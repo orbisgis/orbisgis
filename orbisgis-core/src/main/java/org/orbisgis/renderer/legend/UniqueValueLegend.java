@@ -37,6 +37,7 @@
 package org.orbisgis.renderer.legend;
 
 import org.gdms.data.values.Value;
+import org.orbisgis.renderer.symbol.Symbol;
 
 public interface UniqueValueLegend extends ClassifiedLegend {
 

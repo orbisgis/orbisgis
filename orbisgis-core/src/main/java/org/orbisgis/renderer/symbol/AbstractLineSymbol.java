@@ -34,47 +34,20 @@
  *    fergonco _at_ gmail.com
  *    thomas.leduc _at_ cerma.archi.fr
  */
-package org.orbisgis.renderer.legend;
+package org.orbisgis.renderer.symbol;
 
-import java.awt.BasicStroke;
-import java.awt.Color;
-import java.awt.Graphics2D;
+import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.LineString;
+import com.vividsolutions.jts.geom.MultiLineString;
 
+public abstract class AbstractLineSymbol extends AbstractGeometrySymbol {
 
-public abstract class AbstractCircleSymbol extends AbstractPointSymbol {
-
-	private int size;
-	private Color outline;
-	private Color fillColor;
-
-	public AbstractCircleSymbol(Color outline, Color fillColor, int size) {
-		this.size = size;
-		this.outline = outline;
-		this.fillColor = fillColor;
+	public AbstractLineSymbol() {
+		setName("Line symbol");
 	}
 
-	protected void paintCircle(Graphics2D g, int x, int y) {
-		x = x - size / 2;
-		y = y - size / 2;
-		if (fillColor != null) {
-			g.setPaint(fillColor);
-			g.fillOval(x, y, size, size);
-		}
-		g.setStroke(new BasicStroke(1));
-		g.setColor(outline);
-		g.drawOval(x, y, size, size);
-
+	public boolean willDrawSimpleGeometry(Geometry geom) {
+		return geom instanceof LineString || geom instanceof MultiLineString;
 	}
 
-	public Color getOutlineColor(){
-		return outline;
-	}
-
-	public Color getFillColor(){
-		return fillColor;
-	}
-
-	public int getSize(){
-		return size;
-	}
 }

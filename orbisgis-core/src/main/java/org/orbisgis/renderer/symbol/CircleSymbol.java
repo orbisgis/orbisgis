@@ -34,7 +34,7 @@
  *    fergonco _at_ gmail.com
  *    thomas.leduc _at_ cerma.archi.fr
  */
-package org.orbisgis.renderer.legend;
+package org.orbisgis.renderer.symbol;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
@@ -48,9 +48,9 @@ import org.orbisgis.renderer.liteShape.LiteShape;
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
 
-public class SquareSymbol extends AbstractSquareSymbol {
+public class CircleSymbol extends AbstractCircleSymbol {
 
-	public SquareSymbol(Color outline, Color fillColor, int size) {
+	public CircleSymbol(Color outline, Color fillColor, int size) {
 		super(outline, fillColor, size);
 	}
 

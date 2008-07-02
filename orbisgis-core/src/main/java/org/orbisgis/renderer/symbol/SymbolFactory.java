@@ -34,7 +34,7 @@
  *    fergonco _at_ gmail.com
  *    thomas.leduc _at_ cerma.archi.fr
  */
-package org.orbisgis.renderer.legend;
+package org.orbisgis.renderer.symbol;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
@@ -43,7 +43,7 @@ import java.awt.Stroke;
 public class SymbolFactory {
 
 	public static Symbol createPolygonSymbol() {
-		return new PolygonSymbol();
+		return createPolygonSymbol(Color.black);
 	}
 
 	public static Symbol createPolygonSymbol(Color outlineColor) {
@@ -56,10 +56,7 @@ public class SymbolFactory {
 
 	public static Symbol createPolygonSymbol(Stroke stroke, Color outlineColor,
 			Color fillColor) {
-		PolygonSymbol ret = new PolygonSymbol();
-		ret.setStroke(stroke);
-		ret.setFillColor(fillColor);
-		ret.setOutlineColor(outlineColor);
+		PolygonSymbol ret = new PolygonSymbol(stroke, fillColor, outlineColor);
 
 		return ret;
 	}

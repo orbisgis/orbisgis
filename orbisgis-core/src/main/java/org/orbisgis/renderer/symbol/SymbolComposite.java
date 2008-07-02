@@ -34,7 +34,7 @@
  *    fergonco _at_ gmail.com
  *    thomas.leduc _at_ cerma.archi.fr
  */
-package org.orbisgis.renderer.legend;
+package org.orbisgis.renderer.symbol;
 
 import java.awt.Graphics2D;
 import java.awt.geom.AffineTransform;
@@ -45,80 +45,45 @@ import org.orbisgis.renderer.RenderPermission;
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
 
-public interface Symbol {
+class SymbolComposite extends AbstractSymbol implements Symbol {
 
-	/**
-	 * Draws the symbol in the specified graphics object
-	 *
-	 * @param g
-	 * @param geom
-	 * @param at
-	 * @param permission
-	 *            manager that can be asked for permission to draw
-	 * @return The area used by this draw operation
-	 * @throws DriverException
-	 */
-	Envelope draw(Graphics2D g, Geometry geom, AffineTransform at,
-			RenderPermission permission) throws DriverException;
+	private Symbol[] symbols;
 
-	/**
-	 * Returns true if the symbol will draw the specified geometry
-	 *
-	 * @param geom
-	 * @return
-	 */
-	boolean willDraw(Geometry geom);
+	public SymbolComposite(Symbol[] symbols) {
+		this.symbols = symbols;
+		setName("Symbol composite");
+	}
 
-	/**
-	 * Sets the name of the symbol
-	 *
-	 * @param name
-	 */
-	void setName(String name);
+	public Envelope draw(Graphics2D g, Geometry geom, AffineTransform at,
+			RenderPermission permission) throws DriverException {
+		Envelope ret = null;
+		for (Symbol symbol : symbols) {
+			Envelope area = symbol.draw(g, geom, at, permission);
+			if (ret == null) {
+				ret = area;
+			} else {
+				ret.expandToInclude(area);
+			}
+		}
 
-	/**
-	 * Gets the name of the symbol
-	 *
-	 * @return
-	 */
-	String getName();
+		return ret;
+	}
 
-	/**
-	 * Adds the specified symbol at the end of the children list
-	 *
-	 * @param symbol
-	 */
-	void addSymbol(Symbol symbol);
+	public boolean acceptGeometry(Geometry geom) {
+		for (Symbol symbol : symbols) {
+			if (symbol.acceptGeometry(geom)) {
+				return true;
+			}
+		}
+		return false;
+	}
 
-	/**
-	 * Adds the specified symbol at the specified index
-	 *
-	 * @param index
-	 * @param symbol
-	 */
-	void addSymbol(int index, Symbol symbol);
+	public int getSymbolCount() {
+		return symbols.length;
+	}
 
-	/**
-	 * Removes the symbol at the specified index
-	 *
-	 * @param index
-	 */
-	void removeSymbol(int index);
-
-	/**
-	 * Removes the specified symbol
-	 *
-	 * @param symbol
-	 * @return true if the symbol was in the children and was removed, false
-	 *         otherwise
-	 */
-	boolean removeSymbol(Symbol symbol);
-
-	/**
-	 * True if the symbol accepts children, false otherwise
-	 *
-	 * @return
-	 */
-	boolean acceptsChildren();
+	public Symbol getSymbol(int i) {
+		return symbols[i];
+	}
 
 }

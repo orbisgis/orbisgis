@@ -39,6 +39,7 @@ package org.orbisgis.renderer.legend;
 import java.awt.image.ColorModel;
 
 import org.gdms.data.SpatialDataSourceDecorator;
+import org.orbisgis.renderer.symbol.Symbol;
 
 public class RasterLegend extends AbstractLegend implements Legend {
 

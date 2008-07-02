@@ -56,7 +56,7 @@ import org.orbisgis.renderer.legend.Legend;
 import org.orbisgis.renderer.legend.LegendFactory;
 
 /**
- * 
+ *
  * @author david
  */
 public class JPanelLabelLegend extends javax.swing.JPanel implements
@@ -316,6 +316,31 @@ public class JPanelLabelLegend extends javax.swing.JPanel implements
 		}
 
 		return leg;
+	}
+
+	public boolean acceptsGeometryType(int geometryType) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	public String getLegendTypeName() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public ILegendPanelUI newInstance(LegendContext legendContext) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public void setLegend(Legend legend) {
+		// TODO Auto-generated method stub
+
+	}
+
+	public void setLegendContext(LegendContext lc) {
+		// TODO Auto-generated method stub
+
 	}
 
 

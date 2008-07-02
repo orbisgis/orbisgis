@@ -61,8 +61,8 @@ import org.orbisgis.progress.NullProgressMonitor;
 import org.orbisgis.renderer.legend.Legend;
 import org.orbisgis.renderer.legend.RasterLegend;
 import org.orbisgis.renderer.legend.RenderException;
-import org.orbisgis.renderer.legend.RenderUtils;
-import org.orbisgis.renderer.legend.Symbol;
+import org.orbisgis.renderer.symbol.RenderUtils;
+import org.orbisgis.renderer.symbol.Symbol;
 
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;

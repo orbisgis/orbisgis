@@ -37,7 +37,7 @@
 package org.orbisgis.editorViews.toc.actions.cui.gui.widgets.table;
 
 import org.orbisgis.renderer.legend.Interval;
-import org.orbisgis.renderer.legend.Symbol;
+import org.orbisgis.renderer.symbol.Symbol;
 
 public class SymbolIntervalPOJO {
 	private Symbol sym;

@@ -34,47 +34,49 @@
  *    fergonco _at_ gmail.com
  *    thomas.leduc _at_ cerma.archi.fr
  */
-package org.orbisgis.renderer.legend;
+package org.orbisgis.renderer.symbol;
 
-import java.awt.BasicStroke;
-import java.awt.Color;
-import java.awt.Graphics2D;
-import java.awt.geom.AffineTransform;
+import java.util.ArrayList;
 
-import org.gdms.driver.DriverException;
-import org.orbisgis.renderer.RenderPermission;
-import org.orbisgis.renderer.liteShape.LiteShape;
 
-import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
 
-public class LineSymbol extends AbstractLineSymbol {
+public class RenderUtils {
 
-	private Color color;
-	private BasicStroke stroke;
-
-	public LineSymbol(Color color, BasicStroke stroke) {
-		this.color = color;
-		this.stroke = stroke;
-	}
-
-	public Envelope draw(Graphics2D g, Geometry geom, AffineTransform at,
-			RenderPermission permission) throws DriverException {
-		LiteShape ls = new LiteShape(geom, at, true);
-		g.setStroke(stroke);
-		g.setColor(color);
-		g.setPaint(null);
-		g.draw(ls);
-
-		return null;
-	}
-
-	public Color getColor() {
-		return color;
-	}
-
-	public float getSize() {
-		return (int) stroke.getLineWidth();
+	/**
+	 * Returns a symbol that will draw the geometry. If the specified symbol is
+	 * a symbol composite it will remove the symbols inside that will not draw
+	 * the geometry. It will return null if there is no symbol to draw the
+	 * geometry
+	 *
+	 * @param symbol
+	 * @param geometry
+	 * @return
+	 */
+	public static Symbol buildSymbolToDraw(Symbol symbol, Geometry geometry) {
+		if (symbol instanceof SymbolComposite) {
+			SymbolComposite comp = (SymbolComposite) symbol;
+			ArrayList<Symbol> symbols = new ArrayList<Symbol>();
+			for (int i = 0; i < comp.getSymbolCount(); i++) {
+				Symbol newSymbol = buildSymbolToDraw(comp.getSymbol(i),
+						geometry);
+				if (newSymbol != null) {
+					symbols.add(newSymbol);
+				}
+			}
+			if (symbols.size() == 0) {
+				return null;
+			} else {
+				return SymbolFactory.createSymbolComposite(symbols
+						.toArray(new Symbol[0]));
+			}
+		} else {
+			if (symbol.acceptGeometry(geometry)) {
+				return symbol;
+			} else {
+				return null;
+			}
+		}
 	}
 
 }

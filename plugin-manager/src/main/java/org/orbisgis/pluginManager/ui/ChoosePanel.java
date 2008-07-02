@@ -49,9 +49,9 @@ public class ChoosePanel extends AbstractUIPanel {
 	private String title;
 	private JList lst;
 	private DefaultListModel model;
-	private String[] ids;
+	private Object[] ids;
 
-	public ChoosePanel(String title, String[] names, String[] ids) {
+	public ChoosePanel(String title, String[] names, Object[] ids) {
 		this.title = title;
 		this.names = names;
 		this.ids = ids;
@@ -79,7 +79,7 @@ public class ChoosePanel extends AbstractUIPanel {
 		return null;
 	}
 
-	public String getSelected() {
+	public Object getSelected() {
 		return ids[lst.getSelectedIndex()];
 	}
 

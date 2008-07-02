@@ -59,9 +59,9 @@ import org.orbisgis.layerModel.ILayer;
 import org.orbisgis.layerModel.LayerException;
 import org.orbisgis.layerModel.MapContext;
 import org.orbisgis.renderer.legend.LegendFactory;
-import org.orbisgis.renderer.legend.Symbol;
-import org.orbisgis.renderer.legend.SymbolFactory;
 import org.orbisgis.renderer.legend.UniqueSymbolLegend;
+import org.orbisgis.renderer.symbol.Symbol;
+import org.orbisgis.renderer.symbol.SymbolFactory;
 
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.Polygon;

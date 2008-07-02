@@ -41,7 +41,7 @@ import java.awt.Component;
 import javax.swing.JTable;
 import javax.swing.table.TableCellRenderer;
 
-import org.orbisgis.renderer.legend.Symbol;
+import org.orbisgis.renderer.symbol.Symbol;
 
 public class SymbolValueCellRenderer implements TableCellRenderer {
 

@@ -42,7 +42,9 @@ import org.gdms.data.types.Type;
 import org.gdms.driver.DriverException;
 import org.orbisgis.Services;
 import org.orbisgis.editorViews.toc.action.ILayerAction;
-import org.orbisgis.editorViews.toc.actions.cui.gui.JPanelLegendList;
+import org.orbisgis.editorViews.toc.actions.cui.gui.ILegendPanelUI;
+import org.orbisgis.editorViews.toc.actions.cui.gui.JPanelUniqueSymbolLegend;
+import org.orbisgis.editorViews.toc.actions.cui.ui.LegendsPanel;
 import org.orbisgis.layerModel.ILayer;
 import org.orbisgis.layerModel.MapContext;
 import org.sif.UIFactory;
@@ -62,27 +64,21 @@ public class EditLayerAction implements ILayerAction {
 	}
 
 	public void execute(MapContext mapContext, ILayer layer) {
-		Integer geomConstraint = null;
 		try {
 			Type typ = layer.getDataSource().getMetadata().getFieldType(
 					layer.getDataSource().getSpatialFieldIndex());
-			if (typ.getTypeCode() == Type.GEOMETRY) {
-				Constraint cons = typ.getConstraint(Constraint.GEOMETRY_TYPE);
-				if (cons == null) {
-					geomConstraint = null;
-				} else {
-					geomConstraint = ((GeometryConstraint) cons)
-							.getGeometryType();
-				}
-			}
+			GeometryConstraint cons = (GeometryConstraint) typ
+					.getConstraint(Constraint.GEOMETRY_TYPE);
 
-			JPanelLegendList pan = new JPanelLegendList(geomConstraint, layer);
+			LegendsPanel pan = new LegendsPanel();
+			pan.init(cons, layer.getVectorLegend(),
+					new ILegendPanelUI[] { new JPanelUniqueSymbolLegend(false,
+							pan) });
 			if (UIFactory.showDialog(pan)) {
 				try {
-					layer.setLegend(pan.getLegend());
+					layer.setLegend(pan.getLegends());
 				} catch (DriverException e) {
-					Services.getErrorManager().error("Driver exception ...",
-							e);
+					Services.getErrorManager().error("Driver exception ...", e);
 				}
 			}
 		} catch (DriverException e) {

@@ -37,7 +37,7 @@
 package org.orbisgis.editorViews.toc.actions.cui.gui.widgets.table;
 
 import org.gdms.data.values.Value;
-import org.orbisgis.renderer.legend.Symbol;
+import org.orbisgis.renderer.symbol.Symbol;
 
 public class SymbolValuePOJO {
 	private Symbol sym;

@@ -37,6 +37,7 @@
 package org.orbisgis.renderer.legend;
 
 import org.gdms.driver.DriverException;
+import org.orbisgis.renderer.symbol.Symbol;
 
 public interface ClassifiedLegend extends Legend {
 

@@ -111,7 +111,7 @@ public class CreateFileResource implements IResourceAction {
 			// Create wizard
 			UIPanel[] wizardPanels = new UIPanel[2];
 			ReadWriteDriver driver = (ReadWriteDriver) driverManager
-					.getDriver(cp.getSelected());
+					.getDriver((String) cp.getSelected());
 			boolean file;
 			if ((driver.getType() & SourceManager.FILE) == SourceManager.FILE) {
 				file = true;

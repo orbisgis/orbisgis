@@ -38,6 +38,8 @@ package org.orbisgis.renderer.legend;
 
 import org.gdms.data.SpatialDataSourceDecorator;
 import org.gdms.driver.DriverException;
+import org.orbisgis.renderer.symbol.RenderUtils;
+import org.orbisgis.renderer.symbol.Symbol;
 
 public class DefaultUniqueSymbolLegend extends AbstractLegend implements
 		UniqueSymbolLegend {
@@ -64,7 +66,7 @@ public class DefaultUniqueSymbolLegend extends AbstractLegend implements
 	}
 
 	public String getLegendTypeName() {
-		return "Unique Symbol Legend";
+		return UniqueSymbolLegend.NAME;
 	}
 
 }

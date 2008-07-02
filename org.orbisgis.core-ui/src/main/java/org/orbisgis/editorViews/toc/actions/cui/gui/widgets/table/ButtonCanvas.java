@@ -48,12 +48,11 @@ import javax.swing.JPanel;
 import org.gdms.data.types.GeometryConstraint;
 import org.gdms.driver.DriverException;
 import org.orbisgis.renderer.RenderPermission;
-import org.orbisgis.renderer.legend.CircleSymbol;
-import org.orbisgis.renderer.legend.LineSymbol;
-import org.orbisgis.renderer.legend.PolygonSymbol;
-import org.orbisgis.renderer.legend.Symbol;
-import org.orbisgis.renderer.legend.SymbolComposite;
-import org.orbisgis.renderer.legend.SymbolFactory;
+import org.orbisgis.renderer.symbol.CircleSymbol;
+import org.orbisgis.renderer.symbol.LineSymbol;
+import org.orbisgis.renderer.symbol.PolygonSymbol;
+import org.orbisgis.renderer.symbol.Symbol;
+import org.orbisgis.renderer.symbol.SymbolFactory;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
@@ -107,11 +106,10 @@ public class ButtonCanvas extends JPanel {
 			((Graphics2D) g).setStroke(st);
 
 			if (constr == null) {
-				SymbolComposite comp = (SymbolComposite) s;
 				Symbol sym;
-				int numberOfSymbols = comp.getSymbolCount();
+				int numberOfSymbols = s.getSymbolCount();
 				for (int i = 0; i < numberOfSymbols; i++) {
-					sym = comp.getSymbol(i);
+					sym = s.getSymbol(i);
 					if (sym instanceof LineSymbol) {
 						geom = gf
 								.createLineString(new Coordinate[] {

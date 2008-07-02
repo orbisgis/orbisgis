@@ -36,15 +36,16 @@
  */
 package org.orbisgis.editorViews.toc.actions.cui.gui.widgets;
 
-import org.orbisgis.renderer.legend.CircleSymbol;
-import org.orbisgis.renderer.legend.LineSymbol;
-import org.orbisgis.renderer.legend.PolygonSymbol;
-import org.orbisgis.renderer.legend.Symbol;
+import org.orbisgis.editorViews.toc.actions.cui.ui.EditableSymbol;
+import org.orbisgis.renderer.symbol.CircleSymbol;
+import org.orbisgis.renderer.symbol.LineSymbol;
+import org.orbisgis.renderer.symbol.PolygonSymbol;
+import org.orbisgis.renderer.symbol.Symbol;
 
 public class SymbolListDecorator {
-	Symbol sym;
+	EditableSymbol sym;
 
-	public SymbolListDecorator(Symbol sym) {
+	public SymbolListDecorator(EditableSymbol sym) {
 		if (sym == null || sym.getName() == null || sym.getName() == "") {
 			sym.setName(getSymbolType(sym));
 		}
@@ -64,7 +65,7 @@ public class SymbolListDecorator {
 		return "NO_NAMED_SYMBOL";
 	}
 
-	public Symbol getSymbol() {
+	public EditableSymbol getSymbol() {
 		return sym;
 	}
 
@@ -72,7 +73,7 @@ public class SymbolListDecorator {
 		return sym.getName();
 	}
 
-	public void setSymbol(Symbol sym) {
+	public void setSymbol(EditableSymbol sym) {
 		this.sym = sym;
 	}
 

@@ -39,6 +39,8 @@ package org.orbisgis.renderer.legend;
 import org.gdms.data.SpatialDataSourceDecorator;
 import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
+import org.orbisgis.renderer.symbol.Symbol;
+import org.orbisgis.renderer.symbol.SymbolFactory;
 
 public class DefaultLabelLegend extends AbstractClassifiedLegend implements
 		LabelLegend {

@@ -34,20 +34,20 @@
  *    fergonco _at_ gmail.com
  *    thomas.leduc _at_ cerma.archi.fr
  */
-package org.orbisgis.renderer.legend;
+package org.orbisgis.renderer.symbol;
 
 import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.LineString;
-import com.vividsolutions.jts.geom.MultiLineString;
+import com.vividsolutions.jts.geom.MultiPolygon;
+import com.vividsolutions.jts.geom.Polygon;
 
-public abstract class AbstractLineSymbol extends AbstractGeometrySymbol {
+public abstract class AbstractPolygonSymbol extends AbstractGeometrySymbol {
 
-	public AbstractLineSymbol() {
-		setName("Line symbol");
+	public AbstractPolygonSymbol() {
+		setName("Polygon symbol");
 	}
 
 	public boolean willDrawSimpleGeometry(Geometry geom) {
-		return geom instanceof LineString || geom instanceof MultiLineString;
+		return geom instanceof Polygon || geom instanceof MultiPolygon;
 	}
 
 }

@@ -48,12 +48,11 @@ import javax.swing.JPanel;
 import org.gdms.data.types.GeometryConstraint;
 import org.gdms.driver.DriverException;
 import org.orbisgis.renderer.RenderPermission;
-import org.orbisgis.renderer.legend.CircleSymbol;
-import org.orbisgis.renderer.legend.LineSymbol;
-import org.orbisgis.renderer.legend.PolygonSymbol;
-import org.orbisgis.renderer.legend.Symbol;
-import org.orbisgis.renderer.legend.SymbolComposite;
-import org.orbisgis.renderer.legend.SymbolFactory;
+import org.orbisgis.renderer.symbol.CircleSymbol;
+import org.orbisgis.renderer.symbol.LineSymbol;
+import org.orbisgis.renderer.symbol.PolygonSymbol;
+import org.orbisgis.renderer.symbol.Symbol;
+import org.orbisgis.renderer.symbol.SymbolFactory;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
@@ -65,13 +64,11 @@ import com.vividsolutions.jts.geom.impl.CoordinateArraySequence;
 public class Canvas extends JPanel {
 
 	Symbol s;
-	Integer constraint;
 	boolean isSelected = false;
 
 	public Canvas() {
 		super();
 		s = SymbolFactory.createNullSymbol();
-		constraint = null;
 		this.setSize(126, 70);
 	}
 
@@ -101,14 +98,13 @@ public class Canvas extends JPanel {
 			((Graphics2D) g).setStroke(st);
 
 			if (constr == null) {
-				if (!(s instanceof SymbolComposite)) {
+				if (!(s.acceptsChildren())) {
 					return;
 				}
-				SymbolComposite comp = (SymbolComposite) s;
 				Symbol sym;
-				int numberOfSymbols = comp.getSymbolCount();
+				int numberOfSymbols = s.getSymbolCount();
 				for (int i = 0; i < numberOfSymbols; i++) {
-					sym = comp.getSymbol(i);
+					sym = s.getSymbol(i);
 					if (sym instanceof LineSymbol) {
 						geom = gf
 								.createLineString(new Coordinate[] {
@@ -221,14 +217,13 @@ public class Canvas extends JPanel {
 		}
 	}
 
-	public void setLegend(Symbol sym, Integer constraint) {
+	public void setLegend(Symbol sym) {
 		this.s = sym;
-		this.constraint = constraint;
 	}
 
 	/**
 	 * Gets the real type of layer of the symbol according to their inheritance and
-	 * if it's mixed it will see if all the symbols in it are of the same type or if is 
+	 * if it's mixed it will see if all the symbols in it are of the same type or if is
 	 * a real mixed type.
 	 * @param sym
 	 * @return Integer
@@ -243,9 +238,8 @@ public class Canvas extends JPanel {
 		if (sym instanceof PolygonSymbol) {
 			return GeometryConstraint.POLYGON;
 		}
-		if (sym instanceof SymbolComposite) {
-			SymbolComposite comp = (SymbolComposite) sym;
-			int symbolCount = comp.getSymbolCount();
+		if (sym.acceptsChildren()) {
+			int symbolCount = sym.getSymbolCount();
 
 			boolean allEquals = true;
 			int lastConstraint = 0;
@@ -253,13 +247,11 @@ public class Canvas extends JPanel {
 
 			if (symbolCount > 0) {
 				System.out.println("have more than 0 simbols");
-				lastConstraint = getConstraint(comp.getSymbol(0));
+				lastConstraint = getConstraint(sym.getSymbol(0));
 
 				if (symbolCount != 1) {
 					for (int i = 1; i < symbolCount; i++) {
-						actualConstraint = getConstraint(comp.getSymbol(i));
-						System.out.println("last: " + lastConstraint
-								+ "-- new: " + actualConstraint);
+						actualConstraint = getConstraint(sym.getSymbol(i));
 
 						if (lastConstraint != actualConstraint) {
 							allEquals = false;

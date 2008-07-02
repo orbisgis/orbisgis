@@ -34,29 +34,19 @@
  *    fergonco _at_ gmail.com
  *    thomas.leduc _at_ cerma.archi.fr
  */
-package org.orbisgis.renderer.legend;
+package org.orbisgis.renderer.symbol;
 
-import java.awt.Graphics2D;
-import java.awt.geom.AffineTransform;
-
-import org.gdms.driver.DriverException;
-import org.orbisgis.renderer.RenderPermission;
-
-import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.MultiPoint;
+import com.vividsolutions.jts.geom.Point;
 
-public class NullSymbol extends AbstractSymbol implements Symbol {
+public abstract class AbstractPointSymbol extends AbstractGeometrySymbol {
 
-	public NullSymbol() {
-		setName("Null symbol");
-	}
-	public Envelope draw(Graphics2D g, Geometry geom, AffineTransform at,
-			RenderPermission permission) throws DriverException {
-		return null;
+	public AbstractPointSymbol() {
+		setName("Point symbol");
 	}
 
-	public boolean willDraw(Geometry geom) {
-		return true;
+	public boolean willDrawSimpleGeometry(Geometry geom) {
+		return geom instanceof Point || geom instanceof MultiPoint;
 	}
-
 }

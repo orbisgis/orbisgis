@@ -39,6 +39,7 @@ package org.orbisgis.renderer.legend;
 import java.util.ArrayList;
 
 import org.gdms.data.values.Value;
+import org.orbisgis.renderer.symbol.Symbol;
 
 public interface IntervalLegend extends ClassifiedLegend {
 

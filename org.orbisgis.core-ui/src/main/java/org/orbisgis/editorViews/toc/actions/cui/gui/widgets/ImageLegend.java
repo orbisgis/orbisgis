@@ -49,20 +49,19 @@ import org.gdms.data.types.GeometryConstraint;
 import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
 import org.orbisgis.renderer.RenderPermission;
-import org.orbisgis.renderer.legend.CircleSymbol;
 import org.orbisgis.renderer.legend.Interval;
 import org.orbisgis.renderer.legend.IntervalLegend;
 import org.orbisgis.renderer.legend.LabelLegend;
 import org.orbisgis.renderer.legend.Legend;
-import org.orbisgis.renderer.legend.LineSymbol;
-import org.orbisgis.renderer.legend.NullSymbol;
-import org.orbisgis.renderer.legend.PolygonSymbol;
 import org.orbisgis.renderer.legend.ProportionalLegend;
-import org.orbisgis.renderer.legend.Symbol;
-import org.orbisgis.renderer.legend.SymbolComposite;
-import org.orbisgis.renderer.legend.SymbolFactory;
 import org.orbisgis.renderer.legend.UniqueSymbolLegend;
 import org.orbisgis.renderer.legend.UniqueValueLegend;
+import org.orbisgis.renderer.symbol.CircleSymbol;
+import org.orbisgis.renderer.symbol.LineSymbol;
+import org.orbisgis.renderer.symbol.NullSymbol;
+import org.orbisgis.renderer.symbol.PolygonSymbol;
+import org.orbisgis.renderer.symbol.Symbol;
+import org.orbisgis.renderer.symbol.SymbolFactory;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
@@ -72,7 +71,7 @@ import com.vividsolutions.jts.geom.LinearRing;
 import com.vividsolutions.jts.geom.impl.CoordinateArraySequence;
 
 public class ImageLegend {
-	private BufferedImage [] ims;
+	private BufferedImage[] ims;
 
 	public ImageLegend(Legend[] leg) {
 		ims = new BufferedImage[leg.length];
@@ -81,45 +80,52 @@ public class ImageLegend {
 
 	/**
 	 * The first method to call. Creates one image for each legend in the array
+	 *
 	 * @param leg
 	 */
 	private void createImage(Legend[] leg) {
 
-		BufferedImage imageGarbage = new BufferedImage(10, 10, BufferedImage.TYPE_INT_ARGB);
+		BufferedImage imageGarbage = new BufferedImage(10, 10,
+				BufferedImage.TYPE_INT_ARGB);
 
 		for (int i = 0; i < leg.length; i++) {
-			Dimension dimFinal = getDimension(leg[i], imageGarbage.getGraphics());
+			Dimension dimFinal = getDimension(leg[i], imageGarbage
+					.getGraphics());
 
+			BufferedImage im = new BufferedImage(dimFinal.width,
+					dimFinal.height, BufferedImage.TYPE_INT_ARGB);
 
-			BufferedImage im = new BufferedImage(dimFinal.width, dimFinal.height,
-					BufferedImage.TYPE_INT_ARGB);
+			paintImage(leg[i], 0, im);
 
-			paintImage(leg[i], 0,  im);
-
-			ims[i]=im;
+			ims[i] = im;
 
 		}
 
 	}
 
 	/**
-	 * paint the image of the legend starting from the selected point in te im object
-	 * @param leg the legend to paint
-	 * @param end the point from start to paint (the end of the previous image)
-	 * @param im the buffered image to paint in.
+	 * paint the image of the legend starting from the selected point in te im
+	 * object
+	 *
+	 * @param leg
+	 *            the legend to paint
+	 * @param end
+	 *            the point from start to paint (the end of the previous image)
+	 * @param im
+	 *            the buffered image to paint in.
 	 * @return int
 	 */
-	private int paintImage(Legend leg, int end,  BufferedImage im){
+	private int paintImage(Legend leg, int end, BufferedImage im) {
 		Graphics g = im.getGraphics();
 		Graphics2D g2 = null;
 		if (g instanceof Graphics2D) {
 			g2 = (Graphics2D) g;
-		}else{
+		} else {
 			return -1;
 		}
 
 		if (leg instanceof UniqueSymbolLegend) {
-			UniqueSymbolLegend usl = (UniqueSymbolLegend)leg;
+			UniqueSymbolLegend usl = (UniqueSymbolLegend) leg;
 
 			paintSymbol(usl.getSymbol(), end, g);
 			setText(usl.getSymbol().getName(), end, g);
@@ -131,15 +137,15 @@ public class ImageLegend {
 			UniqueValueLegend uvl = (UniqueValueLegend) leg;
 			int numberOfClas = uvl.getClassificationValues().length;
 			Value[] vals = uvl.getClassificationValues();
-			for (int i=0; i<numberOfClas; i++){
+			for (int i = 0; i < numberOfClas; i++) {
 				paintSymbol(uvl.getValueSymbol(vals[i]), end, g);
 				setText(uvl.getValueSymbol(vals[i]).getName(), end, g);
-				end+=30;
+				end += 30;
 			}
-			if (!(uvl.getDefaultSymbol() instanceof NullSymbol)){
+			if (!(uvl.getDefaultSymbol() instanceof NullSymbol)) {
 				paintSymbol(uvl.getDefaultSymbol(), end, g);
 				setText("Default", end, g);
-				end+=30;
+				end += 30;
 			}
 
 		}
@@ -148,54 +154,60 @@ public class ImageLegend {
 			IntervalLegend il = (IntervalLegend) leg;
 			int numberOfInterv = il.getIntervals().size();
 			ArrayList<Interval> inters = il.getIntervals();
-			for (int i=0; i<numberOfInterv; i++){
+			for (int i = 0; i < numberOfInterv; i++) {
 				paintSymbol(il.getSymbol(inters.get(i)), end, g);
 				setText(il.getSymbol(inters.get(i)).getName(), end, g);
-				end+=30;
+				end += 30;
 			}
-			if (!(il.getDefaultSymbol() instanceof NullSymbol)){
+			if (!(il.getDefaultSymbol() instanceof NullSymbol)) {
 				paintSymbol(il.getDefaultSymbol(), end, g);
 				setText("Default", end, g);
-				end+=30;
+				end += 30;
 			}
 		}
 
 		if (leg instanceof ProportionalLegend) {
 			ProportionalLegend pl = (ProportionalLegend) leg;
-			paintProportionalLegend(pl.getFillColor(), pl.getOutlineColor(), end, g);
+			paintProportionalLegend(pl.getFillColor(), pl.getOutlineColor(),
+					end, g);
 			setText("Proportional", end, g);
 			end += 30;
 		}
 
 		if (leg instanceof LabelLegend) {
 			g2.setColor(Color.BLUE);
-			g2.drawLine(5, end+1, 45, end+1);
+			g2.drawLine(5, end + 1, 45, end + 1);
 			end += 30;
 		}
-
 
 		return end;
 	}
 
-
 	/**
-	 * If the legend is proportional the draw is not equals than the others. then we'll call to this function.
-	 * @param fillColor the fill color
-	 * @param outline the outline color
-	 * @param end the point to start painting (the end of the previous draw)
-	 * @param g the graphics object on where we will paint.
+	 * If the legend is proportional the draw is not equals than the others.
+	 * then we'll call to this function.
+	 *
+	 * @param fillColor
+	 *            the fill color
+	 * @param outline
+	 *            the outline color
+	 * @param end
+	 *            the point to start painting (the end of the previous draw)
+	 * @param g
+	 *            the graphics object on where we will paint.
 	 */
-	private void paintProportionalLegend(Color fillColor, Color outline, int end, Graphics g) {
-		Symbol s1 = SymbolFactory.createCirclePointSymbol(outline, fillColor, 28);
-		Symbol s2 = SymbolFactory.createCirclePointSymbol(outline, fillColor, 10);
+	private void paintProportionalLegend(Color fillColor, Color outline,
+			int end, Graphics g) {
+		Symbol s1 = SymbolFactory.createCirclePointSymbol(outline, fillColor,
+				28);
+		Symbol s2 = SymbolFactory.createCirclePointSymbol(outline, fillColor,
+				10);
 		GeometryFactory gf = new GeometryFactory();
 		Geometry geom = null;
 		Geometry geom2 = null;
 
-
-
 		try {
-			geom = gf.createPoint(new Coordinate(15, end+15));
+			geom = gf.createPoint(new Coordinate(15, end + 15));
 
 			s1.draw((Graphics2D) g, geom, new AffineTransform(),
 					new RenderPermission() {
@@ -206,7 +218,7 @@ public class ImageLegend {
 
 					});
 
-			geom2 = gf.createPoint(new Coordinate(15, end+24));
+			geom2 = gf.createPoint(new Coordinate(15, end + 24));
 
 			s2.draw((Graphics2D) g, geom2, new AffineTransform(),
 					new RenderPermission() {
@@ -221,22 +233,22 @@ public class ImageLegend {
 			e.printStackTrace();
 		}
 
-
 	}
 
 	/**
-	 * draws the specified text on the right of a symbol. 
+	 * draws the specified text on the right of a symbol.
+	 *
 	 * @param name
 	 * @param end
 	 * @param g
 	 */
 	private void setText(String name, int end, Graphics g) {
 		((Graphics2D) g).setColor(Color.black);
-		((Graphics2D) g).drawString(name, 55, end+17);
+		((Graphics2D) g).drawString(name, 55, end + 17);
 	}
 
 	/**
-	 * 
+	 *
 	 * @param sym
 	 * @return
 	 */
@@ -250,14 +262,16 @@ public class ImageLegend {
 		if (sym instanceof PolygonSymbol) {
 			return GeometryConstraint.POLYGON;
 		}
-		if (sym instanceof SymbolComposite) {
+		if (sym.acceptsChildren()) {
 			return null;
 		}
 		return null;
 	}
 
 	/**
-	 * Paints a symbol in the specified graphics and starting from the previous "end" position.
+	 * Paints a symbol in the specified graphics and starting from the previous
+	 * "end" position.
+	 *
 	 * @param s
 	 * @param end
 	 * @param g
@@ -270,15 +284,14 @@ public class ImageLegend {
 			Geometry geom = null;
 
 			if (constr == null) {
-				SymbolComposite comp = (SymbolComposite) s;
 				Symbol sym;
-				int numberOfSymbols = comp.getSymbolCount();
+				int numberOfSymbols = s.getSymbolCount();
 				for (int i = 0; i < numberOfSymbols; i++) {
-					sym = comp.getSymbol(i);
+					sym = s.getSymbol(i);
 					if (sym instanceof LineSymbol) {
-						geom = gf
-								.createLineString(new Coordinate[] {
-										new Coordinate(5, end+15), new Coordinate(45, end+15)});
+						geom = gf.createLineString(new Coordinate[] {
+								new Coordinate(5, end + 15),
+								new Coordinate(45, end + 15) });
 
 						sym.draw((Graphics2D) g, geom, new AffineTransform(),
 								new RenderPermission() {
@@ -291,7 +304,7 @@ public class ImageLegend {
 					}
 
 					if (sym instanceof CircleSymbol) {
-						geom = gf.createPoint(new Coordinate(25, end+15));
+						geom = gf.createPoint(new Coordinate(25, end + 15));
 
 						sym.draw((Graphics2D) g, geom, new AffineTransform(),
 								new RenderPermission() {
@@ -304,9 +317,11 @@ public class ImageLegend {
 					}
 
 					if (sym instanceof PolygonSymbol) {
-						Coordinate[] coordsP = { new Coordinate(5, end+2),
-								new Coordinate(45, end+2), new Coordinate(45, end+28),
-								new Coordinate(5, end+28), new Coordinate(5, end+2) };
+						Coordinate[] coordsP = { new Coordinate(5, end + 2),
+								new Coordinate(45, end + 2),
+								new Coordinate(45, end + 28),
+								new Coordinate(5, end + 28),
+								new Coordinate(5, end + 2) };
 						CoordinateArraySequence seqP = new CoordinateArraySequence(
 								coordsP);
 						geom = gf.createPolygon(new LinearRing(seqP, gf), null);
@@ -327,7 +342,8 @@ public class ImageLegend {
 				case GeometryConstraint.LINESTRING:
 				case GeometryConstraint.MULTI_LINESTRING:
 					geom = gf.createLineString(new Coordinate[] {
-							new Coordinate(5, end+15), new Coordinate(45, end+15) });
+							new Coordinate(5, end + 15),
+							new Coordinate(45, end + 15) });
 
 					s.draw((Graphics2D) g, geom, new AffineTransform(),
 							new RenderPermission() {
@@ -341,7 +357,7 @@ public class ImageLegend {
 					break;
 				case GeometryConstraint.POINT:
 				case GeometryConstraint.MULTI_POINT:
-					geom = gf.createPoint(new Coordinate(25, end+15));
+					geom = gf.createPoint(new Coordinate(25, end + 15));
 
 					s.draw((Graphics2D) g, geom, new AffineTransform(),
 							new RenderPermission() {
@@ -355,9 +371,11 @@ public class ImageLegend {
 					break;
 				case GeometryConstraint.POLYGON:
 				case GeometryConstraint.MULTI_POLYGON:
-					Coordinate[] coords = { new Coordinate(5, end+2),
-							new Coordinate(45, end+2), new Coordinate(45, end+28),
-							new Coordinate(5, end+28), new Coordinate(5, end+2) };
+					Coordinate[] coords = { new Coordinate(5, end + 2),
+							new Coordinate(45, end + 2),
+							new Coordinate(45, end + 28),
+							new Coordinate(5, end + 28),
+							new Coordinate(5, end + 2) };
 					CoordinateArraySequence seq = new CoordinateArraySequence(
 							coords);
 					geom = gf.createPolygon(new LinearRing(seq, gf), null);
@@ -382,16 +400,18 @@ public class ImageLegend {
 			System.out.println(e.getMessage());
 		}
 
-
 	}
 
 	/**
 	 * gets the future dimension of the canvas on where to paint.
-	 * @param leg The legend for wich we want know the dimension
-	 * @param dg The graphics on where we will paint the legend.
+	 *
+	 * @param leg
+	 *            The legend for wich we want know the dimension
+	 * @param dg
+	 *            The graphics on where we will paint the legend.
 	 * @return Dimension
 	 */
-	
+
 	private Dimension getDimension(Legend leg, Graphics dg) {
 		int height = 0;
 		int initWidth = 60;
@@ -399,9 +419,9 @@ public class ImageLegend {
 
 		if (leg instanceof UniqueSymbolLegend) {
 			height = 30;
-			String str = ((UniqueSymbolLegend)leg).getSymbol().getName();
+			String str = ((UniqueSymbolLegend) leg).getSymbol().getName();
 			FontMetrics fm = dg.getFontMetrics();
-			width = initWidth+fm.stringWidth( str );
+			width = initWidth + fm.stringWidth(str);
 		}
 
 		if (leg instanceof UniqueValueLegend) {
@@ -411,30 +431,28 @@ public class ImageLegend {
 			height = 30 * numberOfClas;
 
 			Value[] vals = uvl.getClassificationValues();
-			for (int i=0; i<numberOfClas; i++){
+			for (int i = 0; i < numberOfClas; i++) {
 				String str = uvl.getValueSymbol(vals[i]).getName();
 				FontMetrics fm = dg.getFontMetrics();
-				int widthStr = fm.stringWidth( str );
+				int widthStr = fm.stringWidth(str);
 
-				if (initWidth+widthStr > width){
-					width=initWidth+widthStr;
+				if (initWidth + widthStr > width) {
+					width = initWidth + widthStr;
 				}
 
 			}
 
-			if (!(uvl.getDefaultSymbol() instanceof NullSymbol)){
-				height+=30;
+			if (!(uvl.getDefaultSymbol() instanceof NullSymbol)) {
+				height += 30;
 
 				String str = "Default";
 				FontMetrics fm = dg.getFontMetrics();
-				int widthStr = fm.stringWidth( str );
+				int widthStr = fm.stringWidth(str);
 
-				if (initWidth+widthStr > width){
-					width=initWidth+widthStr;
+				if (initWidth + widthStr > width) {
+					width = initWidth + widthStr;
 				}
 			}
-
-
 
 		}
 
@@ -445,25 +463,25 @@ public class ImageLegend {
 			height = 30 * numberOfInterv;
 
 			ArrayList<Interval> inters = il.getIntervals();
-			for (int i=0; i<numberOfInterv; i++){
+			for (int i = 0; i < numberOfInterv; i++) {
 				String str = il.getSymbol(inters.get(i)).getName();
 				FontMetrics fm = dg.getFontMetrics();
-				int widthStr = fm.stringWidth( str );
+				int widthStr = fm.stringWidth(str);
 
-				if (initWidth+widthStr > width){
-					width=initWidth+widthStr;
+				if (initWidth + widthStr > width) {
+					width = initWidth + widthStr;
 				}
 			}
 
-			if (!(il.getDefaultSymbol() instanceof NullSymbol)){
-				height+=30;
+			if (!(il.getDefaultSymbol() instanceof NullSymbol)) {
+				height += 30;
 
 				String str = "Default";
 				FontMetrics fm = dg.getFontMetrics();
-				int widthStr = fm.stringWidth( str );
+				int widthStr = fm.stringWidth(str);
 
-				if (initWidth+widthStr > width){
-					width=initWidth+widthStr;
+				if (initWidth + widthStr > width) {
+					width = initWidth + widthStr;
 				}
 			}
 		}
@@ -471,7 +489,7 @@ public class ImageLegend {
 		if (leg instanceof ProportionalLegend) {
 			String str = "Default";
 			FontMetrics fm = dg.getFontMetrics();
-			width = initWidth+fm.stringWidth( str );
+			width = initWidth + fm.stringWidth(str);
 			height = 30;
 		}
 
@@ -479,19 +497,20 @@ public class ImageLegend {
 			height = 30;
 		}
 
-		if (width==0)
-			width=1;
-		if (height==0)
-			height=1;
+		if (width == 0)
+			width = 1;
+		if (height == 0)
+			height = 1;
 
 		return new Dimension(width, height);
 	}
 
 	/**
 	 * returns the collection of images of the legends
+	 *
 	 * @return BufferedImage[]
 	 */
-	public BufferedImage [] getIm() {
+	public BufferedImage[] getIm() {
 		return ims;
 	}
 

@@ -56,18 +56,17 @@ import org.orbisgis.layerModel.ILayer;
 import org.orbisgis.renderer.legend.Legend;
 import org.orbisgis.renderer.legend.LegendFactory;
 import org.orbisgis.renderer.legend.ProportionalLegend;
-import org.orbisgis.renderer.legend.Symbol;
-import org.orbisgis.renderer.legend.SymbolFactory;
+import org.orbisgis.renderer.symbol.Symbol;
+import org.orbisgis.renderer.symbol.SymbolFactory;
 import org.sif.UIFactory;
 
 /**
- * 
+ *
  * @author david
  */
 public class JPanelProportionalLegend extends javax.swing.JPanel implements
 		ILegendPanelUI {
 
-	private int constraint = 0;
 	private ILayer layer = null;
 	private ProportionalLegend leg = null;
 	private Canvas canvas = null;
@@ -76,7 +75,6 @@ public class JPanelProportionalLegend extends javax.swing.JPanel implements
 
 	public JPanelProportionalLegend(Legend leg, int constraint,
 			ILayer layer) {
-		this.constraint = constraint;
 		this.layer = layer;
 		this.leg = (ProportionalLegend)leg;
 		initComponents();
@@ -95,7 +93,7 @@ public class JPanelProportionalLegend extends javax.swing.JPanel implements
 	 */
 	private void refreshCanvas() {
 		Symbol sym = createDefaultSymbol();
-		canvas.setLegend(sym, constraint);
+		canvas.setLegend(sym);
 		canvas.validate();
 		canvas.repaint();
 
@@ -380,6 +378,31 @@ public class JPanelProportionalLegend extends javax.swing.JPanel implements
 
 	public void setDecoratorListener(LegendListDecorator dec) {
 		this.dec = dec;
+	}
+
+	public boolean acceptsGeometryType(int geometryType) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	public String getLegendTypeName() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public ILegendPanelUI newInstance(LegendContext legendContext) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public void setLegend(Legend legend) {
+		// TODO Auto-generated method stub
+
+	}
+
+	public void setLegendContext(LegendContext lc) {
+		// TODO Auto-generated method stub
+
 	}
 
 }

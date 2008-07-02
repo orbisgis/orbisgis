@@ -34,21 +34,32 @@
  *    fergonco _at_ gmail.com
  *    thomas.leduc _at_ cerma.archi.fr
  */
-package org.orbisgis.renderer.legend;
+package org.orbisgis.renderer.symbol;
 
-import java.awt.Color;
+public abstract class AbstractSymbol implements Symbol {
 
-import com.vividsolutions.jts.geom.Geometry;
+	private String name;
 
-public class CircleVertexSymbol extends CircleSymbol{
-
-	public CircleVertexSymbol(Color outline, Color fillColor, int size) {
-		super(outline, fillColor, size);
+	public void setName(String name) {
+		this.name = name;
 	}
 
-	@Override
-	public boolean willDrawSimpleGeometry(Geometry geom) {
-		return true;
+	public String getName() {
+		return name;
+	}
+
+	public int getSymbolCount() {
+		throw new UnsupportedOperationException(
+				"This symbol doesn't allow children");
+	}
+
+	public Symbol getSymbol(int i) {
+		throw new UnsupportedOperationException(
+				"This symbol doesn't allow children");
+	}
+
+	public boolean acceptsChildren() {
+		return false;
 	}
 
 }

@@ -37,6 +37,7 @@
 package org.orbisgis.renderer.legend;
 
 import org.gdms.data.SpatialDataSourceDecorator;
+import org.orbisgis.renderer.symbol.Symbol;
 
 /**
  * Interface used by the layer model and the renderer to draw the sources

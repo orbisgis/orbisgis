@@ -37,6 +37,8 @@
 package org.orbisgis.renderer.legend;
 
 import org.gdms.driver.DriverException;
+import org.orbisgis.renderer.symbol.Symbol;
+import org.orbisgis.renderer.symbol.SymbolFactory;
 
 abstract class AbstractClassifiedLegend extends AbstractLegend implements
 		ClassifiedLegend {

@@ -49,7 +49,7 @@ import javax.swing.table.TableModel;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.sql.strategies.IncompatibleTypesException;
-import org.orbisgis.renderer.legend.Symbol;
+import org.orbisgis.renderer.symbol.Symbol;
 
 public class SymbolValueTableModel implements TableModel {
 

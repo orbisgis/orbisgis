@@ -47,8 +47,8 @@ import org.gdms.driver.DriverException;
 import org.orbisgis.renderer.legend.Legend;
 import org.orbisgis.renderer.legend.LegendListener;
 import org.orbisgis.renderer.legend.RenderException;
-import org.orbisgis.renderer.legend.Symbol;
-import org.orbisgis.renderer.legend.SymbolFactory;
+import org.orbisgis.renderer.symbol.Symbol;
+import org.orbisgis.renderer.symbol.SymbolFactory;
 
 public class LegendDecorator implements Legend, EditionListener {
 

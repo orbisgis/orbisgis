@@ -41,6 +41,8 @@ import java.util.ArrayList;
 import org.gdms.data.SpatialDataSourceDecorator;
 import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
+import org.orbisgis.renderer.symbol.RenderUtils;
+import org.orbisgis.renderer.symbol.Symbol;
 
 import com.vividsolutions.jts.geom.Geometry;
 

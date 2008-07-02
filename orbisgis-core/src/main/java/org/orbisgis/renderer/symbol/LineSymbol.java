@@ -34,56 +34,39 @@
  *    fergonco _at_ gmail.com
  *    thomas.leduc _at_ cerma.archi.fr
  */
-package org.orbisgis.renderer.legend;
+package org.orbisgis.renderer.symbol;
 
+import java.awt.BasicStroke;
+import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.geom.AffineTransform;
 
 import org.gdms.driver.DriverException;
 import org.orbisgis.renderer.RenderPermission;
+import org.orbisgis.renderer.liteShape.LiteShape;
 
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
 
-public class SymbolComposite extends AbstractSymbol implements Symbol {
+public class LineSymbol extends AbstractLineSymbol {
 
-	private Symbol[] symbols;
+	private Color color;
+	private BasicStroke stroke;
 
-	public SymbolComposite(Symbol[] symbols) {
-		this.symbols = symbols;
-		setName("Symbol composite");
+	public LineSymbol(Color color, BasicStroke stroke) {
+		this.color = color;
+		this.stroke = stroke;
 	}
 
 	public Envelope draw(Graphics2D g, Geometry geom, AffineTransform at,
 			RenderPermission permission) throws DriverException {
-		Envelope ret = null;
-		for (Symbol symbol : symbols) {
-			Envelope area = symbol.draw(g, geom, at, permission);
-			if (ret == null) {
-				ret = area;
-			} else {
-				ret.expandToInclude(area);
-			}
-		}
+		LiteShape ls = new LiteShape(geom, at, true);
+		g.setStroke(stroke);
+		g.setColor(color);
+		g.setPaint(null);
+		g.draw(ls);
 
-		return ret;
-	}
-
-	public boolean willDraw(Geometry geom) {
-		for (Symbol symbol : symbols) {
-			if (symbol.willDraw(geom)) {
-				return true;
-			}
-		}
-		return false;
-	}
-
-	public int getSymbolCount() {
-		return symbols.length;
-	}
-
-	public Symbol getSymbol(int i) {
-		return symbols[i];
+		return null;
 	}
 
 }

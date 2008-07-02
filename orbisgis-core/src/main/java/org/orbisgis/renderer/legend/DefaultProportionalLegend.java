@@ -42,6 +42,8 @@ import org.gdms.data.SpatialDataSourceDecorator;
 import org.gdms.driver.DriverException;
 import org.gdms.sql.strategies.IncompatibleTypesException;
 import org.orbisgis.renderer.classification.ProportionalMethod;
+import org.orbisgis.renderer.symbol.Symbol;
+import org.orbisgis.renderer.symbol.SymbolFactory;
 
 public class DefaultProportionalLegend extends AbstractClassifiedLegend
 		implements ProportionalLegend {

@@ -36,7 +36,11 @@
  */
 package org.orbisgis.renderer.legend;
 
+import org.orbisgis.renderer.symbol.Symbol;
+
 public interface UniqueSymbolLegend extends Legend {
+
+	String NAME = "Unique Symbol Legend";
 
 	/**
 	 * Sets the symbol of the legend
@@ -44,10 +48,10 @@ public interface UniqueSymbolLegend extends Legend {
 	 * @param symbol
 	 */
 	void setSymbol(Symbol symbol);
-	
+
 	/**
 	 * Gets the symbol of the legend
-	 * 
+	 *
 	 * @return symbol
 	 */
 	public Symbol getSymbol();

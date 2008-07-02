@@ -34,33 +34,50 @@
  *    fergonco _at_ gmail.com
  *    thomas.leduc _at_ cerma.archi.fr
  */
-package org.orbisgis.renderer.legend;
+package org.orbisgis.renderer.symbol;
 
+import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics2D;
+import java.awt.Stroke;
+import java.awt.geom.AffineTransform;
 
+import org.gdms.driver.DriverException;
+import org.orbisgis.renderer.RenderPermission;
+import org.orbisgis.renderer.liteShape.LiteShape;
 
-public abstract class AbstractSquareSymbol extends AbstractPointSymbol {
+import com.vividsolutions.jts.geom.Envelope;
+import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.MultiPolygon;
+import com.vividsolutions.jts.geom.Polygon;
 
-	private int size;
-	private Color outline;
-	private Color fillColor;
+public class PolygonSymbol extends AbstractPolygonSymbol {
 
-	public AbstractSquareSymbol(Color outline, Color fillColor, int size) {
-		this.size = size;
-		this.outline = outline;
+	private Stroke stroke = new BasicStroke();
+
+	private Color outlineColor = Color.black;
+
+	private Color fillColor = Color.red;
+
+	public PolygonSymbol(Stroke stroke, Color fillColor, Color outlineColor) {
+		this.stroke = stroke;
 		this.fillColor = fillColor;
+		this.outlineColor = outlineColor;
 	}
 
-	protected void paintCircle(Graphics2D g, int x, int y) {
-		x = x - size / 2;
-		y = y - size / 2;
-		if (fillColor != null) {
-			g.setPaint(fillColor);
-			g.fillRect(x, y, size, size);
+	public Envelope draw(Graphics2D g, Geometry geom, AffineTransform at,
+			RenderPermission permission) throws DriverException {
+		if (geom instanceof Polygon || geom instanceof MultiPolygon) {
+			LiteShape ls = new LiteShape(geom, at, true);
+			g.setStroke(stroke);
+			if (fillColor != null) {
+				g.setPaint(fillColor);
+				g.fill(ls);
+			}
+			g.setColor(outlineColor);
+			g.draw(ls);
 		}
-		g.setColor(outline);
-		g.drawRect(x, y, size, size);
 
+		return null;
 	}
 }

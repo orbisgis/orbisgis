@@ -34,42 +34,29 @@
  *    fergonco _at_ gmail.com
  *    thomas.leduc _at_ cerma.archi.fr
  */
-package org.orbisgis.renderer.legend;
+package org.orbisgis.renderer.symbol;
 
-public abstract class AbstractSymbol implements Symbol {
+import java.awt.Graphics2D;
+import java.awt.geom.AffineTransform;
 
-	private String name;
+import org.gdms.driver.DriverException;
+import org.orbisgis.renderer.RenderPermission;
 
-	public void setName(String name) {
-		this.name = name;
+import com.vividsolutions.jts.geom.Envelope;
+import com.vividsolutions.jts.geom.Geometry;
+
+public class NullSymbol extends AbstractSymbol implements Symbol {
+
+	public NullSymbol() {
+		setName("Null symbol");
+	}
+	public Envelope draw(Graphics2D g, Geometry geom, AffineTransform at,
+			RenderPermission permission) throws DriverException {
+		return null;
 	}
 
-	public String getName() {
-		return name;
-	}
-
-	public void addSymbol(Symbol symbol) {
-		throw new UnsupportedOperationException(
-				"This symbol doesn't allow children");
-	}
-
-	public void addSymbol(int index, Symbol symbol) {
-		throw new UnsupportedOperationException(
-				"This symbol doesn't allow children");
-	}
-
-	public void removeSymbol(int index) {
-		throw new UnsupportedOperationException(
-				"This symbol doesn't allow children");
-	}
-
-	public boolean removeSymbol(Symbol symbol) {
-		throw new UnsupportedOperationException(
-				"This symbol doesn't allow children");
-	}
-
-	public boolean acceptsChildren() {
-		return false;
+	public boolean acceptGeometry(Geometry geom) {
+		return true;
 	}
 
 }

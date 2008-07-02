@@ -47,34 +47,70 @@ package org.orbisgis.editorViews.toc.actions.cui.gui;
 
 import java.awt.Component;
 
-import org.orbisgis.editorViews.toc.actions.cui.gui.widgets.LegendListDecorator;
-import org.orbisgis.layerModel.ILayer;
 import org.orbisgis.renderer.legend.Legend;
 
 /**
- * 
+ *
  * @author David Ortega
  */
 public interface ILegendPanelUI {
+	int POINT = 1;
+	int LINE = 2;
+	int POLYGON = 4;
+	int ALL = POINT | LINE | POLYGON;
+
 	/**
-	 * This function will return the Component of the object (normally a JPanel).
+	 * This function will return the Component of the object (normally a
+	 * JPanel).
+	 *
 	 * @return Component
 	 */
 	public Component getComponent();
 
 	/**
 	 * It will return the Legend created by all the variables in the panel.
+	 *
 	 * @return Legend
 	 */
 	public Legend getLegend();
 
 	/**
-	 * It receives the LegendListDecorator in order to work as a listener.
-	 * Any change that you make in the panel (press any button, etc..) will
-	 * update the Legend into dec in order to make effective the changes in the 
-	 * final Legend composite.
-	 * @param dec
+	 * Sets the legend to be edited by this component
+	 *
+	 * @param legend
 	 */
-	
-	public void setDecoratorListener(LegendListDecorator dec);
+	public void setLegend(Legend legend);
+
+	/**
+	 * Sets the legend context. This instance is useful to get some information
+	 * about the layer in edition. This method is called just after the legend
+	 * creation.
+	 *
+	 * @param lc
+	 */
+	public void setLegendContext(LegendContext lc);
+
+	/**
+	 * Gets the name for this legend type
+	 *
+	 * @return
+	 */
+	public String getLegendTypeName();
+
+	/**
+	 * Returns true if this legend can be applied to the specified geometry
+	 * type.
+	 *
+	 * @param geometryType
+	 *            Type of geometry in the layer.
+	 * @return
+	 */
+	public boolean acceptsGeometryType(int geometryType);
+
+	/**
+	 * Creates a new empty instance
+	 *
+	 * @return
+	 */
+	public ILegendPanelUI newInstance(LegendContext legendContext);
 }

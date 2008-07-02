@@ -60,9 +60,9 @@ import org.orbisgis.renderer.legend.Legend;
 import org.orbisgis.renderer.legend.LegendFactory;
 import org.orbisgis.renderer.legend.RasterLegend;
 import org.orbisgis.renderer.legend.RenderException;
-import org.orbisgis.renderer.legend.Symbol;
-import org.orbisgis.renderer.legend.SymbolFactory;
 import org.orbisgis.renderer.legend.UniqueSymbolLegend;
+import org.orbisgis.renderer.symbol.Symbol;
+import org.orbisgis.renderer.symbol.SymbolFactory;
 
 import com.vividsolutions.jts.geom.Envelope;
 
@@ -115,6 +115,7 @@ public class Layer extends GdmsLayer {
 			}
 		}
 
+		legend.setName(UniqueSymbolLegend.NAME);
 		return legend;
 	}
 

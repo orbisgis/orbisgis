@@ -60,9 +60,9 @@ import org.orbisgis.renderer.classification.RangeMethod;
 import org.orbisgis.renderer.legend.IntervalLegend;
 import org.orbisgis.renderer.legend.LegendFactory;
 import org.orbisgis.renderer.legend.ProportionalLegend;
-import org.orbisgis.renderer.legend.Symbol;
-import org.orbisgis.renderer.legend.SymbolFactory;
 import org.orbisgis.renderer.legend.UniqueSymbolLegend;
+import org.orbisgis.renderer.symbol.Symbol;
+import org.orbisgis.renderer.symbol.SymbolFactory;
 
 import com.vividsolutions.jts.geom.Envelope;
 

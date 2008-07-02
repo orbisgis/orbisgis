@@ -34,20 +34,33 @@
  *    fergonco _at_ gmail.com
  *    thomas.leduc _at_ cerma.archi.fr
  */
-package org.orbisgis.renderer.legend;
+package org.orbisgis.renderer.symbol;
 
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.MultiPolygon;
-import com.vividsolutions.jts.geom.Polygon;
+import java.awt.Color;
+import java.awt.Graphics2D;
 
-public abstract class AbstractPolygonSymbol extends AbstractGeometrySymbol {
 
-	public AbstractPolygonSymbol() {
-		setName("Polygon symbol");
+public abstract class AbstractSquareSymbol extends AbstractPointSymbol {
+
+	private int size;
+	private Color outline;
+	private Color fillColor;
+
+	public AbstractSquareSymbol(Color outline, Color fillColor, int size) {
+		this.size = size;
+		this.outline = outline;
+		this.fillColor = fillColor;
 	}
 
-	public boolean willDrawSimpleGeometry(Geometry geom) {
-		return geom instanceof Polygon || geom instanceof MultiPolygon;
-	}
+	protected void paintCircle(Graphics2D g, int x, int y) {
+		x = x - size / 2;
+		y = y - size / 2;
+		if (fillColor != null) {
+			g.setPaint(fillColor);
+			g.fillRect(x, y, size, size);
+		}
+		g.setColor(outline);
+		g.drawRect(x, y, size, size);
 
+	}
 }

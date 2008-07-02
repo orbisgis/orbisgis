@@ -62,21 +62,22 @@ import javax.xml.bind.Unmarshaller;
 import org.gdms.data.types.GeometryConstraint;
 import org.orbisgis.ExtendedWorkspace;
 import org.orbisgis.Services;
-import org.orbisgis.editorViews.toc.actions.cui.gui.JPanelUniqueSymbolLegend;
-import org.orbisgis.editorViews.toc.actions.cui.gui.factory.LegendPanelFactory;
+import org.orbisgis.editorViews.toc.actions.cui.gui.ILegendPanelUI;
+import org.orbisgis.editorViews.toc.actions.cui.gui.LegendContext;
 import org.orbisgis.editorViews.toc.actions.cui.persistence.Compositesymboltype;
 import org.orbisgis.editorViews.toc.actions.cui.persistence.ObjectFactory;
 import org.orbisgis.editorViews.toc.actions.cui.persistence.Simplesymboltype;
 import org.orbisgis.editorViews.toc.actions.cui.persistence.Symbolcollection;
+import org.orbisgis.editorViews.toc.actions.cui.ui.EditableSymbol;
+import org.orbisgis.editorViews.toc.actions.cui.ui.SymbolEditor;
 import org.orbisgis.images.IconLoader;
-import org.orbisgis.renderer.legend.CircleSymbol;
 import org.orbisgis.renderer.legend.LegendFactory;
-import org.orbisgis.renderer.legend.LineSymbol;
-import org.orbisgis.renderer.legend.PolygonSymbol;
-import org.orbisgis.renderer.legend.Symbol;
-import org.orbisgis.renderer.legend.SymbolComposite;
-import org.orbisgis.renderer.legend.SymbolFactory;
 import org.orbisgis.renderer.legend.UniqueSymbolLegend;
+import org.orbisgis.renderer.symbol.CircleSymbol;
+import org.orbisgis.renderer.symbol.LineSymbol;
+import org.orbisgis.renderer.symbol.PolygonSymbol;
+import org.orbisgis.renderer.symbol.Symbol;
+import org.orbisgis.renderer.symbol.SymbolFactory;
 import org.sif.UIFactory;
 import org.sif.UIPanel;
 
@@ -88,12 +89,13 @@ public class FlowLayoutPreviewWindow extends javax.swing.JPanel implements
 		UIPanel {
 
 	public static final String SYMBOL_COLLECTION_FILE = "org.orbisgis.symbol-collection.xml";
-	int countSelected = 0;
-	Integer legendConstraint = null;
-	boolean isCtrlPressed = false;
+	private int countSelected = 0;
+	private int legendConstraint;
+	private LegendContext legendContext;
 
 	/** Creates new form VentanaFlowLayoutPreview */
-	public FlowLayoutPreviewWindow() {
+	public FlowLayoutPreviewWindow(LegendContext legendContext) {
+		this.legendContext = legendContext;
 		initComponents();
 		try {
 			ExtendedWorkspace ew = (ExtendedWorkspace) Services
@@ -109,7 +111,6 @@ public class FlowLayoutPreviewWindow extends javax.swing.JPanel implements
 		// setAbstractActions();
 		refreshInterface();
 	}
-
 
 	/**
 	 * This method is called from within the constructor to initialize the form.
@@ -229,7 +230,7 @@ public class FlowLayoutPreviewWindow extends javax.swing.JPanel implements
 
 	}// GEN-LAST:event_jButtonDelActionPerformed
 
-	private void jButtonEditActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jButtonEditActionPerformed
+	private void jButtonEditActionPerformed(java.awt.event.ActionEvent evt) {
 		Component[] comps = jPanelPreviewSymbols.getComponents();
 		for (int i = 0; i < comps.length; i++) {
 			if (comps[i] instanceof Canvas) {
@@ -237,17 +238,13 @@ public class FlowLayoutPreviewWindow extends javax.swing.JPanel implements
 
 				if (can.isSelected) {
 					Symbol sym = can.getSymbol();
-					int constraint = can.constraint;
-
 					UniqueSymbolLegend leg = LegendFactory
 							.createUniqueSymbolLegend();
 					leg.setSymbol(sym);
-					JPanelUniqueSymbolLegend usl = new JPanelUniqueSymbolLegend(
-							leg, constraint, false);
-					usl.setPreferredSize(new Dimension(657, 309));
+					SymbolEditor usl = new SymbolEditor(false, legendContext);
 
 					if (UIFactory.showDialog(usl)) {
-						can.setLegend(usl.getSymbolComposite(), constraint);
+						can.setLegend(usl.getSymbolComposite());
 					}
 
 				}
@@ -255,39 +252,34 @@ public class FlowLayoutPreviewWindow extends javax.swing.JPanel implements
 			}
 		}
 		refreshInterface();
-	}// GEN-LAST:event_jButtonEditActionPerformed
+	}
 
 	private void jButtonAddActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jButtonAddActionPerformed
 
 		// Symbol sym = SymbolFactory.createCirclePointSymbol(Color.BLACK,
 		// Color.BLUE, 20);
 		JPanelTypeOfGeometrySelection type = new JPanelTypeOfGeometrySelection(
-				true);
-		if (!UIFactory.showDialog(type)) {
-			return;
+				SymbolEditor.getAvailableSymbols());
+		if (UIFactory.showDialog(type)) {
+			EditableSymbol sym = (EditableSymbol) type.getSelected();
+
+			SymbolEditor usl = new SymbolEditor(false, legendContext);
+			usl.setSymbol(sym);
+
+			if (UIFactory.showDialog(usl)) {
+				addSymbolToPanel(usl.getSymbolComposite());
+
+				refreshInterface();
+			}
+
 		}
-		//
-		int constraint = type.getConstraint();
-
-		JPanelUniqueSymbolLegend usl = (JPanelUniqueSymbolLegend)LegendPanelFactory.createPanel(LegendPanelFactory.UNIQUE_SYMBOL_LEGEND, LegendFactory.createUniqueSymbolLegend(), constraint, null, false);
-		usl.setPreferredSize(new Dimension(657, 309));
-
-		if (!UIFactory.showDialog(usl)) {
-			return;
-		}
-
-		Symbol sym = usl.getSymbolComposite();
-
-		addSymbolToPanel(sym, constraint);
-
-		refreshInterface();
 
 	}// GEN-LAST:event_jButtonAddActionPerformed
-
 
 	private void jPanelPreviewSymbolsMouseClicked(java.awt.event.MouseEvent evt) {// GEN-FIRST:event_jPanelPreviewSymbolsMouseClicked
 		Component[] comps = jPanelPreviewSymbols.getComponents();
 
+		boolean isCtrlPressed;
 		if (evt.getModifiers() == (InputEvent.CTRL_MASK | InputEvent.BUTTON1_MASK)) {
 			isCtrlPressed = true;
 		} else {
@@ -337,7 +329,6 @@ public class FlowLayoutPreviewWindow extends javax.swing.JPanel implements
 		refreshInterface();
 
 	}// GEN-LAST:event_jPanelPreviewSymbolsMouseClicked
-
 
 	public int getCountSelected() {
 		return countSelected;
@@ -389,11 +380,13 @@ public class FlowLayoutPreviewWindow extends javax.swing.JPanel implements
 	}
 
 	/**
-	 * Create a xml file in the specified path (file) with all the values of the collection
+	 * Create a xml file in the specified path (file) with all the values of the
+	 * collection
+	 *
 	 * @param file
 	 * @throws JAXBException
 	 */
-	
+
 	private void saveXML(FileOutputStream file) throws JAXBException {
 		ObjectFactory of = new ObjectFactory();
 		Symbolcollection coll = of.createSymbolcollection();
@@ -416,9 +409,8 @@ public class FlowLayoutPreviewWindow extends javax.swing.JPanel implements
 					syms.add(sst);
 
 				} else {
-					SymbolComposite com = (SymbolComposite) sym;
 
-					Compositesymboltype cst = createComposite(com);
+					Compositesymboltype cst = createComposite(sym);
 
 					comp.add(cst);
 				}
@@ -430,8 +422,11 @@ public class FlowLayoutPreviewWindow extends javax.swing.JPanel implements
 
 	/**
 	 * creates a simple symbol type object of JAXB
-	 * @param sym the simple symbol to serialize
-	 * @param constraint the type of the symbol
+	 *
+	 * @param sym
+	 *            the simple symbol to serialize
+	 * @param constraint
+	 *            the type of the symbol
 	 * @return Symplesymboltype
 	 */
 	public Simplesymboltype createSimple(Symbol sym, int constraint) {
@@ -448,28 +443,15 @@ public class FlowLayoutPreviewWindow extends javax.swing.JPanel implements
 		case GeometryConstraint.MULTI_LINESTRING:
 			LineSymbol lin = (LineSymbol) sym;
 
-			sst.setLineColor(lin.getColor().getRGB() + "");
-
-			sst.setOutlineSize(lin.getSize() + "");
-
 			break;
 		case GeometryConstraint.POINT:
 		case GeometryConstraint.MULTI_POINT:
 			CircleSymbol cir = (CircleSymbol) sym;
 
-			sst.setLineColor(cir.getOutlineColor().getRGB() + "");
-			sst.setFillColor(cir.getFillColor().getRGB() + "");
-
-			sst.setSimbolSize(cir.getSize() + "");
-
 			break;
 		case GeometryConstraint.POLYGON:
 		case GeometryConstraint.MULTI_POLYGON:
 			PolygonSymbol pol = (PolygonSymbol) sym;
-
-			sst.setLineColor(pol.getOutlineColor().getRGB() + "");
-			sst.setFillColor(pol.getFillColor().getRGB() + "");
-
 			break;
 		}
 
@@ -478,10 +460,12 @@ public class FlowLayoutPreviewWindow extends javax.swing.JPanel implements
 
 	/**
 	 * creates a composite symbol of jaxb
-	 * @param com the symbol composite
+	 *
+	 * @param com
+	 *            the symbol composite
 	 * @return Compositesymboltype
 	 */
-	public Compositesymboltype createComposite(SymbolComposite com) {
+	public Compositesymboltype createComposite(Symbol com) {
 		ObjectFactory of = new ObjectFactory();
 
 		Compositesymboltype cst = of.createCompositesymboltype();
@@ -502,29 +486,17 @@ public class FlowLayoutPreviewWindow extends javax.swing.JPanel implements
 				sst.setGeometryType(String
 						.valueOf(GeometryConstraint.LINESTRING));
 
-				sst.setLineColor(lineSim.getColor().getRGB() + "");
-
-				sst.setOutlineSize(lineSim.getSize() + "");
-
 			}
 
 			if (sim instanceof PolygonSymbol) {
 				PolygonSymbol poliSim = (PolygonSymbol) sim;
 				sst.setGeometryType(String.valueOf(GeometryConstraint.POLYGON));
 
-				sst.setLineColor(poliSim.getOutlineColor().getRGB() + "");
-				sst.setFillColor(poliSim.getFillColor().getRGB() + "");
-
 			}
 
 			if (sim instanceof CircleSymbol) {
 				CircleSymbol circSim = (CircleSymbol) sim;
 				sst.setGeometryType(String.valueOf(GeometryConstraint.POINT));
-
-				sst.setLineColor(circSim.getOutlineColor().getRGB() + "");
-				sst.setFillColor(circSim.getFillColor().getRGB() + "");
-
-				sst.setSimbolSize(circSim.getSize() + "");
 
 			}
 
@@ -537,6 +509,7 @@ public class FlowLayoutPreviewWindow extends javax.swing.JPanel implements
 
 	/**
 	 * Saves the collection object in the specified file
+	 *
 	 * @param coll
 	 * @param file
 	 * @throws JAXBException
@@ -555,6 +528,7 @@ public class FlowLayoutPreviewWindow extends javax.swing.JPanel implements
 
 	/**
 	 * loads a collection object and returns it from the specified file
+	 *
 	 * @param file
 	 * @return Symbolcollection
 	 * @throws JAXBException
@@ -572,6 +546,7 @@ public class FlowLayoutPreviewWindow extends javax.swing.JPanel implements
 
 	/**
 	 * loads an xml file and creates the panels for the created symbols
+	 *
 	 * @param fileInputStream
 	 * @throws JAXBException
 	 */
@@ -617,7 +592,7 @@ public class FlowLayoutPreviewWindow extends javax.swing.JPanel implements
 
 				PolygonSymbol pol = (PolygonSymbol) SymbolFactory
 						.createPolygonSymbol(stroke, outlineColor, fillColor);
-				addSymbolToPanel(pol, constraint);
+				addSymbolToPanel(pol);
 				break;
 			case GeometryConstraint.POINT:
 				out = Integer.parseInt(sim.getLineColor());
@@ -639,7 +614,7 @@ public class FlowLayoutPreviewWindow extends javax.swing.JPanel implements
 				CircleSymbol cir = (CircleSymbol) SymbolFactory
 						.createCirclePointSymbol(outlineColor, fillColor,
 								Integer.parseInt(simbolSize));
-				addSymbolToPanel(cir, constraint);
+				addSymbolToPanel(cir);
 				break;
 			case GeometryConstraint.LINESTRING:
 				outlineSize = sim.getOutlineSize();
@@ -654,7 +629,7 @@ public class FlowLayoutPreviewWindow extends javax.swing.JPanel implements
 
 				LineSymbol lin = (LineSymbol) SymbolFactory.createLineSymbol(
 						outlineColor, (BasicStroke) stroke);
-				addSymbolToPanel(lin, constraint);
+				addSymbolToPanel(lin);
 				break;
 
 			}
@@ -745,18 +720,18 @@ public class FlowLayoutPreviewWindow extends javax.swing.JPanel implements
 				}
 
 			}
-			SymbolComposite compositeSymbol = (SymbolComposite) SymbolFactory
+			Symbol compositeSymbol = SymbolFactory
 					.createSymbolComposite(simbolComp);
-			addSymbolToPanel(compositeSymbol, null);
+			addSymbolToPanel(compositeSymbol);
 
 		}
 
 	}
 
-	private void addSymbolToPanel(Symbol sym, Integer constraint) {
+	private void addSymbolToPanel(Symbol sym) {
 		Canvas can = new Canvas();
 
-		can.setLegend(sym, constraint);
+		can.setLegend(sym);
 		can.setPreferredSize(new Dimension(126, 70));
 
 		can.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -843,7 +818,7 @@ public class FlowLayoutPreviewWindow extends javax.swing.JPanel implements
 		} else {
 			Canvas can = getSelectedCanvas();
 			Integer cons = can.getConstraint(can.getSymbol());
-			if (legendConstraint == null) {
+			if (legendConstraint == ILegendPanelUI.ALL) {
 				if (cons != null) {
 					return "You shall select a symbol with the same type of the legend";
 				}
