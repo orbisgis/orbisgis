@@ -54,9 +54,10 @@ public abstract class AbstractCircleSymbol extends AbstractPointSymbol {
 			g.setPaint(fillColor);
 			g.fillOval(x, y, size, size);
 		}
-		g.setStroke(new BasicStroke(lineWidth));
-		g.setColor(outline);
-		g.drawOval(x, y, size, size);
-
+		if (outline != null) {
+			g.setStroke(new BasicStroke(lineWidth));
+			g.setColor(outline);
+			g.drawOval(x, y, size, size);
+		}
 	}
 }

@@ -110,6 +110,7 @@ public class SymbolEditor extends JPanel implements UIPanel {
 	private Canvas canvas = new Canvas();
 	private boolean showCollection = false;
 	private LegendContext legendContext;
+	private boolean syncing = false;
 
 	private static ArrayList<EditableSymbol> availableSymbols = new ArrayList<EditableSymbol>();
 
@@ -132,35 +133,6 @@ public class SymbolEditor extends JPanel implements UIPanel {
 		lblFill.setBackground(Color.LIGHT_GRAY);
 		lblLine.setBackground(Color.BLUE);
 		lstSymbols.setModel(new DefaultListModel());
-	}
-
-	private void syncSymbol(Symbol sym) {
-
-		DefaultListModel mod = (DefaultListModel) lstSymbols.getModel();
-		mod.removeAllElements();
-
-		if (!(sym.acceptsChildren())) {
-			Symbol[] syms = new Symbol[1];
-			syms[0] = sym;
-			sym = SymbolFactory.createSymbolComposite(syms);
-		}
-
-		int numSymbols = sym.getSymbolCount();
-
-		for (int i = 0; i < numSymbols; i++) {
-			Symbol simpSym = sym.getSymbol(i);
-			if (simpSym != null) {
-				SymbolListDecorator symbolUni = new SymbolListDecorator(
-						(EditableSymbol) sym.getSymbol(i));
-				mod.addElement(symbolUni);
-			}
-		}
-
-		if (mod.getSize() > 0) {
-			lstSymbols.setSelectedIndex(0);
-			syncSymbolControls(sym.getSymbol(0));
-		}
-		refreshListButtons();
 	}
 
 	/**
@@ -205,7 +177,7 @@ public class SymbolEditor extends JPanel implements UIPanel {
 	 */
 
 	private void syncSymbolControls(Symbol sym) {
-
+		syncing = true;
 		chkFill.setSelected(true);
 		chkLine.setSelected(true);
 
@@ -240,6 +212,7 @@ public class SymbolEditor extends JPanel implements UIPanel {
 			sldVertexSize.setValue(symbol.getSize());
 		}
 
+		syncing = false;
 	}
 
 	private void refreshListButtons() {
@@ -287,10 +260,8 @@ public class SymbolEditor extends JPanel implements UIPanel {
 	}
 
 	private void refresh() {
-		boolean enabledFill = false, enabledLine = false, enabledVertex = false;
-
 		syncListSymbolWithControls();
-
+		boolean enabledFill = false, enabledLine = false, enabledVertex = false;
 		if (!showCollection) {
 			jButtonToCollection.setVisible(false);
 		}
@@ -333,7 +304,31 @@ public class SymbolEditor extends JPanel implements UIPanel {
 	}
 
 	public void setSymbol(Symbol symbol) {
-		syncSymbol(symbol);
+		DefaultListModel mod = (DefaultListModel) lstSymbols.getModel();
+		mod.removeAllElements();
+
+		if (!(symbol.acceptsChildren())) {
+			Symbol[] syms = new Symbol[1];
+			syms[0] = symbol;
+			symbol = SymbolFactory.createSymbolComposite(syms);
+		}
+
+		int numSymbols = symbol.getSymbolCount();
+
+		for (int i = 0; i < numSymbols; i++) {
+			Symbol simpSym = symbol.getSymbol(i);
+			if (simpSym != null) {
+				SymbolListDecorator symbolUni = new SymbolListDecorator(
+						(EditableSymbol) symbol.getSymbol(i));
+				mod.addElement(symbolUni);
+			}
+		}
+
+		if (mod.getSize() > 0) {
+			lstSymbols.setSelectedIndex(0);
+			syncSymbolControls(symbol.getSymbol(0));
+		}
+		refreshListButtons();
 	}
 
 	/**
@@ -341,7 +336,10 @@ public class SymbolEditor extends JPanel implements UIPanel {
 	 *
 	 * @return Symbol
 	 */
-	private Symbol syncListSymbolWithControls() {
+	private void syncListSymbolWithControls() {
+		if (syncing) {
+			return;
+		}
 		SymbolListDecorator symbolDec = (SymbolListDecorator) lstSymbols
 				.getSelectedValue();
 		EditableSymbol sym = symbolDec.getSymbol();
@@ -350,7 +348,7 @@ public class SymbolEditor extends JPanel implements UIPanel {
 			EditableLineSymbol symbol = (EditableLineSymbol) sym;
 			Color lineColor = lblLine.getBackground();
 			lineColor = new Color(lineColor.getRed(), lineColor.getGreen(),
-					lineColor.getBlue(), sldTransparency.getValue());
+					lineColor.getBlue(), 255 - sldTransparency.getValue());
 			if (chkLine.isSelected()) {
 				symbol.setOutlineColor(lblLine.getBackground());
 			} else {
@@ -364,7 +362,7 @@ public class SymbolEditor extends JPanel implements UIPanel {
 
 			Color fillColor = lblFill.getBackground();
 			fillColor = new Color(fillColor.getRed(), fillColor.getGreen(),
-					fillColor.getBlue(), sldTransparency.getValue());
+					fillColor.getBlue(), 255 - sldTransparency.getValue());
 			if (chkFill.isSelected()) {
 				symbol.setFillColor(fillColor);
 			} else {
@@ -376,8 +374,6 @@ public class SymbolEditor extends JPanel implements UIPanel {
 			EditablePointSymbol symbol = (EditablePointSymbol) sym;
 			symbol.setSize(sldVertexSize.getValue());
 		}
-
-		return sym;
 	}
 
 	/**
@@ -675,21 +671,21 @@ public class SymbolEditor extends JPanel implements UIPanel {
 				chooseFillColor();
 			}
 		});
-		lblLine = new JLabel();
-		lblFill.setBorder(BorderFactory.createEtchedBorder());
+		lblFill.setBorder(BorderFactory.createLineBorder(Color.black));
 		lblFill.setPreferredSize(new Dimension(40, 20));
 
 		lblFill.setOpaque(true);
 		pnlColorChoosers.add(lblFill);
 		pnlColorChoosers.add(new CarriageReturn());
 
+		lblLine = new JLabel();
 		lblLine.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				chooseLineColor();
 			}
 		});
-		lblLine.setBorder(BorderFactory.createEtchedBorder());
+		lblLine.setBorder(BorderFactory.createLineBorder(Color.black));
 		lblLine.setPreferredSize(new Dimension(40, 20));
 		pnlColorChoosers.add(lblLine);
 		return pnlColorChoosers;
@@ -732,8 +728,8 @@ public class SymbolEditor extends JPanel implements UIPanel {
 		if (UIFactory.showDialog(coll)) {
 			Symbol sym = coll.getSelectedSymbol();
 			addToSymbolList(sym);
+			refresh();
 		}
-		refresh();
 	}// GEN-LAST:event_jButtonFromCollectionActionPerformed
 
 	/**
@@ -749,10 +745,10 @@ public class SymbolEditor extends JPanel implements UIPanel {
 			SymbolListDecorator element = (SymbolListDecorator) mod.get(idx);
 			mod.remove(idx);
 			mod.add(idx - 1, element);
+			lstSymbols.setSelectedIndex(idx - 1);
+			refresh();
+			refreshListButtons();
 		}
-		lstSymbols.setSelectedIndex(idx - 1);
-		refresh();
-		refreshListButtons();
 	}// GEN-LAST:event_jButtonSymbolUpActionPerformed
 
 	/**
@@ -766,7 +762,6 @@ public class SymbolEditor extends JPanel implements UIPanel {
 		if ((mod.getSize() > 0) && (lstSymbols.getSelectedIndex() != -1)) {
 			SymbolListDecorator dec = (SymbolListDecorator) lstSymbols
 					.getSelectedValue();
-			refresh();
 			syncSymbolControls(dec.getSymbol());
 		}
 	}
@@ -784,9 +779,9 @@ public class SymbolEditor extends JPanel implements UIPanel {
 			SymbolListDecorator element = (SymbolListDecorator) mod.get(idx);
 			mod.remove(idx);
 			mod.add(idx + 1, element);
+			lstSymbols.setSelectedIndex(idx + 1);
+			refresh();
 		}
-		lstSymbols.setSelectedIndex(idx + 1);
-		refresh();
 	}
 
 	/**

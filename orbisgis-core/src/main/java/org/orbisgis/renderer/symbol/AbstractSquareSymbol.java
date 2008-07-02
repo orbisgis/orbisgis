@@ -54,9 +54,10 @@ public abstract class AbstractSquareSymbol extends AbstractPointSymbol {
 			g.setPaint(fillColor);
 			g.fillRect(x, y, size, size);
 		}
-		g.setStroke(new BasicStroke(lineWidth));
-		g.setColor(outline);
-		g.drawRect(x, y, size, size);
-
+		if (outline != null) {
+			g.setStroke(new BasicStroke(lineWidth));
+			g.setColor(outline);
+			g.drawRect(x, y, size, size);
+		}
 	}
 }
