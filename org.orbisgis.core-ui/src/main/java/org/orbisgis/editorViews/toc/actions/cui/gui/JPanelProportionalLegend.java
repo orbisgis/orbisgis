@@ -56,6 +56,7 @@ import org.orbisgis.layerModel.ILayer;
 import org.orbisgis.renderer.legend.Legend;
 import org.orbisgis.renderer.legend.LegendFactory;
 import org.orbisgis.renderer.legend.ProportionalLegend;
+import org.orbisgis.renderer.symbol.EditableSymbol;
 import org.orbisgis.renderer.symbol.Symbol;
 import org.orbisgis.renderer.symbol.SymbolFactory;
 import org.sif.UIFactory;
@@ -73,10 +74,9 @@ public class JPanelProportionalLegend extends javax.swing.JPanel implements
 
 	private LegendListDecorator dec = null;
 
-	public JPanelProportionalLegend(Legend leg, int constraint,
-			ILayer layer) {
+	public JPanelProportionalLegend(Legend leg, int constraint, ILayer layer) {
 		this.layer = layer;
-		this.leg = (ProportionalLegend)leg;
+		this.leg = (ProportionalLegend) leg;
 		initComponents();
 		initCombo();
 		setCanvas();
@@ -148,7 +148,6 @@ public class JPanelProportionalLegend extends javax.swing.JPanel implements
 
 	}
 
-
 	public Legend getLegend() {
 		ProportionalLegend leg = LegendFactory.createProportionalLegend();
 
@@ -197,121 +196,127 @@ public class JPanelProportionalLegend extends javax.swing.JPanel implements
 	 */
 	// <editor-fold defaultstate="collapsed" desc=" Generated Code
 	// <editor-fold defaultstate="collapsed" desc="Generated
-    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
-    private void initComponents() {
+	// <editor-fold defaultstate="collapsed" desc="Generated
+	// Code">//GEN-BEGIN:initComponents
+	private void initComponents() {
 
-        jPanelFirstLine = new javax.swing.JPanel();
-        jLabel1 = new javax.swing.JLabel();
-        jComboBoxClasificationField = new javax.swing.JComboBox();
-        jPanelSecondLine = new javax.swing.JPanel();
-        jLabel2 = new javax.swing.JLabel();
-        jComboBoxMethod = new javax.swing.JComboBox();
-        jPanelThirdLine = new javax.swing.JPanel();
-        jPanelThirdLeft = new javax.swing.JPanel();
-        jPanelFirstColor = new javax.swing.JPanel();
-        jLabel3 = new javax.swing.JLabel();
-        jButtonFirstColor = new javax.swing.JButton();
-        jPanelSecondColor = new javax.swing.JPanel();
-        jLabel4 = new javax.swing.JLabel();
-        jButtonSecondColor = new javax.swing.JButton();
-        jPanelArea = new javax.swing.JPanel();
-        jLabel5 = new javax.swing.JLabel();
-        jTextFieldArea = new javax.swing.JTextField();
-        jPanel1 = new javax.swing.JPanel();
+		jPanelFirstLine = new javax.swing.JPanel();
+		jLabel1 = new javax.swing.JLabel();
+		jComboBoxClasificationField = new javax.swing.JComboBox();
+		jPanelSecondLine = new javax.swing.JPanel();
+		jLabel2 = new javax.swing.JLabel();
+		jComboBoxMethod = new javax.swing.JComboBox();
+		jPanelThirdLine = new javax.swing.JPanel();
+		jPanelThirdLeft = new javax.swing.JPanel();
+		jPanelFirstColor = new javax.swing.JPanel();
+		jLabel3 = new javax.swing.JLabel();
+		jButtonFirstColor = new javax.swing.JButton();
+		jPanelSecondColor = new javax.swing.JPanel();
+		jLabel4 = new javax.swing.JLabel();
+		jButtonSecondColor = new javax.swing.JButton();
+		jPanelArea = new javax.swing.JPanel();
+		jLabel5 = new javax.swing.JLabel();
+		jTextFieldArea = new javax.swing.JTextField();
+		jPanel1 = new javax.swing.JPanel();
 
-        setLayout(new javax.swing.BoxLayout(this, javax.swing.BoxLayout.PAGE_AXIS));
+		setLayout(new javax.swing.BoxLayout(this,
+				javax.swing.BoxLayout.PAGE_AXIS));
 
-        jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
-        jLabel1.setText("Classification field:");
-        jPanelFirstLine.add(jLabel1);
+		jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+		jLabel1.setText("Classification field:");
+		jPanelFirstLine.add(jLabel1);
 
-        jComboBoxClasificationField.setPreferredSize(new java.awt.Dimension(225, 19));
-        jComboBoxClasificationField.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jComboBoxClasificationFieldActionPerformed(evt);
-            }
-        });
-        jPanelFirstLine.add(jComboBoxClasificationField);
+		jComboBoxClasificationField.setPreferredSize(new java.awt.Dimension(
+				225, 19));
+		jComboBoxClasificationField
+				.addActionListener(new java.awt.event.ActionListener() {
+					public void actionPerformed(java.awt.event.ActionEvent evt) {
+						jComboBoxClasificationFieldActionPerformed(evt);
+					}
+				});
+		jPanelFirstLine.add(jComboBoxClasificationField);
 
-        add(jPanelFirstLine);
+		add(jPanelFirstLine);
 
-        jLabel2.setText("Method:");
-        jPanelSecondLine.add(jLabel2);
+		jLabel2.setText("Method:");
+		jPanelSecondLine.add(jLabel2);
 
-        jComboBoxMethod.setPreferredSize(new java.awt.Dimension(225, 19));
-        jComboBoxMethod.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jComboBoxMethodActionPerformed(evt);
-            }
-        });
-        jPanelSecondLine.add(jComboBoxMethod);
+		jComboBoxMethod.setPreferredSize(new java.awt.Dimension(225, 19));
+		jComboBoxMethod.addActionListener(new java.awt.event.ActionListener() {
+			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				jComboBoxMethodActionPerformed(evt);
+			}
+		});
+		jPanelSecondLine.add(jComboBoxMethod);
 
-        add(jPanelSecondLine);
+		add(jPanelSecondLine);
 
-        jPanelThirdLeft.setLayout(new javax.swing.BoxLayout(jPanelThirdLeft, javax.swing.BoxLayout.PAGE_AXIS));
+		jPanelThirdLeft.setLayout(new javax.swing.BoxLayout(jPanelThirdLeft,
+				javax.swing.BoxLayout.PAGE_AXIS));
 
-        jLabel3.setText("Line color:");
-        jPanelFirstColor.add(jLabel3);
+		jLabel3.setText("Line color:");
+		jPanelFirstColor.add(jLabel3);
 
-        jButtonFirstColor.setMaximumSize(new java.awt.Dimension(20, 20));
-        jButtonFirstColor.setMinimumSize(new java.awt.Dimension(20, 20));
-        jButtonFirstColor.setPreferredSize(new java.awt.Dimension(20, 20));
-        jButtonFirstColor.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButtonFirstColorActionPerformed(evt);
-            }
-        });
-        jPanelFirstColor.add(jButtonFirstColor);
+		jButtonFirstColor.setMaximumSize(new java.awt.Dimension(20, 20));
+		jButtonFirstColor.setMinimumSize(new java.awt.Dimension(20, 20));
+		jButtonFirstColor.setPreferredSize(new java.awt.Dimension(20, 20));
+		jButtonFirstColor
+				.addActionListener(new java.awt.event.ActionListener() {
+					public void actionPerformed(java.awt.event.ActionEvent evt) {
+						jButtonFirstColorActionPerformed(evt);
+					}
+				});
+		jPanelFirstColor.add(jButtonFirstColor);
 
-        jPanelThirdLeft.add(jPanelFirstColor);
+		jPanelThirdLeft.add(jPanelFirstColor);
 
-        jLabel4.setText("Fill color:");
-        jPanelSecondColor.add(jLabel4);
+		jLabel4.setText("Fill color:");
+		jPanelSecondColor.add(jLabel4);
 
-        jButtonSecondColor.setMaximumSize(new java.awt.Dimension(20, 20));
-        jButtonSecondColor.setMinimumSize(new java.awt.Dimension(20, 20));
-        jButtonSecondColor.setPreferredSize(new java.awt.Dimension(20, 20));
-        jButtonSecondColor.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButtonSecondColorActionPerformed(evt);
-            }
-        });
-        jPanelSecondColor.add(jButtonSecondColor);
+		jButtonSecondColor.setMaximumSize(new java.awt.Dimension(20, 20));
+		jButtonSecondColor.setMinimumSize(new java.awt.Dimension(20, 20));
+		jButtonSecondColor.setPreferredSize(new java.awt.Dimension(20, 20));
+		jButtonSecondColor
+				.addActionListener(new java.awt.event.ActionListener() {
+					public void actionPerformed(java.awt.event.ActionEvent evt) {
+						jButtonSecondColorActionPerformed(evt);
+					}
+				});
+		jPanelSecondColor.add(jButtonSecondColor);
 
-        jPanelThirdLeft.add(jPanelSecondColor);
+		jPanelThirdLeft.add(jPanelSecondColor);
 
-        jLabel5.setText("Area: ");
-        jPanelArea.add(jLabel5);
+		jLabel5.setText("Area: ");
+		jPanelArea.add(jLabel5);
 
-        jTextFieldArea.setText("1000");
-        jTextFieldArea.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jTextFieldAreaActionPerformed(evt);
-            }
-        });
-        jPanelArea.add(jTextFieldArea);
+		jTextFieldArea.setText("1000");
+		jTextFieldArea.addActionListener(new java.awt.event.ActionListener() {
+			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				jTextFieldAreaActionPerformed(evt);
+			}
+		});
+		jPanelArea.add(jTextFieldArea);
 
-        jPanelThirdLeft.add(jPanelArea);
+		jPanelThirdLeft.add(jPanelArea);
 
-        jPanelThirdLine.add(jPanelThirdLeft);
+		jPanelThirdLine.add(jPanelThirdLeft);
 
-        jPanel1.setPreferredSize(new java.awt.Dimension(130, 78));
+		jPanel1.setPreferredSize(new java.awt.Dimension(130, 78));
 
-        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
-        jPanel1.setLayout(jPanel1Layout);
-        jPanel1Layout.setHorizontalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 130, Short.MAX_VALUE)
-        );
-        jPanel1Layout.setVerticalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 78, Short.MAX_VALUE)
-        );
+		javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(
+				jPanel1);
+		jPanel1.setLayout(jPanel1Layout);
+		jPanel1Layout.setHorizontalGroup(jPanel1Layout.createParallelGroup(
+				javax.swing.GroupLayout.Alignment.LEADING).addGap(0, 130,
+				Short.MAX_VALUE));
+		jPanel1Layout.setVerticalGroup(jPanel1Layout.createParallelGroup(
+				javax.swing.GroupLayout.Alignment.LEADING).addGap(0, 78,
+				Short.MAX_VALUE));
 
-        jPanelThirdLine.add(jPanel1);
+		jPanelThirdLine.add(jPanel1);
 
-        add(jPanelThirdLine);
-    }// </editor-fold>//GEN-END:initComponents
+		add(jPanelThirdLine);
+	}// </editor-fold>//GEN-END:initComponents
 
 	private void jComboBoxClasificationFieldActionPerformed(
 			java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jComboBoxClasificationFieldActionPerformed
@@ -348,33 +353,32 @@ public class JPanelProportionalLegend extends javax.swing.JPanel implements
 		}
 	}// GEN-LAST:event_jButtonFirstColorActionPerformed
 
-    // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton jButtonFirstColor;
-    private javax.swing.JButton jButtonSecondColor;
-    private javax.swing.JComboBox jComboBoxClasificationField;
-    private javax.swing.JComboBox jComboBoxMethod;
-    private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel2;
-    private javax.swing.JLabel jLabel3;
-    private javax.swing.JLabel jLabel4;
-    private javax.swing.JLabel jLabel5;
-    private javax.swing.JPanel jPanel1;
-    private javax.swing.JPanel jPanelArea;
-    private javax.swing.JPanel jPanelFirstColor;
-    private javax.swing.JPanel jPanelFirstLine;
-    private javax.swing.JPanel jPanelSecondColor;
-    private javax.swing.JPanel jPanelSecondLine;
-    private javax.swing.JPanel jPanelThirdLeft;
-    private javax.swing.JPanel jPanelThirdLine;
-    private javax.swing.JTextField jTextFieldArea;
-    // End of variables declaration//GEN-END:variables
+	// Variables declaration - do not modify//GEN-BEGIN:variables
+	private javax.swing.JButton jButtonFirstColor;
+	private javax.swing.JButton jButtonSecondColor;
+	private javax.swing.JComboBox jComboBoxClasificationField;
+	private javax.swing.JComboBox jComboBoxMethod;
+	private javax.swing.JLabel jLabel1;
+	private javax.swing.JLabel jLabel2;
+	private javax.swing.JLabel jLabel3;
+	private javax.swing.JLabel jLabel4;
+	private javax.swing.JLabel jLabel5;
+	private javax.swing.JPanel jPanel1;
+	private javax.swing.JPanel jPanelArea;
+	private javax.swing.JPanel jPanelFirstColor;
+	private javax.swing.JPanel jPanelFirstLine;
+	private javax.swing.JPanel jPanelSecondColor;
+	private javax.swing.JPanel jPanelSecondLine;
+	private javax.swing.JPanel jPanelThirdLeft;
+	private javax.swing.JPanel jPanelThirdLine;
+	private javax.swing.JTextField jTextFieldArea;
 
+	// End of variables declaration//GEN-END:variables
 
 	public Component getComponent() {
 		// TODO Auto-generated method stub
 		return this;
 	}
-
 
 	public void setDecoratorListener(LegendListDecorator dec) {
 		this.dec = dec;

@@ -43,7 +43,8 @@ import org.orbisgis.renderer.symbol.PolygonSymbol;
 import org.orbisgis.renderer.symbol.Symbol;
 
 public class SymbolListDecorator {
-	EditableSymbol sym;
+
+	private EditableSymbol sym;
 
 	public SymbolListDecorator(EditableSymbol sym) {
 		if (sym == null || sym.getName() == null || sym.getName() == "") {

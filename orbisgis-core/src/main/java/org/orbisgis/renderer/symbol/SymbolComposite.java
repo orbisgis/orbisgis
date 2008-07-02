@@ -86,4 +86,9 @@ class SymbolComposite extends AbstractSymbol implements Symbol {
 		return symbols[i];
 	}
 
+	@Override
+	public boolean acceptsChildren() {
+		return true;
+	}
+
 }

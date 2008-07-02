@@ -59,7 +59,6 @@ import javax.xml.bind.Unmarshaller;
 import org.gdms.data.types.GeometryConstraint;
 import org.orbisgis.ExtendedWorkspace;
 import org.orbisgis.Services;
-import org.orbisgis.editorViews.toc.actions.cui.gui.ILegendPanelUI;
 import org.orbisgis.editorViews.toc.actions.cui.gui.LegendContext;
 import org.orbisgis.editorViews.toc.actions.cui.persistence.Compositesymboltype;
 import org.orbisgis.editorViews.toc.actions.cui.persistence.ObjectFactory;
@@ -86,9 +85,8 @@ public class FlowLayoutPreviewWindow extends javax.swing.JPanel implements
 		UIPanel {
 
 	public static final String SYMBOL_COLLECTION_FILE = "org.orbisgis.symbol-collection.xml";
-	private int legendConstraint;
 	private LegendContext legendContext;
-	private ArrayList<Canvas> selection = new ArrayList<Canvas>();
+	private ArrayList<SelectableCanvas> selection = new ArrayList<SelectableCanvas>();
 
 	/** Creates new form VentanaFlowLayoutPreview */
 	public FlowLayoutPreviewWindow(LegendContext legendContext) {
@@ -214,8 +212,8 @@ public class FlowLayoutPreviewWindow extends javax.swing.JPanel implements
 	private void jButtonDelActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jButtonDelActionPerformed
 		Component[] comps = jPanelPreviewSymbols.getComponents();
 		for (int i = 0; i < comps.length; i++) {
-			if (comps[i] instanceof Canvas) {
-				Canvas can = (Canvas) comps[i];
+			if (comps[i] instanceof SelectableCanvas) {
+				SelectableCanvas can = (SelectableCanvas) comps[i];
 
 				if (selection.contains(can)) {
 					selection.remove(can);
@@ -231,8 +229,8 @@ public class FlowLayoutPreviewWindow extends javax.swing.JPanel implements
 	private void jButtonEditActionPerformed(java.awt.event.ActionEvent evt) {
 		Component[] comps = jPanelPreviewSymbols.getComponents();
 		for (int i = 0; i < comps.length; i++) {
-			if (comps[i] instanceof Canvas) {
-				Canvas can = (Canvas) comps[i];
+			if (comps[i] instanceof SelectableCanvas) {
+				SelectableCanvas can = (SelectableCanvas) comps[i];
 
 				if (selection.contains(can)) {
 					Symbol sym = can.getSymbol();
@@ -276,16 +274,23 @@ public class FlowLayoutPreviewWindow extends javax.swing.JPanel implements
 
 	private void jPanelPreviewSymbolsMouseClicked(java.awt.event.MouseEvent evt) {// GEN-FIRST:event_jPanelPreviewSymbolsMouseClicked
 		Component c = evt.getComponent();
-		if (c instanceof Canvas) {
-			Canvas can = (Canvas) c;
+		if (c instanceof SelectableCanvas) {
+			SelectableCanvas can = (SelectableCanvas) c;
 			if (evt.isControlDown()) {
 				if (selection.contains(can)) {
 					selection.remove(can);
+					can.setSelected(false);
 				} else {
 					selection.add(can);
+					can.setSelected(true);
 				}
 			} else {
+				for (SelectableCanvas canvas : selection) {
+					canvas.setSelected(false);
+				}
+				selection.clear();
 				selection.add(can);
+				can.setSelected(true);
 			}
 
 		}
@@ -311,8 +316,8 @@ public class FlowLayoutPreviewWindow extends javax.swing.JPanel implements
 		jButtonDel.setEnabled(false);
 		jButtonEdit.setEnabled(false);
 		for (int i = 0; i < comps.length; i++) {
-			if (comps[i] instanceof Canvas) {
-				Canvas can = (Canvas) comps[i];
+			if (comps[i] instanceof SelectableCanvas) {
+				SelectableCanvas can = (SelectableCanvas) comps[i];
 
 				if (selection.contains(can)) {
 					jButtonDel.setEnabled(true);
@@ -349,8 +354,8 @@ public class FlowLayoutPreviewWindow extends javax.swing.JPanel implements
 
 		Component[] comps = jPanelPreviewSymbols.getComponents();
 		for (int i = 0; i < comps.length; i++) {
-			if (comps[i] instanceof Canvas) {
-				Canvas can = (Canvas) comps[i];
+			if (comps[i] instanceof SelectableCanvas) {
+				SelectableCanvas can = (SelectableCanvas) comps[i];
 
 				Symbol sym = can.getSymbol();
 
@@ -629,7 +634,7 @@ public class FlowLayoutPreviewWindow extends javax.swing.JPanel implements
 						outlineColor = new Color(out);
 					else
 						outlineColor = Color.white;
-
+					//
 					LineSymbol lin = (LineSymbol) SymbolFactory
 							.createLineSymbol(outlineColor, Integer
 									.parseInt(outlineSize));
@@ -648,7 +653,7 @@ public class FlowLayoutPreviewWindow extends javax.swing.JPanel implements
 	}
 
 	private void addSymbolToPanel(Symbol sym) {
-		Canvas can = new Canvas();
+		SelectableCanvas can = new SelectableCanvas();
 
 		can.setSymbol(sym);
 		can.setPreferredSize(new Dimension(126, 70));
@@ -666,11 +671,11 @@ public class FlowLayoutPreviewWindow extends javax.swing.JPanel implements
 		return selection.get(0).getSymbol();
 	}
 
-	private Canvas getSelectedCanvas() {
+	private SelectableCanvas getSelectedCanvas() {
 		Component[] comps = jPanelPreviewSymbols.getComponents();
 		for (int i = 0; i < comps.length; i++) {
-			if (comps[i] instanceof Canvas) {
-				Canvas can = (Canvas) comps[i];
+			if (comps[i] instanceof SelectableCanvas) {
+				SelectableCanvas can = (SelectableCanvas) comps[i];
 
 				if (selection.contains(can)) {
 					return can;
@@ -690,27 +695,22 @@ public class FlowLayoutPreviewWindow extends javax.swing.JPanel implements
 	// End of variables declaration//GEN-END:variables
 
 	public Component getComponent() {
-		// TODO Auto-generated method stub
 		return this;
 	}
 
 	public URL getIconURL() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	public String getInfoText() {
-		// TODO Auto-generated method stub
-		return "Is the collection of symbols";
+		return "Select a symbol to add it to the collection";
 	}
 
 	public String getTitle() {
-		// TODO Auto-generated method stub
 		return "Symbol collection";
 	}
 
 	public String initialize() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
@@ -720,50 +720,39 @@ public class FlowLayoutPreviewWindow extends javax.swing.JPanel implements
 	}
 
 	public String validateInput() {
-		if (selection.size() != 1) {
-			return "You can't select more or less than one symbol";
+		if (selection.size() == 0) {
+			return "A symbol must be selected";
+		} else if (selection.size() > 1) {
+			return "Only one symbol should be selected";
 		} else {
-			Canvas can = getSelectedCanvas();
-			Integer cons = can.getConstraint(can.getSymbol());
-			if (legendConstraint == ILegendPanelUI.ALL) {
-				if (cons != null) {
-					return "You shall select a symbol with the same type of the legend";
-				}
-			} else {
-				switch (legendConstraint) {
-				case GeometryConstraint.POINT:
-				case GeometryConstraint.MULTI_POINT:
-					if (cons != GeometryConstraint.POINT
-							&& cons != GeometryConstraint.MULTI_POINT) {
-						return "You shall select a symbol with the same type of the legend";
-					}
-					break;
-				case GeometryConstraint.LINESTRING:
-				case GeometryConstraint.MULTI_LINESTRING:
-					if (cons != GeometryConstraint.LINESTRING
-							&& cons != GeometryConstraint.MULTI_LINESTRING) {
-						return "You shall select a symbol with the same type of the legend";
-					}
-					break;
-				case GeometryConstraint.POLYGON:
-				case GeometryConstraint.MULTI_POLYGON:
-					if (cons != GeometryConstraint.POLYGON
-							&& cons != GeometryConstraint.MULTI_POLYGON) {
-						return "You shall select a symbol with the same type of the legend";
-					}
-					break;
-				default:
-					return "You shall select a symbol with the same type of the legend";
-				}
+			Symbol symbol = getSelectedCanvas().getSymbol();
+			String ret = acceptsGeometry(symbol);
+			if (ret != null) {
+				return ret;
 			}
 		}
 
 		return null;
 	}
 
-	public void setConstraint(int constraint) {
-		this.legendConstraint = constraint;
+	private String acceptsGeometry(Symbol symbol) {
+		if (symbol instanceof EditableSymbol) {
+			if (!((EditableSymbol) symbol).acceptGeometryType(legendContext
+					.getGeometryConstraint())) {
+				return "The symbol type is not applicable";
+			} else {
+				return null;
+			}
+		} else if (symbol.acceptsChildren()) {
+			for (int i = 0; i < symbol.getSymbolCount(); i++) {
+				String ret = acceptsGeometry(symbol.getSymbol(i));
+				if (ret != null) {
+					return ret;
+				}
+			}
+		}
 
+		return null;
 	}
 
 }

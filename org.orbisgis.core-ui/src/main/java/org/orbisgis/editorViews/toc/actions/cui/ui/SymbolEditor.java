@@ -130,8 +130,6 @@ public class SymbolEditor extends JPanel implements UIPanel {
 		this.legendContext = legendContext;
 		this.showCollection = showCollection;
 		initComponents();
-		lblFill.setBackground(Color.LIGHT_GRAY);
-		lblLine.setBackground(Color.BLUE);
 		lstSymbols.setModel(new DefaultListModel());
 	}
 
@@ -266,13 +264,17 @@ public class SymbolEditor extends JPanel implements UIPanel {
 			jButtonToCollection.setVisible(false);
 		}
 
-		if (legendContext.isLine()) {
-			enabledLine = true;
-		} else if (legendContext.isPoint()) {
-			enabledVertex = true;
+		EditableSymbol sym = ((SymbolListDecorator) lstSymbols
+				.getSelectedValue()).getSymbol();
+		if (sym instanceof EditablePolygonSymbol) {
 			enabledFill = true;
 			enabledLine = true;
-		} else {
+		}
+		if (sym instanceof EditableLineSymbol) {
+			enabledLine = true;
+		}
+		if (sym instanceof EditablePointSymbol) {
+			enabledVertex = true;
 			enabledFill = true;
 			enabledLine = true;
 		}
@@ -297,8 +299,7 @@ public class SymbolEditor extends JPanel implements UIPanel {
 
 		btnSync.setVisible(enabledFill && enabledLine);
 
-		Symbol sym = getSymbolComposite();
-		canvas.setSymbol(sym);
+		canvas.setSymbol(getSymbolComposite());
 
 		refreshListButtons();
 	}
@@ -673,7 +674,6 @@ public class SymbolEditor extends JPanel implements UIPanel {
 		});
 		lblFill.setBorder(BorderFactory.createLineBorder(Color.black));
 		lblFill.setPreferredSize(new Dimension(40, 20));
-
 		lblFill.setOpaque(true);
 		pnlColorChoosers.add(lblFill);
 		pnlColorChoosers.add(new CarriageReturn());
@@ -687,6 +687,7 @@ public class SymbolEditor extends JPanel implements UIPanel {
 		});
 		lblLine.setBorder(BorderFactory.createLineBorder(Color.black));
 		lblLine.setPreferredSize(new Dimension(40, 20));
+		lblLine.setOpaque(true);
 		pnlColorChoosers.add(lblLine);
 		return pnlColorChoosers;
 	}
@@ -724,7 +725,6 @@ public class SymbolEditor extends JPanel implements UIPanel {
 	private void jButtonFromCollectionActionPerformed(ActionEvent evt) {// GEN-FIRST:event_jButtonFromCollectionActionPerformed
 		FlowLayoutPreviewWindow coll = new FlowLayoutPreviewWindow(
 				legendContext);
-		coll.setConstraint(legendContext.getGeometryType());
 		if (UIFactory.showDialog(coll)) {
 			Symbol sym = coll.getSelectedSymbol();
 			addToSymbolList(sym);
@@ -873,7 +873,6 @@ public class SymbolEditor extends JPanel implements UIPanel {
 
 	private void jButtonSyncLineWithFillActionPerformed(ActionEvent evt) {// GEN-FIRST:event_jButtonSyncLineWithFillActionPerformed
 		lblLine.setBackground(lblFill.getBackground().darker());
-		lblFill.setOpaque(true);
 		refresh();
 	}// GEN-LAST:event_jButtonSyncLineWithFillActionPerformed
 
@@ -975,13 +974,11 @@ public class SymbolEditor extends JPanel implements UIPanel {
 
 	private void jCheckBoxLineActionPerformed(ActionEvent evt) {// GEN-FIRST:event_jCheckBoxLineActionPerformed
 
-		lblLine.setOpaque(true);
 		refresh();
 	}// GEN-LAST:event_jCheckBoxLineActionPerformed
 
 	private void jCheckBoxFillActionPerformed(ActionEvent evt) {// GEN-FIRST:event_jCheckBoxFillActionPerformed
 
-		lblFill.setOpaque(true);
 		refresh();
 	}// GEN-LAST:event_jCheckBoxFillActionPerformed
 
@@ -1026,7 +1023,6 @@ public class SymbolEditor extends JPanel implements UIPanel {
 		if (UIFactory.showDialog(picker)) {
 			Color color = picker.getColor();
 			lblLine.setBackground(color);
-			lblLine.setOpaque(true);
 		}
 		refresh();
 

@@ -45,14 +45,9 @@ import java.awt.geom.AffineTransform;
 
 import javax.swing.JPanel;
 
-import org.gdms.data.types.GeometryConstraint;
 import org.gdms.driver.DriverException;
 import org.orbisgis.renderer.RenderPermission;
-import org.orbisgis.renderer.symbol.CircleSymbol;
-import org.orbisgis.renderer.symbol.LineSymbol;
-import org.orbisgis.renderer.symbol.PolygonSymbol;
 import org.orbisgis.renderer.symbol.Symbol;
-import org.orbisgis.renderer.symbol.SymbolFactory;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
@@ -67,12 +62,15 @@ public class Canvas extends JPanel {
 
 	public Canvas() {
 		super();
-		s = SymbolFactory.createNullSymbol();
 		this.setSize(126, 70);
 	}
 
 	@Override
 	public void paintComponent(Graphics g) {
+		if (s == null) {
+			return;
+		}
+
 		g.setColor(Color.white);
 		g.fillRect(2, 2, 123, 67);
 
@@ -126,64 +124,6 @@ public class Canvas extends JPanel {
 	public void setSymbol(Symbol sym) {
 		this.s = sym;
 		this.repaint();
-	}
-
-	/**
-	 * Gets the real type of layer of the symbol according to their inheritance
-	 * and if it's mixed it will see if all the symbols in it are of the same
-	 * type or if is a real mixed type.
-	 *
-	 * @param sym
-	 * @return Integer
-	 */
-	public Integer getConstraint(Symbol sym) {
-		if (sym instanceof LineSymbol) {
-			return GeometryConstraint.LINESTRING;
-		}
-		if (sym instanceof CircleSymbol) {
-			return GeometryConstraint.POINT;
-		}
-		if (sym instanceof PolygonSymbol) {
-			return GeometryConstraint.POLYGON;
-		}
-		if (sym.acceptsChildren()) {
-			int symbolCount = sym.getSymbolCount();
-
-			boolean allEquals = true;
-			int lastConstraint = 0;
-			int actualConstraint = 0;
-
-			if (symbolCount > 0) {
-				System.out.println("have more than 0 simbols");
-				lastConstraint = getConstraint(sym.getSymbol(0));
-
-				if (symbolCount != 1) {
-					for (int i = 1; i < symbolCount; i++) {
-						actualConstraint = getConstraint(sym.getSymbol(i));
-
-						if (lastConstraint != actualConstraint) {
-							allEquals = false;
-							System.out.println("not all equals");
-							break;
-						}
-
-						lastConstraint = actualConstraint;
-
-					}
-				}
-
-				if (allEquals == true) {
-					System.out.println("all equals");
-					return lastConstraint;
-				} else
-					return null;
-
-			}
-
-			return null;
-
-		}
-		return null;
 	}
 
 	public Symbol getSymbol() {
