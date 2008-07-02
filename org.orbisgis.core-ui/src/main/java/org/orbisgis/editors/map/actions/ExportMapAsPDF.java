@@ -1,6 +1,7 @@
 package org.orbisgis.editors.map.actions;
 
 import java.awt.Graphics2D;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -40,25 +41,30 @@ public class ExportMapAsPDF implements IEditorAction {
 		MapDocument mapDocument = (MapDocument) editor.getDocument();
 		MapContext mc = mapDocument.getMapContext();
 
+		
 		DataManager dataManager = (DataManager) Services
 				.getService("org.orbisgis.DataManager");
 		ILayer root = dataManager.createLayerCollection("root");
 
 		ILayer[] allLayers = mc.getLayers();
-		Envelope envelope = new Envelope();
+		Envelope envelope = mapEditor.getMapTransform().getAdjustedExtent();
 
+		BufferedImage img = mapEditor.getMapTransform().getImage();
 		try {
 
 			for (int i = 0; i < allLayers.length; i++) {
 
-				if (allLayers[i].isVisible() && allLayers[i].isVectorial()) {
-					Envelope env = allLayers[i].getEnvelope();
-					if (env.intersects(mapEditor.getMapTransform().getExtent())) {
-						envelope.expandToInclude(env);
+				ILayer layer = allLayers[i];
+				if (layer.isVisible() ) {
+					if (layer.isVectorial()){
+
+						layer.setLegend(allLayers[i].getVectorLegend());
 					}
-					allLayers[i].setLegend(allLayers[i].getVectorLegend());
-					root.addLayer(allLayers[i]);
-					allLayers[i].open();
+					else if (layer.isRaster()) {
+						//layer.setLegend(allLayers[i].getRasterLegend());
+					}
+					root.addLayer(layer);
+					layer.open();
 				}
 
 			}
@@ -67,33 +73,13 @@ public class ExportMapAsPDF implements IEditorAction {
 		} catch (DriverException e) {
 			Services.getErrorManager().error("Cannot open the layer", e);
 		}
-
-		Envelope intersectEnv = envelope.intersection(mapEditor
-				.getMapTransform().getExtent());
-
-		Envelope layerPixelEnvelope = mapEditor.getMapTransform().toPixel(
-				intersectEnv);
-
-		save(layerPixelEnvelope, envelope, root);
+		save(img, envelope, root);
 
 	}
 
 	public boolean isEnabled(IEditor editor) {
 		MapDocument map = (MapDocument) editor.getDocument();
-		ILayer[] layers = map.getMapContext().getLayers();
-
-		boolean atLeatOneVectorLayer = false;
-		for (int i = 0; i < layers.length; i++) {
-			try {
-				if (layers[i].isVectorial() && layers[i].isVisible()) {
-					atLeatOneVectorLayer = true;
-				}
-			} catch (DriverException e) {
-				Services.getErrorManager().error("Cannot open the layer", e);
-			}
-		}
-
-		return atLeatOneVectorLayer;
+		return map.getMapContext().getLayerModel().getLayerCount()>=1;
 	}
 
 	public boolean isVisible(IEditor editor) {
@@ -107,10 +93,10 @@ public class ExportMapAsPDF implements IEditorAction {
 	 * @param envelope
 	 * @param layer
 	 */
-	public void save(Envelope layerPixelEnvelope, Envelope envelope,
+	public void save(BufferedImage img, Envelope envelope,
 			ILayer layer) {
-		int width = 1000;
-		int height = 1000;
+		int width = img.getWidth();
+		int height = img.getHeight();
 		Document document = new Document(new Rectangle(width, height));
 
 		try {
