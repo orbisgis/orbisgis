@@ -1,30 +1,29 @@
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
-	<xs:element name="symbolcollection">
+
+	<xs:element name="symbol-collection">
 		<xs:complexType>
-			<xs:sequence>
-				<xs:element name="simple-symbol" type="simplesymboltype"
-					minOccurs="0" maxOccurs="unbounded"/>
-				<xs:element name="composite-symbol" type="compositesymboltype"
-					minOccurs="0" maxOccurs="unbounded"/>
+			<xs:sequence minOccurs="0" maxOccurs="unbounded">
+				<xs:choice maxOccurs="unbounded">
+					<xs:element ref="simple-symbol"/>
+					<xs:element ref="symbol-collection"/>
+				</xs:choice>
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
 
-	<xs:complexType name="simplesymboltype">
-		<xs:attribute name="geometry-type" type="xs:string" use="required"/>
-		<xs:attribute name="fill-color" type="xs:string"/>
-		<xs:attribute name="line-color" type="xs:string"/>
-		<xs:attribute name="fill-pattern" type="xs:string"/>
-		<xs:attribute name="outline-pattern" type="xs:string"/>
-		<xs:attribute name="outline-size" default="1.0" type="xs:string"/>
-		<xs:attribute name="simbol-size" default="1" type="xs:string"/>
-	</xs:complexType>
-
-	<xs:complexType name="compositesymboltype">
-		<xs:sequence>
-			<xs:element name="simple-symbol" type="simplesymboltype" minOccurs="0"
-				maxOccurs="unbounded"/>
-		</xs:sequence>
-	</xs:complexType>
-
+	<xs:element name="simple-symbol">
+		<xs:complexType>
+			<xs:attribute name="name" type="xs:string"/>
+			<xs:attribute name="symbol-class-id" type="xs:string" use="required"/>
+			<xs:attribute name="fill-color" type="xs:int"/>
+			<xs:attribute name="fill-pattern" type="xs:string"/>
+			<xs:attribute name="line-color" type="xs:int"/>
+			<xs:attribute name="line-pattern" type="xs:string"/>
+			<xs:attribute name="line-cap" type="xs:int"/>
+			<xs:attribute name="line-join" type="xs:int"/>
+			<xs:attribute name="line-miter-limit" type="xs:int"/>
+			<xs:attribute name="line-width" type="xs:int"/>
+			<xs:attribute name="symbol-size" type="xs:int"/>
+		</xs:complexType>
+	</xs:element>
 </xs:schema>

@@ -60,4 +60,8 @@ public class CircleVertexSymbol extends CircleSymbol {
 		return new CircleVertexSymbol(Color.black, 1, Color.red, 5);
 	}
 
+	public String getId() {
+		return "org.orbisgis.circle.vertex";
+	}
+
 }

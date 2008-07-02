@@ -1,5 +1,6 @@
 package org.orbisgis.editorViews.toc.actions.cui.gui.widgets;
 
+import java.awt.Color;
 import java.awt.Graphics;
 
 public class SelectableCanvas extends Canvas {
@@ -10,6 +11,7 @@ public class SelectableCanvas extends Canvas {
 	public void paintComponent(Graphics g) {
 		super.paintComponent(g);
 		if (selected) {
+			g.setColor(Color.black);
 			g.drawRect(0, 0, getWidth() - 1, getHeight() - 1);
 		}
 	}

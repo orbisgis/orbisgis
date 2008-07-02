@@ -72,7 +72,7 @@ public class EditLayerAction implements ILayerAction {
 
 			LegendsPanel pan = new LegendsPanel();
 			pan.init(cons, layer.getVectorLegend(),
-					new ILegendPanelUI[] { new JPanelUniqueSymbolLegend(false,
+					new ILegendPanelUI[] { new JPanelUniqueSymbolLegend(true,
 							pan) });
 			if (UIFactory.showDialog(pan)) {
 				try {

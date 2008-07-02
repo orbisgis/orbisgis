@@ -78,4 +78,8 @@ public class InteriorCircleSymbol extends CircleSymbol {
 		return new InteriorCircleSymbol(Color.black, 1, Color.red, 5);
 	}
 
+	public String getId() {
+		return "org.orbisgis.circle.centroid";
+	}
+
 }

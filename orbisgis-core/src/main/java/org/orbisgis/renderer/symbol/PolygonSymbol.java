@@ -79,4 +79,9 @@ public class PolygonSymbol extends AbstractPolygonSymbol {
 	public EditableSymbol newInstance() {
 		return new PolygonSymbol(Color.black, 1, Color.red);
 	}
+
+	public String getId() {
+		return "org.orbisgis.polygon";
+	}
+
 }

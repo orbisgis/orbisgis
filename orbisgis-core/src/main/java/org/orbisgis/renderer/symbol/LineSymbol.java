@@ -73,4 +73,8 @@ public class LineSymbol extends AbstractLineSymbol {
 		return new LineSymbol(Color.black, 1);
 	}
 
+	public String getId() {
+		return "org.orbisgis.line";
+	}
+
 }

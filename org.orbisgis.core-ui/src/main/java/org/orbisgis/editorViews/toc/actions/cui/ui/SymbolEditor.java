@@ -51,10 +51,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 
@@ -65,7 +62,6 @@ import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JList;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSlider;
@@ -78,7 +74,6 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.xml.bind.JAXBException;
 
-import org.orbisgis.ExtendedWorkspace;
 import org.orbisgis.Services;
 import org.orbisgis.editorViews.toc.actions.cui.gui.LegendContext;
 import org.orbisgis.editorViews.toc.actions.cui.gui.widgets.Canvas;
@@ -86,8 +81,6 @@ import org.orbisgis.editorViews.toc.actions.cui.gui.widgets.ColorPicker;
 import org.orbisgis.editorViews.toc.actions.cui.gui.widgets.FlowLayoutPreviewWindow;
 import org.orbisgis.editorViews.toc.actions.cui.gui.widgets.JPanelTypeOfGeometrySelection;
 import org.orbisgis.editorViews.toc.actions.cui.gui.widgets.SymbolListDecorator;
-import org.orbisgis.editorViews.toc.actions.cui.persistence.ObjectFactory;
-import org.orbisgis.editorViews.toc.actions.cui.persistence.Symbolcollection;
 import org.orbisgis.images.IconLoader;
 import org.orbisgis.renderer.symbol.EditableLineSymbol;
 import org.orbisgis.renderer.symbol.EditablePointSymbol;
@@ -115,14 +108,40 @@ public class SymbolEditor extends JPanel implements UIPanel {
 	private static ArrayList<EditableSymbol> availableSymbols = new ArrayList<EditableSymbol>();
 
 	static {
-		availableSymbols.add((EditableSymbol) SymbolFactory
-				.createCirclePointSymbol(Color.black, Color.red, 10));
-		availableSymbols.add((EditableSymbol) SymbolFactory
-				.createSquareVertexSymbol(Color.black, Color.red, 10));
-		availableSymbols.add((EditableSymbol) SymbolFactory
-				.createPolygonSymbol());
-		availableSymbols.add((EditableSymbol) SymbolFactory.createLineSymbol(
-				Color.black, 2));
+		addSymbol((EditableSymbol) SymbolFactory.createCirclePointSymbol(
+				Color.black, Color.red, 10));
+		addSymbol((EditableSymbol) SymbolFactory.createSquareVertexSymbol(
+				Color.black, Color.red, 10));
+		addSymbol((EditableSymbol) SymbolFactory.createPolygonSymbol());
+		addSymbol((EditableSymbol) SymbolFactory.createLineSymbol(Color.black,
+				2));
+	}
+
+	private static boolean addSymbol(EditableSymbol symbol) {
+		if (getNewSymbol(symbol.getId()) != null) {
+			throw new IllegalArgumentException(
+					"There is already a symbol with the same id: "
+							+ symbol.getId());
+		}
+		return availableSymbols.add(symbol);
+	}
+
+	/**
+	 * Gets a new instance from the available symbols with the same id than the
+	 * one specified
+	 *
+	 * @param id
+	 *            Symbol class name
+	 * @return null if there is no symbol with the same id
+	 */
+	public static EditableSymbol getNewSymbol(String id) {
+		for (EditableSymbol sym : availableSymbols) {
+			if (sym.getId().equals(id)) {
+				return sym.newInstance();
+			}
+		}
+
+		return null;
 	}
 
 	/** Creates new form JPanelSimpleSimbolLegend */
@@ -723,12 +742,18 @@ public class SymbolEditor extends JPanel implements UIPanel {
 	 * @param evt
 	 */
 	private void jButtonFromCollectionActionPerformed(ActionEvent evt) {// GEN-FIRST:event_jButtonFromCollectionActionPerformed
-		FlowLayoutPreviewWindow coll = new FlowLayoutPreviewWindow(
-				legendContext);
-		if (UIFactory.showDialog(coll)) {
-			Symbol sym = coll.getSelectedSymbol();
-			addToSymbolList(sym);
-			refresh();
+		try {
+			FlowLayoutPreviewWindow coll = new FlowLayoutPreviewWindow(
+					legendContext);
+			if (UIFactory.showDialog(coll)) {
+				Symbol sym = coll.getSelectedSymbol();
+				addToSymbolList(sym);
+				refresh();
+			}
+		} catch (FileNotFoundException e) {
+			Services.getErrorManager().error("Cannot load collection", e);
+		} catch (JAXBException e) {
+			Services.getErrorManager().error("Cannot load collection", e);
 		}
 	}// GEN-LAST:event_jButtonFromCollectionActionPerformed
 
@@ -882,94 +907,15 @@ public class SymbolEditor extends JPanel implements UIPanel {
 	 * @param evt
 	 */
 	private void jButtonToCollectionActionPerformed(ActionEvent evt) {// GEN-FIRST:event_jButtonToCollectionActionPerformed
-		Symbolcollection coll = null;
-		FlowLayoutPreviewWindow flow = new FlowLayoutPreviewWindow(
-				legendContext);
 		try {
-			ExtendedWorkspace ew = (ExtendedWorkspace) Services
-					.getService("org.orbisgis.ExtendedWorkspace");
-			FileInputStream is = new FileInputStream(ew
-					.getFile(FlowLayoutPreviewWindow.SYMBOL_COLLECTION_FILE));
-			coll = flow.loadCollection(is);
-			is.close();
+			FlowLayoutPreviewWindow flow = new FlowLayoutPreviewWindow(
+					legendContext);
+			flow.addNewSymbol(getSymbolComposite());
 		} catch (FileNotFoundException e) {
-			System.out.println("Collection not loaded: " + e.getMessage());
-			JOptionPane.showMessageDialog(this,
-					"Cannot save symbol in collection", "Error",
-					JOptionPane.ERROR_MESSAGE);
-			return;
+			Services.getErrorManager().error("Cannot load collection", e);
 		} catch (JAXBException e) {
-			System.out.println("Collection not loaded: " + e.getMessage());
-			JOptionPane.showMessageDialog(this,
-					"Cannot save symbol in collection", "Error",
-					JOptionPane.ERROR_MESSAGE);
-			return;
-		} catch (NullPointerException e) {
-			System.out.println("Collection not loaded: " + e.getMessage());
-			JOptionPane.showMessageDialog(this,
-					"Cannot save symbol in collection", "Error",
-					JOptionPane.ERROR_MESSAGE);
-			return;
-		} catch (IOException e) {
-			System.out.println("Collection not loaded: " + e.getMessage());
-			JOptionPane.showMessageDialog(this,
-					"Cannot save symbol in collection", "Error",
-					JOptionPane.ERROR_MESSAGE);
-			return;
+			Services.getErrorManager().error("Cannot load collection", e);
 		}
-
-		if (coll.getCompositeSymbol() == null) {
-			ObjectFactory of = new ObjectFactory();
-			coll = of.createSymbolcollection();
-		}
-
-		Object[] values = ((DefaultListModel) lstSymbols.getModel()).toArray();
-
-		Symbol[] sym = new Symbol[values.length];
-		for (int i = 0; i < values.length; i++) {
-			SymbolListDecorator dec = (SymbolListDecorator) values[i];
-			sym[i] = dec.getSymbol();
-		}
-
-		Symbol comp = SymbolFactory.createSymbolComposite(sym);
-
-		coll.getCompositeSymbol().add(flow.createComposite(comp));
-
-		try {
-			ExtendedWorkspace ew = (ExtendedWorkspace) Services
-					.getService("org.orbisgis.ExtendedWorkspace");
-			FileOutputStream os = new FileOutputStream(ew
-					.getFile(FlowLayoutPreviewWindow.SYMBOL_COLLECTION_FILE));
-			flow.saveCollection(coll, os);
-			os.close();
-		} catch (FileNotFoundException e) {
-			System.out.println("Collection not saved: " + e.getMessage());
-			JOptionPane.showMessageDialog(this,
-					"Cannot save symbol in collection", "Error",
-					JOptionPane.ERROR_MESSAGE);
-			return;
-		} catch (JAXBException e) {
-			System.out.println("Collection not saved: " + e.getMessage());
-			JOptionPane.showMessageDialog(this,
-					"Cannot save symbol in collection", "Error",
-					JOptionPane.ERROR_MESSAGE);
-			return;
-		} catch (NullPointerException e) {
-			System.out.println("Collection not saved: " + e.getMessage());
-			JOptionPane.showMessageDialog(this,
-					"Cannot save symbol in collection", "Error",
-					JOptionPane.ERROR_MESSAGE);
-			return;
-		} catch (IOException e) {
-			System.out.println("Collection not saved: " + e.getMessage());
-			JOptionPane.showMessageDialog(this,
-					"Cannot save symbol in collection", "Error",
-					JOptionPane.ERROR_MESSAGE);
-			return;
-		}
-		JOptionPane.showMessageDialog(this, "Symbol saved in collection",
-				"Operation succesful", JOptionPane.INFORMATION_MESSAGE);
-
 	}// GEN-LAST:event_jButtonToCollectionActionPerformed
 
 	private void jCheckBoxLineActionPerformed(ActionEvent evt) {// GEN-FIRST:event_jCheckBoxLineActionPerformed

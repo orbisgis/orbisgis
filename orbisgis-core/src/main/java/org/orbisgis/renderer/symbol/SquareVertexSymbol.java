@@ -53,13 +53,15 @@ public class SquareVertexSymbol extends SquareSymbol {
 		return true;
 	}
 
-	@Override
 	public String getClassName() {
 		return "Square in vertex";
 	}
 
-	@Override
 	public EditableSymbol newInstance() {
 		return new SquareVertexSymbol(Color.black, 1, Color.red, 5);
+	}
+
+	public String getId() {
+		return "org.orbisgis.square.vertex";
 	}
 }
