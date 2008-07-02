@@ -1,4 +1,4 @@
-package org.orbisgis.editorViews.toc.actions.cui.ui;
+package org.orbisgis.renderer.symbol;
 
 import java.awt.Color;
 
@@ -8,8 +8,8 @@ public interface EditableLineSymbol extends EditableSymbol {
 
 	int getLineWidth();
 
-	void setOutlineColor(Color background);
+	void setOutlineColor(Color color);
 
-	void setLineWidth(int value);
+	void setLineWidth(int width);
 
 }

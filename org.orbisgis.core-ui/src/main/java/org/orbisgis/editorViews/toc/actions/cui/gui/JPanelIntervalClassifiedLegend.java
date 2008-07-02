@@ -41,10 +41,8 @@
 
 package org.orbisgis.editorViews.toc.actions.cui.gui;
 
-import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Component;
-import java.awt.Stroke;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.text.ParseException;
@@ -218,8 +216,8 @@ public class JPanelIntervalClassifiedLegend extends javax.swing.JPanel
 						UniqueSymbolLegend usl = LegendFactory
 								.createUniqueSymbolLegend();
 						usl.setSymbol((Symbol) mod.getValueAt(row, 0));
-						SymbolEditor jpusl = new SymbolEditor(
-								true, legendContext);
+						SymbolEditor jpusl = new SymbolEditor(true,
+								legendContext);
 
 						if (UIFactory.showDialog(jpusl)) {
 							Symbol sym = jpusl.getSymbolComposite();
@@ -629,9 +627,7 @@ public class JPanelIntervalClassifiedLegend extends javax.swing.JPanel
 			switch (constraint) {
 			case GeometryConstraint.LINESTRING:
 			case GeometryConstraint.MULTI_LINESTRING:
-				Stroke stroke = new BasicStroke(1);
-				s = SymbolFactory.createLineSymbol(outline,
-						(BasicStroke) stroke);
+				s = SymbolFactory.createLineSymbol(outline, 1);
 				break;
 			case GeometryConstraint.POINT:
 			case GeometryConstraint.MULTI_POINT:
@@ -640,8 +636,7 @@ public class JPanelIntervalClassifiedLegend extends javax.swing.JPanel
 				break;
 			case GeometryConstraint.POLYGON:
 			case GeometryConstraint.MULTI_POLYGON:
-				Stroke strokeP = new BasicStroke(1);
-				s = SymbolFactory.createPolygonSymbol(strokeP, outline, fill);
+				s = SymbolFactory.createPolygonSymbol(outline, 1, fill);
 				break;
 			default:
 				Symbol sl = createDefaultSymbol(GeometryConstraint.LINESTRING);
@@ -673,15 +668,13 @@ public class JPanelIntervalClassifiedLegend extends javax.swing.JPanel
 	protected Symbol createSymbol(Integer constraint, Color fillColor) {
 		Symbol s;
 
-		Stroke stroke = new BasicStroke(1);
 		Color outline = Color.black;
 
 		if (constraint != null) {
 			switch (constraint) {
 			case GeometryConstraint.LINESTRING:
 			case GeometryConstraint.MULTI_LINESTRING:
-				s = SymbolFactory.createLineSymbol(fillColor,
-						(BasicStroke) stroke);
+				s = SymbolFactory.createLineSymbol(fillColor, 1);
 				break;
 			case GeometryConstraint.POINT:
 			case GeometryConstraint.MULTI_POINT:
@@ -691,8 +684,7 @@ public class JPanelIntervalClassifiedLegend extends javax.swing.JPanel
 				break;
 			case GeometryConstraint.POLYGON:
 			case GeometryConstraint.MULTI_POLYGON:
-				s = SymbolFactory.createPolygonSymbol(stroke, outline,
-						fillColor);
+				s = SymbolFactory.createPolygonSymbol(outline, fillColor);
 				break;
 			default:
 				Symbol sl = createSymbol(GeometryConstraint.LINESTRING,

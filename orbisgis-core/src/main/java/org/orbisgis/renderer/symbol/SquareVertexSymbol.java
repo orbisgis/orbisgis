@@ -42,8 +42,9 @@ import com.vividsolutions.jts.geom.Geometry;
 
 public class SquareVertexSymbol extends SquareSymbol {
 
-	public SquareVertexSymbol(Color outline, Color fillColor, int size) {
-		super(outline, fillColor, size);
+	public SquareVertexSymbol(Color outline, int lineWidth, Color fillColor,
+			int size) {
+		super(outline, lineWidth, fillColor, size);
 
 	}
 
@@ -52,5 +53,13 @@ public class SquareVertexSymbol extends SquareSymbol {
 		return true;
 	}
 
+	@Override
+	public String getClassName() {
+		return "Square in vertex";
+	}
 
+	@Override
+	public EditableSymbol newInstance() {
+		return new SquareVertexSymbol(Color.black, 1, Color.red, 5);
+	}
 }

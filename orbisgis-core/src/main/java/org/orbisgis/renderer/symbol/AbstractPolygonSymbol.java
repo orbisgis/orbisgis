@@ -36,18 +36,33 @@
  */
 package org.orbisgis.renderer.symbol;
 
+import java.awt.Color;
+
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.MultiPolygon;
 import com.vividsolutions.jts.geom.Polygon;
 
-public abstract class AbstractPolygonSymbol extends AbstractGeometrySymbol {
+public abstract class AbstractPolygonSymbol extends AbstractLineSymbol
+		implements EditablePolygonSymbol {
 
-	public AbstractPolygonSymbol() {
+	protected Color fillColor;
+
+	public AbstractPolygonSymbol(Color outline, int lineWidth, Color fillColor) {
+		super(outline, lineWidth);
+		this.fillColor = fillColor;
 		setName("Polygon symbol");
 	}
 
 	public boolean willDrawSimpleGeometry(Geometry geom) {
 		return geom instanceof Polygon || geom instanceof MultiPolygon;
+	}
+
+	public Color getFillColor() {
+		return fillColor;
+	}
+
+	public void setFillColor(Color fillColor) {
+		this.fillColor = fillColor;
 	}
 
 }

@@ -50,8 +50,9 @@ import com.vividsolutions.jts.geom.Point;
 
 public class InteriorCircleSymbol extends CircleSymbol {
 
-	public InteriorCircleSymbol(Color outline, Color fillColor, int size) {
-		super(outline, fillColor, size);
+	public InteriorCircleSymbol(Color outline, int lineWidth, Color fillColor,
+			int size) {
+		super(outline, lineWidth, fillColor, size);
 	}
 
 	public Envelope draw(Graphics2D g, Geometry geom, AffineTransform at,
@@ -68,4 +69,13 @@ public class InteriorCircleSymbol extends CircleSymbol {
 	public boolean acceptGeometry(Geometry geom) {
 		return true;
 	}
+
+	public String getClassName() {
+		return "Circle in center";
+	}
+
+	public EditableSymbol newInstance() {
+		return new InteriorCircleSymbol(Color.black, 1, Color.red, 5);
+	}
+
 }

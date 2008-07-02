@@ -40,15 +40,24 @@ import java.awt.Color;
 
 import com.vividsolutions.jts.geom.Geometry;
 
-public class CircleVertexSymbol extends CircleSymbol{
+public class CircleVertexSymbol extends CircleSymbol {
 
-	public CircleVertexSymbol(Color outline, Color fillColor, int size) {
-		super(outline, fillColor, size);
+	public CircleVertexSymbol(Color outline, int lineWidth, Color fillColor,
+			int size) {
+		super(outline, lineWidth, fillColor, size);
 	}
 
 	@Override
 	public boolean willDrawSimpleGeometry(Geometry geom) {
 		return true;
+	}
+
+	public String getClassName() {
+		return "Circle in vertex";
+	}
+
+	public EditableSymbol newInstance() {
+		return new CircleVertexSymbol(Color.black, 1, Color.red, 5);
 	}
 
 }

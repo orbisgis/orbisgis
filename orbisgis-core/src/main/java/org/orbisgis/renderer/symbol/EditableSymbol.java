@@ -1,7 +1,6 @@
-package org.orbisgis.editorViews.toc.actions.cui.ui;
+package org.orbisgis.renderer.symbol;
 
 import org.gdms.data.types.GeometryConstraint;
-import org.orbisgis.renderer.symbol.Symbol;
 
 public interface EditableSymbol extends Symbol {
 

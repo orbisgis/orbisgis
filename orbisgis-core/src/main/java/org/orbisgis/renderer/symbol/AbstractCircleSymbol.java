@@ -40,17 +40,11 @@ import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics2D;
 
-
 public abstract class AbstractCircleSymbol extends AbstractPointSymbol {
 
-	private int size;
-	private Color outline;
-	private Color fillColor;
-
-	public AbstractCircleSymbol(Color outline, Color fillColor, int size) {
-		this.size = size;
-		this.outline = outline;
-		this.fillColor = fillColor;
+	public AbstractCircleSymbol(Color outline, int lineWidth, Color fillColor,
+			int size) {
+		super(outline, lineWidth, fillColor, size);
 	}
 
 	protected void paintCircle(Graphics2D g, int x, int y) {
@@ -60,7 +54,7 @@ public abstract class AbstractCircleSymbol extends AbstractPointSymbol {
 			g.setPaint(fillColor);
 			g.fillOval(x, y, size, size);
 		}
-		g.setStroke(new BasicStroke(1));
+		g.setStroke(new BasicStroke(lineWidth));
 		g.setColor(outline);
 		g.drawOval(x, y, size, size);
 

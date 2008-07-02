@@ -93,7 +93,7 @@ public class JPanelProportionalLegend extends javax.swing.JPanel implements
 	 */
 	private void refreshCanvas() {
 		Symbol sym = createDefaultSymbol();
-		canvas.setLegend(sym);
+		canvas.setSymbol(sym);
 		canvas.validate();
 		canvas.repaint();
 

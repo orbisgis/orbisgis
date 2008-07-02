@@ -48,10 +48,10 @@ import org.orbisgis.renderer.liteShape.LiteShape;
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
 
-public class CircleSymbol extends AbstractCircleSymbol {
+public abstract class CircleSymbol extends AbstractCircleSymbol {
 
-	public CircleSymbol(Color outline, Color fillColor, int size) {
-		super(outline, fillColor, size);
+	public CircleSymbol(Color outline, int lineWidth, Color fillColor, int size) {
+		super(outline, lineWidth, fillColor, size);
 	}
 
 	public Envelope draw(Graphics2D g, Geometry geom, AffineTransform at,

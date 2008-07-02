@@ -36,8 +36,8 @@
  */
 package org.orbisgis.editorViews.toc.actions.cui.gui.widgets;
 
-import org.orbisgis.editorViews.toc.actions.cui.ui.EditableSymbol;
 import org.orbisgis.renderer.symbol.CircleSymbol;
+import org.orbisgis.renderer.symbol.EditableSymbol;
 import org.orbisgis.renderer.symbol.LineSymbol;
 import org.orbisgis.renderer.symbol.PolygonSymbol;
 import org.orbisgis.renderer.symbol.Symbol;

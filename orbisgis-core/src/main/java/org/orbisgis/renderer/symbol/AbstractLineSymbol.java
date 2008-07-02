@@ -36,18 +36,54 @@
  */
 package org.orbisgis.renderer.symbol;
 
+import java.awt.Color;
+
+import org.gdms.data.types.GeometryConstraint;
+
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.MultiLineString;
 
-public abstract class AbstractLineSymbol extends AbstractGeometrySymbol {
+public abstract class AbstractLineSymbol extends AbstractGeometrySymbol
+		implements EditableLineSymbol {
 
-	public AbstractLineSymbol() {
+	protected Color outline;
+	protected int lineWidth;
+
+	public AbstractLineSymbol(Color outline, int lineWidth) {
+		this.outline = outline;
+		this.lineWidth = lineWidth;
 		setName("Line symbol");
 	}
 
 	public boolean willDrawSimpleGeometry(Geometry geom) {
 		return geom instanceof LineString || geom instanceof MultiLineString;
+	}
+
+	public boolean acceptGeometryType(GeometryConstraint geometryConstraint) {
+		if (geometryConstraint == null) {
+			return true;
+		} else {
+			int geometryType = geometryConstraint.getGeometryType();
+			return (geometryType == GeometryConstraint.LINESTRING)
+					|| (geometryType == GeometryConstraint.MULTI_LINESTRING);
+		}
+	}
+
+	public int getLineWidth() {
+		return lineWidth;
+	}
+
+	public Color getOutlineColor() {
+		return outline;
+	}
+
+	public void setLineWidth(int value) {
+		lineWidth = value;
+	}
+
+	public void setOutlineColor(Color color) {
+		outline = color;
 	}
 
 }

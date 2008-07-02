@@ -50,8 +50,8 @@ import com.vividsolutions.jts.geom.Geometry;
 
 public class SquareSymbol extends AbstractSquareSymbol {
 
-	public SquareSymbol(Color outline, Color fillColor, int size) {
-		super(outline, fillColor, size);
+	public SquareSymbol(Color outline, int lineWidth, Color fillColor, int size) {
+		super(outline, lineWidth, fillColor, size);
 	}
 
 	public Envelope draw(Graphics2D g, Geometry geom, AffineTransform at,
@@ -67,5 +67,13 @@ public class SquareSymbol extends AbstractSquareSymbol {
 		}
 
 		return null;
+	}
+
+	public String getClassName() {
+		return "Square in vertex";
+	}
+
+	public EditableSymbol newInstance() {
+		return new SquareSymbol(Color.black, 1, Color.red, 5);
 	}
 }

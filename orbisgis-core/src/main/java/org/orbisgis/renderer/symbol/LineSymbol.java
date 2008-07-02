@@ -50,23 +50,27 @@ import com.vividsolutions.jts.geom.Geometry;
 
 public class LineSymbol extends AbstractLineSymbol {
 
-	private Color color;
-	private BasicStroke stroke;
-
-	public LineSymbol(Color color, BasicStroke stroke) {
-		this.color = color;
-		this.stroke = stroke;
+	public LineSymbol(Color outline, int lineWidth) {
+		super(outline, lineWidth);
 	}
 
 	public Envelope draw(Graphics2D g, Geometry geom, AffineTransform at,
 			RenderPermission permission) throws DriverException {
 		LiteShape ls = new LiteShape(geom, at, true);
-		g.setStroke(stroke);
-		g.setColor(color);
+		g.setStroke(new BasicStroke(lineWidth));
+		g.setColor(outline);
 		g.setPaint(null);
 		g.draw(ls);
 
 		return null;
+	}
+
+	public String getClassName() {
+		return "Line";
+	}
+
+	public EditableSymbol newInstance() {
+		return new LineSymbol(Color.black, 1);
 	}
 
 }

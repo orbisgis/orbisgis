@@ -42,7 +42,6 @@
 
 package org.orbisgis.editorViews.toc.actions.cui.ui;
 
-import java.awt.BasicStroke;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
@@ -90,6 +89,10 @@ import org.orbisgis.editorViews.toc.actions.cui.gui.widgets.SymbolListDecorator;
 import org.orbisgis.editorViews.toc.actions.cui.persistence.ObjectFactory;
 import org.orbisgis.editorViews.toc.actions.cui.persistence.Symbolcollection;
 import org.orbisgis.images.IconLoader;
+import org.orbisgis.renderer.symbol.EditableLineSymbol;
+import org.orbisgis.renderer.symbol.EditablePointSymbol;
+import org.orbisgis.renderer.symbol.EditablePolygonSymbol;
+import org.orbisgis.renderer.symbol.EditableSymbol;
 import org.orbisgis.renderer.symbol.Symbol;
 import org.orbisgis.renderer.symbol.SymbolFactory;
 import org.orbisgis.ui.sif.AskValue;
@@ -114,9 +117,11 @@ public class SymbolEditor extends JPanel implements UIPanel {
 		availableSymbols.add((EditableSymbol) SymbolFactory
 				.createCirclePointSymbol(Color.black, Color.red, 10));
 		availableSymbols.add((EditableSymbol) SymbolFactory
+				.createSquareVertexSymbol(Color.black, Color.red, 10));
+		availableSymbols.add((EditableSymbol) SymbolFactory
 				.createPolygonSymbol());
 		availableSymbols.add((EditableSymbol) SymbolFactory.createLineSymbol(
-				Color.black, new BasicStroke()));
+				Color.black, 2));
 	}
 
 	/** Creates new form JPanelSimpleSimbolLegend */
@@ -210,12 +215,11 @@ public class SymbolEditor extends JPanel implements UIPanel {
 			if (lineColor != null) {
 				lblLine.setBackground(lineColor);
 				chkLine.setSelected(true);
+				sldTransparency.setValue(255 - lineColor.getAlpha());
 			} else {
 				chkLine.setSelected(false);
 			}
 			sldLineWidth.setValue(symbol.getLineWidth());
-
-			sldTransparency.setValue(255 - lineColor.getAlpha());
 		}
 
 		if (sym instanceof EditablePolygonSymbol) {
@@ -225,11 +229,10 @@ public class SymbolEditor extends JPanel implements UIPanel {
 			if (fillColor != null) {
 				lblFill.setBackground(fillColor);
 				chkFill.setSelected(true);
+				sldTransparency.setValue(255 - fillColor.getAlpha());
 			} else {
 				chkFill.setSelected(false);
 			}
-
-			sldTransparency.setValue(255 - fillColor.getAlpha());
 		}
 
 		if (sym instanceof EditablePointSymbol) {
@@ -324,7 +327,7 @@ public class SymbolEditor extends JPanel implements UIPanel {
 		btnSync.setVisible(enabledFill && enabledLine);
 
 		Symbol sym = getSymbolComposite();
-		canvas.setLegend(sym);
+		canvas.setSymbol(sym);
 
 		refreshListButtons();
 	}
@@ -763,8 +766,8 @@ public class SymbolEditor extends JPanel implements UIPanel {
 		if ((mod.getSize() > 0) && (lstSymbols.getSelectedIndex() != -1)) {
 			SymbolListDecorator dec = (SymbolListDecorator) lstSymbols
 					.getSelectedValue();
-			syncSymbolControls(dec.getSymbol());
 			refresh();
+			syncSymbolControls(dec.getSymbol());
 		}
 	}
 
@@ -934,8 +937,7 @@ public class SymbolEditor extends JPanel implements UIPanel {
 			sym[i] = dec.getSymbol();
 		}
 
-		Symbol comp = SymbolFactory
-				.createSymbolComposite(sym);
+		Symbol comp = SymbolFactory.createSymbolComposite(sym);
 
 		coll.getCompositeSymbol().add(flow.createComposite(comp));
 

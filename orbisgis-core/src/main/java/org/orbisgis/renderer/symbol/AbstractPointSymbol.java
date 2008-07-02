@@ -36,17 +36,52 @@
  */
 package org.orbisgis.renderer.symbol;
 
+import java.awt.Color;
+
+import org.gdms.data.types.GeometryConstraint;
+
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.MultiPoint;
 import com.vividsolutions.jts.geom.Point;
 
-public abstract class AbstractPointSymbol extends AbstractGeometrySymbol {
+public abstract class AbstractPointSymbol extends AbstractPolygonSymbol
+		implements EditablePointSymbol {
 
-	public AbstractPointSymbol() {
+	protected int size;
+
+	public AbstractPointSymbol(Color outline, int lineWidth, Color fillColor, int size) {
+		super(outline, lineWidth, fillColor);
+		this.size = size;
 		setName("Point symbol");
 	}
 
 	public boolean willDrawSimpleGeometry(Geometry geom) {
 		return geom instanceof Point || geom instanceof MultiPoint;
+	}
+
+	public int getSize() {
+		return size;
+	}
+
+	public void setSize(int value) {
+		this.size = value;
+	}
+
+	public Color getFillColor() {
+		return fillColor;
+	}
+
+	public void setFillColor(Color fillColor) {
+		this.fillColor = fillColor;
+	}
+
+	public boolean acceptGeometryType(GeometryConstraint geometryConstraint) {
+		if (geometryConstraint == null) {
+			return true;
+		} else {
+			int geometryType = geometryConstraint.getGeometryType();
+			return (geometryType == GeometryConstraint.POINT)
+					|| (geometryType == GeometryConstraint.MULTI_POINT);
+		}
 	}
 }

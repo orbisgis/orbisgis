@@ -36,20 +36,15 @@
  */
 package org.orbisgis.renderer.symbol;
 
+import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics2D;
 
-
 public abstract class AbstractSquareSymbol extends AbstractPointSymbol {
 
-	private int size;
-	private Color outline;
-	private Color fillColor;
-
-	public AbstractSquareSymbol(Color outline, Color fillColor, int size) {
-		this.size = size;
-		this.outline = outline;
-		this.fillColor = fillColor;
+	public AbstractSquareSymbol(Color outline, int lineWidth, Color fillColor,
+			int size) {
+		super(outline, lineWidth, fillColor, size);
 	}
 
 	protected void paintCircle(Graphics2D g, int x, int y) {
@@ -59,6 +54,7 @@ public abstract class AbstractSquareSymbol extends AbstractPointSymbol {
 			g.setPaint(fillColor);
 			g.fillRect(x, y, size, size);
 		}
+		g.setStroke(new BasicStroke(lineWidth));
 		g.setColor(outline);
 		g.drawRect(x, y, size, size);
 

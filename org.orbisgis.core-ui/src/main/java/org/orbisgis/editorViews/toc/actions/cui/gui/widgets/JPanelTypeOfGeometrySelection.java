@@ -44,8 +44,8 @@ package org.orbisgis.editorViews.toc.actions.cui.gui.widgets;
 
 import java.util.ArrayList;
 
-import org.orbisgis.editorViews.toc.actions.cui.ui.EditableSymbol;
 import org.orbisgis.pluginManager.ui.ChoosePanel;
+import org.orbisgis.renderer.symbol.EditableSymbol;
 
 /**
  *

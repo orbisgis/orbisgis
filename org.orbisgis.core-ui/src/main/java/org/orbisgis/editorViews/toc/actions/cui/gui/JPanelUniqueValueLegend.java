@@ -42,10 +42,8 @@
 
 package org.orbisgis.editorViews.toc.actions.cui.gui;
 
-import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Component;
-import java.awt.Stroke;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.ArrayList;
@@ -187,8 +185,8 @@ public class JPanelUniqueValueLegend extends javax.swing.JPanel implements
 						UniqueSymbolLegend usl = LegendFactory
 								.createUniqueSymbolLegend();
 						usl.setSymbol((Symbol) mod.getValueAt(row, 0));
-						SymbolEditor jpusl = new SymbolEditor(
-								true, legendContext);
+						SymbolEditor jpusl = new SymbolEditor(true,
+								legendContext);
 
 						if (UIFactory.showDialog(jpusl)) {
 							Symbol sym = jpusl.getSymbolComposite();
@@ -263,8 +261,7 @@ public class JPanelUniqueValueLegend extends javax.swing.JPanel implements
 			switch (constraint) {
 			case GeometryConstraint.LINESTRING:
 			case GeometryConstraint.MULTI_LINESTRING:
-				Stroke stroke = new BasicStroke(1);
-				s = SymbolFactory.createLineSymbol(fill, (BasicStroke) stroke);
+				s = SymbolFactory.createLineSymbol(fill, 1);
 				break;
 			case GeometryConstraint.POINT:
 			case GeometryConstraint.MULTI_POINT:
@@ -273,8 +270,7 @@ public class JPanelUniqueValueLegend extends javax.swing.JPanel implements
 				break;
 			case GeometryConstraint.POLYGON:
 			case GeometryConstraint.MULTI_POLYGON:
-				Stroke strokeP = new BasicStroke(1);
-				s = SymbolFactory.createPolygonSymbol(strokeP, outline, fill);
+				s = SymbolFactory.createPolygonSymbol(outline, fill);
 				break;
 			default:
 				throw new RuntimeException("bug");

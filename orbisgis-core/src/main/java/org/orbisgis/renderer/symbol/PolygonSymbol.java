@@ -39,7 +39,6 @@ package org.orbisgis.renderer.symbol;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics2D;
-import java.awt.Stroke;
 import java.awt.geom.AffineTransform;
 
 import org.gdms.driver.DriverException;
@@ -53,31 +52,31 @@ import com.vividsolutions.jts.geom.Polygon;
 
 public class PolygonSymbol extends AbstractPolygonSymbol {
 
-	private Stroke stroke = new BasicStroke();
-
-	private Color outlineColor = Color.black;
-
-	private Color fillColor = Color.red;
-
-	public PolygonSymbol(Stroke stroke, Color fillColor, Color outlineColor) {
-		this.stroke = stroke;
-		this.fillColor = fillColor;
-		this.outlineColor = outlineColor;
+	public PolygonSymbol(Color outlineColor, int lineWidth, Color fillColor) {
+		super(outlineColor, lineWidth, fillColor);
 	}
 
 	public Envelope draw(Graphics2D g, Geometry geom, AffineTransform at,
 			RenderPermission permission) throws DriverException {
 		if (geom instanceof Polygon || geom instanceof MultiPolygon) {
 			LiteShape ls = new LiteShape(geom, at, true);
-			g.setStroke(stroke);
+			g.setStroke(new BasicStroke(lineWidth));
 			if (fillColor != null) {
 				g.setPaint(fillColor);
 				g.fill(ls);
 			}
-			g.setColor(outlineColor);
+			g.setColor(outline);
 			g.draw(ls);
 		}
 
 		return null;
+	}
+
+	public String getClassName() {
+		return "Polygon";
+	}
+
+	public EditableSymbol newInstance() {
+		return new PolygonSymbol(Color.black, 1, Color.red);
 	}
 }

@@ -36,9 +36,7 @@
  */
 package org.orbisgis.renderer.symbol;
 
-import java.awt.BasicStroke;
 import java.awt.Color;
-import java.awt.Stroke;
 
 public class SymbolFactory {
 
@@ -47,16 +45,17 @@ public class SymbolFactory {
 	}
 
 	public static Symbol createPolygonSymbol(Color outlineColor) {
-		return createPolygonSymbol(new BasicStroke(), outlineColor, null);
+		return createPolygonSymbol(outlineColor, 1, null);
 	}
 
 	public static Symbol createPolygonSymbol(Color outlineColor, Color fillColor) {
-		return createPolygonSymbol(new BasicStroke(), outlineColor, fillColor);
+		return createPolygonSymbol(outlineColor, 1, fillColor);
 	}
 
-	public static Symbol createPolygonSymbol(Stroke stroke, Color outlineColor,
+	public static Symbol createPolygonSymbol(Color outlineColor, int lineWidth,
 			Color fillColor) {
-		PolygonSymbol ret = new PolygonSymbol(stroke, fillColor, outlineColor);
+		PolygonSymbol ret = new PolygonSymbol(outlineColor, lineWidth,
+				fillColor);
 
 		return ret;
 	}
@@ -67,7 +66,7 @@ public class SymbolFactory {
 
 	public static Symbol createCirclePointSymbol(Color outline,
 			Color fillColor, int size) {
-		return new CircleSymbol(outline, fillColor, size);
+		return new CircleVertexSymbol(outline, 1, fillColor, size);
 	}
 
 	public static Symbol createSymbolComposite(Symbol... symbols) {
@@ -78,35 +77,35 @@ public class SymbolFactory {
 		return new LabelSymbol(text, fontSize);
 	}
 
-	public static Symbol createLineSymbol(Color color, BasicStroke stroke) {
-		return new LineSymbol(color, stroke);
+	public static Symbol createLineSymbol(Color color, int lineWidth) {
+		return new LineSymbol(color, lineWidth);
 	}
 
 	public static Symbol createCirclePolygonSymbol(Color outline,
 			Color fillColor, int size) {
-		return new InteriorCircleSymbol(outline, fillColor, size);
+		return new InteriorCircleSymbol(outline, 1, fillColor, size);
 	}
 
 	public static Symbol createCircleVertexSymbol(Color outline, Color fillColor) {
-		return new CircleVertexSymbol(outline, fillColor, 10);
+		return new CircleVertexSymbol(outline, 1, fillColor, 10);
 
 	}
 
 	public static Symbol createCircleVertexSymbol(Color outline,
 			Color fillColor, int size) {
-		return new CircleVertexSymbol(outline, fillColor, size);
+		return new CircleVertexSymbol(outline, 1, fillColor, size);
 
 	}
 
 	public static Symbol createSquareVertexSymbol(Color outline, Color fillColor) {
 
-		return new SquareVertexSymbol(outline, fillColor, 10);
+		return new SquareVertexSymbol(outline, 1, fillColor, 10);
 	}
 
 	public static Symbol createSquareVertexSymbol(Color outline,
 			Color fillColor, int size) {
 
-		return new SquareVertexSymbol(outline, fillColor, size);
+		return new SquareVertexSymbol(outline, 1, fillColor, size);
 	}
 
 }

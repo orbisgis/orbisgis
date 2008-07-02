@@ -42,12 +42,9 @@
 
 package org.orbisgis.editorViews.toc.actions.cui.gui.widgets;
 
-import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
-import java.awt.Stroke;
-import java.awt.event.InputEvent;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -68,12 +65,12 @@ import org.orbisgis.editorViews.toc.actions.cui.persistence.Compositesymboltype;
 import org.orbisgis.editorViews.toc.actions.cui.persistence.ObjectFactory;
 import org.orbisgis.editorViews.toc.actions.cui.persistence.Simplesymboltype;
 import org.orbisgis.editorViews.toc.actions.cui.persistence.Symbolcollection;
-import org.orbisgis.editorViews.toc.actions.cui.ui.EditableSymbol;
 import org.orbisgis.editorViews.toc.actions.cui.ui.SymbolEditor;
 import org.orbisgis.images.IconLoader;
 import org.orbisgis.renderer.legend.LegendFactory;
 import org.orbisgis.renderer.legend.UniqueSymbolLegend;
 import org.orbisgis.renderer.symbol.CircleSymbol;
+import org.orbisgis.renderer.symbol.EditableSymbol;
 import org.orbisgis.renderer.symbol.LineSymbol;
 import org.orbisgis.renderer.symbol.PolygonSymbol;
 import org.orbisgis.renderer.symbol.Symbol;
@@ -89,9 +86,9 @@ public class FlowLayoutPreviewWindow extends javax.swing.JPanel implements
 		UIPanel {
 
 	public static final String SYMBOL_COLLECTION_FILE = "org.orbisgis.symbol-collection.xml";
-	private int countSelected = 0;
 	private int legendConstraint;
 	private LegendContext legendContext;
+	private ArrayList<Canvas> selection = new ArrayList<Canvas>();
 
 	/** Creates new form VentanaFlowLayoutPreview */
 	public FlowLayoutPreviewWindow(LegendContext legendContext) {
@@ -220,7 +217,8 @@ public class FlowLayoutPreviewWindow extends javax.swing.JPanel implements
 			if (comps[i] instanceof Canvas) {
 				Canvas can = (Canvas) comps[i];
 
-				if (can.isSelected) {
+				if (selection.contains(can)) {
+					selection.remove(can);
 					jPanelPreviewSymbols.remove(can);
 				}
 			}
@@ -236,7 +234,7 @@ public class FlowLayoutPreviewWindow extends javax.swing.JPanel implements
 			if (comps[i] instanceof Canvas) {
 				Canvas can = (Canvas) comps[i];
 
-				if (can.isSelected) {
+				if (selection.contains(can)) {
 					Symbol sym = can.getSymbol();
 					UniqueSymbolLegend leg = LegendFactory
 							.createUniqueSymbolLegend();
@@ -244,7 +242,7 @@ public class FlowLayoutPreviewWindow extends javax.swing.JPanel implements
 					SymbolEditor usl = new SymbolEditor(false, legendContext);
 
 					if (UIFactory.showDialog(usl)) {
-						can.setLegend(usl.getSymbolComposite());
+						can.setSymbol(usl.getSymbolComposite());
 					}
 
 				}
@@ -277,52 +275,17 @@ public class FlowLayoutPreviewWindow extends javax.swing.JPanel implements
 	}// GEN-LAST:event_jButtonAddActionPerformed
 
 	private void jPanelPreviewSymbolsMouseClicked(java.awt.event.MouseEvent evt) {// GEN-FIRST:event_jPanelPreviewSymbolsMouseClicked
-		Component[] comps = jPanelPreviewSymbols.getComponents();
-
-		boolean isCtrlPressed;
-		if (evt.getModifiers() == (InputEvent.CTRL_MASK | InputEvent.BUTTON1_MASK)) {
-			isCtrlPressed = true;
-		} else {
-			isCtrlPressed = false;
-		}
-
 		Component c = evt.getComponent();
 		if (c instanceof Canvas) {
 			Canvas can = (Canvas) c;
-			if (can.isSelected) {
-				if (isCtrlPressed || countSelected == 0) {
-					countSelected--;
-					can.setSelected(!can.isSelected);
+			if (evt.isControlDown()) {
+				if (selection.contains(can)) {
+					selection.remove(can);
 				} else {
-					for (int i = 0; i < comps.length; i++) {
-						if (comps[i] instanceof Canvas) {
-							Canvas can2 = (Canvas) comps[i];
-							if (comps[i] != c) {
-								can2.setSelected(false);
-							} else {
-								can2.setSelected(true);
-							}
-						}
-					}
-					countSelected = 1;
+					selection.add(can);
 				}
 			} else {
-				if (isCtrlPressed || countSelected == 0) {
-					countSelected++;
-					can.setSelected(!can.isSelected);
-				} else {
-					for (int i = 0; i < comps.length; i++) {
-						if (comps[i] instanceof Canvas) {
-							Canvas can2 = (Canvas) comps[i];
-							if (comps[i] != c) {
-								can2.setSelected(false);
-							} else {
-								can2.setSelected(true);
-							}
-						}
-					}
-					countSelected = 1;
-				}
+				selection.add(can);
 			}
 
 		}
@@ -330,13 +293,7 @@ public class FlowLayoutPreviewWindow extends javax.swing.JPanel implements
 
 	}// GEN-LAST:event_jPanelPreviewSymbolsMouseClicked
 
-	public int getCountSelected() {
-		return countSelected;
-	}
-
 	private void refreshInterface() {
-
-		int count = 0;
 
 		try {
 			ExtendedWorkspace ew = (ExtendedWorkspace) Services
@@ -351,27 +308,21 @@ public class FlowLayoutPreviewWindow extends javax.swing.JPanel implements
 		}
 
 		Component[] comps = jPanelPreviewSymbols.getComponents();
+		jButtonDel.setEnabled(false);
+		jButtonEdit.setEnabled(false);
 		for (int i = 0; i < comps.length; i++) {
 			if (comps[i] instanceof Canvas) {
 				Canvas can = (Canvas) comps[i];
 
-				if (can.isSelected) {
-					count++;
+				if (selection.contains(can)) {
+					jButtonDel.setEnabled(true);
+					if (!jButtonEdit.isEnabled()) {
+						jButtonEdit.setEnabled(true);
+					} else {
+						jButtonEdit.setEnabled(false);
+					}
+
 				}
-
-			}
-		}
-
-		if (count == 1) {
-			jButtonDel.setEnabled(true);
-			jButtonEdit.setEnabled(true);
-		} else {
-			if (count > 1) {
-				jButtonDel.setEnabled(true);
-				jButtonEdit.setEnabled(false);
-			} else { // count = 0
-				jButtonDel.setEnabled(false);
-				jButtonEdit.setEnabled(false);
 			}
 		}
 
@@ -402,18 +353,13 @@ public class FlowLayoutPreviewWindow extends javax.swing.JPanel implements
 				Canvas can = (Canvas) comps[i];
 
 				Symbol sym = can.getSymbol();
-				Integer constr = new Canvas().getConstraintForCanvas(sym);
 
-				if (constr != null) {
-					Simplesymboltype sst = createSimple(sym, constr);
-					syms.add(sst);
+				Simplesymboltype sst = createSimple(sym);
+				syms.add(sst);
 
-				} else {
+				Compositesymboltype cst = createComposite(sym);
 
-					Compositesymboltype cst = createComposite(sym);
-
-					comp.add(cst);
-				}
+				comp.add(cst);
 
 			}
 		}
@@ -429,32 +375,10 @@ public class FlowLayoutPreviewWindow extends javax.swing.JPanel implements
 	 *            the type of the symbol
 	 * @return Symplesymboltype
 	 */
-	public Simplesymboltype createSimple(Symbol sym, int constraint) {
+	public Simplesymboltype createSimple(Symbol sym) {
 		ObjectFactory of = new ObjectFactory();
 
 		Simplesymboltype sst = of.createSimplesymboltype();
-
-		sst.setGeometryType(String.valueOf(constraint));
-
-		int constr = new Canvas().getConstraintForCanvas(sym);
-
-		switch (constr) {
-		case GeometryConstraint.LINESTRING:
-		case GeometryConstraint.MULTI_LINESTRING:
-			LineSymbol lin = (LineSymbol) sym;
-
-			break;
-		case GeometryConstraint.POINT:
-		case GeometryConstraint.MULTI_POINT:
-			CircleSymbol cir = (CircleSymbol) sym;
-
-			break;
-		case GeometryConstraint.POLYGON:
-		case GeometryConstraint.MULTI_POLYGON:
-			PolygonSymbol pol = (PolygonSymbol) sym;
-			break;
-		}
-
 		return sst;
 	}
 
@@ -568,7 +492,6 @@ public class FlowLayoutPreviewWindow extends javax.swing.JPanel implements
 			int fill;
 			Color outlineColor;
 			Color fillColor;
-			Stroke stroke;
 			String outlineSize;
 
 			switch (constraint) {
@@ -577,7 +500,6 @@ public class FlowLayoutPreviewWindow extends javax.swing.JPanel implements
 				if (outlineSize == null) {
 					outlineSize = "1.0";
 				}
-				stroke = new BasicStroke(Float.parseFloat(outlineSize));
 				out = Integer.parseInt(sim.getLineColor());
 				fill = Integer.parseInt(sim.getFillColor());
 				if (sim.getLineColor() != null)
@@ -591,7 +513,8 @@ public class FlowLayoutPreviewWindow extends javax.swing.JPanel implements
 					fillColor = Color.white;
 
 				PolygonSymbol pol = (PolygonSymbol) SymbolFactory
-						.createPolygonSymbol(stroke, outlineColor, fillColor);
+						.createPolygonSymbol(outlineColor, Integer
+								.parseInt(outlineSize), fillColor);
 				addSymbolToPanel(pol);
 				break;
 			case GeometryConstraint.POINT:
@@ -620,7 +543,6 @@ public class FlowLayoutPreviewWindow extends javax.swing.JPanel implements
 				outlineSize = sim.getOutlineSize();
 				if (outlineSize == null)
 					outlineSize = "1.0";
-				stroke = new BasicStroke(Float.parseFloat(outlineSize));
 				out = Integer.parseInt(sim.getLineColor());
 				if (sim.getLineColor() != null)
 					outlineColor = new Color(out);
@@ -628,7 +550,7 @@ public class FlowLayoutPreviewWindow extends javax.swing.JPanel implements
 					outlineColor = Color.white;
 
 				LineSymbol lin = (LineSymbol) SymbolFactory.createLineSymbol(
-						outlineColor, (BasicStroke) stroke);
+						outlineColor, Integer.parseInt(outlineSize));
 				addSymbolToPanel(lin);
 				break;
 
@@ -650,7 +572,6 @@ public class FlowLayoutPreviewWindow extends javax.swing.JPanel implements
 				int fill;
 				Color outlineColor;
 				Color fillColor;
-				Stroke stroke;
 				String outlineSize;
 
 				switch (constraint) {
@@ -659,7 +580,6 @@ public class FlowLayoutPreviewWindow extends javax.swing.JPanel implements
 					if (outlineSize == null) {
 						outlineSize = "1.0";
 					}
-					stroke = new BasicStroke(Float.parseFloat(outlineSize));
 					out = Integer.parseInt(sym.getLineColor());
 					fill = Integer.parseInt(sym.getFillColor());
 					if (sym.getLineColor() != null)
@@ -673,8 +593,8 @@ public class FlowLayoutPreviewWindow extends javax.swing.JPanel implements
 						fillColor = Color.white;
 
 					PolygonSymbol pol = (PolygonSymbol) SymbolFactory
-							.createPolygonSymbol(stroke, outlineColor,
-									fillColor);
+							.createPolygonSymbol(outlineColor, Integer
+									.parseInt(outlineSize), fillColor);
 
 					simbolComp[j] = pol;
 					break;
@@ -704,7 +624,6 @@ public class FlowLayoutPreviewWindow extends javax.swing.JPanel implements
 					outlineSize = sym.getOutlineSize();
 					if (outlineSize == null)
 						outlineSize = "1.0";
-					stroke = new BasicStroke(Float.parseFloat(outlineSize));
 					out = Integer.parseInt(sym.getLineColor());
 					if (sym.getLineColor() != null)
 						outlineColor = new Color(out);
@@ -712,8 +631,8 @@ public class FlowLayoutPreviewWindow extends javax.swing.JPanel implements
 						outlineColor = Color.white;
 
 					LineSymbol lin = (LineSymbol) SymbolFactory
-							.createLineSymbol(outlineColor,
-									(BasicStroke) stroke);
+							.createLineSymbol(outlineColor, Integer
+									.parseInt(outlineSize));
 					simbolComp[j] = lin;
 					break;
 
@@ -731,7 +650,7 @@ public class FlowLayoutPreviewWindow extends javax.swing.JPanel implements
 	private void addSymbolToPanel(Symbol sym) {
 		Canvas can = new Canvas();
 
-		can.setLegend(sym);
+		can.setSymbol(sym);
 		can.setPreferredSize(new Dimension(126, 70));
 
 		can.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -744,28 +663,16 @@ public class FlowLayoutPreviewWindow extends javax.swing.JPanel implements
 	}
 
 	public Symbol getSelectedSymbol() {
-		Component[] comps = jPanelPreviewSymbols.getComponents();
-		Symbol sym = SymbolFactory.createNullSymbol();
-		for (int i = 0; i < comps.length; i++) {
-			if (comps[i] instanceof Canvas) {
-				Canvas can = (Canvas) comps[i];
-
-				if (can.isSelected) {
-					sym = can.getSymbol();
-					break;
-				}
-			}
-		}
-		return sym;
+		return selection.get(0).getSymbol();
 	}
 
-	public Canvas getSelectedCanvas() {
+	private Canvas getSelectedCanvas() {
 		Component[] comps = jPanelPreviewSymbols.getComponents();
 		for (int i = 0; i < comps.length; i++) {
 			if (comps[i] instanceof Canvas) {
 				Canvas can = (Canvas) comps[i];
 
-				if (can.isSelected) {
+				if (selection.contains(can)) {
 					return can;
 				}
 			}
@@ -813,7 +720,7 @@ public class FlowLayoutPreviewWindow extends javax.swing.JPanel implements
 	}
 
 	public String validateInput() {
-		if (countSelected != 1) {
+		if (selection.size() != 1) {
 			return "You can't select more or less than one symbol";
 		} else {
 			Canvas can = getSelectedCanvas();

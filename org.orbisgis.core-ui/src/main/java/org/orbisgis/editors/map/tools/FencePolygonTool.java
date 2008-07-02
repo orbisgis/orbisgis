@@ -36,7 +36,6 @@
  */
 package org.orbisgis.editors.map.tools;
 
-import java.awt.BasicStroke;
 import java.awt.Color;
 
 import org.gdms.data.DataSource;
@@ -87,7 +86,7 @@ public class FencePolygonTool extends AbstractPolygonTool {
 			final UniqueSymbolLegend l = LegendFactory
 					.createUniqueSymbolLegend();
 			final Symbol polSym = SymbolFactory.createPolygonSymbol(
-					new BasicStroke(4), Color.ORANGE, null);
+					Color.ORANGE, 4, null);
 			l.setSymbol(polSym);
 			layer.setLegend(l);
 		} catch (LayerException e) {

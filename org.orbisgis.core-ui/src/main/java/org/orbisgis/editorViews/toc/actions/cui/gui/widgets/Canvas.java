@@ -63,8 +63,7 @@ import com.vividsolutions.jts.geom.impl.CoordinateArraySequence;
 
 public class Canvas extends JPanel {
 
-	Symbol s;
-	boolean isSelected = false;
+	private Symbol s;
 
 	public Canvas() {
 		super();
@@ -79,136 +78,28 @@ public class Canvas extends JPanel {
 
 		GeometryFactory gf = new GeometryFactory();
 		Geometry geom = null;
-		// constraint=getConstraint(s);
-
-		Integer constr = getConstraintForCanvas(s);
 
 		try {
 			Stroke st = new BasicStroke();
-			if (isSelected) {
-				g.setColor(Color.BLUE);
-				st = ((Graphics2D) g).getStroke();
-				((Graphics2D) g).setStroke(new BasicStroke(new Float(2.0)));
-			} else {
-				g.setColor(Color.GRAY);
-			}
+			((Graphics2D) g).setStroke(new BasicStroke(new Float(2.0)));
 			g.drawRect(1, 1, 124, 68); // Painting a Rectangle for the
 			// presentation and selection
 
 			((Graphics2D) g).setStroke(st);
 
-			if (constr == null) {
-				if (!(s.acceptsChildren())) {
-					return;
-				}
-				Symbol sym;
-				int numberOfSymbols = s.getSymbolCount();
-				for (int i = 0; i < numberOfSymbols; i++) {
-					sym = s.getSymbol(i);
-					if (sym instanceof LineSymbol) {
-						geom = gf
-								.createLineString(new Coordinate[] {
-										new Coordinate(30, 20),
-										new Coordinate(50, 50),
-										new Coordinate(70, 20),
-										new Coordinate(90, 50) });
+			geom = gf.createLineString(new Coordinate[] {
+					new Coordinate(30, 20), new Coordinate(50, 50),
+					new Coordinate(70, 20), new Coordinate(90, 50) });
+			paintGeometry(g, geom);
+			geom = gf.createPoint(new Coordinate(60, 35));
+			paintGeometry(g, geom);
+			Coordinate[] coordsP = { new Coordinate(30, 25),
+					new Coordinate(90, 25), new Coordinate(90, 45),
+					new Coordinate(30, 45), new Coordinate(30, 25) };
+			CoordinateArraySequence seqP = new CoordinateArraySequence(coordsP);
+			geom = gf.createPolygon(new LinearRing(seqP, gf), null);
+			paintGeometry(g, geom);
 
-						sym.draw((Graphics2D) g, geom, new AffineTransform(),
-								new RenderPermission() {
-
-									public boolean canDraw(Envelope env) {
-										return true;
-									}
-
-								});
-					}
-
-					if (sym instanceof CircleSymbol) {
-						geom = gf.createPoint(new Coordinate(60, 35));
-
-						sym.draw((Graphics2D) g, geom, new AffineTransform(),
-								new RenderPermission() {
-
-									public boolean canDraw(Envelope env) {
-										return true;
-									}
-
-								});
-					}
-
-					if (sym instanceof PolygonSymbol) {
-						Coordinate[] coordsP = { new Coordinate(30, 25),
-								new Coordinate(90, 25), new Coordinate(90, 45),
-								new Coordinate(30, 45), new Coordinate(30, 25) };
-						CoordinateArraySequence seqP = new CoordinateArraySequence(
-								coordsP);
-						geom = gf.createPolygon(new LinearRing(seqP, gf), null);
-
-						sym.draw((Graphics2D) g, geom, new AffineTransform(),
-								new RenderPermission() {
-
-									public boolean canDraw(Envelope env) {
-										return true;
-									}
-
-								});
-					}
-
-				}
-
-			} else {
-				switch (constr) {
-				case GeometryConstraint.LINESTRING:
-				case GeometryConstraint.MULTI_LINESTRING:
-					geom = gf.createLineString(new Coordinate[] {
-							new Coordinate(20, 30), new Coordinate(40, 60),
-							new Coordinate(60, 30), new Coordinate(80, 60) });
-
-					s.draw((Graphics2D) g, geom, new AffineTransform(),
-							new RenderPermission() {
-
-								public boolean canDraw(Envelope env) {
-									return true;
-								}
-
-							});
-
-					break;
-				case GeometryConstraint.POINT:
-				case GeometryConstraint.MULTI_POINT:
-					geom = gf.createPoint(new Coordinate(60, 35));
-					s.draw((Graphics2D) g, geom, new AffineTransform(),
-							new RenderPermission() {
-
-								public boolean canDraw(Envelope env) {
-									return true;
-								}
-
-							});
-
-					break;
-				case GeometryConstraint.POLYGON:
-				case GeometryConstraint.MULTI_POLYGON:
-					Coordinate[] coords = { new Coordinate(15, 15),
-							new Coordinate(75, 15), new Coordinate(75, 35),
-							new Coordinate(15, 35), new Coordinate(15, 15) };
-					CoordinateArraySequence seq = new CoordinateArraySequence(
-							coords);
-					geom = gf.createPolygon(new LinearRing(seq, gf), null);
-
-					s.draw((Graphics2D) g, geom, new AffineTransform(),
-							new RenderPermission() {
-
-								public boolean canDraw(Envelope env) {
-									return true;
-								}
-
-							});
-
-					break;
-
-				}
-			}
 		} catch (DriverException e) {
 			((Graphics2D) g).drawString("Cannot generate preview", 0, 0);
 		} catch (NullPointerException e) {
@@ -217,14 +108,31 @@ public class Canvas extends JPanel {
 		}
 	}
 
-	public void setLegend(Symbol sym) {
+	private void paintGeometry(Graphics g, Geometry geom)
+			throws DriverException {
+		RenderPermission renderPermission = new RenderPermission() {
+
+			public boolean canDraw(Envelope env) {
+				return true;
+			}
+
+		};
+		if (s.acceptGeometry(geom)) {
+			s.draw((Graphics2D) g, geom, new AffineTransform(),
+					renderPermission);
+		}
+	}
+
+	public void setSymbol(Symbol sym) {
 		this.s = sym;
+		this.repaint();
 	}
 
 	/**
-	 * Gets the real type of layer of the symbol according to their inheritance and
-	 * if it's mixed it will see if all the symbols in it are of the same type or if is
-	 * a real mixed type.
+	 * Gets the real type of layer of the symbol according to their inheritance
+	 * and if it's mixed it will see if all the symbols in it are of the same
+	 * type or if is a real mixed type.
+	 *
 	 * @param sym
 	 * @return Integer
 	 */
@@ -276,29 +184,6 @@ public class Canvas extends JPanel {
 
 		}
 		return null;
-	}
-
-	/**
-	 * Gets the real type of layer of the symbol according to their inheritance, but
-	 * not takes in account the MIXEDS
-	 * @param sym
-	 * @return Integer
-	 */
-	public Integer getConstraintForCanvas(Symbol sym) {
-		if (sym instanceof LineSymbol) {
-			return GeometryConstraint.LINESTRING;
-		}
-		if (sym instanceof CircleSymbol) {
-			return GeometryConstraint.POINT;
-		}
-		if (sym instanceof PolygonSymbol) {
-			return GeometryConstraint.POLYGON;
-		}
-		return null;
-	}
-
-	public void setSelected(boolean selected) {
-		isSelected = selected;
 	}
 
 	public Symbol getSymbol() {

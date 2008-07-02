@@ -36,7 +36,6 @@
  */
 package org.orbisgis.layerModel;
 
-import java.awt.BasicStroke;
 import java.awt.Color;
 import java.io.IOException;
 import java.util.HashMap;
@@ -92,8 +91,7 @@ public class Layer extends GdmsLayer {
 		Symbol polSym = SymbolFactory.createPolygonSymbol(Color.black, c);
 		Symbol pointSym = SymbolFactory.createCirclePointSymbol(Color.black,
 				Color.red, 10);
-		Symbol lineSym = SymbolFactory.createLineSymbol(Color.black,
-				new BasicStroke(2));
+		Symbol lineSym = SymbolFactory.createLineSymbol(Color.black, 2);
 		Symbol composite = SymbolFactory.createSymbolComposite(polSym,
 				pointSym, lineSym);
 		if (gc == null) {

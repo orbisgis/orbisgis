@@ -1,4 +1,4 @@
-package org.orbisgis.editorViews.toc.actions.cui.ui;
+package org.orbisgis.renderer.symbol;
 
 import java.awt.Color;
 
