@@ -54,7 +54,8 @@ public class LegendsPanel extends JPanel implements UIPanel, LegendContext {
 
 		for (Legend legend : legends) {
 			ILegendPanelUI panel = getPanel(legend);
-			LegendElement legendElement = new LegendElement(legend, panel
+			panel.setLegend(legend);
+			LegendElement legendElement = new LegendElement(panel
 					.getComponent(), panel, getNewId());
 			addLegend(legendElement);
 		}
@@ -98,7 +99,7 @@ public class LegendsPanel extends JPanel implements UIPanel, LegendContext {
 		for (ILegendPanelUI panel : availableLegends) {
 			if (panel.getLegend().getLegendTypeName().equals(
 					legend.getLegendTypeName())) {
-				return panel;
+				return panel.newInstance(this);
 			}
 		}
 
@@ -152,7 +153,7 @@ public class LegendsPanel extends JPanel implements UIPanel, LegendContext {
 
 	public void legendAdded(ILegendPanelUI panel) {
 		panel = panel.newInstance(this);
-		LegendElement le = new LegendElement(panel.getLegend(), panel
+		LegendElement le = new LegendElement(panel
 				.getComponent(), panel, getNewId());
 		addLegend(le);
 	}

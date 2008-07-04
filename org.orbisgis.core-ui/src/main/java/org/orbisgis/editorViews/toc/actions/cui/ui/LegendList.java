@@ -18,7 +18,6 @@ import javax.swing.event.ListSelectionListener;
 
 import org.orbisgis.editorViews.toc.actions.cui.gui.ILegendPanelUI;
 import org.orbisgis.editorViews.toc.actions.cui.gui.widgets.JPanelComboLegendPicker;
-import org.orbisgis.editorViews.toc.actions.cui.gui.widgets.LegendListDecorator;
 import org.orbisgis.images.IconLoader;
 import org.orbisgis.ui.sif.AskValue;
 import org.sif.UIFactory;
@@ -152,11 +151,11 @@ public class LegendList extends JPanel {
 	 * @param evt
 	 */
 	private void jButtonMenuRenameActionPerformed(ActionEvent evt) {// GEN-FIRST:event_jButtonMenuRenameActionPerformed
-		LegendListDecorator dec = (LegendListDecorator) lst.getSelectedValue();
+		String legendName = (String) lst.getSelectedValue();
 		int idx = lst.getSelectedIndex();
 
 		AskValue ask = new AskValue("Insert the new name", "txt is not null",
-				"A name must be specified", dec.getLegend().getName());
+				"A name must be specified", legendName);
 		String newName = "";
 		if (UIFactory.showDialog(ask)) {
 			newName = ask.getValue();
@@ -171,6 +170,10 @@ public class LegendList extends JPanel {
 	 */
 	private void jButtonMenuDelActionPerformed(ActionEvent evt) {
 		int idx = lst.getSelectedIndex();
+		int size = lst.getModel().getSize();
+		if (lst.getSelectedIndex() >= size - 1) {
+			lst.setSelectedIndex(Math.min(lst.getSelectedIndex() - 1, 0));
+		}
 		legendsPanel.legendRemoved(idx);
 	}
 
@@ -209,6 +212,7 @@ public class LegendList extends JPanel {
 	 */
 	private void jButtonMenuDownActionPerformed(ActionEvent evt) {
 		int idx = lst.getSelectedIndex();
+		lst.setSelectedIndex(idx + 1);
 		legendsPanel.legendMovedDown(idx);
 	}
 
@@ -219,6 +223,7 @@ public class LegendList extends JPanel {
 	 */
 	private void jButtonMenuUpActionPerformed(ActionEvent evt) {
 		int idx = lst.getSelectedIndex();
+		lst.setSelectedIndex(idx - 1);
 		legendsPanel.legendMovedUp(idx);
 	}
 

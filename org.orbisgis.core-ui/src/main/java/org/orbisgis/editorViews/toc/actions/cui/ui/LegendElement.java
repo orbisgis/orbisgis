@@ -7,25 +7,19 @@ import org.orbisgis.renderer.legend.Legend;
 
 public class LegendElement {
 
-	private Legend legend;
 	private Component component;
 	private ILegendPanelUI legendPanel;
 	private String id;
 
-	public LegendElement(Legend legend, Component component,
+	public LegendElement(Component component,
 			ILegendPanelUI legendPanel, String id) {
-		this.legend = legend;
 		this.component = component;
 		this.legendPanel = legendPanel;
 		this.id = id;
 	}
 
 	public Legend getLegend() {
-		return legend;
-	}
-
-	public void setLegend(Legend legend) {
-		this.legend = legend;
+		return legendPanel.getLegend();
 	}
 
 	public Component getComponent() {
