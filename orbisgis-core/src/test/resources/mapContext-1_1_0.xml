@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<map-context>
+	<layer-collection visible="false" name="root">
+		<layer visible="false" source-name="bv_sap" name="bv_sap"/>
+		<layer visible="false" source-name="linestring" name="linestring"/>
+	</layer-collection>
+</map-context>

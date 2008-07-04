@@ -250,7 +250,7 @@ public class DefaultMapContext implements MapContext {
 			}
 			setSelectedLayers(selected.toArray(new ILayer[0]));
 		} catch (JAXBException e) {
-			throw new PersistenceException("Cannot save view context", e);
+			throw new PersistenceException("Cannot load view context", e);
 		}
 
 	}

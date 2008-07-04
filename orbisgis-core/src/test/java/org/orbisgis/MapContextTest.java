@@ -36,18 +36,17 @@
  */
 package org.orbisgis;
 
-import java.awt.Color;
 import java.io.File;
 
+import org.gdms.data.SpatialDataSourceDecorator;
+import org.gdms.driver.DriverException;
 import org.orbisgis.layerModel.DefaultMapContext;
 import org.orbisgis.layerModel.ILayer;
 import org.orbisgis.layerModel.MapContext;
 import org.orbisgis.progress.NullProgressMonitor;
 import org.orbisgis.renderer.legend.Legend;
-import org.orbisgis.renderer.legend.carto.LegendFactory;
-import org.orbisgis.renderer.legend.carto.UniqueSymbolLegend;
+import org.orbisgis.renderer.legend.RenderException;
 import org.orbisgis.renderer.symbol.Symbol;
-import org.orbisgis.renderer.symbol.SymbolFactory;
 
 public class MapContextTest extends AbstractTest {
 
@@ -88,25 +87,49 @@ public class MapContextTest extends AbstractTest {
 
 	public void testSaveAndRecoverMapContext() throws Exception {
 		MapContext mc = new DefaultMapContext();
-		ILayer layer = getDataManager().createLayer(
+		ILayer layer1 = getDataManager().createLayer(
+				new File("src/test/resources/linestring.shp"));
+		ILayer layer2 = getDataManager().createLayer(
 				new File("src/test/resources/bv_sap.shp"));
-		mc.getLayerModel().addLayer(layer);
-		UniqueSymbolLegend usl = LegendFactory.createUniqueSymbolLegend();
-		Symbol sym = SymbolFactory.createPolygonSymbol(Color.black, 3,
-				Color.red);
-		usl.setSymbol(sym);
-		layer.setLegend(usl);
+		mc.getLayerModel().addLayer(layer1);
+		mc.getLayerModel().addLayer(layer2);
+		Symbol sym1 = layer1.getVectorLegend()[0].getSymbol(layer2
+				.getDataSource(), 0);
+		Symbol sym2 = layer2.getVectorLegend()[0].getSymbol(layer2
+				.getDataSource(), 0);
 		File file = new File("target/mapContextTest.xml");
 		mc.saveStatus(file, new NullProgressMonitor());
 		mc.loadStatus(file, new NullProgressMonitor());
-		assertTrue(mc.getLayers().length == 1);
-		Legend legend = mc.getLayerModel().getLayer(0).getVectorLegend()[0];
-		assertTrue(legend.getSymbol(layer.getDataSource(), 0)
-				.getPersistentProperties()
-				.equals(sym.getPersistentProperties()));
+		assertTrue(mc.getLayers().length == 2);
+		Legend legend1 = mc.getLayerModel().getLayer(0).getVectorLegend()[0];
+		assertTrue(legend1.getSymbol(layer1.getDataSource(), 0)
+				.getPersistentProperties().equals(
+						sym1.getPersistentProperties()));
+		Legend legend2 = mc.getLayerModel().getLayer(1).getVectorLegend()[0];
+		assertTrue(legend2.getSymbol(layer2.getDataSource(), 0)
+				.getPersistentProperties().equals(
+						sym2.getPersistentProperties()));
 	}
 
 	public void testRecover1_1_0() throws Exception {
+		getDataManager().getSourceManager().register("bv_sap",
+				new File("src/test/resources/bv_sap.shp"));
+		getDataManager().getSourceManager().register("linestring",
+				new File("src/test/resources/linestring.shp"));
+		File file = new File("src/test/resources/mapContext-1_1_0.xml");
+		MapContext mc = new DefaultMapContext();
+		mc.loadStatus(file, new NullProgressMonitor());
+		assertTrue(mc.getLayers().length == 2);
+		testNotNullSymbols(mc.getLayerModel().getLayer(0));
+		testNotNullSymbols(mc.getLayerModel().getLayer(1));
+	}
 
+	private void testNotNullSymbols(ILayer layer) throws DriverException,
+			RenderException {
+		Legend legend = layer.getVectorLegend()[0];
+		SpatialDataSourceDecorator sds = layer.getDataSource();
+		for (int i = 0; i < sds.getRowCount(); i++) {
+			assertTrue(legend.getSymbol(sds, i) != null);
+		}
 	}
 }

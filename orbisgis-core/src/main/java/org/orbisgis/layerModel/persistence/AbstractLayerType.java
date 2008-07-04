@@ -11,22 +11,21 @@ package org.orbisgis.layerModel.persistence;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * <p>Java class for anonymous complex type.
+ * <p>Java class for abstract-layer-type complex type.
  * 
  * <p>The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
- * &lt;complexType>
+ * &lt;complexType name="abstract-layer-type">
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
- *       &lt;attribute name="file" use="required" type="{http://www.w3.org/2001/XMLSchema}string" />
- *       &lt;attribute name="legend-id" use="required" type="{http://www.w3.org/2001/XMLSchema}string" />
- *       &lt;attribute name="version" use="required" type="{http://www.w3.org/2001/XMLSchema}string" />
+ *       &lt;attribute name="name" use="required" type="{http://www.w3.org/2001/XMLSchema}string" />
+ *       &lt;attribute name="source-name" use="required" type="{http://www.w3.org/2001/XMLSchema}string" />
+ *       &lt;attribute name="visible" use="required" type="{http://www.w3.org/2001/XMLSchema}boolean" />
  *     &lt;/restriction>
  *   &lt;/complexContent>
  * &lt;/complexType>
@@ -35,87 +34,78 @@ import javax.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "")
-@XmlRootElement(name = "simple-legend")
-public class SimpleLegend {
+@XmlType(name = "abstract-layer-type")
+public abstract class AbstractLayerType {
 
     @XmlAttribute(required = true)
-    protected String file;
-    @XmlAttribute(name = "legend-id", required = true)
-    protected String legendId;
+    protected String name;
+    @XmlAttribute(name = "source-name", required = true)
+    protected String sourceName;
     @XmlAttribute(required = true)
-    protected String version;
+    protected boolean visible;
 
     /**
-     * Gets the value of the file property.
+     * Gets the value of the name property.
      * 
      * @return
      *     possible object is
      *     {@link String }
      *     
      */
-    public String getFile() {
-        return file;
+    public String getName() {
+        return name;
     }
 
     /**
-     * Sets the value of the file property.
+     * Sets the value of the name property.
      * 
      * @param value
      *     allowed object is
      *     {@link String }
      *     
      */
-    public void setFile(String value) {
-        this.file = value;
+    public void setName(String value) {
+        this.name = value;
     }
 
     /**
-     * Gets the value of the legendId property.
+     * Gets the value of the sourceName property.
      * 
      * @return
      *     possible object is
      *     {@link String }
      *     
      */
-    public String getLegendId() {
-        return legendId;
+    public String getSourceName() {
+        return sourceName;
     }
 
     /**
-     * Sets the value of the legendId property.
+     * Sets the value of the sourceName property.
      * 
      * @param value
      *     allowed object is
      *     {@link String }
      *     
      */
-    public void setLegendId(String value) {
-        this.legendId = value;
+    public void setSourceName(String value) {
+        this.sourceName = value;
     }
 
     /**
-     * Gets the value of the version property.
+     * Gets the value of the visible property.
      * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
      */
-    public String getVersion() {
-        return version;
+    public boolean isVisible() {
+        return visible;
     }
 
     /**
-     * Sets the value of the version property.
+     * Sets the value of the visible property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
      */
-    public void setVersion(String value) {
-        this.version = value;
+    public void setVisible(boolean value) {
+        this.visible = value;
     }
 
 }

@@ -63,7 +63,6 @@ import org.orbisgis.Services;
 import org.orbisgis.layerModel.persistence.LayerType;
 import org.orbisgis.layerModel.persistence.Legends;
 import org.orbisgis.layerModel.persistence.SimpleLegend;
-import org.orbisgis.layerModel.persistence.SingleLayerType;
 import org.orbisgis.renderer.legend.Legend;
 import org.orbisgis.renderer.legend.RasterLegend;
 import org.orbisgis.renderer.legend.RenderException;
@@ -358,7 +357,7 @@ public class Layer extends GdmsLayer {
 	}
 
 	public LayerType saveLayer(File baseFile) throws PersistenceException {
-		SingleLayerType ret = new SingleLayerType();
+		LayerType ret = new LayerType();
 		ret.setName(getName());
 		ret.setSourceName(getMainName());
 		ret.setVisible(isVisible());
@@ -374,7 +373,8 @@ public class Layer extends GdmsLayer {
 				Legend legend = legendDecorator.getLegend();
 				SimpleLegend xmlLegend = new SimpleLegend();
 				xmlLegend.setLegendId(legend.getLegendTypeId());
-				File legendFileName = getLegendFileName(baseFile, fieldName, i);
+				File legendFileName = getLegendFileName(baseFile, getName(),
+						fieldName, i);
 				legend.save(legendFileName);
 				xmlLegend.setFile(legendFileName.getName());
 				xmlLegend.setVersion(legend.getVersion());
@@ -386,11 +386,13 @@ public class Layer extends GdmsLayer {
 		return ret;
 	}
 
-	private File getLegendFileName(File baseFile, String fieldName, int i) {
+	private File getLegendFileName(File baseFile, String layerName,
+			String fieldName, int i) {
 		if (baseFile.getAbsolutePath().toLowerCase().endsWith(".xml")) {
 			String name = baseFile.getName();
 			name = name.substring(0, name.length() - 4);
-			name = name + "-legend-" + fieldName + "-" + i + ".xml";
+			name = name + "-legend-" + layerName + "-" + fieldName + "-" + i
+					+ ".xml";
 			return new File(baseFile.getParentFile(), name);
 		} else {
 			throw new RuntimeException("bug!");
@@ -399,7 +401,7 @@ public class Layer extends GdmsLayer {
 
 	public void restoreLayer(LayerType lyr, File baseFile)
 			throws LayerException, PersistenceException {
-		SingleLayerType layer = (SingleLayerType) lyr;
+		LayerType layer = (LayerType) lyr;
 		this.setName(layer.getName());
 		this.setVisible(layer.isVisible());
 
