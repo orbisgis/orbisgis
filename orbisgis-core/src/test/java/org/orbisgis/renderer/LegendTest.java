@@ -43,6 +43,10 @@ import org.orbisgis.AbstractTest;
 import org.orbisgis.layerModel.DefaultMapContext;
 import org.orbisgis.layerModel.ILayer;
 import org.orbisgis.layerModel.MapContext;
+import org.orbisgis.renderer.legend.Legend;
+import org.orbisgis.renderer.legend.carto.LegendFactory;
+import org.orbisgis.renderer.legend.carto.UniqueSymbolLegend;
+import org.orbisgis.renderer.symbol.SymbolFactory;
 
 public class LegendTest extends AbstractTest {
 
@@ -90,5 +94,20 @@ public class LegendTest extends AbstractTest {
 			assertTrue(false);
 		} catch (IllegalArgumentException e) {
 		}
+	}
+
+	public void testNoNullSymbol() throws Exception {
+		MapContext mc = new DefaultMapContext();
+		ILayer layer = getDataManager().createLayer(
+				new File("src/test/resources/linestring.shp"));
+		mc.getLayerModel().addLayer(layer);
+		UniqueSymbolLegend usl = LegendFactory.createUniqueSymbolLegend();
+		usl.setSymbol(SymbolFactory.createPolygonSymbol());
+		layer.setLegend(usl);
+		Legend legend = layer.getRenderingLegend()[0];
+		for (int i = 0; i < layer.getDataSource().getRowCount(); i++) {
+			assertTrue(legend.getSymbol(layer.getDataSource(), i) != null);
+		}
+
 	}
 }

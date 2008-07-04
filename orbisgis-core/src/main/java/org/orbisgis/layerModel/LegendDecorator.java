@@ -84,7 +84,12 @@ public class LegendDecorator implements Legend, EditionListener {
 		symbols.clear();
 		try {
 			for (int i = 0; i < ds.getRowCount(); i++) {
-				symbols.add(legend.getSymbol(sds, i));
+				Symbol symbol = legend.getSymbol(sds, i);
+				if (symbol != null) {
+					symbols.add(symbol);
+				} else {
+					symbols.add(SymbolFactory.createNullSymbol());
+				}
 			}
 		} catch (DriverException e) {
 			throw new RenderException("Cannot cache the symbols", e);
