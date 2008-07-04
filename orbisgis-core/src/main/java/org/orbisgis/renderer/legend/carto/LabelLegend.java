@@ -34,55 +34,26 @@
  *    fergonco _at_ gmail.com
  *    thomas.leduc _at_ cerma.archi.fr
  */
-package org.orbisgis.renderer.legend;
+package org.orbisgis.renderer.legend.carto;
 
-import java.util.ArrayList;
+import org.gdms.driver.DriverException;
 
-public class LegendFactory {
-
-	private static ArrayList<Legend> newInstances = new ArrayList<Legend>();
-
-	static {
-		newInstances.add(createUniqueSymbolLegend());
-		newInstances.add(createUniqueValueLegend());
-		newInstances.add(createIntervalLegend());
-		newInstances.add(createProportionalLegend());
-		newInstances.add(createLabelLegend());
-	}
-
-	public static UniqueSymbolLegend createUniqueSymbolLegend() {
-		return new DefaultUniqueSymbolLegend();
-	}
-
-	public static UniqueValueLegend createUniqueValueLegend() {
-		return new DefaultUniqueValueLegend();
-	}
-
-	public static IntervalLegend createIntervalLegend() {
-		return new DefaultIntervalLegend();
-	}
-
-	public static ProportionalLegend createProportionalLegend() {
-		return new DefaultProportionalLegend();
-	}
-
-	public static LabelLegend createLabelLegend() {
-		return new DefaultLabelLegend();
-	}
+public interface LabelLegend extends ClassifiedLegend {
 
 	/**
-	 * Creates a new instance of a legend which id is equal to the specified one
+	 * Sets the field used to get the size of the label
 	 *
-	 * @param legendId
-	 * @return
+	 * @param fieldName
+	 *            Name to read in the DataSource to calculate the size
+	 * @throws DriverException
+	 *             If there is a problem reading the source of data
 	 */
-	public static Legend getNewLegend(String legendId) {
-		for (Legend legend : newInstances) {
-			if (legend.getLegendTypeId().equals(legendId)) {
-				return legend.newInstance();
-			}
-		}
-		return null;
-	}
+	public void setLabelSizeField(String fieldName) throws DriverException;
+
+	public void setFontSize(int fontSize);
+	
+	public String getLabelSizeField();
+	
+	public int getFontSize();
 
 }

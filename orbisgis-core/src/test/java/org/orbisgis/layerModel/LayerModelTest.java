@@ -48,7 +48,7 @@ import org.grap.model.GeoRaster;
 import org.orbisgis.AbstractTest;
 import org.orbisgis.DataManager;
 import org.orbisgis.Services;
-import org.orbisgis.renderer.legend.LegendFactory;
+import org.orbisgis.renderer.legend.carto.LegendFactory;
 
 public class LayerModelTest extends AbstractTest {
 

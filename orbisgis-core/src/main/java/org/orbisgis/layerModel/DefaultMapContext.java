@@ -79,13 +79,18 @@ public class DefaultMapContext implements MapContext {
 	 * @param mapControl
 	 */
 	public DefaultMapContext() {
+		openerListener = new OpenerListener();
+		init();
+	}
+
+	private void init() {
+		if (this.root != null) {
+			this.root.removeLayerListener(openerListener);
+		}
 		DataManager dataManager = (DataManager) Services
 				.getService("org.orbisgis.DataManager");
 		this.root = dataManager.createLayerCollection("root");
-		openerListener = new OpenerListener();
 		this.root.addLayerListenerRecursively(openerListener);
-
-		// Listen source removal events
 	}
 
 	public void addMapContextListener(MapContextListener listener) {
@@ -219,26 +224,10 @@ public class DefaultMapContext implements MapContext {
 			org.orbisgis.layerModel.persistence.MapContext mapContext = (org.orbisgis.layerModel.persistence.MapContext) jc
 					.createUnmarshaller().unmarshal(file);
 
+			init();
 			LayerType layer = mapContext.getLayerCollection();
-			ILayer layerCollection;
 			try {
-				layerCollection = createLayer(layer, file);
-				for (int i = 0; i < layerCollection.getLayerCount(); i++) {
-					pm.progressTo(i * 100 / layerCollection.getLayerCount());
-					ILayer newLayer = layerCollection.getLayer(i);
-					try {
-						root.addLayer(newLayer);
-					} catch (LayerException e) {
-						Services.getErrorManager().error(
-								"Cannot add "
-										+ "this layer to the collection: "
-										+ newLayer.getName(), e);
-					} catch (Exception e) {
-						Services.getErrorManager().error(
-								"Cannot add layer to collection: "
-										+ newLayer.getName(), e);
-					}
-				}
+				recoverTree(layer, file);
 			} catch (LayerException e1) {
 				Services.getErrorManager().error("Cannot recover layer tree",
 						e1);
@@ -275,7 +264,7 @@ public class DefaultMapContext implements MapContext {
 	 * @throws LayerException
 	 *             If the layer could not be created
 	 */
-	public ILayer createLayer(LayerType layer, File file) throws LayerException {
+	public ILayer recoverTree(LayerType layer, File file) throws LayerException {
 		DataManager dataManager = (DataManager) Services
 				.getService("org.orbisgis.DataManager");
 		ILayer ret = null;
@@ -284,7 +273,7 @@ public class DefaultMapContext implements MapContext {
 			ret = dataManager.createLayerCollection(layer.getName());
 			List<LayerType> xmlChildren = xmlLayerCollection.getLayer();
 			for (LayerType layerType : xmlChildren) {
-				ILayer lyr = createLayer(layerType, file);
+				ILayer lyr = recoverTree(layerType, file);
 				if (lyr != null) {
 					try {
 						ret.addLayer(lyr);
@@ -298,8 +287,23 @@ public class DefaultMapContext implements MapContext {
 		} else {
 			try {
 				ret = dataManager.createLayer(layer.getSourceName());
+				try {
+					root.addLayer(ret);
+				} catch (LayerException e) {
+					Services.getErrorManager().error(
+							"Cannot add " + "this layer to the collection: "
+									+ ret.getName(), e);
+				} catch (Exception e) {
+					Services.getErrorManager().error(
+							"Cannot add layer to collection: " + ret.getName(),
+							e);
+				}
+
 				ret.restoreLayer(layer, file);
 			} catch (LayerException e) {
+				Services.getErrorManager().error(
+						"Cannot recover layer: " + layer.getName(), e);
+			} catch (PersistenceException e) {
 				Services.getErrorManager().error(
 						"Cannot recover layer: " + layer.getName(), e);
 			}

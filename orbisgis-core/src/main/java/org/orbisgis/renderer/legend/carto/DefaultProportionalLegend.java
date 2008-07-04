@@ -34,7 +34,7 @@
  *    fergonco _at_ gmail.com
  *    thomas.leduc _at_ cerma.archi.fr
  */
-package org.orbisgis.renderer.legend;
+package org.orbisgis.renderer.legend.carto;
 
 import java.awt.Color;
 import java.io.File;
@@ -43,6 +43,8 @@ import org.gdms.data.SpatialDataSourceDecorator;
 import org.gdms.driver.DriverException;
 import org.gdms.sql.strategies.IncompatibleTypesException;
 import org.orbisgis.renderer.classification.ProportionalMethod;
+import org.orbisgis.renderer.legend.Legend;
+import org.orbisgis.renderer.legend.RenderException;
 import org.orbisgis.renderer.symbol.Symbol;
 import org.orbisgis.renderer.symbol.SymbolFactory;
 

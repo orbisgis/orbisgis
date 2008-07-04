@@ -45,7 +45,7 @@ import javax.swing.table.TableModel;
 
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
-import org.orbisgis.renderer.legend.Interval;
+import org.orbisgis.renderer.legend.carto.Interval;
 import org.orbisgis.renderer.symbol.Symbol;
 
 public class SymbolIntervalTableModel implements TableModel {

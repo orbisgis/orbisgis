@@ -34,7 +34,7 @@
  *    fergonco _at_ gmail.com
  *    thomas.leduc _at_ cerma.archi.fr
  */
-package org.orbisgis.renderer.legend;
+package org.orbisgis.renderer.legend.carto;
 
 import java.awt.Color;
 

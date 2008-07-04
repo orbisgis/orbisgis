@@ -51,9 +51,9 @@ import org.gdms.data.types.Type;
 import org.gdms.driver.DriverException;
 import org.orbisgis.editorViews.toc.actions.cui.gui.widgets.LegendListDecorator;
 import org.orbisgis.layerModel.ILayer;
-import org.orbisgis.renderer.legend.LabelLegend;
 import org.orbisgis.renderer.legend.Legend;
-import org.orbisgis.renderer.legend.LegendFactory;
+import org.orbisgis.renderer.legend.carto.LabelLegend;
+import org.orbisgis.renderer.legend.carto.LegendFactory;
 
 /**
  *

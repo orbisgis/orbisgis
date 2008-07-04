@@ -34,37 +34,55 @@
  *    fergonco _at_ gmail.com
  *    thomas.leduc _at_ cerma.archi.fr
  */
-package org.orbisgis.editorViews.toc.actions.cui.gui.widgets.table;
+package org.orbisgis.renderer.legend.carto;
 
-import org.orbisgis.renderer.legend.carto.Interval;
-import org.orbisgis.renderer.symbol.Symbol;
+import org.gdms.data.values.Value;
 
-public class SymbolIntervalPOJO {
-	private Symbol sym;
-	private Interval val;
-	private String label;
+public class Interval {
 
-	public Symbol getSym() {
-		return sym;
+	private Value start;
+	private Value end;
+	private boolean minIncluded;
+	private boolean maxIncluded;
+
+	public Interval(Value start, boolean minIncluded, Value end,
+			boolean maxIncluded) {
+		this.start = start;
+		this.minIncluded = minIncluded;
+		this.end = end;
+		this.maxIncluded = maxIncluded;
+	}
+	
+	public String getIntervalString(){
+		return start.toString()+" - "+end.toString();
+	}
+	
+	public Value getMinValue(){
+		return start;
+	}
+	
+	public Value getMaxValue(){
+		return end;
 	}
 
-	public void setSym(Symbol sym) {
-		this.sym = sym;
-	}
+	public boolean contains(Value value) {
+		boolean matchesLower = true;
+		if (start != null) {
+			if (minIncluded) {
+				matchesLower = start.lessEqual(value).getAsBoolean();
+			} else {
+				matchesLower = start.less(value).getAsBoolean();
+			}
+		}
 
-	public Interval getVal() {
-		return val;
-	}
-
-	public void setVal(Interval val) {
-		this.val = val;
-	}
-
-	public String getLabel() {
-		return label;
-	}
-
-	public void setLabel(String label) {
-		this.label = label;
+		boolean matchesUpper = true;
+		if (end != null) {
+			if (maxIncluded) {
+				matchesUpper = end.greaterEqual(value).getAsBoolean();
+			} else {
+				matchesUpper = end.greater(value).getAsBoolean();
+			}
+		}
+		return matchesLower && matchesUpper;
 	}
 }

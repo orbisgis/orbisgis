@@ -45,6 +45,7 @@ import org.gdms.data.edition.EditionEvent;
 import org.gdms.data.edition.EditionListener;
 import org.gdms.data.edition.MultipleEditionEvent;
 import org.gdms.driver.DriverException;
+import org.orbisgis.PersistenceException;
 import org.orbisgis.renderer.legend.Legend;
 import org.orbisgis.renderer.legend.LegendListener;
 import org.orbisgis.renderer.legend.RenderException;
@@ -154,7 +155,7 @@ public class LegendDecorator implements Legend, EditionListener {
 		return legend.getVersion();
 	}
 
-	public void load(File file, String version) {
+	public void load(File file, String version) throws PersistenceException {
 		legend.load(file, version);
 	}
 
@@ -162,7 +163,7 @@ public class LegendDecorator implements Legend, EditionListener {
 		return legend.newInstance();
 	}
 
-	public void save(File file) {
+	public void save(File file) throws PersistenceException {
 		legend.save(file);
 	}
 }

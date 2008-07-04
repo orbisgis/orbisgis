@@ -36,11 +36,18 @@
  */
 package org.orbisgis;
 
+import java.awt.Color;
 import java.io.File;
 
 import org.orbisgis.layerModel.DefaultMapContext;
 import org.orbisgis.layerModel.ILayer;
 import org.orbisgis.layerModel.MapContext;
+import org.orbisgis.progress.NullProgressMonitor;
+import org.orbisgis.renderer.legend.Legend;
+import org.orbisgis.renderer.legend.carto.LegendFactory;
+import org.orbisgis.renderer.legend.carto.UniqueSymbolLegend;
+import org.orbisgis.renderer.symbol.Symbol;
+import org.orbisgis.renderer.symbol.SymbolFactory;
 
 public class MapContextTest extends AbstractTest {
 
@@ -79,4 +86,27 @@ public class MapContextTest extends AbstractTest {
 		assertTrue(mc.getActiveLayer() == null);
 	}
 
+	public void testSaveAndRecoverMapContext() throws Exception {
+		MapContext mc = new DefaultMapContext();
+		ILayer layer = getDataManager().createLayer(
+				new File("src/test/resources/bv_sap.shp"));
+		mc.getLayerModel().addLayer(layer);
+		UniqueSymbolLegend usl = LegendFactory.createUniqueSymbolLegend();
+		Symbol sym = SymbolFactory.createPolygonSymbol(Color.black, 3,
+				Color.red);
+		usl.setSymbol(sym);
+		layer.setLegend(usl);
+		File file = new File("target/mapContextTest.xml");
+		mc.saveStatus(file, new NullProgressMonitor());
+		mc.loadStatus(file, new NullProgressMonitor());
+		assertTrue(mc.getLayers().length == 1);
+		Legend legend = mc.getLayerModel().getLayer(0).getVectorLegend()[0];
+		assertTrue(legend.getSymbol(layer.getDataSource(), 0)
+				.getPersistentProperties()
+				.equals(sym.getPersistentProperties()));
+	}
+
+	public void testRecover1_1_0() throws Exception {
+
+	}
 }

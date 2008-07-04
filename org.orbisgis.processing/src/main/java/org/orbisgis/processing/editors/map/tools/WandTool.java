@@ -63,8 +63,8 @@ import org.orbisgis.editors.map.tools.AbstractPointTool;
 import org.orbisgis.layerModel.ILayer;
 import org.orbisgis.layerModel.LayerException;
 import org.orbisgis.layerModel.MapContext;
-import org.orbisgis.renderer.legend.LegendFactory;
-import org.orbisgis.renderer.legend.UniqueSymbolLegend;
+import org.orbisgis.renderer.legend.carto.LegendFactory;
+import org.orbisgis.renderer.legend.carto.UniqueSymbolLegend;
 import org.orbisgis.renderer.symbol.Symbol;
 import org.orbisgis.renderer.symbol.SymbolFactory;
 

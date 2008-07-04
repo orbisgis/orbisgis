@@ -34,55 +34,27 @@
  *    fergonco _at_ gmail.com
  *    thomas.leduc _at_ cerma.archi.fr
  */
-package org.orbisgis.renderer.legend;
+package org.orbisgis.renderer.legend.carto;
 
-import org.gdms.data.values.Value;
+import org.orbisgis.renderer.legend.Legend;
+import org.orbisgis.renderer.symbol.Symbol;
 
-public class Interval {
+public interface UniqueSymbolLegend extends Legend {
 
-	private Value start;
-	private Value end;
-	private boolean minIncluded;
-	private boolean maxIncluded;
+	String NAME = "Unique Symbol Legend";
 
-	public Interval(Value start, boolean minIncluded, Value end,
-			boolean maxIncluded) {
-		this.start = start;
-		this.minIncluded = minIncluded;
-		this.end = end;
-		this.maxIncluded = maxIncluded;
-	}
-	
-	public String getIntervalString(){
-		return start.toString()+" - "+end.toString();
-	}
-	
-	public Value getMinValue(){
-		return start;
-	}
-	
-	public Value getMaxValue(){
-		return end;
-	}
+	/**
+	 * Sets the symbol of the legend
+	 *
+	 * @param symbol
+	 */
+	void setSymbol(Symbol symbol);
 
-	public boolean contains(Value value) {
-		boolean matchesLower = true;
-		if (start != null) {
-			if (minIncluded) {
-				matchesLower = start.lessEqual(value).getAsBoolean();
-			} else {
-				matchesLower = start.less(value).getAsBoolean();
-			}
-		}
+	/**
+	 * Gets the symbol of the legend
+	 *
+	 * @return symbol
+	 */
+	public Symbol getSymbol();
 
-		boolean matchesUpper = true;
-		if (end != null) {
-			if (maxIncluded) {
-				matchesUpper = end.greaterEqual(value).getAsBoolean();
-			} else {
-				matchesUpper = end.greater(value).getAsBoolean();
-			}
-		}
-		return matchesLower && matchesUpper;
-	}
 }

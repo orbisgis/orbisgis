@@ -34,38 +34,72 @@
  *    fergonco _at_ gmail.com
  *    thomas.leduc _at_ cerma.archi.fr
  */
-package org.orbisgis.renderer.legend;
+package org.orbisgis.renderer.legend.carto;
+
+import java.util.ArrayList;
 
 import org.gdms.data.values.Value;
 import org.orbisgis.renderer.symbol.Symbol;
 
-public interface UniqueValueLegend extends ClassifiedLegend {
+public interface IntervalLegend extends ClassifiedLegend {
 
 	/**
 	 * Adds a classification to the legend
 	 *
-	 * @param value
-	 *            Classification value
+	 * @param initialValue
+	 *            Initial value of the interval to classify
+	 * @param minIncluded
+	 *            If the initialValue is included in the interval
+	 * @param finalValue
+	 *            Final value of the interval to classify
+	 * @param maxIncluded
+	 *            If the finalValue is included in the interval
 	 * @param symbol
-	 *            Symbol to draw the features that is equal the specified
-	 *            classification value
+	 *            Symbol for the interval, including the initial and final
+	 *            values
 	 */
-	void addClassification(Value value, Symbol symbol);
+	void addInterval(Value initialValue, boolean minIncluded, Value finalValue,
+			boolean maxIncluded, Symbol symbol);
 
 	/**
-	 * Gets all the values in this legend that are classified
+	 * Adds a classification to the legend
+	 *
+	 * @param initialValue
+	 *            Initial value of the interval to classify
+	 * @param included
+	 *            if the value is included in the interval
+	 * @param symbol
+	 *            symbol for the values that match the interval
+	 */
+	void addIntervalWithMinLimit(Value initialValue, boolean included,
+			Symbol symbol);
+
+	/**
+	 * Adds a classification to the legend
+	 *
+	 * @param finalValue
+	 *            Final value of the interval to classify
+	 * @param included
+	 *            if the value is included in the interval
+	 * @param symbol
+	 *            symbol for the values that match the interval
+	 */
+	void addIntervalWithMaxLimit(Value finalValue, boolean included,
+			Symbol symbol);
+
+	/**
+	 * Gets all the intervals in the classification
 	 *
 	 * @return
 	 */
-	Value[] getClassificationValues();
+	public ArrayList<Interval> getIntervals();
 
 	/**
-	 * Gets the symbol used for the specified value
+	 * Gets the symbol for a specified interval
 	 *
-	 * @param value
-	 * @return The associated symbol or null if the value is not classified in
-	 *         this legend
+	 * @param inter
+	 * @return
 	 */
-	Symbol getValueSymbol(Value value);
+	public Symbol getSymbol(Interval inter);
 
 }

@@ -34,26 +34,38 @@
  *    fergonco _at_ gmail.com
  *    thomas.leduc _at_ cerma.archi.fr
  */
-package org.orbisgis.renderer.legend;
+package org.orbisgis.renderer.legend.carto;
 
-import org.gdms.driver.DriverException;
+import org.gdms.data.values.Value;
+import org.orbisgis.renderer.symbol.Symbol;
 
-public interface LabelLegend extends ClassifiedLegend {
+public interface UniqueValueLegend extends ClassifiedLegend {
 
 	/**
-	 * Sets the field used to get the size of the label
+	 * Adds a classification to the legend
 	 *
-	 * @param fieldName
-	 *            Name to read in the DataSource to calculate the size
-	 * @throws DriverException
-	 *             If there is a problem reading the source of data
+	 * @param value
+	 *            Classification value
+	 * @param symbol
+	 *            Symbol to draw the features that is equal the specified
+	 *            classification value
 	 */
-	public void setLabelSizeField(String fieldName) throws DriverException;
+	void addClassification(Value value, Symbol symbol);
 
-	public void setFontSize(int fontSize);
-	
-	public String getLabelSizeField();
-	
-	public int getFontSize();
+	/**
+	 * Gets all the values in this legend that are classified
+	 *
+	 * @return
+	 */
+	Value[] getClassificationValues();
+
+	/**
+	 * Gets the symbol used for the specified value
+	 *
+	 * @param value
+	 * @return The associated symbol or null if the value is not classified in
+	 *         this legend
+	 */
+	Symbol getValueSymbol(Value value);
 
 }

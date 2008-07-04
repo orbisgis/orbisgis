@@ -34,26 +34,39 @@
  *    fergonco _at_ gmail.com
  *    thomas.leduc _at_ cerma.archi.fr
  */
-package org.orbisgis.renderer.legend;
+package org.orbisgis.renderer.legend.carto;
 
+import org.gdms.driver.DriverException;
+import org.orbisgis.renderer.legend.AbstractLegend;
 import org.orbisgis.renderer.symbol.Symbol;
+import org.orbisgis.renderer.symbol.SymbolFactory;
 
-public interface UniqueSymbolLegend extends Legend {
+abstract class AbstractClassifiedLegend extends AbstractLegend implements
+		ClassifiedLegend {
 
-	String NAME = "Unique Symbol Legend";
+	private String fieldName;
+	private Symbol defaultSymbol;
 
-	/**
-	 * Sets the symbol of the legend
-	 *
-	 * @param symbol
-	 */
-	void setSymbol(Symbol symbol);
+	public AbstractClassifiedLegend() {
+		defaultSymbol = SymbolFactory.createNullSymbol();
+	}
 
-	/**
-	 * Gets the symbol of the legend
-	 *
-	 * @return symbol
-	 */
-	public Symbol getSymbol();
+	public void setClassificationField(String fieldName) throws DriverException {
+		this.fieldName = fieldName;
+		fireLegendInvalid();
+	}
+
+	public void setDefaultSymbol(Symbol defaultSymbol) {
+		this.defaultSymbol = defaultSymbol;
+		fireLegendInvalid();
+	}
+
+	public Symbol getDefaultSymbol() {
+		return defaultSymbol;
+	}
+
+	public String getClassificationField() {
+		return fieldName;
+	}
 
 }

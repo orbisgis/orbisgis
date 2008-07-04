@@ -45,6 +45,7 @@ import org.gdms.data.types.Type;
 import org.gdms.driver.DriverException;
 import org.grap.model.GeoRaster;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
+import org.orbisgis.PersistenceException;
 import org.orbisgis.layerModel.persistence.LayerType;
 import org.orbisgis.renderer.legend.Legend;
 import org.orbisgis.renderer.legend.RasterLegend;
@@ -137,8 +138,10 @@ public interface ILayer {
 	 *            the layer
 	 *
 	 * @return
+	 * @throws PersistenceException
+	 *             If the layer cannot be saved
 	 */
-	LayerType saveLayer(File baseFile);
+	LayerType saveLayer(File baseFile) throws PersistenceException;
 
 	/**
 	 * Sets the status of the layer from a xml object
@@ -150,8 +153,11 @@ public interface ILayer {
 	 *            information
 	 * @throws LayerException
 	 *             If the status cannot be set
+	 * @throws PersistenceException
+	 *             If the layer cannot be restored
 	 */
-	void restoreLayer(LayerType layer, File baseFile) throws LayerException;
+	void restoreLayer(LayerType layer, File baseFile) throws LayerException,
+			PersistenceException;
 
 	/**
 	 * Gets the specified child layer

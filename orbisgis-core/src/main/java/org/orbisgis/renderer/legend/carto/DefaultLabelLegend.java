@@ -34,61 +34,73 @@
  *    fergonco _at_ gmail.com
  *    thomas.leduc _at_ cerma.archi.fr
  */
-package org.orbisgis.renderer.legend;
+package org.orbisgis.renderer.legend.carto;
 
 import java.io.File;
-import java.util.ArrayList;
 
 import org.gdms.data.SpatialDataSourceDecorator;
 import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
-import org.orbisgis.renderer.symbol.RenderUtils;
+import org.orbisgis.renderer.legend.Legend;
+import org.orbisgis.renderer.legend.RenderException;
 import org.orbisgis.renderer.symbol.Symbol;
+import org.orbisgis.renderer.symbol.SymbolFactory;
 
-import com.vividsolutions.jts.geom.Geometry;
+public class DefaultLabelLegend extends AbstractClassifiedLegend implements
+		LabelLegend {
 
-public class DefaultUniqueValueLegend extends AbstractClassifiedLegend
-		implements UniqueValueLegend {
+	private String labelSizeField;
 
-	private ArrayList<Value> values = new ArrayList<Value>();
-	private ArrayList<Symbol> symbols = new ArrayList<Symbol>();
+	int fontSize = 10;
 
-	public void addClassification(Value value, Symbol symbol) {
-		values.add(value);
-		symbols.add(symbol);
+	private int getSize(SpatialDataSourceDecorator sds, long row)
+			throws RenderException, DriverException {
+		if (labelSizeField == null) {
+			return fontSize;
+		} else {
+			int fieldIndex = sds.getFieldIndexByName(labelSizeField);
+			if (fieldIndex != -1) {
+				throw new RenderException("The label size field '"
+						+ labelSizeField + "' does not exist");
+			} else {
+				return sds.getFieldValue(row, fieldIndex).getAsInt();
+			}
+		}
+	}
+
+	public void setLabelSizeField(String fieldName) throws DriverException {
+		this.labelSizeField = fieldName;
 		fireLegendInvalid();
 	}
 
+	public String getLabelSizeField() {
+		return this.labelSizeField;
+	}
+
+	public void setFontSize(int fontSize) {
+		this.fontSize = fontSize;
+		fireLegendInvalid();
+	}
+
+	public int getFontSize() {
+		return this.fontSize;
+	}
+
 	public String getLegendTypeName() {
-		return "Unique Value Legend";
-	}
-
-	public Value[] getClassificationValues() {
-		return values.toArray(new Value[0]);
-	}
-
-	public Symbol getValueSymbol(Value value) {
-		return symbols.get(values.indexOf(value));
+		return "Label legend";
 	}
 
 	public Symbol getSymbol(SpatialDataSourceDecorator sds, long row)
 			throws RenderException {
 		try {
 			int fieldIndex = sds.getSpatialFieldIndex();
-			Value value = sds.getFieldValue(row, fieldIndex);
-			Geometry geom = sds.getGeometry(row);
-			int symbolIndex = values.indexOf(value);
-			if (symbolIndex != -1) {
-				Symbol classificationSymbol = this.symbols.get(symbolIndex);
-				Symbol symbol = RenderUtils.buildSymbolToDraw(
-						classificationSymbol, geom);
-				return symbol;
-			} else {
-				return getDefaultSymbol();
-			}
+			Value v = sds.getFieldValue(row, fieldIndex);
+			return SymbolFactory.createLabelSymbol(v.getAsString(), getSize(
+					sds, row));
 		} catch (DriverException e) {
-			throw new RenderException("Cannot access the layer contents", e);
+			throw new RenderException("Cannot access layer contents" + e);
 		}
+
 	}
 
 	public String getVersion() {
@@ -103,12 +115,11 @@ public class DefaultUniqueValueLegend extends AbstractClassifiedLegend
 		throw new UnsupportedOperationException();
 	}
 
-	public String getLegendTypeId() {
-		return "org.orbisgis.legend.ValueClassification";
-	}
-
 	public Legend newInstance() {
-		return new DefaultUniqueValueLegend();
+		return new DefaultLabelLegend();
 	}
 
+	public String getLegendTypeId() {
+		return "org.orbisgis.legend.Label";
+	}
 }

@@ -58,16 +58,17 @@ import org.gdms.data.types.Type;
 import org.gdms.driver.DriverException;
 import org.grap.model.GeoRaster;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
+import org.orbisgis.PersistenceException;
 import org.orbisgis.Services;
 import org.orbisgis.layerModel.persistence.LayerType;
 import org.orbisgis.layerModel.persistence.Legends;
 import org.orbisgis.layerModel.persistence.SimpleLegend;
 import org.orbisgis.layerModel.persistence.SingleLayerType;
 import org.orbisgis.renderer.legend.Legend;
-import org.orbisgis.renderer.legend.LegendFactory;
 import org.orbisgis.renderer.legend.RasterLegend;
 import org.orbisgis.renderer.legend.RenderException;
-import org.orbisgis.renderer.legend.UniqueSymbolLegend;
+import org.orbisgis.renderer.legend.carto.LegendFactory;
+import org.orbisgis.renderer.legend.carto.UniqueSymbolLegend;
 import org.orbisgis.renderer.symbol.Symbol;
 import org.orbisgis.renderer.symbol.SymbolFactory;
 
@@ -97,10 +98,11 @@ public class Layer extends GdmsLayer {
 
 		UniqueSymbolLegend legend = LegendFactory.createUniqueSymbolLegend();
 		Symbol polSym = SymbolFactory.createPolygonSymbol(Color.black, c);
-		Symbol pointSym = SymbolFactory
-				.createCirclePointSymbol(Color.black, Color.red, 10);
+		Symbol pointSym = SymbolFactory.createCirclePointSymbol(Color.black,
+				Color.red, 10);
 		Symbol lineSym = SymbolFactory.createLineSymbol(Color.black, 2);
-		Symbol composite = SymbolFactory.createSymbolComposite(polSym, pointSym, lineSym);
+		Symbol composite = SymbolFactory.createSymbolComposite(polSym,
+				pointSym, lineSym);
 		if (gc == null) {
 			legend.setSymbol(composite);
 		} else {
@@ -355,7 +357,7 @@ public class Layer extends GdmsLayer {
 		}
 	}
 
-	public LayerType saveLayer(File baseFile) {
+	public LayerType saveLayer(File baseFile) throws PersistenceException {
 		SingleLayerType ret = new SingleLayerType();
 		ret.setName(getName());
 		ret.setSourceName(getMainName());
@@ -396,7 +398,7 @@ public class Layer extends GdmsLayer {
 	}
 
 	public void restoreLayer(LayerType lyr, File baseFile)
-			throws LayerException {
+			throws LayerException, PersistenceException {
 		SingleLayerType layer = (SingleLayerType) lyr;
 		this.setName(layer.getName());
 		this.setVisible(layer.isVisible());

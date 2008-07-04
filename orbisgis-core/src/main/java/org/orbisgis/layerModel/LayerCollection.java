@@ -46,6 +46,7 @@ import org.gdms.data.types.NullCRS;
 import org.gdms.driver.DriverException;
 import org.grap.model.GeoRaster;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
+import org.orbisgis.PersistenceException;
 import org.orbisgis.layerModel.persistence.LayerCollectionType;
 import org.orbisgis.layerModel.persistence.LayerType;
 import org.orbisgis.renderer.legend.Legend;
@@ -353,7 +354,7 @@ public class LayerCollection extends ALayer {
 		return layerCollection.size();
 	}
 
-	public LayerType saveLayer(File baseFile) {
+	public LayerType saveLayer(File baseFile) throws PersistenceException {
 		LayerCollectionType xmlLayer = new LayerCollectionType();
 		xmlLayer.setName(getName());
 		for (ILayer child : layerCollection) {
@@ -364,7 +365,8 @@ public class LayerCollection extends ALayer {
 		return xmlLayer;
 	}
 
-	public void restoreLayer(LayerType layer, File baseFile) throws LayerException {
+	public void restoreLayer(LayerType layer, File baseFile)
+			throws LayerException {
 	}
 
 	public ILayer getLayerByName(String layerName) {

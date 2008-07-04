@@ -1,0 +1,33 @@
+<xs:schema xmlns:sym="org.orbisgis.symbol"
+	xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="org.orbisgis.legend"
+	targetNamespace="org.orbisgis.legend">
+
+	<xs:import namespace="org.orbisgis.symbol"
+		schemaLocation="../symbol/persistence.xsd"/>
+
+	<xs:element name="legend-container">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="legend-description" type="legend-type"
+					maxOccurs="1"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+
+	<xs:complexType name="legend-type">
+		<xs:attribute name="name" type="xs:string" use="required"/>
+	</xs:complexType>
+
+	<xs:complexType name="unique-symbol-legend-type">
+		<xs:complexContent>
+			<xs:extension base="legend-type">
+				<xs:sequence>
+					<xs:element name="symbol" type="sym:symbol-type"
+						maxOccurs="1"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+
+	<xs:element name="unique-symbol-legend" type="unique-symbol-legend-type"/>
+</xs:schema>

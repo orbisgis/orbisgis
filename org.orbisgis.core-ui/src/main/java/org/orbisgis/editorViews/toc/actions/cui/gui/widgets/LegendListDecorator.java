@@ -38,9 +38,9 @@ package org.orbisgis.editorViews.toc.actions.cui.gui.widgets;
 
 import java.util.Random;
 
-import org.orbisgis.renderer.legend.DefaultLabelLegend;
 import org.orbisgis.renderer.legend.Legend;
-import org.orbisgis.renderer.legend.LegendFactory;
+import org.orbisgis.renderer.legend.carto.DefaultLabelLegend;
+import org.orbisgis.renderer.legend.carto.LegendFactory;
 
 public class LegendListDecorator {
 	private Legend leg;

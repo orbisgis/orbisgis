@@ -47,9 +47,9 @@ import java.awt.Component;
 import java.net.URL;
 
 import org.orbisgis.editorViews.toc.actions.cui.ui.SymbolEditor;
-import org.orbisgis.renderer.legend.DefaultUniqueSymbolLegend;
 import org.orbisgis.renderer.legend.Legend;
-import org.orbisgis.renderer.legend.UniqueSymbolLegend;
+import org.orbisgis.renderer.legend.carto.DefaultUniqueSymbolLegend;
+import org.orbisgis.renderer.legend.carto.UniqueSymbolLegend;
 import org.orbisgis.renderer.symbol.Symbol;
 import org.sif.UIFactory;
 import org.sif.UIPanel;

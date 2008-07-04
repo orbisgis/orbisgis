@@ -34,41 +34,63 @@
  *    fergonco _at_ gmail.com
  *    thomas.leduc _at_ cerma.archi.fr
  */
-package org.orbisgis.renderer.legend;
+package org.orbisgis.renderer.legend.carto;
 
 import java.io.File;
+import java.util.ArrayList;
 
 import org.gdms.data.SpatialDataSourceDecorator;
+import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
+import org.orbisgis.renderer.legend.Legend;
+import org.orbisgis.renderer.legend.RenderException;
 import org.orbisgis.renderer.symbol.RenderUtils;
 import org.orbisgis.renderer.symbol.Symbol;
 
-public class DefaultUniqueSymbolLegend extends AbstractLegend implements
-		UniqueSymbolLegend {
+import com.vividsolutions.jts.geom.Geometry;
 
-	private Symbol symbol;
+public class DefaultUniqueValueLegend extends AbstractClassifiedLegend
+		implements UniqueValueLegend {
 
-	public Symbol getSymbol() {
-		return symbol;
+	private ArrayList<Value> values = new ArrayList<Value>();
+	private ArrayList<Symbol> symbols = new ArrayList<Symbol>();
+
+	public void addClassification(Value value, Symbol symbol) {
+		values.add(value);
+		symbols.add(symbol);
+		fireLegendInvalid();
 	}
 
-	public void setSymbol(Symbol symbol) {
-		this.symbol = symbol;
-		fireLegendInvalid();
+	public String getLegendTypeName() {
+		return "Unique Value Legend";
+	}
+
+	public Value[] getClassificationValues() {
+		return values.toArray(new Value[0]);
+	}
+
+	public Symbol getValueSymbol(Value value) {
+		return symbols.get(values.indexOf(value));
 	}
 
 	public Symbol getSymbol(SpatialDataSourceDecorator sds, long row)
 			throws RenderException {
 		try {
-			return RenderUtils.buildSymbolToDraw(getSymbol(), sds
-					.getGeometry(row));
+			int fieldIndex = sds.getSpatialFieldIndex();
+			Value value = sds.getFieldValue(row, fieldIndex);
+			Geometry geom = sds.getGeometry(row);
+			int symbolIndex = values.indexOf(value);
+			if (symbolIndex != -1) {
+				Symbol classificationSymbol = this.symbols.get(symbolIndex);
+				Symbol symbol = RenderUtils.buildSymbolToDraw(
+						classificationSymbol, geom);
+				return symbol;
+			} else {
+				return getDefaultSymbol();
+			}
 		} catch (DriverException e) {
-			throw new RenderException("Cannot access layer contents" + e);
+			throw new RenderException("Cannot access the layer contents", e);
 		}
-	}
-
-	public String getLegendTypeName() {
-		return UniqueSymbolLegend.NAME;
 	}
 
 	public String getVersion() {
@@ -76,20 +98,19 @@ public class DefaultUniqueSymbolLegend extends AbstractLegend implements
 	}
 
 	public void save(File file) {
-		
-		// TODO
+		throw new UnsupportedOperationException();
 	}
 
 	public void load(File file, String version) {
-		// TODO
+		throw new UnsupportedOperationException();
 	}
 
 	public String getLegendTypeId() {
-		return "org.orbisgis.legend.UniqueSymbol";
+		return "org.orbisgis.legend.ValueClassification";
 	}
 
 	public Legend newInstance() {
-		return new DefaultUniqueSymbolLegend();
+		return new DefaultUniqueValueLegend();
 	}
 
 }

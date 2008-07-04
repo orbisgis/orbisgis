@@ -1,4 +1,5 @@
-<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="org.orbisgis.symbol"
+	targetNamespace="org.orbisgis.symbol">
 
 	<xs:element name="symbol-list">
 		<xs:complexType>
@@ -8,9 +9,8 @@
 		</xs:complexType>
 	</xs:element>
 
-	<xs:complexType name="symbol-type">
+	<xs:complexType name="symbol-type" abstract="true">
 		<xs:attribute name="name" type="xs:string" use="required"/>
-		<xs:attribute name="id" type="xs:string" use="required"/>
 	</xs:complexType>
 
 	<xs:complexType name="simple-symbol-type">
@@ -22,8 +22,7 @@
 				</xs:sequence>
 				<xs:attribute name="symbol-type-id" type="xs:string"
 					use="required"/>
-				<xs:attribute name="version" type="xs:string"
-					use="required"/>
+				<xs:attribute name="version" type="xs:string" use="required"/>
 			</xs:extension>
 		</xs:complexContent>
 	</xs:complexType>

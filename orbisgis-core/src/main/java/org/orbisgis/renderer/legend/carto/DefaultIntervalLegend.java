@@ -34,71 +34,96 @@
  *    fergonco _at_ gmail.com
  *    thomas.leduc _at_ cerma.archi.fr
  */
-package org.orbisgis.renderer.legend;
+package org.orbisgis.renderer.legend.carto;
 
 import java.io.File;
+import java.util.ArrayList;
 
 import org.gdms.data.SpatialDataSourceDecorator;
 import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
+import org.orbisgis.renderer.legend.Legend;
+import org.orbisgis.renderer.legend.RenderException;
+import org.orbisgis.renderer.symbol.RenderUtils;
 import org.orbisgis.renderer.symbol.Symbol;
 import org.orbisgis.renderer.symbol.SymbolFactory;
 
-public class DefaultLabelLegend extends AbstractClassifiedLegend implements
-		LabelLegend {
+public class DefaultIntervalLegend extends AbstractClassifiedLegend implements
+		IntervalLegend {
 
-	private String labelSizeField;
+	private ArrayList<Interval> intervals = new ArrayList<Interval>();
+	private ArrayList<Symbol> symbols = new ArrayList<Symbol>();
 
-	int fontSize = 10;
-
-	private int getSize(SpatialDataSourceDecorator sds, long row)
-			throws RenderException, DriverException {
-		if (labelSizeField == null) {
-			return fontSize;
-		} else {
-			int fieldIndex = sds.getFieldIndexByName(labelSizeField);
-			if (fieldIndex != -1) {
-				throw new RenderException("The label size field '"
-						+ labelSizeField + "' does not exist");
-			} else {
-				return sds.getFieldValue(row, fieldIndex).getAsInt();
+	public Symbol getSymbol(Interval inter) {
+		for (int i = 0; i < intervals.size(); i++) {
+			if (intervals.get(i).equals(inter)) {
+				return symbols.get(i);
 			}
 		}
+		return SymbolFactory.createNullSymbol();
 	}
 
-	public void setLabelSizeField(String fieldName) throws DriverException {
-		this.labelSizeField = fieldName;
+	public ArrayList<Interval> getIntervals() {
+		return intervals;
+	}
+
+	public void addInterval(Value initialValue, boolean minIncluded,
+			Value finalValue, boolean maxIncluded, Symbol symbol) {
+		intervals.add(new Interval(initialValue, minIncluded, finalValue,
+				maxIncluded));
+		symbols.add(symbol);
 		fireLegendInvalid();
 	}
 
-	public String getLabelSizeField() {
-		return this.labelSizeField;
-	}
-
-	public void setFontSize(int fontSize) {
-		this.fontSize = fontSize;
+	public void addIntervalWithMaxLimit(Value finalValue, boolean included,
+			Symbol symbol) {
+		intervals.add(new Interval(null, false, finalValue, included));
+		symbols.add(symbol);
 		fireLegendInvalid();
 	}
 
-	public int getFontSize() {
-		return this.fontSize;
+	public void addIntervalWithMinLimit(Value initialValue, boolean included,
+			Symbol symbol) {
+		intervals.add(new Interval(initialValue, included, null, false));
+		symbols.add(symbol);
+		fireLegendInvalid();
 	}
 
 	public String getLegendTypeName() {
-		return "Label legend";
+		return "Interval Classified Legend";
 	}
 
 	public Symbol getSymbol(SpatialDataSourceDecorator sds, long row)
 			throws RenderException {
 		try {
 			int fieldIndex = sds.getSpatialFieldIndex();
-			Value v = sds.getFieldValue(row, fieldIndex);
-			return SymbolFactory.createLabelSymbol(v.getAsString(), getSize(
-					sds, row));
+			Value value = sds.getFieldValue(row, fieldIndex);
+			Symbol classificationSymbol = getSymbolFor(value);
+			if (classificationSymbol != null) {
+				Symbol symbol;
+				symbol = RenderUtils.buildSymbolToDraw(classificationSymbol,
+						sds.getGeometry(row));
+				return symbol;
+			} else {
+				return getDefaultSymbol();
+			}
 		} catch (DriverException e) {
-			throw new RenderException("Cannot access layer contents" + e);
+			throw new RenderException("Cannot access the layer contents", e);
+		}
+	}
+
+	public Symbol getSymbolFor(Value value) {
+		for (int i = 0; i < intervals.size(); i++) {
+			if (intervals.get(i).contains(value)) {
+				return symbols.get(i);
+			}
 		}
 
+		return getDefaultSymbol();
+	}
+
+	public String getLegendTypeId() {
+		return "org.orbisgis.legend.Intervals";
 	}
 
 	public String getVersion() {
@@ -114,10 +139,7 @@ public class DefaultLabelLegend extends AbstractClassifiedLegend implements
 	}
 
 	public Legend newInstance() {
-		return new DefaultLabelLegend();
+		return new DefaultIntervalLegend();
 	}
 
-	public String getLegendTypeId() {
-		return "org.orbisgis.legend.Label";
-	}
 }

@@ -50,11 +50,11 @@ import org.orbisgis.DataManager;
 import org.orbisgis.Services;
 import org.orbisgis.layerModel.ILayer;
 import org.orbisgis.renderer.Renderer;
-import org.orbisgis.renderer.legend.LabelLegend;
 import org.orbisgis.renderer.legend.Legend;
-import org.orbisgis.renderer.legend.LegendFactory;
-import org.orbisgis.renderer.legend.UniqueSymbolLegend;
-import org.orbisgis.renderer.legend.UniqueValueLegend;
+import org.orbisgis.renderer.legend.carto.LabelLegend;
+import org.orbisgis.renderer.legend.carto.LegendFactory;
+import org.orbisgis.renderer.legend.carto.UniqueSymbolLegend;
+import org.orbisgis.renderer.legend.carto.UniqueValueLegend;
 import org.orbisgis.renderer.symbol.Symbol;
 import org.orbisgis.renderer.symbol.SymbolFactory;
 

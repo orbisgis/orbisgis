@@ -40,7 +40,7 @@ import org.gdms.data.DataSource;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
-import org.orbisgis.renderer.legend.Interval;
+import org.orbisgis.renderer.legend.carto.Interval;
 
 public class RangeMethod {
 

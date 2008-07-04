@@ -57,10 +57,10 @@ import org.orbisgis.layerModel.LayerException;
 import org.orbisgis.renderer.Renderer;
 import org.orbisgis.renderer.classification.Range;
 import org.orbisgis.renderer.classification.RangeMethod;
-import org.orbisgis.renderer.legend.IntervalLegend;
-import org.orbisgis.renderer.legend.LegendFactory;
-import org.orbisgis.renderer.legend.ProportionalLegend;
-import org.orbisgis.renderer.legend.UniqueSymbolLegend;
+import org.orbisgis.renderer.legend.carto.IntervalLegend;
+import org.orbisgis.renderer.legend.carto.LegendFactory;
+import org.orbisgis.renderer.legend.carto.ProportionalLegend;
+import org.orbisgis.renderer.legend.carto.UniqueSymbolLegend;
 import org.orbisgis.renderer.symbol.Symbol;
 import org.orbisgis.renderer.symbol.SymbolFactory;
 

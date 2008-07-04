@@ -34,45 +34,57 @@
  *    fergonco _at_ gmail.com
  *    thomas.leduc _at_ cerma.archi.fr
  */
-package org.orbisgis.renderer.legend;
+package org.orbisgis.renderer.legend.carto;
 
-import org.gdms.driver.DriverException;
-import org.orbisgis.renderer.symbol.Symbol;
+import java.util.ArrayList;
 
-public interface ClassifiedLegend extends Legend {
+import org.orbisgis.renderer.legend.Legend;
+
+public class LegendFactory {
+
+	private static ArrayList<Legend> newInstances = new ArrayList<Legend>();
+
+	static {
+		newInstances.add(createUniqueSymbolLegend());
+		newInstances.add(createUniqueValueLegend());
+		newInstances.add(createIntervalLegend());
+		newInstances.add(createProportionalLegend());
+		newInstances.add(createLabelLegend());
+	}
+
+	public static UniqueSymbolLegend createUniqueSymbolLegend() {
+		return new DefaultUniqueSymbolLegend();
+	}
+
+	public static UniqueValueLegend createUniqueValueLegend() {
+		return new DefaultUniqueValueLegend();
+	}
+
+	public static IntervalLegend createIntervalLegend() {
+		return new DefaultIntervalLegend();
+	}
+
+	public static ProportionalLegend createProportionalLegend() {
+		return new DefaultProportionalLegend();
+	}
+
+	public static LabelLegend createLabelLegend() {
+		return new DefaultLabelLegend();
+	}
 
 	/**
-	 * Sets the default symbol for those features that does not match any of the
-	 * classifications in this legend. By default this symbol is null and those
-	 * features won't be drawn
+	 * Creates a new instance of a legend which id is equal to the specified one
 	 *
-	 * @param lesoutres
-	 */
-	void setDefaultSymbol(Symbol defaultSymbol);
-
-	/**
-	 * Gets the default symbol of this classification.
-	 *
+	 * @param legendId
 	 * @return
 	 */
-	Symbol getDefaultSymbol();
-
-	/**
-	 * Sets the field used to classify the features
-	 *
-	 * @param fieldName
-	 *            Name to read in the DataSource to test against the
-	 *            classification values
-	 * @throws DriverException
-	 *             If there is a problem reading the source of data
-	 */
-	void setClassificationField(String fieldName) throws DriverException;
-
-	/**
-	 * Gets the field used to do the classification
-	 *
-	 * @return
-	 */
-	String getClassificationField();
+	public static Legend getNewLegend(String legendId) {
+		for (Legend legend : newInstances) {
+			if (legend.getLegendTypeId().equals(legendId)) {
+				return legend.newInstance();
+			}
+		}
+		return null;
+	}
 
 }

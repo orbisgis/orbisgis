@@ -48,7 +48,7 @@ public class DefaultSymbolCollection implements SymbolCollection {
 				new FileOutputStream(collectionFile));
 		Symbol[] array = symbols.toArray(new Symbol[0]);
 		Symbol symbolComposite = SymbolFactory.createSymbolComposite(array);
-		SymbolType col = toXML(symbolComposite);
+		SymbolType col = getXMLFromSymbol(symbolComposite);
 		SymbolList list = new SymbolList();
 		list.setSymbolComposite((SymbolCompositeType) col);
 		m.marshal(list, os);
@@ -63,12 +63,12 @@ public class DefaultSymbolCollection implements SymbolCollection {
 	 *            the symbol composite
 	 * @return Compositesymboltype
 	 */
-	private SymbolType toXML(Symbol com) {
+	public static SymbolType getXMLFromSymbol(Symbol com) {
 
 		if (com.acceptsChildren()) {
 			SymbolCompositeType comp = new SymbolCompositeType();
 			for (int i = 0; i < com.getSymbolCount(); i++) {
-				SymbolType xmlSymbol = toXML(com.getSymbol(i));
+				SymbolType xmlSymbol = getXMLFromSymbol(com.getSymbol(i));
 				if (xmlSymbol != null) {
 					comp.getSymbol().add(xmlSymbol);
 				}
@@ -118,7 +118,7 @@ public class DefaultSymbolCollection implements SymbolCollection {
 		}
 	}
 
-	private Symbol getSymbolFromXML(SymbolType sim)
+	public static Symbol getSymbolFromXML(SymbolType sim)
 			throws IncompatibleVersionException {
 		if (sim instanceof SimpleSymbolType) {
 			SimpleSymbolType simpleSymbol = (SimpleSymbolType) sim;

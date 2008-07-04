@@ -39,6 +39,7 @@ package org.orbisgis.renderer.legend;
 import java.io.File;
 
 import org.gdms.data.SpatialDataSourceDecorator;
+import org.orbisgis.PersistenceException;
 import org.orbisgis.renderer.symbol.Symbol;
 
 /**
@@ -122,8 +123,11 @@ public interface Legend {
 	 *
 	 * @param file
 	 *            File to save the legend
+	 *
+	 * @throws PersistenceException
+	 *             if the legend cannot be saved
 	 */
-	void save(File file);
+	void save(File file) throws PersistenceException;
 
 	/**
 	 * Loads the legend
@@ -132,8 +136,11 @@ public interface Legend {
 	 *            File to save the legend
 	 * @param version
 	 *            Version of the contents in the file
+	 *
+	 * @throws PersistenceException
+	 *             if the legend cannot be saved
 	 */
-	void load(File file, String version);
+	void load(File file, String version) throws PersistenceException;
 
 	/**
 	 * Creates a new empty instance of this legend
