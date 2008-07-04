@@ -57,7 +57,8 @@ public class LineSymbol extends AbstractLineSymbol {
 	public Envelope draw(Graphics2D g, Geometry geom, AffineTransform at,
 			RenderPermission permission) throws DriverException {
 		LiteShape ls = new LiteShape(geom, at, true);
-		g.setStroke(new BasicStroke(lineWidth));
+		g.setStroke(new BasicStroke(lineWidth, BasicStroke.CAP_ROUND,
+				BasicStroke.JOIN_ROUND));
 		g.setColor(outline);
 		g.setPaint(null);
 		g.draw(ls);

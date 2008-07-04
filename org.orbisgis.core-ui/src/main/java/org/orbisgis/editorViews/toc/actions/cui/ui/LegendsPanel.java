@@ -108,7 +108,7 @@ public class LegendsPanel extends JPanel implements UIPanel, LegendContext {
 	public Legend[] getLegends() {
 		Legend[] ret = new Legend[legends.size()];
 		for (int i = 0; i < ret.length; i++) {
-			ret[i] = legends.get(i).getLegend();
+			ret[i] = legends.get(i).getLegendPanel().getLegend();
 		}
 		return ret;
 	}
