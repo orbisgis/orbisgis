@@ -155,7 +155,7 @@ public class DefaultSymbolCollection implements SymbolCollection {
 	 * @see org.orbisgis.renderer.symbol.collection.SymbolCollection#addSymbol(org.orbisgis.renderer.symbol.Symbol)
 	 */
 	public void addSymbol(Symbol sym) {
-		symbols.add(sym);
+		symbols.add(sym.cloneSymbol());
 	}
 
 	/**

@@ -209,7 +209,7 @@ public class FlowLayoutPreviewWindow extends javax.swing.JPanel implements
 				SelectableCanvas can = (SelectableCanvas) comps[i];
 
 				if (selection.contains(can)) {
-					Symbol sym = can.getSymbol();
+					Symbol sym = can.getSymbol().cloneSymbol();
 					UniqueSymbolLegend leg = LegendFactory
 							.createUniqueSymbolLegend();
 					leg.setSymbol(sym);
@@ -300,7 +300,7 @@ public class FlowLayoutPreviewWindow extends javax.swing.JPanel implements
 	private void addSymbolToPanel(Symbol sym) {
 		SelectableCanvas can = new SelectableCanvas();
 
-		can.setSymbol(sym);
+		can.setSymbol(sym.cloneSymbol());
 		can.setPreferredSize(new Dimension(126, 70));
 
 		can.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -313,7 +313,7 @@ public class FlowLayoutPreviewWindow extends javax.swing.JPanel implements
 	}
 
 	public Symbol getSelectedSymbol() {
-		return selection.get(0).getSymbol();
+		return selection.get(0).getSymbol().cloneSymbol();
 	}
 
 	private SelectableCanvas getSelectedCanvas() {
@@ -398,9 +398,5 @@ public class FlowLayoutPreviewWindow extends javax.swing.JPanel implements
 		}
 
 		return null;
-	}
-
-	public void addNewSymbol(Symbol symbol) {
-		addSymbolToPanel(symbol);
 	}
 }

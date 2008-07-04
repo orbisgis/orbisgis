@@ -49,6 +49,27 @@ public class SymbolCollectionTest extends TestCase {
 		assertTrue(sv.getSymbolCount() == 1);
 	}
 
+	public void testCollectionClones() throws Exception {
+		File file = new File("target/collection.xml");
+		file.delete();
+		DefaultSymbolCollection sv = new DefaultSymbolCollection(file);
+		Symbol polSym = SymbolFactory.createPolygonSymbol();
+		sv.addSymbol(polSym);
+		Symbol sym = sv.getSymbol(0);
+		((EditablePolygonSymbol) polSym).setOutlineColor(Color.red);
+		try {
+			testEquals(polSym, sym);
+			assertTrue(false);
+		} catch (IllegalArgumentException e) {
+		}
+		((EditablePolygonSymbol) sym).setOutlineColor(Color.red);
+		try {
+			testEquals(sv.getSymbol(0), sym);
+			assertTrue(false);
+		} catch (IllegalArgumentException e) {
+		}
+	}
+
 	public void testSymbolClone() throws Exception {
 		ArrayList<Symbol> symbols = SymbolFactory.getAvailableSymbols();
 		for (Symbol symbol : symbols) {
@@ -91,8 +112,9 @@ public class SymbolCollectionTest extends TestCase {
 		BufferedImage img2 = drawSymbol(symbol2);
 		for (int i = 0; i < img.getWidth(); i++) {
 			for (int j = 0; j < img.getHeight(); j++) {
-				assertTrue(symbol1.toString(), img.getRGB(i, j) == img2.getRGB(
-						i, j));
+				if (img.getRGB(i, j) != img2.getRGB(i, j)) {
+					throw new IllegalArgumentException(symbol1.toString());
+				}
 			}
 		}
 
