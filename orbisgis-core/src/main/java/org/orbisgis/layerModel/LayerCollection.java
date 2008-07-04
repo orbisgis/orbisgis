@@ -471,4 +471,9 @@ public class LayerCollection extends ALayer {
 
 	public void setSelection(int[] newSelection) {
 	}
+
+	public Legend[] getRenderingLegend() throws DriverException {
+		throw new UnsupportedOperationException(
+				"Cannot draw a legend collection");
+	}
 }

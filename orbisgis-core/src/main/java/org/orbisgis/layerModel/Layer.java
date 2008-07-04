@@ -206,6 +206,12 @@ public class Layer extends GdmsLayer {
 		setLegend(defaultFieldName, legends);
 	}
 
+	public Legend[] getRenderingLegend() throws DriverException {
+		int sfi = dataSource.getSpatialFieldIndex();
+		String defaultFieldName = dataSource.getMetadata().getFieldName(sfi);
+		return fieldLegend.get(defaultFieldName);
+	}
+
 	public Legend[] getVectorLegend() throws DriverException {
 		int sfi = dataSource.getSpatialFieldIndex();
 		Metadata metadata = dataSource.getMetadata();
@@ -213,8 +219,7 @@ public class Layer extends GdmsLayer {
 			throw new UnsupportedOperationException("The "
 					+ "field is a raster");
 		}
-		String defaultFieldName = dataSource.getMetadata().getFieldName(
-				dataSource.getSpatialFieldIndex());
+		String defaultFieldName = metadata.getFieldName(sfi);
 		return getVectorLegend(defaultFieldName);
 	}
 
@@ -232,7 +237,13 @@ public class Layer extends GdmsLayer {
 	public Legend[] getVectorLegend(String fieldName) throws DriverException {
 		int sfi = getFieldIndexForLegend(fieldName);
 		validateType(sfi, Type.GEOMETRY, "vector");
-		return fieldLegend.get(fieldName);
+		LegendDecorator[] legends = fieldLegend.get(fieldName);
+		Legend[] ret = new Legend[legends.length];
+		for (int i = 0; i < ret.length; i++) {
+			ret[i] = legends[i].getLegend();
+		}
+
+		return ret;
 	}
 
 	private void validateType(int sfi, int fieldType, String type)

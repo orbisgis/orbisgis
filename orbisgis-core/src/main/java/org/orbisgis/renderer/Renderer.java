@@ -196,7 +196,7 @@ public class Renderer {
 			int width, int height, Envelope extent,
 			DefaultRendererPermission permission, IProgressMonitor pm)
 			throws DriverException {
-		Legend[] legends = layer.getVectorLegend();
+		Legend[] legends = layer.getRenderingLegend();
 		SpatialDataSourceDecorator sds = layer.getDataSource();
 		try {
 			/*

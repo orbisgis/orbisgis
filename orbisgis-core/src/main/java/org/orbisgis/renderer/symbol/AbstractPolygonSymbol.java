@@ -40,6 +40,7 @@ import java.awt.Color;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.gdms.data.types.GeometryConstraint;
 import org.orbisgis.IncompatibleVersionException;
 
 import com.vividsolutions.jts.geom.Geometry;
@@ -60,6 +61,17 @@ public abstract class AbstractPolygonSymbol extends AbstractLineSymbol
 	public boolean willDrawSimpleGeometry(Geometry geom) {
 		return geom instanceof Polygon || geom instanceof MultiPolygon;
 	}
+
+	public boolean acceptGeometryType(GeometryConstraint geometryConstraint) {
+		if (geometryConstraint == null) {
+			return true;
+		} else {
+			int geometryType = geometryConstraint.getGeometryType();
+			return (geometryType == GeometryConstraint.POLYGON)
+					|| (geometryType == GeometryConstraint.MULTI_POLYGON);
+		}
+	}
+
 
 	public Color getFillColor() {
 		return fillColor;

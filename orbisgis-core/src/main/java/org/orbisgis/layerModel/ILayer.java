@@ -305,4 +305,13 @@ public interface ILayer {
 	 */
 	void setSelection(int[] newSelection);
 
+	/**
+	 * Gets the legend to perform the rendering. The actual class of the
+	 * returned legends may not be the same of those set by setLegend methods
+	 *
+	 * @return
+	 * @throws DriverException
+	 */
+	Legend[] getRenderingLegend() throws DriverException;
+
 }

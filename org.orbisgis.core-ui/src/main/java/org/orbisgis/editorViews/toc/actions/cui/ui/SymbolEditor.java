@@ -243,8 +243,13 @@ public class SymbolEditor extends JPanel implements UIPanel {
 			jButtonToCollection.setVisible(false);
 		}
 
-		EditableSymbol sym = ((SymbolListDecorator) lstSymbols
-				.getSelectedValue()).getSymbol();
+		Object selectedValue = lstSymbols.getSelectedValue();
+		Symbol sym;
+		if (selectedValue == null) {
+			sym = SymbolFactory.createNullSymbol();
+		} else {
+			sym = ((SymbolListDecorator) selectedValue).getSymbol();
+		}
 		if (sym instanceof EditablePolygonSymbol) {
 			enabledFill = true;
 			enabledLine = true;
@@ -322,6 +327,9 @@ public class SymbolEditor extends JPanel implements UIPanel {
 		}
 		SymbolListDecorator symbolDec = (SymbolListDecorator) lstSymbols
 				.getSelectedValue();
+		if (symbolDec == null) {
+			return;
+		}
 		EditableSymbol sym = symbolDec.getSymbol();
 
 		if (sym instanceof EditableLineSymbol) {
