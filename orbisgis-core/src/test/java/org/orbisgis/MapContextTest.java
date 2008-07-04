@@ -93,7 +93,7 @@ public class MapContextTest extends AbstractTest {
 				new File("src/test/resources/bv_sap.shp"));
 		mc.getLayerModel().addLayer(layer1);
 		mc.getLayerModel().addLayer(layer2);
-		Symbol sym1 = layer1.getVectorLegend()[0].getSymbol(layer2
+		Symbol sym1 = layer1.getVectorLegend()[0].getSymbol(layer1
 				.getDataSource(), 0);
 		Symbol sym2 = layer2.getVectorLegend()[0].getSymbol(layer2
 				.getDataSource(), 0);
