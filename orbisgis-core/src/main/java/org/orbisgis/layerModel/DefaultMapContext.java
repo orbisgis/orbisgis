@@ -80,16 +80,16 @@ public class DefaultMapContext implements MapContext {
 	 */
 	public DefaultMapContext() {
 		openerListener = new OpenerListener();
-		init();
+		DataManager dataManager = (DataManager) Services
+				.getService("org.orbisgis.DataManager");
+		setRoot(dataManager.createLayerCollection("root"));
 	}
 
-	private void init() {
+	private void setRoot(ILayer newRoot) {
 		if (this.root != null) {
 			this.root.removeLayerListener(openerListener);
 		}
-		DataManager dataManager = (DataManager) Services
-				.getService("org.orbisgis.DataManager");
-		this.root = dataManager.createLayerCollection("root");
+		this.root = newRoot;
 		this.root.addLayerListenerRecursively(openerListener);
 	}
 
@@ -224,10 +224,9 @@ public class DefaultMapContext implements MapContext {
 			org.orbisgis.layerModel.persistence.MapContext mapContext = (org.orbisgis.layerModel.persistence.MapContext) jc
 					.createUnmarshaller().unmarshal(file);
 
-			init();
 			LayerType layer = mapContext.getLayerCollection();
 			try {
-				recoverTree(layer, file);
+				setRoot(recoverTree(layer, file));
 			} catch (LayerException e1) {
 				Services.getErrorManager().error("Cannot recover layer tree",
 						e1);
@@ -277,7 +276,7 @@ public class DefaultMapContext implements MapContext {
 				if (lyr != null) {
 					try {
 						ret.addLayer(lyr);
-					} catch (LayerException e) {
+					} catch (Exception e) {
 						Services.getErrorManager().error(
 								"Cannot add layer to collection: "
 										+ lyr.getName(), e);
@@ -287,18 +286,7 @@ public class DefaultMapContext implements MapContext {
 		} else {
 			try {
 				ret = dataManager.createLayer(layer.getSourceName());
-				try {
-					root.addLayer(ret);
-				} catch (LayerException e) {
-					Services.getErrorManager().error(
-							"Cannot add " + "this layer to the collection: "
-									+ ret.getName(), e);
-				} catch (Exception e) {
-					Services.getErrorManager().error(
-							"Cannot add layer to collection: " + ret.getName(),
-							e);
-				}
-
+				ret.open();
 				ret.restoreLayer(layer, file);
 			} catch (LayerException e) {
 				Services.getErrorManager().error(

@@ -99,6 +99,7 @@ public class MapContextTest extends AbstractTest {
 				.getDataSource(), 0);
 		File file = new File("target/mapContextTest.xml");
 		mc.saveStatus(file, new NullProgressMonitor());
+		mc = new DefaultMapContext();
 		mc.loadStatus(file, new NullProgressMonitor());
 		assertTrue(mc.getLayers().length == 2);
 		Legend legend1 = mc.getLayerModel().getLayer(0).getVectorLegend()[0];
@@ -109,6 +110,26 @@ public class MapContextTest extends AbstractTest {
 		assertTrue(legend2.getSymbol(layer2.getDataSource(), 0)
 				.getPersistentProperties().equals(
 						sym2.getPersistentProperties()));
+	}
+
+	public void testSaveAndRecoverTwoNestedCollections() throws Exception {
+		MapContext mc = new DefaultMapContext();
+		ILayer layer1 = getDataManager().createLayerCollection("a");
+		ILayer layer2 = getDataManager().createLayerCollection("a");
+		ILayer layer3 = getDataManager().createLayer("linestring",
+				new File("src/test/resources/linestring.shp"));
+		mc.getLayerModel().addLayer(layer1);
+		layer1.addLayer(layer2);
+		layer2.addLayer(layer3);
+		File file = new File("target/mapContextTest.xml");
+		mc.saveStatus(file, new NullProgressMonitor());
+		mc = new DefaultMapContext();
+		mc.loadStatus(file, new NullProgressMonitor());
+		ILayer layer1_ = mc.getLayerModel().getLayer(0);
+		assertTrue(layer1_.getLayerCount() == 1);
+		assertTrue(layer1_.getLayer(0).getLayerCount() == 1);
+		assertTrue(layer1_.getLayer(0).getLayer(0).getName().equals(
+				"linestring"));
 	}
 
 	public void testRecover1_1_0() throws Exception {

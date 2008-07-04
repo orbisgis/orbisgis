@@ -350,14 +350,17 @@ public class EditorPanel extends Container {
 		@Override
 		public void viewFocusChanged(View arg0, View arg1) {
 			if (arg1 != null) {
-				IEditor previous = null;
-				if (lastEditor != null) {
-					previous = lastEditor.getEditor();
+				EditorDecorator nextEditor = getEditorByComponent(
+						arg1.getComponent()).getEditorDecorator();
+				if (nextEditor != lastEditor) {
+					IEditor previous = null;
+					if (lastEditor != null) {
+						previous = lastEditor.getEditor();
+					}
+					lastEditor = nextEditor;
+					editorView.fireActiveEditorChanged(previous, lastEditor
+							.getEditor());
 				}
-				lastEditor = getEditorByComponent(arg1.getComponent())
-						.getEditorDecorator();
-				editorView.fireActiveEditorChanged(previous, lastEditor
-						.getEditor());
 			}
 		}
 	}
