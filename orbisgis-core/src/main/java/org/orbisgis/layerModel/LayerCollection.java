@@ -36,6 +36,7 @@
  */
 package org.orbisgis.layerModel;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -352,15 +353,18 @@ public class LayerCollection extends ALayer {
 		return layerCollection.size();
 	}
 
-	public LayerType getStatus() {
+	public LayerType saveLayer(File baseFile) {
 		LayerCollectionType xmlLayer = new LayerCollectionType();
 		xmlLayer.setName(getName());
 		for (ILayer child : layerCollection) {
-			LayerType xmlChild = child.getStatus();
+			LayerType xmlChild = child.saveLayer(baseFile);
 			xmlLayer.getLayer().add(xmlChild);
 		}
 
 		return xmlLayer;
+	}
+
+	public void restoreLayer(LayerType layer, File baseFile) throws LayerException {
 	}
 
 	public ILayer getLayerByName(String layerName) {

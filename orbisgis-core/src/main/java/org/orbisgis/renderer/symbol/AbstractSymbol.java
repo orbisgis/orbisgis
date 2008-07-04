@@ -36,6 +36,11 @@
  */
 package org.orbisgis.renderer.symbol;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import org.orbisgis.IncompatibleVersionException;
+
 public abstract class AbstractSymbol implements Symbol {
 
 	private String name;
@@ -60,6 +65,27 @@ public abstract class AbstractSymbol implements Symbol {
 
 	public boolean acceptsChildren() {
 		return false;
+	}
+
+	public String getVersion() {
+		return "1.0";
+	}
+
+	public Map<String, String> getPersistentProperties() {
+		HashMap<String, String> ret = new HashMap<String, String>();
+		ret.put("name", name);
+
+		return ret;
+	}
+
+	public void setPersistentProperties(Map<String, String> props,
+			String version) throws IncompatibleVersionException {
+		if (version.equals("1.0")) {
+			name = props.get("name");
+		} else {
+			throw new IncompatibleVersionException("This version is too "
+					+ "old to read the symbol");
+		}
 	}
 
 }

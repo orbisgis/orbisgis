@@ -36,6 +36,7 @@
  */
 package org.orbisgis.layerModel;
 
+import java.io.File;
 import java.util.ArrayList;
 
 import org.apache.log4j.Logger;
@@ -143,5 +144,25 @@ public class LegendDecorator implements Legend, EditionListener {
 
 	public Legend getLegend() {
 		return legend;
+	}
+
+	public String getLegendTypeId() {
+		return legend.getLegendTypeId();
+	}
+
+	public String getVersion() {
+		return legend.getVersion();
+	}
+
+	public void load(File file, String version) {
+		legend.load(file, version);
+	}
+
+	public Legend newInstance() {
+		return legend.newInstance();
+	}
+
+	public void save(File file) {
+		legend.save(file);
 	}
 }

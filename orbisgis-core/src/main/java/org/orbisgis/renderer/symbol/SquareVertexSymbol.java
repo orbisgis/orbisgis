@@ -57,11 +57,11 @@ public class SquareVertexSymbol extends SquareSymbol {
 		return "Square in vertex";
 	}
 
-	public EditableSymbol newInstance() {
-		return new SquareVertexSymbol(Color.black, 1, Color.red, 5);
+	public EditableSymbol cloneSymbol() {
+		return new SquareVertexSymbol(outline, lineWidth, fillColor, size);
 	}
 
 	public String getId() {
-		return "org.orbisgis.square.vertex";
+		return "org.orbisgis.symbol.square.Vertex";
 	}
 }

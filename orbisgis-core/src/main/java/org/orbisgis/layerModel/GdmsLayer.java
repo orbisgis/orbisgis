@@ -42,7 +42,6 @@ import org.gdms.sql.strategies.TableNotFoundException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.orbisgis.DataManager;
 import org.orbisgis.Services;
-import org.orbisgis.layerModel.persistence.LayerType;
 
 public abstract class GdmsLayer extends BasicLayer {
 
@@ -85,12 +84,7 @@ public abstract class GdmsLayer extends BasicLayer {
 		}
 	}
 
-	public LayerType getStatus() {
-		LayerType ret = new LayerType();
-		ret.setName(getName());
-		ret.setSourceName(mainName);
-		ret.setVisible(isVisible());
-
-		return ret;
+	protected String getMainName() {
+		return mainName;
 	}
 }

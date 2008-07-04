@@ -36,6 +36,8 @@
  */
 package org.orbisgis.renderer.legend;
 
+import java.io.File;
+
 import org.gdms.data.SpatialDataSourceDecorator;
 import org.gdms.driver.DriverException;
 import org.orbisgis.renderer.symbol.RenderUtils;
@@ -67,6 +69,27 @@ public class DefaultUniqueSymbolLegend extends AbstractLegend implements
 
 	public String getLegendTypeName() {
 		return UniqueSymbolLegend.NAME;
+	}
+
+	public String getVersion() {
+		return "1.0";
+	}
+
+	public void save(File file) {
+		
+		// TODO
+	}
+
+	public void load(File file, String version) {
+		// TODO
+	}
+
+	public String getLegendTypeId() {
+		return "org.orbisgis.legend.UniqueSymbol";
+	}
+
+	public Legend newInstance() {
+		return new DefaultUniqueSymbolLegend();
 	}
 
 }

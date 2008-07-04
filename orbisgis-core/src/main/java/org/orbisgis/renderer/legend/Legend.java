@@ -36,6 +36,8 @@
  */
 package org.orbisgis.renderer.legend;
 
+import java.io.File;
+
 import org.gdms.data.SpatialDataSourceDecorator;
 import org.orbisgis.renderer.symbol.Symbol;
 
@@ -98,5 +100,46 @@ public interface Legend {
 	 * @return
 	 */
 	String getLegendTypeName();
+
+	/**
+	 * Returns an unique id. It can be whatever unique string. If this string
+	 * changes, previous versions of the legend won't be read. For persistence
+	 * purposes.
+	 *
+	 * @return
+	 */
+	String getLegendTypeId();
+
+	/**
+	 * Gets the version of the legend.
+	 *
+	 * @return
+	 */
+	String getVersion();
+
+	/**
+	 * Saves the content of this legend
+	 *
+	 * @param file
+	 *            File to save the legend
+	 */
+	void save(File file);
+
+	/**
+	 * Loads the legend
+	 *
+	 * @param file
+	 *            File to save the legend
+	 * @param version
+	 *            Version of the contents in the file
+	 */
+	void load(File file, String version);
+
+	/**
+	 * Creates a new empty instance of this legend
+	 *
+	 * @return
+	 */
+	Legend newInstance();
 
 }

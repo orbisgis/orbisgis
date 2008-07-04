@@ -37,8 +37,12 @@
 package org.orbisgis.layerModel;
 
 import java.awt.Color;
+import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Random;
 
 import org.gdms.data.AlreadyClosedException;
@@ -55,6 +59,10 @@ import org.gdms.driver.DriverException;
 import org.grap.model.GeoRaster;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.orbisgis.Services;
+import org.orbisgis.layerModel.persistence.LayerType;
+import org.orbisgis.layerModel.persistence.Legends;
+import org.orbisgis.layerModel.persistence.SimpleLegend;
+import org.orbisgis.layerModel.persistence.SingleLayerType;
 import org.orbisgis.renderer.legend.Legend;
 import org.orbisgis.renderer.legend.LegendFactory;
 import org.orbisgis.renderer.legend.RasterLegend;
@@ -89,11 +97,10 @@ public class Layer extends GdmsLayer {
 
 		UniqueSymbolLegend legend = LegendFactory.createUniqueSymbolLegend();
 		Symbol polSym = SymbolFactory.createPolygonSymbol(Color.black, c);
-		Symbol pointSym = SymbolFactory.createCirclePointSymbol(Color.black,
-				Color.red, 10);
+		Symbol pointSym = SymbolFactory
+				.createCirclePointSymbol(Color.black, Color.red, 10);
 		Symbol lineSym = SymbolFactory.createLineSymbol(Color.black, 2);
-		Symbol composite = SymbolFactory.createSymbolComposite(polSym,
-				pointSym, lineSym);
+		Symbol composite = SymbolFactory.createSymbolComposite(polSym, pointSym, lineSym);
 		if (gc == null) {
 			legend.setSymbol(composite);
 		} else {
@@ -345,6 +352,77 @@ public class Layer extends GdmsLayer {
 						newSelectionIndex);
 			}
 			return selection;
+		}
+	}
+
+	public LayerType saveLayer(File baseFile) {
+		SingleLayerType ret = new SingleLayerType();
+		ret.setName(getName());
+		ret.setSourceName(getMainName());
+		ret.setVisible(isVisible());
+
+		Iterator<String> it = fieldLegend.keySet().iterator();
+		while (it.hasNext()) {
+			String fieldName = it.next();
+			Legends legends = new Legends();
+			legends.setFieldName(fieldName);
+			LegendDecorator[] legendDecorators = fieldLegend.get(fieldName);
+			for (int i = 0; i < legendDecorators.length; i++) {
+				LegendDecorator legendDecorator = legendDecorators[i];
+				Legend legend = legendDecorator.getLegend();
+				SimpleLegend xmlLegend = new SimpleLegend();
+				xmlLegend.setLegendId(legend.getLegendTypeId());
+				File legendFileName = getLegendFileName(baseFile, fieldName, i);
+				legend.save(legendFileName);
+				xmlLegend.setFile(legendFileName.getName());
+				xmlLegend.setVersion(legend.getVersion());
+				legends.getSimpleLegend().add(xmlLegend);
+			}
+			ret.getLegends().add(legends);
+		}
+
+		return ret;
+	}
+
+	private File getLegendFileName(File baseFile, String fieldName, int i) {
+		if (baseFile.getAbsolutePath().toLowerCase().endsWith(".xml")) {
+			String name = baseFile.getName();
+			name = name.substring(0, name.length() - 4);
+			name = name + "-legend-" + fieldName + "-" + i + ".xml";
+			return new File(baseFile.getParentFile(), name);
+		} else {
+			throw new RuntimeException("bug!");
+		}
+	}
+
+	public void restoreLayer(LayerType lyr, File baseFile)
+			throws LayerException {
+		SingleLayerType layer = (SingleLayerType) lyr;
+		this.setName(layer.getName());
+		this.setVisible(layer.isVisible());
+
+		List<Legends> legendsCollection = layer.getLegends();
+		for (Legends legends : legendsCollection) {
+			String fieldName = legends.getFieldName();
+			List<SimpleLegend> legendCollection = legends.getSimpleLegend();
+			ArrayList<Legend> fieldLegends = new ArrayList<Legend>();
+			for (SimpleLegend simpleLegend : legendCollection) {
+				String legendId = simpleLegend.getLegendId();
+				String file = simpleLegend.getFile();
+				String version = simpleLegend.getVersion();
+
+				Legend legend = LegendFactory.getNewLegend(legendId);
+				if (legend == null) {
+					throw new LayerException("Unsupported legend: " + legendId);
+				}
+				legend.load(new File(baseFile.getParentFile(), file), version);
+				fieldLegends.add(legend);
+			}
+			try {
+				setLegend(fieldName, fieldLegends.toArray(new Legend[0]));
+			} catch (DriverException e) {
+				throw new LayerException("Cannot set the recovered legend", e);
+			}
 		}
 	}
 

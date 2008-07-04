@@ -36,8 +36,19 @@
  */
 package org.orbisgis.renderer.legend;
 
+import java.util.ArrayList;
 
 public class LegendFactory {
+
+	private static ArrayList<Legend> newInstances = new ArrayList<Legend>();
+
+	static {
+		newInstances.add(createUniqueSymbolLegend());
+		newInstances.add(createUniqueValueLegend());
+		newInstances.add(createIntervalLegend());
+		newInstances.add(createProportionalLegend());
+		newInstances.add(createLabelLegend());
+	}
 
 	public static UniqueSymbolLegend createUniqueSymbolLegend() {
 		return new DefaultUniqueSymbolLegend();
@@ -57,6 +68,21 @@ public class LegendFactory {
 
 	public static LabelLegend createLabelLegend() {
 		return new DefaultLabelLegend();
+	}
+
+	/**
+	 * Creates a new instance of a legend which id is equal to the specified one
+	 *
+	 * @param legendId
+	 * @return
+	 */
+	public static Legend getNewLegend(String legendId) {
+		for (Legend legend : newInstances) {
+			if (legend.getLegendTypeId().equals(legendId)) {
+				return legend.newInstance();
+			}
+		}
+		return null;
 	}
 
 }

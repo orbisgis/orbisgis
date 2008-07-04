@@ -36,6 +36,7 @@
  */
 package org.orbisgis.renderer.legend;
 
+import java.io.File;
 import java.util.ArrayList;
 
 import org.gdms.data.SpatialDataSourceDecorator;
@@ -117,6 +118,26 @@ public class DefaultIntervalLegend extends AbstractClassifiedLegend implements
 		}
 
 		return getDefaultSymbol();
+	}
+
+	public String getLegendTypeId() {
+		return "org.orbisgis.legend.Intervals";
+	}
+
+	public String getVersion() {
+		return "1.0";
+	}
+
+	public void save(File file) {
+		throw new UnsupportedOperationException();
+	}
+
+	public void load(File file, String version) {
+		throw new UnsupportedOperationException();
+	}
+
+	public Legend newInstance() {
+		return new DefaultIntervalLegend();
 	}
 
 }

@@ -37,8 +37,11 @@
 package org.orbisgis.renderer.symbol;
 
 import java.awt.Color;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.gdms.data.types.GeometryConstraint;
+import org.orbisgis.IncompatibleVersionException;
 
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.LineString;
@@ -84,6 +87,27 @@ public abstract class AbstractLineSymbol extends AbstractGeometrySymbol
 
 	public void setOutlineColor(Color color) {
 		outline = color;
+	}
+
+	public Map<String, String> getPersistentProperties() {
+		HashMap<String, String> ret = new HashMap<String, String>();
+		ret.putAll(super.getPersistentProperties());
+		if (outline != null) {
+			ret.put("outline-color", Integer.toString(outline.getRGB()));
+		}
+		ret.put("line-width", Integer.toString(lineWidth));
+
+		return ret;
+	}
+
+	public void setPersistentProperties(Map<String, String> props,
+			String version) throws IncompatibleVersionException {
+		super.setPersistentProperties(props, version);
+		String outlineColor = props.get("outline-color");
+		if (outlineColor != null) {
+			outline = new Color(Integer.parseInt(outlineColor));
+		}
+		lineWidth = Integer.parseInt(outlineColor);
 	}
 
 }

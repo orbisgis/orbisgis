@@ -36,6 +36,8 @@
  */
 package org.orbisgis.renderer.legend;
 
+import java.io.File;
+
 import org.gdms.data.SpatialDataSourceDecorator;
 import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
@@ -97,5 +99,25 @@ public class DefaultLabelLegend extends AbstractClassifiedLegend implements
 			throw new RenderException("Cannot access layer contents" + e);
 		}
 
+	}
+
+	public String getVersion() {
+		return "1.0";
+	}
+
+	public void save(File file) {
+		throw new UnsupportedOperationException();
+	}
+
+	public void load(File file, String version) {
+		throw new UnsupportedOperationException();
+	}
+
+	public Legend newInstance() {
+		return new DefaultLabelLegend();
+	}
+
+	public String getLegendTypeId() {
+		return "org.orbisgis.legend.Label";
 	}
 }

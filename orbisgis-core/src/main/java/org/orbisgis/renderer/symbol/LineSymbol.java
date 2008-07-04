@@ -69,12 +69,12 @@ public class LineSymbol extends AbstractLineSymbol {
 		return "Line";
 	}
 
-	public EditableSymbol newInstance() {
-		return new LineSymbol(Color.black, 1);
+	public EditableSymbol cloneSymbol() {
+		return new LineSymbol(outline, lineWidth);
 	}
 
 	public String getId() {
-		return "org.orbisgis.line";
+		return "org.orbisgis.symbol.Line";
 	}
 
 }

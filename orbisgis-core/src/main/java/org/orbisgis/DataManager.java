@@ -46,7 +46,6 @@ import org.gdms.data.indexes.IndexManager;
 import org.gdms.source.SourceManager;
 import org.orbisgis.layerModel.ILayer;
 import org.orbisgis.layerModel.LayerException;
-import org.orbisgis.layerModel.persistence.LayerType;
 
 public interface DataManager {
 
@@ -113,17 +112,6 @@ public interface DataManager {
 	 * @return
 	 */
 	ILayer createLayerCollection(String layerName);
-
-	/**
-	 * Creates a layer from the information obtained in the specified XML mapped
-	 * object
-	 *
-	 * @param layer
-	 * @return
-	 * @throws LayerException
-	 *             If the layer could not be created
-	 */
-	ILayer createLayer(LayerType layer) throws LayerException;
 
 	/**
 	 * Creates a layer on the specified file with the specified name. The file

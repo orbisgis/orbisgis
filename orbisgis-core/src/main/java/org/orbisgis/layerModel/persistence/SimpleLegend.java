@@ -11,21 +11,22 @@ package org.orbisgis.layerModel.persistence;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * <p>Java class for layer-type complex type.
+ * <p>Java class for anonymous complex type.
  * 
  * <p>The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
- * &lt;complexType name="layer-type">
+ * &lt;complexType>
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
- *       &lt;attribute name="name" use="required" type="{http://www.w3.org/2001/XMLSchema}string" />
- *       &lt;attribute name="source-name" use="required" type="{http://www.w3.org/2001/XMLSchema}string" />
- *       &lt;attribute name="visible" use="required" type="{http://www.w3.org/2001/XMLSchema}boolean" />
+ *       &lt;attribute name="file" use="required" type="{http://www.w3.org/2001/XMLSchema}string" />
+ *       &lt;attribute name="legend-id" use="required" type="{http://www.w3.org/2001/XMLSchema}string" />
+ *       &lt;attribute name="version" use="required" type="{http://www.w3.org/2001/XMLSchema}string" />
  *     &lt;/restriction>
  *   &lt;/complexContent>
  * &lt;/complexType>
@@ -34,78 +35,87 @@ import javax.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "layer-type")
-public class LayerType {
+@XmlType(name = "")
+@XmlRootElement(name = "simple-legend")
+public class SimpleLegend {
 
     @XmlAttribute(required = true)
-    protected String name;
-    @XmlAttribute(name = "source-name", required = true)
-    protected String sourceName;
+    protected String file;
+    @XmlAttribute(name = "legend-id", required = true)
+    protected String legendId;
     @XmlAttribute(required = true)
-    protected boolean visible;
+    protected String version;
 
     /**
-     * Gets the value of the name property.
+     * Gets the value of the file property.
      * 
      * @return
      *     possible object is
      *     {@link String }
      *     
      */
-    public String getName() {
-        return name;
+    public String getFile() {
+        return file;
     }
 
     /**
-     * Sets the value of the name property.
+     * Sets the value of the file property.
      * 
      * @param value
      *     allowed object is
      *     {@link String }
      *     
      */
-    public void setName(String value) {
-        this.name = value;
+    public void setFile(String value) {
+        this.file = value;
     }
 
     /**
-     * Gets the value of the sourceName property.
+     * Gets the value of the legendId property.
      * 
      * @return
      *     possible object is
      *     {@link String }
      *     
      */
-    public String getSourceName() {
-        return sourceName;
+    public String getLegendId() {
+        return legendId;
     }
 
     /**
-     * Sets the value of the sourceName property.
+     * Sets the value of the legendId property.
      * 
      * @param value
      *     allowed object is
      *     {@link String }
      *     
      */
-    public void setSourceName(String value) {
-        this.sourceName = value;
+    public void setLegendId(String value) {
+        this.legendId = value;
     }
 
     /**
-     * Gets the value of the visible property.
+     * Gets the value of the version property.
      * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
      */
-    public boolean isVisible() {
-        return visible;
+    public String getVersion() {
+        return version;
     }
 
     /**
-     * Sets the value of the visible property.
+     * Sets the value of the version property.
      * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
      */
-    public void setVisible(boolean value) {
-        this.visible = value;
+    public void setVersion(String value) {
+        this.version = value;
     }
 
 }

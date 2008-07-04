@@ -36,6 +36,7 @@
  */
 package org.orbisgis.renderer.legend;
 
+import java.io.File;
 import java.util.ArrayList;
 
 import org.gdms.data.SpatialDataSourceDecorator;
@@ -88,6 +89,26 @@ public class DefaultUniqueValueLegend extends AbstractClassifiedLegend
 		} catch (DriverException e) {
 			throw new RenderException("Cannot access the layer contents", e);
 		}
+	}
+
+	public String getVersion() {
+		return "1.0";
+	}
+
+	public void save(File file) {
+		throw new UnsupportedOperationException();
+	}
+
+	public void load(File file, String version) {
+		throw new UnsupportedOperationException();
+	}
+
+	public String getLegendTypeId() {
+		return "org.orbisgis.legend.ValueClassification";
+	}
+
+	public Legend newInstance() {
+		return new DefaultUniqueValueLegend();
 	}
 
 }

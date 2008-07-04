@@ -37,8 +37,11 @@
 package org.orbisgis.renderer.symbol;
 
 import java.awt.Color;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.gdms.data.types.GeometryConstraint;
+import org.orbisgis.IncompatibleVersionException;
 
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.MultiPoint;
@@ -49,7 +52,8 @@ public abstract class AbstractPointSymbol extends AbstractPolygonSymbol
 
 	protected int size;
 
-	public AbstractPointSymbol(Color outline, int lineWidth, Color fillColor, int size) {
+	public AbstractPointSymbol(Color outline, int lineWidth, Color fillColor,
+			int size) {
 		super(outline, lineWidth, fillColor);
 		this.size = size;
 		setName("Point symbol");
@@ -83,5 +87,20 @@ public abstract class AbstractPointSymbol extends AbstractPolygonSymbol
 			return (geometryType == GeometryConstraint.POINT)
 					|| (geometryType == GeometryConstraint.MULTI_POINT);
 		}
+	}
+
+	public Map<String, String> getPersistentProperties() {
+		HashMap<String, String> ret = new HashMap<String, String>();
+		ret.putAll(super.getPersistentProperties());
+		ret.put("size", Integer.toString(size));
+
+		return ret;
+	}
+
+	@Override
+	public void setPersistentProperties(Map<String, String> props,
+			String version) throws IncompatibleVersionException {
+		super.setPersistentProperties(props, version);
+		size = Integer.parseInt(props.get("size"));
 	}
 }

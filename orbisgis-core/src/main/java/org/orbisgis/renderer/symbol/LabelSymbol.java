@@ -43,8 +43,11 @@ import java.awt.FontMetrics;
 import java.awt.Graphics2D;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.gdms.driver.DriverException;
+import org.orbisgis.IncompatibleVersionException;
 import org.orbisgis.renderer.RenderPermission;
 
 import com.vividsolutions.jts.geom.Coordinate;
@@ -95,5 +98,31 @@ public class LabelSymbol extends AbstractSymbol implements Symbol {
 
 	public boolean acceptGeometry(Geometry geom) {
 		return true;
+	}
+
+	public String getId() {
+		return "org.orbisgis.symbol.Label";
+	}
+
+	public Map<String, String> getPersistentProperties() {
+		HashMap<String, String> ret = new HashMap<String, String>();
+		ret.putAll(super.getPersistentProperties());
+		ret.put("font-size", Integer.toString(fontSize));
+
+		return ret;
+	}
+
+	public void setPersistentProperties(Map<String, String> props,
+			String version) throws IncompatibleVersionException {
+		super.setPersistentProperties(props, version);
+		fontSize = Integer.parseInt(props.get("font-size"));
+	}
+
+	public Symbol cloneSymbol() {
+		return new LabelSymbol(text, fontSize);
+	}
+
+	public String getClassName() {
+		return "Label";
 	}
 }

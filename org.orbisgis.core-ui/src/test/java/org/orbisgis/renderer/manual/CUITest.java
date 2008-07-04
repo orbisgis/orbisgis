@@ -10,8 +10,10 @@ import org.gdms.driver.DriverException;
 import org.orbisgis.DataManager;
 import org.orbisgis.DefaultDataManager;
 import org.orbisgis.DefaultExtendedWorkspace;
+import org.orbisgis.DefaultSymbolManager;
 import org.orbisgis.ExtendedWorkspace;
 import org.orbisgis.Services;
+import org.orbisgis.SymbolManager;
 import org.orbisgis.editorViews.toc.actions.cui.gui.ILegendPanelUI;
 import org.orbisgis.editorViews.toc.actions.cui.gui.JPanelUniqueSymbolLegend;
 import org.orbisgis.editorViews.toc.actions.cui.ui.LegendsPanel;
@@ -30,8 +32,11 @@ public class CUITest {
 
 		Services.registerService("org.orbisgis.DataManager", DataManager.class,
 				"", new DefaultDataManager(dsf));
-		Services.registerService("org.orbisgis.Workspace",
-				Workspace.class, "", new DefaultWorkspace() {
+		Services.registerService("org.orbisgis.SymbolManager",
+				SymbolManager.class, "", new DefaultSymbolManager(new File(
+						"collection.xml")));
+		Services.registerService("org.orbisgis.Workspace", Workspace.class, "",
+				new DefaultWorkspace() {
 
 					@Override
 					public File getFile(String name) {

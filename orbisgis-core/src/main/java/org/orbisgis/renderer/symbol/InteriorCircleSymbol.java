@@ -74,12 +74,12 @@ public class InteriorCircleSymbol extends CircleSymbol {
 		return "Circle in center";
 	}
 
-	public EditableSymbol newInstance() {
-		return new InteriorCircleSymbol(Color.black, 1, Color.red, 5);
+	public EditableSymbol cloneSymbol() {
+		return new InteriorCircleSymbol(outline, lineWidth, fillColor, size);
 	}
 
 	public String getId() {
-		return "org.orbisgis.circle.centroid";
+		return "org.orbisgis.symbol.circle.Centroid";
 	}
 
 }

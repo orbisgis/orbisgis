@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
 	<xs:element name="selected-layer">
 		<xs:complexType>
 			<xs:attribute name="name" type="xs:string" use="required"/>
@@ -16,19 +17,47 @@
 		</xs:complexType>
 	</xs:element>
 
+	<xs:element name="simple-legend">
+		<xs:complexType>
+			<xs:attribute name="legend-id" type="xs:string" use="required"/>
+			<xs:attribute name="version" type="xs:string" use="required"/>
+			<xs:attribute name="file" type="xs:string" use="required"/>
+		</xs:complexType>
+	</xs:element>
+
+	<xs:element name="legends">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="simple-legend" minOccurs="1" maxOccurs="unbounded"/>
+			</xs:sequence>
+			<xs:attribute name="field-name" type="xs:string" use="required"/>
+		</xs:complexType>
+	</xs:element>
+
 	<xs:complexType name="layer-type">
 		<xs:attribute name="name" type="xs:string" use="required"/>
 		<xs:attribute name="source-name" type="xs:string" use="required"/>
 		<xs:attribute name="visible" type="xs:boolean" use="required"/>
 	</xs:complexType>
 
-	<xs:element name="layer" type="layer-type"/>
+	<xs:complexType name="single-layer-type">
+		<xs:complexContent>
+			<xs:extension base="layer-type">
+				<xs:sequence>
+					<xs:element ref="legends" minOccurs="0" maxOccurs="unbounded"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+
+	<xs:element name="layer" type="single-layer-type"/>
 
 	<xs:complexType name="layer-collection-type">
 		<xs:complexContent>
 			<xs:extension base="layer-type">
 				<xs:sequence>
-					<xs:element ref="layer" minOccurs="0" maxOccurs="unbounded"/>
+					<xs:element name="layer" type="layer-type" minOccurs="0"
+						maxOccurs="unbounded"/>
 				</xs:sequence>
 			</xs:extension>
 		</xs:complexContent>

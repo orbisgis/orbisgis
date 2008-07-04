@@ -38,9 +38,11 @@ package org.orbisgis;
 
 import java.awt.Color;
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 
 import javax.swing.JOptionPane;
+import javax.xml.bind.JAXBException;
 
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.NoSuchTableException;
@@ -57,6 +59,7 @@ import org.orbisgis.pluginManager.PluginManager;
 import org.orbisgis.pluginManager.SystemListener;
 import org.orbisgis.pluginManager.workspace.Workspace;
 import org.orbisgis.pluginManager.workspace.WorkspaceListener;
+import org.orbisgis.renderer.symbol.collection.DefaultSymbolCollection;
 import org.orbisgis.sql.customQuery.Geomark;
 import org.orbisgis.views.documentCatalog.DocumentCatalogManager;
 import org.orbisgis.views.documentCatalog.documents.MapDocument;
@@ -204,11 +207,47 @@ public class Activator implements PluginActivator {
 		UIFactory.setDefaultIcon(Activator.class
 				.getResource("/org/orbisgis/images/mini_orbisgis.png"));
 
+		// Load symbol collection and install symbol service
+		File symbolCollectionFile = ews
+				.getFile("org.orbisgis.symbol-collection.xml");
+		DefaultSymbolCollection col = new DefaultSymbolCollection(
+				symbolCollectionFile);
+		if (symbolCollectionFile.exists()) {
+			try {
+				col.loadCollection();
+			} catch (JAXBException e) {
+				Services.getErrorManager().error(
+						"Cannot load symbol collection", e);
+			} catch (IOException e) {
+				Services.getErrorManager().error(
+						"Cannot load symbol collection", e);
+			} catch (IncompatibleVersionException e) {
+				Services.getErrorManager().error(
+						"Cannot load symbol collection", e);
+			}
+		}
+		Services.registerService("org.orbisgis.SymbolManager",
+				SymbolManager.class, "Provides methods to create symbols and "
+						+ "access the symbol collection",
+				new DefaultSymbolManager(symbolCollectionFile));
+
 		// Load windows status
 		EPWindowHelper.loadStatus();
 	}
 
 	public void stop() {
+		SymbolManager sm = (SymbolManager) Services
+				.getService("org.orbisgis.SymbolManager");
+		try {
+			sm.saveXML();
+		} catch (JAXBException e1) {
+			Services.getErrorManager()
+					.error("Cannot save symbol collection", e1);
+		} catch (IOException e1) {
+			Services.getErrorManager()
+					.error("Cannot save symbol collection", e1);
+		}
+
 		EPWindowHelper.saveStatus();
 		try {
 			dsf.getSourceManager().saveStatus();

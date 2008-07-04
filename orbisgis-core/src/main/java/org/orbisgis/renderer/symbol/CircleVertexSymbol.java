@@ -56,12 +56,12 @@ public class CircleVertexSymbol extends CircleSymbol {
 		return "Circle in vertex";
 	}
 
-	public EditableSymbol newInstance() {
-		return new CircleVertexSymbol(Color.black, 1, Color.red, 5);
+	public EditableSymbol cloneSymbol() {
+		return new CircleVertexSymbol(outline, lineWidth, fillColor, size);
 	}
 
 	public String getId() {
-		return "org.orbisgis.circle.vertex";
+		return "org.orbisgis.symbol.circle.Vertex";
 	}
 
 }

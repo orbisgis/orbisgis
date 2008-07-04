@@ -46,20 +46,25 @@ import java.util.ArrayList;
 
 import org.orbisgis.pluginManager.ui.ChoosePanel;
 import org.orbisgis.renderer.symbol.EditableSymbol;
+import org.orbisgis.renderer.symbol.Symbol;
 
 /**
  *
  * @author david
  */
-public class JPanelTypeOfGeometrySelection extends ChoosePanel {
+public class SymbolSelection extends ChoosePanel {
 
-	/** Creates new form jPanelTypeOfGeometrySelection
-	 * @param filtered */
-	public JPanelTypeOfGeometrySelection(ArrayList<EditableSymbol> filtered) {
-		super("Select symbol type", getNames(filtered), filtered.toArray(new EditableSymbol[0]));
+	/**
+	 * Creates new form jPanelTypeOfGeometrySelection
+	 *
+	 * @param filtered
+	 */
+	public SymbolSelection(ArrayList<Symbol> filtered) {
+		super("Select symbol type", getNames(filtered), filtered
+				.toArray(new EditableSymbol[0]));
 	}
 
-	private static String[] getNames(ArrayList<EditableSymbol> filtered) {
+	private static String[] getNames(ArrayList<Symbol> filtered) {
 		String[] ret = new String[filtered.size()];
 		for (int i = 0; i < ret.length; i++) {
 			ret[i] = filtered.get(i).getClassName();

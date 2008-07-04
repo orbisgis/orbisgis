@@ -76,12 +76,11 @@ public class PolygonSymbol extends AbstractPolygonSymbol {
 		return "Polygon";
 	}
 
-	public EditableSymbol newInstance() {
-		return new PolygonSymbol(Color.black, 1, Color.red);
+	public EditableSymbol cloneSymbol() {
+		return new PolygonSymbol(outline, lineWidth, fillColor);
 	}
 
 	public String getId() {
-		return "org.orbisgis.polygon";
+		return "org.orbisgis.symbol.Polygon";
 	}
-
 }

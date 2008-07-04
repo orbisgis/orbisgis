@@ -91,4 +91,20 @@ class SymbolComposite extends AbstractSymbol implements Symbol {
 		return true;
 	}
 
+	public String getId() {
+		return "org.orbisgis.symbol.Composite";
+	}
+
+	public Symbol cloneSymbol() {
+		Symbol[] children = new Symbol[symbols.length];
+		for (int i = 0; i < children.length; i++) {
+			children[i] = symbols[i].cloneSymbol();
+		}
+		return new SymbolComposite(children);
+	}
+
+	public String getClassName() {
+		return "Composite";
+	}
+
 }

@@ -36,6 +36,7 @@
  */
 package org.orbisgis.layerModel;
 
+import java.io.File;
 import java.util.Set;
 
 import org.gdms.data.DataSource;
@@ -130,10 +131,34 @@ public interface ILayer {
 	/**
 	 * Gets the status of this object as a xml object
 	 *
+	 * @param baseFile
+	 *            The file where this layer will be saved in. This file is used
+	 *            as base to derive new file names to store different things in
+	 *            the layer
+	 *
 	 * @return
 	 */
-	LayerType getStatus();
+	LayerType saveLayer(File baseFile);
 
+	/**
+	 * Sets the status of the layer from a xml object
+	 *
+	 * @param layer
+	 * @param baseFile
+	 *            The file where this layer will be saved in. This file is used
+	 *            as base to get the derived file names containing layer related
+	 *            information
+	 * @throws LayerException
+	 *             If the status cannot be set
+	 */
+	void restoreLayer(LayerType layer, File baseFile) throws LayerException;
+
+	/**
+	 * Gets the specified child layer
+	 *
+	 * @param index
+	 * @return
+	 */
 	public ILayer getLayer(final int index);
 
 	/**

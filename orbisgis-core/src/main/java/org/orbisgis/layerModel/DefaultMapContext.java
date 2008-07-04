@@ -192,7 +192,7 @@ public class DefaultMapContext implements MapContext {
 			sl.setName(selected.getName());
 			vc.getSelectedLayer().add(sl);
 		}
-		LayerType xmlRootLayer = root.getStatus();
+		LayerType xmlRootLayer = root.saveLayer(file);
 		vc.setLayerCollection((LayerCollectionType) xmlRootLayer);
 
 		try {
@@ -222,9 +222,7 @@ public class DefaultMapContext implements MapContext {
 			LayerType layer = mapContext.getLayerCollection();
 			ILayer layerCollection;
 			try {
-				DataManager dataManager = (DataManager) Services
-						.getService("org.orbisgis.DataManager");
-				layerCollection = dataManager.createLayer(layer);
+				layerCollection = createLayer(layer, file);
 				for (int i = 0; i < layerCollection.getLayerCount(); i++) {
 					pm.progressTo(i * 100 / layerCollection.getLayerCount());
 					ILayer newLayer = layerCollection.getLayer(i);
@@ -266,6 +264,47 @@ public class DefaultMapContext implements MapContext {
 			throw new PersistenceException("Cannot save view context", e);
 		}
 
+	}
+
+	/**
+	 * Creates a layer from the information obtained in the specified XML mapped
+	 * object
+	 *
+	 * @param layer
+	 * @return
+	 * @throws LayerException
+	 *             If the layer could not be created
+	 */
+	public ILayer createLayer(LayerType layer, File file) throws LayerException {
+		DataManager dataManager = (DataManager) Services
+				.getService("org.orbisgis.DataManager");
+		ILayer ret = null;
+		if (layer instanceof LayerCollectionType) {
+			LayerCollectionType xmlLayerCollection = (LayerCollectionType) layer;
+			ret = dataManager.createLayerCollection(layer.getName());
+			List<LayerType> xmlChildren = xmlLayerCollection.getLayer();
+			for (LayerType layerType : xmlChildren) {
+				ILayer lyr = createLayer(layerType, file);
+				if (lyr != null) {
+					try {
+						ret.addLayer(lyr);
+					} catch (LayerException e) {
+						Services.getErrorManager().error(
+								"Cannot add layer to collection: "
+										+ lyr.getName(), e);
+					}
+				}
+			}
+		} else {
+			try {
+				ret = dataManager.createLayer(layer.getSourceName());
+				ret.restoreLayer(layer, file);
+			} catch (LayerException e) {
+				Services.getErrorManager().error(
+						"Cannot recover layer: " + layer.getName(), e);
+			}
+		}
+		return ret;
 	}
 
 	public void draw(BufferedImage inProcessImage, Envelope extent,

@@ -37,6 +37,7 @@
 package org.orbisgis.renderer.legend;
 
 import java.awt.Color;
+import java.io.File;
 
 import org.gdms.data.SpatialDataSourceDecorator;
 import org.gdms.driver.DriverException;
@@ -142,5 +143,25 @@ public class DefaultProportionalLegend extends AbstractClassifiedLegend
 		} catch (DriverException e) {
 			throw new RenderException("Cannot access layer contents" + e);
 		}
+	}
+
+	public String getLegendTypeId() {
+		return "org.orbisgis.legend.ProportionaPoint";
+	}
+
+	public Legend newInstance() {
+		return new DefaultProportionalLegend();
+	}
+
+	public String getVersion() {
+		return "1.0";
+	}
+
+	public void save(File file) {
+		throw new UnsupportedOperationException();
+	}
+
+	public void load(File file, String version) {
+		throw new UnsupportedOperationException();
 	}
 }

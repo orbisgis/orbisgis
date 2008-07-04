@@ -20,4 +20,8 @@ public class SelectableCanvas extends Canvas {
 		this.selected = selected;
 	}
 
+	public boolean isSelected() {
+		return selected;
+	}
+
 }

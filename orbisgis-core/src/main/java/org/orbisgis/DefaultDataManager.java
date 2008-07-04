@@ -37,7 +37,6 @@
 package org.orbisgis;
 
 import java.io.File;
-import java.util.List;
 
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceCreationException;
@@ -53,8 +52,6 @@ import org.orbisgis.layerModel.ILayer;
 import org.orbisgis.layerModel.Layer;
 import org.orbisgis.layerModel.LayerCollection;
 import org.orbisgis.layerModel.LayerException;
-import org.orbisgis.layerModel.persistence.LayerCollectionType;
-import org.orbisgis.layerModel.persistence.LayerType;
 
 public class DefaultDataManager implements DataManager {
 
@@ -107,37 +104,6 @@ public class DefaultDataManager implements DataManager {
 
 	public ILayer createLayer(DataSource ds) {
 		return new Layer(ds.getName(), ds, NullCRS.singleton);
-	}
-
-	public ILayer createLayer(LayerType layer) throws LayerException {
-		ILayer ret = null;
-		if (layer instanceof LayerCollectionType) {
-			LayerCollectionType xmlLayerCollection = (LayerCollectionType) layer;
-			ret = createLayerCollection(layer.getName());
-			List<LayerType> xmlChildren = xmlLayerCollection.getLayer();
-			for (LayerType layerType : xmlChildren) {
-				ILayer lyr = createLayer(layerType);
-				if (lyr != null) {
-					try {
-						ret.addLayer(lyr);
-					} catch (LayerException e) {
-						Services.getErrorManager().error(
-								"Cannot add layer to collection: "
-										+ lyr.getName(), e);
-					}
-				}
-			}
-		} else {
-			try {
-				ret = createLayer(layer.getSourceName());
-				ret.setName(layer.getName());
-				ret.setVisible(layer.isVisible());
-			} catch (LayerException e) {
-				Services.getErrorManager().error(
-						"Cannot recover layer: " + layer.getName(), e);
-			}
-		}
-		return ret;
 	}
 
 	public ILayer createLayerCollection(String layerName) {

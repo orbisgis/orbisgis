@@ -50,6 +50,7 @@ public class NullSymbol extends AbstractSymbol implements Symbol {
 	public NullSymbol() {
 		setName("Null symbol");
 	}
+
 	public Envelope draw(Graphics2D g, Geometry geom, AffineTransform at,
 			RenderPermission permission) throws DriverException {
 		return null;
@@ -57,6 +58,18 @@ public class NullSymbol extends AbstractSymbol implements Symbol {
 
 	public boolean acceptGeometry(Geometry geom) {
 		return true;
+	}
+
+	public String getId() {
+		return "org.orbisgis.symbol.Null";
+	}
+
+	public Symbol cloneSymbol() {
+		return new NullSymbol();
+	}
+
+	public String getClassName() {
+		return "Null";
 	}
 
 }

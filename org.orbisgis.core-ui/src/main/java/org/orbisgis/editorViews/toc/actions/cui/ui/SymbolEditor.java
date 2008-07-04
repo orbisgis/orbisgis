@@ -51,7 +51,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.io.FileNotFoundException;
 import java.net.URL;
 import java.util.ArrayList;
 
@@ -72,15 +71,15 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-import javax.xml.bind.JAXBException;
 
 import org.orbisgis.Services;
+import org.orbisgis.SymbolManager;
 import org.orbisgis.editorViews.toc.actions.cui.gui.LegendContext;
 import org.orbisgis.editorViews.toc.actions.cui.gui.widgets.Canvas;
 import org.orbisgis.editorViews.toc.actions.cui.gui.widgets.ColorPicker;
 import org.orbisgis.editorViews.toc.actions.cui.gui.widgets.FlowLayoutPreviewWindow;
-import org.orbisgis.editorViews.toc.actions.cui.gui.widgets.JPanelTypeOfGeometrySelection;
 import org.orbisgis.editorViews.toc.actions.cui.gui.widgets.SymbolListDecorator;
+import org.orbisgis.editorViews.toc.actions.cui.gui.widgets.SymbolSelection;
 import org.orbisgis.images.IconLoader;
 import org.orbisgis.renderer.symbol.EditableLineSymbol;
 import org.orbisgis.renderer.symbol.EditablePointSymbol;
@@ -104,45 +103,6 @@ public class SymbolEditor extends JPanel implements UIPanel {
 	private boolean showCollection = false;
 	private LegendContext legendContext;
 	private boolean syncing = false;
-
-	private static ArrayList<EditableSymbol> availableSymbols = new ArrayList<EditableSymbol>();
-
-	static {
-		addSymbol((EditableSymbol) SymbolFactory.createCirclePointSymbol(
-				Color.black, Color.red, 10));
-		addSymbol((EditableSymbol) SymbolFactory.createSquareVertexSymbol(
-				Color.black, Color.red, 10));
-		addSymbol((EditableSymbol) SymbolFactory.createPolygonSymbol());
-		addSymbol((EditableSymbol) SymbolFactory.createLineSymbol(Color.black,
-				2));
-	}
-
-	private static boolean addSymbol(EditableSymbol symbol) {
-		if (getNewSymbol(symbol.getId()) != null) {
-			throw new IllegalArgumentException(
-					"There is already a symbol with the same id: "
-							+ symbol.getId());
-		}
-		return availableSymbols.add(symbol);
-	}
-
-	/**
-	 * Gets a new instance from the available symbols with the same id than the
-	 * one specified
-	 *
-	 * @param id
-	 *            Symbol class name
-	 * @return null if there is no symbol with the same id
-	 */
-	public static EditableSymbol getNewSymbol(String id) {
-		for (EditableSymbol sym : availableSymbols) {
-			if (sym.getId().equals(id)) {
-				return sym.newInstance();
-			}
-		}
-
-		return null;
-	}
 
 	/** Creates new form JPanelSimpleSimbolLegend */
 	public SymbolEditor(boolean showCollection, LegendContext legendContext) {
@@ -741,21 +701,15 @@ public class SymbolEditor extends JPanel implements UIPanel {
 	 *
 	 * @param evt
 	 */
-	private void jButtonFromCollectionActionPerformed(ActionEvent evt) {// GEN-FIRST:event_jButtonFromCollectionActionPerformed
-		try {
-			FlowLayoutPreviewWindow coll = new FlowLayoutPreviewWindow(
-					legendContext);
-			if (UIFactory.showDialog(coll)) {
-				Symbol sym = coll.getSelectedSymbol();
-				addToSymbolList(sym);
-				refresh();
-			}
-		} catch (FileNotFoundException e) {
-			Services.getErrorManager().error("Cannot load collection", e);
-		} catch (JAXBException e) {
-			Services.getErrorManager().error("Cannot load collection", e);
+	private void jButtonFromCollectionActionPerformed(ActionEvent evt) {
+		FlowLayoutPreviewWindow coll = new FlowLayoutPreviewWindow(
+				legendContext);
+		if (UIFactory.showDialog(coll)) {
+			Symbol sym = coll.getSelectedSymbol();
+			addToSymbolList(sym);
+			refresh();
 		}
-	}// GEN-LAST:event_jButtonFromCollectionActionPerformed
+	}
 
 	/**
 	 * move up the selected symbol in the list
@@ -818,19 +772,24 @@ public class SymbolEditor extends JPanel implements UIPanel {
 		EditableSymbol sy = null;
 
 		// Filter the available symbols
-		ArrayList<EditableSymbol> filtered = new ArrayList<EditableSymbol>();
-		for (EditableSymbol symbol : availableSymbols) {
-			if (symbol
-					.acceptGeometryType(legendContext.getGeometryConstraint())) {
-				filtered.add(symbol);
+		SymbolManager sm = (SymbolManager) Services
+				.getService("org.orbisgis.SymbolManager");
+		ArrayList<Symbol> availableSymbols = sm.getAvailableSymbols();
+		ArrayList<Symbol> filtered = new ArrayList<Symbol>();
+		for (Symbol symbol : availableSymbols) {
+			if (symbol instanceof EditableSymbol) {
+				EditableSymbol editableSymbol = (EditableSymbol) symbol;
+				if (editableSymbol.acceptGeometryType(legendContext
+						.getGeometryConstraint())) {
+					filtered.add(editableSymbol);
+				}
 			}
 		}
 
-		JPanelTypeOfGeometrySelection sel = new JPanelTypeOfGeometrySelection(
-				filtered);
+		SymbolSelection sel = new SymbolSelection(filtered);
 		if (UIFactory.showDialog(sel)) {
 			EditableSymbol symbol = (EditableSymbol) sel.getSelected();
-			sy = symbol.newInstance();
+			sy = (EditableSymbol) symbol.cloneSymbol();
 		}
 
 		if (sy != null) {
@@ -906,17 +865,11 @@ public class SymbolEditor extends JPanel implements UIPanel {
 	 *
 	 * @param evt
 	 */
-	private void jButtonToCollectionActionPerformed(ActionEvent evt) {// GEN-FIRST:event_jButtonToCollectionActionPerformed
-		try {
-			FlowLayoutPreviewWindow flow = new FlowLayoutPreviewWindow(
-					legendContext);
-			flow.addNewSymbol(getSymbolComposite());
-		} catch (FileNotFoundException e) {
-			Services.getErrorManager().error("Cannot load collection", e);
-		} catch (JAXBException e) {
-			Services.getErrorManager().error("Cannot load collection", e);
-		}
-	}// GEN-LAST:event_jButtonToCollectionActionPerformed
+	private void jButtonToCollectionActionPerformed(ActionEvent evt) {
+		SymbolManager sm = (SymbolManager) Services
+				.getService("org.orbisgis.SymbolManager");
+		sm.addSymbol(getSymbolComposite());
+	}
 
 	private void jCheckBoxLineActionPerformed(ActionEvent evt) {// GEN-FIRST:event_jCheckBoxLineActionPerformed
 
@@ -1038,10 +991,6 @@ public class SymbolEditor extends JPanel implements UIPanel {
 
 	public String validateInput() {
 		return null;
-	}
-
-	public static ArrayList<EditableSymbol> getAvailableSymbols() {
-		return availableSymbols;
 	}
 
 }

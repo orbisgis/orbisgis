@@ -37,8 +37,20 @@
 package org.orbisgis.renderer.symbol;
 
 import java.awt.Color;
+import java.util.ArrayList;
 
 public class SymbolFactory {
+
+	private static ArrayList<Symbol> availableSymbols = new ArrayList<Symbol>();
+
+	static {
+		addSymbol((EditableSymbol) createCirclePointSymbol(Color.black,
+				Color.red, 10));
+		addSymbol((EditableSymbol) createSquareVertexSymbol(Color.black,
+				Color.red, 10));
+		addSymbol((EditableSymbol) createPolygonSymbol());
+		addSymbol((EditableSymbol) createLineSymbol(Color.black, 2));
+	}
 
 	public static Symbol createPolygonSymbol() {
 		return createPolygonSymbol(Color.black);
@@ -106,6 +118,41 @@ public class SymbolFactory {
 			Color fillColor, int size) {
 
 		return new SquareVertexSymbol(outline, 1, fillColor, size);
+	}
+
+	private static boolean addSymbol(Symbol symbol) {
+		if (getNewSymbol(symbol.getId()) != null) {
+			throw new IllegalArgumentException(
+					"There is already a symbol with the same id: "
+							+ symbol.getId());
+		}
+		return availableSymbols.add(symbol);
+	}
+
+	/**
+	 * Gets a new instance from the available symbols with the same id than the
+	 * one specified
+	 *
+	 * @param id
+	 *            Symbol class name
+	 * @return null if there is no symbol with the same id
+	 */
+	public static Symbol getNewSymbol(String id) {
+		for (Symbol sym : availableSymbols) {
+			if (sym.getId().equals(id)) {
+				return sym.cloneSymbol();
+			}
+		}
+
+		return null;
+	}
+
+	public static ArrayList<Symbol> getAvailableSymbols() {
+		ArrayList<Symbol> ret = new ArrayList<Symbol>();
+		for (Symbol symbol : availableSymbols) {
+			ret.add(symbol.cloneSymbol());
+		}
+		return ret;
 	}
 
 }
