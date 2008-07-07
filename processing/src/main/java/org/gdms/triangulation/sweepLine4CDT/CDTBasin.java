@@ -32,7 +32,6 @@ public class CDTBasin {
 		for (int i = basinLeftBorder; i <= basinRightBorder; i++) {
 			this.u.add(i);
 		}
-		printU();
 		Collections.sort(u, new Comparator<Integer>() {
 			public int compare(Integer o1, Integer o2) {
 				double deltaY = slVertices.get(o1).getCoordinate().y
@@ -48,7 +47,6 @@ public class CDTBasin {
 				}
 			}
 		});
-		printU();
 	}
 
 	protected int getBasinLeftBorder() {
@@ -113,16 +111,17 @@ public class CDTBasin {
 		s.add(u.get(1));
 		int n = u.size();
 		for (int j = 2; j < n - 1; j++) {
-			Integer top = s.peek();
+			int top = s.peek();
 			if (((top > basinBed) && (u.get(j) < basinBed))
 					|| ((top < basinBed) && (u.get(j) > basinBed))) {
 				// both vertices are on different chains
 				while (!s.empty()) {
 					if (s.size() > 1) {
 						result.add(new Edge(u.get(j), s.pop()));
+					} else {
+						s.pop();
 					}
 				}
-				s.pop();
 				s.push(u.get(j - 1));
 				s.push(u.get(j));
 			} else {

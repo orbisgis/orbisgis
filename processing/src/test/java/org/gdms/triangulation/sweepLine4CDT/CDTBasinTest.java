@@ -79,19 +79,19 @@ public class CDTBasinTest extends TestCase {
 
 	public void testMeshIntoEdges() {
 		basin1.normalize();
-		basin1.printU();
 		System.out.println(basin1.getLinearRing());
 		List<Edge> edges1 = basin1.meshIntoEdges();
 		for (Edge edge : edges1) {
-			System.err.printf("%d <-> %d\n", edge.begin, edge.end);
+			System.out.printf("%d <-> %d\n", edge.begin, edge.end);
 		}
+		assertEquals(edges1.size(), 1);
 
 		basin2.normalize();
-		basin2.printU();
 		System.out.println(basin2.getLinearRing());
 		List<Edge> edges2 = basin2.meshIntoEdges();
 		for (Edge edge : edges2) {
-			System.err.printf("%d <-> %d\n", edge.begin, edge.end);
+			System.out.printf("%d <-> %d\n", edge.begin, edge.end);
 		}
+		assertEquals(edges2.size(), 12);
 	}
 }
