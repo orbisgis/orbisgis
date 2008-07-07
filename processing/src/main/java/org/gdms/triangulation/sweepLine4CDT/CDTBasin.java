@@ -20,14 +20,16 @@ public class CDTBasin {
 	private int basinLeftBorder;
 	private int basinBed;
 	private int basinRightBorder;
+	private PSLG pslg;
 
 	public CDTBasin(final List<CDTVertex> slVertices,
 			final int basinLeftBorder, final int basinBed,
-			final int basinRightBorder) {
+			final int basinRightBorder, final PSLG pslg) {
 		this.slVertices = slVertices;
 		this.basinLeftBorder = basinLeftBorder;
 		this.basinBed = basinBed;
 		this.basinRightBorder = basinRightBorder;
+		this.pslg = pslg;
 		this.u = new ArrayList<Integer>(basinRightBorder - basinLeftBorder + 1);
 		for (int i = basinLeftBorder; i <= basinRightBorder; i++) {
 			this.u.add(i);
@@ -91,33 +93,23 @@ public class CDTBasin {
 		}
 	}
 
-	class Edge {
-		int begin;
-		int end;
-
-		Edge(int begin, int end) {
-			this.begin = (begin < end) ? begin : end;
-			this.end = (begin < end) ? end : begin;
-		}
-	}
-
-	public List<Edge> meshIntoEdges() {
+	public List<CDTEdge> meshIntoEdges() {
 		// CDTBasin must be normalized !
-		List<Edge> result = new ArrayList<Edge>();
-		Polygon p = getPolygon();
+		final List<CDTEdge> result = new ArrayList<CDTEdge>();
+		final Polygon p = getPolygon();
 
-		Stack<Integer> s = new Stack<Integer>();
+		final Stack<Integer> s = new Stack<Integer>();
 		s.add(u.get(0));
 		s.add(u.get(1));
-		int n = u.size();
+		final int n = u.size();
 		for (int j = 2; j < n - 1; j++) {
-			int top = s.peek();
+			final int top = s.peek();
 			if (((top > basinBed) && (u.get(j) < basinBed))
 					|| ((top < basinBed) && (u.get(j) > basinBed))) {
 				// both vertices are on different chains
 				while (!s.empty()) {
 					if (s.size() > 1) {
-						result.add(new Edge(u.get(j), s.pop()));
+						result.add(new CDTEdge(u.get(j), s.pop()));
 					} else {
 						s.pop();
 					}
@@ -131,7 +123,7 @@ public class CDTBasin {
 					if (p.contains(gf.createLineString(new Coordinate[] {
 							slVertices.get(u.get(j)).getCoordinate(),
 							slVertices.get(current).getCoordinate() }))) {
-						result.add(new Edge(u.get(j), s.pop()));
+						result.add(new CDTEdge(u.get(j), s.pop()));
 						previous = current;
 					} else {
 						break;
@@ -142,16 +134,39 @@ public class CDTBasin {
 			}
 		}
 		for (int i = 1; i < s.size() - 1; i++) {
-			result.add(new Edge(u.get(n - 1), s.get(i)));
+			result.add(new CDTEdge(u.get(n - 1), s.get(i)));
 		}
 		return result;
 	}
 
-	protected void printU() {
-		for (int uItem : u) {
-			System.out.printf("[%d] %s\n", uItem, slVertices.get(uItem)
-					.getCoordinate());
+	public List<CDTTriangle> meshIntoTriangles() {
+		final List<CDTEdge> edges = meshIntoEdges();
+		final List<CDTTriangle> result = new ArrayList<CDTTriangle>();
+		CDTEdge prev = new CDTEdge(basinLeftBorder, basinRightBorder);
+		for (CDTEdge edge : edges) {
+			if (prev.getBegin() == edge.getBegin()) {
+				result.add(0, new CDTTriangle(slVertices.get(prev.getBegin()),
+						slVertices.get(prev.getEnd()), slVertices.get(edge.getEnd()),
+						pslg));
+			} else if (prev.getEnd() == edge.getEnd()) {
+				result.add(0, new CDTTriangle(slVertices.get(prev.getBegin()),
+						slVertices.get(prev.getEnd()), slVertices.get(edge.getBegin()),
+						pslg));
+			} else {
+				throw new RuntimeException("Unreachable code !");
+			}
+			prev = edge;
 		}
-		System.out.println();
+		result.add(0, new CDTTriangle(slVertices.get(prev.getBegin()), slVertices
+				.get(prev.getEnd()), slVertices.get(basinBed), pslg));
+		return result;
 	}
+
+	// protected void printU() {
+	// for (int uItem : u) {
+	// System.out.printf("[%d] %s\n", uItem, slVertices.get(uItem)
+	// .getCoordinate());
+	// }
+	// System.out.println();
+	// }
 }
