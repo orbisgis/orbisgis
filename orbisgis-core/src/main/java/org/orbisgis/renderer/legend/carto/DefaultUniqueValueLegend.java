@@ -97,7 +97,7 @@ public class DefaultUniqueValueLegend extends AbstractClassifiedLegend
 	public Symbol getSymbol(SpatialDataSourceDecorator sds, long row)
 			throws RenderException {
 		try {
-			int fieldIndex = sds.getSpatialFieldIndex();
+			int fieldIndex = sds.getFieldIndexByName(getClassificationField());
 			Value value = sds.getFieldValue(row, fieldIndex);
 			Geometry geom = sds.getGeometry(row);
 			int symbolIndex = getValueIndex(value);

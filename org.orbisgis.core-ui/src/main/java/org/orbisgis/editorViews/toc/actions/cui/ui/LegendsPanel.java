@@ -20,6 +20,7 @@ import org.sif.UIPanel;
 
 public class LegendsPanel extends JPanel implements UIPanel, LegendContext {
 
+	private static final String NO_LEGEND_ID = "no-legend";
 	private int geometryType;
 	private ArrayList<LegendElement> legends = new ArrayList<LegendElement>();
 	private LegendList legendList;
@@ -96,6 +97,7 @@ public class LegendsPanel extends JPanel implements UIPanel, LegendContext {
 		pnlContainer = new JPanel();
 		cardLayout = new CardLayout();
 		pnlContainer.setLayout(cardLayout);
+		pnlContainer.add(new JLabel("Add or select a legend on the left"), NO_LEGEND_ID);
 		return pnlContainer;
 	}
 
@@ -146,7 +148,11 @@ public class LegendsPanel extends JPanel implements UIPanel, LegendContext {
 	private void refreshLegendContainer() {
 		int index = legendList.getSelectedIndex();
 		if (index != -1) {
-			cardLayout.show(pnlContainer, legends.get(index).getId());
+			if (legends.size() > 0) {
+				cardLayout.show(pnlContainer, legends.get(index).getId());
+			} else {
+				cardLayout.show(pnlContainer, NO_LEGEND_ID);
+			}
 		}
 	}
 

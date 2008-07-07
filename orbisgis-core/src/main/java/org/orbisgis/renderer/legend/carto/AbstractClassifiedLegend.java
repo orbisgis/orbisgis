@@ -44,6 +44,7 @@ import org.orbisgis.renderer.legend.carto.persistence.UniqueValueLegendType;
 import org.orbisgis.renderer.symbol.Symbol;
 import org.orbisgis.renderer.symbol.SymbolFactory;
 import org.orbisgis.renderer.symbol.collection.DefaultSymbolCollection;
+import org.orbisgis.renderer.symbol.collection.persistence.SymbolType;
 
 abstract class AbstractClassifiedLegend extends AbstractLegend implements
 		ClassifiedLegend {
@@ -88,9 +89,13 @@ abstract class AbstractClassifiedLegend extends AbstractLegend implements
 
 	public void fillDefaults(UniqueValueLegendType xmlLegend) {
 		xmlLegend.setName(getName());
-		xmlLegend.setDefaultSymbol(DefaultSymbolCollection
-				.getXMLFromSymbol(getDefaultSymbol()));
-		xmlLegend.setDefaultLabel(getDefaultLabel());
+		if (getDefaultSymbol() != null) {
+			xmlLegend.setDefaultSymbol(DefaultSymbolCollection
+					.getXMLFromSymbol(getDefaultSymbol()));
+		}
+		if (getDefaultLabel() != null) {
+			xmlLegend.setDefaultLabel(getDefaultLabel());
+		}
 		xmlLegend.setFieldName(fieldName);
 		xmlLegend.setFieldType(fieldType);
 	}
@@ -101,8 +106,11 @@ abstract class AbstractClassifiedLegend extends AbstractLegend implements
 		setDefaultLabel(xmlLegend.getDefaultLabel());
 		fieldType = xmlLegend.getFieldType();
 		fieldName = xmlLegend.getFieldName();
-		setDefaultSymbol(DefaultSymbolCollection.getSymbolFromXML(xmlLegend
-				.getDefaultSymbol()));
+		SymbolType defaultSymbolXML = xmlLegend.getDefaultSymbol();
+		if (defaultSymbolXML != null) {
+			setDefaultSymbol(DefaultSymbolCollection
+					.getSymbolFromXML(defaultSymbolXML));
+		}
 	}
 
 	protected int getFieldType() {

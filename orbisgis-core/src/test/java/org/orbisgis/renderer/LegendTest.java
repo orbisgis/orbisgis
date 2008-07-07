@@ -139,7 +139,7 @@ public class LegendTest extends AbstractTest {
 				sym.getPersistentProperties()));
 	}
 
-	public void testUniqueValuePersistence() throws Exception {
+	public void testFullUniqueValuePersistence() throws Exception {
 		UniqueValueLegend uvl = LegendFactory.createUniqueValueLegend();
 		String name = "mylegend";
 		uvl.setName(name);
@@ -161,11 +161,30 @@ public class LegendTest extends AbstractTest {
 		assertTrue(uvl.getName().equals(name));
 		assertTrue(uvl.getDefaultSymbol().getPersistentProperties().equals(
 				sym.getPersistentProperties()));
+		assertTrue(uvl.getClassificationField().equals(fieldName));
 		assertTrue(uvl.getValueCount() == 1);
 		assertTrue(uvl.getValue(0).equals(classValue).getAsBoolean());
 		assertTrue(uvl.getSymbol(0).getPersistentProperties().equals(
 				classSym.getPersistentProperties()));
 		assertTrue(uvl.getLabel(0).equals(aLabel));
+	}
+
+	public void testMinimumUniqueValuePersistence() throws Exception {
+		UniqueValueLegend uvl = LegendFactory.createUniqueValueLegend();
+		uvl.setName(null);
+		uvl.setDefaultSymbol(null);
+		uvl.setDefaultLabel(null);
+		uvl.setClassificationField(fieldName, ds);
+		File file = new File("target/uniqueSymbolLegend.ogl");
+		uvl.save(file);
+
+		uvl = (UniqueValueLegend) LegendFactory.getNewLegend(uvl
+				.getLegendTypeId());
+		uvl.load(file, uvl.getVersion());
+		assertTrue(uvl.getName() == null);
+//		assertTrue(uvl.getDefaultSymbol() == null);
+		assertTrue(uvl.getClassificationField().equals(fieldName));
+		assertTrue(uvl.getValueCount() == 0);
 	}
 
 	@Override

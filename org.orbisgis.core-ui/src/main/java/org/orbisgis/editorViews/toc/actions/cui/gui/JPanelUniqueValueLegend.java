@@ -123,6 +123,8 @@ public class JPanelUniqueValueLegend extends javax.swing.JPanel implements
 		String field = legend.getClassificationField();
 		if (field != null) {
 			jComboBox1.setSelectedItem(field);
+		} else if (comboValues.length > 0) {
+			jComboBox1.setSelectedIndex(0);
 		}
 
 		refreshButtons();
@@ -256,7 +258,6 @@ public class JPanelUniqueValueLegend extends javax.swing.JPanel implements
 		jLabel1.setText("Classification field:");
 		jPanelTop.add(jLabel1);
 
-		// jComboBox1.setPreferredSize(new java.awt.Dimension(125, 19));
 		jComboBox1.addActionListener(new ActionListener() {
 
 			public void actionPerformed(ActionEvent e) {
