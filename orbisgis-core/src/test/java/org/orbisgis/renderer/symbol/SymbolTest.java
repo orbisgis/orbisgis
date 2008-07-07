@@ -7,6 +7,7 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Map;
 
 import junit.framework.TestCase;
 
@@ -20,7 +21,7 @@ import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.LinearRing;
 import com.vividsolutions.jts.geom.Polygon;
 
-public class SymbolCollectionTest extends TestCase {
+public class SymbolTest extends TestCase {
 
 	public void testFileNotExits() throws Exception {
 		File file = new File("target/collection.xml");
@@ -139,5 +140,16 @@ public class SymbolCollectionTest extends TestCase {
 
 		});
 		return img;
+	}
+
+	public void testTransparencyPersistence() throws Exception {
+		Symbol sym = SymbolFactory.createCircleVertexSymbol(new Color(10, 10,
+				10, 10), new Color(10, 10, 10, 10));
+		Map<String, String> props = sym.getPersistentProperties();
+		Symbol sym2 = SymbolFactory.createCircleVertexSymbol(new Color(10, 10,
+				10, 10), new Color(10, 10, 10, 10));
+		sym2.setPersistentProperties(props, sym.getVersion());
+
+		testEquals(sym, sym2);
 	}
 }

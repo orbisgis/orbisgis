@@ -105,7 +105,7 @@ public abstract class AbstractLineSymbol extends AbstractGeometrySymbol
 		super.setPersistentProperties(props, version);
 		String outlineColor = props.get("outline-color");
 		if (outlineColor != null) {
-			outline = new Color(Integer.parseInt(outlineColor));
+			outline = new Color(Integer.parseInt(outlineColor), true);
 		}
 		lineWidth = Integer.parseInt(props.get("line-width"));
 	}

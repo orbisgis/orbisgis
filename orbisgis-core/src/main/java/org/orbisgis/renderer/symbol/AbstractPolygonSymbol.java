@@ -97,7 +97,7 @@ public abstract class AbstractPolygonSymbol extends AbstractLineSymbol
 		super.setPersistentProperties(props, version);
 		String fill = props.get("fill-color");
 		if (fill != null) {
-			fillColor = new Color(Integer.parseInt(fill));
+			fillColor = new Color(Integer.parseInt(fill), true);
 		}
 	}
 }

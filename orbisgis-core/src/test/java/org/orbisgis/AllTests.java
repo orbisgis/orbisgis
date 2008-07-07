@@ -43,7 +43,7 @@ import junit.framework.TestSuite;
 import org.orbisgis.layerModel.LayerModelTest;
 import org.orbisgis.renderer.ClassificationTest;
 import org.orbisgis.renderer.LiteShapeTest;
-import org.orbisgis.renderer.symbol.SymbolCollectionTest;
+import org.orbisgis.renderer.symbol.SymbolTest;
 
 public class AllTests extends TestCase {
 
@@ -57,7 +57,7 @@ public class AllTests extends TestCase {
 		suite.addTestSuite(ClassificationTest.class);
 		suite.addTestSuite(MapContextTest.class);
 		suite.addTestSuite(MapTransformTest.class);
-		suite.addTestSuite(SymbolCollectionTest.class);
+		suite.addTestSuite(SymbolTest.class);
 		// $JUnit-END$
 		return suite;
 	}
