@@ -93,7 +93,12 @@ public class Renderer {
 		MapTransform mt = new MapTransform();
 		mt.resizeImage(width, height);
 		mt.setExtent(extent);
-		ILayer[] layers = layer.getLayersRecursively();
+		ILayer[] layers;
+		if (layer.acceptsChilds()) {
+			layers = layer.getLayersRecursively();
+		} else {
+			layers = new ILayer[] { layer };
+		}
 
 		long total1 = System.currentTimeMillis();
 		DefaultRendererPermission permission = new DefaultRendererPermission();
@@ -221,18 +226,21 @@ public class Renderer {
 					}
 					i++;
 					Symbol sym = legend.getSymbol(sds, index);
-					Geometry g = sds.getGeometry(index);
-					if (g.getEnvelopeInternal().intersects(extent)) {
-						Envelope symbolEnvelope;
-						if (g.getGeometryType().equals("GeometryCollection")) {
-							symbolEnvelope = drawGeometryCollection(mt, g2,
-									sym, g, permission);
-						} else {
-							symbolEnvelope = sym.draw(g2, g, mt
-									.getAffineTransform(), permission);
-						}
-						if (symbolEnvelope != null) {
-							permission.addUsedArea(symbolEnvelope);
+					if (sym != null) {
+						Geometry g = sds.getGeometry(index);
+						if (g.getEnvelopeInternal().intersects(extent)) {
+							Envelope symbolEnvelope;
+							if (g.getGeometryType()
+									.equals("GeometryCollection")) {
+								symbolEnvelope = drawGeometryCollection(mt, g2,
+										sym, g, permission);
+							} else {
+								symbolEnvelope = sym.draw(g2, g, mt
+										.getAffineTransform(), permission);
+							}
+							if (symbolEnvelope != null) {
+								permission.addUsedArea(symbolEnvelope);
+							}
 						}
 					}
 				}

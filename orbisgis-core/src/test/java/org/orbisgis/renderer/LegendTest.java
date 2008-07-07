@@ -64,8 +64,10 @@ public class LegendTest extends AbstractTest {
 		ILayer layer = getDataManager().createLayer(
 				new File("src/test/resources/bv_sap.shp"));
 		layer.open();
-		UniqueSymbolLegend legend = LegendFactory.createUniqueSymbolLegend();
-		legend.setSymbol(null);
+		UniqueValueLegend legend = LegendFactory.createUniqueValueLegend();
+		legend.setClassificationField(layer.getDataSource().getFieldName(1),
+				layer.getDataSource());
+		legend.setDefaultSymbol(null);
 		layer.setLegend(legend);
 		Renderer r = new Renderer();
 		BufferedImage img = new BufferedImage(100, 100,
