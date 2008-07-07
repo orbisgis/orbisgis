@@ -97,7 +97,8 @@ public class LegendsPanel extends JPanel implements UIPanel, LegendContext {
 		pnlContainer = new JPanel();
 		cardLayout = new CardLayout();
 		pnlContainer.setLayout(cardLayout);
-		pnlContainer.add(new JLabel("Add or select a legend on the left"), NO_LEGEND_ID);
+		pnlContainer.add(new JLabel("Add or select a legend on the left"),
+				NO_LEGEND_ID);
 		return pnlContainer;
 	}
 
@@ -171,6 +172,7 @@ public class LegendsPanel extends JPanel implements UIPanel, LegendContext {
 	private void addLegend(LegendElement le) {
 		legends.add(le);
 		pnlContainer.add(le.getComponent(), le.getId());
+		cardLayout.show(pnlContainer, le.getId());
 		le.getLegendPanel().setLegendContext(this);
 		le.getLegendPanel().setLegend(getLegend(le));
 		refresh();

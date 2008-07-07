@@ -54,6 +54,8 @@ import java.util.Random;
 
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JOptionPane;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
@@ -276,12 +278,12 @@ public class JPanelUniqueValueLegend extends javax.swing.JPanel implements
 		jCheckBoxRestOfValues.setText("rest of values");
 		jCheckBoxRestOfValues.setBorder(javax.swing.BorderFactory
 				.createEmptyBorder(0, 0, 0, 0));
-		jCheckBoxRestOfValues
-				.addActionListener(new java.awt.event.ActionListener() {
-					public void actionPerformed(java.awt.event.ActionEvent evt) {
-						jCheckBoxRestOfValuesActionPerformed(evt);
-					}
-				});
+		jCheckBoxRestOfValues.addChangeListener(new ChangeListener() {
+
+			public void stateChanged(ChangeEvent e) {
+				jCheckBoxRestOfValuesActionPerformed();
+			}
+		});
 		jPanelTop.add(jCheckBoxRestOfValues);
 
 		jCheckBoxOrder.setText("order");
@@ -420,8 +422,7 @@ public class JPanelUniqueValueLegend extends javax.swing.JPanel implements
 	 *
 	 * @param evt
 	 */
-	private void jCheckBoxRestOfValuesActionPerformed(
-			java.awt.event.ActionEvent evt) {
+	private void jCheckBoxRestOfValuesActionPerformed() {
 		boolean isSelected = jCheckBoxRestOfValues.isSelected();
 		tableModel.setShowRestOfValues(isSelected);
 	}

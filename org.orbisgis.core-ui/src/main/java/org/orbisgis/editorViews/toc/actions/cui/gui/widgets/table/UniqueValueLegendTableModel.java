@@ -1,6 +1,7 @@
 package org.orbisgis.editorViews.toc.actions.cui.gui.widgets.table;
 
 import java.text.ParseException;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.TreeSet;
 
@@ -11,13 +12,14 @@ import javax.swing.table.TableModel;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.sql.strategies.IncompatibleTypesException;
+import org.orbisgis.renderer.legend.carto.LegendFactory;
 import org.orbisgis.renderer.legend.carto.UniqueValueLegend;
 import org.orbisgis.renderer.symbol.Symbol;
 
 public class UniqueValueLegendTableModel extends AbstractTableModel implements
 		TableModel {
 
-	private UniqueValueLegend legend;
+	private UniqueValueLegend legend = LegendFactory.createUniqueValueLegend();
 	private boolean ordered = false;
 	private Integer[] valueIndex;
 	private boolean showRestOfValues;
@@ -202,7 +204,9 @@ public class UniqueValueLegendTableModel extends AbstractTableModel implements
 	}
 
 	public void deleteRows(int[] rows) {
-		for (int row : rows) {
+		Arrays.sort(rows);
+		for (int i = rows.length - 1; i >= 0; i--) {
+			int row = rows[i];
 			if (ordered) {
 				row = getValueIndex(row);
 			}
@@ -225,6 +229,10 @@ public class UniqueValueLegendTableModel extends AbstractTableModel implements
 
 	public void setShowRestOfValues(boolean showRestOfValues) {
 		this.showRestOfValues = showRestOfValues;
+		if (!showRestOfValues) {
+			legend.setDefaultSymbol(null);
+			legend.setDefaultLabel(null);
+		}
 		fireTableDataChanged();
 	}
 }
