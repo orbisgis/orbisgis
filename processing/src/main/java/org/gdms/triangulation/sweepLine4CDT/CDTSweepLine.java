@@ -243,13 +243,15 @@ public class CDTSweepLine {
 		// TODO : what about "smoothing(idx);" to fill in the left part ?
 		int[] leftBasin = findBasinOnTheLeftSide(idx);
 		if (null != leftBasin) {
-			System.err.println("leftBasin");
+			System.err.printf("leftBasin %d %d %d\n", leftBasin[0],
+					leftBasin[1], leftBasin[2]);
 			fillInBasin(leftBasin);
 		}
 
 		int[] rightBasin = findBasinOnTheRightSide(idx);
 		if (null != rightBasin) {
-			System.err.println("rightBasin");
+			System.err.printf("rightBasin %d %d %d\n", rightBasin[0],
+					rightBasin[1], rightBasin[2]);
 			fillInBasin(rightBasin);
 		}
 	}
@@ -342,7 +344,7 @@ public class CDTSweepLine {
 					left--;
 				} else {
 					opposite = right;
-					right++;			
+					right++;
 				}
 
 				// if (opposite < basinBed) {
