@@ -48,7 +48,6 @@ import org.orbisgis.AbstractTest;
 import org.orbisgis.layerModel.DefaultMapContext;
 import org.orbisgis.layerModel.ILayer;
 import org.orbisgis.layerModel.MapContext;
-import org.orbisgis.renderer.legend.Legend;
 import org.orbisgis.renderer.legend.carto.LegendFactory;
 import org.orbisgis.renderer.legend.carto.UniqueSymbolLegend;
 import org.orbisgis.renderer.legend.carto.UniqueValueLegend;
@@ -60,6 +59,20 @@ public class LegendTest extends AbstractTest {
 	private DataSourceFactory dsf;
 	private DataSource ds;
 	private String fieldName;
+
+	public void testRendererWithNullSymbols() throws Exception {
+		ILayer layer = getDataManager().createLayer(
+				new File("src/test/resources/bv_sap.shp"));
+		layer.open();
+		UniqueSymbolLegend legend = LegendFactory.createUniqueSymbolLegend();
+		legend.setSymbol(null);
+		layer.setLegend(legend);
+		Renderer r = new Renderer();
+		BufferedImage img = new BufferedImage(100, 100,
+				BufferedImage.TYPE_INT_ARGB);
+		r.draw(img, layer.getEnvelope(), layer);
+		layer.close();
+	}
 
 	public void testSetLegend() throws Exception {
 		MapContext mc = new DefaultMapContext();
@@ -104,20 +117,6 @@ public class LegendTest extends AbstractTest {
 			layer1.getVectorLegend("thegeom");
 			assertTrue(false);
 		} catch (IllegalArgumentException e) {
-		}
-	}
-
-	public void testNoNullSymbol() throws Exception {
-		MapContext mc = new DefaultMapContext();
-		ILayer layer = getDataManager().createLayer(
-				new File("src/test/resources/linestring.shp"));
-		mc.getLayerModel().addLayer(layer);
-		UniqueSymbolLegend usl = LegendFactory.createUniqueSymbolLegend();
-		usl.setSymbol(SymbolFactory.createPolygonSymbol());
-		layer.setLegend(usl);
-		Legend legend = layer.getRenderingLegend()[0];
-		for (int i = 0; i < layer.getDataSource().getRowCount(); i++) {
-			assertTrue(legend.getSymbol(layer.getDataSource(), i) != null);
 		}
 	}
 
@@ -182,7 +181,7 @@ public class LegendTest extends AbstractTest {
 				.getLegendTypeId());
 		uvl.load(file, uvl.getVersion());
 		assertTrue(uvl.getName() == null);
-//		assertTrue(uvl.getDefaultSymbol() == null);
+		assertTrue(uvl.getDefaultSymbol() == null);
 		assertTrue(uvl.getClassificationField().equals(fieldName));
 		assertTrue(uvl.getValueCount() == 0);
 	}

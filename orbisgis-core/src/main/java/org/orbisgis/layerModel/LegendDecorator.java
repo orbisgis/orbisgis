@@ -50,7 +50,6 @@ import org.orbisgis.renderer.legend.Legend;
 import org.orbisgis.renderer.legend.LegendListener;
 import org.orbisgis.renderer.legend.RenderException;
 import org.orbisgis.renderer.symbol.Symbol;
-import org.orbisgis.renderer.symbol.SymbolFactory;
 
 public class LegendDecorator implements Legend, EditionListener {
 
@@ -88,7 +87,7 @@ public class LegendDecorator implements Legend, EditionListener {
 				if (symbol != null) {
 					symbols.add(symbol);
 				} else {
-					symbols.add(SymbolFactory.createNullSymbol());
+					symbols.add(null);
 				}
 			}
 		} catch (DriverException e) {
@@ -117,7 +116,7 @@ public class LegendDecorator implements Legend, EditionListener {
 				symbols.add((int) e.getRowIndex(), legend.getSymbol(sds, e
 						.getRowIndex()));
 			} catch (RenderException e1) {
-				symbols.add(SymbolFactory.createNullSymbol());
+				symbols.add(null);
 				logger.error("Cannot update symbol", e1);
 			}
 			break;
@@ -126,7 +125,7 @@ public class LegendDecorator implements Legend, EditionListener {
 				symbols.set((int) e.getRowIndex(), legend.getSymbol(sds, e
 						.getRowIndex()));
 			} catch (RenderException e1) {
-				symbols.add(SymbolFactory.createNullSymbol());
+				symbols.add(null);
 				logger.error("Cannot update symbol", e1);
 			}
 			break;
@@ -134,7 +133,7 @@ public class LegendDecorator implements Legend, EditionListener {
 			try {
 				initialize(sds);
 			} catch (RenderException e1) {
-				symbols.add(SymbolFactory.createNullSymbol());
+				symbols.add(null);
 				logger.error("Cannot update symbol", e1);
 			}
 		}

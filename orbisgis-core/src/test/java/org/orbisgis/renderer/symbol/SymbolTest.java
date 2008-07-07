@@ -94,7 +94,6 @@ public class SymbolTest extends TestCase {
 		testClone(SymbolFactory.createLabelSymbol("hola", 5));
 
 		testClone(SymbolFactory.createLineSymbol(Color.red, 3));
-		testClone(SymbolFactory.createNullSymbol());
 		testClone(SymbolFactory.createPolygonSymbol());
 		testClone(SymbolFactory.createPolygonSymbol(Color.black));
 		testClone(SymbolFactory.createPolygonSymbol(Color.black, Color.black));

@@ -46,7 +46,6 @@ import org.orbisgis.renderer.legend.Legend;
 import org.orbisgis.renderer.legend.RenderException;
 import org.orbisgis.renderer.symbol.RenderUtils;
 import org.orbisgis.renderer.symbol.Symbol;
-import org.orbisgis.renderer.symbol.SymbolFactory;
 
 public class DefaultIntervalLegend extends AbstractClassifiedLegend implements
 		IntervalLegend {
@@ -60,7 +59,7 @@ public class DefaultIntervalLegend extends AbstractClassifiedLegend implements
 				return symbols.get(i);
 			}
 		}
-		return SymbolFactory.createNullSymbol();
+		return null;
 	}
 
 	public ArrayList<Interval> getIntervals() {

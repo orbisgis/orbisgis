@@ -71,7 +71,6 @@ import org.orbisgis.layerModel.ILayer;
 import org.orbisgis.renderer.legend.Legend;
 import org.orbisgis.renderer.legend.carto.LegendFactory;
 import org.orbisgis.renderer.legend.carto.UniqueValueLegend;
-import org.orbisgis.renderer.symbol.NullSymbol;
 import org.orbisgis.renderer.symbol.Symbol;
 import org.orbisgis.renderer.symbol.SymbolFactory;
 import org.sif.UIFactory;
@@ -189,8 +188,6 @@ public class JPanelUniqueValueLegend extends javax.swing.JPanel implements
 	 * @return Symbol
 	 */
 	protected Symbol createRandomSymbol() {
-		Symbol s = SymbolFactory.createNullSymbol();
-
 		Random rand = new Random();
 
 		int g2 = rand.nextInt(255);
@@ -206,6 +203,7 @@ public class JPanelUniqueValueLegend extends javax.swing.JPanel implements
 		Symbol polygonSymbol = SymbolFactory.createPolygonSymbol(outline, fill);
 		GeometryConstraint geometryConstraint = legendContext
 				.getGeometryConstraint();
+		Symbol s;
 		if (geometryConstraint == null) {
 			s = SymbolFactory.createSymbolComposite(polygonSymbol, lineSymbol,
 					pointSymbol);
@@ -475,7 +473,7 @@ public class JPanelUniqueValueLegend extends javax.swing.JPanel implements
 
 	private void syncWithLegend() {
 		jCheckBoxRestOfValues
-				.setSelected(!(this.legend.getDefaultSymbol() instanceof NullSymbol));
+				.setSelected(!(this.legend.getDefaultSymbol() == null));
 		initCombo();
 	}
 

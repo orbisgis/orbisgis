@@ -38,7 +38,6 @@ package org.orbisgis.renderer.symbol;
 
 import java.util.ArrayList;
 
-
 import com.vividsolutions.jts.geom.Geometry;
 
 public class RenderUtils {
@@ -54,7 +53,9 @@ public class RenderUtils {
 	 * @return
 	 */
 	public static Symbol buildSymbolToDraw(Symbol symbol, Geometry geometry) {
-		if (symbol instanceof SymbolComposite) {
+		if (symbol == null) {
+			return null;
+		} else if (symbol instanceof SymbolComposite) {
 			SymbolComposite comp = (SymbolComposite) symbol;
 			ArrayList<Symbol> symbols = new ArrayList<Symbol>();
 			for (int i = 0; i < comp.getSymbolCount(); i++) {

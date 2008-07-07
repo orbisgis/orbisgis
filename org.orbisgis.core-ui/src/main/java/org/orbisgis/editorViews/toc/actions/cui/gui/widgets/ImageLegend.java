@@ -57,7 +57,6 @@ import org.orbisgis.renderer.legend.carto.UniqueSymbolLegend;
 import org.orbisgis.renderer.legend.carto.UniqueValueLegend;
 import org.orbisgis.renderer.symbol.CircleSymbol;
 import org.orbisgis.renderer.symbol.LineSymbol;
-import org.orbisgis.renderer.symbol.NullSymbol;
 import org.orbisgis.renderer.symbol.PolygonSymbol;
 import org.orbisgis.renderer.symbol.Symbol;
 import org.orbisgis.renderer.symbol.SymbolFactory;
@@ -140,7 +139,7 @@ public class ImageLegend {
 				setText(uvl.getLabel(i), end, g);
 				end += 30;
 			}
-			if (!(uvl.getDefaultSymbol() instanceof NullSymbol)) {
+			if (!(uvl.getDefaultSymbol() == null)) {
 				paintSymbol(uvl.getDefaultSymbol(), end, g);
 				setText("Default", end, g);
 				end += 30;
@@ -157,7 +156,7 @@ public class ImageLegend {
 				setText(il.getSymbol(inters.get(i)).getName(), end, g);
 				end += 30;
 			}
-			if (!(il.getDefaultSymbol() instanceof NullSymbol)) {
+			if (!(il.getDefaultSymbol() == null)) {
 				paintSymbol(il.getDefaultSymbol(), end, g);
 				setText("Default", end, g);
 				end += 30;
@@ -439,7 +438,7 @@ public class ImageLegend {
 
 			}
 
-			if (!(uvl.getDefaultSymbol() instanceof NullSymbol)) {
+			if (!(uvl.getDefaultSymbol() == null)) {
 				height += 30;
 
 				String str = "Default";
@@ -470,7 +469,7 @@ public class ImageLegend {
 				}
 			}
 
-			if (!(il.getDefaultSymbol() instanceof NullSymbol)) {
+			if (!(il.getDefaultSymbol() == null)) {
 				height += 30;
 
 				String str = "Default";

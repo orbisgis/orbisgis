@@ -42,7 +42,6 @@ import org.orbisgis.IncompatibleVersionException;
 import org.orbisgis.renderer.legend.AbstractLegend;
 import org.orbisgis.renderer.legend.carto.persistence.UniqueValueLegendType;
 import org.orbisgis.renderer.symbol.Symbol;
-import org.orbisgis.renderer.symbol.SymbolFactory;
 import org.orbisgis.renderer.symbol.collection.DefaultSymbolCollection;
 import org.orbisgis.renderer.symbol.collection.persistence.SymbolType;
 
@@ -53,10 +52,6 @@ abstract class AbstractClassifiedLegend extends AbstractLegend implements
 	private Symbol defaultSymbol;
 	private int fieldType;
 	private String defaultLabel = "Rest of values";
-
-	public AbstractClassifiedLegend() {
-		defaultSymbol = SymbolFactory.createNullSymbol();
-	}
 
 	public void setClassificationField(String fieldName, DataSource ds)
 			throws DriverException {

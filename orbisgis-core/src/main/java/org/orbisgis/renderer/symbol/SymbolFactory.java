@@ -72,10 +72,6 @@ public class SymbolFactory {
 		return ret;
 	}
 
-	public static Symbol createNullSymbol() {
-		return new NullSymbol();
-	}
-
 	public static Symbol createCirclePointSymbol(Color outline,
 			Color fillColor, int size) {
 		return new CircleVertexSymbol(outline, 1, fillColor, size);

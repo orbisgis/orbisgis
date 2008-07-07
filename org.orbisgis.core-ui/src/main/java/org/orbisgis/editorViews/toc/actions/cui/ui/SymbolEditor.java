@@ -85,7 +85,6 @@ import org.orbisgis.renderer.symbol.EditableLineSymbol;
 import org.orbisgis.renderer.symbol.EditablePointSymbol;
 import org.orbisgis.renderer.symbol.EditablePolygonSymbol;
 import org.orbisgis.renderer.symbol.EditableSymbol;
-import org.orbisgis.renderer.symbol.NullSymbol;
 import org.orbisgis.renderer.symbol.Symbol;
 import org.orbisgis.renderer.symbol.SymbolFactory;
 import org.orbisgis.ui.sif.AskValue;
@@ -247,21 +246,21 @@ public class SymbolEditor extends JPanel implements UIPanel {
 		Object selectedValue = lstSymbols.getSelectedValue();
 		Symbol sym;
 		if (selectedValue == null) {
-			sym = SymbolFactory.createNullSymbol();
+			sym = null;
 		} else {
 			sym = ((SymbolListDecorator) selectedValue).getSymbol();
-		}
-		if (sym instanceof EditablePolygonSymbol) {
-			enabledFill = true;
-			enabledLine = true;
-		}
-		if (sym instanceof EditableLineSymbol) {
-			enabledLine = true;
-		}
-		if (sym instanceof EditablePointSymbol) {
-			enabledVertex = true;
-			enabledFill = true;
-			enabledLine = true;
+			if (sym instanceof EditablePolygonSymbol) {
+				enabledFill = true;
+				enabledLine = true;
+			}
+			if (sym instanceof EditableLineSymbol) {
+				enabledLine = true;
+			}
+			if (sym instanceof EditablePointSymbol) {
+				enabledVertex = true;
+				enabledFill = true;
+				enabledLine = true;
+			}
 		}
 
 		sldLineWidth.setVisible(enabledLine);
@@ -294,7 +293,7 @@ public class SymbolEditor extends JPanel implements UIPanel {
 	}
 
 	public void setSymbol(Symbol symbol) {
-		if (symbol instanceof NullSymbol) {
+		if (symbol == null) {
 			symbol = SymbolFactory.createSymbolComposite();
 		}
 		DefaultListModel mod = (DefaultListModel) lstSymbols.getModel();

@@ -73,7 +73,6 @@ import org.orbisgis.renderer.legend.carto.Interval;
 import org.orbisgis.renderer.legend.carto.IntervalLegend;
 import org.orbisgis.renderer.legend.carto.LegendFactory;
 import org.orbisgis.renderer.legend.carto.UniqueSymbolLegend;
-import org.orbisgis.renderer.symbol.NullSymbol;
 import org.orbisgis.renderer.symbol.Symbol;
 import org.orbisgis.renderer.symbol.SymbolFactory;
 import org.sif.UIFactory;
@@ -188,7 +187,7 @@ public class JPanelIntervalClassifiedLegend extends javax.swing.JPanel
 			mod.addSymbolValue(poj);
 		}
 
-		if (!(leg.getDefaultSymbol() instanceof NullSymbol)) {
+		if (!(leg.getDefaultSymbol() == null)) {
 			jCheckBoxRestOfValues.setSelected(true);
 
 			SymbolIntervalPOJO poj = new SymbolIntervalPOJO();
@@ -721,7 +720,7 @@ public class JPanelIntervalClassifiedLegend extends javax.swing.JPanel
 
 		SymbolIntervalPOJO poj = new SymbolIntervalPOJO();
 		if (rowCount < 32) {
-			Symbol sym = SymbolFactory.createNullSymbol();
+			Symbol sym = null;
 			Interval val = null;
 			String label = "";
 			if (rowCount > 0) {
