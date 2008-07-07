@@ -238,6 +238,13 @@ public class LegendsPanel extends JPanel implements UIPanel, LegendContext {
 		if (legends.size() == 0) {
 			return "You must create almost one legend";
 		}
+
+		for (LegendElement legendElement : legends) {
+			String panelError = legendElement.getLegendPanel().validateInput();
+			if (panelError != null) {
+				return panelError;
+			}
+		}
 		return null;
 	}
 

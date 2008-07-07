@@ -408,4 +408,9 @@ public class JPanelProportionalLegend extends javax.swing.JPanel implements
 
 	}
 
+	public String validateInput() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }

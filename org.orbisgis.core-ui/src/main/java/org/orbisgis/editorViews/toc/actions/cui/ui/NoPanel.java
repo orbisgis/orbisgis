@@ -44,4 +44,8 @@ public class NoPanel implements ILegendPanelUI {
 
 	}
 
+	public String validateInput() {
+		return null;
+	}
+
 }

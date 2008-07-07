@@ -482,4 +482,10 @@ public class JPanelUniqueValueLegend extends javax.swing.JPanel implements
 		this.legendContext = lc;
 	}
 
+	public String validateInput() {
+		if (legend.getValueCount() == 0) {
+			return "At least a value classification should be added";
+		}
+		return null;
+	}
 }

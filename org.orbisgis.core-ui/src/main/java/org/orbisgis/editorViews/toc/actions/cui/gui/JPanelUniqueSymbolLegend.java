@@ -65,7 +65,8 @@ public class JPanelUniqueSymbolLegend extends javax.swing.JPanel implements
 	private SymbolEditor symbolEditor;
 
 	/** Creates new form JPanelSimpleSimbolLegend */
-	public JPanelUniqueSymbolLegend(boolean showCollection, LegendContext legendContext) {
+	public JPanelUniqueSymbolLegend(boolean showCollection,
+			LegendContext legendContext) {
 		leg = LegendFactory.createUniqueSymbolLegend();
 		leg.setName(getLegendTypeName());
 		symbolEditor = new SymbolEditor(showCollection, legendContext);
@@ -109,6 +110,9 @@ public class JPanelUniqueSymbolLegend extends javax.swing.JPanel implements
 	}
 
 	public String validateInput() {
+		if (symbolEditor.getSymbolComposite() == null) {
+			return "At least symbol must be created";
+		}
 		return null;
 	}
 

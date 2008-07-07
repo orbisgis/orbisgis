@@ -47,7 +47,6 @@ package org.orbisgis.editorViews.toc.actions.cui.gui;
 
 import java.awt.Component;
 
-import org.orbisgis.layerModel.ILayer;
 import org.orbisgis.renderer.legend.Legend;
 
 /**
@@ -114,4 +113,10 @@ public interface ILegendPanelUI {
 	 * @return
 	 */
 	public ILegendPanelUI newInstance(LegendContext legendContext);
+
+	/**
+	 * @return Null if the status of the edited legend is ok. An error message
+	 *         if the legend cannot be created
+	 */
+	public String validateInput();
 }

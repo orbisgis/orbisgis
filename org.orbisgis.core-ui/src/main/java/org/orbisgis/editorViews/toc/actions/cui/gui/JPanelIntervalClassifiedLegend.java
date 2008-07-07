@@ -895,4 +895,9 @@ public class JPanelIntervalClassifiedLegend extends javax.swing.JPanel
 
 	}
 
+	public String validateInput() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }

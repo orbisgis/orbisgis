@@ -348,4 +348,9 @@ public class JPanelLabelLegend extends javax.swing.JPanel implements
 
 	}
 
+	public String validateInput() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }
