@@ -46,6 +46,7 @@ abstract class AbstractClassifiedLegend extends AbstractLegend implements
 
 	private String fieldName;
 	private Symbol defaultSymbol;
+	private String defaultLabel = "Rest of values";
 
 	public AbstractClassifiedLegend() {
 		defaultSymbol = SymbolFactory.createNullSymbol();
@@ -67,6 +68,14 @@ abstract class AbstractClassifiedLegend extends AbstractLegend implements
 
 	public String getClassificationField() {
 		return fieldName;
+	}
+
+	public String getDefaultLabel() {
+		return defaultLabel;
+	}
+
+	public void setDefaultLabel(String defaultLabel) {
+		this.defaultLabel = defaultLabel;
 	}
 
 }

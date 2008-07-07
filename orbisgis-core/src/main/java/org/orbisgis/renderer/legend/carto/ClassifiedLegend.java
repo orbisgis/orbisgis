@@ -59,6 +59,18 @@ public interface ClassifiedLegend extends Legend {
 	Symbol getDefaultSymbol();
 
 	/**
+	 * Get the default label.
+	 *
+	 * @return
+	 */
+	String getDefaultLabel();
+
+	/**
+	 * @param label
+	 */
+	void setDefaultLabel(String label);
+
+	/**
 	 * Sets the field used to classify the features
 	 *
 	 * @param fieldName

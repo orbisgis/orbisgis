@@ -41,6 +41,8 @@ import org.orbisgis.renderer.symbol.Symbol;
 
 public interface UniqueValueLegend extends ClassifiedLegend {
 
+	String NAME = "Unique value legend";
+
 	/**
 	 * Adds a classification to the legend
 	 *
@@ -49,23 +51,76 @@ public interface UniqueValueLegend extends ClassifiedLegend {
 	 * @param symbol
 	 *            Symbol to draw the features that is equal the specified
 	 *            classification value
+	 * @param label
+	 *            Human readable description for the classification
 	 */
-	void addClassification(Value value, Symbol symbol);
+	void addClassification(Value value, Symbol symbol, String label);
 
 	/**
-	 * Gets all the values in this legend that are classified
+	 * Gets the number of classified values in this legend
 	 *
 	 * @return
 	 */
-	Value[] getClassificationValues();
+	int getValueCount();
 
 	/**
-	 * Gets the symbol used for the specified value
+	 * Gets the value of the i-th classification
+	 *
+	 * @param index
+	 * @return
+	 */
+	Value getValue(int index);
+
+	/**
+	 * Gets the symbol used in the specified classification
 	 *
 	 * @param value
-	 * @return The associated symbol or null if the value is not classified in
-	 *         this legend
+	 * @return The associated symbol
 	 */
-	Symbol getValueSymbol(Value value);
+	Symbol getSymbol(int i);
+
+	/**
+	 * Gets the label for the specified classification
+	 *
+	 * @param value
+	 * @return
+	 */
+	String getLabel(int i);
+
+	/**
+	 * Sets the label for the specified classification
+	 *
+	 * @param i
+	 * @param label
+	 */
+	void setLabel(int i, String label);
+
+	/**
+	 * Sets the symbol for the specified classification
+	 *
+	 * @param index
+	 * @param symbol
+	 */
+	void setSymbol(int index, Symbol symbol);
+
+	/**
+	 * Sets the label for the specified classification
+	 *
+	 * @param index
+	 * @param value
+	 */
+	void setValue(int index, Value value);
+
+	/**
+	 * Clears all the classifications in the legend
+	 */
+	void clear();
+
+	/**
+	 * Removes the specified classification
+	 *
+	 * @param index
+	 */
+	void removeClassification(int index);
 
 }

@@ -36,17 +36,16 @@
  */
 package org.orbisgis.editorViews.toc.actions.cui.gui.widgets;
 
-import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.Stroke;
 import java.awt.geom.AffineTransform;
 
 import javax.swing.JPanel;
 
 import org.gdms.driver.DriverException;
 import org.orbisgis.renderer.RenderPermission;
+import org.orbisgis.renderer.symbol.RenderUtils;
 import org.orbisgis.renderer.symbol.Symbol;
 
 import com.vividsolutions.jts.geom.Coordinate;
@@ -72,37 +71,35 @@ public class Canvas extends JPanel {
 		}
 
 		g.setColor(Color.white);
-		g.fillRect(2, 2, 123, 67);
+		g.fillRect(1, 1, getWidth(), getHeight());
 
 		GeometryFactory gf = new GeometryFactory();
 		Geometry geom = null;
 
 		try {
-			Stroke st = new BasicStroke();
-			((Graphics2D) g).setStroke(new BasicStroke(new Float(2.0)));
-			g.drawRect(1, 1, 124, 68); // Painting a Rectangle for the
-			// presentation and selection
-
-			((Graphics2D) g).setStroke(st);
-
-			geom = gf.createLineString(new Coordinate[] {
-					new Coordinate(30, 20), new Coordinate(50, 50),
-					new Coordinate(70, 20), new Coordinate(90, 50) });
-			paintGeometry(g, geom);
-			geom = gf.createPoint(new Coordinate(60, 35));
-			paintGeometry(g, geom);
-			Coordinate[] coordsP = { new Coordinate(30, 25),
-					new Coordinate(90, 25), new Coordinate(90, 45),
-					new Coordinate(30, 45), new Coordinate(30, 25) };
+			int widthUnit = getWidth() / 4;
+			int heightUnit = getHeight() / 4;
+			Coordinate[] coordsP = { new Coordinate(widthUnit, heightUnit),
+					new Coordinate(3 * widthUnit, heightUnit),
+					new Coordinate(widthUnit, 3 * heightUnit),
+					new Coordinate(widthUnit, heightUnit) };
 			CoordinateArraySequence seqP = new CoordinateArraySequence(coordsP);
 			geom = gf.createPolygon(new LinearRing(seqP, gf), null);
+			paintGeometry(g, geom);
+			geom = gf.createLineString(new Coordinate[] {
+					new Coordinate(widthUnit, 3 * heightUnit),
+					new Coordinate(1.5 * widthUnit, 2 * heightUnit),
+					new Coordinate(2 * widthUnit, 3 * heightUnit),
+					new Coordinate(3 * widthUnit, heightUnit) });
+			paintGeometry(g, geom);
+			geom = gf
+					.createPoint(new Coordinate(2 * widthUnit, 2 * heightUnit));
 			paintGeometry(g, geom);
 
 		} catch (DriverException e) {
 			((Graphics2D) g).drawString("Cannot generate preview", 0, 0);
 		} catch (NullPointerException e) {
 			((Graphics2D) g).drawString("Cannot generate preview: ", 0, 0);
-			System.out.println(e.getMessage());
 		}
 	}
 
@@ -116,7 +113,8 @@ public class Canvas extends JPanel {
 
 		};
 		if (s.acceptGeometry(geom)) {
-			s.draw((Graphics2D) g, geom, new AffineTransform(),
+			Symbol sym = RenderUtils.buildSymbolToDraw(s, geom);
+			sym.draw((Graphics2D) g, geom, new AffineTransform(),
 					renderPermission);
 		}
 	}

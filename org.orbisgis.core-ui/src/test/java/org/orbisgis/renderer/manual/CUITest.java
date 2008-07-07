@@ -16,6 +16,7 @@ import org.orbisgis.Services;
 import org.orbisgis.SymbolManager;
 import org.orbisgis.editorViews.toc.actions.cui.gui.ILegendPanelUI;
 import org.orbisgis.editorViews.toc.actions.cui.gui.JPanelUniqueSymbolLegend;
+import org.orbisgis.editorViews.toc.actions.cui.gui.JPanelUniqueValueLegend;
 import org.orbisgis.editorViews.toc.actions.cui.ui.LegendsPanel;
 import org.orbisgis.errorManager.DefaultErrorManager;
 import org.orbisgis.errorManager.ErrorManager;
@@ -27,8 +28,8 @@ import org.sif.UIFactory;
 public class CUITest {
 
 	public static void main(String[] args) throws Throwable {
-		DataSourceFactory dsf = new DataSourceFactory(
-				"src/test/resources/sources", "src/test/resources/temp");
+		DataSourceFactory dsf = new DataSourceFactory("target/sources",
+				"target/temp");
 
 		Services.registerService("org.orbisgis.DataManager", DataManager.class,
 				"", new DefaultDataManager(dsf));
@@ -79,10 +80,9 @@ public class CUITest {
 				.getConstraint(Constraint.GEOMETRY_TYPE);
 
 		LegendsPanel pan = new LegendsPanel();
-		pan
-				.init(cons, layer.getVectorLegend(),
-						new ILegendPanelUI[] { new JPanelUniqueSymbolLegend(
-								true, pan) });
+		pan.init(cons, layer.getVectorLegend(), new ILegendPanelUI[] {
+				new JPanelUniqueSymbolLegend(true, pan),
+				new JPanelUniqueValueLegend(pan) }, layer);
 		if (UIFactory.showDialog(pan)) {
 			try {
 				layer.setLegend(pan.getLegends());

@@ -82,7 +82,8 @@ public class NewRenderer {
 		layer.setLegend(getLegend());
 
 		Envelope extent = layer.getEnvelope();
-		BufferedImage img = new BufferedImage(400, 400, BufferedImage.TYPE_INT_ARGB);
+		BufferedImage img = new BufferedImage(400, 400,
+				BufferedImage.TYPE_INT_ARGB);
 		Renderer r = new Renderer();
 		int size = 350;
 		extent = new Envelope(new Coordinate(extent.centre().x - size, extent
@@ -198,8 +199,10 @@ public class NewRenderer {
 
 		Symbol lesoutres = SymbolFactory.createPolygonSymbol(Color.black);
 
-		uvl.addClassification(ValueFactory.createValue("grassland"), grass);
-		uvl.addClassification(ValueFactory.createValue("cereals"), cereals);
+		uvl.addClassification(ValueFactory.createValue("grassland"), grass,
+				"grass");
+		uvl.addClassification(ValueFactory.createValue("cereals"), cereals,
+				"cereals");
 		uvl.setClassificationField("type");
 		uvl.setDefaultSymbol(lesoutres);
 		LabelLegend ll = LegendFactory.createLabelLegend();

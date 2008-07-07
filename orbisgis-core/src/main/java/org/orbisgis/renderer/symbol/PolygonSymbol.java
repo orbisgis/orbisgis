@@ -60,13 +60,15 @@ public class PolygonSymbol extends AbstractPolygonSymbol {
 			RenderPermission permission) throws DriverException {
 		if (geom instanceof Polygon || geom instanceof MultiPolygon) {
 			LiteShape ls = new LiteShape(geom, at, true);
-			g.setStroke(new BasicStroke(lineWidth));
 			if (fillColor != null) {
 				g.setPaint(fillColor);
 				g.fill(ls);
 			}
-			g.setColor(outline);
-			g.draw(ls);
+			if (outline != null) {
+				g.setStroke(new BasicStroke(lineWidth));
+				g.setColor(outline);
+				g.draw(ls);
+			}
 		}
 
 		return null;

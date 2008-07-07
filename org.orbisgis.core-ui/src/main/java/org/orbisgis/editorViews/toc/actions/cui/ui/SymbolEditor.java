@@ -85,6 +85,7 @@ import org.orbisgis.renderer.symbol.EditableLineSymbol;
 import org.orbisgis.renderer.symbol.EditablePointSymbol;
 import org.orbisgis.renderer.symbol.EditablePolygonSymbol;
 import org.orbisgis.renderer.symbol.EditableSymbol;
+import org.orbisgis.renderer.symbol.NullSymbol;
 import org.orbisgis.renderer.symbol.Symbol;
 import org.orbisgis.renderer.symbol.SymbolFactory;
 import org.orbisgis.ui.sif.AskValue;
@@ -267,6 +268,10 @@ public class SymbolEditor extends JPanel implements UIPanel {
 		txtLineWidth.setVisible(enabledLine);
 		lblLineWidth.setVisible(enabledLine);
 
+		sldLineWidth.setEnabled(chkLine.isSelected());
+		txtLineWidth.setEnabled(chkLine.isSelected());
+		lblLineWidth.setEnabled(chkLine.isSelected());
+
 		sldVertexSize.setVisible(enabledVertex);
 		txtVertexSize.setVisible(enabledVertex);
 		lblSize.setVisible(enabledVertex);
@@ -289,6 +294,9 @@ public class SymbolEditor extends JPanel implements UIPanel {
 	}
 
 	public void setSymbol(Symbol symbol) {
+		if (symbol instanceof NullSymbol) {
+			symbol = SymbolFactory.createSymbolComposite();
+		}
 		DefaultListModel mod = (DefaultListModel) lstSymbols.getModel();
 		mod.removeAllElements();
 
@@ -313,7 +321,7 @@ public class SymbolEditor extends JPanel implements UIPanel {
 			lstSymbols.setSelectedIndex(0);
 			syncSymbolControls(symbol.getSymbol(0));
 		}
-		refreshListButtons();
+		refresh();
 	}
 
 	/**
@@ -338,7 +346,7 @@ public class SymbolEditor extends JPanel implements UIPanel {
 			lineColor = new Color(lineColor.getRed(), lineColor.getGreen(),
 					lineColor.getBlue(), 255 - sldTransparency.getValue());
 			if (chkLine.isSelected()) {
-				symbol.setOutlineColor(lblLine.getBackground());
+				symbol.setOutlineColor(lineColor);
 			} else {
 				symbol.setOutlineColor(null);
 			}
@@ -750,6 +758,7 @@ public class SymbolEditor extends JPanel implements UIPanel {
 			SymbolListDecorator dec = (SymbolListDecorator) lstSymbols
 					.getSelectedValue();
 			syncSymbolControls(dec.getSymbol());
+			refresh();
 		}
 	}
 

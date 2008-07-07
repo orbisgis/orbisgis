@@ -46,7 +46,6 @@ import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 
 import org.gdms.data.types.GeometryConstraint;
-import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
 import org.orbisgis.renderer.RenderPermission;
 import org.orbisgis.renderer.legend.Legend;
@@ -135,11 +134,10 @@ public class ImageLegend {
 
 		if (leg instanceof UniqueValueLegend) {
 			UniqueValueLegend uvl = (UniqueValueLegend) leg;
-			int numberOfClas = uvl.getClassificationValues().length;
-			Value[] vals = uvl.getClassificationValues();
+			int numberOfClas = uvl.getValueCount();
 			for (int i = 0; i < numberOfClas; i++) {
-				paintSymbol(uvl.getValueSymbol(vals[i]), end, g);
-				setText(uvl.getValueSymbol(vals[i]).getName(), end, g);
+				paintSymbol(uvl.getSymbol(i), end, g);
+				setText(uvl.getLabel(i), end, g);
 				end += 30;
 			}
 			if (!(uvl.getDefaultSymbol() instanceof NullSymbol)) {
@@ -426,13 +424,12 @@ public class ImageLegend {
 
 		if (leg instanceof UniqueValueLegend) {
 			UniqueValueLegend uvl = (UniqueValueLegend) leg;
-			int numberOfClas = uvl.getClassificationValues().length;
+			int numberOfClas = uvl.getValueCount();
 
 			height = 30 * numberOfClas;
 
-			Value[] vals = uvl.getClassificationValues();
 			for (int i = 0; i < numberOfClas; i++) {
-				String str = uvl.getValueSymbol(vals[i]).getName();
+				String str = uvl.getLabel(i);
 				FontMetrics fm = dg.getFontMetrics();
 				int widthStr = fm.stringWidth(str);
 

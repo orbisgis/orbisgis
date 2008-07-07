@@ -41,6 +41,7 @@ import java.awt.Component;
 import javax.swing.JTable;
 import javax.swing.table.TableCellRenderer;
 
+import org.orbisgis.editorViews.toc.actions.cui.gui.widgets.Canvas;
 import org.orbisgis.renderer.symbol.Symbol;
 
 public class SymbolValueCellRenderer implements TableCellRenderer {
@@ -48,16 +49,11 @@ public class SymbolValueCellRenderer implements TableCellRenderer {
 	public Component getTableCellRendererComponent(JTable table, Object value,
 			boolean isSelected, boolean hasFocus, int row, int column) {
 
-		Component obj = null;
+		Canvas canvas = new Canvas();
 
-		ButtonCanvas objB = new ButtonCanvas();
+		canvas.setSymbol((Symbol) value);
 
-		Integer constraint = objB.getConstraint((Symbol) value);
-		objB.setLegend((Symbol) value, constraint);
-
-		obj = objB;
-
-		return obj;
+		return canvas;
 	}
 
 }

@@ -54,23 +54,25 @@ public class DefaultUniqueValueLegend extends AbstractClassifiedLegend
 
 	private ArrayList<Value> values = new ArrayList<Value>();
 	private ArrayList<Symbol> symbols = new ArrayList<Symbol>();
+	private ArrayList<String> labels = new ArrayList<String>();
 
-	public void addClassification(Value value, Symbol symbol) {
+	public void addClassification(Value value, Symbol symbol, String label) {
 		values.add(value);
 		symbols.add(symbol);
+		labels.add(label);
 		fireLegendInvalid();
 	}
 
 	public String getLegendTypeName() {
-		return "Unique Value Legend";
+		return NAME;
 	}
 
-	public Value[] getClassificationValues() {
-		return values.toArray(new Value[0]);
+	public Symbol getSymbol(int index) {
+		return symbols.get(index);
 	}
 
-	public Symbol getValueSymbol(Value value) {
-		return symbols.get(values.indexOf(value));
+	private int getValueIndex(Value value) {
+		return values.indexOf(value);
 	}
 
 	public Symbol getSymbol(SpatialDataSourceDecorator sds, long row)
@@ -79,7 +81,7 @@ public class DefaultUniqueValueLegend extends AbstractClassifiedLegend
 			int fieldIndex = sds.getSpatialFieldIndex();
 			Value value = sds.getFieldValue(row, fieldIndex);
 			Geometry geom = sds.getGeometry(row);
-			int symbolIndex = values.indexOf(value);
+			int symbolIndex = getValueIndex(value);
 			if (symbolIndex != -1) {
 				Symbol classificationSymbol = this.symbols.get(symbolIndex);
 				Symbol symbol = RenderUtils.buildSymbolToDraw(
@@ -111,6 +113,45 @@ public class DefaultUniqueValueLegend extends AbstractClassifiedLegend
 
 	public Legend newInstance() {
 		return new DefaultUniqueValueLegend();
+	}
+
+	public String getLabel(int index) throws IllegalArgumentException {
+		return labels.get(index);
+	}
+
+	public Value getValue(int index) {
+		return values.get(index);
+	}
+
+	public int getValueCount() {
+		return values.size();
+	}
+
+	public void setLabel(int index, String label)
+			throws IllegalArgumentException {
+		labels.set(index, label);
+	}
+
+	public void setSymbol(int index, Symbol symbol)
+			throws IllegalArgumentException {
+		symbols.set(index, symbol);
+	}
+
+	public void setValue(int index, Value value) {
+		values.set(index, value);
+	}
+
+	public void clear() {
+		values.clear();
+		symbols.clear();
+		labels.clear();
+	}
+
+	public void removeClassification(int index)
+			throws IllegalArgumentException {
+		values.remove(index);
+		symbols.remove(index);
+		labels.remove(index);
 	}
 
 }

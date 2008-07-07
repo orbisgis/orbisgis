@@ -12,6 +12,7 @@ import javax.swing.JPanel;
 import org.gdms.data.types.GeometryConstraint;
 import org.orbisgis.editorViews.toc.actions.cui.gui.ILegendPanelUI;
 import org.orbisgis.editorViews.toc.actions.cui.gui.LegendContext;
+import org.orbisgis.layerModel.ILayer;
 import org.orbisgis.layerModel.LegendDecorator;
 import org.orbisgis.renderer.legend.Legend;
 import org.sif.UIFactory;
@@ -27,9 +28,12 @@ public class LegendsPanel extends JPanel implements UIPanel, LegendContext {
 	private CardLayout cardLayout;
 	private String lastUID = "";
 	private GeometryConstraint gc;
+	private ILayer layer;
 
-	public void init(GeometryConstraint gc, Legend[] legends, ILegendPanelUI[] availableLegends) {
+	public void init(GeometryConstraint gc, Legend[] legends,
+			ILegendPanelUI[] availableLegends, ILayer layer) {
 		this.gc = gc;
+		this.layer = layer;
 		if (gc == null) {
 			geometryType = ILegendPanelUI.ALL;
 		} else {
@@ -153,8 +157,8 @@ public class LegendsPanel extends JPanel implements UIPanel, LegendContext {
 
 	public void legendAdded(ILegendPanelUI panel) {
 		panel = panel.newInstance(this);
-		LegendElement le = new LegendElement(panel
-				.getComponent(), panel, getNewId());
+		LegendElement le = new LegendElement(panel.getComponent(), panel,
+				getNewId());
 		addLegend(le);
 	}
 
@@ -240,6 +244,10 @@ public class LegendsPanel extends JPanel implements UIPanel, LegendContext {
 
 	public GeometryConstraint getGeometryConstraint() {
 		return gc;
+	}
+
+	public ILayer getLayer() {
+		return layer;
 	}
 
 }

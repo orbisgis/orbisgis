@@ -44,6 +44,7 @@ import org.orbisgis.Services;
 import org.orbisgis.editorViews.toc.action.ILayerAction;
 import org.orbisgis.editorViews.toc.actions.cui.gui.ILegendPanelUI;
 import org.orbisgis.editorViews.toc.actions.cui.gui.JPanelUniqueSymbolLegend;
+import org.orbisgis.editorViews.toc.actions.cui.gui.JPanelUniqueValueLegend;
 import org.orbisgis.editorViews.toc.actions.cui.ui.LegendsPanel;
 import org.orbisgis.layerModel.ILayer;
 import org.orbisgis.layerModel.MapContext;
@@ -71,9 +72,9 @@ public class EditLayerAction implements ILayerAction {
 					.getConstraint(Constraint.GEOMETRY_TYPE);
 
 			LegendsPanel pan = new LegendsPanel();
-			pan.init(cons, layer.getVectorLegend(),
-					new ILegendPanelUI[] { new JPanelUniqueSymbolLegend(true,
-							pan) });
+			pan.init(cons, layer.getVectorLegend(), new ILegendPanelUI[] {
+					new JPanelUniqueSymbolLegend(true, pan),
+					new JPanelUniqueValueLegend(pan) }, layer);
 			if (UIFactory.showDialog(pan)) {
 				try {
 					layer.setLegend(pan.getLegends());

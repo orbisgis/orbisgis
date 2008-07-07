@@ -1,6 +1,7 @@
 package org.orbisgis.editorViews.toc.actions.cui.gui;
 
 import org.gdms.data.types.GeometryConstraint;
+import org.orbisgis.layerModel.ILayer;
 
 public interface LegendContext {
 
@@ -39,4 +40,11 @@ public interface LegendContext {
 	 * @return
 	 */
 	GeometryConstraint getGeometryConstraint();
+
+	/**
+	 * Gets the layer which legend is being edited
+	 *
+	 * @return
+	 */
+	ILayer getLayer();
 }

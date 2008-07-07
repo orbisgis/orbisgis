@@ -54,8 +54,7 @@ public abstract class AbstractSymbol implements Symbol {
 	}
 
 	public int getSymbolCount() {
-		throw new UnsupportedOperationException(
-				"This symbol doesn't allow children");
+		return 0;
 	}
 
 	public Symbol getSymbol(int i) {

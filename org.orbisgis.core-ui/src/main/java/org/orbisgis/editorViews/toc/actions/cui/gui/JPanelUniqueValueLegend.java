@@ -44,15 +44,16 @@ package org.orbisgis.editorViews.toc.actions.cui.gui;
 
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Random;
 
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JOptionPane;
-import javax.swing.event.TableModelEvent;
-import javax.swing.event.TableModelListener;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 
 import org.gdms.data.SpatialDataSourceDecorator;
 import org.gdms.data.types.GeometryConstraint;
@@ -60,16 +61,13 @@ import org.gdms.data.types.Type;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
-import org.orbisgis.editorViews.toc.actions.cui.gui.widgets.LegendListDecorator;
 import org.orbisgis.editorViews.toc.actions.cui.gui.widgets.table.SymbolValueCellRenderer;
-import org.orbisgis.editorViews.toc.actions.cui.gui.widgets.table.SymbolValuePOJO;
-import org.orbisgis.editorViews.toc.actions.cui.gui.widgets.table.SymbolValueTableModel;
+import org.orbisgis.editorViews.toc.actions.cui.gui.widgets.table.UniqueValueLegendTableModel;
 import org.orbisgis.editorViews.toc.actions.cui.ui.SymbolEditor;
 import org.orbisgis.images.IconLoader;
 import org.orbisgis.layerModel.ILayer;
 import org.orbisgis.renderer.legend.Legend;
 import org.orbisgis.renderer.legend.carto.LegendFactory;
-import org.orbisgis.renderer.legend.carto.UniqueSymbolLegend;
 import org.orbisgis.renderer.legend.carto.UniqueValueLegend;
 import org.orbisgis.renderer.symbol.NullSymbol;
 import org.orbisgis.renderer.symbol.Symbol;
@@ -83,20 +81,16 @@ import org.sif.UIFactory;
 public class JPanelUniqueValueLegend extends javax.swing.JPanel implements
 		ILegendPanelUI {
 
-	private Integer constraint = 0;
-	private UniqueValueLegend leg = null;
-	private ILayer layer = null;
+	private UniqueValueLegend legend;
 	private LegendContext legendContext;
+	private UniqueValueLegendTableModel tableModel;
 
-	private LegendListDecorator dec = null;
-
-	public JPanelUniqueValueLegend(Legend leg, Integer constraint, ILayer layer) {
-		this.constraint = constraint;
-		this.leg = (UniqueValueLegend) leg;
-		this.layer = layer;
+	public JPanelUniqueValueLegend(LegendContext legendContext) {
+		legend = LegendFactory.createUniqueValueLegend();
+		legend.setName(getLegendTypeName());
+		this.legendContext = legendContext;
 		initComponents();
 		initList();
-		initCombo();
 	}
 
 	/**
@@ -106,6 +100,7 @@ public class JPanelUniqueValueLegend extends javax.swing.JPanel implements
 
 		ArrayList<String> comboValuesArray = new ArrayList<String>();
 		try {
+			ILayer layer = legendContext.getLayer();
 			int numFields = layer.getDataSource().getFieldCount();
 			for (int i = 0; i < numFields; i++) {
 				int fieldType = layer.getDataSource().getFieldType(i)
@@ -121,115 +116,65 @@ public class JPanelUniqueValueLegend extends javax.swing.JPanel implements
 		String[] comboValues = new String[comboValuesArray.size()];
 
 		comboValues = comboValuesArray.toArray(comboValues);
+		jComboBox1.setModel(new DefaultComboBoxModel(comboValues));
 
-		DefaultComboBoxModel model = (DefaultComboBoxModel) jComboBox1
-				.getModel();
-
-		for (int i = 0; i < comboValues.length; i++) {
-			model.addElement(comboValues[i]);
+		String field = legend.getClassificationField();
+		if (field != null) {
+			jComboBox1.setSelectedItem(field);
 		}
 
-		String field = leg.getClassificationField();
-		jComboBox1.setSelectedItem(field);
+		refreshButtons();
+	}
 
+	private void refreshButtons() {
+		boolean someField = jComboBox1.getSelectedIndex() != -1;
+		jButtonAddAll.setEnabled(someField);
+		jButtonAddOne.setEnabled(someField);
+
+		jButtonDel.setEnabled(table.getSelectedRow() != -1);
 	}
 
 	/**
 	 * init the table and their events
 	 */
 	private void initList() {
-		jTable1.setModel(new SymbolValueTableModel());
-		jTable1.setRowHeight(25);
+		tableModel = new UniqueValueLegendTableModel();
+		table.setModel(tableModel);
+		table.setRowHeight(25);
 
-		SymbolValueTableModel mod = (SymbolValueTableModel) jTable1.getModel();
+		table.setDefaultRenderer(Symbol.class, new SymbolValueCellRenderer());
 
-		Value[] val = leg.getClassificationValues();
+		table.addMouseListener(new MouseAdapter() {
 
-		// jTable1.setDefaultEditor(Symbol.class, new SymbolCellEditor());
-		jTable1.setDefaultRenderer(Symbol.class, new SymbolValueCellRenderer());
-
-		for (int i = 0; i < val.length; i++) {
-
-			SymbolValuePOJO poj = new SymbolValuePOJO();
-			poj.setSym(leg.getValueSymbol(val[i]));
-			poj.setVal(val[i]);
-			poj.setLabel(leg.getValueSymbol(val[i]).getName());
-			mod.addSymbolValue(poj);
-		}
-
-		if (!(leg.getDefaultSymbol() instanceof NullSymbol)) {
-			jCheckBoxRestOfValues.setSelected(true);
-
-			SymbolValuePOJO poj = new SymbolValuePOJO();
-			poj.setSym(leg.getDefaultSymbol());
-			poj.setVal(ValueFactory.createNullValue());
-			poj.setLabel("Default");
-			mod.addSymbolValue(poj);
-
-		} else {
-			jCheckBoxRestOfValues.setSelected(false);
-		}
-
-		jTable1.addMouseListener(new MouseListener() {
-
+			@Override
 			public void mouseClicked(MouseEvent e) {
 				if (e.getClickCount() > 1) {
-					int col = jTable1.getSelectedColumn();
+					int col = table.getSelectedColumn();
 					if (col == 0) {
-						// FlowLayoutPreviewWindow flpw = new
-						// FlowLayoutPreviewWindow();
-						// flpw.setConstraint(constraint);
-						int row = jTable1.getSelectedRow();
-						SymbolValueTableModel mod = (SymbolValueTableModel) jTable1
-								.getModel();
-						UniqueSymbolLegend usl = LegendFactory
-								.createUniqueSymbolLegend();
-						usl.setSymbol((Symbol) mod.getValueAt(row, 0));
-						SymbolEditor jpusl = new SymbolEditor(true,
+						int row = table.getSelectedRow();
+						SymbolEditor symbolEditor = new SymbolEditor(true,
 								legendContext);
+						symbolEditor.setSymbol((Symbol) tableModel.getValueAt(
+								row, 0));
 
-						if (UIFactory.showDialog(jpusl)) {
-							Symbol sym = jpusl.getSymbolComposite();
-
-							mod.setValueAt(sym, row, col);
+						if (UIFactory.showDialog(symbolEditor)) {
+							Symbol sym = symbolEditor.getSymbolComposite();
+							tableModel.setValueAt(sym, row, col);
 						}
 					}
 				}
 			}
 
-			public void mouseEntered(MouseEvent e) {
-				// TODO Auto-generated method stub
-
-			}
-
-			public void mouseExited(MouseEvent e) {
-				// TODO Auto-generated method stub
-
-			}
-
-			public void mousePressed(MouseEvent e) {
-				// TODO Auto-generated method stub
-
-			}
-
-			public void mouseReleased(MouseEvent e) {
-				// TODO Auto-generated method stub
-
-			}
-
 		});
 
-		mod.addTableModelListener(new TableModelListener() {
+		table.getSelectionModel().addListSelectionListener(
+				new ListSelectionListener() {
 
-			public void tableChanged(TableModelEvent e) {
-				jTable1Changed(e);
-			}
+					public void valueChanged(ListSelectionEvent e) {
+						refreshButtons();
+					}
 
-		});
-	}
-
-	protected void jTable1Changed(TableModelEvent e) {
-		dec.setLegend(getLegend());
+				});
 	}
 
 	/**
@@ -239,7 +184,7 @@ public class JPanelUniqueValueLegend extends javax.swing.JPanel implements
 	 * @param constraint
 	 * @return Symbol
 	 */
-	protected Symbol createRandomSymbol(Integer constraint) {
+	protected Symbol createRandomSymbol() {
 		Symbol s = SymbolFactory.createNullSymbol();
 
 		Random rand = new Random();
@@ -251,26 +196,28 @@ public class JPanelUniqueValueLegend extends javax.swing.JPanel implements
 		Color outline = Color.black;
 		Color fill = new Color(r2, g2, b2);
 
-		if (constraint == null) {
-			Symbol sl = createRandomSymbol(GeometryConstraint.LINESTRING);
-			Symbol sc = createRandomSymbol(GeometryConstraint.POINT);
-			Symbol sp = createRandomSymbol(GeometryConstraint.POLYGON);
-			Symbol[] arraySym = { sl, sc, sp };
-			s = SymbolFactory.createSymbolComposite(arraySym);
+		Symbol lineSymbol = SymbolFactory.createLineSymbol(fill, 1);
+		Symbol pointSymbol = SymbolFactory.createCirclePointSymbol(outline,
+				fill, 10);
+		Symbol polygonSymbol = SymbolFactory.createPolygonSymbol(outline, fill);
+		GeometryConstraint geometryConstraint = legendContext
+				.getGeometryConstraint();
+		if (geometryConstraint == null) {
+			s = SymbolFactory.createSymbolComposite(polygonSymbol, lineSymbol,
+					pointSymbol);
 		} else {
-			switch (constraint) {
+			switch (geometryConstraint.getGeometryType()) {
 			case GeometryConstraint.LINESTRING:
 			case GeometryConstraint.MULTI_LINESTRING:
-				s = SymbolFactory.createLineSymbol(fill, 1);
+				s = lineSymbol;
 				break;
 			case GeometryConstraint.POINT:
 			case GeometryConstraint.MULTI_POINT:
-				int size = 10;
-				s = SymbolFactory.createCirclePointSymbol(outline, fill, size);
+				s = pointSymbol;
 				break;
 			case GeometryConstraint.POLYGON:
 			case GeometryConstraint.MULTI_POLYGON:
-				s = SymbolFactory.createPolygonSymbol(outline, fill);
+				s = polygonSymbol;
 				break;
 			default:
 				throw new RuntimeException("bug");
@@ -285,9 +232,6 @@ public class JPanelUniqueValueLegend extends javax.swing.JPanel implements
 	 * WARNING: Do NOT modify this code. The content of this method is always
 	 * regenerated by the Form Editor.
 	 */
-	// <editor-fold defaultstate="collapsed" desc="Generated
-	// <editor-fold defaultstate="collapsed" desc="Generated
-	// Code">//GEN-BEGIN:initComponents
 	private void initComponents() {
 
 		jPanelTop = new javax.swing.JPanel();
@@ -297,7 +241,7 @@ public class JPanelUniqueValueLegend extends javax.swing.JPanel implements
 		jCheckBoxOrder = new javax.swing.JCheckBox();
 		jPanelTable = new javax.swing.JPanel();
 		jScrollPane1 = new javax.swing.JScrollPane();
-		jTable1 = new javax.swing.JTable();
+		table = new javax.swing.JTable();
 		jPanelButtons = new javax.swing.JPanel();
 		jButtonAddAll = new javax.swing.JButton();
 		jButtonAddOne = new javax.swing.JButton();
@@ -338,11 +282,10 @@ public class JPanelUniqueValueLegend extends javax.swing.JPanel implements
 
 		jScrollPane1.setPreferredSize(new java.awt.Dimension(454, 175));
 
-		jTable1.setModel(new javax.swing.table.DefaultTableModel(
-				new Object[][] {
+		table.setModel(new javax.swing.table.DefaultTableModel(new Object[][] {
 
-				}, new String[] { "Symbol", "Value", "Label" }));
-		jScrollPane1.setViewportView(jTable1);
+		}, new String[] { "Symbol", "Value", "Label" }));
+		jScrollPane1.setViewportView(table);
 
 		jPanelTable.add(jScrollPane1);
 
@@ -376,68 +319,54 @@ public class JPanelUniqueValueLegend extends javax.swing.JPanel implements
 		jPanelButtons.add(jButtonDel);
 
 		add(jPanelButtons);
-	}// </editor-fold>//GEN-END:initComponents
+	}
 
 	/**
 	 * adds all the values in the layer to the table.
 	 *
 	 * @param evt
 	 */
-
-	private void jButtonAddAllActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jButtonAddAllActionPerformed
+	private void jButtonAddAllActionPerformed(java.awt.event.ActionEvent evt) {
+		ILayer layer = legendContext.getLayer();
 		SpatialDataSourceDecorator sdsd = layer.getDataSource();
 		String selitem = (String) jComboBox1.getSelectedItem();
-		if (jComboBox1.getSelectedIndex() == -1) {
-			return;
-		}
 
-		((SymbolValueTableModel) jTable1.getModel()).deleteAllSymbols();
+		legend.clear();
 
-		ArrayList<String> alreadyAdded = new ArrayList<String>();
 		try {
-			int fieldindex = sdsd.getFieldIndexByName(selitem);
+			int fieldIndex = sdsd.getFieldIndexByName(selitem);
 
-			long rowcount = sdsd.getRowCount();
+			long rowCount = sdsd.getRowCount();
 
-			for (int i = 0; i < rowcount; i++) {
-				if (alreadyAdded.size() == 32) {
-					JOptionPane
-							.showMessageDialog(this,
-									"More than 32 differnt values found. Showing only 32");
+			HashSet<Value> added = new HashSet<Value>();
+			for (int i = 0; i < rowCount; i++) {
+				if (added.size() == 32) {
+					JOptionPane.showMessageDialog(this,
+							"More than 32 differnt values "
+									+ "found. Showing only 32");
 					break;
 				}
 
-				Value[] vals = sdsd.getRow(i);
-
-				Value val = vals[fieldindex];
+				Value val = sdsd.getFieldValue(i, fieldIndex);
 
 				if (val.isNull()) {
 					continue;
 				}
 
-				if (!alreadyAdded.contains(val.toString())) {
-
-					alreadyAdded.add(val.toString());
-
-					Symbol sym = createRandomSymbol(constraint);
-
-					SymbolValuePOJO poj = new SymbolValuePOJO();
-
-					poj.setSym(sym);
-					poj.setVal(val);
-					poj.setLabel(val.toString());
-
-					((SymbolValueTableModel) jTable1.getModel())
-							.addSymbolValue(poj);
+				if (!added.contains(val)) {
+					added.add(val);
+					Symbol sym = createRandomSymbol();
+					legend.addClassification(val, sym, val.toString());
 				}
 
 			}
 
+			tableModel.setLegend(this.legend);
 		} catch (DriverException e) {
 			System.out.println("Driver Exception: " + e.getMessage());
 		}
 
-	}// GEN-LAST:event_jButtonAddAllActionPerformed
+	}
 
 	/**
 	 * adds one more value to the table. will be a copy of the last (if exists
@@ -446,84 +375,45 @@ public class JPanelUniqueValueLegend extends javax.swing.JPanel implements
 	 * @param evt
 	 */
 	private void jButtonAddOneActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jButtonAddOneActionPerformed
-		SymbolValueTableModel mod = (SymbolValueTableModel) jTable1.getModel();
 
-		int rowCount = mod.getRowCount();
+		int rowCount = tableModel.getRowCount();
 
-		SymbolValuePOJO poj = new SymbolValuePOJO();
 		if (rowCount < 32) {
-			Symbol sym = createRandomSymbol(constraint);
+			Symbol sym = createRandomSymbol();
 			Value val = ValueFactory.createNullValue();
-			String label = "DummyValue";
+			String label = "Rest of values";
 			if (rowCount > 0) {
-				sym = (Symbol) mod.getValueAt(rowCount - 1, 0);
-				val = (Value) mod.getValueAt(rowCount - 1, 3);
-				label = (String) mod.getValueAt(rowCount - 1, 2);
+				sym = (Symbol) tableModel.getValueAt(0, 0);
+				val = (Value) tableModel.getValueAt(0, 1);
+				label = (String) tableModel.getValueAt(0, 2);
 			}
-			poj.setSym(sym);
-			poj.setVal(val);
-			poj.setLabel(label);
+			tableModel.insertRow(sym, val, label);
 		} else {
 			JOptionPane.showMessageDialog(this,
-					"More than 32 differnt values found. Showing only 32");
+					"Cannot have more than 32 classifications");
 		}
 
-		((SymbolValueTableModel) jTable1.getModel()).addSymbolValue(poj);
-	}// GEN-LAST:event_jButtonAddOneActionPerformed
+	}
 
-	private void jButtonDelActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jButtonDelActionPerformed
-		SymbolValueTableModel mod = (SymbolValueTableModel) jTable1.getModel();
-		int[] rows = jTable1.getSelectedRows();
-		SymbolValuePOJO[] pojos = new SymbolValuePOJO[rows.length];
-		for (int i = 0; i < rows.length; i++) {
-			pojos[i] = (SymbolValuePOJO) mod.getValueAt(rows[i], -1);
-		}
-		mod.deleteSymbolPojos(pojos);
-
-		jTable1.getSelectionModel().clearSelection();
-	}// GEN-LAST:event_jButtonDelActionPerformed
+	private void jButtonDelActionPerformed(java.awt.event.ActionEvent evt) {
+		int[] rows = table.getSelectedRows();
+		tableModel.deleteRows(rows);
+	}
 
 	/**
 	 *
 	 * @param evt
 	 */
 	private void jCheckBoxRestOfValuesActionPerformed(
-			java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jCheckBoxRestOfValuesActionPerformed
-
+			java.awt.event.ActionEvent evt) {
 		boolean isSelected = jCheckBoxRestOfValues.isSelected();
-		SymbolValueTableModel mod = (SymbolValueTableModel) jTable1.getModel();
-		if (isSelected) {
-			SymbolValuePOJO poj = new SymbolValuePOJO();
-			Symbol sym = createRandomSymbol(constraint);
-			Value val = ValueFactory.createNullValue();
-			String label = "Default";
-			poj.setSym(sym);
-			poj.setVal(val);
-			poj.setLabel(label);
+		tableModel.setShowRestOfValues(isSelected);
+	}
 
-			((SymbolValueTableModel) jTable1.getModel()).addSymbolValue(poj);
-		} else {
-			int rowcount = mod.getRowCount();
-			for (int i = 0; i < rowcount; i++) {
-				String label = (String) mod.getValueAt(i, 2);
-				if (label.equals("Default")) {
-					mod.deleteSymbolValue(i);
-					break;
-				}
-			}
-		}
+	private void jCheckBoxOrderActionPerformed(java.awt.event.ActionEvent evt) {
+		tableModel.setOrdered(jCheckBoxOrder.isSelected());
+	}
 
-		dec.setLegend(getLegend());
-	}// GEN-LAST:event_jCheckBoxRestOfValuesActionPerformed
-
-	private void jCheckBoxOrderActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jCheckBoxOrderActionPerformed
-		SymbolValueTableModel mod = (SymbolValueTableModel) jTable1.getModel();
-		mod.setOrdered(jCheckBoxOrder.isSelected());
-		jTable1.validate();
-		jTable1.repaint();
-	}// GEN-LAST:event_jCheckBoxOrderActionPerformed
-
-	// Variables declaration - do not modify//GEN-BEGIN:variables
 	private javax.swing.JButton jButtonAddAll;
 	private javax.swing.JButton jButtonAddOne;
 	private javax.swing.JButton jButtonDel;
@@ -535,89 +425,44 @@ public class JPanelUniqueValueLegend extends javax.swing.JPanel implements
 	private javax.swing.JPanel jPanelTable;
 	private javax.swing.JPanel jPanelTop;
 	private javax.swing.JScrollPane jScrollPane1;
-	private javax.swing.JTable jTable1;
-
-	// End of variables declaration//GEN-END:variables
-	// public String toString() {
-	// // return "Unique symbol";
-	// return identity;
-	// }
+	private javax.swing.JTable table;
 
 	public Component getComponent() {
-		// TODO Auto-generated method stub
 		return this;
 	}
 
 	public Legend getLegend() {
-
-		UniqueValueLegend legend = LegendFactory.createUniqueValueLegend();
-
-		SymbolValueTableModel mod = (SymbolValueTableModel) jTable1.getModel();
-
-		int rowcount = mod.getRowCount();
-
-		for (int i = 0; i < rowcount; i++) {
-			SymbolValuePOJO pojo = (SymbolValuePOJO) mod.getValueAt(i, -1);
-
-			Symbol s = pojo.getSym();
-			s.setName(pojo.getLabel());
-			Value val = ValueFactory.createNullValue();
-			try {
-				val = pojo.getVal();
-			} catch (NumberFormatException e) {
-				System.out
-						.println("Number Format Exception: " + e.getMessage());
-			}
-
-			if (jCheckBoxRestOfValues.isSelected()) {
-				if (!pojo.getLabel().equals("Default")) {
-					legend.addClassification(val, s);
-				} else {
-					legend.setDefaultSymbol(pojo.getSym());
-				}
-			} else {
-				legend.addClassification(val, s);
-			}
-		}
-		try {
-			legend
-					.setClassificationField((String) jComboBox1
-							.getSelectedItem());
-		} catch (DriverException e) {
-			System.out.println("Driver Exception: " + e.getMessage());
-		}
-		legend.setName(dec.getLegend().getName());
-
 		return legend;
 	}
 
-	public void setDecoratorListener(LegendListDecorator dec) {
-		this.dec = dec;
-	}
-
 	public boolean acceptsGeometryType(int geometryType) {
-		// TODO Auto-generated method stub
-		return false;
+		return true;
 	}
 
 	public String getLegendTypeName() {
-		// TODO Auto-generated method stub
-		return null;
+		return UniqueValueLegend.NAME;
 	}
 
 	public ILegendPanelUI newInstance(LegendContext legendContext) {
-		// TODO Auto-generated method stub
-		return null;
+		return new JPanelUniqueValueLegend(legendContext);
 	}
 
 	public void setLegend(Legend legend) {
-		// TODO Auto-generated method stub
+		this.legend = (UniqueValueLegend) legend;
+		this.tableModel.setLegend(this.legend);
+		table.setModel(this.tableModel);
 
+		syncWithLegend();
+	}
+
+	private void syncWithLegend() {
+		jCheckBoxRestOfValues
+				.setSelected(!(this.legend.getDefaultSymbol() instanceof NullSymbol));
+		initCombo();
 	}
 
 	public void setLegendContext(LegendContext lc) {
-		// TODO Auto-generated method stub
-
+		this.legendContext = lc;
 	}
 
 }

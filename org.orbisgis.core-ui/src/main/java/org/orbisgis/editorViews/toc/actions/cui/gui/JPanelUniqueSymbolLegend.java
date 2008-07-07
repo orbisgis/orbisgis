@@ -48,7 +48,7 @@ import java.net.URL;
 
 import org.orbisgis.editorViews.toc.actions.cui.ui.SymbolEditor;
 import org.orbisgis.renderer.legend.Legend;
-import org.orbisgis.renderer.legend.carto.DefaultUniqueSymbolLegend;
+import org.orbisgis.renderer.legend.carto.LegendFactory;
 import org.orbisgis.renderer.legend.carto.UniqueSymbolLegend;
 import org.orbisgis.renderer.symbol.Symbol;
 import org.sif.UIFactory;
@@ -66,6 +66,8 @@ public class JPanelUniqueSymbolLegend extends javax.swing.JPanel implements
 
 	/** Creates new form JPanelSimpleSimbolLegend */
 	public JPanelUniqueSymbolLegend(boolean showCollection, LegendContext legendContext) {
+		leg = LegendFactory.createUniqueSymbolLegend();
+		leg.setName(getLegendTypeName());
 		symbolEditor = new SymbolEditor(showCollection, legendContext);
 		this.setLayout(new BorderLayout());
 		this.add(symbolEditor, BorderLayout.CENTER);
@@ -76,10 +78,6 @@ public class JPanelUniqueSymbolLegend extends javax.swing.JPanel implements
 	 * symbols in the list.
 	 */
 	public Legend getLegend() {
-		if (leg == null) {
-			leg = new DefaultUniqueSymbolLegend();
-			leg.setName(getLegendTypeName());
-		}
 		Symbol sym = symbolEditor.getSymbolComposite();
 		leg.setSymbol(sym);
 
