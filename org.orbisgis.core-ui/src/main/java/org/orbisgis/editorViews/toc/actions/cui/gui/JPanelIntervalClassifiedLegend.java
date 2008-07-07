@@ -858,7 +858,7 @@ public class JPanelIntervalClassifiedLegend extends javax.swing.JPanel
 		}
 		try {
 			legend.setClassificationField((String) jComboBoxClasificationField
-					.getSelectedItem());
+					.getSelectedItem(), null);
 		} catch (DriverException e) {
 			System.out.println("Driver Exception: " + e.getMessage());
 		}

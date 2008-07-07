@@ -177,69 +177,74 @@ public class JPanelLabelLegend extends javax.swing.JPanel implements
 	// <editor-fold defaultstate="collapsed" desc="Generated
 	// <editor-fold defaultstate="collapsed" desc="Generated
 	// <editor-fold defaultstate="collapsed" desc="Generated
-    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
-    private void initComponents() {
+	// <editor-fold defaultstate="collapsed" desc="Generated
+	// Code">//GEN-BEGIN:initComponents
+	private void initComponents() {
 
-        buttonGroup1 = new javax.swing.ButtonGroup();
-        jPanelFirstLine = new javax.swing.JPanel();
-        jLabel1 = new javax.swing.JLabel();
-        jComboBoxLabelField = new javax.swing.JComboBox();
-        jPanelSecondLine = new javax.swing.JPanel();
-        jRadioButtonSet = new javax.swing.JRadioButton();
-        jSpinner1 = new javax.swing.JSpinner();
-        jPanelThirdLine = new javax.swing.JPanel();
-        jRadioButtonInPixels = new javax.swing.JRadioButton();
-        jComboBoxFromField = new javax.swing.JComboBox();
+		buttonGroup1 = new javax.swing.ButtonGroup();
+		jPanelFirstLine = new javax.swing.JPanel();
+		jLabel1 = new javax.swing.JLabel();
+		jComboBoxLabelField = new javax.swing.JComboBox();
+		jPanelSecondLine = new javax.swing.JPanel();
+		jRadioButtonSet = new javax.swing.JRadioButton();
+		jSpinner1 = new javax.swing.JSpinner();
+		jPanelThirdLine = new javax.swing.JPanel();
+		jRadioButtonInPixels = new javax.swing.JRadioButton();
+		jComboBoxFromField = new javax.swing.JComboBox();
 
-        setLayout(new javax.swing.BoxLayout(this, javax.swing.BoxLayout.PAGE_AXIS));
+		setLayout(new javax.swing.BoxLayout(this,
+				javax.swing.BoxLayout.PAGE_AXIS));
 
-        jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
-        jLabel1.setText("Label field:");
-        jPanelFirstLine.add(jLabel1);
+		jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+		jLabel1.setText("Label field:");
+		jPanelFirstLine.add(jLabel1);
 
-        jComboBoxLabelField.setPreferredSize(new java.awt.Dimension(225, 19));
-        jComboBoxLabelField.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jComboBoxLabelFieldActionPerformed(evt);
-            }
-        });
-        jPanelFirstLine.add(jComboBoxLabelField);
+		jComboBoxLabelField.setPreferredSize(new java.awt.Dimension(225, 19));
+		jComboBoxLabelField
+				.addActionListener(new java.awt.event.ActionListener() {
+					public void actionPerformed(java.awt.event.ActionEvent evt) {
+						jComboBoxLabelFieldActionPerformed(evt);
+					}
+				});
+		jPanelFirstLine.add(jComboBoxLabelField);
 
-        add(jPanelFirstLine);
+		add(jPanelFirstLine);
 
-        buttonGroup1.add(jRadioButtonSet);
-        jRadioButtonSet.setText("Set size:");
-        jRadioButtonSet.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jRadioButtonSetActionPerformed(evt);
-            }
-        });
-        jPanelSecondLine.add(jRadioButtonSet);
+		buttonGroup1.add(jRadioButtonSet);
+		jRadioButtonSet.setText("Set size:");
+		jRadioButtonSet.addActionListener(new java.awt.event.ActionListener() {
+			public void actionPerformed(java.awt.event.ActionEvent evt) {
+				jRadioButtonSetActionPerformed(evt);
+			}
+		});
+		jPanelSecondLine.add(jRadioButtonSet);
 
-        jSpinner1.setPreferredSize(new java.awt.Dimension(80, 23));
-        jPanelSecondLine.add(jSpinner1);
+		jSpinner1.setPreferredSize(new java.awt.Dimension(80, 23));
+		jPanelSecondLine.add(jSpinner1);
 
-        add(jPanelSecondLine);
+		add(jPanelSecondLine);
 
-        buttonGroup1.add(jRadioButtonInPixels);
-        jRadioButtonInPixels.setText("From field:");
-        jRadioButtonInPixels.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jRadioButtonInPixelsActionPerformed(evt);
-            }
-        });
-        jPanelThirdLine.add(jRadioButtonInPixels);
+		buttonGroup1.add(jRadioButtonInPixels);
+		jRadioButtonInPixels.setText("From field:");
+		jRadioButtonInPixels
+				.addActionListener(new java.awt.event.ActionListener() {
+					public void actionPerformed(java.awt.event.ActionEvent evt) {
+						jRadioButtonInPixelsActionPerformed(evt);
+					}
+				});
+		jPanelThirdLine.add(jRadioButtonInPixels);
 
-        jComboBoxFromField.setPreferredSize(new java.awt.Dimension(80, 23));
-        jComboBoxFromField.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jComboBoxFromFieldActionPerformed(evt);
-            }
-        });
-        jPanelThirdLine.add(jComboBoxFromField);
+		jComboBoxFromField.setPreferredSize(new java.awt.Dimension(80, 23));
+		jComboBoxFromField
+				.addActionListener(new java.awt.event.ActionListener() {
+					public void actionPerformed(java.awt.event.ActionEvent evt) {
+						jComboBoxFromFieldActionPerformed(evt);
+					}
+				});
+		jPanelThirdLine.add(jComboBoxFromField);
 
-        add(jPanelThirdLine);
-    }// </editor-fold>//GEN-END:initComponents
+		add(jPanelThirdLine);
+	}// </editor-fold>//GEN-END:initComponents
 
 	private void jComboBoxFromFieldActionPerformed(
 			java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jComboBoxFromFieldActionPerformed
@@ -268,18 +273,19 @@ public class JPanelLabelLegend extends javax.swing.JPanel implements
 			dec.setLegend(getLegend());
 	}// GEN-LAST:event_jComboBoxLabelFieldActionPerformed
 
-    // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.ButtonGroup buttonGroup1;
-    private javax.swing.JComboBox jComboBoxFromField;
-    private javax.swing.JComboBox jComboBoxLabelField;
-    private javax.swing.JLabel jLabel1;
-    private javax.swing.JPanel jPanelFirstLine;
-    private javax.swing.JPanel jPanelSecondLine;
-    private javax.swing.JPanel jPanelThirdLine;
-    private javax.swing.JRadioButton jRadioButtonInPixels;
-    private javax.swing.JRadioButton jRadioButtonSet;
-    private javax.swing.JSpinner jSpinner1;
-    // End of variables declaration//GEN-END:variables
+	// Variables declaration - do not modify//GEN-BEGIN:variables
+	private javax.swing.ButtonGroup buttonGroup1;
+	private javax.swing.JComboBox jComboBoxFromField;
+	private javax.swing.JComboBox jComboBoxLabelField;
+	private javax.swing.JLabel jLabel1;
+	private javax.swing.JPanel jPanelFirstLine;
+	private javax.swing.JPanel jPanelSecondLine;
+	private javax.swing.JPanel jPanelThirdLine;
+	private javax.swing.JRadioButton jRadioButtonInPixels;
+	private javax.swing.JRadioButton jRadioButtonSet;
+	private javax.swing.JSpinner jSpinner1;
+
+	// End of variables declaration//GEN-END:variables
 	// public String toString() {
 	// // return "Unique symbol";
 	// return identity;
@@ -288,7 +294,6 @@ public class JPanelLabelLegend extends javax.swing.JPanel implements
 	public Component getComponent() {
 		return this;
 	}
-
 
 	public void setDecoratorListener(LegendListDecorator dec) {
 		this.dec = dec;
@@ -299,7 +304,7 @@ public class JPanelLabelLegend extends javax.swing.JPanel implements
 
 		try {
 			leg.setClassificationField((String) jComboBoxLabelField
-					.getSelectedItem());
+					.getSelectedItem(), null);
 		} catch (DriverException e) {
 			System.out.println("Exception: " + e.getMessage());
 		}
@@ -342,6 +347,5 @@ public class JPanelLabelLegend extends javax.swing.JPanel implements
 		// TODO Auto-generated method stub
 
 	}
-
 
 }

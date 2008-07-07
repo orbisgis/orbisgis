@@ -104,7 +104,7 @@ public class TestClassfication {
 			Symbol defaultSymbol = SymbolFactory
 					.createPolygonSymbol(Color.black);
 			IntervalLegend l = LegendFactory.createIntervalLegend();
-			l.setClassificationField("PTOT90");
+			l.setClassificationField("PTOT90", ds);
 			l.setDefaultSymbol(defaultSymbol);
 			for (int i = 0; i < ranges.length; i++) {
 				l.addInterval(
@@ -168,7 +168,7 @@ public class TestClassfication {
 			ds = dsf.getDataSource(src);
 			ds.open();
 			ProportionalLegend l = LegendFactory.createProportionalLegend();
-			l.setClassificationField("PTOT90");
+			l.setClassificationField("PTOT90", ds);
 			l.setMinSymbolArea(100);
 			// l.setSquareMethod(2);
 			l.setLogarithmicMethod();

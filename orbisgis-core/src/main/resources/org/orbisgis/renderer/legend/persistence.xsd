@@ -30,4 +30,32 @@
 	</xs:complexType>
 
 	<xs:element name="unique-symbol-legend" type="unique-symbol-legend-type"/>
+
+	<xs:element name="value-classification">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="symbol" type="sym:symbol-type" maxOccurs="1"/>
+			</xs:sequence>
+			<xs:attribute name="value" type="xs:string" use="required"/>
+			<xs:attribute name="label" type="xs:string" use="required"/>
+		</xs:complexType>
+	</xs:element>
+
+	<xs:complexType name="unique-value-legend-type">
+		<xs:complexContent>
+			<xs:extension base="legend-type">
+				<xs:sequence>
+					<xs:element name="default-symbol" type="sym:symbol-type"
+						maxOccurs="1"/>
+					<xs:element ref="value-classification" minOccurs="0" maxOccurs="unbounded"/>
+				</xs:sequence>
+				<xs:attribute name="default-label" type="xs:string"
+					use="required"/>
+				<xs:attribute name="field-name" type="xs:string" use="required"/>
+				<xs:attribute name="field-type" type="xs:int" use="required"/>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+
+	<xs:element name="unique-value-legend" type="unique-value-legend-type"/>
 </xs:schema>

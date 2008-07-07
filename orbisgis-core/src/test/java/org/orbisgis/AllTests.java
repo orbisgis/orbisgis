@@ -42,6 +42,7 @@ import junit.framework.TestSuite;
 
 import org.orbisgis.layerModel.LayerModelTest;
 import org.orbisgis.renderer.ClassificationTest;
+import org.orbisgis.renderer.LegendTest;
 import org.orbisgis.renderer.LiteShapeTest;
 import org.orbisgis.renderer.symbol.SymbolTest;
 
@@ -53,6 +54,7 @@ public class AllTests extends TestCase {
 		// $JUnit-BEGIN$
 		suite.addTestSuite(LayerModelTest.class);
 		suite.addTestSuite(LiteShapeTest.class);
+		suite.addTestSuite(LegendTest.class);
 		suite.addTestSuite(FormatTest.class);
 		suite.addTestSuite(ClassificationTest.class);
 		suite.addTestSuite(MapContextTest.class);

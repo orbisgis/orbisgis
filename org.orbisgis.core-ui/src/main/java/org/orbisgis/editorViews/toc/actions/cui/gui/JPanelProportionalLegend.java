@@ -56,7 +56,6 @@ import org.orbisgis.layerModel.ILayer;
 import org.orbisgis.renderer.legend.Legend;
 import org.orbisgis.renderer.legend.carto.LegendFactory;
 import org.orbisgis.renderer.legend.carto.ProportionalLegend;
-import org.orbisgis.renderer.symbol.EditableSymbol;
 import org.orbisgis.renderer.symbol.Symbol;
 import org.orbisgis.renderer.symbol.SymbolFactory;
 import org.sif.UIFactory;
@@ -170,7 +169,7 @@ public class JPanelProportionalLegend extends javax.swing.JPanel implements
 			}
 
 			leg.setClassificationField((String) jComboBoxClasificationField
-					.getSelectedItem());
+					.getSelectedItem(), null);
 		} catch (DriverException e) {
 			System.out.println("Driver Exception");
 		}

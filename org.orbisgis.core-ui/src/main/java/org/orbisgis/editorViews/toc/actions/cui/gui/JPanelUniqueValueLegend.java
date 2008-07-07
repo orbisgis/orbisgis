@@ -44,6 +44,8 @@ package org.orbisgis.editorViews.toc.actions.cui.gui;
 
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
@@ -254,7 +256,22 @@ public class JPanelUniqueValueLegend extends javax.swing.JPanel implements
 		jLabel1.setText("Classification field:");
 		jPanelTop.add(jLabel1);
 
-		jComboBox1.setPreferredSize(new java.awt.Dimension(125, 19));
+		// jComboBox1.setPreferredSize(new java.awt.Dimension(125, 19));
+		jComboBox1.addActionListener(new ActionListener() {
+
+			public void actionPerformed(ActionEvent e) {
+				try {
+					legend.setClassificationField((String) jComboBox1
+							.getSelectedItem(), legendContext.getLayer()
+							.getDataSource());
+				} catch (DriverException e1) {
+					JOptionPane.showMessageDialog(null,
+							"Cannot access the type of the field", "Error",
+							JOptionPane.ERROR_MESSAGE);
+				}
+			}
+
+		});
 		jPanelTop.add(jComboBox1);
 
 		jCheckBoxRestOfValues.setText("rest of values");

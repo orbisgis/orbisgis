@@ -36,9 +36,14 @@
  */
 package org.orbisgis.renderer;
 
+import java.awt.Color;
 import java.awt.image.BufferedImage;
 import java.io.File;
 
+import org.gdms.data.DataSource;
+import org.gdms.data.DataSourceFactory;
+import org.gdms.data.values.Value;
+import org.gdms.data.values.ValueFactory;
 import org.orbisgis.AbstractTest;
 import org.orbisgis.layerModel.DefaultMapContext;
 import org.orbisgis.layerModel.ILayer;
@@ -46,9 +51,15 @@ import org.orbisgis.layerModel.MapContext;
 import org.orbisgis.renderer.legend.Legend;
 import org.orbisgis.renderer.legend.carto.LegendFactory;
 import org.orbisgis.renderer.legend.carto.UniqueSymbolLegend;
+import org.orbisgis.renderer.legend.carto.UniqueValueLegend;
+import org.orbisgis.renderer.symbol.Symbol;
 import org.orbisgis.renderer.symbol.SymbolFactory;
 
 public class LegendTest extends AbstractTest {
+
+	private DataSourceFactory dsf;
+	private DataSource ds;
+	private String fieldName;
 
 	public void testSetLegend() throws Exception {
 		MapContext mc = new DefaultMapContext();
@@ -108,6 +119,66 @@ public class LegendTest extends AbstractTest {
 		for (int i = 0; i < layer.getDataSource().getRowCount(); i++) {
 			assertTrue(legend.getSymbol(layer.getDataSource(), i) != null);
 		}
+	}
 
+	public void testUniqueSymbolPersistence() throws Exception {
+		UniqueSymbolLegend usl = LegendFactory.createUniqueSymbolLegend();
+		String name = "mylegend";
+		usl.setName(name);
+		Symbol sym = SymbolFactory.createCirclePointSymbol(Color.black,
+				Color.red, 20);
+		usl.setSymbol(sym);
+		File file = new File("target/uniqueSymbolLegend.ogl");
+		usl.save(file);
+
+		usl = (UniqueSymbolLegend) LegendFactory.getNewLegend(usl
+				.getLegendTypeId());
+		usl.load(file, usl.getVersion());
+		assertTrue(usl.getName().equals(name));
+		assertTrue(usl.getSymbol().getPersistentProperties().equals(
+				sym.getPersistentProperties()));
+	}
+
+	public void testUniqueValuePersistence() throws Exception {
+		UniqueValueLegend uvl = LegendFactory.createUniqueValueLegend();
+		String name = "mylegend";
+		uvl.setName(name);
+		Symbol classSym = SymbolFactory.createCirclePointSymbol(Color.black,
+				Color.red, 20);
+		Symbol sym = classSym;
+		uvl.setDefaultSymbol(sym);
+		String aLabel = "aLabel";
+		uvl.setDefaultLabel(aLabel);
+		uvl.setClassificationField(fieldName, ds);
+		Value classValue = ValueFactory.createValue("string");
+		uvl.addClassification(classValue, classSym, aLabel);
+		File file = new File("target/uniqueSymbolLegend.ogl");
+		uvl.save(file);
+
+		uvl = (UniqueValueLegend) LegendFactory.getNewLegend(uvl
+				.getLegendTypeId());
+		uvl.load(file, uvl.getVersion());
+		assertTrue(uvl.getName().equals(name));
+		assertTrue(uvl.getDefaultSymbol().getPersistentProperties().equals(
+				sym.getPersistentProperties()));
+		assertTrue(uvl.getValueCount() == 1);
+		assertTrue(uvl.getValue(0).equals(classValue).getAsBoolean());
+		assertTrue(uvl.getSymbol(0).getPersistentProperties().equals(
+				classSym.getPersistentProperties()));
+		assertTrue(uvl.getLabel(0).equals(aLabel));
+	}
+
+	@Override
+	protected void setUp() throws Exception {
+		super.setUp();
+		dsf = new DataSourceFactory("target", "target");
+		ds = dsf.getDataSource(new File("src/test/resources/bv_sap.shp"));
+		ds.open();
+		fieldName = ds.getFieldName(1);
+	}
+
+	@Override
+	protected void tearDown() throws Exception {
+		ds.close();
 	}
 }

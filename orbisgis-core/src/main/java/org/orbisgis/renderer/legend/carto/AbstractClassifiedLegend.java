@@ -36,24 +36,32 @@
  */
 package org.orbisgis.renderer.legend.carto;
 
+import org.gdms.data.DataSource;
 import org.gdms.driver.DriverException;
+import org.orbisgis.IncompatibleVersionException;
 import org.orbisgis.renderer.legend.AbstractLegend;
+import org.orbisgis.renderer.legend.carto.persistence.UniqueValueLegendType;
 import org.orbisgis.renderer.symbol.Symbol;
 import org.orbisgis.renderer.symbol.SymbolFactory;
+import org.orbisgis.renderer.symbol.collection.DefaultSymbolCollection;
 
 abstract class AbstractClassifiedLegend extends AbstractLegend implements
 		ClassifiedLegend {
 
 	private String fieldName;
 	private Symbol defaultSymbol;
+	private int fieldType;
 	private String defaultLabel = "Rest of values";
 
 	public AbstractClassifiedLegend() {
 		defaultSymbol = SymbolFactory.createNullSymbol();
 	}
 
-	public void setClassificationField(String fieldName) throws DriverException {
+	public void setClassificationField(String fieldName, DataSource ds)
+			throws DriverException {
 		this.fieldName = fieldName;
+		int fi = ds.getFieldIndexByName(fieldName);
+		this.fieldType = ds.getMetadata().getFieldType(fi).getTypeCode();
 		fireLegendInvalid();
 	}
 
@@ -76,6 +84,29 @@ abstract class AbstractClassifiedLegend extends AbstractLegend implements
 
 	public void setDefaultLabel(String defaultLabel) {
 		this.defaultLabel = defaultLabel;
+	}
+
+	public void fillDefaults(UniqueValueLegendType xmlLegend) {
+		xmlLegend.setName(getName());
+		xmlLegend.setDefaultSymbol(DefaultSymbolCollection
+				.getXMLFromSymbol(getDefaultSymbol()));
+		xmlLegend.setDefaultLabel(getDefaultLabel());
+		xmlLegend.setFieldName(fieldName);
+		xmlLegend.setFieldType(fieldType);
+	}
+
+	public void getDefaults(UniqueValueLegendType xmlLegend)
+			throws DriverException, IncompatibleVersionException {
+		setName(xmlLegend.getName());
+		setDefaultLabel(xmlLegend.getDefaultLabel());
+		fieldType = xmlLegend.getFieldType();
+		fieldName = xmlLegend.getFieldName();
+		setDefaultSymbol(DefaultSymbolCollection.getSymbolFromXML(xmlLegend
+				.getDefaultSymbol()));
+	}
+
+	protected int getFieldType() {
+		return fieldType;
 	}
 
 }

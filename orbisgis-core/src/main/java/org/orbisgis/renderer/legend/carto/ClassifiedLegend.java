@@ -36,6 +36,7 @@
  */
 package org.orbisgis.renderer.legend.carto;
 
+import org.gdms.data.DataSource;
 import org.gdms.driver.DriverException;
 import org.orbisgis.renderer.legend.Legend;
 import org.orbisgis.renderer.symbol.Symbol;
@@ -76,10 +77,13 @@ public interface ClassifiedLegend extends Legend {
 	 * @param fieldName
 	 *            Name to read in the DataSource to test against the
 	 *            classification values
+	 * @param ds
+	 *            DataSource containing the field
 	 * @throws DriverException
 	 *             If there is a problem reading the source of data
 	 */
-	void setClassificationField(String fieldName) throws DriverException;
+	void setClassificationField(String fieldName, DataSource ds)
+			throws DriverException;
 
 	/**
 	 * Gets the field used to do the classification

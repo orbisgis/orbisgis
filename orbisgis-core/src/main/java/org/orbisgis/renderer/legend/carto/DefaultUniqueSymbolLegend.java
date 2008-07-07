@@ -135,14 +135,13 @@ public class DefaultUniqueSymbolLegend extends AbstractLegend implements
 						.getLegendDescription();
 				os.close();
 				setName(xmlLegend.getName());
-				xmlLegend.setName(getName());
 				setSymbol(DefaultSymbolCollection.getSymbolFromXML(xmlLegend
 						.getSymbol()));
 
 			} catch (JAXBException e) {
-				throw new PersistenceException("Cannot save legend", e);
+				throw new PersistenceException("Cannot recover legend", e);
 			} catch (IOException e) {
-				throw new PersistenceException("Cannot save legend", e);
+				throw new PersistenceException("Cannot recover legend", e);
 			} catch (IncompatibleVersionException e) {
 				throw new PersistenceException("Cannot recover legend symbol",
 						e);
