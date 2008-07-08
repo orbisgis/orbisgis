@@ -2,19 +2,23 @@ package org.orbisgis.editorViews.toc.actions.cui.gui;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
 import java.util.HashSet;
 
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 import org.gdms.data.SpatialDataSourceDecorator;
+import org.gdms.data.types.Type;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
 import org.orbisgis.editorViews.toc.actions.cui.gui.widgets.table.UniqueValueLegendTableModel;
 import org.orbisgis.layerModel.ILayer;
+import org.orbisgis.renderer.legend.Legend;
 import org.orbisgis.renderer.legend.carto.LegendFactory;
 import org.orbisgis.renderer.legend.carto.UniqueValueLegend;
 import org.orbisgis.renderer.symbol.Symbol;
@@ -134,4 +138,42 @@ public class PnlUniqueValueLegend extends PnlAbstractClassifiedLegend {
 		return UniqueValueLegend.NAME;
 	}
 
+	public void setLegend(Legend legend) {
+		this.legend = (UniqueValueLegend) legend;
+		syncFieldsWithLegend();
+		super.setLegend(legend);
+	}
+
+	/**
+	 * init the combo box
+	 */
+	private void syncFieldsWithLegend() {
+
+		ArrayList<String> comboValuesArray = new ArrayList<String>();
+		try {
+			ILayer layer = legendContext.getLayer();
+			int numFields = layer.getDataSource().getFieldCount();
+			for (int i = 0; i < numFields; i++) {
+				int fieldType = layer.getDataSource().getFieldType(i)
+						.getTypeCode();
+				if (fieldType != Type.GEOMETRY && fieldType != Type.RASTER) {
+					comboValuesArray.add(layer.getDataSource().getFieldName(i));
+				}
+			}
+		} catch (DriverException e) {
+			System.out.println("Driver Exception: " + e.getMessage());
+		}
+
+		String[] comboValues = new String[comboValuesArray.size()];
+
+		comboValues = comboValuesArray.toArray(comboValues);
+		cmbFields.setModel(new DefaultComboBoxModel(comboValues));
+
+		String field = legend.getClassificationField();
+		if (field != null) {
+			cmbFields.setSelectedItem(field);
+		} else if (comboValues.length > 0) {
+			cmbFields.setSelectedIndex(0);
+		}
+	}
 }

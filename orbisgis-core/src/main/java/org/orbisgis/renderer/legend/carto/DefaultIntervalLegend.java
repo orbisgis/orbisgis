@@ -52,6 +52,7 @@ import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 
 import org.gdms.data.SpatialDataSourceDecorator;
+import org.gdms.data.types.Type;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
@@ -225,14 +226,12 @@ public class DefaultIntervalLegend extends AbstractClassifiedLegend implements
 					}
 					Value minValue = null;
 					if (initValue != null) {
-						minValue = ValueFactory.createValueByType(initValue,
-								getFieldType());
+						minValue = createValueByType(initValue, getFieldType());
 					}
 					Value maxValue = null;
 					String endValue = classification.getEndValue();
 					if (endValue != null) {
-						maxValue = ValueFactory.createValueByType(endValue,
-								getFieldType());
+						maxValue = createValueByType(endValue, getFieldType());
 					}
 					Symbol symbol = DefaultSymbolCollection
 							.getSymbolFromXML(classification.getSymbol());
@@ -254,6 +253,26 @@ public class DefaultIntervalLegend extends AbstractClassifiedLegend implements
 				throw new PersistenceException("Cannot recover value", e);
 			}
 		}
+	}
+
+	private Value createValueByType(String value, int fieldType)
+			throws NumberFormatException, ParseException {
+		Value doubleValue = ValueFactory.createValueByType(value, Type.DOUBLE);
+		switch (fieldType) {
+		case Type.BYTE:
+			return ValueFactory.createValue(doubleValue.getAsByte());
+		case Type.SHORT:
+			return ValueFactory.createValue(doubleValue.getAsShort());
+		case Type.INT:
+			return ValueFactory.createValue(doubleValue.getAsInt());
+		case Type.LONG:
+			return ValueFactory.createValue(doubleValue.getAsLong());
+		case Type.FLOAT:
+			return ValueFactory.createValue(doubleValue.getAsFloat());
+		case Type.DOUBLE:
+			return ValueFactory.createValue(doubleValue.getAsDouble());
+		}
+		return null;
 	}
 
 	public Legend newInstance() {

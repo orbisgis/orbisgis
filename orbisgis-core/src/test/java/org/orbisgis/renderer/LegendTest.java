@@ -42,8 +42,11 @@ import java.io.File;
 
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceFactory;
+import org.gdms.data.types.Type;
+import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
+import org.gdms.driver.memory.ObjectMemoryDriver;
 import org.orbisgis.AbstractTest;
 import org.orbisgis.layerModel.DefaultMapContext;
 import org.orbisgis.layerModel.ILayer;
@@ -152,7 +155,7 @@ public class LegendTest extends AbstractTest {
 		String aLabel = "aLabel";
 		uvl.setDefaultLabel(aLabel);
 		uvl.setClassificationField(fieldName, ds);
-		Value classValue = ValueFactory.createValue("string");
+		Value classValue = ValueFactory.createValue(2);
 		uvl.addClassification(classValue, classSym, aLabel);
 		File file = new File("target/uniqueSymbolLegend.ogl");
 		uvl.save(file);
@@ -200,8 +203,8 @@ public class LegendTest extends AbstractTest {
 		String aLabel = "aLabel";
 		uvl.setDefaultLabel(aLabel);
 		uvl.setClassificationField(fieldName, ds);
-		Value initValue = ValueFactory.createValue("a");
-		Value endValue = ValueFactory.createValue("z");
+		Value initValue = ValueFactory.createValue(0);
+		Value endValue = ValueFactory.createValue(1000d);
 		uvl.addInterval(initValue, false, endValue, true, classSym, aLabel);
 		File file = new File("target/intervalLegend.ogl");
 		uvl.save(file);
@@ -247,9 +250,10 @@ public class LegendTest extends AbstractTest {
 	protected void setUp() throws Exception {
 		super.setUp();
 		dsf = new DataSourceFactory("target", "target");
-		ds = dsf.getDataSource(new File("src/test/resources/bv_sap.shp"));
+		ds = dsf.getDataSource(new ObjectMemoryDriver(new String[] { "long" },
+				new Type[] { TypeFactory.createType(Type.INT) }));
 		ds.open();
-		fieldName = ds.getFieldName(1);
+		fieldName = "long";
 	}
 
 	@Override

@@ -12,7 +12,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 import org.gdms.data.types.GeometryConstraint;
-import org.gdms.data.types.Type;
+import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
@@ -187,7 +187,7 @@ public class PnlIntervalLegend extends PnlAbstractClassifiedLegend {
 			for (int i = 0; i < numFields; i++) {
 				int fieldType = layer.getDataSource().getFieldType(i)
 						.getTypeCode();
-				if (fieldType != Type.GEOMETRY && fieldType != Type.RASTER) {
+				if (TypeFactory.isNumerical(fieldType)) {
 					validFieldNames.add(layer.getDataSource().getFieldName(i));
 				}
 			}

@@ -71,15 +71,16 @@ import org.sif.UIFactory;
 /**
  *
  */
-public abstract class PnlAbstractClassifiedLegend extends javax.swing.JPanel implements
-		ILegendPanelUI {
+public abstract class PnlAbstractClassifiedLegend extends javax.swing.JPanel
+		implements ILegendPanelUI {
 
 	private ClassifiedLegend legend;
 	protected LegendContext legendContext;
 	protected ClassifiedLegendTableModel tableModel;
 
 	public PnlAbstractClassifiedLegend(LegendContext legendContext,
-			ClassifiedLegendTableModel tableModel, ClassifiedLegend initialLegend) {
+			ClassifiedLegendTableModel tableModel,
+			ClassifiedLegend initialLegend) {
 		this.tableModel = tableModel;
 		this.legend = initialLegend;
 		legend.setName(getLegendTypeName());
@@ -236,6 +237,7 @@ public abstract class PnlAbstractClassifiedLegend extends javax.swing.JPanel imp
 		jPanelTable.add(jScrollPane1);
 
 		add(jPanelTable);
+		add(new CarriageReturn());
 
 		jButtonAddAll.setIcon(IconLoader.getIcon("addall.png"));
 		jButtonAddAll.setToolTipText("Add all");

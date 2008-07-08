@@ -7,6 +7,7 @@ import javax.swing.table.TableModel;
 
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
+import org.orbisgis.renderer.legend.carto.ClassifiedLegend;
 import org.orbisgis.renderer.legend.carto.Interval;
 import org.orbisgis.renderer.legend.carto.IntervalLegend;
 import org.orbisgis.renderer.legend.carto.LegendFactory;
@@ -17,8 +18,9 @@ public class IntervalLegendTableModel extends ClassifiedLegendTableModel
 
 	private IntervalLegend legend = LegendFactory.createIntervalLegend();
 
-	public void setLegend(IntervalLegend legend) {
-		this.legend = legend;
+	@Override
+	public void setLegend(ClassifiedLegend legend) {
+		this.legend = (IntervalLegend) legend;
 		super.setLegend(legend);
 	}
 

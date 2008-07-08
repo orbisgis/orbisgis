@@ -7,6 +7,7 @@ import javax.swing.table.TableModel;
 
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
+import org.orbisgis.renderer.legend.carto.ClassifiedLegend;
 import org.orbisgis.renderer.legend.carto.LegendFactory;
 import org.orbisgis.renderer.legend.carto.UniqueValueLegend;
 import org.orbisgis.renderer.symbol.Symbol;
@@ -16,8 +17,9 @@ public class UniqueValueLegendTableModel extends ClassifiedLegendTableModel
 
 	private UniqueValueLegend legend = LegendFactory.createUniqueValueLegend();
 
-	public void setLegend(UniqueValueLegend legend) {
-		this.legend = legend;
+	@Override
+	public void setLegend(ClassifiedLegend legend) {
+		this.legend = (UniqueValueLegend) legend;
 		super.setLegend(legend);
 	}
 
