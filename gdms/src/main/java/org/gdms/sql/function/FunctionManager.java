@@ -54,6 +54,7 @@ import org.gdms.sql.function.alphanumeric.String2DateFunction;
 import org.gdms.sql.function.alphanumeric.String2DoubleFunction;
 import org.gdms.sql.function.alphanumeric.String2IntFunction;
 import org.gdms.sql.function.alphanumeric.Sum;
+import org.gdms.sql.function.alphanumeric.ToStringFunction;
 import org.gdms.sql.function.spatial.convert.Boundary;
 import org.gdms.sql.function.spatial.convert.Centroid;
 import org.gdms.sql.function.spatial.convert.Constraint3D;
@@ -130,6 +131,7 @@ public class FunctionManager {
 		addFunction(ToMultiLine.class);
 		addFunction(IsValid.class);
 
+		addFunction(ToStringFunction.class);
 		addFunction(AutoNumeric.class);
 		addFunction(Pk.class);
 	}
