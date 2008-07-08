@@ -16,7 +16,8 @@ import org.gdms.sql.function.Function;
 import org.gdms.sql.function.FunctionException;
 import org.grap.model.GeoRaster;
 
-import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.CoordinateSequence;
+import com.vividsolutions.jts.geom.CoordinateSequenceFilter;
 import com.vividsolutions.jts.geom.Geometry;
 
 public class RoughGrading implements Function {
@@ -31,23 +32,54 @@ public class RoughGrading implements Function {
 		Geometry geometry = args[0].getAsGeometry();
 		try {
 			if (null == dem) {
-				// TODO this function is only able to deal with a single raster (see FeatureRequest #)
+				// TODO this function is only able to deal with a single raster
+				// (see FeatureRequest #4307)
 				dem = args[1].getAsRaster();
 				dem.open();
 				demIp = dem.getImagePlus().getProcessor();
 			}
-			modifyZCoordinates(geometry);
+
+			// To modify the coordinates of the geometry, we need a
+			// CoordinateSequenceFilter. To have an explanation, see
+			// http://lists.refractions.net/pipermail/jts-devel/2008-June/002534.html
+			//
+			// Coordinate[] coordinates = geometry.getCoordinates();
+			// for (Coordinate coordinate : coordinates) {
+			// coordinate.z = getGroundZ(coordinate.x, coordinate.y);
+			// }
+
+			geometry.apply(new CoordinateSequenceFilter() {
+				private boolean done = false;
+
+				public void filter(CoordinateSequence seq, int i) {
+					double x = seq.getX(i);
+					double y = seq.getY(i);
+					seq.setOrdinate(i, 0, x);
+					seq.setOrdinate(i, 1, y);
+					try {
+						seq.setOrdinate(i, 2, getGroundZ(x, y));
+						if (i + 1 == seq.size()) {
+							done = true;
+						}
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+
+				public boolean isDone() {
+					return done;
+				}
+
+				public boolean isGeometryChanged() {
+					return true;
+				}
+			});
+
 			return ValueFactory.createValue(geometry);
 		} catch (IOException e) {
 			throw new FunctionException(
 					"Bug while trying to retrieve the GeoRaster data", e);
-		}
-	}
-
-	private void modifyZCoordinates(final Geometry geometry) throws IOException {
-		Coordinate[] coordinates = geometry.getCoordinates();
-		for (Coordinate coordinate : coordinates) {
-			coordinate.z = getGroundZ(coordinate.x, coordinate.y);
 		}
 	}
 
