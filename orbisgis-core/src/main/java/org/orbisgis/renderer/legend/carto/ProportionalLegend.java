@@ -43,6 +43,9 @@ import org.orbisgis.renderer.symbol.EditablePointSymbol;
 public interface ProportionalLegend extends Legend {
 
 	String NAME = "Proportional point";
+	int LINEAR = 1;
+	int LOGARITHMIC = 2;
+	int SQUARE = 3;
 
 	int getMinSymbolArea();
 
@@ -52,11 +55,9 @@ public interface ProportionalLegend extends Legend {
 
 	void setSampleSymbol(EditablePointSymbol symbol);
 
-	void setLinearMethod() throws DriverException;
+	void setMethod(int method) throws DriverException;
 
-	void setSquareMethod(double squareFactor) throws DriverException;
-
-	void setLogarithmicMethod() throws DriverException;
+	int getMethod();
 
 	/**
 	 * Sets the field used to compute the size of the proportional symbol

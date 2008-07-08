@@ -17,20 +17,20 @@ import org.orbisgis.renderer.symbol.collection.persistence.SymbolType;
 
 
 /**
- * <p>Java class for classified-legend-type complex type.
+ * <p>Java class for proportional-legend-type complex type.
  * 
  * <p>The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
- * &lt;complexType name="classified-legend-type">
+ * &lt;complexType name="proportional-legend-type">
  *   &lt;complexContent>
  *     &lt;extension base="{org.orbisgis.legend}legend-type">
  *       &lt;sequence>
- *         &lt;element name="default-symbol" type="{org.orbisgis.symbol}symbol-type"/>
+ *         &lt;element name="sample-symbol" type="{org.orbisgis.symbol}symbol-type"/>
  *       &lt;/sequence>
- *       &lt;attribute name="default-label" use="required" type="{http://www.w3.org/2001/XMLSchema}string" />
+ *       &lt;attribute name="min-area" use="required" type="{http://www.w3.org/2001/XMLSchema}int" />
+ *       &lt;attribute name="method" use="required" type="{http://www.w3.org/2001/XMLSchema}int" />
  *       &lt;attribute name="field-name" use="required" type="{http://www.w3.org/2001/XMLSchema}string" />
- *       &lt;attribute name="field-type" use="required" type="{http://www.w3.org/2001/XMLSchema}int" />
  *     &lt;/extension>
  *   &lt;/complexContent>
  * &lt;/complexType>
@@ -39,68 +39,76 @@ import org.orbisgis.renderer.symbol.collection.persistence.SymbolType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "classified-legend-type", propOrder = {
-    "defaultSymbol"
+@XmlType(name = "proportional-legend-type", propOrder = {
+    "sampleSymbol"
 })
-public class ClassifiedLegendType
+public class ProportionalLegendType
     extends LegendType
 {
 
-    @XmlElement(name = "default-symbol", required = true)
-    protected SymbolType defaultSymbol;
-    @XmlAttribute(name = "default-label", required = true)
-    protected String defaultLabel;
+    @XmlElement(name = "sample-symbol", required = true)
+    protected SymbolType sampleSymbol;
+    @XmlAttribute(name = "min-area", required = true)
+    protected int minArea;
+    @XmlAttribute(required = true)
+    protected int method;
     @XmlAttribute(name = "field-name", required = true)
     protected String fieldName;
-    @XmlAttribute(name = "field-type", required = true)
-    protected int fieldType;
 
     /**
-     * Gets the value of the defaultSymbol property.
+     * Gets the value of the sampleSymbol property.
      * 
      * @return
      *     possible object is
      *     {@link SymbolType }
      *     
      */
-    public SymbolType getDefaultSymbol() {
-        return defaultSymbol;
+    public SymbolType getSampleSymbol() {
+        return sampleSymbol;
     }
 
     /**
-     * Sets the value of the defaultSymbol property.
+     * Sets the value of the sampleSymbol property.
      * 
      * @param value
      *     allowed object is
      *     {@link SymbolType }
      *     
      */
-    public void setDefaultSymbol(SymbolType value) {
-        this.defaultSymbol = value;
+    public void setSampleSymbol(SymbolType value) {
+        this.sampleSymbol = value;
     }
 
     /**
-     * Gets the value of the defaultLabel property.
+     * Gets the value of the minArea property.
      * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
      */
-    public String getDefaultLabel() {
-        return defaultLabel;
+    public int getMinArea() {
+        return minArea;
     }
 
     /**
-     * Sets the value of the defaultLabel property.
+     * Sets the value of the minArea property.
      * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
      */
-    public void setDefaultLabel(String value) {
-        this.defaultLabel = value;
+    public void setMinArea(int value) {
+        this.minArea = value;
+    }
+
+    /**
+     * Gets the value of the method property.
+     * 
+     */
+    public int getMethod() {
+        return method;
+    }
+
+    /**
+     * Sets the value of the method property.
+     * 
+     */
+    public void setMethod(int value) {
+        this.method = value;
     }
 
     /**
@@ -125,22 +133,6 @@ public class ClassifiedLegendType
      */
     public void setFieldName(String value) {
         this.fieldName = value;
-    }
-
-    /**
-     * Gets the value of the fieldType property.
-     * 
-     */
-    public int getFieldType() {
-        return fieldType;
-    }
-
-    /**
-     * Sets the value of the fieldType property.
-     * 
-     */
-    public void setFieldType(int value) {
-        this.fieldType = value;
     }
 
 }

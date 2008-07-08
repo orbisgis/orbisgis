@@ -157,14 +157,13 @@ public class JPanelProportionalLegend extends javax.swing.JPanel implements
 			int method = jComboBoxMethod.getSelectedIndex();
 			switch (method) {
 			case 0:
-				leg.setLinearMethod();
+				leg.setMethod(ProportionalLegend.LINEAR);
 				break;
 			case 1:
-				leg.setLogarithmicMethod();
+				leg.setMethod(ProportionalLegend.LOGARITHMIC);
 				break;
 			case 2:
-				// TODO what is the Sqr Factor???
-				leg.setSquareMethod(2);
+				leg.setMethod(ProportionalLegend.SQUARE);
 				break;
 			}
 

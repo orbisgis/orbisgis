@@ -76,13 +76,13 @@ public class PnlProportionalLegend extends JPanel implements ILegendPanelUI {
 				try {
 					switch (cmbMethod.getSelectedIndex()) {
 					case 0:
-						legend.setLinearMethod();
+						legend.setMethod(ProportionalLegend.LINEAR);
 						break;
 					case 1:
-						legend.setLogarithmicMethod();
+						legend.setMethod(ProportionalLegend.LOGARITHMIC);
 						break;
 					case 2:
-						legend.setSquareMethod(2);
+						legend.setMethod(ProportionalLegend.SQUARE);
 						break;
 					}
 				} catch (DriverException e1) {

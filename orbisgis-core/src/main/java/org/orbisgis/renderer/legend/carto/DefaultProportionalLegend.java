@@ -37,24 +37,36 @@
 package org.orbisgis.renderer.legend.carto;
 
 import java.awt.Color;
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
+import javax.xml.bind.Unmarshaller;
 
 import org.gdms.data.SpatialDataSourceDecorator;
 import org.gdms.driver.DriverException;
 import org.gdms.sql.strategies.IncompatibleTypesException;
+import org.orbisgis.IncompatibleVersionException;
+import org.orbisgis.PersistenceException;
 import org.orbisgis.renderer.classification.ProportionalMethod;
 import org.orbisgis.renderer.legend.AbstractLegend;
 import org.orbisgis.renderer.legend.Legend;
 import org.orbisgis.renderer.legend.RenderException;
+import org.orbisgis.renderer.legend.carto.persistence.LegendContainer;
+import org.orbisgis.renderer.legend.carto.persistence.ProportionalLegendType;
 import org.orbisgis.renderer.symbol.EditablePointSymbol;
 import org.orbisgis.renderer.symbol.Symbol;
 import org.orbisgis.renderer.symbol.SymbolFactory;
+import org.orbisgis.renderer.symbol.collection.DefaultSymbolCollection;
 
 public class DefaultProportionalLegend extends AbstractLegend implements
 		ProportionalLegend {
-	private static final int LINEAR = 1;
-	private static final int SQUARE = 2;
-	private static final int LOGARITHMIC = 3;
 
 	private String field;
 	private int minSymbolArea = 3000;
@@ -72,18 +84,18 @@ public class DefaultProportionalLegend extends AbstractLegend implements
 		fireLegendInvalid();
 	}
 
-	public void setLinearMethod() throws DriverException {
+	private void setLinearMethod() throws DriverException {
 		method = LINEAR;
 		fireLegendInvalid();
 	}
 
-	public void setSquareMethod(double sqrtFactor) throws DriverException {
+	private void setSquareMethod(double sqrtFactor) throws DriverException {
 		method = SQUARE;
 		this.sqrtFactor = sqrtFactor;
 		fireLegendInvalid();
 	}
 
-	public void setLogarithmicMethod() throws DriverException {
+	private void setLogarithmicMethod() throws DriverException {
 		method = LOGARITHMIC;
 		fireLegendInvalid();
 	}
@@ -123,7 +135,8 @@ public class DefaultProportionalLegend extends AbstractLegend implements
 				break;
 			}
 
-			EditablePointSymbol ret = (EditablePointSymbol) symbol.cloneSymbol();
+			EditablePointSymbol ret = (EditablePointSymbol) symbol
+					.cloneSymbol();
 			ret.setSize((int) Math.round(symbolSize));
 			return ret;
 		} catch (IncompatibleTypesException e) {
@@ -145,12 +158,68 @@ public class DefaultProportionalLegend extends AbstractLegend implements
 		return "1.0";
 	}
 
-	public void save(File file) {
-		throw new UnsupportedOperationException();
+	public void save(File file) throws PersistenceException {
+		try {
+			JAXBContext jaxbContext = JAXBContext
+					.newInstance(
+							"org.orbisgis.renderer.legend.carto.persistence:"
+									+ "org.orbisgis.renderer.symbol.collection.persistence",
+							DefaultSymbolCollection.class.getClassLoader());
+			Marshaller m = jaxbContext.createMarshaller();
+
+			BufferedOutputStream os = new BufferedOutputStream(
+					new FileOutputStream(file));
+			ProportionalLegendType xmlLegend = new ProportionalLegendType();
+			xmlLegend.setName(getName());
+			xmlLegend.setSampleSymbol(DefaultSymbolCollection
+					.getXMLFromSymbol(symbol));
+			xmlLegend.setMethod(getMethod());
+			xmlLegend.setMinArea(getMinSymbolArea());
+			xmlLegend.setFieldName(getClassificationField());
+			LegendContainer xml = new LegendContainer();
+			xml.setLegendDescription(xmlLegend);
+			m.marshal(xml, os);
+			os.close();
+		} catch (JAXBException e) {
+			throw new PersistenceException("Cannot save legend", e);
+		} catch (IOException e) {
+			throw new PersistenceException("Cannot save legend", e);
+		}
 	}
 
-	public void load(File file, String version) {
-		throw new UnsupportedOperationException();
+	public void load(File file, String version) throws PersistenceException {
+		if (version.equals("1.0")) {
+			try {
+				JAXBContext jaxbContext = JAXBContext
+						.newInstance(
+								"org.orbisgis.renderer.legend.carto.persistence:"
+										+ "org.orbisgis.renderer.symbol.collection.persistence",
+								DefaultSymbolCollection.class.getClassLoader());
+				Unmarshaller m = jaxbContext.createUnmarshaller();
+				BufferedInputStream os = new BufferedInputStream(
+						new FileInputStream(file));
+				LegendContainer xml = (LegendContainer) m.unmarshal(os);
+				ProportionalLegendType xmlLegend = (ProportionalLegendType) xml
+						.getLegendDescription();
+				os.close();
+				setName(xmlLegend.getName());
+				setMethod(xmlLegend.getMethod());
+				setMinSymbolArea(xmlLegend.getMinArea());
+				setSampleSymbol((EditablePointSymbol) DefaultSymbolCollection
+						.getSymbolFromXML(xmlLegend.getSampleSymbol()));
+				setClassificationField(xmlLegend.getFieldName());
+			} catch (JAXBException e) {
+				throw new PersistenceException("Cannot recover legend", e);
+			} catch (IOException e) {
+				throw new PersistenceException("Cannot recover legend", e);
+			} catch (IncompatibleVersionException e) {
+				throw new PersistenceException("Cannot recover legend symbol",
+						e);
+			} catch (DriverException e) {
+				throw new PersistenceException("Cannot perform classification",
+						e);
+			}
+		}
 	}
 
 	public void setClassificationField(String fieldName) {
@@ -171,5 +240,23 @@ public class DefaultProportionalLegend extends AbstractLegend implements
 
 	public void setSampleSymbol(EditablePointSymbol symbol) {
 		this.symbol = symbol;
+	}
+
+	public int getMethod() {
+		return method;
+	}
+
+	public void setMethod(int method) throws DriverException {
+		switch (method) {
+		case LINEAR:
+			setLinearMethod();
+			break;
+		case LOGARITHMIC:
+			setLogarithmicMethod();
+			break;
+		case SQUARE:
+			setSquareMethod(1);
+			break;
+		}
 	}
 }

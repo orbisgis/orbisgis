@@ -93,4 +93,32 @@
 	</xs:complexType>
 
 	<xs:element name="interval-legend" type="interval-legend-type"/>
+
+	<xs:complexType name="proportional-legend-type">
+		<xs:complexContent>
+			<xs:extension base="legend-type">
+				<xs:sequence>
+					<xs:element name="sample-symbol" type="sym:symbol-type"
+						maxOccurs="1"/>
+				</xs:sequence>
+				<xs:attribute name="min-area" type="xs:int" use="required"/>
+				<xs:attribute name="method" type="xs:int" use="required"/>
+				<xs:attribute name="field-name" type="xs:string" use="required"/>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+
+	<xs:element name="proportional-legend" type="proportional-legend-type"/>
+
+	<xs:complexType name="label-legend-type">
+		<xs:complexContent>
+			<xs:extension base="legend-type">
+				<xs:attribute name="font-size" type="xs:int" use="required"/>
+				<xs:attribute name="field-font-size" type="xs:string"/>
+				<xs:attribute name="field-name" type="xs:string" use="required"/>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+
+	<xs:element name="label-legend" type="label-legend-type"/>
 </xs:schema>

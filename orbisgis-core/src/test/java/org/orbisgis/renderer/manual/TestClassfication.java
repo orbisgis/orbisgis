@@ -172,7 +172,7 @@ public class TestClassfication {
 			l.setClassificationField("PTOT90");
 			l.setMinSymbolArea(100);
 			// l.setSquareMethod(2);
-			l.setLogarithmicMethod();
+			l.setMethod(ProportionalLegend.LINEAR);
 
 			Symbol defaultSymbol = SymbolFactory
 					.createPolygonSymbol(Color.black);

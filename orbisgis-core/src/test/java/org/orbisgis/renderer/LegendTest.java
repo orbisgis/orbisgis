@@ -52,9 +52,12 @@ import org.orbisgis.layerModel.DefaultMapContext;
 import org.orbisgis.layerModel.ILayer;
 import org.orbisgis.layerModel.MapContext;
 import org.orbisgis.renderer.legend.carto.IntervalLegend;
+import org.orbisgis.renderer.legend.carto.LabelLegend;
 import org.orbisgis.renderer.legend.carto.LegendFactory;
+import org.orbisgis.renderer.legend.carto.ProportionalLegend;
 import org.orbisgis.renderer.legend.carto.UniqueSymbolLegend;
 import org.orbisgis.renderer.legend.carto.UniqueValueLegend;
+import org.orbisgis.renderer.symbol.EditablePointSymbol;
 import org.orbisgis.renderer.symbol.Symbol;
 import org.orbisgis.renderer.symbol.SymbolFactory;
 
@@ -244,6 +247,66 @@ public class LegendTest extends AbstractTest {
 		assertTrue(uvl.getDefaultSymbol() == null);
 		assertTrue(uvl.getClassificationField().equals(fieldName));
 		assertTrue(uvl.getClassificationCount() == 0);
+	}
+
+	public void testFullProportionalPersistence() throws Exception {
+		ProportionalLegend legend = LegendFactory.createProportionalLegend();
+		String name = "mylegend";
+		legend.setName(name);
+		Symbol sampleSym = SymbolFactory.createCirclePointSymbol(Color.black,
+				Color.red, 20);
+		legend.setClassificationField(fieldName);
+		legend.setMethod(ProportionalLegend.LOGARITHMIC);
+		legend.setMinSymbolArea(14);
+		legend.setSampleSymbol((EditablePointSymbol) sampleSym);
+		File file = new File("target/intervalLegend.ogl");
+		legend.save(file);
+
+		legend = (ProportionalLegend) LegendFactory.getNewLegend(legend
+				.getLegendTypeId());
+		legend.load(file, legend.getVersion());
+		assertTrue(legend.getName().equals(name));
+		assertTrue(legend.getSampleSymbol().getPersistentProperties().equals(
+				sampleSym.getPersistentProperties()));
+		assertTrue(legend.getClassificationField().equals(fieldName));
+		assertTrue(legend.getMinSymbolArea() == 14);
+		assertTrue(legend.getMethod() == ProportionalLegend.LOGARITHMIC);
+	}
+
+	public void testFullLabelPersistence() throws Exception {
+		LabelLegend legend = LegendFactory.createLabelLegend();
+		String name = "mylegend";
+		legend.setName(name);
+		legend.setClassificationField(fieldName);
+		legend.setFontSize(10);
+		legend.setLabelSizeField(fieldName);
+		File file = new File("target/intervalLegend.ogl");
+		legend.save(file);
+
+		legend = (LabelLegend) LegendFactory.getNewLegend(legend
+				.getLegendTypeId());
+		legend.load(file, legend.getVersion());
+		assertTrue(legend.getName().equals(name));
+		assertTrue(legend.getClassificationField().equals(fieldName));
+		assertTrue(legend.getLabelSizeField().equals(fieldName));
+		assertTrue(legend.getFontSize() == 10);
+	}
+
+	public void testMinLabelPersistence() throws Exception {
+		LabelLegend legend = LegendFactory.createLabelLegend();
+		String name = "mylegend";
+		legend.setName(name);
+		legend.setClassificationField(fieldName);
+		legend.setLabelSizeField(fieldName);
+		File file = new File("target/intervalLegend.ogl");
+		legend.save(file);
+
+		legend = (LabelLegend) LegendFactory.getNewLegend(legend
+				.getLegendTypeId());
+		legend.load(file, legend.getVersion());
+		assertTrue(legend.getName().equals(name));
+		assertTrue(legend.getClassificationField().equals(fieldName));
+		assertTrue(legend.getLabelSizeField().equals(fieldName));
 	}
 
 	@Override

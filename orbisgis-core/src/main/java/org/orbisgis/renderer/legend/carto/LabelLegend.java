@@ -57,7 +57,7 @@ public interface LabelLegend extends Legend {
 
 	public int getFontSize();
 
-	public void setClassificationField(String selectedItem);
+	public void setClassificationField(String fieldName);
 
 	public String getClassificationField();
 
