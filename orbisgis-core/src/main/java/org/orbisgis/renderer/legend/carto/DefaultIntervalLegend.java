@@ -112,7 +112,7 @@ public class DefaultIntervalLegend extends AbstractClassifiedLegend implements
 	public Symbol getSymbol(SpatialDataSourceDecorator sds, long row)
 			throws RenderException {
 		try {
-			int fieldIndex = sds.getSpatialFieldIndex();
+			int fieldIndex = sds.getFieldIndexByName(getClassificationField());
 			Value value = sds.getFieldValue(row, fieldIndex);
 			Symbol classificationSymbol = getSymbolFor(value);
 			if (classificationSymbol != null) {
