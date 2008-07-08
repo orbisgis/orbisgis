@@ -111,7 +111,7 @@ public class DefaultProportionalLegend extends AbstractLegend implements
 			int coefType = 1;
 
 			double symbolSize = 0;
-			int fieldIndex = sds.getSpatialFieldIndex();
+			int fieldIndex = sds.getFieldIndexByName(field);
 			double value = sds.getFieldValue(row, fieldIndex).getAsDouble();
 
 			switch (method) {
@@ -140,9 +140,9 @@ public class DefaultProportionalLegend extends AbstractLegend implements
 			ret.setSize((int) Math.round(symbolSize));
 			return ret;
 		} catch (IncompatibleTypesException e) {
-			throw new RenderException("Cannot calculate proportionalities" + e);
+			throw new RenderException("Cannot calculate proportionalities", e);
 		} catch (DriverException e) {
-			throw new RenderException("Cannot access layer contents" + e);
+			throw new RenderException("Cannot access layer contents", e);
 		}
 	}
 

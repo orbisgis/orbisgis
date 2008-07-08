@@ -3,6 +3,7 @@ package org.orbisgis.editorViews.toc.actions.cui.ui;
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
 import java.awt.Component;
+import java.awt.Dimension;
 import java.net.URL;
 import java.util.ArrayList;
 
@@ -95,6 +96,7 @@ public class LegendsPanel extends JPanel implements UIPanel, LegendContext {
 
 	private JPanel getLegendContainer() {
 		pnlContainer = new JPanel();
+		pnlContainer.setPreferredSize(new Dimension(500, 350));
 		cardLayout = new CardLayout();
 		pnlContainer.setLayout(cardLayout);
 		pnlContainer.add(new JLabel("Add or select a legend on the left"),

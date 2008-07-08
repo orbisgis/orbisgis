@@ -65,7 +65,7 @@ public class DefaultLabelLegend extends AbstractLegend implements LabelLegend {
 
 	private String labelSizeField;
 
-	int fontSize = 10;
+	private int fontSize = 10;
 
 	private String fieldName;
 
@@ -105,9 +105,9 @@ public class DefaultLabelLegend extends AbstractLegend implements LabelLegend {
 	public Symbol getSymbol(SpatialDataSourceDecorator sds, long row)
 			throws RenderException {
 		try {
-			int fieldIndex = sds.getSpatialFieldIndex();
+			int fieldIndex = sds.getFieldIndexByName(fieldName);
 			Value v = sds.getFieldValue(row, fieldIndex);
-			return SymbolFactory.createLabelSymbol(v.getAsString(), getSize(
+			return SymbolFactory.createLabelSymbol(v.toString(), getSize(
 					sds, row));
 		} catch (DriverException e) {
 			throw new RenderException("Cannot access layer contents" + e);

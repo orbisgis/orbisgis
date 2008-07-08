@@ -41,6 +41,8 @@ import org.orbisgis.renderer.legend.Legend;
 
 public interface LabelLegend extends Legend {
 
+	String NAME = "Label legend";
+
 	/**
 	 * Sets the field used to get the size of the label
 	 *

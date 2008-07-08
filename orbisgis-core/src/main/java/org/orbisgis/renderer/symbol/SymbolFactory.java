@@ -48,6 +48,8 @@ public class SymbolFactory {
 				Color.red, 10));
 		addSymbol((EditableSymbol) createSquareVertexSymbol(Color.black,
 				Color.red, 10));
+		addSymbol((EditableSymbol) createCirclePolygonSymbol(Color.black,
+				Color.red, 10));
 		addSymbol((EditableSymbol) createPolygonSymbol());
 		addSymbol((EditableSymbol) createLineSymbol(Color.black, 2));
 	}

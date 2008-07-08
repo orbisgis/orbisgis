@@ -45,6 +45,8 @@ import org.orbisgis.editorViews.toc.action.ILayerAction;
 import org.orbisgis.editorViews.toc.actions.cui.gui.ILegendPanelUI;
 import org.orbisgis.editorViews.toc.actions.cui.gui.JPanelUniqueSymbolLegend;
 import org.orbisgis.editorViews.toc.actions.cui.gui.PnlIntervalLegend;
+import org.orbisgis.editorViews.toc.actions.cui.gui.PnlLabelLegend;
+import org.orbisgis.editorViews.toc.actions.cui.gui.PnlProportionalLegend;
 import org.orbisgis.editorViews.toc.actions.cui.gui.PnlUniqueValueLegend;
 import org.orbisgis.editorViews.toc.actions.cui.ui.LegendsPanel;
 import org.orbisgis.layerModel.ILayer;
@@ -76,7 +78,9 @@ public class EditLayerAction implements ILayerAction {
 			pan.init(cons, layer.getVectorLegend(), new ILegendPanelUI[] {
 					new JPanelUniqueSymbolLegend(true, pan),
 					new PnlUniqueValueLegend(pan),
-					new PnlIntervalLegend(pan)}, layer);
+					new PnlIntervalLegend(pan),
+					new PnlProportionalLegend(pan),
+					new PnlLabelLegend(pan)}, layer);
 			if (UIFactory.showDialog(pan)) {
 				try {
 					layer.setLegend(pan.getLegends());
