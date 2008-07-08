@@ -46,39 +46,25 @@ import org.orbisgis.renderer.classification.ProportionalMethod;
 import org.orbisgis.renderer.legend.AbstractLegend;
 import org.orbisgis.renderer.legend.Legend;
 import org.orbisgis.renderer.legend.RenderException;
+import org.orbisgis.renderer.symbol.EditablePointSymbol;
 import org.orbisgis.renderer.symbol.Symbol;
 import org.orbisgis.renderer.symbol.SymbolFactory;
 
-public class DefaultProportionalLegend extends AbstractLegend
-		implements ProportionalLegend {
+public class DefaultProportionalLegend extends AbstractLegend implements
+		ProportionalLegend {
 	private static final int LINEAR = 1;
 	private static final int SQUARE = 2;
 	private static final int LOGARITHMIC = 3;
 
 	private String field;
-	private Color fill = Color.red;
-	private Color outline = Color.black;
-
 	private int minSymbolArea = 3000;
 	private int method = LINEAR;
 	private double sqrtFactor;
+	private EditablePointSymbol symbol;
 
-	public void setOutlineColor(Color outline) {
-		this.outline = outline;
-		fireLegendInvalid();
-	}
-
-	public void setFillColor(Color fill) {
-		this.fill = fill;
-		fireLegendInvalid();
-	}
-
-	public Color getOutlineColor() {
-		return outline;
-	}
-
-	public Color getFillColor() {
-		return fill;
+	public DefaultProportionalLegend() {
+		symbol = (EditablePointSymbol) SymbolFactory.createCirclePolygonSymbol(
+				Color.BLACK, Color.pink, 10);
 	}
 
 	public void setMinSymbolArea(int minSymbolArea) {
@@ -136,8 +122,10 @@ public class DefaultProportionalLegend extends AbstractLegend
 
 				break;
 			}
-			return SymbolFactory.createCirclePolygonSymbol(outline, fill,
-					(int) Math.round(symbolSize));
+
+			EditablePointSymbol ret = (EditablePointSymbol) symbol.cloneSymbol();
+			ret.setSize((int) Math.round(symbolSize));
+			return ret;
 		} catch (IncompatibleTypesException e) {
 			throw new RenderException("Cannot calculate proportionalities" + e);
 		} catch (DriverException e) {
@@ -170,7 +158,18 @@ public class DefaultProportionalLegend extends AbstractLegend
 	}
 
 	public String getClassificationField() {
-		// TODO Auto-generated method stub
-		return null;
+		return field;
+	}
+
+	public int getMinSymbolArea() {
+		return minSymbolArea;
+	}
+
+	public EditablePointSymbol getSampleSymbol() {
+		return symbol;
+	}
+
+	public void setSampleSymbol(EditablePointSymbol symbol) {
+		this.symbol = symbol;
 	}
 }

@@ -3,10 +3,11 @@ package org.orbisgis.editorViews.toc.actions.cui.gui;
 import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 
 import javax.swing.DefaultComboBoxModel;
-import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -35,8 +36,8 @@ public class PnlIntervalLegend extends PnlAbstractClassifiedLegend {
 
 	private javax.swing.JComboBox cmbIntervalType;
 	private javax.swing.JComboBox cmbIntervalCount;
-	private javax.swing.JButton jButtonFirstColor;
-	private javax.swing.JButton jButtonSecondColor;
+	private JLabel lblFirstColor;
+	private JLabel lblSecondColor;
 	private javax.swing.JComboBox cmbFieldNames;
 
 	private IntervalLegend legend;
@@ -91,49 +92,51 @@ public class PnlIntervalLegend extends PnlAbstractClassifiedLegend {
 		pnl.add(cmbIntervalCount);
 
 		pnl.add(new JLabel("First color:"));
-		jButtonFirstColor = new JButton();
-		jButtonFirstColor.setMaximumSize(new java.awt.Dimension(19, 19));
-		jButtonFirstColor.setMinimumSize(new java.awt.Dimension(19, 19));
-		jButtonFirstColor.setPreferredSize(new java.awt.Dimension(19, 19));
-		jButtonFirstColor
-				.addActionListener(new java.awt.event.ActionListener() {
-					public void actionPerformed(java.awt.event.ActionEvent evt) {
-						jButtonFirstColorActionPerformed(evt);
-					}
-				});
-		jButtonFirstColor.setBackground(Color.BLUE);
-		pnl.add(jButtonFirstColor);
+		lblFirstColor = new JLabel();
+		lblFirstColor.setMaximumSize(new java.awt.Dimension(19, 19));
+		lblFirstColor.setMinimumSize(new java.awt.Dimension(19, 19));
+		lblFirstColor.setPreferredSize(new java.awt.Dimension(19, 19));
+		lblFirstColor.addMouseListener(new MouseAdapter() {
+
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				jButtonFirstColorActionPerformed();
+			}
+		});
+		lblFirstColor.setBackground(Color.BLUE);
+		pnl.add(lblFirstColor);
 
 		pnl.add(new JLabel("Final color:"));
-		jButtonSecondColor = new JButton();
-		jButtonSecondColor.setMaximumSize(new java.awt.Dimension(19, 19));
-		jButtonSecondColor.setMinimumSize(new java.awt.Dimension(19, 19));
-		jButtonSecondColor.setPreferredSize(new java.awt.Dimension(19, 19));
-		jButtonSecondColor
-				.addActionListener(new java.awt.event.ActionListener() {
-					public void actionPerformed(java.awt.event.ActionEvent evt) {
-						jButtonSecondColorActionPerformed(evt);
-					}
-				});
-		jButtonSecondColor.setBackground(Color.RED);
-		pnl.add(jButtonSecondColor);
+		lblSecondColor = new JLabel();
+		lblSecondColor.setMaximumSize(new java.awt.Dimension(19, 19));
+		lblSecondColor.setMinimumSize(new java.awt.Dimension(19, 19));
+		lblSecondColor.setPreferredSize(new java.awt.Dimension(19, 19));
+		lblSecondColor.addMouseListener(new MouseAdapter() {
+
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				jButtonSecondColorActionPerformed();
+			}
+		});
+		lblSecondColor.setBackground(Color.RED);
+		pnl.add(lblSecondColor);
 
 		return pnl;
 	}
 
-	private void jButtonFirstColorActionPerformed(ActionEvent evt) {
+	private void jButtonFirstColorActionPerformed() {
 		ColorPicker picker = new ColorPicker();
 		if (UIFactory.showDialog(picker)) {
 			Color color = picker.getColor();
-			jButtonFirstColor.setBackground(color);
+			lblFirstColor.setBackground(color);
 		}
 	}
 
-	private void jButtonSecondColorActionPerformed(ActionEvent evt) {
+	private void jButtonSecondColorActionPerformed() {
 		ColorPicker picker = new ColorPicker();
 		if (UIFactory.showDialog(picker)) {
 			Color color = picker.getColor();
-			jButtonSecondColor.setBackground(color);
+			lblSecondColor.setBackground(color);
 		}
 	}
 
@@ -242,13 +245,13 @@ public class PnlIntervalLegend extends PnlAbstractClassifiedLegend {
 
 		int numberOfIntervals = intervals.length;
 
-		int r1 = jButtonFirstColor.getBackground().getRed();
-		int g1 = jButtonFirstColor.getBackground().getGreen();
-		int b1 = jButtonFirstColor.getBackground().getBlue();
+		int r1 = lblFirstColor.getBackground().getRed();
+		int g1 = lblFirstColor.getBackground().getGreen();
+		int b1 = lblFirstColor.getBackground().getBlue();
 
-		int r2 = jButtonSecondColor.getBackground().getRed();
-		int g2 = jButtonSecondColor.getBackground().getGreen();
-		int b2 = jButtonSecondColor.getBackground().getBlue();
+		int r2 = lblSecondColor.getBackground().getRed();
+		int g2 = lblSecondColor.getBackground().getGreen();
+		int b2 = lblSecondColor.getBackground().getBlue();
 
 		int incR = (r2 - r1) / numberOfIntervals;
 		int incG = (g2 - g1) / numberOfIntervals;

@@ -165,7 +165,7 @@ public class ImageLegend {
 
 		if (leg instanceof ProportionalLegend) {
 			ProportionalLegend pl = (ProportionalLegend) leg;
-			paintProportionalLegend(pl.getFillColor(), pl.getOutlineColor(),
+			paintProportionalLegend(Color.red, Color.blue,
 					end, g);
 			setText("Proportional", end, g);
 			end += 30;

@@ -36,28 +36,27 @@
  */
 package org.orbisgis.renderer.legend.carto;
 
-import java.awt.Color;
-
 import org.gdms.driver.DriverException;
 import org.orbisgis.renderer.legend.Legend;
+import org.orbisgis.renderer.symbol.EditablePointSymbol;
 
 public interface ProportionalLegend extends Legend {
 
+	String NAME = "Proportional point";
+
+	int getMinSymbolArea();
+
 	void setMinSymbolArea(int minArea);
+
+	EditablePointSymbol getSampleSymbol();
+
+	void setSampleSymbol(EditablePointSymbol symbol);
 
 	void setLinearMethod() throws DriverException;
 
 	void setSquareMethod(double squareFactor) throws DriverException;
 
 	void setLogarithmicMethod() throws DriverException;
-
-	public void setOutlineColor(Color outline);
-
-	public void setFillColor(Color fill);
-
-	public Color getFillColor();
-
-	public Color getOutlineColor();
 
 	/**
 	 * Sets the field used to compute the size of the proportional symbol

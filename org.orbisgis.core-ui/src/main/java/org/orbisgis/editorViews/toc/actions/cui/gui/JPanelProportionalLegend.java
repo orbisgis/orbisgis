@@ -142,16 +142,16 @@ public class JPanelProportionalLegend extends javax.swing.JPanel implements
 		String field = leg.getClassificationField();
 		jComboBoxClasificationField.setSelectedItem(field);
 
-		jButtonFirstColor.setBackground(leg.getOutlineColor());
-		jButtonSecondColor.setBackground(leg.getFillColor());
+//		jButtonFirstColor.setBackground(leg.getOutlineColor());
+//		jButtonSecondColor.setBackground(leg.getFillColor());
 
 	}
 
 	public Legend getLegend() {
 		ProportionalLegend leg = LegendFactory.createProportionalLegend();
 
-		leg.setFillColor(jButtonSecondColor.getBackground());
-		leg.setOutlineColor(jButtonFirstColor.getBackground());
+//		leg.setFillColor(jButtonSecondColor.getBackground());
+//		leg.setOutlineColor(jButtonFirstColor.getBackground());
 		leg.setMinSymbolArea(Integer.parseInt(jTextFieldArea.getText()));
 		try {
 			int method = jComboBoxMethod.getSelectedIndex();

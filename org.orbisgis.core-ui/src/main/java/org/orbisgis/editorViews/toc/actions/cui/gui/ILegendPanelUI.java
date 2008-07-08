@@ -57,6 +57,9 @@ public interface ILegendPanelUI {
 	int POINT = 1;
 	int LINE = 2;
 	int POLYGON = 4;
+	/**
+	 * POINT | LINE | POLYGON
+	 */
 	int ALL = POINT | LINE | POLYGON;
 
 	/**
@@ -102,7 +105,8 @@ public interface ILegendPanelUI {
 	 * type.
 	 *
 	 * @param geometryType
-	 *            Type of geometry in the layer.
+	 *            Type of geometry in the layer. One bit-or of the constants
+	 *            POINT, LINE and POLYGON.
 	 * @return
 	 */
 	public boolean acceptsGeometryType(int geometryType);
