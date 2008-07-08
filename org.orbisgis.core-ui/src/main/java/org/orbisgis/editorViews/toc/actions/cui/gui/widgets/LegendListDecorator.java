@@ -39,8 +39,6 @@ package org.orbisgis.editorViews.toc.actions.cui.gui.widgets;
 import java.util.Random;
 
 import org.orbisgis.renderer.legend.Legend;
-import org.orbisgis.renderer.legend.carto.DefaultLabelLegend;
-import org.orbisgis.renderer.legend.carto.LegendFactory;
 
 public class LegendListDecorator {
 	private Legend leg;
@@ -48,7 +46,6 @@ public class LegendListDecorator {
 
 	public LegendListDecorator(Legend leg) {
 		if (leg.getName() == null || leg.getName() == "") {
-			leg.setName(leg.getLegendTypeName());
 			// leg.setName(leg.getTypeName());
 		}
 		this.leg = leg;

@@ -133,7 +133,7 @@ public class ImageLegend {
 
 		if (leg instanceof UniqueValueLegend) {
 			UniqueValueLegend uvl = (UniqueValueLegend) leg;
-			int numberOfClas = uvl.getValueCount();
+			int numberOfClas = uvl.getClassificationCount();
 			for (int i = 0; i < numberOfClas; i++) {
 				paintSymbol(uvl.getSymbol(i), end, g);
 				setText(uvl.getLabel(i), end, g);
@@ -423,7 +423,7 @@ public class ImageLegend {
 
 		if (leg instanceof UniqueValueLegend) {
 			UniqueValueLegend uvl = (UniqueValueLegend) leg;
-			int numberOfClas = uvl.getValueCount();
+			int numberOfClas = uvl.getClassificationCount();
 
 			height = 30 * numberOfClas;
 

@@ -62,7 +62,6 @@ import org.orbisgis.renderer.legend.carto.LegendFactory;
 public class JPanelLabelLegend extends javax.swing.JPanel implements
 		ILegendPanelUI {
 
-	private int constraint = 0;
 	private ILayer layer = null;
 	private LabelLegend leg = null;
 
@@ -70,7 +69,6 @@ public class JPanelLabelLegend extends javax.swing.JPanel implements
 
 	/** Creates new form JPanelUniqueSymbolLegend */
 	public JPanelLabelLegend(Legend leg, int constraint, ILayer layer) {
-		this.constraint = constraint;
 		this.layer = layer;
 		this.leg = (LabelLegend) leg;
 		initComponents();
@@ -302,12 +300,8 @@ public class JPanelLabelLegend extends javax.swing.JPanel implements
 	public Legend getLegend() {
 		LabelLegend leg = (LabelLegend) LegendFactory.createLabelLegend();
 
-		try {
-			leg.setClassificationField((String) jComboBoxLabelField
-					.getSelectedItem(), null);
-		} catch (DriverException e) {
-			System.out.println("Exception: " + e.getMessage());
-		}
+		leg.setClassificationField((String) jComboBoxLabelField
+				.getSelectedItem());
 
 		if (jRadioButtonSet.isSelected()) {
 			leg.setFontSize((Integer) jSpinner1.getValue());

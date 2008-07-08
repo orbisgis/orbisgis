@@ -66,11 +66,11 @@ public class RangeMethod {
 
 	/**
 	 * Quantiles intervalls
-	 * 
+	 *
 	 * Adpated from SCAP3 : http://w3.geoprdc.univ-tlse2.fr/scap/java/
-	 * 
+	 *
 	 * @throws DriverException
-	 * 
+	 *
 	 */
 	public void disecQuantiles() throws DriverException {
 
@@ -105,11 +105,11 @@ public class RangeMethod {
 
 	/**
 	 * Equal intervalls method (equivalence)
-	 * 
+	 *
 	 * Adpated from SCAP3 : http://w3.geoprdc.univ-tlse2.fr/scap/java/
-	 * 
+	 *
 	 * @throws DriverException
-	 * 
+	 *
 	 */
 	public void disecEquivalences() throws DriverException {
 		int i = 0;
@@ -163,15 +163,16 @@ public class RangeMethod {
 
 	/**
 	 * Mean data classification.
-	 * 
+	 *
 	 * Adpated from SCAP3 : http://w3.geoprdc.univ-tlse2.fr/scap/java/
-	 * 
-	 * @throws DriverException  The ranges are available only for 2, 4 and 8.
-	 * 
+	 *
+	 * @throws DriverException
+	 *             The ranges are available only for 2, 4 and 8.
+	 *
 	 */
 	public void disecMean() throws DriverException {
 
-		if ((nbCl != 2) && ((nbCl != 4)&& (nbCl != 8))) {
+		if ((nbCl != 2) && ((nbCl != 4) && (nbCl != 8))) {
 			throw new IllegalArgumentException(
 					"Only 2,4 or 8 intervals allowed");
 		}
@@ -193,7 +194,7 @@ public class RangeMethod {
 				nbCl = 8;
 			// todo add a message dialog
 		} else {
-			
+
 		}
 		M = getMean(valeurs, 0, rowCount);
 		Mi = getIndice(valeurs, M);
@@ -291,17 +292,17 @@ public class RangeMethod {
 	}
 
 	/**
-	 * 
+	 *
 	 * Standard discretization
-	 * 
+	 *
 	 * Adpated from SCAP3 : http://w3.geoprdc.univ-tlse2.fr/scap/java/
-	 * 
-	 * @throws DriverException Only 3,5 or 7 intervals allowed.
-	 * 
+	 *
+	 * @throws DriverException
+	 *             Only 3,5 or 7 intervals allowed.
+	 *
 	 */
 	public void disecStandard() throws DriverException {
-		
-				
+
 		// Discrétisation équivalences : calcul des bornes et des tailles
 		double[] valeurs = ClassificationUtils.getSortedValues(ds, fieldName);
 		double moyenne = getMean(valeurs, 0, valeurs.length);
@@ -488,9 +489,9 @@ public class RangeMethod {
 
 	/**
 	 * Compute the mean value between a set of individus.
-	 * 
+	 *
 	 * Adpated from SCAP3 : http://w3.geoprdc.univ-tlse2.fr/scap/java/
-	 * 
+	 *
 	 * @param values
 	 * @param start
 	 * @param end
@@ -518,9 +519,9 @@ public class RangeMethod {
 	}
 
 	/**
-	 * 
+	 *
 	 * Calcul de l'ecart-type pour un jeu de valeurs numeriques.
-	 * 
+	 *
 	 * @param values
 	 * @return
 	 */
@@ -536,7 +537,7 @@ public class RangeMethod {
 
 	/**
 	 * Get the ranges.
-	 * 
+	 *
 	 * @return Range array
 	 */
 	public Range[] getRanges() {
@@ -544,8 +545,7 @@ public class RangeMethod {
 
 	}
 
-	public Interval[] getIntervals() throws NumberFormatException,
-			java.text.ParseException {
+	public Interval[] getIntervals() {
 		Value val1 = null;
 		Value val2 = null;
 

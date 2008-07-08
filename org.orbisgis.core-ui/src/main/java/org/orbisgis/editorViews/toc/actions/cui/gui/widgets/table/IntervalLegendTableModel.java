@@ -7,16 +7,17 @@ import javax.swing.table.TableModel;
 
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
+import org.orbisgis.renderer.legend.carto.Interval;
+import org.orbisgis.renderer.legend.carto.IntervalLegend;
 import org.orbisgis.renderer.legend.carto.LegendFactory;
-import org.orbisgis.renderer.legend.carto.UniqueValueLegend;
 import org.orbisgis.renderer.symbol.Symbol;
 
-public class UniqueValueLegendTableModel extends ClassifiedLegendTableModel
+public class IntervalLegendTableModel extends ClassifiedLegendTableModel
 		implements TableModel {
 
-	private UniqueValueLegend legend = LegendFactory.createUniqueValueLegend();
+	private IntervalLegend legend = LegendFactory.createIntervalLegend();
 
-	public void setLegend(UniqueValueLegend legend) {
+	public void setLegend(IntervalLegend legend) {
 		this.legend = legend;
 		super.setLegend(legend);
 	}
@@ -26,7 +27,7 @@ public class UniqueValueLegendTableModel extends ClassifiedLegendTableModel
 	}
 
 	protected Value getOrderValue(int index) {
-		return legend.getValue(index);
+		return legend.getInterval(index).getMinValue();
 	}
 
 	@Override
@@ -64,6 +65,8 @@ public class UniqueValueLegendTableModel extends ClassifiedLegendTableModel
 			case 1:
 				return ValueFactory.createNullValue();
 			case 2:
+				return ValueFactory.createNullValue();
+			case 3:
 				return legend.getDefaultLabel();
 			default:
 				throw new RuntimeException("bug!");
@@ -76,8 +79,10 @@ public class UniqueValueLegendTableModel extends ClassifiedLegendTableModel
 		case 0:
 			return legend.getSymbol(rowIndex);
 		case 1:
-			return legend.getValue(rowIndex);
+			return legend.getInterval(rowIndex).getMinValue();
 		case 2:
+			return legend.getInterval(rowIndex).getMaxValue();
+		case 3:
 			return legend.getLabel(rowIndex);
 		default:
 			throw new RuntimeException("bug!");
@@ -95,28 +100,31 @@ public class UniqueValueLegendTableModel extends ClassifiedLegendTableModel
 				legend.setDefaultSymbol((Symbol) value);
 				break;
 			case 1:
+			case 2:
 				JOptionPane.showMessageDialog(null, "Cannot modify "
 						+ "'rest of values'", "Wrong input value",
 						JOptionPane.ERROR_MESSAGE);
 				break;
-			case 2:
+			case 3:
 				legend.setDefaultLabel(value.toString());
 				break;
 			}
 		} else {
 			rowIndex = getSortedIndex(rowIndex);
 
+			Interval interval = legend.getInterval(rowIndex);
 			switch (columnIndex) {
 			case 0:
 				legend.setSymbol(rowIndex, (Symbol) value);
 				break;
 			case 1:
-				Value currentValue = legend.getValue(rowIndex);
-				int type = currentValue.getType();
 				try {
-					Value val = ValueFactory.createValueByType(
-							value.toString(), type);
-					legend.setValue(rowIndex, val);
+					Value currentMin = interval.getMinValue();
+					int typeMin = currentMin.getType();
+					Value valMin = ValueFactory.createValueByType(value
+							.toString(), typeMin);
+					new Interval(valMin, false, interval.getMaxValue(), false);
+					legend.setInterval(rowIndex, interval);
 					invalidateOrder();
 				} catch (NumberFormatException e) {
 					JOptionPane.showMessageDialog(null, value.toString()
@@ -129,6 +137,25 @@ public class UniqueValueLegendTableModel extends ClassifiedLegendTableModel
 				}
 				break;
 			case 2:
+				try {
+					Value currentMax = interval.getMaxValue();
+					int typeMax = currentMax.getType();
+					Value valMax = ValueFactory.createValueByType(value
+							.toString(), typeMax);
+					new Interval(valMax, false, interval.getMaxValue(), false);
+					legend.setInterval(rowIndex, interval);
+					invalidateOrder();
+				} catch (NumberFormatException e) {
+					JOptionPane.showMessageDialog(null, value.toString()
+							+ " is not valid.", "Wrong input value",
+							JOptionPane.ERROR_MESSAGE);
+				} catch (ParseException e) {
+					JOptionPane.showMessageDialog(null, value.toString()
+							+ " is not valid. " + e.getMessage(),
+							"Wrong input value", JOptionPane.ERROR_MESSAGE);
+				}
+				break;
+			case 3:
 				legend.setLabel(rowIndex, value.toString());
 				break;
 			default:
@@ -138,10 +165,10 @@ public class UniqueValueLegendTableModel extends ClassifiedLegendTableModel
 		fireTableCellUpdated(rowIndex, columnIndex);
 	}
 
-	public void insertRow(Symbol symbol, Value value, String label) {
-		legend.addClassification(value, symbol, label);
+	public void insertRow(Symbol symbol, Value min, Value max, String label) {
+		legend.addInterval(min, true, max, false, symbol, label);
 		invalidateOrder();
-		fireTableRowsInserted(legend.getClassificationCount() - 1, legend
-				.getClassificationCount());
+		int classificationCount = legend.getClassificationCount();
+		fireTableRowsInserted(classificationCount - 1, classificationCount);
 	}
 }

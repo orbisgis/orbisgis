@@ -43,17 +43,19 @@ import org.gdms.data.SpatialDataSourceDecorator;
 import org.gdms.driver.DriverException;
 import org.gdms.sql.strategies.IncompatibleTypesException;
 import org.orbisgis.renderer.classification.ProportionalMethod;
+import org.orbisgis.renderer.legend.AbstractLegend;
 import org.orbisgis.renderer.legend.Legend;
 import org.orbisgis.renderer.legend.RenderException;
 import org.orbisgis.renderer.symbol.Symbol;
 import org.orbisgis.renderer.symbol.SymbolFactory;
 
-public class DefaultProportionalLegend extends AbstractClassifiedLegend
+public class DefaultProportionalLegend extends AbstractLegend
 		implements ProportionalLegend {
 	private static final int LINEAR = 1;
 	private static final int SQUARE = 2;
 	private static final int LOGARITHMIC = 3;
 
+	private String field;
 	private Color fill = Color.red;
 	private Color outline = Color.black;
 
@@ -100,15 +102,11 @@ public class DefaultProportionalLegend extends AbstractClassifiedLegend
 		fireLegendInvalid();
 	}
 
-	public String getLegendTypeName() {
-		return "Proportional Legend";
-	}
-
 	public Symbol getSymbol(SpatialDataSourceDecorator sds, long row)
 			throws RenderException {
 		try {
 			ProportionalMethod proportionnalMethod = new ProportionalMethod(
-					sds, getClassificationField());
+					sds, field);
 			proportionnalMethod.build(minSymbolArea);
 
 			// TODO what's the use of this variable
@@ -165,5 +163,14 @@ public class DefaultProportionalLegend extends AbstractClassifiedLegend
 
 	public void load(File file, String version) {
 		throw new UnsupportedOperationException();
+	}
+
+	public void setClassificationField(String fieldName) {
+		this.field = fieldName;
+	}
+
+	public String getClassificationField() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

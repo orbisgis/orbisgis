@@ -169,7 +169,7 @@ public class TestClassfication {
 			ds = dsf.getDataSource(src);
 			ds.open();
 			ProportionalLegend l = LegendFactory.createProportionalLegend();
-			l.setClassificationField("PTOT90", ds);
+			l.setClassificationField("PTOT90");
 			l.setMinSymbolArea(100);
 			// l.setSquareMethod(2);
 			l.setLogarithmicMethod();

@@ -72,22 +72,12 @@ public class DefaultUniqueValueLegend extends AbstractClassifiedLegend
 		implements UniqueValueLegend {
 
 	private ArrayList<Value> values = new ArrayList<Value>();
-	private ArrayList<Symbol> symbols = new ArrayList<Symbol>();
-	private ArrayList<String> labels = new ArrayList<String>();
 
 	public void addClassification(Value value, Symbol symbol, String label) {
 		values.add(value);
-		symbols.add(symbol);
-		labels.add(label);
+		getSymbols().add(symbol);
+		getLabels().add(label);
 		fireLegendInvalid();
-	}
-
-	public String getLegendTypeName() {
-		return NAME;
-	}
-
-	public Symbol getSymbol(int index) {
-		return symbols.get(index);
 	}
 
 	private int getValueIndex(Value value) {
@@ -102,7 +92,7 @@ public class DefaultUniqueValueLegend extends AbstractClassifiedLegend
 			Geometry geom = sds.getGeometry(row);
 			int symbolIndex = getValueIndex(value);
 			if (symbolIndex != -1) {
-				Symbol classificationSymbol = this.symbols.get(symbolIndex);
+				Symbol classificationSymbol = getSymbols().get(symbolIndex);
 				Symbol symbol = RenderUtils.buildSymbolToDraw(
 						classificationSymbol, geom);
 				return symbol;
@@ -135,9 +125,9 @@ public class DefaultUniqueValueLegend extends AbstractClassifiedLegend
 					.getValueClassification();
 			for (int i = 0; i < values.size(); i++) {
 				ValueClassification classification = new ValueClassification();
-				classification.setLabel(labels.get(i));
+				classification.setLabel(getLabel(i));
 				classification.setSymbol(DefaultSymbolCollection
-						.getXMLFromSymbol(symbols.get(i)));
+						.getXMLFromSymbol(getSymbol(i)));
 				classification.setValue(values.get(i).toString());
 				classifications.add(classification);
 			}
@@ -204,42 +194,24 @@ public class DefaultUniqueValueLegend extends AbstractClassifiedLegend
 		return new DefaultUniqueValueLegend();
 	}
 
-	public String getLabel(int index) throws IllegalArgumentException {
-		return labels.get(index);
-	}
-
 	public Value getValue(int index) {
 		return values.get(index);
-	}
-
-	public int getValueCount() {
-		return values.size();
-	}
-
-	public void setLabel(int index, String label)
-			throws IllegalArgumentException {
-		labels.set(index, label);
-	}
-
-	public void setSymbol(int index, Symbol symbol)
-			throws IllegalArgumentException {
-		symbols.set(index, symbol);
 	}
 
 	public void setValue(int index, Value value) {
 		values.set(index, value);
 	}
 
+	@Override
 	public void clear() {
 		values.clear();
-		symbols.clear();
-		labels.clear();
+		super.clear();
 	}
 
+	@Override
 	public void removeClassification(int index) throws IllegalArgumentException {
 		values.remove(index);
-		symbols.remove(index);
-		labels.remove(index);
+		super.removeClassification(index);
 	}
 
 }

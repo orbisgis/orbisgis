@@ -39,8 +39,9 @@ package org.orbisgis.renderer.legend.carto;
 import java.awt.Color;
 
 import org.gdms.driver.DriverException;
+import org.orbisgis.renderer.legend.Legend;
 
-public interface ProportionalLegend extends ClassifiedLegend {
+public interface ProportionalLegend extends Legend {
 
 	void setMinSymbolArea(int minArea);
 
@@ -51,11 +52,20 @@ public interface ProportionalLegend extends ClassifiedLegend {
 	void setLogarithmicMethod() throws DriverException;
 
 	public void setOutlineColor(Color outline);
-	
+
 	public void setFillColor(Color fill);
-	
+
 	public Color getFillColor();
-	
+
 	public Color getOutlineColor();
-	
+
+	/**
+	 * Sets the field used to compute the size of the proportional symbol
+	 *
+	 * @param fieldName
+	 */
+	void setClassificationField(String fieldName);
+
+	String getClassificationField();
+
 }

@@ -57,13 +57,6 @@ public interface UniqueValueLegend extends ClassifiedLegend {
 	void addClassification(Value value, Symbol symbol, String label);
 
 	/**
-	 * Gets the number of classified values in this legend
-	 *
-	 * @return
-	 */
-	int getValueCount();
-
-	/**
 	 * Gets the value of the i-th classification
 	 *
 	 * @param index
@@ -72,55 +65,11 @@ public interface UniqueValueLegend extends ClassifiedLegend {
 	Value getValue(int index);
 
 	/**
-	 * Gets the symbol used in the specified classification
-	 *
-	 * @param value
-	 * @return The associated symbol
-	 */
-	Symbol getSymbol(int i);
-
-	/**
-	 * Gets the label for the specified classification
-	 *
-	 * @param value
-	 * @return
-	 */
-	String getLabel(int i);
-
-	/**
-	 * Sets the label for the specified classification
-	 *
-	 * @param i
-	 * @param label
-	 */
-	void setLabel(int i, String label);
-
-	/**
-	 * Sets the symbol for the specified classification
-	 *
-	 * @param index
-	 * @param symbol
-	 */
-	void setSymbol(int index, Symbol symbol);
-
-	/**
 	 * Sets the label for the specified classification
 	 *
 	 * @param index
 	 * @param value
 	 */
 	void setValue(int index, Value value);
-
-	/**
-	 * Clears all the classifications in the legend
-	 */
-	void clear();
-
-	/**
-	 * Removes the specified classification
-	 *
-	 * @param index
-	 */
-	void removeClassification(int index);
 
 }

@@ -70,13 +70,11 @@ public class DefaultIntervalLegend extends AbstractClassifiedLegend implements
 		IntervalLegend {
 
 	private ArrayList<Interval> intervals = new ArrayList<Interval>();
-	private ArrayList<Symbol> symbols = new ArrayList<Symbol>();
-	private ArrayList<String> labels = new ArrayList<String>();
 
 	public Symbol getSymbol(Interval inter) {
 		for (int i = 0; i < intervals.size(); i++) {
 			if (intervals.get(i).equals(inter)) {
-				return symbols.get(i);
+				return getSymbols().get(i);
 			}
 		}
 		return null;
@@ -90,29 +88,25 @@ public class DefaultIntervalLegend extends AbstractClassifiedLegend implements
 			Value finalValue, boolean maxIncluded, Symbol symbol, String label) {
 		intervals.add(new Interval(initialValue, minIncluded, finalValue,
 				maxIncluded));
-		symbols.add(symbol);
-		labels.add(label);
+		getSymbols().add(symbol);
+		getLabels().add(label);
 		fireLegendInvalid();
 	}
 
 	public void addIntervalWithMaxLimit(Value finalValue, boolean included,
 			Symbol symbol, String label) {
 		intervals.add(new Interval(null, false, finalValue, included));
-		symbols.add(symbol);
-		labels.add(label);
+		getSymbols().add(symbol);
+		getLabels().add(label);
 		fireLegendInvalid();
 	}
 
 	public void addIntervalWithMinLimit(Value initialValue, boolean included,
 			Symbol symbol, String label) {
 		intervals.add(new Interval(initialValue, included, null, false));
-		symbols.add(symbol);
-		labels.add(label);
+		getSymbols().add(symbol);
+		getLabels().add(label);
 		fireLegendInvalid();
-	}
-
-	public String getLegendTypeName() {
-		return "Interval Classified Legend";
 	}
 
 	public Symbol getSymbol(SpatialDataSourceDecorator sds, long row)
@@ -134,10 +128,10 @@ public class DefaultIntervalLegend extends AbstractClassifiedLegend implements
 		}
 	}
 
-	public Symbol getSymbolFor(Value value) {
+	private Symbol getSymbolFor(Value value) {
 		for (int i = 0; i < intervals.size(); i++) {
 			if (intervals.get(i).contains(value)) {
-				return symbols.get(i);
+				return getSymbols().get(i);
 			}
 		}
 
@@ -169,9 +163,9 @@ public class DefaultIntervalLegend extends AbstractClassifiedLegend implements
 					.getIntervalClassification();
 			for (int i = 0; i < intervals.size(); i++) {
 				IntervalClassification classification = new IntervalClassification();
-				classification.setLabel(labels.get(i));
+				classification.setLabel(getLabel(i));
 				classification.setSymbol(DefaultSymbolCollection
-						.getXMLFromSymbol(symbols.get(i)));
+						.getXMLFromSymbol(getSymbol(i)));
 				Interval interval = intervals.get(i);
 				Value minValue = interval.getMinValue();
 				if (minValue != null) {
@@ -274,12 +268,8 @@ public class DefaultIntervalLegend extends AbstractClassifiedLegend implements
 		return intervals.get(index);
 	}
 
-	public Symbol getSymbol(int index) {
-		return symbols.get(index);
-	}
-
-	public String getLabel(int index) {
-		return labels.get(index);
+	public void setInterval(int rowIndex, Interval interval) {
+		intervals.set(rowIndex, interval);
 	}
 
 }

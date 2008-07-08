@@ -92,4 +92,55 @@ public interface ClassifiedLegend extends Legend {
 	 */
 	String getClassificationField();
 
+	/**
+	 * Gets the number of classifications in this legend
+	 *
+	 * @return
+	 */
+	int getClassificationCount();
+
+	/**
+	 * Gets the symbol used in the specified classification
+	 *
+	 * @param value
+	 * @return The associated symbol
+	 */
+	Symbol getSymbol(int i);
+
+	/**
+	 * Gets the label for the specified classification
+	 *
+	 * @param value
+	 * @return
+	 */
+	String getLabel(int i);
+
+	/**
+	 * Sets the label for the specified classification
+	 *
+	 * @param i
+	 * @param label
+	 */
+	void setLabel(int i, String label);
+
+	/**
+	 * Sets the symbol for the specified classification
+	 *
+	 * @param index
+	 * @param symbol
+	 */
+	void setSymbol(int index, Symbol symbol);
+
+	/**
+	 * Clears all the classifications in the legend
+	 */
+	void clear();
+
+	/**
+	 * Removes the specified classification
+	 *
+	 * @param index
+	 */
+	void removeClassification(int index);
+
 }

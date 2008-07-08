@@ -43,6 +43,8 @@ import org.orbisgis.renderer.symbol.Symbol;
 
 public interface IntervalLegend extends ClassifiedLegend {
 
+	String NAME = "Interval Legend";
+
 	/**
 	 * Adds a classification to the legend
 	 *
@@ -109,13 +111,6 @@ public interface IntervalLegend extends ClassifiedLegend {
 	public Symbol getSymbol(Interval inter);
 
 	/**
-	 * Gets the number of intervals in this classification
-	 *
-	 * @return
-	 */
-	int getIntervalCount();
-
-	/**
 	 * Gets the specified interval
 	 *
 	 * @param index
@@ -124,19 +119,10 @@ public interface IntervalLegend extends ClassifiedLegend {
 	Interval getInterval(int index);
 
 	/**
-	 * Gets the symbol of the specified interval classification
+	 * Sets the interval for the specified classification
 	 *
-	 * @param index
-	 * @return
+	 * @param rowIndex
+	 * @param interval
 	 */
-	Symbol getSymbol(int index);
-
-	/**
-	 * Gets the label of the specified interval classification
-	 *
-	 * @param index
-	 * @return
-	 */
-	String getLabel(int index);
-
+	void setInterval(int rowIndex, Interval interval);
 }

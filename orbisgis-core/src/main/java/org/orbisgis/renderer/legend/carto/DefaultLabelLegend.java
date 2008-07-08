@@ -41,12 +41,13 @@ import java.io.File;
 import org.gdms.data.SpatialDataSourceDecorator;
 import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
+import org.orbisgis.renderer.legend.AbstractLegend;
 import org.orbisgis.renderer.legend.Legend;
 import org.orbisgis.renderer.legend.RenderException;
 import org.orbisgis.renderer.symbol.Symbol;
 import org.orbisgis.renderer.symbol.SymbolFactory;
 
-public class DefaultLabelLegend extends AbstractClassifiedLegend implements
+public class DefaultLabelLegend extends AbstractLegend implements
 		LabelLegend {
 
 	private String labelSizeField;
@@ -86,10 +87,6 @@ public class DefaultLabelLegend extends AbstractClassifiedLegend implements
 		return this.fontSize;
 	}
 
-	public String getLegendTypeName() {
-		return "Label legend";
-	}
-
 	public Symbol getSymbol(SpatialDataSourceDecorator sds, long row)
 			throws RenderException {
 		try {
@@ -121,5 +118,15 @@ public class DefaultLabelLegend extends AbstractClassifiedLegend implements
 
 	public String getLegendTypeId() {
 		return "org.orbisgis.legend.Label";
+	}
+
+	public String getClassificationField() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public void setClassificationField(String selectedItem) {
+		// TODO Auto-generated method stub
+
 	}
 }

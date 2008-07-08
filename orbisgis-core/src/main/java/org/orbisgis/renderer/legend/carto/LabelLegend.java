@@ -37,8 +37,9 @@
 package org.orbisgis.renderer.legend.carto;
 
 import org.gdms.driver.DriverException;
+import org.orbisgis.renderer.legend.Legend;
 
-public interface LabelLegend extends ClassifiedLegend {
+public interface LabelLegend extends Legend {
 
 	/**
 	 * Sets the field used to get the size of the label
@@ -51,9 +52,13 @@ public interface LabelLegend extends ClassifiedLegend {
 	public void setLabelSizeField(String fieldName) throws DriverException;
 
 	public void setFontSize(int fontSize);
-	
+
 	public String getLabelSizeField();
-	
+
 	public int getFontSize();
+
+	public void setClassificationField(String selectedItem);
+
+	public String getClassificationField();
 
 }

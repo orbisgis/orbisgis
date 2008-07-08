@@ -85,10 +85,6 @@ public class DefaultUniqueSymbolLegend extends AbstractLegend implements
 		}
 	}
 
-	public String getLegendTypeName() {
-		return UniqueSymbolLegend.NAME;
-	}
-
 	public String getVersion() {
 		return "1.0";
 	}

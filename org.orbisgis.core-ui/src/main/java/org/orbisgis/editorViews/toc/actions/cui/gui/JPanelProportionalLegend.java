@@ -169,7 +169,7 @@ public class JPanelProportionalLegend extends javax.swing.JPanel implements
 			}
 
 			leg.setClassificationField((String) jComboBoxClasificationField
-					.getSelectedItem(), null);
+					.getSelectedItem());
 		} catch (DriverException e) {
 			System.out.println("Driver Exception");
 		}

@@ -76,10 +76,6 @@ public class RasterLegend extends AbstractLegend implements Legend {
 		return null;
 	}
 
-	public String getLegendTypeName() {
-		return "Raster legend";
-	}
-
 	public void setBands(String bandsCode) {
 
 		this.bandsCode = bandsCode;

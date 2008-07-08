@@ -96,13 +96,6 @@ public interface Legend {
 	void setName(String name);
 
 	/**
-	 * Gets the name of the legend type
-	 *
-	 * @return
-	 */
-	String getLegendTypeName();
-
-	/**
 	 * Returns an unique id. It can be whatever unique string. If this string
 	 * changes, previous versions of the legend won't be read. For persistence
 	 * purposes.

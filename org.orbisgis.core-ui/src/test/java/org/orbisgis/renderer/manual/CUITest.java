@@ -15,6 +15,7 @@ import org.orbisgis.ExtendedWorkspace;
 import org.orbisgis.Services;
 import org.orbisgis.SymbolManager;
 import org.orbisgis.editorViews.toc.actions.cui.gui.ILegendPanelUI;
+import org.orbisgis.editorViews.toc.actions.cui.gui.JPanelIntervalLegend;
 import org.orbisgis.editorViews.toc.actions.cui.gui.JPanelUniqueSymbolLegend;
 import org.orbisgis.editorViews.toc.actions.cui.gui.JPanelUniqueValueLegend;
 import org.orbisgis.editorViews.toc.actions.cui.ui.LegendsPanel;
@@ -80,9 +81,10 @@ public class CUITest {
 				.getConstraint(Constraint.GEOMETRY_TYPE);
 
 		LegendsPanel pan = new LegendsPanel();
-		pan.init(cons, layer.getVectorLegend(), new ILegendPanelUI[] {
-				new JPanelUniqueSymbolLegend(true, pan),
-				new JPanelUniqueValueLegend(pan) }, layer);
+		pan.init(cons, layer.getVectorLegend(),
+				new ILegendPanelUI[] { new JPanelUniqueSymbolLegend(true, pan),
+						new JPanelUniqueValueLegend(pan),
+						new JPanelIntervalLegend(pan) }, layer);
 		if (UIFactory.showDialog(pan)) {
 			try {
 				layer.setLegend(pan.getLegends());

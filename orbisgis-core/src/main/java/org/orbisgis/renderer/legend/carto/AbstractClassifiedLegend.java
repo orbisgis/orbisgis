@@ -36,6 +36,8 @@
  */
 package org.orbisgis.renderer.legend.carto;
 
+import java.util.ArrayList;
+
 import org.gdms.data.DataSource;
 import org.gdms.driver.DriverException;
 import org.orbisgis.IncompatibleVersionException;
@@ -52,6 +54,8 @@ abstract class AbstractClassifiedLegend extends AbstractLegend implements
 	private Symbol defaultSymbol;
 	private int fieldType;
 	private String defaultLabel = "Rest of values";
+	private ArrayList<Symbol> symbols = new ArrayList<Symbol>();
+	private ArrayList<String> labels = new ArrayList<String>();
 
 	public void setClassificationField(String fieldName, DataSource ds)
 			throws DriverException {
@@ -59,6 +63,10 @@ abstract class AbstractClassifiedLegend extends AbstractLegend implements
 		int fi = ds.getFieldIndexByName(fieldName);
 		this.fieldType = ds.getMetadata().getFieldType(fi).getTypeCode();
 		fireLegendInvalid();
+	}
+
+	public Symbol getSymbol(int index) {
+		return symbols.get(index);
 	}
 
 	public void setDefaultSymbol(Symbol defaultSymbol) {
@@ -110,6 +118,42 @@ abstract class AbstractClassifiedLegend extends AbstractLegend implements
 
 	protected int getFieldType() {
 		return fieldType;
+	}
+
+	public String getLabel(int index) throws IllegalArgumentException {
+		return labels.get(index);
+	}
+
+	public void setLabel(int index, String label)
+			throws IllegalArgumentException {
+		labels.set(index, label);
+	}
+
+	public void setSymbol(int index, Symbol symbol)
+			throws IllegalArgumentException {
+		symbols.set(index, symbol);
+	}
+
+	public void removeClassification(int index) {
+		symbols.remove(index);
+		labels.remove(index);
+	}
+
+	public void clear() {
+		symbols.clear();
+		labels.clear();
+	}
+
+	protected ArrayList<Symbol> getSymbols() {
+		return symbols;
+	}
+
+	protected ArrayList<String> getLabels() {
+		return labels;
+	}
+
+	public int getClassificationCount() {
+		return symbols.size();
 	}
 
 }

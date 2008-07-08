@@ -164,7 +164,7 @@ public class LegendTest extends AbstractTest {
 		assertTrue(uvl.getDefaultSymbol().getPersistentProperties().equals(
 				sym.getPersistentProperties()));
 		assertTrue(uvl.getClassificationField().equals(fieldName));
-		assertTrue(uvl.getValueCount() == 1);
+		assertTrue(uvl.getClassificationCount() == 1);
 		assertTrue(uvl.getValue(0).equals(classValue).getAsBoolean());
 		assertTrue(uvl.getSymbol(0).getPersistentProperties().equals(
 				classSym.getPersistentProperties()));
@@ -186,7 +186,7 @@ public class LegendTest extends AbstractTest {
 		assertTrue(uvl.getName() == null);
 		assertTrue(uvl.getDefaultSymbol() == null);
 		assertTrue(uvl.getClassificationField().equals(fieldName));
-		assertTrue(uvl.getValueCount() == 0);
+		assertTrue(uvl.getClassificationCount() == 0);
 	}
 
 	public void testFullIntervalPersistence() throws Exception {
@@ -213,7 +213,7 @@ public class LegendTest extends AbstractTest {
 		assertTrue(uvl.getDefaultSymbol().getPersistentProperties().equals(
 				sym.getPersistentProperties()));
 		assertTrue(uvl.getClassificationField().equals(fieldName));
-		assertTrue(uvl.getIntervalCount() == 1);
+		assertTrue(uvl.getClassificationCount() == 1);
 		assertTrue(uvl.getInterval(0).getMinValue().equals(initValue)
 				.getAsBoolean());
 		assertTrue(uvl.getInterval(0).getMaxValue().equals(endValue)
@@ -240,7 +240,7 @@ public class LegendTest extends AbstractTest {
 		assertTrue(uvl.getName() == null);
 		assertTrue(uvl.getDefaultSymbol() == null);
 		assertTrue(uvl.getClassificationField().equals(fieldName));
-		assertTrue(uvl.getIntervalCount() == 0);
+		assertTrue(uvl.getClassificationCount() == 0);
 	}
 
 	@Override

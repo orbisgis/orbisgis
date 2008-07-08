@@ -64,10 +64,6 @@ public class LegendDecorator implements Legend, EditionListener {
 		this.legend = legend;
 	}
 
-	public String getLegendTypeName() {
-		return legend.getLegendTypeName();
-	}
-
 	public String getName() {
 		return legend.getName();
 	}

@@ -104,8 +104,8 @@ public class LegendsPanel extends JPanel implements UIPanel, LegendContext {
 
 	private ILegendPanelUI getPanel(Legend legend) {
 		for (ILegendPanelUI panel : availableLegends) {
-			if (panel.getLegend().getLegendTypeName().equals(
-					legend.getLegendTypeName())) {
+			if (panel.getLegend().getLegendTypeId().equals(
+					legend.getLegendTypeId())) {
 				return panel.newInstance(this);
 			}
 		}
