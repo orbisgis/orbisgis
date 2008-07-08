@@ -48,6 +48,7 @@ import org.orbisgis.AbstractTest;
 import org.orbisgis.layerModel.DefaultMapContext;
 import org.orbisgis.layerModel.ILayer;
 import org.orbisgis.layerModel.MapContext;
+import org.orbisgis.renderer.legend.carto.IntervalLegend;
 import org.orbisgis.renderer.legend.carto.LegendFactory;
 import org.orbisgis.renderer.legend.carto.UniqueSymbolLegend;
 import org.orbisgis.renderer.legend.carto.UniqueValueLegend;
@@ -186,6 +187,60 @@ public class LegendTest extends AbstractTest {
 		assertTrue(uvl.getDefaultSymbol() == null);
 		assertTrue(uvl.getClassificationField().equals(fieldName));
 		assertTrue(uvl.getValueCount() == 0);
+	}
+
+	public void testFullIntervalPersistence() throws Exception {
+		IntervalLegend uvl = LegendFactory.createIntervalLegend();
+		String name = "mylegend";
+		uvl.setName(name);
+		Symbol classSym = SymbolFactory.createCirclePointSymbol(Color.black,
+				Color.red, 20);
+		Symbol sym = classSym;
+		uvl.setDefaultSymbol(sym);
+		String aLabel = "aLabel";
+		uvl.setDefaultLabel(aLabel);
+		uvl.setClassificationField(fieldName, ds);
+		Value initValue = ValueFactory.createValue("a");
+		Value endValue = ValueFactory.createValue("z");
+		uvl.addInterval(initValue, false, endValue, true, classSym, aLabel);
+		File file = new File("target/intervalLegend.ogl");
+		uvl.save(file);
+
+		uvl = (IntervalLegend) LegendFactory
+				.getNewLegend(uvl.getLegendTypeId());
+		uvl.load(file, uvl.getVersion());
+		assertTrue(uvl.getName().equals(name));
+		assertTrue(uvl.getDefaultSymbol().getPersistentProperties().equals(
+				sym.getPersistentProperties()));
+		assertTrue(uvl.getClassificationField().equals(fieldName));
+		assertTrue(uvl.getIntervalCount() == 1);
+		assertTrue(uvl.getInterval(0).getMinValue().equals(initValue)
+				.getAsBoolean());
+		assertTrue(uvl.getInterval(0).getMaxValue().equals(endValue)
+				.getAsBoolean());
+		assertTrue(!uvl.getInterval(0).isMinIncluded());
+		assertTrue(uvl.getInterval(0).isMaxIncluded());
+		assertTrue(uvl.getSymbol(0).getPersistentProperties().equals(
+				classSym.getPersistentProperties()));
+		assertTrue(uvl.getLabel(0).equals(aLabel));
+	}
+
+	public void testMinimumIntervalPersistence() throws Exception {
+		IntervalLegend uvl = LegendFactory.createIntervalLegend();
+		uvl.setName(null);
+		uvl.setDefaultSymbol(null);
+		uvl.setDefaultLabel(null);
+		uvl.setClassificationField(fieldName, ds);
+		File file = new File("target/uniqueSymbolLegend.ogl");
+		uvl.save(file);
+
+		uvl = (IntervalLegend) LegendFactory
+				.getNewLegend(uvl.getLegendTypeId());
+		uvl.load(file, uvl.getVersion());
+		assertTrue(uvl.getName() == null);
+		assertTrue(uvl.getDefaultSymbol() == null);
+		assertTrue(uvl.getClassificationField().equals(fieldName));
+		assertTrue(uvl.getIntervalCount() == 0);
 	}
 
 	@Override

@@ -845,13 +845,13 @@ public class JPanelIntervalClassifiedLegend extends javax.swing.JPanel
 			if (jCheckBoxRestOfValues.isSelected()) {
 				if (!pojo.getLabel().equals("Default")) {
 					legend.addInterval(pojo.getVal().getMinValue(), true, pojo
-							.getVal().getMaxValue(), false, s);
+							.getVal().getMaxValue(), false, s, "");
 				} else {
 					legend.setDefaultSymbol(pojo.getSym());
 				}
 			} else {
 				legend.addInterval(pojo.getVal().getMinValue(), true, pojo
-						.getVal().getMaxValue(), false, s);
+						.getVal().getMaxValue(), false, s, "");
 			}
 
 		}

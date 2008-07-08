@@ -111,7 +111,7 @@ public class TestClassfication {
 						ValueFactory.createValue(ranges[i].getMinRange()),
 						true,
 						ValueFactory.createValue(ranges[i].getMaxRange()),
-						false, s[i]);
+						false, s[i], "");
 
 				System.out.println("Classes " + i + " :  Min "
 						+ ranges[i].getMinRange() + " Max : "
@@ -127,7 +127,8 @@ public class TestClassfication {
 			layer.setLegend(l);
 
 			Envelope extent = layer.getEnvelope();
-			BufferedImage img = new BufferedImage(400, 400, BufferedImage.TYPE_INT_ARGB);
+			BufferedImage img = new BufferedImage(400, 400,
+					BufferedImage.TYPE_INT_ARGB);
 			Renderer r = new Renderer();
 			// int size = 350;
 			// extent = new Envelope(new Coordinate(extent.centre().x - size,
@@ -186,7 +187,8 @@ public class TestClassfication {
 			layer.setLegend(l2, l);
 
 			Envelope extent = layer.getEnvelope();
-			BufferedImage img = new BufferedImage(400, 400, BufferedImage.TYPE_INT_ARGB);
+			BufferedImage img = new BufferedImage(400, 400,
+					BufferedImage.TYPE_INT_ARGB);
 			Renderer r = new Renderer();
 			// int size = 185350;
 			// extent = new Envelope(new Coordinate(extent.centre().x - size,

@@ -57,9 +57,11 @@ public interface IntervalLegend extends ClassifiedLegend {
 	 * @param symbol
 	 *            Symbol for the interval, including the initial and final
 	 *            values
+	 * @param label
+	 *            Human readable description of the interval
 	 */
 	void addInterval(Value initialValue, boolean minIncluded, Value finalValue,
-			boolean maxIncluded, Symbol symbol);
+			boolean maxIncluded, Symbol symbol, String label);
 
 	/**
 	 * Adds a classification to the legend
@@ -70,9 +72,11 @@ public interface IntervalLegend extends ClassifiedLegend {
 	 *            if the value is included in the interval
 	 * @param symbol
 	 *            symbol for the values that match the interval
+	 * @param label
+	 *            Human readable description of the interval
 	 */
 	void addIntervalWithMinLimit(Value initialValue, boolean included,
-			Symbol symbol);
+			Symbol symbol, String label);
 
 	/**
 	 * Adds a classification to the legend
@@ -83,9 +87,11 @@ public interface IntervalLegend extends ClassifiedLegend {
 	 *            if the value is included in the interval
 	 * @param symbol
 	 *            symbol for the values that match the interval
+	 * @param label
+	 *            Human readable description of the interval
 	 */
 	void addIntervalWithMaxLimit(Value finalValue, boolean included,
-			Symbol symbol);
+			Symbol symbol, String label);
 
 	/**
 	 * Gets all the intervals in the classification
@@ -101,5 +107,36 @@ public interface IntervalLegend extends ClassifiedLegend {
 	 * @return
 	 */
 	public Symbol getSymbol(Interval inter);
+
+	/**
+	 * Gets the number of intervals in this classification
+	 *
+	 * @return
+	 */
+	int getIntervalCount();
+
+	/**
+	 * Gets the specified interval
+	 *
+	 * @param index
+	 * @return
+	 */
+	Interval getInterval(int index);
+
+	/**
+	 * Gets the symbol of the specified interval classification
+	 *
+	 * @param index
+	 * @return
+	 */
+	Symbol getSymbol(int index);
+
+	/**
+	 * Gets the label of the specified interval classification
+	 *
+	 * @param index
+	 * @return
+	 */
+	String getLabel(int index);
 
 }

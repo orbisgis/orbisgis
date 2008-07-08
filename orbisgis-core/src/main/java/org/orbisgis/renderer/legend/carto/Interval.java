@@ -52,16 +52,16 @@ public class Interval {
 		this.end = end;
 		this.maxIncluded = maxIncluded;
 	}
-	
-	public String getIntervalString(){
-		return start.toString()+" - "+end.toString();
+
+	public String getIntervalString() {
+		return start.toString() + " - " + end.toString();
 	}
-	
-	public Value getMinValue(){
+
+	public Value getMinValue() {
 		return start;
 	}
-	
-	public Value getMaxValue(){
+
+	public Value getMaxValue() {
 		return end;
 	}
 
@@ -84,5 +84,13 @@ public class Interval {
 			}
 		}
 		return matchesLower && matchesUpper;
+	}
+
+	public boolean isMinIncluded() {
+		return minIncluded;
+	}
+
+	public boolean isMaxIncluded() {
+		return maxIncluded;
 	}
 }

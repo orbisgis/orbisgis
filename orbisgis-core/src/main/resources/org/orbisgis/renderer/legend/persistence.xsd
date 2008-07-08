@@ -31,6 +31,21 @@
 
 	<xs:element name="unique-symbol-legend" type="unique-symbol-legend-type"/>
 
+	<xs:complexType name="classified-legend-type">
+		<xs:complexContent>
+			<xs:extension base="legend-type">
+				<xs:sequence>
+					<xs:element name="default-symbol" type="sym:symbol-type"
+						maxOccurs="1"/>
+				</xs:sequence>
+				<xs:attribute name="default-label" type="xs:string"
+					use="required"/>
+				<xs:attribute name="field-name" type="xs:string" use="required"/>
+				<xs:attribute name="field-type" type="xs:int" use="required"/>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+
 	<xs:element name="value-classification">
 		<xs:complexType>
 			<xs:sequence>
@@ -43,19 +58,39 @@
 
 	<xs:complexType name="unique-value-legend-type">
 		<xs:complexContent>
-			<xs:extension base="legend-type">
+			<xs:extension base="classified-legend-type">
 				<xs:sequence>
-					<xs:element name="default-symbol" type="sym:symbol-type"
-						maxOccurs="1"/>
-					<xs:element ref="value-classification" minOccurs="0" maxOccurs="unbounded"/>
+					<xs:element ref="value-classification" minOccurs="0"
+						maxOccurs="unbounded"/>
 				</xs:sequence>
-				<xs:attribute name="default-label" type="xs:string"
-					use="required"/>
-				<xs:attribute name="field-name" type="xs:string" use="required"/>
-				<xs:attribute name="field-type" type="xs:int" use="required"/>
 			</xs:extension>
 		</xs:complexContent>
 	</xs:complexType>
 
 	<xs:element name="unique-value-legend" type="unique-value-legend-type"/>
+
+	<xs:element name="interval-classification">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="symbol" type="sym:symbol-type" maxOccurs="1"/>
+			</xs:sequence>
+			<xs:attribute name="init-value" type="xs:string"/>
+			<xs:attribute name="init-included" type="xs:boolean"/>
+			<xs:attribute name="end-value" type="xs:string"/>
+			<xs:attribute name="end-included" type="xs:boolean"/>
+			<xs:attribute name="label" type="xs:string" use="required"/>
+		</xs:complexType>
+	</xs:element>
+
+	<xs:complexType name="interval-legend-type">
+		<xs:complexContent>
+			<xs:extension base="classified-legend-type">
+				<xs:sequence>
+					<xs:element ref="interval-classification" minOccurs="0" maxOccurs="unbounded"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+
+	<xs:element name="interval-legend" type="interval-legend-type"/>
 </xs:schema>

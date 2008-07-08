@@ -36,22 +36,42 @@
  */
 package org.orbisgis.renderer.legend.carto;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.List;
+
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
+import javax.xml.bind.Unmarshaller;
 
 import org.gdms.data.SpatialDataSourceDecorator;
 import org.gdms.data.values.Value;
+import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
+import org.orbisgis.IncompatibleVersionException;
+import org.orbisgis.PersistenceException;
 import org.orbisgis.renderer.legend.Legend;
 import org.orbisgis.renderer.legend.RenderException;
+import org.orbisgis.renderer.legend.carto.persistence.IntervalClassification;
+import org.orbisgis.renderer.legend.carto.persistence.IntervalLegendType;
+import org.orbisgis.renderer.legend.carto.persistence.LegendContainer;
 import org.orbisgis.renderer.symbol.RenderUtils;
 import org.orbisgis.renderer.symbol.Symbol;
+import org.orbisgis.renderer.symbol.collection.DefaultSymbolCollection;
 
 public class DefaultIntervalLegend extends AbstractClassifiedLegend implements
 		IntervalLegend {
 
 	private ArrayList<Interval> intervals = new ArrayList<Interval>();
 	private ArrayList<Symbol> symbols = new ArrayList<Symbol>();
+	private ArrayList<String> labels = new ArrayList<String>();
 
 	public Symbol getSymbol(Interval inter) {
 		for (int i = 0; i < intervals.size(); i++) {
@@ -67,24 +87,27 @@ public class DefaultIntervalLegend extends AbstractClassifiedLegend implements
 	}
 
 	public void addInterval(Value initialValue, boolean minIncluded,
-			Value finalValue, boolean maxIncluded, Symbol symbol) {
+			Value finalValue, boolean maxIncluded, Symbol symbol, String label) {
 		intervals.add(new Interval(initialValue, minIncluded, finalValue,
 				maxIncluded));
 		symbols.add(symbol);
+		labels.add(label);
 		fireLegendInvalid();
 	}
 
 	public void addIntervalWithMaxLimit(Value finalValue, boolean included,
-			Symbol symbol) {
+			Symbol symbol, String label) {
 		intervals.add(new Interval(null, false, finalValue, included));
 		symbols.add(symbol);
+		labels.add(label);
 		fireLegendInvalid();
 	}
 
 	public void addIntervalWithMinLimit(Value initialValue, boolean included,
-			Symbol symbol) {
+			Symbol symbol, String label) {
 		intervals.add(new Interval(initialValue, included, null, false));
 		symbols.add(symbol);
+		labels.add(label);
 		fireLegendInvalid();
 	}
 
@@ -129,16 +152,134 @@ public class DefaultIntervalLegend extends AbstractClassifiedLegend implements
 		return "1.0";
 	}
 
-	public void save(File file) {
-		throw new UnsupportedOperationException();
+	public void save(File file) throws PersistenceException {
+		try {
+			JAXBContext jaxbContext = JAXBContext
+					.newInstance(
+							"org.orbisgis.renderer.legend.carto.persistence:"
+									+ "org.orbisgis.renderer.symbol.collection.persistence",
+							DefaultSymbolCollection.class.getClassLoader());
+			Marshaller m = jaxbContext.createMarshaller();
+
+			BufferedOutputStream os = new BufferedOutputStream(
+					new FileOutputStream(file));
+			IntervalLegendType xmlLegend = new IntervalLegendType();
+			super.fillDefaults(xmlLegend);
+			List<IntervalClassification> classifications = xmlLegend
+					.getIntervalClassification();
+			for (int i = 0; i < intervals.size(); i++) {
+				IntervalClassification classification = new IntervalClassification();
+				classification.setLabel(labels.get(i));
+				classification.setSymbol(DefaultSymbolCollection
+						.getXMLFromSymbol(symbols.get(i)));
+				Interval interval = intervals.get(i);
+				Value minValue = interval.getMinValue();
+				if (minValue != null) {
+					classification.setInitValue(minValue.toString());
+				}
+				classification.setInitIncluded(interval.isMinIncluded());
+				classification.setEndIncluded(interval.isMaxIncluded());
+				Value maxValue = interval.getMaxValue();
+				if (maxValue != null) {
+					classification.setEndValue(maxValue.toString());
+				}
+				classifications.add(classification);
+			}
+			LegendContainer xml = new LegendContainer();
+			xml.setLegendDescription(xmlLegend);
+			m.marshal(xml, os);
+			os.close();
+		} catch (JAXBException e) {
+			throw new PersistenceException("Cannot save legend", e);
+		} catch (IOException e) {
+			throw new PersistenceException("Cannot save legend", e);
+		}
 	}
 
-	public void load(File file, String version) {
-		throw new UnsupportedOperationException();
+	public void load(File file, String version) throws PersistenceException {
+		if (version.equals("1.0")) {
+			try {
+				JAXBContext jaxbContext = JAXBContext
+						.newInstance(
+								"org.orbisgis.renderer.legend.carto.persistence:"
+										+ "org.orbisgis.renderer.symbol.collection.persistence",
+								DefaultSymbolCollection.class.getClassLoader());
+				Unmarshaller m = jaxbContext.createUnmarshaller();
+				BufferedInputStream os = new BufferedInputStream(
+						new FileInputStream(file));
+				LegendContainer xml = (LegendContainer) m.unmarshal(os);
+				IntervalLegendType xmlLegend = (IntervalLegendType) xml
+						.getLegendDescription();
+				os.close();
+				super.getDefaults(xmlLegend);
+				List<IntervalClassification> classifications = xmlLegend
+						.getIntervalClassification();
+				for (int i = 0; i < classifications.size(); i++) {
+					IntervalClassification classification = classifications
+							.get(i);
+					String label = classification.getLabel();
+					String initValue = classification.getInitValue();
+					boolean initIncluded = false;
+					Boolean initIncludedXML = classification.isInitIncluded();
+					if ((initIncludedXML != null) && (initIncludedXML)) {
+						initIncluded = true;
+					}
+					boolean endIncluded = false;
+					Boolean endIncludedXML = classification.isEndIncluded();
+					if ((endIncludedXML != null) && (endIncludedXML)) {
+						endIncluded = true;
+					}
+					Value minValue = null;
+					if (initValue != null) {
+						minValue = ValueFactory.createValueByType(initValue,
+								getFieldType());
+					}
+					Value maxValue = null;
+					String endValue = classification.getEndValue();
+					if (endValue != null) {
+						maxValue = ValueFactory.createValueByType(endValue,
+								getFieldType());
+					}
+					Symbol symbol = DefaultSymbolCollection
+							.getSymbolFromXML(classification.getSymbol());
+					addInterval(minValue, initIncluded, maxValue, endIncluded,
+							symbol, label);
+				}
+			} catch (JAXBException e) {
+				throw new PersistenceException("Cannot recover legend", e);
+			} catch (IOException e) {
+				throw new PersistenceException("Cannot recover legend", e);
+			} catch (IncompatibleVersionException e) {
+				throw new PersistenceException("Cannot recover legend symbol",
+						e);
+			} catch (DriverException e) {
+				throw new PersistenceException("Cannot recover legend", e);
+			} catch (NumberFormatException e) {
+				throw new PersistenceException("Cannot recover value", e);
+			} catch (ParseException e) {
+				throw new PersistenceException("Cannot recover value", e);
+			}
+		}
 	}
 
 	public Legend newInstance() {
 		return new DefaultIntervalLegend();
+	}
+
+	public int getIntervalCount() {
+		return intervals.size();
+	}
+
+	public Interval getInterval(int index) {
+		return intervals.get(index);
+	}
+
+	public Symbol getSymbol(int index) {
+		return symbols.get(index);
+	}
+
+	public String getLabel(int index) {
+		return labels.get(index);
 	}
 
 }

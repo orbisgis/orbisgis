@@ -40,7 +40,7 @@ import org.gdms.data.DataSource;
 import org.gdms.driver.DriverException;
 import org.orbisgis.IncompatibleVersionException;
 import org.orbisgis.renderer.legend.AbstractLegend;
-import org.orbisgis.renderer.legend.carto.persistence.UniqueValueLegendType;
+import org.orbisgis.renderer.legend.carto.persistence.ClassifiedLegendType;
 import org.orbisgis.renderer.symbol.Symbol;
 import org.orbisgis.renderer.symbol.collection.DefaultSymbolCollection;
 import org.orbisgis.renderer.symbol.collection.persistence.SymbolType;
@@ -82,7 +82,7 @@ abstract class AbstractClassifiedLegend extends AbstractLegend implements
 		this.defaultLabel = defaultLabel;
 	}
 
-	public void fillDefaults(UniqueValueLegendType xmlLegend) {
+	public void fillDefaults(ClassifiedLegendType xmlLegend) {
 		xmlLegend.setName(getName());
 		if (getDefaultSymbol() != null) {
 			xmlLegend.setDefaultSymbol(DefaultSymbolCollection
@@ -95,7 +95,7 @@ abstract class AbstractClassifiedLegend extends AbstractLegend implements
 		xmlLegend.setFieldType(fieldType);
 	}
 
-	public void getDefaults(UniqueValueLegendType xmlLegend)
+	public void getDefaults(ClassifiedLegendType xmlLegend)
 			throws DriverException, IncompatibleVersionException {
 		setName(xmlLegend.getName());
 		setDefaultLabel(xmlLegend.getDefaultLabel());
