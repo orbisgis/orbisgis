@@ -23,7 +23,7 @@ public class IntervalLegendTableModel extends ClassifiedLegendTableModel
 	}
 
 	public int getColumnCount() {
-		return 3;
+		return 4;
 	}
 
 	protected Value getOrderValue(int index) {
@@ -39,6 +39,8 @@ public class IntervalLegendTableModel extends ClassifiedLegendTableModel
 			return String.class;
 		case 2:
 			return String.class;
+		case 3:
+			return String.class;
 		default:
 			throw new RuntimeException("bug!");
 		}
@@ -49,8 +51,10 @@ public class IntervalLegendTableModel extends ClassifiedLegendTableModel
 		case 0:
 			return "Symbol";
 		case 1:
-			return "Value";
+			return "Init";
 		case 2:
+			return "End";
+		case 3:
 			return "Label";
 		default:
 			throw new RuntimeException("bug!");
@@ -123,8 +127,8 @@ public class IntervalLegendTableModel extends ClassifiedLegendTableModel
 					int typeMin = currentMin.getType();
 					Value valMin = ValueFactory.createValueByType(value
 							.toString(), typeMin);
-					new Interval(valMin, false, interval.getMaxValue(), false);
-					legend.setInterval(rowIndex, interval);
+					legend.setInterval(rowIndex, new Interval(valMin, false,
+							interval.getMaxValue(), false));
 					invalidateOrder();
 				} catch (NumberFormatException e) {
 					JOptionPane.showMessageDialog(null, value.toString()
@@ -142,8 +146,8 @@ public class IntervalLegendTableModel extends ClassifiedLegendTableModel
 					int typeMax = currentMax.getType();
 					Value valMax = ValueFactory.createValueByType(value
 							.toString(), typeMax);
-					new Interval(valMax, false, interval.getMaxValue(), false);
-					legend.setInterval(rowIndex, interval);
+					legend.setInterval(rowIndex, new Interval(interval
+							.getMinValue(), false, valMax, false));
 					invalidateOrder();
 				} catch (NumberFormatException e) {
 					JOptionPane.showMessageDialog(null, value.toString()
