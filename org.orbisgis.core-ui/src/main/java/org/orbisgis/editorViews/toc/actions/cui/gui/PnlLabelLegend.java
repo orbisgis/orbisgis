@@ -100,9 +100,7 @@ public class PnlLabelLegend extends JPanel implements ILegendPanelUI {
 
 			for (int i = 0; i < m.getFieldCount(); i++) {
 				int fieldType = m.getFieldType(i).getTypeCode();
-				if (fieldType == Type.BYTE || fieldType == Type.SHORT
-						|| fieldType == Type.INT || fieldType == Type.LONG
-						|| fieldType == Type.FLOAT || fieldType == Type.DOUBLE) {
+				if ((fieldType != Type.RASTER) && (fieldType != Type.GEOMETRY)) {
 					fieldNames.add(m.getFieldName(i));
 				}
 			}
