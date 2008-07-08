@@ -20,7 +20,7 @@ public class ToStringFunction implements Function {
 	}
 
 	public String getName() {
-		return "toString";
+		return "ToString";
 	}
 
 	public boolean isAggregate() {
