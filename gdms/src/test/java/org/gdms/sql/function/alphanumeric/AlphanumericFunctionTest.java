@@ -64,6 +64,29 @@ public class AlphanumericFunctionTest extends FunctionTest {
 		assertTrue(2l == evaluate(function, new Value[0]).getAsLong());
 	}
 
+	public void testToString() throws Exception {
+		// Test null input
+		ToStringFunction function = new ToStringFunction();
+		Value res = evaluate(function, new ColumnValue(Type.STRING,
+				ValueFactory.createNullValue()));
+		assertTrue(res.isNull());
+
+		// Test normal input value and type
+		res = evaluate(function, ValueFactory.createValue(2));
+		assertTrue(res.getType() == Type.STRING);
+		assertTrue(res.getAsString().equals("2"));
+
+		// Test too many parameters
+		try {
+			res = evaluate(function, ValueFactory.createValue(54), ValueFactory
+					.createValue(7));
+			assertTrue(false);
+		} catch (IncompatibleTypesException e) {
+
+		}
+
+	}
+
 	public void testString2Int() throws Exception {
 		// Test null input
 		String2IntFunction function = new String2IntFunction();
