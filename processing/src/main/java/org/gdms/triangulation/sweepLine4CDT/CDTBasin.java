@@ -93,7 +93,7 @@ public class CDTBasin {
 		}
 	}
 
-	public List<CDTEdge> meshIntoEdges() {
+	protected List<CDTEdge> meshIntoEdges() {
 		// CDTBasin must be normalized !
 		final List<CDTEdge> result = new ArrayList<CDTEdge>();
 		final Polygon p = getPolygon();
@@ -139,29 +139,37 @@ public class CDTBasin {
 		return result;
 	}
 
-	public List<CDTTriangle> meshIntoTriangles() {
+	protected List<CDTTriangle> meshIntoTriangles() {
+		// CDTBasin must be normalized !
 		final List<CDTEdge> edges = meshIntoEdges();
 		final List<CDTTriangle> result = new ArrayList<CDTTriangle>();
 		CDTEdge prev = new CDTEdge(basinLeftBorder, basinRightBorder);
 		for (CDTEdge edge : edges) {
 			if (prev.getBegin() == edge.getBegin()) {
 				result.add(0, new CDTTriangle(slVertices.get(prev.getBegin()),
-						slVertices.get(prev.getEnd()), slVertices.get(edge.getEnd()),
-						pslg));
+						slVertices.get(prev.getEnd()), slVertices.get(edge
+								.getEnd()), pslg));
 			} else if (prev.getEnd() == edge.getEnd()) {
 				result.add(0, new CDTTriangle(slVertices.get(prev.getBegin()),
-						slVertices.get(prev.getEnd()), slVertices.get(edge.getBegin()),
-						pslg));
+						slVertices.get(prev.getEnd()), slVertices.get(edge
+								.getBegin()), pslg));
 			} else {
 				throw new RuntimeException("Unreachable code !");
 			}
 			prev = edge;
 		}
-		result.add(0, new CDTTriangle(slVertices.get(prev.getBegin()), slVertices
-				.get(prev.getEnd()), slVertices.get(basinBed), pslg));
+		result.add(0, new CDTTriangle(slVertices.get(prev.getBegin()),
+				slVertices.get(prev.getEnd()), slVertices.get(basinBed), pslg));
 		return result;
 	}
 
+	public void fillIn() {
+		normalize();
+		List<CDTTriangle> cdtTriangles = meshIntoTriangles();
+		for (CDTTriangle cdtTriangle : cdtTriangles) {
+			pslg.legalizeAndAdd(cdtTriangle);
+		}
+	}
 	// protected void printU() {
 	// for (int uItem : u) {
 	// System.out.printf("[%d] %s\n", uItem, slVertices.get(uItem)

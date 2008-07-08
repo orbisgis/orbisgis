@@ -245,14 +245,20 @@ public class CDTSweepLine {
 		if (null != leftBasin) {
 			System.err.printf("leftBasin %d %d %d\n", leftBasin[0],
 					leftBasin[1], leftBasin[2]);
-			fillInBasin(leftBasin);
+
+			CDTBasin basin = new CDTBasin(slVertices, leftBasin[0],
+					leftBasin[1], leftBasin[2], pslg);
+			basin.fillIn();
 		}
 
 		int[] rightBasin = findBasinOnTheRightSide(idx);
 		if (null != rightBasin) {
 			System.err.printf("rightBasin %d %d %d\n", rightBasin[0],
 					rightBasin[1], rightBasin[2]);
-			fillInBasin(rightBasin);
+
+			CDTBasin basin = new CDTBasin(slVertices, rightBasin[0],
+					rightBasin[1], rightBasin[2], pslg);
+			basin.fillIn();
 		}
 	}
 

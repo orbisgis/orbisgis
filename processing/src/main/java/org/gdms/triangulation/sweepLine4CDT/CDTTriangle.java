@@ -151,10 +151,10 @@ public class CDTTriangle {
 				throw new RuntimeException("Unreachable code");
 			}
 
-			logger.info("point " + v
-					+ " disturbs Delaunay property for triangle [ "
-					+ p0.getCoordinate() + ", " + p1.getCoordinate() + ", "
-					+ p2.getCoordinate() + " ]");
+//			logger.info("point " + v
+//					+ " disturbs Delaunay property for triangle [ "
+//					+ p0.getCoordinate() + ", " + p1.getCoordinate() + ", "
+//					+ p2.getCoordinate() + " ]");
 			return false;
 		}
 		return true;

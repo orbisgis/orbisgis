@@ -264,13 +264,13 @@ public class PSLG {
 					delta2 += System.currentTimeMillis() - tb;
 					// printTriangles("2nd update of SL");
 
-					new DelaunayProperty(verticesSpatialIndex,triangles).check("BEFORE");
+//					new DelaunayProperty(verticesSpatialIndex,triangles).check("BEFORE");
 
 					long tc = System.currentTimeMillis();
 					sweepLine.thirdUpdateOfAdvancingFront(idx);
 					delta3 += System.currentTimeMillis() - tc;
 					
-					new DelaunayProperty(verticesSpatialIndex,triangles).check("AFTER");
+//					new DelaunayProperty(verticesSpatialIndex,triangles).check("AFTER");
 
 				} else {
 					// edge event
@@ -349,14 +349,14 @@ public class PSLG {
 		return triangles;
 	}
 
-	private void printTriangles(final String msg) {
-		int cpt = 0;
-		System.out.println(msg);
-		for (CDTTriangle cdtTriangle : triangles) {
-			System.out.printf("[%d] %s\n", cpt++, cdtTriangle.toString());
-		}
-		System.out.println();
-	}
+	// private void printTriangles(final String msg) {
+	// int cpt = 0;
+	// System.out.println(msg);
+	// for (CDTTriangle cdtTriangle : triangles) {
+	// System.out.printf("[%d] %s\n", cpt++, cdtTriangle.toString());
+	// }
+	// System.out.println();
+	// }
 
 	private CDTTriangle[] swap(CDTVertex v1, CDTVertex v2, CDTVertex v3,
 			CDTVertex v4) {

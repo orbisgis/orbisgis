@@ -41,4 +41,9 @@ public class CDTEdge {
 			return false;
 		return true;
 	}
+
+	@Override
+	public String toString() {
+		return "[ " + begin + ", " + end + " ]";
+	}
 }
