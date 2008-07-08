@@ -44,7 +44,7 @@ import java.text.SimpleDateFormat;
 import com.vividsolutions.jts.geom.Geometry;
 
 /**
- * @author Fernando Gonz�lez Cort�s
+ * @author Fernando Gonzalez Cortes
  */
 class ValueWriterImpl implements ValueWriter {
 
