@@ -266,7 +266,7 @@ abstract class NumericValue extends AbstractValue implements Serializable {
 		}
 
 		if (!(value instanceof NumericValue)) {
-			throw new IncompatibleTypesException();
+			throw new IncompatibleTypesException(value.toString());
 		}
 
 		return ValueFactory
