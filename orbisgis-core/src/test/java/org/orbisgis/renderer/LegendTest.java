@@ -195,6 +195,28 @@ public class LegendTest extends AbstractTest {
 		assertTrue(uvl.getClassificationCount() == 0);
 	}
 
+	public void testClearUniqueValue() throws Exception {
+		UniqueValueLegend uvl = LegendFactory.createUniqueValueLegend();
+		Symbol symbol = SymbolFactory.createCirclePointSymbol(Color.black,
+				Color.red, 20);
+		uvl.addClassification(ValueFactory.createValue(3), symbol, "");
+		uvl.clear();
+		uvl.addClassification(ValueFactory.createValue(6), symbol, "");
+		assertTrue(uvl.getValue(0).getAsInt() == 6);
+	}
+
+	public void testClearInterval() throws Exception {
+		IntervalLegend uvl = LegendFactory.createIntervalLegend();
+		Symbol symbol = SymbolFactory.createCirclePointSymbol(Color.black,
+				Color.red, 20);
+		uvl.addIntervalWithMaxLimit(ValueFactory.createValue(3), false, symbol,
+				"");
+		uvl.clear();
+		uvl.addIntervalWithMaxLimit(ValueFactory.createValue(6), false, symbol,
+				"");
+		assertTrue(uvl.getInterval(0).getMaxValue().getAsInt() == 6);
+	}
+
 	public void testFullIntervalPersistence() throws Exception {
 		IntervalLegend uvl = LegendFactory.createIntervalLegend();
 		String name = "mylegend";

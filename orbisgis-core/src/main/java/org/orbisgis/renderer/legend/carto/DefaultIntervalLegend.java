@@ -191,6 +191,12 @@ public class DefaultIntervalLegend extends AbstractClassifiedLegend implements
 		}
 	}
 
+	@Override
+	public void clear() {
+		intervals.clear();
+		super.clear();
+	}
+
 	public void load(File file, String version) throws PersistenceException {
 		if (version.equals("1.0")) {
 			try {

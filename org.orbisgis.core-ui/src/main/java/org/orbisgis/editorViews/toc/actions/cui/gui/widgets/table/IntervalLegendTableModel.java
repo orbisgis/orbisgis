@@ -129,7 +129,7 @@ public class IntervalLegendTableModel extends ClassifiedLegendTableModel
 					int typeMin = currentMin.getType();
 					Value valMin = ValueFactory.createValueByType(value
 							.toString(), typeMin);
-					legend.setInterval(rowIndex, new Interval(valMin, false,
+					legend.setInterval(rowIndex, new Interval(valMin, true,
 							interval.getMaxValue(), false));
 					invalidateOrder();
 				} catch (NumberFormatException e) {
@@ -149,7 +149,7 @@ public class IntervalLegendTableModel extends ClassifiedLegendTableModel
 					Value valMax = ValueFactory.createValueByType(value
 							.toString(), typeMax);
 					legend.setInterval(rowIndex, new Interval(interval
-							.getMinValue(), false, valMax, false));
+							.getMinValue(), true, valMax, false));
 					invalidateOrder();
 				} catch (NumberFormatException e) {
 					JOptionPane.showMessageDialog(null, value.toString()

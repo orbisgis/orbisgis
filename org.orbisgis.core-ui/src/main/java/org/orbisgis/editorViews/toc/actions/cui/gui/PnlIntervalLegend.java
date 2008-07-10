@@ -93,6 +93,7 @@ public class PnlIntervalLegend extends PnlAbstractClassifiedLegend {
 
 		pnl.add(new JLabel("First color:"));
 		lblFirstColor = new JLabel();
+		lblFirstColor.setOpaque(true);
 		lblFirstColor.setMaximumSize(new java.awt.Dimension(19, 19));
 		lblFirstColor.setMinimumSize(new java.awt.Dimension(19, 19));
 		lblFirstColor.setPreferredSize(new java.awt.Dimension(19, 19));
@@ -108,6 +109,7 @@ public class PnlIntervalLegend extends PnlAbstractClassifiedLegend {
 
 		pnl.add(new JLabel("Final color:"));
 		lblSecondColor = new JLabel();
+		lblSecondColor.setOpaque(true);
 		lblSecondColor.setMaximumSize(new java.awt.Dimension(19, 19));
 		lblSecondColor.setMinimumSize(new java.awt.Dimension(19, 19));
 		lblSecondColor.setPreferredSize(new java.awt.Dimension(19, 19));
