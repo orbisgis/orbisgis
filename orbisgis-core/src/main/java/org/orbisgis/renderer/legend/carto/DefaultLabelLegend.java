@@ -36,6 +36,7 @@
  */
 package org.orbisgis.renderer.legend.carto;
 
+import java.awt.Graphics;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -189,5 +190,13 @@ public class DefaultLabelLegend extends AbstractLegend implements LabelLegend {
 
 	public void setClassificationField(String fieldName) {
 		this.fieldName = fieldName;
+	}
+
+	public void drawImage(Graphics g) {
+
+	}
+
+	public int[] getImageSize(Graphics g) {
+		return new int[] { 0, 0 };
 	}
 }

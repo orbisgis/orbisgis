@@ -40,10 +40,13 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.FlowLayout;
 import java.awt.Font;
+import java.awt.Graphics;
 import java.awt.Rectangle;
+import java.awt.image.BufferedImage;
 import java.io.IOException;
 
 import javax.swing.Icon;
+import javax.swing.ImageIcon;
 import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -52,7 +55,10 @@ import javax.swing.tree.TreeCellRenderer;
 
 import org.gdms.data.SpatialDataSourceDecorator;
 import org.gdms.driver.DriverException;
+import org.orbisgis.Services;
 import org.orbisgis.layerModel.ILayer;
+import org.orbisgis.renderer.legend.Legend;
+import org.sif.CRFlowLayout;
 
 public class TocRenderer extends TocAbstractRenderer implements
 		TreeCellRenderer {
@@ -64,9 +70,9 @@ public class TocRenderer extends TocAbstractRenderer implements
 
 	private static final Color DESELECTED_FONT = Color.black;
 
-	private RenderPanel ourJPanel;
-
 	private Toc toc;
+
+	private LayerRenderPanel ourJPanel;
 
 	public TocRenderer(Toc toc) {
 		this.toc = toc;
@@ -75,23 +81,31 @@ public class TocRenderer extends TocAbstractRenderer implements
 	public Component getTreeCellRendererComponent(JTree tree, Object value,
 			boolean selected, boolean expanded, boolean leaf, int row,
 			boolean hasFocus) {
-		ourJPanel = new RenderPanel();
-		ourJPanel.setNodeCosmetic(tree, (ILayer) value, selected, expanded,
-				leaf, row, hasFocus);
-		return ourJPanel;
+		if (value instanceof ILayer) {
+			ourJPanel = new LayerRenderPanel();
+			ourJPanel.setNodeCosmetic(tree, (ILayer) value, selected, expanded,
+					leaf, row, hasFocus);
+			return ourJPanel;
+		} else {
+			LegendRenderPanel ourJPanel = new LegendRenderPanel();
+			TocTreeModel.LegendNode legendNode = (TocTreeModel.LegendNode) value;
+			ourJPanel.setNodeCosmetic(tree, legendNode.getLayer(), legendNode
+					.getLegendIndex(), selected, expanded, leaf, row, hasFocus);
+			return ourJPanel;
+		}
 	}
 
 	public Rectangle getCheckBoxBounds() {
 		return ourJPanel.getCheckBoxBounds();
 	}
 
-	public class RenderPanel extends JPanel {
+	public class LayerRenderPanel extends JPanel {
 		private JCheckBox check;
 
 		private JLabel iconAndLabel;
 
-		public RenderPanel() {
-			FlowLayout fl = new FlowLayout(FlowLayout.LEADING);
+		public LayerRenderPanel() {
+			FlowLayout fl = new FlowLayout(CRFlowLayout.LEADING);
 			fl.setHgap(0);
 			setLayout(fl);
 			check = new JCheckBox();
@@ -142,6 +156,41 @@ public class TocRenderer extends TocAbstractRenderer implements
 		private Rectangle getCheckBoxBounds() {
 			return check.getBounds();
 		}
+	}
+
+	public class LegendRenderPanel extends JPanel {
+
+		private JLabel lblLegend;
+
+		public LegendRenderPanel() {
+			FlowLayout fl = new FlowLayout(FlowLayout.LEADING);
+			fl.setHgap(0);
+			setLayout(fl);
+			lblLegend = new JLabel();
+			add(lblLegend);
+		}
+
+		public void setNodeCosmetic(JTree tree, ILayer node, int legendIndex,
+				boolean selected, boolean expanded, boolean leaf, int row,
+				boolean hasFocus) {
+			try {
+				this.setBackground(DESELECTED);
+				Graphics dummyGraphics = new BufferedImage(10, 10,
+						BufferedImage.TYPE_INT_ARGB).createGraphics();
+				Legend legend = node.getRenderingLegend()[legendIndex];
+				int[] imageSize = legend.getImageSize(dummyGraphics);
+				BufferedImage legendImage = new BufferedImage(imageSize[0],
+						imageSize[1], BufferedImage.TYPE_INT_ARGB);
+				legend.drawImage(legendImage.createGraphics());
+				ImageIcon imageIcon = new ImageIcon(legendImage);
+				lblLegend.setIcon(imageIcon);
+			} catch (DriverException e) {
+				Services.getErrorManager().error(
+						"Cannot access the legends in layer " + node.getName(),
+						e);
+			}
+		}
+
 	}
 
 }

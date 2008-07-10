@@ -43,6 +43,7 @@ import java.awt.dnd.DragGestureEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import javax.swing.JComponent;
@@ -119,7 +120,8 @@ public class Toc extends ResourceTree {
 				TreePath path = tree.getPathForLocation(x, y);
 				Rectangle layerNodeLocation = Toc.this.tree.getPathBounds(path);
 
-				if (path != null) {
+				if ((path != null)
+						&& (path.getLastPathComponent() instanceof ILayer)) {
 					ILayer layer = (ILayer) path.getLastPathComponent();
 					Rectangle checkBoxBounds = tocRenderer.getCheckBoxBounds();
 					checkBoxBounds.translate((int) layerNodeLocation.getX(),
@@ -147,18 +149,32 @@ public class Toc extends ResourceTree {
 					public void valueChanged(TreeSelectionEvent e) {
 						if (!ignoreSelection) {
 							TreePath[] selectedPaths = Toc.this.getSelection();
-							ILayer[] selected = new ILayer[selectedPaths.length];
-							for (int i = 0; i < selected.length; i++) {
-								selected[i] = (ILayer) selectedPaths[i]
-										.getLastPathComponent();
+							ArrayList<ILayer> layers = getSelectedLayers(selectedPaths);
+
+							if (layers.size() > 0) {
+								ILayer[] selected = new ILayer[selectedPaths.length];
+								for (int i = 0; i < layers.size(); i++) {
+									selected[i] = layers.get(i);
+								}
+								ignoreSelection = true;
+								mapContext.setSelectedLayers(selected);
+								ignoreSelection = false;
 							}
-							ignoreSelection = true;
-							mapContext.setSelectedLayers(selected);
-							ignoreSelection = false;
 						}
 					}
 
 				});
+	}
+
+	private ArrayList<ILayer> getSelectedLayers(TreePath[] selectedPaths) {
+		ArrayList<ILayer> layers = new ArrayList<ILayer>();
+		for (int i = 0; i < selectedPaths.length; i++) {
+			Object lastPathComponent = selectedPaths[i].getLastPathComponent();
+			if (lastPathComponent instanceof ILayer) {
+				layers.add((ILayer) lastPathComponent);
+			}
+		}
+		return layers;
 	}
 
 	@Override
@@ -175,14 +191,6 @@ public class Toc extends ResourceTree {
 		}
 
 		return popup;
-	}
-
-	public ILayer[] toLayerArray(TreePath[] selectedResources) {
-		ILayer[] layers = new ILayer[selectedResources.length];
-		for (int i = 0; i < layers.length; i++) {
-			layers[i] = (ILayer) selectedResources[i].getLastPathComponent();
-		}
-		return layers;
 	}
 
 	@Override
@@ -251,10 +259,11 @@ public class Toc extends ResourceTree {
 
 	public Transferable getDragData(DragGestureEvent dge) {
 		TreePath[] resources = getSelection();
-		if (resources.length > 0) {
-			return new TransferableLayer(toLayerArray(resources));
-		} else {
+		ArrayList<ILayer> layers = getSelectedLayers(resources);
+		if (layers.size() == 0) {
 			return null;
+		} else {
+			return new TransferableLayer(layers.toArray(new ILayer[0]));
 		}
 	}
 
@@ -278,14 +287,12 @@ public class Toc extends ResourceTree {
 			}
 
 			public boolean isVisible() {
-				TreePath[] res = getSelection();
+				ILayer[] selectedLayers = mapContext.getSelectedLayers();
 				if (action instanceof ILayerAction) {
 					ILayerAction tocAction = (ILayerAction) action;
 					boolean acceptsAllResources = true;
-					if (tocAction.acceptsSelectionCount(res.length)) {
-						for (TreePath resource : res) {
-							ILayer layer = (ILayer) resource
-									.getLastPathComponent();
+					if (tocAction.acceptsSelectionCount(selectedLayers.length)) {
+						for (ILayer layer : selectedLayers) {
 							if (!tocAction.accepts(layer)) {
 								acceptsAllResources = false;
 								break;
@@ -298,7 +305,7 @@ public class Toc extends ResourceTree {
 					return acceptsAllResources;
 				} else {
 					IMultipleLayerAction layerAction = (IMultipleLayerAction) action;
-					return layerAction.acceptsAll(toLayerArray(getSelection()));
+					return layerAction.acceptsAll(selectedLayers);
 				}
 
 			}
@@ -311,11 +318,11 @@ public class Toc extends ResourceTree {
 				if (action instanceof ILayerAction) {
 					ILayerAction layerAction = (ILayerAction) action;
 					EPTocLayerActionHelper.execute(mapContext, layerAction,
-							toLayerArray(getSelection()));
+							mapContext.getSelectedLayers());
 				} else {
 					IMultipleLayerAction layerAction = (IMultipleLayerAction) action;
 					EPTocLayerActionHelper.execute(mapContext, layerAction,
-							toLayerArray(getSelection()));
+							mapContext.getSelectedLayers());
 				}
 			}
 		}

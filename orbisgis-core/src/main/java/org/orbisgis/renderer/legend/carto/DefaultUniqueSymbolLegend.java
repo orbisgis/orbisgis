@@ -36,6 +36,10 @@
  */
 package org.orbisgis.renderer.legend.carto;
 
+import java.awt.Color;
+import java.awt.FontMetrics;
+import java.awt.Graphics;
+import java.awt.geom.Rectangle2D;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -52,6 +56,7 @@ import org.gdms.data.SpatialDataSourceDecorator;
 import org.gdms.driver.DriverException;
 import org.orbisgis.IncompatibleVersionException;
 import org.orbisgis.PersistenceException;
+import org.orbisgis.renderer.Renderer;
 import org.orbisgis.renderer.legend.AbstractLegend;
 import org.orbisgis.renderer.legend.Legend;
 import org.orbisgis.renderer.legend.RenderException;
@@ -151,6 +156,24 @@ public class DefaultUniqueSymbolLegend extends AbstractLegend implements
 
 	public Legend newInstance() {
 		return new DefaultUniqueSymbolLegend();
+	}
+
+	public void drawImage(Graphics g) {
+		Renderer renderer = new Renderer();
+		renderer.drawSymbolPreview(g, symbol, 30, 20);
+		g.setColor(Color.black);
+		FontMetrics fm = g.getFontMetrics();
+		String text = symbol.getName();
+		Rectangle2D r = fm.getStringBounds(text, g);
+		g.drawString(text, 35, (int) (10 + r.getHeight() / 2));
+	}
+
+	public int[] getImageSize(Graphics g) {
+		FontMetrics fm = g.getFontMetrics();
+		Rectangle2D stringBounds = fm.getStringBounds(symbol.getName(), g);
+		int width = 35 + (int) stringBounds.getWidth();
+
+		return new int[] { width, (int) Math.max(stringBounds.getHeight(), 20) };
 	}
 
 }

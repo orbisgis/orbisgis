@@ -39,6 +39,7 @@ package org.orbisgis.editorViews.toc;
 import javax.swing.JTree;
 import javax.swing.tree.TreePath;
 
+import org.gdms.driver.DriverException;
 import org.orbisgis.layerModel.ILayer;
 import org.orbisgis.ui.resourceTree.AbstractTreeModel;
 
@@ -57,15 +58,40 @@ public class TocTreeModel extends AbstractTreeModel {
 
 	public Object getChild(Object parent, int index) {
 		ILayer l = (ILayer) parent;
-		return l.getChildren()[index];
+		if (l.acceptsChilds()) {
+			return l.getChildren()[index];
+		} else {
+			return new LegendNode(l, index);
+		}
 	}
 
 	public int getChildCount(Object parent) {
-		return ((ILayer) parent).getChildren().length;
+		if (parent instanceof ILayer) {
+			ILayer layer = (ILayer) parent;
+			if (layer.acceptsChilds()) {
+				return layer.getChildren().length;
+			} else {
+				try {
+					return layer.getRenderingLegend().length;
+				} catch (DriverException e) {
+					return 0;
+				}
+			}
+		} else {
+			return 0;
+		}
 	}
 
 	public int getIndexOfChild(Object parent, Object child) {
-		return ((ILayer) parent).getIndex((ILayer) child);
+		if (parent instanceof ILayer) {
+			if (child instanceof LegendNode) {
+				return ((LegendNode) child).getLegendIndex();
+			} else {
+				return ((ILayer) parent).getIndex((ILayer) child);
+			}
+		} else {
+			return 0;
+		}
 	}
 
 	public Object getRoot() {
@@ -73,10 +99,34 @@ public class TocTreeModel extends AbstractTreeModel {
 	}
 
 	public boolean isLeaf(Object node) {
-		return ((ILayer) node).getChildren().length == 0;
+		if (node instanceof ILayer) {
+			ILayer layer = (ILayer) node;
+			return layer.acceptsChilds() && (layer.getChildren().length == 0);
+		} else {
+			return true;
+		}
 	}
 
 	public void valueForPathChanged(TreePath path, Object newValue) {
+
+	}
+
+	class LegendNode {
+		private ILayer layer;
+		private int legendIndex;
+
+		public LegendNode(ILayer layer, int legendIndex) {
+			this.layer = layer;
+			this.legendIndex = legendIndex;
+		}
+
+		public ILayer getLayer() {
+			return layer;
+		}
+
+		public int getLegendIndex() {
+			return legendIndex;
+		}
 
 	}
 

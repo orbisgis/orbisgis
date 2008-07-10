@@ -36,6 +36,7 @@
  */
 package org.orbisgis.renderer.legend.carto;
 
+import java.awt.Graphics;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -295,6 +296,15 @@ public class DefaultIntervalLegend extends AbstractClassifiedLegend implements
 
 	public void setInterval(int rowIndex, Interval interval) {
 		intervals.set(rowIndex, interval);
+	}
+
+	public void drawImage(Graphics g) {
+		// TODO Auto-generated method stub
+
+	}
+
+	public int[] getImageSize(Graphics g) {
+		return new int[] { 0, 0 };
 	}
 
 }

@@ -53,8 +53,6 @@ import javax.xml.bind.JAXBException;
 import org.orbisgis.Services;
 import org.orbisgis.SymbolManager;
 import org.orbisgis.editorViews.toc.actions.cui.gui.LegendContext;
-import org.orbisgis.editorViews.toc.actions.cui.ui.CompositeSymbolFilter;
-import org.orbisgis.editorViews.toc.actions.cui.ui.ConstraintSymbolFilter;
 import org.orbisgis.editorViews.toc.actions.cui.ui.EditableSymbolFilter;
 import org.orbisgis.editorViews.toc.actions.cui.ui.SymbolEditor;
 import org.orbisgis.editorViews.toc.actions.cui.ui.SymbolFilter;

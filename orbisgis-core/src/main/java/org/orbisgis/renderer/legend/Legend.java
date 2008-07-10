@@ -36,6 +36,7 @@
  */
 package org.orbisgis.renderer.legend;
 
+import java.awt.Graphics;
 import java.io.File;
 
 import org.gdms.data.SpatialDataSourceDecorator;
@@ -154,4 +155,18 @@ public interface Legend {
 	 */
 	Legend newInstance();
 
+	/**
+	 * Draws the image of the legend in the specified graphics.
+	 *
+	 * @param g
+	 */
+	void drawImage(Graphics g);
+
+	/**
+	 * Gets the size of the image being draw in the {@link drawImage} method
+	 * @param g TODO
+	 *
+	 * @return
+	 */
+	int[] getImageSize(Graphics g);
 }

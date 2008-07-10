@@ -474,6 +474,6 @@ public class LayerCollection extends ALayer {
 
 	public Legend[] getRenderingLegend() throws DriverException {
 		throw new UnsupportedOperationException(
-				"Cannot draw a legend collection");
+				"Cannot draw a layer collection");
 	}
 }

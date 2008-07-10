@@ -39,8 +39,11 @@ package org.orbisgis.renderer;
 import ij.process.ColorProcessor;
 
 import java.awt.AlphaComposite;
+import java.awt.Color;
+import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
+import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.awt.image.ColorModel;
 import java.awt.image.DirectColorModel;
@@ -64,8 +67,12 @@ import org.orbisgis.renderer.legend.RenderException;
 import org.orbisgis.renderer.symbol.RenderUtils;
 import org.orbisgis.renderer.symbol.Symbol;
 
+import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.GeometryFactory;
+import com.vividsolutions.jts.geom.LinearRing;
+import com.vividsolutions.jts.geom.impl.CoordinateArraySequence;
 import com.vividsolutions.jts.index.quadtree.Quadtree;
 
 public class Renderer {
@@ -366,6 +373,60 @@ public class Renderer {
 		} else {
 			throw new IllegalArgumentException(
 					"The RGB code doesn't contain RGB codes");
+		}
+	}
+
+	public void drawSymbolPreview(Graphics g, Symbol symbol, int width, int height) {
+		if (symbol == null) {
+			return;
+		}
+
+		g.setColor(Color.white);
+		g.fillRect(1, 1, width, height);
+
+		GeometryFactory gf = new GeometryFactory();
+		Geometry geom = null;
+
+		try {
+			int widthUnit = width / 4;
+			int heightUnit = height / 4;
+			Coordinate[] coordsP = { new Coordinate(widthUnit, heightUnit),
+					new Coordinate(3 * widthUnit, heightUnit),
+					new Coordinate(widthUnit, 3 * heightUnit),
+					new Coordinate(widthUnit, heightUnit) };
+			CoordinateArraySequence seqP = new CoordinateArraySequence(coordsP);
+			geom = gf.createPolygon(new LinearRing(seqP, gf), null);
+			paintGeometry(g, geom, symbol);
+			geom = gf.createLineString(new Coordinate[] {
+					new Coordinate(widthUnit, 3 * heightUnit),
+					new Coordinate(1.5 * widthUnit, 2 * heightUnit),
+					new Coordinate(2 * widthUnit, 3 * heightUnit),
+					new Coordinate(3 * widthUnit, heightUnit) });
+			paintGeometry(g, geom, symbol);
+			geom = gf
+					.createPoint(new Coordinate(2 * widthUnit, 2 * heightUnit));
+			paintGeometry(g, geom, symbol);
+
+		} catch (DriverException e) {
+			((Graphics2D) g).drawString("Cannot generate preview", 0, 0);
+		} catch (NullPointerException e) {
+			((Graphics2D) g).drawString("Cannot generate preview: ", 0, 0);
+		}
+	}
+
+	private void paintGeometry(Graphics g, Geometry geom, Symbol symbol)
+			throws DriverException {
+		RenderPermission renderPermission = new RenderPermission() {
+
+			public boolean canDraw(Envelope env) {
+				return true;
+			}
+
+		};
+		if (symbol.acceptGeometry(geom)) {
+			Symbol sym = RenderUtils.buildSymbolToDraw(symbol, geom);
+			sym.draw((Graphics2D) g, geom, new AffineTransform(),
+					renderPermission);
 		}
 	}
 

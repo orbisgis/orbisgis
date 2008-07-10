@@ -36,6 +36,7 @@
  */
 package org.orbisgis.renderer.legend;
 
+import java.awt.Graphics;
 import java.awt.image.ColorModel;
 import java.io.File;
 
@@ -104,6 +105,14 @@ public class RasterLegend extends AbstractLegend implements Legend {
 
 	public Legend newInstance() {
 		return new RasterLegend(LutGenerator.colorModel("gray"), 0);
+	}
+
+	public void drawImage(Graphics g) {
+
+	}
+
+	public int[] getImageSize(Graphics g) {
+		return new int[] { 0, 0 };
 	}
 
 }

@@ -36,6 +36,7 @@
  */
 package org.orbisgis.layerModel;
 
+import java.awt.Graphics;
 import java.io.File;
 import java.util.ArrayList;
 
@@ -171,5 +172,13 @@ public class LegendDecorator implements Legend, EditionListener {
 	public void preprocess(SpatialDataSourceDecorator sds)
 			throws RenderException {
 		legend.preprocess(sds);
+	}
+
+	public void drawImage(Graphics g) {
+		legend.drawImage(g);
+	}
+
+	public int[] getImageSize(Graphics g) {
+		return legend.getImageSize(g);
 	}
 }

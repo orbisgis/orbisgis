@@ -37,6 +37,7 @@
 package org.orbisgis.renderer.legend.carto;
 
 import java.awt.Color;
+import java.awt.Graphics;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -267,5 +268,14 @@ public class DefaultProportionalLegend extends AbstractLegend implements
 			setSquareMethod(1);
 			break;
 		}
+	}
+
+	public void drawImage(Graphics g) {
+		// TODO Auto-generated method stub
+
+	}
+
+	public int[] getImageSize(Graphics g) {
+		return new int[] { 0, 0 };
 	}
 }
