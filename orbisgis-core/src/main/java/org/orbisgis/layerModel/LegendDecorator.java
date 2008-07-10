@@ -76,6 +76,7 @@ public class LegendDecorator implements Legend, EditionListener {
 	public void initialize(SpatialDataSourceDecorator ds)
 			throws RenderException {
 		this.sds = ds;
+		legend.preprocess(sds);
 		symbols.clear();
 		try {
 			for (int i = 0; i < ds.getRowCount(); i++) {
@@ -165,5 +166,10 @@ public class LegendDecorator implements Legend, EditionListener {
 
 	public void save(File file) throws PersistenceException {
 		legend.save(file);
+	}
+
+	public void preprocess(SpatialDataSourceDecorator sds)
+			throws RenderException {
+		legend.preprocess(sds);
 	}
 }

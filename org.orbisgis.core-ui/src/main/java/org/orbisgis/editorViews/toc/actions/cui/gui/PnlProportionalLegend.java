@@ -5,6 +5,8 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
@@ -43,6 +45,7 @@ public class PnlProportionalLegend extends JPanel implements ILegendPanelUI {
 	private JComboBox cmbField;
 	private JTextField txtMinArea;
 	private Canvas canvas;
+	private JComboBox cmbMethod;
 
 	public PnlProportionalLegend(LegendContext legendContext) {
 		legend = LegendFactory.createProportionalLegend();
@@ -53,10 +56,26 @@ public class PnlProportionalLegend extends JPanel implements ILegendPanelUI {
 
 	private void init() {
 
-		this.setLayout(new BorderLayout());
+		this.setLayout(new CRFlowLayout());
 
 		JPanel confPanel = new JPanel();
-		confPanel.setLayout(new CRFlowLayout());
+		JPanel lblPanel = new JPanel();
+		CRFlowLayout flowLayout = new CRFlowLayout();
+		flowLayout.setAlignment(CRFlowLayout.RIGHT);
+		flowLayout.setVgap(12);
+		lblPanel.setLayout(flowLayout);
+		lblPanel.add(new JLabel("Field:"));
+		lblPanel.add(new CarriageReturn());
+		lblPanel.add(new JLabel("Proportional method:"));
+		lblPanel.add(new CarriageReturn());
+		lblPanel.add(new JLabel("Minimum area:"));
+
+		confPanel.add(lblPanel);
+
+		JPanel inputPanel = new JPanel();
+		CRFlowLayout flowLayout2 = new CRFlowLayout();
+		flowLayout2.setAlignment(CRFlowLayout.LEFT);
+		inputPanel.setLayout(flowLayout2);
 
 		cmbField = new JComboBox();
 		cmbField.addActionListener(new ActionListener() {
@@ -68,13 +87,11 @@ public class PnlProportionalLegend extends JPanel implements ILegendPanelUI {
 			}
 
 		});
-		confPanel.add(new JLabel("Field:"));
-		confPanel.add(cmbField);
-		confPanel.add(new CarriageReturn());
+		inputPanel.add(cmbField);
+		inputPanel.add(new CarriageReturn());
 
-		confPanel.add(new JLabel("Proportional method:"));
-		final JComboBox cmbMethod = new JComboBox(new String[] { "Linear",
-				"logarithmic", "Square" });
+		cmbMethod = new JComboBox(new String[] { "Linear", "logarithmic",
+				"Square" });
 		cmbMethod.addActionListener(new ActionListener() {
 
 			public void actionPerformed(ActionEvent e) {
@@ -97,12 +114,29 @@ public class PnlProportionalLegend extends JPanel implements ILegendPanelUI {
 			}
 
 		});
-		confPanel.add(cmbMethod);
-		this.add(confPanel, BorderLayout.NORTH);
+		inputPanel.add(cmbMethod);
+		inputPanel.add(new CarriageReturn());
+		txtMinArea = new JTextField(5);
+		txtMinArea.addKeyListener(new KeyAdapter() {
+
+			@Override
+			public void keyReleased(KeyEvent e) {
+				try {
+					legend.setMinSymbolArea(Integer.parseInt(txtMinArea
+							.getText()));
+				} catch (NumberFormatException e1) {
+				}
+			}
+
+		});
+		inputPanel.add(txtMinArea);
+		confPanel.add(inputPanel);
+		this.add(confPanel);
+		this.add(new CarriageReturn());
 
 		JPanel pnlSymbol = new JPanel();
-		pnlSymbol.setBorder(BorderFactory
-				.createTitledBorder("Proportional symbol"));
+		pnlSymbol.setPreferredSize(new Dimension(350, 200));
+		pnlSymbol.setBorder(BorderFactory.createTitledBorder("Symbol"));
 		pnlSymbol.add(new JLabel("Symbol:"));
 		canvas = new Canvas();
 		pnlSymbol.add(canvas);
@@ -117,17 +151,12 @@ public class PnlProportionalLegend extends JPanel implements ILegendPanelUI {
 		canvas.setPreferredSize(new Dimension(50, 50));
 		this.add(pnlSymbol, BorderLayout.CENTER);
 
-		JPanel pnlPreview = new JPanel();
-		pnlPreview.add(new JLabel("Minimum area:"));
-		txtMinArea = new JTextField(5);
-		pnlPreview.add(txtMinArea);
-
-		this.add(pnlPreview, BorderLayout.SOUTH);
 	}
 
 	private void editSymbol() {
 		SymbolEditor editor = new SymbolEditor(false, legendContext,
 				getSymbolFilter());
+		editor.setSymbol(canvas.getSymbol());
 		if (UIFactory.showDialog(editor)) {
 			legend.setSampleSymbol((EditablePointSymbol) editor
 					.getSymbolComposite().getSymbol(0));
@@ -191,6 +220,21 @@ public class PnlProportionalLegend extends JPanel implements ILegendPanelUI {
 
 			// symbol
 			canvas.setSymbol(legend.getSampleSymbol());
+
+			// method
+			switch (legend.getMethod()) {
+			case ProportionalLegend.LINEAR:
+				cmbMethod.setSelectedIndex(0);
+				break;
+			case ProportionalLegend.LOGARITHMIC:
+				cmbMethod.setSelectedIndex(1);
+				break;
+			case ProportionalLegend.SQUARE:
+				cmbMethod.setSelectedIndex(2);
+				break;
+			default:
+				throw new RuntimeException("Unknown method");
+			}
 		} catch (DriverException e) {
 			Services.getErrorManager().error("Cannot access layer fields", e);
 		}

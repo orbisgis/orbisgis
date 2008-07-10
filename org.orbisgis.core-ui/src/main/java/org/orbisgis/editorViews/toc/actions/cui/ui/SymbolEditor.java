@@ -106,7 +106,8 @@ public class SymbolEditor extends JPanel implements UIPanel {
 	private SymbolFilter symbolFilter;
 
 	/** Creates new form JPanelSimpleSimbolLegend */
-	public SymbolEditor(boolean showCollection, LegendContext legendContext, SymbolFilter symbolFilter) {
+	public SymbolEditor(boolean showCollection, LegendContext legendContext,
+			SymbolFilter symbolFilter) {
 		this.legendContext = legendContext;
 		this.showCollection = showCollection;
 		this.symbolFilter = symbolFilter;
@@ -1004,6 +1005,10 @@ public class SymbolEditor extends JPanel implements UIPanel {
 	}
 
 	public String validateInput() {
+		if (lstSymbols.getModel().getSize() == 0) {
+			return "At least a symbol must be created";
+		}
+
 		return null;
 	}
 

@@ -38,6 +38,8 @@ package org.orbisgis.renderer.legend;
 
 import java.util.ArrayList;
 
+import org.gdms.data.SpatialDataSourceDecorator;
+
 public abstract class AbstractLegend implements Legend {
 
 	private String name;
@@ -64,5 +66,9 @@ public abstract class AbstractLegend implements Legend {
 		for (LegendListener listener : listeners) {
 			listener.invalidateLegend(this);
 		}
+	}
+
+	public void preprocess(SpatialDataSourceDecorator sds)
+			throws RenderException {
 	}
 }

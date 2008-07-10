@@ -65,6 +65,18 @@ public interface Legend {
 	void removeLegendListener(LegendListener listener);
 
 	/**
+	 * This method is called once when the DataSource is created to allow the
+	 * legend to perform some global calculation like getting min and max
+	 * values, etc.
+	 *
+	 * @param sds
+	 *            DataSource of the layer this legend is associated to
+	 * @throws RenderException
+	 *             If there is some problem during the preprocess
+	 */
+	void preprocess(SpatialDataSourceDecorator sds) throws RenderException;
+
+	/**
 	 * Gets the symbol to draw the specified row of the specified DataSource
 	 *
 	 * @param sds

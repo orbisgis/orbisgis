@@ -73,6 +73,7 @@ public class DefaultProportionalLegend extends AbstractLegend implements
 	private int method = LINEAR;
 	private double sqrtFactor;
 	private EditablePointSymbol symbol;
+	private ProportionalMethod proportionnalMethod;
 
 	public DefaultProportionalLegend() {
 		symbol = (EditablePointSymbol) SymbolFactory.createCirclePolygonSymbol(
@@ -100,13 +101,21 @@ public class DefaultProportionalLegend extends AbstractLegend implements
 		fireLegendInvalid();
 	}
 
+	@Override
+	public void preprocess(SpatialDataSourceDecorator sds)
+			throws RenderException {
+		proportionnalMethod = new ProportionalMethod(sds, field);
+		try {
+			proportionnalMethod.build(minSymbolArea);
+		} catch (DriverException e) {
+			throw new RenderException("Cannot compute the proportional method",
+					e);
+		}
+	}
+
 	public Symbol getSymbol(SpatialDataSourceDecorator sds, long row)
 			throws RenderException {
 		try {
-			ProportionalMethod proportionnalMethod = new ProportionalMethod(
-					sds, field);
-			proportionnalMethod.build(minSymbolArea);
-
 			// TODO what's the use of this variable
 			int coefType = 1;
 
