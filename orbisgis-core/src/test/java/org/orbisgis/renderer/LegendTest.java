@@ -271,6 +271,29 @@ public class LegendTest extends AbstractTest {
 		assertTrue(uvl.getClassificationCount() == 0);
 	}
 
+	public void testNullIntervalPersistence() throws Exception {
+		IntervalLegend uvl = LegendFactory.createIntervalLegend();
+		uvl.setName(null);
+		uvl.setDefaultSymbol(null);
+		uvl.setDefaultLabel(null);
+		uvl.setClassificationField(fieldName, ds);
+		File file = new File("target/uniqueSymbolLegend.ogl");
+		uvl.setClassificationField(fieldName, ds);
+		Value endValue = ValueFactory.createValue(1000d);
+		Symbol classSym = SymbolFactory.createPolygonSymbol();
+		uvl.addInterval(ValueFactory.createNullValue(), false, endValue, true,
+				classSym, "");
+		uvl.save(file);
+
+		uvl = (IntervalLegend) LegendFactory
+				.getNewLegend(uvl.getLegendTypeId());
+		uvl.load(file, uvl.getVersion());
+		assertTrue(uvl.getName() == null);
+		assertTrue(uvl.getDefaultSymbol() == null);
+		assertTrue(uvl.getClassificationField().equals(fieldName));
+		assertTrue(uvl.getClassificationCount() == 1);
+	}
+
 	public void testFullProportionalPersistence() throws Exception {
 		ProportionalLegend legend = LegendFactory.createProportionalLegend();
 		String name = "mylegend";

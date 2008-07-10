@@ -36,6 +36,7 @@
  */
 package org.orbisgis.renderer.legend.carto;
 
+import java.awt.Graphics;
 import java.util.ArrayList;
 
 import org.gdms.data.DataSource;
@@ -158,6 +159,30 @@ abstract class AbstractClassifiedLegend extends AbstractLegend implements
 
 	public int getClassificationFieldType() {
 		return fieldType;
+	}
+
+	public void drawImage(Graphics g) {
+		LegendLine ll = null;
+		for (int i = 0; i < symbols.size(); i++) {
+			if (ll != null) {
+				g.translate(0, ll.getImageSize(g)[1]);
+			}
+			ll = new LegendLine(getSymbols().get(i), getLabels().get(i));
+			ll.drawImage(g);
+		}
+	}
+
+	public int[] getImageSize(Graphics g) {
+		int height = 0;
+		int width = 0;
+		for (int i = 0; i < symbols.size(); i++) {
+			LegendLine ll = new LegendLine(getSymbols().get(i), getLabels()
+					.get(i));
+			int[] imageSize = ll.getImageSize(g);
+			height += imageSize[1];
+			width = Math.max(width, imageSize[0]);
+		}
+		return new int[] { width, height };
 	}
 
 }

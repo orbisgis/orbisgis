@@ -36,7 +36,6 @@
  */
 package org.orbisgis.renderer.legend.carto;
 
-import java.awt.Graphics;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -170,14 +169,18 @@ public class DefaultIntervalLegend extends AbstractClassifiedLegend implements
 						.getXMLFromSymbol(getSymbol(i)));
 				Interval interval = intervals.get(i);
 				Value minValue = interval.getMinValue();
-				if (minValue != null) {
+				if ((minValue != null) && !minValue.isNull()) {
 					classification.setInitValue(minValue.toString());
+				} else {
+					classification.setInitValue(null);
 				}
 				classification.setInitIncluded(interval.isMinIncluded());
 				classification.setEndIncluded(interval.isMaxIncluded());
 				Value maxValue = interval.getMaxValue();
-				if (maxValue != null) {
+				if ((maxValue != null) && !maxValue.isNull()) {
 					classification.setEndValue(maxValue.toString());
+				} else {
+					classification.setEndValue(null);
 				}
 				classifications.add(classification);
 			}
@@ -296,15 +299,6 @@ public class DefaultIntervalLegend extends AbstractClassifiedLegend implements
 
 	public void setInterval(int rowIndex, Interval interval) {
 		intervals.set(rowIndex, interval);
-	}
-
-	public void drawImage(Graphics g) {
-		// TODO Auto-generated method stub
-
-	}
-
-	public int[] getImageSize(Graphics g) {
-		return new int[] { 0, 0 };
 	}
 
 }

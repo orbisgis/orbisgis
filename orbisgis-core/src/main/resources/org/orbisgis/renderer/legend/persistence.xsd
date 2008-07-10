@@ -74,10 +74,10 @@
 			<xs:sequence>
 				<xs:element name="symbol" type="sym:symbol-type" maxOccurs="1"/>
 			</xs:sequence>
-			<xs:attribute name="init-value" type="xs:string"/>
-			<xs:attribute name="init-included" type="xs:boolean"/>
-			<xs:attribute name="end-value" type="xs:string"/>
-			<xs:attribute name="end-included" type="xs:boolean"/>
+			<xs:attribute name="init-value" type="xs:string" use="optional"/>
+			<xs:attribute name="init-included" type="xs:boolean" use="optional"/>
+			<xs:attribute name="end-value" type="xs:string" use="optional"/>
+			<xs:attribute name="end-included" type="xs:boolean" use="optional"/>
 			<xs:attribute name="label" type="xs:string" use="required"/>
 		</xs:complexType>
 	</xs:element>
