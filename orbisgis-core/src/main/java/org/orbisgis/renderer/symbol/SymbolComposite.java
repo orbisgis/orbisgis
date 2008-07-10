@@ -39,6 +39,7 @@ package org.orbisgis.renderer.symbol;
 import java.awt.Graphics2D;
 import java.awt.geom.AffineTransform;
 
+import org.gdms.data.types.GeometryConstraint;
 import org.gdms.driver.DriverException;
 import org.orbisgis.renderer.RenderPermission;
 
@@ -72,6 +73,15 @@ class SymbolComposite extends AbstractSymbol implements Symbol {
 	public boolean acceptGeometry(Geometry geom) {
 		for (Symbol symbol : symbols) {
 			if (symbol.acceptGeometry(geom)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	public boolean acceptGeometryType(GeometryConstraint geometryConstraint) {
+		for (Symbol symbol : symbols) {
+			if (symbol.acceptGeometryType(geometryConstraint)) {
 				return true;
 			}
 		}

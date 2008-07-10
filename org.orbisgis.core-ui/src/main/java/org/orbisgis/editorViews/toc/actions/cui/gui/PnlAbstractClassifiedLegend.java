@@ -57,7 +57,11 @@ import javax.swing.event.ListSelectionListener;
 import org.gdms.data.types.GeometryConstraint;
 import org.orbisgis.editorViews.toc.actions.cui.gui.widgets.table.ClassifiedLegendTableModel;
 import org.orbisgis.editorViews.toc.actions.cui.gui.widgets.table.SymbolValueCellRenderer;
+import org.orbisgis.editorViews.toc.actions.cui.ui.CompositeSymbolFilter;
+import org.orbisgis.editorViews.toc.actions.cui.ui.ConstraintSymbolFilter;
+import org.orbisgis.editorViews.toc.actions.cui.ui.EditableSymbolFilter;
 import org.orbisgis.editorViews.toc.actions.cui.ui.SymbolEditor;
+import org.orbisgis.editorViews.toc.actions.cui.ui.SymbolFilter;
 import org.orbisgis.images.IconLoader;
 import org.orbisgis.renderer.legend.Legend;
 import org.orbisgis.renderer.legend.carto.ClassifiedLegend;
@@ -117,7 +121,7 @@ public abstract class PnlAbstractClassifiedLegend extends javax.swing.JPanel
 					if (col == 0) {
 						int row = table.getSelectedRow();
 						SymbolEditor symbolEditor = new SymbolEditor(true,
-								legendContext);
+								legendContext, getSymbolFilter());
 						symbolEditor.setSymbol((Symbol) tableModel.getValueAt(
 								row, 0));
 
@@ -127,6 +131,12 @@ public abstract class PnlAbstractClassifiedLegend extends javax.swing.JPanel
 						}
 					}
 				}
+			}
+
+			private SymbolFilter getSymbolFilter() {
+				return new CompositeSymbolFilter(new EditableSymbolFilter(),
+						new ConstraintSymbolFilter(legendContext
+								.getGeometryConstraint()));
 			}
 
 		});

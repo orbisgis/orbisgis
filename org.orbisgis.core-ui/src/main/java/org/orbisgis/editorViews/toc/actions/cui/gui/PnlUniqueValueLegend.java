@@ -131,7 +131,7 @@ public class PnlUniqueValueLegend extends PnlAbstractClassifiedLegend {
 	}
 
 	public ILegendPanelUI newInstance(LegendContext legendContext) {
-		return new JPanelUniqueValueLegend(legendContext);
+		return new PnlUniqueValueLegend(legendContext);
 	}
 
 	public String getLegendTypeName() {

@@ -46,6 +46,7 @@ import java.awt.geom.Point2D;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.gdms.data.types.GeometryConstraint;
 import org.gdms.driver.DriverException;
 import org.orbisgis.IncompatibleVersionException;
 import org.orbisgis.renderer.RenderPermission;
@@ -124,5 +125,9 @@ public class LabelSymbol extends AbstractSymbol implements Symbol {
 
 	public String getClassName() {
 		return "Label";
+	}
+
+	public boolean acceptGeometryType(GeometryConstraint geometryConstraint) {
+		return true;
 	}
 }

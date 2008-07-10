@@ -103,11 +103,13 @@ public class SymbolEditor extends JPanel implements UIPanel {
 	private boolean showCollection = false;
 	private LegendContext legendContext;
 	private boolean syncing = false;
+	private SymbolFilter symbolFilter;
 
 	/** Creates new form JPanelSimpleSimbolLegend */
-	public SymbolEditor(boolean showCollection, LegendContext legendContext) {
+	public SymbolEditor(boolean showCollection, LegendContext legendContext, SymbolFilter symbolFilter) {
 		this.legendContext = legendContext;
 		this.showCollection = showCollection;
+		this.symbolFilter = symbolFilter;
 		initComponents();
 		lstSymbols.setModel(new DefaultListModel());
 	}
@@ -793,12 +795,8 @@ public class SymbolEditor extends JPanel implements UIPanel {
 		ArrayList<Symbol> availableSymbols = sm.getAvailableSymbols();
 		ArrayList<Symbol> filtered = new ArrayList<Symbol>();
 		for (Symbol symbol : availableSymbols) {
-			if (symbol instanceof EditableSymbol) {
-				EditableSymbol editableSymbol = (EditableSymbol) symbol;
-				if (editableSymbol.acceptGeometryType(legendContext
-						.getGeometryConstraint())) {
-					filtered.add(editableSymbol);
-				}
+			if (symbolFilter.accept(symbol)) {
+				filtered.add(symbol);
 			}
 		}
 
@@ -1007,6 +1005,10 @@ public class SymbolEditor extends JPanel implements UIPanel {
 
 	public String validateInput() {
 		return null;
+	}
+
+	public void setSymbolFilter(SymbolFilter symbolFilter) {
+		this.symbolFilter = symbolFilter;
 	}
 
 }

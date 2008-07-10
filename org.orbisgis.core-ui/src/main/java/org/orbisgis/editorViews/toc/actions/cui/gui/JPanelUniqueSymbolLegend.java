@@ -46,7 +46,11 @@ import java.awt.BorderLayout;
 import java.awt.Component;
 import java.net.URL;
 
+import org.orbisgis.editorViews.toc.actions.cui.ui.CompositeSymbolFilter;
+import org.orbisgis.editorViews.toc.actions.cui.ui.ConstraintSymbolFilter;
+import org.orbisgis.editorViews.toc.actions.cui.ui.EditableSymbolFilter;
 import org.orbisgis.editorViews.toc.actions.cui.ui.SymbolEditor;
+import org.orbisgis.editorViews.toc.actions.cui.ui.SymbolFilter;
 import org.orbisgis.renderer.legend.Legend;
 import org.orbisgis.renderer.legend.carto.LegendFactory;
 import org.orbisgis.renderer.legend.carto.UniqueSymbolLegend;
@@ -63,15 +67,24 @@ public class JPanelUniqueSymbolLegend extends javax.swing.JPanel implements
 
 	private UniqueSymbolLegend leg = null;
 	private SymbolEditor symbolEditor;
+	private LegendContext legendContext;
 
 	/** Creates new form JPanelSimpleSimbolLegend */
 	public JPanelUniqueSymbolLegend(boolean showCollection,
 			LegendContext legendContext) {
 		leg = LegendFactory.createUniqueSymbolLegend();
 		leg.setName(getLegendTypeName());
-		symbolEditor = new SymbolEditor(showCollection, legendContext);
+		this.legendContext = legendContext;
+		symbolEditor = new SymbolEditor(showCollection, legendContext,
+				getSymbolFilter());
 		this.setLayout(new BorderLayout());
 		this.add(symbolEditor, BorderLayout.CENTER);
+	}
+
+	private SymbolFilter getSymbolFilter() {
+		return new CompositeSymbolFilter(
+				new EditableSymbolFilter(), new ConstraintSymbolFilter(
+						legendContext.getGeometryConstraint()));
 	}
 
 	/**
@@ -134,7 +147,7 @@ public class JPanelUniqueSymbolLegend extends javax.swing.JPanel implements
 	}
 
 	public void setLegendContext(LegendContext lc) {
-		// this.legendContext = lc;
+		this.legendContext = lc;
 	}
 
 }

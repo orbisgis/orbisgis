@@ -18,11 +18,16 @@ import javax.swing.JTextField;
 
 import org.gdms.data.SpatialDataSourceDecorator;
 import org.gdms.data.metadata.Metadata;
+import org.gdms.data.types.GeometryConstraint;
 import org.gdms.data.types.Type;
 import org.gdms.driver.DriverException;
 import org.orbisgis.Services;
 import org.orbisgis.editorViews.toc.actions.cui.gui.widgets.Canvas;
+import org.orbisgis.editorViews.toc.actions.cui.ui.CompositeSymbolFilter;
+import org.orbisgis.editorViews.toc.actions.cui.ui.ConstraintSymbolFilter;
+import org.orbisgis.editorViews.toc.actions.cui.ui.EditableSymbolFilter;
 import org.orbisgis.editorViews.toc.actions.cui.ui.SymbolEditor;
+import org.orbisgis.editorViews.toc.actions.cui.ui.SymbolFilter;
 import org.orbisgis.renderer.legend.Legend;
 import org.orbisgis.renderer.legend.carto.LegendFactory;
 import org.orbisgis.renderer.legend.carto.ProportionalLegend;
@@ -86,8 +91,8 @@ public class PnlProportionalLegend extends JPanel implements ILegendPanelUI {
 						break;
 					}
 				} catch (DriverException e1) {
-					Services.getErrorManager()
-							.error("Cannot set the method", e1);
+					Services.getErrorManager().error("Cannot set the method",
+							e1);
 				}
 			}
 
@@ -121,12 +126,19 @@ public class PnlProportionalLegend extends JPanel implements ILegendPanelUI {
 	}
 
 	private void editSymbol() {
-		SymbolEditor editor = new SymbolEditor(false, legendContext);
+		SymbolEditor editor = new SymbolEditor(false, legendContext,
+				getSymbolFilter());
 		if (UIFactory.showDialog(editor)) {
 			legend.setSampleSymbol((EditablePointSymbol) editor
 					.getSymbolComposite().getSymbol(0));
 			syncWithLegend();
 		}
+	}
+
+	private SymbolFilter getSymbolFilter() {
+		return new CompositeSymbolFilter(new EditableSymbolFilter(),
+				new ConstraintSymbolFilter(new GeometryConstraint(
+						GeometryConstraint.POINT)));
 	}
 
 	public boolean acceptsGeometryType(int geometryType) {

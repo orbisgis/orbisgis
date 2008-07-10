@@ -40,6 +40,7 @@ import java.awt.Graphics2D;
 import java.awt.geom.AffineTransform;
 import java.util.Map;
 
+import org.gdms.data.types.GeometryConstraint;
 import org.gdms.driver.DriverException;
 import org.orbisgis.IncompatibleVersionException;
 import org.orbisgis.renderer.RenderPermission;
@@ -70,6 +71,15 @@ public interface Symbol {
 	 * @return
 	 */
 	boolean acceptGeometry(Geometry geom);
+
+	/**
+	 * Returns true if this symbol is suitable for a geometry field with the
+	 * specified geometry type constraint
+	 *
+	 * @param geometryConstraint
+	 * @return
+	 */
+	boolean acceptGeometryType(GeometryConstraint geometryConstraint);
 
 	/**
 	 * Sets the name of the symbol

@@ -53,7 +53,11 @@ import javax.xml.bind.JAXBException;
 import org.orbisgis.Services;
 import org.orbisgis.SymbolManager;
 import org.orbisgis.editorViews.toc.actions.cui.gui.LegendContext;
+import org.orbisgis.editorViews.toc.actions.cui.ui.CompositeSymbolFilter;
+import org.orbisgis.editorViews.toc.actions.cui.ui.ConstraintSymbolFilter;
+import org.orbisgis.editorViews.toc.actions.cui.ui.EditableSymbolFilter;
 import org.orbisgis.editorViews.toc.actions.cui.ui.SymbolEditor;
+import org.orbisgis.editorViews.toc.actions.cui.ui.SymbolFilter;
 import org.orbisgis.images.IconLoader;
 import org.orbisgis.renderer.legend.carto.LegendFactory;
 import org.orbisgis.renderer.legend.carto.UniqueSymbolLegend;
@@ -213,7 +217,8 @@ public class FlowLayoutPreviewWindow extends javax.swing.JPanel implements
 					UniqueSymbolLegend leg = LegendFactory
 							.createUniqueSymbolLegend();
 					leg.setSymbol(sym);
-					SymbolEditor usl = new SymbolEditor(false, legendContext);
+					SymbolEditor usl = new SymbolEditor(false, legendContext,
+							getSymbolFilter());
 
 					if (UIFactory.showDialog(usl)) {
 						can.setSymbol(usl.getSymbolComposite());
@@ -226,6 +231,10 @@ public class FlowLayoutPreviewWindow extends javax.swing.JPanel implements
 		refreshInterface();
 	}
 
+	private SymbolFilter getSymbolFilter() {
+		return new EditableSymbolFilter();
+	}
+
 	private void jButtonAddActionPerformed(java.awt.event.ActionEvent evt) {
 		SymbolManager sm = (SymbolManager) Services
 				.getService("org.orbisgis.SymbolManager");
@@ -234,7 +243,8 @@ public class FlowLayoutPreviewWindow extends javax.swing.JPanel implements
 		if (UIFactory.showDialog(type)) {
 			EditableSymbol sym = (EditableSymbol) type.getSelected();
 
-			SymbolEditor se = new SymbolEditor(false, legendContext);
+			SymbolEditor se = new SymbolEditor(false, legendContext,
+					getSymbolFilter());
 			se.setSymbol(sym);
 
 			if (UIFactory.showDialog(se)) {
