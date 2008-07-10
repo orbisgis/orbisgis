@@ -61,7 +61,7 @@ public class MapTransform {
 
 	/**
 	 * Sets the painted image
-	 * 
+	 *
 	 * @param newImage
 	 */
 	public void setImage(BufferedImage newImage) {
@@ -71,7 +71,7 @@ public class MapTransform {
 
 	/**
 	 * Gets the painted image
-	 * 
+	 *
 	 * @return
 	 */
 	public BufferedImage getImage() {
@@ -81,7 +81,7 @@ public class MapTransform {
 	/**
 	 * Gets the extent used to calculate the transformation. This extent is the
 	 * same as the setted one but adjusted to have the same ratio than the image
-	 * 
+	 *
 	 * @return
 	 */
 	public Envelope getAdjustedExtent() {
@@ -89,7 +89,7 @@ public class MapTransform {
 	}
 
 	/**
-	 * 
+	 *
 	 * @throws RuntimeException
 	 */
 	private void calculateAffineTransform() {
@@ -146,7 +146,7 @@ public class MapTransform {
 
 	/**
 	 * Gets the height of the drawn image
-	 * 
+	 *
 	 * @return
 	 */
 	public int getHeight() {
@@ -159,7 +159,7 @@ public class MapTransform {
 
 	/**
 	 * Gets the width of the drawn image
-	 * 
+	 *
 	 * @return
 	 */
 	public int getWidth() {
@@ -174,7 +174,7 @@ public class MapTransform {
 	 * Sets the extent of the transformation. This extent is not used directly
 	 * to calculate the transformation but is adjusted to obtain an extent with
 	 * the same ration than the image
-	 * 
+	 *
 	 * @param newExtent
 	 */
 	public void setExtent(Envelope newExtent) {
@@ -188,7 +188,7 @@ public class MapTransform {
 
 	/**
 	 * Creates new image with the specified size
-	 * 
+	 *
 	 * @param width
 	 * @param height
 	 */
@@ -204,7 +204,7 @@ public class MapTransform {
 
 	/**
 	 * Gets this transformation
-	 * 
+	 *
 	 * @return
 	 */
 	public AffineTransform getAffineTransform() {
@@ -213,7 +213,7 @@ public class MapTransform {
 
 	/**
 	 * Gets the extent
-	 * 
+	 *
 	 * @return
 	 */
 	public Envelope getExtent() {
@@ -222,7 +222,7 @@ public class MapTransform {
 
 	/**
 	 * Transforms an envelope in map units to image units
-	 * 
+	 *
 	 * @param geographicEnvelope
 	 * @return
 	 */
@@ -241,7 +241,7 @@ public class MapTransform {
 
 	/**
 	 * Transforms an image coordinate in pixels into a map coordinate
-	 * 
+	 *
 	 * @param i
 	 * @param j
 	 * @return
@@ -256,7 +256,7 @@ public class MapTransform {
 
 	/**
 	 * Transforms the specified map point to an image pixel
-	 * 
+	 *
 	 * @param point
 	 * @return
 	 */
@@ -269,18 +269,18 @@ public class MapTransform {
 	 * Gets the scale denominator. If the scale is 1:1000 this method returns
 	 * 1000. The scale is not absolutely precise and errors of 2% have been
 	 * measured.
-	 * 
+	 *
 	 * @return
 	 */
 	public double getScaleDenominator() {
-		if (extent == null) {
+		if (adjustedExtent == null) {
 			return 0;
 		} else {
 			int dpi = Toolkit.getDefaultToolkit().getScreenResolution();
 			double metersByPixel = 0.0254 / dpi;
 			double imageMeters = getWidth() * metersByPixel;
 
-			return extent.getWidth() / imageMeters;
+			return adjustedExtent.getWidth() / imageMeters;
 		}
 	}
 

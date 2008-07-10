@@ -92,7 +92,7 @@ abstract class AbstractClassifiedLegend extends AbstractLegend implements
 	}
 
 	public void fillDefaults(ClassifiedLegendType xmlLegend) {
-		xmlLegend.setName(getName());
+		save(xmlLegend);
 		if (getDefaultSymbol() != null) {
 			xmlLegend.setDefaultSymbol(DefaultSymbolCollection
 					.getXMLFromSymbol(getDefaultSymbol()));
@@ -106,7 +106,7 @@ abstract class AbstractClassifiedLegend extends AbstractLegend implements
 
 	public void getDefaults(ClassifiedLegendType xmlLegend)
 			throws DriverException, IncompatibleVersionException {
-		setName(xmlLegend.getName());
+		load(xmlLegend);
 		setDefaultLabel(xmlLegend.getDefaultLabel());
 		fieldType = xmlLegend.getFieldType();
 		fieldName = xmlLegend.getFieldName();

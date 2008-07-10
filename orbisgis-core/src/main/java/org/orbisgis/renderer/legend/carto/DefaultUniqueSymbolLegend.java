@@ -102,7 +102,7 @@ public class DefaultUniqueSymbolLegend extends AbstractLegend implements
 			BufferedOutputStream os = new BufferedOutputStream(
 					new FileOutputStream(file));
 			UniqueSymbolLegendType xmlLegend = new UniqueSymbolLegendType();
-			xmlLegend.setName(getName());
+			save(xmlLegend);
 			xmlLegend.setSymbol(DefaultSymbolCollection
 					.getXMLFromSymbol(symbol));
 			LegendContainer xml = new LegendContainer();
@@ -131,7 +131,7 @@ public class DefaultUniqueSymbolLegend extends AbstractLegend implements
 				UniqueSymbolLegendType xmlLegend = (UniqueSymbolLegendType) xml
 						.getLegendDescription();
 				os.close();
-				setName(xmlLegend.getName());
+				load(xmlLegend);
 				setSymbol(DefaultSymbolCollection.getSymbolFromXML(xmlLegend
 						.getSymbol()));
 

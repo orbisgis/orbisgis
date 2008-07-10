@@ -16,6 +16,8 @@
 
 	<xs:complexType name="legend-type">
 		<xs:attribute name="name" type="xs:string" use="required"/>
+		<xs:attribute name="min-scale" type="xs:int" use="optional"/>
+		<xs:attribute name="max-scale" type="xs:int" use="optional"/>
 	</xs:complexType>
 
 	<xs:complexType name="unique-symbol-legend-type">

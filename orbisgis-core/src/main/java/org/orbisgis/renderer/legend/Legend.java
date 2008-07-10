@@ -164,9 +164,38 @@ public interface Legend {
 
 	/**
 	 * Gets the size of the image being draw in the {@link drawImage} method
-	 * @param g TODO
+	 *
+	 * @param g
 	 *
 	 * @return
 	 */
 	int[] getImageSize(Graphics g);
+
+	/**
+	 * Set the minimum scale to use this legend. Use Integer.MIN_VALUE to
+	 * specify no limit
+	 *
+	 * @param min
+	 */
+	void setMinScale(int min);
+
+	/**
+	 * Set the maximum scale to use this legend. Use Integer.MAX_VALUE to
+	 * specify no limit
+	 *
+	 * @param max
+	 */
+	void setMaxScale(int max);
+
+	/**
+	 * Get the minimum scale to use this legend. Integer.MIN_VALUE means there
+	 * is no limit
+	 */
+	int getMinScale();
+
+	/**
+	 * Get the maximum scale to use this legend. Integer.MAX_VALUE means there
+	 * is no limit
+	 */
+	int getMaxScale();
 }

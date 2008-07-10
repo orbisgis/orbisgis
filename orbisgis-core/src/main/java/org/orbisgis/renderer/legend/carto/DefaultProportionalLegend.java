@@ -194,7 +194,7 @@ public class DefaultProportionalLegend extends AbstractLegend implements
 			BufferedOutputStream os = new BufferedOutputStream(
 					new FileOutputStream(file));
 			ProportionalLegendType xmlLegend = new ProportionalLegendType();
-			xmlLegend.setName(getName());
+			save(xmlLegend);
 			xmlLegend.setSampleSymbol(DefaultSymbolCollection
 					.getXMLFromSymbol(symbol));
 			xmlLegend.setMethod(getMethod());
@@ -226,7 +226,7 @@ public class DefaultProportionalLegend extends AbstractLegend implements
 				ProportionalLegendType xmlLegend = (ProportionalLegendType) xml
 						.getLegendDescription();
 				os.close();
-				setName(xmlLegend.getName());
+				load(xmlLegend);
 				setMethod(xmlLegend.getMethod());
 				setMinSymbolArea(xmlLegend.getMinArea());
 				setSampleSymbol((EditablePointSymbol) DefaultSymbolCollection

@@ -4,18 +4,25 @@ import java.awt.BorderLayout;
 import java.awt.CardLayout;
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.net.URL;
 import java.util.ArrayList;
 
+import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JTextField;
 
 import org.gdms.data.types.GeometryConstraint;
+import org.orbisgis.Services;
 import org.orbisgis.editorViews.toc.actions.cui.gui.ILegendPanelUI;
 import org.orbisgis.editorViews.toc.actions.cui.gui.LegendContext;
 import org.orbisgis.layerModel.ILayer;
 import org.orbisgis.layerModel.LegendDecorator;
 import org.orbisgis.renderer.legend.Legend;
+import org.sif.CRFlowLayout;
+import org.sif.CarriageReturn;
 import org.sif.UIFactory;
 import org.sif.UIPanel;
 
@@ -31,6 +38,8 @@ public class LegendsPanel extends JPanel implements UIPanel, LegendContext {
 	private String lastUID = "";
 	private GeometryConstraint gc;
 	private ILayer layer;
+	private JTextField txtMinScale;
+	private JTextField txtMaxScale;
 
 	public void init(GeometryConstraint gc, Legend[] legends,
 			ILegendPanelUI[] availableLegends, ILayer layer) {
@@ -65,6 +74,8 @@ public class LegendsPanel extends JPanel implements UIPanel, LegendContext {
 					.getComponent(), panel, getNewId());
 			addLegend(legendElement);
 		}
+
+		refreshLegendContainer();
 	}
 
 	private String getNewId() {
@@ -90,8 +101,65 @@ public class LegendsPanel extends JPanel implements UIPanel, LegendContext {
 	}
 
 	private Component getScalePanel() {
-		// TODO Auto-generated method stub
-		return new JLabel("Scale panel");
+		JPanel pnlScale = new JPanel();
+
+		JPanel pnlLabels = new JPanel();
+		pnlLabels.setLayout(new CRFlowLayout());
+		pnlLabels.add(new JLabel("Min. scale:"));
+		pnlLabels.add(new CarriageReturn());
+		pnlLabels.add(new JLabel("Max. scale:"));
+		pnlScale.add(pnlLabels);
+
+		JPanel pnlTexts = new JPanel();
+		pnlTexts.setLayout(new CRFlowLayout());
+		KeyAdapter keyAdapter = new KeyAdapter() {
+
+			@Override
+			public void keyReleased(KeyEvent e) {
+				int selectedIndex = legendList.getSelectedIndex();
+				if (selectedIndex != -1) {
+					LegendElement legendElement = legends.get(selectedIndex);
+					Legend legend = legendElement.getLegend();
+					String minScale = txtMinScale.getText();
+					if (minScale.trim().length() != 0) {
+						try {
+							int min = Integer.parseInt(minScale);
+							legend.setMinScale(min);
+						} catch (NumberFormatException e1) {
+						}
+					} else {
+						legend.setMinScale(Integer.MIN_VALUE);
+					}
+					String maxScale = txtMaxScale.getText();
+					if (maxScale.trim().length() != 0) {
+						try {
+							int max = Integer.parseInt(maxScale);
+							legend.setMaxScale(max);
+						} catch (NumberFormatException e1) {
+						}
+					} else {
+						legend.setMaxScale(Integer.MAX_VALUE);
+					}
+				} else {
+					Services.getErrorManager().error(
+							"There is no selected legend, "
+									+ "cannot set scale.");
+				}
+			}
+
+		};
+		txtMinScale = new JTextField(10);
+		txtMinScale.addKeyListener(keyAdapter);
+		txtMaxScale = new JTextField(10);
+		txtMaxScale.addKeyListener(keyAdapter);
+		pnlTexts.add(txtMinScale);
+		pnlTexts.add(new CarriageReturn());
+		pnlTexts.add(txtMaxScale);
+		pnlScale.add(pnlTexts);
+
+		pnlScale.setPreferredSize(new Dimension(200, 100));
+		pnlScale.setBorder(BorderFactory.createTitledBorder("Scale"));
+		return pnlScale;
 	}
 
 	private JPanel getLegendContainer() {
@@ -156,7 +224,23 @@ public class LegendsPanel extends JPanel implements UIPanel, LegendContext {
 			} else {
 				cardLayout.show(pnlContainer, NO_LEGEND_ID);
 			}
+			Legend legend = legends.get(index).getLegend();
+			int minScale = legend.getMinScale();
+			if (minScale != Integer.MIN_VALUE) {
+				txtMinScale.setText(minScale + "");
+			} else {
+				txtMinScale.setText("");
+			}
+			int maxScale = legend.getMaxScale();
+			if (maxScale != Integer.MAX_VALUE) {
+				txtMaxScale.setText(maxScale + "");
+			} else {
+				txtMaxScale.setText("");
+			}
 		}
+
+		txtMinScale.setEnabled(legendList.getSelectedIndex() != -1);
+		txtMaxScale.setEnabled(legendList.getSelectedIndex() != -1);
 	}
 
 	public void legendRemoved(int index) {
@@ -174,7 +258,6 @@ public class LegendsPanel extends JPanel implements UIPanel, LegendContext {
 	private void addLegend(LegendElement le) {
 		legends.add(le);
 		pnlContainer.add(le.getComponent(), le.getId());
-		cardLayout.show(pnlContainer, le.getId());
 		le.getLegendPanel().setLegendContext(this);
 		le.getLegendPanel().setLegend(getLegend(le));
 		refresh();
@@ -247,6 +330,30 @@ public class LegendsPanel extends JPanel implements UIPanel, LegendContext {
 				return panelError;
 			}
 		}
+
+		String error = validateScale(txtMinScale);
+		if (error != null) {
+			return error;
+		}
+
+		error = validateScale(txtMaxScale);
+		if (error != null) {
+			return error;
+		}
+
+		return null;
+	}
+
+	private String validateScale(JTextField txt) {
+		String minScale = txt.getText();
+		if (minScale.trim().length() != 0) {
+			try {
+				Integer.parseInt(minScale);
+			} catch (NumberFormatException e) {
+				return "Min. scale is not a valid number";
+			}
+		}
+
 		return null;
 	}
 

@@ -39,10 +39,15 @@ package org.orbisgis.renderer.legend;
 import java.util.ArrayList;
 
 import org.gdms.data.SpatialDataSourceDecorator;
+import org.orbisgis.renderer.legend.carto.persistence.LegendType;
 
 public abstract class AbstractLegend implements Legend {
 
 	private String name;
+
+	private int minScale = Integer.MIN_VALUE;
+
+	private int maxScale = Integer.MAX_VALUE;
 
 	private ArrayList<LegendListener> listeners = new ArrayList<LegendListener>();
 
@@ -70,5 +75,45 @@ public abstract class AbstractLegend implements Legend {
 
 	public void preprocess(SpatialDataSourceDecorator sds)
 			throws RenderException {
+	}
+
+	public int getMinScale() {
+		return minScale;
+	}
+
+	public void setMinScale(int minScale) {
+		this.minScale = minScale;
+	}
+
+	public int getMaxScale() {
+		return maxScale;
+	}
+
+	public void setMaxScale(int maxScale) {
+		this.maxScale = maxScale;
+	}
+
+	protected void save(LegendType legend) {
+		legend.setName(getName());
+
+		if (minScale != Integer.MIN_VALUE) {
+			legend.setMinScale(minScale);
+		}
+
+		if (maxScale != Integer.MAX_VALUE) {
+			legend.setMaxScale(maxScale);
+		}
+	}
+
+	protected void load(LegendType legend) {
+		this.setName(legend.getName());
+
+		if (legend.getMinScale() != null) {
+			minScale = legend.getMinScale();
+		}
+
+		if (legend.getMaxScale() != null) {
+			maxScale = legend.getMaxScale();
+		}
 	}
 }

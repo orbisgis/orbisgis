@@ -54,6 +54,10 @@ public class RasterLegend extends AbstractLegend implements Legend {
 
 	private String bandsCode = null;
 
+	/**
+	 * @param colorModel
+	 * @param opacity 0 for transparent, 1 for opaque
+	 */
 	public RasterLegend(ColorModel colorModel, float opacity) {
 		this.colorModel = colorModel;
 		this.opacity = opacity;
@@ -95,11 +99,9 @@ public class RasterLegend extends AbstractLegend implements Legend {
 	}
 
 	public void save(File file) {
-		throw new UnsupportedOperationException();
 	}
 
 	public void load(File file, String version) {
-		throw new UnsupportedOperationException();
 	}
 
 	public String getLegendTypeId() {
@@ -107,7 +109,7 @@ public class RasterLegend extends AbstractLegend implements Legend {
 	}
 
 	public Legend newInstance() {
-		return new RasterLegend(LutGenerator.colorModel("gray"), 0);
+		return new RasterLegend(LutGenerator.colorModel("gray"), 1);
 	}
 
 

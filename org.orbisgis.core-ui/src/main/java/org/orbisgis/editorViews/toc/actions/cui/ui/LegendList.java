@@ -106,6 +106,10 @@ public class LegendList extends JPanel {
 		lst.setModel(model);
 
 		refresh();
+
+		if (model.getSize() > 0) {
+			lst.setSelectedIndex(0);
+		}
 	}
 
 	/**

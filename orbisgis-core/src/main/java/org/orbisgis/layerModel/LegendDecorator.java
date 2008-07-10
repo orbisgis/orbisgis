@@ -181,4 +181,20 @@ public class LegendDecorator implements Legend, EditionListener {
 	public int[] getImageSize(Graphics g) {
 		return legend.getImageSize(g);
 	}
+
+	public int getMaxScale() {
+		return legend.getMaxScale();
+	}
+
+	public int getMinScale() {
+		return legend.getMinScale();
+	}
+
+	public void setMaxScale(int max) {
+		legend.setMaxScale(max);
+	}
+
+	public void setMinScale(int min) {
+		legend.setMinScale(min);
+	}
 }

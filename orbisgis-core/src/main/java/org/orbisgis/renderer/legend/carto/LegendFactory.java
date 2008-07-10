@@ -38,7 +38,9 @@ package org.orbisgis.renderer.legend.carto;
 
 import java.util.ArrayList;
 
+import org.grap.lut.LutGenerator;
 import org.orbisgis.renderer.legend.Legend;
+import org.orbisgis.renderer.legend.RasterLegend;
 
 public class LegendFactory {
 
@@ -50,6 +52,8 @@ public class LegendFactory {
 		newInstances.add(createIntervalLegend());
 		newInstances.add(createProportionalLegend());
 		newInstances.add(createLabelLegend());
+		newInstances
+				.add(new RasterLegend(LutGenerator.colorModel("gray"), 1));
 	}
 
 	public static UniqueSymbolLegend createUniqueSymbolLegend() {

@@ -172,6 +172,9 @@ public class Renderer {
 		logger.debug("raster envelope: " + layer.getEnvelope());
 		RasterLegend[] legends = layer.getRasterLegend();
 		for (RasterLegend legend : legends) {
+			if (!validScale(mt, legend)) {
+				continue;
+			}
 			g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER,
 					legend.getOpacity()));
 			for (int i = 0; i < layer.getDataSource().getRowCount(); i++) {
@@ -216,6 +219,10 @@ public class Renderer {
 			 * Don't check the extent because it's expensive in edition
 			 */
 			for (Legend legend : legends) {
+				if (!validScale(mt, legend)) {
+					continue;
+				}
+
 				DefaultSpatialIndexQuery query = new DefaultSpatialIndexQuery(
 						extent, sds.getMetadata().getFieldName(
 								sds.getSpatialFieldIndex()));
@@ -258,6 +265,11 @@ public class Renderer {
 			Services.getErrorManager().warning(
 					"Cannot draw layer: " + layer.getName(), e);
 		}
+	}
+
+	private boolean validScale(MapTransform mt, Legend legend) {
+		return (mt.getScaleDenominator() > legend.getMinScale())
+				&& (mt.getScaleDenominator() < legend.getMaxScale());
 	}
 
 	/**

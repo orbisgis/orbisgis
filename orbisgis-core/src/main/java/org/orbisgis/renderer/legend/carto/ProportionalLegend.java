@@ -51,12 +51,35 @@ public interface ProportionalLegend extends Legend {
 
 	void setMinSymbolArea(int minArea);
 
+	/**
+	 * Get the symbol used to create the proportional instances
+	 *
+	 * @return
+	 */
 	EditablePointSymbol getSampleSymbol();
 
+	/**
+	 * Set the symbol that will be used to create the proportional instances
+	 *
+	 * @param symbol
+	 */
 	void setSampleSymbol(EditablePointSymbol symbol);
 
+	/**
+	 * Set the method to calculate the proportional size. It can be either
+	 * LINEAR, LOGARITHMIC or SQUARE
+	 *
+	 * @param method
+	 * @throws DriverException
+	 */
 	void setMethod(int method) throws DriverException;
 
+	/**
+	 * Get the method used to calculate the proportional size. It can be either
+	 * LINEAR, LOGARITHMIC or SQUARE
+	 *
+	 * @return
+	 */
 	int getMethod();
 
 	/**
@@ -66,6 +89,11 @@ public interface ProportionalLegend extends Legend {
 	 */
 	void setClassificationField(String fieldName);
 
+	/**
+	 * Get the field used to compute the size of the proportional symbol
+	 *
+	 * @return
+	 */
 	String getClassificationField();
 
 }

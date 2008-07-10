@@ -135,7 +135,7 @@ public class DefaultLabelLegend extends AbstractLegend implements LabelLegend {
 			BufferedOutputStream os = new BufferedOutputStream(
 					new FileOutputStream(file));
 			LabelLegendType xmlLegend = new LabelLegendType();
-			xmlLegend.setName(getName());
+			save(xmlLegend);
 			xmlLegend.setFieldFontSize(getLabelSizeField());
 			xmlLegend.setFieldName(getClassificationField());
 			xmlLegend.setFontSize(getFontSize());
@@ -165,7 +165,7 @@ public class DefaultLabelLegend extends AbstractLegend implements LabelLegend {
 				LabelLegendType xmlLegend = (LabelLegendType) xml
 						.getLegendDescription();
 				os.close();
-				setName(xmlLegend.getName());
+				load(xmlLegend);
 				setClassificationField(xmlLegend.getFieldName());
 				setFontSize(xmlLegend.getFontSize());
 				setLabelSizeField(xmlLegend.getFieldFontSize());

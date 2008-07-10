@@ -354,6 +354,24 @@ public class LegendTest extends AbstractTest {
 		assertTrue(legend.getLabelSizeField().equals(fieldName));
 	}
 
+	public void testSaveScale() throws Exception {
+		UniqueSymbolLegend usl = LegendFactory.createUniqueSymbolLegend();
+		String name = "mylegend";
+		usl.setName(name);
+		Symbol sym = SymbolFactory.createCirclePointSymbol(Color.black,
+				Color.red, 20);
+		usl.setSymbol(sym);
+		usl.setMinScale(4000);
+		File file = new File("target/uniqueSymbolLegend.ogl");
+		usl.save(file);
+
+		usl = (UniqueSymbolLegend) LegendFactory.getNewLegend(usl
+				.getLegendTypeId());
+		usl.load(file, usl.getVersion());
+		assertTrue(usl.getMinScale() == 4000);
+		assertTrue(usl.getMaxScale() == Integer.MAX_VALUE);
+	}
+
 	@Override
 	protected void setUp() throws Exception {
 		super.setUp();
