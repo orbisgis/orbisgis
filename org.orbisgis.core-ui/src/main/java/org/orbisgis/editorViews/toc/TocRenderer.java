@@ -179,11 +179,13 @@ public class TocRenderer extends TocAbstractRenderer implements
 						BufferedImage.TYPE_INT_ARGB).createGraphics();
 				Legend legend = node.getRenderingLegend()[legendIndex];
 				int[] imageSize = legend.getImageSize(dummyGraphics);
-				BufferedImage legendImage = new BufferedImage(imageSize[0],
-						imageSize[1], BufferedImage.TYPE_INT_ARGB);
-				legend.drawImage(legendImage.createGraphics());
-				ImageIcon imageIcon = new ImageIcon(legendImage);
-				lblLegend.setIcon(imageIcon);
+				if ((imageSize[0] != 0) && (imageSize[1] != 0)) {
+					BufferedImage legendImage = new BufferedImage(imageSize[0],
+							imageSize[1], BufferedImage.TYPE_INT_ARGB);
+					legend.drawImage(legendImage.createGraphics());
+					ImageIcon imageIcon = new ImageIcon(legendImage);
+					lblLegend.setIcon(imageIcon);
+				}
 			} catch (DriverException e) {
 				Services.getErrorManager().error(
 						"Cannot access the legends in layer " + node.getName(),

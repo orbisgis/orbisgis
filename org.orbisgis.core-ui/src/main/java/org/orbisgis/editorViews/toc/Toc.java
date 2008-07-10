@@ -356,7 +356,7 @@ public class Toc extends ResourceTree {
 		}
 
 		public void styleChanged(LayerListenerEvent e) {
-
+			treeModel.refresh();
 		}
 
 		public void visibilityChanged(LayerListenerEvent e) {
