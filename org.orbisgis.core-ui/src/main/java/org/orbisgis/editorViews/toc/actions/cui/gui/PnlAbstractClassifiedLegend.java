@@ -65,7 +65,6 @@ import org.orbisgis.editorViews.toc.actions.cui.ui.SymbolFilter;
 import org.orbisgis.images.IconLoader;
 import org.orbisgis.renderer.legend.Legend;
 import org.orbisgis.renderer.legend.carto.ClassifiedLegend;
-import org.orbisgis.renderer.legend.carto.IntervalLegend;
 import org.orbisgis.renderer.symbol.Symbol;
 import org.orbisgis.renderer.symbol.SymbolFactory;
 import org.sif.CRFlowLayout;
@@ -337,7 +336,7 @@ public abstract class PnlAbstractClassifiedLegend extends javax.swing.JPanel
 	}
 
 	public void setLegend(Legend legend) {
-		this.legend = (IntervalLegend) legend;
+		this.legend = (ClassifiedLegend) legend;
 		this.tableModel.setLegend(this.legend);
 		table.setModel(this.tableModel);
 

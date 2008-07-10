@@ -151,15 +151,10 @@ public class Toc extends ResourceTree {
 							TreePath[] selectedPaths = Toc.this.getSelection();
 							ArrayList<ILayer> layers = getSelectedLayers(selectedPaths);
 
-							if (layers.size() > 0) {
-								ILayer[] selected = new ILayer[selectedPaths.length];
-								for (int i = 0; i < layers.size(); i++) {
-									selected[i] = layers.get(i);
-								}
-								ignoreSelection = true;
-								mapContext.setSelectedLayers(selected);
-								ignoreSelection = false;
-							}
+							ignoreSelection = true;
+							mapContext.setSelectedLayers(layers
+									.toArray(new ILayer[0]));
+							ignoreSelection = false;
 						}
 					}
 
