@@ -39,6 +39,7 @@ package org.orbisgis.editorViews.toc.actions;
 import javax.swing.JOptionPane;
 
 import org.gdms.data.NonEditableDataSourceException;
+import org.gdms.data.SpatialDataSourceDecorator;
 import org.gdms.driver.DriverException;
 import org.orbisgis.Services;
 import org.orbisgis.editorViews.toc.action.ILayerAction;
@@ -48,7 +49,8 @@ import org.orbisgis.layerModel.MapContext;
 public class Save implements ILayerAction {
 
 	public boolean accepts(ILayer layer) {
-		return layer.getDataSource().isModified();
+		SpatialDataSourceDecorator dataSource = layer.getDataSource();
+		return (dataSource != null) && dataSource.isModified();
 	}
 
 	public boolean acceptsSelectionCount(int selectionCount) {
