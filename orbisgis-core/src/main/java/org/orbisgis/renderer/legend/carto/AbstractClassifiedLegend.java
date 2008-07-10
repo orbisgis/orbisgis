@@ -170,6 +170,11 @@ abstract class AbstractClassifiedLegend extends AbstractLegend implements
 			ll = new LegendLine(getSymbols().get(i), getLabels().get(i));
 			ll.drawImage(g);
 		}
+		if (defaultSymbol != null) {
+			g.translate(0, ll.getImageSize(g)[1]);
+			ll = new LegendLine(defaultSymbol, defaultLabel);
+			ll.drawImage(g);
+		}
 	}
 
 	public int[] getImageSize(Graphics g) {
@@ -178,6 +183,12 @@ abstract class AbstractClassifiedLegend extends AbstractLegend implements
 		for (int i = 0; i < symbols.size(); i++) {
 			LegendLine ll = new LegendLine(getSymbols().get(i), getLabels()
 					.get(i));
+			int[] imageSize = ll.getImageSize(g);
+			height += imageSize[1];
+			width = Math.max(width, imageSize[0]);
+		}
+		if (defaultSymbol != null) {
+			LegendLine ll = new LegendLine(defaultSymbol, defaultLabel);
 			int[] imageSize = ll.getImageSize(g);
 			height += imageSize[1];
 			width = Math.max(width, imageSize[0]);

@@ -36,7 +36,10 @@
  */
 package org.orbisgis.renderer.legend.carto;
 
+import java.awt.Color;
+import java.awt.FontMetrics;
 import java.awt.Graphics;
+import java.awt.geom.Rectangle2D;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -108,8 +111,8 @@ public class DefaultLabelLegend extends AbstractLegend implements LabelLegend {
 		try {
 			int fieldIndex = sds.getFieldIndexByName(fieldName);
 			Value v = sds.getFieldValue(row, fieldIndex);
-			return SymbolFactory.createLabelSymbol(v.toString(), getSize(
-					sds, row));
+			return SymbolFactory.createLabelSymbol(v.toString(), getSize(sds,
+					row));
 		} catch (DriverException e) {
 			throw new RenderException("Cannot access layer contents" + e);
 		}
@@ -193,10 +196,22 @@ public class DefaultLabelLegend extends AbstractLegend implements LabelLegend {
 	}
 
 	public void drawImage(Graphics g) {
-
+		g.setColor(Color.black);
+		FontMetrics fm = g.getFontMetrics();
+		String text = getDrawingText();
+		Rectangle2D r = fm.getStringBounds(text, g);
+		g.drawString(text, 5, (int) (r.getHeight() * 1.2));
 	}
 
 	public int[] getImageSize(Graphics g) {
-		return new int[] { 0, 0 };
+		FontMetrics fm = g.getFontMetrics();
+		String text = getDrawingText();
+		Rectangle2D r = fm.getStringBounds(text, g);
+		return new int[] { 5 + (int) r.getWidth(), (int) (r.getHeight() * 1.4) };
 	}
+
+	private String getDrawingText() {
+		return "abc  Label on " + fieldName;
+	}
+
 }

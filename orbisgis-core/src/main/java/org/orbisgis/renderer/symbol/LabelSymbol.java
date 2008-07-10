@@ -70,8 +70,8 @@ public class LabelSymbol extends AbstractSymbol implements Symbol {
 	public Envelope draw(Graphics2D g, Geometry geom, AffineTransform at,
 			RenderPermission permission) throws DriverException {
 		Font font = g.getFont();
-		g.setFont(font.deriveFont(Font.BOLD, fontSize));
-		FontMetrics metrics = g.getFontMetrics(font);
+		g.setFont(font.deriveFont(fontSize));
+		FontMetrics metrics = g.getFontMetrics(g.getFont());
 		// get the height of a line of text in this font and render context
 		int hgt = metrics.getHeight();
 		// get the advance of my text in this font and render context
@@ -91,10 +91,11 @@ public class LabelSymbol extends AbstractSymbol implements Symbol {
 		if (permission.canDraw(area)) {
 			g.setColor(Color.black);
 			g.drawString(text, (int) x, (int) y);
-			return area;
 		} else {
-			return null;
+			area = null;
 		}
+		g.setFont(font);
+		return area;
 	}
 
 	public boolean acceptGeometry(Geometry geom) {

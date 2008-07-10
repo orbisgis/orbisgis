@@ -55,7 +55,7 @@ public class Canvas extends JPanel {
 	@Override
 	public void paintComponent(Graphics g) {
 		Renderer renderer = new Renderer();
-		renderer.drawSymbolPreview(g, s, getWidth(), getHeight());
+		renderer.drawSymbolPreview(g, s, getWidth(), getHeight(), false);
 	}
 
 	public void setSymbol(Symbol sym) {

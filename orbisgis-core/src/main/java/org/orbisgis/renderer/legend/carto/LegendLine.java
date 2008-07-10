@@ -20,7 +20,7 @@ public class LegendLine {
 
 	public void drawImage(Graphics g) {
 		Renderer renderer = new Renderer();
-		renderer.drawSymbolPreview(g, symbol, 30, 20);
+		renderer.drawSymbolPreview(g, symbol, 30, 20, true);
 		g.setColor(Color.black);
 		FontMetrics fm = g.getFontMetrics();
 		Rectangle2D r = fm.getStringBounds(text, g);
