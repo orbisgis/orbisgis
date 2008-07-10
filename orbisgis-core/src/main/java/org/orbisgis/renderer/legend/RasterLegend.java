@@ -36,7 +36,10 @@
  */
 package org.orbisgis.renderer.legend;
 
+import java.awt.Color;
+import java.awt.FontMetrics;
 import java.awt.Graphics;
+import java.awt.geom.Rectangle2D;
 import java.awt.image.ColorModel;
 import java.io.File;
 
@@ -49,7 +52,7 @@ public class RasterLegend extends AbstractLegend implements Legend {
 	private ColorModel colorModel = null;
 	private float opacity = 1.0f;
 
-	private String bandsCode;
+	private String bandsCode = null;
 
 	public RasterLegend(ColorModel colorModel, float opacity) {
 		this.colorModel = colorModel;
@@ -107,12 +110,28 @@ public class RasterLegend extends AbstractLegend implements Legend {
 		return new RasterLegend(LutGenerator.colorModel("gray"), 0);
 	}
 
-	public void drawImage(Graphics g) {
 
+	public void drawImage(Graphics g) {
+		g.setColor(Color.black);
+		FontMetrics fm = g.getFontMetrics();
+		String text = getDrawingText();
+		Rectangle2D r = fm.getStringBounds(text, g);
+		g.drawString(text, 5, (int) (r.getHeight() * 1.2));
 	}
 
 	public int[] getImageSize(Graphics g) {
-		return new int[] { 0, 0 };
+		FontMetrics fm = g.getFontMetrics();
+		String text = getDrawingText();
+		Rectangle2D r = fm.getStringBounds(text, g);
+		return new int[] { 5 + (int) r.getWidth(), (int) (r.getHeight() * 1.4) };
+	}
+
+	private String getDrawingText() {
+		if (bandsCode != null){
+			return bandsCode + " composition";
+		} else {
+			return "Raster color model";
+		}
 	}
 
 }
