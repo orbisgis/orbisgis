@@ -48,8 +48,14 @@ public class Interval {
 	public Interval(Value start, boolean minIncluded, Value end,
 			boolean maxIncluded) {
 		this.start = start;
+		if ((start != null) && start.isNull()) {
+			start = null;
+		}
 		this.minIncluded = minIncluded;
 		this.end = end;
+		if ((end != null) && end.isNull()) {
+			end = null;
+		}
 		this.maxIncluded = maxIncluded;
 	}
 
@@ -67,7 +73,7 @@ public class Interval {
 
 	public boolean contains(Value value) {
 		boolean matchesLower = true;
-		if (start != null) {
+		if (start != null && !start.isNull()) {
 			if (minIncluded) {
 				matchesLower = start.lessEqual(value).getAsBoolean();
 			} else {
@@ -76,7 +82,7 @@ public class Interval {
 		}
 
 		boolean matchesUpper = true;
-		if (end != null) {
+		if (end != null && !end.isNull()) {
 			if (maxIncluded) {
 				matchesUpper = end.greaterEqual(value).getAsBoolean();
 			} else {

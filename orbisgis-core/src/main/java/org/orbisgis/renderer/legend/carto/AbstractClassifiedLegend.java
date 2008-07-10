@@ -156,4 +156,8 @@ abstract class AbstractClassifiedLegend extends AbstractLegend implements
 		return symbols.size();
 	}
 
+	public int getClassificationFieldType() {
+		return fieldType;
+	}
+
 }

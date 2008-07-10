@@ -93,6 +93,14 @@ public interface ClassifiedLegend extends Legend {
 	String getClassificationField();
 
 	/**
+	 * Gets the classification field type. This value is only valid if the
+	 * classification field is different from null
+	 *
+	 * @return
+	 */
+	int getClassificationFieldType();
+
+	/**
 	 * Gets the number of classifications in this legend
 	 *
 	 * @return

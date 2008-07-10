@@ -100,6 +100,7 @@ public class IntervalLegendTableModel extends ClassifiedLegendTableModel
 	}
 
 	public void setValueAt(Object value, int rowIndex, int columnIndex) {
+		String txt = value.toString();
 		if (rowIndex == legend.getClassificationCount()) {
 			switch (columnIndex) {
 			case 0:
@@ -112,7 +113,7 @@ public class IntervalLegendTableModel extends ClassifiedLegendTableModel
 						JOptionPane.ERROR_MESSAGE);
 				break;
 			case 3:
-				legend.setDefaultLabel(value.toString());
+				legend.setDefaultLabel(txt);
 				break;
 			}
 		} else {
@@ -125,44 +126,48 @@ public class IntervalLegendTableModel extends ClassifiedLegendTableModel
 				break;
 			case 1:
 				try {
-					Value currentMin = interval.getMinValue();
-					int typeMin = currentMin.getType();
-					Value valMin = ValueFactory.createValueByType(value
-							.toString(), typeMin);
+					Value valMin;
+					if (txt.trim().length() == 0) {
+						valMin = null;
+					} else {
+						valMin = ValueFactory.createValueByType(txt, legend
+								.getClassificationFieldType());
+					}
 					legend.setInterval(rowIndex, new Interval(valMin, true,
 							interval.getMaxValue(), false));
 					invalidateOrder();
 				} catch (NumberFormatException e) {
-					JOptionPane.showMessageDialog(null, value.toString()
-							+ " is not valid.", "Wrong input value",
-							JOptionPane.ERROR_MESSAGE);
-				} catch (ParseException e) {
-					JOptionPane.showMessageDialog(null, value.toString()
-							+ " is not valid. " + e.getMessage(),
+					JOptionPane.showMessageDialog(null, txt + " is not valid.",
 							"Wrong input value", JOptionPane.ERROR_MESSAGE);
+				} catch (ParseException e) {
+					JOptionPane.showMessageDialog(null, txt + " is not valid. "
+							+ e.getMessage(), "Wrong input value",
+							JOptionPane.ERROR_MESSAGE);
 				}
 				break;
 			case 2:
 				try {
-					Value currentMax = interval.getMaxValue();
-					int typeMax = currentMax.getType();
-					Value valMax = ValueFactory.createValueByType(value
-							.toString(), typeMax);
+					Value valMax;
+					if (txt.trim().length() == 0) {
+						valMax = null;
+					} else {
+						valMax = ValueFactory.createValueByType(txt, legend
+								.getClassificationFieldType());
+					}
 					legend.setInterval(rowIndex, new Interval(interval
 							.getMinValue(), true, valMax, false));
 					invalidateOrder();
 				} catch (NumberFormatException e) {
-					JOptionPane.showMessageDialog(null, value.toString()
-							+ " is not valid.", "Wrong input value",
-							JOptionPane.ERROR_MESSAGE);
-				} catch (ParseException e) {
-					JOptionPane.showMessageDialog(null, value.toString()
-							+ " is not valid. " + e.getMessage(),
+					JOptionPane.showMessageDialog(null, txt + " is not valid.",
 							"Wrong input value", JOptionPane.ERROR_MESSAGE);
+				} catch (ParseException e) {
+					JOptionPane.showMessageDialog(null, txt + " is not valid. "
+							+ e.getMessage(), "Wrong input value",
+							JOptionPane.ERROR_MESSAGE);
 				}
 				break;
 			case 3:
-				legend.setLabel(rowIndex, value.toString());
+				legend.setLabel(rowIndex, txt);
 				break;
 			default:
 				break;
