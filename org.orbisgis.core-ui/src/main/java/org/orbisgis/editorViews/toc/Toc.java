@@ -191,8 +191,13 @@ public class Toc extends ResourceTree {
 	@Override
 	public boolean doDrop(Transferable trans, Object node) {
 
-		ILayer dropNode = (ILayer) node;
+		ILayer dropNode;
 
+		if (node instanceof TocTreeModel.LegendNode) {
+			dropNode = ((TocTreeModel.LegendNode)node).getLayer();
+		} else {
+			dropNode = (ILayer) node;
+		}
 		// By default drop on rootNode
 		if (dropNode == null) {
 			ILayer rootNode = (ILayer) treeModel.getRoot();
