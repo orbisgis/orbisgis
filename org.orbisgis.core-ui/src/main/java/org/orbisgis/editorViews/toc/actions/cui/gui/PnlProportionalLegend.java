@@ -135,11 +135,11 @@ public class PnlProportionalLegend extends JPanel implements ILegendPanelUI {
 		this.add(new CarriageReturn());
 
 		JPanel pnlSymbol = new JPanel();
+		pnlSymbol.setLayout(new CRFlowLayout());
 		pnlSymbol.setPreferredSize(new Dimension(350, 200));
 		pnlSymbol.setBorder(BorderFactory.createTitledBorder("Symbol"));
-		pnlSymbol.add(new JLabel("Symbol:"));
+		pnlSymbol.add(new JLabel("Select symbol:"));
 		canvas = new Canvas();
-		pnlSymbol.add(canvas);
 		canvas.addMouseListener(new MouseAdapter() {
 
 			@Override
@@ -149,6 +149,7 @@ public class PnlProportionalLegend extends JPanel implements ILegendPanelUI {
 
 		});
 		canvas.setPreferredSize(new Dimension(50, 50));
+		pnlSymbol.add(canvas);
 		this.add(pnlSymbol, BorderLayout.CENTER);
 
 	}
@@ -235,6 +236,16 @@ public class PnlProportionalLegend extends JPanel implements ILegendPanelUI {
 			default:
 				throw new RuntimeException("Unknown method");
 			}
+
+			// preview
+//			int[] imgSize = legend.getImageSize(new BufferedImage(10, 10,
+//					BufferedImage.TYPE_INT_ARGB).createGraphics());
+//			if ((imgSize[0] != 0) && (imgSize[1] != 0)) {
+//				BufferedImage img = new BufferedImage(imgSize[0], imgSize[1],
+//						BufferedImage.TYPE_INT_ARGB);
+//				legend.drawImage(img.createGraphics());
+//				lblPreview.setIcon(new ImageIcon(img));
+//			}
 		} catch (DriverException e) {
 			Services.getErrorManager().error("Cannot access layer fields", e);
 		}

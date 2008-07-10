@@ -298,21 +298,19 @@ public class DefaultProportionalLegend extends AbstractLegend implements
 
 		// Draw lines
 		int topSmall = bigSize - smallSize + textOffset;
-		g.setColor(Color.black);
 		int lineStartX = xOffset + bigSize / 2;
 		int lineEndX = xOffset + bigSize + 5;
-		g.drawLine(lineStartX, topSmall, lineEndX, topSmall);
-		g.setColor(Color.black);
-		g.drawLine(lineStartX, textOffset, lineEndX, textOffset);
 
 		// Draw max text
 		r = fm.getStringBounds(maxText, g);
+		g.setColor(Color.black);
 		g.drawString(maxText, lineEndX + 5,
 				(int) (textOffset + r.getHeight() / 2));
 
 		// Draw min text
 		String minText = Double.toString(proportionnalMethod.getMinValue());
 		r = fm.getStringBounds(minText, g);
+		g.setColor(Color.black);
 		g.drawString(minText, lineEndX + 5,
 				(int) (topSmall + r.getHeight() / 2));
 
@@ -345,18 +343,27 @@ public class DefaultProportionalLegend extends AbstractLegend implements
 			Services.getErrorManager()
 					.error("Cannot get proportional image", e);
 		}
+
+		g.setColor(Color.black);
+		g.drawLine(lineStartX, topSmall, lineEndX, topSmall);
+		g.drawLine(lineStartX, textOffset, lineEndX, textOffset);
+
 	}
 
 	public int[] getImageSize(Graphics g) {
 		FontMetrics fm = g.getFontMetrics();
-		String maxText = Double.toString(proportionnalMethod.getMaxValue());
-		Rectangle2D r = fm.getStringBounds(maxText, g);
-		int height = (int) (r.getHeight() + bigSize);
-		int maxWidth = (int) r.getWidth();
-		String minText = Double.toString(proportionnalMethod.getMinValue());
-		r = fm.getStringBounds(minText, g);
-		maxWidth = (int) Math.max(maxWidth, r.getWidth());
+		if (proportionnalMethod != null) {
+			String maxText = Double.toString(proportionnalMethod.getMaxValue());
+			Rectangle2D r = fm.getStringBounds(maxText, g);
+			int height = (int) (r.getHeight() + bigSize);
+			int maxWidth = (int) r.getWidth();
+			String minText = Double.toString(proportionnalMethod.getMinValue());
+			r = fm.getStringBounds(minText, g);
+			maxWidth = (int) Math.max(maxWidth, r.getWidth());
 
-		return new int[] { bigSize + xOffset + 10 + maxWidth, height };
+			return new int[] { bigSize + xOffset + 10 + maxWidth, height };
+		} else {
+			return new int[] { 0, 0 };
+		}
 	}
 }
