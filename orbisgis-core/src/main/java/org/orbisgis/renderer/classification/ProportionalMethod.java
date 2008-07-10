@@ -49,6 +49,7 @@ public class ProportionalMethod {
 
 	// The surface reference must be greater or equals than 10.
 	private int minSymbolArea;
+	private double minValue;
 
 	public ProportionalMethod(DataSource ds, String fieldName) {
 		this.ds = ds;
@@ -67,7 +68,7 @@ public class ProportionalMethod {
 		double[] valeurs = ClassificationUtils.getSortedValues(ds, fieldName);
 
 		maxValue = valeurs[valeurs.length - 1];
-
+		minValue = valeurs[0];
 	}
 
 	public double getSymbolCoef() {
@@ -81,7 +82,7 @@ public class ProportionalMethod {
 	/**
 	 * Compute the symbol size using a linear method
 	 * Adpated from SCAP3 : http://w3.geoprdc.univ-tlse2.fr/scap/java/
-	 * 
+	 *
 	 * @param value
 	 * @param coefType
 	 * @return
@@ -97,7 +98,7 @@ public class ProportionalMethod {
 	/**
 	 * Compute the symbol size using a squareroot method
 	 * Adpated from SCAP3 : http://w3.geoprdc.univ-tlse2.fr/scap/java/
-	 * 
+	 *
 	 * @param value
 	 * @param sqrtFactor
 	 * @param coefType
@@ -114,7 +115,7 @@ public class ProportionalMethod {
 	/**
 	 * Compute the symbol size using a logarithm  method
 	 * Adpated from SCAP3 : http://w3.geoprdc.univ-tlse2.fr/scap/java/
-	 * 
+	 *
 	 * @param value
 	 * @param coefType
 	 * @return
@@ -125,5 +126,9 @@ public class ProportionalMethod {
 		double surface = Math.abs(Math.log(Math.abs(value))) * coefSymb;
 
 		return Math.sqrt(surface / coefType);
+	}
+
+	public double getMinValue() {
+		return minValue;
 	}
 }
