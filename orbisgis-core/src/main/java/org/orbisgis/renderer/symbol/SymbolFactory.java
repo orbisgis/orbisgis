@@ -44,14 +44,14 @@ public class SymbolFactory {
 	private static ArrayList<Symbol> availableSymbols = new ArrayList<Symbol>();
 
 	static {
-		addSymbol((EditableSymbol) createCirclePointSymbol(Color.black,
-				Color.red, 10));
-		addSymbol((EditableSymbol) createSquareVertexSymbol(Color.black,
-				Color.red, 10));
-		addSymbol((EditableSymbol) createCirclePolygonSymbol(Color.black,
-				Color.red, 10));
-		addSymbol((EditableSymbol) createPolygonSymbol());
-		addSymbol((EditableSymbol) createLineSymbol(Color.black, 2));
+		addSymbol(new CirclePointSymbol(Color.black, 1, Color.red, 10));
+		addSymbol(new SquarePointSymbol(Color.black, 1, Color.red, 10));
+		addSymbol(new SquareVertexSymbol(Color.black, 1, Color.red, 10));
+		addSymbol(new CircleVertexSymbol(Color.black, 1, Color.red, 10));
+		addSymbol(new PolygonCentroidCircleSymbol(Color.black, 1, Color.red, 10));
+		addSymbol(new PolygonCentroidSquareSymbol(Color.black, 1, Color.red, 10));
+		addSymbol(new PolygonSymbol(Color.black, 1, Color.red));
+		addSymbol(new LineSymbol(Color.black, 1));
 	}
 
 	public static Symbol createPolygonSymbol() {
@@ -74,9 +74,9 @@ public class SymbolFactory {
 		return ret;
 	}
 
-	public static Symbol createCirclePointSymbol(Color outline,
+	public static Symbol createPointCircleSymbol(Color outline,
 			Color fillColor, int size) {
-		return new CircleVertexSymbol(outline, 1, fillColor, size);
+		return new CirclePointSymbol(outline, 1, fillColor, size);
 	}
 
 	public static Symbol createSymbolComposite(Symbol... symbols) {
@@ -93,7 +93,7 @@ public class SymbolFactory {
 
 	public static Symbol createCirclePolygonSymbol(Color outline,
 			Color fillColor, int size) {
-		return new InteriorCircleSymbol(outline, 1, fillColor, size);
+		return new PolygonCentroidCircleSymbol(outline, 1, fillColor, size);
 	}
 
 	public static Symbol createCircleVertexSymbol(Color outline, Color fillColor) {

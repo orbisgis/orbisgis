@@ -56,7 +56,6 @@ public abstract class AbstractLineSymbol extends AbstractGeometrySymbol
 	public AbstractLineSymbol(Color outline, int lineWidth) {
 		this.outline = outline;
 		this.lineWidth = lineWidth;
-		setName("Line symbol");
 	}
 
 	public boolean willDrawSimpleGeometry(Geometry geom) {

@@ -37,10 +37,19 @@
 package org.orbisgis.renderer.symbol;
 
 import java.awt.Color;
+import java.awt.Graphics2D;
+import java.awt.geom.AffineTransform;
+import java.awt.geom.PathIterator;
 
+import org.gdms.data.types.GeometryConstraint;
+import org.gdms.driver.DriverException;
+import org.orbisgis.renderer.RenderPermission;
+import org.orbisgis.renderer.liteShape.LiteShape;
+
+import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
 
-public class SquareVertexSymbol extends SquareSymbol {
+public class SquareVertexSymbol extends SquarePointSymbol {
 
 	public SquareVertexSymbol(Color outline, int lineWidth, Color fillColor,
 			int size) {
@@ -48,8 +57,28 @@ public class SquareVertexSymbol extends SquareSymbol {
 
 	}
 
+	public Envelope draw(Graphics2D g, Geometry geom, AffineTransform at,
+			RenderPermission permission) throws DriverException {
+		LiteShape ls = new LiteShape(geom, at, false);
+		PathIterator pi = ls.getPathIterator(null);
+		double[] coords = new double[6];
+
+		while (!pi.isDone()) {
+			pi.currentSegment(coords);
+			paintSquare(g, (int) coords[0], (int) coords[1]);
+			pi.next();
+		}
+
+		return null;
+	}
+
 	@Override
 	public boolean willDrawSimpleGeometry(Geometry geom) {
+		return true;
+	}
+
+	@Override
+	public boolean acceptGeometryType(GeometryConstraint geometryConstraint) {
 		return true;
 	}
 

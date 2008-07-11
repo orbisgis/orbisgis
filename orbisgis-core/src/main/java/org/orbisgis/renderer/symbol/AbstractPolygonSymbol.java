@@ -55,7 +55,6 @@ public abstract class AbstractPolygonSymbol extends AbstractLineSymbol
 	public AbstractPolygonSymbol(Color outline, int lineWidth, Color fillColor) {
 		super(outline, lineWidth);
 		this.fillColor = fillColor;
-		setName("Polygon symbol");
 	}
 
 	public boolean willDrawSimpleGeometry(Geometry geom) {

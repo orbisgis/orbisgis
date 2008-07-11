@@ -40,6 +40,10 @@ import com.vividsolutions.jts.geom.Geometry;
 
 public abstract class AbstractGeometrySymbol extends AbstractSymbol implements Symbol {
 
+	public AbstractGeometrySymbol() {
+		setName(getClassName());
+	}
+
 	public boolean acceptGeometry(Geometry geom) {
 		if (geom.getGeometryType().equals("GeometryCollection")) {
 			for (int i = 0; i < geom.getNumGeometries(); i++) {

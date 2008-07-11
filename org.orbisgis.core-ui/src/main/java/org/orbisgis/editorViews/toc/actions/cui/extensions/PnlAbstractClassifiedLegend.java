@@ -168,7 +168,7 @@ public abstract class PnlAbstractClassifiedLegend extends javax.swing.JPanel
 		Color fill = new Color(r2, g2, b2);
 
 		Symbol lineSymbol = SymbolFactory.createLineSymbol(fill, 1);
-		Symbol pointSymbol = SymbolFactory.createCirclePointSymbol(outline,
+		Symbol pointSymbol = SymbolFactory.createPointCircleSymbol(outline,
 				fill, 10);
 		Symbol polygonSymbol = SymbolFactory.createPolygonSymbol(outline, fill);
 		GeometryConstraint geometryConstraint = legendContext

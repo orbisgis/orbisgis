@@ -133,7 +133,7 @@ public class LegendTest extends AbstractTest {
 		UniqueSymbolLegend usl = LegendFactory.createUniqueSymbolLegend();
 		String name = "mylegend";
 		usl.setName(name);
-		Symbol sym = SymbolFactory.createCirclePointSymbol(Color.black,
+		Symbol sym = SymbolFactory.createPointCircleSymbol(Color.black,
 				Color.red, 20);
 		usl.setSymbol(sym);
 		File file = new File("target/uniqueSymbolLegend.ogl");
@@ -151,7 +151,7 @@ public class LegendTest extends AbstractTest {
 		UniqueValueLegend uvl = LegendFactory.createUniqueValueLegend();
 		String name = "mylegend";
 		uvl.setName(name);
-		Symbol classSym = SymbolFactory.createCirclePointSymbol(Color.black,
+		Symbol classSym = SymbolFactory.createPointCircleSymbol(Color.black,
 				Color.red, 20);
 		Symbol sym = classSym;
 		uvl.setDefaultSymbol(sym);
@@ -197,7 +197,7 @@ public class LegendTest extends AbstractTest {
 
 	public void testClearUniqueValue() throws Exception {
 		UniqueValueLegend uvl = LegendFactory.createUniqueValueLegend();
-		Symbol symbol = SymbolFactory.createCirclePointSymbol(Color.black,
+		Symbol symbol = SymbolFactory.createPointCircleSymbol(Color.black,
 				Color.red, 20);
 		uvl.addClassification(ValueFactory.createValue(3), symbol, "");
 		uvl.clear();
@@ -207,7 +207,7 @@ public class LegendTest extends AbstractTest {
 
 	public void testClearInterval() throws Exception {
 		IntervalLegend uvl = LegendFactory.createIntervalLegend();
-		Symbol symbol = SymbolFactory.createCirclePointSymbol(Color.black,
+		Symbol symbol = SymbolFactory.createPointCircleSymbol(Color.black,
 				Color.red, 20);
 		uvl.addIntervalWithMaxLimit(ValueFactory.createValue(3), false, symbol,
 				"");
@@ -221,7 +221,7 @@ public class LegendTest extends AbstractTest {
 		IntervalLegend uvl = LegendFactory.createIntervalLegend();
 		String name = "mylegend";
 		uvl.setName(name);
-		Symbol classSym = SymbolFactory.createCirclePointSymbol(Color.black,
+		Symbol classSym = SymbolFactory.createPointCircleSymbol(Color.black,
 				Color.red, 20);
 		Symbol sym = classSym;
 		uvl.setDefaultSymbol(sym);
@@ -298,7 +298,7 @@ public class LegendTest extends AbstractTest {
 		ProportionalLegend legend = LegendFactory.createProportionalLegend();
 		String name = "mylegend";
 		legend.setName(name);
-		Symbol sampleSym = SymbolFactory.createCirclePointSymbol(Color.black,
+		Symbol sampleSym = SymbolFactory.createPointCircleSymbol(Color.black,
 				Color.red, 20);
 		legend.setClassificationField(fieldName);
 		legend.setMethod(ProportionalLegend.LOGARITHMIC);
@@ -358,7 +358,7 @@ public class LegendTest extends AbstractTest {
 		UniqueSymbolLegend usl = LegendFactory.createUniqueSymbolLegend();
 		String name = "mylegend";
 		usl.setName(name);
-		Symbol sym = SymbolFactory.createCirclePointSymbol(Color.black,
+		Symbol sym = SymbolFactory.createPointCircleSymbol(Color.black,
 				Color.red, 20);
 		usl.setSymbol(sym);
 		usl.setMinScale(4000);

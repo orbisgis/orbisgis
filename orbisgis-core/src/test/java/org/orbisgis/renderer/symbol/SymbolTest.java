@@ -77,7 +77,7 @@ public class SymbolTest extends TestCase {
 			testClone(symbol);
 		}
 
-		Symbol s1 = SymbolFactory.createCirclePointSymbol(Color.black,
+		Symbol s1 = SymbolFactory.createPointCircleSymbol(Color.black,
 				Color.red, 3);
 		testClone(s1);
 		Symbol s2 = SymbolFactory.createCirclePolygonSymbol(Color.black,

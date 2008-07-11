@@ -36,34 +36,14 @@
  */
 package org.orbisgis.editorViews.toc.actions.cui.components;
 
-import org.orbisgis.renderer.symbol.CircleSymbol;
 import org.orbisgis.renderer.symbol.EditableSymbol;
-import org.orbisgis.renderer.symbol.LineSymbol;
-import org.orbisgis.renderer.symbol.PolygonSymbol;
-import org.orbisgis.renderer.symbol.Symbol;
 
 public class SymbolListDecorator {
 
 	private EditableSymbol sym;
 
 	public SymbolListDecorator(EditableSymbol sym) {
-		if (sym == null || sym.getName() == null || sym.getName() == "") {
-			sym.setName(getSymbolType(sym));
-		}
 		this.sym = sym;
-	}
-
-	private String getSymbolType(Symbol symb) {
-		if (symb instanceof PolygonSymbol) {
-			return "Poligonal symbol";
-		}
-		if (symb instanceof CircleSymbol) {
-			return "Circle symbol";
-		}
-		if (symb instanceof LineSymbol) {
-			return "Line symbol";
-		}
-		return "NO_NAMED_SYMBOL";
 	}
 
 	public EditableSymbol getSymbol() {

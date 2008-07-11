@@ -303,7 +303,7 @@ public class PnlIntervalLegend extends PnlAbstractClassifiedLegend {
 		Color outline = Color.black;
 
 		Symbol lineSymbol = SymbolFactory.createLineSymbol(fillColor, 1);
-		Symbol pointSymbol = SymbolFactory.createCirclePointSymbol(outline,
+		Symbol pointSymbol = SymbolFactory.createPointCircleSymbol(outline,
 				fillColor, 10);
 		Symbol polygonSymbol = SymbolFactory.createPolygonSymbol(outline,
 				fillColor);

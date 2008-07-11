@@ -56,7 +56,6 @@ public abstract class AbstractPointSymbol extends AbstractPolygonSymbol
 			int size) {
 		super(outline, lineWidth, fillColor);
 		this.size = size;
-		setName("Point symbol");
 	}
 
 	public boolean willDrawSimpleGeometry(Geometry geom) {
