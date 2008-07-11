@@ -62,6 +62,7 @@ public abstract class AbstractMultilineTool extends Multiline {
 	@Override
 	public void transitionTo_Done(MapContext vc, ToolManager tm)
 			throws FinishedAutomatonException, TransitionException {
+		points = CoordinateUtils.removeDuplicated(points);
 		if (((points.size() < 2) && (points.size() > 0))
 				|| ((points.size() == 0) && (lines.size() == 0)))
 			throw new TransitionException(Messages.getString("MultilineTool.0")); //$NON-NLS-1$
@@ -99,6 +100,7 @@ public abstract class AbstractMultilineTool extends Multiline {
 	@Override
 	public void transitionTo_Line(MapContext vc, ToolManager tm)
 			throws FinishedAutomatonException, TransitionException {
+		points = CoordinateUtils.removeDuplicated(points);
 		if (points.size() < 2)
 			throw new TransitionException(Messages.getString("MultilineTool.0")); //$NON-NLS-1$
 

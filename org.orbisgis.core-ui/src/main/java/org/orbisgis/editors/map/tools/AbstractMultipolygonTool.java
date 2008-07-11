@@ -75,6 +75,7 @@ public abstract class AbstractMultipolygonTool extends Multipolygon {
 	@Override
 	public void transitionTo_Line(MapContext vc, ToolManager tm)
 			throws FinishedAutomatonException, TransitionException {
+		points = CoordinateUtils.removeDuplicated(points);
 		if (points.size() < 3)
 			throw new TransitionException(Messages
 					.getString("MultipolygonTool.0")); //$NON-NLS-1$
@@ -102,6 +103,7 @@ public abstract class AbstractMultipolygonTool extends Multipolygon {
 	@Override
 	public void transitionTo_Done(MapContext vc, ToolManager tm)
 			throws FinishedAutomatonException, TransitionException {
+		points = CoordinateUtils.removeDuplicated(points);
 		if (((points.size() < 3) && (points.size() > 0))
 				|| ((points.size() == 0) && (polygons.size() == 0)))
 			throw new TransitionException(Messages
