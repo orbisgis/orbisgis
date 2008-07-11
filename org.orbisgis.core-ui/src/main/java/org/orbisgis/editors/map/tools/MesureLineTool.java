@@ -46,7 +46,6 @@ import org.orbisgis.layerModel.MapContext;
 import org.orbisgis.views.outputView.OutputManager;
 
 import com.vividsolutions.jts.geom.LineString;
-import com.vividsolutions.jts.geom.Polygon;
 
 public class MesureLineTool extends AbstractLineTool {
 

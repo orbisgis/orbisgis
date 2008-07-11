@@ -16,7 +16,7 @@ import org.orbisgis.Services;
 import org.orbisgis.SymbolManager;
 import org.orbisgis.editorViews.toc.actions.cui.LegendsPanel;
 import org.orbisgis.editorViews.toc.actions.cui.extensions.ILegendPanelUI;
-import org.orbisgis.editorViews.toc.actions.cui.extensions.JPanelUniqueSymbolLegend;
+import org.orbisgis.editorViews.toc.actions.cui.extensions.PnlUniqueSymbolLegend;
 import org.orbisgis.editorViews.toc.actions.cui.extensions.PnlIntervalLegend;
 import org.orbisgis.editorViews.toc.actions.cui.extensions.PnlProportionalLegend;
 import org.orbisgis.editorViews.toc.actions.cui.extensions.PnlUniqueValueLegend;
@@ -83,7 +83,7 @@ public class CUITest {
 
 		LegendsPanel pan = new LegendsPanel();
 		pan.init(cons, layer.getVectorLegend(),
-				new ILegendPanelUI[] { new JPanelUniqueSymbolLegend(true, pan),
+				new ILegendPanelUI[] { new PnlUniqueSymbolLegend(true, pan),
 						new PnlUniqueValueLegend(pan),
 						new PnlIntervalLegend(pan),
 						new PnlProportionalLegend(pan)}, layer);

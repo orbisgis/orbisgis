@@ -62,7 +62,7 @@ import org.sif.UIPanel;
  *
  * @author david
  */
-public class JPanelUniqueSymbolLegend extends javax.swing.JPanel implements
+public class PnlUniqueSymbolLegend extends javax.swing.JPanel implements
 		ILegendPanelUI, UIPanel {
 
 	private UniqueSymbolLegend leg = null;
@@ -70,7 +70,7 @@ public class JPanelUniqueSymbolLegend extends javax.swing.JPanel implements
 	private LegendContext legendContext;
 
 	/** Creates new form JPanelSimpleSimbolLegend */
-	public JPanelUniqueSymbolLegend(boolean showCollection,
+	public PnlUniqueSymbolLegend(boolean showCollection,
 			LegendContext legendContext) {
 		leg = LegendFactory.createUniqueSymbolLegend();
 		leg.setName(getLegendTypeName());
@@ -138,7 +138,7 @@ public class JPanelUniqueSymbolLegend extends javax.swing.JPanel implements
 	}
 
 	public ILegendPanelUI newInstance(LegendContext legendContext) {
-		return new JPanelUniqueSymbolLegend(true, legendContext);
+		return new PnlUniqueSymbolLegend(true, legendContext);
 	}
 
 	public void setLegend(Legend legend) {

@@ -43,7 +43,7 @@ import org.gdms.driver.DriverException;
 import org.orbisgis.Services;
 import org.orbisgis.editorViews.toc.action.ILayerAction;
 import org.orbisgis.editorViews.toc.actions.cui.extensions.ILegendPanelUI;
-import org.orbisgis.editorViews.toc.actions.cui.extensions.JPanelUniqueSymbolLegend;
+import org.orbisgis.editorViews.toc.actions.cui.extensions.PnlUniqueSymbolLegend;
 import org.orbisgis.editorViews.toc.actions.cui.extensions.PnlIntervalLegend;
 import org.orbisgis.editorViews.toc.actions.cui.extensions.PnlLabelLegend;
 import org.orbisgis.editorViews.toc.actions.cui.extensions.PnlProportionalLegend;
@@ -75,7 +75,7 @@ public class EditLayerAction implements ILayerAction {
 
 			LegendsPanel pan = new LegendsPanel();
 			pan.init(cons, layer.getVectorLegend(), new ILegendPanelUI[] {
-					new JPanelUniqueSymbolLegend(true, pan),
+					new PnlUniqueSymbolLegend(true, pan),
 					new PnlUniqueValueLegend(pan),
 					new PnlIntervalLegend(pan),
 					new PnlProportionalLegend(pan),
