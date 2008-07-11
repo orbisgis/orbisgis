@@ -123,7 +123,7 @@ public class LiteShape implements Shape, Cloneable {
 		if (geom != null)
 			this.geometry = getGeometryFactory().createGeometry(geom);
 		this.affineTransform = at;
-		this.generalize = true;
+		this.generalize = false;
 		if (at == null) {
 			yScale = xScale = 1;
 			return;
