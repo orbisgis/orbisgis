@@ -149,6 +149,39 @@ public class ClassificationTest extends TestCase {
 		ds.close();
 	}
 
+//	public void testLandcoverEquivalences() throws Exception {
+//
+//		DataSource ds = dsf.getDataSource(landcover);
+//		ds.open();
+//
+//		RangeMethod rm = new RangeMethod(ds, "runoff_win", 7);
+//		rm.disecStandard();
+//		testGoodIntervals(rm);
+//
+//		rm = new RangeMethod(ds, "runoff_win", 6);
+//		rm.disecEquivalences();
+//		testGoodIntervals(rm);
+//
+//		rm = new RangeMethod(ds, "runoff_win", 6);
+//		rm.disecMean();
+//		testGoodIntervals(rm);
+//
+//		rm = new RangeMethod(ds, "runoff_win", 6);
+//		rm.disecQuantiles();
+//		testGoodIntervals(rm);
+//
+//		ds.close();
+//	}
+//
+//	private void testGoodIntervals(RangeMethod rm) {
+//		Range[] ranges = rm.getRanges();
+//		for (int i = 0; i < ranges.length - 1; i++) {
+//			assertTrue(ranges[i].getMaxRange() <= ranges[i + 1].getMinRange());
+//			assertTrue(ranges[i].getMaxRange() < ranges[i + 1].getMaxRange());
+//
+//		}
+//	}
+
 	public void testMoyennes() throws Exception {
 
 		DataSource ds = dsf.getDataSource(src);
@@ -210,20 +243,22 @@ public class ClassificationTest extends TestCase {
 		assertTrue(pm.getLogarithmicSize(94162, coefType) == 50.25912203356446);
 
 	}
-//
-//	public void testProportionalLogarithmicMethodInLandCover() throws Exception {
-//		DataSource ds = dsf.getDataSource(landcover);
-//		ds.open();
-//
-//		ProportionalMethod pm = new ProportionalMethod(ds, "runoff_win");
-//		pm.build(3000);
-//
-//		for (int i = 0; i < ds.getRowCount(); i++) {
-//			assertTrue(pm.getLogarithmicSize(ds.getDouble(i, "runoff_win"), 1) != Double.POSITIVE_INFINITY);
-//		}
-//
-//		ds.close();
-//
-//	}
+	//
+	// public void testProportionalLogarithmicMethodInLandCover() throws
+	// Exception {
+	// DataSource ds = dsf.getDataSource(landcover);
+	// ds.open();
+	//
+	// ProportionalMethod pm = new ProportionalMethod(ds, "runoff_win");
+	// pm.build(3000);
+	//
+	// for (int i = 0; i < ds.getRowCount(); i++) {
+	// assertTrue(pm.getLogarithmicSize(ds.getDouble(i, "runoff_win"), 1) !=
+	// Double.POSITIVE_INFINITY);
+	// }
+	//
+	// ds.close();
+	//
+	// }
 
 }
