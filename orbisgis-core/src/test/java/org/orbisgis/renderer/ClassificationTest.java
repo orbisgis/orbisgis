@@ -50,18 +50,17 @@ public class ClassificationTest extends TestCase {
 
 	private DataSourceFactory dsf = new DataSourceFactory();
 
-	//Data to test
+	// Data to test
 	File src = new File("../../datas2tests/shp/bigshape2D/cantons.shp");
-	File landcover = new File("../../datas2tests/shp/mediumshape2D/landcover2000.shp");
-
+	File landcover = new File(
+			"../../datas2tests/shp/mediumshape2D/landcover2000.shp");
 
 	public void testStandard() throws Exception {
 
 		DataSource ds = dsf.getDataSource(src);
 		ds.open();
 
-		RangeMethod rm = new RangeMethod(ds, "PTOT90",
-				3);
+		RangeMethod rm = new RangeMethod(ds, "PTOT90", 3);
 
 		rm.disecStandard();
 
@@ -75,7 +74,7 @@ public class ClassificationTest extends TestCase {
 
 	private boolean checkRange(Range range, int min, int max) {
 
-		if ((range.getMinRange() == min)&& (range.getMaxRange()==max)){
+		if ((range.getMinRange() == min) && (range.getMaxRange() == max)) {
 			return true;
 		}
 		return false;
@@ -85,8 +84,7 @@ public class ClassificationTest extends TestCase {
 		DataSource ds = dsf.getDataSource(landcover);
 		ds.open();
 
-		RangeMethod rm = new RangeMethod(ds, "runoff_win",
-				2);
+		RangeMethod rm = new RangeMethod(ds, "runoff_win", 2);
 
 		try {
 			rm.disecStandard();
@@ -94,8 +92,7 @@ public class ClassificationTest extends TestCase {
 		} catch (IllegalArgumentException e) {
 		}
 
-		rm = new RangeMethod(ds, "runoff_win",
-				4);
+		rm = new RangeMethod(ds, "runoff_win", 4);
 
 		try {
 			rm.disecStandard();
@@ -104,13 +101,12 @@ public class ClassificationTest extends TestCase {
 		}
 		ds.close();
 	}
-	
+
 	public void testInvalidMeanIntervals() throws Exception {
 		DataSource ds = dsf.getDataSource(landcover);
 		ds.open();
 
-		RangeMethod rm = new RangeMethod(ds, "runoff_win",
-				1);
+		RangeMethod rm = new RangeMethod(ds, "runoff_win", 1);
 
 		try {
 			rm.disecMean();
@@ -118,17 +114,15 @@ public class ClassificationTest extends TestCase {
 		} catch (IllegalArgumentException e) {
 		}
 
-		rm = new RangeMethod(ds, "runoff_win",
-				3);
+		rm = new RangeMethod(ds, "runoff_win", 3);
 
 		try {
 			rm.disecMean();
 			assertTrue(false);
 		} catch (IllegalArgumentException e) {
 		}
-		
-		rm = new RangeMethod(ds, "runoff_win",
-				5);
+
+		rm = new RangeMethod(ds, "runoff_win", 5);
 
 		try {
 			rm.disecMean();
@@ -143,8 +137,7 @@ public class ClassificationTest extends TestCase {
 		DataSource ds = dsf.getDataSource(src);
 		ds.open();
 
-		RangeMethod rm = new RangeMethod(ds, "PTOT90",
-				4);
+		RangeMethod rm = new RangeMethod(ds, "PTOT90", 4);
 
 		rm.disecEquivalences();
 
@@ -161,8 +154,7 @@ public class ClassificationTest extends TestCase {
 		DataSource ds = dsf.getDataSource(src);
 		ds.open();
 
-		RangeMethod rm = new RangeMethod(ds, "PTOT90",
-				4);
+		RangeMethod rm = new RangeMethod(ds, "PTOT90", 4);
 
 		rm.disecMean();
 
@@ -179,8 +171,7 @@ public class ClassificationTest extends TestCase {
 		DataSource ds = dsf.getDataSource(src);
 		ds.open();
 
-		RangeMethod rm = new RangeMethod(ds, "PTOT90",
-				4);
+		RangeMethod rm = new RangeMethod(ds, "PTOT90", 4);
 
 		rm.disecQuantiles();
 
@@ -196,18 +187,16 @@ public class ClassificationTest extends TestCase {
 		DataSource ds = dsf.getDataSource(src);
 		ds.open();
 
-		ProportionalMethod pm = new ProportionalMethod(ds,
-				"PTOT90");
+		ProportionalMethod pm = new ProportionalMethod(ds, "PTOT90");
 
 		pm.build(3000);
-
 
 		int coefType = 1;
 		assertTrue(pm.getLinearSize(18155, coefType) == 8.211579893462739);
 		assertTrue(pm.getLinearSize(3153, coefType) == 3.422083335566387);
 		assertTrue(pm.getLinearSize(7096, coefType) == 5.1337580804787715);
-		assertTrue(pm.getLinearSize(94162, coefType) == 18.701069025383298);;
-
+		assertTrue(pm.getLinearSize(94162, coefType) == 18.701069025383298);
+		;
 
 		int sqrtFactor = 2;
 		assertTrue(pm.getSquareSize(3871, sqrtFactor, coefType) == 14.411208598469774);
@@ -221,7 +210,20 @@ public class ClassificationTest extends TestCase {
 		assertTrue(pm.getLogarithmicSize(94162, coefType) == 50.25912203356446);
 
 	}
-
-
+//
+//	public void testProportionalLogarithmicMethodInLandCover() throws Exception {
+//		DataSource ds = dsf.getDataSource(landcover);
+//		ds.open();
+//
+//		ProportionalMethod pm = new ProportionalMethod(ds, "runoff_win");
+//		pm.build(3000);
+//
+//		for (int i = 0; i < ds.getRowCount(); i++) {
+//			assertTrue(pm.getLogarithmicSize(ds.getDouble(i, "runoff_win"), 1) != Double.POSITIVE_INFINITY);
+//		}
+//
+//		ds.close();
+//
+//	}
 
 }
