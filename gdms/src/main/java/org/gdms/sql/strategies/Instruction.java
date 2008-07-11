@@ -128,7 +128,7 @@ public class Instruction {
 			File file = dsf.getResultFile();
 			DataSourceDefinition dsd = new FileSourceDefinition(file);
 			String name = dsf.getSourceManager().nameAndRegister(dsd);
-			dsf.saveContents(name, dsf.getDataSource(ret));
+			dsf.saveContents(name, dsf.getDataSource(ret), pm);
 
 			try {
 				return dsf.getDataSource(name);

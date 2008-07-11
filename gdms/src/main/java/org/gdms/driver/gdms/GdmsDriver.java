@@ -105,7 +105,7 @@ public class GdmsDriver extends GDMSModelDriver implements FileReadWriteDriver {
 			RandomAccessFile raf = new RandomAccessFile(file, "rw");
 			ReadWriteBufferManager bm = new ReadWriteBufferManager(raf
 					.getChannel());
-			write(bm, dataSource);
+			write(bm, dataSource, pm);
 			bm.flush();
 			raf.close();
 		} catch (IOException e) {
@@ -146,7 +146,7 @@ public class GdmsDriver extends GDMSModelDriver implements FileReadWriteDriver {
 		}
 	}
 
-	private void write(ReadWriteBufferManager bm, DataSource dataSource)
+	private void write(ReadWriteBufferManager bm, DataSource dataSource, IProgressMonitor pm)
 			throws IOException, DriverException {
 		Metadata metadata = dataSource.getMetadata();
 		Envelope env = getEnvelope(dataSource);
@@ -161,6 +161,14 @@ public class GdmsDriver extends GDMSModelDriver implements FileReadWriteDriver {
 		int previousRowEnd = bm.getPosition();
 		int[] rowIndexes = new int[(int) dataSource.getRowCount()];
 		for (int i = 0; i < dataSource.getRowCount(); i++) {
+			if (i / 100 == i / 100.0) {
+				if (pm.isCancelled()) {
+					break;
+				} else {
+					pm.progressTo((int) (100 * i / dataSource.getRowCount()));
+				}
+			}
+
 			rowIndexes[i] = previousRowEnd;
 			bm.position(previousRowEnd);
 			// Leave space for the row header
