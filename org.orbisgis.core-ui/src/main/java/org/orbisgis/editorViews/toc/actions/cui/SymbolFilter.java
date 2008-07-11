@@ -1,7 +1,7 @@
 /**
  * 
  */
-package org.orbisgis.editorViews.toc.actions.cui.ui;
+package org.orbisgis.editorViews.toc.actions.cui;
 
 import org.orbisgis.renderer.symbol.Symbol;
 

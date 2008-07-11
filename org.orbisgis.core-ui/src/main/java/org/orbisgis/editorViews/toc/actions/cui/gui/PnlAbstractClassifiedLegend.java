@@ -55,13 +55,13 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
 import org.gdms.data.types.GeometryConstraint;
+import org.orbisgis.editorViews.toc.actions.cui.CompositeSymbolFilter;
+import org.orbisgis.editorViews.toc.actions.cui.ConstraintSymbolFilter;
+import org.orbisgis.editorViews.toc.actions.cui.EditableSymbolFilter;
+import org.orbisgis.editorViews.toc.actions.cui.SymbolEditor;
+import org.orbisgis.editorViews.toc.actions.cui.SymbolFilter;
 import org.orbisgis.editorViews.toc.actions.cui.gui.widgets.table.ClassifiedLegendTableModel;
 import org.orbisgis.editorViews.toc.actions.cui.gui.widgets.table.SymbolValueCellRenderer;
-import org.orbisgis.editorViews.toc.actions.cui.ui.CompositeSymbolFilter;
-import org.orbisgis.editorViews.toc.actions.cui.ui.ConstraintSymbolFilter;
-import org.orbisgis.editorViews.toc.actions.cui.ui.EditableSymbolFilter;
-import org.orbisgis.editorViews.toc.actions.cui.ui.SymbolEditor;
-import org.orbisgis.editorViews.toc.actions.cui.ui.SymbolFilter;
 import org.orbisgis.images.IconLoader;
 import org.orbisgis.renderer.legend.Legend;
 import org.orbisgis.renderer.legend.carto.ClassifiedLegend;

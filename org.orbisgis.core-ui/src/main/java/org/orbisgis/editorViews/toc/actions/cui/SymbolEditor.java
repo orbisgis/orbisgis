@@ -40,7 +40,7 @@
  * Created on 22 de febrero de 2008, 16:33
  */
 
-package org.orbisgis.editorViews.toc.actions.cui.ui;
+package org.orbisgis.editorViews.toc.actions.cui;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -77,7 +77,7 @@ import org.orbisgis.SymbolManager;
 import org.orbisgis.editorViews.toc.actions.cui.gui.LegendContext;
 import org.orbisgis.editorViews.toc.actions.cui.gui.widgets.Canvas;
 import org.orbisgis.editorViews.toc.actions.cui.gui.widgets.ColorPicker;
-import org.orbisgis.editorViews.toc.actions.cui.gui.widgets.FlowLayoutPreviewWindow;
+import org.orbisgis.editorViews.toc.actions.cui.gui.widgets.SymbolCollection;
 import org.orbisgis.editorViews.toc.actions.cui.gui.widgets.SymbolListDecorator;
 import org.orbisgis.editorViews.toc.actions.cui.gui.widgets.SymbolSelection;
 import org.orbisgis.images.IconLoader;
@@ -720,7 +720,7 @@ public class SymbolEditor extends JPanel implements UIPanel {
 	 * @param evt
 	 */
 	private void jButtonFromCollectionActionPerformed(ActionEvent evt) {
-		FlowLayoutPreviewWindow coll = new FlowLayoutPreviewWindow(
+		SymbolCollection coll = new SymbolCollection(
 				legendContext);
 		if (UIFactory.showDialog(coll)) {
 			Symbol sym = coll.getSelectedSymbol();

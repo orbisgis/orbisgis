@@ -52,10 +52,10 @@ import javax.xml.bind.JAXBException;
 
 import org.orbisgis.Services;
 import org.orbisgis.SymbolManager;
+import org.orbisgis.editorViews.toc.actions.cui.EditableSymbolFilter;
+import org.orbisgis.editorViews.toc.actions.cui.SymbolEditor;
+import org.orbisgis.editorViews.toc.actions.cui.SymbolFilter;
 import org.orbisgis.editorViews.toc.actions.cui.gui.LegendContext;
-import org.orbisgis.editorViews.toc.actions.cui.ui.EditableSymbolFilter;
-import org.orbisgis.editorViews.toc.actions.cui.ui.SymbolEditor;
-import org.orbisgis.editorViews.toc.actions.cui.ui.SymbolFilter;
 import org.orbisgis.images.IconLoader;
 import org.orbisgis.renderer.legend.carto.LegendFactory;
 import org.orbisgis.renderer.legend.carto.UniqueSymbolLegend;
@@ -68,7 +68,7 @@ import org.sif.UIPanel;
  *
  * @author david
  */
-public class FlowLayoutPreviewWindow extends javax.swing.JPanel implements
+public class SymbolCollection extends javax.swing.JPanel implements
 		UIPanel {
 	private LegendContext legendContext;
 	private ArrayList<SelectableCanvas> selection = new ArrayList<SelectableCanvas>();
@@ -77,7 +77,7 @@ public class FlowLayoutPreviewWindow extends javax.swing.JPanel implements
 	 * @throws JAXBException
 	 * @throws FileNotFoundException
 	 */
-	public FlowLayoutPreviewWindow(LegendContext legendContext) {
+	public SymbolCollection(LegendContext legendContext) {
 		this.legendContext = legendContext;
 		initComponents();
 		refreshInterface();

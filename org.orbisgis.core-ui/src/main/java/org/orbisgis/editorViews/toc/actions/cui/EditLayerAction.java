@@ -48,7 +48,6 @@ import org.orbisgis.editorViews.toc.actions.cui.gui.PnlIntervalLegend;
 import org.orbisgis.editorViews.toc.actions.cui.gui.PnlLabelLegend;
 import org.orbisgis.editorViews.toc.actions.cui.gui.PnlProportionalLegend;
 import org.orbisgis.editorViews.toc.actions.cui.gui.PnlUniqueValueLegend;
-import org.orbisgis.editorViews.toc.actions.cui.ui.LegendsPanel;
 import org.orbisgis.layerModel.ILayer;
 import org.orbisgis.layerModel.MapContext;
 import org.sif.UIFactory;

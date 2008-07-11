@@ -46,11 +46,11 @@ import java.awt.BorderLayout;
 import java.awt.Component;
 import java.net.URL;
 
-import org.orbisgis.editorViews.toc.actions.cui.ui.CompositeSymbolFilter;
-import org.orbisgis.editorViews.toc.actions.cui.ui.ConstraintSymbolFilter;
-import org.orbisgis.editorViews.toc.actions.cui.ui.EditableSymbolFilter;
-import org.orbisgis.editorViews.toc.actions.cui.ui.SymbolEditor;
-import org.orbisgis.editorViews.toc.actions.cui.ui.SymbolFilter;
+import org.orbisgis.editorViews.toc.actions.cui.CompositeSymbolFilter;
+import org.orbisgis.editorViews.toc.actions.cui.ConstraintSymbolFilter;
+import org.orbisgis.editorViews.toc.actions.cui.EditableSymbolFilter;
+import org.orbisgis.editorViews.toc.actions.cui.SymbolEditor;
+import org.orbisgis.editorViews.toc.actions.cui.SymbolFilter;
 import org.orbisgis.renderer.legend.Legend;
 import org.orbisgis.renderer.legend.carto.LegendFactory;
 import org.orbisgis.renderer.legend.carto.UniqueSymbolLegend;

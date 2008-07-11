@@ -1,4 +1,4 @@
-package org.orbisgis.editorViews.toc.actions.cui.ui;
+package org.orbisgis.editorViews.toc.actions.cui;
 
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
