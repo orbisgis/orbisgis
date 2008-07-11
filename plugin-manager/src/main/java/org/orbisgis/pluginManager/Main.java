@@ -89,6 +89,7 @@ public class Main {
 	private static boolean doc = false;
 	private static File pluginList;
 	private static boolean clean = false;
+	private static String selectedWorkspace = null;
 
 	public static void main(String[] args) throws Exception {
 		DefaultPluginManager pluginManager = new DefaultPluginManager();
@@ -125,6 +126,9 @@ public class Main {
 
 			Workspace ws = (Workspace) Services
 					.getService("org.orbisgis.Workspace");
+			if (selectedWorkspace != null) {
+				ws.setWorkspaceFolder(selectedWorkspace);
+			}
 			ws.init(clean);
 
 			pluginManager.start();
@@ -152,9 +156,7 @@ public class Main {
 				pluginList = new File(args[i + 1]);
 				i++;
 			} else if (args[i].equals("-w")) {
-				Workspace ws = (Workspace) Services
-						.getService("org.orbisgis.Workspace");
-				ws.setWorkspaceFolder(args[i + 1]);
+				selectedWorkspace = args[i + 1];
 				i++;
 			} else if (args[i].equals("-clean")) {
 				clean = true;

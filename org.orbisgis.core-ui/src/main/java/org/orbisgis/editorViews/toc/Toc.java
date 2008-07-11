@@ -95,7 +95,7 @@ public class Toc extends ResourceTree {
 
 	private MyMapContextListener myMapContextListener;
 
-	private MapContext mapContext;
+	private MapContext mapContext = new DefaultMapContext();
 
 	public Toc() {
 
