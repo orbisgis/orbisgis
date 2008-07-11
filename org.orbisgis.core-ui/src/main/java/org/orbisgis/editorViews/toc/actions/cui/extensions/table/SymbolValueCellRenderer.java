@@ -41,7 +41,7 @@ import java.awt.Component;
 import javax.swing.JTable;
 import javax.swing.table.TableCellRenderer;
 
-import org.orbisgis.editorViews.toc.actions.cui.components.widgets.Canvas;
+import org.orbisgis.editorViews.toc.actions.cui.components.Canvas;
 import org.orbisgis.renderer.symbol.Symbol;
 
 public class SymbolValueCellRenderer implements TableCellRenderer {

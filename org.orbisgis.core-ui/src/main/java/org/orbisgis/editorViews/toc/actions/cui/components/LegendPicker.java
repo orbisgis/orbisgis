@@ -40,7 +40,7 @@
  * Created on 1 de marzo de 2008, 9:35
  */
 
-package org.orbisgis.editorViews.toc.actions.cui.components.widgets;
+package org.orbisgis.editorViews.toc.actions.cui.components;
 
 import org.orbisgis.editorViews.toc.actions.cui.extensions.ILegendPanelUI;
 import org.orbisgis.pluginManager.ui.ChoosePanel;

@@ -18,7 +18,7 @@ import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
 import org.orbisgis.Services;
-import org.orbisgis.editorViews.toc.actions.cui.components.widgets.ColorPicker;
+import org.orbisgis.editorViews.toc.actions.cui.components.ColorPicker;
 import org.orbisgis.editorViews.toc.actions.cui.extensions.table.IntervalLegendTableModel;
 import org.orbisgis.layerModel.ILayer;
 import org.orbisgis.renderer.classification.RangeMethod;

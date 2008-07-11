@@ -1,4 +1,4 @@
-package org.orbisgis.editorViews.toc.actions.cui.components.widgets;
+package org.orbisgis.editorViews.toc.actions.cui.components;
 
 import java.awt.Color;
 import java.awt.Graphics;

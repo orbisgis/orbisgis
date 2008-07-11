@@ -16,7 +16,7 @@ import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
-import org.orbisgis.editorViews.toc.actions.cui.components.widgets.LegendPicker;
+import org.orbisgis.editorViews.toc.actions.cui.components.LegendPicker;
 import org.orbisgis.editorViews.toc.actions.cui.extensions.ILegendPanelUI;
 import org.orbisgis.images.IconLoader;
 import org.orbisgis.ui.sif.AskValue;

@@ -34,36 +34,43 @@
  *    fergonco _at_ gmail.com
  *    thomas.leduc _at_ cerma.archi.fr
  */
-package org.orbisgis.editorViews.toc.actions.cui.components.widgets;
+/*
+ * jPanelTypeOfGeometrySelection.java
+ *
+ * Created on 1 de mayo de 2008, 10:20
+ */
 
-import java.awt.Graphics;
+package org.orbisgis.editorViews.toc.actions.cui.components;
 
-import javax.swing.JPanel;
+import java.util.ArrayList;
 
-import org.orbisgis.renderer.Renderer;
+import org.orbisgis.pluginManager.ui.ChoosePanel;
+import org.orbisgis.renderer.symbol.EditableSymbol;
 import org.orbisgis.renderer.symbol.Symbol;
 
-public class Canvas extends JPanel {
+/**
+ *
+ * @author david
+ */
+public class SymbolSelection extends ChoosePanel {
 
-	private Symbol s;
-
-	public Canvas() {
-		super();
-		this.setSize(126, 70);
+	/**
+	 * Creates new form jPanelTypeOfGeometrySelection
+	 *
+	 * @param filtered
+	 */
+	public SymbolSelection(ArrayList<Symbol> filtered) {
+		super("Select symbol type", getNames(filtered), filtered
+				.toArray(new EditableSymbol[0]));
 	}
 
-	@Override
-	public void paintComponent(Graphics g) {
-		Renderer renderer = new Renderer();
-		renderer.drawSymbolPreview(g, s, getWidth(), getHeight(), false);
+	private static String[] getNames(ArrayList<Symbol> filtered) {
+		String[] ret = new String[filtered.size()];
+		for (int i = 0; i < ret.length; i++) {
+			ret[i] = filtered.get(i).getClassName();
+		}
+
+		return ret;
 	}
 
-	public void setSymbol(Symbol sym) {
-		this.s = sym;
-		this.repaint();
-	}
-
-	public Symbol getSymbol() {
-		return s;
-	}
 }

@@ -34,48 +34,36 @@
  *    fergonco _at_ gmail.com
  *    thomas.leduc _at_ cerma.archi.fr
  */
-package org.orbisgis.editorViews.toc.actions.cui.components.widgets;
+package org.orbisgis.editorViews.toc.actions.cui.components;
 
-import org.orbisgis.renderer.symbol.CircleSymbol;
-import org.orbisgis.renderer.symbol.EditableSymbol;
-import org.orbisgis.renderer.symbol.LineSymbol;
-import org.orbisgis.renderer.symbol.PolygonSymbol;
+import java.awt.Graphics;
+
+import javax.swing.JPanel;
+
+import org.orbisgis.renderer.Renderer;
 import org.orbisgis.renderer.symbol.Symbol;
 
-public class SymbolListDecorator {
+public class Canvas extends JPanel {
 
-	private EditableSymbol sym;
+	private Symbol s;
 
-	public SymbolListDecorator(EditableSymbol sym) {
-		if (sym == null || sym.getName() == null || sym.getName() == "") {
-			sym.setName(getSymbolType(sym));
-		}
-		this.sym = sym;
+	public Canvas() {
+		super();
+		this.setSize(126, 70);
 	}
 
-	private String getSymbolType(Symbol symb) {
-		if (symb instanceof PolygonSymbol) {
-			return "Poligonal symbol";
-		}
-		if (symb instanceof CircleSymbol) {
-			return "Circle symbol";
-		}
-		if (symb instanceof LineSymbol) {
-			return "Line symbol";
-		}
-		return "NO_NAMED_SYMBOL";
+	@Override
+	public void paintComponent(Graphics g) {
+		Renderer renderer = new Renderer();
+		renderer.drawSymbolPreview(g, s, getWidth(), getHeight(), false);
 	}
 
-	public EditableSymbol getSymbol() {
-		return sym;
+	public void setSymbol(Symbol sym) {
+		this.s = sym;
+		this.repaint();
 	}
 
-	public String toString() {
-		return sym.getName();
+	public Symbol getSymbol() {
+		return s;
 	}
-
-	public void setSymbol(EditableSymbol sym) {
-		this.sym = sym;
-	}
-
 }

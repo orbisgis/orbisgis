@@ -34,43 +34,48 @@
  *    fergonco _at_ gmail.com
  *    thomas.leduc _at_ cerma.archi.fr
  */
-/*
- * jPanelTypeOfGeometrySelection.java
- *
- * Created on 1 de mayo de 2008, 10:20
- */
+package org.orbisgis.editorViews.toc.actions.cui.components;
 
-package org.orbisgis.editorViews.toc.actions.cui.components.widgets;
-
-import java.util.ArrayList;
-
-import org.orbisgis.pluginManager.ui.ChoosePanel;
+import org.orbisgis.renderer.symbol.CircleSymbol;
 import org.orbisgis.renderer.symbol.EditableSymbol;
+import org.orbisgis.renderer.symbol.LineSymbol;
+import org.orbisgis.renderer.symbol.PolygonSymbol;
 import org.orbisgis.renderer.symbol.Symbol;
 
-/**
- *
- * @author david
- */
-public class SymbolSelection extends ChoosePanel {
+public class SymbolListDecorator {
 
-	/**
-	 * Creates new form jPanelTypeOfGeometrySelection
-	 *
-	 * @param filtered
-	 */
-	public SymbolSelection(ArrayList<Symbol> filtered) {
-		super("Select symbol type", getNames(filtered), filtered
-				.toArray(new EditableSymbol[0]));
+	private EditableSymbol sym;
+
+	public SymbolListDecorator(EditableSymbol sym) {
+		if (sym == null || sym.getName() == null || sym.getName() == "") {
+			sym.setName(getSymbolType(sym));
+		}
+		this.sym = sym;
 	}
 
-	private static String[] getNames(ArrayList<Symbol> filtered) {
-		String[] ret = new String[filtered.size()];
-		for (int i = 0; i < ret.length; i++) {
-			ret[i] = filtered.get(i).getClassName();
+	private String getSymbolType(Symbol symb) {
+		if (symb instanceof PolygonSymbol) {
+			return "Poligonal symbol";
 		}
+		if (symb instanceof CircleSymbol) {
+			return "Circle symbol";
+		}
+		if (symb instanceof LineSymbol) {
+			return "Line symbol";
+		}
+		return "NO_NAMED_SYMBOL";
+	}
 
-		return ret;
+	public EditableSymbol getSymbol() {
+		return sym;
+	}
+
+	public String toString() {
+		return sym.getName();
+	}
+
+	public void setSymbol(EditableSymbol sym) {
+		this.sym = sym;
 	}
 
 }
