@@ -49,6 +49,7 @@ import org.orbisgis.editors.map.tools.generated.Polygon;
 import org.orbisgis.layerModel.MapContext;
 
 import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.LinearRing;
 
@@ -106,10 +107,23 @@ public abstract class AbstractPolygonTool extends Polygon {
 			throws DrawingException {
 	}
 
-	@SuppressWarnings("unchecked")//$NON-NLS-1$
 	@Override
 	public void drawIn_Point(Graphics g, MapContext vc, ToolManager tm)
 			throws DrawingException {
+		Geometry geom = getCurrentPolygon(tm);
+
+		if (geom != null) {
+			tm.addGeomToDraw(geom);
+
+			if (!geom.isValid()) {
+				throw new DrawingException(Messages.getString("PolygonTool.1")); //$NON-NLS-1$
+			}
+		}
+	}
+
+	@SuppressWarnings("unchecked")//$NON-NLS-1$
+	protected Geometry getCurrentPolygon(ToolManager tm) {
+		Geometry geom;
 		if (points.size() >= 2) {
 			ArrayList<Coordinate> tempPoints = (ArrayList<Coordinate>) points
 					.clone();
@@ -117,15 +131,8 @@ public abstract class AbstractPolygonTool extends Polygon {
 			tempPoints.add(new Coordinate(current.getX(), current.getY()));
 			tempPoints.add(new Coordinate(tempPoints.get(0).x, tempPoints
 					.get(0).y));
-			com.vividsolutions.jts.geom.Polygon pol = gf.createPolygon(gf
-					.createLinearRing(tempPoints.toArray(new Coordinate[0])),
-					new LinearRing[0]);
-
-			tm.addGeomToDraw(pol);
-
-			if (!pol.isValid()) {
-				throw new DrawingException(Messages.getString("PolygonTool.1")); //$NON-NLS-1$
-			}
+			geom = gf.createPolygon(gf.createLinearRing(tempPoints
+					.toArray(new Coordinate[0])), new LinearRing[0]);
 
 		} else if (points.size() >= 1) {
 			ArrayList<Coordinate> tempPoints = (ArrayList<Coordinate>) points
@@ -134,15 +141,12 @@ public abstract class AbstractPolygonTool extends Polygon {
 			tempPoints.add(new Coordinate(current.getX(), current.getY()));
 			tempPoints.add(new Coordinate(tempPoints.get(0).x, tempPoints
 					.get(0).y));
-			com.vividsolutions.jts.geom.LineString line = gf
-					.createLineString(tempPoints.toArray(new Coordinate[0]));
+			geom = gf.createLineString(tempPoints.toArray(new Coordinate[0]));
 
-			tm.addGeomToDraw(line);
-
-			if (!line.isValid()) {
-				throw new DrawingException(Messages.getString("PolygonTool.1")); //$NON-NLS-1$
-			}
+		} else {
+			geom = null;
 		}
+		return geom;
 	}
 
 	@Override

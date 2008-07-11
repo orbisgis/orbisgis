@@ -64,6 +64,7 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Cursor;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.GraphicsEnvironment;
@@ -166,6 +167,8 @@ public class ToolManager extends MouseAdapter implements MouseMotionListener {
 	private static final Color HANDLER_COLOR = Color.BLUE;
 
 	private ArrayList<Geometry> geomToDraw = new ArrayList<Geometry>();
+
+	private ArrayList<String> textToDraw = new ArrayList<String>();
 
 	private Component component;
 
@@ -388,6 +391,7 @@ public class ToolManager extends MouseAdapter implements MouseMotionListener {
 
 		String error = null;
 		geomToDraw.clear();
+		textToDraw.clear();
 		try {
 			currentTool.draw(g);
 		} catch (Exception e) {
@@ -411,7 +415,6 @@ public class ToolManager extends MouseAdapter implements MouseMotionListener {
 				g2.draw(ls);
 			}
 		}
-
 		if (adjustedPoint != null) {
 			g2.setStroke(new BasicStroke(2, BasicStroke.CAP_ROUND,
 					BasicStroke.JOIN_ROUND, 1.0f,
@@ -424,6 +427,16 @@ public class ToolManager extends MouseAdapter implements MouseMotionListener {
 		if (error != null) {
 			drawTextWithWhiteBackGround(g2, error, new Point2D.Double(
 					lastMouseX, lastMouseY));
+		} else {
+			Font f = g2.getFont();
+			g2.setFont(f.deriveFont(Font.BOLD, 16));
+			int height = lastMouseY + 3 * uiTolerance;
+			for (String text : textToDraw) {
+				g2.drawString(text, lastMouseX + uiTolerance, height);
+				height += g2.getFontMetrics().getStringBounds(text, g2)
+						.getHeight();
+			}
+			g2.setFont(f);
 		}
 
 	}
@@ -734,6 +747,10 @@ public class ToolManager extends MouseAdapter implements MouseMotionListener {
 
 	public void addGeomToDraw(Geometry geom) {
 		this.geomToDraw.add(geom);
+	}
+
+	public void addTextToDraw(String text) {
+		this.textToDraw.add(text);
 	}
 
 	public void checkToolStatus() throws TransitionException {

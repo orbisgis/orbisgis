@@ -37,13 +37,17 @@
 package org.orbisgis.editors.map.tools;
 
 import java.awt.Color;
+import java.awt.Graphics;
 import java.text.DecimalFormat;
 
 import org.orbisgis.Services;
+import org.orbisgis.editors.map.tool.DrawingException;
 import org.orbisgis.editors.map.tool.ToolManager;
 import org.orbisgis.editors.map.tool.TransitionException;
 import org.orbisgis.layerModel.MapContext;
 import org.orbisgis.views.outputView.OutputManager;
+
+import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.Polygon;
 
 public class MesurePolygonTool extends AbstractPolygonTool {
@@ -54,10 +58,18 @@ public class MesurePolygonTool extends AbstractPolygonTool {
 				.getService("org.orbisgis.OutputManager");
 		Color color = Color.blue;
 
-		om.append("Area : " + new DecimalFormat("0.000").format(g.getArea())+ " Perimeter : "
-				+ new DecimalFormat("0.000").format(g.getLength()), color);
+		om.append("Area : " + getArea(g) + " Perimeter : " + getPerimeter(g)
+				+ "\n", color);
 		om.makeVisible();
 
+	}
+
+	private String getPerimeter(Geometry g) {
+		return new DecimalFormat("0.000").format(g.getLength());
+	}
+
+	private String getArea(Geometry g) {
+		return new DecimalFormat("0.000").format(g.getArea());
 	}
 
 	public boolean isEnabled(MapContext vc, ToolManager tm) {
@@ -68,4 +80,12 @@ public class MesurePolygonTool extends AbstractPolygonTool {
 		return true;
 	}
 
+	@Override
+	public void drawIn_Point(Graphics g, MapContext vc, ToolManager tm)
+			throws DrawingException {
+		super.drawIn_Point(g, vc, tm);
+		Geometry geom = getCurrentPolygon(tm);
+		tm.addTextToDraw("Area: " + getArea(geom));
+		tm.addTextToDraw("Perimeter: " + getPerimeter(geom));
+	}
 }

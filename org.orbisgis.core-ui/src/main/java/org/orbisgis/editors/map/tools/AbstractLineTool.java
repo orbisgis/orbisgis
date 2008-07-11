@@ -99,10 +99,20 @@ public abstract class AbstractLineTool extends Line {
 	protected abstract void lineDone(LineString ls, MapContext vc,
 			ToolManager tm) throws TransitionException;
 
-	@SuppressWarnings("unchecked")//$NON-NLS-1$
 	@Override
 	public void drawIn_Point(Graphics g, MapContext vc, ToolManager tm)
 			throws DrawingException {
+		LineString ls = getCurrentLineString(tm);
+
+		tm.addGeomToDraw(ls);
+
+		if (!ls.isValid()) {
+			throw new DrawingException(Messages.getString("LineTool.0")); //$NON-NLS-1$
+		}
+	}
+
+	@SuppressWarnings("unchecked")//$NON-NLS-1$
+	protected LineString getCurrentLineString(ToolManager tm) {
 		Point2D current = tm.getLastRealMousePosition();
 
 		ArrayList<Coordinate> tempPoints = (ArrayList<Coordinate>) points
@@ -110,12 +120,7 @@ public abstract class AbstractLineTool extends Line {
 		tempPoints.add(new Coordinate(current.getX(), current.getY()));
 		LineString ls = new GeometryFactory().createLineString(tempPoints
 				.toArray(new Coordinate[0]));
-
-		tm.addGeomToDraw(ls);
-
-		if (!ls.isValid()) {
-			throw new DrawingException(Messages.getString("LineTool.0")); //$NON-NLS-1$
-		}
+		return ls;
 	}
 
 	@Override

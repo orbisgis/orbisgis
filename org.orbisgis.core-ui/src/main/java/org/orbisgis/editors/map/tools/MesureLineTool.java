@@ -37,14 +37,17 @@
 package org.orbisgis.editors.map.tools;
 
 import java.awt.Color;
+import java.awt.Graphics;
 import java.text.DecimalFormat;
 
 import org.orbisgis.Services;
+import org.orbisgis.editors.map.tool.DrawingException;
 import org.orbisgis.editors.map.tool.ToolManager;
 import org.orbisgis.editors.map.tool.TransitionException;
 import org.orbisgis.layerModel.MapContext;
 import org.orbisgis.views.outputView.OutputManager;
 
+import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.LineString;
 
 public class MesureLineTool extends AbstractLineTool {
@@ -64,8 +67,21 @@ public class MesureLineTool extends AbstractLineTool {
 				.getService("org.orbisgis.OutputManager");
 		Color color = Color.blue;
 		om.append("Distance : "
-				+ new DecimalFormat("0.000").format(ls.getLength()), color);
+				+ getLength(ls) + "\n",
+				color);
 		om.makeVisible();
 	}
 
+	private String getLength(Geometry ls) {
+		return new DecimalFormat("0.000").format(ls.getLength());
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public void drawIn_Point(Graphics g, MapContext vc, ToolManager tm)
+			throws DrawingException {
+		super.drawIn_Point(g, vc, tm);
+		Geometry geom = getCurrentLineString(tm);
+		tm.addTextToDraw(getLength(geom) + "");
+	}
 }
