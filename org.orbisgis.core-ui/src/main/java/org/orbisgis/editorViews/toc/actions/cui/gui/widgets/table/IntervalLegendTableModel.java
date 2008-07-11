@@ -120,12 +120,12 @@ public class IntervalLegendTableModel extends ClassifiedLegendTableModel
 			rowIndex = getSortedIndex(rowIndex);
 
 			Interval interval = legend.getInterval(rowIndex);
-			switch (columnIndex) {
-			case 0:
-				legend.setSymbol(rowIndex, (Symbol) value);
-				break;
-			case 1:
-				try {
+			try {
+				switch (columnIndex) {
+				case 0:
+					legend.setSymbol(rowIndex, (Symbol) value);
+					break;
+				case 1:
 					Value valMin;
 					if (txt.trim().length() == 0) {
 						valMin = null;
@@ -136,17 +136,8 @@ public class IntervalLegendTableModel extends ClassifiedLegendTableModel
 					legend.setInterval(rowIndex, new Interval(valMin, true,
 							interval.getMaxValue(), false));
 					invalidateOrder();
-				} catch (NumberFormatException e) {
-					JOptionPane.showMessageDialog(null, txt + " is not valid.",
-							"Wrong input value", JOptionPane.ERROR_MESSAGE);
-				} catch (ParseException e) {
-					JOptionPane.showMessageDialog(null, txt + " is not valid. "
-							+ e.getMessage(), "Wrong input value",
-							JOptionPane.ERROR_MESSAGE);
-				}
-				break;
-			case 2:
-				try {
+					break;
+				case 2:
 					Value valMax;
 					if (txt.trim().length() == 0) {
 						valMax = null;
@@ -157,20 +148,20 @@ public class IntervalLegendTableModel extends ClassifiedLegendTableModel
 					legend.setInterval(rowIndex, new Interval(interval
 							.getMinValue(), true, valMax, false));
 					invalidateOrder();
-				} catch (NumberFormatException e) {
-					JOptionPane.showMessageDialog(null, txt + " is not valid.",
-							"Wrong input value", JOptionPane.ERROR_MESSAGE);
-				} catch (ParseException e) {
-					JOptionPane.showMessageDialog(null, txt + " is not valid. "
-							+ e.getMessage(), "Wrong input value",
-							JOptionPane.ERROR_MESSAGE);
+					break;
+				case 3:
+					legend.setLabel(rowIndex, txt);
+					break;
+				default:
+					break;
 				}
-				break;
-			case 3:
-				legend.setLabel(rowIndex, txt);
-				break;
-			default:
-				break;
+			} catch (NumberFormatException e) {
+				JOptionPane.showMessageDialog(null, txt + " is not valid.",
+						"Wrong input value", JOptionPane.ERROR_MESSAGE);
+			} catch (ParseException e) {
+				JOptionPane.showMessageDialog(null, txt + " is not valid. "
+						+ e.getMessage(), "Wrong input value",
+						JOptionPane.ERROR_MESSAGE);
 			}
 		}
 		fireTableCellUpdated(rowIndex, columnIndex);

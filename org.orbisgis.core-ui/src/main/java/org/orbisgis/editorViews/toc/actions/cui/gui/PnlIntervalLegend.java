@@ -64,9 +64,8 @@ public class PnlIntervalLegend extends PnlAbstractClassifiedLegend {
 							.getSelectedItem(), legendContext.getLayer()
 							.getDataSource());
 				} catch (DriverException e1) {
-					JOptionPane.showMessageDialog(null,
-							"Cannot access the type of the field", "Error",
-							JOptionPane.ERROR_MESSAGE);
+					Services.getErrorManager().error(
+							"Cannot access the type of the field", e1);
 				}
 			}
 
@@ -197,7 +196,7 @@ public class PnlIntervalLegend extends PnlAbstractClassifiedLegend {
 				}
 			}
 		} catch (DriverException e) {
-			System.out.println("Driver Exception: " + e.getMessage());
+			Services.getErrorManager().error("Cannot access layer fields", e);
 		}
 
 		cmbFieldNames.setModel(new DefaultComboBoxModel(validFieldNames

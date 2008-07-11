@@ -16,6 +16,7 @@ import org.gdms.data.types.Type;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
+import org.orbisgis.Services;
 import org.orbisgis.editorViews.toc.actions.cui.gui.widgets.table.UniqueValueLegendTableModel;
 import org.orbisgis.layerModel.ILayer;
 import org.orbisgis.renderer.legend.Legend;
@@ -26,8 +27,8 @@ import org.orbisgis.renderer.symbol.Symbol;
 public class PnlUniqueValueLegend extends PnlAbstractClassifiedLegend {
 
 	public PnlUniqueValueLegend(LegendContext legendContext) {
-		super(legendContext, new UniqueValueLegendTableModel(),
-				LegendFactory.createUniqueValueLegend());
+		super(legendContext, new UniqueValueLegendTableModel(), LegendFactory
+				.createUniqueValueLegend());
 	}
 
 	private UniqueValueLegend legend;
@@ -71,7 +72,8 @@ public class PnlUniqueValueLegend extends PnlAbstractClassifiedLegend {
 
 			tableModel.setLegend(this.legend);
 		} catch (DriverException e) {
-			System.out.println("Driver Exception: " + e.getMessage());
+			Services.getErrorManager().error(
+					"Cannot access the values in the layer", e);
 		}
 	}
 
@@ -118,9 +120,8 @@ public class PnlUniqueValueLegend extends PnlAbstractClassifiedLegend {
 							.getSelectedItem(), legendContext.getLayer()
 							.getDataSource());
 				} catch (DriverException e1) {
-					JOptionPane.showMessageDialog(null,
-							"Cannot access the type of the field", "Error",
-							JOptionPane.ERROR_MESSAGE);
+					Services.getErrorManager().error(
+							"Cannot access the type of the field", e1);
 				}
 			}
 
@@ -161,7 +162,7 @@ public class PnlUniqueValueLegend extends PnlAbstractClassifiedLegend {
 				}
 			}
 		} catch (DriverException e) {
-			System.out.println("Driver Exception: " + e.getMessage());
+			Services.getErrorManager().error("Cannot populate field names", e);
 		}
 
 		String[] comboValues = new String[comboValuesArray.size()];

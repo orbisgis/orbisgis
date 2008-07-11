@@ -7,6 +7,7 @@ import javax.swing.table.TableModel;
 
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
+import org.orbisgis.Services;
 import org.orbisgis.renderer.legend.carto.ClassifiedLegend;
 import org.orbisgis.renderer.legend.carto.LegendFactory;
 import org.orbisgis.renderer.legend.carto.UniqueValueLegend;
@@ -121,13 +122,11 @@ public class UniqueValueLegendTableModel extends ClassifiedLegendTableModel
 					legend.setValue(rowIndex, val);
 					invalidateOrder();
 				} catch (NumberFormatException e) {
-					JOptionPane.showMessageDialog(null, value.toString()
-							+ " is not valid.", "Wrong input value",
-							JOptionPane.ERROR_MESSAGE);
+					Services.getErrorManager().error(
+							value.toString() + " is not valid.", e);
 				} catch (ParseException e) {
-					JOptionPane.showMessageDialog(null, value.toString()
-							+ " is not valid. " + e.getMessage(),
-							"Wrong input value", JOptionPane.ERROR_MESSAGE);
+					Services.getErrorManager().error(
+							value.toString() + " is not valid.", e);
 				}
 				break;
 			case 2:
