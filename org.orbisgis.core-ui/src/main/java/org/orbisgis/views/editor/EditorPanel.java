@@ -275,6 +275,15 @@ public class EditorPanel extends Container {
 			HashSet<DockingWindow> visited = new HashSet<DockingWindow>();
 			visited.add(arg0);
 			nextFocus = getNextFocus(parent, visited);
+			if (nextFocus == null) {
+				// We have undocked windows
+				for (EditorInfo editorInfo : editorsInfo) {
+					if (editorInfo.view != arg0) {
+						nextFocus = editorInfo.view;
+						break;
+					}
+				}
+			}
 		}
 
 		public void windowClosed(DockingWindow arg0) {
@@ -293,8 +302,8 @@ public class EditorPanel extends Container {
 				if (nextFocus != null) {
 					nextFocus.requestFocus();
 					nextFocus.requestFocusInWindow();
-					lastEditor = getEditorByComponent(nextFocus.getComponent())
-							.getEditorDecorator();
+					root.restoreFocus();
+					lastEditor = null;
 				} else {
 					lastEditor = null;
 					editorView.fireActiveEditorChanged(lastEditor, null);
@@ -349,9 +358,10 @@ public class EditorPanel extends Container {
 
 		@Override
 		public void viewFocusChanged(View arg0, View arg1) {
-			if (arg1 != null) {
+			View focusedView = root.getFocusedView();
+			if (focusedView != null) {
 				EditorDecorator nextEditor = getEditorByComponent(
-						arg1.getComponent()).getEditorDecorator();
+						focusedView.getComponent()).getEditorDecorator();
 				if (nextEditor != lastEditor) {
 					IEditor previous = null;
 					if (lastEditor != null) {
