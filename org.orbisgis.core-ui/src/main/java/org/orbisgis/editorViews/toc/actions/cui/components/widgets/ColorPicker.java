@@ -40,7 +40,7 @@
  * Created on 23 de febrero de 2008, 16:53
  */
 
-package org.orbisgis.editorViews.toc.actions.cui.gui.widgets;
+package org.orbisgis.editorViews.toc.actions.cui.components.widgets;
 
 import java.awt.Color;
 import java.awt.Component;

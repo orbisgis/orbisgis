@@ -74,12 +74,12 @@ import javax.swing.event.ListSelectionListener;
 
 import org.orbisgis.Services;
 import org.orbisgis.SymbolManager;
+import org.orbisgis.editorViews.toc.actions.cui.components.widgets.Canvas;
+import org.orbisgis.editorViews.toc.actions.cui.components.widgets.ColorPicker;
+import org.orbisgis.editorViews.toc.actions.cui.components.widgets.SymbolCollection;
+import org.orbisgis.editorViews.toc.actions.cui.components.widgets.SymbolListDecorator;
+import org.orbisgis.editorViews.toc.actions.cui.components.widgets.SymbolSelection;
 import org.orbisgis.editorViews.toc.actions.cui.gui.LegendContext;
-import org.orbisgis.editorViews.toc.actions.cui.gui.widgets.Canvas;
-import org.orbisgis.editorViews.toc.actions.cui.gui.widgets.ColorPicker;
-import org.orbisgis.editorViews.toc.actions.cui.gui.widgets.SymbolCollection;
-import org.orbisgis.editorViews.toc.actions.cui.gui.widgets.SymbolListDecorator;
-import org.orbisgis.editorViews.toc.actions.cui.gui.widgets.SymbolSelection;
 import org.orbisgis.images.IconLoader;
 import org.orbisgis.renderer.symbol.EditableLineSymbol;
 import org.orbisgis.renderer.symbol.EditablePointSymbol;

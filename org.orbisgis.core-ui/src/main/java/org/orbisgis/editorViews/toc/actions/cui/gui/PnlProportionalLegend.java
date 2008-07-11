@@ -29,7 +29,7 @@ import org.orbisgis.editorViews.toc.actions.cui.ConstraintSymbolFilter;
 import org.orbisgis.editorViews.toc.actions.cui.EditableSymbolFilter;
 import org.orbisgis.editorViews.toc.actions.cui.SymbolEditor;
 import org.orbisgis.editorViews.toc.actions.cui.SymbolFilter;
-import org.orbisgis.editorViews.toc.actions.cui.gui.widgets.Canvas;
+import org.orbisgis.editorViews.toc.actions.cui.components.widgets.Canvas;
 import org.orbisgis.renderer.legend.Legend;
 import org.orbisgis.renderer.legend.carto.LegendFactory;
 import org.orbisgis.renderer.legend.carto.ProportionalLegend;

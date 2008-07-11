@@ -40,7 +40,7 @@
  * Created on 1 de mayo de 2008, 10:20
  */
 
-package org.orbisgis.editorViews.toc.actions.cui.gui.widgets;
+package org.orbisgis.editorViews.toc.actions.cui.components.widgets;
 
 import java.util.ArrayList;
 

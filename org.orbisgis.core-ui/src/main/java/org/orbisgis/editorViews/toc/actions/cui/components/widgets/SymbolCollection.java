@@ -40,7 +40,7 @@
  * Created on 1 de mayo de 2008, 8:50
  */
 
-package org.orbisgis.editorViews.toc.actions.cui.gui.widgets;
+package org.orbisgis.editorViews.toc.actions.cui.components.widgets;
 
 import java.awt.Component;
 import java.awt.Dimension;

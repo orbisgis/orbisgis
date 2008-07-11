@@ -34,7 +34,7 @@
  *    fergonco _at_ gmail.com
  *    thomas.leduc _at_ cerma.archi.fr
  */
-package org.orbisgis.editorViews.toc.actions.cui.gui.widgets;
+package org.orbisgis.editorViews.toc.actions.cui.components.widgets;
 
 import org.orbisgis.renderer.symbol.CircleSymbol;
 import org.orbisgis.renderer.symbol.EditableSymbol;
