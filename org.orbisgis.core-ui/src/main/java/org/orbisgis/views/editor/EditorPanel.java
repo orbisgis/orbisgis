@@ -82,17 +82,15 @@ public class EditorPanel extends Container {
 		root.getRootWindowProperties().getSplitWindowProperties()
 				.setContinuousLayoutEnabled(false);
 		root.getRootWindowProperties().getTabWindowProperties()
-				.getTabProperties().getNormalButtonProperties()
 				.getCloseButtonProperties().setVisible(false);
 		root.getRootWindowProperties().getTabWindowProperties()
-				.getTabProperties().getNormalButtonProperties()
 				.getUndockButtonProperties().setVisible(false);
 		root.getRootWindowProperties().getTabWindowProperties()
-				.getTabProperties().getNormalButtonProperties()
 				.getRestoreButtonProperties().setVisible(false);
 		root.getRootWindowProperties().getTabWindowProperties()
-				.getTabProperties().getNormalButtonProperties()
 				.getMinimizeButtonProperties().setVisible(false);
+		root.getRootWindowProperties().getTabWindowProperties()
+				.getMaximizeButtonProperties().setVisible(false);
 		root.getRootWindowProperties().getWindowAreaProperties().setBorder(
 				BorderFactory.createEmptyBorder());
 		root.getRootWindowProperties().getTabWindowProperties()
