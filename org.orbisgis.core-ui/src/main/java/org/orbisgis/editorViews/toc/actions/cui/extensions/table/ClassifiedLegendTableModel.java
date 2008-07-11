@@ -1,4 +1,4 @@
-package org.orbisgis.editorViews.toc.actions.cui.gui.table;
+package org.orbisgis.editorViews.toc.actions.cui.extensions.table;
 
 import java.util.Arrays;
 import java.util.Comparator;

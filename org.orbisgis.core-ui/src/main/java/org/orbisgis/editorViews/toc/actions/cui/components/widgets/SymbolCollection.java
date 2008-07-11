@@ -55,7 +55,7 @@ import org.orbisgis.SymbolManager;
 import org.orbisgis.editorViews.toc.actions.cui.EditableSymbolFilter;
 import org.orbisgis.editorViews.toc.actions.cui.SymbolEditor;
 import org.orbisgis.editorViews.toc.actions.cui.SymbolFilter;
-import org.orbisgis.editorViews.toc.actions.cui.gui.LegendContext;
+import org.orbisgis.editorViews.toc.actions.cui.extensions.LegendContext;
 import org.orbisgis.images.IconLoader;
 import org.orbisgis.renderer.legend.carto.LegendFactory;
 import org.orbisgis.renderer.legend.carto.UniqueSymbolLegend;

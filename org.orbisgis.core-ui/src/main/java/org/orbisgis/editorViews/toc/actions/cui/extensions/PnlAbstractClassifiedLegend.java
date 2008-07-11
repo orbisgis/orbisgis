@@ -40,7 +40,7 @@
  * Created on 27 de febrero de 2008, 18:20
  */
 
-package org.orbisgis.editorViews.toc.actions.cui.gui;
+package org.orbisgis.editorViews.toc.actions.cui.extensions;
 
 import java.awt.Color;
 import java.awt.Component;
@@ -60,8 +60,8 @@ import org.orbisgis.editorViews.toc.actions.cui.ConstraintSymbolFilter;
 import org.orbisgis.editorViews.toc.actions.cui.EditableSymbolFilter;
 import org.orbisgis.editorViews.toc.actions.cui.SymbolEditor;
 import org.orbisgis.editorViews.toc.actions.cui.SymbolFilter;
-import org.orbisgis.editorViews.toc.actions.cui.gui.table.ClassifiedLegendTableModel;
-import org.orbisgis.editorViews.toc.actions.cui.gui.table.SymbolValueCellRenderer;
+import org.orbisgis.editorViews.toc.actions.cui.extensions.table.ClassifiedLegendTableModel;
+import org.orbisgis.editorViews.toc.actions.cui.extensions.table.SymbolValueCellRenderer;
 import org.orbisgis.images.IconLoader;
 import org.orbisgis.renderer.legend.Legend;
 import org.orbisgis.renderer.legend.carto.ClassifiedLegend;

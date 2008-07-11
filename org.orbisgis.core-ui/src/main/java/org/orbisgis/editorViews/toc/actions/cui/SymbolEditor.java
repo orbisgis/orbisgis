@@ -79,7 +79,7 @@ import org.orbisgis.editorViews.toc.actions.cui.components.widgets.ColorPicker;
 import org.orbisgis.editorViews.toc.actions.cui.components.widgets.SymbolCollection;
 import org.orbisgis.editorViews.toc.actions.cui.components.widgets.SymbolListDecorator;
 import org.orbisgis.editorViews.toc.actions.cui.components.widgets.SymbolSelection;
-import org.orbisgis.editorViews.toc.actions.cui.gui.LegendContext;
+import org.orbisgis.editorViews.toc.actions.cui.extensions.LegendContext;
 import org.orbisgis.images.IconLoader;
 import org.orbisgis.renderer.symbol.EditableLineSymbol;
 import org.orbisgis.renderer.symbol.EditablePointSymbol;

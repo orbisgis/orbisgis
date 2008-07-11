@@ -43,7 +43,7 @@
  * and open the template in the editor.
  */
 
-package org.orbisgis.editorViews.toc.actions.cui.gui;
+package org.orbisgis.editorViews.toc.actions.cui.extensions;
 
 import java.awt.Component;
 

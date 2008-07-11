@@ -1,4 +1,4 @@
-package org.orbisgis.editorViews.toc.actions.cui.gui;
+package org.orbisgis.editorViews.toc.actions.cui.extensions;
 
 import org.gdms.data.types.GeometryConstraint;
 import org.orbisgis.layerModel.ILayer;

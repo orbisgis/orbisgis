@@ -2,7 +2,7 @@ package org.orbisgis.editorViews.toc.actions.cui;
 
 import java.awt.Component;
 
-import org.orbisgis.editorViews.toc.actions.cui.gui.ILegendPanelUI;
+import org.orbisgis.editorViews.toc.actions.cui.extensions.ILegendPanelUI;
 import org.orbisgis.renderer.legend.Legend;
 
 public class LegendElement {

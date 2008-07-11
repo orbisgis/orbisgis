@@ -40,7 +40,7 @@
  * Created on 22 de febrero de 2008, 16:33
  */
 
-package org.orbisgis.editorViews.toc.actions.cui.gui;
+package org.orbisgis.editorViews.toc.actions.cui.extensions;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
