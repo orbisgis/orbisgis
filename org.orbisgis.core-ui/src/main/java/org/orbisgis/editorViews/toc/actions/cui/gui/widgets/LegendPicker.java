@@ -49,7 +49,7 @@ import org.orbisgis.pluginManager.ui.ChoosePanel;
  * 
  * @author david
  */
-public class JPanelComboLegendPicker extends ChoosePanel {
+public class LegendPicker extends ChoosePanel {
 
 	/**
 	 * Creates new form JPanelComboLegendPicker
@@ -57,7 +57,7 @@ public class JPanelComboLegendPicker extends ChoosePanel {
 	 * @param ids
 	 * @param names
 	 */
-	public JPanelComboLegendPicker(String[] names, ILegendPanelUI[] ids) {
+	public LegendPicker(String[] names, ILegendPanelUI[] ids) {
 		super("Legend selection", names, ids);
 	}
 

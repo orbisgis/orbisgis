@@ -17,7 +17,7 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
 import org.orbisgis.editorViews.toc.actions.cui.gui.ILegendPanelUI;
-import org.orbisgis.editorViews.toc.actions.cui.gui.widgets.JPanelComboLegendPicker;
+import org.orbisgis.editorViews.toc.actions.cui.gui.widgets.LegendPicker;
 import org.orbisgis.images.IconLoader;
 import org.orbisgis.ui.sif.AskValue;
 import org.sif.UIFactory;
@@ -198,7 +198,7 @@ public class LegendList extends JPanel {
 				ids.add(legendPanelUI);
 			}
 		}
-		JPanelComboLegendPicker legendPicker = new JPanelComboLegendPicker(
+		LegendPicker legendPicker = new LegendPicker(
 				paneNames.toArray(new String[0]), ids
 						.toArray(new ILegendPanelUI[0]));
 
