@@ -34,7 +34,7 @@
  *    fergonco _at_ gmail.com
  *    thomas.leduc _at_ cerma.archi.fr
  */
-package org.orbisgis.editorViews.toc.actions.cui.gui.widgets.table;
+package org.orbisgis.editorViews.toc.actions.cui.gui.table;
 
 import java.awt.Component;
 

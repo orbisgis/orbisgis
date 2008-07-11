@@ -1,4 +1,4 @@
-package org.orbisgis.editorViews.toc.actions.cui.gui.widgets.table;
+package org.orbisgis.editorViews.toc.actions.cui.gui.table;
 
 import java.text.ParseException;
 
