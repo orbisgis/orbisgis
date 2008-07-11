@@ -59,6 +59,7 @@ public class ProgressDialog extends JDialog {
 			}
 
 		});
+		this.setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
 	}
 
 	public void setJob(final Job job) {
