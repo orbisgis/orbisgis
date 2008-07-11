@@ -117,11 +117,11 @@ public class JobQueue implements BackgroundManager {
 		Job finishedJob = current;
 		finishedJob.clear();
 		current = null;
-		planify();
-		fireJobRemoved(finishedJob);
 		if (dlg.isVisible()) {
 			dlg.jobFinished();
 		}
+		planify();
+		fireJobRemoved(finishedJob);
 	}
 
 	public synchronized Job[] getJobs() {
