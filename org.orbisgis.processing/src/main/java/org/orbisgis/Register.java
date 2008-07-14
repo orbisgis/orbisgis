@@ -65,6 +65,7 @@ import org.gdms.sql.function.spatial.raster.hydrology.D8Watershed;
 import org.gdms.sql.function.spatial.raster.hydrology.FillSinks;
 import org.gdms.sql.function.spatial.raster.utilities.CropRaster;
 import org.gdms.sql.function.spatial.raster.utilities.ToEnvelope;
+import org.gdms.triangulation.michaelm.TinMM;
 import org.orbisgis.pluginManager.PluginActivator;
 import org.orbisgis.processing.tin.Generate2DMesh;
 
@@ -110,6 +111,7 @@ public class Register implements PluginActivator {
 		FunctionManager.addFunction(ConvexHull.class);
 		
 		FunctionManager.addFunction(SubString.class);
+		QueryManager.registerQuery(new TinMM());
 	}
 
 	public void stop() throws Exception {
