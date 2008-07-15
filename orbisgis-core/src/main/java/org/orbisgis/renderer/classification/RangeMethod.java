@@ -550,18 +550,11 @@ public class RangeMethod {
 
 		for (int i = 0; i < ranges.length; i++) {
 			Range ran = ranges[i];
-			Value val1 = null;
-			Value val2 = null;
-			val1 = ValueFactory.createValue(ran.getMinRange());
-			if (i == 0) {
-				val1 = ValueFactory.createNullValue();
-			}
-			val2 = ValueFactory.createValue(ran.getMaxRange());
-			if (i == ranges.length - 1) {
-				val2 = ValueFactory.createNullValue();
-			}
+			Value val1 = ValueFactory.createValue(ran.getMinRange());
+			Value val2 = ValueFactory.createValue(ran.getMaxRange());
+			boolean maxIncluded = (i == ranges.length - 1);
 
-			Interval inter = new Interval(val1, true, val2, false);
+			Interval inter = new Interval(val1, true, val2, maxIncluded);
 			intervals[i] = inter;
 		}
 		return intervals;

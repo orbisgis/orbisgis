@@ -53,9 +53,9 @@ public class IntervalLegendTableModel extends ClassifiedLegendTableModel
 		case 0:
 			return "Symbol";
 		case 1:
-			return "Init";
+			return "Init (included)";
 		case 2:
-			return "End";
+			return "End (excluded)";
 		case 3:
 			return "Label";
 		default:
