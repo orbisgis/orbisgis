@@ -568,14 +568,15 @@ public class EditionDecorator extends AbstractDataSourceDecorator implements
 
 	private synchronized List<Field> getFields() throws DriverException {
 		if (null == fields) {
-			fields = new ArrayList<Field>();
+			ArrayList<Field> fieldArray = new ArrayList<Field>();
 			Metadata metadata = getDataSource().getMetadata();
 			final int fc = metadata.getFieldCount();
 
 			for (int i = 0; i < fc; i++) {
-				fields.add(new Field(i, metadata.getFieldName(i),
+				fieldArray.add(new Field(i, metadata.getFieldName(i),
 						getDataSource().getFieldType(i)));
 			}
+			fields = fieldArray;
 		}
 		return fields;
 	}
