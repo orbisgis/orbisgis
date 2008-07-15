@@ -41,26 +41,30 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+
 import javax.swing.JOptionPane;
 
-import org.gdms.driver.DriverException;
+import org.grap.lut.LutDisplay;
 import org.orbisgis.DataManager;
 import org.orbisgis.Services;
 import org.orbisgis.editor.IEditor;
 import org.orbisgis.editor.action.IEditorAction;
 import org.orbisgis.editors.map.MapEditor;
 import org.orbisgis.layerModel.ILayer;
-import org.orbisgis.layerModel.LayerException;
 import org.orbisgis.layerModel.MapContext;
 import org.orbisgis.pluginManager.ui.SaveFilePanel;
 import org.orbisgis.progress.NullProgressMonitor;
 import org.orbisgis.renderer.Renderer;
+import org.orbisgis.renderer.legend.Legend;
+import org.orbisgis.renderer.legend.RasterLegend;
 import org.orbisgis.views.documentCatalog.documents.MapDocument;
 import org.sif.UIFactory;
+
 import com.lowagie.text.Document;
 import com.lowagie.text.DocumentException;
-import com.lowagie.text.Rectangle;
+import com.lowagie.text.PageSize;
 import com.lowagie.text.pdf.PdfContentByte;
+import com.lowagie.text.pdf.PdfTemplate;
 import com.lowagie.text.pdf.PdfWriter;
 import com.vividsolutions.jts.geom.Envelope;
 
@@ -77,45 +81,20 @@ public class ExportMapAsPDF implements IEditorAction {
 		MapDocument mapDocument = (MapDocument) editor.getDocument();
 		MapContext mc = mapDocument.getMapContext();
 
-		
 		DataManager dataManager = (DataManager) Services
 				.getService("org.orbisgis.DataManager");
-		ILayer root = dataManager.createLayerCollection("root");
 
-		ILayer[] allLayers = mc.getLayers();
+		ILayer root = mc.getLayerModel();
 		Envelope envelope = mapEditor.getMapTransform().getAdjustedExtent();
 
 		BufferedImage img = mapEditor.getMapTransform().getImage();
-		try {
-
-			for (int i = 0; i < allLayers.length; i++) {
-
-				ILayer layer = allLayers[i];
-				if (layer.isVisible() ) {
-					if (layer.isVectorial()){
-
-						layer.setLegend(allLayers[i].getVectorLegend());
-					}
-					else if (layer.isRaster()) {
-						//layer.setLegend(allLayers[i].getRasterLegend());
-					}
-					root.addLayer(layer);
-					layer.open();
-				}
-
-			}
-		} catch (LayerException e) {
-			Services.getErrorManager().error("Cannot open the layer", e);
-		} catch (DriverException e) {
-			Services.getErrorManager().error("Cannot open the layer", e);
-		}
 		save(img, envelope, root);
 
 	}
 
 	public boolean isEnabled(IEditor editor) {
 		MapDocument map = (MapDocument) editor.getDocument();
-		return map.getMapContext().getLayerModel().getLayerCount()>=1;
+		return map.getMapContext().getLayerModel().getLayerCount() >= 1;
 	}
 
 	public boolean isVisible(IEditor editor) {
@@ -129,11 +108,10 @@ public class ExportMapAsPDF implements IEditorAction {
 	 * @param envelope
 	 * @param layer
 	 */
-	public void save(BufferedImage img, Envelope envelope,
-			ILayer layer) {
+	public void save(BufferedImage img, Envelope envelope, ILayer layer) {
 		int width = img.getWidth();
 		int height = img.getHeight();
-		Document document = new Document(new Rectangle(width, height));
+		Document document = new Document(PageSize.A4.rotate());
 
 		try {
 
@@ -142,7 +120,7 @@ public class ExportMapAsPDF implements IEditorAction {
 			final SaveFilePanel outfilePanel = new SaveFilePanel(
 					"org.orbisgis.editors.map.actions.ExportMapAsPDF",
 					"Choose a file format");
-			outfilePanel.addFilter("pdf", "Scalable Vector Graphics (*.pdf)");
+			outfilePanel.addFilter("pdf", "Portable Document Format (*.pdf)");
 
 			if (UIFactory.showDialog(outfilePanel)) {
 				final File savedFile = new File(outfilePanel.getSelectedFile()
@@ -158,11 +136,65 @@ public class ExportMapAsPDF implements IEditorAction {
 
 					PdfContentByte cb = writer.getDirectContent();
 
-					Graphics2D g2d = cb.createGraphicsShapes(width, height);
+					PdfTemplate tp = cb.createTemplate(document.getPageSize()
+							.getWidth(), document.getPageSize().getHeight());
+
+					Graphics2D g2d = tp.createGraphicsShapes(width, height);
 
 					r.draw(g2d, width, height, envelope, layer,
 							new NullProgressMonitor());
 					g2d.dispose();
+
+					cb.addTemplate(tp, 0, height);
+					PdfTemplate vectorTP = cb.createTemplate(width, height);
+
+					Graphics2D vectorg2d = vectorTP.createGraphicsShapes(width,
+							height);
+
+					ILayer[] layers = layer.getLayersRecursively();
+
+					for (int i = 0; i < layers.length; i++) {
+						if (layers[i].isVisible()) {
+							if (layers[i].isVectorial()) {
+								Legend[] vectorLegends = layers[i]
+										.getVectorLegend();
+								java.awt.Font font = new java.awt.Font("arial",
+										0, 12);
+								vectorg2d.setFont(font);
+								vectorg2d.drawString(layers[i].getName(), 0, 0);
+								for (int j = 0; j < vectorLegends.length; j++) {
+									Legend vectorLegend = vectorLegends[j];
+									vectorLegend.drawImage(vectorg2d);
+									int[] size = vectorLegend
+											.getImageSize(vectorg2d);
+									vectorg2d.translate(0, size[1]);
+
+								}
+
+							} else if (layers[i].isRaster()) {
+
+								// TODO generate a image for LUT with min and
+								// max
+								/*
+								 * RasterLegend[] rastersLegend =
+								 * layers[i].getRasterLegend();
+								 * 
+								 * for (int j = 0; j < rastersLegend.length;
+								 * j++) {
+								 * 
+								 * final LutDisplay lutDisplay = new
+								 * LutDisplay(rastersLegend[j].getColorModel());
+								 * 
+								 * vectorg2d.drawImage(lutDisplay.getImagePlus().getImage(),0,0,
+								 * null); }
+								 */
+
+							}
+						}
+					}
+					vectorg2d.dispose();
+
+					cb.addTemplate(vectorTP, 0, height);
 
 					JOptionPane.showMessageDialog(null,
 							"The file has been saved.");
