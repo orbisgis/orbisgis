@@ -63,7 +63,7 @@ public class ExportMapAsImage implements IEditorAction {
 		MapDocument mapDocument = (MapDocument) editor.getDocument();
 		MapContext mc = mapDocument.getMapContext();
 
-		ILayer[] allSelectedLayers = mc.getSelectedLayers();
+		ILayer[] allSelectedLayers = mc.getLayers();
 		Envelope envelope = new Envelope();
 
 		for (int i = 0; i < allSelectedLayers.length; i++) {
