@@ -25,11 +25,6 @@
 			<artifactId>org.orbisgis.core-ui</artifactId>
 			<version>1.2.0</version>
 		</dependency>
-		<dependency>
-			<groupId>org.orbisgis</groupId>
-			<artifactId>sif</artifactId>
-			<version>1.0.1</version>
-		</dependency>
 	</dependencies>
 
 	<build>
