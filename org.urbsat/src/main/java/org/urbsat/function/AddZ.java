@@ -20,7 +20,7 @@ import com.vividsolutions.jts.geom.CoordinateSequence;
 import com.vividsolutions.jts.geom.CoordinateSequenceFilter;
 import com.vividsolutions.jts.geom.Geometry;
 
-public class RoughGrading implements Function {
+public class AddZ implements Function {
 	private GeoRaster dem = null;
 	private ImageProcessor demIp = null;
 
@@ -47,39 +47,45 @@ public class RoughGrading implements Function {
 			// for (Coordinate coordinate : coordinates) {
 			// coordinate.z = getGroundZ(coordinate.x, coordinate.y);
 			// }
-
-			geometry.apply(new CoordinateSequenceFilter() {
-				private boolean done = false;
-
-				public void filter(CoordinateSequence seq, int i) {
-					double x = seq.getX(i);
-					double y = seq.getY(i);
-					seq.setOrdinate(i, 0, x);
-					seq.setOrdinate(i, 1, y);
-					try {
-						seq.setOrdinate(i, 2, getGroundZ(x, y));
-						if (i + 1 == seq.size()) {
-							done = true;
-						}
-					} catch (IOException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-				}
-
-				public boolean isDone() {
-					return done;
-				}
-
-				public boolean isGeometryChanged() {
-					return true;
-				}
-			});
+			ZFilter zFilter = new ZFilter();
+			geometry.apply(zFilter);
+			if (null != zFilter.exception) {
+				throw new FunctionException(zFilter.exception);
+			}
 
 			return ValueFactory.createValue(geometry);
 		} catch (IOException e) {
 			throw new FunctionException(
 					"Bug while trying to retrieve the GeoRaster data", e);
+		}
+	}
+
+	private class ZFilter implements CoordinateSequenceFilter {
+		private boolean done = false;
+		IOException exception = null;
+
+		public void filter(CoordinateSequence seq, int i) {
+			double x = seq.getX(i);
+			double y = seq.getY(i);
+			seq.setOrdinate(i, 0, x);
+			seq.setOrdinate(i, 1, y);
+			try {
+				seq.setOrdinate(i, 2, getGroundZ(x, y));
+				if (i + 1 == seq.size()) {
+					done = true;
+				}
+			} catch (IOException e) {
+				exception = e;
+				done = true;
+			}
+		}
+
+		public boolean isDone() {
+			return done;
+		}
+
+		public boolean isGeometryChanged() {
+			return true;
 		}
 	}
 
@@ -102,11 +108,11 @@ public class RoughGrading implements Function {
 	}
 
 	public String getName() {
-		return "RoughGrading";
+		return "AddZ";
 	}
 
 	public String getSqlOrder() {
-		return "select RoughGrading(b.the_geom, d.raster) from buildings b, dem d;";
+		return "select AddZ(b.the_geom, d.raster) from buildings b, dem d;";
 	}
 
 	public Type getType(Type[] argsTypes) throws InvalidTypeException {

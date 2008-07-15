@@ -39,7 +39,7 @@ package org.urbsat;
 import org.gdms.sql.customQuery.QueryManager;
 import org.gdms.sql.function.FunctionManager;
 import org.orbisgis.pluginManager.PluginActivator;
-import org.urbsat.function.RoughGrading;
+import org.urbsat.function.AddZ;
 import org.urbsat.kmeans.KMeans;
 import org.urbsat.landcoverIndicators.function.CircleCompacity;
 import org.urbsat.landcoverIndicators.function.MeanSpacingBetweenBuildingsInACell;
@@ -74,7 +74,7 @@ public class Register implements PluginActivator {
 
 		QueryManager.registerQuery(new MainDirections());
 
-		FunctionManager.addFunction(RoughGrading.class);
+		FunctionManager.addFunction(AddZ.class);
 	}
 
 	public void stop() throws Exception {
