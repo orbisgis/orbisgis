@@ -107,11 +107,10 @@ public class ExportMapAsImage implements IEditorAction {
 
 					JOptionPane.showMessageDialog(null,
 							"The file has been saved.");
-				} 
+				}
 
 			} catch (IOException e) {
-				Services.getErrorManager().error(
-						"Cannot find writer for image format", e);
+				Services.getErrorManager().error("Cannot write image", e);
 			}
 
 		}

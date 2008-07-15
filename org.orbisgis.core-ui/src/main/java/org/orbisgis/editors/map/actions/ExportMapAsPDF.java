@@ -65,10 +65,10 @@ import com.lowagie.text.pdf.PdfWriter;
 import com.vividsolutions.jts.geom.Envelope;
 
 /**
- * 
+ *
  * Export a map in a pdf. Currently only vector data are taking into into
  * account.
- * 
+ *
  */
 public class ExportMapAsPDF implements IEditorAction {
 
@@ -96,7 +96,7 @@ public class ExportMapAsPDF implements IEditorAction {
 
 	/**
 	 * TODO take into account raster with nice resolution
-	 * 
+	 *
 	 * @param layerPixelEnvelope
 	 * @param envelope
 	 * @param layer
@@ -171,13 +171,13 @@ public class ExportMapAsPDF implements IEditorAction {
 								/*
 								 * RasterLegend[] rastersLegend =
 								 * layers[i].getRasterLegend();
-								 * 
+								 *
 								 * for (int j = 0; j < rastersLegend.length;
 								 * j++) {
-								 * 
+								 *
 								 * final LutDisplay lutDisplay = new
 								 * LutDisplay(rastersLegend[j].getColorModel());
-								 * 
+								 *
 								 * vectorg2d.drawImage(lutDisplay.getImagePlus().getImage(),0,0,
 								 * null); }
 								 */
