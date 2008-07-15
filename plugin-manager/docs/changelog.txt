@@ -66,17 +66,24 @@
 		previous version
 		* Changed Type constants value
 		* Changed the methods to validate Functions and CustomQueries
+		* Substring function added in GDMS
 
 	- Symbology
-	    * Legends are persistent and can be edited
-	    * Few symbols are available
-	    * A symbol collection to store all the user customized symbols is added
+	    * Advanced thematic maps are available: choropleth,
+	    proportional, value classification, ...
+	    * Legend preview in TOC
+	    * Initial symbol set available
+	    * A symbol collection to store all the user customized symbols
+	    is added
+
+	- Export
+		* Export map as image
 
 	- Plug-in system
 		* Fixed some bug with progress bar and workspace management
 
 	- Processing
-		* New triangulation methods integrated
+		* New triangulation methods integrated (prototype)
 
 	- UrbSAT
 		* New AddZ custom query
