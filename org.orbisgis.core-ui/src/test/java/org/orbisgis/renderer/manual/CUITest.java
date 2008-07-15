@@ -45,9 +45,9 @@ import org.gdms.data.types.Type;
 import org.gdms.driver.DriverException;
 import org.orbisgis.DataManager;
 import org.orbisgis.DefaultDataManager;
-import org.orbisgis.DefaultExtendedWorkspace;
+import org.orbisgis.DefaultOGWorkspace;
 import org.orbisgis.DefaultSymbolManager;
-import org.orbisgis.ExtendedWorkspace;
+import org.orbisgis.OGWorkspace;
 import org.orbisgis.Services;
 import org.orbisgis.SymbolManager;
 import org.orbisgis.editorViews.toc.actions.cui.LegendsPanel;
@@ -83,8 +83,8 @@ public class CUITest {
 					}
 
 				});
-		Services.registerService("org.orbisgis.ExtendedWorkspace",
-				ExtendedWorkspace.class, "", new DefaultExtendedWorkspace() {
+		Services.registerService("org.orbisgis.OGWorkspace",
+				OGWorkspace.class, "", new DefaultOGWorkspace() {
 
 					@Override
 					public File getFile(String name) {
