@@ -174,16 +174,16 @@ public class Activator implements PluginActivator {
 			sourcesDir.mkdirs();
 		}
 
-		DefaultExtendedWorkspace defaultExtendedWorkspace = new DefaultExtendedWorkspace();
+		DefaultOGWorkspace defaultOGWorkspace = new DefaultOGWorkspace();
 		Services
 				.registerService(
-						"org.orbisgis.ExtendedWorkspace",
-						ExtendedWorkspace.class,
+						"org.orbisgis.OGWorkspace",
+						OGWorkspace.class,
 						"Gives access to directories inside the workspace. You can use the temporal folder in the workspace through this service. It lets the access to the results folder",
-						defaultExtendedWorkspace);
+						defaultOGWorkspace);
 
-		ExtendedWorkspace ews = (ExtendedWorkspace) Services
-				.getService("org.orbisgis.ExtendedWorkspace");
+		OGWorkspace ews = (OGWorkspace) Services
+				.getService("org.orbisgis.OGWorkspace");
 
 		dsf = new DataSourceFactory(sourcesDir.getAbsolutePath(), ews
 				.getTempFolder().getAbsolutePath());
@@ -241,11 +241,11 @@ public class Activator implements PluginActivator {
 		try {
 			sm.saveXML();
 		} catch (JAXBException e1) {
-			Services.getErrorManager()
-					.error("Cannot save symbol collection", e1);
+			Services.getErrorManager().error("Cannot save symbol collection",
+					e1);
 		} catch (IOException e1) {
-			Services.getErrorManager()
-					.error("Cannot save symbol collection", e1);
+			Services.getErrorManager().error("Cannot save symbol collection",
+					e1);
 		}
 
 		EPWindowHelper.saveStatus();

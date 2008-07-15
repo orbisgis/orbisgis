@@ -42,12 +42,12 @@ import java.io.IOException;
 import org.orbisgis.pluginManager.workspace.Workspace;
 import org.orbisgis.pluginManager.workspace.WorkspaceListener;
 
-public class DefaultExtendedWorkspace implements ExtendedWorkspace {
+public class DefaultOGWorkspace implements OGWorkspace {
 
 	private static final String TEMP_FOLDER_NAME = "temp";
 	private static final String RESULTS_FOLDER_NAME = "results";
 
-	public DefaultExtendedWorkspace() {
+	public DefaultOGWorkspace() {
 
 		File tempDir = getWorkspace().getFile(TEMP_FOLDER_NAME);
 		if (!tempDir.exists()) {
