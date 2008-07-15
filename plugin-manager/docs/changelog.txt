@@ -77,3 +77,6 @@
 
 	- Processing
 		* New triangulation methods integrated
+
+	- UrbSAT
+		* New AddZ custom query
