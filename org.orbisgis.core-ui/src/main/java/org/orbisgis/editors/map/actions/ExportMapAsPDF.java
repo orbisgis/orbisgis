@@ -43,8 +43,6 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 
 import javax.swing.JOptionPane;
-
-import org.grap.lut.LutDisplay;
 import org.orbisgis.DataManager;
 import org.orbisgis.Services;
 import org.orbisgis.editor.IEditor;
@@ -56,7 +54,6 @@ import org.orbisgis.pluginManager.ui.SaveFilePanel;
 import org.orbisgis.progress.NullProgressMonitor;
 import org.orbisgis.renderer.Renderer;
 import org.orbisgis.renderer.legend.Legend;
-import org.orbisgis.renderer.legend.RasterLegend;
 import org.orbisgis.views.documentCatalog.documents.MapDocument;
 import org.sif.UIFactory;
 
@@ -202,13 +199,12 @@ public class ExportMapAsPDF implements IEditorAction {
 
 			}
 
-		} catch (FileNotFoundException e1) {
-			e1.printStackTrace();
-		} catch (DocumentException e1) {
-			e1.printStackTrace();
-
+		} catch (FileNotFoundException e) {
+			Services.getErrorManager().error("Cannot write on the disk", e);
+		} catch (DocumentException e) {
+			Services.getErrorManager().error("Cannot write the PDF", e);
 		} catch (Exception e) {
-			Services.getErrorManager().error("Cannot export in SVG", e);
+			Services.getErrorManager().error("Cannot export in PDF", e);
 		}
 
 		document.close();
