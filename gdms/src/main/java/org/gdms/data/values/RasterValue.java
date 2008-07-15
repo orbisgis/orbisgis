@@ -50,7 +50,7 @@ import java.io.IOException;
 
 import org.gdms.data.types.Type;
 import org.gdms.sql.strategies.IncompatibleTypesException;
-import org.grap.io.FileReader;
+import org.grap.io.RasterReader;
 import org.grap.model.GeoRaster;
 import org.grap.model.GeoRasterFactory;
 import org.grap.model.RasterMetadata;
@@ -260,7 +260,7 @@ public class RasterValue extends AbstractValue {
 		}
 	}
 
-	private static class ByteArrayFileReader implements FileReader {
+	private static class ByteArrayFileReader implements RasterReader {
 
 		private RasterMetadata metadata;
 		private ByteProvider byteProvider;
