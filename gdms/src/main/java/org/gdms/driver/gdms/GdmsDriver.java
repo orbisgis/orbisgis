@@ -71,7 +71,7 @@ import com.vividsolutions.jts.geom.Envelope;
 
 public class GdmsDriver extends GDMSModelDriver implements FileReadWriteDriver {
 
-	private static final byte VERSION_NUMBER = 1;
+	private static final byte VERSION_NUMBER = 2;
 	private ReadBufferManager rbm;
 	private int rowCount;
 	private int fieldCount;
