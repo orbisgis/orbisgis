@@ -74,7 +74,7 @@ public class ExportMapAsImage implements IEditorAction {
 		}
 
 		Envelope intersectEnv = envelope.intersection(mapEditor
-				.getMapTransform().getExtent());
+				.getMapTransform().getAdjustedExtent());
 
 		Envelope layerPixelEnvelope = mapEditor.getMapTransform().toPixel(
 				intersectEnv);
