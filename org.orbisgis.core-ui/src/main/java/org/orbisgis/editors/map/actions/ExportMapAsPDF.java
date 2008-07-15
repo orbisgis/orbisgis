@@ -78,9 +78,6 @@ public class ExportMapAsPDF implements IEditorAction {
 		MapDocument mapDocument = (MapDocument) editor.getDocument();
 		MapContext mc = mapDocument.getMapContext();
 
-		DataManager dataManager = (DataManager) Services
-				.getService("org.orbisgis.DataManager");
-
 		ILayer root = mc.getLayerModel();
 		Envelope envelope = mapEditor.getMapTransform().getAdjustedExtent();
 
