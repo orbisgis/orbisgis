@@ -90,7 +90,6 @@ public class ExportMapAsImage implements IEditorAction {
 		outfilePanel.addFilter("png", "Portable Network Graphics (*.png)");
 		outfilePanel.addFilter("jpeg ",
 				"Joint Photographic Experts Group (*.jpg)");
-		outfilePanel.addFilter("svg ", "Scalable Vector Graphics (*.svg)");
 
 		if (UIFactory.showDialog(outfilePanel)) {
 			final File savedFile = new File(outfilePanel.getSelectedFile()
