@@ -1,7 +1,7 @@
 <plugin>
 	<activator class="org.orbisgis.Activator"/>
 
-	<application name="OrbisGIS" version="1.1.0 (Boston)"
+	<application name="OrbisGIS" version="1.2.0 (Naoned)"
 		organization="IRSTV CNRS-FR-2488" workspace-version="1"/>
 
 	<!-- windows -->
@@ -289,7 +289,7 @@
 			editor-id="org.orbisgis.editors.Map"
 			class="org.orbisgis.editors.map.actions.ExportMapAsImage"/>
 	</extension>
-	
+
 	<!--<extension id="org.orbisgis.editors.map.actions.Export"
 		point="org.orbisgis.editor.Action">
 		<editor-action menu-id="org.orbisgis.Map"
@@ -299,7 +299,7 @@
 			editor-id="org.orbisgis.editors.Map"
 			class="org.orbisgis.editors.map.actions.ExportMapAsPDF"/>
 	</extension>-->
-	
+
 
 	<!-- map editor tools -->
 	<extension id="org.orbisgis.editors.map.tools.NavigationTools"
