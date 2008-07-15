@@ -3,13 +3,13 @@
 	<parent>
 		<artifactId>platform</artifactId>
 		<groupId>org.orbisgis</groupId>
-		<version>1.1.0</version>
+		<version>1.2.0</version>
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.orbisgis</groupId>
 	<artifactId>sif</artifactId>
 	<name>sif</name>
-	<version>1.0.1</version>
+	<version>1.0.2</version>
 	<url>http://maven.apache.org</url>
 	<dependencies>
 		<dependency>
@@ -21,7 +21,7 @@
 		<dependency>
 			<groupId>org.gdms</groupId>
 			<artifactId>gdms</artifactId>
-			<version>1.1.0</version>
+			<version>1.2.0</version>
 		</dependency>
 	</dependencies>
 </project>
