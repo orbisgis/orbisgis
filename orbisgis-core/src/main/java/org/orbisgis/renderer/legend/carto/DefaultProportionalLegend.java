@@ -71,6 +71,7 @@ import org.orbisgis.renderer.symbol.EditablePointSymbol;
 import org.orbisgis.renderer.symbol.Symbol;
 import org.orbisgis.renderer.symbol.SymbolFactory;
 import org.orbisgis.renderer.symbol.collection.DefaultSymbolCollection;
+import org.orbisgis.renderer.symbol.collection.persistence.SimpleSymbolType;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
@@ -86,9 +87,9 @@ public class DefaultProportionalLegend extends AbstractLegend implements
 	private double sqrtFactor;
 	private EditablePointSymbol symbol;
 	private ProportionalMethod proportionnalMethod;
-	private int bigSize = 80;
-	private int smallSize = 30;
-	private int xOffset = 10;
+	private int bigSize = 60;
+	private int smallSize = 22;
+	private int xOffset = 7;
 
 	public DefaultProportionalLegend() {
 		symbol = (EditablePointSymbol) SymbolFactory.createCirclePolygonSymbol(
@@ -229,8 +230,15 @@ public class DefaultProportionalLegend extends AbstractLegend implements
 				load(xmlLegend);
 				setMethod(xmlLegend.getMethod());
 				setMinSymbolArea(xmlLegend.getMinArea());
-				setSampleSymbol((EditablePointSymbol) DefaultSymbolCollection
-						.getSymbolFromXML(xmlLegend.getSampleSymbol()));
+				Symbol symbol = DefaultSymbolCollection
+						.getSymbolFromXML(xmlLegend.getSampleSymbol());
+				if (symbol != null) {
+					setSampleSymbol((EditablePointSymbol) symbol);
+				} else {
+					throw new PersistenceException("Unknown symbol: "
+							+ ((SimpleSymbolType) xmlLegend.getSampleSymbol())
+									.getSymbolTypeId());
+				}
 				setClassificationField(xmlLegend.getFieldName());
 			} catch (JAXBException e) {
 				throw new PersistenceException("Cannot recover legend", e);
@@ -318,26 +326,21 @@ public class DefaultProportionalLegend extends AbstractLegend implements
 			Point geom = gf.createPoint(new Coordinate(lineStartX, textOffset
 					+ bigSize / 2));
 
+			RenderPermission renderPermission = new RenderPermission() {
+
+				public boolean canDraw(Envelope env) {
+					return true;
+				}
+
+			};
 			big.draw((Graphics2D) g, geom, new AffineTransform(),
-					new RenderPermission() {
-
-						public boolean canDraw(Envelope env) {
-							return true;
-						}
-
-					});
+					renderPermission);
 
 			Point geom2 = gf.createPoint(new Coordinate(lineStartX, textOffset
 					+ bigSize - smallSize / 2));
 
 			small.draw((Graphics2D) g, geom2, new AffineTransform(),
-					new RenderPermission() {
-
-						public boolean canDraw(Envelope env) {
-							return true;
-						}
-
-					});
+					renderPermission);
 
 		} catch (DriverException e) {
 			Services.getErrorManager()
