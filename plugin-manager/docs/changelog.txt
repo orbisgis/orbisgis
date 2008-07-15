@@ -58,3 +58,22 @@
 		* Changed DataSource.cancel for DataSource.close. DataSource.commit doesn't
 		close the DataSource anymore. Added a new method syncWithSource. See
 		javadoc for more information
+
+15-7-2008
+
+	- GDMS
+		* GDMS format internally changed. Now it is incompatible with
+		previous version
+		* Changed Type constants value
+		* Changed the methods to validate Functions and CustomQueries
+
+	- Symbology
+	    * Legends are persistent and can be edited
+	    * Few symbols are available
+	    * A symbol collection to store all the user customized symbols is added
+
+	- Plug-in system
+		* Fixed some bug with progress bar and workspace management
+
+	- Processing
+		* New triangulation methods integrated
