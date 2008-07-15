@@ -145,7 +145,7 @@ EOF
 
 makeZip() {
 	cp ${DST_SVN_DIRECTORY}/platform/plugin-manager/docs/license.txt ${RELEASE_DIRECTORY};
-	cd $(dirname ${RELEASE_DIRECTORY}) && zip -r orbisgis-${VERSION} $(basename ${RELEASE_DIRECTORY});
+	cd $(dirname ${RELEASE_DIRECTORY}) && zip -r orbisgis-${VERSION}.zip $(basename ${RELEASE_DIRECTORY});
 }
 # ======================================================================
 if [ ${#} -eq 1 ]; then
