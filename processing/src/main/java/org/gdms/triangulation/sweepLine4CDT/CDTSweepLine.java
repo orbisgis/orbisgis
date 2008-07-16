@@ -249,6 +249,11 @@ public class CDTSweepLine {
 			CDTBasin basin = new CDTBasin(slVertices, leftBasin[0],
 					leftBasin[1], leftBasin[2], pslg);
 			basin.fillIn();
+
+			// update the sweep-line
+			for (int i = 0; i < leftBasin[2] - leftBasin[0] - 1; i++) {
+				slVertices.remove(leftBasin[0] + 1);
+			}
 		}
 
 		int[] rightBasin = findBasinOnTheRightSide(idx);
@@ -259,6 +264,11 @@ public class CDTSweepLine {
 			CDTBasin basin = new CDTBasin(slVertices, rightBasin[0],
 					rightBasin[1], rightBasin[2], pslg);
 			basin.fillIn();
+
+			// update the sweep-line
+			for (int i = 0; i < rightBasin[2] - rightBasin[0] - 1; i++) {
+				slVertices.remove(rightBasin[0] + 1);
+			}
 		}
 	}
 

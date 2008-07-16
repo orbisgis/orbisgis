@@ -79,15 +79,17 @@ public class CDTBasinTest extends TestCase {
 				new CDTVertex(new Coordinate(16, 10)) };
 		basin2 = new CDTBasin(Arrays.asList(sl2), 1, 6, 15, null);
 
+		double x0 = 183590;
+		double y0 = 2424200;
 		CDTVertex[] sl3 = new CDTVertex[] { new CDTVertex(new Coordinate()),
-				new CDTVertex(new Coordinate(183592.515625, 2424205.75)),
-				new CDTVertex(new Coordinate(183592.890625, 2424202.5)),
-				new CDTVertex(new Coordinate(183598.140625, 2424202.25)),
-				new CDTVertex(new Coordinate(183604.46875, 2424204)),
-				new CDTVertex(new Coordinate(183606.15625, 2424204.5)),
-				new CDTVertex(new Coordinate(183615.453125, 2424208)),
-				new CDTVertex(new Coordinate(183616.6875, 2424208.5)),
-				new CDTVertex(new Coordinate(183621.484375, 2424210.75)), };
+				new CDTVertex(new Coordinate(x0 + 2.515625, y0 + 5.75)),
+				new CDTVertex(new Coordinate(x0 + 2.890625, y0 + 2.5)),
+				new CDTVertex(new Coordinate(x0 + 8.140625, y0 + 2.25)),
+				new CDTVertex(new Coordinate(x0 + 14.46875, y0 + 4)),
+				new CDTVertex(new Coordinate(x0 + 16.15625, y0 + 4.5)),
+				new CDTVertex(new Coordinate(x0 + 25.453125, y0 + 8)),
+				new CDTVertex(new Coordinate(x0 + 26.6875, y0 + 8.5)),
+				new CDTVertex(new Coordinate(x0 + 31.484375, y0 + 10.75)) };
 		basin3 = new CDTBasin(Arrays.asList(sl3), 1, 3, 8, null);
 	}
 
@@ -227,9 +229,9 @@ public class CDTBasinTest extends TestCase {
 				new CDTTriangle(new CDTVertex(new Coordinate(5, 2)),
 						new CDTVertex(new Coordinate(7, 1)), new CDTVertex(
 								new Coordinate(7, 3)), null)));
-		// assertTrue(triangles2.get().equals(
+		// assertTrue(triangles3.get().equals(
 		// new CDTTriangle(new CDTVertex(new Coordinate()), new CDTVertex(
 		// new Coordinate()), new CDTVertex(new Coordinate()),
 		// null)));
-}
+	}
 }

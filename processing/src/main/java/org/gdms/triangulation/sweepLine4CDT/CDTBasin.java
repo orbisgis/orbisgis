@@ -37,9 +37,14 @@
 package org.gdms.triangulation.sweepLine4CDT;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.Stack;
 
 import com.vividsolutions.jts.geom.Coordinate;
@@ -177,26 +182,54 @@ public class CDTBasin {
 
 	protected List<CDTTriangle> meshIntoTriangles() {
 		// CDTBasin must be normalized !
-		final List<CDTEdge> edges = meshIntoEdges();
-		final List<CDTTriangle> result = new ArrayList<CDTTriangle>();
-		CDTEdge prev = new CDTEdge(basinLeftBorder, basinRightBorder);
-		for (CDTEdge edge : edges) {
-			if (prev.getBegin() == edge.getBegin()) {
-				result.add(0, new CDTTriangle(slVertices.get(prev.getBegin()),
-						slVertices.get(prev.getEnd()), slVertices.get(edge
-								.getEnd()), pslg));
-			} else if (prev.getEnd() == edge.getEnd()) {
-				result.add(0, new CDTTriangle(slVertices.get(prev.getBegin()),
-						slVertices.get(prev.getEnd()), slVertices.get(edge
-								.getBegin()), pslg));
-			} else {
-				throw new RuntimeException("Unreachable code !");
+		final Set<CDTTriangle> result = new HashSet<CDTTriangle>();
+		final Map<Integer, Set<Integer>> map = new HashMap<Integer, Set<Integer>>();
+		for (int i = basinLeftBorder; i <= basinRightBorder; i++) {
+			final Set<Integer> tmpSet = new HashSet<Integer>();
+			if (i > basinLeftBorder) {
+				tmpSet.add(i - 1);
 			}
-			prev = edge;
+			if (i < basinRightBorder) {
+				tmpSet.add(i + 1);
+			}
+			map.put(i, tmpSet);
 		}
-		result.add(0, new CDTTriangle(slVertices.get(prev.getBegin()),
-				slVertices.get(prev.getEnd()), slVertices.get(basinBed), pslg));
-		return result;
+		final Set<Integer> tmpSetLeft = new HashSet<Integer>();
+		tmpSetLeft.add(basinRightBorder);
+		map.put(basinLeftBorder, tmpSetLeft);
+
+		final Set<Integer> tmpSetRight = new HashSet<Integer>();
+		tmpSetRight.add(basinLeftBorder);
+		map.put(basinRightBorder, tmpSetRight);
+
+		final List<CDTEdge> edges = meshIntoEdges();
+		for (CDTEdge edge : edges) {
+			map.get(edge.getBegin()).add(edge.getEnd());
+			map.get(edge.getEnd()).add(edge.getBegin());
+		}
+
+		for (CDTEdge edge : edges) {
+			Set<Integer> beginSet = map.get(edge.getBegin());
+			Set<Integer> endSet = map.get(edge.getEnd());
+			if (beginSet.size() < endSet.size()) {
+				for (int idxOfThe3rdVtx : beginSet) {
+					if (endSet.contains(idxOfThe3rdVtx)) {
+						result.add(new CDTTriangle(slVertices.get(edge
+								.getBegin()), slVertices.get(edge.getEnd()),
+								slVertices.get(idxOfThe3rdVtx), pslg));
+					}
+				}
+			} else {
+				for (int idxOfThe3rdVtx : endSet) {
+					if (beginSet.contains(idxOfThe3rdVtx)) {
+						result.add(new CDTTriangle(slVertices.get(edge
+								.getBegin()), slVertices.get(edge.getEnd()),
+								slVertices.get(idxOfThe3rdVtx), pslg));
+					}
+				}
+			}
+		}
+		return Arrays.asList(result.toArray(new CDTTriangle[0]));
 	}
 
 	public void fillIn() {
