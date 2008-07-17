@@ -40,6 +40,7 @@ import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.geom.AffineTransform;
+import java.awt.geom.NoninvertibleTransformException;
 import java.awt.geom.Point2D;
 
 import org.gdms.driver.DriverException;
@@ -52,15 +53,16 @@ import com.vividsolutions.jts.geom.Point;
 public class SquarePointSymbol extends AbstractPointSymbol {
 
 	public SquarePointSymbol(Color outline, int lineWidth, Color fillColor,
-			int size) {
-		super(outline, lineWidth, fillColor, size);
+			int size, boolean mapUnits) {
+		super(outline, lineWidth, fillColor, size, mapUnits);
 	}
 
 	public Symbol cloneSymbol() {
-		return new SquarePointSymbol(outline, lineWidth, fillColor, size);
+		return new SquarePointSymbol(outline, lineWidth, fillColor, size,
+				mapUnits);
 	}
 
-	protected void paintSquare(Graphics2D g, int x, int y) {
+	protected void paintSquare(Graphics2D g, int x, int y, int size) {
 		x = x - size / 2;
 		y = y - size / 2;
 		if (fillColor != null) {
@@ -79,7 +81,15 @@ public class SquarePointSymbol extends AbstractPointSymbol {
 		Point point = geom.getInteriorPoint();
 		Point2D p = new Point2D.Double(point.getX(), point.getY());
 		p = at.transform(p, null);
-		paintSquare(g, (int) p.getX(), (int) p.getY());
+		int drawingSize = size;
+		if (mapUnits) {
+			try {
+				drawingSize = (int) toPixelUnits(size, at);
+			} catch (NoninvertibleTransformException e) {
+				throw new DriverException("Cannot convert to map units", e);
+			}
+		}
+		paintSquare(g, (int) p.getX(), (int) p.getY(), drawingSize);
 
 		return null;
 	}

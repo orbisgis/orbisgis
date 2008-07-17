@@ -104,7 +104,7 @@ public class PnlProportionalLegend extends JPanel implements ILegendPanelUI {
 		lblPanel.add(new CarriageReturn());
 		lblPanel.add(new JLabel("Proportional method:"));
 		lblPanel.add(new CarriageReturn());
-		lblPanel.add(new JLabel("Minimum area:"));
+		lblPanel.add(new JLabel("Maximum area:"));
 
 		confPanel.add(lblPanel);
 

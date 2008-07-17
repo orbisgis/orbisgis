@@ -44,14 +44,25 @@ import com.vividsolutions.jts.geom.Polygon;
 
 public class PolygonCentroidSquareSymbol extends SquarePointSymbol {
 
-	public PolygonCentroidSquareSymbol(Color outline, int lineWidth, Color fillColor,
-			int size) {
-		super(outline, lineWidth, fillColor, size);
+	public PolygonCentroidSquareSymbol(Color outline, int lineWidth,
+			Color fillColor, int size, boolean mapUnits) {
+		super(outline, lineWidth, fillColor, size, mapUnits);
 	}
 
 	@Override
 	public boolean willDrawSimpleGeometry(Geometry geom) {
 		return geom instanceof Polygon || geom instanceof MultiPolygon;
+	}
+
+	@Override
+	public Symbol cloneSymbol() {
+		return new PolygonCentroidSquareSymbol(outline, lineWidth, fillColor,
+				size, mapUnits);
+	}
+
+	@Override
+	public String getClassName() {
+		return "Square in polygon centroid";
 	}
 
 	@Override

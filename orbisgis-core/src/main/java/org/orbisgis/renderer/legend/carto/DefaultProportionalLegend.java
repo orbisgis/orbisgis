@@ -88,12 +88,12 @@ public class DefaultProportionalLegend extends AbstractLegend implements
 	private EditablePointSymbol symbol;
 	private ProportionalMethod proportionnalMethod;
 	private int bigSize = 60;
-	private int smallSize = 22;
 	private int xOffset = 7;
 
 	public DefaultProportionalLegend() {
 		symbol = (EditablePointSymbol) SymbolFactory.createCirclePolygonSymbol(
 				Color.BLACK, Color.pink, 10);
+		symbol.setMapUnits(true);
 	}
 
 	public void setMinSymbolArea(int minSymbolArea) {
@@ -122,7 +122,7 @@ public class DefaultProportionalLegend extends AbstractLegend implements
 			throws RenderException {
 		proportionnalMethod = new ProportionalMethod(sds, field);
 		try {
-			proportionnalMethod.build(minSymbolArea);
+			proportionnalMethod.build(Math.pow(minSymbolArea, 2));
 		} catch (DriverException e) {
 			throw new RenderException("Cannot compute the proportional method",
 					e);
@@ -272,6 +272,7 @@ public class DefaultProportionalLegend extends AbstractLegend implements
 
 	public void setSampleSymbol(EditablePointSymbol symbol) {
 		this.symbol = symbol;
+		this.symbol.setMapUnits(true);
 	}
 
 	public int getMethod() {
@@ -295,17 +296,15 @@ public class DefaultProportionalLegend extends AbstractLegend implements
 	public void drawImage(Graphics g) {
 		EditablePointSymbol big = (EditablePointSymbol) symbol.cloneSymbol();
 		big.setSize(bigSize);
-		EditablePointSymbol small = (EditablePointSymbol) symbol.cloneSymbol();
-		small.setSize(smallSize);
 		GeometryFactory gf = new GeometryFactory();
 
 		FontMetrics fm = g.getFontMetrics();
-		String maxText = Double.toString(proportionnalMethod.getMaxValue());
+		double maxValue = proportionnalMethod.getMaxValue();
+		String maxText = Double.toString(maxValue);
 		Rectangle2D r = fm.getStringBounds(maxText, g);
 		int textOffset = (int) r.getHeight();
 
-		// Draw lines
-		int topSmall = bigSize - smallSize + textOffset;
+		// lines x dimension
 		int lineStartX = xOffset + bigSize / 2;
 		int lineEndX = xOffset + bigSize + 5;
 
@@ -314,13 +313,6 @@ public class DefaultProportionalLegend extends AbstractLegend implements
 		g.setColor(Color.black);
 		g.drawString(maxText, lineEndX + 5,
 				(int) (textOffset + r.getHeight() / 2));
-
-		// Draw min text
-		String minText = Double.toString(proportionnalMethod.getMinValue());
-		r = fm.getStringBounds(minText, g);
-		g.setColor(Color.black);
-		g.drawString(minText, lineEndX + 5,
-				(int) (topSmall + r.getHeight() / 2));
 
 		try {
 			Point geom = gf.createPoint(new Coordinate(lineStartX, textOffset
@@ -336,35 +328,70 @@ public class DefaultProportionalLegend extends AbstractLegend implements
 			big.draw((Graphics2D) g, geom, new AffineTransform(),
 					renderPermission);
 
-			Point geom2 = gf.createPoint(new Coordinate(lineStartX, textOffset
-					+ bigSize - smallSize / 2));
+			double realMaxSize = proportionnalMethod.getLinearSize(maxValue, 1);
+			double minValue = proportionnalMethod.getMinValue();
+			double meanValue = (minValue + maxValue) / 2;
+			double realMeanSize = proportionnalMethod.getLinearSize(meanValue,
+					1);
+			double meanSize = bigSize * (realMeanSize / realMaxSize);
+			drawCircle(g, meanSize, textOffset, lineStartX, lineEndX,
+					renderPermission, Double.toString(meanValue) + " (mean)");
 
-			small.draw((Graphics2D) g, geom2, new AffineTransform(),
-					renderPermission);
-
+			double realSmallSize = proportionnalMethod.getLinearSize(minValue,
+					1);
+			double smallSize = bigSize * (realSmallSize / realMaxSize);
+			drawCircle(g, smallSize, textOffset, lineStartX, lineEndX,
+					renderPermission, Double.toString(proportionnalMethod
+							.getMinValue()));
 		} catch (DriverException e) {
 			Services.getErrorManager()
 					.error("Cannot get proportional image", e);
 		}
 
-		g.setColor(Color.black);
-		g.drawLine(lineStartX, topSmall, lineEndX, topSmall);
 		g.drawLine(lineStartX, textOffset, lineEndX, textOffset);
 
+	}
+
+	private void drawCircle(Graphics g, double smallSize, int textOffset,
+			int lineStartX, int lineEndX, RenderPermission renderPermission,
+			String text) throws DriverException {
+		EditablePointSymbol small = (EditablePointSymbol) symbol.cloneSymbol();
+		small.setSize((int) smallSize);
+		int topSmall = (int) (bigSize - smallSize + textOffset);
+		String minText = text;
+		g.setColor(Color.black);
+		Rectangle2D r = g.getFontMetrics().getStringBounds(minText, g);
+		g.drawString(minText, lineEndX + 5,
+				(int) (topSmall + r.getHeight() / 2));
+		Point geom2 = new GeometryFactory().createPoint(new Coordinate(
+				lineStartX, textOffset + bigSize - smallSize / 2));
+
+		small.draw((Graphics2D) g, geom2, new AffineTransform(),
+				renderPermission);
+		g.setColor(Color.black);
+		g.drawLine(lineStartX, topSmall, lineEndX, topSmall);
 	}
 
 	public int[] getImageSize(Graphics g) {
 		FontMetrics fm = g.getFontMetrics();
 		if (proportionnalMethod != null) {
-			String maxText = Double.toString(proportionnalMethod.getMaxValue());
+			double maxValue = proportionnalMethod.getMaxValue();
+			String maxText = Double.toString(maxValue);
 			Rectangle2D r = fm.getStringBounds(maxText, g);
-			int height = (int) (r.getHeight() + bigSize);
+			int height = (int) (r.getHeight() + bigSize + 1);
 			int maxWidth = (int) r.getWidth();
-			String minText = Double.toString(proportionnalMethod.getMinValue());
+			double minValue = proportionnalMethod.getMinValue();
+			String minText = Double.toString(minValue);
 			r = fm.getStringBounds(minText, g);
 			maxWidth = (int) Math.max(maxWidth, r.getWidth());
 
-			return new int[] { bigSize + xOffset + 10 + maxWidth, height };
+			String meanText = Double.toString((minValue + maxValue) / 2)
+					+ " (mean)";
+			r = fm.getStringBounds(meanText, g);
+			maxWidth = (int) Math.max(maxWidth, r.getWidth());
+
+			return new int[] { bigSize + xOffset + 10 + maxWidth,
+					(int) (height + r.getHeight() / 2) };
 		} else {
 			return new int[] { 0, 0 };
 		}

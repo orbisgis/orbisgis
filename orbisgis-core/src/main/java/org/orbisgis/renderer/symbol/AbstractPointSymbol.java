@@ -37,6 +37,8 @@
 package org.orbisgis.renderer.symbol;
 
 import java.awt.Color;
+import java.awt.geom.AffineTransform;
+import java.awt.geom.NoninvertibleTransformException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -51,11 +53,13 @@ public abstract class AbstractPointSymbol extends AbstractPolygonSymbol
 		implements EditablePointSymbol {
 
 	protected int size;
+	protected boolean mapUnits;
 
 	public AbstractPointSymbol(Color outline, int lineWidth, Color fillColor,
-			int size) {
+			int size, boolean mapUnits) {
 		super(outline, lineWidth, fillColor);
 		this.size = size;
+		this.mapUnits = mapUnits;
 	}
 
 	public boolean willDrawSimpleGeometry(Geometry geom) {
@@ -96,10 +100,24 @@ public abstract class AbstractPointSymbol extends AbstractPolygonSymbol
 		return ret;
 	}
 
+	protected double toPixelUnits(int size, AffineTransform at)
+			throws NoninvertibleTransformException {
+		double ret = at.getScaleX() * size;
+		return ret;
+	}
+
 	@Override
 	public void setPersistentProperties(Map<String, String> props,
 			String version) throws IncompatibleVersionException {
 		super.setPersistentProperties(props, version);
 		size = Integer.parseInt(props.get("size"));
+	}
+
+	public boolean isMapUnits() {
+		return mapUnits;
+	}
+
+	public void setMapUnits(boolean mapUnits) {
+		this.mapUnits = mapUnits;
 	}
 }

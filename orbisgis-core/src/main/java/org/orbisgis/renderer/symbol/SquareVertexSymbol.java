@@ -39,6 +39,7 @@ package org.orbisgis.renderer.symbol;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.geom.AffineTransform;
+import java.awt.geom.NoninvertibleTransformException;
 import java.awt.geom.PathIterator;
 
 import org.gdms.data.types.GeometryConstraint;
@@ -52,8 +53,8 @@ import com.vividsolutions.jts.geom.Geometry;
 public class SquareVertexSymbol extends SquarePointSymbol {
 
 	public SquareVertexSymbol(Color outline, int lineWidth, Color fillColor,
-			int size) {
-		super(outline, lineWidth, fillColor, size);
+			int size, boolean mapUnits) {
+		super(outline, lineWidth, fillColor, size, mapUnits);
 
 	}
 
@@ -63,9 +64,18 @@ public class SquareVertexSymbol extends SquarePointSymbol {
 		PathIterator pi = ls.getPathIterator(null);
 		double[] coords = new double[6];
 
+		int drawingSize = size;
+		if (mapUnits) {
+			try {
+				drawingSize = (int) toPixelUnits(size, at);
+			} catch (NoninvertibleTransformException e) {
+				throw new DriverException("Cannot convert to map units", e);
+			}
+		}
+
 		while (!pi.isDone()) {
 			pi.currentSegment(coords);
-			paintSquare(g, (int) coords[0], (int) coords[1]);
+			paintSquare(g, (int) coords[0], (int) coords[1], drawingSize);
 			pi.next();
 		}
 
@@ -87,7 +97,8 @@ public class SquareVertexSymbol extends SquarePointSymbol {
 	}
 
 	public EditableSymbol cloneSymbol() {
-		return new SquareVertexSymbol(outline, lineWidth, fillColor, size);
+		return new SquareVertexSymbol(outline, lineWidth, fillColor, size,
+				mapUnits);
 	}
 
 	public String getId() {

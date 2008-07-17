@@ -39,6 +39,7 @@ package org.orbisgis.renderer.symbol;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.geom.AffineTransform;
+import java.awt.geom.NoninvertibleTransformException;
 import java.awt.geom.PathIterator;
 
 import org.gdms.data.types.GeometryConstraint;
@@ -52,8 +53,8 @@ import com.vividsolutions.jts.geom.Geometry;
 public class CircleVertexSymbol extends CirclePointSymbol {
 
 	public CircleVertexSymbol(Color outline, int lineWidth, Color fillColor,
-			int size) {
-		super(outline, lineWidth, fillColor, size);
+			int size, boolean mapUnits) {
+		super(outline, lineWidth, fillColor, size, mapUnits);
 	}
 
 	@Override
@@ -71,7 +72,8 @@ public class CircleVertexSymbol extends CirclePointSymbol {
 	}
 
 	public EditableSymbol cloneSymbol() {
-		return new CircleVertexSymbol(outline, lineWidth, fillColor, size);
+		return new CircleVertexSymbol(outline, lineWidth, fillColor, size,
+				mapUnits);
 	}
 
 	public String getId() {
@@ -84,9 +86,18 @@ public class CircleVertexSymbol extends CirclePointSymbol {
 		PathIterator pi = ls.getPathIterator(null);
 		double[] coords = new double[6];
 
+		int drawingSize = size;
+		if (mapUnits) {
+			try {
+				drawingSize = (int) toPixelUnits(size, at);
+			} catch (NoninvertibleTransformException e) {
+				throw new DriverException("Cannot convert to map units", e);
+			}
+		}
+
 		while (!pi.isDone()) {
 			pi.currentSegment(coords);
-			paintCircle(g, (int) coords[0], (int) coords[1]);
+			paintCircle(g, (int) coords[0], (int) coords[1], drawingSize);
 			pi.next();
 		}
 

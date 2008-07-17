@@ -44,12 +44,14 @@ public class SymbolFactory {
 	private static ArrayList<Symbol> availableSymbols = new ArrayList<Symbol>();
 
 	static {
-		addSymbol(new CirclePointSymbol(Color.black, 1, Color.red, 10));
-		addSymbol(new SquarePointSymbol(Color.black, 1, Color.red, 10));
-		addSymbol(new SquareVertexSymbol(Color.black, 1, Color.red, 10));
-		addSymbol(new CircleVertexSymbol(Color.black, 1, Color.red, 10));
-		addSymbol(new PolygonCentroidCircleSymbol(Color.black, 1, Color.red, 10));
-		addSymbol(new PolygonCentroidSquareSymbol(Color.black, 1, Color.red, 10));
+		addSymbol(new CirclePointSymbol(Color.black, 1, Color.red, 10, false));
+		addSymbol(new SquarePointSymbol(Color.black, 1, Color.red, 10, false));
+		addSymbol(new SquareVertexSymbol(Color.black, 1, Color.red, 10, false));
+		addSymbol(new CircleVertexSymbol(Color.black, 1, Color.red, 10, false));
+		addSymbol(new PolygonCentroidCircleSymbol(Color.black, 1, Color.red,
+				10, false));
+		addSymbol(new PolygonCentroidSquareSymbol(Color.black, 1, Color.red,
+				10, false));
 		addSymbol(new PolygonSymbol(Color.black, 1, Color.red));
 		addSymbol(new LineSymbol(Color.black, 1));
 	}
@@ -76,7 +78,7 @@ public class SymbolFactory {
 
 	public static Symbol createPointCircleSymbol(Color outline,
 			Color fillColor, int size) {
-		return new CirclePointSymbol(outline, 1, fillColor, size);
+		return new CirclePointSymbol(outline, 1, fillColor, size, false);
 	}
 
 	public static Symbol createSymbolComposite(Symbol... symbols) {
@@ -93,29 +95,30 @@ public class SymbolFactory {
 
 	public static Symbol createCirclePolygonSymbol(Color outline,
 			Color fillColor, int size) {
-		return new PolygonCentroidCircleSymbol(outline, 1, fillColor, size);
+		return new PolygonCentroidCircleSymbol(outline, 1, fillColor, size,
+				false);
 	}
 
 	public static Symbol createCircleVertexSymbol(Color outline, Color fillColor) {
-		return new CircleVertexSymbol(outline, 1, fillColor, 10);
+		return new CircleVertexSymbol(outline, 1, fillColor, 10, false);
 
 	}
 
 	public static Symbol createCircleVertexSymbol(Color outline,
 			Color fillColor, int size) {
-		return new CircleVertexSymbol(outline, 1, fillColor, size);
+		return new CircleVertexSymbol(outline, 1, fillColor, size, false);
 
 	}
 
 	public static Symbol createSquareVertexSymbol(Color outline, Color fillColor) {
 
-		return new SquareVertexSymbol(outline, 1, fillColor, 10);
+		return new SquareVertexSymbol(outline, 1, fillColor, 10, false);
 	}
 
 	public static Symbol createSquareVertexSymbol(Color outline,
 			Color fillColor, int size) {
 
-		return new SquareVertexSymbol(outline, 1, fillColor, size);
+		return new SquareVertexSymbol(outline, 1, fillColor, size, false);
 	}
 
 	private static boolean addSymbol(Symbol symbol) {

@@ -44,14 +44,25 @@ import com.vividsolutions.jts.geom.Polygon;
 
 public class PolygonCentroidCircleSymbol extends CirclePointSymbol {
 
-	public PolygonCentroidCircleSymbol(Color outline, int lineWidth, Color fillColor,
-			int size) {
-		super(outline, lineWidth, fillColor, size);
+	public PolygonCentroidCircleSymbol(Color outline, int lineWidth,
+			Color fillColor, int size, boolean mapUnits) {
+		super(outline, lineWidth, fillColor, size, mapUnits);
 	}
 
 	@Override
 	public boolean willDrawSimpleGeometry(Geometry geom) {
 		return geom instanceof Polygon || geom instanceof MultiPolygon;
+	}
+
+	@Override
+	public String getClassName() {
+		return "Circle in polygon centroid";
+	}
+
+	@Override
+	public Symbol cloneSymbol() {
+		return new PolygonCentroidCircleSymbol(outline, lineWidth, fillColor,
+				size, mapUnits);
 	}
 
 	@Override

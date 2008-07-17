@@ -39,6 +39,10 @@ package org.orbisgis.renderer.classification;
 import org.gdms.data.DataSource;
 import org.gdms.driver.DriverException;
 
+/**
+ * Adapted from SCAP3 : http://w3.geoprdc.univ-tlse2.fr/scap/java/
+ *
+ */
 public class ProportionalMethod {
 
 	private DataSource ds;
@@ -48,7 +52,7 @@ public class ProportionalMethod {
 	private final static int MIN_SURFACE = 10;
 
 	// The surface reference must be greater or equals than 10.
-	private int minSymbolArea;
+	private double minSymbolArea;
 	private double minValue;
 
 	public ProportionalMethod(DataSource ds, String fieldName) {
@@ -57,7 +61,7 @@ public class ProportionalMethod {
 	}
 
 	// TODO what the surfRef parameter is used to
-	public void build(int minSymbolArea) throws DriverException {
+	public void build(double minSymbolArea) throws DriverException {
 
 		if (minSymbolArea >= 10) {
 			this.minSymbolArea = minSymbolArea;
@@ -80,8 +84,8 @@ public class ProportionalMethod {
 	}
 
 	/**
-	 * Compute the symbol size using a linear method
-	 * Adpated from SCAP3 : http://w3.geoprdc.univ-tlse2.fr/scap/java/
+	 * Compute the symbol size using a linear method Adpated from SCAP3 :
+	 * http://w3.geoprdc.univ-tlse2.fr/scap/java/
 	 *
 	 * @param value
 	 * @param coefType
@@ -96,8 +100,8 @@ public class ProportionalMethod {
 	}
 
 	/**
-	 * Compute the symbol size using a squareroot method
-	 * Adpated from SCAP3 : http://w3.geoprdc.univ-tlse2.fr/scap/java/
+	 * Compute the symbol size using a squareroot method Adpated from SCAP3 :
+	 * http://w3.geoprdc.univ-tlse2.fr/scap/java/
 	 *
 	 * @param value
 	 * @param sqrtFactor
@@ -113,8 +117,8 @@ public class ProportionalMethod {
 	}
 
 	/**
-	 * Compute the symbol size using a logarithm  method
-	 * Adpated from SCAP3 : http://w3.geoprdc.univ-tlse2.fr/scap/java/
+	 * Compute the symbol size using a logarithm method Adpated from SCAP3 :
+	 * http://w3.geoprdc.univ-tlse2.fr/scap/java/
 	 *
 	 * @param value
 	 * @param coefType

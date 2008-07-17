@@ -43,6 +43,7 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Map;
 
 import junit.framework.TestCase;
@@ -109,7 +110,11 @@ public class SymbolTest extends TestCase {
 
 	public void testSymbolClone() throws Exception {
 		ArrayList<Symbol> symbols = SymbolFactory.getAvailableSymbols();
+		HashSet<Class<? extends Symbol>> classes = new HashSet<Class<? extends Symbol>>();
 		for (Symbol symbol : symbols) {
+			Class<? extends Symbol> symbolClass = symbol.getClass();
+			assertTrue(!classes.contains(symbolClass));
+			classes.add(symbol.getClass());
 			testClone(symbol);
 		}
 
@@ -187,4 +192,23 @@ public class SymbolTest extends TestCase {
 
 		testEquals(sym, sym2);
 	}
+
+	public void testFillPersistence() throws Exception {
+		Symbol sym = SymbolFactory.createPolygonSymbol(Color.black);
+		Symbol sym2 = SymbolFactory.createPolygonSymbol(Color.red, Color.white);
+		sym2.setPersistentProperties(sym.getPersistentProperties(), sym
+				.getVersion());
+		assertTrue(sym.getPersistentProperties().equals(
+				sym2.getPersistentProperties()));
+	}
+
+	public void testOutlinePersistence() throws Exception {
+		Symbol sym = SymbolFactory.createPolygonSymbol(null, Color.black);
+		Symbol sym2 = SymbolFactory.createPolygonSymbol(Color.red, Color.white);
+		sym2.setPersistentProperties(sym.getPersistentProperties(), sym
+				.getVersion());
+		assertTrue(sym.getPersistentProperties().equals(
+				sym2.getPersistentProperties()));
+	}
+
 }

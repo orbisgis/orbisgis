@@ -36,10 +36,33 @@
  */
 package org.orbisgis.renderer.symbol;
 
-
 public interface EditablePointSymbol extends EditablePolygonSymbol {
 
+	/**
+	 * Gets the symbol size
+	 *
+	 * @return
+	 */
 	int getSize();
 
+	/**
+	 * Sets the symbol size
+	 *
+	 * @param value
+	 */
 	void setSize(int value);
+
+	/**
+	 * Sets the units of the symbol size. False means pixels and true means map
+	 * units
+	 *
+	 * @param mapUnits
+	 */
+	void setMapUnits(boolean mapUnits);
+
+	/**
+	 * @return True if the size of the symbol is expressed in map units, false
+	 *         if it's done in pixels
+	 */
+	boolean isMapUnits();
 }
