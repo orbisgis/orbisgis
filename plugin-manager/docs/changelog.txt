@@ -1,3 +1,36 @@
+17-7-2008
+    - Symbology
+        * Fixed some bugs
+
+15-7-2008
+
+	- GDMS
+		* GDMS format internally changed. Now it is incompatible with
+		previous version
+		* Changed Type constants value
+		* Changed the methods to validate Functions and CustomQueries
+		* Substring function added in GDMS
+
+	- Symbology
+	    * Advanced thematic maps are available: choropleth,
+	    proportional, value classification, ...
+	    * Legend preview in TOC
+	    * Initial symbol set available
+	    * A symbol collection to store all the user customized symbols
+	    is added
+
+	- Export
+		* Export map as image
+
+	- Plug-in system
+		* Fixed some bug with progress bar and workspace management
+
+	- Processing
+		* New triangulation methods integrated (prototype)
+
+	- UrbSAT
+		* New AddZ custom query
+
 26-6-2008
 
 	- Edition
@@ -58,32 +91,3 @@
 		* Changed DataSource.cancel for DataSource.close. DataSource.commit doesn't
 		close the DataSource anymore. Added a new method syncWithSource. See
 		javadoc for more information
-
-15-7-2008
-
-	- GDMS
-		* GDMS format internally changed. Now it is incompatible with
-		previous version
-		* Changed Type constants value
-		* Changed the methods to validate Functions and CustomQueries
-		* Substring function added in GDMS
-
-	- Symbology
-	    * Advanced thematic maps are available: choropleth,
-	    proportional, value classification, ...
-	    * Legend preview in TOC
-	    * Initial symbol set available
-	    * A symbol collection to store all the user customized symbols
-	    is added
-
-	- Export
-		* Export map as image
-
-	- Plug-in system
-		* Fixed some bug with progress bar and workspace management
-
-	- Processing
-		* New triangulation methods integrated (prototype)
-
-	- UrbSAT
-		* New AddZ custom query
