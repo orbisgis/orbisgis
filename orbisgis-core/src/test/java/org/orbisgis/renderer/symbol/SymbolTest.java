@@ -49,6 +49,7 @@ import java.util.Map;
 import junit.framework.TestCase;
 
 import org.gdms.driver.DriverException;
+import org.orbisgis.IncompatibleVersionException;
 import org.orbisgis.renderer.RenderPermission;
 import org.orbisgis.renderer.symbol.collection.DefaultSymbolCollection;
 
@@ -195,20 +196,31 @@ public class SymbolTest extends TestCase {
 
 	public void testFillPersistence() throws Exception {
 		Symbol sym = SymbolFactory.createPolygonSymbol(Color.black);
-		Symbol sym2 = SymbolFactory.createPolygonSymbol(Color.red, Color.white);
+		testPersistent(sym);
+	}
+
+	private Symbol testPersistent(Symbol sym)
+			throws IncompatibleVersionException {
+		Symbol sym2 = SymbolFactory.getNewSymbol(sym.getId());
 		sym2.setPersistentProperties(sym.getPersistentProperties(), sym
 				.getVersion());
 		assertTrue(sym.getPersistentProperties().equals(
 				sym2.getPersistentProperties()));
+
+		return sym2;
 	}
 
 	public void testOutlinePersistence() throws Exception {
 		Symbol sym = SymbolFactory.createPolygonSymbol(null, Color.black);
-		Symbol sym2 = SymbolFactory.createPolygonSymbol(Color.red, Color.white);
-		sym2.setPersistentProperties(sym.getPersistentProperties(), sym
-				.getVersion());
-		assertTrue(sym.getPersistentProperties().equals(
-				sym2.getPersistentProperties()));
+		testPersistent(sym);
 	}
 
+	public void testMapUnitsPersistence() throws Exception {
+		EditablePointSymbol sym = (EditablePointSymbol) SymbolFactory
+				.createPointCircleSymbol(Color.black, Color.black, 10);
+		sym.setMapUnits(true);
+		testPersistent(sym);
+		sym.setMapUnits(false);
+		assertTrue(!((EditablePointSymbol) testPersistent(sym)).isMapUnits());
+	}
 }

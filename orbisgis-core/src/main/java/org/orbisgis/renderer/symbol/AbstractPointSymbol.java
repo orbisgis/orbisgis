@@ -96,6 +96,7 @@ public abstract class AbstractPointSymbol extends AbstractPolygonSymbol
 		HashMap<String, String> ret = new HashMap<String, String>();
 		ret.putAll(super.getPersistentProperties());
 		ret.put("size", Integer.toString(size));
+		ret.put("map-units", Boolean.toString(mapUnits));
 
 		return ret;
 	}
@@ -111,6 +112,12 @@ public abstract class AbstractPointSymbol extends AbstractPolygonSymbol
 			String version) throws IncompatibleVersionException {
 		super.setPersistentProperties(props, version);
 		size = Integer.parseInt(props.get("size"));
+		String mapUnitsProp = props.get("map-units");
+		if (mapUnitsProp == null) {
+			mapUnits = false;
+		} else {
+			mapUnits = Boolean.parseBoolean(mapUnitsProp);
+		}
 	}
 
 	public boolean isMapUnits() {
