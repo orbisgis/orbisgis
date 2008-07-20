@@ -92,7 +92,7 @@ public class TinMM implements CustomQuery {
 			Triangulation t = new Triangulation(points
 					.toArray(new Coordinate[0]), (int[][]) breakLineList
 					.toArray(new int[][] {}));
-			t.trianguler();
+			t.triangulate();
 
 			// convert the resulting TIN into a data source
 			final ObjectMemoryDriver driver = new ObjectMemoryDriver(
