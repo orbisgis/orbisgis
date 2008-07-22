@@ -254,7 +254,7 @@ public class LegendsPanel extends JPanel implements UIPanel, LegendContext {
 
 	private void refreshLegendContainer() {
 		int index = legendList.getSelectedIndex();
-		if (index != -1) {
+		if ((index >= 0) && (index <= legends.size() - 1)) {
 			if (legends.size() > 0) {
 				cardLayout.show(pnlContainer, legends.get(index).getId());
 			} else {
