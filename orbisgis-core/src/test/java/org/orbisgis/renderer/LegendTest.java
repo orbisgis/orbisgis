@@ -37,6 +37,7 @@
 package org.orbisgis.renderer;
 
 import java.awt.Color;
+import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
 
@@ -370,6 +371,19 @@ public class LegendTest extends AbstractTest {
 		usl.load(file, usl.getVersion());
 		assertTrue(usl.getMinScale() == 4000);
 		assertTrue(usl.getMaxScale() == Integer.MAX_VALUE);
+	}
+
+	public void testGetImageWithNullLabels() throws Exception {
+		UniqueValueLegend uvl = LegendFactory.createUniqueValueLegend();
+		uvl.setName(null);
+		uvl.setDefaultSymbol(SymbolFactory.createPolygonSymbol());
+		uvl.setDefaultLabel(null);
+		uvl.setClassificationField(fieldName, ds);
+
+		Graphics2D graphics = new BufferedImage(10, 10,
+				BufferedImage.TYPE_BYTE_GRAY).createGraphics();
+		uvl.getImageSize(graphics);
+		uvl.drawImage(graphics);
 	}
 
 	@Override

@@ -59,13 +59,21 @@ public class LegendLine {
 		renderer.drawSymbolPreview(g, symbol, 30, 20, true);
 		g.setColor(Color.black);
 		FontMetrics fm = g.getFontMetrics();
-		Rectangle2D r = fm.getStringBounds(text, g);
-		g.drawString(text, 35, (int) (10 + r.getHeight() / 2));
+		Rectangle2D r = fm.getStringBounds(getImageText(), g);
+		g.drawString(getImageText(), 35, (int) (10 + r.getHeight() / 2));
+	}
+
+	private String getImageText() {
+		if (text == null) {
+			return "";
+		} else {
+			return text;
+		}
 	}
 
 	public int[] getImageSize(Graphics g) {
 		FontMetrics fm = g.getFontMetrics();
-		Rectangle2D stringBounds = fm.getStringBounds(text, g);
+		Rectangle2D stringBounds = fm.getStringBounds(getImageText(), g);
 		int width = 35 + (int) stringBounds.getWidth();
 
 		return new int[] { width, (int) Math.max(stringBounds.getHeight(), 20) };

@@ -171,7 +171,9 @@ abstract class AbstractClassifiedLegend extends AbstractLegend implements
 			ll.drawImage(g);
 		}
 		if (defaultSymbol != null) {
-			g.translate(0, ll.getImageSize(g)[1]);
+			if (ll != null) {
+				g.translate(0, ll.getImageSize(g)[1]);
+			}
 			ll = new LegendLine(defaultSymbol, defaultLabel);
 			ll.drawImage(g);
 		}
