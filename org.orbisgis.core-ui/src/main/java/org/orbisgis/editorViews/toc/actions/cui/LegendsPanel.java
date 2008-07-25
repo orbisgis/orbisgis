@@ -255,11 +255,7 @@ public class LegendsPanel extends JPanel implements UIPanel, LegendContext {
 	private void refreshLegendContainer() {
 		int index = legendList.getSelectedIndex();
 		if ((index >= 0) && (index <= legends.size() - 1)) {
-			if (legends.size() > 0) {
-				cardLayout.show(pnlContainer, legends.get(index).getId());
-			} else {
-				cardLayout.show(pnlContainer, NO_LEGEND_ID);
-			}
+			cardLayout.show(pnlContainer, legends.get(index).getId());
 			Legend legend = legends.get(index).getLegend();
 			int minScale = legend.getMinScale();
 			if (minScale != Integer.MIN_VALUE) {
@@ -273,6 +269,8 @@ public class LegendsPanel extends JPanel implements UIPanel, LegendContext {
 			} else {
 				txtMaxScale.setText("");
 			}
+		} else {
+			cardLayout.show(pnlContainer, NO_LEGEND_ID);
 		}
 
 		txtMinScale.setEnabled(legendList.getSelectedIndex() != -1);
