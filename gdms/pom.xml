@@ -5,7 +5,7 @@
 	<parent>
 		<artifactId>platform</artifactId>
 		<groupId>org.orbisgis</groupId>
-		<version>1.2.0</version>
+		<version>1.2.1</version>
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.gdms</groupId>
@@ -30,12 +30,6 @@
 			<groupId>log4j</groupId>
 			<artifactId>log4j</artifactId>
 			<version>1.2.13</version>
-			<scope>compile</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.orbisgis</groupId>
-			<artifactId>commons</artifactId>
-			<version>1.0.1</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
