@@ -36,6 +36,8 @@
  */
 package org.gdms.sql.function.spatial.raster.hydrology;
 
+import java.io.IOException;
+
 import org.gdms.data.types.InvalidTypeException;
 import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeFactory;
@@ -48,31 +50,37 @@ import org.gdms.sql.function.FunctionException;
 import org.grap.model.GeoRaster;
 import org.grap.processing.Operation;
 import org.grap.processing.OperationException;
-import org.grap.processing.operation.hydrology.D8OpDirection;
+import org.grap.processing.operation.hydrology.D8OpRiverDistance;
 
-public class D8Direction implements Function {
+public class D8RiverDistance implements Function {
 	public Value evaluate(Value[] args) throws FunctionException {
-		final GeoRaster geoRasterSrc = args[0].getAsRaster();
-		final Operation slopesDirections = new D8OpDirection();
+		final GeoRaster grD8Direction = args[0].getAsRaster();
+		final GeoRaster grD8Accumulation = args[1].getAsRaster();
+		int riverThreshold = args[2].getAsInt();
+
 		try {
-			return ValueFactory.createValue(geoRasterSrc.doOperation(slopesDirections));
+			final Operation riverDistance = new D8OpRiverDistance(
+					grD8Accumulation, riverThreshold);
+			return ValueFactory.createValue(grD8Direction
+					.doOperation(riverDistance));
 		} catch (OperationException e) {
 			throw new FunctionException("Cannot do the operation", e);
-		} catch (UnsupportedOperationException e) {
-			throw new FunctionException("Cannot set nodata value", e);
+		} catch (IOException e) {
+			throw new FunctionException("Accumulation grid is not readable", e);
 		}
 	}
 
 	public String getDescription() {
-		return "Compute the slopes directions using a GRAY16/32 DEM as input table";
+		return "Calculate the maximum length to the river using a GRAY16/32 DEM slopes "
+				+ "directions and a GRAY16/32 DEM slopes accumulations as input tables";
 	}
 
 	public String getName() {
-		return "D8Direction";
+		return "D8RiverDistance";
 	}
 
 	public String getSqlOrder() {
-		return "select D8Direction(raster) as raster from mydem;";
+		return "select D8RiverDistance(d.raster, a.raster, RiverThreshold) as raster from direction d, accumulation a;";
 	}
 
 	public Type getType(Type[] argsTypes) throws InvalidTypeException {
@@ -84,6 +92,7 @@ public class D8Direction implements Function {
 	}
 
 	public Arguments[] getFunctionArguments() {
-		return new Arguments[] { new Arguments(Argument.RASTER) };
+		return new Arguments[] { new Arguments(Argument.RASTER,
+				Argument.RASTER, Argument.NUMERIC) };
 	}
 }
