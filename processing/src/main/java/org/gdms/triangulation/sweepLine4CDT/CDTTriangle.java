@@ -48,7 +48,7 @@ import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.LineSegment;
 import com.vividsolutions.jts.geom.Polygon;
 
-public class CDTTriangle {
+public class CDTTriangle implements Comparable<CDTTriangle> {
 	private static Logger logger = Logger
 			.getLogger(CDTTriangle.class.getName());
 
@@ -138,23 +138,23 @@ public class CDTTriangle {
 
 	public boolean respectDelaunayProperty(Coordinate v) {
 		if (circumCircle.contains(v)) {
-			
-			if (((v.x == 8348) && (v.y == 626)) &&
-					(p0.getCoordinate().x == 8489 && p0.getCoordinate().y == 622) && 
-					(p1.getCoordinate().x == 8207 && p1.getCoordinate().y == 633) && 
-					(p2.getCoordinate().x == 8780 && p2.getCoordinate().y == 749)) 
-					{
-				int justForDebug=1; justForDebug++;
+
+			if (((v.x == 8348) && (v.y == 626))
+					&& (p0.getCoordinate().x == 8489 && p0.getCoordinate().y == 622)
+					&& (p1.getCoordinate().x == 8207 && p1.getCoordinate().y == 633)
+					&& (p2.getCoordinate().x == 8780 && p2.getCoordinate().y == 749)) {
+				int justForDebug = 1;
+				justForDebug++;
 			}
-			
+
 			if (pTriangle.contains(gf.createPoint(v))) {
 				throw new RuntimeException("Unreachable code");
 			}
 
-//			logger.info("point " + v
-//					+ " disturbs Delaunay property for triangle [ "
-//					+ p0.getCoordinate() + ", " + p1.getCoordinate() + ", "
-//					+ p2.getCoordinate() + " ]");
+			// logger.info("point " + v
+			// + " disturbs Delaunay property for triangle [ "
+			// + p0.getCoordinate() + ", " + p1.getCoordinate() + ", "
+			// + p2.getCoordinate() + " ]");
 			return false;
 		}
 		return true;
@@ -363,5 +363,20 @@ public class CDTTriangle {
 
 	public CDTCircumCircle getCircumCircle() {
 		return circumCircle;
+	}
+
+	public int compareTo(CDTTriangle other) {
+		// TODO needs to be refactored
+		int tmp0 = p0.compareTo(other.p0);
+		if (0 == tmp0) {
+			int tmp1 = p1.compareTo(other.p1);
+			if (0 == tmp1) {
+				return p2.compareTo(other.p2);
+			} else {
+				return tmp1;
+			}
+		} else {
+			return tmp0;
+		}
 	}
 }

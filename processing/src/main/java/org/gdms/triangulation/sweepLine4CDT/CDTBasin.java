@@ -120,7 +120,7 @@ public class CDTBasin {
 		return gf.createPolygon(getLinearRing(), null);
 	}
 
-	protected void normalize() {
+	protected boolean normalize() {
 		while (!getLinearRing().isValid()) {
 			int shift = u.get(0);
 			u.remove(0);
@@ -129,9 +129,10 @@ public class CDTBasin {
 			} else if (shift > basinBed) {
 				basinRightBorder--;
 			} else {
-				throw new RuntimeException("Unreachable code !");
+				return false;
 			}
 		}
+		return true;
 	}
 
 	protected List<CDTEdge> meshIntoEdges() {
@@ -182,8 +183,9 @@ public class CDTBasin {
 
 	protected List<CDTTriangle> meshIntoTriangles() {
 		// CDTBasin must be normalized !
-		final Set<CDTTriangle> result = new HashSet<CDTTriangle>();
 		final Map<Integer, Set<Integer>> map = new HashMap<Integer, Set<Integer>>();
+		// first of all, start adding all the edges located at the bottom
+		// borders of the "monotone polygon".
 		for (int i = basinLeftBorder; i <= basinRightBorder; i++) {
 			final Set<Integer> tmpSet = new HashSet<Integer>();
 			if (i > basinLeftBorder) {
@@ -194,19 +196,18 @@ public class CDTBasin {
 			}
 			map.put(i, tmpSet);
 		}
-		final Set<Integer> tmpSetLeft = new HashSet<Integer>();
-		tmpSetLeft.add(basinRightBorder);
-		map.put(basinLeftBorder, tmpSetLeft);
-
-		final Set<Integer> tmpSetRight = new HashSet<Integer>();
-		tmpSetRight.add(basinLeftBorder);
-		map.put(basinRightBorder, tmpSetRight);
-
+		// then add the edge that closes the "monotone polygon" at the top
+		map.get(basinLeftBorder).add(basinRightBorder);
+		map.get(basinRightBorder).add(basinLeftBorder);
+		// at least, add internal edges
 		final List<CDTEdge> edges = meshIntoEdges();
 		for (CDTEdge edge : edges) {
 			map.get(edge.getBegin()).add(edge.getEnd());
 			map.get(edge.getEnd()).add(edge.getBegin());
 		}
+
+		// build the triangles (in a set to avoid duplicate triangles)
+		final Set<CDTTriangle> result = new HashSet<CDTTriangle>();
 
 		for (CDTEdge edge : edges) {
 			Set<Integer> beginSet = map.get(edge.getBegin());
@@ -229,14 +230,21 @@ public class CDTBasin {
 				}
 			}
 		}
-		return Arrays.asList(result.toArray(new CDTTriangle[0]));
+
+		// convert the set of triangles into an array
+		CDTTriangle[] arrayOfResult = result.toArray(new CDTTriangle[0]);
+		// sort it...
+		Arrays.sort(arrayOfResult);
+
+		return Arrays.asList(arrayOfResult);
 	}
 
 	public void fillIn() {
-		normalize();
-		List<CDTTriangle> cdtTriangles = meshIntoTriangles();
-		for (CDTTriangle cdtTriangle : cdtTriangles) {
-			pslg.legalizeAndAdd(cdtTriangle);
+		if (normalize()) {
+			List<CDTTriangle> cdtTriangles = meshIntoTriangles();
+			for (CDTTriangle cdtTriangle : cdtTriangles) {
+				pslg.legalizeAndAdd(cdtTriangle);
+			}
 		}
 	}
 	// protected void printU() {

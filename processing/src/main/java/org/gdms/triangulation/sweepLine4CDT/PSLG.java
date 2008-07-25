@@ -338,7 +338,7 @@ public class PSLG {
 		// created by artificial triangles removal
 	}
 
-	private void addTriangle(final CDTTriangle cdtTriangle) {
+	protected void addTriangle(final CDTTriangle cdtTriangle) {
 		if (triangles.add(cdtTriangle)) {
 			trianglesSpatialIndex
 					.insert(cdtTriangle.getEnvelope(), cdtTriangle);
