@@ -59,9 +59,12 @@ import org.orbisgis.editorViews.toc.actions.cui.extensions.PnlUniqueValueLegend;
 import org.orbisgis.errorManager.DefaultErrorManager;
 import org.orbisgis.errorManager.ErrorManager;
 import org.orbisgis.layerModel.ILayer;
+import org.orbisgis.map.MapTransform;
 import org.orbisgis.pluginManager.workspace.DefaultWorkspace;
 import org.orbisgis.pluginManager.workspace.Workspace;
 import org.sif.UIFactory;
+
+import com.vividsolutions.jts.geom.Envelope;
 
 public class CUITest {
 
@@ -109,7 +112,7 @@ public class CUITest {
 				});
 
 		ILayer layer = getDataManager().createLayer(
-				new File("/home/gonzales/workspace"
+				new File("/home/fergonco/workspace"
 						+ "/datas2tests/shp/smallshape2D/points.shp"));
 		layer.open();
 		Type typ = layer.getDataSource().getMetadata().getFieldType(
@@ -118,7 +121,10 @@ public class CUITest {
 				.getConstraint(Constraint.GEOMETRY_TYPE);
 
 		LegendsPanel pan = new LegendsPanel();
-		pan.init(cons, layer.getVectorLegend(),
+		MapTransform mt = new MapTransform();
+		mt.setExtent(new Envelope(0, 10000, 0, 10000));
+		mt.resizeImage(100, 100);
+		pan.init(mt, cons, layer.getVectorLegend(),
 				new ILegendPanelUI[] { new PnlUniqueSymbolLegend(true, pan),
 						new PnlUniqueValueLegend(pan),
 						new PnlIntervalLegend(pan),

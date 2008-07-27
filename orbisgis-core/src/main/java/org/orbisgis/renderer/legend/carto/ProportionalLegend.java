@@ -36,6 +36,8 @@
  */
 package org.orbisgis.renderer.legend.carto;
 
+import java.awt.Graphics;
+
 import org.gdms.driver.DriverException;
 import org.orbisgis.renderer.legend.Legend;
 import org.orbisgis.renderer.symbol.EditablePointSymbol;
@@ -95,5 +97,22 @@ public interface ProportionalLegend extends Legend {
 	 * @return
 	 */
 	String getClassificationField();
+
+	/**
+	 * draws the preview with the big point having the specified size
+	 *
+	 * @param g
+	 * @param bigSize
+	 */
+	void drawImage(Graphics g, int bigSize);
+
+	/**
+	 * Gets the size of an image with the specified size for the bigest point
+	 *
+	 * @param g
+	 * @param bigSize
+	 * @return
+	 */
+	int[] getImageSize(Graphics g, int bigSize);
 
 }

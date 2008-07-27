@@ -37,19 +37,25 @@
 package org.orbisgis.editorViews.toc.actions.cui.extensions;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 
 import javax.swing.BorderFactory;
 import javax.swing.DefaultComboBoxModel;
+import javax.swing.JButton;
 import javax.swing.JComboBox;
+import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
@@ -66,13 +72,17 @@ import org.orbisgis.editorViews.toc.actions.cui.EditableSymbolFilter;
 import org.orbisgis.editorViews.toc.actions.cui.SymbolEditor;
 import org.orbisgis.editorViews.toc.actions.cui.SymbolFilter;
 import org.orbisgis.editorViews.toc.actions.cui.components.Canvas;
+import org.orbisgis.map.MapTransform;
 import org.orbisgis.renderer.legend.Legend;
+import org.orbisgis.renderer.legend.RenderException;
 import org.orbisgis.renderer.legend.carto.LegendFactory;
 import org.orbisgis.renderer.legend.carto.ProportionalLegend;
 import org.orbisgis.renderer.symbol.EditablePointSymbol;
 import org.sif.CRFlowLayout;
 import org.sif.CarriageReturn;
 import org.sif.UIFactory;
+
+import com.vividsolutions.jts.geom.Envelope;
 
 public class PnlProportionalLegend extends JPanel implements ILegendPanelUI {
 
@@ -82,6 +92,10 @@ public class PnlProportionalLegend extends JPanel implements ILegendPanelUI {
 	private JTextField txtMinArea;
 	private Canvas canvas;
 	private JComboBox cmbMethod;
+	private JButton btnPreview;
+
+	private BufferedImage previewImage;
+	private JComponent legendPreview;
 
 	public PnlProportionalLegend(LegendContext legendContext) {
 		legend = LegendFactory.createProportionalLegend();
@@ -91,8 +105,6 @@ public class PnlProportionalLegend extends JPanel implements ILegendPanelUI {
 	}
 
 	private void init() {
-
-		this.setLayout(new CRFlowLayout());
 
 		JPanel confPanel = new JPanel();
 		JPanel lblPanel = new JPanel();
@@ -105,6 +117,8 @@ public class PnlProportionalLegend extends JPanel implements ILegendPanelUI {
 		lblPanel.add(new JLabel("Proportional method:"));
 		lblPanel.add(new CarriageReturn());
 		lblPanel.add(new JLabel("Maximum area:"));
+		lblPanel.add(new CarriageReturn());
+		lblPanel.add(new JLabel("Symbol:"));
 
 		confPanel.add(lblPanel);
 
@@ -123,6 +137,10 @@ public class PnlProportionalLegend extends JPanel implements ILegendPanelUI {
 			}
 
 		});
+		JLabel spaceLabel = new JLabel("");
+		spaceLabel.setPreferredSize(new Dimension(2, 22));
+		inputPanel.add(spaceLabel);
+		inputPanel.add(new CarriageReturn());
 		inputPanel.add(cmbField);
 		inputPanel.add(new CarriageReturn());
 
@@ -147,6 +165,8 @@ public class PnlProportionalLegend extends JPanel implements ILegendPanelUI {
 					Services.getErrorManager().error("Cannot set the method",
 							e1);
 				}
+
+				refreshPreviewButton();
 			}
 
 		});
@@ -162,32 +182,90 @@ public class PnlProportionalLegend extends JPanel implements ILegendPanelUI {
 							.getText()));
 				} catch (NumberFormatException e1) {
 				}
+				refreshPreviewButton();
 			}
 
 		});
 		inputPanel.add(txtMinArea);
-		confPanel.add(inputPanel);
-		this.add(confPanel);
-		this.add(new CarriageReturn());
-
-		JPanel pnlSymbol = new JPanel();
-		pnlSymbol.setLayout(new CRFlowLayout());
-		pnlSymbol.setPreferredSize(new Dimension(350, 200));
-		pnlSymbol.setBorder(BorderFactory.createTitledBorder("Symbol"));
-		pnlSymbol.add(new JLabel("Select symbol:"));
+		inputPanel.add(new CarriageReturn());
 		canvas = new Canvas();
 		canvas.addMouseListener(new MouseAdapter() {
 
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				editSymbol();
+				refreshPreviewButton();
 			}
 
 		});
 		canvas.setPreferredSize(new Dimension(50, 50));
-		pnlSymbol.add(canvas);
-		this.add(pnlSymbol, BorderLayout.CENTER);
+		inputPanel.add(canvas);
 
+		confPanel.add(inputPanel);
+		this.add(confPanel);
+
+		JPanel pnlSymbol = new JPanel();
+		pnlSymbol.setLayout(new CRFlowLayout());
+		btnPreview = new JButton("Preview");
+		btnPreview.addActionListener(new ActionListener() {
+
+			public void actionPerformed(ActionEvent e) {
+				try {
+					legend.preprocess(legendContext.getLayer().getDataSource());
+
+					// Transform max to pixels
+					MapTransform mt = legendContext.getCurrentMapTransform();
+					int maxArea = Integer.parseInt(txtMinArea.getText());
+					Envelope env = new Envelope(0, maxArea, 0, maxArea);
+					Envelope pixelEnv = mt.toPixel(env);
+					int pixelHeight = (int) pixelEnv.getHeight();
+
+					// draw the image
+					BufferedImage dummy = new BufferedImage(1, 1,
+							BufferedImage.TYPE_INT_ARGB);
+					Graphics2D dummyGraphics = dummy.createGraphics();
+					int[] previewSize = legend.getImageSize(dummyGraphics,
+							pixelHeight);
+					previewImage = new BufferedImage(previewSize[0],
+							previewSize[1], BufferedImage.TYPE_INT_ARGB);
+					legend
+							.drawImage(previewImage.createGraphics(),
+									pixelHeight);
+				} catch (RenderException e1) {
+					previewImage = new BufferedImage(100, 30,
+							BufferedImage.TYPE_INT_ARGB);
+					previewImage.createGraphics().drawString(
+							"Cannot generate preview", 0, 0);
+				}
+
+				legendPreview.repaint();
+			}
+
+		});
+		pnlSymbol.add(btnPreview);
+		pnlSymbol.add(new CarriageReturn());
+		JPanel imgPanel = new JPanel();
+		imgPanel.setBorder(BorderFactory.createTitledBorder("Symbol"));
+		imgPanel.setPreferredSize(new Dimension(150, 230));
+		legendPreview = new JComponent() {
+
+			@Override
+			protected void paintComponent(Graphics g) {
+				if (previewImage != null) {
+					g.drawImage(previewImage, 0, 0, null);
+				}
+			}
+
+		};
+		legendPreview.setBorder(BorderFactory.createLineBorder(Color.red));
+		imgPanel.setLayout(new BorderLayout());
+		imgPanel.add(legendPreview, BorderLayout.CENTER);
+		pnlSymbol.add(imgPanel);
+		this.add(pnlSymbol, BorderLayout.CENTER);
+	}
+
+	private void refreshPreviewButton() {
+		btnPreview.setEnabled(validateInput() == null);
 	}
 
 	private void editSymbol() {
@@ -274,14 +352,14 @@ public class PnlProportionalLegend extends JPanel implements ILegendPanelUI {
 			}
 
 			// preview
-//			int[] imgSize = legend.getImageSize(new BufferedImage(10, 10,
-//					BufferedImage.TYPE_INT_ARGB).createGraphics());
-//			if ((imgSize[0] != 0) && (imgSize[1] != 0)) {
-//				BufferedImage img = new BufferedImage(imgSize[0], imgSize[1],
-//						BufferedImage.TYPE_INT_ARGB);
-//				legend.drawImage(img.createGraphics());
-//				lblPreview.setIcon(new ImageIcon(img));
-//			}
+			// int[] imgSize = legend.getImageSize(new BufferedImage(10, 10,
+			// BufferedImage.TYPE_INT_ARGB).createGraphics());
+			// if ((imgSize[0] != 0) && (imgSize[1] != 0)) {
+			// BufferedImage img = new BufferedImage(imgSize[0], imgSize[1],
+			// BufferedImage.TYPE_INT_ARGB);
+			// legend.drawImage(img.createGraphics());
+			// lblPreview.setIcon(new ImageIcon(img));
+			// }
 		} catch (DriverException e) {
 			Services.getErrorManager().error("Cannot access layer fields", e);
 		}

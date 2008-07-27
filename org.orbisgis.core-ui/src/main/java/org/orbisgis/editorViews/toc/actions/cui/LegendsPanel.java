@@ -56,6 +56,7 @@ import org.orbisgis.editorViews.toc.actions.cui.extensions.ILegendPanelUI;
 import org.orbisgis.editorViews.toc.actions.cui.extensions.LegendContext;
 import org.orbisgis.layerModel.ILayer;
 import org.orbisgis.layerModel.LegendDecorator;
+import org.orbisgis.map.MapTransform;
 import org.orbisgis.renderer.legend.Legend;
 import org.sif.CRFlowLayout;
 import org.sif.CarriageReturn;
@@ -76,9 +77,11 @@ public class LegendsPanel extends JPanel implements UIPanel, LegendContext {
 	private ILayer layer;
 	private JTextField txtMinScale;
 	private JTextField txtMaxScale;
+	private MapTransform mt;
 
-	public void init(GeometryConstraint gc, Legend[] legends,
+	public void init(MapTransform mt, GeometryConstraint gc, Legend[] legends,
 			ILegendPanelUI[] availableLegends, ILayer layer) {
+		this.mt = mt;
 		this.gc = gc;
 		this.layer = layer;
 		if (gc == null) {
@@ -406,6 +409,10 @@ public class LegendsPanel extends JPanel implements UIPanel, LegendContext {
 
 	public ILayer getLayer() {
 		return layer;
+	}
+
+	public MapTransform getCurrentMapTransform() {
+		return mt;
 	}
 
 }

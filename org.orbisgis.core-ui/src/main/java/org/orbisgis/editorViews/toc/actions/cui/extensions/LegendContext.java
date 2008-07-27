@@ -38,6 +38,7 @@ package org.orbisgis.editorViews.toc.actions.cui.extensions;
 
 import org.gdms.data.types.GeometryConstraint;
 import org.orbisgis.layerModel.ILayer;
+import org.orbisgis.map.MapTransform;
 
 public interface LegendContext {
 
@@ -83,4 +84,11 @@ public interface LegendContext {
 	 * @return
 	 */
 	ILayer getLayer();
+
+	/**
+	 * Gets the transform of the current map editor
+	 *
+	 * @return
+	 */
+	MapTransform getCurrentMapTransform();
 }

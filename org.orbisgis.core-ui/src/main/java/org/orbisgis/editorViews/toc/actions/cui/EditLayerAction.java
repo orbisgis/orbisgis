@@ -48,8 +48,11 @@ import org.orbisgis.editorViews.toc.actions.cui.extensions.PnlIntervalLegend;
 import org.orbisgis.editorViews.toc.actions.cui.extensions.PnlLabelLegend;
 import org.orbisgis.editorViews.toc.actions.cui.extensions.PnlProportionalLegend;
 import org.orbisgis.editorViews.toc.actions.cui.extensions.PnlUniqueValueLegend;
+import org.orbisgis.editors.map.MapEditor;
 import org.orbisgis.layerModel.ILayer;
 import org.orbisgis.layerModel.MapContext;
+import org.orbisgis.map.MapTransform;
+import org.orbisgis.views.editor.EditorManager;
 import org.sif.UIFactory;
 
 public class EditLayerAction implements ILayerAction {
@@ -74,12 +77,15 @@ public class EditLayerAction implements ILayerAction {
 					.getConstraint(Constraint.GEOMETRY_TYPE);
 
 			LegendsPanel pan = new LegendsPanel();
-			pan.init(cons, layer.getVectorLegend(), new ILegendPanelUI[] {
+			EditorManager em = (EditorManager) Services
+					.getService("org.orbisgis.EditorManager");
+			MapTransform mt = ((MapEditor) em.getActiveEditor())
+					.getMapTransform();
+			pan.init(mt, cons, layer.getVectorLegend(), new ILegendPanelUI[] {
 					new PnlUniqueSymbolLegend(true, pan),
-					new PnlUniqueValueLegend(pan),
-					new PnlIntervalLegend(pan),
-					new PnlProportionalLegend(pan),
-					new PnlLabelLegend(pan)}, layer);
+					new PnlUniqueValueLegend(pan), new PnlIntervalLegend(pan),
+					new PnlProportionalLegend(pan), new PnlLabelLegend(pan) },
+					layer);
 			if (UIFactory.showDialog(pan)) {
 				try {
 					layer.setLegend(pan.getLegends());

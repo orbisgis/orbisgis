@@ -294,6 +294,10 @@ public class DefaultProportionalLegend extends AbstractLegend implements
 	}
 
 	public void drawImage(Graphics g) {
+		drawImage(g, bigSize);
+	}
+
+	public void drawImage(Graphics g, int bigSize) {
 		EditablePointSymbol big = (EditablePointSymbol) symbol.cloneSymbol();
 		big.setSize(bigSize);
 		GeometryFactory gf = new GeometryFactory();
@@ -334,13 +338,13 @@ public class DefaultProportionalLegend extends AbstractLegend implements
 			double realMeanSize = proportionnalMethod.getLinearSize(meanValue,
 					1);
 			double meanSize = bigSize * (realMeanSize / realMaxSize);
-			drawCircle(g, meanSize, textOffset, lineStartX, lineEndX,
+			drawCircle(g, bigSize, meanSize, textOffset, lineStartX, lineEndX,
 					renderPermission, Double.toString(meanValue) + " (mean)");
 
 			double realSmallSize = proportionnalMethod.getLinearSize(minValue,
 					1);
 			double smallSize = bigSize * (realSmallSize / realMaxSize);
-			drawCircle(g, smallSize, textOffset, lineStartX, lineEndX,
+			drawCircle(g, bigSize, smallSize, textOffset, lineStartX, lineEndX,
 					renderPermission, Double.toString(proportionnalMethod
 							.getMinValue()));
 		} catch (DriverException e) {
@@ -349,12 +353,12 @@ public class DefaultProportionalLegend extends AbstractLegend implements
 		}
 
 		g.drawLine(lineStartX, textOffset, lineEndX, textOffset);
-
 	}
 
-	private void drawCircle(Graphics g, double smallSize, int textOffset,
-			int lineStartX, int lineEndX, RenderPermission renderPermission,
-			String text) throws DriverException {
+	private void drawCircle(Graphics g, int bigSize, double smallSize,
+			int textOffset, int lineStartX, int lineEndX,
+			RenderPermission renderPermission, String text)
+			throws DriverException {
 		EditablePointSymbol small = (EditablePointSymbol) symbol.cloneSymbol();
 		small.setSize((int) smallSize);
 		int topSmall = (int) (bigSize - smallSize + textOffset);
@@ -373,6 +377,10 @@ public class DefaultProportionalLegend extends AbstractLegend implements
 	}
 
 	public int[] getImageSize(Graphics g) {
+		return getImageSize(g, bigSize);
+	}
+
+	public int[] getImageSize(Graphics g, int bigSize) {
 		FontMetrics fm = g.getFontMetrics();
 		if (proportionnalMethod != null) {
 			double maxValue = proportionnalMethod.getMaxValue();
