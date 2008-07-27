@@ -48,10 +48,14 @@ import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.memory.ObjectMemoryDriver;
+import org.grap.lut.LutGenerator;
 import org.orbisgis.AbstractTest;
 import org.orbisgis.layerModel.DefaultMapContext;
 import org.orbisgis.layerModel.ILayer;
 import org.orbisgis.layerModel.MapContext;
+import org.orbisgis.progress.NullProgressMonitor;
+import org.orbisgis.renderer.legend.Legend;
+import org.orbisgis.renderer.legend.RasterLegend;
 import org.orbisgis.renderer.legend.carto.IntervalLegend;
 import org.orbisgis.renderer.legend.carto.LabelLegend;
 import org.orbisgis.renderer.legend.carto.LegendFactory;
@@ -355,6 +359,31 @@ public class LegendTest extends AbstractTest {
 		assertTrue(legend.getLabelSizeField().equals(fieldName));
 	}
 
+	public void testRasterLegendPersistence() throws Exception {
+		// TODO Waiting grap refactoring
+		// RasterLegend legend = new
+		// RasterLegend(LutGenerator.colorModel("fire"),
+		// 0.3f);
+		// String name = "mylegend";
+		// legend.setName(name);
+		// legend.setMinScale(10);
+		// legend.setMaxScale(1000);
+		// legend.setBands("bgr");
+		// File file = new File("target/rasterLegend.ogl");
+		// legend.save(file);
+		//
+		// legend = (RasterLegend) LegendFactory.getNewLegend(legend
+		// .getLegendTypeId());
+		// legend.load(file, legend.getVersion());
+		// assertTrue(legend.getName().equals(name));
+		// assertTrue(legend.getColorModel().equals(
+		// LutGenerator.colorModel("fire")));
+		// assertTrue(legend.getOpacity() == 0.3f);
+		// assertTrue(legend.getBands().equals("bgr"));
+		// assertTrue(legend.getMinScale() == 10);
+		// assertTrue(legend.getMaxScale() == 1000);
+	}
+
 	public void testSaveScale() throws Exception {
 		UniqueSymbolLegend usl = LegendFactory.createUniqueSymbolLegend();
 		String name = "mylegend";
@@ -384,6 +413,39 @@ public class LegendTest extends AbstractTest {
 				BufferedImage.TYPE_BYTE_GRAY).createGraphics();
 		uvl.getImageSize(graphics);
 		uvl.drawImage(graphics);
+	}
+
+	public void testMapContextWithAllLegends() throws Exception {
+		MapContext mc = new DefaultMapContext();
+		ILayer vectorLayer = getDataManager().createLayer(
+				new File("src/test/resources/bv_sap.shp"));
+		mc.getLayerModel().addLayer(vectorLayer);
+		ILayer rasterLayer = getDataManager().createLayer(
+				new File("src/test/resources/ace.tif"));
+		mc.getLayerModel().addLayer(rasterLayer);
+		UniqueSymbolLegend usl = LegendFactory.createUniqueSymbolLegend();
+		String name = "mylegend";
+		usl.setName(name);
+		Symbol sym = SymbolFactory.createPointCircleSymbol(Color.black,
+				Color.red, 20);
+		usl.setSymbol(sym);
+		vectorLayer.setLegend(usl);
+		RasterLegend rl = new RasterLegend(LutGenerator.colorModel("fire"),
+				0.2f);
+		RasterLegend rl2 = new RasterLegend(LutGenerator.colorModel("fire"),
+				0.2f);
+		rl2.setBands("rrr");
+		rasterLayer.setLegend(rl, rl2);
+		File file = new File("target/test-results/map-control.xml");
+		file.getParentFile().mkdirs();
+		mc.saveStatus(file, new NullProgressMonitor());
+		mc = new DefaultMapContext();
+		mc.loadStatus(file, new NullProgressMonitor());
+		Legend[] l = mc.getLayers()[0].getVectorLegend();
+		assertTrue(l.length == 1);
+		assertTrue(l[0] instanceof UniqueSymbolLegend);
+		RasterLegend[] rasterLegends = mc.getLayers()[1].getRasterLegend();
+		assertTrue(rasterLegends.length == 1);
 	}
 
 	@Override

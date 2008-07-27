@@ -376,6 +376,16 @@ public class Layer extends GdmsLayer {
 		Iterator<String> it = fieldLegend.keySet().iterator();
 		while (it.hasNext()) {
 			String fieldName = it.next();
+			// Ignore raster legends
+			// TODO waiting grap refactoring
+			try {
+				int fi = getDataSource().getFieldIndexByName(fieldName);
+				if (getDataSource().getFieldType(fi).getTypeCode() == Type.RASTER) {
+					continue;
+				}
+			} catch (DriverException e) {
+				throw new PersistenceException("Cannot save legend", e);
+			}
 			Legends legends = new Legends();
 			legends.setFieldName(fieldName);
 			LegendDecorator[] legendDecorators = fieldLegend.get(fieldName);

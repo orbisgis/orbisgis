@@ -123,4 +123,19 @@
 	</xs:complexType>
 
 	<xs:element name="label-legend" type="label-legend-type"/>
+
+	<xs:complexType name="raster-legend-type">
+		<xs:complexContent>
+			<xs:extension base="legend-type">
+				<xs:sequence>
+					<xs:element name="color-model-component" type="xs:int"
+						maxOccurs="unbounded"/>
+				</xs:sequence>
+				<xs:attribute name="opacity" type="xs:float" use="required"/>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+
+	<xs:element name="raster-legend" type="raster-legend-type"/>
+
 </xs:schema>

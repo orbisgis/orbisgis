@@ -45,6 +45,7 @@ import java.io.File;
 
 import org.gdms.data.SpatialDataSourceDecorator;
 import org.grap.lut.LutGenerator;
+import org.orbisgis.PersistenceException;
 import org.orbisgis.renderer.symbol.Symbol;
 
 public class RasterLegend extends AbstractLegend implements Legend {
@@ -56,7 +57,8 @@ public class RasterLegend extends AbstractLegend implements Legend {
 
 	/**
 	 * @param colorModel
-	 * @param opacity 0 for transparent, 1 for opaque
+	 * @param opacity
+	 *            0 for transparent, 1 for opaque
 	 */
 	public RasterLegend(ColorModel colorModel, float opacity) {
 		this.colorModel = colorModel;
@@ -98,10 +100,78 @@ public class RasterLegend extends AbstractLegend implements Legend {
 		return "1.0";
 	}
 
-	public void save(File file) {
+	public void save(File file) throws PersistenceException {
+		// if (colorModel instanceof IndexColorModel) {
+		// try {
+		// JAXBContext jaxbContext = JAXBContext.newInstance(
+		// "org.orbisgis.renderer.legend.carto.persistence",
+		// DefaultSymbolCollection.class.getClassLoader());
+		// Marshaller m = jaxbContext.createMarshaller();
+		//
+		// BufferedOutputStream os = new BufferedOutputStream(
+		// new FileOutputStream(file));
+		// RasterLegendType xmlLegend = new RasterLegendType();
+		// save(xmlLegend);
+		// List<Integer> cmComponentList = xmlLegend
+		// .getColorModelComponent();
+		// for (int i = 0; i < ((IndexColorModel) colorModel).getMapSize(); i++)
+		// {
+		// int red = colorModel.getRed(i);
+		// int green = colorModel.getGreen(i);
+		// int blue = colorModel.getBlue(i);
+		// Color c = new Color(red, green, blue);
+		// cmComponentList.add(c.getRGB());
+		// }
+		// xmlLegend.setOpacity(opacity);
+		// LegendContainer xml = new LegendContainer();
+		// xml.setLegendDescription(xmlLegend);
+		// m.marshal(xml, os);
+		// os.close();
+		// } catch (JAXBException e) {
+		// throw new PersistenceException("Cannot save legend", e);
+		// } catch (IOException e) {
+		// throw new PersistenceException("Cannot save legend", e);
+		// }
+		// }
 	}
 
-	public void load(File file, String version) {
+	public void load(File file, String version) throws PersistenceException {
+		// TODO waiting grap refactoring
+		// if (version.equals("1.0") && file.exists()) {
+		// try {
+		// JAXBContext jaxbContext = JAXBContext
+		// .newInstance(
+		// "org.orbisgis.renderer.legend.carto.persistence:"
+		// + "org.orbisgis.renderer.symbol.collection.persistence",
+		// DefaultSymbolCollection.class.getClassLoader());
+		// Unmarshaller m = jaxbContext.createUnmarshaller();
+		// BufferedInputStream os = new BufferedInputStream(
+		// new FileInputStream(file));
+		// LegendContainer xml = (LegendContainer) m.unmarshal(os);
+		// RasterLegendType xmlLegend = (RasterLegendType) xml
+		// .getLegendDescription();
+		// os.close();
+		// load(xmlLegend);
+		// List<Integer> cmComList = xmlLegend.getColorModelComponent();
+		// byte[] red = new byte[cmComList.size()];
+		// byte[] green = new byte[cmComList.size()];
+		// byte[] blue = new byte[cmComList.size()];
+		// for (int i = 0; i < blue.length; i++) {
+		// Integer integer = cmComList.get(i);
+		// Color c = new Color(integer);
+		// red[i] = (byte) c.getRed();
+		// green[i] = (byte) c.getGreen();
+		// blue[i] = (byte) c.getBlue();
+		// }
+		// colorModel = new IndexColorModel(8, blue.length, red, green,
+		// blue);
+		// opacity = xmlLegend.getOpacity();
+		// } catch (JAXBException e) {
+		// throw new PersistenceException("Cannot recover legend", e);
+		// } catch (IOException e) {
+		// throw new PersistenceException("Cannot recover legend", e);
+		// }
+		// }
 	}
 
 	public String getLegendTypeId() {
@@ -111,7 +181,6 @@ public class RasterLegend extends AbstractLegend implements Legend {
 	public Legend newInstance() {
 		return new RasterLegend(LutGenerator.colorModel("gray"), 1);
 	}
-
 
 	public void drawImage(Graphics g) {
 		g.setColor(Color.black);
@@ -129,7 +198,7 @@ public class RasterLegend extends AbstractLegend implements Legend {
 	}
 
 	private String getDrawingText() {
-		if (bandsCode != null){
+		if (bandsCode != null) {
 			return bandsCode + " composition";
 		} else {
 			return "Raster color model";
