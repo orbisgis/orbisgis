@@ -39,11 +39,13 @@ package org.orbisgis.renderer.legend;
 import java.awt.Color;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
+import java.awt.Image;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.ColorModel;
 import java.io.File;
 
 import org.gdms.data.SpatialDataSourceDecorator;
+import org.grap.lut.LutDisplay;
 import org.grap.lut.LutGenerator;
 import org.orbisgis.PersistenceException;
 import org.orbisgis.renderer.symbol.Symbol;
@@ -183,26 +185,34 @@ public class RasterLegend extends AbstractLegend implements Legend {
 	}
 
 	public void drawImage(Graphics g) {
-		g.setColor(Color.black);
-		FontMetrics fm = g.getFontMetrics();
-		String text = getDrawingText();
-		Rectangle2D r = fm.getStringBounds(text, g);
-		g.drawString(text, 5, (int) (r.getHeight() * 1.2));
+		if (bandsCode != null) {
+			g.setColor(Color.black);
+			FontMetrics fm = g.getFontMetrics();
+			String text = getDrawingText();
+			Rectangle2D r = fm.getStringBounds(text, g);
+			g.drawString(text, 5, (int) (r.getHeight() * 1.2));
+		} else {
+			Image img = new LutDisplay(colorModel).getImage();
+			g.drawImage(img, 0, 0, img.getWidth(null) / 2, img.getHeight(null),
+					null);
+		}
 	}
 
 	public int[] getImageSize(Graphics g) {
-		FontMetrics fm = g.getFontMetrics();
-		String text = getDrawingText();
-		Rectangle2D r = fm.getStringBounds(text, g);
-		return new int[] { 5 + (int) r.getWidth(), (int) (r.getHeight() * 1.4) };
+		if (bandsCode != null) {
+			FontMetrics fm = g.getFontMetrics();
+			String text = getDrawingText();
+			Rectangle2D r = fm.getStringBounds(text, g);
+			return new int[] { 5 + (int) r.getWidth(),
+					(int) (r.getHeight() * 1.4) };
+		} else {
+			Image img = new LutDisplay(colorModel).getImage();
+			return new int[] { img.getWidth(null) / 2, img.getHeight(null) };
+		}
 	}
 
 	private String getDrawingText() {
-		if (bandsCode != null) {
-			return bandsCode + " composition";
-		} else {
-			return "Raster color model";
-		}
+		return bandsCode + " composition";
 	}
 
 }
