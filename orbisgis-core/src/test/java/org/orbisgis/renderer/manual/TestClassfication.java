@@ -170,7 +170,7 @@ public class TestClassfication {
 			ds.open();
 			ProportionalLegend l = LegendFactory.createProportionalLegend();
 			l.setClassificationField("PTOT90");
-			l.setMinSymbolArea(100);
+			l.setMaxSize(100);
 			// l.setSquareMethod(2);
 			l.setMethod(ProportionalLegend.LINEAR);
 

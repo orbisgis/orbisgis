@@ -89,7 +89,7 @@ public class PnlProportionalLegend extends JPanel implements ILegendPanelUI {
 	private ProportionalLegend legend;
 	private LegendContext legendContext;
 	private JComboBox cmbField;
-	private JTextField txtMinArea;
+	private JTextField txtMaxSize;
 	private Canvas canvas;
 	private JComboBox cmbMethod;
 	private JButton btnPreview;
@@ -116,7 +116,7 @@ public class PnlProportionalLegend extends JPanel implements ILegendPanelUI {
 		lblPanel.add(new CarriageReturn());
 		lblPanel.add(new JLabel("Proportional method:"));
 		lblPanel.add(new CarriageReturn());
-		lblPanel.add(new JLabel("Maximum area:"));
+		lblPanel.add(new JLabel("Maximum size:"));
 		lblPanel.add(new CarriageReturn());
 		lblPanel.add(new JLabel("Symbol:"));
 
@@ -172,13 +172,13 @@ public class PnlProportionalLegend extends JPanel implements ILegendPanelUI {
 		});
 		inputPanel.add(cmbMethod);
 		inputPanel.add(new CarriageReturn());
-		txtMinArea = new JTextField(5);
-		txtMinArea.addKeyListener(new KeyAdapter() {
+		txtMaxSize = new JTextField(5);
+		txtMaxSize.addKeyListener(new KeyAdapter() {
 
 			@Override
 			public void keyReleased(KeyEvent e) {
 				try {
-					legend.setMinSymbolArea(Integer.parseInt(txtMinArea
+					legend.setMaxSize(Integer.parseInt(txtMaxSize
 							.getText()));
 				} catch (NumberFormatException e1) {
 				}
@@ -186,7 +186,7 @@ public class PnlProportionalLegend extends JPanel implements ILegendPanelUI {
 			}
 
 		});
-		inputPanel.add(txtMinArea);
+		inputPanel.add(txtMaxSize);
 		inputPanel.add(new CarriageReturn());
 		canvas = new Canvas();
 		canvas.addMouseListener(new MouseAdapter() {
@@ -215,8 +215,8 @@ public class PnlProportionalLegend extends JPanel implements ILegendPanelUI {
 
 					// Transform max to pixels
 					MapTransform mt = legendContext.getCurrentMapTransform();
-					int maxArea = Integer.parseInt(txtMinArea.getText());
-					Envelope env = new Envelope(0, maxArea, 0, maxArea);
+					int maxSize = Integer.parseInt(txtMaxSize.getText());
+					Envelope env = new Envelope(0, maxSize, 0, maxSize);
 					Envelope pixelEnv = mt.toPixel(env);
 					int pixelHeight = (int) pixelEnv.getHeight();
 
@@ -330,8 +330,8 @@ public class PnlProportionalLegend extends JPanel implements ILegendPanelUI {
 					.toArray(new String[0])));
 			cmbField.setSelectedItem(legend.getClassificationField());
 
-			// min area
-			txtMinArea.setText("" + legend.getMinSymbolArea());
+			// max size
+			txtMaxSize.setText("" + legend.getMaxSize());
 
 			// symbol
 			canvas.setSymbol(legend.getSampleSymbol());
@@ -375,11 +375,11 @@ public class PnlProportionalLegend extends JPanel implements ILegendPanelUI {
 			return "A field must be selected";
 		}
 
-		String minArea = txtMinArea.getText();
+		String maxSize = txtMaxSize.getText();
 		try {
-			Integer.parseInt(minArea);
+			Integer.parseInt(maxSize);
 		} catch (NumberFormatException e) {
-			return "min area must be an integer";
+			return "Max size must be an integer";
 		}
 
 		return null;

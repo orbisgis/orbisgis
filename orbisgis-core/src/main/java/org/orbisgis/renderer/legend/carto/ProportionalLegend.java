@@ -49,9 +49,14 @@ public interface ProportionalLegend extends Legend {
 	int LOGARITHMIC = 2;
 	int SQUARE = 3;
 
-	int getMinSymbolArea();
+	int getMaxSize();
 
-	void setMinSymbolArea(int minArea);
+	/**
+	 * Sets the maximum size for the symbols in the proportional legend
+	 *
+	 * @param minArea
+	 */
+	void setMaxSize(int maxSize);
 
 	/**
 	 * Get the symbol used to create the proportional instances

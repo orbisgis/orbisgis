@@ -307,7 +307,7 @@ public class LegendTest extends AbstractTest {
 				Color.red, 20);
 		legend.setClassificationField(fieldName);
 		legend.setMethod(ProportionalLegend.LOGARITHMIC);
-		legend.setMinSymbolArea(14);
+		legend.setMaxSize(14);
 		legend.setSampleSymbol((EditablePointSymbol) sampleSym);
 		File file = new File("target/intervalLegend.ogl");
 		legend.save(file);
@@ -319,7 +319,7 @@ public class LegendTest extends AbstractTest {
 		assertTrue(legend.getSampleSymbol().getPersistentProperties().equals(
 				sampleSym.getPersistentProperties()));
 		assertTrue(legend.getClassificationField().equals(fieldName));
-		assertTrue(legend.getMinSymbolArea() == 14);
+		assertTrue(legend.getMaxSize() == 14);
 		assertTrue(legend.getMethod() == ProportionalLegend.LOGARITHMIC);
 	}
 

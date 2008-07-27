@@ -82,7 +82,7 @@ public class DefaultProportionalLegend extends AbstractLegend implements
 		ProportionalLegend {
 
 	private String field;
-	private int minSymbolArea = 3000;
+	private int maxSize = 3000;
 	private int method = LINEAR;
 	private double sqrtFactor;
 	private EditablePointSymbol symbol;
@@ -96,8 +96,8 @@ public class DefaultProportionalLegend extends AbstractLegend implements
 		symbol.setMapUnits(true);
 	}
 
-	public void setMinSymbolArea(int minSymbolArea) {
-		this.minSymbolArea = minSymbolArea;
+	public void setMaxSize(int maxSize) {
+		this.maxSize = maxSize;
 		fireLegendInvalid();
 	}
 
@@ -122,7 +122,7 @@ public class DefaultProportionalLegend extends AbstractLegend implements
 			throws RenderException {
 		proportionnalMethod = new ProportionalMethod(sds, field);
 		try {
-			proportionnalMethod.build(Math.pow(minSymbolArea, 2));
+			proportionnalMethod.build(Math.pow(maxSize, 2));
 		} catch (DriverException e) {
 			throw new RenderException("Cannot compute the proportional method",
 					e);
@@ -199,7 +199,7 @@ public class DefaultProportionalLegend extends AbstractLegend implements
 			xmlLegend.setSampleSymbol(DefaultSymbolCollection
 					.getXMLFromSymbol(symbol));
 			xmlLegend.setMethod(getMethod());
-			xmlLegend.setMinArea(getMinSymbolArea());
+			xmlLegend.setMinArea(getMaxSize());
 			xmlLegend.setFieldName(getClassificationField());
 			LegendContainer xml = new LegendContainer();
 			xml.setLegendDescription(xmlLegend);
@@ -229,7 +229,7 @@ public class DefaultProportionalLegend extends AbstractLegend implements
 				os.close();
 				load(xmlLegend);
 				setMethod(xmlLegend.getMethod());
-				setMinSymbolArea(xmlLegend.getMinArea());
+				setMaxSize(xmlLegend.getMinArea());
 				Symbol symbol = DefaultSymbolCollection
 						.getSymbolFromXML(xmlLegend.getSampleSymbol());
 				if (symbol != null) {
@@ -262,8 +262,8 @@ public class DefaultProportionalLegend extends AbstractLegend implements
 		return field;
 	}
 
-	public int getMinSymbolArea() {
-		return minSymbolArea;
+	public int getMaxSize() {
+		return maxSize;
 	}
 
 	public EditablePointSymbol getSampleSymbol() {
