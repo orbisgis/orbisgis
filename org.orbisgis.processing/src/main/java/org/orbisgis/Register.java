@@ -50,6 +50,7 @@ import org.gdms.sql.customQuery.spatial.raster.convert.RasterToPoints;
 import org.gdms.sql.customQuery.spatial.raster.convert.RasterToPolygons;
 import org.gdms.sql.customQuery.spatial.raster.convert.RasterToXYZ;
 import org.gdms.sql.customQuery.spatial.raster.convert.RasterizeLine;
+import org.gdms.sql.customQuery.spatial.raster.convert.VectorizeLine;
 import org.gdms.sql.function.FunctionManager;
 import org.gdms.sql.function.alphanumeric.SubString;
 import org.gdms.sql.function.spatial.geometry.extract.ConvexHull;
@@ -94,6 +95,8 @@ public class Register implements PluginActivator {
 		FunctionManager.addFunction(FillSinks.class);
 		FunctionManager.addFunction(D8DistanceToTheOutlet.class);
 		FunctionManager.addFunction(D8RiverDistance.class);
+
+		QueryManager.registerQuery(new VectorizeLine());
 
 		// Vector processing
 

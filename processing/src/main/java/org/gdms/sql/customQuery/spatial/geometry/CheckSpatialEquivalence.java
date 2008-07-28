@@ -62,6 +62,15 @@ public class CheckSpatialEquivalence implements CustomQuery {
 
 			// iterate over all the table1 geometries
 			for (long rowIndex = 0; rowIndex < rowCount2; rowIndex++) {
+
+				if (rowIndex / 100 == rowIndex / 100.0) {
+					if (pm.isCancelled()) {
+						break;
+					} else {
+						pm.progressTo((int) (100 * rowIndex / rowCount2));
+					}
+				}
+
 				Geometry geometry1 = inSds1.getGeometry(rowIndex);
 				if (null != geometry1) {
 					List<Geometry> sublist = spatialIndex.query(geometry1
