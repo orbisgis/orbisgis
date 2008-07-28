@@ -58,7 +58,8 @@ public interface Symbol {
 	 * @param at
 	 * @param permission
 	 *            manager that can be asked for permission to draw
-	 * @return The area used by this draw operation
+	 * @return The area used by this draw operation. It will be taken into
+	 *         account by the RenderPermission
 	 * @throws DriverException
 	 */
 	Envelope draw(Graphics2D g, Geometry geom, AffineTransform at,
@@ -74,9 +75,11 @@ public interface Symbol {
 
 	/**
 	 * Returns true if this symbol is suitable for a geometry field with the
-	 * specified geometry type constraint
+	 * specified geometry type constraint.
 	 *
 	 * @param geometryConstraint
+	 *            The geometry constraint. Null if there is no geometry type
+	 *            constraint, this is, the field can have any type of geometries
 	 * @return
 	 */
 	boolean acceptGeometryType(GeometryConstraint geometryConstraint);

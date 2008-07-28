@@ -55,9 +55,7 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
 import org.gdms.data.types.GeometryConstraint;
-import org.orbisgis.editorViews.toc.actions.cui.CompositeSymbolFilter;
 import org.orbisgis.editorViews.toc.actions.cui.ConstraintSymbolFilter;
-import org.orbisgis.editorViews.toc.actions.cui.EditableSymbolFilter;
 import org.orbisgis.editorViews.toc.actions.cui.SymbolEditor;
 import org.orbisgis.editorViews.toc.actions.cui.SymbolFilter;
 import org.orbisgis.editorViews.toc.actions.cui.extensions.table.ClassifiedLegendTableModel;
@@ -133,9 +131,8 @@ public abstract class PnlAbstractClassifiedLegend extends javax.swing.JPanel
 			}
 
 			private SymbolFilter getSymbolFilter() {
-				return new CompositeSymbolFilter(new EditableSymbolFilter(),
-						new ConstraintSymbolFilter(legendContext
-								.getGeometryConstraint()));
+				return new ConstraintSymbolFilter(legendContext
+						.getGeometryConstraint());
 			}
 
 		});

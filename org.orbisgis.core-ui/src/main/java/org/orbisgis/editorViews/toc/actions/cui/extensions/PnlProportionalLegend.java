@@ -66,9 +66,7 @@ import org.gdms.data.types.GeometryConstraint;
 import org.gdms.data.types.Type;
 import org.gdms.driver.DriverException;
 import org.orbisgis.Services;
-import org.orbisgis.editorViews.toc.actions.cui.CompositeSymbolFilter;
 import org.orbisgis.editorViews.toc.actions.cui.ConstraintSymbolFilter;
-import org.orbisgis.editorViews.toc.actions.cui.EditableSymbolFilter;
 import org.orbisgis.editorViews.toc.actions.cui.SymbolEditor;
 import org.orbisgis.editorViews.toc.actions.cui.SymbolFilter;
 import org.orbisgis.editorViews.toc.actions.cui.components.Canvas;
@@ -178,8 +176,7 @@ public class PnlProportionalLegend extends JPanel implements ILegendPanelUI {
 			@Override
 			public void keyReleased(KeyEvent e) {
 				try {
-					legend.setMaxSize(Integer.parseInt(txtMaxSize
-							.getText()));
+					legend.setMaxSize(Integer.parseInt(txtMaxSize.getText()));
 				} catch (NumberFormatException e1) {
 				}
 				refreshPreviewButton();
@@ -280,9 +277,8 @@ public class PnlProportionalLegend extends JPanel implements ILegendPanelUI {
 	}
 
 	private SymbolFilter getSymbolFilter() {
-		return new CompositeSymbolFilter(new EditableSymbolFilter(),
-				new ConstraintSymbolFilter(new GeometryConstraint(
-						GeometryConstraint.POINT)));
+		return new ConstraintSymbolFilter(new GeometryConstraint(
+				GeometryConstraint.POINT));
 	}
 
 	public boolean acceptsGeometryType(int geometryType) {

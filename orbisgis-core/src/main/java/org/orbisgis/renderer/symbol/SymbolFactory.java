@@ -37,6 +37,9 @@
 package org.orbisgis.renderer.symbol;
 
 import java.awt.Color;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 
 public class SymbolFactory {
@@ -44,6 +47,13 @@ public class SymbolFactory {
 	private static ArrayList<Symbol> availableSymbols = new ArrayList<Symbol>();
 
 	static {
+		ImageSymbol imageSymbol = new ImageSymbol();
+		try {
+			imageSymbol.setImageURL(new URL("file:///tmp/notexists.png"));
+		} catch (MalformedURLException e) {
+		} catch (IOException e) {
+		}
+		addSymbol(imageSymbol);
 		addSymbol(new CirclePointSymbol(Color.black, 1, Color.red, 10, false));
 		addSymbol(new SquarePointSymbol(Color.black, 1, Color.red, 10, false));
 		addSymbol(new SquareVertexSymbol(Color.black, 1, Color.red, 10, false));
@@ -153,6 +163,12 @@ public class SymbolFactory {
 		for (Symbol symbol : availableSymbols) {
 			ret.add(symbol.cloneSymbol());
 		}
+		return ret;
+	}
+
+	public static Symbol createImageSymbol(URL url) throws IOException {
+		ImageSymbol ret = new ImageSymbol();
+		ret.setImageURL(url);
 		return ret;
 	}
 

@@ -42,7 +42,9 @@ import org.gdms.data.types.Type;
 import org.gdms.driver.DriverException;
 import org.orbisgis.Services;
 import org.orbisgis.editorViews.toc.action.ILayerAction;
+import org.orbisgis.editorViews.toc.actions.cui.extensions.ClassicSymbolEditor;
 import org.orbisgis.editorViews.toc.actions.cui.extensions.ILegendPanelUI;
+import org.orbisgis.editorViews.toc.actions.cui.extensions.ImageSymbolEditor;
 import org.orbisgis.editorViews.toc.actions.cui.extensions.PnlUniqueSymbolLegend;
 import org.orbisgis.editorViews.toc.actions.cui.extensions.PnlIntervalLegend;
 import org.orbisgis.editorViews.toc.actions.cui.extensions.PnlLabelLegend;
@@ -85,7 +87,8 @@ public class EditLayerAction implements ILayerAction {
 					new PnlUniqueSymbolLegend(true, pan),
 					new PnlUniqueValueLegend(pan), new PnlIntervalLegend(pan),
 					new PnlProportionalLegend(pan), new PnlLabelLegend(pan) },
-					layer);
+					new ISymbolEditor[] { new ClassicSymbolEditor(),
+							new ImageSymbolEditor() }, layer);
 			if (UIFactory.showDialog(pan)) {
 				try {
 					layer.setLegend(pan.getLegends());

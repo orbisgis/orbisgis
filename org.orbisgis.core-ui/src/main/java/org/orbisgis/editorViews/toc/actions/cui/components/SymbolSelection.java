@@ -45,7 +45,6 @@ package org.orbisgis.editorViews.toc.actions.cui.components;
 import java.util.ArrayList;
 
 import org.orbisgis.pluginManager.ui.ChoosePanel;
-import org.orbisgis.renderer.symbol.EditableSymbol;
 import org.orbisgis.renderer.symbol.Symbol;
 
 /**
@@ -61,7 +60,7 @@ public class SymbolSelection extends ChoosePanel {
 	 */
 	public SymbolSelection(ArrayList<Symbol> filtered) {
 		super("Select symbol type", getNames(filtered), filtered
-				.toArray(new EditableSymbol[0]));
+				.toArray(new Symbol[0]));
 	}
 
 	private static String[] getNames(ArrayList<Symbol> filtered) {

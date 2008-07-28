@@ -78,9 +78,11 @@ public class LegendsPanel extends JPanel implements UIPanel, LegendContext {
 	private JTextField txtMinScale;
 	private JTextField txtMaxScale;
 	private MapTransform mt;
+	private ISymbolEditor[] availableEditors;
 
 	public void init(MapTransform mt, GeometryConstraint gc, Legend[] legends,
-			ILegendPanelUI[] availableLegends, ILayer layer) {
+			ILegendPanelUI[] availableLegends,
+			ISymbolEditor[] availableEditors, ILayer layer) {
 		this.mt = mt;
 		this.gc = gc;
 		this.layer = layer;
@@ -104,6 +106,7 @@ public class LegendsPanel extends JPanel implements UIPanel, LegendContext {
 		}
 
 		this.availableLegends = availableLegends;
+		this.availableEditors = availableEditors;
 		initializeComponents();
 
 		for (Legend legend : legends) {
@@ -413,6 +416,10 @@ public class LegendsPanel extends JPanel implements UIPanel, LegendContext {
 
 	public MapTransform getCurrentMapTransform() {
 		return mt;
+	}
+
+	public ISymbolEditor[] getAvailableSymbolEditors() {
+		return availableEditors;
 	}
 
 }

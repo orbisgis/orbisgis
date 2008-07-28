@@ -37,6 +37,7 @@
 package org.orbisgis.editorViews.toc.actions.cui.extensions;
 
 import org.gdms.data.types.GeometryConstraint;
+import org.orbisgis.editorViews.toc.actions.cui.ISymbolEditor;
 import org.orbisgis.layerModel.ILayer;
 import org.orbisgis.map.MapTransform;
 
@@ -91,4 +92,11 @@ public interface LegendContext {
 	 * @return
 	 */
 	MapTransform getCurrentMapTransform();
+
+	/**
+	 * Gets all the available symbol editors
+	 *
+	 * @return
+	 */
+	ISymbolEditor[] getAvailableSymbolEditors();
 }

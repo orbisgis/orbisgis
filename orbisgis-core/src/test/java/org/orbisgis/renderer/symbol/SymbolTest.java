@@ -37,9 +37,6 @@
 package org.orbisgis.renderer.symbol;
 
 import java.awt.Color;
-import java.awt.Graphics2D;
-import java.awt.geom.AffineTransform;
-import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -50,14 +47,7 @@ import junit.framework.TestCase;
 
 import org.gdms.driver.DriverException;
 import org.orbisgis.IncompatibleVersionException;
-import org.orbisgis.renderer.RenderPermission;
 import org.orbisgis.renderer.symbol.collection.DefaultSymbolCollection;
-
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.Envelope;
-import com.vividsolutions.jts.geom.GeometryFactory;
-import com.vividsolutions.jts.geom.LinearRing;
-import com.vividsolutions.jts.geom.Polygon;
 
 public class SymbolTest extends TestCase {
 
@@ -117,6 +107,7 @@ public class SymbolTest extends TestCase {
 			assertTrue(!classes.contains(symbolClass));
 			classes.add(symbol.getClass());
 			testClone(symbol);
+			testPersistent(symbol);
 		}
 
 		Symbol s1 = SymbolFactory.createPointCircleSymbol(Color.black,
@@ -150,37 +141,8 @@ public class SymbolTest extends TestCase {
 
 	private void testEquals(Symbol symbol1, Symbol symbol2)
 			throws DriverException {
-		BufferedImage img = drawSymbol(symbol1);
-		BufferedImage img2 = drawSymbol(symbol2);
-		for (int i = 0; i < img.getWidth(); i++) {
-			for (int j = 0; j < img.getHeight(); j++) {
-				if (img.getRGB(i, j) != img2.getRGB(i, j)) {
-					throw new IllegalArgumentException(symbol1.toString());
-				}
-			}
-		}
-
-	}
-
-	private BufferedImage drawSymbol(Symbol sym) throws DriverException {
-		BufferedImage img = new BufferedImage(100, 100,
-				BufferedImage.TYPE_INT_ARGB);
-		Graphics2D g = img.createGraphics();
-		GeometryFactory gf = new GeometryFactory();
-		LinearRing lr = gf.createLinearRing(new Coordinate[] {
-				new Coordinate(0, 2, 0), new Coordinate(10, 2, 0),
-				new Coordinate(110, 22, 0), new Coordinate(10, 62, 240),
-				new Coordinate(0, 2, 0) });
-		Polygon geom = gf.createPolygon(lr, new LinearRing[0]);
-
-		sym.draw(g, geom, new AffineTransform(), new RenderPermission() {
-
-			public boolean canDraw(Envelope env) {
-				return true;
-			}
-
-		});
-		return img;
+		symbol1.getPersistentProperties().equals(
+				symbol2.getPersistentProperties());
 	}
 
 	public void testTransparencyPersistence() throws Exception {

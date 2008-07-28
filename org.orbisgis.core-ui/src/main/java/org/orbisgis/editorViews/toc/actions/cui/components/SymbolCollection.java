@@ -52,14 +52,10 @@ import javax.xml.bind.JAXBException;
 
 import org.orbisgis.Services;
 import org.orbisgis.SymbolManager;
-import org.orbisgis.editorViews.toc.actions.cui.EditableSymbolFilter;
 import org.orbisgis.editorViews.toc.actions.cui.SymbolEditor;
 import org.orbisgis.editorViews.toc.actions.cui.SymbolFilter;
 import org.orbisgis.editorViews.toc.actions.cui.extensions.LegendContext;
 import org.orbisgis.images.IconLoader;
-import org.orbisgis.renderer.legend.carto.LegendFactory;
-import org.orbisgis.renderer.legend.carto.UniqueSymbolLegend;
-import org.orbisgis.renderer.symbol.EditableSymbol;
 import org.orbisgis.renderer.symbol.Symbol;
 import org.sif.UIFactory;
 import org.sif.UIPanel;
@@ -68,8 +64,7 @@ import org.sif.UIPanel;
  *
  * @author david
  */
-public class SymbolCollection extends javax.swing.JPanel implements
-		UIPanel {
+public class SymbolCollection extends javax.swing.JPanel implements UIPanel {
 	private LegendContext legendContext;
 	private ArrayList<SelectableCanvas> selection = new ArrayList<SelectableCanvas>();
 
@@ -212,11 +207,9 @@ public class SymbolCollection extends javax.swing.JPanel implements
 
 				if (selection.contains(can)) {
 					Symbol sym = can.getSymbol().cloneSymbol();
-					UniqueSymbolLegend leg = LegendFactory
-							.createUniqueSymbolLegend();
-					leg.setSymbol(sym);
 					SymbolEditor usl = new SymbolEditor(false, legendContext,
 							getSymbolFilter());
+					usl.setSymbol(sym);
 
 					if (UIFactory.showDialog(usl)) {
 						can.setSymbol(usl.getSymbolComposite());
@@ -230,7 +223,13 @@ public class SymbolCollection extends javax.swing.JPanel implements
 	}
 
 	private SymbolFilter getSymbolFilter() {
-		return new EditableSymbolFilter();
+		return new SymbolFilter() {
+
+			public boolean accept(Symbol symbol) {
+				return true;
+			}
+
+		};
 	}
 
 	private void jButtonAddActionPerformed(java.awt.event.ActionEvent evt) {
@@ -239,7 +238,7 @@ public class SymbolCollection extends javax.swing.JPanel implements
 
 		SymbolSelection type = new SymbolSelection(sm.getAvailableSymbols());
 		if (UIFactory.showDialog(type)) {
-			EditableSymbol sym = (EditableSymbol) type.getSelected();
+			Symbol sym = (Symbol) type.getSelected();
 
 			SymbolEditor se = new SymbolEditor(false, legendContext,
 					getSymbolFilter());
@@ -389,13 +388,8 @@ public class SymbolCollection extends javax.swing.JPanel implements
 	}
 
 	private String acceptsGeometry(Symbol symbol) {
-		if (symbol instanceof EditableSymbol) {
-			if (!((EditableSymbol) symbol).acceptGeometryType(legendContext
-					.getGeometryConstraint())) {
-				return "The symbol type is not applicable";
-			} else {
-				return null;
-			}
+		if (!symbol.acceptGeometryType(legendContext.getGeometryConstraint())) {
+			return "The symbol type is not applicable";
 		} else if (symbol.acceptsChildren()) {
 			for (int i = 0; i < symbol.getSymbolCount(); i++) {
 				String ret = acceptsGeometry(symbol.getSymbol(i));

@@ -50,8 +50,11 @@ import org.orbisgis.DefaultSymbolManager;
 import org.orbisgis.OGWorkspace;
 import org.orbisgis.Services;
 import org.orbisgis.SymbolManager;
+import org.orbisgis.editorViews.toc.actions.cui.ISymbolEditor;
 import org.orbisgis.editorViews.toc.actions.cui.LegendsPanel;
+import org.orbisgis.editorViews.toc.actions.cui.extensions.ClassicSymbolEditor;
 import org.orbisgis.editorViews.toc.actions.cui.extensions.ILegendPanelUI;
+import org.orbisgis.editorViews.toc.actions.cui.extensions.ImageSymbolEditor;
 import org.orbisgis.editorViews.toc.actions.cui.extensions.PnlUniqueSymbolLegend;
 import org.orbisgis.editorViews.toc.actions.cui.extensions.PnlIntervalLegend;
 import org.orbisgis.editorViews.toc.actions.cui.extensions.PnlProportionalLegend;
@@ -62,6 +65,7 @@ import org.orbisgis.layerModel.ILayer;
 import org.orbisgis.map.MapTransform;
 import org.orbisgis.pluginManager.workspace.DefaultWorkspace;
 import org.orbisgis.pluginManager.workspace.Workspace;
+import org.orbisgis.renderer.symbol.ImageSymbol;
 import org.sif.UIFactory;
 
 import com.vividsolutions.jts.geom.Envelope;
@@ -86,8 +90,8 @@ public class CUITest {
 					}
 
 				});
-		Services.registerService("org.orbisgis.OGWorkspace",
-				OGWorkspace.class, "", new DefaultOGWorkspace() {
+		Services.registerService("org.orbisgis.OGWorkspace", OGWorkspace.class,
+				"", new DefaultOGWorkspace() {
 
 					@Override
 					public File getFile(String name) {
@@ -124,11 +128,11 @@ public class CUITest {
 		MapTransform mt = new MapTransform();
 		mt.setExtent(new Envelope(0, 10000, 0, 10000));
 		mt.resizeImage(100, 100);
-		pan.init(mt, cons, layer.getVectorLegend(),
-				new ILegendPanelUI[] { new PnlUniqueSymbolLegend(true, pan),
-						new PnlUniqueValueLegend(pan),
-						new PnlIntervalLegend(pan),
-						new PnlProportionalLegend(pan)}, layer);
+		pan.init(mt, cons, layer.getVectorLegend(), new ILegendPanelUI[] {
+				new PnlUniqueSymbolLegend(true, pan),
+				new PnlUniqueValueLegend(pan), new PnlIntervalLegend(pan),
+				new PnlProportionalLegend(pan) }, new ISymbolEditor[] {
+				new ClassicSymbolEditor(), new ImageSymbolEditor() }, layer);
 		if (UIFactory.showDialog(pan)) {
 			try {
 				layer.setLegend(pan.getLegends());

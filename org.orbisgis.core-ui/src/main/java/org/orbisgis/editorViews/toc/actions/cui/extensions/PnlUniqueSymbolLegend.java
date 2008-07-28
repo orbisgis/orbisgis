@@ -46,9 +46,7 @@ import java.awt.BorderLayout;
 import java.awt.Component;
 import java.net.URL;
 
-import org.orbisgis.editorViews.toc.actions.cui.CompositeSymbolFilter;
 import org.orbisgis.editorViews.toc.actions.cui.ConstraintSymbolFilter;
-import org.orbisgis.editorViews.toc.actions.cui.EditableSymbolFilter;
 import org.orbisgis.editorViews.toc.actions.cui.SymbolEditor;
 import org.orbisgis.editorViews.toc.actions.cui.SymbolFilter;
 import org.orbisgis.renderer.legend.Legend;
@@ -82,9 +80,7 @@ public class PnlUniqueSymbolLegend extends javax.swing.JPanel implements
 	}
 
 	private SymbolFilter getSymbolFilter() {
-		return new CompositeSymbolFilter(
-				new EditableSymbolFilter(), new ConstraintSymbolFilter(
-						legendContext.getGeometryConstraint()));
+		return new ConstraintSymbolFilter(legendContext.getGeometryConstraint());
 	}
 
 	/**
@@ -124,7 +120,7 @@ public class PnlUniqueSymbolLegend extends javax.swing.JPanel implements
 
 	public String validateInput() {
 		if (symbolEditor.getSymbolComposite() == null) {
-			return "At least symbol must be created";
+			return "At least one symbol must be created";
 		}
 		return null;
 	}
