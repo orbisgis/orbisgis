@@ -37,6 +37,7 @@
 package org.orbisgis;
 
 import org.gdms.sql.customQuery.QueryManager;
+import org.gdms.sql.customQuery.spatial.geometry.CheckSpatialEquivalence;
 import org.gdms.sql.customQuery.spatial.geometry.convert.PointsToXYZ;
 import org.gdms.sql.customQuery.spatial.geometry.jgrapht.ShortestPath;
 import org.gdms.sql.customQuery.spatial.geometry.others.RandomGeometry;
@@ -111,9 +112,11 @@ public class Register implements PluginActivator {
 
 		FunctionManager.addFunction(CircumCircle.class);
 		FunctionManager.addFunction(ConvexHull.class);
-		
+
 		FunctionManager.addFunction(SubString.class);
 		QueryManager.registerQuery(new TinMM());
+
+		QueryManager.registerQuery(new CheckSpatialEquivalence());
 	}
 
 	public void stop() throws Exception {
