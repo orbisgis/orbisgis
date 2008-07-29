@@ -107,8 +107,8 @@ public class VectorizeLineTest extends TestCase {
 
 	public void testEvaluate() throws Exception {
 		// TODO : try to uncomment following two lines !
-		testEval("insds1");
-		testEval("insds2");
+		// testEval("insds1");
+		// testEval("insds2");
 		testEval("insds3");
 	}
 
@@ -120,7 +120,7 @@ public class VectorizeLineTest extends TestCase {
 		output.open();
 		assertTrue(multiLineString.equalsExact(output.getGeometry(0)));
 		assertEquals(output.getFieldValue(0, 0).getAsDouble(), 1d);
-		// assertEquals(output.getRowCount(), 1);
+		assertEquals(output.getRowCount(), 1);
 		output.close();
 		dsf.getSourceManager().remove("outsds");
 	}
