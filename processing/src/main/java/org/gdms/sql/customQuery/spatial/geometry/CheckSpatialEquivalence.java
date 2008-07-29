@@ -77,8 +77,7 @@ public class CheckSpatialEquivalence implements CustomQuery {
 							.getEnvelopeInternal());
 					boolean isIn = false;
 					for (Geometry geometry2 : sublist) {
-						if (geometry1.contains(geometry2)
-								&& geometry2.contains(geometry1)) {
+						if (geometry1.equals(geometry2)) {
 							spatialIndex.remove(
 									geometry2.getEnvelopeInternal(), geometry2);
 							isIn = true;

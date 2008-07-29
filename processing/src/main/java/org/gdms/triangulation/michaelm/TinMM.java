@@ -78,18 +78,17 @@ public class TinMM implements CustomQuery {
 		try {
 			// populate and mesh the Planar Straight-Line Graph using the unique
 			// table as input data
-			long rowCount = inSds.getRowCount();
+			final long rowCount = inSds.getRowCount();
 
-			List<Coordinate> points = new ArrayList<Coordinate>();
-			List<int[]> breakLineList = new ArrayList<int[]>();
-			int idx = 0;
+			final List<Coordinate> points = new ArrayList<Coordinate>();
+			final List<int[]> breakLineList = new ArrayList<int[]>();
 			for (long rowIndex = 0; rowIndex < rowCount; rowIndex++) {
-				final Geometry geometry = inSds.getGeometry(rowIndex);
-				addConstraint(geometry, points, breakLineList, idx);
+				addConstraint(inSds.getGeometry(rowIndex), points,
+						breakLineList);
 			}
 			inSds.close();
 
-			Triangulation t = new Triangulation(points
+			final Triangulation t = new Triangulation(points
 					.toArray(new Coordinate[0]), (int[][]) breakLineList
 					.toArray(new int[][] {}));
 			t.triangulate();
@@ -97,14 +96,13 @@ public class TinMM implements CustomQuery {
 			// convert the resulting TIN into a data source
 			final ObjectMemoryDriver driver = new ObjectMemoryDriver(
 					getMetadata(null));
+			final Coordinate[] cc = t.getTriangulatedPoints();
 			long index = 0;
-			Coordinate[] cc = t.getTriangulatedPoints();
-			for (int i = 0; i < cc.length; i += 3) {
-				Polygon tmpPolygon = gf.createPolygon(gf
+			for (int i = 0; i < cc.length; i += 3, index++) {
+				final Polygon tmpPolygon = gf.createPolygon(gf
 						.createLinearRing(new Coordinate[] { cc[i], cc[i + 1],
 								cc[i + 2], cc[i] }), null);
-				driver.addValues(new Value[] {
-						ValueFactory.createValue(index++),
+				driver.addValues(new Value[] { ValueFactory.createValue(index),
 						ValueFactory.createValue(tmpPolygon) });
 			}
 			return driver;
@@ -114,27 +112,29 @@ public class TinMM implements CustomQuery {
 	}
 
 	private void addConstraint(Geometry geometry, List<Coordinate> points,
-			List<int[]> breakLineList, int idx) {
+			List<int[]> breakLineList) {
 		if (geometry instanceof Point) {
-			addConstraint((Point) geometry, points, breakLineList, idx);
+			points.add(geometry.getCoordinate());
 		} else if (geometry instanceof LineString) {
-			addConstraint((LineString) geometry, points, breakLineList, idx);
+			addConstraint((LineString) geometry, points, breakLineList);
 		} else if (geometry instanceof Polygon) {
-			// TODO
+			Polygon polygon = (Polygon) geometry;
+			addConstraint(polygon.getExteriorRing(), points, breakLineList);
+			for (int i = 0; i < polygon.getNumInteriorRing(); i++) {
+				addConstraint(polygon.getInteriorRingN(i), points,
+						breakLineList);
+			}
 		} else if (geometry instanceof GeometryCollection) {
-			addConstraint((GeometryCollection) geometry, points, breakLineList,
-					idx);
+			GeometryCollection gc = (GeometryCollection) geometry;
+			for (int i = 0; i < gc.getNumGeometries(); i++) {
+				addConstraint(gc.getGeometryN(i), points, breakLineList);
+			}
 		}
 	}
 
-	private void addConstraint(Point point, List<Coordinate> points,
-			List<int[]> breakLineList, int idx) {
-		points.add(point.getCoordinate());
-		idx++;
-	}
-
 	private void addConstraint(LineString lineString, List<Coordinate> points,
-			List<int[]> breakLineList, int idx) {
+			List<int[]> breakLineList) {
+		int idx = points.size();
 		int[] breakLine = new int[lineString.getNumPoints()];
 		for (int j = 0, n = lineString.getNumPoints(); j < n; j++) {
 			points.add(lineString.getCoordinates()[j]);
@@ -143,16 +143,8 @@ public class TinMM implements CustomQuery {
 		breakLineList.add(breakLine);
 	}
 
-	private void addConstraint(final GeometryCollection gc,
-			List<Coordinate> points, List<int[]> breakLineList, int idx) {
-		for (int i = 0; i < gc.getNumGeometries(); i++) {
-			addConstraint(gc.getGeometryN(i), points, breakLineList, idx);
-		}
-	}
-
 	public String getDescription() {
-		// TODO
-		return "";
+		return "Implementation of a 2D Constrained Delaunay Triangulation written by M. Michaud (France, IGN)";
 	}
 
 	public Metadata getMetadata(Metadata[] tables) throws DriverException {
