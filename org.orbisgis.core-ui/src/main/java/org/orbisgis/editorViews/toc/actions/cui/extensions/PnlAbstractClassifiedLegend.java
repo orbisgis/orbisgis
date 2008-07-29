@@ -56,7 +56,8 @@ import javax.swing.event.ListSelectionListener;
 
 import org.gdms.data.types.GeometryConstraint;
 import org.orbisgis.editorViews.toc.actions.cui.ConstraintSymbolFilter;
-import org.orbisgis.editorViews.toc.actions.cui.SymbolEditor;
+import org.orbisgis.editorViews.toc.actions.cui.LegendContext;
+import org.orbisgis.editorViews.toc.actions.cui.SymbolBuilder;
 import org.orbisgis.editorViews.toc.actions.cui.SymbolFilter;
 import org.orbisgis.editorViews.toc.actions.cui.extensions.table.ClassifiedLegendTableModel;
 import org.orbisgis.editorViews.toc.actions.cui.extensions.table.SymbolValueCellRenderer;
@@ -117,7 +118,7 @@ public abstract class PnlAbstractClassifiedLegend extends javax.swing.JPanel
 					int col = table.getSelectedColumn();
 					if (col == 0) {
 						int row = table.getSelectedRow();
-						SymbolEditor symbolEditor = new SymbolEditor(true,
+						SymbolBuilder symbolEditor = new SymbolBuilder(true,
 								legendContext, getSymbolFilter());
 						symbolEditor.setSymbol((Symbol) tableModel.getValueAt(
 								row, 0));

@@ -67,7 +67,8 @@ import org.gdms.data.types.Type;
 import org.gdms.driver.DriverException;
 import org.orbisgis.Services;
 import org.orbisgis.editorViews.toc.actions.cui.ConstraintSymbolFilter;
-import org.orbisgis.editorViews.toc.actions.cui.SymbolEditor;
+import org.orbisgis.editorViews.toc.actions.cui.LegendContext;
+import org.orbisgis.editorViews.toc.actions.cui.SymbolBuilder;
 import org.orbisgis.editorViews.toc.actions.cui.SymbolFilter;
 import org.orbisgis.editorViews.toc.actions.cui.components.Canvas;
 import org.orbisgis.map.MapTransform;
@@ -266,7 +267,7 @@ public class PnlProportionalLegend extends JPanel implements ILegendPanelUI {
 	}
 
 	private void editSymbol() {
-		SymbolEditor editor = new SymbolEditor(false, legendContext,
+		SymbolBuilder editor = new SymbolBuilder(false, legendContext,
 				getSymbolFilter());
 		editor.setSymbol(canvas.getSymbol());
 		if (UIFactory.showDialog(editor)) {

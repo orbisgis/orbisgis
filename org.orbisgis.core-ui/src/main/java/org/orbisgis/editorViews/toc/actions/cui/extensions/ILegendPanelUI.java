@@ -47,6 +47,7 @@ package org.orbisgis.editorViews.toc.actions.cui.extensions;
 
 import java.awt.Component;
 
+import org.orbisgis.editorViews.toc.actions.cui.LegendContext;
 import org.orbisgis.renderer.legend.Legend;
 
 /**

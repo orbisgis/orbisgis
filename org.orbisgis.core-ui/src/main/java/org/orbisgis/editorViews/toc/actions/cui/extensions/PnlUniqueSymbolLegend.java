@@ -47,7 +47,8 @@ import java.awt.Component;
 import java.net.URL;
 
 import org.orbisgis.editorViews.toc.actions.cui.ConstraintSymbolFilter;
-import org.orbisgis.editorViews.toc.actions.cui.SymbolEditor;
+import org.orbisgis.editorViews.toc.actions.cui.LegendContext;
+import org.orbisgis.editorViews.toc.actions.cui.SymbolBuilder;
 import org.orbisgis.editorViews.toc.actions.cui.SymbolFilter;
 import org.orbisgis.renderer.legend.Legend;
 import org.orbisgis.renderer.legend.carto.LegendFactory;
@@ -64,7 +65,7 @@ public class PnlUniqueSymbolLegend extends javax.swing.JPanel implements
 		ILegendPanelUI, UIPanel {
 
 	private UniqueSymbolLegend leg = null;
-	private SymbolEditor symbolEditor;
+	private SymbolBuilder symbolEditor;
 	private LegendContext legendContext;
 
 	/** Creates new form JPanelSimpleSimbolLegend */
@@ -73,7 +74,7 @@ public class PnlUniqueSymbolLegend extends javax.swing.JPanel implements
 		leg = LegendFactory.createUniqueSymbolLegend();
 		leg.setName(getLegendTypeName());
 		this.legendContext = legendContext;
-		symbolEditor = new SymbolEditor(showCollection, legendContext,
+		symbolEditor = new SymbolBuilder(showCollection, legendContext,
 				getSymbolFilter());
 		this.setLayout(new BorderLayout());
 		this.add(symbolEditor, BorderLayout.CENTER);

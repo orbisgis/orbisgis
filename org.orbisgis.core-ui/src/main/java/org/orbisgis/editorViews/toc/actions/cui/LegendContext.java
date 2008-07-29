@@ -34,10 +34,10 @@
  *    fergonco _at_ gmail.com
  *    thomas.leduc _at_ cerma.archi.fr
  */
-package org.orbisgis.editorViews.toc.actions.cui.extensions;
+package org.orbisgis.editorViews.toc.actions.cui;
 
 import org.gdms.data.types.GeometryConstraint;
-import org.orbisgis.editorViews.toc.actions.cui.ISymbolEditor;
+import org.orbisgis.editorViews.toc.actions.cui.extensions.ILegendPanelUI;
 import org.orbisgis.layerModel.ILayer;
 import org.orbisgis.map.MapTransform;
 

@@ -53,7 +53,6 @@ import javax.swing.JTextField;
 import org.gdms.data.types.GeometryConstraint;
 import org.orbisgis.Services;
 import org.orbisgis.editorViews.toc.actions.cui.extensions.ILegendPanelUI;
-import org.orbisgis.editorViews.toc.actions.cui.extensions.LegendContext;
 import org.orbisgis.layerModel.ILayer;
 import org.orbisgis.layerModel.LegendDecorator;
 import org.orbisgis.map.MapTransform;

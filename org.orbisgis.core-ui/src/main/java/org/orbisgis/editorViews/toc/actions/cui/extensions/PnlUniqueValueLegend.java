@@ -53,6 +53,7 @@ import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
 import org.orbisgis.Services;
+import org.orbisgis.editorViews.toc.actions.cui.LegendContext;
 import org.orbisgis.editorViews.toc.actions.cui.extensions.table.UniqueValueLegendTableModel;
 import org.orbisgis.layerModel.ILayer;
 import org.orbisgis.renderer.legend.Legend;

@@ -67,7 +67,6 @@ import org.orbisgis.SymbolManager;
 import org.orbisgis.editorViews.toc.actions.cui.components.Canvas;
 import org.orbisgis.editorViews.toc.actions.cui.components.SymbolCollection;
 import org.orbisgis.editorViews.toc.actions.cui.components.SymbolSelection;
-import org.orbisgis.editorViews.toc.actions.cui.extensions.LegendContext;
 import org.orbisgis.images.IconLoader;
 import org.orbisgis.renderer.symbol.Symbol;
 import org.orbisgis.renderer.symbol.SymbolFactory;
@@ -79,7 +78,7 @@ import org.sif.UIPanel;
  *
  * @author david
  */
-public class SymbolEditor extends JPanel implements UIPanel, SymbolEditorListener {
+public class SymbolBuilder extends JPanel implements UIPanel, SymbolEditorListener {
 
 	private Canvas canvas = new Canvas();
 	private boolean showCollection = false;
@@ -89,7 +88,7 @@ public class SymbolEditor extends JPanel implements UIPanel, SymbolEditorListene
 	private SymbolListModel model;
 
 	/** Creates new form JPanelSimpleSimbolLegend */
-	public SymbolEditor(boolean showCollection, LegendContext legendContext,
+	public SymbolBuilder(boolean showCollection, LegendContext legendContext,
 			SymbolFilter symbolFilter) {
 		this.legendContext = legendContext;
 		this.showCollection = showCollection;

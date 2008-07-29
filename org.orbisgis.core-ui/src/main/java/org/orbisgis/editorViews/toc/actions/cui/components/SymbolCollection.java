@@ -52,9 +52,9 @@ import javax.xml.bind.JAXBException;
 
 import org.orbisgis.Services;
 import org.orbisgis.SymbolManager;
-import org.orbisgis.editorViews.toc.actions.cui.SymbolEditor;
+import org.orbisgis.editorViews.toc.actions.cui.LegendContext;
+import org.orbisgis.editorViews.toc.actions.cui.SymbolBuilder;
 import org.orbisgis.editorViews.toc.actions.cui.SymbolFilter;
-import org.orbisgis.editorViews.toc.actions.cui.extensions.LegendContext;
 import org.orbisgis.images.IconLoader;
 import org.orbisgis.renderer.symbol.Symbol;
 import org.sif.UIFactory;
@@ -207,7 +207,7 @@ public class SymbolCollection extends javax.swing.JPanel implements UIPanel {
 
 				if (selection.contains(can)) {
 					Symbol sym = can.getSymbol().cloneSymbol();
-					SymbolEditor usl = new SymbolEditor(false, legendContext,
+					SymbolBuilder usl = new SymbolBuilder(false, legendContext,
 							getSymbolFilter());
 					usl.setSymbol(sym);
 
@@ -240,7 +240,7 @@ public class SymbolCollection extends javax.swing.JPanel implements UIPanel {
 		if (UIFactory.showDialog(type)) {
 			Symbol sym = (Symbol) type.getSelected();
 
-			SymbolEditor se = new SymbolEditor(false, legendContext,
+			SymbolBuilder se = new SymbolBuilder(false, legendContext,
 					getSymbolFilter());
 			se.setSymbol(sym);
 
