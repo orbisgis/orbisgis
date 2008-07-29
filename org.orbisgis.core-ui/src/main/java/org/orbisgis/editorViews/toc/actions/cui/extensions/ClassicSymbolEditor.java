@@ -245,11 +245,21 @@ public class ClassicSymbolEditor extends JPanel implements ISymbolEditor {
 
 	private void symbolChanged() {
 		if (!ignoreEvents) {
+			int transparency = 0;
+			try {
+				transparency = Integer.parseInt(txtTransparency.getText());
+			} catch (NumberFormatException e) {
+			}
+			if (transparency > 255) {
+				transparency = 255;
+			} else if (transparency < 0) {
+				transparency = 0;
+			}
 			if (symbol instanceof EditableLineSymbol) {
 				EditableLineSymbol lineSymbol = (EditableLineSymbol) symbol;
 				Color lineColor = lblLine.getBackground();
 				lineColor = new Color(lineColor.getRed(), lineColor.getGreen(),
-						lineColor.getBlue(), 255 - sldTransparency.getValue());
+						lineColor.getBlue(), 255 - transparency);
 				if (chkLine.isSelected()) {
 					lineSymbol.setOutlineColor(lineColor);
 				} else {
@@ -260,6 +270,9 @@ public class ClassicSymbolEditor extends JPanel implements ISymbolEditor {
 					width = Integer.parseInt(txtLineWidth.getText());
 				} catch (NumberFormatException e) {
 				}
+				if (width < 0) {
+					width = 0;
+				}
 				lineSymbol.setLineWidth(width);
 			}
 
@@ -267,11 +280,7 @@ public class ClassicSymbolEditor extends JPanel implements ISymbolEditor {
 				EditablePolygonSymbol polygonSymbol = (EditablePolygonSymbol) symbol;
 
 				Color fillColor = lblFill.getBackground();
-				int transparency = 0;
-				try {
-					transparency = Integer.parseInt(txtTransparency.getText());
-				} catch (NumberFormatException e) {
-				}
+
 				fillColor = new Color(fillColor.getRed(), fillColor.getGreen(),
 						fillColor.getBlue(), 255 - transparency);
 				if (chkFill.isSelected()) {

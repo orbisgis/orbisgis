@@ -180,9 +180,9 @@ public class SymbolCollection extends javax.swing.JPanel implements UIPanel {
 												javax.swing.GroupLayout.DEFAULT_SIZE,
 												367, Short.MAX_VALUE)
 										.addContainerGap()));
-	}// </editor-fold>//GEN-END:initComponents
+	}
 
-	private void jButtonDelActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jButtonDelActionPerformed
+	private void jButtonDelActionPerformed(java.awt.event.ActionEvent evt) {
 		Component[] comps = jPanelPreviewSymbols.getComponents();
 		for (int i = 0; i < comps.length; i++) {
 			if (comps[i] instanceof SelectableCanvas) {
@@ -197,7 +197,7 @@ public class SymbolCollection extends javax.swing.JPanel implements UIPanel {
 
 		refreshInterface();
 
-	}// GEN-LAST:event_jButtonDelActionPerformed
+	}
 
 	private void jButtonEditActionPerformed(java.awt.event.ActionEvent evt) {
 		Component[] comps = jPanelPreviewSymbols.getComponents();
@@ -254,7 +254,7 @@ public class SymbolCollection extends javax.swing.JPanel implements UIPanel {
 		}
 	}
 
-	private void jPanelPreviewSymbolsMouseClicked(java.awt.event.MouseEvent evt) {// GEN-FIRST:event_jPanelPreviewSymbolsMouseClicked
+	private void jPanelPreviewSymbolsMouseClicked(java.awt.event.MouseEvent evt) {
 		Component c = evt.getComponent();
 		if (c instanceof SelectableCanvas) {
 			SelectableCanvas can = (SelectableCanvas) c;
@@ -278,7 +278,7 @@ public class SymbolCollection extends javax.swing.JPanel implements UIPanel {
 		}
 		refreshInterface();
 
-	}// GEN-LAST:event_jPanelPreviewSymbolsMouseClicked
+	}
 
 	private void refreshInterface() {
 		Component[] comps = jPanelPreviewSymbols.getComponents();
