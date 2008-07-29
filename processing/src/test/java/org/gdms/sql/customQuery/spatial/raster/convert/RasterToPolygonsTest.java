@@ -34,7 +34,7 @@
  *    fergonco _at_ gmail.com
  *    thomas.leduc _at_ cerma.archi.fr
  */
-package org.gdms.sql.customQuery.geometry.raster.convert;
+package org.gdms.sql.customQuery.spatial.raster.convert;
 
 import org.gdms.AbstractRasterProcessingTest;
 import org.gdms.data.SpatialDataSourceDecorator;

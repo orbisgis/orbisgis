@@ -39,9 +39,9 @@ package org.gdms;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
-import org.gdms.sql.customQuery.geometry.raster.convert.RasterToPointsTest;
-import org.gdms.sql.customQuery.geometry.raster.convert.RasterToPolygonsTest;
 import org.gdms.sql.customQuery.geometry.raster.utilities.UtilitiesTest;
+import org.gdms.sql.customQuery.spatial.raster.convert.RasterToPointsTest;
+import org.gdms.sql.customQuery.spatial.raster.convert.RasterToPolygonsTest;
 import org.gdms.sql.function.spatial.geometry.ConvexHullTest;
 import org.gdms.sql.function.spatial.geometry.ExtractTest;
 
