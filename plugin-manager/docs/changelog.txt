@@ -4,7 +4,7 @@
         * Preview in proportional legends
 
 	- Processing
-		* New triangulation method developped by M Michaud (IGN/France) integration (Custom query TinMM)
+		* New triangulation method developed by M Michaud (IGN/France) integration (Custom query TinMM)
 		* New VectorizeLine custom query
 		* New CheckSpatialEquivalence custom query
 
