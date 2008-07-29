@@ -3,6 +3,11 @@
         * Raster legend preview in TOC
         * Preview in proportional legends
 
+	- Processing
+		* New triangulation method developped by M Michaud (IGN/France) integration (Custom query TinMM)
+		* New VectorizeLine custom query
+		* New CheckSpatialEquivalence custom query
+
 17-7-2008
     - Symbology
         * Fixed some bugs
