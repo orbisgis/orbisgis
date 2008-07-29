@@ -17,6 +17,7 @@ import org.gdms.data.ExecutionException;
 import org.gdms.data.SpatialDataSourceDecorator;
 import org.gdms.data.metadata.DefaultMetadata;
 import org.gdms.data.metadata.Metadata;
+import org.gdms.data.types.DimensionConstraint;
 import org.gdms.data.types.GeometryConstraint;
 import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeFactory;
@@ -205,8 +206,9 @@ public class VectorizeLine implements CustomQuery {
 		return new DefaultMetadata(new Type[] {
 				TypeFactory.createType(Type.DOUBLE),
 				TypeFactory.createType(Type.GEOMETRY, new GeometryConstraint(
-						GeometryConstraint.MULTI_LINESTRING)) }, new String[] {
-				"gid", "the_geom" });
+						GeometryConstraint.MULTI_LINESTRING),
+						new DimensionConstraint(2)) }, new String[] { "gid",
+				"the_geom" });
 	}
 
 	public String getName() {
