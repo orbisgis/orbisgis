@@ -1,3 +1,8 @@
+29-7-2008
+    - Symbology
+        * Raster legend preview in TOC
+        * Preview in proportional legends
+
 17-7-2008
     - Symbology
         * Fixed some bugs
