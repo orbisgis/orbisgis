@@ -54,6 +54,7 @@ import java.util.Arrays;
 
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
+import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -75,10 +76,38 @@ import org.sif.UIFactory;
 import org.sif.UIPanel;
 
 /**
- *
+ * 
  * @author david
  */
-public class SymbolBuilder extends JPanel implements UIPanel, SymbolEditorListener {
+public class SymbolBuilder extends JPanel implements UIPanel,
+		SymbolEditorListener {
+
+	private final class NoSuitableEditor implements ISymbolEditor {
+		private Symbol symbol;
+
+		public void setSymbolEditorListener(SymbolEditorListener listener) {
+		}
+
+		public void setSymbol(Symbol symbol) {
+			this.symbol = symbol;
+		}
+
+		public ISymbolEditor newInstance() {
+			return new NoSuitableEditor();
+		}
+
+		public Symbol getSymbol() {
+			return symbol;
+		}
+
+		public Component getComponent() {
+			return new JLabel("No suitable editor");
+		}
+
+		public boolean accepts(Symbol symbol) {
+			return false;
+		}
+	}
 
 	private Canvas canvas = new Canvas();
 	private boolean showCollection = false;
@@ -175,7 +204,7 @@ public class SymbolBuilder extends JPanel implements UIPanel, SymbolEditorListen
 
 	/**
 	 * returns a symbolcomposite with all the symbols in the list
-	 *
+	 * 
 	 * @return
 	 */
 	public Symbol getSymbolComposite() {
@@ -293,7 +322,7 @@ public class SymbolBuilder extends JPanel implements UIPanel, SymbolEditorListen
 		lstSymbols = new JList();
 		lstSymbols.addListSelectionListener(new ListSelectionListener() {
 			public void valueChanged(ListSelectionEvent evt) {
-				jList1ValueChanged(evt);
+				jList1ValueChanged();
 			}
 		});
 		JScrollPane scrollPane = new JScrollPane(lstSymbols);
@@ -339,7 +368,7 @@ public class SymbolBuilder extends JPanel implements UIPanel, SymbolEditorListen
 
 	/**
 	 * open the collection window in order to select one symbol.
-	 *
+	 * 
 	 * @param evt
 	 */
 	private void jButtonFromCollectionActionPerformed(ActionEvent evt) {
@@ -369,7 +398,7 @@ public class SymbolBuilder extends JPanel implements UIPanel, SymbolEditorListen
 
 	/**
 	 * move up the selected symbol in the list
-	 *
+	 * 
 	 * @param evt
 	 */
 	private void jButtonSymbolUpActionPerformed(ActionEvent evt) {
@@ -384,10 +413,10 @@ public class SymbolBuilder extends JPanel implements UIPanel, SymbolEditorListen
 	/**
 	 * When the selected value in the list is changed we will call to the
 	 * refresh functions with the new symbol.
-	 *
-	 * @param evt
+	 * 
+	 * @param evt;
 	 */
-	private void jList1ValueChanged(ListSelectionEvent evt) {
+	private void jList1ValueChanged() {
 		int index = lstSymbols.getSelectedIndex();
 		if ((model.getSize() > 0) && (index != -1)) {
 			ISymbolEditor selected = model.getEditor(index);
@@ -415,7 +444,7 @@ public class SymbolBuilder extends JPanel implements UIPanel, SymbolEditorListen
 			}
 		}
 		if (selected == null) {
-			return null;
+			return new NoSuitableEditor();
 		} else {
 			ISymbolEditor ret = selected.newInstance();
 			ret.setSymbolEditorListener(this);
@@ -425,7 +454,7 @@ public class SymbolBuilder extends JPanel implements UIPanel, SymbolEditorListen
 
 	/**
 	 * moves down the symbol
-	 *
+	 * 
 	 * @param evt
 	 */
 	private void jButtonSymbolDownActionPerformed(ActionEvent evt) {
@@ -439,7 +468,7 @@ public class SymbolBuilder extends JPanel implements UIPanel, SymbolEditorListen
 
 	/**
 	 * adds a symbol in the list
-	 *
+	 * 
 	 * @param evt
 	 */
 	private void jButtonSymbolAddActionPerformed(ActionEvent evt) {
@@ -466,7 +495,7 @@ public class SymbolBuilder extends JPanel implements UIPanel, SymbolEditorListen
 
 	/**
 	 * delete the selected symbols
-	 *
+	 * 
 	 * @param evt
 	 */
 	private void jButtonSymbolDelActionPerformed(ActionEvent evt) {
@@ -477,13 +506,14 @@ public class SymbolBuilder extends JPanel implements UIPanel, SymbolEditorListen
 		}
 		if (model.getSize() > 0) {
 			lstSymbols.setSelectedIndex(0);
+			jList1ValueChanged();
 		}
 		refresh();
 	}
 
 	/**
 	 * rename the selected symbol
-	 *
+	 * 
 	 * @param evt
 	 */
 	private void jButtonSymbolRenameActionPerformed(ActionEvent evt) {
@@ -507,7 +537,7 @@ public class SymbolBuilder extends JPanel implements UIPanel, SymbolEditorListen
 
 	/**
 	 * gets the symbols and adds to the collection as a new Composite
-	 *
+	 * 
 	 * @param evt
 	 */
 	private void jButtonToCollectionActionPerformed(ActionEvent evt) {
