@@ -59,43 +59,63 @@ import org.gdms.driver.memory.ObjectMemoryDriver;
 import org.gdms.sql.customQuery.CustomQuery;
 import org.gdms.sql.customQuery.TableDefinition;
 import org.gdms.sql.function.Arguments;
-import org.gdms.triangulation.sweepLine4CDT.CDTTriangle;
-import org.gdms.triangulation.sweepLine4CDT.CDTVertex;
 import org.orbisgis.progress.IProgressMonitor;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
+import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.GeometryFactory;
+import com.vividsolutions.jts.geom.Triangle;
 import com.vividsolutions.jts.index.SpatialIndex;
-import com.vividsolutions.jts.index.quadtree.Quadtree;
+import com.vividsolutions.jts.index.strtree.STRtree;
 
 public class CheckDelaunayProperty implements CustomQuery {
+	private static final GeometryFactory gf = new GeometryFactory();
+
+	private class TriangleCircumCircle {
+		static final double EPSILON = 1E-4;
+
+		Coordinate centre;
+		double radius;
+		Envelope envelope;
+
+		TriangleCircumCircle(final Coordinate p0, final Coordinate p1,
+				final Coordinate p2) {
+			centre = Triangle.circumcentre(p0, p1, p2);
+			radius = Math.sqrt((centre.x - p0.x) * (centre.x - p0.x)
+					+ (centre.y - p0.y) * (centre.y - p0.y));
+			envelope = new Envelope(centre.x - radius, centre.x + radius,
+					centre.y - radius, centre.y + radius);
+		}
+
+		boolean contains(final Coordinate coordinate) {
+			return centre.distance(coordinate) <= radius;
+			// return centre.distance(coordinate) < radius + EPSILON;
+		}
+
+		Geometry getGeometry() {
+			return gf.createPoint(centre).buffer(radius);
+		}
+	}
 
 	@SuppressWarnings("unchecked")
 	public ObjectDriver evaluate(DataSourceFactory dsf, DataSource[] tables,
 			Value[] values, IProgressMonitor pm) throws ExecutionException {
 		SpatialDataSourceDecorator inSds = new SpatialDataSourceDecorator(
 				tables[0]);
-
 		try {
 			inSds.open();
 			long rowCount = inSds.getRowCount();
 
-			Set<CDTTriangle> setOfCDTTriangles = new HashSet<CDTTriangle>(
-					(int) rowCount);
-			Set<Coordinate> setOfVertices = new HashSet<Coordinate>(
+			// first step, build the set of all vertices and the corresponding
+			// spatial index...
+			final Set<Coordinate> setOfVertices = new HashSet<Coordinate>(
 					(int) rowCount * 2);
-			SpatialIndex verticesSpatialIndex = new Quadtree(); // new
-			// STRtree(10);
+			final SpatialIndex verticesSpatialIndex = new STRtree(10);
 
 			for (long rowIndex = 0; rowIndex < rowCount; rowIndex++) {
-
-				Coordinate[] coordinates = inSds.getGeometry(rowIndex)
+				final Coordinate[] coordinates = inSds.getGeometry(rowIndex)
 						.getCoordinates();
-				CDTTriangle cdtTriangle = new CDTTriangle(new CDTVertex(
-						coordinates[0]), new CDTVertex(coordinates[1]),
-						new CDTVertex(coordinates[2]), null);
-				setOfCDTTriangles.add(cdtTriangle);
-
 				if (setOfVertices.add(coordinates[0])) {
 					verticesSpatialIndex.insert(new Envelope(coordinates[0]),
 							coordinates[0]);
@@ -111,26 +131,45 @@ public class CheckDelaunayProperty implements CustomQuery {
 			}
 			inSds.close();
 
-			// convert the resulting TIN into a data source
+			// second step, look for all the triangles that do not verify the
+			// Delaunay empty circle property (no more than 3 vertices for each
+			// triangle's circum-circle)
 			final ObjectMemoryDriver driver = new ObjectMemoryDriver(
 					getMetadata(null));
 			long index = 0;
-			for (CDTTriangle cdtTriangle : setOfCDTTriangles) {
-				List<Coordinate> sublistOfVertices = verticesSpatialIndex
-						.query(cdtTriangle.getCircumCircle()
-								.getEnvelopeInternal());
+			for (long rowIndex = 0; rowIndex < rowCount; rowIndex++) {
 
-				for (Coordinate c : sublistOfVertices) {
-					if ((!cdtTriangle.isAVertex(new CDTVertex(c)))
-							&& (!cdtTriangle.respectDelaunayProperty(c))) {
-						driver.addValues(new Value[] {
-								ValueFactory.createValue(index++),
-								ValueFactory.createValue(cdtTriangle
-										.getCircumCircle().getGeometry()) });
+				if (rowIndex / 100 == rowIndex / 100.0) {
+					if (pm.isCancelled()) {
 						break;
+					} else {
+						pm.progressTo((int) (100 * rowIndex / rowCount));
+					}
+				}
+
+				final Coordinate[] coordinates = inSds.getGeometry(rowIndex)
+						.getCoordinates();
+				final TriangleCircumCircle tcc = new TriangleCircumCircle(
+						coordinates[0], coordinates[1], coordinates[2]);
+				final List<Coordinate> sublistOfVertices = verticesSpatialIndex
+						.query(tcc.envelope);
+
+				int counter = 0;
+				for (Coordinate c : sublistOfVertices) {
+					if (tcc.contains(c)) {
+						counter++;
+						if (counter > 3) {
+							driver
+									.addValues(new Value[] {
+											ValueFactory.createValue(index++),
+											ValueFactory.createValue(tcc
+													.getGeometry()) });
+							break;
+						}
 					}
 				}
 			}
+
 			return driver;
 		} catch (DriverException e) {
 			throw new ExecutionException(e);
@@ -138,8 +177,8 @@ public class CheckDelaunayProperty implements CustomQuery {
 	}
 
 	public String getDescription() {
-		// TODO Auto-generated method stub
-		return null;
+		return "This custom query checks the empty circum circle property "
+				+ "(Delaunay property) for every triangle of the set";
 	}
 
 	public Metadata getMetadata(Metadata[] tables) throws DriverException {
