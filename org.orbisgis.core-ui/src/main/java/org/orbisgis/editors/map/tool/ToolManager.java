@@ -118,7 +118,7 @@ import com.vividsolutions.jts.geom.MultiPoint;
 /**
  * Adapter from the MapControl Behaviours to Automaton's interface. It's also
  * the EditionContext of the system.
- *
+ * 
  * @author Fernando Gonzlez Corts
  */
 public class ToolManager extends MouseAdapter implements MouseMotionListener {
@@ -182,7 +182,7 @@ public class ToolManager extends MouseAdapter implements MouseMotionListener {
 
 	/**
 	 * Creates a new EditionToolAdapter.
-	 *
+	 * 
 	 * @param defaultTool
 	 * @param mapContext
 	 * @param mapTransform
@@ -465,7 +465,7 @@ public class ToolManager extends MouseAdapter implements MouseMotionListener {
 	/**
 	 * Draws the cursor at the mouse cursor position or at the adjusted point if
 	 * any
-	 *
+	 * 
 	 * @param g
 	 */
 	private void drawCursor(Graphics g) {
@@ -754,7 +754,8 @@ public class ToolManager extends MouseAdapter implements MouseMotionListener {
 	}
 
 	public void checkToolStatus() throws TransitionException {
-		if (!currentTool.isEnabled(mapContext, this)) {
+		if (!currentTool.isEnabled(mapContext, this)
+				&& !currentTool.getClass().equals(defaultTool.getClass())) {
 			setTool(defaultTool);
 		}
 	}
