@@ -129,7 +129,7 @@ public class SymbolBuilder extends JPanel implements UIPanel,
 
 	private void refresh() {
 		if (!showCollection) {
-			jButtonToCollection.setVisible(false);
+			btnToCollection.setVisible(false);
 		}
 		canvas.setSymbol(getSymbolComposite());
 
@@ -173,6 +173,8 @@ public class SymbolBuilder extends JPanel implements UIPanel,
 			jButtonSymbolDown.setEnabled(false);
 			jButtonSymbolRename.setEnabled(false);
 		}
+		
+		btnToCollection.setEnabled(lstSymbols.getModel().getSize() > 0);
 	}
 
 	public void setSymbol(Symbol symbol) {
@@ -234,8 +236,8 @@ public class SymbolBuilder extends JPanel implements UIPanel,
 		canvasPreview = new JPanel();
 		canvasPreview.add(canvas);
 		jPanelButtonsCollection = new JPanel();
-		jButtonToCollection = new JButton();
-		jButtonFromCollection = new JButton();
+		btnToCollection = new JButton();
+		btnFromCollection = new JButton();
 
 		JPanel jPanelRight = getRightPanel();
 
@@ -339,26 +341,26 @@ public class SymbolBuilder extends JPanel implements UIPanel,
 		jPanelButtonsCollection.setLayout(new BoxLayout(
 				jPanelButtonsCollection, BoxLayout.PAGE_AXIS));
 
-		jButtonToCollection.setIcon(IconLoader.getIcon("Save.png"));
-		jButtonToCollection.setToolTipText("Save");
-		jButtonToCollection.setFocusable(false);
-		jButtonToCollection.setHorizontalTextPosition(SwingConstants.CENTER);
-		jButtonToCollection.setVerticalTextPosition(SwingConstants.BOTTOM);
-		jButtonToCollection.addActionListener(new ActionListener() {
+		btnToCollection.setIcon(IconLoader.getIcon("Save.png"));
+		btnToCollection.setToolTipText("Save");
+		btnToCollection.setFocusable(false);
+		btnToCollection.setHorizontalTextPosition(SwingConstants.CENTER);
+		btnToCollection.setVerticalTextPosition(SwingConstants.BOTTOM);
+		btnToCollection.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
 				jButtonToCollectionActionPerformed(evt);
 			}
 		});
-		jPanelButtonsCollection.add(jButtonToCollection);
+		jPanelButtonsCollection.add(btnToCollection);
 
-		jButtonFromCollection.setIcon(IconLoader.getIcon("add.png"));
-		jButtonFromCollection.setToolTipText("Add");
-		jButtonFromCollection.addActionListener(new ActionListener() {
+		btnFromCollection.setIcon(IconLoader.getIcon("add.png"));
+		btnFromCollection.setToolTipText("Add");
+		btnFromCollection.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
 				jButtonFromCollectionActionPerformed(evt);
 			}
 		});
-		jPanelButtonsCollection.add(jButtonFromCollection);
+		jPanelButtonsCollection.add(btnFromCollection);
 
 		jPanelPreview.add(jPanelButtonsCollection);
 
@@ -547,13 +549,13 @@ public class SymbolBuilder extends JPanel implements UIPanel,
 	}
 
 	private JPanel canvasPreview;
-	private JButton jButtonFromCollection;
+	private JButton btnFromCollection;
 	private JButton jButtonSymbolAdd;
 	private JButton jButtonSymbolDel;
 	private JButton jButtonSymbolDown;
 	private JButton jButtonSymbolRename;
 	private JButton jButtonSymbolUp;
-	private JButton jButtonToCollection;
+	private JButton btnToCollection;
 	private JList lstSymbols;
 	private JPanel jPanelButtonsCollection;
 	private JPanel jPanelPreview;
