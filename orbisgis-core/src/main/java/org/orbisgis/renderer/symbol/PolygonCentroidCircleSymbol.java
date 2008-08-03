@@ -38,6 +38,8 @@ package org.orbisgis.renderer.symbol;
 
 import java.awt.Color;
 
+import org.gdms.data.types.GeometryConstraint;
+
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.MultiPolygon;
 import com.vividsolutions.jts.geom.Polygon;
@@ -54,6 +56,17 @@ public class PolygonCentroidCircleSymbol extends CirclePointSymbol {
 		return geom instanceof Polygon || geom instanceof MultiPolygon;
 	}
 
+	@Override
+	public boolean acceptGeometryType(GeometryConstraint geometryConstraint) {
+		if (geometryConstraint == null) {
+			return true;
+		} else {
+			int geometryType = geometryConstraint.getGeometryType();
+			return (geometryType == GeometryConstraint.POLYGON)
+					|| (geometryType == GeometryConstraint.MULTI_POLYGON);
+		}
+	}
+	
 	@Override
 	public String getClassName() {
 		return "Circle in polygon centroid";
