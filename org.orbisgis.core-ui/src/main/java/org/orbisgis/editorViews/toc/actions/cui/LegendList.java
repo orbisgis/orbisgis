@@ -154,6 +154,9 @@ public class LegendList extends JPanel {
 	public void refresh() {
 		model.refresh();
 
+		if (lst.getModel().getSize() == 0) {
+			lst.clearSelection();
+		}
 		int idx = lst.getSelectedIndex();
 		int maximo = lst.getModel().getSize() - 1;
 		int minimo = 0;
@@ -187,10 +190,11 @@ public class LegendList extends JPanel {
 
 	/**
 	 * rename of a selected value in the list.
-	 *
+	 * 
 	 * @param evt
 	 */
-	private void jButtonMenuRenameActionPerformed(ActionEvent evt) {// GEN-FIRST:event_jButtonMenuRenameActionPerformed
+	private void jButtonMenuRenameActionPerformed(ActionEvent evt) {//GEN-FIRST:
+		// event_jButtonMenuRenameActionPerformed
 		String legendName = (String) lst.getSelectedValue();
 		int idx = lst.getSelectedIndex();
 
@@ -205,7 +209,7 @@ public class LegendList extends JPanel {
 
 	/**
 	 * remove a selected values
-	 *
+	 * 
 	 * @param evt
 	 */
 	private void jButtonMenuDelActionPerformed(ActionEvent evt) {
@@ -219,10 +223,11 @@ public class LegendList extends JPanel {
 
 	/**
 	 * adds a new legend
-	 *
+	 * 
 	 * @param evt
 	 */
-	private void jButtonMenuAddActionPerformed(ActionEvent evt) {// GEN-FIRST:event_jButtonMenuAddActionPerformed
+	private void jButtonMenuAddActionPerformed(ActionEvent evt) {// GEN-FIRST:
+		// event_jButtonMenuAddActionPerformed
 		ArrayList<String> paneNames = new ArrayList<String>();
 		ArrayList<ILegendPanelUI> ids = new ArrayList<ILegendPanelUI>();
 		ILegendPanelUI[] legends = legendsPanel.getAvailableLegends();
@@ -234,9 +239,8 @@ public class LegendList extends JPanel {
 				ids.add(legendPanelUI);
 			}
 		}
-		LegendPicker legendPicker = new LegendPicker(
-				paneNames.toArray(new String[0]), ids
-						.toArray(new ILegendPanelUI[0]));
+		LegendPicker legendPicker = new LegendPicker(paneNames
+				.toArray(new String[0]), ids.toArray(new ILegendPanelUI[0]));
 
 		if (UIFactory.showDialog(legendPicker)) {
 			ILegendPanelUI panel = (ILegendPanelUI) legendPicker.getSelected();
@@ -247,7 +251,7 @@ public class LegendList extends JPanel {
 
 	/**
 	 * move down the selected legend
-	 *
+	 * 
 	 * @param evt
 	 */
 	private void jButtonMenuDownActionPerformed(ActionEvent evt) {
@@ -258,7 +262,7 @@ public class LegendList extends JPanel {
 
 	/**
 	 * moves up the selected legend
-	 *
+	 * 
 	 * @param evt
 	 */
 	private void jButtonMenuUpActionPerformed(ActionEvent evt) {
@@ -270,13 +274,18 @@ public class LegendList extends JPanel {
 	/**
 	 * selection of a new legend in the list. it will fire this event and will
 	 * open the appropriate panel for these legend.
-	 *
+	 * 
 	 * @param evt
 	 */
 	private void jList1ValueChanged(ListSelectionEvent evt) {
 		legendsPanel.legendSelected(lst.getSelectedIndex());
 	}
 
+	/**
+	 * Returns true
+	 * 
+	 * @return
+	 */
 	public int getSelectedIndex() {
 		return lst.getSelectedIndex();
 	}
