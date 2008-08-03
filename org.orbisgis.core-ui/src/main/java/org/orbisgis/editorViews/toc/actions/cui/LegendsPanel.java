@@ -40,12 +40,16 @@ import java.awt.BorderLayout;
 import java.awt.CardLayout;
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.net.URL;
 import java.util.ArrayList;
 
 import javax.swing.BorderFactory;
+import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
@@ -78,6 +82,8 @@ public class LegendsPanel extends JPanel implements UIPanel, LegendContext {
 	private JTextField txtMaxScale;
 	private MapTransform mt;
 	private ISymbolEditor[] availableEditors;
+	private JButton btnCurrentScaleToMin;
+	private JButton btnCurrentScaleToMax;
 
 	public void init(MapTransform mt, GeometryConstraint gc, Legend[] legends,
 			ILegendPanelUI[] availableLegends,
@@ -143,9 +149,13 @@ public class LegendsPanel extends JPanel implements UIPanel, LegendContext {
 
 	private Component getScalePanel() {
 		JPanel pnlScale = new JPanel();
-
+		FlowLayout fl = new FlowLayout();
+		fl.setVgap(0);
+		pnlScale.setLayout(fl);
 		JPanel pnlLabels = new JPanel();
-		pnlLabels.setLayout(new CRFlowLayout());
+		CRFlowLayout flowLayout = new CRFlowLayout();
+		flowLayout.setVgap(14);
+		pnlLabels.setLayout(flowLayout);
 		pnlLabels.add(new JLabel("Min. scale:"));
 		pnlLabels.add(new CarriageReturn());
 		pnlLabels.add(new JLabel("Max. scale:"));
@@ -194,8 +204,30 @@ public class LegendsPanel extends JPanel implements UIPanel, LegendContext {
 		txtMaxScale = new JTextField(10);
 		txtMaxScale.addKeyListener(keyAdapter);
 		pnlTexts.add(txtMinScale);
+		btnCurrentScaleToMin = new JButton("Current scale");
+		btnCurrentScaleToMin.addActionListener(new ActionListener() {
+
+			public void actionPerformed(ActionEvent e) {
+				txtMinScale.setText(Integer
+						.toString((int) getCurrentMapTransform()
+								.getScaleDenominator()));
+			}
+
+		});
+		pnlTexts.add(btnCurrentScaleToMin);
 		pnlTexts.add(new CarriageReturn());
 		pnlTexts.add(txtMaxScale);
+		btnCurrentScaleToMax = new JButton("Current scale");
+		btnCurrentScaleToMax.addActionListener(new ActionListener() {
+
+			public void actionPerformed(ActionEvent e) {
+				txtMaxScale.setText(Integer
+						.toString((int) getCurrentMapTransform()
+								.getScaleDenominator()));
+			}
+
+		});
+		pnlTexts.add(btnCurrentScaleToMax);
 		pnlScale.add(pnlTexts);
 
 		pnlScale.setPreferredSize(new Dimension(200, 100));
@@ -278,8 +310,11 @@ public class LegendsPanel extends JPanel implements UIPanel, LegendContext {
 			cardLayout.show(pnlContainer, NO_LEGEND_ID);
 		}
 
-		txtMinScale.setEnabled(legendList.getSelectedIndex() != -1);
-		txtMaxScale.setEnabled(legendList.getSelectedIndex() != -1);
+		boolean scaleEnabled = legendList.getSelectedIndex() != -1;
+		txtMinScale.setEnabled(scaleEnabled);
+		btnCurrentScaleToMin.setEnabled(scaleEnabled);
+		txtMaxScale.setEnabled(scaleEnabled);
+		btnCurrentScaleToMax.setEnabled(scaleEnabled);
 	}
 
 	public void legendRemoved(int index) {
