@@ -44,13 +44,13 @@ package org.orbisgis.editorViews.toc.actions.cui.extensions;
 
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.Random;
 
 import javax.swing.JPanel;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
@@ -71,7 +71,7 @@ import org.sif.CarriageReturn;
 import org.sif.UIFactory;
 
 /**
- *
+ * 
  */
 public abstract class PnlAbstractClassifiedLegend extends javax.swing.JPanel
 		implements ILegendPanelUI {
@@ -151,7 +151,7 @@ public abstract class PnlAbstractClassifiedLegend extends javax.swing.JPanel
 	/**
 	 * Creates a random symbol with a random color for the fill and black
 	 * outline.
-	 *
+	 * 
 	 * @param constraint
 	 * @return Symbol
 	 */
@@ -215,9 +215,9 @@ public abstract class PnlAbstractClassifiedLegend extends javax.swing.JPanel
 
 		JPanel pnlChecks = new JPanel();
 		jCheckBoxRestOfValues.setText("rest of values");
-		jCheckBoxRestOfValues.addChangeListener(new ChangeListener() {
+		jCheckBoxRestOfValues.addActionListener(new ActionListener() {
 
-			public void stateChanged(ChangeEvent e) {
+			public void actionPerformed(ActionEvent e) {
 				jCheckBoxRestOfValuesActionPerformed();
 			}
 		});
@@ -225,8 +225,8 @@ public abstract class PnlAbstractClassifiedLegend extends javax.swing.JPanel
 		pnlChecks.add(new CarriageReturn());
 
 		jCheckBoxOrder.setText("order");
-		jCheckBoxOrder.addActionListener(new java.awt.event.ActionListener() {
-			public void actionPerformed(java.awt.event.ActionEvent evt) {
+		jCheckBoxOrder.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent evt) {
 				jCheckBoxOrderActionPerformed(evt);
 			}
 		});
@@ -280,7 +280,7 @@ public abstract class PnlAbstractClassifiedLegend extends javax.swing.JPanel
 
 	/**
 	 * adds all the values in the layer to the table.
-	 *
+	 * 
 	 * @param evt
 	 */
 	protected abstract void addAllAction();
@@ -288,7 +288,7 @@ public abstract class PnlAbstractClassifiedLegend extends javax.swing.JPanel
 	/**
 	 * adds one more value to the table. will be a copy of the last (if exists
 	 * any) or a new one with a NullValue.
-	 *
+	 * 
 	 * @param evt
 	 */
 	protected abstract void addOneAction();
@@ -299,7 +299,7 @@ public abstract class PnlAbstractClassifiedLegend extends javax.swing.JPanel
 	}
 
 	/**
-	 *
+	 * 
 	 * @param evt
 	 */
 	private void jCheckBoxRestOfValuesActionPerformed() {
@@ -326,6 +326,9 @@ public abstract class PnlAbstractClassifiedLegend extends javax.swing.JPanel
 	}
 
 	public Legend getLegend() {
+		if (table.isEditing()) {
+			table.getCellEditor().stopCellEditing();
+		}
 		return legend;
 	}
 
