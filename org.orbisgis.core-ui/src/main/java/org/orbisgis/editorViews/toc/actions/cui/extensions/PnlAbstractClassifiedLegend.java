@@ -343,6 +343,7 @@ public abstract class PnlAbstractClassifiedLegend extends javax.swing.JPanel
 
 		jCheckBoxRestOfValues
 				.setSelected(!(this.legend.getDefaultSymbol() == null));
+		jCheckBoxRestOfValuesActionPerformed();
 		refreshButtons();
 	}
 

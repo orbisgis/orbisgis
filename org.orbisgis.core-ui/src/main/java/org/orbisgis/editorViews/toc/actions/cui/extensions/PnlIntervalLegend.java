@@ -180,7 +180,7 @@ public class PnlIntervalLegend extends PnlAbstractClassifiedLegend {
 
 	/**
 	 * Creates the number of intervals according to the type
-	 *
+	 * 
 	 * @param evt
 	 */
 	private void intervalTypeChanged(ActionEvent evt) {
@@ -329,7 +329,7 @@ public class PnlIntervalLegend extends PnlAbstractClassifiedLegend {
 
 	/**
 	 * Creates the symbol with the specified fillColor and with a black outline
-	 *
+	 * 
 	 * @param constraint
 	 * @param fillColor
 	 * @return Symbol
@@ -386,7 +386,8 @@ public class PnlIntervalLegend extends PnlAbstractClassifiedLegend {
 				maxValue = (Value) tableModel.getValueAt(0, 2);
 				label = (String) tableModel.getValueAt(0, 3);
 			}
-			getTableModel().insertRow(sym, minValue, maxValue, label);
+			getTableModel().insertRow(sym.cloneSymbol(), minValue, maxValue,
+					label);
 		} else {
 			JOptionPane.showMessageDialog(this,
 					"Cannot have more than 32 classifications");
