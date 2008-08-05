@@ -173,11 +173,12 @@ public class SymbolBuilder extends JPanel implements UIPanel,
 			jButtonSymbolDown.setEnabled(false);
 			jButtonSymbolRename.setEnabled(false);
 		}
-		
+
 		btnToCollection.setEnabled(lstSymbols.getModel().getSize() > 0);
 	}
 
 	public void setSymbol(Symbol symbol) {
+		symbol = symbol.cloneSymbol();
 		if (symbol == null) {
 			symbol = SymbolFactory.createSymbolComposite();
 		}
@@ -419,15 +420,13 @@ public class SymbolBuilder extends JPanel implements UIPanel,
 	 * @param evt;
 	 */
 	private void jList1ValueChanged() {
+		pnlEdition.removeAll();
 		int index = lstSymbols.getSelectedIndex();
 		if ((model.getSize() > 0) && (index != -1)) {
 			ISymbolEditor selected = model.getEditor(index);
 
 			if (selected != null) {
-				pnlEdition.removeAll();
 				pnlEdition.add(selected.getComponent(), BorderLayout.CENTER);
-				pnlEdition.invalidate();
-				pnlEdition.repaint();
 			} else {
 				Services.getErrorManager().error(
 						"There is no suitable editor for the symbol");
@@ -435,6 +434,8 @@ public class SymbolBuilder extends JPanel implements UIPanel,
 
 			refresh();
 		}
+		pnlEdition.invalidate();
+		pnlEdition.repaint();
 	}
 
 	private ISymbolEditor getEditor(Symbol selectedSymbol) {
@@ -491,6 +492,7 @@ public class SymbolBuilder extends JPanel implements UIPanel,
 			Symbol selectedSymbol = (Symbol) sel.getSelected();
 			model.addElement(selectedSymbol, getEditor(selectedSymbol));
 			lstSymbols.setSelectedIndex(model.getSize() - 1);
+			jList1ValueChanged();
 			refresh();
 		}
 	}
@@ -508,6 +510,7 @@ public class SymbolBuilder extends JPanel implements UIPanel,
 		}
 		if (model.getSize() > 0) {
 			lstSymbols.setSelectedIndex(0);
+		} else {
 			jList1ValueChanged();
 		}
 		refresh();
@@ -560,6 +563,7 @@ public class SymbolBuilder extends JPanel implements UIPanel,
 	private JPanel jPanelButtonsCollection;
 	private JPanel jPanelPreview;
 	private JToolBar jToolBar1;
+	private SymbolEditionValidation validation;
 
 	public Component getComponent() {
 		return this;
@@ -589,6 +593,10 @@ public class SymbolBuilder extends JPanel implements UIPanel,
 		if (lstSymbols.getModel().getSize() == 0) {
 			return "At least a symbol must be created";
 		}
+		String txt = validation.isValid(getSymbolComposite());
+		if (txt != null) {
+			return txt;
+		}
 
 		return null;
 	}
@@ -599,6 +607,10 @@ public class SymbolBuilder extends JPanel implements UIPanel,
 
 	public void symbolChanged() {
 		canvas.setSymbol(getSymbolComposite());
+	}
+
+	public void setValidation(SymbolEditionValidation symbolEditionValidation) {
+		this.validation = symbolEditionValidation;
 	}
 
 }
