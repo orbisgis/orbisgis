@@ -229,7 +229,7 @@ public class Activator implements PluginActivator {
 		Services.registerService("org.orbisgis.SymbolManager",
 				SymbolManager.class, "Provides methods to create symbols and "
 						+ "access the symbol collection",
-				new DefaultSymbolManager(symbolCollectionFile));
+				new DefaultSymbolManager(col));
 
 		// Load windows status
 		EPWindowHelper.loadStatus();

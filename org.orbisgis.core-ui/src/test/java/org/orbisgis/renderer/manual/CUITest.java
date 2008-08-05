@@ -55,9 +55,9 @@ import org.orbisgis.editorViews.toc.actions.cui.LegendsPanel;
 import org.orbisgis.editorViews.toc.actions.cui.extensions.ClassicSymbolEditor;
 import org.orbisgis.editorViews.toc.actions.cui.extensions.ILegendPanelUI;
 import org.orbisgis.editorViews.toc.actions.cui.extensions.ImageSymbolEditor;
-import org.orbisgis.editorViews.toc.actions.cui.extensions.PnlUniqueSymbolLegend;
 import org.orbisgis.editorViews.toc.actions.cui.extensions.PnlIntervalLegend;
 import org.orbisgis.editorViews.toc.actions.cui.extensions.PnlProportionalLegend;
+import org.orbisgis.editorViews.toc.actions.cui.extensions.PnlUniqueSymbolLegend;
 import org.orbisgis.editorViews.toc.actions.cui.extensions.PnlUniqueValueLegend;
 import org.orbisgis.errorManager.DefaultErrorManager;
 import org.orbisgis.errorManager.ErrorManager;
@@ -65,7 +65,7 @@ import org.orbisgis.layerModel.ILayer;
 import org.orbisgis.map.MapTransform;
 import org.orbisgis.pluginManager.workspace.DefaultWorkspace;
 import org.orbisgis.pluginManager.workspace.Workspace;
-import org.orbisgis.renderer.symbol.ImageSymbol;
+import org.orbisgis.renderer.symbol.collection.DefaultSymbolCollection;
 import org.sif.UIFactory;
 
 import com.vividsolutions.jts.geom.Envelope;
@@ -79,8 +79,9 @@ public class CUITest {
 		Services.registerService("org.orbisgis.DataManager", DataManager.class,
 				"", new DefaultDataManager(dsf));
 		Services.registerService("org.orbisgis.SymbolManager",
-				SymbolManager.class, "", new DefaultSymbolManager(new File(
-						"collection.xml")));
+				SymbolManager.class, "",
+				new DefaultSymbolManager(new DefaultSymbolCollection(new File(
+						"collection.xml"))));
 		Services.registerService("org.orbisgis.Workspace", Workspace.class, "",
 				new DefaultWorkspace() {
 

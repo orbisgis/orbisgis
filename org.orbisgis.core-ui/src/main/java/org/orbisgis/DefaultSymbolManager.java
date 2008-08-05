@@ -36,22 +36,51 @@
  */
 package org.orbisgis;
 
-import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
+
+import javax.xml.bind.JAXBException;
 
 import org.orbisgis.renderer.symbol.Symbol;
 import org.orbisgis.renderer.symbol.SymbolFactory;
 import org.orbisgis.renderer.symbol.collection.DefaultSymbolCollection;
 
-public class DefaultSymbolManager extends DefaultSymbolCollection implements
+public class DefaultSymbolManager implements
 		SymbolManager {
 
-	public DefaultSymbolManager(File collectionFile) {
-		super(collectionFile);
+	private DefaultSymbolCollection symbolCollection;
+
+	public DefaultSymbolManager(DefaultSymbolCollection col) {
+		this.symbolCollection = col;
 	}
 
 	public ArrayList<Symbol> getAvailableSymbols() {
 		return SymbolFactory.getAvailableSymbols();
+	}
+
+	public void addSymbol(Symbol sym) {
+		symbolCollection.addSymbol(sym);
+	}
+
+	public void clear() {
+		symbolCollection.clear();
+	}
+
+	public Symbol getSymbol(int index) {
+		return symbolCollection.getSymbol(index);
+	}
+
+	public int getSymbolCount() {
+		return symbolCollection.getSymbolCount();
+	}
+
+	public void loadCollection() throws JAXBException, IOException,
+			IncompatibleVersionException {
+		symbolCollection.loadCollection();
+	}
+
+	public void saveXML() throws JAXBException, IOException {
+		symbolCollection.saveXML();
 	}
 
 }
