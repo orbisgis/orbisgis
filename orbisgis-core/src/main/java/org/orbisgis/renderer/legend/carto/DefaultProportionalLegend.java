@@ -91,7 +91,7 @@ public class DefaultProportionalLegend extends AbstractLegend implements
 	private int xOffset = 7;
 
 	public DefaultProportionalLegend() {
-		symbol = (EditablePointSymbol) SymbolFactory.createCirclePolygonSymbol(
+		symbol = (EditablePointSymbol) SymbolFactory.createPointCircleSymbol(
 				Color.BLACK, Color.pink, 10);
 		symbol.setMapUnits(true);
 	}
