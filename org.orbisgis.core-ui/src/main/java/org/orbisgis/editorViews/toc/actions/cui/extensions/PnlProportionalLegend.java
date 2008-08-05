@@ -66,9 +66,11 @@ import org.gdms.data.types.GeometryConstraint;
 import org.gdms.data.types.Type;
 import org.gdms.driver.DriverException;
 import org.orbisgis.Services;
+import org.orbisgis.editorViews.toc.actions.cui.CompositeSymbolFilter;
 import org.orbisgis.editorViews.toc.actions.cui.ConstraintSymbolFilter;
 import org.orbisgis.editorViews.toc.actions.cui.LegendContext;
 import org.orbisgis.editorViews.toc.actions.cui.SymbolBuilder;
+import org.orbisgis.editorViews.toc.actions.cui.SymbolEditionValidation;
 import org.orbisgis.editorViews.toc.actions.cui.SymbolFilter;
 import org.orbisgis.editorViews.toc.actions.cui.components.Canvas;
 import org.orbisgis.map.MapTransform;
@@ -77,6 +79,7 @@ import org.orbisgis.renderer.legend.RenderException;
 import org.orbisgis.renderer.legend.carto.LegendFactory;
 import org.orbisgis.renderer.legend.carto.ProportionalLegend;
 import org.orbisgis.renderer.symbol.EditablePointSymbol;
+import org.orbisgis.renderer.symbol.Symbol;
 import org.sif.CRFlowLayout;
 import org.sif.CarriageReturn;
 import org.sif.UIFactory;
@@ -269,6 +272,17 @@ public class PnlProportionalLegend extends JPanel implements ILegendPanelUI {
 	private void editSymbol() {
 		SymbolBuilder editor = new SymbolBuilder(false, legendContext,
 				getSymbolFilter());
+		editor.setValidation(new SymbolEditionValidation() {
+
+			public String isValid(Symbol symbol) {
+				if (symbol.acceptsChildren() && (symbol.getSymbolCount() != 1)){
+					return "One and only one symbol is accepted";
+				}
+				
+				return null;
+			}
+
+		});
 		editor.setSymbol(canvas.getSymbol());
 		if (UIFactory.showDialog(editor)) {
 			legend.setSampleSymbol((EditablePointSymbol) editor
@@ -278,8 +292,9 @@ public class PnlProportionalLegend extends JPanel implements ILegendPanelUI {
 	}
 
 	private SymbolFilter getSymbolFilter() {
-		return new ConstraintSymbolFilter(new GeometryConstraint(
-				GeometryConstraint.POINT));
+		return new CompositeSymbolFilter(new ConstraintSymbolFilter(
+				new GeometryConstraint(GeometryConstraint.POINT)),
+				new EditableSymbolFilter());
 	}
 
 	public boolean acceptsGeometryType(int geometryType) {
