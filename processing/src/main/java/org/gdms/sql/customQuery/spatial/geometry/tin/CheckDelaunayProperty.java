@@ -109,7 +109,7 @@ public class CheckDelaunayProperty implements CustomQuery {
 
 			// first step, build the set of all vertices and the corresponding
 			// spatial index...
-			final Set<Coordinate> setOfVertices = new HashSet<Coordinate>(
+			Set<Coordinate> setOfVertices = new HashSet<Coordinate>(
 					(int) rowCount * 2);
 			final SpatialIndex verticesSpatialIndex = new STRtree(10);
 
@@ -129,6 +129,7 @@ public class CheckDelaunayProperty implements CustomQuery {
 							coordinates[2]);
 				}
 			}
+			setOfVertices = null;
 			inSds.close();
 
 			// second step, look for all the triangles that do not verify the
