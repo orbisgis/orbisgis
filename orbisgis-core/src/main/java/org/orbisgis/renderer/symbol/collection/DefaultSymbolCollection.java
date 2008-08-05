@@ -208,4 +208,8 @@ public class DefaultSymbolCollection implements SymbolCollection {
 		return symbols.size();
 	}
 
+	public void clear() {
+		symbols.clear();
+	}
+
 }

@@ -48,9 +48,9 @@ public interface SymbolCollection {
 	/**
 	 * Create a xml file in the specified path (file) with all the values of the
 	 * collection
-	 *
+	 * 
 	 * @param file
-	 *
+	 * 
 	 * @throws JAXBException
 	 * @throws IOException
 	 */
@@ -58,7 +58,7 @@ public interface SymbolCollection {
 
 	/**
 	 * Loads the symbol collection described the specified file.
-	 *
+	 * 
 	 * @throws JAXBException
 	 * @throws IOException
 	 * @throws IncompatibleVersionException
@@ -68,14 +68,14 @@ public interface SymbolCollection {
 
 	/**
 	 * Adds a new symbol to the collection
-	 *
+	 * 
 	 * @param sym
 	 */
-	void addSymbol(Symbol sym);
+	void addSymbol(Symbol symbol);
 
 	/**
 	 * Gets the specified index
-	 *
+	 * 
 	 * @param index
 	 * @return
 	 */
@@ -83,9 +83,14 @@ public interface SymbolCollection {
 
 	/**
 	 * Gets the number of symbols in the collection
-	 *
+	 * 
 	 * @return
 	 */
 	int getSymbolCount();
+
+	/**
+	 * Removes all the symbols in this collection
+	 */
+	void clear();
 
 }

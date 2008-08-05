@@ -56,6 +56,7 @@ import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JList;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JToolBar;
@@ -397,6 +398,14 @@ public class SymbolBuilder extends JPanel implements UIPanel,
 			}
 			refresh();
 		}
+
+		SymbolManager sm = (SymbolManager) Services
+				.getService("org.orbisgis.SymbolManager");
+		sm.clear();
+		Symbol[] newSymbolCollection = coll.getSymbolCollection();
+		for (Symbol symbol : newSymbolCollection) {
+			sm.addSymbol(symbol);
+		}
 	}
 
 	/**
@@ -549,6 +558,7 @@ public class SymbolBuilder extends JPanel implements UIPanel,
 		SymbolManager sm = (SymbolManager) Services
 				.getService("org.orbisgis.SymbolManager");
 		sm.addSymbol(getSymbolComposite());
+		JOptionPane.showMessageDialog(this, "Symbol saved in collection");
 	}
 
 	private JPanel canvasPreview;
@@ -593,9 +603,12 @@ public class SymbolBuilder extends JPanel implements UIPanel,
 		if (lstSymbols.getModel().getSize() == 0) {
 			return "At least a symbol must be created";
 		}
-		String txt = validation.isValid(getSymbolComposite());
-		if (txt != null) {
-			return txt;
+		
+		if (validation != null) {
+			String txt = validation.isValid(getSymbolComposite());
+			if (txt != null) {
+				return txt;
+			}
 		}
 
 		return null;

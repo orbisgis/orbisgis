@@ -61,7 +61,7 @@ import org.sif.UIFactory;
 import org.sif.UIPanel;
 
 /**
- *
+ * 
  * @author david
  */
 public class SymbolCollection extends javax.swing.JPanel implements UIPanel {
@@ -345,6 +345,19 @@ public class SymbolCollection extends javax.swing.JPanel implements UIPanel {
 	private javax.swing.JToolBar jToolBar1;
 
 	// End of variables declaration//GEN-END:variables
+
+	public Symbol[] getSymbolCollection() {
+		ArrayList<Symbol> ret = new ArrayList<Symbol>();
+		Component[] comps = jPanelPreviewSymbols.getComponents();
+		for (int i = 0; i < comps.length; i++) {
+			if (comps[i] instanceof SelectableCanvas) {
+				SelectableCanvas can = (SelectableCanvas) comps[i];
+				ret.add(can.getSymbol());
+			}
+		}
+
+		return ret.toArray(new Symbol[0]);
+	}
 
 	public Component getComponent() {
 		return this;
