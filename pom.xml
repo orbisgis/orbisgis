@@ -4,7 +4,7 @@
 	<groupId>org.orbisgis</groupId>
 	<artifactId>platform</artifactId>
 	<packaging>pom</packaging>
-	<version>1.2.1</version>
+	<version>1.2.2</version>
 	<name>platform</name>
 	<url>http://maven.apache.org</url>
 	<modules>
