@@ -3,8 +3,6 @@ package org.gdms.triangulation.sweepLine4CDT;
 import java.util.HashSet;
 import java.util.Set;
 
-import junit.framework.Assert;
-
 import org.gdms.data.SpatialDataSourceDecorator;
 import org.gdms.driver.DriverException;
 import org.orbisgis.progress.IProgressMonitor;
@@ -65,10 +63,11 @@ public class CDT {
 	 */
 	public void mesh(final IProgressMonitor pm) {
 		// build the 1st (artificial) triangle...
-		Assert.assertTrue(0 == orderedSetOfVertices
-				.search(firstArtificialPoint));
-		Assert.assertTrue(1 == orderedSetOfVertices
-				.search(secondArtificialPoint));
+		// TODO Modify maven pom to accept this Assert.assertTrue(0 ==
+		// orderedSetOfVertices
+		// .search(firstArtificialPoint));
+		// Assert.assertTrue(1 == orderedSetOfVertices
+		// .search(secondArtificialPoint));
 		setOfTriangles.add(0, 1, 2);
 
 		// ... and the initial value of the sweep-line
@@ -91,7 +90,7 @@ public class CDT {
 			int idx = sweepLine.firstUpdateOfAdvancingFront(i);
 			idx = sweepLine.secondUpdateOfAdvancingFront(idx);
 			// sweepLine.thirdUpdateOfAdvancingFront(idx);
-			
+
 			// TODO edge event
 		}
 
