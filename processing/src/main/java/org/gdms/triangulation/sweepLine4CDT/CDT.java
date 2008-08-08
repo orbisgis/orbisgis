@@ -87,10 +87,12 @@ public class CDT {
 				}
 			}
 
-			// vertex event ONLY
+			// vertex event
 			int idx = sweepLine.firstUpdateOfAdvancingFront(i);
 			idx = sweepLine.secondUpdateOfAdvancingFront(idx);
 			// sweepLine.thirdUpdateOfAdvancingFront(idx);
+			
+			// TODO edge event
 		}
 
 		// finalization process

@@ -398,41 +398,45 @@ public class CDTSweepLine {
 	 * The objective of this method is to add new bordering triangles (the edges
 	 * of all those triangles should form the convex hull of the set of
 	 * vertices) in between the first sweep-line vertex and the vertex that has
-	 * "endIndex" as an index. It is a recursive method.
+	 * "endIndex" as an index.
 	 * 
 	 * @param endIndex
 	 */
 	protected void smoothing(int endIndex) {
-		boolean finalizationUpdate = false;
+		boolean finalizationUpdate;
 
-		int index = 1;
-		while (index + 3 < endIndex) {
-			Coordinate a = orderedSetOfVertices.get(slVertices.get(index));
-			Coordinate b = orderedSetOfVertices.get(slVertices.get(index + 1));
-			Coordinate c = orderedSetOfVertices.get(slVertices.get(index + 2));
-			// lets test sign(z component of ( ab ^ bc ))
-			double tmp = (b.x - a.x) * (c.y - b.y) - (b.y - a.y) * (c.x - b.x);
+		do {
+			finalizationUpdate = false;
+			int index = 1;
+			while (index + 3 < endIndex) {
+				final Coordinate a = orderedSetOfVertices.get(slVertices
+						.get(index));
+				final Coordinate b = orderedSetOfVertices.get(slVertices
+						.get(index + 1));
+				final Coordinate c = orderedSetOfVertices.get(slVertices
+						.get(index + 2));
+				// lets test sign(z component of ( ab ^ bc ))
+				final double tmp = (b.x - a.x) * (c.y - b.y) - (b.y - a.y)
+						* (c.x - b.x);
 
-			if (tmp > 0) {
-				// add a new bordering triangle
-				CDTTriangle cdtTriangle = new CDTTriangle(orderedSetOfVertices,
-						slVertices.get(index), slVertices.get(index + 1),
-						slVertices.get(index + 2));
-				setOfTriangles.legalizeAndAdd(cdtTriangle);
-				finalizationUpdate = true;
+				if (tmp > 0) {
+					// add a new bordering triangle
+					final CDTTriangle cdtTriangle = new CDTTriangle(
+							orderedSetOfVertices, slVertices.get(index),
+							slVertices.get(index + 1), slVertices
+									.get(index + 2));
+					setOfTriangles.legalizeAndAdd(cdtTriangle);
+					finalizationUpdate = true;
 
-				// remove the vertex in the middle
-				slVertices.remove(slVertices.get(index + 1));
+					// remove the vertex in the middle
+					slVertices.remove(slVertices.get(index + 1));
 
-				endIndex--;
-			} else {
-				index++;
+					endIndex--;
+				} else {
+					index++;
+				}
 			}
-		}
-
-		if (finalizationUpdate) {
-			smoothing(endIndex);
-		}
+		} while (finalizationUpdate);
 	}
 
 	/**
