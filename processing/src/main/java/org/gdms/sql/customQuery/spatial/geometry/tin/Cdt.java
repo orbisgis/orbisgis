@@ -55,9 +55,10 @@ import org.gdms.driver.memory.ObjectMemoryDriver;
 import org.gdms.sql.customQuery.CustomQuery;
 import org.gdms.sql.customQuery.TableDefinition;
 import org.gdms.sql.function.Arguments;
-import org.gdms.triangulation.sweepLine4CDT.CDTTriangle;
-import org.gdms.triangulation.sweepLine4CDT.PSLG;
+import org.gdms.triangulation.sweepLine4CDT.CDT;
 import org.orbisgis.progress.IProgressMonitor;
+
+import com.vividsolutions.jts.geom.Polygon;
 
 public class Cdt implements CustomQuery {
 
@@ -68,17 +69,18 @@ public class Cdt implements CustomQuery {
 		try {
 			// populate and mesh the Planar Straight-Line Graph using the unique
 			// table as input data
-			PSLG pslg = new PSLG(inSds);
+			final CDT pslg = new CDT(inSds);
+			inSds.close();
 			pslg.mesh(pm);
 
 			// convert the resulting TIN into a data source
 			final ObjectMemoryDriver driver = new ObjectMemoryDriver(
 					getMetadata(null));
 			long index = 0;
-			for (CDTTriangle cdtTriangle : pslg.getTriangles()) {
+			for (Polygon cdtTriangle : pslg.getTriangles()) {
 				driver.addValues(new Value[] {
 						ValueFactory.createValue(index++),
-						ValueFactory.createValue(cdtTriangle.getPolygon()) });
+						ValueFactory.createValue(cdtTriangle) });
 			}
 			return driver;
 		} catch (DriverException e) {
