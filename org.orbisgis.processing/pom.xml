@@ -1,17 +1,17 @@
-<?xml version="1.0"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<parent>
 		<artifactId>platform</artifactId>
 		<groupId>org.orbisgis</groupId>
-		<version>1.2.1</version>
+		<version>1.2.2</version>
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.orbisgis</groupId>
 	<artifactId>org.orbisgis.processing</artifactId>
 	<name>org.orbisgis.processing</name>
-	<version>1.0.1</version>
+	<version>1.0.2</version>
 	<url>http://maven.apache.org</url>
 	<dependencies>
 		<dependency>
@@ -23,10 +23,10 @@
 		<dependency>
 			<groupId>org.orbisgis</groupId>
 			<artifactId>org.orbisgis.core-ui</artifactId>
-			<version>1.2.1</version>
+			<version>1.2.2</version>
 		</dependency>
 	</dependencies>
-
+	
 	<build>
 		<plugins>
 			<plugin>
@@ -34,7 +34,8 @@
 				<artifactId>maven-surefire-plugin</artifactId>
 				<configuration>
 					<includes>
-						<include>org/orbisgis/geoview/rasterProcessing/RasterProcessingTests.java</include>
+						<include>
+							org/orbisgis/geoview/rasterProcessing/RasterProcessingTests.java</include>
 					</includes>
 				</configuration>
 			</plugin>

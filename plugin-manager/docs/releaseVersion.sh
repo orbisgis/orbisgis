@@ -6,7 +6,7 @@ PLUGINS_LIST="org.orbisgis.core-ui org.orbisgis.processing org.urbsat";
 
 # ======================================================================
 if [ "$#" -ne "2" ] && [ "$#" -ne "1" ]; then
-  echo "Usage: releaseVersion.sh http://geosysin.iict.ch/irstv-svn/platform [ oficial ]";
+  echo "Usage: releaseVersion.sh http://geosysin.iict.ch/irstv-svn/platform [ official ]";
   exit 1;
 fi
 
@@ -16,11 +16,11 @@ DST_SVN_DIRECTORY="${BASE_DIRECTORY}/orbisgis-svn";
 DATE=`date +%Y%m%d-%H%M`;
 RELEASE_DIRECTORY="${BASE_DIRECTORY}/orbisgis-zip";
 URL="$1";
-if [ "$2" == "oficial" ]; then
-  OFICIAL="oficial";
+if [ "$2" == "official" ]; then
+  OFFICIAL="official";
 fi
 
-if [ $OFICIAL ]; then
+if [ $OFFICIAL ]; then
 echo "Please, create a change log (press intro when done)"
 read foo
 echo "Please, generate the OrbisGIS reference (run platform with -document) and commit on the svn (press intro when done)"
@@ -71,7 +71,7 @@ createZipOfAllSrcAndJavadoc() {
 
 mvnPackage() {
 	cd ${DST_SVN_DIRECTORY}/platform;
-	if [ $OFICIAL ]; then
+	if [ $OFFICIAL ]; then
       ${MVN} deploy;
     else
       ${MVN} install;
@@ -155,7 +155,7 @@ else
 fi
 
 svnCheckout ${DATE_OF_RELEASE};
-if [ $OFICIAL ]; then
+if [ $OFFICIAL ]; then
  createZipOfAllSrcAndJavadoc;
 fi
 mvnPackage;
