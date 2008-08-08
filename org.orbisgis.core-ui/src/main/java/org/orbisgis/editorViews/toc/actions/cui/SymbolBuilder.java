@@ -179,9 +179,10 @@ public class SymbolBuilder extends JPanel implements UIPanel,
 	}
 
 	public void setSymbol(Symbol symbol) {
-		symbol = symbol.cloneSymbol();
 		if (symbol == null) {
 			symbol = SymbolFactory.createSymbolComposite();
+		} else {
+			symbol = symbol.cloneSymbol();
 		}
 		model.removeAll();
 
