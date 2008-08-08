@@ -53,7 +53,7 @@ public class CDT {
 		orderedSetOfVertices.add(firstArtificialPoint);
 		orderedSetOfVertices.add(secondArtificialPoint);
 
-		// orderedSetOfVertices.print();
+		orderedSetOfVertices.print();
 	}
 
 	/**

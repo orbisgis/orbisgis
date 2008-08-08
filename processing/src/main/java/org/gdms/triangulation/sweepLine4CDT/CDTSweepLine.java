@@ -68,12 +68,16 @@ public class CDTSweepLine {
 		this.slVertices = new LinkedList<Integer>(Arrays.asList(cdtVertices));
 	}
 
-	public LineString getLineString() {
-		Coordinate[] coordinates = new Coordinate[slVertices.size()];
+	public Coordinate[] getCoordinates() {
+		final Coordinate[] coordinates = new Coordinate[slVertices.size()];
 		for (int i = 0; i < coordinates.length; i++) {
 			coordinates[i] = orderedSetOfVertices.get(slVertices.get(i));
 		}
-		return geometryFactory.createLineString(coordinates);
+		return coordinates;
+	}
+
+	public LineString getLineString() {
+		return geometryFactory.createLineString(getCoordinates());
 	}
 
 	protected int[] matchingEdge(final int vertexIndex) {
@@ -177,56 +181,59 @@ public class CDTSweepLine {
 	 * @return
 	 */
 	protected int secondUpdateOfAdvancingFront(int insertedNodeIndex) {
-		final List<Coordinate> coordinates = new LinkedList<Coordinate>(Arrays
-				.asList(getLineString().getCoordinates()));
-		boolean insertedNodeIndexUpdate = false;
+		boolean insertedNodeIndexUpdate;
+		do {
+			insertedNodeIndexUpdate = false;
 
-		if (2 <= insertedNodeIndex) {
-			double angle = Angle.normalizePositive(Angle.angleBetweenOriented(
-					coordinates.get(insertedNodeIndex), coordinates
-							.get(insertedNodeIndex - 1), coordinates
-							.get(insertedNodeIndex - 2)));
-			if (angle <= PIDIV2) {
-				insertedNodeIndexUpdate = true;
+			final List<Coordinate> coordinates = new LinkedList<Coordinate>(
+					Arrays.asList(getCoordinates()));
+			if (2 <= insertedNodeIndex) {
+				final double angle = Angle.normalizePositive(Angle
+						.angleBetweenOriented(coordinates
+								.get(insertedNodeIndex), coordinates
+								.get(insertedNodeIndex - 1), coordinates
+								.get(insertedNodeIndex - 2)));
+				if (angle <= PIDIV2) {
+					insertedNodeIndexUpdate = true;
 
-				// add a new triangle...
-				CDTTriangle cdtTriangle = new CDTTriangle(orderedSetOfVertices,
-						slVertices.get(insertedNodeIndex - 2), slVertices
-								.get(insertedNodeIndex - 1), slVertices
-								.get(insertedNodeIndex));
-				setOfTriangles.legalizeAndAdd(cdtTriangle);
+					// add a new triangle...
+					final CDTTriangle cdtTriangle = new CDTTriangle(
+							orderedSetOfVertices, slVertices
+									.get(insertedNodeIndex - 2), slVertices
+									.get(insertedNodeIndex - 1), slVertices
+									.get(insertedNodeIndex));
+					setOfTriangles.legalizeAndAdd(cdtTriangle);
 
-				// remove the vertex in the middle
-				slVertices.remove(insertedNodeIndex - 1);
+					// remove the vertex in the middle
+					slVertices.remove(insertedNodeIndex - 1);
 
-				// decrease the insertedNodeIndex
-				insertedNodeIndex--;
+					// decrease the insertedNodeIndex
+					insertedNodeIndex--;
+				}
 			}
-		}
 
-		if (coordinates.size() > insertedNodeIndex + 2) {
-			double angle = Angle.normalizePositive(Angle.angleBetweenOriented(
-					coordinates.get(insertedNodeIndex), coordinates
-							.get(insertedNodeIndex + 1), coordinates
-							.get(insertedNodeIndex + 2)));
-			if (angle >= TPIDIV2) {
-				insertedNodeIndexUpdate = true;
+			if (coordinates.size() > insertedNodeIndex + 2) {
+				final double angle = Angle.normalizePositive(Angle
+						.angleBetweenOriented(coordinates
+								.get(insertedNodeIndex), coordinates
+								.get(insertedNodeIndex + 1), coordinates
+								.get(insertedNodeIndex + 2)));
+				if (angle >= TPIDIV2) {
+					insertedNodeIndexUpdate = true;
 
-				// add a new triangle...
-				CDTTriangle cdtTriangle = new CDTTriangle(orderedSetOfVertices,
-						slVertices.get(insertedNodeIndex), slVertices
-								.get(insertedNodeIndex + 1), slVertices
-								.get(insertedNodeIndex + 2));
-				setOfTriangles.legalizeAndAdd(cdtTriangle);
+					// add a new triangle...
+					final CDTTriangle cdtTriangle = new CDTTriangle(
+							orderedSetOfVertices, slVertices
+									.get(insertedNodeIndex), slVertices
+									.get(insertedNodeIndex + 1), slVertices
+									.get(insertedNodeIndex + 2));
+					setOfTriangles.legalizeAndAdd(cdtTriangle);
 
-				// remove the vertex in the middle
-				slVertices.remove(insertedNodeIndex + 1);
+					// remove the vertex in the middle
+					slVertices.remove(insertedNodeIndex + 1);
+				}
 			}
-		}
-
-		if (insertedNodeIndexUpdate) {
-			insertedNodeIndex = secondUpdateOfAdvancingFront(insertedNodeIndex);
-		}
+		} while (insertedNodeIndexUpdate);
 		return insertedNodeIndex;
 	}
 
