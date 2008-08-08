@@ -190,30 +190,37 @@ public class CDTBasin {
 
 	protected List<CDTTriangle> meshIntoTriangles() {
 		// CDTBasin must be normalized !
-		final Map<Integer, Set<Integer>> map = new HashMap<Integer, Set<Integer>>();
-		// first of all, start adding all the edges located at the bottom
-		// borders of the "monotone polygon".
-		for (int i = basinLeftBorder; i <= basinRightBorder; i++) {
-			final Set<Integer> tmpSet = new HashSet<Integer>();
-			if (i > basinLeftBorder) {
-				tmpSet.add(i - 1);
-			}
-			if (i < basinRightBorder) {
-				tmpSet.add(i + 1);
-			}
-			map.put(i, tmpSet);
-		}
-		// then add the edge that closes the "monotone polygon" at the top
-		map.get(basinLeftBorder).add(basinRightBorder);
-		map.get(basinRightBorder).add(basinLeftBorder);
-		// at least, add internal edges
+
+		// first of all, retrieve all internal edges...
 		final List<CDTEdge> edges = meshIntoEdges();
+		// add all the edges located at the bottom borders of the
+		// "monotone polygon".
+		for (int i = basinLeftBorder; i < basinRightBorder; i++) {
+			edges.add(new CDTEdge(i, i + 1));
+		}
+		// add the edge that closes the "monotone polygon" at the top
+		edges.add(new CDTEdge(basinRightBorder, basinLeftBorder));
+
+		// to continue, build the map...
+		final Map<Integer, Set<Integer>> map = new HashMap<Integer, Set<Integer>>();
 		for (CDTEdge edge : edges) {
-			map.get(edge.begin).add(edge.end);
-			map.get(edge.end).add(edge.begin);
+			if (map.containsKey(edge.begin)) {
+				map.get(edge.begin).add(edge.end);
+			} else {
+				final Set<Integer> tmpSet = new HashSet<Integer>();
+				tmpSet.add(edge.end);
+				map.put(edge.begin, tmpSet);
+			}
+			if (map.containsKey(edge.end)) {
+				map.get(edge.end).add(edge.begin);
+			} else {
+				final Set<Integer> tmpSet = new HashSet<Integer>();
+				tmpSet.add(edge.begin);
+				map.put(edge.end, tmpSet);
+			}
 		}
 
-		// build the triangles (in a set to avoid duplicate triangles)
+		// at least, build the triangles (in a set to avoid duplicate triangles)
 		final Set<CDTTriangle> result = new HashSet<CDTTriangle>();
 
 		for (CDTEdge edge : edges) {

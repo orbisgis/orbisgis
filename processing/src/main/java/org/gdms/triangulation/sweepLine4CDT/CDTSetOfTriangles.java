@@ -169,4 +169,8 @@ public class CDTSetOfTriangles {
 				new CDTTriangle(orderedSetOfVertices, v1, v3, v4),
 				new CDTTriangle(orderedSetOfVertices, v2, v3, v4) };
 	}
+
+	public String toString() {
+		return "Triangles = " + set.toString();
+	}
 }

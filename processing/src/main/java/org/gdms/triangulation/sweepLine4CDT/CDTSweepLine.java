@@ -448,4 +448,8 @@ public class CDTSweepLine {
 	public void smoothing() {
 		smoothing(slVertices.size());
 	}
+
+	public String toString() {
+		return "SL = " + slVertices.toString();
+	}
 }
