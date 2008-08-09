@@ -63,6 +63,10 @@ public class CDTCircumCircle {
 		return centre.distance(coordinate) < radius + EPSILON;
 	}
 
+	public boolean isLocatedOnTheCircumCircle(final Coordinate coordinate) {
+		return Math.abs(centre.distance(coordinate) - radius) < EPSILON;
+	}
+
 	public Envelope getEnvelopeInternal() {
 		return envelope;
 	}

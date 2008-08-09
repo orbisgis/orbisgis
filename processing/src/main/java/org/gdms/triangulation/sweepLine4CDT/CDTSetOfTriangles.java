@@ -20,16 +20,7 @@ public class CDTSetOfTriangles {
 		spatialIndex = new Quadtree(); // new STRtree(10);
 	}
 
-	public boolean add(final int v0, final int v1, final int v2) {
-		CDTTriangle tmp = new CDTTriangle(orderedSetOfVertices, v0, v1, v2);
-		if (set.add(tmp)) {
-			spatialIndex.insert(tmp.getEnvelope(), tmp);
-			return true;
-		}
-		return false;
-	}
-
-	public boolean add(final CDTTriangle triangle) {
+	private boolean add(final CDTTriangle triangle) {
 		if (set.add(triangle)) {
 			spatialIndex.insert(triangle.getEnvelope(), triangle);
 			return true;
@@ -112,7 +103,10 @@ public class CDTSetOfTriangles {
 				if (null != tmp) {
 					int oppositeVertex = (Integer) tmp[4];
 					// TODO replace with respectWeakerDelaunayProperty()
-					if (!triangle.respectDelaunayProperty(oppositeVertex)) {
+					if (!triangle.getCircumCircle().isLocatedOnTheCircumCircle(
+							orderedSetOfVertices.get(oppositeVertex))
+							&& !triangle
+									.respectDelaunayProperty(oppositeVertex)) {
 						return tmp;
 					}
 				}

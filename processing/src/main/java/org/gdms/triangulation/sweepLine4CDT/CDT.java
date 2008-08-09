@@ -68,7 +68,8 @@ public class CDT {
 		// .search(firstArtificialPoint));
 		// Assert.assertTrue(1 == orderedSetOfVertices
 		// .search(secondArtificialPoint));
-		setOfTriangles.add(0, 1, 2);
+		setOfTriangles.legalizeAndAdd(new CDTTriangle(orderedSetOfVertices, 0,
+				1, 2));
 
 		// ... and the initial value of the sweep-line
 		sweepLine = new CDTSweepLine(orderedSetOfVertices, setOfTriangles,
