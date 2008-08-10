@@ -1,21 +1,26 @@
 package org.gdms.triangulation.sweepLine4CDT;
 
-import java.util.HashSet;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
-import java.util.Set;
+import java.util.Map;
+import java.util.SortedSet;
 import java.util.Stack;
+import java.util.TreeSet;
 
+import com.vividsolutions.jts.algorithm.CGAlgorithms;
+import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.index.SpatialIndex;
 import com.vividsolutions.jts.index.quadtree.Quadtree;
 
 public class CDTSetOfTriangles {
 	private CDTOrderedSetOfVertices orderedSetOfVertices;
-	private Set<CDTTriangle> set;
+	private SortedSet<CDTTriangle> set;
 	private SpatialIndex spatialIndex;
 
 	public CDTSetOfTriangles(final CDTOrderedSetOfVertices orderedSetOfVertices) {
 		this.orderedSetOfVertices = orderedSetOfVertices;
-		set = new HashSet<CDTTriangle>();
+		set = new TreeSet<CDTTriangle>();
 		// build the spatial index...
 		spatialIndex = new Quadtree(); // new STRtree(10);
 	}
@@ -26,20 +31,6 @@ public class CDTSetOfTriangles {
 			return true;
 		}
 		return false;
-	}
-
-	@SuppressWarnings("unchecked")
-	public void remove(final int vertexIndex) {
-		final List<CDTTriangle> tmp = spatialIndex.query(orderedSetOfVertices
-				.getEnvelope(vertexIndex));
-
-		for (CDTTriangle cdtTriangle : tmp) {
-			if (cdtTriangle.isAVertex(vertexIndex)) {
-				remove(cdtTriangle);
-			}
-		}
-		// remove also corresponding vertex...
-		// removeVertex(vertexIndex);
 	}
 
 	private void remove(final CDTTriangle triangle) {
@@ -115,7 +106,7 @@ public class CDTSetOfTriangles {
 		return null;
 	}
 
-	public Set<CDTTriangle> getTriangles() {
+	public SortedSet<CDTTriangle> getTriangles() {
 		return set;
 	}
 
@@ -166,5 +157,88 @@ public class CDTSetOfTriangles {
 
 	public String toString() {
 		return "Triangles = " + set.toString();
+	}
+
+	@SuppressWarnings("unchecked")
+	public void focusOnArtificialVertices() {
+		// the indices of the two artificial vertices are 0 and 1
+		final List<CDTTriangle> subList = spatialIndex
+				.query(orderedSetOfVertices.getEnvelope(0));
+		subList.addAll(spatialIndex.query(orderedSetOfVertices.getEnvelope(1)));
+
+		// first of all, compute the "bottom sweep-line" and remove all the
+		// artificial triangles
+		final Map<Integer, Integer> map = new HashMap<Integer, Integer>();
+		for (CDTTriangle t : subList) {
+			if (((0 == t.p0) || (1 == t.p0))) {
+				if (1 != t.p1) {
+					if (CGAlgorithms.COUNTERCLOCKWISE == CGAlgorithms
+							.computeOrientation(orderedSetOfVertices.get(t.p0),
+									orderedSetOfVertices.get(t.p1),
+									orderedSetOfVertices.get(t.p2))) {
+						map.put(t.p1, t.p2);
+					} else {
+						map.put(t.p2, t.p1);
+					}
+				}
+				remove(t);
+			}
+		}
+		Integer begin = null;
+		for (int key : map.keySet()) {
+			if (!map.containsValue(key)) {
+				if (null != begin) {
+					throw new RuntimeException("Unreachable code");
+				}
+				begin = key;
+				break;
+			}
+		}
+		final List<Integer> bottomSL = new ArrayList<Integer>(map.size() + 1);
+		for (int i = 0; i < map.size() + 1; i++) {
+			if (null == begin) {
+				throw new RuntimeException("Unreachable code");
+			}
+			bottomSL.add(begin);
+			begin = map.get(begin);
+		}
+
+		// then, fill in all the gap produced by these removal in order to
+		// obtain a union of triangles that is convex
+		System.err.println(bottomSL);
+
+		boolean finalizationUpdate;
+		int endIndex = bottomSL.size();
+		do {
+			finalizationUpdate = false;
+			int index = 0;
+			while (index + 3 < endIndex) {
+				final Coordinate a = orderedSetOfVertices.get(bottomSL
+						.get(index));
+				final Coordinate b = orderedSetOfVertices.get(bottomSL
+						.get(index + 1));
+				final Coordinate c = orderedSetOfVertices.get(bottomSL
+						.get(index + 2));
+				// lets test sign(z component of ( ab ^ bc ))
+				final double tmp = (b.x - a.x) * (c.y - b.y) - (b.y - a.y)
+						* (c.x - b.x);
+
+				if (tmp > 0) {
+					// add a new bordering triangle
+					final CDTTriangle cdtTriangle = new CDTTriangle(
+							orderedSetOfVertices, bottomSL.get(index), bottomSL
+									.get(index + 1), bottomSL.get(index + 2));
+					legalizeAndAdd(cdtTriangle);
+					finalizationUpdate = true;
+
+					// remove the vertex in the middle
+					bottomSL.remove(bottomSL.get(index + 1));
+
+					endIndex--;
+				} else {
+					index++;
+				}
+			}
+		} while (finalizationUpdate);
 	}
 }

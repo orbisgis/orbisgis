@@ -62,6 +62,7 @@ public class CDT {
 	 * @param pm
 	 */
 	public void mesh(final IProgressMonitor pm) {
+		final long t0 = System.currentTimeMillis();
 		// build the 1st (artificial) triangle...
 		// TODO Modify maven pom to accept this Assert.assertTrue(0 ==
 		// orderedSetOfVertices
@@ -90,13 +91,14 @@ public class CDT {
 			// vertex event
 			int idx = sweepLine.firstUpdateOfAdvancingFront(i);
 			idx = sweepLine.secondUpdateOfAdvancingFront(idx);
-			// sweepLine.thirdUpdateOfAdvancingFront(idx);
+//			sweepLine.thirdUpdateOfAdvancingFront(idx);
 
 			// TODO edge event
 		}
 
 		// finalization process
 		finalization();
+		System.err.println((System.currentTimeMillis() - t0) + " ms");
 	}
 
 	/**
@@ -110,11 +112,8 @@ public class CDT {
 		sweepLine.smoothing();
 
 		// remove all the triangles defined by at least one artificial vertex
-		setOfTriangles.remove(0);
-		setOfTriangles.remove(1);
-
-		// TODO what about lower part of the convex hull... fill in all the gap
-		// created by artificial triangles removal
+		// and fill in "all the gap" created by artificial triangles removal
+		setOfTriangles.focusOnArtificialVertices();
 	}
 
 	public Set<Polygon> getTriangles() {
