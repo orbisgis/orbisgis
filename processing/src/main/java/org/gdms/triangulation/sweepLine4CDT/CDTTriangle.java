@@ -105,7 +105,7 @@ public class CDTTriangle implements Comparable<CDTTriangle> {
 
 	public boolean isAVertex(final int vertexIndex) {
 		return (vertexIndex == p0) || (vertexIndex == p1)
-				|| (vertexIndex == p2) ? true : false;
+				|| (vertexIndex == p2);
 	}
 
 	/**
