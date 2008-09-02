@@ -19,7 +19,9 @@
 		<module>orbisgis-core</module>
 		<module>org.orbisgis.core-ui</module>
 		<module>org.orbisgis.processing</module>
-	</modules>
+		<module>contrib</module>
+		<module>tanato</module>
+  </modules>
 	<scm>
 		<connection>
 			scm:svn:http://geosysin.iict.ch/irstv-svn/platform</connection>
