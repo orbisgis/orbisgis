@@ -1,8 +1,0 @@
-<plugin>
-	<extension point="org.orbisgis.View">
-	<view id="org.orbisgis.views.EuropeGame"
-		icon="/org/orbisgis/images/application_double.png"
-		class="org.orbisgis.views.europeGame.EuropeGame"
-		title="Europe Game"/>
-	</extension>
-</plugin>
