@@ -54,9 +54,9 @@ import org.orbisgis.errorManager.ErrorManager;
 
 /**
  * Class to manage the services
- *
+ * 
  * @author Fernando Gonzalez Cortes
- *
+ * 
  */
 public class Services {
 
@@ -65,12 +65,12 @@ public class Services {
 
 	/**
 	 * Registers the service specifying the interface to be used
-	 *
+	 * 
 	 * @param name
 	 *            Name of the service
 	 * @param interface_
 	 *            Interface to be implemented by every instance of this service
-	 *
+	 * 
 	 * @throws IllegalArgumentException
 	 *             If the class specified in the second parameter is not an
 	 *             interface
@@ -87,14 +87,14 @@ public class Services {
 	/**
 	 * Registers the service specifying the interface to be used and setting an
 	 * instance of the service
-	 *
+	 * 
 	 * @param name
 	 *            Name of the service
 	 * @param interface_
 	 *            Interface to be implemented by every instance of this service
 	 * @param instance
 	 *            instance of the service
-	 *
+	 * 
 	 * @throws IllegalArgumentException
 	 *             If the class specified in the second parameter is not an
 	 *             interface
@@ -108,7 +108,7 @@ public class Services {
 
 	/**
 	 * Sets the instance of the specified service
-	 *
+	 * 
 	 * @param name
 	 *            Name of the service
 	 * @param serviceInstance
@@ -133,7 +133,7 @@ public class Services {
 
 	/**
 	 * Gets the service instance
-	 *
+	 * 
 	 * @param name
 	 *            Name of the service
 	 * @return
@@ -144,7 +144,7 @@ public class Services {
 
 	/**
 	 * Gets a human friendly list of services
-	 *
+	 * 
 	 * @return
 	 */
 	public static String[] getServices() {
@@ -224,10 +224,16 @@ public class Services {
 	/**
 	 * The same as '(ErrorManager)
 	 * Services.getService("org.orbisgis.ErrorManager")'
-	 *
+	 * 
 	 * @return
 	 */
 	public static ErrorManager getErrorManager() {
 		return (ErrorManager) getService("org.orbisgis.ErrorManager");
+	}
+
+	@SuppressWarnings("unchecked")
+	public static <T> T getService(Class<T> serviceInterface) {
+		String[] parts = serviceInterface.getName().split("\\.");
+		return (T) getService("org.orbisgis." + parts[parts.length - 1]);
 	}
 }

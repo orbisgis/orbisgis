@@ -34,54 +34,23 @@
  *    fergonco _at_ gmail.com
  *    thomas.leduc _at_ cerma.archi.fr
  */
-package org.orbisgis.errorManager;
+package org.orbisgis.workspace;
 
-import java.util.ArrayList;
+import java.io.File;
 
-import org.apache.log4j.Logger;
+public interface WorkspaceListener {
 
-public class DefaultErrorManager implements ErrorManager {
+	/**
+	 * The workspace have been asked to be saved
+	 */
+	void saveWorkspace();
 
-	private static Logger logger = Logger.getLogger(DefaultErrorManager.class);
-
-	private ArrayList<ErrorListener> listeners = new ArrayList<ErrorListener>();
-
-	public void error(String userMsg, Throwable exception) {
-		try {
-			logger.error(userMsg, exception);
-			for (ErrorListener listener : listeners) {
-				listener.error(userMsg, exception);
-			}
-		} catch (Throwable t) {
-			logger.error("Error while managing exception", t);
-		}
-	}
-
-	public void warning(String userMsg, Throwable exception) {
-		try {
-			logger.error("warning: " + userMsg, exception);
-			for (ErrorListener listener : listeners) {
-				listener.warning(userMsg, exception);
-			}
-		} catch (Throwable t) {
-			logger.error("Error while managing exception", t);
-		}
-	}
-
-	public void error(String userMsg) {
-		error(userMsg, null);
-	}
-
-	public void addErrorListener(ErrorListener listener) {
-		listeners.add(listener);
-	}
-
-	public void removeErrorListener(ErrorListener listener) {
-		listeners.add(listener);
-	}
-
-	public void warning(String userMsg) {
-		warning(userMsg, null);
-	}
+	/**
+	 * The workspace directory has changed
+	 *
+	 * @param oldWorkspace
+	 * @param newWorkspace
+	 */
+	void workspaceChanged(File oldWorkspace, File newWorkspace);
 
 }
