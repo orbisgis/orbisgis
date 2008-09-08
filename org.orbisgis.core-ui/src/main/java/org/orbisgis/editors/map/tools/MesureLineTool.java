@@ -45,7 +45,7 @@ import org.orbisgis.editors.map.tool.DrawingException;
 import org.orbisgis.editors.map.tool.ToolManager;
 import org.orbisgis.editors.map.tool.TransitionException;
 import org.orbisgis.layerModel.MapContext;
-import org.orbisgis.views.outputView.OutputManager;
+import org.orbisgis.outputManager.OutputManager;
 
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.LineString;
@@ -66,9 +66,7 @@ public class MesureLineTool extends AbstractLineTool {
 		OutputManager om = (OutputManager) Services
 				.getService("org.orbisgis.OutputManager");
 		Color color = Color.blue;
-		om.append("Distance : "
-				+ getLength(ls) + "\n",
-				color);
+		om.append("Distance : " + getLength(ls) + "\n", color);
 		om.makeVisible();
 	}
 
@@ -76,7 +74,6 @@ public class MesureLineTool extends AbstractLineTool {
 		return new DecimalFormat("0.000").format(ls.getLength());
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public void drawIn_Point(Graphics g, MapContext vc, ToolManager tm)
 			throws DrawingException {

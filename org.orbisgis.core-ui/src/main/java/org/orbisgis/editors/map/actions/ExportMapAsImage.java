@@ -50,7 +50,6 @@ import org.orbisgis.editors.map.MapEditor;
 import org.orbisgis.layerModel.ILayer;
 import org.orbisgis.layerModel.MapContext;
 import org.orbisgis.pluginManager.ui.SaveFilePanel;
-import org.orbisgis.views.documentCatalog.documents.MapDocument;
 import org.sif.UIFactory;
 
 import com.vividsolutions.jts.geom.Envelope;
@@ -60,8 +59,7 @@ public class ExportMapAsImage implements IEditorAction {
 	public void actionPerformed(IEditor editor) {
 		MapEditor mapEditor = (MapEditor) editor;
 		BufferedImage image = mapEditor.getMapTransform().getImage();
-		MapDocument mapDocument = (MapDocument) editor.getDocument();
-		MapContext mc = mapDocument.getMapContext();
+		MapContext mc = (MapContext) editor.getElement().getObject();
 
 		ILayer[] allSelectedLayers = mc.getLayers();
 		Envelope envelope = new Envelope();
@@ -118,8 +116,8 @@ public class ExportMapAsImage implements IEditorAction {
 	}
 
 	public boolean isEnabled(IEditor editor) {
-		MapDocument map = (MapDocument) editor.getDocument();
-		return map.getMapContext().getLayerModel().getLayerCount() > 0;
+		MapContext map = (MapContext) editor.getElement().getObject();
+		return map.getLayerModel().getLayerCount() > 0;
 	}
 
 	public boolean isVisible(IEditor editor) {

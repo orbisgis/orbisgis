@@ -1,60 +1,61 @@
 <plugin>
 	<activator class="org.orbisgis.Activator"/>
-
+	
 	<application name="OrbisGIS" version="1.2.2 (Naoned)"
 		organization="IRSTV CNRS-FR-2488" workspace-version="1"/>
-
+	
 	<!-- windows -->
 	<extension-point id="org.orbisgis.Window" schema="schema/window.xsd"/>
-
+	
 	<!-- global actions -->
 	<extension-point id="org.orbisgis.Action" schema="schema/action.xsd"/>
-
+	
 	<!-- geocatalog wizards -->
 	<extension-point id="org.orbisgis.views.geocatalog.NewResourceWizard"
 		name="GeoCatalog Wizards" schema="schema/resourceWizard.xsd"/>
-
+	
 	<!-- geocatalog actions -->
 	<extension-point id="org.orbisgis.views.geocatalog.Action"
 		name="Contextual actions for resources"
 		schema="schema/resourceAction.xsd"/>
-
+	
 	<!-- editor actions -->
 	<extension-point id="org.orbisgis.editor.Action"
 		schema="schema/editorAction.xsd"/>
-
+	
 	<!-- map editor tools -->
 	<extension-point id="org.orbisgis.editors.map.Tool" schema="schema/tool.xsd"/>
-
+	
 	<!-- layer wizards -->
 	<extension-point id="org.orbisgis.editors.map.NewLayerWizard"
 		schema="schema/newLayerWizard.xsd"/>
-
+	
 	<!-- panels -->
 	<extension-point id="org.orbisgis.View" schema="schema/view.xsd"/>
 	<extension-point id="org.orbisgis.EditorView" schema="schema/editorView.xsd"/>
 	<extension-point id="org.orbisgis.Editor" schema="schema/editor.xsd"/>
-
+	
 	<!-- toc actions -->
 	<extension-point id="org.orbisgis.editorViews.toc.Action"
 		schema="schema/layerAction.xsd"/>
-
+	
 	<!-- SQL -->
 	<extension-point id="org.orbisgis.views.sqlRepository.SQL"
 		schema="schema/sqlRepository.xsd"/>
-
-	<!-- document -->
-	<extension-point id="org.orbisgis.views.documentCatalog.Action"
-		schema="schema/documentCatalogAction.xsd"/>
-	<extension-point id="org.orbisgis.views.documentCatalog.NewDocumentWizard"
-		schema="schema/documentWizard.xsd"/>
-
+	
+	<!-- geocognition -->
+	<extension-point id="org.orbisgis.views.geocognition.Action"
+		schema="schema/geocognitionAction.xsd"/>
+	<extension-point id="org.orbisgis.views.geocognition.Filter"
+		schema="schema/geocognitionFilter.xsd"/>
+	<extension-point id="org.orbisgis.views.geocognition.NewWizard"
+		schema="schema/geocognitionWizard.xsd"/>
 	<!--
-
+	
 	EXTENSIONS
-
+	
 	-->
-
+	
 	<!-- windows -->
 	<extension point="org.orbisgis.Window">
 		<window id="org.orbisgis.MainFrame" newOnStartup="true"
@@ -64,7 +65,7 @@
 		<window id="org.orbisgis.windows.ErrorWindow"
 			class="org.orbisgis.windows.errors.ErrorFrame"/>
 	</extension>
-
+	
 	<!-- Geocatalog wizards -->
 	<extension point="org.orbisgis.views.geocatalog.NewResourceWizard">
 		<wizard id="org.orbisgis.views.geocatalog.newResourceWizards.NewFile"
@@ -82,18 +83,18 @@
 		<wizard id="org.orbisgis.views.geocatalog.newResourceWizards.XYZDem"
 			class="org.orbisgis.views.geocatalog.newResourceWizards.xyzdem.ConvertXYZDem"/>
 	</extension>
-
+	
 	<!-- Top level actions-->
 	<extension id="org.orbisgis.BasicActions" point="org.orbisgis.Action">
 		<menu id="org.orbisgis.File" text="File"
 			icon="/org/orbisgis/images/house.png"/>
 		<menu id="org.orbisgis.Geocatalog" text="Geocatalog"
 			icon="/org/orbisgis/images/geocatalog.png"/>
-
+		
 		<menu id="org.orbisgis.Help" text="Help"
 			icon="/org/orbisgis/images/help.png"/>
 		<toolbar id="org.orbisgis.MainBar" text="OrbisGIS"/>
-
+		
 		<action id="org.orbisgis.actions.Exit" text="Exit"
 			menu-id="org.orbisgis.File" icon="/org/orbisgis/images/exit.png"
 			toolbar-id="org.orbisgis.MainBar" class="org.orbisgis.actions.Exit"/>
@@ -104,7 +105,7 @@
 			menu-id="org.orbisgis.Geocatalog" icon="/org/orbisgis/images/add.png"
 			class="org.orbisgis.actions.NewResource"/>
 	</extension>
-
+	
 	<extension point="org.orbisgis.Action" id="org.orbisgis.actions.Workspace">
 		<action id="org.orbisgis.actions.SaveWorkspace"
 			menu-id="org.orbisgis.File"
@@ -115,7 +116,16 @@
 			menu-group="org.orbisgis.actions.Workspace" text="Change workspace"
 			class="org.orbisgis.actions.ChangeWorkspace"/>
 	</extension>
-
+	
+	<extension id="org.orbisgis.actions.SaveElementActions"
+		point="org.orbisgis.Action">
+		<action menu-id="org.orbisgis.File" id="org.orbisgis.actions.Save"
+			text="Save" menu-group="org.orbisgis.File"
+			toolbar-id="org.orbisgis.MainBar"
+			icon="/org/orbisgis/images/disk.png"
+			class="org.orbisgis.actions.Save"/>
+	</extension>
+	
 	<!-- Resource actions -->
 	<extension point="org.orbisgis.views.geocatalog.Action">
 		<menu id="org.orbisgis.views.geocatalog.file.Add" text="Add"/>
@@ -146,14 +156,14 @@
 			icon="/org/orbisgis/images/bin_closed.png"
 			class="org.orbisgis.views.geocatalog.actions.ClearFolder"/>
 	</extension>
-
+	
 	<extension point="org.orbisgis.views.geocatalog.Action">
 		<action id="org.orbisgis.views.geocatalog.ShowTable"
 			menu-group="org.orbisgis.views.geocatalog.basic" text="Show table"
 			icon="/org/orbisgis/images/openattributes.png"
 			class="org.orbisgis.views.geocatalog.actions.ShowTable"/>
 	</extension>
-
+	
 	<!-- layer actions -->
 	<extension point="org.orbisgis.editorViews.toc.Action">
 		<action id="org.edit" text="Edit Legend" menu-group="editlayer"
@@ -197,7 +207,8 @@
 		id="org.orbisgis.editorViews.toc.EditingActions">
 		<!-- Editing actions -->
 		<action id="org.orbisgis.editorViews.toc.actions.SetActive"
-			text="Start edition" menu-group="org.orbisgis.editorViews.toc.Edition"
+			text="Start edition"
+			menu-group="org.orbisgis.editorViews.toc.Edition"
 			class="org.orbisgis.editorViews.toc.actions.SetActive"/>
 		<action id="org.orbisgis.editorViews.toc.actions.SetInactive"
 			text="Stop edition" menu-group="org.orbisgis.editorViews.toc.Edition"
@@ -209,7 +220,7 @@
 			menu-group="org.orbisgis.editorViews.toc.Edition"
 			class="org.orbisgis.editorViews.toc.actions.Revert"/>
 	</extension>
-
+	
 	<extension point="org.orbisgis.editorViews.toc.Action">
 		<menu id="org.orbisgis.editorViews.toc.actions.Export" text="Export..."/>
 		<!-- Save in a file -->
@@ -219,14 +230,14 @@
 			menu-id="org.orbisgis.editorViews.toc.actions.Export"
 			class="org.orbisgis.editorViews.toc.actions.SaveInFile"/>
 	</extension>
-
+	
 	<!-- layer wizards -->
 	<extension id="org.orbisgis.editors.map.newLayerWizards.NewFile"
 		point="org.orbisgis.editors.map.NewLayerWizard">
 		<wizard id="org.orbisgis.editors.map.newLayerWizards.NewFileLayer"
 			class="org.orbisgis.editors.map.newLayerWizards.NewFileLayer"/>
 	</extension>
-
+	
 	<!-- map actions -->
 	<extension id="org.orbisgis.editors.map.actions.NewLayer"
 		point="org.orbisgis.editor.Action">
@@ -239,7 +250,7 @@
 			editor-id="org.orbisgis.editors.Map"
 			class="org.orbisgis.editors.map.actions.NewLayer"/>
 	</extension>
-
+	
 	<extension id="org.orbisgis.editors.map.actions.FullExtent"
 		point="org.orbisgis.editor.Action">
 		<editor-action id="org.orbisgis.editors.map.actions.FullExtent"
@@ -255,7 +266,7 @@
 			editor-id="org.orbisgis.editors.Map" selectable="true"
 			class="org.orbisgis.editors.map.actions.ShowXY"/>
 	</extension>
-
+	
 	<extension point="org.orbisgis.editor.Action">
 		<editor-action id="org.orbisgis.editors.map.actions.Undo"
 			menu-id="org.orbisgis.Map" text="Undo"
@@ -279,7 +290,7 @@
 			toolbar-id="org.orbisgis.editors.map.Edition"
 			class="org.orbisgis.editors.map.actions.DeleteSelection"/>
 	</extension>
-
+	
 	<extension id="org.orbisgis.editors.map.actions.Export"
 		point="org.orbisgis.editor.Action">
 		<editor-action menu-id="org.orbisgis.Map"
@@ -289,18 +300,17 @@
 			editor-id="org.orbisgis.editors.Map"
 			class="org.orbisgis.editors.map.actions.ExportMapAsImage"/>
 	</extension>
-
+	
 	<!--<extension id="org.orbisgis.editors.map.actions.Export"
-		point="org.orbisgis.editor.Action">
-		<editor-action menu-id="org.orbisgis.Map"
-			id="org.orbisgis.editors.map.actions.Export"
-			text="Export map as PDF..."
-			menu-group="org.orbisgis.editors.map.actions.LayerActionGroup"
-			editor-id="org.orbisgis.editors.Map"
-			class="org.orbisgis.editors.map.actions.ExportMapAsPDF"/>
+	point="org.orbisgis.editor.Action">
+	<editor-action menu-id="org.orbisgis.Map"
+	id="org.orbisgis.editors.map.actions.Export"
+	text="Export map as PDF..."
+	menu-group="org.orbisgis.editors.map.actions.LayerActionGroup"
+	editor-id="org.orbisgis.editors.Map"
+	class="org.orbisgis.editors.map.actions.ExportMapAsPDF"/>
 	</extension>-->
-
-
+	
 	<!-- map editor tools -->
 	<extension id="org.orbisgis.editors.map.tools.NavigationTools"
 		point="org.orbisgis.editors.map.Tool">
@@ -329,7 +339,7 @@
 			toolbar-id="org.orbisgis.editors.map.Navigation" selectable="true"
 			class="org.orbisgis.editors.map.tools.PanTool"/>
 	</extension>
-
+	
 	<extension point="org.orbisgis.editors.map.Tool">
 		<toolbar id="org.orbisgis.editors.map.Info" text="Info tools"/>
 		<tool id="org.orbisgis.editors.map.tools.InfoTool"
@@ -339,7 +349,7 @@
 			toolbar-id="org.orbisgis.editors.map.Info" selectable="true"
 			class="org.orbisgis.editors.map.tools.InfoTool"/>
 	</extension>
-
+	
 	<extension point="org.orbisgis.editors.map.Tool">
 		<toolbar id="org.orbisgis.editors.map.Fence" text="Fence tools..."/>
 		<tool id="org.orbisgis.editors.map.tools.FencePolygon"
@@ -348,25 +358,25 @@
 			text="Polygon fence" selectable="true"
 			class="org.orbisgis.editors.map.tools.FencePolygonTool"/>
 	</extension>
-
+	
 	<extension point="org.orbisgis.editors.map.Tool">
 		<toolbar id="org.orbisgis.editors.map.Mesure" text="Mesure area..."/>
 		<tool id="org.orbisgis.editors.map.tools.MesurePolygon"
 			toolbar-id="org.orbisgis.editors.map.Mesure"
-			icon="/org/orbisgis/images/mesurearea.png"
-			text="Mesure area" selectable="true"
+			icon="/org/orbisgis/images/mesurearea.png" text="Mesure area"
+			selectable="true"
 			class="org.orbisgis.editors.map.tools.MesurePolygonTool"/>
 	</extension>
-
+	
 	<extension point="org.orbisgis.editors.map.Tool">
 		<toolbar id="org.orbisgis.editors.map.Mesure" text="Mesure distance..."/>
 		<tool id="org.orbisgis.editors.map.tools.MesureLine"
 			toolbar-id="org.orbisgis.editors.map.Mesure"
-			icon="/org/orbisgis/images/mesurelength.png"
-			text="Mesure distance" selectable="true"
+			icon="/org/orbisgis/images/mesurelength.png" text="Mesure distance"
+			selectable="true"
 			class="org.orbisgis.editors.map.tools.MesureLineTool"/>
 	</extension>
-
+	
 	<extension point="org.orbisgis.editors.map.Tool">
 		<toolbar id="org.orbisgis.editors.map.Edition" text="Edition"/>
 		<tool id="org.orbisgis.editors.map.tools.Selection"
@@ -425,48 +435,166 @@
 			toolbar-id="org.orbisgis.editors.map.Edition" selectable="true"
 			class="org.orbisgis.editors.map.tools.VertexDeletionTool"/>
 	</extension>
-
+	
 	<!-- Editors -->
 	<extension id="org.orbisgis.editor.Map" point="org.orbisgis.Editor">
 		<editor id="org.orbisgis.editors.Map" icon="/org/orbisgis/images/map.png"
 			class="org.orbisgis.editors.map.MapEditor"/>
 	</extension>
-
-	<!-- Document wizards-->
+	<extension id="org.orbisgis.editor.Function" point="org.orbisgis.Editor">
+		<editor id="org.orbisgis.editors.Function"
+			icon="/org/orbisgis/images/java_cup.png"
+			class="org.orbisgis.editors.sql.FunctionEditor"/>
+	</extension>
+	<extension id="org.orbisgis.editor.Function" point="org.orbisgis.Editor">
+		<editor id="org.orbisgis.editors.CustomQuery"
+			icon="/org/orbisgis/images/java_cup.png"
+			class="org.orbisgis.editors.sql.CustomQueryEditor"/>
+	</extension>
+	
+	<!-- Geocognition wizards-->
 	<extension
-		id="org.orbisgis.views.documentCatalog.newDocumentWizards.NewMapDocument"
-		point="org.orbisgis.views.documentCatalog.NewDocumentWizard">
+		id="org.orbisgis.views.geocognition.wizards.NewRegisteredFunctions"
+		point="org.orbisgis.views.geocognition.NewWizard">
+		<category id="org.orbisgis.views.geocognition.Processing"
+			name="Processing"/>
+		<wizard id="org.orbisgis.views.geocognition.wizards.RegisteredFunctions"
+			category="org.orbisgis.views.geocognition.Processing"
+			class="org.orbisgis.views.geocognition.wizards.NewRegisteredFunctions"/>
+	</extension>
+	<extension
+		id="org.orbisgis.views.geocognition.wizards.NewRegisteredCustomQueries"
+		point="org.orbisgis.views.geocognition.NewWizard">
 		<wizard
-			id="org.orbisgis.views.documentCatalog.newDocumentWizards.NewMapDocument"
-			class="org.orbisgis.views.documentCatalog.newDocumentWizards.NewMapDocument"/>
+			id="org.orbisgis.views.geocognition.wizards.RegisteredCustomQueries"
+			category="org.orbisgis.views.geocognition.Processing"
+			class="org.orbisgis.views.geocognition.wizards.NewRegisteredQueries"/>
 	</extension>
-
-	<!-- Document actions -->
-	<extension point="org.orbisgis.views.documentCatalog.Action"
-		id="org.orbisgis.views.documentCatalog.actions.Basic">
-		<menu text="Add..." id="org.orbisgis.views.documentCatalog.New"/>
-		<action id="org.orbisgis.views.documentCatalog.actions.Open" text="Open"
-			menu-group="org.orbisgis.views.documentCatalog.Basic"
+	<extension id="org.orbisgis.views.geocognition.wizards.NewFunction"
+		point="org.orbisgis.views.geocognition.NewWizard">
+		<wizard id="org.orbisgis.views.geocognition.wizards.NewFunction"
+			category="org.orbisgis.views.geocognition.Processing"
+			class="org.orbisgis.views.geocognition.wizards.NewFunction"/>
+	</extension>
+	<extension id="org.orbisgis.views.geocognition.wizards.NewCustomQuery"
+		point="org.orbisgis.views.geocognition.NewWizard">
+		<wizard id="org.orbisgis.views.geocognition.wizards.NewCustomQuery"
+			category="org.orbisgis.views.geocognition.Processing"
+			class="org.orbisgis.views.geocognition.wizards.NewCustomQuery"/>
+	</extension>
+	<extension id="org.orbisgis.views.geocognition.wizards.Map"
+		point="org.orbisgis.views.geocognition.NewWizard">
+		<category id="org.orbisgis.views.geocognition.Representation"
+			name="Representation"/>
+		<wizard id="org.orbisgis.views.geocognition.wizards.Map"
+			category="org.orbisgis.views.geocognition.Representation"
+			class="org.orbisgis.views.geocognition.wizards.NewMap"/>
+	</extension>
+	<extension id="org.orbisgis.views.geocognition.wizards.Legend"
+		point="org.orbisgis.views.geocognition.NewWizard">
+		<wizard id="org.orbisgis.views.geocognition.wizards.Legend"
+			category="org.orbisgis.views.geocognition.Representation"
+			class="org.orbisgis.views.geocognition.wizards.NewLegend"/>
+	</extension>
+	<extension id="org.orbisgis.views.geocognition.wizards.Symbol"
+		point="org.orbisgis.views.geocognition.NewWizard">
+		<wizard id="org.orbisgis.views.geocognition.wizards.Symbol"
+			category="org.orbisgis.views.geocognition.Representation"
+			class="org.orbisgis.views.geocognition.wizards.NewSymbol"/>
+	</extension>
+	<extension id="org.orbisgis.views.geocognition.wizards.Folder"
+		point="org.orbisgis.views.geocognition.NewWizard">
+		<category id="org.orbisgis.views.geocognition.General" name="General"/>
+		<wizard id="org.orbisgis.views.geocognition.wizards.Folder"
+			category="org.orbisgis.views.geocognition.General"
+			class="org.orbisgis.views.geocognition.wizards.NewFolder"/>
+	</extension>
+	
+	<!-- Geocognition actions -->
+	<extension point="org.orbisgis.views.geocognition.Action"
+		id="org.orbisgis.views.geocognition.actions.Basic">
+		<menu text="Add..." id="org.orbisgis.views.geocognition.New"/>
+		<action id="org.orbisgis.views.geocognition.actions.Clear" text="Clear"
+			menu-group="org.orbisgis.views.geocognition.Remove"
+			class="org.orbisgis.views.geocognition.actions.Clear"/>
+		<action id="org.orbisgis.views.geocognition.actions.Open" text="Open"
 			icon="/org/orbisgis/images/application_go.png"
-			class="org.orbisgis.views.documentCatalog.actions.Open"/>
-		<action id="org.orbisgis.views.documentCatalog.actions.NewDocument"
-			text="Document..."
-			menu-group="org.orbisgis.views.documentCatalog.Basic"
-			menu-id="org.orbisgis.views.documentCatalog.New"
-			icon="/org/orbisgis/images/application_add.png"
-			class="org.orbisgis.views.documentCatalog.actions.NewDocument"/>
-		<action id="org.orbisgis.views.documentCatalog.actions.DeleteDocument"
-			text="Remove" menu-group="org.orbisgis.views.documentCatalog.Remove"
-			class="org.orbisgis.views.documentCatalog.actions.DeleteDocument"/>
+			menu-group="org.orbisgis.views.geocognition.Basic"
+			class="org.orbisgis.views.geocognition.actions.Open"/>
+		<action id="org.orbisgis.views.geocognition.actions.Remove" text="Remove"
+			icon="/org/orbisgis/images/remove.png"
+			menu-group="org.orbisgis.views.geocognition.Remove"
+			class="org.orbisgis.views.geocognition.actions.Remove"/>
+		<action id="org.orbisgis.views.geocognition.actions.NewElement"
+			text="Element..." icon="/org/orbisgis/images/application_go.png"
+			menu-group="org.orbisgis.views.geocognition.Basic"
+			class="org.orbisgis.views.geocognition.actions.NewElement"
+			menu-id="org.orbisgis.views.geocognition.New"/>
 	</extension>
-
+	<extension point="org.orbisgis.views.geocognition.Action"
+		id="org.orbisgis.views.geocognition.actions.Basic">
+		<action
+			id="org.orbisgis.views.geocognition.actions.RegisterBuiltInFunction"
+			text="Register" menu-group="org.orbisgis.views.geocognition.SQL"
+			icon="/org/orbisgis/images/builtInFunctionMap.png"
+			class="org.orbisgis.views.geocognition.actions.RegisterBuiltInFunction"/>
+		<action
+			id="org.orbisgis.views.geocognition.actions.UnRegisterBuiltInFunction"
+			text="Unregister"
+			icon="/org/orbisgis/images/builtInFunctionMapError.png"
+			menu-group="org.orbisgis.views.geocognition.SQL"
+			class="org.orbisgis.views.geocognition.actions.UnRegisterBuiltInFunction"/>
+		<action
+			id="org.orbisgis.views.geocognition.actions.RegisterBuiltInCustomQuery"
+			text="Register" menu-group="org.orbisgis.views.geocognition.SQL"
+			icon="/org/orbisgis/images/builtInCustomQueryMap.png"
+			class="org.orbisgis.views.geocognition.actions.RegisterBuiltInCustomQuery"/>
+		<action
+			id="org.orbisgis.views.geocognition.actions.UnRegisterBuiltInCustomQuery"
+			text="Unregister"
+			icon="/org/orbisgis/images/builtInCustomQueryMapError.png"
+			menu-group="org.orbisgis.views.geocognition.SQL"
+			class="org.orbisgis.views.geocognition.actions.UnRegisterBuiltInCustomQuery"/>
+	</extension>
+	<extension point="org.orbisgis.views.geocognition.Action"
+		id="org.orbisgis.views.geocognition.actions.Basic">
+		<menu text="Synchronize"
+			id="org.orbisgis.views.geocognition.Synchronize"/>
+		<action id="org.orbisgis.views.geocognition.actions.Export" text="Export"
+			menu-group="org.orbisgis.views.geocognition.Export"
+			class="org.orbisgis.views.geocognition.actions.Export"
+			menu-id="org.orbisgis.views.geocognition.Synchronize"/>
+		<action id="org.orbisgis.views.geocognition.actions.Import" text="Import"
+			menu-group="org.orbisgis.views.geocognition.Export"
+			class="org.orbisgis.views.geocognition.actions.Import"
+			menu-id="org.orbisgis.views.geocognition.Synchronize"/>
+		<action id="org.orbisgis.views.geocognition.actions.SyncFile"
+			text="Synchronize with file"
+			menu-group="org.orbisgis.views.geocognition.Sync"
+			class="org.orbisgis.views.geocognition.actions.SyncFile"
+			menu-id="org.orbisgis.views.geocognition.Synchronize"/>
+		<action id="org.orbisgis.views.geocognition.actions.SyncURL"
+			text="Synchronize with URL"
+			menu-group="org.orbisgis.views.geocognition.Sync"
+			class="org.orbisgis.views.geocognition.actions.SyncURL"
+			menu-id="org.orbisgis.views.geocognition.Synchronize"/>
+	</extension>
+	
+	<!-- Geocognition filters -->
+	<extension point="org.orbisgis.views.geocognition.Filter"
+		id="org.orbisgis.views.geocognition.filter.Basic">
+		<filter id="org.orbisgis.views.geocognition.filters.Map"
+			icon="/org/orbisgis/images/map.png"
+			class="org.orbisgis.views.geocognition.filters.Map"/>
+		<filter id="org.orbisgis.views.geocognition.filters.SQL"
+			icon="/org/orbisgis/images/script_code.png"
+			class="org.orbisgis.views.geocognition.filters.SQL"/>
+		<filter id="org.orbisgis.views.geocognition.filters.Symbology"
+			icon="/org/orbisgis/images/palette.png"
+			class="org.orbisgis.views.geocognition.filters.Symbology"/>
+	</extension>
+	
 	<!-- Views available in view menu-->
-	<extension point="org.orbisgis.View">
-		<view id="org.orbisgis.views.DocumentCatalog"
-			icon="/org/orbisgis/images/application_double.png"
-			class="org.orbisgis.views.documentCatalog.DocCatalogView"
-			title="Documents"/>
-	</extension>
 	<extension point="org.orbisgis.View">
 		<view id="org.orbisgis.views.Geocatalog"
 			icon="/org/orbisgis/images/geocatalog.png"
@@ -476,8 +604,7 @@
 	<extension point="org.orbisgis.View">
 		<view id="org.orbisgis.views.EditorView" isEditor="true"
 			icon="/org/orbisgis/images/documentviewer.png"
-			class="org.orbisgis.views.editor.EditorView"
-			title="Document Viewer"/>
+			class="org.orbisgis.views.editor.EditorView" title="Editors"/>
 	</extension>
 	<extension point="org.orbisgis.View">
 		<view id="org.orbisgis.views.Table"
@@ -495,10 +622,9 @@
 			icon="/org/orbisgis/images/group_gear.png" title="SQL Repository"/>
 	</extension>
 	<extension point="org.orbisgis.View">
-		<view id="org.orbisgis.views.BSHConsole"
-			class="org.orbisgis.views.beanshellConsole.BSHConsoleView"
-			icon="/org/orbisgis/images/page_white_cup.png"
-			title="Beanshell Console"/>
+		<view id="org.orbisgis.views.JavaConsole"
+			class="org.orbisgis.views.javaConsole.JavaConsoleView"
+			icon="/org/orbisgis/images/page_white_cup.png" title="Java Console"/>
 	</extension>
 	<extension point="org.orbisgis.View">
 		<view id="org.orbisgis.views.Output"
@@ -520,7 +646,12 @@
 			class="org.orbisgis.views.welcome.WelcomeView"
 			icon="/org/orbisgis/images/house.png" title="Welcome"/>
 	</extension>
-
+	<extension point="org.orbisgis.View">
+		<view id="org.orbisgis.views.Geocognition"
+			class="org.orbisgis.views.geocognition.GeocognitionView"
+			title="Geocognition"/>
+	</extension>
+	
 	<!-- Editor Views available in view menu-->
 	<extension point="org.orbisgis.EditorView">
 		<editor-view id="org.orbisgis.editorViews.Toc"
@@ -534,9 +665,9 @@
 			editor-id="org.orbisgis.editors.Map"
 			icon="/org/orbisgis/images/world_add.png" title="Geomarks"/>
 	</extension>
-
+	
 	<!-- SQL repository extensions -->
-
+	
 	<extension point="org.orbisgis.views.sqlRepository.SQL">
 		<sql
 			resource-path="/org/orbisgis/views/sqlRepository/orbisgisdefault.xml"/>

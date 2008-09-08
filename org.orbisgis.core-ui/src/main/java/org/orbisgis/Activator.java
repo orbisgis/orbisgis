@@ -37,12 +37,11 @@
 package org.orbisgis;
 
 import java.awt.Color;
+import java.awt.Component;
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 
 import javax.swing.JOptionPane;
-import javax.xml.bind.JAXBException;
 
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.NoSuchTableException;
@@ -50,31 +49,36 @@ import org.gdms.data.WarningListener;
 import org.gdms.driver.DriverException;
 import org.gdms.source.SourceManager;
 import org.gdms.sql.customQuery.QueryManager;
+import org.gdms.sql.customQuery.QueryManagerListener;
+import org.gdms.sql.function.FunctionManager;
+import org.gdms.sql.function.FunctionManagerListener;
 import org.orbisgis.action.ActionControlsRegistry;
 import org.orbisgis.editor.IEditor;
 import org.orbisgis.errorManager.ErrorListener;
 import org.orbisgis.errorManager.ErrorManager;
+import org.orbisgis.outputManager.OutputManager;
 import org.orbisgis.pluginManager.PluginActivator;
 import org.orbisgis.pluginManager.PluginManager;
 import org.orbisgis.pluginManager.SystemListener;
-import org.orbisgis.pluginManager.workspace.Workspace;
-import org.orbisgis.pluginManager.workspace.WorkspaceListener;
-import org.orbisgis.renderer.symbol.collection.DefaultSymbolCollection;
 import org.orbisgis.sql.customQuery.Geomark;
-import org.orbisgis.views.documentCatalog.DocumentCatalogManager;
-import org.orbisgis.views.documentCatalog.documents.MapDocument;
+import org.orbisgis.view.ViewManager;
 import org.orbisgis.views.editor.EditorManager;
-import org.orbisgis.views.outputView.OutputManager;
 import org.orbisgis.window.EPWindowHelper;
 import org.orbisgis.windows.errors.ErrorMessage;
+import org.orbisgis.workspace.OGWorkspace;
+import org.orbisgis.workspace.Workspace;
+import org.orbisgis.workspace.WorkspaceListener;
 import org.sif.UIFactory;
 
 public class Activator implements PluginActivator {
 
+	private RefreshViewFunctionManagerListener refreshFMListener = new RefreshViewFunctionManagerListener();
 	private DataSourceFactory dsf;
 
 	public void start() throws Exception {
-		QueryManager.registerQuery(new Geomark());
+		QueryManager.registerQuery(Geomark.class);
+
+		OrbisgisCoreServices.installServices();
 
 		// Initialize workspace
 		initializeWorkspace();
@@ -153,14 +157,10 @@ public class Activator implements PluginActivator {
 
 		});
 
-		DocumentCatalogManager dcm = (DocumentCatalogManager) Services
-				.getService("org.orbisgis.DocumentCatalogManager");
-		if (dcm.isEmpty()) {
-			MapDocument mapDocument = new MapDocument();
-			mapDocument.setName("Map1");
-			dcm.addDocument(mapDocument);
-			dcm.openDocument(mapDocument);
-		}
+		// Listen FunctionManager and QueryManager changes to refresh
+		// geocognition view
+		FunctionManager.addFunctionManagerListener(refreshFMListener);
+		QueryManager.addQueryManagerListener(refreshFMListener);
 	}
 
 	private void initializeWorkspace() {
@@ -173,14 +173,6 @@ public class Activator implements PluginActivator {
 		if (!sourcesDir.exists()) {
 			sourcesDir.mkdirs();
 		}
-
-		DefaultOGWorkspace defaultOGWorkspace = new DefaultOGWorkspace();
-		Services
-				.registerService(
-						"org.orbisgis.OGWorkspace",
-						OGWorkspace.class,
-						"Gives access to directories inside the workspace. You can use the temporal folder in the workspace through this service. It lets the access to the results folder",
-						defaultOGWorkspace);
 
 		OGWorkspace ews = (OGWorkspace) Services
 				.getService("org.orbisgis.OGWorkspace");
@@ -207,46 +199,13 @@ public class Activator implements PluginActivator {
 		UIFactory.setDefaultIcon(Activator.class
 				.getResource("/org/orbisgis/images/mini_orbisgis.png"));
 
-		// Load symbol collection and install symbol service
-		File symbolCollectionFile = ews
-				.getFile("org.orbisgis.symbol-collection.xml");
-		DefaultSymbolCollection col = new DefaultSymbolCollection(
-				symbolCollectionFile);
-		if (symbolCollectionFile.exists()) {
-			try {
-				col.loadCollection();
-			} catch (JAXBException e) {
-				Services.getErrorManager().error(
-						"Cannot load symbol collection", e);
-			} catch (IOException e) {
-				Services.getErrorManager().error(
-						"Cannot load symbol collection", e);
-			} catch (IncompatibleVersionException e) {
-				Services.getErrorManager().error(
-						"Cannot load symbol collection", e);
-			}
-		}
-		Services.registerService("org.orbisgis.SymbolManager",
-				SymbolManager.class, "Provides methods to create symbols and "
-						+ "access the symbol collection",
-				new DefaultSymbolManager(col));
-
 		// Load windows status
 		EPWindowHelper.loadStatus();
 	}
 
 	public void stop() {
-		SymbolManager sm = (SymbolManager) Services
-				.getService("org.orbisgis.SymbolManager");
-		try {
-			sm.saveXML();
-		} catch (JAXBException e1) {
-			Services.getErrorManager().error("Cannot save symbol collection",
-					e1);
-		} catch (IOException e1) {
-			Services.getErrorManager().error("Cannot save symbol collection",
-					e1);
-		}
+		FunctionManager.removeFunctionManagerListener(refreshFMListener);
+		QueryManager.removeQueryManagerListener(refreshFMListener);
 
 		EPWindowHelper.saveStatus();
 		try {
@@ -307,4 +266,34 @@ public class Activator implements PluginActivator {
 
 		return ret;
 	}
+
+	private final class RefreshViewFunctionManagerListener implements
+			FunctionManagerListener, QueryManagerListener {
+		public void functionRemoved(String functionName) {
+			refreshGeocognition();
+		}
+
+		private void refreshGeocognition() {
+			ViewManager vm = Services.getService(ViewManager.class);
+			if (vm != null) {
+				Component view = vm.getView("org.orbisgis.views.Geocognition");
+				if (view != null) {
+					view.repaint();
+				}
+			}
+		}
+
+		public void functionAdded(String functionName) {
+			refreshGeocognition();
+		}
+
+		public void queryAdded(String functionName) {
+			refreshGeocognition();
+		}
+
+		public void queryRemoved(String functionName) {
+			refreshGeocognition();
+		}
+	}
+
 }

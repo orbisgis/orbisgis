@@ -45,13 +45,13 @@ import org.orbisgis.Services;
 import org.orbisgis.editor.IEditor;
 import org.orbisgis.editor.action.IEditorAction;
 import org.orbisgis.layerModel.ILayer;
-import org.orbisgis.views.documentCatalog.documents.MapDocument;
+import org.orbisgis.layerModel.MapContext;
 
 public class DeleteSelection implements IEditorAction {
 
 	public void actionPerformed(IEditor editor) {
-		MapDocument map = (MapDocument) editor.getDocument();
-		ILayer activeLayer = map.getMapContext().getActiveLayer();
+		MapContext map = (MapContext) editor.getElement().getObject();
+		ILayer activeLayer = map.getActiveLayer();
 		int[] sel = activeLayer.getSelection().clone();
 		Arrays.sort(sel);
 		SpatialDataSourceDecorator dataSource = activeLayer.getDataSource();
@@ -68,14 +68,14 @@ public class DeleteSelection implements IEditorAction {
 	}
 
 	public boolean isEnabled(IEditor editor) {
-		MapDocument map = (MapDocument) editor.getDocument();
-		ILayer activeLayer = map.getMapContext().getActiveLayer();
+		MapContext map = (MapContext) editor.getElement().getObject();
+		ILayer activeLayer = map.getActiveLayer();
 		return (activeLayer != null) && activeLayer.getSelection().length > 0;
 	}
 
 	public boolean isVisible(IEditor editor) {
-		MapDocument map = (MapDocument) editor.getDocument();
-		return map.getMapContext().getActiveLayer() != null;
+		MapContext map = (MapContext) editor.getElement().getObject();
+		return map.getActiveLayer() != null;
 	}
 
 }

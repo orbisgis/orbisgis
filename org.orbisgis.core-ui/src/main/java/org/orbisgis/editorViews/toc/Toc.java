@@ -66,7 +66,6 @@ import org.orbisgis.action.MenuTree;
 import org.orbisgis.editorViews.toc.action.EPTocLayerActionHelper;
 import org.orbisgis.editorViews.toc.action.ILayerAction;
 import org.orbisgis.editorViews.toc.action.IMultipleLayerAction;
-import org.orbisgis.layerModel.DefaultMapContext;
 import org.orbisgis.layerModel.ILayer;
 import org.orbisgis.layerModel.LayerCollectionEvent;
 import org.orbisgis.layerModel.LayerException;
@@ -95,7 +94,7 @@ public class Toc extends ResourceTree {
 
 	private MyMapContextListener myMapContextListener;
 
-	private MapContext mapContext = new DefaultMapContext();
+	private MapContext mapContext = null;
 
 	public Toc() {
 
@@ -194,7 +193,7 @@ public class Toc extends ResourceTree {
 		ILayer dropNode;
 
 		if (node instanceof TocTreeModel.LegendNode) {
-			dropNode = ((TocTreeModel.LegendNode)node).getLayer();
+			dropNode = ((TocTreeModel.LegendNode) node).getLayer();
 		} else {
 			dropNode = (ILayer) node;
 		}
@@ -287,27 +286,31 @@ public class Toc extends ResourceTree {
 			}
 
 			public boolean isVisible() {
-				ILayer[] selectedLayers = mapContext.getSelectedLayers();
-				if (action instanceof ILayerAction) {
-					ILayerAction tocAction = (ILayerAction) action;
-					boolean acceptsAllResources = true;
-					if (tocAction.acceptsSelectionCount(selectedLayers.length)) {
-						for (ILayer layer : selectedLayers) {
-							if (!tocAction.accepts(layer)) {
-								acceptsAllResources = false;
-								break;
+				if (mapContext != null) {
+					ILayer[] selectedLayers = mapContext.getSelectedLayers();
+					if (action instanceof ILayerAction) {
+						ILayerAction tocAction = (ILayerAction) action;
+						boolean acceptsAllResources = true;
+						if (tocAction
+								.acceptsSelectionCount(selectedLayers.length)) {
+							for (ILayer layer : selectedLayers) {
+								if (!tocAction.accepts(layer)) {
+									acceptsAllResources = false;
+									break;
+								}
 							}
+						} else {
+							acceptsAllResources = false;
 						}
+
+						return acceptsAllResources;
 					} else {
-						acceptsAllResources = false;
+						IMultipleLayerAction layerAction = (IMultipleLayerAction) action;
+						return layerAction.acceptsAll(selectedLayers);
 					}
-
-					return acceptsAllResources;
 				} else {
-					IMultipleLayerAction layerAction = (IMultipleLayerAction) action;
-					return layerAction.acceptsAll(selectedLayers);
+					return false;
 				}
-
 			}
 
 			public boolean isEnabled() {
@@ -354,6 +357,9 @@ public class Toc extends ResourceTree {
 		}
 
 		public void layerRemoved(final LayerCollectionEvent e) {
+			for (final ILayer layer : e.getAffected()) {
+				removeLayerListenerRecursively(layer, ll);
+			}
 			treeModel.refresh();
 		}
 
@@ -519,7 +525,7 @@ public class Toc extends ResourceTree {
 			treeModel = new TocTreeModel(dataManager
 					.createLayerCollection("root"), getTree());
 			this.setModel(treeModel);
-			this.mapContext = new DefaultMapContext();
+			this.mapContext = null;
 
 			// Patch to remove any reference to the previous model
 			myTreeUI = new MyTreeUI();
@@ -529,6 +535,10 @@ public class Toc extends ResourceTree {
 	}
 
 	boolean isActive(ILayer layer) {
-		return layer == mapContext.getActiveLayer();
+		if (mapContext != null) {
+			return layer == mapContext.getActiveLayer();
+		} else {
+			return false;
+		}
 	}
 }

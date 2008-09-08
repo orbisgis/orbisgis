@@ -79,7 +79,6 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionListener;
 import java.awt.font.TextLayout;
 import java.awt.geom.AffineTransform;
-import java.awt.geom.PathIterator;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
@@ -108,12 +107,17 @@ import org.orbisgis.layerModel.MapContextListener;
 import org.orbisgis.layerModel.SelectionEvent;
 import org.orbisgis.map.MapTransform;
 import org.orbisgis.map.TransformListener;
-import org.orbisgis.renderer.liteShape.LiteShape;
+import org.orbisgis.renderer.RenderPermission;
+import org.orbisgis.renderer.symbol.Symbol;
+import org.orbisgis.renderer.symbol.SymbolFactory;
 
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
-import com.vividsolutions.jts.geom.MultiPoint;
+import com.vividsolutions.jts.geom.LineString;
+import com.vividsolutions.jts.geom.MultiLineString;
+import com.vividsolutions.jts.geom.MultiPolygon;
+import com.vividsolutions.jts.geom.Polygon;
 
 /**
  * Adapter from the MapControl Behaviours to Automaton's interface. It's also
@@ -166,7 +170,7 @@ public class ToolManager extends MouseAdapter implements MouseMotionListener {
 
 	private static final Color HANDLER_COLOR = Color.BLUE;
 
-	private ArrayList<Geometry> geomToDraw = new ArrayList<Geometry>();
+	private ArrayList<GeometryAndSymbol> geomToDraw = new ArrayList<GeometryAndSymbol>();
 
 	private ArrayList<String> textToDraw = new ArrayList<String>();
 
@@ -399,20 +403,43 @@ public class ToolManager extends MouseAdapter implements MouseMotionListener {
 		}
 		Graphics2D g2 = (Graphics2D) g;
 		for (int i = 0; i < geomToDraw.size(); i++) {
-			Geometry geometry = geomToDraw.get(i);
-			LiteShape ls = new LiteShape(geometry, mapTransform
-					.getAffineTransform(), false);
-			if ((geometry instanceof com.vividsolutions.jts.geom.Point)
-					|| (geometry instanceof MultiPoint)) {
-				PathIterator pi = ls.getPathIterator(null);
-				float[] coords = new float[6];
-				while (!pi.isDone()) {
-					pi.currentSegment(coords);
-					paintCircle(g2, (int) coords[0], (int) coords[1]);
-					pi.next();
+			try {
+				Geometry geometry = geomToDraw.get(i).getGeometry();
+				Symbol symbol = geomToDraw.get(i).getSymbol();
+				if (symbol == null) {
+					if ((geometry instanceof com.vividsolutions.jts.geom.Point)
+							|| (geometry instanceof com.vividsolutions.jts.geom.MultiPoint)) {
+						symbol = SymbolFactory.createPointCircleSymbol(
+								Color.black, Color.red, 10);
+					}
+					if ((geometry instanceof LineString)
+							|| (geometry instanceof MultiLineString)) {
+						symbol = SymbolFactory.createLineSymbol(Color.black, 2);
+					}
+					if ((geometry instanceof Polygon)
+							|| (geometry instanceof MultiPolygon)) {
+						symbol = SymbolFactory.createPolygonSymbol(Color.black);
+					}
 				}
-			} else {
-				g2.draw(ls);
+
+				BufferedImage bi = new BufferedImage(mapTransform.getWidth(),
+						mapTransform.getHeight(), BufferedImage.TYPE_INT_ARGB);
+				Graphics2D graphics = bi.createGraphics();
+
+				symbol.draw(graphics, geometry, mapTransform
+						.getAffineTransform(), new RenderPermission() {
+
+					@Override
+					public boolean canDraw(Envelope env) {
+						return true;
+					}
+
+				});
+
+				g2.drawImage(bi, 0, 0, null);
+			} catch (DriverException e) {
+				Services.getErrorManager().error(
+						"The legend of the map cannot be drawn correctly", e);
 			}
 		}
 		if (adjustedPoint != null) {
@@ -439,14 +466,6 @@ public class ToolManager extends MouseAdapter implements MouseMotionListener {
 			g2.setFont(f);
 		}
 
-	}
-
-	private void paintCircle(Graphics2D g, int x, int y) {
-		int size = 4;
-		x = x - size / 2;
-		y = y - size / 2;
-		g.setPaint(Color.black);
-		g.fillRect(x, y, size, size);
 	}
 
 	private void drawTextWithWhiteBackGround(Graphics2D g2, String text,
@@ -745,8 +764,12 @@ public class ToolManager extends MouseAdapter implements MouseMotionListener {
 		return currentTool;
 	}
 
+	public void addGeomToDraw(Geometry geom, Symbol symbol) {
+		this.geomToDraw.add(new GeometryAndSymbol(geom, symbol));
+	}
+
 	public void addGeomToDraw(Geometry geom) {
-		this.geomToDraw.add(geom);
+		this.geomToDraw.add(new GeometryAndSymbol(geom, null));
 	}
 
 	public void addTextToDraw(String text) {
@@ -821,6 +844,24 @@ public class ToolManager extends MouseAdapter implements MouseMotionListener {
 
 	public MapTransform getMapTransform() {
 		return mapTransform;
+	}
+
+	private class GeometryAndSymbol {
+		private Geometry geometry;
+		private Symbol symbol;
+
+		public GeometryAndSymbol(Geometry g, Symbol s) {
+			geometry = g;
+			symbol = s;
+		}
+
+		public Geometry getGeometry() {
+			return geometry;
+		}
+
+		public Symbol getSymbol() {
+			return symbol;
+		}
 	}
 
 }

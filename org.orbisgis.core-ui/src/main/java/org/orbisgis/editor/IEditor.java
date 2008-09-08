@@ -36,48 +36,44 @@
  */
 package org.orbisgis.editor;
 
+import org.orbisgis.geocognition.GeocognitionElement;
 import org.orbisgis.view.IView;
-import org.orbisgis.views.documentCatalog.IDocument;
 
 public interface IEditor extends IView {
 
 	/**
-	 * Sets the document to edit. This method is called just once in the
+	 * Sets the element to edit. This method is called just once in the
 	 * lifecycle of an editor
-	 *
-	 * @param doc
+	 * 
+	 * @param element
+	 *            instance to be edited. The class of the object inside the
+	 *            element corresponds to the typeId accepted in the
+	 *            acceptDocument method
 	 */
-	void setDocument(IDocument doc);
+	void setElement(GeocognitionElement element);
 
 	/**
-	 * Invoked when the editor is going to be closed. This means also the
-	 * document is about to be closed
-	 *
-	 * @return True if the editor can be closed. False otherwise
-	 */
-	boolean closingEditor();
-
-	/**
-	 * Returns true if this editor can edit the specified document
-	 *
-	 * @param doc
+	 * Returns true if this editor can edit a geocognition element of the
+	 * specified type
+	 * 
+	 * @param typeId
 	 * @return
 	 */
-	boolean acceptDocument(IDocument doc);
+	boolean acceptElement(String typeId);
 
 	/**
 	 * Gets the title of the editor. Typically related to the name of the
 	 * document
-	 *
+	 * 
 	 * @return
 	 */
 	String getTitle();
 
 	/**
-	 * Gets the document of this editor
-	 *
+	 * Gets the element being edited by this editor
+	 * 
 	 * @return
 	 */
-	IDocument getDocument();
+	GeocognitionElement getElement();
 
 }

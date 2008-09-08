@@ -116,7 +116,6 @@ public class ColorPicker extends javax.swing.JPanel implements UIPanel {
 	}
 
 	public String initialize() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 

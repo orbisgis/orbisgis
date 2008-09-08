@@ -68,7 +68,7 @@ public class PnlLabelLegend extends JPanel implements ILegendPanelUI {
 
 	public PnlLabelLegend(LegendContext legendContext) {
 		legend = LegendFactory.createLabelLegend();
-		legend.setName(getLegendTypeName());
+		legend.setName(legend.getLegendTypeName());
 		this.legendContext = legendContext;
 		init();
 	}
@@ -113,10 +113,6 @@ public class PnlLabelLegend extends JPanel implements ILegendPanelUI {
 
 	public Legend getLegend() {
 		return legend;
-	}
-
-	public String getLegendTypeName() {
-		return LabelLegend.NAME;
 	}
 
 	public ILegendPanelUI newInstance(LegendContext legendContext) {

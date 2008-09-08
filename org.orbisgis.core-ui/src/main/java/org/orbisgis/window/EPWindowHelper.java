@@ -53,10 +53,10 @@ import org.orbisgis.PersistenceException;
 import org.orbisgis.Services;
 import org.orbisgis.pluginManager.ExtensionPointManager;
 import org.orbisgis.pluginManager.ItemAttributes;
-import org.orbisgis.pluginManager.workspace.Workspace;
 import org.orbisgis.window.persistence.Property;
 import org.orbisgis.window.persistence.Window;
 import org.orbisgis.window.persistence.Windows;
+import org.orbisgis.workspace.Workspace;
 
 public class EPWindowHelper {
 

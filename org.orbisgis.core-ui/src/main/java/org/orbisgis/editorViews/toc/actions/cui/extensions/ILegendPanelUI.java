@@ -95,13 +95,6 @@ public interface ILegendPanelUI {
 	public void setLegendContext(LegendContext lc);
 
 	/**
-	 * Gets the name for this legend type
-	 *
-	 * @return
-	 */
-	public String getLegendTypeName();
-
-	/**
 	 * Returns true if this legend can be applied to the specified geometry
 	 * type.
 	 *

@@ -39,6 +39,7 @@ package org.orbisgis.views.outputView;
 import java.awt.Component;
 
 import org.orbisgis.Services;
+import org.orbisgis.outputManager.OutputManager;
 import org.orbisgis.view.IView;
 
 public class OutputView implements IView {

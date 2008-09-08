@@ -47,7 +47,6 @@ import javax.xml.bind.JAXBException;
 
 import org.orbisgis.PersistenceException;
 import org.orbisgis.Services;
-import org.orbisgis.pluginManager.workspace.Workspace;
 import org.orbisgis.resource.IResource;
 import org.orbisgis.resource.IResourceType;
 import org.orbisgis.resource.ResourceFactory;
@@ -55,6 +54,7 @@ import org.orbisgis.resource.ResourceTypeException;
 import org.orbisgis.view.IView;
 import org.orbisgis.views.geocatalog.persistence.Resource;
 import org.orbisgis.window.EPWindowHelper;
+import org.orbisgis.workspace.Workspace;
 
 public class CatalogView implements IView {
 

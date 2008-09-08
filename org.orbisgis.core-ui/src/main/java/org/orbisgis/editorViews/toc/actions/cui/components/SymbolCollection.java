@@ -42,22 +42,25 @@
 
 package org.orbisgis.editorViews.toc.actions.cui.components;
 
+import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
-import java.io.FileNotFoundException;
+import java.awt.FlowLayout;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.net.URL;
 import java.util.ArrayList;
 
-import javax.xml.bind.JAXBException;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 
 import org.orbisgis.Services;
-import org.orbisgis.SymbolManager;
 import org.orbisgis.editorViews.toc.actions.cui.LegendContext;
-import org.orbisgis.editorViews.toc.actions.cui.SymbolBuilder;
-import org.orbisgis.editorViews.toc.actions.cui.SymbolFilter;
-import org.orbisgis.images.IconLoader;
+import org.orbisgis.geocognition.Geocognition;
+import org.orbisgis.geocognition.GeocognitionElement;
+import org.orbisgis.geocognition.GeocognitionFilter;
+import org.orbisgis.renderer.symbol.EditableSymbol;
 import org.orbisgis.renderer.symbol.Symbol;
-import org.sif.UIFactory;
 import org.sif.UIPanel;
 
 /**
@@ -66,22 +69,37 @@ import org.sif.UIPanel;
  */
 public class SymbolCollection extends javax.swing.JPanel implements UIPanel {
 	private LegendContext legendContext;
+	private JPanel pnlSymbols;
 	private ArrayList<SelectableCanvas> selection = new ArrayList<SelectableCanvas>();
 
-	/**
-	 * @throws JAXBException
-	 * @throws FileNotFoundException
-	 */
 	public SymbolCollection(LegendContext legendContext) {
 		this.legendContext = legendContext;
 		initComponents();
-		refreshInterface();
 
-		// Add all the symbols as components
-		SymbolManager sm = (SymbolManager) Services
-				.getService("org.orbisgis.SymbolManager");
-		for (int i = 0; i < sm.getSymbolCount(); i++) {
-			addSymbolToPanel(sm.getSymbol(i));
+		Geocognition geocognition = Services.getService(Geocognition.class);
+		GeocognitionElement[] symbols = geocognition
+				.getElements(new GeocognitionFilter() {
+
+					@Override
+					public boolean accept(GeocognitionElement element) {
+						return element.getTypeId().equals(
+								"org.orbisgis.geocognition.Symbol");
+					}
+
+				});
+		for (int i = 0; i < symbols.length; i++) {
+			SelectableCanvas can = new SelectableCanvas();
+
+			can.setSymbol(((Symbol) symbols[i].getObject()).cloneSymbol());
+			can.setPreferredSize(new Dimension(126, 70));
+
+			can.addMouseListener(new java.awt.event.MouseAdapter() {
+				public void mouseClicked(java.awt.event.MouseEvent evt) {
+					jPanelPreviewSymbolsMouseClicked(evt);
+				}
+			});
+
+			pnlSymbols.add(can);
 		}
 	}
 
@@ -90,168 +108,26 @@ public class SymbolCollection extends javax.swing.JPanel implements UIPanel {
 	 */
 	private void initComponents() {
 
-		jPanelPreviewSymbols = new javax.swing.JPanel();
-		jToolBar1 = new javax.swing.JToolBar();
-		jButtonAdd = new javax.swing.JButton();
-		jButtonEdit = new javax.swing.JButton();
-		jButtonDel = new javax.swing.JButton();
+		pnlSymbols = new JPanel();
 
-		jPanelPreviewSymbols.setBorder(javax.swing.BorderFactory
-				.createEtchedBorder());
-		jPanelPreviewSymbols.setLayout(new java.awt.FlowLayout(
-				java.awt.FlowLayout.LEFT));
+		FlowLayout flowLayout = new FlowLayout(FlowLayout.LEFT);
+		pnlSymbols.setLayout(flowLayout);
 
-		jToolBar1.setFloatable(false);
-		jToolBar1.setRollover(true);
-
-		jButtonAdd.setIcon(IconLoader.getIcon("add.png"));
-		jButtonAdd.setToolTipText("Add");
-		jButtonAdd.addActionListener(new java.awt.event.ActionListener() {
-			public void actionPerformed(java.awt.event.ActionEvent evt) {
-				jButtonAddActionPerformed(evt);
-			}
-		});
-		jToolBar1.add(jButtonAdd);
-
-		jButtonEdit.setIcon(IconLoader.getIcon("pencil.png"));
-		jButtonEdit.setToolTipText("Edit");
-		jButtonEdit.addActionListener(new java.awt.event.ActionListener() {
-			public void actionPerformed(java.awt.event.ActionEvent evt) {
-				jButtonEditActionPerformed(evt);
-			}
-		});
-		jToolBar1.add(jButtonEdit);
-
-		jButtonDel.setIcon(IconLoader.getIcon("delete.png"));
-		jButtonDel.setToolTipText("Delete");
-		jButtonDel.addActionListener(new java.awt.event.ActionListener() {
-			public void actionPerformed(java.awt.event.ActionEvent evt) {
-				jButtonDelActionPerformed(evt);
-			}
-		});
-		jToolBar1.add(jButtonDel);
-
-		javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
+		BorderLayout layout = new BorderLayout();
 		this.setLayout(layout);
-		layout
-				.setHorizontalGroup(layout
-						.createParallelGroup(
-								javax.swing.GroupLayout.Alignment.LEADING)
-						.addGroup(
-								javax.swing.GroupLayout.Alignment.TRAILING,
-								layout
-										.createSequentialGroup()
-										.addContainerGap()
-										.addGroup(
-												layout
-														.createParallelGroup(
-																javax.swing.GroupLayout.Alignment.TRAILING)
-														.addComponent(
-																jPanelPreviewSymbols,
-																javax.swing.GroupLayout.Alignment.LEADING,
-																javax.swing.GroupLayout.DEFAULT_SIZE,
-																453,
-																Short.MAX_VALUE)
-														.addComponent(
-																jToolBar1,
-																javax.swing.GroupLayout.Alignment.LEADING,
-																javax.swing.GroupLayout.DEFAULT_SIZE,
-																453,
-																Short.MAX_VALUE))
-										.addContainerGap()));
-		layout
-				.setVerticalGroup(layout
-						.createParallelGroup(
-								javax.swing.GroupLayout.Alignment.LEADING)
-						.addGroup(
-								javax.swing.GroupLayout.Alignment.TRAILING,
-								layout
-										.createSequentialGroup()
-										.addContainerGap()
-										.addComponent(
-												jToolBar1,
-												javax.swing.GroupLayout.PREFERRED_SIZE,
-												25,
-												javax.swing.GroupLayout.PREFERRED_SIZE)
-										.addPreferredGap(
-												javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-										.addComponent(
-												jPanelPreviewSymbols,
-												javax.swing.GroupLayout.DEFAULT_SIZE,
-												367, Short.MAX_VALUE)
-										.addContainerGap()));
-	}
+		final JScrollPane s = new JScrollPane(pnlSymbols);
+		s.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+		s.addComponentListener(new ComponentAdapter() {
 
-	private void jButtonDelActionPerformed(java.awt.event.ActionEvent evt) {
-		Component[] comps = jPanelPreviewSymbols.getComponents();
-		for (int i = 0; i < comps.length; i++) {
-			if (comps[i] instanceof SelectableCanvas) {
-				SelectableCanvas can = (SelectableCanvas) comps[i];
-
-				if (selection.contains(can)) {
-					selection.remove(can);
-					jPanelPreviewSymbols.remove(can);
-				}
-			}
-		}
-
-		refreshInterface();
-
-	}
-
-	private void jButtonEditActionPerformed(java.awt.event.ActionEvent evt) {
-		Component[] comps = jPanelPreviewSymbols.getComponents();
-		for (int i = 0; i < comps.length; i++) {
-			if (comps[i] instanceof SelectableCanvas) {
-				SelectableCanvas can = (SelectableCanvas) comps[i];
-
-				if (selection.contains(can)) {
-					Symbol sym = can.getSymbol().cloneSymbol();
-					SymbolBuilder usl = new SymbolBuilder(false, legendContext,
-							getSymbolFilter());
-					usl.setSymbol(sym);
-
-					if (UIFactory.showDialog(usl)) {
-						can.setSymbol(usl.getSymbolComposite());
-					}
-
-				}
-
-			}
-		}
-		refreshInterface();
-	}
-
-	private SymbolFilter getSymbolFilter() {
-		return new SymbolFilter() {
-
-			public boolean accept(Symbol symbol) {
-				return true;
+			@Override
+			public void componentResized(ComponentEvent e) {
+				Dimension dimension = new Dimension(s.getWidth(), pnlSymbols
+						.getSize().height);
+				pnlSymbols.setPreferredSize(dimension);
 			}
 
-		};
-	}
-
-	private void jButtonAddActionPerformed(java.awt.event.ActionEvent evt) {
-		SymbolManager sm = (SymbolManager) Services
-				.getService("org.orbisgis.SymbolManager");
-
-		SymbolSelection type = new SymbolSelection(sm.getAvailableSymbols());
-		if (UIFactory.showDialog(type)) {
-			Symbol sym = (Symbol) type.getSelected();
-
-			SymbolBuilder se = new SymbolBuilder(false, legendContext,
-					getSymbolFilter());
-			se.setSymbol(sym);
-
-			if (UIFactory.showDialog(se)) {
-				Symbol newSymbol = se.getSymbolComposite();
-				addSymbolToPanel(newSymbol);
-				sm.addSymbol(newSymbol);
-				refreshInterface();
-			}
-
-		}
+		});
+		this.add(s);
 	}
 
 	private void jPanelPreviewSymbolsMouseClicked(java.awt.event.MouseEvent evt) {
@@ -281,42 +157,7 @@ public class SymbolCollection extends javax.swing.JPanel implements UIPanel {
 	}
 
 	private void refreshInterface() {
-		Component[] comps = jPanelPreviewSymbols.getComponents();
-		jButtonDel.setEnabled(false);
-		jButtonEdit.setEnabled(false);
-		for (int i = 0; i < comps.length; i++) {
-			if (comps[i] instanceof SelectableCanvas) {
-				SelectableCanvas can = (SelectableCanvas) comps[i];
-
-				if (can.isSelected()) {
-					jButtonDel.setEnabled(true);
-					if (!jButtonEdit.isEnabled()) {
-						jButtonEdit.setEnabled(true);
-					} else {
-						jButtonEdit.setEnabled(false);
-					}
-
-				}
-			}
-		}
-
-		jPanelPreviewSymbols.validate();
-		jPanelPreviewSymbols.repaint();
-	}
-
-	private void addSymbolToPanel(Symbol sym) {
-		SelectableCanvas can = new SelectableCanvas();
-
-		can.setSymbol(sym.cloneSymbol());
-		can.setPreferredSize(new Dimension(126, 70));
-
-		can.addMouseListener(new java.awt.event.MouseAdapter() {
-			public void mouseClicked(java.awt.event.MouseEvent evt) {
-				jPanelPreviewSymbolsMouseClicked(evt);
-			}
-		});
-
-		jPanelPreviewSymbols.add(can);
+		pnlSymbols.repaint();
 	}
 
 	public Symbol getSelectedSymbol() {
@@ -324,7 +165,7 @@ public class SymbolCollection extends javax.swing.JPanel implements UIPanel {
 	}
 
 	private SelectableCanvas getSelectedCanvas() {
-		Component[] comps = jPanelPreviewSymbols.getComponents();
+		Component[] comps = pnlSymbols.getComponents();
 		for (int i = 0; i < comps.length; i++) {
 			if (comps[i] instanceof SelectableCanvas) {
 				SelectableCanvas can = (SelectableCanvas) comps[i];
@@ -335,28 +176,6 @@ public class SymbolCollection extends javax.swing.JPanel implements UIPanel {
 			}
 		}
 		return null;
-	}
-
-	// Variables declaration - do not modify//GEN-BEGIN:variables
-	private javax.swing.JButton jButtonAdd;
-	private javax.swing.JButton jButtonDel;
-	private javax.swing.JButton jButtonEdit;
-	private javax.swing.JPanel jPanelPreviewSymbols;
-	private javax.swing.JToolBar jToolBar1;
-
-	// End of variables declaration//GEN-END:variables
-
-	public Symbol[] getSymbolCollection() {
-		ArrayList<Symbol> ret = new ArrayList<Symbol>();
-		Component[] comps = jPanelPreviewSymbols.getComponents();
-		for (int i = 0; i < comps.length; i++) {
-			if (comps[i] instanceof SelectableCanvas) {
-				SelectableCanvas can = (SelectableCanvas) comps[i];
-				ret.add(can.getSymbol());
-			}
-		}
-
-		return ret.toArray(new Symbol[0]);
 	}
 
 	public Component getComponent() {
@@ -401,8 +220,13 @@ public class SymbolCollection extends javax.swing.JPanel implements UIPanel {
 	}
 
 	private String acceptsGeometry(Symbol symbol) {
-		if (!symbol.acceptGeometryType(legendContext.getGeometryConstraint())) {
-			return "The symbol type is not applicable";
+		if (symbol instanceof EditableSymbol) {
+			if (!((EditableSymbol) symbol).acceptGeometryType(legendContext
+					.getGeometryConstraint())) {
+				return "The symbol type is not applicable";
+			} else {
+				return null;
+			}
 		} else if (symbol.acceptsChildren()) {
 			for (int i = 0; i < symbol.getSymbolCount(); i++) {
 				String ret = acceptsGeometry(symbol.getSymbol(i));

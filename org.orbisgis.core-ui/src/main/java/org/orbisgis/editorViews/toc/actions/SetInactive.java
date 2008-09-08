@@ -44,7 +44,6 @@ import org.orbisgis.Services;
 import org.orbisgis.editorViews.toc.action.ILayerAction;
 import org.orbisgis.layerModel.ILayer;
 import org.orbisgis.layerModel.MapContext;
-import org.orbisgis.views.documentCatalog.documents.MapDocument;
 import org.orbisgis.views.editor.EditorManager;
 
 public class SetInactive implements ILayerAction {
@@ -52,8 +51,8 @@ public class SetInactive implements ILayerAction {
 	public boolean accepts(ILayer layer) {
 		EditorManager em = (EditorManager) Services
 				.getService("org.orbisgis.EditorManager");
-		MapDocument md = (MapDocument) em.getActiveDocument();
-		return md.getMapContext().getActiveLayer() == layer;
+		MapContext mc = (MapContext) em.getActiveElement().getObject();
+		return mc.getActiveLayer() == layer;
 	}
 
 	public boolean acceptsSelectionCount(int selectionCount) {

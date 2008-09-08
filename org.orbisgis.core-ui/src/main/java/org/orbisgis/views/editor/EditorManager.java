@@ -37,7 +37,7 @@
 package org.orbisgis.views.editor;
 
 import org.orbisgis.editor.IEditor;
-import org.orbisgis.views.documentCatalog.IDocument;
+import org.orbisgis.geocognition.GeocognitionElement;
 
 public interface EditorManager {
 
@@ -46,7 +46,7 @@ public interface EditorManager {
 	 *
 	 * @return
 	 */
-	IDocument getActiveDocument();
+	GeocognitionElement getActiveElement();
 
 	/**
 	 * Gets the active editor
@@ -72,5 +72,23 @@ public interface EditorManager {
 	 *             If the specified editor is not open
 	 */
 	boolean closeEditor(IEditor editor) throws IllegalArgumentException;
+
+	/**
+	 * Return true if there is an editor able to edit the specified
+	 * GeocognitionElement
+	 * 
+	 * @param element
+	 * @return
+	 */
+	boolean hasEditor(GeocognitionElement element);
+
+	/**
+	 * Opens the specified element in the default editor
+	 * 
+	 * @param element
+	 * @throws UnsupportedOperationException
+	 *             If there is no valid editor for the specified element
+	 */
+	void open(GeocognitionElement element) throws UnsupportedOperationException;
 
 }

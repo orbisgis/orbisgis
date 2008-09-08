@@ -45,11 +45,8 @@ import org.gdms.data.types.Type;
 import org.gdms.driver.DriverException;
 import org.orbisgis.DataManager;
 import org.orbisgis.DefaultDataManager;
-import org.orbisgis.DefaultOGWorkspace;
-import org.orbisgis.DefaultSymbolManager;
-import org.orbisgis.OGWorkspace;
+import org.orbisgis.OrbisgisCoreServices;
 import org.orbisgis.Services;
-import org.orbisgis.SymbolManager;
 import org.orbisgis.editorViews.toc.actions.cui.ISymbolEditor;
 import org.orbisgis.editorViews.toc.actions.cui.LegendsPanel;
 import org.orbisgis.editorViews.toc.actions.cui.extensions.ClassicSymbolEditor;
@@ -64,8 +61,9 @@ import org.orbisgis.errorManager.ErrorManager;
 import org.orbisgis.layerModel.ILayer;
 import org.orbisgis.map.MapTransform;
 import org.orbisgis.pluginManager.workspace.DefaultWorkspace;
-import org.orbisgis.pluginManager.workspace.Workspace;
-import org.orbisgis.renderer.symbol.collection.DefaultSymbolCollection;
+import org.orbisgis.workspace.DefaultOGWorkspace;
+import org.orbisgis.workspace.OGWorkspace;
+import org.orbisgis.workspace.Workspace;
 import org.sif.UIFactory;
 
 import com.vividsolutions.jts.geom.Envelope;
@@ -78,10 +76,6 @@ public class CUITest {
 
 		Services.registerService("org.orbisgis.DataManager", DataManager.class,
 				"", new DefaultDataManager(dsf));
-		Services.registerService("org.orbisgis.SymbolManager",
-				SymbolManager.class, "",
-				new DefaultSymbolManager(new DefaultSymbolCollection(new File(
-						"collection.xml"))));
 		Services.registerService("org.orbisgis.Workspace", Workspace.class, "",
 				new DefaultWorkspace() {
 
@@ -115,9 +109,10 @@ public class CUITest {
 					}
 
 				});
+		OrbisgisCoreServices.installServices();
 
 		ILayer layer = getDataManager().createLayer(
-				new File("/home/fergonco/workspace"
+				new File("/home/gonzales/workspace"
 						+ "/datas2tests/shp/smallshape2D/points.shp"));
 		layer.open();
 		Type typ = layer.getDataSource().getMetadata().getFieldType(
@@ -129,11 +124,13 @@ public class CUITest {
 		MapTransform mt = new MapTransform();
 		mt.setExtent(new Envelope(0, 10000, 0, 10000));
 		mt.resizeImage(100, 100);
-		pan.init(mt, cons, layer.getVectorLegend(), new ILegendPanelUI[] {
-				new PnlUniqueSymbolLegend(true, pan),
-				new PnlUniqueValueLegend(pan), new PnlIntervalLegend(pan),
-				new PnlProportionalLegend(pan) }, new ISymbolEditor[] {
-				new ClassicSymbolEditor(), new ImageSymbolEditor() }, layer);
+		pan.init(mt, cons, layer.getVectorLegend(),
+				new ILegendPanelUI[] { new PnlUniqueSymbolLegend(true, pan),
+						new PnlUniqueValueLegend(pan),
+						new PnlIntervalLegend(pan),
+						new PnlProportionalLegend(pan) }, new ISymbolEditor[] {
+						new ClassicSymbolEditor(), new ImageSymbolEditor() },
+				layer);
 		if (UIFactory.showDialog(pan)) {
 			try {
 				layer.setLegend(pan.getLegends());

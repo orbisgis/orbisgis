@@ -39,20 +39,19 @@ package org.orbisgis.editors.map.actions;
 import org.orbisgis.editor.IEditor;
 import org.orbisgis.editor.action.IEditorAction;
 import org.orbisgis.editors.map.MapEditor;
-import org.orbisgis.views.documentCatalog.documents.MapDocument;
+import org.orbisgis.layerModel.MapContext;
 
 public class FullExtent implements IEditorAction {
 
 	public void actionPerformed(IEditor editor) {
-		MapEditor mapEditor = (MapEditor) editor;
-		MapDocument map = (MapDocument) editor.getDocument();
-		mapEditor.getMapTransform().setExtent(
-				map.getMapContext().getLayerModel().getEnvelope());
+		MapContext mc = (MapContext) editor.getElement().getObject();
+		((MapEditor) editor).getMapTransform().setExtent(
+				mc.getLayerModel().getEnvelope());
 	}
 
 	public boolean isEnabled(IEditor editor) {
-		MapDocument map = (MapDocument) editor.getDocument();
-		return map.getMapContext().getLayerModel().getLayerCount() > 0;
+		MapContext mc = (MapContext) editor.getElement().getObject();
+		return mc.getLayerModel().getLayerCount() > 0;
 	}
 
 	public boolean isVisible(IEditor editor) {

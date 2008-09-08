@@ -85,7 +85,7 @@ public abstract class PnlAbstractClassifiedLegend extends javax.swing.JPanel
 			ClassifiedLegend initialLegend) {
 		this.tableModel = tableModel;
 		this.legend = initialLegend;
-		legend.setName(getLegendTypeName());
+		legend.setName(legend.getLegendTypeName());
 		this.legendContext = legendContext;
 		initComponents();
 		initList();

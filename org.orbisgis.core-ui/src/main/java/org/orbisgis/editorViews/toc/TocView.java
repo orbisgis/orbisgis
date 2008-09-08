@@ -40,7 +40,7 @@ import java.awt.Component;
 
 import org.orbisgis.editor.IEditor;
 import org.orbisgis.editorView.IEditorView;
-import org.orbisgis.views.documentCatalog.documents.MapDocument;
+import org.orbisgis.layerModel.MapContext;
 
 public class TocView implements IEditorView {
 
@@ -67,8 +67,8 @@ public class TocView implements IEditorView {
 	}
 
 	public void setEditor(IEditor editor) {
-		MapDocument mapDocument = (MapDocument) editor.getDocument();
-		toc.setMapContext(mapDocument.getMapContext());
+		MapContext mc = (MapContext) editor.getElement().getObject();
+		toc.setMapContext(mc);
 	}
 
 	public void editorViewDisabled() {

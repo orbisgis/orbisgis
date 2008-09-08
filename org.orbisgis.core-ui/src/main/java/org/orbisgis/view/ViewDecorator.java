@@ -51,6 +51,7 @@ import net.infonode.docking.RootWindow;
 import net.infonode.docking.View;
 
 import org.orbisgis.PersistenceException;
+import org.orbisgis.Services;
 import org.orbisgis.editor.EditorDecorator;
 import org.orbisgis.editorView.IEditorView;
 import org.orbisgis.views.editor.DockingWindowUtil;
@@ -117,9 +118,13 @@ public class ViewDecorator {
 		}
 	}
 
-	public void loadStatus(EditorDecorator activeEditor)
-			throws PersistenceException {
-		view.loadStatus();
+	public void loadStatus(EditorDecorator activeEditor) {
+		try {
+			view.loadStatus();
+		} catch (PersistenceException e) {
+			Services.getErrorManager().error(
+					"Cannot recover previous status of view " + getTitle(), e);
+		}
 		component = view.getComponent();
 		dockingView = new View(title, getImageIcon(), component);
 		editorChanged(activeEditor);
@@ -184,7 +189,7 @@ public class ViewDecorator {
 	/**
 	 * Shows the view or a message depending on the editor's id passed as an
 	 * argument
-	 *
+	 * 
 	 * @param editorId
 	 */
 	public void editorChanged(EditorDecorator editor) {

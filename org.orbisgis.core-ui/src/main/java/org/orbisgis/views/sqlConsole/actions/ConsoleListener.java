@@ -42,7 +42,7 @@ public interface ConsoleListener {
 
 	/**
 	 * Executes the text in the console.
-	 *
+	 * 
 	 * @param text
 	 *            Content of the console
 	 */
@@ -51,17 +51,28 @@ public interface ConsoleListener {
 	/**
 	 * Opens a script and returns the contents, that will be placed in the
 	 * console
-	 *
+	 * 
 	 * @throws IOException
 	 */
 	String open() throws IOException;
 
 	/**
 	 * Saves the content of the console
-	 *
+	 * 
 	 * @param text
 	 * @throws IOException
 	 */
 	void save(String text) throws IOException;
 
+	/**
+	 * Invoked when the text of the console is changed
+	 */
+	void change();
+
+	/**
+	 * Return true if the buttons to execute, open, save, etc. have to be shown
+	 * 
+	 * @return
+	 */
+	boolean showControlButtons();
 }

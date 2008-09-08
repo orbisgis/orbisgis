@@ -65,13 +65,13 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
 import org.orbisgis.Services;
-import org.orbisgis.SymbolManager;
 import org.orbisgis.editorViews.toc.actions.cui.components.Canvas;
 import org.orbisgis.editorViews.toc.actions.cui.components.SymbolCollection;
 import org.orbisgis.editorViews.toc.actions.cui.components.SymbolSelection;
 import org.orbisgis.images.IconLoader;
 import org.orbisgis.renderer.symbol.Symbol;
 import org.orbisgis.renderer.symbol.SymbolFactory;
+import org.orbisgis.renderer.symbol.SymbolManager;
 import org.orbisgis.ui.sif.AskValue;
 import org.sif.UIFactory;
 import org.sif.UIPanel;
@@ -398,14 +398,6 @@ public class SymbolBuilder extends JPanel implements UIPanel,
 				lstSymbols.setSelectedIndex(0);
 			}
 			refresh();
-		}
-
-		SymbolManager sm = (SymbolManager) Services
-				.getService("org.orbisgis.SymbolManager");
-		sm.clear();
-		Symbol[] newSymbolCollection = coll.getSymbolCollection();
-		for (Symbol symbol : newSymbolCollection) {
-			sm.addSymbol(symbol);
 		}
 	}
 

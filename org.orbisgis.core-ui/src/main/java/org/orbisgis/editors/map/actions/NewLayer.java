@@ -43,7 +43,6 @@ import org.orbisgis.editors.map.newLayerWizard.EPLayerWizardHelper;
 import org.orbisgis.layerModel.ILayer;
 import org.orbisgis.layerModel.LayerException;
 import org.orbisgis.layerModel.MapContext;
-import org.orbisgis.views.documentCatalog.documents.MapDocument;
 
 public class NewLayer implements IEditorAction {
 
@@ -51,8 +50,7 @@ public class NewLayer implements IEditorAction {
 		EPLayerWizardHelper wh = new EPLayerWizardHelper();
 		ILayer[] layers = wh.openWizard();
 		if (layers != null) {
-			MapDocument mapDocument = (MapDocument) editor.getDocument();
-			MapContext mc = mapDocument.getMapContext();
+			MapContext mc = (MapContext) editor.getElement().getObject();
 			ILayer lc = mc.getLayerModel();
 			for (ILayer layer : layers) {
 				try {

@@ -39,8 +39,6 @@ package org.orbisgis.editors.map;
 import java.awt.Component;
 import java.util.HashMap;
 
-import javax.swing.JOptionPane;
-
 import org.orbisgis.Services;
 import org.orbisgis.action.EPBaseActionHelper;
 import org.orbisgis.action.IActionAdapter;
@@ -52,27 +50,24 @@ import org.orbisgis.editor.IEditor;
 import org.orbisgis.editor.IExtensionPointEditor;
 import org.orbisgis.editors.map.tool.Automaton;
 import org.orbisgis.editors.map.tool.TransitionException;
-import org.orbisgis.layerModel.ILayer;
+import org.orbisgis.geocognition.GeocognitionElement;
 import org.orbisgis.layerModel.MapContext;
 import org.orbisgis.map.MapTransform;
-import org.orbisgis.views.documentCatalog.IDocument;
-import org.orbisgis.views.documentCatalog.documents.MapDocument;
 import org.orbisgis.views.editor.EditorManager;
 
 public class MapEditor implements IExtensionPointEditor {
 
 	private MapControl map;
-	private MapDocument mapDocument;
+	private GeocognitionElement mapElement;
 	private static Automaton defaultTool;
 	private static String defaultMouseCursor;
 
-	public boolean acceptDocument(IDocument doc) {
-		return doc instanceof MapDocument;
+	public boolean acceptElement(String typeId) {
+		return typeId.equals("org.orbisgis.geocognition.MapContext");
 	}
 
-	public void setDocument(IDocument doc) {
-		MapDocument mapDocument = (MapDocument) doc;
-		MapContext mapContext = mapDocument.getMapContext();
+	public void setElement(GeocognitionElement element) {
+		MapContext mapContext = (MapContext) element.getObject();
 		try {
 			map = new MapControl(mapContext, getIndependentToolInstance(
 					defaultTool, defaultMouseCursor));
@@ -87,11 +82,11 @@ public class MapEditor implements IExtensionPointEditor {
 					.error("The default tool is not valid", e);
 		}
 
-		this.mapDocument = mapDocument;
+		this.mapElement = element;
 	}
 
 	public void delete() {
-
+		map.closing();
 	}
 
 	public Component getComponent() {
@@ -116,11 +111,11 @@ public class MapEditor implements IExtensionPointEditor {
 	}
 
 	public String getTitle() {
-		return mapDocument.getName();
+		return mapElement.getId();
 	}
 
-	public IDocument getDocument() {
-		return mapDocument;
+	public GeocognitionElement getElement() {
+		return mapElement;
 	}
 
 	public void installExtensionPoint(MenuTree menuTree,
@@ -181,7 +176,8 @@ public class MapEditor implements IExtensionPointEditor {
 				return false;
 			} else {
 				MapEditor mapEditor = (MapEditor) editor;
-				MapContext mapContext = mapEditor.mapDocument.getMapContext();
+				MapContext mapContext = (MapContext) mapEditor.mapElement
+						.getObject();
 				if (mapContext != null) {
 					return action.isVisible(mapContext, mapEditor.map
 							.getToolManager());
@@ -199,7 +195,8 @@ public class MapEditor implements IExtensionPointEditor {
 				return false;
 			} else {
 				MapEditor mapEditor = (MapEditor) editor;
-				MapContext mapContext = mapEditor.mapDocument.getMapContext();
+				MapContext mapContext = (MapContext) mapEditor.mapElement
+						.getObject();
 				if (mapContext != null) {
 					return action.isEnabled(mapContext, mapEditor.map
 							.getToolManager());
@@ -237,7 +234,8 @@ public class MapEditor implements IExtensionPointEditor {
 				return false;
 			} else {
 				MapEditor mapEditor = (MapEditor) editor;
-				MapContext mapContext = mapEditor.mapDocument.getMapContext();
+				MapContext mapContext = (MapContext) mapEditor.mapElement
+						.getObject();
 				if (mapContext != null) {
 					return mapEditor.map.getTool().getClass().equals(
 							action.getClass());
@@ -246,22 +244,6 @@ public class MapEditor implements IExtensionPointEditor {
 				}
 			}
 		}
-	}
-
-	public boolean closingEditor() {
-		ILayer[] layers = mapDocument.getMapContext().getLayerModel()
-				.getLayersRecursively();
-		for (ILayer layer : layers) {
-			if (layer.getDataSource().isModified()) {
-				int res = JOptionPane.showConfirmDialog(map,
-						"There are unsaved " + "editions, really close?",
-						"Close map", JOptionPane.YES_NO_OPTION);
-				return res == JOptionPane.YES_OPTION;
-			}
-		}
-		map.closing();
-
-		return true;
 	}
 
 	public boolean getShowInfo() {

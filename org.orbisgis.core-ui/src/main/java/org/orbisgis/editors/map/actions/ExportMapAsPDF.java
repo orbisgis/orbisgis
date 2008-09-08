@@ -43,6 +43,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 
 import javax.swing.JOptionPane;
+
 import org.orbisgis.Services;
 import org.orbisgis.editor.IEditor;
 import org.orbisgis.editor.action.IEditorAction;
@@ -53,7 +54,6 @@ import org.orbisgis.pluginManager.ui.SaveFilePanel;
 import org.orbisgis.progress.NullProgressMonitor;
 import org.orbisgis.renderer.Renderer;
 import org.orbisgis.renderer.legend.Legend;
-import org.orbisgis.views.documentCatalog.documents.MapDocument;
 import org.sif.UIFactory;
 
 import com.lowagie.text.Document;
@@ -65,17 +65,16 @@ import com.lowagie.text.pdf.PdfWriter;
 import com.vividsolutions.jts.geom.Envelope;
 
 /**
- *
+ * 
  * Export a map in a pdf. Currently only vector data are taking into into
  * account.
- *
+ * 
  */
 public class ExportMapAsPDF implements IEditorAction {
 
 	public void actionPerformed(IEditor editor) {
 		MapEditor mapEditor = (MapEditor) editor;
-		MapDocument mapDocument = (MapDocument) editor.getDocument();
-		MapContext mc = mapDocument.getMapContext();
+		MapContext mc = (MapContext) editor.getElement().getObject();
 
 		ILayer root = mc.getLayerModel();
 		Envelope envelope = mapEditor.getMapTransform().getAdjustedExtent();
@@ -86,8 +85,8 @@ public class ExportMapAsPDF implements IEditorAction {
 	}
 
 	public boolean isEnabled(IEditor editor) {
-		MapDocument map = (MapDocument) editor.getDocument();
-		return map.getMapContext().getLayerModel().getLayerCount() >= 1;
+		MapContext mc = (MapContext) editor.getElement().getObject();
+		return mc.getLayerModel().getLayerCount() >= 1;
 	}
 
 	public boolean isVisible(IEditor editor) {
@@ -96,7 +95,7 @@ public class ExportMapAsPDF implements IEditorAction {
 
 	/**
 	 * TODO take into account raster with nice resolution
-	 *
+	 * 
 	 * @param layerPixelEnvelope
 	 * @param envelope
 	 * @param layer
@@ -171,13 +170,13 @@ public class ExportMapAsPDF implements IEditorAction {
 								/*
 								 * RasterLegend[] rastersLegend =
 								 * layers[i].getRasterLegend();
-								 *
+								 * 
 								 * for (int j = 0; j < rastersLegend.length;
 								 * j++) {
-								 *
+								 * 
 								 * final LutDisplay lutDisplay = new
 								 * LutDisplay(rastersLegend[j].getColorModel());
-								 *
+								 * 
 								 * vectorg2d.drawImage(lutDisplay.getImagePlus().getImage(),0,0,
 								 * null); }
 								 */

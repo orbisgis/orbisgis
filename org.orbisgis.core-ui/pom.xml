@@ -36,16 +36,6 @@
 			<version>1.5.0</version>
 		</dependency>
 		<dependency>
-			<groupId>org.beanshell</groupId>
-			<artifactId>bsh</artifactId>
-			<version>2.0b</version>
-		</dependency>
-		<dependency>
-			<groupId>ostermiller</groupId>
-			<artifactId>syntax</artifactId>
-			<version>1.0</version>
-		</dependency>
-		<dependency>
 			<groupId>com.lowagie</groupId>
 			<artifactId>itext</artifactId>
 			<version>2.1.2</version>

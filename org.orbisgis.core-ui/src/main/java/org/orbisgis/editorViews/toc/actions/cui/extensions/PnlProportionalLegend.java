@@ -101,7 +101,7 @@ public class PnlProportionalLegend extends JPanel implements ILegendPanelUI {
 
 	public PnlProportionalLegend(LegendContext legendContext) {
 		legend = LegendFactory.createProportionalLegend();
-		legend.setName(getLegendTypeName());
+		legend.setName(legend.getLegendTypeName());
 		this.legendContext = legendContext;
 		init();
 	}
@@ -227,8 +227,9 @@ public class PnlProportionalLegend extends JPanel implements ILegendPanelUI {
 					Graphics2D dummyGraphics = dummy.createGraphics();
 					int[] previewSize = legend.getImageSize(dummyGraphics,
 							pixelHeight);
-					previewImage = new BufferedImage(previewSize[0],
-							previewSize[1], BufferedImage.TYPE_INT_ARGB);
+					previewImage = new BufferedImage(Math.min(previewSize[0],
+							500), Math.min(previewSize[1], 500),
+							BufferedImage.TYPE_INT_ARGB);
 					legend
 							.drawImage(previewImage.createGraphics(),
 									pixelHeight);
@@ -275,10 +276,10 @@ public class PnlProportionalLegend extends JPanel implements ILegendPanelUI {
 		editor.setValidation(new SymbolEditionValidation() {
 
 			public String isValid(Symbol symbol) {
-				if (symbol.acceptsChildren() && (symbol.getSymbolCount() != 1)){
+				if (symbol.acceptsChildren() && (symbol.getSymbolCount() != 1)) {
 					return "One and only one symbol is accepted";
 				}
-				
+
 				return null;
 			}
 
@@ -308,10 +309,6 @@ public class PnlProportionalLegend extends JPanel implements ILegendPanelUI {
 
 	public Legend getLegend() {
 		return legend;
-	}
-
-	public String getLegendTypeName() {
-		return ProportionalLegend.NAME;
 	}
 
 	public ILegendPanelUI newInstance(LegendContext legendContext) {

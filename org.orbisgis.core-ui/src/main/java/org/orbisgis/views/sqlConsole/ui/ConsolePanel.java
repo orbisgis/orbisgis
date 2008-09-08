@@ -42,6 +42,7 @@ import java.awt.FlowLayout;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.text.BadLocationException;
+import javax.swing.text.JTextComponent;
 
 import org.orbisgis.views.sqlConsole.actions.ActionsListener;
 import org.orbisgis.views.sqlConsole.actions.ConsoleListener;
@@ -58,14 +59,16 @@ public class ConsolePanel extends JPanel {
 	private ScriptPanel scriptPanel;
 
 	/**
-	 * This is the default constructor
+	 * Creates a console for sql or java.
 	 */
 	public ConsolePanel(boolean sql, ConsoleListener listener) {
 		actionAndKeyListener = new ActionsListener(listener, this);
 
 		setLayout(new BorderLayout());
 		add(getCenterPanel(sql), BorderLayout.CENTER);
-		add(getNorthPanel(), BorderLayout.NORTH);
+		if (listener.showControlButtons()) {
+			add(getNorthPanel(), BorderLayout.NORTH);
+		}
 		setButtonsStatus();
 	}
 
@@ -173,5 +176,9 @@ public class ConsolePanel extends JPanel {
 
 	public void insertString(String string) throws BadLocationException {
 		scriptPanel.insertString(string);
+	}
+
+	public JTextComponent getTextComponent() {
+		return scriptPanel.getTextComponent();
 	}
 }

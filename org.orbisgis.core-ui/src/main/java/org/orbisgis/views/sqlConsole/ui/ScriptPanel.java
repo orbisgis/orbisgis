@@ -50,14 +50,14 @@ import java.io.IOException;
 import javax.swing.JScrollPane;
 import javax.swing.JTextPane;
 import javax.swing.text.BadLocationException;
+import javax.swing.text.JTextComponent;
 import javax.swing.text.StyledDocument;
 
 import org.orbisgis.Services;
 import org.orbisgis.editorViews.toc.TransferableLayer;
+import org.orbisgis.ui.text.UndoRedoInstaller;
 import org.orbisgis.views.geocatalog.TransferableResource;
 import org.orbisgis.views.sqlConsole.actions.ActionsListener;
-
-import com.Ostermiller.Syntax.HighlightedDocument;
 
 public class ScriptPanel extends JScrollPane implements DropTargetListener {
 
@@ -71,22 +71,22 @@ public class ScriptPanel extends JScrollPane implements DropTargetListener {
 	public ScriptPanel(final ActionsListener actionAndKeyListener, boolean sql) {
 		this.actionAndKeyListener = actionAndKeyListener;
 		setViewportView(getJTextPane(sql));
+		this.getVerticalScrollBar().setBlockIncrement(10);
+		this.getVerticalScrollBar().setUnitIncrement(5);
 	}
 
 	public JTextPane getJTextPane(boolean sql) {
 		if (jTextPane == null) {
 			jTextPane = new JTextPane();
 			if (sql) {
-				document = new SHDocument(jTextPane);
+				document = new SQLDocument(jTextPane);
 			} else {
-				HighlightedDocument highlightedDocument = new HighlightedDocument();
-				highlightedDocument
-						.setHighlightStyle(HighlightedDocument.JAVA_STYLE);
-				document = highlightedDocument;
+				document = new JavaDocument(jTextPane);
 			}
 			jTextPane.setDocument(document);
 			jTextPane.setDropTarget(new DropTarget(this, this));
 			jTextPane.addKeyListener(actionAndKeyListener);
+			UndoRedoInstaller.installUndoRedoSupport(jTextPane);
 		}
 
 		return jTextPane;
@@ -154,5 +154,9 @@ public class ScriptPanel extends JScrollPane implements DropTargetListener {
 
 	public void insertString(String string) throws BadLocationException {
 		document.insertString(document.getLength(), string, null);
+	}
+
+	public JTextComponent getTextComponent() {
+		return jTextPane;
 	}
 }

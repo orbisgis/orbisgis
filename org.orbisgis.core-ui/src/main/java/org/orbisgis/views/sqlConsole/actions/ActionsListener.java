@@ -55,8 +55,7 @@ public class ActionsListener implements ActionListener, KeyListener {
 
 	private ConsoleListener listener;
 
-	public ActionsListener(ConsoleListener listener,
-			ConsolePanel consolePanel) {
+	public ActionsListener(ConsoleListener listener, ConsolePanel consolePanel) {
 		this.consolePanel = consolePanel;
 		this.listener = listener;
 	}
@@ -127,6 +126,7 @@ public class ActionsListener implements ActionListener, KeyListener {
 
 	public void keyReleased(KeyEvent e) {
 		setButtonsStatus();
+		listener.change();
 	}
 
 	public void keyTyped(KeyEvent e) {

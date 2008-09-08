@@ -45,7 +45,7 @@ import org.orbisgis.editors.map.tool.DrawingException;
 import org.orbisgis.editors.map.tool.ToolManager;
 import org.orbisgis.editors.map.tool.TransitionException;
 import org.orbisgis.layerModel.MapContext;
-import org.orbisgis.views.outputView.OutputManager;
+import org.orbisgis.outputManager.OutputManager;
 
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.Polygon;

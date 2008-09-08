@@ -41,7 +41,7 @@ import java.awt.Component;
 import javax.swing.Icon;
 
 import org.orbisgis.PersistenceException;
-import org.orbisgis.views.documentCatalog.IDocument;
+import org.orbisgis.geocognition.GeocognitionElement;
 
 public class EditorDecorator implements IEditor {
 
@@ -55,8 +55,8 @@ public class EditorDecorator implements IEditor {
 		this.id = id;
 	}
 
-	public boolean acceptDocument(IDocument doc) {
-		return editor.acceptDocument(doc);
+	public boolean acceptElement(String typeId) {
+		return editor.acceptElement(typeId);
 	}
 
 	public void delete() {
@@ -79,8 +79,8 @@ public class EditorDecorator implements IEditor {
 		editor.saveStatus();
 	}
 
-	public void setDocument(IDocument doc) {
-		editor.setDocument(doc);
+	public void setElement(GeocognitionElement object) {
+		editor.setElement(object);
 	}
 
 	public String getTitle() {
@@ -91,8 +91,8 @@ public class EditorDecorator implements IEditor {
 		return icon;
 	}
 
-	public IDocument getDocument() {
-		return editor.getDocument();
+	public GeocognitionElement getElement() {
+		return editor.getElement();
 	}
 
 	public IEditor getEditor() {
@@ -101,10 +101,6 @@ public class EditorDecorator implements IEditor {
 
 	public String getId() {
 		return id;
-	}
-
-	public boolean closingEditor() {
-		return editor.closingEditor();
 	}
 
 }

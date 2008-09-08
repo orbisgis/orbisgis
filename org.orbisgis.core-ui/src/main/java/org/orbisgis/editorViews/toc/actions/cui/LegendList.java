@@ -235,7 +235,7 @@ public class LegendList extends JPanel {
 			ILegendPanelUI legendPanelUI = legends[i];
 			if (legendPanelUI.acceptsGeometryType(legendsPanel
 					.getGeometryType())) {
-				paneNames.add(legendPanelUI.getLegendTypeName());
+				paneNames.add(legendPanelUI.getLegend().getLegendTypeName());
 				ids.add(legendPanelUI);
 			}
 		}

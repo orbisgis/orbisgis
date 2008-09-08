@@ -52,7 +52,11 @@ public class ErrorMessage {
 	private boolean isError;
 
 	public ErrorMessage(String userMsg, Throwable t, boolean isError) {
-		this.userMsg = userMsg;
+		if (userMsg != null) {
+			this.userMsg = userMsg;
+		} else {
+			this.userMsg = "";
+		}
 		this.throwable = t;
 		this.date = System.currentTimeMillis();
 		this.isError = isError;

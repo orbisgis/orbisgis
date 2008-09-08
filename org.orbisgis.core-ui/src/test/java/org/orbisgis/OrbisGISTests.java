@@ -40,6 +40,9 @@ import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
+import org.orbisgis.views.geocognition.GeocognitionTest;
+import org.orbisgis.views.geocognition.sync.NodeTests;
+
 public class OrbisGISTests extends TestCase {
 
 	public static Test suite() {
@@ -48,6 +51,8 @@ public class OrbisGISTests extends TestCase {
 		// $JUnit-BEGIN$
 		suite.addTestSuite(CatalogTest.class);
 		suite.addTestSuite(ResourceTest.class);
+		suite.addTest(NodeTests.suite());
+		suite.addTestSuite(GeocognitionTest.class);
 		// $JUnit-END$
 		return suite;
 	}

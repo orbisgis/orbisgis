@@ -53,6 +53,7 @@ import javax.swing.text.StyleContext;
 
 import org.orbisgis.Services;
 import org.orbisgis.images.IconLoader;
+import org.orbisgis.outputManager.OutputManager;
 import org.orbisgis.view.ViewManager;
 
 public class OutputPanel extends JPanel implements OutputManager {

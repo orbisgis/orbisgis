@@ -44,8 +44,8 @@ package org.orbisgis.editorViews.toc.actions.cui.components;
 
 import java.util.ArrayList;
 
-import org.orbisgis.pluginManager.ui.ChoosePanel;
 import org.orbisgis.renderer.symbol.Symbol;
+import org.orbisgis.ui.sif.ChoosePanel;
 
 /**
  *

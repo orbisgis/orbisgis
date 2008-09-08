@@ -124,6 +124,15 @@ public class ConsoleView implements IView {
 				bm.backgroundOperation(new ExecuteScriptProcess(text));
 			}
 
+			@Override
+			public void change() {
+			}
+
+			@Override
+			public boolean showControlButtons() {
+				return true;
+			}
+
 		});
 	}
 

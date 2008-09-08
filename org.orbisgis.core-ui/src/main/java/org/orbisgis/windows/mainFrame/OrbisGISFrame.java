@@ -85,12 +85,12 @@ import org.orbisgis.editor.IExtensionPointEditor;
 import org.orbisgis.editor.action.IEditorAction;
 import org.orbisgis.editor.action.IEditorSelectableAction;
 import org.orbisgis.images.IconLoader;
-import org.orbisgis.pluginManager.workspace.Workspace;
 import org.orbisgis.view.EPViewHelper;
 import org.orbisgis.view.IEditorsView;
 import org.orbisgis.view.ViewDecorator;
 import org.orbisgis.view.ViewManager;
 import org.orbisgis.window.IWindow;
+import org.orbisgis.workspace.Workspace;
 
 public class OrbisGISFrame extends JFrame implements IWindow, ViewManager,
 		UIManager {
@@ -241,7 +241,12 @@ public class OrbisGISFrame extends JFrame implements IWindow, ViewManager,
 									+ " found.");
 				}
 			}
-			view.getView().initialize();
+			try {
+				view.getView().initialize();
+			} catch (Exception e) {
+				Services.getErrorManager().error(
+						"Error initializating view " + view.getTitle(), e);
+			}
 		}
 
 		this.editorsView = (IEditorsView) editor.getView();
@@ -434,8 +439,12 @@ public class OrbisGISFrame extends JFrame implements IWindow, ViewManager,
 			if (activeEditor == null) {
 				return false;
 			} else {
-				return ((IEditorSelectableAction) action).isSelected(activeEditor
-						.getEditor());
+				if (editorId.equals(editorsView.getActiveEditor().getId())) {
+					return ((IEditorSelectableAction) action)
+					.isSelected(activeEditor.getEditor());
+				} else {
+					return false;
+				}
 			}
 		}
 	}
@@ -540,7 +549,7 @@ public class OrbisGISFrame extends JFrame implements IWindow, ViewManager,
 	/**
 	 * Writes the id of the view and then writes the status. Reads the id,
 	 * obtains the data from the extension xml and reads the status
-	 *
+	 * 
 	 * @author Fernando Gonzalez Cortes
 	 */
 	private class MyViewSerializer implements ViewSerializer {

@@ -72,7 +72,7 @@ public class PnlUniqueSymbolLegend extends javax.swing.JPanel implements
 	public PnlUniqueSymbolLegend(boolean showCollection,
 			LegendContext legendContext) {
 		leg = LegendFactory.createUniqueSymbolLegend();
-		leg.setName(getLegendTypeName());
+		leg.setName(leg.getLegendTypeName());
 		this.legendContext = legendContext;
 		symbolEditor = new SymbolBuilder(showCollection, legendContext,
 				getSymbolFilter());
@@ -128,10 +128,6 @@ public class PnlUniqueSymbolLegend extends javax.swing.JPanel implements
 
 	public boolean acceptsGeometryType(int geometryType) {
 		return true;
-	}
-
-	public String getLegendTypeName() {
-		return UniqueSymbolLegend.NAME;
 	}
 
 	public ILegendPanelUI newInstance(LegendContext legendContext) {

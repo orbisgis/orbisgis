@@ -40,7 +40,7 @@ import java.io.IOException;
 
 import org.orbisgis.Services;
 import org.orbisgis.action.IAction;
-import org.orbisgis.pluginManager.workspace.Workspace;
+import org.orbisgis.workspace.Workspace;
 
 public class SaveWorkspace implements IAction {
 

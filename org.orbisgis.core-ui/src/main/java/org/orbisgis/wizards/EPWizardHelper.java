@@ -43,35 +43,50 @@ import org.orbisgis.action.IActionAdapter;
 import org.orbisgis.action.IActionFactory;
 import org.orbisgis.action.Menu;
 import org.orbisgis.action.MenuTree;
-import org.orbisgis.pluginManager.ui.ChoosePanel;
+import org.orbisgis.pluginManager.ExtensionPointManager;
+import org.orbisgis.pluginManager.ItemAttributes;
+import org.orbisgis.ui.sif.CategorizedChoosePanel;
 import org.sif.UIFactory;
 
 public abstract class EPWizardHelper<Wiz extends IWizard, Res extends Object> {
 
 	/**
 	 * Returns the new resources or null if no resource should be added
-	 *
+	 * 
 	 * @return
 	 */
 	public Res[] openWizard() {
-		ArrayList<WizardAndId<Wiz>> wizards = getWizards(null);
-		String[] names = new String[wizards.size()];
-		String[] ids = new String[wizards.size()];
-		for (int i = 0; i < names.length; i++) {
-			names[i] = wizards.get(i).getWizard().getName();
-			ids[i] = wizards.get(i).getId();
+		HashMap<String, String> categoriesNames = getCategories();
+		ExtensionPointManager<Wiz> epm = new ExtensionPointManager<Wiz>(
+				getExtensionPointId());
+		String query = "/extension/wizard";
+		ArrayList<ItemAttributes<Wiz>> xmlWizards = epm
+				.getItemAttributes(query);
+		CategorizedChoosePanel ccp = new CategorizedChoosePanel(
+				"Select type of " + getElementName(), getExtensionPointId());
+		for (ItemAttributes<Wiz> itemAttributes : xmlWizards) {
+			IWizard wizard = itemAttributes.getInstance("class");
+			String id = itemAttributes.getAttribute("id");
+			String categoryId = itemAttributes.getAttribute("category");
+			if (categoryId != null) {
+				ccp.addOption(categoryId, categoriesNames.get(categoryId),
+						wizard.getName(), id);
+			} else {
+				ccp.addOption("org.orbisgis.DefaultCategory", "General", wizard
+						.getName(), id);
+			}
 		}
-		ChoosePanel cp = new ChoosePanel("Select the " + getElementName()
-				+ " type", names, ids);
-		boolean accepted = UIFactory.showDialog(cp);
-		if (accepted) {
-			int index = cp.getSelectedIndex();
-			Wiz wizard = wizards.get(index).getWizard();
-			Res[] layers = getElements(wizard);
-			return layers;
-		} else {
-			return null;
+		if (UIFactory.showDialog(ccp)) {
+			String wizardId = ccp.getSelectedElement();
+			for (ItemAttributes<Wiz> itemAttributes : xmlWizards) {
+				String id = itemAttributes.getAttribute("id");
+				if (id.equals(wizardId)) {
+					Wiz wizard = itemAttributes.getInstance("class");
+					return getElements(wizard);
+				}
+			}
 		}
+		return null;
 	}
 
 	protected abstract String getElementName();
@@ -79,7 +94,7 @@ public abstract class EPWizardHelper<Wiz extends IWizard, Res extends Object> {
 	/**
 	 * Returns the resource array created by the wizard or null if the wizard
 	 * was canceled
-	 *
+	 * 
 	 * @param wizard
 	 * @return
 	 */
@@ -99,24 +114,43 @@ public abstract class EPWizardHelper<Wiz extends IWizard, Res extends Object> {
 		}
 	}
 
-	private ArrayList<WizardAndId<Wiz>> getWizards(String wizardId) {
+	protected ArrayList<WizardAndId<Wiz>> getWizards(String wizardId) {
 		WizardGetter<Wiz> wg = new WizardGetter<Wiz>(getExtensionPointId());
 		return wg.getWizards(wizardId);
 	}
 
 	public void addWizardMenus(MenuTree menuTree, IActionFactory factory,
 			String parentMenuId) {
-		ArrayList<WizardAndId<Wiz>> wizards = getWizards(null);
-		for (WizardAndId<Wiz> wizard : wizards) {
-			IActionAdapter action = factory.getAction(wizard.getId(),
+		ExtensionPointManager<Wiz> epm = new ExtensionPointManager<Wiz>(
+				getExtensionPointId());
+		String query = "/extension/wizard";
+		ArrayList<ItemAttributes<Wiz>> wizards = epm.getItemAttributes(query);
+		for (ItemAttributes<Wiz> itemAttributes : wizards) {
+			IWizard wizard = itemAttributes.getInstance("class");
+			String id = itemAttributes.getAttribute("id");
+			String category = itemAttributes.getAttribute("category");
+			IActionAdapter action = factory.getAction(id,
 					new HashMap<String, String>());
 			if (action.isVisible()) {
-				Menu menu = new Menu(parentMenuId, wizard.getId(), parentMenuId
-						+ ".wizard", wizard.getWizard().getName(), null, false,
-						action);
+				Menu menu = new Menu(parentMenuId, id, category, wizard
+						.getName(), null, false, action);
 				menuTree.addMenu(menu);
 			}
 		}
 	}
 
+	protected HashMap<String, String> getCategories() {
+		HashMap<String, String> categories = new HashMap<String, String>();
+		ExtensionPointManager<Object> epm = new ExtensionPointManager<Object>(
+				getExtensionPointId());
+		String query = "/extension/category";
+		ArrayList<ItemAttributes<Object>> xmlCategories = epm
+				.getItemAttributes(query);
+		for (ItemAttributes<Object> itemAttributes : xmlCategories) {
+			categories.put(itemAttributes.getAttribute("id"), itemAttributes
+					.getAttribute("name"));
+		}
+
+		return categories;
+	}
 }

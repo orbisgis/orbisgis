@@ -41,13 +41,13 @@ import org.orbisgis.Services;
 import org.orbisgis.editor.IEditor;
 import org.orbisgis.editor.action.IEditorAction;
 import org.orbisgis.layerModel.ILayer;
-import org.orbisgis.views.documentCatalog.documents.MapDocument;
+import org.orbisgis.layerModel.MapContext;
 
 public class Undo implements IEditorAction {
 
 	public void actionPerformed(IEditor editor) {
-		MapDocument map = (MapDocument) editor.getDocument();
-		ILayer activeLayer = map.getMapContext().getActiveLayer();
+		MapContext mc = (MapContext) editor.getElement().getObject();
+		ILayer activeLayer = mc.getActiveLayer();
 		try {
 			activeLayer.getDataSource().undo();
 		} catch (DriverException e) {
@@ -56,8 +56,8 @@ public class Undo implements IEditorAction {
 	}
 
 	public boolean isEnabled(IEditor editor) {
-		MapDocument map = (MapDocument) editor.getDocument();
-		ILayer activeLayer = map.getMapContext().getActiveLayer();
+		MapContext mc = (MapContext) editor.getElement().getObject();
+		ILayer activeLayer = mc.getActiveLayer();
 		if (activeLayer != null) {
 			return activeLayer.getDataSource().canUndo();
 		} else {
@@ -66,8 +66,8 @@ public class Undo implements IEditorAction {
 	}
 
 	public boolean isVisible(IEditor editor) {
-		MapDocument map = (MapDocument) editor.getDocument();
-		ILayer activeLayer = map.getMapContext().getActiveLayer();
+		MapContext mc = (MapContext) editor.getElement().getObject();
+		ILayer activeLayer = mc.getActiveLayer();
 		return activeLayer != null;
 	}
 

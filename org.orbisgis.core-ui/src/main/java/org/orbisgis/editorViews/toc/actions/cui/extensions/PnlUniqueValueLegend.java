@@ -172,10 +172,6 @@ public class PnlUniqueValueLegend extends PnlAbstractClassifiedLegend {
 		return new PnlUniqueValueLegend(legendContext);
 	}
 
-	public String getLegendTypeName() {
-		return UniqueValueLegend.NAME;
-	}
-
 	public void setLegend(Legend legend) {
 		this.legend = (UniqueValueLegend) legend;
 		syncFieldsWithLegend();

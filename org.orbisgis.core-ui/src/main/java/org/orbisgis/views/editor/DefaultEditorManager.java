@@ -36,35 +36,76 @@
  */
 package org.orbisgis.views.editor;
 
+import org.apache.log4j.Logger;
+import org.orbisgis.editor.EPEditorHelper;
+import org.orbisgis.editor.EditorDecorator;
 import org.orbisgis.editor.IEditor;
-import org.orbisgis.views.documentCatalog.IDocument;
+import org.orbisgis.geocognition.GeocognitionElement;
+import org.orbisgis.geocognition.mapContext.GeocognitionException;
+import org.orbisgis.progress.NullProgressMonitor;
 
 public class DefaultEditorManager implements EditorManager {
 
-	private EditorPanel editor;
+	private static final Logger logger = Logger
+			.getLogger(DefaultEditorManager.class);
+
+	private EditorPanel editorPanel;
 
 	public DefaultEditorManager(EditorPanel editor) {
-		this.editor = editor;
+		this.editorPanel = editor;
 	}
 
-	public IDocument getActiveDocument() {
-		return editor.getCurrentDocument();
+	public GeocognitionElement getActiveElement() {
+		return editorPanel.getCurrentDocument();
 	}
 
 	public IEditor getActiveEditor() {
-		if (editor.getCurrentEditor() == null) {
+		if (editorPanel.getCurrentEditor() == null) {
 			return null;
 		} else {
-			return editor.getCurrentEditor().getEditor();
+			return editorPanel.getCurrentEditor().getEditor();
 		}
 	}
 
 	public boolean closeEditor(IEditor editor) {
-		return this.editor.closeEditor(editor);
+		return this.editorPanel.closeEditor(editor);
 	}
 
 	public IEditor[] getEditors() {
-		return editor.getEditors();
+		return editorPanel.getEditors();
+	}
+
+	@Override
+	public boolean hasEditor(GeocognitionElement element) {
+		return EPEditorHelper.getFirstEditor(element) != null;
+	}
+
+	@Override
+	public void open(GeocognitionElement element)
+			throws UnsupportedOperationException {
+		EditorDecorator editor = EPEditorHelper.getFirstEditor(element);
+
+		if (editor == null) {
+			throw new UnsupportedOperationException(
+					"There is no suitable editor for this element");
+		} else {
+			if (!this.editorPanel.isBeingEdited(element, editor.getEditor()
+					.getClass())) {
+				try {
+					element.open(new NullProgressMonitor());
+					editor.setElement(element);
+				} catch (GeocognitionException e) {
+					logger.debug("Cannot open the document: "
+							+ element.getId(), e);
+					editor = new EditorDecorator(new ErrorEditor(element
+							.getId(), e.getMessage()), null, "");
+				}
+				this.editorPanel.addEditor(editor);
+			} else {
+				this.editorPanel.showEditor(element, editor.getEditor()
+						.getClass());
+			}
+		}
 	}
 
 }
