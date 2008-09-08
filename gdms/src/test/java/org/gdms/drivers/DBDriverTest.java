@@ -374,7 +374,7 @@ public class DBDriverTest extends SourceTest {
 
 	public void testShapefile2PostgreSQL() throws Exception {
 		// Delete the table if exists
-		DBSource dbSource = new DBSource("192.168.10.53", 5432, "gdms",
+		DBSource dbSource = new DBSource("127.0.0.1", 5432, "gdms",
 				"postgres", "postgres", "testShapefile2PostgreSQL",
 				"jdbc:postgresql");
 		try {

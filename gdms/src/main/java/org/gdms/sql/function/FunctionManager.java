@@ -85,11 +85,12 @@ import org.gdms.sql.function.statistics.StandardDeviation;
 
 /**
  * DOCUMENT ME!
- *
+ * 
  * @author Fernando Gonzalez Cortes
  */
 public class FunctionManager {
 	private static HashMap<String, Class<? extends Function>> nameFunction = new HashMap<String, Class<? extends Function>>();
+	private static ArrayList<FunctionManagerListener> listeners = new ArrayList<FunctionManagerListener>();
 	static {
 		addFunction(ConcatenateFunction.class);
 		addFunction(String2DateFunction.class);
@@ -136,43 +137,73 @@ public class FunctionManager {
 		addFunction(Pk.class);
 	}
 
+	public static void addFunctionManagerListener(
+			FunctionManagerListener listener) {
+		listeners.add(listener);
+	}
+
+	/**
+	 * Remove the listener if it is present in the listener list
+	 * 
+	 * @param listener
+	 * @return true if the listener was successfully removed. False if the
+	 *         specified parameter was not a listener
+	 */
+	public static boolean removeFunctionManagerListener(
+			FunctionManagerListener listener) {
+		return listeners.remove(listener);
+	}
+
 	/**
 	 * Add a new function to the SQL engine
-	 *
+	 * 
 	 * @param function
 	 *            function
-	 *
-	 * @throws RuntimeException
-	 *
+	 * 
+	 * @throws IllegalArgumentException
+	 *             If the class is not a valid function implementation with an
+	 *             empty constructor or there is already a function or custom
+	 *             query with that name
 	 */
-	public static void addFunction(Class<? extends Function> functionClass) {
+	public static void addFunction(Class<? extends Function> functionClass)
+			throws IllegalArgumentException {
 		Function function;
 		try {
 			function = functionClass.newInstance();
 		} catch (InstantiationException e) {
-			throw new RuntimeException("bug!", e);
+			throw new IllegalArgumentException("Cannot instantiate function: "
+					+ functionClass, e);
 		} catch (IllegalAccessException e) {
-			throw new RuntimeException("bug!", e);
+			throw new IllegalArgumentException("Cannot instantiate function: "
+					+ functionClass, e);
 		}
 		String functionName = function.getName().toLowerCase();
 		if (QueryManager.getQuery(functionName) != null) {
-			throw new RuntimeException(
+			throw new IllegalArgumentException(
 					"A custom query already exists with that name:"
 							+ functionName);
 		}
 		if (nameFunction.get(functionName) != null) {
-			throw new RuntimeException("Function " + functionName
+			throw new IllegalArgumentException("Function " + functionName
 					+ " already exists");
 		}
 
 		nameFunction.put(functionName, functionClass);
+
+		fireFunctionAdded(functionName);
+	}
+
+	private static void fireFunctionAdded(String functionName) {
+		for (FunctionManagerListener listener : listeners) {
+			listener.functionAdded(functionName);
+		}
 	}
 
 	/**
 	 * Gets the function which name is equal to the parameter
-	 *
+	 * 
 	 * @param name
-	 *
+	 * 
 	 * @return a new function instance or null if there is no function with that
 	 *         name
 	 */
@@ -198,14 +229,33 @@ public class FunctionManager {
 		}
 	}
 
-	public static String[] getFunctions() {
+	@SuppressWarnings("unchecked")
+	public static String[] getFunctionNames() {
 		ArrayList<String> ret = new ArrayList<String>();
-		Iterator<Class<? extends Function>> it = nameFunction.values().iterator();
+		Iterator<String> it = nameFunction.keySet().iterator();
 		while (it.hasNext()) {
-			String functionClass = it.next().getCanonicalName();
-			ret.add(functionClass);
+			ret.add(it.next());
 		}
 
-		return ret.toArray(new String[0]);
+		return (String[]) ret.toArray(new String[0]);
+	}
+
+	public static Class<? extends Function> remove(String functionName) {
+		if (functionName != null) {
+			Class<? extends Function> ret = nameFunction.remove(functionName
+					.toLowerCase());
+			if (ret != null) {
+				fireFunctionRemoved(functionName);
+			}
+			return ret;
+		} else {
+			return null;
+		}
+	}
+
+	private static void fireFunctionRemoved(String functionName) {
+		for (FunctionManagerListener listener : listeners) {
+			listener.functionRemoved(functionName);
+		}
 	}
 }

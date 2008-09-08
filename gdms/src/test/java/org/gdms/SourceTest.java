@@ -239,127 +239,133 @@ public class SourceTest extends BaseTest {
 		DataSource ds = dsf.getDataSource(testDataInfo);
 		ds.open();
 		for (int i = 0; i < sources.size(); i++) {
-			TestSourceData sourceData = sources.get(i);
-			getTestSource(sourceData.name).backup();
-			DataSource testData = dsf.getDataSource(sourceData.name);
-			testData.open();
-			ds.insertEmptyRow();
-			long row = ds.getRowCount() - 1;
-			ds.setString(row, fname, sourceData.name);
-			ds.setString(row, frowCount, Long.toString(testData.getRowCount()));
+			try {
 
-			Driver driverName = testData.getDriver();
-			if ((driverName instanceof H2spatialDriver)
-					|| (driverName instanceof PostgreSQLDriver)
-					|| (driverName instanceof HSQLDBDriver)) {
-				ds.setString(row, fisDB, "true");
-			} else {
-				ds.setString(row, fisDB, "false");
-			}
-			String pkField = null;
-			int pkType = -1;
-			String newPK = null;
-			String noPKField = null;
-			String stringField = null;
-			String numericField = null;
-			String spatialField = null;
-			int geometryType = -1;
-			int dimension = 2;
-			for (int j = 0; j < testData.getFieldCount(); j++) {
-				Type fieldType = testData.getFieldType(j);
-				Type type = fieldType;
-				String fieldName = testData.getFieldName(j);
-				// TODO This is due to a bug in the
-				// parser. Remove when the bug is solved
-				if (fieldName.startsWith("_")) {
-					continue;
+				TestSourceData sourceData = sources.get(i);
+				getTestSource(sourceData.name).backup();
+				DataSource testData = dsf.getDataSource(sourceData.name);
+				testData.open();
+				ds.insertEmptyRow();
+				long row = ds.getRowCount() - 1;
+				ds.setString(row, fname, sourceData.name);
+				ds.setString(row, frowCount, Long.toString(testData
+						.getRowCount()));
+
+				Driver driverName = testData.getDriver();
+				if ((driverName instanceof H2spatialDriver)
+						|| (driverName instanceof PostgreSQLDriver)
+						|| (driverName instanceof HSQLDBDriver)) {
+					ds.setString(row, fisDB, "true");
+				} else {
+					ds.setString(row, fisDB, "false");
 				}
-				if (type.getConstraint(Constraint.PK) != null) {
-					if (pkField == null) {
-						pkField = fieldName;
-						pkType = fieldType.getTypeCode();
-						newPK = getPKFor(testData, testData
-								.getFieldIndexByName(fieldName));
+				String pkField = null;
+				int pkType = -1;
+				String newPK = null;
+				String noPKField = null;
+				String stringField = null;
+				String numericField = null;
+				String spatialField = null;
+				int geometryType = -1;
+				int dimension = 2;
+				for (int j = 0; j < testData.getFieldCount(); j++) {
+					Type fieldType = testData.getFieldType(j);
+					Type type = fieldType;
+					String fieldName = testData.getFieldName(j);
+					// TODO This is due to a bug in the
+					// parser. Remove when the bug is solved
+					if (fieldName.startsWith("_")) {
+						continue;
 					}
-				} else if (fieldType.getTypeCode() != Type.GEOMETRY) {
-					noPKField = fieldName;
-				}
-
-				int typeCode = type.getTypeCode();
-
-				switch (typeCode) {
-				case Type.STRING:
-					stringField = fieldName;
-					break;
-				case Type.BYTE:
-				case Type.INT:
-				case Type.LONG:
-				case Type.SHORT:
-					numericField = fieldName;
-					break;
-				case Type.GEOMETRY:
-					spatialField = fieldName;
-					GeometryConstraint c = (GeometryConstraint) fieldType
-							.getConstraint(Constraint.GEOMETRY_TYPE);
-					if (c != null) {
-						geometryType = c.getGeometryType();
+					if (type.getConstraint(Constraint.PK) != null) {
+						if (pkField == null) {
+							pkField = fieldName;
+							pkType = fieldType.getTypeCode();
+							newPK = getPKFor(testData, testData
+									.getFieldIndexByName(fieldName));
+						}
+					} else if (fieldType.getTypeCode() != Type.GEOMETRY) {
+						noPKField = fieldName;
 					}
-					DimensionConstraint dc = (DimensionConstraint) fieldType
-							.getConstraint(Constraint.GEOMETRY_DIMENSION);
-					if (dc != null) {
-						dimension = dc.getDimension();
-					}
-					break;
-				}
-			}
-			ds.setString(row, fnoPKField, noPKField);
-			ds.setString(row, fpkField, pkField);
-			ds.setString(row, fpkType, Integer.toString(pkType));
-			ds.setString(row, fnewPK, newPK);
-			ds.setString(row, fstringField, stringField);
-			ds.setString(row, fnumericFieldName, numericField);
-			ds.setString(row, fspatialField, spatialField);
-			WKTWriter writer = new WKTWriter();
-			if (geometryType == -1) {
-				ds.setString(row, fnewGeometry, writer.write(Geometries
-						.getPoint()));
-			} else {
-				ds.setString(row, fnewGeometry, writer.write(Geometries
-						.getGeometry(geometryType, dimension)));
-			}
 
-			if ((driverName instanceof DBFDriver)
-					|| (driverName instanceof ShapefileDriver)
-					|| (driverName instanceof HSQLDBDriver)
-					|| (driverName instanceof H2spatialDriver)
-					|| (driverName instanceof PostgreSQLDriver)
-					|| (driverName instanceof CSVStringDriver)
-					|| (driverName instanceof CirDriver)) {
-				ds.setString(row, fwrite, "true");
-			} else {
-				ds.setString(row, fwrite, "false");
-			}
+					int typeCode = type.getTypeCode();
 
-			if (numericField != null) {
-				int min = Integer.MAX_VALUE;
-				int max = Integer.MIN_VALUE;
-				for (int j = 0; j < testData.getRowCount(); j++) {
-					int value = testData.getInt(j, numericField);
-					if (value < min) {
-						min = value;
-					}
-					if (value > max) {
-						max = value;
+					switch (typeCode) {
+					case Type.STRING:
+						stringField = fieldName;
+						break;
+					case Type.BYTE:
+					case Type.INT:
+					case Type.LONG:
+					case Type.SHORT:
+						numericField = fieldName;
+						break;
+					case Type.GEOMETRY:
+						spatialField = fieldName;
+						GeometryConstraint c = (GeometryConstraint) fieldType
+								.getConstraint(Constraint.GEOMETRY_TYPE);
+						if (c != null) {
+							geometryType = c.getGeometryType();
+						}
+						DimensionConstraint dc = (DimensionConstraint) fieldType
+								.getConstraint(Constraint.GEOMETRY_DIMENSION);
+						if (dc != null) {
+							dimension = dc.getDimension();
+						}
+						break;
 					}
 				}
-				ds.setString(row, fmin, Integer.toString(min));
-				ds.setString(row, fmax, Integer.toString(max));
-			}
+				ds.setString(row, fnoPKField, noPKField);
+				ds.setString(row, fpkField, pkField);
+				ds.setString(row, fpkType, Integer.toString(pkType));
+				ds.setString(row, fnewPK, newPK);
+				ds.setString(row, fstringField, stringField);
+				ds.setString(row, fnumericFieldName, numericField);
+				ds.setString(row, fspatialField, spatialField);
+				WKTWriter writer = new WKTWriter();
+				if (geometryType == -1) {
+					ds.setString(row, fnewGeometry, writer.write(Geometries
+							.getPoint()));
+				} else {
+					ds.setString(row, fnewGeometry, writer.write(Geometries
+							.getGeometry(geometryType, dimension)));
+				}
 
-			ds.setString(row, fhasRepeatedRows, Boolean
-					.toString(sourceData.repeatedRows));
-			ds.setString(row, fnullField, sourceData.nullField);
-			testData.close();
+				if ((driverName instanceof DBFDriver)
+						|| (driverName instanceof ShapefileDriver)
+						|| (driverName instanceof HSQLDBDriver)
+						|| (driverName instanceof H2spatialDriver)
+						|| (driverName instanceof PostgreSQLDriver)
+						|| (driverName instanceof CSVStringDriver)
+						|| (driverName instanceof CirDriver)) {
+					ds.setString(row, fwrite, "true");
+				} else {
+					ds.setString(row, fwrite, "false");
+				}
+
+				if (numericField != null) {
+					int min = Integer.MAX_VALUE;
+					int max = Integer.MIN_VALUE;
+					for (int j = 0; j < testData.getRowCount(); j++) {
+						int value = testData.getInt(j, numericField);
+						if (value < min) {
+							min = value;
+						}
+						if (value > max) {
+							max = value;
+						}
+					}
+					ds.setString(row, fmin, Integer.toString(min));
+					ds.setString(row, fmax, Integer.toString(max));
+				}
+
+				ds.setString(row, fhasRepeatedRows, Boolean
+						.toString(sourceData.repeatedRows));
+				ds.setString(row, fnullField, sourceData.nullField);
+				testData.close();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 		}
 		ds.commit();
 		ds.close();
@@ -386,7 +392,7 @@ public class SourceTest extends BaseTest {
 
 	/**
 	 * returns the resources with less than SMALL_THRESOLD number of rows
-	 *
+	 * 
 	 * @return
 	 * @throws IOException
 	 */
@@ -400,7 +406,7 @@ public class SourceTest extends BaseTest {
 
 	/**
 	 * returns the resources with less than SMALL_THRESOLD number of rows
-	 *
+	 * 
 	 * @return
 	 * @throws IOException
 	 */
@@ -447,9 +453,9 @@ public class SourceTest extends BaseTest {
 	/**
 	 * If the test is going to write creates a backup and adds the backup to the
 	 * DataSourceFactory
-	 *
+	 * 
 	 * @param testSource
-	 *
+	 * 
 	 * @return The name of the backup in the DataSourceFactory
 	 * @throws IOException
 	 */
@@ -464,7 +470,7 @@ public class SourceTest extends BaseTest {
 
 	/**
 	 * Get all the resources with primary keys
-	 *
+	 * 
 	 * @return
 	 * @throws IOException
 	 */
@@ -490,7 +496,7 @@ public class SourceTest extends BaseTest {
 	 * Gets a new unique primary key for the specified resource. This method
 	 * only should receive as parameters the return values from
 	 * getResourcesWithPK
-	 *
+	 * 
 	 * @param dsName
 	 * @return
 	 */
@@ -502,7 +508,7 @@ public class SourceTest extends BaseTest {
 	 * Gets the primary key field index for the specified resource. This method
 	 * only should receive as parameters the return values from
 	 * getResourcesWithPK
-	 *
+	 * 
 	 * @param dsName
 	 * @return
 	 */
@@ -517,7 +523,7 @@ public class SourceTest extends BaseTest {
 
 	/**
 	 * Gets the index of a string field in the specified resource
-	 *
+	 * 
 	 * @param dsName
 	 * @return
 	 */
@@ -527,7 +533,7 @@ public class SourceTest extends BaseTest {
 
 	/**
 	 * Gets database resources
-	 *
+	 * 
 	 * @return
 	 * @throws IOException
 	 */
@@ -542,7 +548,7 @@ public class SourceTest extends BaseTest {
 	/**
 	 * returns the index of a field that can be set to null and doesn't have to
 	 * have unique values
-	 *
+	 * 
 	 * @param dsName
 	 * @return
 	 */
@@ -552,7 +558,7 @@ public class SourceTest extends BaseTest {
 
 	/**
 	 * Gets any resource without spatial fields
-	 *
+	 * 
 	 * @return
 	 * @throws IOException
 	 */
@@ -567,7 +573,7 @@ public class SourceTest extends BaseTest {
 
 	/**
 	 * Gets any resource with spatial fields
-	 *
+	 * 
 	 * @return
 	 * @throws IOException
 	 */
@@ -582,7 +588,7 @@ public class SourceTest extends BaseTest {
 
 	/**
 	 * Gets resources with null values
-	 *
+	 * 
 	 * @return
 	 * @throws IOException
 	 */
@@ -597,7 +603,7 @@ public class SourceTest extends BaseTest {
 
 	/**
 	 * Returns any numeric field for the given resource.
-	 *
+	 * 
 	 * @param resource
 	 * @return
 	 */
@@ -607,7 +613,7 @@ public class SourceTest extends BaseTest {
 
 	/**
 	 * Return resources which have at leasst one numeric field
-	 *
+	 * 
 	 * @return
 	 * @throws IOException
 	 */
@@ -621,7 +627,7 @@ public class SourceTest extends BaseTest {
 
 	/**
 	 * Returns resources that contain null values
-	 *
+	 * 
 	 * @return
 	 * @throws IOException
 	 */
@@ -636,7 +642,7 @@ public class SourceTest extends BaseTest {
 	/**
 	 * Returns the name of a field containing null values in the specified data
 	 * source
-	 *
+	 * 
 	 * @param ds
 	 * @return
 	 */
@@ -647,7 +653,7 @@ public class SourceTest extends BaseTest {
 	/**
 	 * Gets the minimum value for the specified field in the specified data
 	 * source
-	 *
+	 * 
 	 * @param ds
 	 * @param numericFieldName
 	 * @return
@@ -659,7 +665,7 @@ public class SourceTest extends BaseTest {
 	/**
 	 * Gets the maximum value for the specified field in the specified data
 	 * source
-	 *
+	 * 
 	 * @param ds
 	 * @param numericFieldName
 	 * @return
@@ -670,7 +676,7 @@ public class SourceTest extends BaseTest {
 
 	/**
 	 * Gets the resources with repeated rows
-	 *
+	 * 
 	 * @return
 	 * @throws IOException
 	 */
@@ -685,7 +691,7 @@ public class SourceTest extends BaseTest {
 	/**
 	 * Gets new geometries of a type suitable to be added to the specified data
 	 * source
-	 *
+	 * 
 	 * @param dsName
 	 * @return
 	 */
@@ -696,7 +702,7 @@ public class SourceTest extends BaseTest {
 	/**
 	 * Gets new geometries of a type suitable to be added to the specified data
 	 * source
-	 *
+	 * 
 	 * @param dsName
 	 * @return
 	 */
@@ -706,7 +712,7 @@ public class SourceTest extends BaseTest {
 
 	/**
 	 * returns all the spatial resources
-	 *
+	 * 
 	 * @return
 	 * @throws IOException
 	 */
@@ -734,7 +740,7 @@ public class SourceTest extends BaseTest {
 	/**
 	 * Tell the test system that the tests are going to perform modifications in
 	 * the data sources
-	 *
+	 * 
 	 * @param writeTests
 	 */
 	public void setWritingTests(boolean writingTests) {

@@ -36,7 +36,9 @@
  */
 package org.gdms.sql.customQuery;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 
 import org.gdms.sql.customQuery.showAttributes.ShowCall;
 import org.gdms.sql.customQuery.spatial.convert.Explode;
@@ -44,57 +46,127 @@ import org.gdms.sql.function.FunctionManager;
 
 /**
  * Manages the custom queries
- *
+ * 
  * @author Fernando Gonzalez Cortes
  */
 public class QueryManager {
-	private static HashMap<String, CustomQuery> queries = new HashMap<String, CustomQuery>();
+	private static HashMap<String, Class<? extends CustomQuery>> queries = new HashMap<String, Class<? extends CustomQuery>>();
+	private static ArrayList<QueryManagerListener> listeners = new ArrayList<QueryManagerListener>();
 
 	static {
-		registerQuery(new RegisterCall());
-		registerQuery(new BuildSpatialIndex());
-		registerQuery(new BuildAlphanumericIndex());
-		registerQuery(new DeleteIndex());
-		registerQuery(new Extrude());
-		registerQuery(new ShowCall());
+		registerQuery(RegisterCall.class);
+		registerQuery(BuildSpatialIndex.class);
+		registerQuery(BuildAlphanumericIndex.class);
+		registerQuery(DeleteIndex.class);
+		registerQuery(Extrude.class);
+		registerQuery(ShowCall.class);
 
-		registerQuery(new Explode());
+		registerQuery(Explode.class);
 	}
 
 	/**
 	 * Registers a query
-	 *
+	 * 
 	 * @param query
 	 *            Query to add to the manager.
-	 *
+	 * 
 	 * @throws RuntimeException
-	 *             If a query with the name already exists
+	 *             If a query with the name already exists, or the class is not
+	 *             a valid implementation of {@link CustomQuery} with a default
+	 *             constructor
 	 */
-	public static void registerQuery(CustomQuery query) {
+	public static void registerQuery(Class<? extends CustomQuery> queryClass) {
+		CustomQuery query = null;
+		try {
+			query = queryClass.newInstance();
+		} catch (InstantiationException e) {
+			throw new IllegalArgumentException("Cannot instantiate query: "
+					+ queryClass);
+		} catch (IllegalAccessException e) {
+			throw new IllegalArgumentException("Cannot instantiate query: "
+					+ queryClass);
+		}
 		String queryName = query.getName().toLowerCase();
 
 		if (FunctionManager.getFunction(queryName) != null) {
-			throw new RuntimeException(
+			throw new IllegalArgumentException(
 					"There is already a function with that name");
 		} else if (queries.get(queryName) != null) {
 			throw new IllegalArgumentException("Query already registered: "
 					+ queryName);
 		} else {
-			queries.put(queryName, query);
+			queries.put(queryName, queryClass);
+			fireQueryAdded(queryName);
+		}
+	}
+
+	private static void fireQueryAdded(String queryName) {
+		for (QueryManagerListener listener : listeners) {
+			listener.queryAdded(queryName);
 		}
 	}
 
 	/**
 	 * Gets the query by name
-	 *
+	 * 
 	 * @param queryName
 	 *            Name of the query
-	 *
+	 * 
 	 * @return An instance of the query
 	 */
 	public static CustomQuery getQuery(String queryName) {
 		queryName = queryName.toLowerCase();
 
-		return (CustomQuery) queries.get(queryName);
+		try {
+			Class<? extends CustomQuery> queryClass = queries.get(queryName);
+			if (queryClass != null) {
+				return queryClass.newInstance();
+			} else {
+				return null;
+			}
+		} catch (InstantiationException e) {
+			throw new RuntimeException("bug!", e);
+		} catch (IllegalAccessException e) {
+			throw new RuntimeException("bug!", e);
+		}
+	}
+
+	@SuppressWarnings("unchecked")
+	public static String[] getQueryNames() {
+		ArrayList<String> ret = new ArrayList<String>();
+		Iterator<String> it = queries.keySet().iterator();
+		while (it.hasNext()) {
+			ret.add(it.next());
+		}
+
+		return (String[]) ret.toArray(new String[0]);
+	}
+
+	public static Class<? extends CustomQuery> remove(String queryName) {
+		if (queryName != null) {
+			Class<? extends CustomQuery> ret = queries.remove(queryName
+					.toLowerCase());
+			if (ret != null) {
+				fireQueryRemoved(queryName);
+			}
+			return ret;
+		} else {
+			return null;
+		}
+	}
+
+	private static void fireQueryRemoved(String queryName) {
+		for (QueryManagerListener listener : listeners) {
+			listener.queryRemoved(queryName);
+		}
+	}
+
+	public static void addQueryManagerListener(QueryManagerListener listener) {
+		listeners.add(listener);
+	}
+
+	public static boolean removeQueryManagerListener(
+			QueryManagerListener listener) {
+		return listeners.remove(listener);
 	}
 }

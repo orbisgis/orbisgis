@@ -521,7 +521,7 @@ public class SourceManagementTest extends TestCase {
 	public void testCustomQueryDependences() throws Exception {
 		SumQuery sq = new SumQuery();
 		if (QueryManager.getQuery(sq.getName()) == null) {
-			QueryManager.registerQuery(sq);
+			QueryManager.registerQuery(SumQuery.class);
 		}
 		sm.register("sum", "select sumquery() from \"" + SOURCE + "\";");
 		String[] deps = sm.getSource("sum").getReferencedSources();

@@ -563,7 +563,7 @@ public class ProcessorTest extends TestCase {
 	public void testValidateCustomQueries() throws Exception {
 		SumQuery query = new SumQuery();
 		if (QueryManager.getQuery(query.getName()) == null) {
-			QueryManager.registerQuery(query);
+			QueryManager.registerQuery(SumQuery.class);
 		}
 		getValidatedPreprocessor("select register('file', 'filename');");
 		getValidatedPreprocessor("select sumquery() from gis;");

@@ -63,13 +63,13 @@ public class CustomQueriesTest extends TestCase {
 	private DataSourceFactory dsf;
 
 	static {
-		QueryManager.registerQuery(new SumQuery());
-		QueryManager.registerQuery(new FieldReferenceQuery());
+		QueryManager.registerQuery(SumQuery.class);
+		QueryManager.registerQuery(FieldReferenceQuery.class);
 	}
 
 	/**
 	 * DOCUMENT ME!
-	 *
+	 * 
 	 * @throws DriverLoadException
 	 *             DOCUMENT ME!
 	 * @throws ParseException
@@ -219,7 +219,7 @@ public class CustomQueriesTest extends TestCase {
 					return buffer.getName();
 				}
 
-			});
+			}.getClass());
 			assertTrue(false);
 		} catch (Exception e) {
 		}
