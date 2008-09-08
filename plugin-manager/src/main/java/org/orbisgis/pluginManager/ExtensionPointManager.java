@@ -47,33 +47,21 @@ public class ExtensionPointManager<T> {
 	}
 
 	@SuppressWarnings("unchecked")
-	public ArrayList<T> getInstancesFrom(String tag, String attribute) {
-		IExtensionRegistry reg = RegistryFactory.getRegistry();
-		Extension[] exts = reg.getExtensions(id);
-		ArrayList<T> instances = new ArrayList<T>();
-		for (int i = 0; i < exts.length; i++) {
-			Configuration c = exts[i].getConfiguration();
-			if (c.getAttribute(tag, attribute) != null) {
-				T nr = (T) c.instantiateFromAttribute(tag, attribute);
-				instances.add(nr);
-			}
-		}
-
-		return instances;
-	}
-
-	@SuppressWarnings("unchecked")
 	public ArrayList<ItemAttributes<T>> getItemAttributes(String xpath) {
 		IExtensionRegistry reg = RegistryFactory.getRegistry();
 		Extension[] exts = reg.getExtensions(id);
 		ArrayList<ItemAttributes<T>> instances = new ArrayList<ItemAttributes<T>>();
 		for (int i = 0; i < exts.length; i++) {
 			Configuration c = exts[i].getConfiguration();
-			String[] attributeNames = c.getAttributeNames(xpath);
-			if (attributeNames.length > 0) {
-				ItemAttributes<T> ia = new ItemAttributes<T>(c, xpath,
-						attributeNames, c.getAttributeValues(xpath));
-				instances.add(ia);
+			int elementCount = c.evalInt("count(" + xpath + ")");
+			for (int j = 0; j < elementCount; j++) {
+				String elementXPath = xpath + "[" + (j + 1) + "]";
+				String[] attributeNames = c.getAttributeNames(elementXPath);
+				if (attributeNames.length > 0) {
+					ItemAttributes<T> ia = new ItemAttributes<T>(c, elementXPath,
+							attributeNames, c.getAttributeValues(elementXPath));
+					instances.add(ia);
+				}
 			}
 		}
 

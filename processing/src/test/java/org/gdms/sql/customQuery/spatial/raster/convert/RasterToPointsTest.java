@@ -46,7 +46,7 @@ import com.vividsolutions.jts.geom.Point;
 public class RasterToPointsTest extends AbstractRasterProcessingTest {
 	
 	static {
-		QueryManager.registerQuery(new RasterToPoints());
+		QueryManager.registerQuery(RasterToPoints.class);
 	}
 
 	protected void setUp() throws Exception {

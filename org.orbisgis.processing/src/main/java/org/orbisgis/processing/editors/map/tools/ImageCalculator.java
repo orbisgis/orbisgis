@@ -49,12 +49,10 @@ import org.orbisgis.DataManager;
 import org.orbisgis.Services;
 import org.orbisgis.editor.IEditor;
 import org.orbisgis.editor.action.IEditorAction;
-import org.orbisgis.editors.map.MapEditor;
 import org.orbisgis.layerModel.ILayer;
 import org.orbisgis.layerModel.LayerException;
 import org.orbisgis.layerModel.MapContext;
 import org.orbisgis.ui.sif.RasterLayerCombo;
-import org.orbisgis.views.documentCatalog.documents.MapDocument;
 import org.sif.UIFactory;
 import org.sif.multiInputPanel.ComboBoxChoice;
 import org.sif.multiInputPanel.MultiInputPanel;
@@ -64,11 +62,10 @@ public class ImageCalculator implements IEditorAction {
 
 	public void actionPerformed(IEditor editor) {
 		try {
-			MapContext mapContext = ((MapDocument) ((MapEditor) editor)
-					.getDocument()).getMapContext();
+			MapContext mapContext = (MapContext) editor.getElement()
+					.getObject();
 
-			final MultiInputPanel mip = new MultiInputPanel(
-					"Image calculator");
+			final MultiInputPanel mip = new MultiInputPanel("Image calculator");
 			mip.addInput("source1", "Raster layer1", new RasterLayerCombo(
 					mapContext));
 			mip.addInput("method", "Method", new ComboBoxChoice(
@@ -121,9 +118,8 @@ public class ImageCalculator implements IEditorAction {
 
 	public boolean isEnabled(IEditor editor) {
 		try {
-			MapContext viewContext = ((MapDocument) ((MapEditor) editor)
-					.getDocument()).getMapContext();
-			ILayer[] selectedLayers = viewContext.getSelectedLayers();
+			MapContext mc = (MapContext) editor.getElement().getObject();
+			ILayer[] selectedLayers = mc.getSelectedLayers();
 			if ((selectedLayers.length == 1) && selectedLayers[0].isRaster()
 					&& selectedLayers[0].isVisible()) {
 				return true;

@@ -54,7 +54,7 @@ import com.vividsolutions.jts.geom.LineString;
 
 public class MainDirectionsTest extends UrbsatTestsCommonTools {
 	static {
-		QueryManager.registerQuery(new MainDirections());
+		QueryManager.registerQuery(MainDirections.class);
 	}
 
 	private static final GeometryFactory geometryFactory = new GeometryFactory();

@@ -47,7 +47,7 @@ import org.orbisgis.errorManager.ErrorManager;
 import org.orbisgis.pluginManager.background.BackgroundManager;
 import org.orbisgis.pluginManager.background.JobQueue;
 import org.orbisgis.pluginManager.workspace.DefaultWorkspace;
-import org.orbisgis.pluginManager.workspace.Workspace;
+import org.orbisgis.workspace.Workspace;
 
 public class DefaultPluginManager implements PluginManager {
 

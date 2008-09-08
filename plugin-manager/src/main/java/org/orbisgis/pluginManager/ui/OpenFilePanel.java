@@ -229,4 +229,12 @@ public class OpenFilePanel extends AbstractUIPanel implements SQLUIPanel {
 		return null;
 	}
 
+	public void setSelectedFile(File file) {
+		fileChooser.setSelectedFile(file);
+	}
+
+	public void setCurrentDirectory(File dir) {
+		fileChooser.setCurrentDirectory(dir);
+	}
+
 }

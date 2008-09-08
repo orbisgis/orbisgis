@@ -28,7 +28,7 @@ public class VectorizeLineTest extends TestCase {
 	private MultiLineString multiLineString;
 
 	static {
-		QueryManager.registerQuery(new VectorizeLine());
+		QueryManager.registerQuery(VectorizeLine.class);
 	}
 
 	protected void setUp() throws Exception {

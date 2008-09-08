@@ -131,12 +131,13 @@ public class CommonClassLoader extends SecureClassLoader {
 								entryName.length() - 6).replace('/', '.');
 						File fileForClass = resourcesFile.get(entryName);
 						if (fileForClass != null) {
-//							throw new RuntimeException(
-//									"There are two classes/resources with the same name in "
-//											+ fileForClass.getAbsolutePath()
-//											+ " and in "
-//											+ jars[i].getAbsolutePath() + ": "
-//											+ entryName);
+							// throw new RuntimeException(
+							// "There are two classes/resources with the same
+							// name in "
+							// + fileForClass.getAbsolutePath()
+							// + " and in "
+							// + jars[i].getAbsolutePath() + ": "
+							// + entryName);
 						}
 					}
 
@@ -153,10 +154,6 @@ public class CommonClassLoader extends SecureClassLoader {
 				this.outputFolders.add(outputFolders[i]);
 			}
 		}
-	}
-
-	public void finished() {
-		jars = null;
 	}
 
 	public Class<?> loadClass(String name) throws ClassNotFoundException {
@@ -220,12 +217,12 @@ public class CommonClassLoader extends SecureClassLoader {
 
 	/**
 	 * Gets the bytes of a File
-	 *
+	 * 
 	 * @param file
 	 *            File
-	 *
+	 * 
 	 * @return bytes of file
-	 *
+	 * 
 	 * @throws IOException
 	 *             If the operation fails
 	 */
@@ -281,5 +278,12 @@ public class CommonClassLoader extends SecureClassLoader {
 		perms.add(new AllPermission());
 
 		return perms;
+	}
+
+	public ArrayList<File> getAllFiles() {
+		ArrayList<File> ret = new ArrayList<File>();
+		ret.addAll(jars);
+		ret.addAll(outputFolders);
+		return ret;
 	}
 }

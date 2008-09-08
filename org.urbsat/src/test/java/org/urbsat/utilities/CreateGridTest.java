@@ -48,7 +48,7 @@ import com.vividsolutions.jts.geom.Polygon;
 
 public class CreateGridTest extends UrbsatTestsCommonTools {
 	static {
-		QueryManager.registerQuery(new CreateGrid());
+		QueryManager.registerQuery(CreateGrid.class);
 	}
 
 	protected void setUp() throws Exception {

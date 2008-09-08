@@ -48,6 +48,8 @@ import org.apache.log4j.Logger;
 import org.orbisgis.Services;
 import org.orbisgis.pluginManager.ApplicationInfo;
 import org.orbisgis.pluginManager.PluginManager;
+import org.orbisgis.workspace.Workspace;
+import org.orbisgis.workspace.WorkspaceListener;
 import org.sif.UIFactory;
 
 public class DefaultWorkspace implements Workspace {
@@ -61,7 +63,7 @@ public class DefaultWorkspace implements Workspace {
 	private ArrayList<WorkspaceListener> listeners = new ArrayList<WorkspaceListener>();
 
 	/**
-	 * @see org.orbisgis.pluginManager.workspace.Workspace#getNewFile(java.lang.String,
+	 * @see org.orbisgis.workspace.Workspace#getNewFile(java.lang.String,
 	 *      java.lang.String)
 	 */
 	public File getNewFile(String prefix, String suffix) {
@@ -75,14 +77,14 @@ public class DefaultWorkspace implements Workspace {
 	}
 
 	/**
-	 * @see org.orbisgis.pluginManager.workspace.Workspace#getNewFile()
+	 * @see org.orbisgis.workspace.Workspace#getNewFile()
 	 */
 	public File getNewFile() {
 		return getNewFile("orbisgis", "");
 	}
 
 	/**
-	 * @see org.orbisgis.pluginManager.workspace.Workspace#getFile(java.lang.String)
+	 * @see org.orbisgis.workspace.Workspace#getFile(java.lang.String)
 	 */
 	public File getFile(String name) {
 		File ret = new File(getMetadataFolder(), name);
@@ -94,7 +96,7 @@ public class DefaultWorkspace implements Workspace {
 	}
 
 	/**
-	 * @see org.orbisgis.pluginManager.workspace.Workspace#init(boolean)
+	 * @see org.orbisgis.workspace.Workspace#init(boolean)
 	 */
 	public void init(boolean clean) throws IOException {
 		logger.debug("Initializing workspace");
@@ -222,7 +224,7 @@ public class DefaultWorkspace implements Workspace {
 	}
 
 	/**
-	 * @see org.orbisgis.pluginManager.workspace.Workspace#setWorkspaceFolder(java.lang.String)
+	 * @see org.orbisgis.workspace.Workspace#setWorkspaceFolder(java.lang.String)
 	 */
 	public void setWorkspaceFolder(String folder) throws IOException {
 		saveWorkspace();

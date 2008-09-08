@@ -46,7 +46,7 @@ import com.vividsolutions.jts.geom.Polygon;
 
 public class RasterToPolygonsTest extends AbstractRasterProcessingTest {
 	static {
-		QueryManager.registerQuery(new RasterToPolygons());
+		QueryManager.registerQuery(RasterToPolygons.class);
 	}
 
 	protected void setUp() throws Exception {

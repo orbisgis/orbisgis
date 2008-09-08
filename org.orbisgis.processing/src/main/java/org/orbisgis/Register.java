@@ -76,11 +76,11 @@ public class Register implements PluginActivator {
 
 		// Raster processing
 
-		QueryManager.registerQuery(new RasterToPoints());
-		QueryManager.registerQuery(new RasterToPolygons());
-		QueryManager.registerQuery(new RasterToXYZ());
+		QueryManager.registerQuery(RasterToPoints.class);
+		QueryManager.registerQuery(RasterToPolygons.class);
+		QueryManager.registerQuery(RasterToXYZ.class);
 
-		QueryManager.registerQuery(new RasterizeLine());
+		QueryManager.registerQuery(RasterizeLine.class);
 
 		FunctionManager.addFunction(D8Slope.class);
 		FunctionManager.addFunction(D8Direction.class);
@@ -95,19 +95,19 @@ public class Register implements PluginActivator {
 		FunctionManager.addFunction(D8DistanceToTheOutlet.class);
 		FunctionManager.addFunction(D8RiverDistance.class);
 
-		QueryManager.registerQuery(new VectorizeLine());
+		QueryManager.registerQuery(VectorizeLine.class);
 
 		// Vector processing
 
-		QueryManager.registerQuery(new Generate2DMesh());
-		QueryManager.registerQuery(new PointsToXYZ());
-		QueryManager.registerQuery(new ToLineNoder());
-		QueryManager.registerQuery(new ShortestPath());
-		QueryManager.registerQuery(new BuildTIN());
-		QueryManager.registerQuery(new RandomGeometry());
+		QueryManager.registerQuery(Generate2DMesh.class);
+		QueryManager.registerQuery(PointsToXYZ.class);
+		QueryManager.registerQuery(ToLineNoder.class);
+		QueryManager.registerQuery(ShortestPath.class);
+		QueryManager.registerQuery(BuildTIN.class);
+		QueryManager.registerQuery(RandomGeometry.class);
 
-		QueryManager.registerQuery(new Cdt());
-		QueryManager.registerQuery(new CheckDelaunayProperty());
+		QueryManager.registerQuery(Cdt.class);
+		QueryManager.registerQuery(CheckDelaunayProperty.class);
 
 		FunctionManager.addFunction(ToMultiSegments.class);
 		FunctionManager.addFunction(Generalize.class);
@@ -115,9 +115,9 @@ public class Register implements PluginActivator {
 		FunctionManager.addFunction(ConvexHull.class);
 
 		FunctionManager.addFunction(SubString.class);
-		QueryManager.registerQuery(new TinMM());
+		QueryManager.registerQuery(TinMM.class);
 
-		QueryManager.registerQuery(new CheckSpatialEquivalence());
+		QueryManager.registerQuery(CheckSpatialEquivalence.class);
 	}
 
 	public void stop() throws Exception {

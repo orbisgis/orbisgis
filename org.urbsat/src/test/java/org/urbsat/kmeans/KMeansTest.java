@@ -55,7 +55,7 @@ public class KMeansTest extends TestCase {
 	private long rowCount = 100;
 
 	static {
-		QueryManager.registerQuery(new KMeans());
+		QueryManager.registerQuery(KMeans.class);
 	}
 
 	private static void addDriverValue(final ObjectMemoryDriver driver,
@@ -72,7 +72,7 @@ public class KMeansTest extends TestCase {
 
 		final ObjectMemoryDriver driver = new ObjectMemoryDriver(new String[] {
 				"id", "indicator1", "indicator2" }, new Type[] {
-				TypeFactory.createType(Type.INT,new PrimaryKeyConstraint()),
+				TypeFactory.createType(Type.INT, new PrimaryKeyConstraint()),
 				TypeFactory.createType(Type.DOUBLE),
 				TypeFactory.createType(Type.DOUBLE) });
 		for (int i = 1; i <= rowCount; i++) {

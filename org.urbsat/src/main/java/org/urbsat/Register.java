@@ -50,8 +50,8 @@ import org.urbsat.utilities.MainDirections;
 
 public class Register implements PluginActivator {
 	public void start() throws Exception {
-		QueryManager.registerQuery(new CreateGrid());
-		QueryManager.registerQuery(new CreateWebGrid());
+		QueryManager.registerQuery(CreateGrid.class);
+		QueryManager.registerQuery(CreateWebGrid.class);
 		// QueryManager.registerQuery(new Density());
 		// QueryManager.registerQuery(new BuildNumber());
 		// QueryManager.registerQuery(new BuildLenght());
@@ -65,14 +65,14 @@ public class Register implements PluginActivator {
 		// QueryManager.registerQuery(new StandardDeviationBuildBalanced());
 		// QueryManager.registerQuery(new StandardDeviationBuildHeight());
 
-		QueryManager.registerQuery(new GetZDEM());
+		QueryManager.registerQuery(GetZDEM.class);
 
 		FunctionManager.addFunction(MeanSpacingBetweenBuildingsInACell.class);
 		FunctionManager.addFunction(CircleCompacity.class);
 
-		QueryManager.registerQuery(new KMeans());
+		QueryManager.registerQuery(KMeans.class);
 
-		QueryManager.registerQuery(new MainDirections());
+		QueryManager.registerQuery(MainDirections.class);
 
 		FunctionManager.addFunction(AddZ.class);
 	}

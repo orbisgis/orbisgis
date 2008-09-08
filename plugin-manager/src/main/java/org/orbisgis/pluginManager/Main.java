@@ -71,8 +71,8 @@ import org.apache.log4j.PatternLayout;
 import org.apache.log4j.PropertyConfigurator;
 import org.apache.log4j.RollingFileAppender;
 import org.orbisgis.Services;
-import org.orbisgis.pluginManager.workspace.Workspace;
 import org.orbisgis.utils.XMLUtils;
+import org.orbisgis.workspace.Workspace;
 
 import com.ximpleware.EOFException;
 import com.ximpleware.EncodingException;
@@ -119,8 +119,6 @@ public class Main {
 
 			ArrayList<Plugin> plugins = createExtensionRegistry(pluginDirs,
 					splash);
-
-			commonClassLoader.finished();
 
 			pluginManager.setPlugins(plugins);
 
@@ -259,7 +257,7 @@ public class Main {
 						pluginDir), pluginClassLoader);
 				plugins.add(plugin);
 			} else {
-				throw new RuntimeException("Plugin not found: " + pluginDir);
+				throw new RuntimeException("Plugin file not found: " + pluginDir);
 			}
 		}
 
