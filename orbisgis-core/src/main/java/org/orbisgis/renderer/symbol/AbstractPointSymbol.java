@@ -43,7 +43,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.gdms.data.types.GeometryConstraint;
-import org.orbisgis.IncompatibleVersionException;
 
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.MultiPoint;
@@ -108,9 +107,8 @@ public abstract class AbstractPointSymbol extends AbstractPolygonSymbol
 	}
 
 	@Override
-	public void setPersistentProperties(Map<String, String> props,
-			String version) throws IncompatibleVersionException {
-		super.setPersistentProperties(props, version);
+	public void setPersistentProperties(Map<String, String> props) {
+		super.setPersistentProperties(props);
 		size = Integer.parseInt(props.get("size"));
 		String mapUnitsProp = props.get("map-units");
 		if (mapUnitsProp == null) {

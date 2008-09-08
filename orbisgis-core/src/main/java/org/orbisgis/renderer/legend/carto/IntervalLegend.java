@@ -43,8 +43,6 @@ import org.orbisgis.renderer.symbol.Symbol;
 
 public interface IntervalLegend extends ClassifiedLegend {
 
-	String NAME = "Interval Legend";
-
 	/**
 	 * Adds a classification to the legend
 	 *

@@ -52,8 +52,8 @@ import com.vividsolutions.jts.geom.Point;
 
 public class SquarePointSymbol extends AbstractPointSymbol {
 
-	public SquarePointSymbol(Color outline, int lineWidth, Color fillColor,
-			int size, boolean mapUnits) {
+	SquarePointSymbol(Color outline, int lineWidth, Color fillColor, int size,
+			boolean mapUnits) {
 		super(outline, lineWidth, fillColor, size, mapUnits);
 	}
 

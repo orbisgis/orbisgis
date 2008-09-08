@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<geocognition-node xmlns:ns2="org.orbisgis.symbol" xmlns:ns3="org.orbisgis.legend"
+	xmlns:ns4="org.orbisgis.mapContext" name="New Folder" id="org.orbisgis.root">
+	<geocognition-node id="org.removed.legend">
+		<node-content content-type-id="unsupported-element-id">
+			<i-am-sure-jaxb-cannot-map-this/>
+		</node-content>
+	</geocognition-node>
+</geocognition-node>

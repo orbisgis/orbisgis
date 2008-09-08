@@ -40,10 +40,14 @@ import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
+import org.orbisgis.geocognition.GeoCognitionTest;
+import org.orbisgis.geocognition.ImportExportTest;
+import org.orbisgis.geocognition.SQLArtifactTest;
+import org.orbisgis.javaManager.ExecutionTest;
 import org.orbisgis.layerModel.LayerModelTest;
 import org.orbisgis.renderer.ClassificationTest;
-import org.orbisgis.renderer.LegendTest;
 import org.orbisgis.renderer.LiteShapeTest;
+import org.orbisgis.renderer.legend.LegendTest;
 import org.orbisgis.renderer.symbol.SymbolTest;
 
 public class AllTests extends TestCase {
@@ -60,6 +64,10 @@ public class AllTests extends TestCase {
 		suite.addTestSuite(MapContextTest.class);
 		suite.addTestSuite(MapTransformTest.class);
 		suite.addTestSuite(SymbolTest.class);
+		suite.addTestSuite(GeoCognitionTest.class);
+		suite.addTestSuite(SQLArtifactTest.class);
+		suite.addTestSuite(ExecutionTest.class);
+		suite.addTestSuite(ImportExportTest.class);
 		// $JUnit-END$
 		return suite;
 	}

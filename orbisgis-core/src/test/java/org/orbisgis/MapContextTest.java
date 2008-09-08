@@ -38,20 +38,19 @@ package org.orbisgis;
 
 import java.io.File;
 
-import org.gdms.data.SpatialDataSourceDecorator;
-import org.gdms.driver.DriverException;
 import org.orbisgis.layerModel.DefaultMapContext;
 import org.orbisgis.layerModel.ILayer;
+import org.orbisgis.layerModel.LayerException;
 import org.orbisgis.layerModel.MapContext;
 import org.orbisgis.progress.NullProgressMonitor;
 import org.orbisgis.renderer.legend.Legend;
-import org.orbisgis.renderer.legend.RenderException;
 import org.orbisgis.renderer.symbol.Symbol;
 
 public class MapContextTest extends AbstractTest {
 
 	public void testRemoveSelectedLayer() throws Exception {
 		MapContext mc = new DefaultMapContext();
+		mc.open(null);
 		ILayer layer = getDataManager().createLayer(
 				new File("src/test/resources/bv_sap.shp"));
 		mc.getLayerModel().addLayer(layer);
@@ -60,10 +59,12 @@ public class MapContextTest extends AbstractTest {
 		assertTrue(mc.getSelectedLayers()[0] == layer);
 		mc.getLayerModel().remove(layer);
 		assertTrue(mc.getSelectedLayers().length == 0);
+		mc.close(null);
 	}
 
 	public void testSetBadLayerSelection() throws Exception {
 		MapContext mc = new DefaultMapContext();
+		mc.open(null);
 		ILayer layer = getDataManager().createLayer(
 				new File("src/test/resources/bv_sap.shp"));
 		ILayer layer2 = getDataManager().createLayer(
@@ -73,20 +74,24 @@ public class MapContextTest extends AbstractTest {
 		assertTrue(mc.getSelectedLayers().length == 0);
 		mc.setSelectedLayers(new ILayer[] { layer });
 		assertTrue(mc.getSelectedLayers().length == 1);
+		mc.close(null);
 	}
 
 	public void testRemoveActiveLayer() throws Exception {
 		MapContext mc = new DefaultMapContext();
+		mc.open(null);
 		ILayer layer = getDataManager().createLayer(
 				new File("src/test/resources/bv_sap.shp"));
 		mc.getLayerModel().addLayer(layer);
 		mc.setActiveLayer(layer);
 		mc.getLayerModel().remove(layer);
 		assertTrue(mc.getActiveLayer() == null);
+		mc.close(null);
 	}
 
 	public void testSaveAndRecoverMapContext() throws Exception {
 		MapContext mc = new DefaultMapContext();
+		mc.open(null);
 		ILayer layer1 = getDataManager().createLayer(
 				new File("src/test/resources/linestring.shp"));
 		ILayer layer2 = getDataManager().createLayer(
@@ -97,23 +102,26 @@ public class MapContextTest extends AbstractTest {
 				.getDataSource(), 0);
 		Symbol sym2 = layer2.getVectorLegend()[0].getSymbol(layer2
 				.getDataSource(), 0);
-		File file = new File("target/mapContextTest.xml");
-		mc.saveStatus(file, new NullProgressMonitor());
-		mc = new DefaultMapContext();
-		mc.loadStatus(file, new NullProgressMonitor());
-		assertTrue(mc.getLayers().length == 2);
-		Legend legend1 = mc.getLayerModel().getLayer(0).getVectorLegend()[0];
+		Object persistence = mc.getJAXBObject();
+		DefaultMapContext mc2 = new DefaultMapContext();
+		mc2.setJAXBObject(persistence);
+		mc2.open(null);
+		assertTrue(mc2.getLayers().length == 2);
+		Legend legend1 = mc2.getLayerModel().getLayer(0).getVectorLegend()[0];
 		assertTrue(legend1.getSymbol(layer1.getDataSource(), 0)
 				.getPersistentProperties().equals(
 						sym1.getPersistentProperties()));
-		Legend legend2 = mc.getLayerModel().getLayer(1).getVectorLegend()[0];
+		Legend legend2 = mc2.getLayerModel().getLayer(1).getVectorLegend()[0];
 		assertTrue(legend2.getSymbol(layer2.getDataSource(), 0)
 				.getPersistentProperties().equals(
 						sym2.getPersistentProperties()));
+		mc.close(null);
+		mc2.close(null);
 	}
 
 	public void testSaveAndRecoverTwoNestedCollections() throws Exception {
 		MapContext mc = new DefaultMapContext();
+		mc.open(null);
 		ILayer layer1 = getDataManager().createLayerCollection("a");
 		ILayer layer2 = getDataManager().createLayerCollection("a");
 		ILayer layer3 = getDataManager().createLayer("linestring",
@@ -121,36 +129,198 @@ public class MapContextTest extends AbstractTest {
 		mc.getLayerModel().addLayer(layer1);
 		layer1.addLayer(layer2);
 		layer2.addLayer(layer3);
-		File file = new File("target/mapContextTest.xml");
-		mc.saveStatus(file, new NullProgressMonitor());
+		Object persistence = mc.getJAXBObject();
+		mc.close(null);
 		mc = new DefaultMapContext();
-		mc.loadStatus(file, new NullProgressMonitor());
+		mc.setJAXBObject(persistence);
+		mc.open(null);
 		ILayer layer1_ = mc.getLayerModel().getLayer(0);
 		assertTrue(layer1_.getLayerCount() == 1);
 		assertTrue(layer1_.getLayer(0).getLayerCount() == 1);
 		assertTrue(layer1_.getLayer(0).getLayer(0).getName().equals(
 				"linestring"));
+		mc.close(null);
 	}
 
-	public void testRecover1_1_0() throws Exception {
-		getDataManager().getSourceManager().register("bv_sap",
-				new File("src/test/resources/bv_sap.shp"));
-		getDataManager().getSourceManager().register("linestring",
-				new File("src/test/resources/linestring.shp"));
-		File file = new File("src/test/resources/mapContext-1_1_0.xml");
+	public void testOperateOnClosedMapContext() throws Exception {
 		MapContext mc = new DefaultMapContext();
-		mc.loadStatus(file, new NullProgressMonitor());
-		assertTrue(mc.getLayers().length == 2);
-		testNotNullSymbols(mc.getLayerModel().getLayer(0));
-		testNotNullSymbols(mc.getLayerModel().getLayer(1));
+		try {
+			mc.getSelectedLayers();
+			assertTrue(false);
+		} catch (IllegalStateException e) {
+		}
+		try {
+			mc.draw(null, null, null);
+			assertTrue(false);
+		} catch (IllegalStateException e) {
+		}
+		try {
+			mc.getActiveLayer();
+			assertTrue(false);
+		} catch (IllegalStateException e) {
+		}
+		try {
+			mc.getLayerModel();
+			assertTrue(false);
+		} catch (IllegalStateException e) {
+		}
+		try {
+			mc.getLayers();
+			assertTrue(false);
+		} catch (IllegalStateException e) {
+		}
+		try {
+			mc.setActiveLayer(null);
+			assertTrue(false);
+		} catch (IllegalStateException e) {
+		}
+		try {
+			mc.setSelectedLayers(null);
+			assertTrue(false);
+		} catch (IllegalStateException e) {
+		}
 	}
 
-	private void testNotNullSymbols(ILayer layer) throws DriverException,
-			RenderException {
-		Legend legend = layer.getVectorLegend()[0];
-		SpatialDataSourceDecorator sds = layer.getDataSource();
-		for (int i = 0; i < sds.getRowCount(); i++) {
-			assertTrue(legend.getSymbol(sds, i) != null);
+	public void testIsOpen() throws Exception {
+		MapContext mc = new DefaultMapContext();
+		assertTrue(!mc.isOpen());
+		mc.open(new NullProgressMonitor());
+		assertTrue(mc.isOpen());
+	}
+
+	public void testOpenTwice() throws Exception {
+		MapContext mc = new DefaultMapContext();
+		mc.open(new NullProgressMonitor());
+		try {
+			mc.open(new NullProgressMonitor());
+			assertTrue(false);
+		} catch (IllegalStateException e) {
 		}
+	}
+
+	public void testCloseClosedMap() throws Exception {
+		MapContext mc = new DefaultMapContext();
+		try {
+			mc.close(new NullProgressMonitor());
+			assertTrue(false);
+		} catch (IllegalStateException e) {
+		}
+	}
+
+	public void testSetJAXBOnOpenMap() throws Exception {
+		MapContext mc = new DefaultMapContext();
+		Object obj = mc.getJAXBObject();
+		mc.open(new NullProgressMonitor());
+		try {
+			mc.setJAXBObject(obj);
+			assertTrue(false);
+		} catch (IllegalStateException e) {
+		}
+	}
+
+	public void testRemoveSource() throws Exception {
+		MapContext mc = new DefaultMapContext();
+		mc.open(null);
+		ILayer layer = getDataManager().createLayer("linestring",
+				new File("src/test/resources/linestring.shp"));
+		mc.getLayerModel().addLayer(layer);
+		getDataManager().getSourceManager().remove("linestring");
+		assertTrue(mc.getLayerModel().getLayerCount() == 0);
+		mc.close(null);
+	}
+
+	public void testGetJAXBObject() throws Exception {
+		MapContext mc = getSampleMapContext();
+		Object jaxbObj = mc.getJAXBObject();
+
+		MapContext mc2 = new DefaultMapContext();
+		mc2.setJAXBObject(jaxbObj);
+		jaxbObj = mc2.getJAXBObject();
+		mc2.open(null);
+		assertTrue(mc2.getLayerModel().getLayerCount() == 1);
+		mc2.close(null);
+
+		mc2.setJAXBObject(jaxbObj);
+		jaxbObj = mc2.getJAXBObject();
+		mc2.open(null);
+		assertTrue(mc2.getLayerModel().getLayerCount() == 1);
+		mc2.close(null);
+	}
+
+	private MapContext getSampleMapContext() throws LayerException {
+		MapContext mc = new DefaultMapContext();
+		mc.open(null);
+		ILayer layer = getDataManager().createLayerCollection("a");
+		mc.getLayerModel().addLayer(layer);
+		mc.close(null);
+		return mc;
+	}
+
+	public void testSetJAXBOpenTwice() throws Exception {
+		MapContext mc = getSampleMapContext();
+		Object jaxbObj = mc.getJAXBObject();
+
+		MapContext mc2 = new DefaultMapContext();
+		mc2.setJAXBObject(jaxbObj);
+		mc2.open(null);
+		assertTrue(mc2.getLayerModel().getLayerCount() == 1);
+		ILayer layer = getDataManager().createLayerCollection("b");
+		mc2.getLayerModel().addLayer(layer);
+		assertTrue(mc2.getLayerModel().getLayerCount() == 2);
+		mc2.close(null);
+
+		mc2.open(null);
+		assertTrue(mc2.getLayerModel().getLayerCount() == 2);
+		mc2.close(null);
+	}
+
+	public void testgetJAXBAfterSetModifyAndClose() throws Exception {
+		MapContext mc = getSampleMapContext();
+		Object jaxbObj = mc.getJAXBObject();
+
+		MapContext mc2 = new DefaultMapContext();
+		// set JAXB
+		mc2.setJAXBObject(jaxbObj);
+		// modify
+		mc2.open(null);
+		assertTrue(mc2.getLayerModel().getLayerCount() == 1);
+		ILayer layer = getDataManager().createLayerCollection("b");
+		mc2.getLayerModel().addLayer(layer);
+		assertTrue(mc2.getLayerModel().getLayerCount() == 2);
+		// close
+		mc2.close(null);
+		Object obj = mc2.getJAXBObject();
+		// check obj is good
+		MapContext mc3 = new DefaultMapContext();
+		mc3.setJAXBObject(obj);
+		mc3.open(null);
+		assertTrue(mc3.getLayerModel().getLayerCount() == 2);
+		mc3.close(null);
+	}
+
+	public void testActiveLayerClearedOnClose() throws Exception {
+		MapContext mc = new DefaultMapContext();
+		mc.open(null);
+		ILayer layer = getDataManager().createLayer(
+				new File("src/test/resources/bv_sap.shp"));
+		mc.getLayerModel().addLayer(layer);
+		mc.setActiveLayer(layer);
+		mc.close(null);
+		mc.open(null);
+		assertTrue(mc.getActiveLayer() == null);
+	}
+
+	public void testGetJAXBAfterModify() throws Exception {
+		MapContext mc = new DefaultMapContext();
+		mc.open(null);
+		mc.getJAXBObject();
+		ILayer layer = getDataManager().createLayer(
+				new File("src/test/resources/bv_sap.shp"));
+		mc.getLayerModel().addLayer(layer);
+		org.orbisgis.layerModel.persistence.MapContext xmlMC = (org.orbisgis.layerModel.persistence.MapContext) mc
+				.getJAXBObject();
+		assertTrue(xmlMC.getLayerCollection().getLayer().size() == 1);
+		mc.close(null);
+
 	}
 }

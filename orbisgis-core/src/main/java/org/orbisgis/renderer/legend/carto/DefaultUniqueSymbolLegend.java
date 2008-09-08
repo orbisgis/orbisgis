@@ -37,32 +37,19 @@
 package org.orbisgis.renderer.legend.carto;
 
 import java.awt.Graphics;
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
-import javax.xml.bind.Unmarshaller;
 
 import org.gdms.data.SpatialDataSourceDecorator;
 import org.gdms.driver.DriverException;
-import org.orbisgis.IncompatibleVersionException;
-import org.orbisgis.PersistenceException;
-import org.orbisgis.renderer.legend.AbstractLegend;
+import org.orbisgis.Services;
 import org.orbisgis.renderer.legend.Legend;
 import org.orbisgis.renderer.legend.RenderException;
 import org.orbisgis.renderer.legend.carto.persistence.LegendContainer;
 import org.orbisgis.renderer.legend.carto.persistence.UniqueSymbolLegendType;
 import org.orbisgis.renderer.symbol.RenderUtils;
 import org.orbisgis.renderer.symbol.Symbol;
-import org.orbisgis.renderer.symbol.collection.DefaultSymbolCollection;
+import org.orbisgis.renderer.symbol.SymbolManager;
 
-public class DefaultUniqueSymbolLegend extends AbstractLegend implements
+public class DefaultUniqueSymbolLegend extends AbstractCartoLegend implements
 		UniqueSymbolLegend {
 
 	private Symbol symbol;
@@ -86,64 +73,29 @@ public class DefaultUniqueSymbolLegend extends AbstractLegend implements
 		}
 	}
 
-	public String getVersion() {
-		return "1.0";
+	public Object getJAXBObject() {
+		UniqueSymbolLegendType xmlLegend = new UniqueSymbolLegendType();
+		save(xmlLegend);
+		SymbolManager sm = (SymbolManager) Services
+				.getService("org.orbisgis.SymbolManager");
+		if (symbol != null) {
+			xmlLegend.setSymbol(sm.getJAXBSymbol(symbol));
+		}
+		LegendContainer xml = new LegendContainer();
+		xml.setLegendDescription(xmlLegend);
+
+		return xml;
 	}
 
-	public void save(File file) throws PersistenceException {
-		try {
-			JAXBContext jaxbContext = JAXBContext
-					.newInstance(
-							"org.orbisgis.renderer.legend.carto.persistence:"
-									+ "org.orbisgis.renderer.symbol.collection.persistence",
-							DefaultSymbolCollection.class.getClassLoader());
-			Marshaller m = jaxbContext.createMarshaller();
+	public void setJAXBObject(Object jaxbObject) {
+		LegendContainer xml = (LegendContainer) jaxbObject;
+		UniqueSymbolLegendType xmlLegend = (UniqueSymbolLegendType) xml
+				.getLegendDescription();
+		load(xmlLegend);
+		SymbolManager sm = (SymbolManager) Services
+				.getService("org.orbisgis.SymbolManager");
+		setSymbol(sm.getSymbolFromJAXB(xmlLegend.getSymbol()));
 
-			BufferedOutputStream os = new BufferedOutputStream(
-					new FileOutputStream(file));
-			UniqueSymbolLegendType xmlLegend = new UniqueSymbolLegendType();
-			save(xmlLegend);
-			xmlLegend.setSymbol(DefaultSymbolCollection
-					.getXMLFromSymbol(symbol));
-			LegendContainer xml = new LegendContainer();
-			xml.setLegendDescription(xmlLegend);
-			m.marshal(xml, os);
-			os.close();
-		} catch (JAXBException e) {
-			throw new PersistenceException("Cannot save legend", e);
-		} catch (IOException e) {
-			throw new PersistenceException("Cannot save legend", e);
-		}
-	}
-
-	public void load(File file, String version) throws PersistenceException {
-		if (version.equals("1.0")) {
-			try {
-				JAXBContext jaxbContext = JAXBContext
-						.newInstance(
-								"org.orbisgis.renderer.legend.carto.persistence:"
-										+ "org.orbisgis.renderer.symbol.collection.persistence",
-								DefaultSymbolCollection.class.getClassLoader());
-				Unmarshaller m = jaxbContext.createUnmarshaller();
-				BufferedInputStream os = new BufferedInputStream(
-						new FileInputStream(file));
-				LegendContainer xml = (LegendContainer) m.unmarshal(os);
-				UniqueSymbolLegendType xmlLegend = (UniqueSymbolLegendType) xml
-						.getLegendDescription();
-				os.close();
-				load(xmlLegend);
-				setSymbol(DefaultSymbolCollection.getSymbolFromXML(xmlLegend
-						.getSymbol()));
-
-			} catch (JAXBException e) {
-				throw new PersistenceException("Cannot recover legend", e);
-			} catch (IOException e) {
-				throw new PersistenceException("Cannot recover legend", e);
-			} catch (IncompatibleVersionException e) {
-				throw new PersistenceException("Cannot recover legend symbol",
-						e);
-			}
-		}
 	}
 
 	public String getLegendTypeId() {
@@ -160,6 +112,11 @@ public class DefaultUniqueSymbolLegend extends AbstractLegend implements
 
 	public int[] getImageSize(Graphics g) {
 		return new LegendLine(symbol, "Unique symbol").getImageSize(g);
+	}
+
+	@Override
+	public String getLegendTypeName() {
+		return "Unique symbol";
 	}
 
 }

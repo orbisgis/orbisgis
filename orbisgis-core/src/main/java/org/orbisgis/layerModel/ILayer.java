@@ -36,7 +36,6 @@
  */
 package org.orbisgis.layerModel;
 
-import java.io.File;
 import java.util.Set;
 
 import org.gdms.data.DataSource;
@@ -45,7 +44,6 @@ import org.gdms.data.types.Type;
 import org.gdms.driver.DriverException;
 import org.grap.model.GeoRaster;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
-import org.orbisgis.PersistenceException;
 import org.orbisgis.layerModel.persistence.LayerType;
 import org.orbisgis.renderer.legend.Legend;
 import org.orbisgis.renderer.legend.RasterLegend;
@@ -90,7 +88,7 @@ public interface ILayer {
 	 * Gets the layer with the specified name. It searches in all the subtree
 	 * that has as root this layer. If there is no layer with that name returns
 	 * null
-	 *
+	 * 
 	 * @param layerName
 	 * @return
 	 */
@@ -131,37 +129,23 @@ public interface ILayer {
 
 	/**
 	 * Gets the status of this object as a xml object
-	 *
-	 * @param baseFile
-	 *            The file where this layer will be saved in. This file is used
-	 *            as base to derive new file names to store different things in
-	 *            the layer
-	 *
+	 * 
 	 * @return
-	 * @throws PersistenceException
-	 *             If the layer cannot be saved
 	 */
-	LayerType saveLayer(File baseFile) throws PersistenceException;
+	LayerType saveLayer();
 
 	/**
 	 * Sets the status of the layer from a xml object
-	 *
+	 * 
 	 * @param layer
-	 * @param baseFile
-	 *            The file where this layer will be saved in. This file is used
-	 *            as base to get the derived file names containing layer related
-	 *            information
 	 * @throws LayerException
 	 *             If the status cannot be set
-	 * @throws PersistenceException
-	 *             If the layer cannot be restored
 	 */
-	void restoreLayer(LayerType layer, File baseFile) throws LayerException,
-			PersistenceException;
+	void restoreLayer(LayerType layer) throws LayerException;
 
 	/**
 	 * Gets the specified child layer
-	 *
+	 * 
 	 * @param index
 	 * @return
 	 */
@@ -169,7 +153,7 @@ public interface ILayer {
 
 	/**
 	 * Gets all the raster layers in the tree under this layer
-	 *
+	 * 
 	 * @return
 	 * @throws DriverException
 	 */
@@ -177,7 +161,7 @@ public interface ILayer {
 
 	/**
 	 * Gets all the vectorial layers in the tree under this layer
-	 *
+	 * 
 	 * @return
 	 * @throws DriverException
 	 */
@@ -187,7 +171,7 @@ public interface ILayer {
 	 * Returns true if the default spatial field of this layer is of type
 	 * {@link Type}.RASTER. Return false if the layer is a collection of layers
 	 * or it doesn't contain any spatial field
-	 *
+	 * 
 	 * @return
 	 * @throws DriverException
 	 */
@@ -197,7 +181,7 @@ public interface ILayer {
 	 * Returns true if the default spatial field of this layer is of type
 	 * {@link Type}.GEOMETRY. Return false if the layer is a collection of
 	 * layers or it doesn't contain any spatial field
-	 *
+	 * 
 	 * @return
 	 * @throws DriverException
 	 */
@@ -205,7 +189,7 @@ public interface ILayer {
 
 	/**
 	 * Returns a {@link DataSource} to access the source of this layer
-	 *
+	 * 
 	 * @return
 	 */
 	SpatialDataSourceDecorator getDataSource();
@@ -213,7 +197,7 @@ public interface ILayer {
 	/**
 	 * Gets the legend used to draw the default spatial field in this layer if
 	 * it is of type raster.
-	 *
+	 * 
 	 * @return
 	 * @throws DriverException
 	 *             If there is some problem accessing the default spatial field
@@ -226,7 +210,7 @@ public interface ILayer {
 	/**
 	 * Gets the legends used to draw the default spatial field in this layer if
 	 * it is of type vector.
-	 *
+	 * 
 	 * @return
 	 * @throws DriverException
 	 *             If there is some problem accessing the default spatial field
@@ -238,7 +222,7 @@ public interface ILayer {
 
 	/**
 	 * Sets the legend used to draw the default spatial field in this layer
-	 *
+	 * 
 	 * @param legends
 	 * @throws DriverException
 	 *             If there is some problem accessing the contents of the layer
@@ -247,7 +231,7 @@ public interface ILayer {
 
 	/**
 	 * Gets the legend used to draw the specified vector field in this layer
-	 *
+	 * 
 	 * @return
 	 * @throws IllegalArgumentException
 	 *             If the specified name does not exist or it's not of type
@@ -259,7 +243,7 @@ public interface ILayer {
 
 	/**
 	 * Gets the legend used to draw the specified raster field in this layer
-	 *
+	 * 
 	 * @return
 	 * @throws IllegalArgumentException
 	 *             If the specified name does not exist or it's not of type
@@ -271,7 +255,7 @@ public interface ILayer {
 
 	/**
 	 * Sets the legend used to draw the specified spatial field in this layer
-	 *
+	 * 
 	 * @param legends
 	 * @throws IllegalArgumentException
 	 *             If the specified name does not exist
@@ -285,7 +269,7 @@ public interface ILayer {
 	 * If isRaster is true returns the first raster in the layer DataSource.
 	 * Otherwise it throws a {@link RuntimeException}. The method is just a
 	 * shortcut for getDataSource().getRaster(0)
-	 *
+	 * 
 	 * @return
 	 * @throws DriverException
 	 */
@@ -293,14 +277,14 @@ public interface ILayer {
 
 	/**
 	 * Gets an array of the selected rows
-	 *
+	 * 
 	 * @return
 	 */
 	int[] getSelection();
 
 	/**
 	 * Sets the array of the selected rows
-	 *
+	 * 
 	 * @param newSelection
 	 */
 	void setSelection(int[] newSelection);
@@ -308,7 +292,7 @@ public interface ILayer {
 	/**
 	 * Gets the legend to perform the rendering. The actual class of the
 	 * returned legends may not be the same of those set by setLegend methods
-	 *
+	 * 
 	 * @return
 	 * @throws DriverException
 	 */

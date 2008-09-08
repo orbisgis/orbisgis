@@ -37,7 +37,6 @@
 package org.orbisgis.layerModel;
 
 import java.awt.Graphics;
-import java.io.File;
 import java.util.ArrayList;
 
 import org.apache.log4j.Logger;
@@ -46,7 +45,6 @@ import org.gdms.data.edition.EditionEvent;
 import org.gdms.data.edition.EditionListener;
 import org.gdms.data.edition.MultipleEditionEvent;
 import org.gdms.driver.DriverException;
-import org.orbisgis.PersistenceException;
 import org.orbisgis.renderer.legend.Legend;
 import org.orbisgis.renderer.legend.LegendListener;
 import org.orbisgis.renderer.legend.RenderException;
@@ -153,20 +151,16 @@ public class LegendDecorator implements Legend, EditionListener {
 		return legend.getLegendTypeId();
 	}
 
-	public String getVersion() {
-		return legend.getVersion();
-	}
-
-	public void load(File file, String version) throws PersistenceException {
-		legend.load(file, version);
+	public void setJAXBObject(Object jaxbObject) {
+		legend.setJAXBObject(jaxbObject);
 	}
 
 	public Legend newInstance() {
 		return legend.newInstance();
 	}
 
-	public void save(File file) throws PersistenceException {
-		legend.save(file);
+	public Object getJAXBObject() {
+		return legend.getJAXBObject();
 	}
 
 	public void preprocess(SpatialDataSourceDecorator sds)
@@ -196,5 +190,15 @@ public class LegendDecorator implements Legend, EditionListener {
 
 	public void setMinScale(int min) {
 		legend.setMinScale(min);
+	}
+
+	@Override
+	public String getJAXBContext() {
+		return legend.getJAXBContext();
+	}
+	
+	@Override
+	public String getLegendTypeName() {
+		return legend.getLegendTypeName();
 	}
 }

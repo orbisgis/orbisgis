@@ -36,27 +36,15 @@
  */
 package org.orbisgis.renderer.legend.carto;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
-
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
-import javax.xml.bind.Unmarshaller;
 
 import org.gdms.data.SpatialDataSourceDecorator;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
-import org.orbisgis.IncompatibleVersionException;
-import org.orbisgis.PersistenceException;
+import org.orbisgis.Services;
 import org.orbisgis.renderer.legend.Legend;
 import org.orbisgis.renderer.legend.RenderException;
 import org.orbisgis.renderer.legend.carto.persistence.LegendContainer;
@@ -64,7 +52,7 @@ import org.orbisgis.renderer.legend.carto.persistence.UniqueValueLegendType;
 import org.orbisgis.renderer.legend.carto.persistence.ValueClassification;
 import org.orbisgis.renderer.symbol.RenderUtils;
 import org.orbisgis.renderer.symbol.Symbol;
-import org.orbisgis.renderer.symbol.collection.DefaultSymbolCollection;
+import org.orbisgis.renderer.symbol.SymbolManager;
 
 import com.vividsolutions.jts.geom.Geometry;
 
@@ -104,85 +92,53 @@ public class DefaultUniqueValueLegend extends AbstractClassifiedLegend
 		}
 	}
 
-	public String getVersion() {
-		return "1.0";
-	}
-
-	public void save(File file) throws PersistenceException {
-		try {
-			JAXBContext jaxbContext = JAXBContext
-					.newInstance(
-							"org.orbisgis.renderer.legend.carto.persistence:"
-									+ "org.orbisgis.renderer.symbol.collection.persistence",
-							DefaultSymbolCollection.class.getClassLoader());
-			Marshaller m = jaxbContext.createMarshaller();
-
-			BufferedOutputStream os = new BufferedOutputStream(
-					new FileOutputStream(file));
-			UniqueValueLegendType xmlLegend = new UniqueValueLegendType();
-			super.fillDefaults(xmlLegend);
-			List<ValueClassification> classifications = xmlLegend
-					.getValueClassification();
-			for (int i = 0; i < values.size(); i++) {
-				ValueClassification classification = new ValueClassification();
-				classification.setLabel(getLabel(i));
-				classification.setSymbol(DefaultSymbolCollection
-						.getXMLFromSymbol(getSymbol(i)));
-				classification.setValue(values.get(i).toString());
-				classifications.add(classification);
-			}
-			LegendContainer xml = new LegendContainer();
-			xml.setLegendDescription(xmlLegend);
-			m.marshal(xml, os);
-			os.close();
-		} catch (JAXBException e) {
-			throw new PersistenceException("Cannot save legend", e);
-		} catch (IOException e) {
-			throw new PersistenceException("Cannot save legend", e);
+	public Object getJAXBObject() {
+		UniqueValueLegendType xmlLegend = new UniqueValueLegendType();
+		super.fillDefaults(xmlLegend);
+		List<ValueClassification> classifications = xmlLegend
+				.getValueClassification();
+		SymbolManager sm = (SymbolManager) Services
+				.getService("org.orbisgis.SymbolManager");
+		for (int i = 0; i < values.size(); i++) {
+			ValueClassification classification = new ValueClassification();
+			classification.setLabel(getLabel(i));
+			classification.setSymbol(sm.getJAXBSymbol(getSymbol(i)));
+			classification.setValue(values.get(i).toString());
+			classifications.add(classification);
 		}
+		LegendContainer xml = new LegendContainer();
+		xml.setLegendDescription(xmlLegend);
+		return xml;
 	}
 
-	public void load(File file, String version) throws PersistenceException {
-		if (version.equals("1.0")) {
+	public void setJAXBObject(Object jaxbObject) {
+		LegendContainer xml = (LegendContainer) jaxbObject;
+		UniqueValueLegendType xmlLegend = (UniqueValueLegendType) xml
+				.getLegendDescription();
+		super.getDefaults(xmlLegend);
+		List<ValueClassification> classifications = xmlLegend
+				.getValueClassification();
+		SymbolManager sm = (SymbolManager) Services
+				.getService("org.orbisgis.SymbolManager");
+		for (int i = 0; i < classifications.size(); i++) {
+			ValueClassification classification = classifications.get(i);
+			String label = classification.getLabel();
+			Value value = null;
+			String xmlValue = classification.getValue();
 			try {
-				JAXBContext jaxbContext = JAXBContext
-						.newInstance(
-								"org.orbisgis.renderer.legend.carto.persistence:"
-										+ "org.orbisgis.renderer.symbol.collection.persistence",
-								DefaultSymbolCollection.class.getClassLoader());
-				Unmarshaller m = jaxbContext.createUnmarshaller();
-				BufferedInputStream os = new BufferedInputStream(
-						new FileInputStream(file));
-				LegendContainer xml = (LegendContainer) m.unmarshal(os);
-				UniqueValueLegendType xmlLegend = (UniqueValueLegendType) xml
-						.getLegendDescription();
-				os.close();
-				super.getDefaults(xmlLegend);
-				List<ValueClassification> classifications = xmlLegend
-						.getValueClassification();
-				for (int i = 0; i < classifications.size(); i++) {
-					ValueClassification classification = classifications.get(i);
-					String label = classification.getLabel();
-					Value value = ValueFactory.createValueByType(classification
-							.getValue(), getFieldType());
-					Symbol symbol = DefaultSymbolCollection
-							.getSymbolFromXML(classification.getSymbol());
-					addClassification(value, symbol, label);
-				}
-			} catch (JAXBException e) {
-				throw new PersistenceException("Cannot recover legend", e);
-			} catch (IOException e) {
-				throw new PersistenceException("Cannot recover legend", e);
-			} catch (IncompatibleVersionException e) {
-				throw new PersistenceException("Cannot recover legend symbol",
-						e);
-			} catch (DriverException e) {
-				throw new PersistenceException("Cannot recover legend", e);
+				value = ValueFactory
+						.createValueByType(xmlValue, getFieldType());
 			} catch (NumberFormatException e) {
-				throw new PersistenceException("Cannot recover value", e);
+				Services.getErrorManager().error(
+						"Cannot parse legend value in " + getName() + ": "
+								+ xmlValue, e);
 			} catch (ParseException e) {
-				throw new PersistenceException("Cannot recover value", e);
+				Services.getErrorManager().error(
+						"Cannot parse legend value in " + getName() + ": "
+								+ xmlValue, e);
 			}
+			Symbol symbol = sm.getSymbolFromJAXB(classification.getSymbol());
+			addClassification(value, symbol, label);
 		}
 	}
 
@@ -212,5 +168,10 @@ public class DefaultUniqueValueLegend extends AbstractClassifiedLegend
 	public void removeClassification(int index) throws IllegalArgumentException {
 		values.remove(index);
 		super.removeClassification(index);
+	}
+
+	@Override
+	public String getLegendTypeName() {
+		return "Value classification";
 	}
 }

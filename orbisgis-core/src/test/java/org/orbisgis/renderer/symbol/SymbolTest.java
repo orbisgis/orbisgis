@@ -37,111 +37,124 @@
 package org.orbisgis.renderer.symbol;
 
 import java.awt.Color;
-import java.io.File;
-import java.io.IOException;
+import java.awt.Graphics2D;
+import java.awt.geom.AffineTransform;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Map;
 
 import junit.framework.TestCase;
 
+import org.gdms.data.types.GeometryConstraint;
 import org.gdms.driver.DriverException;
-import org.orbisgis.IncompatibleVersionException;
-import org.orbisgis.renderer.symbol.collection.DefaultSymbolCollection;
+import org.orbisgis.OrbisgisCoreServices;
+import org.orbisgis.Services;
+import org.orbisgis.renderer.RenderPermission;
+import org.orbisgis.renderer.symbol.collection.persistence.SymbolType;
+
+import com.vividsolutions.jts.geom.Envelope;
+import com.vividsolutions.jts.geom.Geometry;
 
 public class SymbolTest extends TestCase {
 
-	public void testFileNotExits() throws Exception {
-		File file = new File("target/collection.xml");
-		file.delete();
-		DefaultSymbolCollection sv = new DefaultSymbolCollection(file);
-		try {
-			sv.loadCollection();
-			assertTrue(false);
-		} catch (IOException e) {
+	private final class TestSymbol extends AbstractSymbol {
+		@Override
+		public String getId() {
+			return "org.new.symbol";
+		}
+
+		@Override
+		public String getClassName() {
+			return "Test symbol";
+		}
+
+		@Override
+		public Envelope draw(Graphics2D g, Geometry geom, AffineTransform at,
+				RenderPermission permission) throws DriverException {
+			return null;
+		}
+
+		@Override
+		public Symbol cloneSymbol() {
+			return new TestSymbol();
+		}
+
+		@Override
+		public boolean acceptGeometryType(GeometryConstraint geometryConstraint) {
+			return false;
+		}
+
+		@Override
+		public boolean acceptGeometry(Geometry geom) {
+			return false;
 		}
 	}
 
-	public void testCreateEmptySymbolCollection() throws Exception {
-		File file = new File("target/collection.xml");
-		file.delete();
-		DefaultSymbolCollection sv = new DefaultSymbolCollection(file);
+	@Override
+	protected void setUp() throws Exception {
+		super.setUp();
+		OrbisgisCoreServices.installServices();
+	}
+
+	public void testManagerClones() throws Exception {
+		SymbolManager sv = getSymbolManager();
 		Symbol polSym = SymbolFactory.createPolygonSymbol();
-		sv.addSymbol(polSym);
-		Symbol sym = sv.getSymbol(0);
-		testEquals(polSym, sym);
-		sv.saveXML();
-		sv = new DefaultSymbolCollection(file);
-		sv.loadCollection();
-		assertTrue(sv.getSymbolCount() == 1);
-		sv.loadCollection();
-		assertTrue(sv.getSymbolCount() == 1);
+		Symbol sym = sv.createSymbol(polSym.getId());
+		assertTrue(testEquals(sv.createSymbol(polSym.getId()), sym));
+		((EditablePolygonSymbol) sym).setOutlineColor(Color.pink);
+		assertTrue(!testEquals(sv.createSymbol(polSym.getId()), sym));
 	}
 
-	public void testCollectionClones() throws Exception {
-		File file = new File("target/collection.xml");
-		file.delete();
-		DefaultSymbolCollection sv = new DefaultSymbolCollection(file);
-		Symbol polSym = SymbolFactory.createPolygonSymbol();
-		sv.addSymbol(polSym);
-		Symbol sym = sv.getSymbol(0);
-		((EditablePolygonSymbol) polSym).setOutlineColor(Color.red);
-		try {
-			testEquals(polSym, sym);
-			assertTrue(false);
-		} catch (IllegalArgumentException e) {
-		}
-		((EditablePolygonSymbol) sym).setOutlineColor(Color.red);
-		try {
-			testEquals(sv.getSymbol(0), sym);
-			assertTrue(false);
-		} catch (IllegalArgumentException e) {
-		}
+	private SymbolManager getSymbolManager() {
+		SymbolManager sm = (SymbolManager) Services
+				.getService("org.orbisgis.SymbolManager");
+		return sm;
 	}
 
-	public void testSymbolClone() throws Exception {
-		ArrayList<Symbol> symbols = SymbolFactory.getAvailableSymbols();
+	public void testAvailableSymbolsClone() throws Exception {
+		SymbolManager sv = getSymbolManager();
+		ArrayList<Symbol> symbols = sv.getAvailableSymbols();
 		HashSet<Class<? extends Symbol>> classes = new HashSet<Class<? extends Symbol>>();
 		for (Symbol symbol : symbols) {
 			Class<? extends Symbol> symbolClass = symbol.getClass();
 			assertTrue(!classes.contains(symbolClass));
 			classes.add(symbol.getClass());
-			testClone(symbol);
-			testPersistent(symbol);
+			assertTrue(testClone(symbol));
 		}
 
 		Symbol s1 = SymbolFactory.createPointCircleSymbol(Color.black,
 				Color.red, 3);
-		testClone(s1);
+		assertTrue(testClone(s1));
 		Symbol s2 = SymbolFactory.createCirclePolygonSymbol(Color.black,
 				Color.red, 3);
-		testClone(s2);
-		testClone(SymbolFactory.createSquareVertexSymbol(Color.black,
-				Color.red, 3));
-		testClone(SymbolFactory
-				.createSquareVertexSymbol(Color.black, Color.red));
-		testClone(SymbolFactory.createCircleVertexSymbol(Color.black,
-				Color.red, 3));
-		testClone(SymbolFactory
-				.createCircleVertexSymbol(Color.black, Color.red));
-		testClone(SymbolFactory.createLabelSymbol("hola", 5));
+		assertTrue(testClone(s2));
+		assertTrue(testClone(SymbolFactory.createSquareVertexSymbol(
+				Color.black, 1, Color.red, 3, false)));
+		assertTrue(testClone(SymbolFactory.createSquareVertexSymbol(
+				Color.black, Color.red)));
+		assertTrue(testClone(SymbolFactory.createCircleVertexSymbol(
+				Color.black, 1, Color.red, 3, false)));
+		assertTrue(testClone(SymbolFactory.createCircleVertexSymbol(
+				Color.black, Color.red)));
+		assertTrue(testClone(SymbolFactory.createLabelSymbol("hola", 5)));
 
-		testClone(SymbolFactory.createLineSymbol(Color.red, 3));
-		testClone(SymbolFactory.createPolygonSymbol());
-		testClone(SymbolFactory.createPolygonSymbol(Color.black));
-		testClone(SymbolFactory.createPolygonSymbol(Color.black, Color.black));
-		testClone(SymbolFactory
-				.createPolygonSymbol(Color.black, 4, Color.black));
-		testClone(SymbolFactory.createSymbolComposite(s1, s2));
+		assertTrue(testClone(SymbolFactory.createLineSymbol(Color.red, 3)));
+		assertTrue(testClone(SymbolFactory.createPolygonSymbol()));
+		assertTrue(testClone(SymbolFactory.createPolygonSymbol(Color.black)));
+		assertTrue(testClone(SymbolFactory.createPolygonSymbol(Color.black,
+				Color.black)));
+		assertTrue(testClone(SymbolFactory.createPolygonSymbol(Color.black, 4,
+				Color.black)));
+		assertTrue(testClone(SymbolFactory.createSymbolComposite(s1, s2)));
 	}
 
-	private void testClone(Symbol symbol) throws DriverException {
-		testEquals(symbol, symbol.cloneSymbol());
+	private boolean testClone(Symbol symbol) throws DriverException {
+		return testEquals(symbol, symbol.cloneSymbol());
 	}
 
-	private void testEquals(Symbol symbol1, Symbol symbol2)
+	private boolean testEquals(Symbol symbol1, Symbol symbol2)
 			throws DriverException {
-		symbol1.getPersistentProperties().equals(
+		return symbol1.getPersistentProperties().equals(
 				symbol2.getPersistentProperties());
 	}
 
@@ -151,9 +164,9 @@ public class SymbolTest extends TestCase {
 		Map<String, String> props = sym.getPersistentProperties();
 		Symbol sym2 = SymbolFactory.createCircleVertexSymbol(new Color(10, 10,
 				10, 10), new Color(10, 10, 10, 10));
-		sym2.setPersistentProperties(props, sym.getVersion());
+		sym2.setPersistentProperties(props);
 
-		testEquals(sym, sym2);
+		assertTrue(testEquals(sym, sym2));
 	}
 
 	public void testFillPersistence() throws Exception {
@@ -161,11 +174,9 @@ public class SymbolTest extends TestCase {
 		testPersistent(sym);
 	}
 
-	private Symbol testPersistent(Symbol sym)
-			throws IncompatibleVersionException {
-		Symbol sym2 = SymbolFactory.getNewSymbol(sym.getId());
-		sym2.setPersistentProperties(sym.getPersistentProperties(), sym
-				.getVersion());
+	private Symbol testPersistent(Symbol sym) {
+		Symbol sym2 = getSymbolManager().createSymbol(sym.getId());
+		sym2.setPersistentProperties(sym.getPersistentProperties());
 		assertTrue(sym.getPersistentProperties().equals(
 				sym2.getPersistentProperties()));
 
@@ -184,5 +195,24 @@ public class SymbolTest extends TestCase {
 		testPersistent(sym);
 		sym.setMapUnits(false);
 		assertTrue(!((EditablePointSymbol) testPersistent(sym)).isMapUnits());
+	}
+
+	public void testLoadNonExistingSymbol() throws Exception {
+		SymbolManager sm = getSymbolManager();
+		TestSymbol symbol = new TestSymbol();
+		SymbolType obj = sm.getJAXBSymbol(symbol);
+		Symbol symbol2 = sm.getSymbolFromJAXB(obj);
+		assertTrue(symbol2 == null);
+		sm.addSymbol(symbol);
+		symbol2 = sm.getSymbolFromJAXB(obj);
+		assertTrue(testEquals(symbol, symbol2));
+	}
+
+	public void testAlreadyExists() throws Exception {
+		try {
+			getSymbolManager().addSymbol(SymbolFactory.createPolygonSymbol());
+			assertTrue(false);
+		} catch (IllegalArgumentException e) {
+		}
 	}
 }

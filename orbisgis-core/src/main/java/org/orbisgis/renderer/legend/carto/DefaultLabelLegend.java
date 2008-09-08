@@ -40,32 +40,18 @@ import java.awt.Color;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.geom.Rectangle2D;
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
-import javax.xml.bind.Unmarshaller;
 
 import org.gdms.data.SpatialDataSourceDecorator;
 import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
-import org.orbisgis.PersistenceException;
-import org.orbisgis.renderer.legend.AbstractLegend;
 import org.orbisgis.renderer.legend.Legend;
 import org.orbisgis.renderer.legend.RenderException;
 import org.orbisgis.renderer.legend.carto.persistence.LabelLegendType;
 import org.orbisgis.renderer.legend.carto.persistence.LegendContainer;
 import org.orbisgis.renderer.symbol.Symbol;
 import org.orbisgis.renderer.symbol.SymbolFactory;
-import org.orbisgis.renderer.symbol.collection.DefaultSymbolCollection;
 
-public class DefaultLabelLegend extends AbstractLegend implements LabelLegend {
+public class DefaultLabelLegend extends AbstractCartoLegend implements LabelLegend {
 
 	private String labelSizeField;
 
@@ -88,7 +74,7 @@ public class DefaultLabelLegend extends AbstractLegend implements LabelLegend {
 		}
 	}
 
-	public void setLabelSizeField(String fieldName) throws DriverException {
+	public void setLabelSizeField(String fieldName) {
 		this.labelSizeField = fieldName;
 		fireLegendInvalid();
 	}
@@ -119,64 +105,25 @@ public class DefaultLabelLegend extends AbstractLegend implements LabelLegend {
 
 	}
 
-	public String getVersion() {
-		return "1.0";
+	public Object getJAXBObject() {
+		LabelLegendType xmlLegend = new LabelLegendType();
+		save(xmlLegend);
+		xmlLegend.setFieldFontSize(getLabelSizeField());
+		xmlLegend.setFieldName(getClassificationField());
+		xmlLegend.setFontSize(getFontSize());
+		LegendContainer xml = new LegendContainer();
+		xml.setLegendDescription(xmlLegend);
+		return xml;
 	}
 
-	public void save(File file) throws PersistenceException {
-		try {
-			JAXBContext jaxbContext = JAXBContext
-					.newInstance(
-							"org.orbisgis.renderer.legend.carto.persistence:"
-									+ "org.orbisgis.renderer.symbol.collection.persistence",
-							DefaultSymbolCollection.class.getClassLoader());
-			Marshaller m = jaxbContext.createMarshaller();
-
-			BufferedOutputStream os = new BufferedOutputStream(
-					new FileOutputStream(file));
-			LabelLegendType xmlLegend = new LabelLegendType();
-			save(xmlLegend);
-			xmlLegend.setFieldFontSize(getLabelSizeField());
-			xmlLegend.setFieldName(getClassificationField());
-			xmlLegend.setFontSize(getFontSize());
-			LegendContainer xml = new LegendContainer();
-			xml.setLegendDescription(xmlLegend);
-			m.marshal(xml, os);
-			os.close();
-		} catch (JAXBException e) {
-			throw new PersistenceException("Cannot save legend", e);
-		} catch (IOException e) {
-			throw new PersistenceException("Cannot save legend", e);
-		}
-	}
-
-	public void load(File file, String version) throws PersistenceException {
-		if (version.equals("1.0")) {
-			try {
-				JAXBContext jaxbContext = JAXBContext
-						.newInstance(
-								"org.orbisgis.renderer.legend.carto.persistence:"
-										+ "org.orbisgis.renderer.symbol.collection.persistence",
-								DefaultSymbolCollection.class.getClassLoader());
-				Unmarshaller m = jaxbContext.createUnmarshaller();
-				BufferedInputStream os = new BufferedInputStream(
-						new FileInputStream(file));
-				LegendContainer xml = (LegendContainer) m.unmarshal(os);
-				LabelLegendType xmlLegend = (LabelLegendType) xml
-						.getLegendDescription();
-				os.close();
-				load(xmlLegend);
-				setClassificationField(xmlLegend.getFieldName());
-				setFontSize(xmlLegend.getFontSize());
-				setLabelSizeField(xmlLegend.getFieldFontSize());
-			} catch (JAXBException e) {
-				throw new PersistenceException("Cannot recover legend", e);
-			} catch (IOException e) {
-				throw new PersistenceException("Cannot recover legend", e);
-			} catch (DriverException e) {
-				throw new PersistenceException("Cannot compute label sizes", e);
-			}
-		}
+	public void setJAXBObject(Object jaxbObject) {
+		LegendContainer xml = (LegendContainer) jaxbObject;
+		LabelLegendType xmlLegend = (LabelLegendType) xml
+				.getLegendDescription();
+		load(xmlLegend);
+		setClassificationField(xmlLegend.getFieldName());
+		setFontSize(xmlLegend.getFontSize());
+		setLabelSizeField(xmlLegend.getFieldFontSize());
 	}
 
 	public Legend newInstance() {
@@ -212,6 +159,11 @@ public class DefaultLabelLegend extends AbstractLegend implements LabelLegend {
 
 	private String getDrawingText() {
 		return "abc  Label on " + fieldName;
+	}
+
+	@Override
+	public String getLegendTypeName() {
+		return "Label";
 	}
 
 }

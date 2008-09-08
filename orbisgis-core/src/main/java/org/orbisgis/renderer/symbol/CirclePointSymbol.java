@@ -52,8 +52,8 @@ import com.vividsolutions.jts.geom.Point;
 
 public class CirclePointSymbol extends AbstractPointSymbol {
 
-	public CirclePointSymbol(Color outline, int lineWidth, Color fillColor,
-			int size, boolean mapUnits) {
+	CirclePointSymbol(Color outline, int lineWidth, Color fillColor, int size,
+			boolean mapUnits) {
 		super(outline, lineWidth, fillColor, size, mapUnits);
 	}
 

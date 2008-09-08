@@ -37,30 +37,28 @@
 package org.orbisgis.renderer.legend;
 
 import java.awt.Graphics;
-import java.io.File;
 
 import org.gdms.data.SpatialDataSourceDecorator;
-import org.orbisgis.PersistenceException;
 import org.orbisgis.renderer.symbol.Symbol;
 
 /**
  * Interface used by the layer model and the renderer to draw the sources
- *
+ * 
  * @author Fernando Gonzalez Cortes
- *
+ * 
  */
 public interface Legend {
 
 	/**
 	 * Adds a listener of legend changes to the legend.
-	 *
+	 * 
 	 * @param listener
 	 */
 	void addLegendListener(LegendListener listener);
 
 	/**
 	 * Removes a listener of legend changes from the legend
-	 *
+	 * 
 	 * @param listener
 	 */
 	void removeLegendListener(LegendListener listener);
@@ -69,7 +67,7 @@ public interface Legend {
 	 * This method is called once when the DataSource is created to allow the
 	 * legend to perform some global calculation like getting min and max
 	 * values, etc.
-	 *
+	 * 
 	 * @param sds
 	 *            DataSource of the layer this legend is associated to
 	 * @throws RenderException
@@ -79,12 +77,12 @@ public interface Legend {
 
 	/**
 	 * Gets the symbol to draw the specified row of the specified DataSource
-	 *
+	 * 
 	 * @param sds
 	 *            DataSource that will be drawn
 	 * @param row
 	 *            Row of the data source the returned symbol will draw
-	 *
+	 * 
 	 * @return The symbol to draw the specified row of the DataSource. Null
 	 *         means the row won't be drawn
 	 * @throws RenderException
@@ -96,14 +94,14 @@ public interface Legend {
 
 	/**
 	 * Gets the legend's name
-	 *
+	 * 
 	 * @return
 	 */
 	String getName();
 
 	/**
 	 * Sets the legend's name. Only meaningful for user interface purposes
-	 *
+	 * 
 	 * @param name
 	 */
 	void setName(String name);
@@ -112,61 +110,52 @@ public interface Legend {
 	 * Returns an unique id. It can be whatever unique string. If this string
 	 * changes, previous versions of the legend won't be read. For persistence
 	 * purposes.
-	 *
+	 * 
 	 * @return
 	 */
 	String getLegendTypeId();
 
 	/**
-	 * Gets the version of the legend.
-	 *
+	 * Returns a human readable description of this implementation
+	 * 
 	 * @return
 	 */
-	String getVersion();
+	String getLegendTypeName();
 
 	/**
-	 * Saves the content of this legend
-	 *
-	 * @param file
-	 *            File to save the legend
-	 *
-	 * @throws PersistenceException
-	 *             if the legend cannot be saved
+	 * Returns this object as a JAXB object ready to be marshalled
+	 * 
+	 * @return The JAXB object or null if this legend is not persistent
 	 */
-	void save(File file) throws PersistenceException;
+	Object getJAXBObject();
 
 	/**
 	 * Loads the legend
-	 *
-	 * @param file
+	 * 
+	 * @param jaxbObject
 	 *            File to save the legend
-	 * @param version
-	 *            Version of the contents in the file
-	 *
-	 * @throws PersistenceException
-	 *             if the legend cannot be saved
 	 */
-	void load(File file, String version) throws PersistenceException;
+	void setJAXBObject(Object jaxbObject);
 
 	/**
 	 * Creates a new empty instance of this legend
-	 *
+	 * 
 	 * @return
 	 */
 	Legend newInstance();
 
 	/**
 	 * Draws the image of the legend in the specified graphics.
-	 *
+	 * 
 	 * @param g
 	 */
 	void drawImage(Graphics g);
 
 	/**
 	 * Gets the size of the image being draw in the {@link drawImage} method
-	 *
+	 * 
 	 * @param g
-	 *
+	 * 
 	 * @return
 	 */
 	int[] getImageSize(Graphics g);
@@ -174,7 +163,7 @@ public interface Legend {
 	/**
 	 * Set the minimum scale to use this legend. Use Integer.MIN_VALUE to
 	 * specify no limit
-	 *
+	 * 
 	 * @param min
 	 */
 	void setMinScale(int min);
@@ -182,7 +171,7 @@ public interface Legend {
 	/**
 	 * Set the maximum scale to use this legend. Use Integer.MAX_VALUE to
 	 * specify no limit
-	 *
+	 * 
 	 * @param max
 	 */
 	void setMaxScale(int max);
@@ -198,4 +187,12 @@ public interface Legend {
 	 * is no limit
 	 */
 	int getMaxScale();
+
+	/**
+	 * Get the JAXB context used to marshall and unmarshall the JAXB objects
+	 * returned by this legend
+	 * 
+	 * @return
+	 */
+	String getJAXBContext();
 }

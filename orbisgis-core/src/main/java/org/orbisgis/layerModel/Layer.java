@@ -37,7 +37,6 @@
 package org.orbisgis.layerModel;
 
 import java.awt.Color;
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -58,7 +57,6 @@ import org.gdms.data.types.Type;
 import org.gdms.driver.DriverException;
 import org.grap.model.GeoRaster;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
-import org.orbisgis.PersistenceException;
 import org.orbisgis.Services;
 import org.orbisgis.layerModel.persistence.LayerType;
 import org.orbisgis.layerModel.persistence.Legends;
@@ -67,6 +65,7 @@ import org.orbisgis.renderer.legend.Legend;
 import org.orbisgis.renderer.legend.RasterLegend;
 import org.orbisgis.renderer.legend.RenderException;
 import org.orbisgis.renderer.legend.carto.LegendFactory;
+import org.orbisgis.renderer.legend.carto.LegendManager;
 import org.orbisgis.renderer.legend.carto.UniqueSymbolLegend;
 import org.orbisgis.renderer.symbol.Symbol;
 import org.orbisgis.renderer.symbol.SymbolFactory;
@@ -121,7 +120,7 @@ public class Layer extends GdmsLayer {
 			}
 		}
 
-		legend.setName(UniqueSymbolLegend.NAME);
+		legend.setName(legend.getLegendTypeName());
 		return legend;
 	}
 
@@ -150,7 +149,7 @@ public class Layer extends GdmsLayer {
 			dataSource.removeEditionListener(editionListener);
 			dataSource.close();
 		} catch (AlreadyClosedException e) {
-			throw new RuntimeException("Bug!");
+			throw new LayerException("Bug!", e);
 		} catch (DriverException e) {
 			throw new LayerException(e);
 		}
@@ -195,7 +194,7 @@ public class Layer extends GdmsLayer {
 
 	/**
 	 * Sets the legend used to draw this layer
-	 *
+	 * 
 	 * @param legends
 	 * @throws DriverException
 	 *             If there is some problem accessing the contents of the layer
@@ -367,7 +366,7 @@ public class Layer extends GdmsLayer {
 		}
 	}
 
-	public LayerType saveLayer(File baseFile) throws PersistenceException {
+	public LayerType saveLayer() {
 		LayerType ret = new LayerType();
 		ret.setName(getName());
 		ret.setSourceName(getMainName());
@@ -376,30 +375,18 @@ public class Layer extends GdmsLayer {
 		Iterator<String> it = fieldLegend.keySet().iterator();
 		while (it.hasNext()) {
 			String fieldName = it.next();
-			// Ignore raster legends
-			// TODO waiting grap refactoring
-			try {
-				int fi = getDataSource().getFieldIndexByName(fieldName);
-				if (getDataSource().getFieldType(fi).getTypeCode() == Type.RASTER) {
-					continue;
-				}
-			} catch (DriverException e) {
-				throw new PersistenceException("Cannot save legend", e);
-			}
 			Legends legends = new Legends();
 			legends.setFieldName(fieldName);
 			LegendDecorator[] legendDecorators = fieldLegend.get(fieldName);
 			for (int i = 0; i < legendDecorators.length; i++) {
 				LegendDecorator legendDecorator = legendDecorators[i];
 				Legend legend = legendDecorator.getLegend();
-				SimpleLegend xmlLegend = new SimpleLegend();
-				xmlLegend.setLegendId(legend.getLegendTypeId());
-				File legendFileName = getLegendFileName(baseFile, getName(),
-						fieldName, i);
-				legend.save(legendFileName);
-				xmlLegend.setFile(legendFileName.getName());
-				xmlLegend.setVersion(legend.getVersion());
-				legends.getSimpleLegend().add(xmlLegend);
+				String legendTypeId = legend.getLegendTypeId();
+				Object legendJAXBObject = legend.getJAXBObject();
+				SimpleLegend simpleLegend = new SimpleLegend();
+				simpleLegend.setLegendId(legendTypeId);
+				simpleLegend.setAny(legendJAXBObject);
+				legends.getSimpleLegend().add(simpleLegend);
 			}
 			ret.getLegends().add(legends);
 		}
@@ -407,21 +394,7 @@ public class Layer extends GdmsLayer {
 		return ret;
 	}
 
-	private File getLegendFileName(File baseFile, String layerName,
-			String fieldName, int i) {
-		if (baseFile.getAbsolutePath().toLowerCase().endsWith(".xml")) {
-			String name = baseFile.getName();
-			name = name.substring(0, name.length() - 4);
-			name = name + "-legend-" + layerName + "-" + fieldName + "-" + i
-					+ ".xml";
-			return new File(baseFile.getParentFile(), name);
-		} else {
-			throw new RuntimeException("bug!");
-		}
-	}
-
-	public void restoreLayer(LayerType lyr, File baseFile)
-			throws LayerException, PersistenceException {
+	public void restoreLayer(LayerType lyr) throws LayerException {
 		LayerType layer = (LayerType) lyr;
 		this.setName(layer.getName());
 		this.setVisible(layer.isVisible());
@@ -431,16 +404,16 @@ public class Layer extends GdmsLayer {
 			String fieldName = legends.getFieldName();
 			List<SimpleLegend> legendCollection = legends.getSimpleLegend();
 			ArrayList<Legend> fieldLegends = new ArrayList<Legend>();
+			LegendManager lm = (LegendManager) Services
+					.getService("org.orbisgis.LegendManager");
 			for (SimpleLegend simpleLegend : legendCollection) {
 				String legendId = simpleLegend.getLegendId();
-				String file = simpleLegend.getFile();
-				String version = simpleLegend.getVersion();
 
-				Legend legend = LegendFactory.getNewLegend(legendId);
+				Legend legend = lm.getNewLegend(legendId);
 				if (legend == null) {
 					throw new LayerException("Unsupported legend: " + legendId);
 				}
-				legend.load(new File(baseFile.getParentFile(), file), version);
+				legend.setJAXBObject(simpleLegend.getAny());
 				fieldLegends.add(legend);
 			}
 			try {

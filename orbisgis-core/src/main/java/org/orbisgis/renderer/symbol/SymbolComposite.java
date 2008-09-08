@@ -50,7 +50,7 @@ class SymbolComposite extends AbstractSymbol implements Symbol {
 
 	private Symbol[] symbols;
 
-	public SymbolComposite(Symbol[] symbols) {
+	SymbolComposite(Symbol[] symbols) {
 		this.symbols = symbols;
 		setName("Symbol composite");
 	}

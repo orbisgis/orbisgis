@@ -41,8 +41,6 @@ import org.orbisgis.renderer.symbol.Symbol;
 
 public interface UniqueSymbolLegend extends Legend {
 
-	String NAME = "Unique symbol legend";
-
 	/**
 	 * Sets the symbol of the legend
 	 *

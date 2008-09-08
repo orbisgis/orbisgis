@@ -46,8 +46,8 @@ import com.vividsolutions.jts.geom.Polygon;
 
 public class PolygonCentroidCircleSymbol extends CirclePointSymbol {
 
-	public PolygonCentroidCircleSymbol(Color outline, int lineWidth,
-			Color fillColor, int size, boolean mapUnits) {
+	PolygonCentroidCircleSymbol(Color outline, int lineWidth, Color fillColor,
+			int size, boolean mapUnits) {
 		super(outline, lineWidth, fillColor, size, mapUnits);
 	}
 

@@ -18,7 +18,6 @@ import javax.imageio.ImageIO;
 
 import org.gdms.data.types.GeometryConstraint;
 import org.gdms.driver.DriverException;
-import org.orbisgis.IncompatibleVersionException;
 import org.orbisgis.renderer.RenderPermission;
 import org.orbisgis.renderer.liteShape.LiteShape;
 
@@ -94,13 +93,12 @@ public class ImageSymbol extends AbstractSymbol implements Symbol {
 		return ret;
 	}
 
-	public void setPersistentProperties(Map<String, String> props,
-			String version) throws IncompatibleVersionException {
-		super.setPersistentProperties(props, version);
+	public void setPersistentProperties(Map<String, String> props) {
+		super.setPersistentProperties(props);
 		try {
 			setImageURL(new URL(props.get("url")));
 		} catch (MalformedURLException e) {
-			throw new IncompatibleVersionException("Cannot parse the url", e);
+			setErrorImage();
 		} catch (IOException e) {
 			setErrorImage();
 		}
@@ -122,7 +120,7 @@ public class ImageSymbol extends AbstractSymbol implements Symbol {
 
 	/**
 	 * Sets the URL of the image to display
-	 *
+	 * 
 	 * @param url
 	 * @throws IOException
 	 *             If the image cannot be loaded
@@ -139,7 +137,7 @@ public class ImageSymbol extends AbstractSymbol implements Symbol {
 
 	/**
 	 * Gets the URL of the image used to draw this symbol
-	 *
+	 * 
 	 * @return
 	 */
 	public URL getImageURL() {

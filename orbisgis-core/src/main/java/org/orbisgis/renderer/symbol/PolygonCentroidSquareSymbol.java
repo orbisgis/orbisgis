@@ -46,7 +46,7 @@ import com.vividsolutions.jts.geom.Polygon;
 
 public class PolygonCentroidSquareSymbol extends SquarePointSymbol {
 
-	public PolygonCentroidSquareSymbol(Color outline, int lineWidth,
+	PolygonCentroidSquareSymbol(Color outline, int lineWidth,
 			Color fillColor, int size, boolean mapUnits) {
 		super(outline, lineWidth, fillColor, size, mapUnits);
 	}

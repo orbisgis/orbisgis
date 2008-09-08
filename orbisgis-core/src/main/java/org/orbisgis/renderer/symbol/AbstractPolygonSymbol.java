@@ -41,7 +41,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.gdms.data.types.GeometryConstraint;
-import org.orbisgis.IncompatibleVersionException;
 
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.MultiPolygon;
@@ -71,7 +70,6 @@ public abstract class AbstractPolygonSymbol extends AbstractLineSymbol
 		}
 	}
 
-
 	public Color getFillColor() {
 		return fillColor;
 	}
@@ -91,9 +89,8 @@ public abstract class AbstractPolygonSymbol extends AbstractLineSymbol
 	}
 
 	@Override
-	public void setPersistentProperties(Map<String, String> props,
-			String version) throws IncompatibleVersionException {
-		super.setPersistentProperties(props, version);
+	public void setPersistentProperties(Map<String, String> props) {
+		super.setPersistentProperties(props);
 		String fill = props.get("fill-color");
 		if (fill != null) {
 			fillColor = new Color(Integer.parseInt(fill), true);

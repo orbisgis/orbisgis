@@ -42,27 +42,13 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
-import javax.xml.bind.Unmarshaller;
 
 import org.gdms.data.SpatialDataSourceDecorator;
 import org.gdms.driver.DriverException;
 import org.gdms.sql.strategies.IncompatibleTypesException;
-import org.orbisgis.IncompatibleVersionException;
-import org.orbisgis.PersistenceException;
 import org.orbisgis.Services;
 import org.orbisgis.renderer.RenderPermission;
 import org.orbisgis.renderer.classification.ProportionalMethod;
-import org.orbisgis.renderer.legend.AbstractLegend;
 import org.orbisgis.renderer.legend.Legend;
 import org.orbisgis.renderer.legend.RenderException;
 import org.orbisgis.renderer.legend.carto.persistence.LegendContainer;
@@ -70,7 +56,7 @@ import org.orbisgis.renderer.legend.carto.persistence.ProportionalLegendType;
 import org.orbisgis.renderer.symbol.EditablePointSymbol;
 import org.orbisgis.renderer.symbol.Symbol;
 import org.orbisgis.renderer.symbol.SymbolFactory;
-import org.orbisgis.renderer.symbol.collection.DefaultSymbolCollection;
+import org.orbisgis.renderer.symbol.SymbolManager;
 import org.orbisgis.renderer.symbol.collection.persistence.SimpleSymbolType;
 
 import com.vividsolutions.jts.geom.Coordinate;
@@ -78,7 +64,7 @@ import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.Point;
 
-public class DefaultProportionalLegend extends AbstractLegend implements
+public class DefaultProportionalLegend extends AbstractCartoLegend implements
 		ProportionalLegend {
 
 	private String field;
@@ -101,18 +87,18 @@ public class DefaultProportionalLegend extends AbstractLegend implements
 		fireLegendInvalid();
 	}
 
-	private void setLinearMethod() throws DriverException {
+	private void setLinearMethod() {
 		method = LINEAR;
 		fireLegendInvalid();
 	}
 
-	private void setSquareMethod(double sqrtFactor) throws DriverException {
+	private void setSquareMethod(double sqrtFactor) {
 		method = SQUARE;
 		this.sqrtFactor = sqrtFactor;
 		fireLegendInvalid();
 	}
 
-	private void setLogarithmicMethod() throws DriverException {
+	private void setLogarithmicMethod() {
 		method = LOGARITHMIC;
 		fireLegendInvalid();
 	}
@@ -179,79 +165,39 @@ public class DefaultProportionalLegend extends AbstractLegend implements
 		return new DefaultProportionalLegend();
 	}
 
-	public String getVersion() {
-		return "1.0";
+	public Object getJAXBObject() {
+		ProportionalLegendType xmlLegend = new ProportionalLegendType();
+		save(xmlLegend);
+		SymbolManager sm = (SymbolManager) Services
+				.getService("org.orbisgis.SymbolManager");
+		xmlLegend.setSampleSymbol(sm.getJAXBSymbol(symbol));
+		xmlLegend.setMethod(getMethod());
+		xmlLegend.setMaxSize(getMaxSize());
+		xmlLegend.setFieldName(getClassificationField());
+		LegendContainer xml = new LegendContainer();
+		xml.setLegendDescription(xmlLegend);
+		return xml;
 	}
 
-	public void save(File file) throws PersistenceException {
-		try {
-			JAXBContext jaxbContext = JAXBContext
-					.newInstance(
-							"org.orbisgis.renderer.legend.carto.persistence:"
-									+ "org.orbisgis.renderer.symbol.collection.persistence",
-							DefaultSymbolCollection.class.getClassLoader());
-			Marshaller m = jaxbContext.createMarshaller();
-
-			BufferedOutputStream os = new BufferedOutputStream(
-					new FileOutputStream(file));
-			ProportionalLegendType xmlLegend = new ProportionalLegendType();
-			save(xmlLegend);
-			xmlLegend.setSampleSymbol(DefaultSymbolCollection
-					.getXMLFromSymbol(symbol));
-			xmlLegend.setMethod(getMethod());
-			xmlLegend.setMinArea(getMaxSize());
-			xmlLegend.setFieldName(getClassificationField());
-			LegendContainer xml = new LegendContainer();
-			xml.setLegendDescription(xmlLegend);
-			m.marshal(xml, os);
-			os.close();
-		} catch (JAXBException e) {
-			throw new PersistenceException("Cannot save legend", e);
-		} catch (IOException e) {
-			throw new PersistenceException("Cannot save legend", e);
-		}
-	}
-
-	public void load(File file, String version) throws PersistenceException {
-		if (version.equals("1.0")) {
-			try {
-				JAXBContext jaxbContext = JAXBContext
-						.newInstance(
-								"org.orbisgis.renderer.legend.carto.persistence:"
-										+ "org.orbisgis.renderer.symbol.collection.persistence",
-								DefaultSymbolCollection.class.getClassLoader());
-				Unmarshaller m = jaxbContext.createUnmarshaller();
-				BufferedInputStream os = new BufferedInputStream(
-						new FileInputStream(file));
-				LegendContainer xml = (LegendContainer) m.unmarshal(os);
-				ProportionalLegendType xmlLegend = (ProportionalLegendType) xml
-						.getLegendDescription();
-				os.close();
-				load(xmlLegend);
-				setMethod(xmlLegend.getMethod());
-				setMaxSize(xmlLegend.getMinArea());
-				Symbol symbol = DefaultSymbolCollection
-						.getSymbolFromXML(xmlLegend.getSampleSymbol());
-				if (symbol != null) {
-					setSampleSymbol((EditablePointSymbol) symbol);
-				} else {
-					throw new PersistenceException("Unknown symbol: "
+	public void setJAXBObject(Object jaxbObject) {
+		LegendContainer xml = (LegendContainer) jaxbObject;
+		ProportionalLegendType xmlLegend = (ProportionalLegendType) xml
+				.getLegendDescription();
+		load(xmlLegend);
+		setMethod(xmlLegend.getMethod());
+		setMaxSize(xmlLegend.getMaxSize());
+		SymbolManager sm = (SymbolManager) Services
+				.getService("org.orbisgis.SymbolManager");
+		Symbol symbol = sm.getSymbolFromJAXB(xmlLegend.getSampleSymbol());
+		if (symbol != null) {
+			setSampleSymbol((EditablePointSymbol) symbol);
+		} else {
+			Services.getErrorManager().error(
+					"Unknown symbol: "
 							+ ((SimpleSymbolType) xmlLegend.getSampleSymbol())
-									.getSymbolTypeId());
-				}
-				setClassificationField(xmlLegend.getFieldName());
-			} catch (JAXBException e) {
-				throw new PersistenceException("Cannot recover legend", e);
-			} catch (IOException e) {
-				throw new PersistenceException("Cannot recover legend", e);
-			} catch (IncompatibleVersionException e) {
-				throw new PersistenceException("Cannot recover legend symbol",
-						e);
-			} catch (DriverException e) {
-				throw new PersistenceException("Cannot perform classification",
-						e);
-			}
+									.getSymbolTypeId() + ". Using default");
 		}
+		setClassificationField(xmlLegend.getFieldName());
 	}
 
 	public void setClassificationField(String fieldName) {
@@ -279,7 +225,7 @@ public class DefaultProportionalLegend extends AbstractLegend implements
 		return method;
 	}
 
-	public void setMethod(int method) throws DriverException {
+	public void setMethod(int method) {
 		switch (method) {
 		case LINEAR:
 			setLinearMethod();
@@ -403,5 +349,10 @@ public class DefaultProportionalLegend extends AbstractLegend implements
 		} else {
 			return new int[] { 0, 0 };
 		}
+	}
+
+	@Override
+	public String getLegendTypeName() {
+		return "Proportional point";
 	}
 }

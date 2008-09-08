@@ -52,7 +52,7 @@ import com.vividsolutions.jts.geom.Geometry;
 
 public class SquareVertexSymbol extends SquarePointSymbol {
 
-	public SquareVertexSymbol(Color outline, int lineWidth, Color fillColor,
+	SquareVertexSymbol(Color outline, int lineWidth, Color fillColor,
 			int size, boolean mapUnits) {
 		super(outline, lineWidth, fillColor, size, mapUnits);
 

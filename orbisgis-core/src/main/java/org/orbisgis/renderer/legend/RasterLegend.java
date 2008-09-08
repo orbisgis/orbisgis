@@ -42,7 +42,6 @@ import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.ColorModel;
-import java.io.File;
 
 import org.gdms.data.SpatialDataSourceDecorator;
 import org.grap.lut.LutDisplay;
@@ -98,82 +97,11 @@ public class RasterLegend extends AbstractLegend implements Legend {
 		return bandsCode;
 	}
 
-	public String getVersion() {
-		return "1.0";
+	public Object getJAXBObject() {
+		return null;
 	}
 
-	public void save(File file) throws PersistenceException {
-		// if (colorModel instanceof IndexColorModel) {
-		// try {
-		// JAXBContext jaxbContext = JAXBContext.newInstance(
-		// "org.orbisgis.renderer.legend.carto.persistence",
-		// DefaultSymbolCollection.class.getClassLoader());
-		// Marshaller m = jaxbContext.createMarshaller();
-		//
-		// BufferedOutputStream os = new BufferedOutputStream(
-		// new FileOutputStream(file));
-		// RasterLegendType xmlLegend = new RasterLegendType();
-		// save(xmlLegend);
-		// List<Integer> cmComponentList = xmlLegend
-		// .getColorModelComponent();
-		// for (int i = 0; i < ((IndexColorModel) colorModel).getMapSize(); i++)
-		// {
-		// int red = colorModel.getRed(i);
-		// int green = colorModel.getGreen(i);
-		// int blue = colorModel.getBlue(i);
-		// Color c = new Color(red, green, blue);
-		// cmComponentList.add(c.getRGB());
-		// }
-		// xmlLegend.setOpacity(opacity);
-		// LegendContainer xml = new LegendContainer();
-		// xml.setLegendDescription(xmlLegend);
-		// m.marshal(xml, os);
-		// os.close();
-		// } catch (JAXBException e) {
-		// throw new PersistenceException("Cannot save legend", e);
-		// } catch (IOException e) {
-		// throw new PersistenceException("Cannot save legend", e);
-		// }
-		// }
-	}
-
-	public void load(File file, String version) throws PersistenceException {
-		// TODO waiting grap refactoring
-		// if (version.equals("1.0") && file.exists()) {
-		// try {
-		// JAXBContext jaxbContext = JAXBContext
-		// .newInstance(
-		// "org.orbisgis.renderer.legend.carto.persistence:"
-		// + "org.orbisgis.renderer.symbol.collection.persistence",
-		// DefaultSymbolCollection.class.getClassLoader());
-		// Unmarshaller m = jaxbContext.createUnmarshaller();
-		// BufferedInputStream os = new BufferedInputStream(
-		// new FileInputStream(file));
-		// LegendContainer xml = (LegendContainer) m.unmarshal(os);
-		// RasterLegendType xmlLegend = (RasterLegendType) xml
-		// .getLegendDescription();
-		// os.close();
-		// load(xmlLegend);
-		// List<Integer> cmComList = xmlLegend.getColorModelComponent();
-		// byte[] red = new byte[cmComList.size()];
-		// byte[] green = new byte[cmComList.size()];
-		// byte[] blue = new byte[cmComList.size()];
-		// for (int i = 0; i < blue.length; i++) {
-		// Integer integer = cmComList.get(i);
-		// Color c = new Color(integer);
-		// red[i] = (byte) c.getRed();
-		// green[i] = (byte) c.getGreen();
-		// blue[i] = (byte) c.getBlue();
-		// }
-		// colorModel = new IndexColorModel(8, blue.length, red, green,
-		// blue);
-		// opacity = xmlLegend.getOpacity();
-		// } catch (JAXBException e) {
-		// throw new PersistenceException("Cannot recover legend", e);
-		// } catch (IOException e) {
-		// throw new PersistenceException("Cannot recover legend", e);
-		// }
-		// }
+	public void setJAXBObject(Object jaxbObject) {
 	}
 
 	public String getLegendTypeId() {
@@ -213,6 +141,16 @@ public class RasterLegend extends AbstractLegend implements Legend {
 
 	private String getDrawingText() {
 		return bandsCode + " composition";
+	}
+
+	@Override
+	public String getJAXBContext() {
+		return null;
+	}
+
+	@Override
+	public String getLegendTypeName() {
+		return "Raster";
 	}
 
 }

@@ -42,7 +42,6 @@ import java.util.Map;
 
 import org.gdms.data.types.GeometryConstraint;
 import org.gdms.driver.DriverException;
-import org.orbisgis.IncompatibleVersionException;
 import org.orbisgis.renderer.RenderPermission;
 
 import com.vividsolutions.jts.geom.Envelope;
@@ -52,7 +51,7 @@ public interface Symbol {
 
 	/**
 	 * Draws the symbol in the specified graphics object
-	 *
+	 * 
 	 * @param g
 	 * @param geom
 	 * @param at
@@ -67,7 +66,7 @@ public interface Symbol {
 
 	/**
 	 * Returns true if the symbol will draw the specified geometry
-	 *
+	 * 
 	 * @param geom
 	 * @return
 	 */
@@ -76,7 +75,7 @@ public interface Symbol {
 	/**
 	 * Returns true if this symbol is suitable for a geometry field with the
 	 * specified geometry type constraint.
-	 *
+	 * 
 	 * @param geometryConstraint
 	 *            The geometry constraint. Null if there is no geometry type
 	 *            constraint, this is, the field can have any type of geometries
@@ -86,37 +85,37 @@ public interface Symbol {
 
 	/**
 	 * Sets the name of the symbol
-	 *
+	 * 
 	 * @param name
 	 */
 	void setName(String name);
 
 	/**
 	 * Gets the name of the symbol
-	 *
+	 * 
 	 * @return
 	 */
 	String getName();
 
 	/**
 	 * True if the symbol accepts children, false otherwise
-	 *
+	 * 
 	 * @return
 	 */
 	boolean acceptsChildren();
 
 	/**
 	 * Gets the number of child in this symbol
-	 *
+	 * 
 	 * @return
 	 */
 	public int getSymbolCount();
 
 	/**
 	 * Gets the i-th child
-	 *
+	 * 
 	 * @param i
-	 *
+	 * 
 	 * @return
 	 */
 	public Symbol getSymbol(int i);
@@ -125,50 +124,38 @@ public interface Symbol {
 	 * Returns an unique id. It can be whatever unique string. If this string
 	 * changes, previous versions of the symbol collection could not be read.
 	 * For persistence purposes.
-	 *
+	 * 
 	 * @return
 	 */
 	String getId();
 
 	/**
 	 * Gets the human readable description of this type of symbol
-	 *
+	 * 
 	 * @return
 	 */
 	String getClassName();
 
 	/**
 	 * Creates a new instance of this symbol
-	 *
+	 * 
 	 * @return
 	 */
 	Symbol cloneSymbol();
 
 	/**
 	 * Gets the properties of this symbol to save it to disk
-	 *
+	 * 
 	 * @return
 	 */
 	Map<String, String> getPersistentProperties();
 
 	/**
-	 * Gets the version of this symbol
-	 *
-	 * @return
-	 */
-	String getVersion();
-
-	/**
 	 * Sets the persistent properties returned previously by
 	 * getPersistentProperties
-	 *
+	 * 
 	 * @param props
-	 * @param version
-	 *            Version of the properties
-	 * @throws IncompatibleVersionException
-	 *             If the symbol cannot read the specified version
 	 */
-	void setPersistentProperties(Map<String, String> props, String version)
-			throws IncompatibleVersionException;
+	void setPersistentProperties(Map<String, String> props);
 
 }

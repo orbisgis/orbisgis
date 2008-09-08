@@ -1,0 +1,8 @@
+99;field-myAttribute
+public class A {
+  private String myAttribute;
+
+  public void method2() {
+    System.out.println(my
+  }
+}

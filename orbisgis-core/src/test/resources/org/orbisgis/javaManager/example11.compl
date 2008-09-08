@@ -1,0 +1,8 @@
+39;method-showMessage(String arg0)
+import javax.swing.JOptionPane;
+
+showMessage("Hola");
+
+void showMessage(String message) {
+JOptionPane.showMessageDialog(null, message);
+}

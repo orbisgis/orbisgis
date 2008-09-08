@@ -38,33 +38,9 @@ package org.orbisgis.renderer.symbol;
 
 import java.awt.Color;
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.ArrayList;
 
 public class SymbolFactory {
-
-	private static ArrayList<Symbol> availableSymbols = new ArrayList<Symbol>();
-
-	static {
-		ImageSymbol imageSymbol = new ImageSymbol();
-		try {
-			imageSymbol.setImageURL(new URL("file:///tmp/notexists.png"));
-		} catch (MalformedURLException e) {
-		} catch (IOException e) {
-		}
-		addSymbol(imageSymbol);
-		addSymbol(new CirclePointSymbol(Color.black, 1, Color.red, 10, false));
-		addSymbol(new SquarePointSymbol(Color.black, 1, Color.red, 10, false));
-		addSymbol(new SquareVertexSymbol(Color.black, 1, Color.red, 10, false));
-		addSymbol(new CircleVertexSymbol(Color.black, 1, Color.red, 10, false));
-		addSymbol(new PolygonCentroidCircleSymbol(Color.black, 1, Color.red,
-				10, false));
-		addSymbol(new PolygonCentroidSquareSymbol(Color.black, 1, Color.red,
-				10, false));
-		addSymbol(new PolygonSymbol(Color.black, 1, Color.red));
-		addSymbol(new LineSymbol(Color.black, 1));
-	}
 
 	public static Symbol createPolygonSymbol() {
 		return createPolygonSymbol(Color.black);
@@ -91,6 +67,18 @@ public class SymbolFactory {
 		return new CirclePointSymbol(outline, 1, fillColor, size, false);
 	}
 
+	public static Symbol createPointCircleSymbol(Color outline, int lineWidth,
+			Color fillColor, int size, boolean mapUnits) {
+		return new CirclePointSymbol(outline, lineWidth, fillColor, size,
+				mapUnits);
+	}
+
+	public static Symbol createPointSquareSymbol(Color outline, int lineWidth,
+			Color fillColor, int size, boolean mapUnits) {
+		return new SquarePointSymbol(outline, lineWidth, fillColor, size,
+				mapUnits);
+	}
+
 	public static Symbol createSymbolComposite(Symbol... symbols) {
 		return new SymbolComposite(symbols);
 	}
@@ -115,8 +103,9 @@ public class SymbolFactory {
 	}
 
 	public static Symbol createCircleVertexSymbol(Color outline,
-			Color fillColor, int size) {
-		return new CircleVertexSymbol(outline, 1, fillColor, size, false);
+			int outlineWidth, Color fillColor, int size, boolean mapUnits) {
+		return new CircleVertexSymbol(outline, outlineWidth, fillColor, size,
+				mapUnits);
 
 	}
 
@@ -126,49 +115,37 @@ public class SymbolFactory {
 	}
 
 	public static Symbol createSquareVertexSymbol(Color outline,
-			Color fillColor, int size) {
+			int outlineWidth, Color fillColor, int size, boolean mapUnits) {
 
-		return new SquareVertexSymbol(outline, 1, fillColor, size, false);
+		return new SquareVertexSymbol(outline, outlineWidth, fillColor, size,
+				mapUnits);
 	}
 
-	private static boolean addSymbol(Symbol symbol) {
-		if (getNewSymbol(symbol.getId()) != null) {
-			throw new IllegalArgumentException(
-					"There is already a symbol with the same id: "
-							+ symbol.getId());
-		}
-		return availableSymbols.add(symbol);
+	public static Symbol createPolygonCentroidSquareSymbol(Color outline,
+			int lineWidth, Color fill, int size, boolean mapUnits) {
+		return new PolygonCentroidSquareSymbol(outline, lineWidth, fill, size,
+				mapUnits);
 	}
 
-	/**
-	 * Gets a new instance from the available symbols with the same id than the
-	 * one specified
-	 *
-	 * @param id
-	 *            Symbol class name
-	 * @return null if there is no symbol with the same id
-	 */
-	public static Symbol getNewSymbol(String id) {
-		for (Symbol sym : availableSymbols) {
-			if (sym.getId().equals(id)) {
-				return sym.cloneSymbol();
-			}
-		}
-
-		return null;
-	}
-
-	public static ArrayList<Symbol> getAvailableSymbols() {
-		ArrayList<Symbol> ret = new ArrayList<Symbol>();
-		for (Symbol symbol : availableSymbols) {
-			ret.add(symbol.cloneSymbol());
-		}
-		return ret;
+	public static Symbol createPolygonCentroidCircleSymbol(Color outline,
+			int lineWidth, Color fill, int size, boolean mapUnits) {
+		return new PolygonCentroidCircleSymbol(outline, lineWidth, fill, size,
+				mapUnits);
 	}
 
 	public static Symbol createImageSymbol(URL url) throws IOException {
 		ImageSymbol ret = new ImageSymbol();
 		ret.setImageURL(url);
+		return ret;
+	}
+
+	public static Symbol createImageSymbol() {
+		ImageSymbol ret = new ImageSymbol();
+		try {
+			ret.setImageURL(new URL("file:///notexists.png"));
+		} catch (IOException e) {
+			// ignore
+		}
 		return ret;
 	}
 

@@ -41,8 +41,6 @@ import org.orbisgis.renderer.symbol.Symbol;
 
 public interface UniqueValueLegend extends ClassifiedLegend {
 
-	String NAME = "Unique value legend";
-
 	/**
 	 * Adds a classification to the legend
 	 *

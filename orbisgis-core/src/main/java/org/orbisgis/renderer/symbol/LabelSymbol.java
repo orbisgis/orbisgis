@@ -48,7 +48,6 @@ import java.util.Map;
 
 import org.gdms.data.types.GeometryConstraint;
 import org.gdms.driver.DriverException;
-import org.orbisgis.IncompatibleVersionException;
 import org.orbisgis.renderer.RenderPermission;
 
 import com.vividsolutions.jts.geom.Coordinate;
@@ -61,7 +60,7 @@ public class LabelSymbol extends AbstractSymbol implements Symbol {
 	private int fontSize;
 	private String text;
 
-	public LabelSymbol(String text, int fontSize) {
+	LabelSymbol(String text, int fontSize) {
 		this.text = text;
 		this.fontSize = fontSize;
 		setName("Label symbol");
@@ -114,9 +113,8 @@ public class LabelSymbol extends AbstractSymbol implements Symbol {
 		return ret;
 	}
 
-	public void setPersistentProperties(Map<String, String> props,
-			String version) throws IncompatibleVersionException {
-		super.setPersistentProperties(props, version);
+	public void setPersistentProperties(Map<String, String> props) {
+		super.setPersistentProperties(props);
 		fontSize = Integer.parseInt(props.get("font-size"));
 	}
 

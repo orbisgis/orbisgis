@@ -50,7 +50,7 @@ import com.vividsolutions.jts.geom.Geometry;
 
 public class LineSymbol extends AbstractLineSymbol {
 
-	public LineSymbol(Color outline, int lineWidth) {
+	LineSymbol(Color outline, int lineWidth) {
 		super(outline, lineWidth);
 	}
 

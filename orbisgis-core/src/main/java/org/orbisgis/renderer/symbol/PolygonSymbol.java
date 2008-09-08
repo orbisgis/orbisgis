@@ -52,7 +52,7 @@ import com.vividsolutions.jts.geom.Polygon;
 
 public class PolygonSymbol extends AbstractPolygonSymbol {
 
-	public PolygonSymbol(Color outlineColor, int lineWidth, Color fillColor) {
+	PolygonSymbol(Color outlineColor, int lineWidth, Color fillColor) {
 		super(outlineColor, lineWidth, fillColor);
 	}
 
@@ -65,7 +65,8 @@ public class PolygonSymbol extends AbstractPolygonSymbol {
 				g.fill(ls);
 			}
 			if (outline != null) {
-				g.setStroke(new BasicStroke(lineWidth));
+				g.setStroke(new BasicStroke(lineWidth, BasicStroke.CAP_ROUND,
+						BasicStroke.JOIN_ROUND));
 				g.setColor(outline);
 				g.draw(ls);
 			}

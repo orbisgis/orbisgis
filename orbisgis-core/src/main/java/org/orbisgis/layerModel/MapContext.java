@@ -37,9 +37,7 @@
 package org.orbisgis.layerModel;
 
 import java.awt.image.BufferedImage;
-import java.io.File;
 
-import org.orbisgis.PersistenceException;
 import org.orbisgis.progress.IProgressMonitor;
 
 import com.vividsolutions.jts.geom.Envelope;
@@ -53,35 +51,41 @@ public interface MapContext {
 
 	/**
 	 * Gets the root layer of the layer collection in this edition context
-	 *
+	 * 
 	 * @return
+	 * @throws IllegalStateException
+	 *             If the map is closed
 	 */
-	ILayer getLayerModel();
+	ILayer getLayerModel() throws IllegalStateException;
 
 	/**
 	 * Gets all the layers in the map context
-	 *
+	 * 
 	 * @return
+	 * @throws IllegalStateException
+	 *             If the map is closed
 	 */
-	public ILayer[] getLayers();
+	public ILayer[] getLayers() throws IllegalStateException;
 
 	/**
 	 * Gets the selected layers
-	 *
+	 * 
 	 * @return
+	 * @throws IllegalStateException
+	 *             If the map is closed
 	 */
-	public ILayer[] getSelectedLayers();
+	public ILayer[] getSelectedLayers() throws IllegalStateException;
 
 	/**
 	 * Adds a listener for map context events
-	 *
+	 * 
 	 * @param listener
 	 */
 	public void addMapContextListener(MapContextListener listener);
 
 	/**
 	 * Removes a listener for map context events
-	 *
+	 * 
 	 * @param listener
 	 */
 	public void removeMapContextListener(MapContextListener listener);
@@ -89,36 +93,65 @@ public interface MapContext {
 	/**
 	 * Sets the selected layers. If the specified layers are not in the map
 	 * context they are removed from selection.
-	 *
+	 * 
 	 * @param selectedLayers
+	 * @throws IllegalStateException
+	 *             If the map is closed
 	 */
-	public void setSelectedLayers(ILayer[] selectedLayers);
+	public void setSelectedLayers(ILayer[] selectedLayers)
+			throws IllegalStateException;
 
 	/**
-	 * Saves the status of the map context in the specified file
-	 *
-	 * @param file
-	 *            File to store the status
-	 * @param pm
-	 *            monitor to notify the progress
-	 * @throws PersistenceException
+	 * Returns a JAXB object containing all the persistent information of this
+	 * MapContext
+	 * 
+	 * @return
 	 */
-	void saveStatus(File file, IProgressMonitor pm) throws PersistenceException;
+	Object getJAXBObject();
 
 	/**
-	 * Loads the status of the map context from the specified file
-	 *
-	 * @param file
-	 *            File to load the status from
-	 * @param pm
-	 *            monitor to notify the progress
-	 * @throws PersistenceException
+	 * Populates the content of this MapContext with the information stored in
+	 * the specified JAXB Object. The map must be closed.
+	 * 
+	 * @param jaxbObject
+	 * @throws IllegalStateException
+	 *             If the map is open
 	 */
-	void loadStatus(File file, IProgressMonitor pm) throws PersistenceException;
+	void setJAXBObject(Object jaxbObject) throws IllegalStateException;
+
+	/**
+	 * Opens all the layers in the map. All layers added to an open map are
+	 * opened automatically. Layers that cannot be created are removed from the
+	 * layer tree and an error message is sent to the ErrorManager service
+	 * 
+	 * @param pm
+	 * @throws LayerException
+	 *             If some layer cannot be open. In this case all already open
+	 *             layers are closed again
+	 * @throws IllegalStateException
+	 *             If the map is already open
+	 */
+	void open(IProgressMonitor pm) throws LayerException, IllegalStateException;
+
+	/**
+	 * Closes all the layers in the map
+	 * 
+	 * @param pm
+	 * @throws IllegalStateException
+	 *             If the map is closed
+	 */
+	void close(IProgressMonitor pm) throws IllegalStateException;
+
+	/**
+	 * Return true if this map context is open and false otherwise
+	 * 
+	 * @return
+	 */
+	boolean isOpen();
 
 	/**
 	 * Draws an image of the layers in the specified image.
-	 *
+	 * 
 	 * @param inProcessImage
 	 *            Image where the drawing will take place
 	 * @param extent
@@ -126,20 +159,27 @@ public interface MapContext {
 	 *            proportions than the image
 	 * @param pm
 	 *            Object to report process and check the cancelation condition
+	 * @throws IllegalStateException
+	 *             If the map is closed
 	 */
-	void draw(BufferedImage inProcessImage, Envelope extent, IProgressMonitor pm);
+	void draw(BufferedImage inProcessImage, Envelope extent, IProgressMonitor pm)
+			throws IllegalStateException;
 
 	/**
 	 * Gets the layer where all the edition actions take place
-	 *
+	 * 
 	 * @return
+	 * @throws IllegalStateException
+	 *             If the map is closed
 	 */
-	ILayer getActiveLayer();
+	ILayer getActiveLayer() throws IllegalStateException;
 
 	/**
 	 * Sets the layer where all the edition actions take place
-	 *
+	 * 
 	 * @return
+	 * @throws IllegalStateException
+	 *             If the map is closed
 	 */
-	void setActiveLayer(ILayer activeLayer);
+	void setActiveLayer(ILayer activeLayer) throws IllegalStateException;
 }

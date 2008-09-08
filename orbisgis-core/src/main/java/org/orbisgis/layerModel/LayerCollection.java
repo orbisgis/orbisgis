@@ -36,7 +36,6 @@
  */
 package org.orbisgis.layerModel;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -46,7 +45,6 @@ import org.gdms.data.types.NullCRS;
 import org.gdms.driver.DriverException;
 import org.grap.model.GeoRaster;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
-import org.orbisgis.PersistenceException;
 import org.orbisgis.layerModel.persistence.LayerCollectionType;
 import org.orbisgis.layerModel.persistence.LayerType;
 import org.orbisgis.renderer.legend.Legend;
@@ -117,11 +115,11 @@ public class LayerCollection extends ALayer {
 
 	/**
 	 * Removes the layer from the collection
-	 *
+	 * 
 	 * @param layerName
 	 * @return the layer removed or null if the layer does not exists
 	 * @throws LayerException
-	 *
+	 * 
 	 */
 	public ILayer remove(final String layerName) throws LayerException {
 		for (int i = 0; i < size(); i++) {
@@ -152,7 +150,7 @@ public class LayerCollection extends ALayer {
 	}
 
 	/**
-	 *
+	 * 
 	 * @see org.orbisgis.layerModel.ILayer#isVisible()
 	 */
 	public boolean isVisible() {
@@ -165,7 +163,7 @@ public class LayerCollection extends ALayer {
 	}
 
 	/**
-	 *
+	 * 
 	 * @throws LayerException
 	 * @see org.orbisgis.layerModel.ILayer#setVisible(boolean)
 	 */
@@ -177,7 +175,7 @@ public class LayerCollection extends ALayer {
 	}
 
 	/**
-	 *
+	 * 
 	 * @see org.orbisgis.layerModel.ILayer#getCoordinateReferenceSystem()
 	 */
 	public CoordinateReferenceSystem getCoordinateReferenceSystem() {
@@ -186,7 +184,7 @@ public class LayerCollection extends ALayer {
 	}
 
 	/**
-	 *
+	 * 
 	 * @throws LayerException
 	 * @see org.orbisgis.layerModel.ILayer#setCoordinateReferenceSystem(org.opengis.referencing.crs.CoordinateReferenceSystem)
 	 */
@@ -354,19 +352,18 @@ public class LayerCollection extends ALayer {
 		return layerCollection.size();
 	}
 
-	public LayerType saveLayer(File baseFile) throws PersistenceException {
+	public LayerType saveLayer() {
 		LayerCollectionType xmlLayer = new LayerCollectionType();
 		xmlLayer.setName(getName());
 		for (ILayer child : layerCollection) {
-			LayerType xmlChild = child.saveLayer(baseFile);
+			LayerType xmlChild = child.saveLayer();
 			xmlLayer.getLayer().add(xmlChild);
 		}
 
 		return xmlLayer;
 	}
 
-	public void restoreLayer(LayerType layer, File baseFile)
-			throws LayerException {
+	public void restoreLayer(LayerType layer) throws LayerException {
 	}
 
 	public ILayer getLayerByName(String layerName) {

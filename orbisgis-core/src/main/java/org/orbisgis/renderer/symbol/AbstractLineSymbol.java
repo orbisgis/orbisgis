@@ -41,7 +41,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.gdms.data.types.GeometryConstraint;
-import org.orbisgis.IncompatibleVersionException;
 
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.LineString;
@@ -99,9 +98,8 @@ public abstract class AbstractLineSymbol extends AbstractGeometrySymbol
 		return ret;
 	}
 
-	public void setPersistentProperties(Map<String, String> props,
-			String version) throws IncompatibleVersionException {
-		super.setPersistentProperties(props, version);
+	public void setPersistentProperties(Map<String, String> props)  {
+		super.setPersistentProperties(props);
 		String outlineColor = props.get("outline-color");
 		if (outlineColor != null) {
 			outline = new Color(Integer.parseInt(outlineColor), true);

@@ -41,14 +41,13 @@ import java.util.ArrayList;
 
 import org.gdms.data.DataSource;
 import org.gdms.driver.DriverException;
-import org.orbisgis.IncompatibleVersionException;
-import org.orbisgis.renderer.legend.AbstractLegend;
+import org.orbisgis.Services;
 import org.orbisgis.renderer.legend.carto.persistence.ClassifiedLegendType;
 import org.orbisgis.renderer.symbol.Symbol;
-import org.orbisgis.renderer.symbol.collection.DefaultSymbolCollection;
+import org.orbisgis.renderer.symbol.SymbolManager;
 import org.orbisgis.renderer.symbol.collection.persistence.SymbolType;
 
-abstract class AbstractClassifiedLegend extends AbstractLegend implements
+abstract class AbstractClassifiedLegend extends AbstractCartoLegend implements
 		ClassifiedLegend {
 
 	private String fieldName;
@@ -94,8 +93,9 @@ abstract class AbstractClassifiedLegend extends AbstractLegend implements
 	public void fillDefaults(ClassifiedLegendType xmlLegend) {
 		save(xmlLegend);
 		if (getDefaultSymbol() != null) {
-			xmlLegend.setDefaultSymbol(DefaultSymbolCollection
-					.getXMLFromSymbol(getDefaultSymbol()));
+			SymbolManager sm = (SymbolManager) Services
+					.getService("org.orbisgis.SymbolManager");
+			xmlLegend.setDefaultSymbol(sm.getJAXBSymbol(getDefaultSymbol()));
 		}
 		if (getDefaultLabel() != null) {
 			xmlLegend.setDefaultLabel(getDefaultLabel());
@@ -104,16 +104,16 @@ abstract class AbstractClassifiedLegend extends AbstractLegend implements
 		xmlLegend.setFieldType(fieldType);
 	}
 
-	public void getDefaults(ClassifiedLegendType xmlLegend)
-			throws DriverException, IncompatibleVersionException {
+	public void getDefaults(ClassifiedLegendType xmlLegend) {
 		load(xmlLegend);
 		setDefaultLabel(xmlLegend.getDefaultLabel());
 		fieldType = xmlLegend.getFieldType();
 		fieldName = xmlLegend.getFieldName();
 		SymbolType defaultSymbolXML = xmlLegend.getDefaultSymbol();
 		if (defaultSymbolXML != null) {
-			setDefaultSymbol(DefaultSymbolCollection
-					.getSymbolFromXML(defaultSymbolXML));
+			SymbolManager sm = (SymbolManager) Services
+			.getService("org.orbisgis.SymbolManager");
+			setDefaultSymbol(sm.getSymbolFromJAXB(defaultSymbolXML));
 		}
 	}
 

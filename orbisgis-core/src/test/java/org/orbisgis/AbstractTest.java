@@ -41,8 +41,18 @@ import junit.framework.TestCase;
 import org.gdms.data.DataSourceFactory;
 import org.orbisgis.errorManager.ErrorListener;
 import org.orbisgis.errorManager.ErrorManager;
+import org.orbisgis.workspace.TestWorkspace;
+import org.orbisgis.workspace.Workspace;
 
 public class AbstractTest extends TestCase {
+
+	static {
+		Services.registerService("org.orbisgis.Workspace", Workspace.class,
+				"",
+				new TestWorkspace());
+	
+		OrbisgisCoreServices.installServices();
+	}
 
 	@Override
 	protected void setUp() throws Exception {

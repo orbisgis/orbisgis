@@ -44,7 +44,6 @@ import org.orbisgis.renderer.symbol.EditablePointSymbol;
 
 public interface ProportionalLegend extends Legend {
 
-	String NAME = "Proportional point";
 	int LINEAR = 1;
 	int LOGARITHMIC = 2;
 	int SQUARE = 3;
