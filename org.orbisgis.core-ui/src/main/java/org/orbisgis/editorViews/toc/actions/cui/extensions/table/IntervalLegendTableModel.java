@@ -42,6 +42,7 @@ import java.text.ParseException;
 import javax.swing.JOptionPane;
 import javax.swing.table.TableModel;
 
+import org.apache.log4j.Logger;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.orbisgis.renderer.legend.carto.ClassifiedLegend;
@@ -52,6 +53,9 @@ import org.orbisgis.renderer.symbol.Symbol;
 
 public class IntervalLegendTableModel extends ClassifiedLegendTableModel
 		implements TableModel {
+
+	private static Logger logger = Logger
+			.getLogger(IntervalLegendTableModel.class);
 
 	private IntervalLegend legend = LegendFactory.createIntervalLegend();
 
@@ -71,7 +75,6 @@ public class IntervalLegendTableModel extends ClassifiedLegendTableModel
 		String ini = df.format(interval.getMinValue().getAsDouble());
 		String end = df.format(interval.getMaxValue().getAsDouble());
 		String s = ini + end;
-		System.out.println(s);
 		return ValueFactory.createValue(s);
 	}
 
@@ -143,6 +146,8 @@ public class IntervalLegendTableModel extends ClassifiedLegendTableModel
 	}
 
 	public void setValueAt(Object value, int rowIndex, int columnIndex) {
+		logger.error("Setting value in classified legend: " + value + ". at "
+				+ rowIndex + "," + columnIndex);
 		String txt = value.toString();
 		if (rowIndex == legend.getClassificationCount()) {
 			switch (columnIndex) {

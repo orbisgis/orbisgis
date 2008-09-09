@@ -41,6 +41,7 @@ import java.text.ParseException;
 import javax.swing.JOptionPane;
 import javax.swing.table.TableModel;
 
+import org.apache.log4j.Logger;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.orbisgis.Services;
@@ -51,6 +52,9 @@ import org.orbisgis.renderer.symbol.Symbol;
 
 public class UniqueValueLegendTableModel extends ClassifiedLegendTableModel
 		implements TableModel {
+
+	private static Logger logger = Logger
+			.getLogger(UniqueValueLegendTableModel.class);
 
 	private UniqueValueLegend legend = LegendFactory.createUniqueValueLegend();
 
@@ -128,6 +132,8 @@ public class UniqueValueLegendTableModel extends ClassifiedLegendTableModel
 	}
 
 	public void setValueAt(Object value, int rowIndex, int columnIndex) {
+		logger.error("Setting value in classified legend: " + value + ". at "
+				+ rowIndex + "," + columnIndex);
 		if (rowIndex == legend.getClassificationCount()) {
 			switch (columnIndex) {
 			case 0:
