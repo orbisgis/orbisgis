@@ -143,19 +143,20 @@ public class UniqueValueLegendTableModel extends ClassifiedLegendTableModel
 				break;
 			}
 		} else {
-			rowIndex = getSortedIndex(rowIndex);
+			int realIndex = getSortedIndex(rowIndex);
 
 			switch (columnIndex) {
 			case 0:
-				legend.setSymbol(rowIndex, (Symbol) value);
+				legend.setSymbol(realIndex, (Symbol) value);
 				break;
 			case 1:
-				Value currentValue = legend.getValue(rowIndex);
+				Value currentValue = legend.getValue(realIndex);
 				int type = currentValue.getType();
 				try {
 					Value val = ValueFactory.createValueByType(
 							value.toString(), type);
-					legend.setValue(rowIndex, val);
+					legend.setValue(realIndex, val);
+					updateLabel(realIndex, rowIndex);
 					invalidateOrder();
 				} catch (NumberFormatException e) {
 					Services.getErrorManager().error(
@@ -166,13 +167,17 @@ public class UniqueValueLegendTableModel extends ClassifiedLegendTableModel
 				}
 				break;
 			case 2:
-				legend.setLabel(rowIndex, value.toString());
+				legend.setLabel(realIndex, value.toString());
 				break;
 			default:
 				break;
 			}
 		}
 		fireTableCellUpdated(rowIndex, columnIndex);
+	}
+
+	private void updateLabel(int realIndex, int rowIndex) {
+		setValueAt(legend.getValue(realIndex).toString(), rowIndex, 2);
 	}
 
 	public void insertRow(Symbol symbol, Value value, String label) {

@@ -36,6 +36,7 @@
  */
 package org.orbisgis.editorViews.toc.actions.cui.extensions.table;
 
+import java.text.DecimalFormat;
 import java.text.ParseException;
 
 import javax.swing.JOptionPane;
@@ -65,7 +66,13 @@ public class IntervalLegendTableModel extends ClassifiedLegendTableModel
 	}
 
 	protected Value getOrderValue(int index) {
-		return legend.getInterval(index).getMinValue();
+		DecimalFormat df = new DecimalFormat("00000000000");
+		Interval interval = legend.getInterval(index);
+		String ini = df.format(interval.getMinValue().getAsDouble());
+		String end = df.format(interval.getMaxValue().getAsDouble());
+		String s = ini + end;
+		System.out.println(s);
+		return ValueFactory.createValue(s);
 	}
 
 	@Override
@@ -153,13 +160,13 @@ public class IntervalLegendTableModel extends ClassifiedLegendTableModel
 				break;
 			}
 		} else {
-			rowIndex = getSortedIndex(rowIndex);
+			int realIndex = getSortedIndex(rowIndex);
 
-			Interval interval = legend.getInterval(rowIndex);
+			Interval interval = legend.getInterval(realIndex);
 			try {
 				switch (columnIndex) {
 				case 0:
-					legend.setSymbol(rowIndex, (Symbol) value);
+					legend.setSymbol(realIndex, (Symbol) value);
 					break;
 				case 1:
 					Value valMin;
@@ -169,8 +176,9 @@ public class IntervalLegendTableModel extends ClassifiedLegendTableModel
 						valMin = ValueFactory.createValueByType(txt, legend
 								.getClassificationFieldType());
 					}
-					legend.setInterval(rowIndex, new Interval(valMin, true,
+					legend.setInterval(realIndex, new Interval(valMin, true,
 							interval.getMaxValue(), false));
+					updateLabel(realIndex, rowIndex);
 					invalidateOrder();
 					break;
 				case 2:
@@ -181,12 +189,13 @@ public class IntervalLegendTableModel extends ClassifiedLegendTableModel
 						valMax = ValueFactory.createValueByType(txt, legend
 								.getClassificationFieldType());
 					}
-					legend.setInterval(rowIndex, new Interval(interval
+					legend.setInterval(realIndex, new Interval(interval
 							.getMinValue(), true, valMax, false));
+					updateLabel(realIndex, rowIndex);
 					invalidateOrder();
 					break;
 				case 3:
-					legend.setLabel(rowIndex, txt);
+					legend.setLabel(realIndex, txt);
 					break;
 				default:
 					break;
@@ -201,6 +210,11 @@ public class IntervalLegendTableModel extends ClassifiedLegendTableModel
 			}
 		}
 		fireTableCellUpdated(rowIndex, columnIndex);
+	}
+
+	private void updateLabel(int realIndex, int rowIndex) {
+		setValueAt(legend.getInterval(realIndex).getIntervalString(), rowIndex,
+				3);
 	}
 
 	public void insertRow(Symbol symbol, Value min, Value max, String label) {
