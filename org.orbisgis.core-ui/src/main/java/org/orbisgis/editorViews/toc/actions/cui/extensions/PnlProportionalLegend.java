@@ -146,7 +146,7 @@ public class PnlProportionalLegend extends JPanel implements ILegendPanelUI {
 		inputPanel.add(cmbField);
 		inputPanel.add(new CarriageReturn());
 
-		cmbMethod = new JComboBox(new String[] { "Linear", "logarithmic",
+		cmbMethod = new JComboBox(new String[] { "Linear", "Logarithmic",
 				"Square" });
 		cmbMethod.addActionListener(new ActionListener() {
 

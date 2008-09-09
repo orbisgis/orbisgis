@@ -42,6 +42,7 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
+import java.text.NumberFormat;
 
 import org.gdms.data.SpatialDataSourceDecorator;
 import org.gdms.driver.DriverException;
@@ -121,30 +122,10 @@ public class DefaultProportionalLegend extends AbstractCartoLegend implements
 			// TODO what's the use of this variable
 			int coefType = 1;
 
-			double symbolSize = 0;
 			int fieldIndex = sds.getFieldIndexByName(field);
 			double value = sds.getFieldValue(row, fieldIndex).getAsDouble();
 
-			switch (method) {
-
-			case LINEAR:
-				symbolSize = proportionnalMethod.getLinearSize(value, coefType);
-
-				break;
-
-			case SQUARE:
-				symbolSize = proportionnalMethod.getSquareSize(value,
-						sqrtFactor, coefType);
-
-				break;
-
-			case LOGARITHMIC:
-
-				symbolSize = proportionnalMethod.getLogarithmicSize(value,
-						coefType);
-
-				break;
-			}
+			double symbolSize = getSize(value, coefType);
 
 			EditablePointSymbol ret = (EditablePointSymbol) symbol
 					.cloneSymbol();
@@ -155,6 +136,31 @@ public class DefaultProportionalLegend extends AbstractCartoLegend implements
 		} catch (DriverException e) {
 			throw new RenderException("Cannot access layer contents", e);
 		}
+	}
+
+	private double getSize(double value, int coefType) {
+		double symbolSize = 0;
+		switch (method) {
+
+		case LINEAR:
+			symbolSize = proportionnalMethod.getLinearSize(value, coefType);
+
+			break;
+
+		case SQUARE:
+			symbolSize = proportionnalMethod.getSquareSize(value, sqrtFactor,
+					coefType);
+
+			break;
+
+		case LOGARITHMIC:
+
+			symbolSize = proportionnalMethod
+					.getLogarithmicSize(value, coefType);
+
+			break;
+		}
+		return symbolSize;
 	}
 
 	public String getLegendTypeId() {
@@ -234,7 +240,7 @@ public class DefaultProportionalLegend extends AbstractCartoLegend implements
 			setLogarithmicMethod();
 			break;
 		case SQUARE:
-			setSquareMethod(1);
+			setSquareMethod(2);
 			break;
 		}
 	}
@@ -278,21 +284,23 @@ public class DefaultProportionalLegend extends AbstractCartoLegend implements
 			big.draw((Graphics2D) g, geom, new AffineTransform(),
 					renderPermission);
 
-			double realMaxSize = proportionnalMethod.getLinearSize(maxValue, 1);
+			double realMaxSize = getSize(maxValue, 1);
 			double minValue = proportionnalMethod.getMinValue();
-			double meanValue = (minValue + maxValue) / 2;
-			double realMeanSize = proportionnalMethod.getLinearSize(meanValue,
-					1);
+			double meanValue = (minValue + maxValue) / 3;
+			double realMeanSize = getSize(meanValue, 1);
 			double meanSize = bigSize * (realMeanSize / realMaxSize);
 			drawCircle(g, bigSize, meanSize, textOffset, lineStartX, lineEndX,
-					renderPermission, Double.toString(meanValue) + " (mean)");
+					renderPermission, NumberFormat.getInstance().format(
+							meanValue));
 
-			double realSmallSize = proportionnalMethod.getLinearSize(minValue,
-					1);
-			double smallSize = bigSize * (realSmallSize / realMaxSize);
-			drawCircle(g, bigSize, smallSize, textOffset, lineStartX, lineEndX,
-					renderPermission, Double.toString(proportionnalMethod
-							.getMinValue()));
+			double realSmallSize = getSize(minValue, 1);
+			if (!Double.isInfinite(realSmallSize)) {
+				// proportional can give infinity sizes
+				double smallSize = bigSize * (realSmallSize / realMaxSize);
+				drawCircle(g, bigSize, smallSize, textOffset, lineStartX,
+						lineEndX, renderPermission, Double
+								.toString(proportionnalMethod.getMinValue()));
+			}
 		} catch (DriverException e) {
 			Services.getErrorManager()
 					.error("Cannot get proportional image", e);
