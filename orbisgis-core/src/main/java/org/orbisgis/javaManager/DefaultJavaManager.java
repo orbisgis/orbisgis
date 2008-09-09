@@ -48,6 +48,8 @@ public class DefaultJavaManager implements JavaManager {
 
 	private HashSet<File> additionalBuildPath = new HashSet<File>();
 
+	private HashSet<File> buildPath = null;
+
 	public DefaultJavaManager() {
 		compiler = ToolProvider.getSystemJavaCompiler();
 	}
@@ -119,14 +121,15 @@ public class DefaultJavaManager implements JavaManager {
 	}
 
 	private HashSet<File> getBuildPath(StandardJavaFileManager stdFileManager) {
-		HashSet<File> buildPath = new HashSet<File>();
-		Iterator<? extends File> classPath = stdFileManager.getLocation(
-				StandardLocation.CLASS_PATH).iterator();
-		while (classPath.hasNext()) {
-			buildPath.add(classPath.next());
+		if (buildPath == null) {
+			buildPath = new HashSet<File>();
+			Iterator<? extends File> classPath = stdFileManager.getLocation(
+					StandardLocation.CLASS_PATH).iterator();
+			while (classPath.hasNext()) {
+				buildPath.add(classPath.next());
+			}
+			buildPath.addAll(additionalBuildPath);
 		}
-
-		buildPath.addAll(additionalBuildPath);
 
 		return buildPath;
 	}
@@ -318,5 +321,6 @@ public class DefaultJavaManager implements JavaManager {
 	@Override
 	public void addFilesToClassPath(List<File> files) {
 		additionalBuildPath.addAll(files);
+		buildPath = null;
 	}
 }

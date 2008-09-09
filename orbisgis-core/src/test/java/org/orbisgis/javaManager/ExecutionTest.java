@@ -16,19 +16,14 @@ import javax.tools.Diagnostic;
 import javax.tools.DiagnosticListener;
 import javax.tools.JavaFileObject;
 
-import junit.framework.TestCase;
-
+import org.orbisgis.AbstractTest;
 import org.orbisgis.Services;
 import org.orbisgis.javaManager.autocompletion.Completion;
 import org.orbisgis.javaManager.autocompletion.Option;
 import org.orbisgis.javaManager.parser.ParseException;
 import org.orbisgis.outputManager.OutputManager;
-import org.orbisgis.workspace.DefaultOGWorkspace;
-import org.orbisgis.workspace.OGWorkspace;
-import org.orbisgis.workspace.TestWorkspace;
-import org.orbisgis.workspace.Workspace;
 
-public class ExecutionTest extends TestCase {
+public class ExecutionTest extends AbstractTest {
 
 	private static boolean flag = false;
 
@@ -40,15 +35,6 @@ public class ExecutionTest extends TestCase {
 
 	@Override
 	protected void setUp() throws Exception {
-		Services.registerService("org.orbisgis.JavaManager", JavaManager.class,
-				"", new DefaultJavaManager());
-		TestWorkspace defaultWS = new TestWorkspace();
-		defaultWS.setWorkspaceFolder("target");
-		Services.registerService("org.orbisgis.Workspace", Workspace.class, "",
-				defaultWS);
-		DefaultOGWorkspace defaultOGWS = new DefaultOGWorkspace();
-		Services.registerService("org.orbisgis.OGWorkspace", OGWorkspace.class,
-				"", defaultOGWS);
 		testOutputManager = new TestOutputManager();
 		Services.registerService("org.orbisgis.OutputManager",
 				OutputManager.class, "", testOutputManager);

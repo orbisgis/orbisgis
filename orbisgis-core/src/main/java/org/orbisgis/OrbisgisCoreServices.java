@@ -1,7 +1,14 @@
 package org.orbisgis;
 
 import java.awt.Color;
+import java.io.File;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.net.URLClassLoader;
+import java.util.Arrays;
+import java.util.HashSet;
 
+import org.apache.log4j.Logger;
 import org.grap.lut.LutGenerator;
 import org.orbisgis.geocognition.DefaultGeocognition;
 import org.orbisgis.geocognition.Geocognition;
@@ -19,6 +26,9 @@ import org.orbisgis.workspace.OGWorkspace;
 
 public class OrbisgisCoreServices {
 
+	private final static Logger logger = Logger
+			.getLogger(OrbisgisCoreServices.class);
+
 	public static void installServices() {
 		installSymbologyServices();
 
@@ -30,9 +40,29 @@ public class OrbisgisCoreServices {
 	}
 
 	public static void installJavaServices() {
+		HashSet<File> buildPath = new HashSet<File>();
+		ClassLoader cl = OrbisgisCoreServices.class.getClassLoader();
+		while (cl != null) {
+			if (cl instanceof URLClassLoader) {
+				URLClassLoader loader = (URLClassLoader) cl;
+				URL[] urls = loader.getURLs();
+				for (URL url : urls) {
+					try {
+						File file = new File(url.toURI());
+						buildPath.add(file);
+					} catch (URISyntaxException e) {
+						logger.error("Cannot add classpath url: " + url, e);
+					}
+				}
+			}
+			cl = cl.getParent();
+		}
+
+		DefaultJavaManager javaManager = new DefaultJavaManager();
 		Services.registerService("org.orbisgis.JavaManager", JavaManager.class,
-				"Execution of java code and java scripts",
-				new DefaultJavaManager());
+				"Execution of java code and java scripts", javaManager);
+		javaManager.addFilesToClassPath(Arrays.asList(buildPath
+				.toArray(new File[0])));
 	}
 
 	public static void installWorkspaceService() {
