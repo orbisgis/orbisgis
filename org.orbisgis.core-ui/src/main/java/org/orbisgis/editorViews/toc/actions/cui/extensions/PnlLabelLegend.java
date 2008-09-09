@@ -112,6 +112,11 @@ public class PnlLabelLegend extends JPanel implements ILegendPanelUI {
 	}
 
 	public Legend getLegend() {
+		try {
+			int fontSize = Integer.parseInt(txtSymbolSize.getText());
+			legend.setFontSize(fontSize);
+		} catch (NumberFormatException e) {
+		}
 		return legend;
 	}
 
