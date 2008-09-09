@@ -164,12 +164,18 @@ abstract class AbstractClassifiedLegend extends AbstractCartoLegend implements
 	}
 
 	public void drawImage(Graphics g) {
-		LegendLine testLine = new LegendLine(getSymbols().get(0), getLabels()
-				.get(0));
 		String text = getClassificationField();
 		Rectangle2D bounds = g.getFontMetrics().getStringBounds(text, g);
+		int start;
+		if (getClassificationCount() > 0) {
+			LegendLine testLine = new LegendLine(getSymbols().get(0),
+					getLabels().get(0));
+			int firstLineWidth = testLine.getImageSize(g)[0];
+			start = (int) ((firstLineWidth - bounds.getWidth()) / 2);
+		} else {
+			start = 0;
+		}
 		g.setColor(Color.black);
-		int start = (int) ((testLine.getImageSize(g)[0] - bounds.getWidth()) / 2);
 		g.drawString(text, start, (int) bounds.getHeight());
 		g.drawLine(start, (int) bounds.getHeight(), start
 				+ (int) bounds.getWidth(), (int) bounds.getHeight());
