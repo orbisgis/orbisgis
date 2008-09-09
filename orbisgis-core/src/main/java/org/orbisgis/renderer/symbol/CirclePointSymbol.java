@@ -62,17 +62,17 @@ public class CirclePointSymbol extends AbstractPointSymbol {
 				mapUnits);
 	}
 
-	protected void paintCircle(Graphics2D g, int x, int y, int size) {
+	protected void paintCircle(Graphics2D g, double x, double y, double size) {
 		x = x - size / 2;
 		y = y - size / 2;
 		if (fillColor != null) {
 			g.setPaint(fillColor);
-			g.fillOval(x, y, size, size);
+			g.fillOval((int) x, (int) y, (int) size, (int) size);
 		}
 		if (outline != null) {
 			g.setStroke(new BasicStroke(lineWidth));
 			g.setColor(outline);
-			g.drawOval(x, y, size, size);
+			g.drawOval((int) x, (int) y, (int) size, (int) size);
 		}
 	}
 
@@ -82,7 +82,7 @@ public class CirclePointSymbol extends AbstractPointSymbol {
 		Point point = geom.getCentroid();
 		Point2D p = new Point2D.Double(point.getX(), point.getY());
 		p = at.transform(p, null);
-		int drawingSize = size;
+		double drawingSize = size;
 		if (mapUnits) {
 			try {
 				drawingSize = (int) toPixelUnits(size, at);
@@ -90,7 +90,7 @@ public class CirclePointSymbol extends AbstractPointSymbol {
 				throw new DriverException("Cannot convert to map units", e);
 			}
 		}
-		paintCircle(g, (int) p.getX(), (int) p.getY(), drawingSize);
+		paintCircle(g, p.getX(), p.getY(), drawingSize);
 
 		return null;
 	}

@@ -69,7 +69,7 @@ public class LabelSymbol extends AbstractSymbol implements Symbol {
 	public Envelope draw(Graphics2D g, Geometry geom, AffineTransform at,
 			RenderPermission permission) throws DriverException {
 		Font font = g.getFont();
-		g.setFont(font.deriveFont(fontSize));
+		g.setFont(font.deriveFont((float) fontSize));
 		FontMetrics metrics = g.getFontMetrics(g.getFont());
 		// get the height of a line of text in this font and render context
 		int hgt = metrics.getHeight();
@@ -77,7 +77,7 @@ public class LabelSymbol extends AbstractSymbol implements Symbol {
 		int adv = metrics.stringWidth(text);
 		// calculate the size of a box to hold the text with some padding.
 		Dimension size = new Dimension(adv + 2, hgt + 2);
-		Point interiorPoint = geom.getInteriorPoint();
+		Point interiorPoint = geom.getCentroid();
 		Point2D p = new Point2D.Double(interiorPoint.getX(), interiorPoint
 				.getY());
 		p = at.transform(p, null);
