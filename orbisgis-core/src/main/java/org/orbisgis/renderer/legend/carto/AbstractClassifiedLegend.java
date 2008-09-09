@@ -36,7 +36,9 @@
  */
 package org.orbisgis.renderer.legend.carto;
 
+import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 
 import org.gdms.data.DataSource;
@@ -112,7 +114,7 @@ abstract class AbstractClassifiedLegend extends AbstractCartoLegend implements
 		SymbolType defaultSymbolXML = xmlLegend.getDefaultSymbol();
 		if (defaultSymbolXML != null) {
 			SymbolManager sm = (SymbolManager) Services
-			.getService("org.orbisgis.SymbolManager");
+					.getService("org.orbisgis.SymbolManager");
 			setDefaultSymbol(sm.getSymbolFromJAXB(defaultSymbolXML));
 		}
 	}
@@ -162,17 +164,30 @@ abstract class AbstractClassifiedLegend extends AbstractCartoLegend implements
 	}
 
 	public void drawImage(Graphics g) {
+		LegendLine testLine = new LegendLine(getSymbols().get(0), getLabels()
+				.get(0));
+		String text = getClassificationField();
+		Rectangle2D bounds = g.getFontMetrics().getStringBounds(text, g);
+		g.setColor(Color.black);
+		int start = (int) ((testLine.getImageSize(g)[0] - bounds.getWidth()) / 2);
+		g.drawString(text, start, (int) bounds.getHeight());
+		g.drawLine(start, (int) bounds.getHeight(), start
+				+ (int) bounds.getWidth(), (int) bounds.getHeight());
+		g.translate(0, (int) bounds.getHeight());
+
 		LegendLine ll = null;
 		for (int i = 0; i < symbols.size(); i++) {
 			if (ll != null) {
-				g.translate(0, ll.getImageSize(g)[1]);
+				int[] imageSize = ll.getImageSize(g);
+				g.translate(0, imageSize[1]);
 			}
 			ll = new LegendLine(getSymbols().get(i), getLabels().get(i));
 			ll.drawImage(g);
 		}
 		if (defaultSymbol != null) {
 			if (ll != null) {
-				g.translate(0, ll.getImageSize(g)[1]);
+				int[] imageSize = ll.getImageSize(g);
+				g.translate(0, imageSize[1]);
 			}
 			ll = new LegendLine(defaultSymbol, defaultLabel);
 			ll.drawImage(g);
@@ -195,7 +210,9 @@ abstract class AbstractClassifiedLegend extends AbstractCartoLegend implements
 			height += imageSize[1];
 			width = Math.max(width, imageSize[0]);
 		}
-		return new int[] { width, height };
+		String text = getClassificationField();
+		Rectangle2D bounds = g.getFontMetrics().getStringBounds(text, g);
+		return new int[] { width, (int) (height + bounds.getHeight()) };
 	}
 
 }
