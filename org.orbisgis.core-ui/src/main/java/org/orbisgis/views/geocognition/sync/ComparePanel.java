@@ -31,6 +31,7 @@ import org.orbisgis.pluginManager.background.BackgroundJob;
 import org.orbisgis.pluginManager.background.BackgroundManager;
 import org.orbisgis.progress.IProgressMonitor;
 import org.orbisgis.views.geocognition.sync.editor.ICompareEditor;
+import org.orbisgis.views.geocognition.sync.editor.text.CompareCodeEditor;
 import org.orbisgis.views.geocognition.sync.editor.text.CompareTextEditor;
 import org.orbisgis.views.geocognition.sync.tree.CompareTreePanel;
 import org.orbisgis.views.geocognition.sync.tree.TreeElement;
@@ -46,6 +47,14 @@ public class ComparePanel extends AbstractUIPanel {
 			+ "Save changes?";
 	private static final String RIGHT_SAVE_BEFORE_CLOSING_TITLE = "Save right resource";
 
+	private static final String ADD_TO_GEOCOGNITION = "Add to geocognition";
+	private static final String ADD_TO_FILE = "Add to file";
+	private static final String REMOVE_FROM_GEOCOGNITION = "Remove from geocognition";
+	private static final String REMOVE_FROM_FILE = "Remove from file";
+	private static final String OVERRIDE_IN_GEOCOGNITION = "Override in geocognition";
+	private static final String OVERRIDE_IN_FILE = "Override in file";
+	private static final String NO_ACTION = "No action available";
+
 	// Transaction constants
 	private static final int COMMIT = 0;
 	private static final int UPDATE = 1;
@@ -55,7 +64,8 @@ public class ComparePanel extends AbstractUIPanel {
 	private ICompareEditor currentEditor;
 	private CompareTreePanel treePanel;
 	private JPopupMenu popup;
-	private JMenuItem commit, update;
+	private JMenuItem addToGeocognition, addToFile, removeFromGeocognition,
+			removeFromFile, overrideInGeocognition, overrideInFile, noAction;
 	private JSplitPane split;
 	private JPanel panel;
 
@@ -86,24 +96,64 @@ public class ComparePanel extends AbstractUIPanel {
 		// Popup menu
 		popup = new JPopupMenu();
 
-		commit = new JMenuItem("Commit");
-		commit.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				execute(COMMIT);
-			}
-		});
-
-		update = new JMenuItem("Update");
-		update.addActionListener(new ActionListener() {
+		addToGeocognition = new JMenuItem(ADD_TO_GEOCOGNITION);
+		addToGeocognition.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				execute(UPDATE);
 			}
 		});
 
-		popup.add(commit);
-		popup.add(update);
+		addToFile = new JMenuItem(ADD_TO_FILE);
+		addToFile.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				execute(COMMIT);
+			}
+		});
+
+		removeFromGeocognition = new JMenuItem(REMOVE_FROM_GEOCOGNITION);
+		removeFromGeocognition.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				execute(UPDATE);
+			}
+		});
+
+		removeFromFile = new JMenuItem(REMOVE_FROM_FILE);
+		removeFromFile.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				execute(COMMIT);
+			}
+		});
+
+		overrideInGeocognition = new JMenuItem(OVERRIDE_IN_GEOCOGNITION);
+		overrideInGeocognition.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				execute(UPDATE);
+			}
+		});
+
+		overrideInFile = new JMenuItem(OVERRIDE_IN_FILE);
+		overrideInFile.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				execute(COMMIT);
+			}
+		});
+
+		noAction = new JMenuItem(NO_ACTION);
+		noAction.setEnabled(false);
+
+		popup.add(addToGeocognition);
+		popup.add(addToFile);
+		popup.add(removeFromGeocognition);
+		popup.add(removeFromFile);
+		popup.add(overrideInGeocognition);
+		popup.add(overrideInFile);
+		popup.add(noAction);
 
 		// Split pane
 		split = new JSplitPane();
@@ -307,7 +357,6 @@ public class ComparePanel extends AbstractUIPanel {
 				}
 			}
 		}
-
 	}
 
 	/**
@@ -363,7 +412,7 @@ public class ComparePanel extends AbstractUIPanel {
 
 	@Override
 	public String getTitle() {
-		return null;
+		return "Right click on an element of the tree to synchronize contents";
 	}
 
 	@Override
@@ -378,7 +427,8 @@ public class ComparePanel extends AbstractUIPanel {
 			currentEditor = null;
 			treePanel = null;
 			popup = null;
-			commit = update = null;
+			addToGeocognition = addToFile = removeFromGeocognition = removeFromFile = null;
+			overrideInGeocognition = overrideInFile = null;
 			split = null;
 			panel = null;
 			manager = null;
@@ -397,6 +447,7 @@ public class ComparePanel extends AbstractUIPanel {
 	 */
 	private ArrayList<ICompareEditor> getAvailableEditors() {
 		ArrayList<ICompareEditor> editors = new ArrayList<ICompareEditor>();
+		editors.add(new CompareCodeEditor());
 		editors.add(new CompareTextEditor());
 
 		return editors;
@@ -411,11 +462,16 @@ public class ComparePanel extends AbstractUIPanel {
 	private class CompareTreeListener extends MouseAdapter {
 		@Override
 		public void mouseClicked(MouseEvent e) {
+			JTree tree = (JTree) e.getSource();
+			Object root = tree.getModel().getRoot();
+			if (!(root instanceof TreeElement)) {
+				tree.setSelectionRow(-1);
+				return;
+			}
+
 			// Get selection path
-			JTree tree = treePanel.getTree();
 			int selRow = tree.getRowForLocation(e.getX(), e.getY());
-			TreePath[] paths = tree.getSelectionPaths();
-			if (paths == null) {
+			if (tree.getSelectionPaths() == null) {
 				return;
 			}
 
@@ -449,16 +505,71 @@ public class ComparePanel extends AbstractUIPanel {
 					tree.setSelectionRow(selRow);
 				}
 
-				update.setEnabled(true);
+				ArrayList<ArrayList<String>> idPaths = new ArrayList<ArrayList<String>>();
+				TreePath[] paths = tree.getSelectionPaths();
+
+				for (int i = 0; i < paths.length; i++) {
+					TreeElement element = (TreeElement) paths[i]
+							.getLastPathComponent();
+					idPaths = merge(idPaths, getChangedChildren(element));
+				}
+
+				boolean deleted = true;
+				boolean added = true;
+				boolean changed = true;
+				for (ArrayList<String> idPath : idPaths) {
+					if (deleted && !manager.isDeleted(idPath)) {
+						deleted = false;
+					}
+
+					if (added && !manager.isAdded(idPath)) {
+						added = false;
+					}
+
+					if (changed && !manager.isModified(idPath)
+							&& !manager.isConflict(idPath)) {
+						changed = false;
+					}
+				}
 
 				if (manager.isRemoteEditable()) {
-					commit.setEnabled(true);
-				} else {
-					commit.setEnabled(false);
+					addToFile.setVisible(added);
+					removeFromFile.setVisible(deleted);
+					overrideInFile.setVisible(changed);
 				}
+
+				addToGeocognition.setVisible(deleted);
+				removeFromGeocognition.setVisible(added);
+				overrideInGeocognition.setVisible(changed);
+				noAction.setVisible(!deleted && !added && !changed);
 
 				popup.show(e.getComponent(), e.getX(), e.getY());
 			}
+		}
+
+		private ArrayList<ArrayList<String>> getChangedChildren(
+				TreeElement element) {
+			ArrayList<ArrayList<String>> arrayList = new ArrayList<ArrayList<String>>();
+			if (manager.hasChanged(element.getIdPath())) {
+				arrayList.add(element.getIdPath());
+			} else {
+				for (int i = 0; i < element.getElementCount(); i++) {
+					TreeElement child = element.getElement(i);
+					arrayList = merge(arrayList, getChangedChildren(child));
+				}
+			}
+
+			return arrayList;
+		}
+
+		@SuppressWarnings("unchecked")
+		private <T> ArrayList<T> merge(ArrayList<T> dest, ArrayList<T> adding) {
+			Object[] aux = adding.toArray();
+			for (int i = 0; i < aux.length; i++) {
+				dest.add((T) aux[i]);
+			}
+
+			return dest;
 		}
 	}
 

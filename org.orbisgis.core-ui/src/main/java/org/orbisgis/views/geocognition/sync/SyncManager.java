@@ -795,7 +795,7 @@ public class SyncManager {
 	 *            the path to the element to determine
 	 * @return true if the element has changes, false otherwise
 	 */
-	private boolean hasChanged(ArrayList<String> path) {
+	boolean hasChanged(ArrayList<String> path) {
 		return isAdded(path) || isConflict(path) || isDeleted(path)
 				|| isModified(path);
 	}
