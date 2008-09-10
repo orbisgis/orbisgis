@@ -17,15 +17,17 @@ import org.orbisgis.views.geocognition.sync.SyncManager;
 import org.orbisgis.views.geocognition.wizard.ElementRenderer;
 
 public class CompareTreeRenderer extends DefaultTreeCellRenderer {
-
-	// TODO get icons
 	private static final ImageIcon ADDED = IconLoader
-			.getIcon("vertexAdition.png");
+			.getIcon("add_blended.png");
 	private static final ImageIcon DELETED = IconLoader
-			.getIcon("vertexDeletion.png");
+			.getIcon("delete_blended.png");
 	private static final ImageIcon CONTENT_MODIFIED = IconLoader
-			.getIcon("smallLock.png");
-	private static final ImageIcon CONFLICT = IconLoader.getIcon("point.png");
+			.getIcon("modify_blended.png");
+	private static final ImageIcon CONFLICT = IconLoader
+			.getIcon("error_blended.png");
+
+	private static final int ADDITIONAL_ICON_WIDTH = 5;
+	private static final int BLENDED_ICON_EXPANSION = 3;
 
 	private ElementRenderer[] renderers;
 	private SyncManager manager;
@@ -62,8 +64,8 @@ public class CompareTreeRenderer extends DefaultTreeCellRenderer {
 			// Set icon
 			setIcon(new BlendedIcon(background, foreground));
 		} else if (value instanceof String) {
-			super.getTreeCellRendererComponent(tree, value, sel, expanded,
-					leaf, row, hasFocus);
+			super.getTreeCellRendererComponent(tree, value, false, expanded,
+					leaf, row, false);
 			setIcon(null);
 		} else {
 			Services.getErrorManager().error("bug!",
@@ -98,7 +100,7 @@ public class CompareTreeRenderer extends DefaultTreeCellRenderer {
 	@Override
 	public Dimension getPreferredSize() {
 		Dimension size = super.getPreferredSize();
-		size.width += 5;
+		size.width += ADDITIONAL_ICON_WIDTH;
 		return size;
 	}
 
@@ -142,6 +144,11 @@ public class CompareTreeRenderer extends DefaultTreeCellRenderer {
 					g.drawImage(foreground, x, y, getImageObserver());
 				}
 			}
+		}
+		
+		@Override
+		public int getIconWidth() {
+			return super.getIconWidth() + BLENDED_ICON_EXPANSION;
 		}
 	}
 

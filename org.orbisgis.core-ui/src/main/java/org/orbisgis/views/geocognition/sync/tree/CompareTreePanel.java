@@ -22,10 +22,10 @@ import org.orbisgis.views.geocognition.sync.SyncManager;
 import org.orbisgis.views.geocognition.wizard.ElementRenderer;
 
 public class CompareTreePanel extends JPanel {
-	// TODO find icons
-	private static final Icon EXPAND_ALL = IconLoader.getIcon("add.png");
-	private static final Icon COLLAPSE_ALL = IconLoader.getIcon("add.png");
-	private static final Icon SYNCHRONIZE = IconLoader.getIcon("add.png");
+	private static final Icon EXPAND_ALL = IconLoader.getIcon("plus.png");
+	private static final Icon COLLAPSE_ALL = IconLoader.getIcon("minus.png");
+	private static final Icon SYNCHRONIZE = IconLoader
+			.getIcon("arrow_refresh.png");
 
 	// Interface
 	private JTree tree;
@@ -61,7 +61,7 @@ public class CompareTreePanel extends JPanel {
 				}
 			}
 		});
-		expandAll.setToolTipText("Expand");
+		expandAll.setToolTipText("Expand All");
 		north.add(expandAll);
 
 		JButton synchronize = new JButton(SYNCHRONIZE);
@@ -95,7 +95,7 @@ public class CompareTreePanel extends JPanel {
 				}
 			}
 		});
-		collapseAll.setToolTipText("Collapse");
+		collapseAll.setToolTipText("Collapse All");
 		north.add(collapseAll);
 
 		setLayout(new BorderLayout());
