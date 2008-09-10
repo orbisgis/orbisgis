@@ -8,6 +8,7 @@ import java.util.List;
 import javax.tools.DiagnosticListener;
 import javax.tools.JavaFileObject;
 
+import org.orbisgis.javaManager.autocompletion.PackageReflection;
 import org.orbisgis.javaManager.parser.ParseException;
 
 public interface JavaManager {
@@ -64,5 +65,12 @@ public interface JavaManager {
 	 * @param files
 	 */
 	void addFilesToClassPath(List<File> files);
+
+	/**
+	 * Gets an object to explore the packages in the classpath
+	 * 
+	 * @return
+	 */
+	PackageReflection getPackageReflection();
 
 }

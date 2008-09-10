@@ -37,14 +37,6 @@ public class AutoCompletionVisitor extends AbstractVisitor {
 
 			});
 
-	/**
-	 * @throws LinkageError
-	 *             If the package reflection is not available
-	 */
-	public AutoCompletionVisitor() throws LinkageError {
-		CompletionUtils.init();
-	}
-
 	public void setCompletionCase(String text, Node cu, int line, int col) {
 		CompletionUtils.setCompletionCase(text, cu, line, col);
 		options.clear();

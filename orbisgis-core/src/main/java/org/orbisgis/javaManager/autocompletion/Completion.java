@@ -17,8 +17,7 @@ public class Completion {
 		acVisitor = new AutoCompletionVisitor();
 	}
 
-	public Option[] getOptions(String text, int caretPosition,
-			boolean script) {
+	public Option[] getOptions(String text, int caretPosition, boolean script) {
 		ArrayList<String> versions = new ArrayList<String>();
 		versions.add(text);
 		int count = 0;
@@ -53,8 +52,8 @@ public class Completion {
 		return new Option[0];
 	}
 
-	private ArrayList<String> getValidText(String text,
-			int caretPosition, ParseException e) {
+	private ArrayList<String> getValidText(String text, int caretPosition,
+			ParseException e) {
 		ArrayList<String> options = new ArrayList<String>();
 		if ((text.charAt(caretPosition - 1) == '.')
 				&& ((caretPosition >= text.length()) || (text

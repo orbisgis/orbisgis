@@ -3,10 +3,6 @@ package org.orbisgis.javaManager.autocompletion;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Modifier;
-import java.net.MalformedURLException;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -15,42 +11,20 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
 public class PackageReflection {
-	private ClassLoader classLoader;
 
 	private Node root = new Node("", "");
 
-	public PackageReflection(ClassLoader classLoader) throws LinkageError {
-		this.classLoader = classLoader;
-		buildHierarchy();
+	public PackageReflection(File[] buildPath) throws LinkageError {
+		addURLs(buildPath);
+		File sys = new File(System.getProperty("java.home") + File.separator
+				+ "lib" + File.separator + "rt.jar");
+		addURLs(new File[] { sys });
 	}
 
-	private void buildHierarchy() throws LinkageError {
-		try {
-			URL[] urls = ((URLClassLoader) classLoader).getURLs();
-			addURLs(urls);
-			File sys = new File(System.getProperty("java.home")
-					+ File.separator + "lib" + File.separator + "rt.jar");
+	private void addURLs(File[] files) throws LinkageError {
+		for (int i = 0; i < files.length; i++) {
 			try {
-				addURLs(new URL[] { sys.toURI().toURL() });
-			} catch (MalformedURLException e) {
-				throw new LinkageError(e.getMessage());
-			}
-		} catch (ClassCastException e) {
-			throw new IllegalArgumentException(
-					"The current VM's System classloader is not a "
-							+ "subclass of java.net.URLClassLoader");
-		}
-	}
-
-	private void addURLs(URL[] urls) throws LinkageError {
-		for (int i = 0; i < urls.length; i++) {
-			try {
-				File f;
-				try {
-					f = new File(urls[i].toURI());
-				} catch (URISyntaxException e) {
-					f = new File(urls[i].getPath());
-				}
+				File f = files[i];
 				if (f.isFile()) {
 					ZipFile zip = new ZipFile(f);
 					Enumeration<? extends ZipEntry> entries = zip.entries();
@@ -58,17 +32,31 @@ public class PackageReflection {
 						ZipEntry entry = entries.nextElement();
 						populate(entry.getName());
 					}
+				} else {
+					ArrayList<File> pending = new ArrayList<File>();
+					pending.add(f);
+					while (!pending.isEmpty()) {
+						File file = pending.remove(0);
+						if (file.isFile()) {
+							String relativePath = file
+									.getAbsolutePath()
+									.substring(f.getAbsolutePath().length() + 1);
+							populate(relativePath);
+						} else if (file.isDirectory()) {
+							File[] children = file.listFiles();
+							for (File child : children) {
+								pending.add(child);
+							}
+						}
+					}
 				}
 			} catch (IllegalArgumentException iae) {
-				throw new LinkageError("malformed class path url:\n " + urls[i]);
+				throw new LinkageError("malformed class path url:\n "
+						+ files[i]);
 			} catch (IOException ioe) {
-				throw new LinkageError("invalid class path url:\n " + urls[i]);
+				throw new LinkageError("invalid class path url:\n " + files[i]);
 			}
 		}
-	}
-
-	public PackageReflection() throws LinkageError {
-		this(ClassLoader.getSystemClassLoader());
 	}
 
 	private void populate(String name) {

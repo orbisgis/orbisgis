@@ -4,6 +4,8 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 
+import org.orbisgis.Services;
+import org.orbisgis.javaManager.JavaManager;
 import org.orbisgis.javaManager.parser.ASTArguments;
 import org.orbisgis.javaManager.parser.ASTBooleanLiteral;
 import org.orbisgis.javaManager.parser.ASTClassOrInterfaceType;
@@ -19,8 +21,6 @@ import org.orbisgis.javaManager.parser.SimpleNode;
 import org.orbisgis.javaManager.parser.Token;
 
 public class CompletionUtils {
-
-	private static PackageReflection pr;
 
 	private static String text;
 
@@ -40,14 +40,6 @@ public class CompletionUtils {
 
 	private static ScriptMethodVisitor scriptMethodVisitor;
 
-	/**
-	 * @throws LinkageError
-	 *             If the package reflection is not available
-	 */
-	public static void init() throws LinkageError {
-		pr = new PackageReflection();
-	}
-
 	public static void setCompletionCase(String text, Node root, int line,
 			int col) {
 		CompletionUtils.text = text;
@@ -62,7 +54,8 @@ public class CompletionUtils {
 	}
 
 	public static PackageReflection getPr() {
-		return pr;
+		JavaManager javaManager = Services.getService(JavaManager.class);
+		return javaManager.getPackageReflection();
 	}
 
 	public static VarVisitor getVarVisitor() {

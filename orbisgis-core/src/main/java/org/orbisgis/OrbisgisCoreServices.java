@@ -14,6 +14,8 @@ import org.orbisgis.geocognition.DefaultGeocognition;
 import org.orbisgis.geocognition.Geocognition;
 import org.orbisgis.javaManager.DefaultJavaManager;
 import org.orbisgis.javaManager.JavaManager;
+import org.orbisgis.map.export.DefaultMapExportManager;
+import org.orbisgis.map.export.MapExportManager;
 import org.orbisgis.renderer.legend.RasterLegend;
 import org.orbisgis.renderer.legend.carto.DefaultLegendManager;
 import org.orbisgis.renderer.legend.carto.LegendFactory;
@@ -37,6 +39,15 @@ public class OrbisgisCoreServices {
 		installWorkspaceService();
 
 		installJavaServices();
+
+		installExportServices();
+	}
+
+	private static void installExportServices() {
+		DefaultMapExportManager mem = new DefaultMapExportManager();
+		Services.registerService("org.orbisgis.MapExportManager",
+				MapExportManager.class,
+				"Manages the export of MapContexts to different formats.", mem);
 	}
 
 	public static void installJavaServices() {

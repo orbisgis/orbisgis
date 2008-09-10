@@ -27,6 +27,7 @@ import org.apache.log4j.Logger;
 import org.orbisgis.Services;
 import org.orbisgis.javaManager.autocompletion.AbstractVisitor;
 import org.orbisgis.javaManager.autocompletion.NodeUtils;
+import org.orbisgis.javaManager.autocompletion.PackageReflection;
 import org.orbisgis.javaManager.parser.ASTBlockStatement;
 import org.orbisgis.javaManager.parser.ASTClassOrInterfaceDeclaration;
 import org.orbisgis.javaManager.parser.ASTCompilationUnit;
@@ -49,6 +50,8 @@ public class DefaultJavaManager implements JavaManager {
 	private HashSet<File> additionalBuildPath = new HashSet<File>();
 
 	private HashSet<File> buildPath = null;
+
+	private PackageReflection pr;
 
 	public DefaultJavaManager() {
 		compiler = ToolProvider.getSystemJavaCompiler();
@@ -322,5 +325,22 @@ public class DefaultJavaManager implements JavaManager {
 	public void addFilesToClassPath(List<File> files) {
 		additionalBuildPath.addAll(files);
 		buildPath = null;
+		pr = null;
+	}
+
+	@Override
+	public PackageReflection getPackageReflection() {
+		if (pr == null) {
+			try {
+				StandardJavaFileManager stdFileManager = compiler
+						.getStandardFileManager(null, null, null);
+				HashSet<File> systemClassPath = getBuildPath(stdFileManager);
+				pr = new PackageReflection(systemClassPath.toArray(new File[0]));
+			} catch (LinkageError e) {
+				throw new RuntimeException("Bug. Malformed classpaths", e);
+			}
+		}
+
+		return pr;
 	}
 }
