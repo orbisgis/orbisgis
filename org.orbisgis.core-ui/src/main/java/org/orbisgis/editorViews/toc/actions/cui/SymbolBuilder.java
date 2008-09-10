@@ -68,6 +68,7 @@ import org.orbisgis.Services;
 import org.orbisgis.editorViews.toc.actions.cui.components.Canvas;
 import org.orbisgis.editorViews.toc.actions.cui.components.SymbolCollection;
 import org.orbisgis.editorViews.toc.actions.cui.components.SymbolSelection;
+import org.orbisgis.geocognition.Geocognition;
 import org.orbisgis.images.IconLoader;
 import org.orbisgis.renderer.symbol.Symbol;
 import org.orbisgis.renderer.symbol.SymbolFactory;
@@ -548,10 +549,9 @@ public class SymbolBuilder extends JPanel implements UIPanel,
 	 * @param evt
 	 */
 	private void jButtonToCollectionActionPerformed(ActionEvent evt) {
-		SymbolManager sm = (SymbolManager) Services
-				.getService("org.orbisgis.SymbolManager");
-		sm.addSymbol(getSymbolComposite());
-		JOptionPane.showMessageDialog(this, "Symbol saved in collection");
+		Geocognition geocognition = Services.getService(Geocognition.class);
+		geocognition.addElement(geocognition.getUniqueId("symbol"), getSymbolComposite());
+		JOptionPane.showMessageDialog(this, "Symbol saved in geocognition");
 	}
 
 	private JPanel canvasPreview;
