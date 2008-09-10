@@ -3,6 +3,7 @@ package org.orbisgis.views.geocognition.sync.editor.text;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.Graphics;
 import java.awt.Insets;
 import java.awt.Rectangle;
 import java.awt.event.MouseWheelListener;
@@ -47,10 +48,13 @@ public class CompareTextPane extends JPanel {
 	// Flag to determine if the pane text has been modified
 	private boolean dirty;
 
+	private AbstractCompareTextEditor editor;
+
 	/**
 	 * Creates a new CompareTextPane
 	 */
-	CompareTextPane(CompareTextEditor editor) {
+	CompareTextPane(AbstractCompareTextEditor editor) {
+		this.editor = editor;
 		line = 0;
 		textArea = new CompareTextArea();
 		textArea.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 14));
@@ -64,7 +68,7 @@ public class CompareTextPane extends JPanel {
 				});
 
 		UndoableDocument doc = new UndoableDocument();
-		doc.addUndoRedoListener(new CompareUndoListener(editor));
+		doc.addUndoRedoListener(new CompareUndoListener());
 		textArea.setDocument(doc);
 
 		scrollPane = new JScrollPane();
@@ -271,11 +275,6 @@ public class CompareTextPane extends JPanel {
 	 */
 	private class CompareUndoListener implements UndoRedoListener {
 		private int scrollValue;
-		private CompareTextEditor editor;
-
-		public CompareUndoListener(CompareTextEditor ed) {
-			editor = ed;
-		}
 
 		private void postUndoRedo() {
 			editor.update();
@@ -306,5 +305,11 @@ public class CompareTextPane extends JPanel {
 
 	void resetUndoManager() {
 		((UndoableDocument) textArea.getDocument()).resetUndoEdits();
+	}
+
+	@Override
+	public void paint(Graphics g) {
+		super.paint(g);
+		editor.repaint();
 	}
 }
