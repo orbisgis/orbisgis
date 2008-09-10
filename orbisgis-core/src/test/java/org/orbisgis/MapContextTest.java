@@ -37,14 +37,19 @@
 package org.orbisgis;
 
 import java.io.File;
+import java.io.FileOutputStream;
 
 import org.orbisgis.layerModel.DefaultMapContext;
 import org.orbisgis.layerModel.ILayer;
 import org.orbisgis.layerModel.LayerException;
 import org.orbisgis.layerModel.MapContext;
+import org.orbisgis.map.export.MapExportManager;
 import org.orbisgis.progress.NullProgressMonitor;
 import org.orbisgis.renderer.legend.Legend;
 import org.orbisgis.renderer.symbol.Symbol;
+
+import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.Envelope;
 
 public class MapContextTest extends AbstractTest {
 
@@ -321,6 +326,31 @@ public class MapContextTest extends AbstractTest {
 				.getJAXBObject();
 		assertTrue(xmlMC.getLayerCollection().getLayer().size() == 1);
 		mc.close(null);
+	}
 
+	public void testExportSVG() throws Exception {
+		MapContext mc = new DefaultMapContext();
+		mc.open(null);
+		ILayer layer = getDataManager().createLayer("linestring",
+				new File("../../datas2tests/shp/mediumshape2D/bati.shp"));
+		mc.getLayerModel().addLayer(layer);
+		ILayer layer2 = getDataManager().createLayer("linestring2",
+				new File("../../datas2tests/geotif/440707.tif"));
+		mc.getLayerModel().addLayer(layer2);
+
+		MapExportManager mem = Services.getService(MapExportManager.class);
+		Envelope envelope = mc.getLayerModel().getEnvelope();
+		FileOutputStream outStream = new FileOutputStream(new File(
+				"/tmp/output.svg"));
+		mem.exportSVG(mc, outStream, 600, 600, new Envelope(new Coordinate(
+				306260, 2251944), new Coordinate(310000, 2253464)));
+		outStream.close();
+		mc.close(null);
+
+		try {
+			mem.exportSVG(mc, outStream, 300, 300, envelope);
+			assertTrue(false);
+		} catch (IllegalArgumentException e) {
+		}
 	}
 }
