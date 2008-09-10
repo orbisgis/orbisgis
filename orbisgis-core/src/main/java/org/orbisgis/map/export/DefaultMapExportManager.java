@@ -1,14 +1,11 @@
 package org.orbisgis.map.export;
 
 import java.awt.image.BufferedImage;
-import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
 import java.io.Writer;
-
-import javax.imageio.ImageIO;
 
 import org.apache.batik.dom.GenericDOMImplementation;
 import org.apache.batik.svggen.SVGGraphics2D;
@@ -52,9 +49,6 @@ public class DefaultMapExportManager implements MapExportManager {
 		svgg.clipRect(0, 0, width, height);
 		r.draw(svgg, width, height, mt.getAdjustedExtent(), mapContext
 				.getLayerModel(), new NullProgressMonitor());
-		r.draw(img.createGraphics(), width, height, mt.getAdjustedExtent(),
-				mapContext.getLayerModel(), new NullProgressMonitor());
-		ImageIO.write(img, "png", new File("/tmp/output.png"));
 
 		// write legends
 		svgg.setClip(null);
