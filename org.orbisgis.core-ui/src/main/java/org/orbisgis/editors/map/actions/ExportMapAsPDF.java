@@ -40,6 +40,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 
+import javax.swing.JOptionPane;
+
 import org.gdms.driver.DriverException;
 import org.orbisgis.Services;
 import org.orbisgis.editor.IEditor;
@@ -75,6 +77,8 @@ public class ExportMapAsPDF implements IEditorAction {
 			try {
 				mem.exportSVG(mc, new FileOutputStream(outfilePanel
 						.getSelectedFile()), 500, 500, envelope);
+				JOptionPane.showMessageDialog(null, "Export finished",
+						"OrbisGIS", JOptionPane.INFORMATION_MESSAGE);
 			} catch (UnsupportedEncodingException e) {
 				Services.getErrorManager().error("Cannot export", e);
 			} catch (IllegalArgumentException e) {
