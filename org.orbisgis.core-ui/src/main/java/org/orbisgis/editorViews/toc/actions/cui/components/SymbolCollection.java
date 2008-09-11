@@ -88,7 +88,7 @@ public class SymbolCollection extends javax.swing.JPanel implements UIPanel {
 
 				});
 		for (int i = 0; i < symbols.length; i++) {
-			SelectableCanvas can = new SelectableCanvas();
+			SelectableCanvas can = new SelectableCanvas(symbols[i].getId());
 
 			can.setSymbol(((Symbol) symbols[i].getObject()).cloneSymbol());
 			can.setPreferredSize(new Dimension(126, 70));

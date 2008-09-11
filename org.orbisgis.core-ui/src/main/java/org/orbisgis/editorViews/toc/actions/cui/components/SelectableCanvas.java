@@ -37,15 +37,27 @@
 package org.orbisgis.editorViews.toc.actions.cui.components;
 
 import java.awt.Color;
+import java.awt.FontMetrics;
 import java.awt.Graphics;
+import java.awt.geom.Rectangle2D;
 
 public class SelectableCanvas extends Canvas {
 
 	private boolean selected = false;
+	private String id;
+
+	public SelectableCanvas(String id) {
+		this.id = id;
+	}
 
 	@Override
 	public void paintComponent(Graphics g) {
 		super.paintComponent(g);
+		FontMetrics fm = g.getFontMetrics();
+		Rectangle2D bounds = fm.getStringBounds(id, g);
+		double width = getPreferredSize().getWidth();
+		g.drawString(id, (int) ((width - bounds.getWidth()) / 2), (int) bounds
+				.getHeight());
 		if (selected) {
 			g.setColor(Color.black);
 			g.drawRect(0, 0, getWidth() - 1, getHeight() - 1);
