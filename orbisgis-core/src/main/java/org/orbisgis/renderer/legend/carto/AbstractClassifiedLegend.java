@@ -37,6 +37,7 @@
 package org.orbisgis.renderer.legend.carto;
 
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
@@ -165,7 +166,7 @@ abstract class AbstractClassifiedLegend extends AbstractCartoLegend implements
 	}
 
 	public void drawImage(Graphics2D g) {
-		String text = getClassificationField();
+		String text = "Field: " + getClassificationField();
 		Rectangle2D bounds = g.getFontMetrics().getStringBounds(text, g);
 		int start;
 		if (getClassificationCount() > 0) {
@@ -177,9 +178,10 @@ abstract class AbstractClassifiedLegend extends AbstractCartoLegend implements
 			start = 0;
 		}
 		g.setColor(Color.black);
+		Font oldFont = g.getFont();
+		g.setFont(g.getFont().deriveFont(Font.BOLD));
 		g.drawString(text, start, (int) bounds.getHeight());
-		g.drawLine(start, (int) bounds.getHeight(), start
-				+ (int) bounds.getWidth(), (int) bounds.getHeight());
+		g.setFont(oldFont);
 		AffineTransform originalTrans = g.getTransform();
 		g.translate(0, (int) bounds.getHeight());
 
