@@ -144,7 +144,9 @@ public abstract class AbstractJavaSQLArtifact extends AbstractExtensionElement
 
 		@Override
 		public void codeChanged(Code code) {
-			elementListener.contentChanged();
+			if (elementListener != null) {
+				elementListener.contentChanged();
+			}
 		}
 
 	}

@@ -47,6 +47,7 @@ public class DefaultGeocognition implements Geocognition {
 
 	@Override
 	public void read(InputStream is) throws PersistenceException {
+		clear();
 		readIn(root, is);
 		root.setId("");
 	}
