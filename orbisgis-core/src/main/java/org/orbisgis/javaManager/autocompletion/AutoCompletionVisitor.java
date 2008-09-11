@@ -9,6 +9,7 @@ import java.util.Comparator;
 import java.util.TreeSet;
 
 import org.apache.log4j.Logger;
+import org.orbisgis.javaManager.PackageReflection;
 import org.orbisgis.javaManager.parser.ASTAllocationExpression;
 import org.orbisgis.javaManager.parser.ASTClassOrInterfaceType;
 import org.orbisgis.javaManager.parser.ASTImportDeclaration;

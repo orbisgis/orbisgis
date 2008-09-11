@@ -6,6 +6,7 @@ import java.util.ArrayList;
 
 import org.orbisgis.Services;
 import org.orbisgis.javaManager.JavaManager;
+import org.orbisgis.javaManager.PackageReflection;
 import org.orbisgis.javaManager.parser.ASTArguments;
 import org.orbisgis.javaManager.parser.ASTBooleanLiteral;
 import org.orbisgis.javaManager.parser.ASTClassOrInterfaceType;

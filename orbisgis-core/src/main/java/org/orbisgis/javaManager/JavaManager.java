@@ -8,7 +8,6 @@ import java.util.List;
 import javax.tools.DiagnosticListener;
 import javax.tools.JavaFileObject;
 
-import org.orbisgis.javaManager.autocompletion.PackageReflection;
 import org.orbisgis.javaManager.parser.ParseException;
 
 public interface JavaManager {

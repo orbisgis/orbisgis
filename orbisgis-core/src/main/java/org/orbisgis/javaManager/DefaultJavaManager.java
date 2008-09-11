@@ -27,7 +27,6 @@ import org.apache.log4j.Logger;
 import org.orbisgis.Services;
 import org.orbisgis.javaManager.autocompletion.AbstractVisitor;
 import org.orbisgis.javaManager.autocompletion.NodeUtils;
-import org.orbisgis.javaManager.autocompletion.PackageReflection;
 import org.orbisgis.javaManager.parser.ASTBlockStatement;
 import org.orbisgis.javaManager.parser.ASTClassOrInterfaceDeclaration;
 import org.orbisgis.javaManager.parser.ASTCompilationUnit;

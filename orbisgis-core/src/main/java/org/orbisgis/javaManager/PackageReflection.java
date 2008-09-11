@@ -1,4 +1,4 @@
-package org.orbisgis.javaManager.autocompletion;
+package org.orbisgis.javaManager;
 
 import java.io.File;
 import java.io.IOException;
