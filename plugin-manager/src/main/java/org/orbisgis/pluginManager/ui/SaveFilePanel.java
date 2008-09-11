@@ -39,6 +39,7 @@ package org.orbisgis.pluginManager.ui;
 import java.io.File;
 
 import javax.swing.JFileChooser;
+import javax.swing.JOptionPane;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.plaf.FileChooserUI;
 import javax.swing.plaf.basic.BasicFileChooserUI;
@@ -106,5 +107,17 @@ public class SaveFilePanel extends OpenFilePanel {
 
 	public void setFileMustNotExist(boolean fileMustNotExist) {
 		this.fileMustNotExist = fileMustNotExist;
+	}
+
+	@Override
+	public String postProcess() {
+		int ret = JOptionPane.showConfirmDialog(null,
+				"The file already exists. Overwrite?", "Existing file",
+				JOptionPane.YES_NO_OPTION);
+		if (ret == JOptionPane.NO_OPTION) {
+			return "The file already exists";
+		} else {
+			return null;
+		}
 	}
 }
