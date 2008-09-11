@@ -38,7 +38,7 @@ package org.orbisgis.renderer.legend;
 
 import java.awt.Color;
 import java.awt.FontMetrics;
-import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.ColorModel;
@@ -112,7 +112,7 @@ public class RasterLegend extends AbstractLegend implements Legend {
 		return new RasterLegend(LutGenerator.colorModel("gray"), 1);
 	}
 
-	public void drawImage(Graphics g) {
+	public void drawImage(Graphics2D g) {
 		if (bandsCode != null) {
 			g.setColor(Color.black);
 			FontMetrics fm = g.getFontMetrics();
@@ -126,7 +126,7 @@ public class RasterLegend extends AbstractLegend implements Legend {
 		}
 	}
 
-	public int[] getImageSize(Graphics g) {
+	public int[] getImageSize(Graphics2D g) {
 		if (bandsCode != null) {
 			FontMetrics fm = g.getFontMetrics();
 			String text = getDrawingText();

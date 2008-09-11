@@ -245,7 +245,7 @@ public class DefaultProportionalLegend extends AbstractCartoLegend implements
 		}
 	}
 
-	public void drawImage(Graphics g) {
+	public void drawImage(Graphics2D g) {
 		drawImage(g, bigSize);
 	}
 
@@ -330,7 +330,7 @@ public class DefaultProportionalLegend extends AbstractCartoLegend implements
 		g.drawLine(lineStartX, topSmall, lineEndX, topSmall);
 	}
 
-	public int[] getImageSize(Graphics g) {
+	public int[] getImageSize(Graphics2D g) {
 		return getImageSize(g, bigSize);
 	}
 

@@ -1,5 +1,6 @@
 package org.orbisgis.map.export;
 
+import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -54,9 +55,12 @@ public class DefaultMapExportManager implements MapExportManager {
 		svgg.setClip(null);
 		ILayer[] layers = mapContext.getLayerModel().getLayersRecursively();
 
-		svgg.translate(0, 11 * height / 10);
-		svgg.drawString("Legends", 0, 0);
+		svgg.translate(0, height + 50);
+		int maxHeight = 0;
 		for (int i = 0; i < layers.length; i++) {
+			svgg.translate(0, maxHeight + 30);
+			maxHeight = 0;
+			AffineTransform original = svgg.getTransform();
 			if (layers[i].isVisible()) {
 				Legend[] legends = layers[i].getRenderingLegend();
 				java.awt.Font font = new java.awt.Font("arial", 0, 12);
@@ -66,9 +70,13 @@ public class DefaultMapExportManager implements MapExportManager {
 					Legend vectorLegend = legends[j];
 					vectorLegend.drawImage(svgg);
 					int[] size = vectorLegend.getImageSize(svgg);
-					svgg.translate(size[0], 0);
+					if (size[1] > maxHeight) {
+						maxHeight = size[1];
+					}
+					svgg.translate(size[0] + 30, 0);
 				}
 			}
+			svgg.setTransform(original);
 		}
 
 		Writer out = new OutputStreamWriter(outStream, "UTF-8");

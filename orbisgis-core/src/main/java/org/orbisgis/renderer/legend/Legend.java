@@ -36,7 +36,7 @@
  */
 package org.orbisgis.renderer.legend;
 
-import java.awt.Graphics;
+import java.awt.Graphics2D;
 
 import org.gdms.data.SpatialDataSourceDecorator;
 import org.orbisgis.renderer.symbol.Symbol;
@@ -149,7 +149,7 @@ public interface Legend {
 	 * 
 	 * @param g
 	 */
-	void drawImage(Graphics g);
+	void drawImage(Graphics2D g);
 
 	/**
 	 * Gets the size of the image being draw in the {@link drawImage} method
@@ -158,7 +158,7 @@ public interface Legend {
 	 * 
 	 * @return
 	 */
-	int[] getImageSize(Graphics g);
+	int[] getImageSize(Graphics2D g);
 
 	/**
 	 * Set the minimum scale to use this legend. Use Integer.MIN_VALUE to

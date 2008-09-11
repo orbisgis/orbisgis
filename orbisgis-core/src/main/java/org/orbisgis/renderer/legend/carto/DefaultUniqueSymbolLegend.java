@@ -36,7 +36,7 @@
  */
 package org.orbisgis.renderer.legend.carto;
 
-import java.awt.Graphics;
+import java.awt.Graphics2D;
 
 import org.gdms.data.SpatialDataSourceDecorator;
 import org.gdms.driver.DriverException;
@@ -106,11 +106,11 @@ public class DefaultUniqueSymbolLegend extends AbstractCartoLegend implements
 		return new DefaultUniqueSymbolLegend();
 	}
 
-	public void drawImage(Graphics g) {
+	public void drawImage(Graphics2D g) {
 		new LegendLine(symbol, "Unique symbol").drawImage(g);
 	}
 
-	public int[] getImageSize(Graphics g) {
+	public int[] getImageSize(Graphics2D g) {
 		return new LegendLine(symbol, "Unique symbol").getImageSize(g);
 	}
 

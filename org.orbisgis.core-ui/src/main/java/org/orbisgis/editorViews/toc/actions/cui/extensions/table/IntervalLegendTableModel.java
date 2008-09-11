@@ -194,8 +194,9 @@ public class IntervalLegendTableModel extends ClassifiedLegendTableModel
 						valMax = ValueFactory.createValueByType(txt, legend
 								.getClassificationFieldType());
 					}
+					boolean maxIncluded = rowIndex == getRowCount() - 1;
 					legend.setInterval(realIndex, new Interval(interval
-							.getMinValue(), true, valMax, false));
+							.getMinValue(), true, valMax, maxIncluded));
 					updateLabel(realIndex, rowIndex);
 					invalidateOrder();
 					break;

@@ -40,7 +40,7 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.FlowLayout;
 import java.awt.Font;
-import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
@@ -175,7 +175,7 @@ public class TocRenderer extends TocAbstractRenderer implements
 				boolean hasFocus) {
 			try {
 				this.setBackground(DESELECTED);
-				Graphics dummyGraphics = new BufferedImage(10, 10,
+				Graphics2D dummyGraphics = new BufferedImage(10, 10,
 						BufferedImage.TYPE_INT_ARGB).createGraphics();
 				Legend legend = node.getRenderingLegend()[legendIndex];
 				int[] imageSize = legend.getImageSize(dummyGraphics);

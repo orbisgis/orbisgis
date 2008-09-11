@@ -38,7 +38,7 @@ package org.orbisgis.renderer.legend.carto;
 
 import java.awt.Color;
 import java.awt.FontMetrics;
-import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.geom.Rectangle2D;
 
 import org.gdms.data.SpatialDataSourceDecorator;
@@ -142,7 +142,7 @@ public class DefaultLabelLegend extends AbstractCartoLegend implements LabelLege
 		this.fieldName = fieldName;
 	}
 
-	public void drawImage(Graphics g) {
+	public void drawImage(Graphics2D g) {
 		g.setColor(Color.black);
 		FontMetrics fm = g.getFontMetrics();
 		String text = getDrawingText();
@@ -150,7 +150,7 @@ public class DefaultLabelLegend extends AbstractCartoLegend implements LabelLege
 		g.drawString(text, 5, (int) (r.getHeight() * 1.2));
 	}
 
-	public int[] getImageSize(Graphics g) {
+	public int[] getImageSize(Graphics2D g) {
 		FontMetrics fm = g.getFontMetrics();
 		String text = getDrawingText();
 		Rectangle2D r = fm.getStringBounds(text, g);

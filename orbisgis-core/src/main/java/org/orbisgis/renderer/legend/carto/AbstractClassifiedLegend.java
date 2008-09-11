@@ -37,7 +37,8 @@
 package org.orbisgis.renderer.legend.carto;
 
 import java.awt.Color;
-import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 
@@ -163,7 +164,7 @@ abstract class AbstractClassifiedLegend extends AbstractCartoLegend implements
 		return fieldType;
 	}
 
-	public void drawImage(Graphics g) {
+	public void drawImage(Graphics2D g) {
 		String text = getClassificationField();
 		Rectangle2D bounds = g.getFontMetrics().getStringBounds(text, g);
 		int start;
@@ -179,6 +180,7 @@ abstract class AbstractClassifiedLegend extends AbstractCartoLegend implements
 		g.drawString(text, start, (int) bounds.getHeight());
 		g.drawLine(start, (int) bounds.getHeight(), start
 				+ (int) bounds.getWidth(), (int) bounds.getHeight());
+		AffineTransform originalTrans = g.getTransform();
 		g.translate(0, (int) bounds.getHeight());
 
 		LegendLine ll = null;
@@ -198,9 +200,10 @@ abstract class AbstractClassifiedLegend extends AbstractCartoLegend implements
 			ll = new LegendLine(defaultSymbol, defaultLabel);
 			ll.drawImage(g);
 		}
+		g.setTransform(originalTrans);
 	}
 
-	public int[] getImageSize(Graphics g) {
+	public int[] getImageSize(Graphics2D g) {
 		int height = 0;
 		int width = 0;
 		for (int i = 0; i < symbols.size(); i++) {

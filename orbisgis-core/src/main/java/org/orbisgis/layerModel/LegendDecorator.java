@@ -36,7 +36,7 @@
  */
 package org.orbisgis.layerModel;
 
-import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.util.ArrayList;
 
 import org.apache.log4j.Logger;
@@ -168,11 +168,11 @@ public class LegendDecorator implements Legend, EditionListener {
 		legend.preprocess(sds);
 	}
 
-	public void drawImage(Graphics g) {
+	public void drawImage(Graphics2D g) {
 		legend.drawImage(g);
 	}
 
-	public int[] getImageSize(Graphics g) {
+	public int[] getImageSize(Graphics2D g) {
 		return legend.getImageSize(g);
 	}
 
