@@ -111,13 +111,14 @@ public class SaveFilePanel extends OpenFilePanel {
 
 	@Override
 	public String postProcess() {
-		int ret = JOptionPane.showConfirmDialog(null,
-				"The file already exists. Overwrite?", "Existing file",
-				JOptionPane.YES_NO_OPTION);
-		if (ret == JOptionPane.NO_OPTION) {
-			return "The file already exists";
-		} else {
-			return null;
+		if (getSelectedFile().exists()) {
+			int ret = JOptionPane.showConfirmDialog(null,
+					"The file already exists. Overwrite?", "Existing file",
+					JOptionPane.YES_NO_OPTION);
+			if (ret == JOptionPane.NO_OPTION) {
+				return "The file already exists";
+			}
 		}
+		return null;
 	}
 }
