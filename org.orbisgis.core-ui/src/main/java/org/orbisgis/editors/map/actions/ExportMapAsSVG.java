@@ -60,7 +60,7 @@ import com.vividsolutions.jts.geom.Envelope;
  * account.
  * 
  */
-public class ExportMapAsPDF implements IEditorAction {
+public class ExportMapAsSVG implements IEditorAction {
 
 	public void actionPerformed(IEditor editor) {
 		MapEditor mapEditor = (MapEditor) editor;
