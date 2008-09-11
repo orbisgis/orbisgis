@@ -37,6 +37,9 @@
 package org.orbisgis.views.sqlConsole;
 
 import java.awt.Component;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.Transferable;
+import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -53,7 +56,11 @@ import org.gdms.data.ExecutionException;
 import org.gdms.data.metadata.Metadata;
 import org.gdms.data.types.Type;
 import org.gdms.driver.DriverException;
+import org.gdms.sql.customQuery.CustomQuery;
+import org.gdms.sql.customQuery.QueryManager;
 import org.gdms.sql.customQuery.showAttributes.Table;
+import org.gdms.sql.function.Function;
+import org.gdms.sql.function.FunctionManager;
 import org.gdms.sql.parser.ParseException;
 import org.gdms.sql.strategies.Instruction;
 import org.gdms.sql.strategies.SQLProcessor;
@@ -61,6 +68,9 @@ import org.gdms.sql.strategies.SemanticException;
 import org.orbisgis.DataManager;
 import org.orbisgis.Services;
 import org.orbisgis.editors.map.MapContextManager;
+import org.orbisgis.geocognition.GeocognitionElement;
+import org.orbisgis.geocognition.sql.GeocognitionCustomQueryFactory;
+import org.orbisgis.geocognition.sql.GeocognitionFunctionFactory;
 import org.orbisgis.layerModel.ILayer;
 import org.orbisgis.layerModel.LayerException;
 import org.orbisgis.layerModel.MapContext;
@@ -70,6 +80,7 @@ import org.orbisgis.pluginManager.ui.OpenFilePanel;
 import org.orbisgis.pluginManager.ui.SaveFilePanel;
 import org.orbisgis.progress.IProgressMonitor;
 import org.orbisgis.view.IView;
+import org.orbisgis.views.geocognition.TransferableGeocognitionElement;
 import org.orbisgis.views.sqlConsole.actions.ConsoleListener;
 import org.orbisgis.views.sqlConsole.ui.ConsolePanel;
 import org.sif.UIFactory;
@@ -131,6 +142,43 @@ public class ConsoleView implements IView {
 			@Override
 			public boolean showControlButtons() {
 				return true;
+			}
+
+			@Override
+			public String doDrop(Transferable t) {
+				DataFlavor geocogFlavor = TransferableGeocognitionElement.geocognitionFlavor;
+				if (t.isDataFlavorSupported(geocogFlavor)) {
+					try {
+						GeocognitionElement[] elems = (GeocognitionElement[]) t
+								.getTransferData(geocogFlavor);
+						if (elems.length == 1) {
+							if ((elems[0].getTypeId()
+									.equals(GeocognitionFunctionFactory.BUILT_IN_FUNCTION_ID))
+									|| (elems[0].getTypeId()
+											.equals(GeocognitionFunctionFactory.JAVA_FUNCTION_ID))) {
+								Function f = FunctionManager
+										.getFunction(elems[0].getId());
+								if (f != null) {
+									return f.getSqlOrder();
+								}
+							} else if ((elems[0].getTypeId()
+									.equals(GeocognitionCustomQueryFactory.BUILT_IN_QUERY_ID))
+									|| (elems[0].getTypeId()
+											.equals(GeocognitionCustomQueryFactory.JAVA_QUERY_ID))) {
+								CustomQuery cq = QueryManager.getQuery(elems[0]
+										.getId());
+								if (cq != null) {
+									return cq.getSqlOrder();
+								}
+							}
+						}
+					} catch (UnsupportedFlavorException e) {
+						logger.error("bug dropping function", e);
+					} catch (IOException e) {
+						logger.error("bug dropping function", e);
+					}
+				}
+				return null;
 			}
 
 		});

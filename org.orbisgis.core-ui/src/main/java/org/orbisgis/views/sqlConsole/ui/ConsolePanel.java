@@ -65,7 +65,7 @@ public class ConsolePanel extends JPanel {
 		actionAndKeyListener = new ActionsListener(listener, this);
 
 		setLayout(new BorderLayout());
-		add(getCenterPanel(sql), BorderLayout.CENTER);
+		add(getCenterPanel(sql, listener), BorderLayout.CENTER);
 		if (listener.showControlButtons()) {
 			add(getNorthPanel(), BorderLayout.NORTH);
 		}
@@ -91,11 +91,11 @@ public class ConsolePanel extends JPanel {
 		return northPanel;
 	}
 
-	private JPanel getCenterPanel(boolean sql) {
+	private JPanel getCenterPanel(boolean sql, ConsoleListener listener) {
 		if (centerPanel == null) {
 			centerPanel = new JPanel();
 			centerPanel.setLayout(new BorderLayout());
-			scriptPanel = new ScriptPanel(actionAndKeyListener, sql);
+			scriptPanel = new ScriptPanel(actionAndKeyListener, listener, sql);
 			centerPanel.add(scriptPanel, BorderLayout.CENTER);
 		}
 		return centerPanel;

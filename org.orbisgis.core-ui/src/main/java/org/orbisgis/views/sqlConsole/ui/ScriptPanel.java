@@ -58,6 +58,7 @@ import org.orbisgis.editorViews.toc.TransferableLayer;
 import org.orbisgis.ui.text.UndoRedoInstaller;
 import org.orbisgis.views.geocatalog.TransferableResource;
 import org.orbisgis.views.sqlConsole.actions.ActionsListener;
+import org.orbisgis.views.sqlConsole.actions.ConsoleListener;
 
 public class ScriptPanel extends JScrollPane implements DropTargetListener {
 
@@ -68,8 +69,12 @@ public class ScriptPanel extends JScrollPane implements DropTargetListener {
 
 	private JTextPane jTextPane;
 
-	public ScriptPanel(final ActionsListener actionAndKeyListener, boolean sql) {
+	private ConsoleListener listener;
+
+	public ScriptPanel(final ActionsListener actionAndKeyListener,
+			ConsoleListener listener, boolean sql) {
 		this.actionAndKeyListener = actionAndKeyListener;
+		this.listener = listener;
 		setViewportView(getJTextPane(sql));
 		this.getVerticalScrollBar().setBlockIncrement(10);
 		this.getVerticalScrollBar().setUnitIncrement(5);
@@ -104,27 +109,31 @@ public class ScriptPanel extends JScrollPane implements DropTargetListener {
 
 	public void drop(DropTargetDropEvent dtde) {
 		final Transferable t = dtde.getTransferable();
-		String query = null;
 
-		try {
-			if ((t.isDataFlavorSupported(TransferableResource
-					.getResourceFlavor()))
-					|| (t.isDataFlavorSupported(TransferableLayer
-							.getLayerFlavor()))) {
-				dtde.acceptDrop(DnDConstants.ACTION_COPY_OR_MOVE);
-				String s = (String) t.getTransferData(DataFlavor.stringFlavor);
-				dtde.getDropTargetContext().dropComplete(true);
-				query = s;
-			} else if (t.isDataFlavorSupported(DataFlavor.stringFlavor)) {
-				dtde.acceptDrop(DnDConstants.ACTION_COPY_OR_MOVE);
-				String s = (String) t.getTransferData(DataFlavor.stringFlavor);
-				dtde.getDropTargetContext().dropComplete(true);
-				query = s;
+		String query = listener.doDrop(t);
+		if (query == null) {
+			try {
+				if ((t.isDataFlavorSupported(TransferableResource
+						.getResourceFlavor()))
+						|| (t.isDataFlavorSupported(TransferableLayer
+								.getLayerFlavor()))) {
+					dtde.acceptDrop(DnDConstants.ACTION_COPY_OR_MOVE);
+					String s = (String) t
+							.getTransferData(DataFlavor.stringFlavor);
+					dtde.getDropTargetContext().dropComplete(true);
+					query = s;
+				} else if (t.isDataFlavorSupported(DataFlavor.stringFlavor)) {
+					dtde.acceptDrop(DnDConstants.ACTION_COPY_OR_MOVE);
+					String s = (String) t
+							.getTransferData(DataFlavor.stringFlavor);
+					dtde.getDropTargetContext().dropComplete(true);
+					query = s;
+				}
+			} catch (IOException e) {
+				dtde.rejectDrop();
+			} catch (UnsupportedFlavorException e) {
+				dtde.rejectDrop();
 			}
-		} catch (IOException e) {
-			dtde.rejectDrop();
-		} catch (UnsupportedFlavorException e) {
-			dtde.rejectDrop();
 		}
 
 		if (query != null) {
@@ -133,10 +142,12 @@ public class ScriptPanel extends JScrollPane implements DropTargetListener {
 			try {
 				jTextPane.getDocument().insertString(position, query, null);
 			} catch (BadLocationException e) {
-				Services.getErrorManager().error("Cannot place the text there", e);
+				Services.getErrorManager().error("Cannot place the text there",
+						e);
 			}
+		} else {
+			dtde.rejectDrop();
 		}
-		dtde.rejectDrop();
 
 		actionAndKeyListener.setButtonsStatus();
 	}

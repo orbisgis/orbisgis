@@ -3,6 +3,7 @@ package org.orbisgis.editors.sql;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.datatransfer.Transferable;
 import java.io.IOException;
 
 import javax.swing.JPanel;
@@ -83,6 +84,11 @@ public abstract class JavaEditor implements IEditor {
 						JavaEditor.this.code.getCode())) {
 					JavaEditor.this.code.setCode(consolePanel.getText());
 				}
+			}
+
+			@Override
+			public String doDrop(Transferable t) {
+				return null;
 			}
 
 		});

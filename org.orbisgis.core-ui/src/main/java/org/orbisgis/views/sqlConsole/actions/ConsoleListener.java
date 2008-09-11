@@ -36,6 +36,7 @@
  */
 package org.orbisgis.views.sqlConsole.actions;
 
+import java.awt.datatransfer.Transferable;
 import java.io.IOException;
 
 public interface ConsoleListener {
@@ -75,4 +76,13 @@ public interface ConsoleListener {
 	 * @return
 	 */
 	boolean showControlButtons();
+
+	/**
+	 * Manages the drop event in the console and returns the string that will be
+	 * added to the console. Return null to have a default management
+	 * 
+	 * @param t
+	 * @return
+	 */
+	String doDrop(Transferable t);
 }

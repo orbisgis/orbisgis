@@ -38,6 +38,7 @@ package org.orbisgis.views.javaConsole;
 
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.datatransfer.Transferable;
 import java.io.BufferedWriter;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -170,6 +171,11 @@ public class JavaConsoleView implements IView {
 			@Override
 			public boolean showControlButtons() {
 				return true;
+			}
+
+			@Override
+			public String doDrop(Transferable t) {
+				return null;
 			}
 
 		});
