@@ -58,7 +58,7 @@ import org.sif.UIFactory;
 import org.sif.UIPanel;
 
 /**
- *
+ * 
  * @author david
  */
 public class PnlUniqueSymbolLegend extends javax.swing.JPanel implements
@@ -120,7 +120,8 @@ public class PnlUniqueSymbolLegend extends javax.swing.JPanel implements
 	}
 
 	public String validateInput() {
-		if (symbolEditor.getSymbolComposite() == null) {
+		if ((symbolEditor.getSymbolComposite() == null)
+				|| (symbolEditor.getSymbolComposite().getSymbolCount() == 0)) {
 			return "At least one symbol must be created";
 		}
 		return null;
