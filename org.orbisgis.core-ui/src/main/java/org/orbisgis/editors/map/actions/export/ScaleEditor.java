@@ -136,7 +136,7 @@ public class ScaleEditor extends JPanel implements UIPanel {
 
 	private void resizePattern(PatternConfigurator patternComponent) {
 		try {
-			int dim = Integer.parseInt(spnPartCount.getValue().toString());
+			int dim = Integer.parseInt(spnPartCount.getValue().toString()) + 1;
 			if (dim > 0) {
 				patternComponent.setDimensions(1, dim);
 			}
@@ -157,6 +157,8 @@ public class ScaleEditor extends JPanel implements UIPanel {
 			scalePreview.setModel(scale);
 			scale.setScaleDenominator(scaleDenominator);
 			syncControls();
+			resizePattern(markPattern);
+			resizePattern(labelPattern);
 		}
 	}
 

@@ -4,14 +4,9 @@ public abstract class AbstractScale implements Scale {
 	protected int partCount = 1;
 	protected double partWidth = 1;
 	protected double height = 0.3;
-	protected boolean[] partsWithText = new boolean[] { false };
-	protected boolean[] remarkedParts = new boolean[] { false };
+	protected boolean[] partsWithText = new boolean[] { false, false };
+	protected boolean[] remarkedParts = new boolean[] { false, false };
 	protected double scaleDenominator = 1;
-
-	@Override
-	public String getScaleTypeName() {
-		return "Single line";
-	}
 
 	public int getPartCount() {
 		return partCount;
@@ -52,7 +47,7 @@ public abstract class AbstractScale implements Scale {
 	}
 
 	public void setPartsWithText(boolean[] partsWithText) {
-		if (partsWithText.length != partCount) {
+		if (partsWithText.length != partCount + 1) {
 			throw new IllegalArgumentException("Wrong number of elements. "
 					+ "It should be equal to the number of parts: " + partCount);
 		}
@@ -64,7 +59,7 @@ public abstract class AbstractScale implements Scale {
 	}
 
 	public void setRemarkedParts(boolean[] remarkedParts) {
-		if (remarkedParts.length != partCount) {
+		if (remarkedParts.length != partCount + 1) {
 			throw new IllegalArgumentException("Wrong number of elements. "
 					+ "It should be equal to the number of parts: " + partCount);
 		}
