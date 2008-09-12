@@ -6,12 +6,13 @@ import org.orbisgis.Services;
 import org.orbisgis.geocognition.Geocognition;
 import org.orbisgis.geocognition.GeocognitionElement;
 import org.orbisgis.pluginManager.ui.OpenFilePanel;
+import org.orbisgis.views.geocognition.sync.ComparePanel;
 import org.sif.UIFactory;
 
-public class SyncFile extends AbstractSyncAction {
-
+public class ExportToFile extends AbstractSyncAction {
 	@Override
-	public void execute(Geocognition geocognition, GeocognitionElement[] elements) {
+	public void execute(Geocognition geocognition,
+			GeocognitionElement[] elements) {
 		OpenFilePanel fp = new OpenFilePanel(
 				"org.orbisgis.geocognition.SyncFile",
 				"Synchronize Geocognition");
@@ -19,7 +20,7 @@ public class SyncFile extends AbstractSyncAction {
 		if (UIFactory.showDialog(fp)) {
 			try {
 				showSynchronizePanel(geocognition, elements, fp
-						.getSelectedFile());
+						.getSelectedFile(), ComparePanel.EXPORT);
 			} catch (IOException e) {
 				Services.getErrorManager().error(
 						"The file cannot be opened for reading", e);

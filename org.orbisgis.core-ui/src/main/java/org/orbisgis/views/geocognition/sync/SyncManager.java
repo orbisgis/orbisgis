@@ -14,6 +14,7 @@ public class SyncManager {
 	// Sets to determine additions, deletions, modifications and conflicts
 	private HashSet<IdPath> added, deleted, contentModified, conflict;
 
+	// Paths that must be synchronized
 	private ArrayList<IdPath> filterPaths;
 
 	// Local, remote and difference root trees
@@ -28,6 +29,7 @@ public class SyncManager {
 
 	// Listeners
 	private ArrayList<SyncListener> listenerList;
+	private EditorSavingListener listener;
 
 	/**
 	 * Creates a new synchronization manager
@@ -88,10 +90,8 @@ public class SyncManager {
 		conflict = new HashSet<IdPath>();
 
 		// Get roots
-		localRoot = (local instanceof GeocognitionElementDecorator) ? (GeocognitionElementDecorator) local
-				: new GeocognitionElementDecorator(local, filterPaths);
-		remoteRoot = (remote instanceof GeocognitionElementDecorator) ? (GeocognitionElementDecorator) remote
-				: new GeocognitionElementDecorator(remote, filterPaths);
+		localRoot = getDecoratedRoot(localRoot, local);
+		remoteRoot = getDecoratedRoot(remoteRoot, remote);
 
 		if (localRoot == remoteRoot) {
 			differenceRoot = null;
@@ -100,6 +100,48 @@ public class SyncManager {
 			differenceRoot = copyTreeStructure(localRoot);
 			synchronize(new IdPath(localRoot.getId()), pm);
 		}
+	}
+
+	/**
+	 * Gets the a GeocognitionElementDecorator from the given
+	 * GeocognitionElement. Removes the listener from the given root, creates a
+	 * new root and adds the listener to the new root
+	 * 
+	 * @param root
+	 *            the root to remove listener from
+	 * @param element
+	 *            element to decorate
+	 * @return the decorated root with the listener
+	 */
+	private GeocognitionElementDecorator getDecoratedRoot(
+			GeocognitionElementDecorator root, GeocognitionElement element) {
+		if (root != null) {
+			root.removeElementContentListener(getEditorSavingListener());
+		}
+
+		root = (element instanceof GeocognitionElementDecorator) ? (GeocognitionElementDecorator) element
+				: new GeocognitionElementDecorator(element, filterPaths);
+		root.addEditorSavingListenerRecursively(getEditorSavingListener());
+
+		return root;
+	}
+
+	/**
+	 * Gets the editor saving listener for this synchronization manager
+	 * 
+	 * @return the editor saving listener for this synchronization manager
+	 */
+	private EditorSavingListener getEditorSavingListener() {
+		if (listener == null) {
+			listener = new EditorSavingListener() {
+				@Override
+				public void elementSaved(GeocognitionElement element) {
+					synchronize(new IdPath(element.getIdPath()), null);
+				}
+			};
+		}
+
+		return listener;
 	}
 
 	/**
@@ -306,7 +348,7 @@ public class SyncManager {
 			GeocognitionElementDecorator bChild = b.getElement(aChild.getId());
 			if (bChild != null) {
 				// If 'a' child is in 'b' folder, compare children
-				path.add(aChild.getId());
+				path.addLast(aChild.getId());
 				TreeElement childTree = doComparison(path, monitor, childWeight);
 				if (childTree != null) {
 					difference.addElement(childTree);
@@ -399,7 +441,7 @@ public class SyncManager {
 		for (int i = root.getElementCount() - 1; i >= 0; i--) {
 			TreeElement child = root.getElement(i);
 			if (child.isFolder()) {
-				path.add(child.getId());
+				path.addLast(child.getId());
 				boolean childHasContent = removeEmptyFolders(path);
 				if (!childHasContent) {
 					root.removeElement(child.getId());
@@ -497,8 +539,8 @@ public class SyncManager {
 			}
 
 			for (String id : ids) {
-				path.add(id);
-				commit(new IdPath(path));
+				path.addLast(id);
+				commit(path.copy());
 				path.removeLast();
 			}
 		}
@@ -540,8 +582,8 @@ public class SyncManager {
 			}
 
 			for (String id : ids) {
-				path.add(id);
-				update(new IdPath(path));
+				path.addLast(id);
+				update(path.copy());
 				path.removeLast();
 			}
 		}
@@ -657,7 +699,7 @@ public class SyncManager {
 		int i;
 		IdPath auxPath = new IdPath();
 		for (i = 0; i < path.size(); i++) {
-			auxPath.add(path.get(i));
+			auxPath.addLast(path.get(i));
 			if (isConflict(auxPath)) {
 				break;
 			}
@@ -823,11 +865,32 @@ public class SyncManager {
 		return (remoteRoot == null) ? remoteRoot : find(remoteRoot, path);
 	}
 
+	/**
+	 * Finds the specified IdPath in the given root
+	 * 
+	 * @param root
+	 *            the element where the search must be performed
+	 * @param path
+	 *            the IdPath of the element to find
+	 * @return the element with the specified IdPath in the given root or null
+	 *         if there's no such element
+	 */
 	private GeocognitionElementDecorator find(
 			GeocognitionElementDecorator root, IdPath path) {
 		return find(root, path, path.size());
 	}
 
+	/**
+	 * Finds the specified IdPath in the given root
+	 * 
+	 * @param root
+	 *            the element where the search must be performed
+	 * @param path
+	 *            the IdPath of the element to find
+	 * @param n the last element of the IdPath to use <b>(exlcusive index)</b>
+	 * @return the element with the specified IdPath in the given root or null
+	 *         if there's no such element
+	 */
 	private GeocognitionElementDecorator find(
 			GeocognitionElementDecorator root, IdPath path, int n) {
 		if (path == null || !path.get(0).equalsIgnoreCase(root.getId())) {
@@ -876,5 +939,12 @@ public class SyncManager {
 		for (SyncListener listener : listenerList) {
 			listener.syncDone();
 		}
+	}
+
+	/**
+	 * Listener for the ICompareEditor saving events
+	 */
+	interface EditorSavingListener {
+		void elementSaved(GeocognitionElement e);
 	}
 }

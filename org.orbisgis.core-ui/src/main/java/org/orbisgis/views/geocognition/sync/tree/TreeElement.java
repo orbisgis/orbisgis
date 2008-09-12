@@ -179,7 +179,7 @@ public class TreeElement {
 
 	public IdPath getIdPath() {
 		IdPath path = new IdPath();
-		path.add(getId());
+		path.addLast(getId());
 		TreeElement p = parent;
 		while (p != null) {
 			path.addFirst(p.getId());

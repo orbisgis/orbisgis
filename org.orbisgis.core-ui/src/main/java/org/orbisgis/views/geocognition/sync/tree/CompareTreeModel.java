@@ -151,7 +151,7 @@ public class CompareTreeModel implements TreeModel {
 				ArrayList<TreeElement> treePath = new ArrayList<TreeElement>();
 				for (int i = 0; i < path.getPathCount(); i++) {
 					TreeElement element = (TreeElement) path.getPath()[i];
-					idPath.add(element.getId());
+					idPath.addLast(element.getId());
 					treePath.add(syncManager.getDifferenceTree().find(idPath));
 				}
 

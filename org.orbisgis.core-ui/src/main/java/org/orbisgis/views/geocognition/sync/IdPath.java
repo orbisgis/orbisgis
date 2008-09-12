@@ -6,48 +6,106 @@ import java.util.Collections;
 public class IdPath {
 	private ArrayList<String> idPath;
 
+	/**
+	 * Creates a new IdPath from the given path. The given path separator must
+	 * be "/"
+	 * 
+	 * @param path
+	 *            the id path
+	 */
 	public IdPath(String path) {
 		idPath = new ArrayList<String>();
 		Collections.addAll(idPath, path.split("/"));
 	}
 
+	/**
+	 * Creates an empty IdPath
+	 */
 	public IdPath() {
 		idPath = new ArrayList<String>();
 	}
 
-	public IdPath(IdPath p) {
-		idPath = new ArrayList<String>();
-		for (int i = 0; i < p.size(); i++) {
-			idPath.add(p.get(i));
+	/**
+	 *Creates a copy of this IdPath
+	 * 
+	 * @return a copy of this IdPath
+	 */
+	public IdPath copy() {
+		IdPath copy = new IdPath();
+		for (int i = 0; i < size(); i++) {
+			copy.addLast(get(i));
 		}
+
+		return copy;
 	}
 
+	/**
+	 * Gets the size of this IdPath
+	 * 
+	 * @return the size of this IdPath
+	 */
 	public int size() {
 		return idPath.size();
 	}
 
+	/**
+	 * Gets the <code>i</code> element of this IdPath
+	 * 
+	 * @param i
+	 *            the index of the element
+	 * @return the element for the given index
+	 */
 	public String get(int i) {
 		return idPath.get(i);
 	}
 
+	/**
+	 * Gets the last element of this IdPath
+	 * 
+	 * @return the last element of this IdPath
+	 */
 	public String getLast() {
 		return idPath.get(idPath.size() - 1);
 	}
 
-	public boolean add(String s) {
-		return idPath.add(s);
+	/**
+	 * Adds the given id at the end of this IdPath
+	 * 
+	 * @param s
+	 *            the id to add
+	 */
+	public void addLast(String s) {
+		idPath.add(s);
 	}
 
+	/**
+	 * Adds the given id at the beginning of this IdPath
+	 * 
+	 * @param s
+	 *            the id to add
+	 */
 	public void addFirst(String s) {
 		idPath.add(0, s);
 	}
 
+	/**
+	 * Removes the last element of this IdPath
+	 * 
+	 * @return the removed element
+	 */
 	public String removeLast() {
 		return idPath.remove(idPath.size() - 1);
 	}
 
-	public int indexOf(String s) {
-		return idPath.indexOf(s);
+	/**
+	 * Gets the index of the given id in this IdPath
+	 * 
+	 * @param id
+	 *            the id to get the index
+	 * @return the index of the id
+	 */
+	public int indexOf(String id) {
+		return idPath.indexOf(id);
 	}
 
 	@Override
@@ -63,13 +121,22 @@ public class IdPath {
 	public int hashCode() {
 		return idPath.hashCode();
 	}
-	
-	public boolean startsWith(IdPath path) {
+
+	/**
+	 * Determines if this element starts with the same id elements as the given
+	 * IdPath
+	 * 
+	 * @param prefix
+	 *            the starting path
+	 * @return true if this element starts with the given prefix, false
+	 *         otherwise
+	 */
+	public boolean startsWith(IdPath prefix) {
 		boolean matches = true;
 
-		if (path.size() <= this.size()) {
-			for (int i = 0; matches && i < path.size(); i++) {
-				if (!get(i).equals(path.get(i))) {
+		if (prefix.size() <= this.size()) {
+			for (int i = 0; matches && i < prefix.size(); i++) {
+				if (!get(i).equals(prefix.get(i))) {
 					matches = false;
 				}
 			}

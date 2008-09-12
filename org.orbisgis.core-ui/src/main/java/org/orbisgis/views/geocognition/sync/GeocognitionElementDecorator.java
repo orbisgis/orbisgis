@@ -9,11 +9,13 @@ import org.orbisgis.geocognition.GeocognitionElementFactory;
 import org.orbisgis.geocognition.GeocognitionElementListener;
 import org.orbisgis.geocognition.mapContext.GeocognitionException;
 import org.orbisgis.progress.IProgressMonitor;
+import org.orbisgis.views.geocognition.sync.SyncManager.EditorSavingListener;
 
 public class GeocognitionElementDecorator implements GeocognitionElement {
 	private GeocognitionElement element;
 	private ArrayList<GeocognitionElementDecorator> children;
 	private ArrayList<IdPath> filterPaths;
+	private ArrayList<EditorSavingListener> listeners;
 
 	/**
 	 * Creates a new GeocognitionElementDecorator
@@ -22,20 +24,37 @@ public class GeocognitionElementDecorator implements GeocognitionElement {
 	 *            the element to decorate
 	 */
 	public GeocognitionElementDecorator(GeocognitionElement e,
-			ArrayList<IdPath> filt) {
+			ArrayList<IdPath> filter) {
 		if (e == null) {
 			Services.getErrorManager().error(
 					"bug!",
 					new IllegalArgumentException(
 							"Cannot decorate a null element"));
 		}
-		filterPaths = filt;
+
+		listeners = new ArrayList<EditorSavingListener>();
+		filterPaths = filter;
 		element = e;
+		element.addElementListener(new GeocognitionElementListener() {
+			@Override
+			public void saved(GeocognitionElement element) {
+				fireElementSaved();
+			}
+
+			@Override
+			public void idChanged(GeocognitionElement element) {
+			}
+
+			@Override
+			public void contentChanged(GeocognitionElement element) {
+				fireElementSaved();
+			}
+		});
 		children = new ArrayList<GeocognitionElementDecorator>();
 		if (element.isFolder()) {
 			for (int i = 0; i < element.getElementCount(); i++) {
 				GeocognitionElementDecorator child = filter(new GeocognitionElementDecorator(
-						element.getElement(i), filt));
+						element.getElement(i), filter));
 				if (child != null) {
 					children.add(child);
 				}
@@ -66,9 +85,17 @@ public class GeocognitionElementDecorator implements GeocognitionElement {
 	@Override
 	public GeocognitionElementDecorator getElement(int i)
 			throws UnsupportedOperationException {
-		return filter(getElement(element.getElement(i).getId()));
+		return filter(children.get(i));
 	}
 
+	/**
+	 * Filters the given element using the filter passed in the constructor
+	 * 
+	 * @param elem
+	 *            the element to filter
+	 * @return the given element if it (or one of its ancestors) is in the
+	 *         filter list, <code>null</code> otherwise
+	 */
 	private GeocognitionElementDecorator filter(
 			GeocognitionElementDecorator elem) {
 		if (filterPaths == null || elem == null) {
@@ -230,5 +257,43 @@ public class GeocognitionElementDecorator implements GeocognitionElement {
 	@Override
 	public Map<String, String> getProperties() {
 		return element.getProperties();
+	}
+
+	/**
+	 * Adds an editor saving listener to this element and to it's children
+	 * recursively
+	 * 
+	 * @param listener
+	 *            the listener to add
+	 */
+	void addEditorSavingListenerRecursively(EditorSavingListener listener) {
+		listeners.add(listener);
+		for (GeocognitionElementDecorator child : children) {
+			child.addEditorSavingListenerRecursively(listener);
+		}
+	}
+
+	/**
+	 * Removes the given editor saving listener from this element and from it's
+	 * children recursively
+	 * 
+	 * @param listener
+	 *            the listener to remove
+	 * @return true if the listener is removed, false otherwise
+	 */
+	boolean removeElementContentListener(EditorSavingListener elementListener) {
+		for (GeocognitionElementDecorator child : children) {
+			child.removeElementContentListener(elementListener);
+		}
+		return listeners.remove(elementListener);
+	}
+
+	/**
+	 * Calls all the editor saving listeners
+	 */
+	private void fireElementSaved() {
+		for (EditorSavingListener listener : listeners) {
+			listener.elementSaved(this);
+		}
 	}
 }

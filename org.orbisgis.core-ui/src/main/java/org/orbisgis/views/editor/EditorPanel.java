@@ -466,8 +466,10 @@ public class EditorPanel extends Container {
 				return closeEditorView(view);
 			}
 
-			for (int i = 0; i < element.getElementCount(); i++) {
-				elementRemoving(geocognition, element.getElement(i));
+			if (element.isFolder()) {
+				for (int i = 0; i < element.getElementCount(); i++) {
+					elementRemoving(geocognition, element.getElement(i));
+				}
 			}
 
 			return true;

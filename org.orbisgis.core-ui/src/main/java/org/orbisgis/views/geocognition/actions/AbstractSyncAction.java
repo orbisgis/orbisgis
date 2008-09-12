@@ -32,7 +32,7 @@ public abstract class AbstractSyncAction implements IGeocognitionGroupAction {
 	}
 
 	protected void showSynchronizePanel(Geocognition geocognition,
-			GeocognitionElement[] elements, Object remoteSource)
+			GeocognitionElement[] elements, Object remoteSource, int syncType)
 			throws IOException {
 
 		EditorManager em = Services.getService(EditorManager.class);
@@ -68,8 +68,8 @@ public abstract class AbstractSyncAction implements IGeocognitionGroupAction {
 
 			// Show panel
 			ComparePanel panel = new ComparePanel();
-			panel.setModel(local, local, filter);
-			panel.setModel(local, remoteSource, filter);
+			panel.setModel(local, local, syncType, filter);
+			panel.setModel(local, remoteSource, syncType, filter);
 			if (UIFactory.showDialog(panel)) {
 				BackgroundManager bm = Services
 						.getService(BackgroundManager.class);

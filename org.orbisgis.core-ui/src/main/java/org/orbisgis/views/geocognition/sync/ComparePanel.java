@@ -46,6 +46,7 @@ public class ComparePanel extends AbstractUIPanel {
 			+ "Save changes?";
 	private static final String RIGHT_SAVE_BEFORE_CLOSING_TITLE = "Save right resource";
 
+	// String constants for popup menu
 	private static final String ADD_TO_GEOCOGNITION = "Add to geocognition";
 	private static final String ADD_TO_FILE = "Add to file";
 	private static final String REMOVE_FROM_GEOCOGNITION = "Remove from geocognition";
@@ -53,6 +54,11 @@ public class ComparePanel extends AbstractUIPanel {
 	private static final String OVERRIDE_IN_GEOCOGNITION = "Override in geocognition";
 	private static final String OVERRIDE_IN_FILE = "Override in file";
 	private static final String NO_ACTION = "No action available";
+
+	// Integer constants for synchronization type
+	public static final int EXPORT = 0x1 << 1;
+	public static final int IMPORT = 0x1 << 2;
+	public static final int SYNCHRONIZATION = EXPORT | IMPORT;
 
 	// Transaction constants
 	private static final int COMMIT = 0;
@@ -73,6 +79,7 @@ public class ComparePanel extends AbstractUIPanel {
 	private GeocognitionElement local, remote;
 	private Object remoteSource;
 	private ArrayList<IdPath> filterPaths;
+	private boolean localEditable, remoteEditable;
 
 	/**
 	 * Creates a new CompareSplitPane
@@ -169,25 +176,70 @@ public class ComparePanel extends AbstractUIPanel {
 	/**
 	 * Sets the model of the comparing pane
 	 * 
-	 * @param left
+	 * @param localElement
 	 *            element to compare
-	 * @param right
+	 * @param remoteObject
 	 *            element to compare
+	 * @param syncType
+	 *            the type of synchronization. Use EXPORT, IMPORT or
+	 *            SYNCHRONIZATION constants.
+	 * 
+	 * @param filter
+	 *            arraylist with the elements to show in the synchronization
+	 *            panel
+	 * 
 	 * @throws IOException
+	 *             if the remote source cannot be readed
 	 * @throws PersistenceException
+	 *             if the remote element cannot be created from the remote
+	 *             source
 	 */
 	public void setModel(GeocognitionElement localElement, Object remoteObject,
-			ArrayList<IdPath> filter) throws IOException, PersistenceException {
+			int syncType, ArrayList<IdPath> filter) throws IOException,
+			PersistenceException {
+		boolean localEditable = (syncType & IMPORT) != 0;
+		boolean remoteEditable = isSourceEditable(remoteObject)
+				&& (syncType & EXPORT) != 0;
+		setModel(localElement, remoteObject, localEditable, remoteEditable,
+				filter);
+	}
 
+	/**
+	 * Sets the model of the comparing pane
+	 * 
+	 * @param localElement
+	 *            element to compare
+	 * @param remoteObject
+	 *            element to compare
+	 * @param localEditable
+	 *            determines if the local element is editable
+	 * @param remoteEditable
+	 *            determines if the remote element is editable
+	 * @param filter
+	 *            arraylist with the elements to show in the synchronization
+	 *            panel
+	 * 
+	 * @throws IOException
+	 *             if the remote source cannot be readed
+	 * @throws PersistenceException
+	 *             if the remote element cannot be created from the remote
+	 *             source
+	 */
+	private void setModel(GeocognitionElement localElement,
+			Object remoteObject, boolean localEditable, boolean remoteEditable,
+			ArrayList<IdPath> filter) throws IOException, PersistenceException {
 		filterPaths = filter;
 		remoteSource = remoteObject;
+
+		this.localEditable = localEditable;
+		this.remoteEditable = remoteEditable;
+
 		local = localElement;
 		remote = createTreeFromResource(remoteSource);
 
 		// Show panel
 		if (local == remote) {
-			manager.compare(local, remote, isSourceEditable(remoteSource),
-					filter);
+			manager.compare(local, remote, remoteEditable, filter);
 		} else {
 			BackgroundManager bm = Services.getService(BackgroundManager.class);
 			bm.backgroundOperation(new SynchronizingJob());
@@ -290,7 +342,8 @@ public class ComparePanel extends AbstractUIPanel {
 		Geocognition geocognition = Services.getService(Geocognition.class);
 		local = geocognition.getGeocognitionElement(local.getIdPath());
 		local = local.cloneElement();
-		setModel(local, remoteSource, filterPaths);
+		setModel(local, remoteSource, localEditable, remoteEditable,
+				filterPaths);
 	}
 
 	/**
@@ -326,11 +379,9 @@ public class ComparePanel extends AbstractUIPanel {
 		if (closeEditor()) {
 			GeocognitionElementDecorator local = null;
 			GeocognitionElementDecorator remote = null;
-			boolean remoteEditable = false;
 			if (path != null) {
 				local = manager.findLocalElement(path);
 				remote = manager.findRemoteElement(path);
-				remoteEditable = manager.isRemoteEditable();
 			}
 
 			String type;
@@ -354,7 +405,7 @@ public class ComparePanel extends AbstractUIPanel {
 					split.setRightComponent(currentEditor.getComponent());
 
 					currentEditor.setModel(local, remote);
-					currentEditor.setEnabledLeft(true);
+					currentEditor.setEnabledLeft(localEditable);
 					currentEditor.setEnabledRight(remoteEditable);
 					break;
 				}
@@ -514,7 +565,7 @@ public class ComparePanel extends AbstractUIPanel {
 				for (int i = 0; i < paths.length; i++) {
 					TreeElement element = (TreeElement) paths[i]
 							.getLastPathComponent();
-					idPaths = merge(idPaths, getChangedChildren(element));
+					idPaths = merge(idPaths, getChangedElements(element));
 				}
 
 				boolean deleted = true;
@@ -550,14 +601,23 @@ public class ComparePanel extends AbstractUIPanel {
 			}
 		}
 
-		private ArrayList<IdPath> getChangedChildren(TreeElement element) {
+		/**
+		 * Returns a list if id paths containing the children with changes
+		 * (added, deleted modified or conflict). The element id path is also
+		 * returned if it has changes
+		 * 
+		 * @param element
+		 *            the element to check
+		 * @return a list of id paths with changes
+		 */
+		private ArrayList<IdPath> getChangedElements(TreeElement element) {
 			ArrayList<IdPath> arrayList = new ArrayList<IdPath>();
 			if (manager.hasChanged(element.getIdPath())) {
 				arrayList.add(element.getIdPath());
 			} else {
 				for (int i = 0; i < element.getElementCount(); i++) {
 					TreeElement child = element.getElement(i);
-					arrayList = merge(arrayList, getChangedChildren(child));
+					arrayList = merge(arrayList, getChangedElements(child));
 				}
 			}
 
@@ -639,8 +699,7 @@ public class ComparePanel extends AbstractUIPanel {
 
 		@Override
 		public void run(IProgressMonitor pm) {
-			manager.compare(local, remote, isSourceEditable(remoteSource),
-					filterPaths, pm);
+			manager.compare(local, remote, remoteEditable, filterPaths, pm);
 		}
 	}
 

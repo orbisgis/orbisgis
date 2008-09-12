@@ -132,7 +132,7 @@ public class TreeCommitTest extends AbstractSyncTest {
 		IdPath path;
 
 		path = createPath("root:e");
-		path.add("root.a");
+		path.addLast("root.a");
 		sm.commit(path);
 
 		// Check boolean methods

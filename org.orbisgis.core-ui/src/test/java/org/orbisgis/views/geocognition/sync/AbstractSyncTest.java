@@ -100,12 +100,12 @@ public class AbstractSyncTest extends TestCase {
 	protected IdPath createPath(String s) {
 		String[] path = s.split(":");
 		IdPath a = new IdPath();
-		a.add("");
-		a.add("root");
+		a.addLast("");
+		a.addLast("root");
 		String aux = "root";
 		for (int i = 1; i < path.length; i++) {
 			aux += "." + path[i];
-			a.add(aux);
+			a.addLast(aux);
 		}
 
 		return a;

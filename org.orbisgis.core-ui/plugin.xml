@@ -568,15 +568,20 @@
 			menu-group="org.orbisgis.views.geocognition.Export"
 			class="org.orbisgis.views.geocognition.actions.Import"
 			menu-id="org.orbisgis.views.geocognition.Synchronize"/>
-		<action id="org.orbisgis.views.geocognition.actions.SyncFile"
-			text="Synchronize with file"
+		<action id="org.orbisgis.views.geocognition.actions.ExportToFile"
+			text="Export to file"
 			menu-group="org.orbisgis.views.geocognition.Sync"
-			class="org.orbisgis.views.geocognition.actions.SyncFile"
+			class="org.orbisgis.views.geocognition.actions.ExportToFile"
 			menu-id="org.orbisgis.views.geocognition.Synchronize"/>
-		<action id="org.orbisgis.views.geocognition.actions.SyncURL"
-			text="Synchronize with URL"
+		<action id="org.orbisgis.views.geocognition.actions.ImportFromFile"
+			text="Import from file"
 			menu-group="org.orbisgis.views.geocognition.Sync"
-			class="org.orbisgis.views.geocognition.actions.SyncURL"
+			class="org.orbisgis.views.geocognition.actions.ImportFromFile"
+			menu-id="org.orbisgis.views.geocognition.Synchronize"/>
+		<action id="org.orbisgis.views.geocognition.actions.ImportFromURL"
+			text="Import from URL"
+			menu-group="org.orbisgis.views.geocognition.Sync"
+			class="org.orbisgis.views.geocognition.actions.ImportFromURL"
 			menu-id="org.orbisgis.views.geocognition.Synchronize"/>
 	</extension>
 	

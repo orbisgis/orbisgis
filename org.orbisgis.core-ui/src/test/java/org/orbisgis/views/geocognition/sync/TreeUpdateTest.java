@@ -93,7 +93,7 @@ public class TreeUpdateTest extends AbstractSyncTest {
 		IdPath path;
 
 		path = createPath("root:e");
-		path.add("root.a");
+		path.addLast("root.a");
 		sm.update(path);
 
 		// Check boolean methods
