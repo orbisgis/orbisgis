@@ -36,20 +36,23 @@
  */
 package org.orbisgis.editors.map.actions;
 
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-
-import javax.swing.JOptionPane;
 
 import org.gdms.driver.DriverException;
 import org.orbisgis.Services;
 import org.orbisgis.editor.IEditor;
 import org.orbisgis.editor.action.IEditorAction;
 import org.orbisgis.editors.map.MapEditor;
+import org.orbisgis.editors.map.actions.export.ScaleChooser;
 import org.orbisgis.layerModel.MapContext;
 import org.orbisgis.map.export.MapExportManager;
+import org.orbisgis.pluginManager.background.BackgroundJob;
+import org.orbisgis.pluginManager.background.BackgroundManager;
 import org.orbisgis.pluginManager.ui.SaveFilePanel;
+import org.orbisgis.progress.IProgressMonitor;
 import org.sif.UIFactory;
 
 import com.vividsolutions.jts.geom.Envelope;
@@ -66,19 +69,56 @@ public class ExportMapAsSVG implements IEditorAction {
 		MapEditor mapEditor = (MapEditor) editor;
 		MapContext mc = (MapContext) editor.getElement().getObject();
 
-		MapExportManager mem = Services.getService(MapExportManager.class);
 		Envelope envelope = mapEditor.getMapTransform().getAdjustedExtent();
 		final SaveFilePanel outfilePanel = new SaveFilePanel(
 				"org.orbisgis.editors.map.actions.ExportMapAsPDF",
 				"Choose a file format");
 		outfilePanel.addFilter("svg", "Scalable Vector Graphics (*.svg)");
 
+		if (UIFactory.showDialog(new ScaleChooser(mapEditor.getMapTransform()
+				.getScaleDenominator()))) {
+
+		}
 		if (UIFactory.showDialog(outfilePanel)) {
+			BackgroundManager bm = Services.getService(BackgroundManager.class);
+			bm.backgroundOperation(new ExportJob(mc, envelope, outfilePanel
+					.getSelectedFile()));
+		}
+	}
+
+	public boolean isEnabled(IEditor editor) {
+		MapContext mc = (MapContext) editor.getElement().getObject();
+		return mc.getLayerModel().getLayerCount() >= 1;
+	}
+
+	public boolean isVisible(IEditor editor) {
+		return true;
+	}
+
+	private class ExportJob implements BackgroundJob {
+
+		private Envelope envelope;
+		private MapContext mc;
+		private File outputFile;
+
+		public ExportJob(MapContext mc, Envelope envelope, File outputFile) {
+			this.mc = mc;
+			this.envelope = envelope;
+			this.outputFile = outputFile;
+		}
+
+		@Override
+		public String getTaskName() {
+			return "Exporting map";
+		}
+
+		@Override
+		public void run(IProgressMonitor pm) {
 			try {
-				mem.exportSVG(mc, new FileOutputStream(outfilePanel
-						.getSelectedFile()), 500, 500, envelope);
-				JOptionPane.showMessageDialog(null, "Export finished",
-						"OrbisGIS", JOptionPane.INFORMATION_MESSAGE);
+				MapExportManager mem = Services
+						.getService(MapExportManager.class);
+				mem.exportSVG(mc, new FileOutputStream(outputFile), 500, 500,
+						envelope, pm);
 			} catch (UnsupportedEncodingException e) {
 				Services.getErrorManager().error("Cannot export", e);
 			} catch (IllegalArgumentException e) {
@@ -90,14 +130,6 @@ public class ExportMapAsSVG implements IEditorAction {
 				Services.getErrorManager().error("Cannot access the map", e);
 			}
 		}
-	}
 
-	public boolean isEnabled(IEditor editor) {
-		MapContext mc = (MapContext) editor.getElement().getObject();
-		return mc.getLayerModel().getLayerCount() >= 1;
-	}
-
-	public boolean isVisible(IEditor editor) {
-		return true;
 	}
 }
