@@ -471,36 +471,50 @@ public class DBDriverTest extends SourceTest {
 		DBSource dbSource = new DBSource(null, -1,
 				"src/test/resources/backup/testHSQLDBCommit", "sa", "",
 				"mytable", "jdbc:hsqldb:file");
-		try {
-			execute(dbSource, "drop table \"mytable\";");
-		} catch (SQLException e) {
-			// ignore, something else will fail
-		}
-		testCommitTwice(dbSource);
+		DefaultMetadata metadata = new DefaultMetadata(new Type[] { TypeFactory
+				.createType(Type.STRING, new PrimaryKeyConstraint()) },
+				new String[] { "field1" });
+		testCommitTwice(dbSource, metadata);
 	}
 
 	public void testH2CommitTwice() throws Exception {
 		DBSource dbSource = new DBSource(null, -1,
-				"src/test/resources/backup/testH2Commit", "sa", "",
-				"mytable", "jdbc:h2");
+				"src/test/resources/backup/testH2Commit", "sa", "", "mytable",
+				"jdbc:h2");
+		DefaultMetadata metadata = new DefaultMetadata(new Type[] { TypeFactory
+				.createType(Type.STRING, new PrimaryKeyConstraint()) },
+				new String[] { "field1" });
+		testCommitTwice(dbSource, metadata);
+	}
+
+	public void testDoublePrimaryKey() throws Exception {
+		DefaultMetadata metadata = new DefaultMetadata(
+				new Type[] {
+						TypeFactory.createType(Type.STRING,
+								new PrimaryKeyConstraint()),
+						TypeFactory.createType(Type.STRING,
+								new PrimaryKeyConstraint()) }, new String[] {
+						"field1", "field2" });
+		DBSource dbSource = new DBSource(null, -1,
+				"src/test/resources/backup/testH2Commit", "sa", "", "mytable",
+				"jdbc:h2");
+		testCommitTwice(dbSource, metadata);
+	}
+
+	private void testCommitTwice(DBSource dbSource, Metadata metadata)
+			throws Exception, DataSourceCreationException,
+			NonEditableDataSourceException {
 		try {
 			execute(dbSource, "drop table \"mytable\";");
 		} catch (SQLException e) {
 			// ignore, something else will fail
 		}
-		testCommitTwice(dbSource);
-	}
-
-	private void testCommitTwice(DBSource dbSource) throws DriverException,
-			DataSourceCreationException, NonEditableDataSourceException {
-		DefaultMetadata metadata = new DefaultMetadata(new Type[] { TypeFactory
-				.createType(Type.STRING, new PrimaryKeyConstraint()) },
-				new String[] { "field" });
 		dsf.createDataSource(new DBSourceCreation(dbSource, metadata));
 		dsf.getSourceManager().register("table", dbSource);
 		DataSource ds = dsf.getDataSource(dbSource);
 		ds.open();
-		ds.insertFilledRow(new Value[] { ValueFactory.createValue("value") });
+		ds.insertFilledRow(new Value[] { ValueFactory.createValue("value"),
+				ValueFactory.createValue("value") });
 		ds.commit();
 		ds.deleteRow(0);
 		ds.commit();
