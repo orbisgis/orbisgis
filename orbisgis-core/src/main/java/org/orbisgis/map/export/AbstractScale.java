@@ -18,6 +18,9 @@ public abstract class AbstractScale implements Scale {
 	}
 
 	public void setPartCount(int partCount) {
+		if (partCount < 1) {
+			throw new IllegalArgumentException("Cannot have so few parts");
+		}
 		this.partCount = partCount;
 	}
 
@@ -26,6 +29,9 @@ public abstract class AbstractScale implements Scale {
 	}
 
 	public void setPartWidth(double partWidth) {
+		if (partWidth <= 0) {
+			throw new IllegalArgumentException("Part width should be possitive");
+		}
 		this.partWidth = partWidth;
 	}
 
@@ -34,6 +40,10 @@ public abstract class AbstractScale implements Scale {
 	}
 
 	public void setHeight(double height) {
+		if (height <= 0) {
+			throw new IllegalArgumentException(
+					"Scale heightshould be possitive");
+		}
 		this.height = height;
 	}
 
@@ -42,6 +52,10 @@ public abstract class AbstractScale implements Scale {
 	}
 
 	public void setPartsWithText(boolean[] partsWithText) {
+		if (partsWithText.length != partCount) {
+			throw new IllegalArgumentException("Wrong number of elements. "
+					+ "It should be equal to the number of parts: " + partCount);
+		}
 		this.partsWithText = partsWithText;
 	}
 
@@ -50,6 +64,10 @@ public abstract class AbstractScale implements Scale {
 	}
 
 	public void setRemarkedParts(boolean[] remarkedParts) {
+		if (remarkedParts.length != partCount) {
+			throw new IllegalArgumentException("Wrong number of elements. "
+					+ "It should be equal to the number of parts: " + partCount);
+		}
 		this.remarkedParts = remarkedParts;
 	}
 

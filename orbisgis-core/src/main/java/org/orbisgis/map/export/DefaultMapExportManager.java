@@ -30,8 +30,9 @@ public class DefaultMapExportManager implements MapExportManager {
 
 	@Override
 	public void exportSVG(MapContext mapContext, OutputStream outStream,
-			int width, int height, Envelope extent, IProgressMonitor pm)
-			throws UnsupportedEncodingException, IOException, DriverException {
+			int width, int height, Envelope extent, Scale scale,
+			IProgressMonitor pm) throws UnsupportedEncodingException,
+			IOException, DriverException {
 		if (!mapContext.isOpen()) {
 			throw new IllegalArgumentException(
 					"The map must be open to call this method");
@@ -83,7 +84,13 @@ public class DefaultMapExportManager implements MapExportManager {
 			}
 			svgg.setTransform(original);
 		}
+
+		// draw scale
+		if (scale != null) {
+			scale.drawScale(svgg);
+		}
 		pm.endTask();
+
 		pm.startTask("writting result");
 		Writer out = new OutputStreamWriter(outStream, "UTF-8");
 		svgg.stream(out);
@@ -92,9 +99,10 @@ public class DefaultMapExportManager implements MapExportManager {
 
 	@Override
 	public void exportSVG(MapContext mc, OutputStream outputStream, int width,
-			int height, Envelope envelope) throws UnsupportedEncodingException,
-			IOException, IllegalArgumentException, DriverException {
-		exportSVG(mc, outputStream, width, height, envelope,
+			int height, Envelope envelope, Scale scale)
+			throws UnsupportedEncodingException, IOException,
+			IllegalArgumentException, DriverException {
+		exportSVG(mc, outputStream, width, height, envelope, scale,
 				new NullProgressMonitor());
 	}
 

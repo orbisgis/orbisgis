@@ -34,7 +34,7 @@
  *    fergonco _at_ gmail.com
  *    thomas.leduc _at_ cerma.archi.fr
  */
-package org.orbisgis.editors.map.actions;
+package org.orbisgis.editors.map.actions.export;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -46,14 +46,15 @@ import org.orbisgis.Services;
 import org.orbisgis.editor.IEditor;
 import org.orbisgis.editor.action.IEditorAction;
 import org.orbisgis.editors.map.MapEditor;
-import org.orbisgis.editors.map.actions.export.ScaleEditor;
 import org.orbisgis.layerModel.MapContext;
 import org.orbisgis.map.export.MapExportManager;
+import org.orbisgis.map.export.Scale;
 import org.orbisgis.pluginManager.background.BackgroundJob;
 import org.orbisgis.pluginManager.background.BackgroundManager;
 import org.orbisgis.pluginManager.ui.SaveFilePanel;
 import org.orbisgis.progress.IProgressMonitor;
 import org.sif.UIFactory;
+import org.sif.UIPanel;
 
 import com.vividsolutions.jts.geom.Envelope;
 
@@ -75,14 +76,13 @@ public class ExportMapAsSVG implements IEditorAction {
 				"Choose a file format");
 		outfilePanel.addFilter("svg", "Scalable Vector Graphics (*.svg)");
 
-		if (UIFactory.showDialog(new ScaleEditor(mapEditor.getMapTransform()
-				.getScaleDenominator()))) {
-
-		}
-		if (UIFactory.showDialog(outfilePanel)) {
+		ScaleEditor scaleEditor = new ScaleEditor(mapEditor.getMapTransform()
+				.getScaleDenominator());
+		UIPanel[] wizards = new UIPanel[] { scaleEditor, outfilePanel };
+		if (UIFactory.showDialog(wizards)) {
 			BackgroundManager bm = Services.getService(BackgroundManager.class);
 			bm.backgroundOperation(new ExportJob(mc, envelope, outfilePanel
-					.getSelectedFile()));
+					.getSelectedFile(), scaleEditor.getScale()));
 		}
 	}
 
@@ -100,11 +100,13 @@ public class ExportMapAsSVG implements IEditorAction {
 		private Envelope envelope;
 		private MapContext mc;
 		private File outputFile;
+		private Scale scale;
 
-		public ExportJob(MapContext mc, Envelope envelope, File outputFile) {
+		public ExportJob(MapContext mc, Envelope envelope, File outputFile, Scale scale) {
 			this.mc = mc;
 			this.envelope = envelope;
 			this.outputFile = outputFile;
+			this.scale = scale;
 		}
 
 		@Override
@@ -118,7 +120,7 @@ public class ExportMapAsSVG implements IEditorAction {
 				MapExportManager mem = Services
 						.getService(MapExportManager.class);
 				mem.exportSVG(mc, new FileOutputStream(outputFile), 500, 500,
-						envelope, pm);
+						envelope, scale, pm);
 			} catch (UnsupportedEncodingException e) {
 				Services.getErrorManager().error("Cannot export", e);
 			} catch (IllegalArgumentException e) {

@@ -34,7 +34,7 @@
  *    fergonco _at_ gmail.com
  *    thomas.leduc _at_ cerma.archi.fr
  */
-package org.orbisgis.editors.map.actions;
+package org.orbisgis.editors.map.actions.export;
 
 import java.awt.image.BufferedImage;
 import java.io.File;

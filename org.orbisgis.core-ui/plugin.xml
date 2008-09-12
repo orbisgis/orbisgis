@@ -298,7 +298,7 @@
 			text="Export map as Image..."
 			menu-group="org.orbisgis.editors.map.actions.LayerActionGroup"
 			editor-id="org.orbisgis.editors.Map"
-			class="org.orbisgis.editors.map.actions.ExportMapAsImage"/>
+			class="org.orbisgis.editors.map.actions.export.ExportMapAsImage"/>
 	</extension>
 	
 	<extension id="org.orbisgis.editors.map.actions.Export"
@@ -308,7 +308,7 @@
 			text="Export map as SVG..."
 			menu-group="org.orbisgis.editors.map.actions.LayerActionGroup"
 			editor-id="org.orbisgis.editors.Map"
-			class="org.orbisgis.editors.map.actions.ExportMapAsSVG"/>
+			class="org.orbisgis.editors.map.actions.export.ExportMapAsSVG"/>
 	</extension>
 	
 	<!-- map editor tools -->

@@ -26,6 +26,8 @@ public interface MapExportManager {
 	 *            height of the map image to export
 	 * @param extent
 	 *            extent of the map to export
+	 * @param scale
+	 *            Scale to draw
 	 * @throws UnsupportedEncodingException
 	 *             If the UTF-8 encoding is not supported
 	 * @throws IOException
@@ -35,14 +37,15 @@ public interface MapExportManager {
 	 *             If there is an error accessing any of the layers in the map
 	 */
 	void exportSVG(MapContext mapContext, OutputStream outStream, int width,
-			int height, Envelope extent) throws UnsupportedEncodingException,
-			IOException, IllegalArgumentException, DriverException;
+			int height, Envelope extent, Scale scale)
+			throws UnsupportedEncodingException, IOException,
+			IllegalArgumentException, DriverException;
 
 	/**
 	 * @see #exportSVG(MapContext, OutputStream, int, int, Envelope)
 	 */
 	void exportSVG(MapContext mapContext, OutputStream outStream, int width,
-			int height, Envelope extent, IProgressMonitor pm)
+			int height, Envelope extent, Scale scale, IProgressMonitor pm)
 			throws UnsupportedEncodingException, IOException,
 			IllegalArgumentException, DriverException;
 

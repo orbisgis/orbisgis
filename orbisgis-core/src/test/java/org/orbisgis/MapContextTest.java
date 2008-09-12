@@ -343,12 +343,12 @@ public class MapContextTest extends AbstractTest {
 		FileOutputStream outStream = new FileOutputStream(new File(
 				"/tmp/output.svg"));
 		mem.exportSVG(mc, outStream, 600, 600, new Envelope(new Coordinate(
-				306260, 2251944), new Coordinate(310000, 2253464)));
+				306260, 2251944), new Coordinate(310000, 2253464)), null);
 		outStream.close();
 		mc.close(null);
 
 		try {
-			mem.exportSVG(mc, outStream, 300, 300, envelope);
+			mem.exportSVG(mc, outStream, 300, 300, envelope, null);
 			assertTrue(false);
 		} catch (IllegalArgumentException e) {
 		}

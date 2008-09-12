@@ -178,7 +178,7 @@ public class ScaleEditor extends JPanel implements UIPanel {
 	private void safeSyncScale() {
 		try {
 			syncScale();
-		} catch (NumberFormatException e) {
+		} catch (RuntimeException e) {
 			// ignore
 		}
 	}
@@ -238,6 +238,10 @@ public class ScaleEditor extends JPanel implements UIPanel {
 	@Override
 	public String postProcess() {
 		return null;
+	}
+
+	public Scale getScale() {
+		return scale;
 	}
 
 }
