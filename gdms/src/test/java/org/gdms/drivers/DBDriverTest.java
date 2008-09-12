@@ -374,9 +374,8 @@ public class DBDriverTest extends SourceTest {
 
 	public void testShapefile2PostgreSQL() throws Exception {
 		// Delete the table if exists
-		DBSource dbSource = new DBSource("127.0.0.1", 5432, "gdms",
-				"postgres", "postgres", "testShapefile2PostgreSQL",
-				"jdbc:postgresql");
+		DBSource dbSource = new DBSource("127.0.0.1", 5432, "gdms", "postgres",
+				"postgres", "testShapefile2PostgreSQL", "jdbc:postgresql");
 		try {
 			execute(dbSource, "DROP TABLE \"testShapefile2PostgreSQL\";");
 		} catch (SQLException e) {
@@ -466,6 +465,46 @@ public class DBDriverTest extends SourceTest {
 		}
 		db.close();
 		file.close();
+	}
+
+	public void testHSQLDBCommitTwice() throws Exception {
+		DBSource dbSource = new DBSource(null, -1,
+				"src/test/resources/backup/testHSQLDBCommit", "sa", "",
+				"mytable", "jdbc:hsqldb:file");
+		try {
+			execute(dbSource, "drop table \"mytable\";");
+		} catch (SQLException e) {
+			// ignore, something else will fail
+		}
+		testCommitTwice(dbSource);
+	}
+
+	public void testH2CommitTwice() throws Exception {
+		DBSource dbSource = new DBSource(null, -1,
+				"src/test/resources/backup/testH2Commit", "sa", "",
+				"mytable", "jdbc:h2");
+		try {
+			execute(dbSource, "drop table \"mytable\";");
+		} catch (SQLException e) {
+			// ignore, something else will fail
+		}
+		testCommitTwice(dbSource);
+	}
+
+	private void testCommitTwice(DBSource dbSource) throws DriverException,
+			DataSourceCreationException, NonEditableDataSourceException {
+		DefaultMetadata metadata = new DefaultMetadata(new Type[] { TypeFactory
+				.createType(Type.STRING, new PrimaryKeyConstraint()) },
+				new String[] { "field" });
+		dsf.createDataSource(new DBSourceCreation(dbSource, metadata));
+		dsf.getSourceManager().register("table", dbSource);
+		DataSource ds = dsf.getDataSource(dbSource);
+		ds.open();
+		ds.insertFilledRow(new Value[] { ValueFactory.createValue("value") });
+		ds.commit();
+		ds.deleteRow(0);
+		ds.commit();
+		ds.close();
 	}
 
 	private void execute(DBSource dbSource, String statement) throws Exception {

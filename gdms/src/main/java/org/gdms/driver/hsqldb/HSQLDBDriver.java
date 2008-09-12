@@ -46,6 +46,7 @@ import java.util.List;
 import java.util.Properties;
 
 import org.gdms.data.metadata.Metadata;
+import org.gdms.data.types.Constraint;
 import org.gdms.data.types.InvalidTypeException;
 import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeFactory;
@@ -69,7 +70,7 @@ import org.gdms.source.SourceManager;
 
 /**
  * DOCUMENT ME!
- *
+ * 
  * @author Fernando Gonzalez Cortes
  */
 public class HSQLDBDriver extends DefaultDBDriver implements DBReadWriteDriver {
@@ -110,10 +111,10 @@ public class HSQLDBDriver extends DefaultDBDriver implements DBReadWriteDriver {
 
 	/**
 	 * DOCUMENT ME!
-	 *
+	 * 
 	 * @param ts
 	 *            DOCUMENT ME!
-	 *
+	 * 
 	 * @return DOCUMENT ME!
 	 */
 	public String getStatementString(Timestamp ts) {
@@ -184,7 +185,10 @@ public class HSQLDBDriver extends DefaultDBDriver implements DBReadWriteDriver {
 		case Types.LONGVARCHAR:
 		case Types.CLOB:
 			if (resultsetMetadata.getColumnDisplaySize(jdbcFieldIndex) == 32766) {
-				return TypeFactory.createType(Type.STRING);
+				List<Constraint> constraints = addGlobalConstraints(
+						resultsetMetadata, pkFieldsList, jdbcFieldIndex);
+				return TypeFactory.createType(Type.STRING, constraints
+						.toArray(new Constraint[0]));
 			}
 		}
 		return super.getGDMSType(resultsetMetadata, pkFieldsList,

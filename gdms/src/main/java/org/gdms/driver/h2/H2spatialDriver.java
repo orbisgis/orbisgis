@@ -46,6 +46,7 @@ import java.util.List;
 import java.util.Properties;
 
 import org.gdms.data.metadata.Metadata;
+import org.gdms.data.types.Constraint;
 import org.gdms.data.types.InvalidTypeException;
 import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeFactory;
@@ -76,9 +77,9 @@ import com.vividsolutions.jts.io.WKTWriter;
 
 /**
  * DOCUMENT ME!
- *
+ * 
  * @author Erwan Bocher
- *
+ * 
  */
 public class H2spatialDriver extends DefaultDBDriver implements
 		DBReadWriteDriver {
@@ -137,7 +138,10 @@ public class H2spatialDriver extends DefaultDBDriver implements
 			case Types.LONGVARCHAR:
 			case Types.CLOB:
 				if (resultsetMetadata.getColumnDisplaySize(jdbcFieldIndex) == 0) {
-					return TypeFactory.createType(Type.STRING);
+					List<Constraint> constraints = addGlobalConstraints(
+							resultsetMetadata, pkFieldsList, jdbcFieldIndex);
+					return TypeFactory.createType(Type.STRING, constraints
+							.toArray(new Constraint[0]));
 				}
 			}
 			return super.getGDMSType(resultsetMetadata, pkFieldsList,

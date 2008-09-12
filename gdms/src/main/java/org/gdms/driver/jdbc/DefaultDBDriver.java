@@ -73,7 +73,7 @@ import org.gdms.driver.DriverException;
 /**
  * Class with the implementation of the methods in database driver interfaces
  * that are related to JDBC
- *
+ * 
  * @author Fernando Gonzalez Cortes
  */
 public abstract class DefaultDBDriver extends DefaultSQL implements DBDriver {
@@ -207,6 +207,17 @@ public abstract class DefaultDBDriver extends DefaultSQL implements DBDriver {
 			throw new DriverException("Couldn't map the type " + jdbcType);
 		}
 
+		constraints.addAll(addGlobalConstraints(resultsetMetadata,
+				pkFieldsList, jdbcFieldIndex));
+
+		return TypeFactory.createType(ret, constraints
+				.toArray(new Constraint[0]));
+	}
+
+	protected List<Constraint> addGlobalConstraints(
+			ResultSetMetaData resultsetMetadata, List<String> pkFieldsList,
+			int jdbcFieldIndex) throws SQLException {
+		List<Constraint> constraints = new ArrayList<Constraint>();
 		if (pkFieldsList.contains(resultsetMetadata
 				.getColumnName(jdbcFieldIndex))) {
 			constraints.add(new PrimaryKeyConstraint());
@@ -223,14 +234,13 @@ public abstract class DefaultDBDriver extends DefaultSQL implements DBDriver {
 			constraints.add(new ReadOnlyConstraint());
 		}
 
-		return TypeFactory.createType(ret, constraints
-				.toArray(new Constraint[0]));
+		return constraints;
 	}
 
 	/**
 	 * Gets the order by clause of an instruction that orders by the primary key
 	 * fields
-	 *
+	 * 
 	 * @param c
 	 * @param tableName
 	 * @return
@@ -275,7 +285,7 @@ public abstract class DefaultDBDriver extends DefaultSQL implements DBDriver {
 
 	/**
 	 * catches the {@link ResultSet} and {@link ResultSetMetaData}
-	 *
+	 * 
 	 * @throws DriverException
 	 */
 	protected void getData() throws DriverException {
@@ -290,7 +300,7 @@ public abstract class DefaultDBDriver extends DefaultSQL implements DBDriver {
 
 	/**
 	 * Gets the Select statement that will be accessed by the driver
-	 *
+	 * 
 	 * @param tableName
 	 * @param orderFieldName
 	 * @return
@@ -457,7 +467,7 @@ public abstract class DefaultDBDriver extends DefaultSQL implements DBDriver {
 
 	/**
 	 * getter for the {@link ResultSet}
-	 *
+	 * 
 	 * @return
 	 */
 	protected ResultSet getResultSet() {
@@ -466,7 +476,7 @@ public abstract class DefaultDBDriver extends DefaultSQL implements DBDriver {
 
 	/**
 	 * getter for the {@link ResultSetMetaData}
-	 *
+	 * 
 	 * @return
 	 */
 	protected ResultSetMetaData getResultsetMetadata() {
@@ -475,7 +485,7 @@ public abstract class DefaultDBDriver extends DefaultSQL implements DBDriver {
 
 	/**
 	 * getter for the {@link WarningListener} of the {@link DataSourceFactory}
-	 *
+	 * 
 	 * @return
 	 */
 	protected WarningListener getWL() {
@@ -494,7 +504,7 @@ public abstract class DefaultDBDriver extends DefaultSQL implements DBDriver {
 
 	/**
 	 * getter for the table name
-	 *
+	 * 
 	 * @return
 	 */
 	protected String getTableName() {
