@@ -53,6 +53,8 @@ public class ComparePanel extends AbstractUIPanel {
 	private static final String REMOVE_FROM_FILE = "Remove from file";
 	private static final String OVERRIDE_IN_GEOCOGNITION = "Override in geocognition";
 	private static final String OVERRIDE_IN_FILE = "Override in file";
+	private static final String CHANGE_GEOCOGNITION = "Change geocognition content";
+	private static final String CHANGE_FILE = "Change file content";
 	private static final String NO_ACTION = "No action available";
 
 	// Integer constants for synchronization type
@@ -70,7 +72,8 @@ public class ComparePanel extends AbstractUIPanel {
 	private CompareTreePanel treePanel;
 	private JPopupMenu popup;
 	private JMenuItem addToGeocognition, addToFile, removeFromGeocognition,
-			removeFromFile, overrideInGeocognition, overrideInFile, noAction;
+			removeFromFile, overrideInGeocognition, overrideInFile,
+			changeGeocognition, changeFile, noAction;
 	private JSplitPane split;
 	private JPanel panel;
 
@@ -79,7 +82,7 @@ public class ComparePanel extends AbstractUIPanel {
 	private GeocognitionElement local, remote;
 	private Object remoteSource;
 	private ArrayList<IdPath> filterPaths;
-	private int currentSynchronization;
+	private int synchronizationType;
 
 	/**
 	 * Creates a new CompareSplitPane
@@ -151,6 +154,22 @@ public class ComparePanel extends AbstractUIPanel {
 			}
 		});
 
+		changeGeocognition = new JMenuItem(CHANGE_GEOCOGNITION);
+		changeGeocognition.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				execute(UPDATE);
+			}
+		});
+
+		changeFile = new JMenuItem(CHANGE_FILE);
+		changeFile.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				execute(COMMIT);
+			}
+		});
+
 		noAction = new JMenuItem(NO_ACTION);
 		noAction.setEnabled(false);
 
@@ -160,6 +179,8 @@ public class ComparePanel extends AbstractUIPanel {
 		popup.add(removeFromFile);
 		popup.add(overrideInGeocognition);
 		popup.add(overrideInFile);
+		popup.add(changeGeocognition);
+		popup.add(changeFile);
 		popup.add(noAction);
 
 		// Split pane
@@ -196,14 +217,14 @@ public class ComparePanel extends AbstractUIPanel {
 	public void setModel(GeocognitionElement localElement, Object remoteObject,
 			int syncType, ArrayList<IdPath> filter) throws IOException,
 			PersistenceException {
-		currentSynchronization = syncType;
+		synchronizationType = syncType;
 		filterPaths = filter;
 		remoteSource = remoteObject;
 
 		local = localElement;
-		if ((currentSynchronization & IMPORT) != 0) {
+		if ((synchronizationType & IMPORT) != 0) {
 			remote = createTreeFromResource(remoteObject);
-		} else if ((currentSynchronization & EXPORT) != 0) {
+		} else if ((synchronizationType & EXPORT) != 0) {
 			if (isSourceEditable(remoteObject)) {
 				try {
 					remote = createTreeFromResource(remoteObject);
@@ -224,7 +245,7 @@ public class ComparePanel extends AbstractUIPanel {
 			bm.backgroundOperation(new SynchronizingJob());
 		}
 
-		treePanel.setModel(manager);
+		treePanel.setModel(manager, synchronizationType);
 		currentEditor = editors.get(0);
 		currentEditor.setModel(null, null);
 		split.setRightComponent(currentEditor.getComponent());
@@ -322,7 +343,7 @@ public class ComparePanel extends AbstractUIPanel {
 		Geocognition geocognition = Services.getService(Geocognition.class);
 		local = geocognition.getGeocognitionElement(local.getIdPath());
 		local = local.cloneElement();
-		setModel(local, remoteSource, currentSynchronization, filterPaths);
+		setModel(local, remoteSource, synchronizationType, filterPaths);
 	}
 
 	/**
@@ -383,8 +404,8 @@ public class ComparePanel extends AbstractUIPanel {
 					currentEditor = editor;
 					split.setRightComponent(currentEditor.getComponent());
 
-					boolean localEditable = (currentSynchronization & IMPORT) != 0;
-					boolean remoteEditable = ((currentSynchronization & EXPORT) != 0)
+					boolean localEditable = (synchronizationType & IMPORT) != 0;
+					boolean remoteEditable = ((synchronizationType & EXPORT) != 0)
 							&& isSourceEditable(remoteSource);
 					currentEditor.setModel(local, remote);
 					currentEditor.setEnabledLeft(localEditable);
@@ -465,6 +486,7 @@ public class ComparePanel extends AbstractUIPanel {
 			popup = null;
 			addToGeocognition = addToFile = removeFromGeocognition = removeFromFile = null;
 			overrideInGeocognition = overrideInFile = null;
+			changeGeocognition = changeFile = null;
 			split = null;
 			panel = null;
 			manager = null;
@@ -552,7 +574,8 @@ public class ComparePanel extends AbstractUIPanel {
 
 				boolean deleted = true;
 				boolean added = true;
-				boolean changed = true;
+				boolean modified = true;
+				boolean conflict = true;
 				for (IdPath idPath : idPaths) {
 					if (deleted && !manager.isDeleted(idPath)) {
 						deleted = false;
@@ -562,38 +585,44 @@ public class ComparePanel extends AbstractUIPanel {
 						added = false;
 					}
 
-					if (changed && !manager.isModified(idPath)
-							&& !manager.isConflict(idPath)) {
-						changed = false;
+					if (modified && !manager.isModified(idPath)) {
+						modified = false;
+					}
+
+					if (conflict && !manager.isConflict(idPath)) {
+						conflict = false;
 					}
 				}
 
 				boolean noActionVisible = true;
-				if ((currentSynchronization & EXPORT) != 0
+				if ((synchronizationType & EXPORT) != 0
 						&& isSourceEditable(remoteSource)) {
-					noActionVisible &= (!added && !deleted && !changed);
+					noActionVisible &= (!added && !deleted && !modified && !conflict);
 					addToFile.setVisible(added);
 					removeFromFile.setVisible(deleted);
-					overrideInFile.setVisible(changed);
+					changeFile.setVisible(modified);
+					overrideInFile.setVisible(conflict);
 				} else {
 					addToFile.setVisible(false);
 					removeFromFile.setVisible(false);
 					overrideInFile.setVisible(false);
+					changeFile.setVisible(false);
 				}
 
-				if ((currentSynchronization & IMPORT) != 0) {
-					noActionVisible &= (!added && !deleted && !changed);
+				if ((synchronizationType & IMPORT) != 0) {
+					noActionVisible &= (!added && !deleted && !modified && !conflict);
 					addToGeocognition.setVisible(deleted);
 					removeFromGeocognition.setVisible(added);
-					overrideInGeocognition.setVisible(changed);
+					changeGeocognition.setVisible(modified);
+					overrideInGeocognition.setVisible(conflict);
 				} else {
 					addToGeocognition.setVisible(false);
 					removeFromGeocognition.setVisible(false);
+					changeGeocognition.setVisible(false);
 					overrideInGeocognition.setVisible(false);
 				}
 
 				noAction.setVisible(noActionVisible);
-
 				popup.show(e.getComponent(), e.getX(), e.getY());
 			}
 		}

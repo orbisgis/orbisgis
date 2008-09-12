@@ -109,10 +109,10 @@ public class CompareTreePanel extends JPanel {
 	 * @param sync
 	 *            the comparer between two trees
 	 */
-	public void setModel(SyncManager sync) {
+	public void setModel(SyncManager sync, int syncType) {
 		treeModel.setModel(sync, tree);
 		tree.setModel(treeModel);
-		renderer.setSyncManager(sync);
+		renderer.setSyncManager(sync, syncType);
 		tree.setCellRenderer(renderer);
 	}
 
