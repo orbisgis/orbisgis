@@ -27,7 +27,7 @@ import org.sif.CarriageReturn;
 import org.sif.UIFactory;
 import org.sif.UIPanel;
 
-public class ScaleChooser extends JPanel implements UIPanel {
+public class ScaleEditor extends JPanel implements UIPanel {
 
 	private JComboBox cmbScaleType;
 	private JSpinner spnPartCount;
@@ -41,7 +41,7 @@ public class ScaleChooser extends JPanel implements UIPanel {
 
 	private boolean syncing = false;
 
-	public ScaleChooser(double scaleDenominator) {
+	public ScaleEditor(double scaleDenominator) {
 		this.scaleDenominator = scaleDenominator;
 
 		this.setLayout(new BorderLayout());

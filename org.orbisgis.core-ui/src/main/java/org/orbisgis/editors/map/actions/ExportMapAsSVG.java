@@ -46,7 +46,7 @@ import org.orbisgis.Services;
 import org.orbisgis.editor.IEditor;
 import org.orbisgis.editor.action.IEditorAction;
 import org.orbisgis.editors.map.MapEditor;
-import org.orbisgis.editors.map.actions.export.ScaleChooser;
+import org.orbisgis.editors.map.actions.export.ScaleEditor;
 import org.orbisgis.layerModel.MapContext;
 import org.orbisgis.map.export.MapExportManager;
 import org.orbisgis.pluginManager.background.BackgroundJob;
@@ -75,7 +75,7 @@ public class ExportMapAsSVG implements IEditorAction {
 				"Choose a file format");
 		outfilePanel.addFilter("svg", "Scalable Vector Graphics (*.svg)");
 
-		if (UIFactory.showDialog(new ScaleChooser(mapEditor.getMapTransform()
+		if (UIFactory.showDialog(new ScaleEditor(mapEditor.getMapTransform()
 				.getScaleDenominator()))) {
 
 		}
