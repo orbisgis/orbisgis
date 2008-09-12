@@ -11,6 +11,7 @@ import javax.swing.tree.TreePath;
 
 import org.orbisgis.Services;
 import org.orbisgis.geocognition.Geocognition;
+import org.orbisgis.views.geocognition.sync.IdPath;
 import org.orbisgis.views.geocognition.sync.SyncListener;
 import org.orbisgis.views.geocognition.sync.SyncManager;
 
@@ -146,7 +147,7 @@ public class CompareTreeModel implements TreeModel {
 		if (expanded != null && syncManager.getDifferenceTree() != null) {
 			while (expanded.hasMoreElements()) {
 				TreePath path = expanded.nextElement();
-				ArrayList<String> idPath = new ArrayList<String>();
+				IdPath idPath = new IdPath();
 				ArrayList<TreeElement> treePath = new ArrayList<TreeElement>();
 				for (int i = 0; i < path.getPathCount(); i++) {
 					TreeElement element = (TreeElement) path.getPath()[i];

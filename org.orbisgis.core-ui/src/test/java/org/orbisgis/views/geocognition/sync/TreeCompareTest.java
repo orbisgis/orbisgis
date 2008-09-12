@@ -1,7 +1,5 @@
 package org.orbisgis.views.geocognition.sync;
 
-import java.util.ArrayList;
-
 import org.orbisgis.views.geocognition.sync.tree.TreeElement;
 
 public class TreeCompareTest extends AbstractSyncTest {
@@ -26,7 +24,7 @@ public class TreeCompareTest extends AbstractSyncTest {
 		assertFalse(sm.isAdded(createPath("root:e")));
 		assertFalse(sm.isAdded(createPath("root:e:1")));
 		assertFalse(sm.isAdded(createPath("root:e:1:1")));
-		ArrayList<String> path = createPath("root:e");
+		IdPath path = createPath("root:e");
 		path.add("root.a");
 		assertTrue(sm.isAdded(path));
 		assertFalse(sm.isAdded(createPath("root:f")));
@@ -51,7 +49,7 @@ public class TreeCompareTest extends AbstractSyncTest {
 		assertFalse(sm.isDeleted(createPath("root:e")));
 		assertFalse(sm.isDeleted(createPath("root:e:1")));
 		assertFalse(sm.isDeleted(createPath("root:e:1:1")));
-		ArrayList<String> path = createPath("root:e");
+		IdPath path = createPath("root:e");
 		path.add("root.a");
 		assertFalse(sm.isDeleted(path));
 		assertFalse(sm.isDeleted(createPath("root:f")));
@@ -76,7 +74,7 @@ public class TreeCompareTest extends AbstractSyncTest {
 		assertFalse(sm.isModified(createPath("root:e")));
 		assertFalse(sm.isModified(createPath("root:e:1")));
 		assertFalse(sm.isModified(createPath("root:e:1:1")));
-		ArrayList<String> path = createPath("root:e");
+		IdPath path = createPath("root:e");
 		path.add("root.a");
 		assertFalse(sm.isModified(path));
 		assertFalse(sm.isModified(createPath("root:f")));
@@ -101,7 +99,7 @@ public class TreeCompareTest extends AbstractSyncTest {
 		assertFalse(sm.isConflict(createPath("root:e")));
 		assertTrue(sm.isConflict(createPath("root:e:1")));
 		assertTrue(sm.isConflict(createPath("root:e:1:1")));
-		ArrayList<String> path = createPath("root:e");
+		IdPath path = createPath("root:e");
 		path.add("root.a");
 		assertFalse(sm.isConflict(path));
 		assertFalse(sm.isConflict(createPath("root:f")));

@@ -1,9 +1,7 @@
 package org.orbisgis.views.geocognition.sync;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashSet;
-import java.util.Iterator;
 
 import org.orbisgis.Services;
 import org.orbisgis.geocognition.Geocognition;
@@ -14,8 +12,7 @@ import org.orbisgis.views.geocognition.sync.tree.TreeElement;
 
 public class SyncManager {
 	// Sets to determine additions, deletions, modifications and conflicts
-	private HashSet<ArrayList<String>> added, deleted, contentModified,
-			conflict;
+	private HashSet<IdPath> added, deleted, contentModified, conflict;
 
 	// Local, remote and difference root trees
 	private GeocognitionElementDecorator localRoot, remoteRoot;
@@ -87,19 +84,17 @@ public class SyncManager {
 
 		// Initialize attributes
 		this.remoteEditable = remoteEditable;
-		added = new HashSet<ArrayList<String>>();
-		deleted = new HashSet<ArrayList<String>>();
-		contentModified = new HashSet<ArrayList<String>>();
-		conflict = new HashSet<ArrayList<String>>();
+		added = new HashSet<IdPath>();
+		deleted = new HashSet<IdPath>();
+		contentModified = new HashSet<IdPath>();
+		conflict = new HashSet<IdPath>();
 
 		if (localRoot == remoteRoot) {
 			differenceRoot = null;
 		} else {
 			// Synchronize
 			differenceRoot = copyTreeStructure(localRoot);
-			ArrayList<String> localPath = new ArrayList<String>();
-			localPath.add(localRoot.getId());
-			synchronize(localPath, pm);
+			synchronize(new IdPath(localRoot.getId()), pm);
 		}
 	}
 
@@ -136,7 +131,7 @@ public class SyncManager {
 	 *            the progress monitor of the synchronization or
 	 *            <code>null</code> if no progress monitor must be used
 	 */
-	private void synchronize(ArrayList<String> path, IProgressMonitor monitor) {
+	private void synchronize(IdPath path, IProgressMonitor monitor) {
 		if (path == null) {
 			return;
 		}
@@ -161,7 +156,7 @@ public class SyncManager {
 			// If the parent exists, remove the previous child and add the new
 			// synchronized one
 			if (parent != null) {
-				parent.removeElement(path.get(path.size() - 1));
+				parent.removeElement(path.getLast());
 				if (subTree != null) {
 					parent.addElement(subTree);
 				}
@@ -190,9 +185,7 @@ public class SyncManager {
 		}
 
 		if (differenceRoot != null) {
-			ArrayList<String> aux = new ArrayList<String>();
-			aux.add(differenceRoot.getId());
-			removeEmptyFolders(aux);
+			removeEmptyFolders(new IdPath(differenceRoot.getId()));
 
 			if (differenceRoot.isFolder()
 					&& differenceRoot.getElementCount() == 0) {
@@ -218,15 +211,15 @@ public class SyncManager {
 	 *         trees for the specified path or <code>null</code> if there are no
 	 *         differences
 	 */
-	private TreeElement doComparison(ArrayList<String> path,
-			IProgressMonitor monitor, float unitWeight) {
+	private TreeElement doComparison(IdPath path, IProgressMonitor monitor,
+			float unitWeight) {
 		GeocognitionElementDecorator a = find(localRoot, path);
 		GeocognitionElementDecorator b = find(remoteRoot, path);
 
 		if (a == null && b == null) {
 			TreeElement parent = differenceRoot.find(path, path.size() - 1);
 			if (parent != null) {
-				parent.removeElement(path.get(path.size() - 1));
+				parent.removeElement(path.getLast());
 			} else {
 				Services.getErrorManager().error(
 						"bug!",
@@ -297,8 +290,7 @@ public class SyncManager {
 				/ (a.getElementCount() + b.getElementCount());
 
 		// Get id path
-		ArrayList<String> path = new ArrayList<String>();
-		Collections.addAll(path, a.getIdPath().split("/"));
+		IdPath path = new IdPath(a.getIdPath());
 
 		// Difference structure is created adding and removing elements
 		// in the 'a' folder structure
@@ -315,7 +307,7 @@ public class SyncManager {
 				if (childTree != null) {
 					difference.addElement(childTree);
 				}
-				path.remove(path.size() - 1);
+				path.removeLast();
 			} else {
 				// If 'a' child is not in 'b' folder
 				difference.addElement(copyTreeStructure(aChild));
@@ -365,10 +357,6 @@ public class SyncManager {
 	private TreeElement compareLeaves(GeocognitionElementDecorator a,
 			GeocognitionElementDecorator b, IProgressMonitor monitor,
 			float unitWeight) throws GeocognitionException {
-		// Get id path
-		ArrayList<String> path = new ArrayList<String>();
-		Collections.addAll(path, a.getIdPath().split("/"));
-
 		TreeElement difference = null;
 
 		if (monitor != null) {
@@ -376,12 +364,11 @@ public class SyncManager {
 		}
 
 		if (!a.getXMLContent().equals(b.getXMLContent())) {
+			IdPath path = new IdPath(a.getIdPath());
 			if (a.getTypeId().equals(b.getTypeId())) {
-				ArrayList<String> aux = new ArrayList<String>(path);
-				contentModified.add(aux);
+				contentModified.add(path);
 			} else {
-				ArrayList<String> aux = new ArrayList<String>(path);
-				conflict.add(aux);
+				conflict.add(path);
 			}
 			difference = new TreeElement(a);
 		}
@@ -397,7 +384,7 @@ public class SyncManager {
 	 * @return true if the specified path has content changed (must be shown in
 	 *         the difference tree), false otherwise
 	 */
-	private boolean removeEmptyFolders(ArrayList<String> path) {
+	private boolean removeEmptyFolders(IdPath path) {
 		TreeElement root = differenceRoot.find(path);
 
 		if (!root.isFolder()) {
@@ -414,7 +401,7 @@ public class SyncManager {
 					root.removeElement(child.getId());
 				}
 				hasContent |= childHasContent;
-				path.remove(path.size() - 1);
+				path.removeLast();
 			} else {
 				hasContent = true;
 			}
@@ -432,9 +419,8 @@ public class SyncManager {
 	 *            the set where the element must be added
 	 */
 	private void mark(GeocognitionElementDecorator element,
-			HashSet<ArrayList<String>> markSet) {
-		ArrayList<String> path = new ArrayList<String>();
-		Collections.addAll(path, element.getIdPath().split("/"));
+			HashSet<IdPath> markSet) {
+		IdPath path = new IdPath(element.getIdPath());
 		markSet.add(path);
 		if (element.isFolder()) {
 			for (int i = 0; i < element.getElementCount(); i++) {
@@ -452,28 +438,12 @@ public class SyncManager {
 	 * @param markSet
 	 *            the set with the elements to remove
 	 */
-	private void unmark(ArrayList<String> startingPath,
-			HashSet<ArrayList<String>> markSet) {
+	private void unmark(IdPath startingPath, HashSet<IdPath> markSet) {
 		// References to the elements to remove
-		ArrayList<ArrayList<String>> remove = new ArrayList<ArrayList<String>>();
+		ArrayList<IdPath> remove = new ArrayList<IdPath>();
 
-		Iterator<ArrayList<String>> iterator = markSet.iterator();
-		while (iterator.hasNext()) {
-			ArrayList<String> marked = iterator.next();
-			boolean matches = true;
-
-			// If 'marked' starts with 'startingPath'
-			if (marked.size() >= startingPath.size()) {
-				for (int i = 0; matches && i < startingPath.size(); i++) {
-					if (!marked.get(i).equals(startingPath.get(i))) {
-						matches = false;
-					}
-				}
-			} else {
-				matches = false;
-			}
-
-			if (matches) {
+		for (IdPath marked : markSet) {
+			if (marked.startsWith(startingPath)) {
 				remove.add(marked);
 			}
 		}
@@ -492,12 +462,12 @@ public class SyncManager {
 	 * @throws UnsupportedOperationException
 	 *             if the remote tree is not editable
 	 */
-	public void commit(ArrayList<String> path) {
+	public void commit(IdPath path) {
 		if (!remoteEditable) {
 			throw new UnsupportedOperationException("The tree is not editable");
 		}
 
-		ArrayList<String> syncPath;
+		IdPath syncPath;
 		if (isAdded(path)) {
 			try {
 				syncPath = add(localRoot, remoteRoot, path);
@@ -524,8 +494,8 @@ public class SyncManager {
 
 			for (String id : ids) {
 				path.add(id);
-				commit(new ArrayList<String>(path));
-				path.remove(path.size() - 1);
+				commit(new IdPath(path));
+				path.removeLast();
 			}
 		}
 
@@ -538,8 +508,8 @@ public class SyncManager {
 	 * @param path
 	 *            the path to the element to update
 	 */
-	public void update(ArrayList<String> path) {
-		ArrayList<String> syncPath = path;
+	public void update(IdPath path) {
+		IdPath syncPath = path;
 		if (isAdded(path)) {
 			syncPath = delete(localRoot, path);
 		} else if (isModified(path)) {
@@ -567,8 +537,8 @@ public class SyncManager {
 
 			for (String id : ids) {
 				path.add(id);
-				update(path);
-				path.remove(path.size() - 1);
+				update(new IdPath(path));
+				path.removeLast();
 			}
 		}
 
@@ -587,8 +557,8 @@ public class SyncManager {
 	 * @throws GeocognitionException
 	 *             if the element cannot be added
 	 */
-	private ArrayList<String> add(GeocognitionElementDecorator srcRoot,
-			GeocognitionElementDecorator destRoot, ArrayList<String> path)
+	private IdPath add(GeocognitionElementDecorator srcRoot,
+			GeocognitionElementDecorator destRoot, IdPath path)
 			throws GeocognitionException {
 		Geocognition gc = Services.getService(Geocognition.class);
 
@@ -618,9 +588,7 @@ public class SyncManager {
 		// Add the top of the element structure created to the common ancestor
 		commonAncestor.addElement(child);
 
-		ArrayList<String> syncPath = new ArrayList<String>();
-		Collections.addAll(syncPath, child.getIdPath().split("/"));
-		return syncPath;
+		return new IdPath(child.getIdPath());
 	}
 
 	/**
@@ -631,15 +599,13 @@ public class SyncManager {
 	 * @param path
 	 *            the elements to delete
 	 */
-	private ArrayList<String> delete(GeocognitionElementDecorator root,
-			ArrayList<String> path) {
+	private IdPath delete(GeocognitionElementDecorator root, IdPath path) {
 		GeocognitionElementDecorator parent = find(root, path, path.size() - 1);
 		GeocognitionElementDecorator child = find(root, path);
 
-		ArrayList<String> syncPath = new ArrayList<String>();
-		Collections.addAll(syncPath, child.getIdPath().split("/"));
+		IdPath syncPath = new IdPath(child.getIdPath());
 
-		parent.removeElement(path.get(path.size() - 1));
+		parent.removeElement(path.getLast());
 
 		return syncPath;
 	}
@@ -654,8 +620,8 @@ public class SyncManager {
 	 * @param path
 	 *            the path to the element to update
 	 */
-	private ArrayList<String> modify(GeocognitionElementDecorator originalRoot,
-			GeocognitionElementDecorator modifyRoot, ArrayList<String> path) {
+	private IdPath modify(GeocognitionElementDecorator originalRoot,
+			GeocognitionElementDecorator modifyRoot, IdPath path) {
 		try {
 			GeocognitionElementDecorator original = getCloserCommonAncestor(
 					path, originalRoot);
@@ -663,8 +629,7 @@ public class SyncManager {
 					modifyRoot);
 			modify.setXMLContent(original.getXMLContent());
 
-			ArrayList<String> syncPath = new ArrayList<String>();
-			Collections.addAll(syncPath, modify.getIdPath().split("/"));
+			IdPath syncPath = new IdPath(modify.getIdPath());
 			return syncPath;
 		} catch (GeocognitionException e) {
 			Services.getErrorManager().error("The element cannot be commited",
@@ -682,12 +647,11 @@ public class SyncManager {
 	 * @param path
 	 *            the elements to replace
 	 */
-	private ArrayList<String> replace(
-			GeocognitionElementDecorator originalRoot,
-			GeocognitionElementDecorator replaceRoot, ArrayList<String> path) {
+	private IdPath replace(GeocognitionElementDecorator originalRoot,
+			GeocognitionElementDecorator replaceRoot, IdPath path) {
 		// Get index of conflict root in the given path
 		int i;
-		ArrayList<String> auxPath = new ArrayList<String>();
+		IdPath auxPath = new IdPath();
 		for (i = 0; i < path.size(); i++) {
 			auxPath.add(path.get(i));
 			if (isConflict(auxPath)) {
@@ -709,10 +673,7 @@ public class SyncManager {
 		parent.removeElement(path.get(i));
 		parent.addElement(original);
 
-		ArrayList<String> syncPath = new ArrayList<String>();
-		Collections.addAll(syncPath, original.getIdPath().split("/"));
-
-		return syncPath;
+		return new IdPath(original.getIdPath());
 	}
 
 	/**
@@ -726,8 +687,8 @@ public class SyncManager {
 	 * @return the last matching node between the path and the given node or
 	 *         null if none
 	 */
-	private GeocognitionElementDecorator getCloserCommonAncestor(
-			ArrayList<String> path, GeocognitionElementDecorator root) {
+	private GeocognitionElementDecorator getCloserCommonAncestor(IdPath path,
+			GeocognitionElementDecorator root) {
 		GeocognitionElementDecorator parent = null;
 		GeocognitionElementDecorator child = root;
 		if (!path.get(0).equals(root.getId())) {
@@ -749,7 +710,7 @@ public class SyncManager {
 	 *            the path to the element
 	 * @return true if the path is added, false otherwise
 	 */
-	public boolean isAdded(ArrayList<String> path) {
+	public boolean isAdded(IdPath path) {
 		return added.contains(path);
 	}
 
@@ -760,7 +721,7 @@ public class SyncManager {
 	 *            the path to the element
 	 * @return true if the path has been deleted, false otherwise
 	 */
-	public boolean isDeleted(ArrayList<String> path) {
+	public boolean isDeleted(IdPath path) {
 		return deleted.contains(path);
 	}
 
@@ -771,7 +732,7 @@ public class SyncManager {
 	 *            the path to the element
 	 * @return true if the path has content modified, false otherwise
 	 */
-	public boolean isModified(ArrayList<String> path) {
+	public boolean isModified(IdPath path) {
 		return contentModified.contains(path);
 	}
 
@@ -783,7 +744,7 @@ public class SyncManager {
 	 *            the path to the element
 	 * @return true if the path is a conflict, false otherwise
 	 */
-	public boolean isConflict(ArrayList<String> path) {
+	public boolean isConflict(IdPath path) {
 		return conflict.contains(path);
 	}
 
@@ -795,7 +756,7 @@ public class SyncManager {
 	 *            the path to the element to determine
 	 * @return true if the element has changes, false otherwise
 	 */
-	boolean hasChanged(ArrayList<String> path) {
+	boolean hasChanged(IdPath path) {
 		return isAdded(path) || isConflict(path) || isDeleted(path)
 				|| isModified(path);
 	}
@@ -843,7 +804,7 @@ public class SyncManager {
 	 *            the path to the element to find
 	 * @return the element for the specified path
 	 */
-	public GeocognitionElementDecorator findLocalElement(ArrayList<String> path) {
+	public GeocognitionElementDecorator findLocalElement(IdPath path) {
 		return (localRoot == null) ? localRoot : find(localRoot, path);
 	}
 
@@ -854,17 +815,17 @@ public class SyncManager {
 	 *            the path to the element to find
 	 * @return the element for the specified path
 	 */
-	public GeocognitionElementDecorator findRemoteElement(ArrayList<String> path) {
+	public GeocognitionElementDecorator findRemoteElement(IdPath path) {
 		return (remoteRoot == null) ? remoteRoot : find(remoteRoot, path);
 	}
 
 	private GeocognitionElementDecorator find(
-			GeocognitionElementDecorator root, ArrayList<String> path) {
+			GeocognitionElementDecorator root, IdPath path) {
 		return find(root, path, path.size());
 	}
 
 	private GeocognitionElementDecorator find(
-			GeocognitionElementDecorator root, ArrayList<String> path, int n) {
+			GeocognitionElementDecorator root, IdPath path, int n) {
 		if (path == null || !path.get(0).equalsIgnoreCase(root.getId())) {
 			return null;
 		}

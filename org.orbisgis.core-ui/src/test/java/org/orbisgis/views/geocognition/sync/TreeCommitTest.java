@@ -1,14 +1,12 @@
 package org.orbisgis.views.geocognition.sync;
 
-import java.util.ArrayList;
-
 import org.orbisgis.geocognition.GeocognitionElement;
 import org.orbisgis.geocognition.mapContext.GeocognitionException;
 import org.orbisgis.views.geocognition.sync.tree.TreeElement;
 
 public class TreeCommitTest extends AbstractSyncTest {
 	public void testCommitAddedLeaf() {
-		ArrayList<String> path;
+		IdPath path;
 
 		path = createPath("root:a:1:1:2");
 		sm.commit(path);
@@ -20,8 +18,8 @@ public class TreeCommitTest extends AbstractSyncTest {
 	}
 
 	public void testCommitAddedContainer() {
-		ArrayList<String> path = createPath("root:a:1:1:2");
-		ArrayList<String> path2 = createPath("root:a:1:1");
+		IdPath path = createPath("root:a:1:1:2");
+		IdPath path2 = createPath("root:a:1:1");
 
 		sm.commit(path);
 		sm.commit(path2);
@@ -30,7 +28,7 @@ public class TreeCommitTest extends AbstractSyncTest {
 	}
 
 	public void testCommitModifiedLeaf() {
-		ArrayList<String> path;
+		IdPath path;
 
 		path = createPath("root:b");
 		sm.commit(path);
@@ -46,7 +44,7 @@ public class TreeCommitTest extends AbstractSyncTest {
 	}
 
 	public void testCommitConflictLeaf() {
-		ArrayList<String> path;
+		IdPath path;
 
 		path = createPath("root:e:1:1");
 		sm.commit(path);
@@ -58,7 +56,7 @@ public class TreeCommitTest extends AbstractSyncTest {
 	}
 
 	public void testCommitConflictContainer() {
-		ArrayList<String> path;
+		IdPath path;
 
 		path = createPath("root:e:1");
 		sm.commit(path);
@@ -70,7 +68,7 @@ public class TreeCommitTest extends AbstractSyncTest {
 	}
 
 	public void testCommitDeletedLeaf() {
-		ArrayList<String> path;
+		IdPath path;
 
 		path = createPath("root:c:1");
 		sm.commit(path);
@@ -82,7 +80,7 @@ public class TreeCommitTest extends AbstractSyncTest {
 	}
 
 	public void testCommitDeletedContainer() {
-		ArrayList<String> path;
+		IdPath path;
 
 		path = createPath("root:c");
 		sm.commit(path);
@@ -91,7 +89,7 @@ public class TreeCommitTest extends AbstractSyncTest {
 	}
 
 	public void testDeletedAfterAdded() {
-		ArrayList<String> path;
+		IdPath path;
 
 		path = createPath("root:a");
 		sm.commit(path);
@@ -131,7 +129,7 @@ public class TreeCommitTest extends AbstractSyncTest {
 	}
 
 	public void testDuplicateId() {
-		ArrayList<String> path;
+		IdPath path;
 
 		path = createPath("root:e");
 		path.add("root.a");

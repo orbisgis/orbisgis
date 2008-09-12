@@ -1,14 +1,12 @@
 package org.orbisgis.views.geocognition.sync;
 
-import java.util.ArrayList;
-
 import org.orbisgis.geocognition.GeocognitionElement;
 import org.orbisgis.geocognition.mapContext.GeocognitionException;
 import org.orbisgis.views.geocognition.sync.tree.TreeElement;
 
 public class TreeUpdateTest extends AbstractSyncTest {
 	public void testUpdateAddedLeaf() {
-		ArrayList<String> path;
+		IdPath path;
 
 		path = createPath("root:a:1:1:2");
 		sm.update(path);
@@ -20,8 +18,8 @@ public class TreeUpdateTest extends AbstractSyncTest {
 	}
 
 	public void testUpdateAddedContainer() {
-		ArrayList<String> path = createPath("root:a:1:1:2");
-		ArrayList<String> path2 = createPath("root:a:1:1");
+		IdPath path = createPath("root:a:1:1:2");
+		IdPath path2 = createPath("root:a:1:1");
 
 		sm.update(path);
 		sm.update(path2);
@@ -30,7 +28,7 @@ public class TreeUpdateTest extends AbstractSyncTest {
 	}
 
 	public void testUpdateModifiedLeaf() {
-		ArrayList<String> path;
+		IdPath path;
 
 		path = createPath("root:b");
 		sm.update(path);
@@ -46,7 +44,7 @@ public class TreeUpdateTest extends AbstractSyncTest {
 	}
 
 	public void testUpdateConflictLeaf() {
-		ArrayList<String> path;
+		IdPath path;
 
 		path = createPath("root:e:1:1");
 		sm.update(path);
@@ -58,7 +56,7 @@ public class TreeUpdateTest extends AbstractSyncTest {
 	}
 
 	public void testUpdateConflictContainer() {
-		ArrayList<String> path;
+		IdPath path;
 
 		path = createPath("root:e:1");
 		sm.update(path);
@@ -70,7 +68,7 @@ public class TreeUpdateTest extends AbstractSyncTest {
 	}
 
 	public void testUpdateDeletedLeaf() {
-		ArrayList<String> path;
+		IdPath path;
 
 		path = createPath("root:c:1");
 		sm.update(path);
@@ -82,7 +80,7 @@ public class TreeUpdateTest extends AbstractSyncTest {
 	}
 
 	public void testUpdateDeletedContainer() {
-		ArrayList<String> path;
+		IdPath path;
 
 		// Create path
 		path = createPath("root:c");
@@ -92,7 +90,7 @@ public class TreeUpdateTest extends AbstractSyncTest {
 	}
 
 	public void testDuplicateId() {
-		ArrayList<String> path;
+		IdPath path;
 
 		path = createPath("root:e");
 		path.add("root.a");

@@ -4,7 +4,6 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Image;
-import java.util.ArrayList;
 
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
@@ -13,6 +12,7 @@ import javax.swing.tree.DefaultTreeCellRenderer;
 
 import org.orbisgis.Services;
 import org.orbisgis.images.IconLoader;
+import org.orbisgis.views.geocognition.sync.IdPath;
 import org.orbisgis.views.geocognition.sync.SyncManager;
 import org.orbisgis.views.geocognition.wizard.ElementRenderer;
 
@@ -48,7 +48,7 @@ public class CompareTreeRenderer extends DefaultTreeCellRenderer {
 
 			// Get foreground icon
 			ImageIcon foreground;
-			ArrayList<String> path = element.getIdPath();
+			IdPath path = element.getIdPath();
 			if (manager.isAdded(path)) {
 				foreground = ADDED;
 			} else if (manager.isDeleted(path)) {
@@ -145,7 +145,7 @@ public class CompareTreeRenderer extends DefaultTreeCellRenderer {
 				}
 			}
 		}
-		
+
 		@Override
 		public int getIconWidth() {
 			return super.getIconWidth() + BLENDED_ICON_EXPANSION;

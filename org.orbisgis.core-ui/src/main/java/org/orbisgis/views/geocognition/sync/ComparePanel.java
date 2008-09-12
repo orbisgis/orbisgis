@@ -12,7 +12,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Collections;
 
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
@@ -301,7 +300,7 @@ public class ComparePanel extends AbstractUIPanel {
 		TreePath[] paths = treePanel.getTree().getSelectionPaths();
 		for (int i = 0; i < paths.length; i++) {
 			TreeElement last = (TreeElement) paths[i].getLastPathComponent();
-			ArrayList<String> path = last.getIdPath();
+			IdPath path = last.getIdPath();
 
 			if (operation == COMMIT) {
 				manager.commit(path);
@@ -319,7 +318,7 @@ public class ComparePanel extends AbstractUIPanel {
 	 * @param path
 	 *            the path to the element to show in the editor
 	 */
-	private void setEditor(ArrayList<String> path) {
+	private void setEditor(IdPath path) {
 		if (closeEditor()) {
 			GeocognitionElementDecorator local = null;
 			GeocognitionElementDecorator remote = null;
@@ -482,7 +481,7 @@ public class ComparePanel extends AbstractUIPanel {
 						.getLastPathComponent();
 
 				if (!selected.isFolder()) {
-					ArrayList<String> idPath = selected.getIdPath();
+					IdPath idPath = selected.getIdPath();
 					if (manager.isModified(idPath) || (manager.isAdded(idPath))
 							|| (manager.isDeleted(idPath))) {
 						setEditor(idPath);
@@ -505,7 +504,7 @@ public class ComparePanel extends AbstractUIPanel {
 					tree.setSelectionRow(selRow);
 				}
 
-				ArrayList<ArrayList<String>> idPaths = new ArrayList<ArrayList<String>>();
+				ArrayList<IdPath> idPaths = new ArrayList<IdPath>();
 				TreePath[] paths = tree.getSelectionPaths();
 
 				for (int i = 0; i < paths.length; i++) {
@@ -517,7 +516,7 @@ public class ComparePanel extends AbstractUIPanel {
 				boolean deleted = true;
 				boolean added = true;
 				boolean changed = true;
-				for (ArrayList<String> idPath : idPaths) {
+				for (IdPath idPath : idPaths) {
 					if (deleted && !manager.isDeleted(idPath)) {
 						deleted = false;
 					}
@@ -547,9 +546,8 @@ public class ComparePanel extends AbstractUIPanel {
 			}
 		}
 
-		private ArrayList<ArrayList<String>> getChangedChildren(
-				TreeElement element) {
-			ArrayList<ArrayList<String>> arrayList = new ArrayList<ArrayList<String>>();
+		private ArrayList<IdPath> getChangedChildren(TreeElement element) {
+			ArrayList<IdPath> arrayList = new ArrayList<IdPath>();
 			if (manager.hasChanged(element.getIdPath())) {
 				arrayList.add(element.getIdPath());
 			} else {
@@ -589,8 +587,7 @@ public class ComparePanel extends AbstractUIPanel {
 			GeocognitionElement right = currentEditor.getRightElement();
 
 			if (left != null && right == null) {
-				ArrayList<String> path = new ArrayList<String>();
-				Collections.addAll(path, left.getIdPath().split("/"));
+				IdPath path = new IdPath(left.getIdPath());
 				// Check right addition
 				GeocognitionElementDecorator remote = manager
 						.findRemoteElement(path);
@@ -605,8 +602,7 @@ public class ComparePanel extends AbstractUIPanel {
 					currentEditor.setModel(null, null);
 				}
 			} else if (right != null && left == null) {
-				ArrayList<String> path = new ArrayList<String>();
-				Collections.addAll(path, right.getIdPath().split("/"));
+				IdPath path = new IdPath(right.getIdPath());
 				// Check left addition
 				GeocognitionElementDecorator local = manager
 						.findLocalElement(path);

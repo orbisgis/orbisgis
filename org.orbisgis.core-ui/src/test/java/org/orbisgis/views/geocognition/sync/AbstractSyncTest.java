@@ -1,7 +1,5 @@
 package org.orbisgis.views.geocognition.sync;
 
-import java.util.ArrayList;
-
 import junit.framework.TestCase;
 
 import org.gdms.data.DataSourceFactory;
@@ -99,9 +97,9 @@ public class AbstractSyncTest extends TestCase {
 		sm.compare(node1, node2, true);
 	}
 
-	protected ArrayList<String> createPath(String s) {
+	protected IdPath createPath(String s) {
 		String[] path = s.split(":");
-		ArrayList<String> a = new ArrayList<String>();
+		IdPath a = new IdPath();
 		a.add("");
 		a.add("root");
 		String aux = "root";

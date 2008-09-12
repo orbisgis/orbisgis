@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.Comparator;
 
 import org.orbisgis.geocognition.GeocognitionElement;
+import org.orbisgis.views.geocognition.sync.IdPath;
 
 public class TreeElement {
 	private String id;
@@ -117,7 +118,7 @@ public class TreeElement {
 	 *            the path to the element
 	 * @return the descendant represented by the path
 	 */
-	public TreeElement find(ArrayList<String> path) {
+	public TreeElement find(IdPath path) {
 		return find(path, path.size());
 	}
 
@@ -133,7 +134,7 @@ public class TreeElement {
 	 *            exclusive index</b>
 	 * @return the descendant represented by the path
 	 */
-	public TreeElement find(ArrayList<String> path, int n) {
+	public TreeElement find(IdPath path, int n) {
 		if (!path.get(0).equalsIgnoreCase(id)) {
 			return null;
 		}
@@ -176,12 +177,12 @@ public class TreeElement {
 		return typeId;
 	}
 
-	public ArrayList<String> getIdPath() {
-		ArrayList<String> path = new ArrayList<String>();
+	public IdPath getIdPath() {
+		IdPath path = new IdPath();
 		path.add(getId());
 		TreeElement p = parent;
 		while (p != null) {
-			path.add(0, p.getId());
+			path.addFirst(p.getId());
 			p = p.parent;
 		}
 
