@@ -42,7 +42,10 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+
+import javax.swing.SwingUtilities;
 
 import org.apache.log4j.Logger;
 import org.orbisgis.Services;
@@ -114,9 +117,13 @@ public class DefaultWorkspace implements Workspace {
 				} catch (FileNotFoundException e) {
 					throw new RuntimeException("Cannot initialize system", e);
 				}
+			} else {
+				throw new RuntimeException("Cannot initialize system");
 			}
 
-			readCurrentworkspace(currentWorkspace);
+			if (currentWorkspace.exists()) {
+				readCurrentworkspace(currentWorkspace);
+			}
 		}
 		setWorkspaceFolder(workspaceFolder.getAbsolutePath());
 
@@ -142,15 +149,14 @@ public class DefaultWorkspace implements Workspace {
 	}
 
 	protected File askWorkspace() {
-		PluginManager psm = (PluginManager) Services
-				.getService("org.orbisgis.PluginManager");
-		WorkspaceFolderFilePanel panel = new WorkspaceFolderFilePanel(
-				"Select the workspace folder", psm.getHomeFolder()
-						.getAbsolutePath());
-		if (UIFactory.showDialog(panel)) {
-			return panel.getSelectedFile();
-		} else {
-			return null;
+		ShowDialog dialog = new ShowDialog();
+		try {
+			SwingUtilities.invokeAndWait(dialog);
+			return dialog.ret;
+		} catch (InterruptedException e) {
+			throw new RuntimeException("Cannot obtain the workspace folder", e);
+		} catch (InvocationTargetException e) {
+			throw new RuntimeException("Cannot obtain the workspace folder", e);
 		}
 	}
 
@@ -164,7 +170,7 @@ public class DefaultWorkspace implements Workspace {
 
 	/**
 	 * This function will recursively delete directories and files.
-	 *
+	 * 
 	 * @param path
 	 *            File or Directory to be deleted
 	 * @return true indicates success.
@@ -291,6 +297,26 @@ public class DefaultWorkspace implements Workspace {
 		pw.println(ai.getWsVersion());
 		pw.flush();
 		pw.close();
+	}
+
+	private class ShowDialog implements Runnable {
+
+		private File ret;
+
+		@Override
+		public void run() {
+			PluginManager psm = (PluginManager) Services
+					.getService("org.orbisgis.PluginManager");
+			WorkspaceFolderFilePanel panel = new WorkspaceFolderFilePanel(
+					"Select the workspace folder", psm.getHomeFolder()
+							.getAbsolutePath());
+			if (UIFactory.showDialog(panel)) {
+				ret = panel.getSelectedFile();
+			} else {
+				ret = null;
+			}
+		}
+
 	}
 
 }

@@ -114,6 +114,17 @@ public class WorkspaceTest extends TestCase {
 				file.getCanonicalPath()));
 	}
 
+	public void testInitEmptyCancelWorkspaceSelection() throws Exception {
+		TestWorkspace tw = new TestWorkspace();
+		tw.setWorkspaceFolderSelectionInDialog(null);
+		applicationInfo.wsVersion = 1;
+		try {
+			tw.init(false);
+			assertTrue(false);
+		} catch (RuntimeException e) {
+		}
+	}
+
 	public void testGoodVersionNoVersionNumber() throws Exception {
 		File file = new File("src/test/resources/wsNoVersion");
 		TestWorkspace tw = new TestWorkspace();
@@ -199,9 +210,13 @@ public class WorkspaceTest extends TestCase {
 		@Override
 		protected File askWorkspace() {
 			File file = files[index];
-			index++;
-			file.mkdirs();
-			return file;
+			if (file != null) {
+				index++;
+				file.mkdirs();
+				return file;
+			} else {
+				return null;
+			}
 		}
 
 		public void setWorkspaceFoldersSelectionInDialog(File... files) {
