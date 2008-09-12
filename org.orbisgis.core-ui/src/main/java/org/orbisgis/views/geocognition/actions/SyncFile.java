@@ -11,14 +11,14 @@ import org.sif.UIFactory;
 public class SyncFile extends AbstractSyncAction {
 
 	@Override
-	public void execute(Geocognition geocognition, GeocognitionElement element) {
+	public void execute(Geocognition geocognition, GeocognitionElement[] elements) {
 		OpenFilePanel fp = new OpenFilePanel(
 				"org.orbisgis.geocognition.SyncFile",
 				"Synchronize Geocognition");
 		fp.addFilter("geocognition.xml", "Geocognition XML file");
 		if (UIFactory.showDialog(fp)) {
 			try {
-				showSynchronizePanel(geocognition, element, fp
+				showSynchronizePanel(geocognition, elements, fp
 						.getSelectedFile());
 			} catch (IOException e) {
 				Services.getErrorManager().error(

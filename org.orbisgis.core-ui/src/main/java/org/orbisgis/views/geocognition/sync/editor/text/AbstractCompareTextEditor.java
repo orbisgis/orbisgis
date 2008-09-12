@@ -667,7 +667,7 @@ public abstract class AbstractCompareTextEditor extends JPanel implements
 		} else {
 			try {
 				originalLeft = (left instanceof GeocognitionElementDecorator) ? (GeocognitionElementDecorator) left
-						: new GeocognitionElementDecorator(left);
+						: new GeocognitionElementDecorator(left, null);
 				leftText = getLeftContent();
 				leftTitle = left.getId();
 				originalLeft.addElementListener(leftElementListener);
@@ -685,7 +685,7 @@ public abstract class AbstractCompareTextEditor extends JPanel implements
 		} else {
 			try {
 				originalRight = (right instanceof GeocognitionElementDecorator) ? (GeocognitionElementDecorator) right
-						: new GeocognitionElementDecorator(right);
+						: new GeocognitionElementDecorator(right, null);
 				rightText = getRightContent();
 				rightTitle = right.getId();
 				originalRight.addElementListener(rightElementListener);

@@ -13,6 +13,7 @@ import org.orbisgis.progress.IProgressMonitor;
 public class GeocognitionElementDecorator implements GeocognitionElement {
 	private GeocognitionElement element;
 	private ArrayList<GeocognitionElementDecorator> children;
+	private ArrayList<IdPath> filterPaths;
 
 	/**
 	 * Creates a new GeocognitionElementDecorator
@@ -20,19 +21,24 @@ public class GeocognitionElementDecorator implements GeocognitionElement {
 	 * @param e
 	 *            the element to decorate
 	 */
-	public GeocognitionElementDecorator(GeocognitionElement e) {
+	public GeocognitionElementDecorator(GeocognitionElement e,
+			ArrayList<IdPath> filt) {
 		if (e == null) {
 			Services.getErrorManager().error(
 					"bug!",
 					new IllegalArgumentException(
 							"Cannot decorate a null element"));
 		}
+		filterPaths = filt;
 		element = e;
 		children = new ArrayList<GeocognitionElementDecorator>();
 		if (element.isFolder()) {
 			for (int i = 0; i < element.getElementCount(); i++) {
-				children.add(new GeocognitionElementDecorator(element
-						.getElement(i)));
+				GeocognitionElementDecorator child = filter(new GeocognitionElementDecorator(
+						element.getElement(i), filt));
+				if (child != null) {
+					children.add(child);
+				}
 			}
 		}
 	}
@@ -41,8 +47,10 @@ public class GeocognitionElementDecorator implements GeocognitionElement {
 	public void addElement(GeocognitionElement element)
 			throws UnsupportedOperationException {
 		GeocognitionElementDecorator e = (GeocognitionElementDecorator) element;
-		this.element.addElement(e.element);
-		children.add(e);
+		if (filter(e) != null) {
+			this.element.addElement(e.element);
+			children.add(e);
+		}
 	}
 
 	@Override
@@ -58,23 +66,42 @@ public class GeocognitionElementDecorator implements GeocognitionElement {
 	@Override
 	public GeocognitionElementDecorator getElement(int i)
 			throws UnsupportedOperationException {
-		return getElement(element.getElement(i).getId());
+		return filter(getElement(element.getElement(i).getId()));
+	}
+
+	private GeocognitionElementDecorator filter(
+			GeocognitionElementDecorator elem) {
+		if (filterPaths == null || elem == null) {
+			return elem;
+		} else {
+			IdPath childPath = new IdPath(elem.getIdPath());
+			boolean show = false;
+			for (IdPath idPath : filterPaths) {
+				if (childPath.startsWith(idPath)) {
+					show = true;
+					break;
+				}
+			}
+
+			return show ? elem : null;
+		}
 	}
 
 	@Override
 	public GeocognitionElementDecorator getElement(String id) {
+		GeocognitionElementDecorator elem = null;
 		for (GeocognitionElementDecorator dec : children) {
 			if (dec.getId().equals(id)) {
 				return dec;
 			}
 		}
 
-		return null;
+		return filter(elem);
 	}
 
 	@Override
 	public int getElementCount() throws UnsupportedOperationException {
-		return element.getElementCount();
+		return children.size();
 	}
 
 	@Override
@@ -187,7 +214,8 @@ public class GeocognitionElementDecorator implements GeocognitionElement {
 	@Override
 	public GeocognitionElementDecorator cloneElement()
 			throws GeocognitionException {
-		return new GeocognitionElementDecorator(element.cloneElement());
+		return new GeocognitionElementDecorator(element.cloneElement(),
+				filterPaths);
 	}
 
 	/**

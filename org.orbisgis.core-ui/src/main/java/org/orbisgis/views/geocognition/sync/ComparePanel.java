@@ -72,6 +72,7 @@ public class ComparePanel extends AbstractUIPanel {
 	private SyncManager manager;
 	private GeocognitionElement local, remote;
 	private Object remoteSource;
+	private ArrayList<IdPath> filterPaths;
 
 	/**
 	 * Creates a new CompareSplitPane
@@ -175,15 +176,18 @@ public class ComparePanel extends AbstractUIPanel {
 	 * @throws IOException
 	 * @throws PersistenceException
 	 */
-	public void setModel(GeocognitionElement localElement, Object remoteObject)
-			throws IOException, PersistenceException {
+	public void setModel(GeocognitionElement localElement, Object remoteObject,
+			ArrayList<IdPath> filter) throws IOException, PersistenceException {
+
+		filterPaths = filter;
 		remoteSource = remoteObject;
 		local = localElement;
 		remote = createTreeFromResource(remoteSource);
 
 		// Show panel
 		if (local == remote) {
-			manager.compare(local, remote, isSourceEditable(remoteSource));
+			manager.compare(local, remote, isSourceEditable(remoteSource),
+					filter);
 		} else {
 			BackgroundManager bm = Services.getService(BackgroundManager.class);
 			bm.backgroundOperation(new SynchronizingJob());
@@ -286,7 +290,7 @@ public class ComparePanel extends AbstractUIPanel {
 		Geocognition geocognition = Services.getService(Geocognition.class);
 		local = geocognition.getGeocognitionElement(local.getIdPath());
 		local = local.cloneElement();
-		setModel(local, remoteSource);
+		setModel(local, remoteSource, filterPaths);
 	}
 
 	/**
@@ -635,7 +639,8 @@ public class ComparePanel extends AbstractUIPanel {
 
 		@Override
 		public void run(IProgressMonitor pm) {
-			manager.compare(local, remote, isSourceEditable(remoteSource), pm);
+			manager.compare(local, remote, isSourceEditable(remoteSource),
+					filterPaths, pm);
 		}
 	}
 

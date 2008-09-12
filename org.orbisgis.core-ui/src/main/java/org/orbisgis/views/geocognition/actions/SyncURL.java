@@ -12,13 +12,13 @@ import org.sif.UIFactory;
 
 public class SyncURL extends AbstractSyncAction {
 	@Override
-	public void execute(Geocognition geocognition, GeocognitionElement element) {
+	public void execute(Geocognition geocognition, GeocognitionElement[] elements) {
 		AskValue av = new AskValue("Enter the URL", "txt is not null",
 				"You must enter an URL");
 		if (UIFactory.showDialog(av)) {
 			try {
 				URL url = new URL(av.getValue());
-				showSynchronizePanel(geocognition, element, url);
+				showSynchronizePanel(geocognition, elements, url);
 			} catch (MalformedURLException e) {
 				Services.getErrorManager().error(
 						"The given URL is not a valid one", e);

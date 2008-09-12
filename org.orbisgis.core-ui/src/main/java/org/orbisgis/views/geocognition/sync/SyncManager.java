@@ -14,6 +14,8 @@ public class SyncManager {
 	// Sets to determine additions, deletions, modifications and conflicts
 	private HashSet<IdPath> added, deleted, contentModified, conflict;
 
+	private ArrayList<IdPath> filterPaths;
+
 	// Local, remote and difference root trees
 	private GeocognitionElementDecorator localRoot, remoteRoot;
 	private TreeElement differenceRoot;
@@ -48,8 +50,9 @@ public class SyncManager {
 	 *             <code>null</code>
 	 */
 	public void compare(GeocognitionElement local, GeocognitionElement remote,
-			boolean remoteEditable) throws IllegalArgumentException {
-		compare(local, remote, remoteEditable, null);
+			boolean remoteEditable, ArrayList<IdPath> filter)
+			throws IllegalArgumentException {
+		compare(local, remote, remoteEditable, filter, null);
 	}
 
 	/**
@@ -68,26 +71,27 @@ public class SyncManager {
 	 *             <code>null</code>
 	 */
 	public void compare(GeocognitionElement local, GeocognitionElement remote,
-			boolean remoteEditable, IProgressMonitor pm)
-			throws IllegalArgumentException {
+			boolean remoteEditable, ArrayList<IdPath> filter,
+			IProgressMonitor pm) throws IllegalArgumentException {
 		if (local == null || remote == null) {
 			throw new IllegalArgumentException("Both trees must not be null");
 		} else if (!local.getId().equalsIgnoreCase(remote.getId())) {
 			remote.setId(local.getId());
 		}
 
-		// Get roots
-		localRoot = (local instanceof GeocognitionElementDecorator) ? (GeocognitionElementDecorator) local
-				: new GeocognitionElementDecorator(local);
-		remoteRoot = (remote instanceof GeocognitionElementDecorator) ? (GeocognitionElementDecorator) remote
-				: new GeocognitionElementDecorator(remote);
-
 		// Initialize attributes
 		this.remoteEditable = remoteEditable;
+		this.filterPaths = filter;
 		added = new HashSet<IdPath>();
 		deleted = new HashSet<IdPath>();
 		contentModified = new HashSet<IdPath>();
 		conflict = new HashSet<IdPath>();
+
+		// Get roots
+		localRoot = (local instanceof GeocognitionElementDecorator) ? (GeocognitionElementDecorator) local
+				: new GeocognitionElementDecorator(local, filterPaths);
+		remoteRoot = (remote instanceof GeocognitionElementDecorator) ? (GeocognitionElementDecorator) remote
+				: new GeocognitionElementDecorator(remote, filterPaths);
 
 		if (localRoot == remoteRoot) {
 			differenceRoot = null;
@@ -575,7 +579,7 @@ public class SyncManager {
 
 			// Decorate folder
 			if (!(aux instanceof GeocognitionElementDecorator)) {
-				parent = new GeocognitionElementDecorator(aux);
+				parent = new GeocognitionElementDecorator(aux, filterPaths);
 			} else {
 				parent = (GeocognitionElementDecorator) aux;
 			}

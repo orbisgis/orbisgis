@@ -5,6 +5,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 
 import javax.swing.JOptionPane;
 
@@ -18,24 +19,20 @@ import org.orbisgis.pluginManager.background.BackgroundJob;
 import org.orbisgis.pluginManager.background.BackgroundManager;
 import org.orbisgis.progress.IProgressMonitor;
 import org.orbisgis.views.editor.EditorManager;
-import org.orbisgis.views.geocognition.action.IGeocognitionAction;
+import org.orbisgis.views.geocognition.action.IGeocognitionGroupAction;
 import org.orbisgis.views.geocognition.sync.ComparePanel;
+import org.orbisgis.views.geocognition.sync.IdPath;
 import org.sif.UIFactory;
 
-public abstract class AbstractSyncAction implements IGeocognitionAction {
+public abstract class AbstractSyncAction implements IGeocognitionGroupAction {
 
 	@Override
-	public boolean accepts(Geocognition geocog, GeocognitionElement element) {
-		return element.isFolder();
-	}
-
-	@Override
-	public boolean acceptsSelectionCount(Geocognition geocog, int selectionCount) {
-		return selectionCount <= 1;
+	public boolean accepts(Geocognition geocog, GeocognitionElement[] element) {
+		return true;
 	}
 
 	protected void showSynchronizePanel(Geocognition geocognition,
-			GeocognitionElement selected, Object remoteSource)
+			GeocognitionElement[] elements, Object remoteSource)
 			throws IOException {
 
 		EditorManager em = Services.getService(EditorManager.class);
@@ -55,21 +52,28 @@ public abstract class AbstractSyncAction implements IGeocognitionAction {
 			}
 		}
 
-		if (selected == null) {
-			selected = geocognition.getRoot();
-		}
-
 		try {
-			GeocognitionElement local = selected.cloneElement();
-			// Show panel
+			GeocognitionElement local = geocognition.getRoot().cloneElement();
+			ArrayList<IdPath> filter;
 
+			if (elements.length == 0) {
+				filter = null;
+			} else {
+				filter = new ArrayList<IdPath>();
+				for (int i = 0; i < elements.length; i++) {
+					filter.add(new IdPath(elements[i].getIdPath()));
+				}
+				
+			}
+
+			// Show panel
 			ComparePanel panel = new ComparePanel();
-			panel.setModel(local, local);
-			panel.setModel(local, remoteSource);
+			panel.setModel(local, local, filter);
+			panel.setModel(local, remoteSource, filter);
 			if (UIFactory.showDialog(panel)) {
 				BackgroundManager bm = Services
 						.getService(BackgroundManager.class);
-				bm.backgroundOperation(new SavingJob(selected, remoteSource,
+				bm.backgroundOperation(new SavingJob(remoteSource,
 						geocognition, panel));
 			}
 		} catch (PersistenceException e) {
@@ -83,14 +87,11 @@ public abstract class AbstractSyncAction implements IGeocognitionAction {
 	}
 
 	private class SavingJob implements BackgroundJob {
-		private GeocognitionElement local;
 		private Object remoteSource;
 		private Geocognition geocognition;
 		private ComparePanel panel;
 
-		private SavingJob(GeocognitionElement loc, Object rem, Geocognition g,
-				ComparePanel p) {
-			local = loc;
+		private SavingJob(Object rem, Geocognition g, ComparePanel p) {
 			remoteSource = rem;
 			geocognition = g;
 			panel = p;
@@ -105,7 +106,7 @@ public abstract class AbstractSyncAction implements IGeocognitionAction {
 		public void run(IProgressMonitor pm) {
 			try {
 				pm.progressTo(0);
-				
+
 				// Update remote file
 				if (remoteSource instanceof File) {
 					pm.startTask("Saving file");
@@ -115,26 +116,16 @@ public abstract class AbstractSyncAction implements IGeocognitionAction {
 					output.close();
 					pm.endTask();
 				}
-				
+
 				pm.progressTo(50);
 				pm.startTask("Saving geocognition");
-				
+
 				// Update local geocognition
-				if (local.getIdPath()
-						.equals(geocognition.getRoot().getIdPath())) {
-					ByteArrayOutputStream buffer = new ByteArrayOutputStream();
-					geocognition.write(panel.getLocalElement(), buffer);
-					geocognition.clear();
-					geocognition.read(new ByteArrayInputStream(buffer
-							.toByteArray()));
-				} else {
-					GeocognitionElement child = geocognition
-							.getGeocognitionElement(local.getIdPath());
-					GeocognitionElement parent = child.getParent();
-					parent.removeElement(child);
-					parent.addElement(panel.getLocalElement());
-				}
-				
+				ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+				geocognition.write(panel.getLocalElement(), buffer);
+				geocognition.clear();
+				geocognition
+						.read(new ByteArrayInputStream(buffer.toByteArray()));
 				pm.endTask();
 				pm.progressTo(100);
 			} catch (IOException e) {
