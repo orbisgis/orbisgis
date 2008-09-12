@@ -6,6 +6,7 @@ import java.io.UnsupportedEncodingException;
 
 import org.gdms.driver.DriverException;
 import org.orbisgis.layerModel.MapContext;
+import org.orbisgis.progress.IProgressMonitor;
 
 import com.vividsolutions.jts.geom.Envelope;
 
@@ -37,4 +38,33 @@ public interface MapExportManager {
 			int height, Envelope extent) throws UnsupportedEncodingException,
 			IOException, IllegalArgumentException, DriverException;
 
+	/**
+	 * @see #exportSVG(MapContext, OutputStream, int, int, Envelope)
+	 */
+	void exportSVG(MapContext mapContext, OutputStream outStream, int width,
+			int height, Envelope extent, IProgressMonitor pm)
+			throws UnsupportedEncodingException, IOException,
+			IllegalArgumentException, DriverException;
+
+	/**
+	 * Adds a new scale to the export manager
+	 * 
+	 * @param scaleClass
+	 */
+	void registerScale(Class<? extends Scale> scaleClass);
+
+	/**
+	 * Get the names of all registered scales
+	 * 
+	 * @return
+	 */
+	String[] getScaleNames();
+
+	/**
+	 * Get an instance of the specified instance
+	 * 
+	 * @param name
+	 * @return The scale instance or null if there is no such scale
+	 */
+	Scale getScale(String name);
 }
