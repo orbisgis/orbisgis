@@ -94,7 +94,7 @@ public class AbstractSyncTest extends TestCase {
 	@Override
 	protected void setUp() throws Exception {
 		super.setUp();
-		sm.compare(node1, node2, true, null);
+		sm.compare(node1, node2, null);
 	}
 
 	protected IdPath createPath(String s) {

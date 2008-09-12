@@ -560,13 +560,10 @@
 		id="org.orbisgis.views.geocognition.actions.Basic">
 		<menu text="Synchronize"
 			id="org.orbisgis.views.geocognition.Synchronize"/>
-		<action id="org.orbisgis.views.geocognition.actions.Export" text="Export"
-			menu-group="org.orbisgis.views.geocognition.Export"
-			class="org.orbisgis.views.geocognition.actions.Export"
-			menu-id="org.orbisgis.views.geocognition.Synchronize"/>
-		<action id="org.orbisgis.views.geocognition.actions.Import" text="Import"
-			menu-group="org.orbisgis.views.geocognition.Export"
-			class="org.orbisgis.views.geocognition.actions.Import"
+		<action id="org.orbisgis.views.geocognition.actions.SyncWithFile" 
+			text="Synchronize with file"
+			menu-group="org.orbisgis.views.geocognition.SyncAdvanced"
+			class="org.orbisgis.views.geocognition.actions.SyncWithFile"
 			menu-id="org.orbisgis.views.geocognition.Synchronize"/>
 		<action id="org.orbisgis.views.geocognition.actions.ExportToFile"
 			text="Export to file"

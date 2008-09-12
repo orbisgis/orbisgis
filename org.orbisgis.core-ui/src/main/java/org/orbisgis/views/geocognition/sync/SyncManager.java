@@ -21,9 +21,6 @@ public class SyncManager {
 	private GeocognitionElementDecorator localRoot, remoteRoot;
 	private TreeElement differenceRoot;
 
-	// Determines if the remote source is editable
-	private boolean remoteEditable;
-
 	// Contains the progress percentage of the synchronization
 	private float progress;
 
@@ -52,9 +49,8 @@ public class SyncManager {
 	 *             <code>null</code>
 	 */
 	public void compare(GeocognitionElement local, GeocognitionElement remote,
-			boolean remoteEditable, ArrayList<IdPath> filter)
-			throws IllegalArgumentException {
-		compare(local, remote, remoteEditable, filter, null);
+			ArrayList<IdPath> filter) throws IllegalArgumentException {
+		compare(local, remote, filter, null);
 	}
 
 	/**
@@ -73,8 +69,8 @@ public class SyncManager {
 	 *             <code>null</code>
 	 */
 	public void compare(GeocognitionElement local, GeocognitionElement remote,
-			boolean remoteEditable, ArrayList<IdPath> filter,
-			IProgressMonitor pm) throws IllegalArgumentException {
+			ArrayList<IdPath> filter, IProgressMonitor pm)
+			throws IllegalArgumentException {
 		if (local == null || remote == null) {
 			throw new IllegalArgumentException("Both trees must not be null");
 		} else if (!local.getId().equalsIgnoreCase(remote.getId())) {
@@ -82,7 +78,6 @@ public class SyncManager {
 		}
 
 		// Initialize attributes
-		this.remoteEditable = remoteEditable;
 		this.filterPaths = filter;
 		added = new HashSet<IdPath>();
 		deleted = new HashSet<IdPath>();
@@ -509,10 +504,6 @@ public class SyncManager {
 	 *             if the remote tree is not editable
 	 */
 	public void commit(IdPath path) {
-		if (!remoteEditable) {
-			throw new UnsupportedOperationException("The tree is not editable");
-		}
-
 		IdPath syncPath;
 		if (isAdded(path)) {
 			try {
@@ -808,15 +799,6 @@ public class SyncManager {
 	}
 
 	/**
-	 * Determines if the remote root is editable
-	 * 
-	 * @return true if the remote root is editable, false otherwise
-	 */
-	public boolean isRemoteEditable() {
-		return remoteEditable;
-	}
-
-	/**
 	 * Gets the difference tree
 	 * 
 	 * @return the difference tree
@@ -887,7 +869,8 @@ public class SyncManager {
 	 *            the element where the search must be performed
 	 * @param path
 	 *            the IdPath of the element to find
-	 * @param n the last element of the IdPath to use <b>(exlcusive index)</b>
+	 * @param n
+	 *            the last element of the IdPath to use <b>(exlcusive index)</b>
 	 * @return the element with the specified IdPath in the given root or null
 	 *         if there's no such element
 	 */

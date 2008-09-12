@@ -63,7 +63,7 @@ public abstract class AbstractSyncAction implements IGeocognitionGroupAction {
 				for (int i = 0; i < elements.length; i++) {
 					filter.add(new IdPath(elements[i].getIdPath()));
 				}
-				
+
 			}
 
 			// Show panel

@@ -79,7 +79,7 @@ public class ComparePanel extends AbstractUIPanel {
 	private GeocognitionElement local, remote;
 	private Object remoteSource;
 	private ArrayList<IdPath> filterPaths;
-	private boolean localEditable, remoteEditable;
+	private int currentSynchronization;
 
 	/**
 	 * Creates a new CompareSplitPane
@@ -185,8 +185,7 @@ public class ComparePanel extends AbstractUIPanel {
 	 *            SYNCHRONIZATION constants.
 	 * 
 	 * @param filter
-	 *            arraylist with the elements to show in the synchronization
-	 *            panel
+	 *            list with the elements to show in the synchronization panel
 	 * 
 	 * @throws IOException
 	 *             if the remote source cannot be readed
@@ -197,53 +196,34 @@ public class ComparePanel extends AbstractUIPanel {
 	public void setModel(GeocognitionElement localElement, Object remoteObject,
 			int syncType, ArrayList<IdPath> filter) throws IOException,
 			PersistenceException {
-		boolean localEditable = (syncType & IMPORT) != 0;
-		boolean remoteEditable = isSourceEditable(remoteObject)
-				&& (syncType & EXPORT) != 0;
-		setModel(localElement, remoteObject, localEditable, remoteEditable,
-				filter);
-	}
-
-	/**
-	 * Sets the model of the comparing pane
-	 * 
-	 * @param localElement
-	 *            element to compare
-	 * @param remoteObject
-	 *            element to compare
-	 * @param localEditable
-	 *            determines if the local element is editable
-	 * @param remoteEditable
-	 *            determines if the remote element is editable
-	 * @param filter
-	 *            arraylist with the elements to show in the synchronization
-	 *            panel
-	 * 
-	 * @throws IOException
-	 *             if the remote source cannot be readed
-	 * @throws PersistenceException
-	 *             if the remote element cannot be created from the remote
-	 *             source
-	 */
-	private void setModel(GeocognitionElement localElement,
-			Object remoteObject, boolean localEditable, boolean remoteEditable,
-			ArrayList<IdPath> filter) throws IOException, PersistenceException {
+		currentSynchronization = syncType;
 		filterPaths = filter;
 		remoteSource = remoteObject;
 
-		this.localEditable = localEditable;
-		this.remoteEditable = remoteEditable;
-
 		local = localElement;
-		remote = createTreeFromResource(remoteSource);
+		if ((currentSynchronization & IMPORT) != 0) {
+			remote = createTreeFromResource(remoteObject);
+		} else if ((currentSynchronization & EXPORT) != 0) {
+			if (isSourceEditable(remoteObject)) {
+				try {
+					remote = createTreeFromResource(remoteObject);
+				} catch (IOException e) {
+					Geocognition gc = Services.getService(Geocognition.class);
+					remote = gc.createFolder(local.getId());
+				}
+			} else {
+				Geocognition gc = Services.getService(Geocognition.class);
+				remote = gc.createFolder(local.getId());
+			}
+		}
 
-		// Show panel
-		if (local == remote) {
-			manager.compare(local, remote, remoteEditable, filter);
+		if (localElement == remoteObject) {
+			manager.compare(local, remote, filter);
 		} else {
 			BackgroundManager bm = Services.getService(BackgroundManager.class);
 			bm.backgroundOperation(new SynchronizingJob());
 		}
+
 		treePanel.setModel(manager);
 		currentEditor = editors.get(0);
 		currentEditor.setModel(null, null);
@@ -342,8 +322,7 @@ public class ComparePanel extends AbstractUIPanel {
 		Geocognition geocognition = Services.getService(Geocognition.class);
 		local = geocognition.getGeocognitionElement(local.getIdPath());
 		local = local.cloneElement();
-		setModel(local, remoteSource, localEditable, remoteEditable,
-				filterPaths);
+		setModel(local, remoteSource, currentSynchronization, filterPaths);
 	}
 
 	/**
@@ -404,6 +383,9 @@ public class ComparePanel extends AbstractUIPanel {
 					currentEditor = editor;
 					split.setRightComponent(currentEditor.getComponent());
 
+					boolean localEditable = (currentSynchronization & IMPORT) != 0;
+					boolean remoteEditable = ((currentSynchronization & EXPORT) != 0)
+							&& isSourceEditable(remoteSource);
 					currentEditor.setModel(local, remote);
 					currentEditor.setEnabledLeft(localEditable);
 					currentEditor.setEnabledRight(remoteEditable);
@@ -586,16 +568,31 @@ public class ComparePanel extends AbstractUIPanel {
 					}
 				}
 
-				if (manager.isRemoteEditable()) {
+				boolean noActionVisible = true;
+				if ((currentSynchronization & EXPORT) != 0
+						&& isSourceEditable(remoteSource)) {
+					noActionVisible &= (!added && !deleted && !changed);
 					addToFile.setVisible(added);
 					removeFromFile.setVisible(deleted);
 					overrideInFile.setVisible(changed);
+				} else {
+					addToFile.setVisible(false);
+					removeFromFile.setVisible(false);
+					overrideInFile.setVisible(false);
 				}
 
-				addToGeocognition.setVisible(deleted);
-				removeFromGeocognition.setVisible(added);
-				overrideInGeocognition.setVisible(changed);
-				noAction.setVisible(!deleted && !added && !changed);
+				if ((currentSynchronization & IMPORT) != 0) {
+					noActionVisible &= (!added && !deleted && !changed);
+					addToGeocognition.setVisible(deleted);
+					removeFromGeocognition.setVisible(added);
+					overrideInGeocognition.setVisible(changed);
+				} else {
+					addToGeocognition.setVisible(false);
+					removeFromGeocognition.setVisible(false);
+					overrideInGeocognition.setVisible(false);
+				}
+
+				noAction.setVisible(noActionVisible);
 
 				popup.show(e.getComponent(), e.getX(), e.getY());
 			}
@@ -699,7 +696,7 @@ public class ComparePanel extends AbstractUIPanel {
 
 		@Override
 		public void run(IProgressMonitor pm) {
-			manager.compare(local, remote, remoteEditable, filterPaths, pm);
+			manager.compare(local, remote, filterPaths, pm);
 		}
 	}
 
