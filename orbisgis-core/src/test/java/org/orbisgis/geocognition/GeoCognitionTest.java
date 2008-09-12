@@ -142,6 +142,22 @@ public class GeoCognitionTest extends AbstractGeocognitionTest {
 		mc.close(null);
 	}
 
+	public void testMapContextIsModifed() throws Exception {
+		MapContext mc = new DefaultMapContext();
+		mc.open(null);
+		DataManager dm = (DataManager) Services
+				.getService("org.orbisgis.DataManager");
+		ILayer lyr = dm.createLayer(new File("src/test/resources/bv_sap.shp"));
+		mc.getLayerModel().addLayer(lyr);
+		mc.getLayerModel().addLayer(dm.createLayerCollection("group"));
+		mc.close(null);
+		gc.addElement("org.mymap", mc);
+		GeocognitionElement elem = gc.getGeocognitionElement("org.mymap");
+		elem.open(null);
+		assertTrue(!elem.isModified());
+		elem.close(null);
+	}
+
 	public void testRestoreUnsupportedElement() throws Exception {
 		// read geocognition
 		InputStream geocogStream = GeoCognitionTest.class

@@ -48,7 +48,7 @@ import org.orbisgis.views.table.Table;
 
 public class ShowInTable implements ILayerAction {
 	public boolean accepts(ILayer layer) {
-		return true;
+		return layer.getDataSource() != null;
 	}
 
 	public boolean acceptsSelectionCount(int selectionCount) {
@@ -64,11 +64,13 @@ public class ShowInTable implements ILayerAction {
 			try {
 				table.setContents(resource.getDataSource());
 			} catch (DriverException e) {
-				Services.getErrorManager().error("Cannot show contents in table:"
-						+ resource.getName(), e);
+				Services.getErrorManager().error(
+						"Cannot show contents in table:" + resource.getName(),
+						e);
 			}
 		} else {
-			Services.getErrorManager().error("Cannot find a table to show contents");
+			Services.getErrorManager().error(
+					"Cannot find a table to show contents");
 		}
 	}
 }

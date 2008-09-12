@@ -89,7 +89,8 @@ public class GeocognitionMapContext extends AbstractExtensionElement implements
 	public boolean isModified() {
 		ILayer[] layers = mapContext.getLayerModel().getLayersRecursively();
 		for (ILayer layer : layers) {
-			if (layer.getDataSource().isModified()) {
+			if ((layer.getDataSource() != null)
+					&& layer.getDataSource().isModified()) {
 				return true;
 			}
 		}
