@@ -166,15 +166,16 @@ abstract class AbstractClassifiedLegend extends AbstractCartoLegend implements
 	}
 
 	public void drawImage(Graphics2D g) {
-		String text = "Field: " + getClassificationField();
+		String text = getHeader();
 		Rectangle2D bounds = g.getFontMetrics().getStringBounds(text, g);
-		int start;
+		int start = 0;
 		if (getClassificationCount() > 0) {
 			LegendLine testLine = new LegendLine(getSymbols().get(0),
 					getLabels().get(0));
 			int firstLineWidth = testLine.getImageSize(g)[0];
 			start = (int) ((firstLineWidth - bounds.getWidth()) / 2);
-		} else {
+		}
+		if (start < 0) {
 			start = 0;
 		}
 		g.setColor(Color.black);
@@ -205,6 +206,10 @@ abstract class AbstractClassifiedLegend extends AbstractCartoLegend implements
 		g.setTransform(originalTrans);
 	}
 
+	private String getHeader() {
+		return "Field: " + getClassificationField();
+	}
+
 	public int[] getImageSize(Graphics2D g) {
 		int height = 0;
 		int width = 0;
@@ -221,9 +226,11 @@ abstract class AbstractClassifiedLegend extends AbstractCartoLegend implements
 			height += imageSize[1];
 			width = Math.max(width, imageSize[0]);
 		}
-		String text = getClassificationField();
-		Rectangle2D bounds = g.getFontMetrics().getStringBounds(text, g);
-		return new int[] { width, (int) (height + bounds.getHeight()) };
+		Rectangle2D bounds = g
+				.getFontMetrics(g.getFont().deriveFont(Font.BOLD))
+				.getStringBounds(getHeader(), g);
+		return new int[] { Math.max(width, (int) bounds.getWidth()),
+				(int) (height + bounds.getHeight()) };
 	}
 
 }
