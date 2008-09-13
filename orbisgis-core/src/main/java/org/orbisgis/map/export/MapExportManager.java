@@ -14,20 +14,24 @@ public interface MapExportManager {
 
 	/**
 	 * Exports the specified mapContext to svg format. The mapContext must be
-	 * open
+	 * open. It creates an image of the map and vectorial representations of the
+	 * legends in each of the layers, along with a graphical representation of
+	 * the specified scale
 	 * 
 	 * @param mapContext
 	 *            MapContext used to draw. Invisible layers won't be drawn
 	 * @param outStream
 	 *            Output stream to export to
 	 * @param width
-	 *            width of the map image to export
+	 *            width of the map image to export in centimeters
 	 * @param height
-	 *            height of the map image to export
+	 *            height of the map image to export in centimeters
 	 * @param extent
 	 *            extent of the map to export
 	 * @param scale
 	 *            Scale to draw
+	 * @param mapDpi
+	 *            Dots per inch of the map image
 	 * @throws UnsupportedEncodingException
 	 *             If the UTF-8 encoding is not supported
 	 * @throws IOException
@@ -36,18 +40,18 @@ public interface MapExportManager {
 	 * @throws DriverException
 	 *             If there is an error accessing any of the layers in the map
 	 */
-	void exportSVG(MapContext mapContext, OutputStream outStream, int width,
-			int height, Envelope extent, Scale scale)
+	void exportSVG(MapContext mapContext, OutputStream outStream, double width,
+			double height, Envelope extent, Scale scale, int mapDpi)
 			throws UnsupportedEncodingException, IOException,
 			IllegalArgumentException, DriverException;
 
 	/**
 	 * @see #exportSVG(MapContext, OutputStream, int, int, Envelope)
 	 */
-	void exportSVG(MapContext mapContext, OutputStream outStream, int width,
-			int height, Envelope extent, Scale scale, IProgressMonitor pm)
-			throws UnsupportedEncodingException, IOException,
-			IllegalArgumentException, DriverException;
+	void exportSVG(MapContext mapContext, OutputStream outStream, double width,
+			double height, Envelope extent, Scale scale, int mapDpi,
+			IProgressMonitor pm) throws UnsupportedEncodingException,
+			IOException, IllegalArgumentException, DriverException;
 
 	/**
 	 * Adds a new scale to the export manager

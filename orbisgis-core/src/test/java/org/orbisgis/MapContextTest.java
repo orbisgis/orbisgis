@@ -342,13 +342,13 @@ public class MapContextTest extends AbstractTest {
 		Envelope envelope = mc.getLayerModel().getEnvelope();
 		FileOutputStream outStream = new FileOutputStream(new File(
 				"/tmp/output.svg"));
-		mem.exportSVG(mc, outStream, 600, 600, new Envelope(new Coordinate(
-				306260, 2251944), new Coordinate(310000, 2253464)), null);
+		mem.exportSVG(mc, outStream, 10, 10, new Envelope(new Coordinate(
+				306260, 2251944), new Coordinate(310000, 2253464)), null, 72);
 		outStream.close();
 		mc.close(null);
 
 		try {
-			mem.exportSVG(mc, outStream, 300, 300, envelope, null);
+			mem.exportSVG(mc, outStream, 10, 10, envelope, null, 72);
 			assertTrue(false);
 		} catch (IllegalArgumentException e) {
 		}

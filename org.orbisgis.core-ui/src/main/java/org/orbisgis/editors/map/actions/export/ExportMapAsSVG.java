@@ -78,11 +78,15 @@ public class ExportMapAsSVG implements IEditorAction {
 
 		ScaleEditor scaleEditor = new ScaleEditor(mapEditor.getMapTransform()
 				.getScaleDenominator());
-		UIPanel[] wizards = new UIPanel[] { scaleEditor, outfilePanel };
+		ImageOutputConf imageOutputConf = new ImageOutputConf();
+		UIPanel[] wizards = new UIPanel[] { imageOutputConf, scaleEditor,
+				outfilePanel };
 		if (UIFactory.showDialog(wizards)) {
 			BackgroundManager bm = Services.getService(BackgroundManager.class);
-			bm.backgroundOperation(new ExportJob(mc, envelope, outfilePanel
-					.getSelectedFile(), scaleEditor.getScale()));
+			bm.backgroundOperation(new ExportJob(imageOutputConf
+					.getImageWidth(), imageOutputConf.getImageHeight(),
+					imageOutputConf.getImageResolution(), mc, envelope,
+					outfilePanel.getSelectedFile(), scaleEditor.getScale()));
 		}
 	}
 
@@ -101,8 +105,15 @@ public class ExportMapAsSVG implements IEditorAction {
 		private MapContext mc;
 		private File outputFile;
 		private Scale scale;
+		private double imageWidth;
+		private double imageHeight;
+		private int imageDPI;
 
-		public ExportJob(MapContext mc, Envelope envelope, File outputFile, Scale scale) {
+		public ExportJob(double imageWidth, double imageHeight, int imageDPI,
+				MapContext mc, Envelope envelope, File outputFile, Scale scale) {
+			this.imageWidth = imageWidth;
+			this.imageHeight = imageHeight;
+			this.imageDPI = imageDPI;
 			this.mc = mc;
 			this.envelope = envelope;
 			this.outputFile = outputFile;
@@ -119,8 +130,8 @@ public class ExportMapAsSVG implements IEditorAction {
 			try {
 				MapExportManager mem = Services
 						.getService(MapExportManager.class);
-				mem.exportSVG(mc, new FileOutputStream(outputFile), 500, 500,
-						envelope, scale, pm);
+				mem.exportSVG(mc, new FileOutputStream(outputFile), imageWidth,
+						imageHeight, envelope, scale, imageDPI, pm);
 			} catch (UnsupportedEncodingException e) {
 				Services.getErrorManager().error("Cannot export", e);
 			} catch (IllegalArgumentException e) {

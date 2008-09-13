@@ -30,9 +30,16 @@ public class DefaultMapExportManager implements MapExportManager {
 
 	@Override
 	public void exportSVG(MapContext mapContext, OutputStream outStream,
-			int width, int height, Envelope extent, Scale scale,
+			double width, double height, Envelope extent, Scale scale, int dpi,
 			IProgressMonitor pm) throws UnsupportedEncodingException,
 			IOException, DriverException {
+
+		// Calculate the number of pixels to have the desired dpi when the image
+		// has the specified size
+		double dpcm = 0.01 * dpi / 0.0254;
+		int pixelWidth = (int) (width * dpcm);
+		int pixelHeight = (int) (height * dpcm);
+
 		if (!mapContext.isOpen()) {
 			throw new IllegalArgumentException(
 					"The map must be open to call this method");
@@ -50,18 +57,22 @@ public class DefaultMapExportManager implements MapExportManager {
 		// Write map image
 		MapTransform mt = new MapTransform();
 		mt.setExtent(extent);
-		BufferedImage img = new BufferedImage(width, height,
+		BufferedImage bi = new BufferedImage(pixelWidth, pixelHeight,
 				BufferedImage.TYPE_INT_ARGB);
-		mt.setImage(img);
-		svgg.clipRect(0, 0, width, height);
-		r.draw(svgg, width, height, mt.getAdjustedExtent(), mapContext
-				.getLayerModel(), pm);
+		mt.setImage(bi);
+		r.draw(bi.createGraphics(), pixelWidth, pixelHeight, mt
+				.getAdjustedExtent(), mapContext.getLayerModel(), pm);
+
+		double batikDefaultDPcm = 0.01 * 90 / 0.0254;
+		int svgWidth = (int) (width * batikDefaultDPcm);
+		int svgHeight = (int) (height * batikDefaultDPcm);
+		svgg.drawImage(bi, 0, 0, svgWidth, svgHeight, null);
 
 		// write legends
 		svgg.setClip(null);
 		ILayer[] layers = mapContext.getLayerModel().getLayersRecursively();
 
-		svgg.translate(0, height + 50);
+		svgg.translate(0, svgHeight + 50);
 		int maxHeight = 0;
 		for (int i = 0; i < layers.length; i++) {
 			svgg.translate(0, maxHeight + 30);
@@ -98,11 +109,11 @@ public class DefaultMapExportManager implements MapExportManager {
 	}
 
 	@Override
-	public void exportSVG(MapContext mc, OutputStream outputStream, int width,
-			int height, Envelope envelope, Scale scale)
+	public void exportSVG(MapContext mc, OutputStream outputStream,
+			double width, double height, Envelope envelope, Scale scale, int dpi)
 			throws UnsupportedEncodingException, IOException,
 			IllegalArgumentException, DriverException {
-		exportSVG(mc, outputStream, width, height, envelope, scale,
+		exportSVG(mc, outputStream, width, height, envelope, scale, dpi,
 				new NullProgressMonitor());
 	}
 
