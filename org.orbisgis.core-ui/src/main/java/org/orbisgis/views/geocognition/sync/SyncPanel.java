@@ -226,11 +226,6 @@ public class SyncPanel extends AbstractUIPanel {
 			treePanel.installAdvancedFeatures();
 		}
 
-		// Set empty editor
-		currentEditor = editors.get(0);
-		currentEditor.setModel(null, null);
-		splitPane.setRightComponent(currentEditor.getComponent());
-
 		synchronize();
 	}
 
@@ -246,6 +241,11 @@ public class SyncPanel extends AbstractUIPanel {
 	 *             if the local geocognition cannot be readed
 	 */
 	public void synchronize() throws IOException, PersistenceException {
+		// Set empty editor
+		currentEditor = editors.get(0);
+		currentEditor.setModel(null, null);
+		splitPane.setRightComponent(currentEditor.getComponent());
+
 		// Get local and remote elements
 		if ((synchronizationType & IMPORT) != 0) {
 			remoteRoot = createTreeFromResource(remoteSource);
