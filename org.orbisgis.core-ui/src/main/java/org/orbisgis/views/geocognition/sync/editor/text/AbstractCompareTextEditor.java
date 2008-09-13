@@ -79,6 +79,7 @@ public abstract class AbstractCompareTextEditor extends JPanel implements
 	public static final int PRESERVE_RIGHT_POSITION = 1;
 	public static final int PRESERVE_LEFT_POSITION = 2;
 	public static final int NO_PRESERVE_POSITION = 0;
+	private static final Dimension BUTTON_SIZE = new Dimension(30, 30);
 
 	// Interface
 	private CompareTextPane rightPane, leftPane;
@@ -132,18 +133,24 @@ public abstract class AbstractCompareTextEditor extends JPanel implements
 
 		allToLeft = new JButton(ALL_TO_LEFT);
 		allToLeft.setToolTipText("Copy all changes to the local element");
+		allToLeft.setPreferredSize(BUTTON_SIZE);
 		allToRight = new JButton(ALL_TO_RIGHT);
 		allToRight.setToolTipText("Copy all changes to the remote element");
+		allToRight.setPreferredSize(BUTTON_SIZE);
 		selectedToLeft = new JButton(SELECTED_TO_LEFT);
 		selectedToLeft
 				.setToolTipText("Copy selected change to the local element");
+		selectedToLeft.setPreferredSize(BUTTON_SIZE);
 		selectedToRight = new JButton(SELECTED_TO_RIGHT);
 		selectedToRight
 				.setToolTipText("Copy selected change to the remote element");
+		selectedToRight.setPreferredSize(BUTTON_SIZE);
 		saveLeft = new JButton(SAVE_LEFT);
 		saveLeft.setToolTipText("Save local element");
+		saveLeft.setPreferredSize(BUTTON_SIZE);
 		saveRight = new JButton(SAVE_RIGHT);
 		saveRight.setToolTipText("Save remote element");
+		saveRight.setPreferredSize(BUTTON_SIZE);
 
 		addListeners();
 		addComponents();

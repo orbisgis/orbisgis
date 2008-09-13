@@ -115,7 +115,8 @@ public class CompareTreeModel implements TreeModel {
 	public boolean isLeaf(Object node) {
 		if (node instanceof TreeElement) {
 			TreeElement n = (TreeElement) node;
-			return !n.isFolder();
+
+			return !n.isFolder() || (n.isFolder() && n.getElementCount() == 0);
 		} else {
 			return true;
 		}

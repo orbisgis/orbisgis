@@ -34,6 +34,10 @@ public class CompareTreeRenderer extends DefaultTreeCellRenderer {
 			.getIcon("blended_leftarrow_cross.png");
 	private static final ImageIcon LEFT = IconLoader
 			.getIcon("blended_leftarrow.png");
+	private static final ImageIcon BOTH_CROSS = IconLoader
+			.getIcon("blended_both_cross.png");
+	private static final ImageIcon BOTH = IconLoader
+			.getIcon("blended_both.png");
 
 	private static final int ADDITIONAL_ICON_WIDTH = 5;
 	private static final int BLENDED_ICON_EXPANSION = 9;
@@ -60,8 +64,7 @@ public class CompareTreeRenderer extends DefaultTreeCellRenderer {
 			// Get foreground icon
 			IdPath path = element.getIdPath();
 
-			if (synchronizationType == ComparePanel.IMPORT
-					|| synchronizationType == ComparePanel.SYNCHRONIZATION) {
+			if (synchronizationType == ComparePanel.IMPORT) {
 				if (manager.isAdded(path)) {
 					foreground = LEFT_MINUS;
 				} else if (manager.isDeleted(path)) {
@@ -80,6 +83,16 @@ public class CompareTreeRenderer extends DefaultTreeCellRenderer {
 					foreground = RIGHT;
 				} else if (manager.isConflict(path)) {
 					foreground = RIGHT_CROSS;
+				}
+			} else if (synchronizationType == ComparePanel.SYNCHRONIZATION) {
+				if (manager.isAdded(path)) {
+					foreground = RIGHT_PLUS;
+				} else if (manager.isDeleted(path)) {
+					foreground = LEFT_PLUS;
+				} else if (manager.isModified(path)) {
+					foreground = BOTH;
+				} else if (manager.isConflict(path)) {
+					foreground = BOTH_CROSS;
 				}
 			} else {
 				Services.getErrorManager().error("bug!",
@@ -174,7 +187,23 @@ public class CompareTreeRenderer extends DefaultTreeCellRenderer {
 
 		@Override
 		public int getIconWidth() {
-			return super.getIconWidth() + BLENDED_ICON_EXPANSION;
+			if (foreground != null) {
+				return foreground.getWidth(getImageObserver())
+						+ BLENDED_ICON_EXPANSION;
+			} else {
+				return super.getIconWidth();
+			}
+		}
+
+		@Override
+		public int getIconHeight() {
+			if (foreground != null) {
+				return Math.max(foreground.getHeight(getImageObserver()),
+						foreground.getHeight(getImageObserver()));
+
+			} else {
+				return super.getIconWidth();
+			}
 		}
 	}
 

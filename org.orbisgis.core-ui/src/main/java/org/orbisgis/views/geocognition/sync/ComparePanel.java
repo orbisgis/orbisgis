@@ -39,10 +39,10 @@ import org.sif.AbstractUIPanel;
 
 public class ComparePanel extends AbstractUIPanel {
 	// String constants for the closing dialogs
-	private static final String LEFT_SAVE_BEFORE_CLOSING_TEXT = "The left resource has been modified. "
+	private static final String LEFT_SAVE_BEFORE_CLOSING_TEXT = "Editor will be closed. The left resource has been modified. "
 			+ "Save changes?";
 	private static final String LEFT_SAVE_BEFORE_CLOSING_TITLE = "Save left resource";
-	private static final String RIGHT_SAVE_BEFORE_CLOSING_TEXT = "The right resource has been modified. "
+	private static final String RIGHT_SAVE_BEFORE_CLOSING_TEXT = "Editor will be closed. The right resource has been modified. "
 			+ "Save changes?";
 	private static final String RIGHT_SAVE_BEFORE_CLOSING_TITLE = "Save right resource";
 
@@ -186,7 +186,6 @@ public class ComparePanel extends AbstractUIPanel {
 		// Split pane
 		split = new JSplitPane();
 		split.setLeftComponent(treePanel);
-		setEditor(null);
 
 		// Put all together
 		panel = new JPanel();
@@ -213,18 +212,23 @@ public class ComparePanel extends AbstractUIPanel {
 	 * @throws PersistenceException
 	 *             if the remote element cannot be created from the remote
 	 *             source
+	 * @throws GeocognitionException
 	 */
 	public void setModel(GeocognitionElement localElement, Object remoteObject,
 			int syncType, ArrayList<IdPath> filter) throws IOException,
-			PersistenceException {
-		synchronizationType = syncType;
+			PersistenceException, GeocognitionException {
+
 		filterPaths = filter;
 		remoteSource = remoteObject;
+		local = localElement.cloneElement();
 
-		local = localElement;
-		if ((synchronizationType & IMPORT) != 0) {
+		if (syncType == SYNCHRONIZATION) {
+			treePanel.installAdvancedFeatures();
+		}
+
+		if ((syncType & IMPORT) != 0) {
 			remote = createTreeFromResource(remoteObject);
-		} else if ((synchronizationType & EXPORT) != 0) {
+		} else if ((syncType & EXPORT) != 0) {
 			if (isSourceEditable(remoteObject)) {
 				try {
 					remote = createTreeFromResource(remoteObject);
@@ -245,10 +249,11 @@ public class ComparePanel extends AbstractUIPanel {
 			bm.backgroundOperation(new SynchronizingJob());
 		}
 
-		treePanel.setModel(manager, synchronizationType);
 		currentEditor = editors.get(0);
 		currentEditor.setModel(null, null);
 		split.setRightComponent(currentEditor.getComponent());
+
+		synchronize(syncType);
 	}
 
 	/**
@@ -338,12 +343,38 @@ public class ComparePanel extends AbstractUIPanel {
 	 * @throws GeocognitionException
 	 *             if the local geocognition cannot be readed
 	 */
-	public void synchronize() throws IOException, PersistenceException,
+	public boolean synchronize(int syncType) throws IOException,
+			PersistenceException, GeocognitionException {
+		if (closeEditor()) {
+			synchronizationType = syncType;
+			treePanel.setModel(manager, synchronizationType);
+			if (currentEditor != null) {
+				boolean localEditable = (synchronizationType & IMPORT) != 0;
+				boolean remoteEditable = ((synchronizationType & EXPORT) != 0)
+						&& isSourceEditable(remoteSource);
+				currentEditor.setEnabledLeft(localEditable);
+				currentEditor.setEnabledRight(remoteEditable);
+			}
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	/**
+	 * Resynchronizes the panel with the local geocognition and the remote
+	 * source
+	 * 
+	 * @throws IOException
+	 *             if the remote source cannot be readed
+	 * @throws PersistenceException
+	 *             if the remote tree cannot be created
+	 * @throws GeocognitionException
+	 *             if the local geocognition cannot be readed
+	 */
+	public boolean synchronize() throws IOException, PersistenceException,
 			GeocognitionException {
-		Geocognition geocognition = Services.getService(Geocognition.class);
-		local = geocognition.getGeocognitionElement(local.getIdPath());
-		local = local.cloneElement();
-		setModel(local, remoteSource, synchronizationType, filterPaths);
+		return synchronize(synchronizationType);
 	}
 
 	/**
