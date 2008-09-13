@@ -133,10 +133,11 @@ public class Difference {
 	public int hashCode() {
 		return deleted.hashCode() + added.hashCode();
 	}
+
 	/**
 	 * Returns a string representation of this difference.
 	 */
-
+	@Override
 	public String toString() {
 		StringBuffer buf = new StringBuffer();
 		buf.append("del: [" + getDeletedStart() + ", " + getDeletedEnd() + "]");

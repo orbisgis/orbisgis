@@ -48,7 +48,7 @@ public class SyncManager {
 	 *             if <code>local</code> or <code>root</code> parameters are
 	 *             <code>null</code>
 	 */
-	public void compare(GeocognitionElement local, GeocognitionElement remote,
+	void compare(GeocognitionElement local, GeocognitionElement remote,
 			ArrayList<IdPath> filter) throws IllegalArgumentException {
 		compare(local, remote, filter, null);
 	}
@@ -68,7 +68,7 @@ public class SyncManager {
 	 *             if <code>local</code> or <code>root</code> parameters are
 	 *             <code>null</code>
 	 */
-	public void compare(GeocognitionElement local, GeocognitionElement remote,
+	void compare(GeocognitionElement local, GeocognitionElement remote,
 			ArrayList<IdPath> filter, IProgressMonitor pm)
 			throws IllegalArgumentException {
 		if (local == null || remote == null) {
@@ -521,8 +521,8 @@ public class SyncManager {
 		} else if (isDeleted(path)) {
 			syncPath = delete(remoteRoot, path);
 		} else {
-			syncPath = null;
 			// Perform commit over the children
+			syncPath = null;
 			TreeElement last = differenceRoot.find(path);
 			ArrayList<String> ids = new ArrayList<String>();
 			for (int i = 0; i < last.getElementCount(); i++) {
@@ -564,8 +564,8 @@ public class SyncManager {
 			}
 
 		} else {
-			syncPath = null;
 			// Perform update over the children
+			syncPath = null;
 			TreeElement last = differenceRoot.find(path);
 			ArrayList<String> ids = new ArrayList<String>();
 			for (int i = 0; i < last.getElementCount(); i++) {

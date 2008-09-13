@@ -8,11 +8,14 @@ import org.orbisgis.geocognition.GeocognitionElement;
 import org.orbisgis.views.geocognition.sync.IdPath;
 
 public class TreeElement {
-	private String id;
+	// Element attributes
 	private boolean isFolder;
-	private ArrayList<TreeElement> children;
 	private String typeId;
+	private String id;
+
+	// Hierachy attributes
 	private TreeElement parent;
+	private ArrayList<TreeElement> children;
 
 	/**
 	 * Create a new TreeElement from a GeocognitionElement
@@ -129,9 +132,9 @@ public class TreeElement {
 	 * 
 	 * @param path
 	 *            the path to the element
-	 * @param the
-	 *            number of elements of the path to use <b><code>n</code> is an
-	 *            exclusive index</b>
+	 * @param n
+	 *            the number of elements of the path to use <b><code>n</code> is
+	 *            an exclusive index</b>
 	 * @return the descendant represented by the path
 	 */
 	public TreeElement find(IdPath path, int n) {
@@ -173,10 +176,20 @@ public class TreeElement {
 		children.clear();
 	}
 
+	/**
+	 * Gets the type of the element represented by this tree element
+	 * 
+	 * @return the type of the element
+	 */
 	public String getTypeId() {
 		return typeId;
 	}
 
+	/**
+	 * Gets the id path of this tree element
+	 * 
+	 * @return the id path of this tree element
+	 */
 	public IdPath getIdPath() {
 		IdPath path = new IdPath();
 		path.addLast(getId());

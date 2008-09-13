@@ -6,7 +6,7 @@ import org.orbisgis.Services;
 import org.orbisgis.geocognition.Geocognition;
 import org.orbisgis.geocognition.GeocognitionElement;
 import org.orbisgis.pluginManager.ui.OpenFilePanel;
-import org.orbisgis.views.geocognition.sync.ComparePanel;
+import org.orbisgis.views.geocognition.sync.SyncPanel;
 import org.sif.UIFactory;
 
 public class ImportFromFile extends AbstractSyncAction {
@@ -21,7 +21,7 @@ public class ImportFromFile extends AbstractSyncAction {
 		if (UIFactory.showDialog(fp)) {
 			try {
 				showSynchronizePanel(geocognition, elements, fp
-						.getSelectedFile(), ComparePanel.IMPORT);
+						.getSelectedFile(), SyncPanel.IMPORT);
 			} catch (IOException e) {
 				Services.getErrorManager().error(
 						"The file cannot be opened for reading", e);

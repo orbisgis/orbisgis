@@ -11,21 +11,21 @@ public class CompareTextEditor extends AbstractCompareTextEditor {
 
 	@Override
 	protected String getLeftContent() throws GeocognitionException {
-		return originalLeft.getXMLContent();
+		return leftElement.getXMLContent();
 	}
 
 	@Override
 	protected String getRightContent() throws GeocognitionException {
-		return originalRight.getXMLContent();
+		return rightElement.getXMLContent();
 	}
 
 	@Override
 	protected void setLeftContent(String content) throws GeocognitionException {
-		originalLeft.setXMLContent(content);
+		leftElement.setXMLContent(content);
 	}
 
 	@Override
 	protected void setRightContent(String content) throws GeocognitionException {
-		originalRight.setXMLContent(content);
+		rightElement.setXMLContent(content);
 	}
 }

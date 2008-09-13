@@ -8,7 +8,7 @@ import org.orbisgis.Services;
 import org.orbisgis.geocognition.Geocognition;
 import org.orbisgis.geocognition.GeocognitionElement;
 import org.orbisgis.ui.sif.AskValue;
-import org.orbisgis.views.geocognition.sync.ComparePanel;
+import org.orbisgis.views.geocognition.sync.SyncPanel;
 import org.sif.UIFactory;
 
 public class ImportFromURL extends AbstractSyncAction {
@@ -20,7 +20,7 @@ public class ImportFromURL extends AbstractSyncAction {
 		if (UIFactory.showDialog(av)) {
 			try {
 				URL url = new URL(av.getValue());
-				showSynchronizePanel(geocognition, elements, url, ComparePanel.IMPORT);
+				showSynchronizePanel(geocognition, elements, url, SyncPanel.IMPORT);
 			} catch (MalformedURLException e) {
 				Services.getErrorManager().error(
 						"The given URL is not a valid one", e);

@@ -14,14 +14,13 @@ import org.orbisgis.Services;
 import org.orbisgis.editor.IEditor;
 import org.orbisgis.geocognition.Geocognition;
 import org.orbisgis.geocognition.GeocognitionElement;
-import org.orbisgis.geocognition.mapContext.GeocognitionException;
 import org.orbisgis.pluginManager.background.BackgroundJob;
 import org.orbisgis.pluginManager.background.BackgroundManager;
 import org.orbisgis.progress.IProgressMonitor;
 import org.orbisgis.views.editor.EditorManager;
 import org.orbisgis.views.geocognition.action.IGeocognitionGroupAction;
-import org.orbisgis.views.geocognition.sync.ComparePanel;
 import org.orbisgis.views.geocognition.sync.IdPath;
+import org.orbisgis.views.geocognition.sync.SyncPanel;
 import org.sif.UIFactory;
 
 public abstract class AbstractSyncAction implements IGeocognitionGroupAction {
@@ -53,7 +52,7 @@ public abstract class AbstractSyncAction implements IGeocognitionGroupAction {
 		}
 
 		try {
-			GeocognitionElement local = geocognition.getRoot().cloneElement();
+			GeocognitionElement local = geocognition.getRoot();
 			ArrayList<IdPath> filter;
 
 			if (elements.length == 0) {
@@ -67,7 +66,7 @@ public abstract class AbstractSyncAction implements IGeocognitionGroupAction {
 			}
 
 			// Show panel
-			ComparePanel panel = new ComparePanel();
+			SyncPanel panel = new SyncPanel();
 			panel.setModel(local, local, syncType, filter);
 			panel.setModel(local, remoteSource, syncType, filter);
 			if (UIFactory.showDialog(panel)) {
@@ -80,18 +79,15 @@ public abstract class AbstractSyncAction implements IGeocognitionGroupAction {
 			Services.getErrorManager().error(
 					"The file cannot be readed. Probably it's not a "
 							+ "valid geocognition xml file", e);
-		} catch (GeocognitionException e) {
-			Services.getErrorManager().error(
-					"The local geocognition cannot be synchronized", e);
 		}
 	}
 
 	private class SavingJob implements BackgroundJob {
 		private Object remoteSource;
 		private Geocognition geocognition;
-		private ComparePanel panel;
+		private SyncPanel panel;
 
-		private SavingJob(Object rem, Geocognition g, ComparePanel p) {
+		private SavingJob(Object rem, Geocognition g, SyncPanel p) {
 			remoteSource = rem;
 			geocognition = g;
 			panel = p;

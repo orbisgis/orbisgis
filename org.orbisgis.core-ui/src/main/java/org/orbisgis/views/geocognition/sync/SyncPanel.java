@@ -37,12 +37,12 @@ import org.orbisgis.views.geocognition.sync.tree.TreeElement;
 import org.orbisgis.views.geocognition.wizard.EPGeocognitionWizardHelper;
 import org.sif.AbstractUIPanel;
 
-public class ComparePanel extends AbstractUIPanel {
+public class SyncPanel extends AbstractUIPanel {
 	// String constants for the closing dialogs
-	private static final String LEFT_SAVE_BEFORE_CLOSING_TEXT = "Editor will be closed. The left resource has been modified. "
+	private static final String LEFT_SAVE_BEFORE_CLOSING_TEXT = "Editor will be closed. The local geocognition has been modified. "
 			+ "Save changes?";
 	private static final String LEFT_SAVE_BEFORE_CLOSING_TITLE = "Save left resource";
-	private static final String RIGHT_SAVE_BEFORE_CLOSING_TEXT = "Editor will be closed. The right resource has been modified. "
+	private static final String RIGHT_SAVE_BEFORE_CLOSING_TEXT = "Editor will be closed. The remote file has been modified. "
 			+ "Save changes?";
 	private static final String RIGHT_SAVE_BEFORE_CLOSING_TITLE = "Save right resource";
 
@@ -74,23 +74,20 @@ public class ComparePanel extends AbstractUIPanel {
 	private JMenuItem addToGeocognition, addToFile, removeFromGeocognition,
 			removeFromFile, overrideInGeocognition, overrideInFile,
 			changeGeocognition, changeFile, noAction;
-	private JSplitPane split;
-	private JPanel panel;
+	private JSplitPane splitPane;
+	private JPanel rootPanel;
 
 	// Model
 	private SyncManager manager;
-	private GeocognitionElement local, remote;
+	private GeocognitionElement localRoot, remoteRoot;
 	private Object remoteSource;
 	private ArrayList<IdPath> filterPaths;
 	private int synchronizationType;
 
 	/**
 	 * Creates a new CompareSplitPane
-	 * 
-	 * @param eds
-	 *            the available editors for the comparing pane
 	 */
-	public ComparePanel() {
+	public SyncPanel() {
 		manager = new SyncManager();
 		manager.addSyncListener(new EditorSyncListener());
 
@@ -99,7 +96,7 @@ public class ComparePanel extends AbstractUIPanel {
 
 		// Left component
 		treePanel = new CompareTreePanel(this);
-		treePanel.addMouseListener(new CompareTreeListener());
+		treePanel.getTree().addMouseListener(new CompareTreeListener());
 		EPGeocognitionWizardHelper wh = new EPGeocognitionWizardHelper();
 		treePanel.setIconRenderers(wh.getElementRenderers());
 
@@ -184,13 +181,13 @@ public class ComparePanel extends AbstractUIPanel {
 		popup.add(noAction);
 
 		// Split pane
-		split = new JSplitPane();
-		split.setLeftComponent(treePanel);
+		splitPane = new JSplitPane();
+		splitPane.setLeftComponent(treePanel);
 
 		// Put all together
-		panel = new JPanel();
-		panel.setLayout(new BorderLayout());
-		panel.add(split, BorderLayout.CENTER);
+		rootPanel = new JPanel();
+		rootPanel.setLayout(new BorderLayout());
+		rootPanel.add(splitPane, BorderLayout.CENTER);
 	}
 
 	/**
@@ -216,44 +213,83 @@ public class ComparePanel extends AbstractUIPanel {
 	 */
 	public void setModel(GeocognitionElement localElement, Object remoteObject,
 			int syncType, ArrayList<IdPath> filter) throws IOException,
-			PersistenceException, GeocognitionException {
-
+			PersistenceException {
+		// Set attributes
 		filterPaths = filter;
 		remoteSource = remoteObject;
-		local = localElement.cloneElement();
+		synchronizationType = syncType;
+		localRoot = localElement;
 
+		// Install buttons in the tree panel if necessary (advanced
+		// synchronization)
 		if (syncType == SYNCHRONIZATION) {
 			treePanel.installAdvancedFeatures();
 		}
 
-		if ((syncType & IMPORT) != 0) {
-			remote = createTreeFromResource(remoteObject);
-		} else if ((syncType & EXPORT) != 0) {
-			if (isSourceEditable(remoteObject)) {
+		// Set empty editor
+		currentEditor = editors.get(0);
+		currentEditor.setModel(null, null);
+		splitPane.setRightComponent(currentEditor.getComponent());
+
+		synchronize();
+	}
+
+	/**
+	 * Resynchronizes the panel with the local geocognition and the remote
+	 * source
+	 * 
+	 * @throws IOException
+	 *             if the remote source cannot be readed
+	 * @throws PersistenceException
+	 *             if the remote tree cannot be created
+	 * @throws GeocognitionException
+	 *             if the local geocognition cannot be readed
+	 */
+	public void synchronize() throws IOException, PersistenceException {
+		// Get local and remote elements
+		if ((synchronizationType & IMPORT) != 0) {
+			remoteRoot = createTreeFromResource(remoteSource);
+		} else if ((synchronizationType & EXPORT) != 0) {
+			if (isSourceEditable(remoteSource)) {
 				try {
-					remote = createTreeFromResource(remoteObject);
+					remoteRoot = createTreeFromResource(remoteSource);
 				} catch (IOException e) {
 					Geocognition gc = Services.getService(Geocognition.class);
-					remote = gc.createFolder(local.getId());
+					remoteRoot = gc.createFolder(localRoot.getId());
 				}
 			} else {
 				Geocognition gc = Services.getService(Geocognition.class);
-				remote = gc.createFolder(local.getId());
+				remoteRoot = gc.createFolder(localRoot.getId());
 			}
 		}
 
-		if (localElement == remoteObject) {
-			manager.compare(local, remote, filter);
+		// Compare elements
+		if (localRoot == remoteSource) {
+			manager.compare(localRoot, remoteRoot, filterPaths);
 		} else {
 			BackgroundManager bm = Services.getService(BackgroundManager.class);
 			bm.backgroundOperation(new SynchronizingJob());
 		}
 
-		currentEditor = editors.get(0);
-		currentEditor.setModel(null, null);
-		split.setRightComponent(currentEditor.getComponent());
+		refresh(synchronizationType);
+	}
 
-		synchronize(syncType);
+	/**
+	 * Resynchronizes the panel with the local geocognition and the remote
+	 * source
+	 */
+	public void refresh(int syncType) {
+		synchronizationType = syncType;
+		treePanel.setModel(manager, synchronizationType);
+		if (currentEditor != null) {
+			boolean localEditable = (synchronizationType & IMPORT) != 0;
+			boolean remoteEditable = ((synchronizationType & EXPORT) != 0)
+					&& isSourceEditable(remoteSource);
+			currentEditor.setEnabledLeft(localEditable);
+			currentEditor.setEnabledRight(remoteEditable);
+		}
+
+		rootPanel.repaint();
 	}
 
 	/**
@@ -320,7 +356,7 @@ public class ComparePanel extends AbstractUIPanel {
 	 * @return the local GeocognitionElement
 	 */
 	public GeocognitionElement getLocalElement() {
-		return local;
+		return localRoot;
 	}
 
 	/**
@@ -329,52 +365,7 @@ public class ComparePanel extends AbstractUIPanel {
 	 * @return the remote GeocognitionElement
 	 */
 	public GeocognitionElement getRemoteElement() {
-		return remote;
-	}
-
-	/**
-	 * Resynchronizes the panel with the local geocognition and the remote
-	 * source
-	 * 
-	 * @throws IOException
-	 *             if the remote source cannot be readed
-	 * @throws PersistenceException
-	 *             if the remote tree cannot be created
-	 * @throws GeocognitionException
-	 *             if the local geocognition cannot be readed
-	 */
-	public boolean synchronize(int syncType) throws IOException,
-			PersistenceException, GeocognitionException {
-		if (closeEditor()) {
-			synchronizationType = syncType;
-			treePanel.setModel(manager, synchronizationType);
-			if (currentEditor != null) {
-				boolean localEditable = (synchronizationType & IMPORT) != 0;
-				boolean remoteEditable = ((synchronizationType & EXPORT) != 0)
-						&& isSourceEditable(remoteSource);
-				currentEditor.setEnabledLeft(localEditable);
-				currentEditor.setEnabledRight(remoteEditable);
-			}
-			return true;
-		} else {
-			return false;
-		}
-	}
-
-	/**
-	 * Resynchronizes the panel with the local geocognition and the remote
-	 * source
-	 * 
-	 * @throws IOException
-	 *             if the remote source cannot be readed
-	 * @throws PersistenceException
-	 *             if the remote tree cannot be created
-	 * @throws GeocognitionException
-	 *             if the local geocognition cannot be readed
-	 */
-	public boolean synchronize() throws IOException, PersistenceException,
-			GeocognitionException {
-		return synchronize(synchronizationType);
+		return remoteRoot;
 	}
 
 	/**
@@ -433,7 +424,7 @@ public class ComparePanel extends AbstractUIPanel {
 			for (ICompareEditor editor : editors) {
 				if (editor.accepts(type)) {
 					currentEditor = editor;
-					split.setRightComponent(currentEditor.getComponent());
+					splitPane.setRightComponent(currentEditor.getComponent());
 
 					boolean localEditable = (synchronizationType & IMPORT) != 0;
 					boolean remoteEditable = ((synchronizationType & EXPORT) != 0)
@@ -495,7 +486,7 @@ public class ComparePanel extends AbstractUIPanel {
 
 	@Override
 	public Component getComponent() {
-		return panel;
+		return rootPanel;
 	}
 
 	@Override
@@ -518,8 +509,8 @@ public class ComparePanel extends AbstractUIPanel {
 			addToGeocognition = addToFile = removeFromGeocognition = removeFromFile = null;
 			overrideInGeocognition = overrideInFile = null;
 			changeGeocognition = changeFile = null;
-			split = null;
-			panel = null;
+			splitPane = null;
+			rootPanel = null;
 			manager = null;
 			remoteSource = null;
 
@@ -564,9 +555,9 @@ public class ComparePanel extends AbstractUIPanel {
 				return;
 			}
 
-			// Double left click
 			if (selRow != -1 && e.getButton() == MouseEvent.BUTTON1
 					&& e.getClickCount() == 2) {
+				// Double left click
 				TreeElement selected = (TreeElement) tree.getPathForRow(selRow)
 						.getLastPathComponent();
 
@@ -579,6 +570,8 @@ public class ComparePanel extends AbstractUIPanel {
 				}
 			} else if (selRow != -1 && e.getButton() == MouseEvent.BUTTON3) {
 				// Single right click
+
+				// Select element clicked if it is not selected yet
 				int[] selected = tree.getSelectionRows();
 				boolean contains = false;
 				if (selected != null) {
@@ -594,6 +587,8 @@ public class ComparePanel extends AbstractUIPanel {
 					tree.setSelectionRow(selRow);
 				}
 
+				// Get the list of IdPath(s) with modifications in the selected
+				// elements and its descendants
 				ArrayList<IdPath> idPaths = new ArrayList<IdPath>();
 				TreePath[] paths = tree.getSelectionPaths();
 
@@ -603,6 +598,8 @@ public class ComparePanel extends AbstractUIPanel {
 					idPaths = merge(idPaths, getChangedElements(element));
 				}
 
+				// Determines if all changed elements in the IdPath(s) list are
+				// added, deleted, modified or conflict
 				boolean deleted = true;
 				boolean added = true;
 				boolean modified = true;
@@ -625,6 +622,7 @@ public class ComparePanel extends AbstractUIPanel {
 					}
 				}
 
+				// Show popup menu
 				boolean noActionVisible = true;
 				if ((synchronizationType & EXPORT) != 0
 						&& isSourceEditable(remoteSource)) {
@@ -681,6 +679,17 @@ public class ComparePanel extends AbstractUIPanel {
 			return arrayList;
 		}
 
+		/**
+		 * Adds all the elements of the adding list to the destination list
+		 * 
+		 * @param <T>
+		 *            The type of the list
+		 * @param dest
+		 *            the list where the elements are added
+		 * @param adding
+		 *            the list with the element to add
+		 * @return the merged list
+		 */
 		@SuppressWarnings("unchecked")
 		private <T> ArrayList<T> merge(ArrayList<T> dest, ArrayList<T> adding) {
 			Object[] aux = adding.toArray();
@@ -756,8 +765,7 @@ public class ComparePanel extends AbstractUIPanel {
 
 		@Override
 		public void run(IProgressMonitor pm) {
-			manager.compare(local, remote, filterPaths, pm);
+			manager.compare(localRoot, remoteRoot, filterPaths, pm);
 		}
 	}
-
 }

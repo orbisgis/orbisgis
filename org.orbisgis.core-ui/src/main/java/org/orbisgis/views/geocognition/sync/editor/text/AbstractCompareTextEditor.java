@@ -88,8 +88,8 @@ public abstract class AbstractCompareTextEditor extends JPanel implements
 	private JButton allToLeft, allToRight, selectedToLeft, selectedToRight,
 			saveRight, saveLeft;
 
-	// References to the original nodes in the local and remote trees
-	protected GeocognitionElementDecorator originalLeft, originalRight;
+	// References to the original elements
+	protected GeocognitionElementDecorator leftElement, rightElement;
 
 	// Copy of the original nodes. All the modifications of the content
 	// of the files update this nodes and the original nodes are never modified
@@ -111,10 +111,7 @@ public abstract class AbstractCompareTextEditor extends JPanel implements
 	private LeftElementListener leftElementListener;
 
 	/**
-	 * Creates a new CompareEditor
-	 * 
-	 * @param p
-	 *            the CompareSplitPane where this editor is contained
+	 * Creates a new AbstractCompareTextEditor
 	 */
 	public AbstractCompareTextEditor() {
 		caretChangeByCode = false;
@@ -588,12 +585,12 @@ public abstract class AbstractCompareTextEditor extends JPanel implements
 
 	@Override
 	public GeocognitionElement getLeftElement() {
-		return originalLeft;
+		return leftElement;
 	}
 
 	@Override
 	public GeocognitionElement getRightElement() {
-		return originalRight;
+		return rightElement;
 	}
 
 	@Override
@@ -608,12 +605,12 @@ public abstract class AbstractCompareTextEditor extends JPanel implements
 
 	@Override
 	public void close() {
-		if (originalLeft != null) {
-			originalLeft.removeElementListener(leftElementListener);
+		if (leftElement != null) {
+			leftElement.removeElementListener(leftElementListener);
 		}
 
-		if (originalRight != null) {
-			originalRight.removeElementListener(rightElementListener);
+		if (rightElement != null) {
+			rightElement.removeElementListener(rightElementListener);
 		}
 	}
 
@@ -657,27 +654,20 @@ public abstract class AbstractCompareTextEditor extends JPanel implements
 	protected abstract void setRightContent(String content)
 			throws GeocognitionException;
 
-	/**
-	 * Sets the model of the editor
-	 * 
-	 * @param path
-	 *            the path to the nodes to compare
-	 * @param manager
-	 *            the synchronization manager with the elements to edit
-	 */
+	@Override
 	public void setModel(GeocognitionElement left, GeocognitionElement right) {
 		// Left node
 		if (left == null) {
-			originalLeft = null;
+			leftElement = null;
 			leftText = "";
 			leftTitle = NO_DOCUMENT_TITLE;
 		} else {
 			try {
-				originalLeft = (left instanceof GeocognitionElementDecorator) ? (GeocognitionElementDecorator) left
+				leftElement = (left instanceof GeocognitionElementDecorator) ? (GeocognitionElementDecorator) left
 						: new GeocognitionElementDecorator(left, null);
 				leftText = getLeftContent();
 				leftTitle = left.getId();
-				originalLeft.addElementListener(leftElementListener);
+				leftElement.addElementListener(leftElementListener);
 			} catch (GeocognitionException e) {
 				Services.getErrorManager().error(
 						"An error has ocurred while reading the file", e);
@@ -686,16 +676,16 @@ public abstract class AbstractCompareTextEditor extends JPanel implements
 
 		// Right node
 		if (right == null) {
-			originalRight = null;
+			rightElement = null;
 			rightText = "";
 			rightTitle = NO_DOCUMENT_TITLE;
 		} else {
 			try {
-				originalRight = (right instanceof GeocognitionElementDecorator) ? (GeocognitionElementDecorator) right
+				rightElement = (right instanceof GeocognitionElementDecorator) ? (GeocognitionElementDecorator) right
 						: new GeocognitionElementDecorator(right, null);
 				rightText = getRightContent();
 				rightTitle = right.getId();
-				originalRight.addElementListener(rightElementListener);
+				rightElement.addElementListener(rightElementListener);
 			} catch (GeocognitionException e) {
 				Services.getErrorManager().error(
 						"An error has ocurred while reading the file", e);
@@ -717,7 +707,7 @@ public abstract class AbstractCompareTextEditor extends JPanel implements
 
 	@Override
 	public void setEnabledRight(boolean b) {
-		boolean enableRight = b && originalRight != null;
+		boolean enableRight = b && rightElement != null;
 		rightPane.setEnabled(enableRight);
 		rightPane.getTextArea().setFocusable(enableRight);
 		if (enableRight && !leftTitle.equals(NO_DOCUMENT_TITLE)) {
@@ -734,7 +724,7 @@ public abstract class AbstractCompareTextEditor extends JPanel implements
 
 	@Override
 	public void setEnabledLeft(boolean b) {
-		boolean enableLeft = b && originalLeft != null;
+		boolean enableLeft = b && leftElement != null;
 		leftPane.setEnabled(enableLeft);
 		leftPane.getTextArea().setFocusable(enableLeft);
 		if (enableLeft && !rightTitle.equals(NO_DOCUMENT_TITLE)) {
@@ -949,7 +939,7 @@ public abstract class AbstractCompareTextEditor extends JPanel implements
 	 * @param text
 	 *            the new text
 	 */
-	private void updateLeft(String text) throws BadLocationException {
+	private void updateLeft(String text) {
 		leftText = text;
 		update(PRESERVE_LEFT_POSITION | PRESERVE_RIGHT_POSITION);
 	}
@@ -1080,8 +1070,7 @@ public abstract class AbstractCompareTextEditor extends JPanel implements
 		 *            the line of the caret
 		 * @throws BadLocationException
 		 */
-		private void updatePane(CompareTextPane pane, int line)
-				throws BadLocationException {
+		private void updatePane(CompareTextPane pane, int line) {
 			int lastVisibleLine = pane.getFirstLine() + pane.getVisibleRows()
 					- 1;
 			int linesToScroll = 0;
@@ -1202,6 +1191,7 @@ public abstract class AbstractCompareTextEditor extends JPanel implements
 
 		@Override
 		public void saved(GeocognitionElement element) {
+			fireChange();
 		}
 	}
 
@@ -1237,6 +1227,7 @@ public abstract class AbstractCompareTextEditor extends JPanel implements
 
 		@Override
 		public void saved(GeocognitionElement element) {
+			fireChange();
 		}
 	}
 }

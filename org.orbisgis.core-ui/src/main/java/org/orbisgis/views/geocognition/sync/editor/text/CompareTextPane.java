@@ -53,8 +53,8 @@ public class CompareTextPane extends JPanel {
 	/**
 	 * Creates a new CompareTextPane
 	 */
-	CompareTextPane(AbstractCompareTextEditor editor) {
-		this.editor = editor;
+	CompareTextPane(AbstractCompareTextEditor ed) {
+		this.editor = ed;
 		line = 0;
 		textArea = new CompareTextArea();
 		textArea.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 14));

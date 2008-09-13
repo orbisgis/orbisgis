@@ -5,8 +5,9 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.MouseListener;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Enumeration;
 
 import javax.swing.Icon;
 import javax.swing.JButton;
@@ -15,14 +16,16 @@ import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
 import javax.swing.JToggleButton;
 import javax.swing.JTree;
+import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 
 import org.orbisgis.PersistenceException;
 import org.orbisgis.Services;
-import org.orbisgis.geocognition.mapContext.GeocognitionException;
 import org.orbisgis.images.IconLoader;
-import org.orbisgis.views.geocognition.sync.ComparePanel;
+import org.orbisgis.views.geocognition.sync.IdPath;
+import org.orbisgis.views.geocognition.sync.SyncListener;
 import org.orbisgis.views.geocognition.sync.SyncManager;
+import org.orbisgis.views.geocognition.sync.SyncPanel;
 import org.orbisgis.views.geocognition.wizard.ElementRenderer;
 
 public class CompareTreePanel extends JPanel {
@@ -40,44 +43,48 @@ public class CompareTreePanel extends JPanel {
 
 	// Interface
 	private JTree tree;
-	private JScrollPane pane;
-	private JPanel buttonPanel;
+	private JPanel toolbarPanel;
 	private JToggleButton importModeButton, exportModeButton, bothModesButton;
 
 	// Model
-	private CompareTreeModel treeModel;
-
+	private CompareTreeModel model;
 	private CompareTreeRenderer renderer;
-	private ComparePanel comparePanel;
+	private SyncPanel syncPanel;
+	private SyncManager syncManager;
+	private SyncListener syncListener;
 
+	// Flag to determine if the advanced features are already installed
 	private boolean installedAdvancedFeatures;
-	private ImportExportButtonsListener toggleButtonsListener;
 
 	/**
 	 * Creates a new CompareTreePanel
 	 */
-	public CompareTreePanel(ComparePanel panel) {
-		comparePanel = panel;
-		renderer = new CompareTreeRenderer();
-
+	public CompareTreePanel(SyncPanel panel) {
+		syncPanel = panel;
 		installedAdvancedFeatures = false;
-		toggleButtonsListener = new ImportExportButtonsListener();
+		renderer = new CompareTreeRenderer();
+		syncListener = new SyncListener() {
+			@Override
+			public void syncDone() {
+				refresh();
+			}
+		};
 
 		tree = new JTree();
-		treeModel = new CompareTreeModel();
+		model = new CompareTreeModel();
 		tree.getSelectionModel().setSelectionMode(
 				TreeSelectionModel.DISCONTIGUOUS_TREE_SELECTION);
-		pane = new JScrollPane(tree);
+		JScrollPane treeScrollPane = new JScrollPane(tree);
 
 		// toolbar
-		buttonPanel = new JPanel();
+		toolbarPanel = new JPanel();
 
 		JButton synchronize = new JButton(SYNCHRONIZE);
 		synchronize.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				try {
-					comparePanel.synchronize();
+					syncPanel.synchronize();
 				} catch (IOException e1) {
 					Services.getErrorManager().error(
 							"The remote source cannot be readed", e1);
@@ -85,18 +92,15 @@ public class CompareTreePanel extends JPanel {
 					Services.getErrorManager().error(
 							"The remote source is not a "
 									+ "valid geocognition xml source", e1);
-				} catch (GeocognitionException e1) {
-					Services.getErrorManager().error(
-							"Cannot read the local geocognition", e1);
 				}
 			}
 		});
 		synchronize.setToolTipText("Synchronize");
 		synchronize.setPreferredSize(BUTTON_SIZE);
 		synchronize.setMinimumSize(BUTTON_SIZE);
-		buttonPanel.add(synchronize);
+		toolbarPanel.add(synchronize);
 
-		buttonPanel.add(new ToolbarSeparator());
+		toolbarPanel.add(new ToolbarSeparator());
 
 		JButton expandAll = new JButton(EXPAND_ALL);
 		expandAll.addActionListener(new ActionListener() {
@@ -110,7 +114,7 @@ public class CompareTreePanel extends JPanel {
 		expandAll.setToolTipText("Expand All");
 		expandAll.setPreferredSize(BUTTON_SIZE);
 		expandAll.setMinimumSize(BUTTON_SIZE);
-		buttonPanel.add(expandAll);
+		toolbarPanel.add(expandAll);
 
 		JButton collapseAll = new JButton(COLLAPSE_ALL);
 		collapseAll.addActionListener(new ActionListener() {
@@ -124,33 +128,38 @@ public class CompareTreePanel extends JPanel {
 		collapseAll.setToolTipText("Collapse All");
 		collapseAll.setPreferredSize(BUTTON_SIZE);
 		collapseAll.setMinimumSize(BUTTON_SIZE);
-		buttonPanel.add(collapseAll);
+		toolbarPanel.add(collapseAll);
 
 		setLayout(new BorderLayout());
-		add(pane, BorderLayout.CENTER);
-		add(buttonPanel, BorderLayout.NORTH);
+		add(treeScrollPane, BorderLayout.CENTER);
+		add(toolbarPanel, BorderLayout.NORTH);
 	}
 
-	public boolean installAdvancedFeatures() {
+	/**
+	 * Adds to the toolbar the import, export and import/export mode buttons
+	 */
+	public void installAdvancedFeatures() {
 		if (installedAdvancedFeatures) {
-			return false;
+			return;
 		}
 
-		buttonPanel.add(new ToolbarSeparator());
+		toolbarPanel.add(new ToolbarSeparator());
+
+		ImportExportButtonsListener toggleButtonsListener = new ImportExportButtonsListener();
 
 		importModeButton = new JToggleButton(IMPORT);
 		importModeButton.addActionListener(toggleButtonsListener);
 		importModeButton.setToolTipText("Import Mode");
 		importModeButton.setPreferredSize(BUTTON_SIZE);
 		importModeButton.setMinimumSize(BUTTON_SIZE);
-		buttonPanel.add(importModeButton);
+		toolbarPanel.add(importModeButton);
 
 		exportModeButton = new JToggleButton(EXPORT);
 		exportModeButton.addActionListener(toggleButtonsListener);
 		exportModeButton.setToolTipText("Export Mode");
 		exportModeButton.setPreferredSize(BUTTON_SIZE);
 		exportModeButton.setMinimumSize(BUTTON_SIZE);
-		buttonPanel.add(exportModeButton);
+		toolbarPanel.add(exportModeButton);
 
 		bothModesButton = new JToggleButton(BOTH);
 		bothModesButton.addActionListener(toggleButtonsListener);
@@ -158,10 +167,9 @@ public class CompareTreePanel extends JPanel {
 		bothModesButton.setPreferredSize(BUTTON_SIZE);
 		bothModesButton.setMinimumSize(BUTTON_SIZE);
 		bothModesButton.setSelected(true);
-		buttonPanel.add(bothModesButton);
+		toolbarPanel.add(bothModesButton);
 
 		installedAdvancedFeatures = true;
-		return true;
 	}
 
 	/**
@@ -171,9 +179,26 @@ public class CompareTreePanel extends JPanel {
 	 *            the comparer between two trees
 	 */
 	public void setModel(SyncManager sync, int syncType) {
-		treeModel.setModel(sync, tree);
-		tree.setModel(treeModel);
-		renderer.setSyncManager(sync, syncType);
+		if (sync == null) {
+			Services.getErrorManager().error(
+					"bug!",
+					new IllegalArgumentException(
+							"The synchronization manager cannot be null"));
+		}
+
+		// Update sync manager
+		if (syncManager != null) {
+			syncManager.removeSyncListener(syncListener);
+		}
+		syncManager = sync;
+		syncManager.addSyncListener(syncListener);
+
+		// Update tree model
+		model.setSyncManager(sync);
+		tree.setModel(model);
+
+		// Update tree renderer
+		renderer.setModel(sync, syncType);
 		tree.setCellRenderer(renderer);
 	}
 
@@ -186,79 +211,91 @@ public class CompareTreePanel extends JPanel {
 		return tree;
 	}
 
-	@Override
-	public synchronized void addMouseListener(MouseListener l) {
-		if (tree == null) {
-			super.addMouseListener(l);
-		} else {
-			tree.addMouseListener(l);
-		}
-	}
-
+	/**
+	 * Sets the icon renderers
+	 * 
+	 * @param renderers
+	 *            the renderers to set
+	 */
 	public void setIconRenderers(ElementRenderer[] renderers) {
 		renderer.setIconRenderers(renderers);
 	}
 
+	/**
+	 * Listener for the advanced import, export and import/export mode buttons
+	 * 
+	 * @author victorzinho
+	 * 
+	 */
 	private class ImportExportButtonsListener implements ActionListener {
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			JToggleButton clicked = (JToggleButton) e.getSource();
-			try {
-				if (clicked.isSelected()) {
-					if (clicked == importModeButton) {
-						if (comparePanel.synchronize(ComparePanel.IMPORT)) {
-							exportModeButton.setSelected(false);
-							bothModesButton.setSelected(false);
-						} else {
-							importModeButton.setSelected(false);
-						}
-					} else if (clicked == exportModeButton) {
-						if (comparePanel.synchronize(ComparePanel.EXPORT)) {
-							importModeButton.setSelected(false);
-							bothModesButton.setSelected(false);
-						} else {
-							exportModeButton.setSelected(false);
-						}
-					} else if (clicked == bothModesButton) {
-						if (comparePanel
-								.synchronize(ComparePanel.SYNCHRONIZATION)) {
-							importModeButton.setSelected(false);
-							exportModeButton.setSelected(false);
-						} else {
-							bothModesButton.setSelected(false);
-						}
-					}
-				} else {
-					clicked.setSelected(true);
+			if (clicked.isSelected()) {
+				if (clicked == importModeButton) {
+					syncPanel.refresh(SyncPanel.IMPORT);
+					exportModeButton.setSelected(false);
+					bothModesButton.setSelected(false);
+				} else if (clicked == exportModeButton) {
+					syncPanel.refresh(SyncPanel.EXPORT);
+					importModeButton.setSelected(false);
+					bothModesButton.setSelected(false);
+				} else if (clicked == bothModesButton) {
+					syncPanel.refresh(SyncPanel.SYNCHRONIZATION);
+					importModeButton.setSelected(false);
+					exportModeButton.setSelected(false);
 				}
-			} catch (IOException e1) {
-				Services.getErrorManager().error(
-						"The remote source cannot be readed", e1);
-			} catch (PersistenceException e1) {
-				Services.getErrorManager().error(
-						"The remote source is not a "
-								+ "valid geocognition xml source", e1);
-			} catch (GeocognitionException e1) {
-				Services.getErrorManager().error(
-						"Cannot read the local geocognition", e1);
+			} else {
+				clicked.setSelected(true);
 			}
 		}
 	}
 
+	/**
+	 * Separator for the toolbar of the tree
+	 * 
+	 * @author victorzinho
+	 * 
+	 */
 	private class ToolbarSeparator extends JSeparator {
 		private ToolbarSeparator() {
 			super();
-			Dimension d = new Dimension(11, 31);
-			setMaximumSize(d);
-			setMinimumSize(d);
-			setPreferredSize(d);
-			setSize(d);
+			Dimension size = new Dimension(11, 31);
+			setMinimumSize(size);
+			setPreferredSize(size);
 		}
 
 		@Override
 		public void paint(Graphics g) {
 			int x = getWidth() / 2;
 			g.drawLine(x, 0, x, getHeight());
+		}
+	}
+
+	/**
+	 * Refreshes the tree
+	 */
+	private void refresh() {
+		// Preserve tree expansions
+		Enumeration<TreePath> expanded = null;
+		expanded = tree.getExpandedDescendants(tree.getPathForRow(0));
+
+		model.fireTreeStructureChanged();
+
+		// Recover tree expansion
+		if (expanded != null && syncManager.getDifferenceTree() != null) {
+			while (expanded.hasMoreElements()) {
+				TreePath path = expanded.nextElement();
+				IdPath idPath = new IdPath();
+				ArrayList<TreeElement> treePath = new ArrayList<TreeElement>();
+				for (int i = 0; i < path.getPathCount(); i++) {
+					TreeElement element = (TreeElement) path.getPath()[i];
+					idPath.addLast(element.getId());
+					treePath.add(syncManager.getDifferenceTree().find(idPath));
+				}
+
+				tree.expandPath(new TreePath(treePath.toArray()));
+			}
 		}
 	}
 }

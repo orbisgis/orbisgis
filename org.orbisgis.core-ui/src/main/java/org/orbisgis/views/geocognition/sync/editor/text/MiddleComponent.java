@@ -39,7 +39,7 @@ public class MiddleComponent extends JComponent {
 
 	@Override
 	public void paintComponent(Graphics g) {
-		g.setColor(CompareTextEditor.highlightColor);
+		g.setColor(AbstractCompareTextEditor.highlightColor);
 
 		ArrayList<Rectangle> leftRectangles = leftArea.getRectangles();
 		ArrayList<Rectangle> rightRectangles = rightArea.getRectangles();
@@ -64,11 +64,11 @@ public class MiddleComponent extends JComponent {
 				int[] xCoordinates = { 0, getWidth(), getWidth(), 0 };
 
 				checkCoordinates(yCoordinates);
-				
+
 				if (i == selectedPolygon) {
-					g.setColor(CompareTextEditor.selectColor);
+					g.setColor(AbstractCompareTextEditor.selectColor);
 					g.fillPolygon(xCoordinates, yCoordinates, 4);
-					g.setColor(CompareTextEditor.highlightColor);
+					g.setColor(AbstractCompareTextEditor.highlightColor);
 				} else {
 					g.fillPolygon(xCoordinates, yCoordinates, 4);
 				}

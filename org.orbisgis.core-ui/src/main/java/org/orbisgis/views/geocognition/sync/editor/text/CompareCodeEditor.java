@@ -12,22 +12,22 @@ public class CompareCodeEditor extends AbstractCompareTextEditor {
 
 	@Override
 	protected String getLeftContent() throws GeocognitionException {
-		return getContent(originalLeft);
+		return getContent(leftElement);
 	}
 
 	@Override
 	protected String getRightContent() throws GeocognitionException {
-		return getContent(originalRight);
+		return getContent(rightElement);
 	}
 
 	@Override
 	protected void setLeftContent(String content) throws GeocognitionException {
-		setContent(originalLeft, content);
+		setContent(leftElement, content);
 	}
 
 	@Override
 	protected void setRightContent(String content) throws GeocognitionException {
-		setContent(originalRight, content);
+		setContent(rightElement, content);
 	}
 
 	@Override
@@ -42,12 +42,29 @@ public class CompareCodeEditor extends AbstractCompareTextEditor {
 		}
 	}
 
+	/**
+	 * Gets the content of the element. The element decorated by the given
+	 * decorator must be an instance of LeafElement
+	 * 
+	 * @param dec
+	 *            the element to obtain content
+	 * @return the content of the element
+	 */
 	private String getContent(GeocognitionElementDecorator dec) {
 		LeafElement element = (LeafElement) dec.getDecoratedElement();
 		Code code = (Code) element.getObject();
 		return code.getCode();
 	}
 
+	/**
+	 * Sets the content of the element. The element decorated by the given
+	 * decorator must be an instance of LeafElement
+	 * 
+	 * @param dec
+	 *            the element to set content
+	 * @param content
+	 *            the content to set
+	 */
 	private void setContent(GeocognitionElementDecorator dec, String content) {
 		LeafElement element = (LeafElement) dec.getDecoratedElement();
 		Code code = (Code) element.getObject();

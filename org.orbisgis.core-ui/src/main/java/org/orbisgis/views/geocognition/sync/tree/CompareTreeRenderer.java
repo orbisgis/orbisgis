@@ -12,12 +12,13 @@ import javax.swing.tree.DefaultTreeCellRenderer;
 
 import org.orbisgis.Services;
 import org.orbisgis.images.IconLoader;
-import org.orbisgis.views.geocognition.sync.ComparePanel;
 import org.orbisgis.views.geocognition.sync.IdPath;
 import org.orbisgis.views.geocognition.sync.SyncManager;
+import org.orbisgis.views.geocognition.sync.SyncPanel;
 import org.orbisgis.views.geocognition.wizard.ElementRenderer;
 
 public class CompareTreeRenderer extends DefaultTreeCellRenderer {
+	// Blended icons
 	private static final ImageIcon RIGHT_PLUS = IconLoader
 			.getIcon("blended_rightarrow_plus.png");
 	private static final ImageIcon RIGHT_MINUS = IconLoader
@@ -39,11 +40,12 @@ public class CompareTreeRenderer extends DefaultTreeCellRenderer {
 	private static final ImageIcon BOTH = IconLoader
 			.getIcon("blended_both.png");
 
+	// Integer spacing constants for the icon width
 	private static final int ADDITIONAL_ICON_WIDTH = 5;
-	private static final int BLENDED_ICON_EXPANSION = 9;
+	private static final int BLENDED_ICON_OVERLAPING = 5;
 
 	private ElementRenderer[] renderers;
-	private SyncManager manager;
+	private SyncManager syncManager;
 	private int synchronizationType;
 
 	@Override
@@ -60,38 +62,38 @@ public class CompareTreeRenderer extends DefaultTreeCellRenderer {
 			ImageIcon background = (ImageIcon) getRendererIcon(element);
 			setIcon(new BlendedIcon(background, background));
 
-			ImageIcon foreground = null;
 			// Get foreground icon
+			ImageIcon foreground = null;
 			IdPath path = element.getIdPath();
 
-			if (synchronizationType == ComparePanel.IMPORT) {
-				if (manager.isAdded(path)) {
+			if (synchronizationType == SyncPanel.IMPORT) {
+				if (syncManager.isAdded(path)) {
 					foreground = LEFT_MINUS;
-				} else if (manager.isDeleted(path)) {
+				} else if (syncManager.isDeleted(path)) {
 					foreground = LEFT_PLUS;
-				} else if (manager.isModified(path)) {
+				} else if (syncManager.isModified(path)) {
 					foreground = LEFT;
-				} else if (manager.isConflict(path)) {
+				} else if (syncManager.isConflict(path)) {
 					foreground = LEFT_CROSS;
 				}
-			} else if (synchronizationType == ComparePanel.EXPORT) {
-				if (manager.isAdded(path)) {
+			} else if (synchronizationType == SyncPanel.EXPORT) {
+				if (syncManager.isAdded(path)) {
 					foreground = RIGHT_PLUS;
-				} else if (manager.isDeleted(path)) {
+				} else if (syncManager.isDeleted(path)) {
 					foreground = RIGHT_MINUS;
-				} else if (manager.isModified(path)) {
+				} else if (syncManager.isModified(path)) {
 					foreground = RIGHT;
-				} else if (manager.isConflict(path)) {
+				} else if (syncManager.isConflict(path)) {
 					foreground = RIGHT_CROSS;
 				}
-			} else if (synchronizationType == ComparePanel.SYNCHRONIZATION) {
-				if (manager.isAdded(path)) {
+			} else if (synchronizationType == SyncPanel.SYNCHRONIZATION) {
+				if (syncManager.isAdded(path)) {
 					foreground = RIGHT_PLUS;
-				} else if (manager.isDeleted(path)) {
+				} else if (syncManager.isDeleted(path)) {
 					foreground = LEFT_PLUS;
-				} else if (manager.isModified(path)) {
+				} else if (syncManager.isModified(path)) {
 					foreground = BOTH;
-				} else if (manager.isConflict(path)) {
+				} else if (syncManager.isConflict(path)) {
 					foreground = BOTH_CROSS;
 				}
 			} else {
@@ -161,10 +163,6 @@ public class CompareTreeRenderer extends DefaultTreeCellRenderer {
 		 */
 		private BlendedIcon(ImageIcon back, ImageIcon front) {
 			super(back.getImage());
-			if (back == null) {
-				throw new IllegalArgumentException(
-						"Background icon cannot be null");
-			}
 			background = back.getImage();
 			foreground = (front == null) ? null : front.getImage();
 		}
@@ -174,13 +172,16 @@ public class CompareTreeRenderer extends DefaultTreeCellRenderer {
 			if (getImageObserver() == null) {
 				g.drawImage(background, x, y, c);
 				if (foreground != null) {
-					g.drawImage(foreground, x + BLENDED_ICON_EXPANSION, y, c);
+					g.drawImage(foreground, x
+							+ background.getWidth(getImageObserver())
+							- BLENDED_ICON_OVERLAPING, y, c);
 				}
 			} else {
 				g.drawImage(background, x, y, getImageObserver());
 				if (foreground != null) {
-					g.drawImage(foreground, x + BLENDED_ICON_EXPANSION, y,
-							getImageObserver());
+					g.drawImage(foreground, x
+							+ background.getWidth(getImageObserver())
+							- BLENDED_ICON_OVERLAPING, y, getImageObserver());
 				}
 			}
 		}
@@ -189,7 +190,8 @@ public class CompareTreeRenderer extends DefaultTreeCellRenderer {
 		public int getIconWidth() {
 			if (foreground != null) {
 				return foreground.getWidth(getImageObserver())
-						+ BLENDED_ICON_EXPANSION;
+						+ background.getWidth(getImageObserver())
+						- BLENDED_ICON_OVERLAPING;
 			} else {
 				return super.getIconWidth();
 			}
@@ -213,8 +215,8 @@ public class CompareTreeRenderer extends DefaultTreeCellRenderer {
 	 * @param sm
 	 *            the synchronization manager
 	 */
-	void setSyncManager(SyncManager sm, int syncType) {
-		manager = sm;
+	void setModel(SyncManager sm, int syncType) {
+		syncManager = sm;
 		synchronizationType = syncType;
 	}
 

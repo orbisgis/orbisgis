@@ -1,9 +1,7 @@
 package org.orbisgis.views.geocognition.sync.tree;
 
 import java.util.ArrayList;
-import java.util.Enumeration;
 
-import javax.swing.JTree;
 import javax.swing.event.TreeModelEvent;
 import javax.swing.event.TreeModelListener;
 import javax.swing.tree.TreeModel;
@@ -11,47 +9,20 @@ import javax.swing.tree.TreePath;
 
 import org.orbisgis.Services;
 import org.orbisgis.geocognition.Geocognition;
-import org.orbisgis.views.geocognition.sync.IdPath;
-import org.orbisgis.views.geocognition.sync.SyncListener;
 import org.orbisgis.views.geocognition.sync.SyncManager;
 
 public class CompareTreeModel implements TreeModel {
-
 	private SyncManager syncManager;
-	private SyncListener syncListener;
 	private ArrayList<TreeModelListener> listenerList = new ArrayList<TreeModelListener>();
-	private JTree tree;
 
 	/**
-	 * Creates a new ComparerTreeModel
+	 * Sets the synchronization manager
 	 * 
-	 * @param nc
-	 *            the comparer between two trees
+	 * @param syncManager
+	 *            the synchronization manager to set
 	 */
-	CompareTreeModel() {
-		syncListener = new SyncListener() {
-			@Override
-			public void syncDone() {
-				refresh();
-			}
-		};
-	}
-
-	void setModel(SyncManager sm, JTree t) {
-		if (syncManager != null) {
-			syncManager.removeSyncListener(syncListener);
-		}
-
-		if (sm == null) {
-			Services.getErrorManager().error(
-					"bug!",
-					new IllegalArgumentException(
-							"The synchronization manager cannot be null"));
-		}
-
-		syncManager = sm;
-		syncManager.addSyncListener(syncListener);
-		tree = t;
+	void setSyncManager(SyncManager syncManager) {
+		this.syncManager = syncManager;
 	}
 
 	@Override
@@ -129,35 +100,18 @@ public class CompareTreeModel implements TreeModel {
 
 	@Override
 	public void valueForPathChanged(TreePath treePath, Object newValue) {
+		// do nothing
 	}
 
 	/**
-	 * Refreshes the tree
+	 * Calls the <code>treeStructureChanged</code> method in all tree model
+	 * listeners
 	 */
-	private void refresh() {
-		// Preserve tree expansions
-		Enumeration<TreePath> expanded = null;
-		expanded = tree.getExpandedDescendants(tree.getPathForRow(0));
-
+	void fireTreeStructureChanged() {
 		for (TreeModelListener listener : listenerList) {
 			listener.treeStructureChanged(new TreeModelEvent(this,
 					new TreePath(getRoot())));
 		}
-
-		// Recover tree expansion
-		if (expanded != null && syncManager.getDifferenceTree() != null) {
-			while (expanded.hasMoreElements()) {
-				TreePath path = expanded.nextElement();
-				IdPath idPath = new IdPath();
-				ArrayList<TreeElement> treePath = new ArrayList<TreeElement>();
-				for (int i = 0; i < path.getPathCount(); i++) {
-					TreeElement element = (TreeElement) path.getPath()[i];
-					idPath.addLast(element.getId());
-					treePath.add(syncManager.getDifferenceTree().find(idPath));
-				}
-
-				tree.expandPath(new TreePath(treePath.toArray()));
-			}
-		}
 	}
+
 }

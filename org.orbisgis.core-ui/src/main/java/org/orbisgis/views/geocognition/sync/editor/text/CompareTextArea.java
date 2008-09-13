@@ -59,16 +59,16 @@ public class CompareTextArea extends JTextArea {
 	@Override
 	public void paintComponent(Graphics g) {
 		super.paintComponent(g);
-		g.setColor(CompareTextEditor.highlightColor);
+		g.setColor(AbstractCompareTextEditor.highlightColor);
 
 		ArrayList<Rectangle> rectangles = getRectangles();
 		if (rectangles != null) {
 			for (int i = 0; i < rectangles.size(); i++) {
 				Rectangle r = rectangles.get(i);
 				if (i == selectedRectangle) {
-					g.setColor(CompareTextEditor.selectColor);
+					g.setColor(AbstractCompareTextEditor.selectColor);
 					g.fillRect(r.x, r.y, r.width, r.height);
-					g.setColor(CompareTextEditor.highlightColor);
+					g.setColor(AbstractCompareTextEditor.highlightColor);
 				} else {
 					g.fillRect(r.x, r.y, r.width, r.height);
 				}

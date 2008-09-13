@@ -43,6 +43,7 @@ public class GeocognitionElementDecorator implements GeocognitionElement {
 
 			@Override
 			public void idChanged(GeocognitionElement element) {
+				// do nothing
 			}
 
 			@Override
