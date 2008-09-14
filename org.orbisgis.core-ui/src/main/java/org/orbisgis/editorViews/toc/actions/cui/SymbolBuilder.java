@@ -203,6 +203,7 @@ public class SymbolBuilder extends JPanel implements UIPanel,
 		}
 
 		if (model.getSize() > 0) {
+			lstSymbols.clearSelection();
 			lstSymbols.setSelectedIndex(0);
 		}
 		refresh();
