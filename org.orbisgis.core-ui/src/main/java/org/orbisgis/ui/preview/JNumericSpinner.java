@@ -1,4 +1,4 @@
-package org.orbisgis.editors.map.actions.export;
+package org.orbisgis.ui.preview;
 
 import java.awt.BorderLayout;
 import java.awt.Insets;
@@ -24,6 +24,11 @@ import org.orbisgis.images.IconLoader;
 import org.sif.CRFlowLayout;
 import org.sif.CarriageReturn;
 
+/**
+ * Numeric spinner
+ * 
+ * @author fergonco
+ */
 public class JNumericSpinner extends JPanel {
 
 	private JTextField txt;
@@ -108,6 +113,11 @@ public class JNumericSpinner extends JPanel {
 		}
 	}
 
+	/**
+	 * Sets the value of the spinner
+	 * 
+	 * @param value
+	 */
 	public void setValue(double value) {
 		txt.setText(numberFormat.format(value));
 		fireChange();
@@ -119,6 +129,11 @@ public class JNumericSpinner extends JPanel {
 		}
 	}
 
+	/**
+	 * Get the value of the spinner
+	 * 
+	 * @return
+	 */
 	public double getValue() {
 		try {
 			return numberFormat.parse(txt.getText()).doubleValue();
@@ -127,6 +142,11 @@ public class JNumericSpinner extends JPanel {
 		}
 	}
 
+	/**
+	 * Set the primary increment the spinner buttons use
+	 * 
+	 * @param inc
+	 */
 	public void setInc(double inc) {
 		this.incActionListener.startingInc = inc;
 	}
@@ -155,6 +175,11 @@ public class JNumericSpinner extends JPanel {
 		this.listeners.remove(changeListener);
 	}
 
+	/**
+	 * Sets a number format in this spinner.
+	 * 
+	 * @param numberFormat
+	 */
 	public void setNumberFormat(NumberFormat numberFormat) {
 		this.numberFormat = numberFormat;
 	}

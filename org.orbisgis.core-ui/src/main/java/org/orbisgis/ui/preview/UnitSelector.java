@@ -1,4 +1,4 @@
-package org.orbisgis.editors.map.actions.export;
+package org.orbisgis.ui.preview;
 
 import java.awt.Component;
 import java.awt.event.ItemEvent;

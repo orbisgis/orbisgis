@@ -6,6 +6,9 @@ import java.net.URL;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
+import org.orbisgis.ui.preview.JNumericSpinner;
+import org.orbisgis.ui.preview.SizeSelector;
+import org.orbisgis.ui.preview.UnitSelector;
 import org.sif.CRFlowLayout;
 import org.sif.CarriageReturn;
 import org.sif.UIFactory;
