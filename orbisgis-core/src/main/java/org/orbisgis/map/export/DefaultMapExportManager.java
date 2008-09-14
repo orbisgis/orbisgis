@@ -7,7 +7,8 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
 import java.io.Writer;
-import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.Iterator;
 
 import org.apache.batik.dom.GenericDOMImplementation;
 import org.apache.batik.svggen.SVGGraphics2D;
@@ -26,7 +27,7 @@ import com.vividsolutions.jts.geom.Envelope;
 
 public class DefaultMapExportManager implements MapExportManager {
 
-	private HashMap<String, Class<? extends Scale>> nameScale = new HashMap<String, Class<? extends Scale>>();
+	private ArrayList<Class<? extends Scale>> scales = new ArrayList<Class<? extends Scale>>();
 
 	@Override
 	public void exportSVG(MapContext mapContext, OutputStream outStream,
@@ -120,39 +121,34 @@ public class DefaultMapExportManager implements MapExportManager {
 	@Override
 	public void registerScale(Class<? extends Scale> scaleClass) {
 		try {
-			String name = scaleClass.newInstance().getScaleTypeName();
-			if (nameScale.get(name) != null) {
-				throw new IllegalArgumentException("The scale '" + name
-						+ "' is already registered");
-			} else {
-				nameScale.put(name, scaleClass);
+			scaleClass.newInstance();
+			scales.add(scaleClass);
+		} catch (InstantiationException e) {
+			throw new IllegalArgumentException(
+					"Cannot obtain a scale instance", e);
+		} catch (IllegalAccessException e) {
+			throw new IllegalArgumentException(
+					"Cannot obtain a scale instance", e);
+		}
+	}
+
+	@Override
+	public Scale[] getScales() {
+		ArrayList<Scale> ret = new ArrayList<Scale>();
+		Iterator<Class<? extends Scale>> it = scales.iterator();
+		while (it.hasNext()) {
+			Class<? extends Scale> scaleClass = it.next();
+			try {
+				ret.add(scaleClass.newInstance());
+			} catch (InstantiationException e) {
+				throw new IllegalArgumentException(
+						"Cannot obtain a scale instance", e);
+			} catch (IllegalAccessException e) {
+				throw new IllegalArgumentException(
+						"Cannot obtain a scale instance", e);
 			}
-		} catch (InstantiationException e) {
-			throw new IllegalArgumentException(
-					"Cannot obtain a scale instance", e);
-		} catch (IllegalAccessException e) {
-			throw new IllegalArgumentException(
-					"Cannot obtain a scale instance", e);
 		}
-	}
 
-	@Override
-	public Scale getScale(String name) {
-		try {
-			return nameScale.get(name).newInstance();
-		} catch (InstantiationException e) {
-			throw new IllegalArgumentException(
-					"Bug. We have already obtained an "
-							+ "instance of this scale", e);
-		} catch (IllegalAccessException e) {
-			throw new IllegalArgumentException(
-					"Bug. We have already obtained an "
-							+ "instance of this scale", e);
-		}
-	}
-
-	@Override
-	public String[] getScaleNames() {
-		return nameScale.keySet().toArray(new String[0]);
+		return ret.toArray(new Scale[0]);
 	}
 }

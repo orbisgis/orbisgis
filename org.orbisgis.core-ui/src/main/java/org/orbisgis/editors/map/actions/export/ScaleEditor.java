@@ -10,9 +10,11 @@ import java.text.NumberFormat;
 
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
+import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+import javax.swing.plaf.basic.BasicComboBoxRenderer;
 
 import org.orbisgis.Services;
 import org.orbisgis.map.export.MapExportManager;
@@ -47,10 +49,21 @@ public class ScaleEditor extends JPanel implements UIPanel {
 		this.setLayout(new BorderLayout());
 		JPanel controlPanel = new JPanel();
 		MapExportManager export = Services.getService(MapExportManager.class);
-		String[] names = export.getScaleNames();
+		Scale[] scales = export.getScales();
 		controlPanel.setLayout(new CRFlowLayout(CRFlowLayout.LEFT));
 
-		cmbScaleType = new JComboBox(names);
+		cmbScaleType = new JComboBox(scales);
+		cmbScaleType.setRenderer(new BasicComboBoxRenderer() {
+			@Override
+			public Component getListCellRendererComponent(JList list,
+					Object value, int index, boolean isSelected,
+					boolean cellHasFocus) {
+				JLabel ret = (JLabel) super.getListCellRendererComponent(list,
+						value, index, isSelected, cellHasFocus);
+				ret.setText(((Scale) value).getScaleTypeName());
+				return ret;
+			}
+		});
 		cmbScaleType.addItemListener(new ItemListener() {
 
 			@Override
@@ -144,15 +157,14 @@ public class ScaleEditor extends JPanel implements UIPanel {
 	}
 
 	private void changeScale() {
-		MapExportManager export = Services.getService(MapExportManager.class);
-		String scaleName = (String) cmbScaleType.getSelectedItem();
-		if (scaleName != null) {
-			scale = export.getScale(scaleName);
+		scale = (Scale) cmbScaleType.getSelectedItem();
+		if (scale != null) {
 			scalePreview.setModel(scale);
 			scale.setScaleDenominator(scaleDenominator);
-			syncControls();
+			// Must resize before syncing or we'll lose the patterns
 			resizePattern(markPattern);
 			resizePattern(labelPattern);
+			syncControls();
 		}
 	}
 

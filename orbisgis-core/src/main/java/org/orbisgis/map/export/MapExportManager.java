@@ -61,17 +61,10 @@ public interface MapExportManager {
 	void registerScale(Class<? extends Scale> scaleClass);
 
 	/**
-	 * Get the names of all registered scales
+	 * Get an array of the instances of all registered Scales
 	 * 
 	 * @return
 	 */
-	String[] getScaleNames();
+	Scale[] getScales();
 
-	/**
-	 * Get an instance of the specified instance
-	 * 
-	 * @param name
-	 * @return The scale instance or null if there is no such scale
-	 */
-	Scale getScale(String name);
 }
