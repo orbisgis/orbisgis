@@ -5,7 +5,6 @@ import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
-import java.awt.Toolkit;
 import java.awt.geom.Rectangle2D;
 import java.text.NumberFormat;
 
@@ -26,11 +25,10 @@ public class RectanglesScale extends AbstractScale implements Scale {
 	}
 
 	@Override
-	public void drawScale(Graphics2D g) {
+	public void drawScale(Graphics2D g, int dpi) {
 		FontMetrics fm = g.getFontMetrics();
 
 		// Get the size of the scale in pixels
-		int dpi = Toolkit.getDefaultToolkit().getScreenResolution();
 		double dpcm = 0.01 * dpi / 0.0254;
 		double scaleWidth = dpcm * partWidth * partCount;
 		double scaleHeight = height * dpcm;
@@ -57,10 +55,10 @@ public class RectanglesScale extends AbstractScale implements Scale {
 		Rectangle size = new Rectangle(0, 0, overallWidth, overallHeight);
 
 		// Write horizontal line
-		int startLineX = (int) (0 + leftTextBounds.getWidth() / 2);
-		int partPixels = (int) (partWidth * dpcm);
+		double startLineX = 0 + leftTextBounds.getWidth() / 2;
+		double partPixels = partWidth * dpcm;
 		// Draw the vertical lines and the text
-		int posX = startLineX;
+		double posX = startLineX;
 		int startingBigVerticalMark = (int) (textHeight + 1);
 		int i = 0;
 		while (i < partCount + 1) {
@@ -75,9 +73,11 @@ public class RectanglesScale extends AbstractScale implements Scale {
 				} else {
 					g.setColor(Color.white);
 				}
-				g.fillRect(posX, posY, partPixels, size.height - posY);
+				g.fillRect((int) posX, posY, (int) partPixels, size.height
+						- posY);
 				g.setColor(Color.black);
-				g.drawRect(posX, posY, partPixels, size.height - posY);
+				g.drawRect((int) posX, posY, (int) partPixels, size.height
+						- posY);
 			}
 
 			if (partsWithText[i]) {

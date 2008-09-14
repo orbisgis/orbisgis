@@ -3,7 +3,6 @@ package org.orbisgis.map.export;
 import java.awt.FontMetrics;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
-import java.awt.Toolkit;
 import java.awt.geom.Rectangle2D;
 import java.text.NumberFormat;
 
@@ -24,11 +23,10 @@ public class SingleLineScale extends AbstractScale implements Scale {
 	}
 
 	@Override
-	public void drawScale(Graphics2D g) {
+	public void drawScale(Graphics2D g, int dpi) {
 		FontMetrics fm = g.getFontMetrics();
 
 		// Get the size of the scale in pixels
-		int dpi = Toolkit.getDefaultToolkit().getScreenResolution();
 		double dpcm = 0.01 * dpi / 0.0254;
 		double scaleWidth = dpcm * partWidth * partCount;
 		double scaleHeight = height * dpcm;
@@ -55,12 +53,12 @@ public class SingleLineScale extends AbstractScale implements Scale {
 		Rectangle size = new Rectangle(0, 0, overallWidth, overallHeight);
 
 		// Write horizontal line
-		int startLineX = (int) (0 + leftTextBounds.getWidth() / 2);
-		int partPixels = (int) (partWidth * dpcm);
+		double startLineX = 0 + leftTextBounds.getWidth() / 2;
+		double partPixels = partWidth * dpcm;
 		int endLineX = (int) (startLineX + partPixels * partCount);
-		g.drawLine(startLineX, size.height, endLineX, size.height);
+		g.drawLine((int) startLineX, size.height, endLineX, size.height);
 		// Draw the vertical lines and the text
-		int posX = startLineX;
+		double posX = startLineX;
 		int startingBigVerticalMark = (int) (textHeight + 1);
 		int startingSmallVerticalMark = size.height - 2;
 		int i = 0;
@@ -71,7 +69,7 @@ public class SingleLineScale extends AbstractScale implements Scale {
 			} else {
 				posY = startingSmallVerticalMark;
 			}
-			g.drawLine(posX, posY, posX, size.height);
+			g.drawLine((int) posX, posY, (int) posX, size.height);
 
 			if (partsWithText[i]) {
 				String number = nf.format(scaleDenominator * partWidth * i);

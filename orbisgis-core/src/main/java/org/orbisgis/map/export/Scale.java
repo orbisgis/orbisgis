@@ -9,8 +9,10 @@ public interface Scale {
 	 * 
 	 * @param g
 	 *            Graphics object to draw to
+	 * @param dpi
+	 *            Resolution of the output image
 	 */
-	void drawScale(Graphics2D g);
+	void drawScale(Graphics2D g, int dpi);
 
 	/**
 	 * Get the name of the scale type

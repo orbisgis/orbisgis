@@ -98,7 +98,7 @@ public class DefaultMapExportManager implements MapExportManager {
 
 		// draw scale
 		if (scale != null) {
-			scale.drawScale(svgg);
+			scale.drawScale(svgg, 90);
 		}
 		pm.endTask();
 
