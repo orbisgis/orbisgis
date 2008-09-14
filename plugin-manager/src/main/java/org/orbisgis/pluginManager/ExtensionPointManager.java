@@ -46,7 +46,6 @@ public class ExtensionPointManager<T> {
 		this.id = id;
 	}
 
-	@SuppressWarnings("unchecked")
 	public ArrayList<ItemAttributes<T>> getItemAttributes(String xpath) {
 		IExtensionRegistry reg = RegistryFactory.getRegistry();
 		Extension[] exts = reg.getExtensions(id);

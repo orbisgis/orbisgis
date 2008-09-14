@@ -4,12 +4,21 @@ import java.awt.BorderLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.text.NumberFormat;
 import java.text.ParseException;
+import java.util.ArrayList;
 
+import javax.swing.Icon;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import javax.swing.Timer;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 
 import org.orbisgis.images.IconLoader;
 import org.sif.CRFlowLayout;
@@ -21,11 +30,30 @@ public class JNumericSpinner extends JPanel {
 	private JButton up;
 	private JButton down;
 	private NumberFormat numberFormat;
-	private double inc = 0.01;
+	private Timer incTimer;
+	private IncActionListener incActionListener;
+	private ArrayList<ChangeListener> listeners = new ArrayList<ChangeListener>();
 
 	public JNumericSpinner(int columns) {
 		numberFormat = NumberFormat.getInstance();
 		txt = new JTextField(columns);
+		txt.getDocument().addDocumentListener(new DocumentListener() {
+
+			@Override
+			public void removeUpdate(DocumentEvent e) {
+				fireChange();
+			}
+
+			@Override
+			public void insertUpdate(DocumentEvent e) {
+				fireChange();
+			}
+
+			@Override
+			public void changedUpdate(DocumentEvent e) {
+				fireChange();
+			}
+		});
 		this.setLayout(new BorderLayout());
 		this.add(txt, BorderLayout.CENTER);
 		JPanel pnlButtons = new JPanel();
@@ -33,38 +61,48 @@ public class JNumericSpinner extends JPanel {
 		layout.setVgap(0);
 		layout.setHgap(0);
 		pnlButtons.setLayout(layout);
-		up = new JButton(IconLoader.getIcon("spinner_up.png"));
-		Insets buttonMargin = new Insets(up.getMargin().top, 0,
-				up.getMargin().bottom, 0);
-		up.setMargin(buttonMargin);
-		up.getInsets().right = 0;
-		up.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				incrementValue(inc);
-			}
-		});
+		incActionListener = new IncActionListener();
+		incTimer = new Timer(10, incActionListener);
+		incTimer.setCoalesce(true);
+		incTimer.setRepeats(true);
+		incTimer.setInitialDelay(100);
+		up = createButton(IconLoader.getIcon("spinner_up.png"), 1);
 		pnlButtons.add(up);
 		pnlButtons.add(new CarriageReturn());
-		down = new JButton(IconLoader.getIcon("spinner_down.png"));
-		down.setMargin(buttonMargin);
-		down.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				incrementValue(-inc);
-			}
-		});
+		down = createButton(IconLoader.getIcon("spinner_down.png"), -1);
 		pnlButtons.add(down);
 		this.add(pnlButtons, BorderLayout.EAST);
+	}
+
+	private JButton createButton(Icon icon, final int sign) {
+		JButton button = new JButton(icon);
+		Insets buttonMargin = new Insets(button.getMargin().top, 0, button
+				.getMargin().bottom, 0);
+		button.setMargin(buttonMargin);
+		button.setFocusable(false);
+		button.getInsets().right = 0;
+		button.addMouseListener(new MouseAdapter() {
+
+			@Override
+			public void mousePressed(MouseEvent e) {
+				incActionListener.init(sign);
+				incActionListener.actionPerformed(null);
+				incTimer.start();
+			}
+
+			@Override
+			public void mouseReleased(MouseEvent e) {
+				incTimer.stop();
+			}
+		});
+		return button;
 	}
 
 	private void incrementValue(double increment) {
 		try {
 			double value = numberFormat.parse(txt.getText()).doubleValue();
 			value += increment;
-			txt.setText(numberFormat.format(value));
+			setValue(value);
 		} catch (ParseException e1) {
 			// ignore
 		}
@@ -72,6 +110,13 @@ public class JNumericSpinner extends JPanel {
 
 	public void setValue(double value) {
 		txt.setText(numberFormat.format(value));
+		fireChange();
+	}
+
+	private void fireChange() {
+		for (ChangeListener listener : listeners) {
+			listener.stateChanged(new ChangeEvent(this));
+		}
 	}
 
 	public double getValue() {
@@ -82,8 +127,35 @@ public class JNumericSpinner extends JPanel {
 		}
 	}
 
-	public void setInc(int inc) {
-		this.inc = inc;
+	public void setInc(double inc) {
+		this.incActionListener.startingInc = inc;
 	}
 
+	private final class IncActionListener implements ActionListener {
+
+		private double startingInc = 0.01;
+		private double currentInc;
+
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			incrementValue(currentInc);
+			currentInc = currentInc * 1.01;
+		}
+
+		public void init(int sign) {
+			currentInc = sign * startingInc;
+		}
+	}
+
+	public void addChangeListener(ChangeListener changeListener) {
+		this.listeners.add(changeListener);
+	}
+
+	public void removeChangeListener(ChangeListener changeListener) {
+		this.listeners.remove(changeListener);
+	}
+
+	public void setNumberFormat(NumberFormat numberFormat) {
+		this.numberFormat = numberFormat;
+	}
 }

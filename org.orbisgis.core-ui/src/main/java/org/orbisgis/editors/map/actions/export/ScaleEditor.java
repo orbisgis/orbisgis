@@ -6,16 +6,13 @@ import java.awt.Dimension;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.net.URL;
+import java.text.NumberFormat;
 
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JSpinner;
-import javax.swing.JTextField;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
 
 import org.orbisgis.Services;
 import org.orbisgis.map.export.MapExportManager;
@@ -30,9 +27,9 @@ import org.sif.UIPanel;
 public class ScaleEditor extends JPanel implements UIPanel {
 
 	private JComboBox cmbScaleType;
-	private JSpinner spnPartCount;
-	private JTextField txtPartSize;
-	private JTextField txtHeight;
+	private JNumericSpinner spnPartCount;
+	private SizeSelector spnPartSize;
+	private SizeSelector spnHeight;
 	private ScalePreview scalePreview;
 	private Scale scale;
 	private double scaleDenominator;
@@ -63,7 +60,9 @@ public class ScaleEditor extends JPanel implements UIPanel {
 		controlPanel.add(new CarriageReturn());
 
 		controlPanel.add(new JLabel("Part count: "));
-		spnPartCount = new JSpinner();
+		spnPartCount = new JNumericSpinner(4);
+		spnPartCount.setInc(1);
+		spnPartCount.setNumberFormat(NumberFormat.getIntegerInstance());
 		spnPartCount.addChangeListener(new ChangeListener() {
 
 			@Override
@@ -76,33 +75,25 @@ public class ScaleEditor extends JPanel implements UIPanel {
 		controlPanel.add(spnPartCount);
 		controlPanel.add(new CarriageReturn());
 
-		DocumentListener synListener = new DocumentListener() {
+		ChangeListener synListener = new ChangeListener() {
 
 			@Override
-			public void removeUpdate(DocumentEvent e) {
-				safeSyncScale();
-			}
-
-			@Override
-			public void insertUpdate(DocumentEvent e) {
-				safeSyncScale();
-			}
-
-			@Override
-			public void changedUpdate(DocumentEvent e) {
+			public void stateChanged(ChangeEvent e) {
 				safeSyncScale();
 			}
 		};
-		controlPanel.add(new JLabel("Part size (cm): "));
-		txtPartSize = new JTextField(2);
-		txtPartSize.getDocument().addDocumentListener(synListener);
-		controlPanel.add(txtPartSize);
+		controlPanel.add(new JLabel("Part size: "));
+		UnitSelector unitSelector = new UnitSelector();
+		spnPartSize = new SizeSelector(5, unitSelector);
+		spnPartSize.addChangeListener(synListener);
+		controlPanel.add(spnPartSize);
+		controlPanel.add(unitSelector);
 		controlPanel.add(new CarriageReturn());
 
-		controlPanel.add(new JLabel("Height (cm): "));
-		txtHeight = new JTextField(2);
-		txtHeight.getDocument().addDocumentListener(synListener);
-		controlPanel.add(txtHeight);
+		controlPanel.add(new JLabel("Height: "));
+		spnHeight = new SizeSelector(5, unitSelector);
+		spnHeight.addChangeListener(synListener);
+		controlPanel.add(spnHeight);
 		controlPanel.add(new CarriageReturn());
 
 		controlPanel.add(new JLabel("Labeled parts: "));
@@ -136,7 +127,7 @@ public class ScaleEditor extends JPanel implements UIPanel {
 
 	private void resizePattern(PatternConfigurator patternComponent) {
 		try {
-			int dim = Integer.parseInt(spnPartCount.getValue().toString()) + 1;
+			int dim = ((int) spnPartCount.getValue()) + 1;
 			if (dim > 0) {
 				patternComponent.setDimensions(1, dim);
 			}
@@ -166,8 +157,8 @@ public class ScaleEditor extends JPanel implements UIPanel {
 		if (!syncing) {
 			syncing = true;
 			try {
-				txtHeight.setText(Double.toString(scale.getHeight()));
-				txtPartSize.setText(Double.toString(scale.getPartWidth()));
+				spnHeight.setMeasure(scale.getHeight());
+				spnPartSize.setMeasure(scale.getPartWidth());
 				spnPartCount.setValue(scale.getPartCount());
 				labelPattern.setRowPattern(0, scale.getLabeledParts());
 				markPattern.setRowPattern(0, scale.getRemarkedParts());
@@ -189,10 +180,9 @@ public class ScaleEditor extends JPanel implements UIPanel {
 		if (!syncing) {
 			syncing = true;
 			try {
-				scale.setHeight(Double.parseDouble(txtHeight.getText()));
-				scale.setPartCount(Integer.parseInt(spnPartCount.getValue()
-						.toString()));
-				scale.setPartWidth(Double.parseDouble(txtPartSize.getText()));
+				scale.setHeight(spnHeight.getMeasure());
+				scale.setPartCount((int) spnPartCount.getValue());
+				scale.setPartWidth(spnPartSize.getMeasure());
 				scale.setPartsWithText(labelPattern.getRowPattern(0));
 				scale.setRemarkedParts(markPattern.getRowPattern(0));
 				scalePreview.repaint();

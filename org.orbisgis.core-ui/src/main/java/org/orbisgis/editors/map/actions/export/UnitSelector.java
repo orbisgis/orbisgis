@@ -79,4 +79,8 @@ public class UnitSelector extends JComboBox {
 	public void addSizeSelector(SizeSelector selector) {
 		this.selectors.add(selector);
 	}
+
+	public double toSelectedUnit(double cm) {
+		return cm / toCM[getSelectedIndex()];
+	}
 }

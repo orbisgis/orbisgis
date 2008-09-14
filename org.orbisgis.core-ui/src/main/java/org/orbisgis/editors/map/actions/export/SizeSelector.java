@@ -15,8 +15,12 @@ public class SizeSelector extends JNumericSpinner {
 	 * 
 	 * @return
 	 */
-	public double getMeassure() {
+	public double getMeasure() {
 		return unitSelector.toCM(getValue());
 	}
 
+	public void setMeasure(double cm) {
+		super.setValue(unitSelector.toSelectedUnit(cm));
+	}
+	
 }
