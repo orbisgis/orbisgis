@@ -112,7 +112,7 @@ public class CUITest {
 		OrbisgisCoreServices.installServices();
 
 		ILayer layer = getDataManager().createLayer(
-				new File("/home/gonzales/workspace"
+				new File("/home/fergonco/ogworkspace"
 						+ "/datas2tests/shp/smallshape2D/points.shp"));
 		layer.open();
 		Type typ = layer.getDataSource().getMetadata().getFieldType(

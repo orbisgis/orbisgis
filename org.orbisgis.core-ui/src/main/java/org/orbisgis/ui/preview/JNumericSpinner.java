@@ -103,22 +103,18 @@ public class JNumericSpinner extends JPanel {
 		return button;
 	}
 
-	private void incrementValue(double increment) {
-		try {
-			double value = numberFormat.parse(txt.getText()).doubleValue();
-			value += increment;
-			setValue(value);
-		} catch (ParseException e1) {
-			// ignore
-		}
-	}
-
 	/**
 	 * Sets the value of the spinner
 	 * 
 	 * @param value
 	 */
 	public void setValue(double value) {
+		if (value > incActionListener.max) {
+			value = incActionListener.max;
+		}
+		if (value < incActionListener.min) {
+			value = incActionListener.min;
+		}
 		txt.setText(numberFormat.format(value));
 		fireChange();
 	}
@@ -155,6 +151,8 @@ public class JNumericSpinner extends JPanel {
 
 		private double startingInc = 0.01;
 		private double currentInc;
+		private int min;
+		private int max;
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
@@ -164,6 +162,16 @@ public class JNumericSpinner extends JPanel {
 
 		public void init(int sign) {
 			currentInc = sign * startingInc;
+		}
+
+		private void incrementValue(double increment) {
+			try {
+				double value = numberFormat.parse(txt.getText()).doubleValue();
+				value += increment;
+				setValue(value);
+			} catch (ParseException e1) {
+				// ignore
+			}
 		}
 	}
 
@@ -182,5 +190,23 @@ public class JNumericSpinner extends JPanel {
 	 */
 	public void setNumberFormat(NumberFormat numberFormat) {
 		this.numberFormat = numberFormat;
+	}
+
+	/**
+	 * Sets the minimum value the buttons can take the value
+	 * 
+	 * @param min
+	 */
+	public void setMin(int min) {
+		incActionListener.min = min;
+	}
+
+	/**
+	 * Sets the minimum value the buttons can take the value
+	 * 
+	 * @param min
+	 */
+	public void setMax(int max) {
+		incActionListener.max = max;
 	}
 }

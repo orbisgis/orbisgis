@@ -39,7 +39,6 @@ package org.orbisgis.renderer;
 import ij.process.ColorProcessor;
 
 import java.awt.AlphaComposite;
-import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
@@ -394,9 +393,6 @@ public class Renderer {
 		if (symbol == null) {
 			return;
 		}
-
-		g.setColor(Color.white);
-		g.fillRect(1, 1, width, height);
 
 		GeometryFactory gf = new GeometryFactory();
 		Geometry geom = null;
