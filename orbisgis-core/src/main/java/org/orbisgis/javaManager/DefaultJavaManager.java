@@ -23,7 +23,6 @@ import javax.tools.StandardLocation;
 import javax.tools.ToolProvider;
 import javax.tools.JavaCompiler.CompilationTask;
 
-import org.apache.log4j.Logger;
 import org.orbisgis.Services;
 import org.orbisgis.javaManager.autocompletion.AbstractVisitor;
 import org.orbisgis.javaManager.autocompletion.NodeUtils;
@@ -41,8 +40,6 @@ import org.orbisgis.outputManager.OutputManager;
 import org.orbisgis.workspace.OGWorkspace;
 
 public class DefaultJavaManager implements JavaManager {
-
-	private static Logger logger = Logger.getLogger(DefaultJavaManager.class);
 
 	private JavaCompiler compiler;
 
@@ -89,7 +86,6 @@ public class DefaultJavaManager implements JavaManager {
 		String packageName = codeInfo.getPackageName();
 		String className = codeInfo.getClassName();
 		code = codeInfo.getModifiedCode();
-		logger.debug("Code to compile: " + code);
 
 		File sourceFolder = new File(ws.getTempFolder(), "java-manager"
 				+ System.currentTimeMillis());
