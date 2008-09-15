@@ -33,6 +33,11 @@
 	</scm>
 	<repositories>
 		<repository>
+			<id>maven_default</id> 
+			<name>Maven Default Central</name> 
+			<url>http://repo1.maven.org/maven2/</url> 
+		</repository>
+  		<repository>
 			<id>gdbms</id>
 			<name>gdbms repo</name>
 			<url>http://gdbms.sourceforge.net/repo</url>
