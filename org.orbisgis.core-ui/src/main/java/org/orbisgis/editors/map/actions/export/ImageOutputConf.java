@@ -2,6 +2,7 @@ package org.orbisgis.editors.map.actions.export;
 
 import java.awt.Component;
 import java.net.URL;
+import java.text.NumberFormat;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -26,18 +27,22 @@ public class ImageOutputConf extends JPanel implements UIPanel {
 		this.add(new JLabel("Width:"));
 		widthSize = new SizeSelector(5, unitSelector);
 		widthSize.setValue(10);
+		widthSize.setMin(0);
 		this.add(widthSize);
 		this.add(unitSelector);
 		this.add(new CarriageReturn());
 		this.add(new JLabel("Height:"));
 		heightSize = new SizeSelector(5, unitSelector);
 		heightSize.setValue(10);
+		heightSize.setMin(0);
 		this.add(heightSize);
 		this.add(new CarriageReturn());
 		this.add(new JLabel("Resolution (dpi):"));
 		spnDPI = new JNumericSpinner(5);
 		spnDPI.setInc(1);
 		spnDPI.setValue(300);
+		spnDPI.setMin(0);
+		spnDPI.setNumberFormat(NumberFormat.getIntegerInstance());
 		this.add(spnDPI);
 	}
 

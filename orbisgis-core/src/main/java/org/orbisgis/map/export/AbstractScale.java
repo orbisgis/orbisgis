@@ -37,7 +37,7 @@ public abstract class AbstractScale implements Scale {
 	public void setHeight(double height) {
 		if (height <= 0) {
 			throw new IllegalArgumentException(
-					"Scale heightshould be possitive");
+					"Scale height should be possitive");
 		}
 		this.height = height;
 	}

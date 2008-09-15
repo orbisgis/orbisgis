@@ -78,6 +78,7 @@ public class ScaleEditor extends JPanel implements UIPanel {
 		controlPanel.add(new JLabel("Part count: "));
 		spnPartCount = new JNumericSpinner(4);
 		spnPartCount.setInc(1);
+		spnPartCount.setMin(0);
 		spnPartCount.setNumberFormat(NumberFormat.getIntegerInstance());
 		spnPartCount.addChangeListener(new ChangeListener() {
 
@@ -102,6 +103,7 @@ public class ScaleEditor extends JPanel implements UIPanel {
 		UnitSelector unitSelector = new UnitSelector();
 		spnPartSize = new SizeSelector(5, unitSelector);
 		spnPartSize.addChangeListener(synListener);
+		spnPartSize.setMin(0);
 		controlPanel.add(spnPartSize);
 		controlPanel.add(unitSelector);
 		controlPanel.add(new CarriageReturn());
@@ -109,6 +111,7 @@ public class ScaleEditor extends JPanel implements UIPanel {
 		controlPanel.add(new JLabel("Height: "));
 		spnHeight = new SizeSelector(5, unitSelector);
 		spnHeight.addChangeListener(synListener);
+		spnHeight.setMin(0);
 		controlPanel.add(spnHeight);
 		controlPanel.add(new CarriageReturn());
 

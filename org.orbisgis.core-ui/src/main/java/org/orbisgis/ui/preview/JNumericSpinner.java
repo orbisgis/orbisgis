@@ -151,8 +151,8 @@ public class JNumericSpinner extends JPanel {
 
 		private double startingInc = 0.01;
 		private double currentInc;
-		private int min;
-		private int max;
+		private int min = Integer.MIN_VALUE;
+		private int max = Integer.MAX_VALUE;
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
