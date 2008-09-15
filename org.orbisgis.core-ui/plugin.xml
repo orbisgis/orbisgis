@@ -2,7 +2,7 @@
 	<activator class="org.orbisgis.Activator"/>
 	
 	<application name="OrbisGIS" version="1.2.2 (Naoned)"
-		organization="IRSTV CNRS-FR-2488" workspace-version="1"/>
+		organization="IRSTV CNRS-FR-2488" workspace-version="2"/>
 	
 	<!-- windows -->
 	<extension-point id="org.orbisgis.Window" schema="schema/window.xsd"/>

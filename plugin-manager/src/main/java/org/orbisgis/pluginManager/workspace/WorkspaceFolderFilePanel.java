@@ -42,12 +42,14 @@ import java.io.FileReader;
 import java.io.IOException;
 
 import javax.swing.JFileChooser;
+import javax.swing.JOptionPane;
 
 import org.orbisgis.Services;
 import org.orbisgis.pluginManager.ApplicationInfo;
-import org.orbisgis.pluginManager.ui.OpenFilePanel;
+import org.orbisgis.pluginManager.ui.SaveFilePanel;
+import org.orbisgis.workspace.Workspace;
 
-public class WorkspaceFolderFilePanel extends OpenFilePanel {
+public class WorkspaceFolderFilePanel extends SaveFilePanel {
 
 	public static final String SIF_ID = "org.orbisgis.pluginManager.WorkspaceFileChooser";
 
@@ -63,9 +65,7 @@ public class WorkspaceFolderFilePanel extends OpenFilePanel {
 		File file = getSelectedFile();
 		if (file == null) {
 			return "A file must be selected";
-		} else if (!file.exists()) {
-			return "The directory must exist";
-		} else if (!file.isDirectory()) {
+		} else if (file.exists() && !file.isDirectory()) {
 			return "The selection must be a directory";
 		}
 
@@ -74,31 +74,47 @@ public class WorkspaceFolderFilePanel extends OpenFilePanel {
 
 	@Override
 	public String postProcess() {
-		File versionFile = new File(getSelectedFile(),
-				".metadata/org.orbisgis.version.txt");
-		ApplicationInfo ai = (ApplicationInfo) Services
-				.getService("org.orbisgis.ApplicationInfo");
-		int version;
-		if (versionFile.exists()) {
-			try {
-				BufferedReader fr = new BufferedReader(new FileReader(
-						versionFile));
-				String strVersion = fr.readLine();
-				fr.close();
-				version = Integer.parseInt(strVersion.trim());
-			} catch (IOException e1) {
-				return "Cannot read workspace version";
-			} catch (NumberFormatException e) {
-				return "Cannot read workspace version";
+		File file = getSelectedFile();
+		if (!file.exists()) {
+			int ret = JOptionPane.showConfirmDialog(null, "Folder '"
+					+ file.getAbsolutePath() + "' will be created. Proceed?",
+					"The folder doesn't exist", JOptionPane.YES_NO_OPTION);
+			if (ret == JOptionPane.NO_OPTION) {
+				return "The folder won't be created";
+			} else {
+				Workspace ws = Services.getService(Workspace.class);
+				try {
+					ws.setWorkspaceFolder(file.getAbsolutePath());
+				} catch (IOException e) {
+					return "Cannot create the folder, Check permissions";
+				}
 			}
 		} else {
-			version = 1;
+			File versionFile = new File(file,
+					".metadata/org.orbisgis.version.txt");
+			int version;
+			if (versionFile.exists()) {
+				try {
+					BufferedReader fr = new BufferedReader(new FileReader(
+							versionFile));
+					String strVersion = fr.readLine();
+					fr.close();
+					version = Integer.parseInt(strVersion.trim());
+				} catch (IOException e1) {
+					return "Cannot read workspace version";
+				} catch (NumberFormatException e) {
+					return "Cannot read workspace version";
+				}
+			} else {
+				version = 1;
+			}
+			ApplicationInfo ai = (ApplicationInfo) Services
+					.getService("org.orbisgis.ApplicationInfo");
+			if (ai.getWsVersion() != version) {
+				return "Workspace version mistmatch. Either"
+						+ " clean or select another folder.";
+			}
 		}
-		if (ai.getWsVersion() != version) {
-			return "Workspace version mistmatch. Either"
-					+ " clean or select another folder.";
-		} else {
-			return null;
-		}
+		return null;
 	}
 }
