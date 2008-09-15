@@ -54,6 +54,7 @@ import org.orbisgis.editors.map.MapEditor;
 import org.orbisgis.layerModel.ILayer;
 import org.orbisgis.layerModel.MapContext;
 import org.orbisgis.map.MapTransform;
+import org.orbisgis.renderer.legend.Legend;
 import org.orbisgis.views.editor.EditorManager;
 import org.sif.UIFactory;
 
@@ -83,7 +84,15 @@ public class EditLayerAction implements ILayerAction {
 					.getService("org.orbisgis.EditorManager");
 			MapTransform mt = ((MapEditor) em.getActiveEditor())
 					.getMapTransform();
-			pan.init(mt, cons, layer.getVectorLegend(), new ILegendPanelUI[] {
+			Legend[] legend = layer.getVectorLegend();
+			Legend[] copies = new Legend[legend.length];
+			for (int i = 0; i < copies.length; i++) {
+				Object obj = legend[i].getJAXBObject();
+				Legend copy = legend[i].newInstance();
+				copy.setJAXBObject(obj);
+				copies[i] = copy;
+			}
+			pan.init(mt, cons, copies, new ILegendPanelUI[] {
 					new PnlUniqueSymbolLegend(true, pan),
 					new PnlUniqueValueLegend(pan), new PnlIntervalLegend(pan),
 					new PnlProportionalLegend(pan), new PnlLabelLegend(pan) },
