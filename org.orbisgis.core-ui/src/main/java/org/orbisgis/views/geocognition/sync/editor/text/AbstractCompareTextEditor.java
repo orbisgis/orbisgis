@@ -607,10 +607,12 @@ public abstract class AbstractCompareTextEditor extends JPanel implements
 	public void close() {
 		if (leftElement != null) {
 			leftElement.removeElementListener(leftElementListener);
+			leftElement = null;
 		}
 
 		if (rightElement != null) {
 			rightElement.removeElementListener(rightElementListener);
+			rightElement = null;
 		}
 	}
 
@@ -656,9 +658,10 @@ public abstract class AbstractCompareTextEditor extends JPanel implements
 
 	@Override
 	public void setModel(GeocognitionElement left, GeocognitionElement right) {
+		close();
+		
 		// Left node
 		if (left == null) {
-			leftElement = null;
 			leftText = "";
 			leftTitle = NO_DOCUMENT_TITLE;
 		} else {
@@ -676,7 +679,6 @@ public abstract class AbstractCompareTextEditor extends JPanel implements
 
 		// Right node
 		if (right == null) {
-			rightElement = null;
 			rightText = "";
 			rightTitle = NO_DOCUMENT_TITLE;
 		} else {
