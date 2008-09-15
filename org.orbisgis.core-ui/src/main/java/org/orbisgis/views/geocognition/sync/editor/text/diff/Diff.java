@@ -1,79 +1,168 @@
 package org.orbisgis.views.geocognition.sync.editor.text.diff;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
 import java.util.TreeMap;
 
+/**
+ * Compares two collections, returning a list of the additions, changes, and
+ * deletions between them. A <code>Comparator</code> may be passed as an
+ * argument to the constructor, and will thus be used. If not provided, the
+ * initial value in the <code>a</code> ("from") collection will be looked at
+ * to see if it supports the <code>Comparable</code> interface. If so, its
+ * <code>equals</code> and <code>compareTo</code> methods will be invoked on
+ * the instances in the "from" and "to" collections; otherwise, for speed, hash
+ * codes from the objects will be used instead for comparison.
+ * 
+ * <p>
+ * The file FileDiff.java shows an example usage of this class, in an
+ * application similar to the Unix "diff" program.
+ * </p>
+ */
 public class Diff {
-	// Source arrays
-	private Object[] a, b;
+	/**
+	 * The source array, AKA the "from" values.
+	 */
+	protected Object[] a;
 
-	// List of differences
-	protected ArrayList<Difference> diffs = new ArrayList<Difference>();
+	/**
+	 * The target array, AKA the "to" values.
+	 */
+	protected Object[] b;
 
-	// Pending, uncommited difference
+	/**
+	 * The list of differences, as <code>Difference</code> instances.
+	 */
+	protected List<Difference> diffs = new ArrayList<Difference>();
+
+	/**
+	 * The pending, uncommitted difference.
+	 */
 	private Difference pending;
 
-	// Thresholds
+	/**
+	 * The comparator used, if any.
+	 */
+	private Comparator<Object> comparator;
+
+	/**
+	 * The thresholds.
+	 */
 	private TreeMap<Integer, Integer> thresh;
 
 	/**
-	 * Constructs the Diff object for the two arrays
+	 * Constructs the Diff object for the two arrays, using the given
+	 * comparator.
 	 */
-	Diff(Object[] a, Object[] b) {
-		if (a.length < 1 || b.length < 1) {
-			throw new RuntimeException("Cannot compare empty contents");
-		}
-
+	Diff(Object[] a, Object[] b, Comparator<Object> comp) {
 		this.a = a;
 		this.b = b;
-		this.thresh = null;
+		this.comparator = comp;
+		this.thresh = null; // created in getLongestCommonSubsequences
 	}
 
 	/**
-	 * Runs diff and returns the results
+	 * Constructs the Diff object for the two arrays, using the default
+	 * comparison mechanism between the objects, such as <code>equals</code>
+	 * and <code>compareTo</code>.
 	 */
-	ArrayList<Difference> diff() {
-		int[] matches = getLongestCommonSubsequences();
+	Diff(Object[] a, Object[] b) {
+		this(a, b, null);
+	}
+
+	/**
+	 * Constructs the Diff object for the two collections, using the given
+	 * comparator.
+	 */
+	Diff(Collection<Difference> a, Collection<Difference> b,
+			Comparator<Object> comp) {
+		this(a.toArray(), b.toArray(), comp);
+	}
+
+	/**
+	 * Constructs the Diff object for the two collections, using the default
+	 * comparison mechanism between the objects, such as <code>equals</code>
+	 * and <code>compareTo</code>.
+	 */
+	Diff(Collection<Difference> a, Collection<Difference> b) {
+		this(a, b, null);
+	}
+
+	/**
+	 * Runs diff and returns the results.
+	 */
+	List<Difference> diff() {
+		traverseSequences();
+
+		// add the last difference, if pending:
+		if (pending != null) {
+			diffs.add(pending);
+		}
+
+		return diffs;
+	}
+
+	/**
+	 * Traverses the sequences, seeking the longest common subsequences,
+	 * invoking the methods <code>finishedA</code>, <code>finishedB</code>,
+	 * <code>onANotB</code>, and <code>onBNotA</code>.
+	 */
+	protected void traverseSequences() {
+		Integer[] matches = getLongestCommonSubsequences();
 
 		int lastA = a.length - 1;
 		int lastB = b.length - 1;
 		int bi = 0;
 		int ai;
 
-		for (ai = 0; ai <= matches.length - 1; ++ai) {
-			int bLine = matches[ai];
+		int lastMatch = matches.length - 1;
 
-			if (bLine == -1) {
+		for (ai = 0; ai <= lastMatch; ++ai) {
+			Integer bLine = matches[ai];
+
+			if (bLine == null) {
 				onANotB(ai, bi);
 			} else {
-				while (bi < bLine) {
+				while (bi < bLine.intValue()) {
 					onBNotA(ai, bi++);
 				}
 
-				// on match
-				bi++;
-				if (pending != null) {
-					diffs.add(pending);
-					pending = null;
-				}
+				onMatch(ai, bi++);
 			}
 		}
 
+		boolean calledFinishA = false;
+		boolean calledFinishB = false;
+
 		while (ai <= lastA || bi <= lastB) {
+
 			// last A?
 			if (ai == lastA + 1 && bi <= lastB) {
-				while (bi <= lastB) {
-					onBNotA(ai, bi++);
+				if (!calledFinishA && callFinishedA()) {
+					finishedA(lastA);
+					calledFinishA = true;
+				} else {
+					while (bi <= lastB) {
+						onBNotA(ai, bi++);
+					}
 				}
 			}
 
 			// last B?
 			if (bi == lastB + 1 && ai <= lastA) {
-				while (ai <= lastA) {
-					onANotB(ai++, bi);
+				if (!calledFinishB && callFinishedB()) {
+					finishedB(lastB);
+					calledFinishB = true;
+				} else {
+					while (ai <= lastA) {
+						onANotB(ai++, bi);
+					}
 				}
 			}
 
@@ -85,19 +174,42 @@ public class Diff {
 				onBNotA(ai, bi++);
 			}
 		}
+	}
 
-		// add the last difference, if pending
-		if (pending != null) {
-			diffs.add(pending);
-		}
+	/**
+	 * Override and return true in order to have <code>finishedA</code>
+	 * invoked at the last element in the <code>a</code> array.
+	 */
+	protected boolean callFinishedA() {
+		return false;
+	}
 
-		return diffs;
+	/**
+	 * Override and return true in order to have <code>finishedB</code>
+	 * invoked at the last element in the <code>b</code> array.
+	 */
+	protected boolean callFinishedB() {
+		return false;
+	}
+
+	/**
+	 * Invoked at the last element in <code>a</code>, if
+	 * <code>callFinishedA</code> returns true.
+	 */
+	protected void finishedA(int lastA) {
+	}
+
+	/**
+	 * Invoked at the last element in <code>b</code>, if
+	 * <code>callFinishedB</code> returns true.
+	 */
+	protected void finishedB(int lastB) {
 	}
 
 	/**
 	 * Invoked for elements in <code>a</code> and not in <code>b</code>.
 	 */
-	private void onANotB(int ai, int bi) {
+	protected void onANotB(int ai, int bi) {
 		if (pending == null) {
 			pending = new Difference(ai, ai, bi, -1);
 		} else {
@@ -108,7 +220,7 @@ public class Diff {
 	/**
 	 * Invoked for elements in <code>b</code> and not in <code>a</code>.
 	 */
-	private void onBNotA(int ai, int bi) {
+	protected void onBNotA(int ai, int bi) {
 		if (pending == null) {
 			pending = new Difference(ai, -1, bi, bi);
 		} else {
@@ -117,9 +229,29 @@ public class Diff {
 	}
 
 	/**
+	 * Invoked for elements matching in <code>a</code> and <code>b</code>.
+	 */
+	protected void onMatch(int ai, int bi) {
+		if (pending == null) {
+			// no current pending
+		} else {
+			diffs.add(pending);
+			pending = null;
+		}
+	}
+
+	/**
+	 * Compares the two objects, using the comparator provided with the
+	 * constructor, if any.
+	 */
+	protected boolean equals(Object x, Object y) {
+		return comparator == null ? x.equals(y) : comparator.compare(x, y) == 0;
+	}
+
+	/**
 	 * Returns an array of the longest common subsequences.
 	 */
-	private int[] getLongestCommonSubsequences() {
+	private Integer[] getLongestCommonSubsequences() {
 		int aStart = 0;
 		int aEnd = a.length - 1;
 
@@ -128,32 +260,38 @@ public class Diff {
 
 		TreeMap<Integer, Integer> matches = new TreeMap<Integer, Integer>();
 
-		while (aStart <= aEnd && bStart <= bEnd && a[aStart].equals(b[bStart])) {
-			matches.put(aStart++, bStart++);
+		while (aStart <= aEnd && bStart <= bEnd && equals(a[aStart], b[bStart])) {
+			matches.put(new Integer(aStart++), new Integer(bStart++));
 		}
 
-		while (aStart <= aEnd && bStart <= bEnd && a[aEnd].equals(b[bEnd])) {
-			matches.put(aEnd--, bEnd--);
+		while (aStart <= aEnd && bStart <= bEnd && equals(a[aEnd], b[bEnd])) {
+			matches.put(new Integer(aEnd--), new Integer(bEnd--));
 		}
 
-		Map<Object, ArrayList<Integer>> bMatches = null;
-		if (a[0] instanceof Comparable) {
-			// this uses the Comparable interface
-			bMatches = new TreeMap<Object, ArrayList<Integer>>();
+		Map<Object, List<Integer>> bMatches = null;
+		if (comparator == null) {
+			if (a.length > 0 && a[0] instanceof Comparable) {
+				// this uses the Comparable interface
+				bMatches = new TreeMap<Object, List<Integer>>();
+			} else {
+				// this just uses hashCode()
+				bMatches = new HashMap<Object, List<Integer>>();
+			}
 		} else {
-			// this just uses hashCode()
-			bMatches = new HashMap<Object, ArrayList<Integer>>();
+			// we don't really want them sorted, but this is the only Map
+			// implementation (as of JDK 1.4) that takes a comparator.
+			bMatches = new TreeMap<Object, List<Integer>>(comparator);
 		}
 
 		for (int bi = bStart; bi <= bEnd; ++bi) {
 			Object element = b[bi];
 			Object key = element;
-			ArrayList<Integer> positions = bMatches.get(key);
+			List<Integer> positions = (List<Integer>) bMatches.get(key);
 			if (positions == null) {
 				positions = new ArrayList<Integer>();
 				bMatches.put(key, positions);
 			}
-			positions.add(bi);
+			positions.add(new Integer(bi));
 		}
 
 		thresh = new TreeMap<Integer, Integer>();
@@ -161,28 +299,31 @@ public class Diff {
 
 		for (int i = aStart; i <= aEnd; ++i) {
 			Object aElement = a[i]; // keygen here.
-			ArrayList<Integer> positions = bMatches.get(aElement);
+			List<Integer> positions = (List<Integer>) bMatches.get(aElement);
 
 			if (positions != null) {
-				int k = 0;
-				ListIterator<Integer> iterator = positions
-						.listIterator(positions.size());
-				while (iterator.hasPrevious()) {
-					int j = iterator.previous();
+				Integer k = new Integer(0);
+				ListIterator<Integer> pit = positions.listIterator(positions
+						.size());
+				while (pit.hasPrevious()) {
+					Integer j = pit.previous();
 
 					k = insert(j, k);
 
-					if (k != -1) {
-						Object value = k > 0 ? links.get(k - 1) : null;
-						links.put(k, new Object[] { value, i, j });
+					if (k == null) {
+						// nothing
+					} else {
+						Object value = k.intValue() > 0 ? links
+								.get(new Integer(k.intValue() - 1)) : null;
+						links.put(k, new Object[] { value, new Integer(i), j });
 					}
 				}
 			}
 		}
 
 		if (thresh.size() > 0) {
-			Integer ti = thresh.lastKey();
-			Object[] link = links.get(ti);
+			Integer ti = (Integer) thresh.lastKey();
+			Object[] link = (Object[]) links.get(ti);
 			while (link != null) {
 				Integer x = (Integer) link[1];
 				Integer y = (Integer) link[2];
@@ -191,68 +332,117 @@ public class Diff {
 			}
 		}
 
-		// Populate returning array
-		int size = (matches.size() == 0) ? 0 : matches.lastKey() + 1;
-		int[] array = new int[size];
+		return toArray(matches);
+	}
 
-		for (int i = 0; i < array.length; i++) {
-			if (matches.containsKey(i)) {
-				array[i] = matches.get(i);
-			} else {
-				array[i] = -1;
-			}
+	/**
+	 * Converts the map (indexed by java.lang.Integers) into an array.
+	 */
+	protected static Integer[] toArray(TreeMap<Integer, Integer> map) {
+		int size = map.size() == 0 ? 0 : 1 + ((Integer) map.lastKey())
+				.intValue();
+		Integer[] ary = new Integer[size];
+		Iterator<Integer> it = map.keySet().iterator();
+
+		while (it.hasNext()) {
+			Integer idx = (Integer) it.next();
+			Integer val = (Integer) map.get(idx);
+			ary[idx.intValue()] = val;
 		}
+		return ary;
+	}
 
-		return array;
+	/**
+	 * Returns whether the integer is not zero (including if it is not null).
+	 */
+	protected static boolean isNonzero(Integer i) {
+		return i != null && i.intValue() != 0;
+	}
+
+	/**
+	 * Returns whether the value in the map for the given index is greater than
+	 * the given value.
+	 */
+	protected boolean isGreaterThan(Integer index, Integer val) {
+		Integer lhs = (Integer) thresh.get(index);
+		return lhs != null && val != null && lhs.compareTo(val) > 0;
+	}
+
+	/**
+	 * Returns whether the value in the map for the given index is less than the
+	 * given value.
+	 */
+	protected boolean isLessThan(Integer index, Integer val) {
+		Integer lhs = (Integer) thresh.get(index);
+		return lhs != null && (val == null || lhs.compareTo(val) < 0);
+	}
+
+	/**
+	 * Returns the value for the greatest key in the map.
+	 */
+	protected Integer getLastValue() {
+		return (Integer) thresh.get(thresh.lastKey());
+	}
+
+	/**
+	 * Adds the given value to the "end" of the threshold map, that is, with the
+	 * greatest index/key.
+	 */
+	protected void append(Integer value) {
+		Integer addIdx = null;
+		if (thresh.size() == 0) {
+			addIdx = new Integer(0);
+		} else {
+			Integer lastKey = (Integer) thresh.lastKey();
+			addIdx = new Integer(lastKey.intValue() + 1);
+		}
+		thresh.put(addIdx, value);
 	}
 
 	/**
 	 * Inserts the given values into the threshold map.
 	 */
-	private int insert(int j, int k) {
-		boolean greaterThan = thresh.get(k) != null && thresh.get(k) > j;
-		boolean lessThan = thresh.get(k - 1) != null && thresh.get(k - 1) < j;
-		if (k != 0 && greaterThan && lessThan) {
+	protected Integer insert(Integer j, Integer k) {
+		if (isNonzero(k) && isGreaterThan(k, j)
+				&& isLessThan(new Integer(k.intValue() - 1), j)) {
 			thresh.put(k, j);
 		} else {
 			int hi = -1;
 
-			if (k != 0) {
-				hi = k;
+			if (isNonzero(k)) {
+				hi = k.intValue();
 			} else if (thresh.size() > 0) {
-				hi = thresh.lastKey();
+				hi = ((Integer) thresh.lastKey()).intValue();
 			}
 
 			// off the end?
-			if (hi == -1 || j > thresh.get(thresh.lastKey())) {
-				if (thresh.size() == 0) {
-					thresh.put(0, j);
-				} else {
-					thresh.put(thresh.lastKey() + 1, j);
-				}
-				k = hi + 1;
+			if (hi == -1 || j.compareTo(getLastValue()) > 0) {
+				append(j);
+				k = new Integer(hi + 1);
 			} else {
 				// binary search for insertion point:
 				int lo = 0;
 
 				while (lo <= hi) {
 					int index = (hi + lo) / 2;
-					int val = thresh.get(index);
+					Integer val = (Integer) thresh.get(new Integer(index));
+					int cmp = j.compareTo(val);
 
-					if (j == val) {
-						return -1;
-					} else if (j > val) {
+					if (cmp == 0) {
+						return null;
+					} else if (cmp > 0) {
 						lo = index + 1;
 					} else {
 						hi = index - 1;
 					}
 				}
 
-				thresh.put(lo, j);
-				k = lo;
+				thresh.put(new Integer(lo), j);
+				k = new Integer(lo);
 			}
 		}
 
 		return k;
 	}
+
 }
