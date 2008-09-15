@@ -43,7 +43,7 @@ public interface Workspace {
 
 	/**
 	 * Gets a file that doesn't exist inside the workspace folder.
-	 *
+	 * 
 	 * @param prefix
 	 *            Prefix of the new file
 	 * @param suffix
@@ -55,7 +55,7 @@ public interface Workspace {
 
 	/**
 	 * Gets a file that doesn't exist inside the workspace folder.
-	 *
+	 * 
 	 * @return A file that doesn't exist yet located in the workspace/.metadata
 	 *         directory
 	 */
@@ -63,7 +63,7 @@ public interface Workspace {
 
 	/**
 	 * Returns a file in the workspace/.metadata directory
-	 *
+	 * 
 	 * @param name
 	 *            relative path inside the workspace/.metadata directory
 	 * @return
@@ -76,7 +76,7 @@ public interface Workspace {
 	 * depending of the application: using a workspace by default, storing the
 	 * latest used workspace and asking the user if there were no previous
 	 * execution, etc.
-	 *
+	 * 
 	 * @param clean
 	 *            If the workspace have to start a new workspace from scratch
 	 * @throws IOException
@@ -84,8 +84,8 @@ public interface Workspace {
 	void init(boolean clean) throws IOException;
 
 	/**
-	 * Changes the workspace folder
-	 *
+	 * Changes the workspace folder. Creates it if necessary
+	 * 
 	 * @param folder
 	 * @throws IOException
 	 */
@@ -93,21 +93,21 @@ public interface Workspace {
 
 	/**
 	 * This invocation forces the workspace to be saved.
-	 *
+	 * 
 	 * @throws IOException
 	 */
 	void saveWorkspace() throws IOException;
 
 	/**
 	 * Adds a workspace listener
-	 *
+	 * 
 	 * @param listener
 	 */
 	void addWorkspaceListener(WorkspaceListener listener);
 
 	/**
 	 * Removes a workspace listener
-	 *
+	 * 
 	 * @param listener
 	 */
 	void removeWorkspaceListener(WorkspaceListener listener);
