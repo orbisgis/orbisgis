@@ -101,7 +101,7 @@ public class OutputPanel extends JPanel implements OutputManager {
 		jTextArea.setCaretPosition(len);
 		jTextArea.setCharacterAttributes(aset, false);
 		jTextArea.replaceSelection(text);
-		jTextArea.setCaretPosition(jTextArea.getText().length());
+		jTextArea.setCaretPosition(jTextArea.getDocument().getLength());
 	}
 
 	public void makeVisible() {
