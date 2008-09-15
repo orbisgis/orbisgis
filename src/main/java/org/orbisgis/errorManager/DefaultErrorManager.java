@@ -47,24 +47,24 @@ public class DefaultErrorManager implements ErrorManager {
 	private ArrayList<ErrorListener> listeners = new ArrayList<ErrorListener>();
 
 	public void error(String userMsg, Throwable exception) {
-		try {
-			logger.error(userMsg, exception);
-			for (ErrorListener listener : listeners) {
+		logger.error(userMsg, exception);
+		for (ErrorListener listener : listeners) {
+			try {
 				listener.error(userMsg, exception);
+			} catch (Throwable t) {
+				logger.error("Error while managing exception", t);
 			}
-		} catch (Throwable t) {
-			logger.error("Error while managing exception", t);
 		}
 	}
 
 	public void warning(String userMsg, Throwable exception) {
-		try {
-			logger.error("warning: " + userMsg, exception);
-			for (ErrorListener listener : listeners) {
+		logger.error("warning: " + userMsg, exception);
+		for (ErrorListener listener : listeners) {
+			try {
 				listener.warning(userMsg, exception);
+			} catch (Throwable t) {
+				logger.error("Error while managing exception", t);
 			}
-		} catch (Throwable t) {
-			logger.error("Error while managing exception", t);
 		}
 	}
 
