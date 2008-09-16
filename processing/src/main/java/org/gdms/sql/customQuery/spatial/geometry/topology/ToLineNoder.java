@@ -39,6 +39,7 @@ package org.gdms.sql.customQuery.spatial.geometry.topology;
 import java.util.Collection;
 import java.util.List;
 
+import org.gdms.algorithm.jts.operation.LineNoder;
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.ExecutionException;
@@ -53,7 +54,6 @@ import org.gdms.driver.DriverException;
 import org.gdms.driver.ObjectDriver;
 import org.gdms.driver.driverManager.DriverLoadException;
 import org.gdms.driver.memory.ObjectMemoryDriver;
-import org.gdms.jts.operation.LineNoder;
 import org.gdms.sql.customQuery.CustomQuery;
 import org.gdms.sql.customQuery.TableDefinition;
 import org.gdms.sql.function.Argument;
