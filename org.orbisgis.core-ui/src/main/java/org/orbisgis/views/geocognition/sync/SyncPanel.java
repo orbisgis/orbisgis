@@ -495,7 +495,7 @@ public class SyncPanel extends AbstractUIPanel {
 	/**
 	 * Job synchronizing two {@link GeocognitionElement} in {@link SyncManager}
 	 * 
-	 * @author victorziho
+	 * @author victorzinho
 	 * 
 	 */
 	private class SynchronizingJob implements BackgroundJob {
@@ -539,6 +539,11 @@ public class SyncPanel extends AbstractUIPanel {
 		return editable && (synchronizationType & EXPORT) != 0;
 	}
 
+	/**
+	 * Determines if the local source is editable
+	 * 
+	 * @return true if the source is editable, false otherwise
+	 */
 	public boolean isLocalEditable() {
 		return (synchronizationType & IMPORT) != 0;
 	}
