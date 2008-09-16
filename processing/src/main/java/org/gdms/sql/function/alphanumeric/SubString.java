@@ -93,7 +93,7 @@ public class SubString implements Function {
 
 	public String getSqlOrder() {
 
-		return "select substring(text, integer[, integer]) from myTable";
+		return "select SubString(text, integer[, integer]) from myTable";
 	}
 
 	public Type getType(Type[] arg0) throws InvalidTypeException {

@@ -96,11 +96,11 @@ public class ToEnvelope implements Function {
 	}
 
 	public String getName() {
-		return "envelope";
+		return "Envelope";
 	}
 
 	public String getSqlOrder() {
-		return "select envelope(raster) as raster from mytif; ---OR--- select envelope(the_geom) from mytable;";
+		return "select Envelope(raster) as raster from mytif; ---OR--- select Envelope(the_geom) from mytable;";
 	}
 
 	public Type getType(Type[] argsTypes) throws InvalidTypeException {

@@ -102,12 +102,12 @@ public class Generalize extends AbstractSpatialFunction {
 	}
 
 	public String getName() {
-		return "generalize";
+		return "Generalize";
 	}
 
 	public String getSqlOrder() {
 
-		return "select generalize(the_geom,maxdistance, [method]) from myTable;";
+		return "select Generalize(the_geom,maxdistance, [method]) from myTable;";
 	}
 
 	public boolean isAggregate() {
