@@ -125,11 +125,7 @@ public abstract class AbstractSyncAction implements IGeocognitionGroupAction {
 				pm.endTask();
 				pm.progressTo(100);
 			} catch (IOException e) {
-				Services.getErrorManager().error(
-						"The file cannot be saved. Probably the file has "
-								+ "changed while synchronizing", e);
-			} catch (UnsupportedOperationException e) {
-				Services.getErrorManager().error("bug!", e);
+				Services.getErrorManager().error("The file cannot be saved", e);
 			} catch (PersistenceException e) {
 				Services.getErrorManager().error(
 						"The geocognition cannot be updated", e);
