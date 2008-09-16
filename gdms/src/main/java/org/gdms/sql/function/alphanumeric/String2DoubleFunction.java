@@ -105,7 +105,7 @@ public class String2DoubleFunction implements Function {
 	}
 
 	public String getName() {
-		return "string2double";
+		return "StringToDouble";
 	}
 
 	public boolean isAggregate() {

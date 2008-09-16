@@ -69,7 +69,7 @@ public class ConcatenateFunction implements Function {
 	 * @see org.gdms.sql.function.Function#getName()
 	 */
 	public String getName() {
-		return "concatenate";
+		return "Concatenate";
 	}
 
 	/**
@@ -91,7 +91,7 @@ public class ConcatenateFunction implements Function {
 	}
 
 	public String getSqlOrder() {
-		return "select concatenate(myField1,'d') from mytable";
+		return "select Concatenate(myField1,'d') from mytable";
 	}
 
 	public Arguments[] getFunctionArguments() {

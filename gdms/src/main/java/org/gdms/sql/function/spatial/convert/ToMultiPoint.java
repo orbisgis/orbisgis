@@ -66,7 +66,7 @@ public class ToMultiPoint extends AbstractSpatialFunction {
 	}
 
 	public String getDescription() {
-		return "Convert any GDMS default spatial field into a MultiPoint";
+		return "Convert a geometry into a MultiPoint";
 	}
 
 	public Arguments[] getFunctionArguments() {

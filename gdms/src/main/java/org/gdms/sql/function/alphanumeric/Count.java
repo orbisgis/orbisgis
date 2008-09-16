@@ -55,7 +55,7 @@ public class Count implements Function {
 	 * @see org.gdms.sql.function.AggregateFunction#getName()
 	 */
 	public String getName() {
-		return "count";
+		return "Count";
 	}
 
 	/**

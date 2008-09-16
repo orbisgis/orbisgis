@@ -79,7 +79,7 @@ public class ToStringFunction implements Function {
 	}
 
 	public String getSqlOrder() {
-		return "select toString(myField) from myTable;";
+		return "select ToString(myField) from myTable;";
 	}
 
 }

@@ -115,15 +115,15 @@ public class ShowCall implements CustomQuery {
 	}
 
 	public String getName() {
-		return "SHOW";
+		return "Show";
 	}
 
 	public String getSqlOrder() {
-		return "select show('select * from myTable');";
+		return "select Show('select * from myTable');";
 	}
 
 	public String getDescription() {
-		return "";
+		return "Display the query result in a table";
 	}
 
 	public Metadata getMetadata(Metadata[] tables) {

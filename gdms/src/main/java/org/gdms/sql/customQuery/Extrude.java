@@ -279,7 +279,7 @@ public class Extrude implements CustomQuery {
 	}
 
 	public String getDescription() {
-		return "Extrude a 2D landcover using a height field value";
+		return "Extrude a 2D polygon using a height field value";
 	}
 
 	public Metadata getMetadata(Metadata[] tables) throws DriverException {

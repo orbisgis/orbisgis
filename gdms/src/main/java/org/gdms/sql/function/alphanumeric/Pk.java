@@ -107,6 +107,6 @@ public class Pk implements Function {
 	}
 
 	public String getSqlOrder() {
-		return "select pk(\"fieldName\") from myTable;";
+		return "select Pk(\"fieldName\") from myTable;";
 	}
 }

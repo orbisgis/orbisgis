@@ -121,7 +121,7 @@ public class ToMultiLine extends AbstractSpatialFunction {
 	}
 
 	public String getDescription() {
-		return "Convert any GDMS default spatial field into a MultiLineString";
+		return "Convert a geometry into a MultiLineString";
 	}
 
 	public String getName() {

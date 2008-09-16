@@ -105,7 +105,7 @@ public class String2IntFunction implements Function {
 	}
 
 	public String getName() {
-		return "string2int";
+		return "StringToInt";
 	}
 
 	public boolean isAggregate() {
@@ -129,6 +129,6 @@ public class String2IntFunction implements Function {
 	}
 
 	public String getSqlOrder() {
-		return "select string2int(myStringField) from myTable;";
+		return "select StringToInt(myStringField) from myTable;";
 	}
 }

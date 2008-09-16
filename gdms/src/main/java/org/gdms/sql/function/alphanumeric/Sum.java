@@ -68,7 +68,7 @@ public class Sum implements Function {
 	 * @see org.gdms.sql.function.Function#getName()
 	 */
 	public String getName() {
-		return "sum";
+		return "Sum";
 	}
 
 	/**
@@ -94,6 +94,6 @@ public class Sum implements Function {
 	}
 
 	public String getSqlOrder() {
-		return "select sum(myField) from myTable;";
+		return "select Sum(myField) from myTable;";
 	}
 }

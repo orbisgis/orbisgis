@@ -108,7 +108,7 @@ public class String2BooleanFunction implements Function {
 	 * @see org.gdms.sql.function.Function#getName()
 	 */
 	public String getName() {
-		return "string2boolean";
+		return "StringToBoolean";
 	}
 
 	/**
@@ -134,6 +134,6 @@ public class String2BooleanFunction implements Function {
 	}
 
 	public String getSqlOrder() {
-		return "select * from myTable where string2boolean(myStringField);";
+		return "select * from myTable where StringToBoolean(myStringField);";
 	}
 }

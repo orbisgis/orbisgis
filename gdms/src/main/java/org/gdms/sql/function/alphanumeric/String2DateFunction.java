@@ -132,7 +132,7 @@ public class String2DateFunction implements Function {
 	 * @see org.gdms.sql.function.Function#getName()
 	 */
 	public String getName() {
-		return "string2date";
+		return "StringToDate";
 	}
 
 	/**
@@ -159,6 +159,6 @@ public class String2DateFunction implements Function {
 	}
 
 	public String getSqlOrder() {
-		return "select date('date_literal'[ , date_format]) from mytable";
+		return "select StringToDate('date_literal'[ , date_format]) from mytable";
 	}
 }
