@@ -36,10 +36,10 @@
  */
 package org.gdms.sql.function.spatial.geometry.generalize;
 
+import org.gdms.algorithm.jts.operation.DouglasPeuckerGeneralization;
+import org.gdms.algorithm.jts.operation.ISAGeneralization;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
-import org.gdms.jts.operation.DouglasPeuckerGeneralization;
-import org.gdms.jts.operation.ISAGeneralization;
 import org.gdms.sql.function.Argument;
 import org.gdms.sql.function.Arguments;
 import org.gdms.sql.function.FunctionException;

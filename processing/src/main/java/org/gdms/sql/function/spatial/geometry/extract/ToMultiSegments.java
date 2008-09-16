@@ -38,9 +38,9 @@ package org.gdms.sql.function.spatial.geometry.extract;
 
 import java.util.List;
 
+import org.gdms.algorithm.jts.operation.UniqueSegmentsExtracter;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
-import org.gdms.jts.operation.UniqueSegmentsExtracter;
 import org.gdms.sql.function.Argument;
 import org.gdms.sql.function.Arguments;
 import org.gdms.sql.function.FunctionException;
