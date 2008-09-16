@@ -229,12 +229,12 @@ public class ProcessorTest extends TestCase {
 		failWithIncompatibleTypes("select avg(4, 6) from alltypes;");
 		failWithIncompatibleTypes("select avg('a string') from alltypes;");
 		failWithIncompatibleTypes("select avg(*) from alltypes;");
-		failWithIncompatibleTypes("select concatenate('string', string2int('3')) from alltypes;");
+		failWithIncompatibleTypes("select concatenate('string', StringtoInt('3')) from alltypes;");
 		getValidatedPreprocessor("select avg(3) from alltypes;");
 		failWithIncompatibleTypes("select * from alltypes where concatenate('e')=3;");
 		failWithIncompatibleTypes("select * from alltypes where concatenate(4)='afs';");
 		failWithIncompatibleTypes("select * from alltypes where zeroargs(*)=3;");
-		failWithIncompatibleTypes("select * from alltypes where concatenate('string', string2int('3')) = 'asd';");
+		failWithIncompatibleTypes("select * from alltypes where concatenate('string', StringtoInt('3')) = 'asd';");
 		getValidatedPreprocessor("select * from alltypes where concatenate('asd', 'asd') = 'asdasd';");
 	}
 
@@ -425,7 +425,7 @@ public class ProcessorTest extends TestCase {
 		failWithSemanticException("select int from alltypes "
 				+ "group by int having strign = 'e';");
 		// mixing aggregated and not aggregated
-		failWithSemanticException("select count(int), string2int(string) from "
+		failWithSemanticException("select count(int), StringtoInt(string) from "
 				+ "alltypes group by int having string = 'e';");
 		// non aggregated type
 		failWithSemanticException("select t1.int from alltypes t1, "
@@ -435,7 +435,7 @@ public class ProcessorTest extends TestCase {
 
 		getValidatedPreprocessor("select t1.int as st1, sum(t2.int) as st2 from "
 				+ "alltypes t1, alltypes t2 group by t1.int having st1 = 3;");
-		getValidatedPreprocessor("select sum(string2int(string)) as st from "
+		getValidatedPreprocessor("select sum(StringtoInt(string)) as st from "
 				+ "alltypes group by int having st = 3;");
 		getValidatedPreprocessor("select sum(t1.int) as st1, sum(t2.int) as st2 from "
 				+ "alltypes t1, alltypes t2 group by t2.int having st1 = 3;");
