@@ -43,7 +43,6 @@ import org.contrib.gdms.sql.customQuery.spatial.geometry.tin.Cdt;
 import org.contrib.gdms.sql.customQuery.spatial.geometry.tin.CheckDelaunayProperty;
 import org.contrib.gdms.sql.customQuery.spatial.geometry.tin.CheckSpatialEquivalence;
 import org.gdms.sql.customQuery.QueryManager;
-import org.gdms.sql.function.FunctionManager;
 import org.orbisgis.pluginManager.PluginActivator;
 
 public class Register implements PluginActivator {

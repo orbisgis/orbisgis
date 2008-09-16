@@ -1,0 +1,3 @@
+<plugin>
+	<activator class="org.contrib.gdms.sql.Register"/>
+</plugin>
