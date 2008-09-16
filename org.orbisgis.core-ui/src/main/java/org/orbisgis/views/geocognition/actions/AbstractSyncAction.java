@@ -68,7 +68,6 @@ public abstract class AbstractSyncAction implements IGeocognitionGroupAction {
 
 			// Show panel
 			SyncPanel panel = new SyncPanel();
-			panel.setModel(local, local, syncType, filter);
 			panel.setModel(local, remoteSource, syncType, filter);
 			if (UIFactory.showDialog(panel)) {
 				BackgroundManager bm = Services

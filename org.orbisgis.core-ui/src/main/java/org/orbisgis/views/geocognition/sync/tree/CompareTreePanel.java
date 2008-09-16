@@ -21,6 +21,7 @@ import javax.swing.JPopupMenu;
 import javax.swing.JSeparator;
 import javax.swing.JToggleButton;
 import javax.swing.JTree;
+import javax.swing.SwingUtilities;
 import javax.swing.tree.TreePath;
 
 import org.orbisgis.PersistenceException;
@@ -69,7 +70,13 @@ public class CompareTreePanel extends JPanel {
 		syncListener = new SyncListener() {
 			@Override
 			public void syncDone() {
-				refresh();
+				SwingUtilities.invokeLater(new Runnable() {
+				
+					@Override
+					public void run() {
+						refresh();
+					}
+				});
 			}
 		};
 

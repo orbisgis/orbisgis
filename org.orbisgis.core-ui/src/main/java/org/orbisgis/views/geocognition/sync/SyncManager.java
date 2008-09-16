@@ -130,7 +130,7 @@ public class SyncManager {
 		if (listener == null) {
 			listener = new EditorSavingListener() {
 				@Override
-				public void elementSaved(GeocognitionElement element) {
+				public void elementChanged(GeocognitionElement element) {
 					synchronize(new IdPath(element.getIdPath()), null);
 				}
 			};
@@ -926,6 +926,6 @@ public class SyncManager {
 	 * Listener for the ICompareEditor saving events
 	 */
 	interface EditorSavingListener {
-		void elementSaved(GeocognitionElement e);
+		void elementChanged(GeocognitionElement e);
 	}
 }

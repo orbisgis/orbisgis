@@ -35,22 +35,6 @@ public class GeocognitionElementDecorator implements GeocognitionElement {
 		listeners = new ArrayList<EditorSavingListener>();
 		filterPaths = filter;
 		element = e;
-		element.addElementListener(new GeocognitionElementListener() {
-			@Override
-			public void saved(GeocognitionElement element) {
-				fireElementSaved();
-			}
-
-			@Override
-			public void idChanged(GeocognitionElement element) {
-				// do nothing
-			}
-
-			@Override
-			public void contentChanged(GeocognitionElement element) {
-				fireElementSaved();
-			}
-		});
 		children = new ArrayList<GeocognitionElementDecorator>();
 		if (element.isFolder()) {
 			for (int i = 0; i < element.getElementCount(); i++) {
@@ -194,7 +178,7 @@ public class GeocognitionElementDecorator implements GeocognitionElement {
 	@Override
 	public void setXMLContent(String xml) throws GeocognitionException {
 		element.setXMLContent(xml.replaceAll(">\n", ">"));
-		fireElementSaved();
+		fireElementChanged();
 	}
 
 	@Override
@@ -233,7 +217,7 @@ public class GeocognitionElementDecorator implements GeocognitionElement {
 	public void save() throws UnsupportedOperationException,
 			GeocognitionException {
 		element.save();
-		fireElementSaved();
+		fireElementChanged();
 	}
 
 	@Override
@@ -294,9 +278,9 @@ public class GeocognitionElementDecorator implements GeocognitionElement {
 	/**
 	 * Calls all the editor saving listeners
 	 */
-	private void fireElementSaved() {
+	private void fireElementChanged() {
 		for (EditorSavingListener listener : listeners) {
-			listener.elementSaved(this);
+			listener.elementChanged(this);
 		}
 	}
 }
