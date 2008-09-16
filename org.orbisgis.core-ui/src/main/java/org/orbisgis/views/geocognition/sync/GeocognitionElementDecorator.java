@@ -194,6 +194,7 @@ public class GeocognitionElementDecorator implements GeocognitionElement {
 	@Override
 	public void setXMLContent(String xml) throws GeocognitionException {
 		element.setXMLContent(xml.replaceAll(">\n", ">"));
+		fireElementSaved();
 	}
 
 	@Override
@@ -232,6 +233,7 @@ public class GeocognitionElementDecorator implements GeocognitionElement {
 	public void save() throws UnsupportedOperationException,
 			GeocognitionException {
 		element.save();
+		fireElementSaved();
 	}
 
 	@Override

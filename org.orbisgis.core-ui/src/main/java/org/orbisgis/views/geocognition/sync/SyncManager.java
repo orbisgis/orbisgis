@@ -204,8 +204,6 @@ public class SyncManager {
 			} else if (subTree != null) {
 				// If parent is null but the synchronized element has changed,
 				// build the minimum directory structure in the difference tree.
-				// This code is executed to build a new difference tree when
-				// the previous one has no differences (is null)
 				TreeElement child = subTree;
 				GeocognitionElement childElement = find(localRoot, path);
 				GeocognitionElement parentElement = childElement.getParent();
@@ -793,7 +791,7 @@ public class SyncManager {
 	 *            the path to the element to determine
 	 * @return true if the element has changes, false otherwise
 	 */
-	boolean hasChanged(IdPath path) {
+	public boolean hasChanged(IdPath path) {
 		return isAdded(path) || isConflict(path) || isDeleted(path)
 				|| isModified(path);
 	}
