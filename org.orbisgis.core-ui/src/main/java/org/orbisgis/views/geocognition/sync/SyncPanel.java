@@ -243,9 +243,7 @@ public class SyncPanel extends AbstractUIPanel {
 	public void synchronize() throws IOException, PersistenceException,
 			GeocognitionException {
 		// Set empty editor
-		currentEditor = editors.get(0);
-		currentEditor.setModel(null, null);
-		splitPane.setRightComponent(currentEditor.getComponent());
+		setEditor(null);
 
 		if (localSource != remoteSource) {
 			localRoot = localSource.cloneElement();
@@ -396,13 +394,14 @@ public class SyncPanel extends AbstractUIPanel {
 	/**
 	 * Sets the editor of the comparing pane. Searches in the available editors
 	 * specified in the constructor and set the first editor accepting the
-	 * element content
+	 * element content. If <code>null</code> is specified in the path parameter,
+	 * the open editor is closed without confirmation and setted as invisible
 	 * 
 	 * @param path
 	 *            the path to the element to show in the editor
 	 */
 	private void setEditor(IdPath path) {
-		if (closeEditor()) {
+		if (path == null || closeEditor()) {
 			GeocognitionElementDecorator local = null;
 			GeocognitionElementDecorator remote = null;
 			if (path != null) {
@@ -439,6 +438,8 @@ public class SyncPanel extends AbstractUIPanel {
 					break;
 				}
 			}
+
+			currentEditor.getComponent().setVisible(path != null);
 		}
 	}
 
