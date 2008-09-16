@@ -7,6 +7,7 @@ import javax.swing.event.UndoableEditEvent;
 import javax.swing.text.DefaultStyledDocument;
 import javax.swing.undo.CompoundEdit;
 import javax.swing.undo.UndoManager;
+import javax.swing.undo.UndoableEdit;
 
 
 /**
@@ -35,7 +36,7 @@ public class UndoableDocument extends DefaultStyledDocument {
 	@Override
 	protected void fireChangedUpdate(DocumentEvent e) {
 		if (isGrouping) {
-			compound.addEdit((DefaultDocumentEvent) e);
+			compound.addEdit((UndoableEdit) e);
 		}
 
 		super.fireChangedUpdate(e);
@@ -44,7 +45,7 @@ public class UndoableDocument extends DefaultStyledDocument {
 	@Override
 	protected void fireInsertUpdate(DocumentEvent e) {
 		if (isGrouping) {
-			compound.addEdit((DefaultDocumentEvent) e);
+			compound.addEdit((UndoableEdit) e);
 		}
 
 		super.fireInsertUpdate(e);
@@ -53,7 +54,7 @@ public class UndoableDocument extends DefaultStyledDocument {
 	@Override
 	protected void fireRemoveUpdate(DocumentEvent e) {
 		if (isGrouping) {
-			compound.addEdit((DefaultDocumentEvent) e);
+			compound.addEdit((UndoableEdit) e);
 		}
 
 		super.fireRemoveUpdate(e);

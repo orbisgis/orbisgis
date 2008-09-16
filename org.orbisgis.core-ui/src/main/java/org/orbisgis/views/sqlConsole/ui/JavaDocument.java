@@ -211,6 +211,9 @@ public class JavaDocument extends AbstractSyntaxColoringDocument {
 			endText = sqlText.length();
 		}
 		sqlText = sqlText.substring(startText, endText);
+		if (sqlText.trim().length() == 0) {
+			return;
+		}
 		JavaParserTokenManager tm = new JavaParserTokenManager(
 				new JavaCharStream(new ByteArrayInputStream(sqlText.getBytes())));
 		Token token;
