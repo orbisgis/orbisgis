@@ -37,13 +37,9 @@
 package org.orbisgis;
 
 import org.gdms.sql.customQuery.QueryManager;
-import org.gdms.sql.customQuery.spatial.geometry.CheckSpatialEquivalence;
 import org.gdms.sql.customQuery.spatial.geometry.convert.PointsToXYZ;
-import org.gdms.sql.customQuery.spatial.geometry.jgrapht.ShortestPath;
 import org.gdms.sql.customQuery.spatial.geometry.others.RandomGeometry;
 import org.gdms.sql.customQuery.spatial.geometry.tin.BuildTIN;
-import org.gdms.sql.customQuery.spatial.geometry.tin.Cdt;
-import org.gdms.sql.customQuery.spatial.geometry.tin.CheckDelaunayProperty;
 import org.gdms.sql.customQuery.spatial.geometry.topology.ToLineNoder;
 import org.gdms.sql.customQuery.spatial.raster.convert.RasterToPoints;
 import org.gdms.sql.customQuery.spatial.raster.convert.RasterToPolygons;
@@ -52,6 +48,7 @@ import org.gdms.sql.customQuery.spatial.raster.convert.RasterizeLine;
 import org.gdms.sql.customQuery.spatial.raster.convert.VectorizeLine;
 import org.gdms.sql.function.FunctionManager;
 import org.gdms.sql.function.alphanumeric.SubString;
+import org.gdms.sql.function.spatial.geometry.convert.PointsToLine;
 import org.gdms.sql.function.spatial.geometry.extract.ConvexHull;
 import org.gdms.sql.function.spatial.geometry.extract.ToMultiSegments;
 import org.gdms.sql.function.spatial.geometry.generalize.Generalize;
@@ -67,9 +64,7 @@ import org.gdms.sql.function.spatial.raster.hydrology.D8Watershed;
 import org.gdms.sql.function.spatial.raster.hydrology.FillSinks;
 import org.gdms.sql.function.spatial.raster.utilities.CropRaster;
 import org.gdms.sql.function.spatial.raster.utilities.ToEnvelope;
-import org.gdms.triangulation.michaelm.TinMM;
 import org.orbisgis.pluginManager.PluginActivator;
-import org.orbisgis.processing.tin.Generate2DMesh;
 
 public class Register implements PluginActivator {
 	public void start() throws Exception {
@@ -93,21 +88,18 @@ public class Register implements PluginActivator {
 		FunctionManager.addFunction(ToEnvelope.class);
 		FunctionManager.addFunction(FillSinks.class);
 		FunctionManager.addFunction(D8DistanceToTheOutlet.class);
-		FunctionManager.addFunction(D8RiverDistance.class);
+		FunctionManager.addFunction(D8RiverDistance.class);		
+		FunctionManager.addFunction(PointsToLine.class);
 
 		QueryManager.registerQuery(VectorizeLine.class);
 
 		// Vector processing
 
-		QueryManager.registerQuery(Generate2DMesh.class);
 		QueryManager.registerQuery(PointsToXYZ.class);
 		QueryManager.registerQuery(ToLineNoder.class);
-		QueryManager.registerQuery(ShortestPath.class);
 		QueryManager.registerQuery(BuildTIN.class);
 		QueryManager.registerQuery(RandomGeometry.class);
 
-		QueryManager.registerQuery(Cdt.class);
-		QueryManager.registerQuery(CheckDelaunayProperty.class);
 
 		FunctionManager.addFunction(ToMultiSegments.class);
 		FunctionManager.addFunction(Generalize.class);
@@ -115,9 +107,7 @@ public class Register implements PluginActivator {
 		FunctionManager.addFunction(ConvexHull.class);
 
 		FunctionManager.addFunction(SubString.class);
-		QueryManager.registerQuery(TinMM.class);
 
-		QueryManager.registerQuery(CheckSpatialEquivalence.class);
 	}
 
 	public void stop() throws Exception {
