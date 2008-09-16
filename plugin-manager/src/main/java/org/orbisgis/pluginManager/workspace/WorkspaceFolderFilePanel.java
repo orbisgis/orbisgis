@@ -75,18 +75,18 @@ public class WorkspaceFolderFilePanel extends SaveFilePanel {
 	@Override
 	public String postProcess() {
 		File file = getSelectedFile();
-		if (!file.exists()) {
-			int ret = JOptionPane.showConfirmDialog(null, "Folder '"
+		if (!new File(file, ".metadata").exists()) {
+			int ret = JOptionPane.showConfirmDialog(null, "Workspace '"
 					+ file.getAbsolutePath() + "' will be created. Proceed?",
-					"The folder doesn't exist", JOptionPane.YES_NO_OPTION);
+					"The workspace doesn't exist", JOptionPane.YES_NO_OPTION);
 			if (ret == JOptionPane.NO_OPTION) {
-				return "The folder won't be created";
+				return "The workspace won't be created";
 			} else {
 				Workspace ws = Services.getService(Workspace.class);
 				try {
 					ws.setWorkspaceFolder(file.getAbsolutePath());
 				} catch (IOException e) {
-					return "Cannot create the folder, Check permissions";
+					return "Cannot create workspaces, Check permissions";
 				}
 			}
 		} else {
@@ -117,4 +117,5 @@ public class WorkspaceFolderFilePanel extends SaveFilePanel {
 		}
 		return null;
 	}
+
 }
