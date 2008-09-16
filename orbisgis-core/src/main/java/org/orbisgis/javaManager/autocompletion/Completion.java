@@ -55,7 +55,8 @@ public class Completion {
 	private ArrayList<String> getValidText(String text, int caretPosition,
 			ParseException e) {
 		ArrayList<String> options = new ArrayList<String>();
-		if ((text.charAt(caretPosition - 1) == '.')
+		if ((caretPosition > 0)
+				&& (text.charAt(caretPosition - 1) == '.')
 				&& ((caretPosition >= text.length()) || (text
 						.charAt(caretPosition) != 'a'))) {
 			String newText = text.substring(0, caretPosition) + "a"
