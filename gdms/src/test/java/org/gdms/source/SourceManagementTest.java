@@ -301,8 +301,8 @@ public class SourceManagementTest extends TestCase {
 		sm.removeAll();
 		sm.register("db", testDB);
 		sm.register("file", testFile);
-		String sql = "select 2*string2int(file.id) from db, file "
-				+ "where string2int(file.id) <> 234;";
+		String sql = "select 2*StringToInt(file.id) from db, file "
+				+ "where StringToInt(file.id) <> 234;";
 		sm.register("sql", sql);
 		DataSource ds = dsf.getDataSource("sql");
 		assertTrue(setIs(ds.getReferencedSources(),
@@ -325,7 +325,7 @@ public class SourceManagementTest extends TestCase {
 		sm.removeAll();
 		sm.register("db", testDB);
 		sm.register("file", testFile);
-		String sql = "select 2*string2int(file.id) from db, file "
+		String sql = "select 2*StringToInt(file.id) from db, file "
 				+ "where file.id <> '234';";
 		sm.remove("file");
 		sm.remove("db");
@@ -354,7 +354,7 @@ public class SourceManagementTest extends TestCase {
 		sm.removeAll();
 		sm.register("db", testDB);
 		sm.register("file", testFile);
-		dsf.executeSQL("select 2*string2int(file.id) from db, file "
+		dsf.executeSQL("select 2*StringToInt(file.id) from db, file "
 				+ "where file.id <> '234';");
 		sm.remove("file");
 		sm.remove("db");
@@ -364,7 +364,7 @@ public class SourceManagementTest extends TestCase {
 		sm.removeAll();
 		sm.register("db", testDB);
 		sm.register("file", testFile);
-		String sql = "select 2*string2int(file.id) from db, file "
+		String sql = "select 2*StringToInt(file.id) from db, file "
 				+ "where file.id <> '234';";
 		sm.register("sql", sql);
 		sql = "select * from sql, file;";

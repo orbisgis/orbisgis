@@ -562,7 +562,7 @@ public class SQLTest extends SourceTest {
 		ds.close();
 
 		ds = dsf
-				.getDataSourceFromSQL("select sum(string2double(id)), count(id), country, category"
+				.getDataSourceFromSQL("select Sum(StringToDouble(id)), Count(id), country, category"
 						+ " from groupcsv group by country, category order by country, category;");
 		ds.open();
 		assertTrue(ds.getRowCount() == 6);
