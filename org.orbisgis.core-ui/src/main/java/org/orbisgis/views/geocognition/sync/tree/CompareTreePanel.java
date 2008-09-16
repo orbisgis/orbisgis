@@ -2,7 +2,9 @@ package org.orbisgis.views.geocognition.sync.tree;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.Graphics;
+import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
@@ -40,8 +42,6 @@ public class CompareTreePanel extends JPanel {
 			.getIcon("blended_leftarrow.png");
 	private static final Icon BOTH = IconLoader.getIcon("blended_both.png");
 
-	private static final Dimension BUTTON_SIZE = new Dimension(30, 30);
-
 	// Interface
 	private JTree tree;
 	private JPanel toolbarPanel;
@@ -78,7 +78,7 @@ public class CompareTreePanel extends JPanel {
 		JScrollPane treeScrollPane = new JScrollPane(tree);
 
 		// toolbar
-		toolbarPanel = new JPanel();
+		toolbarPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
 
 		JButton synchronize = new JButton(SYNCHRONIZE);
 		synchronize.addActionListener(new ActionListener() {
@@ -100,8 +100,7 @@ public class CompareTreePanel extends JPanel {
 			}
 		});
 		synchronize.setToolTipText("Synchronize");
-		synchronize.setPreferredSize(BUTTON_SIZE);
-		synchronize.setMinimumSize(BUTTON_SIZE);
+		synchronize.setMargin(new Insets(0, 0, 0, 0));
 		toolbarPanel.add(synchronize);
 
 		toolbarPanel.add(new ToolbarSeparator());
@@ -116,8 +115,7 @@ public class CompareTreePanel extends JPanel {
 			}
 		});
 		expandAll.setToolTipText("Expand All");
-		expandAll.setPreferredSize(BUTTON_SIZE);
-		expandAll.setMinimumSize(BUTTON_SIZE);
+		expandAll.setMargin(new Insets(0, 0, 0, 0));
 		toolbarPanel.add(expandAll);
 
 		JButton collapseAll = new JButton(COLLAPSE_ALL);
@@ -130,8 +128,7 @@ public class CompareTreePanel extends JPanel {
 			}
 		});
 		collapseAll.setToolTipText("Collapse All");
-		collapseAll.setPreferredSize(BUTTON_SIZE);
-		collapseAll.setMinimumSize(BUTTON_SIZE);
+		collapseAll.setMargin(new Insets(0, 0, 0, 0));
 		toolbarPanel.add(collapseAll);
 
 		setLayout(new BorderLayout());
@@ -154,22 +151,19 @@ public class CompareTreePanel extends JPanel {
 		importModeButton = new JToggleButton(IMPORT);
 		importModeButton.addActionListener(toggleButtonsListener);
 		importModeButton.setToolTipText("Import Mode");
-		importModeButton.setPreferredSize(BUTTON_SIZE);
-		importModeButton.setMinimumSize(BUTTON_SIZE);
+		importModeButton.setMargin(new Insets(0, 0, 0, 0));
 		toolbarPanel.add(importModeButton);
 
 		exportModeButton = new JToggleButton(EXPORT);
 		exportModeButton.addActionListener(toggleButtonsListener);
 		exportModeButton.setToolTipText("Export Mode");
-		exportModeButton.setPreferredSize(BUTTON_SIZE);
-		exportModeButton.setMinimumSize(BUTTON_SIZE);
+		exportModeButton.setMargin(new Insets(0, 0, 0, 0));
 		toolbarPanel.add(exportModeButton);
 
 		bothModesButton = new JToggleButton(BOTH);
 		bothModesButton.addActionListener(toggleButtonsListener);
 		bothModesButton.setToolTipText("Import / Export Mode");
-		bothModesButton.setPreferredSize(BUTTON_SIZE);
-		bothModesButton.setMinimumSize(BUTTON_SIZE);
+		bothModesButton.setMargin(new Insets(0, 0, 0, 0));
 		bothModesButton.setSelected(true);
 		toolbarPanel.add(bothModesButton);
 
@@ -262,6 +256,8 @@ public class CompareTreePanel extends JPanel {
 	 * 
 	 */
 	private class ToolbarSeparator extends JSeparator {
+		private static final int VERT_MARGIN = 3;
+
 		private ToolbarSeparator() {
 			super();
 			Dimension size = new Dimension(11, 31);
@@ -272,7 +268,7 @@ public class CompareTreePanel extends JPanel {
 		@Override
 		public void paint(Graphics g) {
 			int x = getWidth() / 2;
-			g.drawLine(x, 0, x, getHeight());
+			g.drawLine(x, VERT_MARGIN, x, getHeight() - VERT_MARGIN);
 		}
 	}
 

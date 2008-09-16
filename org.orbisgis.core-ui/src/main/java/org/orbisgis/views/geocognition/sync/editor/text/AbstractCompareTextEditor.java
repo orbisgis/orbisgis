@@ -5,8 +5,10 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Container;
 import java.awt.Dimension;
+import java.awt.Graphics;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.Insets;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
@@ -24,6 +26,7 @@ import javax.swing.JButton;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollBar;
+import javax.swing.JSeparator;
 import javax.swing.event.CaretEvent;
 import javax.swing.event.CaretListener;
 import javax.swing.event.DocumentEvent;
@@ -79,7 +82,6 @@ public abstract class AbstractCompareTextEditor extends JPanel implements
 	public static final int PRESERVE_RIGHT_POSITION = 1;
 	public static final int PRESERVE_LEFT_POSITION = 2;
 	public static final int NO_PRESERVE_POSITION = 0;
-	private static final Dimension BUTTON_SIZE = new Dimension(30, 30);
 
 	// Interface
 	private CompareTextPane rightPane, leftPane;
@@ -130,24 +132,24 @@ public abstract class AbstractCompareTextEditor extends JPanel implements
 
 		allToLeft = new JButton(ALL_TO_LEFT);
 		allToLeft.setToolTipText("Copy all changes to the local element");
-		allToLeft.setPreferredSize(BUTTON_SIZE);
+		allToLeft.setMargin(new Insets(0, 0, 0, 0));
 		allToRight = new JButton(ALL_TO_RIGHT);
 		allToRight.setToolTipText("Copy all changes to the remote element");
-		allToRight.setPreferredSize(BUTTON_SIZE);
+		allToRight.setMargin(new Insets(0, 0, 0, 0));
 		selectedToLeft = new JButton(SELECTED_TO_LEFT);
 		selectedToLeft
 				.setToolTipText("Copy selected change to the local element");
-		selectedToLeft.setPreferredSize(BUTTON_SIZE);
+		selectedToLeft.setMargin(new Insets(0, 0, 0, 0));
 		selectedToRight = new JButton(SELECTED_TO_RIGHT);
 		selectedToRight
 				.setToolTipText("Copy selected change to the remote element");
-		selectedToRight.setPreferredSize(BUTTON_SIZE);
+		selectedToRight.setMargin(new Insets(0, 0, 0, 0));
 		saveLeft = new JButton(SAVE_LEFT);
 		saveLeft.setToolTipText("Save local element");
-		saveLeft.setPreferredSize(BUTTON_SIZE);
+		saveLeft.setMargin(new Insets(0, 0, 0, 0));
 		saveRight = new JButton(SAVE_RIGHT);
 		saveRight.setToolTipText("Save remote element");
-		saveRight.setPreferredSize(BUTTON_SIZE);
+		saveRight.setMargin(new Insets(0, 0, 0, 0));
 
 		addListeners();
 		addComponents();
@@ -452,11 +454,12 @@ public abstract class AbstractCompareTextEditor extends JPanel implements
 		// toolbar
 		JPanel north = new JPanel();
 		north.add(saveLeft);
+		north.add(saveRight);
+		north.add(new ToolbarSeparator());
 		north.add(allToRight);
 		north.add(allToLeft);
 		north.add(selectedToRight);
 		north.add(selectedToLeft);
-		north.add(saveRight);
 
 		// Put all together
 		this.add(center, BorderLayout.CENTER);
@@ -659,7 +662,7 @@ public abstract class AbstractCompareTextEditor extends JPanel implements
 	@Override
 	public void setModel(GeocognitionElement left, GeocognitionElement right) {
 		close();
-		
+
 		// Left node
 		if (left == null) {
 			leftText = "";
@@ -1230,6 +1233,29 @@ public abstract class AbstractCompareTextEditor extends JPanel implements
 		@Override
 		public void saved(GeocognitionElement element) {
 			fireChange();
+		}
+	}
+
+	/**
+	 * Separator for the toolbar of the text editor
+	 * 
+	 * @author victorzinho
+	 * 
+	 */
+	private class ToolbarSeparator extends JSeparator {
+		private static final int VERT_MARGIN = 3;
+
+		private ToolbarSeparator() {
+			super();
+			Dimension size = new Dimension(11, 31);
+			setMinimumSize(size);
+			setPreferredSize(size);
+		}
+
+		@Override
+		public void paint(Graphics g) {
+			int x = getWidth() / 2;
+			g.drawLine(x, VERT_MARGIN, x, getHeight() - VERT_MARGIN);
 		}
 	}
 }
