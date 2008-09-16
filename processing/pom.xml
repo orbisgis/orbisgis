@@ -24,12 +24,7 @@
 			<groupId>org.gdms</groupId>
 			<artifactId>gdms</artifactId>
 			<version>1.2.1</version>
-		</dependency>
-		<dependency>
-			<groupId>org.jgrapht</groupId>
-			<artifactId>jgrapht</artifactId>
-			<version>0.7.3</version>
-		</dependency>
+		</dependency>		
 	</dependencies>
 	<build>
 		<plugins>
