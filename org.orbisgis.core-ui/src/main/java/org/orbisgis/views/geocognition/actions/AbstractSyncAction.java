@@ -14,6 +14,7 @@ import org.orbisgis.Services;
 import org.orbisgis.editor.IEditor;
 import org.orbisgis.geocognition.Geocognition;
 import org.orbisgis.geocognition.GeocognitionElement;
+import org.orbisgis.geocognition.mapContext.GeocognitionException;
 import org.orbisgis.pluginManager.background.BackgroundJob;
 import org.orbisgis.pluginManager.background.BackgroundManager;
 import org.orbisgis.progress.IProgressMonitor;
@@ -79,6 +80,9 @@ public abstract class AbstractSyncAction implements IGeocognitionGroupAction {
 			Services.getErrorManager().error(
 					"The file cannot be readed. Probably it's not a "
 							+ "valid geocognition xml file", e);
+		} catch (GeocognitionException e) {
+			Services.getErrorManager().error(
+					"The geocognition cannot be readed", e);
 		}
 	}
 

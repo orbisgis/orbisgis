@@ -79,7 +79,7 @@ public class SyncPanel extends AbstractUIPanel {
 
 	// Model
 	private SyncManager manager;
-	private GeocognitionElement localRoot, remoteRoot;
+	private GeocognitionElement localRoot, remoteRoot, localSource;
 	private Object remoteSource;
 	private ArrayList<IdPath> filterPaths;
 	private int synchronizationType;
@@ -213,12 +213,12 @@ public class SyncPanel extends AbstractUIPanel {
 	 */
 	public void setModel(GeocognitionElement localElement, Object remoteObject,
 			int syncType, ArrayList<IdPath> filter) throws IOException,
-			PersistenceException {
+			PersistenceException, GeocognitionException {
 		// Set attributes
 		filterPaths = filter;
-		remoteSource = remoteObject;
 		synchronizationType = syncType;
-		localRoot = localElement;
+		remoteSource = remoteObject;
+		localSource = localElement;
 
 		// Install buttons in the tree panel if necessary (advanced
 		// synchronization)
@@ -240,35 +240,39 @@ public class SyncPanel extends AbstractUIPanel {
 	 * @throws GeocognitionException
 	 *             if the local geocognition cannot be readed
 	 */
-	public void synchronize() throws IOException, PersistenceException {
+	public void synchronize() throws IOException, PersistenceException,
+			GeocognitionException {
 		// Set empty editor
 		currentEditor = editors.get(0);
 		currentEditor.setModel(null, null);
 		splitPane.setRightComponent(currentEditor.getComponent());
 
-		// Get local and remote elements
-		if ((synchronizationType & IMPORT) != 0) {
-			remoteRoot = createTreeFromResource(remoteSource);
-		} else if ((synchronizationType & EXPORT) != 0) {
-			if (isSourceEditable(remoteSource)) {
-				try {
-					remoteRoot = createTreeFromResource(remoteSource);
-				} catch (IOException e) {
+		if (localSource != remoteSource) {
+			localRoot = localSource.cloneElement();
+
+			// Get local and remote elements
+			if ((synchronizationType & IMPORT) != 0) {
+				remoteRoot = createTreeFromResource(remoteSource);
+			} else if ((synchronizationType & EXPORT) != 0) {
+				if (isSourceEditable(remoteSource)) {
+					try {
+						remoteRoot = createTreeFromResource(remoteSource);
+					} catch (IOException e) {
+						Geocognition gc = Services
+								.getService(Geocognition.class);
+						remoteRoot = gc.createFolder(localRoot.getId());
+					}
+				} else {
 					Geocognition gc = Services.getService(Geocognition.class);
 					remoteRoot = gc.createFolder(localRoot.getId());
 				}
-			} else {
-				Geocognition gc = Services.getService(Geocognition.class);
-				remoteRoot = gc.createFolder(localRoot.getId());
 			}
-		}
 
-		// Compare elements
-		if (localRoot == remoteSource) {
-			manager.compare(localRoot, remoteRoot, filterPaths);
-		} else {
 			BackgroundManager bm = Services.getService(BackgroundManager.class);
 			bm.backgroundOperation(new SynchronizingJob());
+		} else {
+			localRoot = remoteRoot = localSource;
+			manager.compare(localRoot, remoteRoot, filterPaths);
 		}
 
 		refresh(synchronizationType);

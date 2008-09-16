@@ -21,6 +21,7 @@ import javax.swing.tree.TreeSelectionModel;
 
 import org.orbisgis.PersistenceException;
 import org.orbisgis.Services;
+import org.orbisgis.geocognition.mapContext.GeocognitionException;
 import org.orbisgis.images.IconLoader;
 import org.orbisgis.views.geocognition.sync.IdPath;
 import org.orbisgis.views.geocognition.sync.SyncListener;
@@ -92,6 +93,9 @@ public class CompareTreePanel extends JPanel {
 					Services.getErrorManager().error(
 							"The remote source is not a "
 									+ "valid geocognition xml source", e1);
+				} catch (GeocognitionException e1) {
+					Services.getErrorManager().error(
+							"The geocognition cannot be readed", e1);
 				}
 			}
 		});
