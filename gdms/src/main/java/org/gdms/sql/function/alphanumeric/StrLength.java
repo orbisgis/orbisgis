@@ -55,7 +55,7 @@ public class StrLength implements Function {
 	}
 
 	public String getName() {
-		return "char_length";
+		return "strlength";
 	}
 
 	public boolean isAggregate() {
@@ -78,6 +78,6 @@ public class StrLength implements Function {
 	}
 
 	public String getSqlOrder() {
-		return "select char_length(myField) from myTable;";
+		return "select strlength(myField) from myTable;";
 	}
 }
