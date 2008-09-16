@@ -39,6 +39,7 @@ package org.gdms.sql.customQuery.spatial.geometry.tin;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.gdms.algorithm.triangulation.Triangulation;
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.ExecutionException;
@@ -58,7 +59,6 @@ import org.gdms.driver.memory.ObjectMemoryDriver;
 import org.gdms.sql.customQuery.CustomQuery;
 import org.gdms.sql.customQuery.TableDefinition;
 import org.gdms.sql.function.Arguments;
-import org.gdms.triangulation.Triangulation;
 import org.orbisgis.progress.IProgressMonitor;
 
 import com.vividsolutions.jts.geom.Coordinate;
