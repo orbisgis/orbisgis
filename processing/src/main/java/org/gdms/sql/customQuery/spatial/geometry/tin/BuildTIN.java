@@ -36,6 +36,9 @@
  */
 package org.gdms.sql.customQuery.spatial.geometry.tin;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.ExecutionException;
@@ -54,14 +57,11 @@ import org.gdms.driver.ObjectDriver;
 import org.gdms.driver.memory.ObjectMemoryDriver;
 import org.gdms.sql.customQuery.CustomQuery;
 import org.gdms.sql.customQuery.TableDefinition;
-import org.gdms.sql.function.Argument;
 import org.gdms.sql.function.Arguments;
-import org.gdms.triangulation.core.TriangulatedIrregularNetwork;
-import org.gdms.triangulation.jts.Triangle;
+import org.gdms.triangulation.Triangulation;
 import org.orbisgis.progress.IProgressMonitor;
 
 import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryCollection;
 import com.vividsolutions.jts.geom.GeometryFactory;
@@ -70,128 +70,82 @@ import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.Polygon;
 
 public class BuildTIN implements CustomQuery {
-	private static GeometryFactory geometryFactory = new GeometryFactory();
-	private static double BUFFER = 10.d;
+	private static GeometryFactory gf = new GeometryFactory();
 
 	public ObjectDriver evaluate(DataSourceFactory dsf, DataSource[] tables,
 			Value[] values, IProgressMonitor pm) throws ExecutionException {
-		final SpatialDataSourceDecorator inSds = new SpatialDataSourceDecorator(
+		SpatialDataSourceDecorator inSds = new SpatialDataSourceDecorator(
 				tables[0]);
-
 		try {
-			// build the TIN using the input spatial data source
-			inSds.open();
-			if (1 == values.length) {
-				// if no spatial's field's name is provided, the default (first)
-				// one is arbitrarily chosen.
-				final String spatialFieldName = values[0].toString();
-				inSds.setDefaultGeometry(spatialFieldName);
-			}
-
-			final TriangulatedIrregularNetwork theTin = new TriangulatedIrregularNetwork(
-					geometryFactory, toGeometry(inSds.getFullExtent()).buffer(
-							BUFFER).getEnvelopeInternal());
-
+			// populate and mesh the Planar Straight-Line Graph using the unique
+			// table as input data
 			final long rowCount = inSds.getRowCount();
+
+			final List<Coordinate> points = new ArrayList<Coordinate>();
+			final List<int[]> breakLineList = new ArrayList<int[]>();
 			for (long rowIndex = 0; rowIndex < rowCount; rowIndex++) {
-				final Geometry geometry = inSds.getGeometry(rowIndex);
-				if (geometry instanceof Point) {
-					addToTIN(theTin, (Point) geometry);
-				} else if (geometry instanceof LineString) {
-					addToTIN(theTin, (LineString) geometry);
-				} else if (geometry instanceof GeometryCollection) {
-					final GeometryCollection gc = (GeometryCollection) geometry;
-					for (int i = 0; i < gc.getNumGeometries(); i++) {
-						addToTIN(theTin, gc.getGeometryN(i));
-					}
-				}
+				addConstraint(inSds.getGeometry(rowIndex), points,
+						breakLineList);
 			}
-			theTin.buildIndex();
 			inSds.close();
 
-			// convert the TIN into a data source
+			final Triangulation t = new Triangulation(points
+					.toArray(new Coordinate[0]), (int[][]) breakLineList
+					.toArray(new int[][] {}));
+			t.triangulate();
+
+			// convert the resulting TIN into a data source
 			final ObjectMemoryDriver driver = new ObjectMemoryDriver(
 					getMetadata(null));
+			final Coordinate[] cc = t.getTriangulatedPoints();
 			long index = 0;
-			for (Triangle triangle : theTin.getTriangles()) {
+			for (int i = 0; i < cc.length; i += 3, index++) {
+				final Polygon tmpPolygon = gf.createPolygon(gf
+						.createLinearRing(new Coordinate[] { cc[i], cc[i + 1],
+								cc[i + 2], cc[i] }), null);
 				driver.addValues(new Value[] { ValueFactory.createValue(index),
-						ValueFactory.createValue(triangle.getPolygon()) });
+						ValueFactory.createValue(tmpPolygon) });
 			}
-
 			return driver;
 		} catch (DriverException e) {
 			throw new ExecutionException(e);
 		}
 	}
 
-	private void addToTIN(final TriangulatedIrregularNetwork theTin,
-			final Point point) {
-		theTin.insertNode(point);
-	}
-
-	private void addToTIN(final TriangulatedIrregularNetwork theTin,
-			final LineString lineString) {
-		final Coordinate[] vertices = lineString.getCoordinates();
-
-		theTin.insertNode(vertices[0]);
-		// TODO delete duplicate segments...
-		for (int i = 1; i < vertices.length; i++) {
-			theTin.insertNode(vertices[i]);
-			theTin.insertEdge(geometryFactory
-					.createLineString(new Coordinate[] { vertices[i - 1],
-							vertices[i] }));
-		}
-	}
-
-	private void addToTIN(final TriangulatedIrregularNetwork theTin,
-			final Polygon polygon) {
-		// TODO deal with holes
-		addToTIN(theTin, polygon.getExteriorRing());
-	}
-
-	private void addToTIN(final TriangulatedIrregularNetwork theTin,
-			final Geometry geometry) {
+	private void addConstraint(Geometry geometry, List<Coordinate> points,
+			List<int[]> breakLineList) {
 		if (geometry instanceof Point) {
-			addToTIN(theTin, (Point) geometry);
+			points.add(geometry.getCoordinate());
 		} else if (geometry instanceof LineString) {
-			addToTIN(theTin, (LineString) geometry);
+			addConstraint((LineString) geometry, points, breakLineList);
 		} else if (geometry instanceof Polygon) {
-			addToTIN(theTin, (Polygon) geometry);
+			Polygon polygon = (Polygon) geometry;
+			addConstraint(polygon.getExteriorRing(), points, breakLineList);
+			for (int i = 0; i < polygon.getNumInteriorRing(); i++) {
+				addConstraint(polygon.getInteriorRingN(i), points,
+						breakLineList);
+			}
 		} else if (geometry instanceof GeometryCollection) {
-			addToTIN(theTin, (GeometryCollection) geometry);
+			GeometryCollection gc = (GeometryCollection) geometry;
+			for (int i = 0; i < gc.getNumGeometries(); i++) {
+				addConstraint(gc.getGeometryN(i), points, breakLineList);
+			}
 		}
 	}
 
-	private void addToTIN(final TriangulatedIrregularNetwork theTin,
-			final GeometryCollection geometry) {
-		final GeometryCollection gc = (GeometryCollection) geometry;
-		for (int i = 0; i < gc.getNumGeometries(); i++) {
-			addToTIN(theTin, gc.getGeometryN(i));
+	private void addConstraint(LineString lineString, List<Coordinate> points,
+			List<int[]> breakLineList) {
+		int idx = points.size();
+		int[] breakLine = new int[lineString.getNumPoints()];
+		for (int j = 0, n = lineString.getNumPoints(); j < n; j++) {
+			points.add(lineString.getCoordinates()[j]);
+			breakLine[j] = idx++;
 		}
-	}
-
-	private static Geometry toGeometry(Envelope envelope) {
-		if ((envelope.getWidth() == 0) && (envelope.getHeight() == 0)) {
-			return geometryFactory.createPoint(new Coordinate(envelope
-					.getMinX(), envelope.getMinY()));
-		}
-
-		if ((envelope.getWidth() == 0) || (envelope.getHeight() == 0)) {
-			return geometryFactory.createLineString(new Coordinate[] {
-					new Coordinate(envelope.getMinX(), envelope.getMinY()),
-					new Coordinate(envelope.getMaxX(), envelope.getMaxY()) });
-		}
-
-		return geometryFactory.createLinearRing(new Coordinate[] {
-				new Coordinate(envelope.getMinX(), envelope.getMinY()),
-				new Coordinate(envelope.getMinX(), envelope.getMaxY()),
-				new Coordinate(envelope.getMaxX(), envelope.getMaxY()),
-				new Coordinate(envelope.getMaxX(), envelope.getMinY()),
-				new Coordinate(envelope.getMinX(), envelope.getMinY()) });
+		breakLineList.add(breakLine);
 	}
 
 	public String getDescription() {
-		return "Build a 2D TIN using the given table's shapes as input constraints";
+		return "Implementation of a 2D Constrained Delaunay Triangulation written by M. Michaud (France, IGN)";
 	}
 
 	public Metadata getMetadata(Metadata[] tables) throws DriverException {
@@ -213,7 +167,7 @@ public class BuildTIN implements CustomQuery {
 	}
 
 	public String getSqlOrder() {
-		return "select BuildTIN([the_geom]) from myTable";
+		return "select BuildTIN() from mydatasource";
 	}
 
 	public TableDefinition[] geTablesDefinitions() {
@@ -221,7 +175,6 @@ public class BuildTIN implements CustomQuery {
 	}
 
 	public Arguments[] getFunctionArguments() {
-		return new Arguments[] { new Arguments(Argument.GEOMETRY),
-				new Arguments() };
+		return new Arguments[] { new Arguments() };
 	}
 }
