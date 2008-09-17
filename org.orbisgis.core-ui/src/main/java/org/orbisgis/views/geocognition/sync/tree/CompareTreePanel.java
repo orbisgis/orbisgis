@@ -16,6 +16,7 @@ import java.util.Enumeration;
 import javax.swing.Icon;
 import javax.swing.JButton;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JSeparator;
@@ -71,7 +72,7 @@ public class CompareTreePanel extends JPanel {
 			@Override
 			public void syncDone() {
 				SwingUtilities.invokeLater(new Runnable() {
-				
+
 					@Override
 					public void run() {
 						refresh();
@@ -91,7 +92,12 @@ public class CompareTreePanel extends JPanel {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				try {
-					syncPanel.synchronize();
+					int option = JOptionPane.showConfirmDialog(null,
+							"All changes will be lost. Are you sure?",
+							"Synchronize", JOptionPane.YES_NO_OPTION);
+					if (option == JOptionPane.YES_OPTION) {
+						syncPanel.synchronize();
+					}
 				} catch (IOException e1) {
 					Services.getErrorManager().error(
 							"The remote source cannot be readed", e1);
