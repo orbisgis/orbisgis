@@ -1,7 +1,6 @@
 package org.orbisgis.views.geocognition.sync.editor.text;
 
 import org.orbisgis.Services;
-import org.orbisgis.geocognition.LeafElement;
 import org.orbisgis.geocognition.mapContext.GeocognitionException;
 import org.orbisgis.geocognition.sql.Code;
 import org.orbisgis.geocognition.sql.GeocognitionCustomQueryFactory;
@@ -51,8 +50,7 @@ public class CompareCodeEditor extends AbstractCompareTextEditor {
 	 * @return the content of the element
 	 */
 	private String getContent(GeocognitionElementDecorator dec) {
-		LeafElement element = (LeafElement) dec.getDecoratedElement();
-		Code code = (Code) element.getObject();
+		Code code = (Code) dec.getObject();
 		return code.getCode();
 	}
 
@@ -66,11 +64,10 @@ public class CompareCodeEditor extends AbstractCompareTextEditor {
 	 *            the content to set
 	 */
 	private void setContent(GeocognitionElementDecorator dec, String content) {
-		LeafElement element = (LeafElement) dec.getDecoratedElement();
-		Code code = (Code) element.getObject();
+		Code code = (Code) dec.getObject();
 		code.setCode(content);
 		try {
-			element.save();
+			dec.save();
 		} catch (UnsupportedOperationException e) {
 			Services.getErrorManager().error("bug!", e);
 		} catch (GeocognitionException e) {

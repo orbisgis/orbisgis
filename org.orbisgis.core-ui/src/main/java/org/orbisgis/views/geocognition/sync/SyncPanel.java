@@ -146,6 +146,9 @@ public class SyncPanel extends AbstractUIPanel {
 		// Set empty editor
 		setEditor(null);
 
+		localRoot = remoteRoot = localSource;
+		manager.compare(localRoot, remoteRoot, filterPaths);
+
 		if (localSource != remoteSource) {
 			localRoot = localSource.cloneElement();
 
@@ -167,12 +170,6 @@ public class SyncPanel extends AbstractUIPanel {
 				}
 			}
 
-		}
-
-		localRoot = remoteRoot = localSource;
-		manager.compare(localRoot, remoteRoot, filterPaths);
-
-		if (localSource != remoteSource) {
 			BackgroundManager bm = Services.getService(BackgroundManager.class);
 			bm.backgroundOperation(new SynchronizingJob());
 		}
