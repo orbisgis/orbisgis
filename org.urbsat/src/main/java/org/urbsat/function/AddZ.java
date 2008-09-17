@@ -58,7 +58,10 @@ import com.vividsolutions.jts.geom.Geometry;
 
 public class AddZ implements Function {
 	private GeoRaster dem = null;
+
 	private ImageProcessor demIp = null;
+
+	private double ZFieldValue;
 
 	public Value evaluate(Value[] args) throws FunctionException {
 		if ((args[0].isNull()) || (args[1].isNull())) {
@@ -66,38 +69,53 @@ public class AddZ implements Function {
 		}
 
 		Geometry geometry = args[0].getAsGeometry();
-		try {
-			if (null == dem) {
-				// TODO this function is only able to deal with a single raster
-				// (see FeatureRequest #4307)
-				dem = args[1].getAsRaster();
-				dem.open();
-				demIp = dem.getImagePlus().getProcessor();
-			}
 
-			// To modify the coordinates of the geometry, we need a
-			// CoordinateSequenceFilter. To have an explanation, see
-			// http://lists.refractions.net/pipermail/jts-devel/2008-June/002534.html
-			//
-			// Coordinate[] coordinates = geometry.getCoordinates();
-			// for (Coordinate coordinate : coordinates) {
-			// coordinate.z = getGroundZ(coordinate.x, coordinate.y);
-			// }
-			ZFilter zFilter = new ZFilter();
-			geometry.apply(zFilter);
-			if (null != zFilter.exception) {
-				throw new FunctionException(zFilter.exception);
+		if (args[1].getType() == Type.RASTER) {
+			try {
+				if (null == dem) {
+					// TODO this function is only able to deal with a single
+					// raster
+					// (see FeatureRequest #4307)
+					dem = args[1].getAsRaster();
+					dem.open();
+					demIp = dem.getImagePlus().getProcessor();
+				}
+
+				// To modify the coordinates of the geometry, we need a
+				// CoordinateSequenceFilter. To have an explanation, see
+				// http://lists.refractions.net/pipermail/jts-devel/2008-June/002534.html
+				//
+				// Coordinate[] coordinates = geometry.getCoordinates();
+				// for (Coordinate coordinate : coordinates) {
+				// coordinate.z = getGroundZ(coordinate.x, coordinate.y);
+				// }
+				RasterZFilter zFilter = new RasterZFilter();
+				geometry.apply(zFilter);
+				if (null != zFilter.exception) {
+					throw new FunctionException(zFilter.exception);
+				}
+
+				return ValueFactory.createValue(geometry);
+			} catch (IOException e) {
+				throw new FunctionException(
+						"Bug while trying to retrieve the GeoRaster data", e);
 			}
+		} else if (args[1].getType() == Type.DOUBLE) {
+
+			ZFieldValue = args[1].getAsDouble();
+
+			FieldZFilter fieldZFilter = new FieldZFilter();
+			geometry.apply(fieldZFilter);
 
 			return ValueFactory.createValue(geometry);
-		} catch (IOException e) {
-			throw new FunctionException(
-					"Bug while trying to retrieve the GeoRaster data", e);
+
 		}
+		return null;
 	}
 
-	private class ZFilter implements CoordinateSequenceFilter {
+	private class RasterZFilter implements CoordinateSequenceFilter {
 		private boolean done = false;
+
 		IOException exception = null;
 
 		public void filter(CoordinateSequence seq, int i) {
@@ -125,6 +143,31 @@ public class AddZ implements Function {
 		}
 	}
 
+	private class FieldZFilter implements CoordinateSequenceFilter {
+		private boolean done = false;
+
+		IOException exception = null;
+
+		public void filter(CoordinateSequence seq, int i) {
+			double x = seq.getX(i);
+			double y = seq.getY(i);
+			seq.setOrdinate(i, 0, x);
+			seq.setOrdinate(i, 1, y);
+			seq.setOrdinate(i, 2, ZFieldValue);
+			if (i + 1 == seq.size()) {
+				done = true;
+			}
+		}
+
+		public boolean isDone() {
+			return done;
+		}
+
+		public boolean isGeometryChanged() {
+			return true;
+		}
+	}
+
 	private double getGroundZ(final double x, final double y)
 			throws IOException {
 		final Point2D pixelPoint = dem.fromRealWorldToPixel(x, y);
@@ -135,12 +178,14 @@ public class AddZ implements Function {
 	public String getDescription() {
 		return "This function modify (or set) the z component of (each vertex of) the "
 				+ "geometric parameter to the corresponding value given by the DEM "
-				+ "elevation parameter.";
+				+ "elevation parameter or in a field.";
 	}
 
 	public Arguments[] getFunctionArguments() {
-		return new Arguments[] { new Arguments(Argument.GEOMETRY,
-				Argument.RASTER) };
+
+		return new Arguments[] {
+				new Arguments(Argument.GEOMETRY, Argument.RASTER),
+				new Arguments(Argument.GEOMETRY, new Argument(Argument.TYPE_NUMERIC)) };
 	}
 
 	public String getName() {
@@ -148,7 +193,8 @@ public class AddZ implements Function {
 	}
 
 	public String getSqlOrder() {
-		return "select AddZ(b.the_geom, d.raster) from buildings b, dem d;";
+		return "select AddZ(b.the_geom, d.raster) from buildings b, dem d or"
+				+ "select AddZ(b.the_geom, fieldname) from builldings b, dem d;";
 	}
 
 	public Type getType(Type[] argsTypes) throws InvalidTypeException {
