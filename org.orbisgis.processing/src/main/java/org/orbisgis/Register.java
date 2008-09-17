@@ -46,6 +46,7 @@ import org.gdms.sql.customQuery.spatial.raster.convert.RasterToPolygons;
 import org.gdms.sql.customQuery.spatial.raster.convert.RasterToXYZ;
 import org.gdms.sql.customQuery.spatial.raster.convert.RasterizeLine;
 import org.gdms.sql.customQuery.spatial.raster.convert.VectorizeLine;
+import org.gdms.sql.customQuery.spatial.raster.interpolate.GeometryToRasterTINInterpolation;
 import org.gdms.sql.function.FunctionManager;
 import org.gdms.sql.function.alphanumeric.SubString;
 import org.gdms.sql.function.spatial.geometry.convert.PointsToLine;
@@ -76,6 +77,8 @@ public class Register implements PluginActivator {
 		QueryManager.registerQuery(RasterToXYZ.class);
 
 		QueryManager.registerQuery(RasterizeLine.class);
+		
+		QueryManager.registerQuery(GeometryToRasterTINInterpolation.class);
 
 		FunctionManager.addFunction(D8Slope.class);
 		FunctionManager.addFunction(D8Direction.class);
