@@ -10,12 +10,15 @@ if [ "$#" -ne "2" ] && [ "$#" -ne "1" ]; then
   exit 1;
 fi
 
+LZPACK_HOME="/home/fergonco/applications/lzPack";
 BASE_DIRECTORY="/tmp";
-# BASE_DIRECTORY="/import/tmp-3jours";
+DST_INSTALLER_DIRECTORY="${BASE_DIRECTORY}/orbisgis-installers";
 DST_SVN_DIRECTORY="${BASE_DIRECTORY}/orbisgis-svn";
 DATE=`date +%Y%m%d-%H%M`;
 RELEASE_DIRECTORY="${BASE_DIRECTORY}/orbisgis-zip";
 URL="$1";
+INSTALLER_URL="http://geosysin.iict.ch/irstv-svn/platform-installers";
+
 if [ "$2" == "official" ]; then
   OFFICIAL="official";
 fi
@@ -29,9 +32,7 @@ echo "Please, change the pom version numbers depending on the change log (press 
 read foo
 echo "Please, change the OrbisGIS version number on the plugin.xml of org.orbisgis.core-ui (press intro when done)"
 read foo
-echo "It's done. Don't forget to publish change log and zip (press intro)"
-read foo
-echo "A binary and a source package will be created (press intro to proceed)"
+echo "It's done. Don't forget to publish change log and zip. A binary and a source package will be created (press intro to proceed)"
 read foo
 fi
 echo "Please, enter the version number to appear in the zip file name"
@@ -42,6 +43,13 @@ MAIN_CLASS="org.orbisgis.pluginManager.Main";
 RSYNC="rsync --archive --verbose --exclude=.svn";
 MVN="mvn -Dmaven.test.skip=true";
 # ======================================================================
+checkLzPack() {
+	if [ ! -d ${LZPACK_HOME} ]; then
+		echo "Wrong lzPack home";
+		exit 1;
+	fi
+}
+
 svnCheckout() {
 	rm -fr ${DST_SVN_DIRECTORY};
 	mkdir -p ${DST_SVN_DIRECTORY};
@@ -86,7 +94,6 @@ createPluginListXml() {
 	for plugin in ${PLUGINS_LIST}; do
 		echo "  <plugin dir=\"plugins/${plugin}\"/>" >> "${RELEASE_DIRECTORY}/plugin-list.xml";
 	done
-	# echo "  <plugin dir=\"lib\"/>" >> "${RELEASE_DIRECTORY}/plugin-list.xml";
 	echo "</plugins>" >> "${RELEASE_DIRECTORY}/plugin-list.xml";
 }
 
@@ -128,25 +135,50 @@ produceBatAndShellFiles() {
 		WIN="lib\\${jar};${WIN}";
 	done
 
+# standalone linux package
 	cat <<EOF > ${RELEASE_DIRECTORY}/orbisgis.sh;
-#! /bin/sh
-# export TRIANGLE_HOME="/home/leduc/dev/eclipse-java/platform/org.orbisgis.rasterProcessing/lib";
-# PATH="/System/Library/Frameworks/JavaVM.framework/Versions/1.6/Commands/java:\${PATH}";
 java -Xmx512M -cp "${UNX}" ${MAIN_CLASS} \${@}
 EOF
 	chmod +x ${RELEASE_DIRECTORY}/orbisgis.sh;
 
+# with jdk
+	cat <<EOF > ${BASE_DIRECTORY}/orbisgis.sh;
+../jdk/bin/java -Xmx512M -cp "${UNX}" ${MAIN_CLASS} \${@}
+EOF
+
+# standalone windows package
 cat <<EOF > ${RELEASE_DIRECTORY}/orbisgis.bat;
-REM set TRIANGLE_HOME=D:\leduc\eclipse\platform\rasterProcessing\lib
 start javaw -Xmx512M -cp "${WIN}" ${MAIN_CLASS} %1
 EOF
 	unix2dos ${RELEASE_DIRECTORY}/orbisgis.bat;
+
+# with jdk
+cat <<EOF > ${BASE_DIRECTORY}/orbisgis.bat;
+start ..\jdk\bin\javaw -Xmx512M -cp "${WIN}" ${MAIN_CLASS} %1
+EOF
+	unix2dos ${BASE_DIRECTORY}/orbisgis.bat;
 }
 
 makeZip() {
 	cp ${DST_SVN_DIRECTORY}/platform/plugin-manager/docs/license.txt ${RELEASE_DIRECTORY};
 	cd $(dirname ${RELEASE_DIRECTORY}) && zip -r orbisgis-${VERSION}.zip $(basename ${RELEASE_DIRECTORY});
 }
+
+createInstallers() {
+	rm -fr ${DST_INSTALLER_DIRECTORY};
+	svn checkout $INSTALLER_URL ${DST_INSTALLER_DIRECTORY};
+	cd ${DST_INSTALLER_DIRECTORY}/linux;
+	tar -xjvf jdk.bz2;
+#	cd ${DST_INSTALLER_DIRECTORY}/windows;
+#	tar -xjvf jdk.bz2;
+	cd ${DST_INSTALLER_DIRECTORY};
+	cp -R ${RELEASE_DIRECTORY} bin
+	cp ${BASE_DIRECTORY}/orbisgis.sh bin
+	cp ${BASE_DIRECTORY}/orbisgis.bat bin
+	${LZPACK_HOME}/bin/compile install-linux.xml -b ${DST_INSTALLER_DIRECTORY} -o orbisgis-linux-installer-${VERSION}.jar -h ${LZPACK_HOME}
+#	${LZPACK_HOME}/bin/compile install-windows.xml -b ${DST_INSTALLER_DIRECTORY} -o orbisgis-windows-installer-${VERSION}.jar -h ${LZPACK_HOME}}
+}
+
 # ======================================================================
 if [ ${#} -eq 1 ]; then
 	DATE_OF_RELEASE=${1};
@@ -154,6 +186,7 @@ else
 	DATE_OF_RELEASE=$(date +%Y%m%d);
 fi
 
+checkLzPack;
 svnCheckout ${DATE_OF_RELEASE};
 if [ $OFFICIAL ]; then
  createZipOfAllSrcAndJavadoc;
@@ -164,3 +197,5 @@ copyAllJarFiles;
 copyDependenciesAndPluginXmlAndSchema;
 produceBatAndShellFiles;
 makeZip;
+
+createInstallers;
