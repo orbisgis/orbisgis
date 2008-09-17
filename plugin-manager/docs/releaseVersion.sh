@@ -169,14 +169,14 @@ createInstallers() {
 	svn checkout $INSTALLER_URL ${DST_INSTALLER_DIRECTORY};
 	cd ${DST_INSTALLER_DIRECTORY}/linux;
 	tar -xjvf jdk.bz2;
-#	cd ${DST_INSTALLER_DIRECTORY}/windows;
-#	tar -xjvf jdk.bz2;
+	cd ${DST_INSTALLER_DIRECTORY}/windows;
+	tar -xjvf jdk.bz2;
 	cd ${DST_INSTALLER_DIRECTORY};
 	cp -R ${RELEASE_DIRECTORY} bin
 	cp ${BASE_DIRECTORY}/orbisgis.sh bin
 	cp ${BASE_DIRECTORY}/orbisgis.bat bin
 	${LZPACK_HOME}/bin/compile install-linux.xml -b ${DST_INSTALLER_DIRECTORY} -o orbisgis-linux-installer-${VERSION}.jar -h ${LZPACK_HOME}
-#	${LZPACK_HOME}/bin/compile install-windows.xml -b ${DST_INSTALLER_DIRECTORY} -o orbisgis-windows-installer-${VERSION}.jar -h ${LZPACK_HOME}}
+	${LZPACK_HOME}/bin/compile install-windows.xml -b ${DST_INSTALLER_DIRECTORY} -o orbisgis-windows-installer-${VERSION}.jar -h ${LZPACK_HOME}}
 }
 
 # ======================================================================
