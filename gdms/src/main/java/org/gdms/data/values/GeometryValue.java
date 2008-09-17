@@ -45,6 +45,7 @@ import com.vividsolutions.jts.geom.GeometryCollection;
 import com.vividsolutions.jts.io.ParseException;
 import com.vividsolutions.jts.io.WKBReader;
 import com.vividsolutions.jts.io.WKBWriter;
+import com.vividsolutions.jts.io.WKTWriter;
 
 class GeometryValue extends AbstractValue {
 
@@ -52,6 +53,9 @@ class GeometryValue extends AbstractValue {
 
 	private static final WKBWriter writer3D = new WKBWriter(3);
 	private static final WKBWriter writer2D = new WKBWriter();
+
+	private static final WKTWriter textWriter3D = new WKTWriter(3);
+	private static final WKTWriter textWriter2D = new WKTWriter();
 
 	private static final WKBReader reader = new WKBReader();
 
@@ -135,7 +139,11 @@ class GeometryValue extends AbstractValue {
 	}
 
 	public String toString() {
-		return geom.toText();
+		if (Double.isNaN(geom.getCoordinate().z)) {
+			return textWriter2D.write(geom);
+		} else {
+			return textWriter3D.write(geom);
+		}
 	}
 
 	public byte[] getBytes() {
