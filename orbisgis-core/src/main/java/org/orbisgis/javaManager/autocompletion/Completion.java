@@ -38,7 +38,6 @@ public class Completion {
 				SimpleNode node = (SimpleNode) parser.getRootNode();
 				acVisitor.setCompletionCase(text, node, pos[0], pos[1]);
 				acVisitor.visit(node, null);
-				System.out.println(currentText);
 				return acVisitor.getOptions();
 			} catch (ParseException e) {
 				ArrayList<String> validTexts = getValidText(currentText,
