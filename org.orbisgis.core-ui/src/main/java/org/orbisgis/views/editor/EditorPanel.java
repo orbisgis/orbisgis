@@ -59,6 +59,7 @@ import net.infonode.docking.DockingWindow;
 import net.infonode.docking.OperationAbortedException;
 import net.infonode.docking.RootWindow;
 import net.infonode.docking.View;
+import net.infonode.docking.properties.DockingWindowProperties;
 import net.infonode.gui.panel.SimplePanel;
 
 import org.apache.log4j.Logger;
@@ -109,6 +110,13 @@ public class EditorPanel extends Container {
 						new Color(100, 140, 190));
 		root.getRootWindowProperties().getWindowAreaProperties()
 				.setBackgroundColor(new Color(238, 238, 238));
+
+		// Disable undock
+		DockingWindowProperties defaultWindowProperties = root
+				.getRootWindowProperties().getDockingWindowProperties();
+		defaultWindowProperties.setDockEnabled(false);
+		defaultWindowProperties.setUndockEnabled(false);
+		defaultWindowProperties.setUndockOnDropEnabled(false);
 
 		this.add(root, BorderLayout.CENTER);
 
@@ -281,6 +289,43 @@ public class EditorPanel extends Container {
 
 	private final class ClosingListener extends DockingWindowAdapter {
 		private View nextFocus;
+
+		@Override
+		public void windowAdded(DockingWindow arg0, DockingWindow arg1) {
+			System.out.println("added");
+		}
+
+		@Override
+		public void windowDocked(DockingWindow arg0) {
+			System.out.println("docked");
+		}
+
+		@Override
+		public void windowDocking(DockingWindow arg0)
+				throws OperationAbortedException {
+			System.out.println("docking");
+		}
+
+		@Override
+		public void windowHidden(DockingWindow arg0) {
+			System.out.println("hidden");
+		}
+
+		@Override
+		public void windowRemoved(DockingWindow arg0, DockingWindow arg1) {
+			System.out.println("removed");
+		}
+
+		@Override
+		public void windowUndocked(DockingWindow arg0) {
+			System.out.println("undocked");
+		}
+
+		@Override
+		public void windowUndocking(DockingWindow arg0)
+				throws OperationAbortedException {
+			System.out.println("undocking");
+		}
 
 		@Override
 		public void windowClosing(DockingWindow arg0)
