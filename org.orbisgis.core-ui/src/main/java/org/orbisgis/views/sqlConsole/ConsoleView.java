@@ -216,7 +216,7 @@ public class ConsoleView implements IView {
 
 			long t1 = System.currentTimeMillis();
 			try {
-
+				logger.debug("Preparing script: " + script);
 				try {
 					instructions = sqlProcessor.getScriptInstructions(script);
 				} catch (SemanticException e) {
@@ -234,6 +234,7 @@ public class ConsoleView implements IView {
 						.getService("org.orbisgis.DataManager");
 				for (int i = 0; i < instructions.length; i++) {
 
+					logger.debug("Preparing instruction: " + instructions[i]);
 					try {
 						Instruction instruction = sqlProcessor
 								.prepareInstruction(instructions[i]);
