@@ -449,7 +449,8 @@ public class SyncPanel extends AbstractUIPanel {
 	private class EditorSyncListener implements SyncListener {
 		@Override
 		public void syncDone() {
-			if (currentEditor == null) {
+			if (currentEditor == null
+					|| !currentEditor.getComponent().isVisible()) {
 				return;
 			}
 

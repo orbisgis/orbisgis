@@ -9,13 +9,13 @@ import org.orbisgis.geocognition.GeocognitionElementFactory;
 import org.orbisgis.geocognition.GeocognitionElementListener;
 import org.orbisgis.geocognition.mapContext.GeocognitionException;
 import org.orbisgis.progress.IProgressMonitor;
-import org.orbisgis.views.geocognition.sync.SyncManager.EditorSavingListener;
+import org.orbisgis.views.geocognition.sync.editor.EditorElementListener;
 
 public class GeocognitionElementDecorator implements GeocognitionElement {
 	private GeocognitionElement element;
 	private ArrayList<GeocognitionElementDecorator> children;
 	private ArrayList<IdPath> filterPaths;
-	private ArrayList<EditorSavingListener> listeners;
+	private ArrayList<EditorElementListener> listeners;
 
 	/**
 	 * Creates a new GeocognitionElementDecorator
@@ -32,7 +32,7 @@ public class GeocognitionElementDecorator implements GeocognitionElement {
 							"Cannot decorate a null element"));
 		}
 
-		listeners = new ArrayList<EditorSavingListener>();
+		listeners = new ArrayList<EditorElementListener>();
 		filterPaths = filter;
 		element = e;
 		children = new ArrayList<GeocognitionElementDecorator>();
@@ -253,10 +253,10 @@ public class GeocognitionElementDecorator implements GeocognitionElement {
 	 * @param listener
 	 *            the listener to add
 	 */
-	void addEditorSavingListenerRecursively(EditorSavingListener listener) {
+	public void addEditorElementListener(EditorElementListener listener) {
 		listeners.add(listener);
 		for (GeocognitionElementDecorator child : children) {
-			child.addEditorSavingListenerRecursively(listener);
+			child.addEditorElementListener(listener);
 		}
 	}
 
@@ -268,9 +268,10 @@ public class GeocognitionElementDecorator implements GeocognitionElement {
 	 *            the listener to remove
 	 * @return true if the listener is removed, false otherwise
 	 */
-	boolean removeElementContentListener(EditorSavingListener elementListener) {
+	public boolean removeEditorElementListener(
+			EditorElementListener elementListener) {
 		for (GeocognitionElementDecorator child : children) {
-			child.removeElementContentListener(elementListener);
+			child.removeEditorElementListener(elementListener);
 		}
 		return listeners.remove(elementListener);
 	}
@@ -279,7 +280,7 @@ public class GeocognitionElementDecorator implements GeocognitionElement {
 	 * Calls all the editor saving listeners
 	 */
 	private void fireElementChanged() {
-		for (EditorSavingListener listener : listeners) {
+		for (EditorElementListener listener : listeners) {
 			listener.elementChanged(this);
 		}
 	}

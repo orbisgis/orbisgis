@@ -8,6 +8,7 @@ import org.orbisgis.geocognition.Geocognition;
 import org.orbisgis.geocognition.GeocognitionElement;
 import org.orbisgis.geocognition.mapContext.GeocognitionException;
 import org.orbisgis.progress.IProgressMonitor;
+import org.orbisgis.views.geocognition.sync.editor.EditorElementListener;
 import org.orbisgis.views.geocognition.sync.tree.TreeElement;
 
 public class SyncManager {
@@ -26,7 +27,7 @@ public class SyncManager {
 
 	// Listeners
 	private ArrayList<SyncListener> listenerList;
-	private EditorSavingListener listener;
+	private EditorElementListener listener;
 
 	/**
 	 * Creates a new synchronization manager
@@ -111,12 +112,12 @@ public class SyncManager {
 	private GeocognitionElementDecorator getDecoratedRoot(
 			GeocognitionElementDecorator root, GeocognitionElement element) {
 		if (root != null) {
-			root.removeElementContentListener(getEditorSavingListener());
+			root.removeEditorElementListener(getEditorSavingListener());
 		}
 
 		root = (element instanceof GeocognitionElementDecorator) ? (GeocognitionElementDecorator) element
 				: new GeocognitionElementDecorator(element, filterPaths);
-		root.addEditorSavingListenerRecursively(getEditorSavingListener());
+		root.addEditorElementListener(getEditorSavingListener());
 
 		return root;
 	}
@@ -126,9 +127,9 @@ public class SyncManager {
 	 * 
 	 * @return the editor saving listener for this synchronization manager
 	 */
-	private EditorSavingListener getEditorSavingListener() {
+	private EditorElementListener getEditorSavingListener() {
 		if (listener == null) {
-			listener = new EditorSavingListener() {
+			listener = new EditorElementListener() {
 				@Override
 				public void elementChanged(GeocognitionElement element) {
 					synchronize(new IdPath(element.getIdPath()), null);
@@ -934,12 +935,5 @@ public class SyncManager {
 		for (SyncListener listener : listenerList) {
 			listener.syncDone();
 		}
-	}
-
-	/**
-	 * Listener for the ICompareEditor saving events
-	 */
-	interface EditorSavingListener {
-		void elementChanged(GeocognitionElement e);
 	}
 }

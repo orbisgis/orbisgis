@@ -37,11 +37,11 @@ import javax.swing.text.DocumentFilter;
 
 import org.orbisgis.Services;
 import org.orbisgis.geocognition.GeocognitionElement;
-import org.orbisgis.geocognition.GeocognitionElementListener;
 import org.orbisgis.geocognition.mapContext.GeocognitionException;
 import org.orbisgis.images.IconLoader;
 import org.orbisgis.ui.text.UndoableDocument;
 import org.orbisgis.views.geocognition.sync.GeocognitionElementDecorator;
+import org.orbisgis.views.geocognition.sync.editor.EditorElementListener;
 import org.orbisgis.views.geocognition.sync.editor.ICompareEditor;
 import org.orbisgis.views.geocognition.sync.editor.text.diff.Difference;
 import org.orbisgis.views.geocognition.sync.editor.text.diff.Mapping;
@@ -109,8 +109,7 @@ public abstract class AbstractCompareTextEditor extends JPanel implements
 	private boolean documentChangeByCode;
 
 	// Element listeners
-	private RightElementListener rightElementListener;
-	private LeftElementListener leftElementListener;
+	private ElementListener elementListener;
 
 	/**
 	 * Creates a new AbstractCompareTextEditor
@@ -120,8 +119,7 @@ public abstract class AbstractCompareTextEditor extends JPanel implements
 		scrollBarChangeByCode = false;
 		documentChangeByCode = false;
 
-		leftElementListener = new LeftElementListener();
-		rightElementListener = new RightElementListener();
+		elementListener = new ElementListener();
 
 		leftPane = new CompareTextPane(this);
 		rightPane = new CompareTextPane(this);
@@ -609,12 +607,12 @@ public abstract class AbstractCompareTextEditor extends JPanel implements
 	@Override
 	public void close() {
 		if (leftElement != null) {
-			leftElement.removeElementListener(leftElementListener);
+			leftElement.removeEditorElementListener(elementListener);
 			leftElement = null;
 		}
 
 		if (rightElement != null) {
-			rightElement.removeElementListener(rightElementListener);
+			rightElement.removeEditorElementListener(elementListener);
 			rightElement = null;
 		}
 	}
@@ -673,7 +671,8 @@ public abstract class AbstractCompareTextEditor extends JPanel implements
 						: new GeocognitionElementDecorator(left, null);
 				leftText = getLeftContent();
 				leftTitle = left.getId();
-				leftElement.addElementListener(leftElementListener);
+				leftElement
+						.addEditorElementListener(elementListener);
 			} catch (GeocognitionException e) {
 				Services.getErrorManager().error(
 						"An error has ocurred while reading the file", e);
@@ -690,7 +689,8 @@ public abstract class AbstractCompareTextEditor extends JPanel implements
 						: new GeocognitionElementDecorator(right, null);
 				rightText = getRightContent();
 				rightTitle = right.getId();
-				rightElement.addElementListener(rightElementListener);
+				rightElement
+						.addEditorElementListener(elementListener);
 			} catch (GeocognitionException e) {
 				Services.getErrorManager().error(
 						"An error has ocurred while reading the file", e);
@@ -1166,75 +1166,41 @@ public abstract class AbstractCompareTextEditor extends JPanel implements
 	 * 
 	 * @author Victorzinho
 	 */
-	private class RightElementListener implements GeocognitionElementListener {
-		private void fireChange() {
+	private class ElementListener implements EditorElementListener {
+		@Override
+		public void elementChanged(GeocognitionElement e) {
 			try {
-				String original = getRightContent();
-				if (!rightText.equals(original)) {
-					int option = JOptionPane.showConfirmDialog(null,
-							RIGHT_OUTSIDE_MODIFY_TEXT,
-							RIGHT_OUTSIDE_MODIFY_TITLE,
-							JOptionPane.YES_NO_OPTION);
-					if (option == JOptionPane.OK_OPTION) {
-						rightText = original;
-						update(PRESERVE_LEFT_POSITION);
+				if (e == leftElement) {
+					String original = getLeftContent();
+					leftSavedText = original;
+					if (!leftText.equals(original)) {
+						int option = JOptionPane.showConfirmDialog(null,
+								LEFT_OUTSIDE_MODIFY_TEXT,
+								LEFT_OUTSIDE_MODIFY_TITLE,
+								JOptionPane.YES_NO_OPTION);
+						if (option == JOptionPane.OK_OPTION) {
+							leftText = original;
+							update(PRESERVE_RIGHT_POSITION);
+						}
+					}
+				} else if (e == rightElement) {
+					String original = getRightContent();
+					rightSavedText = original;
+					if (!rightText.equals(original)) {
+						int option = JOptionPane.showConfirmDialog(null,
+								RIGHT_OUTSIDE_MODIFY_TEXT,
+								RIGHT_OUTSIDE_MODIFY_TITLE,
+								JOptionPane.YES_NO_OPTION);
+						if (option == JOptionPane.OK_OPTION) {
+							rightText = original;
+							update(PRESERVE_LEFT_POSITION);
+						}
 					}
 				}
-			} catch (GeocognitionException e) {
+			} catch (GeocognitionException e1) {
 				Services.getErrorManager().error(
-						"An error has ocurred while reading the file", e);
+						"An error has ocurred while reading the file", e1);
 			}
-		}
-
-		@Override
-		public void contentChanged(GeocognitionElement element) {
-			fireChange();
-		}
-
-		@Override
-		public void idChanged(GeocognitionElement element) {
-			fireChange();
-		}
-
-		@Override
-		public void saved(GeocognitionElement element) {
-			fireChange();
-		}
-	}
-
-	private class LeftElementListener implements GeocognitionElementListener {
-		private void fireChange() {
-			try {
-				String original = getLeftContent();
-				if (!leftText.equals(original)) {
-					int option = JOptionPane.showConfirmDialog(null,
-							LEFT_OUTSIDE_MODIFY_TEXT,
-							LEFT_OUTSIDE_MODIFY_TITLE,
-							JOptionPane.YES_NO_OPTION);
-					if (option == JOptionPane.OK_OPTION) {
-						leftText = original;
-						update(PRESERVE_RIGHT_POSITION);
-					}
-				}
-			} catch (GeocognitionException e) {
-				Services.getErrorManager().error(
-						"An error has ocurred while reading the file", e);
-			}
-		}
-
-		@Override
-		public void contentChanged(GeocognitionElement element) {
-			fireChange();
-		}
-
-		@Override
-		public void idChanged(GeocognitionElement element) {
-			fireChange();
-		}
-
-		@Override
-		public void saved(GeocognitionElement element) {
-			fireChange();
 		}
 	}
 
