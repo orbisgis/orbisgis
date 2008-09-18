@@ -281,7 +281,7 @@ public class GeocognitionElementDecorator implements GeocognitionElement {
 	 */
 	private void fireElementChanged() {
 		for (EditorElementListener listener : listeners) {
-			listener.elementChanged(this);
+			listener.elementContentChanged(this);
 		}
 	}
 }

@@ -131,7 +131,7 @@ public class SyncManager {
 		if (listener == null) {
 			listener = new EditorElementListener() {
 				@Override
-				public void elementChanged(GeocognitionElement element) {
+				public void elementContentChanged(GeocognitionElement element) {
 					synchronize(new IdPath(element.getIdPath()), null);
 				}
 			};

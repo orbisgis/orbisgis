@@ -1168,7 +1168,7 @@ public abstract class AbstractCompareTextEditor extends JPanel implements
 	 */
 	private class ElementListener implements EditorElementListener {
 		@Override
-		public void elementChanged(GeocognitionElement e) {
+		public void elementContentChanged(GeocognitionElement e) {
 			try {
 				if (e == leftElement) {
 					String original = getLeftContent();
