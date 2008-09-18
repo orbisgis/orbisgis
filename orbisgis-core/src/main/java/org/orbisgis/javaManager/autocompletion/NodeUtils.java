@@ -131,7 +131,8 @@ public class NodeUtils {
 		String cutted = getPrefix(node, line, col);
 		String[] parts = cutted.split("\\Q.\\E");
 		String[] aux;
-		if (cutted.endsWith(".")) {
+		boolean addEmpty = cutted.endsWith(".");
+		if (addEmpty) {
 			aux = new String[parts.length + 1];
 		} else {
 			aux = new String[parts.length];
@@ -139,7 +140,7 @@ public class NodeUtils {
 		for (int i = 0; i < parts.length; i++) {
 			aux[i] = parts[i].trim();
 		}
-		if (cutted.endsWith(".")) {
+		if (addEmpty) {
 			aux[aux.length - 1] = "";
 		}
 		parts = aux;

@@ -17,6 +17,7 @@ import javax.swing.JEditorPane;
 import javax.swing.JFrame;
 import javax.swing.text.JTextComponent;
 
+import org.apache.log4j.Logger;
 import org.orbisgis.Services;
 import org.orbisgis.errorManager.ErrorManager;
 import org.orbisgis.javaManager.autocompletion.Completion;
@@ -26,6 +27,9 @@ import org.orbisgis.windows.mainFrame.UIManager;
 import org.sif.UIFactory;
 
 public class CompletionKeyListener extends KeyAdapter {
+	
+	private final static Logger logger = Logger.getLogger(CompletionKeyListener.class);
+	
 	private final boolean script;
 	private JTextComponent txt;
 	private CompletionPopUp pop;
@@ -77,9 +81,13 @@ public class CompletionKeyListener extends KeyAdapter {
 		String originalText = txt.getText();
 		if ((e.getKeyCode() == KeyEvent.VK_SPACE) && e.isControlDown()) {
 			Point p = txt.getCaret().getMagicCaretPosition();
-			Option[] list = completion.getOptions(originalText, txt
-					.getCaretPosition(), script);
-			showList(list, p);
+			try {
+				Option[] list = completion.getOptions(originalText, txt
+						.getCaretPosition(), script);
+				showList(list, p);
+			} catch (Exception e1) {
+				logger.debug("Bug autocompleting", e1);
+			}
 		} else if ((e.getKeyCode() == KeyEvent.VK_S) && e.isControlDown()
 				&& e.isShiftDown()) {
 			try {
