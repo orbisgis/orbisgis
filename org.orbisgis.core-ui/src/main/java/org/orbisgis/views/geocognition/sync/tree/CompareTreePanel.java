@@ -82,6 +82,7 @@ public class CompareTreePanel extends JPanel {
 		};
 
 		treePanel = new TreePanel();
+		treePanel.getTree().setRootVisible(true);
 		model = new CompareTreeModel();
 
 		// toolbar
@@ -290,10 +291,20 @@ public class CompareTreePanel extends JPanel {
 	 * Refreshes the tree
 	 */
 	private void refresh() {
+		JTree tree = treePanel.getTree();
+
+		// Set root as visible if necessary (to show the 'no changes' message in
+		// the tree)
+		if (syncPanel.getSyncManager().getDifferenceTree() == null) {
+			tree.setRootVisible(true);
+		} else {
+			tree.setRootVisible(false);
+		}
+
 		// Preserve tree expansions
 		Enumeration<TreePath> expanded = null;
-		expanded = treePanel.getTree().getExpandedDescendants(
-				treePanel.getTree().getPathForRow(0));
+		expanded = tree.getExpandedDescendants(new TreePath(tree.getModel()
+				.getRoot()));
 
 		model.fireTreeStructureChanged();
 		SyncManager syncManager = syncPanel.getSyncManager();
@@ -429,9 +440,13 @@ public class CompareTreePanel extends JPanel {
 
 		@Override
 		public JPopupMenu getPopup() {
-			ArrayList<IdPath> idPaths = new ArrayList<IdPath>();
 			TreePath[] paths = tree.getSelectionPaths();
 
+			if (paths == null) {
+				return null;
+			}
+
+			ArrayList<IdPath> idPaths = new ArrayList<IdPath>();
 			for (int i = 0; i < paths.length; i++) {
 				TreeElement element = (TreeElement) paths[i]
 						.getLastPathComponent();
