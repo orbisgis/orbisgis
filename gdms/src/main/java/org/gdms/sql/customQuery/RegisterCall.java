@@ -99,15 +99,15 @@ public class RegisterCall implements CustomQuery {
 	}
 
 	public String getName() {
-		return "register";
+		return "Register";
 	}
 
 	public String getDescription() {
-		return "Register a new file datasource.";
+		return "Register a new file or a database.";
 	}
 
 	public String getSqlOrder() {
-		return "select register('C:\\Document and Settings\\myShape.shp','myTable');";
+		return "select register('C:\\Temp\\myShape.shp','myTable');";
 	}
 
 	public Metadata getMetadata(Metadata[] tables) {
