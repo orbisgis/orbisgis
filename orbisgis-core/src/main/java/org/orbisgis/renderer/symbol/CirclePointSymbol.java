@@ -41,14 +41,14 @@ import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.NoninvertibleTransformException;
-import java.awt.geom.Point2D;
+import java.awt.geom.PathIterator;
 
 import org.gdms.driver.DriverException;
 import org.orbisgis.renderer.RenderPermission;
+import org.orbisgis.renderer.liteShape.LiteShape;
 
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.Point;
 
 public class CirclePointSymbol extends AbstractPointSymbol {
 
@@ -78,11 +78,11 @@ public class CirclePointSymbol extends AbstractPointSymbol {
 
 	public Envelope draw(Graphics2D g, Geometry geom, AffineTransform at,
 			RenderPermission permission) throws DriverException {
+		LiteShape ls = new LiteShape(geom, at, false);
+		PathIterator pi = ls.getPathIterator(null);
+		double[] coords = new double[6];
 
-		Point point = geom.getCentroid();
-		Point2D p = new Point2D.Double(point.getX(), point.getY());
-		p = at.transform(p, null);
-		double drawingSize = size;
+		int drawingSize = size;
 		if (mapUnits) {
 			try {
 				drawingSize = (int) toPixelUnits(size, at);
@@ -90,7 +90,12 @@ public class CirclePointSymbol extends AbstractPointSymbol {
 				throw new DriverException("Cannot convert to map units", e);
 			}
 		}
-		paintCircle(g, p.getX(), p.getY(), drawingSize);
+
+		while (!pi.isDone()) {
+			pi.currentSegment(coords);
+			paintCircle(g, (int) coords[0], (int) coords[1], drawingSize);
+			pi.next();
+		}
 
 		return null;
 	}
