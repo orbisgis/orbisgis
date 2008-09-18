@@ -29,10 +29,13 @@ public class SyncManager {
 	private ArrayList<SyncListener> listenerList;
 	private EditorElementListener listener;
 
+	private boolean isPerformingTransaction;
+
 	/**
 	 * Creates a new synchronization manager
 	 */
 	public SyncManager() {
+		isPerformingTransaction = false;
 		listenerList = new ArrayList<SyncListener>();
 	}
 
@@ -132,7 +135,9 @@ public class SyncManager {
 			listener = new EditorElementListener() {
 				@Override
 				public void elementContentChanged(GeocognitionElement element) {
-					synchronize(new IdPath(element.getIdPath()), null);
+					if (!isPerformingTransaction) {
+						synchronize(new IdPath(element.getIdPath()), null);
+					}
 				}
 			};
 		}
@@ -513,10 +518,20 @@ public class SyncManager {
 	 * 
 	 * @param path
 	 *            the path to the element to commit
-	 * @throws UnsupportedOperationException
-	 *             if the remote tree is not editable
 	 */
 	public void commit(IdPath path) {
+		isPerformingTransaction = true;
+		performCommit(path);
+		isPerformingTransaction = false;
+	}
+
+	/**
+	 * Performs a commit transaction on the given element
+	 * 
+	 * @param path
+	 *            the path to the element to commit
+	 */
+	private void performCommit(IdPath path) {
 		IdPath syncPath;
 		if (isAdded(path)) {
 			try {
@@ -559,6 +574,18 @@ public class SyncManager {
 	 *            the path to the element to update
 	 */
 	public void update(IdPath path) {
+		isPerformingTransaction = true;
+		performUpdate(path);
+		isPerformingTransaction = false;
+	}
+
+	/**
+	 * Performs an update transaction over the given element
+	 * 
+	 * @param path
+	 *            the path to the element to update
+	 */
+	private void performUpdate(IdPath path) {
 		IdPath syncPath = path;
 		if (isAdded(path)) {
 			syncPath = delete(localRoot, path);

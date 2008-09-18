@@ -23,7 +23,6 @@ import java.util.ArrayList;
 
 import javax.swing.Icon;
 import javax.swing.JButton;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollBar;
 import javax.swing.JSeparator;
@@ -58,14 +57,6 @@ public abstract class AbstractCompareTextEditor extends JPanel implements
 			.getIcon("current_right.png");
 	private static final Icon SAVE_LEFT = IconLoader.getIcon("save_left.png");
 	private static final Icon SAVE_RIGHT = IconLoader.getIcon("save_right.png");
-
-	// String constants for the resource modification dialog
-	private static final String LEFT_OUTSIDE_MODIFY_TEXT = "The left resource has changed outside "
-			+ "the editor. Do you want to load the changes?";
-	private static final String LEFT_OUTSIDE_MODIFY_TITLE = "Left resource changed";
-	private static final String RIGHT_OUTSIDE_MODIFY_TEXT = "The right resource has changed outside "
-			+ "the editor. Do you want to load the changes?";
-	private static final String RIGHT_OUTSIDE_MODIFY_TITLE = "Right resource changed";
 
 	// String constants for the empty node
 	private static final String NO_DOCUMENT_TITLE = "(no document)";
@@ -671,8 +662,7 @@ public abstract class AbstractCompareTextEditor extends JPanel implements
 						: new GeocognitionElementDecorator(left, null);
 				leftText = getLeftContent();
 				leftTitle = left.getId();
-				leftElement
-						.addEditorElementListener(elementListener);
+				leftElement.addEditorElementListener(elementListener);
 			} catch (GeocognitionException e) {
 				Services.getErrorManager().error(
 						"An error has ocurred while reading the file", e);
@@ -689,8 +679,7 @@ public abstract class AbstractCompareTextEditor extends JPanel implements
 						: new GeocognitionElementDecorator(right, null);
 				rightText = getRightContent();
 				rightTitle = right.getId();
-				rightElement
-						.addEditorElementListener(elementListener);
+				rightElement.addEditorElementListener(elementListener);
 			} catch (GeocognitionException e) {
 				Services.getErrorManager().error(
 						"An error has ocurred while reading the file", e);
@@ -1173,29 +1162,13 @@ public abstract class AbstractCompareTextEditor extends JPanel implements
 				if (e == leftElement) {
 					String original = getLeftContent();
 					leftSavedText = original;
-					if (!leftText.equals(original)) {
-						int option = JOptionPane.showConfirmDialog(null,
-								LEFT_OUTSIDE_MODIFY_TEXT,
-								LEFT_OUTSIDE_MODIFY_TITLE,
-								JOptionPane.YES_NO_OPTION);
-						if (option == JOptionPane.OK_OPTION) {
-							leftText = original;
-							update(PRESERVE_RIGHT_POSITION);
-						}
-					}
+					leftText = original;
+					update(PRESERVE_RIGHT_POSITION);
 				} else if (e == rightElement) {
 					String original = getRightContent();
 					rightSavedText = original;
-					if (!rightText.equals(original)) {
-						int option = JOptionPane.showConfirmDialog(null,
-								RIGHT_OUTSIDE_MODIFY_TEXT,
-								RIGHT_OUTSIDE_MODIFY_TITLE,
-								JOptionPane.YES_NO_OPTION);
-						if (option == JOptionPane.OK_OPTION) {
-							rightText = original;
-							update(PRESERVE_LEFT_POSITION);
-						}
-					}
+					rightText = original;
+					update(PRESERVE_LEFT_POSITION);
 				}
 			} catch (GeocognitionException e1) {
 				Services.getErrorManager().error(
