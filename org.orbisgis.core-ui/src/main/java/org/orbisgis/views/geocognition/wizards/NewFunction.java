@@ -79,7 +79,7 @@ public class NewFunction implements INewGeocognitionElement {
 
 	@Override
 	public String getName() {
-		return "Function";
+		return "New Function";
 	}
 
 	@Override

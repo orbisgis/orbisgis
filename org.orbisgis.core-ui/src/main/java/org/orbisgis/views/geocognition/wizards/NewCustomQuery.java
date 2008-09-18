@@ -81,7 +81,7 @@ public class NewCustomQuery implements INewGeocognitionElement {
 
 	@Override
 	public String getName() {
-		return "Custom query";
+		return "New Custom query";
 	}
 
 	@Override
