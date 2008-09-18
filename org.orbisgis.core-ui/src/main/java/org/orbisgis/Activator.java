@@ -96,7 +96,9 @@ public class Activator implements PluginActivator {
 		final ErrorManager em = (ErrorManager) Services
 				.getService("org.orbisgis.ErrorManager");
 		em.addErrorListener(new ErrorListener() {
-
+			
+			private ErrorPanel ep = new ErrorPanel();
+			
 			public void warning(String userMsg, Throwable e) {
 				error(userMsg, e, false);
 			}
@@ -116,31 +118,14 @@ public class Activator implements PluginActivator {
 				om.append(errorMessage.getTrace(), color);
 				om.makeVisible();
 
-				// send log
-				if ((e instanceof Throwable) || (e instanceof RuntimeException)) {
-					int ret = JOptionPane
-							.showConfirmDialog(
-									null,
-									"There have been an uncaught error in the \n"
-											+ "system. Hitting OK will send us your OrbisGIS logs \n"
-											+ "that contain information to solve this problem. Proceed? \n"
-											+ Services.getService(
-													PluginManager.class)
-													.getLogFile(),
-									"Unexpected error",
-									JOptionPane.OK_CANCEL_OPTION,
-									JOptionPane.ERROR_MESSAGE);
-					if (ret == JOptionPane.OK_OPTION) {
+				// Show message to the user and send log
+				if (errorMessage.isError()) {
+					ep.show("Error", errorMessage.getLongMessage());
+					if (ep.sendLog()) {
 						Thread t = new Thread(new SendLog());
 						t.setPriority(Thread.MIN_PRIORITY);
 						t.start();
-					}
-				} else {
-					// Show message to the user
-					if (errorMessage.isError()) {
-						JOptionPane.showMessageDialog(null, errorMessage
-								.getLongMessage(), "Error",
-								JOptionPane.ERROR_MESSAGE);
+
 					}
 				}
 			}

@@ -58,7 +58,12 @@ public class UIFactory {
 	}
 
 	public static SIFDialog getSimpleDialog(UIPanel panel, Window owner) {
-		SIFDialog dlg = new SIFDialog(owner);
+		return getSimpleDialog(panel, owner, true);
+	}
+
+	public static SIFDialog getSimpleDialog(UIPanel panel, Window owner,
+			boolean okCancel) {
+		SIFDialog dlg = new SIFDialog(owner, okCancel);
 		SimplePanel simplePanel = new SimplePanel(dlg, panel);
 		dlg.setComponent(simplePanel, inputs);
 		return dlg;
@@ -105,12 +110,20 @@ public class UIFactory {
 	}
 
 	public static boolean showDialog(UIPanel[] panels) {
+		return showDialog(panels, true);
+	}
+
+	public static boolean showDialog(UIPanel[] panels, boolean okCancel) {
 		AbstractOutsideFrame dlg;
 		if (panels.length == 0) {
 			throw new IllegalArgumentException(
 					"At least a panel has to be specified");
 		} else if (panels.length == 1) {
-			dlg = getSimpleDialog(panels[0]);
+			if (okCancel) {
+				dlg = getSimpleDialog(panels[0]);
+			} else {
+				dlg = getSimpleDialog(panels[0], null, false);
+			}
 		} else {
 			dlg = getWizard(panels);
 		}
@@ -123,7 +136,11 @@ public class UIFactory {
 	}
 
 	public static boolean showDialog(UIPanel panel) {
-		return showDialog(new UIPanel[] { panel });
+		return showDialog(new UIPanel[] { panel }, true);
+	}
+
+	public static void showOkDialog(UIPanel panel) {
+		showDialog(new UIPanel[] { panel }, false);
 	}
 
 	public static void setInputFor(String id, String inputName) {

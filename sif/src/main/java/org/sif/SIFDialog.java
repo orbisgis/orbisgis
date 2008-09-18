@@ -57,12 +57,12 @@ public class SIFDialog extends AbstractOutsideFrame {
 
 	private boolean test;
 
-	public SIFDialog(Window owner) {
+	public SIFDialog(Window owner, boolean okCancel) {
 		super(owner);
-		init();
+		init(okCancel);
 	}
 
-	private void init() {
+	private void init(boolean okCancel) {
 		this.setLayout(new BorderLayout());
 
 		btnOk = new JButton("OK");
@@ -84,7 +84,9 @@ public class SIFDialog extends AbstractOutsideFrame {
 		});
 		JPanel pnlButtons = new JPanel();
 		pnlButtons.add(btnOk);
-		pnlButtons.add(btnCancel);
+		if (okCancel) {
+			pnlButtons.add(btnCancel);
+		}
 
 		this.add(pnlButtons, BorderLayout.SOUTH);
 
