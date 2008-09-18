@@ -715,7 +715,8 @@ public abstract class AbstractCompareTextEditor extends JPanel implements
 		boolean enableRight = b && rightElement != null;
 		rightPane.setEnabled(enableRight);
 		rightPane.getTextArea().setFocusable(enableRight);
-		if (enableRight && !leftTitle.equals(NO_DOCUMENT_TITLE)) {
+		if (enableRight && mapping.getDifferences().size() != 0
+				&& !leftTitle.equals(NO_DOCUMENT_TITLE)) {
 			allToRight.setEnabled(true);
 			if (middle.getSelected() != -1) {
 				selectedToRight.setEnabled(true);
@@ -732,7 +733,8 @@ public abstract class AbstractCompareTextEditor extends JPanel implements
 		boolean enableLeft = b && leftElement != null;
 		leftPane.setEnabled(enableLeft);
 		leftPane.getTextArea().setFocusable(enableLeft);
-		if (enableLeft && !rightTitle.equals(NO_DOCUMENT_TITLE)) {
+		if (enableLeft && mapping.getDifferences().size() != 0
+				&& !rightTitle.equals(NO_DOCUMENT_TITLE)) {
 			allToLeft.setEnabled(true);
 			if (middle.getSelected() != -1) {
 				selectedToLeft.setEnabled(true);
