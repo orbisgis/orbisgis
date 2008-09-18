@@ -146,7 +146,8 @@ public class SyncPanel extends AbstractUIPanel {
 		// Set empty editor
 		setEditor(null);
 
-		localRoot = remoteRoot = localSource;
+		localRoot = localSource;
+		remoteRoot = localSource;
 		manager.compare(localRoot, remoteRoot, filterPaths);
 
 		if (localSource != remoteSource) {

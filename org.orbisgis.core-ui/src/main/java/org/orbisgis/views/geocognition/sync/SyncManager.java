@@ -194,6 +194,34 @@ public class SyncManager {
 			TreeElement parent = (differenceRoot == null) ? differenceRoot
 					: differenceRoot.find(path, path.size() - 1);
 
+			// If there's no parent for the element in the difference tree,
+			// create de minimum folder structure
+			if (parent == null) {
+				int i = 0;
+				if (differenceRoot != null) {
+					// find last existing ancestor in the difference tree
+					TreeElement aux = differenceRoot.find(path, 1);
+					for (i = 1; i < path.size(); i++) {
+						if (aux != null) {
+							parent = aux;
+							aux = differenceRoot.find(path, i + 1);
+						} else {
+							break;
+						}
+					}
+
+				} else {
+					differenceRoot = new TreeElement(localRoot);
+					parent = differenceRoot;
+				}
+
+				for (; i < path.size(); i++) {
+					TreeElement aux = new TreeElement(find(localRoot, path, i));
+					parent.addElement(aux);
+					parent = aux;
+				}
+			}
+
 			// If the parent exists, remove the previous child and add the new
 			// synchronized one
 			if (parent != null) {
@@ -201,20 +229,6 @@ public class SyncManager {
 				if (subTree != null) {
 					parent.addElement(subTree);
 				}
-			} else if (subTree != null) {
-				// If parent is null but the synchronized element has changed,
-				// build the minimum directory structure in the difference tree.
-				TreeElement child = subTree;
-				GeocognitionElement childElement = find(localRoot, path);
-				GeocognitionElement parentElement = childElement.getParent();
-				while (parentElement != null) {
-					parent = new TreeElement(parentElement);
-					parent.addElement(child);
-					child = parent;
-					childElement = parentElement;
-					parentElement = parentElement.getParent();
-				}
-				differenceRoot = parent;
 			}
 		} else {
 			Services.getErrorManager().error(
