@@ -79,8 +79,12 @@ public abstract class AbstractSyntaxColoringDocument extends UndoableDocument {
 
 			// If not already applying style, apply it
 			if (!styling) {
+				// Parse all the line if there is any comment
+				if (text.indexOf(getSingleLineComment()) != -1) {
+					offset = 0;
+				}
 				colorize(offset, offset
-						+ Math.max(getLineEnd(offset), text.length()));
+						+ Math.max(getLineEndFromOffset(offset), text.length()));
 			}
 
 			if (!alreadyGrouping) {
@@ -88,10 +92,13 @@ public abstract class AbstractSyntaxColoringDocument extends UndoableDocument {
 			}
 		}
 
-		// TODO change getLineEnd -> getLineEndFromOffset
-		private int getLineEnd(int offset) {
+		private int getLineEndFromOffset(int offset) {
 			String line = textPane.getText().substring(offset);
-			return line.indexOf('\n');
+			if (line.indexOf('\n') != -1) {
+				return line.indexOf('\n');
+			} else {
+				return line.length();
+			}
 		}
 
 		@Override
@@ -101,10 +108,10 @@ public abstract class AbstractSyntaxColoringDocument extends UndoableDocument {
 			if (!alreadyGrouping) {
 				groupUndoEdits(true);
 			}
-			
+
 			super.remove(fb, offset, length);
 			if (!styling) {
-				colorize(offset, offset + getLineEnd(offset));
+				colorize(offset, offset + getLineEndFromOffset(offset));
 			}
 
 			if (!alreadyGrouping) {
@@ -118,6 +125,25 @@ public abstract class AbstractSyntaxColoringDocument extends UndoableDocument {
 			replace(fb, offset, 0, text, attr);
 		}
 	}
+
+	protected void styleComment(String sqlText, int startText, int lastStyledPos,
+			int beginPos) throws BadLocationException {
+		int spaceLength = beginPos - lastStyledPos;
+		String comment = sqlText.substring(lastStyledPos, lastStyledPos
+				+ spaceLength);
+		if (comment.trim().length() > 0) {
+			styling = true;
+			super.remove(startText + lastStyledPos, spaceLength);
+			super
+					.insertString(startText + lastStyledPos, comment,
+							getCommentStyle());
+			styling = false;
+		}
+	}
+
+	protected abstract AttributeSet getCommentStyle();
+
+	protected abstract String getSingleLineComment();
 
 	protected abstract AttributeSet getDefaultStyle();
 

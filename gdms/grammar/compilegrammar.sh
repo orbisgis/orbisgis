@@ -6,8 +6,8 @@ PACKAGE="org.gdms.sql.parser";
 ### ODIR="src/org/gdms/sql/parser";
 ODIR="../src/main/java/org/gdms/sql/parser";
 
-~/applications/javacc-4.0/bin/jjtree -NODE_PACKAGE:${PACKAGE} -OUTPUT_DIRECTORY:${ODIR} -VISITOR:true -NODE_SCOPE_HOOK:true -MULTI:true sql.jj
-~/applications/javacc-4.0/bin/javacc -OUTPUT_DIRECTORY:${ODIR} -IGNORE_CASE:true ${ODIR}/sql.jj.jj
+~/applications/javacc-4.1/bin/jjtree -NODE_PACKAGE:${PACKAGE} -OUTPUT_DIRECTORY:${ODIR} -VISITOR:true -NODE_SCOPE_HOOK:true -MULTI:true sql.jj
+~/applications/javacc-4.1/bin/javacc -OUTPUT_DIRECTORY:${ODIR} -IGNORE_CASE:true ${ODIR}/sql.jj.jj
 
 cat <<EOF > ${ODIR}/TokenSupport.java
 package ${PACKAGE};
@@ -21,4 +21,4 @@ EOF
 
 sed -i 's/class SimpleNode implements/class SimpleNode extends TokenSupport implements/' ${ODIR}/SimpleNode.java
 
-~/applications/javacc-4.0/bin/jjdoc sql.jj
+~/applications/javacc-4.1/bin/jjdoc sql.jj

@@ -44,11 +44,15 @@ SKIP:
 }
 
 
-SKIP:
+MORE:
 {
-  <COMMENT_LINE: "--" (~["\n","\r"])* ("\n"|"\r"|"\r\n") >
+  "--": IN_COMMENT_LINE
 }
-
+<IN_COMMENT_LINE>
+SPECIAL_TOKEN:
+{
+	<COMMENT_LINE: "\n" | "\r" | "\r\n" > : DEFAULT
+}
 
 SKIP:
 {

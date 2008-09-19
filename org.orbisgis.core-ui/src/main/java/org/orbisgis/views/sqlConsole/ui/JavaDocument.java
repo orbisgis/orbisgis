@@ -217,8 +217,8 @@ public class JavaDocument extends AbstractSyntaxColoringDocument {
 		JavaParserTokenManager tm = new JavaParserTokenManager(
 				new JavaCharStream(new ByteArrayInputStream(sqlText.getBytes())));
 		Token token;
+		int lastStyledPos = 0;
 		try {
-			int lastStyledPos = 0;
 			do {
 				token = tm.getNextToken();
 				int beginPos = NodeUtils.getPosition(sqlText, token.beginLine,
@@ -226,16 +226,7 @@ public class JavaDocument extends AbstractSyntaxColoringDocument {
 
 				// check comments
 				if (token.kind != JavaParserTokenManager.EOF) {
-					int spaceLength = beginPos - lastStyledPos;
-					String comment = sqlText.substring(lastStyledPos,
-							lastStyledPos + spaceLength);
-					if (comment.trim().length() > 0) {
-						styling = true;
-						super.remove(startText + lastStyledPos, spaceLength);
-						super.insertString(startText + lastStyledPos, comment,
-								commentStyle);
-						styling = false;
-					}
+					styleComment(sqlText, startText, lastStyledPos, beginPos);
 				}
 
 				// draw token
@@ -248,6 +239,7 @@ public class JavaDocument extends AbstractSyntaxColoringDocument {
 				styling = false;
 			} while (token.kind != JavaParserTokenManager.EOF);
 		} catch (TokenMgrError e1) {
+			styleComment(sqlText, startText, lastStyledPos, sqlText.length());
 		}
 
 	}
@@ -263,7 +255,17 @@ public class JavaDocument extends AbstractSyntaxColoringDocument {
 
 	@Override
 	protected AttributeSet getDefaultStyle() {
-		return punctStyle;
+		return commentStyle;
+	}
+
+	@Override
+	protected String getSingleLineComment() {
+		return "//";
+	}
+
+	@Override
+	protected AttributeSet getCommentStyle() {
+		return commentStyle;
 	}
 
 }

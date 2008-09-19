@@ -27,7 +27,7 @@ public class SQLDocument extends AbstractSyntaxColoringDocument {
 		SimpleAttributeSet idStyle = getStyle(Color.gray);
 		keywordStyle = getStyle(Color.blue);
 		SimpleAttributeSet literalStyle = getStyle(brown);
-		SimpleAttributeSet commentStyle = getStyle(Color.green);
+		commentStyle = getStyle(new Color(63, 127, 95));
 		kindStyle.put(SQLEngineConstants.ID, idStyle);
 		kindStyle.put(SQLEngineConstants.ALL, keywordStyle);
 		kindStyle.put(SQLEngineConstants.AND, keywordStyle);
@@ -95,8 +95,8 @@ public class SQLDocument extends AbstractSyntaxColoringDocument {
 				new SimpleCharStream(new ByteArrayInputStream(sqlText
 						.getBytes())));
 		Token token;
+		int lastStyledPos = 0;
 		try {
-			int lastStyledPos = 0;
 			do {
 				token = tm.getNextToken();
 				int beginPos = NodeUtils.getPosition(sqlText, token.beginLine,
@@ -104,16 +104,7 @@ public class SQLDocument extends AbstractSyntaxColoringDocument {
 
 				// check comments
 				if (token.kind != SQLEngineTokenManager.EOF) {
-					int spaceLength = beginPos - lastStyledPos;
-					String comment = sqlText.substring(lastStyledPos,
-							lastStyledPos + spaceLength);
-					if (comment.trim().length() > 0) {
-						styling = true;
-						super.remove(startText + lastStyledPos, spaceLength);
-						super.insertString(startText + lastStyledPos, comment,
-								commentStyle);
-						styling = false;
-					}
+					styleComment(sqlText, startText, lastStyledPos, beginPos);
 				}
 
 				// draw token
@@ -126,6 +117,7 @@ public class SQLDocument extends AbstractSyntaxColoringDocument {
 				styling = false;
 			} while (token.kind != SQLEngineTokenManager.EOF);
 		} catch (TokenMgrError e1) {
+			styleComment(sqlText, startText, lastStyledPos, sqlText.length());
 		}
 
 	}
@@ -141,6 +133,16 @@ public class SQLDocument extends AbstractSyntaxColoringDocument {
 
 	@Override
 	protected AttributeSet getDefaultStyle() {
-		return keywordStyle;
+		return commentStyle;
+	}
+
+	@Override
+	protected String getSingleLineComment() {
+		return "--";
+	}
+
+	@Override
+	protected AttributeSet getCommentStyle() {
+		return commentStyle;
 	}
 }
