@@ -191,24 +191,32 @@ public class CommonClassLoader extends SecureClassLoader {
 			c = defineClass(name, bytes, 0, bytes.length);
 		}
 
-		if (c != null) {
-			return c;
-		}
-
-		// Look in the classes directory
-		for (int i = 0; i < outputFolders.size(); i++) {
-			try {
-				String classFileName = outputFolders.get(i).getAbsolutePath()
-						+ "/" + name.replace('.', '/') + ".class";
-				File f = new File(classFileName);
-				if (f.exists()) {
-					byte[] data = loadClassData(f);
-					c = defineClass(name, data, 0, data.length);
-					break;
+		if (c == null) {
+			// Look in the classes directory
+			for (int i = 0; i < outputFolders.size(); i++) {
+				try {
+					String classFileName = outputFolders.get(i)
+							.getAbsolutePath()
+							+ "/" + name.replace('.', '/') + ".class";
+					File f = new File(classFileName);
+					if (f.exists()) {
+						byte[] data = loadClassData(f);
+						c = defineClass(name, data, 0, data.length);
+						break;
+					}
+				} catch (IOException e) {
+					throw new NoClassDefFoundError("Cannot read .class file:"
+							+ e.getMessage());
 				}
-			} catch (IOException e) {
-				throw new NoClassDefFoundError("Cannot read .class file:"
-						+ e.getMessage());
+			}
+		}
+		int i = name.lastIndexOf('.');
+		if (i != -1) {
+			String pkgname = name.substring(0, i);
+			// Check if package already loaded.
+			Package pkg = getPackage(pkgname);
+			if (pkg == null) {
+				definePackage(pkgname, null, null, null, null, null, null, null);
 			}
 		}
 
