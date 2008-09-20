@@ -1,56 +1,7 @@
-/*
  * OrbisGIS is a GIS application dedicated to scientific spatial simulation.
- * This cross-platform GIS is developed at French IRSTV institute and is able
- * to manipulate and create vector and raster spatial information. OrbisGIS
- * is distributed under GPL 3 license. It is produced  by the geo-informatic team of
- * the IRSTV Institute <http://www.irstv.cnrs.fr/>, CNRS FR 2488:
- *    Erwan BOCHER, scientific researcher,
- *    Thomas LEDUC, scientific researcher,
- *    Fernando GONZALEZ CORTES, computer engineer.
- *
- * Copyright (C) 2007 Erwan BOCHER, Fernando GONZALEZ CORTES, Thomas LEDUC
- *
- * This file is part of OrbisGIS.
- *
- * OrbisGIS is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * OrbisGIS is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with OrbisGIS. If not, see <http://www.gnu.org/licenses/>.
- *
- * For more information, please consult:
- *    <http://orbisgis.cerma.archi.fr/>
- *    <http://sourcesup.cru.fr/projects/orbisgis/>
- *
- * or contact directly:
- *    erwan.bocher _at_ ec-nantes.fr
- *    fergonco _at_ gmail.com
- *    thomas.leduc _at_ cerma.archi.fr
- */
 package org.orbisgis;
 
 import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.TreeSet;
-
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.stream.StreamResult;
-import javax.xml.transform.stream.StreamSource;
-
-import org.orbisgis.errorManager.ErrorManager;
 
 /**
  * Class to manage the services
@@ -60,14 +11,12 @@ import org.orbisgis.errorManager.ErrorManager;
  */
 public class Services {
 
-	private static HashMap<String, Object> services = new HashMap<String, Object>();
-	private static HashMap<String, ServiceInfo> servicesClass = new HashMap<String, ServiceInfo>();
+	private static HashMap<Class<?>, Object> services = new HashMap<Class<?>, Object>();
+	private static HashMap<Class<?>, String> servicesDoc = new HashMap<Class<?>, String>();
 
 	/**
-	 * Registers the service specifying the interface to be used
+	 * Registers an interface as a service
 	 * 
-	 * @param name
-	 *            Name of the service
 	 * @param interface_
 	 *            Interface to be implemented by every instance of this service
 	 * 
@@ -75,21 +24,18 @@ public class Services {
 	 *             If the class specified in the second parameter is not an
 	 *             interface
 	 */
-	public static void registerService(String name,
-			Class<? extends Object> interface_, String description) {
+	public static void registerService(Class<? extends Object> interface_,
+			String description) {
 		if (!interface_.isInterface()) {
 			throw new IllegalArgumentException("An interface "
 					+ "class must be specified");
 		}
-		servicesClass.put(name, new ServiceInfo(description, interface_));
+		servicesDoc.put(interface_, description);
 	}
 
 	/**
-	 * Registers the service specifying the interface to be used and setting an
-	 * instance of the service
+	 * Registers an interface as a service setting an initial service instance
 	 * 
-	 * @param name
-	 *            Name of the service
 	 * @param interface_
 	 *            Interface to be implemented by every instance of this service
 	 * @param instance
@@ -99,11 +45,10 @@ public class Services {
 	 *             If the class specified in the second parameter is not an
 	 *             interface
 	 */
-	public static void registerService(String name,
-			Class<? extends Object> interface_, String description,
-			Object instance) {
-		servicesClass.put(name, new ServiceInfo(description, interface_));
-		setService(name, instance);
+	public static void registerService(Class<? extends Object> interface_,
+			String description, Object instance) {
+		servicesDoc.put(interface_, description);
+		setService(interface_, instance);
 	}
 
 	/**
@@ -117,29 +62,17 @@ public class Services {
 	 *             If the instance is not an implementation of the service
 	 *             interface or there is no service registered under that name
 	 */
-	public static void setService(String name, Object serviceInstance) {
-		Class<? extends Object> serviceClass = servicesClass.get(name).interface_;
-		if (serviceClass == null) {
+	public static void setService(Class<?> interface_, Object serviceInstance) {
+		if (!services.containsKey(interface_)) {
 			throw new IllegalArgumentException("The service "
-					+ "is not registered: " + name);
-		} else if (serviceClass.isAssignableFrom(serviceInstance.getClass())) {
-			services.put(name, serviceInstance);
+					+ "is not registered: " + interface_);
+		} else if (interface_.isAssignableFrom(serviceInstance.getClass())) {
+			services.put(interface_, serviceInstance);
 		} else {
 			throw new IllegalArgumentException("The service instance "
 					+ "must be an instance of : "
-					+ serviceClass.getCanonicalName());
+					+ interface_.getCanonicalName());
 		}
-	}
-
-	/**
-	 * Gets the service instance
-	 * 
-	 * @param name
-	 *            Name of the service
-	 * @return
-	 */
-	public static Object getService(String name) {
-		return services.get(name);
 	}
 
 	/**
@@ -147,23 +80,23 @@ public class Services {
 	 * 
 	 * @return
 	 */
-	public static String[] getServices() {
+	public static Class<?>[] getServices() {
 		ArrayList<String> ret = new ArrayList<String>();
-		Iterator<String> it = services.keySet().iterator();
+		Iterator<Class<?>> it = services.keySet().iterator();
 		while (it.hasNext()) {
-			String serviceName = it.next();
-			ret.add(serviceName + " -> " + servicesClass.get(serviceName));
+			Class<?> service = it.next();
+			ret.add(service + " -> " + servicesDoc.get(service));
 		}
 
-		return ret.toArray(new String[0]);
+		return ret.toArray(new Class<?>[0]);
 	}
 
 	/**
 	 * Prints an human friendly list of services
 	 */
 	public static void printServices() {
-		String[] services = getServices();
-		for (String service : services) {
+		Class<?>[] services = getServices();
+		for (Class<?> service : services) {
 			System.out.println(service);
 		}
 	}
@@ -172,16 +105,14 @@ public class Services {
 		// Create the xml with the services information
 		StringBuffer xmlContent = new StringBuffer();
 		xmlContent.append("<services>");
-		Iterator<String> it = services.keySet().iterator();
+		Iterator<Class<?>> it = services.keySet().iterator();
 		it = getSortedIterator(it);
 		while (it.hasNext()) {
-			String serviceName = it.next();
-			ServiceInfo serviceInfo = servicesClass.get(serviceName);
-			Class<? extends Object> interface_ = serviceInfo.interface_;
-			String description = serviceInfo.doc;
-			xmlContent.append("<service name=\"" + serviceName
-					+ "\" interface=\"" + interface_.getName()
-					+ "\" description=\"" + description + "\"/>");
+			Class<?> service = it.next();
+			String description = servicesDoc.get(service);
+			xmlContent.append("<service name=\"" + service + "\" interface=\""
+					+ service.getName() + "\" description=\"" + description
+					+ "\"/>");
 		}
 		xmlContent.append("</services>");
 
@@ -199,41 +130,34 @@ public class Services {
 
 	}
 
-	private static Iterator<String> getSortedIterator(Iterator<String> it) {
-		TreeSet<String> orderedServices = new TreeSet<String>();
+	private static Iterator<Class<?>> getSortedIterator(Iterator<Class<?>> it) {
+		TreeSet<Class<?>> orderedServices = new TreeSet<Class<?>>(
+				new Comparator<Class<?>>() {
+
+					@Override
+					public int compare(Class<?> o1, Class<?> o2) {
+						return o1.getName().compareTo(o2.getName());
+					}
+				});
 		while (it.hasNext()) {
-			String elem = it.next();
-			orderedServices.add(elem);
+			orderedServices.add(it.next());
 		}
 
 		return orderedServices.iterator();
 	}
 
-	private static class ServiceInfo {
-		private String doc;
-		private Class<? extends Object> interface_;
-
-		public ServiceInfo(String doc, Class<? extends Object> interface_) {
-			super();
-			this.doc = doc;
-			this.interface_ = interface_;
-		}
-
-	}
-
 	/**
-	 * The same as '(ErrorManager)
-	 * Services.getService("org.orbisgis.ErrorManager")'
+	 * The same as 'Services.getService(ErrorManager.class)'
 	 * 
 	 * @return
 	 */
 	public static ErrorManager getErrorManager() {
-		return (ErrorManager) getService("org.orbisgis.ErrorManager");
+		return getService(ErrorManager.class);
 	}
 
 	@SuppressWarnings("unchecked")
 	public static <T> T getService(Class<T> serviceInterface) {
-		String[] parts = serviceInterface.getName().split("\\.");
-		return (T) getService("org.orbisgis." + parts[parts.length - 1]);
+		return (T) services.get(serviceInterface);
 	}
 }
+
