@@ -131,13 +131,12 @@ public class CommonClassLoader extends SecureClassLoader {
 								entryName.length() - 6).replace('/', '.');
 						File fileForClass = resourcesFile.get(entryName);
 						if (fileForClass != null) {
-							// throw new RuntimeException(
-							// "There are two classes/resources with the same
-							// name in "
-							// + fileForClass.getAbsolutePath()
-							// + " and in "
-							// + jars[i].getAbsolutePath() + ": "
-							// + entryName);
+							throw new RuntimeException(
+									"There are two classes/resources with the same name in "
+											+ fileForClass.getAbsolutePath()
+											+ " and in "
+											+ jars[i].getAbsolutePath() + ": "
+											+ entryName);
 						}
 					}
 
