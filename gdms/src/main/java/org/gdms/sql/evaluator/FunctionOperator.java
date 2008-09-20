@@ -152,7 +152,8 @@ public class FunctionOperator extends AbstractOperator implements Expression {
 							"Invalid number of arguments to the function: "
 									+ name);
 				} else {
-					throw new IncompatibleTypesException(lastMessage);
+					throw new IncompatibleTypesException(lastMessage
+							+ ". Function: " + name);
 				}
 			}
 		}

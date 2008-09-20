@@ -37,6 +37,10 @@
 package org.gdms.drivers;
 
 import ij.ImagePlus;
+import ij.process.ByteProcessor;
+import ij.process.ColorProcessor;
+import ij.process.FloatProcessor;
+import ij.process.ShortProcessor;
 
 import java.io.File;
 import java.sql.Time;
@@ -76,6 +80,7 @@ import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
 import org.grap.model.GeoRaster;
 import org.grap.model.GeoRasterFactory;
+import org.grap.model.RasterMetadata;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
@@ -290,5 +295,86 @@ public class GDMSDriverTest extends TestCase {
 		gr = sds.getRaster(0);
 		assertTrue(gr.getNoDataValue() == 345);
 		sds.close();
+	}
+
+	public void testRasterMetadataPixelArrayInconsistencyFloat()
+			throws Exception {
+		RasterMetadata rm = new RasterMetadata(0, 0, 10, 10, 2, 2);
+		FloatProcessor fp = new FloatProcessor(3, 3);
+		float[] pixels = (float[]) fp.getPixels();
+		for (int i = 0; i < pixels.length; i++) {
+			pixels[i] = i;
+		}
+		GeoRaster gr = GeoRasterFactory.createGeoRaster(fp, rm);
+
+		float[] result = (float[]) testRasterMetadataPixelArrayInconsistency(gr);
+		assertTrue(result[2] == 3);
+		assertTrue(result.length == 4);
+	}
+
+	public void testRasterMetadataPixelArrayInconsistencyInt() throws Exception {
+		RasterMetadata rm = new RasterMetadata(0, 0, 10, 10, 2, 2);
+		ColorProcessor fp = new ColorProcessor(3, 3);
+		int[] pixels = (int[]) fp.getPixels();
+		for (int i = 0; i < pixels.length; i++) {
+			pixels[i] = i;
+		}
+		GeoRaster gr = GeoRasterFactory.createGeoRaster(fp, rm);
+
+		int[] result = (int[]) testRasterMetadataPixelArrayInconsistency(gr);
+		assertTrue(result[2] == 3);
+		assertTrue(result.length == 4);
+	}
+
+	public void testRasterMetadataPixelArrayInconsistencyByte()
+			throws Exception {
+		RasterMetadata rm = new RasterMetadata(0, 0, 10, 10, 2, 2);
+		ByteProcessor fp = new ByteProcessor(3, 3);
+		byte[] pixels = (byte[]) fp.getPixels();
+		for (int i = 0; i < pixels.length; i++) {
+			pixels[i] = (byte) i;
+		}
+		GeoRaster gr = GeoRasterFactory.createGeoRaster(fp, rm);
+
+		byte[] result = (byte[]) testRasterMetadataPixelArrayInconsistency(gr);
+		assertTrue(result[2] == 3);
+		assertTrue(result.length == 4);
+	}
+
+	public void testRasterMetadataPixelArrayInconsistencyShort()
+			throws Exception {
+		RasterMetadata rm = new RasterMetadata(0, 0, 10, 10, 2, 2);
+		ShortProcessor fp = new ShortProcessor(3, 3);
+		short[] pixels = (short[]) fp.getPixels();
+		for (int i = 0; i < pixels.length; i++) {
+			pixels[i] = (short) i;
+		}
+		GeoRaster gr = GeoRasterFactory.createGeoRaster(fp, rm);
+
+		short[] result = (short[]) testRasterMetadataPixelArrayInconsistency(gr);
+		assertTrue(result[2] == 3);
+		assertTrue(result.length == 4);
+	}
+
+	private Object testRasterMetadataPixelArrayInconsistency(GeoRaster gr)
+			throws Exception {
+		// Create the source
+		File out = new File(dsf.getTempFile(".gdms"));
+		DefaultMetadata dm = new DefaultMetadata(new Type[] { TypeFactory
+				.createType(Type.RASTER) }, new String[] { "raster" });
+		FileSourceCreation fsc = new FileSourceCreation(out, dm);
+		dsf.createDataSource(fsc);
+
+		// Register the source
+		DataSource ds = dsf.getDataSource(out);
+		ds.open();
+		ds.insertFilledRow(new Value[] { ValueFactory.createValue(gr) });
+		ds.commit();
+
+		GeoRaster readRaster = ds.getFieldValue(0, 0).getAsRaster();
+		Object pixels = readRaster.getImagePlus().getProcessor().getPixels();
+		assertTrue(readRaster.getMetadata().getNCols() == 2);
+		ds.close();
+		return pixels;
 	}
 }

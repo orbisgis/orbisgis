@@ -40,6 +40,7 @@ import ij.ImagePlus;
 import ij.process.ByteProcessor;
 import ij.process.ColorProcessor;
 import ij.process.FloatProcessor;
+import ij.process.ImageProcessor;
 import ij.process.ShortProcessor;
 
 import java.io.ByteArrayInputStream;
@@ -111,22 +112,49 @@ public class RasterValue extends AbstractValue {
 			writeMetadata(dos, metadata, geoRaster.getMin(),
 					geoRaster.getMax(), imageType);
 			// Write data
+			int ncols = metadata.getNCols();
+			int nrows = metadata.getNRows();
+			ImageProcessor processor = geoRaster.getImagePlus().getProcessor();
 			switch (imageType) {
 			case ImagePlus.COLOR_256:
 			case ImagePlus.GRAY8:
-				byte[] bytePixels = geoRaster.getBytePixels();
+				byte[] bytePixels = new byte[ncols * nrows];
+				for (int i = 0; i < ncols; i++) {
+					for (int j = 0; j < nrows; j++) {
+						bytePixels[j * ncols + i] = (byte) processor.get(i, j);
+					}
+				}
 				dos.write(bytePixels);
 				break;
 			case ImagePlus.GRAY16:
-				short[] shortPixels = geoRaster.getShortPixels();
+				short[] shortPixels = new short[ncols * nrows];
+				for (int i = 0; i < ncols; i++) {
+					for (int j = 0; j < nrows; j++) {
+						shortPixels[j * ncols + i] = (short) processor
+								.get(i, j);
+					}
+				}
 				dos.write(ByteUtils.shortsToBytes(shortPixels));
 				break;
 			case ImagePlus.GRAY32:
-				float[] floatPixels = geoRaster.getFloatPixels();
+				float[] floatPixels = new float[ncols * nrows];
+				for (int i = 0; i < ncols; i++) {
+					for (int j = 0; j < nrows; j++) {
+						floatPixels[j * ncols + i] = processor.getPixelValue(i,
+								j);
+					}
+				}
 				dos.write(ByteUtils.floatsToBytes(floatPixels));
 				break;
 			case ImagePlus.COLOR_RGB:
-				int[] intPixels = geoRaster.getIntPixels();
+				int[] intPixels = new int[ncols * nrows];
+				int[] rasterPixels = (int[]) processor.getPixels();
+				for (int i = 0; i < ncols; i++) {
+					for (int j = 0; j < nrows; j++) {
+						intPixels[j * ncols + i] = rasterPixels[j
+								* processor.getWidth() + i];
+					}
+				}
 				dos.write(ByteUtils.intsToBytes(intPixels));
 				break;
 			}
@@ -234,7 +262,7 @@ public class RasterValue extends AbstractValue {
 	 * Builds a lazy RasterValue. The metadata and cached values are recovered
 	 * immediately and the pixel data will be read through the specified
 	 * {@link ByteProvider}
-	 *
+	 * 
 	 * @param buffer
 	 *            Buffer containing the metadata
 	 * @param byteProvider

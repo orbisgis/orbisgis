@@ -229,7 +229,6 @@ public class FunctionManager {
 		}
 	}
 
-	@SuppressWarnings("unchecked")
 	public static String[] getFunctionNames() {
 		ArrayList<String> ret = new ArrayList<String>();
 		Iterator<String> it = nameFunction.keySet().iterator();
