@@ -294,13 +294,23 @@ public class PnlProportionalLegend extends JPanel implements ILegendPanelUI {
 
 	private SymbolFilter getSymbolFilter() {
 		return new CompositeSymbolFilter(new ConstraintSymbolFilter(
-				new GeometryConstraint(GeometryConstraint.POINT)),
-				new EditableSymbolFilter());
+				new GeometryConstraint(GeometryConstraint.POINT),
+				new GeometryConstraint(GeometryConstraint.MULTI_POINT),
+				new GeometryConstraint(GeometryConstraint.POLYGON),
+				new GeometryConstraint(GeometryConstraint.MULTI_POLYGON)),
+				new SymbolFilter() {
+
+					@Override
+					public boolean accept(Symbol symbol) {
+						return symbol instanceof EditablePointSymbol;
+					}
+				});
 	}
 
 	public boolean acceptsGeometryType(int geometryType) {
 		return (geometryType == ILegendPanelUI.POLYGON)
-				|| (geometryType == ILegendPanelUI.POINT);
+				|| (geometryType == ILegendPanelUI.POINT)
+				|| (geometryType == ILegendPanelUI.ALL);
 	}
 
 	public Component getComponent() {

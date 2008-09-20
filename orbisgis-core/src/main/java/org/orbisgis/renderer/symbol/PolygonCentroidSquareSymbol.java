@@ -37,11 +37,19 @@
 package org.orbisgis.renderer.symbol;
 
 import java.awt.Color;
+import java.awt.Graphics2D;
+import java.awt.geom.AffineTransform;
+import java.awt.geom.NoninvertibleTransformException;
+import java.awt.geom.Point2D;
 
 import org.gdms.data.types.GeometryConstraint;
+import org.gdms.driver.DriverException;
+import org.orbisgis.renderer.RenderPermission;
 
+import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.MultiPolygon;
+import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.Polygon;
 
 public class PolygonCentroidSquareSymbol extends SquarePointSymbol {
@@ -67,6 +75,25 @@ public class PolygonCentroidSquareSymbol extends SquarePointSymbol {
 		}
 	}
 
+	@Override
+	public Envelope draw(Graphics2D g, Geometry geom, AffineTransform at,
+			RenderPermission permission) throws DriverException {
+		Point point = geom.getInteriorPoint();
+		Point2D p = new Point2D.Double(point.getX(), point.getY());
+		p = at.transform(p, null);
+		int drawingSize = size;
+		if (mapUnits) {
+			try {
+				drawingSize = (int) toPixelUnits(size, at);
+			} catch (NoninvertibleTransformException e) {
+				throw new DriverException("Cannot convert to map units", e);
+			}
+		}
+		paintSquare(g, (int) p.getX(), (int) p.getY(), drawingSize);
+
+		return null;
+	}
+	
 	@Override
 	public Symbol cloneSymbol() {
 		return new PolygonCentroidSquareSymbol(outline, lineWidth, fillColor,

@@ -421,7 +421,8 @@ public class SymbolBuilder extends JPanel implements UIPanel,
 	 * When the selected value in the list is changed we will call to the
 	 * refresh functions with the new symbol.
 	 * 
-	 * @param evt;
+	 * @param evt
+	 *            ;
 	 */
 	private void jList1ValueChanged() {
 		pnlEdition.removeAll();
@@ -514,9 +515,8 @@ public class SymbolBuilder extends JPanel implements UIPanel,
 		}
 		if (model.getSize() > 0) {
 			lstSymbols.setSelectedIndex(0);
-		} else {
-			jList1ValueChanged();
 		}
+		jList1ValueChanged();
 		refresh();
 	}
 
@@ -551,7 +551,8 @@ public class SymbolBuilder extends JPanel implements UIPanel,
 	 */
 	private void jButtonToCollectionActionPerformed(ActionEvent evt) {
 		Geocognition geocognition = Services.getService(Geocognition.class);
-		geocognition.addElement(geocognition.getUniqueId("symbol"), getSymbolComposite());
+		geocognition.addElement(geocognition.getUniqueId("symbol"),
+				getSymbolComposite());
 		JOptionPane.showMessageDialog(this, "Symbol saved in geocognition");
 	}
 
@@ -597,7 +598,7 @@ public class SymbolBuilder extends JPanel implements UIPanel,
 		if (lstSymbols.getModel().getSize() == 0) {
 			return "At least a symbol must be created";
 		}
-		
+
 		if (validation != null) {
 			String txt = validation.isValid(getSymbolComposite());
 			if (txt != null) {

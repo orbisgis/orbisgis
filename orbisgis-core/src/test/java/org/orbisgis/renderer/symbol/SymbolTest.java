@@ -121,31 +121,6 @@ public class SymbolTest extends TestCase {
 			classes.add(symbol.getClass());
 			assertTrue(testClone(symbol));
 		}
-
-		Symbol s1 = SymbolFactory.createPointCircleSymbol(Color.black,
-				Color.red, 3);
-		assertTrue(testClone(s1));
-		Symbol s2 = SymbolFactory.createCirclePolygonSymbol(Color.black,
-				Color.red, 3);
-		assertTrue(testClone(s2));
-		assertTrue(testClone(SymbolFactory.createSquareVertexSymbol(
-				Color.black, 1, Color.red, 3, false)));
-		assertTrue(testClone(SymbolFactory.createSquareVertexSymbol(
-				Color.black, Color.red)));
-		assertTrue(testClone(SymbolFactory.createCircleVertexSymbol(
-				Color.black, 1, Color.red, 3, false)));
-		assertTrue(testClone(SymbolFactory.createCircleVertexSymbol(
-				Color.black, Color.red)));
-		assertTrue(testClone(SymbolFactory.createLabelSymbol("hola", 5)));
-
-		assertTrue(testClone(SymbolFactory.createLineSymbol(Color.red, 3)));
-		assertTrue(testClone(SymbolFactory.createPolygonSymbol()));
-		assertTrue(testClone(SymbolFactory.createPolygonSymbol(Color.black)));
-		assertTrue(testClone(SymbolFactory.createPolygonSymbol(Color.black,
-				Color.black)));
-		assertTrue(testClone(SymbolFactory.createPolygonSymbol(Color.black, 4,
-				Color.black)));
-		assertTrue(testClone(SymbolFactory.createSymbolComposite(s1, s2)));
 	}
 
 	private boolean testClone(Symbol symbol) throws DriverException {
@@ -159,11 +134,11 @@ public class SymbolTest extends TestCase {
 	}
 
 	public void testTransparencyPersistence() throws Exception {
-		Symbol sym = SymbolFactory.createCircleVertexSymbol(new Color(10, 10,
-				10, 10), new Color(10, 10, 10, 10));
+		Symbol sym = SymbolFactory.createPointCircleSymbol(new Color(10, 10,
+				10, 10), new Color(10, 10, 10, 10), 10);
 		Map<String, String> props = sym.getPersistentProperties();
-		Symbol sym2 = SymbolFactory.createCircleVertexSymbol(new Color(10, 10,
-				10, 10), new Color(10, 10, 10, 10));
+		Symbol sym2 = SymbolFactory.createPointCircleSymbol(new Color(10, 10,
+				10, 10), new Color(10, 10, 10, 10), 10);
 		sym2.setPersistentProperties(props);
 
 		assertTrue(testEquals(sym, sym2));

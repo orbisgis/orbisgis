@@ -41,14 +41,22 @@ import org.orbisgis.renderer.symbol.Symbol;
 
 public class ConstraintSymbolFilter implements SymbolFilter {
 
-	private GeometryConstraint constraint;
+	private GeometryConstraint[] constraint;
 
-	public ConstraintSymbolFilter(GeometryConstraint constraint) {
+	public ConstraintSymbolFilter(GeometryConstraint... constraint) {
 		this.constraint = constraint;
 	}
 
 	public boolean accept(Symbol symbol) {
-		return symbol.acceptGeometryType(constraint);
+		boolean accepted = false;
+		for (int i = 0; i < constraint.length; i++) {
+			if (symbol.acceptGeometryType(constraint[i])) {
+				accepted = true;
+				break;
+			}
+		}
+
+		return accepted;
 	}
 
 }

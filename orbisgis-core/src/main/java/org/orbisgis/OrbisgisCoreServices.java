@@ -115,10 +115,6 @@ public class OrbisgisCoreServices {
 				Color.red, 10, false));
 		sm.addSymbol(SymbolFactory.createPointSquareSymbol(Color.black, 1,
 				Color.red, 10, false));
-		sm.addSymbol(SymbolFactory.createSquareVertexSymbol(Color.black, 1,
-				Color.red, 10, false));
-		sm.addSymbol(SymbolFactory.createCircleVertexSymbol(Color.black, 1,
-				Color.red, 10, false));
 		sm.addSymbol(SymbolFactory.createPolygonCentroidSquareSymbol(
 				Color.black, 1, Color.red, 10, false));
 		sm.addSymbol(SymbolFactory.createPolygonCentroidCircleSymbol(

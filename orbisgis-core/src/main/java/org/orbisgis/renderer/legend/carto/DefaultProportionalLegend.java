@@ -78,9 +78,9 @@ public class DefaultProportionalLegend extends AbstractCartoLegend implements
 	private int xOffset = 7;
 
 	public DefaultProportionalLegend() {
-		symbol = (EditablePointSymbol) SymbolFactory.createPointCircleSymbol(
-				Color.BLACK, Color.pink, 10);
-		symbol.setMapUnits(true);
+		symbol = (EditablePointSymbol) SymbolFactory
+				.createPolygonCentroidCircleSymbol(Color.BLACK, 1, Color.pink,
+						10, true);
 	}
 
 	public void setMaxSize(int maxSize) {
