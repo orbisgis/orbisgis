@@ -77,7 +77,7 @@ public class DefaultUniqueSymbolLegend extends AbstractCartoLegend implements
 		UniqueSymbolLegendType xmlLegend = new UniqueSymbolLegendType();
 		save(xmlLegend);
 		SymbolManager sm = (SymbolManager) Services
-				.getService("org.orbisgis.SymbolManager");
+				.getService(SymbolManager.class);
 		if (symbol != null) {
 			xmlLegend.setSymbol(sm.getJAXBSymbol(symbol));
 		}
@@ -93,7 +93,7 @@ public class DefaultUniqueSymbolLegend extends AbstractCartoLegend implements
 				.getLegendDescription();
 		load(xmlLegend);
 		SymbolManager sm = (SymbolManager) Services
-				.getService("org.orbisgis.SymbolManager");
+				.getService(SymbolManager.class);
 		setSymbol(sm.getSymbolFromJAXB(xmlLegend.getSymbol()));
 
 	}

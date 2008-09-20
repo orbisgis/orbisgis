@@ -89,7 +89,7 @@ public class RasterizationPanel implements
 		try {
 
 			MapContextManager mcm = (MapContextManager) Services
-					.getService("org.orbisgis.MapContextManager");
+					.getService(MapContextManager.class);
 			ILayer[] rasterLayers = mcm.getActiveView().getLayerModel()
 					.getRasterLayers();
 			if (layer.isVectorial() && (rasterLayers.length >= 1)) {
@@ -115,7 +115,7 @@ public class RasterizationPanel implements
 		final SpatialDataSourceDecorator sds = new SpatialDataSourceDecorator(
 				ds);
 		BackgroundManager bm = (BackgroundManager) Services
-				.getService("org.orbisgis.BackgroundManager");
+				.getService(BackgroundManager.class);
 		bm.backgroundOperation(new ExecuteRasterProcess(mapContext, sds));
 	}
 
@@ -190,13 +190,13 @@ public class RasterizationPanel implements
 							.doOperation(rasterizing);
 					// save the computed GeoRaster in a tempFile
 					final DataSourceFactory dsf = ((DataManager) Services
-							.getService("org.orbisgis.DataManager")).getDSF();
+							.getService(DataManager.class)).getDSF();
 					final String tempFile = dsf.getTempFile() + ".tif";
 					grResult.save(tempFile);
 
 					// populate the GeoView TOC with a new RasterLayer
 					DataManager dataManager = (DataManager) Services
-							.getService("org.orbisgis.DataManager");
+							.getService(DataManager.class);
 					final ILayer newLayer = dataManager.createLayer(new File(
 							tempFile));
 					mapContext.getLayerModel().insertLayer(newLayer, 0);

@@ -483,7 +483,7 @@ public class SymbolBuilder extends JPanel implements UIPanel,
 
 		// Filter the available symbols
 		SymbolManager sm = (SymbolManager) Services
-				.getService("org.orbisgis.SymbolManager");
+				.getService(SymbolManager.class);
 		ArrayList<Symbol> availableSymbols = sm.getAvailableSymbols();
 		ArrayList<Symbol> filtered = new ArrayList<Symbol>();
 		for (Symbol availableSymbol : availableSymbols) {

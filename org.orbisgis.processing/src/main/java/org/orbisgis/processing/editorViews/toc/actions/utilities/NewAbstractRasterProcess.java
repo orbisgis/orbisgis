@@ -62,13 +62,13 @@ public abstract class NewAbstractRasterProcess implements ILayerAction {
 			if (null != geoRasterResult) {
 				// save the computed GeoRaster in a tempFile
 				final DataSourceFactory dsf = ((DataManager) Services
-						.getService("org.orbisgis.DataManager")).getDSF();
+						.getService(DataManager.class)).getDSF();
 				
 				DataSource dsResult = dsf.getDataSourceFromSQL(geoRasterResult);
 
 				// populate the GeoView TOC with a new RasterLayer
 				DataManager dataManager = (DataManager) Services
-						.getService("org.orbisgis.DataManager");
+						.getService(DataManager.class);
 				final ILayer newLayer = dataManager.createLayer(dsResult);
 				mapContext.getLayerModel().insertLayer(newLayer, 0);
 			}

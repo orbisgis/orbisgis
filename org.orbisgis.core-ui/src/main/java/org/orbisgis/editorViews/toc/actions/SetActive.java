@@ -48,7 +48,7 @@ public class SetActive implements ILayerAction {
 	public boolean accepts(ILayer layer) {
 		try {
 			EditorManager em = (EditorManager) Services
-					.getService("org.orbisgis.EditorManager");
+					.getService(EditorManager.class);
 			MapContext mc = (MapContext) em.getActiveElement().getObject();
 			return (mc.getActiveLayer() != layer) && (layer.isVectorial());
 		} catch (DriverException e) {

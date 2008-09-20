@@ -38,7 +38,7 @@ public class GeocognitionLegendFactory implements GeocognitionElementFactory {
 
 	private Legend[] getAvailableLegends() {
 		LegendManager lm = (LegendManager) Services
-				.getService("org.orbisgis.LegendManager");
+				.getService(LegendManager.class);
 		Legend[] availableLegends = lm.getAvailableLegends();
 		return availableLegends;
 	}

@@ -109,7 +109,7 @@ public class WorkspaceFolderFilePanel extends SaveFilePanel {
 				version = 1;
 			}
 			ApplicationInfo ai = (ApplicationInfo) Services
-					.getService("org.orbisgis.ApplicationInfo");
+					.getService(ApplicationInfo.class);
 			if (ai.getWsVersion() != version) {
 				return "Workspace version mistmatch. Either"
 						+ " clean or select another folder.";

@@ -47,7 +47,7 @@ public class NewResource implements IAction {
 
 	public void actionPerformed() {
 		ViewManager vm = (ViewManager) Services
-				.getService("org.orbisgis.ViewManager");
+				.getService(ViewManager.class);
 		Catalog catalog = (Catalog) vm.getView("org.orbisgis.views.Geocatalog");
 		EPResourceWizardHelper wh = new EPResourceWizardHelper(catalog);
 		IResource[] resources = wh.openWizard();

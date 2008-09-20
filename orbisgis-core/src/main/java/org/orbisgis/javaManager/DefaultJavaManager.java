@@ -80,7 +80,7 @@ public class DefaultJavaManager implements JavaManager {
 				.setLocation(StandardLocation.CLASS_PATH, systemClassPath);
 
 		OGWorkspace ws = (OGWorkspace) Services
-				.getService("org.orbisgis.OGWorkspace");
+				.getService(OGWorkspace.class);
 
 		CodeInfo codeInfo = prepareCode(code, 0);
 		String packageName = codeInfo.getPackageName();

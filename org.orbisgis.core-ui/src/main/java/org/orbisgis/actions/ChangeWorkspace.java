@@ -49,9 +49,9 @@ public class ChangeWorkspace implements IAction {
 
 	public void actionPerformed() {
 		Workspace ws = (Workspace) Services
-				.getService("org.orbisgis.Workspace");
+				.getService(Workspace.class);
 		PluginManager psm = (PluginManager) Services
-				.getService("org.orbisgis.PluginManager");
+				.getService(PluginManager.class);
 		WorkspaceFolderFilePanel panel = new WorkspaceFolderFilePanel(
 				"Select the workspace folder", psm.getHomeFolder()
 						.getAbsolutePath());

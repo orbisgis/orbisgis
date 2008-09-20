@@ -75,7 +75,7 @@ public class DefaultDataManager implements DataManager {
 
 	public ILayer createLayer(String sourceName) throws LayerException {
 		Source src = ((DataManager) Services
-				.getService("org.orbisgis.DataManager")).getDSF()
+				.getService(DataManager.class)).getDSF()
 				.getSourceManager().getSource(sourceName);
 		if (src != null) {
 			int type = src.getType();
@@ -85,7 +85,7 @@ public class DefaultDataManager implements DataManager {
 			} else {
 				try {
 					DataSource ds = ((DataManager) Services
-							.getService("org.orbisgis.DataManager")).getDSF()
+							.getService(DataManager.class)).getDSF()
 							.getDataSource(sourceName);
 					return createLayer(ds);
 				} catch (DriverLoadException e) {
@@ -112,7 +112,7 @@ public class DefaultDataManager implements DataManager {
 
 	public ILayer createLayer(String name, File file) throws LayerException {
 		DataSourceFactory dsf = ((DataManager) Services
-				.getService("org.orbisgis.DataManager")).getDSF();
+				.getService(DataManager.class)).getDSF();
 		dsf.getSourceManager().register(name, file);
 		try {
 			return new Layer(name, dsf.getDataSource(name), NullCRS.singleton);
@@ -128,7 +128,7 @@ public class DefaultDataManager implements DataManager {
 
 	public ILayer createLayer(File file) throws LayerException {
 		DataSourceFactory dsf = ((DataManager) Services
-				.getService("org.orbisgis.DataManager")).getDSF();
+				.getService(DataManager.class)).getDSF();
 		String name = dsf.getSourceManager().nameAndRegister(file);
 		try {
 			return new Layer(name, dsf.getDataSource(name), NullCRS.singleton);

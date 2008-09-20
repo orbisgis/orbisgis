@@ -102,7 +102,7 @@ public class GeomarkPanel extends JPanel implements ListSelectionListener {
 					final String geomarkLabel = listModel.getElementAt(
 							list.locationToIndex(e.getPoint())).toString();
 					MapContext vc = ((MapContextManager) Services
-							.getService("org.orbisgis.MapContextManager"))
+							.getService(MapContextManager.class))
 							.getActiveView();
 					if (vc != null) {
 						editor.getMapTransform().setExtent(
@@ -202,7 +202,7 @@ public class GeomarkPanel extends JPanel implements ListSelectionListener {
 
 			listModel.insertElementAt(geomarkName.getText(), index);
 			MapContext vc = ((MapContextManager) Services
-					.getService("org.orbisgis.MapContextManager"))
+					.getService(MapContextManager.class))
 					.getActiveView();
 			if (vc != null) {
 				geomarksMap.put(geomarkName.getText(), editor.getMapTransform()

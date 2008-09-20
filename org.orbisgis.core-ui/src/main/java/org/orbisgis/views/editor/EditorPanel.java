@@ -140,7 +140,7 @@ public class EditorPanel extends Container {
 			@Override
 			public void drop(DropTargetDropEvent dtde) {
 				BackgroundManager backgroundManager = (BackgroundManager) Services
-						.getService("org.orbisgis.BackgroundManager");
+						.getService(BackgroundManager.class);
 				Transferable trans = dtde.getTransferable();
 				if (trans
 						.isDataFlavorSupported(TransferableGeocognitionElement.geocognitionFlavor)) {

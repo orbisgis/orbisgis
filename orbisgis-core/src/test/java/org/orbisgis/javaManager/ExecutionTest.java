@@ -42,7 +42,7 @@ public class ExecutionTest extends AbstractTest {
 
 	public void testExecuteMain() throws Exception {
 		JavaManager javaManager = (JavaManager) Services
-				.getService("org.orbisgis.JavaManager");
+				.getService(JavaManager.class);
 
 		String code = getContent(getClass().getResourceAsStream(
 				"TestExecuteMain.jav"));
@@ -51,7 +51,7 @@ public class ExecutionTest extends AbstractTest {
 
 	public void testExecuteDifferentNamesAndPackages() throws Exception {
 		JavaManager javaManager = (JavaManager) Services
-				.getService("org.orbisgis.JavaManager");
+				.getService(JavaManager.class);
 
 		String code = getContent(getClass().getResourceAsStream(
 				"TestExecuteMain.jav"));
@@ -64,7 +64,7 @@ public class ExecutionTest extends AbstractTest {
 
 	public void testExecuteScript() throws Exception {
 		JavaManager javaManager = (JavaManager) Services
-				.getService("org.orbisgis.JavaManager");
+				.getService(JavaManager.class);
 
 		String code = getContent(getClass().getResourceAsStream(
 				"TestExecuteScript1.jav"));
@@ -77,7 +77,7 @@ public class ExecutionTest extends AbstractTest {
 
 	public void testPrint() throws Exception {
 		JavaManager javaManager = (JavaManager) Services
-				.getService("org.orbisgis.JavaManager");
+				.getService(JavaManager.class);
 
 		String code = getContent(getClass()
 				.getResourceAsStream("TestPrint.jav"));
@@ -87,7 +87,7 @@ public class ExecutionTest extends AbstractTest {
 
 	public void testHelp() throws Exception {
 		JavaManager javaManager = (JavaManager) Services
-				.getService("org.orbisgis.JavaManager");
+				.getService(JavaManager.class);
 
 		String code = getContent(getClass().getResourceAsStream("TestHelp.jav"));
 		javaManager.execute(code, new ErrorListener());

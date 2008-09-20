@@ -65,7 +65,7 @@ public class DefaultOGWorkspace implements OGWorkspace {
 	}
 
 	private Workspace getWorkspace() {
-		return (Workspace) Services.getService("org.orbisgis.Workspace");
+		return (Workspace) Services.getService(Workspace.class);
 	}
 
 	public File getFile(String name) {

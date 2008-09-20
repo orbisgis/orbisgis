@@ -86,7 +86,7 @@ public class DefaultMapContext implements MapContext {
 		openerListener = new OpenerListener();
 		sourceListener = new LayerRemovalSourceListener();
 		DataManager dataManager = (DataManager) Services
-				.getService("org.orbisgis.DataManager");
+				.getService(DataManager.class);
 		setRoot(dataManager.createLayerCollection("root"));
 		this.jaxbMapContext = null;
 	}
@@ -216,7 +216,7 @@ public class DefaultMapContext implements MapContext {
 	public ILayer recoverTree(LayerType layer,
 			HashMap<ILayer, LayerType> layerPersistenceMap) {
 		DataManager dataManager = (DataManager) Services
-				.getService("org.orbisgis.DataManager");
+				.getService(DataManager.class);
 		ILayer ret = null;
 		if (layer instanceof LayerCollectionType) {
 			LayerCollectionType xmlLayerCollection = (LayerCollectionType) layer;

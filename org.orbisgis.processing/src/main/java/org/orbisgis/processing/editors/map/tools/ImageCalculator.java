@@ -87,13 +87,13 @@ public class ImageCalculator implements IEditorAction {
 
 				// save the computed GeoRaster in a tempFile
 				final DataSourceFactory dsf = ((DataManager) Services
-						.getService("org.orbisgis.DataManager")).getDSF();
+						.getService(DataManager.class)).getDSF();
 				final String tempFile = dsf.getTempFile() + ".tif";
 				grResult.save(tempFile);
 
 				// populate the GeoView TOC with a new RasterLayer
 				DataManager dataManager = (DataManager) Services
-						.getService("org.orbisgis.DataManager");
+						.getService(DataManager.class);
 				final ILayer newLayer = dataManager.createLayer(new File(
 						tempFile));
 				mapContext.getLayerModel().insertLayer(newLayer, 0);

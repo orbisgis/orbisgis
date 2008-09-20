@@ -49,7 +49,7 @@ public class About implements IAction {
 				getClass().getResource("about.html")));
 		sifDialog.setSize(650, 600);
 		ApplicationInfo ai = (ApplicationInfo) Services
-				.getService("org.orbisgis.ApplicationInfo");
+				.getService(ApplicationInfo.class);
 		sifDialog.setTitle(ai.getName() + " " + ai.getVersion() + " - "
 				+ ai.getOrganization());
 		sifDialog.setVisible(true);

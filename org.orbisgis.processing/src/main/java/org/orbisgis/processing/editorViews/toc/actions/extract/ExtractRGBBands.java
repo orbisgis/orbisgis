@@ -77,7 +77,7 @@ public class ExtractRGBBands extends AbstractColorRGBProcess {
 
 			// save the computed GeoRaster in a tempFile
 			final DataSourceFactory dsf = ((DataManager) Services
-					.getService("org.orbisgis.DataManager")).getDSF();
+					.getService(DataManager.class)).getDSF();
 			final String tempFileRed = dsf.getTempFile() + "red" + ".tif";
 			final String tempFileGreen = dsf.getTempFile() + "green" + ".tif";
 			final String tempFileBlue = dsf.getTempFile() + "blue" + ".tif";
@@ -93,7 +93,7 @@ public class ExtractRGBBands extends AbstractColorRGBProcess {
 
 			// Create a layer collection and populate it
 			DataManager dataManager = (DataManager) Services
-					.getService("org.orbisgis.DataManager");
+					.getService(DataManager.class);
 			final ILayer rgb = dataManager
 					.createLayerCollection(resource.getName() + "_rgb");
 			

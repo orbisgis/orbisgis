@@ -47,7 +47,7 @@ public class GroupLayers implements IMultipleLayerAction {
 
 	public void executeAll(MapContext mapContext, ILayer[] layers) {
 		DataManager dataManager = (DataManager) Services
-				.getService("org.orbisgis.DataManager");
+				.getService(DataManager.class);
 		ILayer col = dataManager.createLayerCollection("group"
 				+ System.currentTimeMillis());
 		ILayer parent = layers[0].getParent();

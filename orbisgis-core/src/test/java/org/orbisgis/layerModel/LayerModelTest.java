@@ -121,7 +121,7 @@ public class LayerModelTest extends AbstractTest {
 
 	public void testRepeatedName() throws Exception {
 		DataSourceFactory dsf = ((DataManager) Services
-				.getService("org.orbisgis.DataManager")).getDSF();
+				.getService(DataManager.class)).getDSF();
 		SourceManager sourceManager = dsf.getSourceManager();
 		sourceManager.register("vector1", new File("/tmp/1.shp"));
 		sourceManager.register("vector2", new File("/tmp/2.shp"));
@@ -151,7 +151,7 @@ public class LayerModelTest extends AbstractTest {
 
 	public void testAddWithSameName() throws Exception {
 		DataSourceFactory dsf = ((DataManager) Services
-				.getService("org.orbisgis.DataManager")).getDSF();
+				.getService(DataManager.class)).getDSF();
 		SourceManager sourceManager = dsf.getSourceManager();
 		sourceManager
 				.register("mySource", new File("src/test/resources/1.shp"));

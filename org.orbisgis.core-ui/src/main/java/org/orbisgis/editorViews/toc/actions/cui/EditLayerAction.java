@@ -81,7 +81,7 @@ public class EditLayerAction implements ILayerAction {
 
 			LegendsPanel pan = new LegendsPanel();
 			EditorManager em = (EditorManager) Services
-					.getService("org.orbisgis.EditorManager");
+					.getService(EditorManager.class);
 			MapTransform mt = ((MapEditor) em.getActiveEditor())
 					.getMapTransform();
 			Legend[] legend = layer.getVectorLegend();

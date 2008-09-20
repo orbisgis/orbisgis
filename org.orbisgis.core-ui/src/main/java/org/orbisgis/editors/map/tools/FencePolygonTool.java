@@ -78,7 +78,7 @@ public class FencePolygonTool extends AbstractPolygonTool {
 			}
 			buildFenceDatasource(g);
 			DataManager dataManager = (DataManager) Services
-					.getService("org.orbisgis.DataManager");
+					.getService(DataManager.class);
 			layer = dataManager.createLayer(dsResult);
 
 			vc.getLayerModel().insertLayer(layer, 0);
@@ -113,7 +113,7 @@ public class FencePolygonTool extends AbstractPolygonTool {
 							.createType(Type.GEOMETRY) });
 
 			DataSourceFactory dsf = ((DataManager) Services
-					.getService("org.orbisgis.DataManager")).getDSF();
+					.getService(DataManager.class)).getDSF();
 
 			if (!dsf.getSourceManager().exists(fenceLayerName)) {
 				dsf.getSourceManager().register(fenceLayerName, driver);

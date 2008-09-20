@@ -64,7 +64,7 @@ public class NewDB implements INewResource {
 		if (UIFactory.showDialog(new UIPanel[] { firstPanel, secondPanel })) {
 			for (DBSource dBSource : secondPanel.getSelectedDBSources()) {
 				DataManager dm = (DataManager) Services
-						.getService("org.orbisgis.DataManager");
+						.getService(DataManager.class);
 				final String name = dm.registerWithUniqueName(dBSource
 						.getTableName().toString(),
 						new DBTableSourceDefinition(dBSource));

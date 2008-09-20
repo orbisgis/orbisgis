@@ -131,7 +131,7 @@ public class ConsoleView implements IView {
 
 			public void execute(String text) {
 				BackgroundManager bm = (BackgroundManager) Services
-						.getService("org.orbisgis.BackgroundManager");
+						.getService(BackgroundManager.class);
 				bm.backgroundOperation(new ExecuteScriptProcess(text));
 			}
 
@@ -211,7 +211,7 @@ public class ConsoleView implements IView {
 		public void run(IProgressMonitor pm) {
 			SQLProcessor sqlProcessor = new SQLProcessor(
 					((DataManager) Services
-							.getService("org.orbisgis.DataManager")).getDSF());
+							.getService(DataManager.class)).getDSF());
 			String[] instructions = new String[0];
 
 			long t1 = System.currentTimeMillis();
@@ -227,11 +227,11 @@ public class ConsoleView implements IView {
 				}
 
 				MapContext vc = ((MapContextManager) Services
-						.getService("org.orbisgis.MapContextManager"))
+						.getService(MapContextManager.class))
 						.getActiveView();
 
 				DataManager dataManager = (DataManager) Services
-						.getService("org.orbisgis.DataManager");
+						.getService(DataManager.class);
 				for (int i = 0; i < instructions.length; i++) {
 
 					logger.debug("Preparing instruction: " + instructions[i]);

@@ -162,7 +162,7 @@ public class DefaultWorkspace implements Workspace {
 
 	private File getCurrentWorkspaceFile() throws FileNotFoundException {
 		PluginManager psm = (PluginManager) Services
-				.getService("org.orbisgis.PluginManager");
+				.getService(PluginManager.class);
 		psm.getHomeFolder().mkdirs();
 		File file = new File(psm.getHomeFolder(), "currentWorkspace.txt");
 		return file;
@@ -201,7 +201,7 @@ public class DefaultWorkspace implements Workspace {
 		} else {
 			File versionFile = getVersionFile();
 			ApplicationInfo ai = (ApplicationInfo) Services
-					.getService("org.orbisgis.ApplicationInfo");
+					.getService(ApplicationInfo.class);
 			if (versionFile.exists()) {
 				try {
 					BufferedReader fr = new BufferedReader(new FileReader(
@@ -291,7 +291,7 @@ public class DefaultWorkspace implements Workspace {
 	private void writeVersionFile() throws FileNotFoundException {
 		File versionFile = getVersionFile();
 		ApplicationInfo ai = (ApplicationInfo) Services
-				.getService("org.orbisgis.ApplicationInfo");
+				.getService(ApplicationInfo.class);
 		versionFile.getParentFile().mkdirs();
 		PrintWriter pw = new PrintWriter(versionFile);
 		pw.println(ai.getWsVersion());
@@ -306,7 +306,7 @@ public class DefaultWorkspace implements Workspace {
 		@Override
 		public void run() {
 			PluginManager psm = (PluginManager) Services
-					.getService("org.orbisgis.PluginManager");
+					.getService(PluginManager.class);
 			WorkspaceFolderFilePanel panel = new WorkspaceFolderFilePanel(
 					"Select the workspace folder", psm.getHomeFolder()
 							.getAbsolutePath());

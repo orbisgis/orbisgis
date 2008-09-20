@@ -64,7 +64,7 @@ public class MesureLineTool extends AbstractLineTool {
 	protected void lineDone(LineString ls, MapContext vc, ToolManager tm)
 			throws TransitionException {
 		OutputManager om = (OutputManager) Services
-				.getService("org.orbisgis.OutputManager");
+				.getService(OutputManager.class);
 		Color color = Color.blue;
 		om.append("Distance : " + getLength(ls) + "\n", color);
 		om.makeVisible();

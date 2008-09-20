@@ -107,7 +107,7 @@ public class SymbolTest extends TestCase {
 
 	private SymbolManager getSymbolManager() {
 		SymbolManager sm = (SymbolManager) Services
-				.getService("org.orbisgis.SymbolManager");
+				.getService(SymbolManager.class);
 		return sm;
 	}
 

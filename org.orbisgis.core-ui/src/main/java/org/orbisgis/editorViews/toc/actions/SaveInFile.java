@@ -77,9 +77,9 @@ public class SaveInFile implements
 				final String fileName = savedFile.getName();
 				final FileSourceDefinition def = new FileSourceDefinition(
 						savedFile);
-				((DataManager) Services.getService("org.orbisgis.DataManager"))
+				((DataManager) Services.getService(DataManager.class))
 						.getDSF().getSourceManager().register(fileName, def);
-				((DataManager) Services.getService("org.orbisgis.DataManager"))
+				((DataManager) Services.getService(DataManager.class))
 						.getDSF().saveContents(fileName,
 								resource.getDataSource());
 				JOptionPane.showMessageDialog(null,

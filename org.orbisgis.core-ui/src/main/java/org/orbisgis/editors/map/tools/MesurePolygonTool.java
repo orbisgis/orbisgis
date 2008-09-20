@@ -55,7 +55,7 @@ public class MesurePolygonTool extends AbstractPolygonTool {
 	protected void polygonDone(Polygon g, MapContext vc, ToolManager tm)
 			throws TransitionException {
 		OutputManager om = (OutputManager) Services
-				.getService("org.orbisgis.OutputManager");
+				.getService(OutputManager.class);
 		Color color = Color.blue;
 
 		om.append("Area : " + getArea(g) + " Perimeter : " + getPerimeter(g)

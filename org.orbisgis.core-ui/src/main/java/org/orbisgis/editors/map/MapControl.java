@@ -158,14 +158,14 @@ public class MapControl extends JComponent implements ComponentListener {
 
 		// Check the status of the tools
 		PluginManager psm = (PluginManager) Services
-				.getService("org.orbisgis.PluginManager");
+				.getService(PluginManager.class);
 		systemListener = new SystemListener() {
 
 			public void statusChanged() {
 				try {
 					toolManager.checkToolStatus();
 					UIManager uiManager = (UIManager) Services
-							.getService("org.orbisgis.UIManager");
+							.getService(UIManager.class);
 					uiManager.refreshUI();
 				} catch (TransitionException e) {
 				}
@@ -225,7 +225,7 @@ public class MapControl extends JComponent implements ComponentListener {
 			if (mapTransform.getAdjustedExtent() != null) {
 				drawer = new Drawer();
 				BackgroundManager bm = (BackgroundManager) Services
-						.getService("org.orbisgis.BackgroundManager");
+						.getService(BackgroundManager.class);
 				bm.nonBlockingBackgroundOperation(new DefaultJobId(
 						"org.orbisgis.jobs.MapControl-" + processId), drawer);
 			}
@@ -473,7 +473,7 @@ public class MapControl extends JComponent implements ComponentListener {
 			drawer.cancel();
 		}
 		PluginManager psm = (PluginManager) Services
-				.getService("org.orbisgis.PluginManager");
+				.getService(PluginManager.class);
 		psm.removeSystemListener(systemListener);
 		toolManager = null;
 	}

@@ -99,7 +99,7 @@ public class ResourceTreeRenderer extends DefaultTreeCellRenderer {
 				iconAndLabel.setIcon(null);
 			}
 			DataManager dataManager = (DataManager) Services
-					.getService("org.orbisgis.DataManager");
+					.getService(DataManager.class);
 			SourceManager sourceManager = dataManager.getSourceManager();
 			String text = node.getName();
 			try {

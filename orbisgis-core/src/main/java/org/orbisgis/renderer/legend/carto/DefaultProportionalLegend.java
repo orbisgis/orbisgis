@@ -175,7 +175,7 @@ public class DefaultProportionalLegend extends AbstractCartoLegend implements
 		ProportionalLegendType xmlLegend = new ProportionalLegendType();
 		save(xmlLegend);
 		SymbolManager sm = (SymbolManager) Services
-				.getService("org.orbisgis.SymbolManager");
+				.getService(SymbolManager.class);
 		xmlLegend.setSampleSymbol(sm.getJAXBSymbol(symbol));
 		xmlLegend.setMethod(getMethod());
 		xmlLegend.setMaxSize(getMaxSize());
@@ -193,7 +193,7 @@ public class DefaultProportionalLegend extends AbstractCartoLegend implements
 		setMethod(xmlLegend.getMethod());
 		setMaxSize(xmlLegend.getMaxSize());
 		SymbolManager sm = (SymbolManager) Services
-				.getService("org.orbisgis.SymbolManager");
+				.getService(SymbolManager.class);
 		Symbol symbol = sm.getSymbolFromJAXB(xmlLegend.getSampleSymbol());
 		if (symbol != null) {
 			setSampleSymbol((EditablePointSymbol) symbol);

@@ -77,7 +77,7 @@ import com.vividsolutions.jts.geom.Polygon;
 public class WandTool extends AbstractPointTool {
 	private final static String wandLayername = "wand";
 	private final static DataSourceFactory dsf = ((DataManager) Services
-			.getService("org.orbisgis.DataManager")).getDSF();
+			.getService(DataManager.class)).getDSF();
 	private final static GeometryFactory geometryFactory = new GeometryFactory();
 	private final static UniqueSymbolLegend uniqueSymbolLegend = LegendFactory
 			.createUniqueSymbolLegend();
@@ -140,7 +140,7 @@ public class WandTool extends AbstractPointTool {
 				vc.getLayerModel().remove(wandLayername);
 			}
 			DataManager dataManager = (DataManager) Services
-					.getService("org.orbisgis.DataManager");
+					.getService(DataManager.class);
 			final ILayer wandLayer = dataManager
 					.createLayer(buildWandDatasource(polygon));
 

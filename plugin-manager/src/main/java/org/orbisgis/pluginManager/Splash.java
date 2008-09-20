@@ -139,7 +139,7 @@ public class Splash extends JFrame {
 		}
 
 		ApplicationInfo ai = (ApplicationInfo) Services
-				.getService("org.orbisgis.ApplicationInfo");
+				.getService(ApplicationInfo.class);
 		versionLabel.setText(ai.getName() + " " + ai.getVersion() + " - "
 				+ ai.getOrganization());
 	}

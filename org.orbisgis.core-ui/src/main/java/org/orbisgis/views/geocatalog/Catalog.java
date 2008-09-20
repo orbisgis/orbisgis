@@ -95,7 +95,7 @@ public class Catalog extends ResourceTree {
 		tree.setCellEditor(resourceTreeEditor);
 
 		sourceListener = new SyncSourceListener();
-		((DataManager) Services.getService("org.orbisgis.DataManager")).getDSF().getSourceManager().addSourceListener(
+		((DataManager) Services.getService(DataManager.class)).getDSF().getSourceManager().addSourceListener(
 				sourceListener);
 
 	}
@@ -339,7 +339,7 @@ public class Catalog extends ResourceTree {
 	}
 
 	void delete() {
-		((DataManager) Services.getService("org.orbisgis.DataManager")).getDSF().getSourceManager().removeSourceListener(
+		((DataManager) Services.getService(DataManager.class)).getDSF().getSourceManager().removeSourceListener(
 				sourceListener);
 	}
 

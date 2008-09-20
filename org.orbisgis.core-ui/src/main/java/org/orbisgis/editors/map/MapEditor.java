@@ -170,7 +170,7 @@ public class MapEditor implements IExtensionPointEditor {
 
 		public boolean isVisible() {
 			EditorManager em = (EditorManager) Services
-					.getService("org.orbisgis.EditorManager");
+					.getService(EditorManager.class);
 			IEditor editor = em.getActiveEditor();
 			if ((editor == null) || !(editor instanceof MapEditor)) {
 				return false;
@@ -189,7 +189,7 @@ public class MapEditor implements IExtensionPointEditor {
 
 		public boolean isEnabled() {
 			EditorManager em = (EditorManager) Services
-					.getService("org.orbisgis.EditorManager");
+					.getService(EditorManager.class);
 			IEditor editor = em.getActiveEditor();
 			if ((editor == null) || !(editor instanceof MapEditor)) {
 				return false;
@@ -208,7 +208,7 @@ public class MapEditor implements IExtensionPointEditor {
 
 		public void actionPerformed() {
 			EditorManager em = (EditorManager) Services
-					.getService("org.orbisgis.EditorManager");
+					.getService(EditorManager.class);
 			IEditor editor = em.getActiveEditor();
 			MapEditor mapEditor = (MapEditor) editor;
 			try {
@@ -228,7 +228,7 @@ public class MapEditor implements IExtensionPointEditor {
 
 		public boolean isSelected() {
 			EditorManager em = (EditorManager) Services
-					.getService("org.orbisgis.EditorManager");
+					.getService(EditorManager.class);
 			IEditor editor = em.getActiveEditor();
 			if ((editor == null) || !(editor instanceof MapEditor)) {
 				return false;

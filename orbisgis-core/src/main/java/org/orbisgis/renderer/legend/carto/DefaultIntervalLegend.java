@@ -140,7 +140,7 @@ public class DefaultIntervalLegend extends AbstractClassifiedLegend implements
 			IntervalClassification classification = new IntervalClassification();
 			classification.setLabel(getLabel(i));
 			SymbolManager sm = (SymbolManager) Services
-					.getService("org.orbisgis.SymbolManager");
+					.getService(SymbolManager.class);
 			classification.setSymbol(sm.getJAXBSymbol(getSymbol(i)));
 			Interval interval = intervals.get(i);
 			Value minValue = interval.getMinValue();
@@ -219,7 +219,7 @@ public class DefaultIntervalLegend extends AbstractClassifiedLegend implements
 				}
 			}
 			SymbolManager sm = (SymbolManager) Services
-					.getService("org.orbisgis.SymbolManager");
+					.getService(SymbolManager.class);
 			Symbol symbol = sm.getSymbolFromJAXB(classification.getSymbol());
 			addInterval(minValue, initIncluded, maxValue, endIncluded, symbol,
 					label);

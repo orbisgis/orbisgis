@@ -45,7 +45,7 @@ public class DefaultMapContextManager implements MapContextManager {
 
 	public MapContext getActiveView() {
 		GeocognitionElement element = ((EditorManager) Services
-				.getService("org.orbisgis.EditorManager")).getActiveElement();
+				.getService(EditorManager.class)).getActiveElement();
 		if ((element != null) && (element.getObject() instanceof MapContext)) {
 			return (MapContext) element.getObject();
 		} else {

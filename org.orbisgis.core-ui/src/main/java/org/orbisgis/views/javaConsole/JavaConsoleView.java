@@ -79,10 +79,10 @@ public class JavaConsoleView implements IView {
 	private void eval(String text) {
 		OutputDiagnosticListener outputDiagnosticListener = new OutputDiagnosticListener();
 		OutputManager outputManager = (OutputManager) Services
-				.getService("org.orbisgis.OutputManager");
+				.getService(OutputManager.class);
 		try {
 			JavaManager jm = (JavaManager) Services
-					.getService("org.orbisgis.JavaManager");
+					.getService(JavaManager.class);
 			jm.execute(text, outputDiagnosticListener);
 		} catch (ParseException e) {
 			Services.getErrorManager().error("Syntax error in java code", e);

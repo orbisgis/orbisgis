@@ -143,7 +143,7 @@ public class CUITest {
 	}
 
 	public static DataManager getDataManager() {
-		return (DataManager) Services.getService("org.orbisgis.DataManager");
+		return (DataManager) Services.getService(DataManager.class);
 	}
 
 }

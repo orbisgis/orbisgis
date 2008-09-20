@@ -43,7 +43,7 @@ public class GeocognitionSymbol extends AbstractExtensionElement implements
 			SimpleSymbolType simpleSymbol = (SimpleSymbolType) sim;
 			String id = simpleSymbol.getSymbolTypeId();
 			SymbolManager sm = (SymbolManager) Services
-					.getService("org.orbisgis.SymbolManager");
+					.getService(SymbolManager.class);
 			Symbol ret = sm.createSymbol(id);
 			if (ret == null) {
 				return null;

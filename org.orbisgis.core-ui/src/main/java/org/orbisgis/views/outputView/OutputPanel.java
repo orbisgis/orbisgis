@@ -106,7 +106,7 @@ public class OutputPanel extends JPanel implements OutputManager {
 
 	public void makeVisible() {
 		ViewManager vm = (ViewManager) Services
-				.getService("org.orbisgis.ViewManager");
+				.getService(ViewManager.class);
 		vm.showView("org.orbisgis.views.Output");
 	}
 }

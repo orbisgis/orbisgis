@@ -53,7 +53,7 @@ public class ZoomToLayer implements IMultipleLayerAction {
 			env.expandToInclude(layer.getEnvelope());
 		}
 		EditorManager em = (EditorManager) Services
-				.getService("org.orbisgis.EditorManager");
+				.getService(EditorManager.class);
 		if (em.getActiveEditor() != null) {
 			((MapEditor) em.getActiveEditor()).getMapTransform().setExtent(env);
 		}

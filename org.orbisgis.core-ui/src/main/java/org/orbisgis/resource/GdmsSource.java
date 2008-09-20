@@ -68,7 +68,7 @@ public class GdmsSource extends AbstractResourceType implements IResourceType {
 		int type;
 		try {
 			type = ((DataManager) Services
-					.getService("org.orbisgis.DataManager")).getDSF()
+					.getService(DataManager.class)).getDSF()
 					.getSourceManager().getSourceType(name);
 		} catch (NoSuchTableException e) {
 			type = SourceManager.UNKNOWN;
@@ -98,7 +98,7 @@ public class GdmsSource extends AbstractResourceType implements IResourceType {
 
 	public void removeFromTree(INode toRemove) throws ResourceTypeException {
 		SourceManager sourceManager = ((DataManager) Services
-				.getService("org.orbisgis.DataManager")).getDSF()
+				.getService(DataManager.class)).getDSF()
 				.getSourceManager();
 		Source source = sourceManager.getSource(toRemove.getName());
 		if (source != null) {
@@ -110,7 +110,7 @@ public class GdmsSource extends AbstractResourceType implements IResourceType {
 
 	public void setName(INode node, String newName)
 			throws ResourceTypeException {
-		((DataManager) Services.getService("org.orbisgis.DataManager"))
+		((DataManager) Services.getService(DataManager.class))
 				.getDSF().getSourceManager().rename(node.getName(), newName);
 		super.setName(node, newName);
 	}
@@ -118,10 +118,10 @@ public class GdmsSource extends AbstractResourceType implements IResourceType {
 	public void addToTree(INode parent, INode toAdd)
 			throws ResourceTypeException {
 		super.addToTree(parent, toAdd);
-		if (!((DataManager) Services.getService("org.orbisgis.DataManager"))
+		if (!((DataManager) Services.getService(DataManager.class))
 				.getDSF().getSourceManager().exists(toAdd.getName())) {
 			if (def != null) {
-				((DataManager) Services.getService("org.orbisgis.DataManager"))
+				((DataManager) Services.getService(DataManager.class))
 						.getDSF().getSourceManager().register(toAdd.getName(),
 								def);
 			} else {

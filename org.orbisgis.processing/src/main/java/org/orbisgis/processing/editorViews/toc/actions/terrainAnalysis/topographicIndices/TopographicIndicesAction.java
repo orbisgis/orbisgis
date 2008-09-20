@@ -107,7 +107,7 @@ public class TopographicIndicesAction extends AbstractGray16And32Process
 
 				// save the computed GeoRaster in a tempFile
 				final DataSourceFactory dsf = ((DataManager) Services
-						.getService("org.orbisgis.DataManager")).getDSF();
+						.getService(DataManager.class)).getDSF();
 
 				final String tempFilewetness = dsf.getTempFile() + "wetness"
 						+ ".tif";
@@ -117,7 +117,7 @@ public class TopographicIndicesAction extends AbstractGray16And32Process
 
 				// populate the GeoView TOC with a new RasterLayer
 				DataManager dataManager = (DataManager) Services
-						.getService("org.orbisgis.DataManager");
+						.getService(DataManager.class);
 
 				if (new Boolean(mip.getInput("wetness"))) {
 

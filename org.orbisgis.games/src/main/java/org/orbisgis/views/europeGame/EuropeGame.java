@@ -135,7 +135,7 @@ public class EuropeGame implements IView {
 
 			// Create map
 			DataManager dm = (DataManager) Services
-					.getService("org.orbisgis.DataManager");
+					.getService(DataManager.class);
 			mapLayer = dm.createLayer(shp);
 			mapContext = new DefaultMapContext();
 			mapContext.open(null);

@@ -150,7 +150,7 @@ public class EPWindowHelper {
 					"org.orbisgis.window.persistence", EPWindowHelper.class
 							.getClassLoader());
 			Workspace ws = (Workspace) Services
-					.getService("org.orbisgis.Workspace");
+					.getService(Workspace.class);
 			File file = ws.getFile("windows.xml");
 
 			PrintWriter printWriter = new PrintWriter(file);
@@ -179,7 +179,7 @@ public class EPWindowHelper {
 	public static void loadStatus() {
 		cleanWindows();
 		Workspace ws = (Workspace) Services
-				.getService("org.orbisgis.Workspace");
+				.getService(Workspace.class);
 		File file = ws.getFile("windows.xml");
 		if (file.exists()) {
 			try {

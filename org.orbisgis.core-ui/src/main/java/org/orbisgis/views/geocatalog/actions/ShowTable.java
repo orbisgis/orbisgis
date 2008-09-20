@@ -61,7 +61,7 @@ public class ShowTable implements IResourceAction {
 			int sourceType;
 			try {
 				sourceType = ((DataManager) Services
-						.getService("org.orbisgis.DataManager")).getDSF()
+						.getService(DataManager.class)).getDSF()
 						.getSourceManager().getSourceType(
 								selectedNode.getName());
 			} catch (NoSuchTableException e) {
@@ -76,12 +76,12 @@ public class ShowTable implements IResourceAction {
 	public void execute(Catalog catalog, IResource currentNode) {
 		try {
 			DataManager dataManager = (DataManager) Services
-					.getService("org.orbisgis.DataManager");
+					.getService(DataManager.class);
 			DataSourceFactory dsf = dataManager.getDSF();
 			DataSource ds = dsf.getDataSource(currentNode.getName());
 
 			ViewManager viewManager = (ViewManager) Services
-					.getService("org.orbisgis.ViewManager");
+					.getService(ViewManager.class);
 			Table table = (Table) viewManager
 					.getView("org.orbisgis.views.Table");
 			table.setContents(ds);

@@ -45,15 +45,15 @@ public class RegisteredGdmsSource extends GdmsSource {
 	private DataSourceDefinition def;
 //
 //	public RegisteredGdmsSource(String name) {
-//		def = ((DataManager) Services.getService("org.orbisgis.DataManager")).getDSF().getSourceManager().getSource(name)
+//		def = ((DataManager) Services.getService(DataManager.class)).getDSF().getSourceManager().getSource(name)
 //				.getDataSourceDefinition();
 //	}
 
 	public void addToTree(INode parent, INode toAdd)
 			throws ResourceTypeException {
 		super.addToTree(parent, toAdd);
-		if (!((DataManager) Services.getService("org.orbisgis.DataManager")).getDSF().getSourceManager().exists(toAdd.getName())) {
-			((DataManager) Services.getService("org.orbisgis.DataManager")).getDSF().getSourceManager().register(toAdd.getName(),
+		if (!((DataManager) Services.getService(DataManager.class)).getDSF().getSourceManager().exists(toAdd.getName())) {
+			((DataManager) Services.getService(DataManager.class)).getDSF().getSourceManager().register(toAdd.getName(),
 					def);
 		}
 	}

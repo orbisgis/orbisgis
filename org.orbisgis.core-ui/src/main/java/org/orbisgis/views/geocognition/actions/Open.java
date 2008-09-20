@@ -23,7 +23,7 @@ public class Open implements IGeocognitionAction {
 	@Override
 	public void execute(Geocognition geocognition, GeocognitionElement element) {
 		BackgroundManager backgroundManager = (BackgroundManager) Services
-				.getService("org.orbisgis.BackgroundManager");
+				.getService(BackgroundManager.class);
 		backgroundManager.backgroundOperation(new OpenGeocognitionElementJob(element));
 	}
 

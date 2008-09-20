@@ -405,7 +405,7 @@ public class Layer extends GdmsLayer {
 			List<SimpleLegend> legendCollection = legends.getSimpleLegend();
 			ArrayList<Legend> fieldLegends = new ArrayList<Legend>();
 			LegendManager lm = (LegendManager) Services
-					.getService("org.orbisgis.LegendManager");
+					.getService(LegendManager.class);
 			for (SimpleLegend simpleLegend : legendCollection) {
 				String legendId = simpleLegend.getLegendId();
 

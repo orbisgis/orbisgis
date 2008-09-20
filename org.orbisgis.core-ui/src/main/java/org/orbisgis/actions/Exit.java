@@ -49,7 +49,7 @@ public class Exit implements IAction {
 				"OrbisGIS", JOptionPane.YES_NO_OPTION);
 		if (answer == JOptionPane.YES_OPTION) {
 			PluginManager psm = (PluginManager) Services
-					.getService("org.orbisgis.PluginManager");
+					.getService(PluginManager.class);
 			psm.stop();
 		}
 	}

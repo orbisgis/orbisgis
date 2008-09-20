@@ -46,7 +46,7 @@ public class SaveWorkspace implements IAction {
 
 	public void actionPerformed() {
 		Workspace ws = (Workspace) Services
-				.getService("org.orbisgis.Workspace");
+				.getService(Workspace.class);
 		try {
 			ws.saveWorkspace();
 		} catch (IOException e) {

@@ -90,7 +90,7 @@ public class JobPanel extends JPanel {
 
 	private BackgroundManager getBackgroundManager() {
 		return (BackgroundManager) Services
-				.getService("org.orbisgis.BackgroundManager");
+				.getService(BackgroundManager.class);
 	}
 
 	public void removeJob(Job job) {

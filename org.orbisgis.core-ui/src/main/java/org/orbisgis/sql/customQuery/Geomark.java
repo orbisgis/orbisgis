@@ -100,7 +100,7 @@ public class Geomark implements CustomQuery {
 	public ObjectDriver evaluate(DataSourceFactory dsf, DataSource[] tables,
 			Value[] values, IProgressMonitor pm) throws ExecutionException {
 		ViewManager vm = (ViewManager) Services
-				.getService("org.orbisgis.ViewManager");
+				.getService(ViewManager.class);
 		final GeomarkPanel geomarkPanel = (GeomarkPanel) vm
 				.getView("org.orbisgis.editorViews.GeoMark");
 		final String prefix = ((0 == values.length) ? tables[0].getName()

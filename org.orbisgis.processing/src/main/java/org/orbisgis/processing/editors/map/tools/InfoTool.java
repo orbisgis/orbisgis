@@ -94,7 +94,7 @@ public class InfoTool extends AbstractPointTool {
 
 			// populate the PixelInfoView...
 			ViewManager vm = (ViewManager) Services
-					.getService("org.orbisgis.ViewManager");
+					.getService(ViewManager.class);
 
 			final PixelInfoPanel pixelInfoPanel = (PixelInfoPanel) vm
 					.getView("org.orbisgis.rasterProcessing.toolbar.PixelInfoView");

@@ -118,13 +118,13 @@ public class WatershedTool extends AbstractPointTool {
 
 				// save the computed GeoRaster in a tempFile
 				final DataSourceFactory dsf = ((DataManager) Services
-						.getService("org.orbisgis.DataManager")).getDSF();
+						.getService(DataManager.class)).getDSF();
 				final String tempFile = dsf.getTempFile() + ".tif";
 				grWatershedFromOutletIndex.save(tempFile);
 
 				// populate the GeoView TOC with a new RasterLayer
 				DataManager dataManager = (DataManager) Services
-						.getService("org.orbisgis.DataManager");
+						.getService(DataManager.class);
 				final ILayer newLayer = dataManager.createLayer(new File(
 						tempFile));
 				vc.getLayerModel().insertLayer(newLayer, 0);

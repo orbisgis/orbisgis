@@ -66,7 +66,7 @@ public class NewFile implements INewResource {
 			File[] files = filePanel.getSelectedFiles();
 			for (File file : files) {
 				DataManager dm = (DataManager) Services
-						.getService("org.orbisgis.DataManager");
+						.getService(DataManager.class);
 				try {
 					String name = dm.registerWithUniqueName(file.getName(),
 							new FileSourceDefinition(file));

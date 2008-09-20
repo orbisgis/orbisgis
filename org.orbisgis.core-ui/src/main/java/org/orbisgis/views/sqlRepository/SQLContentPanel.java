@@ -87,7 +87,7 @@ public class SQLContentPanel extends ResourceTree {
 			SqlScript script = (SqlScript) sqlContent;
 			String scriptContent = getResourceContent(script.getResource());
 			SQLProcessor pr = new SQLProcessor(((DataManager) Services
-					.getService("org.orbisgis.DataManager")).getDSF());
+					.getService(DataManager.class)).getDSF());
 			String comment = pr.getScriptComment(scriptContent);
 			if (comment != null) {
 				return comment;
@@ -117,7 +117,7 @@ public class SQLContentPanel extends ResourceTree {
 			SqlScript script = (SqlScript) sqlContent;
 			String scriptContent = getResourceContent(script.getResource());
 			SQLProcessor pr = new SQLProcessor(((DataManager) Services
-					.getService("org.orbisgis.DataManager")).getDSF());
+					.getService(DataManager.class)).getDSF());
 			return pr.getScriptBody(scriptContent);
 		} else if (sqlContent instanceof SqlInstruction) {
 			SqlInstruction instruction = (SqlInstruction) sqlContent;

@@ -73,7 +73,7 @@ public class CreateFileResource implements IResourceAction {
 	public void execute(Catalog catalog, IResource selectedNode) {
 		// Get the non raster writable drivers
 		DataManager dm = (DataManager) Services
-				.getService("org.orbisgis.DataManager");
+				.getService(DataManager.class);
 		DriverManager driverManager = dm.getSourceManager().getDriverManager();
 		String[] driverNames = driverManager.getDriverNames();
 		ArrayList<String> filtered = new ArrayList<String>();

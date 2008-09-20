@@ -50,7 +50,7 @@ public class SetInactive implements ILayerAction {
 
 	public boolean accepts(ILayer layer) {
 		EditorManager em = (EditorManager) Services
-				.getService("org.orbisgis.EditorManager");
+				.getService(EditorManager.class);
 		MapContext mc = (MapContext) em.getActiveElement().getObject();
 		return mc.getActiveLayer() == layer;
 	}

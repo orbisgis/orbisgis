@@ -47,7 +47,7 @@ public class FormatTest extends AbstractTest {
 	@Override
 	protected void setUp() throws Exception {
 		super.setUp();
-		sourceManager = ((DataManager) Services.getService("org.orbisgis.DataManager")).getDSF().getSourceManager();
+		sourceManager = ((DataManager) Services.getService(DataManager.class)).getDSF().getSourceManager();
 		sourceManager.removeAll();
 	}
 

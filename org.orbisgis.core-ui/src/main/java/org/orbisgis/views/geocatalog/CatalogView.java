@@ -80,7 +80,7 @@ public class CatalogView implements IView {
 
 	public void loadStatus() throws PersistenceException {
 		Workspace ws = (Workspace) Services
-				.getService("org.orbisgis.Workspace");
+				.getService(Workspace.class);
 		File catalogFile = ws.getFile(CATALOG_PERSISTENCE_FILE);
 		if (catalogFile.exists()) {
 			try {
@@ -154,7 +154,7 @@ public class CatalogView implements IView {
 		populate(root, this.catalog.getTreeModel().getRoot());
 		catalog.getResource().add(root);
 		Workspace ws = (Workspace) Services
-				.getService("org.orbisgis.Workspace");
+				.getService(Workspace.class);
 		File file = ws.getFile(CATALOG_PERSISTENCE_FILE);
 		try {
 			JAXBContext jc = JAXBContext.newInstance(

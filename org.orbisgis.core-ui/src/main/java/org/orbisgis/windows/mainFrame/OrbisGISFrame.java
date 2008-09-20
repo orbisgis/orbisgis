@@ -504,7 +504,7 @@ public class OrbisGISFrame extends JFrame implements IWindow, ViewManager,
 		this.getContentPane().add(root, BorderLayout.CENTER);
 
 		Workspace ws = (Workspace) Services
-				.getService("org.orbisgis.Workspace");
+				.getService(Workspace.class);
 		FileInputStream layoutStream;
 		try {
 			layoutStream = new FileInputStream(ws
@@ -529,7 +529,7 @@ public class OrbisGISFrame extends JFrame implements IWindow, ViewManager,
 	public Map<String, String> save() throws PersistenceException {
 		try {
 			Workspace ws = (Workspace) Services
-					.getService("org.orbisgis.Workspace");
+					.getService(Workspace.class);
 			FileOutputStream fos = new FileOutputStream(ws
 					.getFile(LAYOUT_PERSISTENCE_FILE));
 			ObjectOutputStream oos = new ObjectOutputStream(fos);

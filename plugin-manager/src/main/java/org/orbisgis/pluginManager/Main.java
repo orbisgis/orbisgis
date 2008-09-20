@@ -123,7 +123,7 @@ public class Main {
 			pluginManager.setPlugins(plugins);
 
 			Workspace ws = (Workspace) Services
-					.getService("org.orbisgis.Workspace");
+					.getService(Workspace.class);
 			if (selectedWorkspace != null) {
 				ws.setWorkspaceFolder(selectedWorkspace);
 			}

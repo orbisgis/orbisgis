@@ -77,7 +77,7 @@ public class ConvertXYZDem implements INewResource {
 				geoRaster.open();
 				geoRaster.save(outfile.getAbsolutePath());
 				DataManager dm = (DataManager) Services
-						.getService("org.orbisgis.DataManager");
+						.getService(DataManager.class);
 				String name = dm.registerWithUniqueName(outfile.getName(),
 						new FileSourceDefinition(outfile));
 				resources.add(ResourceFactory.createResource(name,

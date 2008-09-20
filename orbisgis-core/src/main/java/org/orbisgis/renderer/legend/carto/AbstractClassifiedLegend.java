@@ -98,7 +98,7 @@ abstract class AbstractClassifiedLegend extends AbstractCartoLegend implements
 		save(xmlLegend);
 		if (getDefaultSymbol() != null) {
 			SymbolManager sm = (SymbolManager) Services
-					.getService("org.orbisgis.SymbolManager");
+					.getService(SymbolManager.class);
 			xmlLegend.setDefaultSymbol(sm.getJAXBSymbol(getDefaultSymbol()));
 		}
 		if (getDefaultLabel() != null) {
@@ -116,7 +116,7 @@ abstract class AbstractClassifiedLegend extends AbstractCartoLegend implements
 		SymbolType defaultSymbolXML = xmlLegend.getDefaultSymbol();
 		if (defaultSymbolXML != null) {
 			SymbolManager sm = (SymbolManager) Services
-					.getService("org.orbisgis.SymbolManager");
+					.getService(SymbolManager.class);
 			setDefaultSymbol(sm.getSymbolFromJAXB(defaultSymbolXML));
 		}
 	}

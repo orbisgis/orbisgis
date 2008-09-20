@@ -57,7 +57,7 @@ public class AbstractTest extends TestCase {
 	}
 
 	protected DataManager getDataManager() {
-		return (DataManager) Services.getService("org.orbisgis.DataManager");
+		return (DataManager) Services.getService(DataManager.class);
 	}
 
 	private class FailErrorManager implements ErrorManager {

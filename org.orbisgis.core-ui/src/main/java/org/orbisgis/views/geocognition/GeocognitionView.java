@@ -245,7 +245,7 @@ public class GeocognitionView extends JPanel implements IView {
 	@Override
 	public void saveStatus() throws PersistenceException {
 		Workspace ws = (Workspace) Services
-				.getService("org.orbisgis.Workspace");
+				.getService(Workspace.class);
 		File cognitionFile = ws.getFile(COGNITION_PERSISTENCE_FILE);
 		Geocognition geocognition = Services.getService(Geocognition.class);
 		try {

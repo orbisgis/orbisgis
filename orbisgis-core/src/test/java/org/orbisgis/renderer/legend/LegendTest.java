@@ -396,7 +396,7 @@ public class LegendTest extends AbstractTest {
 		ds.open();
 		fieldName = "long";
 
-		lm = (LegendManager) Services.getService("org.orbisgis.LegendManager");
+		lm = (LegendManager) Services.getService(LegendManager.class);
 	}
 
 	@Override

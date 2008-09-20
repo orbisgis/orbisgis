@@ -137,7 +137,7 @@ public class GeocognitionTreeModel extends AbstractTreeModel implements
 	}
 
 	private Geocognition getGeocognition() {
-		return (Geocognition) Services.getService("org.orbisgis.Geocognition");
+		return (Geocognition) Services.getService(Geocognition.class);
 	}
 
 	public boolean filter(String text, ArrayList<IGeocognitionFilter> filters) {

@@ -55,7 +55,7 @@ public abstract class GdmsLayer extends BasicLayer {
 
 	@Override
 	public void setName(String name) throws LayerException {
-		SourceManager sourceManager = ((DataManager) Services.getService("org.orbisgis.DataManager")).getDSF().getSourceManager();
+		SourceManager sourceManager = ((DataManager) Services.getService(DataManager.class)).getDSF().getSourceManager();
 
 		// Remove previous alias
 		if (!mainName.equals(getName())) {
@@ -76,7 +76,7 @@ public abstract class GdmsLayer extends BasicLayer {
 	}
 
 	public void close() throws LayerException {
-		SourceManager sourceManager = ((DataManager) Services.getService("org.orbisgis.DataManager")).getDSF().getSourceManager();
+		SourceManager sourceManager = ((DataManager) Services.getService(DataManager.class)).getDSF().getSourceManager();
 
 		// Remove alias
 		if (!mainName.equals(getName())) {

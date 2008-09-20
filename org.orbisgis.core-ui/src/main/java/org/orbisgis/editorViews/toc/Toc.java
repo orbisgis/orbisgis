@@ -102,7 +102,7 @@ public class Toc extends ResourceTree {
 
 		tocRenderer = new TocRenderer(this);
 		DataManager dataManager = (DataManager) Services
-				.getService("org.orbisgis.DataManager");
+				.getService(DataManager.class);
 		treeModel = new TocTreeModel(dataManager.createLayerCollection("root"),
 				getTree());
 		this.setModel(treeModel);
@@ -240,7 +240,7 @@ public class Toc extends ResourceTree {
 						.getTransferData(TransferableResource
 								.getResourceFlavor());
 				BackgroundManager bm = (BackgroundManager) Services
-						.getService("org.orbisgis.BackgroundManager");
+						.getService(BackgroundManager.class);
 				bm.backgroundOperation(new MoveProcess(draggedResources,
 						dropNode));
 
@@ -430,7 +430,7 @@ public class Toc extends ResourceTree {
 				index = dropNode.getLayerCount();
 			}
 			DataManager dataManager = (DataManager) Services
-					.getService("org.orbisgis.DataManager");
+					.getService(DataManager.class);
 			for (int i = 0; i < draggedResources.length; i++) {
 				IResource resource = draggedResources[i];
 				if (pm.isCancelled()) {
@@ -521,7 +521,7 @@ public class Toc extends ResourceTree {
 		} else {
 			// Remove the references to the mapContext
 			DataManager dataManager = (DataManager) Services
-					.getService("org.orbisgis.DataManager");
+					.getService(DataManager.class);
 			treeModel = new TocTreeModel(dataManager
 					.createLayerCollection("root"), getTree());
 			this.setModel(treeModel);

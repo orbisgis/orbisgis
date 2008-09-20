@@ -57,7 +57,7 @@ public class ShowInTable implements ILayerAction {
 
 	public void execute(MapContext mapContext, ILayer resource) {
 		ViewManager vm = (ViewManager) Services
-				.getService("org.orbisgis.ViewManager");
+				.getService(ViewManager.class);
 		Component comp = vm.getView("org.orbisgis.views.Table");
 		if (comp != null) {
 			Table table = (Table) comp;

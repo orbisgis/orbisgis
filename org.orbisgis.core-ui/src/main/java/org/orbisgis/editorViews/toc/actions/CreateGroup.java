@@ -51,15 +51,15 @@ public class CreateGroup implements ILayerAction {
 
 	public boolean acceptsSelectionCount(int selectionCount) {
 		MapContextManager vcm = (MapContextManager) Services
-				.getService("org.orbisgis.MapContextManager");
+				.getService(MapContextManager.class);
 		return (vcm.getActiveView() != null) && (selectionCount <= 1);
 	}
 
 	public void execute(MapContext mapContext, ILayer resource) {
 		MapContextManager vcm = (MapContextManager) Services
-				.getService("org.orbisgis.MapContextManager");
+				.getService(MapContextManager.class);
 		DataManager dataManager = (DataManager) Services
-				.getService("org.orbisgis.DataManager");
+				.getService(DataManager.class);
 		if (vcm.getActiveView() != null) {
 			ILayer newLayerCollection = dataManager
 					.createLayerCollection("group" + System.currentTimeMillis());

@@ -47,7 +47,7 @@ public class CatalogTest extends AbstractTest {
 	public void testResourcesModifedInDSF() throws Exception {
 		Catalog cat = new Catalog();
 		DataSourceFactory dsf = ((DataManager) Services
-				.getService("org.orbisgis.DataManager")).getDSF();
+				.getService(DataManager.class)).getDSF();
 		dsf.registerDataSource("source", new FileSourceDefinition("a.csv"));
 		assertTrue(cat.getTreeModel().getRoot().getResourceAt(0).getName()
 				.equals("source"));
@@ -62,7 +62,7 @@ public class CatalogTest extends AbstractTest {
 		Catalog cat = new Catalog();
 		ResourceTreeModel model = cat.getTreeModel();
 		DataSourceFactory dsf = ((DataManager) Services
-				.getService("org.orbisgis.DataManager")).getDSF();
+				.getService(DataManager.class)).getDSF();
 		dsf.registerDataSource("source", new FileSourceDefinition("a.csv"));
 		IResource res = model.getRoot().getResourceAt(0);
 		res.setResourceName("source2");

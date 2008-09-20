@@ -85,7 +85,7 @@ public class Activator implements PluginActivator {
 
 		// Install the refresh listener
 		PluginManager pm = (PluginManager) Services
-				.getService("org.orbisgis.PluginManager");
+				.getService(PluginManager.class);
 		pm.addSystemListener(new SystemListener() {
 			public void statusChanged() {
 				ActionControlsRegistry.refresh();
@@ -94,7 +94,7 @@ public class Activator implements PluginActivator {
 
 		// Install the error listener
 		final ErrorManager em = (ErrorManager) Services
-				.getService("org.orbisgis.ErrorManager");
+				.getService(ErrorManager.class);
 		em.addErrorListener(new ErrorListener() {
 			
 			private ErrorPanel ep = new ErrorPanel();
@@ -107,7 +107,7 @@ public class Activator implements PluginActivator {
 				ErrorMessage errorMessage = new ErrorMessage(userMsg, e, error);
 				// Pipe the message to the output manager
 				OutputManager om = (OutputManager) Services
-						.getService("org.orbisgis.OutputManager");
+						.getService(OutputManager.class);
 				Color color;
 				if (errorMessage.isError()) {
 					color = Color.red;
@@ -152,7 +152,7 @@ public class Activator implements PluginActivator {
 
 		// Listen workspace changes
 		Workspace workspace = (Workspace) Services
-				.getService("org.orbisgis.Workspace");
+				.getService(Workspace.class);
 
 		workspace.addWorkspaceListener(new WorkspaceListener() {
 
@@ -176,7 +176,7 @@ public class Activator implements PluginActivator {
 
 		// Configuration of workspace directories
 		Workspace workspace = (Workspace) Services
-				.getService("org.orbisgis.Workspace");
+				.getService(Workspace.class);
 
 		File sourcesDir = workspace.getFile("sources");
 		if (!sourcesDir.exists()) {
@@ -184,7 +184,7 @@ public class Activator implements PluginActivator {
 		}
 
 		OGWorkspace ews = (OGWorkspace) Services
-				.getService("org.orbisgis.OGWorkspace");
+				.getService(OGWorkspace.class);
 
 		dsf = new DataSourceFactory(sourcesDir.getAbsolutePath(), ews
 				.getTempFolder().getAbsolutePath());
@@ -227,7 +227,7 @@ public class Activator implements PluginActivator {
 
 	public boolean allowStop() {
 		DataManager dataManager = (DataManager) Services
-				.getService("org.orbisgis.DataManager");
+				.getService(DataManager.class);
 		SourceManager sourceManager = dataManager.getSourceManager();
 		String[] sourceNames = sourceManager.getSourceNames();
 
@@ -264,7 +264,7 @@ public class Activator implements PluginActivator {
 		}
 
 		EditorManager em = (EditorManager) Services
-				.getService("org.orbisgis.EditorManager");
+				.getService(EditorManager.class);
 		IEditor[] editors = em.getEditors();
 		for (IEditor editor : editors) {
 			if (!em.closeEditor(editor)) {

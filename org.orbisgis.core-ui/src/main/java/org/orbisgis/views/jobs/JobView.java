@@ -59,7 +59,7 @@ public class JobView implements IView {
 
 	public void initialize() {
 		BackgroundManager bm = (BackgroundManager) Services
-				.getService("org.orbisgis.BackgroundManager");
+				.getService(BackgroundManager.class);
 
 		bm.addBackgroundListener(new BackgroundListener() {
 

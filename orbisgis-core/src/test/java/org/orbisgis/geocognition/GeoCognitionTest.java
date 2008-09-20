@@ -130,7 +130,7 @@ public class GeoCognitionTest extends AbstractGeocognitionTest {
 		MapContext mc = new DefaultMapContext();
 		mc.open(null);
 		DataManager dm = (DataManager) Services
-				.getService("org.orbisgis.DataManager");
+				.getService(DataManager.class);
 		ILayer lyr = dm.createLayer(new File("src/test/resources/bv_sap.shp"));
 		mc.getLayerModel().addLayer(lyr);
 		mc.close(null);
@@ -146,7 +146,7 @@ public class GeoCognitionTest extends AbstractGeocognitionTest {
 		MapContext mc = new DefaultMapContext();
 		mc.open(null);
 		DataManager dm = (DataManager) Services
-				.getService("org.orbisgis.DataManager");
+				.getService(DataManager.class);
 		ILayer lyr = dm.createLayer(new File("src/test/resources/bv_sap.shp"));
 		mc.getLayerModel().addLayer(lyr);
 		mc.getLayerModel().addLayer(dm.createLayerCollection("group"));
@@ -437,7 +437,7 @@ public class GeoCognitionTest extends AbstractGeocognitionTest {
 		MapContext mc = new DefaultMapContext();
 		mc.open(null);
 		DataManager dm = (DataManager) Services
-				.getService("org.orbisgis.DataManager");
+				.getService(DataManager.class);
 		ILayer lyr = dm.createLayer(new File("src/test/resources/bv_sap.shp"));
 		mc.getLayerModel().addLayer(lyr);
 		mc.close(null);

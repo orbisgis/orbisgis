@@ -100,7 +100,7 @@ public class InfoTool extends AbstractRectangleTool {
 					+ sds.getDefaultGeometry() + ", geomfromtext('"
 					+ writer.write(geomEnvelope) + "'));";
 			BackgroundManager bm = (BackgroundManager) Services
-					.getService("org.orbisgis.BackgroundManager");
+					.getService(BackgroundManager.class);
 			bm.backgroundOperation(new DefaultJobId(
 					"org.orbisgis.jobs.InfoTool"), new PopulateViewJob(sql));
 		} catch (DriverException e) {
@@ -142,13 +142,13 @@ public class InfoTool extends AbstractRectangleTool {
 
 		public void run(IProgressMonitor pm) {
 			ViewManager vm = (ViewManager) Services
-					.getService("org.orbisgis.ViewManager");
+					.getService(ViewManager.class);
 			Component comp = vm.getView("org.orbisgis.views.Table");
 			final Table table = (Table) comp;
 			try {
 				logger.debug("Info query: " + sql);
 				final DataSource ds = ((DataManager) Services
-						.getService("org.orbisgis.DataManager")).getDSF()
+						.getService(DataManager.class)).getDSF()
 						.getDataSourceFromSQL(sql, pm);
 				if (!pm.isCancelled()) {
 					SwingUtilities.invokeLater(new Runnable() {

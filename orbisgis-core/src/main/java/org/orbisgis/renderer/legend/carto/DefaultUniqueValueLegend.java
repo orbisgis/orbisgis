@@ -98,7 +98,7 @@ public class DefaultUniqueValueLegend extends AbstractClassifiedLegend
 		List<ValueClassification> classifications = xmlLegend
 				.getValueClassification();
 		SymbolManager sm = (SymbolManager) Services
-				.getService("org.orbisgis.SymbolManager");
+				.getService(SymbolManager.class);
 		for (int i = 0; i < values.size(); i++) {
 			ValueClassification classification = new ValueClassification();
 			classification.setLabel(getLabel(i));
@@ -119,7 +119,7 @@ public class DefaultUniqueValueLegend extends AbstractClassifiedLegend
 		List<ValueClassification> classifications = xmlLegend
 				.getValueClassification();
 		SymbolManager sm = (SymbolManager) Services
-				.getService("org.orbisgis.SymbolManager");
+				.getService(SymbolManager.class);
 		for (int i = 0; i < classifications.size(); i++) {
 			ValueClassification classification = classifications.get(i);
 			String label = classification.getLabel();

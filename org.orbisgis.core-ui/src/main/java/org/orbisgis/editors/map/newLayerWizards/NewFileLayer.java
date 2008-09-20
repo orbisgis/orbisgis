@@ -65,7 +65,7 @@ public class NewFileLayer implements INewLayer {
 					FileSourceDefinition fileSourceDefinition = new FileSourceDefinition(
 							file);
 					DataManager dataManager = (DataManager) Services
-							.getService("org.orbisgis.DataManager");
+							.getService(DataManager.class);
 					String registerName = (dataManager).getDSF()
 							.getSourceManager().getSourceName(
 									fileSourceDefinition);
