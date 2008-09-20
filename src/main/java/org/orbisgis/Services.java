@@ -113,7 +113,7 @@ public class Services {
 	 *             interface or there is no service registered under that name
 	 */
 	public static void setService(Class<?> interface_, Object serviceInstance) {
-		if (!services.containsKey(interface_)) {
+		if (!servicesDoc.containsKey(interface_)) {
 			throw new IllegalArgumentException("The service "
 					+ "is not registered: " + interface_);
 		} else if (interface_.isAssignableFrom(serviceInstance.getClass())) {
