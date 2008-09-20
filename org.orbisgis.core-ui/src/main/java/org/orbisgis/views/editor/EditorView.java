@@ -58,8 +58,7 @@ public class EditorView implements IEditorsView {
 	}
 
 	public void initialize() {
-		Services.registerService("org.orbisgis.EditorManager",
-				EditorManager.class,
+		Services.registerService(EditorManager.class,
 				"Gets access to the active editor and its document",
 				new DefaultEditorManager(editor));
 	}

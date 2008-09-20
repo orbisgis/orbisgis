@@ -74,10 +74,18 @@ public class CUITest {
 		DataSourceFactory dsf = new DataSourceFactory("target/sources",
 				"target/temp");
 
-		Services.registerService("org.orbisgis.DataManager", DataManager.class,
-				"", new DefaultDataManager(dsf));
-		Services.registerService("org.orbisgis.Workspace", Workspace.class, "",
-				new DefaultWorkspace() {
+		Services.registerService(DataManager.class, "", new DefaultDataManager(
+				dsf));
+		Services.registerService(Workspace.class, "", new DefaultWorkspace() {
+
+			@Override
+			public File getFile(String name) {
+				return new File(name);
+			}
+
+		});
+		Services.registerService(OGWorkspace.class, "",
+				new DefaultOGWorkspace() {
 
 					@Override
 					public File getFile(String name) {
@@ -85,17 +93,8 @@ public class CUITest {
 					}
 
 				});
-		Services.registerService("org.orbisgis.OGWorkspace", OGWorkspace.class,
-				"", new DefaultOGWorkspace() {
-
-					@Override
-					public File getFile(String name) {
-						return new File(name);
-					}
-
-				});
-		Services.registerService("org.orbisgis.ErrorManager",
-				ErrorManager.class, "", new DefaultErrorManager() {
+		Services.registerService(ErrorManager.class, "",
+				new DefaultErrorManager() {
 
 					@Override
 					public void error(String userMsg) {
@@ -124,13 +123,11 @@ public class CUITest {
 		MapTransform mt = new MapTransform();
 		mt.setExtent(new Envelope(0, 10000, 0, 10000));
 		mt.resizeImage(100, 100);
-		pan.init(mt, cons, layer.getVectorLegend(),
-				new ILegendPanelUI[] { new PnlUniqueSymbolLegend(true, pan),
-						new PnlUniqueValueLegend(pan),
-						new PnlIntervalLegend(pan),
-						new PnlProportionalLegend(pan) }, new ISymbolEditor[] {
-						new ClassicSymbolEditor(), new ImageSymbolEditor() },
-				layer);
+		pan.init(mt, cons, layer.getVectorLegend(), new ILegendPanelUI[] {
+				new PnlUniqueSymbolLegend(true, pan),
+				new PnlUniqueValueLegend(pan), new PnlIntervalLegend(pan),
+				new PnlProportionalLegend(pan) }, new ISymbolEditor[] {
+				new ClassicSymbolEditor(), new ImageSymbolEditor() }, layer);
 		if (UIFactory.showDialog(pan)) {
 			try {
 				layer.setLegend(pan.getLegends());

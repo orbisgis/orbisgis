@@ -129,8 +129,7 @@ public class GeoCognitionTest extends AbstractGeocognitionTest {
 	public void testMapContextPersistence() throws Exception {
 		MapContext mc = new DefaultMapContext();
 		mc.open(null);
-		DataManager dm = (DataManager) Services
-				.getService(DataManager.class);
+		DataManager dm = (DataManager) Services.getService(DataManager.class);
 		ILayer lyr = dm.createLayer(new File("src/test/resources/bv_sap.shp"));
 		mc.getLayerModel().addLayer(lyr);
 		mc.close(null);
@@ -145,8 +144,7 @@ public class GeoCognitionTest extends AbstractGeocognitionTest {
 	public void testMapContextIsModifed() throws Exception {
 		MapContext mc = new DefaultMapContext();
 		mc.open(null);
-		DataManager dm = (DataManager) Services
-				.getService(DataManager.class);
+		DataManager dm = (DataManager) Services.getService(DataManager.class);
 		ILayer lyr = dm.createLayer(new File("src/test/resources/bv_sap.shp"));
 		mc.getLayerModel().addLayer(lyr);
 		mc.getLayerModel().addLayer(dm.createLayerCollection("group"));
@@ -164,9 +162,9 @@ public class GeoCognitionTest extends AbstractGeocognitionTest {
 				.getResourceAsStream("unsupported-element.xml");
 		CountingErrorManager em = new CountingErrorManager();
 		ErrorManager previous = Services.getErrorManager();
-		Services.setService("org.orbisgis.ErrorManager", em);
+		Services.setService(ErrorManager.class, em);
 		gc.read(geocogStream);
-		Services.setService("org.orbisgis.ErrorManager", previous);
+		Services.setService(ErrorManager.class, previous);
 
 		assertTrue(gc.getRoot().getElementCount() == 0);
 		assertTrue(em.warnings == 1);
@@ -177,9 +175,9 @@ public class GeoCognitionTest extends AbstractGeocognitionTest {
 				.getResourceAsStream("supported-element-wrong-content.xml");
 		CountingErrorManager em = new CountingErrorManager();
 		ErrorManager previous = Services.getErrorManager();
-		Services.setService("org.orbisgis.ErrorManager", em);
+		Services.setService(ErrorManager.class, em);
 		gc.read(geocogStream);
-		Services.setService("org.orbisgis.ErrorManager", previous);
+		Services.setService(ErrorManager.class, previous);
 
 		assertTrue(gc.getRoot().getElementCount() == 0);
 		assertTrue(em.warnings == 1);
@@ -369,9 +367,9 @@ public class GeoCognitionTest extends AbstractGeocognitionTest {
 		mapElement = gc.getGeocognitionElement("org.map");
 		CountingErrorManager em = new CountingErrorManager();
 		ErrorManager previous = Services.getErrorManager();
-		Services.setService("org.orbisgis.ErrorManager", em);
+		Services.setService(ErrorManager.class, em);
 		mapElement.open(null);
-		Services.setService("org.orbisgis.ErrorManager", previous);
+		Services.setService(ErrorManager.class, previous);
 		assertTrue(((MapContext) mapElement.getObject()).getLayerModel()
 				.getLayerCount() == 0);
 		assertTrue(mapElement.isModified());
@@ -436,8 +434,7 @@ public class GeoCognitionTest extends AbstractGeocognitionTest {
 	public void testModifyMapContextXML() throws Exception {
 		MapContext mc = new DefaultMapContext();
 		mc.open(null);
-		DataManager dm = (DataManager) Services
-				.getService(DataManager.class);
+		DataManager dm = (DataManager) Services.getService(DataManager.class);
 		ILayer lyr = dm.createLayer(new File("src/test/resources/bv_sap.shp"));
 		mc.getLayerModel().addLayer(lyr);
 		mc.close(null);

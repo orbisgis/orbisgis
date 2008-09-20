@@ -79,8 +79,7 @@ public class DefaultJavaManager implements JavaManager {
 		stdFileManager
 				.setLocation(StandardLocation.CLASS_PATH, systemClassPath);
 
-		OGWorkspace ws = (OGWorkspace) Services
-				.getService(OGWorkspace.class);
+		OGWorkspace ws = (OGWorkspace) Services.getService(OGWorkspace.class);
 
 		CodeInfo codeInfo = prepareCode(code, 0);
 		String packageName = codeInfo.getPackageName();
@@ -258,13 +257,11 @@ public class DefaultJavaManager implements JavaManager {
 			clazz.append("public void print(String text) {"
 					+ getOutputServiceCall()
 					+ "om.append(text+\"\\n\");om.makeVisible();}");
-			clazz
-					.append(
-							"public void help() {"
-									+ "OutputManager om = (OutputManager) "
-									+ "Services.getService(\"org.orbisgis.OutputManager\");"
-									+ "om.append(").append(getHelpText())
-					.append(");om.makeVisible();}");
+			clazz.append(
+					"public void help() {" + "OutputManager om = "
+							+ "Services.getService(OutputManager.class);"
+							+ "om.append(").append(getHelpText()).append(
+					");om.makeVisible();}");
 			clazz.append("}");
 			classCode = clazz.toString();
 		}

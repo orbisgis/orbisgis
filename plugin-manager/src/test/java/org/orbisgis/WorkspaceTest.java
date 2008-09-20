@@ -55,32 +55,30 @@ public class WorkspaceTest extends TestCase {
 	@Override
 	protected void setUp() throws Exception {
 		homeFile = new File("src/test/resources/home");
-		Services.registerService("org.orbisgis.PluginManager",
-				PluginManager.class, "", new PluginManager() {
+		Services.registerService(PluginManager.class, "", new PluginManager() {
 
-					public void stop() {
-					}
+			public void stop() {
+			}
 
-					public void removeSystemListener(SystemListener listener) {
-					}
+			public void removeSystemListener(SystemListener listener) {
+			}
 
-					public String getLogFile() {
-						return null;
-					}
+			public String getLogFile() {
+				return null;
+			}
 
-					public File getHomeFolder() {
-						return homeFile;
-					}
+			public File getHomeFolder() {
+				return homeFile;
+			}
 
-					public void addSystemListener(SystemListener listener) {
+			public void addSystemListener(SystemListener listener) {
 
-					}
+			}
 
-				});
+		});
 
 		applicationInfo = new TestApplicationInfo();
-		Services.registerService("org.orbisgis.ApplicationInfo",
-				ApplicationInfo.class, "", applicationInfo);
+		Services.registerService(ApplicationInfo.class, "", applicationInfo);
 
 		File current = new File(homeFile, "currentWorkspace.txt");
 		current.delete();

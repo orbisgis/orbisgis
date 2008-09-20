@@ -96,9 +96,9 @@ public class Activator implements PluginActivator {
 		final ErrorManager em = (ErrorManager) Services
 				.getService(ErrorManager.class);
 		em.addErrorListener(new ErrorListener() {
-			
+
 			private ErrorPanel ep = new ErrorPanel();
-			
+
 			public void warning(String userMsg, Throwable e) {
 				error(userMsg, e, false);
 			}
@@ -151,8 +151,7 @@ public class Activator implements PluginActivator {
 		});
 
 		// Listen workspace changes
-		Workspace workspace = (Workspace) Services
-				.getService(Workspace.class);
+		Workspace workspace = (Workspace) Services.getService(Workspace.class);
 
 		workspace.addWorkspaceListener(new WorkspaceListener() {
 
@@ -175,16 +174,14 @@ public class Activator implements PluginActivator {
 	private void initializeWorkspace() {
 
 		// Configuration of workspace directories
-		Workspace workspace = (Workspace) Services
-				.getService(Workspace.class);
+		Workspace workspace = (Workspace) Services.getService(Workspace.class);
 
 		File sourcesDir = workspace.getFile("sources");
 		if (!sourcesDir.exists()) {
 			sourcesDir.mkdirs();
 		}
 
-		OGWorkspace ews = (OGWorkspace) Services
-				.getService(OGWorkspace.class);
+		OGWorkspace ews = (OGWorkspace) Services.getService(OGWorkspace.class);
 
 		dsf = new DataSourceFactory(sourcesDir.getAbsolutePath(), ews
 				.getTempFolder().getAbsolutePath());
@@ -193,7 +190,6 @@ public class Activator implements PluginActivator {
 		// Installation of the service
 		Services
 				.registerService(
-						"org.orbisgis.DataManager",
 						DataManager.class,
 						"Access to the sources, to its properties (indexes, etc.) and its contents, either raster or vectorial",
 						new DefaultDataManager(dsf));

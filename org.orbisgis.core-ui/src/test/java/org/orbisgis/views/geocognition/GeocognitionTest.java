@@ -32,8 +32,7 @@ public class GeocognitionTest extends TestCase {
 	protected void setUp() throws Exception {
 		super.setUp();
 
-		Services.registerService("org.orbisgis.Workspace", Workspace.class, "",
-				new TestWorkspace());
+		Services.registerService(Workspace.class, "", new TestWorkspace());
 
 		OrbisgisCoreServices.installServices();
 

@@ -98,8 +98,7 @@ public class MapEditor implements IExtensionPointEditor {
 	}
 
 	public void initialize() {
-		Services.registerService("org.orbisgis.MapContextManager",
-				MapContextManager.class,
+		Services.registerService(MapContextManager.class,
 				"Gives access to the current MapContext",
 				new DefaultMapContextManager());
 	}

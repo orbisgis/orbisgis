@@ -192,10 +192,10 @@ public class OrbisGISFrame extends JFrame implements IWindow, ViewManager,
 
 		});
 
-		Services.registerService("org.orbisgis.ViewManager", ViewManager.class,
+		Services.registerService(ViewManager.class,
 				"Open, close and gets access to the views", this);
 
-		Services.registerService("org.orbisgis.UIManager", UIManager.class,
+		Services.registerService(UIManager.class,
 				"Gets access to the main frame", this);
 
 		// Load default perspective
@@ -441,7 +441,7 @@ public class OrbisGISFrame extends JFrame implements IWindow, ViewManager,
 			} else {
 				if (editorId.equals(editorsView.getActiveEditor().getId())) {
 					return ((IEditorSelectableAction) action)
-					.isSelected(activeEditor.getEditor());
+							.isSelected(activeEditor.getEditor());
 				} else {
 					return false;
 				}
@@ -503,8 +503,7 @@ public class OrbisGISFrame extends JFrame implements IWindow, ViewManager,
 		root = new RootWindow(viewSerializer);
 		this.getContentPane().add(root, BorderLayout.CENTER);
 
-		Workspace ws = (Workspace) Services
-				.getService(Workspace.class);
+		Workspace ws = (Workspace) Services.getService(Workspace.class);
 		FileInputStream layoutStream;
 		try {
 			layoutStream = new FileInputStream(ws
@@ -528,8 +527,7 @@ public class OrbisGISFrame extends JFrame implements IWindow, ViewManager,
 
 	public Map<String, String> save() throws PersistenceException {
 		try {
-			Workspace ws = (Workspace) Services
-					.getService(Workspace.class);
+			Workspace ws = (Workspace) Services.getService(Workspace.class);
 			FileOutputStream fos = new FileOutputStream(ws
 					.getFile(LAYOUT_PERSISTENCE_FILE));
 			ObjectOutputStream oos = new ObjectOutputStream(fos);

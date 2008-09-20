@@ -69,8 +69,7 @@ public class AbstractToolTest extends TestCase {
 				"src/test/resources/backup", "src/test/resources/backup");
 
 		dataManager = new DefaultDataManager(dsf);
-		Services.registerService("org.orbisgis.DataManager", DataManager.class,
-				"", dataManager);
+		Services.registerService(DataManager.class, "", dataManager);
 
 		createSource("mixed", TypeFactory.createType(Type.GEOMETRY));
 

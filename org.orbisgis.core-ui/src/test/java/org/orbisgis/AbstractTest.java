@@ -49,10 +49,10 @@ public class AbstractTest extends TestCase {
 		DataSourceFactory dsf = new DataSourceFactory(
 				"src/test/resources/sources", "src/test/resources/temp");
 
-		Services.registerService("org.orbisgis.DataManager", DataManager.class,
-				"", new DefaultDataManager(dsf));
-		Services.registerService("org.orbisgis.ErrorManager",
-				ErrorManager.class, "", new FailErrorManager());
+		Services.registerService(DataManager.class, "", new DefaultDataManager(
+				dsf));
+		Services
+				.registerService(ErrorManager.class, "", new FailErrorManager());
 		super.setUp();
 	}
 

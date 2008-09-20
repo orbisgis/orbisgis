@@ -36,8 +36,7 @@ public class ExecutionTest extends AbstractTest {
 	@Override
 	protected void setUp() throws Exception {
 		testOutputManager = new TestOutputManager();
-		Services.registerService("org.orbisgis.OutputManager",
-				OutputManager.class, "", testOutputManager);
+		Services.registerService(OutputManager.class, "", testOutputManager);
 	}
 
 	public void testExecuteMain() throws Exception {

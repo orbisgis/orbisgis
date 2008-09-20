@@ -122,8 +122,7 @@ public class Main {
 
 			pluginManager.setPlugins(plugins);
 
-			Workspace ws = (Workspace) Services
-					.getService(Workspace.class);
+			Workspace ws = (Workspace) Services.getService(Workspace.class);
 			if (selectedWorkspace != null) {
 				ws.setWorkspaceFolder(selectedWorkspace);
 			}
@@ -189,9 +188,7 @@ public class Main {
 						DefaultApplicationInfo applicationInfo = new DefaultApplicationInfo(
 								name, version, organization, Integer
 										.parseInt(wsVersion));
-						Services.registerService(
-								"org.orbisgis.ApplicationInfo",
-								ApplicationInfo.class,
+						Services.registerService(ApplicationInfo.class,
 								"Gets information about the application: "
 										+ "name, version, etc.",
 								applicationInfo);
@@ -257,7 +254,8 @@ public class Main {
 						pluginDir), pluginClassLoader);
 				plugins.add(plugin);
 			} else {
-				throw new RuntimeException("Plugin file not found: " + pluginDir);
+				throw new RuntimeException("Plugin file not found: "
+						+ pluginDir);
 			}
 		}
 

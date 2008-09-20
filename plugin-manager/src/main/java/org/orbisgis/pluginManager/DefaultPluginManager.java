@@ -125,7 +125,8 @@ public class DefaultPluginManager implements PluginManager {
 
 	@SuppressWarnings("unchecked")
 	public static void fireEvent() {
-		ArrayList<SystemListener> ls = (ArrayList<SystemListener>) listeners.clone();
+		ArrayList<SystemListener> ls = (ArrayList<SystemListener>) listeners
+				.clone();
 		for (SystemListener listener : ls) {
 			listener.statusChanged();
 		}
@@ -134,23 +135,21 @@ public class DefaultPluginManager implements PluginManager {
 	public void installServices() {
 		Services
 				.registerService(
-						"org.orbisgis.BackgroundManager",
 						BackgroundManager.class,
 						"Execute tasks in background processes, "
 								+ "showing progress bars. Gives access to the job queue",
 						new JobQueue());
 
-		Services.registerService("org.orbisgis.Workspace", Workspace.class,
+		Services.registerService(Workspace.class,
 				"Change workspace, save files in the workspace, etc.",
 				new DefaultWorkspace());
 
-		Services.registerService("org.orbisgis.ErrorManager",
-				ErrorManager.class, "Notification of errors to the system",
+		Services.registerService(ErrorManager.class,
+				"Notification of errors to the system",
 				new DefaultErrorManager());
 
 		Services
 				.registerService(
-						"org.orbisgis.PluginManager",
 						PluginManager.class,
 						"Gives access to the plug-in system manager. It can stop the application, access the log files, etc.",
 						this);

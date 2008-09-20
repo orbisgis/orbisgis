@@ -35,40 +35,39 @@ public class AbstractSyncTest extends TestCase {
 
 		OrbisgisCoreServices.installSymbologyServices();
 		OrbisgisCoreServices.installGeocognitionService();
-		Services.registerService("org.orbisgis.DataManager", DataManager.class,
-				"", new DefaultDataManager(dsf));
-		Services.registerService("org.orbisgis.ErrorManager",
-				ErrorManager.class, "", new ErrorManager() {
+		Services.registerService(DataManager.class, "", new DefaultDataManager(
+				dsf));
+		Services.registerService(ErrorManager.class, "", new ErrorManager() {
 
-					@Override
-					public void warning(String userMsg, Throwable exception) {
-						throw new RuntimeException(userMsg + ": " + exception);
-					}
+			@Override
+			public void warning(String userMsg, Throwable exception) {
+				throw new RuntimeException(userMsg + ": " + exception);
+			}
 
-					@Override
-					public void warning(String userMsg) {
-						throw new RuntimeException(userMsg);
-					}
+			@Override
+			public void warning(String userMsg) {
+				throw new RuntimeException(userMsg);
+			}
 
-					@Override
-					public void removeErrorListener(ErrorListener listener) {
-					}
+			@Override
+			public void removeErrorListener(ErrorListener listener) {
+			}
 
-					@Override
-					public void error(String userMsg, Throwable exception) {
-						throw new RuntimeException(exception);
-					}
+			@Override
+			public void error(String userMsg, Throwable exception) {
+				throw new RuntimeException(exception);
+			}
 
-					@Override
-					public void error(String userMsg) {
-						throw new RuntimeException(userMsg);
-					}
+			@Override
+			public void error(String userMsg) {
+				throw new RuntimeException(userMsg);
+			}
 
-					@Override
-					public void addErrorListener(ErrorListener listener) {
-					}
+			@Override
+			public void addErrorListener(ErrorListener listener) {
+			}
 
-				});
+		});
 
 		sm = new SyncManager();
 		Geocognition dcm = new DefaultGeocognition();
@@ -78,7 +77,7 @@ public class AbstractSyncTest extends TestCase {
 		dcm.addElementFactory(new GeocognitionLegendFactory());
 		dcm.addElementFactory(new GeocognitionMapContextFactory());
 
-		Services.setService("org.orbisgis.Geocognition", dcm);
+		Services.setService(Geocognition.class, dcm);
 
 		try {
 			node1 = dcm.createTree(TreeCommitTest.class

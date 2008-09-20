@@ -60,8 +60,7 @@ public class OutputView implements IView {
 	}
 
 	public void initialize() {
-		Services.registerService("org.orbisgis.OutputManager",
-				OutputManager.class,
+		Services.registerService(OutputManager.class,
 				"Service to send messages to the output system", panel);
 	}
 }

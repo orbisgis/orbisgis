@@ -47,8 +47,7 @@ public class OrbisgisCoreServices {
 
 	private static void installExportServices() {
 		DefaultMapExportManager mem = new DefaultMapExportManager();
-		Services.registerService("org.orbisgis.MapExportManager",
-				MapExportManager.class,
+		Services.registerService(MapExportManager.class,
 				"Manages the export of MapContexts to different formats.", mem);
 		mem.registerScale(SingleLineScale.class);
 		mem.registerScale(RectanglesScale.class);
@@ -74,7 +73,7 @@ public class OrbisgisCoreServices {
 		}
 
 		DefaultJavaManager javaManager = new DefaultJavaManager();
-		Services.registerService("org.orbisgis.JavaManager", JavaManager.class,
+		Services.registerService(JavaManager.class,
 				"Execution of java code and java scripts", javaManager);
 		javaManager.addFilesToClassPath(Arrays.asList(buildPath
 				.toArray(new File[0])));
@@ -82,7 +81,7 @@ public class OrbisgisCoreServices {
 
 	public static void installWorkspaceService() {
 		DefaultOGWorkspace defaultOGWorkspace = new DefaultOGWorkspace();
-		Services.registerService("org.orbisgis.OGWorkspace", OGWorkspace.class,
+		Services.registerService(OGWorkspace.class,
 				"Gives access to directories inside the workspace."
 						+ " You can use the temporal folder in "
 						+ "the workspace through this service. It lets "
@@ -94,7 +93,6 @@ public class OrbisgisCoreServices {
 		DefaultGeocognition dg = new DefaultGeocognition();
 		Services
 				.registerService(
-						"org.orbisgis.Geocognition",
 						Geocognition.class,
 						"Registry containing all the artifacts produced and shared by the users",
 						dg);
@@ -102,13 +100,11 @@ public class OrbisgisCoreServices {
 
 	public static void installSymbologyServices() {
 		DefaultSymbolManager sm = new DefaultSymbolManager();
-		Services.registerService("org.orbisgis.SymbolManager",
-				SymbolManager.class,
+		Services.registerService(SymbolManager.class,
 				"Manages the list of available symbol types", sm);
 
 		DefaultLegendManager lm = new DefaultLegendManager();
-		Services.registerService("org.orbisgis.LegendManager",
-				LegendManager.class,
+		Services.registerService(LegendManager.class,
 				"Manages the list of available legend types", lm);
 
 		sm.addSymbol(SymbolFactory.createPointCircleSymbol(Color.black, 1,

@@ -27,9 +27,10 @@ import org.orbisgis.windows.mainFrame.UIManager;
 import org.sif.UIFactory;
 
 public class CompletionKeyListener extends KeyAdapter {
-	
-	private final static Logger logger = Logger.getLogger(CompletionKeyListener.class);
-	
+
+	private final static Logger logger = Logger
+			.getLogger(CompletionKeyListener.class);
+
 	private final boolean script;
 	private JTextComponent txt;
 	private CompletionPopUp pop;
@@ -57,20 +58,19 @@ public class CompletionKeyListener extends KeyAdapter {
 		frm.setLocationRelativeTo(null);
 		frm.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frm.setVisible(true);
-		Services.registerService("org.orbisgis.UIManager", UIManager.class, "",
-				new UIManager() {
+		Services.registerService(UIManager.class, "", new UIManager() {
 
-					@Override
-					public void refreshUI() {
+			@Override
+			public void refreshUI() {
 
-					}
+			}
 
-					@Override
-					public JFrame getMainFrame() {
-						return frm;
-					}
+			@Override
+			public JFrame getMainFrame() {
+				return frm;
+			}
 
-				});
+		});
 	}
 
 	@Override
