@@ -120,7 +120,6 @@ public class Layer extends GdmsLayer {
 			}
 		}
 
-		legend.setName(legend.getLegendTypeName());
 		return legend;
 	}
 
