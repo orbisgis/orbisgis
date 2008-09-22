@@ -46,8 +46,6 @@ import org.orbisgis.errorManager.DefaultErrorManager;
 import org.orbisgis.errorManager.ErrorManager;
 import org.orbisgis.pluginManager.background.BackgroundManager;
 import org.orbisgis.pluginManager.background.JobQueue;
-import org.orbisgis.pluginManager.workspace.DefaultWorkspace;
-import org.orbisgis.workspace.Workspace;
 
 public class DefaultPluginManager implements PluginManager {
 
@@ -139,10 +137,6 @@ public class DefaultPluginManager implements PluginManager {
 						"Execute tasks in background processes, "
 								+ "showing progress bars. Gives access to the job queue",
 						new JobQueue());
-
-		Services.registerService(Workspace.class,
-				"Change workspace, save files in the workspace, etc.",
-				new DefaultWorkspace());
 
 		Services.registerService(ErrorManager.class,
 				"Notification of errors to the system",

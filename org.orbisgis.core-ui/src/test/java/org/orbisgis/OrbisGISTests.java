@@ -53,6 +53,7 @@ public class OrbisGISTests extends TestCase {
 		suite.addTestSuite(ResourceTest.class);
 		suite.addTest(NodeTests.suite());
 		suite.addTestSuite(GeocognitionTest.class);
+		suite.addTestSuite(WorkspaceTest.class);
 		// $JUnit-END$
 		return suite;
 	}

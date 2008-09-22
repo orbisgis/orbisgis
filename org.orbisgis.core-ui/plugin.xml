@@ -1,5 +1,6 @@
 <plugin>
 	<activator class="org.orbisgis.Activator"/>
+	<workspace class="org.orbisgis.pluginManager.workspace.DefaultWorkspace"/>
 	
 	<application name="OrbisGIS" version="1.2.2 (Naoned)"
 		organization="IRSTV CNRS-FR-2488" workspace-version="2"/>

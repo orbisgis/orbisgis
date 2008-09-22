@@ -48,13 +48,13 @@ import junit.framework.TestCase;
 
 public class WorkspaceTest extends TestCase {
 
-	private static final String NEW_WORKSPACE_VERSION_FILE_TEST = "src/test/resources/newWorkspaceVersionFileTest";
+	private static final String NEW_WORKSPACE_VERSION_FILE_TEST = "target/newWorkspaceVersionFileTest";
 	private TestApplicationInfo applicationInfo;
 	private File homeFile;
 
 	@Override
 	protected void setUp() throws Exception {
-		homeFile = new File("src/test/resources/home");
+		homeFile = new File("target/home");
 		Services.registerService(PluginManager.class, "", new PluginManager() {
 
 			public void stop() {
@@ -103,7 +103,7 @@ public class WorkspaceTest extends TestCase {
 	}
 
 	public void testInitEmpty() throws Exception {
-		File file = new File("src/test/resources/home2");
+		File file = new File("target/home2");
 		TestWorkspace tw = new TestWorkspace();
 		tw.setWorkspaceFolderSelectionInDialog(file);
 		applicationInfo.wsVersion = 1;
@@ -124,7 +124,7 @@ public class WorkspaceTest extends TestCase {
 	}
 
 	public void testGoodVersionNoVersionNumber() throws Exception {
-		File file = new File("src/test/resources/wsNoVersion");
+		File file = new File("src/test/resources/org/orbisgis/workspace/wsNoVersion");
 		TestWorkspace tw = new TestWorkspace();
 		tw.setWorkspaceFolderSelectionInDialog(file);
 		applicationInfo.wsVersion = 1;
@@ -134,7 +134,7 @@ public class WorkspaceTest extends TestCase {
 	}
 
 	public void testGoodVersion1() throws Exception {
-		File file = new File("src/test/resources/wsVersion1");
+		File file = new File("src/test/resources/org/orbisgis/workspace/wsVersion1");
 		TestWorkspace tw = new TestWorkspace();
 		tw.setWorkspaceFolderSelectionInDialog(file);
 		applicationInfo.wsVersion = 1;
@@ -144,8 +144,8 @@ public class WorkspaceTest extends TestCase {
 	}
 
 	public void testBadVersionGoodVersion() throws Exception {
-		File file1 = new File("src/test/resources/wsVersion1");
-		File file2 = new File("src/test/resources/wsVersion2");
+		File file1 = new File("src/test/resources/org/orbisgis/workspace/wsVersion1");
+		File file2 = new File("src/test/resources/org/orbisgis/workspace/wsVersion2");
 		TestWorkspace tw = new TestWorkspace();
 		tw.setWorkspaceFoldersSelectionInDialog(file1, file2);
 		applicationInfo.wsVersion = 2;
@@ -156,7 +156,7 @@ public class WorkspaceTest extends TestCase {
 	public void testDontAskIfGood() throws Exception {
 		File current = new File(homeFile, "currentWorkspace.txt");
 		PrintWriter pw = new PrintWriter(current);
-		pw.println("src/test/resources/wsVersion1");
+		pw.println("src/test/resources/org/orbisgis/workspace/wsVersion1");
 		pw.close();
 		TestWorkspace tw = new TestWorkspace();
 		applicationInfo.wsVersion = 1;

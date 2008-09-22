@@ -169,6 +169,7 @@ public class Main {
 		ArrayList<Plugin> plugins = new ArrayList<Plugin>();
 		HashMap<String, ExtensionPoint> extensionPoints = new HashMap<String, ExtensionPoint>();
 		ArrayList<Extension> extensions = new ArrayList<Extension>();
+		String workspaceClassName = null;
 		for (String pluginDir : pluginDirs) {
 			logger.debug("Reading plugin.xml of " + pluginDir);
 			File pluginXML = new File(pluginDir, "plugin.xml");
@@ -198,7 +199,6 @@ public class Main {
 								+ "workspace version", e);
 					}
 				}
-
 				int n = vtd.evalToInt("count(/plugin/extension-point)");
 				for (int i = 0; i < n; i++) {
 					String schema = vtd.getAttribute("/plugin/extension-point["
@@ -259,6 +259,18 @@ public class Main {
 			}
 		}
 
+		// Create workspace
+		if (workspaceClassName != null) {
+			Class<?> workspaceInstance = commonClassLoader
+					.loadClass(workspaceClassName);
+			Services.registerService(Workspace.class,
+					"Change workspace, save files in the workspace, etc.",
+					workspaceInstance.newInstance());
+		} else {
+			throw new RuntimeException("No workspace found");
+		}
+
+		// Extensions
 		resolveExtensions(extensions, extensionPoints);
 
 		RegistryFactory.createExtensionRegistry(extensions);
