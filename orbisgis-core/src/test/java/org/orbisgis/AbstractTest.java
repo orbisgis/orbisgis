@@ -52,6 +52,8 @@ public class AbstractTest extends TestCase {
 		OrbisgisCoreServices.installServices();
 	}
 
+	protected FailErrorManager failErrorManager;
+
 	@Override
 	protected void setUp() throws Exception {
 		DataSourceFactory dsf = new DataSourceFactory(
@@ -59,8 +61,8 @@ public class AbstractTest extends TestCase {
 
 		Services.registerService(DataManager.class, "", new DefaultDataManager(
 				dsf));
-		Services
-				.registerService(ErrorManager.class, "", new FailErrorManager());
+		failErrorManager = new FailErrorManager();
+		Services.registerService(ErrorManager.class, "", failErrorManager);
 		super.setUp();
 	}
 
@@ -68,7 +70,13 @@ public class AbstractTest extends TestCase {
 		return (DataManager) Services.getService(DataManager.class);
 	}
 
-	private class FailErrorManager implements ErrorManager {
+	protected class FailErrorManager implements ErrorManager {
+
+		private boolean ignoreWarnings;
+
+		public void setIgnoreWarnings(boolean ignore) {
+			this.ignoreWarnings = ignore;
+		}
 
 		public void addErrorListener(ErrorListener listener) {
 		}
@@ -85,11 +93,15 @@ public class AbstractTest extends TestCase {
 		}
 
 		public void warning(String userMsg, Throwable exception) {
-			throw new RuntimeException(userMsg, exception);
+			if (!ignoreWarnings) {
+				throw new RuntimeException(userMsg, exception);
+			}
 		}
 
 		public void warning(String userMsg) {
-			throw new RuntimeException(userMsg);
+			if (!ignoreWarnings) {
+				throw new RuntimeException(userMsg);
+			}
 		}
 
 	}

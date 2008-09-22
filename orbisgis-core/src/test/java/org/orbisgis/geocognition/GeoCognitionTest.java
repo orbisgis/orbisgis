@@ -4,6 +4,8 @@ import java.awt.Color;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.InputStream;
 
 import org.gdms.sql.customQuery.RegisterCall;
@@ -12,9 +14,12 @@ import org.orbisgis.DataManager;
 import org.orbisgis.Services;
 import org.orbisgis.errorManager.ErrorListener;
 import org.orbisgis.errorManager.ErrorManager;
+import org.orbisgis.geocognition.mapContext.GeocognitionMapContextFactory;
 import org.orbisgis.geocognition.sql.Code;
 import org.orbisgis.geocognition.sql.CustomQueryJavaCode;
 import org.orbisgis.geocognition.sql.FunctionJavaCode;
+import org.orbisgis.geocognition.symbology.GeocognitionLegendFactory;
+import org.orbisgis.geocognition.symbology.GeocognitionSymbolFactory;
 import org.orbisgis.layerModel.DefaultMapContext;
 import org.orbisgis.layerModel.ILayer;
 import org.orbisgis.layerModel.MapContext;
@@ -504,6 +509,45 @@ public class GeoCognitionTest extends AbstractGeocognitionTest {
 		element.setId("A");
 		Code code = (Code) element.getObject();
 		assertTrue(code.getCode().equals(script.replaceAll("\\QB\\E", "A")));
+	}
+
+	public void testKeepUnsupportedElement() throws Exception {
+		MapContext mc = new DefaultMapContext();
+		mc.open(null);
+		DataManager dm = (DataManager) Services.getService(DataManager.class);
+		ILayer lyr = dm.createLayer(new File("src/test/resources/bv_sap.shp"));
+		mc.getLayerModel().addLayer(lyr);
+		mc.close(null);
+		gc.addElement("org.mymap", mc);
+		File temp = new File("target/temp.xml");
+		gc.write(new FileOutputStream(temp));
+
+		// Create a geocognition without support for maps
+		gc = new DefaultGeocognition();
+		DefaultGeocognition.clearFactories();
+
+		failErrorManager.setIgnoreWarnings(true);
+		gc.read(new FileInputStream(temp));
+		failErrorManager.setIgnoreWarnings(false);
+		GeocognitionElement elem = gc.getGeocognitionElement("org.mymap");
+		assertTrue(elem != null);
+		assertTrue(!(elem.getObject() instanceof MapContext));
+		gc.write(new FileOutputStream(temp));
+
+		gc = new DefaultGeocognition();
+		gc.addElementFactory(new GeocognitionSymbolFactory());
+		gc.addElementFactory(new GeocognitionLegendFactory());
+		gc.addElementFactory(new GeocognitionMapContextFactory());
+		gc.read(new FileInputStream(temp));
+		elem = gc.getGeocognitionElement("org.mymap");
+		assertTrue(elem != null);
+		assertTrue(new GeocognitionMapContextFactory().acceptContentTypeId(elem
+				.getTypeId()));
+		MapContext map = gc.getElement("org.mymap", MapContext.class);
+		map.open(null);
+		assertTrue(map.getLayerModel()
+				.getLayerCount() > 0);
+		map.close(null);
 	}
 
 	private class TestListener implements GeocognitionListener {

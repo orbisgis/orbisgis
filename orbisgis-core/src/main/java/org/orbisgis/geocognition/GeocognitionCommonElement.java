@@ -6,9 +6,10 @@ import org.orbisgis.progress.IProgressMonitor;
 public interface GeocognitionCommonElement {
 
 	/**
-	 * Gets the object stored in this geocognition element
+	 * Gets the object stored in this geocognition element.
 	 * 
-	 * @return
+	 * @return The object stored in this geocognition element or null if the
+	 *         element was not supported at the time geogoconition tree was read
 	 * @throws UnsupportedOperationException
 	 *             If this element is a folder
 	 */

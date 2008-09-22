@@ -25,6 +25,11 @@ public class DefaultGeocognition implements Geocognition {
 	private FolderElement root;
 	private ArrayList<GeocognitionListener> listeners = new ArrayList<GeocognitionListener>();
 
+	public static void clearFactories() {
+		factories.clear();
+		jaxbContext = null;
+	}
+
 	public DefaultGeocognition() {
 		this.root = new FolderElement(this);
 		(this).root.setId("");
@@ -103,6 +108,8 @@ public class DefaultGeocognition implements Geocognition {
 			Object xmlObject = nodeContent.getAny();
 			String typeId = nodeContent.getContentTypeId();
 			GeocognitionElementFactory factory = getFactoryByType(typeId);
+			ret = new LeafElement(new UnsupportedExtensionElement(xmlObject,
+					typeId));
 			if (factory == null) {
 				Services.getErrorManager().warning(
 						"Non recognized geocognition element: "
@@ -113,12 +120,10 @@ public class DefaultGeocognition implements Geocognition {
 					ret = new LeafElement(factory.createElementFromXML(
 							xmlObject, typeId));
 				} catch (PersistenceException e) {
-					ret = null;
 					Services.getErrorManager().warning(
 							"Cannot restore element: " + xmlRoot.getId() + ": "
 									+ typeId + ". Element is ignored.", e);
 				} catch (ClassCastException e) {
-					ret = null;
 					Services.getErrorManager().warning(
 							"Non recognized geocognition content: "
 									+ xmlRoot.getId() + ": " + typeId
@@ -126,18 +131,14 @@ public class DefaultGeocognition implements Geocognition {
 				}
 			}
 		}
-		if (ret != null) {
-			ret.setId(xmlRoot.getId());
+		ret.setId(xmlRoot.getId());
 
-			if (ret.isFolder()) {
-				FolderElement retFE = (FolderElement) ret;
-				List<GeocognitionNode> nodes = xmlRoot.getGeocognitionNode();
-				for (GeocognitionNode geoNode : nodes) {
-					GeocognitionElement child = fromXML(geoNode);
-					if (child != null) {
-						retFE.addElement(child);
-					}
-				}
+		if (ret.isFolder()) {
+			FolderElement retFE = (FolderElement) ret;
+			List<GeocognitionNode> nodes = xmlRoot.getGeocognitionNode();
+			for (GeocognitionNode geoNode : nodes) {
+				GeocognitionElement child = fromXML(geoNode);
+				retFE.addElement(child);
 			}
 		}
 
