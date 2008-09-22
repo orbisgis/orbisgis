@@ -51,13 +51,15 @@ import org.gdms.data.metadata.MetadataUtilities;
 import org.gdms.data.types.DefaultTypeDefinition;
 import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeDefinition;
+import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
+import org.gdms.driver.memory.ObjectMemoryDriver;
 
 /**
  * DOCUMENT ME!
- *
+ * 
  * @author Fernando Gonzalez Cortes
  */
 public class EditionTests extends SourceTest {
@@ -103,9 +105,9 @@ public class EditionTests extends SourceTest {
 
 	/**
 	 * DOCUMENT ME!
-	 *
+	 * 
 	 * @param mode
-	 *
+	 * 
 	 * @throws Exception
 	 *             DOCUMENT ME!
 	 */
@@ -140,9 +142,9 @@ public class EditionTests extends SourceTest {
 
 	/**
 	 * DOCUMENT ME!
-	 *
+	 * 
 	 * @param mode
-	 *
+	 * 
 	 * @throws Exception
 	 *             DOCUMENT ME!
 	 */
@@ -175,7 +177,7 @@ public class EditionTests extends SourceTest {
 
 	/**
 	 * DOCUMENT ME!
-	 *
+	 * 
 	 * @throws Exception
 	 *             DOCUMENT ME!
 	 */
@@ -247,7 +249,7 @@ public class EditionTests extends SourceTest {
 
 	/**
 	 * DOCUMENT ME!
-	 *
+	 * 
 	 * @throws Exception
 	 *             DOCUMENT ME!
 	 */
@@ -529,4 +531,24 @@ public class EditionTests extends SourceTest {
 		ds.close();
 	}
 
+	public void testInsertWrongNumberOfRows() throws Exception {
+		ObjectMemoryDriver omd = new ObjectMemoryDriver(
+				new String[] { "field" }, new Type[] { TypeFactory
+						.createType(Type.STRING) });
+		DataSource ds = dsf.getDataSource(omd);
+		ds.open();
+		try {
+			ds.insertFilledRow(new Value[] { ValueFactory.createValue(""),
+					ValueFactory.createValue("hi") });
+			assertTrue(false);
+		} catch (IllegalArgumentException e) {
+		}
+		try {
+			ds.insertFilledRow(new Value[0]);
+			assertTrue(false);
+		} catch (IllegalArgumentException e) {
+		}
+		ds.commit();
+		ds.close();
+	}
 }

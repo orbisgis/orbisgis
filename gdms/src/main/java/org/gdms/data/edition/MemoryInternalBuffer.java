@@ -42,6 +42,7 @@ import org.gdms.data.DataSource;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueCollection;
 import org.gdms.data.values.ValueFactory;
+import org.gdms.driver.DriverException;
 
 public class MemoryInternalBuffer implements InternalBuffer {
 
@@ -63,6 +64,15 @@ public class MemoryInternalBuffer implements InternalBuffer {
 	}
 
 	public PhysicalDirection insertRow(ValueCollection pk, Value[] newRow) {
+		try {
+			int fc = dataSource.getFieldCount();
+			if (newRow.length != fc) {
+				throw new IllegalArgumentException(
+						"Wrong number of values. Expected: " + fc);
+			}
+		} catch (DriverException e) {
+			// just ignore the check in this point. Something else will broke
+		}
 		rows.add(getRow(newRow));
 		return new InternalBufferDirection(pk, this, rows.size() - 1,
 				dataSource);
