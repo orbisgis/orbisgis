@@ -68,7 +68,7 @@ public class Sqrt implements Function {
 	}
 
 	public String getName() {
-		return "sqrt";
+		return "SQRT";
 	}
 
 	public boolean isAggregate() {
