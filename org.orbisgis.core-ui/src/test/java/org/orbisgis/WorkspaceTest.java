@@ -39,17 +39,15 @@ package org.orbisgis;
 import java.io.File;
 import java.io.PrintWriter;
 
-import org.orbisgis.pluginManager.ApplicationInfo;
+import junit.framework.TestCase;
+
 import org.orbisgis.pluginManager.PluginManager;
 import org.orbisgis.pluginManager.SystemListener;
 import org.orbisgis.workspace.DefaultWorkspace;
 
-import junit.framework.TestCase;
-
 public class WorkspaceTest extends TestCase {
 
 	private static final String NEW_WORKSPACE_VERSION_FILE_TEST = "target/newWorkspaceVersionFileTest";
-	private TestApplicationInfo applicationInfo;
 	private File homeFile;
 
 	@Override
@@ -77,9 +75,6 @@ public class WorkspaceTest extends TestCase {
 
 		});
 
-		applicationInfo = new TestApplicationInfo();
-		Services.registerService(ApplicationInfo.class, "", applicationInfo);
-
 		File current = new File(homeFile, "currentWorkspace.txt");
 		current.delete();
 
@@ -106,7 +101,7 @@ public class WorkspaceTest extends TestCase {
 		File file = new File("target/home2");
 		TestWorkspace tw = new TestWorkspace();
 		tw.setWorkspaceFolderSelectionInDialog(file);
-		applicationInfo.wsVersion = 1;
+		tw.wsVersion = 1;
 		tw.init(false);
 		assertTrue(tw.getFile("..").getCanonicalPath().equals(
 				file.getCanonicalPath()));
@@ -115,7 +110,7 @@ public class WorkspaceTest extends TestCase {
 	public void testInitEmptyCancelWorkspaceSelection() throws Exception {
 		TestWorkspace tw = new TestWorkspace();
 		tw.setWorkspaceFolderSelectionInDialog(null);
-		applicationInfo.wsVersion = 1;
+		tw.wsVersion = 1;
 		try {
 			tw.init(false);
 			assertTrue(false);
@@ -127,7 +122,7 @@ public class WorkspaceTest extends TestCase {
 		File file = new File("src/test/resources/org/orbisgis/workspace/wsNoVersion");
 		TestWorkspace tw = new TestWorkspace();
 		tw.setWorkspaceFolderSelectionInDialog(file);
-		applicationInfo.wsVersion = 1;
+		tw.wsVersion = 1;
 		tw.init(false);
 		assertTrue(tw.getFile("..").getCanonicalPath().equals(
 				file.getCanonicalPath()));
@@ -137,7 +132,7 @@ public class WorkspaceTest extends TestCase {
 		File file = new File("src/test/resources/org/orbisgis/workspace/wsVersion1");
 		TestWorkspace tw = new TestWorkspace();
 		tw.setWorkspaceFolderSelectionInDialog(file);
-		applicationInfo.wsVersion = 1;
+		tw.wsVersion = 1;
 		tw.init(false);
 		assertTrue(tw.getFile("..").getCanonicalPath().equals(
 				file.getCanonicalPath()));
@@ -148,7 +143,7 @@ public class WorkspaceTest extends TestCase {
 		File file2 = new File("src/test/resources/org/orbisgis/workspace/wsVersion2");
 		TestWorkspace tw = new TestWorkspace();
 		tw.setWorkspaceFoldersSelectionInDialog(file1, file2);
-		applicationInfo.wsVersion = 2;
+		tw.wsVersion = 2;
 		tw.init(false);
 		assertTrue(tw.allFoldersAsked());
 	}
@@ -159,7 +154,7 @@ public class WorkspaceTest extends TestCase {
 		pw.println("src/test/resources/org/orbisgis/workspace/wsVersion1");
 		pw.close();
 		TestWorkspace tw = new TestWorkspace();
-		applicationInfo.wsVersion = 1;
+		tw.wsVersion = 1;
 		tw.init(false);
 		assertTrue(tw.allFoldersAsked());
 	}
@@ -169,41 +164,19 @@ public class WorkspaceTest extends TestCase {
 		file.mkdirs();
 		TestWorkspace tw = new TestWorkspace();
 		tw.setWorkspaceFoldersSelectionInDialog(file);
-		applicationInfo.wsVersion = 1;
+		tw.wsVersion = 1;
 		tw.init(false);
 		assertTrue(tw.allFoldersAsked());
 		assertTrue(new File(NEW_WORKSPACE_VERSION_FILE_TEST,
 				".metadata/org.orbisgis.version.txt").exists());
 	}
 
-	private final class TestApplicationInfo implements ApplicationInfo {
-		private int wsVersion;
-
-		public int getWsVersion() {
-			return wsVersion;
-		}
-
-		public String getVersion() {
-			return null;
-		}
-
-		public String getOrganization() {
-			return null;
-		}
-
-		public String getName() {
-			return null;
-		}
-
-		public void setWsVersion(int wsVersion) {
-			this.wsVersion = wsVersion;
-		}
-	}
-
 	private class TestWorkspace extends DefaultWorkspace {
 
 		private File[] files = new File[0];
 		private int index = 0;
+		private int wsVersion;
+
 
 		@Override
 		protected File askWorkspace() {
@@ -228,5 +201,13 @@ public class WorkspaceTest extends TestCase {
 		public boolean allFoldersAsked() {
 			return index == files.length;
 		}
-	}
+
+		public int getWsVersion() {
+			return wsVersion;
+		}
+
+		public void setWsVersion(int wsVersion) {
+			this.wsVersion = wsVersion;
+		}
+}
 }

@@ -3,7 +3,7 @@
 	<workspace class="org.orbisgis.workspace.DefaultWorkspace"/>
 	
 	<application name="OrbisGIS" version="1.2.2 (Naoned)"
-		organization="IRSTV CNRS-FR-2488" workspace-version="2"/>
+		organization="IRSTV CNRS-FR-2488"/>
 	
 	<!-- windows -->
 	<extension-point id="org.orbisgis.Window" schema="schema/window.xsd"/>
@@ -561,7 +561,7 @@
 		id="org.orbisgis.views.geocognition.actions.Basic">
 		<menu text="Synchronize"
 			id="org.orbisgis.views.geocognition.Synchronize"/>
-		<action id="org.orbisgis.views.geocognition.actions.SyncWithFile" 
+		<action id="org.orbisgis.views.geocognition.actions.SyncWithFile"
 			text="Synchronize with file"
 			menu-group="org.orbisgis.views.geocognition.SyncAdvanced"
 			class="org.orbisgis.views.geocognition.actions.SyncWithFile"

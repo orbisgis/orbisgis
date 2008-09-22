@@ -44,6 +44,4 @@ public interface ApplicationInfo {
 
 	public String getOrganization();
 
-	public int getWsVersion();
-
 }

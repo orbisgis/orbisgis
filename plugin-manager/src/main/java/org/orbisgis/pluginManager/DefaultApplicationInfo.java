@@ -41,14 +41,12 @@ public class DefaultApplicationInfo implements ApplicationInfo {
 	private String name;
 	private String version;
 	private String organization;
-	private int wsVersion;
 
 	public DefaultApplicationInfo(String name, String version,
-			String organization, int wsVersion) {
+			String organization) {
 		this.name = name;
 		this.version = version;
 		this.organization = organization;
-		this.wsVersion = wsVersion;
 	}
 
 	public String getName() {
@@ -61,10 +59,6 @@ public class DefaultApplicationInfo implements ApplicationInfo {
 
 	public String getOrganization() {
 		return organization;
-	}
-
-	public int getWsVersion() {
-		return wsVersion;
 	}
 
 }

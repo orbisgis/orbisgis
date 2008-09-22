@@ -183,12 +183,9 @@ public class Main {
 							"version");
 					String organization = vtd.getAttribute(
 							"/plugin/application", "organization");
-					String wsVersion = vtd.getAttribute("/plugin/application",
-							"workspace-version");
 					try {
 						DefaultApplicationInfo applicationInfo = new DefaultApplicationInfo(
-								name, version, organization, Integer
-										.parseInt(wsVersion));
+								name, version, organization);
 						Services.registerService(ApplicationInfo.class,
 								"Gets information about the application: "
 										+ "name, version, etc.",

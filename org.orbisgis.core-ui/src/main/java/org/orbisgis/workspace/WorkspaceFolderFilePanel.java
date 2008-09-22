@@ -45,9 +45,7 @@ import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 
 import org.orbisgis.Services;
-import org.orbisgis.pluginManager.ApplicationInfo;
 import org.orbisgis.pluginManager.ui.SaveFilePanel;
-import org.orbisgis.workspace.Workspace;
 
 public class WorkspaceFolderFilePanel extends SaveFilePanel {
 
@@ -108,9 +106,9 @@ public class WorkspaceFolderFilePanel extends SaveFilePanel {
 			} else {
 				version = 1;
 			}
-			ApplicationInfo ai = (ApplicationInfo) Services
-					.getService(ApplicationInfo.class);
-			if (ai.getWsVersion() != version) {
+			DefaultWorkspace dw = (DefaultWorkspace) Services
+					.getService(Workspace.class);
+			if (dw.getWsVersion() != version) {
 				return "Workspace version mistmatch. Either"
 						+ " clean or select another folder.";
 			}

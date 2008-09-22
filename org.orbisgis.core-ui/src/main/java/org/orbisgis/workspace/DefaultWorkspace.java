@@ -49,10 +49,7 @@ import javax.swing.SwingUtilities;
 
 import org.apache.log4j.Logger;
 import org.orbisgis.Services;
-import org.orbisgis.pluginManager.ApplicationInfo;
 import org.orbisgis.pluginManager.PluginManager;
-import org.orbisgis.workspace.Workspace;
-import org.orbisgis.workspace.WorkspaceListener;
 import org.sif.UIFactory;
 
 public class DefaultWorkspace implements Workspace {
@@ -200,8 +197,6 @@ public class DefaultWorkspace implements Workspace {
 			return false;
 		} else {
 			File versionFile = getVersionFile();
-			ApplicationInfo ai = (ApplicationInfo) Services
-					.getService(ApplicationInfo.class);
 			if (versionFile.exists()) {
 				try {
 					BufferedReader fr = new BufferedReader(new FileReader(
@@ -209,16 +204,20 @@ public class DefaultWorkspace implements Workspace {
 					String strVersion = fr.readLine();
 					fr.close();
 					int version = Integer.parseInt(strVersion.trim());
-					return ai.getWsVersion() == version;
+					return getWsVersion() == version;
 				} catch (IOException e1) {
 					return false;
 				} catch (NumberFormatException e) {
 					return false;
 				}
 			} else {
-				return ai.getWsVersion() == 1;
+				return getWsVersion() == 1;
 			}
 		}
+	}
+
+	int getWsVersion() {
+		return 2;
 	}
 
 	private File getVersionFile() {
@@ -290,11 +289,9 @@ public class DefaultWorkspace implements Workspace {
 
 	private void writeVersionFile() throws FileNotFoundException {
 		File versionFile = getVersionFile();
-		ApplicationInfo ai = (ApplicationInfo) Services
-				.getService(ApplicationInfo.class);
 		versionFile.getParentFile().mkdirs();
 		PrintWriter pw = new PrintWriter(versionFile);
-		pw.println(ai.getWsVersion());
+		pw.println(getWsVersion());
 		pw.flush();
 		pw.close();
 	}
