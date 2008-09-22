@@ -54,6 +54,7 @@ import com.vividsolutions.jts.geom.Polygon;
 public class RandomGeometryUtilities {
 	private static final Random RAND = new Random();
 	private static final GeometryFactory gf = new GeometryFactory();
+	private int maxHeight = 80;
 	private int maxNodesPerLineMinus3;
 	private int maxHolesPerPolygon;
 
@@ -83,7 +84,7 @@ public class RandomGeometryUtilities {
 	public Coordinate nextCoordinate(final Envelope envelope) {
 		return new Coordinate(RAND.nextInt((int) envelope.getWidth())
 				+ envelope.getMinX(), RAND.nextInt((int) envelope.getHeight())
-				+ envelope.getMinY(), RAND.nextLong());
+				+ envelope.getMinY(), RAND.nextInt(maxHeight));
 	}
 
 	public Coordinate[] nextCoordinates(final int n) {
