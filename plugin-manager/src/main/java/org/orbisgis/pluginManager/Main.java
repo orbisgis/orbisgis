@@ -199,6 +199,11 @@ public class Main {
 								+ "workspace version", e);
 					}
 				}
+
+				if (vtd.count("/plugin/workspace") > 0) {
+					workspaceClassName = vtd.getAttribute("/plugin/workspace",
+							"class");
+				}
 				int n = vtd.evalToInt("count(/plugin/extension-point)");
 				for (int i = 0; i < n; i++) {
 					String schema = vtd.getAttribute("/plugin/extension-point["
