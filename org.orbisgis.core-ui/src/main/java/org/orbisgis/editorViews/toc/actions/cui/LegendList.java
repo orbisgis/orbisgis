@@ -293,7 +293,12 @@ public class LegendList extends JPanel {
 	private class LegendModel extends AbstractListModel implements ListModel {
 
 		public Object getElementAt(int index) {
-			return legendsPanel.getLegendsNames()[index];
+			String legendName = legendsPanel.getLegendsNames()[index];
+			if ((legendName == null) || legendName.trim().length() == 0) {
+				System.err.println("No name");
+				legendName = "(no name)";
+			}
+			return legendName;
 		}
 
 		public void refresh() {
