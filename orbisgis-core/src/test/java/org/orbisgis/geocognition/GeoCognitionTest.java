@@ -6,7 +6,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.InputStream;
 
 import org.gdms.sql.customQuery.RegisterCall;
 import org.gdms.sql.function.spatial.operators.Buffer;
@@ -159,33 +158,6 @@ public class GeoCognitionTest extends AbstractGeocognitionTest {
 		elem.open(null);
 		assertTrue(!elem.isModified());
 		elem.close(null);
-	}
-
-	public void testRestoreUnsupportedElement() throws Exception {
-		// read geocognition
-		InputStream geocogStream = GeoCognitionTest.class
-				.getResourceAsStream("unsupported-element.xml");
-		CountingErrorManager em = new CountingErrorManager();
-		ErrorManager previous = Services.getErrorManager();
-		Services.setService(ErrorManager.class, em);
-		gc.read(geocogStream);
-		Services.setService(ErrorManager.class, previous);
-
-		assertTrue(gc.getRoot().getElementCount() == 0);
-		assertTrue(em.warnings == 1);
-	}
-
-	public void testRestoreSupportedElementWrongContent() throws Exception {
-		InputStream geocogStream = GeoCognitionTest.class
-				.getResourceAsStream("supported-element-wrong-content.xml");
-		CountingErrorManager em = new CountingErrorManager();
-		ErrorManager previous = Services.getErrorManager();
-		Services.setService(ErrorManager.class, em);
-		gc.read(geocogStream);
-		Services.setService(ErrorManager.class, previous);
-
-		assertTrue(gc.getRoot().getElementCount() == 0);
-		assertTrue(em.warnings == 1);
 	}
 
 	public void testNotFoundSymbolReturnsNull() throws Exception {
