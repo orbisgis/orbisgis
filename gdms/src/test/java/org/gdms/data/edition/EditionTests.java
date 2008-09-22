@@ -438,7 +438,7 @@ public class EditionTests extends SourceTest {
 		DataSource d = dsf.getDataSource("persona_created");
 
 		d.open();
-		d.insertFilledRow(new Value[] { v1, v2, ValueFactory.createValue(0L) });
+		d.insertFilledRow(new Value[] { v1, v2 });
 		d.commit();
 		d.close();
 

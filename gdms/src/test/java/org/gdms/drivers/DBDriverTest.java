@@ -513,8 +513,11 @@ public class DBDriverTest extends SourceTest {
 		dsf.getSourceManager().register("table", dbSource);
 		DataSource ds = dsf.getDataSource(dbSource);
 		ds.open();
-		ds.insertFilledRow(new Value[] { ValueFactory.createValue("value"),
-				ValueFactory.createValue("value") });
+		Value[] row = new Value[metadata.getFieldCount()];
+		for (int i = 0; i < row.length; i++) {
+			row[i] = ValueFactory.createValue("value");
+		}
+		ds.insertFilledRow(row);
 		ds.commit();
 		ds.deleteRow(0);
 		ds.commit();
