@@ -51,6 +51,12 @@ public abstract class AbstractSyntaxColoringDocument extends UndoableDocument {
 		@Override
 		public void replace(FilterBypass fb, int offset, int length,
 				String text, AttributeSet attrs) throws BadLocationException {
+			replace(fb, offset, length, text, attrs, containsCommentCharacter(text));
+		}
+
+		public void replace(FilterBypass fb, int offset, int length,
+				String text, AttributeSet attrs, boolean fullFile)
+				throws BadLocationException {
 			// replace tabs by spaces. Grammar needs that
 			text = text.replaceAll("\t", "    ");
 
@@ -66,7 +72,7 @@ public abstract class AbstractSyntaxColoringDocument extends UndoableDocument {
 
 			// Style by default
 			if (!styling) {
-				attrs = getDefaultStyle();
+				attrs = getCommentStyle();
 			}
 
 			boolean alreadyGrouping = isGrouping;
@@ -79,12 +85,13 @@ public abstract class AbstractSyntaxColoringDocument extends UndoableDocument {
 
 			// If not already applying style, apply it
 			if (!styling) {
-				// Parse all the line if there is any comment
-				if (text.indexOf(getSingleLineComment()) != -1) {
-					offset = 0;
+				if (fullFile) {
+					colorize(0, getLength());
+				} else {
+					colorize(offset, offset
+							+ Math.max(getLineEndFromOffset(offset), text
+									.length()));
 				}
-				colorize(offset, offset
-						+ Math.max(getLineEndFromOffset(offset), text.length()));
 			}
 
 			if (!alreadyGrouping) {
@@ -109,9 +116,14 @@ public abstract class AbstractSyntaxColoringDocument extends UndoableDocument {
 				groupUndoEdits(true);
 			}
 
+			String removedText = getText(offset, length);
 			super.remove(fb, offset, length);
 			if (!styling) {
-				colorize(offset, offset + getLineEndFromOffset(offset));
+				if (containsCommentCharacter(removedText)) {
+					colorize(0, getLength());
+				} else {
+					colorize(offset, offset + getLineEndFromOffset(offset));
+				}
 			}
 
 			if (!alreadyGrouping) {
@@ -122,29 +134,25 @@ public abstract class AbstractSyntaxColoringDocument extends UndoableDocument {
 		@Override
 		public void insertString(FilterBypass fb, int offset, String text,
 				AttributeSet attr) throws BadLocationException {
-			replace(fb, offset, 0, text, attr);
+			replace(fb, offset, 0, text, attr, containsCommentCharacter(text));
 		}
 	}
 
-	protected void styleComment(String sqlText, int startText, int lastStyledPos,
-			int beginPos) throws BadLocationException {
+	protected void styleComment(String sqlText, int startText,
+			int lastStyledPos, int beginPos) throws BadLocationException {
 		int spaceLength = beginPos - lastStyledPos;
 		String comment = sqlText.substring(lastStyledPos, lastStyledPos
 				+ spaceLength);
 		if (comment.trim().length() > 0) {
 			styling = true;
 			super.remove(startText + lastStyledPos, spaceLength);
-			super
-					.insertString(startText + lastStyledPos, comment,
-							getCommentStyle());
+			super.insertString(startText + lastStyledPos, comment,
+					getCommentStyle());
 			styling = false;
 		}
 	}
 
 	protected abstract AttributeSet getCommentStyle();
 
-	protected abstract String getSingleLineComment();
-
-	protected abstract AttributeSet getDefaultStyle();
-
+	protected abstract boolean containsCommentCharacter(String text);
 }

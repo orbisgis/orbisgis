@@ -132,17 +132,18 @@ public class SQLDocument extends AbstractSyntaxColoringDocument {
 	}
 
 	@Override
-	protected AttributeSet getDefaultStyle() {
-		return commentStyle;
-	}
-
-	@Override
-	protected String getSingleLineComment() {
-		return "--";
-	}
-
-	@Override
 	protected AttributeSet getCommentStyle() {
 		return commentStyle;
+	}
+
+	@Override
+	protected boolean containsCommentCharacter(String text) {
+		boolean fullFile;
+		if (text.contains("*") || text.contains("/") || text.contains("-")) {
+			fullFile = true;
+		} else {
+			fullFile = false;
+		}
+		return fullFile;
 	}
 }

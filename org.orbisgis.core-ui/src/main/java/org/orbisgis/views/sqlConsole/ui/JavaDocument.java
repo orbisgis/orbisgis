@@ -200,37 +200,38 @@ public class JavaDocument extends AbstractSyntaxColoringDocument {
 
 	@Override
 	protected void colorIn(int start, int end) throws BadLocationException {
-		String sqlText = textPane.getText();
-		String aux = sqlText.substring(0, start);
+		String javaText = textPane.getText();
+		String aux = javaText.substring(0, start);
 		int startText = aux.lastIndexOf("\n");
 		if (startText == -1) {
 			startText = 0;
 		}
 		int endText = end;
-		if (endText > sqlText.length()) {
-			endText = sqlText.length();
+		if (endText > javaText.length()) {
+			endText = javaText.length();
 		}
-		sqlText = sqlText.substring(startText, endText);
-		if (sqlText.trim().length() == 0) {
+		javaText = javaText.substring(startText, endText);
+		if (javaText.trim().length() == 0) {
 			return;
 		}
 		JavaParserTokenManager tm = new JavaParserTokenManager(
-				new JavaCharStream(new ByteArrayInputStream(sqlText.getBytes())));
+				new JavaCharStream(
+						new ByteArrayInputStream(javaText.getBytes())));
 		Token token;
 		int lastStyledPos = 0;
 		try {
 			do {
 				token = tm.getNextToken();
-				int beginPos = NodeUtils.getPosition(sqlText, token.beginLine,
+				int beginPos = NodeUtils.getPosition(javaText, token.beginLine,
 						token.beginColumn);
 
 				// check comments
-				if (token.kind != JavaParserTokenManager.EOF) {
-					styleComment(sqlText, startText, lastStyledPos, beginPos);
+				if (beginPos >= lastStyledPos) {
+					styleComment(javaText, startText, lastStyledPos, beginPos);
 				}
 
 				// draw token
-				lastStyledPos = NodeUtils.getPosition(sqlText, token.endLine,
+				lastStyledPos = NodeUtils.getPosition(javaText, token.endLine,
 						token.endColumn) + 1;
 				styling = true;
 				super.remove(startText + beginPos, token.image.length());
@@ -239,7 +240,7 @@ public class JavaDocument extends AbstractSyntaxColoringDocument {
 				styling = false;
 			} while (token.kind != JavaParserTokenManager.EOF);
 		} catch (TokenMgrError e1) {
-			styleComment(sqlText, startText, lastStyledPos, sqlText.length());
+			styleComment(javaText, startText, lastStyledPos, javaText.length());
 		}
 
 	}
@@ -254,18 +255,19 @@ public class JavaDocument extends AbstractSyntaxColoringDocument {
 	}
 
 	@Override
-	protected AttributeSet getDefaultStyle() {
-		return commentStyle;
-	}
-
-	@Override
-	protected String getSingleLineComment() {
-		return "//";
-	}
-
-	@Override
 	protected AttributeSet getCommentStyle() {
 		return commentStyle;
+	}
+
+	@Override
+	protected boolean containsCommentCharacter(String text) {
+		boolean fullFile;
+		if (text.contains("*") || text.contains("/")) {
+			fullFile = true;
+		} else {
+			fullFile = false;
+		}
+		return fullFile;
 	}
 
 }
