@@ -46,12 +46,18 @@ SKIP:
 
 MORE:
 {
-  "--": IN_COMMENT_LINE
+  "--" : IN_COMMENT_LINE
 }
 <IN_COMMENT_LINE>
-SPECIAL_TOKEN:
+SPECIAL_TOKEN :
 {
 	<COMMENT_LINE: "\n" | "\r" | "\r\n" > : DEFAULT
+}
+
+<IN_COMMENT_LINE>
+MORE :
+{
+  < ~[] >
 }
 
 SKIP:

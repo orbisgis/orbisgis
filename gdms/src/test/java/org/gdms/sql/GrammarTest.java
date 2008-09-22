@@ -192,6 +192,11 @@ public class GrammarTest extends TestCase {
 		parse("create table table2 as select * from table1;");
 	}
 
+	public void testScriptWithComments() throws Exception {
+		parse("select * from mytable;-- comment\nselect * from mytable;");
+		parse("select * from mytable;/* com\nment\n*/select * from mytable;");
+	}
+
 	private void notParse(String sql) {
 		SQLEngine se = new SQLEngine(new ByteArrayInputStream(sql.getBytes()));
 		try {

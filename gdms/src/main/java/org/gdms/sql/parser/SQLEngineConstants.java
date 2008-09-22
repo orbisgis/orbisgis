@@ -13,139 +13,139 @@ public interface SQLEngineConstants {
   /** RegularExpression Id. */
   int COMMENT_LINE = 6;
   /** RegularExpression Id. */
-  int COMMENT_BLOCK = 7;
+  int COMMENT_BLOCK = 8;
   /** RegularExpression Id. */
-  int ALL = 8;
+  int ALL = 9;
   /** RegularExpression Id. */
-  int AND = 9;
+  int AND = 10;
   /** RegularExpression Id. */
-  int AS = 10;
+  int AS = 11;
   /** RegularExpression Id. */
-  int ASC = 11;
+  int ASC = 12;
   /** RegularExpression Id. */
-  int BEGIN = 12;
+  int BEGIN = 13;
   /** RegularExpression Id. */
-  int BETWEEN = 13;
+  int BETWEEN = 14;
   /** RegularExpression Id. */
-  int BY = 14;
+  int BY = 15;
   /** RegularExpression Id. */
-  int DESC = 15;
+  int DESC = 16;
   /** RegularExpression Id. */
-  int DISTINCT = 16;
+  int DISTINCT = 17;
   /** RegularExpression Id. */
-  int DROP = 17;
+  int DROP = 18;
   /** RegularExpression Id. */
-  int FROM = 18;
+  int FROM = 19;
   /** RegularExpression Id. */
-  int GROUP = 19;
+  int GROUP = 20;
   /** RegularExpression Id. */
-  int HAVING = 20;
+  int HAVING = 21;
   /** RegularExpression Id. */
-  int IN = 21;
+  int IN = 22;
   /** RegularExpression Id. */
-  int IS = 22;
+  int IS = 23;
   /** RegularExpression Id. */
-  int KEY = 23;
+  int KEY = 24;
   /** RegularExpression Id. */
-  int LIKE = 24;
+  int LIKE = 25;
   /** RegularExpression Id. */
-  int LIMIT = 25;
+  int LIMIT = 26;
   /** RegularExpression Id. */
-  int NOT = 26;
+  int NOT = 27;
   /** RegularExpression Id. */
-  int NULL = 27;
+  int NULL = 28;
   /** RegularExpression Id. */
-  int OFFSET = 28;
+  int OFFSET = 29;
   /** RegularExpression Id. */
-  int OR = 29;
+  int OR = 30;
   /** RegularExpression Id. */
-  int ORDER = 30;
+  int ORDER = 31;
   /** RegularExpression Id. */
-  int PRIMARY = 31;
+  int PRIMARY = 32;
   /** RegularExpression Id. */
-  int SELECT = 32;
+  int SELECT = 33;
   /** RegularExpression Id. */
-  int UNION = 33;
+  int UNION = 34;
   /** RegularExpression Id. */
-  int SPACES = 34;
+  int SPACES = 35;
   /** RegularExpression Id. */
-  int TABLE = 35;
+  int TABLE = 36;
   /** RegularExpression Id. */
-  int WHERE = 36;
+  int WHERE = 37;
   /** RegularExpression Id. */
-  int CREATE = 37;
+  int CREATE = 38;
   /** RegularExpression Id. */
-  int DELETE = 38;
+  int DELETE = 39;
   /** RegularExpression Id. */
-  int EXISTS = 39;
+  int EXISTS = 40;
   /** RegularExpression Id. */
-  int INSERT = 40;
+  int INSERT = 41;
   /** RegularExpression Id. */
-  int INTO = 41;
+  int INTO = 42;
   /** RegularExpression Id. */
-  int SET = 42;
+  int SET = 43;
   /** RegularExpression Id. */
-  int UPDATE = 43;
+  int UPDATE = 44;
   /** RegularExpression Id. */
-  int VALUES = 44;
+  int VALUES = 45;
   /** RegularExpression Id. */
-  int INTEGER_LITERAL = 45;
+  int INTEGER_LITERAL = 46;
   /** RegularExpression Id. */
-  int FLOATING_POINT_LITERAL = 46;
+  int FLOATING_POINT_LITERAL = 47;
   /** RegularExpression Id. */
-  int EXPONENT = 47;
+  int EXPONENT = 48;
   /** RegularExpression Id. */
-  int STRING_LITERAL = 48;
+  int STRING_LITERAL = 49;
   /** RegularExpression Id. */
-  int BOOLEAN_LITERAL = 49;
+  int BOOLEAN_LITERAL = 50;
   /** RegularExpression Id. */
-  int ID = 50;
+  int ID = 51;
   /** RegularExpression Id. */
-  int LETTER = 51;
+  int LETTER = 52;
   /** RegularExpression Id. */
-  int DIGIT = 52;
+  int DIGIT = 53;
   /** RegularExpression Id. */
-  int QUOTED_ID = 53;
+  int QUOTED_ID = 54;
   /** RegularExpression Id. */
-  int ASSIGN = 54;
+  int ASSIGN = 55;
   /** RegularExpression Id. */
-  int CONCAT = 55;
+  int CONCAT = 56;
   /** RegularExpression Id. */
-  int SEMICOLON = 56;
+  int SEMICOLON = 57;
   /** RegularExpression Id. */
-  int DOT = 57;
+  int DOT = 58;
   /** RegularExpression Id. */
-  int TILDE = 58;
+  int TILDE = 59;
   /** RegularExpression Id. */
-  int LESS = 59;
+  int LESS = 60;
   /** RegularExpression Id. */
-  int LESSEQUAL = 60;
+  int LESSEQUAL = 61;
   /** RegularExpression Id. */
-  int GREATER = 61;
+  int GREATER = 62;
   /** RegularExpression Id. */
-  int GREATEREQUAL = 62;
+  int GREATEREQUAL = 63;
   /** RegularExpression Id. */
-  int EQUAL = 63;
+  int EQUAL = 64;
   /** RegularExpression Id. */
-  int NOTEQUAL = 64;
+  int NOTEQUAL = 65;
   /** RegularExpression Id. */
-  int NOTEQUAL2 = 65;
+  int NOTEQUAL2 = 66;
   /** RegularExpression Id. */
-  int JOINPLUS = 66;
+  int JOINPLUS = 67;
   /** RegularExpression Id. */
-  int OPENPAREN = 67;
+  int OPENPAREN = 68;
   /** RegularExpression Id. */
-  int CLOSEPAREN = 68;
+  int CLOSEPAREN = 69;
   /** RegularExpression Id. */
-  int ASTERISK = 69;
+  int ASTERISK = 70;
   /** RegularExpression Id. */
-  int SLASH = 70;
+  int SLASH = 71;
   /** RegularExpression Id. */
-  int PLUS = 71;
+  int PLUS = 72;
   /** RegularExpression Id. */
-  int MINUS = 72;
+  int MINUS = 73;
   /** RegularExpression Id. */
-  int QUESTIONMARK = 73;
+  int QUESTIONMARK = 74;
 
   /** Lexical state. */
   int DEFAULT = 0;
@@ -161,6 +161,7 @@ public interface SQLEngineConstants {
     "\"\\t\"",
     "\"--\"",
     "<COMMENT_LINE>",
+    "<token of kind 7>",
     "<COMMENT_BLOCK>",
     "\"all\"",
     "\"and\"",
