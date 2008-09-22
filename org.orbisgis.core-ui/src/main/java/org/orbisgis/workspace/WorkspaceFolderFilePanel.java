@@ -34,7 +34,7 @@
  *    fergonco _at_ gmail.com
  *    thomas.leduc _at_ cerma.archi.fr
  */
-package org.orbisgis.pluginManager.workspace;
+package org.orbisgis.workspace;
 
 import java.io.BufferedReader;
 import java.io.File;
