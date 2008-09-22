@@ -41,8 +41,8 @@ import java.io.IOException;
 import org.orbisgis.Services;
 import org.orbisgis.action.IAction;
 import org.orbisgis.pluginManager.PluginManager;
-import org.orbisgis.pluginManager.workspace.WorkspaceFolderFilePanel;
 import org.orbisgis.workspace.Workspace;
+import org.orbisgis.workspace.WorkspaceFolderFilePanel;
 import org.sif.UIFactory;
 
 public class ChangeWorkspace implements IAction {
