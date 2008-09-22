@@ -42,7 +42,7 @@ import java.io.PrintWriter;
 import org.orbisgis.pluginManager.ApplicationInfo;
 import org.orbisgis.pluginManager.PluginManager;
 import org.orbisgis.pluginManager.SystemListener;
-import org.orbisgis.pluginManager.workspace.DefaultWorkspace;
+import org.orbisgis.workspace.DefaultWorkspace;
 
 import junit.framework.TestCase;
 
