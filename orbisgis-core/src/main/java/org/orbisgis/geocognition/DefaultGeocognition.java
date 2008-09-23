@@ -9,9 +9,15 @@ import java.util.List;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.stream.StreamResult;
+import javax.xml.transform.stream.StreamSource;
 
 import org.orbisgis.PersistenceException;
 import org.orbisgis.Services;
+import org.orbisgis.errorManager.ErrorManager;
 import org.orbisgis.geocognition.mapContext.GeocognitionException;
 import org.orbisgis.geocognition.persistence.GeocognitionNode;
 import org.orbisgis.geocognition.persistence.NodeContent;
@@ -60,9 +66,15 @@ public class DefaultGeocognition implements Geocognition {
 	private void readIn(GeocognitionElement rootElement, InputStream is)
 			throws PersistenceException {
 		try {
-			JAXBContext jc = getJAXBContext();
-			GeocognitionNode xmlRoot = (GeocognitionNode) jc
-					.createUnmarshaller().unmarshal(is);
+			GeocognitionNode xmlRoot = unMarshall(is);
+			if (xmlRoot.getVersion() == null) {
+				try {
+					xmlRoot = upgradeNonVersioned(is);
+				} catch (TransformerException e) {
+					Services.getService(ErrorManager.class).error(
+							"Cannot upgrade geocognition to new version", e);
+				}
+			}
 			GeocognitionElement readRoot = fromXML(xmlRoot);
 			for (int i = 0; i < readRoot.getElementCount(); i++) {
 				rootElement.addElement(readRoot.getElement(i));
@@ -71,6 +83,28 @@ public class DefaultGeocognition implements Geocognition {
 		} catch (JAXBException e) {
 			throw new PersistenceException("Cannot read geocognition", e);
 		}
+	}
+
+	private GeocognitionNode unMarshall(InputStream is) throws JAXBException {
+		JAXBContext jc = getJAXBContext();
+		GeocognitionNode xmlRoot = (GeocognitionNode) jc.createUnmarshaller()
+				.unmarshal(is);
+		return xmlRoot;
+	}
+
+	private GeocognitionNode upgradeNonVersioned(InputStream is)
+			throws TransformerException, JAXBException {
+		TransformerFactory xformFactory = TransformerFactory.newInstance();
+		Transformer transformer = xformFactory.newTransformer(new StreamSource(
+				this.getClass().getResourceAsStream(
+						"/org/orbisgis/geocognition/Unversioned.xsl")));
+		ByteArrayOutputStream bos = new ByteArrayOutputStream();
+		StreamResult result = new StreamResult(bos);
+		transformer.transform(new StreamSource(is), result);
+
+		GeocognitionNode xmlRoot = unMarshall(new ByteArrayInputStream(bos
+				.toByteArray()));
+		return xmlRoot;
 	}
 
 	private static JAXBContext getJAXBContext() throws JAXBException {
@@ -220,6 +254,7 @@ public class DefaultGeocognition implements Geocognition {
 	public void write(GeocognitionElement element, OutputStream bos)
 			throws PersistenceException {
 		GeocognitionNode root = toXML(element);
+		root.setVersion(1);
 		try {
 			JAXBContext jc = getJAXBContext();
 			jc.createMarshaller().marshal(root, bos);

@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<geocognition-node xmlns:ns2="org.orbisgis.legend" xmlns:ns3="org.orbisgis.symbol"
+	xmlns:ns4="org.orbisgis.mapContext" id="">
+	<geocognition-node id="Maps">
+		<geocognition-node id="FirstMap">
+			<node-content content-type-id="org.orbisgis.geocognition.MapContext">
+				<map-context>
+					<layer-collection visible="false" name="root">
+						<layer visible="true" source-name="embalses_gv"
+							name="embalses_gv">
+							<legends field-name="the_geom">
+								<simple-legend
+									legend-id="org.orbisgis.legend.UniqueSymbol">
+									<legend-container>
+										<legend-description
+											xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+											xsi:type="unique-symbol-legend-type"
+											name="Unique symbol">
+											<symbol
+												xsi:type="symbol-composite-type">
+												<symbol
+													xsi:type="simple-symbol-type"
+													symbol-type-id="org.orbisgis.symbol.Polygon">
+													<ns3:property
+														value="-16777216"
+														name="outline-color"/>
+													<ns3:property
+														value="-3897102"
+														name="fill-color"/>
+													<ns3:property value="Polygon"
+														name="name"/>
+													<ns3:property value="1"
+														name="line-width"/>
+												</symbol>
+											</symbol>
+										</legend-description>
+									</legend-container>
+								</simple-legend>
+								<simple-legend
+									legend-id="org.orbisgis.legend.ProportionaPoint">
+									<legend-container>
+										<legend-description
+											xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+											xsi:type="proportional-legend-type"
+											field-name="AREA" method="1"
+											max-size="30000"
+											name="Proportional point">
+											<sample-symbol
+												xsi:type="simple-symbol-type"
+												symbol-type-id="org.orbisgis.symbol.point.Circle">
+												<ns3:property value="-16777216"
+													name="outline-color"/>
+												<ns3:property value="-20561"
+													name="fill-color"/>
+												<ns3:property value="true"
+													name="map-units"/>
+												<ns3:property
+													value="Circle in point"
+													name="name"/>
+												<ns3:property value="1"
+													name="line-width"/>
+												<ns3:property value="10"
+													name="size"/>
+											</sample-symbol>
+											<sample-symbol
+												xsi:type="simple-symbol-type"
+												symbol-type-id="org.orbisgis.symbol.point.Square">
+												<ns3:property value="-16777216"
+													name="outline-color"/>
+												<ns3:property value="-20561"
+													name="fill-color"/>
+												<ns3:property value="true"
+													name="map-units"/>
+												<ns3:property
+													value="Circle in point"
+													name="name"/>
+												<ns3:property value="1"
+													name="line-width"/>
+												<ns3:property value="10"
+													name="size"/>
+											</sample-symbol>
+										</legend-description>
+									</legend-container>
+								</simple-legend>
+							</legends>
+						</layer>
+					</layer-collection>
+					<selected-layer name="embalses_gv"/>
+				</map-context>
+			</node-content>
+		</geocognition-node>
+	</geocognition-node>
+</geocognition-node>
