@@ -216,7 +216,7 @@ public class DefaultWorkspace implements Workspace {
 		}
 	}
 
-	int getWsVersion() {
+	public int getWsVersion() {
 		return 2;
 	}
 

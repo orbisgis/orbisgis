@@ -99,6 +99,7 @@ public class WorkspaceTest extends TestCase {
 
 	public void testInitEmpty() throws Exception {
 		File file = new File("target/home2");
+		deleteDir(file);
 		TestWorkspace tw = new TestWorkspace();
 		tw.setWorkspaceFolderSelectionInDialog(file);
 		tw.wsVersion = 1;
