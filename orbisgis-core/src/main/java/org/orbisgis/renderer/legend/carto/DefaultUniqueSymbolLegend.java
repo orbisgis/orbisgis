@@ -48,6 +48,7 @@ import org.orbisgis.renderer.legend.carto.persistence.UniqueSymbolLegendType;
 import org.orbisgis.renderer.symbol.RenderUtils;
 import org.orbisgis.renderer.symbol.Symbol;
 import org.orbisgis.renderer.symbol.SymbolManager;
+import org.orbisgis.renderer.symbol.collection.persistence.SymbolType;
 
 public class DefaultUniqueSymbolLegend extends AbstractCartoLegend implements
 		UniqueSymbolLegend {
@@ -94,8 +95,12 @@ public class DefaultUniqueSymbolLegend extends AbstractCartoLegend implements
 		load(xmlLegend);
 		SymbolManager sm = (SymbolManager) Services
 				.getService(SymbolManager.class);
-		setSymbol(sm.getSymbolFromJAXB(xmlLegend.getSymbol()));
-
+		SymbolType xmlSymbol = xmlLegend.getSymbol();
+		if (xmlSymbol != null) {
+			setSymbol(sm.getSymbolFromJAXB(xmlSymbol));
+		} else {
+			setSymbol(null);
+		}
 	}
 
 	public String getLegendTypeId() {

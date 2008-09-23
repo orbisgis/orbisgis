@@ -123,11 +123,15 @@ public class GeoCognitionTest extends AbstractGeocognitionTest {
 		UniqueSymbolLegend legend = LegendFactory.createUniqueSymbolLegend();
 		Symbol symbol = SymbolFactory.createPolygonSymbol(Color.pink);
 		legend.setSymbol(symbol);
+		UniqueSymbolLegend legend2 = LegendFactory.createUniqueSymbolLegend();
 		gc.addElement("org.mylegend", legend);
+		gc.addElement("org.mylegend2", legend2);
 		saveAndLoad();
 		legend = gc.getElement("org.mylegend", UniqueSymbolLegend.class);
 		assertTrue(legend.getSymbol().getPersistentProperties().equals(
 				symbol.getPersistentProperties()));
+		legend2 = gc.getElement("org.mylegend2", UniqueSymbolLegend.class);
+		assertTrue(legend2.getSymbol() == null);
 	}
 
 	public void testMapContextPersistence() throws Exception {
@@ -517,8 +521,7 @@ public class GeoCognitionTest extends AbstractGeocognitionTest {
 				.getTypeId()));
 		MapContext map = gc.getElement("org.mymap", MapContext.class);
 		map.open(null);
-		assertTrue(map.getLayerModel()
-				.getLayerCount() > 0);
+		assertTrue(map.getLayerModel().getLayerCount() > 0);
 		map.close(null);
 	}
 

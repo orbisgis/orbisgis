@@ -2,6 +2,7 @@ package org.orbisgis.geocognition;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
@@ -15,6 +16,7 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
+import org.apache.log4j.Logger;
 import org.orbisgis.PersistenceException;
 import org.orbisgis.Services;
 import org.orbisgis.errorManager.ErrorManager;
@@ -26,6 +28,8 @@ import org.orbisgis.progress.NullProgressMonitor;
 
 public class DefaultGeocognition implements Geocognition {
 
+	private static Logger logger = Logger.getLogger(DefaultGeocognition.class);
+	
 	private static ArrayList<GeocognitionElementFactory> factories = new ArrayList<GeocognitionElementFactory>();
 	private static JAXBContext jaxbContext;
 	private FolderElement root;
@@ -66,9 +70,21 @@ public class DefaultGeocognition implements Geocognition {
 	private void readIn(GeocognitionElement rootElement, InputStream is)
 			throws PersistenceException {
 		try {
+			byte[] buffer = new byte[8 * 1024];
+			byte[] all = new byte[0];
+			int count;
+			while ((count = is.read(buffer)) != -1) {
+				byte[] aux = new byte[all.length + count];
+				System.arraycopy(all, 0, aux, 0, all.length);
+				System.arraycopy(buffer, 0, aux, all.length, count);
+				all = aux;
+			}
+			is.close();
+			is = new ByteArrayInputStream(all);
 			GeocognitionNode xmlRoot = unMarshall(is);
 			if (xmlRoot.getVersion() == null) {
 				try {
+					is = new ByteArrayInputStream(all);
 					xmlRoot = upgradeNonVersioned(is);
 				} catch (TransformerException e) {
 					Services.getService(ErrorManager.class).error(
@@ -82,6 +98,8 @@ public class DefaultGeocognition implements Geocognition {
 			rootElement.setId(readRoot.getId());
 		} catch (JAXBException e) {
 			throw new PersistenceException("Cannot read geocognition", e);
+		} catch (IOException e) {
+			throw new PersistenceException("Cannot read geocognition file", e);
 		}
 	}
 
@@ -94,6 +112,7 @@ public class DefaultGeocognition implements Geocognition {
 
 	private GeocognitionNode upgradeNonVersioned(InputStream is)
 			throws TransformerException, JAXBException {
+		logger.debug("Non versioned geocognition. Upgrading...");
 		TransformerFactory xformFactory = TransformerFactory.newInstance();
 		Transformer transformer = xformFactory.newTransformer(new StreamSource(
 				this.getClass().getResourceAsStream(
@@ -148,7 +167,7 @@ public class DefaultGeocognition implements Geocognition {
 				Services.getErrorManager().warning(
 						"Non recognized geocognition element: "
 								+ xmlRoot.getId() + ": " + typeId
-								+ ". Element is ignored.");
+								+ ". Element won't be available.");
 			} else {
 				try {
 					ret = new LeafElement(factory.createElementFromXML(
@@ -156,12 +175,12 @@ public class DefaultGeocognition implements Geocognition {
 				} catch (PersistenceException e) {
 					Services.getErrorManager().warning(
 							"Cannot restore element: " + xmlRoot.getId() + ": "
-									+ typeId + ". Element is ignored.", e);
-				} catch (ClassCastException e) {
+									+ typeId + ". Element won't be available.", e);
+				} catch (RuntimeException e) {
 					Services.getErrorManager().warning(
 							"Non recognized geocognition content: "
 									+ xmlRoot.getId() + ": " + typeId
-									+ ". Element is ignored.");
+									+ ". Element won't be available.", e);
 				}
 			}
 		}
