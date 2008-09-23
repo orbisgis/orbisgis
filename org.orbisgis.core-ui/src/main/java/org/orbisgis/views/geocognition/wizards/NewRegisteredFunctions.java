@@ -44,10 +44,10 @@ public class NewRegisteredFunctions extends AbstractRegisteredSQLArtifact
 					.get(GeocognitionBuiltInFunction.REGISTERED);
 			if ((registered != null)
 					&& registered
-							.equals(GeocognitionBuiltInFunction.IS_NOT_REGISTERED)) {
-				return IconLoader.getIcon("builtInFunctionMapError.png");
-			} else {
+							.equals(GeocognitionBuiltInFunction.IS_REGISTERED)) {
 				return IconLoader.getIcon("builtInFunctionMap.png");
+			} else {
+				return IconLoader.getIcon("builtInFunctionMapError.png");
 			}
 		} else {
 			return null;

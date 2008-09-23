@@ -39,10 +39,10 @@ public class NewRegisteredQueries extends AbstractRegisteredSQLArtifact
 					.get(GeocognitionBuiltInCustomQuery.REGISTERED);
 			if ((registered != null)
 					&& registered
-							.equals(GeocognitionBuiltInCustomQuery.IS_NOT_REGISTERED)) {
-				return IconLoader.getIcon("builtInCustomQueryMapError.png");
-			} else {
+							.equals(GeocognitionBuiltInCustomQuery.IS_REGISTERED)) {
 				return IconLoader.getIcon("builtInCustomQueryMap.png");
+			} else {
+				return IconLoader.getIcon("builtInCustomQueryMapError.png");
 			}
 		} else {
 			return null;
