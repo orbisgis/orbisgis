@@ -391,6 +391,7 @@ public class EditorPanel extends Container {
 				freeView(closedView, editorInfo.editorDecorator);
 
 				editorInfo.element.close(new NullProgressMonitor());
+				editorsInfo.remove(editorInfo);
 			}
 		}
 
