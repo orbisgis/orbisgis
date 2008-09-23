@@ -111,6 +111,8 @@ public class OrbisGISFrame extends JFrame implements IWindow, ViewManager,
 
 	private IEditorsView editorsView;
 
+	private boolean perspectiveLoaded = false;
+
 	public OrbisGISFrame() {
 		// Init mapcontrol and fixed ui components
 		mainToolBar = new JActionToolBar("OrbisGIS");
@@ -198,10 +200,6 @@ public class OrbisGISFrame extends JFrame implements IWindow, ViewManager,
 		Services.registerService(UIManager.class,
 				"Gets access to the main frame", this);
 
-		// Load default perspective
-		loadPerspective(OrbisGISFrame.class
-				.getResourceAsStream("defaultPerspective.pers"));
-
 	}
 
 	private void installEditorExtensionPoints(
@@ -270,6 +268,11 @@ public class OrbisGISFrame extends JFrame implements IWindow, ViewManager,
 	}
 
 	public void showWindow() {
+		if (!perspectiveLoaded) {
+			// Load default perspective
+			loadPerspective(OrbisGISFrame.class
+					.getResourceAsStream("defaultPerspective.pers"));
+		}
 		this.setVisible(true);
 	}
 
@@ -518,6 +521,7 @@ public class OrbisGISFrame extends JFrame implements IWindow, ViewManager,
 		try {
 			ObjectInputStream ois = new ObjectInputStream(layoutStream);
 			root.read(ois);
+			perspectiveLoaded = true;
 			ois.close();
 		} catch (Exception e) {
 			Services.getErrorManager().error(
