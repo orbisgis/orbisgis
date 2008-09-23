@@ -1,27 +1,34 @@
 package org.orbisgis.views.geocognition.wizards;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeSet;
 
 import javax.swing.Icon;
-import javax.swing.ImageIcon;
 
+import org.gdms.sql.customQuery.CustomQuery;
+import org.gdms.sql.customQuery.QueryManager;
+import org.gdms.sql.function.Function;
+import org.gdms.sql.function.FunctionManager;
 import org.orbisgis.Services;
 import org.orbisgis.geocognition.Geocognition;
 import org.orbisgis.geocognition.GeocognitionElement;
+import org.orbisgis.geocognition.GeocognitionElementFactory;
 import org.orbisgis.geocognition.GeocognitionFilter;
+import org.orbisgis.geocognition.sql.GeocognitionBuiltInCustomQuery;
+import org.orbisgis.geocognition.sql.GeocognitionBuiltInFunction;
 import org.orbisgis.geocognition.sql.GeocognitionCustomQueryFactory;
 import org.orbisgis.geocognition.sql.GeocognitionFunctionFactory;
+import org.orbisgis.images.IconLoader;
 import org.orbisgis.ui.sif.ChoosePanel;
 import org.orbisgis.views.geocognition.wizard.ElementRenderer;
 import org.orbisgis.views.geocognition.wizard.INewGeocognitionElement;
 import org.sif.UIFactory;
 
-public abstract class AbstractRegisteredSQLArtifact implements
-		INewGeocognitionElement {
+public class NewRegisteredSQLArtifact implements INewGeocognitionElement {
 
 	private ArrayList<Object> artifacts;
 	private ArrayList<String> artifactNames;
@@ -33,23 +40,44 @@ public abstract class AbstractRegisteredSQLArtifact implements
 			@Override
 			public Icon getIcon(String contentTypeId,
 					Map<String, String> properties) {
-				return AbstractRegisteredSQLArtifact.this.getIcon(
-						contentTypeId, properties);
+				if (GeocognitionCustomQueryFactory.BUILT_IN_QUERY_ID
+						.equals(contentTypeId)) {
+					String registered = properties
+							.get(GeocognitionBuiltInCustomQuery.REGISTERED);
+					if ((registered != null)
+							&& registered
+									.equals(GeocognitionBuiltInCustomQuery.IS_REGISTERED)) {
+						return IconLoader.getIcon("builtInCustomQueryMap.png");
+					} else {
+						return IconLoader
+								.getIcon("builtInCustomQueryMapError.png");
+					}
+				} else if (GeocognitionFunctionFactory.BUILT_IN_FUNCTION_ID
+						.equals(contentTypeId)) {
+					String registered = properties
+							.get(GeocognitionBuiltInFunction.REGISTERED);
+					if ((registered != null)
+							&& registered
+									.equals(GeocognitionBuiltInFunction.IS_REGISTERED)) {
+						return IconLoader.getIcon("builtInFunctionMap.png");
+					} else {
+						return IconLoader
+								.getIcon("builtInFunctionMapError.png");
+					}
+				} else {
+					return null;
+				}
+
 			}
 
 			@Override
 			public Icon getDefaultIcon(String contentTypeId) {
-				return AbstractRegisteredSQLArtifact.this.getIcon(
-						contentTypeId, new HashMap<String, String>());
+				return getIcon(contentTypeId, new HashMap<String, String>());
 			}
 
 		};
 	}
 
-	protected abstract ImageIcon getIcon(String contentTypeId,
-			Map<String, String> properties);
-
-	@SuppressWarnings("unchecked")
 	@Override
 	public void runWizard() {
 		Geocognition geocognition = Services.getService(Geocognition.class);
@@ -136,11 +164,34 @@ public abstract class AbstractRegisteredSQLArtifact implements
 
 	}
 
-	protected abstract Class<?> getArtifact(String name);
+	protected Class<?> getArtifact(String name) {
+		Function fnt = FunctionManager.getFunction(name);
+		if (fnt != null) {
+			return fnt.getClass();
+		} else {
+			return QueryManager.getQuery(name).getClass();
+		}
+	}
 
-	protected abstract String getName(Object sqlArtifact);
+	private String getName(Object sqlArtifact) {
+		if (sqlArtifact instanceof Function) {
+			return ((Function) sqlArtifact).getName();
+		} else if (sqlArtifact instanceof CustomQuery) {
+			return ((CustomQuery) sqlArtifact).getName();
+		} else {
+			throw new RuntimeException("bug");
+		}
+	}
 
-	protected abstract String[] getArtifactNames();
+	protected String[] getArtifactNames() {
+		String[] queries = QueryManager.getQueryNames();
+		String[] functions = FunctionManager.getFunctionNames();
+		ArrayList<String> ret = new ArrayList<String>();
+		Collections.addAll(ret, queries);
+		Collections.addAll(ret, functions);
+
+		return ret.toArray(new String[0]);
+	}
 
 	@Override
 	public Object getElement(int index) {
@@ -155,6 +206,28 @@ public abstract class AbstractRegisteredSQLArtifact implements
 	@Override
 	public String getFixedName(int index) {
 		return artifactNames.get(index);
+	}
+
+	@Override
+	public String getBaseName(int elementIndex) {
+		return getFixedName(elementIndex);
+	}
+
+	@Override
+	public GeocognitionElementFactory[] getFactory() {
+		return new GeocognitionElementFactory[] {
+				new GeocognitionFunctionFactory(),
+				new GeocognitionCustomQueryFactory() };
+	}
+
+	@Override
+	public boolean isUniqueIdRequired(int index) {
+		return false;
+	}
+
+	@Override
+	public String getName() {
+		return "Built-in SQL";
 	}
 
 }

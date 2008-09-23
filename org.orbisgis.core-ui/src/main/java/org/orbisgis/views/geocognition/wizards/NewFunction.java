@@ -58,7 +58,7 @@ public class NewFunction implements INewGeocognitionElement {
 	}
 
 	@Override
-	public GeocognitionElementFactory getFactory() {
+	public GeocognitionElementFactory[] getFactory() {
 		return null;
 	}
 
@@ -83,7 +83,7 @@ public class NewFunction implements INewGeocognitionElement {
 	}
 
 	@Override
-	public String getBaseName() {
+	public String getBaseName(int elementIndex) {
 		return "Function";
 	}
 

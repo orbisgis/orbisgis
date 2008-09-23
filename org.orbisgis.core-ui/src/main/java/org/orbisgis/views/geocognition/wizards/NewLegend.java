@@ -20,8 +20,8 @@ public class NewLegend implements INewGeocognitionElement {
 	private Object legend;
 
 	@Override
-	public GeocognitionElementFactory getFactory() {
-		return new GeocognitionLegendFactory();
+	public GeocognitionElementFactory[] getFactory() {
+		return new GeocognitionElementFactory[] { new GeocognitionLegendFactory() };
 	}
 
 	@Override
@@ -61,7 +61,7 @@ public class NewLegend implements INewGeocognitionElement {
 
 			@Override
 			public Icon getDefaultIcon(String contentTypeId) {
-				if (getFactory().acceptContentTypeId(contentTypeId)) {
+				if (getFactory()[0].acceptContentTypeId(contentTypeId)) {
 					return IconLoader.getIcon("palette.png");
 				} else {
 					return null;
@@ -92,7 +92,7 @@ public class NewLegend implements INewGeocognitionElement {
 	}
 
 	@Override
-	public String getBaseName() {
+	public String getBaseName(int elementIndex) {
 		return "Legend";
 	}
 

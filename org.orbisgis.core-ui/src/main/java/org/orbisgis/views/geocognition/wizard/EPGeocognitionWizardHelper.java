@@ -65,7 +65,7 @@ public class EPGeocognitionWizardHelper extends
 				NewGeocognitionObject newGeocognitionObject;
 				String name = wizard.getFixedName(i);
 				if (name == null) {
-					name = wizard.getBaseName();
+					name = wizard.getBaseName(i);
 					newGeocognitionObject = new NewGeocognitionObject(name,
 							wizard.getElement(i));
 				} else {
@@ -93,10 +93,12 @@ public class EPGeocognitionWizardHelper extends
 		ArrayList<GeocognitionElementFactory> ret = new ArrayList<GeocognitionElementFactory>();
 		ArrayList<WizardAndId<INewGeocognitionElement>> wizards = getWizards(null);
 		for (WizardAndId<INewGeocognitionElement> wizardAndId : wizards) {
-			GeocognitionElementFactory factory = wizardAndId.getWizard()
+			GeocognitionElementFactory[] factories = wizardAndId.getWizard()
 					.getFactory();
-			if (factory != null) {
-				ret.add(factory);
+			if (factories != null) {
+				for (GeocognitionElementFactory factory : factories) {
+					ret.add(factory);
+				}
 			}
 		}
 

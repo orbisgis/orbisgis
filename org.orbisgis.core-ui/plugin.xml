@@ -455,21 +455,14 @@
 	
 	<!-- Geocognition wizards-->
 	<extension
-		id="org.orbisgis.views.geocognition.wizards.NewRegisteredFunctions"
+		id="org.orbisgis.views.geocognition.wizards.NewRegisteredSQLArtifacts"
 		point="org.orbisgis.views.geocognition.NewWizard">
 		<category id="org.orbisgis.views.geocognition.Processing"
 			name="Processing"/>
-		<wizard id="org.orbisgis.views.geocognition.wizards.RegisteredFunctions"
-			category="org.orbisgis.views.geocognition.Processing"
-			class="org.orbisgis.views.geocognition.wizards.NewRegisteredFunctions"/>
-	</extension>
-	<extension
-		id="org.orbisgis.views.geocognition.wizards.NewRegisteredCustomQueries"
-		point="org.orbisgis.views.geocognition.NewWizard">
 		<wizard
-			id="org.orbisgis.views.geocognition.wizards.RegisteredCustomQueries"
+			id="org.orbisgis.views.geocognition.wizards.NewRegisteredSQLArtifacts"
 			category="org.orbisgis.views.geocognition.Processing"
-			class="org.orbisgis.views.geocognition.wizards.NewRegisteredQueries"/>
+			class="org.orbisgis.views.geocognition.wizards.NewRegisteredSQLArtifact"/>
 	</extension>
 	<extension id="org.orbisgis.views.geocognition.wizards.NewFunction"
 		point="org.orbisgis.views.geocognition.NewWizard">

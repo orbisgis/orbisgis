@@ -21,8 +21,8 @@ public class NewSymbol implements INewGeocognitionElement {
 	private Symbol symbol;
 
 	@Override
-	public GeocognitionElementFactory getFactory() {
-		return new GeocognitionSymbolFactory();
+	public GeocognitionElementFactory[] getFactory() {
+		return new GeocognitionElementFactory[] { new GeocognitionSymbolFactory() };
 	}
 
 	@Override
@@ -63,7 +63,7 @@ public class NewSymbol implements INewGeocognitionElement {
 
 			@Override
 			public Icon getDefaultIcon(String contentTypeId) {
-				if (getFactory().acceptContentTypeId(contentTypeId)) {
+				if (getFactory()[0].acceptContentTypeId(contentTypeId)) {
 					return IconLoader.getIcon("point.png");
 				} else {
 					return null;
@@ -94,7 +94,7 @@ public class NewSymbol implements INewGeocognitionElement {
 	}
 
 	@Override
-	public String getBaseName() {
+	public String getBaseName(int elementIndex) {
 		return "Symbol";
 	}
 

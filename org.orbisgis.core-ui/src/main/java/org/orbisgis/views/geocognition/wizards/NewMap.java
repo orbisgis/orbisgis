@@ -14,8 +14,8 @@ import org.orbisgis.views.geocognition.wizard.INewGeocognitionElement;
 public class NewMap implements INewGeocognitionElement {
 
 	@Override
-	public GeocognitionElementFactory getFactory() {
-		return new GeocognitionMapContextFactory();
+	public GeocognitionElementFactory[] getFactory() {
+		return new GeocognitionElementFactory[] { new GeocognitionMapContextFactory() };
 	}
 
 	@Override
@@ -39,7 +39,7 @@ public class NewMap implements INewGeocognitionElement {
 
 			@Override
 			public Icon getDefaultIcon(String contentTypeId) {
-				if (getFactory().acceptContentTypeId(contentTypeId)) {
+				if (getFactory()[0].acceptContentTypeId(contentTypeId)) {
 					return IconLoader.getIcon("map.png");
 				} else {
 					return null;
@@ -70,7 +70,7 @@ public class NewMap implements INewGeocognitionElement {
 	}
 
 	@Override
-	public String getBaseName() {
+	public String getBaseName(int elementIndex) {
 		return "Map";
 	}
 

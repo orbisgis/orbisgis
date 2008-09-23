@@ -48,7 +48,7 @@ public interface INewGeocognitionElement extends IWizard {
 	 * 
 	 * @return
 	 */
-	GeocognitionElementFactory getFactory();
+	GeocognitionElementFactory[] getFactory();
 
 	/**
 	 * Gets an element used to draw the elements in the tree. If the default
@@ -73,7 +73,11 @@ public interface INewGeocognitionElement extends IWizard {
 	 * Gets the base name of the elements created with this wizard. This method
 	 * is not called if getFixedName returns something different than null
 	 * 
+	 * @param elementIndex
+	 *            index of the element in the list of the elements this wizard
+	 *            is creating
+	 * 
 	 * @return
 	 */
-	String getBaseName();
+	String getBaseName(int elementIndex);
 }
