@@ -232,12 +232,6 @@
 		</m:parent>
 	</xsl:template>
 	
-	<xsl:template match="/m:project/m:version[../m:artifactId='sif']">
-		<m:version>
-			<xsl:value-of select="$sif-version"/>
-		</m:version>
-	</xsl:template>
-	
 	<!-- COPY -->
 	<xsl:template match="*">
 		
