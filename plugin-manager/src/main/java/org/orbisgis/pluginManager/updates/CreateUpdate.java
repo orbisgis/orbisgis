@@ -5,19 +5,24 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
+
+import org.codehaus.plexus.util.FileUtils;
 
 public class CreateUpdate {
 
 	private File pub;
 	private File next;
+	private File output;
 	private ArrayList<File> added = new ArrayList<File>();
 	private ArrayList<File> removed = new ArrayList<File>();
 	private ArrayList<File> modified = new ArrayList<File>();
 
-	public CreateUpdate(File pub, File next) {
+	public CreateUpdate(File pub, File next, File output) {
 		this.pub = pub;
 		this.next = next;
+		this.output = output;
 	}
 
 	public static void main(String[] args) throws Exception {
@@ -29,8 +34,9 @@ public class CreateUpdate {
 
 		File pub = new File(args[0]);
 		File next = new File(args[1]);
+		File output = new File(args[2]);
 
-		CreateUpdate cu = new CreateUpdate(pub, next);
+		CreateUpdate cu = new CreateUpdate(pub, next, output);
 		cu.create();
 
 	}
@@ -45,9 +51,78 @@ public class CreateUpdate {
 		generateRelease();
 	}
 
-	private void generateRelease() {
-		// TODO Auto-generated method stub
+	private void generateRelease() throws IOException {
+		if (!output.exists()) {
+			if (!output.mkdirs()) {
+				throw new RuntimeException("Cannot create output dir");
+			}
+		}
 
+		generateAnt();
+
+		copyResources();
+	}
+
+	private void copyResources() throws IOException {
+		ArrayList<File> filesToAdd = new ArrayList<File>();
+		filesToAdd.addAll(added);
+		filesToAdd.addAll(modified);
+		for (int i = 0; i < filesToAdd.size(); i++) {
+			File toAdd = filesToAdd.get(i);
+			if (toAdd.isDirectory()) {
+				String relativePath = getRelativePath(next, toAdd);
+				File outputDir = new File(output, relativePath);
+				if (!outputDir.mkdirs()) {
+					throw new IOException("Cannot create: " + outputDir);
+				}
+				copyRecursively(toAdd, outputDir);
+			} else {
+				String relativePath = getRelativePath(next, toAdd
+						.getParentFile());
+				File outputDir = new File(output, relativePath);
+				FileUtils.copyFileToDirectory(toAdd, outputDir);
+			}
+		}
+	}
+
+	private void copyRecursively(File source, File dest) throws IOException {
+		File[] sourceChildren = source.listFiles();
+		for (File file : sourceChildren) {
+			if (file.isDirectory()) {
+				File destDir = new File(dest, file.getName());
+				if (!destDir.mkdirs()) {
+					throw new IOException("Cannot create: " + destDir);
+				}
+				copyRecursively(file, destDir);
+			} else {
+				FileUtils.copyFileToDirectory(file, dest);
+			}
+		}
+	}
+
+	private void generateAnt() throws FileNotFoundException {
+		PrintWriter pw = new PrintWriter(new File(output, "update.xml"));
+		pw.println("<?xml version=\"1.0\"?>");
+		pw.println("<project name=\"org.orbisgis\" "
+				+ "default=\"update\" basedir=\".\">");
+
+		pw.println("<property name=\"update-dir\" value=\"[UPDATE_DIR]\" />");
+		pw
+				.println("<property name=\"orbisgis-home\" value=\"[ORBISGIS_HOME]\" />");
+
+		pw.println("<target name=\"update\">");
+		pw.println(" <copy todir=\"${orbisgis-home}\">");
+		pw.println("  <fileset dir=\"${update-dir}/*\"/>");
+		pw.println(" </copy>");
+		for (File toRemove : removed) {
+			pw.println(" <delete file=\"${orbisgis-home}/"
+					+ getRelativePath(pub, toRemove) + "\"/>");
+		}
+		pw.println("</target>");
+
+		pw.println("</project>");
+
+		pw.close();
 	}
 
 	private void checkFolders(File pub, File next) throws Exception {
@@ -67,6 +142,10 @@ public class CreateUpdate {
 			 */
 			File[] pubChildren = pub.listFiles();
 			for (File pubFile : pubChildren) {
+				if (pubFile.getAbsolutePath().contains(".svn")) {
+					// for tests
+					continue;
+				}
 				File nextFile = getFileIn(next, getRelativePath(pub, pubFile));
 				if (nextFile != null) {
 					if (nextFile.isDirectory()) {
@@ -100,6 +179,10 @@ public class CreateUpdate {
 			 */
 			File[] nextChildren = next.listFiles();
 			for (File nextFile : nextChildren) {
+				if (nextFile.getAbsolutePath().contains(".svn")) {
+					// for tests:
+					continue;
+				}
 				File pubFile = getFileIn(pub, getRelativePath(next, nextFile));
 				if (pubFile != null) {
 					// modification already checked. Do nothing
