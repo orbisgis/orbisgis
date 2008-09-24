@@ -111,11 +111,18 @@ public class CreateUpdate {
 				.println("<property name=\"orbisgis-home\" value=\"[ORBISGIS_HOME]\" />");
 
 		pw.println("<target name=\"update\">");
-		pw.println(" <copy todir=\"${orbisgis-home}\">");
-		pw.println("  <fileset dir=\"${update-dir}/*\"/>");
+		pw.println(" <copy todir=\"${orbisgis-home}\" overwrite=\"true\">");
+		pw.println("  <fileset dir=\"${update-dir}\">");
+		pw.println("   <include name=\"**/*\"/>");
+		pw.println("   <exclude name=\"update.xml\"/>");
+		pw.println("  </fileset>");
 		pw.println(" </copy>");
 		for (File toRemove : removed) {
-			pw.println(" <delete file=\"${orbisgis-home}/"
+			String param = "file";
+			if (toRemove.isDirectory()) {
+				param = "dir";
+			}
+			pw.println(" <delete " + param + "=\"${orbisgis-home}/"
 					+ getRelativePath(pub, toRemove) + "\"/>");
 		}
 		pw.println("</target>");
@@ -205,6 +212,9 @@ public class CreateUpdate {
 	private String getRelativePath(File base, File file) {
 		String absolutePath = file.getAbsolutePath();
 		String path = absolutePath.substring(base.getAbsolutePath().length());
+		while (path.startsWith("/")) {
+			path = path.substring(1);
+		}
 		return path;
 	}
 
