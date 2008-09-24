@@ -4,6 +4,8 @@ import java.util.Map;
 
 import javax.swing.Icon;
 
+import org.orbisgis.geocognition.GeocognitionElement;
+
 public interface ElementRenderer {
 
 	/**
@@ -25,4 +27,12 @@ public interface ElementRenderer {
 	 * @return
 	 */
 	Icon getDefaultIcon(String contentTypeId);
+	
+	/**
+	 * Gets the tooltip that will be shown in the specified GeocognitionElement
+	 * 
+	 * @param element
+	 * @return
+	 */
+	String getTooltip(GeocognitionElement element);
 }

@@ -75,6 +75,32 @@ public class NewRegisteredSQLArtifact implements INewGeocognitionElement {
 				return getIcon(contentTypeId, new HashMap<String, String>());
 			}
 
+			@SuppressWarnings("unchecked")
+			@Override
+			public String getTooltip(GeocognitionElement element) {
+				try {
+					if (element.getTypeId().equals(
+							GeocognitionCustomQueryFactory.BUILT_IN_QUERY_ID)) {
+						Class<? extends CustomQuery> cqClass = (Class<? extends CustomQuery>) element
+								.getObject();
+						return cqClass.newInstance().getDescription();
+					} else if (element.getTypeId().equals(
+							GeocognitionFunctionFactory.BUILT_IN_FUNCTION_ID)) {
+						Class<? extends Function> cqClass = (Class<? extends Function>) element
+								.getObject();
+						return cqClass.newInstance().getDescription();
+					} else {
+						return null;
+					}
+				} catch (UnsupportedOperationException e) {
+					throw new RuntimeException("bug", e);
+				} catch (InstantiationException e) {
+					throw new RuntimeException("bug", e);
+				} catch (IllegalAccessException e) {
+					throw new RuntimeException("bug", e);
+				}
+			}
+
 		};
 	}
 

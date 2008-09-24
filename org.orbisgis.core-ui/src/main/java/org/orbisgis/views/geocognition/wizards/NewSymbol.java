@@ -6,6 +6,7 @@ import java.util.Map;
 import javax.swing.Icon;
 
 import org.orbisgis.Services;
+import org.orbisgis.geocognition.GeocognitionElement;
 import org.orbisgis.geocognition.GeocognitionElementFactory;
 import org.orbisgis.geocognition.symbology.GeocognitionSymbolFactory;
 import org.orbisgis.images.IconLoader;
@@ -68,6 +69,11 @@ public class NewSymbol implements INewGeocognitionElement {
 				} else {
 					return null;
 				}
+			}
+
+			@Override
+			public String getTooltip(GeocognitionElement element) {
+				return null;
 			}
 
 		};

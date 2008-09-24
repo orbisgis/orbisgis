@@ -5,6 +5,7 @@ import java.util.Map;
 import javax.swing.Icon;
 
 import org.orbisgis.geocognition.Folder;
+import org.orbisgis.geocognition.GeocognitionElement;
 import org.orbisgis.geocognition.GeocognitionElementFactory;
 import org.orbisgis.images.IconLoader;
 import org.orbisgis.views.geocognition.wizard.ElementRenderer;
@@ -43,6 +44,11 @@ public class NewFolder implements INewGeocognitionElement {
 				} else {
 					return null;
 				}
+			}
+
+			@Override
+			public String getTooltip(GeocognitionElement element) {
+				return null;
 			}
 
 		};

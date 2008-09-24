@@ -9,6 +9,7 @@ import java.util.HashMap;
 
 import javax.swing.JComponent;
 import javax.swing.JPopupMenu;
+import javax.swing.ToolTipManager;
 import javax.swing.tree.TreePath;
 
 import org.orbisgis.Services;
@@ -37,6 +38,7 @@ public class GeocognitionTree extends ResourceTree {
 		geocognitionRenderer = new GeocognitionRenderer();
 		getTree().setCellRenderer(geocognitionRenderer);
 		getTree().setCellEditor(new GeocognitionEditor(getTree()));
+		ToolTipManager.sharedInstance().registerComponent(getTree());
 	}
 
 	void setGeocognitionModel() {

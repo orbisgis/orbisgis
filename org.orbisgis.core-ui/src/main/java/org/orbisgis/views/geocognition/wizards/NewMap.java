@@ -4,6 +4,7 @@ import java.util.Map;
 
 import javax.swing.Icon;
 
+import org.orbisgis.geocognition.GeocognitionElement;
 import org.orbisgis.geocognition.GeocognitionElementFactory;
 import org.orbisgis.geocognition.mapContext.GeocognitionMapContextFactory;
 import org.orbisgis.images.IconLoader;
@@ -44,6 +45,11 @@ public class NewMap implements INewGeocognitionElement {
 				} else {
 					return null;
 				}
+			}
+
+			@Override
+			public String getTooltip(GeocognitionElement element) {
+				return null;
 			}
 
 		};

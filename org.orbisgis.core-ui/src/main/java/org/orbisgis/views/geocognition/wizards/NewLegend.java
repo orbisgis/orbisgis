@@ -5,6 +5,7 @@ import java.util.Map;
 import javax.swing.Icon;
 
 import org.orbisgis.Services;
+import org.orbisgis.geocognition.GeocognitionElement;
 import org.orbisgis.geocognition.GeocognitionElementFactory;
 import org.orbisgis.geocognition.symbology.GeocognitionLegendFactory;
 import org.orbisgis.images.IconLoader;
@@ -66,6 +67,11 @@ public class NewLegend implements INewGeocognitionElement {
 				} else {
 					return null;
 				}
+			}
+
+			@Override
+			public String getTooltip(GeocognitionElement element) {
+				return null;
 			}
 
 		};

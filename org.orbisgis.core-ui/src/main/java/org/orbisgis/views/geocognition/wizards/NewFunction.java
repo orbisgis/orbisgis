@@ -7,6 +7,7 @@ import java.util.Map;
 
 import javax.swing.Icon;
 
+import org.orbisgis.geocognition.GeocognitionElement;
 import org.orbisgis.geocognition.GeocognitionElementFactory;
 import org.orbisgis.geocognition.mapContext.GeocognitionException;
 import org.orbisgis.geocognition.sql.FunctionJavaCode;
@@ -52,6 +53,11 @@ public class NewFunction implements INewGeocognitionElement {
 				} else {
 					return null;
 				}
+			}
+
+			@Override
+			public String getTooltip(GeocognitionElement element) {
+				return null;
 			}
 
 		};
