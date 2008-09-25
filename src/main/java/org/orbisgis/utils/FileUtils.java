@@ -1,11 +1,17 @@
 package org.orbisgis.utils;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.URL;
+import java.net.URLConnection;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 public class FileUtils {
 
@@ -49,13 +55,14 @@ public class FileUtils {
 		return dir.delete();
 	}
 
-	public static void copyFileToDirectory(File file, File destDir) throws IOException {
+	public static void copyFileToDirectory(File file, File destDir)
+			throws IOException {
 		if (!destDir.exists()) {
 			if (!destDir.mkdirs()) {
 				throw new IOException("Cannot create directories:" + destDir);
 			}
 		}
-		
+
 		File output = new File(destDir, file.getName());
 		copy(file, output);
 	}
@@ -130,6 +137,64 @@ public class FileUtils {
 			bytesCopied += read;
 		}
 		return bytesCopied;
+	}
+
+	public static void download(URL url, File file) throws IOException {
+		URLConnection conn = url.openConnection();
+		OutputStream out = null;
+		InputStream in = null;
+		try {
+			out = new BufferedOutputStream(new FileOutputStream(file));
+			conn = url.openConnection();
+			in = conn.getInputStream();
+			byte[] buffer = new byte[BUF_SIZE];
+			int numRead;
+			long numWritten = 0;
+			while ((numRead = in.read(buffer)) != -1) {
+				out.write(buffer, 0, numRead);
+				numWritten += numRead;
+			}
+		} finally {
+			try {
+				if (in != null) {
+					in.close();
+				}
+				if (out != null) {
+					out.close();
+				}
+			} catch (IOException ioe) {
+			}
+		}
+
+	}
+
+	public static void zip(File inFolder, String fileName) throws IOException {
+		File outFile = new File(fileName);
+		// compress outfile stream
+		ZipOutputStream out = new ZipOutputStream(new BufferedOutputStream(
+				new FileOutputStream(outFile)));
+
+		// writting stream
+		BufferedInputStream in = null;
+
+		byte[] data = new byte[BUF_SIZE];
+		String files[] = inFolder.list();
+
+		for (int i = 0; i < files.length; i++) {
+			in = new BufferedInputStream(new FileInputStream(inFolder.getPath()
+					+ "/" + files[i]), BUF_SIZE);
+
+			out.putNextEntry(new ZipEntry(files[i])); // write data header
+			// (name, size, etc)
+			int count;
+			while ((count = in.read(data, 0, BUF_SIZE)) != -1) {
+				out.write(data, 0, count);
+			}
+			out.closeEntry(); // close each entry
+		}
+		out.flush();
+		out.close();
+		in.close();
 	}
 
 }
