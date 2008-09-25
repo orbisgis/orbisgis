@@ -1,10 +1,6 @@
 package org.orbisgis.pluginManager.updates;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.util.List;
 
 import javax.xml.bind.JAXBContext;
@@ -30,7 +26,8 @@ public class UpdateTest extends TestCase {
 		next = new File("src/test/resources/updates/nextBinary");
 		updateDir = new File("target/updates");
 		testPub = new File("target/testpub");
-		cu = new CreateUpdate(pub, next, updateDir, null, "1.0.0", "Valencia",
+		cu = new CreateUpdate(pub, next, updateDir, this.getClass()
+				.getResource("nonExistingVersion"), "1.0.0", "Valencia",
 				"This is the best OG version ever");
 	}
 
@@ -81,33 +78,14 @@ public class UpdateTest extends TestCase {
 	}
 
 	public void testApplyUpdate() throws Exception {
-		File updateContentDir = new File(this.updateDir, "tozip");
 		// Create the update
-		cu.diff();
-		cu.generateUpdateContent(updateContentDir);
+		cu.create();
 
 		// Move lastBinary to target/binary
 		FileUtils.copyDirsRecursively(pub, testPub);
 
-		// substitute variables in ant script
-		File updateAntFile = new File(updateContentDir, "update.xml");
-		FileInputStream fis = new FileInputStream(updateAntFile);
-		DataInputStream dis = new DataInputStream(fis);
-		byte[] buffer = new byte[dis.available()];
-		dis.readFully(buffer);
-		dis.close();
-		String content = new String(buffer);
-		content = content.replaceAll("\\Q[UPDATE_DIR]\\E", updateContentDir
-				.getAbsolutePath());
-		content = content.replaceAll("\\Q[ORBISGIS_HOME]\\E", testPub
-				.getAbsolutePath());
-		DataOutputStream dos = new DataOutputStream(new FileOutputStream(
-				updateAntFile));
-		dos.write(content.getBytes());
-		dos.close();
-
-		// execute ant to target/binary
-		cu.applyUpdate(updateContentDir, testPub);
+		// apply update to target/binary
+		cu.applyUpdate(new File(updateDir, cu.getUpdateFileName()), testPub);
 
 		// compare folders target/binary and nextBinary
 		compare(next, testPub);

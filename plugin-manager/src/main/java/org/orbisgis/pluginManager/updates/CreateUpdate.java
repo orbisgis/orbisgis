@@ -1,9 +1,11 @@
 package org.orbisgis.pluginManager.updates;
 
 import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.URL;
@@ -77,13 +79,15 @@ public class CreateUpdate {
 
 		modifySiteDescriptor(output, updateSite);
 
-		String fileName = "update" + versionNumber + ".xml";
-
-		zipFile(fileName, tempUpdate);
+		zipUpdate(new File(output, getUpdateFileName()), tempUpdate);
 	}
 
-	private void zipFile(String fileName, File tempUpdate) throws IOException {
-		FileUtils.zip(tempUpdate, fileName);
+	String getUpdateFileName() {
+		return "update" + versionNumber + ".zip";
+	}
+
+	private void zipUpdate(File destFile, File tempUpdate) throws IOException {
+		FileUtils.zip(tempUpdate, destFile);
 		FileUtils.deleteDir(tempUpdate);
 	}
 
@@ -168,14 +172,14 @@ public class CreateUpdate {
 		for (int i = 0; i < filesToAdd.size(); i++) {
 			File toAdd = filesToAdd.get(i);
 			if (toAdd.isDirectory()) {
-				String relativePath = getRelativePath(next, toAdd);
+				String relativePath = FileUtils.getRelativePath(next, toAdd);
 				File outputDir = new File(output, relativePath);
 				if (!outputDir.exists() && !outputDir.mkdirs()) {
 					throw new IOException("Cannot create: " + outputDir);
 				}
 				FileUtils.copyDirsRecursively(toAdd, outputDir);
 			} else {
-				String relativePath = getRelativePath(next, toAdd
+				String relativePath = FileUtils.getRelativePath(next, toAdd
 						.getParentFile());
 				File outputDir = new File(output, relativePath);
 				FileUtils.copyFileToDirectory(toAdd, outputDir);
@@ -206,7 +210,7 @@ public class CreateUpdate {
 				param = "dir";
 			}
 			pw.println(" <delete " + param + "=\"${orbisgis-home}/"
-					+ getRelativePath(pub, toRemove) + "\"/>");
+					+ FileUtils.getRelativePath(pub, toRemove) + "\"/>");
 		}
 		pw.println("</target>");
 
@@ -236,7 +240,8 @@ public class CreateUpdate {
 					// for tests
 					continue;
 				}
-				File nextFile = getFileIn(next, getRelativePath(pub, pubFile));
+				File nextFile = getFileIn(next, FileUtils.getRelativePath(pub,
+						pubFile));
 				if (nextFile != null) {
 					if (nextFile.isDirectory()) {
 						if (pubFile.isDirectory()) {
@@ -273,7 +278,8 @@ public class CreateUpdate {
 					// for tests:
 					continue;
 				}
-				File pubFile = getFileIn(pub, getRelativePath(next, nextFile));
+				File pubFile = getFileIn(pub, FileUtils.getRelativePath(next,
+						nextFile));
 				if (pubFile != null) {
 					// modification already checked. Do nothing
 				} else {
@@ -290,15 +296,6 @@ public class CreateUpdate {
 		dis.readFully(buffer);
 		dis.close();
 		return buffer;
-	}
-
-	private String getRelativePath(File base, File file) {
-		String absolutePath = file.getAbsolutePath();
-		String path = absolutePath.substring(base.getAbsolutePath().length());
-		while (path.startsWith("/")) {
-			path = path.substring(1);
-		}
-		return path;
 	}
 
 	private File getFileIn(File baseDir, String toSearch) {
@@ -337,11 +334,36 @@ public class CreateUpdate {
 	/**
 	 * Applies the update in the specified folder to the specified binary folder
 	 * 
-	 * @param updateDir
+	 * @param updateZipFile
 	 * @param binaryDir
+	 * @throws IOException
 	 */
-	public void applyUpdate(File updateDir, File binaryDir) {
-		File buildFile = new File(updateDir, ANT_FILE_NAME);
+	public void applyUpdate(File updateZipFile, File binaryDir)
+			throws IOException {
+		// unzip update
+		File tempUpdateDir = new File(updateZipFile.getParentFile(),
+				"orbisgis-update" + System.currentTimeMillis());
+		FileUtils.unzip(updateZipFile, tempUpdateDir);
+
+		// substitute variables in ant script
+		File updateAntFile = new File(tempUpdateDir, ANT_FILE_NAME);
+		FileInputStream fis = new FileInputStream(updateAntFile);
+		DataInputStream dis = new DataInputStream(fis);
+		byte[] buffer = new byte[dis.available()];
+		dis.readFully(buffer);
+		dis.close();
+		String content = new String(buffer);
+		content = content.replaceAll("\\Q[UPDATE_DIR]\\E", tempUpdateDir
+				.getAbsolutePath());
+		content = content.replaceAll("\\Q[ORBISGIS_HOME]\\E", binaryDir
+				.getAbsolutePath());
+		DataOutputStream dos = new DataOutputStream(new FileOutputStream(
+				updateAntFile));
+		dos.write(content.getBytes());
+		dos.close();
+
+		// Execute ant
+		File buildFile = new File(tempUpdateDir, ANT_FILE_NAME);
 		Project p = new Project();
 		p.setUserProperty("ant.file", buildFile.getAbsolutePath());
 		DefaultLogger consoleLogger = new DefaultLogger();
