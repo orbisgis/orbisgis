@@ -44,7 +44,7 @@ import java.io.FileFilter;
 import java.io.IOException;
 
 import org.gdms.data.file.FileSourceDefinition;
-import org.gdms.driver.DriverUtilities;
+import org.orbisgis.utils.FileUtils;
 
 public class FileTestSource extends TestSource {
 
@@ -90,7 +90,7 @@ public class FileTestSource extends TestSource {
 		}
 
 		for (int i = 0; i < dbFiles.length; i++) {
-			DriverUtilities.copy(dbFiles[i],
+			FileUtils.copy(dbFiles[i],
 					new File(dir, dbFiles[i].getName()));
 		}
 	}

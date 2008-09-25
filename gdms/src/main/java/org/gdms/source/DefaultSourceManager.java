@@ -65,7 +65,6 @@ import org.gdms.data.db.DBTableSourceDefinition;
 import org.gdms.data.file.FileSourceDefinition;
 import org.gdms.data.object.ObjectSourceDefinition;
 import org.gdms.driver.DriverException;
-import org.gdms.driver.DriverUtilities;
 import org.gdms.driver.ObjectDriver;
 import org.gdms.driver.asc.AscDriver;
 import org.gdms.driver.csvstring.CSVStringDriver;
@@ -89,6 +88,7 @@ import org.gdms.sql.strategies.SQLProcessor;
 import org.gdms.sql.strategies.SemanticException;
 import org.gdms.sql.strategies.TableNotFoundException;
 import org.orbisgis.progress.IProgressMonitor;
+import org.orbisgis.utils.FileUtils;
 
 public class DefaultSourceManager implements SourceManager {
 
@@ -706,7 +706,7 @@ public class DefaultSourceManager implements SourceManager {
 		File[] childs = new File(baseDir).listFiles();
 		for (File file : childs) {
 			try {
-				DriverUtilities.copy(file, new File(newDirectory, file
+				FileUtils.copy(file, new File(newDirectory, file
 						.getName()));
 			} catch (IOException e) {
 				throw new DriverException(e);

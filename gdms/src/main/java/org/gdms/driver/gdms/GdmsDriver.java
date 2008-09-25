@@ -59,12 +59,12 @@ import org.gdms.data.values.RasterValue;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
-import org.gdms.driver.DriverUtilities;
 import org.gdms.driver.FileReadWriteDriver;
 import org.gdms.driver.GDMSModelDriver;
 import org.gdms.driver.ReadBufferManager;
 import org.gdms.source.SourceManager;
 import org.orbisgis.progress.IProgressMonitor;
+import org.orbisgis.utils.FileUtils;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
@@ -82,7 +82,7 @@ public class GdmsDriver extends GDMSModelDriver implements FileReadWriteDriver {
 	private HashMap<Point, Value> rasterValueCache = new HashMap<Point, Value>();
 
 	public void copy(File in, File out) throws IOException {
-		DriverUtilities.copy(in, out);
+		FileUtils.copy(in, out);
 	}
 
 	public void createSource(String path, Metadata metadata,
@@ -146,8 +146,8 @@ public class GdmsDriver extends GDMSModelDriver implements FileReadWriteDriver {
 		}
 	}
 
-	private void write(ReadWriteBufferManager bm, DataSource dataSource, IProgressMonitor pm)
-			throws IOException, DriverException {
+	private void write(ReadWriteBufferManager bm, DataSource dataSource,
+			IProgressMonitor pm) throws IOException, DriverException {
 		Metadata metadata = dataSource.getMetadata();
 		Envelope env = getEnvelope(dataSource);
 		writeMetadata(bm, env, dataSource.getRowCount(), metadata);

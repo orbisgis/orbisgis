@@ -8,10 +8,15 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 
-import org.codehaus.plexus.util.FileUtils;
+import org.apache.tools.ant.BuildException;
+import org.apache.tools.ant.DefaultLogger;
+import org.apache.tools.ant.Project;
+import org.apache.tools.ant.ProjectHelper;
+import org.orbisgis.utils.FileUtils;
 
 public class CreateUpdate {
 
+	private static final String ANT_FILE_NAME = "update.xml";
 	private File pub;
 	private File next;
 	private File output;
@@ -52,10 +57,11 @@ public class CreateUpdate {
 	}
 
 	private void generateRelease() throws IOException {
-		if (!output.exists()) {
-			if (!output.mkdirs()) {
-				throw new RuntimeException("Cannot create output dir");
-			}
+		if (output.exists()) {
+			FileUtils.deleteDir(output);
+		}
+		if (!output.mkdirs()) {
+			throw new RuntimeException("Cannot create output dir");
 		}
 
 		generateAnt();
@@ -72,10 +78,10 @@ public class CreateUpdate {
 			if (toAdd.isDirectory()) {
 				String relativePath = getRelativePath(next, toAdd);
 				File outputDir = new File(output, relativePath);
-				if (!outputDir.mkdirs()) {
+				if (!outputDir.exists() && !outputDir.mkdirs()) {
 					throw new IOException("Cannot create: " + outputDir);
 				}
-				copyRecursively(toAdd, outputDir);
+				FileUtils.copyDirsRecursively(toAdd, outputDir);
 			} else {
 				String relativePath = getRelativePath(next, toAdd
 						.getParentFile());
@@ -85,23 +91,8 @@ public class CreateUpdate {
 		}
 	}
 
-	private void copyRecursively(File source, File dest) throws IOException {
-		File[] sourceChildren = source.listFiles();
-		for (File file : sourceChildren) {
-			if (file.isDirectory()) {
-				File destDir = new File(dest, file.getName());
-				if (!destDir.mkdirs()) {
-					throw new IOException("Cannot create: " + destDir);
-				}
-				copyRecursively(file, destDir);
-			} else {
-				FileUtils.copyFileToDirectory(file, dest);
-			}
-		}
-	}
-
 	private void generateAnt() throws FileNotFoundException {
-		PrintWriter pw = new PrintWriter(new File(output, "update.xml"));
+		PrintWriter pw = new PrintWriter(new File(output, ANT_FILE_NAME));
 		pw.println("<?xml version=\"1.0\"?>");
 		pw.println("<project name=\"org.orbisgis\" "
 				+ "default=\"update\" basedir=\".\">");
@@ -249,5 +240,29 @@ public class CreateUpdate {
 
 	public ArrayList<File> getModified() {
 		return modified;
+	}
+
+	public void applyUpdate(File updateDir, File binaryDir) {
+		File buildFile = new File(updateDir, ANT_FILE_NAME);
+		Project p = new Project();
+		p.setUserProperty("ant.file", buildFile.getAbsolutePath());		
+		DefaultLogger consoleLogger = new DefaultLogger();
+		consoleLogger.setErrorPrintStream(System.err);
+		consoleLogger.setOutputPrintStream(System.out);
+		consoleLogger.setMessageOutputLevel(Project.MSG_INFO);
+		p.addBuildListener(consoleLogger);
+
+		try {
+			p.fireBuildStarted();
+			p.init();
+			ProjectHelper helper = ProjectHelper.getProjectHelper();
+			p.addReference("ant.projectHelper", helper);
+			helper.parse(p, buildFile);
+			p.executeTarget(p.getDefaultTarget());
+			p.fireBuildFinished(null);
+		} catch (BuildException e) {
+			p.fireBuildFinished(e);
+		}
+
 	}
 }

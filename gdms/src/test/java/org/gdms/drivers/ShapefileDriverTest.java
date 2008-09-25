@@ -60,8 +60,8 @@ import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
-import org.gdms.driver.DriverUtilities;
 import org.gdms.driver.memory.ObjectMemoryDriver;
+import org.orbisgis.utils.FileUtils;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
@@ -374,7 +374,7 @@ public class ShapefileDriverTest extends TestCase {
 	public void testReadAndWriteDBF() throws Exception {
 		File file = new File(SourceTest.internalData + "alltypes.dbf");
 		File backup = new File(SourceTest.internalData + "backup/alltypes.dbf");
-		DriverUtilities.copy(file, backup);
+		FileUtils.copy(file, backup);
 		DataSource ds = dsf.getDataSource(backup);
 		for (int i = 0; i < 2; i++) {
 			ds.open();
@@ -400,14 +400,14 @@ public class ShapefileDriverTest extends TestCase {
 	public void testReadAndWriteSHP() throws Exception {
 		File file = new File(SourceTest.internalData + "alltypes.shp");
 		File backup1 = new File(SourceTest.internalData + "backup/alltypes.shp");
-		DriverUtilities.copy(file, backup1);
+		FileUtils.copy(file, backup1);
 		File backup = backup1;
 		file = new File(SourceTest.internalData + "alltypes.shx");
 		File backup2 = new File(SourceTest.internalData + "backup/alltypes.shx");
-		DriverUtilities.copy(file, backup2);
+		FileUtils.copy(file, backup2);
 		file = new File(SourceTest.internalData + "alltypes.dbf");
 		File backup3 = new File(SourceTest.internalData + "backup/alltypes.dbf");
-		DriverUtilities.copy(file, backup3);
+		FileUtils.copy(file, backup3);
 		DataSource ds = dsf.getDataSource(backup);
 		GeometryFactory gf = new GeometryFactory();
 		for (int i = 0; i < 2; i++) {

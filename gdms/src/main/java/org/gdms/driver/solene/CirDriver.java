@@ -63,10 +63,10 @@ import org.gdms.data.types.UniqueConstraint;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
-import org.gdms.driver.DriverUtilities;
 import org.gdms.driver.FileReadWriteDriver;
 import org.gdms.source.SourceManager;
 import org.orbisgis.progress.IProgressMonitor;
+import org.orbisgis.utils.FileUtils;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
@@ -266,7 +266,7 @@ public class CirDriver implements FileReadWriteDriver {
 	}
 
 	public void copy(File in, File out) throws IOException {
-		DriverUtilities.copy(in, out);
+		FileUtils.copy(in, out);
 	}
 
 	public void createSource(String path, Metadata metadata,

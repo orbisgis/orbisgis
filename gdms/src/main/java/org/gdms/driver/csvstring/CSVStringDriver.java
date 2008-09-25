@@ -62,16 +62,16 @@ import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.data.values.ValueWriter;
 import org.gdms.driver.DriverException;
-import org.gdms.driver.DriverUtilities;
 import org.gdms.driver.FileReadWriteDriver;
 import org.gdms.source.SourceManager;
 import org.orbisgis.progress.IProgressMonitor;
+import org.orbisgis.utils.FileUtils;
 
 import com.vividsolutions.jts.geom.Geometry;
 
 /**
  * CSV file driver where the first row is used to define the field names
- *
+ * 
  * @author Fernando Gonzalez Cortes
  */
 public class CSVStringDriver implements FileReadWriteDriver, ValueWriter {
@@ -210,7 +210,7 @@ public class CSVStringDriver implements FileReadWriteDriver, ValueWriter {
 
 	private void copy(InputStream csvContent, FileOutputStream fileOutputStream)
 			throws IOException {
-		DriverUtilities.copy(csvContent, fileOutputStream);
+		FileUtils.copy(csvContent, fileOutputStream);
 		fileOutputStream.close();
 	}
 
@@ -235,7 +235,7 @@ public class CSVStringDriver implements FileReadWriteDriver, ValueWriter {
 
 	/**
 	 * DOCUMENT ME!
-	 *
+	 * 
 	 * @return DOCUMENT ME!
 	 */
 	public String getNullStatementString() {
@@ -244,10 +244,10 @@ public class CSVStringDriver implements FileReadWriteDriver, ValueWriter {
 
 	/**
 	 * DOCUMENT ME!
-	 *
+	 * 
 	 * @param b
 	 *            DOCUMENT ME!
-	 *
+	 * 
 	 * @return DOCUMENT ME!
 	 */
 	public String getStatementString(boolean b) {
@@ -256,10 +256,10 @@ public class CSVStringDriver implements FileReadWriteDriver, ValueWriter {
 
 	/**
 	 * DOCUMENT ME!
-	 *
+	 * 
 	 * @param binary
 	 *            DOCUMENT ME!
-	 *
+	 * 
 	 * @return DOCUMENT ME!
 	 */
 	public String getStatementString(byte[] binary) {
@@ -268,10 +268,10 @@ public class CSVStringDriver implements FileReadWriteDriver, ValueWriter {
 
 	/**
 	 * DOCUMENT ME!
-	 *
+	 * 
 	 * @param d
 	 *            DOCUMENT ME!
-	 *
+	 * 
 	 * @return DOCUMENT ME!
 	 */
 	public String getStatementString(Date d) {
@@ -280,12 +280,12 @@ public class CSVStringDriver implements FileReadWriteDriver, ValueWriter {
 
 	/**
 	 * DOCUMENT ME!
-	 *
+	 * 
 	 * @param d
 	 *            DOCUMENT ME!
 	 * @param sqlType
 	 *            DOCUMENT ME!
-	 *
+	 * 
 	 * @return DOCUMENT ME!
 	 */
 	public String getStatementString(double d, int sqlType) {
@@ -294,12 +294,12 @@ public class CSVStringDriver implements FileReadWriteDriver, ValueWriter {
 
 	/**
 	 * DOCUMENT ME!
-	 *
+	 * 
 	 * @param i
 	 *            DOCUMENT ME!
 	 * @param sqlType
 	 *            DOCUMENT ME!
-	 *
+	 * 
 	 * @return DOCUMENT ME!
 	 */
 	public String getStatementString(int i, int sqlType) {
@@ -308,10 +308,10 @@ public class CSVStringDriver implements FileReadWriteDriver, ValueWriter {
 
 	/**
 	 * DOCUMENT ME!
-	 *
+	 * 
 	 * @param i
 	 *            DOCUMENT ME!
-	 *
+	 * 
 	 * @return DOCUMENT ME!
 	 */
 	public String getStatementString(long i) {
@@ -320,12 +320,12 @@ public class CSVStringDriver implements FileReadWriteDriver, ValueWriter {
 
 	/**
 	 * DOCUMENT ME!
-	 *
+	 * 
 	 * @param str
 	 *            DOCUMENT ME!
 	 * @param sqlType
 	 *            DOCUMENT ME!
-	 *
+	 * 
 	 * @return DOCUMENT ME!
 	 */
 	public String getStatementString(String str, int sqlType) {
@@ -334,10 +334,10 @@ public class CSVStringDriver implements FileReadWriteDriver, ValueWriter {
 
 	/**
 	 * DOCUMENT ME!
-	 *
+	 * 
 	 * @param t
 	 *            DOCUMENT ME!
-	 *
+	 * 
 	 * @return DOCUMENT ME!
 	 */
 	public String getStatementString(Time t) {
@@ -346,10 +346,10 @@ public class CSVStringDriver implements FileReadWriteDriver, ValueWriter {
 
 	/**
 	 * DOCUMENT ME!
-	 *
+	 * 
 	 * @param ts
 	 *            DOCUMENT ME!
-	 *
+	 * 
 	 * @return DOCUMENT ME!
 	 */
 	public String getStatementString(Timestamp ts) {
@@ -375,7 +375,7 @@ public class CSVStringDriver implements FileReadWriteDriver, ValueWriter {
 	 * @see org.gdms.driver.FileDriver#copy(java.io.File, java.io.File)
 	 */
 	public void copy(File in, File out) throws IOException {
-		DriverUtilities.copy(in, out);
+		FileUtils.copy(in, out);
 	}
 
 	/**

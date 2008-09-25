@@ -44,8 +44,8 @@ import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.NoSuchTableException;
 import org.gdms.driver.DriverException;
-import org.gdms.driver.DriverUtilities;
 import org.orbisgis.progress.IProgressMonitor;
+import org.orbisgis.utils.FileUtils;
 
 public class IndexEditionManager {
 
@@ -106,7 +106,7 @@ public class IndexEditionManager {
 					File indexFile = toClone[i].getFile();
 					File copied = new File(ds.getDataSourceFactory()
 							.getTempFile());
-					DriverUtilities.copy(indexFile, copied);
+					FileUtils.copy(indexFile, copied);
 					DataSourceIndex cloned = toClone[i].getClass()
 							.newInstance();
 					cloned.setFieldName(toClone[i].getFieldName());

@@ -51,13 +51,13 @@ import org.gdms.data.DataSourceCreationException;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.NoSuchTableException;
 import org.gdms.driver.DriverException;
-import org.gdms.driver.DriverUtilities;
 import org.gdms.driver.ObjectDriver;
 import org.gdms.driver.driverManager.DriverLoadException;
 import org.gdms.source.Source;
 import org.gdms.sql.strategies.IncompatibleTypesException;
 import org.orbisgis.progress.IProgressMonitor;
 import org.orbisgis.progress.NullProgressMonitor;
+import org.orbisgis.utils.FileUtils;
 
 public class IndexManager {
 
@@ -90,7 +90,7 @@ public class IndexManager {
 	/**
 	 * Builds the specified index on the specified field of the datasource.
 	 * Saves the index in a file
-	 *
+	 * 
 	 * @param dsName
 	 * @param fieldName
 	 * @param indexId
@@ -182,7 +182,7 @@ public class IndexManager {
 
 	/**
 	 * Registers an index into the collection of indexes
-	 *
+	 * 
 	 * @param index
 	 */
 	public void addIndex(String id, Class<? extends DataSourceIndex> index) {
@@ -202,7 +202,7 @@ public class IndexManager {
 	/**
 	 * Gets the index for the specified source name. All instances of DataSource
 	 * that access to the specified source will use the same index instance.
-	 *
+	 * 
 	 * @param dsName
 	 * @param fieldName
 	 * @return
@@ -278,7 +278,7 @@ public class IndexManager {
 									new FileOutputStream(dest));
 							BufferedInputStream in = new BufferedInputStream(
 									new FileInputStream(source));
-							DriverUtilities.copy(in, out);
+							FileUtils.copy(in, out);
 							out.close();
 							in.close();
 						} catch (IOException e) {
@@ -301,7 +301,7 @@ public class IndexManager {
 
 	/**
 	 * Gets the indexes of the specified source
-	 *
+	 * 
 	 * @param dsName
 	 * @return
 	 * @throws IndexException
@@ -359,7 +359,7 @@ public class IndexManager {
 
 	/**
 	 * Queries the index of the specified source, with the specified query
-	 *
+	 * 
 	 * @param dsName
 	 * @param indexQuery
 	 * @return The iterator or null if there is no index in the specified field
@@ -393,7 +393,7 @@ public class IndexManager {
 	/**
 	 * Removes the index for the source. All the current DataSource instances
 	 * are affected
-	 *
+	 * 
 	 * @param dsName
 	 * @param fieldName
 	 * @throws IllegalArgumentException

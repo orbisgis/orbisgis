@@ -41,7 +41,7 @@ import java.io.FileFilter;
 import java.io.IOException;
 
 import org.gdms.data.values.Value;
-import org.gdms.driver.DriverUtilities;
+import org.orbisgis.utils.FileUtils;
 
 import com.vividsolutions.jts.geom.Geometry;
 
@@ -227,8 +227,7 @@ public class TestData {
 		});
 
 		for (int i = 0; i < dbFiles.length; i++) {
-			DriverUtilities.copy(dbFiles[i],
-					new File(dir, dbFiles[i].getName()));
+			FileUtils.copy(dbFiles[i], new File(dir, dbFiles[i].getName()));
 		}
 	}
 

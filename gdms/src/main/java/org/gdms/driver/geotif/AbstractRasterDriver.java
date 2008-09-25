@@ -51,12 +51,12 @@ import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
-import org.gdms.driver.DriverUtilities;
 import org.gdms.driver.FileReadWriteDriver;
 import org.grap.model.GeoRaster;
 import org.grap.model.GeoRasterFactory;
 import org.grap.model.RasterMetadata;
 import org.orbisgis.progress.IProgressMonitor;
+import org.orbisgis.utils.FileUtils;
 
 import com.vividsolutions.jts.geom.Envelope;
 
@@ -105,7 +105,7 @@ public abstract class AbstractRasterDriver implements FileReadWriteDriver {
 	}
 
 	public void copy(File in, File out) throws IOException {
-		DriverUtilities.copy(in, out);
+		FileUtils.copy(in, out);
 	}
 
 	public void writeFile(File file, DataSource dataSource, IProgressMonitor pm)

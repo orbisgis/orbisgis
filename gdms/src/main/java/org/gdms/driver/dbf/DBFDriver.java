@@ -56,10 +56,10 @@ import org.gdms.data.types.TypeDefinition;
 import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
-import org.gdms.driver.DriverUtilities;
 import org.gdms.driver.FileReadWriteDriver;
 import org.gdms.source.SourceManager;
 import org.orbisgis.progress.IProgressMonitor;
+import org.orbisgis.utils.FileUtils;
 
 public class DBFDriver implements FileReadWriteDriver {
 
@@ -221,7 +221,7 @@ public class DBFDriver implements FileReadWriteDriver {
 	}
 
 	public void copy(File in, File out) throws IOException {
-		DriverUtilities.copy(in, out);
+		FileUtils.copy(in, out);
 	}
 
 	public Metadata getMetadata() throws DriverException {

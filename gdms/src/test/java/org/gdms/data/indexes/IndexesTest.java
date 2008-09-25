@@ -50,12 +50,12 @@ import org.gdms.data.NoSuchTableException;
 import org.gdms.data.SpatialDataSourceDecorator;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
-import org.gdms.driver.DriverUtilities;
 import org.gdms.source.Source;
 import org.gdms.source.SourceManager;
 import org.gdms.sql.strategies.FullIterator;
 import org.gdms.sql.strategies.IncompatibleTypesException;
 import org.orbisgis.progress.NullProgressMonitor;
+import org.orbisgis.utils.FileUtils;
 
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
@@ -435,9 +435,9 @@ public class IndexesTest extends TestCase {
 		destshp.delete();
 		destdbf.delete();
 		destshx.delete();
-		DriverUtilities.copy(new File(parent, "hedgerow.shp"), destshp);
-		DriverUtilities.copy(new File(parent, "hedgerow.dbf"), destdbf);
-		DriverUtilities.copy(new File(parent, "hedgerow.shx"), destshx);
+		FileUtils.copy(new File(parent, "hedgerow.shp"), destshp);
+		FileUtils.copy(new File(parent, "hedgerow.dbf"), destdbf);
+		FileUtils.copy(new File(parent, "hedgerow.shx"), destshx);
 		sm.register("source", destshp);
 	}
 
