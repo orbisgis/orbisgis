@@ -10,7 +10,9 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.ArrayList;
 import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
 public class FileUtils {
@@ -168,33 +170,80 @@ public class FileUtils {
 
 	}
 
-	public static void zip(File inFolder, String fileName) throws IOException {
-		File outFile = new File(fileName);
-		// compress outfile stream
+	/**
+	 * Zips the specified file or folder
+	 * 
+	 * @param toZip
+	 * @param outFile
+	 * @throws IOException
+	 */
+	public static void zip(File toZip, File outFile) throws IOException {
 		ZipOutputStream out = new ZipOutputStream(new BufferedOutputStream(
 				new FileOutputStream(outFile)));
 
-		// writting stream
+		// writing stream
 		BufferedInputStream in = null;
 
 		byte[] data = new byte[BUF_SIZE];
-		String files[] = inFolder.list();
+		ArrayList<File> listToZip = new ArrayList<File>();
+		listToZip.add(toZip);
 
-		for (int i = 0; i < files.length; i++) {
-			in = new BufferedInputStream(new FileInputStream(inFolder.getPath()
-					+ "/" + files[i]), BUF_SIZE);
+		while (listToZip.size() > 0) {
+			File file = listToZip.remove(0);
+			if (file.isDirectory()) {
+				File[] children = file.listFiles();
+				for (File child : children) {
+					listToZip.add(child);
+				}
+			} else {
+				in = new BufferedInputStream(new FileInputStream(file),
+						BUF_SIZE);
 
-			out.putNextEntry(new ZipEntry(files[i])); // write data header
-			// (name, size, etc)
-			int count;
-			while ((count = in.read(data, 0, BUF_SIZE)) != -1) {
-				out.write(data, 0, count);
+				out.putNextEntry(new ZipEntry(getRelativePath(toZip, file)));
+				int count;
+				while ((count = in.read(data, 0, BUF_SIZE)) != -1) {
+					out.write(data, 0, count);
+				}
+				out.closeEntry(); // close each entry
 			}
-			out.closeEntry(); // close each entry
 		}
 		out.flush();
 		out.close();
 		in.close();
+	}
+
+	public static void unzip(File zipFile, File destDir) throws IOException {
+		BufferedOutputStream dest = null;
+		FileInputStream fis = new FileInputStream(zipFile);
+		ZipInputStream zis = new ZipInputStream(new BufferedInputStream(fis));
+		ZipEntry entry;
+		while ((entry = zis.getNextEntry()) != null) {
+			int count;
+			byte data[] = new byte[BUF_SIZE];
+			// write the files to the disk
+			File newFile = new File(destDir, entry.getName());
+			File parentFile = newFile.getParentFile();
+			if (!parentFile.exists() && !parentFile.mkdirs()) {
+				throw new IOException("Cannot create directory:" + parentFile);
+			}
+			FileOutputStream fos = new FileOutputStream(newFile);
+			dest = new BufferedOutputStream(fos, BUF_SIZE);
+			while ((count = zis.read(data, 0, BUF_SIZE)) != -1) {
+				dest.write(data, 0, count);
+			}
+			dest.flush();
+			dest.close();
+		}
+		zis.close();
+	}
+
+	public static String getRelativePath(File base, File file) {
+		String absolutePath = file.getAbsolutePath();
+		String path = absolutePath.substring(base.getAbsolutePath().length());
+		while (path.startsWith("/")) {
+			path = path.substring(1);
+		}
+		return path;
 	}
 
 }
