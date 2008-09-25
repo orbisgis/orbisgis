@@ -6,42 +6,61 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.net.URL;
 import java.util.ArrayList;
+
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
 
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.DefaultLogger;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.ProjectHelper;
+import org.orbisgis.pluginManager.updates.persistence.Update;
+import org.orbisgis.pluginManager.updates.persistence.UpdateSite;
 import org.orbisgis.utils.FileUtils;
 
 public class CreateUpdate {
 
+	static final String SITE_UPDATES_FILE_NAME = "site-updates.xml";
 	private static final String ANT_FILE_NAME = "update.xml";
 	private File pub;
 	private File next;
 	private File output;
+	private URL updateSite;
+	private String description;
+	private String versionName;
+	private String versionNumber;
 	private ArrayList<File> added = new ArrayList<File>();
 	private ArrayList<File> removed = new ArrayList<File>();
 	private ArrayList<File> modified = new ArrayList<File>();
 
-	public CreateUpdate(File pub, File next, File output) {
+	public CreateUpdate(File pub, File next, File output, URL updateSite,
+			String versionNumber, String versionName, String description) {
 		this.pub = pub;
 		this.next = next;
 		this.output = output;
+		this.updateSite = updateSite;
+		this.description = description;
+		this.versionName = versionName;
+		this.versionNumber = versionNumber.trim();
 	}
 
 	public static void main(String[] args) throws Exception {
-		if (args.length != 3) {
+		if (args.length != 7) {
 			System.err.println("Usage: java CreateUpdate "
 					+ "latest-public-binary-folder new"
-					+ "-binary-folder update-output-dir");
+					+ "-binary-folder update-output-dir update-site-url "
+					+ "version-number version-name version-description");
 		}
 
 		File pub = new File(args[0]);
 		File next = new File(args[1]);
 		File output = new File(args[2]);
+		URL updateSite = new URL(args[3]);
 
-		CreateUpdate cu = new CreateUpdate(pub, next, output);
+		CreateUpdate cu = new CreateUpdate(pub, next, output, updateSite,
+				args[4], args[5], args[6]);
 		cu.create();
 
 	}
@@ -53,23 +72,96 @@ public class CreateUpdate {
 
 		diff();
 
-		generateRelease();
+		File tempUpdate = new File(output, "tozip");
+		generateUpdateContent(tempUpdate);
+
+		modifySiteDescriptor(output, updateSite);
+
+		String fileName = "update" + versionNumber + ".xml";
+
+		zipFile(fileName, tempUpdate);
 	}
 
-	private void generateRelease() throws IOException {
-		if (output.exists()) {
+	private void zipFile(String fileName, File tempUpdate) throws IOException {
+		FileUtils.zip(tempUpdate, fileName);
+		FileUtils.deleteDir(tempUpdate);
+	}
+
+	/**
+	 * Modifies the site description. It will add an update element with the
+	 * specified version information or it will replace an existing one that
+	 * matches the version number
+	 * 
+	 * @param outputFolder
+	 * @param updateSiteURL
+	 * 
+	 * @return
+	 * @throws IOException
+	 * @throws JAXBException
+	 */
+	public void modifySiteDescriptor(File outputFolder, URL updateSiteURL)
+			throws IOException, JAXBException {
+		updateSiteURL = new URL(updateSiteURL.toExternalForm() + "/"
+				+ SITE_UPDATES_FILE_NAME);
+		File updateSiteFile = new File(outputFolder, SITE_UPDATES_FILE_NAME);
+
+		// create or modify update content
+		JAXBContext context = JAXBContext.newInstance(UpdateSite.class
+				.getPackage().getName());
+		UpdateSite us = null;
+		boolean versionExists = false;
+		try {
+			FileUtils.download(updateSiteURL, updateSiteFile);
+			us = (UpdateSite) context.createUnmarshaller().unmarshal(
+					updateSiteFile);
+			for (int i = 0; i < us.getUpdate().size(); i++) {
+				Update update = us.getUpdate().get(i);
+				if (update.getVersionNumber().equals(versionNumber)) {
+					update.setDescription(description);
+					update.setVersionName(versionName);
+					versionExists = true;
+					break;
+				}
+			}
+		} catch (IOException e) {
+			// ignore, either the url doesn't exists or it will fail later
+		}
+
+		if (!versionExists) {
+			if (us == null) {
+				us = new UpdateSite();
+			}
+			Update update = new Update();
+			update.setDescription(description);
+			update.setVersionName(versionName);
+			update.setVersionNumber(versionNumber);
+			us.getUpdate().add(update);
+		}
+
+		// write the new content
+		context.createMarshaller().marshal(us, updateSiteFile);
+	}
+
+	/**
+	 * Creates the update content to the specified output folder
+	 * 
+	 * @param outputDir
+	 * @throws IOException
+	 */
+	public void generateUpdateContent(File outputDir) throws IOException {
+		if (outputDir.exists()) {
 			FileUtils.deleteDir(output);
 		}
-		if (!output.mkdirs()) {
+		if (!outputDir.mkdirs()) {
 			throw new RuntimeException("Cannot create output dir");
 		}
 
-		generateAnt();
+		generateAnt(outputDir);
 
-		copyResources();
+		copyResources(outputDir);
 	}
 
-	private void copyResources() throws IOException {
+	private void copyResources(File output) throws IOException {
 		ArrayList<File> filesToAdd = new ArrayList<File>();
 		filesToAdd.addAll(added);
 		filesToAdd.addAll(modified);
@@ -91,7 +183,7 @@ public class CreateUpdate {
 		}
 	}
 
-	private void generateAnt() throws FileNotFoundException {
+	private void generateAnt(File output) throws FileNotFoundException {
 		PrintWriter pw = new PrintWriter(new File(output, ANT_FILE_NAME));
 		pw.println("<?xml version=\"1.0\"?>");
 		pw.println("<project name=\"org.orbisgis\" "
@@ -242,10 +334,16 @@ public class CreateUpdate {
 		return modified;
 	}
 
+	/**
+	 * Applies the update in the specified folder to the specified binary folder
+	 * 
+	 * @param updateDir
+	 * @param binaryDir
+	 */
 	public void applyUpdate(File updateDir, File binaryDir) {
 		File buildFile = new File(updateDir, ANT_FILE_NAME);
 		Project p = new Project();
-		p.setUserProperty("ant.file", buildFile.getAbsolutePath());		
+		p.setUserProperty("ant.file", buildFile.getAbsolutePath());
 		DefaultLogger consoleLogger = new DefaultLogger();
 		consoleLogger.setErrorPrintStream(System.err);
 		consoleLogger.setOutputPrintStream(System.out);

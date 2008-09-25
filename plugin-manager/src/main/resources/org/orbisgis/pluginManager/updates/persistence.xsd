@@ -1,0 +1,20 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+	<xs:element name="update-site">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="update" minOccurs="0" maxOccurs="unbounded"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+
+	<xs:element name="update">
+		<xs:complexType>
+			<xs:attribute name="version-number" type="xs:string" use="required"/>
+			<xs:attribute name="version-name" type="xs:string"/>
+			<xs:attribute name="description" type="xs:string" use="required"/>
+		</xs:complexType>
+	</xs:element>
+
+</xs:schema>
