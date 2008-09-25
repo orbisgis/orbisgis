@@ -104,6 +104,7 @@ public class ExportMapAsPDF implements IEditorAction {
 			BufferedImage img = mapEditor.getMapTransform().getImage();
 
 			save(outPutFile, scale, img, envelope, root);
+			img = null;
 		}
 
 	}
