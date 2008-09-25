@@ -152,6 +152,8 @@ public class ExportMapAsPDF implements IEditorAction {
 
 				Image northImage = Image.getInstance(url.toString());
 
+				
+				
 				northImage.setAbsolutePosition(pageWidth
 						- (northImage.getWidth() + 1), pageHeight
 						- (northImage.getHeight() + 1));
