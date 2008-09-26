@@ -37,7 +37,7 @@ public class UpdateTest extends TestCase {
 		assertTrue(cu.getAdded().contains(new File(next, "newFolder")));
 		assertTrue(cu.getModified().contains(new File(next, "someScript")));
 		assertTrue(cu.getModified().contains(
-				new File(next, "jars/modified.jar")));
+				new File(next, "jars/modified.bin")));
 		assertTrue(cu.getRemoved().contains(new File(pub, "oldFolder")));
 	}
 
