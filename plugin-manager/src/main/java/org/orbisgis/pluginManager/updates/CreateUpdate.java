@@ -32,15 +32,17 @@ public class CreateUpdate {
 	private String description;
 	private String versionName;
 	private String versionNumber;
+	private String urlPrefix;
+	private String urlSuffix;
+	private String artifactName;
 	private ArrayList<File> added = new ArrayList<File>();
 	private ArrayList<File> removed = new ArrayList<File>();
 	private ArrayList<File> modified = new ArrayList<File>();
 
-	private String urlPrefix;
-	private String urlSuffix;
-
-	public CreateUpdate(File pub, File next, File output, URL updateSite,
-			String versionNumber, String versionName, String description) {
+	public CreateUpdate(String artifactName, File pub, File next, File output,
+			URL updateSite, String versionNumber, String versionName,
+			String description) {
+		this.artifactName = artifactName;
 		this.pub = pub;
 		this.next = next;
 		this.output = output;
@@ -55,19 +57,19 @@ public class CreateUpdate {
 	public static void main(String[] args) throws Exception {
 		if (args.length != 9) {
 			System.err.println("Usage: java CreateUpdate "
-					+ "latest-public-binary-folder new"
+					+ "artifact-name latest-public-binary-folder new"
 					+ "-binary-folder update-output-dir update-site-url "
 					+ "version-number version-name version-description "
 					+ "update-url-prefix update-url-suffix");
 		}
 
-		File pub = new File(args[0]);
-		File next = new File(args[1]);
-		File output = new File(args[2]);
-		URL updateSite = new URL(args[3]);
+		File pub = new File(args[1]);
+		File next = new File(args[2]);
+		File output = new File(args[3]);
+		URL updateSite = new URL(args[4]);
 
-		CreateUpdate cu = new CreateUpdate(pub, next, output, updateSite,
-				args[4], args[5], args[6]);
+		CreateUpdate cu = new CreateUpdate(args[0], pub, next, output,
+				updateSite, args[5], args[6], args[7]);
 		cu.setUrlPrefix(args[7]);
 		cu.setUrlSuffix(args[8]);
 		cu.create();
@@ -160,11 +162,11 @@ public class CreateUpdate {
 	}
 
 	private void fillUpdate(Update update, String md5) {
+		update.setArtifactName(artifactName);
 		update.setDescription(description);
 		update.setVersionName(versionName);
 		update.setReleaseFileUrl(urlPrefix
-				+ UpdateUtils.getUpdateFileName(versionNumber)
-				+ urlSuffix);
+				+ UpdateUtils.getUpdateFileName(versionNumber) + urlSuffix);
 		update.setChecksum(md5);
 	}
 
@@ -406,6 +408,10 @@ public class CreateUpdate {
 
 	public void setUrlSuffix(String urlSuffix) {
 		this.urlSuffix = urlSuffix;
+	}
+
+	public void setArtifactName(String artifactName) {
+		this.artifactName = artifactName;		
 	}
 
 }

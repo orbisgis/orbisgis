@@ -17,8 +17,10 @@ import org.orbisgis.utils.FileUtils;
 public class UpdateDiscovery {
 
 	private URL updateSite;
+	private String artifactName;
 
-	public UpdateDiscovery(URL updateSite) {
+	public UpdateDiscovery(String artifactName, URL updateSite) {
+		this.artifactName = artifactName;
 		this.updateSite = updateSite;
 	}
 
@@ -44,7 +46,8 @@ public class UpdateDiscovery {
 		ArrayList<UpdateInfo> ret = new ArrayList<UpdateInfo>();
 		for (int i = 0; i < updateList.size(); i++) {
 			Update update = updateList.get(i);
-			if (compare(update.getVersionNumber(), currentVersion) > 0) {
+			if (update.getArtifactName().equals(artifactName)
+					&& compare(update.getVersionNumber(), currentVersion) > 0) {
 				URL updateURL = new URL(update.getReleaseFileUrl());
 				ret.add(new UpdateInfo(updateURL, update));
 			}

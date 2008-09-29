@@ -1,8 +1,8 @@
 <update-site>
-	<update version-number="0.9" version-name="Xirivella"
+	<update artifact-name="OrbisGIS" version-number="0.9" version-name="Xirivella"
 		release-file-url="file:/home/fergonco/ogworkspace/platform/plugin-manager/target/test-classes/org/orbisgis/pluginManager/updates/twoVersions/update-0.9.zip"
 		description="Super critical update"/>
-	<update version-number="1.0.0" version-name="Valencia"
+	<update artifact-name="OrbisGIS" version-number="1.0.0" version-name="Valencia"
 		release-file-url="file:/home/fergonco/ogworkspace/platform/plugin-manager/target/test-classes/org/orbisgis/pluginManager/updates/twoVersions/update-1.0.0.zip"
 		description="Super critical update"/>
 </update-site>

@@ -29,7 +29,7 @@ public class UpdateTest extends TestCase {
 		next = new File("src/test/resources/updates/nextBinary");
 		updateDir = new File("target/updates");
 		testPub = new File("target/testpub");
-		cu = new CreateUpdate(pub, next, updateDir, this.getClass()
+		cu = new CreateUpdate("OrbisGIS", pub, next, updateDir, this.getClass()
 				.getResource("nonExistingVersion"), "1.0.0", "Valencia",
 				"This is the best OG version ever");
 	}
@@ -96,7 +96,7 @@ public class UpdateTest extends TestCase {
 	}
 
 	public void testVersionCompare() throws Exception {
-		UpdateDiscovery ui = new UpdateDiscovery(null);
+		UpdateDiscovery ui = new UpdateDiscovery("OrbisGIS", null);
 		assertTrue(ui.compare("1.0.0", "1.0") == 0);
 		assertTrue(ui.compare("1.0.0", "1.0.0.1") < 0);
 		assertTrue(ui.compare("1.0.0", "1.0.0") == 0);
@@ -108,8 +108,8 @@ public class UpdateTest extends TestCase {
 		cu.create();
 
 		// Discover new updates
-		UpdateDiscovery ud = new UpdateDiscovery(this.getClass().getResource(
-				"twoVersions"));
+		UpdateDiscovery ud = new UpdateDiscovery("OrbisGIS", this.getClass()
+				.getResource("twoVersions"));
 		UpdateInfo[] updates = ud.getAvailableUpdatesInfo("0.8");
 		assertTrue(updates.length == 2);
 
@@ -120,6 +120,18 @@ public class UpdateTest extends TestCase {
 		assertTrue(updates.length == 0);
 	}
 
+	public void testDiscoverWrongArtifact() throws Exception {
+		// Create the update
+		cu.setArtifactName("OrbisGIS plugin");
+		cu.create();
+
+		// No update since 1.0.0 version doesn't match the artifact name
+		UpdateDiscovery ud = new UpdateDiscovery("OrbisGIS", updateDir.toURI()
+				.toURL());
+		UpdateInfo[] updates = ud.getAvailableUpdatesInfo("0.9");
+		assertTrue(updates.length == 0);
+	}
+
 	public void testDownloadDiscovered() throws Exception {
 		// Create the update
 		cu.setUrlPrefix("file://"
@@ -127,7 +139,8 @@ public class UpdateTest extends TestCase {
 		cu.create();
 
 		// Discover new updates
-		UpdateDiscovery ud = new UpdateDiscovery(updateDir.toURI().toURL());
+		UpdateDiscovery ud = new UpdateDiscovery("OrbisGIS", updateDir.toURI()
+				.toURL());
 		UpdateInfo[] updates = ud.getAvailableUpdatesInfo("0.9.1");
 		assertTrue(updates.length == 1);
 
@@ -146,8 +159,8 @@ public class UpdateTest extends TestCase {
 	}
 
 	private void compare(File dir1, File dir2) throws Exception {
-		CreateUpdate cu = new CreateUpdate(dir1, dir2, null, new URL(
-				"file:///foo"), "", "", "");
+		CreateUpdate cu = new CreateUpdate("OrbisGIS", dir1, dir2, null,
+				new URL("file:///foo"), "", "", "");
 		cu.diff();
 		assertTrue(cu.getAdded().size() == 0);
 		assertTrue(cu.getModified().size() == 0);
