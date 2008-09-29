@@ -4,8 +4,9 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.TreeSet;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -43,11 +44,20 @@ public class UpdateDiscovery {
 		us = (UpdateSite) context.createUnmarshaller()
 				.unmarshal(updateSiteFile);
 		List<Update> updateList = us.getUpdate();
-		ArrayList<UpdateInfo> ret = new ArrayList<UpdateInfo>();
+		TreeSet<UpdateInfo> ret = new TreeSet<UpdateInfo>(
+				new Comparator<UpdateInfo>() {
+
+					@Override
+					public int compare(UpdateInfo o1, UpdateInfo o2) {
+						return compareVersions(o1.getVersionNumber(), o2
+								.getVersionNumber());
+					}
+				});
 		for (int i = 0; i < updateList.size(); i++) {
 			Update update = updateList.get(i);
 			if (update.getArtifactName().equals(artifactName)
-					&& compare(update.getVersionNumber(), currentVersion) > 0) {
+					&& compareVersions(update.getVersionNumber(),
+							currentVersion) > 0) {
 				URL updateURL = new URL(update.getReleaseFileUrl());
 				ret.add(new UpdateInfo(updateURL, update));
 			}
@@ -56,7 +66,7 @@ public class UpdateDiscovery {
 		return ret.toArray(new UpdateInfo[0]);
 	}
 
-	int compare(String version1, String version2) {
+	int compareVersions(String version1, String version2) {
 		String[] numbers1 = version1.split("\\Q.\\E");
 		String[] numbers2 = version2.split("\\Q.\\E");
 		if (numbers2.length < numbers1.length) {

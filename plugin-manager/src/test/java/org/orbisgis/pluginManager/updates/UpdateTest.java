@@ -97,14 +97,14 @@ public class UpdateTest extends TestCase {
 
 	public void testVersionCompare() throws Exception {
 		UpdateDiscovery ui = new UpdateDiscovery("OrbisGIS", null);
-		assertTrue(ui.compare("1.0.0", "1.0") == 0);
-		assertTrue(ui.compare("1.0.0", "1.0.0.1") < 0);
-		assertTrue(ui.compare("1.0.0", "1.0.0") == 0);
-		assertTrue(ui.compare("1.0.0", "0.9") > 0);
+		assertTrue(ui.compareVersions("1.0.0", "1.0") == 0);
+		assertTrue(ui.compareVersions("1.0.0", "1.0.0.1") < 0);
+		assertTrue(ui.compareVersions("1.0.0", "1.0.0") == 0);
+		assertTrue(ui.compareVersions("1.0.0", "0.9") > 0);
 	}
 
 	public void testDiscover() throws Exception {
-		// Create the update
+		// Create one update
 		cu.create();
 
 		// Discover new updates
@@ -118,6 +118,20 @@ public class UpdateTest extends TestCase {
 
 		updates = ud.getAvailableUpdatesInfo("1");
 		assertTrue(updates.length == 0);
+	}
+
+	public void testSortedDiscovering() throws Exception {
+		// Create another
+		cu = new CreateUpdate("OrbisGIS", pub, next, updateDir, this.getClass()
+				.getResource("nonExistingVersion"), "0.1", "Valencia",
+				"This is the best OG version ever");
+		cu.create();
+		UpdateDiscovery ud = new UpdateDiscovery("OrbisGIS", this.getClass()
+				.getResource("twoVersions"));
+		UpdateInfo[] updates = ud.getAvailableUpdatesInfo("0.0");
+		assertTrue(updates.length == 2);
+		assertTrue(ud.compareVersions(updates[0].getVersionNumber(), updates[1]
+				.getVersionNumber()) < 0);
 	}
 
 	public void testDiscoverWrongArtifact() throws Exception {
