@@ -1,5 +1,6 @@
 package org.orbisgis.pluginManager.updates;
 
+import java.io.BufferedOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.File;
@@ -9,6 +10,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.URL;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 
 import javax.xml.bind.JAXBContext;
@@ -24,8 +26,6 @@ import org.orbisgis.utils.FileUtils;
 
 public class CreateUpdate {
 
-	static final String SITE_UPDATES_FILE_NAME = "site-updates.xml";
-	private static final String ANT_FILE_NAME = "update.xml";
 	private File pub;
 	private File next;
 	private File output;
@@ -79,11 +79,21 @@ public class CreateUpdate {
 
 		modifySiteDescriptor(output, updateSite);
 
-		zipUpdate(new File(output, getUpdateFileName()), tempUpdate);
+		File updateFileName = new File(output, UpdateUtils
+				.getUpdateFileName(versionNumber));
+		zipUpdate(updateFileName, tempUpdate);
+
+		produceMD5(updateFileName);
 	}
 
-	String getUpdateFileName() {
-		return "update" + versionNumber + ".zip";
+	private void produceMD5(File fileName) throws IOException,
+			NoSuchAlgorithmException {
+		File md5File = new File(fileName.getAbsolutePath() + ".md5");
+		byte[] md5 = FileUtils.getMD5(fileName);
+		BufferedOutputStream bos = new BufferedOutputStream(
+				new FileOutputStream(md5File));
+		bos.write(md5);
+		bos.close();
 	}
 
 	private void zipUpdate(File destFile, File tempUpdate) throws IOException {
@@ -106,8 +116,9 @@ public class CreateUpdate {
 	public void modifySiteDescriptor(File outputFolder, URL updateSiteURL)
 			throws IOException, JAXBException {
 		updateSiteURL = new URL(updateSiteURL.toExternalForm() + "/"
-				+ SITE_UPDATES_FILE_NAME);
-		File updateSiteFile = new File(outputFolder, SITE_UPDATES_FILE_NAME);
+				+ UpdateUtils.SITE_UPDATES_FILE_NAME);
+		File updateSiteFile = new File(outputFolder,
+				UpdateUtils.SITE_UPDATES_FILE_NAME);
 
 		// create or modify update content
 		JAXBContext context = JAXBContext.newInstance(UpdateSite.class
@@ -188,7 +199,8 @@ public class CreateUpdate {
 	}
 
 	private void generateAnt(File output) throws FileNotFoundException {
-		PrintWriter pw = new PrintWriter(new File(output, ANT_FILE_NAME));
+		PrintWriter pw = new PrintWriter(new File(output,
+				UpdateUtils.ANT_FILE_NAME));
 		pw.println("<?xml version=\"1.0\"?>");
 		pw.println("<project name=\"org.orbisgis\" "
 				+ "default=\"update\" basedir=\".\">");
@@ -251,8 +263,8 @@ public class CreateUpdate {
 						}
 					} else {
 						// Check modification nextFile pubFile
-						byte[] pubContent = getContent(pubFile);
-						byte[] nextContent = getContent(nextFile);
+						byte[] pubContent = FileUtils.getContent(pubFile);
+						byte[] nextContent = FileUtils.getContent(nextFile);
 						if (pubContent.length != nextContent.length) {
 							modified.add(nextFile);
 						} else {
@@ -287,15 +299,6 @@ public class CreateUpdate {
 				}
 			}
 		}
-	}
-
-	private byte[] getContent(File file) throws FileNotFoundException,
-			IOException {
-		DataInputStream dis = new DataInputStream(new FileInputStream(file));
-		byte[] buffer = new byte[dis.available()];
-		dis.readFully(buffer);
-		dis.close();
-		return buffer;
 	}
 
 	private File getFileIn(File baseDir, String toSearch) {
@@ -346,7 +349,8 @@ public class CreateUpdate {
 		FileUtils.unzip(updateZipFile, tempUpdateDir);
 
 		// substitute variables in ant script
-		File updateAntFile = new File(tempUpdateDir, ANT_FILE_NAME);
+		File updateAntFile = new File(tempUpdateDir,
+				UpdateUtils.ANT_FILE_NAME);
 		FileInputStream fis = new FileInputStream(updateAntFile);
 		DataInputStream dis = new DataInputStream(fis);
 		byte[] buffer = new byte[dis.available()];
@@ -363,7 +367,7 @@ public class CreateUpdate {
 		dos.close();
 
 		// Execute ant
-		File buildFile = new File(tempUpdateDir, ANT_FILE_NAME);
+		File buildFile = new File(tempUpdateDir, UpdateUtils.ANT_FILE_NAME);
 		Project p = new Project();
 		p.setUserProperty("ant.file", buildFile.getAbsolutePath());
 		DefaultLogger consoleLogger = new DefaultLogger();

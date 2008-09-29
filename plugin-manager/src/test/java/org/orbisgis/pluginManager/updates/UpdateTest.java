@@ -1,6 +1,8 @@
 package org.orbisgis.pluginManager.updates;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.List;
 
 import javax.xml.bind.JAXBContext;
@@ -60,7 +62,7 @@ public class UpdateTest extends TestCase {
 		JAXBContext context = JAXBContext.newInstance(UpdateSite.class
 				.getPackage().getName());
 		UpdateSite us = (UpdateSite) context.createUnmarshaller().unmarshal(
-				new File(updateDir, CreateUpdate.SITE_UPDATES_FILE_NAME));
+				new File(updateDir, UpdateUtils.SITE_UPDATES_FILE_NAME));
 		List<Update> updateList = us.getUpdate();
 		int updateCount = updateList.size();
 		if (updateCount != versionCount) {
@@ -85,10 +87,60 @@ public class UpdateTest extends TestCase {
 		FileUtils.copyDirsRecursively(pub, testPub);
 
 		// apply update to target/binary
-		cu.applyUpdate(new File(updateDir, cu.getUpdateFileName()), testPub);
+		cu.applyUpdate(new File(updateDir, UpdateUtils
+				.getUpdateFileName("1.0.0")), testPub);
 
 		// compare folders target/binary and nextBinary
 		compare(next, testPub);
+	}
+
+	public void testVersionCompare() throws Exception {
+		UpdateDiscovery ui = new UpdateDiscovery(null);
+		assertTrue(ui.compare("1.0.0", "1.0") == 0);
+		assertTrue(ui.compare("1.0.0", "1.0.0.1") < 0);
+		assertTrue(ui.compare("1.0.0", "1.0.0") == 0);
+		assertTrue(ui.compare("1.0.0", "0.9") > 0);
+	}
+
+	public void testDiscover() throws Exception {
+		// Create the update
+		cu.create();
+
+		// Discover new updates
+		UpdateDiscovery ud = new UpdateDiscovery(this.getClass().getResource(
+				"twoVersions"));
+		UpdateInfo[] updates = ud.getAvailableUpdatesInfo("0.8");
+		assertTrue(updates.length == 2);
+
+		updates = ud.getAvailableUpdatesInfo("0.9.1");
+		assertTrue(updates.length == 1);
+
+		updates = ud.getAvailableUpdatesInfo("1");
+		assertTrue(updates.length == 0);
+	}
+
+	public void testDownloadDiscovered() throws Exception {
+		// Create the update
+		cu.create();
+
+		// Discover new updates
+		UpdateDiscovery ud = new UpdateDiscovery(updateDir.toURI().toURL());
+		UpdateInfo[] updates = ud.getAvailableUpdatesInfo("0.9.1");
+		assertTrue(updates.length == 1);
+
+		ud.download(updates[0]);
+
+		// Download new updates with wrong checksum
+		PrintWriter pw = new PrintWriter(new File(updateDir, UpdateUtils
+				.getUpdateFileName(updates[0].getVersionNumber())
+				+ ".md5"));
+		pw.print("faux md5 checksum");
+		pw.close();
+		try {
+			ud.download(updates[0]);
+			assertTrue(false);
+		} catch (IOException e) {
+		}
 	}
 
 	private void compare(File dir1, File dir2) throws Exception {
