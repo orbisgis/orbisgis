@@ -2,14 +2,18 @@ package org.orbisgis.utils;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
+import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URL;
 import java.net.URLConnection;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
@@ -244,6 +248,23 @@ public class FileUtils {
 			path = path.substring(1);
 		}
 		return path;
+	}
+
+	public static byte[] getContent(File file) throws FileNotFoundException,
+			IOException {
+		DataInputStream dis = new DataInputStream(new FileInputStream(file));
+		byte[] buffer = new byte[dis.available()];
+		dis.readFully(buffer);
+		dis.close();
+		return buffer;
+	}
+
+	public static byte[] getMD5(File file) throws FileNotFoundException,
+			IOException, NoSuchAlgorithmException {
+		byte[] content = getContent(file);
+		MessageDigest m = MessageDigest.getInstance("MD5");
+		m.update(content, 0, content.length);
+		return m.digest();
 	}
 
 }
