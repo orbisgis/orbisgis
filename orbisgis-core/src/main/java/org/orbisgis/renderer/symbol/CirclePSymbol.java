@@ -36,28 +36,62 @@
  */
 package org.orbisgis.renderer.symbol;
 
-import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics2D;
+import java.awt.geom.AffineTransform;
+import java.awt.geom.NoninvertibleTransformException;
+import java.awt.geom.PathIterator;
 
-public abstract class CirclePointSymbol extends AbstractPointSymbol {
+import org.gdms.driver.DriverException;
+import org.orbisgis.renderer.RenderPermission;
+import org.orbisgis.renderer.liteShape.LiteShape;
 
-	CirclePointSymbol(Color outline, int lineWidth, Color fillColor, int size,
-			boolean mapUnits) {
+import com.vividsolutions.jts.geom.Envelope;
+import com.vividsolutions.jts.geom.Geometry;
+
+public class CirclePSymbol extends AbstractCirclePointSymbol {
+
+	CirclePSymbol(Color outline, int lineWidth, Color fillColor,
+			int size, boolean mapUnits) {
 		super(outline, lineWidth, fillColor, size, mapUnits);
 	}
 
-	protected void paintCircle(Graphics2D g, double x, double y, double size) {
-		x = x - size / 2;
-		y = y - size / 2;
-		if (fillColor != null) {
-			g.setPaint(fillColor);
-			g.fillOval((int) x, (int) y, (int) size, (int) size);
+	@Override
+	public Envelope draw(Graphics2D g, Geometry geom, AffineTransform at,
+			RenderPermission permission) throws DriverException {
+		LiteShape ls = new LiteShape(geom, at, false);
+		PathIterator pi = ls.getPathIterator(null);
+		double[] coords = new double[6];
+
+		int drawingSize = size;
+		if (mapUnits) {
+			try {
+				drawingSize = (int) toPixelUnits(size, at);
+			} catch (NoninvertibleTransformException e) {
+				throw new DriverException("Cannot convert to map units", e);
+			}
 		}
-		if (outline != null) {
-			g.setStroke(new BasicStroke(lineWidth));
-			g.setColor(outline);
-			g.drawOval((int) x, (int) y, (int) size, (int) size);
+
+		while (!pi.isDone()) {
+			pi.currentSegment(coords);
+			paintCircle(g, (int) coords[0], (int) coords[1], drawingSize);
+			pi.next();
 		}
+
+		return null;
 	}
+
+	public String getClassName() {
+		return "Circle in point";
+	}
+
+	public EditableSymbol cloneSymbol() {
+		return new CirclePSymbol(outline, lineWidth, fillColor, size,
+				mapUnits);
+	}
+
+	public String getId() {
+		return "org.orbisgis.symbol.point.Circle";
+	}
+
 }

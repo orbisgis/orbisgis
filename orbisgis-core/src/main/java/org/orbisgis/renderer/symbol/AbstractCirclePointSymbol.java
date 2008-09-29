@@ -36,40 +36,28 @@
  */
 package org.orbisgis.renderer.symbol;
 
+import java.awt.BasicStroke;
 import java.awt.Color;
+import java.awt.Graphics2D;
 
-import org.gdms.data.types.GeometryConstraint;
+public abstract class AbstractCirclePointSymbol extends AbstractPointSymbol {
 
-import com.vividsolutions.jts.geom.Geometry;
-
-public class CircleVertexSymbol extends CirclePSymbol {
-
-	CircleVertexSymbol(Color outline, int lineWidth, Color fillColor,
-			int size, boolean mapUnits) {
+	AbstractCirclePointSymbol(Color outline, int lineWidth, Color fillColor, int size,
+			boolean mapUnits) {
 		super(outline, lineWidth, fillColor, size, mapUnits);
 	}
 
-	@Override
-	public boolean willDrawSimpleGeometry(Geometry geom) {
-		return true;
+	protected void paintCircle(Graphics2D g, double x, double y, double size) {
+		x = x - size / 2;
+		y = y - size / 2;
+		if (fillColor != null) {
+			g.setPaint(fillColor);
+			g.fillOval((int) x, (int) y, (int) size, (int) size);
+		}
+		if (outline != null) {
+			g.setStroke(new BasicStroke(lineWidth));
+			g.setColor(outline);
+			g.drawOval((int) x, (int) y, (int) size, (int) size);
+		}
 	}
-
-	@Override
-	public boolean acceptGeometryType(GeometryConstraint geometryConstraint) {
-		return true;
-	}
-
-	public String getClassName() {
-		return "Circle in vertex";
-	}
-
-	public EditableSymbol cloneSymbol() {
-		return new CircleVertexSymbol(outline, lineWidth, fillColor, size,
-				mapUnits);
-	}
-
-	public String getId() {
-		return "org.orbisgis.symbol.vertex.Circle";
-	}
-
 }

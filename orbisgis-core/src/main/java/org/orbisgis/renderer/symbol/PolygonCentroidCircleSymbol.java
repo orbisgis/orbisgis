@@ -52,7 +52,7 @@ import com.vividsolutions.jts.geom.MultiPolygon;
 import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.Polygon;
 
-public class PolygonCentroidCircleSymbol extends CirclePointSymbol {
+public class PolygonCentroidCircleSymbol extends AbstractCirclePointSymbol {
 
 	PolygonCentroidCircleSymbol(Color outline, int lineWidth, Color fillColor,
 			int size, boolean mapUnits) {

@@ -52,7 +52,7 @@ import com.vividsolutions.jts.geom.MultiPolygon;
 import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.Polygon;
 
-public class PolygonCentroidSquareSymbol extends SquarePointSymbol {
+public class PolygonCentroidSquareSymbol extends AbstractSquarePointSymbol {
 
 	PolygonCentroidSquareSymbol(Color outline, int lineWidth,
 			Color fillColor, int size, boolean mapUnits) {

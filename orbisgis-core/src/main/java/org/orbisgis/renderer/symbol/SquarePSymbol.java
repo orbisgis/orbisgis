@@ -37,39 +37,61 @@
 package org.orbisgis.renderer.symbol;
 
 import java.awt.Color;
+import java.awt.Graphics2D;
+import java.awt.geom.AffineTransform;
+import java.awt.geom.NoninvertibleTransformException;
+import java.awt.geom.PathIterator;
 
-import org.gdms.data.types.GeometryConstraint;
+import org.gdms.driver.DriverException;
+import org.orbisgis.renderer.RenderPermission;
+import org.orbisgis.renderer.liteShape.LiteShape;
 
+import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
 
-public class CircleVertexSymbol extends CirclePSymbol {
+public class SquarePSymbol extends AbstractSquarePointSymbol {
 
-	CircleVertexSymbol(Color outline, int lineWidth, Color fillColor,
-			int size, boolean mapUnits) {
+	SquarePSymbol(Color outline, int lineWidth, Color fillColor, int size,
+			boolean mapUnits) {
 		super(outline, lineWidth, fillColor, size, mapUnits);
+
 	}
 
 	@Override
-	public boolean willDrawSimpleGeometry(Geometry geom) {
-		return true;
-	}
+	public Envelope draw(Graphics2D g, Geometry geom, AffineTransform at,
+			RenderPermission permission) throws DriverException {
+		LiteShape ls = new LiteShape(geom, at, false);
+		PathIterator pi = ls.getPathIterator(null);
+		double[] coords = new double[6];
 
-	@Override
-	public boolean acceptGeometryType(GeometryConstraint geometryConstraint) {
-		return true;
+		int drawingSize = size;
+		if (mapUnits) {
+			try {
+				drawingSize = (int) toPixelUnits(size, at);
+			} catch (NoninvertibleTransformException e) {
+				throw new DriverException("Cannot convert to map units", e);
+			}
+		}
+
+		while (!pi.isDone()) {
+			pi.currentSegment(coords);
+			paintSquare(g, (int) coords[0], (int) coords[1], drawingSize);
+			pi.next();
+		}
+
+		return null;
 	}
 
 	public String getClassName() {
-		return "Circle in vertex";
+		return "Square in point";
 	}
 
 	public EditableSymbol cloneSymbol() {
-		return new CircleVertexSymbol(outline, lineWidth, fillColor, size,
+		return new SquarePSymbol(outline, lineWidth, fillColor, size,
 				mapUnits);
 	}
 
 	public String getId() {
-		return "org.orbisgis.symbol.vertex.Circle";
+		return "org.orbisgis.symbol.point.Square";
 	}
-
 }

@@ -40,9 +40,9 @@ import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics2D;
 
-public abstract class SquarePointSymbol extends AbstractPointSymbol {
+public abstract class AbstractSquarePointSymbol extends AbstractPointSymbol {
 
-	SquarePointSymbol(Color outline, int lineWidth, Color fillColor, int size,
+	AbstractSquarePointSymbol(Color outline, int lineWidth, Color fillColor, int size,
 			boolean mapUnits) {
 		super(outline, lineWidth, fillColor, size, mapUnits);
 	}

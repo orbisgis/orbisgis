@@ -64,19 +64,17 @@ public class SymbolFactory {
 
 	public static Symbol createPointCircleSymbol(Color outline,
 			Color fillColor, int size) {
-		return new CircleVertexSymbol(outline, 1, fillColor, size, false);
+		return new CirclePSymbol(outline, 1, fillColor, size, false);
 	}
 
 	public static Symbol createPointCircleSymbol(Color outline, int lineWidth,
 			Color fillColor, int size, boolean mapUnits) {
-		return new CircleVertexSymbol(outline, lineWidth, fillColor, size,
-				mapUnits);
+		return new CirclePSymbol(outline, lineWidth, fillColor, size, mapUnits);
 	}
 
 	public static Symbol createPointSquareSymbol(Color outline, int lineWidth,
 			Color fillColor, int size, boolean mapUnits) {
-		return new SquareVertexSymbol(outline, lineWidth, fillColor, size,
-				mapUnits);
+		return new SquarePSymbol(outline, lineWidth, fillColor, size, mapUnits);
 	}
 
 	public static Symbol createSymbolComposite(Symbol... symbols) {
@@ -123,6 +121,16 @@ public class SymbolFactory {
 			// ignore
 		}
 		return ret;
+	}
+
+	public static Symbol createVertexCircleSymbol(Color outline, int lineWidth,
+			Color fill, int size, boolean mapUnits) {
+		return new CircleVertexSymbol(outline, lineWidth, fill, size, mapUnits);
+	}
+
+	public static Symbol createVertexSquareSymbol(Color outline, int lineWidth,
+			Color fill, int size, boolean mapUnits) {
+		return new SquareVertexSymbol(outline, lineWidth, fill, size, mapUnits);
 	}
 
 }
