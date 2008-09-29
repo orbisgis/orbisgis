@@ -1,8 +1,9 @@
 package org.orbisgis.pluginManager.updates;
 
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
-import java.io.PrintWriter;
+import java.net.URL;
 import java.util.List;
 
 import javax.xml.bind.JAXBContext;
@@ -46,13 +47,13 @@ public class UpdateTest extends TestCase {
 	public void testModifySiteDescriptor() throws Exception {
 		updateDir.mkdirs();
 		cu.modifySiteDescriptor(updateDir, this.getClass().getResource(
-				"existingVersion"));
+				"existingVersion"), "");
 		assertTrue(containsVersion("1.0.0", "Valencia", 1));
 		cu.modifySiteDescriptor(updateDir, this.getClass().getResource(
-				"nonExistingDescriptor"));
+				"nonExistingDescriptor"), "");
 		assertTrue(containsVersion("1.0.0", "Valencia", 1));
 		cu.modifySiteDescriptor(updateDir, this.getClass().getResource(
-				"nonExistingVersion"));
+				"nonExistingVersion"), "");
 		assertTrue(containsVersion("1.0.0", "Valencia", 2));
 		assertTrue(containsVersion("0.9", "Xirivella", 2));
 	}
@@ -121,6 +122,8 @@ public class UpdateTest extends TestCase {
 
 	public void testDownloadDiscovered() throws Exception {
 		// Create the update
+		cu.setUrlPrefix("file://"
+				+ new File("target/updates").getAbsolutePath() + "/");
 		cu.create();
 
 		// Discover new updates
@@ -131,10 +134,9 @@ public class UpdateTest extends TestCase {
 		ud.download(updates[0]);
 
 		// Download new updates with wrong checksum
-		PrintWriter pw = new PrintWriter(new File(updateDir, UpdateUtils
-				.getUpdateFileName(updates[0].getVersionNumber())
-				+ ".md5"));
-		pw.print("faux md5 checksum");
+		FileWriter pw = new FileWriter(new File(updateDir, UpdateUtils
+				.getUpdateFileName(updates[0].getVersionNumber())), true);
+		pw.write(0);
 		pw.close();
 		try {
 			ud.download(updates[0]);
@@ -144,7 +146,8 @@ public class UpdateTest extends TestCase {
 	}
 
 	private void compare(File dir1, File dir2) throws Exception {
-		CreateUpdate cu = new CreateUpdate(dir1, dir2, null, null, "", "", "");
+		CreateUpdate cu = new CreateUpdate(dir1, dir2, null, new URL(
+				"file:///foo"), "", "", "");
 		cu.diff();
 		assertTrue(cu.getAdded().size() == 0);
 		assertTrue(cu.getModified().size() == 0);

@@ -22,4 +22,8 @@ public class UpdateInfo {
 		return update.getVersionNumber();
 	}
 
+	public String getChecksum() {
+		return update.getChecksum();
+	}
+
 }

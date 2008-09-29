@@ -45,10 +45,7 @@ public class UpdateDiscovery {
 		for (int i = 0; i < updateList.size(); i++) {
 			Update update = updateList.get(i);
 			if (compare(update.getVersionNumber(), currentVersion) > 0) {
-				URL updateURL = new URL(updateSiteURL.toExternalForm()
-						+ "/"
-						+ UpdateUtils.getUpdateFileName(update
-								.getVersionNumber()));
+				URL updateURL = new URL(update.getReleaseFileUrl());
 				ret.add(new UpdateInfo(updateURL, update));
 			}
 		}
@@ -88,20 +85,12 @@ public class UpdateDiscovery {
 			NoSuchAlgorithmException {
 		File zip = File.createTempFile("orbisgis-update", ".zip");
 		FileUtils.download(updateInfo.getFileURL(), zip);
-		File md5 = File.createTempFile("orbisgis-update", ".zip.md5");
-		FileUtils.download(new URL(updateInfo.getFileURL() + ".md5"), md5);
 
 		// verify checksum
-		byte[] readMD5 = FileUtils.getContent(md5);
 		byte[] calculatedMD5 = FileUtils.getMD5(zip);
-		if (readMD5.length != calculatedMD5.length) {
+		String calculatedString = FileUtils.toHexString(calculatedMD5);
+		if (!calculatedString.equals(updateInfo.getChecksum())) {
 			throw new IOException("md5 checksum failed");
-		} else {
-			for (int i = 0; i < calculatedMD5.length; i++) {
-				if (readMD5[i] != calculatedMD5[i]) {
-					throw new IOException("md5 checksum failed");
-				}
-			}
 		}
 	}
 

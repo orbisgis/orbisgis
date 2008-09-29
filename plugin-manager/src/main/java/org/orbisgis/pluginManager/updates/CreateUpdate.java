@@ -1,6 +1,5 @@
 package org.orbisgis.pluginManager.updates;
 
-import java.io.BufferedOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.File;
@@ -37,6 +36,9 @@ public class CreateUpdate {
 	private ArrayList<File> removed = new ArrayList<File>();
 	private ArrayList<File> modified = new ArrayList<File>();
 
+	private String urlPrefix;
+	private String urlSuffix;
+
 	public CreateUpdate(File pub, File next, File output, URL updateSite,
 			String versionNumber, String versionName, String description) {
 		this.pub = pub;
@@ -46,14 +48,17 @@ public class CreateUpdate {
 		this.description = description;
 		this.versionName = versionName;
 		this.versionNumber = versionNumber.trim();
+		this.urlPrefix = updateSite.toExternalForm() + "/";
+		this.urlSuffix = "";
 	}
 
 	public static void main(String[] args) throws Exception {
-		if (args.length != 7) {
+		if (args.length != 9) {
 			System.err.println("Usage: java CreateUpdate "
 					+ "latest-public-binary-folder new"
 					+ "-binary-folder update-output-dir update-site-url "
-					+ "version-number version-name version-description");
+					+ "version-number version-name version-description "
+					+ "update-url-prefix update-url-suffix");
 		}
 
 		File pub = new File(args[0]);
@@ -63,6 +68,8 @@ public class CreateUpdate {
 
 		CreateUpdate cu = new CreateUpdate(pub, next, output, updateSite,
 				args[4], args[5], args[6]);
+		cu.setUrlPrefix(args[7]);
+		cu.setUrlSuffix(args[8]);
 		cu.create();
 
 	}
@@ -77,23 +84,19 @@ public class CreateUpdate {
 		File tempUpdate = new File(output, "tozip");
 		generateUpdateContent(tempUpdate);
 
-		modifySiteDescriptor(output, updateSite);
-
 		File updateFileName = new File(output, UpdateUtils
 				.getUpdateFileName(versionNumber));
 		zipUpdate(updateFileName, tempUpdate);
 
-		produceMD5(updateFileName);
+		String md5 = produceMD5(updateFileName);
+
+		modifySiteDescriptor(output, updateSite, md5);
 	}
 
-	private void produceMD5(File fileName) throws IOException,
+	private String produceMD5(File fileName) throws IOException,
 			NoSuchAlgorithmException {
-		File md5File = new File(fileName.getAbsolutePath() + ".md5");
 		byte[] md5 = FileUtils.getMD5(fileName);
-		BufferedOutputStream bos = new BufferedOutputStream(
-				new FileOutputStream(md5File));
-		bos.write(md5);
-		bos.close();
+		return FileUtils.toHexString(md5);
 	}
 
 	private void zipUpdate(File destFile, File tempUpdate) throws IOException {
@@ -108,13 +111,14 @@ public class CreateUpdate {
 	 * 
 	 * @param outputFolder
 	 * @param updateSiteURL
+	 * @param md5
 	 * 
 	 * @return
 	 * @throws IOException
 	 * @throws JAXBException
 	 */
-	public void modifySiteDescriptor(File outputFolder, URL updateSiteURL)
-			throws IOException, JAXBException {
+	public void modifySiteDescriptor(File outputFolder, URL updateSiteURL,
+			String md5) throws IOException, JAXBException {
 		updateSiteURL = new URL(updateSiteURL.toExternalForm() + "/"
 				+ UpdateUtils.SITE_UPDATES_FILE_NAME);
 		File updateSiteFile = new File(outputFolder,
@@ -132,8 +136,7 @@ public class CreateUpdate {
 			for (int i = 0; i < us.getUpdate().size(); i++) {
 				Update update = us.getUpdate().get(i);
 				if (update.getVersionNumber().equals(versionNumber)) {
-					update.setDescription(description);
-					update.setVersionName(versionName);
+					fillUpdate(update, md5);
 					versionExists = true;
 					break;
 				}
@@ -147,14 +150,22 @@ public class CreateUpdate {
 				us = new UpdateSite();
 			}
 			Update update = new Update();
-			update.setDescription(description);
-			update.setVersionName(versionName);
 			update.setVersionNumber(versionNumber);
+			fillUpdate(update, md5);
 			us.getUpdate().add(update);
 		}
 
 		// write the new content
 		context.createMarshaller().marshal(us, updateSiteFile);
+	}
+
+	private void fillUpdate(Update update, String md5) {
+		update.setDescription(description);
+		update.setVersionName(versionName);
+		update.setReleaseFileUrl(urlPrefix
+				+ UpdateUtils.getUpdateFileName(versionNumber)
+				+ urlSuffix);
+		update.setChecksum(md5);
 	}
 
 	/**
@@ -349,8 +360,7 @@ public class CreateUpdate {
 		FileUtils.unzip(updateZipFile, tempUpdateDir);
 
 		// substitute variables in ant script
-		File updateAntFile = new File(tempUpdateDir,
-				UpdateUtils.ANT_FILE_NAME);
+		File updateAntFile = new File(tempUpdateDir, UpdateUtils.ANT_FILE_NAME);
 		FileInputStream fis = new FileInputStream(updateAntFile);
 		DataInputStream dis = new DataInputStream(fis);
 		byte[] buffer = new byte[dis.available()];
@@ -389,4 +399,13 @@ public class CreateUpdate {
 		}
 
 	}
+
+	public void setUrlPrefix(String urlPrefix) {
+		this.urlPrefix = urlPrefix;
+	}
+
+	public void setUrlSuffix(String urlSuffix) {
+		this.urlSuffix = urlSuffix;
+	}
+
 }

@@ -1,4 +1,5 @@
 <update-site>
 	<update version-number="1.0.0" version-name="Xirivella"
+		release-file-url="file:/home/fergonco/ogworkspace/platform/plugin-manager/target/test-classes/org/orbisgis/pluginManager/updates/existingVersion/update-1.0.0.zip"
 		description="Super critical update"/>
 </update-site>

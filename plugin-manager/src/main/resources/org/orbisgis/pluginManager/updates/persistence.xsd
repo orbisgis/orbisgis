@@ -14,6 +14,8 @@
 			<xs:attribute name="version-number" type="xs:string" use="required"/>
 			<xs:attribute name="version-name" type="xs:string"/>
 			<xs:attribute name="description" type="xs:string" use="required"/>
+			<xs:attribute name="checksum" type="xs:string" use="required"/>
+			<xs:attribute name="release-file-url" type="xs:string" use="required"/>
 		</xs:complexType>
 	</xs:element>
 

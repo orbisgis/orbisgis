@@ -5,6 +5,6 @@ public class UpdateUtils {
 	static final String ANT_FILE_NAME = "update.xml";
 
 	public static String getUpdateFileName(String versionNumber) {
-		return "update" + versionNumber + ".zip";
+		return "update-" + versionNumber + ".zip";
 	}
 }
