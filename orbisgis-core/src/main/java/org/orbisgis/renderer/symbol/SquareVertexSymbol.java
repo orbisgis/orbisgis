@@ -42,7 +42,7 @@ import org.gdms.data.types.GeometryConstraint;
 
 import com.vividsolutions.jts.geom.Geometry;
 
-public class SquareVertexSymbol extends SquarePSymbol {
+public class SquareVertexSymbol extends SquarePointSymbol {
 
 	SquareVertexSymbol(Color outline, int lineWidth, Color fillColor, int size,
 			boolean mapUnits) {

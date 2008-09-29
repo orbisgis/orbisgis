@@ -46,7 +46,6 @@ import java.awt.image.ColorModel;
 import org.gdms.data.SpatialDataSourceDecorator;
 import org.grap.lut.LutDisplay;
 import org.grap.lut.LutGenerator;
-import org.orbisgis.PersistenceException;
 import org.orbisgis.renderer.symbol.Symbol;
 
 public class RasterLegend extends AbstractLegend implements Legend {

@@ -64,17 +64,17 @@ public class SymbolFactory {
 
 	public static Symbol createPointCircleSymbol(Color outline,
 			Color fillColor, int size) {
-		return new CirclePSymbol(outline, 1, fillColor, size, false);
+		return new CirclePointSymbol(outline, 1, fillColor, size, false);
 	}
 
 	public static Symbol createPointCircleSymbol(Color outline, int lineWidth,
 			Color fillColor, int size, boolean mapUnits) {
-		return new CirclePSymbol(outline, lineWidth, fillColor, size, mapUnits);
+		return new CirclePointSymbol(outline, lineWidth, fillColor, size, mapUnits);
 	}
 
 	public static Symbol createPointSquareSymbol(Color outline, int lineWidth,
 			Color fillColor, int size, boolean mapUnits) {
-		return new SquarePSymbol(outline, lineWidth, fillColor, size, mapUnits);
+		return new SquarePointSymbol(outline, lineWidth, fillColor, size, mapUnits);
 	}
 
 	public static Symbol createSymbolComposite(Symbol... symbols) {

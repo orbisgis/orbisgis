@@ -49,11 +49,12 @@ import org.orbisgis.renderer.liteShape.LiteShape;
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
 
-public class CirclePSymbol extends AbstractCirclePointSymbol {
+public class SquarePointSymbol extends AbstractSquarePointSymbol {
 
-	CirclePSymbol(Color outline, int lineWidth, Color fillColor,
-			int size, boolean mapUnits) {
+	SquarePointSymbol(Color outline, int lineWidth, Color fillColor, int size,
+			boolean mapUnits) {
 		super(outline, lineWidth, fillColor, size, mapUnits);
+
 	}
 
 	@Override
@@ -74,7 +75,7 @@ public class CirclePSymbol extends AbstractCirclePointSymbol {
 
 		while (!pi.isDone()) {
 			pi.currentSegment(coords);
-			paintCircle(g, (int) coords[0], (int) coords[1], drawingSize);
+			paintSquare(g, (int) coords[0], (int) coords[1], drawingSize);
 			pi.next();
 		}
 
@@ -82,16 +83,15 @@ public class CirclePSymbol extends AbstractCirclePointSymbol {
 	}
 
 	public String getClassName() {
-		return "Circle in point";
+		return "Square in point";
 	}
 
 	public EditableSymbol cloneSymbol() {
-		return new CirclePSymbol(outline, lineWidth, fillColor, size,
+		return new SquarePointSymbol(outline, lineWidth, fillColor, size,
 				mapUnits);
 	}
 
 	public String getId() {
-		return "org.orbisgis.symbol.point.Circle";
+		return "org.orbisgis.symbol.point.Square";
 	}
-
 }
