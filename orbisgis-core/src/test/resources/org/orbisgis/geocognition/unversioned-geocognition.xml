@@ -57,6 +57,23 @@
 														<ns3:property value="4"
 															name="size"/>
 													</symbol>
+													<symbol
+														xsi:type="simple-symbol-type"
+														symbol-type-id="org.orbisgis.symbol.square.Vertex">
+														<ns3:property
+															value="-16777216"
+															name="outline-color"/>
+														<ns3:property
+															value="false"
+															name="map-units"/>
+														<ns3:property
+															value="Circle in vertex"
+															name="name"/>
+														<ns3:property value="1"
+															name="line-width"/>
+														<ns3:property value="4"
+															name="size"/>
+													</symbol>
 												</symbol>
 											</legend-description>
 										</legend-container>
