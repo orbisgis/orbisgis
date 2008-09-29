@@ -40,7 +40,9 @@ public interface ApplicationInfo {
 
 	public String getName();
 
-	public String getVersion();
+	public String getVersionNumber();
+
+	public String getVersionName();
 
 	public String getOrganization();
 

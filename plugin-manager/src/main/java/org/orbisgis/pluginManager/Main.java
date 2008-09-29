@@ -179,13 +179,15 @@ public class Main {
 				if (vtd.count("/plugin/application") > 0) {
 					String name = vtd.getAttribute("/plugin/application",
 							"name");
-					String version = vtd.getAttribute("/plugin/application",
-							"version");
+					String versionNumber = vtd.getAttribute(
+							"/plugin/application", "version-number");
+					String versionName = vtd.getAttribute(
+							"/plugin/application", "version-name");
 					String organization = vtd.getAttribute(
 							"/plugin/application", "organization");
 					try {
 						DefaultApplicationInfo applicationInfo = new DefaultApplicationInfo(
-								name, version, organization);
+								name, versionNumber, versionName, organization);
 						Services.registerService(ApplicationInfo.class,
 								"Gets information about the application: "
 										+ "name, version, etc.",

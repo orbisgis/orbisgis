@@ -2,7 +2,7 @@
 	<activator class="org.orbisgis.Activator"/>
 	<workspace class="org.orbisgis.workspace.DefaultWorkspace"/>
 	
-	<application name="OrbisGIS" version="1.2.2 (Naoned)"
+	<application name="OrbisGIS" version-number="1.2.2" version-name="Naoned"
 		organization="IRSTV CNRS-FR-2488"/>
 	
 	<!-- windows -->

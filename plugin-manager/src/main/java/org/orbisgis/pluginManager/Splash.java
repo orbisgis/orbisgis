@@ -54,7 +54,7 @@ import org.orbisgis.Services;
 
 /**
  * A splash screen to show while the main program is loading. A typical use is:
- *
+ * 
  * <pre>
  * public static void main(String[] args) {
  * 	Splash s = new Splash(delay1);
@@ -62,7 +62,7 @@ import org.orbisgis.Services;
  * 	s.dispose(delay2);
  * }
  * </pre>
- *
+ * 
  * The first line creates a Splash that will appear until another frame hides it
  * (MainProgram), but at least during "delay1" milliseconds.<br>
  * To distroy the Splash you can either call "s.dispose()" or
@@ -77,7 +77,7 @@ public class Splash extends JFrame {
 	/**
 	 * Creates a Splash that will appear until another frame hides it, but at
 	 * least during "delay" milliseconds.
-	 *
+	 * 
 	 * @param delay
 	 *            the delay in milliseconds
 	 */
@@ -140,7 +140,7 @@ public class Splash extends JFrame {
 
 		ApplicationInfo ai = (ApplicationInfo) Services
 				.getService(ApplicationInfo.class);
-		versionLabel.setText(ai.getName() + " " + ai.getVersion() + " - "
-				+ ai.getOrganization());
+		versionLabel.setText(ai.getName() + " " + ai.getVersionNumber() + "("
+				+ ai.getVersionName() + ")" + " - " + ai.getOrganization());
 	}
 }

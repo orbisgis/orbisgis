@@ -50,8 +50,8 @@ public class About implements IAction {
 		sifDialog.setSize(650, 600);
 		ApplicationInfo ai = (ApplicationInfo) Services
 				.getService(ApplicationInfo.class);
-		sifDialog.setTitle(ai.getName() + " " + ai.getVersion() + " - "
-				+ ai.getOrganization());
+		sifDialog.setTitle(ai.getName() + " " + ai.getVersionNumber() + "("
+				+ ai.getVersionName() + ")" + " - " + ai.getOrganization());
 		sifDialog.setVisible(true);
 	}
 

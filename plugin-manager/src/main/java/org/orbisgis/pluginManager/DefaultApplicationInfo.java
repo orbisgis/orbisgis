@@ -39,13 +39,16 @@ package org.orbisgis.pluginManager;
 public class DefaultApplicationInfo implements ApplicationInfo {
 
 	private String name;
-	private String version;
 	private String organization;
+	private String versionNumber;
 
-	public DefaultApplicationInfo(String name, String version,
-			String organization) {
+	private String versionName;
+
+	public DefaultApplicationInfo(String name, String versionNumber,
+			String versionName, String organization) {
 		this.name = name;
-		this.version = version;
+		this.versionNumber = versionNumber;
+		this.versionName = versionName;
 		this.organization = organization;
 	}
 
@@ -53,12 +56,15 @@ public class DefaultApplicationInfo implements ApplicationInfo {
 		return name;
 	}
 
-	public String getVersion() {
-		return version;
-	}
-
 	public String getOrganization() {
 		return organization;
 	}
 
+	public String getVersionNumber() {
+		return versionNumber;
+	}
+	
+	public String getVersionName() {
+		return versionName;
+	}
 }
