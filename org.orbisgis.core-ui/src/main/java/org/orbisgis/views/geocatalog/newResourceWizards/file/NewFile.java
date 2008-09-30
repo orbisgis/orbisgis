@@ -54,7 +54,7 @@ import org.sif.UIPanel;
 public class NewFile implements INewResource {
 
 	public String getName() {
-		return "Add a file";
+		return "File";
 	}
 
 	public IResource[] getResources() {

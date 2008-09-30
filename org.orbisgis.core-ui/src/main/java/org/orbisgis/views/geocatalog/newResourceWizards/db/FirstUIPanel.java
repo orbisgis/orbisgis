@@ -43,42 +43,51 @@ import org.gdms.driver.DBDriver;
 import org.gdms.driver.h2.H2spatialDriver;
 import org.gdms.driver.postgresql.PostgreSQLDriver;
 import org.sif.multiInputPanel.ComboBoxChoice;
+import org.sif.multiInputPanel.IntType;
 import org.sif.multiInputPanel.MultiInputPanel;
 import org.sif.multiInputPanel.PasswordType;
 import org.sif.multiInputPanel.StringType;
 
 public class FirstUIPanel extends MultiInputPanel {
 	private final static int LENGTH = 20;
+	public static final String DBTYPE = "dbtype";
+	public static final String HOST = "host";
+	public static final String PORT = "port";
+	public static final String DBNAME = "dbname";
+	public static final String USER = "user";
+	public static final String PASSWORD = "pass";
 
 	public FirstUIPanel() {
 		super("org.orbisgis.geocatalog.resources.db.FirstUIPanel",
 				"Connect to database");
 		setInfoText("Introduce the connection parameters");
-		addInput("dbType", "DataBase type", "PostgreSQL / PostGIS",
+		// TODO fill the combo automatically
+		addInput(DBTYPE, "DataBase type", "PostgreSQL / PostGIS",
 				new ComboBoxChoice("PostgreSQL / PostGIS", "H2 (spatial)"));
-		addValidationExpression("strlength(dbType) is not null",
+		addValidationExpression(DBTYPE + " is not null",
 				"Please choose a DataBase type");
-		addInput("host", "Host name", "127.0.0.1", new StringType(LENGTH));
-		addValidationExpression("strlength(host) is not null",
-				"Please choose a host");
-		addInput("port", "Port number", "5432", new StringType(LENGTH));
+		addInput(HOST, "Host name", "127.0.0.1", new StringType(LENGTH));
+		addValidationExpression(HOST + " is not null", "Please choose a host");
+		addInput(PORT, "Port number", "5432", new IntType(LENGTH));
 
-		addValidationExpression("(int(port) >= 0) and (int(port) <= 32767)",
+		addValidationExpression("(" + PORT + " >= 0) and (" + PORT
+				+ " <= 32767)",
 				"Port number is a number in the range [0,32767]");
-		addInput("dbName", "DataBase name", "dbName", new StringType(LENGTH));
-		addValidationExpression("strlength(dbName) is not null",
-				"DataBase name is mandatory!");
-		addInput("user", "User name", "postgres", new StringType(LENGTH));
-		addInput("password", "Password", "", new PasswordType(LENGTH));
+		addInput(DBNAME, "Database name", "database_name", new StringType(
+				LENGTH));
+		addValidationExpression(DBNAME + " is not null",
+				"Database name is mandatory");
+		addInput(USER, "User name", "postgres", new StringType(LENGTH));
+		addInput(PASSWORD, "Password", "", new PasswordType(LENGTH));
 	}
 
 	public String postProcess() {
-		final String dbType = getInput("dbType");
-		final String host = getInput("host");
-		int port;
-		final String dbName = getInput("dbName");
-		final String user = getInput("user");
-		final String password = getInput("password");
+		final String dbType = getInput(DBTYPE);
+		final String host = getInput(HOST);
+		int port = Integer.parseInt(getInput(PORT));
+		final String dbName = getInput(DBNAME);
+		final String user = getInput(USER);
+		final String password = getInput(PASSWORD);
 
 		try {
 			DBDriver dBDriver;

@@ -53,7 +53,7 @@ import org.sif.UIPanel;
 public class NewDB implements INewResource {
 
 	public String getName() {
-		return "Add database tables";
+		return "Database source";
 	}
 
 	public IResource[] getResources() {

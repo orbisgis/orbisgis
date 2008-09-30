@@ -70,11 +70,11 @@ public class SecondUIPanel extends MultiInputPanel {
 	}
 
 	public String initialize() {
-		dbType = firstPanel.getInput("dbType");
-		host = firstPanel.getInput("host");
-		dbName = firstPanel.getInput("dbName");
-		user = firstPanel.getInput("user");
-		password = firstPanel.getInput("password");
+		dbType = firstPanel.getInput(FirstUIPanel.DBTYPE);
+		host = firstPanel.getInput(FirstUIPanel.HOST);
+		dbName = firstPanel.getInput(FirstUIPanel.DBNAME);
+		user = firstPanel.getInput(FirstUIPanel.USER);
+		password = firstPanel.getInput(FirstUIPanel.PASSWORD);
 
 		try {
 			DBDriver dBDriver;
