@@ -36,12 +36,13 @@
  */
 package org.orbisgis.views.geocatalog.actions.create;
 
-import java.util.ArrayList;
-
-import org.gdms.driver.ReadOnlyDriver;
-import org.gdms.driver.ReadWriteDriver;
+import org.gdms.driver.driverManager.Driver;
 import org.gdms.driver.driverManager.DriverManager;
-import org.gdms.source.SourceManager;
+import org.gdms.source.AndDriverFilter;
+import org.gdms.source.DBDriverFilter;
+import org.gdms.source.NotDriverFilter;
+import org.gdms.source.RasterDriverFilter;
+import org.gdms.source.WritableDriverFilter;
 import org.orbisgis.DataManager;
 import org.orbisgis.Services;
 import org.orbisgis.resource.Folder;
@@ -61,22 +62,11 @@ public class CreateDBResource implements IResourceAction {
 
 	public void execute(Catalog catalog, IResource selectedNode) {
 		// Get the non raster writable drivers
-		DataManager dm = (DataManager) Services
-				.getService(DataManager.class);
+		DataManager dm = (DataManager) Services.getService(DataManager.class);
 		DriverManager driverManager = dm.getSourceManager().getDriverManager();
-		String[] driverNames = driverManager.getDriverNames();
-		ArrayList<String> filtered = new ArrayList<String>();
-		for (String driverName : driverNames) {
-			ReadOnlyDriver rod = (ReadOnlyDriver) driverManager
-					.getDriver(driverName);
-			if ((rod.getType() & SourceManager.RASTER) == 0) {
-				if ((rod.getType() & SourceManager.DB) == SourceManager.DB) {
-					if (rod instanceof ReadWriteDriver) {
-						filtered.add(driverName);
-					}
-				}
-			}
-		}
-		CreateFileResource.createSource(dm, driverManager, filtered);
+		Driver[] drivers = driverManager.getDrivers(new AndDriverFilter(
+				new NotDriverFilter(new RasterDriverFilter()),
+				new DBDriverFilter(), new WritableDriverFilter()));
+		CreateFileResource.createSource(dm, driverManager, drivers);
 	}
 }

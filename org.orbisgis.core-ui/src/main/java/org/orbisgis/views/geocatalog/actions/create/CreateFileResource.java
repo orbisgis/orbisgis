@@ -37,7 +37,6 @@
 package org.orbisgis.views.geocatalog.actions.create;
 
 import java.io.File;
-import java.util.ArrayList;
 
 import org.gdms.data.DataSourceCreation;
 import org.gdms.data.DataSourceDefinition;
@@ -47,7 +46,12 @@ import org.gdms.driver.DriverException;
 import org.gdms.driver.FileDriver;
 import org.gdms.driver.ReadOnlyDriver;
 import org.gdms.driver.ReadWriteDriver;
+import org.gdms.driver.driverManager.Driver;
 import org.gdms.driver.driverManager.DriverManager;
+import org.gdms.source.AndDriverFilter;
+import org.gdms.source.FileDriverFilter;
+import org.gdms.source.NotDriverFilter;
+import org.gdms.source.RasterDriverFilter;
 import org.gdms.source.SourceManager;
 import org.orbisgis.DataManager;
 import org.orbisgis.Services;
@@ -72,35 +76,24 @@ public class CreateFileResource implements IResourceAction {
 
 	public void execute(Catalog catalog, IResource selectedNode) {
 		// Get the non raster writable drivers
-		DataManager dm = (DataManager) Services
-				.getService(DataManager.class);
-		DriverManager driverManager = dm.getSourceManager().getDriverManager();
-		String[] driverNames = driverManager.getDriverNames();
-		ArrayList<String> filtered = new ArrayList<String>();
-		for (String driverName : driverNames) {
-			ReadOnlyDriver rod = (ReadOnlyDriver) driverManager
-					.getDriver(driverName);
-			if ((rod.getType() & SourceManager.RASTER) == 0) {
-				if ((rod.getType() & SourceManager.FILE) == SourceManager.FILE) {
-					if ((rod.getType() & SourceManager.VECTORIAL) == SourceManager.VECTORIAL) {
-						if (rod instanceof ReadWriteDriver) {
-							filtered.add(driverName);
-						}
-					}
-				}
-			}
-		}
+		DataManager dm = (DataManager) Services.getService(DataManager.class);
+		SourceManager sourceManager = dm.getSourceManager();
+		DriverManager driverManager = sourceManager.getDriverManager();
+
+		Driver[] filtered = driverManager.getDrivers(new AndDriverFilter(
+				new FileDriverFilter(), new NotDriverFilter(
+						new RasterDriverFilter())));
+
 		createSource(dm, driverManager, filtered);
 	}
 
 	static void createSource(DataManager dm, DriverManager driverManager,
-			ArrayList<String> filtered) {
-		String[] driverNames;
-		driverNames = filtered.toArray(new String[0]);
-		String[] typeNames = new String[driverNames.length];
-		for (int i = 0; i < driverNames.length; i++) {
-			ReadOnlyDriver rod = (ReadOnlyDriver) driverManager
-					.getDriver(driverNames[i]);
+			Driver[] filtered) {
+		String[] typeNames = new String[filtered.length];
+		String[] driverNames = new String[filtered.length];
+		for (int i = 0; i < filtered.length; i++) {
+			driverNames[i] = filtered[i].getName();
+			ReadOnlyDriver rod = (ReadOnlyDriver) filtered[i];
 			typeNames[i] = dm.getSourceManager().getSourceTypeName(
 					rod.getType());
 		}
