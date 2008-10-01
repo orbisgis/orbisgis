@@ -46,11 +46,11 @@ import org.gdms.driver.TableDescription;
 import org.sif.multiInputPanel.ListChoice;
 import org.sif.multiInputPanel.MultiInputPanel;
 
-public class SecondUIPanel extends MultiInputPanel {
+public class TableSelectionPanel extends MultiInputPanel {
 	private static final String TABLESNAMES = "tablesnames";
-	private FirstUIPanel firstPanel;
+	private ConnectionPanel firstPanel;
 
-	public SecondUIPanel(final FirstUIPanel firstPanel) {
+	public TableSelectionPanel(final ConnectionPanel firstPanel) {
 		super("Select table(s) name(s)...");
 		addInput(TABLESNAMES, null, null, new ListChoice(new String[0]));
 		addValidationExpression("strlength(" + TABLESNAMES + ") is not null",

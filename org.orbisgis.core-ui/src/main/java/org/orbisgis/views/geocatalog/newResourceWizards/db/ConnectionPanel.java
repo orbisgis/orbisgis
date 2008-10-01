@@ -55,7 +55,7 @@ import org.sif.multiInputPanel.MultiInputPanel;
 import org.sif.multiInputPanel.PasswordType;
 import org.sif.multiInputPanel.StringType;
 
-public class FirstUIPanel extends MultiInputPanel {
+public class ConnectionPanel extends MultiInputPanel {
 	private final static int LENGTH = 20;
 	public static final String DBTYPE = "dbtype";
 	public static final String HOST = "host";
@@ -64,7 +64,7 @@ public class FirstUIPanel extends MultiInputPanel {
 	public static final String USER = "user";
 	public static final String PASSWORD = "pass";
 
-	public FirstUIPanel() {
+	public ConnectionPanel() {
 		super("org.orbisgis.geocatalog.resources.db.FirstUIPanel",
 				"Connect to database");
 		setInfoText("Introduce the connection parameters");
