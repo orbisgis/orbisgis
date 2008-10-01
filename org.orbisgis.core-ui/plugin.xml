@@ -51,6 +51,11 @@
 		schema="schema/geocognitionFilter.xsd"/>
 	<extension-point id="org.orbisgis.views.geocognition.NewWizard"
 		schema="schema/geocognitionWizard.xsd"/>
+		
+	<!-- Configuration -->
+	<extension-point id="org.orbisgis.Config" name="Configurations"
+		schema="schema/config.xsd" />
+		
 	<!--
 	
 	EXTENSIONS
@@ -116,6 +121,10 @@
 			menu-id="org.orbisgis.File"
 			menu-group="org.orbisgis.actions.Workspace" text="Change workspace"
 			class="org.orbisgis.actions.ChangeWorkspace"/>
+		<action id="org.orbisgis.actions.Preferences" text="Preferences"
+			menu-id="org.orbisgis.File" 
+			menu-group="org.orbisgis.actions.Configuration"
+			class="org.orbisgis.actions.Preferences"/>
 	</extension>
 	
 	<extension id="org.orbisgis.actions.SaveElementActions"
@@ -677,5 +686,13 @@
 	<extension point="org.orbisgis.views.sqlRepository.SQL">
 		<sql
 			resource-path="/org/orbisgis/views/sqlRepository/orbisgisdefault.xml"/>
+	</extension>
+	
+	<!-- Configuration extensions -->
+	<extension point="org.orbisgis.Config">
+		<configuration id="org.orbisgis.configs.TestConfig"
+			text="Testing One" class="org.orbisgis.configs.TestConfig"/>
+		<configuration id="org.orbisgis.configs.TestTwoConfig"
+			text="Testing Two" class="org.orbisgis.configs.TestTwoConfig"/>
 	</extension>
 </plugin>
