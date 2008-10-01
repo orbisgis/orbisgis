@@ -39,10 +39,17 @@ package org.orbisgis.views.geocatalog.newResourceWizards.db;
 import java.sql.Connection;
 import java.sql.SQLException;
 
+import org.gdms.data.db.DBSource;
 import org.gdms.driver.DBDriver;
-import org.gdms.driver.h2.H2spatialDriver;
-import org.gdms.driver.postgresql.PostgreSQLDriver;
+import org.gdms.driver.ReadOnlyDriver;
+import org.gdms.driver.driverManager.Driver;
+import org.gdms.driver.driverManager.DriverManager;
+import org.gdms.source.DBDriverFilter;
+import org.gdms.source.SourceManager;
+import org.orbisgis.DataManager;
+import org.orbisgis.Services;
 import org.sif.multiInputPanel.ComboBoxChoice;
+import org.sif.multiInputPanel.InputType;
 import org.sif.multiInputPanel.IntType;
 import org.sif.multiInputPanel.MultiInputPanel;
 import org.sif.multiInputPanel.PasswordType;
@@ -61,14 +68,12 @@ public class FirstUIPanel extends MultiInputPanel {
 		super("org.orbisgis.geocatalog.resources.db.FirstUIPanel",
 				"Connect to database");
 		setInfoText("Introduce the connection parameters");
-		// TODO fill the combo automatically
-		addInput(DBTYPE, "DataBase type", "PostgreSQL / PostGIS",
-				new ComboBoxChoice("PostgreSQL / PostGIS", "H2 (spatial)"));
+		addInput(DBTYPE, "DataBase type", getDriverInput());
 		addValidationExpression(DBTYPE + " is not null",
 				"Please choose a DataBase type");
 		addInput(HOST, "Host name", "127.0.0.1", new StringType(LENGTH));
 		addValidationExpression(HOST + " is not null", "Please choose a host");
-		addInput(PORT, "Port number", "5432", new IntType(LENGTH));
+		addInput(PORT, "Port number (0=default)", "0", new IntType(LENGTH));
 
 		addValidationExpression("(" + PORT + " >= 0) and (" + PORT
 				+ " <= 32767)",
@@ -81,29 +86,27 @@ public class FirstUIPanel extends MultiInputPanel {
 		addInput(PASSWORD, "Password", "", new PasswordType(LENGTH));
 	}
 
-	public String postProcess() {
-		final String dbType = getInput(DBTYPE);
-		final String host = getInput(HOST);
-		int port = Integer.parseInt(getInput(PORT));
-		final String dbName = getInput(DBNAME);
-		final String user = getInput(USER);
-		final String password = getInput(PASSWORD);
+	private InputType getDriverInput() {
+		DataManager dm = Services.getService(DataManager.class);
+		SourceManager sourceManager = dm.getSourceManager();
+		DriverManager driverManager = sourceManager.getDriverManager();
 
+		Driver[] filtered = driverManager.getDrivers(new DBDriverFilter());
+
+		String[] ids = new String[filtered.length];
+		String[] texts = new String[filtered.length];
+		for (int i = 0; i < texts.length; i++) {
+			ReadOnlyDriver rod = (ReadOnlyDriver) filtered[i];
+			ids[i] = rod.getName();
+			texts[i] = sourceManager.getSourceTypeName(rod.getType());
+		}
+		ComboBoxChoice combo = new ComboBoxChoice(ids, texts);
+		return combo;
+	}
+
+	public String postProcess() {
 		try {
-			DBDriver dBDriver;
-			if (dbType.equals("H2 (spatial)")) {
-				dBDriver = new H2spatialDriver();
-				port = (0 == getInput("port").length()) ? 9092 : new Integer(
-						getInput("port"));
-			} else if (dbType.equals("PostgreSQL / PostGIS")) {
-				dBDriver = new PostgreSQLDriver();
-				port = (0 == getInput("port").length()) ? 5432 : new Integer(
-						getInput("port"));
-			} else {
-				throw new RuntimeException("Unsupported DBType !");
-			}
-			final Connection connection = dBDriver.getConnection(host, port,
-					dbName, user, password);
+			Connection connection = getConnection();
 			connection.close();
 			return null;
 		} catch (SQLException e) {
@@ -111,7 +114,38 @@ public class FirstUIPanel extends MultiInputPanel {
 		}
 	}
 
+	public Connection getConnection() throws SQLException {
+		DBSource dbSource = getDBSource(null);
+		Connection connection = getDBDriver().getConnection(dbSource.getHost(),
+				dbSource.getPort(), dbSource.getDbName(), dbSource.getUser(),
+				dbSource.getPassword());
+		return connection;
+	}
+
+	public DBDriver getDBDriver() {
+		DataManager dm = Services.getService(DataManager.class);
+		DriverManager driverManager = dm.getSourceManager().getDriverManager();
+		String dbType = getInput(DBTYPE);
+		DBDriver dbDriver = (DBDriver) driverManager.getDriver(dbType);
+		return dbDriver;
+	}
+
 	public String validateInput() {
 		return null;
+	}
+
+	public DBSource getDBSource(String tableName) {
+		String host = getInput(HOST);
+		int port = Integer.parseInt(getInput(PORT));
+		String dbName = getInput(DBNAME);
+		String user = getInput(USER);
+		String password = getInput(PASSWORD);
+		DBDriver dbDriver = getDBDriver();
+		if ((port == 0) || (getInput(PORT).trim().length() == 0)) {
+			port = dbDriver.getDefaultPort();
+		}
+
+		return new DBSource(host, port, dbName, user, password, tableName,
+				getDBDriver().getPrefix());
 	}
 }
