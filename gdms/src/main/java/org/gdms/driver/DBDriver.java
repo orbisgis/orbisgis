@@ -80,15 +80,6 @@ public interface DBDriver extends ReadOnlyDriver {
 	public void close(Connection conn) throws DriverException;
 
 	/**
-	 * Returns true if the driver can access a database with the given prefix in
-	 * the connection string
-	 * 
-	 * @param prefix
-	 * @return
-	 */
-	boolean prefixAccepted(String prefix);
-
-	/**
 	 * Connects to the data source and reads the specified table in the
 	 * specified order
 	 * 
@@ -121,10 +112,10 @@ public interface DBDriver extends ReadOnlyDriver {
 	int getDefaultPort();
 
 	/**
-	 * Gets a prefix accepted by this driver
+	 * Gets the array of the prefixes accepted by this driver
 	 * 
 	 * @return
 	 */
-	String getPrefix();
+	String[] getPrefixes();
 
 }

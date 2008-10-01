@@ -150,13 +150,6 @@ public class CSVStringDriver implements FileReadWriteDriver, ValueWriter {
 		return rows.size() - 1;
 	}
 
-	/**
-	 * @see org.gdms.data.driver.AlphanumericFileDriver#fileAccepted(java.io.File)
-	 */
-	public boolean fileAccepted(File f) {
-		return f.getAbsolutePath().toUpperCase().endsWith("CSV");
-	}
-
 	private List<String> getHeaderRow(final Metadata metaData)
 			throws DriverException {
 		List<String> ret = new ArrayList<String>();
@@ -361,14 +354,6 @@ public class CSVStringDriver implements FileReadWriteDriver, ValueWriter {
 
 	public String getStatementString(Geometry g) {
 		return valueWriter.getStatementString(g);
-	}
-
-	public String completeFileName(String fileName) {
-		if (!fileName.toLowerCase().endsWith(".csv")) {
-			return fileName + ".csv";
-		} else {
-			return fileName;
-		}
 	}
 
 	/**

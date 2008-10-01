@@ -276,13 +276,9 @@ public class PostgreSQLDriver extends DefaultDBDriver implements
 		return DRIVER_NAME;
 	}
 
-	public boolean prefixAccepted(String prefix) {
-		return getPrefix().equals(prefix.toLowerCase());
-	}
-
 	@Override
-	public String getPrefix() {
-		return "jdbc:postgresql";
+	public String[] getPrefixes() {
+		return new String[] { "jdbc:postgresql" };
 	}
 
 	public Number[] getScope(int dimension) throws DriverException {

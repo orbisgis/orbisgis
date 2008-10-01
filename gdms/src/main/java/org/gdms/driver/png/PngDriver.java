@@ -36,8 +36,6 @@
  */
 package org.gdms.driver.png;
 
-import java.io.File;
-
 import org.gdms.driver.FileReadWriteDriver;
 import org.gdms.driver.geotif.AbstractRasterDriver;
 import org.gdms.source.SourceManager;
@@ -51,18 +49,6 @@ public class PngDriver extends AbstractRasterDriver implements
 
 	public int getType() {
 		return SourceManager.PGW;
-	}
-
-	public String completeFileName(String fileName) {
-		if (!fileName.toLowerCase().endsWith(".png")) {
-			return fileName + ".png";
-		} else {
-			return fileName;
-		}
-	}
-
-	public boolean fileAccepted(File f) {
-		return f.getName().toUpperCase().endsWith(".PNG");
 	}
 
 	public boolean isCommitable() {

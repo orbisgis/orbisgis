@@ -36,8 +36,6 @@
  */
 package org.gdms.driver.jpg;
 
-import java.io.File;
-
 import org.gdms.driver.FileReadWriteDriver;
 import org.gdms.driver.geotif.AbstractRasterDriver;
 import org.gdms.source.SourceManager;
@@ -51,18 +49,6 @@ public class JPGDriver extends AbstractRasterDriver implements
 
 	public int getType() {
 		return SourceManager.JGW;
-	}
-
-	public String completeFileName(String fileName) {
-		if (!fileName.toLowerCase().endsWith(".jpg")) {
-			return fileName + ".jpg";
-		} else {
-			return fileName;
-		}
-	}
-
-	public boolean fileAccepted(File f) {
-		return f.getName().toUpperCase().endsWith(".JPG");
 	}
 
 	public boolean isCommitable() {

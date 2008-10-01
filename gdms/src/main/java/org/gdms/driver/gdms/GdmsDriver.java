@@ -123,18 +123,6 @@ public class GdmsDriver extends GDMSModelDriver implements FileReadWriteDriver {
 		}
 	}
 
-	public String completeFileName(String fileName) {
-		if (!fileName.toLowerCase().endsWith(".gdms")) {
-			return fileName + ".gdms";
-		} else {
-			return fileName;
-		}
-	}
-
-	public boolean fileAccepted(File f) {
-		return f.getName().toUpperCase().endsWith(".GDMS");
-	}
-
 	public void open(File file) throws DriverException {
 		try {
 			fis = new FileInputStream(file);

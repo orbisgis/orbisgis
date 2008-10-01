@@ -76,18 +76,6 @@ public class ValDriver implements FileDriver {
 		in.close();
 	}
 
-	public String completeFileName(String fileName) {
-		if (!fileName.toLowerCase().endsWith(EXTENSION)) {
-			return fileName + EXTENSION;
-		} else {
-			return fileName;
-		}
-	}
-
-	public boolean fileAccepted(File f) {
-		return f.getAbsolutePath().toLowerCase().endsWith(EXTENSION);
-	}
-
 	public void open(File file) throws DriverException {
 		try {
 			rows = new ArrayList<Value[]>();

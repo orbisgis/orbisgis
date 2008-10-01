@@ -51,14 +51,14 @@ public class DriverUtilities {
 	 * Translates the specified code by using the translation table specified by
 	 * the two last arguments. If there is no translation a RuntimeException is
 	 * thrown.
-	 *
+	 * 
 	 * @param code
 	 *            code to translate
 	 * @param source
 	 *            keys on the translation table
 	 * @param target
 	 *            translation to the keys
-	 *
+	 * 
 	 * @return translated code
 	 */
 	public static int translate(int code, int[] source, int[] target) {
@@ -76,8 +76,13 @@ public class DriverUtilities {
 		for (int i = 0; i < names.length; i++) {
 			Driver driver = dm.getDriver(names[i]);
 			if (driver instanceof FileDriver) {
-				if (((FileDriver) driver).fileAccepted(file)) {
-					return (ReadOnlyDriver) driver;
+				FileDriver fileDriver = (FileDriver) driver;
+				String[] extensions = fileDriver.getFileExtensions();
+				for (String extension : extensions) {
+					if (file.getAbsolutePath().toLowerCase().endsWith(
+							extension.toLowerCase())) {
+						return fileDriver;
+					}
 				}
 			}
 		}
@@ -91,8 +96,12 @@ public class DriverUtilities {
 		for (int i = 0; i < names.length; i++) {
 			Driver driver = dm.getDriver(names[i]);
 			if (driver instanceof DBDriver) {
-				if (((DBDriver) driver).prefixAccepted(prefix)) {
-					return (ReadOnlyDriver) driver;
+				DBDriver dbDriver = (DBDriver) driver;
+				String[] prefixes = dbDriver.getPrefixes();
+				for (String driverPrefix : prefixes) {
+					if (driverPrefix.toLowerCase().equals(prefix.toLowerCase())) {
+						return dbDriver;
+					}
 				}
 			}
 		}

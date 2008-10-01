@@ -59,7 +59,7 @@ import org.orbisgis.progress.NullProgressMonitor;
 
 /**
  * Adapter to the DataSource interface for file drivers
- *
+ * 
  * @author Fernando Gonzalez Cortes
  */
 public class FileDataSourceAdapter extends DriverDataSource implements
@@ -128,8 +128,9 @@ public class FileDataSourceAdapter extends DriverDataSource implements
 			ArrayList<EditionInfo> editionActions,
 			ArrayList<DeleteEditionInfo> deletedPKs, DataSource modifiedSource)
 			throws DriverException {
-		File temp = new File(driver.completeFileName(getDataSourceFactory()
-				.getTempFile()));
+		String tempFileName = getDataSourceFactory().getTempFile() + "."
+				+ driver.getFileExtensions()[0];
+		File temp = new File(tempFileName);
 		((FileReadWriteDriver) driver).writeFile(temp, new RightValueDecorator(
 				modifiedSource), new NullProgressMonitor());
 		try {

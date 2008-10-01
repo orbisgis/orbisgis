@@ -201,10 +201,6 @@ public class ReadDriver extends DefaultDBDriver implements ObjectDriver,
 		return new FooConnection("alpha");
 	}
 
-	public boolean prefixAccepted(String prefix) {
-		return true;
-	}
-
 	public String getNullStatementString() {
 		return null;
 	}
@@ -249,10 +245,6 @@ public class ReadDriver extends DefaultDBDriver implements ObjectDriver,
 			throws DriverException {
 	}
 
-	public String completeFileName(String fileName) {
-		return fileName;
-	}
-
 	public void copy(File in, File out) throws IOException {
 		if (failOnCopy) {
 			throw new IOException();
@@ -260,10 +252,6 @@ public class ReadDriver extends DefaultDBDriver implements ObjectDriver,
 		if (newValues != null) {
 			values = newValues;
 		}
-	}
-
-	public boolean fileAccepted(File f) {
-		return true;
 	}
 
 	public void open(File file) throws DriverException {
@@ -341,7 +329,7 @@ public class ReadDriver extends DefaultDBDriver implements ObjectDriver,
 	}
 
 	@Override
-	public String getPrefix() {
-		return "jdbc:test";
+	public String[] getPrefixes() {
+		return new String[] { "jdbc:test" };
 	}
 }

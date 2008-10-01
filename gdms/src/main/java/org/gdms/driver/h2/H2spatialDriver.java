@@ -214,13 +214,9 @@ public class H2spatialDriver extends DefaultDBDriver implements
 		return "GEOMFROMTEXT('" + writer.write(g) + "'," + g.getSRID() + ")";
 	}
 
-	public boolean prefixAccepted(String prefix) {
-		return getPrefix().equals(prefix.toLowerCase());
-	}
-
 	@Override
-	public String getPrefix() {
-		return "jdbc:h2";
+	public String[] getPrefixes() {
+		return new String[] { "jdbc:h2" };
 	}
 
 	public Number[] getScope(int dimension) throws DriverException {

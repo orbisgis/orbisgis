@@ -36,8 +36,6 @@
  */
 package org.gdms.driver.asc;
 
-import java.io.File;
-
 import org.gdms.driver.FileDriver;
 import org.gdms.driver.geotif.AbstractRasterDriver;
 import org.gdms.source.SourceManager;
@@ -50,18 +48,6 @@ public class AscDriver extends AbstractRasterDriver implements FileDriver {
 
 	public int getType() {
 		return SourceManager.ASC_GRID;
-	}
-
-	public String completeFileName(String fileName) {
-		if (!fileName.toLowerCase().endsWith(".asc")) {
-			return fileName + ".asc";
-		} else {
-			return fileName;
-		}
-	}
-
-	public boolean fileAccepted(File f) {
-		return f.getName().toUpperCase().endsWith(".ASC");
 	}
 
 	public boolean isCommitable() {

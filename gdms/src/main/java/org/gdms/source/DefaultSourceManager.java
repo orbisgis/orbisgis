@@ -834,6 +834,44 @@ public class DefaultSourceManager implements SourceManager {
 		}
 	}
 
+	public String getSourceTypeDescription(int sourceType) {
+		if ((sourceType & ASC_GRID) == ASC_GRID) {
+			return "Esri ascii grid format (*.asc)";
+		} else if ((sourceType & BPW) == BPW) {
+			return "BMP with BPW format (*.bmp)";
+		} else if ((sourceType & CIR) == CIR) {
+			return "Solene format (*.cir)";
+		} else if ((sourceType & CSV) == CSV) {
+			return "CSV format (*.csv)";
+		} else if ((sourceType & DBF) == DBF) {
+			return "DBF format (*.dbf)";
+		} else if ((sourceType & H2) == H2) {
+			return "H2 database engine";
+		} else if ((sourceType & HSQLDB) == HSQLDB) {
+			return "HSQL database";
+		} else if ((sourceType & JGW) == JGW) {
+			return "JPG with JGW format (*.jpg)";
+		} else if ((sourceType & MEMORY) == MEMORY) {
+			return "MEMORY";
+		} else if ((sourceType & PGW) == PGW) {
+			return "PNG with PGW format (*.png)";
+		} else if ((sourceType & POSTGRESQL) == POSTGRESQL) {
+			return "PostgreSQL / PostGIS";
+		} else if ((sourceType & GDMS) == GDMS) {
+			return "GDMS format (*.gdms)";
+		} else if ((sourceType & SHP) == SHP) {
+			return "Esri shapefile format (*.shp)";
+		} else if ((sourceType & TFW) == TFW) {
+			return "TIF with TFW format (*.tif; *.tiff)";
+		} else if ((sourceType & VAL) == VAL) {
+			return "Solene format (*.val)";
+		} else if ((sourceType & XYZDEM) == XYZDEM) {
+			return "XYZ DEM (*.xyz)";
+		} else {
+			return "UNKNOWN";
+		}
+	}
+
 	public String[] getSourceNames() {
 		return nameSource.keySet().toArray(new String[0]);
 	}

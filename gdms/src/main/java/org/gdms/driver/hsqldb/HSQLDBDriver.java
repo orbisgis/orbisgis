@@ -126,15 +126,11 @@ public class HSQLDBDriver extends DefaultDBDriver implements DBReadWriteDriver {
 		return "CREATE CACHED TABLE";
 	}
 
-	public boolean prefixAccepted(String prefix) {
-		return getPrefix().equals(prefix.toLowerCase());
+	@Override
+	public String[] getPrefixes() {
+		return new String[] { "jdbc:hsqldb:file" };
 	}
 
-	@Override
-	public String getPrefix() {
-		return "jdbc:hsqldb:file";
-	}
-	
 	public Number[] getScope(int dimension) throws DriverException {
 		return null;
 	}

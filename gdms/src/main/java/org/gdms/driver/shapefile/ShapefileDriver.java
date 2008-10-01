@@ -116,18 +116,6 @@ public class ShapefileDriver implements FileReadWriteDriver {
 		}
 	}
 
-	public String completeFileName(String fileName) {
-		if (!fileName.toLowerCase().endsWith(".shp")) {
-			return fileName + ".shp";
-		} else {
-			return fileName;
-		}
-	}
-
-	public boolean fileAccepted(File f) {
-		return f.getName().toUpperCase().endsWith(".SHP");
-	}
-
 	public void open(File f) throws DriverException {
 		try {
 			FileInputStream shpFis = new FileInputStream(f);

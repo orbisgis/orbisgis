@@ -212,14 +212,6 @@ public class DBFDriver implements FileReadWriteDriver {
 		}
 	}
 
-	public String completeFileName(String fileName) {
-		if (!fileName.toLowerCase().endsWith(".dbf")) {
-			return fileName + ".dbf";
-		} else {
-			return fileName;
-		}
-	}
-
 	public void copy(File in, File out) throws IOException {
 		FileUtils.copy(in, out);
 	}
@@ -335,10 +327,6 @@ public class DBFDriver implements FileReadWriteDriver {
 		} catch (IOException e) {
 			throw new DriverException(e);
 		}
-	}
-
-	public boolean fileAccepted(File f) {
-		return f.getAbsolutePath().toUpperCase().endsWith(".DBF");
 	}
 
 	public Value getFieldValue(long rowIndex, int fieldId)
