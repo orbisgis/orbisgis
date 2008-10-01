@@ -37,22 +37,51 @@
 package org.sif.multiInputPanel;
 
 import java.awt.Component;
+import java.util.HashMap;
 
 import javax.swing.JComboBox;
+import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.plaf.basic.BasicComboBoxRenderer;
 
 import org.sif.SQLUIPanel;
 
 public class ComboBoxChoice implements InputType {
 
+	private HashMap<String, String> idText = new HashMap<String, String>();
 	protected JComboBox comp;
 
 	public ComboBoxChoice(String... choices) {
-		setChoices(choices);
+		this(choices, choices);
 	}
 
-	protected void setChoices(String... choices) {
-		comp = new JComboBox(choices);
-		if (choices.length > 0) {
+	public ComboBoxChoice(String[] ids, String[] texts) {
+		setChoices(ids, texts);
+	}
+
+	protected void setChoices(String[] options) {
+		setChoices(options, options);
+	}
+	
+	protected void setChoices(String[] ids, String[] texts) {
+		for (int i = 0; i < texts.length; i++) {
+			idText.put(ids[i], texts[i]);
+		}
+		comp = new JComboBox(ids);
+		comp.setRenderer(new BasicComboBoxRenderer() {
+			@Override
+			public Component getListCellRendererComponent(JList list,
+					Object value, int index, boolean isSelected,
+					boolean cellHasFocus) {
+				JLabel ret = (JLabel) super.getListCellRendererComponent(list, value,
+						index, isSelected, cellHasFocus);
+				
+				ret.setText(idText.get(value));
+				
+				return ret;				
+			}
+		});
+		if (ids.length > 0) {
 			comp.setSelectedIndex(0);
 		}
 	}
