@@ -94,7 +94,7 @@ public class CreateFileResource implements IResourceAction {
 		for (int i = 0; i < filtered.length; i++) {
 			driverNames[i] = filtered[i].getName();
 			ReadOnlyDriver rod = (ReadOnlyDriver) filtered[i];
-			typeNames[i] = dm.getSourceManager().getSourceTypeName(
+			typeNames[i] = dm.getSourceManager().getSourceTypeDescription(
 					rod.getType());
 		}
 
@@ -132,8 +132,21 @@ public class CreateFileResource implements IResourceAction {
 				String name = null;
 				if (file) {
 					File selectedFile = saveFilePanel.getSelectedFile();
-					selectedFile = new File(((FileDriver) driver)
-							.completeFileName(selectedFile.getAbsolutePath()));
+					String selectedPath = selectedFile.getAbsolutePath();
+					boolean hasExtension = false;
+					String[] extensions = ((FileDriver) driver)
+							.getFileExtensions();
+					for (String extension : extensions) {
+						if (selectedPath.toLowerCase().endsWith(
+								extension.toLowerCase())) {
+							hasExtension = true;
+							break;
+						}
+					}
+					if (!hasExtension) {
+						selectedFile = new File(selectedPath + "."
+								+ extensions[0]);
+					}
 					dsc = new FileSourceCreation(selectedFile, mc.getMetadata());
 					dsd = new FileSourceDefinition(selectedFile);
 					name = selectedFile.getName();

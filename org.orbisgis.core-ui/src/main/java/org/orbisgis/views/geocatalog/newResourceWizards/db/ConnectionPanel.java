@@ -98,7 +98,7 @@ public class ConnectionPanel extends MultiInputPanel {
 		for (int i = 0; i < texts.length; i++) {
 			ReadOnlyDriver rod = (ReadOnlyDriver) filtered[i];
 			ids[i] = rod.getName();
-			texts[i] = sourceManager.getSourceTypeName(rod.getType());
+			texts[i] = sourceManager.getSourceTypeDescription(rod.getType());
 		}
 		ComboBoxChoice combo = new ComboBoxChoice(ids, texts);
 		return combo;
@@ -146,6 +146,6 @@ public class ConnectionPanel extends MultiInputPanel {
 		}
 
 		return new DBSource(host, port, dbName, user, password, tableName,
-				getDBDriver().getPrefix());
+				getDBDriver().getPrefixes()[0]);
 	}
 }

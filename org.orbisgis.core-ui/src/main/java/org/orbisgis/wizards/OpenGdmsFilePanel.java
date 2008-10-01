@@ -59,8 +59,8 @@ public class OpenGdmsFilePanel extends OpenFilePanel {
 		for (int i = 0; i < filtered.length; i++) {
 			FileDriver fileDriver = (FileDriver) filtered[i];
 			String[] extensions = fileDriver.getFileExtensions();
-			this.addFilter(extensions, sourceManager.getSourceTypeName(fileDriver
-					.getType()));
+			this.addFilter(extensions, sourceManager
+					.getSourceTypeDescription(fileDriver.getType()));
 		}
 	}
 

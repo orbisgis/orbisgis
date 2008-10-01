@@ -40,8 +40,6 @@ import org.gdms.driver.driverManager.Driver;
 import org.gdms.driver.driverManager.DriverManager;
 import org.gdms.source.AndDriverFilter;
 import org.gdms.source.DBDriverFilter;
-import org.gdms.source.NotDriverFilter;
-import org.gdms.source.RasterDriverFilter;
 import org.gdms.source.WritableDriverFilter;
 import org.orbisgis.DataManager;
 import org.orbisgis.Services;
@@ -65,7 +63,6 @@ public class CreateDBResource implements IResourceAction {
 		DataManager dm = (DataManager) Services.getService(DataManager.class);
 		DriverManager driverManager = dm.getSourceManager().getDriverManager();
 		Driver[] drivers = driverManager.getDrivers(new AndDriverFilter(
-				new NotDriverFilter(new RasterDriverFilter()),
 				new DBDriverFilter(), new WritableDriverFilter()));
 		CreateFileResource.createSource(dm, driverManager, drivers);
 	}
