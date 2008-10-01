@@ -432,4 +432,9 @@ public class GdmsDriver extends GDMSModelDriver implements FileReadWriteDriver {
 		return null;
 	}
 
+	@Override
+	public String[] getFileExtensions() {
+		return new String[] { "gdms" };
+	}
+
 }

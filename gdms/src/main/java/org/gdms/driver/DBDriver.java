@@ -41,7 +41,7 @@ import java.sql.SQLException;
 
 /**
  * Interface to implement by the drivers that use jdbc to access data
- *
+ * 
  * @author Fernando Gonzalez Cortes
  */
 public interface DBDriver extends ReadOnlyDriver {
@@ -49,20 +49,20 @@ public interface DBDriver extends ReadOnlyDriver {
 	/**
 	 * Provides connections to the database. Each invocation creates and returns
 	 * a new connection. The connection are managed in upper layers
-	 *
+	 * 
 	 * @param host
-	 *
+	 * 
 	 * @param port
 	 *            Port of the database management system. -1 means default port
 	 * @param dbName
-	 *
+	 * 
 	 * @param user
-	 *
+	 * 
 	 * @param password
-	 *
-	 *
+	 * 
+	 * 
 	 * @return Connection
-	 *
+	 * 
 	 * @throws SQLException
 	 *             If some error happens
 	 */
@@ -71,9 +71,9 @@ public interface DBDriver extends ReadOnlyDriver {
 
 	/**
 	 * Free any resource reserved in the open method
-	 *
+	 * 
 	 * @param conn
-	 *
+	 * 
 	 * @throws SQLException
 	 *             If the free fails
 	 */
@@ -82,7 +82,7 @@ public interface DBDriver extends ReadOnlyDriver {
 	/**
 	 * Returns true if the driver can access a database with the given prefix in
 	 * the connection string
-	 *
+	 * 
 	 * @param prefix
 	 * @return
 	 */
@@ -91,6 +91,7 @@ public interface DBDriver extends ReadOnlyDriver {
 	/**
 	 * Connects to the data source and reads the specified table in the
 	 * specified order
+	 * 
 	 * @param tableName
 	 *            Name of the table where the data is in
 	 * @param host
@@ -98,18 +99,32 @@ public interface DBDriver extends ReadOnlyDriver {
 	 * @param dbName
 	 * @param user
 	 * @param password
-	 *
+	 * 
 	 * @throws DriverException
 	 */
-	public void open(Connection con, String tableName)
-			throws DriverException;
+	public void open(Connection con, String tableName) throws DriverException;
 
 	/**
 	 * Retrieves all Table names in a database
+	 * 
 	 * @param c
 	 * @return A result set
 	 * @throws DriverException
 	 */
 	public TableDescription[] getTables(Connection c) throws DriverException;
+
+	/**
+	 * Get the port the dbms accessed by this driver listen by default
+	 * 
+	 * @return
+	 */
+	int getDefaultPort();
+
+	/**
+	 * Gets a prefix accepted by this driver
+	 * 
+	 * @return
+	 */
+	String getPrefix();
 
 }

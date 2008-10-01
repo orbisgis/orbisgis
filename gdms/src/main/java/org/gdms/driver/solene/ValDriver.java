@@ -174,4 +174,8 @@ public class ValDriver implements FileDriver {
 		return SourceManager.VAL;
 	}
 
+	@Override
+	public String[] getFileExtensions() {
+		return new String[] { EXTENSION };
+	}
 }

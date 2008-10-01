@@ -329,4 +329,19 @@ public class ReadDriver extends DefaultDBDriver implements ObjectDriver,
 	public String validateMetadata(Metadata metadata) {
 		return null;
 	}
+
+	@Override
+	public int getDefaultPort() {
+		return 0;
+	}
+
+	@Override
+	public String[] getFileExtensions() {
+		return new String[] { "" };
+	}
+
+	@Override
+	public String getPrefix() {
+		return "jdbc:test";
+	}
 }

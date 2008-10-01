@@ -660,4 +660,9 @@ public class ShapefileDriver implements FileReadWriteDriver {
 			return null;
 		}
 	}
+
+	@Override
+	public String[] getFileExtensions() {
+		return new String[] { "shp" };
+	}
 }

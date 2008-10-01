@@ -428,4 +428,10 @@ public class CSVStringDriver implements FileReadWriteDriver, ValueWriter {
 
 		return null;
 	}
+
+
+	@Override
+	public String[] getFileExtensions() {
+		return new String[] { "csv" };
+	}
 }

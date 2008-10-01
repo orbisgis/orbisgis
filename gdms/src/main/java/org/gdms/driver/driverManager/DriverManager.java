@@ -51,12 +51,12 @@ import org.apache.log4j.Logger;
  * del cual se encuentran uno o m�s jar's. La clase Driver ha de implementar la
  * interfaz Driver y su nombre debe terminar en "Driver" y tener un constructor
  * sin par�metros.
- *
+ * 
  * <p>
  * Esta clase es la encargada de la carga y validaci�n de los drivers y de la
  * obtenci�n de los mismo apartir de un tipo
  * </p>
- *
+ * 
  * @author Fernando Gonz�lez Cort�s
  */
 public class DriverManager {
@@ -68,11 +68,11 @@ public class DriverManager {
 
 	/**
 	 * Devuelve un array con los directorios de los plugins
-	 *
+	 * 
 	 * @param dirExt
 	 *            Directorio a partir del que se cuelgan los directorios de los
 	 *            drivers
-	 *
+	 * 
 	 * @return Array de los subdirectorios
 	 */
 	private File[] getPluginDirs(File dirExt) {
@@ -94,10 +94,10 @@ public class DriverManager {
 
 	/**
 	 * Obtiene los jar's de un directorio y los devuelve en un array
-	 *
+	 * 
 	 * @param dir
 	 *            Directorio del que se quieren obtener los jars
-	 *
+	 * 
 	 * @return Array de jars
 	 */
 	private URL[] getJars(File dir) {
@@ -119,11 +119,10 @@ public class DriverManager {
 
 	/**
 	 * Carga los drivers y asocia con el tipo del driver.
-	 *
+	 * 
 	 * @param dir
 	 *            Directorio ra�z de los drivers
 	 */
-	@SuppressWarnings("unchecked")
 	public void loadDrivers(File dir) {
 		try {
 			if (validation == null) {
@@ -185,7 +184,7 @@ public class DriverManager {
 
 	/**
 	 * DOCUMENT ME!
-	 *
+	 * 
 	 * @return DOCUMENT ME!
 	 */
 	public Throwable[] getLoadFailures() {
@@ -194,12 +193,12 @@ public class DriverManager {
 
 	/**
 	 * Obtiene el Driver asociado al tipo que se le pasa como par�metro
-	 *
+	 * 
 	 * @param name
 	 *            Objeto que devolvi� alguno de los drivers en su m�todo getType
-	 *
+	 * 
 	 * @return El driver asociado o null si no se encuentra el driver
-	 *
+	 * 
 	 * @throws DriverLoadException
 	 *             if this Class represents an abstract class, an interface, an
 	 *             array class, a primitive type, or void; or if the class has
@@ -234,7 +233,7 @@ public class DriverManager {
 	 * si cada driver es v�lido mediante el m�todo validate del objeto
 	 * validation establecido con este m�todo. Pro defecto se validan todos los
 	 * drivers
-	 *
+	 * 
 	 * @param validation
 	 *            objeto validador
 	 */
@@ -244,7 +243,7 @@ public class DriverManager {
 
 	/**
 	 * Obtiene los tipos de todos los drivers del sistema
-	 *
+	 * 
 	 * @return DOCUMENT ME!
 	 */
 	public String[] getDriverNames() {
@@ -263,10 +262,10 @@ public class DriverManager {
 	/**
 	 * Obtiene la clase del driver relacionado con el tipo que se pasa como
 	 * par�metro
-	 *
+	 * 
 	 * @param driverName
 	 *            DOCUMENT ME!
-	 *
+	 * 
 	 * @return DOCUMENT ME!
 	 */
 	public Class<? extends Driver> getDriverClassByName(String driverName) {
@@ -275,14 +274,14 @@ public class DriverManager {
 
 	/**
 	 * DOCUMENT ME!
-	 *
+	 * 
 	 * @param driverName
 	 *            DOCUMENT ME!
 	 * @param superClass
 	 *            DOCUMENT ME!
-	 *
+	 * 
 	 * @return DOCUMENT ME!
-	 *
+	 * 
 	 * @throws RuntimeException
 	 *             DOCUMENT ME!
 	 */
@@ -324,12 +323,12 @@ public class DriverManager {
 
 	/**
 	 * DOCUMENT ME!
-	 *
+	 * 
 	 * @param interface_
 	 *            DOCUMENT ME!
 	 * @param superInterface
 	 *            DOCUMENT ME!
-	 *
+	 * 
 	 * @return DOCUMENT ME!
 	 */
 	private boolean recursiveIsA(Class<? extends Object> interface_,
@@ -361,5 +360,27 @@ public class DriverManager {
 		}
 
 		return false;
+	}
+
+	public Driver[] getDrivers(DriverFilter driverFilter) {
+		ArrayList<Driver> drivers = new ArrayList<Driver>();
+
+		Iterator<Class<? extends Driver>> iterator = nombreDriverClass.values()
+				.iterator();
+
+		while (iterator.hasNext()) {
+			try {
+				Driver driver = iterator.next().newInstance();
+				if (driverFilter.acceptDriver(driver)) {
+					drivers.add(driver);
+				}
+			} catch (InstantiationException e) {
+				// ignore
+			} catch (IllegalAccessException e) {
+				// ignore
+			}
+		}
+
+		return drivers.toArray(new Driver[0]);
 	}
 }

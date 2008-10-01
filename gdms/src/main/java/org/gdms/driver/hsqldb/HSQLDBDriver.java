@@ -127,9 +127,14 @@ public class HSQLDBDriver extends DefaultDBDriver implements DBReadWriteDriver {
 	}
 
 	public boolean prefixAccepted(String prefix) {
-		return "jdbc:hsqldb:file".equals(prefix.toLowerCase());
+		return getPrefix().equals(prefix.toLowerCase());
 	}
 
+	@Override
+	public String getPrefix() {
+		return "jdbc:hsqldb:file";
+	}
+	
 	public Number[] getScope(int dimension) throws DriverException {
 		return null;
 	}
@@ -206,6 +211,11 @@ public class HSQLDBDriver extends DefaultDBDriver implements DBReadWriteDriver {
 
 	public String validateMetadata(Metadata metadata) {
 		return null;
+	}
+
+	@Override
+	public int getDefaultPort() {
+		return 9001;
 	}
 
 }

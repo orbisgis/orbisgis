@@ -69,4 +69,9 @@ public class TifDriver extends AbstractRasterDriver implements
 		return true;
 	}
 
+	@Override
+	public String[] getFileExtensions() {
+		return new String[] { "tif", "tiff" };
+	}
+
 }

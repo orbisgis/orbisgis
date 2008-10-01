@@ -68,4 +68,9 @@ public class AscDriver extends AbstractRasterDriver implements FileDriver {
 		return false;
 	}
 
+	@Override
+	public String[] getFileExtensions() {
+		return new String[] { "asc" };
+	}
+
 }

@@ -215,7 +215,12 @@ public class H2spatialDriver extends DefaultDBDriver implements
 	}
 
 	public boolean prefixAccepted(String prefix) {
-		return "jdbc:h2".equals(prefix.toLowerCase());
+		return getPrefix().equals(prefix.toLowerCase());
+	}
+
+	@Override
+	public String getPrefix() {
+		return "jdbc:h2";
 	}
 
 	public Number[] getScope(int dimension) throws DriverException {
@@ -265,5 +270,10 @@ public class H2spatialDriver extends DefaultDBDriver implements
 
 	public String validateMetadata(Metadata metadata) {
 		return null;
+	}
+
+	@Override
+	public int getDefaultPort() {
+		return 9092;
 	}
 }

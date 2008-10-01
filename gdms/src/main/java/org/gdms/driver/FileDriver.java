@@ -47,7 +47,7 @@ public interface FileDriver extends ReadOnlyDriver {
 
 	/**
 	 * Closes the file being accessed
-	 *
+	 * 
 	 * @throws DriverExceptio
 	 *             if something fails
 	 */
@@ -55,10 +55,10 @@ public interface FileDriver extends ReadOnlyDriver {
 
 	/**
 	 * Returns true if the driver can read the file specified as a parameter
-	 *
+	 * 
 	 * @param f
 	 *            File to check
-	 *
+	 * 
 	 * @return DOCUMENT ME!
 	 */
 	boolean fileAccepted(File f);
@@ -66,10 +66,17 @@ public interface FileDriver extends ReadOnlyDriver {
 	/**
 	 * Returns a file name that will be accepted by the driver. Example: a ->
 	 * a.csv
-	 *
+	 * 
 	 * @param fileName
 	 *            base name
 	 * @return
 	 */
 	String completeFileName(String fileName);
+
+	/**
+	 * Get the valid extension a file accessed by this driver can have
+	 * 
+	 * @return
+	 */
+	String[] getFileExtensions();
 }

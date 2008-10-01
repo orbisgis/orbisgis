@@ -407,4 +407,10 @@ public class CirDriver implements FileReadWriteDriver {
 	public String validateMetadata(Metadata metadata) throws DriverException {
 		return null;
 	}
+
+	@Override
+	public String[] getFileExtensions() {
+		return new String[] { EXTENSION };
+	}
+
 }

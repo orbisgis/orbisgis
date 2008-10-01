@@ -69,4 +69,9 @@ public class PngDriver extends AbstractRasterDriver implements
 		return false;
 	}
 
+	@Override
+	public String[] getFileExtensions() {
+		return new String[] { "png" };
+	}
+
 }

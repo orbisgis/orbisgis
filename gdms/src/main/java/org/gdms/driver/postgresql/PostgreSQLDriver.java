@@ -108,7 +108,7 @@ public class PostgreSQLDriver extends DefaultDBDriver implements
 
 	/**
 	 * DOCUMENT ME!
-	 *
+	 * 
 	 * @param host
 	 *            DOCUMENT ME!
 	 * @param port
@@ -119,13 +119,13 @@ public class PostgreSQLDriver extends DefaultDBDriver implements
 	 *            DOCUMENT ME!
 	 * @param password
 	 *            DOCUMENT ME!
-	 *
+	 * 
 	 * @return DOCUMENT ME!
-	 *
+	 * 
 	 * @throws SQLException
 	 * @throws RuntimeException
 	 *             DOCUMENT ME!
-	 *
+	 * 
 	 * @see org.gdms.driver.DBDriver#connect(java.lang.String)
 	 */
 	public Connection getConnection(String host, int port, String dbName,
@@ -277,7 +277,12 @@ public class PostgreSQLDriver extends DefaultDBDriver implements
 	}
 
 	public boolean prefixAccepted(String prefix) {
-		return "jdbc:postgresql".equals(prefix.toLowerCase());
+		return getPrefix().equals(prefix.toLowerCase());
+	}
+
+	@Override
+	public String getPrefix() {
+		return "jdbc:postgresql";
 	}
 
 	public Number[] getScope(int dimension) throws DriverException {
@@ -527,5 +532,10 @@ public class PostgreSQLDriver extends DefaultDBDriver implements
 
 	public String validateMetadata(Metadata metadata) {
 		return null;
+	}
+
+	@Override
+	public int getDefaultPort() {
+		return 5432;
 	}
 }

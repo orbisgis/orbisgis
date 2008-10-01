@@ -387,4 +387,9 @@ public class DBFDriver implements FileReadWriteDriver {
 		return null;
 	}
 
+	@Override
+	public String[] getFileExtensions() {
+		return new String[] { "dbf" };
+	}
+
 }
