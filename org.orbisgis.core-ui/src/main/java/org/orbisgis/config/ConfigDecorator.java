@@ -48,7 +48,6 @@ public class ConfigDecorator implements IConfiguration {
 
 	@Override
 	public JComponent getComponent() {
-
 		return getConfig().getComponent();
 	}
 

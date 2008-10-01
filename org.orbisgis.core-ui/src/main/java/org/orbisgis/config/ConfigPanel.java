@@ -17,7 +17,7 @@ import javax.swing.event.ListSelectionListener;
 
 import org.sif.AbstractUIPanel;
 
-public class ConfigDialog extends AbstractUIPanel {
+public class ConfigPanel extends AbstractUIPanel {
 
 	private JSplitPane pane;
 	private ArrayList<ConfigDecorator> configs;
@@ -26,7 +26,7 @@ public class ConfigDialog extends AbstractUIPanel {
 	/**
 	 * Creates a new configuration dialog
 	 */
-	public ConfigDialog() {
+	public ConfigPanel() {
 		configs = EPConfigHelper.getConfigurations();
 		configTree = new ConfigTree(configs);
 		configTree.addSelectionListener(new ListSelectionListener() {
