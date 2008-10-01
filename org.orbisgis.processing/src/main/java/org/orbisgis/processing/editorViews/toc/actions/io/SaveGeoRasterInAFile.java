@@ -38,11 +38,20 @@ package org.orbisgis.processing.editorViews.toc.actions.io;
 
 import java.io.IOException;
 
+import org.gdms.driver.FileDriver;
+import org.gdms.driver.driverManager.Driver;
+import org.gdms.driver.driverManager.DriverManager;
+import org.gdms.source.AndDriverFilter;
+import org.gdms.source.FileDriverFilter;
+import org.gdms.source.RasterDriverFilter;
+import org.gdms.source.SourceManager;
+import org.gdms.source.WritableDriverFilter;
 import org.grap.model.GeoRaster;
 import org.grap.processing.OperationException;
+import org.orbisgis.DataManager;
+import org.orbisgis.Services;
 import org.orbisgis.pluginManager.ui.SaveFilePanel;
 import org.orbisgis.processing.editorViews.toc.actions.utilities.AbstractRasterProcess;
-import org.orbisgis.processing.editorViews.toc.actions.utilities.NewAbstractRasterProcess;
 import org.sif.UIFactory;
 
 public class SaveGeoRasterInAFile extends AbstractRasterProcess {
@@ -53,12 +62,19 @@ public class SaveGeoRasterInAFile extends AbstractRasterProcess {
 		final SaveFilePanel outfilePanel = new SaveFilePanel(
 				"org.orbisgis.geoview.rasterProcessing.save",
 				"Choose a file format");
-		outfilePanel.addFilter("asc", "ASC ESRI GRID (*.asc)");
-		outfilePanel.addFilter(new String[] { "tif", "tiff" },
-				"TIF with TFW format (*.tif; *.tiff)");
-		outfilePanel.addFilter("png", "PNG with PGW format (*.png)");
-		outfilePanel.addFilter("jpg", "JPG with JGW format (*.jpg)");
-		outfilePanel.addFilter("bmp", "BMP with BPW format (*.bmp)");
+		DataManager dm = Services.getService(DataManager.class);
+		SourceManager sourceManager = dm.getSourceManager();
+		DriverManager driverManager = sourceManager.getDriverManager();
+
+		Driver[] filtered = driverManager.getDrivers(new AndDriverFilter(
+				new FileDriverFilter(), new RasterDriverFilter(),
+				new WritableDriverFilter()));
+		for (int i = 0; i < filtered.length; i++) {
+			FileDriver fileDriver = (FileDriver) filtered[i];
+			String[] extensions = fileDriver.getFileExtensions();
+			outfilePanel.addFilter(extensions, sourceManager
+					.getSourceTypeDescription(fileDriver.getType()));
+		}
 
 		if (UIFactory.showDialog(outfilePanel)) {
 			geoRasterSrc.save(outfilePanel.getSelectedFile().getAbsolutePath());
