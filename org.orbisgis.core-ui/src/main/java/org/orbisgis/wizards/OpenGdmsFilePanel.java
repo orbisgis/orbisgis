@@ -36,6 +36,13 @@
  */
 package org.orbisgis.wizards;
 
+import org.gdms.driver.FileDriver;
+import org.gdms.driver.driverManager.Driver;
+import org.gdms.driver.driverManager.DriverManager;
+import org.gdms.source.FileDriverFilter;
+import org.gdms.source.SourceManager;
+import org.orbisgis.DataManager;
+import org.orbisgis.Services;
 import org.orbisgis.pluginManager.ui.OpenFilePanel;
 
 public class OpenGdmsFilePanel extends OpenFilePanel {
@@ -44,16 +51,17 @@ public class OpenGdmsFilePanel extends OpenFilePanel {
 
 	public OpenGdmsFilePanel(String title) {
 		super(OPEN_GDMS_FILE_PANEL, title);
-		this.addFilter("shp", "Esri shapefile format (*.shp)");
-		this.addFilter("gdms", "GDMS format (*.gdms)");
-		this.addFilter("cir", "Solene format (*.cir)");
-		this.addFilter("dbf", "DBF format (*.dbf)");
-		this.addFilter("csv", "CSV format (*.csv)");
-		this.addFilter(new String[] { "tif", "tiff" },
-				"TIF with TFW format (*.tif; *.tiff)");
-		this.addFilter("png", "PNG with PGW format (*.png)");
-		this.addFilter("asc", "Esri ascii grid format (*.asc)");
-		this.addFilter("jpg", "JPG with JGW format (*.jpg)");
+		DataManager dm = Services.getService(DataManager.class);
+		SourceManager sourceManager = dm.getSourceManager();
+		DriverManager driverManager = sourceManager.getDriverManager();
+
+		Driver[] filtered = driverManager.getDrivers(new FileDriverFilter());
+		for (int i = 0; i < filtered.length; i++) {
+			FileDriver fileDriver = (FileDriver) filtered[i];
+			String[] extensions = fileDriver.getFileExtensions();
+			this.addFilter(extensions, sourceManager.getSourceTypeName(fileDriver
+					.getType()));
+		}
 	}
 
 	public String[] getErrorMessages() {
