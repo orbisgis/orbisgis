@@ -61,6 +61,8 @@ import org.orbisgis.pluginManager.PluginActivator;
 import org.orbisgis.pluginManager.PluginManager;
 import org.orbisgis.pluginManager.SystemListener;
 import org.orbisgis.sql.customQuery.Geomark;
+import org.orbisgis.updates.DefaultUpdateManager;
+import org.orbisgis.updates.UpdateManager;
 import org.orbisgis.view.ViewManager;
 import org.orbisgis.views.editor.EditorManager;
 import org.orbisgis.window.EPWindowHelper;
@@ -74,6 +76,7 @@ public class Activator implements PluginActivator {
 
 	private RefreshViewFunctionManagerListener refreshFMListener = new RefreshViewFunctionManagerListener();
 	private DataSourceFactory dsf;
+	private UpdateManager um;
 
 	public void start() throws Exception {
 		QueryManager.registerQuery(Geomark.class);
@@ -169,6 +172,12 @@ public class Activator implements PluginActivator {
 		// geocognition view
 		FunctionManager.addFunctionManagerListener(refreshFMListener);
 		QueryManager.addQueryManagerListener(refreshFMListener);
+
+		// Search for updates
+		um = new DefaultUpdateManager();
+		Services.registerService(DefaultUpdateManager.class,
+				"Service to install updates from a remote site", um);
+		um.startSearch();
 	}
 
 	private void initializeWorkspace() {
@@ -218,6 +227,11 @@ public class Activator implements PluginActivator {
 		} catch (DriverException e) {
 			Services.getErrorManager().error("Cannot save source information",
 					e);
+		}
+
+		if (um.getUpdateFiles().size() > 0) {
+			System.err.println("UPDATEEEEEEE!");
+			// TODO launch updater prior to shutdown
 		}
 	}
 

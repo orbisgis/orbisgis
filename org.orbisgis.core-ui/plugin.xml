@@ -107,6 +107,9 @@
 		<action id="org.orbisgis.actions.About" text="About OrbisGIS"
 			menu-id="org.orbisgis.Help"
 			class="org.orbisgis.actions.about.About"/>
+		<action id="org.orbisgis.actions.Update" text="Updates..."
+			menu-id="org.orbisgis.Help"
+			class="org.orbisgis.actions.Update"/>
 		<action id="org.orbisgis.actions.NewResource" text="New Resource"
 			menu-id="org.orbisgis.Geocatalog" icon="/org/orbisgis/images/add.png"
 			class="org.orbisgis.actions.NewResource"/>
