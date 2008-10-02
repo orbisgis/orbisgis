@@ -111,4 +111,14 @@ public interface Workspace {
 	 * @param listener
 	 */
 	void removeWorkspaceListener(WorkspaceListener listener);
+
+	/**
+	 * Returns the folder inside the workspace where temporal results can be
+	 * stored. At the higher frequency this folder will be removed each time the
+	 * application exits
+	 *
+	 * @return
+	 */
+	File getTempFolder();
+
 }
