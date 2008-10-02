@@ -15,6 +15,10 @@ import javax.swing.SwingConstants;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
+import org.orbisgis.action.EPBaseActionHelper;
+import org.orbisgis.action.IMenu;
+import org.orbisgis.action.MenuTree;
+import org.orbisgis.action.ToolBarArray;
 import org.sif.AbstractUIPanel;
 
 public class ConfigPanel extends AbstractUIPanel {
@@ -27,6 +31,13 @@ public class ConfigPanel extends AbstractUIPanel {
 	 * Creates a new configuration dialog
 	 */
 	public ConfigPanel() {
+		MenuTree menuTree = new MenuTree();
+		ToolBarArray foo = new ToolBarArray();
+		EPBaseActionHelper.configureParentMenusAndToolBars(
+				new String[] { "org.orbisgis.Configuration" }, "menu",
+				menuTree, foo);
+		IMenu root = menuTree.getRoot();
+		// TODO create tree model linking IMenu's with Configurations
 		configs = EPConfigHelper.getConfigurations();
 		configTree = new ConfigTree(configs);
 		configTree.addSelectionListener(new ListSelectionListener() {
@@ -55,7 +66,8 @@ public class ConfigPanel extends AbstractUIPanel {
 		pane.setRightComponent(init);
 		pane.setLeftComponent(configTree);
 
-		pane.addPropertyChangeListener(JSplitPane.LAST_DIVIDER_LOCATION_PROPERTY,
+		pane.addPropertyChangeListener(
+				JSplitPane.LAST_DIVIDER_LOCATION_PROPERTY,
 				new PropertyChangeListener() {
 					@Override
 					public void propertyChange(PropertyChangeEvent evt) {

@@ -135,4 +135,9 @@ public class MenuTree {
 			menu.remove(menuToDelete);
 		}
 	}
+
+	public IMenu getRoot() {
+		linkAllMenus();
+		return root;
+	}
 }

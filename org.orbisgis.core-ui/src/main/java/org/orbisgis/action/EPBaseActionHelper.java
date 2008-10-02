@@ -48,7 +48,19 @@ import org.orbisgis.pluginManager.RegistryFactory;
 
 public class EPBaseActionHelper {
 
-	private static final Logger logger = Logger.getLogger(EPBaseActionHelper.class);
+	private static final Logger logger = Logger
+			.getLogger(EPBaseActionHelper.class);
+
+	/**
+	 * @see #configureParentMenusAndToolBars(String[], String, MenuTree,
+	 *      ToolBarArray)
+	 */
+	public static void configureParentMenusAndToolBars(
+			String[] extensionPointIDs, MenuTree menuTree,
+			ToolBarArray toolBarArray) {
+		configureParentMenusAndToolBars(extensionPointIDs, "menu", menuTree,
+				toolBarArray);
+	}
 
 	/**
 	 * Reads the configuration for any extension to any of the specified
@@ -57,13 +69,14 @@ public class EPBaseActionHelper {
 	 * similar to the one in action.xsd. This method doesn't populate the leaves
 	 * in the menu tree nor the buttons in the tool bar. It only creates the
 	 * needed parents
-	 *
+	 * 
 	 * @param extensionPointIDs
+	 * @param menuTag
 	 * @param menuTree
 	 * @param toolBarArray
 	 */
 	public static void configureParentMenusAndToolBars(
-			String[] extensionPointIDs, MenuTree menuTree,
+			String[] extensionPointIDs, String menuTag, MenuTree menuTree,
 			ToolBarArray toolBarArray) {
 
 		IExtensionRegistry reg = RegistryFactory.getRegistry();
@@ -71,9 +84,9 @@ public class EPBaseActionHelper {
 			Extension[] exts = reg.getExtensions(extensionPointID);
 			for (int j = 0; j < exts.length; j++) {
 				Configuration c = exts[j].getConfiguration();
-				int n = c.evalInt("count(/extension/menu)");
+				int n = c.evalInt("count(/extension/" + menuTag + ")");
 				for (int i = 0; i < n; i++) {
-					String base = "/extension/menu[" + (i + 1) + "]";
+					String base = "/extension/" + menuTag + "[" + (i + 1) + "]";
 					String parent = c.getAttribute(base, "parent");
 					String id = c.getAttribute(base, "id");
 					String group = c.getAttribute(base, "menu-group");
@@ -100,7 +113,7 @@ public class EPBaseActionHelper {
 	/**
 	 * Populates the specified menu and tool bar structures with the actions
 	 * that will fire the extension code.
-	 *
+	 * 
 	 * @param extensionPointID
 	 *            Extension point which extensions will be processed to add the
 	 *            actions
@@ -156,13 +169,13 @@ public class EPBaseActionHelper {
 							}
 							AbstractButton btn;
 							if (selectable) {
-								btn = new JActionToggleButton(
-										new ImageIcon(EPBaseActionHelper.class
+								btn = new JActionToggleButton(new ImageIcon(
+										EPBaseActionHelper.class
 												.getResource(icon)), false,
 										(ISelectableActionAdapter) action);
 							} else {
-								btn = new JActionButton(
-										new ImageIcon(EPBaseActionHelper.class
+								btn = new JActionButton(new ImageIcon(
+										EPBaseActionHelper.class
 												.getResource(icon)), action);
 							}
 							toolBar.add(btn);
@@ -179,7 +192,7 @@ public class EPBaseActionHelper {
 	 * extension point associated schema must be similar to the one in
 	 * action.xsd. This method doesn't populate the leaves in the menu tree nor
 	 * the buttons in the tool bar. It only creates the needed parents
-	 *
+	 * 
 	 * @param epid
 	 *            Extension point id
 	 * @param menuTree

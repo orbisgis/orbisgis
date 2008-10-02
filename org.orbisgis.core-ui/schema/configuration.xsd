@@ -29,6 +29,32 @@
 		</xs:complexType>
 	</xs:element>
 
+	<xs:element name="menu">
+		<xs:annotation>
+			<xs:documentation> Installs a menu in the configuration tree
+				</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:attribute name="id" type="xs:string" use="required">
+				<xs:annotation>
+					<xs:documentation>Id of the menu, referenced by other
+						attributes</xs:documentation>
+				</xs:annotation>
+			</xs:attribute>
+			<xs:attribute name="text" type="xs:string" use="required">
+				<xs:annotation>
+					<xs:documentation>Text to be shown in the menu</xs:documentation>
+				</xs:annotation>
+			</xs:attribute>
+			<xs:attribute name="parent" type="xs:string">
+				<xs:annotation>
+					<xs:documentation>References the id of another
+						menu</xs:documentation>
+				</xs:annotation>
+			</xs:attribute>
+		</xs:complexType>
+	</xs:element>
+
 	<xs:element name="configuration">
 		<xs:annotation>
 			<xs:documentation> Installs a configuration tab</xs:documentation>
