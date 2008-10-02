@@ -22,6 +22,7 @@
 		<module>contrib</module>
 		<module>tanato</module>
 		<module>org.orbisgis.games</module>
+    <module>updater</module>
   </modules>
 	<scm>
 		<connection>
