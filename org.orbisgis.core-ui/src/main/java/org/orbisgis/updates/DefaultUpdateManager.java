@@ -15,8 +15,8 @@ import org.apache.log4j.Logger;
 import org.orbisgis.Services;
 import org.orbisgis.pluginManager.ApplicationInfo;
 import org.orbisgis.pluginManager.PluginManager;
-import org.orbisgis.pluginManager.updates.UpdateDiscovery;
-import org.orbisgis.pluginManager.updates.UpdateInfo;
+import org.orbisgis.updates.UpdateDiscovery;
+import org.orbisgis.updates.UpdateInfo;
 import org.orbisgis.workspace.Workspace;
 
 public class DefaultUpdateManager implements Runnable, UpdateManager {
