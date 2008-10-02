@@ -42,8 +42,6 @@ import java.io.IOException;
 import org.orbisgis.Services;
 
 public class DefaultOGWorkspace implements OGWorkspace {
-
-	private static final String TEMP_FOLDER_NAME = "temp";
 	private static final String RESULTS_FOLDER_NAME = "results";
 
 	public DefaultOGWorkspace() {
@@ -51,11 +49,6 @@ public class DefaultOGWorkspace implements OGWorkspace {
 		if (getWorkspace() == null) {
 			throw new RuntimeException(Workspace.class.getName()
 					+ " service not found");
-		}
-
-		File tempDir = getWorkspace().getFile(TEMP_FOLDER_NAME);
-		if (!tempDir.exists()) {
-			tempDir.mkdirs();
 		}
 
 		File resultsDir = getWorkspace().getFile(RESULTS_FOLDER_NAME);
@@ -93,7 +86,7 @@ public class DefaultOGWorkspace implements OGWorkspace {
 	}
 
 	public File getTempFolder() {
-		return getWorkspace().getFile(TEMP_FOLDER_NAME);
+		return getWorkspace().getTempFolder();
 	}
 
 	public void addWorkspaceListener(WorkspaceListener listener) {

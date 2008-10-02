@@ -50,4 +50,9 @@ public class TestWorkspace implements Workspace {
 		workspaceFolder = new File(folder);
 	}
 
+	@Override
+	public File getTempFolder() {
+		return null;
+	}
+
 }

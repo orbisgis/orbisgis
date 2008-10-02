@@ -50,15 +50,6 @@ public interface OGWorkspace extends Workspace {
 	File getResultsFolder();
 
 	/**
-	 * Returns the folder inside the workspace where temporal results can be
-	 * stored. At the higher frequency this folder will be removed each time the
-	 * application exits
-	 *
-	 * @return
-	 */
-	File getTempFolder();
-
-	/**
 	 * Gets a new file inside the results folder
 	 *
 	 * @param prefix

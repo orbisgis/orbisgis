@@ -54,6 +54,8 @@ import org.sif.UIFactory;
 
 public class DefaultWorkspace implements Workspace {
 
+	private static final String TEMP_FOLDER_NAME = "temp";
+
 	private static final String VERSION_FILE_NAME = "org.orbisgis.version.txt";
 
 	private static Logger logger = Logger.getLogger(DefaultWorkspace.class);
@@ -61,6 +63,18 @@ public class DefaultWorkspace implements Workspace {
 	private File workspaceFolder;
 
 	private ArrayList<WorkspaceListener> listeners = new ArrayList<WorkspaceListener>();
+
+	public DefaultWorkspace() {
+		File tempDir = getFile(TEMP_FOLDER_NAME);
+		if (!tempDir.exists()) {
+			tempDir.mkdirs();
+		}
+	}
+
+	@Override
+	public File getTempFolder() {
+		return getFile(TEMP_FOLDER_NAME);
+	}
 
 	/**
 	 * @see org.orbisgis.workspace.Workspace#getNewFile(java.lang.String,
