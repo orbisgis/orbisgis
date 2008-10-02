@@ -11,11 +11,15 @@ import java.util.TreeSet;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 
+import org.apache.log4j.Logger;
 import org.orbisgis.pluginManager.updates.persistence.Update;
 import org.orbisgis.pluginManager.updates.persistence.UpdateSite;
 import org.orbisgis.utils.FileUtils;
 
 public class UpdateDiscovery {
+
+	private static final Logger logger = Logger
+			.getLogger(UpdateDiscovery.class);
 
 	private URL updateSite;
 	private String artifactName;
@@ -94,16 +98,26 @@ public class UpdateDiscovery {
 		return ret;
 	}
 
-	public void download(UpdateInfo updateInfo) throws IOException,
-			NoSuchAlgorithmException {
-		File zip = File.createTempFile("orbisgis-update", ".zip");
+	/**
+	 * Download the update file of the specified update to the specified file
+	 * 
+	 * @param updateInfo
+	 * @param zip
+	 * @throws IOException
+	 */
+	public void download(UpdateInfo updateInfo, File zip) throws IOException {
 		FileUtils.download(updateInfo.getFileURL(), zip);
 
 		// verify checksum
-		byte[] calculatedMD5 = FileUtils.getMD5(zip);
-		String calculatedString = FileUtils.toHexString(calculatedMD5);
-		if (!calculatedString.equals(updateInfo.getChecksum())) {
-			throw new IOException("md5 checksum failed");
+		try {
+			byte[] calculatedMD5 = FileUtils.getMD5(zip);
+			String calculatedString = FileUtils.toHexString(calculatedMD5);
+			if (!calculatedString.equals(updateInfo.getChecksum())) {
+				throw new IOException("md5 checksum failed");
+			}
+		} catch (NoSuchAlgorithmException e) {
+			logger.error("Cannot verify checksum", e);
+			// We just don't verify the checksum
 		}
 	}
 

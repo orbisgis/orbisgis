@@ -158,7 +158,7 @@ public class UpdateTest extends TestCase {
 		UpdateInfo[] updates = ud.getAvailableUpdatesInfo("0.9.1");
 		assertTrue(updates.length == 1);
 
-		ud.download(updates[0]);
+		ud.download(updates[0], File.createTempFile("testUpdates", ".zip"));
 
 		// Download new updates with wrong checksum
 		FileWriter pw = new FileWriter(new File(updateDir, UpdateUtils
@@ -166,7 +166,7 @@ public class UpdateTest extends TestCase {
 		pw.write(0);
 		pw.close();
 		try {
-			ud.download(updates[0]);
+			ud.download(updates[0], File.createTempFile("testUpdates", ".zip"));
 			assertTrue(false);
 		} catch (IOException e) {
 		}
