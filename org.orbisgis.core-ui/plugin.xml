@@ -53,8 +53,8 @@
 		schema="schema/geocognitionWizard.xsd"/>
 		
 	<!-- Configuration -->
-	<extension-point id="org.orbisgis.Config" name="Configurations"
-		schema="schema/config.xsd" />
+	<extension-point id="org.orbisgis.Configuration" name="Configurations"
+		schema="schema/configuration.xsd" />
 		
 	<!--
 	
@@ -689,10 +689,14 @@
 	</extension>
 	
 	<!-- Configuration extensions -->
-	<extension point="org.orbisgis.Config">
-		<configuration id="org.orbisgis.configs.TestConfig"
-			text="Testing One" class="org.orbisgis.configs.TestConfig"/>
-		<configuration id="org.orbisgis.configs.TestTwoConfig"
-			text="Testing Two" class="org.orbisgis.configs.TestTwoConfig"/>
+	<extension point="org.orbisgis.Configuration">
+		<menu id="org.orbisgis.File" text="File"/>
+		<menu id="org.orbisgis.Geocatalog" text="Geocatalog"
+			parent="org.orbisgis.Help"/>
+		<menu id="org.orbisgis.Help" text="Help"/>
+		<configuration id="org.orbisgis.configs.TestConfig" text="Testing One"
+			class="org.orbisgis.configs.TestConfig"/>
+		<configuration id="org.orbisgis.configs.TestTwoConfig" text="Testing Two"
+			class="org.orbisgis.configs.TestTwoConfig"/>
 	</extension>
 </plugin>

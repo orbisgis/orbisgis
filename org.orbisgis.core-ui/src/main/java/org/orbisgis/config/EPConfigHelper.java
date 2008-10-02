@@ -14,7 +14,7 @@ public class EPConfigHelper {
 	 */
 	static ArrayList<ConfigDecorator> getConfigurations() {
 		ExtensionPointManager<IConfiguration> epm = new ExtensionPointManager<IConfiguration>(
-				"org.orbisgis.Config");
+				"org.orbisgis.Configuration");
 		ArrayList<ItemAttributes<IConfiguration>> configs;
 		configs = epm.getItemAttributes("/extension/configuration");
 		ArrayList<ConfigDecorator> ret = new ArrayList<ConfigDecorator>();
