@@ -13,15 +13,18 @@ import javax.swing.JOptionPane;
 
 import org.apache.log4j.Logger;
 import org.orbisgis.Services;
+import org.orbisgis.errorManager.ErrorManager;
 import org.orbisgis.pluginManager.ApplicationInfo;
 import org.orbisgis.pluginManager.PluginManager;
 import org.orbisgis.updates.UpdateDiscovery;
 import org.orbisgis.updates.UpdateInfo;
+import org.orbisgis.utils.ExecutionException;
 import org.orbisgis.workspace.Workspace;
 
 public class DefaultUpdateManager implements Runnable, UpdateManager {
 
-	private static final Logger logger = Logger.getLogger(DefaultUpdateManager.class);
+	private static final Logger logger = Logger
+			.getLogger(DefaultUpdateManager.class);
 
 	private static final String UPDATE_SITE_PROPERTY_NAME = "update-site";
 	private URL updateSiteURL;
@@ -29,6 +32,8 @@ public class DefaultUpdateManager implements Runnable, UpdateManager {
 	private Exception error;
 
 	private ArrayList<File> updateFiles;
+
+	private ApplyUpdate au;
 
 	public DefaultUpdateManager() {
 		// default URL
@@ -51,7 +56,7 @@ public class DefaultUpdateManager implements Runnable, UpdateManager {
 		}
 	}
 
-	/* (non-Javadoc)
+	/**
 	 * @see org.orbisgis.updates.UpdateManager#startSearch()
 	 */
 	public void startSearch() {
@@ -60,7 +65,7 @@ public class DefaultUpdateManager implements Runnable, UpdateManager {
 		thread.start();
 	}
 
-	/* (non-Javadoc)
+	/**
 	 * @see org.orbisgis.updates.UpdateManager#run()
 	 */
 	@Override
@@ -89,12 +94,18 @@ public class DefaultUpdateManager implements Runnable, UpdateManager {
 						ud.download(updates[i], tempFile);
 					}
 
-					// Restart the system
+					// Apply update
+					String classpath = System.getProperty("java.class.path");
+					File binaryDir = getBinaryDir(classpath);
+					au = new ApplyUpdate(binaryDir);
+					au.applyUpdates(updateFiles.toArray(new File[0]));
+
+					// Restart
 					PluginManager pm = Services.getService(PluginManager.class);
 					JOptionPane.showMessageDialog(null,
-							"The system needs to be restarted to "
-									+ "install the updates", "Install updates",
-							JOptionPane.INFORMATION_MESSAGE);
+							"The system will be restarted to "
+									+ "finish the installation",
+							"Install updates", JOptionPane.INFORMATION_MESSAGE);
 					pm.stop();
 				}
 
@@ -105,14 +116,27 @@ public class DefaultUpdateManager implements Runnable, UpdateManager {
 		}
 	}
 
-	/* (non-Javadoc)
-	 * @see org.orbisgis.updates.UpdateManager#getUpdateFiles()
-	 */
-	public ArrayList<File> getUpdateFiles() {
-		return updateFiles;
+	private File getBinaryDir(String classpath) {
+		String separator = System.getProperty("path.separator");
+		String[] jars = classpath.split("\\Q" + separator + "\\E");
+		return new File(jars[0]).getParentFile().getParentFile();
 	}
 
-	/* (non-Javadoc)
+	public void applyUpdates() {
+		if (au != null) {
+			try {
+				au.commitNewBinary();
+			} catch (IOException e) {
+				Services.getService(ErrorManager.class).error(
+						"Cannot launch the update commit", e);
+			} catch (ExecutionException e) {
+				Services.getService(ErrorManager.class).error(
+						"Cannot launch the update commit", e);
+			}
+		}
+	}
+
+	/**
 	 * @see org.orbisgis.updates.UpdateManager#getError()
 	 */
 	public Exception getError() {

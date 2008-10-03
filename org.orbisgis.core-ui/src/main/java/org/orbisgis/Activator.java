@@ -229,10 +229,7 @@ public class Activator implements PluginActivator {
 					e);
 		}
 
-		if (um.getUpdateFiles().size() > 0) {
-			System.err.println("UPDATEEEEEEE!");
-			// TODO launch updater prior to shutdown
-		}
+		um.applyUpdates();
 	}
 
 	public boolean allowStop() {

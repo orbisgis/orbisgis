@@ -1,7 +1,5 @@
 package org.orbisgis.updates;
 
-import java.io.File;
-import java.util.ArrayList;
 
 public interface UpdateManager {
 
@@ -17,11 +15,11 @@ public interface UpdateManager {
 	public abstract void run();
 
 	/**
-	 * Gets the update files found in {@link #run()}
+	 * Apply the updates found in {@link #run()}
 	 * 
 	 * @return
 	 */
-	public abstract ArrayList<File> getUpdateFiles();
+	public abstract void applyUpdates();
 
 	/**
 	 * Returns an exception if the {@link #run()} method failed in their last
