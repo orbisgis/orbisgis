@@ -19,4 +19,12 @@ public interface IConfiguration {
 	 * @return the component shown by the configuration dialog
 	 */
 	JComponent getComponent();
+
+	/**
+	 * A method invoked regularly to validate the contents of the interface
+	 * 
+	 * @return An error description if the validation fails or null if
+	 *         everything is ok
+	 */
+	String validateInput();
 }

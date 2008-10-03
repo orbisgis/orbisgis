@@ -7,7 +7,7 @@
 		</xs:annotation>
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element ref="menu" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element ref="group" minOccurs="1" maxOccurs="unbounded"/>
 				<xs:element ref="configuration" minOccurs="0" maxOccurs="unbounded"/>
 			</xs:sequence>
 			<xs:attribute name="point" type="xs:string" use="required">
@@ -17,40 +17,40 @@
 			</xs:attribute>
 			<xs:attribute name="id" type="xs:string">
 				<xs:annotation>
-					<xs:documentation> Id of the extension. For debuging purposes
+					<xs:documentation> Id of the extension. For debugging purposes
 						only</xs:documentation>
 				</xs:annotation>
 			</xs:attribute>
 			<xs:attribute name="name" type="xs:string">
 				<xs:annotation>
-					<xs:documentation> Name of the extension. For debuging purposes
+					<xs:documentation> Name of the extension. For debugging purposes
 						only</xs:documentation>
 				</xs:annotation>
 			</xs:attribute>
 		</xs:complexType>
 	</xs:element>
 
-	<xs:element name="menu">
+	<xs:element name="group">
 		<xs:annotation>
-			<xs:documentation> Installs a menu in the configuration tree
+			<xs:documentation> Installs a group in the configuration tree
 				</xs:documentation>
 		</xs:annotation>
 		<xs:complexType>
 			<xs:attribute name="id" type="xs:string" use="required">
 				<xs:annotation>
-					<xs:documentation>Id of the menu, referenced by other
+					<xs:documentation>Id of the group, referenced by other
 						attributes</xs:documentation>
 				</xs:annotation>
 			</xs:attribute>
 			<xs:attribute name="text" type="xs:string" use="required">
 				<xs:annotation>
-					<xs:documentation>Text to be shown in the menu</xs:documentation>
+					<xs:documentation>Text to be shown in the group</xs:documentation>
 				</xs:annotation>
 			</xs:attribute>
 			<xs:attribute name="parent" type="xs:string">
 				<xs:annotation>
 					<xs:documentation>References the id of another
-						menu</xs:documentation>
+						group</xs:documentation>
 				</xs:annotation>
 			</xs:attribute>
 		</xs:complexType>
@@ -69,6 +69,11 @@
 			<xs:attribute name="text" type="xs:string" use="required">
 				<xs:annotation>
 					<xs:documentation>Text to be shown in the dialog</xs:documentation>
+				</xs:annotation>
+			</xs:attribute>
+			<xs:attribute name="group-id" type="xs:string" use="required">
+				<xs:annotation>
+					<xs:documentation>Parent of the configuration element</xs:documentation>
 				</xs:annotation>
 			</xs:attribute>
 			<xs:attribute name="class" type="xs:string" use="required">

@@ -6,7 +6,7 @@ import org.orbisgis.Services;
 
 public class ConfigurationDecorator implements IConfiguration {
 	private IConfiguration config;
-	private String id, className, text;
+	private String id, className, text, parentId;
 
 	/**
 	 * Creates a new configuration decorator for the specified class with the
@@ -17,10 +17,12 @@ public class ConfigurationDecorator implements IConfiguration {
 	 * @param id
 	 *            the id of the configuration
 	 */
-	public ConfigurationDecorator(String className, String id, String text) {
+	public ConfigurationDecorator(String className, String id, String text,
+			String parentId) {
 		this.id = id;
 		this.className = className;
 		this.text = text;
+		this.parentId = parentId;
 	}
 
 	/**
@@ -70,8 +72,32 @@ public class ConfigurationDecorator implements IConfiguration {
 		return id;
 	}
 
+	/**
+	 * Gets the text to show of this configuration
+	 * 
+	 * @return the text to show of this configuration
+	 */
+	public String getText() {
+		return text;
+	}
+
+	/**
+	 * Gets the parent id of this configuration
+	 * 
+	 * @return the parent id of this configuration
+	 */
+	public String getParentId() {
+		return parentId;
+	}
+
 	@Override
 	public String toString() {
 		return text;
 	}
+
+	@Override
+	public String validateInput() {
+		return config.validateInput();
+	}
+
 }

@@ -53,6 +53,7 @@ import org.gdms.sql.customQuery.QueryManagerListener;
 import org.gdms.sql.function.FunctionManager;
 import org.gdms.sql.function.FunctionManagerListener;
 import org.orbisgis.action.ActionControlsRegistry;
+import org.orbisgis.configuration.EPConfigHelper;
 import org.orbisgis.editor.IEditor;
 import org.orbisgis.errorManager.ErrorListener;
 import org.orbisgis.errorManager.ErrorManager;
@@ -167,6 +168,10 @@ public class Activator implements PluginActivator {
 			}
 
 		});
+
+		// Checks if all the configuration are linked to an existing
+		// configuration group
+		EPConfigHelper.checkConfigurations();
 
 		// Listen FunctionManager and QueryManager changes to refresh
 		// geocognition view

@@ -697,13 +697,12 @@
 	
 	<!-- Configuration extensions -->
 	<extension point="org.orbisgis.Configuration">
-		<menu id="org.orbisgis.File" text="File"/>
-		<menu id="org.orbisgis.Geocatalog" text="Geocatalog"
-			parent="org.orbisgis.Help"/>
-		<menu id="org.orbisgis.Help" text="Help"/>
-		<configuration id="org.orbisgis.configurations.TestConfig" text="Testing One"
-			class="org.orbisgis.configurations.TestConfig"/>
-		<configuration id="org.orbisgis.configurations.TestTwoConfig" text="Testing Two"
-			class="org.orbisgis.configurations.TestTwoConfig"/>
+		<group id="org.orbisgis.Updates" text="Updates"/>
+		<configuration id="org.orbisgis.configurations.ProxyConfiguration" text="Proxy"
+			class="org.orbisgis.configurations.ProxyConfiguration"
+			group-id="org.orbisgis.Updates"/>
+		<configuration id="org.orbisgis.configurations.UpdateURLConfiguration" text="Update URL"
+			class="org.orbisgis.configurations.UpdateURLConfiguration"
+			group-id="org.orbisgis.Updates"/>
 	</extension>
 </plugin>
