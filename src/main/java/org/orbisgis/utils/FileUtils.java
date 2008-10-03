@@ -252,7 +252,12 @@ public class FileUtils {
 
 	public static byte[] getContent(File file) throws FileNotFoundException,
 			IOException {
-		DataInputStream dis = new DataInputStream(new FileInputStream(file));
+		FileInputStream fis = new FileInputStream(file);
+		return getContent(fis);
+	}
+
+	public static byte[] getContent(InputStream fis) throws IOException {
+		DataInputStream dis = new DataInputStream(fis);
 		byte[] buffer = new byte[dis.available()];
 		dis.readFully(buffer);
 		dis.close();
@@ -269,11 +274,18 @@ public class FileUtils {
 
 	public static String toHexString(byte[] messageDigest) {
 		StringBuffer hexString = new StringBuffer();
-		for (int i=0;i<messageDigest.length;i++) {
+		for (int i = 0; i < messageDigest.length; i++) {
 			hexString.append(Integer.toHexString(0xFF & messageDigest[i]));
 		}
-		
+
 		return hexString.toString();
+	}
+
+	public static void setContents(File file, String content) throws IOException {
+		FileOutputStream fos = new FileOutputStream(file);
+		BufferedOutputStream bos = new BufferedOutputStream(fos);
+		bos.write(content.getBytes());
+		bos.close();
 	}
 
 }
