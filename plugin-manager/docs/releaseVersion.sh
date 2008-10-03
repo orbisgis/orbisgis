@@ -2,7 +2,7 @@
 # ======================================================================
 # Thomas LEDUC - le 09/01/2008
 # ======================================================================
-PLUGINS_LIST="org.orbisgis.core-ui org.orbisgis.processing org.urbsat";
+PLUGINS_LIST="org.orbisgis.core-ui org.orbisgis.games org.orbisgis.processing org.urbsat";
 
 # ======================================================================
 if [ "$#" -ne "2" ] && [ "$#" -ne "1" ]; then
