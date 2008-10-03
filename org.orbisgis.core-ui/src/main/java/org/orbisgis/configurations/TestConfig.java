@@ -1,4 +1,4 @@
-package org.orbisgis.configs;
+package org.orbisgis.configurations;
 
 import java.awt.Dimension;
 import java.io.BufferedReader;
@@ -13,16 +13,17 @@ import javax.swing.JComponent;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
-import org.orbisgis.config.IConfiguration;
+import org.orbisgis.configuration.IConfiguration;
 
-public class TestTwoConfig implements IConfiguration {
+public class TestConfig implements IConfiguration {
+
 	private static final File file = new File(TestConfig.class.getResource(
-			"testwo.cfg").getFile());
+			"test.cfg").getFile());
 
 	private JPanel panel;
 	private JTextField field;
 
-	public TestTwoConfig() {
+	public TestConfig() {
 		panel = new JPanel();
 		field = new JTextField();
 		field.setPreferredSize(new Dimension(300, 30));

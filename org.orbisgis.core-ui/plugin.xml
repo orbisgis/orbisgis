@@ -124,11 +124,15 @@
 			menu-id="org.orbisgis.File"
 			menu-group="org.orbisgis.actions.Workspace" text="Change workspace"
 			class="org.orbisgis.actions.ChangeWorkspace"/>
-		<action id="org.orbisgis.actions.Preferences" text="Preferences"
+	</extension>
+	
+	<extension point="org.orbisgis.Action" id="org.orbisgis.actions.Configuration">
+		<action id="org.orbisgis.actions.Configuration" text="Configuration"
 			menu-id="org.orbisgis.File" 
 			menu-group="org.orbisgis.actions.Configuration"
-			class="org.orbisgis.actions.Preferences"/>
+			class="org.orbisgis.actions.Configuration"/>
 	</extension>
+	
 	
 	<extension id="org.orbisgis.actions.SaveElementActions"
 		point="org.orbisgis.Action">
@@ -697,9 +701,9 @@
 		<menu id="org.orbisgis.Geocatalog" text="Geocatalog"
 			parent="org.orbisgis.Help"/>
 		<menu id="org.orbisgis.Help" text="Help"/>
-		<configuration id="org.orbisgis.configs.TestConfig" text="Testing One"
-			class="org.orbisgis.configs.TestConfig"/>
-		<configuration id="org.orbisgis.configs.TestTwoConfig" text="Testing Two"
-			class="org.orbisgis.configs.TestTwoConfig"/>
+		<configuration id="org.orbisgis.configurations.TestConfig" text="Testing One"
+			class="org.orbisgis.configurations.TestConfig"/>
+		<configuration id="org.orbisgis.configurations.TestTwoConfig" text="Testing Two"
+			class="org.orbisgis.configurations.TestTwoConfig"/>
 	</extension>
 </plugin>

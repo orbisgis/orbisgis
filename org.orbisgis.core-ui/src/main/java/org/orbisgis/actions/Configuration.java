@@ -1,14 +1,14 @@
 package org.orbisgis.actions;
 
 import org.orbisgis.action.IAction;
-import org.orbisgis.config.ConfigPanel;
+import org.orbisgis.configuration.ConfigurationPanel;
 import org.sif.UIFactory;
 
-public class Preferences implements IAction {
+public class Configuration implements IAction {
 
 	@Override
 	public void actionPerformed() {
-		ConfigPanel config = new ConfigPanel();
+		ConfigurationPanel config = new ConfigurationPanel();
 		if (UIFactory.showDialog(config)) {
 			config.savePreferences();
 		}

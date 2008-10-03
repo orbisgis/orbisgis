@@ -1,4 +1,4 @@
-package org.orbisgis.config;
+package org.orbisgis.configuration;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
@@ -21,16 +21,16 @@ import org.orbisgis.action.MenuTree;
 import org.orbisgis.action.ToolBarArray;
 import org.sif.AbstractUIPanel;
 
-public class ConfigPanel extends AbstractUIPanel {
+public class ConfigurationPanel extends AbstractUIPanel {
 
 	private JSplitPane pane;
-	private ArrayList<ConfigDecorator> configs;
+	private ArrayList<ConfigurationDecorator> configs;
 	private ConfigTree configTree;
 
 	/**
 	 * Creates a new configuration dialog
 	 */
-	public ConfigPanel() {
+	public ConfigurationPanel() {
 		MenuTree menuTree = new MenuTree();
 		ToolBarArray foo = new ToolBarArray();
 		EPBaseActionHelper.configureParentMenusAndToolBars(
@@ -43,7 +43,7 @@ public class ConfigPanel extends AbstractUIPanel {
 		configTree.addSelectionListener(new ListSelectionListener() {
 			@Override
 			public void valueChanged(ListSelectionEvent e) {
-				for (ConfigDecorator config : configs) {
+				for (ConfigurationDecorator config : configs) {
 					if (config == configTree.getSelectedElement()) {
 						pane.setRightComponent(config.getComponent());
 						return;
@@ -95,7 +95,7 @@ public class ConfigPanel extends AbstractUIPanel {
 	 * Saves all the preferences of the dialog
 	 */
 	public void savePreferences() {
-		for (ConfigDecorator config : configs) {
+		for (ConfigurationDecorator config : configs) {
 			config.save();
 		}
 	}
@@ -114,7 +114,7 @@ public class ConfigPanel extends AbstractUIPanel {
 		 * @param decs
 		 *            the configurations to show
 		 */
-		private ConfigTree(ArrayList<ConfigDecorator> decs) {
+		private ConfigTree(ArrayList<ConfigurationDecorator> decs) {
 			list = new JList(decs.toArray());
 			setLayout(new BorderLayout());
 			add(list, BorderLayout.CENTER);
@@ -135,8 +135,8 @@ public class ConfigPanel extends AbstractUIPanel {
 		 * 
 		 * @return the selected element
 		 */
-		private ConfigDecorator getSelectedElement() {
-			return (ConfigDecorator) list.getSelectedValue();
+		private ConfigurationDecorator getSelectedElement() {
+			return (ConfigurationDecorator) list.getSelectedValue();
 		}
 	}
 

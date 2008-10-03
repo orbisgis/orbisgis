@@ -1,10 +1,10 @@
-package org.orbisgis.config;
+package org.orbisgis.configuration;
 
 import javax.swing.JComponent;
 
 import org.orbisgis.Services;
 
-public class ConfigDecorator implements IConfiguration {
+public class ConfigurationDecorator implements IConfiguration {
 	private IConfiguration config;
 	private String id, className, text;
 
@@ -17,7 +17,7 @@ public class ConfigDecorator implements IConfiguration {
 	 * @param id
 	 *            the id of the configuration
 	 */
-	public ConfigDecorator(String className, String id, String text) {
+	public ConfigurationDecorator(String className, String id, String text) {
 		this.id = id;
 		this.className = className;
 		this.text = text;

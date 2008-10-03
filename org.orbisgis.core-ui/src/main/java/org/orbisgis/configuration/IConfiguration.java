@@ -1,4 +1,4 @@
-package org.orbisgis.config;
+package org.orbisgis.configuration;
 
 import javax.swing.JComponent;
 
