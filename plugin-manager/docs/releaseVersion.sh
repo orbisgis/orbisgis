@@ -2,7 +2,6 @@
 # ======================================================================
 # Thomas LEDUC - le 09/01/2008
 # ======================================================================
-PLUGINS_LIST="org.orbisgis.core-ui org.orbisgis.games org.orbisgis.processing org.urbsat";
 
 # ======================================================================
 if [ "$#" -ne "2" ] && [ "$#" -ne "1" ]; then
@@ -18,6 +17,13 @@ DATE=`date +%Y%m%d-%H%M`;
 RELEASE_DIRECTORY="${BASE_DIRECTORY}/orbisgis-zip";
 URL="$1";
 INSTALLER_URL="http://geosysin.iict.ch/irstv-svn/platform-installers";
+
+PLUGIN_LIST="";
+for jar in $(ls); do 
+  if [ -e $jar/plugin.xml ]; then 
+    PLUGIN_LIST="$PLUGIN_LIST $jar"; 
+  fi 
+done
 
 if [ "$2" == "official" ]; then
   OFFICIAL="official";
@@ -97,23 +103,11 @@ createPluginListXml() {
 	echo "</plugins>" >> "${RELEASE_DIRECTORY}/plugin-list.xml";
 }
 
-createUniqFileName() {
-	dstDir="${1}";
-	fileName="${2}";
-
-	if [ -e "${dstDir}/${fileName}" ]; then
-		while [ -e "${dstDir}/${fileName}" ]; do
-			fileName="_${fileName}";
-		done
-	fi
-	echo "${dstDir}/${fileName}";
-}
-
 copyAllJarFiles() {
 	mkdir -p "${RELEASE_DIRECTORY}/lib";
 	cd "${RELEASE_DIRECTORY}"
 
-	for jar in $(find ${DST_SVN_DIRECTORY}/platform/ -name \*.jar); do
+	for jar in $(find ${DST_SVN_DIRECTORY}/platform/dependencies -name \*.jar); do
 		cp --archive ${jar} ${RELEASE_DIRECTORY}/lib/$(basename ${jar});
 	done
 }

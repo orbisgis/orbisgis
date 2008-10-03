@@ -97,7 +97,7 @@ public class DefaultUpdateManager implements Runnable, UpdateManager {
 					// Apply update
 					String classpath = System.getProperty("java.class.path");
 					File binaryDir = getBinaryDir(classpath);
-					au = new ApplyUpdate(binaryDir);
+					au = new ApplyUpdate(binaryDir, "orbisgis");
 					au.applyUpdates(updateFiles.toArray(new File[0]));
 
 					// Restart
