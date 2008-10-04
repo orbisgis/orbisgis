@@ -62,6 +62,7 @@ import org.gdms.sql.customQuery.showAttributes.Table;
 import org.gdms.sql.function.Function;
 import org.gdms.sql.function.FunctionManager;
 import org.gdms.sql.parser.ParseException;
+import org.gdms.sql.parser.TokenMgrError;
 import org.gdms.sql.strategies.Instruction;
 import org.gdms.sql.strategies.SQLProcessor;
 import org.gdms.sql.strategies.SemanticException;
@@ -223,6 +224,8 @@ public class ConsoleView implements IView {
 					Services.getErrorManager().error(
 							"Semantic error in the script", e);
 				} catch (ParseException e) {
+					Services.getErrorManager().error("Cannot parse script", e);
+				} catch (TokenMgrError e) {
 					Services.getErrorManager().error("Cannot parse script", e);
 				}
 

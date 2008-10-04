@@ -56,6 +56,9 @@ public class DefaultJavaManager implements JavaManager {
 	public void execute(String code, DiagnosticListener<JavaFileObject> listener)
 			throws InvocationTargetException, IOException,
 			IllegalArgumentException, CompilationException, ParseException {
+		if (!code.endsWith("\n")) {
+			code += "\n";
+		}
 		Class<?> cl = compile(code, listener);
 		try {
 			Method m = cl.getMethod("main", String[].class);

@@ -54,7 +54,7 @@
   <TD>
    <PRE>
 &lt;IN_SINGLE_LINE_COMMENT&gt; SPECIAL : {
-&lt;SINGLE_LINE_COMMENT: "\n" | "\r" | "\r\n"&gt; : DEFAULT
+&lt;SINGLE_LINE_COMMENT: (~["\n","\r"])* ("\n" | "\r" | "\r\n")?&gt; : DEFAULT
 }
 
    </PRE>

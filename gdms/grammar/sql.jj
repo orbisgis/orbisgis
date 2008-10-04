@@ -53,7 +53,7 @@ MORE:
 <IN_LINE_COMMENT>
 SPECIAL_TOKEN :
 {
-	<COMMENT_LINE: "\n" | "\r" | "\r\n" > : DEFAULT
+	<COMMENT_LINE: (~["\n","\r"])* ("\n"|"\r"|"\r\n")? > : DEFAULT
 }
 <IN_MULTI_LINE_COMMENT>
 SPECIAL_TOKEN :
