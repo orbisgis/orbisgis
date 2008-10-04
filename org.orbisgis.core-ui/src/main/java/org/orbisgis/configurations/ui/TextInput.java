@@ -31,4 +31,9 @@ public class TextInput extends AbstractInput {
 	public String getValue() {
 		return field.getText();
 	}
+
+	@Override
+	public void setValue(String value) {
+		field.setText(value);
+	}
 }

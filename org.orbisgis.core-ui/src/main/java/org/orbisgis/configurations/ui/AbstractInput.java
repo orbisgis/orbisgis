@@ -64,4 +64,12 @@ public abstract class AbstractInput extends JPanel {
 	 * @return the value of the input component
 	 */
 	public abstract String getValue();
+
+	/**
+	 * Sets the value of the input component
+	 * 
+	 * @param value
+	 *            the value to set
+	 */
+	public abstract void setValue(String value);
 }

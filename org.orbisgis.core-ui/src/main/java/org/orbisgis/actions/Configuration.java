@@ -10,7 +10,7 @@ public class Configuration implements IAction {
 	public void actionPerformed() {
 		ConfigurationPanel config = new ConfigurationPanel();
 		if (UIFactory.showDialog(config)) {
-			config.savePreferences();
+			config.applyConfigurations();
 		}
 	}
 

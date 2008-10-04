@@ -22,7 +22,6 @@ public class ConfigurationPanel extends AbstractUIPanel {
 	private JSplitPane pane;
 	private ArrayList<ConfigurationDecorator> configs;
 	private ConfigurationTree configTree;
-	private ConfigurationDecorator currentConfiguration;
 
 	/**
 	 * Creates a new configuration dialog
@@ -37,7 +36,6 @@ public class ConfigurationPanel extends AbstractUIPanel {
 			public void valueChanged(TreeSelectionEvent e) {
 				for (ConfigurationDecorator config : configs) {
 					if (config == configTree.getSelectedElement()) {
-						currentConfiguration = config;
 						pane.setRightComponent(config.getComponent());
 						return;
 					}
@@ -81,16 +79,24 @@ public class ConfigurationPanel extends AbstractUIPanel {
 
 	@Override
 	public String validateInput() {
-		return (currentConfiguration == null) ? null : currentConfiguration
-				.validateInput();
+		String ret = null;
+		ConfigurationDecorator c = null;
+		for (ConfigurationDecorator config : configs) {
+			ret = config.validateInput();
+			if (ret != null) {
+				c = config;
+				break;
+			}
+		}
+		return (ret == null) ? null : ret + " in " + c.getText();
 	}
 
 	/**
 	 * Saves all the preferences of the dialog
 	 */
-	public void savePreferences() {
+	public void applyConfigurations() {
 		for (ConfigurationDecorator config : configs) {
-			config.save();
+			config.applyUserInput();
 		}
 	}
 }

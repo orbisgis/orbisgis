@@ -31,4 +31,9 @@ public class PasswordInput extends AbstractInput {
 	public String getValue() {
 		return new String(field.getPassword());
 	}
+
+	@Override
+	public void setValue(String value) {
+		field.setText(value);
+	}
 }

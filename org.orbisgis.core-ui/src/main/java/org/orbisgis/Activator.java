@@ -53,6 +53,7 @@ import org.gdms.sql.customQuery.QueryManagerListener;
 import org.gdms.sql.function.FunctionManager;
 import org.gdms.sql.function.FunctionManagerListener;
 import org.orbisgis.action.ActionControlsRegistry;
+import org.orbisgis.configuration.BasicConfiguration;
 import org.orbisgis.configuration.EPConfigHelper;
 import org.orbisgis.editor.IEditor;
 import org.orbisgis.errorManager.ErrorListener;
@@ -87,9 +88,12 @@ public class Activator implements PluginActivator {
 		// Initialize workspace
 		initializeWorkspace();
 
+		// Initialize configuration
+		OrbisgisCoreServices.installConfigurationService();
+		EPConfigHelper.loadAndApplyConfigurations();
+
 		// Install the refresh listener
-		PluginManager pm = (PluginManager) Services
-				.getService(PluginManager.class);
+		PluginManager pm = Services.getService(PluginManager.class);
 		pm.addSystemListener(new SystemListener() {
 			public void statusChanged() {
 				ActionControlsRegistry.refresh();
@@ -97,8 +101,7 @@ public class Activator implements PluginActivator {
 		});
 
 		// Install the error listener
-		final ErrorManager em = (ErrorManager) Services
-				.getService(ErrorManager.class);
+		final ErrorManager em = Services.getService(ErrorManager.class);
 		em.addErrorListener(new ErrorListener() {
 
 			private ErrorPanel ep = new ErrorPanel();
@@ -110,8 +113,7 @@ public class Activator implements PluginActivator {
 			private void error(String userMsg, Throwable e, boolean error) {
 				ErrorMessage errorMessage = new ErrorMessage(userMsg, e, error);
 				// Pipe the message to the output manager
-				OutputManager om = (OutputManager) Services
-						.getService(OutputManager.class);
+				OutputManager om = Services.getService(OutputManager.class);
 				Color color;
 				if (errorMessage.isError()) {
 					color = Color.red;
@@ -155,7 +157,7 @@ public class Activator implements PluginActivator {
 		});
 
 		// Listen workspace changes
-		Workspace workspace = (Workspace) Services.getService(Workspace.class);
+		Workspace workspace = Services.getService(Workspace.class);
 
 		workspace.addWorkspaceListener(new WorkspaceListener() {
 
@@ -168,10 +170,6 @@ public class Activator implements PluginActivator {
 			}
 
 		});
-
-		// Checks if all the configuration are linked to an existing
-		// configuration group
-		EPConfigHelper.checkConfigurations();
 
 		// Listen FunctionManager and QueryManager changes to refresh
 		// geocognition view
@@ -188,14 +186,14 @@ public class Activator implements PluginActivator {
 	private void initializeWorkspace() {
 
 		// Configuration of workspace directories
-		Workspace workspace = (Workspace) Services.getService(Workspace.class);
+		Workspace workspace = Services.getService(Workspace.class);
 
 		File sourcesDir = workspace.getFile("sources");
 		if (!sourcesDir.exists()) {
 			sourcesDir.mkdirs();
 		}
 
-		OGWorkspace ews = (OGWorkspace) Services.getService(OGWorkspace.class);
+		OGWorkspace ews = Services.getService(OGWorkspace.class);
 
 		dsf = new DataSourceFactory(sourcesDir.getAbsolutePath(), ews
 				.getTempFolder().getAbsolutePath());
@@ -234,12 +232,15 @@ public class Activator implements PluginActivator {
 					e);
 		}
 
+		EPConfigHelper.saveAppliedConfigurations();
+		BasicConfiguration bc = Services.getService(BasicConfiguration.class);
+		bc.save();
+
 		um.applyUpdates();
 	}
 
 	public boolean allowStop() {
-		DataManager dataManager = (DataManager) Services
-				.getService(DataManager.class);
+		DataManager dataManager = Services.getService(DataManager.class);
 		SourceManager sourceManager = dataManager.getSourceManager();
 		String[] sourceNames = sourceManager.getSourceNames();
 
@@ -275,8 +276,7 @@ public class Activator implements PluginActivator {
 			ret = true;
 		}
 
-		EditorManager em = (EditorManager) Services
-				.getService(EditorManager.class);
+		EditorManager em = Services.getService(EditorManager.class);
 		IEditor[] editors = em.getEditors();
 		for (IEditor editor : editors) {
 			if (!em.closeEditor(editor)) {

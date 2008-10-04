@@ -4,17 +4,26 @@ import javax.swing.JComponent;
 
 public interface IConfiguration {
 	/**
-	 * Loads the configuration
+	 * Loads the configuration and applies it where necessary. This method is
+	 * called at startup
 	 */
-	void load();
+	void loadAndApply();
 
 	/**
-	 * Saves the configuration
+	 * Applies the user input configuration where necessary. This method is
+	 * called when the user changes the configuration by the getComponent()
+	 * control
 	 */
-	void save();
+	void applyUserInput();
 
 	/**
-	 * Gets the component shown by the configuration dialog
+	 * Retrieves the applied values and saves them
+	 */
+	void saveApplied();
+
+	/**
+	 * Gets the component shown by the configuration dialog. The component must
+	 * show the applied values of the configuration, not the loaded one
 	 * 
 	 * @return the component shown by the configuration dialog
 	 */

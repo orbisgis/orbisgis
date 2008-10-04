@@ -2,11 +2,9 @@ package org.orbisgis.configuration;
 
 import javax.swing.JComponent;
 
-import org.orbisgis.Services;
-
 public class ConfigurationDecorator implements IConfiguration {
 	private IConfiguration config;
-	private String id, className, text, parentId;
+	private String id, text, parentId;
 
 	/**
 	 * Creates a new configuration decorator for the specified class with the
@@ -17,50 +15,37 @@ public class ConfigurationDecorator implements IConfiguration {
 	 * @param id
 	 *            the id of the configuration
 	 */
-	public ConfigurationDecorator(String className, String id, String text,
-			String parentId) {
+	public ConfigurationDecorator(IConfiguration config, String id,
+			String text, String parentId) {
 		this.id = id;
-		this.className = className;
 		this.text = text;
 		this.parentId = parentId;
-	}
-
-	/**
-	 * Gets the IConfiguration of this decorator lazily
-	 * 
-	 * @return the IConfiguration
-	 */
-	private IConfiguration getConfig() {
-		if (config == null) {
-			try {
-				config = (IConfiguration) getClass().getClassLoader()
-						.loadClass(className).newInstance();
-				config.load();
-			} catch (InstantiationException e) {
-				Services.getErrorManager().error("bug!", e);
-			} catch (IllegalAccessException e) {
-				Services.getErrorManager().error("bug!", e);
-			} catch (ClassNotFoundException e) {
-				Services.getErrorManager().error("bug!", e);
-			}
-		}
-
-		return config;
+		this.config = config;
 	}
 
 	@Override
 	public JComponent getComponent() {
-		return getConfig().getComponent();
+		return config.getComponent();
 	}
 
 	@Override
-	public void load() {
-		getConfig().load();
+	public void loadAndApply() {
+		config.loadAndApply();
 	}
 
 	@Override
-	public void save() {
-		getConfig().save();
+	public String validateInput() {
+		return config.validateInput();
+	}
+
+	@Override
+	public void applyUserInput() {
+		config.applyUserInput();
+	}
+
+	@Override
+	public void saveApplied() {
+		config.saveApplied();
 	}
 
 	/**
@@ -94,10 +79,4 @@ public class ConfigurationDecorator implements IConfiguration {
 	public String toString() {
 		return text;
 	}
-
-	@Override
-	public String validateInput() {
-		return config.validateInput();
-	}
-
 }

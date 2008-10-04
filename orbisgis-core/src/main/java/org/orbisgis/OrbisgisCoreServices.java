@@ -10,6 +10,8 @@ import java.util.HashSet;
 
 import org.apache.log4j.Logger;
 import org.grap.lut.LutGenerator;
+import org.orbisgis.configuration.BasicConfiguration;
+import org.orbisgis.configuration.DefaultBasicConfiguration;
 import org.orbisgis.geocognition.DefaultGeocognition;
 import org.orbisgis.geocognition.Geocognition;
 import org.orbisgis.javaManager.DefaultJavaManager;
@@ -129,5 +131,12 @@ public class OrbisgisCoreServices {
 		lm.addLegend(LegendFactory.createProportionalLegend());
 		lm.addLegend(LegendFactory.createLabelLegend());
 		lm.addLegend(new RasterLegend(LutGenerator.colorModel("gray"), 1));
+	}
+
+	public static void installConfigurationService() {
+		BasicConfiguration bc = new DefaultBasicConfiguration();
+		Services.registerService(BasicConfiguration.class,
+				"Manages the basic configurations (key, value)", bc);
+		bc.load();
 	}
 }
