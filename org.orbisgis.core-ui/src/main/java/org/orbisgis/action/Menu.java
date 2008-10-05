@@ -190,4 +190,8 @@ public class Menu implements IMenu {
 		return action != null;
 	}
 
+	@Override
+	public String toString() {
+		return getText();
+	}
 }

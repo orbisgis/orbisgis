@@ -17,41 +17,48 @@ import javax.swing.JPanel;
 import org.orbisgis.Services;
 import org.orbisgis.configuration.BasicConfiguration;
 import org.orbisgis.configuration.IConfiguration;
-import org.orbisgis.configurations.ui.PasswordInput;
-import org.orbisgis.configurations.ui.TextInput;
-import org.orbisgis.configurations.ui.Utilities;
+import org.orbisgis.configurations.ui.ConfigUnitPanel;
+import org.sif.multiInputPanel.InputType;
+import org.sif.multiInputPanel.IntType;
+import org.sif.multiInputPanel.PasswordType;
+import org.sif.multiInputPanel.StringType;
 
 public class ProxyConfiguration implements IConfiguration {
 
 	private JPanel panel;
-	private TextInput host, port, user;
-	private PasswordInput pass;
+	private StringType host, user;
+	private PasswordType pass;
+	private IntType port;
 	private JCheckBox proxyCheck, authCheck;
 	private String userValue, passValue;
 
 	@Override
 	public JComponent getComponent() {
-		// Creates the panel lazily
 		if (panel == null) {
 			panel = new JPanel(new GridBagLayout());
-			host = new TextInput("Host: ", false, 250);
-			port = new TextInput("Port: ", false, 75);
-			user = new TextInput("User: ", false, 250);
-			pass = new PasswordInput("Pass: ", false, 250);
-			proxyCheck = new JCheckBox();
-			authCheck = new JCheckBox();
+			host = new StringType(25);
+			port = new IntType(6);
+			user = new StringType(25);
+			pass = new PasswordType(25);
 
+			proxyCheck = new JCheckBox();
 			proxyCheck.addActionListener(new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent e) {
 					if (!proxyCheck.isSelected()) {
 						authCheck.setSelected(false);
+						host.setEditable(false);
+						port.setEditable(false);
 						user.setEditable(false);
 						pass.setEditable(false);
+					} else {
+						host.setEditable(true);
+						port.setEditable(true);
 					}
 				}
 			});
 
+			authCheck = new JCheckBox();
 			authCheck.addActionListener(new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent e) {
@@ -59,29 +66,34 @@ public class ProxyConfiguration implements IConfiguration {
 						proxyCheck.setSelected(true);
 						host.setEditable(true);
 						port.setEditable(true);
+						user.setEditable(true);
+						pass.setEditable(true);
+					} else {
+						user.setEditable(false);
+						pass.setEditable(false);
 					}
 				}
 			});
 
-			JPanel proxyPanel = Utilities.createPanel("Proxy", proxyCheck,
-					"Enable Proxy", host, port);
-			JPanel authPanel = Utilities.createPanel("Authentication",
-					authCheck, "Enable Authentication", user, pass);
+			String[] proxyLabels = { "Host: ", "Port: " };
+			InputType[] proxyInputs = { host, port };
+			JPanel proxyPanel = new ConfigUnitPanel("Proxy", proxyCheck,
+					"Enable Proxy", proxyLabels, proxyInputs);
+
+			String[] authLabels = { "User: ", "Password: " };
+			InputType[] authInputs = { user, pass };
+			JPanel authPanel = new ConfigUnitPanel("Authentication", authCheck,
+					"Enable Authentication", authLabels, authInputs);
 
 			GridBagConstraints c = new GridBagConstraints();
-			c.anchor = GridBagConstraints.NORTH;
 			c.fill = GridBagConstraints.BOTH;
-			c.ipadx = 5;
-			c.ipady = 5;
 			c.gridx = 0;
 			c.gridy = 0;
 			c.insets = new Insets(30, 10, 10, 10);
 			panel.add(proxyPanel, c);
-
 			c.gridy = 1;
 			c.insets = new Insets(10, 10, 10, 10);
 			panel.add(authPanel, c);
-
 			c.weighty = 0.1;
 			c.gridy = 2;
 			panel.add(new JLabel(""), c);
@@ -115,7 +127,6 @@ public class ProxyConfiguration implements IConfiguration {
 			user.setEditable(enableAuth);
 			pass.setEditable(enableAuth);
 		}
-
 		return panel;
 	}
 

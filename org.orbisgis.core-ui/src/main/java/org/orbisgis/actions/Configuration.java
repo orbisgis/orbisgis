@@ -1,7 +1,7 @@
 package org.orbisgis.actions;
 
 import org.orbisgis.action.IAction;
-import org.orbisgis.configuration.ConfigurationPanel;
+import org.orbisgis.configuration.ui.ConfigurationPanel;
 import org.sif.UIFactory;
 
 public class Configuration implements IAction {

@@ -57,7 +57,7 @@ public class DefaultBasicConfiguration implements BasicConfiguration {
 
 	@Override
 	public String removeProperty(String key) {
-		Object ret = properties.getProperty(key);
+		Object ret = properties.remove(key);
 		return ret == null ? null : ret.toString();
 	}
 }
