@@ -36,39 +36,26 @@
  */
 package org.sif.multiInputPanel;
 
-import java.awt.Component;
-
 import javax.swing.JPasswordField;
 
-import org.sif.SQLUIPanel;
-
-public class PasswordType implements InputType {
+public class PasswordType extends StringType {
 
 	private JPasswordField comp = new JPasswordField();
 
 	public PasswordType(int columns) {
-		comp.setColumns(columns);
+		super(columns);
 	}
 
 	public PasswordType() {
+		super();
 	}
 
-	public Component getComponent() {
-		return comp;
-	}
-
-	public int getType() {
-		return SQLUIPanel.STRING;
-	}
-
+	@Override
 	public String getValue() {
 		return new String(comp.getPassword());
 	}
 
-	public void setValue(String value) {
-		comp.setText(value);
-	}
-
+	@Override
 	public boolean isPersistent() {
 		return false;
 	}

@@ -36,47 +36,23 @@
  */
 package org.sif.multiInputPanel;
 
-import java.awt.Component;
-
-import javax.swing.JTextField;
-
 import org.sif.SQLUIPanel;
 
-public class StringType implements InputType {
-
-	private JTextField comp = new JTextField();
-
+public class StringType extends AbstractTextType {
 	public StringType(int columns, boolean active) {
-		comp.setColumns(columns);
-		comp.setEditable(active);
+		super(columns);
+		setEditable(active);
 	}
 
 	public StringType(int columns) {
-		comp.setColumns(columns);
+		super(columns);
 	}
 
 	public StringType() {
-		comp.setColumns(5);
-	}
-
-	public Component getComponent() {
-		return comp;
+		super();
 	}
 
 	public int getType() {
 		return SQLUIPanel.STRING;
 	}
-
-	public String getValue() {
-		return comp.getText();
-	}
-
-	public void setValue(String value) {
-		comp.setText(value);
-	}
-
-	public boolean isPersistent() {
-		return true;
-	}
-
 }
