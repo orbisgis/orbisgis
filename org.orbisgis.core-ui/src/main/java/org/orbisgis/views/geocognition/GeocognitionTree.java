@@ -290,16 +290,7 @@ public class GeocognitionTree extends ResourceTree {
 	}
 
 	public void filter(String text, ArrayList<IGeocognitionFilter> filters) {
-		boolean collapse = treeModel.filter(text, filters);
-		if (collapse) {
-			for (int i = 0; i < getTree().getRowCount(); i++) {
-				getTree().collapseRow(i);
-			}
-		} else {
-			for (int i = 0; i < getTree().getRowCount(); i++) {
-				getTree().expandRow(i);
-			}
-		}
+		treeModel.filter(text, filters);
 	}
 
 	public void setRenderers(ElementRenderer[] renderers) {
