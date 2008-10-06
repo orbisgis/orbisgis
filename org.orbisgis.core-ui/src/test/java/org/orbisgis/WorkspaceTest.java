@@ -41,8 +41,6 @@ import java.io.PrintWriter;
 
 import junit.framework.TestCase;
 
-import org.orbisgis.pluginManager.PluginManager;
-import org.orbisgis.pluginManager.SystemListener;
 import org.orbisgis.utils.FileUtils;
 import org.orbisgis.workspace.DefaultSwingWorkspace;
 
@@ -54,16 +52,36 @@ public class WorkspaceTest extends TestCase {
 	@Override
 	protected void setUp() throws Exception {
 		homeFile = new File("target/home");
-		Services.registerService(PluginManager.class, "", new PluginManager() {
+		Services.registerService(ApplicationInfo.class, "", new ApplicationInfo() {
 
-			public void stop() {
+			@Override
+			public File getHomeFolder() {
+				return homeFile;
 			}
 
-			public void removeSystemListener(SystemListener listener) {
+			@Override
+			public String getLogFile() {
+				return null;
 			}
 
-			public void addSystemListener(SystemListener listener) {
+			@Override
+			public String getName() {
+				return null;
+			}
 
+			@Override
+			public String getOrganization() {
+				return null;
+			}
+
+			@Override
+			public String getVersionName() {
+				return null;
+			}
+
+			@Override
+			public String getVersionNumber() {
+				return null;
 			}
 
 		});
