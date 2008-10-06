@@ -127,6 +127,11 @@ public class Activator implements PluginActivator {
 		// Initialize workspace
 		initializeWorkspace();
 
+		// Install update manager
+		UpdateManager um = new DefaultUpdateManager();
+		Services.registerService(UpdateManager.class,
+				"Service to install updates from a remote site", um);
+
 		// Initialize configuration
 		EPConfigHelper.loadAndApplyConfigurations();
 
@@ -163,10 +168,10 @@ public class Activator implements PluginActivator {
 		QueryManager.addQueryManagerListener(refreshFMListener);
 
 		// Search for updates
-		DefaultUpdateManager um = new DefaultUpdateManager();
-		Services.registerService(UpdateManager.class,
-				"Service to install updates from a remote site", um);
-		um.startSearch();
+		um = Services.getService(UpdateManager.class);
+		if (um.isSearchAtStartup()) {
+			um.startSearch();
+		}
 	}
 
 	private void initializeWorkspace() throws DriverException {

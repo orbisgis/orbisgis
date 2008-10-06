@@ -1,5 +1,6 @@
 package org.orbisgis.updates;
 
+import java.net.URL;
 
 public interface UpdateManager {
 
@@ -29,5 +30,35 @@ public interface UpdateManager {
 	 * @return
 	 */
 	public abstract Exception getError();
+
+	/**
+	 * Returns true if the update manager should search for updates at start up
+	 * or only when the user ask for it
+	 * 
+	 * @return
+	 */
+	public boolean isSearchAtStartup();
+
+	/**
+	 * Specify true to make OG search for updates just after the application is
+	 * started. False will do nothing at startup
+	 * 
+	 * @param searchAtStartup
+	 */
+	public void setSearchAtStartup(boolean searchAtStartup);
+
+	/**
+	 * Get the site where the updates will be searched
+	 * 
+	 * @return
+	 */
+	public URL getUpdateSiteURL();
+
+	/**
+	 * Set the site where the updates will be searched
+	 * 
+	 * @param updateSiteURL
+	 */
+	public void setUpdateSiteURL(URL updateSiteURL);
 
 }

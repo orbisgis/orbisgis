@@ -1,13 +1,10 @@
 package org.orbisgis.updates;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Properties;
 
 import javax.swing.JOptionPane;
 
@@ -16,8 +13,6 @@ import org.orbisgis.ApplicationInfo;
 import org.orbisgis.Services;
 import org.orbisgis.errorManager.ErrorManager;
 import org.orbisgis.pluginManager.PluginManager;
-import org.orbisgis.updates.UpdateDiscovery;
-import org.orbisgis.updates.UpdateInfo;
 import org.orbisgis.utils.ExecutionException;
 import org.orbisgis.workspace.Workspace;
 
@@ -26,8 +21,9 @@ public class DefaultUpdateManager implements Runnable, UpdateManager {
 	private static final Logger logger = Logger
 			.getLogger(DefaultUpdateManager.class);
 
-	private static final String UPDATE_SITE_PROPERTY_NAME = "update-site";
 	private URL updateSiteURL;
+
+	private boolean searchAtStartup;
 
 	private Exception error;
 
@@ -36,23 +32,12 @@ public class DefaultUpdateManager implements Runnable, UpdateManager {
 	private ApplyUpdate au;
 
 	public DefaultUpdateManager() {
+		this.searchAtStartup = true;
 		// default URL
 		try {
 			this.updateSiteURL = new URL("file:/tmp/");
 		} catch (MalformedURLException e) {
 			throw new RuntimeException("bug!", e);
-		}
-	}
-
-	private void loadConfiguration() throws IOException {
-		Workspace ws = Services.getService(Workspace.class);
-		File propertyFile = ws.getFile("org.orbisgis.updates.conf.properties");
-		Properties p = new Properties();
-		try {
-			p.load(new FileInputStream(propertyFile));
-			updateSiteURL = new URL(p.getProperty(UPDATE_SITE_PROPERTY_NAME));
-		} catch (FileNotFoundException e) {
-			// keep the previous configuration
 		}
 	}
 
@@ -72,7 +57,6 @@ public class DefaultUpdateManager implements Runnable, UpdateManager {
 	public void run() {
 		this.error = null;
 		try {
-			loadConfiguration();
 			ApplicationInfo ai = Services.getService(ApplicationInfo.class);
 			UpdateDiscovery ud = new UpdateDiscovery("OrbisGIS", updateSiteURL);
 			UpdateInfo[] updates = ud.getAvailableUpdatesInfo(ai
@@ -143,4 +127,19 @@ public class DefaultUpdateManager implements Runnable, UpdateManager {
 		return error;
 	}
 
+	public boolean isSearchAtStartup() {
+		return searchAtStartup;
+	}
+
+	public void setSearchAtStartup(boolean searchAtStartup) {
+		this.searchAtStartup = searchAtStartup;
+	}
+	
+	public URL getUpdateSiteURL() {
+		return updateSiteURL;
+	}
+	
+	public void setUpdateSiteURL(URL updateSiteURL) {
+		this.updateSiteURL = updateSiteURL;
+	}
 }
