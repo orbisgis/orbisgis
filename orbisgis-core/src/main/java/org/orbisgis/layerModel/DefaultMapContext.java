@@ -307,6 +307,8 @@ public class DefaultMapContext implements MapContext {
 	public void close(IProgressMonitor pm) {
 		checkIsOpen();
 
+		jaxbMapContext = (org.orbisgis.layerModel.persistence.MapContext) getJAXBObject();
+
 		// Close the layers
 		if (pm == null) {
 			pm = new NullProgressMonitor();

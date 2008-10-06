@@ -36,6 +36,7 @@
  */
 package org.orbisgis;
 
+import java.awt.Color;
 import java.io.File;
 import java.io.FileOutputStream;
 
@@ -46,7 +47,10 @@ import org.orbisgis.layerModel.MapContext;
 import org.orbisgis.map.export.MapExportManager;
 import org.orbisgis.progress.NullProgressMonitor;
 import org.orbisgis.renderer.legend.Legend;
+import org.orbisgis.renderer.legend.carto.LegendFactory;
+import org.orbisgis.renderer.legend.carto.UniqueSymbolLegend;
 import org.orbisgis.renderer.symbol.Symbol;
+import org.orbisgis.renderer.symbol.SymbolFactory;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
@@ -276,6 +280,33 @@ public class MapContextTest extends AbstractTest {
 
 		mc2.open(null);
 		assertTrue(mc2.getLayerModel().getLayerCount() == 2);
+		mc2.close(null);
+	}
+
+	public void testLegendPersistenceOpeningTwice() throws Exception {
+		MapContext mc = new DefaultMapContext();
+		mc.open(null);
+		ILayer layer = getDataManager().createLayer("bv_sap",
+				new File("src/test/resources/bv_sap.shp"));
+		mc.getLayerModel().addLayer(layer);
+		UniqueSymbolLegend legend = LegendFactory.createUniqueSymbolLegend();
+		Symbol symbol = SymbolFactory.createPolygonSymbol(Color.pink);
+		legend.setSymbol(symbol);
+		layer.setLegend(legend);
+		assertTrue(legend.getSymbol().getPersistentProperties().equals(
+				symbol.getPersistentProperties()));
+		mc.close(null);
+		MapContext mc2 = new DefaultMapContext();
+		mc2.setJAXBObject(mc.getJAXBObject());
+		mc2.open(null);
+		assertTrue(legend.getSymbol().getPersistentProperties().equals(
+				symbol.getPersistentProperties()));
+		mc2.close(null);
+		mc2.open(null);
+		layer = mc2.getLayerModel().getLayerByName("bv_sap");
+		legend = (UniqueSymbolLegend) layer.getVectorLegend()[0];
+		assertTrue(legend.getSymbol().getPersistentProperties().equals(
+				symbol.getPersistentProperties()));
 		mc2.close(null);
 	}
 
