@@ -46,7 +46,7 @@ public class EuropeGame implements IView {
 	private static final Symbol MAP_SYMBOL_LEGEND = SymbolFactory
 			.createPolygonSymbol(Color.black, 1, new Color(180, 150, 0));
 	private static final Symbol SELECTED_SYMBOL = SymbolFactory
-			.createPolygonSymbol(Color.red, 10, Color.blue);
+			.createPolygonSymbol(Color.blue, 2, new Color(180, 150, 0));
 
 	private static final String MAP_RESOURCE = "../../maps/europe";
 
