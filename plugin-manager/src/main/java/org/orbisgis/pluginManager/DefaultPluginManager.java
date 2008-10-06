@@ -36,7 +36,6 @@
  */
 package org.orbisgis.pluginManager;
 
-import java.io.File;
 import java.util.ArrayList;
 
 import javax.swing.SwingUtilities;
@@ -102,15 +101,6 @@ public class DefaultPluginManager implements PluginManager {
 		}
 
 		return true;
-	}
-
-	public String getLogFile() {
-		return new File(System.getProperty("user.home")
-				+ "/OrbisGIS/orbisgis.log").getAbsolutePath();
-	}
-
-	public File getHomeFolder() {
-		return new File(System.getProperty("user.home") + "/OrbisGIS/");
 	}
 
 	public void addSystemListener(SystemListener listener) {

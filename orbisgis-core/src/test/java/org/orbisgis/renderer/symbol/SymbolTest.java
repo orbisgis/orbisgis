@@ -43,11 +43,9 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Map;
 
-import junit.framework.TestCase;
-
 import org.gdms.data.types.GeometryConstraint;
 import org.gdms.driver.DriverException;
-import org.orbisgis.OrbisgisCoreServices;
+import org.orbisgis.AbstractTest;
 import org.orbisgis.Services;
 import org.orbisgis.renderer.RenderPermission;
 import org.orbisgis.renderer.symbol.collection.persistence.SymbolType;
@@ -55,7 +53,7 @@ import org.orbisgis.renderer.symbol.collection.persistence.SymbolType;
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
 
-public class SymbolTest extends TestCase {
+public class SymbolTest extends AbstractTest {
 
 	private final class TestSymbol extends AbstractSymbol {
 		@Override
@@ -88,12 +86,6 @@ public class SymbolTest extends TestCase {
 		public boolean acceptGeometry(Geometry geom) {
 			return false;
 		}
-	}
-
-	@Override
-	protected void setUp() throws Exception {
-		super.setUp();
-		OrbisgisCoreServices.installServices();
 	}
 
 	public void testManagerClones() throws Exception {

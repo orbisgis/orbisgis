@@ -12,9 +12,9 @@ import java.util.Properties;
 import javax.swing.JOptionPane;
 
 import org.apache.log4j.Logger;
+import org.orbisgis.ApplicationInfo;
 import org.orbisgis.Services;
 import org.orbisgis.errorManager.ErrorManager;
-import org.orbisgis.pluginManager.ApplicationInfo;
 import org.orbisgis.pluginManager.PluginManager;
 import org.orbisgis.updates.UpdateDiscovery;
 import org.orbisgis.updates.UpdateInfo;

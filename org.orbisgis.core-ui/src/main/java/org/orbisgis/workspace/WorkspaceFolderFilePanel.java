@@ -106,7 +106,7 @@ public class WorkspaceFolderFilePanel extends SaveFilePanel {
 			} else {
 				version = 1;
 			}
-			DefaultWorkspace dw = (DefaultWorkspace) Services
+			DefaultSwingWorkspace dw = (DefaultSwingWorkspace) Services
 					.getService(Workspace.class);
 			if (dw.getWsVersion() != version) {
 				return "Workspace version mistmatch. Either"

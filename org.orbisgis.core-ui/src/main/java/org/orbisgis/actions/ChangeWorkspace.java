@@ -38,9 +38,9 @@ package org.orbisgis.actions;
 
 import java.io.IOException;
 
+import org.orbisgis.ApplicationInfo;
 import org.orbisgis.Services;
 import org.orbisgis.action.IAction;
-import org.orbisgis.pluginManager.PluginManager;
 import org.orbisgis.workspace.Workspace;
 import org.orbisgis.workspace.WorkspaceFolderFilePanel;
 import org.sif.UIFactory;
@@ -48,13 +48,10 @@ import org.sif.UIFactory;
 public class ChangeWorkspace implements IAction {
 
 	public void actionPerformed() {
-		Workspace ws = (Workspace) Services
-				.getService(Workspace.class);
-		PluginManager psm = (PluginManager) Services
-				.getService(PluginManager.class);
+		Workspace ws = (Workspace) Services.getService(Workspace.class);
 		WorkspaceFolderFilePanel panel = new WorkspaceFolderFilePanel(
-				"Select the workspace folder", psm.getHomeFolder()
-						.getAbsolutePath());
+				"Select the workspace folder", Services.getService(
+						ApplicationInfo.class).getHomeFolder().getAbsolutePath());
 		boolean accepted = UIFactory.showDialog(panel);
 		if (accepted) {
 			try {

@@ -10,7 +10,6 @@ import javax.swing.JCheckBox;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
 
-import org.orbisgis.pluginManager.PluginManager;
 import org.sif.SIFDialog;
 import org.sif.SQLUIPanel;
 import org.sif.UIFactory;
@@ -29,7 +28,7 @@ public class ErrorPanel extends JPanel implements SQLUIPanel {
 		txtError.setEditable(false);
 		this.add(txtError, BorderLayout.CENTER);
 		chkSend = new JCheckBox("Send the log in '"
-				+ Services.getService(PluginManager.class).getLogFile()
+				+ Services.getService(ApplicationInfo.class).getLogFile()
 				+ "' to help OrbisGIS team to solve this problem");
 		this.add(chkSend, BorderLayout.SOUTH);
 	}

@@ -9,9 +9,12 @@ import java.util.Arrays;
 import java.util.HashSet;
 
 import org.apache.log4j.Logger;
+import org.gdms.data.DataSourceFactory;
+import org.gdms.data.WarningListener;
 import org.grap.lut.LutGenerator;
 import org.orbisgis.configuration.BasicConfiguration;
 import org.orbisgis.configuration.DefaultBasicConfiguration;
+import org.orbisgis.errorManager.ErrorManager;
 import org.orbisgis.geocognition.DefaultGeocognition;
 import org.orbisgis.geocognition.Geocognition;
 import org.orbisgis.javaManager.DefaultJavaManager;
@@ -29,22 +32,51 @@ import org.orbisgis.renderer.symbol.SymbolFactory;
 import org.orbisgis.renderer.symbol.SymbolManager;
 import org.orbisgis.workspace.DefaultOGWorkspace;
 import org.orbisgis.workspace.OGWorkspace;
+import org.orbisgis.workspace.Workspace;
 
 public class OrbisgisCoreServices {
 
+	private static final String SOURCES_DIR_NAME = "sources";
 	private final static Logger logger = Logger
 			.getLogger(OrbisgisCoreServices.class);
 
+	/**
+	 * Installs all the OrbisGIS core services
+	 */
 	public static void installServices() {
+		// Error service must be installed
+		if (Services.getService(ErrorManager.class) == null) {
+			throw new IllegalStateException("Error service must be installed "
+					+ "before initializing OrbisGIS services");
+		}
+		if (Services.getService(ErrorManager.class) == null) {
+			throw new IllegalStateException(
+					"Workspace service must be installed "
+							+ "before initializing OrbisGIS services");
+		}
+
+		installApplicationInfoServices();
+
+		installWorkspaceServices();
+
+		installConfigurationService();
+
 		installSymbologyServices();
 
 		installGeocognitionService();
 
-		installWorkspaceService();
-
 		installJavaServices();
 
 		installExportServices();
+	}
+
+	private static void installApplicationInfoServices() {
+		if (Services.getService(ApplicationInfo.class) == null) {
+			Services.registerService(ApplicationInfo.class,
+					"Gets information about the application: "
+							+ "name, version, etc.",
+					new OrbisGISApplicationInfo());
+		}
 	}
 
 	private static void installExportServices() {
@@ -81,7 +113,13 @@ public class OrbisgisCoreServices {
 				.toArray(new File[0])));
 	}
 
-	public static void installWorkspaceService() {
+	/**
+	 * Installs services that depend on the workspace such as the
+	 * {@link DataManager} 
+	 */
+	public static void installWorkspaceServices() {
+		Workspace workspace = Services.getService(Workspace.class);
+
 		DefaultOGWorkspace defaultOGWorkspace = new DefaultOGWorkspace();
 		Services.registerService(OGWorkspace.class,
 				"Gives access to directories inside the workspace."
@@ -89,6 +127,38 @@ public class OrbisgisCoreServices {
 						+ "the workspace through this service. It lets "
 						+ "the access to the results folder",
 				defaultOGWorkspace);
+
+		File sourcesDir = workspace.getFile(SOURCES_DIR_NAME);
+		if (!sourcesDir.exists()) {
+			sourcesDir.mkdirs();
+		}
+
+		OGWorkspace ews = Services.getService(OGWorkspace.class);
+
+		DataSourceFactory dsf = new DataSourceFactory(sourcesDir
+				.getAbsolutePath(), ews.getTempFolder().getAbsolutePath());
+		dsf.setResultDir(ews.getResultsFolder());
+
+		// Pipeline the warnings in gdms to the warning system in the
+		// application
+		dsf.setWarninglistener(new WarningListener() {
+
+			public void throwWarning(String msg) {
+				Services.getService(ErrorManager.class).warning(msg, null);
+			}
+
+			public void throwWarning(String msg, Throwable t, Object source) {
+				Services.getService(ErrorManager.class).warning(msg, t);
+			}
+
+		});
+
+		// Installation of the service
+		Services
+				.registerService(
+						DataManager.class,
+						"Access to the sources, to its properties (indexes, etc.) and its contents, either raster or vectorial",
+						new DefaultDataManager(dsf));
 	}
 
 	public static void installGeocognitionService() {
@@ -133,7 +203,7 @@ public class OrbisgisCoreServices {
 		lm.addLegend(new RasterLegend(LutGenerator.colorModel("gray"), 1));
 	}
 
-	public static void installConfigurationService() {
+	private static void installConfigurationService() {
 		BasicConfiguration bc = new DefaultBasicConfiguration();
 		Services.registerService(BasicConfiguration.class,
 				"Manages the basic configurations (key, value)", bc);

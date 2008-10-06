@@ -43,9 +43,7 @@ import java.util.ArrayList;
 
 import javax.swing.JOptionPane;
 
-import org.gdms.data.DataSourceFactory;
 import org.gdms.data.NoSuchTableException;
-import org.gdms.data.WarningListener;
 import org.gdms.driver.DriverException;
 import org.gdms.source.SourceManager;
 import org.gdms.sql.customQuery.QueryManager;
@@ -77,28 +75,9 @@ import org.sif.UIFactory;
 public class Activator implements PluginActivator {
 
 	private RefreshViewFunctionManagerListener refreshFMListener = new RefreshViewFunctionManagerListener();
-	private DataSourceFactory dsf;
-	private UpdateManager um;
 
 	public void start() throws Exception {
 		QueryManager.registerQuery(Geomark.class);
-
-		OrbisgisCoreServices.installServices();
-
-		// Initialize workspace
-		initializeWorkspace();
-
-		// Initialize configuration
-		OrbisgisCoreServices.installConfigurationService();
-		EPConfigHelper.loadAndApplyConfigurations();
-
-		// Install the refresh listener
-		PluginManager pm = Services.getService(PluginManager.class);
-		pm.addSystemListener(new SystemListener() {
-			public void statusChanged() {
-				ActionControlsRegistry.refresh();
-			}
-		});
 
 		// Install the error listener
 		final ErrorManager em = Services.getService(ErrorManager.class);
@@ -142,27 +121,34 @@ public class Activator implements PluginActivator {
 
 		});
 
-		// Pipeline the warnings in gdms to the warning system in the
-		// application
-		dsf.setWarninglistener(new WarningListener() {
+		// Install OrbisGIS core services
+		OrbisgisCoreServices.installServices();
 
-			public void throwWarning(String msg) {
-				em.warning(msg, null);
+		// Initialize workspace
+		initializeWorkspace();
+
+		// Initialize configuration
+		EPConfigHelper.loadAndApplyConfigurations();
+
+		// Install the refresh listener
+		PluginManager pm = Services.getService(PluginManager.class);
+		pm.addSystemListener(new SystemListener() {
+			public void statusChanged() {
+				ActionControlsRegistry.refresh();
 			}
-
-			public void throwWarning(String msg, Throwable t, Object source) {
-				em.warning(msg, t);
-			}
-
 		});
 
 		// Listen workspace changes
 		Workspace workspace = Services.getService(Workspace.class);
-
 		workspace.addWorkspaceListener(new WorkspaceListener() {
 
 			public void workspaceChanged(File oldWorkspace, File newWorkspace) {
-				initializeWorkspace();
+				try {
+					initializeWorkspace();
+				} catch (DriverException e) {
+					Services.getService(ErrorManager.class).error(
+							"Cannot initialize workspace", e);
+				}
 			}
 
 			public void saveWorkspace() {
@@ -177,34 +163,18 @@ public class Activator implements PluginActivator {
 		QueryManager.addQueryManagerListener(refreshFMListener);
 
 		// Search for updates
-		um = new DefaultUpdateManager();
-		Services.registerService(DefaultUpdateManager.class,
+		DefaultUpdateManager um = new DefaultUpdateManager();
+		Services.registerService(UpdateManager.class,
 				"Service to install updates from a remote site", um);
 		um.startSearch();
 	}
 
-	private void initializeWorkspace() {
-
+	private void initializeWorkspace() throws DriverException {
 		// Configuration of workspace directories
 		Workspace workspace = Services.getService(Workspace.class);
 
-		File sourcesDir = workspace.getFile("sources");
-		if (!sourcesDir.exists()) {
-			sourcesDir.mkdirs();
-		}
-
-		OGWorkspace ews = Services.getService(OGWorkspace.class);
-
-		dsf = new DataSourceFactory(sourcesDir.getAbsolutePath(), ews
-				.getTempFolder().getAbsolutePath());
-		dsf.setResultDir(ews.getResultsFolder());
-
-		// Installation of the service
-		Services
-				.registerService(
-						DataManager.class,
-						"Access to the sources, to its properties (indexes, etc.) and its contents, either raster or vectorial",
-						new DefaultDataManager(dsf));
+		// Change DataSourceFactory and SourceManager folders
+		OrbisgisCoreServices.installWorkspaceServices();
 
 		// Link with SIF factory
 		File sifDir = workspace.getFile("sif");
@@ -212,7 +182,8 @@ public class Activator implements PluginActivator {
 			sifDir.mkdirs();
 		}
 		UIFactory.setPersistencyDirectory(sifDir);
-		UIFactory.setTempDirectory(ews.getTempFolder());
+		UIFactory.setTempDirectory(Services.getService(OGWorkspace.class)
+				.getTempFolder());
 		UIFactory.setDefaultIcon(Activator.class
 				.getResource("/org/orbisgis/images/mini_orbisgis.png"));
 
@@ -226,7 +197,8 @@ public class Activator implements PluginActivator {
 
 		EPWindowHelper.saveStatus();
 		try {
-			dsf.getSourceManager().saveStatus();
+			Services.getService(DataManager.class).getSourceManager()
+					.saveStatus();
 		} catch (DriverException e) {
 			Services.getErrorManager().error("Cannot save source information",
 					e);
@@ -236,7 +208,7 @@ public class Activator implements PluginActivator {
 		BasicConfiguration bc = Services.getService(BasicConfiguration.class);
 		bc.save();
 
-		um.applyUpdates();
+		Services.getService(UpdateManager.class).applyUpdates();
 	}
 
 	public boolean allowStop() {

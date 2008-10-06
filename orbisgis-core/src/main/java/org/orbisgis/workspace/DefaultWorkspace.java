@@ -42,15 +42,12 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 
-import javax.swing.SwingUtilities;
-
 import org.apache.log4j.Logger;
+import org.orbisgis.ApplicationInfo;
 import org.orbisgis.Services;
-import org.orbisgis.pluginManager.PluginManager;
-import org.sif.UIFactory;
+import org.orbisgis.utils.FileUtils;
 
 public class DefaultWorkspace implements Workspace {
 
@@ -60,7 +57,7 @@ public class DefaultWorkspace implements Workspace {
 
 	private static Logger logger = Logger.getLogger(DefaultWorkspace.class);
 
-	private File workspaceFolder;
+	protected File workspaceFolder;
 
 	private ArrayList<WorkspaceListener> listeners = new ArrayList<WorkspaceListener>();
 
@@ -114,33 +111,28 @@ public class DefaultWorkspace implements Workspace {
 	 */
 	public void init(boolean clean) throws IOException {
 		logger.debug("Initializing workspace");
-		File currentWorkspace = getCurrentWorkspaceFile();
-		if (currentWorkspace.exists()) {
-			readCurrentworkspace(currentWorkspace);
-		}
-		while (!validWorkspace()) {
-			File folder = askWorkspace();
-			if (folder != null) {
-				try {
-					PrintWriter pw = new PrintWriter(currentWorkspace);
-					pw.println(folder.getAbsolutePath());
-					pw.close();
-				} catch (FileNotFoundException e) {
-					throw new RuntimeException("Cannot initialize system", e);
-				}
-			} else {
-				throw new RuntimeException("Cannot initialize system");
+		File currentWorkspaceFile = getCurrentWorkspaceFile();
+		if (!currentWorkspaceFile.exists()) {
+			try {
+				PrintWriter pw = new PrintWriter(currentWorkspaceFile);
+				pw.println(Services.getService(ApplicationInfo.class)
+						.getHomeFolder());
+				pw.close();
+			} catch (FileNotFoundException e) {
+				throw new RuntimeException("Cannot initialize system", e);
 			}
+		}
+		readCurrentworkspace(currentWorkspaceFile);
+		String error = validateWorkspace();
+		if (error != null) {
+			throw new IllegalStateException("Invalid workspace: " + error);
+		}
 
-			if (currentWorkspace.exists()) {
-				readCurrentworkspace(currentWorkspace);
-			}
-		}
 		setWorkspaceFolder(workspaceFolder.getAbsolutePath());
 
 		logger.debug("Using workspace " + workspaceFolder.getAbsolutePath());
 		if (clean) {
-			deleteFile(getMetadataFolder());
+			FileUtils.deleteDir(getMetadataFolder());
 		}
 		createMetadataDir();
 	}
@@ -159,56 +151,20 @@ public class DefaultWorkspace implements Workspace {
 		}
 	}
 
-	protected File askWorkspace() {
-		ShowDialog dialog = new ShowDialog();
-		try {
-			SwingUtilities.invokeAndWait(dialog);
-			return dialog.ret;
-		} catch (InterruptedException e) {
-			throw new RuntimeException("Cannot obtain the workspace folder", e);
-		} catch (InvocationTargetException e) {
-			throw new RuntimeException("Cannot obtain the workspace folder", e);
-		}
-	}
-
-	private File getCurrentWorkspaceFile() throws FileNotFoundException {
-		PluginManager psm = (PluginManager) Services
-				.getService(PluginManager.class);
-		psm.getHomeFolder().mkdirs();
-		File file = new File(psm.getHomeFolder(), "currentWorkspace.txt");
+	protected File getCurrentWorkspaceFile() throws FileNotFoundException {
+		ApplicationInfo ogInfo = Services.getService(ApplicationInfo.class);
+		ogInfo.getHomeFolder().mkdirs();
+		File file = new File(ogInfo.getHomeFolder(), "currentWorkspace.txt");
 		return file;
 	}
 
-	/**
-	 * This function will recursively delete directories and files.
-	 * 
-	 * @param path
-	 *            File or Directory to be deleted
-	 * @return true indicates success.
-	 */
-	private static boolean deleteFile(File path) {
-		if (path.exists()) {
-			if (path.isDirectory()) {
-				File[] files = path.listFiles();
-				for (int i = 0; i < files.length; i++) {
-					if (files[i].isDirectory()) {
-						deleteFile(files[i]);
-					} else {
-						files[i].delete();
-					}
-				}
-			}
-		}
-		return (path.delete());
-	}
-
-	private boolean validWorkspace() {
+	protected String validateWorkspace() {
 		if (workspaceFolder == null) {
-			return false;
+			return "Workspace is null";
 		} else if (!workspaceFolder.exists()) {
-			return false;
+			return "Workspace folder does not exist: " + workspaceFolder;
 		} else if (!workspaceFolder.isDirectory()) {
-			return false;
+			return "Workspace must be a folder: " + workspaceFolder;
 		} else {
 			File versionFile = getVersionFile();
 			if (versionFile.exists()) {
@@ -218,16 +174,25 @@ public class DefaultWorkspace implements Workspace {
 					String strVersion = fr.readLine();
 					fr.close();
 					int version = Integer.parseInt(strVersion.trim());
-					return getWsVersion() == version;
+					if (getWsVersion() != version) {
+						return "Workspace version mistmatch. Expected "
+								+ getWsVersion() + " and found " + version;
+					}
 				} catch (IOException e1) {
-					return false;
+					return e1.getMessage();
 				} catch (NumberFormatException e) {
-					return false;
+					return e.getMessage();
 				}
 			} else {
-				return getWsVersion() == 1;
+				if (getWsVersion() != 1) {
+					return "Workspace version mistmatch. Expected "
+							+ getWsVersion()
+							+ " and unversioned workspace found, default used: 1";
+				}
 			}
 		}
+
+		return null;
 	}
 
 	public int getWsVersion() {
@@ -238,7 +203,7 @@ public class DefaultWorkspace implements Workspace {
 		return new File(getMetadataFolder(), VERSION_FILE_NAME);
 	}
 
-	private File getMetadataFolder() {
+	protected File getMetadataFolder() {
 		return new File(workspaceFolder, ".metadata");
 	}
 
@@ -267,7 +232,7 @@ public class DefaultWorkspace implements Workspace {
 		}
 	}
 
-	private void createMetadataDir() throws IOException {
+	protected void createMetadataDir() throws IOException {
 		if (!getMetadataFolder().exists()) {
 			if (!getMetadataFolder().mkdirs()) {
 				throw new IOException("Cannot create metadata directory");
@@ -308,26 +273,6 @@ public class DefaultWorkspace implements Workspace {
 		pw.println(getWsVersion());
 		pw.flush();
 		pw.close();
-	}
-
-	private class ShowDialog implements Runnable {
-
-		private File ret;
-
-		@Override
-		public void run() {
-			PluginManager psm = (PluginManager) Services
-					.getService(PluginManager.class);
-			WorkspaceFolderFilePanel panel = new WorkspaceFolderFilePanel(
-					"Select the workspace folder", psm.getHomeFolder()
-							.getAbsolutePath());
-			if (UIFactory.showDialog(panel)) {
-				ret = panel.getSelectedFile();
-			} else {
-				ret = null;
-			}
-		}
-
 	}
 
 }

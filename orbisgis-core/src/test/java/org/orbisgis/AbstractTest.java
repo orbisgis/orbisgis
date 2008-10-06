@@ -38,7 +38,6 @@ package org.orbisgis;
 
 import junit.framework.TestCase;
 
-import org.gdms.data.DataSourceFactory;
 import org.orbisgis.errorManager.ErrorListener;
 import org.orbisgis.errorManager.ErrorManager;
 import org.orbisgis.workspace.TestWorkspace;
@@ -46,24 +45,16 @@ import org.orbisgis.workspace.Workspace;
 
 public class AbstractTest extends TestCase {
 
-	static {
-		Services.registerService(Workspace.class, "", new TestWorkspace());
-
-		OrbisgisCoreServices.installServices();
-	}
-
 	protected FailErrorManager failErrorManager;
 
 	@Override
 	protected void setUp() throws Exception {
-		DataSourceFactory dsf = new DataSourceFactory(
-				"src/test/resources/sources", "src/test/resources/temp");
-
-		Services.registerService(DataManager.class, "", new DefaultDataManager(
-				dsf));
 		failErrorManager = new FailErrorManager();
 		Services.registerService(ErrorManager.class, "", failErrorManager);
-		super.setUp();
+		TestWorkspace workspace = new TestWorkspace();
+		workspace.setWorkspaceFolder("target");
+		Services.registerService(Workspace.class, "", workspace);
+		OrbisgisCoreServices.installServices();
 	}
 
 	protected DataManager getDataManager() {

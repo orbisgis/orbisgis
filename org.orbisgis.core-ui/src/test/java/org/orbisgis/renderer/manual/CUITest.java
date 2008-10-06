@@ -38,13 +38,11 @@ package org.orbisgis.renderer.manual;
 
 import java.io.File;
 
-import org.gdms.data.DataSourceFactory;
 import org.gdms.data.types.Constraint;
 import org.gdms.data.types.GeometryConstraint;
 import org.gdms.data.types.Type;
 import org.gdms.driver.DriverException;
 import org.orbisgis.DataManager;
-import org.orbisgis.DefaultDataManager;
 import org.orbisgis.OrbisgisCoreServices;
 import org.orbisgis.Services;
 import org.orbisgis.editorViews.toc.actions.cui.ISymbolEditor;
@@ -60,9 +58,7 @@ import org.orbisgis.errorManager.DefaultErrorManager;
 import org.orbisgis.errorManager.ErrorManager;
 import org.orbisgis.layerModel.ILayer;
 import org.orbisgis.map.MapTransform;
-import org.orbisgis.workspace.DefaultOGWorkspace;
-import org.orbisgis.workspace.DefaultWorkspace;
-import org.orbisgis.workspace.OGWorkspace;
+import org.orbisgis.workspace.DefaultSwingWorkspace;
 import org.orbisgis.workspace.Workspace;
 import org.sif.UIFactory;
 
@@ -71,28 +67,15 @@ import com.vividsolutions.jts.geom.Envelope;
 public class CUITest {
 
 	public static void main(String[] args) throws Throwable {
-		DataSourceFactory dsf = new DataSourceFactory("target/sources",
-				"target/temp");
-
-		Services.registerService(DataManager.class, "", new DefaultDataManager(
-				dsf));
-		Services.registerService(Workspace.class, "", new DefaultWorkspace() {
+		DefaultSwingWorkspace workspace = new DefaultSwingWorkspace() {
 
 			@Override
 			public File getFile(String name) {
 				return new File(name);
 			}
 
-		});
-		Services.registerService(OGWorkspace.class, "",
-				new DefaultOGWorkspace() {
-
-					@Override
-					public File getFile(String name) {
-						return new File(name);
-					}
-
-				});
+		};
+		Services.registerService(Workspace.class, "", workspace);
 		Services.registerService(ErrorManager.class, "",
 				new DefaultErrorManager() {
 

@@ -36,9 +36,9 @@
  */
 package org.orbisgis.actions.about;
 
+import org.orbisgis.ApplicationInfo;
 import org.orbisgis.Services;
 import org.orbisgis.action.IAction;
-import org.orbisgis.pluginManager.ApplicationInfo;
 import org.sif.SIFDialog;
 import org.sif.UIFactory;
 

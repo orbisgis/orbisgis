@@ -7,7 +7,6 @@ import java.util.HashSet;
 import org.apache.commons.net.ftp.FTPClient;
 import org.apache.commons.net.ftp.FTPFile;
 import org.apache.commons.net.ftp.FTPReply;
-import org.orbisgis.pluginManager.PluginManager;
 
 public class SendLog implements Runnable {
 
@@ -36,7 +35,7 @@ public class SendLog implements Runnable {
 					} while (fileSet.contains(name));
 
 					File log = new File(Services
-							.getService(PluginManager.class).getLogFile());
+							.getService(ApplicationInfo.class).getLogFile());
 					FileInputStream fis = new FileInputStream(log);
 					System.out.println(ftp.storeFile(name, fis));
 					fis.close();

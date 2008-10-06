@@ -11,6 +11,8 @@ import junit.framework.TestCase;
 
 import org.orbisgis.OrbisgisCoreServices;
 import org.orbisgis.Services;
+import org.orbisgis.errorManager.DefaultErrorManager;
+import org.orbisgis.errorManager.ErrorManager;
 import org.orbisgis.geocognition.DefaultGeocognition;
 import org.orbisgis.geocognition.mapContext.GeocognitionMapContextFactory;
 import org.orbisgis.geocognition.sql.Code;
@@ -31,9 +33,11 @@ public class GeocognitionTest extends TestCase {
 	@Override
 	protected void setUp() throws Exception {
 		super.setUp();
-
-		Services.registerService(Workspace.class, "", new TestWorkspace());
-
+		Services.registerService(ErrorManager.class, "",
+				new DefaultErrorManager());
+		TestWorkspace workspace = new TestWorkspace();
+		workspace.setWorkspaceFolder("target");
+		Services.registerService(Workspace.class, "", workspace);
 		OrbisgisCoreServices.installServices();
 
 		gc = new DefaultGeocognition();

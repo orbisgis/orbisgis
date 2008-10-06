@@ -52,7 +52,7 @@ public class TestWorkspace implements Workspace {
 
 	@Override
 	public File getTempFolder() {
-		return null;
+		return new File(workspaceFolder, "temp");
 	}
 
 }

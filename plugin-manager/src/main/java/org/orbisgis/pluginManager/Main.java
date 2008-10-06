@@ -70,6 +70,7 @@ import org.apache.log4j.Logger;
 import org.apache.log4j.PatternLayout;
 import org.apache.log4j.PropertyConfigurator;
 import org.apache.log4j.RollingFileAppender;
+import org.orbisgis.ApplicationInfo;
 import org.orbisgis.Services;
 import org.orbisgis.utils.XMLUtils;
 import org.orbisgis.workspace.Workspace;
@@ -89,7 +90,7 @@ public class Main {
 	private static boolean doc = false;
 	private static File pluginList;
 	private static boolean clean = false;
-	private static String selectedWorkspace = null;
+	private static String commandLineWorkspace = null;
 
 	public static void main(String[] args) throws Exception {
 		DefaultPluginManager pluginManager = new DefaultPluginManager();
@@ -100,11 +101,9 @@ public class Main {
 		PropertyConfigurator.configure(Main.class
 				.getResource("log4j.properties"));
 
-		PatternLayout l = new PatternLayout("%5p [%t] (%F:%L) - %m%n");
-		RollingFileAppender fa = new RollingFileAppender(l, pluginManager
-				.getLogFile());
-		fa.setMaxFileSize("256KB");
-		Logger.getRootLogger().addAppender(fa);
+		/*
+		 * TODO redirect to console and add appender after plugin initialization
+		 */
 
 		Splash splash = new Splash();
 		splash.setVisible(true);
@@ -120,11 +119,17 @@ public class Main {
 			ArrayList<Plugin> plugins = createExtensionRegistry(pluginDirs,
 					splash);
 
+			PatternLayout l = new PatternLayout("%5p [%t] (%F:%L) - %m%n");
+			RollingFileAppender fa = new RollingFileAppender(l, Services
+					.getService(ApplicationInfo.class).getLogFile());
+			fa.setMaxFileSize("256KB");
+			Logger.getRootLogger().addAppender(fa);
+
 			pluginManager.setPlugins(plugins);
 
 			Workspace ws = (Workspace) Services.getService(Workspace.class);
-			if (selectedWorkspace != null) {
-				ws.setWorkspaceFolder(selectedWorkspace);
+			if (commandLineWorkspace != null) {
+				ws.setWorkspaceFolder(commandLineWorkspace);
 			}
 			ws.init(clean);
 
@@ -153,7 +158,7 @@ public class Main {
 				pluginList = new File(args[i + 1]);
 				i++;
 			} else if (args[i].equals("-w")) {
-				selectedWorkspace = args[i + 1];
+				commandLineWorkspace = args[i + 1];
 				i++;
 			} else if (args[i].equals("-clean")) {
 				clean = true;
@@ -164,6 +169,7 @@ public class Main {
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	private static ArrayList<Plugin> createExtensionRegistry(
 			ArrayList<String> pluginDirs, Splash splash) throws Exception {
 		ArrayList<Plugin> plugins = new ArrayList<Plugin>();
@@ -176,33 +182,13 @@ public class Main {
 			if (pluginXML.exists()) {
 				VTD vtd = new VTD(pluginXML);
 
-				if (vtd.count("/plugin/application") > 0) {
-					String name = vtd.getAttribute("/plugin/application",
-							"name");
-					String versionNumber = vtd.getAttribute(
-							"/plugin/application", "version-number");
-					String versionName = vtd.getAttribute(
-							"/plugin/application", "version-name");
-					String organization = vtd.getAttribute(
-							"/plugin/application", "organization");
-					try {
-						DefaultApplicationInfo applicationInfo = new DefaultApplicationInfo(
-								name, versionNumber, versionName, organization);
-						Services.registerService(ApplicationInfo.class,
-								"Gets information about the application: "
-										+ "name, version, etc.",
-								applicationInfo);
-						splash.updateVersion();
-					} catch (NumberFormatException e) {
-						throw new Exception("Unrecognized "
-								+ "workspace version", e);
-					}
-				}
-
+				// Check for workspace
 				if (vtd.count("/plugin/workspace") > 0) {
 					workspaceClassName = vtd.getAttribute("/plugin/workspace",
 							"class");
 				}
+
+				// Check for extension points
 				int n = vtd.evalToInt("count(/plugin/extension-point)");
 				for (int i = 0; i < n; i++) {
 					String schema = vtd.getAttribute("/plugin/extension-point["
@@ -220,6 +206,7 @@ public class Main {
 					extensionPoints.put(id, ep);
 				}
 
+				// Modify class path
 				String[] isolatedJars = new String[vtd
 						.evalToInt("count(/plugin/isolated)")];
 				for (int i = 0; i < isolatedJars.length; i++) {
@@ -234,6 +221,27 @@ public class Main {
 				}
 				updateCommonClassLoader(pluginDir, isolatedJars);
 
+				// Check for application info
+				if (vtd.count("/plugin/application") > 0) {
+					String infoClass = vtd.getAttribute("/plugin/application",
+							"infoClass");
+					try {
+						Class<? extends ApplicationInfo> applicationInfoClass = (Class<? extends ApplicationInfo>) commonClassLoader
+								.loadClass(infoClass);
+						ApplicationInfo applicationInfo = applicationInfoClass
+								.newInstance();
+						Services.registerService(ApplicationInfo.class,
+								"Gets information about the application: "
+										+ "name, version, etc.",
+								applicationInfo);
+						splash.updateVersion();
+					} catch (NumberFormatException e) {
+						throw new Exception("Unrecognized "
+								+ "workspace version", e);
+					}
+				}
+
+				// Check for extensions
 				n = vtd.evalToInt("count(/plugin/extension)");
 				for (int i = 0; i < n; i++) {
 					String point = vtd.getAttribute("/plugin/extension["
@@ -263,7 +271,7 @@ public class Main {
 			}
 		}
 
-		// Create workspace
+		// install workspace
 		if (workspaceClassName != null) {
 			Class<?> workspaceInstance = commonClassLoader
 					.loadClass(workspaceClassName);

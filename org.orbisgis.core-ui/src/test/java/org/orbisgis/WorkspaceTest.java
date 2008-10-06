@@ -44,7 +44,7 @@ import junit.framework.TestCase;
 import org.orbisgis.pluginManager.PluginManager;
 import org.orbisgis.pluginManager.SystemListener;
 import org.orbisgis.utils.FileUtils;
-import org.orbisgis.workspace.DefaultWorkspace;
+import org.orbisgis.workspace.DefaultSwingWorkspace;
 
 public class WorkspaceTest extends TestCase {
 
@@ -60,14 +60,6 @@ public class WorkspaceTest extends TestCase {
 			}
 
 			public void removeSystemListener(SystemListener listener) {
-			}
-
-			public String getLogFile() {
-				return null;
-			}
-
-			public File getHomeFolder() {
-				return homeFile;
 			}
 
 			public void addSystemListener(SystemListener listener) {
@@ -162,7 +154,7 @@ public class WorkspaceTest extends TestCase {
 				".metadata/org.orbisgis.version.txt").exists());
 	}
 
-	private class TestWorkspace extends DefaultWorkspace {
+	private class TestWorkspace extends DefaultSwingWorkspace {
 
 		private File[] files = new File[0];
 		private int index = 0;

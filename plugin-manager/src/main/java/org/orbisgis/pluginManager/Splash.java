@@ -50,6 +50,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
+import org.orbisgis.ApplicationInfo;
 import org.orbisgis.Services;
 
 /**
