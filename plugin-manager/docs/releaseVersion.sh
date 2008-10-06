@@ -2,6 +2,7 @@
 # ======================================================================
 # Thomas LEDUC - le 09/01/2008
 # ======================================================================
+PLUGIN_LIST="org.orbisgis.core-ui org.orbisgis.games org.orbisgis.processing org.urbsat";
 
 # ======================================================================
 if [ "$#" -ne "2" ] && [ "$#" -ne "1" ]; then
@@ -18,13 +19,6 @@ RELEASE_DIRECTORY="${BASE_DIRECTORY}/orbisgis-zip";
 URL="$1";
 INSTALLER_URL="http://geosysin.iict.ch/irstv-svn/platform-installers";
 
-PLUGIN_LIST="";
-for jar in $(ls); do 
-  if [ -e $jar/plugin.xml ]; then 
-    PLUGIN_LIST="$PLUGIN_LIST $jar"; 
-  fi 
-done
-
 if [ "$2" == "official" ]; then
   OFFICIAL="official";
 fi
@@ -36,7 +30,7 @@ echo "Please, generate the OrbisGIS reference (run platform with -document) and 
 read foo
 echo "Please, change the pom version numbers depending on the change log (press intro when done)"
 read foo
-echo "Please, change the OrbisGIS version number on the plugin.xml of org.orbisgis.core-ui (press intro when done)"
+echo "Please, change the OrbisGIS version number on the ApplicationInfo implementation in orbisgis-core (press intro when done)"
 read foo
 echo "It's done. Don't forget to publish change log and zip. A binary and a source package will be created (press intro to proceed)"
 read foo
@@ -97,7 +91,7 @@ createPluginListXml() {
 	rm -fr "${RELEASE_DIRECTORY}";
 	mkdir -p "${RELEASE_DIRECTORY}";
 	echo "<plugins>" > "${RELEASE_DIRECTORY}/plugin-list.xml";
-	for plugin in ${PLUGINS_LIST}; do
+	for plugin in ${PLUGIN_LIST}; do
 		echo "  <plugin dir=\"plugins/${plugin}\"/>" >> "${RELEASE_DIRECTORY}/plugin-list.xml";
 	done
 	echo "</plugins>" >> "${RELEASE_DIRECTORY}/plugin-list.xml";
@@ -114,7 +108,7 @@ copyAllJarFiles() {
 
 copyDependenciesAndPluginXmlAndSchema() {
 	cd ${DST_SVN_DIRECTORY}/platform;
-	for plugin in ${PLUGINS_LIST}; do
+	for plugin in ${PLUGIN_LIST}; do
 		mkdir -p ${RELEASE_DIRECTORY}/plugins/${plugin};
 		${RSYNC} ${plugin}/plugin.xml ${RELEASE_DIRECTORY}/plugins/${plugin};
 		${RSYNC} ${plugin}/schema ${RELEASE_DIRECTORY}/plugins/${plugin};
