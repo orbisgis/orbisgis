@@ -8,10 +8,12 @@ mvn -Dmaven.test.skip=true deploy
 mvn dependency:copy-dependencies
 mvn org.orbisgis:release-maven-plugin:binary
 # build installers
+cd ..
 svn checkout platform-installers
 cd platform-installers
-mvn org.orbisgis:release-maven-plugin:installers
+mvn org.orbisgis:release-maven-plugin:installer
 # create updates
+cd ../platform
 mvn org.orbisgis:release-maven-plugin:update
 
 # upload all binary packages
