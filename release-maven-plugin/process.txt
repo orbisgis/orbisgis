@@ -1,0 +1,16 @@
+# build binary
+svn checkout platform
+cd platform
+mvn -Dmaven.test.skip=true install
+mvn javadoc:javadoc
+mvn org.orbisgis:release-maven-plugin:source
+mvn -Dmaven.test.skip=true deploy
+mvn dependency:copy-dependencies
+mvn org.orbisgis:release-maven-plugin:binary
+# build installers
+svn checkout platform-installers
+cd platform-installers
+mvn org.orbisgis:release-maven-plugin:installers
+
+# create updates
+mvn org.orbisgis:release-maven-plugin:update
