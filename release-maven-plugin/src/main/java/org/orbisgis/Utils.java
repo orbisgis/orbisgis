@@ -14,54 +14,57 @@ import org.apache.tools.ant.ProjectHelper;
 
 public class Utils {
 
+	public static void unzip(File zipFile, File outFolder) throws IOException,
+			MojoExecutionException {
+		String script = getAntScript();
+		script = script.replaceAll("\\QZIP_FILE\\E", zipFile.getAbsolutePath());
+		script = script.replaceAll("\\QOUT_FOLDER\\E", outFolder.getAbsolutePath());
+		executeAnt("unzip", script);
+	}
+
 	public static void buildStructure(String binaryDir)
 			throws MojoExecutionException, IOException {
-		executeAnt("build-installer-structure", "", "", "", "", "", "",
-				binaryDir);
+		String script = getAntScript();
+		script = script.replaceAll("\\QBIN_FOLDER\\E", binaryDir);
+		executeAnt("build-installer-structure", script);
 	}
 
 	public static void executeZipBinary(String binFileName, String binFolder)
 			throws MojoExecutionException, IOException {
-		executeAnt("zip-binary", "", "", "", "", "", binFileName, binFolder);
+		String script = getAntScript();
+		script = script.replaceAll("\\QBIN_FILE_NAME\\E", binFileName);
+		script = script.replaceAll("\\QBIN_FOLDER\\E", binFolder);
+		executeAnt("zip-binary", script);
 	}
 
 	public static void executeCopyJars(String jarSource, String libDir)
 			throws MojoExecutionException, IOException {
-		executeAnt("copy-jars", "", "", "", jarSource, libDir, "", "");
+		String script = getAntScript();
+		script = script.replaceAll("\\QLIB_DIR\\E", libDir);
+		script = script.replaceAll("\\QJAR_SOURCE\\E", jarSource);
+		executeAnt("copy-jars", script);
 	}
 
 	public static void executeCopyPlugin(String pluginDir,
 			String pluginBinaryDir) throws MojoExecutionException, IOException {
-		executeAnt("copy-plugin", "", pluginDir, pluginBinaryDir, "", "", "",
-				"");
+		String script = getAntScript();
+		script = script.replaceAll("\\QDESTINATION\\E", pluginBinaryDir);
+		script = script.replaceAll("\\QPLUGIN_DIR\\E", pluginDir);
+		executeAnt("copy-plugin", script);
 	}
 
 	public static void executeSource(String sourceFileName)
 			throws MojoExecutionException, IOException {
-		executeAnt("source", sourceFileName, "", "", "", "", "", "");
+		String script = getAntScript();
+		script = script.replaceAll("\\QSOURCE_FILE_NAME\\E", sourceFileName);
+		executeAnt("source", script);
 	}
 
-	private static void executeAnt(String task, String sourceFileName,
-			String pluginDir, String pluginBinaryDir, String jarSource,
-			String libDir, String binFileName, String binFolder)
+	private static void executeAnt(String task, String script)
 			throws IOException, FileNotFoundException, MojoExecutionException {
-		File ant = File.createTempFile("build", ".xml");
-		DataInputStream dis = new DataInputStream(Utils.class
-				.getResourceAsStream("/build.xml"));
-		byte[] buffer = new byte[dis.available()];
-		dis.readFully(buffer);
-		dis.close();
-		String script = new String(buffer);
-		script = script.replaceAll("\\QSOURCE_FILE_NAME\\E", sourceFileName);
-		script = script.replaceAll("\\QDESTINATION\\E", pluginBinaryDir);
-		script = script.replaceAll("\\QPLUGIN_DIR\\E", pluginDir);
-		script = script.replaceAll("\\QLIB_DIR\\E", libDir);
-		script = script.replaceAll("\\QJAR_SOURCE\\E", jarSource);
-		script = script.replaceAll("\\QBIN_FILE_NAME\\E", binFileName);
-		script = script.replaceAll("\\QBIN_FOLDER\\E", binFolder);
-		script = script.replaceAll("\\QBIN_FOLDER\\E", binFolder);
 		script = script.replaceAll("\\QBASEDIR\\E", new File(".")
 				.getAbsolutePath());
+		File ant = File.createTempFile("build", ".xml");
 		FileOutputStream antos = new FileOutputStream(ant);
 		antos.write(script.getBytes());
 		antos.close();
@@ -86,6 +89,16 @@ public class Utils {
 			p.fireBuildFinished(e);
 			throw new MojoExecutionException("Cannot execute ant", e);
 		}
+	}
+
+	private static String getAntScript() throws IOException {
+		DataInputStream dis = new DataInputStream(Utils.class
+				.getResourceAsStream("/build.xml"));
+		byte[] buffer = new byte[dis.available()];
+		dis.readFully(buffer);
+		dis.close();
+		String script = new String(buffer);
+		return script;
 	}
 
 }

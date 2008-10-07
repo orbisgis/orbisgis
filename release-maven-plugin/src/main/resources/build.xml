@@ -36,4 +36,7 @@
 		<move overwrite="true" file="bin/orbisgis.sh.installer" tofile="bin/orbisgis.sh" />
 		<move overwrite="true" file="bin/orbisgis.bat.installer" tofile="bin/orbisgis.bat" />
 	</target>
+	<target name="unzip">
+		<unzip src="ZIP_FILE" dest="OUT_FOLDER"/>
+	</target>
 </project>

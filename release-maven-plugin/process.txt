@@ -14,3 +14,6 @@ mvn org.orbisgis:release-maven-plugin:installers
 
 # create updates
 mvn org.orbisgis:release-maven-plugin:update
+*get an old binary
+*get the new binary
+execute CreateUpdate
