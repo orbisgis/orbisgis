@@ -3,7 +3,6 @@ package org.orbisgis;
 import java.io.File;
 import java.io.IOException;
 
-import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 
@@ -13,17 +12,7 @@ import org.apache.maven.plugin.MojoFailureException;
  * 
  * @author Fernando Gonzalez Cortes
  */
-public class SourcePack extends AbstractMojo {
-
-	/**
-	 * @parameter expression="Application name"
-	 */
-	private String appName;
-
-	/**
-	 * @parameter expression="Version number"
-	 */
-	private String versionNumber;
+public class SourcePack extends AbstractReleaseMojo {
 
 	@Override
 	public void execute() throws MojoExecutionException, MojoFailureException {
@@ -33,9 +22,7 @@ public class SourcePack extends AbstractMojo {
 		} else {
 			// write ant file
 			try {
-				String sourceFileName = appName + "-" + versionNumber
-						+ "-sources.zip";
-				Utils.executeSource(sourceFileName);
+				Utils.executeSource(getFileName(true));
 			} catch (IOException e1) {
 				throw new MojoExecutionException("Cannot get ant script", e1);
 			}

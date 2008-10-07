@@ -8,7 +8,6 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 
-import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 
@@ -29,33 +28,13 @@ import com.ximpleware.xpath.XPathParseException;
  * 
  * @author Fernando Gonzalez Cortes
  */
-public class BinaryPack extends AbstractMojo {
-
-	/**
-	 * @parameter expression
-	 */
-	private String pluginList;
-
-	/**
-	 * @parameter expression
-	 */
-	private String mainClass;
-
-	/**
-	 * @parameter expression="Application name"
-	 */
-	private String appName;
-
-	/**
-	 * @parameter expression="Version number"
-	 */
-	private String versionNumber;
+public class BinaryPack extends AbstractReleaseMojo {
 
 	private File bin;
 
 	@Override
 	public void execute() throws MojoExecutionException, MojoFailureException {
-		bin = new File("target/orbisgis");
+		bin = new File("target/" + appName);
 		if (!bin.exists() && !bin.mkdirs()) {
 			throw new MojoExecutionException("Cannot create binary directory: "
 					+ bin);
@@ -98,15 +77,17 @@ public class BinaryPack extends AbstractMojo {
 	}
 
 	private void zipBin() throws MojoExecutionException, IOException {
-		Utils.executeZipBinary(appName + "-" + versionNumber + ".zip", bin
-				.getAbsolutePath());
+		Utils.executeZipBinary(getFileName(false), bin.getAbsolutePath());
 	}
 
 	private void generateShellFiles() throws FileNotFoundException {
-		createLinuxShells("", new File(bin, "orbisgis.sh"));
-		createLinuxShells("../jdk/bin/", new File(bin, "orbisgis.sh.installer"));
-		createWindowShells("", new File(bin, "orbisgis.bat"));
-		createWindowShells("..\\jdk\\bin\\", new File(bin, "orbisgis.bat.installer"));
+		String shellName = appName.toLowerCase();
+		createLinuxShells("", new File(bin, shellName + ".sh"));
+		createLinuxShells("../jdk/bin/", new File(bin, shellName
+				+ ".sh.installer"));
+		createWindowShells("", new File(bin, shellName + ".bat"));
+		createWindowShells("..\\jdk\\bin\\", new File(bin, shellName
+				+ ".bat.installer"));
 	}
 
 	private void createWindowShells(String javaBinPath, File windowsShell)
@@ -142,12 +123,14 @@ public class BinaryPack extends AbstractMojo {
 
 	private void copyJars(File[] pluginsDir) throws MojoExecutionException,
 			IOException {
+		// Copy dependencies
 		File lib = new File(bin, "lib");
 		if (!lib.exists() && !lib.mkdirs()) {
 			throw new IOException("Cannot create lib directory");
 		}
 		Utils.executeCopyJars("dependencies", lib.getAbsolutePath());
 
+		// Copy plugin jars
 		for (File pluginDir : pluginsDir) {
 			Utils.executeCopyJars(pluginDir + "/target", lib.getAbsolutePath());
 		}

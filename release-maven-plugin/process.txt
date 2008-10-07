@@ -11,9 +11,9 @@ mvn org.orbisgis:release-maven-plugin:binary
 svn checkout platform-installers
 cd platform-installers
 mvn org.orbisgis:release-maven-plugin:installers
-
 # create updates
 mvn org.orbisgis:release-maven-plugin:update
-*get an old binary
-*get the new binary
-execute CreateUpdate
+
+# upload all binary packages
+# upload site descriptor
+# upload default geocognition?
