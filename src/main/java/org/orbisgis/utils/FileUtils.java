@@ -146,12 +146,11 @@ public class FileUtils {
 	}
 
 	public static void download(URL url, File file) throws IOException {
-		URLConnection conn = url.openConnection();
 		OutputStream out = null;
 		InputStream in = null;
 		try {
 			out = new BufferedOutputStream(new FileOutputStream(file));
-			conn = url.openConnection();
+			URLConnection conn = url.openConnection();
 			in = conn.getInputStream();
 			byte[] buffer = new byte[BUF_SIZE];
 			int numRead;
