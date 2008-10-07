@@ -37,7 +37,7 @@ public class Update extends AbstractReleaseMojo {
 
 			CreateUpdate cu = new CreateUpdate(appName, latestBinaryHome,
 					currentBinary, new File("target", "updates"), new URL(
-							updateURL), versionNumber, versionName, "");
+							updateURL), versionNumber, versionName);
 			cu.setUrlPrefix(urlPrefix);
 			cu.create();
 		} catch (IOException e) {
