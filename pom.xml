@@ -80,7 +80,7 @@
 					<pluginList>plugin-manager/plugin-list.xml</pluginList>
 					<mainClass>org.orbisgis.pluginManager.Main</mainClass>
 					<latestBinary>file:///home/fergonco/ogworkspace/platform/target/previous-OrbisGIS-2.0.0.zip</latestBinary>
-					<updateUrl>file:///tmp</updateUrl>
+					<updateURL>file:///tmp</updateURL>
 					<urlPrefix>http://sourcesup.cru.fr/frs/download.php/changethis/</urlPrefix>
 				</configuration>
 			</plugin>
