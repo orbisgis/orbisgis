@@ -131,7 +131,6 @@ public class QueryManager {
 		}
 	}
 
-	@SuppressWarnings("unchecked")
 	public static String[] getQueryNames() {
 		ArrayList<String> ret = new ArrayList<String>();
 		Iterator<String> it = queries.keySet().iterator();
