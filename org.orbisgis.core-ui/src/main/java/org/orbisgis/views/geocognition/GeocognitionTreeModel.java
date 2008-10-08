@@ -19,6 +19,35 @@ public class GeocognitionTreeModel extends FilterTreeModelDecorator {
 
 	public GeocognitionTreeModel(JTree tree) {
 		super(new GecognitionModel(tree), tree);
+
+		Geocognition gc = Services.getService(Geocognition.class);
+		gc.addGeocognitionListener(new GeocognitionListener() {
+
+			@Override
+			public void elementRemoved(Geocognition geocognition,
+					GeocognitionElement element) {
+				fireEvent(null);
+			}
+
+			@Override
+			public void elementAdded(Geocognition geocognition,
+					GeocognitionElement parent, GeocognitionElement newElement) {
+				fireEvent(null);
+			}
+
+			@Override
+			public boolean elementRemoving(Geocognition geocognition,
+					GeocognitionElement element) {
+				return true;
+			}
+
+			@Override
+			public void elementMoved(Geocognition geocognition,
+					GeocognitionElement element, GeocognitionElement oldParent) {
+				fireEvent(null);
+			}
+
+		});
 	}
 
 	public void filter(String text, ArrayList<IGeocognitionFilter> filters) {
@@ -61,38 +90,6 @@ public class GeocognitionTreeModel extends FilterTreeModelDecorator {
 	private static class GecognitionModel extends AbstractTreeModel {
 		private GecognitionModel(JTree tree) {
 			super(tree);
-
-			getGeocognition().addGeocognitionListener(
-					new GeocognitionListener() {
-
-						@Override
-						public void elementRemoved(Geocognition geocognition,
-								GeocognitionElement element) {
-							fireEvent(null);
-						}
-
-						@Override
-						public void elementAdded(Geocognition geocognition,
-								GeocognitionElement parent,
-								GeocognitionElement newElement) {
-							fireEvent(null);
-						}
-
-						@Override
-						public boolean elementRemoving(
-								Geocognition geocognition,
-								GeocognitionElement element) {
-							return true;
-						}
-
-						@Override
-						public void elementMoved(Geocognition geocognition,
-								GeocognitionElement element,
-								GeocognitionElement oldParent) {
-							fireEvent(null);
-						}
-
-					});
 		}
 
 		@Override
@@ -121,7 +118,8 @@ public class GeocognitionTreeModel extends FilterTreeModelDecorator {
 
 		@Override
 		public Object getRoot() {
-			return getGeocognition().getRoot();
+			Geocognition gc = Services.getService(Geocognition.class);
+			return gc.getRoot();
 		}
 
 		@Override
@@ -133,10 +131,6 @@ public class GeocognitionTreeModel extends FilterTreeModelDecorator {
 		@Override
 		public void valueForPathChanged(TreePath path, Object newValue) {
 			// do nothing
-		}
-
-		private Geocognition getGeocognition() {
-			return Services.getService(Geocognition.class);
 		}
 	}
 }
