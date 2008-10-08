@@ -291,43 +291,6 @@ public class EditorPanel extends Container {
 		private View nextFocus;
 
 		@Override
-		public void windowAdded(DockingWindow arg0, DockingWindow arg1) {
-			System.out.println("added");
-		}
-
-		@Override
-		public void windowDocked(DockingWindow arg0) {
-			System.out.println("docked");
-		}
-
-		@Override
-		public void windowDocking(DockingWindow arg0)
-				throws OperationAbortedException {
-			System.out.println("docking");
-		}
-
-		@Override
-		public void windowHidden(DockingWindow arg0) {
-			System.out.println("hidden");
-		}
-
-		@Override
-		public void windowRemoved(DockingWindow arg0, DockingWindow arg1) {
-			System.out.println("removed");
-		}
-
-		@Override
-		public void windowUndocked(DockingWindow arg0) {
-			System.out.println("undocked");
-		}
-
-		@Override
-		public void windowUndocking(DockingWindow arg0)
-				throws OperationAbortedException {
-			System.out.println("undocking");
-		}
-
-		@Override
 		public void windowClosing(DockingWindow arg0)
 				throws OperationAbortedException {
 			if (arg0 instanceof View) {
