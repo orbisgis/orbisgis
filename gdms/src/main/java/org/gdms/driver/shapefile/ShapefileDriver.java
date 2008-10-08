@@ -378,7 +378,7 @@ public class ShapefileDriver implements FileReadWriteDriver {
 			ShapefileWriter writer = new ShapefileWriter(shpFis.getChannel(),
 					shxFis.getChannel());
 			GeometryConstraint gc = getGeometryType(metadata);
-			int dimension = getGeometryDimension(metadata);
+			int dimension = getGeometryDimension(null, metadata);
 			if (gc == null) {
 				throw new DriverException("Shapefiles need a "
 						+ "specific geometry type");
@@ -408,13 +408,29 @@ public class ShapefileDriver implements FileReadWriteDriver {
 				+ "source doesn't contain any spatial field");
 	}
 
-	private int getGeometryDimension(Metadata metadata) throws DriverException {
+	private int getGeometryDimension(DataSource dataSource, Metadata metadata)
+			throws DriverException {
 		for (int i = 0; i < metadata.getFieldCount(); i++) {
 			if (metadata.getFieldType(i).getTypeCode() == Type.GEOMETRY) {
 				DimensionConstraint c = (DimensionConstraint) metadata
 						.getFieldType(i).getConstraint(
 								Constraint.GEOMETRY_DIMENSION);
 				if (c == null) {
+					if (dataSource != null) {
+						for (int j = 0; j < dataSource.getRowCount(); j++) {
+							Geometry g = dataSource.getFieldValue(j, i)
+									.getAsGeometry();
+							if (g != null) {
+								if (Double.isNaN(g.getCoordinate().z)) {
+									return 2;
+								} else {
+									return 3;
+								}
+							}
+						}
+					}
+
+					// 2d by default
 					return 2;
 				} else {
 					return c.getDimension();
@@ -484,7 +500,7 @@ public class ShapefileDriver implements FileReadWriteDriver {
 			Envelope fullExtent = sds.getFullExtent();
 			Metadata metadata = dataSource.getMetadata();
 			GeometryConstraint gc = getGeometryType(metadata);
-			int dimension = getGeometryDimension(metadata);
+			int dimension = getGeometryDimension(dataSource, metadata);
 			ShapeType shapeType;
 			if (gc == null) {
 				warningListener.throwWarning("No geometry type in the "

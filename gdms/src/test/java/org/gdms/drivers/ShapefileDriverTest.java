@@ -309,6 +309,26 @@ public class ShapefileDriverTest extends TestCase {
 				ValueFactory.createValue(linestring2)).getAsBoolean());
 	}
 
+	public void testNoConstraintWith3DGeom2SHP() throws Exception {
+		ObjectMemoryDriver omd = new ObjectMemoryDriver(
+				new String[] { "geom" }, new Type[] { TypeFactory
+						.createType(Type.GEOMETRY) });
+		omd.addValues(new Value[] { ValueFactory
+				.createValue(new GeometryFactory().createPoint(new Coordinate(
+						2, 2, 2))) });
+		DataSource ds = dsf.getDataSource(omd);
+
+		File shpFile = new File(SourceTest.backupDir,
+				"testNoConstraintWith3DGeom2SHP.shp");
+		dsf.getSourceManager().register("shp", shpFile);
+		dsf.saveContents("shp", ds);
+		ds = dsf.getDataSource("shp");
+		ds.open();
+		Coordinate coord = ds.getFieldValue(0, 0).getAsGeometry().getCoordinate();
+		ds.close();
+		assertTrue(coord.z == 2);
+	}
+
 	public void testWrongTypeForDBF() throws Exception {
 		DefaultMetadata m = new DefaultMetadata();
 		m.addField("id", Type.TIMESTAMP);
