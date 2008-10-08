@@ -40,6 +40,8 @@ import org.gdms.data.types.Type;
 import org.gdms.sql.strategies.IncompatibleTypesException;
 
 import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.CoordinateSequence;
+import com.vividsolutions.jts.geom.CoordinateSequenceFilter;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryCollection;
 import com.vividsolutions.jts.io.ParseException;
@@ -147,10 +149,12 @@ class GeometryValue extends AbstractValue {
 	}
 
 	public byte[] getBytes() {
-		if (Double.isNaN(geom.getCoordinate().z)) {
-			return writer2D.write(geom);
-		} else {
+		GetDimensionSequenceFilter sf = new GetDimensionSequenceFilter();
+		geom.apply(sf);
+		if (sf.dimension == 3) {
 			return writer3D.write(geom);
+		} else {
+			return writer2D.write(geom);
 		}
 	}
 
@@ -165,5 +169,27 @@ class GeometryValue extends AbstractValue {
 	@Override
 	public Geometry getAsGeometry() throws IncompatibleTypesException {
 		return geom;
+	}
+
+	private final class GetDimensionSequenceFilter implements
+			CoordinateSequenceFilter {
+		private boolean isDone = false;
+		private int dimension = 0;
+
+		@Override
+		public boolean isGeometryChanged() {
+			return false;
+		}
+
+		@Override
+		public boolean isDone() {
+			return isDone;
+		}
+
+		@Override
+		public void filter(CoordinateSequence arg0, int arg1) {
+			dimension = arg0.getDimension();
+			isDone = true;
+		}
 	}
 }
