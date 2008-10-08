@@ -84,7 +84,8 @@ public class SQLSourceDefinition extends AbstractDataSourceDefinition implements
 				File file = new File(dsf.getTempFile("gdms"));
 				DataSourceDefinition dsd = new FileSourceDefinition(file);
 				String name = dsf.getSourceManager().nameAndRegister(dsd);
-				dsf.saveContents(name, dsf.getDataSource(source));
+				dsf.saveContents(name, dsf.getDataSource(source,
+						DataSourceFactory.NORMAL));
 
 				if (source == null) {
 					throw new IllegalArgumentException(
