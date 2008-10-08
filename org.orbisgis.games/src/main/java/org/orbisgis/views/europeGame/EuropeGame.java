@@ -5,7 +5,6 @@ import java.awt.Component;
 import java.awt.Graphics;
 import java.awt.geom.Point2D;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -34,8 +33,9 @@ import org.orbisgis.layerModel.MapContext;
 import org.orbisgis.renderer.legend.carto.DefaultUniqueSymbolLegend;
 import org.orbisgis.renderer.symbol.Symbol;
 import org.orbisgis.renderer.symbol.SymbolFactory;
+import org.orbisgis.utils.FileUtils;
 import org.orbisgis.view.IView;
-import org.orbisgis.workspace.DefaultOGWorkspace;
+import org.orbisgis.workspace.Workspace;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
@@ -76,10 +76,12 @@ public class EuropeGame implements IView {
 
 	@Override
 	public void loadStatus() throws PersistenceException {
+		// do nothing
 	}
 
 	@Override
 	public void saveStatus() throws PersistenceException {
+		// do nothing
 	}
 
 	public void delete() {
@@ -89,33 +91,25 @@ public class EuropeGame implements IView {
 	}
 
 	/**
-	 * Copies the given file from the classpath to the temp folder of the OG
-	 * workspace
+	 * Copies the specified file into the given directory
 	 * 
+	 * @param dir
+	 *            the directory where the file will be copied
 	 * @param filename
-	 *            the name of the file to copy
-	 * @return the file copied in the workspace
+	 *            the name of the file <b>used by the class loader</b> to get
+	 *            the resource
+	 * @return the copied file
 	 * @throws IOException
 	 *             if the file cannot be copied
 	 */
-	private File copyFiles(String filename) throws IOException {
-		DefaultOGWorkspace workspace = new DefaultOGWorkspace();
-
+	private File copyFiles(File dir, String filename) throws IOException {
 		InputStream in = EuropeGame.class.getResourceAsStream(filename);
-
-		File outFile = new File(workspace.getTempFolder() + File.separator
-				+ filename.substring(filename.lastIndexOf('/')));
-		FileOutputStream out = new FileOutputStream(outFile);
-
-		byte[] buffer = new byte[1024];
-		while (in.read(buffer) != -1) {
-			out.write(buffer);
-		}
-
+		File ret = new File(dir, filename.substring(filename
+				.lastIndexOf(File.separator)));
+		FileUtils.copy(in, ret);
 		in.close();
-		out.close();
 
-		return outFile;
+		return ret;
 	}
 
 	@Override
@@ -129,13 +123,14 @@ public class EuropeGame implements IView {
 			rnd = new Random();
 
 			// Copy map files to temp folder
-			shp = copyFiles(MAP_RESOURCE + ".shp");
-			shx = copyFiles(MAP_RESOURCE + ".shx");
-			dbf = copyFiles(MAP_RESOURCE + ".dbf");
+			Workspace workspace = Services.getService(Workspace.class);
+			File tmp = workspace.getTempFolder();
+			shp = copyFiles(tmp, MAP_RESOURCE + ".shp");
+			shx = copyFiles(tmp, MAP_RESOURCE + ".shx");
+			dbf = copyFiles(tmp, MAP_RESOURCE + ".dbf");
 
 			// Create map
-			DataManager dm = (DataManager) Services
-					.getService(DataManager.class);
+			DataManager dm = Services.getService(DataManager.class);
 			mapLayer = dm.createLayer(shp);
 			mapContext = new DefaultMapContext();
 			mapContext.open(null);
