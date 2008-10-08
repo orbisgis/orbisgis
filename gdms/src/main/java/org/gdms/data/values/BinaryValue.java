@@ -165,15 +165,6 @@ class BinaryValue extends AbstractValue {
 		return new BinaryValue(buffer);
 	}
 
-	public Value toType(int typeCode) throws IncompatibleTypesException {
-		if (typeCode == getType()) {
-			return this;
-		} else {
-			throw new IncompatibleTypesException("Cannot cast to type: "
-					+ typeCode);
-		}
-	}
-
 	@Override
 	public byte[] getAsBinary() throws IncompatibleTypesException {
 		return value;

@@ -49,7 +49,7 @@ import org.gdms.sql.strategies.IncompatibleTypesException;
 
 /**
  * ArrayValue. Contains an array of Values
- *
+ * 
  * @author Fernando Gonzalez Cortes
  */
 public class ValueCollection extends AbstractValue {
@@ -83,9 +83,9 @@ public class ValueCollection extends AbstractValue {
 
 	/**
 	 * Gets the ith value of the array
-	 *
+	 * 
 	 * @param i
-	 *
+	 * 
 	 * @return
 	 */
 	public Value get(int i) {
@@ -94,7 +94,7 @@ public class ValueCollection extends AbstractValue {
 
 	/**
 	 * Gets the array size
-	 *
+	 * 
 	 * @return int
 	 */
 	public int getValueCount() {
@@ -103,7 +103,7 @@ public class ValueCollection extends AbstractValue {
 
 	/**
 	 * Adds a value to the end of the array
-	 *
+	 * 
 	 * @param value
 	 *            value to add
 	 */
@@ -140,7 +140,7 @@ public class ValueCollection extends AbstractValue {
 
 	/**
 	 * DOCUMENT ME!
-	 *
+	 * 
 	 * @param values
 	 */
 	public void setValues(Value[] values) {
@@ -153,7 +153,7 @@ public class ValueCollection extends AbstractValue {
 
 	/**
 	 * DOCUMENT ME!
-	 *
+	 * 
 	 * @return DOCUMENT ME!
 	 */
 	public Value[] getValues() {
@@ -214,14 +214,6 @@ public class ValueCollection extends AbstractValue {
 		ValueCollection valueCollection = new ValueCollection();
 		valueCollection.values = ret;
 		return valueCollection;
-	}
-
-	public Value toType(int typeCode) throws IncompatibleTypesException {
-		switch (typeCode) {
-		case Type.COLLECTION:
-			return this;
-		}
-		throw new IncompatibleTypesException("Cannot cast to type: " + typeCode);
 	}
 
 	@Override

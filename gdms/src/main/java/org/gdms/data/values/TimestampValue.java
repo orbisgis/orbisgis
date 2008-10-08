@@ -217,16 +217,6 @@ class TimestampValue extends AbstractValue implements Serializable {
 		return new TimestampValue(new Timestamp(LongValue.getLong(buffer)));
 	}
 
-	public Value toType(int typeCode) throws IncompatibleTypesException {
-		switch (typeCode) {
-		case Type.TIMESTAMP:
-			return this;
-		case Type.STRING:
-			return ValueFactory.createValue(toString());
-		}
-		throw new IncompatibleTypesException("Cannot cast to type: " + typeCode);
-	}
-
 	@Override
 	public Timestamp getAsTimestamp() throws IncompatibleTypesException {
 		return value;

@@ -43,13 +43,13 @@ import org.gdms.sql.strategies.IncompatibleTypesException;
 
 /**
  * DOCUMENT ME!
- *
+ * 
  * @author Fernando Gonzalez Cortes
  */
 class NullValue extends AbstractValue implements Serializable {
 	/**
 	 * DOCUMENT ME!
-	 *
+	 * 
 	 * @return DOCUMENT ME!
 	 */
 	public String toString() {
@@ -115,10 +115,6 @@ class NullValue extends AbstractValue implements Serializable {
 
 	public byte[] getBytes() {
 		return new byte[0];
-	}
-
-	public Value toType(int typeCode) throws IncompatibleTypesException {
-		return this;
 	}
 
 	@Override

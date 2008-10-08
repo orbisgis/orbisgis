@@ -37,11 +37,7 @@
 package org.gdms.data.values;
 
 import java.io.Serializable;
-import java.sql.Time;
-import java.sql.Timestamp;
-import java.util.Date;
 
-import org.gdms.data.types.Type;
 import org.gdms.sql.strategies.IncompatibleTypesException;
 
 /**
@@ -304,40 +300,6 @@ abstract class NumericValue extends AbstractValue implements Serializable {
 	 */
 	public int doHashCode() {
 		return intValue();
-	}
-
-	private boolean isDecimal() {
-		return !((getType() == Type.BYTE) || (getType() == Type.SHORT)
-				|| (getType() == Type.LONG) || (getType() == Type.INT));
-	}
-
-	public Value toType(int typeCode) throws IncompatibleTypesException {
-		switch (typeCode) {
-		case Type.NULL:
-		case Type.BYTE:
-		case Type.SHORT:
-		case Type.INT:
-		case Type.LONG:
-		case Type.FLOAT:
-		case Type.DOUBLE:
-			return this;
-		case Type.DATE:
-			if (!isDecimal()) {
-				return ValueFactory.createValue(new Date(longValue()));
-			}
-		case Type.STRING:
-			return ValueFactory.createValue(toString());
-		case Type.TIME:
-			if (!isDecimal()) {
-				return ValueFactory.createValue(new Time(longValue()));
-			}
-		case Type.TIMESTAMP:
-			if (!isDecimal()) {
-				return ValueFactory.createValue(new Timestamp(longValue()));
-			}
-		}
-		throw new IncompatibleTypesException("Cannot cast to type:" + typeCode
-				+ ": " + getStringValue(ValueWriter.internalValueWriter));
 	}
 
 	@Override

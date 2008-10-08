@@ -262,16 +262,6 @@ class BooleanValue extends AbstractValue implements Serializable {
 		return new BooleanValue(buffer[0] == 1);
 	}
 
-	public Value toType(int typeCode) throws IncompatibleTypesException {
-		switch (typeCode) {
-		case Type.BOOLEAN:
-			return this;
-		case Type.STRING:
-			return ValueFactory.createValue(Boolean.toString(value));
-		}
-		throw new IncompatibleTypesException("Cannot cast to type: " + typeCode);
-	}
-
 	@Override
 	public boolean getAsBoolean() throws IncompatibleTypesException {
 		return value;

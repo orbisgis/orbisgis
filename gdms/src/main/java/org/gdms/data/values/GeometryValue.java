@@ -162,15 +162,6 @@ class GeometryValue extends AbstractValue {
 		}
 	}
 
-	public Value toType(int typeCode) throws IncompatibleTypesException {
-		if (typeCode == getType()) {
-			return this;
-		} else {
-			throw new IncompatibleTypesException("Cannot cast value to type: "
-					+ typeCode);
-		}
-	}
-
 	@Override
 	public Geometry getAsGeometry() throws IncompatibleTypesException {
 		return geom;
