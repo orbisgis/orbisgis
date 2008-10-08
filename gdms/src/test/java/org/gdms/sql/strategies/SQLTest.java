@@ -40,6 +40,7 @@ import java.io.File;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.gdms.Geometries;
 import org.gdms.SourceTest;
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceFactory;
@@ -51,6 +52,7 @@ import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.data.values.ValueWriter;
+import org.gdms.driver.DriverException;
 import org.gdms.driver.memory.ObjectMemoryDriver;
 
 import com.vividsolutions.jts.io.WKTReader;
@@ -454,7 +456,7 @@ public class SQLTest extends SourceTest {
 
 	/**
 	 * Tests a simple select query
-	 *
+	 * 
 	 * @throws Throwable
 	 *             DOCUMENT ME!
 	 */
@@ -701,6 +703,27 @@ public class SQLTest extends SourceTest {
 		ds.open();
 		assertTrue(ds.getRowCount() == 0);
 		ds.close();
+	}
+
+	public void testFunctionsExecutedTwice() throws Exception {
+		final StringBuffer tics = new StringBuffer("");
+		ObjectMemoryDriver omd = new ObjectMemoryDriver(
+				new String[] { "the_geom" }, new Type[] { TypeFactory
+						.createType(Type.GEOMETRY) }) {
+			@Override
+			public Value getFieldValue(long rowIndex, int fieldId)
+					throws DriverException {
+				tics.append("x");
+				return super.getFieldValue(rowIndex, fieldId);
+			}
+		};
+		omd.addValues(new Value[] { ValueFactory.createValue(Geometries
+				.getPoint()) });
+		dsf.getSourceManager().register("oneline", omd);
+		dsf.getDataSourceFromSQL("select buffer(the_geom, 10) from oneline",
+				DataSourceFactory.NORMAL);
+		System.out.println(tics.length());
+		assertTrue(tics.length() == 1);
 	}
 
 	@Override

@@ -45,11 +45,9 @@ import java.util.HashMap;
 
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceFactory;
-import org.gdms.data.SpatialDataSourceDecorator;
 import org.gdms.data.indexes.btree.ReadWriteBufferManager;
 import org.gdms.data.metadata.DefaultMetadata;
 import org.gdms.data.metadata.Metadata;
-import org.gdms.data.metadata.MetadataUtilities;
 import org.gdms.data.types.Constraint;
 import org.gdms.data.types.ConstraintFactory;
 import org.gdms.data.types.Type;
@@ -91,7 +89,7 @@ public class GdmsDriver extends GDMSModelDriver implements FileReadWriteDriver {
 			RandomAccessFile raf = new RandomAccessFile(new File(path), "rw");
 			ReadWriteBufferManager bm = new ReadWriteBufferManager(raf
 					.getChannel());
-			writeMetadata(bm, getEnvelope(null), 0, metadata);
+			writeMetadata(bm, 0, metadata);
 			bm.flush();
 			raf.close();
 		} catch (IOException e) {
@@ -137,8 +135,8 @@ public class GdmsDriver extends GDMSModelDriver implements FileReadWriteDriver {
 	private void write(ReadWriteBufferManager bm, DataSource dataSource,
 			IProgressMonitor pm) throws IOException, DriverException {
 		Metadata metadata = dataSource.getMetadata();
-		Envelope env = getEnvelope(dataSource);
-		writeMetadata(bm, env, dataSource.getRowCount(), metadata);
+		Envelope env = null;
+		writeMetadata(bm, dataSource.getRowCount(), metadata);
 
 		// Leave space for the row indexes
 		int rowIndexesStart = bm.getPosition();
@@ -173,6 +171,22 @@ public class GdmsDriver extends GDMSModelDriver implements FileReadWriteDriver {
 				bm.putInt(bytes.length);
 				bm.putInt(value.getType());
 				bm.put(bytes);
+				int typeCode = metadata.getFieldType(j).getTypeCode();
+				Envelope fieldEnvelope = null;
+				if (!value.isNull() && (typeCode == Type.GEOMETRY)) {
+					fieldEnvelope = new Envelope(value.getAsGeometry()
+							.getEnvelopeInternal());
+				} else if (!value.isNull() && (typeCode == Type.RASTER)) {
+					fieldEnvelope = new Envelope(value.getAsRaster()
+							.getMetadata().getEnvelope());
+				}
+				if (fieldEnvelope != null) {
+					if (env == null) {
+						env = new Envelope(fieldEnvelope);
+					} else {
+						env.expandToInclude(fieldEnvelope);
+					}
+				}
 			}
 
 			previousRowEnd = bm.getPosition();
@@ -184,6 +198,11 @@ public class GdmsDriver extends GDMSModelDriver implements FileReadWriteDriver {
 			}
 		}
 
+		// write envelope
+		if (env != null) {
+			writeExtent(bm, env);
+		}
+
 		// write the row indexes
 		bm.position(rowIndexesStart);
 		for (int index : rowIndexes) {
@@ -191,20 +210,38 @@ public class GdmsDriver extends GDMSModelDriver implements FileReadWriteDriver {
 		}
 	}
 
-	private Envelope getEnvelope(DataSource dataSource) throws DriverException {
-		if (dataSource != null) {
-			if ((MetadataUtilities.isGeometry(dataSource.getMetadata()) || (MetadataUtilities
-					.isRaster(dataSource.getMetadata())))) {
-				return new SpatialDataSourceDecorator(dataSource)
-						.getFullExtent();
-			}
-		}
-		return new Envelope(0, 0, 0, 0);
+	//
+	// private Envelope getEnvelope(DataSource dataSource) throws
+	// DriverException {
+	// if (dataSource != null) {
+	// if ((MetadataUtilities.isGeometry(dataSource.getMetadata()) ||
+	// (MetadataUtilities
+	// .isRaster(dataSource.getMetadata())))) {
+	// return new SpatialDataSourceDecorator(dataSource)
+	// .getFullExtent();
+	// }
+	// }
+	// return new Envelope(0, 0, 0, 0);
+	// }
+
+	private void writeExtent(ReadWriteBufferManager bm, Envelope fullExtent)
+			throws IOException {
+		bm.position(0);
+		// version
+		bm.skip(1);
+		// dimensions
+		bm.skip(4);
+		bm.skip(4);
+
+		// write extent
+		bm.putDouble(fullExtent.getMinX());
+		bm.putDouble(fullExtent.getMinY());
+		bm.putDouble(fullExtent.getMaxX());
+		bm.putDouble(fullExtent.getMaxY());
 	}
 
-	private void writeMetadata(ReadWriteBufferManager bm, Envelope fullExtent,
-			long rowCount, Metadata metadata) throws IOException,
-			DriverException {
+	private void writeMetadata(ReadWriteBufferManager bm, long rowCount,
+			Metadata metadata) throws IOException, DriverException {
 		// Write version number
 		bm.put(VERSION_NUMBER);
 
@@ -212,11 +249,11 @@ public class GdmsDriver extends GDMSModelDriver implements FileReadWriteDriver {
 		bm.putInt((int) rowCount);
 		bm.putInt(metadata.getFieldCount());
 
-		// write extent
-		bm.putDouble(fullExtent.getMinX());
-		bm.putDouble(fullExtent.getMinY());
-		bm.putDouble(fullExtent.getMaxX());
-		bm.putDouble(fullExtent.getMaxY());
+		// write default extent
+		bm.putDouble(0);
+		bm.putDouble(0);
+		bm.putDouble(0);
+		bm.putDouble(0);
 
 		// write field metadata
 		for (int i = 0; i < metadata.getFieldCount(); i++) {
