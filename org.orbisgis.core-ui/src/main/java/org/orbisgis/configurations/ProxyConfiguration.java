@@ -1,8 +1,5 @@
 package org.orbisgis.configurations;
 
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.net.Authenticator;
@@ -11,19 +8,31 @@ import java.util.Properties;
 
 import javax.swing.JCheckBox;
 import javax.swing.JComponent;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import org.orbisgis.Services;
 import org.orbisgis.configuration.BasicConfiguration;
 import org.orbisgis.configuration.IConfiguration;
 import org.orbisgis.configurations.ui.ConfigUnitPanel;
+import org.sif.CRFlowLayout;
+import org.sif.CarriageReturn;
 import org.sif.multiInputPanel.InputType;
 import org.sif.multiInputPanel.IntType;
 import org.sif.multiInputPanel.PasswordType;
 import org.sif.multiInputPanel.StringType;
 
 public class ProxyConfiguration implements IConfiguration {
+	private static final String SYSTEM_SOCKS_PROXY_PORT = "socksProxyPort";
+	private static final String SYSTEM_SOCKS_PROXY_HOST = "socksProxyHost";
+	private static final String SYSTEM_FTP_PROXY_PORT = "ftp.proxyPort";
+	private static final String SYSTEM_FTP_PROXY_HOST = "ftp.proxyHost";
+	private static final String SYSTEM_HTTP_PROXY_PORT = "http.proxyPort";
+	private static final String SYSTEM_HTTP_PROXY_HOST = "http.proxyHost";
+	
+	private static final String PROXY_HOST_PROPERTY = "org.orbisgis.configuration.proxyHost";
+	private static final String PROXY_PORT_PROPERTY = "org.orbisgis.configuration.proxyPort";
+	private static final String PROXY_USER_PROPERTY = "org.orbisgis.configuration.proxyUser";
+	private static final String PROXY_PASSWORD_PROPERTY = "org.orbisgis.configuration.proxyPassword";
 
 	private JPanel panel;
 	private StringType host, user;
@@ -35,7 +44,9 @@ public class ProxyConfiguration implements IConfiguration {
 	@Override
 	public JComponent getComponent() {
 		if (panel == null) {
-			panel = new JPanel(new GridBagLayout());
+			CRFlowLayout layout = new CRFlowLayout();
+			layout.setVgap(40);
+			panel = new JPanel(layout);
 			host = new StringType(25);
 			port = new IntType(6);
 			user = new StringType(25);
@@ -85,58 +96,50 @@ public class ProxyConfiguration implements IConfiguration {
 			JPanel authPanel = new ConfigUnitPanel("Authentication", authCheck,
 					"Enable Authentication", authLabels, authInputs);
 
-			GridBagConstraints c = new GridBagConstraints();
-			c.fill = GridBagConstraints.BOTH;
-			c.gridx = 0;
-			c.gridy = 0;
-			c.insets = new Insets(30, 10, 10, 10);
-			panel.add(proxyPanel, c);
-			c.gridy = 1;
-			c.insets = new Insets(10, 10, 10, 10);
-			panel.add(authPanel, c);
-			c.weighty = 0.1;
-			c.gridy = 2;
-			panel.add(new JLabel(""), c);
+			panel.add(proxyPanel);
+			panel.add(new CarriageReturn());
+			panel.add(authPanel);
+		}
 
-			Properties systemSettings = System.getProperties();
-			String hostValue = systemSettings.getProperty("http.proxyHost");
-			String portValue = systemSettings.getProperty("http.proxyPort");
+		Properties systemSettings = System.getProperties();
+		String hostValue = systemSettings.getProperty(SYSTEM_HTTP_PROXY_HOST);
+		String portValue = systemSettings.getProperty(SYSTEM_HTTP_PROXY_PORT);
 
-			host.setValue(hostValue);
-			port.setValue(portValue);
-			user.setValue(userValue);
-			pass.setValue(passValue);
+		host.setValue(hostValue);
+		port.setValue(portValue);
+		user.setValue(userValue);
+		pass.setValue(passValue);
 
-			boolean enableProxy, enableAuth;
-			if (hostValue != null && portValue != null) {
-				enableProxy = true;
-				if (userValue != null && passValue != null) {
-					enableAuth = true;
-				} else {
-					enableAuth = false;
-				}
+		boolean enableProxy, enableAuth;
+		if (hostValue != null && portValue != null) {
+			enableProxy = true;
+			if (userValue != null && passValue != null) {
+				enableAuth = true;
 			} else {
-				enableProxy = false;
 				enableAuth = false;
 			}
-
-			proxyCheck.setSelected(enableProxy);
-			host.setEditable(enableProxy);
-			port.setEditable(enableProxy);
-			authCheck.setSelected(enableAuth);
-			user.setEditable(enableAuth);
-			pass.setEditable(enableAuth);
+		} else {
+			enableProxy = false;
+			enableAuth = false;
 		}
+
+		proxyCheck.setSelected(enableProxy);
+		host.setEditable(enableProxy);
+		port.setEditable(enableProxy);
+		authCheck.setSelected(enableAuth);
+		user.setEditable(enableAuth);
+		pass.setEditable(enableAuth);
+
 		return panel;
 	}
 
 	@Override
 	public void loadAndApply() {
 		BasicConfiguration bc = Services.getService(BasicConfiguration.class);
-		String hostValue = bc.getProperty("proxyHost");
-		String portValue = bc.getProperty("proxyPort");
-		userValue = bc.getProperty("proxyUser");
-		passValue = bc.getProperty("proxyPassword");
+		String hostValue = bc.getProperty(PROXY_HOST_PROPERTY);
+		String portValue = bc.getProperty(PROXY_PORT_PROPERTY);
+		userValue = bc.getProperty(PROXY_USER_PROPERTY);
+		passValue = bc.getProperty(PROXY_PASSWORD_PROPERTY);
 
 		apply(hostValue, portValue);
 	}
@@ -155,8 +158,9 @@ public class ProxyConfiguration implements IConfiguration {
 				userValue = user.getValue();
 				passValue = pass.getValue();
 			}
-		}
 
+		}
+		
 		apply(hostValue, portValue);
 	}
 
@@ -164,12 +168,12 @@ public class ProxyConfiguration implements IConfiguration {
 		Properties systemSettings = System.getProperties();
 		Authenticator auth = null;
 		if (hostValue != null && portValue != null) {
-			systemSettings.put("http.proxyHost", hostValue);
-			systemSettings.put("http.proxyPort", portValue);
-			systemSettings.put("ftp.proxyHost", hostValue);
-			systemSettings.put("ftp.proxyPort", portValue);
-			systemSettings.put("socksProxyHost", hostValue);
-			systemSettings.put("socksProxyPort", portValue);
+			systemSettings.put(SYSTEM_HTTP_PROXY_HOST, hostValue);
+			systemSettings.put(SYSTEM_HTTP_PROXY_PORT, portValue);
+			systemSettings.put(SYSTEM_FTP_PROXY_HOST, hostValue);
+			systemSettings.put(SYSTEM_FTP_PROXY_PORT, portValue);
+			systemSettings.put(SYSTEM_SOCKS_PROXY_HOST, hostValue);
+			systemSettings.put(SYSTEM_SOCKS_PROXY_PORT, portValue);
 			System.setProperties(systemSettings);
 			if (userValue != null && passValue != null) {
 				auth = new Authenticator() {
@@ -181,12 +185,12 @@ public class ProxyConfiguration implements IConfiguration {
 				};
 			}
 		} else {
-			systemSettings.remove("http.proxyHost");
-			systemSettings.remove("http.proxyPort");
-			systemSettings.remove("ftp.proxyHost");
-			systemSettings.remove("ftp.proxyPort");
-			systemSettings.remove("socksProxyHost");
-			systemSettings.remove("socksProxyPort");
+			systemSettings.remove(SYSTEM_HTTP_PROXY_HOST);
+			systemSettings.remove(SYSTEM_HTTP_PROXY_PORT);
+			systemSettings.remove(SYSTEM_FTP_PROXY_HOST);
+			systemSettings.remove(SYSTEM_FTP_PROXY_PORT);
+			systemSettings.remove(SYSTEM_SOCKS_PROXY_HOST);
+			systemSettings.remove(SYSTEM_SOCKS_PROXY_PORT);
 		}
 
 		System.setProperties(systemSettings);
@@ -196,31 +200,31 @@ public class ProxyConfiguration implements IConfiguration {
 	@Override
 	public void saveApplied() {
 		Properties systemSettings = System.getProperties();
-		String hostValue = systemSettings.getProperty("http.proxyHost");
-		String portValue = systemSettings.getProperty("http.proxyPort");
+		String hostValue = systemSettings.getProperty(SYSTEM_HTTP_PROXY_HOST);
+		String portValue = systemSettings.getProperty(SYSTEM_HTTP_PROXY_PORT);
 
 		BasicConfiguration bc = Services.getService(BasicConfiguration.class);
 		if (hostValue != null && portValue != null) {
-			bc.setProperty("proxyHost", hostValue);
-			bc.setProperty("proxyPort", portValue);
+			bc.setProperty(PROXY_HOST_PROPERTY, hostValue);
+			bc.setProperty(PROXY_PORT_PROPERTY, portValue);
 			if (userValue != null && passValue != null) {
-				bc.setProperty("proxyUser", userValue);
-				bc.setProperty("proxyPassword", passValue);
+				bc.setProperty(PROXY_USER_PROPERTY, userValue);
+				bc.setProperty(PROXY_PASSWORD_PROPERTY, passValue);
 			} else {
 				bc.removeProperty("proxyUser");
 				bc.removeProperty("proxyPassword");
 			}
 		} else {
-			bc.removeProperty("proxyHost");
-			bc.removeProperty("proxyPort");
-			bc.removeProperty("proxyUser");
-			bc.removeProperty("proxyPassword");
+			bc.removeProperty(PROXY_HOST_PROPERTY);
+			bc.removeProperty(PROXY_PORT_PROPERTY);
+			bc.removeProperty(PROXY_USER_PROPERTY);
+			bc.removeProperty(PROXY_PASSWORD_PROPERTY);
 		}
 	}
 
 	@Override
 	public String validateInput() {
-		if (proxyCheck != null && proxyCheck.isSelected()) {
+		if (proxyCheck.isSelected()) {
 			if (host.getValue().equals("")) {
 				return "You must specify a correct host";
 			}
@@ -234,7 +238,7 @@ public class ProxyConfiguration implements IConfiguration {
 				return "You must specify a correct port";
 			}
 
-			if (authCheck != null && authCheck.isSelected()) {
+			if (authCheck.isSelected()) {
 				if (user.getValue().equals("")) {
 					return "You must specify a correct user";
 				}

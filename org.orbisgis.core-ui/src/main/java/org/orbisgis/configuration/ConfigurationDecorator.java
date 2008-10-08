@@ -5,6 +5,7 @@ import javax.swing.JComponent;
 public class ConfigurationDecorator implements IConfiguration {
 	private IConfiguration config;
 	private String id, text, parentId;
+	private boolean isComponentCreated;
 
 	/**
 	 * Creates a new configuration decorator for the specified class with the
@@ -21,10 +22,12 @@ public class ConfigurationDecorator implements IConfiguration {
 		this.text = text;
 		this.parentId = parentId;
 		this.config = config;
+		isComponentCreated = false;
 	}
 
 	@Override
 	public JComponent getComponent() {
+		isComponentCreated = true;
 		return config.getComponent();
 	}
 
@@ -35,12 +38,18 @@ public class ConfigurationDecorator implements IConfiguration {
 
 	@Override
 	public String validateInput() {
-		return config.validateInput();
+		if (isComponentCreated) {
+			return config.validateInput();
+		} else {
+			return null;
+		}
 	}
 
 	@Override
 	public void applyUserInput() {
-		config.applyUserInput();
+		if (isComponentCreated) {
+			config.applyUserInput();
+		}
 	}
 
 	@Override

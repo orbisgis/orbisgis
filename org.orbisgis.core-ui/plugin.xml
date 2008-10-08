@@ -585,8 +585,8 @@
 		<configuration id="org.orbisgis.configurations.ProxyConfiguration"
 			text="Proxy" class="org.orbisgis.configurations.ProxyConfiguration"
 			group-id="org.orbisgis.Updates"/>
-		<configuration id="org.orbisgis.configurations.UpdateURLConfiguration"
-			text="Update URL" class="org.orbisgis.configurations.UpdateURLConfiguration"
+		<configuration id="org.orbisgis.configurations.UpdatesConfiguration"
+			text="Updates" class="org.orbisgis.configurations.UpdatesConfiguration"
 			group-id="org.orbisgis.Updates"/>
 	</extension>
 </plugin>

@@ -112,7 +112,7 @@ public class ConfigurationPanel extends AbstractUIPanel {
 				break;
 			}
 		}
-		return (ret == null || c == null) ? null : ret + " in " + c.getText();
+		return (ret == null || c == null) ? null : ret + " - " + c.getText();
 	}
 
 	/**

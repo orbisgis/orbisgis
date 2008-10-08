@@ -1,7 +1,6 @@
 package org.orbisgis.configuration;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import org.orbisgis.Services;
 import org.orbisgis.action.EPBaseActionHelper;
@@ -12,6 +11,7 @@ import org.orbisgis.pluginManager.ExtensionPointManager;
 import org.orbisgis.pluginManager.ItemAttributes;
 
 public class EPConfigHelper {
+	private static ArrayList<ConfigurationDecorator> configs;
 
 	/**
 	 * Gets the installed configurations in the plugin.xml file
@@ -19,20 +19,24 @@ public class EPConfigHelper {
 	 * @return the installed configurations
 	 */
 	public static ArrayList<ConfigurationDecorator> getConfigurations() {
-		ExtensionPointManager<IConfiguration> epm = new ExtensionPointManager<IConfiguration>(
-				"org.orbisgis.Configuration");
-		ArrayList<ItemAttributes<IConfiguration>> configs;
-		configs = epm.getItemAttributes("/extension/configuration");
-		ArrayList<ConfigurationDecorator> ret = new ArrayList<ConfigurationDecorator>();
-		for (ItemAttributes<IConfiguration> itemAttributes : configs) {
-			String id = itemAttributes.getAttribute("id");
-			String text = itemAttributes.getAttribute("text");
-			String menuParent = itemAttributes.getAttribute("group-id");
-			IConfiguration config = itemAttributes.getInstance("class");
-			ret.add(new ConfigurationDecorator(config, id, text, menuParent));
+		if (configs == null) {
+			ExtensionPointManager<IConfiguration> epm = new ExtensionPointManager<IConfiguration>(
+					"org.orbisgis.Configuration");
+			ArrayList<ItemAttributes<IConfiguration>> configItemAttributes;
+			configItemAttributes = epm
+					.getItemAttributes("/extension/configuration");
+			configs = new ArrayList<ConfigurationDecorator>();
+			for (ItemAttributes<IConfiguration> itemAttributes : configItemAttributes) {
+				String id = itemAttributes.getAttribute("id");
+				String text = itemAttributes.getAttribute("text");
+				String menuParent = itemAttributes.getAttribute("group-id");
+				IConfiguration config = itemAttributes.getInstance("class");
+				configs.add(new ConfigurationDecorator(config, id, text,
+						menuParent));
+			}
 		}
 
-		return ret;
+		return configs;
 	}
 
 	/**
@@ -83,9 +87,8 @@ public class EPConfigHelper {
 	 */
 	public static void loadAndApplyConfigurations() {
 		IMenu root = getConfigurationMenu();
-		List<ConfigurationDecorator> configs = getConfigurations();
 
-		for (ConfigurationDecorator config : configs) {
+		for (ConfigurationDecorator config : getConfigurations()) {
 			if (!scanMenu(root, config.getParentId())) {
 				Services.getErrorManager().error(
 						"The configuration group " + config.getParentId()
@@ -101,7 +104,6 @@ public class EPConfigHelper {
 	 * Saves the applied configurations
 	 */
 	public static void saveAppliedConfigurations() {
-		ArrayList<ConfigurationDecorator> configs = getConfigurations();
 		for (ConfigurationDecorator config : configs) {
 			config.saveApplied();
 		}
