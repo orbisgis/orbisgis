@@ -5,7 +5,8 @@ import javax.swing.JComponent;
 public interface IConfiguration {
 	/**
 	 * Loads the configuration and applies it where necessary. This method is
-	 * called at startup
+	 * called at startup. If no previous configuration is stored this method
+	 * does nothing
 	 */
 	void loadAndApply();
 
@@ -23,7 +24,7 @@ public interface IConfiguration {
 
 	/**
 	 * Gets the component shown by the configuration dialog. The component must
-	 * show the applied values of the configuration, not the loaded one
+	 * show the applied values of the configuration, not the loaded ones
 	 * 
 	 * @return the component shown by the configuration dialog
 	 */
