@@ -125,11 +125,11 @@ public class ExportTest extends AbstractDBTest {
 		dsRes.close();
 	}
 
-	public void testSHP2PostgreSQL2H22SHP_2D() throws Exception {
-		testSHP2PostgreSQL2H22SHP("select register('../../datas2tests/shp/"
-				+ "mediumshape2D/landcover2000.shp', " + "'landcover2000');",
-				"gid", 2);
-	}
+//	public void testSHP2PostgreSQL2H22SHP_2D() throws Exception {
+//		testSHP2PostgreSQL2H22SHP("select register('../../datas2tests/shp/"
+//				+ "mediumshape2D/landcover2000.shp', " + "'landcover2000');",
+//				"gid", 2);
+//	}
 
 	public void testSHP2PostgreSQL2H22SHP_3D() throws Exception {
 		testSHP2PostgreSQL2H22SHP(
