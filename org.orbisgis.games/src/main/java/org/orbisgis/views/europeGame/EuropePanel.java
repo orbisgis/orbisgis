@@ -26,17 +26,17 @@ public class EuropePanel extends JPanel {
 	public static String FULL_EXTENT_TOOL_NAME = "Show All Europe";
 
 	// Toolbar icons
-	private static final String IMAGE_RESOURCE = "../../images/";
-	private static final Icon SELECTION_BUTTON = new ImageIcon(EuropeGame.class
+	private static final String IMAGE_RESOURCE = "/org/orbisgis/images/";
+	private static final Icon SELECTION_BUTTON = new ImageIcon(EuropePanel.class
 			.getResource(IMAGE_RESOURCE + "select.png"));
-	private static final Icon PAN_BUTTON = new ImageIcon(EuropeGame.class
+	private static final Icon PAN_BUTTON = new ImageIcon(EuropePanel.class
 			.getResource(IMAGE_RESOURCE + "pan.png"));
-	private static final Icon ZOOM_IN_BUTTON = new ImageIcon(EuropeGame.class
+	private static final Icon ZOOM_IN_BUTTON = new ImageIcon(EuropePanel.class
 			.getResource(IMAGE_RESOURCE + "zoom_in.png"));
-	private static final Icon ZOOM_OUT_BUTTON = new ImageIcon(EuropeGame.class
+	private static final Icon ZOOM_OUT_BUTTON = new ImageIcon(EuropePanel.class
 			.getResource(IMAGE_RESOURCE + "zoom_out.png"));
 	private static final Icon FULL_EXTENT_BUTTON = new ImageIcon(
-			EuropeGame.class.getResource(IMAGE_RESOURCE + "world.png"));
+			EuropePanel.class.getResource(IMAGE_RESOURCE + "world.png"));
 
 	// Interface
 	private JLabel label;
