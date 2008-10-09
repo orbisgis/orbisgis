@@ -104,7 +104,7 @@ public class EPConfigHelper {
 	 * Saves the applied configurations
 	 */
 	public static void saveAppliedConfigurations() {
-		for (ConfigurationDecorator config : configs) {
+		for (ConfigurationDecorator config : getConfigurations()) {
 			config.saveApplied();
 		}
 	}
