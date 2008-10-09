@@ -46,8 +46,8 @@ public class UpdatesConfiguration implements IConfiguration {
 
 			String[] labels = { "URL: " };
 			InputType[] inputs = { url };
-			JPanel urlPanel = new ConfigUnitPanel("Updates",
-					checkbox, "Enable update search at startup", labels, inputs);
+			JPanel urlPanel = new ConfigUnitPanel("Updates", checkbox,
+					"Enable update search at startup", labels, inputs);
 
 			panel.add(urlPanel);
 		}
@@ -60,7 +60,7 @@ public class UpdatesConfiguration implements IConfiguration {
 		BasicConfiguration bc = Services.getService(BasicConfiguration.class);
 		String urlString = bc.getProperty(UPDATE_URL_PROPERTY);
 		String updateSearchAtStartup = bc.getProperty(UPDATE_SEARCH_PROPERTY);
-		apply(urlString, Boolean.parseBoolean(updateSearchAtStartup));
+		apply(urlString, updateSearchAtStartup);
 	}
 
 	/**
@@ -71,7 +71,7 @@ public class UpdatesConfiguration implements IConfiguration {
 	 *            the url to apply in the update manager
 	 * @param updateSearchAtStartup
 	 */
-	private void apply(String updatesURLString, Boolean updateSearchAtStartup) {
+	private void apply(String updatesURLString, String updateSearchAtStartup) {
 		try {
 			UpdateManager update = Services.getService(UpdateManager.class);
 			if (updatesURLString != null) {
@@ -79,7 +79,8 @@ public class UpdatesConfiguration implements IConfiguration {
 			}
 
 			if (updateSearchAtStartup != null) {
-				update.setSearchAtStartup(updateSearchAtStartup);
+				update.setSearchAtStartup(Boolean
+						.parseBoolean(updateSearchAtStartup));
 			}
 		} catch (MalformedURLException e) {
 			Services.getErrorManager().error("bug!", e);
@@ -98,7 +99,7 @@ public class UpdatesConfiguration implements IConfiguration {
 
 	@Override
 	public void applyUserInput() {
-		apply(url.getValue(), checkbox.isSelected());
+		apply(url.getValue(), String.valueOf(checkbox.isSelected()));
 	}
 
 	@Override
