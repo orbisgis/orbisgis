@@ -172,6 +172,8 @@ public class Activator implements PluginActivator {
 		if (um.isSearchAtStartup()) {
 			um.startSearch();
 		}
+
+		JOptionPane.showMessageDialog(null, "updated!");
 	}
 
 	private void initializeWorkspace() throws DriverException {
