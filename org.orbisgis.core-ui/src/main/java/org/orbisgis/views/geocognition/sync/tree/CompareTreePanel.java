@@ -29,6 +29,7 @@ import org.orbisgis.PersistenceException;
 import org.orbisgis.Services;
 import org.orbisgis.geocognition.mapContext.GeocognitionException;
 import org.orbisgis.images.IconLoader;
+import org.orbisgis.ui.resourceTree.ReadOnlyCellEditor;
 import org.orbisgis.ui.resourceTree.ResourceTree;
 import org.orbisgis.views.geocognition.sync.IdPath;
 import org.orbisgis.views.geocognition.sync.SyncListener;
@@ -425,7 +426,7 @@ public class CompareTreePanel extends JPanel {
 			popup.add(changeFile);
 			popup.add(noAction);
 
-			getTree().setCellEditor(null);
+			getTree().setCellEditor(new ReadOnlyCellEditor());
 		}
 
 		@Override
@@ -442,7 +443,8 @@ public class CompareTreePanel extends JPanel {
 		public JPopupMenu getPopup() {
 			TreePath[] paths = tree.getSelectionPaths();
 
-			if (paths == null) {
+			if (paths == null
+					|| paths[0].getLastPathComponent() instanceof String) {
 				return null;
 			}
 

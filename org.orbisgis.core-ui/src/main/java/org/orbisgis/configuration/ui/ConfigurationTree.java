@@ -18,6 +18,7 @@ import javax.swing.tree.TreeSelectionModel;
 import org.orbisgis.action.IMenu;
 import org.orbisgis.configuration.ConfigurationDecorator;
 import org.orbisgis.ui.resourceTree.FilterTreeModelDecorator;
+import org.orbisgis.ui.resourceTree.ReadOnlyCellEditor;
 
 class ConfigurationTree extends JPanel {
 

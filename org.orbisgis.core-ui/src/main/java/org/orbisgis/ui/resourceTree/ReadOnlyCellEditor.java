@@ -1,4 +1,4 @@
-package org.orbisgis.configuration.ui;
+package org.orbisgis.ui.resourceTree;
 
 import java.awt.Component;
 import java.util.EventObject;
@@ -10,7 +10,7 @@ import javax.swing.tree.TreeCellEditor;
 /**
  * Cell editor that doesn't allow cell editing
  */
-class ReadOnlyCellEditor implements TreeCellEditor {
+public class ReadOnlyCellEditor implements TreeCellEditor {
 	@Override
 	public Component getTreeCellEditorComponent(JTree tree, Object value,
 			boolean isSelected, boolean expanded, boolean leaf, int row) {

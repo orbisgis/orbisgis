@@ -1,23 +1,22 @@
 package org.orbisgis.views.geocognition.sync.tree;
 
 import java.awt.Component;
-import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Image;
 
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JTree;
-import javax.swing.tree.DefaultTreeCellRenderer;
 
 import org.orbisgis.Services;
 import org.orbisgis.images.IconLoader;
+import org.orbisgis.ui.resourceTree.AbstractTreeRenderer;
 import org.orbisgis.views.geocognition.sync.IdPath;
 import org.orbisgis.views.geocognition.sync.SyncManager;
 import org.orbisgis.views.geocognition.sync.SyncPanel;
 import org.orbisgis.views.geocognition.wizard.ElementRenderer;
 
-public class CompareTreeRenderer extends DefaultTreeCellRenderer {
+public class CompareTreeRenderer extends AbstractTreeRenderer {
 	// Blended icons
 	private static final ImageIcon RIGHT_PLUS = IconLoader
 			.getIcon("blended_rightarrow_plus.png");
@@ -41,7 +40,6 @@ public class CompareTreeRenderer extends DefaultTreeCellRenderer {
 			.getIcon("blended_both.png");
 
 	// Integer spacing constants for the icon width
-	private static final int ADDITIONAL_ICON_WIDTH = 5;
 	private static final int BLENDED_ICON_OVERLAPING = 5;
 
 	private ElementRenderer[] renderers;
@@ -49,18 +47,16 @@ public class CompareTreeRenderer extends DefaultTreeCellRenderer {
 	private int synchronizationType;
 
 	@Override
-	public Component getTreeCellRendererComponent(JTree tree, Object value,
-			boolean sel, boolean expanded, boolean leaf, int row,
+	protected void updateIconAndTooltip(JTree tree, Object value,
+			boolean selected, boolean expanded, boolean leaf, int row,
 			boolean hasFocus) {
+		icon = null;
 
 		if (value instanceof TreeElement) {
-			super.getTreeCellRendererComponent(tree, value, sel, expanded,
-					leaf, row, hasFocus);
 			TreeElement element = (TreeElement) value;
 
 			// Get background icon
 			ImageIcon background = (ImageIcon) getRendererIcon(element);
-			setIcon(new BlendedIcon(background, background));
 
 			// Get foreground icon
 			ImageIcon foreground = null;
@@ -102,17 +98,11 @@ public class CompareTreeRenderer extends DefaultTreeCellRenderer {
 			}
 
 			// Set icon
-			setIcon(new BlendedIcon(background, foreground));
-		} else if (value instanceof String) {
-			super.getTreeCellRendererComponent(tree, value, false, expanded,
-					leaf, row, false);
-			setIcon(null);
+			icon = new BlendedIcon(background, foreground);
 		} else {
 			Services.getErrorManager().error("bug!",
 					new RuntimeException("The tree cannot be displayed"));
 		}
-
-		return this;
 	}
 
 	/**
@@ -132,16 +122,6 @@ public class CompareTreeRenderer extends DefaultTreeCellRenderer {
 		}
 
 		return null;
-	}
-
-	/**
-	 * Override method to get an slightly wider preferred size
-	 */
-	@Override
-	public Dimension getPreferredSize() {
-		Dimension size = super.getPreferredSize();
-		size.width += ADDITIONAL_ICON_WIDTH;
-		return size;
 	}
 
 	/**
