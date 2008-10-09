@@ -48,7 +48,7 @@ public class EuropeGame implements IView {
 	private static final Symbol SELECTED_SYMBOL = SymbolFactory
 			.createPolygonSymbol(Color.blue, 2, new Color(180, 150, 0));
 
-	private static final String MAP_RESOURCE = "../../maps/europe";
+	private static final String MAP_RESOURCE = "europe";
 
 	// Countries with area lower than this value will not be asked
 	// Some area values:
@@ -104,8 +104,7 @@ public class EuropeGame implements IView {
 	 */
 	private File copyFiles(File dir, String filename) throws IOException {
 		InputStream in = EuropeGame.class.getResourceAsStream(filename);
-		File ret = new File(dir, filename.substring(filename
-				.lastIndexOf(File.separator)));
+		File ret = new File(dir, filename);
 		FileUtils.copy(in, ret);
 		in.close();
 
