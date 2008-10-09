@@ -103,7 +103,8 @@ public class DefaultUpdateManager implements Runnable, UpdateManager {
 	private File getBinaryDir(String classpath) {
 		String separator = System.getProperty("path.separator");
 		String[] jars = classpath.split("\\Q" + separator + "\\E");
-		return new File(jars[0]).getParentFile().getParentFile();
+		return new File(jars[0]).getAbsoluteFile().getParentFile()
+				.getParentFile();
 	}
 
 	public void applyUpdates() {
@@ -134,11 +135,11 @@ public class DefaultUpdateManager implements Runnable, UpdateManager {
 	public void setSearchAtStartup(boolean searchAtStartup) {
 		this.searchAtStartup = searchAtStartup;
 	}
-	
+
 	public URL getUpdateSiteURL() {
 		return updateSiteURL;
 	}
-	
+
 	public void setUpdateSiteURL(URL updateSiteURL) {
 		this.updateSiteURL = updateSiteURL;
 	}
