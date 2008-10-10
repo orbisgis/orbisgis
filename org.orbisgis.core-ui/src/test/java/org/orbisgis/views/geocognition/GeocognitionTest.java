@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Map;
 
 import junit.framework.TestCase;
@@ -46,6 +47,13 @@ public class GeocognitionTest extends TestCase {
 		gc.addElementFactory(new GeocognitionCustomQueryFactory());
 		gc.addElementFactory(new GeocognitionLegendFactory());
 		gc.addElementFactory(new GeocognitionMapContextFactory());
+	}
+
+	public void testLoadInitialMap() throws Exception {
+		InputStream geocognitionStream = GeocognitionView.class
+				.getResourceAsStream(GeocognitionView.STARTUP_GEOCOGNITION_XML);
+		gc.read(geocognitionStream);
+		assertTrue(gc.getGeocognitionElement(GeocognitionView.FIRST_MAP) != null);
 	}
 
 	public void testDefaultFunctionCompiles() throws Exception {

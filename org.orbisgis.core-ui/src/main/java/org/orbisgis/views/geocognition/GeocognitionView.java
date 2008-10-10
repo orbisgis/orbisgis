@@ -44,6 +44,8 @@ import org.sif.CarriageReturn;
 
 public class GeocognitionView extends JPanel implements IView {
 
+	public static final String FIRST_MAP = "/Maps/MyFirstMap";
+	public static final String STARTUP_GEOCOGNITION_XML = "startup.geocognition.xml";
 	private static final String COGNITION_PERSISTENCE_FILE = "org.orbisgis.Geocognition.xml";
 	private GeocognitionTree tree;
 	private JTextField txtFilter;
@@ -182,7 +184,7 @@ public class GeocognitionView extends JPanel implements IView {
 		if (!cognitionFile.exists()) {
 			try {
 				InputStream is = GeocognitionView.class
-						.getResourceAsStream("startup.geocognition.xml");
+						.getResourceAsStream(STARTUP_GEOCOGNITION_XML);
 				Geocognition geocognition = Services
 						.getService(Geocognition.class);
 				geocognition.read(is);
@@ -190,7 +192,7 @@ public class GeocognitionView extends JPanel implements IView {
 
 				// Open first map
 				GeocognitionElement element = geocognition
-						.getGeocognitionElement("/OrbisGIS/Maps/FirstMap");
+						.getGeocognitionElement(FIRST_MAP);
 				if (element != null) {
 					EditorManager em = Services.getService(EditorManager.class);
 					em.open(element);
