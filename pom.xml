@@ -71,6 +71,21 @@
 	<build>
 		<plugins>
 			<plugin>
+				<groupId>org.orbisgis</groupId>
+				<artifactId>release-maven-plugin</artifactId>
+				<configuration>
+
+					<appName>OrbisGIS</appName>
+					<versionNumber>2.0.0</versionNumber>
+					<versionName>Malaga</versionName>
+					<pluginList>plugin-manager/plugin-list.xml</pluginList>
+					<mainClass>org.orbisgis.pluginManager.Main</mainClass>
+					<latestBinary>file:///home/fergonco/ogworkspace/platform/target/previous-OrbisGIS-2.0.0.zip</latestBinary>
+					<updateURL>file:///tmp</updateURL>
+					<urlPrefix>http://sourcesup.cru.fr/frs/download.php/changethis/</urlPrefix>
+				</configuration>
+			</plugin>
+			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
 				<configuration>
