@@ -94,6 +94,11 @@ public class BinaryPack extends AbstractReleaseMojo {
 			throws FileNotFoundException {
 		PrintWriter pw;
 		pw = new PrintWriter(windowsShell);
+		pw.println("echo off");
+		pw.println("if exist bin2. (");
+		pw.println("  rmdir /q /s bin");
+		pw.println("  move /y bin2 bin");
+		pw.println(")");
 		pw.println("start " + javaBinPath + "javaw -Xmx512M -cp "
 				+ getClassPath(";") + " " + mainClass + " %1");
 		pw.close();
@@ -102,6 +107,11 @@ public class BinaryPack extends AbstractReleaseMojo {
 	private void createLinuxShells(String javaBinPath, File linuxShell)
 			throws FileNotFoundException {
 		PrintWriter pw = new PrintWriter(linuxShell);
+		pw.println("#!/bin/bash");
+		pw.println("if [ bin2 ]; then");
+		pw.println("  rm -fr bin;");
+		pw.println("  mv bin2 bin;");
+		pw.println("fi");
 		pw.println(javaBinPath + "java -Xmx512M -cp " + getClassPath(":") + " "
 				+ mainClass + " ${@}");
 		pw.close();

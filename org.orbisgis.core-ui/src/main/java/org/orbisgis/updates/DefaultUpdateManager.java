@@ -1,7 +1,6 @@
 package org.orbisgis.updates;
 
 import java.io.File;
-import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -11,9 +10,8 @@ import javax.swing.JOptionPane;
 import org.apache.log4j.Logger;
 import org.orbisgis.ApplicationInfo;
 import org.orbisgis.Services;
-import org.orbisgis.errorManager.ErrorManager;
 import org.orbisgis.pluginManager.PluginManager;
-import org.orbisgis.utils.ExecutionException;
+import org.orbisgis.utils.FileUtils;
 import org.orbisgis.workspace.Workspace;
 
 public class DefaultUpdateManager implements Runnable, UpdateManager {
@@ -81,14 +79,16 @@ public class DefaultUpdateManager implements Runnable, UpdateManager {
 					// Apply update
 					String classpath = System.getProperty("java.class.path");
 					File binaryDir = getBinaryDir(classpath);
-					au = new ApplyUpdate(binaryDir, "orbisgis");
-					au.applyUpdates(updateFiles.toArray(new File[0]));
+					au = new ApplyUpdate();
+					File bin2 = new File(binaryDir.getParentFile(), "bin2");
+					FileUtils.copyDirsRecursively(binaryDir, bin2);
+					au.applyUpdates(bin2, updateFiles.toArray(new File[0]));
 
 					// Restart
 					PluginManager pm = Services.getService(PluginManager.class);
 					JOptionPane.showMessageDialog(null,
-							"The system will be restarted to "
-									+ "finish the installation",
+							"The system have to be restarted to "
+									+ "apply the update",
 							"Install updates", JOptionPane.INFORMATION_MESSAGE);
 					pm.stop();
 				}
@@ -105,20 +105,6 @@ public class DefaultUpdateManager implements Runnable, UpdateManager {
 		String[] jars = classpath.split("\\Q" + separator + "\\E");
 		return new File(jars[0]).getAbsoluteFile().getParentFile()
 				.getParentFile();
-	}
-
-	public void applyUpdates() {
-		if (au != null) {
-			try {
-				au.commitNewBinary();
-			} catch (IOException e) {
-				Services.getService(ErrorManager.class).error(
-						"Cannot launch the update commit", e);
-			} catch (ExecutionException e) {
-				Services.getService(ErrorManager.class).error(
-						"Cannot launch the update commit", e);
-			}
-		}
 	}
 
 	/**

@@ -213,8 +213,6 @@ public class Activator implements PluginActivator {
 		EPConfigHelper.saveAppliedConfigurations();
 		BasicConfiguration bc = Services.getService(BasicConfiguration.class);
 		bc.save();
-
-		Services.getService(UpdateManager.class).applyUpdates();
 	}
 
 	public boolean allowStop() {
