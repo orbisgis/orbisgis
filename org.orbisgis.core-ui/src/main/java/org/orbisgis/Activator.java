@@ -173,7 +173,7 @@ public class Activator implements PluginActivator {
 			um.startSearch();
 		}
 
-		JOptionPane.showMessageDialog(null, "updated 2!");
+		JOptionPane.showMessageDialog(null, "updated 3!");
 	}
 
 	private void initializeWorkspace() throws DriverException {
