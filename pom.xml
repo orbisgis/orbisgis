@@ -70,7 +70,7 @@
 	</distributionManagement>
 	<build>
 		<plugins>
-			<plugin>
+			<!--<plugin>
 				<groupId>org.orbisgis</groupId>
 				<artifactId>release-maven-plugin</artifactId>
 				<configuration>
@@ -84,7 +84,7 @@
 					<updateURL>file:///tmp</updateURL>
 					<urlPrefix>http://sourcesup.cru.fr/frs/download.php/changethis/</urlPrefix>
 				</configuration>
-			</plugin>
+			</plugin>-->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
