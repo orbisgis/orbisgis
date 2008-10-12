@@ -94,25 +94,34 @@ public class BinaryPack extends AbstractReleaseMojo {
 			throws FileNotFoundException {
 		PrintWriter pw;
 		pw = new PrintWriter(windowsShell);
-		pw.println("echo off");
-		pw.println("if exist bin2. (");
-		pw.println("  rmdir /q /s bin");
-		pw.println("  move /y bin2 bin");
-		pw.println(")");
-		pw.println("start " + javaBinPath + "javaw -Xmx512M -cp "
-				+ getClassPath(";") + " " + mainClass + " %1");
+		pw.print("echo off\r\n");
+		pw.print("if exist ..\\bin2. (\r\n");
+		pw.print("  copy /y orbisgis.bat ..\r\n");
+		pw.print("  cd ..\r\n");
+		pw.print("  orbisgis.bat\r\n");
+		pw.print(")\r\n");
+		pw.print("\r\n");
+		pw.print("if exist bin2. (\r\n");
+		pw.print("  rmdir /q /s bin\r\n");
+		pw.print("  move /y bin2 bin\r\n");
+		pw.print("  cd bin\r\n");
+		pw.print(")\r\n");
+		pw.print("start " + javaBinPath + "javaw -Xmx512M -cp "
+				+ getClassPath(";") + " " + mainClass + " %1\r\n");
 		pw.close();
 	}
 
 	private void createLinuxShells(String javaBinPath, File linuxShell)
 			throws FileNotFoundException {
 		PrintWriter pw = new PrintWriter(linuxShell);
-		pw.println("#!/bin/bash");
-		pw.println("if [ bin2 ]; then");
-		pw.println("  rm -fr bin;");
-		pw.println("  mv bin2 bin;");
-		pw.println("fi");
-		pw.println(javaBinPath + "java -Xmx512M -cp " + getClassPath(":") + " "
+		pw.print("#!/bin/bash\n");
+		pw.print("if [ -e ../bin2 ]; then\n");
+		pw.print("  rm -fr ../bin;\n");
+		pw.print("  mv ../bin2 ../bin;\n");
+		pw.print("  cd ../bin;\n");
+		pw.print("  chmod u+x orbisgis.sh;\n");
+		pw.print("fi\n");
+		pw.print(javaBinPath + "java -Xmx512M -cp " + getClassPath(":") + " "
 				+ mainClass + " ${@}");
 		pw.close();
 		linuxShell.setExecutable(true);
