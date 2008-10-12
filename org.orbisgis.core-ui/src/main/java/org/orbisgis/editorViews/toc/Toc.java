@@ -371,10 +371,11 @@ public class Toc extends ResourceTree {
 		}
 
 		public void visibilityChanged(LayerListenerEvent e) {
+			treeModel.refresh();
 		}
 
 		public void selectionChanged(SelectionEvent e) {
-
+			treeModel.refresh();
 		}
 
 		public void multipleModification(MultipleEditionEvent e) {
