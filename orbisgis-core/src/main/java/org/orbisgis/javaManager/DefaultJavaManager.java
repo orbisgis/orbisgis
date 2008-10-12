@@ -247,9 +247,9 @@ public class DefaultJavaManager implements JavaManager {
 					+ "import org.orbisgis.Services;");
 			className = "GDMS" + System.currentTimeMillis();
 			clazz.append("public class ").append(className).append("{\n");
-			clazz.append("public static void main(String[] args) {new ")
+			clazz.append("public static void main(String[] args) throws Exception {new ")
 					.append(className).append(
-							"().execute();}public void execute(){\n");
+							"().execute();}public void execute() throws Exception {\n");
 			if (caretPosition >= blockStartPos) {
 				modifiedCaretPosition = clazz.length() - blockStartPos
 						+ caretPosition;

@@ -70,7 +70,8 @@ public class AutoCompletionVisitor extends AbstractVisitor {
 			}
 
 			// attribute references
-			String[] attributeNames = CompletionUtils.getVarVisitor().getAttributeNames();
+			String[] attributeNames = CompletionUtils.getVarVisitor()
+					.getAttributeNames();
 			for (String varName : attributeNames) {
 				if (varName.toLowerCase().startsWith(prefix)) {
 					options.add(new FieldOption(prefix, varName));
@@ -120,6 +121,11 @@ public class AutoCompletionVisitor extends AbstractVisitor {
 				if (Modifier.isPublic(field.getModifiers())) {
 					options.add(new VariableOption(prefix, field.getName()));
 				}
+			}
+		}
+		if (clazz.isArray()) {
+			if ("length".startsWith(prefix.toLowerCase())) {
+				options.add(new VariableOption(prefix, "length"));
 			}
 		}
 		Method[] methods = clazz.getMethods();
@@ -176,7 +182,7 @@ public class AutoCompletionVisitor extends AbstractVisitor {
 					// If it's a reference
 					try {
 						completeName(name);
-					} catch (SecurityException e) {
+					} catch (RuntimeException e) {
 						logger.warn(EXCEPTION_MSG, e);
 					} catch (ClassNotFoundException e) {
 						logger.warn(EXCEPTION_MSG, e);

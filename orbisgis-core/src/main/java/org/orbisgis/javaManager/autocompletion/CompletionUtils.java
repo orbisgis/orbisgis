@@ -123,6 +123,12 @@ public class CompletionUtils {
 				clazz = getType((ASTLiteral) literalOrName);
 			} else {
 				clazz = getType(null, getNodeUtils().getText(literalOrName));
+				// Array access []
+				for (int i = 0; i < suffixes.length; i++) {
+					if (suffixes[i].first_token.kind == JavaParserConstants.LBRACKET) {
+						clazz = clazz.getComponentType();
+					}
+				}
 			}
 		} else {
 			String methodName = parts[parts.length - 1];
@@ -235,13 +241,7 @@ public class CompletionUtils {
 
 	public static Class<? extends Object> getArgType(String part)
 			throws ClassNotFoundException {
-		String type = CompletionUtils.getMethodParameterVisitor().getArgType(
-				part);
-		if (type == null) {
-			return null;
-		} else {
-			return getClassType(type);
-		}
+		return CompletionUtils.getMethodParameterVisitor().getArgType(part);
 	}
 
 	public static Class<? extends Object> getClassType(String part)
@@ -342,7 +342,7 @@ public class CompletionUtils {
 		}
 		if (strType != null) {
 			if (isArray) {
-				return Class.forName("L" + strType + ";");
+				return Class.forName("[L" + strType + ";");
 			} else {
 				return Class.forName(strType);
 			}

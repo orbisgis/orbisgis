@@ -2,12 +2,18 @@ package org.orbisgis.javaManager.autocompletion;
 
 import java.util.ArrayList;
 
+import org.apache.log4j.Logger;
 import org.orbisgis.javaManager.parser.ASTFormalParameter;
 import org.orbisgis.javaManager.parser.ASTMethodDeclaration;
 import org.orbisgis.javaManager.parser.ASTType;
 import org.orbisgis.javaManager.parser.ASTVariableDeclaratorId;
 
 public class MethodParameterVisitor extends AbstractVisitor {
+
+	private static final String EXCEPTION_MSG = "Code completion exception";
+
+	private static Logger logger = Logger
+			.getLogger(MethodParameterVisitor.class);
 
 	private ArrayList<Variable> paramsBlock = new ArrayList<Variable>();
 
@@ -34,9 +40,13 @@ public class MethodParameterVisitor extends AbstractVisitor {
 				ASTVariableDeclaratorId var = (ASTVariableDeclaratorId) n
 						.jjtGetChild(i);
 				String varName = CompletionUtils.getNodeUtils().getText(var);
-				String varType = CompletionUtils.getNodeUtils().getText(type);
-				Variable variable = new Variable(varName, varType);
-				paramsBlock.add(variable);
+				try {
+					Class<?> varType = CompletionUtils.getType(type);
+					Variable variable = new Variable(varName, varType);
+					paramsBlock.add(variable);
+				} catch (ClassNotFoundException e) {
+					logger.warn(EXCEPTION_MSG, e);
+				}
 			}
 		}
 		return super.visit(n, data);
@@ -50,7 +60,7 @@ public class MethodParameterVisitor extends AbstractVisitor {
 		return ret;
 	}
 
-	public String getArgType(String argName) {
+	public Class<?> getArgType(String argName) {
 		for (int i = 0; i < paramsBlock.size(); i++) {
 			Variable variable = paramsBlock.get(i);
 			if (variable.name.equals(argName)) {
@@ -60,15 +70,4 @@ public class MethodParameterVisitor extends AbstractVisitor {
 		return null;
 	}
 
-	private class Variable {
-		public String name;
-		public String type;
-
-		public Variable(String name, String type) {
-			super();
-			this.name = name;
-			this.type = type;
-		}
-
-	}
 }
