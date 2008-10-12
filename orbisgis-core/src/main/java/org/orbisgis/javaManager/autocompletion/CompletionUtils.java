@@ -41,6 +41,15 @@ public class CompletionUtils {
 
 	private static ScriptMethodVisitor scriptMethodVisitor;
 
+	private static final int _double = 0;
+	private static final int _float = 1;
+	private static final int _long = 2;
+	private static final int _int = 3;
+	private static final int _short = 4;
+	private static final int _byte = 5;
+	private static final int _char = 6;
+	private static final int _boolean = 7;
+
 	public static void setCompletionCase(String text, Node root, int line,
 			int col) {
 		CompletionUtils.text = text;
@@ -137,7 +146,7 @@ public class CompletionUtils {
 						&& (suffixes[0].jjtGetChild(0) instanceof ASTArguments)) {
 					Class<? extends Object>[] params = getParams((ASTArguments) suffixes[0]
 							.jjtGetChild(0));
-					Method method = clazz.getMethod(methodName, params);
+					Method method = getMethod(clazz, methodName, params);
 					clazz = method.getReturnType();
 					methodName = null;
 				} else if (suffixes[0].jjtGetNumChildren() == 0) {
@@ -149,6 +158,71 @@ public class CompletionUtils {
 		}
 
 		return clazz;
+	}
+
+	private static Method getMethod(Class<? extends Object> clazz,
+			String methodName, Class<? extends Object>[] params) {
+		Method[] methods = clazz.getMethods();
+		for (Method method : methods) {
+			if (method.getName().toLowerCase().equals(methodName.toLowerCase())) {
+				Class<?>[] paramTypes = method.getParameterTypes();
+				if (params.length == paramTypes.length) {
+					for (int i = 0; i < paramTypes.length; i++) {
+						if (!isAssignableFrom(paramTypes[i], params[i])) {
+							break;
+						}
+					}
+
+					return method;
+				}
+			}
+		}
+
+		return null;
+	}
+
+	private static boolean isAssignableFrom(Class<?> class1,
+			Class<? extends Object> class2) {
+		if (class1.isPrimitive()) {
+			try {
+				int primTypeCode1 = getPrimitiveTypeCode(class1);
+				int primTypeCode2 = getPrimitiveTypeCode(class2);
+				if (primTypeCode1 == _char) {
+					return (primTypeCode2 == _byte)
+							|| (primTypeCode2 == _short)
+							|| (primTypeCode2 == _int)
+							|| (primTypeCode2 == _char);
+				} else if ((primTypeCode1 == _byte)
+						|| (primTypeCode1 == _short) || (primTypeCode1 == _int)
+						|| (primTypeCode1 == _long)
+						|| (primTypeCode1 == _float)
+						|| (primTypeCode1 == _double)) {
+					return primTypeCode1 <= primTypeCode2;
+				} else if (primTypeCode1 == _boolean) {
+					return primTypeCode2 == _boolean;
+				}
+				return false;
+			} catch (ClassCastException e) {
+				return false;
+			}
+		} else {
+			return class1.isAssignableFrom(class2);
+		}
+	}
+
+	private static int getPrimitiveTypeCode(Class<?> clazz) {
+		try {
+			Field f = CompletionUtils.class.getField("_" + clazz.getName());
+			return f.getInt(null);
+		} catch (SecurityException e) {
+			return -1;
+		} catch (NoSuchFieldException e) {
+			return -1;
+		} catch (IllegalArgumentException e) {
+			return -1;
+		} catch (IllegalAccessException e) {
+			return -1;
+		}
 	}
 
 	private static Class<? extends Object> getType(ASTLiteral literal) {
