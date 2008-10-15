@@ -1,8 +1,12 @@
 package org.contrib.algorithm.triangulation.tin2;
 
 import com.vividsolutions.jts.algorithm.CGAlgorithms;
+import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.GeometryFactory;
+import com.vividsolutions.jts.geom.Polygon;
 
 public class Triangle {
+	private final static GeometryFactory gf = new GeometryFactory();
 	public static int NO_NEIGHBOUR = -1;
 
 	private SetOfVertices setOfVertices;
@@ -15,10 +19,61 @@ public class Triangle {
 
 	public Triangle(final SetOfVertices setOfVertices, final int vtx1,
 			final int vtx2, final int vtx3) {
+		this(setOfVertices, vtx1, vtx2, vtx3, NO_NEIGHBOUR, NO_NEIGHBOUR,
+				NO_NEIGHBOUR);
+	}
+
+	public Triangle(final SetOfVertices setOfVertices, final int vtx1,
+			final int vtx2, final int vtx3, final int neighbour1,
+			final int neighbour2, final int neighbour3) {
 		this.setOfVertices = setOfVertices;
 		this.vtx1 = vtx1;
 		this.vtx2 = vtx2;
 		this.vtx3 = vtx3;
+		this.neighbour1 = neighbour1;
+		this.neighbour2 = neighbour2;
+		this.neighbour3 = neighbour3;
+	}
+
+	public int getNeighbour1() {
+		return neighbour1;
+	}
+
+	public int getNeighbour2() {
+		return neighbour2;
+	}
+
+	public int getNeighbour3() {
+		return neighbour3;
+	}
+
+	public void setNeighbourForEdge(final int v1, final int v2,
+			final int neighIdx) {
+		if ((v1 == vtx1) && (v2 == vtx2)) {
+			neighbour1 = neighIdx;
+		} else if ((v1 == vtx2) && (v2 == vtx3)) {
+			neighbour2 = neighIdx;
+		} else if ((v1 == vtx3) && (v2 == vtx1)) {
+			neighbour3 = neighIdx;
+		} else {
+			throw new RuntimeException("Unreachable source code");
+		}
+	}
+
+	public void setNeighbourForEdge(final int edgeIdx, final int neighIdx) {
+		switch (edgeIdx) {
+		case 1:
+			neighbour1 = neighIdx;
+			break;
+		case 2:
+			neighbour2 = neighIdx;
+			break;
+		case 3:
+			neighbour3 = neighIdx;
+			break;
+		default:
+			throw new RuntimeException("Unreachable source code");
+		}
 	}
 
 	public boolean isAVisibleEdgeFrom(final int edgeIdx, final int vertexIdx) {
@@ -57,5 +112,13 @@ public class Triangle {
 			return 3;
 		}
 		throw new RuntimeException("Unreachable source code");
+	}
+
+	public Polygon getPolygon() {
+		return gf.createPolygon(gf.createLinearRing(new Coordinate[] {
+				setOfVertices.getCoordinate(vtx1),
+				setOfVertices.getCoordinate(vtx2),
+				setOfVertices.getCoordinate(vtx3),
+				setOfVertices.getCoordinate(vtx1) }), null);
 	}
 }

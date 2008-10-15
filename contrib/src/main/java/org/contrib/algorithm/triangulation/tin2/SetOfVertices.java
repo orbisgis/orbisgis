@@ -27,7 +27,7 @@ public class SetOfVertices {
 		}
 	}
 
-	private VertexPtr getVertexPtr(final int index) {
+	private VertexPtr[] getVerticesPtr() {
 		if (null == verticesPtr) {
 			// final SortedSet<VertexPtr> verticesSet = new TreeSet<VertexPtr>(
 			// new VertexPtrSimpleComparator());
@@ -38,7 +38,11 @@ public class SetOfVertices {
 			}
 			verticesPtr = verticesSet.toArray(new VertexPtr[0]);
 		}
-		return verticesPtr[index];
+		return verticesPtr;
+	}
+	
+	private VertexPtr getVertexPtr(final int index) {
+		return getVerticesPtr()[index];
 	}
 
 	public Coordinate getCoordinate(final int index) {
@@ -46,7 +50,7 @@ public class SetOfVertices {
 	}
 
 	public int size() {
-		return verticesPtr.length;
+		return getVerticesPtr().length;
 	}
 
 	private Coordinate getBarycentre() {

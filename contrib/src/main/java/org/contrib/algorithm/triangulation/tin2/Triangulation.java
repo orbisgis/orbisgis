@@ -1,5 +1,7 @@
 package org.contrib.algorithm.triangulation.tin2;
 
+import java.util.Map;
+
 import org.gdms.data.SpatialDataSourceDecorator;
 import org.gdms.driver.DriverException;
 import org.orbisgis.progress.IProgressMonitor;
@@ -19,8 +21,6 @@ public class Triangulation {
 			final String gidFieldName) throws DriverException {
 		final long rowCount = inSds.getRowCount();
 
-		long t0 = System.currentTimeMillis(); // REMOVE
-
 		// 1st step: add all the (constraining) vertices
 		if (null == gidFieldName) {
 			vertices = new SetOfVertices();
@@ -39,21 +39,20 @@ public class Triangulation {
 				vertices.addAll(geometry.getCoordinates(), gid);
 			}
 		}
-
-		System.err.println((System.currentTimeMillis() - t0) + " ms"); // REMOVE
-		System.err.println(vertices.getCoordinate(0)); // REMOVE
-		System.err.println((System.currentTimeMillis() - t0) + " ms"); // REMOVE
-
 	}
 
 	public void mesh(IProgressMonitor pm) {
 		// build the 1st triangle
-		triangles = new SetOfTriangles();
+		triangles = new SetOfTriangles(vertices);
 		triangles.add(new Triangle(vertices, 0, 1, 2));
 
 		// then iterate over each already sorted set of vertices
 		for (int i = 3; i < vertices.size(); i++) {
-			triangles.mesh(vertices, i);
+			triangles.mesh(i);
 		}
+	}
+
+	public Map<Integer, Triangle> getTriangles() {
+		return triangles.getTriangles();
 	}
 }
