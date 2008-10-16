@@ -14,7 +14,7 @@ public class SetOfTriangles {
 		this.vertices = vertices;
 		triangles = new HashMap<Integer, Triangle>();
 		sweepLine = new SweepLine(vertices);
-		topIdx = 0;
+		topIdx = -1;
 	}
 
 	public int add(final Triangle triangle) {

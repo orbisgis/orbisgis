@@ -1,5 +1,7 @@
 package org.contrib.algorithm.triangulation.tin2;
 
+import java.util.Formatter;
+
 import com.vividsolutions.jts.algorithm.CGAlgorithms;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.GeometryFactory;
@@ -27,12 +29,27 @@ public class Triangle {
 			final int vtx2, final int vtx3, final int neighbour1,
 			final int neighbour2, final int neighbour3) {
 		this.setOfVertices = setOfVertices;
-		this.vtx1 = vtx1;
-		this.vtx2 = vtx2;
-		this.vtx3 = vtx3;
-		this.neighbour1 = neighbour1;
-		this.neighbour2 = neighbour2;
-		this.neighbour3 = neighbour3;
+
+		final int orientation = CGAlgorithms.computeOrientation(setOfVertices
+				.getCoordinate(vtx1), setOfVertices.getCoordinate(vtx2),
+				setOfVertices.getCoordinate(vtx3));
+
+		if ((CGAlgorithms.COUNTERCLOCKWISE == orientation)
+				|| (CGAlgorithms.COLLINEAR == orientation)) {
+			this.vtx1 = vtx1;
+			this.vtx2 = vtx2;
+			this.vtx3 = vtx3;
+			this.neighbour1 = neighbour1;
+			this.neighbour2 = neighbour2;
+			this.neighbour3 = neighbour3;
+		} else {
+			this.vtx1 = vtx1;
+			this.vtx2 = vtx3;
+			this.vtx3 = vtx2;
+			this.neighbour1 = neighbour1;
+			this.neighbour2 = neighbour3;
+			this.neighbour3 = neighbour2;
+		}
 	}
 
 	public int getNeighbour1() {
@@ -76,7 +93,7 @@ public class Triangle {
 		}
 	}
 
-	public boolean isAVisibleEdgeFrom(final int edgeIdx, final int vertexIdx) {
+	private boolean isAVisibleEdgeFrom(final int edgeIdx, final int vertexIdx) {
 		switch (edgeIdx) {
 		case 1:
 			return (NO_NEIGHBOUR == neighbour1)
@@ -120,5 +137,12 @@ public class Triangle {
 				setOfVertices.getCoordinate(vtx2),
 				setOfVertices.getCoordinate(vtx3),
 				setOfVertices.getCoordinate(vtx1) }), null);
+	}
+
+	@Override
+	public String toString() {
+		return new Formatter().format(
+				"vtx = {%d, %d, %d} neigh = {%d, %d, %d}", vtx1, vtx2, vtx3,
+				neighbour1, neighbour2, neighbour3).toString();
 	}
 }

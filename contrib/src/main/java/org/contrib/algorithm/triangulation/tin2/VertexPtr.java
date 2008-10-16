@@ -1,5 +1,6 @@
 package org.contrib.algorithm.triangulation.tin2;
 
+import java.util.Formatter;
 import java.util.List;
 
 import com.vividsolutions.jts.geom.Coordinate;
@@ -37,5 +38,11 @@ public class VertexPtr {
 		if (index != other.index)
 			return false;
 		return true;
+	}
+
+	@Override
+	public String toString() {
+		return new Formatter().format("[%d] %s", index,
+				getCoordinate().toString()).toString();
 	}
 }
