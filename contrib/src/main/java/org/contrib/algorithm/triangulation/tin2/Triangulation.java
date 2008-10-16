@@ -12,14 +12,17 @@ public class Triangulation {
 	private SetOfVertices vertices;
 	private SetOfTriangles triangles;
 
-	public Triangulation(final SpatialDataSourceDecorator inSds)
-			throws DriverException {
-		this(inSds, null);
+	public Triangulation(final SpatialDataSourceDecorator inSds,
+			final String spatialFieldName) throws DriverException {
+		this(inSds, spatialFieldName, null);
 	}
 
 	public Triangulation(final SpatialDataSourceDecorator inSds,
-			final String gidFieldName) throws DriverException {
+			final String spatialFieldName, final String gidFieldName)
+			throws DriverException {
 		final long rowCount = inSds.getRowCount();
+
+		inSds.setDefaultGeometry(spatialFieldName);
 
 		// 1st step: add all the (constraining) vertices
 		if (null == gidFieldName) {
@@ -48,6 +51,15 @@ public class Triangulation {
 
 		// then iterate over each already sorted set of vertices
 		for (int i = 3; i < vertices.size(); i++) {
+
+			if (i / 100 == i / 100.0) {
+				if (pm.isCancelled()) {
+					break;
+				} else {
+					pm.progressTo((int) (100 * i / vertices.size()));
+				}
+			}
+
 			triangles.mesh(i);
 		}
 	}

@@ -69,15 +69,20 @@ public class Tin2 implements CustomQuery {
 		try {
 			// populate and mesh the Planar Straight-Line Graph using the unique
 			// table as input data
+			final long t0 = System.currentTimeMillis();
+
 			final Triangulation triangulation;
-			if (0 == values.length) {
-				triangulation = new Triangulation(inSds);
-			} else {
+			if (1 == values.length) {
 				triangulation = new Triangulation(inSds, values[0]
 						.getAsString());
+			} else {
+				triangulation = new Triangulation(inSds, values[0]
+						.getAsString(), values[1].getAsString());
 			}
 			inSds.close();
 			triangulation.mesh(pm);
+			System.err.println("Triangulation process:"
+					+ (System.currentTimeMillis() - t0) + " ms");
 
 			// convert the resulting TIN into a data source
 			final ObjectMemoryDriver driver = new ObjectMemoryDriver(
@@ -127,7 +132,7 @@ public class Tin2 implements CustomQuery {
 	}
 
 	public String getSqlOrder() {
-		return "select Tin2([optionalGid]) from mydatasource";
+		return "select Tin2(the_geom [, optionalGid]) from mydatasource";
 	}
 
 	public TableDefinition[] geTablesDefinitions() {
@@ -135,7 +140,8 @@ public class Tin2 implements CustomQuery {
 	}
 
 	public Arguments[] getFunctionArguments() {
-		return new Arguments[] { new Arguments(Argument.WHOLE_NUMBER),
-				new Arguments() };
+		return new Arguments[] {
+				new Arguments(Argument.GEOMETRY, Argument.WHOLE_NUMBER),
+				new Arguments(Argument.GEOMETRY) };
 	}
 }
