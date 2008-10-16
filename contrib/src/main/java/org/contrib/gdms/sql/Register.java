@@ -42,6 +42,9 @@ import org.contrib.gdms.sql.customQuery.spatial.geometry.tin.BuildTIN2;
 import org.contrib.gdms.sql.customQuery.spatial.geometry.tin.Cdt;
 import org.contrib.gdms.sql.customQuery.spatial.geometry.tin.CheckDelaunayProperty;
 import org.contrib.gdms.sql.customQuery.spatial.geometry.tin.CheckSpatialEquivalence;
+import org.contrib.gdms.sql.customQuery.spatial.geometry.tin.CircumCircle;
+import org.contrib.gdms.sql.customQuery.spatial.geometry.tin.QualityMeasuresOfTIN;
+import org.contrib.gdms.sql.customQuery.spatial.geometry.tin.Tin2;
 import org.gdms.sql.customQuery.QueryManager;
 import org.orbisgis.pluginManager.PluginActivator;
 
@@ -58,6 +61,10 @@ public class Register implements PluginActivator {
 		QueryManager.registerQuery(Cdt.class);
 		QueryManager.registerQuery(CheckDelaunayProperty.class);
 		QueryManager.registerQuery(CheckSpatialEquivalence.class);
+//		QueryManager.registerQuery(CircumCircle.class);
+//		QueryManager.registerQuery(QualityMeasuresOfTIN.class);
+
+		QueryManager.registerQuery(Tin2.class);
 	}
 
 	public void stop() throws Exception {
