@@ -23,7 +23,7 @@ public class Triangulation {
 
 		// 1st step: add all the (constraining) vertices
 		if (null == gidFieldName) {
-			vertices = new SetOfVertices();
+			vertices = new SetOfVertices(inSds.getFullExtent());
 			for (long rowIndex = 0; rowIndex < rowCount; rowIndex++) {
 				final Geometry geometry = inSds.getGeometry(rowIndex);
 				vertices.addAll(geometry.getCoordinates());
@@ -31,7 +31,7 @@ public class Triangulation {
 		} else {
 			int gidFieldIndex = inSds.getFieldIndexByName(gidFieldName);
 
-			vertices = new SetOfVertices();
+			vertices = new SetOfVertices(inSds.getFullExtent());
 			for (long rowIndex = 0; rowIndex < rowCount; rowIndex++) {
 				final Geometry geometry = inSds.getGeometry(rowIndex);
 				final int gid = inSds.getFieldValue(rowIndex, gidFieldIndex)

@@ -6,13 +6,16 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.Envelope;
 
 public class SetOfVertices {
 	private List<Vertex> vertices;
 	private VertexPtr[] verticesPtr;
+	private Envelope envelope;
 
-	public SetOfVertices() {
+	public SetOfVertices(final Envelope envelope) {
 		vertices = new ArrayList<Vertex>();
+		this.envelope = envelope;
 	}
 
 	public void addAll(final Coordinate[] coordinates) {
@@ -31,14 +34,20 @@ public class SetOfVertices {
 		if (null == verticesPtr) {
 			// final SortedSet<VertexPtr> verticesSet = new TreeSet<VertexPtr>(
 			// new VertexPtrSimpleComparator());
+			// final SortedSet<VertexPtr> verticesSet = new TreeSet<VertexPtr>(
+			// new VertexPtrRadiusComparator(getBarycentre()));
 			final SortedSet<VertexPtr> verticesSet = new TreeSet<VertexPtr>(
-					new VertexPtrRadiusComparator(getBarycentre()));
+					new VertexPtrRadiusComparator(getLowerLeftCorner()));
 			for (int i = 0; i < vertices.size(); i++) {
 				verticesSet.add(new VertexPtr(vertices, i));
 			}
 			verticesPtr = verticesSet.toArray(new VertexPtr[0]);
 		}
 		return verticesPtr;
+	}
+
+	private Coordinate getLowerLeftCorner() {
+		return new Coordinate(envelope.getMinX(), envelope.getMinY());
 	}
 
 	private VertexPtr getVertexPtr(final int index) {
