@@ -112,12 +112,17 @@ public class SweepLine {
 		slTriangles.add(visibleVertices[0] + 1, lastNewTri);
 		// remove at least all useless vertices and triangles from the
 		// sweep-line
+		final List<Integer> tmpSlVertices = new ArrayList<Integer>();
+		final List<Integer> tmpSlTriangles = new ArrayList<Integer>();
+
 		for (int i = 0; i < slVertices.size(); i++) {
-			if (-1 == slVertices.get(i)) {
-				slVertices.remove(i);
-				slTriangles.remove(i);
+			if (-1 != slVertices.get(i)) {
+				tmpSlVertices.add(slVertices.get(i));
+				tmpSlTriangles.add(slTriangles.get(i));
 			}
 		}
+		slVertices = tmpSlVertices;
+		slTriangles = tmpSlTriangles;
 	}
 
 	@Override

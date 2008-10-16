@@ -40,7 +40,7 @@ public class SetOfVertices {
 		}
 		return verticesPtr;
 	}
-	
+
 	private VertexPtr getVertexPtr(final int index) {
 		return getVerticesPtr()[index];
 	}
