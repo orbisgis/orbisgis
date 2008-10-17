@@ -44,6 +44,10 @@ public class Triangle {
 		return neighbour[i];
 	}
 
+	public int[] getVerticesForEdge(int edgeIdx) {
+		return new int[] { vtx[edgeIdx], vtx[(edgeIdx + 1) % 3] };
+	}
+
 	public void setNeighbourForEdge(final int v1, final int v2,
 			final int neighIdx) {
 		if ((v1 == vtx[0]) && (v2 == vtx[1])) {
@@ -55,10 +59,6 @@ public class Triangle {
 		} else {
 			throw new RuntimeException("Unreachable source code");
 		}
-	}
-
-	public void setNeighbourForEdge(final int edgeIdx, final int neighIdx) {
-		neighbour[edgeIdx] = neighIdx;
 	}
 
 	public Polygon getPolygon() {

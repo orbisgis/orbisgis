@@ -20,6 +20,16 @@ public class SetOfTriangles {
 	public int add(final Triangle triangle) {
 		topIdx++;
 		triangles.put(topIdx, triangle);
+		for (int i = 0; i < 3; i++) {
+			if (Triangle.NO_NEIGHBOUR != triangle.getNeighbour(i)) {
+				// update the corresponding neighbour triangle (set it's own
+				// neighbour's pointer to topIdx)
+				Triangle neighbour = triangles.get(triangle.getNeighbour(i));
+				int[] commonVertices = triangle.getVerticesForEdge(i);
+				neighbour.setNeighbourForEdge(commonVertices[1],
+						commonVertices[0], topIdx);
+			}
+		}
 		return topIdx;
 	}
 
@@ -42,13 +52,7 @@ public class SetOfTriangles {
 					Triangle.NO_NEIGHBOUR, neighTri);
 			// add it to the set of triangles
 			int currTri = add(triangle);
-			// update the 2 adjacent triangles already build
-			triangles.get(neighTri).setNeighbourForEdge(
-					sweepLine.getVertexIndex(i),
-					sweepLine.getVertexIndex(iNext), currTri);
-			if (Triangle.NO_NEIGHBOUR != prevTri) {
-				triangles.get(prevTri).setNeighbourForEdge(1, currTri);
-			} else {
+			if (Triangle.NO_NEIGHBOUR == prevTri) {
 				firstNewTri = currTri;
 			}
 			// and iterate once again
