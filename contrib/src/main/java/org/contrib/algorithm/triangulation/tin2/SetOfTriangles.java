@@ -47,7 +47,7 @@ public class SetOfTriangles {
 					sweepLine.getVertexIndex(i),
 					sweepLine.getVertexIndex(iNext), currTri);
 			if (Triangle.NO_NEIGHBOUR != prevTri) {
-				triangles.get(prevTri).setNeighbourForEdge(2, currTri);
+				triangles.get(prevTri).setNeighbourForEdge(1, currTri);
 			} else {
 				firstNewTri = currTri;
 			}

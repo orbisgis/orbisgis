@@ -94,9 +94,9 @@ public class Tin2 implements CustomQuery {
 				driver.addValues(new Value[] {
 						ValueFactory.createValue(triIdx),
 						ValueFactory.createValue(triangle.getPolygon()),
-						ValueFactory.createValue(triangle.getNeighbour1()),
-						ValueFactory.createValue(triangle.getNeighbour2()),
-						ValueFactory.createValue(triangle.getNeighbour3())
+						ValueFactory.createValue(triangle.getNeighbour(0)),
+						ValueFactory.createValue(triangle.getNeighbour(1)),
+						ValueFactory.createValue(triangle.getNeighbour(2))
 
 				});
 			}
