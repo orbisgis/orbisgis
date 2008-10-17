@@ -30,168 +30,199 @@
  * www.vividsolutions.com
  */
 package org.contrib.model.jump.model;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import org.contrib.model.jump.coordsys.CoordinateSystem;
+
 import com.vividsolutions.jts.util.Assert;
-//import com.vividsolutions.jump.coordsys.CoordinateSystem;
+
+// import com.vividsolutions.jump.coordsys.CoordinateSystem;
 /**
  * Metadata for a FeatureCollection: attribute names and types.
+ * 
  * @see FeatureCollection
  */
 public class FeatureSchema implements Cloneable, Serializable {
-    private static final long serialVersionUID = -8627306219650589202L;
-    //<<TODO:QUESTION>> Is this an efficient implementation? Must cast the Integer to
-    //an int. [Jon Aquino]
-   // private CoordinateSystem coordinateSystem = CoordinateSystem.UNSPECIFIED;
-    private HashMap attributeNameToIndexMap = new HashMap();
-    private int geometryIndex = -1;
-    private int attributeCount = 0;
-    private ArrayList attributeNames = new ArrayList();
-    private ArrayList attributeTypes = new ArrayList();
+	private static final long serialVersionUID = -8627306219650589202L;
 
-    //todo Deep-copy! [Jon Aquino]
-    //deep copy done 25. Juli 2005 [sstein] 
-    public Object clone() {
-        try {
-    		FeatureSchema fs = new FeatureSchema();
-    		for (int i = 0; i < this.attributeCount; i++) {
-    			AttributeType at = (AttributeType)this.attributeTypes.get(i);
-    			String aname = (String)this.attributeNames.get(i);
-    			fs.addAttribute(aname,at);
-    			//fs.setCoordinateSystem(this.coordinateSystem);			
-    		}		
-    		return fs;
-        } 
-        catch (Exception ex) {
-            Assert.shouldNeverReachHere();
-            return null;
-        }
-    }  
+	// <<TODO:QUESTION>> Is this an efficient implementation? Must cast the
+	// Integer to
+	// an int. [Jon Aquino]
+	private CoordinateSystem coordinateSystem = CoordinateSystem.UNSPECIFIED;
 
-    /**
-     * Returns the zero-based index of the attribute with the given name
-     * (case-sensitive)
-     *@throws  IllegalArgumentException  if attributeName is unrecognized
-     */
-    public int getAttributeIndex(String attributeName) {
-        //<<TODO:RECONSIDER>> Attribute names are currently case sensitive.
-        //I wonder whether or not this is desirable. [Jon Aquino]
-        Integer index = (Integer) attributeNameToIndexMap.get(attributeName);
-        if (index == null) {
-            throw new IllegalArgumentException();
-             //   I18N.get("feature.FeatureSchema.unrecognized-attribute-name")+" " + attributeName);
-        }
-        return index.intValue();
-    }
-    /**
-     * Returns whether this FeatureSchema has an attribute with this name
-     * @param attributeName the name to look up
-     * @return whether this FeatureSchema has an attribute with this name
-     */
-    public boolean hasAttribute(String attributeName) {
-        return attributeNameToIndexMap.get(attributeName) != null;
-    }
-    /**
+	private HashMap attributeNameToIndexMap = new HashMap();
+
+	private int geometryIndex = -1;
+
+	private int attributeCount = 0;
+
+	private ArrayList attributeNames = new ArrayList();
+
+	private ArrayList attributeTypes = new ArrayList();
+
+	// todo Deep-copy! [Jon Aquino]
+	// deep copy done 25. Juli 2005 [sstein]
+	public Object clone() {
+		try {
+			FeatureSchema fs = new FeatureSchema();
+			for (int i = 0; i < this.attributeCount; i++) {
+				AttributeType at = (AttributeType) this.attributeTypes.get(i);
+				String aname = (String) this.attributeNames.get(i);
+				fs.addAttribute(aname, at);
+				// fs.setCoordinateSystem(this.coordinateSystem);
+			}
+			return fs;
+		} catch (Exception ex) {
+			Assert.shouldNeverReachHere();
+			return null;
+		}
+	}
+
+	/**
+	 * Returns the zero-based index of the attribute with the given name
+	 * (case-sensitive)
+	 * 
+	 * @throws IllegalArgumentException
+	 *             if attributeName is unrecognized
+	 */
+	public int getAttributeIndex(String attributeName) {
+		// <<TODO:RECONSIDER>> Attribute names are currently case sensitive.
+		// I wonder whether or not this is desirable. [Jon Aquino]
+		Integer index = (Integer) attributeNameToIndexMap.get(attributeName);
+		if (index == null) {
+			throw new IllegalArgumentException();
+			// I18N.get("feature.FeatureSchema.unrecognized-attribute-name")+" "
+			// + attributeName);
+		}
+		return index.intValue();
+	}
+
+	/**
+	 * Returns whether this FeatureSchema has an attribute with this name
+	 * 
+	 * @param attributeName
+	 *            the name to look up
+	 * @return whether this FeatureSchema has an attribute with this name
+	 */
+	public boolean hasAttribute(String attributeName) {
+		return attributeNameToIndexMap.get(attributeName) != null;
+	}
+
+	/**
 	 * Returns the attribute index of the Geometry, or -1 if there is no
 	 * Geometry attribute
 	 */
-    public int getGeometryIndex() {
-        return geometryIndex;
-    }
-    /**
-     * Returns the (case-sensitive) name of the attribute at the given zero-based index.
-     */    
-    public String getAttributeName(int attributeIndex) {
-        return (String) attributeNames.get(attributeIndex);
-    }
-    /**
-     * Returns whether the attribute at the given zero-based index is a string,
-     * integer, double, etc.
-     */
-    public AttributeType getAttributeType(int attributeIndex) {
-        return (AttributeType) attributeTypes.get(attributeIndex);
-    }
-    /**
-     * Returns whether the attribute with the given name (case-sensitive) is a string,
-     * integer, double, etc.
-     */    
-    public AttributeType getAttributeType(String attributeName) {
-        return getAttributeType(getAttributeIndex(attributeName));
-    }
-    /**
-     * Returns the total number of spatial and non-spatial attributes in this
-     * FeatureSchema. There are 0 or 1 spatial attributes and 0 or more
-     * non-spatial attributes.
-     */
-    public int getAttributeCount() {
-        return attributeCount;
-    }
-    /**
-     * Adds an attribute with the given case-sensitive name. 
-     * @throws AssertionFailedException if a second Geometry is being added
-     */
-    public void addAttribute(String attributeName, AttributeType attributeType) {
-        if (AttributeType.GEOMETRY == attributeType) {
-            Assert.isTrue(geometryIndex == -1);
-            geometryIndex = attributeCount;
-        }
-        attributeNames.add(attributeName);
-        attributeNameToIndexMap.put(attributeName, new Integer(attributeCount));
-        attributeTypes.add(attributeType);
-        attributeCount++;
-    }
-    /**
-     * Returns whether the two FeatureSchemas have the same attribute names
-     * with the same types and in the same order.
-     */
-    public boolean equals(Object other) {
-        return this.equals(other, false);
-    }
-    /**
-     * Returns whether the two FeatureSchemas have the same attribute names
-     * with the same types and (optionally) in the same order.
-     */
-    public boolean equals(Object other, boolean orderMatters) {
-        if (!(other instanceof FeatureSchema)) {
-            return false;
-        }
-        FeatureSchema otherFeatureSchema = (FeatureSchema) other;
-        if (attributeNames.size() != otherFeatureSchema.attributeNames.size()) {
-            return false;
-        }
-        for (int i = 0; i < attributeNames.size(); i++) {
-            String attributeName = (String) attributeNames.get(i);
-            if (!otherFeatureSchema.attributeNames.contains(attributeName)) {
-                return false;
-            }
-            if (orderMatters
-                && !otherFeatureSchema.attributeNames.get(i).equals(attributeName)) {
-                return false;
-            }
-            if (getAttributeType(attributeName)
-                != otherFeatureSchema.getAttributeType(attributeName)) {
-                return false;
-            }
-        }
-        return true;
-    }
-   /* *//**
-     * Sets the CoordinateSystem associated with this FeatureSchema, but does
-     * not perform any reprojection.
-     * @return this FeatureSchema
-     *//*
+	public int getGeometryIndex() {
+		return geometryIndex;
+	}
+
+	/**
+	 * Returns the (case-sensitive) name of the attribute at the given
+	 * zero-based index.
+	 */
+	public String getAttributeName(int attributeIndex) {
+		return (String) attributeNames.get(attributeIndex);
+	}
+
+	/**
+	 * Returns whether the attribute at the given zero-based index is a string,
+	 * integer, double, etc.
+	 */
+	public AttributeType getAttributeType(int attributeIndex) {
+		return (AttributeType) attributeTypes.get(attributeIndex);
+	}
+
+	/**
+	 * Returns whether the attribute with the given name (case-sensitive) is a
+	 * string, integer, double, etc.
+	 */
+	public AttributeType getAttributeType(String attributeName) {
+		return getAttributeType(getAttributeIndex(attributeName));
+	}
+
+	/**
+	 * Returns the total number of spatial and non-spatial attributes in this
+	 * FeatureSchema. There are 0 or 1 spatial attributes and 0 or more
+	 * non-spatial attributes.
+	 */
+	public int getAttributeCount() {
+		return attributeCount;
+	}
+
+	/**
+	 * Adds an attribute with the given case-sensitive name.
+	 * 
+	 * @throws AssertionFailedException
+	 *             if a second Geometry is being added
+	 */
+	public void addAttribute(String attributeName, AttributeType attributeType) {
+		if (AttributeType.GEOMETRY == attributeType) {
+			Assert.isTrue(geometryIndex == -1);
+			geometryIndex = attributeCount;
+		}
+		attributeNames.add(attributeName);
+		attributeNameToIndexMap.put(attributeName, new Integer(attributeCount));
+		attributeTypes.add(attributeType);
+		attributeCount++;
+	}
+
+	/**
+	 * Returns whether the two FeatureSchemas have the same attribute names with
+	 * the same types and in the same order.
+	 */
+	public boolean equals(Object other) {
+		return this.equals(other, false);
+	}
+
+	/**
+	 * Returns whether the two FeatureSchemas have the same attribute names with
+	 * the same types and (optionally) in the same order.
+	 */
+	public boolean equals(Object other, boolean orderMatters) {
+		if (!(other instanceof FeatureSchema)) {
+			return false;
+		}
+		FeatureSchema otherFeatureSchema = (FeatureSchema) other;
+		if (attributeNames.size() != otherFeatureSchema.attributeNames.size()) {
+			return false;
+		}
+		for (int i = 0; i < attributeNames.size(); i++) {
+			String attributeName = (String) attributeNames.get(i);
+			if (!otherFeatureSchema.attributeNames.contains(attributeName)) {
+				return false;
+			}
+			if (orderMatters
+					&& !otherFeatureSchema.attributeNames.get(i).equals(
+							attributeName)) {
+				return false;
+			}
+			if (getAttributeType(attributeName) != otherFeatureSchema
+					.getAttributeType(attributeName)) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	/**
+	 * Sets the CoordinateSystem associated with this FeatureSchema, but does
+	 * not perform any reprojection.
+	 * 
+	 * @return this FeatureSchema
+	 */
 	public FeatureSchema setCoordinateSystem(CoordinateSystem coordinateSystem) {
 		this.coordinateSystem = coordinateSystem;
 		return this;
-	}*/
+	}
 
-  /*  *//**
-     * @see #setCoordinateSystem(CoordinateSystem)
-     *//*
+	/**
+	 * @see #setCoordinateSystem(CoordinateSystem)
+	 */
 	public CoordinateSystem getCoordinateSystem() {
 		return coordinateSystem;
-	}*/
+	}
 
 }
