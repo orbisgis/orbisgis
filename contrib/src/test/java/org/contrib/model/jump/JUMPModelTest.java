@@ -12,28 +12,38 @@ import junit.framework.TestCase;
 public class JUMPModelTest extends TestCase {
 
 	public static DataSourceFactory dsf = new DataSourceFactory();
-	
-	public String path =  "../../datas2tests/shp/mediumshape2D/landcover2000.shp";
-	
-	
-	public void testEnvelope() throws Exception{
-		
+
+	public String path = "../../datas2tests/shp/mediumshape2D/landcover2000.shp";
+
+	public void testMetadata() throws Exception {
 		DataSource mydata = dsf.getDataSource(new File(path));
-		
+
 		SpatialDataSourceDecorator sds = new SpatialDataSourceDecorator(mydata);
 		sds.open();
+
+		FeatureCollectionAdapter featureCollectionAdapter = new FeatureCollectionAdapter(
+				sds);
 		
-		FeatureCollectionAdapter featureCollectionAdapter = new FeatureCollectionAdapter(sds);
-		
-		
-		
-		//Global envelope
-		System.out.println(featureCollectionAdapter.getEnvelope());
-	
-		assertTrue(featureCollectionAdapter.getEnvelope().equals(sds.getFullExtent()));
-		
-		sds.close();
-		
+		assertTrue(featureCollectionAdapter.size()==sds.getRowCount());
+		assertTrue(featureCollectionAdapter.getFeatureSchema().getAttributeCount()==sds.getMetadata().getFieldCount());
+
 	}
-	
+
+	public void testEnvelope() throws Exception {
+
+		DataSource mydata = dsf.getDataSource(new File(path));
+
+		SpatialDataSourceDecorator sds = new SpatialDataSourceDecorator(mydata);
+		sds.open();
+
+		FeatureCollectionAdapter featureCollectionAdapter = new FeatureCollectionAdapter(
+				sds);
+
+		assertTrue(featureCollectionAdapter.getEnvelope().equals(
+				sds.getFullExtent()));
+
+		sds.close();
+
+	}
+
 }
