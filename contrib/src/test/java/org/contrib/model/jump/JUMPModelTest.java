@@ -3,6 +3,7 @@ package org.contrib.model.jump;
 import java.io.File;
 
 import org.contrib.model.jump.adapter.FeatureCollectionAdapter;
+import org.contrib.model.jump.model.Feature;
 import org.contrib.model.jump.model.FeatureSchema;
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceFactory;
@@ -64,6 +65,27 @@ public class JUMPModelTest extends TestCase {
 
 			assertTrue(fs.getAttributeName(i).equals(
 					sds.getMetadata().getFieldName(i)));
+
+		}
+
+	}
+
+	public void testGeometries() throws Exception {
+
+		DataSource mydata = dsf.getDataSource(new File(path));
+
+		SpatialDataSourceDecorator sds = new SpatialDataSourceDecorator(mydata);
+		sds.open();
+
+		FeatureCollectionAdapter featureCollectionAdapter = new FeatureCollectionAdapter(
+				sds);
+
+		for (int i = 0; i < featureCollectionAdapter.getFeatures().size(); i++) {
+			Feature feature = (Feature) featureCollectionAdapter.getFeatures()
+					.get(i);
+
+			assertTrue(feature.getGeometry().equals(
+					sds.getGeometry(sds.getDefaultGeometry(), i)));
 
 		}
 
