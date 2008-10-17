@@ -1,18 +1,19 @@
 package org.contrib.model.jump;
 
 import java.io.File;
-import java.util.Collection;
 import java.util.Iterator;
-import java.util.List;
 
 import org.contrib.model.jump.adapter.FeatureCollectionAdapter;
+import org.contrib.model.jump.adapter.TaskMonitorAdapter;
 import org.contrib.model.jump.model.Feature;
+import org.contrib.model.jump.model.FeatureCollection;
 import org.contrib.model.jump.model.FeatureSchema;
 import org.contrib.model.jump.model.IndexedFeatureCollection;
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.SpatialDataSourceDecorator;
 
+import com.vividsolutions.jcs.qa.InternalOverlapFinder;
 import com.vividsolutions.jts.geom.Geometry;
 
 import junit.framework.TestCase;
@@ -122,15 +123,38 @@ public class JUMPModelTest extends TestCase {
 
 			if (featureResult.getGeometry().equals(sdsGeom)) {
 				result = true;
-
 				System.out.println(featureResult.getGeometry());
-
 			}
-
 		}
 
 		assertTrue(result);
 
+	}
+	
+	public void testWrapper()throws Exception {
+		
+		path = "../../datas2tests/shp/mediumshape2D/bati.shp";
+		
+		DataSource mydata = dsf.getDataSource(new File(path));
+
+		SpatialDataSourceDecorator sds = new SpatialDataSourceDecorator(mydata);
+		sds.open();
+
+		FeatureCollectionAdapter featureCollectionAdapter = new FeatureCollectionAdapter(
+				sds);
+
+		InternalOverlapFinder internalOverlapFinder = new InternalOverlapFinder(featureCollectionAdapter, new TaskMonitorAdapter());
+		
+		FeatureCollection result = internalOverlapFinder.getOverlappingFeatures();
+		
+		for (int i = 0; i < result.size(); i++) {
+			Feature feature = (Feature) result.getFeatures().get(i);
+			
+			System.out.println(feature.getGeometry());
+		
+			
+		}
+		
 	}
 
 }
