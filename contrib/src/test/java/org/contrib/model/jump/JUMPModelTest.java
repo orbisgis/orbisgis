@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.Iterator;
 
 import org.contrib.model.jump.adapter.FeatureCollectionAdapter;
+import org.contrib.model.jump.adapter.FeatureCollectionDatasourceAdapter;
 import org.contrib.model.jump.adapter.TaskMonitorAdapter;
 import org.contrib.model.jump.model.Feature;
 import org.contrib.model.jump.model.FeatureCollection;
@@ -114,7 +115,7 @@ public class JUMPModelTest extends TestCase {
 		Geometry sdsGeom = sds.getGeometry(10);
 
 		System.out.println(sdsGeom);
-	
+
 		boolean result = false;
 
 		for (Iterator j = indexedFeatureCollection.query(
@@ -130,11 +131,11 @@ public class JUMPModelTest extends TestCase {
 		assertTrue(result);
 
 	}
-	
-	public void testWrapper()throws Exception {
-		
+
+	public void testWrapper() throws Exception {
+
 		path = "../../datas2tests/shp/mediumshape2D/bati.shp";
-		
+
 		DataSource mydata = dsf.getDataSource(new File(path));
 
 		SpatialDataSourceDecorator sds = new SpatialDataSourceDecorator(mydata);
@@ -143,18 +144,59 @@ public class JUMPModelTest extends TestCase {
 		FeatureCollectionAdapter featureCollectionAdapter = new FeatureCollectionAdapter(
 				sds);
 
-		InternalOverlapFinder internalOverlapFinder = new InternalOverlapFinder(featureCollectionAdapter, new TaskMonitorAdapter());
-		
-		FeatureCollection result = internalOverlapFinder.getOverlappingFeatures();
-		
+		InternalOverlapFinder internalOverlapFinder = new InternalOverlapFinder(
+				featureCollectionAdapter, new TaskMonitorAdapter());
+
+		FeatureCollection result = internalOverlapFinder
+				.getOverlappingFeatures();
+
 		for (int i = 0; i < result.size(); i++) {
 			Feature feature = (Feature) result.getFeatures().get(i);
-			
+
 			System.out.println(feature.getGeometry());
-		
-			
+
 		}
+
+	}
+
+	public void testMetaDataFeatureCollectionToDatasource() throws Exception {
+		DataSource mydata = dsf.getDataSource(new File(path));
+
+		SpatialDataSourceDecorator sds = new SpatialDataSourceDecorator(mydata);
+		sds.open();
+
+		FeatureCollectionAdapter featureCollectionAdapter = new FeatureCollectionAdapter(
+				sds);
+
+		DataSource ds = new FeatureCollectionDatasourceAdapter(
+				featureCollectionAdapter);
 		
+		assertTrue(ds.getMetadata().getFieldCount()==sds.getMetadata().getFieldCount());
+
+	}
+
+	public void testSaveAsDatasource() throws Exception {
+
+		DataSource mydata = dsf.getDataSource(new File(path));
+
+		SpatialDataSourceDecorator sds = new SpatialDataSourceDecorator(mydata);
+		sds.open();
+
+		FeatureCollectionAdapter featureCollectionAdapter = new FeatureCollectionAdapter(
+				sds);
+		File gdmsFile = new File("src/test/resources/backup/saveAsGDMS.gdms");
+		dsf.getSourceManager().register("gdms", gdmsFile);
+
+		DataSource ds = new FeatureCollectionDatasourceAdapter(
+				featureCollectionAdapter);
+		ds.open();
+		dsf.saveContents("gdms", ds);
+		ds.close();
+
+		ds = dsf.getDataSource(gdmsFile);
+		ds.open();
+		ds.getAsString();
+		ds.close();
 	}
 
 }
