@@ -13,6 +13,9 @@ import org.contrib.model.jump.model.IndexedFeatureCollection;
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.SpatialDataSourceDecorator;
+import org.gdms.data.types.TypeFactory;
+import org.gdms.data.values.Value;
+import org.gdms.driver.memory.ObjectMemoryDriver;
 
 import com.vividsolutions.jcs.qa.InternalOverlapFinder;
 import com.vividsolutions.jts.geom.Geometry;
@@ -70,14 +73,13 @@ public class JUMPModelTest extends TestCase {
 		FeatureSchema fs = featureCollectionAdapter.getFeatureSchema();
 
 		for (int i = 0; i < fs.getAttributeCount(); i++) {
-
 			assertTrue(fs.getAttributeName(i).equals(
 					sds.getMetadata().getFieldName(i)));
-
 		}
 
 	}
 
+	
 	public void testGeometries() throws Exception {
 
 		DataSource mydata = dsf.getDataSource(new File(path));
@@ -91,7 +93,6 @@ public class JUMPModelTest extends TestCase {
 		for (int i = 0; i < featureCollectionAdapter.getFeatures().size(); i++) {
 			Feature feature = (Feature) featureCollectionAdapter.getFeatures()
 					.get(i);
-
 			assertTrue(feature.getGeometry().equals(
 					sds.getGeometry(sds.getDefaultGeometry(), i)));
 
@@ -150,12 +151,13 @@ public class JUMPModelTest extends TestCase {
 		FeatureCollection result = internalOverlapFinder
 				.getOverlappingFeatures();
 
-		for (int i = 0; i < result.size(); i++) {
-			Feature feature = (Feature) result.getFeatures().get(i);
-
-			System.out.println(feature.getGeometry());
-
-		}
+		File gdmsFile = new File("src/test/resources/backup/saveAsResult.gdms");
+		gdmsFile.delete();
+		dsf.getSourceManager().register("result", gdmsFile);
+		DataSource ds = new FeatureCollectionDatasourceAdapter(result);
+		ds.open();
+		dsf.saveContents("result", ds);
+		ds.close();
 
 	}
 
@@ -170,8 +172,9 @@ public class JUMPModelTest extends TestCase {
 
 		DataSource ds = new FeatureCollectionDatasourceAdapter(
 				featureCollectionAdapter);
-		
-		assertTrue(ds.getMetadata().getFieldCount()==sds.getMetadata().getFieldCount());
+
+		assertTrue(ds.getMetadata().getFieldCount() == sds.getMetadata()
+				.getFieldCount());
 
 	}
 
@@ -185,6 +188,8 @@ public class JUMPModelTest extends TestCase {
 		FeatureCollectionAdapter featureCollectionAdapter = new FeatureCollectionAdapter(
 				sds);
 		File gdmsFile = new File("src/test/resources/backup/saveAsGDMS.gdms");
+
+		gdmsFile.delete();
 		dsf.getSourceManager().register("gdms", gdmsFile);
 
 		DataSource ds = new FeatureCollectionDatasourceAdapter(
@@ -197,6 +202,33 @@ public class JUMPModelTest extends TestCase {
 		ds.open();
 		ds.getAsString();
 		ds.close();
+	}
+
+	public void testObjectDriver() throws Exception {
+
+		DataSource mydata = dsf.getDataSource(new File(path));
+
+		SpatialDataSourceDecorator sds = new SpatialDataSourceDecorator(mydata);
+		sds.open();
+
+		FeatureCollectionAdapter featureCollectionAdapter = new FeatureCollectionAdapter(
+				sds);
+
+		DataSource ds = new FeatureCollectionDatasourceAdapter(
+				featureCollectionAdapter);
+
+		ObjectMemoryDriver driver = new ObjectMemoryDriver(ds);
+		for (int i = 0; i < driver.getRowCount(); i++) {
+
+			for (int j = 0; j < driver.getMetadata().getFieldCount(); j++) {
+
+				Value origineValue = mydata.getFieldValue(i, j);
+				Value resultValue = driver.getFieldValue(i, j);
+				assertTrue(origineValue.equals(resultValue).getAsBoolean());
+
+			}
+		}
+
 	}
 
 }
