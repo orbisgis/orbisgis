@@ -38,6 +38,7 @@ package org.contrib.gdms.sql;
 
 import org.contrib.algorithm.triangulation.triangleCLib.Generate2DMesh;
 import org.contrib.gdms.sql.customQuery.spatial.geometry.jgrapht.ShortestPath;
+import org.contrib.gdms.sql.customQuery.spatial.geometry.qa.InternalOverlapFinderGeometries;
 import org.contrib.gdms.sql.customQuery.spatial.geometry.tin.BuildTIN2;
 import org.contrib.gdms.sql.customQuery.spatial.geometry.tin.Cdt;
 import org.contrib.gdms.sql.customQuery.spatial.geometry.tin.CheckDelaunayProperty;
@@ -59,7 +60,7 @@ public class Register implements PluginActivator {
 		QueryManager.registerQuery(Cdt.class);
 		QueryManager.registerQuery(CheckDelaunayProperty.class);
 		QueryManager.registerQuery(CheckSpatialEquivalence.class);
-		// QueryManager.registerQuery(CircumCircle.class);
+		QueryManager.registerQuery(InternalOverlapFinderGeometries.class);
 		// QueryManager.registerQuery(QualityMeasuresOfTIN.class);
 
 		QueryManager.registerQuery(Tin2.class);
