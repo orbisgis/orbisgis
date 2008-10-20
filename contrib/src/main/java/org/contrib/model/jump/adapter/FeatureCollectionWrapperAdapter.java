@@ -28,7 +28,7 @@ import org.contrib.model.jump.model.FeatureCollectionWrapper;
 
 
 
-public class FeatureCollectionWrapperAdapter extends FeatureCollectionWrapper {
+public abstract class FeatureCollectionWrapperAdapter extends FeatureCollectionWrapper {
 
     public FeatureCollectionWrapperAdapter(FeatureCollection fc) {
         super(fc);

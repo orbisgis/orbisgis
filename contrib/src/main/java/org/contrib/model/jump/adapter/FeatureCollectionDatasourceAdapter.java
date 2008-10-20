@@ -10,8 +10,6 @@ import org.contrib.model.jump.model.AttributeType;
 import org.contrib.model.jump.model.Feature;
 import org.contrib.model.jump.model.FeatureCollection;
 import org.contrib.model.jump.model.FeatureSchema;
-import org.gdms.data.AbstractDataSource;
-import org.gdms.data.AbstractDataSourceCreation;
 import org.gdms.data.AlreadyClosedException;
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceFactory;
@@ -31,6 +29,7 @@ import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.ReadOnlyDriver;
 import org.gdms.source.Source;
+import org.gdms.sql.strategies.IncompatibleTypesException;
 
 import com.vividsolutions.jts.geom.Geometry;
 
@@ -53,7 +52,6 @@ public class FeatureCollectionDatasourceAdapter implements DataSource {
 	}
 
 	public void addField(String name, Type driverType) throws DriverException {
-		// TODO Auto-generated method stub
 
 	}
 
@@ -87,8 +85,22 @@ public class FeatureCollectionDatasourceAdapter implements DataSource {
 	}
 
 	public String getAsString() throws DriverException {
+		StringBuffer aux = new StringBuffer();
+		int fc = getMetadata().getFieldCount();
+		int rc = (int) getRowCount();
 
-		return null;
+		for (int i = 0; i < fc; i++) {
+			aux.append(getMetadata().getFieldName(i)).append("\t");
+		}
+		aux.append("\n");
+		for (int row = 0; row < rc; row++) {
+			for (int j = 0; j < fc; j++) {
+				aux.append(getFieldValue(row, j)).append("\t");
+			}
+			aux.append("\n");
+		}
+
+		return aux.toString();
 	}
 
 	public byte[] getBinary(long row, String fieldName) throws DriverException {
@@ -155,17 +167,25 @@ public class FeatureCollectionDatasourceAdapter implements DataSource {
 		return 0;
 	}
 
-	public ReadOnlyDriver getDriver() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
+	/**
+	 * todo : add a reference to datasource driver
+	 */
+	/*
+	 * public ReadOnlyDriver getDriver() { return fc.getDriver(); }
+	 */
 	public int getFieldCount() throws DriverException {
-		return fc.getFeatureSchema().getAttributeCount();
+		return getMetadata().getFieldCount();
 	}
 
 	public int getFieldIndexByName(String fieldName) throws DriverException {
-		return fc.getFeatureSchema().getAttributeIndex(fieldName);
+		Metadata metadata = getMetadata();
+		for (int i = 0; i < metadata.getFieldCount(); i++) {
+			if (metadata.getFieldName(i).equals(fieldName)) {
+				return i;
+			}
+		}
+
+		return -1;
 	}
 
 	public String getFieldName(int fieldId) throws DriverException {
@@ -183,28 +203,28 @@ public class FeatureCollectionDatasourceAdapter implements DataSource {
 
 	public Type getFieldType(int i) throws DriverException {
 
-		 FeatureSchema fSchema = fc.getFeatureSchema();
-         if (fSchema instanceof FeatureSchemaAdapter) {
-             return ((FeatureSchemaAdapter) fSchema).getDs()
-             .getMetadata().getFieldType(i);
-         } else {
-             AttributeType at = fSchema.getAttributeType(i);
-             if (at == AttributeType.DATE) {
-                 return TypeFactory.createType(Type.DATE);
-             } else if (at == AttributeType.DOUBLE) {
-                 return  TypeFactory.createType(Type.DOUBLE);
-             } else if (at == AttributeType.GEOMETRY) {
-                 return  TypeFactory.createType(Type.GEOMETRY);
-             } else if (at == AttributeType.INTEGER) {
-                 return  TypeFactory.createType(Type.INT);
-             } else if (at == AttributeType.STRING) {
-                 return  TypeFactory.createType(Type.STRING);
-             } else if (at == AttributeType.OBJECT) {
-                 return  TypeFactory.createType(Type.STRING);
-             }
-             
-             throw new RuntimeException("OpenUMP attribute type unknow"); //$NON-NLS-1$
-         }
+		FeatureSchema fSchema = fc.getFeatureSchema();
+		if (fSchema instanceof FeatureSchemaAdapter) {
+			return ((FeatureSchemaAdapter) fSchema).getDs().getMetadata()
+					.getFieldType(i);
+		} else {
+			AttributeType at = fSchema.getAttributeType(i);
+			if (at == AttributeType.DATE) {
+				return TypeFactory.createType(Type.DATE);
+			} else if (at == AttributeType.DOUBLE) {
+				return TypeFactory.createType(Type.DOUBLE);
+			} else if (at == AttributeType.GEOMETRY) {
+				return TypeFactory.createType(Type.GEOMETRY);
+			} else if (at == AttributeType.INTEGER) {
+				return TypeFactory.createType(Type.INT);
+			} else if (at == AttributeType.STRING) {
+				return TypeFactory.createType(Type.STRING);
+			} else if (at == AttributeType.OBJECT) {
+				return TypeFactory.createType(Type.STRING);
+			}
+
+			throw new RuntimeException("OpenUMP attribute type unknow"); //$NON-NLS-1$
+		}
 	}
 
 	public float getFloat(long row, String fieldName) throws DriverException {
@@ -218,13 +238,15 @@ public class FeatureCollectionDatasourceAdapter implements DataSource {
 	}
 
 	public int getInt(long row, String fieldName) throws DriverException {
-		// TODO Auto-generated method stub
-		return 0;
+		return getInt(row, getFieldIndexByName(fieldName));
 	}
 
 	public int getInt(long row, int fieldId) throws DriverException {
-		// TODO Auto-generated method stub
-		return 0;
+		try {
+			return getFieldValue(row, fieldId).getAsInt();
+		} catch (IncompatibleTypesException e) {
+			throw new DriverException(e);
+		}
 	}
 
 	public long getLong(long row, String fieldName) throws DriverException {
@@ -239,9 +261,7 @@ public class FeatureCollectionDatasourceAdapter implements DataSource {
 
 	public Metadata getMetadata() throws DriverException {
 		DefaultMetadata metadata = new DefaultMetadata();
-		
 		for (int i = 0; i < fc.getFeatureSchema().getAttributeCount(); i++) {
-			
 			metadata.addField(getFieldName(i), getFieldType(i));
 		}
 		return metadata;
@@ -263,12 +283,14 @@ public class FeatureCollectionDatasourceAdapter implements DataSource {
 	}
 
 	public Value[] getRow(long rowIndex) throws DriverException {
-		// TODO Auto-generated method stub
-		return null;
+		Value[] values = new Value[getMetadata().getFieldCount()];
+		for (int i = 0; i < values.length; i++) {
+			values[i] = getFieldValue(rowIndex, i);
+		}
+		return values;
 	}
 
 	public short getShort(long row, String fieldName) throws DriverException {
-		// TODO Auto-generated method stub
 		return 0;
 	}
 
@@ -366,7 +388,6 @@ public class FeatureCollectionDatasourceAdapter implements DataSource {
 	}
 
 	public void open() throws DriverException {
-		// TODO Auto-generated method stub
 
 	}
 
@@ -382,7 +403,6 @@ public class FeatureCollectionDatasourceAdapter implements DataSource {
 	}
 
 	public void redo() throws DriverException {
-		// TODO Auto-generated method stub
 
 	}
 
@@ -624,6 +644,10 @@ public class FeatureCollectionDatasourceAdapter implements DataSource {
 	}
 
 	public Number[] getScope(int dimension) throws DriverException {
+		return null;
+	}
+
+	public ReadOnlyDriver getDriver() {
 		return null;
 	}
 

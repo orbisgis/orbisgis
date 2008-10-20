@@ -77,8 +77,7 @@ public class FeatureAdapter implements Feature, Comparable {
 	}
 
 	public void setSchema(FeatureSchema schema) {
-		// TODO Auto-generated method stub
-
+	
 	}
 
 	public int getID() {
