@@ -46,10 +46,12 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.log4j.Logger;
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceCreationException;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.NoSuchTableException;
+import org.gdms.data.types.Type;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.ObjectDriver;
 import org.gdms.driver.driverManager.DriverLoadException;
@@ -61,6 +63,8 @@ import org.orbisgis.utils.FileUtils;
 
 public class IndexManager {
 
+	private static final Logger logger = Logger.getLogger(IndexManager.class);
+	
 	public static final String INDEX_PROPERTY_PREFIX = "org.gdms.index";
 
 	public static final String RTREE_SPATIAL_INDEX = "org.gdms.rtree";
@@ -108,11 +112,6 @@ public class IndexManager {
 			pm = new NullProgressMonitor();
 		}
 		dsName = dsf.getSourceManager().getMainNameFor(dsName);
-		DataSourceIndex index = instantiateIndex(indexId);
-		if (index == null) {
-			throw new UnsupportedOperationException("Cannot find " + indexId
-					+ " index");
-		}
 
 		Source src = dsf.getSourceManager().getSource(dsName);
 		String propertyName = INDEX_PROPERTY_PREFIX + "-" + fieldName + "-"
@@ -125,9 +124,24 @@ public class IndexManager {
 						+ "." + fieldName);
 			}
 			File indexFile = src.createFileProperty(propertyName);
+			ds.open();
+			DataSourceIndex index = null;
+			if (indexId == null) {
+				int code = ds.getFieldType(ds.getFieldIndexByName(fieldName))
+						.getTypeCode();
+				if (code == Type.GEOMETRY) {
+					indexId = RTREE_SPATIAL_INDEX;
+				} else {
+					indexId = BTREE_ALPHANUMERIC_INDEX;
+				}
+			}
+			index = instantiateIndex(indexId);
+			if (index == null) {
+				throw new UnsupportedOperationException("Cannot find "
+						+ indexId + " index");
+			}
 			index.setFile(indexFile);
 			index.setFieldName(fieldName);
-			ds.open();
 			index.buildIndex(dsf, ds, pm);
 			ds.close();
 			if (pm.isCancelled()) {
@@ -136,6 +150,10 @@ public class IndexManager {
 			}
 			index.save();
 			index.close();
+
+			IndexDefinition def = new IndexDefinition(dsName, fieldName);
+			indexCache.put(def, index);
+			fireIndexCreated(dsName, fieldName, indexId, pm);
 		} catch (DriverLoadException e) {
 			throw new IndexException("Cannot read source", e);
 		} catch (NoSuchTableException e) {
@@ -146,7 +164,7 @@ public class IndexManager {
 			try {
 				src.deleteProperty(propertyName);
 			} catch (IOException e1) {
-				// TODO log the exception
+				logger.debug("Cannot create index and remove property", e1);
 			}
 			throw new IndexException("Cannot create an "
 					+ "index with that field type: " + fieldName);
@@ -156,14 +174,16 @@ public class IndexManager {
 			try {
 				src.deleteProperty(propertyName);
 			} catch (IOException e1) {
-				// TODO log the exception
+				logger.debug("Cannot create index and remove property", e1);
 			}
 			throw new IndexException("Cannot access data to index", e);
 		}
 
-		IndexDefinition def = new IndexDefinition(dsName, fieldName);
-		indexCache.put(def, index);
-		fireIndexCreated(dsName, fieldName, indexId, pm);
+	}
+
+	public void buildIndex(String tableName, String fieldName,
+			IProgressMonitor pm) throws NoSuchTableException, IndexException {
+		buildIndex(tableName, fieldName, null, pm);
 	}
 
 	private void fireIndexCreated(String dsName, String fieldName,
@@ -401,7 +421,7 @@ public class IndexManager {
 	 * @throws IndexException
 	 */
 	public void deleteIndex(String dsName, String fieldName)
-			throws IllegalArgumentException, IndexException {
+			throws NoSuchTableException, IndexException {
 		try {
 			dsName = dsf.getSourceManager().getMainNameFor(dsName);
 			String[] indexProperties = getIndexProperties(dsName);
@@ -419,8 +439,6 @@ public class IndexManager {
 			}
 			throw new IllegalArgumentException(dsName + " does not have "
 					+ "an index on the field'" + fieldName + "'");
-		} catch (NoSuchTableException e) {
-			throw new IllegalArgumentException("The source doesn't exist", e);
 		} catch (IOException e) {
 			throw new IndexException("Cannot remove index property of "
 					+ dsName + " at field " + fieldName);
