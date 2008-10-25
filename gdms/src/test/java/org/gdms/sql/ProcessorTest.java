@@ -537,7 +537,6 @@ public class ProcessorTest extends TestCase {
 	public void testCreate() throws Exception {
 		dsf.getSourceManager().register("table", new File("/tmp/foo"));
 		getValidatedPreprocessor("create table \"table\" as select * from gis;");
-		failWithSemanticException("create table \"Gis\" as select * from gis;");
 		failWithSemanticException("create table gis2 as select * from \"Gis\";");
 	}
 
