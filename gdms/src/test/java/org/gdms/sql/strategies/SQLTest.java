@@ -726,6 +726,20 @@ public class SQLTest extends SourceTest {
 		assertTrue(tics.length() == 1);
 	}
 
+	public void testImplicitRegisterInCreate() throws Exception {
+		String resourceName = super.getAnyNonSpatialResource();
+		dsf.executeSQL("create table newtable as select * from \""
+				+ resourceName + "\"");
+		DataSource dataSource1 = dsf.getDataSource("newtable");
+		DataSource dataSource2 = dsf.getDataSource(resourceName);
+		dataSource1.open();
+		dataSource2.open();
+		assertTrue(super.equals(super.getDataSourceContents(dataSource1), super
+				.getDataSourceContents(dataSource2)));
+		dataSource1.close();
+		dataSource2.close();
+	}
+
 	@Override
 	protected void setUp() throws Exception {
 		setWritingTests(false);
