@@ -92,6 +92,12 @@ public class EclipseProjectReader implements PluginClassPathReader {
 						}
 						attribute = attribute.replaceAll("\\QM2_REPO\\E",
 								mavenRepo);
+					} else {
+						File jar = new File(attribute);
+						if (!jar.isAbsolute()) {
+							jar = new File(pluginDir, attribute);
+						}
+						attribute = jar.getAbsolutePath();
 					}
 					ret.add(new File(attribute));
 				}
