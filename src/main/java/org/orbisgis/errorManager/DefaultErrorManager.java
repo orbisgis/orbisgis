@@ -77,7 +77,7 @@ public class DefaultErrorManager implements ErrorManager {
 	}
 
 	public void removeErrorListener(ErrorListener listener) {
-		listeners.add(listener);
+		listeners.remove(listener);
 	}
 
 	public void warning(String userMsg) {
