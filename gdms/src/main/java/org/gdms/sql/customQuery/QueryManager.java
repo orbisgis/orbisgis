@@ -55,9 +55,6 @@ public class QueryManager {
 
 	static {
 		registerQuery(RegisterCall.class);
-		registerQuery(BuildSpatialIndex.class);
-		registerQuery(BuildAlphanumericIndex.class);
-		registerQuery(DeleteIndex.class);
 		registerQuery(Extrude.class);
 		registerQuery(ShowCall.class);
 
