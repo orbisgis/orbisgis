@@ -160,7 +160,7 @@ public class Activator implements PluginActivator {
 				if (errorMessage.isError()) {
 					color = Color.red;
 				} else {
-					color = Color.orange;
+					color = new Color(128, 128, 0);
 				}
 				om.append(errorMessage.getUserMessage(), color);
 				om.append(errorMessage.getTrace(), color);
