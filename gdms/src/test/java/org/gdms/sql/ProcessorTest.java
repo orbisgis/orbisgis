@@ -613,6 +613,15 @@ public class ProcessorTest extends TestCase {
 		getValidatedPreprocessor("select t.int from alltypes t"
 				+ " where int=2 group by int;");
 	}
+	
+	public void testCreateDropIndex() throws Exception {
+		getValidatedPreprocessor("create index on alltypes (int);");
+		getValidatedPreprocessor("drop index on alltypes (int);");
+		failWithSemanticException("create index on \"allTypes\" (int);");
+		failWithSemanticException("create index on alltypes (rint);");
+		failWithSemanticException("drop index on \"allTypes\" (int);");
+		failWithSemanticException("drop index on alltypes (rint);");
+	}
 
 	private Preprocessor getValidatedPreprocessor(String sql) throws Exception {
 		return getValidatedPreprocessor(getOperator(sql));

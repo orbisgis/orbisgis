@@ -740,6 +740,18 @@ public class SQLTest extends SourceTest {
 		dataSource2.close();
 	}
 
+	public void testCreateIndex() throws Exception {
+		String resource = super.getAnySpatialResource();
+		dsf.executeSQL("create index on " + resource + " ("
+				+ super.getStringFieldFor(resource) + ")");
+		dsf.executeSQL("create index on " + resource + " ("
+				+ super.getSpatialFieldName(resource) + ")");
+		dsf.executeSQL("drop index on " + resource + " ("
+				+ super.getStringFieldFor(resource) + ")");
+		dsf.executeSQL("drop index on " + resource + " ("
+				+ super.getSpatialFieldName(resource) + ")");
+	}
+
 	@Override
 	protected void setUp() throws Exception {
 		setWritingTests(false);
