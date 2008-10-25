@@ -70,7 +70,6 @@
 <category id="other" label="Other">
 		<sql-instruction
 			class="org.gdms.sql.customQuery.showAttributes.ShowCall"/>
-		<sql-instruction class="org.gdms.sql.customQuery.BuildSpatialIndex"/>
 		<sql-instruction class="org.gdms.sql.customQuery.Extrude"/>
 		<sql-instruction class="org.orbisgis.sql.customQuery.Geomark"/>
 </category>
