@@ -71,7 +71,7 @@ public class DataSourceFactoryTests extends SourceTest {
 
 	/**
 	 * Tests the DataSource.remove method
-	 *
+	 * 
 	 * @throws RuntimeException
 	 *             DOCUMENT ME!
 	 */
@@ -98,7 +98,7 @@ public class DataSourceFactoryTests extends SourceTest {
 
 	/**
 	 * Tests the DataSourceFactory.removeAllDataSources method
-	 *
+	 * 
 	 * @throws Exception
 	 */
 	public void testRemoveAllDataSources() throws Exception {
@@ -108,7 +108,7 @@ public class DataSourceFactoryTests extends SourceTest {
 
 	/**
 	 * Tests the naming of operation layer datasource
-	 *
+	 * 
 	 * @throws Throwable
 	 *             DOCUMENT ME!
 	 */
@@ -370,6 +370,15 @@ public class DataSourceFactoryTests extends SourceTest {
 			dsf.createDataSource(sc);
 			assertTrue(false);
 		} catch (DriverException e) {
+		}
+	}
+
+	public void testCreationNotRegisteredSource() throws Exception {
+		try {
+			dsf.saveContents("notexists", dsf
+					.getDataSource(new ObjectMemoryDriver()));
+			assertTrue(false);
+		} catch (IllegalArgumentException e) {
 		}
 	}
 

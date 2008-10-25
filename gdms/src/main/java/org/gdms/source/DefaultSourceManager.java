@@ -231,7 +231,7 @@ public class DefaultSourceManager implements SourceManager {
 
 	/**
 	 * @throws IOException
-	 *
+	 * 
 	 */
 	public void removeAll() throws IOException {
 		File[] files = new File(baseDir).listFiles();
@@ -390,7 +390,7 @@ public class DefaultSourceManager implements SourceManager {
 
 	/**
 	 * Registers the specified DataSourceDefinition with the specified name
-	 *
+	 * 
 	 * @param name
 	 * @param def
 	 * @throws DriverException
@@ -689,9 +689,14 @@ public class DefaultSourceManager implements SourceManager {
 
 	public void saveContents(String sourceName, DataSource contents,
 			IProgressMonitor pm) throws DriverException {
-		DataSourceDefinition dsd = getExtendedSource(sourceName)
-				.getDataSourceDefinition();
-		dsd.createDataSource(contents, pm);
+		ExtendedSource extendedSource = getExtendedSource(sourceName);
+		if (extendedSource == null) {
+			throw new IllegalArgumentException(
+					"There is no source with the specified name: " + sourceName);
+		} else {
+			DataSourceDefinition dsd = extendedSource.getDataSourceDefinition();
+			dsd.createDataSource(contents, pm);
+		}
 	}
 
 	public File getSourceInfoDirectory() {
@@ -706,8 +711,7 @@ public class DefaultSourceManager implements SourceManager {
 		File[] childs = new File(baseDir).listFiles();
 		for (File file : childs) {
 			try {
-				FileUtils.copy(file, new File(newDirectory, file
-						.getName()));
+				FileUtils.copy(file, new File(newDirectory, file.getName()));
 			} catch (IOException e) {
 				throw new DriverException(e);
 			}
