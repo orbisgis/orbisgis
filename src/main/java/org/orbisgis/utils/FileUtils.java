@@ -229,13 +229,15 @@ public class FileUtils {
 			if (!parentFile.exists() && !parentFile.mkdirs()) {
 				throw new IOException("Cannot create directory:" + parentFile);
 			}
-			FileOutputStream fos = new FileOutputStream(newFile);
-			dest = new BufferedOutputStream(fos, BUF_SIZE);
-			while ((count = zis.read(data, 0, BUF_SIZE)) != -1) {
-				dest.write(data, 0, count);
+			if (!entry.isDirectory()) {
+				FileOutputStream fos = new FileOutputStream(newFile);
+				dest = new BufferedOutputStream(fos, BUF_SIZE);
+				while ((count = zis.read(data, 0, BUF_SIZE)) != -1) {
+					dest.write(data, 0, count);
+				}
+				dest.flush();
+				dest.close();
 			}
-			dest.flush();
-			dest.close();
 		}
 		zis.close();
 	}
