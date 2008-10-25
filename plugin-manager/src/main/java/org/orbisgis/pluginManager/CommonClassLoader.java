@@ -57,6 +57,9 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipException;
 import java.util.zip.ZipFile;
 
+import org.orbisgis.Services;
+import org.orbisgis.errorManager.ErrorManager;
+
 public class CommonClassLoader extends SecureClassLoader {
 
 	private ArrayList<File> outputFolders = new ArrayList<File>();
@@ -131,7 +134,7 @@ public class CommonClassLoader extends SecureClassLoader {
 								entryName.length() - 6).replace('/', '.');
 						File fileForClass = resourcesFile.get(entryName);
 						if (fileForClass != null) {
-							throw new RuntimeException(
+							Services.getService(ErrorManager.class).warning(
 									"There are two classes/resources with the same name in "
 											+ fileForClass.getAbsolutePath()
 											+ " and in "
