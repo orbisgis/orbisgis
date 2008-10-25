@@ -99,4 +99,8 @@ public class ErrorMessage {
 
 		return ret.toString();
 	}
+
+	public Throwable getException() {
+		return throwable;
+	}
 }

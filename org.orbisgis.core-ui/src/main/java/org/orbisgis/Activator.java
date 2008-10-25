@@ -76,11 +76,74 @@ public class Activator implements PluginActivator {
 
 	private RefreshViewFunctionManagerListener refreshFMListener = new RefreshViewFunctionManagerListener();
 
+	private ArrayList<ErrorMessage> initMessages = new ArrayList<ErrorMessage>();
+
 	public void start() throws Exception {
+		final ErrorManager errorService = Services.getService(ErrorManager.class);
+		ErrorManager em = errorService;
+		ErrorListener cacheListener = new ErrorListener() {
+
+			public void warning(String userMsg, Throwable e) {
+				initMessages.add(new ErrorMessage(userMsg, e, false));
+			}
+
+			public void error(String userMsg, Throwable e) {
+				initMessages.add(new ErrorMessage(userMsg, e, true));
+			}
+
+		};
+		em.addErrorListener(cacheListener);
+
+		// Register UI queries
 		QueryManager.registerQuery(Geomark.class);
 
+		// Install OrbisGIS core services
+		OrbisgisCoreServices.installServices();
+
+		// Initialize workspace
+		initializeWorkspace();
+
+		// Install update manager
+		UpdateManager um = new DefaultUpdateManager();
+		Services.registerService(UpdateManager.class,
+				"Service to install updates from a remote site", um);
+
+		// Initialize configuration
+		EPConfigHelper.loadAndApplyConfigurations();
+
+		// Install the refresh listener
+		PluginManager pm = Services.getService(PluginManager.class);
+		pm.addSystemListener(new SystemListener() {
+			public void statusChanged() {
+				ActionControlsRegistry.refresh();
+			}
+		});
+
+		// Listen workspace changes
+		Workspace workspace = Services.getService(Workspace.class);
+		workspace.addWorkspaceListener(new WorkspaceListener() {
+
+			public void workspaceChanged(File oldWorkspace, File newWorkspace) {
+				try {
+					initializeWorkspace();
+				} catch (DriverException e) {
+					errorService.error(
+							"Cannot initialize workspace", e);
+				}
+			}
+
+			public void saveWorkspace() {
+				stop();
+			}
+
+		});
+
+		// Listen FunctionManager and QueryManager changes to refresh
+		// geocognition view
+		FunctionManager.addFunctionManagerListener(refreshFMListener);
+		QueryManager.addQueryManagerListener(refreshFMListener);
+
 		// Install the error listener
-		final ErrorManager em = Services.getService(ErrorManager.class);
 		em.addErrorListener(new ErrorListener() {
 
 			private ErrorPanel ep = new ErrorPanel();
@@ -121,57 +184,24 @@ public class Activator implements PluginActivator {
 
 		});
 
-		// Install OrbisGIS core services
-		OrbisgisCoreServices.installServices();
-
-		// Initialize workspace
-		initializeWorkspace();
-
-		// Install update manager
-		UpdateManager um = new DefaultUpdateManager();
-		Services.registerService(UpdateManager.class,
-				"Service to install updates from a remote site", um);
-
-		// Initialize configuration
-		EPConfigHelper.loadAndApplyConfigurations();
-
-		// Install the refresh listener
-		PluginManager pm = Services.getService(PluginManager.class);
-		pm.addSystemListener(new SystemListener() {
-			public void statusChanged() {
-				ActionControlsRegistry.refresh();
+		//Put in output the errors raised at start up
+		errorService.removeErrorListener(cacheListener);
+		for (ErrorMessage msg : initMessages) {
+			if (msg.isError()) {
+				errorService.error(
+						msg.getUserMessage(), msg.getException());
+			} else {
+				errorService.warning(
+						msg.getUserMessage(), msg.getException());
 			}
-		});
-
-		// Listen workspace changes
-		Workspace workspace = Services.getService(Workspace.class);
-		workspace.addWorkspaceListener(new WorkspaceListener() {
-
-			public void workspaceChanged(File oldWorkspace, File newWorkspace) {
-				try {
-					initializeWorkspace();
-				} catch (DriverException e) {
-					Services.getService(ErrorManager.class).error(
-							"Cannot initialize workspace", e);
-				}
-			}
-
-			public void saveWorkspace() {
-				stop();
-			}
-
-		});
-
-		// Listen FunctionManager and QueryManager changes to refresh
-		// geocognition view
-		FunctionManager.addFunctionManagerListener(refreshFMListener);
-		QueryManager.addQueryManagerListener(refreshFMListener);
+		}
 
 		// Search for updates
-		um = Services.getService(UpdateManager.class);
-		if (um.isSearchAtStartup()) {
-			um.startSearch();
-		}
+		// um = Services.getService(UpdateManager.class);
+		// if (um.isSearchAtStartup()) {
+		// um.startSearch();
+		// }
+
 	}
 
 	private void initializeWorkspace() throws DriverException {
