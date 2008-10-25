@@ -606,7 +606,7 @@ public class LogicTreeBuilder {
 					args[i] = getSQLExpression((SimpleNode) argsNode
 							.jjtGetChild(i));
 				}
-				return new FunctionOperator(functionName, args);
+				return new FunctionOperator(dsf, functionName, args);
 			}
 		} else if (node instanceof ASTSQLColRef) {
 			String fieldName = getId(node.jjtGetChild(0));

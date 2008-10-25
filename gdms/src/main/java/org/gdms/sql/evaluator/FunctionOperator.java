@@ -38,8 +38,10 @@ package org.gdms.sql.evaluator;
 
 import java.util.ArrayList;
 
+import org.gdms.data.DataSourceFactory;
 import org.gdms.data.types.Type;
 import org.gdms.data.values.Value;
+import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
 import org.gdms.sql.function.Arguments;
 import org.gdms.sql.function.Function;
@@ -52,9 +54,12 @@ public class FunctionOperator extends AbstractOperator implements Expression {
 	private String name;
 	private Function function;
 	private boolean star;
+	private DataSourceFactory dsf;
 
-	public FunctionOperator(String name, Expression[] arguments) {
+	public FunctionOperator(DataSourceFactory dsf, String name,
+			Expression[] arguments) {
 		super(arguments);
+		this.dsf = dsf;
 		this.name = name;
 		this.star = false;
 	}
@@ -74,8 +79,9 @@ public class FunctionOperator extends AbstractOperator implements Expression {
 		try {
 			return fnc.evaluate(args);
 		} catch (RuntimeException e) {
-			throw new EvaluationException("Error evaluating " + name
-					+ " function", e);
+			dsf.getWarningListener().throwWarning(
+					"Cannot evaluate: " + e.getMessage(), e, this);
+			return ValueFactory.createNullValue();
 		} catch (FunctionException e) {
 			throw new EvaluationException("Error evaluating " + name
 					+ " function", e);
@@ -172,7 +178,8 @@ public class FunctionOperator extends AbstractOperator implements Expression {
 	}
 
 	public Expression cloneExpression() {
-		FunctionOperator ret = new FunctionOperator(this.name, getChildren());
+		FunctionOperator ret = new FunctionOperator(dsf, this.name,
+				getChildren());
 		ret.star = this.star;
 
 		return ret;
