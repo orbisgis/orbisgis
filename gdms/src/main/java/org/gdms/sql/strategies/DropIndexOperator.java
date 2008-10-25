@@ -36,29 +36,53 @@
  */
 package org.gdms.sql.strategies;
 
+import org.gdms.data.DataSourceFactory;
 import org.gdms.data.ExecutionException;
+import org.gdms.data.NoSuchTableException;
+import org.gdms.data.indexes.IndexException;
+import org.gdms.data.indexes.IndexManager;
 import org.gdms.data.metadata.Metadata;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.ObjectDriver;
+import org.gdms.sql.evaluator.Expression;
+import org.gdms.sql.evaluator.Field;
 import org.orbisgis.progress.IProgressMonitor;
 
-public class DropOperator extends AbstractOperator implements Operator {
+public class DropIndexOperator extends AbstractExpressionOperator implements
+		Operator {
 
-	public ObjectDriver getResultContents(IProgressMonitor pm) throws ExecutionException {
-		return null;
+	private String tableName;
+	private String fieldName;
+	private DataSourceFactory dsf;
+
+	public DropIndexOperator(DataSourceFactory dsf, String tableName,
+			String fieldName) {
+		this.tableName = tableName;
+		this.fieldName = fieldName;
+		this.dsf = dsf;
+	}
+
+	public ObjectDriver getResultContents(IProgressMonitor pm)
+			throws ExecutionException {
+		try {
+			IndexManager im = dsf.getIndexManager();
+			im.deleteIndex(tableName, fieldName);
+			return null;
+		} catch (NoSuchTableException e) {
+			throw new ExecutionException("Cannot remove index:" + tableName, e);
+		} catch (IndexException e) {
+			throw new ExecutionException("Cannot remove index:" + tableName, e);
+		}
 	}
 
 	public Metadata getResultMetadata() throws DriverException {
 		return null;
 	}
 
-	public void addTable(ScanOperator scan) {
-		super.addChild(scan);
-	}
-
 	@Override
-	public void addChild(Operator operator) {
-		throw new RuntimeException("use addTable");
+	protected Expression[] getExpressions() throws DriverException,
+			SemanticException {
+		return new Expression[] { new Field(fieldName) };
 	}
 
 }

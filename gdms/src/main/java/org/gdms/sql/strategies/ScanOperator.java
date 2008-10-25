@@ -311,7 +311,7 @@ public class ScanOperator extends AbstractOperator implements ChangesMetadata {
 			}
 		}
 
-		throw new RuntimeException("bug!");
+		return -1;
 	}
 
 	private boolean referencesThisTable(Field field) {

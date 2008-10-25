@@ -73,7 +73,7 @@ public abstract class AbstractExpressionOperator extends AbstractOperator {
 	/**
 	 * Resolves the field references setting the index in the metadata of the
 	 * nearest child operator that implements ChangesMetadata
-	 *
+	 * 
 	 * @see org.gdms.sql.strategies.AbstractOperator#validateFieldReferences()
 	 */
 	public void validateFieldReferences() throws SemanticException,
@@ -86,7 +86,7 @@ public abstract class AbstractExpressionOperator extends AbstractOperator {
 			// references
 			int fieldIndex = -1;
 			Operator prod = this;
-			while (fieldIndex == -1) {
+			while ((prod.getOperatorCount() > 0) && (fieldIndex == -1)) {
 				prod = prod.getOperator(0);
 				if (prod instanceof ChangesMetadata) {
 					fieldIndex = ((ChangesMetadata) prod).getFieldIndex(field);
@@ -148,7 +148,7 @@ public abstract class AbstractExpressionOperator extends AbstractOperator {
 	/**
 	 * Sets the field context for all the field references and expands the '*'
 	 * in functions
-	 *
+	 * 
 	 * @see org.gdms.sql.strategies.AbstractOperator#prepareValidation()
 	 */
 	public void prepareValidation() throws DriverException, SemanticException {
@@ -193,7 +193,7 @@ public abstract class AbstractExpressionOperator extends AbstractOperator {
 
 	/**
 	 * Validates the types of the expressions in the operator
-	 *
+	 * 
 	 * @see org.gdms.sql.strategies.AbstractOperator#validateExpressionTypes()
 	 */
 	@Override
@@ -208,7 +208,7 @@ public abstract class AbstractExpressionOperator extends AbstractOperator {
 
 	/**
 	 * Checks that the functions exist
-	 *
+	 * 
 	 * @see org.gdms.sql.strategies.AbstractOperator#validateFunctionReferences()
 	 */
 	@Override

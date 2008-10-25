@@ -123,7 +123,7 @@ public class LogicTreeBuilder {
 	/**
 	 * Recursive method that returns the root of the tree of logic operators
 	 * that implement the query. Returns null if no operator has to be applied
-	 *
+	 * 
 	 * @param node
 	 * @return
 	 * @throws SemanticException
@@ -186,15 +186,24 @@ public class LogicTreeBuilder {
 
 			return ret;
 		} else if (node instanceof ASTSQLDrop) {
-			Node tableListNode = node.jjtGetChild(0);
-			DropOperator operator = new DropOperator();
-			for (int i = 0; i < tableListNode.jjtGetNumChildren(); i++) {
-				ScanOperator scan = (ScanOperator) getOperator(tableListNode
-						.jjtGetChild(i));
-				operator.addTable(scan);
-			}
+			if (node.first_token.next.kind == SQLEngineConstants.TABLE) {
+				Node tableListNode = node.jjtGetChild(0);
+				DropTableOperator operator = new DropTableOperator();
+				for (int i = 0; i < tableListNode.jjtGetNumChildren(); i++) {
+					ScanOperator scan = (ScanOperator) getOperator(tableListNode
+							.jjtGetChild(i));
+					operator.addChild(scan);
+				}
 
-			return operator;
+				return operator;
+			} else {
+				String tableName = getId(node.jjtGetChild(0));
+				String fieldName = getId(node.jjtGetChild(1));
+				DropIndexOperator op = new DropIndexOperator(dsf,
+						tableName, fieldName);
+				op.addChild(new ScanOperator(dsf, tableName, tableName));
+				return op;
+			}
 		} else if (node instanceof ASTSQLUnion) {
 			Node tableOrSelect1 = node.jjtGetChild(0);
 			Node tableOrSelect2 = node.jjtGetChild(1);
@@ -202,22 +211,32 @@ public class LogicTreeBuilder {
 			Operator op2 = getOperator(tableOrSelect2);
 			return new UnionOperator(op1, op2);
 		} else if (node instanceof ASTSQLCreate) {
-			String tableName = getId(node.jjtGetChild(0));
-			Node schemaNode = node.jjtGetChild(1);
-			if (schemaNode instanceof ASTSQLSelect) {
-				Operator selectOp = getOperator(schemaNode);
-				Operator co = new CreateOperator(dsf, tableName);
-				co.addChild(selectOp);
-				return co;
-			} else if (schemaNode instanceof ASTSQLUnion) {
-				Operator unionOp = getOperator(schemaNode);
-				Operator co = new CreateOperator(dsf, tableName);
-				co.addChild(unionOp);
-				return co;
+			if (node.first_token.next.kind == SQLEngineConstants.TABLE) {
+				String tableName = getId(node.jjtGetChild(0));
+				Node schemaNode = node.jjtGetChild(1);
+				if (schemaNode instanceof ASTSQLSelect) {
+					Operator selectOp = getOperator(schemaNode);
+					Operator co = new CreateTableOperator(dsf, tableName);
+					co.addChild(selectOp);
+					return co;
+				} else if (schemaNode instanceof ASTSQLUnion) {
+					Operator unionOp = getOperator(schemaNode);
+					Operator co = new CreateTableOperator(dsf, tableName);
+					co.addChild(unionOp);
+					return co;
+				} else {
+					throw new UnsupportedOperationException(
+							"Only 'create table [tablename] "
+									+ "as ...' implemented");
+				}
 			} else {
-				throw new UnsupportedOperationException(
-						"Only 'create table [tablename] "
-								+ "as ...' implemented");
+				// Create index
+				String tableName = getId(node.jjtGetChild(0));
+				String fieldName = getId(node.jjtGetChild(1));
+				CreateIndexOperator op = new CreateIndexOperator(dsf,
+						tableName, fieldName);
+				op.addChild(new ScanOperator(dsf, tableName, tableName));
+				return op;
 			}
 		} else if (node instanceof ASTSQLUpdate) {
 			String tableName = getId(node.jjtGetChild(0));
@@ -603,7 +622,8 @@ public class LogicTreeBuilder {
 		} else if (node instanceof ASTSQLUnaryExpr) {
 			Expression exp = getExpression((SimpleNode) node.jjtGetChild(0));
 			if (node.first_token.image.equals("-")) {
-				exp = new Product(new Literal(ValueFactory.createValue(-1)), exp);
+				exp = new Product(new Literal(ValueFactory.createValue(-1)),
+						exp);
 			}
 
 			return exp;
@@ -730,9 +750,9 @@ public class LogicTreeBuilder {
 	/**
 	 * Gets the type of the specified node if the node consists of only one
 	 * token Otherwise it returns -1
-	 *
+	 * 
 	 * @param n
-	 *
+	 * 
 	 * @return A constant in {@link SQLEngineConstants}
 	 */
 	private int getType(Node n) {
@@ -747,9 +767,9 @@ public class LogicTreeBuilder {
 
 	/**
 	 * Gets the text of the specified node
-	 *
+	 * 
 	 * @param n
-	 *
+	 * 
 	 * @return
 	 */
 	private String getText(Node n) {
