@@ -45,109 +45,113 @@ public interface SQLEngineConstants {
   /** RegularExpression Id. */
   int IN = 24;
   /** RegularExpression Id. */
-  int IS = 25;
+  int INDEX = 25;
   /** RegularExpression Id. */
-  int KEY = 26;
+  int IS = 26;
   /** RegularExpression Id. */
-  int LIKE = 27;
+  int KEY = 27;
   /** RegularExpression Id. */
-  int LIMIT = 28;
+  int LIKE = 28;
   /** RegularExpression Id. */
-  int NOT = 29;
+  int LIMIT = 29;
   /** RegularExpression Id. */
-  int NULL = 30;
+  int NOT = 30;
   /** RegularExpression Id. */
-  int OFFSET = 31;
+  int NULL = 31;
   /** RegularExpression Id. */
-  int OR = 32;
+  int OFFSET = 32;
   /** RegularExpression Id. */
-  int ORDER = 33;
+  int ON = 33;
   /** RegularExpression Id. */
-  int PRIMARY = 34;
+  int OR = 34;
   /** RegularExpression Id. */
-  int SELECT = 35;
+  int ORDER = 35;
   /** RegularExpression Id. */
-  int UNION = 36;
+  int PRIMARY = 36;
   /** RegularExpression Id. */
-  int SPACES = 37;
+  int SELECT = 37;
   /** RegularExpression Id. */
-  int TABLE = 38;
+  int UNION = 38;
   /** RegularExpression Id. */
-  int WHERE = 39;
+  int SPACES = 39;
   /** RegularExpression Id. */
-  int CREATE = 40;
+  int TABLE = 40;
   /** RegularExpression Id. */
-  int DELETE = 41;
+  int WHERE = 41;
   /** RegularExpression Id. */
-  int EXISTS = 42;
+  int CREATE = 42;
   /** RegularExpression Id. */
-  int INSERT = 43;
+  int DELETE = 43;
   /** RegularExpression Id. */
-  int INTO = 44;
+  int EXISTS = 44;
   /** RegularExpression Id. */
-  int SET = 45;
+  int INSERT = 45;
   /** RegularExpression Id. */
-  int UPDATE = 46;
+  int INTO = 46;
   /** RegularExpression Id. */
-  int VALUES = 47;
+  int SET = 47;
   /** RegularExpression Id. */
-  int INTEGER_LITERAL = 48;
+  int UPDATE = 48;
   /** RegularExpression Id. */
-  int FLOATING_POINT_LITERAL = 49;
+  int VALUES = 49;
   /** RegularExpression Id. */
-  int EXPONENT = 50;
+  int INTEGER_LITERAL = 50;
   /** RegularExpression Id. */
-  int STRING_LITERAL = 51;
+  int FLOATING_POINT_LITERAL = 51;
   /** RegularExpression Id. */
-  int BOOLEAN_LITERAL = 52;
+  int EXPONENT = 52;
   /** RegularExpression Id. */
-  int ID = 53;
+  int STRING_LITERAL = 53;
   /** RegularExpression Id. */
-  int LETTER = 54;
+  int BOOLEAN_LITERAL = 54;
   /** RegularExpression Id. */
-  int DIGIT = 55;
+  int ID = 55;
   /** RegularExpression Id. */
-  int QUOTED_ID = 56;
+  int LETTER = 56;
   /** RegularExpression Id. */
-  int ASSIGN = 57;
+  int DIGIT = 57;
   /** RegularExpression Id. */
-  int CONCAT = 58;
+  int QUOTED_ID = 58;
   /** RegularExpression Id. */
-  int SEMICOLON = 59;
+  int ASSIGN = 59;
   /** RegularExpression Id. */
-  int DOT = 60;
+  int CONCAT = 60;
   /** RegularExpression Id. */
-  int TILDE = 61;
+  int SEMICOLON = 61;
   /** RegularExpression Id. */
-  int LESS = 62;
+  int DOT = 62;
   /** RegularExpression Id. */
-  int LESSEQUAL = 63;
+  int TILDE = 63;
   /** RegularExpression Id. */
-  int GREATER = 64;
+  int LESS = 64;
   /** RegularExpression Id. */
-  int GREATEREQUAL = 65;
+  int LESSEQUAL = 65;
   /** RegularExpression Id. */
-  int EQUAL = 66;
+  int GREATER = 66;
   /** RegularExpression Id. */
-  int NOTEQUAL = 67;
+  int GREATEREQUAL = 67;
   /** RegularExpression Id. */
-  int NOTEQUAL2 = 68;
+  int EQUAL = 68;
   /** RegularExpression Id. */
-  int JOINPLUS = 69;
+  int NOTEQUAL = 69;
   /** RegularExpression Id. */
-  int OPENPAREN = 70;
+  int NOTEQUAL2 = 70;
   /** RegularExpression Id. */
-  int CLOSEPAREN = 71;
+  int JOINPLUS = 71;
   /** RegularExpression Id. */
-  int ASTERISK = 72;
+  int OPENPAREN = 72;
   /** RegularExpression Id. */
-  int SLASH = 73;
+  int CLOSEPAREN = 73;
   /** RegularExpression Id. */
-  int PLUS = 74;
+  int ASTERISK = 74;
   /** RegularExpression Id. */
-  int MINUS = 75;
+  int SLASH = 75;
   /** RegularExpression Id. */
-  int QUESTIONMARK = 76;
+  int PLUS = 76;
+  /** RegularExpression Id. */
+  int MINUS = 77;
+  /** RegularExpression Id. */
+  int QUESTIONMARK = 78;
 
   /** Lexical state. */
   int DEFAULT = 0;
@@ -185,6 +189,7 @@ public interface SQLEngineConstants {
     "\"group\"",
     "\"having\"",
     "\"in\"",
+    "\"index\"",
     "\"is\"",
     "\"key\"",
     "\"like\"",
@@ -192,6 +197,7 @@ public interface SQLEngineConstants {
     "\"not\"",
     "\"null\"",
     "\"offset\"",
+    "\"on\"",
     "\"or\"",
     "\"order\"",
     "\"primary\"",

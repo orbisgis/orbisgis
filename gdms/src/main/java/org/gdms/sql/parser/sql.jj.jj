@@ -93,6 +93,7 @@ TOKEN:  /* Keywords */
   | < GROUP: "group" >
   | < HAVING: "having" >
   | < IN: "in" >
+  | < INDEX: "index" >
   | < IS: "is" >
   | < KEY: "key" >
   | < LIKE: "like" >
@@ -100,6 +101,7 @@ TOKEN:  /* Keywords */
   | < NOT: "not" >
   | < NULL: "null" >
   | < OFFSET: "offset" >
+  | < ON: "on" >
   | < OR: "or" >
   | < ORDER: "order" >
   | < PRIMARY: "primary" >
@@ -436,8 +438,12 @@ void SQLDrop() :
 {/*@bgen(jjtree) SQLDrop */
   try {
 /*@egen*/
-  <DROP> <TABLE>
-  SQLTableList()/*@bgen(jjtree)*/
+  <DROP> 
+  ( 
+    (<TABLE> SQLTableList())
+  |
+    (<INDEX> <ON> SQLId() "(" SQLId() ")")
+  )/*@bgen(jjtree)*/
   } catch (Throwable jjte000) {
     if (jjtc000) {
       jjtree.clearNodeScope(jjtn000);
@@ -1956,9 +1962,12 @@ void SQLCreate() :
 {/*@bgen(jjtree) SQLCreate */
   try {
 /*@egen*/
-  <CREATE> <TABLE> SQLId()
+  <CREATE> 
   (
-  "(" SQLCreateArgsList() ")" | <AS> (SQLSelect() | SQLUnion())
+  	(<TABLE> SQLId()
+    ( "(" SQLCreateArgsList() ")" | <AS> (SQLSelect() | SQLUnion()) ) )
+  |
+    (<INDEX> <ON> SQLId() "(" SQLId() ")")
   )/*@bgen(jjtree)*/
   } catch (Throwable jjte000) {
     if (jjtc000) {
