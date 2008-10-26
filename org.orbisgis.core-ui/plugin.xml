@@ -73,14 +73,17 @@
 	<!-- Geocatalog wizards -->
 	<extension point="org.orbisgis.views.geocatalog.NewResourceWizard">
 		<wizard id="org.orbisgis.views.geocatalog.newResourceWizards.NewFile"
+			icon="/org/orbisgis/images/flatfile.png"
 			class="org.orbisgis.views.geocatalog.newResourceWizards.file.NewFile"/>
 	</extension>
 	<extension point="org.orbisgis.views.geocatalog.NewResourceWizard">
 		<wizard id="org.orbisgis.views.geocatalog.newResourceWizards.NewDB"
+			icon="/org/orbisgis/images/db.png"
 			class="org.orbisgis.views.geocatalog.newResourceWizards.db.NewDB"/>
 	</extension>
 	<extension point="org.orbisgis.views.geocatalog.NewResourceWizard">
 		<wizard id="org.orbisgis.views.geocatalog.newResourceWizards.NewFolder"
+			icon="/org/orbisgis/images/folder.png"
 			class="org.orbisgis.views.geocatalog.newResourceWizards.NewFolder"/>
 	</extension>
 	<extension point="org.orbisgis.views.geocatalog.NewResourceWizard">
@@ -406,17 +409,20 @@
 			name="Processing"/>
 		<wizard
 			id="org.orbisgis.views.geocognition.wizards.NewRegisteredSQLArtifacts"
+			icon="/org/orbisgis/images/builtInFunctionMap.png"
 			category="org.orbisgis.views.geocognition.Processing"
 			class="org.orbisgis.views.geocognition.wizards.NewRegisteredSQLArtifact"/>
 	</extension>
 	<extension id="org.orbisgis.views.geocognition.wizards.NewFunction"
 		point="org.orbisgis.views.geocognition.NewWizard">
 		<wizard id="org.orbisgis.views.geocognition.wizards.NewFunction"
+			icon="/org/orbisgis/images/functionMap.png"
 			category="org.orbisgis.views.geocognition.Processing" class="org.orbisgis.views.geocognition.wizards.NewFunction" />
 	</extension>
 	<extension id="org.orbisgis.views.geocognition.wizards.NewCustomQuery"
 		point="org.orbisgis.views.geocognition.NewWizard">
 		<wizard id="org.orbisgis.views.geocognition.wizards.NewCustomQuery"
+			icon="/org/orbisgis/images/customQueryMap.png"
 			category="org.orbisgis.views.geocognition.Processing" class="org.orbisgis.views.geocognition.wizards.NewCustomQuery" />
 	</extension>
 	<extension id="org.orbisgis.views.geocognition.wizards.Map"
@@ -424,23 +430,28 @@
 		<category id="org.orbisgis.views.geocognition.Representation"
 			name="Representation"/>
 		<wizard id="org.orbisgis.views.geocognition.wizards.Map"
+			icon="/org/orbisgis/images/map.png"
 			category="org.orbisgis.views.geocognition.Representation" class="org.orbisgis.views.geocognition.wizards.NewMap" />
 	</extension>
 	<extension id="org.orbisgis.views.geocognition.wizards.Legend"
 		point="org.orbisgis.views.geocognition.NewWizard">
 		<wizard id="org.orbisgis.views.geocognition.wizards.Legend"
+			icon="/org/orbisgis/images/palette.png"
 			category="org.orbisgis.views.geocognition.Representation" class="org.orbisgis.views.geocognition.wizards.NewLegend" />
 	</extension>
 	<extension id="org.orbisgis.views.geocognition.wizards.Symbol"
 		point="org.orbisgis.views.geocognition.NewWizard">
 		<wizard id="org.orbisgis.views.geocognition.wizards.Symbol"
+			icon="/org/orbisgis/images/point.png"
 			category="org.orbisgis.views.geocognition.Representation" class="org.orbisgis.views.geocognition.wizards.NewSymbol" />
 	</extension>
 	<extension id="org.orbisgis.views.geocognition.wizards.Folder"
 		point="org.orbisgis.views.geocognition.NewWizard">
 		<category id="org.orbisgis.views.geocognition.General" name="General"/>
 		<wizard id="org.orbisgis.views.geocognition.wizards.Folder"
-			category="org.orbisgis.views.geocognition.General" class="org.orbisgis.views.geocognition.wizards.NewFolder" />
+			icon="/org/orbisgis/images/folder.png"
+			category="org.orbisgis.views.geocognition.General"
+			class="org.orbisgis.views.geocognition.wizards.NewFolder"/>
 	</extension>
 	
 	<!-- Geocognition actions -->

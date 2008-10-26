@@ -67,13 +67,14 @@ public abstract class EPWizardHelper<Wiz extends IWizard, Res extends Object> {
 		for (ItemAttributes<Wiz> itemAttributes : xmlWizards) {
 			IWizard wizard = itemAttributes.getInstance("class");
 			String id = itemAttributes.getAttribute("id");
+			String icon = itemAttributes.getAttribute("icon");
 			String categoryId = itemAttributes.getAttribute("category");
 			if (categoryId != null) {
 				ccp.addOption(categoryId, categoriesNames.get(categoryId),
-						wizard.getName(), id);
+						wizard.getName(), id, icon);
 			} else {
 				ccp.addOption("org.orbisgis.DefaultCategory", "General", wizard
-						.getName(), id);
+						.getName(), id, icon);
 			}
 		}
 		if (UIFactory.showDialog(ccp)) {
@@ -128,12 +129,13 @@ public abstract class EPWizardHelper<Wiz extends IWizard, Res extends Object> {
 		for (ItemAttributes<Wiz> itemAttributes : wizards) {
 			IWizard wizard = itemAttributes.getInstance("class");
 			String id = itemAttributes.getAttribute("id");
+			String icon = itemAttributes.getAttribute("icon");
 			String category = itemAttributes.getAttribute("category");
 			IActionAdapter action = factory.getAction(id,
 					new HashMap<String, String>());
 			if (action.isVisible()) {
 				Menu menu = new Menu(parentMenuId, id, category, wizard
-						.getName(), null, false, action);
+						.getName(), icon, false, action);
 				menuTree.addMenu(menu);
 			}
 		}

@@ -7,11 +7,15 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTree;
 import javax.swing.event.TreeModelEvent;
 import javax.swing.event.TreeModelListener;
+import javax.swing.tree.DefaultTreeCellRenderer;
+import javax.swing.tree.TreeCellRenderer;
 import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
 
@@ -34,13 +38,13 @@ public class CategorizedChoosePanel extends JPanel implements SQLUIPanel {
 	}
 
 	public void addOption(String categoryId, String categoryName, String name,
-			String id) {
-		Option category = new Option(categoryId, categoryName, true);
+			String id, String icon) {
+		Option category = new Option(categoryId, categoryName, true, null);
 		ArrayList<Option> options = categories.get(category);
 		if (options == null) {
 			options = new ArrayList<Option>();
 		}
-		options.add(new Option(id, name, false));
+		options.add(new Option(id, name, false, icon));
 
 		categories.put(category, options);
 
@@ -52,6 +56,7 @@ public class CategorizedChoosePanel extends JPanel implements SQLUIPanel {
 		categoriesTreeModel = new CategoriesTreeModel();
 		tree.setModel(categoriesTreeModel);
 		tree.setRootVisible(false);
+		tree.setCellRenderer(new IconRenderer());
 		this.setLayout(new BorderLayout());
 		this.add(new JScrollPane(tree), BorderLayout.CENTER);
 	}
@@ -148,16 +153,37 @@ public class CategorizedChoosePanel extends JPanel implements SQLUIPanel {
 		return null;
 	}
 
+	/**
+	 * Returns the id of the currently selected option if it's valid. If there
+	 * is no selection or the selection is not valid it returns null
+	 * 
+	 * @return
+	 */
+	public String getSelectedElement() {
+		if (validateInput() == null) {
+			Object selection = tree.getSelectionPath().getLastPathComponent();
+			return ((Option) selection).getId();
+		} else {
+			return null;
+		}
+	}
+
 	private class Option {
 		private String id;
 		private String name;
 		private boolean category;
+		private String icon;
 
-		public Option(String id, String name, boolean category) {
+		public Option(String id, String name, boolean category, String icon) {
 			super();
 			this.id = id;
 			this.name = name;
 			this.category = category;
+			this.icon = icon;
+		}
+
+		public String getIcon() {
+			return icon;
 		}
 
 		public String getId() {
@@ -246,7 +272,7 @@ public class CategorizedChoosePanel extends JPanel implements SQLUIPanel {
 
 		@Override
 		public Object getRoot() {
-			return new Option("ROOT", "ROOT", true);
+			return new Option("ROOT", "ROOT", true, null);
 		}
 
 		@Override
@@ -266,18 +292,37 @@ public class CategorizedChoosePanel extends JPanel implements SQLUIPanel {
 
 	}
 
-	/**
-	 * Returns the id of the currently selected option if it's valid. If there
-	 * is no selection or the selection is not valid it returns null
-	 * 
-	 * @return
-	 */
-	public String getSelectedElement() {
-		if (validateInput() == null) {
-			Object selection = tree.getSelectionPath().getLastPathComponent();
-			return ((Option) selection).getId();
-		} else {
-			return null;
+	private class IconRenderer extends DefaultTreeCellRenderer implements
+			TreeCellRenderer {
+		private Icon defaultClosedFolderIcon;
+		private Icon defaultOpenFolderIcon;
+		private Icon defaultLeafIcon;
+
+		public IconRenderer() {
+			this.defaultClosedFolderIcon = this.getDefaultClosedIcon();
+			this.defaultOpenFolderIcon = this.getDefaultOpenIcon();
+			this.defaultLeafIcon = this.getLeafIcon();
+		}
+
+		@Override
+		public Component getTreeCellRendererComponent(JTree tree, Object value,
+				boolean sel, boolean expanded, boolean leaf, int row,
+				boolean hasFocus) {
+			Option option = (Option) value;
+			if (option.getIcon() != null) {
+				ImageIcon icon = new ImageIcon(this.getClass().getResource(
+						option.getIcon()));
+				this.setLeafIcon(icon);
+			} else {
+				if (option.isCategory()) {
+					this.setOpenIcon(defaultOpenFolderIcon);
+					this.setClosedIcon(defaultClosedFolderIcon);
+				} else {
+					this.setLeafIcon(defaultLeafIcon);
+				}
+			}
+			return super.getTreeCellRendererComponent(tree, value, sel,
+					expanded, leaf, row, hasFocus);
 		}
 	}
 }
