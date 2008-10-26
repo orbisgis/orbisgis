@@ -32,11 +32,18 @@ import org.gdms.source.Source;
 import org.gdms.sql.strategies.IncompatibleTypesException;
 
 import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.LineString;
+import com.vividsolutions.jts.geom.MultiLineString;
+import com.vividsolutions.jts.geom.MultiPoint;
+import com.vividsolutions.jts.geom.MultiPolygon;
+import com.vividsolutions.jts.geom.Point;
+import com.vividsolutions.jts.geom.Polygon;
 
 public class FeatureCollectionDatasourceAdapter implements DataSource {
 
 	private FeatureCollection fc;
 
+		
 	public FeatureCollectionDatasourceAdapter(FeatureCollection fc) {
 		this.fc = fc;
 	}
@@ -197,6 +204,9 @@ public class FeatureCollectionDatasourceAdapter implements DataSource {
 		String[] fieldNames = new String[getFieldCount()];
 		for (int i = 0; i < getFieldCount(); i++) {
 			fieldNames[i] = getFieldName(i);
+			if (fieldNames[i].equalsIgnoreCase("geometry")) {
+				fieldNames[i] = "the_geom";
+			}
 		}
 		return fieldNames;
 	}
@@ -268,9 +278,9 @@ public class FeatureCollectionDatasourceAdapter implements DataSource {
 	}
 
 	public String getName() {
-		// TODO Auto-generated method stub
 		return null;
 	}
+	
 
 	public ValueCollection getPK(int row) throws DriverException {
 		// TODO Auto-generated method stub
@@ -612,7 +622,22 @@ public class FeatureCollectionDatasourceAdapter implements DataSource {
 		if (o instanceof Geometry) {
 			if (((Geometry) o).isEmpty()) {
 				return ValueFactory.createNullValue();
-			} else {
+			} 
+			else if (o instanceof Point) {
+				return ValueFactory.createValue((Point) o);
+			}
+			else if (o instanceof MultiPoint) {
+				return ValueFactory.createValue((MultiPoint) o);
+			} else if (o instanceof LineString) {
+				return ValueFactory.createValue((LineString) o);
+			} else if (o instanceof MultiLineString) {
+				return ValueFactory.createValue((MultiLineString) o);
+			} else if (o instanceof Polygon) {
+				return ValueFactory.createValue((Polygon) o);
+			} else if (o instanceof MultiPolygon) {
+				return ValueFactory.createValue((MultiPolygon) o);
+			}
+			else {
 				return (Value) o;
 			}
 		} else {
