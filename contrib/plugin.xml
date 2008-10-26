@@ -1,3 +1,14 @@
 <plugin>
-	<activator class="org.contrib.gdms.sql.Register"/>
+	<activator class="org.contrib.gdms.sql.Register"/>	
+	<extension point="org.orbisgis.editorViews.toc.Action">
+		<action id="org.orbisgis.geomProcessing" text="Find ovelaping features"
+			menu-group="org.orbisgis.rasterProcessing"
+			menu-id="org.orbisgis.ProcessingMenu"
+			class="org.contrib.ui.editorViews.toc.actions.geometry.qa.IntervalOverlapsFinderAction"/>
+		<action id="org.orbisgis.geomProcessing" text="Find gap features"
+			menu-group="org.orbisgis.rasterProcessing"
+			menu-id="org.orbisgis.ProcessingMenu"
+			class="org.contrib.ui.editorViews.toc.actions.geometry.qa.IntervalGapsFinderAction"/>
+	</extension>
+	
 </plugin>
