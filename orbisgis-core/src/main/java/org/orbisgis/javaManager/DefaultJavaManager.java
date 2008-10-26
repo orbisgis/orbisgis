@@ -153,19 +153,22 @@ public class DefaultJavaManager implements JavaManager {
 				new ByteArrayInputStream(code.getBytes()));
 		jp.CompilationUnit();
 		ASTCompilationUnit cu = (ASTCompilationUnit) jp.getRootNode();
-		if ((cu.jjtGetChild(0) instanceof ASTScript)
-				&& (cu.jjtGetNumChildren() == 1)) {
+		if ((cu.jjtGetNumChildren() == 1)
+				&& (cu.jjtGetChild(0) instanceof ASTScript)) {
 			ScriptClassBuilder scb = new ScriptClassBuilder(code, caretPosition);
 			scb.visit((SimpleNode) jp.getRootNode(), null);
 
 			return new CodeInfo(code, scb.getScriptClassCode(), scb
 					.getClassName(), scb.getPackage(), scb.getCaretPosition());
-		} else {
+		} else if ((cu.jjtGetNumChildren() > 1)
+				&& (cu.jjtGetChild(0) instanceof ASTPackageDeclaration)) {
 			ClassAndPackageGetter visitor = new ClassAndPackageGetter();
 			visitor.visit((SimpleNode) jp.getRootNode(), null);
 
 			return new CodeInfo(code, code, visitor.className, visitor.pack,
 					caretPosition);
+		} else {
+			throw new IllegalArgumentException("No code to execute");
 		}
 	}
 
@@ -247,8 +250,11 @@ public class DefaultJavaManager implements JavaManager {
 					+ "import org.orbisgis.Services;");
 			className = "GDMS" + System.currentTimeMillis();
 			clazz.append("public class ").append(className).append("{\n");
-			clazz.append("public static void main(String[] args) throws Exception {new ")
-					.append(className).append(
+			clazz
+					.append(
+							"public static void main(String[] args) throws Exception {new ")
+					.append(className)
+					.append(
 							"().execute();}public void execute() throws Exception {\n");
 			if (caretPosition >= blockStartPos) {
 				modifiedCaretPosition = clazz.length() - blockStartPos
