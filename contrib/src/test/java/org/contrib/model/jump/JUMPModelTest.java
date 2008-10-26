@@ -13,7 +13,6 @@ import org.contrib.model.jump.model.IndexedFeatureCollection;
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.SpatialDataSourceDecorator;
-import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
 import org.gdms.driver.memory.ObjectMemoryDriver;
 
@@ -79,7 +78,6 @@ public class JUMPModelTest extends TestCase {
 
 	}
 
-	
 	public void testGeometries() throws Exception {
 
 		DataSource mydata = dsf.getDataSource(new File(path));
@@ -194,9 +192,7 @@ public class JUMPModelTest extends TestCase {
 
 		DataSource ds = new FeatureCollectionDatasourceAdapter(
 				featureCollectionAdapter);
-		ds.open();
 		dsf.saveContents("gdms", ds);
-		ds.close();
 
 		ds = dsf.getDataSource(gdmsFile);
 		ds.open();
