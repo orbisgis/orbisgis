@@ -83,16 +83,26 @@ public class SQLDocument extends AbstractSyntaxColoringDocument {
 
 	protected void colorIn(int start, int end) throws BadLocationException {
 		String sqlText = textPane.getText();
+
 		String aux = sqlText.substring(0, start);
 		int startText = aux.lastIndexOf("\n");
 		if (startText == -1) {
 			startText = 0;
+		} else {
+			SQLEngineTokenManager tm = new SQLEngineTokenManager(
+					new SimpleCharStream(new ByteArrayInputStream(sqlText
+							.getBytes())));
+			int newStart = getNewStart(tm, startText, sqlText);
+			startText = newStart;
 		}
 		int endText = end + 1;
 		if (endText > sqlText.length()) {
 			endText = sqlText.length();
 		}
 		sqlText = sqlText.substring(startText, endText);
+		if (sqlText.trim().length() == 0) {
+			return;
+		}
 		SQLEngineTokenManager tm = new SQLEngineTokenManager(
 				new SimpleCharStream(new ByteArrayInputStream(sqlText
 						.getBytes())));
@@ -105,7 +115,7 @@ public class SQLDocument extends AbstractSyntaxColoringDocument {
 						token.beginColumn);
 
 				// check comments
-				if (token.kind != SQLEngineTokenManager.EOF) {
+				if (beginPos >= lastStyledPos) {
 					styleComment(sqlText, startText, lastStyledPos, beginPos);
 				}
 
@@ -122,6 +132,29 @@ public class SQLDocument extends AbstractSyntaxColoringDocument {
 			styleComment(sqlText, startText, lastStyledPos, sqlText.length());
 		}
 
+	}
+
+	private int getNewStart(SQLEngineTokenManager tm, int start, String sqlText) {
+		int beginPos = 0;
+		Token previousToken = null;
+		Token token = null;
+		try {
+			do {
+				previousToken = token;
+				token = tm.getNextToken();
+				beginPos = NodeUtils.getPosition(sqlText, token.beginLine,
+						token.beginColumn);
+			} while ((token.kind != SQLEngineTokenManager.EOF)
+					&& (beginPos < start));
+		} catch (TokenMgrError e1) {
+		}
+
+		if (previousToken == null) {
+			return 0;
+		} else {
+			return NodeUtils.getPosition(sqlText, previousToken.beginLine,
+					previousToken.beginColumn);
+		}
 	}
 
 	private AttributeSet getStyle(int kind) {
