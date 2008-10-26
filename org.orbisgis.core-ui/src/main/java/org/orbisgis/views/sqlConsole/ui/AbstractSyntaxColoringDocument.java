@@ -51,12 +51,6 @@ public abstract class AbstractSyntaxColoringDocument extends UndoableDocument {
 		@Override
 		public void replace(FilterBypass fb, int offset, int length,
 				String text, AttributeSet attrs) throws BadLocationException {
-			replace(fb, offset, length, text, attrs, containsCommentCharacter(text));
-		}
-
-		public void replace(FilterBypass fb, int offset, int length,
-				String text, AttributeSet attrs, boolean fullFile)
-				throws BadLocationException {
 			// replace tabs by spaces. Grammar needs that
 			text = text.replaceAll("\t", "    ");
 
@@ -80,31 +74,27 @@ public abstract class AbstractSyntaxColoringDocument extends UndoableDocument {
 				groupUndoEdits(true);
 			}
 
+			// Save token bounds
+			int[] originalTokenBounds = new int[] { 0, 0 };
+			if (!styling) {
+				originalTokenBounds = getTokenBounds(offset, length);
+			}
+
 			// Do replacement
 			super.replace(fb, offset, length, text, attrs);
 
+			// Get current token bounds
 			// If not already applying style, apply it
+			int[] currentTokenBounds;
 			if (!styling) {
-				if (fullFile) {
-					colorize(0, getLength());
-				} else {
-					colorize(offset, offset
-							+ Math.max(getLineEndFromOffset(offset), text
-									.length()));
-				}
+				currentTokenBounds = getTokenBounds(offset, length);
+				colorize(Math
+						.min(originalTokenBounds[0], currentTokenBounds[0]),
+						Math.max(originalTokenBounds[1], currentTokenBounds[1]));
 			}
 
 			if (!alreadyGrouping) {
 				groupUndoEdits(false);
-			}
-		}
-
-		private int getLineEndFromOffset(int offset) {
-			String line = textPane.getText().substring(offset);
-			if (line.indexOf('\n') != -1) {
-				return line.indexOf('\n');
-			} else {
-				return line.length();
 			}
 		}
 
@@ -116,14 +106,22 @@ public abstract class AbstractSyntaxColoringDocument extends UndoableDocument {
 				groupUndoEdits(true);
 			}
 
-			String removedText = getText(offset, length);
-			super.remove(fb, offset, length);
+			// Save token bounds
+			int[] originalTokenBounds = new int[] { 0, 0 };
 			if (!styling) {
-				if (containsCommentCharacter(removedText)) {
-					colorize(0, getLength());
-				} else {
-					colorize(offset, offset + getLineEndFromOffset(offset));
-				}
+				originalTokenBounds = getTokenBounds(offset, length);
+			}
+
+			// do removal
+			super.remove(fb, offset, length);
+
+			// Get current token bounds
+			// If not already applying style, apply it
+			if (!styling) {
+				int[] currentTokenBounds = getTokenBounds(offset, length);
+				colorize(Math
+						.min(originalTokenBounds[0], currentTokenBounds[0]),
+						Math.max(originalTokenBounds[1], currentTokenBounds[1]));
 			}
 
 			if (!alreadyGrouping) {
@@ -134,7 +132,7 @@ public abstract class AbstractSyntaxColoringDocument extends UndoableDocument {
 		@Override
 		public void insertString(FilterBypass fb, int offset, String text,
 				AttributeSet attr) throws BadLocationException {
-			replace(fb, offset, 0, text, attr, containsCommentCharacter(text));
+			replace(fb, offset, 0, text, attr);
 		}
 	}
 
@@ -152,7 +150,7 @@ public abstract class AbstractSyntaxColoringDocument extends UndoableDocument {
 		}
 	}
 
-	protected abstract AttributeSet getCommentStyle();
+	protected abstract int[] getTokenBounds(int offset, int length);
 
-	protected abstract boolean containsCommentCharacter(String text);
+	protected abstract AttributeSet getCommentStyle();
 }

@@ -201,11 +201,7 @@ public class JavaDocument extends AbstractSyntaxColoringDocument {
 	@Override
 	protected void colorIn(int start, int end) throws BadLocationException {
 		String javaText = textPane.getText();
-		String aux = javaText.substring(0, start);
-		int startText = aux.lastIndexOf("\n");
-		if (startText == -1) {
-			startText = 0;
-		}
+		int startText = start;
 		int endText = end;
 		if (endText > javaText.length()) {
 			endText = javaText.length();
@@ -222,8 +218,13 @@ public class JavaDocument extends AbstractSyntaxColoringDocument {
 		try {
 			do {
 				token = tm.getNextToken();
-				int beginPos = NodeUtils.getPosition(javaText, token.beginLine,
-						token.beginColumn);
+				int beginPos;
+				if (token.kind == JavaParserConstants.EOF) {
+					beginPos = javaText.length();
+				} else {
+					beginPos = NodeUtils.getPosition(javaText, token.beginLine,
+							token.beginColumn);
+				}
 
 				// check comments
 				if (beginPos >= lastStyledPos) {
@@ -260,14 +261,52 @@ public class JavaDocument extends AbstractSyntaxColoringDocument {
 	}
 
 	@Override
-	protected boolean containsCommentCharacter(String text) {
-		boolean fullFile;
-		if (text.contains("*") || text.contains("/")) {
-			fullFile = true;
-		} else {
-			fullFile = false;
+	protected int[] getTokenBounds(int offset, int length) {
+		String javaText = textPane.getText();
+
+		JavaParserTokenManager tm = new JavaParserTokenManager(
+				new JavaCharStream(
+						new ByteArrayInputStream(javaText.getBytes())));
+		Token token = null;
+		Token initialToken = null;
+		Token endToken = null;
+		try {
+			do {
+				token = tm.getNextToken();
+				int beginPos = NodeUtils.getPosition(javaText, token.beginLine,
+						token.beginColumn);
+				int endPos = NodeUtils.getPosition(javaText, token.endLine,
+						token.endColumn);
+
+				if (beginPos < offset) {
+					initialToken = token;
+				}
+
+				if (endPos > offset + length) {
+					endToken = token;
+				}
+
+			} while ((token.kind != JavaParserTokenManager.EOF)
+					&& ((initialToken == null) || (endToken == null)));
+		} catch (TokenMgrError e1) {
 		}
-		return fullFile;
+
+		int init;
+		if (initialToken == null) {
+			init = 0;
+		} else {
+			init = NodeUtils.getPosition(javaText, initialToken.beginLine,
+					initialToken.beginColumn);
+		}
+
+		int end;
+		if (endToken == null) {
+			end = javaText.length();
+		} else {
+			end = NodeUtils.getPosition(javaText, endToken.endLine,
+					endToken.endColumn) + 1;
+		}
+		return new int[] { Math.max(init, 0), Math.max(end, 0) };
 	}
 
 }

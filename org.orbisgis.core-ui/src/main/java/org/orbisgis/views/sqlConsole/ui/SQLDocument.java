@@ -84,18 +84,8 @@ public class SQLDocument extends AbstractSyntaxColoringDocument {
 	protected void colorIn(int start, int end) throws BadLocationException {
 		String sqlText = textPane.getText();
 
-		String aux = sqlText.substring(0, start);
-		int startText = aux.lastIndexOf("\n");
-		if (startText == -1) {
-			startText = 0;
-		} else {
-			SQLEngineTokenManager tm = new SQLEngineTokenManager(
-					new SimpleCharStream(new ByteArrayInputStream(sqlText
-							.getBytes())));
-			int newStart = getNewStart(tm, startText, sqlText);
-			startText = newStart;
-		}
-		int endText = end + 1;
+		int startText = start;
+		int endText = end;
 		if (endText > sqlText.length()) {
 			endText = sqlText.length();
 		}
@@ -111,8 +101,13 @@ public class SQLDocument extends AbstractSyntaxColoringDocument {
 		try {
 			do {
 				token = tm.getNextToken();
-				int beginPos = NodeUtils.getPosition(sqlText, token.beginLine,
-						token.beginColumn);
+				int beginPos;
+				if (token.kind == SQLEngineConstants.EOF) {
+					beginPos = sqlText.length();
+				} else {
+					beginPos = NodeUtils.getPosition(sqlText, token.beginLine,
+							token.beginColumn);
+				}
 
 				// check comments
 				if (beginPos >= lastStyledPos) {
@@ -134,29 +129,6 @@ public class SQLDocument extends AbstractSyntaxColoringDocument {
 
 	}
 
-	private int getNewStart(SQLEngineTokenManager tm, int start, String sqlText) {
-		int beginPos = 0;
-		Token previousToken = null;
-		Token token = null;
-		try {
-			do {
-				previousToken = token;
-				token = tm.getNextToken();
-				beginPos = NodeUtils.getPosition(sqlText, token.beginLine,
-						token.beginColumn);
-			} while ((token.kind != SQLEngineTokenManager.EOF)
-					&& (beginPos < start));
-		} catch (TokenMgrError e1) {
-		}
-
-		if (previousToken == null) {
-			return 0;
-		} else {
-			return NodeUtils.getPosition(sqlText, previousToken.beginLine,
-					previousToken.beginColumn);
-		}
-	}
-
 	private AttributeSet getStyle(int kind) {
 		SimpleAttributeSet style = kindStyle.get(kind);
 		if (style == null) {
@@ -172,13 +144,51 @@ public class SQLDocument extends AbstractSyntaxColoringDocument {
 	}
 
 	@Override
-	protected boolean containsCommentCharacter(String text) {
-		boolean fullFile;
-		if (text.contains("*") || text.contains("/") || text.contains("-")) {
-			fullFile = true;
-		} else {
-			fullFile = false;
+	protected int[] getTokenBounds(int offset, int length) {
+		String sqlText = textPane.getText();
+
+		SQLEngineTokenManager tm = new SQLEngineTokenManager(
+				new SimpleCharStream(new ByteArrayInputStream(sqlText
+						.getBytes())));
+		Token token = null;
+		Token initialToken = null;
+		Token endToken = null;
+		try {
+			do {
+				token = tm.getNextToken();
+				int beginPos = NodeUtils.getPosition(sqlText, token.beginLine,
+						token.beginColumn);
+				int endPos = NodeUtils.getPosition(sqlText, token.endLine,
+						token.endColumn);
+
+				if (beginPos < offset) {
+					initialToken = token;
+				}
+
+				if (endPos > offset + length) {
+					endToken = token;
+				}
+
+			} while ((token.kind != SQLEngineTokenManager.EOF)
+					&& ((initialToken == null) || (endToken == null)));
+		} catch (TokenMgrError e1) {
 		}
-		return fullFile;
+
+		int init;
+		if (initialToken == null) {
+			init = 0;
+		} else {
+			init = NodeUtils.getPosition(sqlText, initialToken.beginLine,
+					initialToken.beginColumn);
+		}
+
+		int end;
+		if (endToken == null) {
+			end = sqlText.length();
+		} else {
+			end = NodeUtils.getPosition(sqlText, endToken.endLine,
+					endToken.endColumn) + 1;
+		}
+		return new int[] { Math.max(init, 0), Math.max(end, 0) };
 	}
 }
