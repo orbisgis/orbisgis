@@ -112,10 +112,14 @@ public class NodeUtils {
 	public static int getPosition(String text, int line, int column) {
 		line = line - 1;
 		column = column - 1;
-		String[] lines = text.split("\n");
 		int acum = 0;
-		for (int i = 0; i < line; i++) {
-			acum = acum + lines[i].length() + 1;
+		int lastPos = 0;
+		int breakPos;
+		int i = 0;
+		while ((i < line) && ((breakPos = text.indexOf("\n", lastPos)) != -1)) {
+			acum = acum + breakPos - lastPos + 1;
+			lastPos = breakPos + 1;
+			i++;
 		}
 		return acum + column;
 	}
