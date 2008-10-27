@@ -40,11 +40,10 @@ import java.awt.Component;
 
 import javax.swing.JLabel;
 
+import org.orbisgis.edition.EditableElement;
+import org.orbisgis.edition.EditableElementException;
+import org.orbisgis.edition.EditableElementListener;
 import org.orbisgis.editor.IEditor;
-import org.orbisgis.geocognition.AbstractGeocognitionElement;
-import org.orbisgis.geocognition.GeocognitionElement;
-import org.orbisgis.geocognition.GeocognitionElementFactory;
-import org.orbisgis.geocognition.mapContext.GeocognitionException;
 import org.orbisgis.progress.IProgressMonitor;
 
 public class ErrorEditor implements IEditor {
@@ -61,7 +60,7 @@ public class ErrorEditor implements IEditor {
 		return false;
 	}
 
-	public GeocognitionElement getElement() {
+	public EditableElement getElement() {
 		return new DummyElement();
 	}
 
@@ -69,7 +68,7 @@ public class ErrorEditor implements IEditor {
 		return documentName;
 	}
 
-	public void setElement(GeocognitionElement obj) {
+	public void setElement(EditableElement obj) {
 	}
 
 	public void delete() {
@@ -89,35 +88,12 @@ public class ErrorEditor implements IEditor {
 	public void saveStatus() {
 	}
 
-	private class DummyElement extends AbstractGeocognitionElement implements
-			GeocognitionElement {
-
-		@Override
-		public void addElement(GeocognitionElement element)
-				throws UnsupportedOperationException {
-			
-		}
+	private class DummyElement implements EditableElement {
 
 		@Override
 		public void close(IProgressMonitor progressMonitor)
 				throws UnsupportedOperationException {
-			
-		}
 
-		@Override
-		public GeocognitionElement getElement(int i)
-				throws UnsupportedOperationException {
-			return null;
-		}
-
-		@Override
-		public int getElementCount() throws UnsupportedOperationException {
-			return 0;
-		}
-
-		@Override
-		public Object getJAXBObject() {
-			return null;
 		}
 
 		@Override
@@ -131,24 +107,14 @@ public class ErrorEditor implements IEditor {
 		}
 
 		@Override
-		public boolean isFolder() {
-			return false;
-		}
-
-		@Override
 		public void open(IProgressMonitor progressMonitor)
-				throws UnsupportedOperationException, GeocognitionException {
-			
-		}
+				throws UnsupportedOperationException, EditableElementException {
 
-		@Override
-		public boolean removeElement(GeocognitionElement element) {
-			return false;
 		}
 
 		@Override
 		public void save() throws UnsupportedOperationException {
-			
+
 		}
 
 		@Override
@@ -157,47 +123,17 @@ public class ErrorEditor implements IEditor {
 		}
 
 		@Override
-		public GeocognitionElement getElement(String id) {
-			return null;
-		}
-
-		@Override
-		public GeocognitionElementFactory getFactory() {
-			return null;
-		}
-
-		@Override
-		public String getXMLContent() throws GeocognitionException {
-			return null;
-		}
-
-		@Override
-		public void setXMLContent(String xml) throws GeocognitionException {
-			
-		}
-
-		@Override
-		public boolean removeElement(String elementId) {
-			return false;
-		}
-
-		@Override
-		public GeocognitionElement cloneElement() throws GeocognitionException {
-			return null;
-		}
-
-		@Override
 		public String getId() {
 			return null;
 		}
 
 		@Override
-		public void setId(String id) throws IllegalArgumentException {
-			
+		public void addElementListener(EditableElementListener listener) {
 		}
 
 		@Override
-		public void elementRemoved(GeocognitionElement oldParent) {
+		public boolean removeElementListener(EditableElementListener listener) {
+			return true;
 		}
 
 	}

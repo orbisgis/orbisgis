@@ -6,6 +6,7 @@ import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.IOException;
 
 import org.orbisgis.geocognition.GeocognitionElement;
+import org.orbisgis.views.editor.TransferableEditableElement;
 
 public class TransferableGeocognitionElement implements Transferable {
 
@@ -24,6 +25,9 @@ public class TransferableGeocognitionElement implements Transferable {
 		Object ret = null;
 		if (flavor.equals(geocognitionFlavor)) {
 			ret = elements;
+		} else if (flavor
+				.equals(TransferableEditableElement.editableElementFlavor)) {
+			ret = elements;
 		} else if (flavor.equals(DataFlavor.stringFlavor)) {
 			String retString = "";
 			String separator = "";
@@ -39,12 +43,16 @@ public class TransferableGeocognitionElement implements Transferable {
 
 	@Override
 	public DataFlavor[] getTransferDataFlavors() {
-		return (new DataFlavor[] { geocognitionFlavor, DataFlavor.stringFlavor });
+		return (new DataFlavor[] {
+				TransferableEditableElement.editableElementFlavor,
+				geocognitionFlavor, DataFlavor.stringFlavor });
 	}
 
 	@Override
 	public boolean isDataFlavorSupported(DataFlavor flavor) {
-		return (flavor.equals(geocognitionFlavor) || flavor
+		return (flavor
+				.equals(TransferableEditableElement.editableElementFlavor)
+				|| flavor.equals(geocognitionFlavor) || flavor
 				.equals(DataFlavor.stringFlavor));
 	}
 

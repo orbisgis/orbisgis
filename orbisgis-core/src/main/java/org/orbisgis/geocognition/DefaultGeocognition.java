@@ -19,6 +19,7 @@ import javax.xml.transform.stream.StreamSource;
 import org.apache.log4j.Logger;
 import org.orbisgis.PersistenceException;
 import org.orbisgis.Services;
+import org.orbisgis.edition.EditableElementException;
 import org.orbisgis.errorManager.ErrorManager;
 import org.orbisgis.geocognition.mapContext.GeocognitionException;
 import org.orbisgis.geocognition.persistence.GeocognitionNode;
@@ -251,6 +252,8 @@ public class DefaultGeocognition implements Geocognition {
 		} catch (PersistenceException e) {
 			throw new GeocognitionException(e);
 		} catch (UnsupportedOperationException e) {
+			throw new GeocognitionException(e);
+		} catch (EditableElementException e) {
 			throw new GeocognitionException(e);
 		}
 

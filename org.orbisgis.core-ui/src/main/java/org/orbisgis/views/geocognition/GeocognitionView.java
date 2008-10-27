@@ -26,10 +26,12 @@ import javax.swing.JToggleButton;
 
 import org.orbisgis.PersistenceException;
 import org.orbisgis.Services;
+import org.orbisgis.edition.EditableElement;
+import org.orbisgis.edition.EditableElementListener;
+import org.orbisgis.editor.IEditor;
 import org.orbisgis.geocognition.Geocognition;
 import org.orbisgis.geocognition.GeocognitionElement;
 import org.orbisgis.geocognition.GeocognitionElementFactory;
-import org.orbisgis.geocognition.GeocognitionElementListener;
 import org.orbisgis.geocognition.GeocognitionListener;
 import org.orbisgis.pluginManager.ExtensionPointManager;
 import org.orbisgis.pluginManager.ItemAttributes;
@@ -246,8 +248,7 @@ public class GeocognitionView extends JPanel implements IView {
 
 	@Override
 	public void saveStatus() throws PersistenceException {
-		Workspace ws = (Workspace) Services
-				.getService(Workspace.class);
+		Workspace ws = (Workspace) Services.getService(Workspace.class);
 		File cognitionFile = ws.getFile(COGNITION_PERSISTENCE_FILE);
 		Geocognition geocognition = Services.getService(Geocognition.class);
 		try {
@@ -266,13 +267,33 @@ public class GeocognitionView extends JPanel implements IView {
 		@Override
 		public boolean elementRemoving(Geocognition geocognition,
 				GeocognitionElement element) {
-			return true;
+			return closeEditorsRecursively(element);
 		}
 
 		@Override
 		public void elementRemoved(Geocognition geocognition,
 				GeocognitionElement element) {
 			removeListenerRecursively(element);
+		}
+
+		private boolean closeEditorsRecursively(GeocognitionElement element) {
+			if (element.isFolder()) {
+				for (int i = 0; i < element.getElementCount(); i++) {
+					if (!closeEditorsRecursively(element.getElement(i))) {
+						return false;
+					}
+				}
+			} else {
+				EditorManager em = Services.getService(EditorManager.class);
+				IEditor[] editors = em.getEditor(element);
+				for (IEditor editor : editors) {
+					if (!em.closeEditor(editor)) {
+						return false;
+					}
+				}
+			}
+			
+			return true;
 		}
 
 		@Override
@@ -307,19 +328,19 @@ public class GeocognitionView extends JPanel implements IView {
 
 	}
 
-	private class ModificationListener implements GeocognitionElementListener {
+	private class ModificationListener implements EditableElementListener {
 
 		@Override
-		public void contentChanged(GeocognitionElement element) {
+		public void contentChanged(EditableElement element) {
 		}
 
 		@Override
-		public void idChanged(GeocognitionElement element) {
+		public void idChanged(EditableElement element) {
 
 		}
 
 		@Override
-		public void saved(GeocognitionElement element) {
+		public void saved(EditableElement element) {
 			tree.repaint();
 		}
 

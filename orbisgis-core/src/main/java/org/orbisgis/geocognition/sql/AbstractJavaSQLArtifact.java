@@ -6,6 +6,7 @@ import java.util.Map;
 
 import org.gdms.sql.customQuery.QueryManager;
 import org.gdms.sql.function.FunctionManager;
+import org.orbisgis.edition.EditableElementException;
 import org.orbisgis.geocognition.AbstractExtensionElement;
 import org.orbisgis.geocognition.GeocognitionElementContentListener;
 import org.orbisgis.geocognition.GeocognitionElementFactory;
@@ -112,7 +113,7 @@ public abstract class AbstractJavaSQLArtifact extends AbstractExtensionElement
 	}
 
 	@Override
-	public void save() throws GeocognitionException {
+	public void save() throws EditableElementException {
 		this.revertStatus = getProperty(this.code);
 		publish();
 	}
@@ -184,7 +185,7 @@ public abstract class AbstractJavaSQLArtifact extends AbstractExtensionElement
 			properties.put(COMPILE_RESULT, COMPILE_ERROR);
 		} catch (TokenMgrError e) {
 			properties.put(COMPILE_RESULT, COMPILE_ERROR);
-		} catch (GeocognitionException e) {
+		} catch (EditableElementException e) {
 			properties.put(COMPILE_RESULT, COMPILE_ERROR);
 		}
 	}
@@ -209,7 +210,7 @@ public abstract class AbstractJavaSQLArtifact extends AbstractExtensionElement
 		jp.getRootNode().jjtAccept(nrv, null);
 	}
 
-	private void publish() throws GeocognitionException {
+	private void publish() throws EditableElementException {
 		try {
 			changeCode(id);
 			Class<?> cl = this.code.compile();
@@ -221,26 +222,26 @@ public abstract class AbstractJavaSQLArtifact extends AbstractExtensionElement
 					properties.put(COMPILE_RESULT, COMPILE_OK);
 				} catch (IllegalArgumentException e) {
 					properties.put(COMPILE_RESULT, COMPILE_ERROR);
-					throw new GeocognitionException(
+					throw new EditableElementException(
 							"Invalid function implementation", e);
 				}
 			} else {
 				properties.put(COMPILE_RESULT, COMPILE_ERROR);
-				throw new GeocognitionException("Error compiling the class");
+				throw new EditableElementException("Error compiling the class");
 			}
 		} catch (CompilationException e) {
 			properties.put(COMPILE_RESULT, COMPILE_ERROR);
-			throw new GeocognitionException("Compile error", e);
+			throw new EditableElementException("Compile error", e);
 		} catch (ClassCastException e) {
 			properties.put(COMPILE_RESULT, COMPILE_ERROR);
-			throw new GeocognitionException("The class must implement "
+			throw new EditableElementException("The class must implement "
 					+ getInterfaceName(), e);
 		} catch (ParseException e) {
 			properties.put(COMPILE_RESULT, COMPILE_ERROR);
-			throw new GeocognitionException("Cannot parse content", e);
+			throw new EditableElementException("Cannot parse content", e);
 		} catch (TokenMgrError e) {
 			properties.put(COMPILE_RESULT, COMPILE_ERROR);
-			throw new GeocognitionException("Cannot parse content", e);
+			throw new EditableElementException("Cannot parse content", e);
 		}
 	}
 

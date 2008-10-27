@@ -1,5 +1,6 @@
 package org.orbisgis.geocognition.symbology;
 
+import org.orbisgis.edition.EditableElementException;
 import org.orbisgis.geocognition.AbstractExtensionElement;
 import org.orbisgis.geocognition.GeocognitionElementContentListener;
 import org.orbisgis.geocognition.GeocognitionElementFactory;
@@ -41,7 +42,7 @@ public class GeocognitionLegend extends AbstractExtensionElement implements
 
 	@Override
 	public void open(IProgressMonitor progressMonitor)
-			throws UnsupportedOperationException, GeocognitionException {
+			throws UnsupportedOperationException, EditableElementException {
 		revertStatus = getJAXBObject();
 	}
 

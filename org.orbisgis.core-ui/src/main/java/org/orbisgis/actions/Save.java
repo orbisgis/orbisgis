@@ -2,9 +2,9 @@ package org.orbisgis.actions;
 
 import org.orbisgis.Services;
 import org.orbisgis.action.IAction;
+import org.orbisgis.edition.EditableElementException;
 import org.orbisgis.editor.IEditor;
 import org.orbisgis.errorManager.ErrorManager;
-import org.orbisgis.geocognition.mapContext.GeocognitionException;
 import org.orbisgis.views.editor.EditorManager;
 
 public class Save implements IAction {
@@ -15,7 +15,7 @@ public class Save implements IAction {
 		if (editor != null) {
 			try {
 				editor.getElement().save();
-			} catch (GeocognitionException e) {
+			} catch (EditableElementException e) {
 				Services.getService(ErrorManager.class).error(
 						"Problem saving", e);
 			}

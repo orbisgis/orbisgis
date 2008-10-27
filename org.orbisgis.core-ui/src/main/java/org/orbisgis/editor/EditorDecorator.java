@@ -41,7 +41,7 @@ import java.awt.Component;
 import javax.swing.Icon;
 
 import org.orbisgis.PersistenceException;
-import org.orbisgis.geocognition.GeocognitionElement;
+import org.orbisgis.edition.EditableElement;
 
 public class EditorDecorator implements IEditor {
 
@@ -79,7 +79,7 @@ public class EditorDecorator implements IEditor {
 		editor.saveStatus();
 	}
 
-	public void setElement(GeocognitionElement object) {
+	public void setElement(EditableElement object) {
 		editor.setElement(object);
 	}
 
@@ -91,7 +91,7 @@ public class EditorDecorator implements IEditor {
 		return icon;
 	}
 
-	public GeocognitionElement getElement() {
+	public EditableElement getElement() {
 		return editor.getElement();
 	}
 

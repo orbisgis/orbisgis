@@ -4,16 +4,16 @@
 package org.orbisgis.views.geocognition.actions;
 
 import org.orbisgis.Services;
-import org.orbisgis.geocognition.GeocognitionElement;
+import org.orbisgis.edition.EditableElement;
 import org.orbisgis.pluginManager.background.BackgroundJob;
 import org.orbisgis.progress.IProgressMonitor;
 import org.orbisgis.views.editor.EditorManager;
 
 public class OpenGeocognitionElementJob implements BackgroundJob {
 
-	private GeocognitionElement[] elements;
+	private EditableElement[] elements;
 
-	public OpenGeocognitionElementJob(GeocognitionElement... elements) {
+	public OpenGeocognitionElementJob(EditableElement... elements) {
 		this.elements = elements;
 	}
 
@@ -23,7 +23,7 @@ public class OpenGeocognitionElementJob implements BackgroundJob {
 
 	public void run(IProgressMonitor pm) {
 		EditorManager em = Services.getService(EditorManager.class);
-		for (GeocognitionElement element : elements) {
+		for (EditableElement element : elements) {
 			em.open(element);
 		}
 	}

@@ -1,6 +1,7 @@
 package org.orbisgis.views.geocognition.sync.editor.text;
 
 import org.orbisgis.Services;
+import org.orbisgis.edition.EditableElementException;
 import org.orbisgis.geocognition.mapContext.GeocognitionException;
 import org.orbisgis.geocognition.sql.Code;
 import org.orbisgis.geocognition.sql.GeocognitionCustomQueryFactory;
@@ -70,7 +71,7 @@ public class CompareCodeEditor extends AbstractCompareTextEditor {
 			dec.save();
 		} catch (UnsupportedOperationException e) {
 			Services.getErrorManager().error("bug!", e);
-		} catch (GeocognitionException e) {
+		} catch (EditableElementException e) {
 			Services.getErrorManager().warning(
 					"Some extraordinary conditions occurred while saving", e);
 		}

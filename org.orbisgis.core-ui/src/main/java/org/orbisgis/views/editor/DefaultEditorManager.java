@@ -37,11 +37,11 @@
 package org.orbisgis.views.editor;
 
 import org.apache.log4j.Logger;
+import org.orbisgis.edition.EditableElement;
+import org.orbisgis.edition.EditableElementException;
 import org.orbisgis.editor.EPEditorHelper;
 import org.orbisgis.editor.EditorDecorator;
 import org.orbisgis.editor.IEditor;
-import org.orbisgis.geocognition.GeocognitionElement;
-import org.orbisgis.geocognition.mapContext.GeocognitionException;
 import org.orbisgis.progress.NullProgressMonitor;
 
 public class DefaultEditorManager implements EditorManager {
@@ -55,7 +55,7 @@ public class DefaultEditorManager implements EditorManager {
 		this.editorPanel = editor;
 	}
 
-	public GeocognitionElement getActiveElement() {
+	public EditableElement getActiveElement() {
 		return editorPanel.getCurrentDocument();
 	}
 
@@ -76,12 +76,12 @@ public class DefaultEditorManager implements EditorManager {
 	}
 
 	@Override
-	public boolean hasEditor(GeocognitionElement element) {
+	public boolean hasEditor(EditableElement element) {
 		return EPEditorHelper.getFirstEditor(element) != null;
 	}
 
 	@Override
-	public void open(GeocognitionElement element)
+	public void open(EditableElement element)
 			throws UnsupportedOperationException {
 		EditorDecorator editor = EPEditorHelper.getFirstEditor(element);
 
@@ -94,7 +94,7 @@ public class DefaultEditorManager implements EditorManager {
 				try {
 					element.open(new NullProgressMonitor());
 					editor.setElement(element);
-				} catch (GeocognitionException e) {
+				} catch (EditableElementException e) {
 					logger.debug("Cannot open the document: "
 							+ element.getId(), e);
 					editor = new EditorDecorator(new ErrorEditor(element
@@ -106,6 +106,11 @@ public class DefaultEditorManager implements EditorManager {
 						.getClass());
 			}
 		}
+	}
+
+	@Override
+	public IEditor[] getEditor(EditableElement element) {
+		return this.editorPanel.getEditor(element);
 	}
 
 }

@@ -8,6 +8,7 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 
 import org.orbisgis.PersistenceException;
+import org.orbisgis.edition.EditableElementException;
 import org.orbisgis.geocognition.mapContext.GeocognitionException;
 import org.orbisgis.progress.IProgressMonitor;
 
@@ -154,12 +155,12 @@ public final class LeafElement extends AbstractGeocognitionElement implements
 
 	@Override
 	public void save() throws UnsupportedOperationException,
-			GeocognitionException {
+			EditableElementException {
 		modified = null;
-		GeocognitionException problem = null;
+		EditableElementException problem = null;
 		try {
 			element.save();
-		} catch (GeocognitionException e) {
+		} catch (EditableElementException e) {
 			problem = e;
 		}
 		fireSave();
@@ -170,7 +171,7 @@ public final class LeafElement extends AbstractGeocognitionElement implements
 
 	@Override
 	public void open(IProgressMonitor progressMonitor)
-			throws UnsupportedOperationException, GeocognitionException {
+			throws UnsupportedOperationException, EditableElementException {
 		modified = null;
 		element.setElementListener(contentListener);
 		element.open(progressMonitor);

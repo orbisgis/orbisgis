@@ -4,9 +4,10 @@ import java.util.ArrayList;
 import java.util.Map;
 
 import org.orbisgis.Services;
+import org.orbisgis.edition.EditableElementException;
+import org.orbisgis.edition.EditableElementListener;
 import org.orbisgis.geocognition.GeocognitionElement;
 import org.orbisgis.geocognition.GeocognitionElementFactory;
-import org.orbisgis.geocognition.GeocognitionElementListener;
 import org.orbisgis.geocognition.mapContext.GeocognitionException;
 import org.orbisgis.progress.IProgressMonitor;
 import org.orbisgis.views.geocognition.sync.editor.EditorElementListener;
@@ -58,12 +59,12 @@ public class GeocognitionElementDecorator implements GeocognitionElement {
 	}
 
 	@Override
-	public void addElementListener(GeocognitionElementListener listener) {
+	public void addElementListener(EditableElementListener listener) {
 		element.addElementListener(listener);
 	}
 
 	@Override
-	public boolean removeElementListener(GeocognitionElementListener listener) {
+	public boolean removeElementListener(EditableElementListener listener) {
 		return element.removeElementListener(listener);
 	}
 
@@ -209,13 +210,13 @@ public class GeocognitionElementDecorator implements GeocognitionElement {
 
 	@Override
 	public void open(IProgressMonitor progressMonitor)
-			throws UnsupportedOperationException, GeocognitionException {
+			throws UnsupportedOperationException, EditableElementException {
 		element.open(progressMonitor);
 	}
 
 	@Override
 	public void save() throws UnsupportedOperationException,
-			GeocognitionException {
+			EditableElementException {
 		element.save();
 		fireElementChanged();
 	}

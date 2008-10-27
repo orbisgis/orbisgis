@@ -4,35 +4,37 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.orbisgis.edition.EditableElementListener;
+
 public abstract class AbstractGeocognitionElement implements
 		GeocognitionElement {
-	private ArrayList<GeocognitionElementListener> listeners = new ArrayList<GeocognitionElementListener>();
+	private ArrayList<EditableElementListener> listeners = new ArrayList<EditableElementListener>();
 	private GeocognitionElement parent = null;
 
 	protected void fireContentChanged() {
-		for (GeocognitionElementListener listener : listeners) {
+		for (EditableElementListener listener : listeners) {
 			listener.contentChanged(this);
 		}
 	}
 
 	protected void fireSave() {
-		for (GeocognitionElementListener listener : listeners) {
+		for (EditableElementListener listener : listeners) {
 			listener.saved(this);
 		}
 	}
 
 	@Override
-	public void addElementListener(GeocognitionElementListener listener) {
+	public void addElementListener(EditableElementListener listener) {
 		listeners.add(listener);
 	}
 
 	@Override
-	public boolean removeElementListener(GeocognitionElementListener listener) {
+	public boolean removeElementListener(EditableElementListener listener) {
 		return listeners.remove(listener);
 	}
 
 	protected void fireIdChanged() {
-		for (GeocognitionElementListener listener : listeners) {
+		for (EditableElementListener listener : listeners) {
 			listener.idChanged(this);
 		}
 	}

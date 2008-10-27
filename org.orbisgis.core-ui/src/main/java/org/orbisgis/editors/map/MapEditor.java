@@ -46,11 +46,11 @@ import org.orbisgis.action.IActionFactory;
 import org.orbisgis.action.ISelectableActionAdapter;
 import org.orbisgis.action.MenuTree;
 import org.orbisgis.action.ToolBarArray;
+import org.orbisgis.edition.EditableElement;
 import org.orbisgis.editor.IEditor;
 import org.orbisgis.editor.IExtensionPointEditor;
 import org.orbisgis.editors.map.tool.Automaton;
 import org.orbisgis.editors.map.tool.TransitionException;
-import org.orbisgis.geocognition.GeocognitionElement;
 import org.orbisgis.layerModel.MapContext;
 import org.orbisgis.map.MapTransform;
 import org.orbisgis.views.editor.EditorManager;
@@ -58,7 +58,7 @@ import org.orbisgis.views.editor.EditorManager;
 public class MapEditor implements IExtensionPointEditor {
 
 	private MapControl map;
-	private GeocognitionElement mapElement;
+	private EditableElement mapElement;
 	private static Automaton defaultTool;
 	private static String defaultMouseCursor;
 
@@ -66,7 +66,7 @@ public class MapEditor implements IExtensionPointEditor {
 		return typeId.equals("org.orbisgis.geocognition.MapContext");
 	}
 
-	public void setElement(GeocognitionElement element) {
+	public void setElement(EditableElement element) {
 		MapContext mapContext = (MapContext) element.getObject();
 		try {
 			map = new MapControl(mapContext, getIndependentToolInstance(
@@ -113,7 +113,7 @@ public class MapEditor implements IExtensionPointEditor {
 		return mapElement.getId();
 	}
 
-	public GeocognitionElement getElement() {
+	public EditableElement getElement() {
 		return mapElement;
 	}
 

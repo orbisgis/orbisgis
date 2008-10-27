@@ -1,5 +1,6 @@
 package org.orbisgis.geocognition;
 
+import org.orbisgis.edition.EditableElementException;
 import org.orbisgis.geocognition.mapContext.GeocognitionException;
 import org.orbisgis.progress.IProgressMonitor;
 
@@ -57,12 +58,12 @@ public class UnsupportedExtensionElement extends AbstractExtensionElement
 
 	@Override
 	public void open(IProgressMonitor progressMonitor)
-			throws UnsupportedOperationException, GeocognitionException {
+			throws UnsupportedOperationException, EditableElementException {
 	}
 
 	@Override
 	public void save() throws UnsupportedOperationException,
-			GeocognitionException {
+			EditableElementException {
 	}
 
 }

@@ -1,5 +1,6 @@
 package org.orbisgis.geocognition.mapContext;
 
+import org.orbisgis.edition.EditableElementException;
 import org.orbisgis.geocognition.AbstractExtensionElement;
 import org.orbisgis.geocognition.GeocognitionElementContentListener;
 import org.orbisgis.geocognition.GeocognitionElementFactory;
@@ -65,7 +66,7 @@ public class GeocognitionMapContext extends AbstractExtensionElement implements
 
 	@Override
 	public void open(IProgressMonitor progressMonitor)
-			throws UnsupportedOperationException, GeocognitionException {
+			throws UnsupportedOperationException, EditableElementException {
 		try {
 			if (revertStatus == null) {
 				revertStatus = mapContext.getJAXBObject();
@@ -77,7 +78,7 @@ public class GeocognitionMapContext extends AbstractExtensionElement implements
 			mapContext.getLayerModel().addLayerListenerRecursively(
 					changeListener);
 		} catch (LayerException e) {
-			throw new GeocognitionException("Cannot open map", e);
+			throw new EditableElementException("Cannot open map", e);
 		}
 	}
 

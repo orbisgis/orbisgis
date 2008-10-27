@@ -64,17 +64,14 @@ import net.infonode.gui.panel.SimplePanel;
 
 import org.apache.log4j.Logger;
 import org.orbisgis.Services;
+import org.orbisgis.edition.EditableElement;
+import org.orbisgis.edition.EditableElementException;
+import org.orbisgis.edition.EditableElementListener;
 import org.orbisgis.editor.EditorDecorator;
 import org.orbisgis.editor.IEditor;
 import org.orbisgis.errorManager.ErrorManager;
-import org.orbisgis.geocognition.Geocognition;
-import org.orbisgis.geocognition.GeocognitionElement;
-import org.orbisgis.geocognition.GeocognitionElementListener;
-import org.orbisgis.geocognition.GeocognitionListener;
-import org.orbisgis.geocognition.mapContext.GeocognitionException;
 import org.orbisgis.pluginManager.background.BackgroundManager;
 import org.orbisgis.progress.NullProgressMonitor;
-import org.orbisgis.views.geocognition.TransferableGeocognitionElement;
 import org.orbisgis.views.geocognition.actions.OpenGeocognitionElementJob;
 
 public class EditorPanel extends Container {
@@ -85,7 +82,6 @@ public class EditorPanel extends Container {
 	private EditorDecorator lastEditor = null;
 	private EditorView editorView;
 	private ChangeNameListener changeNameListener = new ChangeNameListener();
-	private DocumentRemovalListener removalListener;
 
 	public EditorPanel(EditorView editorView) {
 		this.setLayout(new BorderLayout());
@@ -143,10 +139,10 @@ public class EditorPanel extends Container {
 						.getService(BackgroundManager.class);
 				Transferable trans = dtde.getTransferable();
 				if (trans
-						.isDataFlavorSupported(TransferableGeocognitionElement.geocognitionFlavor)) {
+						.isDataFlavorSupported(TransferableEditableElement.editableElementFlavor)) {
 					try {
-						GeocognitionElement[] elements = (GeocognitionElement[]) trans
-								.getTransferData(TransferableGeocognitionElement.geocognitionFlavor);
+						EditableElement[] elements = (EditableElement[]) trans
+								.getTransferData(TransferableEditableElement.editableElementFlavor);
 						backgroundManager
 								.backgroundOperation(new OpenGeocognitionElementJob(
 										elements));
@@ -163,7 +159,7 @@ public class EditorPanel extends Container {
 		}));
 	}
 
-	public GeocognitionElement getCurrentDocument() {
+	public EditableElement getCurrentDocument() {
 		if (lastEditor != null) {
 			return lastEditor.getElement();
 		} else {
@@ -177,7 +173,7 @@ public class EditorPanel extends Container {
 	 * @return True if the specified document is currently being edited by an
 	 *         editor of the specified class
 	 */
-	public boolean isBeingEdited(GeocognitionElement doc,
+	public boolean isBeingEdited(EditableElement doc,
 			Class<? extends IEditor> editorClass) {
 		return findViewWithEditor(root, doc, editorClass) != null;
 	}
@@ -188,7 +184,7 @@ public class EditorPanel extends Container {
 	 * @param element
 	 * @param editorClass
 	 */
-	public void showEditor(GeocognitionElement document,
+	public void showEditor(EditableElement document,
 			Class<? extends IEditor> editorClass) {
 		View existingView = findViewWithEditor(root, document, editorClass);
 		if (existingView != null) {
@@ -207,7 +203,18 @@ public class EditorPanel extends Container {
 		return null;
 	}
 
-	private EditorInfo[] getEditorsByDocument(GeocognitionElement document) {
+	public IEditor[] getEditor(EditableElement element) {
+		ArrayList<IEditor> ret = new ArrayList<IEditor>();
+		for (EditorInfo editorInfo : editorsInfo) {
+			if (editorInfo.getDocument() == element) {
+				ret.add(editorInfo.getEditorDecorator());
+			}
+		}
+
+		return ret.toArray(new IEditor[0]);
+	}
+
+	private EditorInfo[] getEditorsByDocument(EditableElement document) {
 		ArrayList<EditorInfo> ret = new ArrayList<EditorInfo>();
 		for (EditorInfo editorInfo : editorsInfo) {
 			if (editorInfo.getDocument() == document) {
@@ -235,14 +242,9 @@ public class EditorPanel extends Container {
 
 		editor.getElement().addElementListener(changeNameListener);
 
-		if (removalListener == null) {
-			removalListener = new DocumentRemovalListener();
-			Geocognition gc = Services.getService(Geocognition.class);
-			gc.addGeocognitionListener(removalListener);
-		}
 	}
 
-	private View findViewWithEditor(DockingWindow wnd, GeocognitionElement doc,
+	private View findViewWithEditor(DockingWindow wnd, EditableElement doc,
 			Class<? extends IEditor> editorClass) {
 		for (int i = 0; i < wnd.getChildWindowCount(); i++) {
 			DockingWindow child = wnd.getChildWindow(i);
@@ -270,15 +272,15 @@ public class EditorPanel extends Container {
 	}
 
 	public void saveAllDocuments() {
-		HashSet<GeocognitionElement> done = new HashSet<GeocognitionElement>();
+		HashSet<EditableElement> done = new HashSet<EditableElement>();
 		Iterator<EditorInfo> it = editorsInfo.iterator();
 		while (it.hasNext()) {
 			EditorInfo editorInfo = it.next();
-			GeocognitionElement document = editorInfo.getDocument();
+			EditableElement document = editorInfo.getDocument();
 			if (!done.contains(document)) {
 				try {
 					document.save();
-				} catch (GeocognitionException e) {
+				} catch (EditableElementException e) {
 					Services.getService(ErrorManager.class).error(
 							"Problem saving", e);
 				}
@@ -420,14 +422,14 @@ public class EditorPanel extends Container {
 		}
 	}
 
-	private class ChangeNameListener implements GeocognitionElementListener {
+	private class ChangeNameListener implements EditableElementListener {
 
 		@Override
-		public void idChanged(GeocognitionElement element) {
+		public void idChanged(EditableElement element) {
 			setTitle(element);
 		}
 
-		private void setTitle(GeocognitionElement element) {
+		private void setTitle(EditableElement element) {
 			EditorInfo[] infos = getEditorsByDocument(element);
 			for (EditorInfo editorInfo : infos) {
 				View view = editorInfo.getView();
@@ -441,53 +443,15 @@ public class EditorPanel extends Container {
 		}
 
 		@Override
-		public void contentChanged(GeocognitionElement element) {
+		public void contentChanged(EditableElement element) {
 			setTitle(element);
 		}
 
 		@Override
-		public void saved(GeocognitionElement element) {
+		public void saved(EditableElement element) {
 			setTitle(element);
 		}
 
-	}
-
-	private class DocumentRemovalListener implements GeocognitionListener {
-
-		@Override
-		public void elementAdded(Geocognition geocognition,
-				GeocognitionElement parent, GeocognitionElement newElement) {
-
-		}
-
-		@Override
-		public void elementRemoved(Geocognition geocognition,
-				GeocognitionElement element) {
-
-		}
-
-		@Override
-		public boolean elementRemoving(Geocognition geocognition,
-				GeocognitionElement element) {
-			EditorInfo[] infos = getEditorsByDocument(element);
-			for (EditorInfo editorInfo : infos) {
-				View view = editorInfo.getView();
-				return closeEditorView(view);
-			}
-
-			if (element.isFolder()) {
-				for (int i = 0; i < element.getElementCount(); i++) {
-					elementRemoving(geocognition, element.getElement(i));
-				}
-			}
-
-			return true;
-		}
-
-		@Override
-		public void elementMoved(Geocognition geocognition,
-				GeocognitionElement element, GeocognitionElement oldParent) {
-		}
 	}
 
 	private boolean closeEditorView(View view) {
@@ -504,11 +468,11 @@ public class EditorPanel extends Container {
 
 	private class EditorInfo {
 		private View view;
-		private GeocognitionElement element;
+		private EditableElement element;
 		private EditorDecorator editorDecorator;
 		private Component editorComponent;
 
-		public EditorInfo(View view, GeocognitionElement element,
+		public EditorInfo(View view, EditableElement element,
 				EditorDecorator editorDecorator, Component editorComponent) {
 			super();
 			this.view = view;
@@ -521,7 +485,7 @@ public class EditorPanel extends Container {
 			return view;
 		}
 
-		public GeocognitionElement getDocument() {
+		public EditableElement getDocument() {
 			return element;
 		}
 

@@ -36,7 +36,7 @@
  */
 package org.orbisgis.editor;
 
-import org.orbisgis.geocognition.GeocognitionElement;
+import org.orbisgis.edition.EditableElement;
 import org.orbisgis.view.IView;
 
 public interface IEditor extends IView {
@@ -50,7 +50,7 @@ public interface IEditor extends IView {
 	 *            element corresponds to the typeId accepted in the
 	 *            acceptDocument method
 	 */
-	void setElement(GeocognitionElement element);
+	void setElement(EditableElement element);
 
 	/**
 	 * Returns true if this editor can edit a geocognition element of the
@@ -74,6 +74,6 @@ public interface IEditor extends IView {
 	 * 
 	 * @return
 	 */
-	GeocognitionElement getElement();
+	EditableElement getElement();
 
 }

@@ -37,14 +37,14 @@
 package org.orbisgis.editors.map;
 
 import org.orbisgis.Services;
-import org.orbisgis.geocognition.GeocognitionElement;
+import org.orbisgis.edition.EditableElement;
 import org.orbisgis.layerModel.MapContext;
 import org.orbisgis.views.editor.EditorManager;
 
 public class DefaultMapContextManager implements MapContextManager {
 
 	public MapContext getActiveView() {
-		GeocognitionElement element = ((EditorManager) Services
+		EditableElement element = ((EditorManager) Services
 				.getService(EditorManager.class)).getActiveElement();
 		if ((element != null) && (element.getObject() instanceof MapContext)) {
 			return (MapContext) element.getObject();

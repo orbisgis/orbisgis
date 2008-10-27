@@ -13,6 +13,7 @@ import org.gdms.sql.parser.ParseException;
 import org.gdms.sql.strategies.SemanticException;
 import org.orbisgis.DataManager;
 import org.orbisgis.Services;
+import org.orbisgis.edition.EditableElementException;
 import org.orbisgis.geocognition.mapContext.GeocognitionException;
 import org.orbisgis.geocognition.sql.Code;
 import org.orbisgis.geocognition.sql.CustomQueryJavaCode;
@@ -149,7 +150,7 @@ public class SQLArtifactTest extends AbstractGeocognitionTest {
 	private void testChangeIdNotCompilingChangesCode(Code code,
 			String originalSQL, String modifiedIdSQL) throws ParseException,
 			SemanticException, DriverException, ExecutionException,
-			GeocognitionException {
+			EditableElementException {
 		// Register code
 		gc.addElement("A", code);
 

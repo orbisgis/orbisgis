@@ -41,13 +41,13 @@ import java.util.ArrayList;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 
-import org.orbisgis.geocognition.GeocognitionElement;
+import org.orbisgis.edition.EditableElement;
 import org.orbisgis.pluginManager.ExtensionPointManager;
 import org.orbisgis.pluginManager.ItemAttributes;
 
 public class EPEditorHelper {
 
-	public static EditorDecorator getFirstEditor(GeocognitionElement element) {
+	public static EditorDecorator getFirstEditor(EditableElement element) {
 		ExtensionPointManager<IEditor> epm = new ExtensionPointManager<IEditor>(
 				"org.orbisgis.Editor");
 		ArrayList<ItemAttributes<IEditor>> itemAttributes = epm

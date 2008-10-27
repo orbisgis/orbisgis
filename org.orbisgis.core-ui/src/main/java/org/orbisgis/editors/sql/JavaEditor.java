@@ -10,9 +10,9 @@ import javax.swing.JPanel;
 import javax.swing.text.JTextComponent;
 
 import org.orbisgis.PersistenceException;
+import org.orbisgis.edition.EditableElement;
+import org.orbisgis.edition.EditableElementListener;
 import org.orbisgis.editor.IEditor;
-import org.orbisgis.geocognition.GeocognitionElement;
-import org.orbisgis.geocognition.GeocognitionElementListener;
 import org.orbisgis.geocognition.sql.Code;
 import org.orbisgis.geocognition.sql.CodeListener;
 import org.orbisgis.ui.text.UndoableDocument;
@@ -22,7 +22,7 @@ import org.orbisgis.views.sqlConsole.ui.ConsolePanel;
 
 public abstract class JavaEditor implements IEditor {
 
-	private GeocognitionElement element;
+	private EditableElement element;
 	private Code code;
 	private ConsolePanel consolePanel;
 	private CodeListener codeListener;
@@ -34,7 +34,7 @@ public abstract class JavaEditor implements IEditor {
 	}
 
 	@Override
-	public GeocognitionElement getElement() {
+	public EditableElement getElement() {
 		return element;
 	}
 
@@ -44,7 +44,7 @@ public abstract class JavaEditor implements IEditor {
 	}
 
 	@Override
-	public void setElement(GeocognitionElement element) {
+	public void setElement(EditableElement element) {
 		this.element = element;
 		this.element.addElementListener(saveListener);
 		this.code = (Code) element.getObject();
@@ -144,18 +144,18 @@ public abstract class JavaEditor implements IEditor {
 		}
 	}
 
-	private class SaveListener implements GeocognitionElementListener {
+	private class SaveListener implements EditableElementListener {
 
 		@Override
-		public void contentChanged(GeocognitionElement element) {
+		public void contentChanged(EditableElement element) {
 		}
 
 		@Override
-		public void idChanged(GeocognitionElement element) {
+		public void idChanged(EditableElement element) {
 		}
 
 		@Override
-		public void saved(GeocognitionElement element) {
+		public void saved(EditableElement element) {
 			markErrors();
 		}
 

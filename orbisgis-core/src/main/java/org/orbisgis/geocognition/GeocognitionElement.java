@@ -2,9 +2,11 @@ package org.orbisgis.geocognition;
 
 import java.util.Map;
 
+import org.orbisgis.edition.EditableElement;
 import org.orbisgis.geocognition.mapContext.GeocognitionException;
 
-public interface GeocognitionElement extends GeocognitionCommonElement {
+public interface GeocognitionElement extends GeocognitionCommonElement,
+		EditableElement {
 
 	/**
 	 * Sets the id if this element. The id must be unique in the parent
@@ -16,8 +18,6 @@ public interface GeocognitionElement extends GeocognitionCommonElement {
 	 *             doesn't allow the name change
 	 */
 	void setId(String id) throws IllegalArgumentException;
-
-	String getId();
 
 	/**
 	 * @return
@@ -75,29 +75,6 @@ public interface GeocognitionElement extends GeocognitionCommonElement {
 	 * @return The specified element or null if there is no element with such id
 	 */
 	GeocognitionElement getElement(String id);
-
-	/**
-	 * Adds a listener to this element events
-	 * 
-	 * @param listener
-	 */
-	void addElementListener(GeocognitionElementListener listener);
-
-	/**
-	 * Removes a listener to this element events
-	 * 
-	 * @param listener
-	 * @return The removed listener or null if there was not such listener
-	 */
-	boolean removeElementListener(GeocognitionElementListener listener);
-
-	/**
-	 * Return if this element was modified since the last time save or open was
-	 * called
-	 * 
-	 * @return
-	 */
-	boolean isModified();
 
 	/**
 	 * Get the parent element

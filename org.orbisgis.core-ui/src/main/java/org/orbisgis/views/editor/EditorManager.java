@@ -36,28 +36,28 @@
  */
 package org.orbisgis.views.editor;
 
+import org.orbisgis.edition.EditableElement;
 import org.orbisgis.editor.IEditor;
-import org.orbisgis.geocognition.GeocognitionElement;
 
 public interface EditorManager {
 
 	/**
 	 * Gets the active document
-	 *
+	 * 
 	 * @return
 	 */
-	GeocognitionElement getActiveElement();
+	EditableElement getActiveElement();
 
 	/**
 	 * Gets the active editor
-	 *
+	 * 
 	 * @return
 	 */
 	IEditor getActiveEditor();
 
 	/**
 	 * Gets all the opened editors
-	 *
+	 * 
 	 * @return
 	 */
 	IEditor[] getEditors();
@@ -65,7 +65,7 @@ public interface EditorManager {
 	/**
 	 * Asks the specified editor to be closed. Note that it may not be closed
 	 * because, for example, it can have unsaved changes.
-	 *
+	 * 
 	 * @param editor
 	 * @return True if the editor was closed, false otherwise
 	 * @throws IllegalArgumentException
@@ -80,7 +80,7 @@ public interface EditorManager {
 	 * @param element
 	 * @return
 	 */
-	boolean hasEditor(GeocognitionElement element);
+	boolean hasEditor(EditableElement element);
 
 	/**
 	 * Opens the specified element in the default editor
@@ -89,6 +89,14 @@ public interface EditorManager {
 	 * @throws UnsupportedOperationException
 	 *             If there is no valid editor for the specified element
 	 */
-	void open(GeocognitionElement element) throws UnsupportedOperationException;
+	void open(EditableElement element) throws UnsupportedOperationException;
+
+	/**
+	 * Gets the editors that edit the specified element
+	 * 
+	 * @param element
+	 * @return
+	 */
+	IEditor[] getEditor(EditableElement element);
 
 }
