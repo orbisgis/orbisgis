@@ -36,6 +36,8 @@
  */
 package org.gdms.sql.function.spatial.operators;
 
+import java.util.ArrayList;
+
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.sql.function.Argument;
@@ -44,22 +46,23 @@ import org.gdms.sql.function.FunctionException;
 import org.gdms.sql.function.spatial.AbstractSpatialFunction;
 
 import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.GeometryFactory;
+import com.vividsolutions.jts.operation.union.UnaryUnionOp;
 
 public class GeomUnion extends AbstractSpatialFunction {
 
-	private Value unionOfGeom = ValueFactory.createNullValue();
+	private ArrayList<Geometry> toUnite = new ArrayList<Geometry>();
+	private boolean last = false;
 
 	public Value evaluate(Value[] args) throws FunctionException {
 		if (!args[0].isNull()) {
-			if (unionOfGeom.isNull()) {
-				unionOfGeom = ValueFactory.createValue(new GeometryFactory()
-						.createGeometryCollection(new Geometry[0]));
-			}
 			final Geometry geom = args[0].getAsGeometry();
 			addGeometry(geom);
 		}
-		return unionOfGeom;
+		if (last) {
+			return ValueFactory.createValue(UnaryUnionOp.union(toUnite));
+		} else {
+			return null;
+		}
 	}
 
 	private void addGeometry(Geometry geom) {
@@ -68,9 +71,15 @@ public class GeomUnion extends AbstractSpatialFunction {
 				addGeometry(geom.getGeometryN(i));
 			}
 		} else {
-			unionOfGeom = ValueFactory.createValue(unionOfGeom.getAsGeometry()
-					.union(geom));
+			toUnite.add(geom);
+			// unionOfGeom =
+			// ValueFactory.createValue(unionOfGeom.getAsGeometry()
+			// .union(geom));
 		}
+	}
+
+	public void lastCall() {
+		last = true;
 	}
 
 	public String getName() {

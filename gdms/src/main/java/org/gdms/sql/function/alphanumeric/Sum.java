@@ -96,4 +96,8 @@ public class Sum implements Function {
 	public String getSqlOrder() {
 		return "select Sum(myField) from myTable;";
 	}
+
+	@Override
+	public void lastCall() {
+	}
 }

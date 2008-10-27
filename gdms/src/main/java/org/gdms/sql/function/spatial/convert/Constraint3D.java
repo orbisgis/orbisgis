@@ -83,4 +83,8 @@ public class Constraint3D implements Function {
 		return TypeFactory.createType(type.getTypeCode(), result);
 	}
 
+	@Override
+	public void lastCall() {
+	}
+
 }

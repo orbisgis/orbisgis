@@ -59,5 +59,9 @@ public abstract class AbstractSpatialPropertyFunction implements Function {
 
 	protected abstract Value evaluateResult(Value[] args)
 			throws FunctionException;
+	
+	@Override
+	public void lastCall() {
+	}
 
 }

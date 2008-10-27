@@ -136,4 +136,8 @@ public class String2BooleanFunction implements Function {
 	public String getSqlOrder() {
 		return "select * from myTable where StringToBoolean(myStringField);";
 	}
+
+	@Override
+	public void lastCall() {
+	}
 }

@@ -48,7 +48,7 @@ import org.gdms.sql.function.FunctionException;
 /**
  * DOCUMENT ME!
  *
- * @author Fernando Gonz�lez Cort�s
+ * @author Fernando Gonzalez Cortes
  */
 public class ConcatenateFunction implements Function {
 	/**
@@ -96,5 +96,9 @@ public class ConcatenateFunction implements Function {
 
 	public Arguments[] getFunctionArguments() {
 		return new Arguments[] { new Arguments(Argument.STRING, Argument.STRING) };
+	}
+
+	@Override
+	public void lastCall() {
 	}
 }

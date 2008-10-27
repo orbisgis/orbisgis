@@ -204,4 +204,7 @@ public class AddZ implements Function {
 	public boolean isAggregate() {
 		return false;
 	}
+
+	public void lastCall() {
+	}
 }

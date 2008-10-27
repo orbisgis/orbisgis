@@ -95,4 +95,8 @@ public class D8RiverDistance implements Function {
 		return new Arguments[] { new Arguments(Argument.RASTER,
 				Argument.RASTER, Argument.NUMERIC) };
 	}
+
+	@Override
+	public void lastCall() {
+	}
 }

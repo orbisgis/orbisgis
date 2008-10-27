@@ -104,4 +104,8 @@ public class PointsToLine implements Function {
 	public boolean isAggregate() {
 		return true;
 	}
+
+	@Override
+	public void lastCall() {
+	}
 }

@@ -101,4 +101,8 @@ public class Min implements Function {
 	public String getSqlOrder() {
 		return "select Min(myField) from myTable;";
 	}
+
+	@Override
+	public void lastCall() {
+	}
 }

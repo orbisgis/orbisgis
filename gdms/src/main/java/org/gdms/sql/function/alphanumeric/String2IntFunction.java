@@ -131,4 +131,8 @@ public class String2IntFunction implements Function {
 	public String getSqlOrder() {
 		return "select StringToInt(myStringField) from myTable;";
 	}
+
+	@Override
+	public void lastCall() {
+	}
 }

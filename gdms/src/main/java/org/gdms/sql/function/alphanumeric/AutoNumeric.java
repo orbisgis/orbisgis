@@ -77,4 +77,8 @@ public class AutoNumeric implements Function {
 	public Arguments[] getFunctionArguments() {
 		return new Arguments[] {};
 	}
+
+	@Override
+	public void lastCall() {
+	}
 }

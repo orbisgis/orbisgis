@@ -126,4 +126,8 @@ public class IsWithinDistance implements Function {
 	public String getSqlOrder() {
 		return "select IsWithinDistance(the_geom1,the_geom2) from myTable;";
 	}
+
+	@Override
+	public void lastCall() {
+	}
 }

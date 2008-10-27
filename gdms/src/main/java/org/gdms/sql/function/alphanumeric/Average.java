@@ -90,4 +90,8 @@ public class Average implements Function {
 	public Arguments[] getFunctionArguments() {
 		return new Arguments[] { new Arguments(Argument.NUMERIC) };
 	}
+
+	@Override
+	public void lastCall() {
+	}
 }

@@ -88,4 +88,8 @@ public class Max implements Function {
 	public String getSqlOrder() {
 		return "select Max(myField) from myTable;";
 	}
+
+	@Override
+	public void lastCall() {
+	}
 }

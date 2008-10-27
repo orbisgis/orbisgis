@@ -96,4 +96,8 @@ public class Count implements Function {
 	public String getSqlOrder() {
 		return "select Count(*) from myTable;";
 	}
+
+	@Override
+	public void lastCall() {
+	}
 }

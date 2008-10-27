@@ -109,4 +109,8 @@ public class Pk implements Function {
 	public String getSqlOrder() {
 		return "select Pk(\"fieldName\") from myTable;";
 	}
+
+	@Override
+	public void lastCall() {
+	}
 }

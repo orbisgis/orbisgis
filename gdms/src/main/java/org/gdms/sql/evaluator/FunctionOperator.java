@@ -194,4 +194,8 @@ public class FunctionOperator extends AbstractOperator implements Expression {
 		}
 	}
 
+	public void lastCall() {
+		getFunction().lastCall();
+	}
+
 }

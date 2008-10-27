@@ -92,4 +92,8 @@ public class D8StrahlerStreamOrder implements Function {
 	public boolean isAggregate() {
 		return false;
 	}
+
+	@Override
+	public void lastCall() {
+	}
 }

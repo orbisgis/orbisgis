@@ -90,4 +90,8 @@ public class Abs implements Function {
 	public String getSqlOrder() {
 		return "select Abs(myNumericField) from myTable;";
 	}
+
+	@Override
+	public void lastCall() {
+	}
 }

@@ -112,4 +112,8 @@ public class SubString implements Function {
 						Argument.NUMERIC) };
 	}
 
+	@Override
+	public void lastCall() {
+	}
+
 }

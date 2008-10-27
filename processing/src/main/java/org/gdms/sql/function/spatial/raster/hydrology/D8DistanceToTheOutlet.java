@@ -85,4 +85,8 @@ public class D8DistanceToTheOutlet implements Function {
 	public Arguments[] getFunctionArguments() {
 		return new Arguments[] { new Arguments(Argument.RASTER) };
 	}
+
+	@Override
+	public void lastCall() {
+	}
 }

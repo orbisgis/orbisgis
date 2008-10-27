@@ -65,5 +65,9 @@ public abstract class AbstractSpatialPredicateFunction implements Function {
 		return new Arguments[] { new Arguments(Argument.GEOMETRY,
 				Argument.GEOMETRY) };
 	}
+	
+	@Override
+	public void lastCall() {
+	}
 
 }

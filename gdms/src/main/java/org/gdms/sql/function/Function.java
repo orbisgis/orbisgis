@@ -49,12 +49,12 @@ public interface Function {
 	/**
 	 * Evaluates the function. FunctionValidator contains several static methods
 	 * that can help in the validation of the input parameters
-	 *
+	 * 
 	 * @param args
 	 *            list of arguments
-	 *
+	 * 
 	 * @return the result value
-	 *
+	 * 
 	 * @throws FunctionException
 	 *             If some error happens and the execution of the query should
 	 *             be stopped
@@ -63,7 +63,7 @@ public interface Function {
 
 	/**
 	 * Gets the name of the function. This name will be used in SQL statements
-	 *
+	 * 
 	 * @return
 	 */
 	public String getName();
@@ -75,8 +75,16 @@ public interface Function {
 	public boolean isAggregate();
 
 	/**
+	 * Method called when the last call to the function is going to be done.
+	 * This method is only called on aggregated functions (
+	 * {@link #isAggregate()} == true) and indicates that the next call to
+	 * evaluate will be the one used included the result
+	 */
+	public void lastCall();
+
+	/**
 	 * Gets the type of the result this function provides.
-	 *
+	 * 
 	 * @param argsTypes
 	 * @return The type of the function
 	 */
@@ -84,7 +92,7 @@ public interface Function {
 
 	/**
 	 * Usage description.
-	 *
+	 * 
 	 * @return
 	 */
 
@@ -92,7 +100,7 @@ public interface Function {
 
 	/**
 	 * Example of use.
-	 *
+	 * 
 	 * @return
 	 */
 	public String getSqlOrder();

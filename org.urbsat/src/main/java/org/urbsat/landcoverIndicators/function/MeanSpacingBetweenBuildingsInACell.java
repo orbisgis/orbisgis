@@ -99,4 +99,7 @@ public class MeanSpacingBetweenBuildingsInACell implements Function {
 		return new Arguments[] { new Arguments(Argument.GEOMETRY,
 				Argument.GEOMETRY) };
 	}
+
+	public void lastCall() {
+	}
 }

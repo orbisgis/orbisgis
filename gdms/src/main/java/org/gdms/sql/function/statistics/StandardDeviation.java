@@ -92,4 +92,7 @@ public class StandardDeviation implements Function {
 		return "select StandardDeviation(myNumericField) from myTable;";
 	}
 
+	@Override
+	public void lastCall() {
+	}
 }

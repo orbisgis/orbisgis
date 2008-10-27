@@ -89,4 +89,8 @@ public class FillSinks implements Function {
 		return new Arguments[] { new Arguments(Argument.RASTER,
 				Argument.NUMERIC) };
 	}
+
+	@Override
+	public void lastCall() {
+	}
 }

@@ -98,4 +98,8 @@ public class Round implements Function {
 	public String getSqlOrder() {
 		return "select Round(myNumericField) from myTable;";
 	}
+
+	@Override
+	public void lastCall() {
+	}
 }

@@ -44,4 +44,8 @@ public abstract class AbstractSpatialFunction implements Function {
 	final public Type getType(Type[] types) {
 		return TypeFactory.createType(Type.GEOMETRY);
 	}
+	
+	@Override
+	public void lastCall() {
+	}
 }

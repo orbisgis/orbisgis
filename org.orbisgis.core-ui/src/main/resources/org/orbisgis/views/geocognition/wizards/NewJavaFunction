@@ -59,4 +59,7 @@ public class CLASSNAME implements Function {
         return false;
     }
 
+    public void lastCall() {
+        // Only meaningful in aggregated functions
+    }
 }

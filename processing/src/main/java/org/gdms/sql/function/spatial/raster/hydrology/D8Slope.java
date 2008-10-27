@@ -104,4 +104,8 @@ public class D8Slope implements Function {
 		return new Arguments[] { new Arguments(Argument.RASTER),
 				new Arguments(Argument.RASTER, Argument.STRING) };
 	}
+
+	@Override
+	public void lastCall() {
+	}
 }

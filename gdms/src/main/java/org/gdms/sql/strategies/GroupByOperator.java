@@ -52,6 +52,7 @@ import org.gdms.driver.memory.ObjectMemoryDriver;
 import org.gdms.sql.evaluator.EvaluationException;
 import org.gdms.sql.evaluator.Expression;
 import org.gdms.sql.evaluator.Field;
+import org.gdms.sql.evaluator.FunctionOperator;
 import org.orbisgis.progress.IProgressMonitor;
 
 public class GroupByOperator extends AbstractExpressionOperator implements
@@ -128,6 +129,15 @@ public class GroupByOperator extends AbstractExpressionOperator implements
 						exprs = newClassExpressions;
 						results = newClassResults;
 					}
+					if (i == rowCount - 1) {
+						// notify lastCall
+						for (int k = 0; k < exprs.length; k++) {
+							FunctionOperator[] functions = exprs[k].getFunctionReferences();
+							for (FunctionOperator function : functions) {
+								function.lastCall();
+							}
+						}
+					}
 					for (int k = 0; k < exprs.length; k++) {
 						Expression expression = exprs[k];
 						Value res = expression.evaluate();
@@ -144,7 +154,7 @@ public class GroupByOperator extends AbstractExpressionOperator implements
 				int index = 0;
 				while (it.hasNext()) {
 					index++;
-					if (index / 1000 == index / 1000.0) {
+					if (index / 100 == index / 100.0) {
 						if (pm.isCancelled()) {
 							return null;
 						} else {
@@ -191,7 +201,7 @@ public class GroupByOperator extends AbstractExpressionOperator implements
 	 * clause and one field for each of the aggregated function in the select
 	 * clause. This aggregated functions will have as name the string 'groupby'
 	 * concatenated with the index in the field array of the resulting metadata
-	 *
+	 * 
 	 * @see org.gdms.sql.strategies.Operator#getResultMetadata()
 	 */
 	public Metadata getResultMetadata() throws DriverException {

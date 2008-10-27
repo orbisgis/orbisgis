@@ -80,4 +80,8 @@ public class StrLength implements Function {
 	public String getSqlOrder() {
 		return "select strlength(myField) from myTable;";
 	}
+
+	@Override
+	public void lastCall() {
+	}
 }

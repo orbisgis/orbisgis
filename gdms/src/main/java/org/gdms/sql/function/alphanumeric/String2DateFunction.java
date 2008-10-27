@@ -161,4 +161,8 @@ public class String2DateFunction implements Function {
 	public String getSqlOrder() {
 		return "select StringToDate('date_literal'[ , date_format]) from mytable";
 	}
+
+	@Override
+	public void lastCall() {
+	}
 }

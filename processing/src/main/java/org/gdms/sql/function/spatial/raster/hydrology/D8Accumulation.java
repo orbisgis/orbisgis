@@ -87,4 +87,8 @@ public class D8Accumulation implements Function {
 	public Arguments[] getFunctionArguments() {
 		return new Arguments[] { new Arguments(Argument.RASTER) };
 	}
+
+	@Override
+	public void lastCall() {
+	}
 }

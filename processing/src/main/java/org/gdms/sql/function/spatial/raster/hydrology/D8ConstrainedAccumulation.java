@@ -93,4 +93,8 @@ public class D8ConstrainedAccumulation implements Function {
 	public boolean isAggregate() {
 		return false;
 	}
+
+	@Override
+	public void lastCall() {
+	}
 }

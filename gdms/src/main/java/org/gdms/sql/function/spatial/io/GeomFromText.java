@@ -87,4 +87,8 @@ public class GeomFromText implements Function {
 	public String getSqlOrder() {
 		return "select GeomFromText(myField) from myTable;";
 	}
+
+	@Override
+	public void lastCall() {
+	}
 }

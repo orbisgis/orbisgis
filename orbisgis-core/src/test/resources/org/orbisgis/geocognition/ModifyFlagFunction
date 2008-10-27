@@ -42,4 +42,6 @@ public class A implements Function {
         return false;
     }
 
+    public void lastCall() {
+    }
 }

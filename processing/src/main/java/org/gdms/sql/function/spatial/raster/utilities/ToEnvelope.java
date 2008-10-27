@@ -116,4 +116,8 @@ public class ToEnvelope implements Function {
 				new Arguments(Argument.RASTER) };
 	}
 
+	@Override
+	public void lastCall() {
+	}
+
 }

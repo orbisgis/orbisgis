@@ -157,4 +157,7 @@ public class Chaillou implements Function {
 		return new Arguments[] { new Arguments(Argument.NUMERIC,
 				Argument.NUMERIC) };
 	}
+
+	public void lastCall() {
+	}
 }

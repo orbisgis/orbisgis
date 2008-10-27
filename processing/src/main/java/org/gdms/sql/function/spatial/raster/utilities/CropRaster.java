@@ -95,4 +95,8 @@ public class CropRaster implements Function {
 		return new Arguments[] { new Arguments(Argument.RASTER,
 				Argument.GEOMETRY) };
 	}
+
+	@Override
+	public void lastCall() {
+	}
 }

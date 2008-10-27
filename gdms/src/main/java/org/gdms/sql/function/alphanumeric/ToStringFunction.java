@@ -82,4 +82,8 @@ public class ToStringFunction implements Function {
 		return "select ToString(myField) from myTable;";
 	}
 
+	@Override
+	public void lastCall() {
+	}
+
 }

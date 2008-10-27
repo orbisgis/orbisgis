@@ -131,4 +131,8 @@ public class String2DoubleFunction implements Function {
 	public String getSqlOrder() {
 		return "select string2double(myStringField) from myTable;";
 	}
+
+	@Override
+	public void lastCall() {
+	}
 }

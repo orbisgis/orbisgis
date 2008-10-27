@@ -74,4 +74,8 @@ public class ZeroArgsFunction implements Function {
 		return new Arguments[] {};
 	}
 
+	@Override
+	public void lastCall() {
+	}
+
 }

@@ -80,6 +80,9 @@ public abstract class FunctionTest extends TestCase {
 			values[i] = args[i].getValue();
 		}
 		FunctionOperator.validateFunction(types, function);
+		if (function.isAggregate()) {
+			function.lastCall();
+		}
 		return function.evaluate(values);
 	}
 
@@ -91,6 +94,9 @@ public abstract class FunctionTest extends TestCase {
 		}
 		FunctionOperator.validateFunction(types, function);
 		try {
+			if (function.isAggregate()) {
+				function.lastCall();
+			}
 			return function.evaluate(args);
 		} catch (IncompatibleTypesException e) {
 			throw new RuntimeException("This exception should"

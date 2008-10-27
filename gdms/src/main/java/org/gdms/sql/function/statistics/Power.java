@@ -87,4 +87,8 @@ public class Power implements Function {
 	public String getSqlOrder() {
 		return "select Power(myBaseNumericField,myPowerNumericField) from myTable;";
 	}
+
+	@Override
+	public void lastCall() {
+	}
 }
