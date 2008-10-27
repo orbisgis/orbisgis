@@ -36,11 +36,11 @@
  */
 package org.orbisgis.resource;
 
-
 public abstract class AbstractResourceType implements IResourceType {
 
 	public void addToTree(INode parent, INode toAdd)
 			throws ResourceTypeException {
+		INode initialParent = parent;
 		while (parent != null) {
 			if (parent.getResourceType() instanceof Folder) {
 				parent.addNode(toAdd);
@@ -51,7 +51,7 @@ public abstract class AbstractResourceType implements IResourceType {
 		}
 		throw new ResourceTypeException(
 				"The folder cannot be added to a node of type "
-						+ parent.getResourceType().getClass()
+						+ initialParent.getResourceType().getClass()
 								.getCanonicalName());
 	}
 

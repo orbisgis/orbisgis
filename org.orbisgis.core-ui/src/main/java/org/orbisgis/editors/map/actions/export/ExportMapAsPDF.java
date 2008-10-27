@@ -37,17 +37,14 @@
 package org.orbisgis.editors.map.actions.export;
 
 import java.awt.Graphics2D;
-import java.awt.Rectangle;
 import java.awt.RenderingHints;
-import java.awt.geom.AffineTransform;
-import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 
 import javax.swing.JOptionPane;
-import org.orbisgis.DataManager;
+
 import org.orbisgis.Services;
 import org.orbisgis.editor.IEditor;
 import org.orbisgis.editor.action.IEditorAction;
@@ -55,7 +52,6 @@ import org.orbisgis.editors.map.MapEditor;
 import org.orbisgis.layerModel.ILayer;
 import org.orbisgis.layerModel.MapContext;
 import org.orbisgis.map.export.Scale;
-import org.orbisgis.pluginManager.background.BackgroundManager;
 import org.orbisgis.pluginManager.ui.SaveFilePanel;
 import org.orbisgis.progress.NullProgressMonitor;
 import org.orbisgis.renderer.Renderer;
