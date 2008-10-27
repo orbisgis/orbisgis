@@ -47,13 +47,13 @@ public class RenderUtils {
 	 * a symbol composite it will remove the symbols inside that will not draw
 	 * the geometry. It will return null if there is no symbol to draw the
 	 * geometry
-	 *
+	 * 
 	 * @param symbol
 	 * @param geometry
 	 * @return
 	 */
 	public static Symbol buildSymbolToDraw(Symbol symbol, Geometry geometry) {
-		if (symbol == null) {
+		if ((symbol == null) || (geometry == null)) {
 			return null;
 		} else if (symbol instanceof SymbolComposite) {
 			SymbolComposite comp = (SymbolComposite) symbol;
@@ -79,5 +79,4 @@ public class RenderUtils {
 			}
 		}
 	}
-
 }

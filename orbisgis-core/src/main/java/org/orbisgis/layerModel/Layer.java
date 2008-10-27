@@ -168,8 +168,7 @@ public class Layer extends GdmsLayer {
 					try {
 						setLegend(metadata.getFieldName(i), legend);
 					} catch (DriverException e) {
-						// Should never reach here with UniqueSymbolLegend
-						throw new RuntimeException(e);
+						// TODO Should never reach here with UniqueSymbolLegend
 					}
 
 				} else if (fieldTypeCode == Type.RASTER) {
