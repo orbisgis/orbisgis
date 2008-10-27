@@ -83,7 +83,11 @@ public class NewRegisteredSQLArtifact implements INewGeocognitionElement {
 							GeocognitionCustomQueryFactory.BUILT_IN_QUERY_ID)) {
 						Class<? extends CustomQuery> cqClass = (Class<? extends CustomQuery>) element
 								.getObject();
-						return cqClass.newInstance().getDescription();
+						if (cqClass != null) {
+							return cqClass.newInstance().getDescription();
+						} else {
+							return "Custom query class not found";
+						}
 					} else if (element.getTypeId().equals(
 							GeocognitionFunctionFactory.BUILT_IN_FUNCTION_ID)) {
 						Class<? extends Function> cqClass = (Class<? extends Function>) element
