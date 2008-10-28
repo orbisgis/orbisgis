@@ -50,6 +50,7 @@ public class AskValue extends AbstractUIPanel implements SQLUIPanel {
 	private String title;
 	private String error;
 	private String initialValue;
+	private int type;
 
 	public AskValue(String title, String sql, String error) {
 		this(title, sql, error, "");
@@ -60,6 +61,7 @@ public class AskValue extends AbstractUIPanel implements SQLUIPanel {
 		this.sql = sql;
 		this.error = error;
 		this.initialValue = initialValue;
+		this.type = STRING;
 	}
 
 	public Component getComponent() {
@@ -84,7 +86,7 @@ public class AskValue extends AbstractUIPanel implements SQLUIPanel {
 	}
 
 	public int[] getFieldTypes() {
-		return new int[] { SQLUIPanel.STRING };
+		return new int[] { type };
 	}
 
 	public String[] getValidationExpressions() {
@@ -105,6 +107,10 @@ public class AskValue extends AbstractUIPanel implements SQLUIPanel {
 
 	public void setValue(String fieldName, String fieldValue) {
 		txtField.setText(fieldValue);
+	}
+
+	public void setType(int type) {
+		this.type = type;
 	}
 
 }
