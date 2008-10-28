@@ -30,8 +30,6 @@ import org.orbisgis.Services;
 import org.orbisgis.errorManager.ErrorManager;
 import org.orbisgis.ui.table.TextFieldCellEditor;
 
-import sun.swing.table.DefaultTableCellHeaderRenderer;
-
 public class TableComponent extends JPanel {
 	private javax.swing.JScrollPane jScrollPane = null;
 	private JTable table = null;
@@ -267,7 +265,7 @@ public class TableComponent extends JPanel {
 		for (int i = 0; i < table.getColumnCount(); i++) {
 			TableColumn col = new TableColumn(i);
 			col.setHeaderValue(table.getColumnName(i));
-			col.setHeaderRenderer(new DefaultTableCellHeaderRenderer());
+			col.setHeaderRenderer(table.getTableHeader().getDefaultRenderer());
 			colModel.addColumn(col);
 			int width = 0;
 
