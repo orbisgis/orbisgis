@@ -360,7 +360,7 @@ public class ValuesTest extends TestCase {
 	}
 
 	public void testToStringFromStringCoherente() throws Exception {
-		Value v = ValueFactory.createValue(1300.5d);
+		Value v = ValueFactory.createValue(1300.5566d);
 		assertTrue(((BooleanValue) v.equals(ValueFactory.createValueByType(v
 				.toString(), Type.DOUBLE))).getValue());
 

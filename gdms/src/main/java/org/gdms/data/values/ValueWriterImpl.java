@@ -39,6 +39,7 @@ package org.gdms.data.values;
 import java.sql.Date;
 import java.sql.Time;
 import java.sql.Timestamp;
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 
 import com.vividsolutions.jts.geom.Geometry;
@@ -49,6 +50,12 @@ import com.vividsolutions.jts.geom.Geometry;
 class ValueWriterImpl implements ValueWriter {
 
 	private SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm:ss");
+	private DecimalFormat df = new DecimalFormat();
+
+	public ValueWriterImpl() {
+		df.setGroupingUsed(false);
+		df.setMaximumFractionDigits(Integer.MAX_VALUE);
+	}
 
 	/**
 	 * @see org.gdms.data.values.ValueWriter#getStatementString(long)
@@ -68,7 +75,7 @@ class ValueWriterImpl implements ValueWriter {
 	 * @see org.gdms.data.values.ValueWriter#getStatementString(double, int)
 	 */
 	public String getStatementString(double d, int sqlType) {
-		return Double.toString(d);
+		return df.format(d);
 	}
 
 	/**

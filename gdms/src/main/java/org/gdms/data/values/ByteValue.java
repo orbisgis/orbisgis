@@ -127,13 +127,6 @@ class ByteValue extends NumericValue {
 		return value;
 	}
 
-	/**
-	 * @see java.lang.Object#toString()
-	 */
-	public String toString() {
-		return "" + value;
-	}
-
 	public byte[] getBytes() {
 		return new byte[] { value };
 	}

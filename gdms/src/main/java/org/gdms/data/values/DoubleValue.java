@@ -37,7 +37,6 @@
 package org.gdms.data.values;
 
 import java.sql.Types;
-import java.text.NumberFormat;
 
 import org.gdms.data.types.Type;
 
@@ -81,13 +80,6 @@ class DoubleValue extends NumericValue {
 	 */
 	public double getValue() {
 		return value;
-	}
-
-	/**
-	 * @see java.lang.Object#toString()
-	 */
-	public String toString() {
-		return NumberFormat.getNumberInstance().format(value);
 	}
 
 	/**

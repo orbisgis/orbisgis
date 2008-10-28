@@ -43,7 +43,7 @@ import org.gdms.sql.strategies.IncompatibleTypesException;
 /**
  * DOCUMENT ME!
  *
- * @author Fernando Gonz�lez Cort�s
+ * @author Fernando Gonzalez Cortes
  */
 abstract class NumericValue extends AbstractValue implements Serializable {
 	/**

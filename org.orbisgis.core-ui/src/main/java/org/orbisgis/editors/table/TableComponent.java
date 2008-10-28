@@ -1,11 +1,6 @@
 package org.orbisgis.editors.table;
 
 import java.awt.BorderLayout;
-import java.sql.Date;
-import java.sql.Time;
-import java.sql.Timestamp;
-import java.text.DateFormat;
-import java.text.DecimalFormat;
 import java.text.ParseException;
 
 import javax.swing.DefaultListSelectionModel;
@@ -26,15 +21,12 @@ import org.gdms.data.types.Constraint;
 import org.gdms.data.types.Type;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
-import org.gdms.data.values.ValueWriter;
 import org.gdms.driver.DriverException;
 import org.orbisgis.Services;
 import org.orbisgis.errorManager.ErrorManager;
 import org.orbisgis.ui.table.TextFieldCellEditor;
 
-import com.vividsolutions.jts.geom.Geometry;
-
-public class TableComponent extends JPanel implements ValueWriter {
+public class TableComponent extends JPanel {
 	private javax.swing.JScrollPane jScrollPane = null;
 	private JTable table = null;
 
@@ -173,8 +165,6 @@ public class TableComponent extends JPanel implements ValueWriter {
 		public Object getValueAt(int row, int col) {
 			try {
 				return dataSource.getFieldValue(row, col).toString();
-				// return dataSource.getFieldValue(row, col).getStringValue(
-				// TableComponent.this);
 			} catch (DriverException e) {
 				return "";
 			}
@@ -232,104 +222,6 @@ public class TableComponent extends JPanel implements ValueWriter {
 
 	public boolean tableHasFocus() {
 		return table.hasFocus() || table.isEditing();
-	}
-
-	/**
-	 * Must show the value in a form it can be parsed later
-	 * 
-	 * @see com.hardcode.gdbms.engine.values.ValueWriter#getStatementString(long)
-	 */
-	public String getStatementString(long i) {
-		return Long.toString(i);
-	}
-
-	/**
-	 * @see com.hardcode.gdbms.engine.values.ValueWriter#getStatementString(int,
-	 *      int)
-	 */
-	public String getStatementString(int i, int sqlType) {
-		return Integer.toString(i);
-	}
-
-	/**
-	 * @see com.hardcode.gdbms.engine.values.ValueWriter#getStatementString(double,
-	 *      int)
-	 */
-	public String getStatementString(double d, int sqlType) {
-		DecimalFormat df = new DecimalFormat();
-		df.setGroupingUsed(false);
-		df.setMaximumFractionDigits(Integer.MAX_VALUE);
-		return df.format(d);
-	}
-
-	/**
-	 * @see com.hardcode.gdbms.engine.values.ValueWriter#getStatementString(java.lang.String,
-	 *      int)
-	 */
-	public String getStatementString(String str, int sqlType) {
-		return str;
-	}
-
-	/**
-	 * @see com.hardcode.gdbms.engine.values.ValueWriter#getStatementString(java.sql.Date)
-	 */
-	public String getStatementString(Date d) {
-		return DateFormat.getDateInstance(DateFormat.SHORT).format(d);
-	}
-
-	/**
-	 * @see com.hardcode.gdbms.engine.values.ValueWriter#getStatementString(java.sql.Time)
-	 */
-	public String getStatementString(Time t) {
-		return DateFormat.getTimeInstance().format(t);
-	}
-
-	/**
-	 * @see com.hardcode.gdbms.engine.values.ValueWriter#getStatementString(java.sql.Timestamp)
-	 */
-	public String getStatementString(Timestamp ts) {
-		return DateFormat.getDateTimeInstance().format(ts);
-	}
-
-	/**
-	 * @see com.hardcode.gdbms.engine.values.ValueWriter#getStatementString(byte[])
-	 */
-	public String getStatementString(byte[] binary) {
-		StringBuffer sb = new StringBuffer();
-		for (int i = 0; i < binary.length; i++) {
-			int byte_ = binary[i];
-			if (byte_ < 0)
-				byte_ = byte_ + 256;
-			String b = Integer.toHexString(byte_);
-			if (b.length() == 1)
-				sb.append("0").append(b);
-			else
-				sb.append(b);
-		}
-
-		return sb.toString();
-	}
-
-	/**
-	 * @see com.hardcode.gdbms.engine.values.ValueWriter#getStatementString(boolean)
-	 */
-	public String getStatementString(boolean b) {
-		return (b) ? "true" : "false";
-	}
-
-	/**
-	 * @see com.hardcode.gdbms.engine.values.ValueWriter#getStatementString(com.hardcode.gdbms.engine.spatial.Geometry)
-	 */
-	public String getStatementString(Geometry g) {
-		throw new RuntimeException(
-				"We don't show any spatial field on this table");
-	}
-
-	/**
-	 * @see com.hardcode.gdbms.engine.values.ValueWriter#getNullStatementString()
-	 */
-	public String getNullStatementString() {
-		return null;
 	}
 
 	public String[] getSelectedFieldNames() {

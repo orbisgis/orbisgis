@@ -81,13 +81,6 @@ class LongValue extends NumericValue {
 	}
 
 	/**
-	 * @see java.lang.Object#toString()
-	 */
-	public String toString() {
-		return "" + value;
-	}
-
-	/**
 	 * @see org.gdms.data.values.NumericValue#intValue()
 	 */
 	public int intValue() {

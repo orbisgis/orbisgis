@@ -127,13 +127,6 @@ class ShortValue extends NumericValue {
 		return value;
 	}
 
-	/**
-	 * @see java.lang.Object#toString()
-	 */
-	public String toString() {
-		return "" + value;
-	}
-
 	public byte[] getBytes() {
 		byte[] ret = new byte[2];
 		ret[0] = (byte) ((value >>> 8) & 0xFF);
