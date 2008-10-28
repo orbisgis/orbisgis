@@ -1,6 +1,7 @@
 package org.orbisgis.editors.table;
 
 import java.awt.BorderLayout;
+import java.awt.Component;
 import java.text.ParseException;
 
 import javax.swing.DefaultListSelectionModel;
@@ -8,7 +9,10 @@ import javax.swing.JPanel;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 import javax.swing.table.AbstractTableModel;
+import javax.swing.table.DefaultTableColumnModel;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableCellRenderer;
+import javax.swing.table.TableColumn;
 
 import org.gdms.data.DataSource;
 import org.gdms.data.edition.EditionEvent;
@@ -25,6 +29,8 @@ import org.gdms.driver.DriverException;
 import org.orbisgis.Services;
 import org.orbisgis.errorManager.ErrorManager;
 import org.orbisgis.ui.table.TextFieldCellEditor;
+
+import sun.swing.table.DefaultTableCellHeaderRenderer;
 
 public class TableComponent extends JPanel {
 	private javax.swing.JScrollPane jScrollPane = null;
@@ -68,6 +74,8 @@ public class TableComponent extends JPanel {
 
 			table.getSelectionModel().setSelectionMode(
 					ListSelectionModel.SINGLE_SELECTION);
+
+			table.getTableHeader().setReorderingAllowed(false);
 
 			// TODO table.getSelectionModel().addListSelectionListener(
 			// new ListSelectionListener() {
@@ -248,7 +256,57 @@ public class TableComponent extends JPanel {
 			this.dataSource.addMetadataEditionListener(listener);
 			tableModel = new DataSourceDataModel();
 			table.setModel(tableModel);
+			autoResizeColWidth(Math.min(50, tableModel.getRowCount()));
 		}
+	}
+
+	private void autoResizeColWidth(int rowsToCheck) {
+		int margin = 5;
+
+		DefaultTableColumnModel colModel = new DefaultTableColumnModel();
+		for (int i = 0; i < table.getColumnCount(); i++) {
+			TableColumn col = new TableColumn(i);
+			col.setHeaderValue(table.getColumnName(i));
+			col.setHeaderRenderer(new DefaultTableCellHeaderRenderer());
+			colModel.addColumn(col);
+			int width = 0;
+
+			// Get width of column header
+			TableCellRenderer renderer = col.getHeaderRenderer();
+
+			if (renderer == null) {
+				renderer = table.getTableHeader().getDefaultRenderer();
+			}
+
+			Component comp = renderer.getTableCellRendererComponent(table, col
+					.getHeaderValue(), false, false, 0, 0);
+
+			width = comp.getPreferredSize().width;
+
+			// Get maximum width of column data
+			for (int r = 0; r < rowsToCheck; r++) {
+				renderer = table.getCellRenderer(r, i);
+				comp = renderer.getTableCellRendererComponent(table, table
+						.getValueAt(r, i), false, false, r, i);
+				width = Math.max(width, comp.getPreferredSize().width);
+			}
+			// Check header
+			renderer = colModel.getColumn(i).getHeaderRenderer();
+			comp = renderer.getTableCellRendererComponent(table, col
+					.getHeaderValue(), false, false, 0, i);
+			width = Math.max(width, comp.getPreferredSize().width);
+
+			// limit
+			width = Math.min(width, 200);
+
+			// Add margin
+			width += 2 * margin;
+
+			// Set the width
+			col.setPreferredWidth(width);
+		}
+
+		table.setColumnModel(colModel);
 	}
 
 	private class ModificationListener implements EditionListener,
@@ -281,5 +339,4 @@ public class TableComponent extends JPanel {
 		}
 
 	}
-
 }
