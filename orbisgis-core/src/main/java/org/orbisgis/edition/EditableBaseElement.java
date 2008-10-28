@@ -46,9 +46,11 @@ public interface EditableBaseElement {
 	 * @param progressMonitor
 	 * @throws UnsupportedOperationException
 	 *             if this element cannot be edited
+	 * @throws EditableElementException
+	 *             If the closing was not done
 	 */
 	void close(IProgressMonitor progressMonitor)
-			throws UnsupportedOperationException;
+			throws UnsupportedOperationException, EditableElementException;
 
 	/**
 	 * Gets the object stored in this element.

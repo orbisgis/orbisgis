@@ -354,9 +354,14 @@ public class EditorPanel extends Container {
 				editorView.fireEditorClosed(closedEditor, editorInfo
 						.getEditorDecorator().getId());
 				freeView(closedView, editorInfo.editorDecorator);
-
-				editorInfo.element.close(new NullProgressMonitor());
-				editorsInfo.remove(editorInfo);
+				
+				try {
+					editorInfo.element.close(new NullProgressMonitor());
+				} catch (UnsupportedOperationException e) {
+					logger.debug("Cannot close editor", e);
+				} catch (EditableElementException e) {
+					logger.debug("Cannot close editor", e);
+				}
 			}
 		}
 

@@ -184,7 +184,7 @@ public class GeocognitionElementDecorator implements GeocognitionElement {
 
 	@Override
 	public void close(IProgressMonitor progressMonitor)
-			throws UnsupportedOperationException {
+			throws UnsupportedOperationException, EditableElementException {
 		element.close(progressMonitor);
 	}
 

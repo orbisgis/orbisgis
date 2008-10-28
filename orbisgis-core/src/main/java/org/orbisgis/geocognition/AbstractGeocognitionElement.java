@@ -1,43 +1,13 @@
 package org.orbisgis.geocognition;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.orbisgis.edition.EditableElementListener;
+import org.orbisgis.edition.AbstractEditableElement;
 
-public abstract class AbstractGeocognitionElement implements
-		GeocognitionElement {
-	private ArrayList<EditableElementListener> listeners = new ArrayList<EditableElementListener>();
+public abstract class AbstractGeocognitionElement extends
+		AbstractEditableElement implements GeocognitionElement {
 	private GeocognitionElement parent = null;
-
-	protected void fireContentChanged() {
-		for (EditableElementListener listener : listeners) {
-			listener.contentChanged(this);
-		}
-	}
-
-	protected void fireSave() {
-		for (EditableElementListener listener : listeners) {
-			listener.saved(this);
-		}
-	}
-
-	@Override
-	public void addElementListener(EditableElementListener listener) {
-		listeners.add(listener);
-	}
-
-	@Override
-	public boolean removeElementListener(EditableElementListener listener) {
-		return listeners.remove(listener);
-	}
-
-	protected void fireIdChanged() {
-		for (EditableElementListener listener : listeners) {
-			listener.idChanged(this);
-		}
-	}
 
 	public void setParent(GeocognitionElement parent) {
 		this.parent = parent;

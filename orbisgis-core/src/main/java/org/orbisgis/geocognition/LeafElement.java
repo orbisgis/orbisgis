@@ -179,7 +179,7 @@ public final class LeafElement extends AbstractGeocognitionElement implements
 
 	@Override
 	public void close(IProgressMonitor progressMonitor)
-			throws UnsupportedOperationException {
+			throws UnsupportedOperationException, EditableElementException {
 		element.close(progressMonitor);
 		element.setElementListener(null);
 	}

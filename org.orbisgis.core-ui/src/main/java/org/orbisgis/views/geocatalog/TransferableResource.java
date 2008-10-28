@@ -42,7 +42,9 @@ import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import org.orbisgis.edition.EditableElement;
 import org.orbisgis.resource.IResource;
+import org.orbisgis.views.editor.TransferableEditableElement;
 
 public class TransferableResource implements Transferable {
 
@@ -97,6 +99,13 @@ public class TransferableResource implements Transferable {
 		Object ret = null;
 		if (flavor.equals(resourceFlavor)) {
 			ret = nodes;
+		} else if (flavor
+				.equals(TransferableEditableElement.editableElementFlavor)) {
+			EditableElement[] elems = new EditableElement[nodes.length];
+			for (int i = 0; i < nodes.length; i++) {
+				elems[i] = new EditableResource(nodes[i].getName());
+			}
+			ret = elems;
 		} else if (flavor.equals(DataFlavor.stringFlavor)) {
 			String retString = "";
 			String separator = "";
@@ -111,11 +120,15 @@ public class TransferableResource implements Transferable {
 	}
 
 	public DataFlavor[] getTransferDataFlavors() {
-		return (new DataFlavor[] { resourceFlavor, DataFlavor.stringFlavor });
+		return (new DataFlavor[] { resourceFlavor,
+				TransferableEditableElement.editableElementFlavor,
+				DataFlavor.stringFlavor });
 	}
 
 	public boolean isDataFlavorSupported(DataFlavor flavor) {
-		return (flavor.equals(getResourceFlavor()) || flavor
+		return (flavor
+				.equals(TransferableEditableElement.editableElementFlavor)
+				|| flavor.equals(getResourceFlavor()) || flavor
 				.equals(DataFlavor.stringFlavor));
 	}
 
