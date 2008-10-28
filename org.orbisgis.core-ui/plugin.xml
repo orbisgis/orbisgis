@@ -392,6 +392,11 @@
 		<editor id="org.orbisgis.editors.Map" icon="/org/orbisgis/images/map.png"
 			class="org.orbisgis.editors.map.MapEditor"/>
 	</extension>
+	<extension id="org.orbisgis.editor.Table" point="org.orbisgis.Editor">
+		<editor id="org.orbisgis.editors.Table"
+			icon="/org/orbisgis/images/openattributes.png"
+			class="org.orbisgis.editors.table.TableEditor"/>
+	</extension>
 	<extension id="org.orbisgis.editor.Function" point="org.orbisgis.Editor">
 		<editor id="org.orbisgis.editors.Function" icon="/org/orbisgis/images/java_cup.png"
 			class="org.orbisgis.editors.sql.FunctionEditor"/>
