@@ -13,8 +13,14 @@ import javax.swing.JPanel;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 import javax.swing.table.AbstractTableModel;
+import javax.swing.table.DefaultTableModel;
 
 import org.gdms.data.DataSource;
+import org.gdms.data.edition.EditionEvent;
+import org.gdms.data.edition.EditionListener;
+import org.gdms.data.edition.FieldEditionEvent;
+import org.gdms.data.edition.MetadataEditionListener;
+import org.gdms.data.edition.MultipleEditionEvent;
 import org.gdms.data.metadata.Metadata;
 import org.gdms.data.types.Constraint;
 import org.gdms.data.types.Type;
@@ -34,6 +40,8 @@ public class TableComponent extends JPanel implements ValueWriter {
 
 	private DataSourceDataModel tableModel;
 	private DataSource dataSource;
+
+	private ModificationListener listener = new ModificationListener();
 
 	/**
 	 * This is the default constructor
@@ -165,10 +173,10 @@ public class TableComponent extends JPanel implements ValueWriter {
 		public Object getValueAt(int row, int col) {
 			try {
 				return dataSource.getFieldValue(row, col).toString();
-//				return dataSource.getFieldValue(row, col).getStringValue(
-//						TableComponent.this);
+				// return dataSource.getFieldValue(row, col).getStringValue(
+				// TableComponent.this);
 			} catch (DriverException e) {
-				return ""; //$NON-NLS-1$
+				return "";
 			}
 		}
 
@@ -294,7 +302,7 @@ public class TableComponent extends JPanel implements ValueWriter {
 				byte_ = byte_ + 256;
 			String b = Integer.toHexString(byte_);
 			if (b.length() == 1)
-				sb.append("0").append(b); //$NON-NLS-1$
+				sb.append("0").append(b);
 			else
 				sb.append(b);
 		}
@@ -306,7 +314,7 @@ public class TableComponent extends JPanel implements ValueWriter {
 	 * @see com.hardcode.gdbms.engine.values.ValueWriter#getStatementString(boolean)
 	 */
 	public String getStatementString(boolean b) {
-		return (b) ? "true" : "false"; //$NON-NLS-1$ //$NON-NLS-2$
+		return (b) ? "true" : "false";
 	}
 
 	/**
@@ -314,7 +322,7 @@ public class TableComponent extends JPanel implements ValueWriter {
 	 */
 	public String getStatementString(Geometry g) {
 		throw new RuntimeException(
-				"We don't show any spatial field on this table"); //$NON-NLS-1$
+				"We don't show any spatial field on this table");
 	}
 
 	/**
@@ -336,8 +344,50 @@ public class TableComponent extends JPanel implements ValueWriter {
 	}
 
 	public void setDataSource(DataSource dataSource) {
+		if (this.dataSource != null) {
+			this.dataSource.removeEditionListener(listener);
+			this.dataSource.removeMetadataEditionListener(listener);
+		}
 		this.dataSource = dataSource;
-		table.setModel(new DataSourceDataModel());
+		if (this.dataSource == null) {
+			table.setModel(new DefaultTableModel());
+		} else {
+			this.dataSource.addEditionListener(listener);
+			this.dataSource.addMetadataEditionListener(listener);
+			tableModel = new DataSourceDataModel();
+			table.setModel(tableModel);
+		}
+	}
+
+	private class ModificationListener implements EditionListener,
+			MetadataEditionListener {
+
+		@Override
+		public void multipleModification(MultipleEditionEvent e) {
+			tableModel.fireTableDataChanged();
+		}
+
+		@Override
+		public void singleModification(EditionEvent e) {
+			tableModel.fireTableCellUpdated((int) e.getRowIndex(), e
+					.getFieldIndex());
+		}
+
+		@Override
+		public void fieldAdded(FieldEditionEvent event) {
+			tableModel.fireTableStructureChanged();
+		}
+
+		@Override
+		public void fieldModified(FieldEditionEvent event) {
+			tableModel.fireTableStructureChanged();
+		}
+
+		@Override
+		public void fieldRemoved(FieldEditionEvent event) {
+			tableModel.fireTableStructureChanged();
+		}
+
 	}
 
 }

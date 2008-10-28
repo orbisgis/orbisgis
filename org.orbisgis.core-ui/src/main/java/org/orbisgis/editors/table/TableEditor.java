@@ -11,7 +11,12 @@ import org.orbisgis.views.geocatalog.EditableResource;
 public class TableEditor implements IEditor {
 
 	private EditableElement element;
+	private TableComponent table;
 
+	public TableEditor() {
+		table = new TableComponent();
+	}
+	
 	@Override
 	public boolean acceptElement(String typeId) {
 		return EditableResource.EDITABLE_RESOURCE_TYPE.equals(typeId);
@@ -30,16 +35,16 @@ public class TableEditor implements IEditor {
 	@Override
 	public void setElement(EditableElement element) {
 		this.element = element;
+		table.setDataSource((DataSource) this.element.getObject());
 	}
 
 	@Override
 	public void delete() {
+		table.setDataSource(null);
 	}
 
 	@Override
 	public Component getComponent() {
-		TableComponent table = new TableComponent();
-		table.setDataSource((DataSource) this.element.getObject());
 		return table;
 	}
 
