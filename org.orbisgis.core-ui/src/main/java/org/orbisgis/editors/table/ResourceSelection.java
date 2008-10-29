@@ -1,22 +1,40 @@
 package org.orbisgis.editors.table;
 
+import javax.swing.JTable;
+import javax.swing.ListSelectionModel;
 
 public class ResourceSelection implements Selection {
 
-	private int[] rowIndexes;
+	private JTable table;
 
-	public ResourceSelection(int[] rowIndexes) {
-		this.rowIndexes = rowIndexes;
+	public ResourceSelection(JTable table) {
+		this.table = table;
 	}
 
 	@Override
 	public int[] getSelection() {
-		return rowIndexes;
+		return table.getSelectedRows();
 	}
 
 	@Override
 	public void setSelection(int[] indexes) {
-		this.rowIndexes = indexes;
+		ListSelectionModel model = table.getSelectionModel();
+		model.setValueIsAdjusting(true);
+		model.clearSelection();
+		for (int i : indexes) {
+			model.addSelectionInterval(i, i);
+		}
+		model.setValueIsAdjusting(false);
+	}
+
+	@Override
+	public void clearSelection() {
+		table.getSelectionModel().clearSelection();
+	}
+
+	@Override
+	public void selectInterval(int init, int end) {
+		table.getSelectionModel().setSelectionInterval(init, end);
 	}
 
 }

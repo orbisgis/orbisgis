@@ -47,6 +47,7 @@ import org.orbisgis.action.IActionAdapter;
 import org.orbisgis.action.IActionFactory;
 import org.orbisgis.action.ISelectableActionAdapter;
 import org.orbisgis.action.MenuTree;
+import org.orbisgis.editors.table.action.ITableCellAction;
 import org.orbisgis.editors.table.action.ITableColumnAction;
 import org.orbisgis.errorManager.ErrorManager;
 import org.orbisgis.layerModel.ILayer;
@@ -72,7 +73,7 @@ public class TableComponent extends JPanel {
 	private int selectedColumn = -1;
 	private DataSourceDataModel tableModel;
 	private DataSource dataSource;
-
+	private ActionListener menuListener = new PopupActionListener();
 	private ModificationListener listener = new ModificationListener();
 	public ArrayList<Integer> indexes = null;
 	private Selection selection;
@@ -109,109 +110,11 @@ public class TableComponent extends JPanel {
 			}
 
 			table.getSelectionModel().setSelectionMode(
-					ListSelectionModel.SINGLE_SELECTION);
+					ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
 			table.getTableHeader().setReorderingAllowed(false);
-			final ActionListener menuListener = new ActionListener() {
-
-				@Override
-				public void actionPerformed(ActionEvent e) {
-					if (OPTIMALWIDTH.equals(e.getActionCommand())) {
-						BackgroundManager bm = Services
-								.getService(BackgroundManager.class);
-						bm.backgroundOperation(new BackgroundJob() {
-
-							@Override
-							public void run(IProgressMonitor pm) {
-								final int width = getColumnOptimalWidth(table
-										.getRowCount(), Integer.MAX_VALUE,
-										selectedColumn, pm);
-								final TableColumn col = table.getColumnModel()
-										.getColumn(selectedColumn);
-								SwingUtilities.invokeLater(new Runnable() {
-
-									@Override
-									public void run() {
-										col.setPreferredWidth(width);
-									}
-								});
-							}
-
-							@Override
-							public String getTaskName() {
-								return "Calculating optimal width";
-							}
-						});
-					} else if (SETWIDTH.equals(e.getActionCommand())) {
-						TableColumn selectedTableColumn = table
-								.getTableHeader().getColumnModel().getColumn(
-										selectedColumn);
-						AskValue av = new AskValue("New column width", null,
-								null, Integer.toString(selectedTableColumn
-										.getPreferredWidth()));
-						av.setType(SQLUIPanel.INT);
-						if (UIFactory.showDialog(av)) {
-							selectedTableColumn.setPreferredWidth(Integer
-									.parseInt(av.getValue()));
-						}
-					} else if (SORTUP.equals(e.getActionCommand())) {
-						BackgroundManager bm = Services
-								.getService(BackgroundManager.class);
-						bm.backgroundOperation(new SortJob(true));
-					} else if (SORTDOWN.equals(e.getActionCommand())) {
-						BackgroundManager bm = Services
-								.getService(BackgroundManager.class);
-						bm.backgroundOperation(new SortJob(false));
-					} else if (NOSORT.equals(e.getActionCommand())) {
-						indexes = null;
-						tableModel.fireTableDataChanged();
-					}
-					table.getTableHeader().repaint();
-				}
-			};
-			table.getTableHeader().addMouseListener(new MouseAdapter() {
-				@Override
-				public void mousePressed(MouseEvent e) {
-					popup(e);
-				}
-
-				@Override
-				public void mouseReleased(MouseEvent e) {
-					popup(e);
-				}
-
-				private void popup(MouseEvent e) {
-					selectedColumn = table.getTableHeader().columnAtPoint(
-							e.getPoint());
-					table.getTableHeader().repaint();
-					if (e.isPopupTrigger()) {
-						JPopupMenu pop = new JPopupMenu();
-						addMenu(pop, "Optimal width", OPTIMALWIDTH);
-						addMenu(pop, "Set width", SETWIDTH);
-						pop.addSeparator();
-						addMenu(pop, "Sort ascending", SORTUP);
-						addMenu(pop, "Sort descending", SORTDOWN);
-						addMenu(pop, "No Sort", NOSORT);
-						pop.addSeparator();
-						MenuTree menuTree = new MenuTree();
-						String epid = "org.orbisgis.editors.table.ColumnAction";
-						ContextualActionExtensionPointHelper.createPopup(
-								menuTree, new ColumnActionFactory(), epid);
-						JComponent[] menus = menuTree.getJMenus();
-						for (JComponent menu : menus) {
-							pop.add(menu);
-						}
-						pop.show(table.getTableHeader(), e.getX(), e.getY());
-					}
-				}
-
-				private void addMenu(JPopupMenu pop, String text,
-						String actionCommand) {
-					JMenuItem menu = new JMenuItem(text);
-					menu.setActionCommand(actionCommand);
-					menu.addActionListener(menuListener);
-					pop.add(menu);
-				}
-			});
+			table.getTableHeader().addMouseListener(
+					new HeaderPopupMouseAdapter());
+			table.addMouseListener(new CellPopupMouseAdapter());
 
 			// TODO table.getSelectionModel().addListSelectionListener(
 			// new ListSelectionListener() {
@@ -288,7 +191,7 @@ public class TableComponent extends JPanel {
 					new HashMap<String, Integer>(),
 					new HashMap<String, TableCellRenderer>());
 			if (layer == null) {
-				this.selection = new ResourceSelection(table.getSelectedRows());
+				this.selection = new ResourceSelection(table);
 			} else {
 				this.selection = new LayerSelection(layer);
 			}
@@ -364,6 +267,155 @@ public class TableComponent extends JPanel {
 		width += 2 * margin;
 
 		return width;
+	}
+
+	private final class PopupActionListener implements ActionListener {
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			if (OPTIMALWIDTH.equals(e.getActionCommand())) {
+				BackgroundManager bm = Services
+						.getService(BackgroundManager.class);
+				bm.backgroundOperation(new BackgroundJob() {
+
+					@Override
+					public void run(IProgressMonitor pm) {
+						final int width = getColumnOptimalWidth(table
+								.getRowCount(), Integer.MAX_VALUE,
+								selectedColumn, pm);
+						final TableColumn col = table.getColumnModel()
+								.getColumn(selectedColumn);
+						SwingUtilities.invokeLater(new Runnable() {
+
+							@Override
+							public void run() {
+								col.setPreferredWidth(width);
+							}
+						});
+					}
+
+					@Override
+					public String getTaskName() {
+						return "Calculating optimal width";
+					}
+				});
+			} else if (SETWIDTH.equals(e.getActionCommand())) {
+				TableColumn selectedTableColumn = table.getTableHeader()
+						.getColumnModel().getColumn(selectedColumn);
+				AskValue av = new AskValue("New column width", null, null,
+						Integer.toString(selectedTableColumn
+								.getPreferredWidth()));
+				av.setType(SQLUIPanel.INT);
+				if (UIFactory.showDialog(av)) {
+					selectedTableColumn.setPreferredWidth(Integer.parseInt(av
+							.getValue()));
+				}
+			} else if (SORTUP.equals(e.getActionCommand())) {
+				BackgroundManager bm = Services
+						.getService(BackgroundManager.class);
+				bm.backgroundOperation(new SortJob(true));
+			} else if (SORTDOWN.equals(e.getActionCommand())) {
+				BackgroundManager bm = Services
+						.getService(BackgroundManager.class);
+				bm.backgroundOperation(new SortJob(false));
+			} else if (NOSORT.equals(e.getActionCommand())) {
+				indexes = null;
+				tableModel.fireTableDataChanged();
+			}
+			table.getTableHeader().repaint();
+		}
+	}
+
+	private abstract class PopupMouseAdapter extends MouseAdapter {
+		@Override
+		public void mousePressed(MouseEvent e) {
+			popup(e);
+		}
+
+		@Override
+		public void mouseReleased(MouseEvent e) {
+			popup(e);
+		}
+
+		private void popup(MouseEvent e) {
+			Component component = getComponent();
+			selectedColumn = table.columnAtPoint(e.getPoint());
+			int clickedRow = table.rowAtPoint(e.getPoint());
+			component.repaint();
+			if (e.isPopupTrigger()) {
+				JPopupMenu pop = getPopupMenu();
+				MenuTree menuTree = new MenuTree();
+				String epid = getExtensionPointId();
+				ContextualActionExtensionPointHelper.createPopup(menuTree,
+						getFactory(clickedRow), epid);
+				JComponent[] menus = menuTree.getJMenus();
+				for (JComponent menu : menus) {
+					pop.add(menu);
+				}
+				pop.show(component, e.getX(), e.getY());
+			}
+		}
+
+		protected abstract IActionFactory getFactory(int clickedRow);
+
+		protected abstract Component getComponent();
+
+		protected abstract String getExtensionPointId();
+
+		protected abstract JPopupMenu getPopupMenu();
+	}
+
+	private class HeaderPopupMouseAdapter extends PopupMouseAdapter {
+
+		protected ColumnActionFactory getFactory(int clickedRow) {
+			return new ColumnActionFactory();
+		}
+
+		protected Component getComponent() {
+			return table.getTableHeader();
+		}
+
+		protected String getExtensionPointId() {
+			return "org.orbisgis.editors.table.ColumnAction";
+		}
+
+		protected JPopupMenu getPopupMenu() {
+			JPopupMenu pop = new JPopupMenu();
+			addMenu(pop, "Optimal width", OPTIMALWIDTH);
+			addMenu(pop, "Set width", SETWIDTH);
+			pop.addSeparator();
+			addMenu(pop, "Sort ascending", SORTUP);
+			addMenu(pop, "Sort descending", SORTDOWN);
+			addMenu(pop, "No Sort", NOSORT);
+			pop.addSeparator();
+			return pop;
+		}
+
+		private void addMenu(JPopupMenu pop, String text, String actionCommand) {
+			JMenuItem menu = new JMenuItem(text);
+			menu.setActionCommand(actionCommand);
+			menu.addActionListener(menuListener);
+			pop.add(menu);
+		}
+	}
+
+	private class CellPopupMouseAdapter extends PopupMouseAdapter {
+
+		protected Component getComponent() {
+			return table;
+		}
+
+		protected String getExtensionPointId() {
+			return "org.orbisgis.editors.table.CellAction";
+		}
+
+		protected JPopupMenu getPopupMenu() {
+			return new JPopupMenu();
+		}
+
+		@Override
+		protected IActionFactory getFactory(int clickedRow) {
+			return new CellActionFactory(clickedRow);
+		}
 	}
 
 	private class ModificationListener implements EditionListener,
@@ -639,6 +691,28 @@ public class TableComponent extends JPanel {
 
 	}
 
+	private class CellActionFactory implements IActionFactory {
+
+		private int clickedRow;
+
+		public CellActionFactory(int clickedRow) {
+			this.clickedRow = clickedRow;
+		}
+
+		@Override
+		public IActionAdapter getAction(Object action,
+				HashMap<String, String> attributes) {
+			return new CellActionAdapter((ITableCellAction) action, clickedRow);
+		}
+
+		@Override
+		public ISelectableActionAdapter getSelectableAction(Object action,
+				HashMap<String, String> attributes) {
+			throw new RuntimeException("Selectable action not allowed");
+		}
+
+	}
+
 	private class ColumnActionAdapter implements IActionAdapter {
 
 		private ITableColumnAction action;
@@ -653,12 +727,40 @@ public class TableComponent extends JPanel {
 		}
 
 		@Override
-		public boolean isEnabled() {
+		public boolean isVisible() {
 			return action.accepts(dataSource, selection, selectedColumn);
 		}
 
 		@Override
+		public boolean isEnabled() {
+			return true;
+		}
+
+	}
+
+	private class CellActionAdapter implements IActionAdapter {
+
+		private ITableCellAction action;
+		private int clickedRow;
+
+		public CellActionAdapter(ITableCellAction action, int clickedRow) {
+			this.action = action;
+			this.clickedRow = clickedRow;
+		}
+
+		@Override
+		public void actionPerformed() {
+			action.execute(dataSource, selection, clickedRow, selectedColumn);
+		}
+
+		@Override
 		public boolean isVisible() {
+			return action.accepts(dataSource, selection, clickedRow,
+					selectedColumn);
+		}
+
+		@Override
+		public boolean isEnabled() {
 			return true;
 		}
 

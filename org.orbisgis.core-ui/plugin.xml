@@ -29,6 +29,8 @@
 	<!-- table editor actions -->
 	<extension-point id="org.orbisgis.editors.table.ColumnAction"
 		schema="schema/tableColumnAction.xsd"/>
+	<extension-point id="org.orbisgis.editors.table.CellAction"
+		schema="schema/tableCellAction.xsd"/>
 	
 	<!-- layer wizards -->
 	<extension-point id="org.orbisgis.editors.map.NewLayerWizard"
@@ -292,6 +294,26 @@
 			text="Add field"
 			menu-group="org.orbisgis.editors.table.FieldManagement"
 			class="org.orbisgis.editors.table.actions.AddField"/>
+	</extension>
+	
+	<!-- table cell actions -->
+	<extension point="org.orbisgis.editors.table.CellAction">
+		<action id="org.orbisgis.editors.table.actions.SetNull"
+			text="Set to null"
+			menu-group="org.orbisgis.editors.table.Value"
+			class="org.orbisgis.editors.table.actions.SetNull"/>
+		<action id="org.orbisgis.editors.table.actions.SelectEqual"
+			text="Select rows with the same value"
+			menu-group="org.orbisgis.editors.table.Selection"
+			class="org.orbisgis.editors.table.actions.SelectEqual"/>
+		<action id="org.orbisgis.editors.table.actions.SelectAll"
+			text="Select all rows"
+			menu-group="org.orbisgis.editors.table.Selection"
+			class="org.orbisgis.editors.table.actions.SelectAll"/>
+		<action id="org.orbisgis.editors.table.actions.SelectNone"
+			text="Clear selection"
+			menu-group="org.orbisgis.editors.table.Selection"
+			class="org.orbisgis.editors.table.actions.SelectNone"/>
 	</extension>
 	
 	<!-- map actions -->

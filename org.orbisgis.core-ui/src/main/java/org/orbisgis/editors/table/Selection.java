@@ -15,4 +15,19 @@ public interface Selection {
 	 * @return
 	 */
 	int[] getSelection();
+
+	/**
+	 * Selects all the rows in the specified interval
+	 * 
+	 * @param init
+	 *            first selected row
+	 * @param end
+	 *            last selected row
+	 */
+	void selectInterval(int init, int end);
+
+	/**
+	 * Clears the selection
+	 */
+	void clearSelection();
 }

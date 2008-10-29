@@ -20,4 +20,16 @@ public class LayerSelection implements Selection {
 
 	}
 
+	@Override
+	public void selectInterval(int init, int end) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void clearSelection() {
+		// TODO Auto-generated method stub
+		
+	}
+
 }
