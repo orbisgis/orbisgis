@@ -53,7 +53,7 @@ public class GdmsSource extends AbstractResourceType implements IResourceType {
 
 	private final Icon raster = IconLoader.getIcon("image.png");
 
-	private final Icon alphanumeric_database = IconLoader.getIcon("db.png");
+	private final Icon alphanumeric_database = IconLoader.getIcon("database.png");
 
 	private final Icon spatial = IconLoader.getIcon("geofile.png");
 
