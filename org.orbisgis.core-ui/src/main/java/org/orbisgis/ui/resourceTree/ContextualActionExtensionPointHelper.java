@@ -36,8 +36,6 @@
  */
 package org.orbisgis.ui.resourceTree;
 
-import javax.swing.tree.TreePath;
-
 import org.orbisgis.action.IActionAdapter;
 import org.orbisgis.action.IActionFactory;
 import org.orbisgis.action.Menu;
@@ -47,10 +45,10 @@ import org.orbisgis.pluginManager.Extension;
 import org.orbisgis.pluginManager.IExtensionRegistry;
 import org.orbisgis.pluginManager.RegistryFactory;
 
-public class ResourceTreeActionExtensionPointHelper {
+public class ContextualActionExtensionPointHelper {
 
 	public static void createPopup(MenuTree menuTree, IActionFactory factory,
-			ResourceTree rt, String extensionPointID) {
+			String extensionPointID) {
 
 		IExtensionRegistry reg = RegistryFactory.getRegistry();
 		Extension[] exts = reg.getExtensions(extensionPointID);
@@ -80,10 +78,6 @@ public class ResourceTreeActionExtensionPointHelper {
 				String icon = c.getAttribute(base, "icon");
 				Object action = c.instantiateFromAttribute(base, "class");
 				IActionAdapter iAction = factory.getAction(action, c.getAttributes(base));
-				TreePath[] res = rt.getSelection();
-				if (res == null) {
-					res = new TreePath[0];
-				}
 				if (iAction.isVisible()) {
 					Menu menu = new Menu(menuId, id, group, text, icon, false, iAction);
 					menuTree.addMenu(menu);

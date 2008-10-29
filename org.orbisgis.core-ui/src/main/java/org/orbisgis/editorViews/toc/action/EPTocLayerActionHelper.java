@@ -38,10 +38,10 @@ package org.orbisgis.editorViews.toc.action;
 
 import org.orbisgis.layerModel.ILayer;
 import org.orbisgis.layerModel.MapContext;
-import org.orbisgis.ui.resourceTree.ResourceTreeActionExtensionPointHelper;
+import org.orbisgis.ui.resourceTree.ContextualActionExtensionPointHelper;
 
 public class EPTocLayerActionHelper extends
-		ResourceTreeActionExtensionPointHelper {
+		ContextualActionExtensionPointHelper {
 
 	public static void execute(MapContext mapContext, ILayerAction action,
 			ILayer[] selectedResources) {

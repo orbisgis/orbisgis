@@ -95,8 +95,8 @@ public class Catalog extends ResourceTree {
 		tree.setCellEditor(resourceTreeEditor);
 
 		sourceListener = new SyncSourceListener();
-		((DataManager) Services.getService(DataManager.class)).getDSF().getSourceManager().addSourceListener(
-				sourceListener);
+		((DataManager) Services.getService(DataManager.class)).getDSF()
+				.getSourceManager().addSourceListener(sourceListener);
 
 	}
 
@@ -108,7 +108,7 @@ public class Catalog extends ResourceTree {
 	public JPopupMenu getPopup() {
 		MenuTree menuTree = new MenuTree();
 		IActionFactory factory = new ResourceActionFactory();
-		EPGeocatalogResourceActionHelper.createPopup(menuTree, factory, this,
+		EPGeocatalogResourceActionHelper.createPopup(menuTree, factory,
 				"org.orbisgis.views.geocatalog.Action");
 
 		EPResourceWizardHelper wh = new EPResourceWizardHelper(this);
@@ -212,8 +212,8 @@ public class Catalog extends ResourceTree {
 			return new ResourceAction(action);
 		}
 
-		public ISelectableActionAdapter getSelectableAction(Object actionObject,
-				HashMap<String, String> attributes) {
+		public ISelectableActionAdapter getSelectableAction(
+				Object actionObject, HashMap<String, String> attributes) {
 			throw new RuntimeException(
 					"Bug. Resource actions should not be selectable");
 		}
@@ -339,13 +339,13 @@ public class Catalog extends ResourceTree {
 	}
 
 	void delete() {
-		((DataManager) Services.getService(DataManager.class)).getDSF().getSourceManager().removeSourceListener(
-				sourceListener);
+		((DataManager) Services.getService(DataManager.class)).getDSF()
+				.getSourceManager().removeSourceListener(sourceListener);
 	}
 
 	/**
 	 * Adds the resources to the catalog
-	 *
+	 * 
 	 * @param resources
 	 */
 	public void addResources(IResource[] resources) {
@@ -362,7 +362,7 @@ public class Catalog extends ResourceTree {
 
 	/**
 	 * Adds the resources to the catalog under the specified parent
-	 *
+	 * 
 	 * @param resources
 	 *            Resources to add
 	 * @param parent

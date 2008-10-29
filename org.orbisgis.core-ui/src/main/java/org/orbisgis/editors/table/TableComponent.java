@@ -15,6 +15,7 @@ import java.util.TreeSet;
 
 import javax.swing.DefaultListSelectionModel;
 import javax.swing.JButton;
+import javax.swing.JComponent;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
@@ -41,12 +42,10 @@ import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
 import org.gdms.sql.strategies.SortComparator;
 import org.orbisgis.Services;
-import org.orbisgis.action.EPActionHelper;
 import org.orbisgis.action.IActionAdapter;
 import org.orbisgis.action.IActionFactory;
 import org.orbisgis.action.ISelectableActionAdapter;
 import org.orbisgis.action.MenuTree;
-import org.orbisgis.action.ToolBarArray;
 import org.orbisgis.editors.table.action.ITableColumnAction;
 import org.orbisgis.errorManager.ErrorManager;
 import org.orbisgis.layerModel.ILayer;
@@ -54,6 +53,7 @@ import org.orbisgis.pluginManager.background.BackgroundJob;
 import org.orbisgis.pluginManager.background.BackgroundManager;
 import org.orbisgis.progress.IProgressMonitor;
 import org.orbisgis.progress.NullProgressMonitor;
+import org.orbisgis.ui.resourceTree.ContextualActionExtensionPointHelper;
 import org.orbisgis.ui.sif.AskValue;
 import org.orbisgis.ui.table.TextFieldCellEditor;
 import org.sif.SQLUIPanel;
@@ -191,11 +191,13 @@ public class TableComponent extends JPanel {
 						addMenu(pop, "Sort descending", SORTDOWN);
 						addMenu(pop, "No Sort", NOSORT);
 						MenuTree menuTree = new MenuTree();
-						ToolBarArray toolBarArray = new ToolBarArray();
-						EPActionHelper.configureMenuAndToolBar(
-								"org.orbisgis.editors.table.ColumnAction",
-								"action", new ColumnActionFactory(), menuTree,
-								toolBarArray);
+						String epid = "org.orbisgis.editors.table.ColumnAction";
+						ContextualActionExtensionPointHelper.createPopup(
+								menuTree, new ColumnActionFactory(), epid);
+						JComponent[] menus = menuTree.getJMenus();
+						for (JComponent menu : menus) {
+							pop.add(menu);
+						}
 						pop.show(table.getTableHeader(), e.getX(), e.getY());
 					}
 				}

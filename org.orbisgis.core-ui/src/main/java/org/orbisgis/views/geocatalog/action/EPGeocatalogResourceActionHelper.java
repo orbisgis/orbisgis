@@ -38,11 +38,11 @@ package org.orbisgis.views.geocatalog.action;
 
 import org.orbisgis.pluginManager.ExtensionPointManager;
 import org.orbisgis.resource.IResource;
-import org.orbisgis.ui.resourceTree.ResourceTreeActionExtensionPointHelper;
+import org.orbisgis.ui.resourceTree.ContextualActionExtensionPointHelper;
 import org.orbisgis.views.geocatalog.Catalog;
 
 public class EPGeocatalogResourceActionHelper extends
-		ResourceTreeActionExtensionPointHelper {
+		ContextualActionExtensionPointHelper {
 
 	public static void executeAction(Catalog catalog, IResourceAction action,
 			IResource[] selectedResources) {

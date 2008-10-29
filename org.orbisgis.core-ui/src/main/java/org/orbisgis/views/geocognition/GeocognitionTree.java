@@ -20,7 +20,7 @@ import org.orbisgis.action.MenuTree;
 import org.orbisgis.geocognition.Geocognition;
 import org.orbisgis.geocognition.GeocognitionElement;
 import org.orbisgis.ui.resourceTree.ResourceTree;
-import org.orbisgis.ui.resourceTree.ResourceTreeActionExtensionPointHelper;
+import org.orbisgis.ui.resourceTree.ContextualActionExtensionPointHelper;
 import org.orbisgis.views.geocognition.action.IGeocognitionAction;
 import org.orbisgis.views.geocognition.action.IGeocognitionGroupAction;
 import org.orbisgis.views.geocognition.filter.IGeocognitionFilter;
@@ -115,8 +115,8 @@ public class GeocognitionTree extends ResourceTree {
 	public JPopupMenu getPopup() {
 		MenuTree menuTree = new MenuTree();
 		GeocognitionActionFactory factory = new GeocognitionActionFactory();
-		ResourceTreeActionExtensionPointHelper.createPopup(menuTree, factory,
-				this, "org.orbisgis.views.geocognition.Action");
+		ContextualActionExtensionPointHelper.createPopup(menuTree, factory,
+				"org.orbisgis.views.geocognition.Action");
 		EPGeocognitionWizardHelper wh = new EPGeocognitionWizardHelper();
 		wh.addWizardMenus(menuTree, new GeocognitionWizardActionFactory(),
 				"org.orbisgis.views.geocognition.New");

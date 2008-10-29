@@ -175,7 +175,7 @@ public class Toc extends ResourceTree {
 	public JPopupMenu getPopup() {
 		MenuTree menuTree = new MenuTree();
 		LayerActionFactory factory = new LayerActionFactory();
-		EPTocLayerActionHelper.createPopup(menuTree, factory, this,
+		EPTocLayerActionHelper.createPopup(menuTree, factory,
 				"org.orbisgis.editorViews.toc.Action");
 		menuTree.removeEmptyMenus();
 		JPopupMenu popup = new JPopupMenu();
