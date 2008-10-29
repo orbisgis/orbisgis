@@ -8,6 +8,9 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.TreeSet;
 
 import javax.swing.DefaultListSelectionModel;
 import javax.swing.JButton;
@@ -35,6 +38,7 @@ import org.gdms.data.types.Type;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
+import org.gdms.sql.strategies.SortComparator;
 import org.orbisgis.Services;
 import org.orbisgis.errorManager.ErrorManager;
 import org.orbisgis.pluginManager.background.BackgroundJob;
@@ -47,8 +51,12 @@ import org.sif.SQLUIPanel;
 import org.sif.UIFactory;
 
 public class TableComponent extends JPanel {
+
 	private static final String OPTIMALWIDTH = "OPTIMALWIDTH";
 	private static final String SETWIDTH = "SETWIDTH";
+	private static final String SORTUP = "SORTUP";
+	private static final String SORTDOWN = "SORTDOWN";
+	private static final String NOSORT = "NOSORT";
 	private javax.swing.JScrollPane jScrollPane = null;
 	private JTable table = null;
 	private int selectedColumn = -1;
@@ -56,6 +64,7 @@ public class TableComponent extends JPanel {
 	private DataSource dataSource;
 
 	private ModificationListener listener = new ModificationListener();
+	public ArrayList<Integer> indexes = null;
 
 	/**
 	 * This is the default constructor
@@ -134,7 +143,19 @@ public class TableComponent extends JPanel {
 							selectedTableColumn.setPreferredWidth(Integer
 									.parseInt(av.getValue()));
 						}
+					} else if (SORTUP.equals(e.getActionCommand())) {
+						BackgroundManager bm = Services
+								.getService(BackgroundManager.class);
+						bm.backgroundOperation(new SortJob(true));
+					} else if (SORTDOWN.equals(e.getActionCommand())) {
+						BackgroundManager bm = Services
+								.getService(BackgroundManager.class);
+						bm.backgroundOperation(new SortJob(false));
+					} else if (NOSORT.equals(e.getActionCommand())) {
+						indexes = null;
+						tableModel.fireTableDataChanged();
 					}
+					table.getTableHeader().repaint();
 				}
 			};
 			table.getTableHeader().addMouseListener(new MouseAdapter() {
@@ -156,6 +177,9 @@ public class TableComponent extends JPanel {
 						JPopupMenu pop = new JPopupMenu();
 						addMenu(pop, "Optimal width", OPTIMALWIDTH);
 						addMenu(pop, "Set width", SETWIDTH);
+						addMenu(pop, "Sort ascending", SORTUP);
+						addMenu(pop, "Sort descending", SORTDOWN);
+						addMenu(pop, "No Sort", NOSORT);
 						pop.show(table.getTableHeader(), e.getX(), e.getY());
 					}
 				}
@@ -200,114 +224,6 @@ public class TableComponent extends JPanel {
 		}
 
 		return jScrollPane;
-	}
-
-	/**
-	 * @author Fernando Gonzalez Cortes
-	 */
-	public class DataSourceDataModel extends AbstractTableModel {
-		private Metadata metadata;
-
-		private Metadata getMetadata() throws DriverException {
-			if (metadata == null) {
-				metadata = dataSource.getMetadata();
-
-			}
-
-			return metadata;
-		}
-
-		/**
-		 * Returns the name of the field.
-		 * 
-		 * @param col
-		 *            index of field
-		 * 
-		 * @return Name of field
-		 */
-		public String getColumnName(int col) {
-			try {
-				return getMetadata().getFieldName(col);
-			} catch (DriverException e) {
-				return null;
-			}
-		}
-
-		/**
-		 * Returns the number of fields.
-		 * 
-		 * @return number of fields
-		 */
-		public int getColumnCount() {
-			try {
-				return getMetadata().getFieldCount();
-			} catch (DriverException e) {
-				return 0;
-			}
-		}
-
-		/**
-		 * Returns number of rows.
-		 * 
-		 * @return number of rows.
-		 */
-		public int getRowCount() {
-			try {
-				return (int) dataSource.getRowCount();
-			} catch (DriverException e) {
-				return 0;
-			}
-		}
-
-		/**
-		 * @see javax.swing.table.TableModel#getValueAt(int, int)
-		 */
-		public Object getValueAt(int row, int col) {
-			try {
-				return dataSource.getFieldValue(row, col).toString();
-			} catch (DriverException e) {
-				return "";
-			}
-		}
-
-		/**
-		 * @see javax.swing.table.TableModel#isCellEditable(int, int)
-		 */
-		public boolean isCellEditable(int rowIndex, int columnIndex) {
-			try {
-				Constraint c = getMetadata().getFieldType(columnIndex)
-						.getConstraint(Constraint.READONLY);
-				return c == null;
-			} catch (DriverException e) {
-				return false;
-			}
-		}
-
-		/**
-		 * @see javax.swing.table.TableModel#setValueAt(java.lang.Object, int,
-		 *      int)
-		 */
-		public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
-			try {
-				Type type = getMetadata().getFieldType(columnIndex);
-				String strValue = aValue.toString().trim();
-				Value v = ValueFactory.createValueByType(strValue, type
-						.getTypeCode());
-
-				String inputError = dataSource.check(columnIndex, v);
-				if (inputError != null) {
-					inputError(inputError, null);
-				} else {
-					dataSource.setFieldValue(rowIndex, columnIndex, v);
-				}
-			} catch (DriverException e1) {
-				throw new RuntimeException(e1);
-			} catch (NumberFormatException e) {
-				inputError(e.getMessage(), e);
-			} catch (ParseException e) {
-				inputError(e.getMessage(), e);
-			}
-		}
 	}
 
 	/**
@@ -445,6 +361,178 @@ public class TableComponent extends JPanel {
 			tableModel.fireTableStructureChanged();
 		}
 
+	}
+
+	/**
+	 * @author Fernando Gonzalez Cortes
+	 */
+	public class DataSourceDataModel extends AbstractTableModel {
+		private Metadata metadata;
+
+		private Metadata getMetadata() throws DriverException {
+			if (metadata == null) {
+				metadata = dataSource.getMetadata();
+
+			}
+
+			return metadata;
+		}
+
+		/**
+		 * Returns the name of the field.
+		 * 
+		 * @param col
+		 *            index of field
+		 * 
+		 * @return Name of field
+		 */
+		public String getColumnName(int col) {
+			try {
+				return getMetadata().getFieldName(col);
+			} catch (DriverException e) {
+				return null;
+			}
+		}
+
+		/**
+		 * Returns the number of fields.
+		 * 
+		 * @return number of fields
+		 */
+		public int getColumnCount() {
+			try {
+				return getMetadata().getFieldCount();
+			} catch (DriverException e) {
+				return 0;
+			}
+		}
+
+		/**
+		 * Returns number of rows.
+		 * 
+		 * @return number of rows.
+		 */
+		public int getRowCount() {
+			try {
+				return (int) dataSource.getRowCount();
+			} catch (DriverException e) {
+				return 0;
+			}
+		}
+
+		/**
+		 * @see javax.swing.table.TableModel#getValueAt(int, int)
+		 */
+		public Object getValueAt(int row, int col) {
+			try {
+				return dataSource.getFieldValue(getRowIndex(row), col)
+						.toString();
+			} catch (DriverException e) {
+				return "";
+			}
+		}
+
+		private int getRowIndex(int row) {
+			if (indexes != null) {
+				row = indexes.get(row);
+			}
+			return row;
+		}
+
+		/**
+		 * @see javax.swing.table.TableModel#isCellEditable(int, int)
+		 */
+		public boolean isCellEditable(int rowIndex, int columnIndex) {
+			try {
+				Constraint c = getMetadata().getFieldType(columnIndex)
+						.getConstraint(Constraint.READONLY);
+				return c == null;
+			} catch (DriverException e) {
+				return false;
+			}
+		}
+
+		/**
+		 * @see javax.swing.table.TableModel#setValueAt(java.lang.Object, int,
+		 *      int)
+		 */
+		public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
+			try {
+				Type type = getMetadata().getFieldType(columnIndex);
+				String strValue = aValue.toString().trim();
+				Value v = ValueFactory.createValueByType(strValue, type
+						.getTypeCode());
+
+				String inputError = dataSource.check(columnIndex, v);
+				if (inputError != null) {
+					inputError(inputError, null);
+				} else {
+					dataSource.setFieldValue(getRowIndex(rowIndex),
+							columnIndex, v);
+				}
+			} catch (DriverException e1) {
+				throw new RuntimeException(e1);
+			} catch (NumberFormatException e) {
+				inputError(e.getMessage(), e);
+			} catch (ParseException e) {
+				inputError(e.getMessage(), e);
+			}
+		}
+	}
+
+	private final class SortJob implements BackgroundJob {
+
+		private boolean ascending;
+
+		public SortJob(boolean ascending) {
+			this.ascending = ascending;
+		}
+
+		@Override
+		public void run(IProgressMonitor pm) {
+			try {
+				int rowCount = (int) dataSource.getRowCount();
+				Value[][] cache = new Value[rowCount][1];
+				for (int i = 0; i < rowCount; i++) {
+					cache[i][0] = dataSource.getFieldValue(i, selectedColumn);
+				}
+				ArrayList<Boolean> order = new ArrayList<Boolean>();
+				order.add(ascending);
+				TreeSet<Integer> sortset = new TreeSet<Integer>(
+						new SortComparator(cache, order));
+				for (int i = 0; i < rowCount; i++) {
+					if (i / 100 == i / 100.0) {
+						if (pm.isCancelled()) {
+							break;
+						} else {
+							pm.progressTo(100 * i / rowCount);
+						}
+					}
+					sortset.add(new Integer(i));
+				}
+				ArrayList<Integer> indexes = new ArrayList<Integer>();
+				Iterator<Integer> it = sortset.iterator();
+				while (it.hasNext()) {
+					Integer integer = (Integer) it.next();
+					indexes.add(integer);
+				}
+				TableComponent.this.indexes = indexes;
+				SwingUtilities.invokeLater(new Runnable() {
+				
+					@Override
+					public void run() {
+						tableModel.fireTableDataChanged();
+					}
+				});
+			} catch (DriverException e) {
+				Services.getService(ErrorManager.class).error("Cannot sort", e);
+			}
+		}
+
+		@Override
+		public String getTaskName() {
+			return "Sorting";
+		}
 	}
 
 	class ButtonHeaderRenderer extends JButton implements TableCellRenderer {
