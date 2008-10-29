@@ -34,7 +34,7 @@
  *    fergonco _at_ gmail.com
  *    thomas.leduc _at_ cerma.archi.fr
  */
-package org.orbisgis.editors.table.actions;
+package org.orbisgis.editors.table.editorActions;
 
 import org.gdms.data.DataSource;
 import org.gdms.driver.DriverException;

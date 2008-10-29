@@ -262,20 +262,20 @@
 	<extension point="org.orbisgis.editor.Action">
 		<menu id="org.orbisgis.Table" text="Table"
 			icon="/org/orbisgis/images/openattributes.png"/>
-		<editor-action id="org.orbisgis.editors.table.actions.Undo"
+		<editor-action id="org.orbisgis.editors.table.editorActions.Undo"
 			menu-id="org.orbisgis.Table" text="Undo"
 			menu-group="org.orbisgis.editors.table.Basic"
 			icon="/org/orbisgis/images/edit-undo.png"
 			editor-id="org.orbisgis.editors.Table"
 			toolbar-id="org.orbisgis.editors.map.Edition"
-			class="org.orbisgis.editors.table.actions.Undo"/>
-		<editor-action id="org.orbisgis.editors.table.actions.Redo"
+			class="org.orbisgis.editors.table.editorActions.Undo"/>
+		<editor-action id="org.orbisgis.editors.table.editorActions.Redo"
 			menu-id="org.orbisgis.Table" text="Redo"
 			menu-group="org.orbisgis.editors.table.Basic"
 			icon="/org/orbisgis/images/edit-redo.png"
 			editor-id="org.orbisgis.editors.Table"
 			toolbar-id="org.orbisgis.editors.map.Edition"
-			class="org.orbisgis.editors.table.actions.Redo"/>
+			class="org.orbisgis.editors.table.editorActions.Redo"/>
 	</extension>
 	
 	<!-- table column actions -->
