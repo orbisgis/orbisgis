@@ -300,9 +300,9 @@ public class TableComponent extends JPanel {
 			HashMap<String, TableCellRenderer> renderers) {
 		DefaultTableColumnModel colModel = new DefaultTableColumnModel();
 		int maxWidth = 200;
-		for (int i = 0; i < table.getColumnCount(); i++) {
+		for (int i = 0; i < tableModel.getColumnCount(); i++) {
 			TableColumn col = new TableColumn(i);
-			String columnName = table.getColumnName(i);
+			String columnName = tableModel.getColumnName(i);
 			col.setHeaderValue(columnName);
 			TableCellRenderer renderer = renderers.get(columnName);
 			if (renderer == null) {
@@ -318,9 +318,6 @@ public class TableComponent extends JPanel {
 			colModel.addColumn(col);
 		}
 		table.setColumnModel(colModel);
-		// for (int i = 0; i < table.getColumnCount(); i++) {
-		// TableColumn col = table.getColumnModel().getColumn(i);
-		// }
 	}
 
 	private int getColumnOptimalWidth(int rowsToCheck, int maxWidth, int i,
@@ -398,17 +395,33 @@ public class TableComponent extends JPanel {
 			TableColumnModel columnModel = table.getColumnModel();
 			HashMap<String, Integer> widths = new HashMap<String, Integer>();
 			HashMap<String, TableCellRenderer> renderers = new HashMap<String, TableCellRenderer>();
-			for (int i = 0; i < columnModel.getColumnCount(); i++) {
-				TableColumn column = columnModel.getColumn(i);
-				String columnName;
-				try {
-					columnName = dataSource.getMetadata().getFieldName(i);
-				} catch (DriverException e) {
-					// Take old value and don't fail
-					columnName = column.getHeaderValue().toString();
+			try {
+				for (int i = 0; i < dataSource.getMetadata().getFieldCount(); i++) {
+					String columnName = null;
+					try {
+						columnName = dataSource.getMetadata().getFieldName(i);
+					} catch (DriverException e) {
+					}
+					int columnIndex = -1;
+					if (columnName != null) {
+						try {
+							columnIndex = columnModel
+									.getColumnIndex(columnName);
+						} catch (IllegalArgumentException e) {
+							columnIndex = -1;
+						}
+						if (columnIndex != -1) {
+							TableColumn column = columnModel
+									.getColumn(columnIndex);
+							widths.put(columnName, column.getPreferredWidth());
+							renderers.put(columnName, column
+									.getHeaderRenderer());
+						}
+					}
 				}
-				widths.put(columnName, column.getPreferredWidth());
-				renderers.put(columnName, column.getHeaderRenderer());
+			} catch (DriverException e) {
+				Services.getService(ErrorManager.class).warning(
+						"Cannot keep table configuration", e);
 			}
 			autoResizeColWidth(Math.min(5, tableModel.getRowCount()), widths,
 					renderers);

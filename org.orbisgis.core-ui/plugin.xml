@@ -284,6 +284,14 @@
 			text="Change field name"
 			menu-group="org.orbisgis.editors.table.FieldManagement"
 			class="org.orbisgis.editors.table.actions.ChangeFieldName"/>
+		<action id="org.orbisgis.editors.table.actions.RemoveField"
+			text="Remove field"
+			menu-group="org.orbisgis.editors.table.FieldManagement"
+			class="org.orbisgis.editors.table.actions.RemoveField"/>
+		<action id="org.orbisgis.editors.table.actions.AddField"
+			text="Add field"
+			menu-group="org.orbisgis.editors.table.FieldManagement"
+			class="org.orbisgis.editors.table.actions.AddField"/>
 	</extension>
 	
 	<!-- map actions -->
