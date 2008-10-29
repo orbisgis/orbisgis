@@ -551,4 +551,20 @@ public class EditionTests extends SourceTest {
 		ds.commit();
 		ds.close();
 	}
+
+	public void testCheckValuesInAddedField() throws Exception {
+		ObjectMemoryDriver omd = new ObjectMemoryDriver(
+				new String[] { "field" }, new Type[] { TypeFactory
+						.createType(Type.STRING) });
+		DataSource ds = dsf.getDataSource(omd);
+		ds.open();
+		ds.addField("newfield", TypeFactory.createType(Type.STRING));
+		ds.insertEmptyRow();
+		String bye = "bye";
+		int fieldIndex = ds.getFieldIndexByName("newfield");
+		assertTrue(ds.check(fieldIndex, ValueFactory.createValue(bye)) == null);
+		ds.setFieldValue(0, fieldIndex, ValueFactory.createValue(bye));
+		assertTrue(ds.getString(0, fieldIndex).equals(bye));
+		ds.close();
+	}
 }

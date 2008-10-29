@@ -255,12 +255,12 @@ public class EditionDecorator extends AbstractDataSourceDecorator implements
 
 	/**
 	 * Gets the values of the original row
-	 *
+	 * 
 	 * @param rowIndex
 	 *            index of the row to be retrieved
-	 *
+	 * 
 	 * @return Row values
-	 *
+	 * 
 	 * @throws DriverException
 	 *             if the operation fails
 	 */
@@ -752,6 +752,11 @@ public class EditionDecorator extends AbstractDataSourceDecorator implements
 			throw new DriverException("Cannot commit the source. "
 					+ "Another edition already in process");
 		}
+	}
+
+	@Override
+	public String check(int fieldId, Value value) throws DriverException {
+		return getMetadata().getFieldType(fieldId).check(value);
 	}
 
 }
