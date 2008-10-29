@@ -16,7 +16,7 @@ public class TableEditor implements IEditor {
 	public TableEditor() {
 		table = new TableComponent();
 	}
-	
+
 	@Override
 	public boolean acceptElement(String typeId) {
 		return EditableResource.EDITABLE_RESOURCE_TYPE.equals(typeId);
@@ -35,12 +35,14 @@ public class TableEditor implements IEditor {
 	@Override
 	public void setElement(EditableElement element) {
 		this.element = element;
-		table.setDataSource((DataSource) this.element.getObject());
+		if (element instanceof EditableResource) {
+			table.setDataSource((DataSource) this.element.getObject(), null);
+		}
 	}
 
 	@Override
 	public void delete() {
-		table.setDataSource(null);
+		table.setDataSource(null, null);
 	}
 
 	@Override

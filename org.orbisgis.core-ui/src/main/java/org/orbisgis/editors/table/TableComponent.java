@@ -9,6 +9,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.TreeSet;
 
@@ -40,7 +41,15 @@ import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
 import org.gdms.sql.strategies.SortComparator;
 import org.orbisgis.Services;
+import org.orbisgis.action.EPActionHelper;
+import org.orbisgis.action.IActionAdapter;
+import org.orbisgis.action.IActionFactory;
+import org.orbisgis.action.ISelectableActionAdapter;
+import org.orbisgis.action.MenuTree;
+import org.orbisgis.action.ToolBarArray;
+import org.orbisgis.editors.table.action.ITableColumnAction;
 import org.orbisgis.errorManager.ErrorManager;
+import org.orbisgis.layerModel.ILayer;
 import org.orbisgis.pluginManager.background.BackgroundJob;
 import org.orbisgis.pluginManager.background.BackgroundManager;
 import org.orbisgis.progress.IProgressMonitor;
@@ -65,6 +74,7 @@ public class TableComponent extends JPanel {
 
 	private ModificationListener listener = new ModificationListener();
 	public ArrayList<Integer> indexes = null;
+	private Selection selection;
 
 	/**
 	 * This is the default constructor
@@ -180,6 +190,12 @@ public class TableComponent extends JPanel {
 						addMenu(pop, "Sort ascending", SORTUP);
 						addMenu(pop, "Sort descending", SORTDOWN);
 						addMenu(pop, "No Sort", NOSORT);
+						MenuTree menuTree = new MenuTree();
+						ToolBarArray toolBarArray = new ToolBarArray();
+						EPActionHelper.configureMenuAndToolBar(
+								"org.orbisgis.editors.table.ColumnAction",
+								"action", new ColumnActionFactory(), menuTree,
+								toolBarArray);
 						pop.show(table.getTableHeader(), e.getX(), e.getY());
 					}
 				}
@@ -251,7 +267,7 @@ public class TableComponent extends JPanel {
 		return ret;
 	}
 
-	public void setDataSource(DataSource dataSource) {
+	public void setDataSource(DataSource dataSource, ILayer layer) {
 		if (this.dataSource != null) {
 			this.dataSource.removeEditionListener(listener);
 			this.dataSource.removeMetadataEditionListener(listener);
@@ -265,6 +281,11 @@ public class TableComponent extends JPanel {
 			tableModel = new DataSourceDataModel();
 			table.setModel(tableModel);
 			autoResizeColWidth(Math.min(5, tableModel.getRowCount()));
+			if (layer == null) {
+				this.selection = new ResourceSelection(table.getSelectedRows());
+			} else {
+				this.selection = new LayerSelection(layer);
+			}
 		}
 	}
 
@@ -518,7 +539,7 @@ public class TableComponent extends JPanel {
 				}
 				TableComponent.this.indexes = indexes;
 				SwingUtilities.invokeLater(new Runnable() {
-				
+
 					@Override
 					public void run() {
 						tableModel.fireTableDataChanged();
@@ -554,6 +575,47 @@ public class TableComponent extends JPanel {
 		public void setPressedColumn(int col) {
 			selectedColumn = col;
 		}
+	}
+
+	private class ColumnActionFactory implements IActionFactory {
+
+		@Override
+		public IActionAdapter getAction(Object action,
+				HashMap<String, String> attributes) {
+			return new ColumnActionAdapter((ITableColumnAction) action);
+		}
+
+		@Override
+		public ISelectableActionAdapter getSelectableAction(Object action,
+				HashMap<String, String> attributes) {
+			throw new RuntimeException("Selectable action not allowed");
+		}
+
+	}
+
+	private class ColumnActionAdapter implements IActionAdapter {
+
+		private ITableColumnAction action;
+
+		public ColumnActionAdapter(ITableColumnAction action) {
+			this.action = action;
+		}
+
+		@Override
+		public void actionPerformed() {
+			action.execute(dataSource, selection, selectedColumn);
+		}
+
+		@Override
+		public boolean isEnabled() {
+			return action.accepts(dataSource, selection, selectedColumn);
+		}
+
+		@Override
+		public boolean isVisible() {
+			return true;
+		}
+
 	}
 
 }

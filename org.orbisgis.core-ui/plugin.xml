@@ -26,6 +26,10 @@
 	<extension-point id="org.orbisgis.editors.map.Tool"
 		schema="schema/tool.xsd" />
 	
+	<!-- table editor actions -->
+	<extension-point id="org.orbisgis.editors.table.ColumnAction"
+		schema="schema/tableColumnAction.xsd" />
+	
 	<!-- layer wizards -->
 	<extension-point id="org.orbisgis.editors.map.NewLayerWizard"
 		schema="schema/newLayerWizard.xsd"/>
