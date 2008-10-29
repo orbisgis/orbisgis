@@ -252,7 +252,7 @@ public class EditorPanel extends Container {
 				Component comp = ((View) child).getComponent();
 				EditorDecorator existingEditor = getEditorByComponent(comp)
 						.getEditorDecorator();
-				if ((existingEditor.getElement() == doc)
+				if ((existingEditor.getElement().equals(doc))
 						&& (existingEditor.getEditor().getClass() == editorClass)) {
 					return (View) child;
 				}
@@ -354,7 +354,7 @@ public class EditorPanel extends Container {
 				editorView.fireEditorClosed(closedEditor, editorInfo
 						.getEditorDecorator().getId());
 				freeView(closedView, editorInfo.editorDecorator);
-				
+
 				try {
 					editorInfo.element.close(new NullProgressMonitor());
 				} catch (UnsupportedOperationException e) {

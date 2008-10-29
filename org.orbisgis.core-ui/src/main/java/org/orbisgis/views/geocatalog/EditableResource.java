@@ -65,7 +65,8 @@ public class EditableResource extends AbstractEditableElement implements
 			throws UnsupportedOperationException, EditableElementException {
 		try {
 			if (ds == null) {
-				DataSourceFactory dsf = Services.getService(DataManager.class).getDSF();
+				DataSourceFactory dsf = Services.getService(DataManager.class)
+						.getDSF();
 				ds = dsf.getDataSource(sourceName);
 			}
 			ds.open();
@@ -92,4 +93,18 @@ public class EditableResource extends AbstractEditableElement implements
 		}
 	}
 
+	@Override
+	public boolean equals(Object obj) {
+		if (obj instanceof EditableResource) {
+			EditableResource er = (EditableResource) obj;
+			return sourceName.equals(er.sourceName);
+		} else {
+			return false;
+		}
+	}
+
+	@Override
+	public int hashCode() {
+		return sourceName.hashCode();
+	}
 }

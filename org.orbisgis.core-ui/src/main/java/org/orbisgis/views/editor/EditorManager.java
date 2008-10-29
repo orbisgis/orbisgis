@@ -83,7 +83,9 @@ public interface EditorManager {
 	boolean hasEditor(EditableElement element);
 
 	/**
-	 * Opens the specified element in the default editor
+	 * Opens the specified element in the default editor. If the element is been
+	 * edited the editor gains focus and no new editor is open. The comparison
+	 * between elements is done using the {@link Object#equals(Object)} method.
 	 * 
 	 * @param element
 	 * @throws UnsupportedOperationException
