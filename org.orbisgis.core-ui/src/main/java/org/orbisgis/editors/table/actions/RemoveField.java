@@ -14,7 +14,7 @@ public class RemoveField implements ITableColumnAction {
 	@Override
 	public boolean accepts(DataSource dataSource, Selection selection,
 			int selectedColumn) {
-		return selectedColumn != -1;
+		return (selectedColumn != -1) && dataSource.isEditable();
 	}
 
 	@Override

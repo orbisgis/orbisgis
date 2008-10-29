@@ -320,9 +320,9 @@ public class TableComponent extends JPanel {
 		table.setColumnModel(colModel);
 	}
 
-	private int getColumnOptimalWidth(int rowsToCheck, int maxWidth, int i,
-			IProgressMonitor pm) {
-		TableColumn col = table.getColumnModel().getColumn(i);
+	private int getColumnOptimalWidth(int rowsToCheck, int maxWidth,
+			int column, IProgressMonitor pm) {
+		TableColumn col = table.getColumnModel().getColumn(column);
 		int margin = 5;
 		int width = 0;
 
@@ -340,20 +340,20 @@ public class TableComponent extends JPanel {
 
 		// Check header
 		comp = renderer.getTableCellRendererComponent(table, col
-				.getHeaderValue(), false, false, 0, i);
+				.getHeaderValue(), false, false, 0, column);
 		width = Math.max(width, comp.getPreferredSize().width);
 		// Get maximum width of column data
 		for (int r = 0; r < rowsToCheck; r++) {
-			if (i / 100 == i / 100.0) {
+			if (r / 100 == r / 100.0) {
 				if (pm.isCancelled()) {
 					break;
 				} else {
-					pm.progressTo(100 * i / rowsToCheck);
+					pm.progressTo(100 * r / rowsToCheck);
 				}
 			}
-			renderer = table.getCellRenderer(r, i);
+			renderer = table.getCellRenderer(r, column);
 			comp = renderer.getTableCellRendererComponent(table, table
-					.getValueAt(r, i), false, false, r, i);
+					.getValueAt(r, column), false, false, r, column);
 			width = Math.max(width, comp.getPreferredSize().width);
 		}
 
@@ -423,6 +423,7 @@ public class TableComponent extends JPanel {
 				Services.getService(ErrorManager.class).warning(
 						"Cannot keep table configuration", e);
 			}
+			tableModel.fireTableStructureChanged();
 			autoResizeColWidth(Math.min(5, tableModel.getRowCount()), widths,
 					renderers);
 		}
