@@ -69,7 +69,7 @@ public class ConsoleAction {
 				"Click to execute query"));
 		mapOfActions.put(CLEAR, new InternalConsoleAction("Erase.png",
 				"Clear console"));
-		mapOfActions.put(OPEN, new InternalConsoleAction("Open.png",
+		mapOfActions.put(OPEN, new InternalConsoleAction("open.png",
 				"Open an already saved SQL script"));
 		mapOfActions.put(SAVE, new InternalConsoleAction("Save.png",
 				"Save current console"));
