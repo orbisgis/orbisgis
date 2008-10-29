@@ -46,9 +46,9 @@ import org.sif.SQLUIPanel;
 public class AskValue extends AbstractUIPanel implements SQLUIPanel {
 
 	private JTextField txtField;
-	private String sql;
+	private String[] sql;
 	private String title;
-	private String error;
+	private String[] error;
 	private String initialValue;
 	private int type;
 
@@ -58,8 +58,8 @@ public class AskValue extends AbstractUIPanel implements SQLUIPanel {
 
 	public AskValue(String title, String sql, String error, String initialValue) {
 		this.title = title;
-		this.sql = sql;
-		this.error = error;
+		this.sql = (sql == null) ? null : new String[] { sql };
+		this.error = (error == null) ? null : new String[] { error };
 		this.initialValue = initialValue;
 		this.type = STRING;
 	}
@@ -78,7 +78,7 @@ public class AskValue extends AbstractUIPanel implements SQLUIPanel {
 	}
 
 	public String[] getErrorMessages() {
-		return new String[] { error };
+		return error;
 	}
 
 	public String[] getFieldNames() {
@@ -90,7 +90,7 @@ public class AskValue extends AbstractUIPanel implements SQLUIPanel {
 	}
 
 	public String[] getValidationExpressions() {
-		return new String[] { sql };
+		return sql;
 	}
 
 	public String[] getValues() {
