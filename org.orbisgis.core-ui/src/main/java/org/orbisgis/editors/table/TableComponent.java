@@ -27,6 +27,7 @@ import javax.swing.table.DefaultTableColumnModel;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
+import javax.swing.table.TableColumnModel;
 
 import org.gdms.data.DataSource;
 import org.gdms.data.edition.EditionEvent;
@@ -109,7 +110,6 @@ public class TableComponent extends JPanel {
 
 			table.getSelectionModel().setSelectionMode(
 					ListSelectionModel.SINGLE_SELECTION);
-
 			table.getTableHeader().setReorderingAllowed(false);
 			final ActionListener menuListener = new ActionListener() {
 
@@ -187,9 +187,11 @@ public class TableComponent extends JPanel {
 						JPopupMenu pop = new JPopupMenu();
 						addMenu(pop, "Optimal width", OPTIMALWIDTH);
 						addMenu(pop, "Set width", SETWIDTH);
+						pop.addSeparator();
 						addMenu(pop, "Sort ascending", SORTUP);
 						addMenu(pop, "Sort descending", SORTDOWN);
 						addMenu(pop, "No Sort", NOSORT);
+						pop.addSeparator();
 						MenuTree menuTree = new MenuTree();
 						String epid = "org.orbisgis.editors.table.ColumnAction";
 						ContextualActionExtensionPointHelper.createPopup(
@@ -282,7 +284,9 @@ public class TableComponent extends JPanel {
 			this.dataSource.addMetadataEditionListener(listener);
 			tableModel = new DataSourceDataModel();
 			table.setModel(tableModel);
-			autoResizeColWidth(Math.min(5, tableModel.getRowCount()));
+			autoResizeColWidth(Math.min(5, tableModel.getRowCount()),
+					new HashMap<String, Integer>(),
+					new HashMap<String, TableCellRenderer>());
 			if (layer == null) {
 				this.selection = new ResourceSelection(table.getSelectedRows());
 			} else {
@@ -291,22 +295,32 @@ public class TableComponent extends JPanel {
 		}
 	}
 
-	private void autoResizeColWidth(int rowsToCheck) {
+	private void autoResizeColWidth(int rowsToCheck,
+			HashMap<String, Integer> widths,
+			HashMap<String, TableCellRenderer> renderers) {
 		DefaultTableColumnModel colModel = new DefaultTableColumnModel();
+		int maxWidth = 200;
 		for (int i = 0; i < table.getColumnCount(); i++) {
 			TableColumn col = new TableColumn(i);
-			col.setHeaderValue(table.getColumnName(i));
-			col.setHeaderRenderer(new ButtonHeaderRenderer());
+			String columnName = table.getColumnName(i);
+			col.setHeaderValue(columnName);
+			TableCellRenderer renderer = renderers.get(columnName);
+			if (renderer == null) {
+				renderer = new ButtonHeaderRenderer();
+			}
+			col.setHeaderRenderer(renderer);
+			Integer width = widths.get(columnName);
+			if (width == null) {
+				width = getColumnOptimalWidth(rowsToCheck, maxWidth, i,
+						new NullProgressMonitor());
+			}
+			col.setPreferredWidth(width);
 			colModel.addColumn(col);
 		}
 		table.setColumnModel(colModel);
-		int maxWidth = 200;
-		for (int i = 0; i < table.getColumnCount(); i++) {
-			TableColumn col = table.getColumnModel().getColumn(i);
-			int width = getColumnOptimalWidth(rowsToCheck, maxWidth, i,
-					new NullProgressMonitor());
-			col.setPreferredWidth(width);
-		}
+		// for (int i = 0; i < table.getColumnCount(); i++) {
+		// TableColumn col = table.getColumnModel().getColumn(i);
+		// }
 	}
 
 	private int getColumnOptimalWidth(int rowsToCheck, int maxWidth, int i,
@@ -371,17 +385,33 @@ public class TableComponent extends JPanel {
 
 		@Override
 		public void fieldAdded(FieldEditionEvent event) {
-			tableModel.fireTableStructureChanged();
+			fieldRemoved(null);
 		}
 
 		@Override
 		public void fieldModified(FieldEditionEvent event) {
-			tableModel.fireTableStructureChanged();
+			fieldRemoved(null);
 		}
 
 		@Override
 		public void fieldRemoved(FieldEditionEvent event) {
-			tableModel.fireTableStructureChanged();
+			TableColumnModel columnModel = table.getColumnModel();
+			HashMap<String, Integer> widths = new HashMap<String, Integer>();
+			HashMap<String, TableCellRenderer> renderers = new HashMap<String, TableCellRenderer>();
+			for (int i = 0; i < columnModel.getColumnCount(); i++) {
+				TableColumn column = columnModel.getColumn(i);
+				String columnName;
+				try {
+					columnName = dataSource.getMetadata().getFieldName(i);
+				} catch (DriverException e) {
+					// Take old value and don't fail
+					columnName = column.getHeaderValue().toString();
+				}
+				widths.put(columnName, column.getPreferredWidth());
+				renderers.put(columnName, column.getHeaderRenderer());
+			}
+			autoResizeColWidth(Math.min(5, tableModel.getRowCount()), widths,
+					renderers);
 		}
 
 	}
