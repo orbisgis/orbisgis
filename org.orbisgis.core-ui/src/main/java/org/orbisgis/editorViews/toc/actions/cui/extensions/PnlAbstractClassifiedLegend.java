@@ -246,8 +246,7 @@ public abstract class PnlAbstractClassifiedLegend extends javax.swing.JPanel
 		add(jPanelTable);
 		add(new CarriageReturn());
 
-		jButtonAddAll.setIcon(IconLoader.getIcon("addall.png"));
-		jButtonAddAll.setToolTipText("Add all");
+		jButtonAddAll.setText("Add all");
 		jButtonAddAll.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
 				addAllAction();
@@ -255,8 +254,7 @@ public abstract class PnlAbstractClassifiedLegend extends javax.swing.JPanel
 		});
 		jPanelButtons.add(jButtonAddAll);
 
-		jButtonAddOne.setIcon(IconLoader.getIcon("add.png"));
-		jButtonAddOne.setToolTipText("Add");
+		jButtonAddOne.setText("Add");
 		jButtonAddOne.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
 				addOneAction();
@@ -264,8 +262,7 @@ public abstract class PnlAbstractClassifiedLegend extends javax.swing.JPanel
 		});
 		jPanelButtons.add(jButtonAddOne);
 
-		jButtonDel.setIcon(IconLoader.getIcon("delete.png"));
-		jButtonDel.setToolTipText("Delete");
+		jButtonDel.setText("Delete");
 		jButtonDel.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
 				jButtonDelActionPerformed(evt);
