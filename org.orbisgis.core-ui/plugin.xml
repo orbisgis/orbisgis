@@ -80,21 +80,22 @@
 	<!-- Geocatalog wizards -->
 	<extension point="org.orbisgis.views.geocatalog.NewResourceWizard">
 		<wizard id="org.orbisgis.views.geocatalog.newResourceWizards.NewFile"
-			icon="/org/orbisgis/images/flatfile.png"
+			icon="/org/orbisgis/images/page_white_add.png"
 			class="org.orbisgis.views.geocatalog.newResourceWizards.file.NewFile"/>
 	</extension>
 	<extension point="org.orbisgis.views.geocatalog.NewResourceWizard">
 		<wizard id="org.orbisgis.views.geocatalog.newResourceWizards.NewDB"
-			icon="/org/orbisgis/images/db.png"
+			icon="/org/orbisgis/images/database_add.png"
 			class="org.orbisgis.views.geocatalog.newResourceWizards.db.NewDB"/>
 	</extension>
 	<extension point="org.orbisgis.views.geocatalog.NewResourceWizard">
 		<wizard id="org.orbisgis.views.geocatalog.newResourceWizards.NewFolder"
-			icon="/org/orbisgis/images/folder.png"
+			icon="/org/orbisgis/images/folder_add.png"
 			class="org.orbisgis.views.geocatalog.newResourceWizards.NewFolder"/>
 	</extension>
 	<extension point="org.orbisgis.views.geocatalog.NewResourceWizard">
 		<wizard id="org.orbisgis.views.geocatalog.newResourceWizards.XYZDem"
+			icon="/org/orbisgis/images/cog_go.png"
 			class="org.orbisgis.views.geocatalog.newResourceWizards.xyzdem.ConvertXYZDem"/>
 	</extension>
 	
@@ -124,10 +125,12 @@
 		<action id="org.orbisgis.actions.SaveWorkspace"
 			menu-id="org.orbisgis.File"
 			menu-group="org.orbisgis.actions.Workspace" text="Save workspace"
+			icon="/org/orbisgis/images/disk.png"
 			class="org.orbisgis.actions.SaveWorkspace"/>
 		<action id="org.orbisgis.actions.ChangeWorkspace"
 			menu-id="org.orbisgis.File"
 			menu-group="org.orbisgis.actions.Workspace" text="Change workspace"
+			icon="/org/orbisgis/images/application_go.png"
 			class="org.orbisgis.actions.ChangeWorkspace"/>
 	</extension>
 	
@@ -136,6 +139,7 @@
 		<action id="org.orbisgis.actions.Configuration" text="Configuration"
 			menu-id="org.orbisgis.File"
 			menu-group="org.orbisgis.actions.Configuration"
+			icon="/org/orbisgis/images/preferences-system.png"
 			class="org.orbisgis.actions.Configuration"/>
 	</extension>
 	
@@ -231,16 +235,23 @@
 		<action id="org.orbisgis.editorViews.toc.actions.SetActive"
 			text="Start edition"
 			menu-group="org.orbisgis.editorViews.toc.Edition"
+			icon="/org/orbisgis/images/pencil.png"
 			class="org.orbisgis.editorViews.toc.actions.SetActive"/>
 		<action id="org.orbisgis.editorViews.toc.actions.SetInactive"
 			text="Stop edition" menu-group="org.orbisgis.editorViews.toc.Edition"
+			icon="/org/orbisgis/images/stop.png"
 			class="org.orbisgis.editorViews.toc.actions.SetInactive"/>
 		<action id="org.orbisgis.editorViews.toc.actions.Save" text="Save"
-			menu-group="org.orbisgis.editorViews.toc.Edition"
-			class="org.orbisgis.editorViews.toc.actions.Save"/>
+
+			menu-group="org.orbisgis.editorViews.toc.Edition" 
+				icon="/org/orbisgis/images/disk.png"
+			class="org.orbisgis.editorViews.toc.actions.Save" />
 		<action id="org.orbisgis.editorViews.toc.actions.Revert" text="Revert"
-			menu-group="org.orbisgis.editorViews.toc.Edition"
-			class="org.orbisgis.editorViews.toc.actions.Revert"/>
+
+			menu-group="org.orbisgis.editorViews.toc.Edition" 
+			icon="/org/orbisgis/images/arrow_refresh.png"
+			class="org.orbisgis.editorViews.toc.actions.Revert" />
+
 	</extension>
 	
 	<extension point="org.orbisgis.editorViews.toc.Action">
