@@ -1,5 +1,7 @@
 package org.orbisgis.geocognition.sql;
 
+import java.util.Map;
+
 import org.gdms.sql.function.Function;
 import org.gdms.sql.function.FunctionManager;
 import org.orbisgis.geocognition.GeocognitionElementFactory;
@@ -42,12 +44,21 @@ public class GeocognitionJavaFunction extends AbstractJavaSQLArtifact implements
 	}
 
 	@Override
-	protected Code getJavaCode(String codeContent) {
+	protected Code instantiateJavaCode(String codeContent) {
 		return new FunctionJavaCode(codeContent);
 	}
 
 	@Override
 	protected String getInterfaceName() {
 		return Function.class.getName();
+	}
+
+	@Override
+	protected Map<String, String> getPersistentProperties() {
+		return null;
+	}
+
+	@Override
+	protected void setPersistentProperties(Map<String, String> properties) {
 	}
 }

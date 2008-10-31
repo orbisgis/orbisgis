@@ -4,6 +4,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 
 import org.orbisgis.AbstractTest;
+import org.orbisgis.geocognition.actions.GeocognitionActionElementFactory;
 import org.orbisgis.geocognition.mapContext.GeocognitionMapContextFactory;
 import org.orbisgis.geocognition.sql.GeocognitionCustomQueryFactory;
 import org.orbisgis.geocognition.sql.GeocognitionFunctionFactory;
@@ -23,6 +24,7 @@ public class AbstractGeocognitionTest extends AbstractTest {
 		gc.addElementFactory(new GeocognitionCustomQueryFactory());
 		gc.addElementFactory(new GeocognitionLegendFactory());
 		gc.addElementFactory(new GeocognitionMapContextFactory());
+		gc.addElementFactory(new GeocognitionActionElementFactory());
 	}
 
 	protected void saveAndLoad() throws Exception {

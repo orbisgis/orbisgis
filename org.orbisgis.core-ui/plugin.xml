@@ -242,16 +242,13 @@
 			icon="/org/orbisgis/images/stop.png"
 			class="org.orbisgis.editorViews.toc.actions.SetInactive"/>
 		<action id="org.orbisgis.editorViews.toc.actions.Save" text="Save"
-
-			menu-group="org.orbisgis.editorViews.toc.Edition" 
+			menu-group="org.orbisgis.editorViews.toc.Edition"
 				icon="/org/orbisgis/images/disk.png"
-			class="org.orbisgis.editorViews.toc.actions.Save" />
+			class="org.orbisgis.editorViews.toc.actions.Save"/>
 		<action id="org.orbisgis.editorViews.toc.actions.Revert" text="Revert"
-
-			menu-group="org.orbisgis.editorViews.toc.Edition" 
+			menu-group="org.orbisgis.editorViews.toc.Edition"
 			icon="/org/orbisgis/images/arrow_refresh.png"
-			class="org.orbisgis.editorViews.toc.actions.Revert" />
-
+			class="org.orbisgis.editorViews.toc.actions.Revert"/>
 	</extension>
 	
 	<extension point="org.orbisgis.editorViews.toc.Action">
@@ -545,6 +542,11 @@
 			icon="/org/orbisgis/images/openattributes.png"
 			class="org.orbisgis.editors.table.TableEditor"/>
 	</extension>
+	<extension id="org.orbisgis.editor.Action" point="org.orbisgis.Editor">
+		<editor id="org.orbisgis.editors.Action"
+			icon="/org/orbisgis/images/java_cup.png"
+			class="org.orbisgis.editors.action.ActionEditor"/>
+	</extension>
 	<extension id="org.orbisgis.editor.Function" point="org.orbisgis.Editor">
 		<editor id="org.orbisgis.editors.Function"
 			icon="/org/orbisgis/images/java_cup.png"
@@ -557,6 +559,15 @@
 	</extension>
 	
 	<!-- Geocognition wizards-->
+	<extension id="org.orbisgis.views.geocognition.wizards.NewAction"
+		point="org.orbisgis.views.geocognition.NewWizard">
+		<category id="org.orbisgis.views.geocognition.UI"
+			name="User interface"/>
+		<wizard id="org.orbisgis.views.geocognition.wizards.NewAction"
+			icon="/org/orbisgis/images/action.png"
+			category="org.orbisgis.views.geocognition.UI"
+			class="org.orbisgis.views.geocognition.wizards.NewAction"/>
+	</extension>
 	<extension
 		id="org.orbisgis.views.geocognition.wizards.NewRegisteredSQLArtifacts"
 		point="org.orbisgis.views.geocognition.NewWizard">
@@ -684,6 +695,13 @@
 			menu-group="org.orbisgis.views.geocognition.Sync"
 			class="org.orbisgis.views.geocognition.actions.ImportFromURL"
 			menu-id="org.orbisgis.views.geocognition.Synchronize"/>
+	</extension>
+	<extension point="org.orbisgis.views.geocognition.Action"
+		id="org.orbisgis.views.geocognition.actions.Action">
+		<action id="org.orbisgis.views.geocognition.actions.InstallAction"
+			menu-group="org.orbisgis.views.geocognition.Action"
+			text="Install action"
+			class="org.orbisgis.views.geocognition.actions.InstallAction"/>
 	</extension>
 	
 	<!-- Geocognition filters -->

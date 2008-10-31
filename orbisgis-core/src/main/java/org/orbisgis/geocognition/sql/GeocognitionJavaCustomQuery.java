@@ -1,5 +1,7 @@
 package org.orbisgis.geocognition.sql;
 
+import java.util.Map;
+
 import org.gdms.sql.customQuery.CustomQuery;
 import org.gdms.sql.customQuery.QueryManager;
 import org.orbisgis.geocognition.GeocognitionElementFactory;
@@ -42,12 +44,22 @@ public class GeocognitionJavaCustomQuery extends AbstractJavaSQLArtifact
 	}
 
 	@Override
-	protected Code getJavaCode(String codeContent) {
+	protected Code instantiateJavaCode(String codeContent) {
 		return new CustomQueryJavaCode(codeContent);
 	}
 
 	@Override
 	protected String getInterfaceName() {
 		return CustomQuery.class.getName();
+	}
+
+	@Override
+	protected Map<String, String> getPersistentProperties() {
+		return null;
+	}
+
+	@Override
+	protected void setPersistentProperties(Map<String, String> properties) {
+
 	}
 }

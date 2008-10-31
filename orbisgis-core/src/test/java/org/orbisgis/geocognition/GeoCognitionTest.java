@@ -13,6 +13,7 @@ import org.orbisgis.DataManager;
 import org.orbisgis.Services;
 import org.orbisgis.errorManager.ErrorListener;
 import org.orbisgis.errorManager.ErrorManager;
+import org.orbisgis.geocognition.actions.ActionCode;
 import org.orbisgis.geocognition.mapContext.GeocognitionMapContextFactory;
 import org.orbisgis.geocognition.sql.Code;
 import org.orbisgis.geocognition.sql.CustomQueryJavaCode;
@@ -117,6 +118,22 @@ public class GeoCognitionTest extends AbstractGeocognitionTest {
 		CustomQueryJavaCode readCode = gc.getElement("query",
 				CustomQueryJavaCode.class);
 		assertTrue(readCode.getCode().equals(codeContent));
+	}
+
+	public void testJavaActionPersistence() throws Exception {
+		String codeContent = "the custom query java code here";
+		String text = "text";
+		String menuId = "org.orbisgis.MyMenu";
+		ActionCode code = new ActionCode(codeContent);
+		code.setText(text);
+		code.setMenuId(menuId);
+		gc.addElement("query", code);
+		saveAndLoad();
+		ActionCode readCode = gc.getElement("query", ActionCode.class);
+		assertTrue(readCode.getCode().equals(codeContent));
+		assertTrue(readCode.getGroup() == null);
+		assertTrue(readCode.getMenuId().equals(menuId));
+		assertTrue(readCode.getText().equals(text));
 	}
 
 	public void testLegendPersistence() throws Exception {
@@ -313,6 +330,33 @@ public class GeoCognitionTest extends AbstractGeocognitionTest {
 		unsupportedBuiltInSQLEdition("/register");
 	}
 
+	public void testOpenSaveCloseAction() throws Exception {
+		ActionCode code = new ActionCode("this is the code");
+		gc.addElement("id", code);
+		GeocognitionElement element = gc.getGeocognitionElement("id");
+		element.open(new NullProgressMonitor());
+		String newContent = "new content";
+		String group = "mygroup";
+		String text = "mytext";
+		String menuId = "mymenu";
+		code.setCode(newContent);
+		code.setGroup(group);
+		code.setText(text);
+		code.setMenuId(menuId);
+		element.save();
+		element.close(new NullProgressMonitor());
+		element.open(new NullProgressMonitor());
+		assertTrue(code.getCode().equals(newContent));
+		assertTrue(code.getGroup().equals(group));
+		assertTrue(code.getText().equals(text));
+		assertTrue(code.getMenuId().equals(menuId));
+		code.setCode("This won't be saved");
+		element.close(new NullProgressMonitor());
+		element.open(new NullProgressMonitor());
+		assertTrue(code.getCode().equals(newContent));
+		element.close(new NullProgressMonitor());
+	}
+
 	private void unsupportedBuiltInSQLEdition(String id) throws Exception {
 		GeocognitionElement element = gc.getGeocognitionElement(id);
 		try {
@@ -441,6 +485,8 @@ public class GeoCognitionTest extends AbstractGeocognitionTest {
 				"I'm afraid this won't compile"));
 		gc.addElement("/folder1/id5", LegendFactory.createUniqueValueLegend());
 		gc.addElement("/folder1/id6", SymbolFactory.createPolygonSymbol());
+		gc.addElement("/folder1/id7", new ActionCode(
+				"I'm afraid this won't compile"));
 		ByteArrayOutputStream bos1 = new ByteArrayOutputStream();
 		gc.write(bos1, "folder1");
 		GeocognitionElement folder1 = gc.getGeocognitionElement("folder1");

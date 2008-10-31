@@ -1,25 +1,16 @@
 package org.orbisgis.geocognition.sql;
 
-import java.io.ByteArrayInputStream;
-import java.util.HashMap;
-import java.util.Map;
-
 import org.gdms.sql.customQuery.QueryManager;
 import org.gdms.sql.function.FunctionManager;
 import org.orbisgis.edition.EditableElementException;
-import org.orbisgis.geocognition.AbstractExtensionElement;
-import org.orbisgis.geocognition.GeocognitionElementContentListener;
 import org.orbisgis.geocognition.GeocognitionElementFactory;
 import org.orbisgis.geocognition.GeocognitionExtensionElement;
+import org.orbisgis.geocognition.java.AbstractJavaArtifact;
 import org.orbisgis.geocognition.mapContext.GeocognitionException;
-import org.orbisgis.geocognition.persistence.Property;
 import org.orbisgis.geocognition.persistence.PropertySet;
 import org.orbisgis.javaManager.CompilationException;
-import org.orbisgis.javaManager.autocompletion.AbstractVisitor;
-import org.orbisgis.javaManager.parser.JavaParser;
 import org.orbisgis.javaManager.parser.ParseException;
 import org.orbisgis.javaManager.parser.TokenMgrError;
-import org.orbisgis.progress.IProgressMonitor;
 
 /**
  * <p>
@@ -42,114 +33,30 @@ import org.orbisgis.progress.IProgressMonitor;
  * @author Fernando Gonzalez Cortes
  * 
  */
-public abstract class AbstractJavaSQLArtifact extends AbstractExtensionElement
+public abstract class AbstractJavaSQLArtifact extends AbstractJavaArtifact
 		implements GeocognitionExtensionElement {
 
 	// persistence property name
 	static final String PERSISTENCE_PROPERTY_NAME = "function-code";
-
-	// compiling properties
-	public static final String COMPILE_RESULT = "COMPILE_RESULT";
-	public static final String COMPILE_OK = "COMPILE_RESULT_OK";
-	public static final String COMPILE_ERROR = "COMPILE_RESULT_ERROR";
-
-	private Code code;
-	private Property revertStatus;
-	private GeocognitionElementContentListener elementListener;
-	private CodeChangeListener codeListener;
 	private String id;
-	private HashMap<String, String> properties = new HashMap<String, String>();
 
 	public AbstractJavaSQLArtifact(Code code, GeocognitionElementFactory factory) {
-		super(factory);
-		this.code = code;
+		super(code, factory);
 	}
 
 	public AbstractJavaSQLArtifact(PropertySet properties,
 			GeocognitionElementFactory factory) throws ClassNotFoundException {
-		super(factory);
-		String codeContent = properties.getProperty().get(0).getValue();
-		code = getJavaCode(codeContent);
+		super(properties, factory);
 	}
 
-	protected abstract Code getJavaCode(String codeContent);
-
-	@Override
-	public Object getJAXBObject() {
-		Property property = getProperty(code);
-		return getPropertySet(property);
-	}
-
-	private Object getPropertySet(Property property) {
-		PropertySet props = new PropertySet();
-		props.getProperty().add(property);
-		return props;
-	}
-
-	private Property getProperty(Code code) {
-		Property property = new Property();
-		property.setName(PERSISTENCE_PROPERTY_NAME);
-		property.setValue(code.getCode());
-		return property;
-	}
-
-	@Override
-	public Object getObject() throws UnsupportedOperationException {
-		return code;
-	}
-
-	@Override
-	public void close(IProgressMonitor progressMonitor) {
-		code.setCode(revertStatus.getValue());
-		this.code.removeCodeListener(codeListener);
-	}
-
-	@Override
-	public void open(IProgressMonitor progressMonitor)
-			throws UnsupportedOperationException {
-		this.revertStatus = getProperty(this.code);
-		codeListener = new CodeChangeListener();
-		this.code.addCodeListener(codeListener);
+	protected String getCodePropertyName() {
+		return PERSISTENCE_PROPERTY_NAME;
 	}
 
 	@Override
 	public void save() throws EditableElementException {
-		this.revertStatus = getProperty(this.code);
+		super.save();
 		publish();
-	}
-
-	@Override
-	public boolean isModified() {
-		return false;
-	}
-
-	@Override
-	public Object getRevertJAXBObject() {
-		return getPropertySet(revertStatus);
-	}
-
-	@Override
-	public void setElementListener(GeocognitionElementContentListener listener) {
-		this.elementListener = listener;
-	}
-
-	@Override
-	public void setJAXBObject(Object jaxbObject)
-			throws IllegalArgumentException, GeocognitionException {
-		PropertySet props = (PropertySet) jaxbObject;
-		Property property = props.getProperty().get(0);
-		code.setCode(property.getValue());
-	}
-
-	private class CodeChangeListener implements CodeListener {
-
-		@Override
-		public void codeChanged(Code code) {
-			if (elementListener != null) {
-				elementListener.contentChanged();
-			}
-		}
-
 	}
 
 	@Override
@@ -191,23 +98,12 @@ public abstract class AbstractJavaSQLArtifact extends AbstractExtensionElement
 	}
 
 	private void changeCode(String newId) throws ParseException {
-		NameRefactoringVisitor nrv = new NameRefactoringVisitor(this.code
-				.getCode(), newId);
-		applyVisitor(nrv, this.code.getCode());
-		String nameChanged = nrv.getModifiedText();
+		String nameChanged = changeName(newId);
 		GetNameRefactoringVisitor gnrv = new GetNameRefactoringVisitor(
 				nameChanged, "return \"" + newId + "\";");
 		applyVisitor(gnrv, nameChanged);
 		nameChanged = gnrv.getModifiedText();
 		this.code.setCode(nameChanged);
-	}
-
-	private void applyVisitor(AbstractVisitor nrv, String javaCode)
-			throws ParseException {
-		ByteArrayInputStream bis = new ByteArrayInputStream(javaCode.getBytes());
-		JavaParser jp = new JavaParser(bis);
-		jp.CompilationUnit();
-		jp.getRootNode().jjtAccept(nrv, null);
 	}
 
 	private void publish() throws EditableElementException {
@@ -256,10 +152,5 @@ public abstract class AbstractJavaSQLArtifact extends AbstractExtensionElement
 	 */
 	protected abstract void addArtifact(Class<?> cl)
 			throws IllegalArgumentException;
-
-	@Override
-	public Map<String, String> getProperties() {
-		return properties;
-	}
 
 }
