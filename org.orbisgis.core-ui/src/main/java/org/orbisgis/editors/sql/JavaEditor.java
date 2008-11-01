@@ -14,7 +14,6 @@ import org.orbisgis.edition.EditableElement;
 import org.orbisgis.edition.EditableElementListener;
 import org.orbisgis.editor.IEditor;
 import org.orbisgis.geocognition.sql.Code;
-import org.orbisgis.geocognition.sql.CodeListener;
 import org.orbisgis.ui.text.UndoableDocument;
 import org.orbisgis.views.javaConsole.CompletionKeyListener;
 import org.orbisgis.views.sqlConsole.actions.ConsoleListener;
@@ -25,13 +24,8 @@ public abstract class JavaEditor implements IEditor {
 	private EditableElement element;
 	private Code code;
 	private ConsolePanel consolePanel;
-	private CodeListener codeListener;
 	private SaveListener saveListener = new SaveListener();
 	private MarkNavigator errorNavigator;
-
-	public JavaEditor() {
-		codeListener = new CodeModificationListener();
-	}
 
 	@Override
 	public EditableElement getElement() {
@@ -48,13 +42,11 @@ public abstract class JavaEditor implements IEditor {
 		this.element = element;
 		this.element.addElementListener(saveListener);
 		this.code = (Code) element.getObject();
-		this.code.addCodeListener(codeListener);
 		markErrors();
 	}
 
 	@Override
 	public void delete() {
-		this.code.removeCodeListener(codeListener);
 		this.element.removeElementListener(saveListener);
 	}
 
@@ -121,22 +113,6 @@ public abstract class JavaEditor implements IEditor {
 
 	}
 
-	private class CodeModificationListener implements CodeListener {
-
-		@Override
-		public void codeChanged(Code code) {
-			JTextComponent txt = consolePanel.getTextComponent();
-			if (!txt.getText().equals(code.getCode())) {
-				int caretPosition = txt.getCaretPosition();
-				txt.setText(code.getCode());
-				if (caretPosition < code.getCode().length()) {
-					txt.setCaretPosition(caretPosition);
-				}
-			}
-		}
-
-	}
-
 	private void markErrors() {
 		if (errorNavigator != null) {
 			errorNavigator.setTotalLines(code.getLineCount());
@@ -148,6 +124,14 @@ public abstract class JavaEditor implements IEditor {
 
 		@Override
 		public void contentChanged(EditableElement element) {
+			JTextComponent txt = consolePanel.getTextComponent();
+			if (!txt.getText().equals(code.getCode())) {
+				int caretPosition = txt.getCaretPosition();
+				txt.setText(code.getCode());
+				if (caretPosition < code.getCode().length()) {
+					txt.setCaretPosition(caretPosition);
+				}
+			}
 		}
 
 		@Override
