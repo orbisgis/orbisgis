@@ -32,7 +32,7 @@ public abstract class AbstractJavaArtifact extends AbstractExtensionElement
 	public static final String COMPILE_ERROR = "COMPILE_RESULT_ERROR";
 
 	private PropertySet revertStatus;
-	private GeocognitionElementContentListener elementListener;
+	protected GeocognitionElementContentListener elementListener;
 	private CodeChangeListener codeListener;
 	protected Code code;
 	protected HashMap<String, String> properties = new HashMap<String, String>();

@@ -32,6 +32,7 @@ import org.orbisgis.edition.EditableElement;
 import org.orbisgis.editor.IEditor;
 import org.orbisgis.editors.sql.JavaEditor;
 import org.orbisgis.geocognition.actions.ActionCode;
+import org.orbisgis.geocognition.actions.ActionPropertyChangeListener;
 import org.orbisgis.geocognition.actions.GeocognitionActionElementFactory;
 import org.orbisgis.ui.resourceTree.AbstractTreeModel;
 import org.sif.CRFlowLayout;
@@ -44,6 +45,7 @@ public class ActionEditor extends JavaEditor implements IEditor {
 	private JList lstGroups;
 	private JTextField txtText;
 	private boolean refreshing = false;
+	private PropertyModifiacationListener changeListener = new PropertyModifiacationListener();
 
 	public Component getComponent() {
 		panel = new JTabbedPane(JTabbedPane.BOTTOM);
@@ -138,6 +140,15 @@ public class ActionEditor extends JavaEditor implements IEditor {
 	@Override
 	public void setElement(EditableElement element) {
 		super.setElement(element);
+		ActionCode code = (ActionCode) element.getObject();
+		code.addActionPropertyListener(changeListener);
+	}
+
+	@Override
+	public void delete() {
+		super.delete();
+		ActionCode code = (ActionCode) getElement().getObject();
+		code.removeActionPropertyListener(changeListener);
 	}
 
 	private synchronized void refreshUI() {
@@ -219,6 +230,15 @@ public class ActionEditor extends JavaEditor implements IEditor {
 	@Override
 	public boolean acceptElement(String typeId) {
 		return GeocognitionActionElementFactory.ACTION_ID.equals(typeId);
+	}
+
+	private final class PropertyModifiacationListener implements
+			ActionPropertyChangeListener {
+		@Override
+		public void propertyChanged(String propertyName, String newValue,
+				String oldValue) {
+			refreshUI();
+		}
 	}
 
 	private class MenuTreeRenderer extends DefaultTreeCellRenderer implements

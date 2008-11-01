@@ -8,11 +8,13 @@ import org.orbisgis.geocognition.GeocognitionExtensionElement;
 import org.orbisgis.geocognition.java.AbstractJavaArtifact;
 import org.orbisgis.geocognition.persistence.PropertySet;
 import org.orbisgis.geocognition.sql.Code;
+import org.orbisgis.progress.IProgressMonitor;
 
 public class GeocognitionActionElement extends AbstractJavaArtifact implements
 		GeocognitionExtensionElement {
 
 	static final String PERSISTENCE_PROPERTY_NAME = "action-code";
+	private PropertyChangeListener propertyListener;
 
 	public GeocognitionActionElement(ActionCode code,
 			GeocognitionElementFactory factory) {
@@ -59,4 +61,32 @@ public class GeocognitionActionElement extends AbstractJavaArtifact implements
 	private ActionCode getAction() {
 		return (ActionCode) code;
 	}
+
+	@Override
+	public void open(IProgressMonitor progressMonitor)
+			throws UnsupportedOperationException {
+		super.open(progressMonitor);
+		propertyListener = new PropertyChangeListener();
+		getAction().addActionPropertyListener(propertyListener);
+	}
+
+	@Override
+	public void close(IProgressMonitor progressMonitor) {
+		super.close(progressMonitor);
+		getAction().removeActionPropertyListener(propertyListener);
+	}
+
+	private class PropertyChangeListener implements
+			ActionPropertyChangeListener {
+
+		@Override
+		public void propertyChanged(String propertyName, String newValue,
+				String oldValue) {
+			if (elementListener != null) {
+				elementListener.contentChanged();
+			}
+		}
+
+	}
+
 }
