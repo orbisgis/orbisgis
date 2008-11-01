@@ -39,6 +39,7 @@ package org.orbisgis.windows.mainFrame;
 import javax.swing.JFrame;
 
 import org.orbisgis.Services;
+import org.orbisgis.action.IActionAdapter;
 
 public interface UIManager {
 
@@ -46,7 +47,7 @@ public interface UIManager {
 	 * Gets the main frame of the application. Useful to set the parent of the
 	 * dialogs. There is no functionality in this frame that cannot be used
 	 * through the preferred way, the {@link Services} class
-	 *
+	 * 
 	 * @return
 	 */
 	JFrame getMainFrame();
@@ -57,5 +58,57 @@ public interface UIManager {
 	 * it manually
 	 */
 	void refreshUI();
+
+	/**
+	 * Get the groups of all the actions installed as menus
+	 * 
+	 * @return
+	 */
+	String[] getInstalledMenuGroups();
+
+	/**
+	 * Get the ids of the specified menu children
+	 * 
+	 * @param parentMenuId
+	 *            The menu id. Null if the top level menus are required
+	 * 
+	 * @return
+	 */
+	String[] getMenuChildren(String parentMenuId);
+
+	/**
+	 * Gets the name of the specified menu in the current locale
+	 * 
+	 * @param menuId
+	 * @return
+	 */
+	String getMenuName(String menuId);
+
+	/**
+	 * Install a menu for an action
+	 * 
+	 * @param id
+	 *            id of the new menu
+	 * @param text
+	 *            Text to show in the menu
+	 * @param menuId
+	 *            Id of the parent menu. It must be different from null and a
+	 *            menu with that id must exist
+	 * @param group
+	 *            Group to install the action to
+	 * @param actionAdapter
+	 *            Adapter to manage visibility and execution
+	 * @throws IllegalArgumentException
+	 *             If the menuId is null or doesn't point to a valid menu
+	 */
+	void installMenu(String id, String text, String menuId, String group,
+			IActionAdapter actionAdapter) throws IllegalArgumentException;
+
+	/**
+	 * Uninstalls a menu with the specified id
+	 * 
+	 * @param idPath
+	 */
+	void uninstallMenu(String id);
 
 }

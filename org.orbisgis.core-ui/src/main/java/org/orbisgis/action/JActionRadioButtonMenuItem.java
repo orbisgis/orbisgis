@@ -42,13 +42,18 @@ import java.awt.event.ActionListener;
 import javax.swing.JRadioButtonMenuItem;
 
 public class JActionRadioButtonMenuItem extends JRadioButtonMenuItem implements
-		IActionControl {
+		IMenuActionControl, IActionControl {
 
 	private ISelectableActionAdapter action;
+	private String group;
+	private String id;
 
-	public JActionRadioButtonMenuItem(String text, ISelectableActionAdapter action) {
+	public JActionRadioButtonMenuItem(String text, String group, String id,
+			ISelectableActionAdapter action) {
 		super(text);
 		this.action = action;
+		this.group = group;
+		this.id = id;
 		this.addActionListener(new ActionListener() {
 
 			public void actionPerformed(ActionEvent e) {
@@ -65,6 +70,21 @@ public class JActionRadioButtonMenuItem extends JRadioButtonMenuItem implements
 			this.setVisible(action.isVisible());
 			this.setSelected(action.isSelected());
 		}
+	}
+
+	@Override
+	public String getGroup() {
+		return group;
+	}
+
+	@Override
+	public String getId() {
+		return id;
+	}
+
+	@Override
+	public void setActionAdapter(IActionAdapter actionAdapter) {
+		this.action = (ISelectableActionAdapter) actionAdapter;
 	}
 
 }

@@ -1,7 +1,6 @@
 package org.orbisgis.editors.action;
 
 import java.awt.Component;
-import java.awt.Dimension;
 import java.util.ArrayList;
 
 import javax.swing.BorderFactory;
@@ -24,10 +23,7 @@ import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 
-import org.orbisgis.action.EPActionHelper;
-import org.orbisgis.action.IMenu;
-import org.orbisgis.action.MenuTree;
-import org.orbisgis.action.ToolBarArray;
+import org.orbisgis.Services;
 import org.orbisgis.edition.EditableElement;
 import org.orbisgis.editor.IEditor;
 import org.orbisgis.editors.sql.JavaEditor;
@@ -35,6 +31,7 @@ import org.orbisgis.geocognition.actions.ActionCode;
 import org.orbisgis.geocognition.actions.ActionPropertyChangeListener;
 import org.orbisgis.geocognition.actions.GeocognitionActionElementFactory;
 import org.orbisgis.ui.resourceTree.AbstractTreeModel;
+import org.orbisgis.windows.mainFrame.UIManager;
 import org.sif.CRFlowLayout;
 import org.sif.CarriageReturn;
 
@@ -63,9 +60,8 @@ public class ActionEditor extends JavaEditor implements IEditor {
 	}
 
 	private Component getGroupAndTextPanel() {
-		String[] groups = EPActionHelper.getGroupList("org.orbisgis.Action",
-				"action");
-		lstGroups = new JList(groups);
+		UIManager ui = Services.getService(UIManager.class);
+		lstGroups = new JList(ui.getInstalledMenuGroups());
 		lstGroups.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		lstGroups.getSelectionModel().addListSelectionListener(
 				new ListSelectionListener() {
@@ -114,8 +110,7 @@ public class ActionEditor extends JavaEditor implements IEditor {
 			TreePath selectionPath = menuTree.getSelectionPath();
 			String menuId = null;
 			if (selectionPath != null) {
-				IMenu menu = (IMenu) selectionPath.getLastPathComponent();
-				menuId = menu.getId();
+				menuId = selectionPath.getLastPathComponent().toString();
 			}
 
 			Object selectedValue = lstGroups.getSelectedValue();
@@ -159,11 +154,12 @@ public class ActionEditor extends JavaEditor implements IEditor {
 			// Tree selection
 			TreePath selection = null;
 			if (code.getMenuId() != null) {
-				ArrayList<IMenu> rootPath = new ArrayList<IMenu>();
-				rootPath.add((IMenu) menuTree.getModel().getRoot());
+				ArrayList<String> rootPath = new ArrayList<String>();
+				rootPath.add((String) menuTree.getModel().getRoot());
 				selection = getMenuPath(rootPath, code.getMenuId());
 			}
 			menuTree.setSelectionPath(selection);
+			menuTree.scrollPathToVisible(selection);
 
 			// List selection
 			lstGroups.setSelectedValue(code.getGroup(), true);
@@ -174,15 +170,17 @@ public class ActionEditor extends JavaEditor implements IEditor {
 		}
 	}
 
-	private TreePath getMenuPath(ArrayList<IMenu> path, String menuId) {
-		IMenu last = path.get(path.size() - 1);
-		String lastMenuId = last.getId();
+	private TreePath getMenuPath(ArrayList<String> path, String menuId) {
+		String lastMenuId = path.get(path.size() - 1);
 		if ((lastMenuId != null) && lastMenuId.equals(menuId)) {
-			return new TreePath(path.toArray(new IMenu[0]));
+			return new TreePath(path.toArray(new String[0]));
 		} else {
-			IMenu[] children = last.getChildren();
-			for (IMenu menu : children) {
-				ArrayList<IMenu> newPath = new ArrayList<IMenu>();
+			if (lastMenuId.equals(MenuTreeModel.ROOT_ID)) {
+				lastMenuId = null;
+			}
+			String[] children = getUIManager().getMenuChildren(lastMenuId);
+			for (String menu : children) {
+				ArrayList<String> newPath = new ArrayList<String>();
 				newPath.addAll(path);
 				newPath.add(menu);
 				TreePath ret = getMenuPath(newPath, menuId);
@@ -196,13 +194,15 @@ public class ActionEditor extends JavaEditor implements IEditor {
 	}
 
 	private Component getMenuPanel() {
-		MenuTree mt = getMenuStructure();
 		menuTree = new JTree();
-		menuTree.setPreferredSize(new Dimension(200, 100));
 		menuTree.setRootVisible(false);
+		menuTree.setShowsRootHandles(true);
 		menuTree.getSelectionModel().setSelectionMode(
 				TreeSelectionModel.SINGLE_TREE_SELECTION);
-		menuTree.setModel(new MenuTreeModel(menuTree, mt));
+		menuTree.setModel(new MenuTreeModel(menuTree));
+		for (int i = 0; i < menuTree.getRowCount(); i++) {
+			menuTree.expandRow(i);
+		}
 		menuTree.setCellRenderer(new MenuTreeRenderer());
 		menuTree.getSelectionModel().addTreeSelectionListener(
 				new TreeSelectionListener() {
@@ -213,18 +213,10 @@ public class ActionEditor extends JavaEditor implements IEditor {
 					}
 				});
 		JPanel ret = new JPanel();
-		ret.setBorder(BorderFactory
-				.createTitledBorder("Select menu to install action"));
+		// ret.setBorder(BorderFactory
+		// .createTitledBorder("Select menu to install action"));
 		ret.add(new JScrollPane(menuTree));
 		return ret;
-	}
-
-	private MenuTree getMenuStructure() {
-		ToolBarArray foo = new ToolBarArray();
-		MenuTree mt = new MenuTree();
-		EPActionHelper.configureParentMenusAndToolBars("org.orbisgis.Action",
-				mt, foo);
-		return mt;
 	}
 
 	@Override
@@ -247,35 +239,73 @@ public class ActionEditor extends JavaEditor implements IEditor {
 		public Component getTreeCellRendererComponent(JTree tree, Object value,
 				boolean sel, boolean expanded, boolean leaf, int row,
 				boolean hasFocus) {
-			return super.getTreeCellRendererComponent(tree, ((IMenu) value)
-					.getText(), sel, expanded, leaf, row, hasFocus);
+			String menuId = value.toString();
+			String menuName;
+			if (menuId.equals(MenuTreeModel.ROOT_ID)) {
+				menuName = "Root";
+			} else {
+				menuName = getUIManager().getMenuName(menuId);
+			}
+			return super.getTreeCellRendererComponent(tree, menuName, sel,
+					expanded, leaf, row, hasFocus);
 		}
+	}
+
+	private UIManager getUIManager() {
+		return Services.getService(UIManager.class);
 	}
 
 	private class MenuTreeModel extends AbstractTreeModel implements TreeModel {
 
-		private MenuTree mt;
+		static final String ROOT_ID = "ROOT";
 
-		public MenuTreeModel(JTree tree, MenuTree mt) {
+		public MenuTreeModel(JTree tree) {
 			super(tree);
-			this.mt = mt;
 		}
 
 		@Override
 		public Object getChild(Object parent, int index) {
-			return ((IMenu) parent).getChildren()[index];
+			String id = getId(parent);
+			String[] children = getUIManager().getMenuChildren(id);
+			int count = 0;
+			for (String child : children) {
+				if (getUIManager().getMenuChildren(child).length > 0) {
+					if (count == index) {
+						return child;
+					} else {
+						count++;
+					}
+				}
+			}
+			return null;
+		}
+
+		private String getId(Object parent) {
+			if (parent.equals(ROOT_ID)) {
+				return null;
+			} else {
+				return parent.toString();
+			}
 		}
 
 		@Override
 		public int getChildCount(Object parent) {
-			return ((IMenu) parent).getChildren().length;
+			String id = getId(parent);
+			String[] children = getUIManager().getMenuChildren(id);
+			int count = 0;
+			for (String child : children) {
+				if (getUIManager().getMenuChildren(child).length > 0) {
+					count++;
+				}
+
+			}
+			return count;
 		}
 
 		@Override
 		public int getIndexOfChild(Object parent, Object child) {
-			IMenu[] children = ((IMenu) parent).getChildren();
-			for (int i = 0; i < children.length; i++) {
-				if (children[i] == child) {
+			for (int i = 0; i < getChildCount(parent); i++) {
+				if (getChild(parent, i).equals(child)) {
 					return i;
 				}
 			}
@@ -284,12 +314,19 @@ public class ActionEditor extends JavaEditor implements IEditor {
 
 		@Override
 		public Object getRoot() {
-			return mt.getRoot();
+			return ROOT_ID;
 		}
 
 		@Override
 		public boolean isLeaf(Object node) {
-			return ((IMenu) node).getChildren().length == 0;
+			String id = getId(node);
+			String[] children = getUIManager().getMenuChildren(id);
+			for (String child : children) {
+				if (getUIManager().getMenuChildren(child).length > 0) {
+					return false;
+				}
+			}
+			return true;
 		}
 
 		@Override

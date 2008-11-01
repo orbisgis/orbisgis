@@ -67,5 +67,4 @@ public class JActionToggleButton extends JToggleButton implements
 			this.setSelected(action.isSelected());
 		}
 	}
-
 }

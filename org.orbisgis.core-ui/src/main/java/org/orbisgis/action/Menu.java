@@ -42,7 +42,6 @@ import java.util.Iterator;
 
 import javax.swing.ImageIcon;
 import javax.swing.JComponent;
-import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 
 public class Menu implements IMenu {
@@ -110,16 +109,16 @@ public class Menu implements IMenu {
 	public JComponent getJMenuItem() {
 		JMenuItem ret;
 		if (children.size() > 0) {
-			ret = new JMenu(text);
+			ret = new JActionMenu(id, text);
 			for (int i = 0; i < children.size(); i++) {
 				ret.add(children.get(i).getJMenuItem());
 			}
 		} else if (action != null) {
 			if (selectable) {
-				ret = new JActionRadioButtonMenuItem(text,
+				ret = new JActionRadioButtonMenuItem(text, group, id,
 						(ISelectableActionAdapter) action);
 			} else {
-				ret = new JActionMenuItem(text, action);
+				ret = new JActionMenuItem(text, group, id, action);
 			}
 		} else {
 			return null;

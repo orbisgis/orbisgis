@@ -702,6 +702,10 @@
 			menu-group="org.orbisgis.views.geocognition.Action"
 			text="Install action"
 			class="org.orbisgis.views.geocognition.actions.InstallAction"/>
+		<action id="org.orbisgis.views.geocognition.actions.UninstallAction"
+			menu-group="org.orbisgis.views.geocognition.Action"
+			text="Uninstall action"
+			class="org.orbisgis.views.geocognition.actions.UninstallAction"/>
 	</extension>
 	
 	<!-- Geocognition filters -->

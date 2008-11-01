@@ -41,13 +41,19 @@ import java.awt.event.ActionListener;
 
 import javax.swing.JMenuItem;
 
-public class JActionMenuItem extends JMenuItem implements IActionControl {
+public class JActionMenuItem extends JMenuItem implements IMenuActionControl,
+		IActionControl {
 
 	private IActionAdapter action;
+	private String group;
+	private String id;
 
-	public JActionMenuItem(String text, IActionAdapter action) {
+	public JActionMenuItem(String text, String group, String id,
+			IActionAdapter action) {
 		super(text);
 		this.action = action;
+		this.group = group;
+		this.id = id;
 		this.addActionListener(new ActionListener() {
 
 			public void actionPerformed(ActionEvent e) {
@@ -62,6 +68,21 @@ public class JActionMenuItem extends JMenuItem implements IActionControl {
 			this.setEnabled(action.isEnabled());
 			this.setVisible(action.isVisible());
 		}
+	}
+
+	@Override
+	public String getGroup() {
+		return group;
+	}
+
+	@Override
+	public String getId() {
+		return id;
+	}
+
+	@Override
+	public void setActionAdapter(IActionAdapter actionAdapter) {
+		this.action = actionAdapter;
 	}
 
 }

@@ -36,8 +36,6 @@
  */
 package org.orbisgis.action;
 
-import java.util.HashSet;
-
 import javax.swing.AbstractButton;
 import javax.swing.ImageIcon;
 import javax.swing.JToolBar;
@@ -62,34 +60,6 @@ public class EPBaseActionHelper {
 			ToolBarArray toolBarArray) {
 		configureParentMenusAndToolBars(extensionPointIDs, "menu", menuTree,
 				toolBarArray);
-	}
-
-	/**
-	 * Get a list of all the groups used in the specified extension point
-	 * extensions
-	 * 
-	 * @param extensionPointId
-	 * @param actionName
-	 * @return
-	 */
-	public static String[] getGroupList(String extensionPointId,
-			String actionName) {
-		IExtensionRegistry reg = RegistryFactory.getRegistry();
-		Extension[] exts = reg.getExtensions(extensionPointId);
-		HashSet<String> ret = new HashSet<String>();
-		for (int j = 0; j < exts.length; j++) {
-			Configuration c = exts[j].getConfiguration();
-			int n = c.evalInt("count(/extension/" + actionName + ")");
-			for (int i = 0; i < n; i++) {
-				String base = "/extension/" + actionName + "[" + (i + 1) + "]";
-				String group = c.getAttribute(base, "menu-group");
-				if (group != null){
-					ret.add(group);
-				}
-			}
-		}
-
-		return ret.toArray(new String[0]);
 	}
 
 	/**

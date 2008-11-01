@@ -3,7 +3,6 @@
  */
 package org.orbisgis.views.javaConsole;
 
-import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Point;
 import java.awt.event.KeyAdapter;
@@ -13,7 +12,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
-import javax.swing.JEditorPane;
 import javax.swing.JFrame;
 import javax.swing.text.JTextComponent;
 
@@ -45,32 +43,6 @@ public class CompletionKeyListener extends KeyAdapter {
 			Services.getService(ErrorManager.class).error(
 					"Completion system cannot be initialized", e);
 		}
-	}
-
-	public static void main(String[] args) throws Exception {
-		JEditorPane textComponent = new JEditorPane();
-		textComponent.setPreferredSize(new Dimension(400, 400));
-		textComponent.addKeyListener(new CompletionKeyListener(false,
-				textComponent));
-		final JFrame frm = new JFrame();
-		frm.getContentPane().add(textComponent, BorderLayout.CENTER);
-		frm.pack();
-		frm.setLocationRelativeTo(null);
-		frm.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		frm.setVisible(true);
-		Services.registerService(UIManager.class, "", new UIManager() {
-
-			@Override
-			public void refreshUI() {
-
-			}
-
-			@Override
-			public JFrame getMainFrame() {
-				return frm;
-			}
-
-		});
 	}
 
 	@Override

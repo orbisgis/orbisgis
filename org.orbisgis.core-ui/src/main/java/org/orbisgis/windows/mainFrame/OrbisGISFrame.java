@@ -53,10 +53,13 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 
 import javax.swing.JComponent;
 import javax.swing.JFrame;
+import javax.swing.JMenu;
+import javax.swing.JMenuItem;
 import javax.swing.JToolBar;
 
 import net.infonode.docking.RootWindow;
@@ -72,9 +75,11 @@ import org.orbisgis.action.EPBaseActionHelper;
 import org.orbisgis.action.IAction;
 import org.orbisgis.action.IActionAdapter;
 import org.orbisgis.action.IActionFactory;
+import org.orbisgis.action.IMenuActionControl;
 import org.orbisgis.action.ISelectableAction;
 import org.orbisgis.action.ISelectableActionAdapter;
 import org.orbisgis.action.JActionMenuBar;
+import org.orbisgis.action.JActionMenuItem;
 import org.orbisgis.action.JActionToolBar;
 import org.orbisgis.action.MenuTree;
 import org.orbisgis.action.ToolBarArray;
@@ -603,6 +608,157 @@ public class OrbisGISFrame extends JFrame implements IWindow, ViewManager,
 			if (vd.getViewComponent() != null) {
 				vd.getView().delete();
 			}
+		}
+	}
+
+	@Override
+	public String[] getInstalledMenuGroups() {
+		HashSet<String> ret = new HashSet<String>();
+		for (int i = 0; i < menuBar.getMenuCount(); i++) {
+			HashSet<IMenuActionControl> actions = fillGroups(menuBar.getMenu(i));
+			for (IMenuActionControl actionControl : actions) {
+				String group = actionControl.getGroup();
+				if (group != null) {
+					ret.add(group);
+				}
+			}
+		}
+
+		return ret.toArray(new String[0]);
+	}
+
+	private HashSet<IMenuActionControl> fillGroups(Component menuItem) {
+		HashSet<IMenuActionControl> ret = new HashSet<IMenuActionControl>();
+		if (menuItem instanceof IMenuActionControl) {
+			IMenuActionControl actionControl = (IMenuActionControl) menuItem;
+			ret.add(actionControl);
+		}
+		if (menuItem instanceof JMenu) {
+			JMenu c = (JMenu) menuItem;
+			for (int i = 0; i < c.getMenuComponentCount(); i++) {
+				HashSet<IMenuActionControl> aux = fillGroups(c
+						.getMenuComponent(i));
+				ret.addAll(aux);
+			}
+		}
+
+		return ret;
+	}
+
+	@Override
+	public String[] getMenuChildren(String parentMenuId) {
+		HashSet<String> ret = new HashSet<String>();
+		if (parentMenuId == null) {
+			for (int i = 0; i < menuBar.getMenuCount(); i++) {
+				JMenu menu = menuBar.getMenu(i);
+				if (menu instanceof IMenuActionControl) {
+					ret.add(((IMenuActionControl) menu).getId());
+				}
+			}
+		} else {
+			IMenuActionControl menu = getActionMenu(parentMenuId);
+			if (menu != null && (menu instanceof JMenu)) {
+				JMenu m = (JMenu) menu;
+				for (int i = 0; i < m.getMenuComponentCount(); i++) {
+					Component comp = m.getMenuComponent(i);
+					if (comp instanceof IMenuActionControl) {
+						ret.add(((IMenuActionControl) comp).getId());
+					}
+				}
+			}
+		}
+
+		return ret.toArray(new String[0]);
+	}
+
+	@Override
+	public String getMenuName(String menuId) {
+		IMenuActionControl menu = getActionMenu(menuId);
+		if (menu != null) {
+			return menu.getText();
+		} else {
+			return null;
+		}
+	}
+
+	private IMenuActionControl getActionMenu(String menuId) {
+		for (int i = 0; i < menuBar.getMenuCount(); i++) {
+			JMenu menu = menuBar.getMenu(i);
+			IMenuActionControl ret = getActionMenu(menu, menuId);
+			if (ret != null) {
+				return ret;
+			}
+		}
+
+		return null;
+	}
+
+	private IMenuActionControl getActionMenu(Component menu, String menuId) {
+		if (menu instanceof IMenuActionControl) {
+			IMenuActionControl menuActionControl = (IMenuActionControl) menu;
+			if (menuActionControl.getId().equals(menuId)) {
+				return menuActionControl;
+			} else if (menu instanceof JMenu) {
+				JMenu m = (JMenu) menu;
+				for (int i = 0; i < m.getMenuComponentCount(); i++) {
+					Component comp = m.getMenuComponent(i);
+					IMenuActionControl ret = getActionMenu(comp, menuId);
+					if (ret != null) {
+						return ret;
+					}
+				}
+			}
+		}
+
+		return null;
+	}
+
+	@Override
+	public void installMenu(String id, String text, String menuId,
+			String group, IActionAdapter actionAdapter) {
+		if (menuId == null) {
+			throw new IllegalArgumentException("Null menuID");
+		}
+		IMenuActionControl parent = getActionMenu(menuId);
+		if (parent == null) {
+			throw new IllegalArgumentException("Menu: " + menuId + " not found");
+		} else if (!(parent instanceof JMenu)) {
+			throw new IllegalArgumentException("Invalid parent menu: " + menuId);
+		} else {
+			IMenuActionControl existingMenu = getActionMenu(id);
+			if (existingMenu != null) {
+				existingMenu.setActionAdapter(actionAdapter);
+			} else {
+				JActionMenuItem newMenu = new JActionMenuItem(text, group, id,
+						actionAdapter);
+				JMenu menu = (JMenu) parent;
+				boolean inserted = false;
+				for (int i = 0; i < menu.getMenuComponentCount(); i++) {
+					Component comp = menu.getMenuComponent(i);
+					if (comp instanceof IMenuActionControl) {
+						IMenuActionControl actionChild = (IMenuActionControl) comp;
+						String actionGroup = actionChild.getGroup();
+						if ((actionGroup != null) && actionGroup.equals(group)) {
+							menu.insert(newMenu, i);
+							inserted = true;
+							break;
+						}
+					}
+				}
+				if (!inserted) {
+					menu.addSeparator();
+					menu.add(newMenu);
+				}
+			}
+		}
+	}
+
+	@Override
+	public void uninstallMenu(String id) {
+		IMenuActionControl action = getActionMenu(id);
+		if (action instanceof JMenuItem) {
+			JMenuItem menuItem = (JMenuItem) action;
+			menuItem.getParent().remove(menuItem);
 		}
 	}
 }
