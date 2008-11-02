@@ -51,6 +51,7 @@ import org.orbisgis.renderer.legend.carto.LegendFactory;
 import org.orbisgis.renderer.legend.carto.UniqueSymbolLegend;
 import org.orbisgis.renderer.symbol.Symbol;
 import org.orbisgis.renderer.symbol.SymbolFactory;
+import org.orbisgis.utils.FileUtils;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
@@ -356,6 +357,29 @@ public class MapContextTest extends AbstractTest {
 		org.orbisgis.layerModel.persistence.MapContext xmlMC = (org.orbisgis.layerModel.persistence.MapContext) mc
 				.getJAXBObject();
 		assertTrue(xmlMC.getLayerCollection().getLayer().size() == 1);
+		mc.close(null);
+	}
+
+	public void testMapOpensWithBadLayer() throws Exception {
+		MapContext mc = new DefaultMapContext();
+		mc.open(null);
+		File shp = new File("target/bv_sap.shp");
+		File dbf = new File("target/bv_sap.dbf");
+		File shx = new File("target/bv_sap.shx");
+		File originalShp = new File("src/test/resources/bv_sap.shp");
+		FileUtils.copy(originalShp, shp);
+		FileUtils.copy(new File("src/test/resources/bv_sap.dbf"), dbf);
+		FileUtils.copy(new File("src/test/resources/bv_sap.shx"), shx);
+		mc.getLayerModel().addLayer(getDataManager().createLayer(shp));
+		mc.getLayerModel().addLayer(getDataManager().createLayer(originalShp));
+		mc.close(null);
+		shp.delete();
+		dbf.delete();
+		shx.delete();
+		failErrorManager.setIgnoreWarnings(true);
+		mc.open(null);
+		failErrorManager.setIgnoreWarnings(false);
+		assertTrue(mc.getLayerModel().getLayerCount() == 1);
 		mc.close(null);
 	}
 
