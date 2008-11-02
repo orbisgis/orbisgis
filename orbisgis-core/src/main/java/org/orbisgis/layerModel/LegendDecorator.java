@@ -44,7 +44,6 @@ import org.gdms.data.SpatialDataSourceDecorator;
 import org.gdms.data.edition.EditionEvent;
 import org.gdms.data.edition.EditionListener;
 import org.gdms.data.edition.MultipleEditionEvent;
-import org.gdms.driver.DriverException;
 import org.orbisgis.renderer.legend.Legend;
 import org.orbisgis.renderer.legend.LegendListener;
 import org.orbisgis.renderer.legend.RenderException;
@@ -86,7 +85,8 @@ public class LegendDecorator implements Legend, EditionListener {
 					symbols.add(null);
 				}
 			}
-		} catch (DriverException e) {
+		} catch (Exception e) {
+			// Catch exception since we don't trust Legend implementations
 			throw new RenderException("Cannot cache the symbols", e);
 		}
 	}
@@ -196,7 +196,7 @@ public class LegendDecorator implements Legend, EditionListener {
 	public String getJAXBContext() {
 		return legend.getJAXBContext();
 	}
-	
+
 	@Override
 	public String getLegendTypeName() {
 		return legend.getLegendTypeName();
