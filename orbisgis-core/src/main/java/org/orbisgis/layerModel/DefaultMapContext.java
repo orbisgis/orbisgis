@@ -378,8 +378,15 @@ public class DefaultMapContext implements MapContext {
 				}
 				if (layerPersistenceMap != null) {
 					if (!toRemove.contains(layers[i])) {
-						layers[i].restoreLayer(layerPersistenceMap
-								.get(layers[i]));
+						try {
+							layers[i].restoreLayer(layerPersistenceMap
+									.get(layers[i]));
+						} catch (LayerException e) {
+							Services.getService(ErrorManager.class).warning(
+									"Cannot restore '" + layers[i].getName()
+											+ "'. Layer is removed", e);
+							toRemove.add(layers[i]);
+						}
 					}
 				}
 			}

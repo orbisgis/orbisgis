@@ -40,6 +40,7 @@ import java.awt.Color;
 import java.io.File;
 import java.io.FileOutputStream;
 
+import org.gdms.data.DataSource;
 import org.orbisgis.layerModel.DefaultMapContext;
 import org.orbisgis.layerModel.ILayer;
 import org.orbisgis.layerModel.LayerException;
@@ -47,6 +48,7 @@ import org.orbisgis.layerModel.MapContext;
 import org.orbisgis.map.export.MapExportManager;
 import org.orbisgis.progress.NullProgressMonitor;
 import org.orbisgis.renderer.legend.Legend;
+import org.orbisgis.renderer.legend.carto.LabelLegend;
 import org.orbisgis.renderer.legend.carto.LegendFactory;
 import org.orbisgis.renderer.legend.carto.UniqueSymbolLegend;
 import org.orbisgis.renderer.symbol.Symbol;
@@ -361,8 +363,6 @@ public class MapContextTest extends AbstractTest {
 	}
 
 	public void testMapOpensWithBadLayer() throws Exception {
-		MapContext mc = new DefaultMapContext();
-		mc.open(null);
 		File shp = new File("target/bv_sap.shp");
 		File dbf = new File("target/bv_sap.dbf");
 		File shx = new File("target/bv_sap.shx");
@@ -370,6 +370,8 @@ public class MapContextTest extends AbstractTest {
 		FileUtils.copy(originalShp, shp);
 		FileUtils.copy(new File("src/test/resources/bv_sap.dbf"), dbf);
 		FileUtils.copy(new File("src/test/resources/bv_sap.shx"), shx);
+		MapContext mc = new DefaultMapContext();
+		mc.open(null);
 		mc.getLayerModel().addLayer(getDataManager().createLayer(shp));
 		mc.getLayerModel().addLayer(getDataManager().createLayer(originalShp));
 		mc.close(null);
@@ -380,6 +382,39 @@ public class MapContextTest extends AbstractTest {
 		mc.open(null);
 		failErrorManager.setIgnoreWarnings(false);
 		assertTrue(mc.getLayerModel().getLayerCount() == 1);
+		mc.close(null);
+	}
+
+	public void testRemoveFieldUsedInLegend() throws Exception {
+		File shp = new File("target/bv_sap.shp");
+		File dbf = new File("target/bv_sap.dbf");
+		File shx = new File("target/bv_sap.shx");
+		FileUtils.copy(new File("src/test/resources/bv_sap.shp"), shp);
+		FileUtils.copy(new File("src/test/resources/bv_sap.dbf"), dbf);
+		FileUtils.copy(new File("src/test/resources/bv_sap.shx"), shx);
+		MapContext mc = new DefaultMapContext();
+		mc.open(null);
+		ILayer layer = getDataManager().createLayer(shp);
+		mc.getLayerModel().addLayer(layer);
+		LabelLegend labelLegend = LegendFactory.createLabelLegend();
+		int legendFieldIndex = 1;
+		labelLegend.setClassificationField(layer.getDataSource().getFieldName(
+				legendFieldIndex));
+		layer.setLegend(labelLegend);
+		mc.close(null);
+
+		DataSource ds = getDataManager().getDSF().getDataSource(shp);
+		ds.open();
+		ds.removeField(legendFieldIndex);
+		ds.commit();
+		ds.close();
+
+		failErrorManager.setIgnoreWarnings(true);
+		mc.open(null);
+		failErrorManager.setIgnoreWarnings(false);
+		ILayer readLayer = mc.getLayerModel().getLayer(0);
+		assertTrue(readLayer.getVectorLegend().length == 1);
+		assertTrue(readLayer.getRenderingLegend().length == 0);
 		mc.close(null);
 	}
 

@@ -58,6 +58,7 @@ import org.gdms.driver.DriverException;
 import org.grap.model.GeoRaster;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.orbisgis.Services;
+import org.orbisgis.errorManager.ErrorManager;
 import org.orbisgis.layerModel.persistence.LayerType;
 import org.orbisgis.layerModel.persistence.Legends;
 import org.orbisgis.layerModel.persistence.SimpleLegend;
@@ -206,7 +207,14 @@ public class Layer extends GdmsLayer {
 	public Legend[] getRenderingLegend() throws DriverException {
 		int sfi = dataSource.getSpatialFieldIndex();
 		String defaultFieldName = dataSource.getMetadata().getFieldName(sfi);
-		return fieldLegend.get(defaultFieldName);
+		LegendDecorator[] legendDecorators = fieldLegend.get(defaultFieldName);
+		ArrayList<Legend> ret = new ArrayList<Legend>();
+		for (LegendDecorator legendDecorator : legendDecorators) {
+			if (legendDecorator.isValid()) {
+				ret.add(legendDecorator);
+			}
+		}
+		return ret.toArray(new Legend[0]);
 	}
 
 	public Legend[] getVectorLegend() throws DriverException {
@@ -293,15 +301,16 @@ public class Layer extends GdmsLayer {
 		}
 	}
 
-	private LegendDecorator[] decorate(String fieldName, Legend... legends)
-			throws DriverException {
+	private LegendDecorator[] decorate(String fieldName, Legend... legends) {
 		LegendDecorator[] decorated = new LegendDecorator[legends.length];
 		for (int i = 0; i < decorated.length; i++) {
 			LegendDecorator decorator = new LegendDecorator(legends[i]);
 			try {
 				decorator.initialize(dataSource);
 			} catch (RenderException e) {
-				throw new DriverException("Cannot initialize legend", e);
+				Services.getService(ErrorManager.class).warning(
+						"Cannot initialize legend", e);
+				decorator.setValid(false);
 			}
 			decorated[i] = decorator;
 		}
@@ -417,9 +426,8 @@ public class Layer extends GdmsLayer {
 			try {
 				setLegend(fieldName, fieldLegends.toArray(new Legend[0]));
 			} catch (DriverException e) {
-				throw new LayerException("Cannot set the recovered legend", e);
+				throw new LayerException("Cannot restore legends", e);
 			}
 		}
 	}
-
 }

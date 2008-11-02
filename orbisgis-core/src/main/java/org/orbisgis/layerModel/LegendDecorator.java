@@ -58,6 +58,8 @@ public class LegendDecorator implements Legend, EditionListener {
 	private ArrayList<Symbol> symbols = new ArrayList<Symbol>();
 	private SpatialDataSourceDecorator sds;
 
+	private boolean valid = true;
+
 	public LegendDecorator(Legend legend) {
 		this.legend = legend;
 	}
@@ -200,5 +202,13 @@ public class LegendDecorator implements Legend, EditionListener {
 	@Override
 	public String getLegendTypeName() {
 		return legend.getLegendTypeName();
+	}
+
+	public void setValid(boolean valid) {
+		this.valid = valid;
+	}
+
+	public boolean isValid() {
+		return valid;
 	}
 }
