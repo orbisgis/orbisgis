@@ -79,7 +79,8 @@ public class Activator implements PluginActivator {
 	private ArrayList<ErrorMessage> initMessages = new ArrayList<ErrorMessage>();
 
 	public void start() throws Exception {
-		final ErrorManager errorService = Services.getService(ErrorManager.class);
+		final ErrorManager errorService = Services
+				.getService(ErrorManager.class);
 		ErrorManager em = errorService;
 		ErrorListener cacheListener = new ErrorListener() {
 
@@ -127,8 +128,7 @@ public class Activator implements PluginActivator {
 				try {
 					initializeWorkspace();
 				} catch (DriverException e) {
-					errorService.error(
-							"Cannot initialize workspace", e);
+					errorService.error("Cannot initialize workspace", e);
 				}
 			}
 
@@ -162,7 +162,7 @@ public class Activator implements PluginActivator {
 				} else {
 					color = new Color(128, 128, 0);
 				}
-				om.append(errorMessage.getUserMessage(), color);
+				om.append(errorMessage.getUserMessage() + "\n", color);
 				om.append(errorMessage.getTrace(), color);
 				om.makeVisible();
 
@@ -184,15 +184,13 @@ public class Activator implements PluginActivator {
 
 		});
 
-		//Put in output the errors raised at start up
+		// Put in output the errors raised at start up
 		errorService.removeErrorListener(cacheListener);
 		for (ErrorMessage msg : initMessages) {
 			if (msg.isError()) {
-				errorService.error(
-						msg.getUserMessage(), msg.getException());
+				errorService.error(msg.getUserMessage(), msg.getException());
 			} else {
-				errorService.warning(
-						msg.getUserMessage(), msg.getException());
+				errorService.warning(msg.getUserMessage(), msg.getException());
 			}
 		}
 
