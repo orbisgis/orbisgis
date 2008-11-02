@@ -5,21 +5,35 @@ import org.orbisgis.action.IAction;
 import org.orbisgis.edition.EditableElementException;
 import org.orbisgis.editor.IEditor;
 import org.orbisgis.errorManager.ErrorManager;
+import org.orbisgis.pluginManager.background.BackgroundJob;
+import org.orbisgis.pluginManager.background.BackgroundManager;
+import org.orbisgis.progress.IProgressMonitor;
 import org.orbisgis.views.editor.EditorManager;
 
 public class Save implements IAction {
 
 	@Override
 	public void actionPerformed() {
-		IEditor editor = getEditor();
+		final IEditor editor = getEditor();
 		if (editor != null) {
-			try {
-				editor.getElement().save();
-			} catch (EditableElementException e) {
-				Services.getService(ErrorManager.class).error(
-						"Problem saving", e);
-			}
+			BackgroundManager mb = Services.getService(BackgroundManager.class);
+			mb.backgroundOperation(new BackgroundJob() {
 
+				@Override
+				public void run(IProgressMonitor pm) {
+					try {
+						editor.getElement().save();
+					} catch (EditableElementException e) {
+						Services.getService(ErrorManager.class).error(
+								"Problem saving", e);
+					}
+				}
+
+				@Override
+				public String getTaskName() {
+					return "Saving...";
+				}
+			});
 		}
 	}
 
