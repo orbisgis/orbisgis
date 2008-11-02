@@ -269,6 +269,43 @@ public class TableComponent extends JPanel {
 		return width;
 	}
 
+	private void refreshTableStructure() {
+		TableColumnModel columnModel = table.getColumnModel();
+		HashMap<String, Integer> widths = new HashMap<String, Integer>();
+		HashMap<String, TableCellRenderer> renderers = new HashMap<String, TableCellRenderer>();
+		try {
+			for (int i = 0; i < dataSource.getMetadata().getFieldCount(); i++) {
+				String columnName = null;
+				try {
+					columnName = dataSource.getMetadata().getFieldName(i);
+				} catch (DriverException e) {
+				}
+				int columnIndex = -1;
+				if (columnName != null) {
+					try {
+						columnIndex = columnModel
+						.getColumnIndex(columnName);
+					} catch (IllegalArgumentException e) {
+						columnIndex = -1;
+					}
+					if (columnIndex != -1) {
+						TableColumn column = columnModel
+						.getColumn(columnIndex);
+						widths.put(columnName, column.getPreferredWidth());
+						renderers.put(columnName, column
+								.getHeaderRenderer());
+					}
+				}
+			}
+		} catch (DriverException e) {
+			Services.getService(ErrorManager.class).warning(
+					"Cannot keep table configuration", e);
+		}
+		tableModel.fireTableStructureChanged();
+		autoResizeColWidth(Math.min(5, tableModel.getRowCount()), widths,
+				renderers);
+	}
+
 	private final class PopupActionListener implements ActionListener {
 		@Override
 		public void actionPerformed(ActionEvent e) {
@@ -428,8 +465,12 @@ public class TableComponent extends JPanel {
 
 		@Override
 		public void singleModification(EditionEvent e) {
-			tableModel.fireTableCellUpdated((int) e.getRowIndex(), e
-					.getFieldIndex());
+			if (e.getType() != EditionEvent.RESYNC) {
+				tableModel.fireTableCellUpdated((int) e.getRowIndex(), e
+						.getFieldIndex());
+			} else {
+				refreshTableStructure();
+			}
 		}
 
 		@Override
@@ -444,41 +485,9 @@ public class TableComponent extends JPanel {
 
 		@Override
 		public void fieldRemoved(FieldEditionEvent event) {
-			TableColumnModel columnModel = table.getColumnModel();
-			HashMap<String, Integer> widths = new HashMap<String, Integer>();
-			HashMap<String, TableCellRenderer> renderers = new HashMap<String, TableCellRenderer>();
-			try {
-				for (int i = 0; i < dataSource.getMetadata().getFieldCount(); i++) {
-					String columnName = null;
-					try {
-						columnName = dataSource.getMetadata().getFieldName(i);
-					} catch (DriverException e) {
-					}
-					int columnIndex = -1;
-					if (columnName != null) {
-						try {
-							columnIndex = columnModel
-									.getColumnIndex(columnName);
-						} catch (IllegalArgumentException e) {
-							columnIndex = -1;
-						}
-						if (columnIndex != -1) {
-							TableColumn column = columnModel
-									.getColumn(columnIndex);
-							widths.put(columnName, column.getPreferredWidth());
-							renderers.put(columnName, column
-									.getHeaderRenderer());
-						}
-					}
-				}
-			} catch (DriverException e) {
-				Services.getService(ErrorManager.class).warning(
-						"Cannot keep table configuration", e);
-			}
-			tableModel.fireTableStructureChanged();
-			autoResizeColWidth(Math.min(5, tableModel.getRowCount()), widths,
-					renderers);
+			refreshTableStructure();
 		}
+
 
 	}
 
