@@ -168,7 +168,7 @@ public class Layer extends GdmsLayer {
 					try {
 						setLegend(metadata.getFieldName(i), legend);
 					} catch (DriverException e) {
-						// TODO Should never reach here with UniqueSymbolLegend
+						// Should never reach here with UniqueSymbolLegend
 					}
 
 				} else if (fieldTypeCode == Type.RASTER) {
@@ -186,7 +186,7 @@ public class Layer extends GdmsLayer {
 		} catch (IOException e) {
 			throw new LayerException("Cannot set legend", e);
 		} catch (DriverException e) {
-			throw new LayerException("Cannot set legend", e);
+			throw new LayerException("Cannot open layer", e);
 		}
 	}
 
