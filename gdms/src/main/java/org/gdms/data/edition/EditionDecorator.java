@@ -737,6 +737,7 @@ public class EditionDecorator extends AbstractDataSourceDecorator implements
 
 	public void commitDone(String name) throws DriverException {
 		initialize();
+		editionListenerSupport.callSync();
 	}
 
 	@Override

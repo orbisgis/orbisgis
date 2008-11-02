@@ -230,23 +230,46 @@ public class ListenerTest extends TestCase {
 	}
 
 	public void testResync() throws Exception {
-		testResync(dsf.getDataSource("object", DataSourceFactory.EDITABLE));
-		testResync(dsf.getDataSource("file", DataSourceFactory.EDITABLE));
-		testResync(dsf.getDataSource("db", DataSourceFactory.EDITABLE));
+		testResync(dsf.getDataSource("object"));
+		testResync(dsf.getDataSource("file"));
+		testResync(dsf.getDataSource("db"));
 	}
 
-	private void testResync(DataSource d) throws Exception {
+	private void testResync(DataSource d1) throws Exception {
 		listener = new ListenerCounter();
-		d.addDataSourceListener(listener);
-		d.addEditionListener(listener);
-		d.open();
-		d.deleteRow(0);
-		d.syncWithSource();
+		d1.addDataSourceListener(listener);
+		d1.addEditionListener(listener);
+		d1.open();
+		d1.deleteRow(0);
+		d1.syncWithSource();
 		assertTrue(listener.total == 3);
 		assertTrue(listener.resync == 1);
 		assertTrue(listener.deletions == 1);
 		assertTrue(listener.open == 1);
-		d.close();
+		d1.close();
+	}
+
+	public void testResyncEventOnAnotherDSCommit() throws Exception {
+		DataSource d1 = dsf.getDataSource("file");
+		DataSource d2 = dsf.getDataSource("file");
+		DataSource d3 = dsf.getDataSource("file");
+		listener = new ListenerCounter();
+		d1.addDataSourceListener(listener);
+		d1.addEditionListener(listener);
+		d2.addEditionListener(listener);
+		d3.addEditionListener(listener);
+		d1.open();
+		d2.open();
+		d1.deleteRow(0);
+		d1.commit();
+		d1.close();
+		assertTrue(listener.deletions == 1);
+		// Second open call doesn't actually open anything
+		assertTrue(listener.open == 1);
+		assertTrue(listener.commit == 1);
+		// The closed one 'd3' should not receive the resync event
+		assertTrue(listener.resync == 2);
+		assertTrue(listener.total == 5);
 	}
 
 	@Override
