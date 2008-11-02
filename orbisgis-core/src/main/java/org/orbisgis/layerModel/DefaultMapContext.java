@@ -47,6 +47,7 @@ import org.gdms.source.SourceListener;
 import org.gdms.source.SourceRemovalEvent;
 import org.orbisgis.DataManager;
 import org.orbisgis.Services;
+import org.orbisgis.errorManager.ErrorManager;
 import org.orbisgis.layerModel.persistence.LayerCollectionType;
 import org.orbisgis.layerModel.persistence.LayerType;
 import org.orbisgis.layerModel.persistence.SelectedLayer;
@@ -362,14 +363,29 @@ public class DefaultMapContext implements MapContext {
 		ILayer[] layers = this.root.getLayersRecursively();
 		int i = 0;
 		try {
+			ArrayList<ILayer> toRemove = new ArrayList<ILayer>();
 			for (; i < layers.length; i++) {
 				pm.progressTo(i * 100 / layers.length);
 				if (!layers[i].acceptsChilds()) {
-					layers[i].open();
+					try {
+						layers[i].open();
+					} catch (LayerException e) {
+						Services.getService(ErrorManager.class).warning(
+								"Cannot open '" + layers[i].getName()
+										+ "'. Layer is removed", e);
+						toRemove.add(layers[i]);
+					}
 				}
 				if (layerPersistenceMap != null) {
-					layers[i].restoreLayer(layerPersistenceMap.get(layers[i]));
+					if (layers[i].getDataSource().isOpen()) {
+						layers[i].restoreLayer(layerPersistenceMap
+								.get(layers[i]));
+					}
 				}
+			}
+
+			for (ILayer layer : toRemove) {
+				layer.getParent().remove(layer);
 			}
 		} catch (LayerException e) {
 			for (int j = 0; j < i; j++) {
