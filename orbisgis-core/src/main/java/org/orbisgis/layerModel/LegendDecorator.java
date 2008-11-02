@@ -87,7 +87,9 @@ public class LegendDecorator implements Legend, EditionListener {
 					symbols.add(null);
 				}
 			}
+			valid = true;
 		} catch (Exception e) {
+			valid = false;
 			// Catch exception since we don't trust Legend implementations
 			throw new RenderException("Cannot cache the symbols", e);
 		}
@@ -123,7 +125,7 @@ public class LegendDecorator implements Legend, EditionListener {
 				symbols.set((int) e.getRowIndex(), legend.getSymbol(sds, e
 						.getRowIndex()));
 			} catch (RenderException e1) {
-				symbols.add(null);
+				symbols.set((int) e.getRowIndex(), null);
 				logger.error("Cannot update symbol", e1);
 			}
 			break;
@@ -131,7 +133,7 @@ public class LegendDecorator implements Legend, EditionListener {
 			try {
 				initialize(sds);
 			} catch (RenderException e1) {
-				symbols.add(null);
+				valid = false;
 				logger.error("Cannot update symbol", e1);
 			}
 		}
@@ -202,10 +204,6 @@ public class LegendDecorator implements Legend, EditionListener {
 	@Override
 	public String getLegendTypeName() {
 		return legend.getLegendTypeName();
-	}
-
-	public void setValid(boolean valid) {
-		this.valid = valid;
 	}
 
 	public boolean isValid() {

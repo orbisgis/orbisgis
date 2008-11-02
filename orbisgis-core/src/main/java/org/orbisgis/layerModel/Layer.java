@@ -310,7 +310,6 @@ public class Layer extends GdmsLayer {
 			} catch (RenderException e) {
 				Services.getService(ErrorManager.class).warning(
 						"Cannot initialize legend", e);
-				decorator.setValid(false);
 			}
 			decorated[i] = decorator;
 		}
