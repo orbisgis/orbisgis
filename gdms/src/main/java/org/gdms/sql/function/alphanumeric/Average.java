@@ -92,6 +92,7 @@ public class Average implements Function {
 	}
 
 	@Override
-	public void lastCall() {
+	public Value getAggregateResult() {
+		return null;
 	}
 }

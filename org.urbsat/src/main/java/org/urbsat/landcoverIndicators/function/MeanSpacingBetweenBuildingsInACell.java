@@ -100,6 +100,7 @@ public class MeanSpacingBetweenBuildingsInACell implements Function {
 				Argument.GEOMETRY) };
 	}
 
-	public void lastCall() {
+	public Value getAggregateResult() {
+		return null;
 	}
 }

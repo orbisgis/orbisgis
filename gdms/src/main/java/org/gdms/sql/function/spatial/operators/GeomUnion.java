@@ -51,18 +51,13 @@ import com.vividsolutions.jts.operation.union.UnaryUnionOp;
 public class GeomUnion extends AbstractSpatialFunction {
 
 	private ArrayList<Geometry> toUnite = new ArrayList<Geometry>();
-	private boolean last = false;
 
 	public Value evaluate(Value[] args) throws FunctionException {
 		if (!args[0].isNull()) {
 			final Geometry geom = args[0].getAsGeometry();
 			addGeometry(geom);
 		}
-		if (last) {
-			return ValueFactory.createValue(UnaryUnionOp.union(toUnite));
-		} else {
-			return null;
-		}
+		return null;
 	}
 
 	private void addGeometry(Geometry geom) {
@@ -78,8 +73,8 @@ public class GeomUnion extends AbstractSpatialFunction {
 		}
 	}
 
-	public void lastCall() {
-		last = true;
+	public Value getAggregateResult() {
+		return ValueFactory.createValue(UnaryUnionOp.union(toUnite));
 	}
 
 	public String getName() {

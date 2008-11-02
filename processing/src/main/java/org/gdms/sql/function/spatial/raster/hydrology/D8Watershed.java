@@ -138,6 +138,7 @@ public class D8Watershed implements Function {
 	}
 
 	@Override
-	public void lastCall() {
+	public Value getAggregateResult() {
+		return null;
 	}
 }

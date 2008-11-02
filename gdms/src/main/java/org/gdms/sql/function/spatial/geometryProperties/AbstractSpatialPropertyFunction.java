@@ -61,7 +61,8 @@ public abstract class AbstractSpatialPropertyFunction implements Function {
 			throws FunctionException;
 	
 	@Override
-	public void lastCall() {
+	public Value getAggregateResult() {
+		return null;
 	}
 
 }

@@ -75,12 +75,15 @@ public interface Function {
 	public boolean isAggregate();
 
 	/**
-	 * Method called when the last call to the function is going to be done.
-	 * This method is only called on aggregated functions (
-	 * {@link #isAggregate()} == true) and indicates that the next call to
-	 * evaluate will be the one used included the result
+	 * Method called to obtain the result of an aggregate function. If this
+	 * method returns null the last return value of the
+	 * {@link #evaluate(Value[])} method is used as aggregated result. This
+	 * method is not called at all if this is not an aggregated function (
+	 * {@link #isAggregate()} == true)
+	 * 
+	 * @return
 	 */
-	public void lastCall();
+	public Value getAggregateResult();
 
 	/**
 	 * Gets the type of the result this function provides.

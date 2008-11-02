@@ -740,6 +740,33 @@ public class SQLTest extends SourceTest {
 		dataSource2.close();
 	}
 
+	public void testAggregatedExecution() throws Exception {
+		ObjectMemoryDriver omd = new ObjectMemoryDriver(new String[] {
+				"the_geom", "alpha" }, new Type[] {
+				TypeFactory.createType(Type.GEOMETRY),
+				TypeFactory.createType(Type.STRING) });
+		omd.addValues(new Value[] {
+				ValueFactory.createValue(Geometries.getPolygon()),
+				ValueFactory.createValue("a") });
+		omd.addValues(new Value[] {
+				ValueFactory.createValue(Geometries.getPolygon()),
+				ValueFactory.createValue("a") });
+		omd.addValues(new Value[] {
+				ValueFactory.createValue(Geometries.getPolygon()),
+				ValueFactory.createValue("b") });
+		dsf.getSourceManager().register("source", omd);
+		DataSource ds = dsf
+				.getDataSourceFromSQL("select geomunion(the_geom) from source "
+						+ "group by alpha");
+		ds.open();
+		assertTrue(ds.getRowCount() == 2);
+		for (int i = 0; i < ds.getRowCount(); i++) {
+			assertTrue(ds.getFieldValue(i, 0).getAsGeometry() != null);
+		}
+		ds.close();
+
+	}
+
 	public void testCreateIndex() throws Exception {
 		String resource = super.getAnySpatialResource();
 		dsf.executeSQL("create index on " + resource + " ("

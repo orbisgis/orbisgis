@@ -80,10 +80,22 @@ public abstract class FunctionTest extends TestCase {
 			values[i] = args[i].getValue();
 		}
 		FunctionOperator.validateFunction(types, function);
+		return evaluateFunction(function, values);
+	}
+
+	private Value evaluateFunction(Function function, Value[] values)
+			throws FunctionException {
 		if (function.isAggregate()) {
-			function.lastCall();
+			Value lastEvaluation = function.evaluate(values);
+			Value lastCall = function.getAggregateResult();
+			if (lastCall != null ) {
+				return lastCall;
+			} else {
+				return lastEvaluation;
+			}
+		} else {
+			return function.evaluate(values);
 		}
-		return function.evaluate(values);
 	}
 
 	protected Value evaluate(Function function, Value... args)
@@ -93,15 +105,7 @@ public abstract class FunctionTest extends TestCase {
 			types[i] = TypeFactory.createType(args[i].getType());
 		}
 		FunctionOperator.validateFunction(types, function);
-		try {
-			if (function.isAggregate()) {
-				function.lastCall();
-			}
-			return function.evaluate(args);
-		} catch (IncompatibleTypesException e) {
-			throw new RuntimeException("This exception should"
-					+ " be catched in validateTypes", e);
-		}
+		return evaluateFunction(function, args);
 	}
 
 	protected Type evaluate(Function function, Type... args)

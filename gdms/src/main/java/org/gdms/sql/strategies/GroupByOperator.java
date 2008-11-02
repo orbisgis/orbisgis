@@ -92,7 +92,6 @@ public class GroupByOperator extends AbstractExpressionOperator implements
 				// and
 				// results
 				HashMap<ValueCollection, Expression[]> classExpressions = new HashMap<ValueCollection, Expression[]>();
-				HashMap<ValueCollection, Value[]> classResults = new HashMap<ValueCollection, Value[]>();
 
 				pm.startTask("Creating the groups");
 				// Iterate throughout the source
@@ -115,33 +114,18 @@ public class GroupByOperator extends AbstractExpressionOperator implements
 					ValueCollection vc = ValueFactory
 							.createValue(groupByValues);
 					Expression[] exprs = classExpressions.get(vc);
-					Value[] results = classResults.get(vc);
 					if (exprs == null) {
-						Value[] newClassResults = new Value[initialExpressions
+						Expression[] newClassExpressions = new Expression[initialExpressions
 								.size()];
-						Expression[] newClassExpressions = new Expression[newClassResults.length];
 						for (int k = 0; k < newClassExpressions.length; k++) {
 							newClassExpressions[k] = initialExpressions.get(k)
 									.cloneExpression();
 						}
 						classExpressions.put(vc, newClassExpressions);
-						classResults.put(vc, newClassResults);
 						exprs = newClassExpressions;
-						results = newClassResults;
-					}
-					if (i == rowCount - 1) {
-						// notify lastCall
-						for (int k = 0; k < exprs.length; k++) {
-							FunctionOperator[] functions = exprs[k].getFunctionReferences();
-							for (FunctionOperator function : functions) {
-								function.lastCall();
-							}
-						}
 					}
 					for (int k = 0; k < exprs.length; k++) {
-						Expression expression = exprs[k];
-						Value res = expression.evaluate();
-						results[k] = res;
+						exprs[k].evaluate();
 					}
 				}
 				pm.endTask();
@@ -165,7 +149,19 @@ public class GroupByOperator extends AbstractExpressionOperator implements
 					}
 					ValueCollection groupByClass = it.next();
 					Value[] fieldValues = groupByClass.getValues();
-					Value[] exprResults = classResults.get(groupByClass);
+					Expression[] expressions = classExpressions
+							.get(groupByClass);
+					Value[] exprResults = new Value[expressions.length];
+					for (int j = 0; j < expressions.length; j++) {
+						Expression expression = expressions[j];
+						FunctionOperator[] functions = expression
+								.getFunctionReferences();
+						for (FunctionOperator function : functions) {
+							function.lastCall();
+						}
+
+						exprResults[j] = expressions[j].evaluate();
+					}
 					Value[] row = new Value[fields.size()];
 					int fieldValuesIndex = 0;
 					int exprResultIndex = 0;

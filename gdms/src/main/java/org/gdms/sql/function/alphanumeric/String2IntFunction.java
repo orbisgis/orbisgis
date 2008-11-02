@@ -133,6 +133,7 @@ public class String2IntFunction implements Function {
 	}
 
 	@Override
-	public void lastCall() {
+	public Value getAggregateResult() {
+		return null;
 	}
 }

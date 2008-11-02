@@ -55,6 +55,8 @@ public class FunctionOperator extends AbstractOperator implements Expression {
 	private Function function;
 	private boolean star;
 	private DataSourceFactory dsf;
+	private boolean lastCall = false;
+	private Value lastReturnValue = null;
 
 	public FunctionOperator(DataSourceFactory dsf, String name,
 			Expression[] arguments) {
@@ -72,12 +74,22 @@ public class FunctionOperator extends AbstractOperator implements Expression {
 
 	public Value evaluateExpression() throws EvaluationException {
 		Function fnc = getFunction();
-		Value[] args = new Value[getChildCount()];
-		for (int i = 0; i < args.length; i++) {
-			args[i] = getChild(i).evaluate();
-		}
 		try {
-			return fnc.evaluate(args);
+			if (lastCall) {
+				Value ret = fnc.getAggregateResult();
+				if (ret != null) {
+					return ret;
+				} else {
+					return lastReturnValue;
+				}
+			} else {
+				Value[] args = new Value[getChildCount()];
+				for (int i = 0; i < args.length; i++) {
+					args[i] = getChild(i).evaluate();
+				}
+				lastReturnValue = fnc.evaluate(args);
+				return lastReturnValue;
+			}
 		} catch (RuntimeException e) {
 			dsf.getWarningListener().throwWarning(
 					"Cannot evaluate: " + e.getMessage(), e, this);
@@ -195,7 +207,7 @@ public class FunctionOperator extends AbstractOperator implements Expression {
 	}
 
 	public void lastCall() {
-		getFunction().lastCall();
+		this.lastCall = true;
 	}
 
 }

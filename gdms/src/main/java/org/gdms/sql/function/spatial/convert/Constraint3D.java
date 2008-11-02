@@ -84,7 +84,8 @@ public class Constraint3D implements Function {
 	}
 
 	@Override
-	public void lastCall() {
+	public Value getAggregateResult() {
+		return null;
 	}
 
 }

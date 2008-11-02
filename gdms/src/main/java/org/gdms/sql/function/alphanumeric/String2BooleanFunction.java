@@ -138,6 +138,7 @@ public class String2BooleanFunction implements Function {
 	}
 
 	@Override
-	public void lastCall() {
+	public Value getAggregateResult() {
+		return null;
 	}
 }

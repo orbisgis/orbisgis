@@ -87,6 +87,7 @@ public class D8DistanceToTheOutlet implements Function {
 	}
 
 	@Override
-	public void lastCall() {
+	public Value getAggregateResult() {
+		return null;
 	}
 }

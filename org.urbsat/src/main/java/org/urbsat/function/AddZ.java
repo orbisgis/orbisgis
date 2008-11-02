@@ -205,6 +205,7 @@ public class AddZ implements Function {
 		return false;
 	}
 
-	public void lastCall() {
+	public Value getAggregateResult() {
+		return null;
 	}
 }

@@ -158,6 +158,7 @@ public class Chaillou implements Function {
 				Argument.NUMERIC) };
 	}
 
-	public void lastCall() {
+	public Value getAggregateResult() {
+		return null;
 	}
 }
