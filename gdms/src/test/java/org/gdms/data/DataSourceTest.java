@@ -36,11 +36,14 @@
  */
 package org.gdms.data;
 
+import java.io.File;
+
 import org.gdms.SourceTest;
 import org.gdms.data.metadata.Metadata;
 import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.ObjectDriver;
+import org.orbisgis.utils.FileUtils;
 
 public class DataSourceTest extends SourceTest {
 
@@ -166,6 +169,19 @@ public class DataSourceTest extends SourceTest {
 			assertFalse(true);
 		} catch (AlreadyClosedException e) {
 			assertTrue(true);
+		}
+	}
+
+	public void testFailedOpenClosedDataSource() throws Exception {
+		File volatileCsv = new File("target/test.csv");
+		FileUtils.copy(new File("src/test/resources/test.csv"), volatileCsv);
+		DataSource ds = dsf.getDataSource(volatileCsv);
+		volatileCsv.delete();
+		try {
+			ds.open();
+			assertTrue(false);
+		} catch (DriverException e) {
+			assertTrue(!ds.isOpen());
 		}
 	}
 

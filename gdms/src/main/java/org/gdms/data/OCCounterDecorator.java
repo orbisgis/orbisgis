@@ -62,7 +62,12 @@ public class OCCounterDecorator extends AbstractDataSourceDecorator {
 	@Override
 	public void open() throws DriverException {
 		if (ocCounter.start()) {
-			getDataSource().open();
+			try {
+				getDataSource().open();
+			} catch (DriverException e) {
+				ocCounter.stop();
+				throw e;
+			}
 		}
 	}
 
