@@ -377,7 +377,7 @@ public class DefaultMapContext implements MapContext {
 					}
 				}
 				if (layerPersistenceMap != null) {
-					if (layers[i].getDataSource().isOpen()) {
+					if (!toRemove.contains(layers[i])) {
 						layers[i].restoreLayer(layerPersistenceMap
 								.get(layers[i]));
 					}
