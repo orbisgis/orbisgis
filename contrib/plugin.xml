@@ -1,5 +1,5 @@
 <plugin>
-	<activator class="org.contrib.gdms.sql.Register"/>	
+	<activator class="org.contrib.gdms.sql.Register"/>
 	<extension point="org.orbisgis.editorViews.toc.Action">
 		<action id="org.orbisgis.geomProcessing" text="Find ovelaping features"
 			menu-group="org.orbisgis.rasterProcessing"
@@ -9,6 +9,15 @@
 			menu-group="org.orbisgis.rasterProcessing"
 			menu-id="org.orbisgis.ProcessingMenu"
 			class="org.contrib.ui.editorViews.toc.actions.geometry.qa.IntervalGapsFinderAction"/>
+		<action id="org.orbisgis.geomProcessing" text="Validate geometries"
+			menu-group="org.orbisgis.rasterProcessing"
+			menu-id="org.orbisgis.ProcessingMenu"
+			class="org.contrib.ui.editorViews.toc.actions.geometry.qa.ValidateSelectedLayersAction"/>		
 	</extension>
-	
+	<extension point="org.orbisgis.editorViews.toc.Action"
+		id="org.orbisgis.editorViews.toc.EditingActions">
+		<action id="org.orbisgis.editorViews.toc.actions.SetActive"
+			text="Add geometry" menu-group="org.orbisgis.editorViews.toc.Edition"
+			class="org.contrib.ui.editorViews.toc.actions.geometry.edition.AddGeometriesAsWKTAction"/>
+		</extension>
 </plugin>
