@@ -37,7 +37,9 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import org.contrib.images.IconLoader;
 import org.contrib.model.jump.adapter.FeatureCollectionAdapter;
+import org.contrib.model.jump.adapter.FeatureCollectionDatasourceAdapter;
 import org.contrib.model.jump.adapter.TaskMonitorAdapter;
 import org.contrib.model.jump.model.AttributeType;
 import org.contrib.model.jump.model.BasicFeature;
@@ -66,39 +68,39 @@ import com.vividsolutions.jump.qa.Validator;
 public class ValidateSelectedLayers {
 	private static String CHECK_BASIC_TOPOLOGY = "";
 
-	private final static String CHECK_POLYGON_ORIENTATION = "check-polygon-orientation";
+	private final static String CHECK_POLYGON_ORIENTATION = "check polygon orientation";
 
-	private final static String CHECK_LINESTRINGS_SIMPLE = "check-that-linestrings-are-simple";
+	private final static String CHECK_LINESTRINGS_SIMPLE = "check that linestrings are simple";
 
-	private final static String CHECK_POLYGONS_HAVE_NO_HOLES = "disallow-polygons-and-multipolygons-with-holes";
+	private final static String CHECK_POLYGONS_HAVE_NO_HOLES = "check polygons and multipolygons with holes";
 
-	private final static String CHECK_NO_REPEATED_CONSECUTIVE_POINTS = "disallow-repeated-consective-points";
+	private final static String CHECK_NO_REPEATED_CONSECUTIVE_POINTS = "check repeated consective points";
 
-	private final static String CHECK_MIN_SEGMENT_LENGTH = "check-minimum-segment-length";
+	private final static String CHECK_MIN_SEGMENT_LENGTH = "check minimum segment length";
 
-	private final static String CHECK_MIN_ANGLE = "check-minimum-angle";
+	private final static String CHECK_MIN_ANGLE = "check minimum angle";
 
-	private final static String MIN_SEGMENT_LENGTH = "minimum-segment-length";
+	private final static String MIN_SEGMENT_LENGTH = "minimum segment length";
 
-	private final static String MIN_ANGLE = "minimum-angle-in-degrees";
+	private final static String MIN_ANGLE = "minimum angle in degrees";
 
-	private final static String MIN_POLYGON_AREA = "minimum-polygon-area";
+	private final static String MIN_POLYGON_AREA = "minimum polygon area";
 
-	private final static String CHECK_MIN_POLYGON_AREA = "check-minimum-polygon-area";
+	private final static String CHECK_MIN_POLYGON_AREA = "check minimum polygon area";
 
-	private final static String DISALLOW_POINTS = "disallow-points";
+	private final static String DISALLOW_POINTS = "check points";
 
-	private final static String DISALLOW_LINESTRINGS = "disallow-linestrings";
+	private final static String DISALLOW_LINESTRINGS = "check linestrings";
 
-	private final static String DISALLOW_POLYGONS = "disallow-polygons";
+	private final static String DISALLOW_POLYGONS = "check polygons";
 
-	private final static String DISALLOW_MULTIPOINTS = "disallow-multipoints";
+	private final static String DISALLOW_MULTIPOINTS = "check multipoints";
 
-	private final static String DISALLOW_MULTILINESTRINGS = "disallow-multilinestrings";
+	private final static String DISALLOW_MULTILINESTRINGS = "check multilinestrings";
 
-	private final static String DISALLOW_MULTIPOLYGONS = "disallow-multipolygons";
+	private final static String DISALLOW_MULTIPOLYGONS = "check multipolygons";
 
-	private final static String DISALLOW_GEOMETRYCOLLECTIONS = "disallow-geometrycollections";
+	private final static String DISALLOW_GEOMETRYCOLLECTIONS = "check geometrycollections";
 
 	private static final String ERROR = "ERROR";
 
@@ -114,9 +116,9 @@ public class ValidateSelectedLayers {
 
 	private Validator validator;
 
-	private FeatureCollection dataSourceToLocationFeatures;
+	private DataSource dataSourceToLocationFeatures;
 
-	private FeatureCollection dataSourceToFeatures;
+	private DataSource dataSourceToFeatures;
 
 	private boolean noErrors = true;
 
@@ -132,7 +134,7 @@ public class ValidateSelectedLayers {
 	}
 
 	public Validator prompt() {
-
+		
 		Validator validator = new Validator();
 		validator.setCheckingBasicTopology(dialog
 				.getBoolean(CHECK_BASIC_TOPOLOGY));
@@ -197,6 +199,8 @@ public class ValidateSelectedLayers {
 		dialog.setVisible(true);
 
 		validator = prompt();
+		
+		
 
 		if (dialog.wasOKPressed()) {
 			validate(layer);
@@ -215,21 +219,21 @@ public class ValidateSelectedLayers {
 			List features = fc.getFeatures();
 			List validationErrors = validator.validate(features,
 					new TaskMonitorAdapter());
-
+			sds.close();
 			if (!validationErrors.isEmpty()) {
 				noErrors = false;
-				dataSourceToLocationFeatures = getFeatureCollection(toLocationFeatures(
-						validationErrors, layer));
-				dataSourceToFeatures = getFeatureCollection(toFeatures(
-						validationErrors, layer));
+				dataSourceToLocationFeatures =  new FeatureCollectionDatasourceAdapter(getFeatureCollection(toLocationFeatures(
+						validationErrors, layer)));
+				
+				dataSourceToFeatures = new FeatureCollectionDatasourceAdapter(getFeatureCollection(toFeatures(
+						validationErrors, layer)));
 
 			}
 		} catch (DriverException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
-		// outputSummary(layer, validationErrors);
+	// outputSummary(layer, validationErrors);
 	}
 
 	/*
@@ -301,28 +305,27 @@ public class ValidateSelectedLayers {
 
 	}
 
-	public FeatureCollection getDataSourcetoLocationFeatures() {
+	public DataSource getDataSourcetoLocationFeatures() {
 		return dataSourceToLocationFeatures;
 	}
 
-	public FeatureCollection getDataSourcetoFeatures() {
+	public DataSource getDataSourcetoFeatures() {
 		return dataSourceToFeatures;
 	}
 
 	private void initDialog() {
 
 		CHECK_BASIC_TOPOLOGY = "check-basic-topology";
-		dialog = new MultiInputDialog(null, "Title!", true);
-		// dialog.setSideBarImage(IconLoader.getIcon("Validate.gif"));
-		dialog.setSideBarDescription("tests-layers-against-various-criteria");
-		dialog.addLabel("<HTML><STRONG>" + "geometry-metrics-validation"
+		dialog = new MultiInputDialog(null, "Basic topology analysis", true);
+		dialog.setSideBarImage(IconLoader.getIcon("Validate.gif"));
+		dialog.setSideBarDescription("Test layer against various topological criterias");
+		dialog.addLabel("<HTML><STRONG>" + "geometry metrics validation"
 				+ "</STRONG></HTML>");
 		dialog.addSeparator();
-		dialog.addCheckBox(CHECK_BASIC_TOPOLOGY, true, "Test");
 		dialog.addCheckBox(CHECK_NO_REPEATED_CONSECUTIVE_POINTS, false);
 		dialog
 				.addCheckBox(CHECK_POLYGON_ORIENTATION, false,
-						"check-that-polygon-shells-are-oriented-clockwise-and-holes-counterclockwise");
+						"check that polygon shells are oriented clockwise and holes counterclockwise");
 		dialog.addCheckBox(CHECK_MIN_SEGMENT_LENGTH, false);
 		dialog.addPositiveDoubleField(MIN_SEGMENT_LENGTH, 0.001, 5);
 		dialog.addCheckBox(CHECK_MIN_ANGLE, false);
@@ -330,9 +333,9 @@ public class ValidateSelectedLayers {
 		dialog.addCheckBox(CHECK_MIN_POLYGON_AREA, false);
 		dialog.addPositiveDoubleField(MIN_POLYGON_AREA, 0.001, 5);
 		dialog.addCheckBox(CHECK_LINESTRINGS_SIMPLE, false,
-				"check-that-linestrings-are-simple");
+				"check that linestrings are simple");
 		dialog.startNewColumn();
-		dialog.addLabel("<HTML><STRONG>" + "geometry-types-validation"
+		dialog.addLabel("<HTML><STRONG>" + "geometry types validation"
 				+ "</STRONG></HTML>");
 		dialog.addSeparator();
 		dialog.addCheckBox(DISALLOW_POINTS, false);
@@ -343,7 +346,7 @@ public class ValidateSelectedLayers {
 		dialog.addCheckBox(DISALLOW_MULTIPOLYGONS, false);
 		dialog.addCheckBox(CHECK_POLYGONS_HAVE_NO_HOLES, false);
 		dialog.addCheckBox(DISALLOW_GEOMETRYCOLLECTIONS, false,
-				"geometry-collection-subtypes-are-not-disallowed");
+				"geometry collection subtypes are not disallowed");
 
 	}
 }

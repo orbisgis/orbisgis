@@ -1,6 +1,5 @@
 package org.contrib.ui.editorViews.toc.actions.geometry.qa;
 
-
 import org.contrib.model.jump.adapter.FeatureCollectionAdapter;
 import org.contrib.model.jump.adapter.FeatureCollectionDatasourceAdapter;
 import org.contrib.model.jump.adapter.TaskMonitorAdapter;
@@ -26,7 +25,8 @@ public class IntervalOverlapsFinderAction implements ILayerAction {
 		try {
 			return layer.isVectorial();
 		} catch (DriverException e) {
-			e.printStackTrace();
+			Services.getErrorManager().error(
+					"Vector type unreadable for this layer", e);
 		}
 		return false;
 	}
@@ -61,36 +61,46 @@ public class IntervalOverlapsFinderAction implements ILayerAction {
 		try {
 			ObjectMemoryDriver overlapingFeaturesdriver = new ObjectMemoryDriver(
 					new FeatureCollectionDatasourceAdapter(overlapingFeatures));
-			String overlapingFeatureslayer = dsf.getSourceManager().nameAndRegister(
-					overlapingFeaturesdriver);
-			
+			String overlapingFeatureslayer = dsf.getSourceManager()
+					.nameAndRegister(overlapingFeaturesdriver);
 
 			ObjectMemoryDriver overlapingIndicatorsdriver = new ObjectMemoryDriver(
 					new FeatureCollectionDatasourceAdapter(overlapIndicators));
-			String overlapingIndicatorslayer = dsf.getSourceManager().nameAndRegister(
-					overlapingIndicatorsdriver);
-			
-			ObjectMemoryDriver overlapingSizeIndicatorsdriver = new ObjectMemoryDriver(
-					new FeatureCollectionDatasourceAdapter(overlapSizeIndicators));
-			String overlapingSizeIndicatorslayer = dsf.getSourceManager().nameAndRegister(
-					overlapingSizeIndicatorsdriver);
-			
-			final ILayer overlapingFeaturesLayer = dataManager.createLayer(overlapingFeatureslayer);
-			
-			final ILayer overlapingSizeIndicatorsLayer = dataManager.createLayer(overlapingSizeIndicatorslayer);
-			final ILayer overlapingIndicatorsLayer = dataManager.createLayer(overlapingIndicatorslayer);
-			mapContext.getLayerModel().insertLayer(overlapingFeaturesLayer, 0);
-			mapContext.getLayerModel().insertLayer(overlapingIndicatorsLayer, 0);
-			mapContext.getLayerModel().insertLayer(overlapingSizeIndicatorsLayer, 0);
+			String overlapingIndicatorslayer = dsf.getSourceManager()
+					.nameAndRegister(overlapingIndicatorsdriver);
 
-		} catch (DriverException e) {
-			e.printStackTrace();
+			ObjectMemoryDriver overlapingSizeIndicatorsdriver = new ObjectMemoryDriver(
+					new FeatureCollectionDatasourceAdapter(
+							overlapSizeIndicators));
+			String overlapingSizeIndicatorslayer = dsf.getSourceManager()
+					.nameAndRegister(overlapingSizeIndicatorsdriver);
+
+			final ILayer overlapingFeaturesLayer = dataManager
+					.createLayer(overlapingFeatureslayer);
+
+			final ILayer overlapingSizeIndicatorsLayer = dataManager
+					.createLayer(overlapingSizeIndicatorslayer);
+			final ILayer overlapingIndicatorsLayer = dataManager
+					.createLayer(overlapingIndicatorslayer);
+			mapContext.getLayerModel().insertLayer(overlapingFeaturesLayer, 0);
+			mapContext.getLayerModel()
+					.insertLayer(overlapingIndicatorsLayer, 0);
+			mapContext.getLayerModel().insertLayer(
+					overlapingSizeIndicatorsLayer, 0);
+
 		} catch (DriverLoadException e) {
-			e.printStackTrace();
+			Services.getErrorManager().error(
+					"Cannot create the resulting layer of geometry type ", e);
 		} catch (IllegalStateException e) {
-			e.printStackTrace();
+			Services.getErrorManager().error("Cannot get the layer ", e);
 		} catch (LayerException e) {
-			e.printStackTrace();
+			Services.getErrorManager()
+					.error(
+							"Cannot insert resulting layer based on "
+									+ layer.getName(), e);
+		} catch (DriverException e) {
+			Services.getErrorManager().error(
+					"Cannot read the resulting datasource from the layer ", e);
 		}
 
 	}
