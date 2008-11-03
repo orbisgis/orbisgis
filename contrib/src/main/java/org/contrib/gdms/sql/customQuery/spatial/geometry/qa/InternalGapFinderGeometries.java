@@ -90,7 +90,7 @@ public class InternalGapFinderGeometries implements CustomQuery {
 
 			sds.close();
 
-			InternalGapFinder internalGapFinder = new InternalGapFinder(sds, pm);
+			InternalGapFinder internalGapFinder = new InternalGapFinder(sds);
 
 			return internalGapFinder.getObjectMemoryDriver();
 		} catch (DriverLoadException e) {
