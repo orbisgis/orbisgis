@@ -5,18 +5,17 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
-import org.gdms.data.DataSource;
 import org.gdms.data.SpatialDataSourceDecorator;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.memory.ObjectMemoryDriver;
 import org.orbisgis.progress.IProgressMonitor;
+import org.orbisgis.progress.ProgressMonitor;
 
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryCollection;
 import com.vividsolutions.jts.geom.GeometryFactory;
-import com.vividsolutions.jts.geom.MultiPolygon;
 import com.vividsolutions.jts.geom.Polygon;
 import com.vividsolutions.jts.index.SpatialIndex;
 import com.vividsolutions.jts.index.strtree.STRtree;
@@ -30,27 +29,28 @@ public class InternalGapFinder {
 
 	private ObjectMemoryDriver driver;
 
-	public InternalGapFinder(SpatialDataSourceDecorator sds, IProgressMonitor pm) {
+	public InternalGapFinder(SpatialDataSourceDecorator sds) {
 		this.sds = sds;
-		this.pm = pm;
 		findGaps();
 	}
 
 	public void findGaps() {
 
 		try {
-			sds.open();			
+
+			IProgressMonitor pm = new ProgressMonitor("Gaps finders");
+			pm.startTask("Read data");
+			sds.open();
 
 			long rowCount = sds.getRowCount();
 
 			SpatialIndex spatialIndex = new STRtree(10);
-			
-			
-			
+
 			Collection geometries = new ArrayList<Geometry>();
 			for (int i = 0; i < rowCount; i++) {
 				Geometry geom = sds.getGeometry(i);
 
+				pm.progressTo(i);
 				if (geom instanceof GeometryCollection) {
 					final int nbOfGeometries = geom.getNumGeometries();
 					for (int j = 0; j < nbOfGeometries; j++) {
@@ -64,11 +64,15 @@ public class InternalGapFinder {
 
 					if (geom.getDimension() == 2) {
 						geometries.add(geom);
-						
+
 					}
 				}
 
 			}
+
+			pm.endTask();
+
+			pm.startTask("Gap processing");
 
 			Geometry cascadedPolygonUnion = CascadedPolygonUnion
 					.union(geometries);
@@ -82,45 +86,48 @@ public class InternalGapFinder {
 
 			int nbOfGeometries = cascadedPolygonUnion.getNumGeometries();
 			for (int i = 0; i < nbOfGeometries; i++) {
-
+				pm.progressTo(i);
 				Geometry simpleGeom = cascadedPolygonUnion.getGeometryN(i);
-				spatialIndex.insert(simpleGeom.getEnvelopeInternal(), simpleGeom);
+				spatialIndex.insert(simpleGeom.getEnvelopeInternal(),
+						simpleGeom);
 			}
-			
+
+			pm.endTask();
+
+			pm.startTask("Result saving");
+
 			for (int i = 0; i < nbOfGeometries; i++) {
 				Geometry simpleGeom = cascadedPolygonUnion.getGeometryN(i);
 				Polygon poly = (Polygon) simpleGeom;
-
+				pm.progressTo(i);
 				if (poly.getNumInteriorRing() > 0) {
 					for (int j = 0; j < poly.getNumInteriorRing(); j++) {
 						Polygon result = gf.createPolygon(gf
 								.createLinearRing(poly.getInteriorRingN(j)
 										.getCoordinates()), null);
-						
-						List query = spatialIndex.query(result.getEnvelopeInternal());
+
+						List query = spatialIndex.query(result
+								.getEnvelopeInternal());
 						Geometry geomDiff = result;
-						
+
 						for (Iterator k = query.iterator(); k.hasNext();) {
-				            Geometry queryGeom = (Geometry) k.next();
-				            
-				            if (result.contains(queryGeom)){
-				            	 geomDiff = result.difference(queryGeom);
-				            	 
-				            	 //System.out.print(geomDiff);
-								
-				            }	
+							Geometry queryGeom = (Geometry) k.next();
+
+							if (result.contains(queryGeom)) {
+								geomDiff = result.difference(queryGeom);
+
+							}
 						}
-						//System.out.print(geomDiff);
-						
-			            fieldsValues[spatialFieldIndex] = ValueFactory
-						.createValue(geomDiff);
-			            driver.addValues(fieldsValues);
-						
+
+						fieldsValues[spatialFieldIndex] = ValueFactory
+								.createValue(geomDiff);
+						driver.addValues(fieldsValues);
+
 					}
 				}
 
 			}
-			
+			pm.endTask();
 			spatialIndex = null;
 
 		} catch (DriverException e) {
