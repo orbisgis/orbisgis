@@ -36,12 +36,16 @@
  */
 package org.orbisgis.editorViews.toc.actions;
 
-import org.gdms.driver.DriverException;
 import org.orbisgis.Services;
 import org.orbisgis.editorViews.toc.action.ILayerAction;
+import org.orbisgis.geocognition.Geocognition;
+import org.orbisgis.geocognition.GeocognitionElement;
+import org.orbisgis.geocognition.GeocognitionFilter;
+import org.orbisgis.layerModel.EditableLayer;
 import org.orbisgis.layerModel.ILayer;
 import org.orbisgis.layerModel.MapContext;
-import org.orbisgis.views.information.InformationManager;
+import org.orbisgis.pluginManager.background.BackgroundManager;
+import org.orbisgis.views.geocognition.actions.OpenGeocognitionElementJob;
 
 public class ShowInTable implements ILayerAction {
 	public boolean accepts(ILayer layer) {
@@ -52,13 +56,17 @@ public class ShowInTable implements ILayerAction {
 		return selectionCount == 1;
 	}
 
-	public void execute(MapContext mapContext, ILayer resource) {
-		try {
-			Services.getService(InformationManager.class).setContents(
-					resource.getDataSource());
-		} catch (DriverException e) {
-			Services.getErrorManager().error(
-					"Cannot show contents in table:" + resource.getName(), e);
-		}
+	public void execute(final MapContext mapContext, ILayer resource) {
+		GeocognitionElement[] element = Services.getService(Geocognition.class)
+				.getElements(new GeocognitionFilter() {
+
+					@Override
+					public boolean accept(GeocognitionElement element) {
+						return element.getObject() == mapContext;
+					}
+				});
+		Services.getService(BackgroundManager.class).backgroundOperation(
+				new OpenGeocognitionElementJob(new EditableLayer(element[0]
+						.getId(), resource)));
 	}
 }
