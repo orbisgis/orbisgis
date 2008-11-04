@@ -162,8 +162,7 @@ public class Activator implements PluginActivator {
 				} else {
 					color = new Color(128, 128, 0);
 				}
-				om.append(errorMessage.getUserMessage() + "\n", color);
-				om.append(errorMessage.getTrace(), color);
+				om.append(errorMessage.getLongMessage() + "\n", color);
 				om.makeVisible();
 
 				// Show message to the user and send log
