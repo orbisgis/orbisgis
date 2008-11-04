@@ -89,7 +89,7 @@ public class EditableResource extends AbstractEditableElement implements
 		} catch (DriverException e) {
 			throw new EditableElementException("Could not save", e);
 		} catch (NonEditableDataSourceException e) {
-			throw new EditableElementException("Could not save", e);
+			throw new EditableElementException("Non editable element", e);
 		}
 	}
 
