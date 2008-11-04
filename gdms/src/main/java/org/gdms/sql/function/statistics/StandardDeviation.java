@@ -88,6 +88,9 @@ public class StandardDeviation implements Function {
 
 	@Override
 	public Value getAggregateResult() {
+		if (0 == numberOfValues) {
+			return nullValue;
+		}
 		final double average = sumOfValues / numberOfValues;
 		return ValueFactory.createValue(Math.sqrt(sumOfSquareValues
 				/ numberOfValues - average * average));

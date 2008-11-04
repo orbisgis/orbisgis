@@ -91,6 +91,9 @@ public class Average implements Function {
 
 	@Override
 	public Value getAggregateResult() {
+		if (0 == numberOfValues) {
+			return nullValue;
+		}
 		return ValueFactory.createValue(sumOfValues / numberOfValues);
 	}
 }
