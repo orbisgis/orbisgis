@@ -15,6 +15,8 @@ import org.orbisgis.Services;
 import org.orbisgis.errorManager.DefaultErrorManager;
 import org.orbisgis.errorManager.ErrorManager;
 import org.orbisgis.geocognition.DefaultGeocognition;
+import org.orbisgis.geocognition.GeocognitionElement;
+import org.orbisgis.geocognition.GeocognitionFilter;
 import org.orbisgis.geocognition.mapContext.GeocognitionMapContextFactory;
 import org.orbisgis.geocognition.sql.Code;
 import org.orbisgis.geocognition.sql.CustomQueryJavaCode;
@@ -47,6 +49,23 @@ public class GeocognitionTest extends TestCase {
 		gc.addElementFactory(new GeocognitionCustomQueryFactory());
 		gc.addElementFactory(new GeocognitionLegendFactory());
 		gc.addElementFactory(new GeocognitionMapContextFactory());
+	}
+
+	public void testLoadAndCheckInitialGeocognition() throws Exception {
+		InputStream geocognitionStream = GeocognitionView.class
+				.getResourceAsStream(GeocognitionView.STARTUP_GEOCOGNITION_XML);
+		gc.read(geocognitionStream);
+		GeocognitionElement[] elems = gc.getElements(new GeocognitionFilter() {
+
+			@Override
+			public boolean accept(GeocognitionElement element) {
+				return true;
+			}
+		});
+
+		for (GeocognitionElement elem : elems) {
+			assertTrue(elem.getObject() != null);
+		}
 	}
 
 	public void testLoadInitialMap() throws Exception {
