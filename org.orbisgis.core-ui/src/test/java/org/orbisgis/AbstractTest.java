@@ -39,8 +39,11 @@ package org.orbisgis;
 import junit.framework.TestCase;
 
 import org.gdms.data.DataSourceFactory;
+import org.orbisgis.edition.EditableElement;
+import org.orbisgis.editor.IEditor;
 import org.orbisgis.errorManager.ErrorListener;
 import org.orbisgis.errorManager.ErrorManager;
+import org.orbisgis.views.editor.EditorManager;
 
 public class AbstractTest extends TestCase {
 
@@ -53,6 +56,43 @@ public class AbstractTest extends TestCase {
 				dsf));
 		Services
 				.registerService(ErrorManager.class, "", new FailErrorManager());
+		Services.registerService(EditorManager.class, "", new EditorManager() {
+		
+			@Override
+			public void open(EditableElement element)
+					throws UnsupportedOperationException {
+			}
+		
+			@Override
+			public boolean hasEditor(EditableElement element) {
+				return false;
+			}
+		
+			@Override
+			public IEditor[] getEditors() {
+				return new IEditor[0];
+			}
+		
+			@Override
+			public IEditor[] getEditor(EditableElement element) {
+				return new IEditor[0];
+			}
+		
+			@Override
+			public EditableElement getActiveElement() {
+				return null;
+			}
+		
+			@Override
+			public IEditor getActiveEditor() {
+				return null;
+			}
+		
+			@Override
+			public boolean closeEditor(IEditor editor) throws IllegalArgumentException {
+				return true;
+			}
+		});
 		super.setUp();
 	}
 
