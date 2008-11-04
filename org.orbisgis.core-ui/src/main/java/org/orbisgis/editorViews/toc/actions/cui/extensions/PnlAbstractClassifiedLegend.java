@@ -61,7 +61,6 @@ import org.orbisgis.editorViews.toc.actions.cui.SymbolBuilder;
 import org.orbisgis.editorViews.toc.actions.cui.SymbolFilter;
 import org.orbisgis.editorViews.toc.actions.cui.extensions.table.ClassifiedLegendTableModel;
 import org.orbisgis.editorViews.toc.actions.cui.extensions.table.SymbolValueCellRenderer;
-import org.orbisgis.images.IconLoader;
 import org.orbisgis.renderer.legend.Legend;
 import org.orbisgis.renderer.legend.carto.ClassifiedLegend;
 import org.orbisgis.renderer.symbol.Symbol;
