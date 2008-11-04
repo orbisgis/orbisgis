@@ -37,6 +37,7 @@ import java.util.*;
 
 import org.contrib.model.jump.model.Feature;
 import org.contrib.model.jump.model.TaskMonitor;
+import org.orbisgis.progress.IProgressMonitor;
 
 import com.vividsolutions.jts.algorithm.Angle;
 import com.vividsolutions.jts.algorithm.RobustCGAlgorithms;
@@ -201,21 +202,23 @@ public class Validator {
      * @return a List of ValidationErrors; if all features are valid, the list
      * will be empty
      */
-    public List validate(Collection features, TaskMonitor monitor) {
-        monitor.allowCancellationRequests();
+    public List validate(Collection features, IProgressMonitor pm) {
+       
         validatedFeatureCount = 0;
-        monitor.report("validating");
+        pm.startTask("validating");
 
         ArrayList validationErrors = new ArrayList();
         int totalFeatures = features.size();
-
+        int  k =0;
         for (Iterator i = features.iterator();
-                i.hasNext() && !monitor.isCancelRequested();) {
+                i.hasNext() && !pm.isCancelled();) {
+        	pm.progressTo(k++);
             Feature feature = (Feature) i.next();
             validate(feature, validationErrors);
             validatedFeatureCount++;
-            monitor.report(validatedFeatureCount, totalFeatures, "features");
+           // pm.(validatedFeatureCount, totalFeatures, "features");
         }
+        pm.endTask();
 
         return validationErrors;
     }
