@@ -74,14 +74,14 @@ public abstract class AbstractSyntaxColoringDocument extends UndoableDocument {
 				groupUndoEdits(true);
 			}
 
-			// Do replacement
-			super.replace(fb, offset, length, text, attrs);
-
 			// Save token bounds
 			int[] originalTokenBounds = new int[] { 0, 0 };
 			if (!styling) {
 				originalTokenBounds = getTokenBounds(offset, length);
 			}
+
+			// Do replacement
+			super.replace(fb, offset, length, text, attrs);
 
 			// Get current token bounds
 			// If not already applying style, apply it
@@ -90,7 +90,8 @@ public abstract class AbstractSyntaxColoringDocument extends UndoableDocument {
 				currentTokenBounds = getTokenBounds(offset, length);
 				colorize(Math
 						.min(originalTokenBounds[0], currentTokenBounds[0]),
-						Math.max(originalTokenBounds[1], currentTokenBounds[1]));
+						Math.max(originalTokenBounds[1] + length + 1,
+								currentTokenBounds[1]));
 			}
 
 			if (!alreadyGrouping) {
