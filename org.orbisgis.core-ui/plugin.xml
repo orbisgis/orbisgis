@@ -736,7 +736,7 @@
 	</extension>
 	<extension point="org.orbisgis.View">
 		<view id="org.orbisgis.views.Information"
-			class="org.orbisgis.views.table.TableView"
+			class="org.orbisgis.views.table.InformationView"
 			icon="/org/orbisgis/images/openattributes.png" title="Information"/>
 	</extension>
 	<extension point="org.orbisgis.View">

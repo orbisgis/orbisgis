@@ -36,15 +36,12 @@
  */
 package org.orbisgis.editorViews.toc.actions;
 
-import java.awt.Component;
-
 import org.gdms.driver.DriverException;
 import org.orbisgis.Services;
 import org.orbisgis.editorViews.toc.action.ILayerAction;
 import org.orbisgis.layerModel.ILayer;
 import org.orbisgis.layerModel.MapContext;
-import org.orbisgis.view.ViewManager;
-import org.orbisgis.views.information.Table;
+import org.orbisgis.views.information.InformationManager;
 
 public class ShowInTable implements ILayerAction {
 	public boolean accepts(ILayer layer) {
@@ -56,21 +53,12 @@ public class ShowInTable implements ILayerAction {
 	}
 
 	public void execute(MapContext mapContext, ILayer resource) {
-		ViewManager vm = (ViewManager) Services
-				.getService(ViewManager.class);
-		Component comp = vm.getView("org.orbisgis.views.Table");
-		if (comp != null) {
-			Table table = (Table) comp;
-			try {
-				table.setContents(resource.getDataSource());
-			} catch (DriverException e) {
-				Services.getErrorManager().error(
-						"Cannot show contents in table:" + resource.getName(),
-						e);
-			}
-		} else {
+		try {
+			Services.getService(InformationManager.class).setContents(
+					resource.getDataSource());
+		} catch (DriverException e) {
 			Services.getErrorManager().error(
-					"Cannot find a table to show contents");
+					"Cannot show contents in table:" + resource.getName(), e);
 		}
 	}
 }

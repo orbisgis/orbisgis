@@ -45,7 +45,7 @@ import javax.swing.JTable;
 import org.gdms.data.DataSource;
 import org.gdms.driver.DriverException;
 
-public class Table extends JPanel {
+class Table extends JPanel implements InformationManager {
 
 	private JTable tbl;
 	private DataSourceTableModel dataSourceTableModel = null;
@@ -57,21 +57,22 @@ public class Table extends JPanel {
 		this.add(new JScrollPane(tbl));
 	}
 
+	@Override
 	public void setContents(DataSource ds) throws DriverException {
 		ds.open();
 		if (dataSourceTableModel != null) {
 			dataSourceTableModel.getDataSource().close();
 		}
-		dataSourceTableModel  = new DataSourceTableModel(ds);
+		dataSourceTableModel = new DataSourceTableModel(ds);
 		tbl.setModel(dataSourceTableModel);
 	}
 
 	public DataSource getContents() {
 		if (dataSourceTableModel == null) {
 			return null;
- 		} else {
- 			return dataSourceTableModel.getDataSource();
- 		}
+		} else {
+			return dataSourceTableModel.getDataSource();
+		}
 	}
 
 }

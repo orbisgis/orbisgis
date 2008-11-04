@@ -38,12 +38,15 @@ package org.orbisgis.views.information;
 
 import java.awt.Component;
 
+import org.orbisgis.Services;
 import org.orbisgis.view.IView;
 
-public class TableView implements IView {
+public class InformationView implements IView {
+
+	private Table table = new Table();
 
 	public Component getComponent() {
-		return new Table();
+		return table;
 	}
 
 	public void loadStatus() {
@@ -59,7 +62,8 @@ public class TableView implements IView {
 	}
 
 	public void initialize() {
-
+		Services.registerService(InformationManager.class,
+				"Service to show tabular information to the user.", table);
 	}
 
 }

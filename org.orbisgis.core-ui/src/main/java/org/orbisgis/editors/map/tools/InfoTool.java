@@ -36,10 +36,7 @@
  */
 package org.orbisgis.editors.map.tools;
 
-import java.awt.Component;
 import java.awt.geom.Rectangle2D;
-
-import javax.swing.SwingUtilities;
 
 import org.apache.log4j.Logger;
 import org.gdms.data.DataSource;
@@ -59,8 +56,7 @@ import org.orbisgis.pluginManager.background.BackgroundJob;
 import org.orbisgis.pluginManager.background.BackgroundManager;
 import org.orbisgis.pluginManager.background.DefaultJobId;
 import org.orbisgis.progress.IProgressMonitor;
-import org.orbisgis.view.ViewManager;
-import org.orbisgis.views.information.Table;
+import org.orbisgis.views.information.InformationManager;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
@@ -141,28 +137,19 @@ public class InfoTool extends AbstractRectangleTool {
 		}
 
 		public void run(IProgressMonitor pm) {
-			ViewManager vm = (ViewManager) Services
-					.getService(ViewManager.class);
-			Component comp = vm.getView("org.orbisgis.views.Table");
-			final Table table = (Table) comp;
 			try {
 				logger.debug("Info query: " + sql);
 				final DataSource ds = ((DataManager) Services
 						.getService(DataManager.class)).getDSF()
 						.getDataSourceFromSQL(sql, pm);
 				if (!pm.isCancelled()) {
-					SwingUtilities.invokeLater(new Runnable() {
-
-						public void run() {
-							try {
-								table.setContents(ds);
-							} catch (DriverException e) {
-								Services.getErrorManager().error(
-										"Cannot show the data", e);
-							}
-						}
-
-					});
+					try {
+						Services.getService(InformationManager.class)
+								.setContents(ds);
+					} catch (DriverException e) {
+						Services.getErrorManager().error(
+								"Cannot show the data", e);
+					}
 				}
 			} catch (DataSourceCreationException e) {
 				Services.getErrorManager().error("Cannot get the result", e);
