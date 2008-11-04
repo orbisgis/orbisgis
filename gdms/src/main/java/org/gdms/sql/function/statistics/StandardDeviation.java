@@ -50,22 +50,16 @@ public class StandardDeviation implements Function {
 	private double sumOfValues = 0;
 	private double sumOfSquareValues = 0;
 	private int numberOfValues = 0;
-	private Value stdDeviation = ValueFactory.createNullValue();
+	private Value nullValue = ValueFactory.createNullValue();
 
 	public Value evaluate(Value[] args) throws FunctionException {
 		if (!args[0].isNull()) {
 			final double currentValue = args[0].getAsDouble();
-
 			sumOfValues += currentValue;
 			sumOfSquareValues += currentValue * currentValue;
 			numberOfValues++;
-
-			final double average = sumOfValues / numberOfValues;
-			stdDeviation = ValueFactory.createValue(Math.sqrt(sumOfSquareValues
-					/ numberOfValues - average * average));
 		}
-
-		return stdDeviation;
+		return nullValue;
 	}
 
 	public String getName() {
@@ -94,6 +88,8 @@ public class StandardDeviation implements Function {
 
 	@Override
 	public Value getAggregateResult() {
-		return stdDeviation;
+		final double average = sumOfValues / numberOfValues;
+		return ValueFactory.createValue(Math.sqrt(sumOfSquareValues
+				/ numberOfValues - average * average));
 	}
 }

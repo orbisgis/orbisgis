@@ -50,7 +50,7 @@ import org.gdms.sql.strategies.IncompatibleTypesException;
 public class Average implements Function {
 	private double sumOfValues = 0;
 	private int numberOfValues = 0;
-	private Value average = ValueFactory.createNullValue();
+	private Value nullValue = ValueFactory.createNullValue();
 
 	public Value evaluate(Value[] args) throws FunctionException {
 		if (!args[0].isNull()) {
@@ -61,10 +61,8 @@ public class Average implements Function {
 						"Cannot operate in non-numeric fields");
 			}
 			numberOfValues++;
-			average = ValueFactory.createValue(sumOfValues / numberOfValues);
 		}
-
-		return average;
+		return nullValue;
 	}
 
 	public String getName() {
@@ -93,6 +91,6 @@ public class Average implements Function {
 
 	@Override
 	public Value getAggregateResult() {
-		return average;
+		return ValueFactory.createValue(sumOfValues / numberOfValues);
 	}
 }
