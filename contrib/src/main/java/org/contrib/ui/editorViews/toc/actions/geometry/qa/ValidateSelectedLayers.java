@@ -384,7 +384,7 @@ public class ValidateSelectedLayers {
 	private void initDialog() {
 
 		CHECK_BASIC_TOPOLOGY = "check-basic-topology";
-		dialog = new MultiInputDialog(null, "Basic topology analysis", true);
+		dialog = new MultiInputDialog(null, "Basic topological analysis", true);
 		dialog.setSideBarImage(IconLoader.getIcon("Validate.gif"));
 		dialog
 				.setSideBarDescription("Test layer against various topological criterias");
