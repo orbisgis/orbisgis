@@ -97,7 +97,7 @@ public interface EditorManager {
 	 * Gets the editors that edit the specified element
 	 * 
 	 * @param element
-	 * @return
+	 * @return List with editor. Can be empty. Never null
 	 */
 	IEditor[] getEditor(EditableElement element);
 

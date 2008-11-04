@@ -56,6 +56,7 @@ import org.orbisgis.action.IActionAdapter;
 import org.orbisgis.action.IActionFactory;
 import org.orbisgis.action.ISelectableActionAdapter;
 import org.orbisgis.action.MenuTree;
+import org.orbisgis.editor.IEditor;
 import org.orbisgis.resource.GdmsSource;
 import org.orbisgis.resource.INode;
 import org.orbisgis.resource.IResource;
@@ -64,6 +65,7 @@ import org.orbisgis.resource.ResourceDecorator;
 import org.orbisgis.resource.ResourceFactory;
 import org.orbisgis.resource.ResourceTypeException;
 import org.orbisgis.ui.resourceTree.ResourceTree;
+import org.orbisgis.views.editor.EditorManager;
 import org.orbisgis.views.geocatalog.action.EPGeocatalogResourceActionHelper;
 import org.orbisgis.views.geocatalog.action.IResourceAction;
 import org.orbisgis.views.geocatalog.newResourceWizard.EPResourceWizardHelper;
@@ -126,14 +128,29 @@ public class Catalog extends ResourceTree {
 
 	private final class SyncSourceListener implements SourceListener {
 		public synchronized void sourceRemoved(final SourceRemovalEvent e) {
-			if (ignoreSourceOperations) {
-				return;
-			}
 			IResource[] res = treeModel
 					.getNodes(new GdmsNodeFilter(e.getName()));
 			if (res.length > 0) {
-				((ResourceDecorator) res[0]).getParent().removeNode(
-						(INode) res[0]);
+				// Close editors
+				closeEditor(res[0]);
+
+				if (!ignoreSourceOperations) {
+					((ResourceDecorator) res[0]).getParent().removeNode(
+							(INode) res[0]);
+				}
+			}
+		}
+
+		private void closeEditor(IResource resource) {
+			EditorManager em = Services.getService(EditorManager.class);
+			IEditor[] editors = em.getEditor(new EditableResource(resource
+					.getName()));
+			for (IEditor editor : editors) {
+				em.closeEditor(editor);
+			}
+
+			for (int i = 0; i < resource.getChildCount(); i++) {
+				closeEditor(resource.getResourceAt(i));
 			}
 		}
 

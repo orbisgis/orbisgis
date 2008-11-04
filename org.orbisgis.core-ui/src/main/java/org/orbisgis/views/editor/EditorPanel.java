@@ -206,7 +206,7 @@ public class EditorPanel extends Container {
 	public IEditor[] getEditor(EditableElement element) {
 		ArrayList<IEditor> ret = new ArrayList<IEditor>();
 		for (EditorInfo editorInfo : editorsInfo) {
-			if (editorInfo.getDocument() == element) {
+			if (editorInfo.getDocument().equals(element)) {
 				ret.add(editorInfo.getEditorDecorator());
 			}
 		}
@@ -217,7 +217,7 @@ public class EditorPanel extends Container {
 	private EditorInfo[] getEditorsByDocument(EditableElement document) {
 		ArrayList<EditorInfo> ret = new ArrayList<EditorInfo>();
 		for (EditorInfo editorInfo : editorsInfo) {
-			if (editorInfo.getDocument() == document) {
+			if (editorInfo.getDocument().equals(document)) {
 				ret.add(editorInfo);
 			}
 		}
