@@ -29,16 +29,15 @@ public class InternalGapFinder {
 
 	private ObjectMemoryDriver driver;
 
-	public InternalGapFinder(SpatialDataSourceDecorator sds) {
+	public InternalGapFinder(SpatialDataSourceDecorator sds, IProgressMonitor pm) {
 		this.sds = sds;
+		this.pm = pm;
 		findGaps();
 	}
 
 	public void findGaps() {
 
 		try {
-
-			IProgressMonitor pm = new ProgressMonitor("Gaps finders");
 			pm.startTask("Read data");
 			sds.open();
 
@@ -50,7 +49,13 @@ public class InternalGapFinder {
 			for (int i = 0; i < rowCount; i++) {
 				Geometry geom = sds.getGeometry(i);
 
-				pm.progressTo(i);
+				if (i / 100 == i / 100.0) {
+					if (pm.isCancelled()) {
+						break;
+					} else {
+						pm.progressTo((int) (100 * i / rowCount));
+					}
+				}
 				if (geom instanceof GeometryCollection) {
 					final int nbOfGeometries = geom.getNumGeometries();
 					for (int j = 0; j < nbOfGeometries; j++) {
@@ -86,7 +91,13 @@ public class InternalGapFinder {
 
 			int nbOfGeometries = cascadedPolygonUnion.getNumGeometries();
 			for (int i = 0; i < nbOfGeometries; i++) {
-				pm.progressTo(i);
+				if (i / 100 == i / 100.0) {
+					if (pm.isCancelled()) {
+						break;
+					} else {
+						pm.progressTo((int) (100 * i / nbOfGeometries));
+					}
+				}
 				Geometry simpleGeom = cascadedPolygonUnion.getGeometryN(i);
 				spatialIndex.insert(simpleGeom.getEnvelopeInternal(),
 						simpleGeom);
@@ -99,7 +110,13 @@ public class InternalGapFinder {
 			for (int i = 0; i < nbOfGeometries; i++) {
 				Geometry simpleGeom = cascadedPolygonUnion.getGeometryN(i);
 				Polygon poly = (Polygon) simpleGeom;
-				pm.progressTo(i);
+				if (i / 100 == i / 100.0) {
+					if (pm.isCancelled()) {
+						break;
+					} else {
+						pm.progressTo((int) (100 * i / nbOfGeometries));
+					}
+				}
 				if (poly.getNumInteriorRing() > 0) {
 					for (int j = 0; j < poly.getNumInteriorRing(); j++) {
 						Polygon result = gf.createPolygon(gf
