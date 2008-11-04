@@ -29,34 +29,8 @@ public class ValidateSelectedLayersAction implements ILayerAction {
 
 	public void execute(MapContext mapContext, ILayer layer) {
 
-		DataManager dataManager = (DataManager) Services
-				.getService(DataManager.class);
-
-		final DataSourceFactory dsf = dataManager.getDSF();
-
 		ValidateSelectedLayers validateSelectedLayers = new ValidateSelectedLayers();
-		validateSelectedLayers.execute(layer);
-
-		DataSource resultDS = validateSelectedLayers.getDataSourcetoFeatures();
-
-		try {
-			if (resultDS!= null) {
-				ObjectMemoryDriver resultdriver = new ObjectMemoryDriver(
-						resultDS);
-				String resultlayer = dsf.getSourceManager().nameAndRegister(
-						resultdriver);
-				final ILayer rsLayer = dataManager.createLayer(resultlayer);
-				mapContext.getLayerModel().insertLayer(rsLayer, 0);
-			}
-		} catch (DriverException e) {
-			Services.getErrorManager().error(
-					"Cannot read the resulting datasource from the layer ", e);
-		} catch (LayerException e) {
-			Services.getErrorManager()
-					.error(
-							"Cannot insert resulting layer based on "
-									+ layer.getName(), e);
-		}
+		validateSelectedLayers.execute(mapContext, layer);
 
 	}
 

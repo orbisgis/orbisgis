@@ -32,7 +32,7 @@
 
 package org.contrib.ui.editorViews.toc.actions.geometry.qa;
 
-
+import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -40,18 +40,28 @@ import java.util.List;
 import org.contrib.images.IconLoader;
 import org.contrib.model.jump.adapter.FeatureCollectionAdapter;
 import org.contrib.model.jump.adapter.FeatureCollectionDatasourceAdapter;
-import org.contrib.model.jump.adapter.TaskMonitorAdapter;
 import org.contrib.model.jump.model.AttributeType;
 import org.contrib.model.jump.model.BasicFeature;
+import org.contrib.model.jump.model.CollectionMap;
 import org.contrib.model.jump.model.Feature;
 import org.contrib.model.jump.model.FeatureCollection;
 import org.contrib.model.jump.model.FeatureDataset;
 import org.contrib.model.jump.model.FeatureSchema;
 import org.contrib.model.jump.ui.MultiInputDialog;
 import org.gdms.data.DataSource;
+import org.gdms.data.DataSourceFactory;
 import org.gdms.data.SpatialDataSourceDecorator;
 import org.gdms.driver.DriverException;
+import org.gdms.driver.memory.ObjectMemoryDriver;
+import org.orbisgis.DataManager;
+import org.orbisgis.Services;
 import org.orbisgis.layerModel.ILayer;
+import org.orbisgis.layerModel.LayerException;
+import org.orbisgis.layerModel.MapContext;
+import org.orbisgis.outputManager.OutputManager;
+import org.orbisgis.pluginManager.background.BackgroundJob;
+import org.orbisgis.pluginManager.background.BackgroundManager;
+import org.orbisgis.progress.IProgressMonitor;
 
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryCollection;
@@ -122,6 +132,8 @@ public class ValidateSelectedLayers {
 
 	private boolean noErrors = true;
 
+	private IProgressMonitor pm;
+
 	public ValidateSelectedLayers() {
 		initFeatureSchema();
 	}
@@ -133,9 +145,15 @@ public class ValidateSelectedLayers {
 		schema.addAttribute(GEOMETRY, AttributeType.GEOMETRY);
 	}
 
-	public Validator prompt() {
-		
-		Validator validator = new Validator();
+	public void execute(MapContext mapContext, ILayer layer) {
+
+		if (dialog == null) {
+			initDialog();
+		}
+
+		dialog.setVisible(true);
+
+		validator = new Validator();
 		validator.setCheckingBasicTopology(dialog
 				.getBoolean(CHECK_BASIC_TOPOLOGY));
 		validator.setCheckingNoRepeatedConsecutivePoints(dialog
@@ -187,29 +205,41 @@ public class ValidateSelectedLayers {
 
 		validator.setDisallowedGeometryClasses(disallowedGeometryClasses);
 
-		return validator;
-	}
-
-	public void execute(final ILayer layer) {
-
-		if (dialog == null) {
-			initDialog();
-		}
-
-		dialog.setVisible(true);
-
-		validator = prompt();
-		
-		
-
 		if (dialog.wasOKPressed()) {
-			validate(layer);
+			BackgroundManager bm = (BackgroundManager) Services
+					.getService(BackgroundManager.class);
+			bm.backgroundOperation(new ExecuteValidateSelectedLayers(
+					mapContext, layer));
+
 		}
 
 	}
 
-	private void validate(final ILayer layer) {
+	private class ExecuteValidateSelectedLayers implements BackgroundJob {
 
+		private ILayer layer;
+
+		private MapContext mapContext;
+
+		public ExecuteValidateSelectedLayers(MapContext mapContext, ILayer layer) {
+			this.mapContext = mapContext;
+			this.layer = layer;
+		}
+
+		public String getTaskName() {
+			return "Topological layer validation";
+		}
+
+		public void run(IProgressMonitor pm) {
+			validate(mapContext, layer, pm);
+
+		}
+	}
+
+	private void validate(MapContext mapContext, final ILayer layer,
+			IProgressMonitor pm) {
+
+		this.pm = pm;
 		DataSource ds = layer.getDataSource();
 		try {
 			SpatialDataSourceDecorator sds = new SpatialDataSourceDecorator(ds);
@@ -217,46 +247,80 @@ public class ValidateSelectedLayers {
 			FeatureCollectionAdapter fc = new FeatureCollectionAdapter(sds);
 
 			List features = fc.getFeatures();
-			List validationErrors = validator.validate(features,
-					new TaskMonitorAdapter());
+			List validationErrors = validator.validate(features, pm);
 			sds.close();
 			if (!validationErrors.isEmpty()) {
 				noErrors = false;
-				dataSourceToLocationFeatures =  new FeatureCollectionDatasourceAdapter(getFeatureCollection(toLocationFeatures(
-						validationErrors, layer)));
-				
-				dataSourceToFeatures = new FeatureCollectionDatasourceAdapter(getFeatureCollection(toFeatures(
-						validationErrors, layer)));
+				DataManager dataManager = (DataManager) Services
+						.getService(DataManager.class);
+				DataSourceFactory dsf = dataManager.getDSF();
+
+				dataSourceToLocationFeatures = new FeatureCollectionDatasourceAdapter(
+						getFeatureCollection(toLocationFeatures(
+								validationErrors, layer)));
+
+				dataSourceToFeatures = new FeatureCollectionDatasourceAdapter(
+						getFeatureCollection(toFeatures(validationErrors, layer)));
+
+				ObjectMemoryDriver resultdriver = new ObjectMemoryDriver(
+						dataSourceToFeatures);
+				String resultlayer = dsf.getSourceManager().nameAndRegister(
+						resultdriver);
+				final ILayer rsLayer = dataManager.createLayer(resultlayer);
+				mapContext.getLayerModel().insertLayer(rsLayer, 0);
 
 			}
+
+			outputSummary(layer, validationErrors);
 		} catch (DriverException e) {
-			e.printStackTrace();
+			Services.getErrorManager().error(
+					"Cannot read the resulting datasource from the layer ", e);
+		} catch (LayerException e) {
+			Services.getErrorManager()
+					.error(
+							"Cannot insert resulting layer based on "
+									+ layer.getName(), e);
 		}
 
-	// outputSummary(layer, validationErrors);
 	}
 
-	/*
-	 * private void outputSummary(ILayer layer, List validationErrors) {
-	 * context.getOutputFrame().addHeader(2,
-	 * ("ui.plugin.ValidateSelectedLayersPlugIn.layer")+" " + layer.getName());
-	 * 
-	 * if (validationErrors.isEmpty()) {
-	 * context.getOutputFrame().addText(("ui.plugin.ValidateSelectedLayersPlugIn.no-validation-errors"));
-	 * 
-	 * return; }
-	 * 
-	 * CollectionMap descriptionToErrorMap = new CollectionMap();
-	 * 
-	 * for (Iterator i = validationErrors.iterator(); i.hasNext();) {
-	 * ValidationError error = (ValidationError) i.next();
-	 * descriptionToErrorMap.addItem(error.getMessage(), error); }
-	 * 
-	 * for (Iterator i = descriptionToErrorMap.keySet().iterator();
-	 * i.hasNext();) { String message = (String) i.next();
-	 * context.getOutputFrame().addField(message + ":",
-	 * descriptionToErrorMap.getItems(message).size() + ""); } }
-	 */
+	private void outputSummary(ILayer layer, List validationErrors) {
+
+		OutputManager om = (OutputManager) Services
+				.getService(OutputManager.class);
+		Color color = Color.black;
+		om.append("Report ----------------------------------" + "\n", color);
+
+		color = Color.red;
+		om.append("Layer : " + layer.getName() + "\n", color);
+
+		if (validationErrors.isEmpty()) {
+
+			om.append("No validation errors " + "\n", color);
+			return;
+		}
+
+		CollectionMap descriptionToErrorMap = new CollectionMap();
+
+		for (Iterator i = validationErrors.iterator(); i.hasNext();) {
+			ValidationError error = (ValidationError) i.next();
+			descriptionToErrorMap.addItem(error.getMessage(), error);
+		}
+
+		for (Iterator i = descriptionToErrorMap.keySet().iterator(); i
+				.hasNext();) {
+			String message = (String) i.next();
+
+			color = Color.blue;
+			om.append(message + ":"
+					+ descriptionToErrorMap.getItems(message).size() + ""
+					+ "\n", color);
+
+		}
+		color = Color.black;
+		om.append("----------------------------------" + "\n", color);
+		om.makeVisible();
+	}
 
 	public boolean isEmpty() {
 		return noErrors;
@@ -264,13 +328,17 @@ public class ValidateSelectedLayers {
 	}
 
 	private List toFeatures(List validationErrors, ILayer sourceLayer) {
-		ArrayList features = new ArrayList();
 
+		pm.startTask("Get geometries errors");
+		ArrayList features = new ArrayList();
+		int k = 0;
 		for (Iterator i = validationErrors.iterator(); i.hasNext();) {
+			pm.progressTo(k++);
 			ValidationError error = (ValidationError) i.next();
 			features.add(toFeature(error, sourceLayer, (Geometry) error
 					.getFeature().getGeometry().clone()));
 		}
+		pm.endTask();
 
 		return features;
 	}
@@ -318,10 +386,12 @@ public class ValidateSelectedLayers {
 		CHECK_BASIC_TOPOLOGY = "check-basic-topology";
 		dialog = new MultiInputDialog(null, "Basic topology analysis", true);
 		dialog.setSideBarImage(IconLoader.getIcon("Validate.gif"));
-		dialog.setSideBarDescription("Test layer against various topological criterias");
+		dialog
+				.setSideBarDescription("Test layer against various topological criterias");
 		dialog.addLabel("<HTML><STRONG>" + "geometry metrics validation"
 				+ "</STRONG></HTML>");
 		dialog.addSeparator();
+		dialog.addCheckBox(CHECK_BASIC_TOPOLOGY, true);
 		dialog.addCheckBox(CHECK_NO_REPEATED_CONSECUTIVE_POINTS, false);
 		dialog
 				.addCheckBox(CHECK_POLYGON_ORIENTATION, false,
@@ -349,4 +419,5 @@ public class ValidateSelectedLayers {
 				"geometry collection subtypes are not disallowed");
 
 	}
+
 }
