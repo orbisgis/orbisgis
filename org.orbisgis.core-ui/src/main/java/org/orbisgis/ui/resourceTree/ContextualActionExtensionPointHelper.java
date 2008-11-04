@@ -36,10 +36,12 @@
  */
 package org.orbisgis.ui.resourceTree;
 
+import org.orbisgis.Services;
 import org.orbisgis.action.IActionAdapter;
 import org.orbisgis.action.IActionFactory;
 import org.orbisgis.action.Menu;
 import org.orbisgis.action.MenuTree;
+import org.orbisgis.errorManager.ErrorManager;
 import org.orbisgis.pluginManager.Configuration;
 import org.orbisgis.pluginManager.Extension;
 import org.orbisgis.pluginManager.IExtensionRegistry;
@@ -77,10 +79,17 @@ public class ContextualActionExtensionPointHelper {
 				String text = c.getAttribute(base, "text");
 				String icon = c.getAttribute(base, "icon");
 				Object action = c.instantiateFromAttribute(base, "class");
-				IActionAdapter iAction = factory.getAction(action, c.getAttributes(base));
-				if (iAction.isVisible()) {
-					Menu menu = new Menu(menuId, id, group, text, icon, false, iAction);
-					menuTree.addMenu(menu);
+				IActionAdapter iAction = factory.getAction(action, c
+						.getAttributes(base));
+				try {
+					if (iAction.isVisible()) {
+						Menu menu = new Menu(menuId, id, group, text, icon,
+								false, iAction);
+						menuTree.addMenu(menu);
+					}
+				} catch (Exception e) {
+					Services.getService(ErrorManager.class).warning(
+							"Some of the actions are buggy", e);
 				}
 			}
 		}
