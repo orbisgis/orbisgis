@@ -15,6 +15,7 @@ import org.gdms.data.DataSourceFactory;
 import org.gdms.data.SpatialDataSourceDecorator;
 import org.gdms.data.values.Value;
 import org.gdms.driver.memory.ObjectMemoryDriver;
+import org.orbisgis.progress.NullProgressMonitor;
 
 import com.vividsolutions.jcs.qa.InternalOverlapFinder;
 import com.vividsolutions.jts.geom.Geometry;
@@ -144,7 +145,7 @@ public class JUMPModelTest extends TestCase {
 				sds);
 
 		InternalOverlapFinder internalOverlapFinder = new InternalOverlapFinder(
-				featureCollectionAdapter, new TaskMonitorAdapter());
+				featureCollectionAdapter, new NullProgressMonitor());
 
 		FeatureCollection result = internalOverlapFinder
 				.getOverlappingFeatures();
