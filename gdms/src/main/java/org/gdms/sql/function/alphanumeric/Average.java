@@ -93,6 +93,6 @@ public class Average implements Function {
 
 	@Override
 	public Value getAggregateResult() {
-		return null;
+		return average;
 	}
 }

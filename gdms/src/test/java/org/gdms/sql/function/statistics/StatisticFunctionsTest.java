@@ -195,6 +195,9 @@ public class StatisticFunctionsTest extends FunctionTest {
 			assertTrue(false);
 		} catch (IncompatibleTypesException e) {
 		}
+
+		// Test zero rows
+		assertTrue(evaluateAggregatedZeroRows(new StandardDeviation()).isNull());
 	}
 
 }

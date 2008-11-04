@@ -91,6 +91,6 @@ public class Max implements Function {
 
 	@Override
 	public Value getAggregateResult() {
-		return null;
+		return max;
 	}
 }

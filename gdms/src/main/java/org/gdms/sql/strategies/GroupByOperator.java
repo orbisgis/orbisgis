@@ -89,10 +89,21 @@ public class GroupByOperator extends AbstractExpressionOperator implements
 				}
 
 				// create a map for the group by classes and it's expressions
-				// and
-				// results
 				HashMap<ValueCollection, Expression[]> classExpressions = new HashMap<ValueCollection, Expression[]>();
 
+				// Add unique class if there is no group by attribute
+				if (fieldIndexes.size() == 0) {
+					ValueCollection vc = ValueFactory.createValue(new Value[0]);
+					Expression[] newClassExpressions = new Expression[initialExpressions
+							.size()];
+					for (int k = 0; k < newClassExpressions.length; k++) {
+						newClassExpressions[k] = initialExpressions.get(k)
+								.cloneExpression();
+					}
+					classExpressions.put(vc, newClassExpressions);
+				}
+
+				// Iterata and evaluate aggregate functions in each class
 				pm.startTask("Creating the groups");
 				// Iterate throughout the source
 				long rowCount = source.getRowCount();

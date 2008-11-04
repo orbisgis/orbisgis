@@ -99,6 +99,6 @@ public class Sum implements Function {
 
 	@Override
 	public Value getAggregateResult() {
-		return null;
+		return acum;
 	}
 }

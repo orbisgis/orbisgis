@@ -83,6 +83,10 @@ public abstract class FunctionTest extends TestCase {
 		return evaluateFunction(function, values);
 	}
 
+	protected Value evaluateAggregatedZeroRows(Function function) {
+		return function.getAggregateResult();
+	}
+	
 	private Value evaluateFunction(Function function, Value[] values)
 			throws FunctionException {
 		if (function.isAggregate()) {

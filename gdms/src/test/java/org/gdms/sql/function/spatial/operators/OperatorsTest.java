@@ -151,6 +151,9 @@ public class OperatorsTest extends FunctionTest {
 
 		// Test it works with geometry collections
 		evaluate(function, ValueFactory.createValue(geomCollection));
+
+		// Test zero rows
+		assertTrue(evaluateAggregatedZeroRows(new GeomUnion()).isNull());
 	}
 
 	public void testIntersection() throws Exception {

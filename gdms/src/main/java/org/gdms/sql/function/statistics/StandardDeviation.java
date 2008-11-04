@@ -94,6 +94,6 @@ public class StandardDeviation implements Function {
 
 	@Override
 	public Value getAggregateResult() {
-		return null;
+		return stdDeviation;
 	}
 }

@@ -182,6 +182,9 @@ public class AlphanumericFunctionTest extends FunctionTest {
 			assertTrue(false);
 		} catch (IncompatibleTypesException e) {
 		}
+
+		// Test zero rows
+		assertTrue(evaluateAggregatedZeroRows(new Average()).isNull());
 	}
 
 	public void testString2Boolean() throws Exception {
@@ -261,6 +264,9 @@ public class AlphanumericFunctionTest extends FunctionTest {
 			assertTrue(false);
 		} catch (IncompatibleTypesException e) {
 		}
+
+		// Test zero rows
+		assertTrue(evaluateAggregatedZeroRows(new Count()).getAsInt() == 0);
 	}
 
 	public void testMax() throws Exception {
@@ -300,6 +306,9 @@ public class AlphanumericFunctionTest extends FunctionTest {
 			assertTrue(false);
 		} catch (IncompatibleTypesException e) {
 		}
+
+		// Test zero rows
+		assertTrue(evaluateAggregatedZeroRows(new Max()).isNull());
 	}
 
 	public void testMin() throws Exception {
@@ -339,6 +348,9 @@ public class AlphanumericFunctionTest extends FunctionTest {
 			assertTrue(false);
 		} catch (IncompatibleTypesException e) {
 		}
+
+		// Test zero rows
+		assertTrue(evaluateAggregatedZeroRows(new Min()).isNull());
 	}
 
 	public void testPk() throws Exception {
@@ -417,6 +429,9 @@ public class AlphanumericFunctionTest extends FunctionTest {
 			assertTrue(false);
 		} catch (IncompatibleTypesException e) {
 		}
+
+		// Test zero rows
+		assertTrue(evaluateAggregatedZeroRows(new Sum()).isNull());
 	}
 
 	public void testString2Date() throws Exception {

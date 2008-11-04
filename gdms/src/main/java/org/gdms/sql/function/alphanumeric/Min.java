@@ -104,6 +104,6 @@ public class Min implements Function {
 
 	@Override
 	public Value getAggregateResult() {
-		return null;
+		return min;
 	}
 }
