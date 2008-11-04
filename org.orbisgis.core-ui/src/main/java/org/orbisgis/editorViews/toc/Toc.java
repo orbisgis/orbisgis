@@ -96,6 +96,8 @@ public class Toc extends ResourceTree {
 
 	private MapContext mapContext = null;
 
+	private String mapContextName;
+
 	public Toc() {
 
 		this.ll = new MyLayerListener();
@@ -262,7 +264,7 @@ public class Toc extends ResourceTree {
 		if (layers.size() == 0) {
 			return null;
 		} else {
-			return new TransferableLayer(layers.toArray(new ILayer[0]));
+			return new TransferableLayer(mapContextName, layers.toArray(new ILayer[0]));
 		}
 	}
 
@@ -497,7 +499,7 @@ public class Toc extends ResourceTree {
 		ignoreSelection = false;
 	}
 
-	public void setMapContext(MapContext mapContext) {
+	public void setMapContext(String mapContextName, MapContext mapContext) {
 		// Remove the listeners
 		if (this.mapContext != null) {
 			removeLayerListenerRecursively(this.mapContext.getLayerModel(), ll);
@@ -506,6 +508,7 @@ public class Toc extends ResourceTree {
 
 		if (mapContext != null) {
 			this.mapContext = mapContext;
+			this.mapContextName = mapContextName;
 			// Add the listeners to the new MapContext
 			this.mapContext.addMapContextListener(myMapContextListener);
 			final ILayer root = this.mapContext.getLayerModel();
@@ -527,6 +530,7 @@ public class Toc extends ResourceTree {
 					.createLayerCollection("root"), getTree());
 			this.setModel(treeModel);
 			this.mapContext = null;
+			this.mapContextName = null;
 
 			// Patch to remove any reference to the previous model
 			myTreeUI = new MyTreeUI();

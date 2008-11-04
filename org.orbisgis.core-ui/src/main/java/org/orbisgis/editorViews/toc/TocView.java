@@ -38,6 +38,7 @@ package org.orbisgis.editorViews.toc;
 
 import java.awt.Component;
 
+import org.orbisgis.edition.EditableElement;
 import org.orbisgis.editor.IEditor;
 import org.orbisgis.editorView.IEditorView;
 import org.orbisgis.layerModel.MapContext;
@@ -67,11 +68,12 @@ public class TocView implements IEditorView {
 	}
 
 	public void setEditor(IEditor editor) {
-		MapContext mc = (MapContext) editor.getElement().getObject();
-		toc.setMapContext(mc);
+		EditableElement element = editor.getElement();
+		MapContext mc = (MapContext) element.getObject();
+		toc.setMapContext(element.getId(), mc);
 	}
 
 	public void editorViewDisabled() {
-		toc.setMapContext(null);
+		toc.setMapContext(null, null);
 	}
 }

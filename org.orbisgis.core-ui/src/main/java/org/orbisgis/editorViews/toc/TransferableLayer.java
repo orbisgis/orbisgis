@@ -42,15 +42,22 @@ import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import org.orbisgis.edition.EditableElement;
+import org.orbisgis.layerModel.EditableLayer;
 import org.orbisgis.layerModel.ILayer;
+import org.orbisgis.views.editor.TransferableEditableElement;
 
 public class TransferableLayer implements Transferable {
 
-	private static DataFlavor layerFlavor = new DataFlavor(ILayer.class, "Resource");
+	private static DataFlavor layerFlavor = new DataFlavor(ILayer.class,
+			"Resource");
 
 	private ILayer[] nodes = null;
 
-	public TransferableLayer(ILayer[] node) {
+	private String prefix;
+
+	public TransferableLayer(String prefix, ILayer[] node) {
+		this.prefix = prefix;
 		ArrayList<ILayer> nodes = new ArrayList<ILayer>();
 		for (int i = 0; i < node.length; i++) {
 
@@ -67,6 +74,13 @@ public class TransferableLayer implements Transferable {
 		Object ret = null;
 		if (flavor.equals(layerFlavor)) {
 			ret = nodes;
+		} else if (flavor
+				.equals(TransferableEditableElement.editableElementFlavor)) {
+			EditableElement[] elems = new EditableElement[nodes.length];
+			for (int i = 0; i < nodes.length; i++) {
+				elems[i] = new EditableLayer(prefix, nodes[i]);
+			}
+			ret = elems;
 		} else if (flavor.equals(DataFlavor.stringFlavor)) {
 			String retString = "";
 			String separator = "";
@@ -81,12 +95,15 @@ public class TransferableLayer implements Transferable {
 	}
 
 	public DataFlavor[] getTransferDataFlavors() {
-		return (new DataFlavor[] { layerFlavor, DataFlavor.stringFlavor });
+		return (new DataFlavor[] { layerFlavor,
+				TransferableEditableElement.editableElementFlavor,
+				DataFlavor.stringFlavor });
 	}
 
 	public boolean isDataFlavorSupported(DataFlavor flavor) {
-		return (flavor.equals(getLayerFlavor()) || flavor
-				.equals(DataFlavor.stringFlavor));
+		return flavor.equals(TransferableEditableElement.editableElementFlavor)
+				|| flavor.equals(getLayerFlavor())
+				|| flavor.equals(DataFlavor.stringFlavor);
 	}
 
 	public static DataFlavor getLayerFlavor() {

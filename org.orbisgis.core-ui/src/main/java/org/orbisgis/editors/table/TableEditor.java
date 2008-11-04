@@ -6,6 +6,7 @@ import org.gdms.data.DataSource;
 import org.orbisgis.PersistenceException;
 import org.orbisgis.edition.EditableElement;
 import org.orbisgis.editor.IEditor;
+import org.orbisgis.layerModel.EditableLayer;
 import org.orbisgis.views.geocatalog.EditableResource;
 
 public class TableEditor implements IEditor {
@@ -19,7 +20,8 @@ public class TableEditor implements IEditor {
 
 	@Override
 	public boolean acceptElement(String typeId) {
-		return EditableResource.EDITABLE_RESOURCE_TYPE.equals(typeId);
+		return EditableResource.EDITABLE_RESOURCE_TYPE.equals(typeId)
+				|| EditableLayer.EDITABLE_LAYER_TYPE.equals(typeId);
 	}
 
 	@Override
@@ -35,9 +37,7 @@ public class TableEditor implements IEditor {
 	@Override
 	public void setElement(EditableElement element) {
 		this.element = element;
-		if (element instanceof EditableResource) {
-			table.setDataSource((DataSource) this.element.getObject(), null);
-		}
+		table.setDataSource((DataSource) this.element.getObject(), null);
 	}
 
 	@Override
