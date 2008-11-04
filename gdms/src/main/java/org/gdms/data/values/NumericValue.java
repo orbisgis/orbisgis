@@ -42,102 +42,110 @@ import org.gdms.sql.strategies.IncompatibleTypesException;
 
 /**
  * DOCUMENT ME!
- *
+ * 
  * @author Fernando Gonzalez Cortes
  */
 abstract class NumericValue extends AbstractValue implements Serializable {
 	/**
 	 * DOCUMENT ME!
-	 *
+	 * 
 	 * @return DOCUMENT ME!
 	 */
 	public abstract byte byteValue();
 
 	/**
 	 * DOCUMENT ME!
-	 *
+	 * 
 	 * @return DOCUMENT ME!
 	 */
 	public abstract short shortValue();
 
 	/**
 	 * DOCUMENT ME!
-	 *
+	 * 
 	 * @return DOCUMENT ME!
 	 */
 	public abstract int intValue();
 
 	/**
 	 * DOCUMENT ME!
-	 *
+	 * 
 	 * @return DOCUMENT ME!
 	 */
 	public abstract long longValue();
 
 	/**
 	 * DOCUMENT ME!
-	 *
+	 * 
 	 * @return DOCUMENT ME!
 	 */
 	public abstract float floatValue();
 
 	/**
 	 * DOCUMENT ME!
-	 *
+	 * 
 	 * @return DOCUMENT ME!
 	 */
 	public abstract double doubleValue();
 
 	/**
 	 * Returns the number of digits after the decimal point
-	 *
+	 * 
 	 * @return
 	 */
 	public abstract int getDecimalDigitsCount();
 
 	/**
 	 * DOCUMENT ME!
-	 *
+	 * 
 	 * @param value
 	 *            DOCUMENT ME!
-	 *
+	 * 
 	 * @return DOCUMENT ME!
-	 *
+	 * 
 	 * @throws IncompatibleTypesException
 	 *             DOCUMENT ME!
 	 */
 	public Value producto(Value value) throws IncompatibleTypesException {
-		if (!(value instanceof NumericValue)) {
-			throw new IncompatibleTypesException();
-		}
+		if (value.isNull()) {
+			return ValueFactory.createNullValue();
+		} else {
+			if (!(value instanceof NumericValue)) {
+				throw new IncompatibleTypesException();
+			}
 
-		return ValueFactory.producto(this, (NumericValue) value);
+			return ValueFactory.producto(this, (NumericValue) value);
+		}
 	}
 
 	/**
 	 * DOCUMENT ME!
-	 *
+	 * 
 	 * @param value
 	 *            DOCUMENT ME!
-	 *
+	 * 
 	 * @return DOCUMENT ME!
-	 *
+	 * 
 	 * @throws IncompatibleTypesException
 	 *             DOCUMENT ME!
 	 */
 	public Value suma(Value value) throws IncompatibleTypesException {
-		if (!(value instanceof NumericValue)) {
-			throw new IncompatibleTypesException();
-		}
+		if (value.isNull()) {
+			return ValueFactory.createNullValue();
+		} else {
+			if (!(value instanceof NumericValue)) {
+				throw new IncompatibleTypesException();
+			}
 
-		return ValueFactory.suma(this, (NumericValue) value);
+			return ValueFactory.suma(this, (NumericValue) value);
+		}
 	}
 
 	/**
 	 * DOCUMENT ME!
-	 *
+	 * 
 	 * @return DOCUMENT ME!
-	 *
+	 * 
 	 * @throws IncompatibleTypesException
 	 *             DOCUMENT ME!
 	 */
@@ -147,12 +155,12 @@ abstract class NumericValue extends AbstractValue implements Serializable {
 
 	/**
 	 * DOCUMENT ME!
-	 *
+	 * 
 	 * @param value
 	 *            DOCUMENT ME!
-	 *
+	 * 
 	 * @return DOCUMENT ME!
-	 *
+	 * 
 	 * @throws IncompatibleTypesException
 	 *             DOCUMENT ME!
 	 */
@@ -172,12 +180,12 @@ abstract class NumericValue extends AbstractValue implements Serializable {
 
 	/**
 	 * DOCUMENT ME!
-	 *
+	 * 
 	 * @param value
 	 *            DOCUMENT ME!
-	 *
+	 * 
 	 * @return DOCUMENT ME!
-	 *
+	 * 
 	 * @throws IncompatibleTypesException
 	 *             DOCUMENT ME!
 	 */
@@ -197,12 +205,12 @@ abstract class NumericValue extends AbstractValue implements Serializable {
 
 	/**
 	 * DOCUMENT ME!
-	 *
+	 * 
 	 * @param value
 	 *            DOCUMENT ME!
-	 *
+	 * 
 	 * @return DOCUMENT ME!
-	 *
+	 * 
 	 * @throws IncompatibleTypesException
 	 *             DOCUMENT ME!
 	 */
@@ -222,12 +230,12 @@ abstract class NumericValue extends AbstractValue implements Serializable {
 
 	/**
 	 * DOCUMENT ME!
-	 *
+	 * 
 	 * @param value
 	 *            DOCUMENT ME!
-	 *
+	 * 
 	 * @return DOCUMENT ME!
-	 *
+	 * 
 	 * @throws IncompatibleTypesException
 	 *             DOCUMENT ME!
 	 */
@@ -247,12 +255,12 @@ abstract class NumericValue extends AbstractValue implements Serializable {
 
 	/**
 	 * DOCUMENT ME!
-	 *
+	 * 
 	 * @param value
 	 *            DOCUMENT ME!
-	 *
+	 * 
 	 * @return DOCUMENT ME!
-	 *
+	 * 
 	 * @throws IncompatibleTypesException
 	 *             DOCUMENT ME!
 	 */
@@ -272,12 +280,12 @@ abstract class NumericValue extends AbstractValue implements Serializable {
 
 	/**
 	 * DOCUMENT ME!
-	 *
+	 * 
 	 * @param value
 	 *            DOCUMENT ME!
-	 *
+	 * 
 	 * @return DOCUMENT ME!
-	 *
+	 * 
 	 * @throws IncompatibleTypesException
 	 *             DOCUMENT ME!
 	 */

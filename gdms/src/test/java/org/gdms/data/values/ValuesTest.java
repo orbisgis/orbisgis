@@ -62,7 +62,7 @@ import com.vividsolutions.jts.geom.Polygon;
 
 /**
  * DOCUMENT ME!
- *
+ * 
  * @author Fernando Gonzalez Cortes
  */
 public class ValuesTest extends TestCase {
@@ -70,7 +70,7 @@ public class ValuesTest extends TestCase {
 
 	/**
 	 * DOCUMENT ME!
-	 *
+	 * 
 	 * @throws Exception
 	 *             DOCUMENT ME!
 	 */
@@ -243,7 +243,7 @@ public class ValuesTest extends TestCase {
 
 	/**
 	 * DOCUMENT ME!
-	 *
+	 * 
 	 * @throws IncompatibleTypesException
 	 *             DOCUMENT ME!
 	 */
@@ -291,7 +291,7 @@ public class ValuesTest extends TestCase {
 
 	/**
 	 * DOCUMENT ME!
-	 *
+	 * 
 	 * @throws Exception
 	 *             DOCUMENT ME!
 	 */
@@ -941,6 +941,30 @@ public class ValuesTest extends TestCase {
 	private void checkDifferent(Value p1, Value p2) {
 		assertTrue(p1.equals(p2).getAsBoolean() == false);
 		assertTrue(p1.equals(p1).getAsBoolean());
+	}
+
+	public void testNullOperations() throws Exception {
+		Value nullv = ValueFactory.createNullValue();
+		Value numv = ValueFactory.createValue(4d);
+		// Value strv = ValueFactory.createValue("s");
+		// Value falsev = numv.less(numv);
+		// Value truev = numv.equals(numv);
+		assertTrue(nullv.producto(numv).isNull());
+		assertTrue(numv.producto(nullv).isNull());
+		assertTrue(nullv.suma(numv).isNull());
+		assertTrue(numv.suma(nullv).isNull());
+		// TODO uncomment and fix this bad behavior
+		// assertTrue(strv.like(nullv).isNull());
+		// assertTrue(nullv.like(strv).isNull());
+		// assertTrue(falsev.or(nullv).isNull());
+		// assertTrue(nullv.or(falsev).isNull());
+		// assertTrue(truev.and(nullv).isNull());
+		// assertTrue(nullv.and(truev).isNull());
+		// assertTrue(numv.greaterEqual(nullv).isNull());
+		// assertTrue(numv.equals(nullv).isNull());
+		// assertTrue(numv.notEquals(nullv).isNull());
+		// assertTrue(numv.less(nullv).isNull());
+		// assertTrue(numv.lessEqual(nullv).isNull());
 	}
 
 	@Override
