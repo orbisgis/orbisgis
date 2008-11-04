@@ -34,7 +34,7 @@
  *    fergonco _at_ gmail.com
  *    thomas.leduc _at_ cerma.archi.fr
  */
-package org.orbisgis.views.table;
+package org.orbisgis.views.information;
 
 import java.awt.Component;
 

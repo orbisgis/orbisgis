@@ -735,9 +735,9 @@
 			class="org.orbisgis.views.editor.EditorView" title="Editors"/>
 	</extension>
 	<extension point="org.orbisgis.View">
-		<view id="org.orbisgis.views.Table"
+		<view id="org.orbisgis.views.Information"
 			class="org.orbisgis.views.table.TableView"
-			icon="/org/orbisgis/images/openattributes.png" title="Table"/>
+			icon="/org/orbisgis/images/openattributes.png" title="Information"/>
 	</extension>
 	<extension point="org.orbisgis.View">
 		<view id="org.orbisgis.views.SQLConsole"

@@ -60,7 +60,7 @@ import org.orbisgis.pluginManager.background.BackgroundManager;
 import org.orbisgis.pluginManager.background.DefaultJobId;
 import org.orbisgis.progress.IProgressMonitor;
 import org.orbisgis.view.ViewManager;
-import org.orbisgis.views.table.Table;
+import org.orbisgis.views.information.Table;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;

@@ -44,7 +44,7 @@ import org.orbisgis.editorViews.toc.action.ILayerAction;
 import org.orbisgis.layerModel.ILayer;
 import org.orbisgis.layerModel.MapContext;
 import org.orbisgis.view.ViewManager;
-import org.orbisgis.views.table.Table;
+import org.orbisgis.views.information.Table;
 
 public class ShowInTable implements ILayerAction {
 	public boolean accepts(ILayer layer) {

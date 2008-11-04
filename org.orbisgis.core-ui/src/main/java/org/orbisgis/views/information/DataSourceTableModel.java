@@ -37,7 +37,7 @@
 /**
  *
  */
-package org.orbisgis.views.table;
+package org.orbisgis.views.information;
 
 import java.util.ArrayList;
 
