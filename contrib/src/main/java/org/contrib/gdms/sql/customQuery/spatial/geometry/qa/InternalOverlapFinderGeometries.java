@@ -92,7 +92,7 @@ public class InternalOverlapFinderGeometries implements CustomQuery {
 					sds);
 
 			InternalOverlapFinder internalOverlapFinder = new InternalOverlapFinder(
-					featureCollectionAdapter, new TaskMonitorAdapter());
+					featureCollectionAdapter, pm);
 
 			FeatureCollection result = internalOverlapFinder
 					.getOverlappingFeatures();
