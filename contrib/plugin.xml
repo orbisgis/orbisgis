@@ -4,20 +4,24 @@
 		<action id="org.orbisgis.geomProcessing" text="Find ovelaping features"
 			menu-group="org.orbisgis.rasterProcessing"
 			menu-id="org.orbisgis.ProcessingMenu"
+			icon="/org/contrib/images/overlaps.png"
 			class="org.contrib.ui.editorViews.toc.actions.geometry.qa.IntervalOverlapsFinderAction"/>
 		<action id="org.orbisgis.geomProcessing" text="Find gap features"
 			menu-group="org.orbisgis.rasterProcessing"
-			menu-id="org.orbisgis.ProcessingMenu"
+			menu-id="org.orbisgis.ProcessingMenu"			
+			icon="/org/contrib/images/gaps.png"
 			class="org.contrib.ui.editorViews.toc.actions.geometry.qa.IntervalGapsFinderAction"/>
 		<action id="org.orbisgis.geomProcessing" text="Validate geometries"
 			menu-group="org.orbisgis.rasterProcessing"
 			menu-id="org.orbisgis.ProcessingMenu"
+			icon="/org/contrib/images/edit-clear.png"
 			class="org.contrib.ui.editorViews.toc.actions.geometry.qa.ValidateSelectedLayersAction"/>		
 	</extension>
 	<extension point="org.orbisgis.editorViews.toc.Action"
 		id="org.orbisgis.editorViews.toc.EditingActions">
 		<action id="org.orbisgis.editorViews.toc.actions.SetActive"
 			text="Add geometry" menu-group="org.orbisgis.editorViews.toc.Edition"
+			icon="/org/contrib/images/shape_square_add.png"
 			class="org.contrib.ui.editorViews.toc.actions.geometry.edition.AddGeometriesAsWKTAction"/>
 		</extension>
 </plugin>
