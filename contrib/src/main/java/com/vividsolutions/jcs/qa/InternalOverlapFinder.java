@@ -1,5 +1,3 @@
-
-
 /*
  * The JCS Conflation Suite (JCS) is a library of Java classes that
  * can be used to build automated or semi-automated conflation solutions.
@@ -42,151 +40,173 @@ import org.contrib.model.jump.model.FeatureDataset;
 import org.contrib.model.jump.model.FeatureDatasetFactory;
 import org.contrib.model.jump.model.FeatureUtil;
 import org.contrib.model.jump.model.IndexedFeatureCollection;
-import org.contrib.model.jump.model.TaskMonitor;
-
+import org.orbisgis.progress.IProgressMonitor;
 
 import com.vividsolutions.jts.geom.*;
-import com.vividsolutions.jts.index.quadtree.Quadtree;
-import com.vividsolutions.jts.util.*;
-
 
 /**
  * Finds features in a dataset which overlap.
  */
 public class InternalOverlapFinder {
 
+	private static final String FEATURES = "features";
 
-  private static final String FEATURES = "features";
-  
-  private FeatureCollection inputFC;
-  private FeatureCollection overlappingFC;
+	private FeatureCollection inputFC;
 
-  private FeatureCollection overlapIndicatorFC;
-  private FeatureCollection overlapSizeIndicatorFC;
+	private FeatureCollection overlappingFC;
 
-  private Set overlappingFeatures = new TreeSet(new FeatureUtil.IDComparator());
-  private List overlapIndicators = new ArrayList();// a list of Geometry's
-  private List overlapSizeIndicators = new ArrayList();// a list of Geometry's
-  private Envelope fence = null;
-  
-  private TaskMonitor monitor;
+	private FeatureCollection overlapIndicatorFC;
 
-  private boolean isComputed = false;
+	private FeatureCollection overlapSizeIndicatorFC;
 
-  public InternalOverlapFinder(FeatureCollection inputFC, TaskMonitor monitor) {
-    this.inputFC = inputFC;
-    this.monitor = monitor;
-  }
+	private Set overlappingFeatures = new TreeSet(
+			new FeatureUtil.IDComparator());
 
-  
-  
+	private List overlapIndicators = new ArrayList();// a list of Geometry's
 
-public void setFence(Envelope fence)  { this.fence = fence; }
+	private List overlapSizeIndicators = new ArrayList();// a list of
 
-  public FeatureCollection getOverlappingFeatures()
-  {
-    computeOverlaps();
-    return overlappingFC;
-  }
+	// Geometry's
 
-  public FeatureCollection getOverlapIndicators()
-  {
-    computeOverlaps();
-    return overlapIndicatorFC;
-  }
+	private Envelope fence = null;
 
+	private IProgressMonitor monitor;
 
-  public FeatureCollection getOverlapSizeIndicators()
-  {
-    computeOverlaps();
-    return overlapSizeIndicatorFC;
-  }
+	private boolean isComputed = false;
 
-  private FeatureCollection getSubjectFC()
-  {
-    if (fence == null) return inputFC;
-    List fenceFeat = inputFC.query(fence);
-    return new FeatureDataset(fenceFeat, inputFC.getFeatureSchema());
-  }
+	public InternalOverlapFinder(FeatureCollection inputFC,
+			IProgressMonitor monitor) {
+		this.inputFC = inputFC;
+		this.monitor = monitor;
+	}
 
-  public void computeOverlaps()
-  {
-    if (isComputed) return;
-    int featuresProcessed = 0;
-    int totalFeatures = inputFC.size();
-    FeatureCollection subjectFC = getSubjectFC();
-    FeatureCollection indexFC = new IndexedFeatureCollection(subjectFC);
-    for (Iterator i = inputFC.iterator(); i.hasNext(); ) {
-      Feature f = (Feature) i.next();
-      featuresProcessed++;
-      List closeFeat = indexFC.query(f.getGeometry().getEnvelopeInternal());
-      monitor.report(featuresProcessed, totalFeatures, FEATURES);
-      for (Iterator j = closeFeat.iterator(); j.hasNext(); ) {
-        Feature closeF = (Feature) j.next();
-        /**
-         * Since the overlaps relation is symmetric, we
-         * can avoid redundantly comparing each pair of features twice
-         * if we only compare the smaller ID to the larger.
-         * This also avoids comparing features with themselves.
-         *
-         * We can't actually use the OGC overlaps predicate, since it
-         * is false if one geometry is wholely contained in the other.
-         * Instead, we check for the interiors intersecting using relate().
-         */
-        if (f.getID() < closeF.getID()) {
-          IntersectionMatrix im = f.getGeometry().relate(closeF.getGeometry());
-          boolean interiorsIntersect = im.get(Location.INTERIOR, Location.INTERIOR) >= 0;
-          if (interiorsIntersect) {
-            overlappingFeatures.add(f);
-            overlappingFeatures.add(closeF);
+	public void setFence(Envelope fence) {
+		this.fence = fence;
+	}
 
-            addIndicators(f, closeF);
-          }
-        }
-      }
-    }
-    overlappingFC = new FeatureDataset(overlappingFeatures, inputFC.getFeatureSchema());
-    overlapIndicatorFC = FeatureDatasetFactory.createFromGeometry(overlapIndicators);
-    overlapSizeIndicatorFC = FeatureDatasetFactory.createFromGeometryWithLength(overlapSizeIndicators, "LENGTH");
+	public FeatureCollection getOverlappingFeatures() {
+		computeOverlaps();
+		return overlappingFC;
+	}
 
-    isComputed = true;
-  }
+	public FeatureCollection getOverlapIndicators() {
+		computeOverlaps();
+		return overlapIndicatorFC;
+	}
 
-  /**
-   * Computes indicator for a pair of overlapping geometries.
-   * Tries using {@link OverlapBoundaryIndicators} first; if it
-   * can't compute indicators (because of a robustness failure or a linear collapse)
-   * uses the slower but more robust {@link OverlapSegmentIndicators}
-   * @param f0
-   * @param f1
-   */
-  private void addIndicators(Feature f0, Feature f1)
-  {
-    List overlapIndList;
-    List overlapSizeIndList;
+	public FeatureCollection getOverlapSizeIndicators() {
+		computeOverlaps();
+		return overlapSizeIndicatorFC;
+	}
 
-    OverlapBoundaryIndicators obi = new OverlapBoundaryIndicators(f0.getGeometry(), f1.getGeometry());
-    overlapIndList = obi.getOverlapIndicators();
-    overlapSizeIndList = obi.getSizeIndicators();
-    if (overlapIndList.size() > 0 && overlapSizeIndList.size() > 0) {
-      overlapIndicators.addAll(overlapIndList);
-      overlapSizeIndicators.addAll(overlapSizeIndList);
-      return;
-    }
+	private FeatureCollection getSubjectFC() {
+		if (fence == null)
+			return inputFC;
+		List fenceFeat = inputFC.query(fence);
+		return new FeatureDataset(fenceFeat, inputFC.getFeatureSchema());
+	}
 
-    OverlapSegmentIndicators osi = new OverlapSegmentIndicators(f0.getGeometry(), f1.getGeometry());
-    overlapIndList = osi.getOverlapIndicators();
-    overlapSizeIndList = osi.getSizeIndicators();
-    // as long as there is at least one indicator computed, use the segment indicators
-    // (there should always be segment indicators, even if there is no size indicator)
-    if (overlapIndList.size() > 0 || overlapSizeIndList.size() > 0) {
-      overlapIndicators.addAll(overlapIndList);
-      overlapSizeIndicators.addAll(overlapSizeIndList);
-      return;
-    }
-    // no indicators were computed - print a warning
-    System.out.println("Warning - Could not compute overlap indicators");
-    System.out.println(f0.getGeometry());
-    System.out.println(f1.getGeometry());
-  }
+	public void computeOverlaps() {
+		monitor.startTask("Computing overlaps");
+		if (isComputed)
+			return;
+		int featuresProcessed = 0;
+		int totalFeatures = inputFC.size();
+		FeatureCollection subjectFC = getSubjectFC();
+		FeatureCollection indexFC = new IndexedFeatureCollection(subjectFC);
+		int k = 0;
+		for (Iterator i = inputFC.iterator(); i.hasNext();) {
+
+			if (k / 100 == k / 100.0) {
+				if (monitor.isCancelled()) {
+					break;
+				} else {
+					monitor.progressTo((int) (100 * k / totalFeatures));
+				}
+			}
+
+			Feature f = (Feature) i.next();
+			featuresProcessed++;
+			List closeFeat = indexFC.query(f.getGeometry()
+					.getEnvelopeInternal());
+			// monitor.report(featuresProcessed, totalFeatures, FEATURES);
+			for (Iterator j = closeFeat.iterator(); j.hasNext();) {
+				Feature closeF = (Feature) j.next();
+				/**
+				 * Since the overlaps relation is symmetric, we can avoid
+				 * redundantly comparing each pair of features twice if we only
+				 * compare the smaller ID to the larger. This also avoids
+				 * comparing features with themselves.
+				 * 
+				 * We can't actually use the OGC overlaps predicate, since it is
+				 * false if one geometry is wholely contained in the other.
+				 * Instead, we check for the interiors intersecting using
+				 * relate().
+				 */
+				if (f.getID() < closeF.getID()) {
+					IntersectionMatrix im = f.getGeometry().relate(
+							closeF.getGeometry());
+					boolean interiorsIntersect = im.get(Location.INTERIOR,
+							Location.INTERIOR) >= 0;
+					if (interiorsIntersect) {
+						overlappingFeatures.add(f);
+						overlappingFeatures.add(closeF);
+
+						addIndicators(f, closeF);
+					}
+				}
+			}
+		}
+		monitor.endTask();
+		overlappingFC = new FeatureDataset(overlappingFeatures, inputFC
+				.getFeatureSchema());
+		overlapIndicatorFC = FeatureDatasetFactory
+				.createFromGeometry(overlapIndicators);
+		overlapSizeIndicatorFC = FeatureDatasetFactory
+				.createFromGeometryWithLength(overlapSizeIndicators, "LENGTH");
+
+		isComputed = true;
+	}
+
+	/**
+	 * Computes indicator for a pair of overlapping geometries. Tries using
+	 * {@link OverlapBoundaryIndicators} first; if it can't compute indicators
+	 * (because of a robustness failure or a linear collapse) uses the slower
+	 * but more robust {@link OverlapSegmentIndicators}
+	 * 
+	 * @param f0
+	 * @param f1
+	 */
+	private void addIndicators(Feature f0, Feature f1) {
+		List overlapIndList;
+		List overlapSizeIndList;
+
+		OverlapBoundaryIndicators obi = new OverlapBoundaryIndicators(f0
+				.getGeometry(), f1.getGeometry());
+		overlapIndList = obi.getOverlapIndicators();
+		overlapSizeIndList = obi.getSizeIndicators();
+		if (overlapIndList.size() > 0 && overlapSizeIndList.size() > 0) {
+			overlapIndicators.addAll(overlapIndList);
+			overlapSizeIndicators.addAll(overlapSizeIndList);
+			return;
+		}
+
+		OverlapSegmentIndicators osi = new OverlapSegmentIndicators(f0
+				.getGeometry(), f1.getGeometry());
+		overlapIndList = osi.getOverlapIndicators();
+		overlapSizeIndList = osi.getSizeIndicators();
+		// as long as there is at least one indicator computed, use the segment
+		// indicators
+		// (there should always be segment indicators, even if there is no size
+		// indicator)
+		if (overlapIndList.size() > 0 || overlapSizeIndList.size() > 0) {
+			overlapIndicators.addAll(overlapIndList);
+			overlapSizeIndicators.addAll(overlapSizeIndList);
+			return;
+		}
+		// no indicators were computed - print a warning
+		System.out.println("Warning - Could not compute overlap indicators");
+		System.out.println(f0.getGeometry());
+		System.out.println(f1.getGeometry());
+	}
 }
