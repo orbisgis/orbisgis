@@ -122,7 +122,8 @@ public abstract class AbstractSyntaxColoringDocument extends UndoableDocument {
 				int[] currentTokenBounds = getTokenBounds(offset, length);
 				colorize(Math
 						.min(originalTokenBounds[0], currentTokenBounds[0]),
-						Math.max(originalTokenBounds[1], currentTokenBounds[1]));
+						Math.max(originalTokenBounds[1] - length - 1,
+								currentTokenBounds[1]));
 			}
 
 			if (!alreadyGrouping) {
