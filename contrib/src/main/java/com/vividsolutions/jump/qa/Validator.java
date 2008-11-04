@@ -212,7 +212,14 @@ public class Validator {
         int  k =0;
         for (Iterator i = features.iterator();
                 i.hasNext() && !pm.isCancelled();) {
-        	pm.progressTo(k++);
+        	k++;
+        	if (k / 100 == k / 100.0) {
+				if (pm.isCancelled()) {
+					break;
+				} else {
+					pm.progressTo((int) (100 * k / totalFeatures));
+				}
+			}
             Feature feature = (Feature) i.next();
             validate(feature, validationErrors);
             validatedFeatureCount++;
