@@ -48,9 +48,9 @@ import org.gdms.sql.function.FunctionException;
 import org.gdms.sql.strategies.IncompatibleTypesException;
 
 public class Average implements Function {
+	private final static Value nullValue = ValueFactory.createNullValue();
 	private double sumOfValues = 0;
 	private int numberOfValues = 0;
-	private Value nullValue = ValueFactory.createNullValue();
 
 	public Value evaluate(Value[] args) throws FunctionException {
 		if (!args[0].isNull()) {

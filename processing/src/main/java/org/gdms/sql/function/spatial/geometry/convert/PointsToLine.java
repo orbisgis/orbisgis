@@ -57,6 +57,7 @@ import com.vividsolutions.jts.geom.MultiPoint;
 import com.vividsolutions.jts.geom.Point;
 
 public class PointsToLine implements Function {
+	private final static Value nullValue = ValueFactory.createNullValue();
 	private final static GeometryFactory gf = new GeometryFactory();
 	private List<Coordinate> coords = new LinkedList<Coordinate>();
 
@@ -70,15 +71,10 @@ public class PointsToLine implements Function {
 				coords.addAll(Arrays.asList(tmp));
 			} else {
 				throw new FunctionException(
-						"MultiPointsToLine only process [Multi]Point as a geometry!");
+						"PointsToLine function only processes [Multi]Point as input geometry!");
 			}
 		}
-		if (coords.size() > 2) {
-			return ValueFactory.createValue(gf.createLineString(coords
-					.toArray(new Coordinate[0])));
-		} else {
-			return ValueFactory.createNullValue();
-		}
+		return nullValue;
 	}
 
 	public String getDescription() {
@@ -107,6 +103,11 @@ public class PointsToLine implements Function {
 
 	@Override
 	public Value getAggregateResult() {
-		return null;
+		if (coords.size() > 2) {
+			return ValueFactory.createValue(gf.createLineString(coords
+					.toArray(new Coordinate[0])));
+		} else {
+			return nullValue;
+		}
 	}
 }
