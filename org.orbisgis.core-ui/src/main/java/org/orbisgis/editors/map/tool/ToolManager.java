@@ -223,11 +223,6 @@ public class ToolManager extends MouseAdapter implements MouseMotionListener {
 							layerListener);
 					activeLayer.getDataSource().removeDataSourceListener(
 							layerListener);
-					/*
-					 * the editing tool is set twice because the first one will
-					 * cause a termination event on the tool and that event must
-					 * be dealt without changing the theme
-					 */
 					try {
 						setTool(ToolManager.this.defaultTool);
 					} catch (TransitionException e2) {
