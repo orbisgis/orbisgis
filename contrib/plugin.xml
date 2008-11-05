@@ -15,7 +15,12 @@
 			menu-group="org.orbisgis.rasterProcessing"
 			menu-id="org.orbisgis.ProcessingMenu"
 			icon="/org/contrib/images/edit-clear.png"
-			class="org.contrib.ui.editorViews.toc.actions.geometry.qa.ValidateSelectedLayersAction"/>		
+			class="org.contrib.ui.editorViews.toc.actions.geometry.qa.ValidateSelectedLayersAction"/>	
+		<action id="org.orbisgis.geomProcessing" text="Geometry statistics"
+			menu-group="org.orbisgis.rasterProcessing"
+			menu-id="org.orbisgis.ProcessingMenu"
+			icon="/org/contrib/images/lightbulb_off.png"
+			class="org.contrib.ui.editorViews.toc.actions.geometry.qa.GeometriesStatisticsAction"/>		
 	</extension>
 	<extension point="org.orbisgis.editorViews.toc.Action"
 		id="org.orbisgis.editorViews.toc.EditingActions">
