@@ -2,10 +2,8 @@ package org.contrib.ui.editorViews.toc.actions.geometry.qa;
 
 import java.awt.Color;
 
-import org.contrib.algorithm.qa.InternalGapFinder;
 import org.contrib.model.jump.adapter.FeatureCollectionAdapter;
 import org.contrib.model.jump.adapter.FeatureCollectionDatasourceAdapter;
-import org.contrib.model.jump.adapter.TaskMonitorAdapter;
 import org.contrib.model.jump.model.FeatureCollection;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.SpatialDataSourceDecorator;
