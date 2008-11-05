@@ -3,6 +3,20 @@ package org.orbisgis.editors.table;
 public interface Selection {
 
 	/**
+	 * Set a listener for selection changes
+	 * 
+	 * @param listener
+	 */
+	void setSelectionListener(SelectionListener listener);
+
+	/**
+	 * Removes the listener for selection changes
+	 * 
+	 * @param listener
+	 */
+	void removeSelectionListener(SelectionListener listener);
+
+	/**
 	 * Sets the selected rows
 	 * 
 	 * @param indexes

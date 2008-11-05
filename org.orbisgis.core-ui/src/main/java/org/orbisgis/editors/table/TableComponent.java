@@ -22,6 +22,8 @@ import javax.swing.JPopupMenu;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingUtilities;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableColumnModel;
 import javax.swing.table.DefaultTableModel;
@@ -67,16 +69,26 @@ public class TableComponent extends JPanel {
 	private static final String SORTUP = "SORTUP";
 	private static final String SORTDOWN = "SORTDOWN";
 	private static final String NOSORT = "NOSORT";
+
+	// Swing components
 	private javax.swing.JScrollPane jScrollPane = null;
 	private JTable table = null;
+
+	// Model
 	private int selectedColumn = -1;
 	private DataSourceDataModel tableModel;
 	private DataSource dataSource;
-	private ActionListener menuListener = new PopupActionListener();
-	private ModificationListener listener = new ModificationListener();
-	public ArrayList<Integer> indexes = null;
+	private ArrayList<Integer> indexes = null;
 	private Selection selection;
 	private TableEditableElement element;
+
+	// listeners
+	private ActionListener menuListener = new PopupActionListener();
+	private ModificationListener listener = new ModificationListener();
+	private SelectionListener selectionListener = new SyncSelectionListener();
+
+	// flags
+	private boolean managingSelection;
 
 	/**
 	 * This is the default constructor
@@ -111,22 +123,25 @@ public class TableComponent extends JPanel {
 
 			table.getSelectionModel().setSelectionMode(
 					ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+			table.getSelectionModel().addListSelectionListener(
+					new ListSelectionListener() {
+
+						@Override
+						public void valueChanged(ListSelectionEvent e) {
+							if (!e.getValueIsAdjusting()) {
+								if (!managingSelection && (selection != null)) {
+									managingSelection = true;
+									selection.setSelection(table
+											.getSelectedRows());
+									managingSelection = false;
+								}
+							}
+						}
+					});
 			table.getTableHeader().setReorderingAllowed(false);
 			table.getTableHeader().addMouseListener(
 					new HeaderPopupMouseAdapter());
 			table.addMouseListener(new CellPopupMouseAdapter());
-
-			// TODO table.getSelectionModel().addListSelectionListener(
-			// new ListSelectionListener() {
-			//
-			// public void valueChanged(ListSelectionEvent e) {
-			// if (!e.getValueIsAdjusting()) {
-			// ec.remark(table.getSelectedRow());
-			// }
-			// }
-			//
-			// });
-			//
 			table.setColumnSelectionAllowed(true);
 			table.getColumnModel().setSelectionModel(
 					new DefaultListSelectionModel());
@@ -178,9 +193,12 @@ public class TableComponent extends JPanel {
 		if (this.dataSource != null) {
 			this.dataSource.removeEditionListener(listener);
 			this.dataSource.removeMetadataEditionListener(listener);
+			this.selection.removeSelectionListener(selectionListener);
 		}
 		this.element = element;
 		if (this.element == null) {
+			this.dataSource = null;
+			this.selection = null;
 			table.setModel(new DefaultTableModel());
 		} else {
 			this.dataSource = element.getDataSource();
@@ -192,6 +210,7 @@ public class TableComponent extends JPanel {
 					new HashMap<String, Integer>(),
 					new HashMap<String, TableCellRenderer>());
 			this.selection = element.getSelection();
+			this.selection.setSelectionListener(selectionListener);
 		}
 	}
 
@@ -300,6 +319,37 @@ public class TableComponent extends JPanel {
 				renderers);
 	}
 
+	private int getRowIndex(int row) {
+		if (indexes != null) {
+			row = indexes.get(row);
+		}
+		return row;
+	}
+
+	private class SyncSelectionListener implements SelectionListener {
+
+		@Override
+		public void selectionChanged() {
+			if (!managingSelection) {
+				managingSelection = true;
+				ListSelectionModel model = table.getSelectionModel();
+				model.setValueIsAdjusting(true);
+				model.clearSelection();
+				for (int i : selection.getSelection()) {
+					if (indexes != null) {
+						Integer sortedIndex = indexes.indexOf(i);
+						model.addSelectionInterval(sortedIndex, sortedIndex);
+					} else {
+						model.addSelectionInterval(i, i);
+					}
+				}
+				model.setValueIsAdjusting(false);
+				managingSelection = false;
+			}
+		}
+
+	}
+
 	private final class PopupActionListener implements ActionListener {
 		@Override
 		public void actionPerformed(ActionEvent e) {
@@ -377,7 +427,7 @@ public class TableComponent extends JPanel {
 				MenuTree menuTree = new MenuTree();
 				String epid = getExtensionPointId();
 				ContextualActionExtensionPointHelper.createPopup(menuTree,
-						getFactory(clickedRow), epid);
+						getFactory(getRowIndex(clickedRow)), epid);
 				JComponent[] menus = menuTree.getJMenus();
 				for (JComponent menu : menus) {
 					pop.add(menu);
@@ -551,13 +601,6 @@ public class TableComponent extends JPanel {
 			} catch (DriverException e) {
 				return "";
 			}
-		}
-
-		private int getRowIndex(int row) {
-			if (indexes != null) {
-				row = indexes.get(row);
-			}
-			return row;
 		}
 
 		/**

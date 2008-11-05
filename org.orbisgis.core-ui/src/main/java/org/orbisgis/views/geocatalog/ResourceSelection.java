@@ -1,10 +1,12 @@
 package org.orbisgis.views.geocatalog;
 
 import org.orbisgis.editors.table.Selection;
+import org.orbisgis.editors.table.SelectionListener;
 
 public class ResourceSelection implements Selection {
 
 	private int[] selection = new int[0];
+	private SelectionListener listener;
 
 	@Override
 	public int[] getSelection() {
@@ -14,18 +16,13 @@ public class ResourceSelection implements Selection {
 	@Override
 	public void setSelection(int[] indexes) {
 		this.selection = indexes;
-		// ListSelectionModel model = table.getSelectionModel();
-		// model.setValueIsAdjusting(true);
-		// model.clearSelection();
-		// for (int i : indexes) {
-		// model.addSelectionInterval(i, i);
-		// }
-		// model.setValueIsAdjusting(false);
+		listener.selectionChanged();
 	}
 
 	@Override
 	public void clearSelection() {
 		selection = new int[0];
+		listener.selectionChanged();
 	}
 
 	@Override
@@ -34,6 +31,19 @@ public class ResourceSelection implements Selection {
 		for (int i = init; i <= end; i++) {
 			selection[i - init] = i;
 		}
+		listener.selectionChanged();
+	}
+
+	@Override
+	public void removeSelectionListener(SelectionListener listener) {
+		if (listener == this.listener) {
+			this.listener = null;
+		}
+	}
+
+	@Override
+	public void setSelectionListener(SelectionListener listener) {
+		this.listener = listener;
 	}
 
 }
