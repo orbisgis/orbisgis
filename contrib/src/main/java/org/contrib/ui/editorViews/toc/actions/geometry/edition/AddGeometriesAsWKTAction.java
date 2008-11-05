@@ -132,7 +132,13 @@ public class AddGeometriesAsWKTAction implements ILayerAction {
 					.getDefaultGeometry()));
 			GeometryConstraint gc = (GeometryConstraint) fieldType
 					.getConstraint(Constraint.GEOMETRY_TYPE);
+			
+			if (gc==null){
+				geomTypeName = "Mixed geometry";
+			}
+			else {
 			geomTypeName = gc.getConstraintHumanValue();
+			}
 
 		} catch (DriverException e) {
 			Services.getErrorManager().error(
