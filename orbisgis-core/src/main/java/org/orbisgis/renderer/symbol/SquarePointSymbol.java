@@ -94,4 +94,10 @@ public class SquarePointSymbol extends AbstractSquarePointSymbol {
 	public String getId() {
 		return "org.orbisgis.symbol.point.Square";
 	}
+
+	@Override
+	public Symbol deriveSymbol(Color color) {
+		return new SquarePointSymbol(color.darker(), lineWidth, color
+				.brighter(), size, mapUnits);
+	}
 }

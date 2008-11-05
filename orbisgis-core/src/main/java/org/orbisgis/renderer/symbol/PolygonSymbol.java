@@ -86,4 +86,9 @@ public class PolygonSymbol extends AbstractPolygonSymbol {
 	public String getId() {
 		return "org.orbisgis.symbol.Polygon";
 	}
+
+	@Override
+	public Symbol deriveSymbol(Color color) {
+		return new PolygonSymbol(color.darker(), lineWidth, color.brighter());
+	}
 }

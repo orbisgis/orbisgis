@@ -36,6 +36,7 @@
  */
 package org.orbisgis.renderer.symbol;
 
+import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.geom.AffineTransform;
 import java.util.Map;
@@ -157,5 +158,13 @@ public interface Symbol {
 	 * @param props
 	 */
 	void setPersistentProperties(Map<String, String> props);
+
+	/**
+	 * Creates a new symbol of this type but containing the specified color
+	 * 
+	 * @param yellow
+	 * @return The derived symbol or null if this symbol cannot be derived
+	 */
+	Symbol deriveSymbol(Color color);
 
 }

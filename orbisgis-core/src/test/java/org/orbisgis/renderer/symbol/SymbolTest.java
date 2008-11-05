@@ -86,6 +86,11 @@ public class SymbolTest extends AbstractTest {
 		public boolean acceptGeometry(Geometry geom) {
 			return false;
 		}
+
+		@Override
+		public Symbol deriveSymbol(Color color) {
+			return null;
+		}
 	}
 
 	public void testManagerClones() throws Exception {

@@ -36,6 +36,7 @@
  */
 package org.orbisgis.renderer.symbol;
 
+import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.geom.AffineTransform;
 
@@ -115,6 +116,16 @@ class SymbolComposite extends AbstractSymbol implements Symbol {
 
 	public String getClassName() {
 		return "Composite";
+	}
+
+	@Override
+	public Symbol deriveSymbol(Color color) {
+		Symbol[] newSymbols = new Symbol[symbols.length];
+		for (int i = 0; i < newSymbols.length; i++) {
+			newSymbols[i] = symbols[i].deriveSymbol(color);
+		}
+
+		return new SymbolComposite(newSymbols);
 	}
 
 }

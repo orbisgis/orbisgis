@@ -144,4 +144,9 @@ public class ImageSymbol extends AbstractSymbol implements Symbol {
 		return url;
 	}
 
+	@Override
+	public Symbol deriveSymbol(Color color) {
+		return null;
+	}
+
 }

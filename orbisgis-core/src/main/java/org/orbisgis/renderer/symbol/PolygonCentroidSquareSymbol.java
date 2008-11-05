@@ -109,5 +109,10 @@ public class PolygonCentroidSquareSymbol extends AbstractSquarePointSymbol {
 	public String getId() {
 		return "org.orbisgis.symbol.polygon.centroid.Square";
 	}
-
+	
+	@Override
+	public Symbol deriveSymbol(Color color) {
+		return new PolygonCentroidSquareSymbol(color.darker(), lineWidth, color
+				.brighter(), size, mapUnits);
+	}
 }

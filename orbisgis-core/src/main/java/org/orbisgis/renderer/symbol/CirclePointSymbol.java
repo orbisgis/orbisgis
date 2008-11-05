@@ -51,8 +51,8 @@ import com.vividsolutions.jts.geom.Geometry;
 
 public class CirclePointSymbol extends AbstractCirclePointSymbol {
 
-	CirclePointSymbol(Color outline, int lineWidth, Color fillColor,
-			int size, boolean mapUnits) {
+	CirclePointSymbol(Color outline, int lineWidth, Color fillColor, int size,
+			boolean mapUnits) {
 		super(outline, lineWidth, fillColor, size, mapUnits);
 	}
 
@@ -94,4 +94,9 @@ public class CirclePointSymbol extends AbstractCirclePointSymbol {
 		return "org.orbisgis.symbol.point.Circle";
 	}
 
+	@Override
+	public Symbol deriveSymbol(Color color) {
+		return new CirclePointSymbol(color.darker(), lineWidth, color
+				.brighter(), size, mapUnits);
+	}
 }

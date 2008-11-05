@@ -110,4 +110,10 @@ public class PolygonCentroidCircleSymbol extends AbstractCirclePointSymbol {
 		return "org.orbisgis.symbol.polygon.centroid.Circle";
 	}
 
+	@Override
+	public Symbol deriveSymbol(Color color) {
+		return new PolygonCentroidCircleSymbol(color.darker(), lineWidth, color
+				.brighter(), size, mapUnits);
+	}
+
 }

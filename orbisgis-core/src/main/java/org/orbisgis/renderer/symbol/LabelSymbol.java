@@ -129,4 +129,9 @@ public class LabelSymbol extends AbstractSymbol implements Symbol {
 	public boolean acceptGeometryType(GeometryConstraint geometryConstraint) {
 		return true;
 	}
+	
+	@Override
+	public Symbol deriveSymbol(Color color) {
+		return null;
+	}
 }

@@ -78,4 +78,9 @@ public class LineSymbol extends AbstractLineSymbol {
 		return "org.orbisgis.symbol.Line";
 	}
 
+	@Override
+	public Symbol deriveSymbol(Color color) {
+		return new LineSymbol(color, lineWidth);
+	}
+
 }

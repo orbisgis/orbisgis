@@ -39,6 +39,7 @@ package org.orbisgis.renderer;
 import ij.process.ColorProcessor;
 
 import java.awt.AlphaComposite;
+import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
@@ -47,6 +48,7 @@ import java.awt.image.BufferedImage;
 import java.awt.image.ColorModel;
 import java.awt.image.DirectColorModel;
 import java.io.IOException;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 
@@ -81,7 +83,7 @@ public class Renderer {
 
 	/**
 	 * Draws the content of the layer in the specified graphics
-	 *
+	 * 
 	 * @param g2
 	 *            Object to draw to
 	 * @param width
@@ -149,7 +151,7 @@ public class Renderer {
 
 	/**
 	 * Draws the content of the layer in the specified image.
-	 *
+	 * 
 	 * @param img
 	 *            Image to draw the data
 	 * @param extent
@@ -214,6 +216,11 @@ public class Renderer {
 		Legend[] legends = layer.getRenderingLegend();
 		SpatialDataSourceDecorator sds = layer.getDataSource();
 		try {
+			HashSet<Integer> selected = new HashSet<Integer>();
+			int[] selection = layer.getSelection();
+			for (int i = 0; i < selection.length; i++) {
+				selected.add(selection[i]);
+			}
 			/*
 			 * Don't check the extent because it's expensive in edition
 			 */
@@ -243,6 +250,13 @@ public class Renderer {
 					if (sym != null) {
 						Geometry g = sds.getGeometry(index);
 						if (g.getEnvelopeInternal().intersects(extent)) {
+							if (selected.contains(index)) {
+								Symbol derivedSymbol = sym
+										.deriveSymbol(new Color(250, 250, 0));
+								if (derivedSymbol != null) {
+									sym = derivedSymbol;
+								}
+							}
 							Envelope symbolEnvelope;
 							if (g.getGeometryType()
 									.equals("GeometryCollection")) {
@@ -274,7 +288,7 @@ public class Renderer {
 	/**
 	 * For geometry collections we need to filter the symbol composite before
 	 * drawing
-	 *
+	 * 
 	 * @param mt
 	 * @param g2
 	 * @param sym
@@ -336,7 +350,7 @@ public class Renderer {
 
 	/**
 	 * Method to change bands order only on the BufferedImage.
-	 *
+	 * 
 	 * @param bufferedImage
 	 * @return new bufferedImage
 	 */
@@ -368,7 +382,7 @@ public class Renderer {
 	/**
 	 * Gets the component specified by the char between the int components
 	 * passed as parameters in red, green blue
-	 *
+	 * 
 	 * @param rgbChar
 	 * @param red
 	 * @param green
