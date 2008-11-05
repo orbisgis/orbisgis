@@ -444,6 +444,12 @@
 			icon="/org/orbisgis/images/information.png"
 			toolbar-id="org.orbisgis.editors.map.Info" selectable="true"
 			class="org.orbisgis.editors.map.tools.InfoTool"/>
+		<tool id="org.orbisgis.editors.map.tools.Selection"
+			menu-id="org.orbisgis.editors.map.Tool" text="Selection"
+			menu-group="org.orbisgis.editors.map.tools.Edition"
+			icon="/org/orbisgis/images/select.png"
+			toolbar-id="org.orbisgis.editors.map.Info" selectable="true"
+			class="org.orbisgis.editors.map.tools.SelectionTool"/>
 	</extension>
 	
 	<extension point="org.orbisgis.editors.map.Tool">
@@ -475,12 +481,12 @@
 	
 	<extension point="org.orbisgis.editors.map.Tool">
 		<toolbar id="org.orbisgis.editors.map.Edition" text="Edition"/>
-		<tool id="org.orbisgis.editors.map.tools.Selection"
-			menu-id="org.orbisgis.editors.map.Tool" text="Selection"
+		<tool id="org.orbisgis.editors.map.tools.EditionSelection"
+			menu-id="org.orbisgis.editors.map.Tool" text="Edition Selection"
 			menu-group="org.orbisgis.editors.map.tools.Edition"
 			icon="/org/orbisgis/images/select.png"
 			toolbar-id="org.orbisgis.editors.map.Edition" selectable="true"
-			class="org.orbisgis.editors.map.tools.SelectionTool"/>
+			class="org.orbisgis.editors.map.tools.EditionSelectionTool"/>
 		<tool id="org.orbisgis.editors.map.tools.InsertPoint"
 			menu-id="org.orbisgis.editors.map.Tool" text="Insert point"
 			menu-group="org.orbisgis.editors.map.tools.Edition"
