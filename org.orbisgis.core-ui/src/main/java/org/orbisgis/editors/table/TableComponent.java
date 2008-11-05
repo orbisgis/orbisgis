@@ -50,7 +50,6 @@ import org.orbisgis.action.MenuTree;
 import org.orbisgis.editors.table.action.ITableCellAction;
 import org.orbisgis.editors.table.action.ITableColumnAction;
 import org.orbisgis.errorManager.ErrorManager;
-import org.orbisgis.layerModel.ILayer;
 import org.orbisgis.pluginManager.background.BackgroundJob;
 import org.orbisgis.pluginManager.background.BackgroundManager;
 import org.orbisgis.progress.IProgressMonitor;
@@ -77,6 +76,7 @@ public class TableComponent extends JPanel {
 	private ModificationListener listener = new ModificationListener();
 	public ArrayList<Integer> indexes = null;
 	private Selection selection;
+	private TableEditableElement element;
 
 	/**
 	 * This is the default constructor
@@ -174,12 +174,13 @@ public class TableComponent extends JPanel {
 		return ret;
 	}
 
-	public void setDataSource(DataSource dataSource, ILayer layer) {
+	public void setElement(TableEditableElement element) {
 		if (this.dataSource != null) {
 			this.dataSource.removeEditionListener(listener);
 			this.dataSource.removeMetadataEditionListener(listener);
 		}
-		this.dataSource = dataSource;
+		this.element = element;
+		this.dataSource = element.getDataSource();
 		if (this.dataSource == null) {
 			table.setModel(new DefaultTableModel());
 		} else {
@@ -190,11 +191,7 @@ public class TableComponent extends JPanel {
 			autoResizeColWidth(Math.min(5, tableModel.getRowCount()),
 					new HashMap<String, Integer>(),
 					new HashMap<String, TableCellRenderer>());
-			if (layer == null) {
-				this.selection = new ResourceSelection(table);
-			} else {
-				this.selection = new LayerSelection(layer);
-			}
+			this.selection = element.getSelection();
 		}
 	}
 
@@ -283,17 +280,14 @@ public class TableComponent extends JPanel {
 				int columnIndex = -1;
 				if (columnName != null) {
 					try {
-						columnIndex = columnModel
-						.getColumnIndex(columnName);
+						columnIndex = columnModel.getColumnIndex(columnName);
 					} catch (IllegalArgumentException e) {
 						columnIndex = -1;
 					}
 					if (columnIndex != -1) {
-						TableColumn column = columnModel
-						.getColumn(columnIndex);
+						TableColumn column = columnModel.getColumn(columnIndex);
 						widths.put(columnName, column.getPreferredWidth());
-						renderers.put(columnName, column
-								.getHeaderRenderer());
+						renderers.put(columnName, column.getHeaderRenderer());
 					}
 				}
 			}
@@ -488,7 +482,6 @@ public class TableComponent extends JPanel {
 			refreshTableStructure();
 		}
 
-
 	}
 
 	/**
@@ -571,11 +564,15 @@ public class TableComponent extends JPanel {
 		 * @see javax.swing.table.TableModel#isCellEditable(int, int)
 		 */
 		public boolean isCellEditable(int rowIndex, int columnIndex) {
-			try {
-				Constraint c = getMetadata().getFieldType(columnIndex)
-						.getConstraint(Constraint.READONLY);
-				return c == null;
-			} catch (DriverException e) {
+			if (element.isEditable()) {
+				try {
+					Constraint c = getMetadata().getFieldType(columnIndex)
+							.getConstraint(Constraint.READONLY);
+					return c == null;
+				} catch (DriverException e) {
+					return false;
+				}
+			} else {
 				return false;
 			}
 		}

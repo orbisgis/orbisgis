@@ -43,7 +43,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 import org.orbisgis.edition.EditableElement;
-import org.orbisgis.layerModel.EditableLayer;
 import org.orbisgis.layerModel.ILayer;
 import org.orbisgis.views.editor.TransferableEditableElement;
 

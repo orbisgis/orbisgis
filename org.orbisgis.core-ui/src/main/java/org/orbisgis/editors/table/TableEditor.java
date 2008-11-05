@@ -2,16 +2,15 @@ package org.orbisgis.editors.table;
 
 import java.awt.Component;
 
-import org.gdms.data.DataSource;
 import org.orbisgis.PersistenceException;
 import org.orbisgis.edition.EditableElement;
 import org.orbisgis.editor.IEditor;
-import org.orbisgis.layerModel.EditableLayer;
+import org.orbisgis.editorViews.toc.EditableLayer;
 import org.orbisgis.views.geocatalog.EditableResource;
 
 public class TableEditor implements IEditor {
 
-	private EditableElement element;
+	private TableEditableElement element;
 	private TableComponent table;
 
 	public TableEditor() {
@@ -36,13 +35,13 @@ public class TableEditor implements IEditor {
 
 	@Override
 	public void setElement(EditableElement element) {
-		this.element = element;
-		table.setDataSource((DataSource) this.element.getObject(), null);
+		this.element = (TableEditableElement) element;
+		table.setElement(this.element);
 	}
 
 	@Override
 	public void delete() {
-		table.setDataSource(null, null);
+		table.setElement(null);
 	}
 
 	@Override

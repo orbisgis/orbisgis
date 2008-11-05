@@ -1,10 +1,11 @@
-package org.orbisgis.layerModel;
+package org.orbisgis.editorViews.toc;
 
 import org.gdms.data.NonEditableDataSourceException;
 import org.gdms.driver.DriverException;
 import org.orbisgis.edition.AbstractEditableElement;
 import org.orbisgis.edition.EditableElement;
 import org.orbisgis.edition.EditableElementException;
+import org.orbisgis.layerModel.ILayer;
 import org.orbisgis.progress.IProgressMonitor;
 
 public class EditableLayer extends AbstractEditableElement implements

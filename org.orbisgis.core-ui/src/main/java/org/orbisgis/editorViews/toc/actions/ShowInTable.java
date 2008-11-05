@@ -37,11 +37,11 @@
 package org.orbisgis.editorViews.toc.actions;
 
 import org.orbisgis.Services;
+import org.orbisgis.editorViews.toc.EditableLayer;
 import org.orbisgis.editorViews.toc.action.ILayerAction;
 import org.orbisgis.geocognition.Geocognition;
 import org.orbisgis.geocognition.GeocognitionElement;
 import org.orbisgis.geocognition.GeocognitionFilter;
-import org.orbisgis.layerModel.EditableLayer;
 import org.orbisgis.layerModel.ILayer;
 import org.orbisgis.layerModel.MapContext;
 import org.orbisgis.pluginManager.background.BackgroundManager;
