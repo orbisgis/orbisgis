@@ -131,8 +131,15 @@ public class TableComponent extends JPanel {
 							if (!e.getValueIsAdjusting()) {
 								if (!managingSelection && (selection != null)) {
 									managingSelection = true;
-									selection.setSelection(table
-											.getSelectedRows());
+									int[] selectedRows = table
+											.getSelectedRows();
+									if (indexes != null) {
+										for (int i = 0; i < selectedRows.length; i++) {
+											selectedRows[i] = indexes
+													.get(selectedRows[i]);
+										}
+									}
+									selection.setSelection(selectedRows);
 									managingSelection = false;
 								}
 							}
