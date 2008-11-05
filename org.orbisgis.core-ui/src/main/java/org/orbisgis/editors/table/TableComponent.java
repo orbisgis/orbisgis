@@ -180,10 +180,10 @@ public class TableComponent extends JPanel {
 			this.dataSource.removeMetadataEditionListener(listener);
 		}
 		this.element = element;
-		this.dataSource = element.getDataSource();
-		if (this.dataSource == null) {
+		if (this.element == null) {
 			table.setModel(new DefaultTableModel());
 		} else {
+			this.dataSource = element.getDataSource();
 			this.dataSource.addEditionListener(listener);
 			this.dataSource.addMetadataEditionListener(listener);
 			tableModel = new DataSourceDataModel();

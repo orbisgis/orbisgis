@@ -67,6 +67,6 @@ public class ShowInTable implements ILayerAction {
 				});
 		Services.getService(BackgroundManager.class).backgroundOperation(
 				new OpenGeocognitionElementJob(new EditableLayer(element[0]
-						.getId(), resource)));
+						.getId(), mapContext, resource)));
 	}
 }

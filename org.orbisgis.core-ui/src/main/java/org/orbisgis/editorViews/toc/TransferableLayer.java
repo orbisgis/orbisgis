@@ -44,6 +44,7 @@ import java.util.ArrayList;
 
 import org.orbisgis.edition.EditableElement;
 import org.orbisgis.layerModel.ILayer;
+import org.orbisgis.layerModel.MapContext;
 import org.orbisgis.views.editor.TransferableEditableElement;
 
 public class TransferableLayer implements Transferable {
@@ -52,11 +53,12 @@ public class TransferableLayer implements Transferable {
 			"Resource");
 
 	private ILayer[] nodes = null;
-
 	private String prefix;
+	private MapContext mapContext;
 
-	public TransferableLayer(String prefix, ILayer[] node) {
+	public TransferableLayer(String prefix, MapContext mapContext, ILayer[] node) {
 		this.prefix = prefix;
+		this.mapContext = mapContext;
 		ArrayList<ILayer> nodes = new ArrayList<ILayer>();
 		for (int i = 0; i < node.length; i++) {
 
@@ -77,7 +79,7 @@ public class TransferableLayer implements Transferable {
 				.equals(TransferableEditableElement.editableElementFlavor)) {
 			EditableElement[] elems = new EditableElement[nodes.length];
 			for (int i = 0; i < nodes.length; i++) {
-				elems[i] = new EditableLayer(prefix, nodes[i]);
+				elems[i] = new EditableLayer(prefix, mapContext, nodes[i]);
 			}
 			ret = elems;
 		} else if (flavor.equals(DataFlavor.stringFlavor)) {

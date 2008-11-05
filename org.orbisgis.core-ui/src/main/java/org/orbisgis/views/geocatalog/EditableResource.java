@@ -11,12 +11,13 @@ import org.gdms.driver.driverManager.DriverLoadException;
 import org.orbisgis.DataManager;
 import org.orbisgis.Services;
 import org.orbisgis.edition.AbstractEditableElement;
-import org.orbisgis.edition.EditableElement;
 import org.orbisgis.edition.EditableElementException;
+import org.orbisgis.editors.table.Selection;
+import org.orbisgis.editors.table.TableEditableElement;
 import org.orbisgis.progress.IProgressMonitor;
 
 public class EditableResource extends AbstractEditableElement implements
-		EditableElement {
+		TableEditableElement {
 
 	public static final String EDITABLE_RESOURCE_TYPE = "org.orbisgis.geocatalog.EditableResource";
 
@@ -106,5 +107,20 @@ public class EditableResource extends AbstractEditableElement implements
 	@Override
 	public int hashCode() {
 		return sourceName.hashCode();
+	}
+
+	@Override
+	public DataSource getDataSource() {
+		return ds;
+	}
+
+	@Override
+	public Selection getSelection() {
+		return new ResourceSelection();
+	}
+
+	@Override
+	public boolean isEditable() {
+		return true;
 	}
 }

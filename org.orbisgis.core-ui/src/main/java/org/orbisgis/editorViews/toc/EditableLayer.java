@@ -1,24 +1,29 @@
 package org.orbisgis.editorViews.toc;
 
+import org.gdms.data.DataSource;
 import org.gdms.data.NonEditableDataSourceException;
 import org.gdms.driver.DriverException;
 import org.orbisgis.edition.AbstractEditableElement;
-import org.orbisgis.edition.EditableElement;
 import org.orbisgis.edition.EditableElementException;
+import org.orbisgis.editors.table.Selection;
+import org.orbisgis.editors.table.TableEditableElement;
 import org.orbisgis.layerModel.ILayer;
+import org.orbisgis.layerModel.MapContext;
 import org.orbisgis.progress.IProgressMonitor;
 
 public class EditableLayer extends AbstractEditableElement implements
-		EditableElement {
+		TableEditableElement {
 
 	public static final String EDITABLE_LAYER_TYPE = "org.orbisgis.mapContext.EditableLayer";
 
 	private ILayer layer;
 	private String prefix;
+	private MapContext mapContext;
 
-	public EditableLayer(String prefix, ILayer layer) {
+	public EditableLayer(String prefix, MapContext mapContext, ILayer layer) {
 		this.prefix = prefix;
 		this.layer = layer;
+		this.mapContext = mapContext;
 	}
 
 	@Override
@@ -78,6 +83,21 @@ public class EditableLayer extends AbstractEditableElement implements
 	@Override
 	public int hashCode() {
 		return getId().hashCode();
+	}
+
+	@Override
+	public DataSource getDataSource() {
+		return layer.getDataSource();
+	}
+
+	@Override
+	public Selection getSelection() {
+		return new LayerSelection(layer);
+	}
+
+	@Override
+	public boolean isEditable() {
+		return mapContext.getActiveLayer() == layer;
 	}
 
 }

@@ -264,7 +264,8 @@ public class Toc extends ResourceTree {
 		if (layers.size() == 0) {
 			return null;
 		} else {
-			return new TransferableLayer(mapContextName, layers.toArray(new ILayer[0]));
+			return new TransferableLayer(mapContextName, mapContext, layers
+					.toArray(new ILayer[0]));
 		}
 	}
 
