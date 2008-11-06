@@ -44,24 +44,14 @@ public class Code {
 
 	public Class<?> compile() throws CompilationException {
 		JavaManager jm = Services.getService(JavaManager.class);
+		ErrorDiagnosticListener listener = new ErrorDiagnosticListener();
 		Class<?> cl;
 		try {
 			errorLines.clear();
-			cl = jm.compile(code, new DiagnosticListener<JavaFileObject>() {
-
-				@Override
-				public void report(
-						Diagnostic<? extends JavaFileObject> diagnostic) {
-					long lineNumber = diagnostic.getLineNumber();
-					errorLines.add(lineNumber);
-
-					System.err.println(diagnostic.getMessage(Locale
-							.getDefault()));
-					System.err.println(lineNumber);
-					System.err.println(diagnostic.getColumnNumber());
-				}
-
-			});
+			cl = jm.compile(code, listener);
+		} catch (CompilationException e) {
+			throw new CompilationException("Compile error:\n"
+					+ listener.getErrorMessage(), e);
 		} catch (IOException e) {
 			throw new CompilationException("Error compiling the class", e);
 		} catch (ParseException e) {
@@ -74,8 +64,30 @@ public class Code {
 	public ArrayList<Long> getErrorLines() {
 		return errorLines;
 	}
-	
+
 	public int getLineCount() {
 		return code.split("\n").length;
+	}
+
+	private class ErrorDiagnosticListener implements
+			DiagnosticListener<JavaFileObject> {
+		private String errorMessage = "";
+		private String cr = "";
+
+		@Override
+		public void report(Diagnostic<? extends JavaFileObject> diagnostic) {
+			long lineNumber = diagnostic.getLineNumber();
+			errorLines.add(lineNumber);
+
+			errorMessage += cr + diagnostic.getMessage(Locale.getDefault())
+					+ " at line " + lineNumber + " at column "
+					+ diagnostic.getColumnNumber();
+			cr = "\n";
+		}
+
+		public String getErrorMessage() {
+			return errorMessage;
+		}
+
 	}
 }
