@@ -286,6 +286,13 @@
 			editor-id="org.orbisgis.editors.Table"
 			toolbar-id="org.orbisgis.editors.map.Edition"
 			class="org.orbisgis.editors.table.editorActions.Redo"/>
+		<editor-action id="org.orbisgis.editors.table.actions.DeleteSelection"
+			menu-id="org.orbisgis.Table" text="Delete"
+			menu-group="org.orbisgis.editors.table.Basic"
+			icon="/org/orbisgis/images/remove.png"
+			editor-id="org.orbisgis.editors.Table"
+			toolbar-id="org.orbisgis.editors.map.Edition"
+			class="org.orbisgis.editors.table.actions.DeleteSelection"/>
 	</extension>
 	
 	<!-- table column actions -->

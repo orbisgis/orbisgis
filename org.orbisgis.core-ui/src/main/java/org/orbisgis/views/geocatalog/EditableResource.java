@@ -23,6 +23,7 @@ public class EditableResource extends AbstractEditableElement implements
 
 	private String sourceName;
 	private DataSource ds;
+	private ResourceSelection resourceSelection = new ResourceSelection();
 
 	public EditableResource(String sourceName) {
 		this.sourceName = sourceName;
@@ -116,7 +117,7 @@ public class EditableResource extends AbstractEditableElement implements
 
 	@Override
 	public Selection getSelection() {
-		return new ResourceSelection();
+		return resourceSelection;
 	}
 
 	@Override
