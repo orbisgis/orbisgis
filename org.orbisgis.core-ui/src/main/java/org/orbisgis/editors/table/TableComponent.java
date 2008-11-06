@@ -218,6 +218,7 @@ public class TableComponent extends JPanel {
 					new HashMap<String, TableCellRenderer>());
 			this.selection = element.getSelection();
 			this.selection.setSelectionListener(selectionListener);
+			updateTableSelection();
 		}
 	}
 
@@ -333,26 +334,40 @@ public class TableComponent extends JPanel {
 		return row;
 	}
 
+	private void updateTableSelection() {
+		if (!managingSelection) {
+			managingSelection = true;
+			ListSelectionModel model = table.getSelectionModel();
+			model.setValueIsAdjusting(true);
+			model.clearSelection();
+			for (int i : selection.getSelection()) {
+				if (indexes != null) {
+					Integer sortedIndex = indexes.indexOf(i);
+					model.addSelectionInterval(sortedIndex, sortedIndex);
+				} else {
+					model.addSelectionInterval(i, i);
+				}
+			}
+			model.setValueIsAdjusting(false);
+			managingSelection = false;
+		}
+	}
+
+	private void fireTableDataChanged() {
+		//to avoid losing the selection
+		managingSelection = true;
+		
+		tableModel.fireTableDataChanged();
+		
+		managingSelection = false;
+		updateTableSelection();
+	}
+
 	private class SyncSelectionListener implements SelectionListener {
 
 		@Override
 		public void selectionChanged() {
-			if (!managingSelection) {
-				managingSelection = true;
-				ListSelectionModel model = table.getSelectionModel();
-				model.setValueIsAdjusting(true);
-				model.clearSelection();
-				for (int i : selection.getSelection()) {
-					if (indexes != null) {
-						Integer sortedIndex = indexes.indexOf(i);
-						model.addSelectionInterval(sortedIndex, sortedIndex);
-					} else {
-						model.addSelectionInterval(i, i);
-					}
-				}
-				model.setValueIsAdjusting(false);
-				managingSelection = false;
-			}
+			updateTableSelection();
 		}
 
 	}
@@ -407,7 +422,7 @@ public class TableComponent extends JPanel {
 				bm.backgroundOperation(new SortJob(false));
 			} else if (NOSORT.equals(e.getActionCommand())) {
 				indexes = null;
-				tableModel.fireTableDataChanged();
+				fireTableDataChanged();
 			}
 			table.getTableHeader().repaint();
 		}
@@ -696,7 +711,7 @@ public class TableComponent extends JPanel {
 
 					@Override
 					public void run() {
-						tableModel.fireTableDataChanged();
+						fireTableDataChanged();
 					}
 				});
 			} catch (DriverException e) {
