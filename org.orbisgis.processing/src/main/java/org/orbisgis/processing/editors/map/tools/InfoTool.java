@@ -39,15 +39,21 @@ package org.orbisgis.processing.editors.map.tools;
 import java.awt.geom.Point2D;
 import java.io.IOException;
 
+import org.gdms.data.types.Type;
+import org.gdms.data.types.TypeFactory;
+import org.gdms.data.values.Value;
+import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.driverManager.DriverLoadException;
+import org.gdms.driver.memory.ObjectMemoryDriver;
 import org.grap.model.GeoRaster;
+import org.orbisgis.DataManager;
 import org.orbisgis.Services;
 import org.orbisgis.editors.map.tool.ToolManager;
 import org.orbisgis.editors.map.tool.TransitionException;
 import org.orbisgis.editors.map.tools.AbstractPointTool;
 import org.orbisgis.layerModel.MapContext;
-import org.orbisgis.view.ViewManager;
+import org.orbisgis.views.information.InformationManager;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Point;
@@ -80,9 +86,8 @@ public class InfoTool extends AbstractPointTool {
 			final GeoRaster geoRaster = vc.getSelectedLayers()[0].getRaster();
 			final Coordinate realWorldCoord = point.getCoordinate();
 
-			final Point2D pixelGridCoord = geoRaster
-					.fromRealWorldToPixel(realWorldCoord.x,
-							realWorldCoord.y);
+			final Point2D pixelGridCoord = geoRaster.fromRealWorldToPixel(
+					realWorldCoord.x, realWorldCoord.y);
 
 			final int pixelX = (int) pixelGridCoord.getX();
 			final int pixelY = (int) pixelGridCoord.getY();
@@ -93,14 +98,24 @@ public class InfoTool extends AbstractPointTool {
 			final int height = geoRaster.getHeight();
 
 			// populate the PixelInfoView...
-			ViewManager vm = (ViewManager) Services
-					.getService(ViewManager.class);
-
-			final PixelInfoPanel pixelInfoPanel = (PixelInfoPanel) vm
-					.getView("org.orbisgis.rasterProcessing.toolbar.PixelInfoView");
-			pixelInfoPanel.setValues(new Object[] { pixelX, pixelY, pixelValue,
-					width, height, realWorldCoord.x, realWorldCoord.y });
-
+			InformationManager im = Services
+					.getService(InformationManager.class);
+			String[] columnsNames = new String[] { "column", "row", "value",
+					"width", "height", "x", "y" };
+			Type[] types = new Type[columnsNames.length];
+			for (int i = 0; i < types.length; i++) {
+				types[i] = TypeFactory.createType(Type.STRING);
+			}
+			ObjectMemoryDriver omd = new ObjectMemoryDriver(columnsNames, types);
+			omd.addValues(new Value[] { ValueFactory.createValue(pixelX),
+					ValueFactory.createValue(pixelY),
+					ValueFactory.createValue(pixelValue),
+					ValueFactory.createValue(width),
+					ValueFactory.createValue(height),
+					ValueFactory.createValue(realWorldCoord.x),
+					ValueFactory.createValue(realWorldCoord.y) });
+			DataManager dataManager = Services.getService(DataManager.class);
+			im.setContents(dataManager.getDSF().getDataSource(omd));
 		} catch (IOException e) {
 			Services.getErrorManager().error(
 					"Problem while accessing GeoRaster datas", e);

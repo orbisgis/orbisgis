@@ -242,13 +242,6 @@
 			class="org.orbisgis.processing.editors.map.tools.WatershedTool"/>
 	</extension>
 
-	<extension point="org.orbisgis.View">
-		<view id="org.orbisgis.rasterProcessing.toolbar.PixelInfoView"
-			class="org.orbisgis.processing.editors.map.tools.PixelInfoView"
-			icon="/org/orbisgis/processing/images/information.png"
-			title="Pixel info panel"/>
-	</extension>
-
 	<extension point="org.orbisgis.views.sqlRepository.SQL">
 		<sql
 			resource-path="/org/orbisgis/processing/processing.xml"/>
