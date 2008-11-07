@@ -354,11 +354,11 @@ public class TableComponent extends JPanel {
 	}
 
 	private void fireTableDataChanged() {
-		//to avoid losing the selection
+		// to avoid losing the selection
 		managingSelection = true;
-		
+
 		tableModel.fireTableDataChanged();
-		
+
 		managingSelection = false;
 		updateTableSelection();
 	}
@@ -631,9 +631,10 @@ public class TableComponent extends JPanel {
 		public boolean isCellEditable(int rowIndex, int columnIndex) {
 			if (element.isEditable()) {
 				try {
-					Constraint c = getMetadata().getFieldType(columnIndex)
-							.getConstraint(Constraint.READONLY);
-					return c == null;
+					Type fieldType = getMetadata().getFieldType(columnIndex);
+					Constraint c = fieldType.getConstraint(Constraint.READONLY);
+					return (fieldType.getTypeCode() != Type.RASTER)
+							&& (c == null);
 				} catch (DriverException e) {
 					return false;
 				}
