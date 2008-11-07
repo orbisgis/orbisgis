@@ -63,6 +63,7 @@ import org.orbisgis.action.IActionAdapter;
 import org.orbisgis.action.IActionFactory;
 import org.orbisgis.action.ISelectableActionAdapter;
 import org.orbisgis.action.MenuTree;
+import org.orbisgis.editor.IEditor;
 import org.orbisgis.editorViews.toc.action.EPTocLayerActionHelper;
 import org.orbisgis.editorViews.toc.action.ILayerAction;
 import org.orbisgis.editorViews.toc.action.IMultipleLayerAction;
@@ -81,6 +82,7 @@ import org.orbisgis.resource.GdmsSource;
 import org.orbisgis.resource.IResource;
 import org.orbisgis.ui.resourceTree.MyTreeUI;
 import org.orbisgis.ui.resourceTree.ResourceTree;
+import org.orbisgis.views.editor.EditorManager;
 import org.orbisgis.views.geocatalog.TransferableResource;
 
 public class Toc extends ResourceTree {
@@ -364,6 +366,22 @@ public class Toc extends ResourceTree {
 				removeLayerListenerRecursively(layer, ll);
 			}
 			treeModel.refresh();
+
+			// Close editors
+			for (final ILayer layer : e.getAffected()) {
+				ILayer[] layers = new ILayer[] { layer };
+				if (layer.acceptsChilds()) {
+					layers = layer.getLayersRecursively();
+				}
+				for (ILayer lyr : layers) {
+					EditorManager em = Services.getService(EditorManager.class);
+					IEditor[] editors = em.getEditor(new EditableLayer(
+							mapContextName, mapContext, lyr));
+					for (IEditor editor : editors) {
+						em.closeEditor(editor);
+					}
+				}
+			}
 		}
 
 		public void nameChanged(LayerListenerEvent e) {
