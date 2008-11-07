@@ -212,7 +212,6 @@ public class GeocognitionView extends JPanel implements IView {
 		}
 
 		// Listen modifications
-		addListenerRecursively(geocog.getRoot());
 		geocog.addGeocognitionListener(treeListener);
 	}
 
@@ -222,6 +221,9 @@ public class GeocognitionView extends JPanel implements IView {
 				addListenerRecursively(element.getElement(i));
 			}
 		} else {
+			// Just to not have twice the same listener
+			element.removeElementListener(modificationListener);
+			
 			element.addElementListener(modificationListener);
 		}
 	}
@@ -292,7 +294,7 @@ public class GeocognitionView extends JPanel implements IView {
 					}
 				}
 			}
-			
+
 			return true;
 		}
 
