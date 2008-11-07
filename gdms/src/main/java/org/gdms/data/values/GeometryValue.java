@@ -47,6 +47,7 @@ import com.vividsolutions.jts.geom.GeometryCollection;
 import com.vividsolutions.jts.io.ParseException;
 import com.vividsolutions.jts.io.WKBReader;
 import com.vividsolutions.jts.io.WKBWriter;
+import com.vividsolutions.jts.io.WKTReader;
 import com.vividsolutions.jts.io.WKTWriter;
 
 class GeometryValue extends AbstractValue {
@@ -59,7 +60,8 @@ class GeometryValue extends AbstractValue {
 	private static final WKTWriter textWriter3D = new WKTWriter(3);
 	private static final WKTWriter textWriter2D = new WKTWriter();
 
-	private static final WKBReader reader = new WKBReader();
+	private static final WKBReader wkbReader = new WKBReader();
+	private static final WKTReader wktReader = new WKTReader();
 
 	public GeometryValue(Geometry g) {
 		this.geom = g;
@@ -160,7 +162,7 @@ class GeometryValue extends AbstractValue {
 
 	public static Value readBytes(byte[] buffer) {
 		try {
-			return new GeometryValue(reader.read(buffer));
+			return new GeometryValue(wkbReader.read(buffer));
 		} catch (ParseException e) {
 			throw new RuntimeException(e);
 		}
@@ -191,5 +193,9 @@ class GeometryValue extends AbstractValue {
 			dimension = arg0.getDimension();
 			isDone = true;
 		}
+	}
+
+	public static Value parseString(String text) throws ParseException {
+		return new GeometryValue(wktReader.read(text));
 	}
 }
