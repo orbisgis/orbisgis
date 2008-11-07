@@ -426,6 +426,11 @@ public class MapControl extends JComponent implements ComponentListener {
 			invalidateImage();
 		}
 
+		@Override
+		public boolean layerRemoving(LayerCollectionEvent layerCollectionEvent) {
+			return true;
+		}
+
 		public void layerRemoved(LayerCollectionEvent listener) {
 			for (ILayer layer : listener.getAffected()) {
 				removeLayerListenerRecursively(layer, this);
@@ -465,6 +470,7 @@ public class MapControl extends JComponent implements ComponentListener {
 		public void open(DataSource ds) {
 			invalidateImage();
 		}
+
 
 	}
 

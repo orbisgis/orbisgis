@@ -99,9 +99,8 @@ import org.gdms.data.edition.MultipleEditionEvent;
 import org.gdms.driver.DriverException;
 import org.orbisgis.Services;
 import org.orbisgis.layerModel.ILayer;
-import org.orbisgis.layerModel.LayerCollectionEvent;
 import org.orbisgis.layerModel.LayerListener;
-import org.orbisgis.layerModel.LayerListenerEvent;
+import org.orbisgis.layerModel.LayerListenerAdapter;
 import org.orbisgis.layerModel.MapContext;
 import org.orbisgis.layerModel.MapContextListener;
 import org.orbisgis.layerModel.SelectionEvent;
@@ -789,31 +788,8 @@ public class ToolManager extends MouseAdapter implements MouseMotionListener {
 		listeners.remove(listener);
 	}
 
-	private class ToolLayerListener implements LayerListener, EditionListener,
-			DataSourceListener {
-
-		public void layerAdded(LayerCollectionEvent e) {
-		}
-
-		public void layerMoved(LayerCollectionEvent e) {
-
-		}
-
-		public void layerRemoved(LayerCollectionEvent e) {
-
-		}
-
-		public void nameChanged(LayerListenerEvent e) {
-
-		}
-
-		public void styleChanged(LayerListenerEvent e) {
-
-		}
-
-		public void visibilityChanged(LayerListenerEvent e) {
-
-		}
+	private class ToolLayerListener extends LayerListenerAdapter implements
+			LayerListener, EditionListener, DataSourceListener {
 
 		public void selectionChanged(SelectionEvent e) {
 			recalculateHandlers();
