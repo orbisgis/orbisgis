@@ -1,17 +1,12 @@
 package org.orbisgis.editorViews.toc;
 
 import org.gdms.data.DataSource;
-import org.gdms.data.NonEditableDataSourceException;
-import org.gdms.driver.DriverException;
-import org.orbisgis.edition.AbstractEditableElement;
-import org.orbisgis.edition.EditableElementException;
 import org.orbisgis.editors.table.Selection;
 import org.orbisgis.editors.table.TableEditableElement;
 import org.orbisgis.layerModel.ILayer;
 import org.orbisgis.layerModel.MapContext;
-import org.orbisgis.progress.IProgressMonitor;
 
-public class EditableLayer extends AbstractEditableElement implements
+public class EditableLayer extends AbstractTableEditableElement implements
 		TableEditableElement {
 
 	public static final String EDITABLE_LAYER_TYPE = "org.orbisgis.mapContext.EditableLayer";
@@ -32,42 +27,8 @@ public class EditableLayer extends AbstractEditableElement implements
 	}
 
 	@Override
-	public boolean isModified() {
-		return layer.getDataSource().isModified();
-	}
-
-	@Override
-	public void close(IProgressMonitor progressMonitor)
-			throws UnsupportedOperationException, EditableElementException {
-		// Nothing. Layers are closed when the map is closed
-	}
-
-	@Override
-	public Object getObject() throws UnsupportedOperationException {
-		return layer.getDataSource();
-	}
-
-	@Override
 	public String getTypeId() {
 		return EDITABLE_LAYER_TYPE;
-	}
-
-	@Override
-	public void open(IProgressMonitor progressMonitor)
-			throws UnsupportedOperationException, EditableElementException {
-		// Nothing. Layers are closed when the map is closed
-	}
-
-	@Override
-	public void save() throws UnsupportedOperationException,
-			EditableElementException {
-		try {
-			layer.getDataSource().commit();
-		} catch (DriverException e) {
-			throw new EditableElementException("Could not save", e);
-		} catch (NonEditableDataSourceException e) {
-			throw new EditableElementException("Non editable element", e);
-		}
 	}
 
 	@Override
@@ -99,5 +60,5 @@ public class EditableLayer extends AbstractEditableElement implements
 	public boolean isEditable() {
 		return mapContext.getActiveLayer() == layer;
 	}
-
+	
 }

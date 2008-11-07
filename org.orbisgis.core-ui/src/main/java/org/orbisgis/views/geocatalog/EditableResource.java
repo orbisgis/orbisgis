@@ -5,18 +5,17 @@ import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceCreationException;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.NoSuchTableException;
-import org.gdms.data.NonEditableDataSourceException;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.driverManager.DriverLoadException;
 import org.orbisgis.DataManager;
 import org.orbisgis.Services;
-import org.orbisgis.edition.AbstractEditableElement;
 import org.orbisgis.edition.EditableElementException;
+import org.orbisgis.editorViews.toc.AbstractTableEditableElement;
 import org.orbisgis.editors.table.Selection;
 import org.orbisgis.editors.table.TableEditableElement;
 import org.orbisgis.progress.IProgressMonitor;
 
-public class EditableResource extends AbstractEditableElement implements
+public class EditableResource extends AbstractTableEditableElement implements
 		TableEditableElement {
 
 	public static final String EDITABLE_RESOURCE_TYPE = "org.orbisgis.geocatalog.EditableResource";
@@ -35,13 +34,9 @@ public class EditableResource extends AbstractEditableElement implements
 	}
 
 	@Override
-	public boolean isModified() {
-		return ds.isModified();
-	}
-
-	@Override
 	public void close(IProgressMonitor progressMonitor)
 			throws UnsupportedOperationException, EditableElementException {
+		super.close(progressMonitor);
 		try {
 			ds.close();
 			ds = null;
@@ -50,11 +45,6 @@ public class EditableResource extends AbstractEditableElement implements
 		} catch (DriverException e) {
 			throw new EditableElementException("Cannot close the table", e);
 		}
-	}
-
-	@Override
-	public Object getObject() throws UnsupportedOperationException {
-		return ds;
 	}
 
 	@Override
@@ -72,6 +62,7 @@ public class EditableResource extends AbstractEditableElement implements
 				ds = dsf.getDataSource(sourceName);
 			}
 			ds.open();
+			super.open(progressMonitor);
 		} catch (DriverException e) {
 			throw new EditableElementException("Cannot open the source", e);
 		} catch (DriverLoadException e) {
@@ -80,18 +71,6 @@ public class EditableResource extends AbstractEditableElement implements
 			throw new EditableElementException("Cannot open the source", e);
 		} catch (DataSourceCreationException e) {
 			throw new EditableElementException("Cannot open the source", e);
-		}
-	}
-
-	@Override
-	public void save() throws UnsupportedOperationException,
-			EditableElementException {
-		try {
-			ds.commit();
-		} catch (DriverException e) {
-			throw new EditableElementException("Could not save", e);
-		} catch (NonEditableDataSourceException e) {
-			throw new EditableElementException("Non editable element", e);
 		}
 	}
 
