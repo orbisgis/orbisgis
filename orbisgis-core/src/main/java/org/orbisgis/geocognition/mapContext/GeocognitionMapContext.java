@@ -10,6 +10,7 @@ import org.orbisgis.layerModel.ILayer;
 import org.orbisgis.layerModel.LayerCollectionEvent;
 import org.orbisgis.layerModel.LayerException;
 import org.orbisgis.layerModel.LayerListener;
+import org.orbisgis.layerModel.LayerListenerAdapter;
 import org.orbisgis.layerModel.LayerListenerEvent;
 import org.orbisgis.layerModel.MapContext;
 import org.orbisgis.layerModel.MapContextListener;
@@ -99,8 +100,8 @@ public class GeocognitionMapContext extends AbstractExtensionElement implements
 		return false;
 	}
 
-	private final class ChangeListener implements MapContextListener,
-			LayerListener {
+	private final class ChangeListener extends LayerListenerAdapter implements
+			MapContextListener, LayerListener {
 		@Override
 		public void layerSelectionChanged(MapContext mapContext) {
 			fireContentChanged();

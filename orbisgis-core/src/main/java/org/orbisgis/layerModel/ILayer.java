@@ -74,10 +74,38 @@ public interface ILayer {
 
 	ILayer getParent();
 
+	/**
+	 * Removes the specified child layer.
+	 * 
+	 * @param layer
+	 * @param isMoving
+	 * @return the removed layer or null if the layer was not removed. This can
+	 *         be because of a listener cancelling the removal or the layer
+	 *         doesn't exist, etc.
+	 * @throws LayerException
+	 */
 	ILayer remove(ILayer layer, boolean isMoving) throws LayerException;
 
+	/**
+	 * Removes the specified child layer.
+	 * 
+	 * @param layer
+	 * @return the removed layer or null if the layer was not removed. This can
+	 *         be because of a listener cancelling the removal or the layer
+	 *         doesn't exist, etc.
+	 * @throws LayerException
+	 */
 	ILayer remove(ILayer layer) throws LayerException;
 
+	/**
+	 * Removes the specified child layer.
+	 * 
+	 * @param layerName
+	 * @return the removed layer or null if the layer was not removed. This can
+	 *         be because of a listener cancelling the removal or the layer
+	 *         doesn't exist, etc.
+	 * @throws LayerException
+	 */
 	ILayer remove(String layerName) throws LayerException;
 
 	void addLayer(ILayer layer) throws LayerException;

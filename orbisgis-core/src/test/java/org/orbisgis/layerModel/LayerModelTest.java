@@ -115,10 +115,28 @@ public class LayerModelTest extends AbstractTest {
 		assertTrue(listener.sc == refsc + 1);
 		lc.remove(vl1.getName());
 		assertTrue(listener.lr == 1);
+		assertTrue(listener.lring == 1);
 		assertTrue(lc.getLayerCount() == 0);
 		vl.close();
 	}
 
+	public void testLayerRemovalCancellation() throws Exception {
+		TestLayerListener listener = new TestLayerListener() {
+			@Override
+			public boolean layerRemoving(LayerCollectionEvent arg0) {
+				return false;
+			}
+		};
+		ILayer vl = getDataManager().createLayer((DataSource) dummy);
+		ILayer lc = getDataManager().createLayerCollection("root");
+		lc.addLayer(vl);
+		lc.addLayerListener(listener);
+		assertTrue(lc.remove(vl)==null);
+		assertTrue(lc.remove(vl.getName())==null);
+		assertTrue(lc.remove(vl, false)==null);
+		assertTrue(lc.remove(vl, true) != null);
+	}
+	
 	public void testRepeatedName() throws Exception {
 		DataSourceFactory dsf = ((DataManager) Services
 				.getService(DataManager.class)).getDSF();
@@ -185,6 +203,7 @@ public class LayerModelTest extends AbstractTest {
 		assertTrue(lc2.getChildren().length == 0);
 		assertTrue(listener.la == 0);
 		assertTrue(listener.lr == 0);
+		assertTrue(listener.lring == 0);
 		assertTrue(listener.lm == 1);
 	}
 
@@ -223,6 +242,8 @@ public class LayerModelTest extends AbstractTest {
 
 		private int lr = 0;
 
+		private int lring = 0;
+
 		private int sc = 0;
 
 		public void nameChanged(LayerListenerEvent e) {
@@ -250,6 +271,12 @@ public class LayerModelTest extends AbstractTest {
 		}
 
 		public void selectionChanged(SelectionEvent e) {
+		}
+
+		@Override
+		public boolean layerRemoving(LayerCollectionEvent layerCollectionEvent) {
+			lring++;
+			return true;
 		}
 	}
 }

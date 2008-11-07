@@ -40,49 +40,58 @@ public interface LayerListener {
 
 	/**
 	 * The name of the layer has changed
-	 *
+	 * 
 	 * @param e
 	 */
 	void nameChanged(LayerListenerEvent e);
 
 	/**
 	 * the layer has became visible or invisible
-	 *
+	 * 
 	 * @param e
 	 */
 	void visibilityChanged(LayerListenerEvent e);
 
 	/**
 	 * The style of the layer has changed
-	 *
+	 * 
 	 * @param e
 	 */
 	void styleChanged(LayerListenerEvent e);
 
 	/**
 	 * A new layer has been added as a child
-	 *
+	 * 
 	 * @param e
 	 */
 	void layerAdded(LayerCollectionEvent e);
 
 	/**
 	 * A child layer has been removed
-	 *
+	 * 
 	 * @param e
 	 */
 	void layerRemoved(LayerCollectionEvent e);
 
 	/**
+	 * A child layer is going to be removed. Removal can be cancelled by
+	 * returning false.
+	 * 
+	 * @param layerCollectionEvent
+	 * @return
+	 */
+	boolean layerRemoving(LayerCollectionEvent layerCollectionEvent);
+
+	/**
 	 * A layer has been moved
-	 *
+	 * 
 	 * @param e
 	 */
 	void layerMoved(LayerCollectionEvent e);
 
 	/**
 	 * The row selection of the layer has changed
-	 *
+	 * 
 	 * @param e
 	 */
 	void selectionChanged(SelectionEvent e);

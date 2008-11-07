@@ -15,6 +15,11 @@ public abstract class LayerListenerAdapter implements LayerListener {
 	}
 
 	@Override
+	public boolean layerRemoving(LayerCollectionEvent e) {
+		return true;
+	}
+
+	@Override
 	public void nameChanged(LayerListenerEvent e) {
 	}
 

@@ -138,18 +138,7 @@ public class DefaultMapContext implements MapContext {
 		}
 	}
 
-	private final class OpenerListener implements LayerListener {
-		public void visibilityChanged(LayerListenerEvent e) {
-		}
-
-		public void styleChanged(LayerListenerEvent e) {
-		}
-
-		public void nameChanged(LayerListenerEvent e) {
-		}
-
-		public void layerMoved(LayerCollectionEvent e) {
-		}
+	private final class OpenerListener extends LayerListenerAdapter implements LayerListener {
 
 		public void layerAdded(LayerCollectionEvent e) {
 			if (isOpen()) {
@@ -200,9 +189,6 @@ public class DefaultMapContext implements MapContext {
 			}
 
 			selectedLayers = newSelection.toArray(new ILayer[0]);
-		}
-
-		public void selectionChanged(SelectionEvent e) {
 		}
 	}
 

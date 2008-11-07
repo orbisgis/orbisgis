@@ -56,7 +56,7 @@ public abstract class ALayer implements ILayer {
 
 	/* getters and setters */
 	/**
-	 *
+	 * 
 	 * @see org.orbisgis.layerModel.ILayer#getParent()
 	 */
 	public ILayer getParent() {
@@ -64,7 +64,7 @@ public abstract class ALayer implements ILayer {
 	}
 
 	/**
-	 *
+	 * 
 	 * @see org.orbisgis.layerModel.ILayer#setParent()
 	 */
 	public void setParent(final ILayer parent) {
@@ -72,7 +72,7 @@ public abstract class ALayer implements ILayer {
 	}
 
 	/**
-	 *
+	 * 
 	 * @see org.orbisgis.layerModel.ILayer#getName()
 	 */
 	public String getName() {
@@ -80,7 +80,7 @@ public abstract class ALayer implements ILayer {
 	}
 
 	/**
-	 *
+	 * 
 	 * @throws LayerException
 	 * @see org.orbisgis.layerModel.ILayer#setName(java.lang.String)
 	 */
@@ -123,7 +123,6 @@ public abstract class ALayer implements ILayer {
 		allLayersNames.add(tmpName);
 		return tmpName;
 	}
-
 
 	public ILayer getRoot() {
 		ILayer root = this;
@@ -226,10 +225,21 @@ public abstract class ALayer implements ILayer {
 		}
 	}
 
-	protected void fireLayerRemovedEvent(ILayer[] added) {
+	protected void fireLayerRemovedEvent(ILayer[] removed) {
 		for (LayerListener listener : listeners) {
-			listener.layerRemoved(new LayerCollectionEvent(this, added));
+			listener.layerRemoved(new LayerCollectionEvent(this, removed));
 		}
+	}
+
+	protected boolean fireLayerRemovingEvent(ILayer[] toRemove) {
+		for (LayerListener listener : listeners) {
+			if (!listener
+					.layerRemoving(new LayerCollectionEvent(this, toRemove))) {
+				return false;
+			}
+		}
+
+		return true;
 	}
 
 }

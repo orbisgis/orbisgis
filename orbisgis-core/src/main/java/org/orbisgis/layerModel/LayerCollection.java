@@ -72,10 +72,6 @@ public class LayerCollection extends ALayer {
 		return layerCollection.get(index);
 	}
 
-	public boolean containsLayerName(final String layerName) {
-		return getAllLayersNames().contains(layerName);
-	}
-
 	private void setNamesRecursively(final ILayer layer,
 			final Set<String> allLayersNames) throws LayerException {
 		layer.setName(provideNewLayerName(layer.getName(), allLayersNames));
@@ -139,13 +135,7 @@ public class LayerCollection extends ALayer {
 		}
 	}
 
-	public void removeAll() {
-		ILayer[] removed = layerCollection.toArray(new ILayer[0]);
-		layerCollection.clear();
-		fireLayerRemovedEvent(removed);
-	}
-
-	public int size() {
+	private int size() {
 		return layerCollection.size();
 	}
 
@@ -315,11 +305,26 @@ public class LayerCollection extends ALayer {
 	}
 
 	public ILayer remove(ILayer layer, boolean isMoving) throws LayerException {
-		if (layerCollection.remove(layer)) {
-			if (!isMoving) {
-				fireLayerRemovedEvent(new ILayer[] { layer });
+		if (layerCollection.contains(layer)) {
+			if (isMoving) {
+				if (layerCollection.remove(layer)) {
+					return layer;
+				} else {
+					return null;
+				}
+			} else {
+				ILayer[] toRemove = new ILayer[] { layer };
+				if (fireLayerRemovingEvent(toRemove)) {
+					if (layerCollection.remove(layer)) {
+						fireLayerRemovedEvent(toRemove);
+						return layer;
+					} else {
+						return null;
+					}
+				} else {
+					return null;
+				}
 			}
-			return layer;
 		} else {
 			return null;
 		}
