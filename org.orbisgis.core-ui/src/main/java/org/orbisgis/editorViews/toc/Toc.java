@@ -361,12 +361,8 @@ public class Toc extends ResourceTree {
 			treeModel.refresh();
 		}
 
-		public void layerRemoved(final LayerCollectionEvent e) {
-			for (final ILayer layer : e.getAffected()) {
-				removeLayerListenerRecursively(layer, ll);
-			}
-			treeModel.refresh();
-
+		@Override
+		public boolean layerRemoving(LayerCollectionEvent e) {
 			// Close editors
 			for (final ILayer layer : e.getAffected()) {
 				ILayer[] layers = new ILayer[] { layer };
@@ -378,10 +374,20 @@ public class Toc extends ResourceTree {
 					IEditor[] editors = em.getEditor(new EditableLayer(
 							mapContextName, mapContext, lyr));
 					for (IEditor editor : editors) {
-						em.closeEditor(editor);
+						if (!em.closeEditor(editor)) {
+							return false;
+						}
 					}
 				}
 			}
+			return true;
+		}
+
+		public void layerRemoved(final LayerCollectionEvent e) {
+			for (final ILayer layer : e.getAffected()) {
+				removeLayerListenerRecursively(layer, ll);
+			}
+			treeModel.refresh();
 		}
 
 		public void nameChanged(LayerListenerEvent e) {
