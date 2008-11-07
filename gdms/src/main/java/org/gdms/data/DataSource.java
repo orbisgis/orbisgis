@@ -546,8 +546,8 @@ public interface DataSource extends ReadAccess {
 
 	/**
 	 * Returns true if the DataSource has been modified since it was created.
-	 * Notice that it doesn't check the source and only checks wheter the source
-	 * has been modified through this instance
+	 * Notice that it doesn't check the source and only checks whether the source
+	 * has been modified through this instance or not
 	 * 
 	 * @return
 	 */
