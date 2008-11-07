@@ -721,10 +721,13 @@ public class ToolManager extends MouseAdapter implements MouseMotionListener {
 		try {
 			for (int selectedRow : selection) {
 				Primitive p;
-				p = new Primitive(sds.getGeometry(selectedRow), selectedRow);
-				Handler[] handlers = p.getHandlers();
-				for (int j = 0; j < handlers.length; j++) {
-					currentHandlers.add(handlers[j]);
+				Geometry geometry = sds.getGeometry(selectedRow);
+				if (geometry != null) {
+					p = new Primitive(geometry, selectedRow);
+					Handler[] handlers = p.getHandlers();
+					for (int j = 0; j < handlers.length; j++) {
+						currentHandlers.add(handlers[j]);
+					}
 				}
 			}
 		} catch (DriverException e) {
