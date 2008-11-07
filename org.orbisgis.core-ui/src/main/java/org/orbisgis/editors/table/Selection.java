@@ -21,14 +21,14 @@ public interface Selection {
 	 * 
 	 * @param indexes
 	 */
-	void setSelection(int[] indexes);
+	void setSelectedRows(int[] indexes);
 
 	/**
 	 * Gets the currently selected rows
 	 * 
 	 * @return
 	 */
-	int[] getSelection();
+	int[] getSelectedRows();
 
 	/**
 	 * Selects all the rows in the specified interval

@@ -139,7 +139,7 @@ public class TableComponent extends JPanel {
 													.get(selectedRows[i]);
 										}
 									}
-									selection.setSelection(selectedRows);
+									selection.setSelectedRows(selectedRows);
 									managingSelection = false;
 								}
 							}
@@ -340,7 +340,7 @@ public class TableComponent extends JPanel {
 			ListSelectionModel model = table.getSelectionModel();
 			model.setValueIsAdjusting(true);
 			model.clearSelection();
-			for (int i : selection.getSelection()) {
+			for (int i : selection.getSelectedRows()) {
 				if (indexes != null) {
 					Integer sortedIndex = indexes.indexOf(i);
 					model.addSelectionInterval(sortedIndex, sortedIndex);
@@ -794,12 +794,12 @@ public class TableComponent extends JPanel {
 
 		@Override
 		public void actionPerformed() {
-			action.execute(dataSource, selection, selectedColumn);
+			action.execute(element, selectedColumn);
 		}
 
 		@Override
 		public boolean isVisible() {
-			return action.accepts(dataSource, selection, selectedColumn);
+			return action.accepts(element, selectedColumn);
 		}
 
 		@Override
@@ -821,13 +821,12 @@ public class TableComponent extends JPanel {
 
 		@Override
 		public void actionPerformed() {
-			action.execute(dataSource, selection, clickedRow, selectedColumn);
+			action.execute(element, clickedRow, selectedColumn);
 		}
 
 		@Override
 		public boolean isVisible() {
-			return action.accepts(dataSource, selection, clickedRow,
-					selectedColumn);
+			return action.accepts(element, clickedRow, selectedColumn);
 		}
 
 		@Override

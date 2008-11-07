@@ -16,12 +16,12 @@ public class LayerSelection implements Selection {
 	}
 
 	@Override
-	public int[] getSelection() {
+	public int[] getSelectedRows() {
 		return layer.getSelection();
 	}
 
 	@Override
-	public void setSelection(int[] indexes) {
+	public void setSelectedRows(int[] indexes) {
 		layer.setSelection(indexes);
 	}
 

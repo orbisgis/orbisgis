@@ -4,7 +4,7 @@ import org.gdms.data.DataSource;
 import org.gdms.driver.DriverException;
 import org.orbisgis.Services;
 import org.orbisgis.editors.table.FieldNameChooser;
-import org.orbisgis.editors.table.Selection;
+import org.orbisgis.editors.table.TableEditableElement;
 import org.orbisgis.editors.table.action.ITableColumnAction;
 import org.orbisgis.errorManager.ErrorManager;
 import org.sif.UIFactory;
@@ -12,15 +12,14 @@ import org.sif.UIFactory;
 public class ChangeFieldName implements ITableColumnAction {
 
 	@Override
-	public boolean accepts(DataSource dataSource, Selection selection,
-			int selectedColumn) {
-		return (selectedColumn != -1) && dataSource.isEditable();
+	public boolean accepts(TableEditableElement element, int selectedColumn) {
+		return (selectedColumn != -1) && element.getDataSource().isEditable();
 	}
 
 	@Override
-	public void execute(DataSource dataSource, Selection selection,
-			int selectedColumnIndex) {
+	public void execute(TableEditableElement element, int selectedColumnIndex) {
 		try {
+			DataSource dataSource = element.getDataSource();
 			FieldNameChooser av = new FieldNameChooser(dataSource
 					.getFieldNames(), "New field name", "strlength(txt) > 0",
 					"Empty name not allowed", dataSource.getMetadata()

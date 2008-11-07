@@ -9,12 +9,12 @@ public class ResourceSelection implements Selection {
 	private SelectionListener listener;
 
 	@Override
-	public int[] getSelection() {
+	public int[] getSelectedRows() {
 		return selection;
 	}
 
 	@Override
-	public void setSelection(int[] indexes) {
+	public void setSelectedRows(int[] indexes) {
 		this.selection = indexes;
 		listener.selectionChanged();
 	}

@@ -6,7 +6,7 @@ import org.gdms.data.DataSource;
 import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
 import org.orbisgis.Services;
-import org.orbisgis.editors.table.Selection;
+import org.orbisgis.editors.table.TableEditableElement;
 import org.orbisgis.editors.table.action.ITableCellAction;
 import org.orbisgis.errorManager.ErrorManager;
 import org.orbisgis.pluginManager.background.BackgroundJob;
@@ -16,20 +16,21 @@ import org.orbisgis.progress.IProgressMonitor;
 public class SelectEqual implements ITableCellAction {
 
 	@Override
-	public boolean accepts(DataSource dataSource, Selection selection,
-			int rowIndex, int columnIndex) {
+	public boolean accepts(TableEditableElement element, int rowIndex,
+			int columnIndex) {
 		return true;
 	}
 
 	@Override
-	public void execute(final DataSource dataSource, final Selection selection,
-			final int rowIndex, final int columnIndex) {
+	public void execute(final TableEditableElement element, final int rowIndex,
+			final int columnIndex) {
 		BackgroundManager bm = Services.getService(BackgroundManager.class);
 		bm.backgroundOperation(new BackgroundJob() {
 
 			@Override
 			public void run(IProgressMonitor pm) {
 				try {
+					DataSource dataSource = element.getDataSource();
 					ArrayList<Integer> newSel = new ArrayList<Integer>();
 					Value ref = dataSource.getFieldValue(rowIndex, columnIndex);
 					for (int i = 0; i < dataSource.getRowCount(); i++) {
@@ -43,7 +44,7 @@ public class SelectEqual implements ITableCellAction {
 						sel[i] = newSel.get(i);
 					}
 
-					selection.setSelection(sel);
+					element.getSelection().setSelectedRows(sel);
 				} catch (DriverException e) {
 					Services.getService(ErrorManager.class).error(
 							"Cannot read source", e);
