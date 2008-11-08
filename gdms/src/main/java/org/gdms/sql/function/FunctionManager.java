@@ -69,6 +69,7 @@ import org.gdms.sql.function.spatial.geometryProperties.IsEmpty;
 import org.gdms.sql.function.spatial.geometryProperties.IsSimple;
 import org.gdms.sql.function.spatial.geometryProperties.IsValid;
 import org.gdms.sql.function.spatial.geometryProperties.Length;
+import org.gdms.sql.function.spatial.geometryProperties.NumInteriorRing;
 import org.gdms.sql.function.spatial.geometryProperties.NumPoints;
 import org.gdms.sql.function.spatial.io.AsWKT;
 import org.gdms.sql.function.spatial.io.GeomFromText;
@@ -126,12 +127,11 @@ public class FunctionManager {
 		addFunction(SymDifference.class);
 		addFunction(Average.class);
 		addFunction(StandardDeviation.class);
-
+		addFunction(NumInteriorRing.class);
 		addFunction(Sqrt.class);
 		addFunction(ToMultiPoint.class);
 		addFunction(ToMultiLine.class);
 		addFunction(IsValid.class);
-
 		addFunction(ToStringFunction.class);
 		addFunction(AutoNumeric.class);
 		addFunction(Pk.class);

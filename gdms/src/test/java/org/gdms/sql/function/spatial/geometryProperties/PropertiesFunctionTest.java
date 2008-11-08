@@ -41,6 +41,7 @@ import org.gdms.sql.FunctionTest;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.GeometryFactory;
+import com.vividsolutions.jts.geom.Polygon;
 
 public class PropertiesFunctionTest extends FunctionTest {
 
@@ -103,6 +104,12 @@ public class PropertiesFunctionTest extends FunctionTest {
 	public void testNumPoints() throws Exception {
 		int v = testSpatialFunction(new NumPoints(), g2, 1).getAsInt();
 		assertTrue(v == g2.getNumPoints());
+	}
+
+	public void testNumInteriorRing() throws Exception {
+		int v = testSpatialFunction(new NumInteriorRing(), g4, 1).getAsInt();
+		Polygon p = (Polygon) g4;
+		assertTrue(p.getNumInteriorRing()==v);
 	}
 
 }
