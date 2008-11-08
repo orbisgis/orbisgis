@@ -45,9 +45,9 @@ import org.gdms.driver.DriverException;
 import org.grap.model.GeoRaster;
 import org.grap.processing.Operation;
 import org.grap.processing.OperationException;
-import org.grap.processing.operation.topographicIndices.LSFactor;
-import org.grap.processing.operation.topographicIndices.StreamPowerIndex;
-import org.grap.processing.operation.topographicIndices.WetnessIndex;
+import org.grap.processing.operation.topographicIndices.LSFactorOp;
+import org.grap.processing.operation.topographicIndices.StreamPowerIndexOp;
+import org.grap.processing.operation.topographicIndices.WetnessIndexOp;
 import org.orbisgis.DataManager;
 import org.orbisgis.Services;
 import org.orbisgis.editorViews.toc.action.ILayerAction;
@@ -121,7 +121,7 @@ public class TopographicIndicesAction extends AbstractGray16And32Process
 
 				if (new Boolean(mip.getInput("wetness"))) {
 
-					final Operation opwetness = new WetnessIndex(grAccflow);
+					final Operation opwetness = new WetnessIndexOp(grAccflow);
 					final GeoRaster grwetness = grSlope.doOperation(opwetness);
 					grwetness.save(tempFilewetness);
 					final ILayer newLayer = dataManager.createLayer(new File(
@@ -133,7 +133,7 @@ public class TopographicIndicesAction extends AbstractGray16And32Process
 				}
 				if (new Boolean(mip.getInput("streampowerindex"))) {
 
-					final Operation streamPowerIndex = new StreamPowerIndex(
+					final Operation streamPowerIndex = new StreamPowerIndexOp(
 							grAccflow);
 					final GeoRaster grstreamPowerIndex = grSlope
 							.doOperation(streamPowerIndex);
@@ -147,7 +147,7 @@ public class TopographicIndicesAction extends AbstractGray16And32Process
 				}
 				if (new Boolean(mip.getInput("lsfactor"))) {
 
-					final Operation lSFactor = new LSFactor(grAccflow);
+					final Operation lSFactor = new LSFactorOp(grAccflow);
 					final GeoRaster grLSFactor = grSlope.doOperation(lSFactor);
 					grLSFactor.save(tempFileLS);
 					final ILayer newLayer = dataManager.createLayer(new File(

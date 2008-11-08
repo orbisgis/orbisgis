@@ -63,6 +63,9 @@ import org.gdms.sql.function.spatial.raster.hydrology.D8Slope;
 import org.gdms.sql.function.spatial.raster.hydrology.D8StrahlerStreamOrder;
 import org.gdms.sql.function.spatial.raster.hydrology.D8Watershed;
 import org.gdms.sql.function.spatial.raster.hydrology.FillSinks;
+import org.gdms.sql.function.spatial.raster.hydrology.LSFactor;
+import org.gdms.sql.function.spatial.raster.hydrology.StreamPowerIndex;
+import org.gdms.sql.function.spatial.raster.hydrology.WetnessIndex;
 import org.gdms.sql.function.spatial.raster.utilities.CropRaster;
 import org.gdms.sql.function.spatial.raster.utilities.ToEnvelope;
 import org.orbisgis.pluginManager.PluginActivator;
@@ -79,7 +82,8 @@ public class Register implements PluginActivator {
 		QueryManager.registerQuery(RasterizeLine.class);
 		
 		QueryManager.registerQuery(GeometryToRasterTINInterpolation.class);
-
+		
+		
 		FunctionManager.addFunction(D8Slope.class);
 		FunctionManager.addFunction(D8Direction.class);
 		FunctionManager.addFunction(D8Accumulation.class);
@@ -93,6 +97,9 @@ public class Register implements PluginActivator {
 		FunctionManager.addFunction(D8DistanceToTheOutlet.class);
 		FunctionManager.addFunction(D8RiverDistance.class);		
 		FunctionManager.addFunction(PointsToLine.class);
+		FunctionManager.addFunction(WetnessIndex.class);
+		FunctionManager.addFunction(LSFactor.class);
+		FunctionManager.addFunction(StreamPowerIndex.class);
 
 		QueryManager.registerQuery(VectorizeLine.class);
 

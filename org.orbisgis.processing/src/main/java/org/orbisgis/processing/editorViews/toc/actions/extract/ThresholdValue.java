@@ -65,9 +65,6 @@ public class ThresholdValue extends AbstractRasterProcess {
 		} catch (IOException e) {
 			Services.getErrorManager().error(
 					"Raster type unreadable for this layer", e);
-
-			Services.getErrorManager().error(
-					"Raster type unreadable for this layer", e);
 		}
 		return false;
 	}
@@ -87,8 +84,9 @@ public class ThresholdValue extends AbstractRasterProcess {
 			final double max = new Double(mip.getInput("MaxValue"));
 			final GeoRaster geoRasterResult = GeoRasterFactory.createGeoRaster(
 					geoRasterSrc.getImagePlus(), geoRasterSrc.getMetadata());
-			geoRasterResult.setRangeValues(min, max);			
-			geoRasterResult.setNodataValue((float)geoRasterSrc.getMetadata().getNoDataValue());
+			geoRasterResult.setRangeValues(min, max);
+			geoRasterResult.setNodataValue((float) geoRasterSrc.getMetadata()
+					.getNoDataValue());
 			return geoRasterResult;
 		}
 
