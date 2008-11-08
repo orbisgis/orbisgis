@@ -1,102 +1,48 @@
 package org.contrib.ui.editorViews.toc.actions.geometry.qa;
 
-import org.contrib.algorithm.qa.FeatureStatisticsPlugIn;
-import org.contrib.model.jump.adapter.FeatureCollectionAdapter;
-import org.contrib.model.jump.adapter.FeatureCollectionDatasourceAdapter;
-import org.contrib.model.jump.model.FeatureDataset;
-import org.gdms.data.DataSourceFactory;
-import org.gdms.data.SpatialDataSourceDecorator;
+
+import java.io.IOException;
+
+import org.contrib.ui.editorViews.toc.actions.geometry.action.SQLGeometryAbstractProcess;
 import org.gdms.driver.DriverException;
-import org.gdms.driver.driverManager.DriverLoadException;
-import org.gdms.driver.memory.ObjectMemoryDriver;
-import org.orbisgis.DataManager;
-import org.orbisgis.Services;
-import org.orbisgis.editorViews.toc.action.ILayerAction;
+import org.grap.processing.OperationException;
 import org.orbisgis.layerModel.ILayer;
-import org.orbisgis.layerModel.LayerException;
 import org.orbisgis.layerModel.MapContext;
-import org.orbisgis.pluginManager.background.BackgroundJob;
-import org.orbisgis.pluginManager.background.BackgroundManager;
-import org.orbisgis.progress.IProgressMonitor;
 
-public class GeometriesStatisticsAction implements ILayerAction {
+public class GeometriesStatisticsAction extends SQLGeometryAbstractProcess {
 
-	public boolean accepts(ILayer layer) {
-
+	@Override
+	protected String evaluateResult(ILayer layer, MapContext mapContext) throws OperationException, IOException, DriverException {
+		
 		try {
-			return layer.isVectorial();
-		} catch (DriverException e) {
-			Services.getErrorManager().error(
-					"Vector type unreadable for this layer", e);
-		}
-		return false;
-	}
+			String geometryField = layer.getDataSource().getDefaultGeometry();
 
-	public boolean acceptsSelectionCount(int selectionCount) {
-		return selectionCount >= 1;
-	}
+			StringBuffer stringBuffer = new StringBuffer("SELECT ");
 
-	public void execute(MapContext mapContext, ILayer layer) {
-
-		BackgroundManager bm = (BackgroundManager) Services
-				.getService(BackgroundManager.class);
-		bm.backgroundOperation(new ExecuteProcessing(mapContext, layer));
-
-	}
-
-	private class ExecuteProcessing implements BackgroundJob {
-
-		private ILayer layer;
-
-		private MapContext mapContext;
-
-		public ExecuteProcessing(MapContext mapContext, ILayer layer) {
-			this.mapContext = mapContext;
-			this.layer = layer;
-		}
-
-		public String getTaskName() {
-			return "Geometry statistics";
-		}
-
-		public void run(IProgressMonitor pm) {
-
-			DataManager dataManager = (DataManager) Services
-					.getService(DataManager.class);
-
-			final DataSourceFactory dsf = dataManager.getDSF();
-
-			FeatureStatisticsPlugIn featureStatisticsPlugIn = new FeatureStatisticsPlugIn(pm);
+			stringBuffer.append(geometryField);
+			stringBuffer.append(" , ");
 			
-			SpatialDataSourceDecorator sds = new SpatialDataSourceDecorator(layer.getDataSource());
-					
-			FeatureDataset fc = featureStatisticsPlugIn.featureStatistics(new FeatureCollectionAdapter(sds));
-						
+			stringBuffer.append("NumPoints(" + geometryField + ") as nPts");
+			stringBuffer.append(" , ");
 
-			try {
-				ObjectMemoryDriver objectDriver = new ObjectMemoryDriver(new FeatureCollectionDatasourceAdapter(fc));
+			stringBuffer.append("NumInteriorRing(" + geometryField
+					+ ") as nHoles");
+			stringBuffer.append(" , ");
+			stringBuffer.append("GeometryN(" + geometryField + ") as nGeom");
+			stringBuffer.append(" , ");
+			stringBuffer.append("Area(" + geometryField + ") as area");
+			stringBuffer.append(" , ");
+			stringBuffer.append("Length(" + geometryField + ") as length");
+			stringBuffer.append(" FROM  " + layer.getName() + " ;");
 
-				String result = dsf.getSourceManager().nameAndRegister(
-						objectDriver);
-
-				final ILayer resultLayer = dataManager.createLayer(result);
-
-				mapContext.getLayerModel().insertLayer(resultLayer, 0);
-
-			} catch (DriverLoadException e) {
-				Services.getErrorManager().error(
-						"Cannot create the resulting layer of geometry type ",
-						e);
-			} catch (IllegalStateException e) {
-				Services.getErrorManager().error("Cannot get the layer ", e);
-			} catch (LayerException e) {
-				Services.getErrorManager().error(
-						"Cannot insert resulting layer based on "
-								+ layer.getName(), e);
-			} catch (DriverException e) {
-			}
-
+			return stringBuffer.toString();
+		} catch (DriverException e) {
+			e.printStackTrace();
 		}
+		return null;
 	}
+
+	
+	
 
 }
