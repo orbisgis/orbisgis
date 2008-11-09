@@ -178,7 +178,7 @@ public class TableComponent extends JPanel {
 	 * @param msg
 	 */
 	private void inputError(String msg, Exception e) {
-		Services.getService(ErrorManager.class).error(msg);
+		Services.getService(ErrorManager.class).error(msg, e);
 		getTable().requestFocus();
 	}
 
@@ -363,7 +363,7 @@ public class TableComponent extends JPanel {
 		managingSelection = false;
 		updateTableSelection();
 	}
-	
+
 	public void moveSelectionUp() {
 		int[] selectedRows = selection.getSelectedRows();
 		HashSet<Integer> selectedRowSet = new HashSet<Integer>();
@@ -682,7 +682,7 @@ public class TableComponent extends JPanel {
 			} catch (DriverException e1) {
 				throw new RuntimeException(e1);
 			} catch (NumberFormatException e) {
-				inputError(e.getMessage(), e);
+				inputError("Cannot parse number: " + e.getMessage(), e);
 			} catch (ParseException e) {
 				inputError(e.getMessage(), e);
 			}
