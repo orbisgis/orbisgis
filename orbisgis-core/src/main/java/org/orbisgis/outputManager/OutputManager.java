@@ -42,18 +42,35 @@ public interface OutputManager {
 
 	/**
 	 * Adds code to the output window
-	 *
+	 * 
 	 * @param out
 	 */
-	void append(String out);
+	void print(String out);
 
 	/**
 	 * Adds text in the specified color
-	 *
+	 * 
 	 * @param text
 	 * @param color
 	 */
-	void append(String text, Color color);
+	void print(String text, Color color);
+
+	/**
+	 * Adds code to the output window and adds a carriage return to the end of
+	 * the string
+	 * 
+	 * @param out
+	 */
+	void println(String out);
+
+	/**
+	 * Adds text in the specified color and adds a carriage return to the end of
+	 * the string
+	 * 
+	 * @param text
+	 * @param color
+	 */
+	void println(String text, Color color);
 
 	/**
 	 * Makes the output visible to the user

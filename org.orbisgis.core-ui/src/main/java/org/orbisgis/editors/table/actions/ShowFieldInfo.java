@@ -24,15 +24,15 @@ public class ShowFieldInfo implements ITableColumnAction {
 		try {
 			Metadata metadata = element.getDataSource().getMetadata();
 			OutputManager om = Services.getService(OutputManager.class);
-			om.append("Field name:"
+			om.print("Field name:"
 					+ metadata.getFieldName(selectedColumnIndex) + "\n");
 			Type type = metadata.getFieldType(selectedColumnIndex);
-			om.append("Field type:"
+			om.print("Field type:"
 					+ TypeFactory.getTypeName(type.getTypeCode())
 					+ "\nConstraints:\n");
 			Constraint[] cons = type.getConstraints();
 			for (Constraint constraint : cons) {
-				om.append("  "
+				om.print("  "
 						+ ConstraintFactory.getConstraintName(constraint
 								.getConstraintCode()) + ": "
 						+ constraint.getConstraintHumanValue() + "\n");

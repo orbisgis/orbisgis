@@ -192,13 +192,23 @@ public class ExecutionTest extends AbstractTest {
 		}
 
 		@Override
-		public void append(String text, Color color) {
+		public void print(String text, Color color) {
 			content += text;
 		}
 
 		@Override
-		public void append(String out) {
+		public void print(String out) {
 			content += out;
+		}
+
+		@Override
+		public void println(String out) {
+			print(out + "\n");
+		}
+
+		@Override
+		public void println(String text, Color color) {
+			print(text + "\n", color);
 		}
 	}
 

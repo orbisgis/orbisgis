@@ -58,7 +58,7 @@ public class MesurePolygonTool extends AbstractPolygonTool {
 				.getService(OutputManager.class);
 		Color color = Color.blue;
 
-		om.append("Area : " + getArea(g) + " Perimeter : " + getPerimeter(g)
+		om.print("Area : " + getArea(g) + " Perimeter : " + getPerimeter(g)
 				+ "\n", color);
 		om.makeVisible();
 

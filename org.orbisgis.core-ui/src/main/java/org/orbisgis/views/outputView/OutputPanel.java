@@ -88,11 +88,23 @@ public class OutputPanel extends JPanel implements OutputManager {
 
 	}
 
-	public void append(String out) {
-		append(out, Color.black);
+	@Override
+	public void println(String out) {
+		print(out + "\n");
 	}
 
-	public void append(String text, Color color) {
+	@Override
+	public void println(String text, Color color) {
+		print(text + "\n", color);
+	}
+
+	@Override
+	public void print(String out) {
+		print(out, Color.black);
+	}
+
+	@Override
+	public void print(String text, Color color) {
 		StyleContext sc = StyleContext.getDefaultStyleContext();
 		AttributeSet aset = sc.addAttribute(SimpleAttributeSet.EMPTY,
 				StyleConstants.Foreground, color);

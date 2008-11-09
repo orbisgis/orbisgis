@@ -95,13 +95,13 @@ public class JavaConsoleView implements IView {
 			ByteArrayOutputStream bos = new ByteArrayOutputStream();
 			e.printStackTrace(new PrintStream(bos));
 			String stackTrace = new String(bos.toByteArray());
-			outputManager.append("Execution error:" + e.getMessage() + "\n"
+			outputManager.print("Execution error:" + e.getMessage() + "\n"
 					+ stackTrace, Color.red);
 			outputManager.makeVisible();
 		} catch (IOException e) {
 			Services.getErrorManager().error("Cannot execute code", e);
 		} catch (CompilationException e) {
-			outputManager.append(outputDiagnosticListener.getErrorRepport());
+			outputManager.print(outputDiagnosticListener.getErrorRepport());
 			outputManager.makeVisible();
 		}
 	}
