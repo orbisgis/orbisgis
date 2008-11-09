@@ -10,6 +10,7 @@ import java.awt.event.MouseEvent;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.TreeSet;
 
@@ -362,6 +363,22 @@ public class TableComponent extends JPanel {
 		managingSelection = false;
 		updateTableSelection();
 	}
+	
+	public void moveSelectionUp() {
+		int[] selectedRows = selection.getSelectedRows();
+		HashSet<Integer> selectedRowSet = new HashSet<Integer>();
+		indexes = new ArrayList<Integer>();
+		for (int i : selectedRows) {
+			indexes.add(i);
+			selectedRowSet.add(i);
+		}
+		for (int i = 0; i < tableModel.getRowCount(); i++) {
+			if (!selectedRowSet.contains(i)) {
+				indexes.add(i);
+			}
+		}
+		fireTableDataChanged();
+	}
 
 	private class SyncSelectionListener implements SelectionListener {
 
@@ -373,6 +390,7 @@ public class TableComponent extends JPanel {
 	}
 
 	private final class PopupActionListener implements ActionListener {
+
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			if (OPTIMALWIDTH.equals(e.getActionCommand())) {
@@ -458,6 +476,13 @@ public class TableComponent extends JPanel {
 			}
 		}
 
+		protected void addMenu(JPopupMenu pop, String text, String actionCommand) {
+			JMenuItem menu = new JMenuItem(text);
+			menu.setActionCommand(actionCommand);
+			menu.addActionListener(menuListener);
+			pop.add(menu);
+		}
+
 		protected abstract IActionFactory getFactory(int clickedRow);
 
 		protected abstract Component getComponent();
@@ -491,13 +516,6 @@ public class TableComponent extends JPanel {
 			addMenu(pop, "No Sort", NOSORT);
 			pop.addSeparator();
 			return pop;
-		}
-
-		private void addMenu(JPopupMenu pop, String text, String actionCommand) {
-			JMenuItem menu = new JMenuItem(text);
-			menu.setActionCommand(actionCommand);
-			menu.addActionListener(menuListener);
-			pop.add(menu);
 		}
 	}
 

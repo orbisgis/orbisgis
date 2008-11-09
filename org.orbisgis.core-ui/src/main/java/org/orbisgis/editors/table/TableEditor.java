@@ -61,4 +61,8 @@ public class TableEditor implements IEditor {
 	public void saveStatus() throws PersistenceException {
 	}
 
+	public void moveSelectionUp() {
+		table.moveSelectionUp();
+	}
+
 }
