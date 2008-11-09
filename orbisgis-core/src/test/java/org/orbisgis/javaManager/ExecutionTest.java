@@ -35,6 +35,7 @@ public class ExecutionTest extends AbstractTest {
 
 	@Override
 	protected void setUp() throws Exception {
+		super.setUp();
 		testOutputManager = new TestOutputManager();
 		Services.registerService(OutputManager.class, "", testOutputManager);
 	}

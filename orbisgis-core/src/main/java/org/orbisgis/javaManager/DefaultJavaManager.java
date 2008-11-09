@@ -268,13 +268,13 @@ public class DefaultJavaManager implements JavaManager {
 			clazz.append(scriptCode.substring(blockStartPos, methodStartPos));
 			clazz.append("}");
 			clazz.append(scriptCode.substring(methodStartPos));
-			clazz.append("public void print(String text) {"
+			clazz.append("public void print(Object text) {"
 					+ getOutputServiceCall()
-					+ "om.append(text+\"\\n\");om.makeVisible();}");
+					+ "om.println(text.toString());om.makeVisible();}");
 			clazz.append(
 					"public void help() {" + "OutputManager om = "
 							+ "Services.getService(OutputManager.class);"
-							+ "om.append(").append(getHelpText()).append(
+							+ "om.print(").append(getHelpText()).append(
 					");om.makeVisible();}");
 			clazz.append("}");
 			classCode = clazz.toString();
