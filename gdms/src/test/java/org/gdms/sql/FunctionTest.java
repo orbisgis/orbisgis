@@ -56,7 +56,7 @@ public abstract class FunctionTest extends TestCase {
 	protected Geometry g1;
 	protected Geometry g2;
 	protected Geometry g3;
-	protected Geometry g4; //With two holes
+	protected Geometry g4; // With two holes
 	protected Geometry geomCollection;
 
 	@Override
@@ -65,12 +65,12 @@ public abstract class FunctionTest extends TestCase {
 		g1 = wktr.read("MULTIPOLYGON (((0 0, 1 1, 0 1, 0 0)))");
 		g2 = wktr.read("MULTILINESTRING ((0 0, 1 1, 0 1, 0 0))");
 		g3 = wktr.read("MULTIPOINT (0 0, 1 1, 0 1, 0 0)");
-		g4 = wktr.read("POLYGON ((181 124, 87 162, 76 256, 166 315, 286 325, 373 255, 387 213, 377 159, 351 121, 298 101, 234 56, 181 124), (165 244, 227 219, 234 300, 168 288, 165 244), (244 130, 305 135, 324 186, 306 210, 272 206, 206 174, 244 130))");
-		
+		g4 = wktr
+				.read("POLYGON ((181 124, 87 162, 76 256, 166 315, 286 325, 373 255, 387 213, 377 159, 351 121, 298 101, 234 56, 181 124), (165 244, 227 219, 234 300, 168 288, 165 244), (244 130, 305 135, 324 186, 306 210, 272 206, 206 174, 244 130))");
 
 		GeometryFactory gf = new GeometryFactory();
 		geomCollection = gf.createGeometryCollection(new Geometry[] { g1, g2 });
-		geomCollection = gf.createGeometryCollection(new Geometry[] { g3,
+		geomCollection = gf.createGeometryCollection(new Geometry[] { g3, g4,
 				geomCollection });
 	}
 
@@ -89,13 +89,13 @@ public abstract class FunctionTest extends TestCase {
 	protected Value evaluateAggregatedZeroRows(Function function) {
 		return function.getAggregateResult();
 	}
-	
+
 	private Value evaluateFunction(Function function, Value[] values)
 			throws FunctionException {
 		if (function.isAggregate()) {
 			Value lastEvaluation = function.evaluate(values);
 			Value lastCall = function.getAggregateResult();
-			if (lastCall != null ) {
+			if (lastCall != null) {
 				return lastCall;
 			} else {
 				return lastEvaluation;

@@ -109,7 +109,12 @@ public class PropertiesFunctionTest extends FunctionTest {
 	public void testNumInteriorRing() throws Exception {
 		int v = testSpatialFunction(new NumInteriorRing(), g4, 1).getAsInt();
 		Polygon p = (Polygon) g4;
-		assertTrue(p.getNumInteriorRing()==v);
+		assertTrue(p.getNumInteriorRing() == v);
+
+		// Test with geometry collections
+		// v = testSpatialFunction(new NumInteriorRing(), geomCollection,
+		// 1).getAsInt();
+		// assertTrue(p.getNumInteriorRing()==v);
 	}
 
 }
