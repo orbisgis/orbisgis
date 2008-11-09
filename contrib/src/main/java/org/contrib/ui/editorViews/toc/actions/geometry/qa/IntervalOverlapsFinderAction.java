@@ -128,14 +128,13 @@ public class IntervalOverlapsFinderAction implements ILayerAction {
 					OutputManager om = (OutputManager) Services
 							.getService(OutputManager.class);
 					Color color = Color.black;
-					om.append("Report ----------------------------------"
-							+ "\n", color);
+					om.println("Report ----------------------------------", color);
 
 					color = Color.red;
-					om.append("No overlaping geometries in the layer  : " + layer.getName() + "\n", color);
+					om.println("No overlaping geometries in the layer  : " + layer.getName(), color);
 					
 					color = Color.black;
-					om.append("----------------------------------" + "\n", color);
+					om.println("----------------------------------", color);
 					om.makeVisible();
 
 				}

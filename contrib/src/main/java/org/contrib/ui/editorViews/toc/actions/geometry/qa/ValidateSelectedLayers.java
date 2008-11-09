@@ -289,14 +289,14 @@ public class ValidateSelectedLayers {
 		OutputManager om = (OutputManager) Services
 				.getService(OutputManager.class);
 		Color color = Color.black;
-		om.append("Report ----------------------------------" + "\n", color);
+		om.println("Report ----------------------------------", color);
 
 		color = Color.red;
-		om.append("Layer : " + layer.getName() + "\n", color);
+		om.println("Layer : " + layer.getName(), color);
 
 		if (validationErrors.isEmpty()) {
 
-			om.append("No validation errors " + "\n", color);
+			om.println("No validation errors ", color);
 			return;
 		}
 
@@ -312,13 +312,12 @@ public class ValidateSelectedLayers {
 			String message = (String) i.next();
 
 			color = Color.blue;
-			om.append(message + ":"
-					+ descriptionToErrorMap.getItems(message).size() + ""
-					+ "\n", color);
+			om.println(message + ":"
+					+ descriptionToErrorMap.getItems(message).size() + "", color);
 
 		}
 		color = Color.black;
-		om.append("----------------------------------" + "\n", color);
+		om.println("----------------------------------", color);
 		om.makeVisible();
 	}
 
