@@ -1,4 +1,4 @@
-package org.orbisgis.editors.table.actions;
+package org.orbisgis.editors.table.editorActions;
 
 import java.util.Arrays;
 
