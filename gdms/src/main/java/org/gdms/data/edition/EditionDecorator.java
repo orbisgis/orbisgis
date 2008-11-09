@@ -293,10 +293,10 @@ public class EditionDecorator extends AbstractDataSourceDecorator implements
 			value = ValueFactory.createNullValue();
 		}
 
-		String error = check(fieldId, value);
-		if (error != null) {
-			throw new DriverException(error);
-		}
+//		String error = check(fieldId, value);
+//		if (error != null) {
+//			throw new DriverException(error);
+//		}
 
 		ModifyCommand.ModifyInfo ret;
 		PhysicalDirection dir = rowsDirections.get((int) row);
@@ -380,12 +380,12 @@ public class EditionDecorator extends AbstractDataSourceDecorator implements
 	}
 
 	void doInsertAt(long rowIndex, Value[] values) throws DriverException {
-		for (int i = 0; i < values.length; i++) {
-			String error = check(i, values[i]);
-			if (error != null) {
-				throw new DriverException(error);
-			}
-		}
+//		for (int i = 0; i < values.length; i++) {
+//			String error = check(i, values[i]);
+//			if (error != null) {
+//				throw new DriverException(error);
+//			}
+//		}
 		dirty = true;
 
 		insertInIndex(values, (int) rowIndex);

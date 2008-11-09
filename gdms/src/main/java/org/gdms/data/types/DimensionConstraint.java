@@ -72,7 +72,7 @@ public class DimensionConstraint extends AbstractIntConstraint {
 			final Geometry geom = value.getAsGeometry();
 			if (getDimension(geom) != constraintValue) {
 				return "This source doesn't allow geometries with different dimensions. "
-						+ getDimensionDescription() + "expected";
+						+ getDimensionDescription() + " expected";
 			}
 		}
 		return null;
