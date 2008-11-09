@@ -14,7 +14,9 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 
+import javax.tools.Diagnostic;
 import javax.tools.DiagnosticListener;
 import javax.tools.JavaCompiler;
 import javax.tools.JavaFileObject;
@@ -74,8 +76,10 @@ public class DefaultJavaManager implements JavaManager {
 
 	@Override
 	public Class<?> compile(String code,
-			DiagnosticListener<JavaFileObject> listener) throws IOException,
-			CompilationException, ParseException {
+			DiagnosticListener<JavaFileObject> userListener)
+			throws IOException, CompilationException, ParseException {
+		FirstErrorDiagnosticListener listener = new FirstErrorDiagnosticListener(
+				userListener);
 		StandardJavaFileManager stdFileManager = compiler
 				.getStandardFileManager(listener, null, null);
 		HashSet<File> systemClassPath = getBuildPath(stdFileManager);
@@ -116,7 +120,8 @@ public class DefaultJavaManager implements JavaManager {
 				throw new RuntimeException("Bug! Cannot find compiled class", e);
 			}
 		} else {
-			throw new CompilationException("Cannot compile class");
+			throw new CompilationException("Cannot compile class: "
+					+ listener.message);
 		}
 	}
 
@@ -343,5 +348,28 @@ public class DefaultJavaManager implements JavaManager {
 		}
 
 		return pr;
+	}
+
+	private class FirstErrorDiagnosticListener implements
+			DiagnosticListener<JavaFileObject> {
+
+		String message;
+		private DiagnosticListener<JavaFileObject> delegate;
+
+		public FirstErrorDiagnosticListener(
+				DiagnosticListener<JavaFileObject> delegate) {
+			this.delegate = delegate;
+		}
+
+		@Override
+		public void report(Diagnostic<? extends JavaFileObject> diagnostic) {
+			message = diagnostic.getMessage(Locale.getDefault()) + " at line "
+					+ diagnostic.getLineNumber() + " at column "
+					+ diagnostic.getColumnNumber();
+			if (delegate != null) {
+				delegate.report(diagnostic);
+			}
+		}
+
 	}
 }
