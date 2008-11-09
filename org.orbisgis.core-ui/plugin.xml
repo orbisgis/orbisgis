@@ -286,14 +286,14 @@
 			editor-id="org.orbisgis.editors.Table"
 			toolbar-id="org.orbisgis.editors.map.Edition"
 			class="org.orbisgis.editors.table.editorActions.Redo"/>
-		<editor-action id="org.orbisgis.editors.table.actions.DeleteSelection"
+		<editor-action id="org.orbisgis.editors.table.editorActions.DeleteSelection"
 			menu-id="org.orbisgis.Table" text="Delete"
 			menu-group="org.orbisgis.editors.table.Basic"
 			icon="/org/orbisgis/images/remove.png"
 			editor-id="org.orbisgis.editors.Table"
 			toolbar-id="org.orbisgis.editors.map.Edition"
 			class="org.orbisgis.editors.table.editorActions.DeleteSelection"/>
-		<editor-action id="org.orbisgis.editors.table.actions.SelectionUp"
+		<editor-action id="org.orbisgis.editors.table.editorActions.SelectionUp"
 			menu-id="org.orbisgis.Table" text="Move selection up"
 			menu-group="org.orbisgis.editors.table.Basic"
 			icon="/org/orbisgis/images/remove.png"
@@ -312,10 +312,13 @@
 			text="Remove field"
 			menu-group="org.orbisgis.editors.table.FieldManagement"
 			class="org.orbisgis.editors.table.actions.RemoveField"/>
-		<action id="org.orbisgis.editors.table.actions.AddField"
-			text="Add field"
+		<action id="org.orbisgis.editors.table.actions.AddField" text="Add field"
 			menu-group="org.orbisgis.editors.table.FieldManagement"
 			class="org.orbisgis.editors.table.actions.AddField"/>
+		<action id="org.orbisgis.editors.table.actions.ShowFieldInfo"
+			text="Show field info"
+			menu-group="org.orbisgis.editors.table.FieldManagement"
+			class="org.orbisgis.editors.table.actions.ShowFieldInfo"/>
 	</extension>
 	
 	<!-- table cell actions -->
