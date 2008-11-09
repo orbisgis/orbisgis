@@ -779,6 +779,22 @@ public class SQLTest extends SourceTest {
 				+ super.getSpatialFieldName(resource) + ")");
 	}
 
+	public void testDeepAggregatedFunction() throws Exception {
+		String[] resources = super.getResourcesWithNumericField();
+		for (String resource : resources) {
+			String nfName = super.getNumericFieldNameFor(resource);
+			String sql = "select stringtodouble(toString(max(\"" + nfName
+					+ "\"))) from \"" + resource + "\" group by \"" + nfName
+					+ "\"";
+			DataSource ds = dsf.getDataSourceFromSQL(sql);
+			ds.open();
+			for (int i = 0; i < ds.getRowCount(); i++) {
+				assertTrue(!ds.isNull(i, 0));
+			}
+			ds.close();
+		}
+	}
+
 	@Override
 	protected void setUp() throws Exception {
 		setWritingTests(false);
