@@ -71,7 +71,8 @@ public class Literal extends Operand {
 		return new Literal(value);
 	}
 
-	public void replace(Expression expression1, Expression expression2) {
+	public boolean replace(Expression expression1, Expression expression2) {
+		return false;
 	}
 
 	public boolean isLiteral() {
