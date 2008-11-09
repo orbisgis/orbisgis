@@ -69,7 +69,7 @@ public abstract class FunctionTest extends TestCase {
 				.read("POLYGON ((181 124, 87 162, 76 256, 166 315, 286 325, 373 255, 387 213, 377 159, 351 121, 298 101, 234 56, 181 124), (165 244, 227 219, 234 300, 168 288, 165 244), (244 130, 305 135, 324 186, 306 210, 272 206, 206 174, 244 130))");
 
 		GeometryFactory gf = new GeometryFactory();
-		geomCollection = gf.createGeometryCollection(new Geometry[] { g1, g2 });
+		geomCollection = gf.createGeometryCollection(new Geometry[] { g1, g2, g4 });
 		geomCollection = gf.createGeometryCollection(new Geometry[] { g3, g4,
 				geomCollection });
 	}

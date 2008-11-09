@@ -52,25 +52,19 @@ public class NumInteriorRing extends AbstractSpatialPropertyFunction {
 
 		Geometry g = args[0].getAsGeometry();
 
-		int holes = 0;
-		if (g instanceof GeometryCollection) {
-			int geomCount = g.getNumGeometries();
-
-			for (int i = 0; i < geomCount; i++) {
-
-				holes = getHoles(g.getGeometryN(i)) + holes;
-
-			}
-
-		} else {
-			holes = getHoles(g);		}
+		int holes = getHoles(g);
 
 		return ValueFactory.createValue(holes);
 	}
 
 	private int getHoles(Geometry g) {
 		int holes = 0;
-		if (g instanceof Polygon) {
+		if (g instanceof GeometryCollection) {
+			int geomCount = g.getNumGeometries();
+			for (int i = 0; i < geomCount; i++) {
+				holes += getHoles(g.getGeometryN(i));
+			}
+		} else if (g instanceof Polygon) {
 			holes = ((Polygon) g).getNumInteriorRing();
 		}
 		return holes;
