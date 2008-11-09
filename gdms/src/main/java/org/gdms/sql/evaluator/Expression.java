@@ -46,7 +46,7 @@ public interface Expression {
 	/**
 	 * Evaluates this expression tree. If the tree contains field references and
 	 * no DataSource was specified it throws NullPointerException
-	 *
+	 * 
 	 * @return The result of the evaluation
 	 * @throws EvaluationException
 	 *             If there is some problem evaluating the expression
@@ -56,7 +56,7 @@ public interface Expression {
 	/**
 	 * Does nothing if the types of the expression are valid. If there is an
 	 * operation with the wrong types at its input it raises an exception
-	 *
+	 * 
 	 * @throws IncompatibleTypesException
 	 * @throws DriverException
 	 */
@@ -65,7 +65,7 @@ public interface Expression {
 	/**
 	 * Gets the type of the expression. It is one of the constants in
 	 * {@link Type}
-	 *
+	 * 
 	 * @return
 	 * @throws DriverException
 	 */
@@ -74,21 +74,21 @@ public interface Expression {
 	/**
 	 * Gets an array of the field references that are in the tree. If there is
 	 * no field reference it returns an empty array, never null
-	 *
+	 * 
 	 * @return
 	 */
 	Field[] getFieldReferences();
 
 	/**
 	 * Gets an array with the names of the functions referenced in the tree
-	 *
+	 * 
 	 * @return An array of functions. It may be empty
 	 */
 	FunctionOperator[] getFunctionReferences();
 
 	/**
 	 * Gets the child expression at the specified index
-	 *
+	 * 
 	 * @param index
 	 * @return
 	 */
@@ -96,28 +96,28 @@ public interface Expression {
 
 	/**
 	 * Gets the number of children this expression has
-	 *
+	 * 
 	 * @return
 	 */
 	public int getChildCount();
 
 	/**
 	 * Gets all the children of this expression
-	 *
+	 * 
 	 * @return
 	 */
 	public Expression[] getChildren();
 
 	/**
 	 * Returns a exact copy of the expression
-	 *
+	 * 
 	 * @return
 	 */
 	public Expression cloneExpression();
 
 	/**
 	 * Gets the path of the field reference instance in the expression tree
-	 *
+	 * 
 	 * @param field
 	 * @return
 	 */
@@ -126,15 +126,17 @@ public interface Expression {
 	/**
 	 * Replaces in this expression tree the occurrences of expression1 by
 	 * expression2.
-	 *
+	 * 
 	 * @param expression1
 	 * @param expression2
+	 * @return true if expression1 was found and successfully replaced. False
+	 *         otherwise
 	 */
-	void replace(Expression expression1, Expression expression2);
+	boolean replace(Expression expression1, Expression expression2);
 
 	/**
 	 * True if this expression always returns the same value
-	 *
+	 * 
 	 * @return
 	 */
 	boolean isLiteral();
@@ -143,7 +145,7 @@ public interface Expression {
 	 * Transforms the top level logical operators in this expression by applying
 	 * the rule: a | b -> !(!a & !b). The rule is applied to the AND, OR and NOT
 	 * operators
-	 *
+	 * 
 	 * @return Expression
 	 */
 	public Expression changeOrForNotAnd();
