@@ -57,6 +57,9 @@ public class MinConstraint extends AbstractIntConstraint {
 	}
 
 	public String check(Value value) {
+		if (!value.isNull() && (value.getAsDouble() < constraintValue)) {
+			return "Minimum valid value is " + constraintValue;
+		}
 		return null;
 	}
 }

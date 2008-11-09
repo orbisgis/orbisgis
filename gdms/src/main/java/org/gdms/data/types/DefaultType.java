@@ -100,7 +100,13 @@ public class DefaultType implements Type {
 	}
 
 	public String check(final Value value) {
-		// TODO Auto-generated method stub
+		for (Constraint constraint : constraints) {
+			String error = constraint.check(value);
+			if (error != null) {
+				return error;
+			}
+		}
+		
 		return null;
 	}
 

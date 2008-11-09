@@ -36,9 +36,11 @@
  */
 package org.gdms.data.types;
 
+import org.gdms.data.values.Value;
+
 /**
  * Indicates that the field cannot accept null values
- *
+ * 
  */
 public class NotNullConstraint extends AbstractBooleanConstraint {
 
@@ -51,5 +53,14 @@ public class NotNullConstraint extends AbstractBooleanConstraint {
 	@Override
 	public int getConstraintCode() {
 		return Constraint.NOT_NULL;
+	}
+
+	@Override
+	public String check(Value value) {
+		if (value.isNull()) {
+			return "Null values not allowed";
+		}
+		
+		return null;
 	}
 }

@@ -36,10 +36,12 @@
  */
 package org.gdms.data.types;
 
+import org.gdms.data.values.Value;
+
 /**
  * Indicates the field is incremented automatically without the need to specify
  * a value for it
- *
+ * 
  */
 public class AutoIncrementConstraint extends AbstractBooleanConstraint {
 
@@ -52,5 +54,14 @@ public class AutoIncrementConstraint extends AbstractBooleanConstraint {
 	@Override
 	public int getConstraintCode() {
 		return Constraint.AUTO_INCREMENT;
+	}
+
+	@Override
+	public String check(Value value) {
+		if (!value.isNull()) {
+			return "This column is automatically populated with sequential values";
+		}
+		
+		return null;
 	}
 }

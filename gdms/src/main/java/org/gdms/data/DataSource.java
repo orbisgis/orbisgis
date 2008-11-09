@@ -194,7 +194,7 @@ public interface DataSource extends ReadAccess {
 			IllegalArgumentException;
 
 	/**
-	 * Inserts a row at the end of the dataware
+	 * Inserts a row at the end of the datasource
 	 * 
 	 * @throws DriverException
 	 *             if the row could not be inserted
@@ -202,7 +202,7 @@ public interface DataSource extends ReadAccess {
 	public void insertEmptyRow() throws DriverException;
 
 	/**
-	 * Inserts a row at the end of the dataware with the specified values
+	 * Inserts a row at the end of the datasource with the specified values
 	 * 
 	 * @param values
 	 *            Values of the inserted row fields in the field order
@@ -375,7 +375,7 @@ public interface DataSource extends ReadAccess {
 
 	/**
 	 * Sets the value of a cell of the table. Cannot be called outside a
-	 * beginTrans-commintTrans or beginTrans-rollBackTrans
+	 * open-close
 	 * 
 	 * @param row
 	 *            row to update
@@ -546,8 +546,8 @@ public interface DataSource extends ReadAccess {
 
 	/**
 	 * Returns true if the DataSource has been modified since it was created.
-	 * Notice that it doesn't check the source and only checks whether the source
-	 * has been modified through this instance or not
+	 * Notice that it doesn't check the source and only checks whether the
+	 * source has been modified through this instance or not
 	 * 
 	 * @return
 	 */

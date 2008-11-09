@@ -36,6 +36,8 @@
  */
 package org.gdms.data.types;
 
+import org.gdms.data.values.Value;
+
 /**
  * indicates that the field is read only
  */
@@ -50,5 +52,10 @@ public class ReadOnlyConstraint extends AbstractBooleanConstraint {
 	@Override
 	public int getConstraintCode() {
 		return Constraint.READONLY;
+	}
+
+	@Override
+	public String check(Value value) {
+		return "This field is read-only";
 	}
 }

@@ -40,7 +40,7 @@ import org.gdms.data.values.Value;
 
 /**
  * Indicates the maximum value a field can have
- *
+ * 
  */
 public class MaxConstraint extends AbstractIntConstraint {
 
@@ -57,6 +57,9 @@ public class MaxConstraint extends AbstractIntConstraint {
 	}
 
 	public String check(Value value) {
+		if (!value.isNull() && (value.getAsDouble() > constraintValue)) {
+			return "Maximum valid value is " + constraintValue;
+		}
 		return null;
 	}
 }

@@ -49,7 +49,7 @@ import com.vividsolutions.jts.io.WKTWriter;
 
 /**
  * Constraint indicating the type of the geometry: point, multilinestring, ...
- *
+ * 
  */
 public class GeometryConstraint extends AbstractIntConstraint {
 	private static final String MULTI_POLYGON_TEXT = "Multi polygon";
@@ -76,8 +76,6 @@ public class GeometryConstraint extends AbstractIntConstraint {
 
 	public static final int MULTI_POLYGON = 20;
 
-	private static final int NONE = 0;
-
 	public GeometryConstraint(final int constraintValue) {
 		super(constraintValue);
 	}
@@ -91,13 +89,11 @@ public class GeometryConstraint extends AbstractIntConstraint {
 	}
 
 	public String check(Value value) {
-		if (!(value.getType() == Type.GEOMETRY)) {
-			return "Value '" + value.toString() + "' must be a Geometry";
-		} else {
+		if (!value.isNull()) {
 			final Geometry geom = value.getAsGeometry();
-			final int st = findBestGeometryType(geom);
+			final int st = getGeometryType(geom);
 			if (st != constraintValue) {
-				return "The type of the geometry is not "
+				return "The type of the geometry must be "
 						+ getConstraintHumanValue() + ": "
 						+ new WKTWriter(3).write(geom);
 			}
@@ -106,7 +102,7 @@ public class GeometryConstraint extends AbstractIntConstraint {
 	}
 
 	/**
-	 *
+	 * 
 	 * @return One of the following constant in geometry constraint: MIXED,
 	 *         POINT,MULTI_POINT, LINESTRING,
 	 *         MULTI_LINESTRING,POLYGON,MULTI_POLYGON
@@ -116,7 +112,14 @@ public class GeometryConstraint extends AbstractIntConstraint {
 		return constraintValue;
 	}
 
-	private static int findBestGeometryType(final Geometry geometry) {
+	/**
+	 * Get the type of the geometry as a constraint. Returns -1 if the geometry
+	 * type doesn't fit any of the possible constraints
+	 * 
+	 * @param geometry
+	 * @return
+	 */
+	private static int getGeometryType(final Geometry geometry) {
 		int type;
 
 		if (geometry instanceof Point) {
@@ -132,7 +135,7 @@ public class GeometryConstraint extends AbstractIntConstraint {
 		} else if (geometry instanceof MultiLineString) {
 			type = MULTI_LINESTRING;
 		} else {
-			type = NONE;
+			type = -1;
 		}
 
 		return type;

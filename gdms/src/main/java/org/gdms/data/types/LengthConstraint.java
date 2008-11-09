@@ -40,7 +40,7 @@ import org.gdms.data.values.Value;
 
 /**
  * Indicates the maximum length of a value
- *
+ * 
  */
 public class LengthConstraint extends AbstractIntConstraint {
 
@@ -57,6 +57,10 @@ public class LengthConstraint extends AbstractIntConstraint {
 	}
 
 	public String check(Value value) {
+		if (value.toString().length() > constraintValue) {
+			return "Maximum length is " + constraintValue;
+		}
+		
 		return null;
 	}
 }

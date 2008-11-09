@@ -42,14 +42,14 @@ import com.vividsolutions.jts.geom.Geometry;
 
 /**
  * Constraint indicating the dimension of the geometry: 2D or 3D
- *
+ * 
  */
 public class DimensionConstraint extends AbstractIntConstraint {
 
 	/**
 	 * The dimension of the coordinates in the geometries. 2 if the geometries
 	 * will not contain a Z value and 3 otherwise.
-	 *
+	 * 
 	 * @param constraintValue
 	 */
 	public DimensionConstraint(final int constraintValue) {
@@ -68,10 +68,12 @@ public class DimensionConstraint extends AbstractIntConstraint {
 	}
 
 	public String check(Value value) {
-		final Geometry geom = value.getAsGeometry();
-		if (getDimension(geom) != constraintValue) {
-			return "This source doesn't allow geometries with different dimensions. "
-					+ getDimensionDescription() + "expected";
+		if (!value.isNull()) {
+			final Geometry geom = value.getAsGeometry();
+			if (getDimension(geom) != constraintValue) {
+				return "This source doesn't allow geometries with different dimensions. "
+						+ getDimensionDescription() + "expected";
+			}
 		}
 		return null;
 	}
