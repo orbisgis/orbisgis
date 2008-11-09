@@ -91,13 +91,20 @@ public abstract class AbstractOperator extends AbstractExpression implements
 		return children;
 	}
 
-	public void replace(Expression expression1, Expression expression2) {
+	public boolean replace(Expression expression1, Expression expression2) {
 		for (int i = 0; i < children.length; i++) {
 			Expression expr = children[i];
 			if (expr == expression1) {
 				children[i] = expression2;
+				return true;
+			} else {
+				if (children[i].replace(expression1, expression2)) {
+					return true;
+				}
 			}
 		}
+
+		return false;
 	}
 
 	public boolean isLiteral() {
