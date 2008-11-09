@@ -146,7 +146,8 @@ public class Field extends Operand {
 		return fieldName.hashCode();
 	}
 
-	public void replace(Expression expression1, Expression expression2) {
+	public boolean replace(Expression expression1, Expression expression2) {
+		return false;
 	}
 
 	public boolean isLiteral() {
