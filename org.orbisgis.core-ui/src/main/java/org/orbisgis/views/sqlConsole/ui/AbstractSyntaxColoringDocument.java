@@ -77,7 +77,7 @@ public abstract class AbstractSyntaxColoringDocument extends UndoableDocument {
 			// Save token bounds
 			int[] originalTokenBounds = new int[] { 0, 0 };
 			if (!styling) {
-				originalTokenBounds = getTokenBounds(offset, length);
+				originalTokenBounds = getTokenBounds(offset, text.length());
 			}
 
 			// Do replacement
@@ -87,7 +87,7 @@ public abstract class AbstractSyntaxColoringDocument extends UndoableDocument {
 			// If not already applying style, apply it
 			int[] currentTokenBounds;
 			if (!styling) {
-				currentTokenBounds = getTokenBounds(offset, length);
+				currentTokenBounds = getTokenBounds(offset, text.length());
 				colorize(Math
 						.min(originalTokenBounds[0], currentTokenBounds[0]),
 						Math.max(originalTokenBounds[1] + length + 1,
