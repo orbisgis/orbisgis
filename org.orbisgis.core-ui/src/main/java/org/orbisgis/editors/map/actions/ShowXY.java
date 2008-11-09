@@ -37,10 +37,10 @@
 package org.orbisgis.editors.map.actions;
 
 import org.orbisgis.editor.IEditor;
-import org.orbisgis.editor.action.IEditorSelectableAction;
+import org.orbisgis.editor.action.ISelectableEditorAction;
 import org.orbisgis.editors.map.MapEditor;
 
-public class ShowXY implements IEditorSelectableAction{
+public class ShowXY implements ISelectableEditorAction{
 
 	public void actionPerformed(IEditor editor) {
 		MapEditor me = (MapEditor) editor;

@@ -38,7 +38,7 @@ package org.orbisgis.editor.action;
 
 import org.orbisgis.editor.IEditor;
 
-public interface IEditorSelectableAction extends IEditorAction {
+public interface ISelectableEditorAction extends IEditorAction {
 
 	/**
 	 * Return true if the action should appear as 'selected'

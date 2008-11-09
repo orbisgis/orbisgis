@@ -88,7 +88,7 @@ import org.orbisgis.editor.EditorListener;
 import org.orbisgis.editor.IEditor;
 import org.orbisgis.editor.IExtensionPointEditor;
 import org.orbisgis.editor.action.IEditorAction;
-import org.orbisgis.editor.action.IEditorSelectableAction;
+import org.orbisgis.editor.action.ISelectableEditorAction;
 import org.orbisgis.images.IconLoader;
 import org.orbisgis.view.EPViewHelper;
 import org.orbisgis.view.IEditorsView;
@@ -448,7 +448,7 @@ public class OrbisGISFrame extends JFrame implements IWindow, ViewManager,
 				return false;
 			} else {
 				if (editorId.equals(editorsView.getActiveEditor().getId())) {
-					return ((IEditorSelectableAction) action)
+					return ((ISelectableEditorAction) action)
 							.isSelected(activeEditor.getEditor());
 				} else {
 					return false;
