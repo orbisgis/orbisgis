@@ -193,7 +193,7 @@ public class ProjectionOp extends AbstractExpressionOperator implements
 	 * field reference its name is used. Finally, if a complex expression is
 	 * found and there is no alias, the string 'unknown' concatenated with the
 	 * index of the field in the resulting metadata is used
-	 *
+	 * 
 	 * @see org.gdms.sql.strategies.Operator#getResultMetadata()
 	 */
 	public Metadata getResultMetadata() throws DriverException {
@@ -300,7 +300,7 @@ public class ProjectionOp extends AbstractExpressionOperator implements
 	 * Returns the aggregated expressions to be added in the groupby operator
 	 * further down. This method assumes the instruction contains at least an
 	 * aggregated function or a group by clause
-	 *
+	 * 
 	 * @param groupByFields
 	 *            The names used in the group by clause
 	 * @return
@@ -318,9 +318,8 @@ public class ProjectionOp extends AbstractExpressionOperator implements
 		ArrayList<Expression> ret = new ArrayList<Expression>();
 		for (int i = 0; i < exprs.length; i++) {
 			Expression expression = exprs[i];
-			FunctionOperator[] functions = getFirstFunctionLevel(expression)
-					.toArray(new FunctionOperator[0]);
-			for (FunctionOperator functionOperator : functions) {
+			ArrayList<FunctionOperator> aggregatedFunctions = getAggregatedFunctions(expression);
+			for (FunctionOperator functionOperator : aggregatedFunctions) {
 				ret.add(functionOperator);
 				// Substitute the functions by field references to the group by
 				int groupByIndex = functionStartIndex;
@@ -344,14 +343,20 @@ public class ProjectionOp extends AbstractExpressionOperator implements
 		return ret.toArray(new Expression[0]);
 	}
 
-	private ArrayList<FunctionOperator> getFirstFunctionLevel(
+	private ArrayList<FunctionOperator> getAggregatedFunctions(
 			Expression expression) {
+		boolean aggregated = false;
 		ArrayList<FunctionOperator> ret = new ArrayList<FunctionOperator>();
 		if (expression instanceof FunctionOperator) {
-			ret.add((FunctionOperator) expression);
-		} else {
+			FunctionOperator fnc = (FunctionOperator) expression;
+			if (isAggregated(fnc)) {
+				aggregated = true;
+				ret.add(fnc);
+			}
+		}
+		if (!aggregated) {
 			for (int i = 0; i < expression.getChildCount(); i++) {
-				ret.addAll(getFirstFunctionLevel(expression.getChild(i)));
+				ret.addAll(getAggregatedFunctions(expression.getChild(i)));
 			}
 		}
 
