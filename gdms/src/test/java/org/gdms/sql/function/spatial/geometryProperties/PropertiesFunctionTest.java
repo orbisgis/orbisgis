@@ -111,10 +111,10 @@ public class PropertiesFunctionTest extends FunctionTest {
 		Polygon p = (Polygon) g4;
 		assertTrue(p.getNumInteriorRing() == v);
 
-		// Test with geometry collections
-		// v = testSpatialFunction(new NumInteriorRing(), geomCollection,
-		// 1).getAsInt();
-		// assertTrue(p.getNumInteriorRing()==v);
+		//Test with geometry collections
+		v = testSpatialFunction(new NumInteriorRing(), geomCollection,
+		 1).getAsInt();
+		 assertTrue(p.getNumInteriorRing()==v);
 	}
 
 }

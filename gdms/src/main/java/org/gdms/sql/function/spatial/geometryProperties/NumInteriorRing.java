@@ -43,20 +43,37 @@ import org.gdms.data.values.ValueFactory;
 import org.gdms.sql.function.FunctionException;
 
 import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.GeometryCollection;
 import com.vividsolutions.jts.geom.Polygon;
 
 public class NumInteriorRing extends AbstractSpatialPropertyFunction {
 
 	public Value evaluateResult(final Value[] args) throws FunctionException {
 
-		int holes = 0;
-
 		Geometry g = args[0].getAsGeometry();
+
+		int holes = 0;
+		if (g instanceof GeometryCollection) {
+			int geomCount = g.getNumGeometries();
+
+			for (int i = 0; i < geomCount; i++) {
+
+				holes = getHoles(g.getGeometryN(i)) + holes;
+
+			}
+
+		} else {
+			holes = getHoles(g);		}
+
+		return ValueFactory.createValue(holes);
+	}
+
+	private int getHoles(Geometry g) {
+		int holes = 0;
 		if (g instanceof Polygon) {
 			holes = ((Polygon) g).getNumInteriorRing();
 		}
-
-		return ValueFactory.createValue(holes);
+		return holes;
 	}
 
 	public String getName() {
