@@ -36,11 +36,14 @@
  */
 package org.gdms.data.types;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import org.gdms.data.values.Value;
 
 /**
  * Indicates the pattern that the field values must have
- *
+ * 
  */
 public class PatternConstraint extends AbstractConstraint {
 	private String constraintValue;
@@ -62,6 +65,14 @@ public class PatternConstraint extends AbstractConstraint {
 	}
 
 	public String check(Value value) {
+		if (!value.isNull()) {
+			Pattern p = Pattern.compile(constraintValue);
+			Matcher m = p.matcher(value.toString());
+			if (!m.find()) {
+				return "The value doesn't match the pattern '"
+						+ constraintValue + "'";
+			}
+		}
 		return null;
 	}
 
