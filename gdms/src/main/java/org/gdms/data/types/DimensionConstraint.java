@@ -70,9 +70,9 @@ public class DimensionConstraint extends AbstractIntConstraint {
 	public String check(Value value) {
 		if (!value.isNull()) {
 			final Geometry geom = value.getAsGeometry();
-			if (getDimension(geom) != constraintValue) {
-				return "This source doesn't allow geometries with different dimensions. "
-						+ getDimensionDescription() + " expected";
+			if ((getDimension(geom) == 2) && (constraintValue == 3)) {
+				return "Invalid dimension. " + getDimensionDescription()
+						+ " expected";
 			}
 		}
 		return null;
