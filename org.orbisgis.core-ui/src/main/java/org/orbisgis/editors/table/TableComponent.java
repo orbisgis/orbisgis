@@ -550,8 +550,13 @@ public class TableComponent extends JPanel {
 		@Override
 		public void singleModification(EditionEvent e) {
 			if (e.getType() != EditionEvent.RESYNC) {
-				tableModel.fireTableCellUpdated((int) e.getRowIndex(), e
-						.getFieldIndex());
+				if ((e.getType() == EditionEvent.DELETE)
+						|| (e.getType() == EditionEvent.INSERT)) {
+					refreshTableStructure();
+				} else {
+					tableModel.fireTableCellUpdated((int) e.getRowIndex(), e
+							.getFieldIndex());
+				}
 			} else {
 				refreshTableStructure();
 			}
