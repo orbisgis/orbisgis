@@ -66,7 +66,9 @@ import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.LineString;
+import com.vividsolutions.jts.geom.LinearRing;
 import com.vividsolutions.jts.geom.Point;
+import com.vividsolutions.jts.geom.Polygon;
 
 public class SpatialEditionTest extends SourceTest {
 
@@ -141,6 +143,7 @@ public class SpatialEditionTest extends SourceTest {
 	public void testIndex() throws Exception {
 		String[] resources = super.getSpatialResources();
 		for (String resource : resources) {
+			System.out.println(resource);
 			testIndex(resource);
 		}
 	}
@@ -219,7 +222,7 @@ public class SpatialEditionTest extends SourceTest {
 		assertTrue(d.isNull(1, 0));
 		d.deleteRow(1);
 		d.insertFilledRowAt(1, d.getRow(0));
-		assertTrue(d.getFieldValue(1, 0).equals(d.getFieldValue(0, 0))
+		assertTrue(d.getFieldValue(1, 1).equals(d.getFieldValue(0, 1))
 				.getAsBoolean());
 		assertTrue(count(d.queryIndex(query)) == originalRowCount);
 		d.deleteRow(1);
@@ -418,17 +421,16 @@ public class SpatialEditionTest extends SourceTest {
 		Value[] row = d.getRow(0);
 		double x = originalExtent.getMinX();
 		double y = originalExtent.getMinY();
-		row[sfi] = ValueFactory.createValue(gf.createPoint(new Coordinate(
-				x - 10, y - 10)));
+		GeometryConstraint gc = (GeometryConstraint) d.getFieldType(sfi)
+				.getConstraint(Constraint.GEOMETRY_TYPE);
+		row[sfi] = getOutsideGeom(gc, x, y, -10);
 		d.insertFilledRow(row);
 		assertTrue(fullExtentContainsAll(d));
 
-		d.setFieldValue(d.getRowCount() - 1, sfi, ValueFactory.createValue(gf
-				.createPoint(new Coordinate(x - 11, y - 11))));
+		d.setFieldValue(d.getRowCount() - 1, sfi, getOutsideGeom(gc, x, y, -11));
 		assertTrue(fullExtentContainsAll(d));
 
-		d.setFieldValue(d.getRowCount() - 1, sfi, ValueFactory.createValue(gf
-				.createPoint(new Coordinate(x - 9, y - 9))));
+		d.setFieldValue(d.getRowCount() - 1, sfi, getOutsideGeom(gc, x, y, -9));
 		assertTrue(fullExtentContainsAll(d));
 
 		d.deleteRow(d.getRowCount() - 1);
@@ -440,6 +442,35 @@ public class SpatialEditionTest extends SourceTest {
 		d.redo();
 		assertTrue(fullExtentContainsAll(d));
 
+	}
+
+	private Value getOutsideGeom(GeometryConstraint gc, double x, double y,
+			double offset) {
+		Geometry g = null;
+		Point point = gf.createPoint(new Coordinate(x + offset, y + offset));
+		LineString lineString = gf.createLineString(new Coordinate[] {
+				new Coordinate(x + offset, y + offset), new Coordinate(x, y) });
+		LinearRing linearRing = gf.createLinearRing(new Coordinate[] {
+				new Coordinate(x, y), new Coordinate(x + offset, y + offset),
+				new Coordinate(x + offset, y), new Coordinate(x, y) });
+		Polygon polygon = gf.createPolygon(linearRing, null);
+		if ((gc == null) || (gc.getGeometryType() == GeometryConstraint.POINT)) {
+			g = point;
+		} else if (gc.getGeometryType() == GeometryConstraint.MULTI_POINT) {
+			g = gf.createMultiPoint(new Point[] { point });
+		} else if (gc.getGeometryType() == GeometryConstraint.LINESTRING) {
+			g = lineString;
+		} else if (gc.getGeometryType() == GeometryConstraint.MULTI_LINESTRING) {
+			g = gf.createMultiLineString(new LineString[] { lineString });
+		} else if (gc.getGeometryType() == GeometryConstraint.POLYGON) {
+			g = polygon;
+		} else if (gc.getGeometryType() == GeometryConstraint.MULTI_POLYGON) {
+			g = gf.createMultiPolygon(new Polygon[] { polygon });
+		} else {
+			throw new RuntimeException();
+		}
+
+		return ValueFactory.createValue(g);
 	}
 
 	public void testEditedSpatialDataSourceFullExtentFile() throws Exception {

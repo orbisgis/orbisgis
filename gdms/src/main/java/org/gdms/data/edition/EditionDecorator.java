@@ -397,8 +397,9 @@ public class EditionDecorator extends AbstractDataSourceDecorator implements
 		for (int i = 0; i < values.length; i++) {
 			// Check special case of auto-increment not-null fields
 			Type type = getMetadata().getFieldType(i);
-			if (type.getBooleanConstraint(Constraint.AUTO_INCREMENT)
-					|| type.getBooleanConstraint(Constraint.NOT_NULL)) {
+			boolean autoIncrement = type
+					.getBooleanConstraint(Constraint.AUTO_INCREMENT);
+			if (autoIncrement && type.getBooleanConstraint(Constraint.NOT_NULL)) {
 				if (values[i].isNull()) {
 					continue;
 				}

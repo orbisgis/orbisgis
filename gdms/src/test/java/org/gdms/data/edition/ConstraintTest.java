@@ -21,6 +21,9 @@ import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.memory.ObjectMemoryDriver;
 
+import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.GeometryFactory;
+
 public class ConstraintTest extends TestCase {
 
 	private DataSourceFactory dsf;
@@ -106,6 +109,8 @@ public class ConstraintTest extends TestCase {
 		setType(TypeFactory.createType(Type.GEOMETRY, new GeometryConstraint(
 				GeometryConstraint.POINT)));
 		setValidValues(ValueFactory.createValue(Geometries.getPoint()),
+				ValueFactory.createValue(new GeometryFactory()
+						.createGeometryCollection(new Geometry[0])),
 				ValueFactory.createNullValue());
 		setInvalidValues(ValueFactory.createValue(Geometries.getMultiPoint3D()));
 		doEdition();

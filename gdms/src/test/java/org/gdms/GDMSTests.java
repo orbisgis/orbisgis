@@ -42,10 +42,11 @@ import junit.framework.TestSuite;
 
 import org.gdms.data.DataSourceFactoryTests;
 import org.gdms.data.DataSourceTest;
-import org.gdms.data.ListenerTest;
 import org.gdms.data.GettersTest;
+import org.gdms.data.ListenerTest;
 import org.gdms.data.command.CommandStackTests;
 import org.gdms.data.db.DataBaseTests;
+import org.gdms.data.edition.ConstraintTest;
 import org.gdms.data.edition.EditionTests;
 import org.gdms.data.edition.FailedEditionTest;
 import org.gdms.data.edition.MetadataTest;
@@ -91,6 +92,7 @@ public class GDMSTests extends TestCase {
 		suite.addTestSuite(MetadataTest.class);
 		suite.addTestSuite(SpatialDriverMetadataTest.class);
 		suite.addTestSuite(EditionTests.class);
+		suite.addTestSuite(ConstraintTest.class);
 		suite.addTestSuite(PKEditionTest.class);
 		suite.addTestSuite(UndoRedoTests.class);
 		suite.addTestSuite(ListenerTest.class);
