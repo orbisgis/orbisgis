@@ -56,6 +56,18 @@ public class ScaleConstraint extends AbstractIntConstraint {
 	}
 
 	public String check(Value value) {
+		if (!value.isNull()) {
+			double d = value.getAsDouble();
+			String s = "" + d;
+			String[] nums = s.split("\\Q.\\E");
+			if (nums.length == 2) {
+				int length = nums[1].length();
+				if (length > constraintValue) {
+					return "Too many digits. Only " + constraintValue
+							+ " allowed";
+				}
+			}
+		}
 		return null;
 	}
 

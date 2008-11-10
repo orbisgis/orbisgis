@@ -13,7 +13,9 @@ import org.gdms.data.types.LengthConstraint;
 import org.gdms.data.types.MaxConstraint;
 import org.gdms.data.types.MinConstraint;
 import org.gdms.data.types.NotNullConstraint;
+import org.gdms.data.types.PrecisionConstraint;
 import org.gdms.data.types.ReadOnlyConstraint;
+import org.gdms.data.types.ScaleConstraint;
 import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
@@ -123,6 +125,28 @@ public class ConstraintTest extends TestCase {
 				ValueFactory.createNullValue());
 		setInvalidValues(ValueFactory.createValue(Geometries
 				.getMultiPolygon2D()));
+		doEdition();
+	}
+
+	public void testPrecision() throws Exception {
+		setType(TypeFactory.createType(Type.DOUBLE,
+				new PrecisionConstraint(3)));
+		setValidValues(ValueFactory.createValue(123), ValueFactory
+				.createValue(12.3), ValueFactory.createValue(0.13),
+				ValueFactory.createNullValue());
+		setInvalidValues(ValueFactory.createValue(0.123), ValueFactory
+				.createValue(1235));
+		doEdition();
+	}
+
+	public void testScale() throws Exception {
+		setType(TypeFactory.createType(Type.DOUBLE,
+				new ScaleConstraint(3)));
+		setValidValues(ValueFactory.createValue(123), ValueFactory
+				.createValue(12.322), ValueFactory.createValue(0.133),
+				ValueFactory.createNullValue());
+		setInvalidValues(ValueFactory.createValue(0.1323), ValueFactory
+				.createValue(1244.1235));
 		doEdition();
 	}
 

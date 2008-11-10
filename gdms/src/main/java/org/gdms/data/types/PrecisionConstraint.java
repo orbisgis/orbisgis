@@ -40,7 +40,7 @@ import org.gdms.data.values.Value;
 
 /**
  * Indicates the precision of the values
- *
+ * 
  */
 public class PrecisionConstraint extends AbstractIntConstraint {
 
@@ -57,6 +57,17 @@ public class PrecisionConstraint extends AbstractIntConstraint {
 	}
 
 	public String check(Value value) {
+		if (!value.isNull()) {
+			double d = value.getAsDouble();
+			int length = value.toString().length();
+			if (d != (long) d) {
+				length--;
+			}
+
+			if (length > constraintValue) {
+				return "Too many digits. Only " + constraintValue + " allowed";
+			}
+		}
 		return null;
 	}
 }
