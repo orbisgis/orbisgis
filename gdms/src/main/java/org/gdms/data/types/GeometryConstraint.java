@@ -92,7 +92,7 @@ public class GeometryConstraint extends AbstractIntConstraint {
 		if (!value.isNull()) {
 			final Geometry geom = value.getAsGeometry();
 			final int st = getGeometryType(geom);
-			if (st != constraintValue) {
+			if (!geom.isEmpty() && (st != constraintValue)) {
 				return "The type of the geometry must be "
 						+ getConstraintHumanValue() + ": "
 						+ new WKTWriter(3).write(geom);
