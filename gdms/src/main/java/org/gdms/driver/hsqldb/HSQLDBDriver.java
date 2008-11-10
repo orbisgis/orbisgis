@@ -185,7 +185,9 @@ public class HSQLDBDriver extends DefaultDBDriver implements DBReadWriteDriver {
 		case Types.VARCHAR:
 		case Types.LONGVARCHAR:
 		case Types.CLOB:
-			if (resultsetMetadata.getColumnDisplaySize(jdbcFieldIndex) == 32766) {
+			int columnSize = resultsetMetadata
+					.getColumnDisplaySize(jdbcFieldIndex);
+			if ((columnSize == 32766) || (columnSize == 0)) {
 				List<Constraint> constraints = addGlobalConstraints(
 						resultsetMetadata, pkFieldsList, jdbcFieldIndex);
 				return TypeFactory.createType(Type.STRING, constraints
