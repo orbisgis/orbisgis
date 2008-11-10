@@ -48,6 +48,7 @@ import org.gdms.data.file.FileSourceDefinition;
 import org.gdms.data.metadata.DefaultMetadata;
 import org.gdms.data.metadata.Metadata;
 import org.gdms.data.metadata.MetadataUtilities;
+import org.gdms.data.types.Constraint;
 import org.gdms.data.types.DefaultTypeDefinition;
 import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeDefinition;
@@ -233,8 +234,8 @@ public class EditionTests extends SourceTest {
 
 		Value[] firstRow = d.getRow(0);
 
-		d.setFieldValue(1, fieldId, firstRow[0]);
-		assertTrue(equals(d.getFieldValue(1, fieldId), firstRow[0]));
+		d.setFieldValue(1, fieldId, firstRow[fieldId]);
+		assertTrue(equals(d.getFieldValue(1, fieldId), firstRow[fieldId]));
 		d.insertEmptyRow();
 		assertTrue(d.getFieldValue(d.getRowCount() - 1, fieldId).isNull());
 		d.close();
@@ -294,7 +295,7 @@ public class EditionTests extends SourceTest {
 	private void testSQLInjection(String dsName) throws Exception {
 		DataSource d = dsf.getDataSource(dsName);
 
-		Value value = ValueFactory.createValue("aaa'aaa");
+		Value value = ValueFactory.createValue("aa'aa");
 
 		d.open();
 		int fieldIndex = d.getFieldIndexByName(super.getStringFieldFor(dsName));
@@ -320,7 +321,12 @@ public class EditionTests extends SourceTest {
 		d.open();
 		Value[] row = d.getRow(0);
 		int pkField = d.getFieldIndexByName(super.getPKFieldFor(dsName));
-		row[pkField] = super.getNewPKFor(dsName);
+		if (d.getFieldType(pkField).getBooleanConstraint(
+				Constraint.AUTO_INCREMENT)) {
+			row[pkField] = ValueFactory.createNullValue();
+		} else {
+			row[pkField] = super.getNewPKFor(dsName);
+		}
 		int lastRow = (int) (d.getRowCount() - 1);
 		d.insertFilledRow(row);
 		d.commit();
@@ -328,7 +334,11 @@ public class EditionTests extends SourceTest {
 
 		d.open();
 		Value[] newRow = d.getRow(lastRow + 1);
-		assertTrue(equals(newRow, row));
+		for (int i = 0; i < newRow.length; i++) {
+			if (i != pkField) {
+				assertTrue(equals(newRow[i], row[i]));
+			}
+		}
 		d.close();
 	}
 
