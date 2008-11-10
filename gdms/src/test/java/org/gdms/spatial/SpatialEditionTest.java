@@ -93,7 +93,7 @@ public class SpatialEditionTest extends SourceTest {
 
 		for (int i = 0; i < geometries.length; i++) {
 			row[sfi] = ValueFactory.createValue(geometries[i]);
-			d.insertFilledRow(row);
+			d.insertFilledRow(nullifyAutoIncrement(d, row));
 		}
 
 		for (int i = 0; i < geometries.length; i++) {
@@ -143,7 +143,6 @@ public class SpatialEditionTest extends SourceTest {
 	public void testIndex() throws Exception {
 		String[] resources = super.getSpatialResources();
 		for (String resource : resources) {
-			System.out.println(resource);
 			testIndex(resource);
 		}
 	}
@@ -174,7 +173,7 @@ public class SpatialEditionTest extends SourceTest {
 		d.open();
 		rc = d.getRowCount();
 		e = d.getFullExtent();
-		d.insertFilledRowAt(0, d.getRow(0));
+		d.insertFilledRowAt(0, nullifyAutoIncrement(d, d.getRow(0)));
 		d.deleteRow(1);
 		query = new DefaultSpatialIndexQuery(e, super
 				.getSpatialFieldName(dsName));
@@ -221,7 +220,7 @@ public class SpatialEditionTest extends SourceTest {
 		d.insertEmptyRowAt(1);
 		assertTrue(d.isNull(1, 0));
 		d.deleteRow(1);
-		d.insertFilledRowAt(1, d.getRow(0));
+		d.insertFilledRowAt(1, nullifyAutoIncrement(d, d.getRow(0)));
 		assertTrue(d.getFieldValue(1, 1).equals(d.getFieldValue(0, 1))
 				.getAsBoolean());
 		assertTrue(count(d.queryIndex(query)) == originalRowCount);
@@ -424,10 +423,12 @@ public class SpatialEditionTest extends SourceTest {
 		GeometryConstraint gc = (GeometryConstraint) d.getFieldType(sfi)
 				.getConstraint(Constraint.GEOMETRY_TYPE);
 		row[sfi] = getOutsideGeom(gc, x, y, -10);
-		d.insertFilledRow(row);
+		d.insertFilledRow(nullifyAutoIncrement(d, row));
 		assertTrue(fullExtentContainsAll(d));
 
-		d.setFieldValue(d.getRowCount() - 1, sfi, getOutsideGeom(gc, x, y, -11));
+		d
+				.setFieldValue(d.getRowCount() - 1, sfi, getOutsideGeom(gc, x,
+						y, -11));
 		assertTrue(fullExtentContainsAll(d));
 
 		d.setFieldValue(d.getRowCount() - 1, sfi, getOutsideGeom(gc, x, y, -9));
@@ -566,5 +567,20 @@ public class SpatialEditionTest extends SourceTest {
 				"geom");
 		assertTrue(count(sds.queryIndex(query)) == sds.getRowCount());
 		sds.close();
+	}
+
+	private Value[] nullifyAutoIncrement(DataSource ds, Value[] row)
+			throws DriverException {
+		Value[] ret = new Value[row.length];
+		for (int i = 0; i < ds.getFieldCount(); i++) {
+			if (ds.getFieldType(i).getBooleanConstraint(
+					Constraint.AUTO_INCREMENT)) {
+				ret[i] = ValueFactory.createNullValue();
+			} else {
+				ret[i] = row[i];
+			}
+		}
+
+		return ret;
 	}
 }

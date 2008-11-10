@@ -152,14 +152,14 @@ public class DBDriverTest extends SourceTest {
 
 		ds.open();
 		Metadata m = ds.getMetadata();
-		ds.insertEmptyRow();
+		Value[] newRow = new Value[m.getFieldCount()];
 		for (int i = 0; i < m.getFieldCount(); i++) {
 			Type fieldType = m.getFieldType(i);
 			if (MetadataUtilities.isWritable(fieldType)) {
-				ds.setFieldValue(0, i, sampleValues
-						.get(fieldType.getTypeCode()));
+				newRow[i] = sampleValues.get(fieldType.getTypeCode());
 			}
 		}
+		ds.insertFilledRow(newRow);
 		Value[] firstRow = ds.getRow(0);
 		ds.commit();
 		ds.close();

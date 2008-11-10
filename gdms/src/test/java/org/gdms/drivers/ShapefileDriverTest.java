@@ -399,7 +399,7 @@ public class ShapefileDriverTest extends TestCase {
 		for (int i = 0; i < 2; i++) {
 			ds.open();
 			ds.insertFilledRow(new Value[] { ValueFactory.createValue(1),
-					ValueFactory.createValue(23.4d),
+					ValueFactory.createValue(2.4d),
 					ValueFactory.createValue(2556),
 					ValueFactory.createValue("sadkjsr"),
 					ValueFactory.createValue(sdf.parse("1980-7-23")),
@@ -435,7 +435,7 @@ public class ShapefileDriverTest extends TestCase {
 			ds.insertFilledRow(new Value[] {
 					ValueFactory.createValue(gf.createPoint(new Coordinate(10,
 							10))), ValueFactory.createValue(1),
-					ValueFactory.createValue(23.4d),
+					ValueFactory.createValue(3.4d),
 					ValueFactory.createValue(2556),
 					ValueFactory.createValue("sadkjsr"),
 					ValueFactory.createValue(sdf.parse("1980-7-23")),
