@@ -110,6 +110,7 @@
 				<artifactId>maven-javadoc-plugin</artifactId>
 				<configuration>
 					<aggregate>true</aggregate>
+					<maxmemory>512m</maxmemory>
 				</configuration>
 			</plugin>
 		</plugins>
