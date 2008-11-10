@@ -47,9 +47,11 @@ import org.gdms.data.values.Value;
  */
 public class PatternConstraint extends AbstractConstraint {
 	private String constraintValue;
+	private Pattern pattern;
 
 	public PatternConstraint(final String constraintValue) {
 		this.constraintValue = constraintValue;
+		pattern = Pattern.compile(constraintValue);
 	}
 
 	public PatternConstraint(byte[] constraintBytes) {
@@ -66,9 +68,8 @@ public class PatternConstraint extends AbstractConstraint {
 
 	public String check(Value value) {
 		if (!value.isNull()) {
-			Pattern p = Pattern.compile(constraintValue);
-			Matcher m = p.matcher(value.toString());
-			if (!m.find()) {
+			Matcher m = pattern.matcher(value.toString());
+			if (!m.matches()) {
 				return "The value doesn't match the pattern '"
 						+ constraintValue + "'";
 			}

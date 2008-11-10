@@ -154,7 +154,7 @@ public class ConstraintTest extends TestCase {
 				"[hc]+at")));
 		setValidValues(ValueFactory.createValue("hat"), ValueFactory
 				.createValue("cat"), ValueFactory.createNullValue());
-		setInvalidValues(ValueFactory.createValue("rat"), ValueFactory
+		setInvalidValues(ValueFactory.createValue("hate"), ValueFactory
 				.createValue("at"));
 		doEdition();
 	}
