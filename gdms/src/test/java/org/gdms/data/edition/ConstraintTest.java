@@ -15,10 +15,12 @@ import org.gdms.data.types.MinConstraint;
 import org.gdms.data.types.NotNullConstraint;
 import org.gdms.data.types.PatternConstraint;
 import org.gdms.data.types.PrecisionConstraint;
+import org.gdms.data.types.PrimaryKeyConstraint;
 import org.gdms.data.types.ReadOnlyConstraint;
 import org.gdms.data.types.ScaleConstraint;
 import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeFactory;
+import org.gdms.data.types.UniqueConstraint;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
@@ -157,6 +159,34 @@ public class ConstraintTest extends TestCase {
 		setInvalidValues(ValueFactory.createValue("hate"), ValueFactory
 				.createValue("at"));
 		doEdition();
+	}
+
+	public void testUnique() throws Exception {
+		setType(TypeFactory.createType(Type.INT, new UniqueConstraint()));
+		checkUniqueness();
+	}
+
+	public void testPK() throws Exception {
+		setType(TypeFactory.createType(Type.INT, new PrimaryKeyConstraint()));
+		checkUniqueness();
+	}
+
+	private void checkUniqueness() throws DriverException {
+		DataSource ds = getDataSource();
+		ds.open();
+		ds.insertFilledRow(new Value[] { ValueFactory.createValue(2) });
+		try {
+			ds.insertFilledRow(new Value[] { ValueFactory.createValue(2) });
+			assertTrue(false);
+		} catch (DriverException e) {
+		}
+		ds.insertFilledRow(new Value[] { ValueFactory.createValue(3) });
+		try {
+			ds.setFieldValue(ds.getRowCount() - 1, 0, ValueFactory
+					.createValue(2));
+			assertTrue(false);
+		} catch (DriverException e) {
+		}
 	}
 
 	private void setValidValues(Value... values) {

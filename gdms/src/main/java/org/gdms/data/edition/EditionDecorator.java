@@ -43,11 +43,14 @@ import java.util.List;
 
 import org.gdms.data.AbstractDataSourceDecorator;
 import org.gdms.data.DataSource;
+import org.gdms.data.NoSuchTableException;
 import org.gdms.data.NonEditableDataSourceException;
 import org.gdms.data.edition.DeleteCommand.DeleteCommandInfo;
 import org.gdms.data.indexes.DataSourceIndex;
+import org.gdms.data.indexes.DefaultAlphaQuery;
 import org.gdms.data.indexes.IndexEditionManager;
 import org.gdms.data.indexes.IndexException;
+import org.gdms.data.indexes.IndexManager;
 import org.gdms.data.indexes.IndexQuery;
 import org.gdms.data.indexes.ResultIterator;
 import org.gdms.data.metadata.Metadata;
@@ -62,6 +65,7 @@ import org.gdms.driver.ReadWriteDriver;
 import org.gdms.source.CommitListener;
 import org.gdms.source.DefaultSourceManager;
 import org.gdms.sql.strategies.FullIterator;
+import org.orbisgis.progress.NullProgressMonitor;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
@@ -306,7 +310,10 @@ public class EditionDecorator extends AbstractDataSourceDecorator implements
 				throw new DriverException(error);
 			}
 		}
+		// Check uniqueness
+		checkUniqueness(fieldType, value, getMetadata().getFieldName(fieldId));
 
+		// Do modification
 		ModifyCommand.ModifyInfo ret;
 		PhysicalDirection dir = rowsDirections.get((int) row);
 		dirty = true;
@@ -389,29 +396,38 @@ public class EditionDecorator extends AbstractDataSourceDecorator implements
 	}
 
 	void doInsertAt(long rowIndex, Value[] values) throws DriverException {
+		// Check value count
 		int fc = getFieldCount();
 		if (values.length != fc) {
 			throw new IllegalArgumentException(
 					"Wrong number of values. Expected: " + fc);
 		}
+		// Check constraints
 		for (int i = 0; i < values.length; i++) {
 			// Check special case of auto-increment not-null fields
 			Type type = getMetadata().getFieldType(i);
 			boolean autoIncrement = type
 					.getBooleanConstraint(Constraint.AUTO_INCREMENT);
+			Value value = values[i];
 			if (autoIncrement && type.getBooleanConstraint(Constraint.NOT_NULL)) {
-				if (values[i].isNull()) {
+				if (value.isNull()) {
 					continue;
 				}
 			}
-			String error = check(i, values[i]);
+			// Check uniqueness
+			String fieldName = getMetadata().getFieldName(i);
+			checkUniqueness(type, value, fieldName);
+
+			// Check rest of constraints
+			String error = check(i, value);
 			if (error != null) {
 				throw new DriverException("Value at field " + i
 						+ " is not valid:" + error);
 			}
 		}
-		dirty = true;
 
+		// Perform modifications
+		dirty = true;
 		insertInIndex(values, (int) rowIndex);
 		PhysicalDirection dir = internalBuffer.insertRow(null, values);
 		rowsDirections.add((int) rowIndex, dir);
@@ -420,6 +436,19 @@ public class EditionDecorator extends AbstractDataSourceDecorator implements
 		cachedScope = null;
 
 		editionListenerSupport.callInsert(rowIndex, undoRedo);
+	}
+
+	private void checkUniqueness(Type type, Value value, String fieldName)
+			throws DriverException {
+		if (type.getBooleanConstraint(Constraint.UNIQUE)
+				|| type.getBooleanConstraint(Constraint.PK)) {
+			// We assume a geometry field can't have unique constraint
+			IndexQuery iq = new DefaultAlphaQuery(fieldName, value);
+			if (queryIndex(iq).hasNext()) {
+				throw new DriverException(
+						"This column doesn't admit duplicates");
+			}
+		}
 	}
 
 	void undoInsertAt(long rowIndex) throws DriverException {
@@ -471,6 +500,30 @@ public class EditionDecorator extends AbstractDataSourceDecorator implements
 		deletedPKs = new ArrayList<DeleteEditionInfo>();
 		cs = new CommandStack();
 
+		// build alpha indexes on unique fields
+		Metadata m = getMetadata();
+		for (int i = 0; i < m.getFieldCount(); i++) {
+			Type type = m.getFieldType(i);
+			if (type.getBooleanConstraint(Constraint.UNIQUE)
+					|| type.getBooleanConstraint(Constraint.PK)) {
+				IndexManager indexManager = getDataSourceFactory()
+						.getIndexManager();
+				try {
+					if (!indexManager.isIndexed(getName(), m.getFieldName(i))) {
+						indexManager.buildIndex(getName(), m.getFieldName(i),
+								new NullProgressMonitor());
+					}
+				} catch (NoSuchTableException e) {
+					throw new DriverException("table not found: " + getName(),
+							e);
+				} catch (IndexException e) {
+					throw new DriverException(
+							"Cannot create index on unique fields", e);
+				}
+			}
+		}
+
+		// initialize directions and unique values
 		editionActions = new ArrayList<EditionInfo>();
 		rowsDirections = new ArrayList<PhysicalDirection>();
 		for (int i = 0; i < rowCount; i++) {
