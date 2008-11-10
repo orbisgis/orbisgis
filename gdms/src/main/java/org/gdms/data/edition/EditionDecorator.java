@@ -51,6 +51,7 @@ import org.gdms.data.indexes.IndexException;
 import org.gdms.data.indexes.IndexQuery;
 import org.gdms.data.indexes.ResultIterator;
 import org.gdms.data.metadata.Metadata;
+import org.gdms.data.types.Constraint;
 import org.gdms.data.types.Type;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
@@ -293,10 +294,18 @@ public class EditionDecorator extends AbstractDataSourceDecorator implements
 			value = ValueFactory.createNullValue();
 		}
 
-		// String error = check(fieldId, value);
-		// if (error != null) {
-		// throw new DriverException(error);
-		// }
+		// write check
+		Type fieldType = getMetadata().getFieldType(fieldId);
+		if ((fieldType.getConstraint(Constraint.READONLY) != null)
+				|| (fieldType.getConstraint(Constraint.AUTO_INCREMENT) != null)) {
+			throw new DriverException(
+					"A read only or autoincrement field cannot be modified");
+		} else {
+			String error = check(fieldId, value);
+			if (error != null) {
+				throw new DriverException(error);
+			}
+		}
 
 		ModifyCommand.ModifyInfo ret;
 		PhysicalDirection dir = rowsDirections.get((int) row);
@@ -385,12 +394,21 @@ public class EditionDecorator extends AbstractDataSourceDecorator implements
 			throw new IllegalArgumentException(
 					"Wrong number of values. Expected: " + fc);
 		}
-		// for (int i = 0; i < values.length; i++) {
-		// String error = check(i, values[i]);
-		// if (error != null) {
-		// throw new DriverException(error);
-		// }
-		// }
+		for (int i = 0; i < values.length; i++) {
+			// Check special case of auto-increment not-null fields
+			Type type = getMetadata().getFieldType(i);
+			if (type.getBooleanConstraint(Constraint.AUTO_INCREMENT)
+					|| type.getBooleanConstraint(Constraint.NOT_NULL)) {
+				if (values[i].isNull()) {
+					continue;
+				}
+			}
+			String error = check(i, values[i]);
+			if (error != null) {
+				throw new DriverException("Value at field " + i
+						+ " is not valid:" + error);
+			}
+		}
 		dirty = true;
 
 		insertInIndex(values, (int) rowIndex);

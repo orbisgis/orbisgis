@@ -37,7 +37,6 @@
 package org.gdms.data;
 
 import org.gdms.data.metadata.Metadata;
-import org.gdms.data.types.Constraint;
 import org.gdms.data.types.Type;
 import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
@@ -220,14 +219,7 @@ public class StatusCheckDecorator extends AbstractDataSourceDecorator {
 	public void setFieldValue(long row, int fieldId, Value value)
 			throws DriverException {
 		if (isOpen()) {
-			Type fieldType = getMetadata().getFieldType(fieldId);
-			if ((fieldType.getConstraint(Constraint.READONLY) != null)
-					|| (fieldType.getConstraint(Constraint.AUTO_INCREMENT) != null)) {
-				throw new DriverException(
-						"A read only or autoincrement field cannot be modified");
-			} else {
-				getDataSource().setFieldValue(row, fieldId, value);
-			}
+			getDataSource().setFieldValue(row, fieldId, value);
 		} else {
 			throw new ClosedDataSourceException(
 					"The data source must be open to call this method");

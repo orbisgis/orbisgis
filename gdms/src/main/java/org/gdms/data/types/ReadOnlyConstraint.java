@@ -56,6 +56,10 @@ public class ReadOnlyConstraint extends AbstractBooleanConstraint {
 
 	@Override
 	public String check(Value value) {
-		return "This field is read-only";
+		if (!value.isNull()) {
+			return "This field is read-only";
+		}
+		
+		return null;
 	}
 }

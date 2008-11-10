@@ -6,6 +6,7 @@ import org.gdms.Geometries;
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.types.AutoIncrementConstraint;
+import org.gdms.data.types.Constraint;
 import org.gdms.data.types.DimensionConstraint;
 import org.gdms.data.types.GeometryConstraint;
 import org.gdms.data.types.LengthConstraint;
@@ -59,17 +60,46 @@ public class ConstraintTest extends TestCase {
 	}
 
 	public void testAutoIncrement() throws Exception {
-		setType(TypeFactory.createType(Type.INT, new AutoIncrementConstraint()));
-		setValidValues(ValueFactory.createNullValue());
-		setInvalidValues(ValueFactory.createValue(3));
-		doEdition();
+		AutoIncrementConstraint constraint = new AutoIncrementConstraint();
+		checkCannotSetAndOnlyAddNull(constraint);
 	}
 
 	public void testReadOnly() throws Exception {
-		setType(TypeFactory.createType(Type.INT, new ReadOnlyConstraint()));
-		setInvalidValues(ValueFactory.createValue(3), ValueFactory
-				.createNullValue());
-		doEdition();
+		ReadOnlyConstraint constraint = new ReadOnlyConstraint();
+		checkCannotSetAndOnlyAddNull(constraint);
+	}
+
+	/**
+	 * Cannot set a value Cannot insert a new row with values different than
+	 * null
+	 * 
+	 * @param constraint
+	 * @throws DriverException
+	 */
+	private void checkCannotSetAndOnlyAddNull(Constraint constraint)
+			throws DriverException {
+		Value three = ValueFactory.createValue(3);
+		Value nullV = ValueFactory.createNullValue();
+		setType(TypeFactory.createType(Type.INT, constraint));
+		DataSource ds = getDataSource();
+		ds.open();
+		ds.insertFilledRow(new Value[] { nullV });
+		try {
+			ds.insertFilledRow(new Value[] { three });
+			assertTrue(false);
+		} catch (DriverException e) {
+		}
+		try {
+			ds.setFieldValue(0, 0, three);
+			assertTrue(false);
+		} catch (DriverException e) {
+		}
+		try {
+			ds.setFieldValue(0, 0, nullV);
+			assertTrue(false);
+		} catch (DriverException e) {
+		}
+		ds.close();
 	}
 
 	public void testGeometryType() throws Exception {
@@ -104,9 +134,7 @@ public class ConstraintTest extends TestCase {
 	}
 
 	private void doEdition() throws Exception {
-		ObjectMemoryDriver omd = new ObjectMemoryDriver(
-				new String[] { "string" }, new Type[] { type });
-		DataSource dataSource = dsf.getDataSource(omd);
+		DataSource dataSource = getDataSource();
 		dataSource.open();
 		for (Value value : validValues) {
 			dataSource.insertFilledRow(new Value[] { value });
@@ -120,6 +148,12 @@ public class ConstraintTest extends TestCase {
 		}
 		dataSource.commit();
 		dataSource.close();
-		super.tearDown();
+	}
+
+	private DataSource getDataSource() throws DriverException {
+		ObjectMemoryDriver omd = new ObjectMemoryDriver(
+				new String[] { "string" }, new Type[] { type });
+		DataSource dataSource = dsf.getDataSource(omd);
+		return dataSource;
 	}
 }
