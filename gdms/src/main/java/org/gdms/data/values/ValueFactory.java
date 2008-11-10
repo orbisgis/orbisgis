@@ -399,7 +399,7 @@ public class ValueFactory {
 	 * 
 	 * @return NullValue
 	 */
-	public static NullValue createNullValue() {
+	public static Value createNullValue() {
 		return new NullValue();
 	}
 
