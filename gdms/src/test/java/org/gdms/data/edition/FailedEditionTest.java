@@ -128,6 +128,7 @@ public class FailedEditionTest extends BaseTest {
 	protected void setUp() throws Exception {
 		ReadDriver.initialize();
 		ReadDriver.isEditable = true;
+		ReadDriver.pk = true;
 
 		dsf = new DataSourceFactory();
 		dsf.setTempDir("src/test/resources/backup");
