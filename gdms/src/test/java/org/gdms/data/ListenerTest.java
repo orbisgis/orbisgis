@@ -276,12 +276,13 @@ public class ListenerTest extends TestCase {
 	protected void setUp() throws Exception {
 		ReadDriver.initialize();
 		ReadDriver.isEditable = true;
+		ReadDriver.pk = false;
 
 		dsf = new DataSourceFactory();
 		dsf.setTempDir("src/test/resources/backup");
 		DriverManager dm = new DriverManager();
 		dm.registerDriver("failingdriver", ReadAndWriteDriver.class);
-
+		
 		SourceManager sourceManager = dsf.getSourceManager();
 		sourceManager.setDriverManager(dm);
 		sourceManager.register("object", new ObjectSourceDefinition(

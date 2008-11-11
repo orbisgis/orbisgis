@@ -97,15 +97,18 @@ public class ObjectDataSourceAdapter extends DriverDataSource implements
 		return null;
 	}
 
-	public void commit(List<PhysicalDirection> rowsDirections,
+	@Override
+	public boolean commit(List<PhysicalDirection> rowsDirections,
 			String[] fieldName, ArrayList<EditionInfo> schemaActions,
 			ArrayList<EditionInfo> editionActions,
 			ArrayList<DeleteEditionInfo> deletedPKs, DataSource modifiedSource)
 			throws DriverException {
-		((ObjectReadWriteDriver) driver).write(modifiedSource,
+		boolean rowChanged = ((ObjectReadWriteDriver) driver).write(modifiedSource,
 				new NullProgressMonitor());
 		driver.stop();
 		fireCommit(this);
+		
+		return rowChanged;
 	}
 
 	public void commitDone(String name) throws DriverException {

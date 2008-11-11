@@ -1,5 +1,9 @@
 package org.gdms.data.edition;
 
+import java.sql.Time;
+import java.sql.Timestamp;
+import java.util.Date;
+
 import junit.framework.TestCase;
 
 import org.gdms.Geometries;
@@ -25,6 +29,7 @@ import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.memory.ObjectMemoryDriver;
+import org.gdms.sql.strategies.IncompatibleTypesException;
 
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
@@ -152,7 +157,7 @@ public class ConstraintTest extends TestCase {
 	}
 
 	public void testPattern() throws Exception {
-		setType(TypeFactory.createType(Type.DOUBLE, new PatternConstraint(
+		setType(TypeFactory.createType(Type.STRING, new PatternConstraint(
 				"[hc]+at")));
 		setValidValues(ValueFactory.createValue("hat"), ValueFactory
 				.createValue("cat"), ValueFactory.createNullValue());
@@ -169,6 +174,22 @@ public class ConstraintTest extends TestCase {
 	public void testPK() throws Exception {
 		setType(TypeFactory.createType(Type.INT, new PrimaryKeyConstraint()));
 		checkUniqueness();
+	}
+
+	public void testAddWrongTypeBinary() throws Exception {
+		setType(TypeFactory.createType(Type.BINARY));
+		setValidValues(ValueFactory.createValue(new byte[] { 2, 3, 4, 5 }));
+		setInvalidValues(ValueFactory.createValue(true), ValueFactory
+				.createValue((byte) 3), ValueFactory.createValue(new Date()),
+				ValueFactory.createValue(4.4d), ValueFactory.createValue(3.3f),
+				ValueFactory.createValue(Geometries.getPoint()), ValueFactory
+						.createValue(3), ValueFactory.createValue(4L),
+				ValueFactory.createValue((short) 3), ValueFactory
+						.createValue("string"), ValueFactory
+						.createValue(new Time(2)), ValueFactory
+						.createValue(new Timestamp(2)), ValueFactory
+						.createValue(new Value[0]));
+		doEdition();
 	}
 
 	private void checkUniqueness() throws DriverException {
@@ -206,12 +227,21 @@ public class ConstraintTest extends TestCase {
 		dataSource.open();
 		for (Value value : validValues) {
 			dataSource.insertFilledRow(new Value[] { value });
+			dataSource.setFieldValue(dataSource.getRowCount() - 1, 0, value);
 		}
 		for (Value value : invalidValues) {
 			try {
 				dataSource.insertFilledRow(new Value[] { value });
+				System.out.println(value);
 				assertTrue(false);
 			} catch (DriverException e) {
+			} catch (IncompatibleTypesException e) {
+			}
+			try {
+				dataSource.setFieldValue(0, 0, value);
+				assertTrue(false);
+			} catch (DriverException e) {
+			} catch (IncompatibleTypesException e) {
 			}
 		}
 		dataSource.commit();

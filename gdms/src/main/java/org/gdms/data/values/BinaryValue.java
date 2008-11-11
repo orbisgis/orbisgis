@@ -60,7 +60,7 @@ class BinaryValue extends AbstractValue {
 
 	/**
 	 * DOCUMENT ME!
-	 *
+	 * 
 	 * @return DOCUMENT ME!
 	 */
 	public String toString() {
@@ -80,12 +80,12 @@ class BinaryValue extends AbstractValue {
 
 	/**
 	 * DOCUMENT ME!
-	 *
+	 * 
 	 * @param value
 	 *            DOCUMENT ME!
-	 *
+	 * 
 	 * @return DOCUMENT ME!
-	 *
+	 * 
 	 * @throws IncompatibleTypesException
 	 *             DOCUMENT ME!
 	 */

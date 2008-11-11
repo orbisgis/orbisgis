@@ -52,30 +52,34 @@ import com.vividsolutions.jts.geom.Geometry;
  */
 public interface Value {
 	/**
-	 * @see com.hardcode.gdbms.engine.instruction.Operations#and(com.hardcode.gdbms.engine.values.value);
+	 * @see com.hardcode.gdbms.engine.instruction.Operations#and(com.hardcode.gdbms.engine.values.value)
+	 *      ;
 	 */
 	public Value and(Value value) throws IncompatibleTypesException;
 
 	/**
-	 * @see com.hardcode.gdbms.engine.instruction.Operations#or(com.hardcode.gdbms.engine.values.value);
+	 * @see com.hardcode.gdbms.engine.instruction.Operations#or(com.hardcode.gdbms.engine.values.value)
+	 *      ;
 	 */
 	public Value or(Value value) throws IncompatibleTypesException;
 
 	/**
-	 * @see com.hardcode.gdbms.engine.instruction.Operations#producto(com.hardcode.gdbms.engine.values.value);
+	 * @see com.hardcode.gdbms.engine.instruction.Operations#producto(com.hardcode.gdbms.engine.values.value)
+	 *      ;
 	 */
 	public Value producto(Value value) throws IncompatibleTypesException;
 
 	/**
-	 * @see com.hardcode.gdbms.engine.instruction.Operations#suma(com.hardcode.gdbms.engine.values.value);
+	 * @see com.hardcode.gdbms.engine.instruction.Operations#suma(com.hardcode.gdbms.engine.values.value)
+	 *      ;
 	 */
 	public Value suma(Value value) throws IncompatibleTypesException;
 
 	/**
 	 * DOCUMENT ME!
-	 *
+	 * 
 	 * @return DOCUMENT ME!
-	 *
+	 * 
 	 * @throws IncompatibleTypesException
 	 *             DOCUMENT ME!
 	 */
@@ -121,7 +125,7 @@ public interface Value {
 	 * AbstractValue overrides these methods by calling doEquals and doHashCode.
 	 * Any Value must inherit from abstract Value or override those methods in
 	 * the same way.
-	 *
+	 * 
 	 * @see java.lang.Object#equals(java.lang.Object)
 	 */
 	public boolean doEquals(Object obj);
@@ -129,9 +133,9 @@ public interface Value {
 	/**
 	 * The hashCode implementation. Every value with the same semantic
 	 * information must return the same int
-	 *
+	 * 
 	 * @return integer
-	 *
+	 * 
 	 * @see java.lang.Object#hashCode()
 	 */
 	public int doHashCode();
@@ -139,24 +143,24 @@ public interface Value {
 	/**
 	 * Gets the string representation of the value as it is defined in the
 	 * specified ValueWriter
-	 *
+	 * 
 	 * @param writer
 	 *            Specifies the string representation for the values
-	 *
+	 * 
 	 * @return String
 	 */
 	public String getStringValue(ValueWriter writer);
 
 	/**
 	 * Gets the type of the value
-	 *
+	 * 
 	 * @return integer
 	 */
 	public int getType();
 
 	/**
 	 * Gets this value represented as an array of bytes
-	 *
+	 * 
 	 * @return
 	 */
 	public byte[] getBytes();
@@ -168,7 +172,7 @@ public interface Value {
 
 	/**
 	 * @return this value if it is a binary value or it can be converted
-	 *
+	 * 
 	 * @throws IncompatibleTypesException
 	 *             if the value is not of the required type or cannot be
 	 *             converted
@@ -177,7 +181,7 @@ public interface Value {
 
 	/**
 	 * @return this value if it is a boolean value or it can be converted
-	 *
+	 * 
 	 * @throws IncompatibleTypesException
 	 *             if the value is not of the required type or cannot be
 	 *             converted
@@ -186,7 +190,7 @@ public interface Value {
 
 	/**
 	 * @return this value if it is a date value or it can be converted
-	 *
+	 * 
 	 * @throws IncompatibleTypesException
 	 *             if the value is not of the required type or cannot be
 	 *             converted
@@ -195,7 +199,7 @@ public interface Value {
 
 	/**
 	 * @return this value if it is a geometry value or it can be converted
-	 *
+	 * 
 	 * @throws IncompatibleTypesException
 	 *             if the value is not of the required type or cannot be
 	 *             converted
@@ -204,7 +208,7 @@ public interface Value {
 
 	/**
 	 * @return this value if it is a geometry value or it can be converted
-	 *
+	 * 
 	 * @throws IncompatibleTypesException
 	 *             if the value is not of the required type or cannot be
 	 *             converted
@@ -213,7 +217,7 @@ public interface Value {
 
 	/**
 	 * @return this value if it is a numeric value or it can be converted
-	 *
+	 * 
 	 * @throws IncompatibleTypesException
 	 *             if the value is not of the required type or cannot be
 	 *             converted
@@ -222,7 +226,7 @@ public interface Value {
 
 	/**
 	 * @return this value if it is a numeric value or it can be converted
-	 *
+	 * 
 	 * @throws IncompatibleTypesException
 	 *             if the value is not of the required type or cannot be
 	 *             converted
@@ -231,7 +235,7 @@ public interface Value {
 
 	/**
 	 * @return this value if it is a numeric value or it can be converted
-	 *
+	 * 
 	 * @throws IncompatibleTypesException
 	 *             if the value is not of the required type or cannot be
 	 *             converted
@@ -240,7 +244,7 @@ public interface Value {
 
 	/**
 	 * @return this value if it is a numeric value or it can be converted
-	 *
+	 * 
 	 * @throws IncompatibleTypesException
 	 *             if the value is not of the required type or cannot be
 	 *             converted
@@ -249,7 +253,7 @@ public interface Value {
 
 	/**
 	 * @return this value if it is a numeric value or it can be converted
-	 *
+	 * 
 	 * @throws IncompatibleTypesException
 	 *             if the value is not of the required type or cannot be
 	 *             converted
@@ -258,7 +262,7 @@ public interface Value {
 
 	/**
 	 * @return this value if it is a numeric value or it can be converted
-	 *
+	 * 
 	 * @throws IncompatibleTypesException
 	 *             if the value is not of the required type or cannot be
 	 *             converted
@@ -267,7 +271,7 @@ public interface Value {
 
 	/**
 	 * @return this value if it is a string value or it can be converted
-	 *
+	 * 
 	 * @throws IncompatibleTypesException
 	 *             if the value is not of the required type or cannot be
 	 *             converted
@@ -276,7 +280,7 @@ public interface Value {
 
 	/**
 	 * @return this value if it is a timestamp value or it can be converted
-	 *
+	 * 
 	 * @throws IncompatibleTypesException
 	 *             if the value is not of the required type or cannot be
 	 *             converted
@@ -285,7 +289,7 @@ public interface Value {
 
 	/**
 	 * @return this value if it is a time value or it can be converted
-	 *
+	 * 
 	 * @throws IncompatibleTypesException
 	 *             if the value is not of the required type or cannot be
 	 *             converted
@@ -294,12 +298,22 @@ public interface Value {
 
 	/**
 	 * @return this value if it is a value collection
-	 *
+	 * 
 	 * @throws IncompatibleTypesException
 	 *             if the value is not of the required type or cannot be
 	 *             converted
 	 */
 	public ValueCollection getAsValueCollection()
 			throws IncompatibleTypesException;
+
+	/**
+	 * Tries to make a conversion to the specified type.
+	 * 
+	 * @param typeCode
+	 * @return The converted type
+	 * @throws IncompatibleTypesException
+	 *             If the value cannot be converted
+	 */
+	public Value toType(int typeCode) throws IncompatibleTypesException;
 
 }

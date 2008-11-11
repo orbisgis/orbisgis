@@ -37,55 +37,28 @@
 package org.gdms.data.values;
 
 import java.io.Serializable;
+import java.sql.Time;
+import java.sql.Timestamp;
+import java.util.Date;
 
+import org.gdms.data.types.Type;
 import org.gdms.sql.strategies.IncompatibleTypesException;
 
 /**
- * DOCUMENT ME!
- * 
  * @author Fernando Gonzalez Cortes
  */
 abstract class NumericValue extends AbstractValue implements Serializable {
-	/**
-	 * DOCUMENT ME!
-	 * 
-	 * @return DOCUMENT ME!
-	 */
+
 	public abstract byte byteValue();
 
-	/**
-	 * DOCUMENT ME!
-	 * 
-	 * @return DOCUMENT ME!
-	 */
 	public abstract short shortValue();
 
-	/**
-	 * DOCUMENT ME!
-	 * 
-	 * @return DOCUMENT ME!
-	 */
 	public abstract int intValue();
 
-	/**
-	 * DOCUMENT ME!
-	 * 
-	 * @return DOCUMENT ME!
-	 */
 	public abstract long longValue();
 
-	/**
-	 * DOCUMENT ME!
-	 * 
-	 * @return DOCUMENT ME!
-	 */
 	public abstract float floatValue();
 
-	/**
-	 * DOCUMENT ME!
-	 * 
-	 * @return DOCUMENT ME!
-	 */
 	public abstract double doubleValue();
 
 	/**
@@ -118,17 +91,6 @@ abstract class NumericValue extends AbstractValue implements Serializable {
 		}
 	}
 
-	/**
-	 * DOCUMENT ME!
-	 * 
-	 * @param value
-	 *            DOCUMENT ME!
-	 * 
-	 * @return DOCUMENT ME!
-	 * 
-	 * @throws IncompatibleTypesException
-	 *             DOCUMENT ME!
-	 */
 	public Value suma(Value value) throws IncompatibleTypesException {
 		if (value.isNull()) {
 			return ValueFactory.createNullValue();
@@ -141,29 +103,10 @@ abstract class NumericValue extends AbstractValue implements Serializable {
 		}
 	}
 
-	/**
-	 * DOCUMENT ME!
-	 * 
-	 * @return DOCUMENT ME!
-	 * 
-	 * @throws IncompatibleTypesException
-	 *             DOCUMENT ME!
-	 */
 	public Value inversa() throws IncompatibleTypesException {
 		return ValueFactory.inversa(this);
 	}
 
-	/**
-	 * DOCUMENT ME!
-	 * 
-	 * @param value
-	 *            DOCUMENT ME!
-	 * 
-	 * @return DOCUMENT ME!
-	 * 
-	 * @throws IncompatibleTypesException
-	 *             DOCUMENT ME!
-	 */
 	public Value equals(Value value) throws IncompatibleTypesException {
 		if (value instanceof NullValue) {
 			return ValueFactory.createValue(false);
@@ -178,17 +121,6 @@ abstract class NumericValue extends AbstractValue implements Serializable {
 						.doubleValue());
 	}
 
-	/**
-	 * DOCUMENT ME!
-	 * 
-	 * @param value
-	 *            DOCUMENT ME!
-	 * 
-	 * @return DOCUMENT ME!
-	 * 
-	 * @throws IncompatibleTypesException
-	 *             DOCUMENT ME!
-	 */
 	public Value greater(Value value) throws IncompatibleTypesException {
 		if (value instanceof NullValue) {
 			return ValueFactory.createValue(false);
@@ -203,17 +135,6 @@ abstract class NumericValue extends AbstractValue implements Serializable {
 						.doubleValue());
 	}
 
-	/**
-	 * DOCUMENT ME!
-	 * 
-	 * @param value
-	 *            DOCUMENT ME!
-	 * 
-	 * @return DOCUMENT ME!
-	 * 
-	 * @throws IncompatibleTypesException
-	 *             DOCUMENT ME!
-	 */
 	public Value greaterEqual(Value value) throws IncompatibleTypesException {
 		if (value instanceof NullValue) {
 			return ValueFactory.createValue(false);
@@ -228,17 +149,6 @@ abstract class NumericValue extends AbstractValue implements Serializable {
 						.doubleValue());
 	}
 
-	/**
-	 * DOCUMENT ME!
-	 * 
-	 * @param value
-	 *            DOCUMENT ME!
-	 * 
-	 * @return DOCUMENT ME!
-	 * 
-	 * @throws IncompatibleTypesException
-	 *             DOCUMENT ME!
-	 */
 	public Value less(Value value) throws IncompatibleTypesException {
 		if (value instanceof NullValue) {
 			return ValueFactory.createValue(false);
@@ -253,17 +163,6 @@ abstract class NumericValue extends AbstractValue implements Serializable {
 						.doubleValue());
 	}
 
-	/**
-	 * DOCUMENT ME!
-	 * 
-	 * @param value
-	 *            DOCUMENT ME!
-	 * 
-	 * @return DOCUMENT ME!
-	 * 
-	 * @throws IncompatibleTypesException
-	 *             DOCUMENT ME!
-	 */
 	public Value lessEqual(Value value) throws IncompatibleTypesException {
 		if (value instanceof NullValue) {
 			return ValueFactory.createValue(false);
@@ -278,17 +177,6 @@ abstract class NumericValue extends AbstractValue implements Serializable {
 						.doubleValue());
 	}
 
-	/**
-	 * DOCUMENT ME!
-	 * 
-	 * @param value
-	 *            DOCUMENT ME!
-	 * 
-	 * @return DOCUMENT ME!
-	 * 
-	 * @throws IncompatibleTypesException
-	 *             DOCUMENT ME!
-	 */
 	public Value notEquals(Value value) throws IncompatibleTypesException {
 		if (value instanceof NullValue) {
 			return ValueFactory.createValue(false);
@@ -340,4 +228,37 @@ abstract class NumericValue extends AbstractValue implements Serializable {
 		return shortValue();
 	}
 
+	private boolean isDecimal() {
+		return !((getType() == Type.BYTE) || (getType() == Type.SHORT)
+				|| (getType() == Type.LONG) || (getType() == Type.INT));
+	}
+
+	public Value toType(int typeCode) throws IncompatibleTypesException {
+		switch (typeCode) {
+		case Type.NULL:
+		case Type.BYTE:
+		case Type.SHORT:
+		case Type.INT:
+		case Type.LONG:
+		case Type.FLOAT:
+		case Type.DOUBLE:
+			return this;
+		case Type.DATE:
+			if (!isDecimal()) {
+				return ValueFactory.createValue(new Date(longValue()));
+			}
+		case Type.STRING:
+			return ValueFactory.createValue(toString());
+		case Type.TIME:
+			if (!isDecimal()) {
+				return ValueFactory.createValue(new Time(longValue()));
+			}
+		case Type.TIMESTAMP:
+			if (!isDecimal()) {
+				return ValueFactory.createValue(new Timestamp(longValue()));
+			}
+		}
+		throw new IncompatibleTypesException("Cannot cast to type:" + typeCode
+				+ ": " + getStringValue(ValueWriter.internalValueWriter));
+	}
 }

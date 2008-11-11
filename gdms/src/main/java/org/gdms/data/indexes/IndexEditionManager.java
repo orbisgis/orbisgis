@@ -45,6 +45,7 @@ import org.gdms.data.DataSourceFactory;
 import org.gdms.data.NoSuchTableException;
 import org.gdms.driver.DriverException;
 import org.orbisgis.progress.IProgressMonitor;
+import org.orbisgis.progress.NullProgressMonitor;
 import org.orbisgis.utils.FileUtils;
 
 public class IndexEditionManager {
@@ -66,10 +67,33 @@ public class IndexEditionManager {
 		modifiedIndexes = null;
 	}
 
-	public void commit() throws IOException {
+	public void commit(boolean rebuildIndexes) throws DriverException {
 		if (modifiedIndexes != null) {
-			im.indexesChanged(ds.getName(), modifiedIndexes
-					.toArray(new DataSourceIndex[0]));
+			if (rebuildIndexes) {
+				String[] indexedFieldNames = new String[modifiedIndexes.size()];
+				for (int i = 0; i < modifiedIndexes.size(); i++) {
+					indexedFieldNames[i] = modifiedIndexes.get(i)
+							.getFieldName();
+				}
+				for (String indexFieldName : indexedFieldNames) {
+					try {
+						im.deleteIndex(ds.getName(), indexFieldName);
+						im.buildIndex(ds.getName(), indexFieldName,
+								new NullProgressMonitor());
+					} catch (NoSuchTableException e) {
+						throw new DriverException("Cannot rebuild index", e);
+					} catch (IndexException e) {
+						throw new DriverException("Cannot rebuild index", e);
+					}
+				}
+			} else {
+				try {
+					im.indexesChanged(ds.getName(), modifiedIndexes
+							.toArray(new DataSourceIndex[0]));
+				} catch (IOException e) {
+					throw new DriverException("Cannot replace index content", e);
+				}
+			}
 		}
 		cancel();
 	}

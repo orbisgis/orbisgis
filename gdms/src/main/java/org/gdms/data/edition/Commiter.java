@@ -44,7 +44,19 @@ import org.gdms.driver.DriverException;
 
 public interface Commiter {
 
-	public abstract void commit(List<PhysicalDirection> rowsDirections,
+	/**
+	 * Performs the commit in the source
+	 * 
+	 * @param rowsDirections
+	 * @param fieldNames
+	 * @param schemaActions
+	 * @param editionActions
+	 * @param deletedPKs
+	 * @param modifiedSource
+	 * @return If row order can have changed after commit
+	 * @throws DriverException
+	 */
+	public abstract boolean commit(List<PhysicalDirection> rowsDirections,
 			String[] fieldNames, ArrayList<EditionInfo> schemaActions,
 			ArrayList<EditionInfo> editionActions,
 			ArrayList<DeleteEditionInfo> deletedPKs, DataSource modifiedSource)

@@ -305,13 +305,10 @@ public class EditionDecorator extends AbstractDataSourceDecorator implements
 			throw new DriverException(
 					"A read only or autoincrement field cannot be modified");
 		} else {
-			String error = check(fieldId, value);
-			if (error != null) {
-				throw new DriverException(error);
-			}
+			// Check uniqueness
+			checkConstraints(fieldType, value, getMetadata().getFieldName(
+					fieldId), fieldId);
 		}
-		// Check uniqueness
-		checkUniqueness(fieldType, value, getMetadata().getFieldName(fieldId));
 
 		// Do modification
 		ModifyCommand.ModifyInfo ret;
@@ -416,14 +413,7 @@ public class EditionDecorator extends AbstractDataSourceDecorator implements
 			}
 			// Check uniqueness
 			String fieldName = getMetadata().getFieldName(i);
-			checkUniqueness(type, value, fieldName);
-
-			// Check rest of constraints
-			String error = check(i, value);
-			if (error != null) {
-				throw new DriverException("Value at field " + i
-						+ " is not valid:" + error);
-			}
+			checkConstraints(type, value, fieldName, i);
 		}
 
 		// Perform modifications
@@ -438,15 +428,28 @@ public class EditionDecorator extends AbstractDataSourceDecorator implements
 		editionListenerSupport.callInsert(rowIndex, undoRedo);
 	}
 
-	private void checkUniqueness(Type type, Value value, String fieldName)
-			throws DriverException {
+	private void checkConstraints(Type type, Value value, String fieldName,
+			int fieldId) throws DriverException {
+		// Check types
+		if (!value.isNull() && (type.getTypeCode() != value.getType())) {
+			value = value.toType(type.getTypeCode());
+		}
+
+		// Check constraints
+		String error = check(fieldId, value);
+		if (error != null) {
+			throw new DriverException("Value at field " + fieldId
+					+ " is not valid:" + error);
+		}
+
+		// Check uniqueness
 		if (type.getBooleanConstraint(Constraint.UNIQUE)
 				|| type.getBooleanConstraint(Constraint.PK)) {
 			// We assume a geometry field can't have unique constraint
 			IndexQuery iq = new DefaultAlphaQuery(fieldName, value);
 			if (queryIndex(iq).hasNext()) {
-				throw new DriverException(
-						"This column doesn't admit duplicates");
+				throw new DriverException(fieldName
+						+ " column doesn't admit duplicates");
 			}
 		}
 	}
@@ -600,17 +603,18 @@ public class EditionDecorator extends AbstractDataSourceDecorator implements
 			DefaultSourceManager dsm = (DefaultSourceManager) getDataSourceFactory()
 					.getSourceManager();
 			dsm.fireIsCommiting(getName(), this);
-			commiter.commit(rowsDirections, getFieldNames(),
-					getSchemaActions(), editionActions, deletedPKs, this);
+			boolean rebuildIndexes = commiter.commit(rowsDirections,
+					getFieldNames(), getSchemaActions(), editionActions,
+					deletedPKs, this);
 			dsm.fireCommitDone(getName());
+
+			try {
+				indexEditionManager.commit(rebuildIndexes);
+			} catch (DriverException e) {
+				throw new DriverException("Cannot update indexes", e);
+			}
 		} else {
 			throw new UnsupportedOperationException("DataSource not editable");
-		}
-
-		try {
-			indexEditionManager.commit();
-		} catch (IOException e) {
-			throw new DriverException("Cannot save indexes", e);
 		}
 	}
 
@@ -847,5 +851,4 @@ public class EditionDecorator extends AbstractDataSourceDecorator implements
 	public String check(int fieldId, Value value) throws DriverException {
 		return getMetadata().getFieldType(fieldId).check(value);
 	}
-
 }

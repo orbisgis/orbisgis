@@ -51,9 +51,9 @@ import org.gdms.data.db.DBSource;
 import org.gdms.data.metadata.DefaultMetadata;
 import org.gdms.data.metadata.Metadata;
 import org.gdms.data.types.Constraint;
-import org.gdms.data.types.DefaultTypeDefinition;
 import org.gdms.data.types.PrimaryKeyConstraint;
 import org.gdms.data.types.Type;
+import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DBDriver;
@@ -87,6 +87,8 @@ public class ReadDriver extends DefaultDBDriver implements ObjectDriver,
 
 	private static DataSource currentDataSource;
 
+	public static boolean pk = true;
+
 	public static void initialize() {
 		values.clear();
 		values.add("cadena1");
@@ -102,12 +104,14 @@ public class ReadDriver extends DefaultDBDriver implements ObjectDriver,
 		isEditable = false;
 	}
 
-	public void write(DataSource dataWare, IProgressMonitor pm)
+	public boolean write(DataSource dataWare, IProgressMonitor pm)
 			throws DriverException {
 		if (failOnWrite) {
 			throw new DriverException();
 		}
 		values = getContent(dataWare);
+
+		return false;
 	}
 
 	private ArrayList<String> getContent(DataSource d) throws DriverException {
@@ -123,14 +127,14 @@ public class ReadDriver extends DefaultDBDriver implements ObjectDriver,
 	}
 
 	public Metadata getMetadata() throws DriverException {
-		final Type[] fieldsTypes = new Type[2];
+		Constraint[] constraints = new Constraint[0];
+		if (pk) {
+			constraints = new Constraint[] { new PrimaryKeyConstraint() };
+		}
+		final Type[] fieldsTypes = new Type[] {
+				TypeFactory.createType(Type.GEOMETRY),
+				TypeFactory.createType(Type.STRING, constraints) };
 		final String[] fieldsNames = new String[] { "geom", "alpha" };
-
-		fieldsTypes[0] = new DefaultTypeDefinition("GEOMETRY", Type.GEOMETRY)
-				.createType();
-		fieldsTypes[1] = new DefaultTypeDefinition("STRING", Type.STRING,
-				new int[] { Constraint.PK })
-				.createType(new Constraint[] { new PrimaryKeyConstraint() });
 
 		return new DefaultMetadata(fieldsTypes, fieldsNames);
 	}

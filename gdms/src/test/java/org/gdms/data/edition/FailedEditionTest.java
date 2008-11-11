@@ -63,7 +63,9 @@ public class FailedEditionTest extends BaseTest {
 			throws DriverException, NonEditableDataSourceException {
 		ds.deleteRow(2);
 		ds.setFieldValue(0, 1, ValueFactory.createValue("nouveau"));
-		ds.insertFilledRow(ds.getRow(0));
+		Value[] row = ds.getRow(0);
+		row[1] = ValueFactory.createValue("aaaaa");
+		ds.insertFilledRow(row);
 		Value[][] table = super.getDataSourceContents(ds);
 		Iterator<Integer> it = ds.queryIndex(query);
 		try {
@@ -84,7 +86,6 @@ public class FailedEditionTest extends BaseTest {
 		ds.open();
 		assertTrue(equals(table, super.getDataSourceContents(ds)));
 		ds.close();
-
 	}
 
 	public void testAlphanumericObjectfailedCommit() throws Exception {

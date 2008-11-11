@@ -123,7 +123,8 @@ public class FileDataSourceAdapter extends DriverDataSource implements
 		return null;
 	}
 
-	public void commit(List<PhysicalDirection> rowsDirections,
+	@Override
+	public boolean commit(List<PhysicalDirection> rowsDirections,
 			String[] fieldNames, ArrayList<EditionInfo> schemaActions,
 			ArrayList<EditionInfo> editionActions,
 			ArrayList<DeleteEditionInfo> deletedPKs, DataSource modifiedSource)
@@ -149,6 +150,8 @@ public class FileDataSourceAdapter extends DriverDataSource implements
 		driver.open(file);
 
 		fireCommit(this);
+		
+		return false;
 	}
 
 	@Override

@@ -41,17 +41,18 @@ import org.orbisgis.progress.IProgressMonitor;
 
 /**
  * Interface to be implement by the Object driver that as also RW capabilities
- *
+ * 
  */
 public interface ObjectReadWriteDriver extends ObjectDriver, ReadWriteDriver {
 	/**
-	 * Writes the content in the DataWare to the specified file
-	 *
-	 * @param pm
-	 *
+	 * Writes the content in the DataSource to the specified file
+	 * 
 	 * @param dataWare
-	 *            DataWare with the contents
+	 *            DataSource with the contents
+	 * @param pm
+	 * @return
+	 * @throws DriverException
 	 */
-	void write(DataSource dataSource, IProgressMonitor pm)
+	boolean write(DataSource dataSource, IProgressMonitor pm)
 			throws DriverException;
 }

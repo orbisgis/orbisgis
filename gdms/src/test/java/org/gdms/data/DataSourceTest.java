@@ -39,6 +39,7 @@ package org.gdms.data;
 import java.io.File;
 
 import org.gdms.SourceTest;
+import org.gdms.data.metadata.DefaultMetadata;
 import org.gdms.data.metadata.Metadata;
 import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
@@ -209,7 +210,7 @@ public class DataSourceTest extends SourceTest {
 			}
 
 			public Metadata getMetadata() throws DriverException {
-				return null;
+				return new DefaultMetadata();
 			}
 
 			public void stop() throws DriverException {

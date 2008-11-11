@@ -38,6 +38,7 @@ package org.gdms.data.values;
 
 import java.io.Serializable;
 import java.sql.Time;
+import java.sql.Timestamp;
 import java.text.DateFormat;
 
 import org.gdms.data.types.Type;
@@ -45,7 +46,7 @@ import org.gdms.sql.strategies.IncompatibleTypesException;
 
 /**
  * Wrapper for times
- *
+ * 
  * @author Fernando Gonzalez Cortes
  */
 class TimeValue extends AbstractValue implements Serializable {
@@ -53,7 +54,7 @@ class TimeValue extends AbstractValue implements Serializable {
 
 	/**
 	 * Creates a new DateValue object.
-	 *
+	 * 
 	 * @param d
 	 *            DOCUMENT ME!
 	 */
@@ -69,7 +70,7 @@ class TimeValue extends AbstractValue implements Serializable {
 
 	/**
 	 * Establece el valor
-	 *
+	 * 
 	 * @param d
 	 *            valor
 	 */
@@ -175,7 +176,7 @@ class TimeValue extends AbstractValue implements Serializable {
 
 	/**
 	 * DOCUMENT ME!
-	 *
+	 * 
 	 * @return DOCUMENT ME!
 	 */
 	public String toString() {
@@ -222,4 +223,18 @@ class TimeValue extends AbstractValue implements Serializable {
 	public Time getAsTime() throws IncompatibleTypesException {
 		return value;
 	}
+
+	@Override
+	public Value toType(int typeCode) throws IncompatibleTypesException {
+		switch (typeCode) {
+		case Type.TIME:
+			return this;
+		case Type.TIMESTAMP:
+			return ValueFactory.createValue(new Timestamp(value.getTime()));
+		case Type.STRING:
+			return ValueFactory.createValue(toString());
+		}
+		throw new IncompatibleTypesException("Cannot cast to type: " + typeCode);
+	}
+
 }

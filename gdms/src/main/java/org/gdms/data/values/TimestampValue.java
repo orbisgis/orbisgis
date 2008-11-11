@@ -44,7 +44,7 @@ import org.gdms.sql.strategies.IncompatibleTypesException;
 
 /**
  * Wrapper for timestamps
- *
+ * 
  * @author Fernando Gonzalez Cortes
  */
 class TimestampValue extends AbstractValue implements Serializable {
@@ -52,7 +52,7 @@ class TimestampValue extends AbstractValue implements Serializable {
 
 	/**
 	 * Creates a new DateValue object.
-	 *
+	 * 
 	 * @param d
 	 *            DOCUMENT ME!
 	 */
@@ -68,7 +68,7 @@ class TimestampValue extends AbstractValue implements Serializable {
 
 	/**
 	 * Establece el valor
-	 *
+	 * 
 	 * @param d
 	 *            valor
 	 */
@@ -174,7 +174,7 @@ class TimestampValue extends AbstractValue implements Serializable {
 
 	/**
 	 * DOCUMENT ME!
-	 *
+	 * 
 	 * @return DOCUMENT ME!
 	 */
 	public String toString() {
@@ -220,5 +220,16 @@ class TimestampValue extends AbstractValue implements Serializable {
 	@Override
 	public Timestamp getAsTimestamp() throws IncompatibleTypesException {
 		return value;
+	}
+
+	@Override
+	public Value toType(int typeCode) throws IncompatibleTypesException {
+		switch (typeCode) {
+		case Type.TIMESTAMP:
+			return this;
+		case Type.STRING:
+			return ValueFactory.createValue(toString());
+		}
+		throw new IncompatibleTypesException("Cannot cast to type: " + typeCode);
 	}
 }

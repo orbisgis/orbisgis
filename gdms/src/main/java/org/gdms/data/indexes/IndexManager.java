@@ -64,7 +64,7 @@ import org.orbisgis.utils.FileUtils;
 public class IndexManager {
 
 	private static final Logger logger = Logger.getLogger(IndexManager.class);
-	
+
 	public static final String INDEX_PROPERTY_PREFIX = "org.gdms.index";
 
 	public static final String RTREE_SPATIAL_INDEX = "org.gdms.rtree";
@@ -114,18 +114,11 @@ public class IndexManager {
 		dsName = dsf.getSourceManager().getMainNameFor(dsName);
 
 		Source src = dsf.getSourceManager().getSource(dsName);
-		String propertyName = INDEX_PROPERTY_PREFIX + "-" + fieldName + "-"
-				+ indexId;
+
+		// Get index id if null
+		DataSource ds;
 		try {
-			DataSource ds = dsf.getDataSource(dsName, DataSourceFactory.NORMAL);
-			if (src.getFileProperty(propertyName) != null) {
-				throw new IndexException("There is already an "
-						+ "index on that field for that source: " + dsName
-						+ "." + fieldName);
-			}
-			File indexFile = src.createFileProperty(propertyName);
-			ds.open();
-			DataSourceIndex index = null;
+			ds = dsf.getDataSource(dsName, DataSourceFactory.NORMAL);
 			if (indexId == null) {
 				int code = ds.getFieldType(ds.getFieldIndexByName(fieldName))
 						.getTypeCode();
@@ -135,6 +128,26 @@ public class IndexManager {
 					indexId = BTREE_ALPHANUMERIC_INDEX;
 				}
 			}
+		} catch (DriverException e) {
+			throw new IndexException("Cannot access data to index", e);
+		} catch (NoSuchTableException e) {
+			throw new IndexException("The source doesn't exist", e);
+		} catch (DataSourceCreationException e) {
+			throw new IndexException("Cannot access the source", e);
+		}
+		String propertyName = INDEX_PROPERTY_PREFIX + "-" + fieldName + "-"
+				+ indexId;
+
+		// build index
+		try {
+			if (src.getFileProperty(propertyName) != null) {
+				throw new IndexException("There is already an "
+						+ "index on that field for that source: " + dsName
+						+ "." + fieldName);
+			}
+			File indexFile = src.createFileProperty(propertyName);
+			ds.open();
+			DataSourceIndex index = null;
 			index = instantiateIndex(indexId);
 			if (index == null) {
 				throw new UnsupportedOperationException("Cannot find "
@@ -156,10 +169,6 @@ public class IndexManager {
 			fireIndexCreated(dsName, fieldName, indexId, pm);
 		} catch (DriverLoadException e) {
 			throw new IndexException("Cannot read source", e);
-		} catch (NoSuchTableException e) {
-			throw new IndexException("The source doesn't exist", e);
-		} catch (DataSourceCreationException e) {
-			throw new IndexException("Cannot access the source", e);
 		} catch (IncompatibleTypesException e) {
 			try {
 				src.deleteProperty(propertyName);

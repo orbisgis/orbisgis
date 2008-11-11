@@ -47,13 +47,13 @@ import org.grap.model.GeoRaster;
 import com.vividsolutions.jts.geom.Geometry;
 
 /**
- * Clase padre de todos los wrappers sobre tipos del sistema
- *
- * @author Fernando Gonz�lez Cort�s
+ * Parent wrapper
+ * 
+ * @author Fernando Gonzalez Cortes
  */
 public abstract class AbstractValue implements Value {
 	/**
-	 * @see com.hardcode.gdbms.engine.instruction.Operations#and(com.hardcode.gdbms.engine.values.value);
+	 * @see com.hardcode.gdbms.engine.instruction.Operations#and(com.hardcode.gdbms.engine.values.value)
 	 */
 	public Value and(Value value) throws IncompatibleTypesException {
 		throw new IncompatibleTypesException("Cannot operate with " + value
@@ -61,7 +61,7 @@ public abstract class AbstractValue implements Value {
 	}
 
 	/**
-	 * @see com.hardcode.gdbms.engine.instruction.Operations#or(com.hardcode.gdbms.engine.values.value);
+	 * @see com.hardcode.gdbms.engine.instruction.Operations#or(com.hardcode.gdbms.engine.values.value)
 	 */
 	public Value or(Value value) throws IncompatibleTypesException {
 		throw new IncompatibleTypesException("Cannot operate with " + value
@@ -69,7 +69,7 @@ public abstract class AbstractValue implements Value {
 	}
 
 	/**
-	 * @see com.hardcode.gdbms.engine.instruction.Operations#producto(com.hardcode.gdbms.engine.values.value);
+	 * @see com.hardcode.gdbms.engine.instruction.Operations#producto(com.hardcode.gdbms.engine.values.value)
 	 */
 	public Value producto(Value value) throws IncompatibleTypesException {
 		throw new IncompatibleTypesException("Cannot operate with " + value
@@ -77,7 +77,7 @@ public abstract class AbstractValue implements Value {
 	}
 
 	/**
-	 * @see com.hardcode.gdbms.engine.instruction.Operations#suma(com.hardcode.gdbms.engine.values.value);
+	 * @see com.hardcode.gdbms.engine.instruction.Operations#suma(com.hardcode.gdbms.engine.values.value)
 	 */
 	public Value suma(Value value) throws IncompatibleTypesException {
 		throw new IncompatibleTypesException("Cannot operate with " + value
@@ -306,6 +306,16 @@ public abstract class AbstractValue implements Value {
 
 	public boolean isNull() {
 		return false;
+	}
+
+	@Override
+	public Value toType(int typeCode) throws IncompatibleTypesException {
+		if (typeCode == getType()) {
+			return this;
+		} else {
+			throw new IncompatibleTypesException("Cannot cast value to type: "
+					+ typeCode);
+		}
 	}
 
 }

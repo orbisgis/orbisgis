@@ -217,7 +217,8 @@ public class DBTableDataSourceAdapter extends DriverDataSource implements
 		return null;
 	}
 
-	public void commit(List<PhysicalDirection> rowsDirections,
+	@Override
+	public boolean commit(List<PhysicalDirection> rowsDirections,
 			String[] fieldNames, ArrayList<EditionInfo> schemaActions,
 			ArrayList<EditionInfo> editionActions,
 			ArrayList<DeleteEditionInfo> deletedPKs, DataSource modifiedSource)
@@ -263,6 +264,8 @@ public class DBTableDataSourceAdapter extends DriverDataSource implements
 		}
 
 		fireCommit(this);
+		
+		return true;
 	}
 
 	/**

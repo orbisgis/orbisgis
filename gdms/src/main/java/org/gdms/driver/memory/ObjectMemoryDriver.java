@@ -99,7 +99,7 @@ public class ObjectMemoryDriver extends GDMSModelDriver implements ObjectReadWri
 		dataSource.close();
 	}
 
-	public void write(DataSource dataSource, IProgressMonitor pm)
+	public boolean write(DataSource dataSource, IProgressMonitor pm)
 			throws DriverException {
 		ArrayList<ArrayList<Value>> newContents = new ArrayList<ArrayList<Value>>();
 		for (int i = 0; i < dataSource.getRowCount(); i++) {
@@ -124,6 +124,8 @@ public class ObjectMemoryDriver extends GDMSModelDriver implements ObjectReadWri
 		for (int i = 0; i < columnsTypes.length; i++) {
 			columnsTypes[i] = dataSource.getFieldType(i);
 		}
+		
+		return false;
 	}
 
 	public void start() throws DriverException {

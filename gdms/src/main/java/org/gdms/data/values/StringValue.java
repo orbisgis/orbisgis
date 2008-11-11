@@ -38,13 +38,15 @@ package org.gdms.data.values;
 
 import java.io.Serializable;
 import java.sql.Types;
+import java.text.ParseException;
 
 import org.gdms.data.types.Type;
+import org.gdms.data.types.TypeFactory;
 import org.gdms.sql.strategies.IncompatibleTypesException;
 
 /**
  * Wrapper for strings
- *
+ * 
  * @author Fernando Gonzalez Cortes
  */
 class StringValue extends AbstractValue implements Serializable {
@@ -52,7 +54,7 @@ class StringValue extends AbstractValue implements Serializable {
 
 	/**
 	 * Construye un objeto StringValue con el texto que se pasa como parametro
-	 *
+	 * 
 	 * @param text
 	 */
 	StringValue(String text) {
@@ -67,7 +69,7 @@ class StringValue extends AbstractValue implements Serializable {
 
 	/**
 	 * Establece el valor de este objeto
-	 *
+	 * 
 	 * @param value
 	 */
 	public void setValue(String value) {
@@ -76,7 +78,7 @@ class StringValue extends AbstractValue implements Serializable {
 
 	/**
 	 * Obtiene el valor de este objeto
-	 *
+	 * 
 	 * @return
 	 */
 	public String getValue() {
@@ -335,5 +337,18 @@ class StringValue extends AbstractValue implements Serializable {
 	@Override
 	public String getAsString() throws IncompatibleTypesException {
 		return value;
+	}
+
+	@Override
+	public Value toType(int typeCode) throws IncompatibleTypesException {
+		try {
+			return ValueFactory.createValueByType(value, typeCode);
+		} catch (NumberFormatException e) {
+			throw new IncompatibleTypesException("Cannot convert value to "
+					+ TypeFactory.getTypeName(typeCode) + ": " + value, e);
+		} catch (ParseException e) {
+			throw new IncompatibleTypesException("Cannot convert value to "
+					+ TypeFactory.getTypeName(typeCode) + ": " + value, e);
+		}
 	}
 }

@@ -54,6 +54,7 @@ import org.gdms.driver.DriverException;
 import org.gdms.driver.ReadAccess;
 import org.gdms.driver.ReadOnlyDriver;
 import org.gdms.source.Source;
+import org.gdms.sql.strategies.IncompatibleTypesException;
 
 /**
  * Interface to access any data source
@@ -186,12 +187,16 @@ public interface DataSource extends ReadAccess {
 	 *            Values of the inserted row fields in the field order
 	 * 
 	 * @throws DriverException
-	 *             if the row could not be inserted IllegalArgumentException If
-	 *             the number of values doesn't match the number of fields in
+	 *             if the row could not be inserted
+	 * @throws IllegalArgumentException
+	 *             If the number of values doesn't match the number of fields in
 	 *             this data source
+	 * @throws IncompatibleTypesException
+	 *             If the values doesn't match the field type and no conversion
+	 *             can be applied
 	 */
 	public void insertFilledRow(Value[] values) throws DriverException,
-			IllegalArgumentException;
+			IllegalArgumentException, IncompatibleTypesException;
 
 	/**
 	 * Inserts a row at the end of the datasource

@@ -43,7 +43,7 @@ import org.gdms.sql.strategies.IncompatibleTypesException;
 
 /**
  * Wrapper for boolean
- *
+ * 
  * @author Fernando Gonzalez Cortes
  */
 class BooleanValue extends AbstractValue implements Serializable {
@@ -103,7 +103,7 @@ class BooleanValue extends AbstractValue implements Serializable {
 
 	/**
 	 * Creates a new BooleanValue object.
-	 *
+	 * 
 	 * @param value
 	 *            Valor booleano que tendr� este objeto
 	 */
@@ -119,12 +119,12 @@ class BooleanValue extends AbstractValue implements Serializable {
 
 	/**
 	 * DOCUMENT ME!
-	 *
+	 * 
 	 * @param value
 	 *            DOCUMENT ME!
-	 *
+	 * 
 	 * @return DOCUMENT ME!
-	 *
+	 * 
 	 * @throws IncompatibleTypesException
 	 *             DOCUMENT ME!
 	 */
@@ -143,12 +143,12 @@ class BooleanValue extends AbstractValue implements Serializable {
 
 	/**
 	 * DOCUMENT ME!
-	 *
+	 * 
 	 * @param value
 	 *            DOCUMENT ME!
-	 *
+	 * 
 	 * @return DOCUMENT ME!
-	 *
+	 * 
 	 * @throws IncompatibleTypesException
 	 *             DOCUMENT ME!
 	 */
@@ -167,7 +167,7 @@ class BooleanValue extends AbstractValue implements Serializable {
 
 	/**
 	 * Establece el valor de este objeto
-	 *
+	 * 
 	 * @param value
 	 */
 	public void setValue(boolean value) {
@@ -176,7 +176,7 @@ class BooleanValue extends AbstractValue implements Serializable {
 
 	/**
 	 * Obtiene el valor de este objeto
-	 *
+	 * 
 	 * @return
 	 */
 	public boolean getValue() {
@@ -266,4 +266,16 @@ class BooleanValue extends AbstractValue implements Serializable {
 	public boolean getAsBoolean() throws IncompatibleTypesException {
 		return value;
 	}
+
+	@Override
+	public Value toType(int typeCode) throws IncompatibleTypesException {
+		switch (typeCode) {
+		case Type.BOOLEAN:
+			return this;
+		case Type.STRING:
+			return ValueFactory.createValue(Boolean.toString(value));
+		}
+		throw new IncompatibleTypesException("Cannot cast to type: " + typeCode);
+	}
+
 }
