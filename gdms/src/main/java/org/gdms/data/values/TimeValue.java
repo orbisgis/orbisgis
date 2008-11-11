@@ -40,6 +40,9 @@ import java.io.Serializable;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import org.gdms.data.types.Type;
 import org.gdms.sql.strategies.IncompatibleTypesException;
@@ -50,10 +53,11 @@ import org.gdms.sql.strategies.IncompatibleTypesException;
  * @author Fernando Gonzalez Cortes
  */
 class TimeValue extends AbstractValue implements Serializable {
+	private static final String TIME_FORMAT = "yyyy-MM-dd HH:mm";
 	private Time value;
 
 	/**
-	 * Creates a new DateValue object.
+	 * Creates a new TimeValue object.
 	 * 
 	 * @param d
 	 *            DOCUMENT ME!
@@ -63,9 +67,18 @@ class TimeValue extends AbstractValue implements Serializable {
 	}
 
 	/**
-	 * Creates a new DateValue object.
+	 * Creates a new TimeValue object.
 	 */
 	TimeValue() {
+	}
+
+	public TimeValue(String text) throws ParseException {
+		SimpleDateFormat sdf = getDateFormat();
+		value = new Time(sdf.parse(text).getTime());
+	}
+
+	private SimpleDateFormat getDateFormat() {
+		return new SimpleDateFormat(TIME_FORMAT);
 	}
 
 	/**
@@ -227,6 +240,8 @@ class TimeValue extends AbstractValue implements Serializable {
 	@Override
 	public Value toType(int typeCode) throws IncompatibleTypesException {
 		switch (typeCode) {
+		case Type.DATE:
+			return ValueFactory.createValue(new Date(value.getTime()));
 		case Type.TIME:
 			return this;
 		case Type.TIMESTAMP:

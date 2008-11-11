@@ -40,6 +40,7 @@ import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.Date;
 
+import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeFactory;
 import org.gdms.sql.strategies.IncompatibleTypesException;
 import org.grap.model.GeoRaster;
@@ -312,9 +313,11 @@ public abstract class AbstractValue implements Value {
 	public Value toType(int typeCode) throws IncompatibleTypesException {
 		if (typeCode == getType()) {
 			return this;
+		} else if (typeCode == Type.STRING) {
+			return ValueFactory.createValue(toString());
 		} else {
-			throw new IncompatibleTypesException("Cannot cast value to type: "
-					+ typeCode);
+			throw new IncompatibleTypesException("Cannot cast '" + toString()
+					+ "' to type " + TypeFactory.getTypeName(typeCode));
 		}
 	}
 

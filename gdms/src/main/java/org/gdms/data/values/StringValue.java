@@ -342,7 +342,15 @@ class StringValue extends AbstractValue implements Serializable {
 	@Override
 	public Value toType(int typeCode) throws IncompatibleTypesException {
 		try {
-			return ValueFactory.createValueByType(value, typeCode);
+			Value ret = ValueFactory.createValueByType(value, typeCode);
+			if (ret.getType() == typeCode) {
+				return ret;
+			} else {
+				throw new IncompatibleTypesException(
+						"Cannot convert string to "
+								+ TypeFactory.getTypeName(typeCode) + ": "
+								+ value);
+			}
 		} catch (NumberFormatException e) {
 			throw new IncompatibleTypesException("Cannot convert value to "
 					+ TypeFactory.getTypeName(typeCode) + ": " + value, e);

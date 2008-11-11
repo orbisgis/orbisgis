@@ -228,9 +228,8 @@ abstract class NumericValue extends AbstractValue implements Serializable {
 		return shortValue();
 	}
 
-	private boolean isDecimal() {
-		return !((getType() == Type.BYTE) || (getType() == Type.SHORT)
-				|| (getType() == Type.LONG) || (getType() == Type.INT));
+	private boolean isDecimal(int type) {
+		return (type == Type.FLOAT) || (type == Type.DOUBLE);
 	}
 
 	public Value toType(int typeCode) throws IncompatibleTypesException {
@@ -242,20 +241,33 @@ abstract class NumericValue extends AbstractValue implements Serializable {
 		case Type.LONG:
 		case Type.FLOAT:
 		case Type.DOUBLE:
+			if (!isDecimal(typeCode) && isDecimal(getType())) {
+				throw new IncompatibleTypesException(
+						"Cannot cast decimal to whole :"
+								+ typeCode
+								+ ": "
+								+ getStringValue(ValueWriter.internalValueWriter));
+			}
 			return this;
 		case Type.DATE:
-			if (!isDecimal()) {
+			if (!isDecimal(getType())) {
 				return ValueFactory.createValue(new Date(longValue()));
+			} else {
+				break;
 			}
 		case Type.STRING:
 			return ValueFactory.createValue(toString());
 		case Type.TIME:
-			if (!isDecimal()) {
+			if (!isDecimal(getType())) {
 				return ValueFactory.createValue(new Time(longValue()));
+			} else {
+				break;
 			}
 		case Type.TIMESTAMP:
-			if (!isDecimal()) {
+			if (!isDecimal(getType())) {
 				return ValueFactory.createValue(new Timestamp(longValue()));
+			} else {
+				break;
 			}
 		}
 		throw new IncompatibleTypesException("Cannot cast to type:" + typeCode

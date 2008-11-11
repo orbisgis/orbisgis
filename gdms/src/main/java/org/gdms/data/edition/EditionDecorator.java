@@ -294,12 +294,16 @@ public class EditionDecorator extends AbstractDataSourceDecorator implements
 
 	ModifyCommand.ModifyInfo doSetFieldValue(long row, int fieldId, Value value)
 			throws DriverException {
+		// convert value
 		if (value == null) {
 			value = ValueFactory.createNullValue();
 		}
+		Type fieldType = getMetadata().getFieldType(fieldId);
+		if (!value.isNull() && (fieldType.getTypeCode() != value.getType())) {
+			value = value.toType(fieldType.getTypeCode());
+		}
 
 		// write check
-		Type fieldType = getMetadata().getFieldType(fieldId);
 		if ((fieldType.getConstraint(Constraint.READONLY) != null)
 				|| (fieldType.getConstraint(Constraint.AUTO_INCREMENT) != null)) {
 			throw new DriverException(
@@ -399,6 +403,16 @@ public class EditionDecorator extends AbstractDataSourceDecorator implements
 			throw new IllegalArgumentException(
 					"Wrong number of values. Expected: " + fc);
 		}
+
+		// Convert value
+		for (int i = 0; i < values.length; i++) {
+			Type type = getMetadata().getFieldType(i);
+			if (!values[i].isNull()
+					&& (type.getTypeCode() != values[i].getType())) {
+				values[i] = values[i].toType(type.getTypeCode());
+			}
+		}
+
 		// Check constraints
 		for (int i = 0; i < values.length; i++) {
 			// Check special case of auto-increment not-null fields
@@ -430,11 +444,6 @@ public class EditionDecorator extends AbstractDataSourceDecorator implements
 
 	private void checkConstraints(Type type, Value value, String fieldName,
 			int fieldId) throws DriverException {
-		// Check types
-		if (!value.isNull() && (type.getTypeCode() != value.getType())) {
-			value = value.toType(type.getTypeCode());
-		}
-
 		// Check constraints
 		String error = check(fieldId, value);
 		if (error != null) {

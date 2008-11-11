@@ -26,6 +26,7 @@ import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeFactory;
 import org.gdms.data.types.UniqueConstraint;
 import org.gdms.data.values.Value;
+import org.gdms.data.values.ValueCollection;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.memory.ObjectMemoryDriver;
@@ -40,6 +41,22 @@ public class ConstraintTest extends TestCase {
 	private Type type;
 	private Value[] validValues = new Value[0];
 	private Value[] invalidValues = new Value[0];
+	private Value binaryValue = ValueFactory.createValue(new byte[] { 2, 3, 4,
+			5 });
+	private Value booleanValue = ValueFactory.createValue(true);
+	private Value byteValue = ValueFactory.createValue((byte) 3);
+	private Value dateValue = ValueFactory.createValue(new Date());
+	private Value doubleValue = ValueFactory.createValue(4.4d);
+	private Value floatValue = ValueFactory.createValue(3.3f);
+	private Value geomValue = ValueFactory.createValue(Geometries.getPoint());
+	private Value intValue = ValueFactory.createValue(3);
+	private Value longValue = ValueFactory.createValue(4L);
+	private Value shortValue = ValueFactory.createValue((short) 3);
+	private Value stringValue = ValueFactory.createValue("string");
+	private Value timeValue = ValueFactory.createValue(new Time(2));
+	private Value timestampValue = ValueFactory.createValue(new Timestamp(2));
+	private ValueCollection collectionValue = ValueFactory
+			.createValue(new Value[0]);
 
 	@Override
 	protected void setUp() throws Exception {
@@ -178,18 +195,123 @@ public class ConstraintTest extends TestCase {
 
 	public void testAddWrongTypeBinary() throws Exception {
 		setType(TypeFactory.createType(Type.BINARY));
-		setValidValues(ValueFactory.createValue(new byte[] { 2, 3, 4, 5 }));
-		setInvalidValues(ValueFactory.createValue(true), ValueFactory
-				.createValue((byte) 3), ValueFactory.createValue(new Date()),
-				ValueFactory.createValue(4.4d), ValueFactory.createValue(3.3f),
-				ValueFactory.createValue(Geometries.getPoint()), ValueFactory
-						.createValue(3), ValueFactory.createValue(4L),
-				ValueFactory.createValue((short) 3), ValueFactory
-						.createValue("string"), ValueFactory
-						.createValue(new Time(2)), ValueFactory
-						.createValue(new Timestamp(2)), ValueFactory
-						.createValue(new Value[0]));
+		setValidValues(binaryValue);
+		setInvalidValues(booleanValue, byteValue, dateValue, doubleValue,
+				floatValue, geomValue, intValue, longValue, shortValue,
+				stringValue, timeValue, timestampValue, collectionValue);
 		doEdition();
+	}
+
+	public void testAddWrongTypeBoolean() throws Exception {
+		setType(TypeFactory.createType(Type.BOOLEAN));
+		setValidValues(booleanValue, stringValue);
+		setInvalidValues(binaryValue, byteValue, dateValue, doubleValue,
+				floatValue, geomValue, intValue, longValue, shortValue,
+				timeValue, timestampValue, collectionValue);
+		doEdition();
+	}
+
+	public void testAddWrongTypeCollection() throws Exception {
+		setType(TypeFactory.createType(Type.COLLECTION));
+		setValidValues(collectionValue);
+		setInvalidValues(binaryValue, booleanValue, byteValue, dateValue,
+				doubleValue, floatValue, geomValue, intValue, longValue,
+				shortValue, stringValue, timeValue, timestampValue);
+		doEdition();
+	}
+
+	public void testAddWrongTypeDate() throws Exception {
+		setType(TypeFactory.createType(Type.DATE));
+		setValidValues(timeValue, dateValue, timestampValue, ValueFactory
+				.createValue("1980-09-05"), byteValue, intValue, longValue,
+				shortValue);
+		setInvalidValues(binaryValue, booleanValue, doubleValue, floatValue,
+				geomValue, stringValue, collectionValue);
+		doEdition();
+	}
+
+	public void testAddWrongTypeGeometry() throws Exception {
+		setType(TypeFactory.createType(Type.GEOMETRY));
+		setValidValues(geomValue, ValueFactory.createValue("POINT (0 0)"));
+		setInvalidValues(binaryValue, booleanValue, byteValue, dateValue,
+				doubleValue, floatValue, intValue, longValue, shortValue,
+				stringValue, timeValue, timestampValue, collectionValue);
+		doEdition();
+	}
+
+	public void testAddWrongTypeString() throws Exception {
+		setType(TypeFactory.createType(Type.STRING));
+		setValidValues(binaryValue, booleanValue, byteValue, dateValue,
+				doubleValue, floatValue, geomValue, intValue, longValue,
+				shortValue, stringValue, timeValue, timestampValue,
+				collectionValue);
+		doEdition();
+	}
+
+	public void testAddWrongTypeTime() throws Exception {
+		setType(TypeFactory.createType(Type.TIME));
+		setValidValues(dateValue, ValueFactory.createValue("1980-09-05 12:00"),
+				byteValue, intValue, longValue, shortValue, timeValue,
+				timestampValue);
+		setInvalidValues(binaryValue, booleanValue, doubleValue, floatValue,
+				geomValue, stringValue, collectionValue);
+		doEdition();
+	}
+
+	public void testAddWrongTypeTimestamp() throws Exception {
+		setType(TypeFactory.createType(Type.TIMESTAMP));
+		setValidValues(dateValue, ValueFactory
+				.createValue("1980-09-05 12:00:24.12132"), byteValue, intValue,
+				longValue, shortValue, timeValue, timestampValue);
+		setInvalidValues(binaryValue, booleanValue, doubleValue, floatValue,
+				geomValue, stringValue, collectionValue);
+		doEdition();
+	}
+
+	public void testAddWrongTypeByte() throws Exception {
+		setType(TypeFactory.createType(Type.BYTE));
+		checkWholeNumber();
+	}
+
+	private void checkWholeNumber() throws Exception {
+		setValidValues(byteValue, intValue, longValue, shortValue);
+		setInvalidValues(binaryValue, booleanValue, dateValue, doubleValue,
+				floatValue, geomValue, stringValue, timeValue, timestampValue,
+				collectionValue);
+		doEdition();
+	}
+
+	private void checkDecimalNumber() throws Exception {
+		setValidValues(doubleValue, floatValue, byteValue, intValue, longValue,
+				shortValue);
+		setInvalidValues(binaryValue, booleanValue, dateValue, geomValue,
+				stringValue, timeValue, timestampValue, collectionValue);
+		doEdition();
+	}
+
+	public void testAddWrongTypeShort() throws Exception {
+		setType(TypeFactory.createType(Type.SHORT));
+		checkWholeNumber();
+	}
+
+	public void testAddWrongTypeInt() throws Exception {
+		setType(TypeFactory.createType(Type.INT));
+		checkWholeNumber();
+	}
+
+	public void testAddWrongTypeLong() throws Exception {
+		setType(TypeFactory.createType(Type.LONG));
+		checkWholeNumber();
+	}
+
+	public void testAddWrongTypeFloat() throws Exception {
+		setType(TypeFactory.createType(Type.FLOAT));
+		checkDecimalNumber();
+	}
+
+	public void testAddWrongTypeDouble() throws Exception {
+		setType(TypeFactory.createType(Type.DOUBLE));
+		checkDecimalNumber();
 	}
 
 	private void checkUniqueness() throws DriverException {

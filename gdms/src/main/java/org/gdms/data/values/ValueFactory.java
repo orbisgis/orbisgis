@@ -38,7 +38,6 @@ package org.gdms.data.values;
 
 import java.sql.Time;
 import java.sql.Timestamp;
-import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.util.Date;
@@ -376,14 +375,16 @@ public class ValueFactory {
 			break;
 
 		case Type.TIMESTAMP:
-			value = ValueFactory.createValue(Timestamp.valueOf(text));
+			try {
+				value = ValueFactory.createValue(Timestamp.valueOf(text));
+			} catch (IllegalArgumentException e) {
+				throw new ParseException(e.getMessage(), -1);
+			}
 
 			break;
 
 		case Type.TIME:
-			DateFormat tf = DateFormat.getTimeInstance();
-			value = ValueFactory
-					.createValue(new Time(tf.parse(text).getTime()));
+			value = new TimeValue(text);
 
 			break;
 
