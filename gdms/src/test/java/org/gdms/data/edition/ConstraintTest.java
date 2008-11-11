@@ -250,7 +250,7 @@ public class ConstraintTest extends TestCase {
 
 	public void testAddWrongTypeTime() throws Exception {
 		setType(TypeFactory.createType(Type.TIME));
-		setValidValues(dateValue, ValueFactory.createValue("1980-09-05 12:00"),
+		setValidValues(dateValue, ValueFactory.createValue("1980-09-05 12:00:20"),
 				byteValue, intValue, longValue, shortValue, timeValue,
 				timestampValue);
 		setInvalidValues(binaryValue, booleanValue, doubleValue, floatValue,

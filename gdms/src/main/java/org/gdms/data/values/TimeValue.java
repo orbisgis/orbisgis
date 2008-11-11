@@ -39,7 +39,6 @@ package org.gdms.data.values;
 import java.io.Serializable;
 import java.sql.Time;
 import java.sql.Timestamp;
-import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -53,7 +52,7 @@ import org.gdms.sql.strategies.IncompatibleTypesException;
  * @author Fernando Gonzalez Cortes
  */
 class TimeValue extends AbstractValue implements Serializable {
-	private static final String TIME_FORMAT = "yyyy-MM-dd HH:mm";
+	private static final String TIME_FORMAT = "yyyy-MM-dd HH:mm:ss";
 	private Time value;
 
 	/**
@@ -193,7 +192,7 @@ class TimeValue extends AbstractValue implements Serializable {
 	 * @return DOCUMENT ME!
 	 */
 	public String toString() {
-		return DateFormat.getTimeInstance().format(value);
+		return getDateFormat().format(value);
 	}
 
 	/**

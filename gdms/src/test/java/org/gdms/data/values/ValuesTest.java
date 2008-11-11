@@ -38,8 +38,8 @@ package org.gdms.data.values;
 
 import java.sql.Time;
 import java.sql.Timestamp;
-import java.text.DateFormat;
 import java.text.NumberFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -342,13 +342,13 @@ public class ValuesTest extends TestCase {
 				Type.BINARY).equals(ValueFactory.createValue(array)))
 				.getValue());
 
-		c.set(1970, 0, 1, 22, 45, 20);
+		c.set(1970, 0, 1, 22, 45, 00);
 		c.set(Calendar.MILLISECOND, 0);
 
 		Time t = new Time(c.getTime().getTime());
 		assertTrue(((BooleanValue) ValueFactory.createValueByType(
-				DateFormat.getTimeInstance().format(t), Type.TIME).equals(
-				ValueFactory.createValue(t))).getValue());
+				new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(t),
+				Type.TIME).equals(ValueFactory.createValue(t))).getValue());
 
 		c.set(1970, 0, 1, 22, 45, 20);
 		c.set(Calendar.MILLISECOND, 2345);
@@ -891,6 +891,15 @@ public class ValuesTest extends TestCase {
 	private void checkIO(Value v) throws IncompatibleTypesException {
 		Value v2 = ValueFactory.createValue(v.getType(), v.getBytes());
 		assertTrue(((BooleanValue) v2.equals(v)).getValue());
+	}
+
+	public void testEmptyStringIsNotValidGeometry() throws Exception {
+		try {
+			ValueFactory.createValueByType("", Type.GEOMETRY);
+			assertTrue(false);
+		} catch (ParseException e) {
+
+		}
 	}
 
 	public void test3DGeoms() throws Exception {

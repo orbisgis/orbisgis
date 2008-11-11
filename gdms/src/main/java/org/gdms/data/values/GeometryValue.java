@@ -196,6 +196,11 @@ class GeometryValue extends AbstractValue {
 	}
 
 	public static Value parseString(String text) throws ParseException {
-		return new GeometryValue(wktReader.read(text));
+		Geometry readGeometry = wktReader.read(text);
+		if (readGeometry != null) {
+			return new GeometryValue(readGeometry);
+		} else {
+			throw new ParseException("Cannot parse geometry: " + text);
+		}
 	}
 }

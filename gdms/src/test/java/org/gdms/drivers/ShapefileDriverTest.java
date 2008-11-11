@@ -188,29 +188,6 @@ public class ShapefileDriverTest extends TestCase {
 		ds.close();
 	}
 
-	public void testSaveWrongType() throws Exception {
-		BasicWarningListener listener = new BasicWarningListener();
-		dsf.setWarninglistener(listener);
-
-		ObjectMemoryDriver omd = new ObjectMemoryDriver(new String[] { "id",
-				"geom" }, new Type[] {
-				TypeFactory.createType(Type.INT),
-				TypeFactory.createType(Type.GEOMETRY,
-						new Constraint[] { new GeometryConstraint(
-								GeometryConstraint.POLYGON) }) });
-		dsf.getSourceManager().register("obj", new ObjectSourceDefinition(omd));
-		DataSourceDefinition target = new FileSourceDefinition(new File(
-				SourceTest.backupDir, "outputtestSaveWrongType.shp"));
-		DataSource ds = dsf.getDataSource("obj");
-		ds.open();
-		ds.insertFilledRow(new Value[] { ValueFactory.createValue("1"),
-				ValueFactory.createValue(Geometries.getPolygon()), });
-		dsf.getSourceManager().register("buffer", target);
-		dsf.saveContents("buffer", ds);
-		assertTrue(listener.warnings.size() == 1);
-		ds.close();
-	}
-
 	public void testFieldNameTooLong() throws Exception {
 		BasicWarningListener listener = new BasicWarningListener();
 		dsf.setWarninglistener(listener);
