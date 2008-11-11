@@ -4,7 +4,7 @@ import org.orbisgis.editors.table.TableEditableElement;
 import org.orbisgis.editors.table.TableEditor;
 import org.orbisgis.editors.table.action.ITableCellAction;
 
-public class SelectNone implements ITableCellAction {
+public class SelectionUp implements ITableCellAction {
 
 	@Override
 	public boolean accepts(TableEditableElement element, int rowIndex,
@@ -15,7 +15,7 @@ public class SelectNone implements ITableCellAction {
 	@Override
 	public void execute(TableEditor editor, TableEditableElement element,
 			int rowIndex, int columnIndex) {
-		element.getSelection().clearSelection();
+		editor.moveSelectionUp();
 	}
 
 }

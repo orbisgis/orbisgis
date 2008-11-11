@@ -14,7 +14,7 @@ public class TableEditor implements IEditor {
 	private TableComponent table;
 
 	public TableEditor() {
-		table = new TableComponent();
+		table = new TableComponent(this);
 	}
 
 	@Override

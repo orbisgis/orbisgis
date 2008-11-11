@@ -323,8 +323,7 @@
 	
 	<!-- table cell actions -->
 	<extension point="org.orbisgis.editors.table.CellAction">
-		<action id="org.orbisgis.editors.table.actions.SetNull"
-			text="Set to null"
+		<action id="org.orbisgis.editors.table.actions.SetNull" text="Set to null"
 			menu-group="org.orbisgis.editors.table.Value"
 			class="org.orbisgis.editors.table.actions.SetNull"/>
 		<action id="org.orbisgis.editors.table.actions.SelectEqual"
@@ -339,6 +338,16 @@
 			text="Clear selection"
 			menu-group="org.orbisgis.editors.table.Selection"
 			class="org.orbisgis.editors.table.actions.SelectNone"/>
+		<action id="org.orbisgis.editors.table.SelectionUp"
+			text="Move selection up"
+			menu-group="org.orbisgis.editors.table.Selection"
+			icon="/org/orbisgis/images/arrow_up.png"
+			class="org.orbisgis.editors.table.actions.SelectionUp"/>
+		<action id="org.orbisgis.editors.table.DeleteSelection"
+			text="Remove selection"
+			menu-group="org.orbisgis.editors.table.Selection"
+			icon="/org/orbisgis/images/remove.png"
+			class="org.orbisgis.editors.table.actions.DeleteSelection"/>
 	</extension>
 	
 	<!-- map actions -->

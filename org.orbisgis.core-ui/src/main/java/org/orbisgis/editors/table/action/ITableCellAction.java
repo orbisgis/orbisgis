@@ -1,12 +1,15 @@
 package org.orbisgis.editors.table.action;
 
 import org.orbisgis.editors.table.TableEditableElement;
+import org.orbisgis.editors.table.TableEditor;
 
 public interface ITableCellAction {
 
 	/**
 	 * Executes the column action
 	 * 
+	 * @param tableEditor
+	 *            Editor containing the table
 	 * @param element
 	 *            Element being edited
 	 * @param rowIndex
@@ -14,7 +17,8 @@ public interface ITableCellAction {
 	 * @param columnIndex
 	 *            Index of the column the selected cell is at
 	 */
-	void execute(TableEditableElement element, int rowIndex, int columnIndex);
+	void execute(TableEditor tableEditor, TableEditableElement element,
+			int rowIndex, int columnIndex);
 
 	/**
 	 * Returns true if the action can be executed on the specified column

@@ -7,6 +7,7 @@ import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
 import org.orbisgis.Services;
 import org.orbisgis.editors.table.TableEditableElement;
+import org.orbisgis.editors.table.TableEditor;
 import org.orbisgis.editors.table.action.ITableCellAction;
 import org.orbisgis.errorManager.ErrorManager;
 import org.orbisgis.pluginManager.background.BackgroundJob;
@@ -22,8 +23,8 @@ public class SelectEqual implements ITableCellAction {
 	}
 
 	@Override
-	public void execute(final TableEditableElement element, final int rowIndex,
-			final int columnIndex) {
+	public void execute(TableEditor editor, final TableEditableElement element,
+			final int rowIndex, final int columnIndex) {
 		BackgroundManager bm = Services.getService(BackgroundManager.class);
 		bm.backgroundOperation(new BackgroundJob() {
 

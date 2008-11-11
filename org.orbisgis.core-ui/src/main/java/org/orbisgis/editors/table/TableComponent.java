@@ -90,13 +90,15 @@ public class TableComponent extends JPanel {
 
 	// flags
 	private boolean managingSelection;
+	private TableEditor editor;
 
 	/**
 	 * This is the default constructor
 	 * 
 	 * @throws DriverException
 	 */
-	public TableComponent() {
+	public TableComponent(TableEditor editor) {
+		this.editor = editor;
 		initialize();
 	}
 
@@ -378,6 +380,10 @@ public class TableComponent extends JPanel {
 			}
 		}
 		fireTableDataChanged();
+	}
+
+	private TableEditor getEditor() {
+		return editor;
 	}
 
 	private class SyncSelectionListener implements SelectionListener {
@@ -845,7 +851,7 @@ public class TableComponent extends JPanel {
 
 		@Override
 		public void actionPerformed() {
-			action.execute(element, clickedRow, selectedColumn);
+			action.execute(getEditor(), element, clickedRow, selectedColumn);
 		}
 
 		@Override

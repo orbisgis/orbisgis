@@ -13,7 +13,12 @@ public class DeleteSelection implements IEditorAction {
 
 	@Override
 	public void actionPerformed(IEditor editor) {
-		TableEditableElement element = (TableEditableElement) editor.getElement();
+		TableEditableElement element = (TableEditableElement) editor
+				.getElement();
+		removeSelection(element);
+	}
+
+	public static void removeSelection(TableEditableElement element) {
 		int[] sel = element.getSelection().getSelectedRows().clone();
 		Arrays.sort(sel);
 		DataSource dataSource = element.getDataSource();
@@ -31,7 +36,8 @@ public class DeleteSelection implements IEditorAction {
 
 	@Override
 	public boolean isEnabled(IEditor editor) {
-		TableEditableElement element = (TableEditableElement) editor.getElement();
+		TableEditableElement element = (TableEditableElement) editor
+				.getElement();
 		return element.getSelection().getSelectedRows().length > 0;
 	}
 
