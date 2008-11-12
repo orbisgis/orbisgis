@@ -91,12 +91,12 @@ public class ConstraintTest extends TestCase {
 
 	public void testAutoIncrement() throws Exception {
 		AutoIncrementConstraint constraint = new AutoIncrementConstraint();
-		checkCannotSetAndOnlyAddNull(constraint);
+		checkOnlyCanSetAndAddNull(constraint);
 	}
 
 	public void testReadOnly() throws Exception {
 		ReadOnlyConstraint constraint = new ReadOnlyConstraint();
-		checkCannotSetAndOnlyAddNull(constraint);
+		checkOnlyCanSetAndAddNull(constraint);
 	}
 
 	/**
@@ -106,7 +106,7 @@ public class ConstraintTest extends TestCase {
 	 * @param constraint
 	 * @throws DriverException
 	 */
-	private void checkCannotSetAndOnlyAddNull(Constraint constraint)
+	private void checkOnlyCanSetAndAddNull(Constraint constraint)
 			throws DriverException {
 		Value three = ValueFactory.createValue(3);
 		Value nullV = ValueFactory.createNullValue();
@@ -114,6 +114,8 @@ public class ConstraintTest extends TestCase {
 		DataSource ds = getDataSource();
 		ds.open();
 		ds.insertFilledRow(new Value[] { nullV });
+		assertTrue(ds.check(0, nullV) == null);
+		assertTrue(ds.check(0, three) != null);
 		try {
 			ds.insertFilledRow(new Value[] { three });
 			assertTrue(false);
@@ -124,11 +126,7 @@ public class ConstraintTest extends TestCase {
 			assertTrue(false);
 		} catch (DriverException e) {
 		}
-		try {
-			ds.setFieldValue(0, 0, nullV);
-			assertTrue(false);
-		} catch (DriverException e) {
-		}
+		ds.setFieldValue(0, 0, nullV);
 		ds.close();
 	}
 
@@ -250,9 +248,9 @@ public class ConstraintTest extends TestCase {
 
 	public void testAddWrongTypeTime() throws Exception {
 		setType(TypeFactory.createType(Type.TIME));
-		setValidValues(dateValue, ValueFactory.createValue("1980-09-05 12:00:20"),
-				byteValue, intValue, longValue, shortValue, timeValue,
-				timestampValue);
+		setValidValues(dateValue, ValueFactory
+				.createValue("1980-09-05 12:00:20"), byteValue, intValue,
+				longValue, shortValue, timeValue, timestampValue);
 		setInvalidValues(binaryValue, booleanValue, doubleValue, floatValue,
 				geomValue, stringValue, collectionValue);
 		doEdition();
@@ -350,16 +348,18 @@ public class ConstraintTest extends TestCase {
 		for (Value value : validValues) {
 			dataSource.insertFilledRow(new Value[] { value });
 			dataSource.setFieldValue(dataSource.getRowCount() - 1, 0, value);
+			assertTrue(dataSource.check(0, value) == null);
 		}
 		for (Value value : invalidValues) {
 			try {
+				assertTrue(dataSource.check(0, value) != null);
 				dataSource.insertFilledRow(new Value[] { value });
-				System.out.println(value);
 				assertTrue(false);
 			} catch (DriverException e) {
 			} catch (IncompatibleTypesException e) {
 			}
 			try {
+				assertTrue(dataSource.check(0, value) != null);
 				dataSource.setFieldValue(0, 0, value);
 				assertTrue(false);
 			} catch (DriverException e) {

@@ -56,9 +56,10 @@ public class MultipointTool extends AbstractMultipointTool {
 		try {
 			Value[] row = new Value[sds.getMetadata().getFieldCount()];
 			row[sds.getSpatialFieldIndex()] = ValueFactory.createValue(mp);
+			row = InsertionToolUtils.populateNotNullFields(sds, row);
 			sds.insertFilledRow(row);
 		} catch (DriverException e) {
-			throw new TransitionException("Cannot insert polygon", e);
+			throw new TransitionException("Cannot insert multipoint", e);
 		}
 	}
 

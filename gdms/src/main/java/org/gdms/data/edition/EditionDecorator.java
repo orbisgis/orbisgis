@@ -304,15 +304,7 @@ public class EditionDecorator extends AbstractDataSourceDecorator implements
 		}
 
 		// write check
-		if ((fieldType.getConstraint(Constraint.READONLY) != null)
-				|| (fieldType.getConstraint(Constraint.AUTO_INCREMENT) != null)) {
-			throw new DriverException(
-					"A read only or autoincrement field cannot be modified");
-		} else {
-			// Check uniqueness
-			checkConstraints(fieldType, value, getMetadata().getFieldName(
-					fieldId), fieldId);
-		}
+		checkConstraints(value, fieldId);
 
 		// Do modification
 		ModifyCommand.ModifyInfo ret;
@@ -407,27 +399,13 @@ public class EditionDecorator extends AbstractDataSourceDecorator implements
 		// Convert value
 		for (int i = 0; i < values.length; i++) {
 			Type type = getMetadata().getFieldType(i);
-			if (!values[i].isNull()
-					&& (type.getTypeCode() != values[i].getType())) {
-				values[i] = values[i].toType(type.getTypeCode());
-			}
+			values[i] = castValue(type, values[i]);
 		}
 
 		// Check constraints
 		for (int i = 0; i < values.length; i++) {
-			// Check special case of auto-increment not-null fields
-			Type type = getMetadata().getFieldType(i);
-			boolean autoIncrement = type
-					.getBooleanConstraint(Constraint.AUTO_INCREMENT);
-			Value value = values[i];
-			if (autoIncrement && type.getBooleanConstraint(Constraint.NOT_NULL)) {
-				if (value.isNull()) {
-					continue;
-				}
-			}
 			// Check uniqueness
-			String fieldName = getMetadata().getFieldName(i);
-			checkConstraints(type, value, fieldName, i);
+			checkConstraints(values[i], i);
 		}
 
 		// Perform modifications
@@ -442,24 +420,19 @@ public class EditionDecorator extends AbstractDataSourceDecorator implements
 		editionListenerSupport.callInsert(rowIndex, undoRedo);
 	}
 
-	private void checkConstraints(Type type, Value value, String fieldName,
-			int fieldId) throws DriverException {
-		// Check constraints
+	private Value castValue(Type type, Value value) {
+		Value newValue = value;
+		if (!value.isNull() && (type.getTypeCode() != value.getType())) {
+			newValue = value.toType(type.getTypeCode());
+		}
+		return newValue;
+	}
+
+	private void checkConstraints(Value value, int fieldId)
+			throws DriverException {
 		String error = check(fieldId, value);
 		if (error != null) {
-			throw new DriverException("Value at field " + fieldId
-					+ " is not valid:" + error);
-		}
-
-		// Check uniqueness
-		if (type.getBooleanConstraint(Constraint.UNIQUE)
-				|| type.getBooleanConstraint(Constraint.PK)) {
-			// We assume a geometry field can't have unique constraint
-			IndexQuery iq = new DefaultAlphaQuery(fieldName, value);
-			if (queryIndex(iq).hasNext()) {
-				throw new DriverException(fieldName
-						+ " column doesn't admit duplicates");
-			}
+			throw new DriverException(error);
 		}
 	}
 
@@ -858,6 +831,36 @@ public class EditionDecorator extends AbstractDataSourceDecorator implements
 
 	@Override
 	public String check(int fieldId, Value value) throws DriverException {
-		return getMetadata().getFieldType(fieldId).check(value);
+		// Check special case of auto-increment not-null fields
+		Type type = getMetadata().getFieldType(fieldId);
+		boolean autoIncrement = type
+				.getBooleanConstraint(Constraint.AUTO_INCREMENT);
+		if (autoIncrement && type.getBooleanConstraint(Constraint.NOT_NULL)) {
+			if (value.isNull()) {
+				return null;
+			}
+		}
+
+		// Cast value
+		castValue(type, value);
+
+		// Check constraints
+		String fieldName = getMetadata().getFieldName(fieldId);
+		String error = type.check(value);
+		if (error != null) {
+			return "Value at field " + fieldId + " is not valid:" + error;
+		}
+
+		// Check uniqueness
+		if (type.getBooleanConstraint(Constraint.UNIQUE)
+				|| type.getBooleanConstraint(Constraint.PK)) {
+			// We assume a geometry field can't have unique constraint
+			IndexQuery iq = new DefaultAlphaQuery(fieldName, value);
+			if (queryIndex(iq).hasNext()) {
+				return fieldName + " column doesn't admit duplicates";
+			}
+		}
+
+		return null;
 	}
 }

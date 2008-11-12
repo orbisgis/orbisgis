@@ -97,6 +97,7 @@ public class PointTool extends AbstractPointTool {
 		try {
 			Value[] row = new Value[sds.getMetadata().getFieldCount()];
 			row[sds.getSpatialFieldIndex()] = ValueFactory.createValue(g);
+			row = InsertionToolUtils.populateNotNullFields(sds, row);
 			sds.insertFilledRow(row);
 		} catch (DriverException e) {
 			throw new TransitionException("Cannot insert polygon", e);

@@ -98,9 +98,10 @@ public class LineTool extends AbstractLineTool {
 		try {
 			Value[] row = new Value[sds.getMetadata().getFieldCount()];
 			row[sds.getSpatialFieldIndex()] = ValueFactory.createValue(g);
+			row = InsertionToolUtils.populateNotNullFields(sds, row);
 			sds.insertFilledRow(row);
 		} catch (DriverException e) {
-			throw new TransitionException("Cannot insert polygon", e);
+			throw new TransitionException("Cannot insert linestring", e);
 		}
 	}
 }
