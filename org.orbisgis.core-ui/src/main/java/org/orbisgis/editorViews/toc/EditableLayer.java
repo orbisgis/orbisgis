@@ -60,5 +60,10 @@ public class EditableLayer extends AbstractTableEditableElement implements
 	public boolean isEditable() {
 		return mapContext.getActiveLayer() == layer;
 	}
-	
+
+	@Override
+	public MapContext getMapContext() {
+		return mapContext;
+	}
+
 }

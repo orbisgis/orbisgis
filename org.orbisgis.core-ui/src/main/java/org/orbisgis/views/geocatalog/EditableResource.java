@@ -13,6 +13,7 @@ import org.orbisgis.edition.EditableElementException;
 import org.orbisgis.editorViews.toc.AbstractTableEditableElement;
 import org.orbisgis.editors.table.Selection;
 import org.orbisgis.editors.table.TableEditableElement;
+import org.orbisgis.layerModel.MapContext;
 import org.orbisgis.progress.IProgressMonitor;
 
 public class EditableResource extends AbstractTableEditableElement implements
@@ -102,5 +103,10 @@ public class EditableResource extends AbstractTableEditableElement implements
 	@Override
 	public boolean isEditable() {
 		return true;
+	}
+
+	@Override
+	public MapContext getMapContext() {
+		return null;
 	}
 }

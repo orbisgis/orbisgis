@@ -2,6 +2,7 @@ package org.orbisgis.editors.table;
 
 import org.gdms.data.DataSource;
 import org.orbisgis.edition.EditableElement;
+import org.orbisgis.layerModel.MapContext;
 
 /**
  * Interface to be implemented by those EditableElements that need to be edited
@@ -32,4 +33,13 @@ public interface TableEditableElement extends EditableElement {
 	 * @return
 	 */
 	boolean isEditable();
+
+	/**
+	 * Return the MapContext containing the DataSource returned in
+	 * {@link #getDataSource()}. Return null if it is not contained in any
+	 * MapContext
+	 * 
+	 * @return
+	 */
+	MapContext getMapContext();
 }
