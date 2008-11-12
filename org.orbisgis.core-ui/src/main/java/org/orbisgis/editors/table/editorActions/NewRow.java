@@ -19,6 +19,10 @@ public class NewRow implements IEditorAction {
 	public void actionPerformed(IEditor editor) {
 		TableEditableElement element = (TableEditableElement) editor
 				.getElement();
+		actionPerformed(element);
+	}
+
+	public static void actionPerformed(TableEditableElement element) {
 		DataSource ds = element.getDataSource();
 		try {
 			AskValidRow rowInput = new AskValidRow("Introduce row values", ds);
@@ -43,6 +47,10 @@ public class NewRow implements IEditorAction {
 	public boolean isEnabled(IEditor editor) {
 		TableEditableElement element = (TableEditableElement) editor
 				.getElement();
+		return isEnabled(element);
+	}
+
+	public static boolean isEnabled(TableEditableElement element) {
 		return element.getDataSource().isEditable();
 	}
 

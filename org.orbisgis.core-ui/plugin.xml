@@ -329,8 +329,11 @@
 	
 	<!-- table cell actions -->
 	<extension point="org.orbisgis.editors.table.CellAction">
+		<action id="org.orbisgis.editors.table.actions.NewRow" text="New row"
+			menu-group="org.orbisgis.editors.table.Edition"
+			class="org.orbisgis.editors.table.actions.NewRow"/>
 		<action id="org.orbisgis.editors.table.actions.SetNull" text="Set to null"
-			menu-group="org.orbisgis.editors.table.Value"
+			menu-group="org.orbisgis.editors.table.Edition"
 			class="org.orbisgis.editors.table.actions.SetNull"/>
 		<action id="org.orbisgis.editors.table.actions.SelectEqual"
 			text="Select rows with the same value"
