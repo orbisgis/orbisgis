@@ -3,6 +3,7 @@ package org.orbisgis.editors.table;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Insets;
+import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
@@ -59,7 +60,6 @@ import org.orbisgis.progress.IProgressMonitor;
 import org.orbisgis.progress.NullProgressMonitor;
 import org.orbisgis.ui.resourceTree.ContextualActionExtensionPointHelper;
 import org.orbisgis.ui.sif.AskValue;
-import org.orbisgis.ui.table.TextFieldCellEditor;
 import org.sif.SQLUIPanel;
 import org.sif.UIFactory;
 
@@ -119,11 +119,6 @@ public class TableComponent extends JPanel {
 		if (table == null) {
 			table = new JTable();
 			table.setAutoResizeMode(javax.swing.JTable.AUTO_RESIZE_OFF);
-			TextFieldCellEditor ce = new TextFieldCellEditor();
-			for (int i = 0; i < table.getColumnModel().getColumnCount(); i++) {
-				table.getColumnModel().getColumn(i).setCellEditor(ce);
-			}
-
 			table.getSelectionModel().setSelectionMode(
 					ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
 			table.getSelectionModel().addListSelectionListener(
@@ -357,6 +352,7 @@ public class TableComponent extends JPanel {
 	}
 
 	private void fireTableDataChanged() {
+		Rectangle r = table.getVisibleRect();
 		// to avoid losing the selection
 		managingSelection = true;
 
@@ -364,6 +360,8 @@ public class TableComponent extends JPanel {
 
 		managingSelection = false;
 		updateTableSelection();
+
+		table.scrollRectToVisible(r);
 	}
 
 	public void moveSelectionUp() {
@@ -520,7 +518,6 @@ public class TableComponent extends JPanel {
 			addMenu(pop, "Sort ascending", SORTUP);
 			addMenu(pop, "Sort descending", SORTDOWN);
 			addMenu(pop, "No Sort", NOSORT);
-			pop.addSeparator();
 			return pop;
 		}
 	}
@@ -682,14 +679,7 @@ public class TableComponent extends JPanel {
 				String strValue = aValue.toString().trim();
 				Value v = ValueFactory.createValueByType(strValue, type
 						.getTypeCode());
-
-				String inputError = dataSource.check(columnIndex, v);
-				if (inputError != null) {
-					inputError(inputError, null);
-				} else {
-					dataSource.setFieldValue(getRowIndex(rowIndex),
-							columnIndex, v);
-				}
+				dataSource.setFieldValue(getRowIndex(rowIndex), columnIndex, v);
 			} catch (DriverException e1) {
 				throw new RuntimeException(e1);
 			} catch (NumberFormatException e) {
