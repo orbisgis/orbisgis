@@ -9,7 +9,8 @@ public class DeleteSelection implements ITableCellAction {
 	@Override
 	public boolean accepts(TableEditableElement element, int rowIndex,
 			int columnIndex) {
-		return element.getSelection().getSelectedRows().length > 0;
+		return org.orbisgis.editors.table.editorActions.DeleteSelection
+				.isEnabled(element);
 	}
 
 	@Override

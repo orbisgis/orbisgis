@@ -38,13 +38,17 @@ public class DeleteSelection implements IEditorAction {
 	public boolean isEnabled(IEditor editor) {
 		TableEditableElement element = (TableEditableElement) editor
 				.getElement();
-		return (element.getSelection().getSelectedRows().length > 0)
-				&& element.getDataSource().isEditable();
+		return isEnabled(element);
 	}
 
 	@Override
 	public boolean isVisible(IEditor editor) {
 		return true;
+	}
+
+	public static boolean isEnabled(TableEditableElement element) {
+		// TODO Auto-generated method stub
+		return false;
 	}
 
 }
