@@ -825,14 +825,17 @@
 	<extension point="org.orbisgis.EditorView">
 		<editor-view id="org.orbisgis.editorViews.Toc"
 			class="org.orbisgis.editorViews.toc.TocView"
-			editor-id="org.orbisgis.editors.Map"
-			icon="/org/orbisgis/images/map.png" title="TOC"/>
+			icon="/org/orbisgis/images/map.png" title="TOC">
+			<editor id="org.orbisgis.editors.Map"/>
+			<editor id="org.orbisgis.editors.Table"/>
+		</editor-view>
 	</extension>
 	<extension point="org.orbisgis.EditorView">
 		<editor-view id="org.orbisgis.editorViews.GeoMark"
 			class="org.orbisgis.editorViews.geomark.GeomarkView"
-			editor-id="org.orbisgis.editors.Map"
-			icon="/org/orbisgis/images/world_add.png" title="Geomarks"/>
+			icon="/org/orbisgis/images/world_add.png" title="Geomarks">
+			<editor id="org.orbisgis.editors.Map"/>
+		</editor-view>
 	</extension>
 	
 	<!-- SQL repository extensions -->
