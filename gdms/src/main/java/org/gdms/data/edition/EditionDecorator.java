@@ -848,7 +848,8 @@ public class EditionDecorator extends AbstractDataSourceDecorator implements
 		String fieldName = getMetadata().getFieldName(fieldId);
 		String error = type.check(value);
 		if (error != null) {
-			return "Value at field " + fieldId + " is not valid:" + error;
+			return "Value at field " + getFieldName(fieldId) + " is not valid:"
+					+ error;
 		}
 
 		// Check uniqueness
