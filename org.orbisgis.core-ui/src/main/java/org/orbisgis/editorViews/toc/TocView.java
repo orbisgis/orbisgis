@@ -41,6 +41,9 @@ import java.awt.Component;
 import org.orbisgis.edition.EditableElement;
 import org.orbisgis.editor.IEditor;
 import org.orbisgis.editorView.IEditorView;
+import org.orbisgis.editors.map.MapEditor;
+import org.orbisgis.editors.table.TableEditableElement;
+import org.orbisgis.editors.table.TableEditor;
 import org.orbisgis.layerModel.MapContext;
 
 public class TocView implements IEditorView {
@@ -69,8 +72,13 @@ public class TocView implements IEditorView {
 
 	public void setEditor(IEditor editor) {
 		EditableElement element = editor.getElement();
-		MapContext mc = (MapContext) element.getObject();
-		toc.setMapContext(element.getId(), mc);
+		if (editor instanceof MapEditor) {
+			MapContext mc = (MapContext) element.getObject();
+			toc.setMapContext(element.getId(), mc);
+		} else if (editor instanceof TableEditor) {
+			TableEditableElement tableElement = (TableEditableElement) element;
+			toc.setMapContext(element.getId(), tableElement.getMapContext());
+		}
 	}
 
 	public void editorViewDisabled() {
