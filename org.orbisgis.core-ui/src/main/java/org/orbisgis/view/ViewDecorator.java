@@ -64,7 +64,7 @@ public class ViewDecorator {
 	private View dockingView;
 	private Component component;
 	private boolean editor;
-	private String editorId;
+	private String[] editors;
 	private Component activeComponent = null;
 
 	/**
@@ -78,18 +78,18 @@ public class ViewDecorator {
 	 *            Icon to show in the panel
 	 * @param editor
 	 *            If this view is the one that contains the editors
-	 * @param editorId
-	 *            The associated editor
+	 * @param editors
+	 *            The associated editors
 	 */
 	public ViewDecorator(IView view, String id, String title, String icon,
-			boolean editor, String editorId) {
+			boolean editor, String[] editors) {
 		super();
 		this.view = view;
 		this.id = id;
 		this.title = title;
 		this.icon = icon;
 		this.editor = editor;
-		this.editorId = editorId;
+		this.editors = editors;
 	}
 
 	public IView getView() {
@@ -193,11 +193,11 @@ public class ViewDecorator {
 	 * @param editorId
 	 */
 	public void editorChanged(EditorDecorator editor) {
-		if (this.editorId == null) {
+		if (this.editors.length == 0) {
 			return;
 		} else {
 			if (dockingView != null) {
-				if ((editor == null) || (!editor.getId().equals(this.editorId))) {
+				if ((editor == null) || (!isAssociatedEditor(editor.getId()))) {
 					if (activeComponent == null) {
 						activeComponent = dockingView.getComponent();
 					}
@@ -214,13 +214,22 @@ public class ViewDecorator {
 	}
 
 	public void editorClosed(String editorId) {
-		if (this.editorId == null) {
+		if (this.editors.length == 0) {
 			return;
 		} else {
-			if ((dockingView != null) && (this.editorId.equals(editorId))) {
+			if ((dockingView != null) && isAssociatedEditor(editorId)) {
 				((IEditorView) view).editorViewDisabled();
 			}
 		}
+	}
+
+	private boolean isAssociatedEditor(String editorId) {
+		for (String editor : editors) {
+			if (editor.equals(editorId)) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 }

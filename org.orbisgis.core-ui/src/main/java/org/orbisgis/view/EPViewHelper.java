@@ -60,11 +60,11 @@ public class EPViewHelper {
 		ExtensionPointManager<IView> epm = new ExtensionPointManager<IView>(
 				extensionPointId);
 		ArrayList<ItemAttributes<IView>> views;
+		String baseTag = "/extension/" + viewTag;
 		if (askedId != null) {
-			views = epm.getItemAttributes("/extension/" + viewTag + "[@id='"
-					+ askedId + "']");
+			views = epm.getItemAttributes(baseTag + "[@id='" + askedId + "']");
 		} else {
-			views = epm.getItemAttributes("/extension/" + viewTag);
+			views = epm.getItemAttributes(baseTag);
 		}
 		ArrayList<ViewDecorator> ret = new ArrayList<ViewDecorator>();
 		for (ItemAttributes<IView> itemAttributes : views) {
@@ -72,13 +72,19 @@ public class EPViewHelper {
 			String iconStr = itemAttributes.getAttribute("icon");
 			String title = itemAttributes.getAttribute("title");
 			String editor = itemAttributes.getAttribute("isEditor");
-			String editorId = itemAttributes.getAttribute("editor-id");
 			IView view = itemAttributes.getInstance("class");
 			boolean isEditor = (editor == null) ? false : Boolean
 					.parseBoolean(editor);
+			ArrayList<ItemAttributes<IView>> linkedEditors = epm
+					.getItemAttributes(baseTag + "[@id='" + id + "']"
+							+ "/editor");
+			String[] editors = new String[linkedEditors.size()];
+			for (int i = 0; i < linkedEditors.size(); i++) {
+				editors[i] = linkedEditors.get(i).getAttribute("id");
+			}
 
 			ret.add(new ViewDecorator(view, id, title, iconStr, isEditor,
-					editorId));
+					editors));
 		}
 
 		return ret;
@@ -86,7 +92,8 @@ public class EPViewHelper {
 
 	public static void addViewMenu(MenuTree menuTree, final RootWindow root,
 			IActionFactory actionFactory, ArrayList<ViewDecorator> viewsInfo) {
-		Menu menu = new Menu(null, parentId, null, "View", "/org/orbisgis/images/application.png", false, null);
+		Menu menu = new Menu(null, parentId, null, "View",
+				"/org/orbisgis/images/application.png", false, null);
 		menuTree.addMenu(menu);
 		for (final ViewDecorator info : viewsInfo) {
 
