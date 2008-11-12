@@ -55,8 +55,10 @@ import org.gdms.data.edition.EditionListener;
 import org.gdms.data.edition.MultipleEditionEvent;
 import org.orbisgis.Services;
 import org.orbisgis.editors.map.tool.Automaton;
+import org.orbisgis.editors.map.tool.ToolListener;
 import org.orbisgis.editors.map.tool.ToolManager;
 import org.orbisgis.editors.map.tool.TransitionException;
+import org.orbisgis.errorManager.ErrorManager;
 import org.orbisgis.layerModel.ILayer;
 import org.orbisgis.layerModel.LayerCollectionEvent;
 import org.orbisgis.layerModel.LayerListener;
@@ -77,7 +79,7 @@ import com.vividsolutions.jts.geom.Envelope;
 
 /**
  * MapControl.
- *
+ * 
  * @author Fernando Gonzlez Corts
  */
 public class MapControl extends JComponent implements ComponentListener {
@@ -112,10 +114,10 @@ public class MapControl extends JComponent implements ComponentListener {
 
 	/**
 	 * Creates a new NewMapControl.
-	 *
+	 * 
 	 * @param mapContext
 	 * @param defaultTool
-	 *
+	 * 
 	 * @param ec
 	 * @throws TransitionException
 	 */
@@ -131,6 +133,23 @@ public class MapControl extends JComponent implements ComponentListener {
 
 		toolManager = new ToolManager(defaultTool, mapContext, mapTransform,
 				this);
+		toolManager.addToolListener(new ToolListener() {
+
+			@Override
+			public void transitionException(ToolManager toolManager,
+					TransitionException e) {
+				Services.getService(ErrorManager.class).error("Tool error", e);
+			}
+
+			@Override
+			public void stateChanged(ToolManager toolManager) {
+			}
+
+			@Override
+			public void currentToolChanged(Automaton previous,
+					ToolManager toolManager) {
+			}
+		});
 		this.addMouseListener(toolManager);
 		this.addMouseMotionListener(toolManager);
 
@@ -257,7 +276,7 @@ public class MapControl extends JComponent implements ComponentListener {
 
 	/**
 	 * Returns the drawn image
-	 *
+	 * 
 	 * @return imagen.
 	 */
 	public BufferedImage getImage() {
@@ -470,7 +489,6 @@ public class MapControl extends JComponent implements ComponentListener {
 		public void open(DataSource ds) {
 			invalidateImage();
 		}
-
 
 	}
 
