@@ -38,7 +38,8 @@ public class DeleteSelection implements IEditorAction {
 	public boolean isEnabled(IEditor editor) {
 		TableEditableElement element = (TableEditableElement) editor
 				.getElement();
-		return element.getSelection().getSelectedRows().length > 0;
+		return (element.getSelection().getSelectedRows().length > 0)
+				&& element.getDataSource().isEditable();
 	}
 
 	@Override
