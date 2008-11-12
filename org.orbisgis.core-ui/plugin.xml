@@ -300,6 +300,12 @@
 			editor-id="org.orbisgis.editors.Table"
 			toolbar-id="org.orbisgis.editors.map.Edition"
 			class="org.orbisgis.editors.table.editorActions.SelectionUp"/>
+		<editor-action id="org.orbisgis.editors.table.editorActions.NewRow"
+			menu-id="org.orbisgis.Table" text="New row"
+			menu-group="org.orbisgis.editors.table.Basic"
+			editor-id="org.orbisgis.editors.Table"
+			toolbar-id="org.orbisgis.editors.map.Edition"
+			class="org.orbisgis.editors.table.editorActions.NewRow"/>
 	</extension>
 	
 	<!-- table column actions -->

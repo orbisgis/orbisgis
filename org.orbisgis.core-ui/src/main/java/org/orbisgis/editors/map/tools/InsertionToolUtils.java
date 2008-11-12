@@ -8,6 +8,7 @@ import org.gdms.data.types.Type;
 import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
 import org.orbisgis.editors.map.tool.TransitionException;
+import org.orbisgis.ui.sif.AskValidValue;
 import org.sif.UIFactory;
 
 public class InsertionToolUtils {
