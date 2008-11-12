@@ -198,19 +198,25 @@ public class ViewDecorator {
 		} else {
 			if (dockingView != null) {
 				if ((editor == null) || (!isAssociatedEditor(editor.getId()))) {
-					if (activeComponent == null) {
-						activeComponent = dockingView.getComponent();
-					}
-					dockingView.setComponent(new JLabel("View not available"));
+					disableView();
 				} else {
 					if (activeComponent != null) {
 						dockingView.setComponent(activeComponent);
 						activeComponent = null;
 					}
-					((IEditorView) view).setEditor(editor.getEditor());
+					if (!((IEditorView) view).setEditor(editor.getEditor())) {
+						disableView();
+					}
 				}
 			}
 		}
+	}
+
+	private void disableView() {
+		if (activeComponent == null) {
+			activeComponent = dockingView.getComponent();
+		}
+		dockingView.setComponent(new JLabel("View not available"));
 	}
 
 	public void editorClosed(String editorId) {

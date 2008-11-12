@@ -42,9 +42,9 @@ import org.orbisgis.view.IView;
 /**
  * Interface to implement for those IView instances that are associated with a
  * concrete editor
- *
+ * 
  * @author Fernando Gonzalez Cortes
- *
+ * 
  */
 public interface IEditorView extends IView {
 
@@ -52,10 +52,13 @@ public interface IEditorView extends IView {
 	 * This method is invoked each time the active editor changes to an editor
 	 * which id is equals to the editor id specified in the plugin.xml for this
 	 * view
-	 *
+	 * 
 	 * @param editor
+	 * @return true if the editor is accepted by this editor view. False
+	 *         otherwise. If this EditorView will be available whenever an
+	 *         editor with the configured id is active just return always true
 	 */
-	void setEditor(IEditor editor);
+	boolean setEditor(IEditor editor);
 
 	/**
 	 * Invoked when the previously set editor has been changed to an editor that

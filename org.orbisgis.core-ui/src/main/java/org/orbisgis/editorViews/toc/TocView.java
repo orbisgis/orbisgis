@@ -70,15 +70,25 @@ public class TocView implements IEditorView {
 
 	}
 
-	public void setEditor(IEditor editor) {
+	public boolean setEditor(IEditor editor) {
 		EditableElement element = editor.getElement();
 		if (editor instanceof MapEditor) {
 			MapContext mc = (MapContext) element.getObject();
 			toc.setMapContext(element.getId(), mc);
+			return true;
 		} else if (editor instanceof TableEditor) {
 			TableEditableElement tableElement = (TableEditableElement) element;
-			toc.setMapContext(element.getId(), tableElement.getMapContext());
+			MapContext mapContext = tableElement.getMapContext();
+			if (mapContext != null) {
+				toc.setMapContext(element.getId(), mapContext);
+				return true;
+			} else {
+				editorViewDisabled();
+				return false;
+			}
 		}
+
+		return false;
 	}
 
 	public void editorViewDisabled() {
