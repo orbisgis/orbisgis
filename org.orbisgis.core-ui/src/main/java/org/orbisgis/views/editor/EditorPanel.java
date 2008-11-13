@@ -117,7 +117,6 @@ public class EditorPanel extends Container {
 
 		this.add(root, BorderLayout.CENTER);
 
-
 		this.addComponentListener(new ComponentAdapter() {
 
 			@Override
@@ -300,18 +299,23 @@ public class EditorPanel extends Container {
 				EditorInfo editorInfo = getEditorByComponent(closedView
 						.getComponent());
 				try {
-					if (editorInfo.element.isModified()) {
-						int res = JOptionPane.showConfirmDialog(
-								EditorPanel.this, "There are unsaved "
-										+ "changes in "
-										+ editorInfo.element.getId()
-										+ ", save them before closing?",
-								"Close editor",
-								JOptionPane.YES_NO_CANCEL_OPTION);
-						if (res == JOptionPane.CANCEL_OPTION) {
-							throw new OperationAbortedException();
-						} else if (res == JOptionPane.YES_OPTION) {
-							editorInfo.element.save();
+					EditorDecorator editorDecorator = editorInfo
+							.getEditorDecorator();
+					if (fireEditorClosing(editorDecorator.getEditor(),
+							editorDecorator.getId())) {
+						if (editorInfo.element.isModified()) {
+							int res = JOptionPane.showConfirmDialog(
+									EditorPanel.this, "There are unsaved "
+											+ "changes in "
+											+ editorInfo.element.getId()
+											+ ", save them before closing?",
+									"Close editor",
+									JOptionPane.YES_NO_CANCEL_OPTION);
+							if (res == JOptionPane.CANCEL_OPTION) {
+								throw new OperationAbortedException();
+							} else if (res == JOptionPane.YES_OPTION) {
+								editorInfo.element.save();
+							}
 						}
 					}
 				} catch (OperationAbortedException e) {
@@ -351,8 +355,8 @@ public class EditorPanel extends Container {
 					fireActiveEditorChanged(lastEditor, null);
 				}
 
-				fireEditorClosed(closedEditor, editorInfo
-						.getEditorDecorator().getId());
+				fireEditorClosed(closedEditor, editorInfo.getEditorDecorator()
+						.getId());
 				freeView(closedView, editorInfo.editorDecorator);
 
 				try {
@@ -420,8 +424,7 @@ public class EditorPanel extends Container {
 						previous = lastEditor.getEditor();
 					}
 					lastEditor = nextEditor;
-					fireActiveEditorChanged(previous, lastEditor
-							.getEditor());
+					fireActiveEditorChanged(previous, lastEditor.getEditor());
 				}
 			}
 		}
@@ -540,16 +543,35 @@ public class EditorPanel extends Container {
 		listeners.remove(listener);
 	}
 
-	void fireActiveEditorChanged(IEditor previous, IEditor current) {
-		for (EditorListener listener : listeners) {
+	@SuppressWarnings("unchecked")
+	private void fireActiveEditorChanged(IEditor previous, IEditor current) {
+		ArrayList<EditorListener> l = (ArrayList<EditorListener>) listeners
+				.clone();
+		for (EditorListener listener : l) {
 			listener.activeEditorChanged(previous, current);
 		}
 	}
 
-	public void fireEditorClosed(IEditor editor, String editorId) {
-		for (EditorListener listener : listeners) {
+	@SuppressWarnings("unchecked")
+	private void fireEditorClosed(IEditor editor, String editorId) {
+		ArrayList<EditorListener> l = (ArrayList<EditorListener>) listeners
+				.clone();
+		for (EditorListener listener : l) {
 			listener.activeEditorClosed(editor, editorId);
 		}
+	}
+
+	@SuppressWarnings("unchecked")
+	private boolean fireEditorClosing(IEditor editor, String editorId) {
+		ArrayList<EditorListener> l = (ArrayList<EditorListener>) listeners
+				.clone();
+		for (EditorListener listener : l) {
+			if (!listener.activeEditorClosing(editor, editorId)) {
+				return false;
+			}
+		}
+
+		return true;
 	}
 
 }

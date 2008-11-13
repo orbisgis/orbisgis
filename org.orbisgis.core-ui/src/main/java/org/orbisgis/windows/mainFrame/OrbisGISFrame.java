@@ -261,6 +261,11 @@ public class OrbisGISFrame extends JFrame implements IWindow, ViewManager,
 				}
 			}
 
+			@Override
+			public boolean activeEditorClosing(IEditor editor, String editorId) {
+				return true;
+			}
+
 		});
 	}
 
