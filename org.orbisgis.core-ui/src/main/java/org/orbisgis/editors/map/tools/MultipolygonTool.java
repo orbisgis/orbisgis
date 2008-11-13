@@ -56,7 +56,7 @@ public class MultipolygonTool extends AbstractMultipolygonTool {
 		try {
 			Value[] row = new Value[sds.getMetadata().getFieldCount()];
 			row[sds.getSpatialFieldIndex()] = ValueFactory.createValue(mp);
-			row = InsertionToolUtils.populateNotNullFields(sds, row);
+			row = ToolUtilities.populateNotNullFields(sds, row);
 			sds.insertFilledRow(row);
 		} catch (DriverException e) {
 			throw new TransitionException("Cannot insert multipolygon", e);
@@ -64,9 +64,9 @@ public class MultipolygonTool extends AbstractMultipolygonTool {
 	}
 
 	public boolean isEnabled(MapContext vc, ToolManager tm) {
-		return ToolValidationUtilities.geometryTypeIs(vc,
+		return ToolUtilities.geometryTypeIs(vc,
 				GeometryConstraint.MULTI_POLYGON)
-				&& ToolValidationUtilities.isActiveLayerEditable(vc);
+				&& ToolUtilities.isActiveLayerEditable(vc);
 	}
 
 	public boolean isVisible(MapContext vc, ToolManager tm) {
@@ -75,7 +75,7 @@ public class MultipolygonTool extends AbstractMultipolygonTool {
 
 	@Override
 	public double getInitialZ(MapContext mapContext) {
-		return InsertionToolUtils.getActiveLayerInitialZ(mapContext);
+		return ToolUtilities.getActiveLayerInitialZ(mapContext);
 	}
 
 }

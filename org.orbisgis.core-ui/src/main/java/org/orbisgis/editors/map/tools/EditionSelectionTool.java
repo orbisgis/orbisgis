@@ -8,8 +8,8 @@ public class EditionSelectionTool extends AbstractSelectionTool {
 
 	@Override
 	public boolean isEnabled(MapContext vc, ToolManager tm) {
-		return ToolValidationUtilities.isActiveLayerEditable(vc)
-				&& ToolValidationUtilities.isActiveLayerVisible(vc);
+		return ToolUtilities.isActiveLayerEditable(vc)
+				&& ToolUtilities.isActiveLayerVisible(vc);
 	}
 
 	@Override

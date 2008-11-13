@@ -36,14 +36,86 @@
  */
 package org.orbisgis.editors.map.tools;
 
+import java.text.ParseException;
+import java.util.ArrayList;
+
 import org.gdms.data.SpatialDataSourceDecorator;
 import org.gdms.data.types.Constraint;
 import org.gdms.data.types.Type;
+import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
+import org.orbisgis.editors.map.tool.TransitionException;
 import org.orbisgis.layerModel.ILayer;
 import org.orbisgis.layerModel.MapContext;
+import org.orbisgis.ui.sif.AskValidValue;
+import org.sif.UIFactory;
 
-public class ToolValidationUtilities {
+import com.vividsolutions.jts.geom.Coordinate;
+
+public class ToolUtilities {
+
+	public static double getActiveLayerInitialZ(MapContext mapContext) {
+		SpatialDataSourceDecorator sds = mapContext.getActiveLayer()
+				.getDataSource();
+		try {
+			Type type = sds.getFieldType(sds.getSpatialFieldIndex());
+			if (type.getIntConstraint(Constraint.GEOMETRY_DIMENSION) == 3) {
+				return 0;
+			}
+		} catch (DriverException e) {
+		}
+		return Double.NaN;
+	}
+
+	/**
+	 * Ask the user to input initial values for the non null fields
+	 * 
+	 * @param sds
+	 * @param row
+	 * @return
+	 * @throws DriverException
+	 * @throws TransitionException
+	 */
+	public static Value[] populateNotNullFields(SpatialDataSourceDecorator sds,
+			Value[] row) throws DriverException, TransitionException {
+		Value[] ret = new Value[row.length];
+		for (int i = 0; i < sds.getFieldCount(); i++) {
+			Type type = sds.getFieldType(i);
+			if (type.getBooleanConstraint(Constraint.NOT_NULL)
+					&& !type.getBooleanConstraint(Constraint.AUTO_INCREMENT)) {
+				AskValidValue av = new AskValidValue(sds, i);
+				if (UIFactory.showDialog(av)) {
+					try {
+						ret[i] = av.getUserValue();
+					} catch (ParseException e) {
+						throw new TransitionException("bug!");
+					}
+				} else {
+					throw new TransitionException("Insertion cancelled");
+				}
+			} else {
+				ret[i] = row[i];
+			}
+		}
+
+		return ret;
+	}
+
+	public static ArrayList<Coordinate> removeDuplicated(
+			ArrayList<Coordinate> points) {
+		if (points.size() == 0) {
+			return points;
+		} else {
+			ArrayList<Coordinate> ret = new ArrayList<Coordinate>();
+			for (int i = 0; i < points.size() - 1; i++) {
+				if (!points.get(i).equals(points.get(i + 1))) {
+					ret.add(points.get(i));
+				}
+			}
+			ret.add(points.get(points.size() - 1));
+			return ret;
+		}
+	}
 
 	public static boolean isActiveLayerEditable(MapContext vc) {
 		ILayer activeLayer = vc.getActiveLayer();

@@ -75,7 +75,7 @@ public abstract class AbstractPolygonTool extends Polygon implements InsertionTo
 	@Override
 	public void transitionTo_Done(MapContext vc, ToolManager tm)
 			throws FinishedAutomatonException, TransitionException {
-		points = CoordinateUtils.removeDuplicated(points);
+		points = ToolUtilities.removeDuplicated(points);
 		if (points.size() < 3) {
 			throw new TransitionException(Messages
 					.getString("MultipolygonTool.0")); //$NON-NLS-1$

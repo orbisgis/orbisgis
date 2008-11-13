@@ -54,9 +54,9 @@ public class MultilineTool extends AbstractMultilineTool {
 	}
 
 	public boolean isEnabled(MapContext vc, ToolManager tm) {
-		return ToolValidationUtilities.geometryTypeIs(vc,
+		return ToolUtilities.geometryTypeIs(vc,
 				GeometryConstraint.MULTI_LINESTRING)
-				&& ToolValidationUtilities.isActiveLayerEditable(vc);
+				&& ToolUtilities.isActiveLayerEditable(vc);
 	}
 
 	@Override
@@ -66,7 +66,7 @@ public class MultilineTool extends AbstractMultilineTool {
 		try {
 			Value[] row = new Value[sds.getMetadata().getFieldCount()];
 			row[sds.getSpatialFieldIndex()] = ValueFactory.createValue(mls);
-			row = InsertionToolUtils.populateNotNullFields(sds, row);
+			row = ToolUtilities.populateNotNullFields(sds, row);
 			sds.insertFilledRow(row);
 		} catch (DriverException e) {
 			throw new TransitionException("Cannot insert multiline", e);
@@ -75,7 +75,7 @@ public class MultilineTool extends AbstractMultilineTool {
 
 	@Override
 	public double getInitialZ(MapContext mapContext) {
-		return InsertionToolUtils.getActiveLayerInitialZ(mapContext);
+		return ToolUtilities.getActiveLayerInitialZ(mapContext);
 	}
 
 }

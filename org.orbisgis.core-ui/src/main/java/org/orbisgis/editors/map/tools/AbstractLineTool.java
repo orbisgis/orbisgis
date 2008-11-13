@@ -82,7 +82,7 @@ public abstract class AbstractLineTool extends Line implements InsertionTool {
 	@Override
 	public void transitionTo_Done(MapContext vc, ToolManager tm)
 			throws FinishedAutomatonException, TransitionException {
-		points = CoordinateUtils.removeDuplicated(points);
+		points = ToolUtilities.removeDuplicated(points);
 		if (points.size() < 2)
 			throw new TransitionException(Messages.getString("MultilineTool.0")); //$NON-NLS-1$
 		LineString ls = new GeometryFactory().createLineString(points

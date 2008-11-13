@@ -134,7 +134,7 @@ public class ZoomOutTool extends ZoomOut {
 	}
 
 	public boolean isEnabled(MapContext vc, ToolManager tm) {
-		return ToolValidationUtilities.layerCountGreaterThan(vc, 0);
+		return ToolUtilities.layerCountGreaterThan(vc, 0);
 	}
 
 	public boolean isVisible(MapContext vc, ToolManager tm) {

@@ -74,9 +74,9 @@ import com.vividsolutions.jts.geom.Point;
 public class PointTool extends AbstractPointTool {
 
 	public boolean isEnabled(MapContext vc, ToolManager tm) {
-		return ToolValidationUtilities.geometryTypeIs(vc,
+		return ToolUtilities.geometryTypeIs(vc,
 				GeometryConstraint.POINT, GeometryConstraint.MULTI_POINT)
-				&& ToolValidationUtilities.isActiveLayerEditable(vc);
+				&& ToolUtilities.isActiveLayerEditable(vc);
 	}
 
 	public boolean isVisible(MapContext vc, ToolManager tm) {
@@ -87,7 +87,7 @@ public class PointTool extends AbstractPointTool {
 	protected void pointDone(Point point, MapContext mc, ToolManager tm)
 			throws TransitionException {
 		Geometry g = point;
-		if (ToolValidationUtilities.geometryTypeIs(mc,
+		if (ToolUtilities.geometryTypeIs(mc,
 				GeometryConstraint.MULTI_POINT)) {
 			g = ToolManager.toolsGeometryFactory
 					.createMultiPoint(new Point[] { point });
@@ -97,7 +97,7 @@ public class PointTool extends AbstractPointTool {
 		try {
 			Value[] row = new Value[sds.getMetadata().getFieldCount()];
 			row[sds.getSpatialFieldIndex()] = ValueFactory.createValue(g);
-			row = InsertionToolUtils.populateNotNullFields(sds, row);
+			row = ToolUtilities.populateNotNullFields(sds, row);
 			sds.insertFilledRow(row);
 		} catch (DriverException e) {
 			throw new TransitionException("Cannot insert polygon", e);
@@ -106,7 +106,7 @@ public class PointTool extends AbstractPointTool {
 
 	@Override
 	public double getInitialZ(MapContext mapContext) {
-		return InsertionToolUtils.getActiveLayerInitialZ(mapContext);
+		return ToolUtilities.getActiveLayerInitialZ(mapContext);
 	}
 
 }

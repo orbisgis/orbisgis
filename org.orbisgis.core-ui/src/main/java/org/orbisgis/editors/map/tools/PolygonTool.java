@@ -54,7 +54,7 @@ public class PolygonTool extends AbstractPolygonTool {
 	protected void polygonDone(com.vividsolutions.jts.geom.Polygon pol,
 			MapContext mc, ToolManager tm) throws TransitionException {
 		Geometry g = pol;
-		if (ToolValidationUtilities.geometryTypeIs(mc,
+		if (ToolUtilities.geometryTypeIs(mc,
 				GeometryConstraint.MULTI_POLYGON)) {
 			g = ToolManager.toolsGeometryFactory
 					.createMultiPolygon(new Polygon[] { pol });
@@ -64,7 +64,7 @@ public class PolygonTool extends AbstractPolygonTool {
 		try {
 			Value[] row = new Value[sds.getMetadata().getFieldCount()];
 			row[sds.getSpatialFieldIndex()] = ValueFactory.createValue(g);
-			row = InsertionToolUtils.populateNotNullFields(sds, row);
+			row = ToolUtilities.populateNotNullFields(sds, row);
 			sds.insertFilledRow(row);
 		} catch (DriverException e) {
 			throw new TransitionException("Cannot insert polygon", e);
@@ -72,9 +72,9 @@ public class PolygonTool extends AbstractPolygonTool {
 	}
 
 	public boolean isEnabled(MapContext vc, ToolManager tm) {
-		return ToolValidationUtilities.geometryTypeIs(vc,
+		return ToolUtilities.geometryTypeIs(vc,
 				GeometryConstraint.POLYGON, GeometryConstraint.MULTI_POLYGON)
-				&& ToolValidationUtilities.isActiveLayerEditable(vc);
+				&& ToolUtilities.isActiveLayerEditable(vc);
 	}
 
 	public boolean isVisible(MapContext vc, ToolManager tm) {
@@ -83,7 +83,7 @@ public class PolygonTool extends AbstractPolygonTool {
 
 	@Override
 	public double getInitialZ(MapContext mapContext) {
-		return InsertionToolUtils.getActiveLayerInitialZ(mapContext);
+		return ToolUtilities.getActiveLayerInitialZ(mapContext);
 	}
 
 }

@@ -79,7 +79,7 @@ public abstract class AbstractMultipointTool extends Multipoint implements
 	@Override
 	public void transitionTo_Done(MapContext vc, ToolManager tm)
 			throws FinishedAutomatonException, TransitionException {
-		point = CoordinateUtils.removeDuplicated(point);
+		point = ToolUtilities.removeDuplicated(point);
 		MultiPoint g = ToolManager.toolsGeometryFactory.createMultiPoint(point
 				.toArray(new Coordinate[0]));
 		multipointDone(g, vc, tm);

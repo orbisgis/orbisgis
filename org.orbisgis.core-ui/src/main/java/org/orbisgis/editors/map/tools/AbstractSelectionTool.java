@@ -104,7 +104,7 @@ public abstract class AbstractSelectionTool extends Selection {
 	@Override
 	public void transitionTo_Standby(MapContext vc, ToolManager tm)
 			throws TransitionException {
-		if (ToolValidationUtilities.activeSelectionGreaterThan(vc, 0)) {
+		if (ToolUtilities.activeSelectionGreaterThan(vc, 0)) {
 			setStatus("Selection"); //$NON-NLS-1$
 		}
 	}
@@ -296,7 +296,7 @@ public abstract class AbstractSelectionTool extends Selection {
 			}
 
 			if (p.distance(handler.getPoint()) < tm.getTolerance()) {
-				if (!ToolValidationUtilities.isActiveLayerEditable(mc)) {
+				if (!ToolUtilities.isActiveLayerEditable(mc)) {
 					throw new TransitionException(Messages
 							.getString("SelectionTool.10")); //$NON-NLS-1$
 				}

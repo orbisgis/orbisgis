@@ -130,8 +130,8 @@ public class VertexDeletionTool extends VertexDeletion {
 	}
 
 	public boolean isEnabled(MapContext vc, ToolManager tm) {
-		return ToolValidationUtilities.activeSelectionGreaterThan(vc, 0)
-				&& ToolValidationUtilities.isActiveLayerEditable(vc);
+		return ToolUtilities.activeSelectionGreaterThan(vc, 0)
+				&& ToolUtilities.isActiveLayerEditable(vc);
 	}
 
 	public boolean isVisible(MapContext vc, ToolManager tm) {

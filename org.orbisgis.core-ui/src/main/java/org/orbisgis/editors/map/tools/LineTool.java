@@ -74,10 +74,10 @@ import com.vividsolutions.jts.geom.LineString;
 public class LineTool extends AbstractLineTool {
 
 	public boolean isEnabled(MapContext vc, ToolManager tm) {
-		return ToolValidationUtilities.geometryTypeIs(vc,
+		return ToolUtilities.geometryTypeIs(vc,
 				GeometryConstraint.LINESTRING,
 				GeometryConstraint.MULTI_LINESTRING)
-				&& ToolValidationUtilities.isActiveLayerEditable(vc);
+				&& ToolUtilities.isActiveLayerEditable(vc);
 	}
 
 	public boolean isVisible(MapContext vc, ToolManager tm) {
@@ -88,7 +88,7 @@ public class LineTool extends AbstractLineTool {
 	protected void lineDone(LineString ls, MapContext mc, ToolManager tm)
 			throws TransitionException {
 		Geometry g = ls;
-		if (ToolValidationUtilities.geometryTypeIs(mc,
+		if (ToolUtilities.geometryTypeIs(mc,
 				GeometryConstraint.MULTI_LINESTRING)) {
 			g = ToolManager.toolsGeometryFactory
 					.createMultiLineString(new LineString[] { ls });
@@ -98,7 +98,7 @@ public class LineTool extends AbstractLineTool {
 		try {
 			Value[] row = new Value[sds.getMetadata().getFieldCount()];
 			row[sds.getSpatialFieldIndex()] = ValueFactory.createValue(g);
-			row = InsertionToolUtils.populateNotNullFields(sds, row);
+			row = ToolUtilities.populateNotNullFields(sds, row);
 			sds.insertFilledRow(row);
 		} catch (DriverException e) {
 			throw new TransitionException("Cannot insert linestring", e);
@@ -107,6 +107,6 @@ public class LineTool extends AbstractLineTool {
 
 	@Override
 	public double getInitialZ(MapContext mapContext) {
-		return InsertionToolUtils.getActiveLayerInitialZ(mapContext);
+		return ToolUtilities.getActiveLayerInitialZ(mapContext);
 	}
 }
