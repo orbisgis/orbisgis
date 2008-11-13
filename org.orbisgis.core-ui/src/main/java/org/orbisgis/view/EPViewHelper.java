@@ -71,10 +71,7 @@ public class EPViewHelper {
 			String id = itemAttributes.getAttribute("id");
 			String iconStr = itemAttributes.getAttribute("icon");
 			String title = itemAttributes.getAttribute("title");
-			String editor = itemAttributes.getAttribute("isEditor");
 			IView view = itemAttributes.getInstance("class");
-			boolean isEditor = (editor == null) ? false : Boolean
-					.parseBoolean(editor);
 			ArrayList<ItemAttributes<IView>> linkedEditors = epm
 					.getItemAttributes(baseTag + "[@id='" + id + "']"
 							+ "/editor");
@@ -83,7 +80,7 @@ public class EPViewHelper {
 				editors[i] = linkedEditors.get(i).getAttribute("id");
 			}
 
-			ret.add(new ViewDecorator(view, id, title, iconStr, isEditor,
+			ret.add(new ViewDecorator(view, id, title, iconStr, 
 					editors));
 		}
 

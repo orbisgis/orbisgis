@@ -38,15 +38,6 @@
 					<xs:documentation>Title to display in the view</xs:documentation>
 				</xs:annotation>
 			</xs:attribute>
-			<xs:attribute name="isEditor" type="xs:boolean">
-				<xs:annotation>
-					<xs:documentation>True if this view contains all the editors in the
-						system. Only one view can have this attribute to true. If this
-						attribute is true, the class must implement
-						org.orbisgis.view.IEditorsView instead of
-						org.orbisgis.view.IView</xs:documentation>
-				</xs:annotation>
-			</xs:attribute>
 			<xs:attribute name="id" type="xs:string" use="required">
 				<xs:annotation>
 					<xs:documentation>Identifier for internal use. Should be unique

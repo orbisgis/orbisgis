@@ -771,7 +771,7 @@
 			title="Geocatalog"/>
 	</extension>
 	<extension point="org.orbisgis.View">
-		<view id="org.orbisgis.views.EditorView" isEditor="true"
+		<view id="org.orbisgis.views.EditorView"
 			icon="/org/orbisgis/images/documentviewer.png"
 			class="org.orbisgis.views.editor.EditorView" title="Editors"/>
 	</extension>
