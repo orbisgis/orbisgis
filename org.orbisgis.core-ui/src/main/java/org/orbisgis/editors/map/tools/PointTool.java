@@ -104,4 +104,9 @@ public class PointTool extends AbstractPointTool {
 		}
 	}
 
+	@Override
+	public double getInitialZ(MapContext mapContext) {
+		return InsertionToolUtils.getActiveLayerInitialZ(mapContext);
+	}
+
 }

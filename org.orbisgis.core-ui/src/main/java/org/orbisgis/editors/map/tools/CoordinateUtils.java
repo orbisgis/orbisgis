@@ -44,14 +44,18 @@ public class CoordinateUtils {
 
 	public static ArrayList<Coordinate> removeDuplicated(
 			ArrayList<Coordinate> points) {
-		ArrayList<Coordinate> ret = new ArrayList<Coordinate>();
-		for (int i = 0; i < points.size() - 1; i++) {
-			if (!points.get(i).equals(points.get(i + 1))) {
-				ret.add(points.get(i));
+		if (points.size() == 0) {
+			return points;
+		} else {
+			ArrayList<Coordinate> ret = new ArrayList<Coordinate>();
+			for (int i = 0; i < points.size() - 1; i++) {
+				if (!points.get(i).equals(points.get(i + 1))) {
+					ret.add(points.get(i));
+				}
 			}
+			ret.add(points.get(points.size() - 1));
+			return ret;
 		}
-		ret.add(points.get(points.size() - 1));
-		return ret;
 	}
 
 }

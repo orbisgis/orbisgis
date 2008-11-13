@@ -53,7 +53,8 @@ import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.MultiLineString;
 
-public abstract class AbstractMultilineTool extends Multiline {
+public abstract class AbstractMultilineTool extends Multiline implements
+		InsertionTool {
 
 	protected GeometryFactory gf = new GeometryFactory();
 	protected ArrayList<Coordinate> points = new ArrayList<Coordinate>();
@@ -94,7 +95,11 @@ public abstract class AbstractMultilineTool extends Multiline {
 	@Override
 	public void transitionTo_Point(MapContext vc, ToolManager tm)
 			throws FinishedAutomatonException, TransitionException {
-		points.add(new Coordinate(tm.getValues()[0], tm.getValues()[1]));
+		points.add(newCoordinate(tm.getValues()[0], tm.getValues()[1], vc));
+	}
+
+	private Coordinate newCoordinate(double x, double y, MapContext mapContext) {
+		return new Coordinate(x, y, getInitialZ(mapContext));
 	}
 
 	@Override
@@ -118,6 +123,11 @@ public abstract class AbstractMultilineTool extends Multiline {
 	}
 
 	@Override
+	public double getInitialZ(MapContext mapContext) {
+		return Double.NaN;
+	}
+
+	@Override
 	public void transitionTo_Cancel(MapContext vc, ToolManager tm)
 			throws FinishedAutomatonException, TransitionException {
 	}
@@ -135,7 +145,7 @@ public abstract class AbstractMultilineTool extends Multiline {
 		Point2D current = tm.getLastRealMousePosition();
 		ArrayList<Coordinate> tempPoints = (ArrayList<Coordinate>) points
 				.clone();
-		tempPoints.add(new Coordinate(current.getX(), current.getY()));
+		tempPoints.add(newCoordinate(current.getX(), current.getY(), vc));
 		ArrayList<LineString> tempLines = (ArrayList<LineString>) lines.clone();
 		if (tempPoints.size() >= 2) {
 			tempLines.add(gf.createLineString(tempPoints

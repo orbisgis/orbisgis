@@ -8,10 +8,24 @@ import org.gdms.data.types.Type;
 import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
 import org.orbisgis.editors.map.tool.TransitionException;
+import org.orbisgis.layerModel.MapContext;
 import org.orbisgis.ui.sif.AskValidValue;
 import org.sif.UIFactory;
 
 public class InsertionToolUtils {
+
+	public static double getActiveLayerInitialZ(MapContext mapContext) {
+		SpatialDataSourceDecorator sds = mapContext.getActiveLayer()
+				.getDataSource();
+		try {
+			Type type = sds.getFieldType(sds.getSpatialFieldIndex());
+			if (type.getIntConstraint(Constraint.GEOMETRY_DIMENSION) == 3) {
+				return 0;
+			}
+		} catch (DriverException e) {
+		}
+		return Double.NaN;
+	}
 
 	/**
 	 * Ask the user to input initial values for the non null fields

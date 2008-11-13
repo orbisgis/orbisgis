@@ -73,4 +73,9 @@ public class MultipointTool extends AbstractMultipointTool {
 		return isEnabled(vc, tm);
 	}
 
+	@Override
+	public double getInitialZ(MapContext mapContext) {
+		return InsertionToolUtils.getActiveLayerInitialZ(mapContext);
+	}
+
 }

@@ -84,7 +84,7 @@ public class MesurePolygonTool extends AbstractPolygonTool {
 	public void drawIn_Point(Graphics g, MapContext vc, ToolManager tm)
 			throws DrawingException {
 		super.drawIn_Point(g, vc, tm);
-		Geometry geom = getCurrentPolygon(tm);
+		Geometry geom = getCurrentPolygon(vc, tm);
 		tm.addTextToDraw("Area: " + getArea(geom));
 		tm.addTextToDraw("Perimeter: " + getPerimeter(geom));
 	}

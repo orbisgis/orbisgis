@@ -73,4 +73,9 @@ public class MultilineTool extends AbstractMultilineTool {
 		}
 	}
 
+	@Override
+	public double getInitialZ(MapContext mapContext) {
+		return InsertionToolUtils.getActiveLayerInitialZ(mapContext);
+	}
+
 }

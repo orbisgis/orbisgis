@@ -50,7 +50,8 @@ import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.MultiPoint;
 
-public abstract class AbstractMultipointTool extends Multipoint {
+public abstract class AbstractMultipointTool extends Multipoint implements
+		InsertionTool {
 
 	private ArrayList<Coordinate> point = new ArrayList<Coordinate>();
 
@@ -62,8 +63,17 @@ public abstract class AbstractMultipointTool extends Multipoint {
 	@Override
 	public void transitionTo_Point(MapContext vc, ToolManager tm)
 			throws FinishedAutomatonException, TransitionException {
-		Coordinate c = new Coordinate(tm.getValues()[0], tm.getValues()[1]);
+		Coordinate c = newCoordinate(tm.getValues()[0], tm.getValues()[1], vc);
 		point.add(c);
+	}
+
+	private Coordinate newCoordinate(double x, double y, MapContext mapContext) {
+		return new Coordinate(x, y, getInitialZ(mapContext));
+	}
+
+	@Override
+	public double getInitialZ(MapContext mapContext) {
+		return 0;
 	}
 
 	@Override

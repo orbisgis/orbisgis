@@ -78,7 +78,7 @@ public class MesureLineTool extends AbstractLineTool {
 	public void drawIn_Point(Graphics g, MapContext vc, ToolManager tm)
 			throws DrawingException {
 		super.drawIn_Point(g, vc, tm);
-		Geometry geom = getCurrentLineString(tm);
+		Geometry geom = getCurrentLineString(vc, tm);
 		tm.addTextToDraw(getLength(geom) + "");
 	}
 }

@@ -51,7 +51,7 @@ import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.LineString;
 
-public abstract class AbstractLineTool extends Line {
+public abstract class AbstractLineTool extends Line implements InsertionTool {
 
 	protected ArrayList<Coordinate> points = new ArrayList<Coordinate>();
 
@@ -64,7 +64,7 @@ public abstract class AbstractLineTool extends Line {
 	@Override
 	public void transitionTo_Point(MapContext vc, ToolManager tm)
 			throws FinishedAutomatonException, TransitionException {
-		points.add(new Coordinate(tm.getValues()[0], tm.getValues()[1]));
+		points.add(newCoordinate(tm.getValues()[0], tm.getValues()[1], vc));
 	}
 
 	@Override
@@ -102,7 +102,7 @@ public abstract class AbstractLineTool extends Line {
 	@Override
 	public void drawIn_Point(Graphics g, MapContext vc, ToolManager tm)
 			throws DrawingException {
-		LineString ls = getCurrentLineString(tm);
+		LineString ls = getCurrentLineString(vc, tm);
 
 		tm.addGeomToDraw(ls);
 
@@ -112,15 +112,24 @@ public abstract class AbstractLineTool extends Line {
 	}
 
 	@SuppressWarnings("unchecked")//$NON-NLS-1$
-	protected LineString getCurrentLineString(ToolManager tm) {
+	protected LineString getCurrentLineString(MapContext mc, ToolManager tm) {
 		Point2D current = tm.getLastRealMousePosition();
 
 		ArrayList<Coordinate> tempPoints = (ArrayList<Coordinate>) points
 				.clone();
-		tempPoints.add(new Coordinate(current.getX(), current.getY()));
+		tempPoints.add(newCoordinate(current.getX(), current.getY(), mc));
 		LineString ls = new GeometryFactory().createLineString(tempPoints
 				.toArray(new Coordinate[0]));
 		return ls;
+	}
+
+	private Coordinate newCoordinate(double x, double y, MapContext mapContext) {
+		return new Coordinate(x, y, getInitialZ(mapContext));
+	}
+
+	@Override
+	public double getInitialZ(MapContext mapContext) {
+		return Double.NaN;
 	}
 
 	@Override

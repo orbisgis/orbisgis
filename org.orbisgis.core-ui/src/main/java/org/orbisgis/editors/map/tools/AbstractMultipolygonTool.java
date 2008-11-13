@@ -54,7 +54,8 @@ import com.vividsolutions.jts.geom.LinearRing;
 import com.vividsolutions.jts.geom.MultiPolygon;
 import com.vividsolutions.jts.geom.Polygon;
 
-public abstract class AbstractMultipolygonTool extends Multipolygon {
+public abstract class AbstractMultipolygonTool extends Multipolygon implements
+		InsertionTool {
 
 	private GeometryFactory gf = new GeometryFactory();
 	private ArrayList<Coordinate> points = new ArrayList<Coordinate>();
@@ -69,7 +70,7 @@ public abstract class AbstractMultipolygonTool extends Multipolygon {
 	@Override
 	public void transitionTo_Point(MapContext vc, ToolManager tm)
 			throws FinishedAutomatonException, TransitionException {
-		points.add(new Coordinate(tm.getValues()[0], tm.getValues()[1]));
+		points.add(newCoordinate(tm.getValues()[0], tm.getValues()[1], vc));
 	}
 
 	@Override
@@ -80,16 +81,17 @@ public abstract class AbstractMultipolygonTool extends Multipolygon {
 			throw new TransitionException(Messages
 					.getString("MultipolygonTool.0")); //$NON-NLS-1$
 
-		addPolygon();
+		addPolygon(vc);
 
 		transition("init"); //$NON-NLS-1$
 	}
 
 	@SuppressWarnings("unchecked")//$NON-NLS-1$
-	private void addPolygon() throws TransitionException {
+	private void addPolygon(MapContext mapContext) throws TransitionException {
 		ArrayList<Coordinate> tempPoints = (ArrayList<Coordinate>) points
 				.clone();
-		tempPoints.add(new Coordinate(points.get(0).x, points.get(0).y));
+		tempPoints.add(newCoordinate(points.get(0).x, points.get(0).y,
+				mapContext));
 		Coordinate[] coords = tempPoints.toArray(new Coordinate[0]);
 		Polygon p = gf.createPolygon(gf.createLinearRing(coords),
 				new LinearRing[0]);
@@ -98,6 +100,15 @@ public abstract class AbstractMultipolygonTool extends Multipolygon {
 					.getString("MultipolygonTool.2")); //$NON-NLS-1$
 		}
 		polygons.add(p);
+	}
+
+	private Coordinate newCoordinate(double x, double y, MapContext mapContext) {
+		return new Coordinate(x, y, getInitialZ(mapContext));
+	}
+
+	@Override
+	public double getInitialZ(MapContext mapContext) {
+		return Double.NaN;
 	}
 
 	@Override
@@ -109,7 +120,7 @@ public abstract class AbstractMultipolygonTool extends Multipolygon {
 			throw new TransitionException(Messages
 					.getString("MultipolygonTool.0")); //$NON-NLS-1$
 		if (points.size() > 0) {
-			addPolygon();
+			addPolygon(vc);
 		}
 		MultiPolygon mp = gf.createMultiPolygon(polygons
 				.toArray(new Polygon[0]));
@@ -144,9 +155,9 @@ public abstract class AbstractMultipolygonTool extends Multipolygon {
 		Point2D current = tm.getLastRealMousePosition();
 		ArrayList<Coordinate> tempPoints = (ArrayList<Coordinate>) points
 				.clone();
-		tempPoints.add(new Coordinate(current.getX(), current.getY()));
-		tempPoints
-				.add(new Coordinate(tempPoints.get(0).x, tempPoints.get(0).y));
+		tempPoints.add(newCoordinate(current.getX(), current.getY(), vc));
+		tempPoints.add(newCoordinate(tempPoints.get(0).x, tempPoints.get(0).y,
+				vc));
 		ArrayList<Polygon> tempPolygons = (ArrayList<Polygon>) polygons.clone();
 		if (tempPoints.size() >= 4) {
 			tempPolygons.add(gf.createPolygon(gf.createLinearRing(tempPoints

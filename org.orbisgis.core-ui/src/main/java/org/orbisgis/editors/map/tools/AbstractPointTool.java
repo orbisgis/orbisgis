@@ -47,17 +47,26 @@ import org.orbisgis.layerModel.MapContext;
 
 import com.vividsolutions.jts.geom.Coordinate;
 
-public abstract class AbstractPointTool extends Point {
+public abstract class AbstractPointTool extends Point implements InsertionTool {
 
 	@Override
 	public void transitionTo_Done(MapContext vc, ToolManager tm)
 			throws FinishedAutomatonException, TransitionException {
-		Coordinate coordinate = new Coordinate(tm.getValues()[0], tm
-				.getValues()[1]);
+		Coordinate coordinate = newCoordinate(tm.getValues()[0], tm
+				.getValues()[1], vc);
 		pointDone(ToolManager.toolsGeometryFactory.createPoint(coordinate), vc,
 				tm);
 
 		transition("init"); //$NON-NLS-1$
+	}
+
+	private Coordinate newCoordinate(double x, double y, MapContext mapContext) {
+		return new Coordinate(x, y, getInitialZ(mapContext));
+	}
+
+	@Override
+	public double getInitialZ(MapContext mapContext) {
+		return 0;
 	}
 
 	protected abstract void pointDone(com.vividsolutions.jts.geom.Point point,

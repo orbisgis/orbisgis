@@ -104,4 +104,9 @@ public class LineTool extends AbstractLineTool {
 			throw new TransitionException("Cannot insert linestring", e);
 		}
 	}
+
+	@Override
+	public double getInitialZ(MapContext mapContext) {
+		return InsertionToolUtils.getActiveLayerInitialZ(mapContext);
+	}
 }

@@ -53,7 +53,7 @@ import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.LinearRing;
 
-public abstract class AbstractPolygonTool extends Polygon {
+public abstract class AbstractPolygonTool extends Polygon implements InsertionTool {
 
 	private GeometryFactory gf = new GeometryFactory();
 
@@ -68,7 +68,7 @@ public abstract class AbstractPolygonTool extends Polygon {
 	@Override
 	public void transitionTo_Point(MapContext vc, ToolManager tm)
 			throws FinishedAutomatonException, TransitionException {
-		points.add(new Coordinate(tm.getValues()[0], tm.getValues()[1]));
+		points.add(newCoordinate(tm.getValues()[0], tm.getValues()[1], vc));
 	}
 
 	@SuppressWarnings("unchecked")//$NON-NLS-1$
@@ -76,15 +76,18 @@ public abstract class AbstractPolygonTool extends Polygon {
 	public void transitionTo_Done(MapContext vc, ToolManager tm)
 			throws FinishedAutomatonException, TransitionException {
 		points = CoordinateUtils.removeDuplicated(points);
-		if (points.size() < 3)
+		if (points.size() < 3) {
 			throw new TransitionException(Messages
 					.getString("MultipolygonTool.0")); //$NON-NLS-1$
+		}
 		ArrayList<Coordinate> tempPoints = (ArrayList<Coordinate>) points
 				.clone();
-		tempPoints.add(new Coordinate(points.get(0).x, points.get(0).y));
+		double firstX = points.get(0).x;
+		double firstY = points.get(0).y;
+		tempPoints.add(newCoordinate(firstX, firstY, vc));
+		Coordinate[] polygonCoordinates = tempPoints.toArray(new Coordinate[0]);
 		com.vividsolutions.jts.geom.Polygon pol = gf.createPolygon(gf
-				.createLinearRing(tempPoints.toArray(new Coordinate[0])),
-				new LinearRing[0]);
+				.createLinearRing(polygonCoordinates), new LinearRing[0]);
 
 		if (!pol.isValid()) {
 			throw new TransitionException(Messages.getString("PolygonTool.1")); //$NON-NLS-1$
@@ -92,6 +95,15 @@ public abstract class AbstractPolygonTool extends Polygon {
 		polygonDone(pol, vc, tm);
 
 		transition("init"); //$NON-NLS-1$
+	}
+
+	private Coordinate newCoordinate(double x, double y, MapContext mapContext) {
+		return new Coordinate(x, y, getInitialZ(mapContext));
+	}
+
+	@Override
+	public double getInitialZ(MapContext mapContext) {
+		return 0;
 	}
 
 	protected abstract void polygonDone(com.vividsolutions.jts.geom.Polygon g,
@@ -110,7 +122,7 @@ public abstract class AbstractPolygonTool extends Polygon {
 	@Override
 	public void drawIn_Point(Graphics g, MapContext vc, ToolManager tm)
 			throws DrawingException {
-		Geometry geom = getCurrentPolygon(tm);
+		Geometry geom = getCurrentPolygon(vc, tm);
 
 		if (geom != null) {
 			tm.addGeomToDraw(geom);
@@ -122,15 +134,16 @@ public abstract class AbstractPolygonTool extends Polygon {
 	}
 
 	@SuppressWarnings("unchecked")//$NON-NLS-1$
-	protected Geometry getCurrentPolygon(ToolManager tm) {
+	protected Geometry getCurrentPolygon(MapContext vc, ToolManager tm) {
 		Geometry geom;
 		if (points.size() >= 2) {
 			ArrayList<Coordinate> tempPoints = (ArrayList<Coordinate>) points
 					.clone();
 			Point2D current = tm.getLastRealMousePosition();
-			tempPoints.add(new Coordinate(current.getX(), current.getY()));
-			tempPoints.add(new Coordinate(tempPoints.get(0).x, tempPoints
-					.get(0).y));
+			tempPoints
+					.add(newCoordinate(current.getX(), current.getY(), vc));
+			tempPoints.add(newCoordinate(tempPoints.get(0).x,
+					tempPoints.get(0).y, vc));
 			geom = gf.createPolygon(gf.createLinearRing(tempPoints
 					.toArray(new Coordinate[0])), new LinearRing[0]);
 
@@ -138,9 +151,10 @@ public abstract class AbstractPolygonTool extends Polygon {
 			ArrayList<Coordinate> tempPoints = (ArrayList<Coordinate>) points
 					.clone();
 			Point2D current = tm.getLastRealMousePosition();
-			tempPoints.add(new Coordinate(current.getX(), current.getY()));
-			tempPoints.add(new Coordinate(tempPoints.get(0).x, tempPoints
-					.get(0).y));
+			tempPoints
+					.add(newCoordinate(current.getX(), current.getY(), vc));
+			tempPoints.add(newCoordinate(tempPoints.get(0).x,
+					tempPoints.get(0).y, vc));
 			geom = gf.createLineString(tempPoints.toArray(new Coordinate[0]));
 
 		} else {
