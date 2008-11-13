@@ -499,6 +499,7 @@ public class MapControl extends JComponent implements ComponentListener {
 		PluginManager psm = (PluginManager) Services
 				.getService(PluginManager.class);
 		psm.removeSystemListener(systemListener);
+		toolManager.freeResources();
 		toolManager = null;
 	}
 

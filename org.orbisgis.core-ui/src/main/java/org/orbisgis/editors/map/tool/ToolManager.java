@@ -216,18 +216,7 @@ public class ToolManager extends MouseAdapter implements MouseMotionListener {
 					return;
 				}
 
-				if (activeLayer != null) {
-					activeLayer.removeLayerListener(layerListener);
-					activeLayer.getDataSource().removeEditionListener(
-							layerListener);
-					activeLayer.getDataSource().removeDataSourceListener(
-							layerListener);
-					try {
-						setTool(ToolManager.this.defaultTool);
-					} catch (TransitionException e2) {
-						// ignore it
-					}
-				}
+				freeResources();
 
 				activeLayer = layer;
 
@@ -270,6 +259,19 @@ public class ToolManager extends MouseAdapter implements MouseMotionListener {
 				recalculateHandlers();
 			}
 		});
+	}
+
+	public void freeResources() {
+		if (activeLayer != null) {
+			activeLayer.removeLayerListener(layerListener);
+			activeLayer.getDataSource().removeEditionListener(layerListener);
+			activeLayer.getDataSource().removeDataSourceListener(layerListener);
+			try {
+				setTool(ToolManager.this.defaultTool);
+			} catch (TransitionException e2) {
+				// ignore it
+			}
+		}
 	}
 
 	public void mouseMoved(MouseEvent e) {
