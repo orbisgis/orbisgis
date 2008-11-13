@@ -69,11 +69,4 @@ public interface ViewManager {
 	 */
 	public void hideView(String id);
 
-	/**
-	 * Gets the view in charge of managing the IEditor instances
-	 *
-	 * @return
-	 */
-	public IEditorsView getEditorsView();
-
 }
