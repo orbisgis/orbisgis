@@ -585,7 +585,7 @@ public class ToolManager extends MouseAdapter implements MouseMotionListener {
 				configureMenu();
 				component.repaint();
 			} catch (FinishedAutomatonException e) {
-				setTool(defaultTool);
+				setTool(currentTool);
 			} catch (NoSuchTransitionException e) {
 				/*
 				 * Without this line, this exception will be catch by the "catch
@@ -620,6 +620,7 @@ public class ToolManager extends MouseAdapter implements MouseMotionListener {
 				public void actionPerformed(ActionEvent e) {
 					try {
 						transition(e.getActionCommand());
+						component.repaint();
 					} catch (NoSuchTransitionException e1) {
 						Services.getErrorManager().error("Error in the tool.",
 								e1);
