@@ -68,6 +68,7 @@ import org.orbisgis.edition.EditableElement;
 import org.orbisgis.edition.EditableElementException;
 import org.orbisgis.edition.EditableElementListener;
 import org.orbisgis.editor.EditorDecorator;
+import org.orbisgis.editor.EditorListener;
 import org.orbisgis.editor.IEditor;
 import org.orbisgis.errorManager.ErrorManager;
 import org.orbisgis.pluginManager.background.BackgroundManager;
@@ -80,10 +81,10 @@ public class EditorPanel extends Container {
 	private RootWindow root;
 	private ArrayList<EditorInfo> editorsInfo = new ArrayList<EditorInfo>();
 	private EditorDecorator lastEditor = null;
-	private EditorView editorView;
 	private ChangeNameListener changeNameListener = new ChangeNameListener();
+	private ArrayList<EditorListener> listeners = new ArrayList<EditorListener>();
 
-	public EditorPanel(EditorView editorView) {
+	public EditorPanel() {
 		this.setLayout(new BorderLayout());
 		root = new RootWindow(null);
 		root.getRootWindowProperties().getSplitWindowProperties()
@@ -116,7 +117,6 @@ public class EditorPanel extends Container {
 
 		this.add(root, BorderLayout.CENTER);
 
-		this.editorView = editorView;
 
 		this.addComponentListener(new ComponentAdapter() {
 
@@ -348,10 +348,10 @@ public class EditorPanel extends Container {
 					lastEditor = null;
 				} else {
 					lastEditor = null;
-					editorView.fireActiveEditorChanged(lastEditor, null);
+					fireActiveEditorChanged(lastEditor, null);
 				}
 
-				editorView.fireEditorClosed(closedEditor, editorInfo
+				fireEditorClosed(closedEditor, editorInfo
 						.getEditorDecorator().getId());
 				freeView(closedView, editorInfo.editorDecorator);
 
@@ -420,7 +420,7 @@ public class EditorPanel extends Container {
 						previous = lastEditor.getEditor();
 					}
 					lastEditor = nextEditor;
-					editorView.fireActiveEditorChanged(previous, lastEditor
+					fireActiveEditorChanged(previous, lastEditor
 							.getEditor());
 				}
 			}
@@ -520,6 +520,36 @@ public class EditorPanel extends Container {
 		}
 
 		return ret;
+	}
+
+	public String getEditorId(IEditor editor) {
+		for (EditorInfo editorInfo : editorsInfo) {
+			if (editor == editorInfo.getEditorDecorator().getEditor()) {
+				return editorInfo.getEditorDecorator().getId();
+			}
+		}
+
+		return null;
+	}
+
+	public void addEditorListener(EditorListener listener) {
+		listeners.add(listener);
+	}
+
+	public void removeEditorListener(EditorListener listener) {
+		listeners.remove(listener);
+	}
+
+	void fireActiveEditorChanged(IEditor previous, IEditor current) {
+		for (EditorListener listener : listeners) {
+			listener.activeEditorChanged(previous, current);
+		}
+	}
+
+	public void fireEditorClosed(IEditor editor, String editorId) {
+		for (EditorListener listener : listeners) {
+			listener.activeEditorClosed(editor, editorId);
+		}
 	}
 
 }

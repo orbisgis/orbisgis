@@ -41,6 +41,7 @@ import org.orbisgis.edition.EditableElement;
 import org.orbisgis.edition.EditableElementException;
 import org.orbisgis.editor.EPEditorHelper;
 import org.orbisgis.editor.EditorDecorator;
+import org.orbisgis.editor.EditorListener;
 import org.orbisgis.editor.IEditor;
 import org.orbisgis.progress.NullProgressMonitor;
 
@@ -111,6 +112,21 @@ public class DefaultEditorManager implements EditorManager {
 	@Override
 	public IEditor[] getEditor(EditableElement element) {
 		return this.editorPanel.getEditor(element);
+	}
+
+	@Override
+	public String getEditorId(IEditor editor) {
+		return editorPanel.getEditorId(editor);
+	}
+
+	@Override
+	public void addEditorListener(EditorListener listener) {
+		editorPanel.addEditorListener(listener);
+	}
+
+	@Override
+	public void removeEditorListener(EditorListener listener) {
+		editorPanel.removeEditorListener(listener);
 	}
 
 }

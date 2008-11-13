@@ -37,6 +37,7 @@
 package org.orbisgis.views.editor;
 
 import org.orbisgis.edition.EditableElement;
+import org.orbisgis.editor.EditorListener;
 import org.orbisgis.editor.IEditor;
 
 public interface EditorManager {
@@ -100,5 +101,27 @@ public interface EditorManager {
 	 * @return List with editor. Can be empty. Never null
 	 */
 	IEditor[] getEditor(EditableElement element);
+
+	/**
+	 * Adds an editor listener
+	 * 
+	 * @param listener
+	 */
+	void addEditorListener(EditorListener listener);
+
+	/**
+	 * Removes an editor listener
+	 * 
+	 * @param listener
+	 */
+	void removeEditorListener(EditorListener listener);
+
+	/**
+	 * Returns the id of the specified editor
+	 * 
+	 * @param editor
+	 * @return Null if the editor is not open
+	 */
+	String getEditorId(IEditor editor);
 
 }

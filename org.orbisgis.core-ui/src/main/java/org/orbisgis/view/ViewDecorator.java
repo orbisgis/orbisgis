@@ -52,7 +52,7 @@ import net.infonode.docking.View;
 
 import org.orbisgis.PersistenceException;
 import org.orbisgis.Services;
-import org.orbisgis.editor.EditorDecorator;
+import org.orbisgis.editor.IEditor;
 import org.orbisgis.editorView.IEditorView;
 import org.orbisgis.views.editor.DockingWindowUtil;
 
@@ -63,7 +63,6 @@ public class ViewDecorator {
 	private IView view;
 	private View dockingView;
 	private Component component;
-	private boolean editor;
 	private String[] editors;
 	private Component activeComponent = null;
 
@@ -82,13 +81,12 @@ public class ViewDecorator {
 	 *            The associated editors
 	 */
 	public ViewDecorator(IView view, String id, String title, String icon,
-			boolean editor, String[] editors) {
+			String[] editors) {
 		super();
 		this.view = view;
 		this.id = id;
 		this.title = title;
 		this.icon = icon;
-		this.editor = editor;
 		this.editors = editors;
 	}
 
@@ -118,7 +116,7 @@ public class ViewDecorator {
 		}
 	}
 
-	public void loadStatus(EditorDecorator activeEditor) {
+	public void loadStatus(IEditor activeEditor, String activeEditorId) {
 		try {
 			view.loadStatus();
 		} catch (PersistenceException e) {
@@ -127,10 +125,11 @@ public class ViewDecorator {
 		}
 		component = view.getComponent();
 		dockingView = new View(title, getImageIcon(), component);
-		editorChanged(activeEditor);
+		editorChanged(activeEditor, activeEditorId);
 	}
 
-	public void open(RootWindow root, EditorDecorator activeEditor) {
+	public void open(RootWindow root, IEditor activeEditor,
+			String activeEditorId) {
 		if (dockingView == null) {
 			component = view.getComponent();
 			dockingView = new View(title, getImageIcon(), component);
@@ -140,12 +139,12 @@ public class ViewDecorator {
 				getDockingView().restore();
 				if (!isOpen()) {
 					dockingView = null;
-					open(root, activeEditor);
+					open(root, activeEditor, activeEditorId);
 				}
 			}
 		}
 
-		editorChanged(activeEditor);
+		editorChanged(activeEditor, activeEditorId);
 	}
 
 	private Icon getImageIcon() {
@@ -182,29 +181,25 @@ public class ViewDecorator {
 		}
 	}
 
-	public boolean isEditor() {
-		return editor;
-	}
-
 	/**
 	 * Shows the view or a message depending on the editor's id passed as an
 	 * argument
 	 * 
 	 * @param editorId
 	 */
-	public void editorChanged(EditorDecorator editor) {
+	public void editorChanged(IEditor editor, String editorId) {
 		if (this.editors.length == 0) {
 			return;
 		} else {
 			if (dockingView != null) {
-				if ((editor == null) || (!isAssociatedEditor(editor.getId()))) {
+				if ((editor == null) || (!isAssociatedEditor(editorId))) {
 					disableView();
 				} else {
 					if (activeComponent != null) {
 						dockingView.setComponent(activeComponent);
 						activeComponent = null;
 					}
-					if (!((IEditorView) view).setEditor(editor.getEditor())) {
+					if (!((IEditorView) view).setEditor(editor)) {
 						disableView();
 					}
 				}

@@ -83,7 +83,6 @@ import org.orbisgis.action.JActionMenuItem;
 import org.orbisgis.action.JActionToolBar;
 import org.orbisgis.action.MenuTree;
 import org.orbisgis.action.ToolBarArray;
-import org.orbisgis.editor.EditorDecorator;
 import org.orbisgis.editor.EditorListener;
 import org.orbisgis.editor.IEditor;
 import org.orbisgis.editor.IExtensionPointEditor;
@@ -91,9 +90,9 @@ import org.orbisgis.editor.action.IEditorAction;
 import org.orbisgis.editor.action.ISelectableEditorAction;
 import org.orbisgis.images.IconLoader;
 import org.orbisgis.view.EPViewHelper;
-import org.orbisgis.view.IEditorsView;
 import org.orbisgis.view.ViewDecorator;
 import org.orbisgis.view.ViewManager;
+import org.orbisgis.views.editor.EditorManager;
 import org.orbisgis.window.IWindow;
 import org.orbisgis.workspace.Workspace;
 
@@ -113,8 +112,6 @@ public class OrbisGISFrame extends JFrame implements IWindow, ViewManager,
 	private RootWindow root;
 
 	private MyViewSerializer viewSerializer = new MyViewSerializer();
-
-	private IEditorsView editorsView;
 
 	private boolean perspectiveLoaded = false;
 
@@ -232,18 +229,7 @@ public class OrbisGISFrame extends JFrame implements IWindow, ViewManager,
 	}
 
 	private void initializeViews() {
-		ViewDecorator editor = null;
 		for (ViewDecorator view : views) {
-			if (view.isEditor()) {
-				if (editor == null) {
-					editor = view;
-				} else {
-					throw new RuntimeException(
-							"No more than one editor is allowed. "
-									+ editor.getId() + " and " + view.getId()
-									+ " found.");
-				}
-			}
 			try {
 				view.getView().initialize();
 			} catch (Exception e) {
@@ -252,14 +238,20 @@ public class OrbisGISFrame extends JFrame implements IWindow, ViewManager,
 			}
 		}
 
-		this.editorsView = (IEditorsView) editor.getView();
-		this.editorsView.addEditorListener(new EditorListener() {
+		final EditorManager em = Services.getService(EditorManager.class);
+		if (em == null) {
+			throw new RuntimeException(
+					"A view must initialize the EditorManager service");
+		}
+
+		em.addEditorListener(new EditorListener() {
 
 			public void activeEditorChanged(IEditor previous, IEditor current) {
 				refreshUI();
+				IEditor activeEditor = em.getActiveEditor();
 				for (ViewDecorator view : views) {
-					view.editorChanged(OrbisGISFrame.this.editorsView
-							.getActiveEditor());
+					view.editorChanged(activeEditor, em
+							.getEditorId(activeEditor));
 				}
 			}
 
@@ -285,7 +277,9 @@ public class OrbisGISFrame extends JFrame implements IWindow, ViewManager,
 		ViewDecorator ret = getViewDecorator(viewId);
 		if (ret != null) {
 			if (!ret.isOpen()) {
-				ret.open(root, editorsView.getActiveEditor());
+				EditorManager em = Services.getService(EditorManager.class);
+				IEditor activeEditor = em.getActiveEditor();
+				ret.open(root, activeEditor, em.getEditorId(activeEditor));
 			}
 			return ret.getViewComponent();
 		} else {
@@ -296,7 +290,9 @@ public class OrbisGISFrame extends JFrame implements IWindow, ViewManager,
 	public void showView(String id) {
 		ViewDecorator view = getViewDecorator(id);
 		if (view != null) {
-			view.open(root, editorsView.getActiveEditor());
+			EditorManager em = Services.getService(EditorManager.class);
+			IEditor activeEditor = em.getActiveEditor();
+			view.open(root, activeEditor, em.getEditorId(activeEditor));
 		}
 	}
 
@@ -305,10 +301,6 @@ public class OrbisGISFrame extends JFrame implements IWindow, ViewManager,
 		if (view != null) {
 			view.close();
 		}
-	}
-
-	public IEditorsView getEditorsView() {
-		return editorsView;
 	}
 
 	private ViewDecorator getViewDecorator(String id) {
@@ -356,7 +348,10 @@ public class OrbisGISFrame extends JFrame implements IWindow, ViewManager,
 			if (getViewDecorator().isOpen()) {
 				getViewDecorator().close();
 			} else {
-				getViewDecorator().open(root, editorsView.getActiveEditor());
+				EditorManager em = Services.getService(EditorManager.class);
+				IEditor activeEditor = em.getActiveEditor();
+				getViewDecorator().open(root, activeEditor,
+						em.getEditorId(activeEditor));
 			}
 		}
 
@@ -413,12 +408,13 @@ public class OrbisGISFrame extends JFrame implements IWindow, ViewManager,
 		}
 
 		public boolean isVisible() {
-			if (editorsView.getActiveEditor() == null) {
+			EditorManager em = Services.getService(EditorManager.class);
+			IEditor activeEditor = em.getActiveEditor();
+			if (activeEditor == null) {
 				return false;
 			} else {
-				if (editorId.equals(editorsView.getActiveEditor().getId())) {
-					return action.isVisible(editorsView.getActiveEditor()
-							.getEditor());
+				if (editorId.equals(em.getEditorId(activeEditor))) {
+					return action.isVisible(activeEditor);
 				} else {
 					return false;
 				}
@@ -426,12 +422,13 @@ public class OrbisGISFrame extends JFrame implements IWindow, ViewManager,
 		}
 
 		public boolean isEnabled() {
-			if (editorsView.getActiveEditor() == null) {
+			EditorManager em = Services.getService(EditorManager.class);
+			IEditor activeEditor = em.getActiveEditor();
+			if (activeEditor == null) {
 				return false;
 			} else {
-				if (editorId.equals(editorsView.getActiveEditor().getId())) {
-					return action.isEnabled(editorsView.getActiveEditor()
-							.getEditor());
+				if (editorId.equals(em.getEditorId(activeEditor))) {
+					return action.isEnabled(activeEditor);
 				} else {
 					return false;
 				}
@@ -439,17 +436,19 @@ public class OrbisGISFrame extends JFrame implements IWindow, ViewManager,
 		}
 
 		public void actionPerformed() {
-			action.actionPerformed(editorsView.getActiveEditor().getEditor());
+			action.actionPerformed(Services.getService(EditorManager.class)
+					.getActiveEditor());
 		}
 
 		public boolean isSelected() {
-			EditorDecorator activeEditor = editorsView.getActiveEditor();
+			EditorManager em = Services.getService(EditorManager.class);
+			IEditor activeEditor = em.getActiveEditor();
 			if (activeEditor == null) {
 				return false;
 			} else {
-				if (editorId.equals(editorsView.getActiveEditor().getId())) {
+				if (editorId.equals(em.getEditorId(activeEditor))) {
 					return ((ISelectableEditorAction) action)
-							.isSelected(activeEditor.getEditor());
+							.isSelected(activeEditor);
 				} else {
 					return false;
 				}
@@ -566,7 +565,9 @@ public class OrbisGISFrame extends JFrame implements IWindow, ViewManager,
 			ViewDecorator vd = OrbisGISFrame.this.getViewDecorator(id);
 			if (vd != null) {
 				try {
-					vd.loadStatus(editorsView.getActiveEditor());
+					EditorManager em = Services.getService(EditorManager.class);
+					IEditor activeEditor = em.getActiveEditor();
+					vd.loadStatus(activeEditor, em.getEditorId(activeEditor));
 					return vd.getDockingView();
 				} catch (Throwable t) {
 					Services.getErrorManager().error(

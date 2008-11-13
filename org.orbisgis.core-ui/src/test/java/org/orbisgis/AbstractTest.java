@@ -40,6 +40,7 @@ import junit.framework.TestCase;
 
 import org.gdms.data.DataSourceFactory;
 import org.orbisgis.edition.EditableElement;
+import org.orbisgis.editor.EditorListener;
 import org.orbisgis.editor.IEditor;
 import org.orbisgis.errorManager.ErrorListener;
 import org.orbisgis.errorManager.ErrorManager;
@@ -91,6 +92,19 @@ public class AbstractTest extends TestCase {
 			@Override
 			public boolean closeEditor(IEditor editor) throws IllegalArgumentException {
 				return true;
+			}
+
+			@Override
+			public void addEditorListener(EditorListener listener) {
+			}
+
+			@Override
+			public String getEditorId(IEditor editor) {
+				return null;
+			}
+
+			@Override
+			public void removeEditorListener(EditorListener listener) {
 			}
 		});
 		super.setUp();

@@ -37,18 +37,13 @@
 package org.orbisgis.views.editor;
 
 import java.awt.Component;
-import java.util.ArrayList;
 
 import org.orbisgis.Services;
-import org.orbisgis.editor.EditorDecorator;
-import org.orbisgis.editor.EditorListener;
-import org.orbisgis.editor.IEditor;
-import org.orbisgis.view.IEditorsView;
+import org.orbisgis.view.IView;
 
-public class EditorView implements IEditorsView {
+public class EditorView implements IView {
 
-	private EditorPanel editor = new EditorPanel(this);
-	private ArrayList<EditorListener> listeners = new ArrayList<EditorListener>();
+	private EditorPanel editor = new EditorPanel();
 
 	public void delete() {
 	}
@@ -69,34 +64,6 @@ public class EditorView implements IEditorsView {
 
 	public void saveStatus() {
 		editor.saveAllDocuments();
-	}
-
-	public static String getViewId() {
-		return "org.orbisgis.views.EditorView";
-	}
-
-	public EditorDecorator getActiveEditor() {
-		return editor.getCurrentEditor();
-	}
-
-	public void addEditorListener(EditorListener listener) {
-		listeners.add(listener);
-	}
-
-	public void removeEditorListener(EditorListener listener) {
-		listeners.remove(listener);
-	}
-
-	void fireActiveEditorChanged(IEditor previous, IEditor current) {
-		for (EditorListener listener : listeners) {
-			listener.activeEditorChanged(previous, current);
-		}
-	}
-
-	public void fireEditorClosed(IEditor editor, String editorId) {
-		for (EditorListener listener : listeners) {
-			listener.activeEditorClosed(editor, editorId);
-		}
 	}
 
 }
