@@ -38,17 +38,21 @@ package org.orbisgis.editorViews.toc;
 
 import java.awt.Component;
 
+import org.orbisgis.Services;
 import org.orbisgis.edition.EditableElement;
+import org.orbisgis.editor.EditorListener;
 import org.orbisgis.editor.IEditor;
 import org.orbisgis.editorView.IEditorView;
 import org.orbisgis.editors.map.MapEditor;
 import org.orbisgis.editors.table.TableEditableElement;
 import org.orbisgis.editors.table.TableEditor;
 import org.orbisgis.layerModel.MapContext;
+import org.orbisgis.views.editor.EditorManager;
 
 public class TocView implements IEditorView {
 
 	private Toc toc = new Toc();
+	private EditorListener closingListener = null;
 
 	public Component getComponent() {
 		return toc;
@@ -71,6 +75,7 @@ public class TocView implements IEditorView {
 	}
 
 	public boolean setEditor(IEditor editor) {
+		listenEditorClosing();
 		EditableElement element = editor.getElement();
 		if (editor instanceof MapEditor) {
 			MapContext mc = (MapContext) element.getObject();
@@ -89,6 +94,49 @@ public class TocView implements IEditorView {
 		}
 
 		return false;
+	}
+
+	private void listenEditorClosing() {
+		if (closingListener == null) {
+			closingListener = new EditorListener() {
+
+				@Override
+				public boolean activeEditorClosing(IEditor editor,
+						String editorId) {
+					if (editorId.equals("org.orbisgis.editors.Map")) {
+						MapContext mc = (MapContext) editor.getElement()
+								.getObject();
+						EditorManager em = Services
+								.getService(EditorManager.class);
+						IEditor[] editors = em.getEditors();
+						for (IEditor openEditor : editors) {
+							if (openEditor.getElement() instanceof EditableLayer) {
+								EditableLayer el = (EditableLayer) openEditor
+										.getElement();
+								if (el.getMapContext() == mc) {
+									if (!em.closeEditor(openEditor)) {
+										return false;
+									}
+								}
+							}
+						}
+					}
+
+					return true;
+				}
+
+				@Override
+				public void activeEditorClosed(IEditor editor, String editorId) {
+				}
+
+				@Override
+				public void activeEditorChanged(IEditor previous,
+						IEditor current) {
+				}
+			};
+			EditorManager em = Services.getService(EditorManager.class);
+			em.addEditorListener(closingListener);
+		}
 	}
 
 	public void editorViewDisabled() {

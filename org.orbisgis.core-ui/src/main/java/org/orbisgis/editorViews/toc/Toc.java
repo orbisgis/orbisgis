@@ -553,7 +553,9 @@ public class Toc extends ResourceTree {
 					.getService(DataManager.class);
 			treeModel = new TocTreeModel(dataManager
 					.createLayerCollection("root"), getTree());
+			ignoreSelection = true;
 			this.setModel(treeModel);
+			ignoreSelection = false;
 			this.mapContext = null;
 			this.mapContextName = null;
 
