@@ -198,6 +198,7 @@ public class ViewDecorator {
 					if (activeComponent != null) {
 						dockingView.setComponent(activeComponent);
 						activeComponent = null;
+						dockingView.repaint();
 					}
 					if (!((IEditorView) view).setEditor(editor)) {
 						disableView();
