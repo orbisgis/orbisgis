@@ -41,6 +41,9 @@ import java.awt.event.ActionListener;
 
 import javax.swing.JRadioButtonMenuItem;
 
+import org.orbisgis.Services;
+import org.orbisgis.errorManager.ErrorManager;
+
 public class JActionRadioButtonMenuItem extends JRadioButtonMenuItem implements
 		IMenuActionControl, IActionControl {
 
@@ -66,9 +69,15 @@ public class JActionRadioButtonMenuItem extends JRadioButtonMenuItem implements
 
 	public void refresh() {
 		if (action != null) {
-			this.setEnabled(action.isEnabled());
-			this.setVisible(action.isVisible());
-			this.setSelected(action.isSelected());
+			try {
+				this.setEnabled(action.isEnabled());
+				this.setVisible(action.isVisible());
+				this.setSelected(action.isSelected());
+			} catch (Exception e) {
+				Services.getService(ErrorManager.class).warning(
+						"Action is buggy", e);
+			}
+
 		}
 	}
 

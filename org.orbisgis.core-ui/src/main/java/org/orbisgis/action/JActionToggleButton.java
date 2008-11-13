@@ -42,12 +42,16 @@ import java.awt.event.ActionListener;
 import javax.swing.ImageIcon;
 import javax.swing.JToggleButton;
 
+import org.orbisgis.Services;
+import org.orbisgis.errorManager.ErrorManager;
+
 public class JActionToggleButton extends JToggleButton implements
 		IActionControl {
 
 	private ISelectableActionAdapter action;
 
-	public JActionToggleButton(ImageIcon imageIcon, boolean b, ISelectableActionAdapter action) {
+	public JActionToggleButton(ImageIcon imageIcon, boolean b,
+			ISelectableActionAdapter action) {
 		super(imageIcon, b);
 		this.action = action;
 		this.addActionListener(new ActionListener() {
@@ -62,9 +66,14 @@ public class JActionToggleButton extends JToggleButton implements
 
 	public void refresh() {
 		if (action != null) {
-			this.setEnabled(action.isEnabled());
-			this.setVisible(action.isVisible());
-			this.setSelected(action.isSelected());
+			try {
+				this.setEnabled(action.isEnabled());
+				this.setVisible(action.isVisible());
+				this.setSelected(action.isSelected());
+			} catch (Exception e) {
+				Services.getService(ErrorManager.class).warning(
+						"Action is buggy", e);
+			}
 		}
 	}
 }

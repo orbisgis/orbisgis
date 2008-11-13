@@ -42,6 +42,9 @@ import java.awt.event.ActionListener;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 
+import org.orbisgis.Services;
+import org.orbisgis.errorManager.ErrorManager;
+
 public class JActionButton extends JButton implements IActionControl {
 
 	private IActionAdapter action;
@@ -60,8 +63,13 @@ public class JActionButton extends JButton implements IActionControl {
 
 	public void refresh() {
 		if (action != null) {
-			this.setEnabled(action.isEnabled());
-			this.setVisible(action.isVisible());
+			try {
+				this.setEnabled(action.isEnabled());
+				this.setVisible(action.isVisible());
+			} catch (Exception e) {
+				Services.getService(ErrorManager.class).warning(
+						"Action is buggy", e);
+			}
 		}
 	}
 

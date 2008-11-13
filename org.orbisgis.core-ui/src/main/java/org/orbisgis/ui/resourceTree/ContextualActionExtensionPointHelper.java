@@ -89,7 +89,7 @@ public class ContextualActionExtensionPointHelper {
 					}
 				} catch (Exception e) {
 					Services.getService(ErrorManager.class).warning(
-							"Some of the actions are buggy", e);
+							"Action '" + id + "' is buggy", e);
 				}
 			}
 		}
