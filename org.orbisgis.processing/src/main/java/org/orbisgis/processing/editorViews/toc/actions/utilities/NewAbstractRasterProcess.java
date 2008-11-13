@@ -104,7 +104,7 @@ public abstract class NewAbstractRasterProcess implements ILayerAction {
 		return selectionCount >= 1;
 	}
 
-	public boolean accepts(ILayer layer) {
+	public boolean accepts(MapContext mc, ILayer layer) {
 		try {
 			return layer.isRaster();
 		} catch (DriverException e) {

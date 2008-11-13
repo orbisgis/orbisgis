@@ -68,10 +68,11 @@ public interface ILayerAction {
 
 	/**
 	 * Returns true if the action can be executed on the specified layer
-	 *
+	 * @param mc MapContext of the associated MapEditor
 	 * @param layer
+	 *
 	 * @return
 	 */
-	boolean accepts(ILayer layer);
+	boolean accepts(MapContext mc, ILayer layer);
 
 }

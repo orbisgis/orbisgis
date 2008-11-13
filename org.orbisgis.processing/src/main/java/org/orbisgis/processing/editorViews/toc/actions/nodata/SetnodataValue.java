@@ -53,7 +53,7 @@ import org.sif.multiInputPanel.MultiInputPanel;
 public class SetnodataValue implements
 		org.orbisgis.editorViews.toc.action.ILayerAction {
 
-	public boolean accepts(ILayer layer) {
+	public boolean accepts(MapContext mc, ILayer layer) {
 		try {
 			if (layer.isRaster()) {
 				SpatialDataSourceDecorator ds = layer.getDataSource();

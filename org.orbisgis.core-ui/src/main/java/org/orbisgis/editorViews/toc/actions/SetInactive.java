@@ -44,14 +44,10 @@ import org.orbisgis.Services;
 import org.orbisgis.editorViews.toc.action.ILayerAction;
 import org.orbisgis.layerModel.ILayer;
 import org.orbisgis.layerModel.MapContext;
-import org.orbisgis.views.editor.EditorManager;
 
 public class SetInactive implements ILayerAction {
 
-	public boolean accepts(ILayer layer) {
-		EditorManager em = (EditorManager) Services
-				.getService(EditorManager.class);
-		MapContext mc = (MapContext) em.getActiveElement().getObject();
+	public boolean accepts(MapContext mc, ILayer layer) {
 		return mc.getActiveLayer() == layer;
 	}
 

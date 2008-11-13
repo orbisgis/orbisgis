@@ -61,7 +61,6 @@ import org.grap.processing.operation.others.Rasterization;
 import org.grap.utilities.PixelsUtil;
 import org.orbisgis.DataManager;
 import org.orbisgis.Services;
-import org.orbisgis.editors.map.MapContextManager;
 import org.orbisgis.layerModel.ILayer;
 import org.orbisgis.layerModel.LayerException;
 import org.orbisgis.layerModel.MapContext;
@@ -85,12 +84,9 @@ public class RasterizationPanel implements
 	private Double value;
 	private GeoRaster geoRasterSrc;
 
-	public boolean accepts(ILayer layer) {
+	public boolean accepts(MapContext mc, ILayer layer) {
 		try {
-
-			MapContextManager mcm = (MapContextManager) Services
-					.getService(MapContextManager.class);
-			ILayer[] rasterLayers = mcm.getActiveView().getLayerModel()
+			ILayer[] rasterLayers = mc.getLayerModel()
 					.getRasterLayers();
 			if (layer.isVectorial() && (rasterLayers.length >= 1)) {
 				return true;

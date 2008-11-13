@@ -25,7 +25,7 @@ import com.vividsolutions.jcs.qa.InternalOverlapFinder;
 
 public class IntervalOverlapsFinderAction implements ILayerAction {
 
-	public boolean accepts(ILayer layer) {
+	public boolean accepts(MapContext mc, ILayer layer) {
 
 		try {
 			return layer.isVectorial();

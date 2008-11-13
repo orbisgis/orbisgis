@@ -18,7 +18,7 @@ import org.orbisgis.progress.IProgressMonitor;
 
 public class IntervalGapsFinderAction implements ILayerAction {
 
-	public boolean accepts(ILayer layer) {
+	public boolean accepts(MapContext mc, ILayer layer) {
 
 		try {
 			return layer.isVectorial();

@@ -44,7 +44,7 @@ import org.orbisgis.layerModel.MapContext;
 
 public class RemoveLayer implements ILayerAction {
 
-	public boolean accepts(ILayer layer) {
+	public boolean accepts(MapContext mc, ILayer layer) {
 		return layer != null;
 	}
 

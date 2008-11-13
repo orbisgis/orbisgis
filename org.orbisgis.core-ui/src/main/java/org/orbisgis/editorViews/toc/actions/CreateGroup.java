@@ -45,7 +45,7 @@ import org.orbisgis.layerModel.LayerException;
 import org.orbisgis.layerModel.MapContext;
 
 public class CreateGroup implements ILayerAction {
-	public boolean accepts(ILayer layer) {
+	public boolean accepts(MapContext mc, ILayer layer) {
 		return layer.acceptsChilds();
 	}
 

@@ -39,7 +39,6 @@ package org.contrib.ui.editorViews.toc.actions.geometry.edition;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-import javax.swing.JDialog;
 import javax.swing.JOptionPane;
 
 import org.contrib.model.jump.ui.EnterWKTDialog;
@@ -54,7 +53,6 @@ import org.orbisgis.Services;
 import org.orbisgis.editorViews.toc.action.ILayerAction;
 import org.orbisgis.layerModel.ILayer;
 import org.orbisgis.layerModel.MapContext;
-import org.orbisgis.views.editor.EditorManager;
 
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.io.ParseException;
@@ -69,10 +67,7 @@ public class AddGeometriesAsWKTAction implements ILayerAction {
 
 	private MapContext mapContext;
 
-	public boolean accepts(ILayer layer) {
-		EditorManager em = (EditorManager) Services
-				.getService(EditorManager.class);
-		MapContext mc = (MapContext) em.getActiveElement().getObject();
+	public boolean accepts(MapContext mc, ILayer layer) {
 		return mc.getActiveLayer() == layer;
 	}
 
@@ -132,12 +127,11 @@ public class AddGeometriesAsWKTAction implements ILayerAction {
 					.getDefaultGeometry()));
 			GeometryConstraint gc = (GeometryConstraint) fieldType
 					.getConstraint(Constraint.GEOMETRY_TYPE);
-			
-			if (gc==null){
+
+			if (gc == null) {
 				geomTypeName = "Mixed geometry";
-			}
-			else {
-			geomTypeName = gc.getConstraintHumanValue();
+			} else {
+				geomTypeName = gc.getConstraintHumanValue();
 			}
 
 		} catch (DriverException e) {

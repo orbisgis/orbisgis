@@ -103,7 +103,7 @@ public abstract class SQLGeometryAbstractProcess implements ILayerAction {
 		return selectionCount >= 1;
 	}
 
-	public boolean accepts(ILayer layer) {
+	public boolean accepts(MapContext mc, ILayer layer) {
 		try {
 			return layer.isVectorial();
 		} catch (DriverException e) {

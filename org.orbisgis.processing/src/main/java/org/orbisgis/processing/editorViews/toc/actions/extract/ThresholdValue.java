@@ -46,13 +46,14 @@ import org.grap.model.GeoRasterFactory;
 import org.grap.processing.OperationException;
 import org.orbisgis.Services;
 import org.orbisgis.layerModel.ILayer;
+import org.orbisgis.layerModel.MapContext;
 import org.orbisgis.processing.editorViews.toc.actions.utilities.AbstractRasterProcess;
 import org.sif.UIFactory;
 import org.sif.multiInputPanel.DoubleType;
 import org.sif.multiInputPanel.MultiInputPanel;
 
 public class ThresholdValue extends AbstractRasterProcess {
-	public boolean accepts(ILayer layer) {
+	public boolean accepts(MapContext mc, ILayer layer) {
 		try {
 			if (layer.isRaster()) {
 				final int type = layer.getRaster().getType();

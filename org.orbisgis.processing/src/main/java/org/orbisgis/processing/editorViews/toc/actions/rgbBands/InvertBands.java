@@ -71,7 +71,7 @@ public class InvertBands implements
 
 	private MultiInputPanel mip;
 
-	public boolean accepts(ILayer layer) {
+	public boolean accepts(MapContext mc, ILayer layer) {
 		try {
 			if (layer.isRaster()) {
 				SpatialDataSourceDecorator ds = layer.getDataSource();

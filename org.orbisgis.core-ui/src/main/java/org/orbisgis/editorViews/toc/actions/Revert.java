@@ -45,7 +45,7 @@ import org.orbisgis.layerModel.MapContext;
 
 public class Revert implements ILayerAction {
 
-	public boolean accepts(ILayer layer) {
+	public boolean accepts(MapContext mc, ILayer layer) {
 		SpatialDataSourceDecorator dataSource = layer.getDataSource();
 		return (dataSource != null) && dataSource.isModified();
 	}

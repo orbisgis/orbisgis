@@ -13,7 +13,7 @@ import org.orbisgis.layerModel.MapContext;
 
 public class ValidateSelectedLayersAction implements ILayerAction {
 
-	public boolean accepts(ILayer layer) {
+	public boolean accepts(MapContext mc, ILayer layer) {
 		try {
 			return layer.isVectorial();
 		} catch (DriverException e) {

@@ -43,9 +43,10 @@ import java.io.IOException;
 import org.gdms.driver.DriverException;
 import org.orbisgis.Services;
 import org.orbisgis.layerModel.ILayer;
+import org.orbisgis.layerModel.MapContext;
 
 public abstract class AbstractGray16Process extends NewAbstractRasterProcess {
-	public final boolean accepts(ILayer layer) {
+	public final boolean accepts(MapContext mc, ILayer layer) {
 		try {
 			if (layer.isRaster()) {
 				final int type = layer.getRaster().getType();

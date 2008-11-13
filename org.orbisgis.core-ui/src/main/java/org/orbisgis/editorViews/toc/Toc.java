@@ -299,7 +299,7 @@ public class Toc extends ResourceTree {
 						if (tocAction
 								.acceptsSelectionCount(selectedLayers.length)) {
 							for (ILayer layer : selectedLayers) {
-								if (!tocAction.accepts(layer)) {
+								if (!tocAction.accepts(mapContext, layer)) {
 									acceptsAllResources = false;
 									break;
 								}

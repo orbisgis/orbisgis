@@ -60,7 +60,7 @@ import org.sif.UIFactory;
 public class SaveInFile implements
 		org.orbisgis.editorViews.toc.action.ILayerAction {
 
-	public boolean accepts(ILayer layer) {
+	public boolean accepts(MapContext mc, ILayer layer) {
 		try {
 			return layer.isVectorial();
 		} catch (DriverException e) {

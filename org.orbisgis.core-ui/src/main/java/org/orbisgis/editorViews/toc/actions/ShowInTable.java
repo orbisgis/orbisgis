@@ -48,7 +48,7 @@ import org.orbisgis.pluginManager.background.BackgroundManager;
 import org.orbisgis.views.geocognition.actions.OpenGeocognitionElementJob;
 
 public class ShowInTable implements ILayerAction {
-	public boolean accepts(ILayer layer) {
+	public boolean accepts(MapContext mc, ILayer layer) {
 		return layer.getDataSource() != null;
 	}
 

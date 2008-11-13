@@ -52,7 +52,7 @@ import org.sif.UIFactory;
 public class RasterDefaultStyle implements
 		org.orbisgis.editorViews.toc.action.ILayerAction {
 
-	public boolean accepts(ILayer layer) {
+	public boolean accepts(MapContext mc, ILayer layer) {
 		try {
 			if (layer.isRaster()) {
 				SpatialDataSourceDecorator ds = layer.getDataSource();
