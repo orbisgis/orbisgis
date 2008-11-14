@@ -34,7 +34,7 @@
  *    fergonco _at_ gmail.com
  *    thomas.leduc _at_ cerma.archi.fr
  */
-package org.orbisgis.editorViews.toc.actions.cui.extensions;
+package org.orbisgis.editorViews.toc.actions.cui.legends;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -68,12 +68,12 @@ import org.gdms.driver.DriverException;
 import org.orbisgis.Services;
 import org.orbisgis.editorViews.toc.actions.cui.CompositeSymbolFilter;
 import org.orbisgis.editorViews.toc.actions.cui.ConstraintSymbolFilter;
-import org.orbisgis.editorViews.toc.actions.cui.ILegendPanelUI;
 import org.orbisgis.editorViews.toc.actions.cui.LegendContext;
 import org.orbisgis.editorViews.toc.actions.cui.SymbolBuilder;
 import org.orbisgis.editorViews.toc.actions.cui.SymbolEditionValidation;
 import org.orbisgis.editorViews.toc.actions.cui.SymbolFilter;
 import org.orbisgis.editorViews.toc.actions.cui.components.Canvas;
+import org.orbisgis.editorViews.toc.actions.cui.legend.ILegendPanel;
 import org.orbisgis.map.MapTransform;
 import org.orbisgis.renderer.legend.Legend;
 import org.orbisgis.renderer.legend.RenderException;
@@ -87,7 +87,7 @@ import org.sif.UIFactory;
 
 import com.vividsolutions.jts.geom.Envelope;
 
-public class PnlProportionalLegend extends JPanel implements ILegendPanelUI {
+public class PnlProportionalLegend extends JPanel implements ILegendPanel {
 
 	private ProportionalLegend legend;
 	private LegendContext legendContext;
@@ -302,9 +302,9 @@ public class PnlProportionalLegend extends JPanel implements ILegendPanelUI {
 	}
 
 	public boolean acceptsGeometryType(int geometryType) {
-		return (geometryType == ILegendPanelUI.POLYGON)
-				|| (geometryType == ILegendPanelUI.POINT)
-				|| (geometryType == ILegendPanelUI.ALL);
+		return (geometryType == ILegendPanel.POLYGON)
+				|| (geometryType == ILegendPanel.POINT)
+				|| (geometryType == ILegendPanel.ALL);
 	}
 
 	public Component getComponent() {
@@ -315,7 +315,7 @@ public class PnlProportionalLegend extends JPanel implements ILegendPanelUI {
 		return legend;
 	}
 
-	public ILegendPanelUI newInstance() {
+	public ILegendPanel newInstance() {
 		return new PnlProportionalLegend();
 	}
 

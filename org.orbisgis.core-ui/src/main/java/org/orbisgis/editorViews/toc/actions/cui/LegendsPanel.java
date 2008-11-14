@@ -56,6 +56,8 @@ import javax.swing.JTextField;
 
 import org.gdms.data.types.GeometryConstraint;
 import org.orbisgis.Services;
+import org.orbisgis.editorViews.toc.actions.cui.legend.ILegendPanel;
+import org.orbisgis.editorViews.toc.actions.cui.legend.ISymbolEditor;
 import org.orbisgis.layerModel.ILayer;
 import org.orbisgis.layerModel.LegendDecorator;
 import org.orbisgis.map.MapTransform;
@@ -71,7 +73,7 @@ public class LegendsPanel extends JPanel implements UIPanel, LegendContext {
 	private int geometryType;
 	private ArrayList<LegendElement> legends = new ArrayList<LegendElement>();
 	private LegendList legendList;
-	private ILegendPanelUI[] availableLegends;
+	private ILegendPanel[] availableLegends;
 	private JPanel pnlContainer;
 	private CardLayout cardLayout;
 	private String lastUID = "";
@@ -85,26 +87,26 @@ public class LegendsPanel extends JPanel implements UIPanel, LegendContext {
 	private JButton btnCurrentScaleToMax;
 
 	public void init(MapTransform mt, GeometryConstraint gc, Legend[] legends,
-			ILegendPanelUI[] availableLegends,
+			ILegendPanel[] availableLegends,
 			ISymbolEditor[] availableEditors, ILayer layer) {
 		this.mt = mt;
 		this.gc = gc;
 		this.layer = layer;
 		if (gc == null) {
-			geometryType = ILegendPanelUI.ALL;
+			geometryType = ILegendPanel.ALL;
 		} else {
 			switch (gc.getGeometryType()) {
 			case GeometryConstraint.POINT:
 			case GeometryConstraint.MULTI_POINT:
-				geometryType = ILegendPanelUI.POINT;
+				geometryType = ILegendPanel.POINT;
 				break;
 			case GeometryConstraint.LINESTRING:
 			case GeometryConstraint.MULTI_LINESTRING:
-				geometryType = ILegendPanelUI.LINE;
+				geometryType = ILegendPanel.LINE;
 				break;
 			case GeometryConstraint.POLYGON:
 			case GeometryConstraint.MULTI_POLYGON:
-				geometryType = ILegendPanelUI.POLYGON;
+				geometryType = ILegendPanel.POLYGON;
 				break;
 			}
 		}
@@ -114,7 +116,7 @@ public class LegendsPanel extends JPanel implements UIPanel, LegendContext {
 		initializeComponents();
 
 		for (Legend legend : legends) {
-			ILegendPanelUI panel = getPanel(legend);
+			ILegendPanel panel = getPanel(legend);
 			panel.setLegend(legend);
 			LegendElement legendElement = new LegendElement(panel
 					.getComponent(), panel, getNewId());
@@ -244,8 +246,8 @@ public class LegendsPanel extends JPanel implements UIPanel, LegendContext {
 		return pnlContainer;
 	}
 
-	private ILegendPanelUI getPanel(Legend legend) {
-		for (ILegendPanelUI panel : availableLegends) {
+	private ILegendPanel getPanel(Legend legend) {
+		for (ILegendPanel panel : availableLegends) {
 			if (panel.getLegend().getLegendTypeId().equals(
 					legend.getLegendTypeId())) {
 				return newInstance(panel);
@@ -263,7 +265,7 @@ public class LegendsPanel extends JPanel implements UIPanel, LegendContext {
 		return ret;
 	}
 
-	public ILegendPanelUI[] getAvailableLegends() {
+	public ILegendPanel[] getAvailableLegends() {
 		return availableLegends;
 	}
 
@@ -272,15 +274,15 @@ public class LegendsPanel extends JPanel implements UIPanel, LegendContext {
 	}
 
 	public boolean isLine() {
-		return (geometryType & ILegendPanelUI.LINE) > 0;
+		return (geometryType & ILegendPanel.LINE) > 0;
 	}
 
 	public boolean isPoint() {
-		return (geometryType & ILegendPanelUI.POINT) > 0;
+		return (geometryType & ILegendPanel.POINT) > 0;
 	}
 
 	public boolean isPolygon() {
-		return (geometryType & ILegendPanelUI.POLYGON) > 0;
+		return (geometryType & ILegendPanel.POLYGON) > 0;
 	}
 
 	private void refresh() {
@@ -321,15 +323,15 @@ public class LegendsPanel extends JPanel implements UIPanel, LegendContext {
 		refresh();
 	}
 
-	public void legendAdded(ILegendPanelUI panel) {
+	public void legendAdded(ILegendPanel panel) {
 		panel = newInstance(panel);
 		LegendElement le = new LegendElement(panel.getComponent(), panel,
 				getNewId());
 		addLegend(le);
 	}
 
-	private ILegendPanelUI newInstance(ILegendPanelUI panel) {
-		ILegendPanelUI ret = panel.newInstance();
+	private ILegendPanel newInstance(ILegendPanel panel) {
+		ILegendPanel ret = panel.newInstance();
 		ret.initialize(this);
 
 		return ret;

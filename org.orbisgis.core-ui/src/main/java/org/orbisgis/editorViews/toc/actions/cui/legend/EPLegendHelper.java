@@ -2,27 +2,25 @@ package org.orbisgis.editorViews.toc.actions.cui.legend;
 
 import java.util.ArrayList;
 
-import org.orbisgis.editorViews.toc.actions.cui.ILegendPanelUI;
-import org.orbisgis.editorViews.toc.actions.cui.ISymbolEditor;
 import org.orbisgis.editorViews.toc.actions.cui.LegendContext;
 import org.orbisgis.pluginManager.ExtensionPointManager;
 import org.orbisgis.pluginManager.ItemAttributes;
 
 public class EPLegendHelper {
 
-	public static ILegendPanelUI[] getLegendPanels(LegendContext legendContext) {
-		ExtensionPointManager<ILegendPanelUI> epm = new ExtensionPointManager<ILegendPanelUI>(
+	public static ILegendPanel[] getLegendPanels(LegendContext legendContext) {
+		ExtensionPointManager<ILegendPanel> epm = new ExtensionPointManager<ILegendPanel>(
 				"org.orbisgis.LegendPanel");
-		ArrayList<ItemAttributes<ILegendPanelUI>> ia = epm
+		ArrayList<ItemAttributes<ILegendPanel>> ia = epm
 				.getItemAttributes("/extension/legend-panel");
-		ArrayList<ILegendPanelUI> legends = new ArrayList<ILegendPanelUI>();
-		for (ItemAttributes<ILegendPanelUI> itemAttributes : ia) {
-			ILegendPanelUI legendPanel = itemAttributes.getInstance("class");
+		ArrayList<ILegendPanel> legends = new ArrayList<ILegendPanel>();
+		for (ItemAttributes<ILegendPanel> itemAttributes : ia) {
+			ILegendPanel legendPanel = itemAttributes.getInstance("class");
 			legendPanel.initialize(legendContext);
 			legends.add(legendPanel);
 		}
 
-		return legends.toArray(new ILegendPanelUI[0]);
+		return legends.toArray(new ILegendPanel[0]);
 	}
 
 	public static ISymbolEditor[] getSymbolPanels() {

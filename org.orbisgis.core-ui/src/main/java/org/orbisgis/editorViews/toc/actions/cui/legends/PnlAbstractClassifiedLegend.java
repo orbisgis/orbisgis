@@ -40,7 +40,7 @@
  * Created on 27 de febrero de 2008, 18:20
  */
 
-package org.orbisgis.editorViews.toc.actions.cui.extensions;
+package org.orbisgis.editorViews.toc.actions.cui.legends;
 
 import java.awt.Color;
 import java.awt.Component;
@@ -56,12 +56,12 @@ import javax.swing.event.ListSelectionListener;
 
 import org.gdms.data.types.GeometryConstraint;
 import org.orbisgis.editorViews.toc.actions.cui.ConstraintSymbolFilter;
-import org.orbisgis.editorViews.toc.actions.cui.ILegendPanelUI;
 import org.orbisgis.editorViews.toc.actions.cui.LegendContext;
 import org.orbisgis.editorViews.toc.actions.cui.SymbolBuilder;
 import org.orbisgis.editorViews.toc.actions.cui.SymbolFilter;
 import org.orbisgis.editorViews.toc.actions.cui.extensions.table.ClassifiedLegendTableModel;
 import org.orbisgis.editorViews.toc.actions.cui.extensions.table.SymbolValueCellRenderer;
+import org.orbisgis.editorViews.toc.actions.cui.legend.ILegendPanel;
 import org.orbisgis.renderer.legend.Legend;
 import org.orbisgis.renderer.legend.carto.ClassifiedLegend;
 import org.orbisgis.renderer.symbol.Symbol;
@@ -74,7 +74,7 @@ import org.sif.UIFactory;
  * 
  */
 public abstract class PnlAbstractClassifiedLegend extends javax.swing.JPanel
-		implements ILegendPanelUI {
+		implements ILegendPanel {
 
 	private ClassifiedLegend legend;
 	protected LegendContext legendContext;

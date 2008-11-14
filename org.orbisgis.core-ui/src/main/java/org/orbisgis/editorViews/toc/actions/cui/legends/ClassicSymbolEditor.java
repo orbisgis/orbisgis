@@ -1,4 +1,4 @@
-package org.orbisgis.editorViews.toc.actions.cui.extensions;
+package org.orbisgis.editorViews.toc.actions.cui.legends;
 
 import java.awt.Color;
 import java.awt.Component;
@@ -17,9 +17,9 @@ import javax.swing.JPanel;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
-import org.orbisgis.editorViews.toc.actions.cui.ISymbolEditor;
 import org.orbisgis.editorViews.toc.actions.cui.SymbolEditorListener;
 import org.orbisgis.editorViews.toc.actions.cui.components.ColorPicker;
+import org.orbisgis.editorViews.toc.actions.cui.legend.ISymbolEditor;
 import org.orbisgis.renderer.symbol.EditableLineSymbol;
 import org.orbisgis.renderer.symbol.EditablePointSymbol;
 import org.orbisgis.renderer.symbol.EditablePolygonSymbol;

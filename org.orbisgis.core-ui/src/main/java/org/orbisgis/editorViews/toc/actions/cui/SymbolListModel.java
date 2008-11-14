@@ -6,6 +6,7 @@ import javax.swing.ListModel;
 import javax.swing.event.ListDataEvent;
 import javax.swing.event.ListDataListener;
 
+import org.orbisgis.editorViews.toc.actions.cui.legend.ISymbolEditor;
 import org.orbisgis.renderer.symbol.Symbol;
 
 public class SymbolListModel implements ListModel {

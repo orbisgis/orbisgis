@@ -37,6 +37,8 @@
 package org.orbisgis.editorViews.toc.actions.cui;
 
 import org.gdms.data.types.GeometryConstraint;
+import org.orbisgis.editorViews.toc.actions.cui.legend.ILegendPanel;
+import org.orbisgis.editorViews.toc.actions.cui.legend.ISymbolEditor;
 import org.orbisgis.layerModel.ILayer;
 import org.orbisgis.map.MapTransform;
 
@@ -44,7 +46,7 @@ public interface LegendContext {
 
 	/**
 	 * Gets the type of geometries in the specified layer. One of the constants
-	 * in the {@link ILegendPanelUI}
+	 * in the {@link ILegendPanel}
 	 *
 	 * @return
 	 */

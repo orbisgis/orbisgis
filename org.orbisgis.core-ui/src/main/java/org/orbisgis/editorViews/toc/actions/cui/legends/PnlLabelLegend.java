@@ -34,7 +34,7 @@
  *    fergonco _at_ gmail.com
  *    thomas.leduc _at_ cerma.archi.fr
  */
-package org.orbisgis.editorViews.toc.actions.cui.extensions;
+package org.orbisgis.editorViews.toc.actions.cui.legends;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
@@ -53,14 +53,14 @@ import org.gdms.data.metadata.Metadata;
 import org.gdms.data.types.Type;
 import org.gdms.driver.DriverException;
 import org.orbisgis.Services;
-import org.orbisgis.editorViews.toc.actions.cui.ILegendPanelUI;
 import org.orbisgis.editorViews.toc.actions.cui.LegendContext;
+import org.orbisgis.editorViews.toc.actions.cui.legend.ILegendPanel;
 import org.orbisgis.renderer.legend.Legend;
 import org.orbisgis.renderer.legend.carto.LabelLegend;
 import org.orbisgis.renderer.legend.carto.LegendFactory;
 import org.sif.CRFlowLayout;
 
-public class PnlLabelLegend extends JPanel implements ILegendPanelUI {
+public class PnlLabelLegend extends JPanel implements ILegendPanel {
 
 	private LabelLegend legend;
 	private LegendContext legendContext;
@@ -114,7 +114,7 @@ public class PnlLabelLegend extends JPanel implements ILegendPanelUI {
 		return legend;
 	}
 
-	public ILegendPanelUI newInstance() {
+	public ILegendPanel newInstance() {
 		return new PnlLabelLegend();
 	}
 

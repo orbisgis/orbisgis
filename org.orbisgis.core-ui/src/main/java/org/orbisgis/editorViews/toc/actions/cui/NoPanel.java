@@ -40,9 +40,10 @@ import java.awt.Component;
 
 import javax.swing.JLabel;
 
+import org.orbisgis.editorViews.toc.actions.cui.legend.ILegendPanel;
 import org.orbisgis.renderer.legend.Legend;
 
-public class NoPanel implements ILegendPanelUI {
+public class NoPanel implements ILegendPanel {
 
 	private Legend legend;
 
@@ -66,7 +67,7 @@ public class NoPanel implements ILegendPanelUI {
 		throw new RuntimeException("bug!");
 	}
 
-	public ILegendPanelUI newInstance() {
+	public ILegendPanel newInstance() {
 		throw new RuntimeException("bug!");
 	}
 

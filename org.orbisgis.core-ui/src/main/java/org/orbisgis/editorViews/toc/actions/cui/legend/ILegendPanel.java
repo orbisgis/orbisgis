@@ -43,17 +43,18 @@
  * and open the template in the editor.
  */
 
-package org.orbisgis.editorViews.toc.actions.cui;
+package org.orbisgis.editorViews.toc.actions.cui.legend;
 
 import java.awt.Component;
 
+import org.orbisgis.editorViews.toc.actions.cui.LegendContext;
 import org.orbisgis.renderer.legend.Legend;
 
 /**
  * 
  * @author David Ortega
  */
-public interface ILegendPanelUI {
+public interface ILegendPanel {
 	int POINT = 1;
 	int LINE = 2;
 	int POLYGON = 4;
@@ -110,7 +111,7 @@ public interface ILegendPanelUI {
 	 * 
 	 * @return
 	 */
-	public ILegendPanelUI newInstance();
+	public ILegendPanel newInstance();
 
 	/**
 	 * @return Null if the status of the edited legend is ok. An error message

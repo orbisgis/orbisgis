@@ -43,6 +43,8 @@ import org.gdms.driver.DriverException;
 import org.orbisgis.Services;
 import org.orbisgis.editorViews.toc.action.ILayerAction;
 import org.orbisgis.editorViews.toc.actions.cui.legend.EPLegendHelper;
+import org.orbisgis.editorViews.toc.actions.cui.legend.ILegendPanel;
+import org.orbisgis.editorViews.toc.actions.cui.legend.ISymbolEditor;
 import org.orbisgis.editors.map.MapEditor;
 import org.orbisgis.layerModel.ILayer;
 import org.orbisgis.layerModel.MapContext;
@@ -85,7 +87,7 @@ public class EditLayerAction implements ILayerAction {
 				copy.setJAXBObject(obj);
 				copies[i] = copy;
 			}
-			ILegendPanelUI[] legends = EPLegendHelper.getLegendPanels(pan);
+			ILegendPanel[] legends = EPLegendHelper.getLegendPanels(pan);
 			ISymbolEditor[] symbolEditors = EPLegendHelper.getSymbolPanels();
 			pan.init(mt, cons, copies, legends, symbolEditors, layer);
 			if (UIFactory.showDialog(pan)) {

@@ -34,7 +34,7 @@
  *    fergonco _at_ gmail.com
  *    thomas.leduc _at_ cerma.archi.fr
  */
-package org.orbisgis.editorViews.toc.actions.cui.extensions;
+package org.orbisgis.editorViews.toc.actions.cui.legends;
 
 import java.awt.Color;
 import java.awt.event.ActionEvent;
@@ -54,9 +54,9 @@ import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
 import org.orbisgis.Services;
-import org.orbisgis.editorViews.toc.actions.cui.ILegendPanelUI;
 import org.orbisgis.editorViews.toc.actions.cui.components.ColorPicker;
 import org.orbisgis.editorViews.toc.actions.cui.extensions.table.IntervalLegendTableModel;
+import org.orbisgis.editorViews.toc.actions.cui.legend.ILegendPanel;
 import org.orbisgis.layerModel.ILayer;
 import org.orbisgis.renderer.classification.RangeMethod;
 import org.orbisgis.renderer.legend.Legend;
@@ -209,7 +209,7 @@ public class PnlIntervalLegend extends PnlAbstractClassifiedLegend {
 				.toArray(new Integer[0])));
 	}
 
-	public ILegendPanelUI newInstance() {
+	public ILegendPanel newInstance() {
 		return new PnlIntervalLegend();
 	}
 

@@ -1,4 +1,4 @@
-package org.orbisgis.editorViews.toc.actions.cui.extensions;
+package org.orbisgis.editorViews.toc.actions.cui.legends;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
@@ -15,8 +15,8 @@ import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
-import org.orbisgis.editorViews.toc.actions.cui.ISymbolEditor;
 import org.orbisgis.editorViews.toc.actions.cui.SymbolEditorListener;
+import org.orbisgis.editorViews.toc.actions.cui.legend.ISymbolEditor;
 import org.orbisgis.renderer.symbol.ImageSymbol;
 import org.orbisgis.renderer.symbol.Symbol;
 import org.sif.CRFlowLayout;

@@ -68,6 +68,7 @@ import org.orbisgis.Services;
 import org.orbisgis.editorViews.toc.actions.cui.components.Canvas;
 import org.orbisgis.editorViews.toc.actions.cui.components.SymbolCollection;
 import org.orbisgis.editorViews.toc.actions.cui.components.SymbolSelection;
+import org.orbisgis.editorViews.toc.actions.cui.legend.ISymbolEditor;
 import org.orbisgis.geocognition.Geocognition;
 import org.orbisgis.images.IconLoader;
 import org.orbisgis.renderer.symbol.Symbol;

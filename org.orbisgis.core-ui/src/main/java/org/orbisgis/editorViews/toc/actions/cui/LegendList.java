@@ -53,6 +53,7 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
 import org.orbisgis.editorViews.toc.actions.cui.components.LegendPicker;
+import org.orbisgis.editorViews.toc.actions.cui.legend.ILegendPanel;
 import org.orbisgis.images.IconLoader;
 import org.orbisgis.ui.sif.AskValue;
 import org.sif.UIFactory;
@@ -228,10 +229,10 @@ public class LegendList extends JPanel {
 	private void jButtonMenuAddActionPerformed(ActionEvent evt) {// GEN-FIRST:
 		// event_jButtonMenuAddActionPerformed
 		ArrayList<String> paneNames = new ArrayList<String>();
-		ArrayList<ILegendPanelUI> ids = new ArrayList<ILegendPanelUI>();
-		ILegendPanelUI[] legends = legendsPanel.getAvailableLegends();
+		ArrayList<ILegendPanel> ids = new ArrayList<ILegendPanel>();
+		ILegendPanel[] legends = legendsPanel.getAvailableLegends();
 		for (int i = 0; i < legends.length; i++) {
-			ILegendPanelUI legendPanelUI = legends[i];
+			ILegendPanel legendPanelUI = legends[i];
 			if (legendPanelUI.acceptsGeometryType(legendsPanel
 					.getGeometryType())) {
 				paneNames.add(legendPanelUI.getLegend().getLegendTypeName());
@@ -239,10 +240,10 @@ public class LegendList extends JPanel {
 			}
 		}
 		LegendPicker legendPicker = new LegendPicker(paneNames
-				.toArray(new String[0]), ids.toArray(new ILegendPanelUI[0]));
+				.toArray(new String[0]), ids.toArray(new ILegendPanel[0]));
 
 		if (UIFactory.showDialog(legendPicker)) {
-			ILegendPanelUI panel = (ILegendPanelUI) legendPicker.getSelected();
+			ILegendPanel panel = (ILegendPanel) legendPicker.getSelected();
 
 			legendsPanel.legendAdded(panel);
 		}

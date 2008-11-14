@@ -34,7 +34,7 @@
  *    fergonco _at_ gmail.com
  *    thomas.leduc _at_ cerma.archi.fr
  */
-package org.orbisgis.editorViews.toc.actions.cui.extensions;
+package org.orbisgis.editorViews.toc.actions.cui.legends;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -53,8 +53,8 @@ import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
 import org.orbisgis.Services;
-import org.orbisgis.editorViews.toc.actions.cui.ILegendPanelUI;
 import org.orbisgis.editorViews.toc.actions.cui.extensions.table.UniqueValueLegendTableModel;
+import org.orbisgis.editorViews.toc.actions.cui.legend.ILegendPanel;
 import org.orbisgis.layerModel.ILayer;
 import org.orbisgis.renderer.legend.Legend;
 import org.orbisgis.renderer.legend.carto.LegendFactory;
@@ -168,7 +168,7 @@ public class PnlUniqueValueLegend extends PnlAbstractClassifiedLegend {
 		return pnlTop;
 	}
 
-	public ILegendPanelUI newInstance() {
+	public ILegendPanel newInstance() {
 		return new PnlUniqueValueLegend();
 	}
 

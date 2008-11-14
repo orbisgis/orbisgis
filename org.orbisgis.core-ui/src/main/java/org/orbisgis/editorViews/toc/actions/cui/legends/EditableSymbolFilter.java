@@ -1,4 +1,4 @@
-package org.orbisgis.editorViews.toc.actions.cui.extensions;
+package org.orbisgis.editorViews.toc.actions.cui.legends;
 
 import org.orbisgis.editorViews.toc.actions.cui.SymbolFilter;
 import org.orbisgis.renderer.symbol.EditableSymbol;

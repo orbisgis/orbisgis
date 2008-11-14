@@ -1,7 +1,8 @@
-package org.orbisgis.editorViews.toc.actions.cui;
+package org.orbisgis.editorViews.toc.actions.cui.legend;
 
 import java.awt.Component;
 
+import org.orbisgis.editorViews.toc.actions.cui.SymbolEditorListener;
 import org.orbisgis.renderer.symbol.Symbol;
 
 public interface ISymbolEditor {

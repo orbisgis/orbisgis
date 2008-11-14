@@ -1,4 +1,4 @@
-package org.orbisgis.editorViews.toc.actions.cui.extensions;
+package org.orbisgis.editorViews.toc.actions.cui.legends;
 
 import org.orbisgis.pluginManager.ui.OpenFilePanel;
 

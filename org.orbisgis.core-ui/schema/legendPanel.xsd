@@ -25,7 +25,7 @@
 			<xs:attribute name="class" type="xs:string" use="required">
 				<xs:annotation>
 					<xs:documentation> Class that implements the
-						org.orbisgis.editorViews.toc.actions.cui.extensions.ILegendPanelUI
+						org.orbisgis.editorViews.toc.actions.cui.legend.ILegendPanel
 						</xs:documentation>
 				</xs:annotation>
 			</xs:attribute>

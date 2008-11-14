@@ -42,7 +42,7 @@
 
 package org.orbisgis.editorViews.toc.actions.cui.components;
 
-import org.orbisgis.editorViews.toc.actions.cui.ILegendPanelUI;
+import org.orbisgis.editorViews.toc.actions.cui.legend.ILegendPanel;
 import org.orbisgis.ui.sif.ChoosePanel;
 
 /**
@@ -57,7 +57,7 @@ public class LegendPicker extends ChoosePanel {
 	 * @param ids
 	 * @param names
 	 */
-	public LegendPicker(String[] names, ILegendPanelUI[] ids) {
+	public LegendPicker(String[] names, ILegendPanel[] ids) {
 		super("Legend selection", names, ids);
 	}
 

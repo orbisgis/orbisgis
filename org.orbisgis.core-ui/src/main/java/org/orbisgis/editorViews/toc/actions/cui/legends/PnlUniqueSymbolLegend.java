@@ -40,17 +40,17 @@
  * Created on 22 de febrero de 2008, 16:33
  */
 
-package org.orbisgis.editorViews.toc.actions.cui.extensions;
+package org.orbisgis.editorViews.toc.actions.cui.legends;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.net.URL;
 
 import org.orbisgis.editorViews.toc.actions.cui.ConstraintSymbolFilter;
-import org.orbisgis.editorViews.toc.actions.cui.ILegendPanelUI;
 import org.orbisgis.editorViews.toc.actions.cui.LegendContext;
 import org.orbisgis.editorViews.toc.actions.cui.SymbolBuilder;
 import org.orbisgis.editorViews.toc.actions.cui.SymbolFilter;
+import org.orbisgis.editorViews.toc.actions.cui.legend.ILegendPanel;
 import org.orbisgis.renderer.legend.Legend;
 import org.orbisgis.renderer.legend.carto.LegendFactory;
 import org.orbisgis.renderer.legend.carto.UniqueSymbolLegend;
@@ -63,7 +63,7 @@ import org.sif.UIPanel;
  * @author david
  */
 public class PnlUniqueSymbolLegend extends javax.swing.JPanel implements
-		ILegendPanelUI, UIPanel {
+		ILegendPanel, UIPanel {
 
 	private UniqueSymbolLegend leg = null;
 	private SymbolBuilder symbolEditor;
@@ -120,7 +120,7 @@ public class PnlUniqueSymbolLegend extends javax.swing.JPanel implements
 		return true;
 	}
 
-	public ILegendPanelUI newInstance() {
+	public ILegendPanel newInstance() {
 		return new PnlUniqueSymbolLegend();
 	}
 
