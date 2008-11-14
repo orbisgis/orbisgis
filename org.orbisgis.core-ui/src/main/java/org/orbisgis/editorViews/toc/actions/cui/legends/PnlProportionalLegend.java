@@ -44,8 +44,6 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
@@ -54,11 +52,14 @@ import java.util.ArrayList;
 import javax.swing.BorderFactory;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 
 import org.gdms.data.SpatialDataSourceDecorator;
 import org.gdms.data.metadata.Metadata;
@@ -99,6 +100,7 @@ public class PnlProportionalLegend extends JPanel implements ILegendPanel {
 
 	private BufferedImage previewImage;
 	private JComponent legendPreview;
+	private JCheckBox chkMapUnits;
 
 	private void init() {
 
@@ -169,15 +171,25 @@ public class PnlProportionalLegend extends JPanel implements ILegendPanel {
 		inputPanel.add(cmbMethod);
 		inputPanel.add(new CarriageReturn());
 		txtMaxSize = new JTextField(5);
-		txtMaxSize.addKeyListener(new KeyAdapter() {
+		txtMaxSize.getDocument().addDocumentListener(new DocumentListener() {
 
 			@Override
-			public void keyReleased(KeyEvent e) {
+			public void removeUpdate(DocumentEvent e) {
+				insertUpdate(e);
+			}
+
+			@Override
+			public void insertUpdate(DocumentEvent e) {
 				try {
 					legend.setMaxSize(Integer.parseInt(txtMaxSize.getText()));
 				} catch (NumberFormatException e1) {
 				}
 				refreshPreviewButton();
+			}
+
+			@Override
+			public void changedUpdate(DocumentEvent e) {
+				insertUpdate(e);
 			}
 
 		});
@@ -195,6 +207,18 @@ public class PnlProportionalLegend extends JPanel implements ILegendPanel {
 		});
 		canvas.setPreferredSize(new Dimension(50, 50));
 		inputPanel.add(canvas);
+		chkMapUnits = new JCheckBox("Map units");
+		chkMapUnits.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				EditablePointSymbol sampleSymbol = legend.getSampleSymbol();
+				sampleSymbol.setMapUnits(chkMapUnits.isSelected());
+				legend.setSampleSymbol(sampleSymbol);
+				refreshPreviewButton();
+			}
+		});
+		inputPanel.add(chkMapUnits);
 
 		confPanel.add(inputPanel);
 		this.add(confPanel);
@@ -209,11 +233,18 @@ public class PnlProportionalLegend extends JPanel implements ILegendPanel {
 					legend.preprocess(legendContext.getLayer().getDataSource());
 
 					// Transform max to pixels
-					MapTransform mt = legendContext.getCurrentMapTransform();
 					int maxSize = Integer.parseInt(txtMaxSize.getText());
-					Envelope env = new Envelope(0, maxSize, 0, maxSize);
-					Envelope pixelEnv = mt.toPixel(env);
-					int pixelHeight = (int) pixelEnv.getHeight();
+					int pixelHeight;
+					if (legend.getSampleSymbol().isMapUnits()) {
+						MapTransform mt = legendContext
+								.getCurrentMapTransform();
+						Envelope env = new Envelope(0, maxSize, 0, maxSize);
+						Envelope pixelEnv = mt.toPixel(env);
+						pixelHeight = (int) pixelEnv.getHeight();
+					} else {
+						pixelHeight = (int) maxSize;
+
+					}
 
 					// draw the image
 					BufferedImage dummy = new BufferedImage(1, 1,
@@ -345,6 +376,9 @@ public class PnlProportionalLegend extends JPanel implements ILegendPanel {
 
 			// max size
 			txtMaxSize.setText("" + legend.getMaxSize());
+			
+			// map units
+			chkMapUnits.setSelected(legend.getSampleSymbol().isMapUnits());
 
 			// symbol
 			canvas.setSymbol(legend.getSampleSymbol());
