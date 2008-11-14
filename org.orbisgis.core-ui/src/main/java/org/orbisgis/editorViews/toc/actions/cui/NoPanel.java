@@ -67,7 +67,7 @@ public class NoPanel implements ILegendPanelUI {
 		throw new RuntimeException("bug!");
 	}
 
-	public ILegendPanelUI newInstance(LegendContext legendContext) {
+	public ILegendPanelUI newInstance() {
 		throw new RuntimeException("bug!");
 	}
 
@@ -75,7 +75,7 @@ public class NoPanel implements ILegendPanelUI {
 		this.legend = legend;
 	}
 
-	public void setLegendContext(LegendContext lc) {
+	public void initialize(LegendContext lc) {
 
 	}
 

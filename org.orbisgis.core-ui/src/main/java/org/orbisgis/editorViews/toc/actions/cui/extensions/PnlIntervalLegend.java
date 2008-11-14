@@ -54,7 +54,6 @@ import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
 import org.orbisgis.Services;
-import org.orbisgis.editorViews.toc.actions.cui.LegendContext;
 import org.orbisgis.editorViews.toc.actions.cui.components.ColorPicker;
 import org.orbisgis.editorViews.toc.actions.cui.extensions.table.IntervalLegendTableModel;
 import org.orbisgis.layerModel.ILayer;
@@ -79,8 +78,8 @@ public class PnlIntervalLegend extends PnlAbstractClassifiedLegend {
 
 	private IntervalLegend legend;
 
-	public PnlIntervalLegend(LegendContext legendContext) {
-		super(legendContext, new IntervalLegendTableModel(), LegendFactory
+	public PnlIntervalLegend() {
+		super(new IntervalLegendTableModel(), LegendFactory
 				.createIntervalLegend());
 	}
 
@@ -209,8 +208,8 @@ public class PnlIntervalLegend extends PnlAbstractClassifiedLegend {
 				.toArray(new Integer[0])));
 	}
 
-	public ILegendPanelUI newInstance(LegendContext legendContext) {
-		return new PnlIntervalLegend(legendContext);
+	public ILegendPanelUI newInstance() {
+		return new PnlIntervalLegend();
 	}
 
 	public void setLegend(Legend legend) {

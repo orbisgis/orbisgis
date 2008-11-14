@@ -53,7 +53,6 @@ import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
 import org.orbisgis.Services;
-import org.orbisgis.editorViews.toc.actions.cui.LegendContext;
 import org.orbisgis.editorViews.toc.actions.cui.extensions.table.UniqueValueLegendTableModel;
 import org.orbisgis.layerModel.ILayer;
 import org.orbisgis.renderer.legend.Legend;
@@ -63,8 +62,8 @@ import org.orbisgis.renderer.symbol.Symbol;
 
 public class PnlUniqueValueLegend extends PnlAbstractClassifiedLegend {
 
-	public PnlUniqueValueLegend(LegendContext legendContext) {
-		super(legendContext, new UniqueValueLegendTableModel(), LegendFactory
+	public PnlUniqueValueLegend() {
+		super(new UniqueValueLegendTableModel(), LegendFactory
 				.createUniqueValueLegend());
 	}
 
@@ -168,8 +167,8 @@ public class PnlUniqueValueLegend extends PnlAbstractClassifiedLegend {
 		return pnlTop;
 	}
 
-	public ILegendPanelUI newInstance(LegendContext legendContext) {
-		return new PnlUniqueValueLegend(legendContext);
+	public ILegendPanelUI newInstance() {
+		return new PnlUniqueValueLegend();
 	}
 
 	public void setLegend(Legend legend) {

@@ -68,18 +68,6 @@ public class PnlUniqueSymbolLegend extends javax.swing.JPanel implements
 	private SymbolBuilder symbolEditor;
 	private LegendContext legendContext;
 
-	/** Creates new form JPanelSimpleSimbolLegend */
-	public PnlUniqueSymbolLegend(boolean showCollection,
-			LegendContext legendContext) {
-		leg = LegendFactory.createUniqueSymbolLegend();
-		leg.setName(leg.getLegendTypeName());
-		this.legendContext = legendContext;
-		symbolEditor = new SymbolBuilder(showCollection, legendContext,
-				getSymbolFilter());
-		this.setLayout(new BorderLayout());
-		this.add(symbolEditor, BorderLayout.CENTER);
-	}
-
 	private SymbolFilter getSymbolFilter() {
 		return new ConstraintSymbolFilter(legendContext.getGeometryConstraint());
 	}
@@ -131,8 +119,8 @@ public class PnlUniqueSymbolLegend extends javax.swing.JPanel implements
 		return true;
 	}
 
-	public ILegendPanelUI newInstance(LegendContext legendContext) {
-		return new PnlUniqueSymbolLegend(true, legendContext);
+	public ILegendPanelUI newInstance() {
+		return new PnlUniqueSymbolLegend();
 	}
 
 	public void setLegend(Legend legend) {
@@ -140,8 +128,13 @@ public class PnlUniqueSymbolLegend extends javax.swing.JPanel implements
 		symbolEditor.setSymbol(leg.getSymbol());
 	}
 
-	public void setLegendContext(LegendContext lc) {
+	public void initialize(LegendContext lc) {
+		leg = LegendFactory.createUniqueSymbolLegend();
+		leg.setName(leg.getLegendTypeName());
 		this.legendContext = lc;
+		symbolEditor = new SymbolBuilder(true, legendContext, getSymbolFilter());
+		this.setLayout(new BorderLayout());
+		this.add(symbolEditor, BorderLayout.CENTER);
 	}
 
 }

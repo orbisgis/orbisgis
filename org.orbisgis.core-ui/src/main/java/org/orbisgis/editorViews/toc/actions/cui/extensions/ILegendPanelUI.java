@@ -51,7 +51,7 @@ import org.orbisgis.editorViews.toc.actions.cui.LegendContext;
 import org.orbisgis.renderer.legend.Legend;
 
 /**
- *
+ * 
  * @author David Ortega
  */
 public interface ILegendPanelUI {
@@ -66,38 +66,39 @@ public interface ILegendPanelUI {
 	/**
 	 * This function will return the Component of the object (normally a
 	 * JPanel).
-	 *
+	 * 
 	 * @return Component
 	 */
 	public Component getComponent();
 
 	/**
 	 * It will return the Legend created by all the variables in the panel.
-	 *
+	 * 
 	 * @return Legend
 	 */
 	public Legend getLegend();
 
 	/**
 	 * Sets the legend to be edited by this component
-	 *
+	 * 
 	 * @param legend
 	 */
 	public void setLegend(Legend legend);
 
 	/**
-	 * Sets the legend context. This instance is useful to get some information
-	 * about the layer in edition. This method is called just after the legend
+	 * Initialize the legend. This method is called just after the legend
 	 * creation.
-	 *
+	 * 
 	 * @param lc
+	 *            LegendContext is useful to get some information about the
+	 *            layer in edition.
 	 */
-	public void setLegendContext(LegendContext lc);
+	public void initialize(LegendContext lc);
 
 	/**
 	 * Returns true if this legend can be applied to the specified geometry
 	 * type.
-	 *
+	 * 
 	 * @param geometryType
 	 *            Type of geometry in the layer. One bit-or of the constants
 	 *            POINT, LINE and POLYGON.
@@ -107,10 +108,10 @@ public interface ILegendPanelUI {
 
 	/**
 	 * Creates a new empty instance
-	 *
+	 * 
 	 * @return
 	 */
-	public ILegendPanelUI newInstance(LegendContext legendContext);
+	public ILegendPanelUI newInstance();
 
 	/**
 	 * @return Null if the status of the edited legend is ok. An error message

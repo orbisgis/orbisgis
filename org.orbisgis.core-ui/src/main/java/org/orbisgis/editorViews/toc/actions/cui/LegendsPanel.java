@@ -249,7 +249,7 @@ public class LegendsPanel extends JPanel implements UIPanel, LegendContext {
 		for (ILegendPanelUI panel : availableLegends) {
 			if (panel.getLegend().getLegendTypeId().equals(
 					legend.getLegendTypeId())) {
-				return panel.newInstance(this);
+				return newInstance(panel);
 			}
 		}
 
@@ -323,16 +323,23 @@ public class LegendsPanel extends JPanel implements UIPanel, LegendContext {
 	}
 
 	public void legendAdded(ILegendPanelUI panel) {
-		panel = panel.newInstance(this);
+		panel = newInstance(panel);
 		LegendElement le = new LegendElement(panel.getComponent(), panel,
 				getNewId());
 		addLegend(le);
 	}
 
+	private ILegendPanelUI newInstance(ILegendPanelUI panel) {
+		ILegendPanelUI ret = panel.newInstance();
+		ret.initialize(this);
+
+		return ret;
+	}
+
 	private void addLegend(LegendElement le) {
 		legends.add(le);
 		pnlContainer.add(le.getComponent(), le.getId());
-		le.getLegendPanel().setLegendContext(this);
+//		le.getLegendPanel().initialize(this);
 		le.getLegendPanel().setLegend(getLegend(le));
 		refresh();
 	}

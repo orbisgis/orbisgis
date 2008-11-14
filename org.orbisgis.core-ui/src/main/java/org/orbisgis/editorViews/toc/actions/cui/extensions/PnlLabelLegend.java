@@ -66,13 +66,6 @@ public class PnlLabelLegend extends JPanel implements ILegendPanelUI {
 	private JComboBox cmbField;
 	private JTextField txtSymbolSize;
 
-	public PnlLabelLegend(LegendContext legendContext) {
-		legend = LegendFactory.createLabelLegend();
-		legend.setName(legend.getLegendTypeName());
-		this.legendContext = legendContext;
-		init();
-	}
-
 	private void init() {
 
 		this.setLayout(new BorderLayout());
@@ -120,8 +113,8 @@ public class PnlLabelLegend extends JPanel implements ILegendPanelUI {
 		return legend;
 	}
 
-	public ILegendPanelUI newInstance(LegendContext legendContext) {
-		return new PnlLabelLegend(legendContext);
+	public ILegendPanelUI newInstance() {
+		return new PnlLabelLegend();
 	}
 
 	public void setLegend(Legend legend) {
@@ -155,8 +148,11 @@ public class PnlLabelLegend extends JPanel implements ILegendPanelUI {
 
 	}
 
-	public void setLegendContext(LegendContext lc) {
+	public void initialize(LegendContext lc) {
 		this.legendContext = lc;
+		legend = LegendFactory.createLabelLegend();
+		legend.setName(legend.getLegendTypeName());
+		init();
 	}
 
 	public String validateInput() {

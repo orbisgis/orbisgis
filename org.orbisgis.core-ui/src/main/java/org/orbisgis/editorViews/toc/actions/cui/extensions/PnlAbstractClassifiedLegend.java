@@ -79,15 +79,12 @@ public abstract class PnlAbstractClassifiedLegend extends javax.swing.JPanel
 	protected LegendContext legendContext;
 	protected ClassifiedLegendTableModel tableModel;
 
-	public PnlAbstractClassifiedLegend(LegendContext legendContext,
+	public PnlAbstractClassifiedLegend(
 			ClassifiedLegendTableModel tableModel,
 			ClassifiedLegend initialLegend) {
 		this.tableModel = tableModel;
 		this.legend = initialLegend;
 		legend.setName(legend.getLegendTypeName());
-		this.legendContext = legendContext;
-		initComponents();
-		initList();
 	}
 
 	private void refreshButtons() {
@@ -343,8 +340,10 @@ public abstract class PnlAbstractClassifiedLegend extends javax.swing.JPanel
 		refreshButtons();
 	}
 
-	public void setLegendContext(LegendContext lc) {
+	public void initialize(LegendContext lc) {
 		this.legendContext = lc;
+		initComponents();
+		initList();
 	}
 
 	public String validateInput() {

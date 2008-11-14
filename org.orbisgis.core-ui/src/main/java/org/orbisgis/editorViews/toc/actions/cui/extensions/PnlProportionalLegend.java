@@ -99,13 +99,6 @@ public class PnlProportionalLegend extends JPanel implements ILegendPanelUI {
 	private BufferedImage previewImage;
 	private JComponent legendPreview;
 
-	public PnlProportionalLegend(LegendContext legendContext) {
-		legend = LegendFactory.createProportionalLegend();
-		legend.setName(legend.getLegendTypeName());
-		this.legendContext = legendContext;
-		init();
-	}
-
 	private void init() {
 
 		JPanel confPanel = new JPanel();
@@ -321,8 +314,8 @@ public class PnlProportionalLegend extends JPanel implements ILegendPanelUI {
 		return legend;
 	}
 
-	public ILegendPanelUI newInstance(LegendContext legendContext) {
-		return new PnlProportionalLegend(legendContext);
+	public ILegendPanelUI newInstance() {
+		return new PnlProportionalLegend();
 	}
 
 	public void setLegend(Legend legend) {
@@ -385,8 +378,11 @@ public class PnlProportionalLegend extends JPanel implements ILegendPanelUI {
 
 	}
 
-	public void setLegendContext(LegendContext lc) {
+	public void initialize(LegendContext lc) {
 		this.legendContext = lc;
+		legend = LegendFactory.createProportionalLegend();
+		legend.setName(legend.getLegendTypeName());
+		init();
 	}
 
 	public String validateInput() {

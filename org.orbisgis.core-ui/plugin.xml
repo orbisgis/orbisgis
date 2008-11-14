@@ -61,6 +61,10 @@
 	<extension-point id="org.orbisgis.Configuration" name="Configurations"
 		schema="schema/configuration.xsd"/>
 	
+	<!-- Legends -->
+	<extension-point id="org.orbisgis.LegendPanel" name="Legend Panels"
+		schema="schema/legendPanel.xsd"/>
+	
 	<!--
 	
 	EXTENSIONS
@@ -243,7 +247,7 @@
 			class="org.orbisgis.editorViews.toc.actions.SetInactive"/>
 		<action id="org.orbisgis.editorViews.toc.actions.Save" text="Save"
 			menu-group="org.orbisgis.editorViews.toc.Edition"
-				icon="/org/orbisgis/images/disk.png"
+			icon="/org/orbisgis/images/disk.png"
 			class="org.orbisgis.editorViews.toc.actions.Save"/>
 		<action id="org.orbisgis.editorViews.toc.actions.Revert" text="Revert"
 			menu-group="org.orbisgis.editorViews.toc.Edition"
@@ -286,7 +290,8 @@
 			editor-id="org.orbisgis.editors.Table"
 			toolbar-id="org.orbisgis.editors.map.Edition"
 			class="org.orbisgis.editors.table.editorActions.Redo"/>
-		<editor-action id="org.orbisgis.editors.table.editorActions.DeleteSelection"
+		<editor-action
+			id="org.orbisgis.editors.table.editorActions.DeleteSelection"
 			menu-id="org.orbisgis.Table" text="Delete"
 			menu-group="org.orbisgis.editors.table.Basic"
 			icon="/org/orbisgis/images/remove.png"
@@ -602,8 +607,7 @@
 	<!-- Geocognition wizards-->
 	<extension id="org.orbisgis.views.geocognition.wizards.NewAction"
 		point="org.orbisgis.views.geocognition.NewWizard">
-		<category id="org.orbisgis.views.geocognition.UI"
-			name="User interface"/>
+		<category id="org.orbisgis.views.geocognition.UI" name="User interface"/>
 		<wizard id="org.orbisgis.views.geocognition.wizards.NewAction"
 			icon="/org/orbisgis/images/action.png"
 			category="org.orbisgis.views.geocognition.UI"
@@ -856,4 +860,20 @@
 			class="org.orbisgis.configurations.UpdatesConfiguration"
 			group-id="org.orbisgis.Updates"/>
 	</extension>
+	
+	<!-- Legend panels extensions -->
+	<extension point="org.orbisgis.LegendPanel">
+		<legend-panel
+			class="org.orbisgis.editorViews.toc.actions.cui.extensions.PnlUniqueSymbolLegend"/>
+		<legend-panel
+			class="org.orbisgis.editorViews.toc.actions.cui.extensions.PnlUniqueValueLegend"/>
+		<legend-panel
+			class="org.orbisgis.editorViews.toc.actions.cui.extensions.PnlIntervalLegend"/>
+		<legend-panel
+			class="org.orbisgis.editorViews.toc.actions.cui.extensions.PnlProportionalLegend"/>
+		<legend-panel
+			class="org.orbisgis.editorViews.toc.actions.cui.extensions.PnlLabelLegend"/>
+	</extension>
+	
+	 
 </plugin>

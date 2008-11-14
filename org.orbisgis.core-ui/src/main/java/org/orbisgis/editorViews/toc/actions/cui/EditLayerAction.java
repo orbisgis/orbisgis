@@ -45,11 +45,7 @@ import org.orbisgis.editorViews.toc.action.ILayerAction;
 import org.orbisgis.editorViews.toc.actions.cui.extensions.ClassicSymbolEditor;
 import org.orbisgis.editorViews.toc.actions.cui.extensions.ILegendPanelUI;
 import org.orbisgis.editorViews.toc.actions.cui.extensions.ImageSymbolEditor;
-import org.orbisgis.editorViews.toc.actions.cui.extensions.PnlUniqueSymbolLegend;
-import org.orbisgis.editorViews.toc.actions.cui.extensions.PnlIntervalLegend;
-import org.orbisgis.editorViews.toc.actions.cui.extensions.PnlLabelLegend;
-import org.orbisgis.editorViews.toc.actions.cui.extensions.PnlProportionalLegend;
-import org.orbisgis.editorViews.toc.actions.cui.extensions.PnlUniqueValueLegend;
+import org.orbisgis.editorViews.toc.actions.cui.legend.EPLegendHelper;
 import org.orbisgis.editors.map.MapEditor;
 import org.orbisgis.layerModel.ILayer;
 import org.orbisgis.layerModel.MapContext;
@@ -92,10 +88,11 @@ public class EditLayerAction implements ILayerAction {
 				copy.setJAXBObject(obj);
 				copies[i] = copy;
 			}
-			pan.init(mt, cons, copies, new ILegendPanelUI[] {
-					new PnlUniqueSymbolLegend(true, pan),
-					new PnlUniqueValueLegend(pan), new PnlIntervalLegend(pan),
-					new PnlProportionalLegend(pan), new PnlLabelLegend(pan) },
+			ILegendPanelUI[] legends = EPLegendHelper.getLegends(pan);
+			for (ILegendPanelUI legendPanelUI : legends) {
+				legendPanelUI.initialize(pan);
+			}
+			pan.init(mt, cons, copies, legends,
 					new ISymbolEditor[] { new ClassicSymbolEditor(),
 							new ImageSymbolEditor() }, layer);
 			if (UIFactory.showDialog(pan)) {
