@@ -43,11 +43,10 @@
  * and open the template in the editor.
  */
 
-package org.orbisgis.editorViews.toc.actions.cui.extensions;
+package org.orbisgis.editorViews.toc.actions.cui;
 
 import java.awt.Component;
 
-import org.orbisgis.editorViews.toc.actions.cui.LegendContext;
 import org.orbisgis.renderer.legend.Legend;
 
 /**

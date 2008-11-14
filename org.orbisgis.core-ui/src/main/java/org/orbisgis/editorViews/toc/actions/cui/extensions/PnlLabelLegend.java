@@ -53,6 +53,7 @@ import org.gdms.data.metadata.Metadata;
 import org.gdms.data.types.Type;
 import org.gdms.driver.DriverException;
 import org.orbisgis.Services;
+import org.orbisgis.editorViews.toc.actions.cui.ILegendPanelUI;
 import org.orbisgis.editorViews.toc.actions.cui.LegendContext;
 import org.orbisgis.renderer.legend.Legend;
 import org.orbisgis.renderer.legend.carto.LabelLegend;

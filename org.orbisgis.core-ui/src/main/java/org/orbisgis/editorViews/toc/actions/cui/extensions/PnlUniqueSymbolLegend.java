@@ -47,6 +47,7 @@ import java.awt.Component;
 import java.net.URL;
 
 import org.orbisgis.editorViews.toc.actions.cui.ConstraintSymbolFilter;
+import org.orbisgis.editorViews.toc.actions.cui.ILegendPanelUI;
 import org.orbisgis.editorViews.toc.actions.cui.LegendContext;
 import org.orbisgis.editorViews.toc.actions.cui.SymbolBuilder;
 import org.orbisgis.editorViews.toc.actions.cui.SymbolFilter;

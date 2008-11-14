@@ -40,7 +40,6 @@ import java.awt.Component;
 
 import javax.swing.JLabel;
 
-import org.orbisgis.editorViews.toc.actions.cui.extensions.ILegendPanelUI;
 import org.orbisgis.renderer.legend.Legend;
 
 public class NoPanel implements ILegendPanelUI {

@@ -68,6 +68,7 @@ import org.gdms.driver.DriverException;
 import org.orbisgis.Services;
 import org.orbisgis.editorViews.toc.actions.cui.CompositeSymbolFilter;
 import org.orbisgis.editorViews.toc.actions.cui.ConstraintSymbolFilter;
+import org.orbisgis.editorViews.toc.actions.cui.ILegendPanelUI;
 import org.orbisgis.editorViews.toc.actions.cui.LegendContext;
 import org.orbisgis.editorViews.toc.actions.cui.SymbolBuilder;
 import org.orbisgis.editorViews.toc.actions.cui.SymbolEditionValidation;

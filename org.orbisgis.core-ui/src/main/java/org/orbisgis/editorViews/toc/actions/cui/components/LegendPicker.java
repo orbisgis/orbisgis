@@ -42,7 +42,7 @@
 
 package org.orbisgis.editorViews.toc.actions.cui.components;
 
-import org.orbisgis.editorViews.toc.actions.cui.extensions.ILegendPanelUI;
+import org.orbisgis.editorViews.toc.actions.cui.ILegendPanelUI;
 import org.orbisgis.ui.sif.ChoosePanel;
 
 /**

@@ -56,6 +56,7 @@ import javax.swing.event.ListSelectionListener;
 
 import org.gdms.data.types.GeometryConstraint;
 import org.orbisgis.editorViews.toc.actions.cui.ConstraintSymbolFilter;
+import org.orbisgis.editorViews.toc.actions.cui.ILegendPanelUI;
 import org.orbisgis.editorViews.toc.actions.cui.LegendContext;
 import org.orbisgis.editorViews.toc.actions.cui.SymbolBuilder;
 import org.orbisgis.editorViews.toc.actions.cui.SymbolFilter;

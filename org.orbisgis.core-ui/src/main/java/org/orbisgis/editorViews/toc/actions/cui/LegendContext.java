@@ -37,7 +37,6 @@
 package org.orbisgis.editorViews.toc.actions.cui;
 
 import org.gdms.data.types.GeometryConstraint;
-import org.orbisgis.editorViews.toc.actions.cui.extensions.ILegendPanelUI;
 import org.orbisgis.layerModel.ILayer;
 import org.orbisgis.map.MapTransform;
 
