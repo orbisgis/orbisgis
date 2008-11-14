@@ -224,7 +224,6 @@ public class DefaultProportionalLegend extends AbstractCartoLegend implements
 
 	public void setSampleSymbol(EditablePointSymbol symbol) {
 		this.symbol = symbol;
-		this.symbol.setMapUnits(true);
 	}
 
 	public int getMethod() {
