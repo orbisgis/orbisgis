@@ -868,23 +868,23 @@
 	<!-- Legend panels extensions -->
 	<extension point="org.orbisgis.LegendPanel">
 		<legend-panel
-			class="org.orbisgis.editorViews.toc.actions.cui.extensions.PnlUniqueSymbolLegend"/>
+			class="org.orbisgis.editorViews.toc.actions.cui.legends.PnlUniqueSymbolLegend"/>
 		<legend-panel
-			class="org.orbisgis.editorViews.toc.actions.cui.extensions.PnlUniqueValueLegend"/>
+			class="org.orbisgis.editorViews.toc.actions.cui.legends.PnlUniqueValueLegend"/>
 		<legend-panel
-			class="org.orbisgis.editorViews.toc.actions.cui.extensions.PnlIntervalLegend"/>
+			class="org.orbisgis.editorViews.toc.actions.cui.legends.PnlIntervalLegend"/>
 		<legend-panel
-			class="org.orbisgis.editorViews.toc.actions.cui.extensions.PnlProportionalLegend"/>
+			class="org.orbisgis.editorViews.toc.actions.cui.legends.PnlProportionalLegend"/>
 		<legend-panel
-			class="org.orbisgis.editorViews.toc.actions.cui.extensions.PnlLabelLegend"/>
+			class="org.orbisgis.editorViews.toc.actions.cui.legends.PnlLabelLegend"/>
 	</extension>
 	
 	<!-- Symbol panels extensions -->
 	<extension point="org.orbisgis.SymbolPanel">
 		<symbol-panel
-			class="org.orbisgis.editorViews.toc.actions.cui.extensions.ImageSymbolEditor"/>
+			class="org.orbisgis.editorViews.toc.actions.cui.legends.ImageSymbolEditor"/>
 		<symbol-panel
-			class="org.orbisgis.editorViews.toc.actions.cui.extensions.ClassicSymbolEditor"/>
+			class="org.orbisgis.editorViews.toc.actions.cui.legends.ClassicSymbolEditor"/>
 	</extension>
 	
 	 
