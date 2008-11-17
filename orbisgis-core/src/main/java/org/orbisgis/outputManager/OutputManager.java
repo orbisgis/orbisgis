@@ -38,6 +38,13 @@ package org.orbisgis.outputManager;
 
 import java.awt.Color;
 
+/**
+ * Interface to manage the output of information to the user. Typically this
+ * information should be accumulated so that user can see previous messages. The
+ * amount of historic information the user can access is not specified
+ * 
+ * @author Fernando Gonzalez Cortes
+ */
 public interface OutputManager {
 
 	/**
