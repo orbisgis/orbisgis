@@ -265,6 +265,7 @@ public final class GeomCollectionIterator extends AbstractLiteIterator {
 	 * direction.
 	 */
 	public void next() {
+		currentIterator.next();
 		if (currentIterator.isDone()) {
 			if (currentGeom < (gc.getNumGeometries() - 1)) {
 				currentGeom++;
@@ -272,8 +273,6 @@ public final class GeomCollectionIterator extends AbstractLiteIterator {
 			} else {
 				done = true;
 			}
-		} else {
-			currentIterator.next();
 		}
 	}
 
