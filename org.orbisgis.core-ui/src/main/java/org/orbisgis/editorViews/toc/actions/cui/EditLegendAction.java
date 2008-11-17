@@ -56,7 +56,7 @@ import org.orbisgis.renderer.legend.Legend;
 import org.orbisgis.views.editor.EditorManager;
 import org.sif.UIFactory;
 
-public class EditLayerAction implements ILayerAction {
+public class EditLegendAction implements ILayerAction {
 
 	public boolean accepts(MapContext mc, ILayer layer) {
 		try {

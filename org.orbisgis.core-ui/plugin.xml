@@ -200,9 +200,10 @@
 	
 	<!-- layer actions -->
 	<extension point="org.orbisgis.editorViews.toc.Action">
-		<action id="org.edit" text="Edit Legend" menu-group="editlayer"
+		<action id="org.edit" text="Edit Legend"
+			menu-group="org.orbisgis.editorViews.toc.LegendManagement"
 			icon="/org/orbisgis/images/palette.png"
-			class="org.orbisgis.editorViews.toc.actions.cui.EditLayerAction"/>
+			class="org.orbisgis.editorViews.toc.actions.cui.EditLegendAction"/>
 	</extension>
 	<extension point="org.orbisgis.editorViews.toc.Action"
 		id="org.orbisgis.editorViews.toc.LayerManagement">
