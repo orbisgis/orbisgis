@@ -34,7 +34,7 @@
  *    fergonco _at_ gmail.com
  *    thomas.leduc _at_ cerma.archi.fr
  */
-package org.orbisgis.editorViews.toc.actions.cui.extensions.table;
+package org.orbisgis.editorViews.toc.actions.cui.legends.table;
 
 import java.util.Arrays;
 import java.util.Comparator;

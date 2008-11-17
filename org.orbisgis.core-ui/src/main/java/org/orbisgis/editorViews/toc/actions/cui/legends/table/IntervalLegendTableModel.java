@@ -34,8 +34,9 @@
  *    fergonco _at_ gmail.com
  *    thomas.leduc _at_ cerma.archi.fr
  */
-package org.orbisgis.editorViews.toc.actions.cui.extensions.table;
+package org.orbisgis.editorViews.toc.actions.cui.legends.table;
 
+import java.text.DecimalFormat;
 import java.text.ParseException;
 
 import javax.swing.JOptionPane;
@@ -44,32 +45,37 @@ import javax.swing.table.TableModel;
 import org.apache.log4j.Logger;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
-import org.orbisgis.Services;
 import org.orbisgis.renderer.legend.carto.ClassifiedLegend;
+import org.orbisgis.renderer.legend.carto.Interval;
+import org.orbisgis.renderer.legend.carto.IntervalLegend;
 import org.orbisgis.renderer.legend.carto.LegendFactory;
-import org.orbisgis.renderer.legend.carto.UniqueValueLegend;
 import org.orbisgis.renderer.symbol.Symbol;
 
-public class UniqueValueLegendTableModel extends ClassifiedLegendTableModel
+public class IntervalLegendTableModel extends ClassifiedLegendTableModel
 		implements TableModel {
 
 	private static Logger logger = Logger
-			.getLogger(UniqueValueLegendTableModel.class);
+			.getLogger(IntervalLegendTableModel.class);
 
-	private UniqueValueLegend legend = LegendFactory.createUniqueValueLegend();
+	private IntervalLegend legend = LegendFactory.createIntervalLegend();
 
 	@Override
 	public void setLegend(ClassifiedLegend legend) {
-		this.legend = (UniqueValueLegend) legend;
+		this.legend = (IntervalLegend) legend;
 		super.setLegend(legend);
 	}
 
 	public int getColumnCount() {
-		return 3;
+		return 4;
 	}
 
 	protected Value getOrderValue(int index) {
-		return legend.getValue(index);
+		DecimalFormat df = new DecimalFormat("00000000000");
+		Interval interval = legend.getInterval(index);
+		String ini = df.format(interval.getMinValue().getAsDouble());
+		String end = df.format(interval.getMaxValue().getAsDouble());
+		String s = ini + end;
+		return ValueFactory.createValue(s);
 	}
 
 	@Override
@@ -81,6 +87,8 @@ public class UniqueValueLegendTableModel extends ClassifiedLegendTableModel
 			return String.class;
 		case 2:
 			return String.class;
+		case 3:
+			return String.class;
 		default:
 			throw new RuntimeException("bug!");
 		}
@@ -91,8 +99,10 @@ public class UniqueValueLegendTableModel extends ClassifiedLegendTableModel
 		case 0:
 			return "Symbol";
 		case 1:
-			return "Value";
+			return "Init (included)";
 		case 2:
+			return "End (excluded)";
+		case 3:
 			return "Label";
 		default:
 			throw new RuntimeException("bug!");
@@ -107,6 +117,8 @@ public class UniqueValueLegendTableModel extends ClassifiedLegendTableModel
 			case 1:
 				return ValueFactory.createNullValue();
 			case 2:
+				return ValueFactory.createNullValue();
+			case 3:
 				return legend.getDefaultLabel();
 			default:
 				throw new RuntimeException("bug!");
@@ -119,8 +131,10 @@ public class UniqueValueLegendTableModel extends ClassifiedLegendTableModel
 		case 0:
 			return legend.getSymbol(rowIndex);
 		case 1:
-			return legend.getValue(rowIndex);
+			return legend.getInterval(rowIndex).getMinValue();
 		case 2:
+			return legend.getInterval(rowIndex).getMaxValue();
+		case 3:
 			return legend.getLabel(rowIndex);
 		default:
 			throw new RuntimeException("bug!");
@@ -134,62 +148,85 @@ public class UniqueValueLegendTableModel extends ClassifiedLegendTableModel
 	public void setValueAt(Object value, int rowIndex, int columnIndex) {
 		logger.error("Setting value in classified legend: " + value + ". at "
 				+ rowIndex + "," + columnIndex);
+		String txt = value.toString();
 		if (rowIndex == legend.getClassificationCount()) {
 			switch (columnIndex) {
 			case 0:
 				legend.setDefaultSymbol((Symbol) value);
 				break;
 			case 1:
+			case 2:
 				JOptionPane.showMessageDialog(null, "Cannot modify "
 						+ "'rest of values'", "Wrong input value",
 						JOptionPane.ERROR_MESSAGE);
 				break;
-			case 2:
-				legend.setDefaultLabel(value.toString());
+			case 3:
+				legend.setDefaultLabel(txt);
 				break;
 			}
 		} else {
 			int realIndex = getSortedIndex(rowIndex);
 
-			switch (columnIndex) {
-			case 0:
-				legend.setSymbol(realIndex, (Symbol) value);
-				break;
-			case 1:
-				Value currentValue = legend.getValue(realIndex);
-				int type = currentValue.getType();
-				try {
-					Value val = ValueFactory.createValueByType(
-							value.toString(), type);
-					legend.setValue(realIndex, val);
+			Interval interval = legend.getInterval(realIndex);
+			try {
+				switch (columnIndex) {
+				case 0:
+					legend.setSymbol(realIndex, (Symbol) value);
+					break;
+				case 1:
+					Value valMin;
+					if (txt.trim().length() == 0) {
+						valMin = null;
+					} else {
+						valMin = ValueFactory.createValueByType(txt, legend
+								.getClassificationFieldType());
+					}
+					legend.setInterval(realIndex, new Interval(valMin, true,
+							interval.getMaxValue(), false));
 					updateLabel(realIndex, rowIndex);
 					invalidateOrder();
-				} catch (NumberFormatException e) {
-					Services.getErrorManager().error(
-							value.toString() + " is not valid.", e);
-				} catch (ParseException e) {
-					Services.getErrorManager().error(
-							value.toString() + " is not valid.", e);
+					break;
+				case 2:
+					Value valMax;
+					if (txt.trim().length() == 0) {
+						valMax = null;
+					} else {
+						valMax = ValueFactory.createValueByType(txt, legend
+								.getClassificationFieldType());
+					}
+					boolean maxIncluded = rowIndex == getRowCount() - 1;
+					legend.setInterval(realIndex, new Interval(interval
+							.getMinValue(), true, valMax, maxIncluded));
+					updateLabel(realIndex, rowIndex);
+					invalidateOrder();
+					break;
+				case 3:
+					legend.setLabel(realIndex, txt);
+					break;
+				default:
+					break;
 				}
-				break;
-			case 2:
-				legend.setLabel(realIndex, value.toString());
-				break;
-			default:
-				break;
+			} catch (NumberFormatException e) {
+				JOptionPane.showMessageDialog(null, txt + " is not valid.",
+						"Wrong input value", JOptionPane.ERROR_MESSAGE);
+			} catch (ParseException e) {
+				JOptionPane.showMessageDialog(null, txt + " is not valid. "
+						+ e.getMessage(), "Wrong input value",
+						JOptionPane.ERROR_MESSAGE);
 			}
 		}
 		fireTableCellUpdated(rowIndex, columnIndex);
 	}
 
 	private void updateLabel(int realIndex, int rowIndex) {
-		setValueAt(legend.getValue(realIndex).toString(), rowIndex, 2);
+		setValueAt(legend.getInterval(realIndex).getIntervalString(), rowIndex,
+				3);
 	}
 
-	public void insertRow(Symbol symbol, Value value, String label) {
-		legend.addClassification(value, symbol, label);
+	public void insertRow(Symbol symbol, Value min, Value max, String label) {
+		legend.addInterval(min, true, max, false, symbol, label);
 		invalidateOrder();
-		fireTableRowsInserted(legend.getClassificationCount() - 1, legend
-				.getClassificationCount());
+		int classificationCount = legend.getClassificationCount();
+		fireTableRowsInserted(classificationCount - 1, classificationCount);
 	}
 }
