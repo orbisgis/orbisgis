@@ -197,9 +197,11 @@ public abstract class ALayer implements ILayer {
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	protected void fireVisibilityChanged() {
 		if (null != listeners) {
-			for (LayerListener listener : listeners) {
+			ArrayList<LayerListener> l = (ArrayList<LayerListener>) listeners.clone();
+			for (LayerListener listener : l) {
 				listener.visibilityChanged(new LayerListenerEvent(this));
 			}
 		}
@@ -213,26 +215,34 @@ public abstract class ALayer implements ILayer {
 
 	}
 
+	@SuppressWarnings("unchecked")
 	protected void fireStyleChanged() {
-		for (LayerListener listener : listeners) {
+		ArrayList<LayerListener> l = (ArrayList<LayerListener>) listeners.clone();
+		for (LayerListener listener : l) {
 			listener.styleChanged(new LayerListenerEvent(this));
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	protected void fireLayerAddedEvent(ILayer[] added) {
-		for (LayerListener listener : listeners) {
+		ArrayList<LayerListener> l = (ArrayList<LayerListener>) listeners.clone();
+		for (LayerListener listener : l) {
 			listener.layerAdded(new LayerCollectionEvent(this, added));
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	protected void fireLayerRemovedEvent(ILayer[] removed) {
-		for (LayerListener listener : listeners) {
+		ArrayList<LayerListener> l = (ArrayList<LayerListener>) listeners.clone();
+		for (LayerListener listener : l) {
 			listener.layerRemoved(new LayerCollectionEvent(this, removed));
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	protected boolean fireLayerRemovingEvent(ILayer[] toRemove) {
-		for (LayerListener listener : listeners) {
+		ArrayList<LayerListener> l = (ArrayList<LayerListener>) listeners.clone();
+		for (LayerListener listener : l) {
 			if (!listener
 					.layerRemoving(new LayerCollectionEvent(this, toRemove))) {
 				return false;
