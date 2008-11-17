@@ -40,7 +40,7 @@ import java.awt.Graphics;
 
 import org.gdms.driver.DriverException;
 import org.orbisgis.renderer.legend.Legend;
-import org.orbisgis.renderer.symbol.EditablePointSymbol;
+import org.orbisgis.renderer.symbol.StandardPointSymbol;
 
 public interface ProportionalLegend extends Legend {
 
@@ -62,14 +62,14 @@ public interface ProportionalLegend extends Legend {
 	 *
 	 * @return
 	 */
-	EditablePointSymbol getSampleSymbol();
+	StandardPointSymbol getSampleSymbol();
 
 	/**
 	 * Set the symbol that will be used to create the proportional instances
 	 *
 	 * @param symbol
 	 */
-	void setSampleSymbol(EditablePointSymbol symbol);
+	void setSampleSymbol(StandardPointSymbol symbol);
 
 	/**
 	 * Set the method to calculate the proportional size. It can be either

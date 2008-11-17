@@ -49,7 +49,7 @@ import com.vividsolutions.jts.geom.MultiPoint;
 import com.vividsolutions.jts.geom.Point;
 
 public abstract class AbstractPointSymbol extends AbstractPolygonSymbol
-		implements EditablePointSymbol {
+		implements StandardPointSymbol {
 
 	protected int size;
 	protected boolean mapUnits;

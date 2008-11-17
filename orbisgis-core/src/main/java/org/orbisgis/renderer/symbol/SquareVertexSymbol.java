@@ -64,7 +64,7 @@ public class SquareVertexSymbol extends SquarePointSymbol {
 		return "Square in vertex";
 	}
 
-	public EditableSymbol cloneSymbol() {
+	public StandardSymbol cloneSymbol() {
 		return new SquareVertexSymbol(outline, lineWidth, fillColor, size,
 				mapUnits);
 	}

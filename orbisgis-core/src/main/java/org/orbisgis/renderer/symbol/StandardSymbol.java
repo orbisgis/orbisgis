@@ -36,16 +36,11 @@
  */
 package org.orbisgis.renderer.symbol;
 
-import java.awt.Color;
-
-public interface EditableLineSymbol extends EditableSymbol {
-
-	Color getOutlineColor();
-
-	int getLineWidth();
-
-	void setOutlineColor(Color color);
-
-	void setLineWidth(int width);
-
+/**
+ * Interface to be implemented by those symbols that contain a standard set of
+ * attributes. See subinterfaces.
+ * 
+ * @author Fernando Gonzalez Cortes
+ */
+public interface StandardSymbol extends Symbol {
 }

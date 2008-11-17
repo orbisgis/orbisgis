@@ -86,7 +86,7 @@ public class SquarePointSymbol extends AbstractSquarePointSymbol {
 		return "Square in point";
 	}
 
-	public EditableSymbol cloneSymbol() {
+	public StandardSymbol cloneSymbol() {
 		return new SquarePointSymbol(outline, lineWidth, fillColor, size,
 				mapUnits);
 	}

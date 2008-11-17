@@ -20,17 +20,17 @@ import javax.swing.event.ChangeListener;
 import org.orbisgis.editorViews.toc.actions.cui.SymbolEditorListener;
 import org.orbisgis.editorViews.toc.actions.cui.components.ColorPicker;
 import org.orbisgis.editorViews.toc.actions.cui.legend.ISymbolEditor;
-import org.orbisgis.renderer.symbol.EditableLineSymbol;
-import org.orbisgis.renderer.symbol.EditablePointSymbol;
-import org.orbisgis.renderer.symbol.EditablePolygonSymbol;
-import org.orbisgis.renderer.symbol.EditableSymbol;
+import org.orbisgis.renderer.symbol.StandardLineSymbol;
+import org.orbisgis.renderer.symbol.StandardPointSymbol;
+import org.orbisgis.renderer.symbol.StandardPolygonSymbol;
+import org.orbisgis.renderer.symbol.StandardSymbol;
 import org.orbisgis.renderer.symbol.Symbol;
 import org.orbisgis.ui.preview.JNumericSpinner;
 import org.sif.CRFlowLayout;
 import org.sif.CarriageReturn;
 import org.sif.UIFactory;
 
-public class ClassicSymbolEditor extends JPanel implements ISymbolEditor {
+public class StandardSymbolEditor extends JPanel implements ISymbolEditor {
 
 	private JButton btnSync;
 	private JNumericSpinner spnLineWidth;
@@ -40,14 +40,14 @@ public class ClassicSymbolEditor extends JPanel implements ISymbolEditor {
 	private JLabel lblLine;
 	private JCheckBox chkFill;
 	private JCheckBox chkLine;
-	protected EditableSymbol symbol;
+	protected StandardSymbol symbol;
 	private JLabel lblLineWidth;
 	private JLabel lblTransparency;
 	private JLabel lblSize;
 	private SymbolEditorListener listener;
 	protected boolean ignoreEvents = false;
 
-	public ClassicSymbolEditor() {
+	public StandardSymbolEditor() {
 		CRFlowLayout flowLayout = new CRFlowLayout();
 		this.setLayout(flowLayout);
 
@@ -203,8 +203,8 @@ public class ClassicSymbolEditor extends JPanel implements ISymbolEditor {
 			} else if (transparency < 0) {
 				transparency = 0;
 			}
-			if (symbol instanceof EditableLineSymbol) {
-				EditableLineSymbol lineSymbol = (EditableLineSymbol) symbol;
+			if (symbol instanceof StandardLineSymbol) {
+				StandardLineSymbol lineSymbol = (StandardLineSymbol) symbol;
 				Color lineColor = lblLine.getBackground();
 				lineColor = new Color(lineColor.getRed(), lineColor.getGreen(),
 						lineColor.getBlue(), 255 - transparency);
@@ -224,8 +224,8 @@ public class ClassicSymbolEditor extends JPanel implements ISymbolEditor {
 				lineSymbol.setLineWidth(width);
 			}
 
-			if (symbol instanceof EditablePolygonSymbol) {
-				EditablePolygonSymbol polygonSymbol = (EditablePolygonSymbol) symbol;
+			if (symbol instanceof StandardPolygonSymbol) {
+				StandardPolygonSymbol polygonSymbol = (StandardPolygonSymbol) symbol;
 
 				Color fillColor = lblFill.getBackground();
 
@@ -238,8 +238,8 @@ public class ClassicSymbolEditor extends JPanel implements ISymbolEditor {
 				}
 			}
 
-			if (symbol instanceof EditablePointSymbol) {
-				EditablePointSymbol pointSymbol = (EditablePointSymbol) symbol;
+			if (symbol instanceof StandardPointSymbol) {
+				StandardPointSymbol pointSymbol = (StandardPointSymbol) symbol;
 				try {
 					pointSymbol.setSize((int) spnVertexSize.getValue());
 				} catch (NumberFormatException e) {
@@ -280,15 +280,15 @@ public class ClassicSymbolEditor extends JPanel implements ISymbolEditor {
 
 	public void setSymbol(Symbol symbol) {
 		ignoreEvents = true;
-		if (symbol instanceof EditableSymbol) {
-			this.symbol = (EditableSymbol) symbol;
+		if (symbol instanceof StandardSymbol) {
+			this.symbol = (StandardSymbol) symbol;
 			boolean enabledFill = false;
 			boolean enabledLine = false;
 			boolean enabledVertex = false;
 
-			if (symbol instanceof EditableLineSymbol) {
+			if (symbol instanceof StandardLineSymbol) {
 				enabledLine = true;
-				EditableLineSymbol lineSymbol = (EditableLineSymbol) symbol;
+				StandardLineSymbol lineSymbol = (StandardLineSymbol) symbol;
 				Color lineColor = lineSymbol.getOutlineColor();
 				if (lineColor != null) {
 					lblLine.setBackground(lineColor);
@@ -300,10 +300,10 @@ public class ClassicSymbolEditor extends JPanel implements ISymbolEditor {
 				spnLineWidth.setValue(lineSymbol.getLineWidth());
 			}
 
-			if (symbol instanceof EditablePolygonSymbol) {
+			if (symbol instanceof StandardPolygonSymbol) {
 				enabledFill = true;
 				enabledLine = true;
-				EditablePolygonSymbol polygonSymbol = (EditablePolygonSymbol) symbol;
+				StandardPolygonSymbol polygonSymbol = (StandardPolygonSymbol) symbol;
 
 				Color fillColor = polygonSymbol.getFillColor();
 				if (fillColor != null) {
@@ -315,11 +315,11 @@ public class ClassicSymbolEditor extends JPanel implements ISymbolEditor {
 				}
 			}
 
-			if (symbol instanceof EditablePointSymbol) {
+			if (symbol instanceof StandardPointSymbol) {
 				enabledVertex = true;
 				enabledFill = true;
 				enabledLine = true;
-				EditablePointSymbol pointSymbol = (EditablePointSymbol) symbol;
+				StandardPointSymbol pointSymbol = (StandardPointSymbol) symbol;
 				spnVertexSize.setValue(pointSymbol.getSize());
 			}
 
@@ -357,7 +357,7 @@ public class ClassicSymbolEditor extends JPanel implements ISymbolEditor {
 	}
 
 	public boolean accepts(Symbol symbol) {
-		return symbol instanceof EditableSymbol;
+		return symbol instanceof StandardSymbol;
 	}
 
 	public Component getComponent() {
@@ -365,7 +365,7 @@ public class ClassicSymbolEditor extends JPanel implements ISymbolEditor {
 	}
 
 	public ISymbolEditor newInstance() {
-		return new ClassicSymbolEditor();
+		return new StandardSymbolEditor();
 	}
 
 	public void setSymbolEditorListener(SymbolEditorListener listener) {

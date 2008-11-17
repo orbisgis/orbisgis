@@ -85,7 +85,7 @@ public class CirclePointSymbol extends AbstractCirclePointSymbol {
 		return "Circle in point";
 	}
 
-	public EditableSymbol cloneSymbol() {
+	public StandardSymbol cloneSymbol() {
 		return new CirclePointSymbol(outline, lineWidth, fillColor, size,
 				mapUnits);
 	}

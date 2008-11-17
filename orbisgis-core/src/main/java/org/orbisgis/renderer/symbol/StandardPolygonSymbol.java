@@ -38,10 +38,26 @@ package org.orbisgis.renderer.symbol;
 
 import java.awt.Color;
 
-public interface EditablePolygonSymbol extends EditableLineSymbol {
+/**
+ * Interface to be implemented by the symbols with polygon standard attributes:
+ * fill, outline, etc.
+ * 
+ * @author Fernando Gonzalez Cortes
+ */
+public interface StandardPolygonSymbol extends StandardLineSymbol {
 
+	/**
+	 * Get the fill color
+	 * 
+	 * @return
+	 */
 	Color getFillColor();
 
+	/**
+	 * Set the fill color
+	 * 
+	 * @param fillColor
+	 */
 	void setFillColor(Color fillColor);
 
 }

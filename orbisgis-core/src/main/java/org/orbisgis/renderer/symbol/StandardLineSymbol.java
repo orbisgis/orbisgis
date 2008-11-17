@@ -36,33 +36,42 @@
  */
 package org.orbisgis.renderer.symbol;
 
-public interface EditablePointSymbol extends EditablePolygonSymbol {
+import java.awt.Color;
+
+/**
+ * Interface to be implemented by the symbols with line standard attributes:
+ * outline, etc.
+ * 
+ * @author Fernando Gonzalez Cortes
+ */
+public interface StandardLineSymbol extends StandardSymbol {
 
 	/**
-	 * Gets the symbol size
-	 *
+	 * Get the outline color
+	 * 
 	 * @return
 	 */
-	int getSize();
+	Color getOutlineColor();
 
 	/**
-	 * Sets the symbol size
-	 *
-	 * @param value
+	 * Get the outline width
+	 * 
+	 * @return
 	 */
-	void setSize(int value);
+	int getLineWidth();
 
 	/**
-	 * Sets the units of the symbol size. False means pixels and true means map
-	 * units
-	 *
-	 * @param mapUnits
+	 * Set the specified outline color
+	 * 
+	 * @param color
 	 */
-	void setMapUnits(boolean mapUnits);
+	void setOutlineColor(Color color);
 
 	/**
-	 * @return True if the size of the symbol is expressed in map units, false
-	 *         if it's done in pixels
+	 * Set the specified line width
+	 * 
+	 * @param width
 	 */
-	boolean isMapUnits();
+	void setLineWidth(int width);
+
 }

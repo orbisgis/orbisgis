@@ -54,7 +54,7 @@ import org.orbisgis.renderer.legend.Legend;
 import org.orbisgis.renderer.legend.RenderException;
 import org.orbisgis.renderer.legend.carto.persistence.LegendContainer;
 import org.orbisgis.renderer.legend.carto.persistence.ProportionalLegendType;
-import org.orbisgis.renderer.symbol.EditablePointSymbol;
+import org.orbisgis.renderer.symbol.StandardPointSymbol;
 import org.orbisgis.renderer.symbol.Symbol;
 import org.orbisgis.renderer.symbol.SymbolFactory;
 import org.orbisgis.renderer.symbol.SymbolManager;
@@ -72,13 +72,13 @@ public class DefaultProportionalLegend extends AbstractCartoLegend implements
 	private int maxSize = 3000;
 	private int method = LINEAR;
 	private double sqrtFactor;
-	private EditablePointSymbol symbol;
+	private StandardPointSymbol symbol;
 	private ProportionalMethod proportionnalMethod;
 	private int bigSize = 60;
 	private int xOffset = 7;
 
 	public DefaultProportionalLegend() {
-		symbol = (EditablePointSymbol) SymbolFactory
+		symbol = (StandardPointSymbol) SymbolFactory
 				.createPolygonCentroidCircleSymbol(Color.BLACK, 1, Color.pink,
 						10, true);
 	}
@@ -127,7 +127,7 @@ public class DefaultProportionalLegend extends AbstractCartoLegend implements
 
 			double symbolSize = getSize(value, coefType);
 
-			EditablePointSymbol ret = (EditablePointSymbol) symbol
+			StandardPointSymbol ret = (StandardPointSymbol) symbol
 					.cloneSymbol();
 			ret.setSize((int) Math.round(symbolSize));
 			return ret;
@@ -196,7 +196,7 @@ public class DefaultProportionalLegend extends AbstractCartoLegend implements
 				.getService(SymbolManager.class);
 		Symbol symbol = sm.getSymbolFromJAXB(xmlLegend.getSampleSymbol());
 		if (symbol != null) {
-			setSampleSymbol((EditablePointSymbol) symbol);
+			setSampleSymbol((StandardPointSymbol) symbol);
 		} else {
 			Services.getErrorManager().error(
 					"Unknown symbol: "
@@ -218,11 +218,11 @@ public class DefaultProportionalLegend extends AbstractCartoLegend implements
 		return maxSize;
 	}
 
-	public EditablePointSymbol getSampleSymbol() {
+	public StandardPointSymbol getSampleSymbol() {
 		return symbol;
 	}
 
-	public void setSampleSymbol(EditablePointSymbol symbol) {
+	public void setSampleSymbol(StandardPointSymbol symbol) {
 		this.symbol = symbol;
 	}
 
@@ -249,7 +249,7 @@ public class DefaultProportionalLegend extends AbstractCartoLegend implements
 	}
 
 	public void drawImage(Graphics g, int bigSize) {
-		EditablePointSymbol big = (EditablePointSymbol) symbol.cloneSymbol();
+		StandardPointSymbol big = (StandardPointSymbol) symbol.cloneSymbol();
 		big.setSize(bigSize);
 		GeometryFactory gf = new GeometryFactory();
 
@@ -312,7 +312,7 @@ public class DefaultProportionalLegend extends AbstractCartoLegend implements
 			int textOffset, int lineStartX, int lineEndX,
 			RenderPermission renderPermission, String text)
 			throws DriverException {
-		EditablePointSymbol small = (EditablePointSymbol) symbol.cloneSymbol();
+		StandardPointSymbol small = (StandardPointSymbol) symbol.cloneSymbol();
 		small.setSize((int) smallSize);
 		int topSmall = (int) (bigSize - smallSize + textOffset);
 		String minText = text;

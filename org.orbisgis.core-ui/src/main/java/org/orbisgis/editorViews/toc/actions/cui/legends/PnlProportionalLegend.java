@@ -80,7 +80,7 @@ import org.orbisgis.renderer.legend.Legend;
 import org.orbisgis.renderer.legend.RenderException;
 import org.orbisgis.renderer.legend.carto.LegendFactory;
 import org.orbisgis.renderer.legend.carto.ProportionalLegend;
-import org.orbisgis.renderer.symbol.EditablePointSymbol;
+import org.orbisgis.renderer.symbol.StandardPointSymbol;
 import org.orbisgis.renderer.symbol.Symbol;
 import org.sif.CRFlowLayout;
 import org.sif.CarriageReturn;
@@ -212,7 +212,7 @@ public class PnlProportionalLegend extends JPanel implements ILegendPanel {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				EditablePointSymbol sampleSymbol = legend.getSampleSymbol();
+				StandardPointSymbol sampleSymbol = legend.getSampleSymbol();
 				sampleSymbol.setMapUnits(chkMapUnits.isSelected());
 				legend.setSampleSymbol(sampleSymbol);
 				refreshPreviewButton();
@@ -311,7 +311,7 @@ public class PnlProportionalLegend extends JPanel implements ILegendPanel {
 		});
 		editor.setSymbol(canvas.getSymbol());
 		if (UIFactory.showDialog(editor)) {
-			legend.setSampleSymbol((EditablePointSymbol) editor
+			legend.setSampleSymbol((StandardPointSymbol) editor
 					.getSymbolComposite().getSymbol(0));
 			syncWithLegend();
 		}
@@ -327,7 +327,7 @@ public class PnlProportionalLegend extends JPanel implements ILegendPanel {
 
 					@Override
 					public boolean accept(Symbol symbol) {
-						return symbol instanceof EditablePointSymbol;
+						return symbol instanceof StandardPointSymbol;
 					}
 				});
 	}
@@ -376,7 +376,7 @@ public class PnlProportionalLegend extends JPanel implements ILegendPanel {
 
 			// max size
 			txtMaxSize.setText("" + legend.getMaxSize());
-			
+
 			// map units
 			chkMapUnits.setSelected(legend.getSampleSymbol().isMapUnits());
 

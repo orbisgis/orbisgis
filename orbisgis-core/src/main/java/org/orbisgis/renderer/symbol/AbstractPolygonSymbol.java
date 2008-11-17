@@ -47,7 +47,7 @@ import com.vividsolutions.jts.geom.MultiPolygon;
 import com.vividsolutions.jts.geom.Polygon;
 
 public abstract class AbstractPolygonSymbol extends AbstractLineSymbol
-		implements EditablePolygonSymbol {
+		implements StandardPolygonSymbol {
 
 	protected Color fillColor;
 

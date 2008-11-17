@@ -54,7 +54,6 @@ import org.orbisgis.layerModel.DefaultMapContext;
 import org.orbisgis.layerModel.ILayer;
 import org.orbisgis.layerModel.MapContext;
 import org.orbisgis.renderer.Renderer;
-import org.orbisgis.renderer.legend.Legend;
 import org.orbisgis.renderer.legend.carto.DefaultUniqueSymbolLegend;
 import org.orbisgis.renderer.legend.carto.IntervalLegend;
 import org.orbisgis.renderer.legend.carto.LabelLegend;
@@ -63,7 +62,7 @@ import org.orbisgis.renderer.legend.carto.LegendManager;
 import org.orbisgis.renderer.legend.carto.ProportionalLegend;
 import org.orbisgis.renderer.legend.carto.UniqueSymbolLegend;
 import org.orbisgis.renderer.legend.carto.UniqueValueLegend;
-import org.orbisgis.renderer.symbol.EditablePointSymbol;
+import org.orbisgis.renderer.symbol.StandardPointSymbol;
 import org.orbisgis.renderer.symbol.Symbol;
 import org.orbisgis.renderer.symbol.SymbolFactory;
 
@@ -300,7 +299,7 @@ public class LegendTest extends AbstractTest {
 		legend.setClassificationField(fieldName);
 		legend.setMethod(ProportionalLegend.LOGARITHMIC);
 		legend.setMaxSize(14);
-		legend.setSampleSymbol((EditablePointSymbol) sampleSym);
+		legend.setSampleSymbol((StandardPointSymbol) sampleSym);
 		Object object = legend.getJAXBObject();
 
 		legend = (ProportionalLegend) lm.getNewLegend(legend.getLegendTypeId());

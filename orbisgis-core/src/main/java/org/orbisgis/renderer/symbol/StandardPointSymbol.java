@@ -36,16 +36,39 @@
  */
 package org.orbisgis.renderer.symbol;
 
-import org.gdms.data.types.GeometryConstraint;
-
-public interface EditableSymbol extends Symbol {
+/**
+ * Interface to be implemented by the symbols with point standard attributes:
+ * fill, size, etc.
+ * 
+ * @author Fernando Gonzalez Cortes
+ */
+public interface StandardPointSymbol extends StandardPolygonSymbol {
 
 	/**
-	 * Returns true if this symbol is suitable for a geometry field with the
-	 * specified geometry type constraint
-	 *
-	 * @param geometryConstraint
+	 * Gets the symbol size
+	 * 
 	 * @return
 	 */
-	boolean acceptGeometryType(GeometryConstraint geometryConstraint);
+	int getSize();
+
+	/**
+	 * Sets the symbol size
+	 * 
+	 * @param value
+	 */
+	void setSize(int value);
+
+	/**
+	 * Sets the units of the symbol size. False means pixels and true means map
+	 * units
+	 * 
+	 * @param mapUnits
+	 */
+	void setMapUnits(boolean mapUnits);
+
+	/**
+	 * @return True if the size of the symbol is expressed in map units, false
+	 *         if it's done in pixels
+	 */
+	boolean isMapUnits();
 }

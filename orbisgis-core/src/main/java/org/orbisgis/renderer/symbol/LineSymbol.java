@@ -70,7 +70,7 @@ public class LineSymbol extends AbstractLineSymbol {
 		return "Line";
 	}
 
-	public EditableSymbol cloneSymbol() {
+	public StandardSymbol cloneSymbol() {
 		return new LineSymbol(outline, lineWidth);
 	}
 

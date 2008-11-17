@@ -26,7 +26,7 @@ import org.orbisgis.layerModel.MapContext;
 import org.orbisgis.progress.NullProgressMonitor;
 import org.orbisgis.renderer.legend.carto.LegendFactory;
 import org.orbisgis.renderer.legend.carto.UniqueSymbolLegend;
-import org.orbisgis.renderer.symbol.EditablePolygonSymbol;
+import org.orbisgis.renderer.symbol.StandardPolygonSymbol;
 import org.orbisgis.renderer.symbol.Symbol;
 import org.orbisgis.renderer.symbol.SymbolFactory;
 
@@ -304,7 +304,7 @@ public class GeoCognitionTest extends AbstractGeocognitionTest {
 	}
 
 	public void testOpenSaveCloseSymbol() throws Exception {
-		EditablePolygonSymbol symbol = (EditablePolygonSymbol) SymbolFactory
+		StandardPolygonSymbol symbol = (StandardPolygonSymbol) SymbolFactory
 				.createPolygonSymbol();
 		gc.addElement("id", symbol);
 		GeocognitionElement element = gc.getGeocognitionElement("id");

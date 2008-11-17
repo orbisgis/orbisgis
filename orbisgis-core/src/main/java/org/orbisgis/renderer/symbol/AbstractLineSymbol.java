@@ -47,7 +47,7 @@ import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.MultiLineString;
 
 public abstract class AbstractLineSymbol extends AbstractGeometrySymbol
-		implements EditableLineSymbol {
+		implements StandardLineSymbol {
 
 	protected Color outline;
 	protected int lineWidth;

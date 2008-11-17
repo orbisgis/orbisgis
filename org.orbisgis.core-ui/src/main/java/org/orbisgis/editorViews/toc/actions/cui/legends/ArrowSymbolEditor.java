@@ -10,7 +10,7 @@ import org.orbisgis.renderer.symbol.ArrowSymbol;
 import org.orbisgis.renderer.symbol.Symbol;
 import org.orbisgis.ui.preview.JNumericSpinner;
 
-public class ArrowSymbolEditor extends ClassicSymbolEditor implements
+public class ArrowSymbolEditor extends StandardSymbolEditor implements
 		ISymbolEditor {
 
 	private JNumericSpinner spnArrowLength;

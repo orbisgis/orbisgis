@@ -63,7 +63,7 @@ public class CircleVertexSymbol extends CirclePointSymbol {
 		return "Circle in vertex";
 	}
 
-	public EditableSymbol cloneSymbol() {
+	public StandardSymbol cloneSymbol() {
 		return new CircleVertexSymbol(outline, lineWidth, fillColor, size,
 				mapUnits);
 	}

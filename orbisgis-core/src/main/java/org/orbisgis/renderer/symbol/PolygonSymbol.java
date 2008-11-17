@@ -79,7 +79,7 @@ public class PolygonSymbol extends AbstractPolygonSymbol {
 		return "Polygon";
 	}
 
-	public EditableSymbol cloneSymbol() {
+	public StandardSymbol cloneSymbol() {
 		return new PolygonSymbol(outline, lineWidth, fillColor);
 	}
 

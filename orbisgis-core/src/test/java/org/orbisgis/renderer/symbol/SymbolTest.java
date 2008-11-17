@@ -98,7 +98,7 @@ public class SymbolTest extends AbstractTest {
 		Symbol polSym = SymbolFactory.createPolygonSymbol();
 		Symbol sym = sv.createSymbol(polSym.getId());
 		assertTrue(testEquals(sv.createSymbol(polSym.getId()), sym));
-		((EditablePolygonSymbol) sym).setOutlineColor(Color.pink);
+		((StandardLineSymbol) sym).setOutlineColor(Color.pink);
 		assertTrue(!testEquals(sv.createSymbol(polSym.getId()), sym));
 	}
 
@@ -117,6 +117,14 @@ public class SymbolTest extends AbstractTest {
 			assertTrue(!classes.contains(symbolClass));
 			classes.add(symbol.getClass());
 			assertTrue(testClone(symbol));
+		}
+	}
+
+	public void testAvailableSymbolsPersistence() throws Exception {
+		SymbolManager sv = getSymbolManager();
+		ArrayList<Symbol> symbols = sv.getAvailableSymbols();
+		for (Symbol symbol : symbols) {
+			testPersistent(symbol);
 		}
 	}
 
@@ -161,12 +169,12 @@ public class SymbolTest extends AbstractTest {
 	}
 
 	public void testMapUnitsPersistence() throws Exception {
-		EditablePointSymbol sym = (EditablePointSymbol) SymbolFactory
+		StandardPointSymbol sym = (StandardPointSymbol) SymbolFactory
 				.createPointCircleSymbol(Color.black, Color.black, 10);
 		sym.setMapUnits(true);
 		testPersistent(sym);
 		sym.setMapUnits(false);
-		assertTrue(!((EditablePointSymbol) testPersistent(sym)).isMapUnits());
+		assertTrue(!((StandardPointSymbol) testPersistent(sym)).isMapUnits());
 	}
 
 	public void testLoadNonExistingSymbol() throws Exception {

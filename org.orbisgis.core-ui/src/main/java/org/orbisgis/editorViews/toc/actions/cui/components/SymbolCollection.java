@@ -59,7 +59,6 @@ import org.orbisgis.editorViews.toc.actions.cui.LegendContext;
 import org.orbisgis.geocognition.Geocognition;
 import org.orbisgis.geocognition.GeocognitionElement;
 import org.orbisgis.geocognition.GeocognitionFilter;
-import org.orbisgis.renderer.symbol.EditableSymbol;
 import org.orbisgis.renderer.symbol.Symbol;
 import org.sif.UIPanel;
 
@@ -220,14 +219,14 @@ public class SymbolCollection extends javax.swing.JPanel implements UIPanel {
 	}
 
 	private String acceptsGeometry(Symbol symbol) {
-		if (symbol instanceof EditableSymbol) {
-			if (!((EditableSymbol) symbol).acceptGeometryType(legendContext
+		if (!symbol.acceptsChildren()) {
+			if (!symbol.acceptGeometryType(legendContext
 					.getGeometryConstraint())) {
 				return "The symbol type is not applicable";
 			} else {
 				return null;
 			}
-		} else if (symbol.acceptsChildren()) {
+		} else {
 			for (int i = 0; i < symbol.getSymbolCount(); i++) {
 				String ret = acceptsGeometry(symbol.getSymbol(i));
 				if (ret != null) {
