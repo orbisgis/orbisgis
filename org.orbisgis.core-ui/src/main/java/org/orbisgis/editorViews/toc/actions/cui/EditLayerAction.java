@@ -36,11 +36,14 @@
  */
 package org.orbisgis.editorViews.toc.actions.cui;
 
+import javax.swing.JOptionPane;
+
 import org.gdms.data.types.Constraint;
 import org.gdms.data.types.GeometryConstraint;
 import org.gdms.data.types.Type;
 import org.gdms.driver.DriverException;
 import org.orbisgis.Services;
+import org.orbisgis.editor.IEditor;
 import org.orbisgis.editorViews.toc.action.ILayerAction;
 import org.orbisgis.editorViews.toc.actions.cui.legend.EPLegendHelper;
 import org.orbisgis.editorViews.toc.actions.cui.legend.ILegendPanel;
@@ -75,10 +78,23 @@ public class EditLayerAction implements ILayerAction {
 					.getConstraint(Constraint.GEOMETRY_TYPE);
 
 			LegendsPanel pan = new LegendsPanel();
+			// Obtain MapTransform
 			EditorManager em = (EditorManager) Services
 					.getService(EditorManager.class);
-			MapTransform mt = ((MapEditor) em.getActiveEditor())
-					.getMapTransform();
+			MapTransform mt = null;
+			// Find the map editor editing mapContext
+			IEditor[] editors = em.getEditors();
+			for (IEditor openEditor : editors) {
+				if ((openEditor.getElement().getObject() == mapContext)
+						&& (openEditor instanceof MapEditor)) {
+					mt = ((MapEditor) openEditor).getMapTransform();
+				}
+			}
+			if (mt == null) {
+				JOptionPane.showMessageDialog(null,
+						"Cannot find a map editor, 1:1 scale used");
+			}
+
 			Legend[] legend = layer.getVectorLegend();
 			Legend[] copies = new Legend[legend.length];
 			for (int i = 0; i < copies.length; i++) {
@@ -102,5 +118,4 @@ public class EditLayerAction implements ILayerAction {
 					e);
 		}
 	}
-
 }
