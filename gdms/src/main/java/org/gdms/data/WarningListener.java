@@ -38,16 +38,15 @@ package org.gdms.data;
 
 /**
  * This interface manages exceptions of process that will not abort its
- * operation on such exceptions
- *
+ * operation on such exceptions.
+ * 
  * @author Fernando Gonzalez Cortes
- *
  */
 public interface WarningListener {
 
 	/**
-	 * The process throwed a warning
-	 *
+	 * The process thrown a warning
+	 * 
 	 * @param msg
 	 * @param t
 	 * @param source
@@ -55,7 +54,8 @@ public interface WarningListener {
 	public void throwWarning(String msg, Throwable t, Object source);
 
 	/**
-	 * The process throwed a warning
+	 * The process thrown a warning
+	 * 
 	 * @param msg
 	 */
 	public void throwWarning(String msg);
