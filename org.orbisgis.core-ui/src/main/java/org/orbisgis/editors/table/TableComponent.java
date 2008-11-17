@@ -554,6 +554,9 @@ public class TableComponent extends JPanel {
 		public void singleModification(EditionEvent e) {
 			if (e.getType() != EditionEvent.RESYNC) {
 				int row = (int) e.getRowIndex();
+				if (indexes != null) {
+					row = indexes.indexOf(new Integer(row));
+				}
 				int column = e.getFieldIndex();
 				if ((e.getType() == EditionEvent.DELETE)
 						|| (e.getType() == EditionEvent.INSERT)) {
