@@ -419,7 +419,12 @@ public class Layer extends GdmsLayer {
 				if (legend == null) {
 					throw new LayerException("Unsupported legend: " + legendId);
 				}
-				legend.setJAXBObject(simpleLegend.getAny());
+				try {
+					legend.setJAXBObject(simpleLegend.getAny());
+				} catch (Exception e) {
+					Services.getErrorManager().error(
+							"Cannot recover legend. Legend is lost", e);
+				}
 				fieldLegends.add(legend);
 			}
 			try {
