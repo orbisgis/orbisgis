@@ -129,4 +129,14 @@ public class DefaultEditorManager implements EditorManager {
 		editorPanel.removeEditorListener(listener);
 	}
 
+	@Override
+	public IEditor[] getEditors(String editorId, Object object) {
+		return editorPanel.getEditors(editorId, object);
+	}
+
+	@Override
+	public IEditor[] getEditors(String editorId) {
+		return editorPanel.getEditors(editorId);
+	}
+
 }

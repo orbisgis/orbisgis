@@ -37,6 +37,7 @@
 package org.orbisgis.editorViews.toc.actions;
 
 import org.orbisgis.Services;
+import org.orbisgis.editor.IEditor;
 import org.orbisgis.editorViews.toc.action.IMultipleLayerAction;
 import org.orbisgis.editors.map.MapEditor;
 import org.orbisgis.layerModel.ILayer;
@@ -54,8 +55,10 @@ public class ZoomToLayer implements IMultipleLayerAction {
 		}
 		EditorManager em = (EditorManager) Services
 				.getService(EditorManager.class);
-		if (em.getActiveEditor() != null) {
-			((MapEditor) em.getActiveEditor()).getMapTransform().setExtent(env);
+		IEditor[] editors = em.getEditors("org.orbisgis.editors.Map",
+				mapContext);
+		for (IEditor editor : editors) {
+			((MapEditor) editor).getMapTransform().setExtent(env);
 		}
 	}
 

@@ -83,13 +83,9 @@ public class EditLayerAction implements ILayerAction {
 					.getService(EditorManager.class);
 			MapTransform mt = null;
 			// Find the map editor editing mapContext
-			IEditor[] editors = em.getEditors();
-			for (IEditor openEditor : editors) {
-				if ((openEditor.getElement().getObject() == mapContext)
-						&& (openEditor instanceof MapEditor)) {
-					mt = ((MapEditor) openEditor).getMapTransform();
-				}
-			}
+			IEditor editor = em.getEditors("org.orbisgis.editors.Map",
+					mapContext)[0];
+			mt = ((MapEditor) editor).getMapTransform();
 			if (mt == null) {
 				JOptionPane.showMessageDialog(null,
 						"Cannot find a map editor, 1:1 scale used");

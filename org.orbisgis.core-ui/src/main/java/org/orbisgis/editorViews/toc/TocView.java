@@ -108,15 +108,14 @@ public class TocView implements IEditorView {
 								.getObject();
 						EditorManager em = Services
 								.getService(EditorManager.class);
-						IEditor[] editors = em.getEditors();
+						IEditor[] editors = em
+								.getEditors("org.orbisgis.editors.Table");
 						for (IEditor openEditor : editors) {
-							if (openEditor.getElement() instanceof EditableLayer) {
-								EditableLayer el = (EditableLayer) openEditor
-										.getElement();
-								if (el.getMapContext() == mc) {
-									if (!em.closeEditor(openEditor)) {
-										return false;
-									}
+							EditableLayer el = (EditableLayer) openEditor
+									.getElement();
+							if (el.getMapContext() == mc) {
+								if (!em.closeEditor(openEditor)) {
+									return false;
 								}
 							}
 						}

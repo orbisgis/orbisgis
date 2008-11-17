@@ -58,39 +58,40 @@ public class AbstractTest extends TestCase {
 		Services
 				.registerService(ErrorManager.class, "", new FailErrorManager());
 		Services.registerService(EditorManager.class, "", new EditorManager() {
-		
+
 			@Override
 			public void open(EditableElement element)
 					throws UnsupportedOperationException {
 			}
-		
+
 			@Override
 			public boolean hasEditor(EditableElement element) {
 				return false;
 			}
-		
+
 			@Override
 			public IEditor[] getEditors() {
 				return new IEditor[0];
 			}
-		
+
 			@Override
 			public IEditor[] getEditor(EditableElement element) {
 				return new IEditor[0];
 			}
-		
+
 			@Override
 			public EditableElement getActiveElement() {
 				return null;
 			}
-		
+
 			@Override
 			public IEditor getActiveEditor() {
 				return null;
 			}
-		
+
 			@Override
-			public boolean closeEditor(IEditor editor) throws IllegalArgumentException {
+			public boolean closeEditor(IEditor editor)
+					throws IllegalArgumentException {
 				return true;
 			}
 
@@ -105,6 +106,16 @@ public class AbstractTest extends TestCase {
 
 			@Override
 			public void removeEditorListener(EditorListener listener) {
+			}
+
+			@Override
+			public IEditor[] getEditors(String editorId, Object object) {
+				return getEditors();
+			}
+
+			@Override
+			public IEditor[] getEditors(String editorId) {
+				return getEditors();
 			}
 		});
 		super.setUp();

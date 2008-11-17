@@ -367,7 +367,7 @@
 			icon="/org/orbisgis/images/remove.png"
 			class="org.orbisgis.editors.table.actions.DeleteSelection"/>
 		<action id="org.orbisgis.editors.table.DeleteSelection"
-			text="Zoom to"
+			text="Zoom to selection"
 			menu-group="org.orbisgis.editors.table.Selection"
 			class="org.orbisgis.editors.table.actions.ZoomToSelected"/>
 	</extension>

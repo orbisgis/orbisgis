@@ -124,4 +124,23 @@ public interface EditorManager {
 	 */
 	String getEditorId(IEditor editor);
 
+	/**
+	 * Get the open editors with the specified id and which object stored in the
+	 * element in edition is the same as 'object'
+	 * 
+	 * @param editorId
+	 * @param object
+	 * 
+	 * @return
+	 */
+	IEditor[] getEditors(String editorId, Object object);
+
+	/**
+	 * Get the open editors with the specified id
+	 * 
+	 * @param editorId
+	 * @return
+	 */
+	IEditor[] getEditors(String editorId);
+
 }

@@ -525,6 +525,33 @@ public class EditorPanel extends Container {
 		return ret;
 	}
 
+	public IEditor[] getEditors(String editorId, Object object) {
+		ArrayList<IEditor> ret = new ArrayList<IEditor>();
+		for (int i = 0; i < editorsInfo.size(); i++) {
+			EditorDecorator editorDecorator = editorsInfo.get(i)
+					.getEditorDecorator();
+			if (editorDecorator.getId().equals(editorId)
+					&& editorDecorator.getElement().getObject() == object) {
+				ret.add(editorDecorator.getEditor());
+			}
+		}
+
+		return ret.toArray(new IEditor[0]);
+	}
+
+	public IEditor[] getEditors(String editorId) {
+		ArrayList<IEditor> ret = new ArrayList<IEditor>();
+		for (int i = 0; i < editorsInfo.size(); i++) {
+			EditorDecorator editorDecorator = editorsInfo.get(i)
+					.getEditorDecorator();
+			if (editorDecorator.getId().equals(editorId)) {
+				ret.add(editorDecorator.getEditor());
+			}
+		}
+
+		return ret.toArray(new IEditor[0]);
+	}
+
 	public String getEditorId(IEditor editor) {
 		for (EditorInfo editorInfo : editorsInfo) {
 			if (editor == editorInfo.getEditorDecorator().getEditor()) {
