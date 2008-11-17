@@ -167,8 +167,8 @@ public class DefaultLabelLegend extends AbstractCartoLegend implements LabelLege
 	}
 
 	@Override
-	public int getSymbolAttributesSource() {
-		return ONE_FEATURE_SOURCE;
+	public int getSymbolsToUpdateOnRowModification() {
+		return ONLY_AFFECTED;
 	}
 
 }

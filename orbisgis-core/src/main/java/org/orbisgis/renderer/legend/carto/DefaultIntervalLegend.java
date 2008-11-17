@@ -268,8 +268,8 @@ public class DefaultIntervalLegend extends AbstractClassifiedLegend implements
 	}
 
 	@Override
-	public int getSymbolAttributesSource() {
-		return ONE_FEATURE_SOURCE;
+	public int getSymbolsToUpdateOnRowModification() {
+		return ONLY_AFFECTED;
 	}
 
 }

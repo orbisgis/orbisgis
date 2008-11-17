@@ -107,7 +107,7 @@ public class LegendDecorator implements Legend, EditionListener {
 	}
 
 	public void singleModification(EditionEvent e) {
-		if ((legend.getSymbolAttributesSource() == Legend.SEVERAL_FEATURES_SOURCE)
+		if ((legend.getSymbolsToUpdateOnRowModification() == Legend.ALL)
 				|| (e.getType() == EditionEvent.RESYNC)) {
 			try {
 				initialize(sds);
@@ -214,7 +214,7 @@ public class LegendDecorator implements Legend, EditionListener {
 	}
 
 	@Override
-	public int getSymbolAttributesSource() {
-		return legend.getSymbolAttributesSource();
+	public int getSymbolsToUpdateOnRowModification() {
+		return legend.getSymbolsToUpdateOnRowModification();
 	}
 }

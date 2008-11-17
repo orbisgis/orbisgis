@@ -176,7 +176,7 @@ public class DefaultUniqueValueLegend extends AbstractClassifiedLegend
 	}
 
 	@Override
-	public int getSymbolAttributesSource() {
-		return ONE_FEATURE_SOURCE;
+	public int getSymbolsToUpdateOnRowModification() {
+		return ONLY_AFFECTED;
 	}
 }

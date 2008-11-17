@@ -153,8 +153,8 @@ public class RasterLegend extends AbstractLegend implements Legend {
 	}
 
 	@Override
-	public int getSymbolAttributesSource() {
-		return ONE_FEATURE_SOURCE;
+	public int getSymbolsToUpdateOnRowModification() {
+		return ONLY_AFFECTED;
 	}
 
 }

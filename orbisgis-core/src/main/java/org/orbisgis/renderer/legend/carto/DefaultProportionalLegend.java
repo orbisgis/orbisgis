@@ -364,7 +364,7 @@ public class DefaultProportionalLegend extends AbstractCartoLegend implements
 	}
 
 	@Override
-	public int getSymbolAttributesSource() {
-		return SEVERAL_FEATURES_SOURCE;
+	public int getSymbolsToUpdateOnRowModification() {
+		return ALL;
 	}
 }
