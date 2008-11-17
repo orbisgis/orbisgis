@@ -59,10 +59,15 @@ public class GraphicsUtils {
 		xPoints[2] = (int) (baseX - th * vecLeft[0]);
 		yPoints[2] = (int) (baseY - th * vecLeft[1]);
 
-		g.setColor(fillColor);
-		g.fillPolygon(xPoints, yPoints, 3);
-		g.setColor(outlineColor);
-		g.drawLine(x, y, (int) baseX, (int) baseY);
-		g.drawPolygon(xPoints, yPoints, 3);
+		if (fillColor != null) {
+			g.setColor(fillColor);
+			g.fillPolygon(xPoints, yPoints, 3);
+		}
+
+		if (outlineColor != null) {
+			g.setColor(outlineColor);
+			g.drawLine(x, y, (int) baseX, (int) baseY);
+			g.drawPolygon(xPoints, yPoints, 3);
+		}
 	}
 }
