@@ -47,8 +47,8 @@ public class DeleteSelection implements IEditorAction {
 	}
 
 	public static boolean isEnabled(TableEditableElement element) {
-		// TODO Auto-generated method stub
-		return false;
+		return (element.getSelection().getSelectedRows().length > 0)
+				&& element.getDataSource().isEditable();
 	}
 
 }
