@@ -47,16 +47,20 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextPane;
 import javax.swing.text.AttributeSet;
+import javax.swing.text.BadLocationException;
 import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyleConstants;
 import javax.swing.text.StyleContext;
 
 import org.orbisgis.Services;
+import org.orbisgis.errorManager.ErrorManager;
 import org.orbisgis.images.IconLoader;
 import org.orbisgis.outputManager.OutputManager;
 import org.orbisgis.view.ViewManager;
 
 public class OutputPanel extends JPanel implements OutputManager {
+
+	private static final int MAX_CHARACTERS = 2048;
 
 	private JTextPane jTextArea;
 
@@ -110,15 +114,23 @@ public class OutputPanel extends JPanel implements OutputManager {
 				StyleConstants.Foreground, color);
 
 		int len = jTextArea.getDocument().getLength();
-		jTextArea.setCaretPosition(len);
-		jTextArea.setCharacterAttributes(aset, false);
-		jTextArea.replaceSelection(text);
+		try {
+			jTextArea.setCaretPosition(len);
+			jTextArea.setCharacterAttributes(aset, false);
+			jTextArea.getDocument().insertString(len, text, aset);
+			len = jTextArea.getDocument().getLength();
+			if (len > MAX_CHARACTERS) {
+				jTextArea.getDocument().remove(0, len - MAX_CHARACTERS);
+			}
+		} catch (BadLocationException e) {
+			Services.getService(ErrorManager.class).error(
+					"Cannot add error message", e);
+		}
 		jTextArea.setCaretPosition(jTextArea.getDocument().getLength());
 	}
 
 	public void makeVisible() {
-		ViewManager vm = (ViewManager) Services
-				.getService(ViewManager.class);
+		ViewManager vm = (ViewManager) Services.getService(ViewManager.class);
 		vm.showView("org.orbisgis.views.Output");
 	}
 }
