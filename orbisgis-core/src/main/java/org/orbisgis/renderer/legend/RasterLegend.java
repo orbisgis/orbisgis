@@ -152,4 +152,9 @@ public class RasterLegend extends AbstractLegend implements Legend {
 		return "Raster";
 	}
 
+	@Override
+	public int getSymbolAttributesSource() {
+		return ONE_FEATURE_SOURCE;
+	}
+
 }

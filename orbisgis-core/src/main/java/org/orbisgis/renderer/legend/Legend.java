@@ -50,6 +50,19 @@ import org.orbisgis.renderer.symbol.Symbol;
 public interface Legend {
 
 	/**
+	 * Indicates that a symbol is calculated using only one feature. If this
+	 * feature is modified the symbol can be recalculated with the data of this
+	 * single feature
+	 */
+	int ONE_FEATURE_SOURCE = 1;
+
+	/**
+	 * Indicates that a symbol is calculated using several feature. If the
+	 * feature painted by a symbol is changed several symbols can be affected.
+	 */
+	int SEVERAL_FEATURES_SOURCE = 2;
+
+	/**
 	 * Adds a listener of legend changes to the legend.
 	 * 
 	 * @param listener
@@ -195,4 +208,15 @@ public interface Legend {
 	 * @return
 	 */
 	String getJAXBContext();
+
+	/**
+	 * Get the source for the symbols attributes. The source for a symbol can be
+	 * just the feature this symbol paints or some other features in the layer
+	 * (for example, those containing minimum and maximum values, those nearby,
+	 * etc.). In the last case it should return {@link #SEVERAL_FEATURES_SOURCE}
+	 * and in the former case {@link #ONE_FEATURE_SOURCE} should be returned
+	 * 
+	 * @return
+	 */
+	int getSymbolAttributesSource();
 }

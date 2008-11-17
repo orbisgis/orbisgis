@@ -166,4 +166,9 @@ public class DefaultLabelLegend extends AbstractCartoLegend implements LabelLege
 		return "Label";
 	}
 
+	@Override
+	public int getSymbolAttributesSource() {
+		return ONE_FEATURE_SOURCE;
+	}
+
 }

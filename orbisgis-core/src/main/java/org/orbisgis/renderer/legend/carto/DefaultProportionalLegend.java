@@ -362,4 +362,9 @@ public class DefaultProportionalLegend extends AbstractCartoLegend implements
 	public String getLegendTypeName() {
 		return "Proportional point";
 	}
+
+	@Override
+	public int getSymbolAttributesSource() {
+		return SEVERAL_FEATURES_SOURCE;
+	}
 }

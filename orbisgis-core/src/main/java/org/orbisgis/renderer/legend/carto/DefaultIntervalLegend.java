@@ -267,4 +267,9 @@ public class DefaultIntervalLegend extends AbstractClassifiedLegend implements
 		return "Interval classification";
 	}
 
+	@Override
+	public int getSymbolAttributesSource() {
+		return ONE_FEATURE_SOURCE;
+	}
+
 }

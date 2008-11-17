@@ -107,34 +107,37 @@ public class LegendDecorator implements Legend, EditionListener {
 	}
 
 	public void singleModification(EditionEvent e) {
-		switch (e.getType()) {
-		case EditionEvent.DELETE:
-			symbols.remove(e.getRowIndex());
-			break;
-		case EditionEvent.INSERT:
-			try {
-				symbols.add((int) e.getRowIndex(), legend.getSymbol(sds, e
-						.getRowIndex()));
-			} catch (RenderException e1) {
-				symbols.add(null);
-				logger.error("Cannot update symbol", e1);
-			}
-			break;
-		case EditionEvent.MODIFY:
-			try {
-				symbols.set((int) e.getRowIndex(), legend.getSymbol(sds, e
-						.getRowIndex()));
-			} catch (RenderException e1) {
-				symbols.set((int) e.getRowIndex(), null);
-				logger.error("Cannot update symbol", e1);
-			}
-			break;
-		case EditionEvent.RESYNC:
+		if ((legend.getSymbolAttributesSource() == Legend.SEVERAL_FEATURES_SOURCE)
+				|| (e.getType() == EditionEvent.RESYNC)) {
 			try {
 				initialize(sds);
 			} catch (RenderException e1) {
 				valid = false;
 				logger.error("Cannot update symbol", e1);
+			}
+		} else {
+			switch (e.getType()) {
+			case EditionEvent.DELETE:
+				symbols.remove(e.getRowIndex());
+				break;
+			case EditionEvent.INSERT:
+				try {
+					symbols.add((int) e.getRowIndex(), legend.getSymbol(sds, e
+							.getRowIndex()));
+				} catch (RenderException e1) {
+					symbols.add(null);
+					logger.error("Cannot update symbol", e1);
+				}
+				break;
+			case EditionEvent.MODIFY:
+				try {
+					symbols.set((int) e.getRowIndex(), legend.getSymbol(sds, e
+							.getRowIndex()));
+				} catch (RenderException e1) {
+					symbols.set((int) e.getRowIndex(), null);
+					logger.error("Cannot update symbol", e1);
+				}
+				break;
 			}
 		}
 	}
@@ -208,5 +211,10 @@ public class LegendDecorator implements Legend, EditionListener {
 
 	public boolean isValid() {
 		return valid;
+	}
+
+	@Override
+	public int getSymbolAttributesSource() {
+		return legend.getSymbolAttributesSource();
 	}
 }

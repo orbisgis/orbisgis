@@ -124,4 +124,9 @@ public class DefaultUniqueSymbolLegend extends AbstractCartoLegend implements
 		return "Unique symbol";
 	}
 
+	@Override
+	public int getSymbolAttributesSource() {
+		return ONE_FEATURE_SOURCE;
+	}
+
 }

@@ -174,4 +174,9 @@ public class DefaultUniqueValueLegend extends AbstractClassifiedLegend
 	public String getLegendTypeName() {
 		return "Value classification";
 	}
+
+	@Override
+	public int getSymbolAttributesSource() {
+		return ONE_FEATURE_SOURCE;
+	}
 }
