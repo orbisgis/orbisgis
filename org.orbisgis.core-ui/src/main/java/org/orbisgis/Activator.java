@@ -281,9 +281,13 @@ public class Activator implements PluginActivator {
 		EditorManager em = Services.getService(EditorManager.class);
 		IEditor[] editors = em.getEditors();
 		for (IEditor editor : editors) {
-			if (!em.closeEditor(editor)) {
-				ret = false;
-				break;
+			try {
+				if (!em.closeEditor(editor)) {
+					ret = false;
+					break;
+				}
+			} catch (IllegalArgumentException e) {
+				// Ignore. Some editor closings lead to the closing of others
 			}
 		}
 
