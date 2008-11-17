@@ -206,7 +206,7 @@ public class EditorPanel extends Container {
 		ArrayList<IEditor> ret = new ArrayList<IEditor>();
 		for (EditorInfo editorInfo : editorsInfo) {
 			if (editorInfo.getDocument().equals(element)) {
-				ret.add(editorInfo.getEditorDecorator());
+				ret.add(editorInfo.getEditorDecorator().getEditor());
 			}
 		}
 
@@ -508,7 +508,7 @@ public class EditorPanel extends Container {
 
 	public boolean closeEditor(IEditor editor) {
 		for (EditorInfo editorInfo : editorsInfo) {
-			if (editor == editorInfo.getEditorDecorator()) {
+			if (editor == editorInfo.getEditorDecorator().getEditor()) {
 				return closeEditorView(editorInfo.getView());
 			}
 		}
@@ -519,7 +519,7 @@ public class EditorPanel extends Container {
 	public IEditor[] getEditors() {
 		IEditor[] ret = new IEditor[editorsInfo.size()];
 		for (int i = 0; i < editorsInfo.size(); i++) {
-			ret[i] = editorsInfo.get(i).getEditorDecorator();
+			ret[i] = editorsInfo.get(i).getEditorDecorator().getEditor();
 		}
 
 		return ret;
