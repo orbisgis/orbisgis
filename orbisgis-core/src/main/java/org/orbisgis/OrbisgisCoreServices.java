@@ -115,7 +115,7 @@ public class OrbisgisCoreServices {
 
 	/**
 	 * Installs services that depend on the workspace such as the
-	 * {@link DataManager} 
+	 * {@link DataManager}
 	 */
 	public static void installWorkspaceServices() {
 		Workspace workspace = Services.getService(Workspace.class);
@@ -141,17 +141,7 @@ public class OrbisgisCoreServices {
 
 		// Pipeline the warnings in gdms to the warning system in the
 		// application
-		dsf.setWarninglistener(new WarningListener() {
-
-			public void throwWarning(String msg) {
-				Services.getService(ErrorManager.class).warning(msg, null);
-			}
-
-			public void throwWarning(String msg, Throwable t, Object source) {
-				Services.getService(ErrorManager.class).warning(msg, t);
-			}
-
-		});
+		dsf.setWarninglistener(new PipelineWarningListener());
 
 		// Installation of the service
 		Services
@@ -208,5 +198,53 @@ public class OrbisgisCoreServices {
 		Services.registerService(BasicConfiguration.class,
 				"Manages the basic configurations (key, value)", bc);
 		bc.load();
+	}
+
+	private static final class PipelineWarningListener implements
+			WarningListener {
+
+		private String lastMessage = null;
+		private boolean ignoredMsgShown = false;
+
+		public void throwWarning(String msg) {
+			if (shouldRepport(msg)) {
+				Services.getService(ErrorManager.class).warning(msg, null);
+			}
+		}
+
+		private boolean shouldRepport(String msg) {
+			if (looksLikePrevious(msg)) {
+				if (!ignoredMsgShown) {
+					ignoredMsgShown = true;
+					Services.getService(ErrorManager.class).warning(
+							"Similar warnings ignored");
+				}
+				return false;
+			} else {
+				ignoredMsgShown = false;
+				return true;
+			}
+		}
+
+		public void throwWarning(String msg, Throwable t, Object source) {
+			if (shouldRepport(msg)) {
+				Services.getService(ErrorManager.class).warning(msg, t);
+			}
+		}
+
+		private boolean looksLikePrevious(String currentMsg) {
+			if (lastMessage == null) {
+				lastMessage = currentMsg;
+				return false;
+			} else {
+				String currentMsgStart = currentMsg.substring(0, currentMsg
+						.length() / 4);
+				String currentMsgEnd = currentMsg.substring((3 * currentMsg
+						.length()) / 4);
+				return (lastMessage.startsWith(currentMsgStart) || lastMessage
+						.endsWith(currentMsgEnd));
+			}
+		}
+
 	}
 }
