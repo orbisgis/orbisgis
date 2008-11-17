@@ -27,6 +27,7 @@ import org.orbisgis.renderer.legend.RasterLegend;
 import org.orbisgis.renderer.legend.carto.DefaultLegendManager;
 import org.orbisgis.renderer.legend.carto.LegendFactory;
 import org.orbisgis.renderer.legend.carto.LegendManager;
+import org.orbisgis.renderer.symbol.ArrowSymbol;
 import org.orbisgis.renderer.symbol.DefaultSymbolManager;
 import org.orbisgis.renderer.symbol.SymbolFactory;
 import org.orbisgis.renderer.symbol.SymbolManager;
@@ -184,6 +185,7 @@ public class OrbisgisCoreServices {
 		sm.addSymbol(SymbolFactory.createPolygonSymbol());
 		sm.addSymbol(SymbolFactory.createLineSymbol(Color.black, 1));
 		sm.addSymbol(SymbolFactory.createImageSymbol());
+		sm.addSymbol(new ArrowSymbol(8, 6, Color.black, Color.red, 1));
 
 		lm.addLegend(LegendFactory.createUniqueSymbolLegend());
 		lm.addLegend(LegendFactory.createUniqueValueLegend());
