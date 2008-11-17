@@ -128,7 +128,7 @@ public class PointHandler extends AbstractHandler implements Handler {
 	public Geometry remove() throws CannotChangeGeometryException {
 		if (geometryType == Primitive.POINT_GEOMETRY_TYPE) {
 			throw new CannotChangeGeometryException(
-					"No se puede eliminar un vrtice a un punto");
+					"Cannot remove a vertex from a point geometry");
 		} else if ((geometryType == Primitive.LINE_GEOMETRY_TYPE)
 				|| (geometryType == Primitive.MULTIPOINT_GEOMETRY_TYPE)) {
 			com.vividsolutions.jts.geom.Geometry g = removeVertex();

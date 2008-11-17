@@ -75,7 +75,7 @@ import com.vividsolutions.jts.geom.Polygon;
 /**
  * A wrapper around GDBMS Geometry in order to provide the handler related
  * methods
- *
+ * 
  * @author Fernando Gonzlez Corts
  */
 public class Primitive {
@@ -119,7 +119,7 @@ public class Primitive {
 
 	/**
 	 * Creates a new Primitive
-	 *
+	 * 
 	 * @param g
 	 *            Geometry to be wrapped
 	 * @param geometryIndex
@@ -135,9 +135,7 @@ public class Primitive {
 		Handler[] ret;
 		ArrayList<Handler> retArray;
 		String type = geometry.getGeometryType();
-		if (type.equals(POINT_GEOMETRY_TYPE)
-				|| type.equals(MULTIPOINT_GEOMETRY_TYPE)
-				|| type.equals(LINE_GEOMETRY_TYPE)) {
+		if (type.equals(POINT_GEOMETRY_TYPE) || type.equals(LINE_GEOMETRY_TYPE)) {
 			hndPoints = geometry.getCoordinates();
 			ret = new Handler[hndPoints.length];
 			for (int i = 0; i < hndPoints.length; i++) {
@@ -145,8 +143,17 @@ public class Primitive {
 						i, hndPoints[i], geomIndex);
 			}
 			return ret;
+		} else if (type.equals(MULTIPOINT_GEOMETRY_TYPE)) {
+			retArray = new ArrayList<Handler>();
+			for (int g = 0; g < geometry.getNumGeometries(); g++) {
+				hndPoints = geometry.getGeometryN(g).getCoordinates();
+				for (int i = 0; i < hndPoints.length; i++) {
+					retArray.add(new MultipointHandler(geometry, g, i,
+							hndPoints[i], geomIndex));
+				}
+			}
+			return retArray.toArray(new Handler[0]);
 		} else if (type.equals(MULTILINE_GEOMETRY_TYPE)) {
-
 			retArray = new ArrayList<Handler>();
 			for (int g = 0; g < geometry.getNumGeometries(); g++) {
 				hndPoints = geometry.getGeometryN(g).getCoordinates();
@@ -186,7 +193,7 @@ public class Primitive {
 
 	/**
 	 * Gets this geometry by adding the specified point as a new vertex
-	 *
+	 * 
 	 * @param vertexPoint
 	 * @param tolerance
 	 * @return Null if the vertex cannot be inserted

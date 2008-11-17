@@ -59,94 +59,70 @@
  */
 package org.orbisgis.editors.map.tool;
 
-import java.awt.Color;
-import java.awt.Graphics2D;
-import java.awt.Point;
-import java.awt.geom.Point2D;
-
-import org.orbisgis.map.MapTransform;
+import java.util.ArrayList;
 
 import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.GeometryFactory;
+import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.MultiPoint;
+import com.vividsolutions.jts.geom.Point;
 
-public abstract class AbstractHandler implements Handler {
+public class MultipointHandler extends AbstractHandler implements Handler {
 
-	protected static GeometryFactory gf = new GeometryFactory();
-	protected int vertexIndex;
-	protected Coordinate point;
-	protected com.vividsolutions.jts.geom.Geometry geometry;
-	protected int geomIndex;
+	private int pointIndex;
 
-	/**
-	 * Creates a new PointHandler
-	 *
-	 * @param p
-	 *            Primitive this handler belongs to
-	 * @param vertexIndex
-	 *            index of the vertex this handler represents
-	 * @param primitiveIndex
-	 *            Index of the primitive in the Theme it was read
-	 * @param x
-	 * @param y
-	 */
-	public AbstractHandler(com.vividsolutions.jts.geom.Geometry g,
-			int vertexIndex, Coordinate p, int geomIndex) {
-		this.vertexIndex = vertexIndex;
-		this.point = p;
-		this.geometry = g;
-		this.geomIndex = geomIndex;
+	public MultipointHandler(Geometry g, int pointIndex, int vertexIndex,
+			Coordinate p, int geomIndex) {
+		super(g, vertexIndex, p, geomIndex);
+		this.pointIndex = pointIndex;
 	}
 
 	/**
-	 * @see org.estouro.theme.Handler#draw(java.awt.Graphics2D)
+	 * @see org.estouro.theme.Handler#moveTo(double, double)
 	 */
-	public void draw(Graphics2D g2, Color color, ToolManager tm,
-			MapTransform transform) {
-		g2.setColor(color);
-		Point p = transform.fromMapPoint(getPoint());
-		int tol = tm.getUITolerance();
-		g2.drawRect(p.x - tol / 2, p.y - tol / 2, tol, tol);
-	}
-
-	/**
-	 * @see org.estouro.theme.Handler#getPoint()
-	 */
-	public Point2D getPoint() {
-		return new Point2D.Double(point.x, point.y);
-	}
-
-	/**
-	 * removes the vertex from the JTS geometry
-	 *
-	 * @param g
-	 *
-	 * @return
-	 *
-	 * @throws CannotChangeGeometryException
-	 */
-	protected Coordinate[] removeVertex(int vertexIndex,
-			com.vividsolutions.jts.geom.Geometry g, int minNumVertex)
+	public Geometry moveTo(double x, double y)
 			throws CannotChangeGeometryException {
-		Coordinate[] coords = g.getCoordinates();
-		if (coords.length <= minNumVertex) {
-			throw new CannotChangeGeometryException(
-					"Invalid geometry. Too few vertex");
+		Coordinate p = new Coordinate(x, y);
+		MultiPoint mp = (MultiPoint) geometry.clone();
+		Point[] points = new Point[mp.getNumGeometries()];
+		for (int i = 0; i < points.length; i++) {
+			if (i == pointIndex) {
+				PointHandler handler = new PointHandler((Point) mp
+						.getGeometryN(i), Primitive.POINT_GEOMETRY_TYPE, 0, p,
+						geomIndex);
+				points[i] = (Point) handler.moveJTSTo(x, y);
+			} else {
+				points[i] = (Point) mp.getGeometryN(i);
+			}
+
 		}
-		Coordinate[] newCoords = new Coordinate[coords.length - 1];
-		for (int i = 0; i < vertexIndex; i++) {
-			newCoords[i] = new Coordinate(coords[i].x, coords[i].y);
+
+		mp = gf.createMultiPoint(points);
+		if (!mp.isValid()) {
+			throw new CannotChangeGeometryException(THE_GEOMETRY_IS_NOT_VALID);
 		}
-		if (vertexIndex != coords.length - 1) {
-			for (int i = vertexIndex + 1; i < coords.length; i++) {
-				newCoords[i - 1] = new Coordinate(coords[i].x, coords[i].y);
+
+		return mp;
+	}
+
+	/**
+	 * @see org.estouro.theme.Handler#remove()
+	 */
+	public Geometry remove() throws CannotChangeGeometryException {
+
+		MultiPoint mp = (MultiPoint) geometry;
+		ArrayList<Point> points = new ArrayList<Point>();
+		for (int i = 0; i < mp.getNumGeometries(); i++) {
+			if (i != pointIndex) {
+				points.add((Point) mp.getGeometryN(i));
 			}
 		}
 
-		return newCoords;
-	}
+		mp = gf.createMultiPoint(points.toArray(new Point[0]));
+		if (!mp.isValid()) {
+			throw new CannotChangeGeometryException(THE_GEOMETRY_IS_NOT_VALID);
+		}
 
-	public int getGeometryIndex() {
-		return geomIndex;
+		return mp;
 	}
 
 }
