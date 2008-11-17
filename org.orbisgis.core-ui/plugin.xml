@@ -883,10 +883,6 @@
 		<legend-panel
 			class="org.orbisgis.editorViews.toc.actions.cui.legends.PnlLabelLegend"/>
 	</extension>
-	<extension point="org.orbisgis.LegendPanel">
-		<legend-panel
-			class="org.orbisgis.editorViews.toc.actions.cui.legends.PnlMultipointLinker"/>
-	</extension>
 		
 	<!-- Symbol panels extensions -->
 	<extension point="org.orbisgis.SymbolPanel">
