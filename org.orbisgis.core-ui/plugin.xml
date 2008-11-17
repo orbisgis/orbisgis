@@ -890,6 +890,8 @@
 			class="org.orbisgis.editorViews.toc.actions.cui.legends.ImageSymbolEditor"/>
 		<symbol-panel
 			class="org.orbisgis.editorViews.toc.actions.cui.legends.ClassicSymbolEditor"/>
+		<symbol-panel
+			class="org.orbisgis.editorViews.toc.actions.cui.legends.ArrowSymbolEditor"/>
 	</extension>
 	
 	 

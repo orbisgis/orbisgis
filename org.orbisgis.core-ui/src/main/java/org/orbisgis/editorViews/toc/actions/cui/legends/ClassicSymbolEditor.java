@@ -40,12 +40,12 @@ public class ClassicSymbolEditor extends JPanel implements ISymbolEditor {
 	private JLabel lblLine;
 	private JCheckBox chkFill;
 	private JCheckBox chkLine;
-	private EditableSymbol symbol;
+	protected EditableSymbol symbol;
 	private JLabel lblLineWidth;
 	private JLabel lblTransparency;
 	private JLabel lblSize;
 	private SymbolEditorListener listener;
-	private boolean ignoreEvents = false;
+	protected boolean ignoreEvents = false;
 
 	public ClassicSymbolEditor() {
 		CRFlowLayout flowLayout = new CRFlowLayout();
@@ -75,7 +75,7 @@ public class ClassicSymbolEditor extends JPanel implements ISymbolEditor {
 
 	}
 
-	private JPanel getPnlSizeControls() {
+	protected JPanel getPnlSizeControls() {
 		JPanel pnlSizeControls = new JPanel();
 		pnlSizeControls.setLayout(new CRFlowLayout());
 		pnlSizeControls.add(new JLabel(""));
@@ -96,7 +96,7 @@ public class ClassicSymbolEditor extends JPanel implements ISymbolEditor {
 		return pnlSizeControls;
 	}
 
-	private JNumericSpinner getSpinner(int min, int max) {
+	protected JNumericSpinner getSpinner(int min, int max) {
 		JNumericSpinner spinner = new JNumericSpinner(4);
 		spinner.setInc(1);
 		spinner.addChangeListener(new ChangeListener() {
@@ -110,7 +110,7 @@ public class ClassicSymbolEditor extends JPanel implements ISymbolEditor {
 		return spinner;
 	}
 
-	private JPanel getPnlSizeTexts() {
+	protected JPanel getPnlSizeTexts() {
 		JPanel pnlSizeTexts = new JPanel();
 		CRFlowLayout flowLayout2 = new CRFlowLayout();
 		flowLayout2.setVgap(18);
@@ -191,7 +191,7 @@ public class ClassicSymbolEditor extends JPanel implements ISymbolEditor {
 		symbolChanged();
 	}
 
-	private void symbolChanged() {
+	protected void symbolChanged() {
 		if (!ignoreEvents) {
 			int transparency = 0;
 			try {
