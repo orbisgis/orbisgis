@@ -52,7 +52,7 @@ public interface DataSourceDefinition {
 	 * @param tableName
 	 *            name of the DataSource
 	 * @param pm
-	 *            TODO
+	 *            To indicate progress or being canceled
 	 * @return DataSource
 	 */
 	public DataSource createDataSource(String tableName, IProgressMonitor pm)
