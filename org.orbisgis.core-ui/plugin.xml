@@ -335,6 +335,10 @@
 			text="Show field info"
 			menu-group="org.orbisgis.editors.table.FieldManagement"
 			class="org.orbisgis.editors.table.actions.ShowFieldInfo"/>
+		<action id="org.orbisgis.editors.table.actions.ShowFieldStatistics"
+			text="Show statistics"
+			menu-group="org.orbisgis.editors.table.FieldManagement"
+			class="org.orbisgis.editors.table.actions.ShowFieldStatistics"/>		
 	</extension>
 	
 	<!-- table cell actions -->
