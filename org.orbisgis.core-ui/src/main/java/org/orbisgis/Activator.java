@@ -144,44 +144,7 @@ public class Activator implements PluginActivator {
 		QueryManager.addQueryManagerListener(refreshFMListener);
 
 		// Install the error listener
-		em.addErrorListener(new ErrorListener() {
-
-			private ErrorPanel ep = new ErrorPanel();
-
-			public void warning(String userMsg, Throwable e) {
-				error(userMsg, e, false);
-			}
-
-			private void error(String userMsg, Throwable e, boolean error) {
-				ErrorMessage errorMessage = new ErrorMessage(userMsg, e, error);
-				// Pipe the message to the output manager
-				OutputManager om = Services.getService(OutputManager.class);
-				Color color;
-				if (errorMessage.isError()) {
-					color = Color.red;
-				} else {
-					color = new Color(128, 128, 0);
-				}
-				om.print(errorMessage.getLongMessage() + "\n", color);
-				om.makeVisible();
-
-				// Show message to the user and send log
-				if (errorMessage.isError()) {
-					ep.show("Error", errorMessage.getLongMessage());
-					if (ep.sendLog()) {
-						Thread t = new Thread(new SendLog());
-						t.setPriority(Thread.MIN_PRIORITY);
-						t.start();
-
-					}
-				}
-			}
-
-			public void error(String userMsg, Throwable e) {
-				error(userMsg, e, true);
-			}
-
-		});
+		em.addErrorListener(new FilteringErrorListener());
 
 		// Put in output the errors raised at start up
 		errorService.removeErrorListener(cacheListener);
@@ -292,6 +255,85 @@ public class Activator implements PluginActivator {
 		}
 
 		return ret;
+	}
+
+	private final class FilteringErrorListener implements ErrorListener {
+		private ErrorPanel ep = new ErrorPanel();
+
+		private String lastMessage = null;
+		private boolean ignoredMsgShown = false;
+
+		public void warning(String userMsg, Throwable e) {
+			error(userMsg, e, false);
+		}
+
+		private boolean looksLikePrevious(String currentMsg) {
+			if (lastMessage == null) {
+				lastMessage = currentMsg;
+				return false;
+			} else {
+				String currentMsgStart = currentMsg.substring(0, currentMsg
+						.length() / 4);
+				String currentMsgEnd = currentMsg.substring((3 * currentMsg
+						.length()) / 4);
+				return (lastMessage.startsWith(currentMsgStart) || lastMessage
+						.endsWith(currentMsgEnd));
+			}
+		}
+
+		private boolean shouldRepport(String msg) {
+			if (looksLikePrevious(msg)) {
+				if (!ignoredMsgShown) {
+					ignoredMsgShown = true;
+					reportOutputManager(new ErrorMessage("Similar error "
+							+ "messages not shown", null, false));
+				}
+				return false;
+			} else {
+				lastMessage = msg;
+				ignoredMsgShown = false;
+				return true;
+			}
+		}
+
+		private void error(String userMsg, Throwable e, boolean error) {
+			ErrorMessage errorMessage = new ErrorMessage(userMsg, e, error);
+
+			// Show the message to the user
+			if (shouldRepport(userMsg)) {
+				// Pipe the message to the output manager
+				reportOutputManager(errorMessage);
+
+				if (errorMessage.isError()) {
+					ep.show("Error", errorMessage.getLongMessage());
+					// Send log
+					boolean isBug = (e instanceof RuntimeException)
+							|| (e instanceof Error);
+					if (isBug && ep.sendLog()) {
+						Thread t = new Thread(new SendLog());
+						t.setPriority(Thread.MIN_PRIORITY);
+						t.start();
+
+					}
+				}
+			}
+		}
+
+		private void reportOutputManager(ErrorMessage errorMessage) {
+			OutputManager om = Services.getService(OutputManager.class);
+			Color color;
+			if (errorMessage.isError()) {
+				color = Color.red;
+			} else {
+				color = new Color(128, 128, 0);
+			}
+			om.print(errorMessage.getLongMessage() + "\n", color);
+			om.makeVisible();
+		}
+
+		public void error(String userMsg, Throwable e) {
+			error(userMsg, e, true);
+		}
 	}
 
 	private final class RefreshViewFunctionManagerListener implements
