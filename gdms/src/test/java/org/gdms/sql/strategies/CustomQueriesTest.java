@@ -65,6 +65,7 @@ public class CustomQueriesTest extends TestCase {
 	static {
 		QueryManager.registerQuery(SumQuery.class);
 		QueryManager.registerQuery(FieldReferenceQuery.class);
+		QueryManager.registerQuery(GigaCustomQuery.class);
 	}
 
 	/**
@@ -236,6 +237,12 @@ public class CustomQueriesTest extends TestCase {
 		} catch (Exception e) {
 		}
 	}
+//
+//	public void testGigaQuery() throws Exception {
+//		DataSource ds = dsf.getDataSourceFromSQL("select gigaquery();");
+//		ds.open();
+//		ds.close();
+//	}
 
 	@Override
 	protected void setUp() throws Exception {
