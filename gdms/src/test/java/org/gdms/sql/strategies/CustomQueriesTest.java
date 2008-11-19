@@ -237,12 +237,13 @@ public class CustomQueriesTest extends TestCase {
 		} catch (Exception e) {
 		}
 	}
-//
-//	public void testGigaQuery() throws Exception {
-//		DataSource ds = dsf.getDataSourceFromSQL("select gigaquery();");
-//		ds.open();
-//		ds.close();
-//	}
+
+	public void testGigaQuery() throws Exception {
+		DataSource ds = dsf.getDataSourceFromSQL("select gigaquery();",
+				DataSourceFactory.NORMAL);
+		ds.open();
+		ds.close();
+	}
 
 	@Override
 	protected void setUp() throws Exception {
