@@ -62,7 +62,7 @@ import org.gdms.source.Source;
 
 /**
  * Adapter to the DataSource interface for database drivers
- *
+ * 
  * @author Fernando Gonzalez Cortes
  */
 public class DBTableDataSourceAdapter extends DriverDataSource implements
@@ -78,7 +78,7 @@ public class DBTableDataSourceAdapter extends DriverDataSource implements
 
 	/**
 	 * Creates a new DBTableDataSourceAdapter
-	 *
+	 * 
 	 */
 	public DBTableDataSourceAdapter(Source src, DBSource def, DBDriver driver) {
 		super(src);
@@ -103,7 +103,7 @@ public class DBTableDataSourceAdapter extends DriverDataSource implements
 
 	/**
 	 * DOCUMENT ME!
-	 *
+	 * 
 	 * @return
 	 */
 	public DBDriver getDriver() {
@@ -112,9 +112,9 @@ public class DBTableDataSourceAdapter extends DriverDataSource implements
 
 	/**
 	 * Get's a connection to the driver
-	 *
+	 * 
 	 * @return Connection
-	 *
+	 * 
 	 * @throws SQLException
 	 *             if the connection cannot be established
 	 */
@@ -242,9 +242,9 @@ public class DBTableDataSourceAdapter extends DriverDataSource implements
 				((DBReadWriteDriver) driver).execute(con, sql);
 			}
 			for (EditionInfo info : editionActions) {
-				sql = info.getSQL(def.getTableName(), getPKNames(), fieldNames,
-						(DBReadWriteDriver) driver);
-				if (sql != null) {
+				if (info != null) {
+					sql = info.getSQL(def.getTableName(), getPKNames(),
+							fieldNames, (DBReadWriteDriver) driver);
 					((DBReadWriteDriver) driver).execute(con, sql);
 				}
 			}
@@ -264,7 +264,7 @@ public class DBTableDataSourceAdapter extends DriverDataSource implements
 		}
 
 		fireCommit(this);
-		
+
 		return true;
 	}
 
