@@ -61,7 +61,7 @@ public class SQLProcessor {
 
 	/**
 	 * Executes the specified instruction using the specified DataSourceFactory
-	 *
+	 * 
 	 * @param sql
 	 * @param pm
 	 * @return
@@ -116,7 +116,7 @@ public class SQLProcessor {
 	/**
 	 * Prepares the instruction for the execution. The returned value is
 	 * optimized and ready to execute
-	 *
+	 * 
 	 * @param script
 	 *            text containing the sql instruction
 	 * @return
@@ -152,12 +152,12 @@ public class SQLProcessor {
 			p.optimize(dsf);
 		}
 
-		return new Instruction(dsf, op, sql, doOpenClose);
+		return new Instruction(op, sql, doOpenClose);
 	}
 
 	/**
 	 * Gets the instructions found in the script
-	 *
+	 * 
 	 * @param script
 	 *            text containing the sql script
 	 * @return

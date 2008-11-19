@@ -51,6 +51,7 @@ import org.gdms.source.SourceManager;
 import org.gdms.source.directory.DefinitionType;
 import org.gdms.source.directory.SqlDefinitionType;
 import org.gdms.sql.parser.ParseException;
+import org.gdms.sql.strategies.DiskBufferDriver;
 import org.gdms.sql.strategies.Instruction;
 import org.gdms.sql.strategies.SQLProcessor;
 import org.gdms.sql.strategies.SemanticException;
@@ -80,18 +81,25 @@ public class SQLSourceDefinition extends AbstractDataSourceDefinition implements
 			if (pm.isCancelled()) {
 				return null;
 			} else {
-				DataSourceFactory dsf = getDataSourceFactory();
-				File file = new File(dsf.getTempFile("gdms"));
-				DataSourceDefinition dsd = new FileSourceDefinition(file);
-				String name = dsf.getSourceManager().nameAndRegister(dsd);
-				dsf.saveContents(name, dsf.getDataSource(source,
-						DataSourceFactory.NORMAL));
-
 				if (source == null) {
 					throw new IllegalArgumentException(
 							"The query produces no result: "
 									+ instruction.getSQL());
 				} else {
+					File file = null;
+					if (source instanceof DiskBufferDriver) {
+						((DiskBufferDriver) source).start();
+						file = ((DiskBufferDriver) source).getFile();
+					} else {
+						DataSourceFactory dsf = getDataSourceFactory();
+						file = new File(dsf.getTempFile("gdms"));
+						DataSourceDefinition dsd = new FileSourceDefinition(
+								file);
+						String name = dsf.getSourceManager().nameAndRegister(
+								dsd);
+						dsf.saveContents(name, dsf.getDataSource(source,
+								DataSourceFactory.NORMAL));
+					}
 					return new FileDataSourceAdapter(getSource(tableName),
 							file, new GdmsDriver(), false);
 				}

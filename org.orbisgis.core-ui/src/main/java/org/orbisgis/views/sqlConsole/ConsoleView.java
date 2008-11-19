@@ -52,6 +52,7 @@ import javax.swing.JDialog;
 import org.apache.log4j.Logger;
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceCreationException;
+import org.gdms.data.DataSourceFactory;
 import org.gdms.data.ExecutionException;
 import org.gdms.data.metadata.Metadata;
 import org.gdms.data.types.Type;
@@ -210,9 +211,9 @@ public class ConsoleView implements IView {
 		}
 
 		public void run(IProgressMonitor pm) {
-			SQLProcessor sqlProcessor = new SQLProcessor(
-					((DataManager) Services
-							.getService(DataManager.class)).getDSF());
+			DataSourceFactory dsf = ((DataManager) Services
+					.getService(DataManager.class)).getDSF();
+			SQLProcessor sqlProcessor = new SQLProcessor(dsf);
 			String[] instructions = new String[0];
 
 			long t1 = System.currentTimeMillis();
@@ -230,8 +231,7 @@ public class ConsoleView implements IView {
 				}
 
 				MapContext vc = ((MapContextManager) Services
-						.getService(MapContextManager.class))
-						.getActiveView();
+						.getService(MapContextManager.class)).getActiveView();
 
 				DataManager dataManager = (DataManager) Services
 						.getService(DataManager.class);
@@ -254,7 +254,8 @@ public class ConsoleView implements IView {
 								}
 							}
 
-							DataSource ds = instruction.getDataSource(pm);
+							DataSource ds = dsf.getDataSource(instruction,
+									DataSourceFactory.DEFAULT, pm);
 
 							if (pm.isCancelled()) {
 								break;

@@ -36,50 +36,40 @@
  */
 package org.gdms.sql.strategies;
 
-import java.io.File;
 import java.util.ArrayList;
 
-import org.gdms.data.DataSource;
-import org.gdms.data.DataSourceCreationException;
-import org.gdms.data.DataSourceDefinition;
-import org.gdms.data.DataSourceFactory;
 import org.gdms.data.ExecutionException;
-import org.gdms.data.NoSuchTableException;
-import org.gdms.data.file.FileSourceDefinition;
 import org.gdms.data.metadata.Metadata;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.ObjectDriver;
-import org.gdms.driver.driverManager.DriverLoadException;
 import org.gdms.sql.parser.ParseException;
 import org.orbisgis.progress.IProgressMonitor;
 import org.orbisgis.progress.NullProgressMonitor;
 
 /**
  * Class that embeds an optimized instruction
- *
+ * 
  * @author Fernando Gonzalez Cortes
- *
+ * 
  */
 public class Instruction {
 	private String sql;
 	private Operator op;
-	private DataSourceFactory dsf;
 	private boolean doOpenClose;
 
-	Instruction(DataSourceFactory dsf, Operator op, String sql,
+	Instruction(Operator op, String sql,
 			boolean doOpenClose) {
 		this.op = op;
 		this.doOpenClose = doOpenClose;
 		this.sql = sql;
-		this.dsf = dsf;
 	}
 
 	/**
 	 * Executes the instruction and returns a source with the result of the
 	 * query
-	 *
+	 * 
 	 * @param pm
-	 *
+	 * 
 	 * @return
 	 * @throws ExecutionException
 	 * @throws DriverException
@@ -99,45 +89,6 @@ public class Instruction {
 			op.operationFinished();
 		}
 		return ret;
-	}
-
-	/**
-	 * Executes the instruction, registers the result and returns a DataSource
-	 * to explore the result. The resulting DataSource cannot be commited
-	 *
-	 * @param pm
-	 *
-	 * @return The result of this instruction or null if the execution was
-	 *         cancelled
-	 *
-	 * @throws ExecutionException
-	 * @throws DataSourceCreationException
-	 * @throws DriverException
-	 * @throws SemanticException
-	 */
-	public DataSource getDataSource(IProgressMonitor pm)
-			throws ExecutionException, DataSourceCreationException,
-			SemanticException, DriverException {
-		if (pm == null) {
-			pm = new NullProgressMonitor();
-		}
-		ObjectDriver ret = execute(pm);
-		if (pm.isCancelled()) {
-			return null;
-		} else {
-			File file = dsf.getResultFile();
-			DataSourceDefinition dsd = new FileSourceDefinition(file);
-			String name = dsf.getSourceManager().nameAndRegister(dsd);
-			dsf.saveContents(name, dsf.getDataSource(ret), pm);
-
-			try {
-				return dsf.getDataSource(name);
-			} catch (DriverLoadException e) {
-				throw new RuntimeException("bug!", e);
-			} catch (NoSuchTableException e) {
-				throw new RuntimeException("bug!", e);
-			}
-		}
 	}
 
 	public String getSQL() {

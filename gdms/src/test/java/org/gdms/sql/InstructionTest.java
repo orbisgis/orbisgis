@@ -109,18 +109,19 @@ public class InstructionTest extends TestCase {
 
 	}
 
-	public void testResultDir() throws Exception {
+	public void testSQLSource() throws Exception {
 		SQLProcessor pr = new SQLProcessor(dsf);
 		Instruction instr = pr.prepareInstruction("select * from alltypes");
-		DataSource ds = instr.getDataSource(null);
-		File file = ds.getSource().getFile();
-		assertTrue(file.getParentFile().equals(resultDir));
+		DataSource ds = dsf.getDataSource(instr, DataSourceFactory.DEFAULT,
+				null);
+		assertTrue(ds.getSource().getSQL().equals("select * from alltypes"));
 	}
 
 	public void testCancelledInstructions() throws Exception {
 		SQLProcessor pr = new SQLProcessor(dsf);
 		Instruction instr = pr.prepareInstruction("select * from alltypes");
-		DataSource ds = instr.getDataSource(cancelPM);
+		DataSource ds = dsf.getDataSource(instr, DataSourceFactory.DEFAULT,
+				cancelPM);
 		assertTrue(ds == null);
 
 		assertTrue(dsf.getDataSourceFromSQL("select * from alltypes", cancelPM) == null);
