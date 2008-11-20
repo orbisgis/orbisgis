@@ -5,7 +5,6 @@ import java.io.File;
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceCreation;
 import org.gdms.data.DataSourceCreationException;
-import org.gdms.data.DataSourceDefinition;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.NoSuchTableException;
 import org.gdms.data.NonEditableDataSourceException;
@@ -26,21 +25,25 @@ public class CreateSourceFromSelection implements IEditorAction {
 
 	@Override
 	public void actionPerformed(IEditor editor) {
-		DataSourceFactory dsf;
-		DataSourceDefinition dsd;
+		TableEditableElement element = (TableEditableElement) editor
+				.getElement();
+		DataSource original = element.getDataSource();
+		int[] selectedRows = element.getSelection().getSelectedRows();
+		createSourceFromSelection(original, selectedRows);
+	}
+
+	public static void createSourceFromSelection(DataSource original,
+			int[] selectedRows) {
 		try {
-			TableEditableElement element = (TableEditableElement) editor
-					.getElement();
-			DataSource original = element.getDataSource();
 			DataManager dm = Services.getService(DataManager.class);
 
 			// Create the new source
-			dsf = dm.getDSF();
+			DataSourceFactory dsf = dm.getDSF();
 			File file = dsf.getResultFile();
 			DataSourceCreation dsc = new FileSourceCreation(file, original
 					.getMetadata());
 			dsf.createDataSource(dsc);
-			dsd = new FileSourceDefinition(file);
+			FileSourceDefinition dsd = new FileSourceDefinition(file);
 
 			// Find an unique name to register
 			SourceManager sm = dm.getSourceManager();
@@ -55,7 +58,6 @@ public class CreateSourceFromSelection implements IEditorAction {
 			// Populate the new source
 			DataSource newds = dsf.getDataSource(newName);
 			newds.open();
-			int[] selectedRows = element.getSelection().getSelectedRows();
 			for (int i = 0; i < selectedRows.length; i++) {
 				newds.insertFilledRow(original.getRow(selectedRows[i]));
 			}

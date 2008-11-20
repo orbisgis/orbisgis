@@ -40,15 +40,11 @@ import java.io.File;
 
 import javax.swing.JOptionPane;
 
-import org.gdms.data.DataSource;
-import org.gdms.data.SpatialDataSourceDecorator;
 import org.gdms.data.file.FileSourceDefinition;
-import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.FileDriver;
 import org.gdms.driver.driverManager.Driver;
 import org.gdms.driver.driverManager.DriverManager;
-import org.gdms.driver.memory.ObjectMemoryDriver;
 import org.gdms.source.AndDriverFilter;
 import org.gdms.source.FileDriverFilter;
 import org.gdms.source.SourceManager;
@@ -107,58 +103,13 @@ public class SaveInFile implements
 						savedFile);
 				Services.getService(DataManager.class).getDSF()
 						.getSourceManager().register(fileName, def);
-
-				int[] selection = resource.getSelection();
-
-				SpatialDataSourceDecorator datasource = resource
-						.getDataSource();
-				if (selection.length > 0) {
-
-					int response = JOptionPane.showConfirmDialog(null,
-							"Do you want to save only the selected features",
-							"Export layer", JOptionPane.YES_NO_OPTION);
-
-					if (response == JOptionPane.YES_OPTION) {
-
-						ObjectMemoryDriver om = new ObjectMemoryDriver(
-								datasource.getMetadata());
-
-						for (int i = 0; i < selection.length; i++) {
-							Value[] value = datasource.getRow(selection[i]);
-							om.addValues(value);
-						}
-
-						DataSource dataResult = Services.getService(
-								DataManager.class).getDSF().getDataSource(om);
-						Services.getService(DataManager.class).getDSF()
-								.saveContents(
-										fileName,
-										new SpatialDataSourceDecorator(
-												dataResult));
-						JOptionPane
-								.showMessageDialog(null,
-										"The file has been saved and added in the geocatalog.");
-
-					} else {
-
-						Services.getService(DataManager.class).getDSF()
-								.saveContents(fileName, datasource);
-						JOptionPane
-								.showMessageDialog(null,
-										"The file has been saved and added in the geocatalog.");
-
-					}
-				} else {
-
-					Services.getService(DataManager.class).getDSF()
-							.saveContents(fileName, datasource);
-					JOptionPane
-							.showMessageDialog(null,
-									"The file has been saved and added in the geocatalog.");
-				}
+				Services.getService(DataManager.class).getDSF().saveContents(
+						fileName, resource.getDataSource());
+				JOptionPane.showMessageDialog(null,
+						"The file has been saved and added in the geocatalog.");
 			}
 		} catch (DriverException e) {
-			Services.getErrorManager().error("Cannot saved the layer.", e);
+			Services.getErrorManager().error("Cannot save the layer.", e);
 		}
 	}
 }

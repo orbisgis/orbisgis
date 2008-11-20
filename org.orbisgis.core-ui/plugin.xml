@@ -227,6 +227,13 @@
 			class="org.orbisgis.editorViews.toc.actions.ZoomToLayer"/>
 	</extension>
 	<extension point="org.orbisgis.editorViews.toc.Action"
+		id="org.orbisgis.editorViews.toc.actions.Selection">
+		<action id="org.orbisgis.editorViews.toc.actions.CreateSourceFromSelection"
+			text="Create source from selection"
+			menu-group="org.orbisgis.editorViews.toc.Selection"
+			class="org.orbisgis.editorViews.toc.actions.CreateSourceFromSelection"/>
+	</extension>
+	<extension point="org.orbisgis.editorViews.toc.Action"
 		id="org.orbisgis.editorViews.toc.TableActions">
 		<action id="org.orbisgis.editorViews.toc.actions.ShowInTable"
 			text="Show in table" menu-group="org.orbisgis.editorViews.toc.Data"
