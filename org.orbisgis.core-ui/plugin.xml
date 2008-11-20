@@ -172,11 +172,6 @@
 			menu-id="org.orbisgis.views.geocatalog.file.New"
 			menu-group="org.orbisgis.views.geocatalog.new" text="Database"
 			class="org.orbisgis.views.geocatalog.actions.create.CreateDBResource"/>
-		<action id="org.orbisgis.views.geocatalog.AddResource"
-			menu-id="org.orbisgis.views.geocatalog.file.Add"
-			menu-group="org.orbisgis.views.geocatalog.new" text="Add..."
-			icon="/org/orbisgis/images/add.png"
-			class="org.orbisgis.views.geocatalog.actions.NewResource"/>
 		<action id="org.orbisgis.views.geocatalog.Delete"
 			menu-group="org.orbisgis.views.geocatalog" text="Delete resource"
 			icon="/org/orbisgis/images/remove.png"
@@ -618,14 +613,6 @@
 	</extension>
 	
 	<!-- Geocognition wizards-->
-	<extension id="org.orbisgis.views.geocognition.wizards.NewAction"
-		point="org.orbisgis.views.geocognition.NewWizard">
-		<category id="org.orbisgis.views.geocognition.UI" name="User interface"/>
-		<wizard id="org.orbisgis.views.geocognition.wizards.NewAction"
-			icon="/org/orbisgis/images/action.png"
-			category="org.orbisgis.views.geocognition.UI"
-			class="org.orbisgis.views.geocognition.wizards.NewAction"/>
-	</extension>
 	<extension
 		id="org.orbisgis.views.geocognition.wizards.NewRegisteredSQLArtifacts"
 		point="org.orbisgis.views.geocognition.NewWizard">
@@ -637,20 +624,6 @@
 			category="org.orbisgis.views.geocognition.Processing"
 			class="org.orbisgis.views.geocognition.wizards.NewRegisteredSQLArtifact"/>
 	</extension>
-	<extension id="org.orbisgis.views.geocognition.wizards.NewFunction"
-		point="org.orbisgis.views.geocognition.NewWizard">
-		<wizard id="org.orbisgis.views.geocognition.wizards.NewFunction"
-			icon="/org/orbisgis/images/functionMap.png"
-			category="org.orbisgis.views.geocognition.Processing"
-			class="org.orbisgis.views.geocognition.wizards.NewFunction"/>
-	</extension>
-	<extension id="org.orbisgis.views.geocognition.wizards.NewCustomQuery"
-		point="org.orbisgis.views.geocognition.NewWizard">
-		<wizard id="org.orbisgis.views.geocognition.wizards.NewCustomQuery"
-			icon="/org/orbisgis/images/customQueryMap.png"
-			category="org.orbisgis.views.geocognition.Processing"
-			class="org.orbisgis.views.geocognition.wizards.NewCustomQuery"/>
-	</extension>
 	<extension id="org.orbisgis.views.geocognition.wizards.Map"
 		point="org.orbisgis.views.geocognition.NewWizard">
 		<category id="org.orbisgis.views.geocognition.Representation"
@@ -659,20 +632,6 @@
 			icon="/org/orbisgis/images/map.png"
 			category="org.orbisgis.views.geocognition.Representation"
 			class="org.orbisgis.views.geocognition.wizards.NewMap"/>
-	</extension>
-	<extension id="org.orbisgis.views.geocognition.wizards.Legend"
-		point="org.orbisgis.views.geocognition.NewWizard">
-		<wizard id="org.orbisgis.views.geocognition.wizards.Legend"
-			icon="/org/orbisgis/images/palette.png"
-			category="org.orbisgis.views.geocognition.Representation"
-			class="org.orbisgis.views.geocognition.wizards.NewLegend"/>
-	</extension>
-	<extension id="org.orbisgis.views.geocognition.wizards.Symbol"
-		point="org.orbisgis.views.geocognition.NewWizard">
-		<wizard id="org.orbisgis.views.geocognition.wizards.Symbol"
-			icon="/org/orbisgis/images/point.png"
-			category="org.orbisgis.views.geocognition.Representation"
-			class="org.orbisgis.views.geocognition.wizards.NewSymbol"/>
 	</extension>
 	<extension id="org.orbisgis.views.geocognition.wizards.Folder"
 		point="org.orbisgis.views.geocognition.NewWizard">
@@ -698,11 +657,6 @@
 			icon="/org/orbisgis/images/remove.png"
 			menu-group="org.orbisgis.views.geocognition.Remove"
 			class="org.orbisgis.views.geocognition.actions.Remove"/>
-		<action id="org.orbisgis.views.geocognition.actions.NewElement"
-			text="Element..." icon="/org/orbisgis/images/application_go.png"
-			menu-group="org.orbisgis.views.geocognition.Basic"
-			class="org.orbisgis.views.geocognition.actions.NewElement"
-			menu-id="org.orbisgis.views.geocognition.New"/>
 	</extension>
 	<extension point="org.orbisgis.views.geocognition.Action"
 		id="org.orbisgis.views.geocognition.actions.Basic">
@@ -728,42 +682,6 @@
 			icon="/org/orbisgis/images/builtInCustomQueryMapError.png"
 			menu-group="org.orbisgis.views.geocognition.SQL"
 			class="org.orbisgis.views.geocognition.actions.UnRegisterBuiltInCustomQuery"/>
-	</extension>
-	<extension point="org.orbisgis.views.geocognition.Action"
-		id="org.orbisgis.views.geocognition.actions.Basic">
-		<menu text="Synchronize"
-			id="org.orbisgis.views.geocognition.Synchronize"/>
-		<action id="org.orbisgis.views.geocognition.actions.SyncWithFile"
-			text="Synchronize with file"
-			menu-group="org.orbisgis.views.geocognition.SyncAdvanced"
-			class="org.orbisgis.views.geocognition.actions.SyncWithFile"
-			menu-id="org.orbisgis.views.geocognition.Synchronize"/>
-		<action id="org.orbisgis.views.geocognition.actions.ExportToFile"
-			text="Export to file"
-			menu-group="org.orbisgis.views.geocognition.Sync"
-			class="org.orbisgis.views.geocognition.actions.ExportToFile"
-			menu-id="org.orbisgis.views.geocognition.Synchronize"/>
-		<action id="org.orbisgis.views.geocognition.actions.ImportFromFile"
-			text="Import from file"
-			menu-group="org.orbisgis.views.geocognition.Sync"
-			class="org.orbisgis.views.geocognition.actions.ImportFromFile"
-			menu-id="org.orbisgis.views.geocognition.Synchronize"/>
-		<action id="org.orbisgis.views.geocognition.actions.ImportFromURL"
-			text="Import from URL"
-			menu-group="org.orbisgis.views.geocognition.Sync"
-			class="org.orbisgis.views.geocognition.actions.ImportFromURL"
-			menu-id="org.orbisgis.views.geocognition.Synchronize"/>
-	</extension>
-	<extension point="org.orbisgis.views.geocognition.Action"
-		id="org.orbisgis.views.geocognition.actions.Action">
-		<action id="org.orbisgis.views.geocognition.actions.InstallAction"
-			menu-group="org.orbisgis.views.geocognition.Action"
-			text="Install action"
-			class="org.orbisgis.views.geocognition.actions.InstallAction"/>
-		<action id="org.orbisgis.views.geocognition.actions.UninstallAction"
-			menu-group="org.orbisgis.views.geocognition.Action"
-			text="Uninstall action"
-			class="org.orbisgis.views.geocognition.actions.UninstallAction"/>
 	</extension>
 	
 	<!-- Geocognition filters -->
