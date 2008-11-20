@@ -242,7 +242,9 @@ public class DBTableDataSourceAdapter extends DriverDataSource implements
 				((DBReadWriteDriver) driver).execute(con, sql);
 			}
 			for (EditionInfo info : editionActions) {
-				if (info != null) {
+				sql = info.getSQL(def.getTableName(), getPKNames(), fieldNames,
+						(DBReadWriteDriver) driver);
+				if (sql != null) {
 					sql = info.getSQL(def.getTableName(), getPKNames(),
 							fieldNames, (DBReadWriteDriver) driver);
 					((DBReadWriteDriver) driver).execute(con, sql);

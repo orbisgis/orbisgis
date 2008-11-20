@@ -514,7 +514,7 @@ public class EditionDecorator extends AbstractDataSourceDecorator implements
 		for (int i = 0; i < rowCount; i++) {
 			PhysicalDirection dir = new OriginalDirection(getDataSource(), i);
 			rowsDirections.add(dir);
-			editionActions.add(null);
+			editionActions.add(new NoEditionInfo(getPK(i), i));
 		}
 
 		Number[] xScope = getDataSource().getScope(ReadOnlyDriver.X);
