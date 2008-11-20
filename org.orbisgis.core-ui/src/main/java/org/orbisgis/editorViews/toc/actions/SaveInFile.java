@@ -41,10 +41,7 @@ import java.io.File;
 import javax.swing.JOptionPane;
 
 import org.gdms.data.DataSource;
-import org.gdms.data.DataSourceCreation;
-import org.gdms.data.DataSourceFactory;
 import org.gdms.data.SpatialDataSourceDecorator;
-import org.gdms.data.file.FileSourceCreation;
 import org.gdms.data.file.FileSourceDefinition;
 import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
@@ -127,7 +124,7 @@ public class SaveInFile implements
 								datasource.getMetadata());
 
 						for (int i = 0; i < selection.length; i++) {
-							Value[] value = datasource.getRow(i);
+							Value[] value = datasource.getRow(selection[i]);
 							om.addValues(value);
 						}
 
