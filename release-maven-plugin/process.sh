@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # build binary
-#svn checkout http://geosysin.iict.ch/irstv-svn/platform/ && \
+svn checkout http://geosysin.iict.ch/irstv-svn/platform/ && \
 cd platform && \
 mvn -Dmaven.test.skip=true install && \
 mvn javadoc:javadoc && \
