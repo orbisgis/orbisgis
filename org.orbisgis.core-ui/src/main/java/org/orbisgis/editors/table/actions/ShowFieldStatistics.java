@@ -6,10 +6,7 @@ import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceCreationException;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.metadata.Metadata;
-import org.gdms.data.types.Constraint;
-import org.gdms.data.types.ConstraintFactory;
 import org.gdms.data.types.Type;
-import org.gdms.data.types.TypeFactory;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.driverManager.DriverLoadException;
 import org.gdms.sql.parser.ParseException;
@@ -20,8 +17,6 @@ import org.orbisgis.editors.table.TableEditableElement;
 import org.orbisgis.editors.table.action.ITableColumnAction;
 import org.orbisgis.errorManager.ErrorManager;
 import org.orbisgis.outputManager.OutputManager;
-
-import com.sun.org.apache.bcel.internal.generic.RETURN;
 
 public class ShowFieldStatistics implements ITableColumnAction {
 
