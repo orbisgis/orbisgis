@@ -23,6 +23,7 @@ public class ZoomToSelected implements ITableCellAction {
 	@Override
 	public boolean accepts(TableEditableElement element, int rowIndex,
 			int columnIndex) {
+
 		return element.getMapContext() != null;
 	}
 
@@ -42,17 +43,26 @@ public class ZoomToSelected implements ITableCellAction {
 							element.getDataSource());
 
 					Envelope rect = null;
+					Geometry geometry = null;
+					Envelope geometryEnvelope = null;
 					for (int i = 0; i < selectedRow.length; i++) {
-						Geometry geometry = sds.getGeometry(selectedRow[i]);
-						if (geometry != null) {
-							Envelope geometryEnvelope = geometry
-									.getEnvelopeInternal();
-							if (rect == null) {
-								rect = new Envelope(geometryEnvelope);
-							} else {
-								rect.expandToInclude(geometryEnvelope);
+						if (sds.isDefaultVectorial()) {
+							geometry = sds.getGeometry(selectedRow[i]);
+							if (geometry != null) {
+								geometryEnvelope = geometry
+										.getEnvelopeInternal();
 							}
+						} else if (sds.isDefaultRaster()) {
+							geometryEnvelope = sds.getRaster(selectedRow[i]).getMetadata()
+									.getEnvelope();
 						}
+
+						if (rect == null) {
+							rect = new Envelope(geometryEnvelope);
+						} else {
+							rect.expandToInclude(geometryEnvelope);
+						}
+
 					}
 
 					EditorManager em = (EditorManager) Services
