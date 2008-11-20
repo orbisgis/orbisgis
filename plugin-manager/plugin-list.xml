@@ -1,5 +1,6 @@
 <plugins>
 	<plugin dir="../org.orbisgis.core-ui"/>
+	<plugin dir="../org.orbisgis.full-ui"/>
 	<plugin dir="../org.urbsat"/>
 	<plugin dir="../org.orbisgis.processing"/>
 	<plugin dir="../org.orbisgis.games"/>
