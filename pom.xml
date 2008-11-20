@@ -23,7 +23,8 @@
 		<module>tanato</module>
 		<module>org.orbisgis.games</module>
 		<module>updater</module>
-	</modules>
+		<module>org.orbisgis.full-ui</module>
+  </modules>
 	<scm>
 		<connection>
 			scm:svn:http://geosysin.iict.ch/irstv-svn/platform</connection>
@@ -110,7 +111,6 @@
 				<artifactId>maven-javadoc-plugin</artifactId>
 				<configuration>
 					<aggregate>true</aggregate>
-					<maxmemory>512m</maxmemory>
 				</configuration>
 			</plugin>
 		</plugins>
