@@ -43,7 +43,7 @@ public class ZoomToSelected implements ITableCellAction {
 
 					Envelope rect = null;
 					for (int i = 0; i < selectedRow.length; i++) {
-						Geometry geometry = sds.getGeometry(i);
+						Geometry geometry = sds.getGeometry(selectedRow[i]);
 						if (geometry != null) {
 							Envelope geometryEnvelope = geometry
 									.getEnvelopeInternal();
