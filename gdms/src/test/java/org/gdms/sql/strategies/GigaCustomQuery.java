@@ -26,7 +26,7 @@ public class GigaCustomQuery implements CustomQuery {
 			Metadata metadata = getMetadata(MetadataUtilities
 					.fromTablesToMetadatas(tables));
 			DiskBufferDriver dbd = new DiskBufferDriver(dsf, metadata);
-			for (int i = 0; i <2000000; i++) {
+			for (int i = 0; i < 1000000; i++) {
 				dbd.addValues(new Value[] { ValueFactory
 						.createValue("this is row " + i) });
 			}
