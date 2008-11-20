@@ -28,15 +28,9 @@
 	</dependencies>
 	<distributionManagement>
 		<repository>
-			<id>cerma</id>
-			<name>CERMA local repository</name>
-			<url>scp://repository.cerma.archi.fr:/home/web/repository/repository</url>
+			<id>osor</id>
+			<name>OSOR repository</name>
+			<url>scp://shell.forge.osor.eu:/home/groups/orbisgis/www/repository/</url>
 		</repository>
-		<snapshotRepository>
-			<id>cerma</id>
-			<name>CERMA local repository</name>
-			<url>
-				scp://repository.cerma.archi.fr:/home/web/repository/repository</url>
-		</snapshotRepository>
 	</distributionManagement>
 </project>
