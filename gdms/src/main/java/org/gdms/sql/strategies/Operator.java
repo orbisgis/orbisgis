@@ -61,7 +61,7 @@ public interface Operator {
 
 	/**
 	 * Expands stars and sets a field context to evaluate field types
-	 *
+	 * 
 	 * @throws SemanticException
 	 * @throws DriverException
 	 */
@@ -85,22 +85,23 @@ public interface Operator {
 
 	/**
 	 * Method to perform the necessary initialization. Typically open the
-	 * DataSources
-	 *
+	 * DataSources. Operators can be executed several times so this method
+	 * should clear any cached data
+	 * 
 	 * @throws ExecutionException
 	 */
 	public void initialize() throws DriverException;
 
 	/**
 	 * Gets the information necessary to perform some optimizations
-	 *
+	 * 
 	 * @return
 	 */
 	public OptimizationInfo getOptimizationInfo();
 
 	/**
 	 * Method to free any resource. Typically close the DataSources
-	 *
+	 * 
 	 * @throws ExecutionException
 	 */
 	public void operationFinished() throws DriverException;
@@ -109,7 +110,7 @@ public interface Operator {
 	 * Sets the scan mode of the branch. If there are bifurcations in the branch
 	 * this call has no effect. if indexQueries has no elements the scan mode is
 	 * 'table-scan', otherwise an index-scan using all the queries is used.
-	 *
+	 * 
 	 * @param indexQueries
 	 */
 	public void setScanMode(IndexQuery[] indexQueries);
@@ -126,7 +127,7 @@ public interface Operator {
 	 * operator does not modify the number of rows it should delegate on the
 	 * children, otherwise it should keep the limit without delegating on the
 	 * children
-	 *
+	 * 
 	 * @param limit
 	 */
 	public void setLimit(int limit);
@@ -135,7 +136,7 @@ public interface Operator {
 	 * Sets the offset of this instruction result. If an operator does not
 	 * modify the rows it should delegate on the children, otherwise it should
 	 * keep the offset without delegating on the children
-	 *
+	 * 
 	 * @param offset
 	 */
 	public void setOffset(int offset);
@@ -143,7 +144,7 @@ public interface Operator {
 	/**
 	 * Gets the operators that match the filter that are located in the sub tree
 	 * which root is this operator
-	 *
+	 * 
 	 * @param filter
 	 * @return
 	 */
@@ -151,10 +152,10 @@ public interface Operator {
 
 	/**
 	 * Resolves the references between the fields and the sources they refer
-	 *
+	 * 
 	 * @throws SemanticException
 	 * @throws DriverException
 	 */
-	public void resolveFieldSourceReferences(SourceManager sm) throws DriverException,
-			SemanticException;
+	public void resolveFieldSourceReferences(SourceManager sm)
+			throws DriverException, SemanticException;
 }
