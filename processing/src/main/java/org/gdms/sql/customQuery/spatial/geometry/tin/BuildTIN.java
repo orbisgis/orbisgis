@@ -87,7 +87,6 @@ public class BuildTIN implements CustomQuery {
 				addConstraint(inSds.getGeometry(rowIndex), points,
 						breakLineList);
 			}
-			inSds.close();
 
 			final Triangulation t = new Triangulation(points
 					.toArray(new Coordinate[0]), (int[][]) breakLineList
