@@ -84,8 +84,13 @@ public class TocView implements IEditorView {
 		} else if (editor instanceof TableEditor) {
 			TableEditableElement tableElement = (TableEditableElement) element;
 			MapContext mapContext = tableElement.getMapContext();
+			// Get MapContext id
+			EditorManager em = Services.getService(EditorManager.class);
+			IEditor[] mapEditors = em.getEditors("org.orbisgis.editors.Map",
+					mapContext);
+			String mapContextId = mapEditors[0].getElement().getId();
 			if (mapContext != null) {
-				toc.setMapContext(element.getId(), mapContext);
+				toc.setMapContext(mapContextId, mapContext);
 				return true;
 			} else {
 				editorViewDisabled();
