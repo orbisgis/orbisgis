@@ -44,7 +44,9 @@ import java.util.List;
 import org.gdms.data.AlreadyClosedException;
 import org.gdms.data.DataSource;
 import org.gdms.data.DriverDataSource;
+import org.gdms.data.ExecutionException;
 import org.gdms.data.RightValueDecorator;
+import org.gdms.data.SQLSourceDefinition;
 import org.gdms.data.edition.Commiter;
 import org.gdms.data.edition.DeleteEditionInfo;
 import org.gdms.data.edition.EditionInfo;
@@ -55,6 +57,7 @@ import org.gdms.driver.FileReadWriteDriver;
 import org.gdms.source.CommitListener;
 import org.gdms.source.DefaultSourceManager;
 import org.gdms.source.Source;
+import org.gdms.sql.strategies.SemanticException;
 import org.orbisgis.progress.NullProgressMonitor;
 
 /**
@@ -150,7 +153,7 @@ public class FileDataSourceAdapter extends DriverDataSource implements
 		driver.open(file);
 
 		fireCommit(this);
-		
+
 		return false;
 	}
 
@@ -160,7 +163,25 @@ public class FileDataSourceAdapter extends DriverDataSource implements
 	}
 
 	public void commitDone(String name) throws DriverException {
-		sync();
+		if (realSource) {
+			sync();
+		} else {
+			// reexecute query
+			driver.close();
+			Source src = getSource();
+			SQLSourceDefinition dsd = (SQLSourceDefinition) src
+					.getDataSourceDefinition();
+			try {
+				this.file = dsd.execute(new NullProgressMonitor());
+			} catch (ExecutionException e) {
+				throw new DriverException("Cannot update view. "
+						+ "Using last result", e);
+			} catch (SemanticException e) {
+				throw new DriverException("Cannot update view. "
+						+ "Using last result", e);
+			}
+			driver.open(file);
+		}
 	}
 
 	public void syncWithSource() throws DriverException {

@@ -71,38 +71,44 @@ public class SQLSourceDefinition extends AbstractDataSourceDefinition implements
 		this.tempSQL = sql;
 	}
 
+	public File execute(IProgressMonitor pm) throws DriverException,
+			ExecutionException, SemanticException {
+		getDataSourceFactory().fireInstructionExecuted(instruction.getSQL());
+		ObjectDriver source = instruction.execute(pm);
+		if (pm.isCancelled()) {
+			return null;
+		} else {
+			if (source == null) {
+				throw new IllegalArgumentException(
+						"The query produces no result: " + instruction.getSQL());
+			} else {
+				File file = null;
+				DataSourceFactory dsf = getDataSourceFactory();
+				if (source instanceof DiskBufferDriver) {
+					((DiskBufferDriver) source).start();
+					file = ((DiskBufferDriver) source).getFile();
+				} else {
+					file = new File(dsf.getTempFile("gdms"));
+					DataSourceDefinition dsd = new FileSourceDefinition(file);
+					String name = dsf.getSourceManager().nameAndRegister(dsd);
+					dsf.saveContents(name, dsf.getDataSource(source,
+							DataSourceFactory.NORMAL));
+				}
+				
+				return file;
+			}
+		}
+	}
+
 	public DataSource createDataSource(String tableName, IProgressMonitor pm)
 			throws DataSourceCreationException {
 		try {
-			getDataSourceFactory()
-					.fireInstructionExecuted(instruction.getSQL());
-
-			ObjectDriver source = instruction.execute(pm);
+			File file = execute(pm);
 			if (pm.isCancelled()) {
 				return null;
 			} else {
-				if (source == null) {
-					throw new IllegalArgumentException(
-							"The query produces no result: "
-									+ instruction.getSQL());
-				} else {
-					File file = null;
-					if (source instanceof DiskBufferDriver) {
-						((DiskBufferDriver) source).start();
-						file = ((DiskBufferDriver) source).getFile();
-					} else {
-						DataSourceFactory dsf = getDataSourceFactory();
-						file = new File(dsf.getTempFile("gdms"));
-						DataSourceDefinition dsd = new FileSourceDefinition(
-								file);
-						String name = dsf.getSourceManager().nameAndRegister(
-								dsd);
-						dsf.saveContents(name, dsf.getDataSource(source,
-								DataSourceFactory.NORMAL));
-					}
-					return new FileDataSourceAdapter(getSource(tableName),
-							file, new GdmsDriver(), false);
-				}
+				return new FileDataSourceAdapter(getSource(tableName), file,
+						new GdmsDriver(), false);
 			}
 		} catch (ExecutionException e) {
 			throw new DataSourceCreationException(
