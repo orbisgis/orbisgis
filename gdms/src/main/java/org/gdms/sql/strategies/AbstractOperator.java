@@ -212,6 +212,7 @@ public abstract class AbstractOperator implements Operator {
 	}
 
 	public void initialize() throws DriverException {
+		result = null;
 		for (Operator child : children) {
 			child.initialize();
 		}

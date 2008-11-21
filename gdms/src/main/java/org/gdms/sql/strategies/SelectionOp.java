@@ -187,6 +187,12 @@ public class SelectionOp extends AbstractExpressionOperator implements Operator 
 		}
 	}
 
+	@Override
+	public void initialize() throws DriverException {
+		super.initialize();
+		indexes = null;
+	}
+	
 	private ArrayList<Integer> getIndexes(IProgressMonitor pm)
 			throws IncompatibleTypesException, EvaluationException,
 			ExecutionException, DriverException {
