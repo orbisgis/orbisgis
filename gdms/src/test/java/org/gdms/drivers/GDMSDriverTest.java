@@ -377,4 +377,11 @@ public class GDMSDriverTest extends TestCase {
 		ds.close();
 		return pixels;
 	}
+	
+	public void testCompatibleWith2_0() throws Exception {
+		DataSource ds = dsf.getDataSource(new File("src/test/resources/version2.gdms"));
+		ds.open();
+		ds.getAsString();
+		ds.close();
+	}
 }
