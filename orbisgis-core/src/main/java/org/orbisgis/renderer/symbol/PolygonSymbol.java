@@ -89,6 +89,6 @@ public class PolygonSymbol extends AbstractPolygonSymbol {
 
 	@Override
 	public Symbol deriveSymbol(Color color) {
-		return new PolygonSymbol(color.darker(), lineWidth, color.brighter());
+		return new PolygonSymbol(color, Math.max(1, lineWidth), null);
 	}
 }

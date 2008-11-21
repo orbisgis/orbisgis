@@ -162,7 +162,7 @@ public interface Symbol {
 	/**
 	 * Creates a new symbol of this type but containing the specified color
 	 * 
-	 * @param yellow
+	 * @param color
 	 * @return The derived symbol or null if this symbol cannot be derived
 	 */
 	Symbol deriveSymbol(Color color);
