@@ -268,7 +268,7 @@ public class Activator implements PluginActivator {
 		}
 
 		private boolean looksLikePrevious(String currentMsg) {
-			if (lastMessage == null) {
+			if (lastMessage == null || (currentMsg == null)) {
 				lastMessage = currentMsg;
 				return false;
 			} else {
