@@ -105,7 +105,7 @@ public class DefaultSourceManager implements SourceManager {
 
 	private List<SourceListener> listeners = new ArrayList<SourceListener>();;
 
-	List<CommitListener> commitListeners = new ArrayList<CommitListener>();;
+	ArrayList<CommitListener> commitListeners = new ArrayList<CommitListener>();;
 
 	private DataSourceFactory dsf;
 
@@ -888,17 +888,23 @@ public class DefaultSourceManager implements SourceManager {
 		commitListeners.remove(listener);
 	}
 
+	@SuppressWarnings("unchecked")
 	public void fireIsCommiting(String name, Object source)
 			throws DriverException {
-		for (CommitListener listener : commitListeners) {
+		List<CommitListener> listenerCopy = (List<CommitListener>) commitListeners
+				.clone();
+		for (CommitListener listener : listenerCopy) {
 			if (listener.getName().equals(name)) {
 				listener.isCommiting(name, source);
 			}
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	public void fireCommitDone(String name) {
-		for (CommitListener listener : commitListeners) {
+		List<CommitListener> listenerCopy = (List<CommitListener>) commitListeners
+				.clone();
+		for (CommitListener listener : listenerCopy) {
 			if (listener.getName().equals(name)) {
 				try {
 					listener.commitDone(name);
@@ -906,6 +912,11 @@ public class DefaultSourceManager implements SourceManager {
 					logger.error("Cannot refresh commit listener: " + name, e);
 				}
 			}
+		}
+		ExtendedSource src = getExtendedSource(name);
+		String[] referenced = src.getReferencingSources();
+		for (String referencedSource : referenced) {
+			fireCommitDone(referencedSource);
 		}
 	}
 }
