@@ -622,9 +622,6 @@ public class DataSourceFactory {
 	private void initialize(String sourceInfoDir, String tempDir)
 			throws InitializationException {
 		try {
-			sourceManager = new DefaultSourceManager(this, sourceInfoDir);
-			sourceManager.init();
-
 			indexManager = new IndexManager(this);
 			indexManager.addIndex(IndexManager.RTREE_SPATIAL_INDEX,
 					RTreeIndex.class);
@@ -635,6 +632,9 @@ public class DataSourceFactory {
 			setResultDir(new File(tempDir));
 
 			Class.forName("org.hsqldb.jdbcDriver");
+
+			sourceManager = new DefaultSourceManager(this, sourceInfoDir);
+			sourceManager.init();
 
 		} catch (ClassNotFoundException e) {
 			throw new InitializationException(e);
