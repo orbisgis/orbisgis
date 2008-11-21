@@ -120,7 +120,7 @@ public class D8Watershed implements Function {
 		// select D8Watershed(dir.raster) from dir;
 		// select D8Watershed(dir.raster, GeomFromText("POINT(x y)")) from dir;
 		// select D8Watershed(dir.raster, acc.raster, value) from dir, acc;
-		return "select D8Watershed(dir.raster, acc.raster[, value]) from dir, acc;";
+		return "select D8Watershed(dir.raster[, acc.raster, value | GeomFromText(\"POINT(x y)\")]) from dir, acc;";
 	}
 
 	public Arguments[] getFunctionArguments() {

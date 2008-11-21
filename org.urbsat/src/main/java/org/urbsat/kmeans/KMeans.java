@@ -328,13 +328,15 @@ public class KMeans implements CustomQuery {
 	}
 
 	public Arguments[] getFunctionArguments() {
-		return new Arguments[] { new Arguments(new Argument(
-				Argument.TYPE_NUMERIC | Type.STRING | Type.TIME | Type.DATE
-						| Type.TIMESTAMP,
-				"1st argument must be a primary key!", new ArgumentValidator() {
-					public boolean isValid(Type type) {
-						return MetadataUtilities.isPrimaryKey(type);
-					}
-				}), Argument.WHOLE_NUMBER) };
+		return new Arguments[] { new Arguments(Argument.NUMERIC,
+				Argument.WHOLE_NUMBER) };
+		// return new Arguments[] { new Arguments(new Argument(
+		// Argument.TYPE_NUMERIC | Type.STRING | Type.TIME | Type.DATE
+		// | Type.TIMESTAMP,
+		// "1st argument must be a primary key!", new ArgumentValidator() {
+		// public boolean isValid(Type type) {
+		// return MetadataUtilities.isPrimaryKey(type);
+		// }
+		// }), Argument.WHOLE_NUMBER) };
 	}
 }

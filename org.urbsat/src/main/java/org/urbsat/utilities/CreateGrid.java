@@ -223,7 +223,7 @@ public class CreateGrid implements CustomQuery {
 		return new DefaultMetadata(new Type[] {
 				TypeFactory.createType(Type.GEOMETRY),
 				TypeFactory.createType(Type.INT) }, new String[] { "the_geom",
-				"index" });
+				"gid" });
 	}
 
 	public TableDefinition[] geTablesDefinitions() {

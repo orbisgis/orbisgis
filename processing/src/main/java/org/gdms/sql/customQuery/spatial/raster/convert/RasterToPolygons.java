@@ -204,7 +204,7 @@ public class RasterToPolygons implements CustomQuery {
 		return new DefaultMetadata(new Type[] {
 				TypeFactory.createType(Type.INT),
 				TypeFactory.createType(Type.GEOMETRY),
-				TypeFactory.createType(Type.DOUBLE) }, new String[] { "index",
+				TypeFactory.createType(Type.DOUBLE) }, new String[] { "gid",
 				"the_geom", "value" });
 	}
 
