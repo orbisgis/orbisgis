@@ -37,135 +37,25 @@
 package org.orbisgis.layerModel;
 
 import org.gdms.data.SourceAlreadyExistsException;
-import org.gdms.driver.DriverException;
 import org.gdms.source.SourceManager;
 import org.gdms.sql.strategies.TableNotFoundException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.orbisgis.DataManager;
 import org.orbisgis.Services;
 
-public abstract class GdmsLayer extends AbstractLayer {
-
-	private CoordinateReferenceSystem coordinateReferenceSystem;
-	private boolean isVisible = true;
+public abstract class GdmsLayer extends BasicLayer {
 
 	private String mainName;
 
 	public GdmsLayer(String name,
 			CoordinateReferenceSystem coordinateReferenceSystem) {
-		super(name);
+		super(name, coordinateReferenceSystem);
 		this.mainName = name;
-		this.coordinateReferenceSystem = coordinateReferenceSystem;
-	}
-
-	/**
-	 * 
-	 * @see org.orbisgis.layerModel.ILayer#getCoordinateReferenceSystem()
-	 */
-	public CoordinateReferenceSystem getCoordinateReferenceSystem() {
-		return coordinateReferenceSystem;
-	}
-
-	/**
-	 * 
-	 * @see org.orbisgis.layerModel.ILayer#setCoordinateReferenceSystem(org.opengis.referencing.crs.CoordinateReferenceSystem)
-	 */
-	public void setCoordinateReferenceSystem(
-			CoordinateReferenceSystem coordinateReferenceSystem) {
-		this.coordinateReferenceSystem = coordinateReferenceSystem;
-	}
-
-	/**
-	 * 
-	 * @see org.orbisgis.layerModel.ILayer#isVisible()
-	 */
-	public boolean isVisible() {
-		return isVisible;
-	}
-
-	/**
-	 * @throws LayerException
-	 * @see org.orbisgis.layerModel.ILayer#setVisible(boolean)
-	 */
-	public void setVisible(boolean isVisible) throws LayerException {
-		this.isVisible = isVisible;
-		fireVisibilityChanged();
-	}
-
-	public void addLayer(ILayer layer) {
-		throw new IllegalArgumentException("This layer cannot have children");
-	}
-
-	public ILayer remove(ILayer layer) {
-		throw new IllegalArgumentException("This layer does not have children");
-	}
-
-	public ILayer remove(String layerName) {
-		throw new IllegalArgumentException("This layer does not have children");
-	}
-
-	public boolean acceptsChilds() {
-		return false;
-	}
-
-	public ILayer[] getChildren() {
-		return new ILayer[0];
-	}
-
-	public int getIndex(ILayer targetLayer) {
-		return -1;
-	}
-
-	public void insertLayer(ILayer layer, int index) throws LayerException {
-		throw new IllegalArgumentException("This layer cannot have children");
-	}
-
-	public void addLayerListenerRecursively(LayerListener listener) {
-		addLayerListener(listener);
-	}
-
-	public void removeLayerListenerRecursively(LayerListener listener) {
-		removeLayerListener(listener);
-	}
-
-	public void addLayer(ILayer layer, boolean isMoving) throws LayerException {
-		throw new IllegalArgumentException("This layer cannot have children");
-	}
-
-	public ILayer remove(ILayer layer, boolean isMoving) throws LayerException {
-		throw new IllegalArgumentException("This layer cannot have children");
-	}
-
-	public void insertLayer(ILayer layer, int index, boolean isMoving)
-			throws LayerException {
-		throw new IllegalArgumentException("This layer cannot have children");
-	}
-
-	public int getLayerCount() {
-		return 0;
-	}
-
-	public ILayer getLayer(final int index) {
-		throw new ArrayIndexOutOfBoundsException(
-				"This layer doesn't contain any child");
-	}
-
-	public ILayer getLayerByName(String layerName) {
-		return null;
-	}
-
-	public ILayer[] getRasterLayers() {
-		return new ILayer[0];
-	}
-
-	public ILayer[] getVectorLayers() throws DriverException {
-		return new ILayer[0];
 	}
 
 	@Override
 	public void setName(String name) throws LayerException {
-		SourceManager sourceManager = ((DataManager) Services
-				.getService(DataManager.class)).getDSF().getSourceManager();
+		SourceManager sourceManager = ((DataManager) Services.getService(DataManager.class)).getDSF().getSourceManager();
 
 		// Remove previous alias
 		if (!mainName.equals(getName())) {
@@ -186,8 +76,7 @@ public abstract class GdmsLayer extends AbstractLayer {
 	}
 
 	public void close() throws LayerException {
-		SourceManager sourceManager = ((DataManager) Services
-				.getService(DataManager.class)).getDSF().getSourceManager();
+		SourceManager sourceManager = ((DataManager) Services.getService(DataManager.class)).getDSF().getSourceManager();
 
 		// Remove alias
 		if (!mainName.equals(getName())) {
