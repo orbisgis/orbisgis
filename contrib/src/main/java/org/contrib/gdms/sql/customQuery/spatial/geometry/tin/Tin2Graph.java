@@ -48,6 +48,12 @@ public class Tin2Graph implements CustomQuery {
 						rowValues[3].getAsInt(), rowValues[4].getAsInt() };
 				final int[] neighGid = new int[] { rowValues[5].getAsInt(),
 						rowValues[6].getAsInt(), rowValues[7].getAsInt() };
+				final int[] vtxConstraintsGid = new int[] {
+						rowValues[8].getAsInt(), rowValues[9].getAsInt(),
+						rowValues[10].getAsInt() };
+				final int[] edgConstraintsGid = new int[] {
+						rowValues[11].getAsInt(), rowValues[12].getAsInt(),
+						rowValues[13].getAsInt() };
 				final int[] edgGid = new int[3];
 
 				for (int i = 0; i < vtxGid.length; i++) {
@@ -59,7 +65,8 @@ public class Tin2Graph implements CustomQuery {
 						// add a new edge
 						edgIdx = edges.size();
 						vtxToEdg.put(curr, next, edgIdx);
-						edges.put(edgIdx, new GEdge(vertices, curr, next));
+						edges.put(edgIdx, new GEdge(vertices, curr, next,
+								edgConstraintsGid[i]));
 					}
 					edgGid[i] = edgIdx;
 
@@ -78,7 +85,8 @@ public class Tin2Graph implements CustomQuery {
 
 				for (int i = 0; i < vtxGid.length; i++) {
 					if (!vertices.containsKey(vtxGid[i])) {
-						vertices.put(vtxGid[i], new GVertex(coordinates[i]));
+						vertices.put(vtxGid[i], new GVertex(coordinates[i],
+								vtxConstraintsGid[i]));
 					}
 					vertices.get(vtxGid[i]).addAGedge(edgGid[(i + 2) % 3]);
 					vertices.get(vtxGid[i]).addAGedge(edgGid[i]);
