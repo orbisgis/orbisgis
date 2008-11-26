@@ -18,6 +18,7 @@ public class GEdge extends GNode {
 	public int incidentVertex2;
 	private int incidentTriangleLeft = -1;
 	private int incidentTriangleRight = -1;
+	private int constraintGid;
 	private Double azimuth;
 	private Double steepestSlope;
 
@@ -25,7 +26,7 @@ public class GEdge extends GNode {
 	}
 
 	public GEdge(final GMap<GVertex> vertices, final int incidentVertex1,
-			final int incidentVertex2) {
+			final int incidentVertex2, final int edgConstraintGid) {
 		this.vertices = vertices;
 		if (incidentVertex1 < incidentVertex2) {
 			this.incidentVertex1 = incidentVertex1;
@@ -34,6 +35,7 @@ public class GEdge extends GNode {
 			this.incidentVertex1 = incidentVertex2;
 			this.incidentVertex2 = incidentVertex1;
 		}
+		this.constraintGid = edgConstraintGid;
 	}
 
 	@Override
@@ -68,10 +70,11 @@ public class GEdge extends GNode {
 				TypeFactory.createType(Type.INT),
 				TypeFactory.createType(Type.INT),
 				TypeFactory.createType(Type.DOUBLE),
-				TypeFactory.createType(Type.DOUBLE) }, new String[] { "gid",
+				TypeFactory.createType(Type.DOUBLE),
+				TypeFactory.createType(Type.INT) }, new String[] { "gid",
 				"incident_vertex_1", "incident_vertex_2",
 				"incident_triangle_left", "incident_triangle_right",
-				"steepest_slope", "azimuth" });
+				"steepest_slope", "azimuth", "constraint gid" });
 	}
 
 	@Override
@@ -104,7 +107,8 @@ public class GEdge extends GNode {
 				ValueFactory.createValue(incidentTriangleLeft),
 				ValueFactory.createValue(incidentTriangleRight),
 				ValueFactory.createValue(getSteepestSlope()),
-				ValueFactory.createValue(getAzimuth()) });
+				ValueFactory.createValue(getAzimuth()),
+				ValueFactory.createValue(constraintGid) });
 	}
 
 	@Override

@@ -21,19 +21,22 @@ public class GVertex extends GNode {
 	public double y;
 	public double z;
 	private Set<Integer> incidentEdges;
+	private int constraintGid;
 
 	public GVertex() {
 	}
 
-	public GVertex(double x, double y, double z) {
+	public GVertex(final double x, final double y, final double z,
+			final int constraintGid) {
 		this.x = x;
 		this.y = y;
 		this.z = z;
 		incidentEdges = new HashSet<Integer>();
+		this.constraintGid = constraintGid;
 	}
 
-	public GVertex(Coordinate coordinate) {
-		this(coordinate.x, coordinate.y, coordinate.z);
+	public GVertex(Coordinate coordinate, final int constraintGid) {
+		this(coordinate.x, coordinate.y, coordinate.z, constraintGid);
 	}
 
 	public boolean addAGedge(int edgeIdx) {
@@ -56,8 +59,9 @@ public class GVertex extends GNode {
 				TypeFactory.createType(Type.DOUBLE),
 				TypeFactory.createType(Type.DOUBLE),
 				TypeFactory.createType(Type.DOUBLE),
-				TypeFactory.createType(Type.COLLECTION), }, new String[] {
-				"gid", "x", "y", "z", "incident_edges" });
+				TypeFactory.createType(Type.COLLECTION),
+				TypeFactory.createType(Type.INT) }, new String[] { "gid", "x",
+				"y", "z", "incident_edges", "constraint gid" });
 	}
 
 	@Override
@@ -78,7 +82,8 @@ public class GVertex extends GNode {
 		dataSource.insertFilledRow(new Value[] { ValueFactory.createValue(gid),
 				ValueFactory.createValue(x), ValueFactory.createValue(y),
 				ValueFactory.createValue(z),
-				ValueFactory.createValue(collectionOfValues) });
+				ValueFactory.createValue(collectionOfValues),
+				ValueFactory.createValue(constraintGid) });
 	}
 
 	@Override
