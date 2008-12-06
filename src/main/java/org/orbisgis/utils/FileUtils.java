@@ -289,4 +289,15 @@ public class FileUtils {
 		bos.close();
 	}
 
+	public static String getFileNameWithoutExtensionU(File file) {
+		String name = file.getName();
+		int extensionStart = name.lastIndexOf('.');
+		String ret = name;
+		if (extensionStart != -1) {
+			ret = name.substring(0, name.indexOf(name
+					.substring(extensionStart)));
+		}
+		
+		return ret;
+	}
 }
