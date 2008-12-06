@@ -54,6 +54,11 @@
 			<name>CERMA local repository</name>
 			<url>http://repository.cerma.archi.fr/repository</url>
 		</repository>
+		<repository>
+			<id>osor</id>
+			<name>OSOR repository</name>
+			<url>http://orbisgis.forge.osor.eu/repository/</url>
+		</repository>
 	</repositories>
 	<pluginRepositories>
 		<pluginRepository>
