@@ -1,0 +1,46 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+	<xs:element name="extension">
+		<xs:annotation>
+			<xs:documentation>This extension point is used to add filters to the
+				geocatalog sources</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence minOccurs="0" maxOccurs="unbounded">
+				<xs:element ref="source-filter" maxOccurs="unbounded"/>
+			</xs:sequence>
+			<xs:attribute name="point" type="xs:string" use="required"/>
+			<xs:attribute name="id" type="xs:string"/>
+			<xs:attribute name="name" type="xs:string"/>
+		</xs:complexType>
+	</xs:element>
+
+	<xs:element name="source-filter">
+		<xs:annotation>
+			<xs:documentation> Defines a filter
+				</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:attribute name="id" type="xs:string" use="required">
+				<xs:annotation>
+					<xs:documentation>Unique id, for persistence purposes. Must be
+						unique</xs:documentation>
+				</xs:annotation>
+			</xs:attribute>
+			<xs:attribute name="name" type="xs:string" use="required">
+				<xs:annotation>
+					<xs:documentation>Name to appear in the filter
+						list</xs:documentation>
+				</xs:annotation>
+			</xs:attribute>
+			<xs:attribute name="class" type="xs:string" use="required">
+				<xs:annotation>
+					<xs:documentation>Class that implements the filter. It has to
+						implement
+						org.orbisgis.views.geocatalog.filter.IGeocatalogFilter</xs:documentation>
+				</xs:annotation>
+			</xs:attribute>
+		</xs:complexType>
+	</xs:element>
+</xs:schema>

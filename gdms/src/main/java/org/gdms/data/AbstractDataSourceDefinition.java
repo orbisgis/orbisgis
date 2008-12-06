@@ -42,6 +42,7 @@ import java.util.ArrayList;
 import org.gdms.driver.ChecksumCalculator;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.ReadOnlyDriver;
+import org.gdms.driver.driverManager.DriverLoadException;
 import org.gdms.source.Source;
 import org.orbisgis.progress.NullProgressMonitor;
 
@@ -60,7 +61,7 @@ public abstract class AbstractDataSourceDefinition implements
 		this.dsf = dsf;
 	}
 
-	public ReadOnlyDriver getDriver() {
+	protected ReadOnlyDriver getDriver() {
 		if (driver == null) {
 			driver = getDriverInstance();
 		}
@@ -68,7 +69,8 @@ public abstract class AbstractDataSourceDefinition implements
 		return driver;
 	}
 
-	protected abstract ReadOnlyDriver getDriverInstance();
+	protected abstract ReadOnlyDriver getDriverInstance()
+			throws DriverLoadException;
 
 	public void setDriver(ReadOnlyDriver driver) {
 		this.driver = driver;
@@ -112,7 +114,24 @@ public abstract class AbstractDataSourceDefinition implements
 		return getDriver().getType();
 	}
 
+	@Override
+	public String getTypeName() {
+		try {
+			return getDriver().getTypeName();
+		} catch (DriverLoadException e) {
+			return "Unknown";
+		}
+	}
+
 	public void initialize() throws DriverException {
 	}
 
+	@Override
+	public String getDriverId() {
+		try {
+			return getDriver().getDriverId();
+		} catch (DriverLoadException e) {
+			return null;
+		}
+	}
 }

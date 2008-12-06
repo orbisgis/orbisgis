@@ -50,6 +50,16 @@
 			<artifactId>batik-dom</artifactId>
 			<version>1.6</version>
 		</dependency>
+		<dependency>
+			<groupId>com.iver.cit.gvsig</groupId>
+			<artifactId>remote-clients</artifactId>
+			<version>1.1.0</version>
+		</dependency>
+		<dependency>
+			<groupId>kxml2</groupId>
+			<artifactId>kxml2</artifactId>
+			<version>2.2.2</version>
+		</dependency>
 	</dependencies>
 	<build>
 		<plugins>

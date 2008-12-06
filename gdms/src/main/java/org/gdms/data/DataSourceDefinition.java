@@ -43,12 +43,12 @@ import org.gdms.source.directory.DefinitionType;
 import org.orbisgis.progress.IProgressMonitor;
 
 /**
- *
+ * Class to be implemented to add new types of sources to the system.
  */
 public interface DataSourceDefinition {
 	/**
 	 * Creates a DataSource with the information of this object
-	 *
+	 * 
 	 * @param tableName
 	 *            name of the DataSource
 	 * @param pm
@@ -60,17 +60,18 @@ public interface DataSourceDefinition {
 
 	/**
 	 * Creates this source with the content specified in the parameter
-	 *
+	 * 
 	 * @param contents
 	 */
-	public void createDataSource(DataSource contents, IProgressMonitor pm) throws DriverException;
+	public void createDataSource(DataSource contents, IProgressMonitor pm)
+			throws DriverException;
 
 	/**
 	 * if any, frees the resources taken when the DataSource was created
-	 *
+	 * 
 	 * @param name
 	 *            DataSource registration name
-	 *
+	 * 
 	 * @throws DataSourceFinalizationException
 	 *             If the operation fails
 	 */
@@ -80,25 +81,25 @@ public interface DataSourceDefinition {
 	/**
 	 * Gives to the DataSourceDefinition a reference of the DataSourceFactory
 	 * where the DataSourceDefinition is registered
-	 *
+	 * 
 	 * @param dsf
 	 */
 	public void setDataSourceFactory(DataSourceFactory dsf);
 
 	/**
 	 * Returns a xml object to save the definition at disk
-	 *
+	 * 
 	 * @return
 	 */
 	public DefinitionType getDefinition();
 
 	/**
 	 * Calculates the checksum of the source
-	 *
+	 * 
 	 * @param openDS
 	 *            An instance to an open DataSource that accesses the source
 	 *            this object defines. Null if there is no open DataSource
-	 *
+	 * 
 	 * @return
 	 * @throws DriverException
 	 */
@@ -108,26 +109,49 @@ public interface DataSourceDefinition {
 	 * Gets the names of the sources this source depends on. Usually it will be
 	 * an empty array but definitions that consist in an sql instruction may
 	 * return several values
-	 *
+	 * 
 	 * @return
 	 * @throws DriverException
 	 */
 	public ArrayList<String> getSourceDependencies() throws DriverException;
 
 	/**
-	 * Gets the type of the source defined by this type
-	 *
+	 * Gets the type of the source accessed by this definition
+	 * 
 	 * @return
 	 */
 	public int getType();
 
 	/**
+	 * Get the source type description of the source accessed by this definition
+	 * 
+	 * @return
+	 */
+	public String getTypeName();
+
+	/**
 	 * Method that lets the DataSourceDefinitions perform any kind of
 	 * initialization
-	 *
+	 * 
 	 * @throws DriverException
 	 *             If the source is not valid and cannot be initializated
 	 */
 	public void initialize() throws DriverException;
+
+	/**
+	 * Return true if this definition represents the same source as the
+	 * specified one
+	 * 
+	 * @param dsd
+	 * @return
+	 */
+	boolean equals(DataSourceDefinition dsd);
+
+	/**
+	 * Get the id of the driver used to access this source definition
+	 * 
+	 * @return
+	 */
+	public String getDriverId();
 
 }

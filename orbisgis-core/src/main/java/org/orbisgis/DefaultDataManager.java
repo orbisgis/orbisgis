@@ -40,7 +40,6 @@ import java.io.File;
 
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceCreationException;
-import org.gdms.data.DataSourceDefinition;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.NoSuchTableException;
 import org.gdms.data.indexes.IndexManager;
@@ -52,6 +51,7 @@ import org.orbisgis.layerModel.ILayer;
 import org.orbisgis.layerModel.Layer;
 import org.orbisgis.layerModel.LayerCollection;
 import org.orbisgis.layerModel.LayerException;
+import org.orbisgis.layerModel.WMSLayer;
 
 public class DefaultDataManager implements DataManager {
 
@@ -74,15 +74,11 @@ public class DefaultDataManager implements DataManager {
 	}
 
 	public ILayer createLayer(String sourceName) throws LayerException {
-		Source src = ((DataManager) Services
-				.getService(DataManager.class)).getDSF()
-				.getSourceManager().getSource(sourceName);
+		Source src = ((DataManager) Services.getService(DataManager.class))
+				.getDSF().getSourceManager().getSource(sourceName);
 		if (src != null) {
 			int type = src.getType();
-			if ((type & (SourceManager.RASTER | SourceManager.VECTORIAL)) == 0) {
-				throw new LayerException("Cannot understand source type: "
-						+ type);
-			} else {
+			if ((type & (SourceManager.RASTER | SourceManager.VECTORIAL | SourceManager.WMS)) != 0) {
 				try {
 					DataSource ds = ((DataManager) Services
 							.getService(DataManager.class)).getDSF()
@@ -95,6 +91,9 @@ public class DefaultDataManager implements DataManager {
 				} catch (DataSourceCreationException e) {
 					throw new LayerException("Cannot instantiate layer", e);
 				}
+			} else {
+				throw new LayerException("Cannot understand source type: "
+						+ type);
 			}
 		} else {
 			throw new LayerException("There is no source "
@@ -103,7 +102,11 @@ public class DefaultDataManager implements DataManager {
 	}
 
 	public ILayer createLayer(DataSource ds) {
-		return new Layer(ds.getName(), ds, NullCRS.singleton);
+		if ((ds.getSource().getType() & SourceManager.WMS) == SourceManager.WMS) {
+			return new WMSLayer(ds.getName(), ds, NullCRS.singleton);
+		} else {
+			return new Layer(ds.getName(), ds, NullCRS.singleton);
+		}
 	}
 
 	public ILayer createLayerCollection(String layerName) {
@@ -115,7 +118,8 @@ public class DefaultDataManager implements DataManager {
 				.getService(DataManager.class)).getDSF();
 		dsf.getSourceManager().register(name, file);
 		try {
-			return new Layer(name, dsf.getDataSource(name), NullCRS.singleton);
+			DataSource dataSource = dsf.getDataSource(name);
+			return createLayer(dataSource);
 		} catch (DriverLoadException e) {
 			throw new LayerException("Cannot find a suitable driver for "
 					+ file.getAbsolutePath(), e);
@@ -131,7 +135,8 @@ public class DefaultDataManager implements DataManager {
 				.getService(DataManager.class)).getDSF();
 		String name = dsf.getSourceManager().nameAndRegister(file);
 		try {
-			return new Layer(name, dsf.getDataSource(name), NullCRS.singleton);
+			DataSource dataSource = dsf.getDataSource(name);
+			return createLayer(dataSource);
 		} catch (DriverLoadException e) {
 			throw new LayerException("Cannot find a suitable driver for "
 					+ file.getAbsolutePath(), e);
@@ -140,29 +145,6 @@ public class DefaultDataManager implements DataManager {
 		} catch (DataSourceCreationException e) {
 			throw new LayerException("Cannot instantiate layer", e);
 		}
-	}
-
-	/**
-	 * @see org.orbisgis.core.DataManager#registerWithUniqueName(java.lang.String,
-	 *      org.gdms.data.DataSourceDefinition)
-	 */
-	public String registerWithUniqueName(String name, DataSourceDefinition dsd) {
-		int extensionStart = name.lastIndexOf('.');
-		String nickname = name;
-		if (extensionStart != -1) {
-			nickname = name.substring(0, name.indexOf(name
-					.substring(extensionStart)));
-		}
-		String tmpName = nickname;
-		int i = 0;
-		while (dsf.exists(tmpName)) {
-			i++;
-			tmpName = nickname + "_" + i;
-		}
-
-		dsf.registerDataSource(tmpName, dsd);
-
-		return tmpName;
 	}
 
 }

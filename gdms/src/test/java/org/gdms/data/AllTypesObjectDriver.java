@@ -154,20 +154,6 @@ public class AllTypesObjectDriver implements ObjectDriver {
 	}
 
 	/**
-	 * @see org.gdms.driver.ReadAccess#getFieldCount()
-	 */
-	public int getFieldCount() throws DriverException {
-		return names.length;
-	}
-
-	/**
-	 * @see org.gdms.driver.ReadAccess#getFieldName(int)
-	 */
-	public String getFieldName(int fieldId) throws DriverException {
-		return names[fieldId];
-	}
-
-	/**
 	 * @see org.gdms.driver.ReadAccess#getRowCount()
 	 */
 	public long getRowCount() throws DriverException {
@@ -184,7 +170,7 @@ public class AllTypesObjectDriver implements ObjectDriver {
 	public void setDataSourceFactory(DataSourceFactory dsf) {
 	}
 
-	public String getName() {
+	public String getDriverId() {
 		return null;
 	}
 
@@ -247,5 +233,15 @@ public class AllTypesObjectDriver implements ObjectDriver {
 
 	public int getType() {
 		return 0;
+	}
+
+	@Override
+	public String getTypeDescription() {
+		return null;
+	}
+
+	@Override
+	public String getTypeName() {
+		return null;
 	}
 }

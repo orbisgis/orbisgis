@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <project name="org.orbisgis" default="run jaxb" basedir=".">
 
-	<property name="xjc-path" value="/home/gonzales/applications/jdk1.6.0_02/bin/xjc" />
+	<property name="xjc-path" value="/home/fergonco/applications/jdk1.6.0_07/bin/xjc" />
 
 	<target name="run jaxb" depends="Windows,
 		Geocatalog">

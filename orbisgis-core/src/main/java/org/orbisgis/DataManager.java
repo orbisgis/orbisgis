@@ -39,9 +39,7 @@ package org.orbisgis;
 import java.io.File;
 
 import org.gdms.data.DataSource;
-import org.gdms.data.DataSourceDefinition;
 import org.gdms.data.DataSourceFactory;
-import org.gdms.data.SourceAlreadyExistsException;
 import org.gdms.data.indexes.IndexManager;
 import org.gdms.source.SourceManager;
 import org.orbisgis.layerModel.ILayer;
@@ -69,21 +67,6 @@ public interface DataManager {
 	 * @return
 	 */
 	IndexManager getIndexManager();
-
-	/**
-	 * Registers the specified definition in the system source manager. If the
-	 * name already exists a different one is derived
-	 *
-	 * @param name
-	 *            base name to register the source definition
-	 * @param dsd
-	 *            source definition
-	 * @return The name actually used to register the definition
-	 * @throws SourceAlreadyExistsException
-	 *             If the source is already registered
-	 */
-	String registerWithUniqueName(String name, DataSourceDefinition dsd)
-			throws SourceAlreadyExistsException;
 
 	/**
 	 * Creates a layer on the source which name is equal to the specified name

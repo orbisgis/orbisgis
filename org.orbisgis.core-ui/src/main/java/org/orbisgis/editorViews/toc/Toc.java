@@ -78,12 +78,10 @@ import org.orbisgis.layerModel.SelectionEvent;
 import org.orbisgis.pluginManager.background.BackgroundJob;
 import org.orbisgis.pluginManager.background.BackgroundManager;
 import org.orbisgis.progress.IProgressMonitor;
-import org.orbisgis.resource.GdmsSource;
-import org.orbisgis.resource.IResource;
 import org.orbisgis.ui.resourceTree.MyTreeUI;
 import org.orbisgis.ui.resourceTree.ResourceTree;
 import org.orbisgis.views.editor.EditorManager;
-import org.orbisgis.views.geocatalog.TransferableResource;
+import org.orbisgis.views.geocatalog.TransferableSource;
 
 public class Toc extends ResourceTree {
 	private MyLayerListener ll;
@@ -238,10 +236,10 @@ public class Toc extends ResourceTree {
 						}
 					}
 				}
-			} else if (trans.isDataFlavorSupported(TransferableResource
+			} else if (trans.isDataFlavorSupported(TransferableSource
 					.getResourceFlavor())) {
-				final IResource[] draggedResources = (IResource[]) trans
-						.getTransferData(TransferableResource
+				final String[] draggedResources = (String[]) trans
+						.getTransferData(TransferableSource
 								.getResourceFlavor());
 				BackgroundManager bm = (BackgroundManager) Services
 						.getService(BackgroundManager.class);
@@ -435,9 +433,9 @@ public class Toc extends ResourceTree {
 	private class MoveProcess implements BackgroundJob {
 
 		private ILayer dropNode;
-		private IResource[] draggedResources;
+		private String[] draggedResources;
 
-		public MoveProcess(IResource[] draggedResources, ILayer dropNode) {
+		public MoveProcess(String[] draggedResources, ILayer dropNode) {
 			this.draggedResources = draggedResources;
 			this.dropNode = dropNode;
 		}
@@ -460,19 +458,17 @@ public class Toc extends ResourceTree {
 			DataManager dataManager = (DataManager) Services
 					.getService(DataManager.class);
 			for (int i = 0; i < draggedResources.length; i++) {
-				IResource resource = draggedResources[i];
+				String sourceName = draggedResources[i];
 				if (pm.isCancelled()) {
 					break;
 				} else {
 					pm.progressTo(100 * i / draggedResources.length);
-					if (resource.getResourceType() instanceof GdmsSource) {
-						try {
-							dropNode.insertLayer(dataManager
-									.createLayer(resource.getName()), index);
-						} catch (LayerException e) {
-							throw new RuntimeException("Cannot "
-									+ "add the layer to the destination", e);
-						}
+					try {
+						dropNode.insertLayer(dataManager
+								.createLayer(sourceName), index);
+					} catch (LayerException e) {
+						throw new RuntimeException("Cannot "
+								+ "add the layer to the destination", e);
 					}
 				}
 			}

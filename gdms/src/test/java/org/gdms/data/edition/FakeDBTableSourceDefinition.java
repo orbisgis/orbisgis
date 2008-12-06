@@ -39,6 +39,7 @@ package org.gdms.data.edition;
 import org.gdms.data.AbstractDataSource;
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceCreationException;
+import org.gdms.data.DataSourceDefinition;
 import org.gdms.data.db.DBSource;
 import org.gdms.data.db.DBTableDataSourceAdapter;
 import org.gdms.data.db.DBTableSourceDefinition;
@@ -79,7 +80,7 @@ public class FakeDBTableSourceDefinition extends DBTableSourceDefinition {
 	}
 
 	@Override
-	public boolean equals(Object obj) {
+	public boolean equals(DataSourceDefinition obj) {
 		return false;
 	}
 

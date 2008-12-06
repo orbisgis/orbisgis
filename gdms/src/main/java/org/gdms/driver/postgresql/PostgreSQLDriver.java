@@ -270,9 +270,9 @@ public class PostgreSQLDriver extends DefaultDBDriver implements
 	}
 
 	/**
-	 * @see com.hardcode.driverManager.Driver#getName()
+	 * @see com.hardcode.driverManager.Driver#getDriverId()
 	 */
-	public String getName() {
+	public String getDriverId() {
 		return DRIVER_NAME;
 	}
 
@@ -514,7 +514,7 @@ public class PostgreSQLDriver extends DefaultDBDriver implements
 	}
 
 	public int getType() {
-		return SourceManager.POSTGRESQL;
+		return SourceManager.DB | SourceManager.VECTORIAL;
 	}
 
 	@Override
@@ -533,5 +533,15 @@ public class PostgreSQLDriver extends DefaultDBDriver implements
 	@Override
 	public int getDefaultPort() {
 		return 5432;
+	}
+
+	@Override
+	public String getTypeDescription() {
+		return "PostgreSQL / PostGIS";
+	}
+
+	@Override
+	public String getTypeName() {
+		return "POSTGRESQL";
 	}
 }

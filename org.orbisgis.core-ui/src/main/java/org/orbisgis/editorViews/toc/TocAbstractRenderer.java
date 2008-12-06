@@ -58,43 +58,47 @@ public abstract class TocAbstractRenderer {
 		if (layer.acceptsChilds()) {
 			return IconLoader.getIcon("layers.png");
 		} else {
-			if (!layer.getDataSource().isOpen()) {
-				return null;
-			}
-			SpatialDataSourceDecorator dataSource = layer.getDataSource();
-			int spatialField = dataSource.getSpatialFieldIndex();
-			// Create a legend for each spatial field
-			Metadata metadata = dataSource.getMetadata();
-			Type fieldType = metadata.getFieldType(spatialField);
-			if (fieldType.getTypeCode() == Type.GEOMETRY) {
-				GeometryConstraint geomTypeConstraint = (GeometryConstraint) fieldType
-						.getConstraint(Constraint.GEOMETRY_TYPE);
-				if (geomTypeConstraint == null) {
-					return IconLoader.getIcon("layermixe.png");
-				} else {
-					int geomType = geomTypeConstraint.getGeometryType();
-
-					if ((geomType == GeometryConstraint.POLYGON)
-							|| (geomType == GeometryConstraint.MULTI_POLYGON)) {
-						return IconLoader.getIcon("layerpolygon.png");
-					} else if ((geomType == GeometryConstraint.LINESTRING)
-							|| (geomType == GeometryConstraint.MULTI_LINESTRING)) {
-						return IconLoader.getIcon("layerline.png");
-					} else if ((geomType == GeometryConstraint.POINT)
-							|| (geomType == GeometryConstraint.MULTI_POINT)) {
-						return IconLoader.getIcon("layerpoint.png");
-					} else {
-						throw new RuntimeException("Bug");
-					}
-				}
-
+			if (layer.isWMS()) {
+				return IconLoader.getIcon("server_connect.png");
 			} else {
-				if (layer.getRaster().getType() == ImagePlus.COLOR_RGB) {
-					return IconLoader.getIcon("layerrgb.png");
-				} else {
-					return IconLoader.getIcon("raster.png");
+				SpatialDataSourceDecorator dataSource = layer.getDataSource();
+				if (!dataSource.isOpen()) {
+					return null;
 				}
+				int spatialField = dataSource.getSpatialFieldIndex();
+				// Create a legend for each spatial field
+				Metadata metadata = dataSource.getMetadata();
+				Type fieldType = metadata.getFieldType(spatialField);
+				if (fieldType.getTypeCode() == Type.GEOMETRY) {
+					GeometryConstraint geomTypeConstraint = (GeometryConstraint) fieldType
+							.getConstraint(Constraint.GEOMETRY_TYPE);
+					if (geomTypeConstraint == null) {
+						return IconLoader.getIcon("layermixe.png");
+					} else {
+						int geomType = geomTypeConstraint.getGeometryType();
 
+						if ((geomType == GeometryConstraint.POLYGON)
+								|| (geomType == GeometryConstraint.MULTI_POLYGON)) {
+							return IconLoader.getIcon("layerpolygon.png");
+						} else if ((geomType == GeometryConstraint.LINESTRING)
+								|| (geomType == GeometryConstraint.MULTI_LINESTRING)) {
+							return IconLoader.getIcon("layerline.png");
+						} else if ((geomType == GeometryConstraint.POINT)
+								|| (geomType == GeometryConstraint.MULTI_POINT)) {
+							return IconLoader.getIcon("layerpoint.png");
+						} else {
+							throw new RuntimeException("Bug");
+						}
+					}
+
+				} else {
+					if (layer.getRaster().getType() == ImagePlus.COLOR_RGB) {
+						return IconLoader.getIcon("layerrgb.png");
+					} else {
+						return IconLoader.getIcon("raster.png");
+					}
+
+				}
 			}
 		}
 	}

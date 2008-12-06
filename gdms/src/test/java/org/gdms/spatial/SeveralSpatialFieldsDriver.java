@@ -137,7 +137,7 @@ public class SeveralSpatialFieldsDriver extends ObjectMemoryDriver {
 		}
 	}
 
-	public String getName() {
+	public String getDriverId() {
 		return "severalSpatialFieldsDriver";
 	}
 }

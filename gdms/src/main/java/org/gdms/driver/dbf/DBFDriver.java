@@ -343,7 +343,7 @@ public class DBFDriver implements FileReadWriteDriver {
 		return dbaseReader.getHeader().getNumRecords();
 	}
 
-	public String getName() {
+	public String getDriverId() {
 		return DRIVER_NAME;
 	}
 
@@ -368,7 +368,7 @@ public class DBFDriver implements FileReadWriteDriver {
 	}
 
 	public int getType() {
-		return SourceManager.DBF;
+		return SourceManager.FILE;
 	}
 
 	public String validateMetadata(Metadata metadata) {
@@ -378,6 +378,16 @@ public class DBFDriver implements FileReadWriteDriver {
 	@Override
 	public String[] getFileExtensions() {
 		return new String[] { "dbf" };
+	}
+
+	@Override
+	public String getTypeDescription() {
+		return "dBase file";
+	}
+
+	@Override
+	public String getTypeName() {
+		return "DBF";
 	}
 
 }

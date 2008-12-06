@@ -12,7 +12,7 @@ import org.gdms.driver.gdms.GdmsDriver;
 import org.gdms.driver.gdms.GdmsReader;
 import org.gdms.driver.gdms.GdmsWriter;
 
-public class DiskBufferDriver implements ObjectDriver {
+public class DiskBufferDriver extends AbstractBasicSQLDriver implements ObjectDriver {
 
 	private Metadata metadata;
 	private GdmsWriter writer;
@@ -80,8 +80,8 @@ public class DiskBufferDriver implements ObjectDriver {
 	}
 
 	@Override
-	public String getName() {
-		return new GdmsDriver().getName();
+	public String getDriverId() {
+		return new GdmsDriver().getDriverId();
 	}
 
 	@Override

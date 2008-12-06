@@ -84,7 +84,7 @@ import com.vividsolutions.jts.geom.Polygon;
 public class CirDriver implements FileReadWriteDriver {
 	public static final String DRIVER_NAME = "Solene Cir driver";
 
-	private String EXTENSION = ".cir";
+	private String EXTENSION = "cir";
 
 	private Scanner in;
 
@@ -225,7 +225,7 @@ public class CirDriver implements FileReadWriteDriver {
 	public void setDataSourceFactory(DataSourceFactory dsf) {
 	}
 
-	public String getName() {
+	public String getDriverId() {
 		return DRIVER_NAME;
 	}
 
@@ -389,7 +389,7 @@ public class CirDriver implements FileReadWriteDriver {
 	}
 
 	public int getType() {
-		return SourceManager.CIR;
+		return SourceManager.FILE | SourceManager.VECTORIAL;
 	}
 
 	public String validateMetadata(Metadata metadata) throws DriverException {
@@ -399,6 +399,16 @@ public class CirDriver implements FileReadWriteDriver {
 	@Override
 	public String[] getFileExtensions() {
 		return new String[] { EXTENSION };
+	}
+
+	@Override
+	public String getTypeDescription() {
+		return "Solene file";
+	}
+
+	@Override
+	public String getTypeName() {
+		return "CIR";
 	}
 
 }

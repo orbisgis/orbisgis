@@ -57,6 +57,7 @@ import org.gdms.data.file.FileSourceDefinition;
 import org.gdms.data.object.ObjectSourceDefinition;
 import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeFactory;
+import org.gdms.data.wms.WMSSource;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.driverManager.DriverManager;
 import org.gdms.driver.memory.ObjectMemoryDriver;
@@ -72,6 +73,7 @@ public class SourceManagementTest extends TestCase {
 	private DataSourceFactory dsf;
 	private File testFile;
 	private DBSource testDB;
+	private WMSSource testWMS;
 	private String sql = "select count(id) from myfile;";
 	private ObjectMemoryDriver obj;
 
@@ -270,11 +272,13 @@ public class SourceManagementTest extends TestCase {
 
 		sm.register("myfile", testFile);
 		sm.register("db", testDB);
+		sm.register("wms", testWMS);
 		sm.register("sql", sql);
 		sm.register("obj", obj);
 
 		String fileContent = getContent("myfile");
 		String dbContent = getContent("db");
+		String wmsContent = getContent("wms");
 		String sqlContent = getContent("sql");
 		String objContent = getContent("obj");
 
@@ -283,6 +287,7 @@ public class SourceManagementTest extends TestCase {
 
 		assertTrue(fileContent.equals(getContent("myfile")));
 		assertTrue(dbContent.equals(getContent("db")));
+		assertTrue(wmsContent.equals(getContent("wms")));
 		assertTrue(sqlContent.equals(getContent("sql")));
 		assertTrue(objContent.equals(getContent("obj")));
 
@@ -448,25 +453,34 @@ public class SourceManagementTest extends TestCase {
 	public void testGetAlreadyRegisteredSourceAnonimously() throws Exception {
 		sm.removeAll();
 
-		sm.register("myFile", testFile);
+		sm.register("myfile", testFile);
 		sm.register("myDB", testDB);
+		sm.register("myWMS", testWMS);
 		sm.register("myObj", obj);
+		sm.register("mySQL", sql);
 
 		DataSource ds = dsf.getDataSource(testFile);
-		assertTrue(ds.getName().equals("myFile"));
+		assertTrue(ds.getName().equals("myfile"));
 
 		ds = dsf.getDataSource(testDB);
 		assertTrue(ds.getName().equals("myDB"));
 
+		ds = dsf.getDataSource(testWMS);
+		assertTrue(ds.getName().equals("myWMS"));
+
 		ds = dsf.getDataSource(obj);
 		assertTrue(ds.getName().equals("myObj"));
-	}
 
+		ds = dsf.getDataSourceFromSQL(sql);
+		assertTrue(ds.getName().equals("mySQL"));
+	}
+	
 	public void testCannotRegisterTwice() throws Exception {
 		sm.removeAll();
 
 		sm.register("myfile", testFile);
 		sm.register("myDB", testDB);
+		sm.register("myWMS", testWMS);
 		sm.register("myObj", obj);
 		sm.register("mySQL", sql);
 
@@ -481,14 +495,19 @@ public class SourceManagementTest extends TestCase {
 		} catch (SourceAlreadyExistsException e) {
 		}
 		try {
+			sm.register("w", testWMS);
+			assertTrue(false);
+		} catch (SourceAlreadyExistsException e) {
+		}
+		try {
 			sm.register("c", obj);
 			assertTrue(false);
 		} catch (SourceAlreadyExistsException e) {
 		}
 		try {
 			sm.register("d", sql);
-		} catch (SourceAlreadyExistsException e) {
 			assertTrue(false);
+		} catch (SourceAlreadyExistsException e) {
 		}
 
 		try {
@@ -502,7 +521,17 @@ public class SourceManagementTest extends TestCase {
 		} catch (SourceAlreadyExistsException e) {
 		}
 		try {
+			sm.nameAndRegister(testWMS);
+			assertTrue(false);
+		} catch (SourceAlreadyExistsException e) {
+		}
+		try {
 			sm.nameAndRegister(obj);
+			assertTrue(false);
+		} catch (SourceAlreadyExistsException e) {
+		}
+		try {
+			sm.nameAndRegister(sql);
 			assertTrue(false);
 		} catch (SourceAlreadyExistsException e) {
 		}
@@ -510,12 +539,20 @@ public class SourceManagementTest extends TestCase {
 
 	public void testSQLSourceType() throws Exception {
 		sm.register("spatial source", new SeveralSpatialFieldsDriver());
+		sm.register("myraster", new File("src/test/resources/sample.png"));
 		sm.register("alphasql", "select * from \"" + SOURCE + "\";");
 		sm.register("spatialsql", "select * from \"spatial source\";");
+		sm.register("rastersql", "select * from \"myraster\";");
+		sm.register("mixedsql", "select * from \"myraster\", \"spatial source\";");
 		assertTrue((sm.getSource("alphasql").getType() & SourceManager.SQL) == SourceManager.SQL);
 		assertTrue((sm.getSource("alphasql").getType() & SourceManager.VECTORIAL) == 0);
 		assertTrue((sm.getSource("spatialsql").getType() & SourceManager.SQL) == SourceManager.SQL);
 		assertTrue((sm.getSource("spatialsql").getType() & SourceManager.VECTORIAL) == SourceManager.VECTORIAL);
+		assertTrue((sm.getSource("rastersql").getType() & SourceManager.SQL) == SourceManager.SQL);
+		assertTrue((sm.getSource("rastersql").getType() & SourceManager.RASTER) == SourceManager.RASTER);
+		assertTrue((sm.getSource("mixedsql").getType() & SourceManager.SQL) == SourceManager.SQL);
+		assertTrue((sm.getSource("mixedsql").getType() & SourceManager.VECTORIAL) == SourceManager.VECTORIAL);
+		assertTrue((sm.getSource("mixedsql").getType() & SourceManager.RASTER) == SourceManager.RASTER);
 	}
 
 	public void testCustomQueryDependences() throws Exception {
@@ -541,12 +578,13 @@ public class SourceManagementTest extends TestCase {
 	public void testUnknownSources() throws Exception {
 		sm.register("toto", new FileSourceDefinition("toto.shpp"));
 		assertTrue(sm.getSource("toto").getType() == SourceManager.UNKNOWN);
-		assertTrue(sm.getSourceTypeName("toto").equals("UNKNOWN"));
+		assertTrue(sm.getSource("toto").getTypeName().toUpperCase().equals(
+				"UNKNOWN"));
 	}
 
 	public void testListenCommits() throws Exception {
 		DriverManager dm = new DriverManager();
-		dm.registerDriver("failingdriver", ReadAndWriteDriver.class);
+		dm.registerDriver(ReadAndWriteDriver.class);
 
 		SourceManager sourceManager = dsf.getSourceManager();
 		sourceManager.setDriverManager(dm);
@@ -579,6 +617,8 @@ public class SourceManagementTest extends TestCase {
 		sm.register(SOURCE, testFile);
 		testDB = new DBSource(null, 0, SourceTest.internalData
 				+ "backup/testhsqldb", "sa", "", "gisapps", "jdbc:hsqldb:file");
+		testWMS = new WMSSource("127.0.0.1", "cantons", "EPSG:1234",
+				"format/pig");
 		obj = new ObjectMemoryDriver();
 	}
 

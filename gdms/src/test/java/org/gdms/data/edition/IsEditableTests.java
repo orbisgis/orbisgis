@@ -80,7 +80,7 @@ public class IsEditableTests extends BaseTest {
 
 		dsf = new DataSourceFactory();
 		DriverManager dm = new DriverManager();
-		dm.registerDriver("readwritedriver", ReadDriver.class);
+		dm.registerDriver(ReadDriver.class);
 		SourceManager sourceManager = dsf.getSourceManager();
 		sourceManager.setDriverManager(dm);
 

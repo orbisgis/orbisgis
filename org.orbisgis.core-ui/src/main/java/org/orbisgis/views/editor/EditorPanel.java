@@ -348,7 +348,9 @@ public class EditorPanel extends Container {
 				if (nextFocus != null) {
 					nextFocus.requestFocus();
 					nextFocus.requestFocusInWindow();
-					root.restoreFocus();
+					if (root.getLastFocusedChildWindow() != null) {
+						root.restoreFocus();
+					}
 					lastEditor = null;
 				} else {
 					lastEditor = null;

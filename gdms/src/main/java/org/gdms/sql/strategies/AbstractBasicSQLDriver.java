@@ -54,6 +54,16 @@ public abstract class AbstractBasicSQLDriver implements ObjectDriver {
 		return SourceManager.SQL;
 	}
 
+	@Override
+	public String getTypeDescription() {
+		return "SQL internal driver";
+	}
+
+	@Override
+	public String getTypeName() {
+		return "SQL";
+	}
+
 	public TypeDefinition[] getTypesDefinitions() {
 		return new TypeDefinition[0];
 	}
@@ -61,7 +71,7 @@ public abstract class AbstractBasicSQLDriver implements ObjectDriver {
 	public void setDataSourceFactory(DataSourceFactory dsf) {
 	}
 
-	public String getName() {
+	public String getDriverId() {
 		return "sql driver";
 	}
 

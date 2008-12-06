@@ -104,14 +104,13 @@ public class GdmsDriver extends GDMSModelDriver implements FileReadWriteDriver {
 	}
 
 	public int getType() {
-		return SourceManager.GDMS | SourceManager.VECTORIAL
-				| SourceManager.FILE;
+		return SourceManager.VECTORIAL | SourceManager.FILE;
 	}
 
 	public void setDataSourceFactory(DataSourceFactory dsf) {
 	}
 
-	public String getName() {
+	public String getDriverId() {
 		return "GDMS driver";
 	}
 
@@ -139,6 +138,16 @@ public class GdmsDriver extends GDMSModelDriver implements FileReadWriteDriver {
 	@Override
 	public String[] getFileExtensions() {
 		return new String[] { "gdms" };
+	}
+
+	@Override
+	public String getTypeDescription() {
+		return "GDMS native file";
+	}
+
+	@Override
+	public String getTypeName() {
+		return "GDMS";
 	}
 
 }

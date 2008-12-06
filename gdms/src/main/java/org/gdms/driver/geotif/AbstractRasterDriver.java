@@ -52,6 +52,7 @@ import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.FileReadWriteDriver;
+import org.gdms.source.SourceManager;
 import org.grap.model.GeoRaster;
 import org.grap.model.GeoRasterFactory;
 import org.grap.model.RasterMetadata;
@@ -175,6 +176,14 @@ public abstract class AbstractRasterDriver implements FileReadWriteDriver {
 			}
 		}
 		return null;
+	}
+
+	public int getType() {
+		return SourceManager.RASTER | SourceManager.FILE;
+	}
+
+	public boolean isCommitable() {
+		return false;
 	}
 
 }

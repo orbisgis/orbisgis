@@ -36,43 +36,25 @@
  */
 package org.orbisgis.views.geocatalog.actions;
 
-import org.gdms.data.NoSuchTableException;
+import org.gdms.source.Source;
 import org.gdms.source.SourceManager;
-import org.orbisgis.DataManager;
 import org.orbisgis.Services;
 import org.orbisgis.pluginManager.background.BackgroundManager;
-import org.orbisgis.resource.GdmsSource;
-import org.orbisgis.resource.IResource;
-import org.orbisgis.resource.IResourceType;
-import org.orbisgis.views.geocatalog.Catalog;
-import org.orbisgis.views.geocatalog.EditableResource;
-import org.orbisgis.views.geocatalog.action.IResourceAction;
+import org.orbisgis.views.geocatalog.EditableSource;
+import org.orbisgis.views.geocatalog.action.ISourceAction;
 import org.orbisgis.views.geocognition.actions.OpenGeocognitionElementJob;
 
-public class ShowTable implements IResourceAction {
+public class ShowTable implements ISourceAction {
 
-	public boolean accepts(IResource selectedNode) {
-		IResourceType resourceType = selectedNode.getResourceType();
-		if (resourceType instanceof GdmsSource) {
-			int sourceType;
-			try {
-				sourceType = ((DataManager) Services
-						.getService(DataManager.class)).getDSF()
-						.getSourceManager().getSourceType(
-								selectedNode.getName());
-			} catch (NoSuchTableException e) {
-				throw new RuntimeException("bug!");
-			}
-			return (sourceType & SourceManager.RASTER) == 0;
-		}
-
-		return false;
+	public boolean accepts(SourceManager sourceManager, String selectedNode) {
+		Source source = sourceManager.getSource(selectedNode);
+		return (source.getType() & SourceManager.RASTER) == 0;
 	}
 
-	public void execute(Catalog catalog, IResource currentNode) {
+	public void execute(SourceManager sourceManager, String currentNode) {
 		BackgroundManager bm = Services.getService(BackgroundManager.class);
 		bm.backgroundOperation(new OpenGeocognitionElementJob(
-				new EditableResource(currentNode.getName())));
+				new EditableSource(currentNode)));
 	}
 
 	public boolean acceptsSelectionCount(int selectionCount) {

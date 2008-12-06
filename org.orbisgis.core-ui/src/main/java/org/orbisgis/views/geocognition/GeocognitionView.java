@@ -5,8 +5,6 @@ import java.awt.Component;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -19,10 +17,10 @@ import java.net.URL;
 import java.util.ArrayList;
 
 import javax.swing.ImageIcon;
-import javax.swing.JButton;
 import javax.swing.JPanel;
-import javax.swing.JTextField;
 import javax.swing.JToggleButton;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 
 import org.orbisgis.PersistenceException;
 import org.orbisgis.Services;
@@ -35,6 +33,7 @@ import org.orbisgis.geocognition.GeocognitionElementFactory;
 import org.orbisgis.geocognition.GeocognitionListener;
 import org.orbisgis.pluginManager.ExtensionPointManager;
 import org.orbisgis.pluginManager.ItemAttributes;
+import org.orbisgis.ui.text.JTextFilter;
 import org.orbisgis.view.IView;
 import org.orbisgis.views.editor.EditorManager;
 import org.orbisgis.views.geocognition.filter.IGeocognitionFilter;
@@ -50,10 +49,9 @@ public class GeocognitionView extends JPanel implements IView {
 	public static final String STARTUP_GEOCOGNITION_XML = "startup.geocognition.xml";
 	private static final String COGNITION_PERSISTENCE_FILE = "org.orbisgis.Geocognition.xml";
 	private GeocognitionTree tree;
-	private JTextField txtFilter;
+	private JTextFilter txtFilter;
 	private JPanel controlPanel;
 	private ArrayList<FilterButton> filterButtons;
-	private JButton btnClear;
 	private ModificationListener modificationListener = new ModificationListener();
 	private TreeListener treeListener = new TreeListener();
 
@@ -75,30 +73,25 @@ public class GeocognitionView extends JPanel implements IView {
 			controlPanel.add(getFilterButtonPanel());
 			controlPanel.add(new CarriageReturn());
 
-			txtFilter = new JTextField(8);
-			txtFilter.addKeyListener(new KeyAdapter() {
-
+			txtFilter = new JTextFilter();
+			txtFilter.addDocumentListener(new DocumentListener() {
+			
 				@Override
-				public void keyReleased(KeyEvent e) {
+				public void removeUpdate(DocumentEvent e) {
 					doFilter();
 				}
-
+			
+				@Override
+				public void insertUpdate(DocumentEvent e) {
+					doFilter();
+				}
+			
+				@Override
+				public void changedUpdate(DocumentEvent e) {
+					doFilter();
+				}
 			});
 			controlPanel.add(txtFilter);
-			btnClear = new JButton(new ImageIcon(this.getClass().getResource(
-					"/org/orbisgis/images/remove.png")));
-			btnClear.setVisible(false);
-			btnClear.setMargin(new Insets(0, 0, 0, 0));
-			btnClear.addActionListener(new ActionListener() {
-
-				@Override
-				public void actionPerformed(ActionEvent e) {
-					txtFilter.setText("");
-					doFilter();
-				}
-
-			});
-			controlPanel.add(btnClear);
 		}
 		return controlPanel;
 	}
@@ -132,8 +125,6 @@ public class GeocognitionView extends JPanel implements IView {
 	}
 
 	private void doFilter() {
-		btnClear.setVisible(txtFilter.getText().length() > 0);
-
 		ArrayList<IGeocognitionFilter> filters = new ArrayList<IGeocognitionFilter>();
 		for (FilterButton filterButton : filterButtons) {
 			if (filterButton.getButton().isSelected()) {

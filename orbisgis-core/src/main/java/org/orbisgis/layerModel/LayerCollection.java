@@ -52,7 +52,7 @@ import org.orbisgis.renderer.legend.RasterLegend;
 
 import com.vividsolutions.jts.geom.Envelope;
 
-public class LayerCollection extends ALayer {
+public class LayerCollection extends AbstractLayer {
 	private List<ILayer> layerCollection;
 
 	public LayerCollection(String name) {
@@ -477,5 +477,17 @@ public class LayerCollection extends ALayer {
 	public Legend[] getRenderingLegend() throws DriverException {
 		throw new UnsupportedOperationException(
 				"Cannot draw a layer collection");
+	}
+
+	@Override
+	public WMSConnection getWMSConnection()
+			throws UnsupportedOperationException {
+		throw new UnsupportedOperationException("Cannot do this "
+				+ "operation on a layer collection");
+	}
+
+	@Override
+	public boolean isWMS() {
+		return false;
 	}
 }

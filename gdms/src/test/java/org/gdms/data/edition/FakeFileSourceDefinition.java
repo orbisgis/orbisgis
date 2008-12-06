@@ -38,6 +38,7 @@ package org.gdms.data.edition;
 
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceCreationException;
+import org.gdms.data.DataSourceDefinition;
 import org.gdms.data.file.FileDataSourceAdapter;
 import org.gdms.data.file.FileSourceDefinition;
 import org.gdms.driver.FileDriver;
@@ -65,7 +66,7 @@ public class FakeFileSourceDefinition extends FileSourceDefinition {
 	}
 
 	@Override
-	public boolean equals(Object obj) {
+	public boolean equals(DataSourceDefinition obj) {
 		return false;
 	}
 

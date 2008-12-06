@@ -273,7 +273,7 @@ public abstract class DefaultSQL implements DBReadWriteDriver, ValueWriter {
 			}
 		}
 		if (rule == null) {
-			throw new DriverException(getName() + " doesn't accept "
+			throw new DriverException(getTypeName() + " doesn't accept "
 					+ TypeFactory.getTypeName(fieldType.getTypeCode())
 					+ " types");
 		} else {

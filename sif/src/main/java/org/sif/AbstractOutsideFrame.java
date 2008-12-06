@@ -43,6 +43,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ContainerEvent;
 import java.awt.event.ContainerListener;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
@@ -52,7 +54,7 @@ import javax.swing.JComboBox;
 import javax.swing.JDialog;
 
 public abstract class AbstractOutsideFrame extends JDialog implements
-		OutsideFrame, ContainerListener, KeyListener, MouseListener, ActionListener {
+		OutsideFrame, ContainerListener, KeyListener, MouseListener, ActionListener, FocusListener {
 
 	private boolean accepted = false;
 
@@ -66,12 +68,14 @@ public abstract class AbstractOutsideFrame extends JDialog implements
 		// If not, it won't do any harm
 		c.removeKeyListener(this);
 		c.removeMouseListener(this);
+		c.removeFocusListener(this);
 		if (c instanceof JComboBox) {
 			((JComboBox)c).removeActionListener(this);
 		}
 		// Add KeyListener to the Component passed as an argument
 		c.addKeyListener(this);
 		c.addMouseListener(this);
+		c.addFocusListener(this);
 		if (c instanceof JComboBox) {
 			((JComboBox)c).addActionListener(this);
 		}
@@ -181,4 +185,13 @@ public abstract class AbstractOutsideFrame extends JDialog implements
 		getPanel().validateInput();
 	}
 
+	@Override
+	public void focusGained(FocusEvent e) {
+		getPanel().validateInput();
+	}
+	
+	@Override
+	public void focusLost(FocusEvent e) {
+	}
+	
 }

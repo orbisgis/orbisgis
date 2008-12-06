@@ -49,8 +49,6 @@ public class OrbisGISTests extends TestCase {
 
 		TestSuite suite = new TestSuite("Test for orbisgis");
 		// $JUnit-BEGIN$
-		suite.addTestSuite(CatalogTest.class);
-		suite.addTestSuite(ResourceTest.class);
 		suite.addTest(NodeTests.suite());
 		suite.addTestSuite(GeocognitionTest.class);
 		suite.addTestSuite(WorkspaceTest.class);

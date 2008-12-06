@@ -44,21 +44,31 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.geom.AffineTransform;
+import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.awt.image.ColorModel;
 import java.awt.image.DirectColorModel;
+import java.io.File;
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Vector;
+
+import javax.imageio.ImageIO;
 
 import org.apache.log4j.Logger;
 import org.gdms.data.SpatialDataSourceDecorator;
 import org.gdms.data.indexes.DefaultSpatialIndexQuery;
 import org.gdms.driver.DriverException;
 import org.grap.model.GeoRaster;
+import org.gvsig.remoteClient.exceptions.ServerErrorException;
+import org.gvsig.remoteClient.exceptions.WMSException;
+import org.gvsig.remoteClient.wms.WMSStatus;
 import org.orbisgis.Services;
+import org.orbisgis.errorManager.ErrorManager;
 import org.orbisgis.layerModel.ILayer;
+import org.orbisgis.layerModel.WMSConnection;
 import org.orbisgis.map.MapTransform;
 import org.orbisgis.progress.IProgressMonitor;
 import org.orbisgis.progress.NullProgressMonitor;
@@ -116,37 +126,98 @@ public class Renderer {
 				break;
 			} else {
 				layer = layers[i];
-				if (layer.isVisible()) {
-					try {
-						logger.debug("Drawing " + layer.getName());
-						long t1 = System.currentTimeMillis();
+				if (layer.isVisible() && extent.intersects(layer.getEnvelope())) {
+					logger.debug("Drawing " + layer.getName());
+					long t1 = System.currentTimeMillis();
+					if (layer.isWMS()) {
+						// Iterate over next layers to make only one call to the
+						// WMS server
+						WMSStatus status = (WMSStatus) layer.getWMSConnection()
+								.getStatus().clone();
+						if (i > 0) {
+							for (int j = i - 1; (j >= 0)
+									&& (layers[j].isWMS() || !layers[j]
+											.isVisible()); j--) {
+								if (layers[j].isVisible()) {
+									i = j;
+									if (sameServer(layer, layers[j])) {
+										Vector<?> layerNames = layers[j]
+												.getWMSConnection().getStatus()
+												.getLayerNames();
+										for (Object layerName : layerNames) {
+											status.addLayerName(layerName
+													.toString());
+										}
+									}
+								}
+							}
+						}
+						WMSConnection conn = new WMSConnection(layer
+								.getWMSConnection().getClient(), status);
+						drawWMS(g2, width, height, extent, conn);
+					} else {
 						SpatialDataSourceDecorator sds = layer.getDataSource();
 						if (sds != null) {
-							if (sds.isDefaultVectorial()) {
-								drawVectorLayer(mt, layer, g2, width, height,
-										extent, permission, pm);
-							} else if (sds.isDefaultRaster()) {
-								drawRasterLayer(mt, layer, g2, width, height,
-										extent, pm);
-							} else {
-								logger.warn("Not drawn: " + layer.getName());
+							try {
+								if (sds.isDefaultVectorial()) {
+									drawVectorLayer(mt, layer, g2, width,
+											height, extent, permission, pm);
+								} else if (sds.isDefaultRaster()) {
+									try {
+										drawRasterLayer(mt, layer, g2, width,
+												height, extent, pm);
+									} catch (IOException e) {
+										Services.getErrorManager().error(
+												"Cannot draw raster:"
+														+ layer.getName(), e);
+									}
+								} else {
+									logger
+											.warn("Not drawn: "
+													+ layer.getName());
+								}
+							} catch (DriverException e) {
+								Services.getErrorManager().error(
+										"Cannot draw : " + layer.getName(), e);
 							}
 							pm.progressTo(100 - (100 * i) / layers.length);
 						}
-						long t2 = System.currentTimeMillis();
-						logger.info("Rendering time:" + (t2 - t1));
-					} catch (IOException e) {
-						Services.getErrorManager().error(
-								"Cannot draw raster:" + layer.getName(), e);
-					} catch (DriverException e) {
-						Services.getErrorManager().error(
-								"Cannot draw : " + layer.getName(), e);
 					}
+					long t2 = System.currentTimeMillis();
+					logger.info("Rendering time:" + (t2 - t1));
 				}
 			}
 		}
 		long total2 = System.currentTimeMillis();
 		logger.info("Total rendering time:" + (total2 - total1));
+	}
+
+	private boolean sameServer(ILayer layer, ILayer layer2) {
+		return layer.getWMSConnection().getClient().getHost().equals(
+				layer2.getWMSConnection().getClient().getHost());
+	}
+
+	private void drawWMS(Graphics2D g2, int width, int height, Envelope extent,
+			WMSConnection connection) {
+		WMSStatus status = connection.getStatus();
+		status.setWidth(width);
+		status.setHeight(height);
+		status.setExtent(new Rectangle2D.Double(extent.getMinX(), extent
+				.getMinY(), extent.getWidth(), extent.getHeight()));
+		try {
+			File file = connection.getClient().getMap(status, null);
+			BufferedImage image = ImageIO.read(file);
+			g2.drawImage(image, 0, 0, null);
+		} catch (WMSException e) {
+			Services.getService(ErrorManager.class).error(
+					"Cannot get WMS image", e);
+		} catch (ServerErrorException e) {
+			Services.getService(ErrorManager.class).error(
+					"Cannot get WMS image", e);
+		} catch (IOException e) {
+			Services.getService(ErrorManager.class).error(
+					"Cannot get WMS image", e);
+		}
 	}
 
 	/**
@@ -182,29 +253,26 @@ public class Renderer {
 				GeoRaster geoRaster = layer.getDataSource().getRaster(i);
 				Envelope layerEnvelope = geoRaster.getMetadata().getEnvelope();
 				Envelope layerPixelEnvelope = null;
-				if (extent.intersects(layerEnvelope)) {
+				BufferedImage layerImage = new BufferedImage(width, height,
+						BufferedImage.TYPE_INT_ARGB);
 
-					BufferedImage layerImage = new BufferedImage(width, height,
-							BufferedImage.TYPE_INT_ARGB);
-
-					// part or all of the GeoRaster is visible
-					layerPixelEnvelope = mt.toPixel(layerEnvelope);
-					Graphics2D gLayer = layerImage.createGraphics();
-					Image dataImage = geoRaster
-							.getImage(((RasterLegend) legend).getColorModel());
-					gLayer.drawImage(dataImage, (int) layerPixelEnvelope
-							.getMinX(), (int) layerPixelEnvelope.getMinY(),
-							(int) layerPixelEnvelope.getWidth() + 1,
-							(int) layerPixelEnvelope.getHeight() + 1, null);
-					pm.startTask("Drawing " + layer.getName());
-					String bands = ((RasterLegend) legend).getBands();
-					if (bands != null) {
-						g2.drawImage(invertRGB(layerImage, bands), 0, 0, null);
-					} else {
-						g2.drawImage(layerImage, 0, 0, null);
-					}
-					pm.endTask();
+				// part or all of the GeoRaster is visible
+				layerPixelEnvelope = mt.toPixel(layerEnvelope);
+				Graphics2D gLayer = layerImage.createGraphics();
+				Image dataImage = geoRaster.getImage(((RasterLegend) legend)
+						.getColorModel());
+				gLayer.drawImage(dataImage, (int) layerPixelEnvelope.getMinX(),
+						(int) layerPixelEnvelope.getMinY(),
+						(int) layerPixelEnvelope.getWidth() + 1,
+						(int) layerPixelEnvelope.getHeight() + 1, null);
+				pm.startTask("Drawing " + layer.getName());
+				String bands = ((RasterLegend) legend).getBands();
+				if (bands != null) {
+					g2.drawImage(invertRGB(layerImage, bands), 0, 0, null);
+				} else {
+					g2.drawImage(layerImage, 0, 0, null);
 				}
+				pm.endTask();
 			}
 		}
 	}

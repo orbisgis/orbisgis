@@ -94,7 +94,7 @@ public class SQLSourceDefinition extends AbstractDataSourceDefinition implements
 					dsf.saveContents(name, dsf.getDataSource(source,
 							DataSourceFactory.NORMAL));
 				}
-				
+
 				return file;
 			}
 		}
@@ -172,17 +172,25 @@ public class SQLSourceDefinition extends AbstractDataSourceDefinition implements
 	}
 
 	public int getType() {
+		int type = SourceManager.SQL;
 		try {
 			Metadata metadata = instruction.getResultMetadata();
 			for (int i = 0; i < metadata.getFieldCount(); i++) {
-				if (metadata.getFieldType(i).getTypeCode() == Type.GEOMETRY) {
-					return SourceManager.SQL | SourceManager.VECTORIAL;
+				int typeCode = metadata.getFieldType(i).getTypeCode();
+				if (typeCode == Type.GEOMETRY) {
+					type = type | SourceManager.VECTORIAL;
+				} else if (typeCode == Type.RASTER) {
+					type = type | SourceManager.RASTER;
 				}
 			}
 		} catch (DriverException e) {
-			return SourceManager.SQL;
 		}
-		return SourceManager.SQL;
+		return type;
+	}
+
+	@Override
+	public String getTypeName() {
+		return "SQL";
 	}
 
 	public void initialize() throws DriverException {
@@ -195,6 +203,16 @@ public class SQLSourceDefinition extends AbstractDataSourceDefinition implements
 		} catch (SemanticException e) {
 			throw new DriverException("Cannot " + "initialize source: "
 					+ tempSQL, e);
+		}
+	}
+
+	@Override
+	public boolean equals(DataSourceDefinition obj) {
+		if (obj instanceof SQLSourceDefinition) {
+			SQLSourceDefinition dsd = (SQLSourceDefinition) obj;
+			return instruction.getSQL().equals(dsd.instruction.getSQL());
+		} else {
+			return false;
 		}
 	}
 }

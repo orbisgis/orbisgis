@@ -38,26 +38,27 @@ package org.gdms.driver.png;
 
 import org.gdms.driver.FileReadWriteDriver;
 import org.gdms.driver.geotif.AbstractRasterDriver;
-import org.gdms.source.SourceManager;
 
 public class PngDriver extends AbstractRasterDriver implements
 		FileReadWriteDriver {
 
-	public String getName() {
+	public String getDriverId() {
 		return "png driver";
-	}
-
-	public int getType() {
-		return SourceManager.PGW;
-	}
-
-	public boolean isCommitable() {
-		return false;
 	}
 
 	@Override
 	public String[] getFileExtensions() {
 		return new String[] { "png" };
+	}
+
+	@Override
+	public String getTypeDescription() {
+		return "PNG with PGW file";
+	}
+
+	@Override
+	public String getTypeName() {
+		return "PGW";
 	}
 
 }

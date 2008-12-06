@@ -37,17 +37,12 @@
 package org.gdms.driver.geotif;
 
 import org.gdms.driver.FileReadWriteDriver;
-import org.gdms.source.SourceManager;
 
 public class TifDriver extends AbstractRasterDriver implements
 		FileReadWriteDriver {
 
-	public String getName() {
+	public String getDriverId() {
 		return "tif with world file driver";
-	}
-
-	public int getType() {
-		return SourceManager.TFW;
 	}
 
 	public boolean isCommitable() {
@@ -57,6 +52,16 @@ public class TifDriver extends AbstractRasterDriver implements
 	@Override
 	public String[] getFileExtensions() {
 		return new String[] { "tif", "tiff" };
+	}
+
+	@Override
+	public String getTypeDescription() {
+		return "TIF with TFW file";
+	}
+
+	@Override
+	public String getTypeName() {
+		return "TFW";
 	}
 
 }

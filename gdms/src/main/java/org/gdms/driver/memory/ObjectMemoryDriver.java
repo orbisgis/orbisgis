@@ -147,7 +147,7 @@ public class ObjectMemoryDriver extends GDMSModelDriver implements ObjectReadWri
 	public void setDataSourceFactory(DataSourceFactory dsf) {
 	}
 
-	public String getName() {
+	public String getDriverId() {
 		return DRIVER_NAME;
 	}
 
@@ -195,5 +195,15 @@ public class ObjectMemoryDriver extends GDMSModelDriver implements ObjectReadWri
 
 	public String validateMetadata(Metadata metadata) {
 		return null;
+	}
+
+	@Override
+	public String getTypeDescription() {
+		return "Memory content";
+	}
+
+	@Override
+	public String getTypeName() {
+		return "MEMORY";
 	}
 }

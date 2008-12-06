@@ -1,0 +1,95 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+	<xs:element name="extension">
+		<xs:annotation>
+			<xs:documentation> Action to execute on resouces in the geocatalog
+				</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence minOccurs="0" maxOccurs="unbounded">
+				<xs:element ref="menu" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element ref="action"/>
+			</xs:sequence>
+			<xs:attribute name="point" type="xs:string" use="required"/>
+			<xs:attribute name="id" type="xs:string"/>
+			<xs:attribute name="name" type="xs:string"/>
+		</xs:complexType>
+	</xs:element>
+
+	<xs:element name="menu">
+		<xs:annotation>
+			<xs:documentation> Installs a parent menu </xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:attribute name="id" type="xs:string" use="required">
+				<xs:annotation>
+					<xs:documentation>Id of the menu, referenced by other
+						attributes</xs:documentation>
+				</xs:annotation>
+			</xs:attribute>
+			<xs:attribute name="text" type="xs:string" use="required">
+				<xs:annotation>
+					<xs:documentation>Text to be shown in the menu</xs:documentation>
+				</xs:annotation>
+			</xs:attribute>
+			<xs:attribute name="parent" type="xs:string">
+				<xs:annotation>
+					<xs:documentation>References the id of another
+						menu</xs:documentation>
+				</xs:annotation>
+			</xs:attribute>
+			<xs:attribute name="icon" type="xs:string">
+				<xs:annotation>
+					<xs:documentation>Path to the icon to show in the menu. It has to be in
+						the classpath of the plug-in</xs:documentation>
+				</xs:annotation>
+			</xs:attribute>
+		</xs:complexType>
+	</xs:element>
+
+	<xs:element name="action">
+		<xs:annotation>
+			<xs:documentation> Defines a contextual action of the geocatalog. The will be
+				active when there is some resource selected. </xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:attribute name="id" type="xs:string" use="required">
+				<xs:annotation>
+					<xs:documentation>id of the action. For internal use. Must be
+						unique</xs:documentation>
+				</xs:annotation>
+			</xs:attribute>
+			<xs:attribute name="menu-group" type="xs:string" use="required">
+				<xs:annotation>
+					<xs:documentation>The group of the action. It will be used to group
+						graphically the actions that have the same value in this
+						attribute</xs:documentation>
+				</xs:annotation>
+			</xs:attribute>
+			<xs:attribute name="menu-id" type="xs:string">
+				<xs:annotation>
+					<xs:documentation>Id of the menu where this action will be
+						installed</xs:documentation>
+				</xs:annotation>
+			</xs:attribute>
+			<xs:attribute name="text" type="xs:string" use="required">
+				<xs:annotation>
+					<xs:documentation>Text to display to the user</xs:documentation>
+				</xs:annotation>
+			</xs:attribute>
+			<xs:attribute name="icon" type="xs:string">
+				<xs:annotation>
+					<xs:documentation>Icon to display to the user</xs:documentation>
+				</xs:annotation>
+			</xs:attribute>
+			<xs:attribute name="class" type="xs:string" use="required">
+				<xs:annotation>
+					<xs:documentation>Class that implements the action. It has to
+						implement
+						org.orbisgis.views.geocatalog.action.ISourceAction</xs:documentation>
+				</xs:annotation>
+			</xs:attribute>
+		</xs:complexType>
+	</xs:element>
+</xs:schema>

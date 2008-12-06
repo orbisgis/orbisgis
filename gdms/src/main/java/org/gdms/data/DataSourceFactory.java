@@ -50,6 +50,8 @@ import org.gdms.data.indexes.BTreeIndex;
 import org.gdms.data.indexes.IndexManager;
 import org.gdms.data.indexes.RTreeIndex;
 import org.gdms.data.object.ObjectSourceDefinition;
+import org.gdms.data.wms.WMSSource;
+import org.gdms.data.wms.WMSSourceDefinition;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.ObjectDriver;
 import org.gdms.driver.driverManager.DriverLoadException;
@@ -458,6 +460,43 @@ public class DataSourceFactory {
 	}
 
 	/**
+	 * Gets a DataSource instance to access the wms source
+	 * 
+	 * @param wmsSource
+	 *            source to access
+	 * @param mode
+	 *            To enable undo/redo operations UNDOABLE. NORMAL otherwise
+	 * @return
+	 * 
+	 * @throws DataSourceCreationException
+	 *             If the instance creation fails
+	 * @throws DriverException
+	 */
+	public DataSource getDataSource(WMSSource wmsSource, int mode)
+			throws DataSourceCreationException, DriverException {
+		return getDataSource(new WMSSourceDefinition(wmsSource), mode,
+				new NullProgressMonitor());
+	}
+
+	/**
+	 * Gets a DataSource instance to access the wms source with the
+	 * {@link #DEFAULT} mode
+	 * 
+	 * @param wmsSource
+	 *            source to access
+	 * @return
+	 * 
+	 * @throws DataSourceCreationException
+	 *             If the instance creation fails
+	 * @throws DriverException
+	 */
+	public DataSource getDataSource(WMSSource wmsSource)
+			throws DataSourceCreationException, DriverException {
+		return getDataSource(new WMSSourceDefinition(wmsSource), DEFAULT,
+				new NullProgressMonitor());
+	}
+
+	/**
 	 * Returns a DataSource to access the source associated to the specified
 	 * name
 	 * 
@@ -727,14 +766,24 @@ public class DataSourceFactory {
 	}
 
 	/**
-	 * Gets a new file in the results directory
+	 * Gets a new file in the results directory with "gdms" extension
 	 * 
 	 * @return
 	 */
 	public File getResultFile() {
+		return getResultFile("gdms");
+	}
+
+	/**
+	 * Get a new file in the results directory with the specified extension
+	 * 
+	 * @param extension
+	 * @return
+	 */
+	public File getResultFile(String extension) {
 		File file;
 		do {
-			file = new File(resultDir, getUID() + ".gdms");
+			file = new File(resultDir, getUID() + "." + extension);
 		} while (file.exists());
 
 		return file;

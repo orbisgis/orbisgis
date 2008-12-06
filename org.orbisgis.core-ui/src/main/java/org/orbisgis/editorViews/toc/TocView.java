@@ -88,8 +88,8 @@ public class TocView implements IEditorView {
 			EditorManager em = Services.getService(EditorManager.class);
 			IEditor[] mapEditors = em.getEditors("org.orbisgis.editors.Map",
 					mapContext);
-			String mapContextId = mapEditors[0].getElement().getId();
-			if (mapContext != null) {
+			if (mapEditors.length > 0) {
+				String mapContextId = mapEditors[0].getElement().getId();
 				toc.setMapContext(mapContextId, mapContext);
 				return true;
 			} else {
@@ -116,7 +116,7 @@ public class TocView implements IEditorView {
 						IEditor[] editors = em
 								.getEditors("org.orbisgis.editors.Table");
 						for (IEditor openEditor : editors) {
-							EditableLayer el = (EditableLayer) openEditor
+							AbstractTableEditableElement el = (AbstractTableEditableElement) openEditor
 									.getElement();
 							if (el.getMapContext() == mc) {
 								if (!em.closeEditor(openEditor)) {

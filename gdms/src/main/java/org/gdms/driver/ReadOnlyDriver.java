@@ -39,12 +39,13 @@ package org.gdms.driver;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.metadata.Metadata;
 import org.gdms.driver.driverManager.Driver;
+import org.gdms.source.SourceManager;
 
 public interface ReadOnlyDriver extends Driver, ReadAccess {
 
 	/**
 	 * Gets the driver specific metadata
-	 *
+	 * 
 	 * @return
 	 * @throws DriverException
 	 */
@@ -52,18 +53,34 @@ public interface ReadOnlyDriver extends Driver, ReadAccess {
 
 	/**
 	 * Method to pass references to the driver
-	 *
+	 * 
 	 * @param dsf
 	 */
 	public void setDataSourceFactory(DataSourceFactory dsf);
 
 	/**
 	 * Gets the type of the sources this driver can read. It can be one of the
-	 * constants in SourceManager or a new value that will be meaningful for the
-	 * client of this method.
-	 *
+	 * constants in {@link SourceManager} or a new value that will be meaningful
+	 * for the client of this method.
+	 * 
 	 * @return
 	 */
 	public int getType();
+
+	/**
+	 * Return a short representation of the source types this driver accesses.
+	 * E.g.: SHP
+	 * 
+	 * @return
+	 */
+	public String getTypeName();
+
+	/**
+	 * Return a 'long' description of the source type this driver accesses.
+	 * E.g.: Esri shapefile format
+	 * 
+	 * @return
+	 */
+	public String getTypeDescription();
 
 }

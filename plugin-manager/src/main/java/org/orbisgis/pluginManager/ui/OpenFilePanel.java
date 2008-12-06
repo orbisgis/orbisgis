@@ -179,7 +179,13 @@ public class OpenFilePanel extends AbstractUIPanel implements SQLUIPanel {
 
 		private FormatFilter(String[] extensions, String description) {
 			this.extensions = extensions;
-			this.description = description;
+			this.description = description + " (";
+			String separator = "";
+			for (String extension : extensions) {
+				this.description += separator + "*." + extension;
+				separator = ",";
+			}
+			this.description += ")";
 		}
 
 		@Override

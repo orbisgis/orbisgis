@@ -103,9 +103,9 @@ public class HSQLDBDriver extends DefaultDBDriver implements DBReadWriteDriver {
 	}
 
 	/**
-	 * @see com.hardcode.driverManager.Driver#getName()
+	 * @see com.hardcode.driverManager.Driver#getDriverId()
 	 */
-	public String getName() {
+	public String getDriverId() {
 		return DRIVER_NAME;
 	}
 
@@ -172,7 +172,7 @@ public class HSQLDBDriver extends DefaultDBDriver implements DBReadWriteDriver {
 	}
 
 	public int getType() {
-		return SourceManager.HSQLDB;
+		return SourceManager.DB;
 	}
 
 	@Override
@@ -214,6 +214,16 @@ public class HSQLDBDriver extends DefaultDBDriver implements DBReadWriteDriver {
 	@Override
 	public int getDefaultPort() {
 		return 9001;
+	}
+
+	@Override
+	public String getTypeDescription() {
+		return "HSQL database";
+	}
+
+	@Override
+	public String getTypeName() {
+		return "HSQLDB";
 	}
 
 }

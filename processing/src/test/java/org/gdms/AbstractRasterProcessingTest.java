@@ -64,9 +64,10 @@ abstract public class AbstractRasterProcessingTest extends TestCase {
 			.getResource("4x3.asc").getFile();
 
 	static {
-		dsf.getSourceManager().getDriverManager().registerDriver("asc driver",
+		dsf.getSourceManager().getDriverManager().registerDriver(
 				AscDriver.class);
-		dsf.getSourceManager().register("georastersource", new File(geoRasterPath));
+		dsf.getSourceManager().register("georastersource",
+				new File(geoRasterPath));
 
 		try {
 			geoRaster = GeoRasterFactory.createGeoRaster(geoRasterPath);

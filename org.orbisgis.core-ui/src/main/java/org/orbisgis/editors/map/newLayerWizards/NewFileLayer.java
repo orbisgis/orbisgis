@@ -40,11 +40,13 @@ import java.io.File;
 import java.util.ArrayList;
 
 import org.gdms.data.file.FileSourceDefinition;
+import org.gdms.source.SourceManager;
 import org.orbisgis.DataManager;
 import org.orbisgis.Services;
 import org.orbisgis.editors.map.newLayerWizard.INewLayer;
 import org.orbisgis.layerModel.ILayer;
 import org.orbisgis.layerModel.LayerException;
+import org.orbisgis.utils.FileUtils;
 import org.orbisgis.wizards.OpenGdmsFilePanel;
 import org.sif.UIFactory;
 import org.sif.UIPanel;
@@ -66,12 +68,15 @@ public class NewFileLayer implements INewLayer {
 							file);
 					DataManager dataManager = (DataManager) Services
 							.getService(DataManager.class);
-					String registerName = (dataManager).getDSF()
-							.getSourceManager().getSourceName(
-									fileSourceDefinition);
+					SourceManager sourceManager = (dataManager).getDSF()
+							.getSourceManager();
+					String registerName = sourceManager
+							.getSourceName(fileSourceDefinition);
 					if (registerName == null) {
-						registerName = dataManager.registerWithUniqueName(file
-								.getName(), fileSourceDefinition);
+						registerName = sourceManager.getUniqueName(FileUtils
+								.getFileNameWithoutExtensionU(file));
+						sourceManager.register(registerName,
+								fileSourceDefinition);
 					}
 					ILayer layer = dataManager.createLayer(registerName);
 					ret.add(layer);

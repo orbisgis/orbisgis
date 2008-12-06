@@ -281,7 +281,7 @@ public class ListenerTest extends TestCase {
 		dsf = new DataSourceFactory();
 		dsf.setTempDir("src/test/resources/backup");
 		DriverManager dm = new DriverManager();
-		dm.registerDriver("failingdriver", ReadAndWriteDriver.class);
+		dm.registerDriver(ReadAndWriteDriver.class);
 		
 		SourceManager sourceManager = dsf.getSourceManager();
 		sourceManager.setDriverManager(dm);

@@ -1,0 +1,46 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+	<xs:element name="extension">
+		<xs:annotation>
+			<xs:documentation> This extension point can be extended to add new types of
+				sources to the catalog </xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="wizard"/>
+			</xs:sequence>
+			<xs:attribute name="point" type="xs:string" use="required"/>
+			<xs:attribute name="id" type="xs:string"/>
+			<xs:attribute name="name" type="xs:string"/>
+		</xs:complexType>
+	</xs:element>
+
+	<xs:element name="wizard">
+		<xs:annotation>
+			<xs:documentation> Defines the interface to add new resources to the catalog
+				</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:attribute name="class" type="xs:string" use="required">
+				<xs:annotation>
+					<xs:documentation> Class that implements the
+						org.orbisgis.views.geocatalog.newSourceWizard.INewSource
+						that will contain the logic to add the new resource to the catalog
+						</xs:documentation>
+				</xs:annotation>
+			</xs:attribute>
+			<xs:attribute name="icon" type="xs:string">
+				<xs:annotation>
+					<xs:documentation> Icon to show in the wizard chooser
+						</xs:documentation>
+				</xs:annotation>
+			</xs:attribute>
+			<xs:attribute name="id" type="xs:string" use="required">
+				<xs:annotation>
+					<xs:documentation>Identificator for internal use. Should be unique
+						</xs:documentation>
+				</xs:annotation>
+			</xs:attribute>
+		</xs:complexType>
+	</xs:element>
+</xs:schema>

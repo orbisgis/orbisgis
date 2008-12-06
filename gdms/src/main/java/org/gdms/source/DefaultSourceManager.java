@@ -64,6 +64,8 @@ import org.gdms.data.db.DBSource;
 import org.gdms.data.db.DBTableSourceDefinition;
 import org.gdms.data.file.FileSourceDefinition;
 import org.gdms.data.object.ObjectSourceDefinition;
+import org.gdms.data.wms.WMSSource;
+import org.gdms.data.wms.WMSSourceDefinition;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.ObjectDriver;
 import org.gdms.driver.asc.AscDriver;
@@ -121,19 +123,19 @@ public class DefaultSourceManager implements SourceManager {
 
 	public DefaultSourceManager(DataSourceFactory dsf, String baseDir)
 			throws IOException {
-		dm.registerDriver(CSVStringDriver.DRIVER_NAME, CSVStringDriver.class);
-		dm.registerDriver(DBFDriver.DRIVER_NAME, DBFDriver.class);
-		dm.registerDriver(ShapefileDriver.DRIVER_NAME, ShapefileDriver.class);
-		dm.registerDriver(CirDriver.DRIVER_NAME, CirDriver.class);
-		dm.registerDriver(ValDriver.DRIVER_NAME, ValDriver.class);
-		dm.registerDriver(PostgreSQLDriver.DRIVER_NAME, PostgreSQLDriver.class);
-		dm.registerDriver(HSQLDBDriver.DRIVER_NAME, HSQLDBDriver.class);
-		dm.registerDriver(H2spatialDriver.DRIVER_NAME, H2spatialDriver.class);
-		dm.registerDriver(new GdmsDriver().getName(), GdmsDriver.class);
-		dm.registerDriver(new TifDriver().getName(), TifDriver.class);
-		dm.registerDriver(new AscDriver().getName(), AscDriver.class);
-		dm.registerDriver(new JPGDriver().getName(), JPGDriver.class);
-		dm.registerDriver(new PngDriver().getName(), PngDriver.class);
+		dm.registerDriver(CSVStringDriver.class);
+		dm.registerDriver(DBFDriver.class);
+		dm.registerDriver(ShapefileDriver.class);
+		dm.registerDriver(CirDriver.class);
+		dm.registerDriver(ValDriver.class);
+		dm.registerDriver(PostgreSQLDriver.class);
+		dm.registerDriver(HSQLDBDriver.class);
+		dm.registerDriver(H2spatialDriver.class);
+		dm.registerDriver(GdmsDriver.class);
+		dm.registerDriver(TifDriver.class);
+		dm.registerDriver(AscDriver.class);
+		dm.registerDriver(JPGDriver.class);
+		dm.registerDriver(PngDriver.class);
 		this.dsf = dsf;
 		changeSourceInfoDirectory(baseDir);
 	}
@@ -360,6 +362,12 @@ public class DefaultSourceManager implements SourceManager {
 		register(name, new DBTableSourceDefinition(dbTable));
 	}
 
+	@Override
+	public void register(String name, WMSSource wmsSource)
+			throws SourceAlreadyExistsException {
+		register(name, new WMSSourceDefinition(wmsSource));
+	}
+
 	/**
 	 * @param name
 	 * @param driver
@@ -462,6 +470,17 @@ public class DefaultSourceManager implements SourceManager {
 		return name;
 	}
 
+	public String getUniqueName(String base) {
+		String tmpName = base;
+		int i = 0;
+		while (exists(tmpName)) {
+			tmpName = base + "_" + i;
+			i++;
+		}
+
+		return tmpName;
+	}
+
 	/**
 	 * @param file
 	 * @return
@@ -488,13 +507,17 @@ public class DefaultSourceManager implements SourceManager {
 		return name;
 	}
 
-	/**
-	 * @param dbTable
-	 * @return
-	 */
+	@Override
 	public String nameAndRegister(DBSource dbTable) {
 		String name = getUID();
 		register(name, false, new DBTableSourceDefinition(dbTable));
+		return name;
+	}
+
+	@Override
+	public String nameAndRegister(WMSSource dbTable) {
+		String name = getUID();
+		register(name, false, new WMSSourceDefinition(dbTable));
 		return name;
 	}
 
@@ -747,15 +770,6 @@ public class DefaultSourceManager implements SourceManager {
 		return ret.toString();
 	}
 
-	public int getSourceType(String sourceName) throws NoSuchTableException {
-		org.gdms.source.Source src = getExtendedSource(sourceName);
-		if (src == null) {
-			throw new NoSuchTableException(sourceName);
-		} else {
-			return src.getType();
-		}
-	}
-
 	public void removeName(String secondName) {
 		if (nameMapping.containsKey(secondName)) {
 			nameMapping.remove(secondName);
@@ -792,87 +806,6 @@ public class DefaultSourceManager implements SourceManager {
 			throw new InitializationException(e);
 		} catch (DriverException e) {
 			throw new InitializationException(e);
-		}
-	}
-
-	public String getSourceTypeName(String name) throws NoSuchTableException {
-		int sourceType = getSourceType(name);
-		return getSourceTypeName(sourceType);
-	}
-
-	public String getSourceTypeName(int sourceType) {
-		if ((sourceType & ASC_GRID) == ASC_GRID) {
-			return "ASCII GRID";
-		} else if ((sourceType & BPW) == BPW) {
-			return "BMP";
-		} else if ((sourceType & CIR) == CIR) {
-			return "CIR";
-		} else if ((sourceType & CSV) == CSV) {
-			return "CSV";
-		} else if ((sourceType & DBF) == DBF) {
-			return "DBF";
-		} else if ((sourceType & H2) == H2) {
-			return "H2";
-		} else if ((sourceType & HSQLDB) == HSQLDB) {
-			return "HSQLDB";
-		} else if ((sourceType & JGW) == JGW) {
-			return "JGW";
-		} else if ((sourceType & MEMORY) == MEMORY) {
-			return "MEMORY";
-		} else if ((sourceType & PGW) == PGW) {
-			return "PGW";
-		} else if ((sourceType & POSTGRESQL) == POSTGRESQL) {
-			return "POSTGRESQL";
-		} else if ((sourceType & GDMS) == GDMS) {
-			return "GDMS";
-		} else if ((sourceType & SHP) == SHP) {
-			return "SHP";
-		} else if ((sourceType & TFW) == TFW) {
-			return "TFW";
-		} else if ((sourceType & VAL) == VAL) {
-			return "VAL";
-		} else if ((sourceType & XYZDEM) == XYZDEM) {
-			return "XYZDEM";
-		} else {
-			return "UNKNOWN";
-		}
-	}
-
-	public String getSourceTypeDescription(int sourceType) {
-		if ((sourceType & ASC_GRID) == ASC_GRID) {
-			return "Esri ascii grid format (*.asc)";
-		} else if ((sourceType & BPW) == BPW) {
-			return "BMP with BPW format (*.bmp)";
-		} else if ((sourceType & CIR) == CIR) {
-			return "Solene format (*.cir)";
-		} else if ((sourceType & CSV) == CSV) {
-			return "CSV format (*.csv)";
-		} else if ((sourceType & DBF) == DBF) {
-			return "DBF format (*.dbf)";
-		} else if ((sourceType & H2) == H2) {
-			return "H2 database engine";
-		} else if ((sourceType & HSQLDB) == HSQLDB) {
-			return "HSQL database";
-		} else if ((sourceType & JGW) == JGW) {
-			return "JPG with JGW format (*.jpg)";
-		} else if ((sourceType & MEMORY) == MEMORY) {
-			return "MEMORY";
-		} else if ((sourceType & PGW) == PGW) {
-			return "PNG with PGW format (*.png)";
-		} else if ((sourceType & POSTGRESQL) == POSTGRESQL) {
-			return "PostgreSQL / PostGIS";
-		} else if ((sourceType & GDMS) == GDMS) {
-			return "GDMS format (*.gdms)";
-		} else if ((sourceType & SHP) == SHP) {
-			return "Esri shapefile format (*.shp)";
-		} else if ((sourceType & TFW) == TFW) {
-			return "TIF with TFW format (*.tif; *.tiff)";
-		} else if ((sourceType & VAL) == VAL) {
-			return "Solene format (*.val)";
-		} else if ((sourceType & XYZDEM) == XYZDEM) {
-			return "XYZ DEM (*.xyz)";
-		} else {
-			return "UNKNOWN";
 		}
 	}
 

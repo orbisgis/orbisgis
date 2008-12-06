@@ -202,7 +202,7 @@ public class DBTableSourceDefinition extends AbstractDataSourceDefinition {
 	}
 
 	@Override
-	public boolean equals(Object obj) {
+	public boolean equals(DataSourceDefinition obj) {
 		if (obj instanceof DBTableSourceDefinition) {
 			DBTableSourceDefinition dsd = (DBTableSourceDefinition) obj;
 			if (equals(dsd.def.getDbms(), def.getDbms())

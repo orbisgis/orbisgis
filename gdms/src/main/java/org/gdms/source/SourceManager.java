@@ -45,6 +45,7 @@ import org.gdms.data.DataSourceFinalizationException;
 import org.gdms.data.NoSuchTableException;
 import org.gdms.data.SourceAlreadyExistsException;
 import org.gdms.data.db.DBSource;
+import org.gdms.data.wms.WMSSource;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.ObjectDriver;
 import org.gdms.driver.driverManager.DriverManager;
@@ -54,39 +55,56 @@ import org.gdms.sql.strategies.TableNotFoundException;
 
 public interface SourceManager {
 
+	/**
+	 * The source has no known type
+	 */
 	public static final int UNKNOWN = 0;
+
+	/**
+	 * The source type can contain raster fields
+	 */
 	public static final int RASTER = 1;
+
+	/**
+	 * The source type can contain geometric fields
+	 */
 	public static final int VECTORIAL = 2;
+
+	/**
+	 * The source is stored in a file
+	 */
 	public static final int FILE = 4;
+
+	/**
+	 * The source is stored in a database
+	 */
 	public static final int DB = 8;
+
+	/**
+	 * The source is stored in memory
+	 */
 	public static final int MEMORY = 16;
+
+	/**
+	 * The source is the result of a SQL query
+	 */
 	public static final int SQL = 32;
-	public static final int SHP = 64 | FILE | VECTORIAL;
-	public static final int CSV = 128 | FILE;
-	public static final int DBF = 256 | FILE;
-	public static final int CIR = 512 | FILE | VECTORIAL;
-	public static final int VAL = 1024 | FILE;
-	public static final int POSTGRESQL = 2048 | DB | VECTORIAL;
-	public static final int H2 = 4096 | DB | VECTORIAL;
-	public static final int HSQLDB = 8192 | DB;
-	public static final int TFW = 16384 | RASTER | FILE;
-	public static final int PGW = 32768 | RASTER | FILE;
-	public static final int BPW = 65536 | RASTER | FILE;
-	public static final int ASC_GRID = 131072 | RASTER | FILE;
-	public static final int XYZDEM = 262144 | RASTER | FILE;
-	public static final int JGW = 524288 | RASTER | FILE;
-	public static final int GDMS = 1048576 | VECTORIAL | FILE;
+
+	/**
+	 * The source contains the parameters of a WMS connection
+	 */
+	public static final int WMS = 64;
 
 	/**
 	 * Sets the driver manager used to load the drivers of the sources
-	 *
+	 * 
 	 * @param dm
 	 */
 	public abstract void setDriverManager(DriverManager dm);
 
 	/**
 	 * Adds a listener to the events in this class
-	 *
+	 * 
 	 * @param e
 	 * @return
 	 */
@@ -94,7 +112,7 @@ public interface SourceManager {
 
 	/**
 	 * Removes a listener to the events in this class
-	 *
+	 * 
 	 * @param o
 	 * @return
 	 */
@@ -102,7 +120,7 @@ public interface SourceManager {
 
 	/**
 	 * Removes all the information about the sources
-	 *
+	 * 
 	 * @throws IOException
 	 */
 	public abstract void removeAll() throws IOException;
@@ -110,7 +128,7 @@ public interface SourceManager {
 	/**
 	 * Try to remove the information about the source with the name or alias
 	 * specified
-	 *
+	 * 
 	 * @param name
 	 * @return true if the source was found and removed and false if the source
 	 *         was not found
@@ -121,7 +139,7 @@ public interface SourceManager {
 
 	/**
 	 * Registers a file with the specified name
-	 *
+	 * 
 	 * @param name
 	 *            Name to register with
 	 * @param file
@@ -133,7 +151,7 @@ public interface SourceManager {
 
 	/**
 	 * Registers a database table with the specified name
-	 *
+	 * 
 	 * @param name
 	 *            Name to register
 	 * @param dbTable
@@ -143,8 +161,19 @@ public interface SourceManager {
 			throws SourceAlreadyExistsException;
 
 	/**
+	 * Registers a wms source with the specified name
+	 * 
+	 * @param name
+	 *            Name to register
+	 * @param wmsSource
+	 *            source to register
+	 */
+	public abstract void register(String name, WMSSource wmsSource)
+			throws SourceAlreadyExistsException;
+
+	/**
 	 * Registers a object with the specified name
-	 *
+	 * 
 	 * @param name
 	 *            Name to register with
 	 * @param driver
@@ -155,7 +184,7 @@ public interface SourceManager {
 
 	/**
 	 * Generic register method
-	 *
+	 * 
 	 * @param name
 	 *            Name to register with
 	 * @param def
@@ -166,14 +195,24 @@ public interface SourceManager {
 
 	/**
 	 * Get's a unique id
-	 *
+	 * 
 	 * @return unique id
 	 */
 	public abstract String getUID();
 
 	/**
+	 * Returns a name that hasn't been used for any registration so far and
+	 * based in the specified name
+	 * 
+	 * @param base
+	 *            Base to obtain the unique name
+	 * @return
+	 */
+	String getUniqueName(String base);
+
+	/**
 	 * Registers generating the name automatically
-	 *
+	 * 
 	 * @param file
 	 * @return the name of the registered source
 	 */
@@ -181,7 +220,7 @@ public interface SourceManager {
 
 	/**
 	 * Registers generating the name automatically
-	 *
+	 * 
 	 * @param dbTable
 	 * @return the name of the registered source
 	 */
@@ -189,7 +228,15 @@ public interface SourceManager {
 
 	/**
 	 * Registers generating the name automatically
-	 *
+	 * 
+	 * @param wmsSource
+	 * @return the name of the registered source
+	 */
+	public abstract String nameAndRegister(WMSSource wmsSource);
+
+	/**
+	 * Registers generating the name automatically
+	 * 
 	 * @param driver
 	 * @return the name of the registered source
 	 */
@@ -197,7 +244,7 @@ public interface SourceManager {
 
 	/**
 	 * Registers generating the name automatically
-	 *
+	 * 
 	 * @param query
 	 * @return the name of the registered source
 	 * @throws DriverException
@@ -209,7 +256,7 @@ public interface SourceManager {
 
 	/**
 	 * Registers generating the name automatically
-	 *
+	 * 
 	 * @param def
 	 * @return the name of the registered source
 	 */
@@ -219,7 +266,7 @@ public interface SourceManager {
 	 * Adds a new name to the specified data source name. The main name of the
 	 * data source will not change but the new name can be used to refer to the
 	 * source in the same way as the main one
-	 *
+	 * 
 	 * @param dsName
 	 * @param newName
 	 * @throws TableNotFoundException
@@ -230,7 +277,7 @@ public interface SourceManager {
 	/**
 	 * Modifies the name of the specified source. If modifies either the main
 	 * name either the aliases
-	 *
+	 * 
 	 * @param dsName
 	 * @param newName
 	 * @throws SourceAlreadyExistsException
@@ -247,7 +294,7 @@ public interface SourceManager {
 
 	/**
 	 * Gets the main name of the source
-	 *
+	 * 
 	 * @param dsName
 	 * @return
 	 * @throws NoSuchTableException
@@ -258,7 +305,7 @@ public interface SourceManager {
 
 	/**
 	 * Called to free resources
-	 *
+	 * 
 	 * @throws DataSourceFinalizationException
 	 */
 	public abstract void shutdown() throws DataSourceFinalizationException;
@@ -271,7 +318,7 @@ public interface SourceManager {
 	/**
 	 * Creates a source and returns a definition of the source that can be used
 	 * to register it. This method does not register the created source
-	 *
+	 * 
 	 * @param dsc
 	 *            creation object
 	 * @return
@@ -282,7 +329,7 @@ public interface SourceManager {
 
 	/**
 	 * Gets the source with the specified name
-	 *
+	 * 
 	 * @param name
 	 * @return null if there is no source with that name
 	 */
@@ -292,7 +339,7 @@ public interface SourceManager {
 	 * Sets the directory where the registry of sources and its properties are
 	 * stored. Each call to saveStatus will serialize the content of this
 	 * manager to the specified directory. The current status is preserved
-	 *
+	 * 
 	 * @param newDir
 	 * @throws DriverException
 	 */
@@ -304,7 +351,7 @@ public interface SourceManager {
 	 * stored. Each call to saveStatus will serialize the content of this
 	 * manager to the specified directory. The specified directory is read and
 	 * the status of this source manager is replaced by the one in the directory
-	 *
+	 * 
 	 * @param newSourceInfoDir
 	 * @throws IOException
 	 */
@@ -313,7 +360,7 @@ public interface SourceManager {
 
 	/**
 	 * Method for debugging purposes that obtains a snapshot of the system
-	 *
+	 * 
 	 * @return
 	 * @throws IOException
 	 */
@@ -322,21 +369,21 @@ public interface SourceManager {
 	/**
 	 * saves all the information about the sources in the directory specified by
 	 * the last call to setSourceInfoDirectory
-	 *
+	 * 
 	 * @throws DriverException
 	 */
 	public abstract void saveStatus() throws DriverException;
 
 	/**
 	 * Gets the directory where the information of sources is stored
-	 *
+	 * 
 	 * @return
 	 */
 	public abstract File getSourceInfoDirectory();
 
 	/**
 	 * Registers an sql instruction.
-	 *
+	 * 
 	 * @param name
 	 *            name to register
 	 * @param sql
@@ -351,52 +398,14 @@ public interface SourceManager {
 
 	/**
 	 * Gets the driver manager
-	 *
+	 * 
 	 * @return
 	 */
 	public DriverManager getDriverManager();
 
 	/**
-	 * Gets the type of this source
-	 *
-	 * @param sourceName
-	 * @return A bit-or of the contants in SourceManager
-	 * @throws NoSuchTableException
-	 */
-	public abstract int getSourceType(String sourceName)
-			throws NoSuchTableException;
-
-	/**
-	 * Gets a textual representation of the type of the specified source
-	 *
-	 * @param name
-	 * @return
-	 * @throws NoSuchTableException
-	 */
-	public abstract String getSourceTypeName(String name)
-			throws NoSuchTableException;
-
-	/**
-	 * Gets a textual representation of the specified type. The type can be any
-	 * combination of the constants in this interface
-	 *
-	 * @param type
-	 * @return
-	 */
-	public abstract String getSourceTypeName(int type);
-
-	/**
-	 * Gets a textual description of the specified type. The type can be any
-	 * combination of the constants in this interface
-	 *
-	 * @param type
-	 * @return
-	 */
-	public abstract String getSourceTypeDescription(int type);
-
-	/**
 	 * Removes the specified secondary name.
-	 *
+	 * 
 	 * @param secondName
 	 */
 	public abstract void removeName(String secondName);
@@ -405,7 +414,7 @@ public interface SourceManager {
 	 * Gets the name of the source that accesses the specified source
 	 * definition. If the source definition is not accessed by any source it
 	 * will return null
-	 *
+	 * 
 	 * @param fileSourceDefinition
 	 * @return
 	 */
@@ -414,7 +423,7 @@ public interface SourceManager {
 
 	/**
 	 * Gets the list of the names of all the sources in the manager
-	 *
+	 * 
 	 * @return
 	 */
 	public abstract String[] getSourceNames();

@@ -11,13 +11,17 @@
 	<extension-point id="org.orbisgis.Action" schema="schema/action.xsd"/>
 	
 	<!-- geocatalog wizards -->
-	<extension-point id="org.orbisgis.views.geocatalog.NewResourceWizard"
-		name="GeoCatalog Wizards" schema="schema/resourceWizard.xsd"/>
+	<extension-point id="org.orbisgis.views.geocatalog.NewSourceWizard"
+		name="GeoCatalog Wizards" schema="schema/sourceWizard.xsd"/>
 	
 	<!-- geocatalog actions -->
 	<extension-point id="org.orbisgis.views.geocatalog.Action"
 		name="Contextual actions for resources"
-		schema="schema/resourceAction.xsd"/>
+		schema="schema/sourceAction.xsd"/>
+	
+	<!-- geocatalog filters -->
+	<extension-point id="org.orbisgis.views.geocatalog.Filter"
+		schema="schema/geocatalogFilter.xsd"/>
 	
 	<!-- editor actions -->
 	<extension-point id="org.orbisgis.editor.Action"
@@ -86,25 +90,25 @@
 	</extension>
 	
 	<!-- Geocatalog wizards -->
-	<extension point="org.orbisgis.views.geocatalog.NewResourceWizard">
-		<wizard id="org.orbisgis.views.geocatalog.newResourceWizards.NewFile"
+	<extension point="org.orbisgis.views.geocatalog.NewSourceWizard">
+		<wizard id="org.orbisgis.views.geocatalog.newSourceWizards.NewFile"
 			icon="/org/orbisgis/images/page_white_add.png"
-			class="org.orbisgis.views.geocatalog.newResourceWizards.file.NewFile"/>
+			class="org.orbisgis.views.geocatalog.newSourceWizards.file.NewFile"/>
 	</extension>
-	<extension point="org.orbisgis.views.geocatalog.NewResourceWizard">
-		<wizard id="org.orbisgis.views.geocatalog.newResourceWizards.NewDB"
+	<extension point="org.orbisgis.views.geocatalog.NewSourceWizard">
+		<wizard id="org.orbisgis.views.geocatalog.newSourceWizards.NewDB"
 			icon="/org/orbisgis/images/database_add.png"
-			class="org.orbisgis.views.geocatalog.newResourceWizards.db.NewDB"/>
+			class="org.orbisgis.views.geocatalog.newSourceWizards.db.NewDB"/>
 	</extension>
-	<extension point="org.orbisgis.views.geocatalog.NewResourceWizard">
-		<wizard id="org.orbisgis.views.geocatalog.newResourceWizards.NewFolder"
-			icon="/org/orbisgis/images/folder_add.png"
-			class="org.orbisgis.views.geocatalog.newResourceWizards.NewFolder"/>
-	</extension>
-	<extension point="org.orbisgis.views.geocatalog.NewResourceWizard">
-		<wizard id="org.orbisgis.views.geocatalog.newResourceWizards.XYZDem"
+	<extension point="org.orbisgis.views.geocatalog.NewSourceWizard">
+		<wizard id="org.orbisgis.views.geocatalog.newSourceWizards.XYZDem"
 			icon="/org/orbisgis/images/cog_go.png"
-			class="org.orbisgis.views.geocatalog.newResourceWizards.xyzdem.ConvertXYZDem"/>
+			class="org.orbisgis.views.geocatalog.newSourceWizards.xyzdem.ConvertXYZDem"/>
+	</extension>
+	<extension point="org.orbisgis.views.geocatalog.NewSourceWizard">
+		<wizard id="org.orbisgis.views.geocatalog.newSourceWizards.WMS"
+			icon="/org/orbisgis/images/server_connect.png"
+			class="org.orbisgis.views.geocatalog.newSourceWizards.wms.WMSWizard"/>
 	</extension>
 	
 	<!-- Top level actions-->
@@ -124,9 +128,9 @@
 			class="org.orbisgis.actions.about.About"/>
 		<action id="org.orbisgis.actions.Update" text="Updates..."
 			menu-id="org.orbisgis.Help" class="org.orbisgis.actions.Update"/>
-		<action id="org.orbisgis.actions.NewResource" text="New Resource"
+		<action id="org.orbisgis.actions.NewSource" text="New Source"
 			menu-id="org.orbisgis.Geocatalog" icon="/org/orbisgis/images/add.png"
-			class="org.orbisgis.actions.NewResource"/>
+			class="org.orbisgis.actions.NewSource"/>
 	</extension>
 	
 	<extension point="org.orbisgis.Action" id="org.orbisgis.actions.Workspace">
@@ -160,30 +164,26 @@
 			class="org.orbisgis.actions.Save"/>
 	</extension>
 	
-	<!-- Resource actions -->
+	<!-- Source actions -->
 	<extension point="org.orbisgis.views.geocatalog.Action">
 		<menu id="org.orbisgis.views.geocatalog.file.Add" text="Add"/>
 		<menu id="org.orbisgis.views.geocatalog.file.New" text="New"/>
-		<action id="org.orbisgis.views.geocatalog.NewFileResource"
+		<action id="org.orbisgis.views.geocatalog.NewFileSource"
 			menu-id="org.orbisgis.views.geocatalog.file.New"
 			menu-group="org.orbisgis.views.geocatalog.new" text="File"
-			class="org.orbisgis.views.geocatalog.actions.create.CreateFileResource"/>
-		<action id="org.orbisgis.views.geocatalog.NewDBResource"
+			class="org.orbisgis.views.geocatalog.actions.create.CreateFileSource"/>
+		<action id="org.orbisgis.views.geocatalog.NewDBSource"
 			menu-id="org.orbisgis.views.geocatalog.file.New"
 			menu-group="org.orbisgis.views.geocatalog.new" text="Database"
-			class="org.orbisgis.views.geocatalog.actions.create.CreateDBResource"/>
+			class="org.orbisgis.views.geocatalog.actions.create.CreateDBSource"/>
 		<action id="org.orbisgis.views.geocatalog.Delete"
-			menu-group="org.orbisgis.views.geocatalog" text="Delete resource"
+			menu-group="org.orbisgis.views.geocatalog" text="Delete source"
 			icon="/org/orbisgis/images/remove.png"
-			class="org.orbisgis.views.geocatalog.actions.DeleteResource"/>
+			class="org.orbisgis.views.geocatalog.actions.DeleteSource"/>
 		<action id="org.orbisgis.views.geocatalog.ClearCatalog"
 			menu-group="org.orbisgis.views.geocatalog.global"
 			text="Clear catalog" icon="/org/orbisgis/images/bin_closed.png"
 			class="org.orbisgis.views.geocatalog.actions.ClearCatalog"/>
-		<action id="org.orbisgis.views.geocatalog.ClearFolder"
-			menu-group="org.orbisgis.views.geocatalog" text="Clear folder"
-			icon="/org/orbisgis/images/bin_closed.png"
-			class="org.orbisgis.views.geocatalog.actions.ClearFolder"/>
 	</extension>
 	
 	<extension point="org.orbisgis.views.geocatalog.Action">
@@ -191,6 +191,24 @@
 			menu-group="org.orbisgis.views.geocatalog.basic" text="Show table"
 			icon="/org/orbisgis/images/openattributes.png"
 			class="org.orbisgis.views.geocatalog.actions.ShowTable"/>
+	</extension>
+	
+	<!-- Geocatalog filters -->
+	<extension point="org.orbisgis.views.geocatalog.Filter">
+		<source-filter id="org.orbisgis.geocatalog.filters.File" name="Files"
+			class="org.orbisgis.views.geocatalog.filters.Files"/>
+		<source-filter id="org.orbisgis.geocatalog.filters.DB" name="Databases"
+			class="org.orbisgis.views.geocatalog.filters.DBs"/>
+		<source-filter id="org.orbisgis.geocatalog.filters.Alphanumeric"
+			name="Alphanumeric"
+			class="org.orbisgis.views.geocatalog.filters.Alphanumeric"/>
+		<source-filter id="org.orbisgis.geocatalog.filters.WMS" name="WMS"
+			class="org.orbisgis.views.geocatalog.filters.WMS"/>
+		<source-filter id="org.orbisgis.geocatalog.filters.Vectorial"
+			name="Vectorial"
+			class="org.orbisgis.views.geocatalog.filters.Vectorial"/>
+		<source-filter id="org.orbisgis.geocatalog.filters.Raster" name="Raster"
+			class="org.orbisgis.views.geocatalog.filters.Raster"/>
 	</extension>
 	
 	<!-- layer actions -->
@@ -228,7 +246,8 @@
 	</extension>
 	<extension point="org.orbisgis.editorViews.toc.Action"
 		id="org.orbisgis.editorViews.toc.actions.Selection">
-		<action id="org.orbisgis.editorViews.toc.actions.CreateSourceFromSelection"
+		<action
+			id="org.orbisgis.editorViews.toc.actions.CreateSourceFromSelection"
 			text="Create source from selection"
 			menu-group="org.orbisgis.editorViews.toc.Selection"
 			class="org.orbisgis.editorViews.toc.actions.CreateSourceFromSelection"/>
@@ -318,7 +337,8 @@
 			editor-id="org.orbisgis.editors.Table"
 			toolbar-id="org.orbisgis.editors.map.Edition"
 			class="org.orbisgis.editors.table.editorActions.NewRow"/>
-		<editor-action id="org.orbisgis.editors.table.editorActions.CreateSourceFromSelection"
+		<editor-action
+			id="org.orbisgis.editors.table.editorActions.CreateSourceFromSelection"
 			menu-id="org.orbisgis.Table" text="Create source from selection"
 			menu-group="org.orbisgis.editors.table.Basic"
 			editor-id="org.orbisgis.editors.Table"
@@ -346,7 +366,7 @@
 		<action id="org.orbisgis.editors.table.actions.ShowFieldStatistics"
 			text="Show statistics"
 			menu-group="org.orbisgis.editors.table.FieldManagement"
-			class="org.orbisgis.editors.table.actions.ShowFieldStatistics"/>		
+			class="org.orbisgis.editors.table.actions.ShowFieldStatistics"/>
 	</extension>
 	
 	<!-- table cell actions -->
@@ -818,7 +838,7 @@
 		<legend-panel
 			class="org.orbisgis.editorViews.toc.actions.cui.legends.PnlLabelLegend"/>
 	</extension>
-		
+	
 	<!-- Symbol panels extensions -->
 	<extension point="org.orbisgis.SymbolPanel">
 		<symbol-panel
@@ -829,5 +849,4 @@
 			class="org.orbisgis.editorViews.toc.actions.cui.legends.ArrowSymbolEditor"/>
 	</extension>
 	
-	 
 </plugin>

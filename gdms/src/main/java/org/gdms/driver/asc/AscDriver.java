@@ -38,25 +38,26 @@ package org.gdms.driver.asc;
 
 import org.gdms.driver.FileDriver;
 import org.gdms.driver.geotif.AbstractRasterDriver;
-import org.gdms.source.SourceManager;
 
 public class AscDriver extends AbstractRasterDriver implements FileDriver {
 
-	public String getName() {
+	public String getDriverId() {
 		return "asc driver";
-	}
-
-	public int getType() {
-		return SourceManager.ASC_GRID;
-	}
-
-	public boolean isCommitable() {
-		return false;
 	}
 
 	@Override
 	public String[] getFileExtensions() {
 		return new String[] { "asc" };
+	}
+
+	@Override
+	public String getTypeDescription() {
+		return "Esri ascii grid format";
+	}
+
+	@Override
+	public String getTypeName() {
+		return "ASCII GRID";
 	}
 
 }

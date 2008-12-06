@@ -2,11 +2,11 @@
 	
 	<!-- Resource actions -->
 	<extension point="org.orbisgis.views.geocatalog.Action">
-		<action id="org.orbisgis.views.geocatalog.AddResource"
+		<action id="org.orbisgis.views.geocatalog.AddSource"
 			menu-id="org.orbisgis.views.geocatalog.file.Add"
 			menu-group="org.orbisgis.views.geocatalog.new" text="Add..."
 			icon="/org/orbisgis/images/add.png"
-			class="org.orbisgis.views.geocatalog.actions.NewResource"/>
+			class="org.orbisgis.views.geocatalog.actions.NewSource"/>
 	</extension>
 	
 	<!-- Geocognition wizards-->

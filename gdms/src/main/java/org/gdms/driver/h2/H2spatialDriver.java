@@ -195,9 +195,9 @@ public class H2spatialDriver extends DefaultDBDriver implements
 	}
 
 	/**
-	 * @see com.hardcode.driverManager.Driver#getName()
+	 * @see com.hardcode.driverManager.Driver#getDriverId()
 	 */
-	public String getName() {
+	public String getDriverId() {
 		return DRIVER_NAME;
 	}
 
@@ -251,7 +251,7 @@ public class H2spatialDriver extends DefaultDBDriver implements
 	}
 
 	public int getType() {
-		return SourceManager.H2;
+		return SourceManager.DB | SourceManager.VECTORIAL;
 	}
 
 	@Override
@@ -271,5 +271,15 @@ public class H2spatialDriver extends DefaultDBDriver implements
 	@Override
 	public int getDefaultPort() {
 		return 9092;
+	}
+
+	@Override
+	public String getTypeDescription() {
+		return "H2 database engine";
+	}
+
+	@Override
+	public String getTypeName() {
+		return "H2";
 	}
 }

@@ -216,9 +216,17 @@ public interface ILayer {
 	boolean isVectorial() throws DriverException;
 
 	/**
-	 * Returns a {@link DataSource} to access the source of this layer
+	 * Returns true if this layer represents a WMS source
 	 * 
 	 * @return
+	 */
+	boolean isWMS();
+
+	/**
+	 * Returns a {@link DataSource} to access the source of this layer
+	 * 
+	 * @return A DataSource or null if this layer is not backed up by a
+	 *         DataSource (Layer collections and WMS layers, for example)
 	 */
 	SpatialDataSourceDecorator getDataSource();
 
@@ -295,27 +303,42 @@ public interface ILayer {
 
 	/**
 	 * If isRaster is true returns the first raster in the layer DataSource.
-	 * Otherwise it throws a {@link RuntimeException}. The method is just a
-	 * shortcut for getDataSource().getRaster(0)
+	 * Otherwise it throws an {@link UnsupportedOperationException}. The method
+	 * is just a shortcut for getDataSource().getRaster(0)
 	 * 
 	 * @return
 	 * @throws DriverException
+	 * @throws UnsupportedOperationException
 	 */
-	GeoRaster getRaster() throws DriverException;
+	GeoRaster getRaster() throws DriverException, UnsupportedOperationException;
+
+	/**
+	 * Gets an object to manage the WMS contents in this layer.
+	 * 
+	 * @return
+	 * @throws UnsupportedOperationException
+	 *             If this layer is not a WMS layer. This is {@link #isWMS()}
+	 *             returns false
+	 */
+	WMSConnection getWMSConnection() throws UnsupportedOperationException;
 
 	/**
 	 * Gets an array of the selected rows
 	 * 
 	 * @return
+	 * @throws UnsupportedOperationException
+	 *             If this layer doesn't support selection
 	 */
-	int[] getSelection();
+	int[] getSelection() throws UnsupportedOperationException;
 
 	/**
 	 * Sets the array of the selected rows
 	 * 
 	 * @param newSelection
+	 * @throws UnsupportedOperationException
+	 *             If this layer doesn't support selection
 	 */
-	void setSelection(int[] newSelection);
+	void setSelection(int[] newSelection) throws UnsupportedOperationException;
 
 	/**
 	 * Gets the legend to perform the rendering. The actual class of the

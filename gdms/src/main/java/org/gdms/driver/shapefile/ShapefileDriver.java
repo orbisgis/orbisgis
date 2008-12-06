@@ -242,7 +242,7 @@ public class ShapefileDriver implements FileReadWriteDriver {
 		this.dataSourceFactory = dsf;
 	}
 
-	public String getName() {
+	public String getDriverId() {
 		return DRIVER_NAME;
 	}
 
@@ -616,7 +616,7 @@ public class ShapefileDriver implements FileReadWriteDriver {
 	}
 
 	public int getType() {
-		return SourceManager.SHP;
+		return SourceManager.FILE | SourceManager.VECTORIAL;
 	}
 
 	public String validateMetadata(Metadata m) throws DriverException {
@@ -668,5 +668,15 @@ public class ShapefileDriver implements FileReadWriteDriver {
 	@Override
 	public String[] getFileExtensions() {
 		return new String[] { "shp" };
+	}
+
+	@Override
+	public String getTypeDescription() {
+		return "Esri shapefile";
+	}
+
+	@Override
+	public String getTypeName() {
+		return "SHP";
 	}
 }

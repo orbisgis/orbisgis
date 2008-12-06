@@ -87,8 +87,8 @@ public class SaveInFile implements
 			for (int i = 0; i < filtered.length; i++) {
 				FileDriver fileDriver = (FileDriver) filtered[i];
 				String[] extensions = fileDriver.getFileExtensions();
-				outfilePanel.addFilter(extensions, sourceManager
-						.getSourceTypeDescription(fileDriver.getType()));
+				outfilePanel.addFilter(extensions, fileDriver
+						.getTypeDescription());
 			}
 
 			if (UIFactory.showDialog(outfilePanel)) {

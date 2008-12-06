@@ -139,8 +139,8 @@ public class ReadDriver extends DefaultDBDriver implements ObjectDriver,
 		return new DefaultMetadata(fieldsTypes, fieldsNames);
 	}
 
-	public String getName() {
-		return null;
+	public String getDriverId() {
+		return "failing driver";
 	}
 
 	public int getType(String driverType) {
@@ -335,5 +335,15 @@ public class ReadDriver extends DefaultDBDriver implements ObjectDriver,
 	@Override
 	public String[] getPrefixes() {
 		return new String[] { "jdbc:test" };
+	}
+
+	@Override
+	public String getTypeDescription() {
+		return null;
+	}
+
+	@Override
+	public String getTypeName() {
+		return null;
 	}
 }

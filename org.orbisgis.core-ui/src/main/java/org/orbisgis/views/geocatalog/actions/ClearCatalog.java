@@ -36,37 +36,30 @@
  */
 package org.orbisgis.views.geocatalog.actions;
 
+import java.io.IOException;
+
 import javax.swing.JOptionPane;
 
+import org.gdms.source.SourceManager;
 import org.orbisgis.Services;
-import org.orbisgis.resource.IResource;
-import org.orbisgis.resource.ResourceTypeException;
-import org.orbisgis.views.geocatalog.Catalog;
-import org.orbisgis.views.geocatalog.action.IResourceAction;
+import org.orbisgis.views.geocatalog.action.ISourceAction;
 
-public class ClearCatalog implements IResourceAction {
+public class ClearCatalog implements ISourceAction {
 
-	public boolean accepts(IResource currentNode) {
+	public boolean accepts(SourceManager sourceManager, String currentNode) {
 		return true;
 	}
 
-	public void execute(Catalog catalog, IResource currentNode) {
+	public void execute(SourceManager sourceManager, String currentNode) {
 		int option = JOptionPane.showConfirmDialog(null, "This will clear all "
 				+ "resources and their associated layers. Continue?",
 				"Clear catalog", JOptionPane.YES_NO_OPTION,
 				JOptionPane.WARNING_MESSAGE);
 		if (option == JOptionPane.YES_OPTION) {
-			IResource root = catalog.getTreeModel().getRoot();
-			IResource[] children = root.getResources();
-			for (IResource resource : children) {
-				try {
-					root.removeResource(resource);
-				} catch (ResourceTypeException e) {
-					Services.getErrorManager()
-							.error(
-									"Cannot remove the resource: "
-											+ resource.getName(), e);
-				}
+			try {
+				sourceManager.removeAll();
+			} catch (IOException e) {
+				Services.getErrorManager().error("Cannot clear catalog", e);
 			}
 		}
 	}

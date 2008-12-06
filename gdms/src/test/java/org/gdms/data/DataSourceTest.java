@@ -202,7 +202,7 @@ public class DataSourceTest extends SourceTest {
 				return null;
 			}
 
-			public String getName() {
+			public String getDriverId() {
 				return null;
 			}
 
@@ -221,6 +221,16 @@ public class DataSourceTest extends SourceTest {
 
 			public int getType() {
 				return 0;
+			}
+
+			@Override
+			public String getTypeDescription() {
+				return null;
+			}
+
+			@Override
+			public String getTypeName() {
+				return null;
 			}
 
 		});

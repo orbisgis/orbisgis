@@ -52,6 +52,8 @@ import org.gdms.data.db.DBSource;
 import org.gdms.data.db.DBTableSourceDefinition;
 import org.gdms.data.file.FileSourceDefinition;
 import org.gdms.data.object.ObjectSourceDefinition;
+import org.gdms.data.wms.WMSSource;
+import org.gdms.data.wms.WMSSourceDefinition;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.ObjectDriver;
 import org.gdms.driver.driverManager.DriverLoadException;
@@ -64,6 +66,7 @@ import org.gdms.source.directory.Property;
 import org.gdms.source.directory.Source;
 import org.gdms.source.directory.Sources;
 import org.gdms.source.directory.SqlDefinitionType;
+import org.gdms.source.directory.WmsDefinitionType;
 
 public class ExtendedSource implements org.gdms.source.Source {
 
@@ -128,6 +131,9 @@ public class ExtendedSource implements org.gdms.source.Source {
 			} else if (definitionType instanceof SqlDefinitionType) {
 				this.def = SQLSourceDefinition.createFromXML(dsf,
 						(SqlDefinitionType) definitionType);
+			} else if (definitionType instanceof WmsDefinitionType) {
+				this.def = WMSSourceDefinition.createFromXML(dsf,
+						(WmsDefinitionType) definitionType);
 			} else {
 				throw new RuntimeException("Not recognized source type: "
 						+ definitionType.getClass().getCanonicalName());
@@ -397,6 +403,11 @@ public class ExtendedSource implements org.gdms.source.Source {
 		return deps.toArray(new String[0]);
 	}
 
+	@Override
+	public String getDriverId() {
+		return def.getDriverId();
+	}
+	
 	public int getType() {
 		try {
 			return def.getType();
@@ -404,10 +415,23 @@ public class ExtendedSource implements org.gdms.source.Source {
 			return SourceManager.UNKNOWN;
 		}
 	}
+	
+	@Override
+	public String getTypeName() {
+		return def.getTypeName();
+	}
 
 	public DBSource getDBSource() {
 		if (def instanceof DBTableSourceDefinition) {
 			return ((DBTableSourceDefinition) def).getSourceDefinition();
+		}
+		return null;
+	}
+
+	@Override
+	public WMSSource getWMSSource() {
+		if (def instanceof WMSSourceDefinition) {
+			return ((WMSSourceDefinition) def).getWMSSource();
 		}
 		return null;
 	}
@@ -435,6 +459,11 @@ public class ExtendedSource implements org.gdms.source.Source {
 
 	public boolean isDBSource() {
 		return (getType() & SourceManager.DB) == SourceManager.DB;
+	}
+
+	@Override
+	public boolean isWMSSource() {
+		return (getType() & SourceManager.WMS) == SourceManager.WMS;
 	}
 
 	public boolean isFileSource() {

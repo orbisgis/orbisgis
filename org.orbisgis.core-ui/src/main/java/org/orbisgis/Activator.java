@@ -43,7 +43,6 @@ import java.util.ArrayList;
 
 import javax.swing.JOptionPane;
 
-import org.gdms.data.NoSuchTableException;
 import org.gdms.driver.DriverException;
 import org.gdms.source.SourceManager;
 import org.gdms.sql.customQuery.QueryManager;
@@ -211,12 +210,9 @@ public class Activator implements PluginActivator {
 
 		ArrayList<String> memoryResources = new ArrayList<String>();
 		for (String sourceName : sourceNames) {
-			try {
-				int sourceType = sourceManager.getSourceType(sourceName);
-				if ((sourceType & SourceManager.MEMORY) == SourceManager.MEMORY) {
-					memoryResources.add(sourceName);
-				}
-			} catch (NoSuchTableException e) {
+			int sourceType = sourceManager.getSource(sourceName).getType();
+			if ((sourceType & SourceManager.MEMORY) == SourceManager.MEMORY) {
+				memoryResources.add(sourceName);
 			}
 		}
 
@@ -261,6 +257,7 @@ public class Activator implements PluginActivator {
 		private ErrorPanel ep = new ErrorPanel();
 
 		private String lastMessage = null;
+		private long lastTimeStamp = 0;
 		private boolean ignoredMsgShown = false;
 
 		public void warning(String userMsg, Throwable e) {
@@ -282,7 +279,8 @@ public class Activator implements PluginActivator {
 		}
 
 		private boolean shouldRepport(String msg) {
-			if (looksLikePrevious(msg)) {
+			if (looksLikePrevious(msg)
+					&& (System.currentTimeMillis() - lastTimeStamp) < 1000) {
 				if (!ignoredMsgShown) {
 					ignoredMsgShown = true;
 					reportOutputManager(new ErrorMessage("Similar error "
@@ -317,6 +315,7 @@ public class Activator implements PluginActivator {
 					}
 				}
 			}
+			lastTimeStamp = System.currentTimeMillis();
 		}
 
 		private void reportOutputManager(ErrorMessage errorMessage) {

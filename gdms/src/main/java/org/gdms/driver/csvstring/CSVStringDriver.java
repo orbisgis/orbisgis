@@ -77,16 +77,16 @@ import com.vividsolutions.jts.geom.Geometry;
 public class CSVStringDriver implements FileReadWriteDriver, ValueWriter {
 	public static final String DRIVER_NAME = "csv string";
 
-	private char FIELD_SEPARATOR = ';';
+	protected char FIELD_SEPARATOR = ';';
 
 	private List<List<String>> rows;
 
 	private ValueWriter valueWriter = ValueWriter.internalValueWriter;
 
 	/**
-	 * @see org.gdms.driver.Driver#getName()
+	 * @see org.gdms.driver.Driver#getDriverId()
 	 */
-	public String getName() {
+	public String getDriverId() {
 		return DRIVER_NAME;
 	}
 
@@ -399,7 +399,7 @@ public class CSVStringDriver implements FileReadWriteDriver, ValueWriter {
 	}
 
 	public int getType() {
-		return SourceManager.CSV;
+		return SourceManager.FILE;
 	}
 
 	public String validateMetadata(Metadata m) throws DriverException {
@@ -414,9 +414,18 @@ public class CSVStringDriver implements FileReadWriteDriver, ValueWriter {
 		return null;
 	}
 
-
 	@Override
 	public String[] getFileExtensions() {
 		return new String[] { "csv" };
+	}
+
+	@Override
+	public String getTypeDescription() {
+		return "Comma Separated Values";
+	}
+
+	@Override
+	public String getTypeName() {
+		return "CSV";
 	}
 }

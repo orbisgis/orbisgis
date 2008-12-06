@@ -50,8 +50,8 @@ import org.gdms.data.DataSourceFactory;
 import org.gdms.data.file.FileSourceDefinition;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.driverManager.DriverLoadException;
+import org.gdms.driver.gdms.GdmsDriver;
 import org.gdms.source.Source;
-import org.gdms.source.SourceManager;
 import org.gdms.sql.customQuery.QueryManager;
 import org.gdms.sql.customQuery.RegisterCall;
 import org.gdms.sql.function.FunctionManager;
@@ -205,7 +205,7 @@ public class CustomQueriesTest extends TestCase {
 		dsf.setResultDir(resultDir);
 		dsf.executeSQL("select register('toto')");
 		Source src = dsf.getSourceManager().getSource("toto");
-		assertTrue((src.getType() & SourceManager.GDMS) == SourceManager.GDMS);
+		assertTrue(src.getDriverId().equals(new GdmsDriver().getDriverId()));
 		assertTrue(src.getFile().getParentFile().equals(resultDir));
 	}
 

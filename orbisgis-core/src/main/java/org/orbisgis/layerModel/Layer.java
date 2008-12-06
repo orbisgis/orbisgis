@@ -78,6 +78,7 @@ public class Layer extends GdmsLayer {
 	private SpatialDataSourceDecorator dataSource;
 	private HashMap<String, LegendDecorator[]> fieldLegend = new HashMap<String, LegendDecorator[]>();
 	private RefreshSelectionEditionListener editionListener;
+	private int[] selection = new int[0];
 
 	public Layer(String name, DataSource ds,
 			final CoordinateReferenceSystem coordinateReferenceSystem) {
@@ -326,6 +327,10 @@ public class Layer extends GdmsLayer {
 	}
 
 	public GeoRaster getRaster() throws DriverException {
+		if (!isRaster()) {
+			throw new UnsupportedOperationException(
+					"This layer is not a raster layer");
+		}
 		return getDataSource().getRaster(0);
 	}
 
@@ -433,5 +438,33 @@ public class Layer extends GdmsLayer {
 				throw new LayerException("Cannot restore legends", e);
 			}
 		}
+	}
+
+	private void fireSelectionChanged() {
+		for (LayerListener listener : listeners) {
+			listener.selectionChanged(new SelectionEvent());
+		}
+	}
+
+	@Override
+	public int[] getSelection() {
+		return selection;
+	}
+
+	@Override
+	public void setSelection(int[] newSelection) {
+		this.selection = newSelection;
+		fireSelectionChanged();
+	}
+
+	@Override
+	public boolean isWMS() {
+		return false;
+	}
+
+	@Override
+	public WMSConnection getWMSConnection()
+			throws UnsupportedOperationException {
+		throw new UnsupportedOperationException("This is not a WMS layer");
 	}
 }

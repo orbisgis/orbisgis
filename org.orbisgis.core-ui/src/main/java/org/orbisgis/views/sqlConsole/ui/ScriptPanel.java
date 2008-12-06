@@ -56,7 +56,7 @@ import javax.swing.text.StyledDocument;
 import org.orbisgis.Services;
 import org.orbisgis.editorViews.toc.TransferableLayer;
 import org.orbisgis.ui.text.UndoRedoInstaller;
-import org.orbisgis.views.geocatalog.TransferableResource;
+import org.orbisgis.views.geocatalog.TransferableSource;
 import org.orbisgis.views.sqlConsole.actions.ActionsListener;
 import org.orbisgis.views.sqlConsole.actions.ConsoleListener;
 
@@ -113,7 +113,7 @@ public class ScriptPanel extends JScrollPane implements DropTargetListener {
 		String query = listener.doDrop(t);
 		if (query == null) {
 			try {
-				if ((t.isDataFlavorSupported(TransferableResource
+				if ((t.isDataFlavorSupported(TransferableSource
 						.getResourceFlavor()))
 						|| (t.isDataFlavorSupported(TransferableLayer
 								.getLayerFlavor()))) {

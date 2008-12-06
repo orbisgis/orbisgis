@@ -136,7 +136,7 @@ public class ValDriver implements FileDriver {
 	public void setDataSourceFactory(DataSourceFactory dsf) {
 	}
 
-	public String getName() {
+	public String getDriverId() {
 		return DRIVER_NAME;
 	}
 
@@ -159,11 +159,21 @@ public class ValDriver implements FileDriver {
 	}
 
 	public int getType() {
-		return SourceManager.VAL;
+		return SourceManager.FILE;
 	}
 
 	@Override
 	public String[] getFileExtensions() {
 		return new String[] { EXTENSION };
+	}
+
+	@Override
+	public String getTypeDescription() {
+		return "Solene alphanumeric file";
+	}
+
+	@Override
+	public String getTypeName() {
+		return "VAL";
 	}
 }

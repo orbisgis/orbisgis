@@ -121,7 +121,7 @@ public class FileSourceDefinition extends AbstractDataSourceDefinition {
 	}
 
 	@Override
-	public boolean equals(Object obj) {
+	public boolean equals(DataSourceDefinition obj) {
 		if (obj instanceof FileSourceDefinition) {
 			FileSourceDefinition dsd = (FileSourceDefinition) obj;
 			if (file.equals(dsd.file)) {

@@ -38,26 +38,27 @@ package org.gdms.driver.jpg;
 
 import org.gdms.driver.FileReadWriteDriver;
 import org.gdms.driver.geotif.AbstractRasterDriver;
-import org.gdms.source.SourceManager;
 
 public class JPGDriver extends AbstractRasterDriver implements
 		FileReadWriteDriver {
 
-	public String getName() {
+	public String getDriverId() {
 		return "jpg driver";
-	}
-
-	public int getType() {
-		return SourceManager.JGW;
-	}
-
-	public boolean isCommitable() {
-		return false;
 	}
 
 	@Override
 	public String[] getFileExtensions() {
 		return new String[] { "jpg" };
+	}
+
+	@Override
+	public String getTypeDescription() {
+		return "JPG with JGW file";
+	}
+
+	@Override
+	public String getTypeName() {
+		return "JGW";
 	}
 
 }

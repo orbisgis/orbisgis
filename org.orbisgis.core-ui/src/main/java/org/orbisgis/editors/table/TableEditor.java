@@ -6,7 +6,7 @@ import org.orbisgis.PersistenceException;
 import org.orbisgis.edition.EditableElement;
 import org.orbisgis.editor.IEditor;
 import org.orbisgis.editorViews.toc.EditableLayer;
-import org.orbisgis.views.geocatalog.EditableResource;
+import org.orbisgis.views.geocatalog.EditableSource;
 
 public class TableEditor implements IEditor {
 
@@ -19,7 +19,7 @@ public class TableEditor implements IEditor {
 
 	@Override
 	public boolean acceptElement(String typeId) {
-		return EditableResource.EDITABLE_RESOURCE_TYPE.equals(typeId)
+		return EditableSource.EDITABLE_RESOURCE_TYPE.equals(typeId)
 				|| EditableLayer.EDITABLE_LAYER_TYPE.equals(typeId);
 	}
 
