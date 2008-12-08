@@ -12,7 +12,8 @@ import org.gdms.driver.gdms.GdmsDriver;
 import org.gdms.driver.gdms.GdmsReader;
 import org.gdms.driver.gdms.GdmsWriter;
 
-public class DiskBufferDriver extends AbstractBasicSQLDriver implements ObjectDriver {
+public class DiskBufferDriver extends AbstractBasicSQLDriver implements
+		ObjectDriver {
 
 	private Metadata metadata;
 	private GdmsWriter writer;
@@ -45,14 +46,14 @@ public class DiskBufferDriver extends AbstractBasicSQLDriver implements ObjectDr
 			throw new DriverException("Cannot finalize writing process", e);
 		}
 
-//		try {
-//			// Open file
-//			reader = new GdmsReader(file);
-//			reader.readMetadata();
-//		} catch (IOException e) {
-//			throw new DriverException("Cannot open temporal file for reading",
-//					e);
-//		}
+		try {
+			// Open file
+			reader = new GdmsReader(file);
+			reader.readMetadata();
+		} catch (IOException e) {
+			throw new DriverException("Cannot open temporal file for reading",
+					e);
+		}
 		writer = null;
 	}
 

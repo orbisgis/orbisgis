@@ -239,10 +239,17 @@ public class CustomQueriesTest extends TestCase {
 	}
 
 	public void testGigaQuery() throws Exception {
-		DataSource ds = dsf.getDataSourceFromSQL("select gigaquery();",
-				DataSourceFactory.NORMAL);
+		String sql = "select gigaquery();";
+		DataSource ds = dsf.getDataSourceFromSQL(sql, DataSourceFactory.NORMAL);
 		ds.open();
 		ds.close();
+		ds = null;
+
+		dsf.executeSQL("create table toto as select gigaquery();");
+		ds = dsf.getDataSource("toto", DataSourceFactory.NORMAL);
+		ds.open();
+		ds.close();
+		ds = null;
 	}
 
 	@Override
