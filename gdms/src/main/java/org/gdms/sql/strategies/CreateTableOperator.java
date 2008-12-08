@@ -63,7 +63,8 @@ public class CreateTableOperator extends AbstractOperator implements Operator {
 			if (!sourceManager.exists(tableName)) {
 				sourceManager.register(tableName, dsf.getResultFile());
 			}
-			ds = dsf.getDataSource(getOperator(0).getResult(pm));
+			ds = dsf.getDataSource(getOperator(0).getResult(pm),
+					DataSourceFactory.NORMAL);
 			if (!pm.isCancelled()) {
 				pm.startTask("Saving result");
 				dsf.saveContents(tableName, ds, pm);
