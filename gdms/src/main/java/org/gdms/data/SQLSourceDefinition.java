@@ -85,7 +85,6 @@ public class SQLSourceDefinition extends AbstractDataSourceDefinition implements
 				File file = null;
 				DataSourceFactory dsf = getDataSourceFactory();
 				if (source instanceof DiskBufferDriver) {
-					((DiskBufferDriver) source).start();
 					file = ((DiskBufferDriver) source).getFile();
 				} else {
 					file = new File(dsf.getTempFile("gdms"));

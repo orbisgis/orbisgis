@@ -12,6 +12,15 @@ import org.gdms.driver.gdms.GdmsDriver;
 import org.gdms.driver.gdms.GdmsReader;
 import org.gdms.driver.gdms.GdmsWriter;
 
+/**
+ * This driver writes all the content added with the {@link #addValues(Value[])}
+ * method to a file saving main memory. One all calls to
+ * {@link #addValues(Value[])} are done, the method {@link #writingFinished()}
+ * must be called.
+ * 
+ * @author Fernando Gonzalez Cortes
+ * 
+ */
 public class DiskBufferDriver extends AbstractBasicSQLDriver implements
 		ObjectDriver {
 
@@ -36,15 +45,7 @@ public class DiskBufferDriver extends AbstractBasicSQLDriver implements
 
 	@Override
 	public void start() throws DriverException {
-		// Close writing
-		try {
-			writer.writeRowIndexes();
-			writer.writeExtent();
-			writer.writeWritenRowCount();
-			writer.close();
-		} catch (IOException e) {
-			throw new DriverException("Cannot finalize writing process", e);
-		}
+		writingFinished();
 
 		try {
 			// Open file
@@ -55,6 +56,27 @@ public class DiskBufferDriver extends AbstractBasicSQLDriver implements
 					e);
 		}
 		writer = null;
+	}
+
+	/**
+	 * This method must be called when all the contents have been added to the
+	 * file
+	 * 
+	 * @throws DriverException
+	 */
+	public void writingFinished() throws DriverException {
+		// Close writing
+		try {
+			if (writer != null) {
+				writer.writeRowIndexes();
+				writer.writeExtent();
+				writer.writeWritenRowCount();
+				writer.close();
+				writer = null;
+			}
+		} catch (IOException e) {
+			throw new DriverException("Cannot finalize writing process", e);
+		}
 	}
 
 	@Override
@@ -101,6 +123,12 @@ public class DiskBufferDriver extends AbstractBasicSQLDriver implements
 		return reader.getScope(dimension);
 	}
 
+	/**
+	 * Add a new row to the file
+	 * 
+	 * @param row
+	 * @throws DriverException
+	 */
 	public void addValues(Value[] row) throws DriverException {
 		if (firstRow) {
 			firstRow = false;

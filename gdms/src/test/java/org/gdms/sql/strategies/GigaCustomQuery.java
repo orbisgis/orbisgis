@@ -30,6 +30,7 @@ public class GigaCustomQuery implements CustomQuery {
 				dbd.addValues(new Value[] { ValueFactory
 						.createValue("this is row " + i) });
 			}
+			dbd.writingFinished();
 			return dbd;
 		} catch (DriverException e) {
 			throw new ExecutionException("Cannot generate the gigasource", e);
