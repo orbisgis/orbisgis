@@ -57,6 +57,7 @@ import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.memory.ObjectMemoryDriver;
+import org.gdms.sql.strategies.DiskBufferDriver;
 
 /**
  * DOCUMENT ME!
@@ -64,6 +65,20 @@ import org.gdms.driver.memory.ObjectMemoryDriver;
  * @author Fernando Gonzalez Cortes
  */
 public class EditionTests extends SourceTest {
+
+	public void testNoMemoryUntilEdition() throws Exception {
+		Metadata metadata = new DefaultMetadata(new Type[] { TypeFactory
+				.createType(Type.BOOLEAN) }, new String[] { "bool" });
+		DiskBufferDriver dbd = new DiskBufferDriver(dsf, metadata);
+		for (int i = 0; i < 1000000; i++) {
+			dbd.addValues(new Value[] { ValueFactory.createValue(false) });
+		}
+		dbd.writingFinished();
+
+		DataSource ds = dsf.getDataSource(dbd.getFile());
+		ds.open();
+		ds.close();
+	}
 
 	/**
 	 * Test the deletion of a row

@@ -102,6 +102,8 @@ public class EditionDecorator extends AbstractDataSourceDecorator implements
 
 	private CommandStack cs;
 
+	private boolean initialized;
+
 	public EditionDecorator(DataSource internalDataSource) {
 		super(internalDataSource);
 		this.editionListenerSupport = new EditionListenerSupport(this);
@@ -112,6 +114,7 @@ public class EditionDecorator extends AbstractDataSourceDecorator implements
 	}
 
 	public void deleteRow(long rowId) throws DriverException {
+		initializeEdition();
 		DeleteCommand command = new DeleteCommand((int) rowId, this);
 		cs.put(command);
 	}
@@ -287,6 +290,7 @@ public class EditionDecorator extends AbstractDataSourceDecorator implements
 
 	public void setFieldValue(long row, int fieldId, Value value)
 			throws DriverException {
+		initializeEdition();
 		ModifyCommand command = new ModifyCommand((int) row, this, value,
 				fieldId);
 		cs.put(command);
@@ -383,6 +387,7 @@ public class EditionDecorator extends AbstractDataSourceDecorator implements
 
 	public void insertFilledRowAt(long rowIndex, Value[] values)
 			throws DriverException {
+		initializeEdition();
 		InsertAtCommand command = new InsertAtCommand((int) rowIndex, this,
 				values);
 		cs.put(command);
@@ -474,57 +479,69 @@ public class EditionDecorator extends AbstractDataSourceDecorator implements
 		sm.addCommitListener(this);
 	}
 
-	private void initialize() throws DriverException {
+	private void initialize() {
+		initialized = false;
 		dirty = false;
-		long rowCount = getDataSource().getRowCount();
 		undoRedo = false;
 		fields = null;
 		modifiedMetadata = null;
 		internalBuffer = new MemoryInternalBuffer(this);
 		fieldsToDelete = new ArrayList<String>();
 		deletedPKs = new ArrayList<DeleteEditionInfo>();
+		editionActions = new ArrayList<EditionInfo>();
 		cs = new CommandStack();
+	}
 
-		// build alpha indexes on unique fields
-		Metadata m = getMetadata();
-		for (int i = 0; i < m.getFieldCount(); i++) {
-			Type type = m.getFieldType(i);
-			if (type.getBooleanConstraint(Constraint.UNIQUE)
-					|| type.getBooleanConstraint(Constraint.PK)) {
-				IndexManager indexManager = getDataSourceFactory()
-						.getIndexManager();
-				try {
-					if (!indexManager.isIndexed(getName(), m.getFieldName(i))) {
-						indexManager.buildIndex(getName(), m.getFieldName(i),
-								new NullProgressMonitor());
+	private void initializeEdition() throws DriverException {
+		if (!initialized) {
+			long rowCount = getDataSource().getRowCount();
+
+			// build alpha indexes on unique fields
+			Metadata m = getMetadata();
+			for (int i = 0; i < m.getFieldCount(); i++) {
+				Type type = m.getFieldType(i);
+				if (type.getBooleanConstraint(Constraint.UNIQUE)
+						|| type.getBooleanConstraint(Constraint.PK)) {
+					IndexManager indexManager = getDataSourceFactory()
+							.getIndexManager();
+					try {
+						if (!indexManager.isIndexed(getName(), m
+								.getFieldName(i))) {
+							indexManager
+									.buildIndex(getName(), m.getFieldName(i),
+											new NullProgressMonitor());
+						}
+					} catch (NoSuchTableException e) {
+						throw new DriverException("table not found: "
+								+ getName(), e);
+					} catch (IndexException e) {
+						throw new DriverException(
+								"Cannot create index on unique fields", e);
 					}
-				} catch (NoSuchTableException e) {
-					throw new DriverException("table not found: " + getName(),
-							e);
-				} catch (IndexException e) {
-					throw new DriverException(
-							"Cannot create index on unique fields", e);
 				}
 			}
-		}
 
-		// initialize directions and unique values
-		editionActions = new ArrayList<EditionInfo>();
-		rowsDirections = new ArrayList<PhysicalDirection>();
-		for (int i = 0; i < rowCount; i++) {
-			PhysicalDirection dir = new OriginalDirection(getDataSource(), i);
-			rowsDirections.add(dir);
-			editionActions.add(new NoEditionInfo(getPK(i), i));
-		}
+			// initialize directions 
+			rowsDirections = new ArrayList<PhysicalDirection>();
+			for (int i = 0; i < rowCount; i++) {
+				PhysicalDirection dir = new OriginalDirection(getDataSource(),
+						i);
+				rowsDirections.add(dir);
+				editionActions.add(new NoEditionInfo(getPK(i), i));
+			}
 
-		Number[] xScope = getDataSource().getScope(ReadOnlyDriver.X);
-		Number[] yScope = getDataSource().getScope(ReadOnlyDriver.Y);
-		if ((xScope != null) && (yScope != null)) {
-			cachedScope = new Envelope(new Coordinate(xScope[0].doubleValue(),
-					yScope[0].doubleValue()), new Coordinate(xScope[1]
-					.doubleValue(), yScope[1].doubleValue()));
-		} else {
-			cachedScope = null;
+			Number[] xScope = getDataSource().getScope(ReadOnlyDriver.X);
+			Number[] yScope = getDataSource().getScope(ReadOnlyDriver.Y);
+			if ((xScope != null) && (yScope != null)) {
+				cachedScope = new Envelope(new Coordinate(xScope[0]
+						.doubleValue(), yScope[0].doubleValue()),
+						new Coordinate(xScope[1].doubleValue(), yScope[1]
+								.doubleValue()));
+			} else {
+				cachedScope = null;
+			}
+
+			initialized = true;
 		}
 	}
 
@@ -552,7 +569,11 @@ public class EditionDecorator extends AbstractDataSourceDecorator implements
 	 * @see org.gdms.data.edition.DataSource#getRowCount()
 	 */
 	public long getRowCount() throws DriverException {
-		return rowsDirections.size();
+		if (initialized) {
+			return rowsDirections.size();
+		} else {
+			return getDataSource().getRowCount();
+		}
 	}
 
 	public void close() throws DriverException {
@@ -684,6 +705,7 @@ public class EditionDecorator extends AbstractDataSourceDecorator implements
 
 	@Override
 	public void addField(String name, Type type) throws DriverException {
+		initializeEdition();
 		AddFieldCommand command = new AddFieldCommand(this, name, type);
 		cs.put(command);
 	}
@@ -704,6 +726,7 @@ public class EditionDecorator extends AbstractDataSourceDecorator implements
 
 	@Override
 	public void removeField(int index) throws DriverException {
+		initializeEdition();
 		DelFieldCommand command = new DelFieldCommand(this, index);
 		cs.put(command);
 	}
@@ -744,6 +767,7 @@ public class EditionDecorator extends AbstractDataSourceDecorator implements
 
 	@Override
 	public void setFieldName(int index, String name) throws DriverException {
+		initializeEdition();
 		SetFieldNameCommand command = new SetFieldNameCommand(this, index, name);
 		cs.put(command);
 	}
