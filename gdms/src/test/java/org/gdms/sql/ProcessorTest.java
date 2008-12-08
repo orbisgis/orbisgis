@@ -596,6 +596,9 @@ public class ProcessorTest extends TestCase {
 	public void testProductOfThreeTables() throws Exception {
 		getValidatedPreprocessor("select t3.timestamp, t2.string, t1.id "
 				+ "from gis t1, alltypes t2, hsqldb t3;");
+		getValidatedPreprocessor("select a.date as d1, h.date as h2, gis "
+				+ "from alltypes a, gis g, hsqldb h "
+				+ "where a.string = g.gis AND h.string= g.gis;");
 	}
 
 	public void testDifferentNumberOfFields() throws Exception {
@@ -613,7 +616,7 @@ public class ProcessorTest extends TestCase {
 		getValidatedPreprocessor("select t.int from alltypes t"
 				+ " where int=2 group by int;");
 	}
-	
+
 	public void testCreateDropIndex() throws Exception {
 		getValidatedPreprocessor("create index on alltypes (int);");
 		getValidatedPreprocessor("drop index on alltypes (int);");

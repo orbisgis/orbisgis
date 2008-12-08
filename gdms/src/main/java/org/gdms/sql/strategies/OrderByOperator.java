@@ -189,7 +189,7 @@ public class OrderByOperator extends AbstractExpressionOperator implements
 			// references
 			int fieldIndex = -1;
 			Operator prod = this;
-			while (fieldIndex == -1) {
+			while ((fieldIndex == -1) && (prod.getOperatorCount() > 0)) {
 				prod = prod.getOperator(0);
 				if (prod instanceof ChangesMetadata) {
 					fieldIndex = ((ChangesMetadata) prod).getFieldIndex(field);
