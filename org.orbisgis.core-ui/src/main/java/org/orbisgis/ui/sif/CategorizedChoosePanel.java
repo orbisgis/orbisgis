@@ -18,6 +18,7 @@ import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.TreeCellRenderer;
 import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
+import javax.swing.tree.TreeSelectionModel;
 
 import org.sif.SQLUIPanel;
 import org.sif.UIFactory;
@@ -57,6 +58,7 @@ public class CategorizedChoosePanel extends JPanel implements SQLUIPanel {
 		tree.setModel(categoriesTreeModel);
 		tree.setRootVisible(false);
 		tree.setCellRenderer(new IconRenderer());
+		tree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
 		this.setLayout(new BorderLayout());
 		this.add(new JScrollPane(tree), BorderLayout.CENTER);
 	}
