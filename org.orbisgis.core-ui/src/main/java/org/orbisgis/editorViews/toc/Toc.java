@@ -63,6 +63,7 @@ import org.orbisgis.action.IActionAdapter;
 import org.orbisgis.action.IActionFactory;
 import org.orbisgis.action.ISelectableActionAdapter;
 import org.orbisgis.action.MenuTree;
+import org.orbisgis.edition.EditableElement;
 import org.orbisgis.editor.IEditor;
 import org.orbisgis.editorViews.toc.action.EPTocLayerActionHelper;
 import org.orbisgis.editorViews.toc.action.ILayerAction;
@@ -96,7 +97,7 @@ public class Toc extends ResourceTree {
 
 	private MapContext mapContext = null;
 
-	private String mapContextName;
+	private EditableElement element = null;
 
 	public Toc() {
 
@@ -239,8 +240,7 @@ public class Toc extends ResourceTree {
 			} else if (trans.isDataFlavorSupported(TransferableSource
 					.getResourceFlavor())) {
 				final String[] draggedResources = (String[]) trans
-						.getTransferData(TransferableSource
-								.getResourceFlavor());
+						.getTransferData(TransferableSource.getResourceFlavor());
 				BackgroundManager bm = (BackgroundManager) Services
 						.getService(BackgroundManager.class);
 				bm.backgroundOperation(new MoveProcess(draggedResources,
@@ -264,8 +264,7 @@ public class Toc extends ResourceTree {
 		if (layers.size() == 0) {
 			return null;
 		} else {
-			return new TransferableLayer(mapContextName, mapContext, layers
-					.toArray(new ILayer[0]));
+			return new TransferableLayer(element, layers.toArray(new ILayer[0]));
 		}
 	}
 
@@ -369,8 +368,8 @@ public class Toc extends ResourceTree {
 				}
 				for (ILayer lyr : layers) {
 					EditorManager em = Services.getService(EditorManager.class);
-					IEditor[] editors = em.getEditor(new EditableLayer(
-							mapContextName, mapContext, lyr));
+					IEditor[] editors = em.getEditor(new EditableLayer(element,
+							lyr));
 					for (IEditor editor : editors) {
 						if (!em.closeEditor(editor)) {
 							return false;
@@ -520,16 +519,17 @@ public class Toc extends ResourceTree {
 		ignoreSelection = false;
 	}
 
-	public void setMapContext(String mapContextName, MapContext mapContext) {
+	public void setMapContext(EditableElement element) {
+
 		// Remove the listeners
 		if (this.mapContext != null) {
 			removeLayerListenerRecursively(this.mapContext.getLayerModel(), ll);
 			this.mapContext.removeMapContextListener(myMapContextListener);
 		}
 
-		if (mapContext != null) {
-			this.mapContext = mapContext;
-			this.mapContextName = mapContextName;
+		if (element != null) {
+			this.mapContext = ((MapContext) element.getObject());
+			this.element = element;
 			// Add the listeners to the new MapContext
 			this.mapContext.addMapContextListener(myMapContextListener);
 			final ILayer root = this.mapContext.getLayerModel();
@@ -553,7 +553,7 @@ public class Toc extends ResourceTree {
 			this.setModel(treeModel);
 			ignoreSelection = false;
 			this.mapContext = null;
-			this.mapContextName = null;
+			this.element = null;
 
 			// Patch to remove any reference to the previous model
 			myTreeUI = new MyTreeUI();

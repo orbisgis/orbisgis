@@ -7,6 +7,9 @@ import org.gdms.data.DataSourceFactory;
 import org.gdms.data.NoSuchTableException;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.driverManager.DriverLoadException;
+import org.gdms.source.SourceEvent;
+import org.gdms.source.SourceListener;
+import org.gdms.source.SourceRemovalEvent;
 import org.orbisgis.DataManager;
 import org.orbisgis.Services;
 import org.orbisgis.edition.EditableElementException;
@@ -24,6 +27,8 @@ public class EditableSource extends AbstractTableEditableElement implements
 	private String sourceName;
 	private DataSource ds;
 	private SourceSelection resourceSelection = new SourceSelection();
+
+	private NameChangeSourceListener listener = new NameChangeSourceListener();
 
 	public EditableSource(String sourceName) {
 		this.sourceName = sourceName;
@@ -46,6 +51,8 @@ public class EditableSource extends AbstractTableEditableElement implements
 		} catch (DriverException e) {
 			throw new EditableElementException("Cannot close the table", e);
 		}
+		Services.getService(DataManager.class).getSourceManager()
+				.removeSourceListener(listener);
 	}
 
 	@Override
@@ -57,13 +64,15 @@ public class EditableSource extends AbstractTableEditableElement implements
 	public void open(IProgressMonitor progressMonitor)
 			throws UnsupportedOperationException, EditableElementException {
 		try {
+			DataManager dataManager = Services.getService(DataManager.class);
 			if (ds == null) {
-				DataSourceFactory dsf = Services.getService(DataManager.class)
-						.getDSF();
+				DataSourceFactory dsf = dataManager.getDSF();
 				ds = dsf.getDataSource(sourceName);
 			}
 			ds.open();
 			super.open(progressMonitor);
+
+			dataManager.getSourceManager().addSourceListener(listener);
 		} catch (DriverException e) {
 			throw new EditableElementException("Cannot open the source", e);
 		} catch (DriverLoadException e) {
@@ -108,5 +117,23 @@ public class EditableSource extends AbstractTableEditableElement implements
 	@Override
 	public MapContext getMapContext() {
 		return null;
+	}
+
+	private class NameChangeSourceListener implements SourceListener {
+
+		@Override
+		public void sourceAdded(SourceEvent e) {
+		}
+
+		@Override
+		public void sourceNameChanged(SourceEvent e) {
+			sourceName = e.getNewName();
+			fireIdChanged();
+		}
+
+		@Override
+		public void sourceRemoved(SourceRemovalEvent e) {
+		}
+
 	}
 }
