@@ -142,15 +142,15 @@ public class CompletionUtils {
 		} else {
 			String methodName = parts[parts.length - 1];
 			for (int i = 0; i < suffixes.length; i++) {
-				if ((suffixes[0].jjtGetNumChildren() == 1)
-						&& (suffixes[0].jjtGetChild(0) instanceof ASTArguments)) {
-					Class<? extends Object>[] params = getParams((ASTArguments) suffixes[0]
+				if ((suffixes[i].jjtGetNumChildren() == 1)
+						&& (suffixes[i].jjtGetChild(0) instanceof ASTArguments)) {
+					Class<? extends Object>[] params = getParams((ASTArguments) suffixes[i]
 							.jjtGetChild(0));
 					Method method = getMethod(clazz, methodName, params);
 					clazz = method.getReturnType();
 					methodName = null;
-				} else if (suffixes[0].jjtGetNumChildren() == 0) {
-					methodName = suffixes[0].first_token.next.image;
+				} else if (suffixes[i].jjtGetNumChildren() == 0) {
+					methodName = suffixes[i].first_token.next.image;
 				} else {
 					throw new CannotAutocompleteException();
 				}
