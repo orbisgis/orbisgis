@@ -58,7 +58,8 @@ public class CategorizedChoosePanel extends JPanel implements SQLUIPanel {
 		tree.setModel(categoriesTreeModel);
 		tree.setRootVisible(false);
 		tree.setCellRenderer(new IconRenderer());
-		tree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
+		tree.getSelectionModel().setSelectionMode(
+				TreeSelectionModel.SINGLE_TREE_SELECTION);
 		this.setLayout(new BorderLayout());
 		this.add(new JScrollPane(tree), BorderLayout.CENTER);
 	}
