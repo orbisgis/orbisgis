@@ -90,7 +90,7 @@ public class ScriptPanel extends JScrollPane implements DropTargetListener {
 			}
 			jTextPane.setDocument(document);
 			jTextPane.setDropTarget(new DropTarget(this, this));
-			jTextPane.addKeyListener(actionAndKeyListener);
+			jTextPane.getDocument().addDocumentListener(actionAndKeyListener);
 			UndoRedoInstaller.installUndoRedoSupport(jTextPane);
 		}
 

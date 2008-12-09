@@ -38,18 +38,18 @@ package org.orbisgis.views.sqlConsole.actions;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
 import java.io.IOException;
 
 import javax.swing.JOptionPane;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import javax.swing.text.BadLocationException;
 
 import org.orbisgis.Services;
 import org.orbisgis.views.sqlConsole.ui.ConsoleAction;
 import org.orbisgis.views.sqlConsole.ui.ConsolePanel;
 
-public class ActionsListener implements ActionListener, KeyListener {
+public class ActionsListener implements ActionListener, DocumentListener{
 
 	private ConsolePanel consolePanel;
 
@@ -120,17 +120,20 @@ public class ActionsListener implements ActionListener, KeyListener {
 		consolePanel.setButtonsStatus();
 	}
 
-	public void keyPressed(KeyEvent e) {
-		setButtonsStatus();
+	@Override
+	public void changedUpdate(DocumentEvent e) {
+		insertUpdate(e);
 	}
 
-	public void keyReleased(KeyEvent e) {
+	@Override
+	public void insertUpdate(DocumentEvent e) {
 		setButtonsStatus();
 		listener.change();
 	}
 
-	public void keyTyped(KeyEvent e) {
-		setButtonsStatus();
+	@Override
+	public void removeUpdate(DocumentEvent e) {
+		insertUpdate(e);
 	}
 
 }
