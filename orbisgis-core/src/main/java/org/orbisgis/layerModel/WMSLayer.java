@@ -34,10 +34,6 @@ public class WMSLayer extends GdmsLayer {
 	}
 
 	@Override
-	public void close() throws LayerException {
-	}
-
-	@Override
 	public SpatialDataSourceDecorator getDataSource() {
 		return null;
 	}
@@ -98,6 +94,7 @@ public class WMSLayer extends GdmsLayer {
 
 	@Override
 	public void open() throws LayerException {
+		super.open();
 		try {
 			ds.open();
 			String host = ds.getString(0, "host");

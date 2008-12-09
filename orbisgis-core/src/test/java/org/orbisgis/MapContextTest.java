@@ -41,6 +41,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 
 import org.gdms.data.DataSource;
+import org.gdms.source.SourceManager;
 import org.orbisgis.layerModel.DefaultMapContext;
 import org.orbisgis.layerModel.ILayer;
 import org.orbisgis.layerModel.LayerException;
@@ -442,5 +443,33 @@ public class MapContextTest extends AbstractTest {
 			assertTrue(false);
 		} catch (IllegalArgumentException e) {
 		}
+	}
+
+	public void testRenameLayerSource() throws Exception {
+		MapContext mc = new DefaultMapContext();
+		mc.open(null);
+		SourceManager sm = getDataManager().getSourceManager();
+		sm.register("bv", new File("src/test/resources/bv_sap.shp"));
+		ILayer layer = getDataManager().createLayer("bv");
+		mc.getLayerModel().addLayer(layer);
+		sm.rename("bv", "bva");
+		assertTrue(sm.getAllNames("bva").length == 1);
+		assertTrue(sm.getAllNames("bva")[0].equals("bv"));
+		mc.close(null);
+	}
+	
+	public void testRenameLayerBack() throws Exception {
+		MapContext mc = new DefaultMapContext();
+		mc.open(null);
+		SourceManager sm = getDataManager().getSourceManager();
+		sm.register("bv", new File("src/test/resources/bv_sap.shp"));
+		ILayer layer = getDataManager().createLayer("bv");
+		mc.getLayerModel().addLayer(layer);
+		layer.setName("bva");
+		assertTrue(sm.getAllNames("bv").length == 1);
+		assertTrue(sm.getAllNames("bv")[0].equals("bva"));
+		layer.setName("bv");
+		assertTrue(sm.getAllNames("bv").length == 0);
+		mc.close(null);
 	}
 }

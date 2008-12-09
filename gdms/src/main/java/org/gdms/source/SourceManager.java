@@ -428,4 +428,15 @@ public interface SourceManager {
 	 */
 	public abstract String[] getSourceNames();
 
+	/**
+	 * Get all the alternative names for the specified source
+	 * 
+	 * @param sourceName
+	 * @return
+	 * @throws NoSuchTableException
+	 *             If there is no source with the specified name
+	 */
+	public abstract String[] getAllNames(String sourceName)
+			throws NoSuchTableException;
+
 }

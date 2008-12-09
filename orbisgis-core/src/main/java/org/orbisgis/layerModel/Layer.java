@@ -157,6 +157,7 @@ public class Layer extends GdmsLayer {
 	}
 
 	public void open() throws LayerException {
+		super.open();
 		try {
 			dataSource.open();
 			// Create a legend for each spatial field

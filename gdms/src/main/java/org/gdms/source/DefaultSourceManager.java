@@ -624,7 +624,6 @@ public class DefaultSourceManager implements SourceManager {
 
 			changeNameMapping(dsName, newName);
 
-			fireNameChanged(dsName, newName);
 		}
 
 		if (nameMapping.containsKey(dsName)) {
@@ -636,6 +635,7 @@ public class DefaultSourceManager implements SourceManager {
 			nameMapping.put(newName, ds);
 		}
 
+		fireNameChanged(dsName, newName);
 	}
 
 	private void fireNameChanged(String dsName, String newName) {
@@ -851,5 +851,10 @@ public class DefaultSourceManager implements SourceManager {
 		for (String referencedSource : referenced) {
 			fireCommitDone(referencedSource);
 		}
+	}
+
+	@Override
+	public String[] getAllNames(String sourceName) throws NoSuchTableException {
+		return getNamesFor(getMainNameFor(sourceName)).toArray(new String[0]);
 	}
 }

@@ -38,7 +38,10 @@ package org.orbisgis.layerModel;
 
 import org.gdms.data.SourceAlreadyExistsException;
 import org.gdms.driver.DriverException;
+import org.gdms.source.SourceEvent;
+import org.gdms.source.SourceListener;
 import org.gdms.source.SourceManager;
+import org.gdms.source.SourceRemovalEvent;
 import org.gdms.sql.strategies.TableNotFoundException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.orbisgis.DataManager;
@@ -50,6 +53,7 @@ public abstract class GdmsLayer extends AbstractLayer {
 	private boolean isVisible = true;
 
 	private String mainName;
+	private SourceListener listener = new NameSourceListener();
 
 	public GdmsLayer(String name,
 			CoordinateReferenceSystem coordinateReferenceSystem) {
@@ -186,8 +190,10 @@ public abstract class GdmsLayer extends AbstractLayer {
 	}
 
 	public void close() throws LayerException {
-		SourceManager sourceManager = ((DataManager) Services
-				.getService(DataManager.class)).getDSF().getSourceManager();
+		SourceManager sourceManager = Services.getService(DataManager.class)
+				.getSourceManager();
+
+		sourceManager.removeSourceListener(listener);
 
 		// Remove alias
 		if (!mainName.equals(getName())) {
@@ -195,7 +201,51 @@ public abstract class GdmsLayer extends AbstractLayer {
 		}
 	}
 
+	@Override
+	public void open() throws LayerException {
+		SourceManager sourceManager = Services.getService(DataManager.class)
+				.getSourceManager();
+		sourceManager.addSourceListener(listener);
+	}
+
 	protected String getMainName() {
 		return mainName;
+	}
+
+	private class NameSourceListener implements SourceListener {
+
+		@Override
+		public void sourceAdded(SourceEvent e) {
+		}
+
+		@Override
+		public void sourceNameChanged(SourceEvent e) {
+			// If this layer source name was changed
+			if (e.getName().equals(mainName)) {
+				mainName = e.getNewName();
+				// Add alias if necessary
+				if (!getName().equals(mainName)
+						&& (getName().equals(e.getName()))) {
+					SourceManager sourceManager = Services.getService(
+							DataManager.class).getSourceManager();
+					try {
+						// If this layer name was the mainName
+						sourceManager.addName(mainName, getName());
+					} catch (TableNotFoundException e1) {
+						// The table exists since mainName is the new name
+						throw new RuntimeException("bug!", e1);
+					} catch (SourceAlreadyExistsException e1) {
+						// This layer had the old source name so there is no
+						// possibility for a conflict to happen
+						throw new RuntimeException("bug!", e1);
+					}
+				}
+			}
+		}
+
+		@Override
+		public void sourceRemoved(SourceRemovalEvent e) {
+		}
+
 	}
 }
