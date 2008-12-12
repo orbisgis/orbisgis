@@ -804,12 +804,18 @@ public class EditionDecorator extends AbstractDataSourceDecorator implements
 
 	public void redo() throws DriverException {
 		undoRedo = true;
+		if (!cs.canRedo()) {
+			throw new IllegalStateException("There is no action to redo");
+		}
 		cs.redo();
 		undoRedo = false;
 	}
 
 	public void undo() throws DriverException {
 		undoRedo = true;
+		if (!cs.canUndo()) {
+			throw new IllegalStateException("There is no action to undo");
+		}
 		cs.undo();
 		undoRedo = false;
 	}

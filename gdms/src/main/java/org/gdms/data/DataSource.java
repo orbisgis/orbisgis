@@ -425,15 +425,21 @@ public interface DataSource extends ReadAccess {
 	 * Redoes the last undone edition action
 	 * 
 	 * @throws DriverException
+	 * @throws IllegalStateException
+	 *             If there is no action to redo ({@link #canRedo()}
+	 *             returns false)
 	 */
-	public void redo() throws DriverException;
+	public void redo() throws DriverException, IllegalStateException;
 
 	/**
 	 * Undoes the last edition action
 	 * 
 	 * @throws DriverException
+	 * @throws IllegalStateException
+	 *             If there is no action to undo ({@link #canUndo()}
+	 *             returns false)
 	 */
-	public void undo() throws DriverException;
+	public void undo() throws DriverException, IllegalStateException;
 
 	/**
 	 * @return true if there is an edition action to redo
