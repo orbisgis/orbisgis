@@ -66,6 +66,7 @@ import org.orbisgis.view.ViewManager;
 import org.orbisgis.views.editor.EditorManager;
 import org.orbisgis.window.EPWindowHelper;
 import org.orbisgis.windows.errors.ErrorMessage;
+import org.orbisgis.windows.mainFrame.UIManager;
 import org.orbisgis.workspace.OGWorkspace;
 import org.orbisgis.workspace.Workspace;
 import org.orbisgis.workspace.WorkspaceListener;
@@ -175,14 +176,17 @@ public class Activator implements PluginActivator {
 		if (!sifDir.exists()) {
 			sifDir.mkdirs();
 		}
+
+		// Load windows status
+		EPWindowHelper.loadStatus();
+
 		UIFactory.setPersistencyDirectory(sifDir);
 		UIFactory.setTempDirectory(Services.getService(OGWorkspace.class)
 				.getTempFolder());
 		UIFactory.setDefaultIcon(Activator.class
 				.getResource("/org/orbisgis/images/mini_orbisgis.png"));
-
-		// Load windows status
-		EPWindowHelper.loadStatus();
+		UIFactory.setMainFrame(Services.getService(UIManager.class)
+				.getMainFrame());
 	}
 
 	public void stop() {

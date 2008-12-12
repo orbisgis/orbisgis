@@ -36,7 +36,7 @@ public class ErrorPanel extends JPanel implements SQLUIPanel {
 	public void show(String title, String message) {
 		this.title = title;
 		this.txtError.setText(message);
-		SIFDialog dlg = UIFactory.getSimpleDialog(this, null, false);
+		SIFDialog dlg = UIFactory.getSimpleDialog(this, false);
 		dlg.setModal(true);
 		Dimension size = Toolkit.getDefaultToolkit().getScreenSize();
 		dlg.setMaximumSize(new Dimension(size.width / (int) 1.1, size.height

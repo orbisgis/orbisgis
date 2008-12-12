@@ -36,7 +36,6 @@
  */
 package org.sif;
 
-import java.awt.Frame;
 import java.awt.Window;
 import java.io.File;
 import java.net.URL;
@@ -51,14 +50,19 @@ public class UIFactory {
 			+ File.separator + ".sif");
 	private static URL defaultIconURL;
 	private static String okMessage;
+	private static Window mainFrame = null;
 	static final DataSourceFactory dsf = new DataSourceFactory();
 
 	public static SIFDialog getSimpleDialog(UIPanel panel) {
-		return getSimpleDialog(panel, null);
+		return getSimpleDialog(panel, mainFrame);
 	}
 
 	public static SIFDialog getSimpleDialog(UIPanel panel, Window owner) {
 		return getSimpleDialog(panel, owner, true);
+	}
+
+	public static SIFDialog getSimpleDialog(UIPanel panel, boolean b) {
+		return getSimpleDialog(panel, mainFrame, true);
 	}
 
 	public static SIFDialog getSimpleDialog(UIPanel panel, Window owner,
@@ -96,10 +100,10 @@ public class UIFactory {
 	}
 
 	public static SIFWizard getWizard(UIPanel[] panels) {
-		return getWizard(panels, null);
+		return getWizard(panels, mainFrame);
 	}
 
-	private static SIFWizard getWizard(UIPanel[] panels, Frame owner) {
+	private static SIFWizard getWizard(UIPanel[] panels, Window owner) {
 		SIFWizard dlg = new SIFWizard(owner);
 		SimplePanel[] simplePanels = new SimplePanel[panels.length];
 		for (int i = 0; i < simplePanels.length; i++) {
@@ -122,7 +126,7 @@ public class UIFactory {
 			if (okCancel) {
 				dlg = getSimpleDialog(panels[0]);
 			} else {
-				dlg = getSimpleDialog(panels[0], null, false);
+				dlg = getSimpleDialog(panels[0], mainFrame, false);
 			}
 		} else {
 			dlg = getWizard(panels);
@@ -175,5 +179,13 @@ public class UIFactory {
 
 	public static void setDefaultOkMessage(String msg) {
 		okMessage = msg;
+	}
+	
+	public static void setMainFrame(Window wnd) {
+		mainFrame = wnd;
+	}
+
+	public static Window getMainFrame() {
+		return mainFrame;
 	}
 }
