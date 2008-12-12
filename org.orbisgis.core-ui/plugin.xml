@@ -195,6 +195,8 @@
 	
 	<!-- Geocatalog filters -->
 	<extension point="org.orbisgis.views.geocatalog.Filter">
+		<source-filter id="org.orbisgis.geocatalog.filters.All" name="All"
+			class="org.orbisgis.views.geocatalog.filters.All"/>
 		<source-filter id="org.orbisgis.geocatalog.filters.File" name="Files"
 			class="org.orbisgis.views.geocatalog.filters.Files"/>
 		<source-filter id="org.orbisgis.geocatalog.filters.DB" name="Databases"
