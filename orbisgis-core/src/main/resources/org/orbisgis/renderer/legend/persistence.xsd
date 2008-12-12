@@ -121,6 +121,7 @@
 				<xs:attribute name="font-size" type="xs:int" use="required"/>
 				<xs:attribute name="field-font-size" type="xs:string"/>
 				<xs:attribute name="field-name" type="xs:string" use="required"/>
+				<xs:attribute name="smart-placing" type="xs:boolean" use="required"/>
 			</xs:extension>
 		</xs:complexContent>
 	</xs:complexType>

@@ -51,13 +51,16 @@ import org.orbisgis.renderer.legend.carto.persistence.LegendContainer;
 import org.orbisgis.renderer.symbol.Symbol;
 import org.orbisgis.renderer.symbol.SymbolFactory;
 
-public class DefaultLabelLegend extends AbstractCartoLegend implements LabelLegend {
+public class DefaultLabelLegend extends AbstractCartoLegend implements
+		LabelLegend {
 
 	private String labelSizeField;
 
 	private int fontSize = 10;
 
 	private String fieldName;
+
+	private boolean smartPlacing;
 
 	private int getSize(SpatialDataSourceDecorator sds, long row)
 			throws RenderException, DriverException {
@@ -97,8 +100,9 @@ public class DefaultLabelLegend extends AbstractCartoLegend implements LabelLege
 		try {
 			int fieldIndex = sds.getFieldIndexByName(fieldName);
 			Value v = sds.getFieldValue(row, fieldIndex);
-			return SymbolFactory.createLabelSymbol(v.toString(), getSize(sds,
-					row));
+			Symbol symbol = SymbolFactory.createLabelSymbol(v.toString(),
+					getSize(sds, row), smartPlacing);
+			return symbol;
 		} catch (DriverException e) {
 			throw new RenderException("Cannot access layer contents" + e);
 		}
@@ -111,6 +115,7 @@ public class DefaultLabelLegend extends AbstractCartoLegend implements LabelLege
 		xmlLegend.setFieldFontSize(getLabelSizeField());
 		xmlLegend.setFieldName(getClassificationField());
 		xmlLegend.setFontSize(getFontSize());
+		xmlLegend.setSmartPlacing(smartPlacing);
 		LegendContainer xml = new LegendContainer();
 		xml.setLegendDescription(xmlLegend);
 		return xml;
@@ -124,6 +129,7 @@ public class DefaultLabelLegend extends AbstractCartoLegend implements LabelLege
 		setClassificationField(xmlLegend.getFieldName());
 		setFontSize(xmlLegend.getFontSize());
 		setLabelSizeField(xmlLegend.getFieldFontSize());
+		setSmartPlacing(xmlLegend.isSmartPlacing());
 	}
 
 	public Legend newInstance() {
@@ -169,6 +175,16 @@ public class DefaultLabelLegend extends AbstractCartoLegend implements LabelLege
 	@Override
 	public int getSymbolsToUpdateOnRowModification() {
 		return ONLY_AFFECTED;
+	}
+
+	@Override
+	public void setSmartPlacing(boolean placing) {
+		this.smartPlacing = placing;
+	}
+
+	@Override
+	public boolean isSmartPlacing() {
+		return smartPlacing;
 	}
 
 }

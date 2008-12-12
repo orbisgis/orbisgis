@@ -62,6 +62,7 @@ import org.orbisgis.renderer.symbol.collection.persistence.SimpleSymbolType;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
+import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.Point;
 
@@ -277,6 +278,12 @@ public class DefaultProportionalLegend extends AbstractCartoLegend implements
 
 				public boolean canDraw(Envelope env) {
 					return true;
+				}
+
+				@Override
+				public Geometry getValidGeometry(Geometry geometry,
+						double distance) {
+					return geometry;
 				}
 
 			};

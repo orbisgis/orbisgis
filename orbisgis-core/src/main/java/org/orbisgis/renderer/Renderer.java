@@ -120,7 +120,8 @@ public class Renderer {
 		}
 
 		long total1 = System.currentTimeMillis();
-		DefaultRendererPermission permission = new DefaultRendererPermission();
+		DefaultRendererPermission permission = new DefaultRendererPermission(
+				extent);
 		for (int i = layers.length - 1; i >= 0; i--) {
 			if (pm.isCancelled()) {
 				break;
@@ -188,6 +189,7 @@ public class Renderer {
 				}
 			}
 		}
+
 		long total2 = System.currentTimeMillis();
 		logger.info("Total rendering time:" + (total2 - total1));
 	}
@@ -306,7 +308,7 @@ public class Renderer {
 				int i = 0;
 				while (it.hasNext()) {
 					Integer index = it.next();
-					if (i / 10000 == i / 10000.0) {
+					if (i / 1000 == i / 1000.0) {
 						if (pm.isCancelled()) {
 							break;
 						} else {
@@ -394,9 +396,11 @@ public class Renderer {
 	private class DefaultRendererPermission implements RenderPermission {
 
 		private Quadtree quadtree;
+		private Envelope drawExtent;
 
-		public DefaultRendererPermission() {
-			quadtree = new Quadtree();
+		public DefaultRendererPermission(Envelope drawExtent) {
+			this.drawExtent = drawExtent;
+			this.quadtree = new Quadtree();
 		}
 
 		public void addUsedArea(Envelope area) {
@@ -404,6 +408,7 @@ public class Renderer {
 		}
 
 		@SuppressWarnings("unchecked")
+		@Override
 		public boolean canDraw(Envelope area) {
 			List<Envelope> list = quadtree.query(area);
 			for (Envelope envelope : list) {
@@ -413,6 +418,26 @@ public class Renderer {
 			}
 
 			return true;
+		}
+
+		@SuppressWarnings("unchecked")
+		@Override
+		public Geometry getValidGeometry(Geometry geometry, double distance) {
+			List<Envelope> list = quadtree
+					.query(geometry.getEnvelopeInternal());
+			GeometryFactory geometryFactory = new GeometryFactory();
+			for (Envelope envelope : list) {
+				geometry = geometry.difference(geometryFactory.toGeometry(
+						envelope).buffer(distance, 1));
+			}
+			geometry = geometry.intersection(geometryFactory
+					.toGeometry(drawExtent));
+
+			if (geometry.isEmpty()) {
+				return null;
+			} else {
+				return geometry;
+			}
 		}
 	}
 
@@ -547,6 +572,11 @@ public class Renderer {
 
 			public boolean canDraw(Envelope env) {
 				return true;
+			}
+
+			@Override
+			public Geometry getValidGeometry(Geometry geometry, double distance) {
+				return geometry;
 			}
 
 		};

@@ -69,6 +69,8 @@ public class PnlLabelLegend extends JPanel implements ILegendPanel {
 	private LegendContext legendContext;
 	private JComboBox cmbField;
 	private JTextField txtSymbolSize;
+	private JCheckBox chkIntelligentLabelPlacing;
+	private boolean syncing = false;
 
 	private void init() {
 
@@ -90,8 +92,6 @@ public class PnlLabelLegend extends JPanel implements ILegendPanel {
 		c.gridx = 0;
 		c.gridy = 0;
 		c.insets = new Insets(8, 5, 8, 5);
-		// c.weightx = 0.5;
-		// c.weighty = 0.5;
 		this.add(new JLabel("Field:"), c);
 
 		c.anchor = GridBagConstants.SOUTHWEST;
@@ -110,12 +110,21 @@ public class PnlLabelLegend extends JPanel implements ILegendPanel {
 		c.gridy = 1;
 		this.add(txtSymbolSize, c);
 
-		JCheckBox chkAvoidCollisions = new JCheckBox("Avoid label collisions");
+		chkIntelligentLabelPlacing = new JCheckBox(
+				"Intelligent label placing (slow)");
+		chkIntelligentLabelPlacing.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				legend.setSmartPlacing(chkIntelligentLabelPlacing.isSelected());
+				syncWithLegend();
+			}
+		});
 		c.anchor = GridBagConstants.NORTH;
 		c.gridx = 0;
 		c.gridy = 2;
 		c.gridwidth = 2;
-		this.add(chkAvoidCollisions, c);
+		this.add(chkIntelligentLabelPlacing, c);
 	}
 
 	public boolean acceptsGeometryType(int geometryType) {
@@ -145,29 +154,36 @@ public class PnlLabelLegend extends JPanel implements ILegendPanel {
 	}
 
 	private void syncWithLegend() {
-		try {
-			SpatialDataSourceDecorator sds = legendContext.getLayer()
-					.getDataSource();
-			Metadata m = sds.getMetadata();
-			ArrayList<String> fieldNames = new ArrayList<String>();
+		if (!syncing) {
+			syncing = true;
+			try {
+				SpatialDataSourceDecorator sds = legendContext.getLayer()
+						.getDataSource();
+				Metadata m = sds.getMetadata();
+				ArrayList<String> fieldNames = new ArrayList<String>();
 
-			for (int i = 0; i < m.getFieldCount(); i++) {
-				int fieldType = m.getFieldType(i).getTypeCode();
-				if ((fieldType != Type.RASTER) && (fieldType != Type.GEOMETRY)) {
-					fieldNames.add(m.getFieldName(i));
+				for (int i = 0; i < m.getFieldCount(); i++) {
+					int fieldType = m.getFieldType(i).getTypeCode();
+					if ((fieldType != Type.RASTER)
+							&& (fieldType != Type.GEOMETRY)) {
+						fieldNames.add(m.getFieldName(i));
+					}
 				}
+				cmbField.setModel(new DefaultComboBoxModel(fieldNames
+						.toArray(new String[0])));
+				cmbField.setSelectedItem(legend.getClassificationField());
+
+				// symbol size
+				txtSymbolSize.setText("" + legend.getFontSize());
+
+				chkIntelligentLabelPlacing.setSelected(legend.isSmartPlacing());
+
+			} catch (DriverException e) {
+				Services.getErrorManager().error("Cannot access layer fields",
+						e);
 			}
-			cmbField.setModel(new DefaultComboBoxModel(fieldNames
-					.toArray(new String[0])));
-			cmbField.setSelectedItem(legend.getClassificationField());
-
-			// symbol size
-			txtSymbolSize.setText("" + legend.getFontSize());
-
-		} catch (DriverException e) {
-			Services.getErrorManager().error("Cannot access layer fields", e);
+			syncing = false;
 		}
-
 	}
 
 	public void initialize(LegendContext lc) {

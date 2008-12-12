@@ -319,6 +319,7 @@ public class LegendTest extends AbstractTest {
 		legend.setClassificationField(fieldName);
 		legend.setFontSize(10);
 		legend.setLabelSizeField(fieldName);
+		legend.setSmartPlacing(true);
 		Object object = legend.getJAXBObject();
 
 		legend = (LabelLegend) lm.getNewLegend(legend.getLegendTypeId());
@@ -327,6 +328,7 @@ public class LegendTest extends AbstractTest {
 		assertTrue(legend.getClassificationField().equals(fieldName));
 		assertTrue(legend.getLabelSizeField().equals(fieldName));
 		assertTrue(legend.getFontSize() == 10);
+		assertTrue(legend.isSmartPlacing());
 	}
 
 	public void testMinLabelPersistence() throws Exception {

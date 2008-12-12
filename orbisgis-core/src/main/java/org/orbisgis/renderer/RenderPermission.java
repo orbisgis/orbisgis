@@ -37,17 +37,33 @@
 package org.orbisgis.renderer;
 
 import com.vividsolutions.jts.geom.Envelope;
+import com.vividsolutions.jts.geom.Geometry;
 
 /**
  * Interface used at render process to control overlapings of symbols. The
  * drawing of a symbol will return an envelope that will keep other symbols to
  * draw there. The other symbols will know where to draw by asking to this
  * interface.
- *
+ * 
  * @author Fernando Gonzalez Cortes
- *
+ * 
  */
 public interface RenderPermission {
 
+	/**
+	 * Return true if the specified area can be drawn
+	 * 
+	 * @param env
+	 * @return
+	 */
 	boolean canDraw(Envelope env);
+
+	/**
+	 * Returns a geometry that doesn't overlap any of the forbidden envelopes
+	 * 
+	 * @param geometry
+	 * @param distance 
+	 * @return
+	 */
+	Geometry getValidGeometry(Geometry geometry, double distance);
 }

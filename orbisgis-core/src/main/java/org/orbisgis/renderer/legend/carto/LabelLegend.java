@@ -57,4 +57,19 @@ public interface LabelLegend extends Legend {
 
 	public String getClassificationField();
 
+	/**
+	 * Enables or disables the smart placing algorithm. It's better but slower
+	 * 
+	 * @param placing
+	 */
+	public void setSmartPlacing(boolean placing);
+
+	/**
+	 * Return true if the smart placing algorithm is activated and false
+	 * otherwise
+	 * 
+	 * @return
+	 */
+	public boolean isSmartPlacing();
+
 }

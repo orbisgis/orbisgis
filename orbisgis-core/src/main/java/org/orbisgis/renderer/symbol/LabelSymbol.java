@@ -42,6 +42,7 @@ import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics2D;
 import java.awt.geom.AffineTransform;
+import java.awt.geom.NoninvertibleTransformException;
 import java.awt.geom.Point2D;
 import java.util.HashMap;
 import java.util.Map;
@@ -59,10 +60,12 @@ public class LabelSymbol extends AbstractSymbol implements Symbol {
 
 	private int fontSize;
 	private String text;
+	private boolean smartPlacing;
 
-	LabelSymbol(String text, int fontSize) {
+	LabelSymbol(String text, int fontSize, boolean smartPlacing) {
 		this.text = text;
 		this.fontSize = fontSize;
+		this.smartPlacing = smartPlacing;
 		setName("Label symbol");
 	}
 
@@ -77,7 +80,42 @@ public class LabelSymbol extends AbstractSymbol implements Symbol {
 		int adv = metrics.stringWidth(text);
 		// calculate the size of a box to hold the text with some padding.
 		Dimension size = new Dimension(adv + 2, hgt + 2);
+
+		// Get text size in map units
+		AffineTransform inv = new AffineTransform(at);
+		try {
+			inv.invert();
+		} catch (NoninvertibleTransformException e) {
+			throw new RuntimeException("bug!");
+		}
+		Point2D mapPoint = inv.transform(new Point2D.Double(0, 0), null);
+		Point2D mapPoint2 = inv.transform(new Point2D.Double(size.width,
+				size.height), null);
+		double[] mapSize = new double[] {
+				Math.abs(mapPoint2.getX() - mapPoint.getX()),
+				Math.abs(mapPoint2.getY() - mapPoint.getY()) };
+		double halfWidth = mapSize[0] / 2;
+		double halfHeight = mapSize[1] / 2;
+
+		// Obtain geometry to place label
+		if (smartPlacing) {
+			geom = permission.getValidGeometry(geom, Math.max(halfWidth,
+					halfHeight));
+
+			if (geom == null) {
+				return null;
+
+			}
+		}
 		Point interiorPoint = geom.getCentroid();
+		Envelope textMapArea = new Envelope(interiorPoint.getX() - halfWidth,
+				interiorPoint.getX() + halfWidth, interiorPoint.getY()
+						- halfHeight, interiorPoint.getY() + halfHeight);
+		if (!smartPlacing && !permission.canDraw(textMapArea)) {
+			return null;
+		}
+
+		// Draw label
 		Point2D p = new Point2D.Double(interiorPoint.getX(), interiorPoint
 				.getY());
 		p = at.transform(p, null);
@@ -94,7 +132,7 @@ public class LabelSymbol extends AbstractSymbol implements Symbol {
 			area = null;
 		}
 		g.setFont(font);
-		return area;
+		return textMapArea;
 	}
 
 	public boolean acceptGeometry(Geometry geom) {
@@ -109,6 +147,7 @@ public class LabelSymbol extends AbstractSymbol implements Symbol {
 		HashMap<String, String> ret = new HashMap<String, String>();
 		ret.putAll(super.getPersistentProperties());
 		ret.put("font-size", Integer.toString(fontSize));
+		ret.put("smart-placing", Boolean.toString(smartPlacing));
 
 		return ret;
 	}
@@ -116,10 +155,11 @@ public class LabelSymbol extends AbstractSymbol implements Symbol {
 	public void setPersistentProperties(Map<String, String> props) {
 		super.setPersistentProperties(props);
 		fontSize = Integer.parseInt(props.get("font-size"));
+		smartPlacing = Boolean.parseBoolean(props.get("smart-placing"));
 	}
 
 	public Symbol cloneSymbol() {
-		return new LabelSymbol(text, fontSize);
+		return new LabelSymbol(text, fontSize, smartPlacing);
 	}
 
 	public String getClassName() {
@@ -129,7 +169,7 @@ public class LabelSymbol extends AbstractSymbol implements Symbol {
 	public boolean acceptGeometryType(GeometryConstraint geometryConstraint) {
 		return true;
 	}
-	
+
 	@Override
 	public Symbol deriveSymbol(Color color) {
 		return null;

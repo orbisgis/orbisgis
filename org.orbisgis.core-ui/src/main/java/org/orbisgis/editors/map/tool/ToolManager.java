@@ -430,6 +430,12 @@ public class ToolManager extends MouseAdapter implements MouseMotionListener {
 						return true;
 					}
 
+					@Override
+					public Geometry getValidGeometry(Geometry geometry,
+							double distance) {
+						return geometry;
+					}
+
 				});
 
 				g2.drawImage(bi, 0, 0, null);

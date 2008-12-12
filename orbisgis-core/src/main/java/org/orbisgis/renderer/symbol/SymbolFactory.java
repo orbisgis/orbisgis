@@ -81,8 +81,9 @@ public class SymbolFactory {
 		return new SymbolComposite(symbols);
 	}
 
-	public static Symbol createLabelSymbol(String text, int fontSize) {
-		return new LabelSymbol(text, fontSize);
+	public static Symbol createLabelSymbol(String text, int fontSize,
+			boolean smartPlacing) {
+		return new LabelSymbol(text, fontSize, smartPlacing);
 	}
 
 	public static Symbol createLineSymbol(Color color, int lineWidth) {
