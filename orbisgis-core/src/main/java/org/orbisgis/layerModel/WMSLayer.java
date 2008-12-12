@@ -62,7 +62,7 @@ public class WMSLayer extends GdmsLayer {
 
 	@Override
 	public Legend[] getRenderingLegend() throws DriverException {
-		throw new UnsupportedOperationException(NOT_SUPPORTED);
+		return new Legend[0];
 	}
 
 	@Override
