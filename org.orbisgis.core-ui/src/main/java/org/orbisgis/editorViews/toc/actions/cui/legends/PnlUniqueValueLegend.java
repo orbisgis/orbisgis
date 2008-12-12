@@ -60,6 +60,8 @@ import org.orbisgis.renderer.legend.Legend;
 import org.orbisgis.renderer.legend.carto.LegendFactory;
 import org.orbisgis.renderer.legend.carto.UniqueValueLegend;
 import org.orbisgis.renderer.symbol.Symbol;
+import org.orbisgis.ui.sif.ChoosePanel;
+import org.sif.UIFactory;
 
 public class PnlUniqueValueLegend extends PnlAbstractClassifiedLegend {
 
@@ -119,17 +121,50 @@ public class PnlUniqueValueLegend extends PnlAbstractClassifiedLegend {
 		int rowCount = tableModel.getRowCount();
 
 		if (rowCount < 32) {
-			Symbol sym = createRandomSymbol();
-			Value val = ValueFactory.createNullValue();
-			String label = "Rest of values";
-			if (rowCount > 0) {
-				sym = (Symbol) tableModel.getValueAt(0, 0);
-				val = (Value) tableModel.getValueAt(0, 1);
-				label = (String) tableModel.getValueAt(0, 2);
+			try {
+				SpatialDataSourceDecorator ds = legendContext.getLayer()
+						.getDataSource();
+				ArrayList<String> options = new ArrayList<String>();
+				ArrayList<Value> values = new ArrayList<Value>();
+				for (int i = 0; i < ds.getRowCount() && values.size() < 32; i++) {
+					String classificationField = legend
+							.getClassificationField();
+					int index = ds.getFieldIndexByName(classificationField);
+					Value value = ds.getFieldValue(i, index);
+					boolean exists = false;
+					for (int j = 0; j < tableModel.getRowCount(); j++) {
+						if (tableModel.getValueAt(j, 1).equals(value)) {
+							exists = true;
+							break;
+						}
+					}
+					if (exists || values.contains(value)) {
+						continue;
+					}
+					values.add(value);
+					options.add(value.toString());
+				}
+				options.add("Null");
+				values.add(ValueFactory.createNullValue());
+				Symbol sym = createRandomSymbol();
+				if (options.size() == 1) {
+					getTableModel().insertRow(sym, values.get(0),
+							options.get(0));
+				} else {
+					ChoosePanel cp = new ChoosePanel("Select the class value",
+							options.toArray(new String[0]), values
+									.toArray(new Value[0]));
+					if (UIFactory.showDialog(cp)) {
+						Value val = (Value) cp.getSelected();
+						String label = val.toString();
+						getTableModel().insertRow(sym, val, label);
+					}
+				}
+			} catch (DriverException e) {
+				Services.getErrorManager().error("Cannot access layer data", e);
 			}
-			getTableModel().insertRow(sym, val, label);
 		} else {
-			JOptionPane.showMessageDialog(this,
+			Services.getErrorManager().error(
 					"Cannot have more than 32 classifications");
 		}
 	}
