@@ -86,6 +86,14 @@ public class SourceListModel extends AbstractListModel implements ListModel {
 		}
 		logger.debug("Showing " + names.length + " sources");
 
+		names = filter(sourceManager, names, new IGeocatalogFilter() {
+
+			@Override
+			public boolean accept(SourceManager sm, String sourceName) {
+				return sm.getSource(sourceName).isWellKnownName();
+			}
+		});
+
 		Arrays.sort(names, new Comparator<String>() {
 
 			@Override
@@ -139,7 +147,10 @@ public class SourceListModel extends AbstractListModel implements ListModel {
 		public synchronized void sourceRemoved(final SourceRemovalEvent e) {
 			// Close editors
 			closeEditor(e.getName());
-			refresh();
+
+			if (e.isWellKnownName()) {
+				refresh();
+			}
 		}
 
 		private void closeEditor(String sourceName) {
@@ -151,11 +162,15 @@ public class SourceListModel extends AbstractListModel implements ListModel {
 		}
 
 		public synchronized void sourceNameChanged(final SourceEvent e) {
-			refresh();
+			if (e.isWellKnownName()) {
+				refresh();
+			}
 		}
 
 		public synchronized void sourceAdded(SourceEvent e) {
-			refresh();
+			if (e.isWellKnownName()) {
+				refresh();
+			}
 		}
 	}
 
