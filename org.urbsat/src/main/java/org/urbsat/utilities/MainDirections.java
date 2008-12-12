@@ -77,7 +77,6 @@ public class MainDirections implements CustomQuery {
 			final double subdivisionOfAngle = Math.PI / nbOfClasses;
 			final SpatialDataSourceDecorator inSds = new SpatialDataSourceDecorator(
 					tables[0]);
-			inSds.open();
 
 			final Coordinate origin = inSds.getFullExtent().centre();
 			// final double radius = 0.5 * Math.sqrt(inSds.getFullExtent()
@@ -86,7 +85,7 @@ public class MainDirections implements CustomQuery {
 			// + inSds.getFullExtent().getHeight()
 			// * inSds.getFullExtent().getHeight());
 			final ObjectMemoryDriver driver = new ObjectMemoryDriver(
-					getMetadata(MetadataUtilities.fromTablesToMetadatas(tables)));
+					getMetadata(null));
 			final Map<Integer, Double> distancesAccumulations = new HashMap<Integer, Double>();
 
 			final long rowCount = inSds.getRowCount();
@@ -114,7 +113,6 @@ public class MainDirections implements CustomQuery {
 					}
 				}
 			}
-			inSds.close();
 
 			double sum = 0;
 			for (Integer key : distancesAccumulations.keySet()) {

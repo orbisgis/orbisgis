@@ -43,7 +43,6 @@ import org.gdms.data.ExecutionException;
 import org.gdms.data.SpatialDataSourceDecorator;
 import org.gdms.data.metadata.DefaultMetadata;
 import org.gdms.data.metadata.Metadata;
-import org.gdms.data.metadata.MetadataUtilities;
 import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
@@ -76,14 +75,13 @@ public class CreateWebGrid implements CustomQuery {
 
 			final SpatialDataSourceDecorator inSds = new SpatialDataSourceDecorator(
 					tables[0]);
-			inSds.open();
+
 			// built the driver for the resulting datasource and register it...
 			final ObjectMemoryDriver driver = new ObjectMemoryDriver(
-					getMetadata(MetadataUtilities.fromTablesToMetadatas(tables)));
+					getMetadata(null));
 			final Envelope envelope = inSds.getFullExtent();
-			inSds.close();
-
 			createGrid(driver, envelope, deltaR, deltaT, pm);
+
 			return driver;
 		} catch (AlreadyClosedException e) {
 			throw new ExecutionException(e);
@@ -103,7 +101,7 @@ public class CreateWebGrid implements CustomQuery {
 	}
 
 	public String getSqlOrder() {
-		return "select CreateWebGrid(4000,1000) from myTable;";
+		return "select " + getName() + "(4000,1000) from myTable;";
 	}
 
 	private void createGrid(final ObjectMemoryDriver driver,

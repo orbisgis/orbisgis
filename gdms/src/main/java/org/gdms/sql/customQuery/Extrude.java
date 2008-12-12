@@ -42,7 +42,6 @@ import org.gdms.data.ExecutionException;
 import org.gdms.data.SpatialDataSourceDecorator;
 import org.gdms.data.metadata.DefaultMetadata;
 import org.gdms.data.metadata.Metadata;
-import org.gdms.data.metadata.MetadataUtilities;
 import org.gdms.data.types.Constraint;
 import org.gdms.data.types.DimensionConstraint;
 import org.gdms.data.types.GeometryConstraint;
@@ -79,7 +78,6 @@ public class Extrude implements CustomQuery {
 
 			final SpatialDataSourceDecorator sds = new SpatialDataSourceDecorator(
 					tables[0]);
-			sds.open();
 
 			if (3 == values.length) {
 				// if no spatial's field's name is provided, the default (first)
@@ -93,7 +91,7 @@ public class Extrude implements CustomQuery {
 					.getFieldIndexByName(heightFieldName);
 
 			final ObjectMemoryDriver driver = new ObjectMemoryDriver(
-					getMetadata(MetadataUtilities.fromTablesToMetadatas(tables)));
+					getMetadata(null));
 			final int rowCount = (int) sds.getRowCount();
 
 			for (int rowIndex = 0; rowIndex < rowCount; rowIndex++) {
@@ -128,7 +126,6 @@ public class Extrude implements CustomQuery {
 							"Extrude only (Multi-)Polygon geometries");
 				}
 			}
-			sds.close();
 
 			return driver;
 		} catch (DriverException e) {

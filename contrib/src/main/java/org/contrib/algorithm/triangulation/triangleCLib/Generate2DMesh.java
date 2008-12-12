@@ -85,7 +85,6 @@ public class Generate2DMesh implements CustomQuery {
 				tables[0]);
 
 		try {
-			inSds.open();
 
 			// convert the spatial datasource into a .node or a .poly temporal
 			// file
@@ -155,12 +154,10 @@ public class Generate2DMesh implements CustomQuery {
 			final List<Polygon> listOfTriangles = eleReader.read();
 			eleReader.close();
 
-			inSds.close();
-
 			// using the list of JTS polygons, build and populate the resulting
 			// ObjectMemory
 			final ObjectMemoryDriver driver = new ObjectMemoryDriver(
-					getMetadata(MetadataUtilities.fromTablesToMetadatas(tables)));
+					getMetadata(null));
 			for (int i = 0; i < listOfTriangles.size(); i++) {
 				driver.addValues(new Value[] { ValueFactory.createValue(i),
 						ValueFactory.createValue(listOfTriangles.get(i)) });

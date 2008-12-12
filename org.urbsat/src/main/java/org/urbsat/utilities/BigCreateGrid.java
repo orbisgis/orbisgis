@@ -49,11 +49,11 @@ import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.ObjectDriver;
 import org.gdms.driver.driverManager.DriverLoadException;
-import org.gdms.driver.memory.ObjectMemoryDriver;
 import org.gdms.sql.customQuery.CustomQuery;
 import org.gdms.sql.customQuery.TableDefinition;
 import org.gdms.sql.function.Argument;
 import org.gdms.sql.function.Arguments;
+import org.gdms.sql.strategies.DiskBufferDriver;
 import org.orbisgis.progress.IProgressMonitor;
 
 import com.vividsolutions.jts.geom.Coordinate;
@@ -62,7 +62,7 @@ import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.LinearRing;
 
-public class CreateGrid implements CustomQuery {
+public class BigCreateGrid implements CustomQuery {
 	private final static GeometryFactory geometryFactory = new GeometryFactory();
 
 	private boolean isAnOrientedGrid;
@@ -85,7 +85,7 @@ public class CreateGrid implements CustomQuery {
 					tables[0]);
 
 			// built the driver for the resulting datasource and register it...
-			final ObjectMemoryDriver driver = new ObjectMemoryDriver(
+			DiskBufferDriver driver = new DiskBufferDriver(dsf,
 					getMetadata(null));
 
 			if (3 == values.length) {
@@ -96,6 +96,7 @@ public class CreateGrid implements CustomQuery {
 				isAnOrientedGrid = false;
 				createGrid(driver, inSds.getFullExtent(), pm);
 			}
+			driver.writingFinished();
 
 			return driver;
 		} catch (DriverLoadException e) {
@@ -106,7 +107,7 @@ public class CreateGrid implements CustomQuery {
 	}
 
 	public String getName() {
-		return "CreateGrid";
+		return "BigCreateGrid";
 	}
 
 	public String getDescription() {
@@ -117,9 +118,8 @@ public class CreateGrid implements CustomQuery {
 		return "select " + getName() + "(4000,1000[,15]) from myTable;";
 	}
 
-	private void createGrid(final ObjectMemoryDriver driver,
-			final Envelope env, final IProgressMonitor pm)
-			throws DriverException {
+	private void createGrid(final DiskBufferDriver driver, final Envelope env,
+			final IProgressMonitor pm) throws DriverException {
 		final int nbX = new Double(Math.ceil((env.getMaxX() - env.getMinX())
 				/ deltaX)).intValue();
 		final int nbY = new Double(Math.ceil((env.getMaxY() - env.getMinY())
@@ -209,8 +209,9 @@ public class CreateGrid implements CustomQuery {
 		}
 	}
 
-	private void createGridCell(final ObjectMemoryDriver driver,
-			final Coordinate[] summits, final int gridCellIndex) {
+	private void createGridCell(final DiskBufferDriver driver,
+			final Coordinate[] summits, final int gridCellIndex)
+			throws DriverException {
 		final LinearRing g = geometryFactory.createLinearRing(summits);
 		final Geometry gg = geometryFactory.createPolygon(g, null);
 		driver.addValues(new Value[] { ValueFactory.createValue(gg),

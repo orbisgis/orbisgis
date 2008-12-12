@@ -43,6 +43,7 @@ import org.urbsat.function.AddZ;
 import org.urbsat.kmeans.KMeans;
 import org.urbsat.landcoverIndicators.function.CircleCompacity;
 import org.urbsat.landcoverIndicators.function.MeanSpacingBetweenBuildingsInACell;
+import org.urbsat.utilities.BigCreateGrid;
 import org.urbsat.utilities.CreateGrid;
 import org.urbsat.utilities.CreateWebGrid;
 import org.urbsat.utilities.GetZDEM;
@@ -51,6 +52,7 @@ import org.urbsat.utilities.MainDirections;
 public class Register implements PluginActivator {
 	public void start() throws Exception {
 		QueryManager.registerQuery(CreateGrid.class);
+		QueryManager.registerQuery(BigCreateGrid.class);
 		QueryManager.registerQuery(CreateWebGrid.class);
 		// QueryManager.registerQuery(new Density());
 		// QueryManager.registerQuery(new BuildNumber());

@@ -108,7 +108,7 @@ public class GetZDEM implements CustomQuery {
 
 			final SpatialDataSourceDecorator inSds = new SpatialDataSourceDecorator(
 					tables[0]);
-			inSds.open();
+
 			if (2 == values.length) {
 				// if no spatial's field's name is provided, the default (first)
 				// one is arbitrarily chosen.
@@ -117,7 +117,7 @@ public class GetZDEM implements CustomQuery {
 			}
 
 			final ObjectMemoryDriver driver = new ObjectMemoryDriver(
-					getMetadata(MetadataUtilities.fromTablesToMetadatas(tables)));
+					getMetadata(null));
 
 			double height;
 			final int rowCount = (int) inSds.getRowCount();
@@ -162,7 +162,7 @@ public class GetZDEM implements CustomQuery {
 						ValueFactory.createValue(height),
 						ValueFactory.createValue(gg) });
 			}
-			inSds.close();
+
 			return driver;
 		} catch (FileNotFoundException e) {
 			throw new ExecutionException(e);
@@ -187,7 +187,7 @@ public class GetZDEM implements CustomQuery {
 	}
 
 	public String getSqlOrder() {
-		return "select GetZDEM('the_DEM'[, the_geom]) from myTable;";
+		return "select " + getName() + "('the_DEM'[, the_geom]) from myTable;";
 	}
 
 	public String getName() {
