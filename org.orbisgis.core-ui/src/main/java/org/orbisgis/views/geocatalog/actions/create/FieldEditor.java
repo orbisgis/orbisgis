@@ -203,12 +203,15 @@ public class FieldEditor extends AbstractUIPanel implements UIPanel {
 	}
 
 	private void updateNameIfEmpty() {
-		int typeCode = getType().getTypeCode();
-		String suggestion = "the_" + TypeFactory.getTypeName(typeCode);
-		if (typeCode == Type.GEOMETRY) {
-			suggestion = "the_geom";
+		String fieldName = txtName.getText();
+		if ((fieldName.trim().length() == 0) || fieldName.startsWith("the_")) {
+			int typeCode = getType().getTypeCode();
+			String suggestion = "the_" + TypeFactory.getTypeName(typeCode);
+			if (typeCode == Type.GEOMETRY) {
+				suggestion = "the_geom";
+			}
+			txtName.setText(suggestion);
 		}
-		txtName.setText(suggestion);
 	}
 
 	private int getCorrespondingType(Type type, TypeDefinition[] types) {
