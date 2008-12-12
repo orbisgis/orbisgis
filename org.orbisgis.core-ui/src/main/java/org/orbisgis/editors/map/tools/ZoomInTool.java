@@ -70,7 +70,7 @@ import com.vividsolutions.jts.geom.Envelope;
 
 /**
  * Tool to zoom in
- *
+ * 
  * @author Fernando Gonzalez Cortes
  */
 public class ZoomInTool extends AbstractRectangleTool {
@@ -82,6 +82,19 @@ public class ZoomInTool extends AbstractRectangleTool {
 		tm.getMapTransform().setExtent(
 				new Envelope(rect.getMinX(), rect.getMaxX(), rect.getMinY(),
 						rect.getMaxY()));
+	}
+
+	@Override
+	protected Rectangle2D buildRectangleOnPoint(ToolManager toolManager,
+			double x, double y) {
+		Envelope extent = toolManager.getMapTransform().getExtent();
+		double width = extent.getWidth() / 2;
+		double height = extent.getHeight() / 2;
+		double minx = x - width / 2;
+		double miny = y - height / 2;
+		Rectangle2D.Double newRect = new Rectangle2D.Double(minx, miny, width,
+				height);
+		return newRect;
 	}
 
 	@Override

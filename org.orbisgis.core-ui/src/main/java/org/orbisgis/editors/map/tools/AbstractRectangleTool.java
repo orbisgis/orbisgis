@@ -69,17 +69,29 @@ public abstract class AbstractRectangleTool extends ZoomIn {
 		double maxx = rect.getMaxX();
 		double maxy = rect.getMaxY();
 		if ((maxx - minx < tolerance) && maxy - miny < tolerance) {
-			minx = rect.getCenterX() - tolerance;
-			miny = rect.getCenterY() - tolerance;
-			maxx = rect.getCenterX() + tolerance;
-			maxy = rect.getCenterY() + tolerance;
-			rect = new Rectangle2D.Double(minx, miny, maxx - minx, maxy - miny);
+			double centerX = rect.getCenterX();
+			double centerY = rect.getCenterY();
+			rect = buildRectangleOnPoint(tm, centerX, centerY);
 			rectangleDone(rect, true, vc, tm);
 		} else {
 			rectangleDone(rect, false, vc, tm);
 		}
 
 		transition("init"); //$NON-NLS-1$
+	}
+
+	protected Rectangle2D buildRectangleOnPoint(ToolManager tm, double x,
+			double y) {
+		double minx;
+		double miny;
+		double maxx;
+		double maxy;
+		double tolerance = tm.getTolerance();
+		minx = x - tolerance;
+		miny = y - tolerance;
+		maxx = x + tolerance;
+		maxy = y + tolerance;
+		return new Rectangle2D.Double(minx, miny, maxx - minx, maxy - miny);
 	}
 
 	protected abstract void rectangleDone(Rectangle2D rect,
