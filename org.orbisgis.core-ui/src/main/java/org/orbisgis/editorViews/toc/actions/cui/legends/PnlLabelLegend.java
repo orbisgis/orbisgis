@@ -36,18 +36,22 @@
  */
 package org.orbisgis.editorViews.toc.actions.cui.legends;
 
-import java.awt.BorderLayout;
 import java.awt.Component;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 
 import javax.swing.DefaultComboBoxModel;
+import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
+import org.apache.batik.ext.swing.GridBagConstants;
 import org.gdms.data.SpatialDataSourceDecorator;
 import org.gdms.data.metadata.Metadata;
 import org.gdms.data.types.Type;
@@ -58,7 +62,6 @@ import org.orbisgis.editorViews.toc.actions.cui.legend.ILegendPanel;
 import org.orbisgis.renderer.legend.Legend;
 import org.orbisgis.renderer.legend.carto.LabelLegend;
 import org.orbisgis.renderer.legend.carto.LegendFactory;
-import org.sif.CRFlowLayout;
 
 public class PnlLabelLegend extends JPanel implements ILegendPanel {
 
@@ -69,10 +72,8 @@ public class PnlLabelLegend extends JPanel implements ILegendPanel {
 
 	private void init() {
 
-		this.setLayout(new BorderLayout());
-
-		JPanel confPanel = new JPanel();
-		confPanel.setLayout(new CRFlowLayout());
+		GridBagLayout mgr = new GridBagLayout();
+		this.setLayout(mgr);
 
 		cmbField = new JComboBox();
 		cmbField.addActionListener(new ActionListener() {
@@ -84,17 +85,37 @@ public class PnlLabelLegend extends JPanel implements ILegendPanel {
 			}
 
 		});
-		confPanel.add(new JLabel("Field:"));
-		confPanel.add(cmbField);
+		GridBagConstraints c = new GridBagConstraints();
+		c.anchor = GridBagConstants.SOUTHEAST;
+		c.gridx = 0;
+		c.gridy = 0;
+		c.insets = new Insets(8, 5, 8, 5);
+		// c.weightx = 0.5;
+		// c.weighty = 0.5;
+		this.add(new JLabel("Field:"), c);
 
-		this.add(confPanel, BorderLayout.NORTH);
+		c.anchor = GridBagConstants.SOUTHWEST;
+		c.gridx = 1;
+		c.gridy = 0;
+		this.add(cmbField, c);
 
-		JPanel pnlConf = new JPanel();
-		pnlConf.add(new JLabel("Symbol size:"));
+		c.anchor = GridBagConstants.NORTHEAST;
+		c.gridx = 0;
+		c.gridy = 1;
+		this.add(new JLabel("Symbol size:"), c);
+
 		txtSymbolSize = new JTextField(2);
-		pnlConf.add(txtSymbolSize);
+		c.anchor = GridBagConstants.NORTHWEST;
+		c.gridx = 1;
+		c.gridy = 1;
+		this.add(txtSymbolSize, c);
 
-		this.add(pnlConf, BorderLayout.CENTER);
+		JCheckBox chkAvoidCollisions = new JCheckBox("Avoid label collisions");
+		c.anchor = GridBagConstants.NORTH;
+		c.gridx = 0;
+		c.gridy = 2;
+		c.gridwidth = 2;
+		this.add(chkAvoidCollisions, c);
 	}
 
 	public boolean acceptsGeometryType(int geometryType) {
