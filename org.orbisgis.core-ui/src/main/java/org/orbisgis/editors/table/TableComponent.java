@@ -16,6 +16,7 @@ import java.util.Iterator;
 import java.util.TreeSet;
 
 import javax.swing.DefaultListSelectionModel;
+import javax.swing.Icon;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JMenuItem;
@@ -54,6 +55,7 @@ import org.orbisgis.action.MenuTree;
 import org.orbisgis.editors.table.action.ITableCellAction;
 import org.orbisgis.editors.table.action.ITableColumnAction;
 import org.orbisgis.errorManager.ErrorManager;
+import org.orbisgis.images.IconLoader;
 import org.orbisgis.pluginManager.background.BackgroundJob;
 import org.orbisgis.pluginManager.background.BackgroundManager;
 import org.orbisgis.progress.IProgressMonitor;
@@ -483,7 +485,15 @@ public class TableComponent extends JPanel {
 		protected void addMenu(JPopupMenu pop, String text, String actionCommand) {
 			JMenuItem menu = new JMenuItem(text);
 			menu.setActionCommand(actionCommand);
-			menu.addActionListener(menuListener);
+			menu.addActionListener(menuListener);			
+			pop.add(menu);
+		}
+		
+		protected void addMenu(JPopupMenu pop, String text, Icon icon, String actionCommand) {
+			JMenuItem menu = new JMenuItem(text);
+			menu.setIcon(icon);
+			menu.setActionCommand(actionCommand);
+			menu.addActionListener(menuListener);			
 			pop.add(menu);
 		}
 
@@ -512,12 +522,12 @@ public class TableComponent extends JPanel {
 
 		protected JPopupMenu getPopupMenu() {
 			JPopupMenu pop = new JPopupMenu();
-			addMenu(pop, "Optimal width", OPTIMALWIDTH);
+			addMenu(pop, "Optimal width",IconLoader.getIcon("text_letterspacing.png"), OPTIMALWIDTH);
 			addMenu(pop, "Set width", SETWIDTH);
 			pop.addSeparator();
-			addMenu(pop, "Sort ascending", SORTUP);
-			addMenu(pop, "Sort descending", SORTDOWN);
-			addMenu(pop, "No Sort", NOSORT);
+			addMenu(pop, "Sort ascending", IconLoader.getIcon("thumb_up.png"), SORTUP);
+			addMenu(pop, "Sort descending",IconLoader.getIcon("thumb_down.png"), SORTDOWN);
+			addMenu(pop, "No Sort", IconLoader.getIcon("table_refresh.png"), NOSORT);
 			return pop;
 		}
 	}
