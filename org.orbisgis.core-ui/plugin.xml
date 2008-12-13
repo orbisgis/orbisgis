@@ -755,11 +755,11 @@
 			class="org.orbisgis.views.sqlConsole.ConsoleView"
 			icon="/org/orbisgis/images/script_code.png" title="SQL Console"/>
 	</extension>
-	<extension point="org.orbisgis.View">
+	<!--<extension point="org.orbisgis.View">
 		<view id="org.orbisgis.views.SQLRepository"
 			class="org.orbisgis.views.sqlRepository.SQLRepositoryView"
 			icon="/org/orbisgis/images/group_gear.png" title="SQL Repository"/>
-	</extension>
+	</extension>-->
 	<extension point="org.orbisgis.View">
 		<view id="org.orbisgis.views.JavaConsole"
 			class="org.orbisgis.views.javaConsole.JavaConsoleView"
