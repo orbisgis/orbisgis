@@ -568,18 +568,7 @@ public class Renderer {
 
 	private void paintGeometry(Graphics g, Geometry geom, Symbol symbol)
 			throws DriverException {
-		RenderPermission renderPermission = new RenderPermission() {
-
-			public boolean canDraw(Envelope env) {
-				return true;
-			}
-
-			@Override
-			public Geometry getValidGeometry(Geometry geometry, double distance) {
-				return geometry;
-			}
-
-		};
+		RenderPermission renderPermission = new AllowAllRenderPermission();
 		if (symbol.acceptGeometry(geom)) {
 			Symbol sym = RenderUtils.buildSymbolToDraw(symbol, geom);
 			sym.draw((Graphics2D) g, geom, new AffineTransform(),

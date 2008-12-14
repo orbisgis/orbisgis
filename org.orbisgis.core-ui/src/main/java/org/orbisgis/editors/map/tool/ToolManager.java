@@ -106,7 +106,7 @@ import org.orbisgis.layerModel.MapContextListener;
 import org.orbisgis.layerModel.SelectionEvent;
 import org.orbisgis.map.MapTransform;
 import org.orbisgis.map.TransformListener;
-import org.orbisgis.renderer.RenderPermission;
+import org.orbisgis.renderer.AllowAllRenderPermission;
 import org.orbisgis.renderer.symbol.Symbol;
 import org.orbisgis.renderer.symbol.SymbolFactory;
 
@@ -423,20 +423,7 @@ public class ToolManager extends MouseAdapter implements MouseMotionListener {
 				Graphics2D graphics = bi.createGraphics();
 
 				symbol.draw(graphics, geometry, mapTransform
-						.getAffineTransform(), new RenderPermission() {
-
-					@Override
-					public boolean canDraw(Envelope env) {
-						return true;
-					}
-
-					@Override
-					public Geometry getValidGeometry(Geometry geometry,
-							double distance) {
-						return geometry;
-					}
-
-				});
+						.getAffineTransform(), new AllowAllRenderPermission());
 
 				g2.drawImage(bi, 0, 0, null);
 			} catch (DriverException e) {

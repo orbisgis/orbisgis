@@ -48,6 +48,7 @@ import org.gdms.data.SpatialDataSourceDecorator;
 import org.gdms.driver.DriverException;
 import org.gdms.sql.strategies.IncompatibleTypesException;
 import org.orbisgis.Services;
+import org.orbisgis.renderer.AllowAllRenderPermission;
 import org.orbisgis.renderer.RenderPermission;
 import org.orbisgis.renderer.classification.ProportionalMethod;
 import org.orbisgis.renderer.legend.Legend;
@@ -61,8 +62,6 @@ import org.orbisgis.renderer.symbol.SymbolManager;
 import org.orbisgis.renderer.symbol.collection.persistence.SimpleSymbolType;
 
 import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.Envelope;
-import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.Point;
 
@@ -274,19 +273,7 @@ public class DefaultProportionalLegend extends AbstractCartoLegend implements
 			Point geom = gf.createPoint(new Coordinate(lineStartX, textOffset
 					+ bigSize / 2));
 
-			RenderPermission renderPermission = new RenderPermission() {
-
-				public boolean canDraw(Envelope env) {
-					return true;
-				}
-
-				@Override
-				public Geometry getValidGeometry(Geometry geometry,
-						double distance) {
-					return geometry;
-				}
-
-			};
+			RenderPermission renderPermission = new AllowAllRenderPermission();
 			big.draw((Graphics2D) g, geom, new AffineTransform(),
 					renderPermission);
 
