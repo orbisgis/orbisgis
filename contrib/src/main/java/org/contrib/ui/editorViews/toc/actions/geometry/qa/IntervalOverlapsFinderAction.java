@@ -135,8 +135,6 @@ public class IntervalOverlapsFinderAction implements ILayerAction {
 					
 					color = Color.black;
 					om.println("----------------------------------", color);
-					om.makeVisible();
-
 				}
 
 			} catch (DriverLoadException e) {

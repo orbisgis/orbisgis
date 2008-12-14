@@ -318,7 +318,6 @@ public class ValidateSelectedLayers {
 		}
 		color = Color.black;
 		om.println("----------------------------------", color);
-		om.makeVisible();
 	}
 
 	public boolean isEmpty() {
