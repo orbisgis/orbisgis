@@ -44,7 +44,6 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Map;
 
-import org.gdms.Geometries;
 import org.gdms.data.types.GeometryConstraint;
 import org.gdms.driver.DriverException;
 import org.orbisgis.AbstractTest;
@@ -55,6 +54,8 @@ import org.orbisgis.renderer.symbol.collection.persistence.SymbolType;
 
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.GeometryFactory;
+import com.vividsolutions.jts.geom.Polygon;
 
 public class SymbolTest extends AbstractTest {
 
@@ -204,8 +205,9 @@ public class SymbolTest extends AbstractTest {
 				.createSymbolComposite(new NullDerivedSymbol());
 		Symbol derived = toDerive.deriveSymbol(Color.pink);
 		BufferedImage bi = new BufferedImage(2, 2, BufferedImage.TYPE_INT_ARGB);
-		derived.draw(bi.createGraphics(), Geometries.getPolygon(),
-				new AffineTransform(), new AllowAllRenderPermission());
+		derived.draw(bi.createGraphics(), new GeometryFactory()
+				.createMultiPolygon(new Polygon[0]), new AffineTransform(),
+				new AllowAllRenderPermission());
 	}
 
 	private class NullDerivedSymbol extends AbstractPolygonSymbol implements
