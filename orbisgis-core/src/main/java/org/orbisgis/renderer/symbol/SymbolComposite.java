@@ -39,6 +39,7 @@ package org.orbisgis.renderer.symbol;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.geom.AffineTransform;
+import java.util.ArrayList;
 
 import org.gdms.data.types.GeometryConstraint;
 import org.gdms.driver.DriverException;
@@ -120,12 +121,15 @@ class SymbolComposite extends AbstractSymbol implements Symbol {
 
 	@Override
 	public Symbol deriveSymbol(Color color) {
-		Symbol[] newSymbols = new Symbol[symbols.length];
-		for (int i = 0; i < newSymbols.length; i++) {
-			newSymbols[i] = symbols[i].deriveSymbol(color);
+		ArrayList<Symbol> newSymbols = new ArrayList<Symbol>();
+		for (int i = 0; i < symbols.length; i++) {
+			Symbol derivedSymbol = symbols[i].deriveSymbol(color);
+			if (derivedSymbol != null) {
+				newSymbols.add(derivedSymbol);
+			}
 		}
 
-		return new SymbolComposite(newSymbols);
+		return new SymbolComposite(newSymbols.toArray(new Symbol[0]));
 	}
 
 }

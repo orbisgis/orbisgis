@@ -39,14 +39,17 @@ package org.orbisgis.renderer.symbol;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.geom.AffineTransform;
+import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Map;
 
+import org.gdms.Geometries;
 import org.gdms.data.types.GeometryConstraint;
 import org.gdms.driver.DriverException;
 import org.orbisgis.AbstractTest;
 import org.orbisgis.Services;
+import org.orbisgis.renderer.AllowAllRenderPermission;
 import org.orbisgis.renderer.RenderPermission;
 import org.orbisgis.renderer.symbol.collection.persistence.SymbolType;
 
@@ -194,5 +197,53 @@ public class SymbolTest extends AbstractTest {
 			assertTrue(false);
 		} catch (IllegalArgumentException e) {
 		}
+	}
+
+	public void testDerivedNullInComposite() throws Exception {
+		Symbol toDerive = SymbolFactory
+				.createSymbolComposite(new NullDerivedSymbol());
+		Symbol derived = toDerive.deriveSymbol(Color.pink);
+		BufferedImage bi = new BufferedImage(2, 2, BufferedImage.TYPE_INT_ARGB);
+		derived.draw(bi.createGraphics(), Geometries.getPolygon(),
+				new AffineTransform(), new AllowAllRenderPermission());
+	}
+
+	private class NullDerivedSymbol extends AbstractPolygonSymbol implements
+			Symbol {
+
+		public NullDerivedSymbol(Color outline, int lineWidth, Color fillColor) {
+			super(outline, lineWidth, fillColor);
+		}
+
+		public NullDerivedSymbol() {
+			super(Color.black, 3, null);
+		}
+
+		@Override
+		public Symbol cloneSymbol() {
+			return new NullDerivedSymbol(outline, lineWidth, fillColor);
+		}
+
+		@Override
+		public Symbol deriveSymbol(Color color) {
+			return null;
+		}
+
+		@Override
+		public Envelope draw(Graphics2D g, Geometry geom, AffineTransform at,
+				RenderPermission permission) throws DriverException {
+			return null;
+		}
+
+		@Override
+		public String getClassName() {
+			return "null derived for tests";
+		}
+
+		@Override
+		public String getId() {
+			return "org.orbisgis.symbol.test.NullDerived";
+		}
+
 	}
 }
