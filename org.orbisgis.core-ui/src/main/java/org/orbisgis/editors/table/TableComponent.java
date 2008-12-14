@@ -482,13 +482,6 @@ public class TableComponent extends JPanel {
 			}
 		}
 
-		protected void addMenu(JPopupMenu pop, String text, String actionCommand) {
-			JMenuItem menu = new JMenuItem(text);
-			menu.setActionCommand(actionCommand);
-			menu.addActionListener(menuListener);			
-			pop.add(menu);
-		}
-		
 		protected void addMenu(JPopupMenu pop, String text, Icon icon, String actionCommand) {
 			JMenuItem menu = new JMenuItem(text);
 			menu.setIcon(icon);
@@ -523,7 +516,7 @@ public class TableComponent extends JPanel {
 		protected JPopupMenu getPopupMenu() {
 			JPopupMenu pop = new JPopupMenu();
 			addMenu(pop, "Optimal width",IconLoader.getIcon("text_letterspacing.png"), OPTIMALWIDTH);
-			addMenu(pop, "Set width", SETWIDTH);
+			addMenu(pop, "Set width", null, SETWIDTH);
 			pop.addSeparator();
 			addMenu(pop, "Sort ascending", IconLoader.getIcon("thumb_up.png"), SORTUP);
 			addMenu(pop, "Sort descending",IconLoader.getIcon("thumb_down.png"), SORTDOWN);

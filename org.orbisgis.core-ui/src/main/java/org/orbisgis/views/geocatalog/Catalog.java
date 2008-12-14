@@ -200,7 +200,7 @@ public class Catalog extends JPanel implements DragGestureListener,
 			}
 		});
 		pnlTextFilter.add(txtFilter);
-		btnToggleFilters = new JToggleButton(IconLoader.getIcon("flag_blue.png"));
+		btnToggleFilters = new JToggleButton(IconLoader.getIcon("filter.png"));
 		btnToggleFilters.setMargin(new Insets(0, 0, 0, 0));
 		btnToggleFilters.addActionListener(new ActionListener() {
 
