@@ -139,6 +139,10 @@ public class SymbolBuilder extends JPanel implements UIPanel,
 		int[] idxs = lstSymbols.getSelectedIndices();
 		int maximo = lstSymbols.getModel().getSize() - 1;
 		int minimo = 0;
+		
+		if (maximo == -1) {
+			idxs = new int[0];
+		}
 
 		if (idxs.length == 1) {
 			int idx = idxs[0];
@@ -150,21 +154,8 @@ public class SymbolBuilder extends JPanel implements UIPanel,
 			} else {
 				jButtonSymbolDel.setEnabled(true);
 				jButtonSymbolRename.setEnabled(true);
-				if (idx == minimo) {
-					if (idx == maximo)
-						jButtonSymbolDown.setEnabled(false);
-					else
-						jButtonSymbolDown.setEnabled(true);
-					jButtonSymbolUp.setEnabled(false);
-				} else {
-					if (idx == maximo) {
-						jButtonSymbolUp.setEnabled(true);
-						jButtonSymbolDown.setEnabled(false);
-					} else {
-						jButtonSymbolUp.setEnabled(true);
-						jButtonSymbolDown.setEnabled(true);
-					}
-				}
+				jButtonSymbolDown.setEnabled(idx < maximo);
+				jButtonSymbolUp.setEnabled(idx > minimo);
 			}
 		} else {
 			if (idxs.length > 0) {
