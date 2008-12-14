@@ -44,6 +44,8 @@ import javax.swing.JTable;
 
 import org.gdms.data.DataSource;
 import org.gdms.driver.DriverException;
+import org.orbisgis.Services;
+import org.orbisgis.view.ViewManager;
 
 class Table extends JPanel implements InformationManager {
 
@@ -65,6 +67,8 @@ class Table extends JPanel implements InformationManager {
 		}
 		dataSourceTableModel = new DataSourceTableModel(ds);
 		tbl.setModel(dataSourceTableModel);
+		ViewManager vm = (ViewManager) Services.getService(ViewManager.class);
+		vm.showView("org.orbisgis.views.Information");
 	}
 
 	public DataSource getContents() {

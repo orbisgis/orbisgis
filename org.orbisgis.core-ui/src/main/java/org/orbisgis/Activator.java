@@ -331,7 +331,6 @@ public class Activator implements PluginActivator {
 				color = new Color(128, 128, 0);
 			}
 			om.print(errorMessage.getLongMessage() + "\n", color);
-			om.makeVisible();
 		}
 
 		public void error(String userMsg, Throwable e) {

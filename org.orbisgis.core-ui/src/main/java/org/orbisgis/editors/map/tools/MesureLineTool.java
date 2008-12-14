@@ -67,7 +67,6 @@ public class MesureLineTool extends AbstractLineTool {
 				.getService(OutputManager.class);
 		Color color = Color.blue;
 		om.print("Distance : " + getLength(ls) + "\n", color);
-		om.makeVisible();
 	}
 
 	private String getLength(Geometry ls) {

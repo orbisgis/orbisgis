@@ -79,8 +79,4 @@ public interface OutputManager {
 	 */
 	void println(String text, Color color);
 
-	/**
-	 * Makes the output visible to the user
-	 */
-	void makeVisible();
 }

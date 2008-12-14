@@ -141,6 +141,8 @@ public class ViewDecorator {
 					dockingView = null;
 					open(root, activeEditor, activeEditorId);
 				}
+			} else {
+				dockingView.makeVisible();
 			}
 		}
 

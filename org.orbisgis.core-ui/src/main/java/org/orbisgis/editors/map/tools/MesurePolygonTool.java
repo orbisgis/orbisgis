@@ -60,8 +60,6 @@ public class MesurePolygonTool extends AbstractPolygonTool {
 
 		om.print("Area : " + getArea(g) + " Perimeter : " + getPerimeter(g)
 				+ "\n", color);
-		om.makeVisible();
-
 	}
 
 	private String getPerimeter(Geometry g) {

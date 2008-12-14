@@ -189,10 +189,6 @@ public class ExecutionTest extends AbstractTest {
 		private String content = "";
 
 		@Override
-		public void makeVisible() {
-		}
-
-		@Override
 		public void print(String text, Color color) {
 			content += text;
 		}

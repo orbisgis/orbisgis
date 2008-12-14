@@ -127,9 +127,7 @@ public class OutputPanel extends JPanel implements OutputManager {
 					"Cannot add error message", e);
 		}
 		jTextArea.setCaretPosition(jTextArea.getDocument().getLength());
-	}
-
-	public void makeVisible() {
+		
 		ViewManager vm = (ViewManager) Services.getService(ViewManager.class);
 		vm.showView("org.orbisgis.views.Output");
 	}
