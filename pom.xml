@@ -39,39 +39,29 @@
 			<name>Maven Default Central</name> 
 			<url>http://repo1.maven.org/maven2/</url> 
 		</repository>
-  		<repository>
-			<id>gdbms</id>
-			<name>gdbms repo</name>
-			<url>http://gdbms.sourceforge.net/repo</url>
-		</repository>
 		<repository>
 			<id>geotools</id>
 			<name>Geotools repository</name>
 			<url>http://maven.geotools.fr/repository</url>
 		</repository>
 		<repository>
-			<id>cerma</id>
-			<name>CERMA local repository</name>
-			<url>http://repository.cerma.archi.fr/repository</url>
-		</repository>
-		<repository>
-			<id>osor</id>
-			<name>OSOR repository</name>
-			<url>http://orbisgis.forge.osor.eu/repository/</url>
+			<id>geosysin</id>
+			<name>Geosysin repository</name>
+			<url>http://geosysin.iict.ch/irstv-web/maven-repo</url>
 		</repository>
 	</repositories>
 	<pluginRepositories>
 		<pluginRepository>
-			<id>osor</id>
-			<name>OSOR repository</name>
-			<url>http://orbisgis.forge.osor.eu/repository/</url>
+			<id>geosysin</id>
+			<name>Geosysin repository</name>
+			<url>http://geosysin.iict.ch/irstv-web/maven-repo</url>
 		</pluginRepository>
 	</pluginRepositories>
 	<distributionManagement>
 		<repository>
-			<id>osor</id>
-			<name>OSOR repository</name>
-			<url>scp://shell.forge.osor.eu:/home/groups/orbisgis/www/repository/</url>
+			<id>geosysin</id>
+			<name>Geosysin repository</name>
+			<url>scp://geosysin.iict.ch:/home/irstv/trac/htdocs/maven-repo/</url>
 		</repository>
 	</distributionManagement>
 	<build>
@@ -82,7 +72,7 @@
 				<configuration>
 					<appName>OrbisGIS</appName>
 					<versionNumber>2.0.0</versionNumber>
-					<versionName>Malaga</versionName>
+					<versionName>Montpellier</versionName>
 					<pluginList>plugin-manager/plugin-list.xml</pluginList>
 					<mainClass>org.orbisgis.pluginManager.Main</mainClass>
 				</configuration>

@@ -28,9 +28,9 @@
 	</dependencies>
 	<distributionManagement>
 		<repository>
-			<id>osor</id>
-			<name>OSOR repository</name>
-			<url>scp://shell.forge.osor.eu:/home/groups/orbisgis/www/repository/</url>
+			<id>geosysin</id>
+			<name>Geosysin repository</name>
+			<url>scp://geosysin.iict.ch:/home/irstv/trac/htdocs/maven-repo/</url>
 		</repository>
 	</distributionManagement>
 </project>
