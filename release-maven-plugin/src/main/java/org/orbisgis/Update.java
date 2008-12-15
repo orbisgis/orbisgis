@@ -3,13 +3,9 @@ package org.orbisgis;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
-import java.security.NoSuchAlgorithmException;
-
-import javax.xml.bind.JAXBException;
 
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
-import org.orbisgis.updates.CreateUpdate;
 
 /**
  * @goal update
@@ -35,17 +31,18 @@ public class Update extends AbstractReleaseMojo {
 			Utils.unzip(latestBinZip, outFolder);
 			File latestBinaryHome = outFolder.listFiles()[0];
 
-			CreateUpdate cu = new CreateUpdate(appName, latestBinaryHome,
-					currentBinary, new File("target", "updates"), new URL(
-							updateURL), versionNumber, versionName);
-			cu.setUrlPrefix(urlPrefix);
-			cu.create();
+			// CreateUpdate cu = new CreateUpdate(appName, latestBinaryHome,
+			// currentBinary, new File("target", "updates"), new URL(
+			// updateURL), versionNumber, versionName);
+			// cu.setUrlPrefix(urlPrefix);
+			// cu.create();
+			throw new UnsupportedOperationException("Updates are not available");
 		} catch (IOException e) {
 			throw new MojoExecutionException("Cannot create update", e);
-		} catch (NoSuchAlgorithmException e) {
-			throw new MojoExecutionException("Cannot create update", e);
-		} catch (JAXBException e) {
-			throw new MojoExecutionException("Cannot create update", e);
+			// } catch (NoSuchAlgorithmException e) {
+			// throw new MojoExecutionException("Cannot create update", e);
+			// } catch (JAXBException e) {
+			// throw new MojoExecutionException("Cannot create update", e);
 		}
 	}
 
