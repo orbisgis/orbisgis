@@ -62,7 +62,7 @@ import org.gdms.source.SourceManager;
 public class ValDriver implements FileDriver {
 	public static final String DRIVER_NAME = "Solene Val driver";
 
-	private String EXTENSION = ".val";
+	private String EXTENSION = "val";
 
 	private Scanner in;
 
