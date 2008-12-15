@@ -85,8 +85,9 @@ public interface DataManager {
 	 *
 	 * @param dataSource
 	 * @return
+	 * @throws LayerException If the layer cannot be created
 	 */
-	ILayer createLayer(DataSource dataSource);
+	ILayer createLayer(DataSource dataSource) throws LayerException;
 
 	/**
 	 * Creates a layer collection with the specified name

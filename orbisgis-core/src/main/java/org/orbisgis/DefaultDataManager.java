@@ -38,12 +38,16 @@ package org.orbisgis;
 
 import java.io.File;
 
+import org.apache.log4j.Logger;
+import org.gdms.data.AlreadyClosedException;
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceCreationException;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.NoSuchTableException;
+import org.gdms.data.SpatialDataSourceDecorator;
 import org.gdms.data.indexes.IndexManager;
 import org.gdms.data.types.NullCRS;
+import org.gdms.driver.DriverException;
 import org.gdms.driver.driverManager.DriverLoadException;
 import org.gdms.source.Source;
 import org.gdms.source.SourceManager;
@@ -55,6 +59,8 @@ import org.orbisgis.layerModel.WMSLayer;
 
 public class DefaultDataManager implements DataManager {
 
+	private static final Logger logger = Logger
+			.getLogger(DefaultDataManager.class);
 	private DataSourceFactory dsf;
 
 	public DefaultDataManager(DataSourceFactory dsf) {
@@ -92,7 +98,7 @@ public class DefaultDataManager implements DataManager {
 					throw new LayerException("Cannot instantiate layer", e);
 				}
 			} else {
-				throw new LayerException("Cannot understand source type: "
+				throw new LayerException("There is no spatial information: "
 						+ type);
 			}
 		} else {
@@ -101,11 +107,35 @@ public class DefaultDataManager implements DataManager {
 		}
 	}
 
-	public ILayer createLayer(DataSource ds) {
-		if ((ds.getSource().getType() & SourceManager.WMS) == SourceManager.WMS) {
+	public ILayer createLayer(DataSource ds) throws LayerException {
+		int type = ds.getSource().getType();
+		if ((type & SourceManager.WMS) == SourceManager.WMS) {
 			return new WMSLayer(ds.getName(), ds, NullCRS.singleton);
 		} else {
-			return new Layer(ds.getName(), ds, NullCRS.singleton);
+			boolean hasSpatialData = true;
+			if ((type & SourceManager.VECTORIAL) == SourceManager.VECTORIAL) {
+				SpatialDataSourceDecorator sds = new SpatialDataSourceDecorator(
+						ds);
+				int sfi;
+				try {
+					sds.open();
+					sfi = sds.getSpatialFieldIndex();
+					try {
+						sds.close();
+					} catch (AlreadyClosedException e) {
+						// ignore
+						logger.debug("Cannot close", e);
+					}
+					hasSpatialData = (sfi != -1);
+				} catch (DriverException e) {
+					throw new LayerException("Cannot check source contents", e);
+				}
+			}
+			if (hasSpatialData) {
+				return new Layer(ds.getName(), ds, NullCRS.singleton);
+			} else {
+				throw new LayerException("The source contains no spatial info");
+			}
 		}
 	}
 

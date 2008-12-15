@@ -263,9 +263,9 @@ public class ConsoleView implements IView {
 
 							if (spatial) {
 
-								final ILayer layer = dataManager
-										.createLayer(ds);
 								try {
+									final ILayer layer = dataManager
+											.createLayer(ds);
 									if (vc != null) {
 										vc.getLayerModel()
 												.insertLayer(layer, 0);
@@ -273,7 +273,7 @@ public class ConsoleView implements IView {
 								} catch (LayerException e) {
 									Services.getErrorManager().error(
 											"Impossible to create the layer:"
-													+ layer.getName(), e);
+													+ ds.getName(), e);
 									break;
 								}
 							} else {
