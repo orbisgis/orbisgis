@@ -81,7 +81,7 @@ public class MapContextTest extends AbstractTest {
 		ILayer layer = getDataManager().createLayer(
 				new File("src/test/resources/bv_sap.shp"));
 		ILayer layer2 = getDataManager().createLayer(
-				new File("src/test/resources/1.shp"));
+				new File("src/test/resources/linestring.shp"));
 		mc.getLayerModel().addLayer(layer);
 		mc.setSelectedLayers(new ILayer[] { layer2 });
 		assertTrue(mc.getSelectedLayers().length == 0);
@@ -380,8 +380,10 @@ public class MapContextTest extends AbstractTest {
 		dbf.delete();
 		shx.delete();
 		failErrorManager.setIgnoreWarnings(true);
+		failErrorManager.setIgnoreErrors(true);
 		mc.open(null);
 		failErrorManager.setIgnoreWarnings(false);
+		failErrorManager.setIgnoreErrors(false);
 		assertTrue(mc.getLayerModel().getLayerCount() == 1);
 		mc.close(null);
 	}

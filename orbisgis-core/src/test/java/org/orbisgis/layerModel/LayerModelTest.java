@@ -172,7 +172,7 @@ public class LayerModelTest extends AbstractTest {
 				.getService(DataManager.class)).getDSF();
 		SourceManager sourceManager = dsf.getSourceManager();
 		sourceManager
-				.register("mySource", new File("src/test/resources/1.shp"));
+				.register("mySource", new File("src/test/resources/bv_sap.shp"));
 		ILayer lc = getDataManager().createLayerCollection("firstLevel");
 		ILayer vl1 = getDataManager().createLayer("mySource");
 		ILayer vl2 = getDataManager().createLayer("mySource");

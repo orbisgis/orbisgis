@@ -64,6 +64,7 @@ public class AbstractTest extends TestCase {
 	protected class FailErrorManager implements ErrorManager {
 
 		private boolean ignoreWarnings;
+		private boolean ignoreErrors;
 
 		public void setIgnoreWarnings(boolean ignore) {
 			this.ignoreWarnings = ignore;
@@ -73,11 +74,15 @@ public class AbstractTest extends TestCase {
 		}
 
 		public void error(String userMsg) {
-			throw new RuntimeException(userMsg);
+			if (!ignoreErrors) {
+				throw new RuntimeException(userMsg);
+			}
 		}
 
 		public void error(String userMsg, Throwable exception) {
-			throw new RuntimeException(userMsg, exception);
+			if (!ignoreErrors) {
+				throw new RuntimeException(userMsg, exception);
+			}
 		}
 
 		public void removeErrorListener(ErrorListener listener) {
@@ -93,6 +98,10 @@ public class AbstractTest extends TestCase {
 			if (!ignoreWarnings) {
 				throw new RuntimeException(userMsg);
 			}
+		}
+
+		public void setIgnoreErrors(boolean b) {
+			this.ignoreErrors = b;
 		}
 
 	}
