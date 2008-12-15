@@ -116,7 +116,8 @@ public class CreateFileSource implements ISourceAction {
 					"Select the file to create");
 			if (file) {
 				saveFilePanel.setFileMustNotExist(true);
-				saveFilePanel.addAllFilter(driver.getDriverId());
+				saveFilePanel.addFilter(((FileDriver) driver)
+						.getFileExtensions(), driver.getTypeDescription());
 				wizardPanels[0] = saveFilePanel;
 			} else {
 				throw new UnsupportedOperationException("Not implemented yet");
