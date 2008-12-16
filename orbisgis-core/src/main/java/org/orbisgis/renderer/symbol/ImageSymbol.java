@@ -146,7 +146,8 @@ public class ImageSymbol extends AbstractSymbol implements Symbol {
 
 	@Override
 	public Symbol deriveSymbol(Color color) {
-		return null;
+		// TODO derive image symbol correctly
+		return this;
 	}
 
 }
