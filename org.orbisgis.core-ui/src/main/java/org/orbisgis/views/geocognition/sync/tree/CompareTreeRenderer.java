@@ -99,6 +99,8 @@ public class CompareTreeRenderer extends AbstractTreeRenderer {
 
 			// Set icon
 			icon = new BlendedIcon(background, foreground);
+		} else if (value instanceof String) {
+			icon = null;
 		} else {
 			Services.getErrorManager().error("bug!",
 					new RuntimeException("The tree cannot be displayed"));
