@@ -34,7 +34,9 @@ public class GeocognitionElementDecorator implements GeocognitionElement {
 		}
 
 		listeners = new ArrayList<EditorElementListener>();
-		filterPaths = filter;
+		// TODO filters disabled: bugs
+		filterPaths = null;
+		//filterPaths = filter;
 		element = e;
 		children = new ArrayList<GeocognitionElementDecorator>();
 		if (element.isFolder()) {
@@ -52,9 +54,11 @@ public class GeocognitionElementDecorator implements GeocognitionElement {
 	public void addElement(GeocognitionElement element)
 			throws UnsupportedOperationException {
 		GeocognitionElementDecorator e = (GeocognitionElementDecorator) element;
-		if (filter(e) != null) {
-			this.element.addElement(e.element);
-			children.add(e);
+		this.element.addElement(e.element);
+		children.add(e);
+		if (filter(e) == null) {
+			this.element.removeElement(e.element);
+			children.remove(e);
 		}
 	}
 
@@ -90,7 +94,8 @@ public class GeocognitionElementDecorator implements GeocognitionElement {
 			IdPath childPath = new IdPath(elem.getIdPath());
 			boolean show = false;
 			for (IdPath idPath : filterPaths) {
-				if (childPath.startsWith(idPath)) {
+				if (childPath.startsWith(idPath)
+						|| idPath.startsWith(childPath)) {
 					show = true;
 					break;
 				}
