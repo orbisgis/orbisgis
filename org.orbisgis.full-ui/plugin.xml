@@ -94,4 +94,54 @@
 			class="org.orbisgis.views.geocognition.actions.UninstallAction"/>
 	</extension>
 	
+	<!--  GRAPHIC MODELER EXTENSIONS -->
+	
+	<activator class="org.orbisgis.graphicModeler.Activator"/>
+
+	<extension point="org.orbisgis.editors.map.Tool">
+		<toolbar id="org.orbisgis.GraphicModeler" text="Graphic Modeler"/>
+		
+		<tool id="org.orbisgis.graphicModeler.InsertProcessTool"
+			menu-id="org.orbisgis.GraphicModeler" text="Insert process"
+			toolbar-id="org.orbisgis.GraphicModeler" selectable="true"
+			icon="/org/orbisgis/images/process.png"
+			mouse-cursor="/org/orbisgis/images/add.png"
+			class="org.orbisgis.graphicModeler.tools.InsertProcessTool"/>
+		<tool id="org.orbisgis.graphicModeler.InsertDataSourceTool"
+			menu-id="org.orbisgis.GraphicModeler" text="Insert data source"
+			toolbar-id="org.orbisgis.GraphicModeler" selectable="true"
+			icon="/org/orbisgis/images/database.png"
+			mouse-cursor="/org/orbisgis/images/add.png"
+			class="org.orbisgis.graphicModeler.tools.InsertDataSourceTool"/>
+		<tool id="org.orbisgis.graphicModeler.SelectTool"
+			menu-id="org.orbisgis.GraphicModeler" text="Select"
+			toolbar-id="org.orbisgis.GraphicModeler" selectable="true"
+			icon="/org/orbisgis/images/select.png"
+			mouse-cursor="/org/orbisgis/images/select.png"
+			class="org.orbisgis.graphicModeler.tools.SelectionTool"/>
+		<tool id="org.orbisgis.graphicModeler.LinkTool"
+			menu-id="org.orbisgis.GraphicModeler" text="Link Input / Output"
+			toolbar-id="org.orbisgis.GraphicModeler" selectable="true"
+			icon="/org/orbisgis/images/filter.png"
+			mouse-cursor="/org/orbisgis/images/filter.png"
+			class="org.orbisgis.graphicModeler.tools.LinkTool"/>
+	</extension>
+	
+	<extension point="org.orbisgis.editor.Action">
+		<editor-action id="org.orbisgis.graphicModeler.DeleteNode"
+			menu-id="org.orbisgis.GraphicModeler" text="Delete process or data source"
+			toolbar-id="org.orbisgis.GraphicModeler"
+			icon="/org/orbisgis/images/remove.png"
+			editor-id="org.orbisgis.editors.Map"
+			class="org.orbisgis.graphicModeler.actions.DeleteNode"/>
+	</extension>
+	
+    <extension point="org.orbisgis.Action">
+		<menu id="org.orbisgis.GraphicModeler" text="GraphicModeler"
+			icon="/org/orbisgis/images/pencil.png"/>
+		<action id="org.orbisgis.graphicModeler.ApplyLegend" text="Apply Legend"
+			menu-id="org.orbisgis.GraphicModeler"
+			icon="/org/orbisgis/images/palette.png"
+			class="org.orbisgis.graphicModeler.actions.ApplyLegend"/>
+	</extension>
 </plugin>
