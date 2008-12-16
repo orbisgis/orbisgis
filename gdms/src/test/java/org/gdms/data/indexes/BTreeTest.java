@@ -172,7 +172,6 @@ public class BTreeTest extends TestCase {
 		int fieldIndex = ds.getFieldIndexByName(fieldName);
 		for (int i = 0; i < ds.getRowCount(); i++) {
 			if (i / (int) checkPeriod == i / checkPeriod) {
-				System.out.println(i);
 				tree.checkTree();
 				tree.close();
 				tree.openIndex(indexFile);
@@ -185,7 +184,6 @@ public class BTreeTest extends TestCase {
 		}
 		for (int i = 0; i < ds.getRowCount(); i++) {
 			if (i / (int) checkPeriod == i / checkPeriod) {
-				System.out.println(i);
 				tree.checkTree();
 				tree.save();
 				tree.checkTree();

@@ -180,7 +180,6 @@ public class RTreeTest extends TestCase {
 		long t1 = System.currentTimeMillis();
 		for (int i = 0; i < ds.getRowCount(); i++) {
 			if (i / (int) checkPeriod == i / checkPeriod) {
-				System.out.println(i);
 				tree.checkTree();
 				tree.close();
 				tree.openIndex(indexFile);
@@ -195,7 +194,6 @@ public class RTreeTest extends TestCase {
 		System.out.println(((t2 - t1) / 1000.0) + " secs");
 		for (int i = 0; i < ds.getRowCount(); i++) {
 			if (i / (int) checkPeriod == i / checkPeriod) {
-				System.out.println(i);
 				tree.checkTree();
 				tree.save();
 				tree.checkTree();

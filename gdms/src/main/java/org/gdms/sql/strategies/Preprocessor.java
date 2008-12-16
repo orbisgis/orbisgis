@@ -44,7 +44,6 @@ import org.gdms.data.DataSourceFactory;
 import org.gdms.data.NoSuchTableException;
 import org.gdms.data.metadata.Metadata;
 import org.gdms.driver.DriverException;
-import org.gdms.source.SourceManager;
 import org.gdms.sql.strategies.joinOptimization.BNB;
 import org.gdms.sql.strategies.joinOptimization.BNBNode;
 
@@ -150,8 +149,6 @@ public class Preprocessor {
 
 	public void optimize(DataSourceFactory dsf) throws DriverException,
 			SemanticException {
-		resolveFieldSourceReferences(dsf.getSourceManager());
-
 		// Push selections down
 		pushDownSelections();
 
@@ -174,11 +171,6 @@ public class Preprocessor {
 		resolveFieldReferences();
 
 		logger.debug("Optimized Query: " + op.toString());
-	}
-
-	private void resolveFieldSourceReferences(SourceManager sourceManager)
-			throws DriverException, SemanticException {
-		op.resolveFieldSourceReferences(sourceManager);
 	}
 
 	private void chooseScanStrategy(DataSourceFactory dsf, Operator[] selections)

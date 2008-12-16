@@ -384,7 +384,6 @@ public class IndexesTest extends TestCase {
 		DefaultAlphaQuery tenQuery = new DefaultAlphaQuery("gid", null, true,
 				ValueFactory.createValue(10), true);
 		int indexResultCount = getCount(ds.queryIndex(tenQuery));
-		System.out.println(indexResultCount);
 		assertTrue(indexResultCount <= 10);
 		ds.commit();
 		ds.close();

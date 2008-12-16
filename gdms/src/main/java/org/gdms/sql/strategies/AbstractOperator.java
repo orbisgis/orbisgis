@@ -122,13 +122,6 @@ public abstract class AbstractOperator implements Operator {
 		}
 	}
 
-	public void resolveFieldSourceReferences(SourceManager sm)
-			throws DriverException, SemanticException {
-		for (int i = 0; i < getOperatorCount(); i++) {
-			getOperator(i).resolveFieldSourceReferences(sm);
-		}
-	}
-
 	public void validateTableReferences() throws NoSuchTableException,
 			SemanticException, DriverException {
 		for (int i = 0; i < getOperatorCount(); i++) {

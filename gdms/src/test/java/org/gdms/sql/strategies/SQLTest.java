@@ -722,7 +722,6 @@ public class SQLTest extends SourceTest {
 		dsf.getSourceManager().register("oneline", omd);
 		dsf.getDataSourceFromSQL("select buffer(the_geom, 10) from oneline",
 				DataSourceFactory.NORMAL);
-		System.out.println(tics.length());
 		assertTrue(tics.length() == 1);
 	}
 
@@ -805,7 +804,6 @@ public class SQLTest extends SourceTest {
 						+ "WHERE n1.id = e.id;");
 		ds.open();
 		assertTrue(ds.getRowCount() == 16);
-		System.out.println(ds.getAsString());
 		ds.close();
 	}
 

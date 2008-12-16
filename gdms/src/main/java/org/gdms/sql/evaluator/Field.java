@@ -57,7 +57,6 @@ public class Field extends Operand {
 	private FieldContext fieldContext;
 	private int fieldIndex = -1;
 	private boolean outerEvaluation = false;
-	private String sourceName;
 
 	public Field(String fieldName) {
 		this.fieldName = fieldName;
@@ -170,14 +169,6 @@ public class Field extends Operand {
 	 */
 	public void setOuterEvaluation(boolean outerEvaluation) {
 		this.outerEvaluation = outerEvaluation;
-	}
-
-	public void setSourceName(String sourceName) {
-		this.sourceName = sourceName;
-	}
-
-	public String getSourceName() {
-		return sourceName;
 	}
 
 }

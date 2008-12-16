@@ -181,15 +181,6 @@ public interface Operator {
 	Operator[] getOperators(OperatorFilter filter);
 
 	/**
-	 * Resolves the references between the fields and the sources they refer
-	 * 
-	 * @throws SemanticException
-	 * @throws DriverException
-	 */
-	public void resolveFieldSourceReferences(SourceManager sm)
-			throws DriverException, SemanticException;
-
-	/**
 	 * Returns the tables referenced in the subtree which root is this operator
 	 * 
 	 * @return

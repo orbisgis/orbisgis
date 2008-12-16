@@ -42,7 +42,6 @@ import org.gdms.data.metadata.Metadata;
 import org.gdms.data.types.Type;
 import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
-import org.gdms.source.SourceManager;
 import org.gdms.sql.customQuery.CustomQuery;
 import org.gdms.sql.customQuery.QueryManager;
 import org.gdms.sql.evaluator.Expression;
@@ -220,17 +219,4 @@ public abstract class AbstractExpressionOperator extends AbstractOperator {
 		super.validateFunctionReferences();
 	}
 
-	@Override
-	public void resolveFieldSourceReferences(SourceManager sm)
-			throws DriverException, SemanticException {
-		super.resolveFieldSourceReferences(sm);
-
-		Field[] fields = getFieldReferences();
-		for (Field field : fields) {
-			String sourceName = this.getFieldSource(sm, field);
-			if (sourceName != null) {
-				field.setSourceName(sm.getMainNameFor(sourceName));
-			}
-		}
-	}
 }
