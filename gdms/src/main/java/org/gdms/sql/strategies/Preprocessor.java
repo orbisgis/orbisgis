@@ -51,9 +51,9 @@ import org.gdms.sql.strategies.joinOptimization.BNBNode;
 /**
  * Class that validates all field, table and function references, the types of
  * the expressions, etc
- *
+ * 
  * @author Fernando Gonzalez Cortes
- *
+ * 
  */
 public class Preprocessor {
 
@@ -67,7 +67,7 @@ public class Preprocessor {
 
 	/**
 	 * Checks that the tables exist, and their aliases doesn't collide
-	 *
+	 * 
 	 * @throws NoSuchTableException
 	 *             if a table in the product does not exist
 	 * @throws SemanticException
@@ -81,7 +81,7 @@ public class Preprocessor {
 
 	/**
 	 * Resolves the field and table references inside the instruction.
-	 *
+	 * 
 	 * @throws DriverException
 	 *             Error accessing tables metadata
 	 * @throws SemanticException
@@ -94,7 +94,7 @@ public class Preprocessor {
 
 	/**
 	 * Gets the metadata of the result
-	 *
+	 * 
 	 * @return
 	 * @throws DriverException
 	 */
@@ -104,7 +104,7 @@ public class Preprocessor {
 
 	/**
 	 * Validates the types of the expressions
-	 *
+	 * 
 	 * @throws SemanticException
 	 *             If there is some error in the validation
 	 * @throws DriverException
@@ -156,7 +156,7 @@ public class Preprocessor {
 		pushDownSelections();
 
 		// Find best join strategy
-		BNB bnb = new BNB(dsf.getIndexManager(), dsf.getSourceManager());
+		BNB bnb = new BNB(dsf.getIndexManager());
 		BNBNode node = bnb.optimize(op);
 		if (node != null) {
 			node.replaceScalarProduct(dsf.getIndexManager());

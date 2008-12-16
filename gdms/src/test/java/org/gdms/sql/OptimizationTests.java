@@ -479,7 +479,7 @@ public class OptimizationTests extends TestCase {
 		scan2.initialize();
 		OnePassScalarProduct scalar = new OnePassScalarProduct(dsf
 				.getIndexManager());
-		scalar.addTable(scan1, "test", "a");
+		scalar.addChild(scan1);
 		ArrayList<IndexScan> indexScans = new ArrayList<IndexScan>();
 		Literal l1 = new Literal(ValueFactory.createValue("1"));
 		Expression exp1 = new Equals(l1, new Field("a", "id"));
@@ -490,7 +490,7 @@ public class OptimizationTests extends TestCase {
 				true, exp2);
 		indexScans.add(is1);
 		indexScans.add(is2);
-		scalar.setIndexScan(indexScans, scan2, "test", "b");
+		scalar.setIndexScan(indexScans, scan2);
 		scalar.operationFinished();
 		assertTrue((scalar.getResult(new NullProgressMonitor()).getRowCount()) == 2);
 	}

@@ -59,11 +59,12 @@ import org.gdms.sql.function.FunctionManager;
 import org.orbisgis.progress.IProgressMonitor;
 
 public class ProjectionOp extends AbstractExpressionOperator implements
-		Operator, ChangesMetadata, SelectionTransporter {
+		Operator, SelectionTransporter {
 
 	private ArrayList<SelectElement> selectElements;
 	private String[] aliasList;
 	private Expression[] expressionList;
+	private ArrayList<Integer> internalFields = new ArrayList<Integer>();
 	private ArrayList<Field> groupByFields = new ArrayList<Field>();
 	private boolean distinct;
 
@@ -398,34 +399,65 @@ public class ProjectionOp extends AbstractExpressionOperator implements
 		return false;
 	}
 
-	public int getFieldIndex(Field field) throws DriverException,
-			SemanticException {
-		if (field.getTableName() != null) {
-			// The dependency will be satisfied by a scalar product operator
-			return -1;
-		} else {
-			int fieldIndex = -1;
-
+	public int passFieldUp(Field field) throws DriverException {
+		try {
 			Expression[] exprs = getExpressions();
-			for (int i = 0; i < exprs.length; i++) {
-				if ((aliasList[i] != null)
-						&& aliasList[i].equals(field.getFieldName())) {
-					fieldIndex = setFieldIndex(field, fieldIndex, i);
-				} else {
-					if (exprs[i] instanceof Field) {
-						Field expr = (Field) exprs[i];
-						if (field.getFieldName().equals(expr.getFieldName())) {
-							fieldIndex = setFieldIndex(field, fieldIndex, i);
+
+			int fieldIndex = -1;
+			if (field.getTableName() == null) {
+				for (int i = 0; i < exprs.length; i++) {
+					if ((aliasList[i] != null)
+							&& aliasList[i].equals(field.getFieldName())) {
+						fieldIndex = returnIIfNotAmbiguous(field, fieldIndex, i);
+					} else {
+						if (exprs[i] instanceof Field) {
+							Field expr = (Field) exprs[i];
+							if (field.getFieldName().equals(expr.getFieldName())) {
+								fieldIndex = returnIIfNotAmbiguous(field,
+										fieldIndex, i);
+							}
 						}
 					}
 				}
 			}
 
-			return fieldIndex;
+			if (fieldIndex != -1) {
+				return fieldIndex;
+			} else {
+				// The dependency will be satisfied further down
+				fieldIndex = getOperator(0).passFieldUp(field);
+
+				if (fieldIndex != -1) {
+					// If the field is not in the selection add it
+					boolean exists = false;
+					for (int i = 0; i < exprs.length; i++) {
+						Expression expression = exprs[i];
+						if (expression instanceof Field) {
+							Field selectedField = (Field) expression;
+							if (selectedField.getFieldIndex() == fieldIndex) {
+								exists = true;
+								fieldIndex = i;
+							}
+						}
+					}
+					if (!exists) {
+						Field newField = new Field(field.getTableName(), field
+								.getFieldName());
+						newField.setFieldIndex(fieldIndex);
+						addField(newField);
+						int indexInProjection = getExpressions().length - 1;
+						internalFields.add(indexInProjection);
+						fieldIndex = indexInProjection;
+					}
+				}
+				return fieldIndex;
+			}
+		} catch (SemanticException e) {
+			return -1;
 		}
 	}
 
-	private int setFieldIndex(Field field, int fieldIndex, int i)
+	private int returnIIfNotAmbiguous(Field field, int fieldIndex, int i)
 			throws SemanticException {
 		if (fieldIndex == -1) {
 			fieldIndex = i;
@@ -436,6 +468,15 @@ public class ProjectionOp extends AbstractExpressionOperator implements
 		return fieldIndex;
 	}
 
+	@Override
+	public int[] getInternalFields() {
+		int[] ret = new int[internalFields.size()];
+		for (int i = 0; i < ret.length; i++) {
+			ret[i] = internalFields.get(i);
+		}
+		return ret;
+	}
+
 	public void setGroupByFieldNames(ArrayList<Field> arrayList) {
 		this.groupByFields = arrayList;
 	}
@@ -444,7 +485,13 @@ public class ProjectionOp extends AbstractExpressionOperator implements
 		this.distinct = distinct;
 	}
 
-	public int addField(Field newField) {
+	/**
+	 * Adds an internal field. This field will be used by
+	 * 
+	 * @param newField
+	 * @return
+	 */
+	private int addField(Field newField) {
 		newField.setFieldContext(new FieldContext() {
 
 			public Value getFieldValue(int fieldId) throws DriverException {

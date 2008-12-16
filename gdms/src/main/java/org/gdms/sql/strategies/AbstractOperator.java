@@ -42,9 +42,11 @@ import org.gdms.data.DataSourceFactory;
 import org.gdms.data.ExecutionException;
 import org.gdms.data.NoSuchTableException;
 import org.gdms.data.indexes.IndexQuery;
+import org.gdms.data.metadata.Metadata;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.ObjectDriver;
 import org.gdms.source.SourceManager;
+import org.gdms.sql.evaluator.Field;
 import org.orbisgis.progress.IProgressMonitor;
 
 public abstract class AbstractOperator implements Operator {
@@ -229,5 +231,88 @@ public abstract class AbstractOperator implements Operator {
 		if (getOperatorCount() == 1) {
 			getOperator(0).setScanMode(indexQueries);
 		}
+	}
+
+	@Override
+	public int passFieldUp(Field field) throws DriverException,
+			AmbiguousFieldReferenceException {
+		throw new UnsupportedOperationException(
+				"This operator doesn't generate any result");
+	}
+
+	@Override
+	public int[] getInternalFields() throws DriverException {
+		ArrayList<Integer> ret = new ArrayList<Integer>();
+		int offset = 0;
+		for (int i = 0; i < getOperatorCount(); i++) {
+			Operator child = getOperator(i);
+			int[] fields = child.getInternalFields();
+			for (int field : fields) {
+				ret.add(field);
+			}
+			offset += child.getResultMetadata().getFieldCount();
+		}
+
+		int[] retArray = new int[ret.size()];
+		for (int i = 0; i < retArray.length; i++) {
+			retArray[i] = ret.get(i);
+		}
+		return retArray;
+	}
+
+	@Override
+	public String getTableName() {
+		return getTableNameAndAlias()[0];
+	}
+
+	@Override
+	public String getTableAlias() {
+		return getTableNameAndAlias()[1];
+	}
+
+	private String[] getTableNameAndAlias() {
+		if (getOperatorCount() != 1) {
+			return new String[] { null, null };
+		} else {
+			return new String[] { getOperator(0).getTableName(),
+					getOperator(0).getTableAlias() };
+		}
+	}
+
+	@Override
+	public Metadata getBranchMetadata(String tableName) throws DriverException {
+		Metadata ret = null;
+		for (int i = 0; i < getOperatorCount(); i++) {
+			Metadata childMetadata = null;
+			Operator op = getOperator(i);
+			String childTableName = op.getTableName();
+			if (childTableName != null) {
+				if (tableName.equals(op.getTableAlias())
+						|| tableName.equals(op.getTableName())) {
+					childMetadata = op.getResultMetadata();
+				}
+			} else {
+				childMetadata = op.getBranchMetadata(tableName);
+			}
+
+			if (childMetadata != null) {
+				ret = childMetadata;
+			}
+		}
+
+		return ret;
+	}
+
+	@Override
+	public String getFieldSource(SourceManager sm, Field field) {
+		for (int i = 0; i < getOperatorCount(); i++) {
+			Operator child = getOperator(i);
+			String fieldSource = child.getFieldSource(sm, field);
+			if (fieldSource != null) {
+				return fieldSource;
+			}
+		}
+
+		return null;
 	}
 }

@@ -41,7 +41,6 @@ import java.util.Iterator;
 import java.util.TreeSet;
 
 import org.gdms.data.ExecutionException;
-import org.gdms.data.metadata.DefaultMetadata;
 import org.gdms.data.metadata.Metadata;
 import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
@@ -56,7 +55,6 @@ public class OrderByOperator extends AbstractExpressionOperator implements
 
 	private ArrayList<Field> fields = new ArrayList<Field>();
 	private ArrayList<Boolean> orders = new ArrayList<Boolean>();
-	private ArrayList<Integer> notIncludeInOutput = new ArrayList<Integer>();
 
 	@Override
 	protected Expression[] getExpressions() throws DriverException,
@@ -115,47 +113,14 @@ public class OrderByOperator extends AbstractExpressionOperator implements
 				indexes.add(integer);
 			}
 			ObjectDriver ret = new RowMappedDriver(source, indexes);
-			if (notIncludeInOutput.size() > 0) {
-				// Remove previously added fields
-				ret = new ColumnMappedDriver(ret, getOutputFields(source));
-			}
 			return ret;
 		} catch (DriverException e) {
 			throw new ExecutionException(e);
 		}
 	}
 
-	private int[] getOutputFields(ObjectDriver source) throws DriverException {
-		Metadata metadata = source.getMetadata();
-		int[] ret = new int[metadata.getFieldCount()
-				- notIncludeInOutput.size()];
-		int index = 0;
-		for (int i = 0; i < metadata.getFieldCount(); i++) {
-			if (notIncludeInOutput.contains(new Integer(i))) {
-				continue;
-			} else {
-				ret[index] = i;
-				index++;
-			}
-		}
-
-		return ret;
-	}
-
 	public Metadata getResultMetadata() throws DriverException {
-		DefaultMetadata ret = new DefaultMetadata();
-		Metadata metadata = getOperator(0).getResultMetadata();
-		for (int i = 0; i < metadata.getFieldCount(); i++) {
-			if (notIncludeInOutput.contains(new Integer(i))) {
-				continue;
-			} else {
-				ret
-						.addField(metadata.getFieldName(i), metadata
-								.getFieldType(i));
-			}
-		}
-
-		return ret;
+		return getOperator(0).getResultMetadata();
 	}
 
 	public void addCriterium(Field field, boolean asc) {
@@ -185,44 +150,14 @@ public class OrderByOperator extends AbstractExpressionOperator implements
 		}
 		Field[] fieldReferences = getFieldReferences();
 		for (Field field : fieldReferences) {
-			// Look the first operator that changes the metadata for the field
-			// references
-			int fieldIndex = -1;
-			Operator prod = this;
-			while ((fieldIndex == -1) && (prod.getOperatorCount() > 0)) {
-				prod = prod.getOperator(0);
-				if (prod instanceof ChangesMetadata) {
-					fieldIndex = ((ChangesMetadata) prod).getFieldIndex(field);
-				}
-			}
-
+			int fieldIndex = getOperator(0).passFieldUp(field);
 			if (fieldIndex == -1) {
 				throw new SemanticException("Field not found: "
 						+ field.toString());
 			} else {
-				if (prod instanceof ProjectionOp) {
-					field.setFieldIndex(fieldIndex);
-				} else {
-					ProjectionOp proj = getProjectionOperator();
-					Field newField = new Field(field.getTableName(), field
-							.getFieldName());
-					newField.setFieldIndex(fieldIndex);
-
-					int fieldPosition = proj.addField(newField);
-					field.setFieldIndex(fieldPosition);
-					notIncludeInOutput.add(fieldPosition);
-				}
+				field.setFieldIndex(fieldIndex);
 			}
 		}
-	}
-
-	private ProjectionOp getProjectionOperator() {
-		Operator prod = this;
-		while (!(prod instanceof ProjectionOp)) {
-			prod = prod.getOperator(0);
-		}
-
-		return (ProjectionOp) prod;
 	}
 
 	public void transportSelection(SelectionOp op) {

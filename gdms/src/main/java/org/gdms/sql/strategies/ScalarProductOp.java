@@ -50,21 +50,11 @@ import org.gdms.sql.evaluator.Field;
 import org.orbisgis.progress.IProgressMonitor;
 
 public class ScalarProductOp extends AbstractOperator implements Operator,
-		ChangesMetadata, SelectionTransporter {
-
-	private ArrayList<String> tables = new ArrayList<String>();
-
-	private ArrayList<String> aliases = new ArrayList<String>();
+		SelectionTransporter {
 
 	private int limit = -1;
 
 	private int offset = -1;
-
-	public void addTable(Operator operator, String tableName, String tableAlias) {
-		addChild(operator);
-		tables.add(tableName);
-		aliases.add(tableAlias);
-	}
 
 	public ObjectDriver getResultContents(IProgressMonitor pm)
 			throws ExecutionException {
@@ -84,10 +74,6 @@ public class ScalarProductOp extends AbstractOperator implements Operator,
 		}
 	}
 
-	public String[] getAliases() {
-		return aliases.toArray(new String[0]);
-	}
-
 	/**
 	 * Checks that the tables exist and their aliases doesn't collide
 	 * 
@@ -100,18 +86,20 @@ public class ScalarProductOp extends AbstractOperator implements Operator,
 	public void validateTableReferences() throws NoSuchTableException,
 			SemanticException, DriverException {
 		HashSet<String> refs = new HashSet<String>();
-		for (int i = 0; i < tables.size(); i++) {
-			String tableName = tables.get(i);
-
-			String ref = tableName;
-			String alias = aliases.get(i);
-			if (alias != null) {
-				ref = alias;
-			}
-			if (refs.contains(ref)) {
-				throw new SemanticException("Ambiguous table reference: " + ref);
-			} else {
-				refs.add(ref);
+		for (int i = 0; i < getOperatorCount(); i++) {
+			String tableName = getOperator(i).getTableName();
+			if (tableName != null) {
+				String ref = tableName;
+				String alias = getOperator(i).getTableAlias();
+				if (alias != null) {
+					ref = alias;
+				}
+				if (refs.contains(ref)) {
+					throw new SemanticException("Ambiguous table reference: "
+							+ ref);
+				} else {
+					refs.add(ref);
+				}
 			}
 		}
 
@@ -134,16 +122,25 @@ public class ScalarProductOp extends AbstractOperator implements Operator,
 		return ret;
 	}
 
-	public int getFieldIndex(Field field) throws DriverException,
-			SemanticException {
+	public int passFieldUp(Field field) throws DriverException,
+			AmbiguousFieldReferenceException {
 		String tableName = field.getTableName();
 		String fieldName = field.getFieldName();
 		int fieldIndex = -1;
 		// If the field contains a table reference we look just it
 		if (tableName != null) {
-			Metadata metadata = getMetadata(tableName);
+			Metadata metadata = getBranchMetadata(tableName);
 			if (metadata != null) {
-				fieldIndex = getFieldIndexInProduct(tableName, fieldName);
+				int offset = 0;
+				for (int i = 0; i < getOperatorCount(); i++) {
+					Operator child = getOperator(i);
+					int childFieldIndex = child.passFieldUp(field);
+					if (childFieldIndex != -1) {
+						fieldIndex = offset + childFieldIndex;
+					} else {
+						offset += child.getResultMetadata().getFieldCount();
+					}
+				}
 			}
 		} else {
 			// If the field doesn't contain a table reference
@@ -151,11 +148,11 @@ public class ScalarProductOp extends AbstractOperator implements Operator,
 			Metadata metadata = getResultMetadata();
 			for (int i = 0; i < metadata.getFieldCount(); i++) {
 				if (metadata.getFieldName(i).equals(fieldName)) {
-					if (fieldIndex != -1) {
-						throw new SemanticException(
-								"Ambiguous field reference: " + fieldName);
+					if (fieldIndex == -1) {
+						fieldIndex = i;
+					} else {
+						throw new AmbiguousFieldReferenceException(field);
 					}
-					fieldIndex = i;
 				}
 			}
 		}
@@ -163,60 +160,6 @@ public class ScalarProductOp extends AbstractOperator implements Operator,
 		return fieldIndex;
 	}
 
-	public String getAlias(String sourceName) {
-		return aliases.get(tables.indexOf(sourceName));
-	}
-
-	Metadata getMetadata(String tableName) throws DriverException,
-			SemanticException {
-		int tableIndex = tables.indexOf(tableName);
-		int aliasIndex = aliases.indexOf(tableName);
-
-		if ((tableIndex == -1) && (aliasIndex == -1)) {
-			return null;
-		} else if ((tableIndex != -1) && (aliasIndex != -1)) {
-			throw new SemanticException("Ambiguous table reference: "
-					+ tableName);
-		} else {
-			if (tableIndex != -1) {
-				return getOperator(tableIndex).getResultMetadata();
-			} else {
-				return getOperator(aliasIndex).getResultMetadata();
-			}
-		}
-	}
-
-	private int getFieldIndexInProduct(String tableName, String fieldName)
-			throws DriverException, SemanticException {
-		int index = tables.indexOf(tableName);
-		if (index == -1) {
-			index = aliases.indexOf(tableName);
-		}
-
-		if (index == -1) {
-			return -1;
-		} else {
-			int ret = 0;
-			for (int i = 0; i < index; i++) {
-				ret += getOperator(i).getResultMetadata().getFieldCount();
-			}
-			Metadata metadata = getMetadata(tableName);
-			boolean found = false;
-			for (int i = 0; i < metadata.getFieldCount(); i++) {
-				if (fieldName.equals(metadata.getFieldName(i))) {
-					found = true;
-					ret += i;
-				}
-			}
-			if (found) {
-				return ret;
-			} else {
-				return -1;
-			}
-		}
-	}
-
-	@Override
 	public void setLimit(int limit) {
 		this.limit = limit;
 	}
@@ -229,9 +172,10 @@ public class ScalarProductOp extends AbstractOperator implements Operator,
 	public void transportSelection(SelectionOp op) throws DriverException,
 			SemanticException {
 		Expression[] ands = op.getExpressions();
-		int[] tablesNumFields = new int[tables.size()];
+		int[] tablesNumFields = new int[getOperatorCount()];
 		for (int j = 0; j < tablesNumFields.length; j++) {
-			tablesNumFields[j] = getMetadata(tables.get(j)).getFieldCount();
+			tablesNumFields[j] = getOperator(j).getResultMetadata()
+					.getFieldCount();
 		}
 		// For each child
 		for (int i = 0; i < getOperatorCount(); i++) {
@@ -296,19 +240,6 @@ public class ScalarProductOp extends AbstractOperator implements Operator,
 		}
 
 		return child;
-	}
-
-	public String getSourceName(Field field) {
-		String tableName = field.getTableName();
-		int tablesIndex = tables.indexOf(tableName);
-		int aliasesIndex = aliases.indexOf(tableName);
-		if (tablesIndex != -1) {
-			return tableName;
-		} else if (aliasesIndex != -1) {
-			return tables.get(aliasesIndex);
-		} else {
-			return null;
-		}
 	}
 
 }

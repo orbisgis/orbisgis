@@ -142,8 +142,7 @@ public class LogicTreeBuilder {
 			// we use a scalar product because it helps to resolve the field
 			// references
 			ScalarProductOp identity = new ScalarProductOp();
-			identity.addTable(tableRef, tableRef.getTableName(), tableRef
-					.getTableAlias());
+			identity.addChild(tableRef);
 			Operator top = identity;
 			SimpleNode whereNode = getChildNode(node, ASTSQLWhere.class);
 			if (whereNode != null) {
@@ -160,8 +159,7 @@ public class LogicTreeBuilder {
 			// we use a scalar product because it helps to resolve the field
 			// references
 			ScalarProductOp identity = new ScalarProductOp();
-			identity.addTable(tableRef, tableRef.getTableName(), tableRef
-					.getTableAlias());
+			identity.addChild(tableRef);
 			Operator top = identity;
 
 			InsertOperator ret = new InsertOperator();
@@ -199,8 +197,8 @@ public class LogicTreeBuilder {
 			} else {
 				String tableName = getId(node.jjtGetChild(0));
 				String fieldName = getId(node.jjtGetChild(1));
-				DropIndexOperator op = new DropIndexOperator(dsf,
-						tableName, fieldName);
+				DropIndexOperator op = new DropIndexOperator(dsf, tableName,
+						fieldName);
 				op.addChild(new ScanOperator(dsf, tableName, tableName));
 				return op;
 			}
@@ -244,7 +242,7 @@ public class LogicTreeBuilder {
 			// we use a scalar product because it helps to resolve the field
 			// references
 			ScalarProductOp identity = new ScalarProductOp();
-			identity.addTable(scan, scan.getTableName(), scan.getTableAlias());
+			identity.addChild(scan);
 			Operator last = identity;
 
 			Node whereNode = getChildNode(node, ASTSQLWhere.class);
@@ -466,8 +464,7 @@ public class LogicTreeBuilder {
 			for (int i = 0; i < node.jjtGetNumChildren(); i++) {
 				SimpleNode tableRefNode = (SimpleNode) node.jjtGetChild(i);
 				ScanOperator tableScanOperator = (ScanOperator) getOperator(tableRefNode);
-				ret.addTable(tableScanOperator, tableScanOperator
-						.getTableName(), tableScanOperator.getTableAlias());
+				ret.addChild(tableScanOperator);
 			}
 			return ret;
 		} else if (node instanceof ASTSQLTableRef) {

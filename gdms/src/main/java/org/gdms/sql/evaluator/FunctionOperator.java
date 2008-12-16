@@ -210,4 +210,13 @@ public class FunctionOperator extends AbstractOperator implements Expression {
 		this.lastCall = true;
 	}
 
+	/**
+	 * Return true if this function has '*' as arguments
+	 * 
+	 * @return
+	 */
+	public boolean hasStar() {
+		return star;
+	}
+
 }

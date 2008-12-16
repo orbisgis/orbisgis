@@ -56,7 +56,7 @@ import org.gdms.sql.evaluator.FunctionOperator;
 import org.orbisgis.progress.IProgressMonitor;
 
 public class GroupByOperator extends AbstractExpressionOperator implements
-		Operator, ChangesMetadata {
+		Operator {
 
 	public static final String FIELD_PREFIX = "groupby";
 	private ArrayList<Expression> fields = new ArrayList<Expression>();
@@ -252,19 +252,19 @@ public class GroupByOperator extends AbstractExpressionOperator implements
 		return ret;
 	}
 
-	public int getFieldIndex(Field field) throws DriverException,
-			SemanticException {
+	public int passFieldUp(Field field) throws DriverException,
+			AmbiguousFieldReferenceException {
 		String tableName = field.getTableName();
 		String fieldName = field.getFieldName();
 		int fieldIndex = -1;
-		// If the field contains a table reference we just look it
+		// If the field contains a table reference we just delegate
 		if (tableName != null) {
 			for (int i = 0; i < fields.size(); i++) {
 				Expression expression = fields.get(i);
 				if (expression instanceof Field) {
 					Field groupByField = (Field) expression;
-					ChangesMetadata cm = getChangesMetadata(this);
-					if (cm.getFieldIndex(field) == groupByField.getFieldIndex()) {
+					if (getOperator(0).passFieldUp(field) == groupByField
+							.getFieldIndex()) {
 						return i;
 					}
 				}
@@ -275,34 +275,12 @@ public class GroupByOperator extends AbstractExpressionOperator implements
 			Metadata metadata = getResultMetadata();
 			for (int i = 0; i < metadata.getFieldCount(); i++) {
 				if (metadata.getFieldName(i).equals(fieldName)) {
-					if (fieldIndex != -1) {
-						throw new SemanticException(
-								"Ambiguous field reference: " + fieldName);
-					}
 					fieldIndex = i;
 				}
 			}
 		}
 
-		if (fieldIndex == -1) {
-			throw new SemanticException("The field " + field + " could not be "
-					+ "resolved. Check it's on the group by clause or"
-					+ " inside an aggregate function.");
-		} else {
-			return fieldIndex;
-		}
-	}
-
-	private ChangesMetadata getChangesMetadata(Operator op) {
-		if (op.getOperatorCount() == 1) {
-			if (op.getOperator(0) instanceof ChangesMetadata) {
-				return (ChangesMetadata) op.getOperator(0);
-			} else {
-				return getChangesMetadata(op.getOperator(0));
-			}
-		} else {
-			throw new RuntimeException("Bug");
-		}
+		return fieldIndex;
 	}
 
 	@Override
@@ -313,5 +291,15 @@ public class GroupByOperator extends AbstractExpressionOperator implements
 	@Override
 	public void setOffset(int offset) {
 		this.offset = offset;
+	}
+
+	@Override
+	public String getTableName() {
+		return null;
+	}
+
+	@Override
+	public String getTableAlias() {
+		return null;
 	}
 }

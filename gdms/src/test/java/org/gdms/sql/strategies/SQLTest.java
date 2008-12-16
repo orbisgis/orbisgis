@@ -795,6 +795,31 @@ public class SQLTest extends SourceTest {
 		}
 	}
 
+	public void testJoinThreeTablesTwoAreTheSameBug() throws Exception {
+		createSource("table1", "id", 1, 2, 3, 4, 5, 6, 7, 8);
+		createSource("table2", "id", 1, 2);
+		DataSource ds = dsf
+				.getDataSourceFromSQL("SELECT n1.id as n1, n2.id as n2, e.id "
+						+ "FROM table1 n1, "
+						+ "table1 n2, table2 e "
+						+ "WHERE n1.id = e.id;");
+		ds.open();
+		assertTrue(ds.getRowCount() == 16);
+		System.out.println(ds.getAsString());
+		ds.close();
+	}
+
+	private void createSource(String name, String fieldName, int... values) {
+		ObjectMemoryDriver omd = new ObjectMemoryDriver(
+				new String[] { fieldName }, new Type[] { TypeFactory
+						.createType(Type.INT) });
+		for (int value : values) {
+			omd.addValues(new Value[] { ValueFactory.createValue(value) });
+		}
+
+		dsf.getSourceManager().register(name, omd);
+	}
+
 	@Override
 	protected void setUp() throws Exception {
 		setWritingTests(false);

@@ -41,11 +41,9 @@ import java.util.HashMap;
 import java.util.Stack;
 
 import org.gdms.data.ExecutionException;
-import org.gdms.data.NoSuchTableException;
 import org.gdms.data.indexes.IndexManager;
 import org.gdms.data.indexes.IndexQuery;
 import org.gdms.driver.DriverException;
-import org.gdms.source.SourceManager;
 import org.gdms.sql.evaluator.EvaluationException;
 import org.gdms.sql.evaluator.Expression;
 import org.gdms.sql.evaluator.Field;
@@ -64,11 +62,9 @@ public class BNB {
 	private double best;
 	private HashMap<String, ArrayList<String>> tableIndexes;
 	private IndexManager im;
-	private SourceManager sm;
 
-	public BNB(IndexManager im, SourceManager sm) {
+	public BNB(IndexManager im) {
 		this.im = im;
-		this.sm = sm;
 	}
 
 	public BNBNode optimize(Operator op) throws DriverException,
@@ -135,7 +131,7 @@ public class BNB {
 					Expression[] ands = selection.getExpressions();
 					for (Expression and : ands) {
 						IndexQuery[] queries = getIndexableField(node,
-								tableName, and);
+								optimizationInfo.getScanOperator(), and);
 						for (IndexQuery indexQuery : queries) {
 							boolean adHoc;
 							if (tableIndexes.get(tableName).contains(
@@ -191,7 +187,7 @@ public class BNB {
 	 * Gets an index query corresponding to the and expression on a field if and
 	 * only if all the field references but one refers to the fixed tables in
 	 * node and the remaining field references refers to newTable
-	 *
+	 * 
 	 * @param node
 	 * @param newOperator
 	 * @param and
@@ -201,20 +197,13 @@ public class BNB {
 	 * @throws EvaluationException
 	 */
 	private IndexQuery[] getIndexableField(final BNBNode node,
-			String tableName, Expression and) throws DriverException {
-		String sourceName;
-		try {
-			sourceName = sm.getMainNameFor(tableName);
-		} catch (NoSuchTableException e) {
-			throw new RuntimeException("bug!");
-		}
+			ScanOperator scanOperator, Expression and) throws DriverException {
 		Field[] fieldReferences = and.getFieldReferences();
 		Field newTableField = null;
 		for (Field field : fieldReferences) {
-			if (field.getSourceName().equals(sourceName)) {
-				if (newTableField == null) {
-					newTableField = field;
-				}
+			if (scanOperator.referencesThisTable(field)) {
+				newTableField = field;
+				break;
 			}
 		}
 		if (newTableField != null) {

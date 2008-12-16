@@ -131,7 +131,7 @@ public class BNBNode {
 
 	/**
 	 * Adds a index-scan query to the tables array
-	 *
+	 * 
 	 * @param operator
 	 * @param indexScan
 	 */
@@ -172,9 +172,9 @@ public class BNBNode {
 	/**
 	 * Replaces the scalar product under the selection by the plan this node
 	 * represents
-	 *
+	 * 
 	 * @param im
-	 *
+	 * 
 	 * @throws SemanticException
 	 * @throws DriverException
 	 */
@@ -183,28 +183,19 @@ public class BNBNode {
 
 		// Put the selection on the first left operator
 		Operator left = fixedOperators.get(0).operator;
-		String leftTableName = left.getOptimizationInfo().getScanOperator()
-				.getTableName();
-		String leftTableAlias = left.getOptimizationInfo().getScanOperator()
-				.getTableAlias();
 
 		// Create the product operators that will execute the index strategy
 		for (int i = 1; i < fixedOperators.size(); i++) {
 			FixedOperator fixedOperator = fixedOperators.get(i);
 			Operator right = fixedOperator.operator;
-			String rightTableName = right.getOptimizationInfo()
-					.getScanOperator().getTableName();
-			String rightTableAlias = right.getOptimizationInfo()
-					.getScanOperator().getTableAlias();
 
 			if (fixedOperator.queries.size() > 0) {
 				// Create the scalar product
 				OnePassScalarProduct scalar = new OnePassScalarProduct(im);
-				scalar.addTable(left, leftTableName, leftTableAlias);
+				scalar.addChild(left);
 
 				// Set the index-scan to apply to the right operator
-				scalar.setIndexScan(fixedOperator.queries, right,
-						rightTableName, rightTableAlias);
+				scalar.setIndexScan(fixedOperator.queries, right);
 
 				// Delete the expressions in the selection
 				for (IndexScan indexScan : fixedOperator.queries) {
@@ -216,8 +207,8 @@ public class BNBNode {
 
 			} else {
 				ScalarProductOp scalar = new ScalarProductOp();
-				scalar.addTable(left, leftTableName, leftTableAlias);
-				scalar.addTable(right, rightTableName, rightTableAlias);
+				scalar.addChild(left);
+				scalar.addChild(right);
 				left = scalar;
 			}
 		}
@@ -233,7 +224,7 @@ public class BNBNode {
 
 	/**
 	 * The expression is evaluable if all the field reference fixed operators
-	 *
+	 * 
 	 * @param exp
 	 * @return
 	 * @throws DriverException

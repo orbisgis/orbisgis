@@ -82,14 +82,18 @@ public abstract class AbstractExpressionOperator extends AbstractOperator {
 
 		Field[] fieldReferences = getFieldReferences();
 		for (Field field : fieldReferences) {
-			// Look the first operator that changes the metadata for the field
-			// references
+			// One and only one operator should resolve this field reference
 			int fieldIndex = -1;
-			Operator prod = this;
-			while ((prod.getOperatorCount() > 0) && (fieldIndex == -1)) {
-				prod = prod.getOperator(0);
-				if (prod instanceof ChangesMetadata) {
-					fieldIndex = ((ChangesMetadata) prod).getFieldIndex(field);
+			for (int i = 0; i < getOperatorCount(); i++) {
+				Operator child = getOperator(i);
+				int childFieldIndex = child.passFieldUp(field);
+				if (childFieldIndex != -1) {
+					if (fieldIndex == -1) {
+						fieldIndex = childFieldIndex;
+					} else {
+						throw new SemanticException(
+								"Ambiguous field reference: " + field);
+					}
 				}
 			}
 
@@ -104,45 +108,25 @@ public abstract class AbstractExpressionOperator extends AbstractOperator {
 
 	protected void expandStar(ArrayList<Expression> expressions,
 			ArrayList<String> aliases, String tableName)
-			throws DriverException, TableNotFoundException {
-		boolean tableFound = false;
-		Operator[] products = getOperators(this, new OperatorFilter() {
-
-			public boolean accept(Operator op) {
-				return op instanceof ScalarProductOp;
-			}
-
-		});
-		for (Operator operator : products) {
-			ScalarProductOp op = (ScalarProductOp) operator;
-			String[] tableNames;
-			if (tableName == null) {
-				tableNames = op.getReferencedTables();
-			} else {
-				tableNames = new String[] { tableName };
-			}
-			for (String table : tableNames) {
-				try {
-					Metadata m = op.getMetadata(table);
-					if (m != null) {
-						tableFound = true;
-						for (int i = 0; i < m.getFieldCount(); i++) {
-							expressions
-									.add(new Field(table, m.getFieldName(i)));
-							aliases.add(null);
-						}
-					}
-				} catch (SemanticException e) {
-					throw new RuntimeException(
-							"The semantics should be validated "
-									+ "before this method is called");
+			throws DriverException, SemanticException {
+		String[] tableNames;
+		if (tableName == null) {
+			tableNames = getReferencedTables();
+		} else {
+			tableNames = new String[] { tableName };
+		}
+		for (String table : tableNames) {
+			Metadata m = getBranchMetadata(table);
+			if (m != null) {
+				for (int i = 0; i < m.getFieldCount(); i++) {
+					expressions.add(new Field(table, m.getFieldName(i)));
+					aliases.add(null);
 				}
+			} else {
+				throw new SemanticException("Table reference not found: "
+						+ table);
 			}
 		}
-		if (!tableFound) {
-			throw new TableNotFoundException(tableName + " not found");
-		}
-
 	}
 
 	/**
@@ -176,16 +160,19 @@ public abstract class AbstractExpressionOperator extends AbstractOperator {
 			FunctionOperator[] functionReferences = expression
 					.getFunctionReferences();
 			for (FunctionOperator function : functionReferences) {
-				ArrayList<Expression> arguments = new ArrayList<Expression>();
-				ArrayList<String> alias = new ArrayList<String>();
-				expandStar(arguments, alias, null);
-				for (Expression expr : arguments) {
-					Field[] fields = expr.getFieldReferences();
-					for (Field field : fields) {
-						field.setFieldContext(fieldContext);
+				if (function.hasStar()) {
+					ArrayList<Expression> arguments = new ArrayList<Expression>();
+					ArrayList<String> alias = new ArrayList<String>();
+					expandStar(arguments, alias, null);
+					for (Expression expr : arguments) {
+						Field[] fields = expr.getFieldReferences();
+						for (Field field : fields) {
+							field.setFieldContext(fieldContext);
+						}
 					}
+					function
+							.replaceStarBy(arguments.toArray(new Expression[0]));
 				}
-				function.replaceStarBy(arguments.toArray(new Expression[0]));
 			}
 		}
 
@@ -240,18 +227,10 @@ public abstract class AbstractExpressionOperator extends AbstractOperator {
 
 		Field[] fields = getFieldReferences();
 		for (Field field : fields) {
-			String sourceName = null;
-			Operator prod = this;
-			while ((sourceName == null) && (prod.getOperatorCount() > 0)) {
-				prod = prod.getOperator(0);
-				if (prod instanceof ScalarProductOp) {
-					sourceName = ((ScalarProductOp) prod).getSourceName(field);
-				}
-			}
+			String sourceName = this.getFieldSource(sm, field);
 			if (sourceName != null) {
 				field.setSourceName(sm.getMainNameFor(sourceName));
 			}
 		}
 	}
-
 }

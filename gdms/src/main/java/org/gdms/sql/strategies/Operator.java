@@ -44,6 +44,7 @@ import org.gdms.data.metadata.Metadata;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.ObjectDriver;
 import org.gdms.source.SourceManager;
+import org.gdms.sql.evaluator.Field;
 import org.orbisgis.progress.IProgressMonitor;
 
 public interface Operator {
@@ -57,7 +58,38 @@ public interface Operator {
 
 	public int getOperatorCount();
 
+	/**
+	 * Gets the metadata of this operator result. Return null if this operator
+	 * doesn't generate any result
+	 * 
+	 * @return
+	 * @throws DriverException
+	 */
 	public Metadata getResultMetadata() throws DriverException;
+
+	/**
+	 * Makes the specified field appear in the result provided by this operator
+	 * and returns the field index in the metadata of the result. Return -1 if
+	 * this operator cannot resolve the field reference.
+	 * 
+	 * @param field
+	 * @return
+	 * @throws DriverException
+	 *             If there is a problem accessing sources
+	 * @throws UnsupportedOperationException
+	 *             if invoked in operators that doesn't return any result
+	 */
+	int passFieldUp(Field field) throws DriverException, AmbiguousFieldReferenceException;
+
+	/**
+	 * Get the field indexes in the result metadata that were created just to
+	 * execute the instruction but were not specified for the final result
+	 * 
+	 * @return
+	 * @throws DriverException
+	 *             If there is a problem accessing sources
+	 */
+	int[] getInternalFields() throws DriverException;
 
 	/**
 	 * Expands stars and sets a field context to evaluate field types
@@ -75,8 +107,6 @@ public interface Operator {
 
 	public void validateExpressionTypes() throws SemanticException,
 			DriverException;
-
-	public String[] getReferencedTables();
 
 	public void validateFunctionReferences() throws DriverException,
 			SemanticException;
@@ -158,4 +188,51 @@ public interface Operator {
 	 */
 	public void resolveFieldSourceReferences(SourceManager sm)
 			throws DriverException, SemanticException;
+
+	/**
+	 * Returns the tables referenced in the subtree which root is this operator
+	 * 
+	 * @return
+	 */
+	public String[] getReferencedTables();
+
+	/**
+	 * Return the table name referenced in the tree branch which origin is this
+	 * operator. If the tree is not a branch and accesses several tables it
+	 * returns null
+	 * 
+	 * @return
+	 */
+	public String getTableName();
+
+	/**
+	 * Return the table alias referenced in the tree branch which origin is this
+	 * operator. If the tree is not a branch and accesses several tables it
+	 * returns null
+	 * 
+	 * @return
+	 */
+	public String getTableAlias();
+
+	/**
+	 * Gets the metadata of the branch accessing the specified table name or
+	 * null if there is no branch that accesses the specified table
+	 * 
+	 * @param tableName
+	 * @return
+	 * @throws DriverException
+	 *             If there is a problem accessing source metadata
+	 * 
+	 */
+	public Metadata getBranchMetadata(String tableName) throws DriverException;
+
+	/**
+	 * Get the source containing this field
+	 * 
+	 * @param sm
+	 * @param field
+	 * @return
+	 */
+	public String getFieldSource(SourceManager sm, Field field);
+
 }

@@ -241,7 +241,7 @@ public class OnePassScalarProduct extends ScalarProductOp {
 
 	private boolean referencesLeft(Field field, Metadata metadata)
 			throws DriverException, SemanticException {
-		int fieldIndex = getFieldIndex(field);
+		int fieldIndex = passFieldUp(field);
 
 		return fieldIndex < metadata.getFieldCount();
 	}
@@ -271,9 +271,8 @@ public class OnePassScalarProduct extends ScalarProductOp {
 		throw new RuntimeException("bug!");
 	}
 
-	public void setIndexScan(ArrayList<IndexScan> indexScans, Operator right,
-			String sourceName, String alias) {
-		addTable(right, sourceName, alias);
+	public void setIndexScan(ArrayList<IndexScan> indexScans, Operator right) {
+		addChild(right);
 		rightSelection = new HashSet<Expression>();
 		for (IndexScan indexScan : indexScans) {
 			rightSelection.add(indexScan.getExpression());

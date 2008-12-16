@@ -53,6 +53,7 @@ import org.gdms.data.metadata.Metadata;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.ObjectDriver;
 import org.gdms.driver.driverManager.DriverLoadException;
+import org.gdms.source.SourceManager;
 import org.gdms.sql.evaluator.ComparisonOperator;
 import org.gdms.sql.evaluator.Equals;
 import org.gdms.sql.evaluator.Expression;
@@ -68,7 +69,7 @@ import org.gdms.sql.function.FunctionManager;
 import org.gdms.sql.function.TwoOverlappingArgumentsFunction;
 import org.orbisgis.progress.IProgressMonitor;
 
-public class ScanOperator extends AbstractOperator implements ChangesMetadata {
+public class ScanOperator extends AbstractOperator {
 
 	private String tableName;
 	private String tableAlias;
@@ -87,7 +88,7 @@ public class ScanOperator extends AbstractOperator implements ChangesMetadata {
 	/**
 	 * The result metadata of a scan operator is the metadata of the source it
 	 * accesses
-	 *
+	 * 
 	 * @see org.gdms.sql.strategies.Operator#getResultMetadata()
 	 */
 	public Metadata getResultMetadata() throws DriverException {
@@ -163,17 +164,19 @@ public class ScanOperator extends AbstractOperator implements ChangesMetadata {
 		return new ScanOptimizationInfo(this, dataSource);
 	}
 
+	@Override
 	public String getTableName() {
 		return tableName;
 	}
 
+	@Override
 	public String getTableAlias() {
 		return tableAlias;
 	}
 
 	/**
 	 * Checks the referenced source exists
-	 *
+	 * 
 	 * @see org.gdms.sql.strategies.AbstractOperator#validateTableReferences()
 	 */
 	@Override
@@ -301,8 +304,7 @@ public class ScanOperator extends AbstractOperator implements ChangesMetadata {
 		}
 	}
 
-	public int getFieldIndex(Field field) throws DriverException,
-			SemanticException {
+	public int passFieldUp(Field field) throws DriverException {
 		Metadata metadata = getResultMetadata();
 		for (int i = 0; i < metadata.getFieldCount(); i++) {
 			if (metadata.getFieldName(i).equals(field.getFieldName())
@@ -314,7 +316,7 @@ public class ScanOperator extends AbstractOperator implements ChangesMetadata {
 		return -1;
 	}
 
-	private boolean referencesThisTable(Field field) {
+	public boolean referencesThisTable(Field field) {
 		if (field.getTableName() == null) {
 			return true;
 		} else {
@@ -331,5 +333,20 @@ public class ScanOperator extends AbstractOperator implements ChangesMetadata {
 	public String toString() {
 		return ScanOperator.class.getSimpleName() + "(" + tableName + ","
 				+ tableAlias + ")";
+	}
+
+	@Override
+	public String getFieldSource(SourceManager sm, Field field) {
+		try {
+			if (passFieldUp(field) != -1) {
+				return sm.getMainNameFor(tableName);
+			} else {
+				return null;
+			}
+		} catch (SemanticException e) {
+			return null;
+		} catch (DriverException e) {
+			return null;
+		}
 	}
 }

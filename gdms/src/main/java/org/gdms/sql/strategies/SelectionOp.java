@@ -68,7 +68,7 @@ public class SelectionOp extends AbstractExpressionOperator implements Operator 
 
 	/**
 	 * Set the expression to filter
-	 *
+	 * 
 	 * @param operator
 	 */
 	public void setExpression(Expression operator) {
@@ -79,7 +79,7 @@ public class SelectionOp extends AbstractExpressionOperator implements Operator 
 	 * Sets the expressions to filter. The overall value of the selection
 	 * expression is the AND operation of all the expressions specified as
 	 * parameters
-	 *
+	 * 
 	 * @param operator
 	 */
 	public void setExpressions(Expression[] operator) {
@@ -115,7 +115,7 @@ public class SelectionOp extends AbstractExpressionOperator implements Operator 
 	 * returns null if the scan strategy has not been yet chosen. Returns the
 	 * array of index queries used in the scan strategy. Zero length array means
 	 * table-scan
-	 *
+	 * 
 	 * @return
 	 */
 	public IndexQuery[] getIndexQueries() {
@@ -192,7 +192,7 @@ public class SelectionOp extends AbstractExpressionOperator implements Operator 
 		super.initialize();
 		indexes = null;
 	}
-	
+
 	private ArrayList<Integer> getIndexes(IProgressMonitor pm)
 			throws IncompatibleTypesException, EvaluationException,
 			ExecutionException, DriverException {
@@ -243,7 +243,7 @@ public class SelectionOp extends AbstractExpressionOperator implements Operator 
 
 	/**
 	 * Evaluates the and expressions and stops at the first false
-	 *
+	 * 
 	 * @return
 	 * @throws IncompatibleTypesException
 	 * @throws EvaluationException
@@ -262,8 +262,7 @@ public class SelectionOp extends AbstractExpressionOperator implements Operator 
 	private boolean evaluatesToTrue(Expression expression)
 			throws IncompatibleTypesException, EvaluationException {
 		Value expressionResult = expression.evaluate();
-		return !expressionResult.isNull()
-				&& expressionResult.getAsBoolean();
+		return !expressionResult.isNull() && expressionResult.getAsBoolean();
 	}
 
 	private boolean enough(int resultCount, int rowCount) {
@@ -290,7 +289,7 @@ public class SelectionOp extends AbstractExpressionOperator implements Operator 
 
 	/**
 	 * Checks there is no aggregate function in the where clause
-	 *
+	 * 
 	 * @see org.gdms.sql.strategies.AbstractExpressionOperator#validateFunctionReferences()
 	 */
 	@Override
@@ -365,5 +364,10 @@ public class SelectionOp extends AbstractExpressionOperator implements Operator 
 			ret = ret + children.get(i);
 		}
 		return ret + ")";
+	}
+
+	@Override
+	public int passFieldUp(Field field) throws DriverException, AmbiguousFieldReferenceException {
+		return getOperator(0).passFieldUp(field);
 	}
 }
