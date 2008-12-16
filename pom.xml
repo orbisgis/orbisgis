@@ -20,7 +20,6 @@
 		<module>org.orbisgis.core-ui</module>
 		<module>org.orbisgis.processing</module>
 		<module>contrib</module>
-		<module>tanato</module>
 		<module>org.orbisgis.games</module>
 		<module>updater</module>
 		<module>org.orbisgis.full-ui</module>
