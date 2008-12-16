@@ -136,7 +136,7 @@ public class ImageSymbol extends AbstractSymbol implements Symbol {
 	}
 
 	/**
-	 * Gets the URL of the image used to draw this symbol
+	 * Get the URL of the image used to draw this symbol
 	 * 
 	 * @return
 	 */
@@ -146,8 +146,7 @@ public class ImageSymbol extends AbstractSymbol implements Symbol {
 
 	@Override
 	public Symbol deriveSymbol(Color color) {
-		// TODO derive image symbol correctly
-		return this;
+		return null;
 	}
 
 }
