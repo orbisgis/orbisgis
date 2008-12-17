@@ -46,6 +46,6 @@ public interface MapContextManager {
 	 *
 	 * @return
 	 */
-	MapContext getActiveView();
+	MapContext getActiveMapContext();
 
 }

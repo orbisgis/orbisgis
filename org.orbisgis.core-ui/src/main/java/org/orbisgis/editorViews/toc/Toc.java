@@ -191,6 +191,11 @@ public class Toc extends ResourceTree {
 	}
 
 	@Override
+	protected boolean isDroppable(TreePath path) {
+		return path.getLastPathComponent() instanceof ILayer;
+	}
+
+	@Override
 	public boolean doDrop(Transferable trans, Object node) {
 
 		ILayer dropNode;

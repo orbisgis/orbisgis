@@ -36,8 +36,11 @@
  */
 package org.orbisgis.ui.resourceTree;
 
+import java.awt.Color;
+import java.awt.Graphics;
 import java.awt.GridLayout;
 import java.awt.Point;
+import java.awt.Rectangle;
 import java.awt.datatransfer.Transferable;
 import java.awt.dnd.DnDConstants;
 import java.awt.dnd.DragGestureEvent;
@@ -75,11 +78,31 @@ public abstract class ResourceTree extends JPanel implements
 
 	protected MyTreeUI myTreeUI;
 
+	private TreePath currentDropTarget = null;
+	private boolean dragDrawDirty = false;
+
 	/** *** Catalog constructor **** */
 	public ResourceTree() {
 		super(new GridLayout(1, 0));
 
-		tree = new JTree();
+		tree = new JTree() {
+			@Override
+			protected void paintComponent(Graphics g) {
+				super.paintComponent(g);
+				if (dragDrawDirty) {
+					dragDrawDirty = false;
+					Rectangle bounds = null;
+					if (currentDropTarget != null) {
+						bounds = tree.getPathBounds(currentDropTarget);
+					} else {
+						bounds = tree.getBounds();
+					}
+					g.setColor(Color.black);
+					g.drawRect(bounds.x, bounds.y, bounds.width - 1,
+							bounds.height - 1);
+				}
+			}
+		};
 		myTreeUI = new MyTreeUI();
 		tree.setUI(myTreeUI);
 		/** *** Register listeners **** */
@@ -91,13 +114,13 @@ public abstract class ResourceTree extends JPanel implements
 
 		/***********************************************************************
 		 * DO NOT UNCOMMENT *
-		 *
+		 * 
 		 * setDragEnabled(true);
-		 *
+		 * 
 		 * This method is a swing method while our DnD is using awt. Using both
 		 * swing and awt creates horrible exceptions... Please use DragSource
 		 * instead
-		 *
+		 * 
 		 */
 
 		/** *** Drag and Drop stuff **** */
@@ -138,13 +161,50 @@ public abstract class ResourceTree extends JPanel implements
 	}
 
 	public void dragOver(DropTargetDragEvent dtde) {
+		Point location = dtde.getLocation();
+		TreePath nearestLayerPath = getNearestDroppablePath(location.x, location.y);
+		currentDropTarget = nearestLayerPath;
+		dragDrawDirty = true;
+		this.repaint();
 	}
+
+	private TreePath getNearestDroppablePath(int refX, int refY) {
+		int row = -1;
+		for (int i = 0; i < tree.getRowCount(); i++) {
+			TreePath path = tree.getPathForRow(i);
+			if (isDroppable(path)) {
+				Rectangle rowBounds = tree.getPathBounds(path);
+				if (rowBounds.contains(refX, refY)) {
+					row = i;
+					break;
+				}
+			}
+		}
+		TreePath nearestPath = null;
+		if (row != -1) {
+			nearestPath = tree.getPathForRow(row);
+		} else {
+			nearestPath = null;
+		}
+		return nearestPath;
+	}
+
+	protected abstract boolean isDroppable(TreePath path);
 
 	public void drop(DropTargetDropEvent dtde) {
 		Transferable trans = dtde.getTransferable();
-		if (!doDrop(trans, getMyNodeAtPoint(dtde.getLocation()))) {
+		Point location = dtde.getLocation();
+		Object component = null;
+		TreePath nearestLayerPath = getNearestDroppablePath(location.x, location.y);
+		if (nearestLayerPath != null) {
+			component = nearestLayerPath.getLastPathComponent();
+		}
+		if (!doDrop(trans, component)) {
 			dtde.rejectDrop();
 		}
+		currentDropTarget = null;
+		dragDrawDirty = false;
+		this.repaint();
 	}
 
 	public void dragGestureRecognized(DragGestureEvent dge) {
@@ -161,23 +221,6 @@ public abstract class ResourceTree extends JPanel implements
 	protected abstract boolean doDrop(Transferable trans, Object node);
 
 	public void dropActionChanged(DropTargetDragEvent dtde) {
-	}
-
-	/**
-	 * Retrieves myNode at the location point and select the node at this point
-	 * Use it like this : currentNode = getMyNodeAtPoint(anypoint); so the
-	 * selected node and currentNode remains coherent
-	 *
-	 * @param point
-	 * @return
-	 */
-	private Object getMyNodeAtPoint(Point point) {
-		TreePath treePath = tree.getPathForLocation(point.x, point.y);
-		Object myNode = null;
-		if (treePath != null) {
-			myNode = treePath.getLastPathComponent();
-		}
-		return myNode;
 	}
 
 	protected class MyMouseAdapter extends MouseAdapter {

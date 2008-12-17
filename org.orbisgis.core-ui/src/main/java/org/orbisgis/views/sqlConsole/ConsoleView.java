@@ -231,7 +231,7 @@ public class ConsoleView implements IView {
 				}
 
 				MapContext vc = ((MapContextManager) Services
-						.getService(MapContextManager.class)).getActiveView();
+						.getService(MapContextManager.class)).getActiveMapContext();
 
 				DataManager dataManager = (DataManager) Services
 						.getService(DataManager.class);

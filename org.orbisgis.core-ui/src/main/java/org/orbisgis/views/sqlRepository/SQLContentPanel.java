@@ -191,6 +191,11 @@ public class SQLContentPanel extends ResourceTree {
 		return false;
 	}
 
+	@Override
+	protected boolean isDroppable(TreePath path) {
+		return false;
+	}
+	
 	private Object getSelectedResources() {
 		TreePath path = getTree().getSelectionPath();
 		if (path == null) {

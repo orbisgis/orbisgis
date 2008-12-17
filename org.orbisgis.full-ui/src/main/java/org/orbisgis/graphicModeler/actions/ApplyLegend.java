@@ -26,7 +26,7 @@ public class ApplyLegend implements IAction {
 			// TODO get the correct layer
 			MapContextManager mcm = Services
 					.getService(MapContextManager.class);
-			ILayer activeLayer = mcm.getActiveView().getActiveLayer();
+			ILayer activeLayer = mcm.getActiveMapContext().getActiveLayer();
 			SpatialDataSourceDecorator sds = activeLayer.getDataSource();
 
 			UniqueValueLegend classification = LegendFactory
@@ -62,7 +62,7 @@ public class ApplyLegend implements IAction {
 	@Override
 	public boolean isEnabled() {
 		MapContextManager mcm = Services.getService(MapContextManager.class);
-		MapContext vc = mcm.getActiveView();
+		MapContext vc = mcm.getActiveMapContext();
 		return vc != null && ToolUtilities.isActiveLayerEditable(vc)
 				&& ToolUtilities.isActiveLayerVisible(vc)
 				&& ToolUtilities.geometryTypeIs(vc, GeometryConstraint.POINT);

@@ -43,7 +43,7 @@ import org.orbisgis.views.editor.EditorManager;
 
 public class DefaultMapContextManager implements MapContextManager {
 
-	public MapContext getActiveView() {
+	public MapContext getActiveMapContext() {
 		EditableElement element = ((EditorManager) Services
 				.getService(EditorManager.class)).getActiveElement();
 		if ((element != null) && (element.getObject() instanceof MapContext)) {

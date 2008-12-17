@@ -47,6 +47,11 @@ public class GeocognitionTree extends ResourceTree {
 	}
 
 	@Override
+	protected boolean isDroppable(TreePath path) {
+		return true;
+	}
+	
+	@Override
 	protected boolean doDrop(Transferable trans, Object element) {
 
 		// Get the node where we drop

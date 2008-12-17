@@ -52,7 +52,7 @@ public class CreateGroup implements ILayerAction {
 	public boolean acceptsSelectionCount(int selectionCount) {
 		MapContextManager vcm = (MapContextManager) Services
 				.getService(MapContextManager.class);
-		return (vcm.getActiveView() != null) && (selectionCount <= 1);
+		return (vcm.getActiveMapContext() != null) && (selectionCount <= 1);
 	}
 
 	public void execute(MapContext mapContext, ILayer resource) {
@@ -60,12 +60,12 @@ public class CreateGroup implements ILayerAction {
 				.getService(MapContextManager.class);
 		DataManager dataManager = (DataManager) Services
 				.getService(DataManager.class);
-		if (vcm.getActiveView() != null) {
+		if (vcm.getActiveMapContext() != null) {
 			ILayer newLayerCollection = dataManager
 					.createLayerCollection("group" + System.currentTimeMillis());
 
 			if ((resource == null) || (!resource.acceptsChilds())) {
-				resource = vcm.getActiveView().getLayerModel();
+				resource = vcm.getActiveMapContext().getLayerModel();
 			}
 			try {
 				resource.addLayer(newLayerCollection);

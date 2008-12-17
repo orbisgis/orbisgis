@@ -76,7 +76,7 @@ public class DeleteNode implements IEditorAction {
 
 	public boolean isEnabled(IEditor editor) {
 		MapContextManager mcm = Services.getService(MapContextManager.class);
-		MapContext vc = mcm.getActiveView();
+		MapContext vc = mcm.getActiveMapContext();
 		return ToolUtilities.isActiveLayerEditable(vc)
 				&& ToolUtilities.isActiveLayerVisible(vc)
 				&& ToolUtilities.geometryTypeIs(vc, GeometryConstraint.POINT);

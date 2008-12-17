@@ -4,6 +4,7 @@ import java.awt.datatransfer.Transferable;
 import java.awt.dnd.DragGestureEvent;
 
 import javax.swing.JPopupMenu;
+import javax.swing.tree.TreePath;
 
 import org.orbisgis.ui.resourceTree.ResourceTree;
 
@@ -24,5 +25,10 @@ class BasicResourceTree extends ResourceTree {
 	@Override
 	public JPopupMenu getPopup() {
 		return null;
+	}
+	
+	@Override
+	protected boolean isDroppable(TreePath path) {
+		return false;
 	}
 }

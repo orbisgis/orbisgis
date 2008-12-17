@@ -103,7 +103,7 @@ public class GeomarkPanel extends JPanel implements ListSelectionListener {
 							list.locationToIndex(e.getPoint())).toString();
 					MapContext vc = ((MapContextManager) Services
 							.getService(MapContextManager.class))
-							.getActiveView();
+							.getActiveMapContext();
 					if (vc != null) {
 						editor.getMapTransform().setExtent(
 								geomarksMap.get(geomarkLabel));
@@ -203,7 +203,7 @@ public class GeomarkPanel extends JPanel implements ListSelectionListener {
 			listModel.insertElementAt(geomarkName.getText(), index);
 			MapContext vc = ((MapContextManager) Services
 					.getService(MapContextManager.class))
-					.getActiveView();
+					.getActiveMapContext();
 			if (vc != null) {
 				geomarksMap.put(geomarkName.getText(), editor.getMapTransform()
 						.getAdjustedExtent());

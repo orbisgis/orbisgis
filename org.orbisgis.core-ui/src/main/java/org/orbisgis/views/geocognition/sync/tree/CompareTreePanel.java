@@ -430,6 +430,11 @@ public class CompareTreePanel extends JPanel {
 		}
 
 		@Override
+		protected boolean isDroppable(TreePath path) {
+			return false;
+		}
+		
+		@Override
 		protected boolean doDrop(Transferable trans, Object node) {
 			return false;
 		}
