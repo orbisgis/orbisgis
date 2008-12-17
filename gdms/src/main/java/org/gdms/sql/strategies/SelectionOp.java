@@ -46,6 +46,7 @@ import org.gdms.data.metadata.Metadata;
 import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.ObjectDriver;
+import org.gdms.sql.customQuery.QueryManager;
 import org.gdms.sql.evaluator.EvaluationException;
 import org.gdms.sql.evaluator.Expression;
 import org.gdms.sql.evaluator.Field;
@@ -300,9 +301,21 @@ public class SelectionOp extends AbstractExpressionOperator implements Operator 
 		for (FunctionOperator functionOperator : functions) {
 			Function function = FunctionManager.getFunction(functionOperator
 					.getFunctionName());
-			if (function.isAggregate()) {
-				throw new SemanticException("'Where' clause "
-						+ "cannot contain aggregated functions");
+			if (function != null) {
+				if (function.isAggregate()) {
+					throw new SemanticException("'Where' clause "
+							+ "cannot contain aggregated functions");
+				}
+			} else {
+				if (QueryManager.getQuery(functionOperator.getFunctionName()) != null) {
+					throw new SemanticException(
+							"Custom queries not valid in where clause: "
+									+ functionOperator.getFunctionName());
+				} else {
+					throw new SemanticException("Function '"
+							+ functionOperator.getFunctionName()
+							+ "' not found");
+				}
 			}
 		}
 	}
@@ -367,7 +380,8 @@ public class SelectionOp extends AbstractExpressionOperator implements Operator 
 	}
 
 	@Override
-	public int passFieldUp(Field field) throws DriverException, AmbiguousFieldReferenceException {
+	public int passFieldUp(Field field) throws DriverException,
+			AmbiguousFieldReferenceException {
 		return getOperator(0).passFieldUp(field);
 	}
 }

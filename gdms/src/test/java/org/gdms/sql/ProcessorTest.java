@@ -559,6 +559,24 @@ public class ProcessorTest extends TestCase {
 
 	}
 
+	public void testFunctions() throws Exception {
+		// Non existing function in where clause
+		failWithSemanticException("select * "
+				+ "from alltypes where notexists(int);");
+
+		// Non existing function in selection
+		failWithSemanticException("select notexists(int) " + "from alltypes;");
+
+		// Custom query in where clause
+		failWithSemanticException("select * "
+				+ "from alltypes where register('a', 'a');");
+
+		getValidatedPreprocessor("select * "
+				+ "from alltypes where strlength(string) > 0;");
+		getValidatedPreprocessor("select strlength(string) " + "from alltypes;");
+
+	}
+
 	public void testValidateCustomQueries() throws Exception {
 		SumQuery query = new SumQuery();
 		if (QueryManager.getQuery(query.getName()) == null) {
