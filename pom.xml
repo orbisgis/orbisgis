@@ -68,6 +68,7 @@
 			<plugin>
 				<groupId>org.orbisgis</groupId>
 				<artifactId>release-maven-plugin</artifactId>
+				<version>1.0.0-SNAPSHOT</version>
 				<configuration>
 					<appName>OrbisGIS</appName>
 					<versionNumber>2.0.0</versionNumber>
