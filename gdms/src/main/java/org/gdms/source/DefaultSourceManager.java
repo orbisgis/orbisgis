@@ -106,7 +106,7 @@ public class DefaultSourceManager implements SourceManager {
 
 	private HashMap<String, String> nameMapping;
 
-	private List<SourceListener> listeners = new ArrayList<SourceListener>();;
+	private ArrayList<SourceListener> listeners = new ArrayList<SourceListener>();;
 
 	ArrayList<CommitListener> commitListeners = new ArrayList<CommitListener>();;
 
@@ -310,8 +310,11 @@ public class DefaultSourceManager implements SourceManager {
 		fireSourceRemoved(name, names);
 	}
 
+	@SuppressWarnings("unchecked")
 	private void fireSourceRemoved(String name, ArrayList<String> names) {
-		for (SourceListener listener : listeners) {
+		ArrayList<SourceListener> list = (ArrayList<SourceListener>) listeners
+				.clone();
+		for (SourceListener listener : list) {
 			listener.sourceRemoved(new SourceRemovalEvent(name, names
 					.toArray(new String[0]), true, this));
 		}
@@ -452,8 +455,11 @@ public class DefaultSourceManager implements SourceManager {
 		fireSourceAdded(name, src.isWellKnownName());
 	}
 
+	@SuppressWarnings("unchecked")
 	private void fireSourceAdded(String name, boolean wellKnownName) {
-		for (SourceListener listener : listeners) {
+		ArrayList<SourceListener> list = (ArrayList<SourceListener>) listeners
+				.clone();
+		for (SourceListener listener : list) {
 			listener.sourceAdded(new SourceEvent(name, wellKnownName, this));
 		}
 	}
@@ -640,8 +646,11 @@ public class DefaultSourceManager implements SourceManager {
 		fireNameChanged(dsName, newName);
 	}
 
+	@SuppressWarnings("unchecked")
 	private void fireNameChanged(String dsName, String newName) {
-		for (SourceListener listener : listeners) {
+		ArrayList<SourceListener> list = (ArrayList<SourceListener>) listeners
+				.clone();
+		for (SourceListener listener : list) {
 			listener.sourceNameChanged(new SourceEvent(dsName, true, this,
 					newName));
 		}
