@@ -57,10 +57,14 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipException;
 import java.util.zip.ZipFile;
 
+import org.apache.log4j.Logger;
 import org.orbisgis.Services;
 import org.orbisgis.errorManager.ErrorManager;
 
 public class CommonClassLoader extends SecureClassLoader {
+
+	private static final Logger logger = Logger
+			.getLogger(CommonClassLoader.class);
 
 	private ArrayList<File> outputFolders = new ArrayList<File>();
 
@@ -115,6 +119,7 @@ public class CommonClassLoader extends SecureClassLoader {
 	public void addJars(File[] jars) throws IOException {
 		for (int i = 0; i < jars.length; i++) {
 			if (!this.jars.contains(jars[i])) {
+				logger.debug("Jar added to classpath: " + jars[i]);
 				ZipFile jar = null;
 				try {
 					jar = new ZipFile(jars[i].getPath());
@@ -153,6 +158,8 @@ public class CommonClassLoader extends SecureClassLoader {
 	public void addOutputFolders(File[] outputFolders) {
 		for (int i = 0; i < outputFolders.length; i++) {
 			if (!this.outputFolders.contains(outputFolders[i])) {
+				logger.debug("Output folder added to classpath: "
+						+ outputFolders[i]);
 				this.outputFolders.add(outputFolders[i]);
 			}
 		}
