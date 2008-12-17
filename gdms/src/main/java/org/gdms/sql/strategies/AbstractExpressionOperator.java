@@ -209,8 +209,8 @@ public abstract class AbstractExpressionOperator extends AbstractOperator {
 				if (fnc == null) {
 					CustomQuery query = QueryManager.getQuery(functionName);
 					if (query == null) {
-						throw new SemanticException("The function "
-								+ functionName + " does not exist");
+						throw new SemanticException("Function '" + functionName
+								+ "' not found");
 					}
 				}
 			}
