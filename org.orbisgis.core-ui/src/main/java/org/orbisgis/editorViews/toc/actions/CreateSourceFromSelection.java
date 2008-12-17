@@ -18,7 +18,7 @@ public class CreateSourceFromSelection implements ILayerAction {
 
 	@Override
 	public boolean acceptsSelectionCount(int selectionCount) {
-		return true;
+		return selectionCount > 0;
 	}
 
 	@Override
