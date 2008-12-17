@@ -117,6 +117,7 @@ public class LogicTreeBuilder {
 			DriverException {
 		Operator operator = getOperator(rootNode);
 		operator.setDataSourceFactory(dsf);
+		operator.setRoot(true);
 		return operator;
 	}
 

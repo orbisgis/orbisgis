@@ -54,6 +54,8 @@ public abstract class AbstractOperator implements Operator {
 	protected ArrayList<Operator> children = new ArrayList<Operator>();
 	private ObjectDriver result;
 	private DataSourceFactory dsf;
+	private boolean removeInternal = false;
+
 	private boolean validated = false;
 
 	public void setDataSourceFactory(DataSourceFactory dsf) {
@@ -161,10 +163,41 @@ public abstract class AbstractOperator implements Operator {
 		}
 	}
 
+	public void setRoot(boolean isRoot) {
+		this.removeInternal = isRoot;
+	}
+
 	public ObjectDriver getResult(IProgressMonitor pm)
 			throws ExecutionException {
 		if (result == null) {
 			result = getResultContents(pm);
+			if (removeInternal && (result != null)) {
+				try {
+					ArrayList<Integer> externalFields = new ArrayList<Integer>();
+					int[] internal = getInternalFields();
+					if (internal.length > 0) {
+						Metadata metadata = result.getMetadata();
+						for (int i = 0; i < metadata.getFieldCount(); i++) {
+							boolean isInternal = false;
+							for (int j = 0; j < internal.length; j++) {
+								if (internal[j] == i) {
+									isInternal = true;
+								}
+							}
+							if (!isInternal) {
+								externalFields.add(i);
+							}
+						}
+						int[] columnMap = new int[externalFields.size()];
+						for (int i = 0; i < columnMap.length; i++) {
+							columnMap[i] = externalFields.get(i);
+						}
+						result = new ColumnMappedDriver(result, columnMap);
+					}
+				} catch (DriverException e) {
+					throw new ExecutionException("Cannot execute query", e);
+				}
+			}
 		}
 		return result;
 	}

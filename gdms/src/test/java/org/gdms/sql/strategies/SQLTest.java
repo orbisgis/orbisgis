@@ -799,11 +799,20 @@ public class SQLTest extends SourceTest {
 		createSource("table2", "id", 1, 2);
 		DataSource ds = dsf
 				.getDataSourceFromSQL("SELECT n1.id as n1, n2.id as n2, e.id "
-						+ "FROM table1 n1, "
-						+ "table1 n2, table2 e "
+						+ "FROM table1 n1, " + "table1 n2, table2 e "
 						+ "WHERE n1.id = e.id;");
 		ds.open();
 		assertTrue(ds.getRowCount() == 16);
+		ds.close();
+	}
+
+	public void testSortDoesNotIncludeField() throws Exception {
+		dsf.getSourceManager().register("test",
+				new File(internalData + "/test.csv"));
+		DataSource ds = dsf
+				.getDataSourceFromSQL("SELECT gis from test order by id;");
+		ds.open();
+		assertTrue(ds.getMetadata().getFieldCount() == 1);
 		ds.close();
 	}
 

@@ -79,7 +79,8 @@ public interface Operator {
 	 * @throws UnsupportedOperationException
 	 *             if invoked in operators that doesn't return any result
 	 */
-	int passFieldUp(Field field) throws DriverException, AmbiguousFieldReferenceException;
+	int passFieldUp(Field field) throws DriverException,
+			AmbiguousFieldReferenceException;
 
 	/**
 	 * Get the field indexes in the result metadata that were created just to
@@ -225,5 +226,12 @@ public interface Operator {
 	 * @return
 	 */
 	public String getFieldSource(SourceManager sm, Field field);
+
+	/**
+	 * Used to notify the root operator that it has no parent
+	 * 
+	 * @param isRoot
+	 */
+	public void setRoot(boolean isRoot);
 
 }
