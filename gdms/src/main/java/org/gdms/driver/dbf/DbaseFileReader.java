@@ -72,31 +72,32 @@ import org.gdms.driver.ReadBufferManager;
 /**
  * A DbaseFileReader is used to read a dbase III format file. <br>
  * The general use of this class is: <CODE><PRE>
- *
+ * 
  * FileChannel in = new FileInputStream("thefile.dbf").getChannel();
  * DbaseFileReader r = new DbaseFileReader( in ) Object[] fields = new
  * Object[r.getHeader().getNumFields()]; while (r.hasNext()) {
  * r.readEntry(fields); // do stuff } r.close();
- *
- * </PRE></CODE> For consumers who wish to be a bit more selective with their reading
- * of rows, the Row object has been added. The semantics are the same as using
- * the readEntry method, but remember that the Row object is always the same.
- * The values are parsed as they are read, so it pays to copy them out (as each
- * call to Row.read() will result in an expensive String parse). <br>
+ * 
+ * </PRE></CODE> For consumers who wish to be a bit more selective with their
+ * reading of rows, the Row object has been added. The semantics are the same as
+ * using the readEntry method, but remember that the Row object is always the
+ * same. The values are parsed as they are read, so it pays to copy them out (as
+ * each call to Row.read() will result in an expensive String parse). <br>
  * <b>EACH CALL TO readEntry OR readRow ADVANCES THE FILE!</b><br>
  * An example of using the Row method of reading: <CODE><PRE>
- *
+ * 
  * FileChannel in = new FileInputStream("thefile.dbf").getChannel();
  * DbaseFileReader r = new DbaseFileReader( in ) int fields =
  * r.getHeader().getNumFields(); while (r.hasNext()) { DbaseFileReader.Row row =
  * r.readRow(); for (int i = 0; i < fields; i++) { // do stuff Foo.bar(
  * row.read(i) ); } } r.close();
- *
+ * 
  * </PRE></CODE>
- *
+ * 
  * @author Ian Schneider
  * @source $URL:
- *         http://svn.geotools.org/geotools/tags/2.3.1/plugin/shapefile/src/org/geotools/data/shapefile/dbf/DbaseFileReader.java $
+ *         http://svn.geotools.org/geotools/tags/2.3.1/plugin/shapefile/src
+ *         /org/geotools/data/shapefile/dbf/DbaseFileReader.java $
  */
 public class DbaseFileReader {
 
@@ -120,7 +121,7 @@ public class DbaseFileReader {
 
 	/**
 	 * Creates a new instance of DBaseFileReader
-	 *
+	 * 
 	 * @param channel
 	 *            The readable channel to use.
 	 * @throws IOException
@@ -159,7 +160,7 @@ public class DbaseFileReader {
 
 	/**
 	 * Get the header from this file. The header is read upon instantiation.
-	 *
+	 * 
 	 * @return The header associated with this file or null if an error
 	 *         occurred.
 	 */
@@ -168,8 +169,9 @@ public class DbaseFileReader {
 	}
 
 	/**
-	 * Clean up all resources associated with this reader.<B>Highly recomended.</B>
-	 *
+	 * Clean up all resources associated with this reader.<B>Highly
+	 * recomended.</B>
+	 * 
 	 * @throws IOException
 	 *             If an error occurs.
 	 */
@@ -189,7 +191,7 @@ public class DbaseFileReader {
 
 	/**
 	 * Query the reader as to whether there is another record.
-	 *
+	 * 
 	 * @return True if more records exist, false otherwise.
 	 */
 	public boolean hasNext() {
@@ -311,24 +313,28 @@ public class DbaseFileReader {
 			// (D)date (Date)
 			case 'd':
 			case 'D':
-				try {
-					String tempString = charBuffer.subSequence(fieldOffset,
-							fieldOffset + 4).toString();
-					int tempYear = Integer.parseInt(tempString);
-					tempString = charBuffer.subSequence(fieldOffset + 4,
-							fieldOffset + 6).toString();
-					int tempMonth = Integer.parseInt(tempString) - 1;
-					tempString = charBuffer.subSequence(fieldOffset + 6,
-							fieldOffset + 8).toString();
-					int tempDay = Integer.parseInt(tempString);
-					Calendar cal = Calendar.getInstance();
-					cal.clear();
-					cal.set(Calendar.YEAR, tempYear);
-					cal.set(Calendar.MONTH, tempMonth);
-					cal.set(Calendar.DAY_OF_MONTH, tempDay);
-					object = ValueFactory.createValue(cal.getTime());
-				} catch (NumberFormatException nfe) {
-					// todo: use progresslistener, this isn't a grave error.
+				if (charBuffer.toString().equals("00000000")) {
+					return ValueFactory.createNullValue();
+				} else {
+					try {
+						String tempString = charBuffer.subSequence(fieldOffset,
+								fieldOffset + 4).toString();
+						int tempYear = Integer.parseInt(tempString);
+						tempString = charBuffer.subSequence(fieldOffset + 4,
+								fieldOffset + 6).toString();
+						int tempMonth = Integer.parseInt(tempString) - 1;
+						tempString = charBuffer.subSequence(fieldOffset + 6,
+								fieldOffset + 8).toString();
+						int tempDay = Integer.parseInt(tempString);
+						Calendar cal = Calendar.getInstance();
+						cal.clear();
+						cal.set(Calendar.YEAR, tempYear);
+						cal.set(Calendar.MONTH, tempMonth);
+						cal.set(Calendar.DAY_OF_MONTH, tempDay);
+						object = ValueFactory.createValue(cal.getTime());
+					} catch (NumberFormatException nfe) {
+						// todo: use progresslistener, this isn't a grave error.
+					}
 				}
 				break;
 

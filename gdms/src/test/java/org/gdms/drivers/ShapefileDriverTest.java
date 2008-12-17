@@ -38,6 +38,7 @@ package org.gdms.drivers;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import junit.framework.TestCase;
 
@@ -46,6 +47,7 @@ import org.gdms.Geometries;
 import org.gdms.SourceTest;
 import org.gdms.data.BasicWarningListener;
 import org.gdms.data.DataSource;
+import org.gdms.data.DataSourceCreation;
 import org.gdms.data.DataSourceDefinition;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.file.FileSourceCreation;
@@ -301,7 +303,8 @@ public class ShapefileDriverTest extends TestCase {
 		dsf.saveContents("shp", ds);
 		ds = dsf.getDataSource("shp");
 		ds.open();
-		Coordinate coord = ds.getFieldValue(0, 0).getAsGeometry().getCoordinate();
+		Coordinate coord = ds.getFieldValue(0, 0).getAsGeometry()
+				.getCoordinate();
 		ds.close();
 		assertTrue(coord.z == 2);
 	}
@@ -440,5 +443,27 @@ public class ShapefileDriverTest extends TestCase {
 		Value read = ValueFactory.createValue(Type.GEOMETRY, wkb);
 		ds.close();
 		assertTrue(read.equals(geom).getAsBoolean());
+	}
+
+	public void testNullDates() throws Exception {
+		DefaultMetadata m = new DefaultMetadata();
+		m.addField("geom", TypeFactory.createType(Type.GEOMETRY,
+				new GeometryConstraint(GeometryConstraint.LINESTRING)));
+		m.addField("date", Type.DATE);
+		DataSourceCreation dsc = new FileSourceCreation(new File(dsf
+				.getTempFile()
+				+ ".shp"), m);
+		dsf.getSourceManager().register("sample", dsf.createDataSource(dsc));
+		DataSource ds = dsf.getDataSource("sample");
+		ds.open();
+		ds.insertFilledRow(new Value[] { ValueFactory.createNullValue(),
+				ValueFactory.createNullValue() });
+		ds.commit();
+		ds.close();
+
+		ds.open();
+		Date date = ds.getDate(0, 0);
+		ds.close();
+		assertTrue(date == null);
 	}
 }

@@ -60,9 +60,12 @@ class DBFMetadata implements Metadata {
 				mapping.add(i);
 			}
 		}
-		if (mapping.size() + 1 != metadata.getFieldCount()) {
+		if (mapping.size() + 1 < metadata.getFieldCount()) {
 			throw new IllegalArgumentException("The data source "
 					+ "has more than one spatial field");
+		} else if (mapping.size() + 1 > metadata.getFieldCount()) {
+			throw new IllegalArgumentException("The data source "
+					+ "has no spatial field");
 		}
 	}
 

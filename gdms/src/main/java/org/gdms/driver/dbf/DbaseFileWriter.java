@@ -96,8 +96,6 @@ public class DbaseFileWriter {
 
 	private final String NULL_STRING = "";
 
-	private final Date NULL_DATE = new Date();
-
 	/**
 	 * Create a DbaseFileWriter using the specified header and writing to the
 	 * given channel.
@@ -211,7 +209,7 @@ public class DbaseFileWriter {
 				break;
 			case 'D':
 			case 'd':
-				o = formatter.getFieldString((Date) (obj == null ? NULL_DATE
+				o = formatter.getFieldString((Date) (obj == null ? null
 						: ((Value) obj).getAsDate()));
 				break;
 			default:
@@ -351,8 +349,7 @@ public class DbaseFileWriter {
 				}
 				buffer.append(day);
 			} else {
-				buffer.setLength(8);
-				buffer.replace(0, 8, emptyString);
+				buffer.append("00000000");
 			}
 
 			buffer.setLength(8);
