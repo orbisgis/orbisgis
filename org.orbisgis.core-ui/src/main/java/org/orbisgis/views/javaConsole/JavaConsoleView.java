@@ -119,8 +119,8 @@ public class JavaConsoleView implements IView {
 
 			public void save(String text) throws IOException {
 				final SaveFilePanel outfilePanel = new SaveFilePanel(
-						"org.orbisgis.views.BSHConsoleOutFile", "Save script");
-				outfilePanel.addFilter("java", "JAVA script (*.java)");
+						"org.orbisgis.views.JavaConsoleOutFile", "Save script");
+				outfilePanel.addFilter("ojava", "OrbisGIS JAVA Script (*.ogjava)");
 
 				if (UIFactory.showDialog(outfilePanel)) {
 					final BufferedWriter out = new BufferedWriter(
@@ -132,8 +132,8 @@ public class JavaConsoleView implements IView {
 
 			public String open() throws IOException {
 				final OpenFilePanel inFilePanel = new OpenFilePanel(
-						"org.orbisgis.views.BSHConsoleInFile", "Open script");
-				inFilePanel.addFilter("java", "JAVA script (*.java)");
+						"org.orbisgis.views.JavaConsoleInFile", "Open script");
+				inFilePanel.addFilter("ojava", "OrbisGIS JAVA Script (*.ogjava)");
 
 				if (UIFactory.showDialog(inFilePanel)) {
 					File selectedFile = inFilePanel.getSelectedFile();
