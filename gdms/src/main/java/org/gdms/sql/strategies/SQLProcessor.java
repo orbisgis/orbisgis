@@ -137,6 +137,21 @@ public class SQLProcessor {
 		return prepareInstruction(op, sql, true);
 	}
 
+	/**
+	 * Creates an instruction object that will be able to execute the specified
+	 * operator
+	 * 
+	 * @param op
+	 *            Operation
+	 * @param sql
+	 *            SQL query
+	 * @param doOpenClose
+	 *            flag to make it initialize and finalize the operator tree
+	 * @return
+	 * @throws ParseException
+	 * @throws SemanticException
+	 * @throws DriverException
+	 */
 	private Instruction prepareInstruction(Operator op, String sql,
 			boolean doOpenClose) throws ParseException, SemanticException,
 			DriverException {
