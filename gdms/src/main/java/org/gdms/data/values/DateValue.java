@@ -56,6 +56,8 @@ class DateValue extends AbstractValue implements Serializable {
 
 	private Date value;
 
+	private static SimpleDateFormat simpleDateFormat;
+
 	/**
 	 * Creates a new DateValue object.
 	 *
@@ -125,7 +127,11 @@ class DateValue extends AbstractValue implements Serializable {
 	}
 
 	private SimpleDateFormat getDateFormat() {
-		return new SimpleDateFormat(DATE_FORMAT);
+		if (simpleDateFormat == null) {
+			simpleDateFormat = new SimpleDateFormat(DATE_FORMAT);
+			simpleDateFormat.setLenient(false);
+		}
+		return simpleDateFormat;
 	}
 
 	/**
