@@ -82,6 +82,7 @@ import javax.swing.event.ListSelectionListener;
 
 import org.apache.log4j.Logger;
 import org.gdms.source.SourceManager;
+import org.orbisgis.CollectionUtils;
 import org.orbisgis.DataManager;
 import org.orbisgis.Services;
 import org.orbisgis.action.IActionAdapter;
@@ -91,6 +92,7 @@ import org.orbisgis.action.MenuTree;
 import org.orbisgis.images.IconLoader;
 import org.orbisgis.pluginManager.ExtensionPointManager;
 import org.orbisgis.pluginManager.ItemAttributes;
+import org.orbisgis.ui.jlist.OGList;
 import org.orbisgis.ui.sif.AskValue;
 import org.orbisgis.ui.text.JTextFilter;
 import org.orbisgis.views.geocatalog.action.EPGeocatalogSourceActionHelper;
@@ -116,7 +118,7 @@ public class Catalog extends JPanel implements DragGestureListener,
 
 	private SourceListModel listModel;
 
-	private JList lstSources;
+	private OGList lstSources;
 
 	private DragSource dragSource;
 
@@ -137,8 +139,8 @@ public class Catalog extends JPanel implements DragGestureListener,
 	private EPSourceWizardHelper wh;
 
 	public Catalog(EPSourceWizardHelper wh) {
-		this.wh= wh;
-		lstSources = new JList();
+		this.wh = wh;
+		lstSources = new OGList();
 		lstSources.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mousePressed(MouseEvent e) {
@@ -151,6 +153,30 @@ public class Catalog extends JPanel implements DragGestureListener,
 			}
 
 			private void showPopup(MouseEvent e) {
+				if (e.getButton() == MouseEvent.BUTTON3) {
+					int path = -1;
+					for (int i = 0; i < listModel.getSize(); i++) {
+						if (lstSources.getCellBounds(i, i).contains(
+								e.getPoint())) {
+							path = i;
+							break;
+						}
+					}
+					int[] selectionPaths = lstSources.getSelectedIndices();
+					if ((selectionPaths != null) && (path != -1)) {
+						if (!CollectionUtils.contains(selectionPaths, path)) {
+							if (e.isControlDown()) {
+								lstSources.addSelectionInterval(path, path);
+							} else {
+								lstSources.setSelectionInterval(path, path);
+							}
+						}
+					} else if (path == -1) {
+						lstSources.clearSelection();
+					} else {
+
+					}
+				}
 				if (e.isPopupTrigger()) {
 					JPopupMenu popup = getPopup();
 					if (popup != null) {
