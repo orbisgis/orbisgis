@@ -96,7 +96,7 @@ public class WMSConnectionPanel extends JPanel implements SQLUIPanel {
 
 			@Override
 			public void run(IProgressMonitor pm) {
-				String wmsURL = txtURL.getText();
+				String wmsURL = txtURL.getText().trim();
 				try {
 					client = WMSClientPool.getWMSClient(wmsURL);
 					client.getCapabilities(null, false, null);
