@@ -45,7 +45,8 @@ public class SetActive implements ILayerAction {
 
 	public boolean accepts(MapContext mc, ILayer layer) {
 		try {
-			return (mc.getActiveLayer() != layer) && (layer.isVectorial());
+			return (mc.getActiveLayer() != layer) && layer.isVectorial()
+					&& layer.getDataSource().isEditable();
 		} catch (DriverException e) {
 			return false;
 		}
