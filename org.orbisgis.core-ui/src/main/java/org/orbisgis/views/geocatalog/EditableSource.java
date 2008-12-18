@@ -111,7 +111,7 @@ public class EditableSource extends AbstractTableEditableElement implements
 
 	@Override
 	public boolean isEditable() {
-		return true;
+		return ds.isEditable();
 	}
 
 	@Override
