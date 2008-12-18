@@ -816,6 +816,22 @@ public class SQLTest extends SourceTest {
 		ds.close();
 	}
 
+	public void testExecuteTwiceOnTwoSourcesWithSameName() throws Exception {
+		createSource("source", "a", 1, 2, 3);
+		String sql = "select * from source where a < 2;";
+		DataSource ds = dsf.getDataSourceFromSQL(sql);
+		ds.open();
+		assertTrue(ds.getRowCount() == 1);
+		ds.close();
+		dsf.getSourceManager().remove("source");
+
+		createSource("source", "a", 10);
+		ds = dsf.getDataSourceFromSQL(sql);
+		ds.open();
+		assertTrue(ds.getRowCount() == 0);
+		ds.close();
+	}
+
 	private void createSource(String name, String fieldName, int... values) {
 		ObjectMemoryDriver omd = new ObjectMemoryDriver(
 				new String[] { fieldName }, new Type[] { TypeFactory

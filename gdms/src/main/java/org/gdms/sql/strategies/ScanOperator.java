@@ -144,6 +144,7 @@ public class ScanOperator extends AbstractOperator {
 	}
 
 	public void initialize() throws DriverException {
+		super.initialize();
 		try {
 			dataSource = dsf.getDataSource(tableName, DataSourceFactory.NORMAL);
 			dataSource.open();
