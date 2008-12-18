@@ -107,13 +107,11 @@ public class ExtendedSource implements org.gdms.source.Source {
 			List<String> referencedSources = source.getReferencedSource();
 			referencedSources.addAll(depNames);
 
-			if (isWellKnownName) {
-				// Add dependencies to other sources
-				List<Source> srcList = sources.getSource();
-				for (Source src : srcList) {
-					if (depNames.contains(src.getName())) {
-						src.getReferencingSource().add(name);
-					}
+			// Add dependencies to other sources
+			List<Source> srcList = sources.getSource();
+			for (Source src : srcList) {
+				if (depNames.contains(src.getName())) {
+					src.getReferencingSource().add(name);
 				}
 			}
 		} else {
@@ -407,7 +405,7 @@ public class ExtendedSource implements org.gdms.source.Source {
 	public String getDriverId() {
 		return def.getDriverId();
 	}
-	
+
 	public int getType() {
 		try {
 			return def.getType();
@@ -415,7 +413,7 @@ public class ExtendedSource implements org.gdms.source.Source {
 			return SourceManager.UNKNOWN;
 		}
 	}
-	
+
 	@Override
 	public String getTypeName() {
 		return def.getTypeName();

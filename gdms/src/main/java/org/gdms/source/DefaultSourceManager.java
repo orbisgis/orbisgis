@@ -275,11 +275,14 @@ public class DefaultSourceManager implements SourceManager {
 		ExtendedSource toRemove = nameSource.get(name);
 		// Check if some source depends on it
 		String[] referencingSources = toRemove.getReferencingSources();
+		ArrayList<String> notWellKnown = new ArrayList<String>();
 		if (referencingSources.length > 0) {
 			boolean anyWellKnown = false;
 			for (String referencingSource : referencingSources) {
 				if (getSource(referencingSource).isWellKnownName()) {
 					anyWellKnown = true;
+				} else {
+					notWellKnown.add(referencingSource);
 				}
 			}
 			if (anyWellKnown) {
@@ -294,6 +297,10 @@ public class DefaultSourceManager implements SourceManager {
 
 		toRemove.removeFromXML();
 		nameSource.remove(name);
+		
+		for (String nwk : notWellKnown) {
+			remove(nwk);
+		}
 
 		fireSourceRemoved(name);
 
@@ -858,9 +865,9 @@ public class DefaultSourceManager implements SourceManager {
 			}
 		}
 		ExtendedSource src = getExtendedSource(name);
-		String[] referenced = src.getReferencingSources();
-		for (String referencedSource : referenced) {
-			fireCommitDone(referencedSource);
+		String[] referencing = src.getReferencingSources();
+		for (String referencingSource : referencing) {
+			fireCommitDone(referencingSource);
 		}
 	}
 

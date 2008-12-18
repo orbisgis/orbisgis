@@ -474,7 +474,7 @@ public class SourceManagementTest extends TestCase {
 		ds = dsf.getDataSourceFromSQL(sql);
 		assertTrue(ds.getName().equals("mySQL"));
 	}
-	
+
 	public void testCannotRegisterTwice() throws Exception {
 		sm.removeAll();
 
@@ -543,7 +543,8 @@ public class SourceManagementTest extends TestCase {
 		sm.register("alphasql", "select * from \"" + SOURCE + "\";");
 		sm.register("spatialsql", "select * from \"spatial source\";");
 		sm.register("rastersql", "select * from \"myraster\";");
-		sm.register("mixedsql", "select * from \"myraster\", \"spatial source\";");
+		sm.register("mixedsql",
+				"select * from \"myraster\", \"spatial source\";");
 		assertTrue((sm.getSource("alphasql").getType() & SourceManager.SQL) == SourceManager.SQL);
 		assertTrue((sm.getSource("alphasql").getType() & SourceManager.VECTORIAL) == 0);
 		assertTrue((sm.getSource("spatialsql").getType() & SourceManager.SQL) == SourceManager.SQL);
@@ -607,6 +608,13 @@ public class SourceManagementTest extends TestCase {
 
 		assertTrue(((DefaultSourceManager) dsf.getSourceManager()).commitListeners
 				.size() == 0);
+	}
+
+	public void testDependingNotWellKnownSourcesRemoved() throws Exception {
+		DataSource ds = dsf.getDataSourceFromSQL("select * from " + SOURCE);
+		String nwkn = ds.getName();
+		dsf.getSourceManager().remove(SOURCE);
+		assertTrue(!dsf.getSourceManager().exists(nwkn));
 	}
 
 	@Override
