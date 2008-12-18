@@ -268,9 +268,6 @@ public abstract class DefaultDBDriver extends DefaultSQL implements DBDriver {
 	public void open(Connection con, String tableName) throws DriverException {
 		try {
 			orderFieldName = getOrderFields(con, tableName);
-			if (orderFieldName == null) {
-				throw new DriverException("The table has no primary key");
-			}
 
 			statement = con.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,
 					ResultSet.CONCUR_READ_ONLY,
@@ -308,8 +305,10 @@ public abstract class DefaultDBDriver extends DefaultSQL implements DBDriver {
 	 */
 	protected String getSelectSQL(String tableName, String orderFieldName)
 			throws DriverException {
-		String sql = "SELECT * FROM \"" + tableName + "\"" + " ORDER BY "
-				+ orderFieldName;
+		String sql = "SELECT * FROM \"" + tableName + "\"";
+		if (orderFieldName != null) {
+			sql += " ORDER BY " + orderFieldName;
+		}
 		return sql;
 	}
 
@@ -462,7 +461,7 @@ public abstract class DefaultDBDriver extends DefaultSQL implements DBDriver {
 	 * @see org.gdms.driver.ReadWriteDriver#isCommitable()
 	 */
 	public boolean isCommitable() {
-		return true;
+		return orderFieldName != null;
 	}
 
 	/**

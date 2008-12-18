@@ -205,9 +205,11 @@ public class PostgreSQLDriver extends DefaultDBDriver implements
 	@Override
 	protected String getSelectSQL(String tableName, String orderFieldName)
 			throws DriverException {
-		String sql = "SELECT * FROM \"" + tableName + "\"" + " ORDER BY "
-				+ orderFieldName + " OFFSET " + wnd.offset + " LIMIT "
-				+ wnd.length;
+		String sql = "SELECT * FROM \"" + tableName + "\"";
+		if (orderFieldName != null) {
+			sql += " ORDER BY " + orderFieldName;
+		}
+		sql += " OFFSET " + wnd.offset + " LIMIT " + wnd.length;
 		return sql;
 	}
 
