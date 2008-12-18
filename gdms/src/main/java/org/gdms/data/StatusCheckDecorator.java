@@ -70,7 +70,7 @@ public class StatusCheckDecorator extends AbstractDataSourceDecorator {
 			if (isEditable()) {
 				getDataSource().commit();
 			} else {
-				throw new NonEditableDataSourceException();
+				throw new NonEditableDataSourceException("The source is not editable");
 			}
 		} else {
 			throw new ClosedDataSourceException(
