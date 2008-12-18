@@ -59,4 +59,14 @@ public class CollectionUtils {
 		return ret.toString();
 	}
 
+	public static boolean contains(int[] array, int element) {
+		for (int i = 0; i < array.length; i++) {
+			if (array[i] == element) {
+				return true;
+			}
+		}
+		
+		return false;
+	}
+
 }
