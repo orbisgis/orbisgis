@@ -284,7 +284,7 @@ public class Activator implements PluginActivator {
 
 		private boolean shouldRepport(String msg) {
 			if (looksLikePrevious(msg)
-					&& (System.currentTimeMillis() - lastTimeStamp) < 1000) {
+					&& (System.currentTimeMillis() - lastTimeStamp) < 5000) {
 				if (!ignoredMsgShown) {
 					ignoredMsgShown = true;
 					reportOutputManager(new ErrorMessage("Similar error "
