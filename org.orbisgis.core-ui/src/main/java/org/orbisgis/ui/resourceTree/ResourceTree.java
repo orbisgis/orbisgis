@@ -162,7 +162,8 @@ public abstract class ResourceTree extends JPanel implements
 
 	public void dragOver(DropTargetDragEvent dtde) {
 		Point location = dtde.getLocation();
-		TreePath nearestLayerPath = getNearestDroppablePath(location.x, location.y);
+		TreePath nearestLayerPath = getNearestDroppablePath(location.x,
+				location.y);
 		currentDropTarget = nearestLayerPath;
 		dragDrawDirty = true;
 		this.repaint();
@@ -195,7 +196,8 @@ public abstract class ResourceTree extends JPanel implements
 		Transferable trans = dtde.getTransferable();
 		Point location = dtde.getLocation();
 		Object component = null;
-		TreePath nearestLayerPath = getNearestDroppablePath(location.x, location.y);
+		TreePath nearestLayerPath = getNearestDroppablePath(location.x,
+				location.y);
 		if (nearestLayerPath != null) {
 			component = nearestLayerPath.getLastPathComponent();
 		}
@@ -208,7 +210,6 @@ public abstract class ResourceTree extends JPanel implements
 	}
 
 	public void dragGestureRecognized(DragGestureEvent dge) {
-		myTreeUI.startDrag();
 		Transferable dragData = getDragData(dge);
 		if (dragData != null) {
 			dragSource.startDrag(dge, DragSource.DefaultMoveDrop, dragData,
@@ -241,7 +242,11 @@ public abstract class ResourceTree extends JPanel implements
 				TreePath[] selectionPaths = tree.getSelectionPaths();
 				if ((selectionPaths != null) && (path != null)) {
 					if (!contains(selectionPaths, path)) {
-						tree.setSelectionPath(path);
+						if (e.isControlDown()) {
+							tree.addSelectionPath(path);
+						} else {
+							tree.setSelectionPath(path);
+						}
 					}
 				} else {
 					tree.setSelectionPath(path);

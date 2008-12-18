@@ -41,6 +41,14 @@ import java.awt.event.MouseEvent;
 
 import javax.swing.plaf.basic.BasicTreeUI;
 
+/**
+ * Installs listeners to be executed before and after UI listeners. They
+ * enable drag just before UI process to have a drag-enabled feel and
+ * disable later to have a custom d&d management.
+ * 
+ * @author Fernando Gonzalez Cortes
+ * 
+ */
 public class MyTreeUI extends BasicTreeUI {
 
 	private StartDragListener startDragListener;
@@ -55,10 +63,6 @@ public class MyTreeUI extends BasicTreeUI {
 
 		endDragListener = new EndDragListener();
 		tree.addMouseListener(endDragListener);
-	}
-
-	public void startDrag() {
-		tree.setDragEnabled(false);
 	}
 
 	public void dispose() {
