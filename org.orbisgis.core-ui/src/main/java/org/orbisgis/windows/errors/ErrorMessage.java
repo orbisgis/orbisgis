@@ -89,7 +89,13 @@ public class ErrorMessage {
 		StringBuffer ret = new StringBuffer(getUserMessage());
 		Throwable t = this.throwable;
 		while (t != null) {
-			ret.append("\nCaused by: ").append(t.getMessage());
+			ret.append("\nCaused by: ");
+			String message = t.getMessage();
+			if (message != null) {
+				ret.append(message);
+			} else {
+				ret.append(t.getClass().getName());
+			}
 			if (t != t.getCause()) {
 				t = t.getCause();
 			} else {
