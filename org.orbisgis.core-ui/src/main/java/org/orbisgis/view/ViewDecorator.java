@@ -214,7 +214,8 @@ public class ViewDecorator {
 		if (activeComponent == null) {
 			activeComponent = dockingView.getComponent();
 		}
-		dockingView.setComponent(new JLabel("View not available"));
+		dockingView.setComponent(new JLabel(
+				"<html>View not available.<br/>Select an associated editor.</html>"));
 	}
 
 	public void editorClosed(String editorId) {
