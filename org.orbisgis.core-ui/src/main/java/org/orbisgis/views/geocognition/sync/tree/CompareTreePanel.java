@@ -5,8 +5,6 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Graphics;
 import java.awt.Insets;
-import java.awt.datatransfer.Transferable;
-import java.awt.dnd.DragGestureEvent;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
@@ -27,10 +25,10 @@ import javax.swing.tree.TreePath;
 
 import org.orbisgis.PersistenceException;
 import org.orbisgis.Services;
+import org.orbisgis.configuration.ui.BasicResourceTree;
 import org.orbisgis.geocognition.mapContext.GeocognitionException;
 import org.orbisgis.images.IconLoader;
 import org.orbisgis.ui.resourceTree.ReadOnlyCellEditor;
-import org.orbisgis.ui.resourceTree.ResourceTree;
 import org.orbisgis.views.geocognition.sync.IdPath;
 import org.orbisgis.views.geocognition.sync.SyncListener;
 import org.orbisgis.views.geocognition.sync.SyncManager;
@@ -328,7 +326,7 @@ public class CompareTreePanel extends JPanel {
 		}
 	}
 
-	private class TreePanel extends ResourceTree {
+	private class TreePanel extends BasicResourceTree {
 		// String constants for popup menu
 		private static final String ADD_TO_GEOCOGNITION = "Add to geocognition";
 		private static final String ADD_TO_FILE = "Add to file";
@@ -427,21 +425,6 @@ public class CompareTreePanel extends JPanel {
 			popup.add(noAction);
 
 			getTree().setCellEditor(new ReadOnlyCellEditor());
-		}
-
-		@Override
-		protected boolean isDroppable(TreePath path) {
-			return false;
-		}
-		
-		@Override
-		protected boolean doDrop(Transferable trans, Object node) {
-			return false;
-		}
-
-		@Override
-		protected Transferable getDragData(DragGestureEvent dge) {
-			return null;
 		}
 
 		@Override

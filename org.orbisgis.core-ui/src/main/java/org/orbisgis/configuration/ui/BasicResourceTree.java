@@ -11,7 +11,7 @@ import org.orbisgis.ui.resourceTree.ResourceTree;
 /**
  * Resource tree that doesn't allow drag and drop or popup menu
  */
-class BasicResourceTree extends ResourceTree {
+public class BasicResourceTree extends ResourceTree {
 	@Override
 	protected boolean doDrop(Transferable trans, Object node) {
 		return false;
