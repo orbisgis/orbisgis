@@ -346,12 +346,10 @@ public class EditorPanel extends Container {
 
 				// Focus next editor
 				if (nextFocus != null) {
-					nextFocus.requestFocus();
 					nextFocus.requestFocusInWindow();
-					if (root.getLastFocusedChildWindow() != null) {
-						root.restoreFocus();
-					}
+					IEditor previous = lastEditor.getEditor();
 					lastEditor = null;
+					fireActiveEditorChanged(previous, null);
 				} else {
 					lastEditor = null;
 					fireActiveEditorChanged(lastEditor, null);
