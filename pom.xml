@@ -19,7 +19,6 @@
 		<module>orbisgis-core</module>
 		<module>org.orbisgis.core-ui</module>
 		<module>org.orbisgis.processing</module>
-		<module>contrib</module>
 		<module>org.orbisgis.games</module>
 		<module>updater</module>
 		<module>org.orbisgis.full-ui</module>
