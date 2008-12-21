@@ -18,6 +18,7 @@ import javax.swing.JTextField;
 import org.orbisgis.editorViews.toc.actions.cui.SymbolEditorListener;
 import org.orbisgis.editorViews.toc.actions.cui.legend.ISymbolEditor;
 import org.orbisgis.renderer.symbol.ImageSymbol;
+import org.orbisgis.renderer.symbol.ScalableImageSymbol;
 import org.orbisgis.renderer.symbol.Symbol;
 import org.sif.CRFlowLayout;
 import org.sif.CarriageReturn;
@@ -53,7 +54,8 @@ public class ImageSymbolEditor extends JPanel implements ISymbolEditor {
 
 			public void actionPerformed(ActionEvent e) {
 				ImageFileChooser ifc = new ImageFileChooser(
-						"Select the image for the symbol");
+						"Select the image for the symbol",
+						symbol instanceof ScalableImageSymbol);
 				if (UIFactory.showDialog(ifc)) {
 					try {
 						txtURL.setText(ifc.getSelectedFile().toURI().toURL()
@@ -81,7 +83,7 @@ public class ImageSymbolEditor extends JPanel implements ISymbolEditor {
 	}
 
 	public boolean accepts(Symbol symbol) {
-		return symbol instanceof ImageSymbol;
+		return ((symbol instanceof ImageSymbol) || (symbol instanceof ScalableImageSymbol));
 	}
 
 	public Component getComponent() {
@@ -93,7 +95,8 @@ public class ImageSymbolEditor extends JPanel implements ISymbolEditor {
 	}
 
 	public void setSymbol(Symbol symbol) {
-		if (symbol instanceof ImageSymbol) {
+		if ((symbol instanceof ImageSymbol)
+				|| (symbol instanceof ScalableImageSymbol)) {
 			this.symbol = (ImageSymbol) symbol;
 			txtURL.setText(this.symbol.getImageURL().toString());
 		} else {

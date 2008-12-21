@@ -69,12 +69,14 @@ public class SymbolFactory {
 
 	public static Symbol createPointCircleSymbol(Color outline, int lineWidth,
 			Color fillColor, int size, boolean mapUnits) {
-		return new CirclePointSymbol(outline, lineWidth, fillColor, size, mapUnits);
+		return new CirclePointSymbol(outline, lineWidth, fillColor, size,
+				mapUnits);
 	}
 
 	public static Symbol createPointSquareSymbol(Color outline, int lineWidth,
 			Color fillColor, int size, boolean mapUnits) {
-		return new SquarePointSymbol(outline, lineWidth, fillColor, size, mapUnits);
+		return new SquarePointSymbol(outline, lineWidth, fillColor, size,
+				mapUnits);
 	}
 
 	public static Symbol createSymbolComposite(Symbol... symbols) {
@@ -116,6 +118,22 @@ public class SymbolFactory {
 
 	public static Symbol createImageSymbol() {
 		ImageSymbol ret = new ImageSymbol();
+		try {
+			ret.setImageURL(new URL("file:///notexists.png"));
+		} catch (IOException e) {
+			// ignore
+		}
+		return ret;
+	}
+
+	public static Symbol createScalableImageSymbol(URL url) throws IOException {
+		ScalableImageSymbol ret = new ScalableImageSymbol();
+		ret.setImageURL(url);
+		return ret;
+	}
+
+	public static Symbol createScalableImageSymbol() {
+		ScalableImageSymbol ret = new ScalableImageSymbol();
 		try {
 			ret.setImageURL(new URL("file:///notexists.png"));
 		} catch (IOException e) {

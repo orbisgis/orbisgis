@@ -28,8 +28,8 @@ import com.vividsolutions.jts.geom.Point;
 
 public class ImageSymbol extends AbstractSymbol implements Symbol {
 
-	private Image img;
-	private URL url;
+	protected Image img;
+	protected URL url;
 
 	public ImageSymbol() {
 		setName(getClassName());

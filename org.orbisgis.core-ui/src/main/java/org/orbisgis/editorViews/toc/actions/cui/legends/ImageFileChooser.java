@@ -6,11 +6,15 @@ public class ImageFileChooser extends OpenFilePanel {
 
 	public static final String IMAGE_FILE_CHOOSER = "org.orbisgis.ImageFileChooser";
 
-	public ImageFileChooser(String title) {
+	public ImageFileChooser(String title, boolean vectorial) {
 		super(IMAGE_FILE_CHOOSER, title);
-		this.addFilter(new String[] { "tif", "tiff" }, "TIF (*.tif; *.tiff)");
-		this.addFilter("png", "PNG (*.png)");
-		this.addFilter("jpg", "JPG (*.jpg)");
+		if (vectorial) {
+			this.addFilter("svg", "Scalable Vector Graphics (*.svg)");
+		} else {
+			this.addFilter(new String[] { "tif", "tiff" }, "TIF");
+			this.addFilter("png", "PNG");
+			this.addFilter("jpg", "JPG");
+		}
 	}
 
 	public String[] getErrorMessages() {
