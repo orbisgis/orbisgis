@@ -126,22 +126,6 @@ public class SymbolFactory {
 		return ret;
 	}
 
-	public static Symbol createScalableImageSymbol(URL url) throws IOException {
-		ScalableImageSymbol ret = new ScalableImageSymbol();
-		ret.setImageURL(url);
-		return ret;
-	}
-
-	public static Symbol createScalableImageSymbol() {
-		ScalableImageSymbol ret = new ScalableImageSymbol();
-		try {
-			ret.setImageURL(new URL("file:///notexists.png"));
-		} catch (IOException e) {
-			// ignore
-		}
-		return ret;
-	}
-
 	public static Symbol createVertexCircleSymbol(Color outline, int lineWidth,
 			Color fill, int size, boolean mapUnits) {
 		return new CircleVertexSymbol(outline, lineWidth, fill, size, mapUnits);

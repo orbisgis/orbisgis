@@ -195,7 +195,6 @@ public class OrbisgisCoreServices {
 		sm.addSymbol(SymbolFactory.createPolygonSymbol());
 		sm.addSymbol(SymbolFactory.createLineSymbol(Color.black, 1));
 		sm.addSymbol(SymbolFactory.createImageSymbol());
-		sm.addSymbol(SymbolFactory.createScalableImageSymbol());
 		sm.addSymbol(new ArrowSymbol(8, 6, Color.red, Color.black, 1));
 
 		lm.addLegend(LegendFactory.createUniqueSymbolLegend());
