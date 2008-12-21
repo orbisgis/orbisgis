@@ -233,7 +233,7 @@ public class Activator implements PluginActivator {
 									+ resourceList
 									+ ".\nDo you want to exit"
 									+ " and probably lose the content of those sources?",
-							"Loose object resources?",
+							"Lose object resources?",
 							JOptionPane.YES_NO_OPTION);
 
 			ret = (exit == JOptionPane.YES_OPTION);
