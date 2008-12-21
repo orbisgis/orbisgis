@@ -143,5 +143,9 @@
 			menu-id="org.orbisgis.GraphicModeler"
 			icon="/org/orbisgis/images/palette.png"
 			class="org.orbisgis.graphicModeler.actions.ApplyLegend"/>
+		<action id="org.orbisgis.graphicModeler.LoadResources" text="Load Resources"
+			menu-id="org.orbisgis.GraphicModeler"
+			icon="/org/orbisgis/images/map.png"
+			class="org.orbisgis.graphicModeler.actions.LoadResources"/>
 	</extension>
 </plugin>
