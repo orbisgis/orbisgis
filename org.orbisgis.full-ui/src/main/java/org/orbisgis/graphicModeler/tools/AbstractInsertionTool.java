@@ -17,6 +17,8 @@ import org.sif.UIFactory;
 import com.vividsolutions.jts.geom.Point;
 
 public abstract class AbstractInsertionTool extends AbstractPointTool {
+	private static int LastID = 0;
+
 	protected static final String PROCESS_TYPE = "process";
 	protected static final String DATASOURCE_TYPE = "data source";
 
@@ -33,10 +35,27 @@ public abstract class AbstractInsertionTool extends AbstractPointTool {
 			SpatialDataSourceDecorator sds = mc.getActiveLayer()
 					.getDataSource();
 			try {
+				// TODO should be optimized?
+				int id = LastID;
+				boolean exists;
+				do {
+					id++;
+					exists = false;
+					for (long i = 0; id < sds.getRowCount() && !exists; i++) {
+						if (sds.getInt(i, "id") == id) {
+							exists = true;
+						}
+					}
+				} while (exists);
+				LastID++;
+				
+				// Insert data
 				Value[] row = new Value[sds.getMetadata().getFieldCount()];
 				row[sds.getSpatialFieldIndex()] = ValueFactory
 						.createValue(point);
 				row[sds.getFieldIndexByName("id")] = ValueFactory
+						.createValue(id);
+				row[sds.getFieldIndexByName("src")] = ValueFactory
 						.createValue(selectedElement);
 				row[sds.getFieldIndexByName("type")] = ValueFactory
 						.createValue(getType());

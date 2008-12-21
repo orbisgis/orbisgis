@@ -24,7 +24,6 @@ public class DeleteNode implements IEditorAction {
 	@Override
 	public void actionPerformed(IEditor editor) {
 		try {
-			DataManager dm = Services.getService(DataManager.class);
 			MapContext map = (MapContext) editor.getElement().getObject();
 			ILayer activeLayer = map.getActiveLayer();
 			int[] sel = activeLayer.getSelection().clone();
@@ -32,6 +31,7 @@ public class DeleteNode implements IEditorAction {
 			SpatialDataSourceDecorator nodes = activeLayer.getDataSource();
 
 			// TODO get the right data source
+			DataManager dm = Services.getService(DataManager.class);
 			DataSource edges = dm.getDSF().getDataSource("edges");
 
 			if (!edges.isOpen()) {
@@ -40,11 +40,11 @@ public class DeleteNode implements IEditorAction {
 
 			nodes.setDispatchingMode(DataSource.STORE);
 			for (int i = sel.length - 1; i >= 0; i--) {
-				String id = nodes.getString(sel[i], "id");
+				int id = nodes.getInt(sel[i], "id");
 
 				for (long j = edges.getRowCount() - 1; j >= 0; j--) {
-					if (edges.getString(j, "src").equals(id)
-							|| edges.getString(j, "dest").equals(id)) {
+					if (edges.getInt(j, "src") == id
+							|| edges.getInt(j, "dest") == id) {
 						edges.deleteRow(j);
 					}
 				}

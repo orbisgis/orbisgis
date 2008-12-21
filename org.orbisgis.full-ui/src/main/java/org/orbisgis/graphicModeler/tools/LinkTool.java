@@ -39,11 +39,11 @@ public class LinkTool extends AbstractLineTool {
 			SpatialDataSourceDecorator sds = mc.getActiveLayer()
 					.getDataSource();
 
-			String ids[] = new String[2];
+			int ids[] = new int[2];
 			for (int i = 0; i < ls.getNumPoints(); i++) {
 				for (long j = 0; j < sds.getRowCount(); j++) {
 					if (ls.getPointN(i).equalsExact(sds.getGeometry(j))) {
-						ids[i] = sds.getString(j, "id");
+						ids[i] = sds.getInt(j, "id");
 						break;
 					}
 				}
@@ -54,7 +54,6 @@ public class LinkTool extends AbstractLineTool {
 					.createValue(ids[0]);
 			row[ds.getFieldIndexByName("dest")] = ValueFactory
 					.createValue(ids[1]);
-			row = ToolUtilities.populateNotNullFields(sds, row);
 			ds.insertFilledRow(row);
 
 			ds.commit();

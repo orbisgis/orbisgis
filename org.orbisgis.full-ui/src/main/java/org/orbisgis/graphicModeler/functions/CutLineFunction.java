@@ -30,7 +30,7 @@ public class CutLineFunction implements Function {
 		} else {
 			Geometry g = args[0].getAsGeometry();
 			double distance = args[1].getAsDouble();
-			if (!(g instanceof MultiLineString)) {
+			if (!(g instanceof LineString)) {
 				return ValueFactory.createNullValue();
 			}
 

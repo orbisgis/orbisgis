@@ -45,7 +45,7 @@ public class ApplyLegend implements IAction {
 					"Data Source");
 
 			LabelLegend label = LegendFactory.createLabelLegend();
-			label.setClassificationField("id");
+			label.setClassificationField("src");
 			label.setSmartPlacing(true);
 			label.setFontSize(15);
 
