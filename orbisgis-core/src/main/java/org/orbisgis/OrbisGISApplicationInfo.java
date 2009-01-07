@@ -27,12 +27,12 @@ public class OrbisGISApplicationInfo implements ApplicationInfo {
 
 	@Override
 	public String getVersionName() {
-		return "Naoned";
+		return "Montpellier";
 	}
 
 	@Override
 	public String getVersionNumber() {
-		return "1.2.2";
+		return "2.0";
 	}
 
 }
