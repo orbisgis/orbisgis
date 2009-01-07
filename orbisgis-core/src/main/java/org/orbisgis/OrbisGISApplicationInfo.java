@@ -27,7 +27,7 @@ public class OrbisGISApplicationInfo implements ApplicationInfo {
 
 	@Override
 	public String getVersionName() {
-		return "Montpellier";
+		return "Ostrava";
 	}
 
 	@Override
