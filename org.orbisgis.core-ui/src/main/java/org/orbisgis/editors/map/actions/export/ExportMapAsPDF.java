@@ -36,13 +36,18 @@
  */
 package org.orbisgis.editors.map.actions.export;
 
+import java.awt.BasicStroke;
+import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
+import java.awt.geom.AffineTransform;
+import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 
+import javax.imageio.ImageIO;
 import javax.swing.JOptionPane;
 
 import org.orbisgis.Services;
@@ -69,9 +74,9 @@ import com.lowagie.text.pdf.PdfWriter;
 import com.vividsolutions.jts.geom.Envelope;
 
 /**
- * 
- * Export a map in a  pdf. 
- * 
+ *
+ * Experimental pdf exporter
+ *
  */
 public class ExportMapAsPDF implements IEditorAction {
 
@@ -117,7 +122,7 @@ public class ExportMapAsPDF implements IEditorAction {
 
 	/**
 	 * TODO take into account raster with nice resolution
-	 * 
+	 *
 	 * @param layerPixelEnvelope
 	 * @param envelope
 	 * @param layer
@@ -147,72 +152,99 @@ public class ExportMapAsPDF implements IEditorAction {
 				final java.net.URL url = this.getClass().getResource(
 						"simplenorth.png");
 
-				Image northImage = Image.getInstance(url.toString());
-
-				
-				
-				northImage.setAbsolutePosition(pageWidth
-						- (northImage.getWidth() + 1), pageHeight
-						- (northImage.getHeight() + 1));
-				document.add(northImage);
-
 				PdfContentByte cb = writer.getDirectContent();
 
-				PdfTemplate tp = cb.createTemplate(pageWidth, pageHeight);
+				PdfTemplate templateMap = cb.createTemplate(pageWidth,
+						pageHeight);
 
-				Graphics2D g2d = tp.createGraphicsShapes(pageWidth, pageHeight);
+				PdfTemplate templateLegend = cb.createTemplate(150, pageHeight);
 
-				g2d.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING,
+				PdfTemplate templateScale = cb.createTemplate(pageWidth, 50);
+
+
+				Graphics2D g2dLegend = templateLegend.createGraphicsShapes(150,
+						pageHeight);
+
+				Graphics2D g2dMap = templateMap.createGraphicsShapes(pageWidth,
+						pageHeight);
+
+
+				Graphics2D g2dScale = templateScale.createGraphicsShapes(pageWidth,
+						50);
+
+				g2dMap.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING,
 						RenderingHints.VALUE_TEXT_ANTIALIAS_OFF);
 
-				r.draw(g2d, width, height, envelope, layer,
+				r.draw(g2dMap, width, height, envelope, layer,
 						new NullProgressMonitor());
-
-				g2d.dispose();
-				// Determine la position en x et Y
-				// g2d.translate(50, 100);
-
-				// g2d.draw(new Rectangle(50, 50));
-
-				// g2d.dispose();
 
 				ILayer[] layers = mapContext.getLayerModel()
 						.getLayersRecursively();
 
-				Graphics2D g2dlegend = tp.createGraphicsShapes(pageWidth,
-						pageHeight);
+				g2dLegend.setColor(Color.BLACK);
+				g2dLegend.drawRect(0, 0, 150, (int) pageHeight);
 
-				// g2d.translate(0, 50);
-				int maxHeight = 0;
+				g2dLegend.setColor(Color.white);
+				g2dLegend.fillRect(0, 0, 150, (int) pageHeight);
+
+				g2dLegend.setColor(Color.BLACK);
+				int maxHeight = 30;
+
+				g2dLegend.translate(10, 10);
+				g2dLegend.drawString("Legend", 0, 10);
+
 				for (int i = 0; i < layers.length; i++) {
-					g2dlegend.translate(0, maxHeight + 10);
+					g2dLegend.translate(0, maxHeight +10);
 					maxHeight = 0;
 					if (layers[i].isVisible()) {
 						Legend[] legends = layers[i].getRenderingLegend();
-
-						g2dlegend.drawString(layers[i].getName(), 0, 0);
-
+						g2dLegend.drawString(layers[i].getName(), 0, 0);
 						for (int j = 0; j < legends.length; j++) {
 							Legend vectorLegend = legends[j];
-							vectorLegend.drawImage(g2dlegend);
-							int[] size = vectorLegend.getImageSize(g2dlegend);
+							vectorLegend.drawImage(g2dLegend);
+							int[] size = vectorLegend.getImageSize(g2dLegend);
 							if (size[1] > maxHeight) {
 								maxHeight = size[1];
 							}
-							g2dlegend.translate(0, size[0]);
+							g2dLegend.translate(0, 20);
 						}
-
 					}
 				}
 
-				g2dlegend.translate(0, maxHeight);
+
+				g2dScale.translate(150, 0);
+				g2dScale.setColor(Color.BLACK);
+				g2dScale.drawRect(0, 0, (int)pageWidth, 50);
+
+				g2dScale.setColor(Color.white);
+				g2dScale.fillRect(0, 0, (int)pageWidth,  50);
+
+				g2dScale.setColor(Color.BLACK);
+
+				g2dScale.translate(30, 10);
 				// draw scale
 				if (scale != null) {
-					scale.drawScale(g2dlegend, 90);
+					scale.drawScale(g2dScale, 90);
 				}
 
-				g2dlegend.dispose();
-				cb.addTemplate(tp, 0, 0);
+				BufferedImage image = ImageIO.read(url);
+
+
+				AffineTransform tx = new AffineTransform();
+			    tx.scale(0.5, 0.5);
+
+			    AffineTransformOp op = new AffineTransformOp(tx, AffineTransformOp.TYPE_BILINEAR);
+			    image = op.filter(image, null);
+
+			    g2dScale.drawImage(image, 200, 0, null);
+
+				g2dMap.dispose();
+				g2dLegend.dispose();
+				g2dScale.dispose();
+
+				cb.addTemplate(templateMap, 0, 0);
+				cb.addTemplate(templateLegend, 0, 0);
+				cb.addTemplate(templateScale, 0, 0);
 
 				JOptionPane.showMessageDialog(null, "The file has been saved.");
 			}
