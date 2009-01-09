@@ -92,7 +92,7 @@ public class Splash extends JFrame {
 		p.add(versionLabel, BorderLayout.SOUTH);
 		p.setBorder(BorderFactory.createLineBorder(Color.BLACK, 3));
 		getContentPane().add(p);
-		setSize(700, 200);
+		setSize(700, 250);
 		setLocationRelativeTo(null);
 		setUndecorated(true);
 		setVisible(true);
