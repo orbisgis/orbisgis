@@ -169,6 +169,7 @@ public class DefaultSourceManager implements SourceManager {
 			for (Source sourceElement : sources.getSource()) {
 				ExtendedSource src = nameSource.get(sourceElement.getName());
 				if (src.isWellKnownName()) {
+					removeNonWellKnownDependencies(sourceElement);
 					sourceElements.add(sourceElement);
 				}
 			}
@@ -186,6 +187,23 @@ public class DefaultSourceManager implements SourceManager {
 			throw new DriverException(e);
 		} catch (IOException e) {
 			throw new DriverException(e);
+		}
+	}
+
+	private void removeNonWellKnownDependencies(Source sourceElement) {
+		removeNonWellKnown(sourceElement.getReferencedSource());
+		removeNonWellKnown(sourceElement.getReferencingSource());
+	}
+
+	private void removeNonWellKnown(List<String> sourceNameList) {
+		ArrayList<String> toRemove = new ArrayList<String>();
+		for (String referenced : sourceNameList) {
+			if (!getSource(referenced).isWellKnownName()) {
+				toRemove.add(referenced);
+			}
+		}
+		for (String depToRemove : toRemove) {
+			sourceNameList.remove(depToRemove);
 		}
 	}
 
