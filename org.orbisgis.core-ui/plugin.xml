@@ -95,11 +95,11 @@
 			icon="/org/orbisgis/images/page_white_add.png"
 			class="org.orbisgis.views.geocatalog.newSourceWizards.file.NewFile"/>
 	</extension>
-	<extension point="org.orbisgis.views.geocatalog.NewSourceWizard">
+	<!-- <extension point="org.orbisgis.views.geocatalog.NewSourceWizard">
 		<wizard id="org.orbisgis.views.geocatalog.newSourceWizards.NewDB"
 			icon="/org/orbisgis/images/database_add.png"
 			class="org.orbisgis.views.geocatalog.newSourceWizards.db.NewDB"/>
-	</extension>
+	</extension>-->
 	<extension point="org.orbisgis.views.geocatalog.NewSourceWizard">
 		<wizard id="org.orbisgis.views.geocatalog.newSourceWizards.XYZDem"
 			icon="/org/orbisgis/images/cog_go.png"
@@ -172,10 +172,10 @@
 			menu-id="org.orbisgis.views.geocatalog.file.New"
 			menu-group="org.orbisgis.views.geocatalog.new" text="File"
 			class="org.orbisgis.views.geocatalog.actions.create.CreateFileSource"/>
-		<action id="org.orbisgis.views.geocatalog.NewDBSource"
+		<!-- <action id="org.orbisgis.views.geocatalog.NewDBSource"
 			menu-id="org.orbisgis.views.geocatalog.file.New"
 			menu-group="org.orbisgis.views.geocatalog.new" text="Database"
-			class="org.orbisgis.views.geocatalog.actions.create.CreateDBSource"/>
+			class="org.orbisgis.views.geocatalog.actions.create.CreateDBSource"/>-->
 		<action id="org.orbisgis.views.geocatalog.Delete"
 			menu-group="org.orbisgis.views.geocatalog" text="Delete source"
 			icon="/org/orbisgis/images/remove.png"
