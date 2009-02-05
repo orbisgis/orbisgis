@@ -38,6 +38,7 @@ package org.gdms.driver.solene;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.GeometryFactory;
+import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.LinearRing;
 import com.vividsolutions.jts.geom.Polygon;
 
@@ -116,8 +117,9 @@ public class Geometry3DUtilities {
 			holes[i] = new GeometryFactory().createLinearRing(polygon
 					.getInteriorRingN(i).getCoordinateSequence());
 		}
-		final LinearRing shell = new GeometryFactory().createLinearRing(polygon
-				.getExteriorRing().reverse().getCoordinateSequence());
+		final LinearRing shell = new GeometryFactory()
+				.createLinearRing(((LineString) polygon.getExteriorRing()
+						.reverse()).getCoordinateSequence());
 
 		return new GeometryFactory().createPolygon(shell, holes);
 	}

@@ -143,7 +143,7 @@ public class Extrude implements CustomQuery {
 		if (CGAlgorithms.computeOrientation(c0, c1, c2) == CGAlgorithms.CLOCKWISE) {
 			return lineString;
 		} else {
-			return lineString.reverse();
+			return (LineString) lineString.reverse();
 		}
 	}
 
@@ -155,7 +155,7 @@ public class Extrude implements CustomQuery {
 		if (CGAlgorithms.computeOrientation(c0, c1, c2) == CGAlgorithms.COUNTERCLOCKWISE) {
 			return lineString;
 		} else {
-			return lineString.reverse();
+			return (LineString) lineString.reverse();
 		}
 	}
 

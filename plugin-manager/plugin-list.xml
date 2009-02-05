@@ -3,7 +3,7 @@
 	<!--<plugin dir="../org.orbisgis.full-ui"/>-->
 	<plugin dir="../org.urbsat"/>
 	<plugin dir="../org.orbisgis.processing"/>
-	<!--<plugin dir="../../contrib"/>-->
+	<!--<plugin dir="../contrib"/>-->
 	<!--<plugin dir="../org.orbisgis.games"/>-->
-	<!--<plugin dir="../../tanato2"/>-->
+	<plugin dir="../jtinpa"/>
 </plugins>

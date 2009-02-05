@@ -34,7 +34,7 @@
 		<dependency>
 			<groupId>com.vividsolutions</groupId>
 			<artifactId>jts</artifactId>
-			<version>1.9</version>
+			<version>1.10</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
@@ -102,9 +102,9 @@
 			<url>http://maven.geotools.fr/repository</url>
 		</repository>
 		<repository>
-			<id>cerma</id>
-			<name>CERMA local repository</name>
-			<url>http://repository.cerma.archi.fr/repository</url>
+			<id>sourcesup</id>
+			<name>SourceSup repository</name>
+			<url>http://sourcesup.cru.fr/orbisgis/maven-repo</url>
 		</repository>
 	</repositories>
 	<pluginRepositories>

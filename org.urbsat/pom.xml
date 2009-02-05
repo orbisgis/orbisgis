@@ -26,13 +26,6 @@
 			<version>1.3.0-SNAPSHOT</version>
 		</dependency>
 	</dependencies>
-	<repositories>
-		<repository>
-			<id>cerma</id>
-			<name>CERMA local repository</name>
-			<url>http://repository.cerma.archi.fr/repository</url>
-		</repository>
-	</repositories>
 	<build>
 		<plugins>
 			<plugin>

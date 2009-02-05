@@ -23,8 +23,7 @@ public class GigaCustomQuery implements CustomQuery {
 	public ObjectDriver evaluate(DataSourceFactory dsf, DataSource[] tables,
 			Value[] values, IProgressMonitor pm) throws ExecutionException {
 		try {
-			Metadata metadata = getMetadata(MetadataUtilities
-					.fromTablesToMetadatas(tables));
+			Metadata metadata = getMetadata(null);
 			DiskBufferDriver dbd = new DiskBufferDriver(dsf, metadata);
 			for (int i = 0; i < 1000000; i++) {
 				dbd.addValues(new Value[] { ValueFactory
