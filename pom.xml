@@ -43,22 +43,12 @@
 			<url>http://maven.geotools.fr/repository</url>
 		</repository>
 		<repository>
-			<id>geosysin</id>
-			<name>Geosysin repository</name>
-			<url>http://geosysin.iict.ch/irstv-web/maven-repo</url>
-		</repository>
-		<repository>
 			<id>sourcesup</id>
 			<name>SourceSup repository</name>
 			<url>http://sourcesup.cru.fr/orbisgis/maven-repo</url>
 		</repository>
 	</repositories>
 	<pluginRepositories>
-		<pluginRepository>
-			<id>geosysin</id>
-			<name>Geosysin repository</name>
-			<url>http://geosysin.iict.ch/irstv-web/maven-repo</url>
-		</pluginRepository>
 		<pluginRepository>
 			<id>sourcesup</id>
 			<name>SourceSup repository</name>
@@ -67,9 +57,9 @@
 	</pluginRepositories>
 	<distributionManagement>
 		<repository>
-			<id>geosysin</id>
-			<name>Geosysin repository</name>
-			<url>scp://geosysin.iict.ch:/home/irstv/trac/htdocs/maven-repo/</url>
+			<id>sourcesup</id>
+			<name>SourceSup repository</name>
+			<url>dav:http://sourcesup.cru.fr/orbisgis/maven-repo/</url>
 		</repository>
 	</distributionManagement>
 	<build>
