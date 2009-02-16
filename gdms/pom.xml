@@ -32,12 +32,6 @@
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
-			<groupId>com.vividsolutions</groupId>
-			<artifactId>jts</artifactId>
-			<version>1.10</version>
-			<scope>compile</scope>
-		</dependency>
-		<dependency>
 			<groupId>hsqldb</groupId>
 			<artifactId>hsqldb</artifactId>
 			<version>1.8.0.1</version>
