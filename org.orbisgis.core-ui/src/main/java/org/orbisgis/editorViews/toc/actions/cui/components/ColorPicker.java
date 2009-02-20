@@ -87,7 +87,7 @@ public class ColorPicker extends javax.swing.JPanel implements UIPanel {
 						javax.swing.GroupLayout.PREFERRED_SIZE)
 						.addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE,
 								Short.MAX_VALUE)));
-		jColorChooser1 = null;
+
 	}// </editor-fold>//GEN-END:initComponents
 
 	// Variables declaration - do not modify//GEN-BEGIN:variables
