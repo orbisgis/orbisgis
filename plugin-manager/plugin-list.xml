@@ -5,5 +5,4 @@
 	<plugin dir="../org.orbisgis.processing"/>
 	<!--<plugin dir="../contrib"/>-->
 	<!--<plugin dir="../org.orbisgis.games"/>-->
-	<plugin dir="../jtinpa"/>
 </plugins>
