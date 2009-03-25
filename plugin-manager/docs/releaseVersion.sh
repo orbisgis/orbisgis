@@ -10,7 +10,7 @@ if [ "$#" -ne "2" ] && [ "$#" -ne "1" ]; then
   exit 1;
 fi
 
-LZPACK_HOME="/usr/local/misc/IzPack"; # "/home/fergonco/applications/lzPack";
+LZPACK_HOME="/usr/local/misc/IzPack"; # "/home/bocher/applications/izpack";
 BASE_DIRECTORY="/tmp";
 DST_INSTALLER_DIRECTORY="${BASE_DIRECTORY}/orbisgis-installers";
 DST_SVN_DIRECTORY="${BASE_DIRECTORY}/orbisgis-svn";
