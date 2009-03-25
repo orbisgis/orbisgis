@@ -86,26 +86,17 @@ public class ExportMapAsImage implements IEditorAction {
 				"org.orbisgis.editors.map.actions.ExportMapAsImage",
 				"Choose a file format");
 		outfilePanel.addFilter("png", "Portable Network Graphics (*.png)");
-		outfilePanel.addFilter("jpeg ",
-				"Joint Photographic Experts Group (*.jpg)");
 
 		if (UIFactory.showDialog(outfilePanel)) {
 			final File savedFile = new File(outfilePanel.getSelectedFile()
 					.getAbsolutePath());
 
 			try {
-				if (savedFile.getName().toLowerCase().endsWith("png")) {
-
 					ImageIO.write(subImg, "png", savedFile);
 
 					JOptionPane.showMessageDialog(null,
 							"The file has been saved.");
-				} else if (savedFile.getName().toLowerCase().endsWith("jpg")) {
-					ImageIO.write(subImg, "jpg", savedFile);
 
-					JOptionPane.showMessageDialog(null,
-							"The file has been saved.");
-				}
 
 			} catch (IOException e) {
 				Services.getErrorManager().error("Cannot write image", e);

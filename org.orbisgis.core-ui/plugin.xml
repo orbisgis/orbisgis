@@ -367,6 +367,10 @@
 			menu-group="org.orbisgis.editors.table.FieldManagement"
 			icon="/org/orbisgis/images/add_field.png"
 			class="org.orbisgis.editors.table.actions.AddField"/>
+		<action id="org.orbisgis.editors.table.actions.AddValue" text="Add value"
+			menu-group="org.orbisgis.editors.table.FieldManagement"
+			icon="/org/orbisgis/images/table_add.png"
+			class="org.orbisgis.editors.table.actions.AddValue"/>
 		<action id="org.orbisgis.editors.table.actions.ShowFieldInfo"
 			text="Show field info"
 			menu-group="org.orbisgis.editors.table.FieldManagement"

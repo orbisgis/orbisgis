@@ -65,6 +65,9 @@ import javax.swing.JToolBar;
 import net.infonode.docking.RootWindow;
 import net.infonode.docking.View;
 import net.infonode.docking.ViewSerializer;
+import net.infonode.docking.theme.DockingWindowsTheme;
+import net.infonode.docking.theme.ShapedGradientDockingTheme;
+import net.infonode.tabbedpanel.theme.ShapedGradientTheme;
 
 import org.apache.log4j.Logger;
 import org.orbisgis.PersistenceException;
@@ -116,6 +119,8 @@ public class OrbisGISFrame extends JFrame implements IWindow, ViewManager,
 	private boolean perspectiveLoaded = false;
 
 	public OrbisGISFrame() {
+
+
 		// Init mapcontrol and fixed ui components
 		mainToolBar = new JActionToolBar("OrbisGIS");
 		mainToolBar.setFloatable(false);
@@ -560,7 +565,7 @@ public class OrbisGISFrame extends JFrame implements IWindow, ViewManager,
 	/**
 	 * Writes the id of the view and then writes the status. Reads the id,
 	 * obtains the data from the extension xml and reads the status
-	 * 
+	 *
 	 * @author Fernando Gonzalez Cortes
 	 */
 	private class MyViewSerializer implements ViewSerializer {
