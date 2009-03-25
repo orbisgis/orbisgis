@@ -95,11 +95,11 @@
 			icon="/org/orbisgis/images/page_white_add.png"
 			class="org.orbisgis.views.geocatalog.newSourceWizards.file.NewFile"/>
 	</extension>
-	<!-- <extension point="org.orbisgis.views.geocatalog.NewSourceWizard">
+	<extension point="org.orbisgis.views.geocatalog.NewSourceWizard">
 		<wizard id="org.orbisgis.views.geocatalog.newSourceWizards.NewDB"
 			icon="/org/orbisgis/images/database_add.png"
 			class="org.orbisgis.views.geocatalog.newSourceWizards.db.NewDB"/>
-	</extension>-->
+	</extension>
 	<extension point="org.orbisgis.views.geocatalog.NewSourceWizard">
 		<wizard id="org.orbisgis.views.geocatalog.newSourceWizards.XYZDem"
 			icon="/org/orbisgis/images/cog_go.png"
