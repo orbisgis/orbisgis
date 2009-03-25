@@ -420,8 +420,13 @@
 		<action id="org.orbisgis.editors.table.ZoomSelection"
 			text="Zoom to selection"
 			menu-group="org.orbisgis.editors.table.Selection"
-			icon="/org/orbisgis/images/magnifier.png"
+			icon="/org/orbisgis/images/zoom_in.png"
 			class="org.orbisgis.editors.table.actions.ZoomToSelected"/>
+		<action id="org.orbisgis.editors.table.ZoomToLayerTable"
+			text="Zoom to layer"
+			menu-group="org.orbisgis.editors.table.Selection"
+			icon="/org/orbisgis/images/magnifier.png"
+			class="org.orbisgis.editors.table.actions.ZoomToLayerTable"/>
 	</extension>
 
 	<!-- map actions -->

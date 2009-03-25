@@ -5,7 +5,6 @@ import org.gdms.driver.DriverException;
 import org.orbisgis.Services;
 import org.orbisgis.editor.IEditor;
 import org.orbisgis.editors.map.MapEditor;
-import org.orbisgis.editors.table.Selection;
 import org.orbisgis.editors.table.TableEditableElement;
 import org.orbisgis.editors.table.TableEditor;
 import org.orbisgis.editors.table.action.ITableCellAction;
@@ -16,20 +15,14 @@ import org.orbisgis.progress.IProgressMonitor;
 import org.orbisgis.views.editor.EditorManager;
 
 import com.vividsolutions.jts.geom.Envelope;
-import com.vividsolutions.jts.geom.Geometry;
 
-public class ZoomToSelected implements ITableCellAction {
+public class ZoomToLayerTable implements ITableCellAction {
 
 	@Override
 	public boolean accepts(TableEditableElement element, int rowIndex,
 			int columnIndex) {
 
-		if (element.getMapContext() != null){
-			if (element.getSelection().getSelectedRows().length>0){
-				return true;
-			}
-		}
-		return false;
+		return element.getMapContext() != null;
 	}
 
 	@Override
@@ -41,34 +34,11 @@ public class ZoomToSelected implements ITableCellAction {
 			@Override
 			public void run(IProgressMonitor pm) {
 				try {
-					Selection selection = element.getSelection();
-					int[] selectedRow = selection.getSelectedRows();
 
 					SpatialDataSourceDecorator sds = new SpatialDataSourceDecorator(
 							element.getDataSource());
 
-					Envelope rect = null;
-					Geometry geometry = null;
-					Envelope geometryEnvelope = null;
-					for (int i = 0; i < selectedRow.length; i++) {
-						if (sds.isDefaultVectorial()) {
-							geometry = sds.getGeometry(selectedRow[i]);
-							if (geometry != null) {
-								geometryEnvelope = geometry
-										.getEnvelopeInternal();
-							}
-						} else if (sds.isDefaultRaster()) {
-							geometryEnvelope = sds.getRaster(selectedRow[i]).getMetadata()
-									.getEnvelope();
-						}
-
-						if (rect == null) {
-							rect = new Envelope(geometryEnvelope);
-						} else {
-							rect.expandToInclude(geometryEnvelope);
-						}
-
-					}
+					Envelope rect = sds.getFullExtent();
 
 					EditorManager em = (EditorManager) Services
 							.getService(EditorManager.class);
@@ -88,7 +58,7 @@ public class ZoomToSelected implements ITableCellAction {
 
 			@Override
 			public String getTaskName() {
-				return "Calculating selected extent";
+				return "Calculating  extent";
 			}
 		});
 	}
