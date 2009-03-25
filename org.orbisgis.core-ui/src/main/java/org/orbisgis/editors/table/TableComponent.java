@@ -2,6 +2,7 @@ package org.orbisgis.editors.table;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
+import java.awt.FlowLayout;
 import java.awt.Insets;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
@@ -19,10 +20,12 @@ import javax.swing.DefaultListSelectionModel;
 import javax.swing.Icon;
 import javax.swing.JButton;
 import javax.swing.JComponent;
+import javax.swing.JLabel;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JTable;
+import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingUtilities;
 import javax.swing.event.ListSelectionEvent;
@@ -73,9 +76,12 @@ public class TableComponent extends JPanel {
 	private static final String SORTDOWN = "SORTDOWN";
 	private static final String NOSORT = "NOSORT";
 
+
 	// Swing components
 	private javax.swing.JScrollPane jScrollPane = null;
 	private JTable table = null;
+	private JLabel messageLabel = null;
+
 
 	// Model
 	private int selectedColumn = -1;
@@ -96,7 +102,7 @@ public class TableComponent extends JPanel {
 
 	/**
 	 * This is the default constructor
-	 * 
+	 *
 	 * @throws DriverException
 	 */
 	public TableComponent(TableEditor editor) {
@@ -110,11 +116,12 @@ public class TableComponent extends JPanel {
 	private void initialize() {
 		this.setLayout(new BorderLayout());
 		add(getJScrollPane(), BorderLayout.CENTER);
+		add(getPanelInformation(), BorderLayout.NORTH);
 	}
 
 	/**
 	 * This method initializes table
-	 * 
+	 *
 	 * @return javax.swing.JTable
 	 */
 	private javax.swing.JTable getTable() {
@@ -141,6 +148,8 @@ public class TableComponent extends JPanel {
 									}
 									selection.setSelectedRows(selectedRows);
 									managingSelection = false;
+									messageLabel.setText("Row selected : "+ selectedRows.length + " / " + table.getRowCount() + " total rows");
+
 								}
 							}
 						}
@@ -157,9 +166,30 @@ public class TableComponent extends JPanel {
 		return table;
 	}
 
+
+	public JPanel getPanelInformation(){
+		final JPanel informationPanel = new JPanel();
+		final FlowLayout flowLayout = new FlowLayout();
+		flowLayout.setAlignment(FlowLayout.LEFT);
+		informationPanel.setLayout(flowLayout);
+		informationPanel.add(getLabelInformation());
+
+		return informationPanel;
+
+	}
+
+	private JLabel getLabelInformation() {
+		JLabel labelMessage = new JLabel();
+		labelMessage.setText("Row number : ");
+		messageLabel = labelMessage;
+		return labelMessage;
+	}
+
+
+
 	/**
 	 * This method initializes jScrollPane
-	 * 
+	 *
 	 * @return javax.swing.JScrollPane
 	 */
 	private javax.swing.JScrollPane getJScrollPane() {
@@ -173,7 +203,7 @@ public class TableComponent extends JPanel {
 
 	/**
 	 * Shows a dialog with the error type
-	 * 
+	 *
 	 * @param msg
 	 */
 	private void inputError(String msg, Exception e) {
@@ -219,6 +249,8 @@ public class TableComponent extends JPanel {
 			this.selection = element.getSelection();
 			this.selection.setSelectionListener(selectionListener);
 			updateTableSelection();
+			messageLabel.setText("Row number : "+ tableModel.getRowCount());
+
 		}
 	}
 
@@ -350,6 +382,7 @@ public class TableComponent extends JPanel {
 			}
 			model.setValueIsAdjusting(false);
 			managingSelection = false;
+			messageLabel.setText("Row number : "+ tableModel.getRowCount());
 		}
 	}
 
@@ -486,7 +519,7 @@ public class TableComponent extends JPanel {
 			JMenuItem menu = new JMenuItem(text);
 			menu.setIcon(icon);
 			menu.setActionCommand(actionCommand);
-			menu.addActionListener(menuListener);			
+			menu.addActionListener(menuListener);
 			pop.add(menu);
 		}
 
@@ -611,10 +644,10 @@ public class TableComponent extends JPanel {
 
 		/**
 		 * Returns the name of the field.
-		 * 
+		 *
 		 * @param col
 		 *            index of field
-		 * 
+		 *
 		 * @return Name of field
 		 */
 		public String getColumnName(int col) {
@@ -627,7 +660,7 @@ public class TableComponent extends JPanel {
 
 		/**
 		 * Returns the number of fields.
-		 * 
+		 *
 		 * @return number of fields
 		 */
 		public int getColumnCount() {
@@ -640,7 +673,7 @@ public class TableComponent extends JPanel {
 
 		/**
 		 * Returns number of rows.
-		 * 
+		 *
 		 * @return number of rows.
 		 */
 		public int getRowCount() {
