@@ -44,6 +44,8 @@ import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
 import java.text.NumberFormat;
 
+import javax.swing.JOptionPane;
+
 import org.gdms.data.SpatialDataSourceDecorator;
 import org.gdms.driver.DriverException;
 import org.gdms.sql.strategies.IncompatibleTypesException;
@@ -155,8 +157,16 @@ public class DefaultProportionalLegend extends AbstractCartoLegend implements
 
 		case LOGARITHMIC:
 
-			symbolSize = proportionnalMethod
-					.getLogarithmicSize(value, coefType);
+			if (proportionnalMethod.getMinValue() <= 0) {
+				JOptionPane.showMessageDialog(null,
+						"Values must be greater than 0");
+			}
+
+			else {
+				symbolSize = proportionnalMethod.getLogarithmicSize(value,
+						coefType);
+
+			}
 
 			break;
 		}
