@@ -12,7 +12,7 @@
 		</geocognition-node>
 	</geocognition-node>
 	<geocognition-node id="SQL">
-		<geocognition-node id="OCG">
+		<geocognition-node id="OGC">
 			<geocognition-node id="Area">
 				<node-content
 					content-type-id="org.orbisgis.geocognition.BuiltInFunction">
