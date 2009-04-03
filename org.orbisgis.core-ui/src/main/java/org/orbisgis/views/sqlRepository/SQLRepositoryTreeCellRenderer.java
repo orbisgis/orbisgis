@@ -69,13 +69,13 @@ public class SQLRepositoryTreeCellRenderer implements TreeCellRenderer {
 			.getIcon("folder_magnify.png");
 
 	private static final Icon FUNCTION_MAP_ICON = IconLoader
-			.getIcon("functionMap.png");
+			.getIcon("functionmap.png");
 
 	private static final Icon CUSTOMQUERY_MAP_ICON = IconLoader
-			.getIcon("customQueryMap.png");
+			.getIcon("customquerymap.png");
 
 	private static final Icon SQLSCRIPT_MAP_ICON = IconLoader
-			.getIcon("sqlScriptMap.png");
+			.getIcon("sqlscriptmap.png");
 
 	private NodeJPanel nodeJPanel = null;
 
