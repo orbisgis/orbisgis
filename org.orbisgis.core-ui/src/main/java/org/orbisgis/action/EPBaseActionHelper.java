@@ -69,7 +69,7 @@ public class EPBaseActionHelper {
 	 * similar to the one in action.xsd. This method doesn't populate the leaves
 	 * in the menu tree nor the buttons in the tool bar. It only creates the
 	 * needed parents
-	 * 
+	 *
 	 * @param extensionPointIDs
 	 * @param menuTag
 	 * @param menuTree
@@ -113,7 +113,7 @@ public class EPBaseActionHelper {
 	/**
 	 * Populates the specified menu and tool bar structures with the actions
 	 * that will fire the extension code.
-	 * 
+	 *
 	 * @param extensionPointID
 	 *            Extension point which extensions will be processed to add the
 	 *            actions
@@ -140,6 +140,7 @@ public class EPBaseActionHelper {
 				String group = c.getAttribute(base, "menu-group");
 				String text = c.getAttribute(base, "text");
 				String icon = c.getAttribute(base, "icon");
+				String tooltips = c.getAttribute(base, "tooltips");
 				boolean selectable = c.getBooleanAttribute(base, "selectable");
 				Object actionObject = c.instantiateFromAttribute(base, "class");
 				IActionAdapter action;
@@ -177,7 +178,9 @@ public class EPBaseActionHelper {
 								btn = new JActionButton(new ImageIcon(
 										EPBaseActionHelper.class
 												.getResource(icon)), action);
+
 							}
+							btn.setToolTipText(tooltips);
 							toolBar.add(btn);
 						}
 					}
@@ -192,7 +195,7 @@ public class EPBaseActionHelper {
 	 * extension point associated schema must be similar to the one in
 	 * action.xsd. This method doesn't populate the leaves in the menu tree nor
 	 * the buttons in the tool bar. It only creates the needed parents
-	 * 
+	 *
 	 * @param epid
 	 *            Extension point id
 	 * @param menuTree
