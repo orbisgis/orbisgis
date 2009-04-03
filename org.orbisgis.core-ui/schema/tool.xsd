@@ -118,6 +118,11 @@
 						select this tool</xs:documentation>
 				</xs:annotation>
 			</xs:attribute>
+			<xs:attribute name="tooltips" type="xs:string">
+				<xs:annotation>
+					<xs:documentation>Text that will appear in the button</xs:documentation>
+				</xs:annotation>
+			</xs:attribute>
 			<xs:attribute name="mouse-cursor" type="xs:string">
 				<xs:annotation>
 					<xs:documentation>Mouse cursor to show when this tool is selected. If

@@ -122,6 +122,12 @@
 						action</xs:documentation>
 				</xs:annotation>
 			</xs:attribute>
+			<xs:attribute name="tooltips" type="xs:string">
+				<xs:annotation>
+					<xs:documentation>Icon associated to the
+						action</xs:documentation>
+				</xs:annotation>
+			</xs:attribute>
 			<xs:attribute name="menu-group" type="xs:string">
 				<xs:annotation>
 					<xs:documentation>The group to associate the actions in the menu.
