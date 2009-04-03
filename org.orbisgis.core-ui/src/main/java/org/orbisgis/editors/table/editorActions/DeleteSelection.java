@@ -38,7 +38,14 @@ public class DeleteSelection implements IEditorAction {
 	public boolean isEnabled(IEditor editor) {
 		TableEditableElement element = (TableEditableElement) editor
 				.getElement();
-		return isEnabled(element);
+
+		if (element.isEditable()){
+			return true;
+		}
+		else if (element.getMapContext() == null){
+			return isEnabled(element);
+		}
+		return false;
 	}
 
 	@Override
@@ -47,8 +54,8 @@ public class DeleteSelection implements IEditorAction {
 	}
 
 	public static boolean isEnabled(TableEditableElement element) {
-		return (element.getSelection().getSelectedRows().length > 0)
-				&& element.getDataSource().isEditable();
+
+		return element.getDataSource().isEditable();
 	}
 
 }
