@@ -321,7 +321,7 @@
 			class="org.orbisgis.editors.table.editorActions.Redo"/>
 		<editor-action
 			id="org.orbisgis.editors.table.editorActions.DeleteSelection"
-			menu-id="org.orbisgis.Table" text="Delete"
+			menu-id="org.orbisgis.Table" text="Remove selected row"
 			menu-group="org.orbisgis.editors.table.Basic"
 			icon="/org/orbisgis/images/remove.png"
 			editor-id="org.orbisgis.editors.Table"
@@ -349,6 +349,14 @@
 			toolbar-id="org.orbisgis.editors.map.Edition"
 			icon="/org/orbisgis/images/table_go.png"
 			class="org.orbisgis.editors.table.editorActions.CreateSourceFromSelection"/>
+		<editor-action
+			id="org.orbisgis.editors.table.editorActions.ClearSelection"
+			menu-id="org.orbisgis.Table" text="Clear selection"
+			menu-group="org.orbisgis.editors.table.Basic"
+			editor-id="org.orbisgis.editors.Table"
+			toolbar-id="org.orbisgis.editors.map.Edition"
+			icon="/org/orbisgis/images/edit-clear.png"
+			class="org.orbisgis.editors.table.editorActions.ClearSelection"/>
 	</extension>
 
 	<!-- table column actions -->
@@ -413,7 +421,7 @@
 			icon="/org/orbisgis/images/arrow_up.png"
 			class="org.orbisgis.editors.table.actions.SelectionUp"/>
 		<action id="org.orbisgis.editors.table.DeleteSelection"
-			text="Remove selection"
+			text="Remove selected row"
 			menu-group="org.orbisgis.editors.table.Selection"
 			icon="/org/orbisgis/images/remove.png"
 			class="org.orbisgis.editors.table.actions.DeleteSelection"/>
@@ -448,6 +456,7 @@
 			menu-id="org.orbisgis.editors.map.Tool" text="Full extent"
 			menu-group="org.orbisgis.editors.map.tools.Inmediate"
 			icon="/org/orbisgis/images/world.png"
+			tooltips="Zoom to full extent"
 			toolbar-id="org.orbisgis.editors.map.Navigation"
 			editor-id="org.orbisgis.editors.Map"
 			class="org.orbisgis.editors.map.actions.FullExtent"/>
@@ -474,12 +483,19 @@
 			toolbar-id="org.orbisgis.editors.map.Edition"
 			class="org.orbisgis.editors.map.actions.Redo"/>
 		<editor-action id="org.orbisgis.editors.map.actions.DeleteSelection"
-			menu-id="org.orbisgis.Map" text="Delete"
+			menu-id="org.orbisgis.Map" text="Delete feature"
 			menu-group="org.orbisgis.editors.map.tools.Edition"
 			icon="/org/orbisgis/images/remove.png"
 			editor-id="org.orbisgis.editors.Map"
 			toolbar-id="org.orbisgis.editors.map.Edition"
 			class="org.orbisgis.editors.map.actions.DeleteSelection"/>
+		<editor-action id="org.orbisgis.editors.map.actions.ClearMapSelection"
+			menu-id="org.orbisgis.Map" text="Clear selection"
+			menu-group="org.orbisgis.editors.map.tools.Edition"
+			icon="/org/orbisgis/images/edit-clear.png"
+			editor-id="org.orbisgis.editors.Map"
+			toolbar-id="org.orbisgis.editors.map.Edition"
+			class="org.orbisgis.editors.map.actions.ClearMapSelection"/>
 	</extension>
 
 	<extension id="org.orbisgis.editors.map.actions.Export"
@@ -512,6 +528,7 @@
 			class="org.orbisgis.editors.map.actions.export.ExportMapAsPDF"/>
 	</extension>
 
+
 	<!-- map editor tools -->
 	<extension id="org.orbisgis.editors.map.tools.NavigationTools"
 		point="org.orbisgis.editors.map.Tool">
@@ -524,6 +541,7 @@
 			icon="/org/orbisgis/images/zoom_in.png"
 			mouse-cursor="/org/orbisgis/images/zoom_in.gif"
 			toolbar-id="org.orbisgis.editors.map.Navigation" selectable="true"
+			tooltips="Zoom out"
 			class="org.orbisgis.editors.map.tools.ZoomInTool"/>
 		<tool id="org.orbisgis.editors.map.tools.ZoomOut"
 			menu-id="org.orbisgis.editors.map.Tool" text="Zoom Out"
@@ -531,6 +549,7 @@
 			icon="/org/orbisgis/images/zoom_out.png"
 			mouse-cursor="/org/orbisgis/images/zoom_out.gif"
 			toolbar-id="org.orbisgis.editors.map.Navigation" selectable="true"
+			tooltips="Zoom out"
 			class="org.orbisgis.editors.map.tools.ZoomOutTool"/>
 		<tool id="org.orbisgis.editors.map.tools.Pan"
 			menu-id="org.orbisgis.editors.map.Tool" text="Pan"
@@ -538,6 +557,7 @@
 			icon="/org/orbisgis/images/pan.png"
 			mouse-cursor="/org/orbisgis/images/pan.gif"
 			toolbar-id="org.orbisgis.editors.map.Navigation" selectable="true"
+			tooltips ="Move the map"
 			class="org.orbisgis.editors.map.tools.PanTool"/>
 	</extension>
 
@@ -548,12 +568,14 @@
 			menu-group="org.orbisgis.editors.map.tools.Selectable"
 			icon="/org/orbisgis/images/information.png"
 			toolbar-id="org.orbisgis.editors.map.Info" selectable="true"
+			tooltips="Get feature attributes"
 			class="org.orbisgis.editors.map.tools.InfoTool"/>
 		<tool id="org.orbisgis.editors.map.tools.Selection"
 			menu-id="org.orbisgis.editors.map.Tool" text="Selection"
 			menu-group="org.orbisgis.editors.map.tools.Edition"
 			icon="/org/orbisgis/images/select.png"
 			toolbar-id="org.orbisgis.editors.map.Info" selectable="true"
+			tooltips="Select geometries"
 			class="org.orbisgis.editors.map.tools.SelectionTool"/>
 	</extension>
 
@@ -563,6 +585,7 @@
 			toolbar-id="org.orbisgis.editors.map.Fence"
 			icon="/org/orbisgis/images/shape_polygon_edit.png"
 			text="Polygon fence" selectable="true"
+			tooltips="Draw a fence"
 			class="org.orbisgis.editors.map.tools.FencePolygonTool"/>
 	</extension>
 
@@ -572,6 +595,7 @@
 			toolbar-id="org.orbisgis.editors.map.Mesure"
 			icon="/org/orbisgis/images/mesurearea.png" text="Mesure area"
 			selectable="true"
+			tooltips="Mesure an area"
 			class="org.orbisgis.editors.map.tools.MesurePolygonTool"/>
 	</extension>
 
@@ -581,6 +605,7 @@
 			toolbar-id="org.orbisgis.editors.map.Mesure"
 			icon="/org/orbisgis/images/mesurelength.png" text="Mesure distance"
 			selectable="true"
+		tooltips="Mesure a distance"
 			class="org.orbisgis.editors.map.tools.MesureLineTool"/>
 	</extension>
 
@@ -597,6 +622,7 @@
 			menu-group="org.orbisgis.editors.map.tools.Edition"
 			icon="/org/orbisgis/images/point.png"
 			toolbar-id="org.orbisgis.editors.map.Edition" selectable="true"
+			tooltips="Insert a point"
 			class="org.orbisgis.editors.map.tools.PointTool"/>
 		<tool id="org.orbisgis.editors.map.tools.InsertMultiPoint"
 			menu-id="org.orbisgis.editors.map.Tool" text="Insert multi point"
@@ -632,13 +658,13 @@
 		<tool id="org.orbisgis.editors.map.tools.VertexAdition"
 			menu-id="org.orbisgis.editors.map.Tool" text="Insert vertex"
 			menu-group="org.orbisgis.editors.map.tools.Edition"
-			icon="/org/orbisgis/images/vertexAdition.png"
+			icon="/org/orbisgis/images/vertexadition.png"
 			toolbar-id="org.orbisgis.editors.map.Edition" selectable="true"
 			class="org.orbisgis.editors.map.tools.VertexAditionTool"/>
 		<tool id="org.orbisgis.editors.map.tools.InsertMultiPolygon"
 			menu-id="org.orbisgis.editors.map.Tool" text="Remove vertex"
 			menu-group="org.orbisgis.editors.map.tools.Edition"
-			icon="/org/orbisgis/images/vertexDeletion.png"
+			icon="/org/orbisgis/images/vertexdeletion.png"
 			toolbar-id="org.orbisgis.editors.map.Edition" selectable="true"
 			class="org.orbisgis.editors.map.tools.VertexDeletionTool"/>
 	</extension>
