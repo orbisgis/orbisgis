@@ -36,6 +36,8 @@
  */
 package org.orbisgis.editors.map.actions.export;
 
+import ij.ImagePlus;
+
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -94,8 +96,13 @@ public class ExportMapAsImage implements IEditorAction {
 			try {
 					ImageIO.write(subImg, "png", savedFile);
 
+					ImagePlus imagePlus = new ImagePlus();
+					imagePlus.setImage(subImg);
+					imagePlus.show();
+
 					JOptionPane.showMessageDialog(null,
 							"The file has been saved.");
+
 
 
 			} catch (IOException e) {
