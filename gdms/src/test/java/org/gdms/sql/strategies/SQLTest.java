@@ -456,7 +456,7 @@ public class SQLTest extends SourceTest {
 
 	/**
 	 * Tests a simple select query
-	 * 
+	 *
 	 * @throws Throwable
 	 *             DOCUMENT ME!
 	 */
@@ -829,6 +829,29 @@ public class SQLTest extends SourceTest {
 		ds = dsf.getDataSourceFromSQL(sql);
 		ds.open();
 		assertTrue(ds.getRowCount() == 0);
+		ds.close();
+	}
+
+	public void testUpdate() throws Exception {
+		createSource("source", "a", 0, 1, 2, 3);
+		dsf.executeSQL("update source SET a = a + StringToInt('1');",
+				null);
+		DataSource ds = dsf.getDataSource("source");
+		ds.open();
+		assertTrue(ds.getRowCount() == 4);
+		for (int i = 0; i < ds.getRowCount(); i++) {
+			assertTrue(ds.getInt(i, 0) == i + 1);
+		}
+		ds.close();
+	}
+
+	public void testUpdateWhere() throws Exception {
+		createSource("source", "a", 0, 1, 2, 3);
+		dsf.executeSQL("update source SET a = 1 WHERE a = 0", null);
+		DataSource ds = dsf.getDataSource("source");
+		ds.open();
+		assertTrue(ds.getRowCount() == 4);
+		assertTrue(ds.getInt(0, 0) == 1);
 		ds.close();
 	}
 
