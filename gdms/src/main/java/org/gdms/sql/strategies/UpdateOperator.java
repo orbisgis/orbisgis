@@ -38,13 +38,23 @@ package org.gdms.sql.strategies;
 
 import java.util.ArrayList;
 
+import org.gdms.data.AlreadyClosedException;
+import org.gdms.data.DataSource;
+import org.gdms.data.DataSourceCreationException;
 import org.gdms.data.ExecutionException;
+import org.gdms.data.NoSuchTableException;
+import org.gdms.data.NonEditableDataSourceException;
 import org.gdms.data.metadata.Metadata;
+import org.gdms.data.types.Type;
+import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.ObjectDriver;
+import org.gdms.driver.driverManager.DriverLoadException;
 import org.gdms.sql.evaluator.Equals;
+import org.gdms.sql.evaluator.EvaluationException;
 import org.gdms.sql.evaluator.Expression;
 import org.gdms.sql.evaluator.Field;
+import org.gdms.sql.evaluator.FieldContext;
 import org.orbisgis.progress.IProgressMonitor;
 
 public class UpdateOperator extends AbstractExpressionOperator implements
@@ -52,6 +62,7 @@ public class UpdateOperator extends AbstractExpressionOperator implements
 
 	private ArrayList<Field> fields = new ArrayList<Field>();
 	private ArrayList<Expression> values = new ArrayList<Expression>();
+	private Expression filterExpression;
 
 	@Override
 	protected Expression[] getExpressions() throws DriverException,
@@ -59,13 +70,76 @@ public class UpdateOperator extends AbstractExpressionOperator implements
 		ArrayList<Expression> ret = new ArrayList<Expression>();
 		ret.addAll(fields);
 		ret.addAll(values);
+		if (filterExpression != null) {
+			ret.add(filterExpression);
+		}
 
 		return ret.toArray(new Expression[0]);
 	}
 
-	public ObjectDriver getResultContents(IProgressMonitor pm) throws ExecutionException {
-		// TODO Auto-generated method stub
+	public ObjectDriver getResultContents(IProgressMonitor pm)
+			throws ExecutionException {
+		try {
+			String sourceName = getTableName();
+			final DataSource ds = getDataSourceFactory().getDataSource(
+					sourceName);
+			Field[] fieldReferences = getFieldReferences();
+			DataSourceFieldIndex dsFieldContext = new DataSourceFieldIndex(ds);
+			for (Field field : fieldReferences) {
+				field.setFieldContext(dsFieldContext);
+			}
+			ds.open();
+			for (int i = 0; i < ds.getRowCount(); i++) {
+				dsFieldContext.setIndex(i);
+				if ((filterExpression == null)
+						|| evaluatesToTrue(new Expression[] { filterExpression })) {
+					for (int j = 0; j < fields.size(); j++) {
+						int fieldIndex = ds.getFieldIndexByName(fields.get(j)
+								.getFieldName());
+						ds.setFieldValue(i, fieldIndex, values.get(j)
+								.evaluate());
+					}
+				}
+			}
+			ds.commit();
+			ds.close();
+		} catch (DriverLoadException e) {
+			throw new ExecutionException("Cannot access source", e);
+		} catch (NoSuchTableException e) {
+			throw new ExecutionException("Cannot find source", e);
+		} catch (AlreadyClosedException e) {
+			throw new ExecutionException("Cannot modify source", e);
+		} catch (DataSourceCreationException e) {
+			throw new ExecutionException("Cannot access source", e);
+		} catch (DriverException e) {
+			throw new ExecutionException("Cannot modify source", e);
+		} catch (NonEditableDataSourceException e) {
+			throw new ExecutionException("The source is not editable", e);
+		} catch (EvaluationException e) {
+			throw new ExecutionException("Cannot evaluate update expression", e);
+		} catch (SemanticException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		return null;
+
+	}
+
+	private boolean evaluatesToTrue(Expression[] exprs)
+			throws EvaluationException {
+		for (Expression expression : exprs) {
+			if (!evaluatesToTrue(expression)) {
+				return false;
+			}
+		}
+
+		return true;
+	}
+
+	private static boolean evaluatesToTrue(Expression expression)
+			throws IncompatibleTypesException, EvaluationException {
+		Value expressionResult = expression.evaluate();
+		return !expressionResult.isNull() && expressionResult.getAsBoolean();
 	}
 
 	public Metadata getResultMetadata() throws DriverException {
@@ -93,6 +167,33 @@ public class UpdateOperator extends AbstractExpressionOperator implements
 		}
 
 		super.validateExpressionTypes();
+	}
+
+	public void setWhereExpression(Expression filterExpression) {
+		this.filterExpression = filterExpression;
+	}
+
+	private final class DataSourceFieldIndex implements FieldContext {
+		private final DataSource ds;
+		private int rowIndex;
+
+		private DataSourceFieldIndex(DataSource ds) {
+			this.ds = ds;
+		}
+
+		public void setIndex(int i) {
+			rowIndex = i;
+		}
+
+		@Override
+		public Value getFieldValue(int fieldId) throws DriverException {
+			return ds.getFieldValue(rowIndex, fieldId);
+		}
+
+		@Override
+		public Type getFieldType(int fieldId) throws DriverException {
+			return ds.getFieldType(fieldId);
+		}
 	}
 
 }
