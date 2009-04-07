@@ -38,10 +38,18 @@ package org.gdms.sql.strategies;
 
 import java.util.ArrayList;
 
+import org.gdms.data.AlreadyClosedException;
+import org.gdms.data.DataSource;
+import org.gdms.data.DataSourceCreationException;
 import org.gdms.data.ExecutionException;
+import org.gdms.data.NoSuchTableException;
+import org.gdms.data.NonEditableDataSourceException;
 import org.gdms.data.metadata.Metadata;
+import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.ObjectDriver;
+import org.gdms.driver.driverManager.DriverLoadException;
+import org.gdms.sql.evaluator.EvaluationException;
 import org.gdms.sql.evaluator.Expression;
 import org.gdms.sql.evaluator.Field;
 import org.orbisgis.progress.IProgressMonitor;
@@ -69,8 +77,39 @@ public class InsertOperator extends AbstractExpressionOperator implements
 		return fields;
 	}
 
-	public ObjectDriver getResultContents(IProgressMonitor pm) throws ExecutionException {
-		return null;
+	public ObjectDriver getResultContents(IProgressMonitor pm)
+			throws ExecutionException {
+		String sourceName = getTableName();
+		try {
+			DataSource ds = getDataSourceFactory().getDataSource(sourceName);
+			ds.open();
+			Value[] row = new Value[ds.getFieldCount()];
+			for (int i = 0; i < fields.size(); i++) {
+				Field field = (Field) fields.get(i);
+				System.out.println(field.getFieldName());
+				int fieldIndex = ds.getFieldIndexByName(field.getFieldName());
+				row[fieldIndex] = values.get(i).evaluate();
+			}
+			ds.insertFilledRow(row);
+			ds.commit();
+			ds.close();
+			return null;
+		} catch (DriverLoadException e) {
+			throw new ExecutionException("Cannot perform the insertion", e);
+		} catch (NoSuchTableException e) {
+			throw new ExecutionException("Cannot perform the insertion", e);
+		} catch (AlreadyClosedException e) {
+			throw new ExecutionException("Cannot perform the insertion", e);
+		} catch (DataSourceCreationException e) {
+			throw new ExecutionException("Cannot perform the insertion", e);
+		} catch (DriverException e) {
+			throw new ExecutionException("Cannot perform the insertion", e);
+		} catch (EvaluationException e) {
+			throw new ExecutionException("Cannot evaluate value to insert", e);
+		} catch (NonEditableDataSourceException e) {
+			throw new ExecutionException("The data source " + sourceName
+					+ " is not editable", e);
+		}
 	}
 
 	public Metadata getResultMetadata() throws DriverException {
