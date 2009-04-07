@@ -124,7 +124,7 @@ public class LogicTreeBuilder {
 	/**
 	 * Recursive method that returns the root of the tree of logic operators
 	 * that implement the query. Returns null if no operator has to be applied
-	 * 
+	 *
 	 * @param node
 	 * @return
 	 * @throws SemanticException
@@ -246,17 +246,15 @@ public class LogicTreeBuilder {
 			identity.addChild(scan);
 			Operator last = identity;
 
-			Node whereNode = getChildNode(node, ASTSQLWhere.class);
-			if (whereNode != null) {
-				Expression whereExpr = getSQLExpression(whereNode
-						.jjtGetChild(0));
-				SelectionOp selection = new SelectionOp();
-				selection.setExpression(whereExpr);
-				selection.addChild(last);
-				last = selection;
-			}
 
 			UpdateOperator updateOperator = new UpdateOperator();
+			Node whereNode = getChildNode(node, ASTSQLWhere.class);
+			if (whereNode != null) {
+				Expression whereExpr =
+				getSQLExpression(whereNode.jjtGetChild(0));
+				updateOperator.setWhereExpression(whereExpr);
+			}
+
 			int index = 1;
 			while ((index < node.jjtGetNumChildren())
 					&& !(node.jjtGetChild(index) instanceof ASTSQLWhere)) {
@@ -748,9 +746,9 @@ public class LogicTreeBuilder {
 	/**
 	 * Gets the type of the specified node if the node consists of only one
 	 * token Otherwise it returns -1
-	 * 
+	 *
 	 * @param n
-	 * 
+	 *
 	 * @return A constant in {@link SQLEngineConstants}
 	 */
 	private int getType(Node n) {
@@ -765,9 +763,9 @@ public class LogicTreeBuilder {
 
 	/**
 	 * Gets the text of the specified node
-	 * 
+	 *
 	 * @param n
-	 * 
+	 *
 	 * @return
 	 */
 	private String getText(Node n) {
