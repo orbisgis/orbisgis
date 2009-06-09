@@ -42,6 +42,16 @@ import org.gdms.data.values.ValueFactory;
 import org.gdms.sql.ColumnValue;
 import org.gdms.sql.FunctionTest;
 import org.gdms.sql.function.Function;
+import org.gdms.sql.function.spatial.geometry.predicates.Contains;
+import org.gdms.sql.function.spatial.geometry.predicates.Crosses;
+import org.gdms.sql.function.spatial.geometry.predicates.Disjoint;
+import org.gdms.sql.function.spatial.geometry.predicates.Equals;
+import org.gdms.sql.function.spatial.geometry.predicates.Intersects;
+import org.gdms.sql.function.spatial.geometry.predicates.IsWithin;
+import org.gdms.sql.function.spatial.geometry.predicates.IsWithinDistance;
+import org.gdms.sql.function.spatial.geometry.predicates.Overlaps;
+import org.gdms.sql.function.spatial.geometry.predicates.Relate;
+import org.gdms.sql.function.spatial.geometry.predicates.Touches;
 import org.gdms.sql.strategies.IncompatibleTypesException;
 
 import com.vividsolutions.jts.geom.Geometry;
@@ -88,6 +98,7 @@ public class PredicatesTest extends FunctionTest {
 		} catch (IncompatibleTypesException e) {
 		}
 	}
+
 
 	public void testIsWithinDistance() throws Exception {
 		// Test null input

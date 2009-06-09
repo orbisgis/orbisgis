@@ -166,4 +166,10 @@ public class String2DateFunction implements Function {
 	public Value getAggregateResult() {
 		return null;
 	}
+
+	@Override
+	public boolean isDesaggregate() {
+		// TODO Auto-generated method stub
+		return false;
+	}
 }

@@ -36,10 +36,27 @@
  */
 package org.gdms.sql.function.spatial.geometryProperties;
 
+import org.gdms.data.types.Type;
 import org.gdms.data.values.Value;
+import org.gdms.data.values.ValueFactory;
+import org.gdms.sql.ColumnValue;
 import org.gdms.sql.FunctionTest;
+import org.gdms.sql.function.spatial.geometry.properties.Area;
+import org.gdms.sql.function.spatial.geometry.properties.Dimension;
+import org.gdms.sql.function.spatial.geometry.properties.GeometryN;
+import org.gdms.sql.function.spatial.geometry.properties.GeometryType;
+import org.gdms.sql.function.spatial.geometry.properties.GetX;
+import org.gdms.sql.function.spatial.geometry.properties.GetY;
+import org.gdms.sql.function.spatial.geometry.properties.GetZ;
+import org.gdms.sql.function.spatial.geometry.properties.IsEmpty;
+import org.gdms.sql.function.spatial.geometry.properties.IsSimple;
+import org.gdms.sql.function.spatial.geometry.properties.IsValid;
+import org.gdms.sql.function.spatial.geometry.properties.Length;
+import org.gdms.sql.function.spatial.geometry.properties.NumInteriorRing;
+import org.gdms.sql.function.spatial.geometry.properties.NumPoints;
 
 import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.CoordinateSequence;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.Polygon;
 
@@ -70,13 +87,33 @@ public class PropertiesFunctionTest extends FunctionTest {
 	}
 
 	public void testGetZValue() throws Exception {
-		Value v = testSpatialFunction(new GetZValue(), new GeometryFactory()
+		Value v = testSpatialFunction(new GetZ(), new GeometryFactory()
 				.createPoint(new Coordinate(0, 50)), 1);
 		assertTrue(v.isNull());
-		double d = testSpatialFunction(new GetZValue(),
+		double d = testSpatialFunction(new GetZ(),
 				new GeometryFactory().createPoint(new Coordinate(0, 50, 23)), 1)
 				.getAsDouble();
 		assertTrue(d == 23);
+	}
+
+	public void testGetX() throws Exception {
+		Value v = testSpatialFunction(new GetX(), new GeometryFactory()
+				.createPoint(new Coordinate(0, 50)), 1);
+		assertTrue(!v.isNull());
+		double d = testSpatialFunction(new GetX(),
+				new GeometryFactory().createPoint(new Coordinate(0, 50, 23)), 1)
+				.getAsDouble();
+		assertTrue(d == 0);
+	}
+
+	public void testGetY() throws Exception {
+		Value v = testSpatialFunction(new GetY(), new GeometryFactory()
+				.createPoint(new Coordinate(0, 50)), 1);
+		assertTrue(!v.isNull());
+		double d = testSpatialFunction(new GetY(),
+				new GeometryFactory().createPoint(new Coordinate(0, 50, 23)), 1)
+				.getAsDouble();
+		assertTrue(d == 50);
 	}
 
 	public void testIsEmpty() throws Exception {
@@ -116,5 +153,7 @@ public class PropertiesFunctionTest extends FunctionTest {
 				.getAsInt();
 		assertTrue(v == 4);
 	}
+
+
 
 }

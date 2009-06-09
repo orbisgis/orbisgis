@@ -38,6 +38,7 @@ package org.gdms.data;
 
 import java.sql.Time;
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.Date;
 
 import org.gdms.data.metadata.Metadata;
@@ -69,6 +70,28 @@ public abstract class AbstractDataSource implements DataSource {
 		}
 
 		return ret;
+	}
+
+	public ArrayList<Value[]> getRows(int fieldId, Value value)
+			throws DriverException {
+
+		ArrayList<Value[]> values = new ArrayList<Value[]>();
+		long size = getRowCount();
+
+		for (int i = 0; i < size; i++) {
+
+			Value v = getFieldValue(i, fieldId);
+
+			if (v.equals(value).getAsBoolean()) {
+
+				values.add(getRow(i));
+
+			}
+
+		}
+
+		return values;
+
 	}
 
 	public String getName() {

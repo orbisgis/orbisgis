@@ -130,7 +130,7 @@ public class OrderByOperator extends AbstractExpressionOperator implements
 
 	/**
 	 * Checks that the field types used in the order operation are 'orderable'
-	 * 
+	 *
 	 * @see org.gdms.sql.strategies.AbstractExpressionOperator#validateExpressionTypes()
 	 */
 	@Override

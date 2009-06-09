@@ -41,7 +41,7 @@ import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.sql.function.FunctionException;
-import org.gdms.sql.function.spatial.geometryProperties.AbstractSpatialPropertyFunction;
+import org.gdms.sql.function.spatial.geometry.properties.AbstractSpatialPropertyFunction;
 
 import com.vividsolutions.jts.geom.Geometry;
 
@@ -82,5 +82,11 @@ public class CircleCompacity extends AbstractSpatialPropertyFunction {
 
 	public String getSqlOrder() {
 		return "select CircleCompacity(the_geom) from myBuildingsTable;";
+	}
+
+	@Override
+	public boolean isDesaggregate() {
+		// TODO Auto-generated method stub
+		return false;
 	}
 }

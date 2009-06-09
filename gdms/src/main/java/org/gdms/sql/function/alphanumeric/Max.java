@@ -93,4 +93,10 @@ public class Max implements Function {
 	public Value getAggregateResult() {
 		return max;
 	}
+
+	@Override
+	public boolean isDesaggregate() {
+		// TODO Auto-generated method stub
+		return false;
+	}
 }

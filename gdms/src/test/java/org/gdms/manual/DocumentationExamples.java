@@ -155,7 +155,7 @@ public class DocumentationExamples extends TestCase {
 
 		// populate it
 		ds.setString(0, "name", "micky");
-		ds.setString(0, "surname", "mouse");
+		//ds.setString(0, "surname", "mouse");
 
 		// SAVE MY RESULTS PLEASE!!
 		ds.commit();

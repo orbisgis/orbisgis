@@ -1,0 +1,51 @@
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="org.orbisgis.symbol"
+	targetNamespace="org.orbisgis.symbol">
+
+	<xs:element name="symbol-list">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="symbol" type="symbol-type"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+
+	<xs:complexType name="symbol-type" abstract="true">
+		<xs:attribute name="name" type="xs:string" use="required"/>
+	</xs:complexType>
+
+	<xs:complexType name="simple-symbol-type">
+		<xs:complexContent>
+			<xs:extension base="symbol-type">
+				<xs:sequence>
+					<xs:element ref="property" minOccurs="0"
+						maxOccurs="unbounded"/>
+				</xs:sequence>
+				<xs:attribute name="symbol-type-id" type="xs:string"
+					use="required"/>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+
+	<xs:element name="simple-symbol" type="simple-symbol-type"/>
+
+	<xs:complexType name="symbol-composite-type">
+		<xs:complexContent>
+			<xs:extension base="symbol-type">
+				<xs:sequence>
+					<xs:element name="symbol" type="symbol-type" minOccurs="0"
+						maxOccurs="unbounded"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+
+	<xs:element name="symbol-composite" type="symbol-composite-type"/>
+
+	<xs:element name="property">
+		<xs:complexType>
+			<xs:attribute name="name" type="xs:string" use="required"/>
+			<xs:attribute name="value" type="xs:string" use="required"/>
+		</xs:complexType>
+	</xs:element>
+
+</xs:schema>

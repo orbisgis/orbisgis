@@ -1,0 +1,3 @@
+<plugin>
+	<activator class="org.urbsat.Register"/>
+</plugin>

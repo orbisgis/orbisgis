@@ -1,0 +1,56 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+	<xs:element name="extension">
+		<xs:annotation>
+			<xs:documentation>This extension point is used to add new panels inside
+				the main frame of the application </xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="view"/>
+			</xs:sequence>
+			<xs:attribute name="point" type="xs:string" use="required"/>
+			<xs:attribute name="id" type="xs:string"/>
+			<xs:attribute name="name" type="xs:string"/>
+		</xs:complexType>
+	</xs:element>
+
+	<xs:element name="view">
+		<xs:annotation>
+			<xs:documentation> Defines a view to be included in the main application frame
+				</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:attribute name="class" type="xs:string">
+				<xs:annotation>
+					<xs:documentation> Class that implements the
+						org.orbisgis.view.IView that will contain the logic to add the
+						new view </xs:documentation>
+				</xs:annotation>
+			</xs:attribute>
+			<xs:attribute name="icon" type="xs:string">
+				<xs:annotation>
+					<xs:documentation>Icon to be shown in the view</xs:documentation>
+				</xs:annotation>
+			</xs:attribute>
+			<xs:attribute name="title" type="xs:string" use="required">
+				<xs:annotation>
+					<xs:documentation>Title to display in the view</xs:documentation>
+				</xs:annotation>
+			</xs:attribute>
+			<xs:attribute name="show-title-bar" type="xs:string">
+				<xs:annotation>
+					<xs:documentation>If "true" the view will have a title and it will be
+						draggable. Otherwise it will be a fixed panel. It's true by
+						default</xs:documentation>
+				</xs:annotation>
+			</xs:attribute>
+			<xs:attribute name="id" type="xs:string" use="required">
+				<xs:annotation>
+					<xs:documentation>Identifier for internal use. Should be unique
+						</xs:documentation>
+				</xs:annotation>
+			</xs:attribute>
+		</xs:complexType>
+	</xs:element>
+</xs:schema>

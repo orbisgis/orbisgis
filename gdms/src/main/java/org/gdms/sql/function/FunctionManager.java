@@ -53,40 +53,55 @@ import org.gdms.sql.function.alphanumeric.String2BooleanFunction;
 import org.gdms.sql.function.alphanumeric.String2DateFunction;
 import org.gdms.sql.function.alphanumeric.String2DoubleFunction;
 import org.gdms.sql.function.alphanumeric.String2IntFunction;
+import org.gdms.sql.function.alphanumeric.SubString;
 import org.gdms.sql.function.alphanumeric.Sum;
 import org.gdms.sql.function.alphanumeric.ToStringFunction;
-import org.gdms.sql.function.spatial.convert.Boundary;
-import org.gdms.sql.function.spatial.convert.Centroid;
-import org.gdms.sql.function.spatial.convert.Constraint3D;
-import org.gdms.sql.function.spatial.convert.ToMultiLine;
-import org.gdms.sql.function.spatial.convert.ToMultiPoint;
-import org.gdms.sql.function.spatial.geometryProperties.Area;
-import org.gdms.sql.function.spatial.geometryProperties.Dimension;
-import org.gdms.sql.function.spatial.geometryProperties.GeometryN;
-import org.gdms.sql.function.spatial.geometryProperties.GeometryType;
-import org.gdms.sql.function.spatial.geometryProperties.GetZValue;
-import org.gdms.sql.function.spatial.geometryProperties.IsEmpty;
-import org.gdms.sql.function.spatial.geometryProperties.IsSimple;
-import org.gdms.sql.function.spatial.geometryProperties.IsValid;
-import org.gdms.sql.function.spatial.geometryProperties.Length;
-import org.gdms.sql.function.spatial.geometryProperties.NumInteriorRing;
-import org.gdms.sql.function.spatial.geometryProperties.NumPoints;
-import org.gdms.sql.function.spatial.io.AsWKT;
-import org.gdms.sql.function.spatial.io.GeomFromText;
-import org.gdms.sql.function.spatial.operators.Buffer;
-import org.gdms.sql.function.spatial.operators.Difference;
-import org.gdms.sql.function.spatial.operators.GeomUnion;
-import org.gdms.sql.function.spatial.operators.Intersection;
-import org.gdms.sql.function.spatial.operators.SymDifference;
-import org.gdms.sql.function.spatial.predicates.Contains;
-import org.gdms.sql.function.spatial.predicates.Equals;
-import org.gdms.sql.function.spatial.predicates.Intersects;
+import org.gdms.sql.function.spatial.geometry.convert.Boundary;
+import org.gdms.sql.function.spatial.geometry.convert.Centroid;
+import org.gdms.sql.function.spatial.geometry.convert.Constraint3D;
+import org.gdms.sql.function.spatial.geometry.convert.ToMultiLine;
+import org.gdms.sql.function.spatial.geometry.convert.ToMultiPoint;
+import org.gdms.sql.function.spatial.geometry.io.AsWKT;
+import org.gdms.sql.function.spatial.geometry.io.GeomFromText;
+import org.gdms.sql.function.spatial.geometry.operators.Buffer;
+import org.gdms.sql.function.spatial.geometry.operators.Difference;
+import org.gdms.sql.function.spatial.geometry.operators.GeomUnion;
+import org.gdms.sql.function.spatial.geometry.operators.GeomUnionArg;
+import org.gdms.sql.function.spatial.geometry.operators.Intersection;
+import org.gdms.sql.function.spatial.geometry.operators.SymDifference;
+import org.gdms.sql.function.spatial.geometry.predicates.Contains;
+import org.gdms.sql.function.spatial.geometry.predicates.Crosses;
+import org.gdms.sql.function.spatial.geometry.predicates.Disjoint;
+import org.gdms.sql.function.spatial.geometry.predicates.Equals;
+import org.gdms.sql.function.spatial.geometry.predicates.Intersects;
+import org.gdms.sql.function.spatial.geometry.predicates.IsWithin;
+import org.gdms.sql.function.spatial.geometry.predicates.IsWithinDistance;
+import org.gdms.sql.function.spatial.geometry.predicates.Overlaps;
+import org.gdms.sql.function.spatial.geometry.predicates.Relate;
+import org.gdms.sql.function.spatial.geometry.predicates.Touches;
+import org.gdms.sql.function.spatial.geometry.properties.Area;
+import org.gdms.sql.function.spatial.geometry.properties.ConvexHull;
+import org.gdms.sql.function.spatial.geometry.properties.Dimension;
+import org.gdms.sql.function.spatial.geometry.properties.Extent;
+import org.gdms.sql.function.spatial.geometry.properties.GeometryN;
+import org.gdms.sql.function.spatial.geometry.properties.GeometryType;
+import org.gdms.sql.function.spatial.geometry.properties.GetX;
+import org.gdms.sql.function.spatial.geometry.properties.GetY;
+import org.gdms.sql.function.spatial.geometry.properties.GetZ;
+import org.gdms.sql.function.spatial.geometry.properties.IsEmpty;
+import org.gdms.sql.function.spatial.geometry.properties.IsSimple;
+import org.gdms.sql.function.spatial.geometry.properties.IsValid;
+import org.gdms.sql.function.spatial.geometry.properties.Length;
+import org.gdms.sql.function.spatial.geometry.properties.NumInteriorRing;
+import org.gdms.sql.function.spatial.geometry.properties.NumPoints;
+import org.gdms.sql.function.spatial.mixed.ToEnvelope;
+import org.gdms.sql.function.spatial.raster.CropRaster;
 import org.gdms.sql.function.statistics.Sqrt;
 import org.gdms.sql.function.statistics.StandardDeviation;
 
 /**
  * DOCUMENT ME!
- * 
+ *
  * @author Fernando Gonzalez Cortes
  */
 public class FunctionManager {
@@ -121,7 +136,7 @@ public class FunctionManager {
 		addFunction(Boundary.class);
 		addFunction(GeometryN.class);
 		addFunction(Equals.class);
-		addFunction(GetZValue.class);
+		addFunction(GetZ.class);
 		addFunction(Centroid.class);
 		addFunction(Difference.class);
 		addFunction(SymDifference.class);
@@ -135,6 +150,21 @@ public class FunctionManager {
 		addFunction(ToStringFunction.class);
 		addFunction(AutoNumeric.class);
 		addFunction(Pk.class);
+		addFunction(IsWithin.class);
+		addFunction(IsWithinDistance.class);
+		addFunction(Relate.class);
+		addFunction(Touches.class);
+		addFunction(Disjoint.class);
+		addFunction(Crosses.class);
+		addFunction(Overlaps.class);
+		addFunction(GeomUnionArg.class);
+		addFunction(GetX.class);
+		addFunction(GetY.class);
+		addFunction(Extent.class);
+		addFunction(ConvexHull.class);
+		addFunction(SubString.class);
+		addFunction(ToEnvelope.class);
+		addFunction(CropRaster.class);
 	}
 
 	public static void addFunctionManagerListener(
@@ -144,7 +174,7 @@ public class FunctionManager {
 
 	/**
 	 * Remove the listener if it is present in the listener list
-	 * 
+	 *
 	 * @param listener
 	 * @return true if the listener was successfully removed. False if the
 	 *         specified parameter was not a listener
@@ -156,10 +186,10 @@ public class FunctionManager {
 
 	/**
 	 * Add a new function to the SQL engine
-	 * 
+	 *
 	 * @param function
 	 *            function
-	 * 
+	 *
 	 * @throws IllegalArgumentException
 	 *             If the class is not a valid function implementation with an
 	 *             empty constructor or there is already a function or custom
@@ -201,9 +231,9 @@ public class FunctionManager {
 
 	/**
 	 * Gets the function which name is equal to the parameter
-	 * 
+	 *
 	 * @param name
-	 * 
+	 *
 	 * @return a new function instance or null if there is no function with that
 	 *         name
 	 */

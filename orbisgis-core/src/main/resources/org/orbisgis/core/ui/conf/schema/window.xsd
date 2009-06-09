@@ -1,0 +1,63 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+	<xs:element name="extension">
+		<xs:annotation>
+			<xs:documentation> Installs top level windows </xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="window" minOccurs="1" maxOccurs="unbounded"/>
+			</xs:sequence>
+			<xs:attribute name="point" type="xs:string" use="required">
+				<xs:annotation>
+					<xs:documentation> Id of the extension point </xs:documentation>
+				</xs:annotation>
+			</xs:attribute>
+			<xs:attribute name="id" type="xs:string">
+				<xs:annotation>
+					<xs:documentation> Id of the extension. For debuging purposes
+						only</xs:documentation>
+				</xs:annotation>
+			</xs:attribute>
+			<xs:attribute name="name" type="xs:string">
+				<xs:annotation>
+					<xs:documentation> Name of the extension. For debuging purposes
+						only</xs:documentation>
+				</xs:annotation>
+			</xs:attribute>
+		</xs:complexType>
+	</xs:element>
+
+	<xs:element name="window">
+		<xs:annotation>
+			<xs:documentation> Adds a top level window</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:attribute name="id" type="xs:string" use="required">
+				<xs:annotation>
+					<xs:documentation>Id of the window</xs:documentation>
+				</xs:annotation>
+			</xs:attribute>
+			<xs:attribute name="newOnStartup" type="xs:string">
+				<xs:annotation>
+					<xs:documentation>If a new empty window is created when the system
+						starts for the first time</xs:documentation>
+				</xs:annotation>
+			</xs:attribute>
+			<xs:attribute name="icon" type="xs:string">
+				<xs:annotation>
+					<xs:documentation>Path to the resource that will be used as window
+						icon</xs:documentation>
+				</xs:annotation>
+			</xs:attribute>
+			<xs:attribute name="class" type="xs:string" use="required">
+				<xs:annotation>
+					<xs:documentation>Class that implements the IWindow
+						interface</xs:documentation>
+				</xs:annotation>
+			</xs:attribute>
+		</xs:complexType>
+	</xs:element>
+
+</xs:schema>

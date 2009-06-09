@@ -141,4 +141,10 @@ public class String2BooleanFunction implements Function {
 	public Value getAggregateResult() {
 		return null;
 	}
+
+	@Override
+	public boolean isDesaggregate() {
+		// TODO Auto-generated method stub
+		return false;
+	}
 }

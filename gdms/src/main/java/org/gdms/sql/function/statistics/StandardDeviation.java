@@ -95,4 +95,10 @@ public class StandardDeviation implements Function {
 		return ValueFactory.createValue(Math.sqrt(sumOfSquareValues
 				/ numberOfValues - average * average));
 	}
+
+	@Override
+	public boolean isDesaggregate() {
+		// TODO Auto-generated method stub
+		return false;
+	}
 }

@@ -39,6 +39,8 @@ package org.gdms.sql.function.spatial.io;
 import org.gdms.data.types.Type;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.sql.FunctionTest;
+import org.gdms.sql.function.spatial.geometry.io.AsWKT;
+import org.gdms.sql.function.spatial.geometry.io.GeomFromText;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;

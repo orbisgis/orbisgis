@@ -55,7 +55,7 @@ import org.gdms.source.Source;
 import org.gdms.sql.customQuery.QueryManager;
 import org.gdms.sql.customQuery.RegisterCall;
 import org.gdms.sql.function.FunctionManager;
-import org.gdms.sql.function.spatial.operators.Buffer;
+import org.gdms.sql.function.spatial.geometry.operators.Buffer;
 import org.gdms.sql.parser.ParseException;
 
 public class CustomQueriesTest extends TestCase {

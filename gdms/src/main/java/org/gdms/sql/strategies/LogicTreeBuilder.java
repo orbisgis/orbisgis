@@ -246,12 +246,11 @@ public class LogicTreeBuilder {
 			identity.addChild(scan);
 			Operator last = identity;
 
-
 			UpdateOperator updateOperator = new UpdateOperator();
 			Node whereNode = getChildNode(node, ASTSQLWhere.class);
 			if (whereNode != null) {
-				Expression whereExpr =
-				getSQLExpression(whereNode.jjtGetChild(0));
+				Expression whereExpr = getSQLExpression(whereNode
+						.jjtGetChild(0));
 				updateOperator.setWhereExpression(whereExpr);
 			}
 
@@ -393,8 +392,15 @@ public class LogicTreeBuilder {
 					Node obListNode = orderByNode.jjtGetChild(0);
 					for (int i = 0; i < obListNode.jjtGetNumChildren(); i++) {
 						Node obElement = obListNode.jjtGetChild(i);
-						Field field = (Field) getSQLExpression(obElement
-								.jjtGetChild(0));
+						int nodeType = 0;
+						Field field = null;
+						if (node instanceof ASTSQLFunction) {
+							nodeType = 1;
+						} else {
+							nodeType = 2;
+							field = (Field) getSQLExpression(obElement
+									.jjtGetChild(0));
+						}
 						boolean asc = true;
 						if (obElement.jjtGetNumChildren() > 1) {
 							int orderType = ((SimpleNode) obElement
@@ -403,7 +409,15 @@ public class LogicTreeBuilder {
 								asc = false;
 							}
 						}
-						orderByOperator.addCriterium(field, asc);
+
+						if (nodeType == 1) {
+							throw new UnsupportedOperationException("Cuurently not supported");
+						}
+
+						else if (nodeType == 2) {
+							orderByOperator.addCriterium(field, asc);
+						}
+
 					}
 
 					orderByOperator.addChild(last);

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<category id="org.orbisgis.georaster" label="Raster">
+	<category id="org.raster.convert" label="CONVERT">
+	<sql-instruction
+		class="org.gdms.sql.customQuery.spatial.raster.convert.RasterToPoints"/>
+	<sql-instruction
+		class="org.gdms.sql.customQuery.spatial.raster.convert.RasterToPolygons"/>
+	<sql-instruction
+		class="org.gdms.sql.customQuery.spatial.raster.convert.RasterToXYZ"/>
+	</category>
+	<category id="org.orbisgis.georaster.hydrology" label="Hydrology">
+		<sql-instruction
+			class="org.gdms.sql.function.spatial.raster.hydrology.FillSinks"/>
+		<sql-instruction
+			class="org.gdms.sql.function.spatial.raster.hydrology.D8Direction"/>
+		<sql-instruction
+			class="org.gdms.sql.function.spatial.raster.hydrology.D8Accumulation"/>
+		<sql-instruction
+			class="org.gdms.sql.function.spatial.raster.hydrology.D8Slope"/>
+		<sql-instruction
+			class="org.gdms.sql.function.spatial.raster.hydrology.D8AllOutlets"/>
+		<sql-instruction
+			class="org.gdms.sql.function.spatial.raster.hydrology.D8Watershed"/>
+
+		<sql-instruction
+			class="org.gdms.sql.function.spatial.raster.hydrology.D8StrahlerStreamOrder"/>
+	</category>
+</category>

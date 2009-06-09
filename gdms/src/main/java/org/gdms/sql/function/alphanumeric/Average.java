@@ -96,4 +96,10 @@ public class Average implements Function {
 		}
 		return ValueFactory.createValue(sumOfValues / numberOfValues);
 	}
+
+	@Override
+	public boolean isDesaggregate() {
+		// TODO Auto-generated method stub
+		return false;
+	}
 }

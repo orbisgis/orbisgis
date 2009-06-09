@@ -57,6 +57,12 @@ public class GrammarTest extends TestCase {
 		}
 	}
 
+	public void testOrderBy() throws Exception {
+		parse("select * from gis where a=3 order by a;");
+		parse("select * from gis where a=3 order by area(the_geom);");
+		parse("select * from gis order by area(the_geom);");
+	}
+
 	public void testGroupBy() throws Exception {
 		parse("select * from gis where a=3 group by a having a=4;");
 		notParse("select * from gis where a=3 group by a desc having a=4;");

@@ -42,9 +42,15 @@ import org.gdms.data.types.GeometryConstraint;
 import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
+import org.gdms.data.values.ValueCollection;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.sql.ColumnValue;
 import org.gdms.sql.FunctionTest;
+import org.gdms.sql.function.spatial.geometry.convert.Boundary;
+import org.gdms.sql.function.spatial.geometry.convert.Centroid;
+import org.gdms.sql.function.spatial.geometry.convert.Constraint3D;
+import org.gdms.sql.function.spatial.geometry.convert.ToMultiLine;
+import org.gdms.sql.function.spatial.geometry.convert.ToMultiPoint;
 import org.gdms.sql.strategies.IncompatibleTypesException;
 
 import com.vividsolutions.jts.geom.Geometry;
@@ -66,8 +72,7 @@ public class SpatialFunctionTest extends FunctionTest {
 
 		// Test too many parameters
 		try {
-			res = evaluate(function, vg1, ValueFactory
-					.createValue(g2));
+			res = evaluate(function, vg1, ValueFactory.createValue(g2));
 			assertTrue(false);
 		} catch (IncompatibleTypesException e) {
 
@@ -81,8 +86,9 @@ public class SpatialFunctionTest extends FunctionTest {
 		}
 
 		// Test return type
-		Type type = TypeFactory.createType(Type.GEOMETRY, new Constraint[] {
-				new GeometryConstraint(GeometryConstraint.LINESTRING) });
+		Type type = TypeFactory.createType(Type.GEOMETRY,
+				new Constraint[] { new GeometryConstraint(
+						GeometryConstraint.LINESTRING) });
 		type = evaluate(function, type);
 		assertTrue(type.getTypeCode() == Type.GEOMETRY);
 		assertTrue(type.getIntConstraint(Constraint.GEOMETRY_DIMENSION) == 3);
@@ -131,16 +137,19 @@ public class SpatialFunctionTest extends FunctionTest {
 	}
 
 	public final void testToMultipoint() throws Exception {
-		Geometry g = testSpatialFunction(new ToMultiPoint(), g1, 1)
-				.getAsGeometry();
-		assertTrue(g1.getEnvelopeInternal().equals(g.getEnvelopeInternal()));
+		ValueCollection vc = testSpatialFunction(new ToMultiPoint(), g1, 1)
+				.getAsValueCollection();
+		for (int i = 0; i < vc.getValueCount(); i++) {
+
+			assertTrue(g1.getEnvelopeInternal().equals(
+					vc.get(i).getAsGeometry().getEnvelopeInternal()));
+
+		}
 	}
 
 	public final void testCentroid() throws Exception {
 		Geometry g = testSpatialFunction(new Centroid(), g1, 1).getAsGeometry();
 		assertTrue(g1.getCentroid().equals(g));
 	}
-
-	
 
 }

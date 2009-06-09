@@ -1,0 +1,5 @@
+59;method-length()
+help();
+public void mymethod(String[] arg) {
+    arg[0].len
+}

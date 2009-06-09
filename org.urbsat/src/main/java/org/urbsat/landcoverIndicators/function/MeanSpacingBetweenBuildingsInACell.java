@@ -103,4 +103,10 @@ public class MeanSpacingBetweenBuildingsInACell implements Function {
 	public Value getAggregateResult() {
 		return null;
 	}
+
+	@Override
+	public boolean isDesaggregate() {
+		// TODO Auto-generated method stub
+		return false;
+	}
 }

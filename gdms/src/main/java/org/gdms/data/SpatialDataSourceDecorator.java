@@ -65,6 +65,8 @@ public class SpatialDataSourceDecorator extends AbstractDataSourceDecorator {
 		super(dataSource);
 	}
 
+
+
 	/**
 	 * Gets the full extent of the data accessed
 	 *
