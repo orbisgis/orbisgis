@@ -34,52 +34,38 @@
  *    fergonco _at_ gmail.com
  *    thomas.leduc _at_ cerma.archi.fr
  */
-package org.orbisgis;
+package org.orbisgis.progress;
 
-import java.io.File;
 
-public interface ApplicationInfo {
+import org.orbisgis.progress.IProgressMonitor;
+import org.orbisgis.progress.ProgressMonitor;
 
-	/**
-	 * Get the name of the application
-	 * 
-	 * @return
-	 */
-	String getName();
+import junit.framework.TestCase;
 
-	/**
-	 * Get the version number
-	 * 
-	 * @return
-	 */
-	String getVersionNumber();
+public class ProgressMonitorTest extends TestCase {
 
-	/**
-	 * Get a name for the version
-	 * 
-	 * @return
-	 */
-	String getVersionName();
-
-	/**
-	 * Get the organization that developed the application
-	 * 
-	 * @return
-	 */
-	String getOrganization();
-
-	/**
-	 * Gets the file where all the logging take place
-	 * 
-	 * @return
-	 */
-	String getLogFile();
-
-	/**
-	 * Gets the folder where the basic configuration of OrbisGIS is stored
-	 * 
-	 * @return
-	 */
-	File getHomeFolder();
+	public void testUsage() throws Exception {
+		IProgressMonitor pm = new ProgressMonitor("open file");
+		pm.startTask("read header");
+		System.out.println(pm);
+		for (int i = 0; i < 100; i++) {
+			pm.progressTo(i);
+			System.out.println(pm);
+		}
+		pm.endTask();
+		pm.progressTo(50);
+		System.out.println(pm);
+		pm.startTask("index file");
+		pm.startTask("select index");
+		System.out.println(pm);
+		pm.endTask();
+		System.out.println(pm);
+		pm.endTask();
+		System.out.println(pm);
+		pm.progressTo(80);
+		System.out.println(pm);
+		pm.endTask();
+		System.out.println(pm);
+	}
 
 }

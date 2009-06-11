@@ -34,23 +34,39 @@
  *    fergonco _at_ gmail.com
  *    thomas.leduc _at_ cerma.archi.fr
  */
-package org.orbisgis.workspace;
+package org.orbisgis.utils;
 
-import java.io.File;
+public class CollectionUtils {
 
-public interface WorkspaceListener {
+	public static boolean contains(Object[] collection, Object testObject) {
+		for (Object object : collection) {
+			if (object == testObject) {
+				return true;
+			}
+		}
 
-	/**
-	 * The workspace have been asked to be saved
-	 */
-	void saveWorkspace();
+		return false;
+	}
 
-	/**
-	 * The workspace directory has changed
-	 *
-	 * @param oldWorkspace
-	 * @param newWorkspace
-	 */
-	void workspaceChanged(File oldWorkspace, File newWorkspace);
+	public static String getCommaSeparated(Object[] array) {
+		StringBuilder ret = new StringBuilder("");
+		String separator = "";
+		for (Object object : array) {
+			ret.append(separator).append(object);
+			separator=", ";
+		}
+
+		return ret.toString();
+	}
+
+	public static boolean contains(int[] array, int element) {
+		for (int i = 0; i < array.length; i++) {
+			if (array[i] == element) {
+				return true;
+			}
+		}
+		
+		return false;
+	}
 
 }
