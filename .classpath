@@ -1,0 +1,24 @@
+<classpath>
+  <classpathentry kind="src" path="src/main/java"/>
+  <classpathentry kind="src" path="src/main/resources" excluding="**/*.java"/>
+  <classpathentry kind="src" path="src/test/java" output="target/test-classes"/>
+  <classpathentry kind="src" path="src/test/resources" output="target/test-classes" excluding="**/*.java"/>
+  <classpathentry kind="output" path="target/classes"/>
+  <classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+  <classpathentry kind="var" path="M2_REPO/javax/activation/activation/1.1/activation-1.1.jar" sourcepath="M2_REPO/javax/activation/activation/1.1/activation-1.1-sources.jar"/>
+  <classpathentry kind="src" path="/commons"/>
+  <classpathentry kind="var" path="M2_REPO/org/opengis/geoapi-nogenerics/2.1-M2/geoapi-nogenerics-2.1-M2.jar"/>
+  <classpathentry kind="src" path="/grap"/>
+  <classpathentry kind="var" path="M2_REPO/com/h2database/h2/1.0.20070617/h2-1.0.20070617.jar"/>
+  <classpathentry kind="src" path="/h2spatial"/>
+  <classpathentry kind="var" path="M2_REPO/hsqldb/hsqldb/1.8.0.1/hsqldb-1.8.0.1.jar" sourcepath="M2_REPO/hsqldb/hsqldb/1.8.0.1/hsqldb-1.8.0.1-sources.jar"/>
+  <classpathentry kind="var" path="M2_REPO/ij/imagej/1.39p/imagej-1.39p.jar"/>
+  <classpathentry kind="var" path="M2_REPO/javax/xml/bind/jaxb-api/2.0/jaxb-api-2.0.jar"/>
+  <classpathentry kind="var" path="M2_REPO/javax/units/jsr108/0.01/jsr108-0.01.jar"/>
+  <classpathentry kind="var" path="M2_REPO/javax/xml/bind/jsr173_api/1.0/jsr173_api-1.0.jar"/>
+  <classpathentry kind="var" path="M2_REPO/com/vividsolutions/jts/1.10/jts-1.10.jar"/>
+  <classpathentry kind="var" path="M2_REPO/junit/junit/3.8.1/junit-3.8.1.jar" sourcepath="M2_REPO/junit/junit/3.8.1/junit-3.8.1-sources.jar"/>
+  <classpathentry kind="var" path="M2_REPO/log4j/log4j/1.2.13/log4j-1.2.13.jar" sourcepath="M2_REPO/log4j/log4j/1.2.13/log4j-1.2.13-sources.jar"/>
+  <classpathentry kind="var" path="M2_REPO/org/postgis/postgis/1.3.1/postgis-1.3.1.jar"/>
+  <classpathentry kind="var" path="M2_REPO/org/postgresql/postgresql/8.2/postgresql-8.2.jar"/>
+</classpath>

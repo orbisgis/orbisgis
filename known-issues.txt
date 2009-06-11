@@ -1,0 +1,14 @@
+* If a dbf file has a record marked as 'deleted' it will be treated in gdms
+as a row with null values.
+
+* The following PostgreSQL datatypes are not supported: bit, bit varying,
+box, cidr, circle, inet, interval, line, lseg, macaddr, money, path, point and
+polygon. That means we can only deal with tables without this types.
+
+* The 'OTHER' data type in hsqldb is not supported.
+
+* H2 not supported types: OTHER, UUID, ARRAY
+
+* If some source doesn't specify the geometry constraint or the geometry
+constraint specified is "MIXED" and that source is exported to PostGIS the
+table will have type "GEOMETRY" and dimension "3"

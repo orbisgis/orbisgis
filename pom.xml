@@ -2,125 +2,89 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<parent>
+		<artifactId>platform</artifactId>
+		<groupId>org.orbisgis</groupId>
+		<version>2.1.0</version>
+	</parent>
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>org.orbisgis</groupId>
-	<artifactId>platform</artifactId>
-	<packaging>pom</packaging>
-	<version>2.0.0-SNAPSHOT</version>
-	<name>platform</name>
-	<url>http://maven.apache.org</url>
-	<modules>
-		<module>gdms</module>
-		<module>grap</module>
-		<module>processing</module>
-		<module>org.urbsat</module>
-		<module>plugin-manager</module>
-		<module>sif</module>
-		<module>commons</module>
-		<module>h2spatial</module>
-		<module>orbisgis-core</module>
-		<module>org.orbisgis.core-ui</module>
-		<module>org.orbisgis.processing</module>
-		<module>org.orbisgis.games</module>
-		<module>updater</module>
-		<module>org.orbisgis.full-ui</module>
-	</modules>
-	<scm>
-		<connection>
-			scm:svn:http://geosysin.iict.ch/irstv-svn/platform</connection>
-		<developerConnection>
-			scm:svn:http://geosysin.iict.ch/irstv-svn/platform</developerConnection>
-		<tag>HEAD</tag>
-		<url>http://geosysin.iict.ch/irstv-svn/platform</url>
-	</scm>
-	<repositories>
-		<repository>
-			<id>maven_default</id>
-			<name>Maven Default Central</name>
-			<url>http://repo1.maven.org/maven2/</url>
-		</repository>
-		<repository>
-			<id>geotools</id>
-			<name>Geotools repository</name>
-			<url>http://maven.geotools.fr/repository</url>
-		</repository>
-		<repository>
-			<id>sourcesup</id>
-			<name>SourceSup repository</name>
-			<url>http://sourcesup.cru.fr/orbisgis/maven-repo</url>
-		</repository>
-		<!--
-		<repository>
-		<id>gdbms</id>
-		<name>gdbms repo</name>
-		<url>http://gdbms.sourceforge.net/repo</url>
-		</repository>
-		-->
-	</repositories>
-	<pluginRepositories>
-		<pluginRepository>
-			<id>sourcesup</id>
-			<name>SourceSup repository</name>
-			<url>http://sourcesup.cru.fr/orbisgis/maven-repo</url>
-		</pluginRepository>
-	</pluginRepositories>
-	<distributionManagement>
-		<repository>
-			<id>sourcesup</id>
-			<name>SourceSup repository</name>
-			<url>dav:http://sourcesup.cru.fr/orbisgis/maven-repo/</url>
-		</repository>
-	</distributionManagement>
+	<groupId>org.gdms</groupId>
+	<artifactId>gdms</artifactId>
+	<packaging>jar</packaging>
+	<version>1.4.0</version>
+	<name>gdms</name>
+	<url>http://gdbms.sourceforge.net</url>
+	<dependencies>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>3.8.1</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.opengis</groupId>
+			<artifactId>geoapi-nogenerics</artifactId>
+			<version>2.1-M2</version>
+		</dependency>
+		<dependency>
+			<groupId>log4j</groupId>
+			<artifactId>log4j</artifactId>
+			<version>1.2.13</version>
+		</dependency>
+		<dependency>
+			<groupId>hsqldb</groupId>
+			<artifactId>hsqldb</artifactId>
+			<version>1.8.0.1</version>
+			<scope>runtime</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.postgis</groupId>
+			<artifactId>postgis</artifactId>
+			<version>1.3.1</version>
+		</dependency>
+		<dependency>
+			<groupId>org.postgresql</groupId>
+			<artifactId>postgresql</artifactId>
+			<version>8.2</version>
+		</dependency>
+		<dependency>
+			<groupId>h2spatial</groupId>
+			<artifactId>h2spatial</artifactId>
+			<version>1.0.1</version>
+		</dependency>
+		<dependency>
+			<groupId>org.grap</groupId>
+			<artifactId>grap</artifactId>
+			<version>1.2.0</version>
+		</dependency>
+		<dependency>
+			<groupId>javax.xml.bind</groupId>
+			<artifactId>jaxb-api</artifactId>
+			<version>2.0</version>
+		</dependency>
+	</dependencies>
 	<build>
 		<plugins>
 			<plugin>
-				<groupId>org.orbisgis</groupId>
-				<artifactId>release-maven-plugin</artifactId>
-				<version>1.0.0-SNAPSHOT</version>
-				<configuration>
-					<appName>OrbisGIS</appName>
-					<versionNumber>2.0.0</versionNumber>
-					<versionName>Montpellier</versionName>
-					<pluginList>plugin-manager/plugin-list.xml</pluginList>
-					<mainClass>org.orbisgis.pluginManager.Main</mainClass>
-				</configuration>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-source-plugin</artifactId>
+				<executions>
+					<execution>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+					</execution>
+				</executions>
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-compiler-plugin</artifactId>
+				<artifactId>maven-surefire-plugin</artifactId>
 				<configuration>
-					<source>1.6</source>
-					<target>1.6</target>
-				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-dependency-plugin</artifactId>
-				<configuration>
-					<useRepositoryLayout>true</useRepositoryLayout>
-					<outputDirectory>../dependencies</outputDirectory>
-				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-eclipse-plugin</artifactId>
-				<configuration>
-					<downloadSources>true</downloadSources>
-					<downloadJavadocs>true</downloadJavadocs>
+					<includes>
+						<include>org/gdms/GDMSTests.java</include>
+					</includes>
 				</configuration>
 			</plugin>
 		</plugins>
 	</build>
-	<reporting>
-		<plugins>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-javadoc-plugin</artifactId>
-				<configuration>
-					<maxmemory>512m</maxmemory>
-					<aggregate>true</aggregate>
-				</configuration>
-			</plugin>
-		</plugins>
-	</reporting>
 </project>

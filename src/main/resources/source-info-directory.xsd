@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+	<xs:element name="file-property">
+		<xs:complexType>
+			<xs:attribute name="name" type="xs:NMTOKEN" use="required"/>
+			<xs:attribute name="file" type="xs:NMTOKEN" use="required"/>
+		</xs:complexType>
+	</xs:element>
+
+	<xs:element name="property">
+		<xs:complexType>
+			<xs:attribute name="name" type="xs:NMTOKEN" use="required"/>
+			<xs:attribute name="value" type="xs:NMTOKEN" use="required"/>
+		</xs:complexType>
+	</xs:element>
+
+	<xs:element name="source">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="definition"/>
+				<xs:element ref="property" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element ref="file-property" minOccurs="0"
+					maxOccurs="unbounded"/>
+				<xs:element name="referencing-source" minOccurs="0"
+					maxOccurs="unbounded" type="xs:string"/>
+				<xs:element name="referenced-source" minOccurs="0"
+					maxOccurs="unbounded" type="xs:string"/>
+			</xs:sequence>
+			<xs:attribute name="name" type="xs:NMTOKEN" use="required"/>
+			<xs:attribute name="checksum" type="xs:NMTOKEN"/>
+		</xs:complexType>
+	</xs:element>
+
+	<xs:element name="sources">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="source" minOccurs="0" maxOccurs="unbounded"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+
+	<xs:complexType name="definition-type"/>
+
+	<xs:element name="definition" type="definition-type"/>
+
+	<xs:complexType name="file-definition-type">
+		<xs:complexContent>
+			<xs:extension base="definition-type">
+				<xs:attribute name="path" type="xs:string" use="required"/>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+
+	<xs:element name="file-definition" type="file-definition-type"/>
+
+	<xs:complexType name="object-definition-type">
+		<xs:complexContent>
+			<xs:extension base="definition-type">
+				<xs:attribute name="class" type="xs:string" use="required"/>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+
+	<xs:element name="object-definition" type="object-definition-type"/>
+
+	<xs:complexType name="sql-definition-type">
+		<xs:complexContent>
+			<xs:extension base="definition-type">
+				<xs:attribute name="sql" type="xs:string" use="required"/>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+
+	<xs:element name="sql-definition" type="sql-definition-type"/>
+
+	<xs:complexType name="db-definition-type">
+		<xs:complexContent>
+			<xs:extension base="definition-type">
+				<xs:attribute name="host" type="xs:string" use="required"/>
+				<xs:attribute name="port" type="xs:string" use="required"/>
+				<xs:attribute name="db-name" type="xs:string" use="required"/>
+				<xs:attribute name="table-name" type="xs:string" use="required"/>
+				<xs:attribute name="user" type="xs:string" use="required"/>
+				<xs:attribute name="password" type="xs:string" use="required"/>
+				<xs:attribute name="prefix" type="xs:string" use="required"/>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+
+	<xs:element name="db-definition" type="db-definition-type"/>
+
+	<xs:complexType name="wms-definition-type">
+		<xs:complexContent>
+			<xs:extension base="definition-type">
+				<xs:attribute name="host" type="xs:string" use="required"/>
+				<xs:attribute name="layer-name" type="xs:string" use="required"/>
+				<xs:attribute name="srs" type="xs:string" use="required"/>
+				<xs:attribute name="format" type="xs:string" use="required"/>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+
+	<xs:element name="wms-definition" type="wms-definition-type"/>
+</xs:schema>

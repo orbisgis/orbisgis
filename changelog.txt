@@ -1,0 +1,6 @@
+1.0b5
+	DataSourceFactory has a result directory.
+	select register by default registers a gdms source in the result directory
+	Instruction.getSQL returns a source on the results directory.
+	DataSources obtained with DataSourceFactory.getDataSourceFromSQL are stored
+in the temporal directory.
