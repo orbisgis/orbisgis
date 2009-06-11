@@ -2,7 +2,7 @@
 
 UI
 
-- New shin
+- New skin
 - UI simplification
 
 
