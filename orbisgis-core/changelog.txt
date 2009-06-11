@@ -9,11 +9,11 @@ UI
 New features
 
 - Cascading maps
-- Managing symbol in geocognition
+- Managing symbols in geocognition
 - Displaying selected features
 - Statistics on features
 - Unselect features
-- Scale visibilty
+- Scale visibility
 - Beanshell with code completion
 - QA analysis and topology
 - Constrained triangulation
