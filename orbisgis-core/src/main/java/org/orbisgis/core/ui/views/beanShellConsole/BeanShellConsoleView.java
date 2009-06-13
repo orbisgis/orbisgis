@@ -84,6 +84,9 @@ public class BeanShellConsoleView implements IView {
 			MapContext mc = ((MapContextManager) Services
 					.getService(MapContextManager.class)).getActiveMapContext();
 
+
+			interpreter.getNameSpace().importCommands("org.orbisgis.core.ui.views.beanShellConsole.commands");
+
 			if (mc != null) {
 				interpreter.set("mc", mc);
 			} else {
@@ -109,6 +112,13 @@ public class BeanShellConsoleView implements IView {
 			outputManager.println(e.getErrorText(), Color.RED);
 			outputManager.println("--------------------", Color.RED);
 		}
+	}
+
+
+	public void foo(String msg){
+
+		System.out.println("Message " + msg);
+
 	}
 
 	public void loadStatus() {
@@ -210,6 +220,7 @@ public class BeanShellConsoleView implements IView {
 		consolePanel.setText("print(\"" + "Hello world !\"" + ");");
 		JTextComponent txt = consolePanel.getTextComponent();
 		txt.addKeyListener(new CompletionKeyListener(true, txt, interpreter));
+
 
 		JavaManager javaManager = Services.getService(JavaManager.class);
 		ClassLoader classLoader = BeanShellConsoleView.class.getClassLoader();
