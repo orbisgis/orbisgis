@@ -15,9 +15,10 @@ New features
 - Unselect features
 - Scale visibility
 - Beanshell with code completion
-- QA analysis and topology
+- QA analysis and topology (planar and network)
 - Constrained triangulation
 - GDMS update and insert
+- OpenJUMP FeatureCollection wrapper
 
 
 Packaging
