@@ -70,21 +70,8 @@ public class FeatureCollectionModelUtils {
 				if (o instanceof Geometry) {
 					if (((Geometry) o).isEmpty()) {
 						values[i] = ValueFactory.createNullValue();
-					} else if (o instanceof Point) {
-						values[i] = ValueFactory.createValue((Point) o);
-					} else if (o instanceof MultiPoint) {
-						values[i] = ValueFactory.createValue((MultiPoint) o);
-					} else if (o instanceof LineString) {
-						values[i] = ValueFactory.createValue((LineString) o);
-					} else if (o instanceof MultiLineString) {
-						values[i] = ValueFactory
-								.createValue((MultiLineString) o);
-					} else if (o instanceof Polygon) {
-						values[i] = ValueFactory.createValue((Polygon) o);
-					} else if (o instanceof MultiPolygon) {
-						values[i] = ValueFactory.createValue((MultiPolygon) o);
-					} else {
-						values[i] = (Value) o;
+					} else  {
+						values[i] = ValueFactory.createValue((Geometry) o);
 					}
 				} else if (o instanceof Value) {
 					values[i] = (Value) o;
