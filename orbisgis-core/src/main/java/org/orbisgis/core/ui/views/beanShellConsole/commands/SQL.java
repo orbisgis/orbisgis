@@ -32,7 +32,7 @@ import bsh.Interpreter;
 
 public class SQL {
 
-	private final static Logger logger = Logger.getLogger(SQL.class);
+	private final Logger logger = Logger.getLogger(SQL.class);
 
 	/**
 	 * Implement the command action.
