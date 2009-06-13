@@ -70,7 +70,7 @@ public class FeatureCollectionModelUtils {
 				if (o instanceof Geometry) {
 					if (((Geometry) o).isEmpty()) {
 						values[i] = ValueFactory.createNullValue();
-					} else  {
+					} else {
 						values[i] = ValueFactory.createValue((Geometry) o);
 					}
 				} else if (o instanceof Value) {
@@ -88,8 +88,6 @@ public class FeatureCollectionModelUtils {
 					} else if (at == AttributeType.OBJECT) {
 						values[i] = ValueFactory.createValue(o.toString());
 					}
-
-
 				}
 			}
 		}
