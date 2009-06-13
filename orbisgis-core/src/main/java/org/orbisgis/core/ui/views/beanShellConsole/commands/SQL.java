@@ -22,7 +22,6 @@ import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.layerModel.LayerException;
 import org.orbisgis.core.layerModel.MapContext;
 import org.orbisgis.core.ui.editors.map.MapContextManager;
-import org.orbisgis.core.ui.views.sqlConsole.ConsoleView;
 import org.orbisgis.pluginManager.background.BackgroundJob;
 import org.orbisgis.pluginManager.background.BackgroundManager;
 import org.orbisgis.progress.IProgressMonitor;
@@ -32,7 +31,7 @@ import bsh.Interpreter;
 
 public class SQL {
 
-	private final Logger logger = Logger.getLogger(SQL.class);
+	private static final Logger logger = Logger.getLogger(SQL.class);
 
 	/**
 	 * Implement the command action.
