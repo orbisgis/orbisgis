@@ -89,8 +89,6 @@ public class FeatureCollectionModelUtils {
 						values[i] = ValueFactory.createValue(o.toString());
 					}
 
-					throw new RuntimeException(
-							"OpenJUMP attribute type unknown");
 
 				}
 			}
