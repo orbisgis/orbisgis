@@ -216,16 +216,21 @@
 			menu-id="org.orbisgis.ProcessingMenu"
 			icon="/org/orbisgis/images/gaps.png"
 			class="org.orbisgis.geoprocessing.editorViews.toc.actions.qa.IntervalGapsFinderAction"/>
-		<!--<action id="org.orbisgis.geomProcessing" text="Validate geometries"
+		<action id="org.orbisgis.geomProcessing" text="Validate geometries"
 			menu-group="org.orbisgis.rasterProcessing"
 			menu-id="org.orbisgis.ProcessingMenu"
 			icon="/org/orbisgis/images/edit-clear.png"
-			class="org.orbisgis.geoprocessing.editorViews.toc.actions.qa.ValidateSelectedLayersAction"/>-->
+			class="org.orbisgis.geoprocessing.editorViews.toc.actions.qa.ValidateSelectedLayersAction"/>
 		<action id="org.orbisgis.geomProcessing" text="Geometry statistics"
 			menu-group="org.orbisgis.rasterProcessing"
 			menu-id="org.orbisgis.ProcessingMenu"
 			icon="/org/orbisgis/images/lightbulb_off.png"
 			class="org.orbisgis.geoprocessing.editorViews.toc.actions.qa.GeometriesStatisticsAction"/>
+		<action id="org.orbisgis.geomProcessing" text="Network topology"
+			menu-group="org.orbisgis.rasterProcessing"
+			menu-id="org.orbisgis.ProcessingMenu"
+			icon="/org/orbisgis/images/network.png"
+			class="org.orbisgis.geoprocessing.editorViews.toc.actions.topology.NetworkTopologyLayerAction"/>
 		<action id="org.orbisgis.geomProcessing" text="Planar topology"
 			menu-group="org.orbisgis.rasterProcessing"
 			menu-id="org.orbisgis.ProcessingMenu"
