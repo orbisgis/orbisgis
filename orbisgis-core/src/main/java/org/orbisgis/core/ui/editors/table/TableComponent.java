@@ -25,7 +25,6 @@ import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JTable;
-import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingUtilities;
 import javax.swing.event.ListSelectionEvent;
@@ -76,12 +75,10 @@ public class TableComponent extends JPanel {
 	private static final String SORTDOWN = "SORTDOWN";
 	private static final String NOSORT = "NOSORT";
 
-
 	// Swing components
 	private javax.swing.JScrollPane jScrollPane = null;
 	private JTable table = null;
 	private JLabel messageLabel = null;
-
 
 	// Model
 	private int selectedColumn = -1;
@@ -148,7 +145,10 @@ public class TableComponent extends JPanel {
 									}
 									selection.setSelectedRows(selectedRows);
 									managingSelection = false;
-									messageLabel.setText("Row selected : "+ selectedRows.length + " / " + table.getRowCount() + " total rows");
+									messageLabel.setText("Row selected : "
+											+ selectedRows.length + " / "
+											+ table.getRowCount()
+											+ " total rows");
 
 								}
 							}
@@ -166,8 +166,7 @@ public class TableComponent extends JPanel {
 		return table;
 	}
 
-
-	public JPanel getPanelInformation(){
+	public JPanel getPanelInformation() {
 		final JPanel informationPanel = new JPanel();
 		final FlowLayout flowLayout = new FlowLayout();
 		flowLayout.setAlignment(FlowLayout.LEFT);
@@ -184,8 +183,6 @@ public class TableComponent extends JPanel {
 		messageLabel = labelMessage;
 		return labelMessage;
 	}
-
-
 
 	/**
 	 * This method initializes jScrollPane
@@ -249,7 +246,7 @@ public class TableComponent extends JPanel {
 			this.selection = element.getSelection();
 			this.selection.setSelectionListener(selectionListener);
 			updateTableSelection();
-			messageLabel.setText("Row number : "+ tableModel.getRowCount());
+			messageLabel.setText("Row number : " + tableModel.getRowCount());
 
 		}
 	}
@@ -382,7 +379,7 @@ public class TableComponent extends JPanel {
 			}
 			model.setValueIsAdjusting(false);
 			managingSelection = false;
-			messageLabel.setText("Row number : "+ tableModel.getRowCount());
+			messageLabel.setText("Row number : " + tableModel.getRowCount());
 		}
 	}
 
@@ -515,7 +512,8 @@ public class TableComponent extends JPanel {
 			}
 		}
 
-		protected void addMenu(JPopupMenu pop, String text, Icon icon, String actionCommand) {
+		protected void addMenu(JPopupMenu pop, String text, Icon icon,
+				String actionCommand) {
 			JMenuItem menu = new JMenuItem(text);
 			menu.setIcon(icon);
 			menu.setActionCommand(actionCommand);
@@ -548,12 +546,18 @@ public class TableComponent extends JPanel {
 
 		protected JPopupMenu getPopupMenu() {
 			JPopupMenu pop = new JPopupMenu();
-			addMenu(pop, "Optimal width",IconLoader.getIcon("text_letterspacing.png"), OPTIMALWIDTH);
+			addMenu(pop, "Optimal width", IconLoader
+					.getIcon("text_letterspacing.png"), OPTIMALWIDTH);
 			addMenu(pop, "Set width", null, SETWIDTH);
 			pop.addSeparator();
-			addMenu(pop, "Sort ascending", IconLoader.getIcon("thumb_up.png"), SORTUP);
-			addMenu(pop, "Sort descending",IconLoader.getIcon("thumb_down.png"), SORTDOWN);
-			addMenu(pop, "No Sort", IconLoader.getIcon("table_refresh.png"), NOSORT);
+			if (tableModel.getColumnType(selectedColumn).getTypeCode()!= Type.GEOMETRY){
+			addMenu(pop, "Sort ascending", IconLoader.getIcon("thumb_up.png"),
+					SORTUP);
+			addMenu(pop, "Sort descending", IconLoader
+					.getIcon("thumb_down.png"), SORTDOWN);
+			addMenu(pop, "No Sort", IconLoader.getIcon("table_refresh.png"),
+					NOSORT);
+			}
 			return pop;
 		}
 	}
@@ -653,6 +657,21 @@ public class TableComponent extends JPanel {
 		public String getColumnName(int col) {
 			try {
 				return getMetadata().getFieldName(col);
+			} catch (DriverException e) {
+				return null;
+			}
+		}
+
+		/**
+		 * Returns the type of field
+		 *
+		 * @param col
+		 *            index of field
+		 * @return Type of field
+		 */
+		public Type getColumnType(int col) {
+			try {
+				return getMetadata().getFieldType(col);
 			} catch (DriverException e) {
 				return null;
 			}
