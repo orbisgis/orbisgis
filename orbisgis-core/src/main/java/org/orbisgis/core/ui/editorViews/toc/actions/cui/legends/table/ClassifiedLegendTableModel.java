@@ -52,7 +52,8 @@ import org.orbisgis.core.renderer.legend.carto.LegendFactory;
 public abstract class ClassifiedLegendTableModel extends AbstractTableModel
 		implements TableModel {
 
-	private ClassifiedLegend classifiedLegend = LegendFactory.createUniqueValueLegend();
+	private ClassifiedLegend classifiedLegend = LegendFactory
+			.createUniqueValueLegend();
 	private boolean ordered = false;
 	private Integer[] valueIndex;
 	private boolean showRestOfValues;
