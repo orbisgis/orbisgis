@@ -51,7 +51,7 @@ import javax.imageio.ImageIO;
 import javax.swing.JOptionPane;
 
 import org.orbisgis.core.Services;
-import org.orbisgis.core.renderer.Renderer2;
+import org.orbisgis.core.renderer.Renderer;
 import org.orbisgis.core.renderer.legend.Legend;
 import org.orbisgis.core.ui.editor.IEditor;
 import org.orbisgis.core.ui.editor.action.IEditorAction;
@@ -135,7 +135,7 @@ public class ExportMapAsPDF implements IEditorAction {
 
 		try {
 
-			Renderer2 r = new Renderer2();
+			Renderer r = new Renderer();
 
 			if (outputFile.getName().toLowerCase().endsWith("pdf")) {
 
