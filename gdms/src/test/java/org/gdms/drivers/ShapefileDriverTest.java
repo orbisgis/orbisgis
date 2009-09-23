@@ -95,7 +95,7 @@ public class ShapefileDriverTest extends TestCase {
 	public void testBigShape() throws Exception {
 		dsf.getSourceManager().register(
 				"big",
-				new FileSourceDefinition(new File(SourceTest.externalData
+				new FileSourceDefinition(new File(SourceTest.internalData
 						+ "shp/bigshape3D/point3D.shp")));
 		DataSource ds = dsf.getDataSource("big");
 		ds.open();
@@ -105,8 +105,8 @@ public class ShapefileDriverTest extends TestCase {
 	public void testSaveSQL() throws Exception {
 		dsf.getSourceManager().register(
 				"shape",
-				new FileSourceDefinition(new File(SourceTest.externalData
-						+ "shp/mediumshape2D/landcover2000.shp")));
+				new FileSourceDefinition(new File(SourceTest.internalData
+						+ "landcover2000.shp")));
 
 		DataSource sql = dsf.getDataSourceFromSQL(
 				"select Buffer(the_geom, 20) from shape",
@@ -434,8 +434,7 @@ public class ShapefileDriverTest extends TestCase {
 	}
 
 	public void testSHPGeometryWKB() throws Exception {
-		File file = new File(BaseTest.externalData
-				+ "shp/mediumshape2D/hedgerow.shp");
+		File file = new File(BaseTest.internalData + "hedgerow.shp");
 		DataSource ds = dsf.getDataSource(file);
 		ds.open();
 		Value geom = ds.getFieldValue(0, 0);

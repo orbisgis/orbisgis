@@ -388,21 +388,20 @@ public class DBDriverTest extends SourceTest {
 				+ dbSource.getDbName() + "','" + dbSource.getUser() + "','"
 				+ dbSource.getPassword() + "'," + "'" + dbSource.getTableName()
 				+ "','bati');";
-		String registerFile = "select register('" + externalData
-				+ "cours/shape/ile_de_nantes_bati.shp','ile_de_nantes_bati');";
+		String registerFile = "select register('" + internalData
+				+ "landcover2000.shp','parcels');";
 		dsf.executeSQL(registerDB);
 		dsf.executeSQL(registerFile);
 
 		// Do the migration
-		String load = "create table bati as select * "
-				+ "from ile_de_nantes_bati";
+		String load = "create table lands as select * " + "from parcels";
 		dsf.executeSQL(load);
 
 		// Get each value
 		SpatialDataSourceDecorator db = new SpatialDataSourceDecorator(dsf
-				.getDataSource("bati"));
+				.getDataSource("lands"));
 		SpatialDataSourceDecorator file = new SpatialDataSourceDecorator(dsf
-				.getDataSource("ile_de_nantes_bati"));
+				.getDataSource("parcels"));
 		db.open();
 		file.open();
 		assertTrue(db.getRowCount() == file.getRowCount());
@@ -440,21 +439,20 @@ public class DBDriverTest extends SourceTest {
 				+ dbSource.getDbName() + "','" + dbSource.getUser() + "','"
 				+ dbSource.getPassword() + "'," + "'" + dbSource.getTableName()
 				+ "','bati');";
-		String registerFile = "select register('" + externalData
-				+ "cours/shape/ile_de_nantes_bati.shp','ile_de_nantes_bati');";
+		String registerFile = "select register('" + internalData
+				+ "landcover2000.shp','parcels');";
 		dsf.executeSQL(registerDB);
 		dsf.executeSQL(registerFile);
 
 		// Do the migration
-		String load = "create table bati as select * "
-				+ "from ile_de_nantes_bati";
+		String load = "create table lands as select * " + "from parcels";
 		dsf.executeSQL(load);
 
 		// Get each value
 		SpatialDataSourceDecorator db = new SpatialDataSourceDecorator(dsf
-				.getDataSource("bati"));
+				.getDataSource("lands"));
 		SpatialDataSourceDecorator file = new SpatialDataSourceDecorator(dsf
-				.getDataSource("ile_de_nantes_bati"));
+				.getDataSource("parcels"));
 		db.open();
 		file.open();
 		assertTrue(db.getRowCount() == file.getRowCount());

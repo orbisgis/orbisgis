@@ -101,7 +101,7 @@ public abstract class AbstractDBTest extends TestCase {
 	}
 
 	protected void deleteTable(DBSource source) {
-		String script = "DROP TABLE \"" + source.getTableName() + "\";";
+		String script = "DROP TABLE " + source.getTableName() + ";";
 		try {
 			executeScript(source, script);
 		} catch (Exception e) {

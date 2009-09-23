@@ -104,13 +104,13 @@ public class RasterTest extends TestCase {
 	}
 
 	public void testOpenASC() throws Exception {
-		File file = new File(BaseTest.externalData + "/grid/sample.asc");
+		File file = new File(BaseTest.internalData + "sample.asc");
 		testOpen(file);
 	}
 
 	public void testOpenTIFF() throws Exception {
-		File file = new File(BaseTest.externalData
-				+ "/geotif/littlelehavre.tif");
+		File file = new File(BaseTest.internalData
+				+ "littlelehavre.tif");
 		testOpen(file);
 	}
 

@@ -97,8 +97,7 @@ public class GDMSDriverTest extends TestCase {
 	}
 
 	public void testSaveASGDMS() throws Exception {
-		File source = new File(SourceTest.externalData
-				+ "shp/mediumshape2D/landcover2000.shp");
+		File source = new File(SourceTest.internalData + "landcover2000.shp");
 		saveAs(source);
 	}
 
@@ -253,13 +252,13 @@ public class GDMSDriverTest extends TestCase {
 		File vectFile = new File(
 				"src/test/resources/backup/fullExtentVectGDMS.gdms");
 		vectFile.delete();
-		testFullExtent(vectFile, new File(SourceTest.externalData
-				+ "shp/mediumshape2D/landcover2000.shp"));
+		testFullExtent(vectFile, new File(SourceTest.internalData
+				+ "landcover2000.shp"));
 		File rasterFile = new File(
 				"src/test/resources/backup/fullExtentRasterGDMS.gdms");
 		rasterFile.delete();
-		testFullExtent(rasterFile, new File(SourceTest.externalData
-				+ "geotif/440606.tif"));
+		testFullExtent(rasterFile, new File(SourceTest.internalData
+				+ "sample.png"));
 	}
 
 	private void testFullExtent(File gdmsFile, File original)
@@ -279,8 +278,7 @@ public class GDMSDriverTest extends TestCase {
 	}
 
 	public void testDifferentValueTypeAndFieldType() throws Exception {
-		File source = new File(SourceTest.externalData
-				+ "shp/smallshape2D/multipoint2d.shp");
+		File source = new File(SourceTest.internalData + "points.shp");
 		saveAs(source);
 	}
 
@@ -377,9 +375,10 @@ public class GDMSDriverTest extends TestCase {
 		ds.close();
 		return pixels;
 	}
-	
+
 	public void testCompatibleWith2_0() throws Exception {
-		DataSource ds = dsf.getDataSource(new File("src/test/resources/version2.gdms"));
+		DataSource ds = dsf.getDataSource(new File(
+				"src/test/resources/version2.gdms"));
 		ds.open();
 		ds.getAsString();
 		ds.close();
