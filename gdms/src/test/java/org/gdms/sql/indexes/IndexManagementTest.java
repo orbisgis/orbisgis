@@ -59,8 +59,8 @@ public class IndexManagementTest extends TestCase {
 		dsf.setTempDir("src/test/resources/backup");
 		SourceManager sm = dsf.getSourceManager();
 		sm.removeAll();
-		sm.register("source", new File(BaseTest.externalData,
-				"shp/mediumshape2D/hedgerow.shp"));
+		sm.register("source", new File(BaseTest.internalData,
+				"hedgerow.shp"));
 		im = dsf.getIndexManager();
 	}
 
