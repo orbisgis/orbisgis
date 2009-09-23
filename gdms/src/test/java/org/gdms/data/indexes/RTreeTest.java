@@ -220,10 +220,10 @@ public class RTreeTest extends TestCase {
 
 		SourceManager sm = dsf.getSourceManager();
 		sm.register("points", new File("src/test/resources/points.shp"));
-		sm.register("lines", new File(BaseTest.externalData
-				+ "shp/mediumshape2D/hedgerow.shp"));
-		sm.register("pols", new File(BaseTest.externalData
-				+ "shp/bigshape2D/cantons.shp"));
+		sm.register("lines", new File(BaseTest.internalData
+				+ "hedgerow.shp"));
+		sm.register("pols", new File(BaseTest.internalData
+				+ "landcover2000.shp"));
 		sm.register("small", "select * from pols limit 15;");
 	}
 }

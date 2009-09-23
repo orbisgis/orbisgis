@@ -426,7 +426,7 @@ public class IndexesTest extends TestCase {
 		instantiateDSF();
 
 		sm.removeAll();
-		File parent = new File(BaseTest.externalData, "shp/mediumshape2D/");
+		File parent = new File(BaseTest.internalData);
 		File backup = new File("src/test/resources/backup");
 		File destshp = new File(backup, "hedgerow.shp");
 		File destdbf = new File(backup, "hedgerow.dbf");
