@@ -77,41 +77,41 @@ public interface SQLEngineConstants {
   /** RegularExpression Id. */
   int TABLE = 40;
   /** RegularExpression Id. */
-  int WHERE = 41;
+  int VIEW = 41;
   /** RegularExpression Id. */
-  int CREATE = 42;
+  int WHERE = 42;
   /** RegularExpression Id. */
-  int DELETE = 43;
+  int CREATE = 43;
   /** RegularExpression Id. */
-  int EXISTS = 44;
+  int DELETE = 44;
   /** RegularExpression Id. */
-  int INSERT = 45;
+  int EXISTS = 45;
   /** RegularExpression Id. */
-  int INTO = 46;
+  int INSERT = 46;
   /** RegularExpression Id. */
-  int SET = 47;
+  int INTO = 47;
   /** RegularExpression Id. */
-  int UPDATE = 48;
+  int SET = 48;
   /** RegularExpression Id. */
-  int VALUES = 49;
+  int UPDATE = 49;
   /** RegularExpression Id. */
-  int INTEGER_LITERAL = 50;
+  int VALUES = 50;
   /** RegularExpression Id. */
-  int FLOATING_POINT_LITERAL = 51;
+  int INTEGER_LITERAL = 51;
   /** RegularExpression Id. */
-  int EXPONENT = 52;
+  int FLOATING_POINT_LITERAL = 52;
   /** RegularExpression Id. */
-  int STRING_LITERAL = 53;
+  int EXPONENT = 53;
   /** RegularExpression Id. */
-  int BOOLEAN_LITERAL = 54;
+  int STRING_LITERAL = 54;
   /** RegularExpression Id. */
-  int ID = 55;
+  int BOOLEAN_LITERAL = 55;
   /** RegularExpression Id. */
-  int LETTER = 56;
+  int ID = 56;
   /** RegularExpression Id. */
-  int DIGIT = 57;
+  int LETTER = 57;
   /** RegularExpression Id. */
-  int QUOTED_ID = 58;
+  int DIGIT = 58;
   /** RegularExpression Id. */
   int ASSIGN = 59;
   /** RegularExpression Id. */
@@ -205,6 +205,7 @@ public interface SQLEngineConstants {
     "\"union\"",
     "\"spaces\"",
     "\"table\"",
+    "\"view\"",
     "\"where\"",
     "\"create\"",
     "\"delete\"",
@@ -222,7 +223,6 @@ public interface SQLEngineConstants {
     "<ID>",
     "<LETTER>",
     "<DIGIT>",
-    "<QUOTED_ID>",
     "\":=\"",
     "\"||\"",
     "\";\"",
