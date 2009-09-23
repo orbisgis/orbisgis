@@ -36,6 +36,9 @@
  */
 package org.gdms.sql.customQuery.spatial.geometry.update;
 
+import java.util.LinkedList;
+import java.util.ListIterator;
+
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.ExecutionException;
@@ -48,26 +51,31 @@ import org.gdms.driver.ObjectDriver;
 import org.gdms.driver.driverManager.DriverLoadException;
 import org.gdms.driver.memory.ObjectMemoryDriver;
 import org.gdms.geoutils.CoordinatesUtils;
+import org.gdms.geoutils.GeomUtils;
 import org.gdms.sql.customQuery.CustomQuery;
 import org.gdms.sql.customQuery.TableDefinition;
 import org.gdms.sql.function.Argument;
 import org.gdms.sql.function.Arguments;
 import org.orbisgis.progress.IProgressMonitor;
 
+import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.GeometryFactory;
 
-public class UpdateZGeometry implements CustomQuery {
+public class InsertPoint implements CustomQuery {
+
+	GeometryFactory gf = new GeometryFactory();
 
 	public String getName() {
-		return "UpdateZ";
+		return "InsertPoint";
 	}
 
 	public String getSqlOrder() {
-		return "select UpdateZ(the_geom, field) from myTable;";
+		return "select InsertPoint(the_geom, point) from myTable;";
 	}
 
 	public String getDescription() {
-		return "Update all z value for a geometry";
+		return "Insert a point along a line";
 	}
 
 	public ObjectDriver evaluate(DataSourceFactory dsf, DataSource[] tables,
@@ -75,17 +83,31 @@ public class UpdateZGeometry implements CustomQuery {
 		try {
 			final SpatialDataSourceDecorator sds = new SpatialDataSourceDecorator(
 					tables[0]);
+			final SpatialDataSourceDecorator sdspts = new SpatialDataSourceDecorator(
+					tables[1]);
 			sds.open();
+			sdspts.open();
 
 			final String spatialFieldName = values[0].toString();
 			sds.setDefaultGeometry(spatialFieldName);
 
-			final double zValue = Double.parseDouble(values[1].getAsString());
+			final String spatialFieldNamePts = values[1].toString();
+			sds.setDefaultGeometry(spatialFieldNamePts);
 
 			ObjectMemoryDriver driver = new ObjectMemoryDriver(sds
 					.getMetadata());
 
 			long rowCount = sds.getRowCount();
+
+			LinkedList<Coordinate> pts = new LinkedList<Coordinate>();
+			for (int i = 0; i < sdspts.getRowCount(); i++) {
+
+				pts.add(sdspts.getGeometry(i).getCoordinate());
+			}
+
+			ListIterator<Coordinate> ptsIterator = pts.listIterator();
+
+			sdspts.close();
 
 			for (int i = 0; i < rowCount; i++) {
 
@@ -93,8 +115,26 @@ public class UpdateZGeometry implements CustomQuery {
 
 				Geometry geom = sds.getGeometry(i);
 
+				LinkedList<Geometry> list = new LinkedList<Geometry>();
+				list.add(geom);
+
+				while (ptsIterator.hasNext()) {
+					Coordinate pt = ptsIterator.next();
+
+					Geometry newGeom = GeomUtils.insertPoint(geom, pt);
+
+					if (newGeom != null) {
+
+						if (!list.contains(newGeom)) {
+							list.add(newGeom);
+							pts.remove();
+						}
+					}
+
+				}
+
 				vals[sds.getFieldIndexByName(sds.getDefaultGeometry())] = ValueFactory
-						.createValue(CoordinatesUtils.updateZ(geom, zValue));
+						.createValue(list.getFirst());
 
 				driver.addValues(vals);
 
@@ -115,11 +155,12 @@ public class UpdateZGeometry implements CustomQuery {
 	}
 
 	public TableDefinition[] geTablesDefinitions() {
-		return new TableDefinition[] { TableDefinition.GEOMETRY };
+		return new TableDefinition[] { TableDefinition.GEOMETRY,
+				TableDefinition.GEOMETRY };
 	}
 
 	public Arguments[] getFunctionArguments() {
 		return new Arguments[] { new Arguments(Argument.GEOMETRY,
-				Argument.NUMERIC) };
+				Argument.GEOMETRY) };
 	}
 }
