@@ -129,7 +129,7 @@ public class DBFDriver implements FileReadWriteDriver {
 						pm.progressTo((int) (100 * i / header.getNumRecords()));
 					}
 				}
-				writer.write(dataSource.getRow(i), i, warningListener);
+				writer.write(dataSource.getRow(i));
 			}
 			writer.close();
 		} catch (IOException e) {
