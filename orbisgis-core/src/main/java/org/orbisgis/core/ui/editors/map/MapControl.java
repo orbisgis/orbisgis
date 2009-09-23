@@ -46,7 +46,6 @@ import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
 
 import javax.swing.JComponent;
-import javax.swing.JLabel;
 
 import org.gdms.data.ClosedDataSourceException;
 import org.gdms.data.DataSource;
