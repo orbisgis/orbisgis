@@ -253,7 +253,7 @@ public class DefaultSourceManager implements SourceManager {
 
 	/**
 	 * @throws IOException
-	 * 
+	 *
 	 */
 	public void removeAll() throws IOException {
 		File[] files = new File(baseDir).listFiles();
@@ -315,7 +315,7 @@ public class DefaultSourceManager implements SourceManager {
 
 		toRemove.removeFromXML();
 		nameSource.remove(name);
-		
+
 		for (String nwk : notWellKnown) {
 			remove(nwk);
 		}
@@ -424,11 +424,12 @@ public class DefaultSourceManager implements SourceManager {
 		SQLProcessor sqlProcessor = new SQLProcessor(dsf);
 		Instruction instruction = sqlProcessor.prepareInstruction(sql);
 		register(name, true, new SQLSourceDefinition(instruction));
+
 	}
 
 	/**
 	 * Registers the specified DataSourceDefinition with the specified name
-	 * 
+	 *
 	 * @param name
 	 * @param def
 	 * @throws DriverException
