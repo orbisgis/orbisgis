@@ -49,10 +49,6 @@
 	<extension-point id="org.orbisgis.core.ui.editorViews.toc.Action"
 		schema="schema/layerAction.xsd"/>
 
-	<!-- SQL -->
-	<extension-point id="org.orbisgis.core.ui.views.sqlRepository.SQL"
-		schema="schema/sqlRepository.xsd"/>
-
 	<!-- geocognition -->
 	<extension-point id="org.orbisgis.core.ui.views.geocognition.Action"
 		schema="schema/geocognitionAction.xsd"/>
@@ -118,8 +114,10 @@
 	<extension id="org.orbisgis.core.ui.BasicActions" point="org.orbisgis.core.ui.Action">
 		<menu id="org.orbisgis.core.ui.File" text="File"
 			icon="/org/orbisgis/images/house.png"/>
-		<!--<menu id="org.orbisgis.core.ui.Geocatalog" text="Geocatalog"
-			icon="/org/orbisgis/images/geocatalog.png"/>-->
+		<menu id="org.orbisgis.core.ui.Table" text="Table"
+			icon="/org/orbisgis/images/openattributes.png"/>
+		<menu id="org.orbisgis.core.ui.Map" text="Map"
+			icon="/org/orbisgis/images/map.png"/>
 		<menu id="org.orbisgis.core.ui.Help" text="Help"
 			icon="/org/orbisgis/images/help.png"/>
 		<toolbar id="org.orbisgis.core.ui.MainBar" text="OrbisGIS"/>
@@ -129,11 +127,6 @@
 		<action id="org.orbisgis.core.ui.actions.About" text="About OrbisGIS"
 			menu-id="org.orbisgis.core.ui.Help"
 			class="org.orbisgis.core.ui.actions.about.About"/>
-		<!--<action id="org.orbisgis.core.ui.actions.Update" text="Updates..."
-			menu-id="org.orbisgis.core.ui.Help" class="org.orbisgis.core.ui.actions.Update"/>
-		<action id="org.orbisgis.core.ui.actions.NewSource" text="New Source"
-			menu-id="org.orbisgis.core.ui.Geocatalog" icon="/org/orbisgis/images/add.png"
-			class="org.orbisgis.core.ui.actions.NewSource"/>-->
 	</extension>
 
 	<extension point="org.orbisgis.core.ui.Action" id="org.orbisgis.actions.Workspace">
@@ -250,6 +243,14 @@
 			menu-group="org.orbisgis.core.ui.editorViews.toc.NavigationActions"
 			icon="/org/orbisgis/images/magnifier.png"
 			class="org.orbisgis.core.ui.editorViews.toc.actions.ZoomToLayer"/>
+		<action id="org.orbisgis.core.ui.editorViews.toc.actions.ZoomToSelectedLayer"
+			text="Zoom to selected"
+			menu-group="org.orbisgis.core.ui.editorViews.toc.NavigationActions"
+			icon="/org/orbisgis/images/zoom_selected.png"
+			class="org.orbisgis.core.ui.editorViews.toc.actions.ZoomToSelectedLayer"/>
+<action id="org.orbisgis.core.ui.editorViews.toc.actions.ShowLayerSchema"
+			text="Show schema" menu-group="org.orbisgis.core.ui.editorViews.toc.NavigationActions"
+			class="org.orbisgis.core.ui.editorViews.toc.actions.ShowLayerSchema"/>
 	</extension>
 	<extension point="org.orbisgis.core.ui.editorViews.toc.Action"
 		id="org.orbisgis.core.ui.editorViews.toc.actions.Selection">
@@ -310,8 +311,6 @@
 	<!-- table actions -->
 	<extension point="org.orbisgis.core.ui.editor.Action"
 		id="org.orbisgis.core.ui.editors.table.actions.All">
-		<menu id="org.orbisgis.core.ui.Table" text="Table"
-			icon="/org/orbisgis/images/openattributes.png"/>
 		<editor-action id="org.orbisgis.core.ui.editors.table.editorActions.Undo"
 			menu-id="org.orbisgis.core.ui.Table" text="Undo"
 			menu-group="org.orbisgis.core.ui.editors.table.Basic"
@@ -437,7 +436,7 @@
 		<action id="org.orbisgis.core.ui.editors.table.ZoomSelection"
 			text="Zoom to selection"
 			menu-group="org.orbisgis.core.ui.editors.table.Selection"
-			icon="/org/orbisgis/images/zoom_in.png"
+			icon="/org/orbisgis/images/zoom_selected.png"
 			class="org.orbisgis.core.ui.editors.table.actions.ZoomToSelected"/>
 		<action id="org.orbisgis.core.ui.editors.table.ZoomToLayerTable"
 			text="Zoom to layer"
@@ -446,18 +445,7 @@
 			class="org.orbisgis.core.ui.editors.table.actions.ZoomToLayerTable"/>
 	</extension>
 
-	<!-- map actions -->
-	<extension id="org.orbisgis.core.ui.editors.map.actions.NewLayer"
-		point="org.orbisgis.core.ui.editor.Action">
-		<menu id="org.orbisgis.core.ui.Map" text="Map"
-			icon="/org/orbisgis/images/map.png"/>
-		<editor-action menu-id="org.orbisgis.core.ui.Map"
-			id="org.orbisgis.core.ui.editors.map.actions.NewLayer" text="New Layer..."
-			icon="/org/orbisgis/images/add.png"
-			menu-group="org.orbisgis.core.ui.editors.map.actions.LayerActionGroup"
-			editor-id="org.orbisgis.core.ui.editors.Map"
-			class="org.orbisgis.core.ui.editors.map.actions.NewLayer"/>
-	</extension>
+
 
 	<extension id="org.orbisgis.core.ui.editors.map.actions.FullExtent"
 		point="org.orbisgis.core.ui.editor.Action">
@@ -504,8 +492,16 @@
 			menu-group="org.orbisgis.core.ui.editors.map.tools.Edition"
 			icon="/org/orbisgis/images/edit-clear.png"
 			editor-id="org.orbisgis.core.ui.editors.Map"
-			toolbar-id="org.orbisgis.core.ui.editors.map.Edition"
+			toolbar-id="org.orbisgis.core.ui.editors.map.Info"
 			class="org.orbisgis.core.ui.editors.map.actions.ClearMapSelection"/>
+		<editor-action id="org.orbisgis.core.ui.editors.map.actions.ZoomToSelectedLayer"
+			menu-id="org.orbisgis.core.ui.Map" text="Zoom to selected"
+			menu-group="org.orbisgis.core.ui.editors.map.tools.Edition"
+			icon="/org/orbisgis/images/zoom_selected.png"
+			editor-id="org.orbisgis.core.ui.editors.Map"
+			toolbar-id="org.orbisgis.core.ui.editors.map.Info"
+			class="org.orbisgis.core.ui.editors.map.actions.ZoomToSelectedFeatures"/>
+
 	</extension>
 
 	<extension id="org.orbisgis.editors.map.actions.Export"
@@ -518,15 +514,6 @@
 			class="org.orbisgis.core.ui.editors.map.actions.export.ExportMapAsImage"/>
 	</extension>
 
-	<!--<extension id="org.orbisgis.core.ui.editors.map.actions.Export"
-		point="org.orbisgis.core.ui.editor.Action">
-		<editor-action menu-id="org.orbisgis.core.ui.Map"
-			id="org.orbisgis.core.ui.editors.map.actions.Export"
-			text="Export map as SVG..."
-			menu-group="org.orbisgis.core.ui.editors.map.actions.LayerActionGroup"
-			editor-id="org.orbisgis.core.ui.editors.Map"
-			class="org.orbisgis.core.ui.editors.map.actions.export.ExportMapAsSVG"/>
-	</extension>-->
 
 	<extension id="org.orbisgis.core.ui.editors.map.actions.Export"
 		point="org.orbisgis.core.ui.editor.Action">
@@ -869,14 +856,6 @@
 		</editor-view>
 	</extension>
 
-	<!-- SQL repository extensions -->
-
-	<extension point="org.orbisgis.core.ui.views.sqlRepository.SQL"
-		id="org.orbisgis.core.ui.ViewSQLRepo">
-		<sql
-			resource-path="/org/orbisgis/views/sqlRepository/orbisgisdefault.xml"/>
-	</extension>
-
 	<!-- Configuration extensions-->
 	<extension point="org.orbisgis.core.ui.Configuration"
 		id="org.orbisgis.core.ui.config.Update">
@@ -888,6 +867,13 @@
 			text="Updates"
 			class="org.orbisgis.core.ui.configurations.UpdatesConfiguration"
 			group-id="org.orbisgis.core.ui.Updates"/>-->
+	</extension>
+		<extension point="org.orbisgis.core.ui.Configuration"
+		id="org.orbisgis.core.ui.config.RenderingConfiguration">
+		<group id="org.orbisgis.core.ui.RenderingConfiguration" text="Rendering"/>
+		<configuration id="org.orbisgis.core.ui.configurations.RenderingConfiguration"
+			text="Rules" class="org.orbisgis.core.ui.configurations.RenderingConfiguration"
+			group-id="org.orbisgis.core.ui.RenderingConfiguration"/>
 	</extension>
 
 	<!-- Legend panels extensions -->
@@ -916,14 +902,5 @@
 			class="org.orbisgis.core.ui.editorViews.toc.actions.cui.legends.ArrowSymbolEditor"/>
 	</extension>
 
-
-		<!-- Perspective experimentation
-	<extension id="org.orbisgis.core.ui.perspectives" point="org.orbisgis.core.ui.Action">
-		<menu id="org.orbisgis.core.ui.Window" text="Window"
-			icon="/org/orbisgis/images/help.png"/>
-		<action id="org.orbisgis.core.ui.actions.DefaultPerspective" text="Default perspective"
-			menu-id="org.orbisgis.core.ui.Window" icon="/org/orbisgis/images/add.png"
-			class="org.orbisgis.core.ui.actions.DefaultPerspective"/>
-	</extension>-->
 
 </plugin>
