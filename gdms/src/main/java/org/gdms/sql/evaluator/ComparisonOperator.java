@@ -82,7 +82,7 @@ public abstract class ComparisonOperator extends Operator {
 		compatibleTypes.add(new TypeCompatibility(code2, code1));
 	}
 
-	public ComparisonOperator(Expression...children) {
+	public ComparisonOperator(Expression... children) {
 		super(children);
 	}
 
@@ -91,6 +91,20 @@ public abstract class ComparisonOperator extends Operator {
 		TypeCompatibility comp = new TypeCompatibility(getLeftOperator()
 				.getType().getTypeCode(), getRightOperator().getType()
 				.getTypeCode());
+		if (!compatibleTypes.contains(comp)) {
+			String className = getClass().getName();
+			throw new IncompatibleTypesException("Cannot do a '"
+					+ getClass().getName().substring(
+							className.lastIndexOf('.') + 1)
+					+ "' operation with "
+					+ TypeFactory.getTypeName(comp.typeCode1) + " and "
+					+ TypeFactory.getTypeName(comp.typeCode2));
+		}
+	}
+
+	protected void validateExpressionTypes(Type type1, Type type2) {
+		TypeCompatibility comp = new TypeCompatibility(type1.getTypeCode(),
+				type2.getTypeCode());
 		if (!compatibleTypes.contains(comp)) {
 			String className = getClass().getName();
 			throw new IncompatibleTypesException("Cannot do a '"
