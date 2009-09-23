@@ -43,6 +43,8 @@ import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Iterator;
 
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JCheckBox;
@@ -161,6 +163,18 @@ public class PnlLabelLegend extends JPanel implements ILegendPanel {
 						.getDataSource();
 				Metadata m = sds.getMetadata();
 				ArrayList<String> fieldNames = new ArrayList<String>();
+
+				HashSet<String> names = GeometryProperties
+						.getPropertiesName(legendContext.getGeometryType());
+
+				if (names != null) {
+					for (Iterator iterator = names.iterator(); iterator
+							.hasNext();) {
+						String name = (String) iterator.next();
+						fieldNames.add(name);
+					}
+
+				}
 
 				for (int i = 0; i < m.getFieldCount(); i++) {
 					int fieldType = m.getFieldType(i).getTypeCode();

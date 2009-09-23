@@ -42,6 +42,8 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Iterator;
 
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JLabel;
@@ -118,7 +120,7 @@ public class PnlIntervalLegend extends PnlAbstractClassifiedLegend {
 			}
 		});
 		cmbIntervalType.setModel(new DefaultComboBoxModel(new Object[] {
-				"Quantiles", "Equivalences", "Moyennes", "Standard" }));
+				"Quantiles", "Equivalences", "Moyennes", "Standard", "Jenks" }));
 		cmbIntervalType.setSelectedIndex(0);
 		pnl.add(cmbIntervalType);
 
@@ -203,6 +205,11 @@ public class PnlIntervalLegend extends PnlAbstractClassifiedLegend {
 			mod.add(5);
 			mod.add(7);
 			break;
+		case 4: //Jenks
+			for (int i = 2; i < 20; i++) {
+				mod.add(i);
+			}
+			break;
 		}
 
 		cmbIntervalCount.setModel(new DefaultComboBoxModel(mod
@@ -222,6 +229,16 @@ public class PnlIntervalLegend extends PnlAbstractClassifiedLegend {
 	private void syncFieldsWithLegend() {
 
 		ArrayList<String> validFieldNames = new ArrayList<String>();
+		HashSet<String> names = GeometryProperties
+				.getPropertiesName(legendContext.getGeometryType());
+
+		if (names != null) {
+			for (Iterator iterator = names.iterator(); iterator.hasNext();) {
+				String name = (String) iterator.next();
+				validFieldNames.add(name);
+			}
+
+		}
 		try {
 			ILayer layer = legendContext.getLayer();
 			int numFields = layer.getDataSource().getFieldCount();
@@ -269,6 +286,9 @@ public class PnlIntervalLegend extends PnlAbstractClassifiedLegend {
 				break;
 			case 3:
 				rm.disecStandard();
+				break;
+			case 4:
+				rm.disecNaturalBreaks();
 				break;
 			}
 
@@ -375,7 +395,7 @@ public class PnlIntervalLegend extends PnlAbstractClassifiedLegend {
 	protected void addOneAction() {
 		int rowCount = tableModel.getRowCount();
 
-		if (rowCount < 32) {
+		if (rowCount < 64) {
 			Symbol sym = createRandomSymbol();
 			Value minValue = ValueFactory.createNullValue();
 			Value maxValue = ValueFactory.createNullValue();
@@ -390,7 +410,7 @@ public class PnlIntervalLegend extends PnlAbstractClassifiedLegend {
 					label);
 		} else {
 			JOptionPane.showMessageDialog(this,
-					"Cannot have more than 32 classifications");
+					"Cannot have more than 64 classifications");
 		}
 	}
 
