@@ -488,6 +488,111 @@ public class RangeMethod {
 	}
 
 	/**
+	 * TODO: Set items count for each ranges. calculates class limits using
+	 * Jenks's Optimisation Method(Natural Break)
+	 *
+	 * @param data
+	 * @param numberClasses
+	 * @return break values for classes. E.g. for 4 ranges 3 breaks are
+	 *         returned. Min and Max Values are not returned.
+	 */
+	public void disecNaturalBreaks() throws DriverException {
+
+		double[] limits = new double[nbCl - 1];
+		int[] itemsCount = new int[nbCl - 1];
+		double[] valeurs = ClassificationUtils.getSortedValues(ds, fieldName);
+
+		int numData = valeurs.length;
+
+		double[][] mat1 = new double[numData + 1][nbCl + 1];
+		double[][] mat2 = new double[numData + 1][nbCl + 1];
+
+		for (int i = 1; i <= nbCl; i++) {
+			mat1[1][i] = 1;
+			mat2[1][i] = 0;
+			for (int j = 2; j <= numData; j++)
+				mat2[j][i] = Double.MAX_VALUE;
+		}
+		double v = 0;
+
+		for (int l = 2; l <= numData; l++) {
+			double s1 = 0;
+			double s2 = 0;
+			double w = 0;
+			for (int m = 1; m <= l; m++) {
+				int i3 = l - m + 1;
+				double val = valeurs[i3 - 1];
+
+				s2 += val * val;
+				s1 += val;
+
+				w++;
+				v = s2 - (s1 * s1) / w;
+				int i4 = i3 - 1;
+				if (i4 != 0) {
+					for (int j = 2; j <= nbCl; j++) {
+						if (mat2[l][j] >= (v + mat2[i4][j - 1])) {
+							mat1[l][j] = i3;
+							mat2[l][j] = v + mat2[i4][j - 1];
+						}
+						;
+					}
+					;
+				}
+				;
+			}
+			;
+			mat1[l][1] = 1;
+			mat2[l][1] = v;
+		}
+		;
+
+		int k = numData;
+		int nextK = 0;
+
+		int sum = 0;
+		for (int j = nbCl; j >= 2; j--) {
+			nextK = k;
+			int id = (int) (mat1[k][j]) - 2;
+			// -- [sstein] modified version from Hisaji,
+			// otherwise breaks will be "on" one item
+			// limits[j - 2] = orderedItems[id];
+			// -- new
+			double limit = valeurs[id + 1];
+			limits[j - 2] = limit;
+			k = (int) mat1[k][j] - 1;
+			int nbItems = (nextK - k);
+			sum = nbItems + sum;
+			itemsCount[j - 2] = nbItems;
+
+		}
+
+		int index = -1;
+		double min = valeurs[0];
+		double max = valeurs[0];
+
+		int nbItems = 0;
+		for (int j = 0; j < nbCl - 1; j++) {
+			min = max;
+			index = index + 1;
+			max = limits[index];
+			ranges[j] = new Range();
+			ranges[j].setMinRange(min);
+			ranges[j].setMaxRange(max);
+			nbItems = itemsCount[j];
+			ranges[j].setNumberOfItems(nbItems);
+			ranges[j].setPartOfItems(nbItems * 100 / valeurs.length);
+
+		}
+		ranges[nbCl - 1] = new Range();
+		ranges[nbCl - 1].setMinRange(max);
+		ranges[nbCl - 1].setMaxRange(valeurs[rowCount - 1]);
+		nbItems = numData - sum;
+		ranges[nbCl - 1].setNumberOfItems(nbItems);
+		ranges[nbCl - 1].setPartOfItems(nbItems * 100 / valeurs.length);
+	}
+
+	/**
 	 * Compute the mean value between a set of individus.
 	 *
 	 * Adpated from SCAP3 : http://w3.geoprdc.univ-tlse2.fr/scap/java/

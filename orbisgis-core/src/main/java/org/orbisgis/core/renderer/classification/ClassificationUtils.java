@@ -39,17 +39,27 @@ package org.orbisgis.core.renderer.classification;
 import java.util.Arrays;
 
 import org.gdms.data.DataSource;
+import org.gdms.data.SpatialDataSourceDecorator;
 import org.gdms.driver.DriverException;
+import org.orbisgis.core.ui.editorViews.toc.actions.cui.legends.GeometryProperties;
 
 public class ClassificationUtils {
 
 	public static double[] getSortedValues(DataSource ds, String fieldName)
 			throws DriverException {
-		double[] values = new double[(int) ds.getRowCount()];
 
-		int fieldIndex = ds.getFieldIndexByName(fieldName);
-		for (int i = 0; i < values.length; i++) {
-			values[i] = ds.getFieldValue(i, fieldIndex).getAsDouble();
+		double[] values = new double[(int) ds.getRowCount()];
+		if (GeometryProperties.isFieldName(fieldName)) {
+			for (int i = 0; i < values.length; i++) {
+				values[i] = GeometryProperties.getPropertyValue(fieldName,
+						new SpatialDataSourceDecorator(ds).getGeometry(i))
+						.getAsDouble();
+			}
+		} else {
+			int fieldIndex = ds.getFieldIndexByName(fieldName);
+			for (int i = 0; i < values.length; i++) {
+				values[i] = ds.getFieldValue(i, fieldIndex).getAsDouble();
+			}
 		}
 		Arrays.sort(values);
 		return values;
