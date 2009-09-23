@@ -36,7 +36,6 @@
  */
 package org.orbisgis.core.layerModel;
 
-
 public interface MapContextListener {
 
 	/**
@@ -55,4 +54,5 @@ public interface MapContextListener {
 	 * @param mapContext
 	 */
 	void activeLayerChanged(ILayer previousActiveLayer, MapContext mapContext);
+
 }

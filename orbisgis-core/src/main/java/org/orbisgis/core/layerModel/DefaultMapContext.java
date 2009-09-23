@@ -47,7 +47,7 @@ import org.gdms.source.SourceListener;
 import org.gdms.source.SourceRemovalEvent;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.DataManager;
-import org.orbisgis.core.renderer.Renderer2;
+import org.orbisgis.core.renderer.Renderer;
 import org.orbisgis.core.layerModel.persistence.LayerCollectionType;
 import org.orbisgis.core.layerModel.persistence.LayerType;
 import org.orbisgis.core.layerModel.persistence.SelectedLayer;
@@ -138,7 +138,8 @@ public class DefaultMapContext implements MapContext {
 		}
 	}
 
-	private final class OpenerListener extends LayerListenerAdapter implements LayerListener {
+	private final class OpenerListener extends LayerListenerAdapter implements
+			LayerListener {
 
 		public void layerAdded(LayerCollectionEvent e) {
 			if (isOpen()) {
@@ -236,7 +237,7 @@ public class DefaultMapContext implements MapContext {
 	public void draw(BufferedImage inProcessImage, Envelope extent,
 			IProgressMonitor pm) {
 		checkIsOpen();
-		Renderer2 renderer = new Renderer2();
+		Renderer renderer = new Renderer();
 		renderer.draw(inProcessImage, extent, getLayerModel(), pm);
 	}
 
@@ -464,5 +465,6 @@ public class DefaultMapContext implements MapContext {
 			}
 		}
 	}
+
 
 }

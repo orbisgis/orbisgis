@@ -51,7 +51,7 @@ public interface MapContext {
 
 	/**
 	 * Gets the root layer of the layer collection in this edition context
-	 * 
+	 *
 	 * @return
 	 * @throws IllegalStateException
 	 *             If the map is closed
@@ -60,7 +60,7 @@ public interface MapContext {
 
 	/**
 	 * Gets all the layers in the map context
-	 * 
+	 *
 	 * @return
 	 * @throws IllegalStateException
 	 *             If the map is closed
@@ -69,7 +69,7 @@ public interface MapContext {
 
 	/**
 	 * Gets the selected layers
-	 * 
+	 *
 	 * @return
 	 * @throws IllegalStateException
 	 *             If the map is closed
@@ -78,14 +78,14 @@ public interface MapContext {
 
 	/**
 	 * Adds a listener for map context events
-	 * 
+	 *
 	 * @param listener
 	 */
 	public void addMapContextListener(MapContextListener listener);
 
 	/**
 	 * Removes a listener for map context events
-	 * 
+	 *
 	 * @param listener
 	 */
 	public void removeMapContextListener(MapContextListener listener);
@@ -93,7 +93,7 @@ public interface MapContext {
 	/**
 	 * Sets the selected layers. If the specified layers are not in the map
 	 * context they are removed from selection.
-	 * 
+	 *
 	 * @param selectedLayers
 	 * @throws IllegalStateException
 	 *             If the map is closed
@@ -104,7 +104,7 @@ public interface MapContext {
 	/**
 	 * Returns a JAXB object containing all the persistent information of this
 	 * MapContext
-	 * 
+	 *
 	 * @return
 	 */
 	Object getJAXBObject();
@@ -112,7 +112,7 @@ public interface MapContext {
 	/**
 	 * Populates the content of this MapContext with the information stored in
 	 * the specified JAXB Object. The map must be closed.
-	 * 
+	 *
 	 * @param jaxbObject
 	 * @throws IllegalStateException
 	 *             If the map is open
@@ -123,7 +123,7 @@ public interface MapContext {
 	 * Opens all the layers in the map. All layers added to an open map are
 	 * opened automatically. Layers that cannot be created are removed from the
 	 * layer tree and an error message is sent to the ErrorManager service
-	 * 
+	 *
 	 * @param pm
 	 * @throws LayerException
 	 *             If some layer cannot be open. In this case all already open
@@ -135,7 +135,7 @@ public interface MapContext {
 
 	/**
 	 * Closes all the layers in the map
-	 * 
+	 *
 	 * @param pm
 	 * @throws IllegalStateException
 	 *             If the map is closed
@@ -144,14 +144,14 @@ public interface MapContext {
 
 	/**
 	 * Return true if this map context is open and false otherwise
-	 * 
+	 *
 	 * @return
 	 */
 	boolean isOpen();
 
 	/**
 	 * Draws an image of the layers in the specified image.
-	 * 
+	 *
 	 * @param inProcessImage
 	 *            Image where the drawing will take place
 	 * @param extent
@@ -167,7 +167,7 @@ public interface MapContext {
 
 	/**
 	 * Gets the layer where all the edition actions take place
-	 * 
+	 *
 	 * @return
 	 * @throws IllegalStateException
 	 *             If the map is closed
@@ -176,7 +176,7 @@ public interface MapContext {
 
 	/**
 	 * Sets the layer where all the edition actions take place
-	 * 
+	 *
 	 * @return
 	 * @throws IllegalStateException
 	 *             If the map is closed
