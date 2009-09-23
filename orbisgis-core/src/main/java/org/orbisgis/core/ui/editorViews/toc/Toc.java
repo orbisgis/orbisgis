@@ -36,8 +36,10 @@
  */
 package org.orbisgis.core.ui.editorViews.toc;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.Rectangle;
 import java.awt.Toolkit;
 import java.awt.datatransfer.Transferable;
@@ -231,7 +233,7 @@ public class Toc extends ResourceTree {
 
 				});
 
-		JPanel p = new JPanel();
+		JPanel p = new JPanel(new BorderLayout());
 
 		JLabel label = new JLabel("Scale 1 : ");
 		label.setAlignmentX(Component.LEFT_ALIGNMENT);
@@ -242,10 +244,12 @@ public class Toc extends ResourceTree {
 				SCALE_500000, SCALE_1000000, SCALE_5000000, SCALE_10000000 });
 		combobox.setAlignmentX(Component.RIGHT_ALIGNMENT);
 		combobox.addActionListener(new ScaleListener());
+		combobox.setMaximumSize(new Dimension(100,20));
 		p.add(label);
 		p.add(combobox);
 		p.setLayout(new BoxLayout(p, BoxLayout.X_AXIS));
 		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+
 		add(p);
 	}
 
