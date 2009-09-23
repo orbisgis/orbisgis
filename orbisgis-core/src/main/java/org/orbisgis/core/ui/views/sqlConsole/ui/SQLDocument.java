@@ -66,7 +66,6 @@ public class SQLDocument extends AbstractSyntaxColoringDocument {
 		kindStyle.put(SQLEngineConstants.ON, keywordStyle);
 		kindStyle.put(SQLEngineConstants.ORDER, keywordStyle);
 		kindStyle.put(SQLEngineConstants.PRIMARY, keywordStyle);
-		kindStyle.put(SQLEngineConstants.QUOTED_ID, idStyle);
 		kindStyle.put(SQLEngineConstants.SELECT, keywordStyle);
 		kindStyle.put(SQLEngineConstants.SET, keywordStyle);
 		kindStyle.put(SQLEngineConstants.STRING_LITERAL, literalStyle);
