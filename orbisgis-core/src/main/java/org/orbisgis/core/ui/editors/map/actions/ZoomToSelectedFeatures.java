@@ -36,22 +36,63 @@
  */
 package org.orbisgis.core.ui.editors.map.actions;
 
-import org.orbisgis.core.edition.EditableElement;
+import org.gdms.data.SpatialDataSourceDecorator;
+import org.gdms.driver.DriverException;
+import org.orbisgis.core.Services;
 import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.layerModel.MapContext;
 import org.orbisgis.core.ui.editor.IEditor;
 import org.orbisgis.core.ui.editor.action.IEditorAction;
-import org.orbisgis.core.ui.editorViews.toc.EditableLayer;
+import org.orbisgis.core.ui.editors.map.MapEditor;
+import org.orbisgis.errorManager.ErrorManager;
 
-public class ClearMapSelection implements IEditorAction {
+import com.vividsolutions.jts.geom.Envelope;
+import com.vividsolutions.jts.geom.Geometry;
+
+public class ZoomToSelectedFeatures implements IEditorAction {
 
 	public void actionPerformed(IEditor editor) {
 		MapContext mc = (MapContext) editor.getElement().getObject();
 		ILayer[] layers = mc.getLayerModel().getLayersRecursively();
-		EditableElement element = editor.getElement();
+		Envelope rect = null;
 		for (ILayer lyr : layers) {
-			new EditableLayer(element, lyr).getSelection().clearSelection();
+			try {
+				int[] selectedRow = lyr.getSelection();
+
+				SpatialDataSourceDecorator sds = lyr.getDataSource();
+
+				Geometry geometry = null;
+				Envelope geometryEnvelope = null;
+				for (int i = 0; i < selectedRow.length; i++) {
+					if (sds.isDefaultVectorial()) {
+						geometry = sds.getGeometry(selectedRow[i]);
+						if (geometry != null) {
+							geometryEnvelope = geometry.buffer(0.01)
+									.getEnvelopeInternal();
+						}
+					} else if (sds.isDefaultRaster()) {
+						geometryEnvelope = sds.getRaster(selectedRow[i])
+								.getMetadata().getEnvelope();
+					}
+
+					if (rect == null) {
+						rect = new Envelope(geometryEnvelope);
+					} else {
+						rect.expandToInclude(geometryEnvelope);
+					}
+
+				}
+			} catch (DriverException e) {
+				Services.getService(ErrorManager.class).error(
+						"Cannot compute envelope", e);
+			}
 		}
+
+		if (rect != null) {
+			((MapEditor) editor).getMapTransform().setExtent(rect);
+
+		}
+
 	}
 
 	public boolean isEnabled(IEditor editor) {
