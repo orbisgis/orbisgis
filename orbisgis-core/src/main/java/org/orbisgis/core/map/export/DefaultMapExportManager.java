@@ -13,7 +13,7 @@ import java.util.Iterator;
 import org.apache.batik.dom.GenericDOMImplementation;
 import org.apache.batik.svggen.SVGGraphics2D;
 import org.gdms.driver.DriverException;
-import org.orbisgis.core.renderer.Renderer2;
+import org.orbisgis.core.renderer.Renderer;
 import org.orbisgis.core.renderer.legend.Legend;
 import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.layerModel.MapContext;
@@ -47,7 +47,7 @@ public class DefaultMapExportManager implements MapExportManager {
 		}
 
 		pm.startTask("Drawing map");
-		Renderer2 r = new Renderer2();
+		Renderer r = new Renderer();
 		DOMImplementation domImpl = GenericDOMImplementation
 				.getDOMImplementation();
 
