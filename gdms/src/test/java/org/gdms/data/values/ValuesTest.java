@@ -50,6 +50,7 @@ import junit.framework.TestCase;
 
 import org.gdms.Geometries;
 import org.gdms.data.types.Type;
+import org.gdms.sql.parser.SQLEngineConstants;
 import org.gdms.sql.strategies.IncompatibleTypesException;
 import org.grap.model.GeoRaster;
 import org.grap.model.GeoRasterFactory;
@@ -62,7 +63,7 @@ import com.vividsolutions.jts.geom.Polygon;
 
 /**
  * DOCUMENT ME!
- * 
+ *
  * @author Fernando Gonzalez Cortes
  */
 public class ValuesTest extends TestCase {
@@ -70,7 +71,7 @@ public class ValuesTest extends TestCase {
 
 	/**
 	 * DOCUMENT ME!
-	 * 
+	 *
 	 * @throws Exception
 	 *             DOCUMENT ME!
 	 */
@@ -98,49 +99,14 @@ public class ValuesTest extends TestCase {
 		}
 	}
 
-	//
-	// /**
-	// * DOCUMENT ME!
-	// *
-	// * @param dsName
-	// * DOCUMENT ME!
-	// *
-	// * @throws NoSuchTableException
-	// * DOCUMENT ME!
-	// * @throws DriverException
-	// * DOCUMENT ME!
-	// * @throws DataSourceCreationException
-	// * @throws DriverLoadException
-	// */
-	// private void doTestNullValues(String dsName) throws NoSuchTableException,
-	// DriverException, DriverLoadException, DataSourceCreationException {
-	// DataSource d = dsf.getDataSource(dsName);
-	// d.open();
-	//
-	// for (int i = 0; i < d.getRowCount(); i++) {
-	// for (int j = 0; j < d.getMetadata().getFieldCount(); j++) {
-	// assertTrue(d.getFieldValue(i, j) != null);
-	// assertFalse(d.getFieldValue(i, j).toString().equals("'null'"));
-	// }
-	// }
-	//
-	// d.cancel();
-	// }
-	// TODO
-	// /**
-	// * Tests the DataSources never return null instead of NullValue
-	// *
-	// * @throws Throwable
-	// * DOCUMENT ME!
-	// */
-	// public void testNullValues() throws Throwable {
-	// String[] resources = super.getSmallResourcesWithNullValues();
-	// for (String ds : resources) {
-	// doTestNullValues(ds);
-	// }
-	//
-	// }
-	//
+	public void testDoubleValue() {
+
+		String value = "0.05";
+
+		Value v = ValueFactory.createValue(value, SQLEngineConstants.FLOATING_POINT_LITERAL);
+		assertTrue(v.getAsDouble() == 0.05);
+	}
+
 	/**
 	 * Tests the NullValues operations
 	 */
@@ -243,7 +209,7 @@ public class ValuesTest extends TestCase {
 
 	/**
 	 * DOCUMENT ME!
-	 * 
+	 *
 	 * @throws IncompatibleTypesException
 	 *             DOCUMENT ME!
 	 */
@@ -291,7 +257,7 @@ public class ValuesTest extends TestCase {
 
 	/**
 	 * DOCUMENT ME!
-	 * 
+	 *
 	 * @throws Exception
 	 *             DOCUMENT ME!
 	 */
