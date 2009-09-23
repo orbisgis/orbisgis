@@ -73,7 +73,6 @@ public class InfoTool extends AbstractRectangleTool {
 			boolean smallerThanTolerance, MapContext vc, ToolManager tm)
 			throws TransitionException {
 		ILayer layer = vc.getSelectedLayers()[0];
-
 		DataSource ds = layer.getDataSource();
 		String sql = null;
 		try {
@@ -92,7 +91,7 @@ public class InfoTool extends AbstractRectangleTool {
 			Geometry geomEnvelope = gf.createPolygon(envelopeShell,
 					new LinearRing[0]);
 			WKTWriter writer = new WKTWriter();
-			sql = "select * from \"" + layer.getName() + "\" where intersects("
+			sql = "select * from " + layer.getName() + " where intersects("
 					+ sds.getDefaultGeometry() + ", geomfromtext('"
 					+ writer.write(geomEnvelope) + "'));";
 			BackgroundManager bm = (BackgroundManager) Services
