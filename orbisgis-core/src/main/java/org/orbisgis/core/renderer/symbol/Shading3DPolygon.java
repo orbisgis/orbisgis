@@ -21,7 +21,7 @@ public class Shading3DPolygon extends AbstractPolygonSymbol implements
 
 	// position of the sun
 	private double azimuthAngle = 315; // in degree clockwise from the North
-	private double altitudeAngle = 35; // in degree from ground zero
+	private double altitudeAngle = 45; // in degree from ground zero
 	Coordinate sunDir = new Coordinate(0, 0, 0); // direction of the sun
 	// (from Earth)
 
