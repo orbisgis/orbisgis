@@ -90,17 +90,17 @@ public class OptimizationTests extends TestCase {
 		dsf = new DataSourceFactory();
 		dsf.setTempDir(SourceTest.backupDir.getAbsolutePath());
 		dsf.getSourceManager().register(
-				"communes",
-				new File(SourceTest.externalData
-						+ "/shp/bigshape2D/communes.shp"));
+				"points",
+				new File(SourceTest.internalData
+						+ "points.shp"));
 		dsf.getSourceManager().register(
-				"bzh5_communes",
-				new File(SourceTest.externalData
-						+ "/shp/mediumshape2D/bzh5_communes.shp"));
+				"hedgerow",
+				new File(SourceTest.internalData
+						+ "hedgerow.shp"));
 		dsf.getSourceManager().register(
 				"landcover2000",
-				new File(SourceTest.externalData
-						+ "/shp/mediumshape2D/landcover2000.shp"));
+				new File(SourceTest.internalData
+						+ "landcover2000.shp"));
 
 		selectionAndScan = new OperatorFilter() {
 

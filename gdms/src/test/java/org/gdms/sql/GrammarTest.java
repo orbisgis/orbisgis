@@ -59,8 +59,8 @@ public class GrammarTest extends TestCase {
 
 	public void testOrderBy() throws Exception {
 		parse("select * from gis where a=3 order by a;");
-		parse("select * from gis where a=3 order by area(the_geom);");
 		parse("select * from gis order by area(the_geom);");
+		parse("select * from gis where a=3 order by area(the_geom);");
 	}
 
 	public void testGroupBy() throws Exception {
@@ -74,10 +74,11 @@ public class GrammarTest extends TestCase {
 	}
 
 	public void testQuotedId() throws Exception {
+		parse("select NAME from mytable;");
+		parse("select Name from mytable;");
 		notParse("select _field from table;");
-		notParse("select \"function name\"(*) from mytable;");
-		parse("select \"table\".\"_field\" from \"table\";");
-		parse("select \"table\".\"_field\" , \"table\".\"_field2\" from \"table\";");
+		notParse("select \"table\".\"_field\" from \"table\";");
+		notParse("select \"table\".\"_field\" , \"table\".\"_field2\" from \"table\";");
 	}
 
 	public void testFieldAlias() throws Exception {
@@ -94,6 +95,7 @@ public class GrammarTest extends TestCase {
 	}
 
 	public void testwhereCondition() throws Exception {
+		parse("select * from mytable where a=0.002;");
 		parse("select * from mytable where a like '';");
 		parse("select * from mytable where a is not null;");
 		parse("select * from mytable where a in(3);");
@@ -198,9 +200,29 @@ public class GrammarTest extends TestCase {
 		parse("create table table2 as select * from table1;");
 	}
 
+	public void testCreateViewAs() throws Exception {
+		parse("create view view1 as select CreateGrid() from table1;");
+		parse("create view view2 as select * from table1;");
+	}
+
 	public void testScriptWithComments() throws Exception {
 		parse("select * from mytable;-- comment\nselect * from mytable;");
 		parse("select * from mytable;/* com\nment\n*/select * from mytable;");
+	}
+
+	/**
+	 * Add subquery in SQL grammar
+	 *
+	 * @throws Exception
+	 */
+	public void testInSubQuery() throws Exception {
+		parse("select * from mytable where myfield in (3, 4);");
+		// notParse("select * from mytable where myfield "
+		// + "in (3, select id from mtable);");
+		// notParse("select * from mytable where myfield in (select id from
+		// mtable);");
+		// notParse("select * from mytable where myfield "
+		// + "in (select id2 from mtable, select id from mtable);");
 	}
 
 	private void notParse(String sql) {

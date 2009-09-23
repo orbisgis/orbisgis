@@ -561,7 +561,7 @@ public class SourceManagementTest extends TestCase {
 		if (QueryManager.getQuery(sq.getName()) == null) {
 			QueryManager.registerQuery(SumQuery.class);
 		}
-		sm.register("sum", "select sumquery() from \"" + SOURCE + "\";");
+		sm.register("sum", "select sumquery() from " + SOURCE + ";");
 		String[] deps = sm.getSource("sum").getReferencedSources();
 		assertTrue(deps.length == 1);
 		assertTrue(deps[0].equals(SOURCE));
