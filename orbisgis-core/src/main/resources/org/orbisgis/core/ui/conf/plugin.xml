@@ -248,9 +248,6 @@
 			menu-group="org.orbisgis.core.ui.editorViews.toc.NavigationActions"
 			icon="/org/orbisgis/images/zoom_selected.png"
 			class="org.orbisgis.core.ui.editorViews.toc.actions.ZoomToSelectedLayer"/>
-<action id="org.orbisgis.core.ui.editorViews.toc.actions.ShowLayerSchema"
-			text="Show schema" menu-group="org.orbisgis.core.ui.editorViews.toc.NavigationActions"
-			class="org.orbisgis.core.ui.editorViews.toc.actions.ShowLayerSchema"/>
 	</extension>
 	<extension point="org.orbisgis.core.ui.editorViews.toc.Action"
 		id="org.orbisgis.core.ui.editorViews.toc.actions.Selection">
