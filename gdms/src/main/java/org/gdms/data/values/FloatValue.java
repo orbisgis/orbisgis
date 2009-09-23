@@ -39,6 +39,7 @@ package org.gdms.data.values;
 import java.sql.Types;
 
 import org.gdms.data.types.Type;
+import org.orbisgis.utils.FormatUtils;
 
 /**
  * Wrapper for floats
@@ -56,7 +57,7 @@ class FloatValue extends NumericValue {
 	}
 
 	/**
-	 * Establece el valor de este objeto
+	 * set the value
 	 *
 	 * @param value
 	 */
@@ -65,7 +66,7 @@ class FloatValue extends NumericValue {
 	}
 
 	/**
-	 * Obtiene el valor de este objeto
+	 * get the value
 	 *
 	 * @return
 	 */
@@ -98,7 +99,7 @@ class FloatValue extends NumericValue {
 	 * @see org.gdms.data.values.NumericValue#doubleValue()
 	 */
 	public double doubleValue() {
-		return (double) value;
+		return FormatUtils.round(value, getDecimalDigitsCount());
 	}
 
 	/**
