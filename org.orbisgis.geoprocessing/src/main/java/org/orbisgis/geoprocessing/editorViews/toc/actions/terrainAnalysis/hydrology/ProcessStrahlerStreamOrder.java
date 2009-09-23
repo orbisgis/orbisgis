@@ -71,11 +71,11 @@ public class ProcessStrahlerStreamOrder extends AbstractGray16And32Process {
 			final Integer riverThreshold = new Integer(mip
 					.getInput("riverthreshold"));
 			if (null != riverThreshold) {
-				return "select D8StrahlerStreamOrder(d.\""
-						+ dir.getDataSource().getDefaultGeometry() + "\", a.\""
-						+ acc.getDataSource().getDefaultGeometry() + "\", "
-						+ riverThreshold + ") as raster from  \""
-						+ dir.getName() + "\" d, \"" + acc.getName() + "\" a";
+				return "select D8StrahlerStreamOrder(d."
+						+ dir.getDataSource().getDefaultGeometry() + ", a."
+						+ acc.getDataSource().getDefaultGeometry() + ", "
+						+ riverThreshold + ") as raster from  "
+						+ dir.getName() + " d, " + acc.getName() + " a";
 			}
 		}
 		return null;

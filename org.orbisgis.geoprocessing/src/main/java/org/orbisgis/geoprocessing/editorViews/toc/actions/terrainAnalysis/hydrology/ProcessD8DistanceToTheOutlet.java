@@ -48,8 +48,8 @@ public class ProcessD8DistanceToTheOutlet extends AbstractGray16And32Process {
 	@Override
 	protected String evaluateResult(ILayer layer, MapContext mapContext)
 			throws OperationException, IOException, DriverException {
-		return "select D8Distance(\""
+		return "select D8Distance("
 				+ layer.getDataSource().getDefaultGeometry()
-				+ "\") as raster from \"" + layer.getName() + "\"";
+				+ ") as raster from " + layer.getName() + "";
 	}
 }

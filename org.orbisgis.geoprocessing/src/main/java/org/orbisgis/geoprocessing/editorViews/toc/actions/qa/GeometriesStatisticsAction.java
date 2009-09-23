@@ -33,7 +33,7 @@ public class GeometriesStatisticsAction extends SQLGeometryAbstractProcess {
 			stringBuffer.append("Area(" + geometryField + ") as area");
 			stringBuffer.append(" , ");
 			stringBuffer.append("Length(" + geometryField + ") as length");
-			stringBuffer.append(" FROM  \"" + layer.getName() + "\" ;");
+			stringBuffer.append(" FROM  " + layer.getName() + " ;");
 
 			return stringBuffer.toString();
 		} catch (DriverException e) {

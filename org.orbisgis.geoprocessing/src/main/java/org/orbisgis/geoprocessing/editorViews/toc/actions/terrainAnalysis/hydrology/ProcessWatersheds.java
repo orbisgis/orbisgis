@@ -76,17 +76,17 @@ public class ProcessWatersheds extends AbstractGray16And32Process {
 					: new Integer(watershedthreshold);
 
 			if (watershedthresholdValue > 1) {
-				sql = "select D8Watershed(d.\""
-						+ dir.getDataSource().getDefaultGeometry() + "\", a.\""
-						+ acc.getDataSource().getDefaultGeometry() + "\", "
-						+ watershedthresholdValue + ") as raster from \""
-						+ dir.getName() + "\" d, \"" + acc.getName() + "\" a";
+				sql = "select D8Watershed(d."
+						+ dir.getDataSource().getDefaultGeometry() + ", a."
+						+ acc.getDataSource().getDefaultGeometry() + ", "
+						+ watershedthresholdValue + ") as raster from "
+						+ dir.getName() + " d, " + acc.getName() + " a";
 			} else {
-				sql = "select D8Watershed(d.\""
-						+ dir.getDataSource().getDefaultGeometry() + "\", a.\""
+				sql = "select D8Watershed(d."
+						+ dir.getDataSource().getDefaultGeometry() + ", a."
 						+ acc.getDataSource().getDefaultGeometry()
-						+ "\") as raster from \"" + dir.getName() + "\" d, \""
-						+ acc.getName() + "\" a";
+						+ ") as raster from " + dir.getName() + " d, "
+						+ acc.getName() + " a";
 			}
 		}
 		return sql;

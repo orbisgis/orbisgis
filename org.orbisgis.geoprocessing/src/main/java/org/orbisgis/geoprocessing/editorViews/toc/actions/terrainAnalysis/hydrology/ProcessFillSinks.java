@@ -56,9 +56,9 @@ public class ProcessFillSinks extends AbstractGray16And32Process implements
 		Double minSlope = getMinSlope();
 		if (null != minSlope) {
 
-			return "select FillSinks(\""
-					+ layer.getDataSource().getDefaultGeometry() + "\", "
-					+ minSlope + ") as raster from \"" + layer.getName() + "\"";
+			return "select FillSinks("
+					+ layer.getDataSource().getDefaultGeometry() + ", "
+					+ minSlope + ") as raster from " + layer.getName() + "";
 		}
 		return null;
 	}
