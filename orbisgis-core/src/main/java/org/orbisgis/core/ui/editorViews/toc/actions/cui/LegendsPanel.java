@@ -146,6 +146,7 @@ public class LegendsPanel extends JPanel implements UIPanel, LegendContext {
 		right.add(getLegendContainer(), BorderLayout.CENTER);
 		right.add(getScalePanel(), BorderLayout.SOUTH);
 		this.add(right, BorderLayout.CENTER);
+
 	}
 
 	private Component getScalePanel() {
@@ -238,7 +239,7 @@ public class LegendsPanel extends JPanel implements UIPanel, LegendContext {
 
 	private JPanel getLegendContainer() {
 		pnlContainer = new JPanel();
-		pnlContainer.setPreferredSize(new Dimension(500, 350));
+		pnlContainer.setPreferredSize(new Dimension(550, 400));
 		cardLayout = new CardLayout();
 		pnlContainer.setLayout(cardLayout);
 		pnlContainer.add(new JLabel("Add or select a legend on the left"),
