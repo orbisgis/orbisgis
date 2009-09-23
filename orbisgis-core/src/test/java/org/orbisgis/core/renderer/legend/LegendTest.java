@@ -50,7 +50,7 @@ import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.memory.ObjectMemoryDriver;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.AbstractTest;
-import org.orbisgis.core.renderer.Renderer2;
+import org.orbisgis.core.renderer.Renderer;
 import org.orbisgis.core.renderer.legend.Legend;
 import org.orbisgis.core.renderer.legend.carto.DefaultUniqueSymbolLegend;
 import org.orbisgis.core.renderer.legend.carto.IntervalLegend;
@@ -84,7 +84,7 @@ public class LegendTest extends AbstractTest {
 		legend.setDefaultSymbol(null);
 		layer.setLegend(legend);
 
-		Renderer2 r = new Renderer2();
+		Renderer r = new Renderer();
 		BufferedImage img = new BufferedImage(100, 100,
 				BufferedImage.TYPE_INT_ARGB);
 		r.draw(img, layer.getEnvelope(), layer);
@@ -100,10 +100,11 @@ public class LegendTest extends AbstractTest {
 		ILayer layer2 = getDataManager().createLayer(
 				new File("src/test/resources/ace.tiff"));
 		mc.getLayerModel().addLayer(layer2);
-		Renderer2 r = new Renderer2();
+		Renderer r = new Renderer();
 		BufferedImage img = new BufferedImage(100, 100,
 				BufferedImage.TYPE_INT_ARGB);
 		r.draw(img, mc.getLayerModel().getEnvelope(), mc.getLayerModel());
+
 
 		try {
 			layer1.getRasterLegend();
