@@ -106,7 +106,6 @@ public class Activator implements PluginActivator {
 		// Initialize workspace
 		initializeWorkspace();
 
-
 		// Initialize configuration
 		EPConfigHelper.loadAndApplyConfigurations();
 
@@ -231,8 +230,7 @@ public class Activator implements PluginActivator {
 									+ resourceList
 									+ ".\nDo you want to exit"
 									+ " and probably lose the content of those sources?",
-							"Lose object resources?",
-							JOptionPane.YES_NO_OPTION);
+							"Lose object resources?", JOptionPane.YES_NO_OPTION);
 
 			ret = (exit == JOptionPane.YES_OPTION);
 		} else {
@@ -307,14 +305,13 @@ public class Activator implements PluginActivator {
 				if (errorMessage.isError()) {
 					ep.show("Error", errorMessage.getLongMessage());
 					// Send log
-					boolean isBug = (e instanceof RuntimeException)
-							|| (e instanceof Error);
-					if (isBug && ep.sendLog()) {
-						Thread t = new Thread(new SendLog());
-						t.setPriority(Thread.MIN_PRIORITY);
-						t.start();
-
-					}
+					/*
+					 * boolean isBug = (e instanceof RuntimeException) || (e
+					 * instanceof Error); if (isBug && ep.sendLog()) { Thread t =
+					 * new Thread(new SendLog());
+					 * t.setPriority(Thread.MIN_PRIORITY); t.start();
+					 *  }
+					 */
 				}
 			}
 			lastTimeStamp = System.currentTimeMillis();
@@ -345,7 +342,8 @@ public class Activator implements PluginActivator {
 		private void refreshGeocognition() {
 			ViewManager vm = Services.getService(ViewManager.class);
 			if (vm != null) {
-				Component view = vm.getView("org.orbisgis.core.ui.views.Geocognition");
+				Component view = vm
+						.getView("org.orbisgis.core.ui.views.Geocognition");
 				if (view != null) {
 					view.repaint();
 				}
