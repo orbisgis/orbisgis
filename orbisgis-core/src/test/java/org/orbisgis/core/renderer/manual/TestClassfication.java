@@ -52,7 +52,7 @@ import org.gdms.driver.DriverException;
 import org.gdms.driver.driverManager.DriverLoadException;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.DataManager;
-import org.orbisgis.core.renderer.Renderer2;
+import org.orbisgis.core.renderer.Renderer;
 import org.orbisgis.core.renderer.classification.Range;
 import org.orbisgis.core.renderer.classification.RangeMethod;
 import org.orbisgis.core.renderer.legend.carto.IntervalLegend;
@@ -129,7 +129,7 @@ public class TestClassfication {
 			Envelope extent = layer.getEnvelope();
 			BufferedImage img = new BufferedImage(400, 400,
 					BufferedImage.TYPE_INT_ARGB);
-			Renderer2 r = new Renderer2();
+			Renderer r = new Renderer();
 			// int size = 350;
 			// extent = new Envelope(new Coordinate(extent.centre().x - size,
 			// extent.centre().y - size), new Coordinate(extent.centre().x
@@ -189,7 +189,7 @@ public class TestClassfication {
 			Envelope extent = layer.getEnvelope();
 			BufferedImage img = new BufferedImage(400, 400,
 					BufferedImage.TYPE_INT_ARGB);
-			Renderer2 r = new Renderer2();
+			Renderer r = new Renderer();
 			// int size = 185350;
 			// extent = new Envelope(new Coordinate(extent.centre().x - size,
 			// extent.centre().y - size), new Coordinate(extent.centre().x
