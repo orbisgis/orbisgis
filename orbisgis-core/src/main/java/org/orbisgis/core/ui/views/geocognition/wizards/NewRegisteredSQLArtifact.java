@@ -26,7 +26,6 @@
  * or contact directly fergonco _at_ gmail.com
  */
 
-
 package org.orbisgis.core.ui.views.geocognition.wizards;
 
 import java.util.ArrayList;
@@ -160,9 +159,8 @@ public class NewRegisteredSQLArtifact implements INewGeocognitionElement {
 							String typeId = element.getTypeId();
 							if (typeId
 									.equals(GeocognitionCustomQueryFactory.BUILT_IN_QUERY_ID)
-									||  typeId
-											.equals(GeocognitionFunctionFactory.BUILT_IN_FUNCTION_ID)
-									) {
+									|| typeId
+											.equals(GeocognitionFunctionFactory.BUILT_IN_FUNCTION_ID)) {
 								return element.getId().toLowerCase().equals(
 										artifactName.toLowerCase());
 							} else {
@@ -245,6 +243,7 @@ public class NewRegisteredSQLArtifact implements INewGeocognitionElement {
 		ArrayList<String> ret = new ArrayList<String>();
 		Collections.addAll(ret, queries);
 		Collections.addAll(ret, functions);
+		Collections.sort(ret);
 
 		return ret.toArray(new String[0]);
 	}
