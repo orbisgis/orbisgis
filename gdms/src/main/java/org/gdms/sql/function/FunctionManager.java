@@ -61,6 +61,8 @@ import org.gdms.sql.function.spatial.geometry.convert.Centroid;
 import org.gdms.sql.function.spatial.geometry.convert.Constraint3D;
 import org.gdms.sql.function.spatial.geometry.convert.ToMultiLine;
 import org.gdms.sql.function.spatial.geometry.convert.ToMultiPoint;
+import org.gdms.sql.function.spatial.geometry.create.MakeLine;
+import org.gdms.sql.function.spatial.geometry.create.MakePoint;
 import org.gdms.sql.function.spatial.geometry.io.AsWKT;
 import org.gdms.sql.function.spatial.geometry.io.GeomFromText;
 import org.gdms.sql.function.spatial.geometry.operators.Buffer;
@@ -165,6 +167,8 @@ public class FunctionManager {
 		addFunction(SubString.class);
 		addFunction(ToEnvelope.class);
 		addFunction(CropRaster.class);
+		addFunction(MakePoint.class);
+		addFunction(MakeLine.class);
 	}
 
 	public static void addFunctionManagerListener(
