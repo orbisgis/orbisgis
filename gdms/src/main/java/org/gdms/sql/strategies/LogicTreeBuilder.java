@@ -99,6 +99,7 @@ import org.gdms.sql.parser.ASTSQLTableRef;
 import org.gdms.sql.parser.ASTSQLUnaryExpr;
 import org.gdms.sql.parser.ASTSQLUnion;
 import org.gdms.sql.parser.ASTSQLUpdate;
+import org.gdms.sql.parser.ASTSQLValueList;
 import org.gdms.sql.parser.ASTSQLWhere;
 import org.gdms.sql.parser.Node;
 import org.gdms.sql.parser.SQLEngineConstants;
@@ -185,7 +186,8 @@ public class LogicTreeBuilder {
 
 			return ret;
 		} else if (node instanceof ASTSQLDrop) {
-			if (node.first_token.next.kind == SQLEngineConstants.TABLE) {
+			if ((node.first_token.next.kind == SQLEngineConstants.TABLE)
+					|| (node.first_token.next.kind == SQLEngineConstants.VIEW)) {
 				Node tableListNode = node.jjtGetChild(0);
 				DropTableOperator operator = new DropTableOperator();
 				for (int i = 0; i < tableListNode.jjtGetNumChildren(); i++) {
@@ -195,6 +197,7 @@ public class LogicTreeBuilder {
 				}
 
 				return operator;
+
 			} else {
 				String tableName = getId(node.jjtGetChild(0));
 				String fieldName = getId(node.jjtGetChild(1));
@@ -228,7 +231,25 @@ public class LogicTreeBuilder {
 							"Only 'create table [tablename] "
 									+ "as ...' implemented");
 				}
-			} else {
+			}
+
+			else if (node.first_token.next.kind == SQLEngineConstants.VIEW) {
+				String tableName = getId(node.jjtGetChild(0));
+				Node schemaNode = node.jjtGetChild(1);
+				CreateViewOperator co = new CreateViewOperator(tableName,
+						getText(schemaNode), dsf);
+
+				if (schemaNode instanceof ASTSQLSelect) {
+					Operator selectOp = getOperator(schemaNode);
+					co.addChild(selectOp);
+				} else if (schemaNode instanceof ASTSQLUnion) {
+					Operator unionOp = getOperator(schemaNode);
+					co.addChild(unionOp);
+				}
+				return co;
+			}
+
+			else {
 				// Create index
 				String tableName = getId(node.jjtGetChild(0));
 				String fieldName = getId(node.jjtGetChild(1));
@@ -411,7 +432,8 @@ public class LogicTreeBuilder {
 						}
 
 						if (nodeType == 1) {
-							throw new UnsupportedOperationException("Cuurently not supported");
+							throw new UnsupportedOperationException(
+									"Cuurently not supported");
 						}
 
 						else if (nodeType == 2) {
@@ -520,12 +542,6 @@ public class LogicTreeBuilder {
 		SimpleNode n = (SimpleNode) node;
 		Token token = n.first_token;
 		String ret = token.image;
-		if (token.kind == SQLEngineConstants.QUOTED_ID) {
-			ret = ret.substring(1, ret.length() - 1);
-		} else {
-			ret = ret.toLowerCase();
-		}
-
 		return ret;
 	}
 
@@ -646,6 +662,7 @@ public class LogicTreeBuilder {
 			boolean not = token.next.kind == SQLEngineConstants.NOT;
 			IsOperator is = new IsOperator(ref, not);
 			return is;
+
 		} else if (node instanceof ASTSQLExistsClause) {
 			throw new UnsupportedOperationException("Exist is not supported");
 		} else if (node instanceof ASTSQLPattern) {
@@ -702,30 +719,28 @@ public class LogicTreeBuilder {
 								.jjtGetChild(0));
 
 						// We translate into an array of "ref=value"
-						ArrayList<Expression> equals = new ArrayList<Expression>();
 						Node valueList = rightExpression.jjtGetChild(0);
-						for (int i = 0; i < valueList.jjtGetNumChildren(); i++) {
-							Node valueElement = valueList.jjtGetChild(i);
-							if (valueElement.jjtGetNumChildren() == 0) {
-								equals.add(new IsOperator(ref, false));
-							} else if (valueElement.jjtGetChild(0) instanceof ASTSQLSumExpr) {
-								Expression elementExpr = getExpression(valueElement);
-								equals.add(new Equals(ref, elementExpr));
-							} else {
-								throw new UnsupportedOperationException(
-										"Nested selects are not supported");
+						if (valueList instanceof ASTSQLValueList) {
+							ArrayList<Expression> equals = new ArrayList<Expression>();
+							for (int i = 0; i < valueList.jjtGetNumChildren(); i++) {
+								Node valueElement = valueList.jjtGetChild(i);
+								if (valueElement.jjtGetNumChildren() == 0) {
+									equals.add(new IsOperator(ref, false));
+								} else if (valueElement.jjtGetChild(0) instanceof ASTSQLSumExpr) {
+									Expression elementExpr = getSQLExpression(valueElement);
+									equals.add(new Equals(ref, elementExpr));
+								}
 							}
 
-						}
+							// We construct the "or" tree
+							Expression last = equals.get(0);
+							for (int i = 1; i < equals.size(); i++) {
+								Or or = new Or(last, equals.get(i));
+								last = or;
+							}
 
-						// We construct the "or" tree
-						Expression last = equals.get(0);
-						for (int i = 1; i < equals.size(); i++) {
-							Or or = new Or(last, equals.get(i));
-							last = or;
+							return last;
 						}
-
-						return last;
 					} else if (rightExpression instanceof ASTSQLLeftJoinClause) {
 					} else if (rightExpression instanceof ASTSQLRightJoinClause) {
 					} else if (rightExpression instanceof ASTSQLBetweenClause) {
