@@ -240,6 +240,10 @@
 			menu-group="org.orbisgis.rasterProcessing"
 			menu-id="org.orbisgis.ProcessingMenu"
 			class="org.orbisgis.geoprocessing.editorViews.toc.actions.update.UpdatezGeometryLayerAction"/>
+		<action id="org.orbisgis.geomProcessing" text="Update z start - end"
+			menu-group="org.orbisgis.rasterProcessing"
+			menu-id="org.orbisgis.ProcessingMenu"
+			class="org.orbisgis.geoprocessing.editorViews.toc.actions.update.UpdateZStartEndGeometryLayerAction"/>
 
 
 	</extension>
