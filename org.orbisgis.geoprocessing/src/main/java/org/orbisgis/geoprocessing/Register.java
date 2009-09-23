@@ -38,12 +38,14 @@ package org.orbisgis.geoprocessing;
 
 import org.gdms.sql.customQuery.QueryManager;
 import org.gdms.sql.customQuery.spatial.geometry.convert.PointsToXYZ;
+import org.gdms.sql.customQuery.spatial.geometry.extract.IntersectsPolygon;
 import org.gdms.sql.customQuery.spatial.geometry.others.RandomGeometry;
 import org.gdms.sql.customQuery.spatial.geometry.tin.BuildTIN;
 import org.gdms.sql.customQuery.spatial.geometry.topology.ToLineNoder;
 import org.gdms.sql.customQuery.spatial.geometry.topology.TopologyPlanarGraph;
 import org.gdms.sql.customQuery.spatial.geometry.triangulation.ConstrainedTINProcessing;
 import org.gdms.sql.customQuery.spatial.geometry.triangulation.TINProcessing;
+import org.gdms.sql.customQuery.spatial.geometry.update.InsertPoint;
 import org.gdms.sql.customQuery.spatial.geometry.update.UpdateZGeometry;
 import org.gdms.sql.customQuery.spatial.raster.convert.RasterToPoints;
 import org.gdms.sql.customQuery.spatial.raster.convert.RasterToPolygons;
@@ -107,15 +109,15 @@ public class Register implements PluginActivator {
 		QueryManager.registerQuery(ToLineNoder.class);
 		QueryManager.registerQuery(BuildTIN.class);
 		QueryManager.registerQuery(RandomGeometry.class);
+		QueryManager.registerQuery(IntersectsPolygon.class);
 
 		FunctionManager.addFunction(ToMultiSegments.class);
 		FunctionManager.addFunction(Generalize.class);
 
-
-
 		QueryManager.registerQuery(TINProcessing.class);
 		QueryManager.registerQuery(ConstrainedTINProcessing.class);
 
+		QueryManager.registerQuery(InsertPoint.class);
 
 	}
 
