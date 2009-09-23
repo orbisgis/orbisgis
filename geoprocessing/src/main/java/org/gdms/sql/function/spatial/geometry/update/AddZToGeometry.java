@@ -36,17 +36,16 @@
  */
 package org.gdms.sql.function.spatial.geometry.update;
 
-
 import org.gdms.data.types.InvalidTypeException;
 import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
+import org.gdms.geoutils.CoordinatesUtils;
 import org.gdms.sql.function.Argument;
 import org.gdms.sql.function.Arguments;
 import org.gdms.sql.function.Function;
 import org.gdms.sql.function.FunctionException;
-import org.geoutils.GeomUtil;
 
 import com.vividsolutions.jts.geom.Geometry;
 
@@ -63,10 +62,9 @@ public class AddZToGeometry implements Function {
 
 		ZFieldValue = args[1].getAsDouble();
 
-		Geometry geom = GeomUtil.updateZ(geometry, ZFieldValue);
+		Geometry geom = CoordinatesUtils.updateZ(geometry, ZFieldValue);
 
-		return ValueFactory
-				.createValue(geom);
+		return ValueFactory.createValue(geom);
 
 	}
 
