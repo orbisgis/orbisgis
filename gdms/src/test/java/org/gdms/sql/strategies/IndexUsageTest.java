@@ -52,8 +52,8 @@ public class IndexUsageTest extends TestCase {
 	public void testConstant() throws Exception {
 		dsf.getSourceManager().register(
 				"cantons",
-				new FileSourceDefinition(new File(SourceTest.externalData
-						+ "/shp/bigshape2D/communes.shp")));
+				new FileSourceDefinition(new File(SourceTest.internalData
+						+ "landcover2000.shp")));
 
 		DataSource ds = dsf.getDataSource("cantons");
 		ds.open();

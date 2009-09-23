@@ -94,8 +94,8 @@ public class SQLTest extends SourceTest {
 		double low = super.getMinimumValueFor(ds, numericField);
 		double high = super.getMaximumValueFor(ds, numericField) + low / 2;
 		DataSource d = dsf.getDataSourceFromSQL("select * from " + ds
-				+ " where \"" + numericField + "\" between " + low + " and "
-				+ high + ";");
+				+ " where " + numericField + " between " + low + " and " + high
+				+ ";");
 		d.open();
 		for (int i = 0; i < d.getRowCount(); i++) {
 			double fieldValue = d.getDouble(i, numericField);
@@ -115,9 +115,9 @@ public class SQLTest extends SourceTest {
 		String numericField = super.getNumericFieldNameFor(ds);
 		double low = super.getMinimumValueFor(ds, numericField);
 		double high = super.getMaximumValueFor(ds, numericField);
-		DataSource d = dsf.getDataSourceFromSQL("select * from " + ds
-				+ " where \"" + numericField + "\" in (" + low + ", " + high
-				+ ");");
+		DataSource d = dsf
+				.getDataSourceFromSQL("select * from " + ds + " where "
+						+ numericField + " in (" + low + ", " + high + ");");
 
 		d.open();
 		for (int i = 0; i < d.getRowCount(); i++) {
@@ -139,9 +139,9 @@ public class SQLTest extends SourceTest {
 		double low = super.getMinimumValueFor(ds, numericField);
 		double high = (super.getMaximumValueFor(ds, numericField) + low) / 2;
 
-		DataSource d = dsf.getDataSourceFromSQL("select count(\""
-				+ numericField + "\") from \"" + ds + "\" where \""
-				+ numericField + "\" < " + high + ";");
+		DataSource d = dsf.getDataSourceFromSQL("select count(" + numericField
+				+ ") from " + ds + " where " + numericField + " < " + high
+				+ ";");
 
 		DataSource original = dsf.getDataSource(ds);
 		original.open();
@@ -171,9 +171,9 @@ public class SQLTest extends SourceTest {
 		double low = super.getMinimumValueFor(ds, numericField);
 		double high = super.getMaximumValueFor(ds, numericField) + low / 2;
 
-		DataSource d = dsf.getDataSourceFromSQL("select count(\""
-				+ numericField + "\"), count(\"" + numericField + "\") from \""
-				+ ds + "\" where \"" + numericField + "\" < " + high + ";");
+		DataSource d = dsf.getDataSourceFromSQL("select count(" + numericField
+				+ "), count(" + numericField + ") from " + ds + " where "
+				+ numericField + " < " + high + ";");
 
 		d.open();
 		assertTrue(equals(d.getFieldValue(0, 0), d.getFieldValue(0, 1)));
@@ -187,10 +187,19 @@ public class SQLTest extends SourceTest {
 		}
 	}
 
+	public void testOrderByFunction() throws Exception {
+		String name = super.getAnySpatialResource();
+
+		DataSource resultDataSource = dsf.getDataSourceFromSQL("select * from "
+				+ name + " order by area(the_geom);");
+		resultDataSource.open();
+		assertTrue(resultDataSource.getRowCount() > 0);
+		resultDataSource.close();
+	}
+
 	private void testOrderByAsc(String ds) throws Exception {
 		String fieldName = super.getNoPKFieldFor(ds);
-		String sql = "select * from \"" + ds + "\" order by \"" + fieldName
-				+ "\" asc;";
+		String sql = "select * from " + ds + " order by " + fieldName + " asc;";
 
 		DataSource resultDataSource = dsf.getDataSourceFromSQL(sql);
 		resultDataSource.open();
@@ -215,8 +224,8 @@ public class SQLTest extends SourceTest {
 
 	private void testOrderByDesc(String ds) throws Exception {
 		String fieldName = super.getNoPKFieldFor(ds);
-		String sql = "select * from \"" + ds + "\" order by \"" + fieldName
-				+ "\" desc;";
+		String sql = "select * from " + ds + " order by " + fieldName
+				+ " desc;";
 
 		DataSource resultDataSource = dsf.getDataSourceFromSQL(sql);
 		resultDataSource.open();
@@ -302,8 +311,8 @@ public class SQLTest extends SourceTest {
 
 	private void testDistinct(String ds) throws Exception {
 		String[] fields = super.getFieldNames(ds);
-		DataSource d = dsf.getDataSourceFromSQL("select distinct \""
-				+ fields[0] + "\" from \"" + ds + "\" ;");
+		DataSource d = dsf.getDataSourceFromSQL("select distinct " + fields[0]
+				+ " from " + ds + " ;");
 
 		d.open();
 		int fieldIndex = d.getFieldIndexByName(fields[0]);
@@ -326,7 +335,7 @@ public class SQLTest extends SourceTest {
 		dsf.getSourceManager().register("communes",
 				new File("../../datas2tests/shp/bigshape2D/communes.shp"));
 		DataSource d = dsf
-				.getDataSourceFromSQL("select distinct \"STATUT\" from \"communes\" ;");
+				.getDataSourceFromSQL("select distinct STATUT from communes ;");
 
 		d.open();
 		int fieldIndex = d.getFieldIndexByName("STATUT");
@@ -340,9 +349,8 @@ public class SQLTest extends SourceTest {
 
 	private void testDistinctManyFields(String ds) throws Exception {
 		String[] fields = super.getFieldNames(ds);
-		DataSource d = dsf
-				.getDataSourceFromSQL("select distinct \"" + fields[0]
-						+ "\", \"" + fields[1] + "\" from \"" + ds + "\" ;");
+		DataSource d = dsf.getDataSourceFromSQL("select distinct " + fields[0]
+				+ ", " + fields[1] + " from " + ds + " ;");
 
 		d.open();
 		int fieldIndex1 = d.getFieldIndexByName(fields[0]);
@@ -367,8 +375,8 @@ public class SQLTest extends SourceTest {
 
 	private void testDistinctAllFields(String ds) throws Exception {
 		String[] fields = super.getFieldNames(ds);
-		DataSource d = dsf.getDataSourceFromSQL("select distinct * from \""
-				+ ds + "\" ;");
+		DataSource d = dsf.getDataSourceFromSQL("select distinct * from " + ds
+				+ " ;");
 
 		d.open();
 		Set<Value> valueSet = new HashSet<Value>();
@@ -403,15 +411,15 @@ public class SQLTest extends SourceTest {
 						.createValue(wktr.read(g1)) });
 		dsf.getSourceManager().register("ds1", driver);
 		final DataSource dsResult = dsf
-				.getDataSourceFromSQL("select distinct the_geom from \"ds1\";");
+				.getDataSourceFromSQL("select distinct the_geom from ds1;");
 		dsResult.open();
 		assertTrue(dsResult.getRowCount() == 1);
 		dsResult.close();
 	}
 
 	private void testUnion(String ds) throws Exception {
-		d = dsf.getDataSourceFromSQL("(select * from \"" + ds
-				+ "\") union (select  * from \"" + ds + "\");");
+		d = dsf.getDataSourceFromSQL("(select * from " + ds
+				+ ") union (select  * from " + ds + ");");
 
 		d.open();
 		DataSource originalDS = dsf.getDataSource(ds);
@@ -419,10 +427,10 @@ public class SQLTest extends SourceTest {
 		for (int i = 0; i < originalDS.getRowCount(); i++) {
 			String[] fieldNames = d.getFieldNames();
 			Value[] row = d.getRow(0);
-			String sql = "select * from \"" + d.getName() + "\" where ";
+			String sql = "select * from " + d.getName() + " where ";
 			String separator = "";
 			for (int j = 0; j < row.length; j++) {
-				sql += separator + "\"" + fieldNames[j] + "\"";
+				sql += separator + " " + fieldNames[j] + "";
 				if (row[j].isNull()) {
 					sql += " is "
 							+ row[j]
@@ -465,7 +473,7 @@ public class SQLTest extends SourceTest {
 		double low = super.getMinimumValueFor(ds, numericField);
 		double average = super.getMaximumValueFor(ds, numericField) + low / 2;
 		DataSource d = dsf.getDataSourceFromSQL("select * from " + ds
-				+ " where \"" + numericField + "\"<" + average + ";");
+				+ " where " + numericField + "<" + average + ";");
 
 		d.open();
 		int fieldIndex = d.getFieldIndexByName(numericField);
@@ -480,6 +488,35 @@ public class SQLTest extends SourceTest {
 		for (String resource : resources) {
 			testSelect(resource);
 		}
+	}
+
+	public void testSelectWhere() throws Exception {
+
+		dsf
+				.getSourceManager()
+				.register(
+						"landcover2000",
+						new File(
+								"/home/bocher/Documents/devs/orbisgis/datas2tests/shp/mediumshape2D/landcover2000.shp"));
+		String query = "SELECT * FROM landcover2000 where runoff_win = 0.05";
+		DataSource ds = dsf.getDataSourceFromSQL(query);
+		ds.open();
+		assertTrue(ds.getRowCount() > 0);
+		assertTrue(ds.getFieldValue(0, ds.getFieldIndexByName("runoff_win"))
+				.getAsDouble() == 0.05);
+		ds.close();
+
+	}
+
+	public void testExists() throws Exception {
+
+		String data = super.getAnySpatialResource();
+
+		DataSource d = dsf.getDataSourceFromSQL("select * from " + data
+				+ " where exists (select * from " + data + ") ;");
+		d.open();
+		System.out.println(d.getRowCount());
+		d.close();
 	}
 
 	public void testSecondaryIndependence() throws Exception {
@@ -515,7 +552,7 @@ public class SQLTest extends SourceTest {
 		String source = super.getAnySpatialResource();
 		dsf.executeSQL("select register ('" + backupDir + "/"
 				+ "testCreate.shp', 'newShape') ");
-		dsf.executeSQL("create table \"newShape\" as select * from " + source);
+		dsf.executeSQL("create table newShape as select * from " + source);
 		DataSource newDs = dsf.getDataSource("newShape");
 		DataSource sourceDs = dsf.getDataSource(source);
 		newDs.open();
@@ -531,7 +568,7 @@ public class SQLTest extends SourceTest {
 		String source = super.getAnySpatialResource();
 		dsf.executeSQL("select register ('" + backupDir + "/"
 				+ "testCreate.shp', 'newShape') ");
-		dsf.executeSQL("create table \"newShape\" as " + source + " union "
+		dsf.executeSQL("create table newShape as " + source + " union "
 				+ source);
 		DataSource newDs = dsf.getDataSource("newShape");
 		DataSource sourceDs = dsf.getDataSource(source);
@@ -540,6 +577,26 @@ public class SQLTest extends SourceTest {
 		assertTrue(newDs.getRowCount() / 2.0 == sourceDs.getRowCount());
 		newDs.close();
 		sourceDs.close();
+	}
+
+	public void testCreateAsView() throws Exception {
+		String dsName = super.getAnySpatialResource();
+		dsf.executeSQL("create view myview as select * from " + dsName);
+		DataSource ds = dsf.getDataSource("myview");
+		DataSource dsIn = dsf.getDataSource(dsName);
+		ds.open();
+		dsIn.open();
+		assertTrue(ds.getRowCount() == dsIn.getRowCount());
+		ds.close();
+		dsIn.close();
+	}
+
+
+	public void testDropAsView() throws Exception {
+		String dsName = super.getAnySpatialResource();
+		dsf.executeSQL("create view myview as select * from " + dsName);
+		dsf.executeSQL("drop view myview ");
+		assertTrue(!dsf.getSourceManager().exists("myview"));
 	}
 
 	public void testAliasInFunction() throws Exception {
@@ -589,21 +646,21 @@ public class SQLTest extends SourceTest {
 
 	public void testLimitOffset() throws Exception {
 		String resource = super.getAnyNonSpatialResource();
-		testLimitOffset("select * from \"" + resource + "\" where true");
-		testLimit("select * from \"" + resource + "\" where true");
-		testOffset("select * from \"" + resource + "\" where true");
+		testLimitOffset("select * from " + resource + " where true");
+		testLimit("select * from " + resource + " where true");
+		testOffset("select * from " + resource + " where true");
 
-		testLimitOffset("select * from \"" + resource + "\" ");
-		testLimit("select * from \"" + resource + "\" ");
-		testOffset("select * from \"" + resource + "\" ");
+		testLimitOffset("select * from " + resource + " ");
+		testLimit("select * from " + resource + " ");
+		testOffset("select * from " + resource + " ");
 
 		String stringField = super.getStringFieldFor(resource);
-		testLimitOffset("select \"" + stringField + "\" from \"" + resource
-				+ "\" group by \"" + stringField + "\"");
-		testLimit("select \"" + stringField + "\" from \"" + resource
-				+ "\" group by \"" + stringField + "\"");
-		testOffset("select \"" + stringField + "\" from \"" + resource
-				+ "\" group by \"" + stringField + "\"");
+		testLimitOffset("select " + stringField + " from " + resource
+				+ " group by " + stringField + "");
+		testLimit("select " + stringField + " from " + resource + " group by "
+				+ stringField + "");
+		testOffset("select " + stringField + " from " + resource + " group by "
+				+ stringField + "");
 	}
 
 	private void testLimitOffset(String sql) throws Exception {
@@ -657,9 +714,9 @@ public class SQLTest extends SourceTest {
 
 	private void testGroupAndOrderBy(String resource) throws Exception {
 		String field = super.getStringFieldFor(resource);
-		String sql = "select \"" + field + "\" from \"" + resource
-				+ "\" group by \"" + resource + "\".\"" + field
-				+ "\" order by \"" + resource + "\".\"" + field + "\"";
+		String sql = "select " + field + " from " + resource + " group by "
+				+ resource + "." + field + " order by " + resource + "."
+				+ field + "";
 		DataSource ds = dsf.getDataSourceFromSQL(sql);
 		ds.open();
 		assertTrue(ds.getMetadata().getFieldCount() == 1);
@@ -669,14 +726,14 @@ public class SQLTest extends SourceTest {
 	public void testNot() throws Exception {
 		String resource = super.getAnyNonSpatialResource();
 		String stringField = super.getStringFieldFor(resource);
-		String sql = "select * from \"" + resource + "\" where \""
-				+ stringField + "\" <> 'a'";
+		String sql = "select * from " + resource + " where " + stringField
+				+ " <> 'a'";
 		DataSource ds = dsf.getDataSourceFromSQL(sql);
 		ds.open();
 		long rc1 = ds.getRowCount();
 		ds.close();
-		sql = "select * from \"" + resource + "\" where not \"" + stringField
-				+ "\" <> 'a'";
+		sql = "select * from " + resource + " where not " + stringField
+				+ " <> 'a'";
 		ds = dsf.getDataSourceFromSQL(sql);
 		ds.open();
 		long rc2 = ds.getRowCount();
@@ -697,8 +754,8 @@ public class SQLTest extends SourceTest {
 	public void testLike() throws Exception {
 		String resource = super.getAnyNonSpatialResource();
 		String stringField = super.getStringFieldFor(resource);
-		String sql = "select * from \"" + resource + "\" where \""
-				+ stringField + "\" NOT LIKE '%'";
+		String sql = "select * from " + resource + " where " + stringField
+				+ " NOT LIKE '%'";
 		DataSource ds = dsf.getDataSourceFromSQL(sql);
 		ds.open();
 		assertTrue(ds.getRowCount() == 0);
@@ -727,8 +784,8 @@ public class SQLTest extends SourceTest {
 
 	public void testImplicitRegisterInCreate() throws Exception {
 		String resourceName = super.getAnyNonSpatialResource();
-		dsf.executeSQL("create table newtable as select * from \""
-				+ resourceName + "\"");
+		dsf.executeSQL("create table newtable as select * from " + resourceName
+				+ "");
 		DataSource dataSource1 = dsf.getDataSource("newtable");
 		DataSource dataSource2 = dsf.getDataSource(resourceName);
 		dataSource1.open();
@@ -782,9 +839,8 @@ public class SQLTest extends SourceTest {
 		String[] resources = super.getResourcesWithNumericField();
 		for (String resource : resources) {
 			String nfName = super.getNumericFieldNameFor(resource);
-			String sql = "select stringtodouble(toString(max(\"" + nfName
-					+ "\"))) from \"" + resource + "\" group by \"" + nfName
-					+ "\"";
+			String sql = "select stringtodouble(toString(max(" + nfName
+					+ "))) from " + resource + " group by " + nfName + "";
 			DataSource ds = dsf.getDataSourceFromSQL(sql);
 			ds.open();
 			for (int i = 0; i < ds.getRowCount(); i++) {
@@ -834,8 +890,7 @@ public class SQLTest extends SourceTest {
 
 	public void testUpdate() throws Exception {
 		createSource("source", "a", 0, 1, 2, 3);
-		dsf.executeSQL("update source SET a = a + StringToInt('1');",
-				null);
+		dsf.executeSQL("update source SET a = a + StringToInt('1');", null);
 		DataSource ds = dsf.getDataSource("source");
 		ds.open();
 		assertTrue(ds.getRowCount() == 4);
@@ -844,6 +899,29 @@ public class SQLTest extends SourceTest {
 		}
 		ds.close();
 	}
+
+	/*
+	 * TODO : activate subquery public void testInSelect() throws Exception {
+	 * Type intType = TypeFactory.createType(Type.INT); Type stringType =
+	 * TypeFactory.createType(Type.STRING); ObjectMemoryDriver dict = new
+	 * ObjectMemoryDriver(new String[] { "code", "text" }, new Type[] { intType,
+	 * stringType }); dict.addValues(new Value[] { ValueFactory.createValue(0),
+	 * ValueFactory.createValue("good") }); dict.addValues(new Value[] {
+	 * ValueFactory.createValue(1), ValueFactory.createValue("bad") });
+	 * ObjectMemoryDriver thetable = new ObjectMemoryDriver( new String[] {
+	 * "dict_code" }, new Type[] { intType }); thetable.addValues(new Value[] {
+	 * ValueFactory.createValue(0) }); thetable.addValues(new Value[] {
+	 * ValueFactory.createValue(1) }); thetable.addValues(new Value[] {
+	 * ValueFactory.createValue(0) }); thetable.addValues(new Value[] {
+	 * ValueFactory.createValue(1) }); thetable.addValues(new Value[] {
+	 * ValueFactory.createValue(1) }); thetable.addValues(new Value[] {
+	 * ValueFactory.createValue(0) }); dsf.getSourceManager().register("dict",
+	 * dict); dsf.getSourceManager().register("thetable", thetable); DataSource
+	 * ds = dsf.getDataSourceFromSQL("select * from thetable " + "where
+	 * dict_code in " + "(select code from dict where text = 'good');");
+	 * ds.open(); for (int i = 0; i < ds.getRowCount(); i++) {
+	 * assertTrue(ds.getInt(i, 0) == 0); } ds.close(); }
+	 */
 
 	public void testUpdateWhere() throws Exception {
 		createSource("source", "a", 0, 1, 2, 3);

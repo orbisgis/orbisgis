@@ -70,7 +70,7 @@ public class CustomQueriesTest extends TestCase {
 
 	/**
 	 * DOCUMENT ME!
-	 * 
+	 *
 	 * @throws DriverLoadException
 	 *             DOCUMENT ME!
 	 * @throws ParseException
@@ -103,8 +103,8 @@ public class CustomQueriesTest extends TestCase {
 	public void testFieldTypesAndValues() throws Exception {
 		dsf.getSourceManager().register(
 				"ds2",
-				new FileSourceDefinition(new File(SourceTest.externalData
-						+ "shp/smallshape2D/multilinestring2d.shp")));
+				new FileSourceDefinition(new File(SourceTest.internalData
+						+ "multilinestring2d.shp")));
 		dsf.getDataSourceFromSQL("select fieldReferenceQuery(ds.gid,"
 				+ " t2.the_geom) from ds, ds2 t2;");
 
@@ -119,8 +119,8 @@ public class CustomQueriesTest extends TestCase {
 	public void testFieldReferences() throws Exception {
 		dsf.getSourceManager().register(
 				"ds2",
-				new FileSourceDefinition(new File(SourceTest.externalData
-						+ "shp/smallshape2D/multilinestring2d.shp")));
+				new FileSourceDefinition(new File(SourceTest.internalData
+						+ "multilinestring2d.shp")));
 		dsf.getDataSourceFromSQL("select fieldReferenceQuery(ds.gid) "
 				+ "from ds, ds2;");
 		dsf.getDataSourceFromSQL("select fieldReferenceQuery(ds.gid,"
@@ -136,8 +136,8 @@ public class CustomQueriesTest extends TestCase {
 
 	public void testRegister() throws Exception {
 		dsf.getSourceManager().remove("ds");
-		String path = SourceTest.externalData
-				+ "shp/smallshape2D/multipoint2d.shp";
+		String path = SourceTest.internalData
+				+ "points.shp";
 		dsf.executeSQL("select register ('" + path + "', 'myshape');");
 		DataSource ret = dsf.getDataSource("myshape");
 		assertTrue(ret != null);
@@ -258,8 +258,8 @@ public class CustomQueriesTest extends TestCase {
 				"src/test/resources/backup");
 		dsf.getSourceManager().register(
 				"ds",
-				new FileSourceDefinition(new File(SourceTest.externalData
-						+ "shp/smallshape2D/multipoint2d.shp")));
+				new FileSourceDefinition(new File(SourceTest.internalData
+						+ "multipoints.shp")));
 	}
 
 }
