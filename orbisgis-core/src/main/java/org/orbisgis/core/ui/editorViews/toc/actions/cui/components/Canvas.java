@@ -41,7 +41,7 @@ import java.awt.Graphics;
 
 import javax.swing.JPanel;
 
-import org.orbisgis.core.renderer.Renderer2;
+import org.orbisgis.core.renderer.Renderer;
 import org.orbisgis.core.renderer.symbol.Symbol;
 
 public class Canvas extends JPanel {
@@ -57,7 +57,7 @@ public class Canvas extends JPanel {
 	public void paintComponent(Graphics g) {
 		g.setColor(Color.white);
 		g.fillRect(0, 0, getWidth(), getHeight());
-		Renderer2 renderer = new Renderer2();
+		Renderer renderer = new Renderer();
 		renderer.drawSymbolPreview(g, s, getWidth(), getHeight(), false);
 	}
 
