@@ -40,6 +40,7 @@ package org.orbisgis.core.ui.views.geocatalog;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.FlowLayout;
+import java.io.File;
 
 import javax.swing.Icon;
 import javax.swing.JLabel;
@@ -47,6 +48,11 @@ import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.ListCellRenderer;
 
+import org.gdms.data.DataSource;
+import org.gdms.data.DataSourceCreationException;
+import org.gdms.data.NoSuchTableException;
+import org.gdms.driver.DriverException;
+import org.gdms.driver.driverManager.DriverLoadException;
 import org.gdms.source.Source;
 import org.gdms.source.SourceManager;
 import org.orbisgis.core.Services;
@@ -110,49 +116,57 @@ public class SourceListRenderer implements ListCellRenderer {
 				}
 			}
 			Source src = sourceManager.getSource(source);
-			if (src != null) {
-			if (icon == null) {
-				int sourceType = src.getType();
-				if ((sourceType & SourceManager.VECTORIAL) == SourceManager.VECTORIAL) {
-					icon = spatial;
-				} else if ((sourceType & SourceManager.RASTER) == SourceManager.RASTER) {
-					icon = raster;
-				} else if ((sourceType & SourceManager.WMS) == SourceManager.WMS) {
-					icon = server_connect;
-				} else if ((sourceType & SourceManager.FILE) == SourceManager.FILE) {
-					icon = alphanumeric_file;
-				} else if ((sourceType & SourceManager.DB) == SourceManager.DB) {
-					icon = alphanumeric_database;
-				}
-			}
-			if (null != icon) {
-				iconAndLabel.setIcon(icon);
-			} else {
-				iconAndLabel.setIcon(null);
-			}
-			String text = null;
-			for (SourceRenderer renderer : renderers) {
-				text = renderer.getText(sourceManager, source);
-				if (text != null) {
-					break;
-				}
-			}
-			if (text == null) {
-				text = source;
-				text += " (" + src.getTypeName()
-						+ ")";
-			}
-			iconAndLabel.setText(text);
-			iconAndLabel.setVisible(true);
 
-			if (selected) {
-				this.setBackground(SELECTED);
-				iconAndLabel.setForeground(SELECTED_FONT);
-			} else {
-				this.setBackground(DESELECTED);
-				iconAndLabel.setForeground(DESELECTED_FONT);
+			if (src != null) {
+
+				if (src.isFileSource()) {
+					if (!src.getFile().exists()) {
+						icon = IconLoader.getIcon("remove.png");
+					}
+				}
+
+				if (icon == null) {
+					int sourceType = src.getType();
+					if ((sourceType & SourceManager.VECTORIAL) == SourceManager.VECTORIAL) {
+						icon = spatial;
+					} else if ((sourceType & SourceManager.RASTER) == SourceManager.RASTER) {
+						icon = raster;
+					} else if ((sourceType & SourceManager.WMS) == SourceManager.WMS) {
+						icon = server_connect;
+					} else if ((sourceType & SourceManager.FILE) == SourceManager.FILE) {
+						icon = alphanumeric_file;
+					} else if ((sourceType & SourceManager.DB) == SourceManager.DB) {
+						icon = alphanumeric_database;
+					}
+				}
+				if (null != icon) {
+					iconAndLabel.setIcon(icon);
+				} else {
+					iconAndLabel.setIcon(null);
+				}
+				String text = null;
+				for (SourceRenderer renderer : renderers) {
+					text = renderer.getText(sourceManager, source);
+					if (text != null) {
+						break;
+					}
+				}
+				if (text == null) {
+					text = source;
+					text += " (" + src.getTypeName() + ")";
+				}
+				iconAndLabel.setText(text);
+				iconAndLabel.setVisible(true);
+
+				if (selected) {
+					this.setBackground(SELECTED);
+					iconAndLabel.setForeground(SELECTED_FONT);
+				} else {
+					this.setBackground(DESELECTED);
+					iconAndLabel.setForeground(DESELECTED_FONT);
+				}
 			}
-		}
+
 		}
 	}
 
