@@ -44,12 +44,14 @@ import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 
 import org.gdms.data.DataSource;
+import org.gdms.data.types.Type;
 import org.gdms.driver.DriverException;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.renderer.legend.carto.persistence.ClassifiedLegendType;
 import org.orbisgis.core.renderer.symbol.Symbol;
 import org.orbisgis.core.renderer.symbol.SymbolManager;
 import org.orbisgis.core.renderer.symbol.collection.persistence.SymbolType;
+import org.orbisgis.core.ui.editorViews.toc.actions.cui.legends.GeometryProperties;
 
 abstract class AbstractClassifiedLegend extends AbstractCartoLegend implements
 		ClassifiedLegend {
@@ -64,8 +66,12 @@ abstract class AbstractClassifiedLegend extends AbstractCartoLegend implements
 	public void setClassificationField(String fieldName, DataSource ds)
 			throws DriverException {
 		this.fieldName = fieldName;
-		int fi = ds.getFieldIndexByName(fieldName);
-		this.fieldType = ds.getMetadata().getFieldType(fi).getTypeCode();
+		if (GeometryProperties.isFieldName(fieldName)) {
+			this.fieldType = Type.DOUBLE;
+		} else {
+			int fi = ds.getFieldIndexByName(fieldName);
+			this.fieldType = ds.getMetadata().getFieldType(fi).getTypeCode();
+		}
 		fireLegendInvalid();
 	}
 

@@ -50,6 +50,10 @@ import org.orbisgis.core.renderer.legend.carto.persistence.LabelLegendType;
 import org.orbisgis.core.renderer.legend.carto.persistence.LegendContainer;
 import org.orbisgis.core.renderer.symbol.Symbol;
 import org.orbisgis.core.renderer.symbol.SymbolFactory;
+import org.orbisgis.core.ui.editorViews.toc.actions.cui.legends.GeometryProperties;
+import org.orbisgis.utils.FormatUtils;
+
+import com.vividsolutions.jts.geom.Geometry;
 
 public class DefaultLabelLegend extends AbstractCartoLegend implements
 		LabelLegend {
@@ -98,10 +102,18 @@ public class DefaultLabelLegend extends AbstractCartoLegend implements
 	public Symbol getSymbol(SpatialDataSourceDecorator sds, long row)
 			throws RenderException {
 		try {
-			int fieldIndex = sds.getFieldIndexByName(fieldName);
-			Value v = sds.getFieldValue(row, fieldIndex);
-			Symbol symbol = SymbolFactory.createLabelSymbol(v.toString(),
-					getSize(sds, row), smartPlacing);
+			Value v;
+
+			if (GeometryProperties.isFieldName(fieldName)) {
+				Geometry geom = sds.getGeometry(row);
+				v = GeometryProperties.getPropertyValue(fieldName, geom);
+			} else {
+				int fieldIndex = sds.getFieldIndexByName(fieldName);
+				v = sds.getFieldValue(row, fieldIndex);
+			}
+			double value = FormatUtils.round(v.getAsDouble(), 3);
+			Symbol symbol = SymbolFactory.createLabelSymbol(new Double(value)
+					.toString(), getSize(sds, row), smartPlacing);
 			return symbol;
 		} catch (DriverException e) {
 			throw new RenderException("Cannot access layer contents" + e);

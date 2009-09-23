@@ -54,6 +54,9 @@ import org.orbisgis.core.renderer.legend.carto.persistence.LegendContainer;
 import org.orbisgis.core.renderer.symbol.RenderUtils;
 import org.orbisgis.core.renderer.symbol.Symbol;
 import org.orbisgis.core.renderer.symbol.SymbolManager;
+import org.orbisgis.core.ui.editorViews.toc.actions.cui.legends.GeometryProperties;
+
+import com.vividsolutions.jts.geom.Geometry;
 
 public class DefaultIntervalLegend extends AbstractClassifiedLegend implements
 		IntervalLegend {
@@ -101,8 +104,17 @@ public class DefaultIntervalLegend extends AbstractClassifiedLegend implements
 	public Symbol getSymbol(SpatialDataSourceDecorator sds, long row)
 			throws RenderException {
 		try {
-			int fieldIndex = sds.getFieldIndexByName(getClassificationField());
-			Value value = sds.getFieldValue(row, fieldIndex);
+			Value value;
+			if (GeometryProperties.isFieldName(getClassificationField())) {
+				Geometry geom = sds.getGeometry(row);
+				value = GeometryProperties.getPropertyValue(
+						getClassificationField(), geom);
+			} else {
+
+				int fieldIndex = sds
+						.getFieldIndexByName(getClassificationField());
+				value = sds.getFieldValue(row, fieldIndex);
+			}
 			Symbol classificationSymbol = getSymbolFor(value);
 			if (classificationSymbol != null) {
 				Symbol symbol;

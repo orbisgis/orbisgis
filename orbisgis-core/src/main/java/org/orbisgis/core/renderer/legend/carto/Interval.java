@@ -37,6 +37,7 @@
 package org.orbisgis.core.renderer.legend.carto;
 
 import org.gdms.data.values.Value;
+import org.orbisgis.utils.FormatUtils;
 
 public class Interval {
 
@@ -60,7 +61,11 @@ public class Interval {
 	}
 
 	public String getIntervalString() {
-		return start.toString() + " - " + end.toString();
+		String startF = new Double(FormatUtils.round(start.getAsDouble(), 3))
+				.toString();
+		String endF = new Double(FormatUtils.round(end.getAsDouble(), 3))
+				.toString();
+		return startF + " - " + endF;
 	}
 
 	public Value getMinValue() {

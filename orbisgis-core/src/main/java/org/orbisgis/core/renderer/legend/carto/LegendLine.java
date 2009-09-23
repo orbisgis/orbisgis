@@ -41,7 +41,7 @@ import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.geom.Rectangle2D;
 
-import org.orbisgis.core.renderer.Renderer2;
+import org.orbisgis.core.renderer.Renderer;
 import org.orbisgis.core.renderer.symbol.Symbol;
 
 public class LegendLine {
@@ -55,7 +55,7 @@ public class LegendLine {
 	}
 
 	public void drawImage(Graphics g) {
-		Renderer2 renderer = new Renderer2();
+		Renderer renderer = new Renderer();
 		renderer.drawSymbolPreview(g, symbol, 30, 20, true);
 		g.setColor(Color.black);
 		FontMetrics fm = g.getFontMetrics();
