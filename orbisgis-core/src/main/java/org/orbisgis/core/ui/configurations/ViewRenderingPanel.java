@@ -14,12 +14,16 @@ import javax.swing.JPanel;
 
 public class ViewRenderingPanel extends JPanel {
 
-	AlphaComposite ac = AlphaComposite.getInstance(AlphaComposite.SRC_OVER);
 	float alpha = 1.0f;
 
 	boolean antialiasing = false;
 
-	public ViewRenderingPanel() {
+	private AlphaComposite ac;
+
+	public ViewRenderingPanel(String composite_value) {
+		if (composite_value != null) {
+			this.alpha = new Float(composite_value);
+		}
 	}
 
 	// Resets the alpha and composite rules with selected items.
@@ -32,6 +36,7 @@ public class ViewRenderingPanel extends JPanel {
 	public void paintComponent(Graphics g) {
 		super.paintComponent(g);
 		Graphics2D g2 = (Graphics2D) g;
+		ac = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, alpha);
 
 		if (antialiasing) {
 			g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,

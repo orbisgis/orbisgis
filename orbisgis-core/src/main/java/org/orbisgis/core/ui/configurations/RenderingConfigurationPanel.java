@@ -39,7 +39,7 @@ public class RenderingConfigurationPanel extends JPanel implements ItemListener 
 		this.setLayout(new BorderLayout());
 		this.add(getCheckPanel(), BorderLayout.WEST);
 		this.add(new CarriageReturn());
-		view = new ViewRenderingPanel();
+		view = new ViewRenderingPanel(composite_value);
 		this.add(view, BorderLayout.CENTER);
 	}
 
