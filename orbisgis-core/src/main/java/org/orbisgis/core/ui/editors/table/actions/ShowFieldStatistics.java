@@ -5,11 +5,13 @@ import java.awt.Color;
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceCreationException;
 import org.gdms.data.DataSourceFactory;
+import org.gdms.data.metadata.DefaultMetadata;
 import org.gdms.data.metadata.Metadata;
 import org.gdms.data.types.Type;
 import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.driverManager.DriverLoadException;
+import org.gdms.driver.memory.ObjectMemoryDriver;
 import org.gdms.sql.parser.ParseException;
 import org.gdms.sql.strategies.SemanticException;
 import org.orbisgis.core.Services;
@@ -67,21 +69,28 @@ public class ShowFieldStatistics implements ITableColumnAction {
 			int countSelection = element.getSelection().getSelectedRows().length;
 			int[] selected = element.getSelection().getSelectedRows();
 			if (selected.length > 0) {
-
 				if (countSelection == ds.getRowCount()) {
 					query = getQuery(fieldName, ds).append(" ;").toString();
+
+					dsResult = dsf.getDataSourceFromSQL(query);
 				} else {
-					query = getQuery(fieldName, ds, selected).append(" ;")
-							.toString();
+					ObjectMemoryDriver subds = getSubData(fieldName, ds,
+							selected);
+
+					query = getQuery(fieldName, dsf.getDataSource(subds))
+							.append(" ;").toString();
+
+					dsResult = dsf.getDataSourceFromSQL(query);
+
 				}
 
 			} else {
 				query = getQuery(fieldName, element.getDataSource()).append(
 						" ;").toString();
 
-			}
+				dsResult = dsf.getDataSourceFromSQL(query);
 
-			dsResult = dsf.getDataSourceFromSQL(query);
+			}
 
 			OutputManager om = Services.getService(OutputManager.class);
 
@@ -115,68 +124,25 @@ public class ShowFieldStatistics implements ITableColumnAction {
 		}
 	}
 
-	private StringBuffer getQuery(String fieldName, DataSource ds,
-			int[] selected) {
+	private ObjectMemoryDriver getSubData(String fieldName, DataSource ds,
+			int[] selected) throws DriverException {
 
-		StringBuffer query = getQuery(fieldName, ds);
+		int fieldIndex = ds.getFieldIndexByName(fieldName);
+		int fieldType = ds.getFieldType(fieldIndex).getTypeCode();
 
-		try {
-			int fieldIndex = ds.getFieldIndexByName(fieldName);
-			int fieldType = ds.getFieldType(fieldIndex).getTypeCode();
+		DefaultMetadata metadata = new DefaultMetadata();
+		metadata.addField(fieldName, fieldType);
 
-			query.append(" WHERE ");
+		ObjectMemoryDriver driver = new ObjectMemoryDriver(metadata);
 
-			int and = -1;
-			for (int i = 0; i < selected.length; i++) {
-				Value v = ds.getFieldValue(selected[i], ds
-						.getFieldIndexByName(fieldName));
-				if (i > 0) {
-					query.append(" or ");
-				}
-				query.append(fieldName + " = ");
-				switch (fieldType) {
-				case Type.DOUBLE:
-					query.append(v.getAsDouble());
-					and++;
-					break;
-				case Type.INT:
-					query.append(v.getAsInt());
-					and++;
-					break;
-				case Type.FLOAT:
-					query.append(v.getAsFloat());
-					and++;
-					break;
-				case Type.SHORT:
-					query.append(v.getAsShort());
-					and++;
-					break;
-				case Type.LONG:
-					query.append(v.getAsLong());
-					and++;
-					break;
-				case Type.DATE:
-					query.append("'" + v.getAsDate() + "'");
-					and++;
-					break;
-				case Type.BOOLEAN:
-					query.append("'" + v.getAsBoolean() + "'");
-					and++;
-					break;
-				case Type.STRING:
-					query.append("'" + v.getAsString() + "'");
-					and++;
-					break;
-				default:
-					break;
-				}
+		for (int i = 0; i < selected.length; i++) {
 
-			}
+			driver.addValues(new Value[] { ds.getFieldValue(selected[i],
+					fieldIndex) });
 
-		} catch (DriverException e) {
-			e.printStackTrace();
 		}
-		return query;
+
+		return driver;
 	}
 
 	private StringBuffer getQuery(String fieldName, DataSource ds) {
