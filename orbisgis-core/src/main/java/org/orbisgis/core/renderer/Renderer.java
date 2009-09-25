@@ -112,6 +112,8 @@ public class Renderer {
 	 */
 	public void draw(Graphics2D g2, int width, int height, Envelope extent,
 			ILayer layer, IProgressMonitor pm) {
+		setHints(g2);
+
 		MapTransform mt = new MapTransform();
 		mt.resizeImage(width, height);
 		mt.setExtent(extent);
@@ -286,33 +288,6 @@ public class Renderer {
 			int width, int height, Envelope extent,
 			DefaultRendererPermission permission, IProgressMonitor pm)
 			throws DriverException {
-
-		// Rendering rules
-		Properties systemSettings = System.getProperties();
-
-		String antialiasing = systemSettings
-				.getProperty(RenderingConfiguration.SYSTEM_ANTIALIASING_STATUS);
-		String composite = systemSettings
-				.getProperty(RenderingConfiguration.SYSTEM_COMPOSITE_STATUS);
-
-		if (antialiasing != null || composite != null) {
-			if (antialiasing.equals("true")) {
-				g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
-						RenderingHints.VALUE_ANTIALIAS_ON);
-			}
-
-			if (composite.equals("true")) {
-				AlphaComposite ac = AlphaComposite
-						.getInstance(AlphaComposite.SRC);
-				ac = AlphaComposite
-						.getInstance(
-								AlphaComposite.SRC_OVER,
-								new Float(
-										systemSettings
-												.getProperty(RenderingConfiguration.SYSTEM_COMPOSITE_VALUE)));
-				g2.setComposite(ac);
-			}
-		}
 
 		Legend[] legends = layer.getRenderingLegend();
 		SpatialDataSourceDecorator sds = layer.getDataSource();
@@ -531,6 +506,8 @@ public class Renderer {
 
 	public void drawSymbolPreview(Graphics g, Symbol symbol, int width,
 			int height, boolean simple) {
+
+		setHints((Graphics2D) g);
 		if (symbol == null) {
 			return;
 		}
@@ -608,6 +585,41 @@ public class Renderer {
 			sym.draw((Graphics2D) g, geom, new AffineTransform(),
 					renderPermission);
 		}
+	}
+
+
+	/**
+	 * Apply some rendering rules
+	 * @param g2
+	 */
+	private void setHints(Graphics2D g2) {
+
+		Properties systemSettings = System.getProperties();
+
+		String antialiasing = systemSettings
+				.getProperty(RenderingConfiguration.SYSTEM_ANTIALIASING_STATUS);
+		String composite = systemSettings
+				.getProperty(RenderingConfiguration.SYSTEM_COMPOSITE_STATUS);
+
+		if (antialiasing != null || composite != null) {
+			if (antialiasing.equals("true")) {
+				g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+						RenderingHints.VALUE_ANTIALIAS_ON);
+			}
+
+			if (composite.equals("true")) {
+				AlphaComposite ac = AlphaComposite
+						.getInstance(AlphaComposite.SRC);
+				ac = AlphaComposite
+						.getInstance(
+								AlphaComposite.SRC_OVER,
+								new Float(
+										systemSettings
+												.getProperty(RenderingConfiguration.SYSTEM_COMPOSITE_VALUE)));
+				g2.setComposite(ac);
+			}
+		}
+
 	}
 
 }
