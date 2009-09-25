@@ -75,6 +75,7 @@ import org.orbisgis.core.geocognition.sql.GeocognitionFunctionFactory;
 import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.layerModel.LayerException;
 import org.orbisgis.core.layerModel.MapContext;
+import org.orbisgis.core.outputManager.OutputManager;
 import org.orbisgis.core.ui.editors.map.MapContextManager;
 import org.orbisgis.core.ui.view.IView;
 import org.orbisgis.core.ui.views.geocognition.TransferableGeocognitionElement;
@@ -98,7 +99,8 @@ public class ConsoleView implements IView {
 
 			public void save(String text) throws IOException {
 				final SaveFilePanel outfilePanel = new SaveFilePanel(
-						"org.orbisgis.core.ui.views.sqlConsoleOutFile", "Save script");
+						"org.orbisgis.core.ui.views.sqlConsoleOutFile",
+						"Save script");
 				outfilePanel.addFilter("sql", "SQL script (*.sql)");
 
 				if (UIFactory.showDialog(outfilePanel)) {
@@ -111,7 +113,8 @@ public class ConsoleView implements IView {
 
 			public String open() throws IOException {
 				final OpenFilePanel inFilePanel = new OpenFilePanel(
-						"org.orbisgis.core.ui.views.sqlConsoleInFile", "Load script");
+						"org.orbisgis.core.ui.views.sqlConsoleInFile",
+						"Load script");
 				inFilePanel.addFilter("sql", "SQL script (*.sql)");
 
 				if (UIFactory.showDialog(inFilePanel)) {
@@ -227,7 +230,8 @@ public class ConsoleView implements IView {
 				}
 
 				MapContext vc = ((MapContextManager) Services
-						.getService(MapContextManager.class)).getActiveMapContext();
+						.getService(MapContextManager.class))
+						.getActiveMapContext();
 
 				DataManager dataManager = (DataManager) Services
 						.getService(DataManager.class);
@@ -257,15 +261,14 @@ public class ConsoleView implements IView {
 								break;
 							}
 
-							if (spatial) {
+							if (spatial && vc != null) {
 
 								try {
 									final ILayer layer = dataManager
 											.createLayer(ds);
-									if (vc != null) {
-										vc.getLayerModel()
-												.insertLayer(layer, 0);
-									}
+
+									vc.getLayerModel().insertLayer(layer, 0);
+
 								} catch (LayerException e) {
 									Services.getErrorManager().error(
 											"Impossible to create the layer:"
@@ -273,18 +276,38 @@ public class ConsoleView implements IView {
 									break;
 								}
 							} else {
-								final JDialog dlg = new JDialog();
 
-								dlg.setTitle("Result from : "
-										+ instruction.getSQL());
-								dlg.setModal(true);
-								dlg
-										.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+								/*This code is from OrbisGIS fork GearScape.
+								*http://forge.osor.eu/projects/gearscape/
+								*date : 24/09/2009
+								*/
+
 								ds.open();
-								dlg.getContentPane().add(new Table(ds));
-								dlg.pack();
-								dlg.setVisible(true);
+								StringBuilder aux = new StringBuilder();
+								int fc = ds.getMetadata().getFieldCount();
+								int rc = (int) ds.getRowCount();
+
+								for (int j = 0; j < fc; j++) {
+									aux.append(ds.getFieldName(j)).append("\t");
+								}
+								aux.append("\n");
+								for (int row = 0; row < rc; row++) {
+									for (int j = 0; j < fc; j++) {
+										aux.append(ds.getFieldValue(row, j))
+												.append("\t");
+									}
+									aux.append("\n");
+									if (row > 100) {
+										aux.append("and more... total " + rc
+												+ " rows");
+										break;
+									}
+								}
 								ds.close();
+
+								OutputManager om = Services
+										.getService(OutputManager.class);
+								om.println(aux.toString());
 							}
 						} else {
 							instruction.execute(pm);
