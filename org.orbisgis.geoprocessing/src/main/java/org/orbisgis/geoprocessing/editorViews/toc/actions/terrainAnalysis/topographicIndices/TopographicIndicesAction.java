@@ -73,7 +73,6 @@ public class TopographicIndicesAction extends AbstractGray16And32Process
 
 	private MultiInputPanel mip;
 
-	private ArrayList<Integer> indexIndice;
 
 	private MapContext mapContext;
 
