@@ -37,6 +37,7 @@
 package org.gdms.sql.strategies;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import org.gdms.data.DataSourceCreationException;
 import org.gdms.data.DataSourceFactory;
@@ -74,6 +75,7 @@ import org.gdms.sql.parser.ASTSQLExistsClause;
 import org.gdms.sql.parser.ASTSQLFunction;
 import org.gdms.sql.parser.ASTSQLGroupBy;
 import org.gdms.sql.parser.ASTSQLId;
+import org.gdms.sql.parser.ASTSQLIdSequence;
 import org.gdms.sql.parser.ASTSQLInClause;
 import org.gdms.sql.parser.ASTSQLInsert;
 import org.gdms.sql.parser.ASTSQLIsClause;
@@ -89,6 +91,9 @@ import org.gdms.sql.parser.ASTSQLRightJoinClause;
 import org.gdms.sql.parser.ASTSQLSelect;
 import org.gdms.sql.parser.ASTSQLSelectAllCols;
 import org.gdms.sql.parser.ASTSQLSelectAllColsInTable;
+import org.gdms.sql.parser.ASTSQLSelectAllInTableModifier;
+import org.gdms.sql.parser.ASTSQLSelectAllModifier;
+import org.gdms.sql.parser.ASTSQLSelectAllModifierExcept;
 import org.gdms.sql.parser.ASTSQLSelectCols;
 import org.gdms.sql.parser.ASTSQLSelectLimit;
 import org.gdms.sql.parser.ASTSQLSelectList;
@@ -105,6 +110,8 @@ import org.gdms.sql.parser.Node;
 import org.gdms.sql.parser.SQLEngineConstants;
 import org.gdms.sql.parser.SimpleNode;
 import org.gdms.sql.parser.Token;
+import org.gdms.sql.strategies.ProjectionOp.AbstractStarElement;
+import org.gdms.sql.strategies.ProjectionOp.StarElement;
 
 public class LogicTreeBuilder {
 
@@ -487,10 +494,15 @@ public class LogicTreeBuilder {
 					}
 					ret.addExpr(expression, alias);
 				} else if (childNode instanceof ASTSQLSelectAllCols) {
-					ret.addStar();
+					ProjectionOp.StarElement star = new StarElement();
+					fillStar(star, childNode);
+					ret.addSelectElement(star);
 				} else if (childNode instanceof ASTSQLSelectAllColsInTable) {
 					String tableName = getId(childNode.jjtGetChild(0));
-					ret.addStarOf(tableName);
+					ProjectionOp.TableStarElement star = new ProjectionOp.TableStarElement(
+							tableName);
+					fillStar(star, childNode);
+					ret.addSelectElement(star);
 				}
 			}
 			return ret;
@@ -851,6 +863,41 @@ public class LogicTreeBuilder {
 	private interface OperatorFactory {
 		Expression instantiateOperator(String symbol, Expression left,
 				Expression right);
+	}
+
+	public void fillStar(AbstractStarElement ret, SimpleNode childNode)
+			throws SemanticException {
+		SimpleNode starModifier = getChildNode(childNode,
+				ASTSQLSelectAllModifier.class);
+		if (starModifier == null) {
+			starModifier = getChildNode(childNode,
+					ASTSQLSelectAllInTableModifier.class);
+		}
+
+		if (starModifier != null) {
+			for (int i = 0; i < starModifier.jjtGetNumChildren(); i++) {
+				SimpleNode modifier = (SimpleNode) starModifier.jjtGetChild(i);
+				if (modifier instanceof ASTSQLSelectAllModifierExcept) {
+					ret.except = new ArrayList<String>();
+					String[] idSequence = getIdSequence((ASTSQLIdSequence) modifier
+							.jjtGetChild(0));
+					ret.except.addAll(Arrays.asList(idSequence));
+				} else {
+					throw new UnsupportedOperationException("Not yet supported");
+
+				}
+			}
+		}
+	}
+
+	public String[] getIdSequence(ASTSQLIdSequence node) {
+		int idCount = node.jjtGetNumChildren();
+		String[] ret = new String[idCount];
+		for (int i = 0; i < idCount; i++) {
+			ret[i] = getId(node.jjtGetChild(i));
+		}
+
+		return ret;
 	}
 
 }

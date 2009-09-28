@@ -37,6 +37,7 @@
 package org.gdms.sql.strategies;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import org.gdms.data.metadata.Metadata;
 import org.gdms.data.types.Type;
@@ -50,6 +51,8 @@ import org.gdms.sql.evaluator.FieldContext;
 import org.gdms.sql.evaluator.FunctionOperator;
 import org.gdms.sql.function.Function;
 import org.gdms.sql.function.FunctionManager;
+import org.gdms.sql.strategies.ProjectionOp.AbstractStarElement;
+import org.gdms.sql.strategies.ProjectionOp.SelectElement;
 
 public abstract class AbstractExpressionOperator extends AbstractOperator {
 
@@ -72,7 +75,7 @@ public abstract class AbstractExpressionOperator extends AbstractOperator {
 	/**
 	 * Resolves the field references setting the index in the metadata of the
 	 * nearest child operator that implements ChangesMetadata
-	 * 
+	 *
 	 * @see org.gdms.sql.strategies.AbstractOperator#validateFieldReferences()
 	 */
 	public void validateFieldReferences() throws SemanticException,
@@ -106,7 +109,9 @@ public abstract class AbstractExpressionOperator extends AbstractOperator {
 	}
 
 	protected void expandStar(ArrayList<Expression> expressions,
-			ArrayList<String> aliases, String tableName)
+			HashMap<Expression, SelectElement> expressionSelectElement,
+			ArrayList<String> aliases, String tableName,
+			AbstractStarElement star)
 			throws DriverException, SemanticException {
 		String[] tableNames;
 		if (tableName == null) {
@@ -114,12 +119,38 @@ public abstract class AbstractExpressionOperator extends AbstractOperator {
 		} else {
 			tableNames = new String[] { tableName };
 		}
+
+		boolean[] exceptUsed = new boolean[star.except.size()];
 		for (String table : tableNames) {
 			Metadata m = getBranchMetadata(table);
 			if (m != null) {
 				for (int i = 0; i < m.getFieldCount(); i++) {
-					expressions.add(new Field(table, m.getFieldName(i)));
-					aliases.add(null);
+					String fieldName = m.getFieldName(i);
+					if (star.except.contains(fieldName)) {
+						int exceptFieldIndex = star.except
+								.indexOf(fieldName);
+						if (exceptUsed[exceptFieldIndex]) {
+							throw new SemanticException(
+									"Ambiguous excluded field: "
+											+ fieldName);
+						}
+						exceptUsed[exceptFieldIndex] = true;
+					} else {
+						Field field = new Field(table, fieldName);
+						expressions.add(field);
+						expressionSelectElement.put(field, star);
+						if (star.prefix != null) {
+							aliases.add(star.prefix + fieldName);
+						} else {
+							aliases.add(fieldName);
+						}
+					}
+				}
+				for (int i = 0; i < exceptUsed.length; i++) {
+					if (!exceptUsed[i]) {
+						throw new SemanticException("Exception field '"
+								+ star.except.get(i) + "' does not exist");
+					}
 				}
 			} else {
 				throw new SemanticException("Table reference not found: "
@@ -131,7 +162,7 @@ public abstract class AbstractExpressionOperator extends AbstractOperator {
 	/**
 	 * Sets the field context for all the field references and expands the '*'
 	 * in functions
-	 * 
+	 *
 	 * @see org.gdms.sql.strategies.AbstractOperator#prepareValidation()
 	 */
 	public void prepareValidation() throws DriverException, SemanticException {
@@ -154,7 +185,7 @@ public abstract class AbstractExpressionOperator extends AbstractOperator {
 			field.setFieldContext(fieldContext);
 		}
 
-		// Expand '*' in all function references
+		/*// Expand '*' in all function references
 		for (Expression expression : getExpressions()) {
 			FunctionOperator[] functionReferences = expression
 					.getFunctionReferences();
@@ -173,13 +204,13 @@ public abstract class AbstractExpressionOperator extends AbstractOperator {
 							.replaceStarBy(arguments.toArray(new Expression[0]));
 				}
 			}
-		}
+		}*/
 
 	}
 
 	/**
 	 * Validates the types of the expressions in the operator
-	 * 
+	 *
 	 * @see org.gdms.sql.strategies.AbstractOperator#validateExpressionTypes()
 	 */
 	@Override
@@ -194,7 +225,7 @@ public abstract class AbstractExpressionOperator extends AbstractOperator {
 
 	/**
 	 * Checks that the functions exist
-	 * 
+	 *
 	 * @see org.gdms.sql.strategies.AbstractOperator#validateFunctionReferences()
 	 */
 	@Override

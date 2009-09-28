@@ -37,6 +37,7 @@
 package org.gdms.sql.strategies;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 
 import org.gdms.data.ExecutionException;
@@ -143,13 +144,15 @@ public class ProjectionOp extends AbstractExpressionOperator implements
 		// Replace the select elements by Expression instances
 		ArrayList<Expression> expressions = new ArrayList<Expression>();
 		ArrayList<String> aliases = new ArrayList<String>();
+		HashMap<Expression, SelectElement> expressionSelectElement = new HashMap<Expression, SelectElement>();
 		for (SelectElement element : selectElements) {
 			if (element instanceof StarElement) {
-				// populateWithChildOperatorMetadata(expressions, aliases);
-				expandStar(expressions, aliases, null);
+				expandStar(expressions, expressionSelectElement, aliases, null,
+						(AbstractStarElement) element);
 			} else if (element instanceof TableStarElement) {
 				String tableName = ((TableStarElement) element).tableName;
-				expandStar(expressions, aliases, tableName);
+				expandStar(expressions, expressionSelectElement, aliases,
+						tableName, (AbstractStarElement) element);
 			} else if (element instanceof ExpressionElement) {
 				ExpressionElement expressionElement = (ExpressionElement) element;
 				expressions.add(expressionElement.expr);
@@ -194,7 +197,7 @@ public class ProjectionOp extends AbstractExpressionOperator implements
 	 * field reference its name is used. Finally, if a complex expression is
 	 * found and there is no alias, the string 'unknown' concatenated with the
 	 * index of the field in the resulting metadata is used
-	 * 
+	 *
 	 * @see org.gdms.sql.strategies.Operator#getResultMetadata()
 	 */
 	public Metadata getResultMetadata() throws DriverException {
@@ -239,7 +242,7 @@ public class ProjectionOp extends AbstractExpressionOperator implements
 		}
 	}
 
-	private interface SelectElement {
+	public static interface SelectElement {
 	}
 
 	private class ExpressionElement implements SelectElement {
@@ -253,7 +256,13 @@ public class ProjectionOp extends AbstractExpressionOperator implements
 		}
 	}
 
-	private class TableStarElement implements SelectElement {
+	public static abstract class AbstractStarElement implements SelectElement {
+		ArrayList<String> except = new ArrayList<String>();
+		String prefix = null;
+	}
+
+	public static class TableStarElement extends AbstractStarElement implements
+			SelectElement {
 		String tableName;
 
 		public TableStarElement(String tableName) {
@@ -262,7 +271,8 @@ public class ProjectionOp extends AbstractExpressionOperator implements
 		}
 	}
 
-	private class StarElement implements SelectElement {
+	public static class StarElement extends AbstractStarElement implements
+			SelectElement {
 	}
 
 	public boolean isAggregated() {
@@ -301,7 +311,7 @@ public class ProjectionOp extends AbstractExpressionOperator implements
 	 * Returns the aggregated expressions to be added in the groupby operator
 	 * further down. This method assumes the instruction contains at least an
 	 * aggregated function or a group by clause
-	 * 
+	 *
 	 * @param groupByFields
 	 *            The names used in the group by clause
 	 * @return
@@ -412,7 +422,8 @@ public class ProjectionOp extends AbstractExpressionOperator implements
 					} else {
 						if (exprs[i] instanceof Field) {
 							Field expr = (Field) exprs[i];
-							if (field.getFieldName().equals(expr.getFieldName())) {
+							if (field.getFieldName()
+									.equals(expr.getFieldName())) {
 								fieldIndex = returnIIfNotAmbiguous(field,
 										fieldIndex, i);
 							}
@@ -487,7 +498,7 @@ public class ProjectionOp extends AbstractExpressionOperator implements
 
 	/**
 	 * Adds an internal field. This field will be used by
-	 * 
+	 *
 	 * @param newField
 	 * @return
 	 */
@@ -520,6 +531,11 @@ public class ProjectionOp extends AbstractExpressionOperator implements
 	public void transportSelection(SelectionOp op) {
 		throw new UnsupportedOperationException("Nested "
 				+ "instructions not yet allowed");
+	}
+
+
+	public void addSelectElement(SelectElement elem) {
+		selectElements.add(elem);
 	}
 
 }
