@@ -53,6 +53,7 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import javax.swing.JToolBar;
 
 import org.gdms.data.types.GeometryConstraint;
 import org.orbisgis.core.Services;
@@ -87,8 +88,8 @@ public class LegendsPanel extends JPanel implements UIPanel, LegendContext {
 	private JButton btnCurrentScaleToMax;
 
 	public void init(MapTransform mt, GeometryConstraint gc, Legend[] legends,
-			ILegendPanel[] availableLegends,
-			ISymbolEditor[] availableEditors, ILayer layer) {
+			ILegendPanel[] availableLegends, ISymbolEditor[] availableEditors,
+			ILayer layer) {
 		this.mt = mt;
 		this.gc = gc;
 		this.layer = layer;
@@ -139,6 +140,7 @@ public class LegendsPanel extends JPanel implements UIPanel, LegendContext {
 
 	private void initializeComponents() {
 		this.setLayout(new BorderLayout());
+		this.add(getLegendToolBar(), BorderLayout.NORTH);
 		legendList = new LegendList(this);
 		this.add(legendList, BorderLayout.WEST);
 		JPanel right = new JPanel();
@@ -147,6 +149,13 @@ public class LegendsPanel extends JPanel implements UIPanel, LegendContext {
 		right.add(getScalePanel(), BorderLayout.SOUTH);
 		this.add(right, BorderLayout.CENTER);
 
+	}
+
+	private JToolBar getLegendToolBar() {
+		JToolBar toolBar = new JToolBar();
+		toolBar.add(new JLabel("Layer : " + layer.getName()));
+		toolBar.setFloatable(false);
+		return toolBar;
 	}
 
 	private Component getScalePanel() {
@@ -341,7 +350,7 @@ public class LegendsPanel extends JPanel implements UIPanel, LegendContext {
 	private void addLegend(LegendElement le) {
 		legends.add(le);
 		pnlContainer.add(le.getComponent(), le.getId());
-//		le.getLegendPanel().initialize(this);
+		// le.getLegendPanel().initialize(this);
 		le.getLegendPanel().setLegend(getLegend(le));
 		refresh();
 	}
