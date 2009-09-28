@@ -71,7 +71,7 @@ public class DataSourceFactoryTests extends SourceTest {
 
 	/**
 	 * Tests the DataSource.remove method
-	 * 
+	 *
 	 * @throws RuntimeException
 	 *             DOCUMENT ME!
 	 */
@@ -98,7 +98,7 @@ public class DataSourceFactoryTests extends SourceTest {
 
 	/**
 	 * Tests the DataSourceFactory.removeAllDataSources method
-	 * 
+	 *
 	 * @throws Exception
 	 */
 	public void testRemoveAllDataSources() throws Exception {
@@ -108,7 +108,7 @@ public class DataSourceFactoryTests extends SourceTest {
 
 	/**
 	 * Tests the naming of operation layer datasource
-	 * 
+	 *
 	 * @throws Throwable
 	 *             DOCUMENT ME!
 	 */
@@ -324,7 +324,7 @@ public class DataSourceFactoryTests extends SourceTest {
 
 	public void testSQLSources() throws Exception {
 		dsf.getSourceManager().register("sql",
-				"select * from \"" + super.getAnyNonSpatialResource() + "\"");
+				"select * from " + super.getAnyNonSpatialResource() + ";");
 		DataSource ds = dsf.getDataSource("sql");
 		assertTrue((ds.getSource().getType() & SourceManager.SQL) == SourceManager.SQL);
 		assertTrue(ds.isEditable() == false);
