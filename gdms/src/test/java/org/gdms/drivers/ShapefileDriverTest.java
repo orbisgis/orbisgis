@@ -96,7 +96,7 @@ public class ShapefileDriverTest extends TestCase {
 		dsf.getSourceManager().register(
 				"big",
 				new FileSourceDefinition(new File(SourceTest.internalData
-						+ "shp/bigshape3D/point3D.shp")));
+						+ "landcover2000.shp")));
 		DataSource ds = dsf.getDataSource("big");
 		ds.open();
 		ds.close();
