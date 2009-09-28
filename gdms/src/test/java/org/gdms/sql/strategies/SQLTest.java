@@ -70,6 +70,51 @@ public class SQLTest extends SourceTest {
 		dsf.executeSQL("selecT REGisteR('memory')");
 	}
 
+	public void testExcept() throws Exception {
+		dsf.getSourceManager().register("landcover2000",
+				new File(internalData + "landcover2000.shp"));
+
+		dsf.executeSQL("select register('/tmp/test.csv','temp')");
+		dsf.executeSQL("create table temp as select *{except type}  from landcover2000");
+		DataSource dsOut = dsf.getDataSource("temp");
+
+		dsOut.open();
+		assertTrue(dsOut.getFieldIndexByName("type") == -1);
+		dsOut.close();
+
+	}
+
+
+	public void testExceptList() throws Exception {
+		dsf.getSourceManager().register("landcover2000",
+				new File(internalData + "landcover2000.shp"));
+
+		dsf.executeSQL("select register('/tmp/test.csv','temp')");
+		dsf.executeSQL("create table temp as select *{except type, the_geom}  from landcover2000");
+		DataSource dsOut = dsf.getDataSource("temp");
+
+		dsOut.open();
+		assertTrue(dsOut.getFieldIndexByName("type") == -1);
+		assertTrue(dsOut.getFieldIndexByName("the_geom") == -1);
+		dsOut.close();
+
+	}
+
+	public void testExceptAlias() throws Exception {
+		dsf.getSourceManager().register("landcover2000",
+				new File(internalData + "landcover2000.shp"));
+
+		dsf.executeSQL("select register('/tmp/test.csv','temp')");
+		dsf.executeSQL("create table temp as select a.*{except the_geom}  from landcover2000 a");
+		DataSource dsOut = dsf.getDataSource("temp");
+
+		dsOut.open();
+		assertTrue(dsOut.getFieldIndexByName("the_geom") == -1);
+		dsOut.close();
+
+	}
+
+
 	private void testIsClause(String ds) throws Exception {
 		String fieldName = super.getContainingNullFieldNameFor(ds);
 		DataSource d = dsf.getDataSourceFromSQL("select * from " + ds
@@ -492,12 +537,8 @@ public class SQLTest extends SourceTest {
 
 	public void testSelectWhere() throws Exception {
 
-		dsf
-				.getSourceManager()
-				.register(
-						"landcover2000",
-						new File(
-								"/home/bocher/Documents/devs/orbisgis/datas2tests/shp/mediumshape2D/landcover2000.shp"));
+		dsf.getSourceManager().register("landcover2000",
+				new File(internalData + "landcover2000.shp"));
 		String query = "SELECT * FROM landcover2000 where runoff_win = 0.05";
 		DataSource ds = dsf.getDataSourceFromSQL(query);
 		ds.open();
@@ -590,7 +631,6 @@ public class SQLTest extends SourceTest {
 		ds.close();
 		dsIn.close();
 	}
-
 
 	public void testDropAsView() throws Exception {
 		String dsName = super.getAnySpatialResource();
