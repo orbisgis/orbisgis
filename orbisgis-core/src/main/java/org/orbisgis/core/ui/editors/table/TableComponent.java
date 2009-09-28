@@ -199,6 +199,10 @@ public class TableComponent extends JPanel {
 				if (e.getKeyCode() == KeyEvent.VK_ENTER) {
 					final String text = txtFilter.getText();
 					if (text.length() == 0) {
+						if (selectedRowsCount > 0) {
+							selection.clearSelection();
+							updateRowsMessage();
+						}
 
 					} else {
 						findAValue(text);
