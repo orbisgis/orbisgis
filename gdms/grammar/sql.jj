@@ -85,6 +85,7 @@ TOKEN :  /* Keywords */
   | < DESC: "desc" >
   | < DISTINCT: "distinct" >
   | < DROP: "drop" >
+  | <EXCEPT:"except">
   | < FROM: "from" >
   | < GROUP: "group" >
   | < HAVING: "having" >
@@ -303,6 +304,12 @@ void SQLId() :
   <ID>
 }
 
+void SQLIdSequence() :
+{}
+{
+	SQLId() (LOOKAHEAD(2) "," SQLId())*
+}
+
 void SQLInClause() :
 {}
 {
@@ -320,8 +327,7 @@ void SQLInsert() :
   SQLTableRef()
   [
     "("
-    SQLId()
-    ("," SQLId())*
+    SQLIdSequence()
     ")"
   ]
   <VALUES>
@@ -470,13 +476,37 @@ void SQLSelect() :
 void SQLSelectAllCols() :
 {}
 {
-  "*"
+   "*" [ SQLSelectAllModifier() ]
+}
+
+void SQLSelectAllModifier() :
+{}
+{
+
+    SQLSelectAllModifierExcept()
+
+}
+
+void SQLSelectAllModifierExcept() :
+{}
+{
+"{"
+  <EXCEPT> [SQLIdSequence()]
+  "}"
+}
+
+
+void SQLSelectAllInTableModifier() :
+{}
+{
+     SQLSelectAllModifierExcept()
+
 }
 
 void SQLSelectAllColsInTable() :
 {}
 {
-  SQLId() <DOT> "*"
+  SQLId() <DOT> "*" [ SQLSelectAllInTableModifier() ]
 }
 
 void SQLSelectCols() :
@@ -667,7 +697,7 @@ void SQLCreateArgsList() :
 {}
 {
 	SQLColumnDefinition() (LOOKAHEAD(2) "," SQLColumnDefinition() ) *
-	[ "," <PRIMARY> <KEY> "(" SQLId() ( "," SQLId() ) * ")" ]
+	[ "," <PRIMARY> <KEY> "(" SQLIdSequence() ")" ]
 }
 
 void SQLColumnDefinition() :
