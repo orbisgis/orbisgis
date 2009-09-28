@@ -1,12 +1,15 @@
 package org.orbisgis.core.ui.editors.table;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.FlowLayout;
 import java.awt.Insets;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.text.ParseException;
@@ -25,6 +28,7 @@ import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JTable;
+import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingUtilities;
 import javax.swing.event.ListSelectionEvent;
@@ -35,7 +39,6 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
-
 import org.gdms.data.DataSource;
 import org.gdms.data.edition.EditionEvent;
 import org.gdms.data.edition.EditionListener;
@@ -78,7 +81,7 @@ public class TableComponent extends JPanel {
 	// Swing components
 	private javax.swing.JScrollPane jScrollPane = null;
 	private JTable table = null;
-	private JLabel messageLabel = null;
+	private JLabel nbRowsSelectedLabel = null;
 
 	// Model
 	private int selectedColumn = -1;
@@ -87,6 +90,7 @@ public class TableComponent extends JPanel {
 	private ArrayList<Integer> indexes = null;
 	private Selection selection;
 	private TableEditableElement element;
+	private int selectedRowsCount;
 
 	// listeners
 	private ActionListener menuListener = new PopupActionListener();
@@ -143,12 +147,11 @@ public class TableComponent extends JPanel {
 													.get(selectedRows[i]);
 										}
 									}
+									selectedRowsCount = selectedRows.length;
 									selection.setSelectedRows(selectedRows);
 									managingSelection = false;
-									messageLabel.setText("Row selected : "
-											+ selectedRows.length + " / "
-											+ table.getRowCount()
-											+ " total rows");
+
+									updateRowsMessage();
 
 								}
 							}
@@ -171,17 +174,49 @@ public class TableComponent extends JPanel {
 		final FlowLayout flowLayout = new FlowLayout();
 		flowLayout.setAlignment(FlowLayout.LEFT);
 		informationPanel.setLayout(flowLayout);
-		informationPanel.add(getLabelInformation());
-
+		informationPanel.add(getJTextField());
+		informationPanel.add(getNbRowsInformation());
 		return informationPanel;
 
 	}
 
-	private JLabel getLabelInformation() {
-		JLabel labelMessage = new JLabel();
-		labelMessage.setText("Row number : ");
-		messageLabel = labelMessage;
-		return labelMessage;
+	private JLabel getNbRowsInformation() {
+		JLabel nbRowsMessage = new JLabel();
+		nbRowsMessage.setText("Row number : ");
+		nbRowsSelectedLabel = nbRowsMessage;
+		return nbRowsMessage;
+	}
+
+	private JTextField getJTextField() {
+		final JTextField txtFilter = new JTextField(20);
+		txtFilter.setBackground(Color.ORANGE);
+		txtFilter.setText("Put a text here... +  Enter");
+		txtFilter.setToolTipText("Press enter to find the value");
+
+		txtFilter.addKeyListener(new KeyListener() {
+
+			public void keyPressed(KeyEvent e) {
+				if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+					final String text = txtFilter.getText();
+					if (text.length() == 0) {
+
+					} else {
+						findAValue(text);
+
+					}
+				}
+			}
+
+			public void keyReleased(KeyEvent e) {
+			}
+
+			public void keyTyped(KeyEvent e) {
+			}
+
+		});
+
+		return txtFilter;
+
 	}
 
 	/**
@@ -246,7 +281,7 @@ public class TableComponent extends JPanel {
 			this.selection = element.getSelection();
 			this.selection.setSelectionListener(selectionListener);
 			updateTableSelection();
-			messageLabel.setText("Row number : " + tableModel.getRowCount());
+			updateRowsMessage();
 
 		}
 	}
@@ -379,7 +414,7 @@ public class TableComponent extends JPanel {
 			}
 			model.setValueIsAdjusting(false);
 			managingSelection = false;
-			messageLabel.setText("Row number : " + tableModel.getRowCount());
+			updateRowsMessage();
 		}
 	}
 
@@ -394,6 +429,77 @@ public class TableComponent extends JPanel {
 		updateTableSelection();
 
 		table.scrollRectToVisible(r);
+	}
+
+	public void updateRowsMessage() {
+
+		if (selectedRowsCount > 0) {
+			nbRowsSelectedLabel.setText("Row selected : " + selectedRowsCount
+					+ " / " + table.getRowCount() + " total rows");
+		} else {
+			nbRowsSelectedLabel.setText("Row number : "
+					+ tableModel.getRowCount());
+		}
+	}
+
+	public void findAValue(String value) {
+
+		try {
+
+			HashSet<Integer> selectedRowSet = new HashSet<Integer>();
+
+			indexes = new ArrayList<Integer>();
+
+			Metadata metadata = dataSource.getMetadata();
+
+			int fieldsCount = metadata.getFieldCount();
+
+			long rowCount = dataSource.getRowCount();
+
+			for (int i = 0; i < rowCount; i++) {
+
+				for (int j = 0; j < fieldsCount; j++) {
+
+					Type type = dataSource.getFieldType(j);
+
+					if (type.getTypeCode() != Type.GEOMETRY) {
+
+						String dsValue = dataSource.getFieldValue(i, j)
+								.toString();
+
+						if (dsValue.equalsIgnoreCase(value)) {
+							selectedRowSet.add(i);
+							indexes.add(i);
+						}
+					}
+
+				}
+
+			}
+
+			for (int i = 0; i < tableModel.getRowCount(); i++) {
+				if (!selectedRowSet.contains(i)) {
+					indexes.add(i);
+				}
+			}
+
+			Integer[] selected = selectedRowSet.toArray(new Integer[0]);
+
+			selectedRowsCount = selected.length;
+			int[] selectedInt = new int[selectedRowsCount];
+			for (int i = 0; i < selected.length; i++) {
+
+				selectedInt[i] = selected[i];
+
+			}
+
+			selection.setSelectedRows(selectedInt);
+			fireTableDataChanged();
+
+		} catch (DriverException e) {
+			e.printStackTrace();
+		}
+
 	}
 
 	public void moveSelectionUp() {
@@ -550,13 +656,13 @@ public class TableComponent extends JPanel {
 					.getIcon("text_letterspacing.png"), OPTIMALWIDTH);
 			addMenu(pop, "Set width", null, SETWIDTH);
 			pop.addSeparator();
-			if (tableModel.getColumnType(selectedColumn).getTypeCode()!= Type.GEOMETRY){
-			addMenu(pop, "Sort ascending", IconLoader.getIcon("thumb_up.png"),
-					SORTUP);
-			addMenu(pop, "Sort descending", IconLoader
-					.getIcon("thumb_down.png"), SORTDOWN);
-			addMenu(pop, "No Sort", IconLoader.getIcon("table_refresh.png"),
-					NOSORT);
+			if (tableModel.getColumnType(selectedColumn).getTypeCode() != Type.GEOMETRY) {
+				addMenu(pop, "Sort ascending", IconLoader
+						.getIcon("thumb_up.png"), SORTUP);
+				addMenu(pop, "Sort descending", IconLoader
+						.getIcon("thumb_down.png"), SORTDOWN);
+				addMenu(pop, "No Sort",
+						IconLoader.getIcon("table_refresh.png"), NOSORT);
 			}
 			return pop;
 		}
