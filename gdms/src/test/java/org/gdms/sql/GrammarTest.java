@@ -57,6 +57,11 @@ public class GrammarTest extends TestCase {
 		}
 	}
 
+	public void testExcept() throws Exception {
+		parse("select *{except myfield} from gis;");
+		parse("select a.*{except field} from gis a;");
+	}
+
 	public void testOrderBy() throws Exception {
 		parse("select * from gis where a=3 order by a;");
 		parse("select * from gis order by area(the_geom);");
