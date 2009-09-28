@@ -155,7 +155,6 @@ public class SourceTest extends BaseTest {
 
 	private static void createDB() throws Exception {
 		ArrayList<TestSourceData> sources = new ArrayList<TestSourceData>();
-		// sources.add(new TestSourceData("point3d", null, false));
 		sources.add(new TestSourceData("hedgerow", null, false));
 		sources.add(new TestSourceData("cantonsdbf", null, false));
 		sources.add(new TestSourceData("pghedgerow", null, false));
