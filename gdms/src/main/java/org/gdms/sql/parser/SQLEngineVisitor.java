@@ -18,6 +18,7 @@ public interface SQLEngineVisitor
   public Object visit(ASTSQLGroupBy node, Object data);
   public Object visit(ASTSQLGroupByList node, Object data);
   public Object visit(ASTSQLId node, Object data);
+  public Object visit(ASTSQLIdSequence node, Object data);
   public Object visit(ASTSQLInClause node, Object data);
   public Object visit(ASTSQLInsert node, Object data);
   public Object visit(ASTSQLIsClause node, Object data);
@@ -37,6 +38,9 @@ public interface SQLEngineVisitor
   public Object visit(ASTSQLScript node, Object data);
   public Object visit(ASTSQLSelect node, Object data);
   public Object visit(ASTSQLSelectAllCols node, Object data);
+  public Object visit(ASTSQLSelectAllModifier node, Object data);
+  public Object visit(ASTSQLSelectAllModifierExcept node, Object data);
+  public Object visit(ASTSQLSelectAllInTableModifier node, Object data);
   public Object visit(ASTSQLSelectAllColsInTable node, Object data);
   public Object visit(ASTSQLSelectCols node, Object data);
   public Object visit(ASTSQLSelectLimit node, Object data);
@@ -62,4 +66,4 @@ public interface SQLEngineVisitor
   public Object visit(ASTSQLTypeArgLiteral node, Object data);
   public Object visit(ASTSQLTypeArgs node, Object data);
 }
-/* JavaCC - OriginalChecksum=a0505023cda1cc23209f70da81ed82d0 (do not edit this line) */
+/* JavaCC - OriginalChecksum=a0249b1d77c9f4eab3de240953c5d15a (do not edit this line) */

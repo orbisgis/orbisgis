@@ -17,49 +17,53 @@ public interface SQLEngineTreeConstants
   public int JJTSQLGROUPBY = 11;
   public int JJTSQLGROUPBYLIST = 12;
   public int JJTSQLID = 13;
-  public int JJTSQLINCLAUSE = 14;
-  public int JJTSQLINSERT = 15;
-  public int JJTSQLISCLAUSE = 16;
-  public int JJTSQLLEFTJOINCLAUSE = 17;
-  public int JJTSQLLIKECLAUSE = 18;
-  public int JJTSQLLITERAL = 19;
-  public int JJTSQLNOTEXPR = 20;
-  public int JJTSQLORDERBY = 21;
-  public int JJTSQLORDERBYELEM = 22;
-  public int JJTSQLORDERBYLIST = 23;
-  public int JJTSQLORDERDIRECTION = 24;
-  public int JJTSQLOREXPR = 25;
-  public int JJTSQLPATTERN = 26;
-  public int JJTSQLPRODUCTEXPR = 27;
-  public int JJTSQLPRODUCTSYMBOL = 28;
-  public int JJTSQLRIGHTJOINCLAUSE = 29;
-  public int JJTSQLSCRIPT = 30;
-  public int JJTSQLSELECT = 31;
-  public int JJTSQLSELECTALLCOLS = 32;
-  public int JJTSQLSELECTALLCOLSINTABLE = 33;
-  public int JJTSQLSELECTCOLS = 34;
-  public int JJTSQLSELECTLIMIT = 35;
-  public int JJTSQLSELECTLIST = 36;
-  public int JJTSQLSELECTOFFSET = 37;
-  public int JJTSQLSTATEMENT = 38;
-  public int JJTSQLSUMEXPR = 39;
-  public int JJTSQLSUMSYMBOL = 40;
-  public int JJTSQLTABLELIST = 41;
-  public int JJTSQLTABLEREF = 42;
-  public int JJTSQLTERM = 43;
-  public int JJTSQLUNARYEXPR = 44;
-  public int JJTSQLUNION = 45;
-  public int JJTSQLUPDATE = 46;
-  public int JJTSQLUPDATEASSIGNMENT = 47;
-  public int JJTSQLLVALUEELEMENT = 48;
-  public int JJTSQLVALUELIST = 49;
-  public int JJTSQLWHERE = 50;
-  public int JJTSQLCREATE = 51;
-  public int JJTSQLCREATEARGSLIST = 52;
-  public int JJTSQLCOLUMNDEFINITION = 53;
-  public int JJTSQLDATATYPECONSTRAINT = 54;
-  public int JJTSQLTYPEARGLITERAL = 55;
-  public int JJTSQLTYPEARGS = 56;
+  public int JJTSQLIDSEQUENCE = 14;
+  public int JJTSQLINCLAUSE = 15;
+  public int JJTSQLINSERT = 16;
+  public int JJTSQLISCLAUSE = 17;
+  public int JJTSQLLEFTJOINCLAUSE = 18;
+  public int JJTSQLLIKECLAUSE = 19;
+  public int JJTSQLLITERAL = 20;
+  public int JJTSQLNOTEXPR = 21;
+  public int JJTSQLORDERBY = 22;
+  public int JJTSQLORDERBYELEM = 23;
+  public int JJTSQLORDERBYLIST = 24;
+  public int JJTSQLORDERDIRECTION = 25;
+  public int JJTSQLOREXPR = 26;
+  public int JJTSQLPATTERN = 27;
+  public int JJTSQLPRODUCTEXPR = 28;
+  public int JJTSQLPRODUCTSYMBOL = 29;
+  public int JJTSQLRIGHTJOINCLAUSE = 30;
+  public int JJTSQLSCRIPT = 31;
+  public int JJTSQLSELECT = 32;
+  public int JJTSQLSELECTALLCOLS = 33;
+  public int JJTSQLSELECTALLMODIFIER = 34;
+  public int JJTSQLSELECTALLMODIFIEREXCEPT = 35;
+  public int JJTSQLSELECTALLINTABLEMODIFIER = 36;
+  public int JJTSQLSELECTALLCOLSINTABLE = 37;
+  public int JJTSQLSELECTCOLS = 38;
+  public int JJTSQLSELECTLIMIT = 39;
+  public int JJTSQLSELECTLIST = 40;
+  public int JJTSQLSELECTOFFSET = 41;
+  public int JJTSQLSTATEMENT = 42;
+  public int JJTSQLSUMEXPR = 43;
+  public int JJTSQLSUMSYMBOL = 44;
+  public int JJTSQLTABLELIST = 45;
+  public int JJTSQLTABLEREF = 46;
+  public int JJTSQLTERM = 47;
+  public int JJTSQLUNARYEXPR = 48;
+  public int JJTSQLUNION = 49;
+  public int JJTSQLUPDATE = 50;
+  public int JJTSQLUPDATEASSIGNMENT = 51;
+  public int JJTSQLLVALUEELEMENT = 52;
+  public int JJTSQLVALUELIST = 53;
+  public int JJTSQLWHERE = 54;
+  public int JJTSQLCREATE = 55;
+  public int JJTSQLCREATEARGSLIST = 56;
+  public int JJTSQLCOLUMNDEFINITION = 57;
+  public int JJTSQLDATATYPECONSTRAINT = 58;
+  public int JJTSQLTYPEARGLITERAL = 59;
+  public int JJTSQLTYPEARGS = 60;
 
 
   public String[] jjtNodeName = {
@@ -77,6 +81,7 @@ public interface SQLEngineTreeConstants
     "SQLGroupBy",
     "SQLGroupByList",
     "SQLId",
+    "SQLIdSequence",
     "SQLInClause",
     "SQLInsert",
     "SQLIsClause",
@@ -96,6 +101,9 @@ public interface SQLEngineTreeConstants
     "SQLScript",
     "SQLSelect",
     "SQLSelectAllCols",
+    "SQLSelectAllModifier",
+    "SQLSelectAllModifierExcept",
+    "SQLSelectAllInTableModifier",
     "SQLSelectAllColsInTable",
     "SQLSelectCols",
     "SQLSelectLimit",
@@ -122,4 +130,4 @@ public interface SQLEngineTreeConstants
     "SQLTypeArgs",
   };
 }
-/* JavaCC - OriginalChecksum=486f74d1dcf044f89b98cce7a9cbe7e3 (do not edit this line) */
+/* JavaCC - OriginalChecksum=4a7b119970faa46ebe8f4aa7a0f721a8 (do not edit this line) */
