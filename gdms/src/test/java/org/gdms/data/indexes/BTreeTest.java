@@ -42,6 +42,7 @@ import java.util.ArrayList;
 
 import junit.framework.TestCase;
 
+import org.gdms.SourceTest;
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.indexes.btree.BTree;
@@ -147,13 +148,12 @@ public class BTreeTest extends TestCase {
 
 	public void testIndexRealData() throws Exception {
 		DataSourceFactory dsf = new DataSourceFactory();
-		File file = new File("../../datas2tests/"
-				+ "shp/bigshape2D/cantons.dbf");
-		dsf.getSourceManager().register("cantons", file);
+		File file = new File(SourceTest.internalData + "hedgerow.shp");
+		dsf.getSourceManager().register("hedges", file);
 		DataSource ds = dsf
-				.getDataSourceFromSQL("select * from cantons order by \"PTOT99\";");
-		File repeatedValuesFile = new File("../../datas2tests/"
-				+ "shp/mediumshape2D/landcover2000.dbf");
+				.getDataSourceFromSQL("select * from hedges order by type ;");
+		File repeatedValuesFile = new File(SourceTest.internalData
+				+ "landcover2000.dbf");
 		testIndexRealData(new DiskBTree(3, 64, false), dsf
 				.getDataSource(repeatedValuesFile), "type", 100.0);
 		setUp();
@@ -162,7 +162,7 @@ public class BTreeTest extends TestCase {
 		setUp();
 		testIndexRealData(new DiskBTree(255, 512, false), ds, "CODECANT", 100.0);
 		setUp();
-		testIndexRealData(new DiskBTree(3, 256, false), ds, "CODECANT", 1000.0);// 300.0);
+		testIndexRealData(new DiskBTree(3, 256, false), ds, "CODECANT", 1000.0);
 	}
 
 	private void testIndexRealData(BTree tree, DataSource ds, String fieldName,
