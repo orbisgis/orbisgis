@@ -48,6 +48,7 @@ import org.gdms.sql.function.alphanumeric.Count;
 import org.gdms.sql.function.alphanumeric.Max;
 import org.gdms.sql.function.alphanumeric.Min;
 import org.gdms.sql.function.alphanumeric.Pk;
+import org.gdms.sql.function.alphanumeric.ReplaceString;
 import org.gdms.sql.function.alphanumeric.StrLength;
 import org.gdms.sql.function.alphanumeric.String2BooleanFunction;
 import org.gdms.sql.function.alphanumeric.String2DateFunction;
@@ -101,11 +102,6 @@ import org.gdms.sql.function.spatial.raster.CropRaster;
 import org.gdms.sql.function.statistics.Sqrt;
 import org.gdms.sql.function.statistics.StandardDeviation;
 
-/**
- * DOCUMENT ME!
- *
- * @author Fernando Gonzalez Cortes
- */
 public class FunctionManager {
 	private static HashMap<String, Class<? extends Function>> nameFunction = new HashMap<String, Class<? extends Function>>();
 	private static ArrayList<FunctionManagerListener> listeners = new ArrayList<FunctionManagerListener>();
@@ -169,6 +165,7 @@ public class FunctionManager {
 		addFunction(CropRaster.class);
 		addFunction(MakePoint.class);
 		addFunction(MakeLine.class);
+		addFunction(ReplaceString.class);
 	}
 
 	public static void addFunctionManagerListener(
