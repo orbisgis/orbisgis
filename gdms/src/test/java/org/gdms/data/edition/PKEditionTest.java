@@ -55,7 +55,7 @@ public class PKEditionTest extends TestCase {
 
 		d.open();
 		d.setInt(0, "id", 7);
-		d.setString(0, "gis", "gisberto");
+		d.setString(0, "gis", "gilberto");
 		d.commit();
 		d.close();
 
@@ -64,7 +64,7 @@ public class PKEditionTest extends TestCase {
 		d.open();
 		assertTrue(d.getRowCount() == 1);
 		assertTrue(d.getInt(0, "id") == 7);
-		assertTrue(d.getString(0, "gis").equals("gisberto"));
+		assertTrue(d.getString(0, "gis").equals("gilberto"));
 		d.close();
 	}
 
