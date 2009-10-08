@@ -37,18 +37,14 @@
 package org.gdms.sql.function.spatial.geometry.convert;
 
 import org.gdms.data.values.Value;
-import org.gdms.data.values.ValueCollection;
 import org.gdms.data.values.ValueFactory;
+import org.gdms.geometryUtils.GeometryConverter;
 import org.gdms.sql.function.Argument;
 import org.gdms.sql.function.Arguments;
 import org.gdms.sql.function.FunctionException;
 import org.gdms.sql.function.spatial.geometry.AbstractSpatialFunction;
 
 import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.GeometryFactory;
-import com.vividsolutions.jts.geom.MultiPoint;
-
-// select id,AsWKT(the_geom),AsWKT(ToMultiPoint(the_geom)) from points;
 
 public class ToMultiPoint extends AbstractSpatialFunction {
 	public String getName() {
@@ -61,10 +57,8 @@ public class ToMultiPoint extends AbstractSpatialFunction {
 		} else {
 			final Geometry geom = args[0].getAsGeometry();
 
-			final MultiPoint multiPoint = new GeometryFactory()
-					.createMultiPoint(geom.getCoordinates());
-
-			return ValueFactory.createValue(multiPoint);
+			return ValueFactory.createValue(GeometryConverter
+					.toMultiPoint(geom));
 		}
 	}
 
