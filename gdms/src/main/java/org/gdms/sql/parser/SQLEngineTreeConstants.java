@@ -11,59 +11,68 @@ public interface SQLEngineTreeConstants
   public int JJTSQLCOMPAREOP = 5;
   public int JJTSQLDELETE = 6;
   public int JJTSQLDROP = 7;
-  public int JJTSQLEXISTSCLAUSE = 8;
-  public int JJTSQLFUNCTION = 9;
-  public int JJTSQLFUNCTIONARGS = 10;
-  public int JJTSQLGROUPBY = 11;
-  public int JJTSQLGROUPBYLIST = 12;
-  public int JJTSQLID = 13;
-  public int JJTSQLIDSEQUENCE = 14;
-  public int JJTSQLINCLAUSE = 15;
-  public int JJTSQLINSERT = 16;
-  public int JJTSQLISCLAUSE = 17;
-  public int JJTSQLLEFTJOINCLAUSE = 18;
-  public int JJTSQLLIKECLAUSE = 19;
-  public int JJTSQLLITERAL = 20;
-  public int JJTSQLNOTEXPR = 21;
-  public int JJTSQLORDERBY = 22;
-  public int JJTSQLORDERBYELEM = 23;
-  public int JJTSQLORDERBYLIST = 24;
-  public int JJTSQLORDERDIRECTION = 25;
-  public int JJTSQLOREXPR = 26;
-  public int JJTSQLPATTERN = 27;
-  public int JJTSQLPRODUCTEXPR = 28;
-  public int JJTSQLPRODUCTSYMBOL = 29;
-  public int JJTSQLRIGHTJOINCLAUSE = 30;
-  public int JJTSQLSCRIPT = 31;
-  public int JJTSQLSELECT = 32;
-  public int JJTSQLSELECTALLCOLS = 33;
-  public int JJTSQLSELECTALLMODIFIER = 34;
-  public int JJTSQLSELECTALLMODIFIEREXCEPT = 35;
-  public int JJTSQLSELECTALLINTABLEMODIFIER = 36;
-  public int JJTSQLSELECTALLCOLSINTABLE = 37;
-  public int JJTSQLSELECTCOLS = 38;
-  public int JJTSQLSELECTLIMIT = 39;
-  public int JJTSQLSELECTLIST = 40;
-  public int JJTSQLSELECTOFFSET = 41;
-  public int JJTSQLSTATEMENT = 42;
-  public int JJTSQLSUMEXPR = 43;
-  public int JJTSQLSUMSYMBOL = 44;
-  public int JJTSQLTABLELIST = 45;
-  public int JJTSQLTABLEREF = 46;
-  public int JJTSQLTERM = 47;
-  public int JJTSQLUNARYEXPR = 48;
-  public int JJTSQLUNION = 49;
-  public int JJTSQLUPDATE = 50;
-  public int JJTSQLUPDATEASSIGNMENT = 51;
-  public int JJTSQLLVALUEELEMENT = 52;
-  public int JJTSQLVALUELIST = 53;
-  public int JJTSQLWHERE = 54;
-  public int JJTSQLCREATE = 55;
-  public int JJTSQLCREATEARGSLIST = 56;
-  public int JJTSQLCOLUMNDEFINITION = 57;
-  public int JJTSQLDATATYPECONSTRAINT = 58;
-  public int JJTSQLTYPEARGLITERAL = 59;
-  public int JJTSQLTYPEARGS = 60;
+  public int JJTSQLALTER = 8;
+  public int JJTSQLADD = 9;
+  public int JJTSQLADDCOLUMN = 10;
+  public int JJTSQLADDPRIMARYKEY = 11;
+  public int JJTSQLDROPCOLUMN = 12;
+  public int JJTSQLRENAME = 13;
+  public int JJTSQLRENAMECOLUMN = 14;
+  public int JJTSQLRENAMETABLE = 15;
+  public int JJTSQLTYPE = 16;
+  public int JJTSQLEXISTSCLAUSE = 17;
+  public int JJTSQLFUNCTION = 18;
+  public int JJTSQLFUNCTIONARGS = 19;
+  public int JJTSQLGROUPBY = 20;
+  public int JJTSQLGROUPBYLIST = 21;
+  public int JJTSQLID = 22;
+  public int JJTSQLIDSEQUENCE = 23;
+  public int JJTSQLINCLAUSE = 24;
+  public int JJTSQLINSERT = 25;
+  public int JJTSQLISCLAUSE = 26;
+  public int JJTSQLLEFTJOINCLAUSE = 27;
+  public int JJTSQLLIKECLAUSE = 28;
+  public int JJTSQLLITERAL = 29;
+  public int JJTSQLNOTEXPR = 30;
+  public int JJTSQLORDERBY = 31;
+  public int JJTSQLORDERBYELEM = 32;
+  public int JJTSQLORDERBYLIST = 33;
+  public int JJTSQLORDERDIRECTION = 34;
+  public int JJTSQLOREXPR = 35;
+  public int JJTSQLPATTERN = 36;
+  public int JJTSQLPRODUCTEXPR = 37;
+  public int JJTSQLPRODUCTSYMBOL = 38;
+  public int JJTSQLRIGHTJOINCLAUSE = 39;
+  public int JJTSQLSCRIPT = 40;
+  public int JJTSQLSELECT = 41;
+  public int JJTSQLSELECTALLCOLS = 42;
+  public int JJTSQLSELECTALLMODIFIER = 43;
+  public int JJTSQLSELECTALLMODIFIEREXCEPT = 44;
+  public int JJTSQLSELECTALLINTABLEMODIFIER = 45;
+  public int JJTSQLSELECTALLCOLSINTABLE = 46;
+  public int JJTSQLSELECTCOLS = 47;
+  public int JJTSQLSELECTLIMIT = 48;
+  public int JJTSQLSELECTLIST = 49;
+  public int JJTSQLSELECTOFFSET = 50;
+  public int JJTSQLSTATEMENT = 51;
+  public int JJTSQLSUMEXPR = 52;
+  public int JJTSQLSUMSYMBOL = 53;
+  public int JJTSQLTABLELIST = 54;
+  public int JJTSQLTABLEREF = 55;
+  public int JJTSQLTERM = 56;
+  public int JJTSQLUNARYEXPR = 57;
+  public int JJTSQLUNION = 58;
+  public int JJTSQLUPDATE = 59;
+  public int JJTSQLUPDATEASSIGNMENT = 60;
+  public int JJTSQLLVALUEELEMENT = 61;
+  public int JJTSQLVALUELIST = 62;
+  public int JJTSQLWHERE = 63;
+  public int JJTSQLCREATE = 64;
+  public int JJTSQLCREATEARGSLIST = 65;
+  public int JJTSQLCOLUMNDEFINITION = 66;
+  public int JJTSQLDATATYPECONSTRAINT = 67;
+  public int JJTSQLTYPEARGLITERAL = 68;
+  public int JJTSQLTYPEARGS = 69;
 
 
   public String[] jjtNodeName = {
@@ -75,6 +84,15 @@ public interface SQLEngineTreeConstants
     "SQLCompareOp",
     "SQLDelete",
     "SQLDrop",
+    "SQLAlter",
+    "SQLAdd",
+    "SQLAddColumn",
+    "SQLAddPrimaryKey",
+    "SQLDropColumn",
+    "SQLRename",
+    "SQLRenameColumn",
+    "SQLRenameTable",
+    "SQLType",
     "SQLExistsClause",
     "SQLFunction",
     "SQLFunctionArgs",
@@ -130,4 +148,4 @@ public interface SQLEngineTreeConstants
     "SQLTypeArgs",
   };
 }
-/* JavaCC - OriginalChecksum=4a7b119970faa46ebe8f4aa7a0f721a8 (do not edit this line) */
+/* JavaCC - OriginalChecksum=d5046d729a00922c09c0df10eac424ad (do not edit this line) */

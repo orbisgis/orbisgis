@@ -12,6 +12,15 @@ public interface SQLEngineVisitor
   public Object visit(ASTSQLCompareOp node, Object data);
   public Object visit(ASTSQLDelete node, Object data);
   public Object visit(ASTSQLDrop node, Object data);
+  public Object visit(ASTSQLAlter node, Object data);
+  public Object visit(ASTSQLAdd node, Object data);
+  public Object visit(ASTSQLAddColumn node, Object data);
+  public Object visit(ASTSQLAddPrimaryKey node, Object data);
+  public Object visit(ASTSQLDropColumn node, Object data);
+  public Object visit(ASTSQLRename node, Object data);
+  public Object visit(ASTSQLRenameColumn node, Object data);
+  public Object visit(ASTSQLRenameTable node, Object data);
+  public Object visit(ASTSQLType node, Object data);
   public Object visit(ASTSQLExistsClause node, Object data);
   public Object visit(ASTSQLFunction node, Object data);
   public Object visit(ASTSQLFunctionArgs node, Object data);
@@ -66,4 +75,4 @@ public interface SQLEngineVisitor
   public Object visit(ASTSQLTypeArgLiteral node, Object data);
   public Object visit(ASTSQLTypeArgs node, Object data);
 }
-/* JavaCC - OriginalChecksum=a0249b1d77c9f4eab3de240953c5d15a (do not edit this line) */
+/* JavaCC - OriginalChecksum=cf8ebdd2b18f3267d89af5c24183afaf (do not edit this line) */

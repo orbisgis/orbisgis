@@ -81,79 +81,103 @@ public interface SQLEngineConstants {
   /** RegularExpression Id. */
   int VIEW = 42;
   /** RegularExpression Id. */
-  int WHERE = 43;
+  int ADD = 43;
   /** RegularExpression Id. */
-  int CREATE = 44;
+  int COLUMN = 44;
   /** RegularExpression Id. */
-  int DELETE = 45;
+  int WHERE = 45;
   /** RegularExpression Id. */
-  int EXISTS = 46;
+  int CREATE = 46;
   /** RegularExpression Id. */
-  int INSERT = 47;
+  int DELETE = 47;
   /** RegularExpression Id. */
-  int INTO = 48;
+  int EXISTS = 48;
   /** RegularExpression Id. */
-  int SET = 49;
+  int ALTER = 49;
   /** RegularExpression Id. */
-  int UPDATE = 50;
+  int INSERT = 50;
   /** RegularExpression Id. */
-  int VALUES = 51;
+  int INTO = 51;
   /** RegularExpression Id. */
-  int INTEGER_LITERAL = 52;
+  int SET = 52;
   /** RegularExpression Id. */
-  int FLOATING_POINT_LITERAL = 53;
+  int UPDATE = 53;
   /** RegularExpression Id. */
-  int EXPONENT = 54;
+  int VALUES = 54;
   /** RegularExpression Id. */
-  int STRING_LITERAL = 55;
+  int RENAME = 55;
   /** RegularExpression Id. */
-  int BOOLEAN_LITERAL = 56;
+  int TO = 56;
   /** RegularExpression Id. */
-  int ID = 57;
+  int TEXT = 57;
   /** RegularExpression Id. */
-  int LETTER = 58;
+  int BOOLEAN = 58;
   /** RegularExpression Id. */
-  int DIGIT = 59;
+  int DATE = 59;
   /** RegularExpression Id. */
-  int ASSIGN = 60;
+  int NUMERIC = 60;
   /** RegularExpression Id. */
-  int CONCAT = 61;
+  int INTERGER = 61;
   /** RegularExpression Id. */
-  int SEMICOLON = 62;
+  int RESTRICT = 62;
   /** RegularExpression Id. */
-  int DOT = 63;
+  int CASCADE = 63;
   /** RegularExpression Id. */
-  int TILDE = 64;
+  int INTEGER_LITERAL = 64;
   /** RegularExpression Id. */
-  int LESS = 65;
+  int FLOATING_POINT_LITERAL = 65;
   /** RegularExpression Id. */
-  int LESSEQUAL = 66;
+  int EXPONENT = 66;
   /** RegularExpression Id. */
-  int GREATER = 67;
+  int STRING_LITERAL = 67;
   /** RegularExpression Id. */
-  int GREATEREQUAL = 68;
+  int BOOLEAN_LITERAL = 68;
   /** RegularExpression Id. */
-  int EQUAL = 69;
+  int ID = 69;
   /** RegularExpression Id. */
-  int NOTEQUAL = 70;
+  int LETTER = 70;
   /** RegularExpression Id. */
-  int NOTEQUAL2 = 71;
+  int DIGIT = 71;
   /** RegularExpression Id. */
-  int JOINPLUS = 72;
+  int ASSIGN = 72;
   /** RegularExpression Id. */
-  int OPENPAREN = 73;
+  int CONCAT = 73;
   /** RegularExpression Id. */
-  int CLOSEPAREN = 74;
+  int SEMICOLON = 74;
   /** RegularExpression Id. */
-  int ASTERISK = 75;
+  int DOT = 75;
   /** RegularExpression Id. */
-  int SLASH = 76;
+  int TILDE = 76;
   /** RegularExpression Id. */
-  int PLUS = 77;
+  int LESS = 77;
   /** RegularExpression Id. */
-  int MINUS = 78;
+  int LESSEQUAL = 78;
   /** RegularExpression Id. */
-  int QUESTIONMARK = 79;
+  int GREATER = 79;
+  /** RegularExpression Id. */
+  int GREATEREQUAL = 80;
+  /** RegularExpression Id. */
+  int EQUAL = 81;
+  /** RegularExpression Id. */
+  int NOTEQUAL = 82;
+  /** RegularExpression Id. */
+  int NOTEQUAL2 = 83;
+  /** RegularExpression Id. */
+  int JOINPLUS = 84;
+  /** RegularExpression Id. */
+  int OPENPAREN = 85;
+  /** RegularExpression Id. */
+  int CLOSEPAREN = 86;
+  /** RegularExpression Id. */
+  int ASTERISK = 87;
+  /** RegularExpression Id. */
+  int SLASH = 88;
+  /** RegularExpression Id. */
+  int PLUS = 89;
+  /** RegularExpression Id. */
+  int MINUS = 90;
+  /** RegularExpression Id. */
+  int QUESTIONMARK = 91;
 
   /** Lexical state. */
   int DEFAULT = 0;
@@ -209,15 +233,27 @@ public interface SQLEngineConstants {
     "\"spaces\"",
     "\"table\"",
     "\"view\"",
+    "\"add\"",
+    "\"column\"",
     "\"where\"",
     "\"create\"",
     "\"delete\"",
     "\"exists\"",
+    "\"alter\"",
     "\"insert\"",
     "\"into\"",
     "\"set\"",
     "\"update\"",
     "\"values\"",
+    "\"rename\"",
+    "\"to\"",
+    "\"text\"",
+    "\"boolean\"",
+    "\"date\"",
+    "\"numeric\"",
+    "\"integer\"",
+    "\"restrict\"",
+    "\"cascade\"",
     "<INTEGER_LITERAL>",
     "<FLOATING_POINT_LITERAL>",
     "<EXPONENT>",
