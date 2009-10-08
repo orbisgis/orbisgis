@@ -46,6 +46,7 @@ import org.gdms.data.types.ReadOnlyConstraint;
 import org.gdms.data.types.Type;
 import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
+import org.gdms.sql.strategies.SemanticException;
 
 /**
  * An utility class to help the exploration of Metadata instances
@@ -60,9 +61,10 @@ public class MetadataUtilities {
 	 * @return
 	 * @throws DriverException
 	 *             if raised when reading metadata
+	 * @throws SemanticException
 	 */
 	public static String[] getPKNames(final Metadata metadata)
-			throws DriverException {
+			throws DriverException, SemanticException {
 		final int[] pKIndices = getPKIndices(metadata);
 		final String[] pKNames = new String[pKIndices.length];
 
@@ -81,9 +83,10 @@ public class MetadataUtilities {
 	 * @return
 	 * @throws DriverException
 	 *             if raised when reading metadata
+	 * @throws SemanticException
 	 */
 	public static int[] getPKIndices(final Metadata metadata)
-			throws DriverException {
+			throws DriverException, SemanticException {
 		final int fc = metadata.getFieldCount();
 		final List<Integer> tmpPKIndices = new ArrayList<Integer>();
 
@@ -114,9 +117,10 @@ public class MetadataUtilities {
 	 * @return
 	 * @throws DriverException
 	 *             if raised when reading metadata
+	 * @throws SemanticException
 	 */
 	public static boolean isReadOnly(final Metadata metadata, final int fieldId)
-			throws DriverException {
+			throws DriverException, SemanticException {
 		final Constraint[] constraints = metadata.getFieldType(fieldId)
 				.getConstraints();
 		for (Constraint c : constraints) {
@@ -135,9 +139,10 @@ public class MetadataUtilities {
 	 * @return
 	 * @throws DriverException
 	 *             if raised when reading metadata
+	 * @throws SemanticException
 	 */
 	public static boolean isPrimaryKey(final Metadata metadata,
-			final int fieldId) throws DriverException {
+			final int fieldId) throws DriverException, SemanticException {
 		final Constraint[] constraints = metadata.getFieldType(fieldId)
 				.getConstraints();
 		return isPK(constraints);
@@ -173,9 +178,10 @@ public class MetadataUtilities {
 	 * @return
 	 * @throws DriverException
 	 *             if raised when reading metadata
+	 * @throws SemanticException
 	 */
 	public static String check(final Metadata metadata, final int fieldId,
-			Value value) throws DriverException {
+			Value value) throws DriverException, SemanticException {
 		final Constraint[] constraints = metadata.getFieldType(fieldId)
 				.getConstraints();
 		for (Constraint c : constraints) {
@@ -192,9 +198,10 @@ public class MetadataUtilities {
 	 * @param metadata
 	 * @return
 	 * @throws DriverException
+	 * @throws SemanticException
 	 */
 	public static Type[] getFieldTypes(Metadata metadata)
-			throws DriverException {
+			throws DriverException, SemanticException {
 		Type[] fieldTypes = new Type[metadata.getFieldCount()];
 		for (int i = 0; i < metadata.getFieldCount(); i++) {
 			fieldTypes[i] = metadata.getFieldType(i);
@@ -219,8 +226,9 @@ public class MetadataUtilities {
 	 * @param metadata
 	 * @return
 	 * @throws DriverException
+	 * @throws SemanticException
 	 */
-	public static boolean isGeometry(Metadata metadata) throws DriverException {
+	public static boolean isGeometry(Metadata metadata) throws DriverException, SemanticException {
 		for (int i = 0; i < metadata.getFieldCount(); i++) {
 			if (metadata.getFieldType(i).getTypeCode() == Type.GEOMETRY) {
 				return true;
@@ -235,8 +243,9 @@ public class MetadataUtilities {
 	 * @param metadata
 	 * @return
 	 * @throws DriverException
+	 * @throws SemanticException
 	 */
-	public static boolean isRaster(Metadata metadata) throws DriverException {
+	public static boolean isRaster(Metadata metadata) throws DriverException, SemanticException {
 		for (int i = 0; i < metadata.getFieldCount(); i++) {
 			if (metadata.getFieldType(i).getTypeCode() == Type.RASTER) {
 				return true;
@@ -246,7 +255,7 @@ public class MetadataUtilities {
 	}
 
 	public static Metadata[] fromTablesToMetadatas(final DataSource[] tables)
-			throws DriverException {
+			throws DriverException, SemanticException {
 		final Metadata[] metadatas = new Metadata[tables.length];
 		for (int i = 0; i < tables.length; i++) {
 			metadatas[i] = tables[i].getMetadata();

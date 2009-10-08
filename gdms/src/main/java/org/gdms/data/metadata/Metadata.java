@@ -38,6 +38,7 @@ package org.gdms.data.metadata;
 
 import org.gdms.data.types.Type;
 import org.gdms.driver.DriverException;
+import org.gdms.sql.strategies.SemanticException;
 
 /**
  * Defines the schema of a data source
@@ -49,21 +50,24 @@ public interface Metadata {
 	 *
 	 * @return
 	 * @throws DriverException
+	 * @throws SemanticException
 	 */
-	public int getFieldCount() throws DriverException;
+	public int getFieldCount() throws DriverException, SemanticException;
 
 	/**
 	 * Gets the name of the field.
 	 *
 	 * @param fieldId
 	 * @return
+	 * @throws SemanticException
 	 */
-	public String getFieldName(int fieldId) throws DriverException;
+	public String getFieldName(int fieldId) throws DriverException, SemanticException;
 
 	/**
 	 * Gets the type of the field.
 	 *
 	 * @return
+	 * @throws SemanticException
 	 */
-	public Type getFieldType(int fieldId) throws DriverException;
+	public Type getFieldType(int fieldId) throws DriverException, SemanticException;
 }

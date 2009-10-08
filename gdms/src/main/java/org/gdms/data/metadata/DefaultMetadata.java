@@ -87,19 +87,23 @@ public class DefaultMetadata implements Metadata {
 	 * @throws DriverException
 	 *             If there is some exception reading the metadata from the
 	 *             parameter
+	 * @throws SemanticException
 	 */
 	public DefaultMetadata(final Metadata originalMetadata)
 			throws DriverException {
 		this();
 		addAll(originalMetadata);
+
 	}
 
 	public void addAll(final Metadata metadata) throws DriverException {
 		final int fc = metadata.getFieldCount();
 
 		for (int i = 0; i < fc; i++) {
+			String fieldName = metadata.getFieldName(i);
 			fieldsTypes.add(metadata.getFieldType(i));
-			fieldsNames.add(metadata.getFieldName(i));
+			fieldsNames.add(fieldName);
+
 		}
 	}
 
@@ -121,12 +125,21 @@ public class DefaultMetadata implements Metadata {
 	 *
 	 * @param fieldName
 	 * @param typeCode
+	 * @throws SemanticException
+	 * @throws MetadataException
 	 * @throws InvalidTypeException
 	 *             If the specified type code is not a valid type code
 	 */
-	public void addField(final String fieldName, final int typeCode) {
-		fieldsNames.add(fieldName);
-		fieldsTypes.add(TypeFactory.createType(typeCode));
+	public void addField(final String fieldName, final int typeCode)
+			throws DriverException {
+		if (!isFieldExists(fieldName)) {
+			fieldsNames.add(fieldName);
+			fieldsTypes.add(TypeFactory.createType(typeCode));
+
+		} else {
+			throw new DriverException("The field " + fieldName
+					+ " already exists");
+		}
 	}
 
 	/**
@@ -138,11 +151,19 @@ public class DefaultMetadata implements Metadata {
 	 * @throws InvalidTypeException
 	 *             If the specified type code is not a valid type code or the
 	 *             specified constraints are not valid for the given type
+	 * @throws SemanticException
+	 * @throws MetadataException
 	 */
 	public void addField(final String fieldName, final int typeCode,
-			final Constraint[] constraints) throws InvalidTypeException {
-		fieldsNames.add(fieldName);
-		fieldsTypes.add(TypeFactory.createType(typeCode, constraints));
+			final Constraint[] constraints) throws InvalidTypeException,
+			DriverException {
+		if (!isFieldExists(fieldName)) {
+			fieldsNames.add(fieldName);
+			fieldsTypes.add(TypeFactory.createType(typeCode, constraints));
+		} else {
+			throw new DriverException("The field " + fieldName
+					+ " already exists");
+		}
 	}
 
 	/**
@@ -154,11 +175,18 @@ public class DefaultMetadata implements Metadata {
 	 * @param typeCode
 	 * @throws InvalidTypeException
 	 *             If the specified type code is not a valid type code
+	 * @throws SemanticException
+	 * @throws MetadataException
 	 */
 	public void addField(final String fieldName, final int typeCode,
-			final String typeName) throws InvalidTypeException {
-		fieldsNames.add(fieldName);
-		fieldsTypes.add(TypeFactory.createType(typeCode, typeName));
+			final String typeName) throws InvalidTypeException, DriverException {
+		if (!isFieldExists(fieldName)) {
+			fieldsNames.add(fieldName);
+			fieldsTypes.add(TypeFactory.createType(typeCode, typeName));
+		} else {
+			throw new DriverException("The field " + fieldName
+					+ " already exists");
+		}
 	}
 
 	/**
@@ -171,13 +199,20 @@ public class DefaultMetadata implements Metadata {
 	 * @throws InvalidTypeException
 	 *             If the specified type code is not a valid type code or the
 	 *             specified constraints are not valid for the given type
+	 * @throws SemanticException
+	 * @throws MetadataException
 	 */
 	public void addField(final String fieldName, final int typeCode,
 			final String typeName, final Constraint[] constraints)
-			throws InvalidTypeException {
-		fieldsNames.add(fieldName);
-		fieldsTypes
-				.add(TypeFactory.createType(typeCode, typeName, constraints));
+			throws InvalidTypeException, DriverException {
+		if (!isFieldExists(fieldName)) {
+			fieldsNames.add(fieldName);
+			fieldsTypes.add(TypeFactory.createType(typeCode, typeName,
+					constraints));
+		} else {
+			throw new DriverException("The field " + fieldName
+					+ " already exists");
+		}
 	}
 
 	/**
@@ -190,11 +225,19 @@ public class DefaultMetadata implements Metadata {
 	 * @param typeCode
 	 * @throws InvalidTypeException
 	 *             If the specified type code is not a valid type code
+	 * @throws SemanticException
+	 * @throws MetadataException
 	 */
 	public void addField(int index, String fieldName, int typeCode)
-			throws InvalidTypeException {
-		fieldsNames.add(index, fieldName);
-		fieldsTypes.add(index, TypeFactory.createType(typeCode));
+			throws InvalidTypeException, DriverException {
+		if (!isFieldExists(fieldName)) {
+			fieldsNames.add(index, fieldName);
+			fieldsTypes.add(index, TypeFactory.createType(typeCode));
+
+		} else {
+			throw new DriverException("The field " + fieldName
+					+ " already exists");
+		}
 	}
 
 	/**
@@ -208,12 +251,20 @@ public class DefaultMetadata implements Metadata {
 	 * @throws InvalidTypeException
 	 *             If the specified type code is not a valid type code or the
 	 *             specified constraints are not valid for the given type
+	 * @throws SemanticException
+	 * @throws MetadataException
 	 */
 	public void addField(int index, String fieldName, int typeCode,
-			Constraint... constraints) throws InvalidTypeException {
-		fieldsNames.add(index, fieldName);
-		fieldsTypes.add(index, TypeFactory
-				.createType(typeCode, "", constraints));
+			Constraint... constraints) throws InvalidTypeException,
+			DriverException {
+		if (!isFieldExists(fieldName)) {
+			fieldsNames.add(index, fieldName);
+			fieldsTypes.add(index, TypeFactory.createType(typeCode, "",
+					constraints));
+		} else {
+			throw new DriverException("The field " + fieldName
+					+ " already exists");
+		}
 	}
 
 	/**
@@ -223,9 +274,31 @@ public class DefaultMetadata implements Metadata {
 	 *
 	 * @param fieldName
 	 * @param type
+	 * @throws SemanticException
+	 * @throws MetadataException
 	 */
-	public void addField(String fieldName, Type type) {
-		fieldsNames.add(fieldName);
-		fieldsTypes.add(type);
+	public void addField(String fieldName, Type type) throws DriverException {
+		if (!isFieldExists(fieldName)) {
+			fieldsNames.add(fieldName);
+			fieldsTypes.add(type);
+		} else {
+			throw new DriverException("The field " + fieldName
+					+ " already exists.");
+		}
 	}
+
+	/**
+	 * Check is a field exists
+	 *
+	 * @param fieldName
+	 * @return
+	 */
+	private boolean isFieldExists(String fieldName) {
+
+		if (fieldsNames.contains(fieldName)) {
+			return true;
+		}
+		return false;
+	}
+
 }
