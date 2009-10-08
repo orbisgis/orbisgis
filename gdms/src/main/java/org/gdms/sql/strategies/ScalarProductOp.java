@@ -76,7 +76,7 @@ public class ScalarProductOp extends AbstractOperator implements Operator,
 
 	/**
 	 * Checks that the tables exist and their aliases doesn't collide
-	 * 
+	 *
 	 * @throws NoSuchTableException
 	 *             if a table in the product does not exist
 	 * @throws SemanticException
@@ -110,13 +110,14 @@ public class ScalarProductOp extends AbstractOperator implements Operator,
 	 * The resulting metadata in a scalar product consist of the metadata in the
 	 * first child operator plus the metadata in the second child operator and
 	 * so on
-	 * 
+	 *
 	 * @see org.gdms.sql.strategies.Operator#getResultMetadata()
 	 */
 	public Metadata getResultMetadata() throws DriverException {
 		DefaultMetadata ret = new DefaultMetadata();
 		for (int i = 0; i < getOperatorCount(); i++) {
 			ret.addAll(getOperator(i).getResultMetadata());
+
 		}
 
 		return ret;

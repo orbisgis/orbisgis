@@ -61,7 +61,7 @@ public interface Operator {
 	/**
 	 * Gets the metadata of this operator result. Return null if this operator
 	 * doesn't generate any result
-	 * 
+	 *
 	 * @return
 	 * @throws DriverException
 	 */
@@ -71,7 +71,7 @@ public interface Operator {
 	 * Makes the specified field appear in the result provided by this operator
 	 * and returns the field index in the metadata of the result. Return -1 if
 	 * this operator cannot resolve the field reference.
-	 * 
+	 *
 	 * @param field
 	 * @return
 	 * @throws DriverException
@@ -85,7 +85,7 @@ public interface Operator {
 	/**
 	 * Get the field indexes in the result metadata that were created just to
 	 * execute the instruction but were not specified for the final result
-	 * 
+	 *
 	 * @return
 	 * @throws DriverException
 	 *             If there is a problem accessing sources
@@ -94,7 +94,7 @@ public interface Operator {
 
 	/**
 	 * Expands stars and sets a field context to evaluate field types
-	 * 
+	 *
 	 * @throws SemanticException
 	 * @throws DriverException
 	 */
@@ -118,21 +118,21 @@ public interface Operator {
 	 * Method to perform the necessary initialization. Typically open the
 	 * DataSources. Operators can be executed several times so this method
 	 * should clear any cached data
-	 * 
+	 *
 	 * @throws ExecutionException
 	 */
 	public void initialize() throws DriverException;
 
 	/**
 	 * Gets the information necessary to perform some optimizations
-	 * 
+	 *
 	 * @return
 	 */
 	public OptimizationInfo getOptimizationInfo();
 
 	/**
 	 * Method to free any resource. Typically close the DataSources
-	 * 
+	 *
 	 * @throws ExecutionException
 	 */
 	public void operationFinished() throws DriverException;
@@ -141,7 +141,7 @@ public interface Operator {
 	 * Sets the scan mode of the branch. If there are bifurcations in the branch
 	 * this call has no effect. if indexQueries has no elements the scan mode is
 	 * 'table-scan', otherwise an index-scan using all the queries is used.
-	 * 
+	 *
 	 * @param indexQueries
 	 */
 	public void setScanMode(IndexQuery[] indexQueries);
@@ -158,7 +158,7 @@ public interface Operator {
 	 * operator does not modify the number of rows it should delegate on the
 	 * children, otherwise it should keep the limit without delegating on the
 	 * children
-	 * 
+	 *
 	 * @param limit
 	 */
 	public void setLimit(int limit);
@@ -167,7 +167,7 @@ public interface Operator {
 	 * Sets the offset of this instruction result. If an operator does not
 	 * modify the rows it should delegate on the children, otherwise it should
 	 * keep the offset without delegating on the children
-	 * 
+	 *
 	 * @param offset
 	 */
 	public void setOffset(int offset);
@@ -175,7 +175,7 @@ public interface Operator {
 	/**
 	 * Gets the operators that match the filter that are located in the sub tree
 	 * which root is this operator
-	 * 
+	 *
 	 * @param filter
 	 * @return
 	 */
@@ -183,7 +183,7 @@ public interface Operator {
 
 	/**
 	 * Returns the tables referenced in the subtree which root is this operator
-	 * 
+	 *
 	 * @return
 	 */
 	public String[] getReferencedTables();
@@ -192,7 +192,7 @@ public interface Operator {
 	 * Return the table name referenced in the tree branch which origin is this
 	 * operator. If the tree is not a branch and accesses several tables it
 	 * returns null
-	 * 
+	 *
 	 * @return
 	 */
 	public String getTableName();
@@ -201,7 +201,7 @@ public interface Operator {
 	 * Return the table alias referenced in the tree branch which origin is this
 	 * operator. If the tree is not a branch and accesses several tables it
 	 * returns null
-	 * 
+	 *
 	 * @return
 	 */
 	public String getTableAlias();
@@ -209,18 +209,18 @@ public interface Operator {
 	/**
 	 * Gets the metadata of the branch accessing the specified table name or
 	 * null if there is no branch that accesses the specified table
-	 * 
+	 *
 	 * @param tableName
 	 * @return
 	 * @throws DriverException
 	 *             If there is a problem accessing source metadata
-	 * 
+	 *
 	 */
 	public Metadata getBranchMetadata(String tableName) throws DriverException;
 
 	/**
 	 * Get the source containing this field
-	 * 
+	 *
 	 * @param sm
 	 * @param field
 	 * @return
@@ -229,7 +229,7 @@ public interface Operator {
 
 	/**
 	 * Used to notify the root operator that it has no parent
-	 * 
+	 *
 	 * @param isRoot
 	 */
 	public void setRoot(boolean isRoot);

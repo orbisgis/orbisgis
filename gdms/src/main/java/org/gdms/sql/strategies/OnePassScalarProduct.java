@@ -77,9 +77,9 @@ public class OnePassScalarProduct extends ScalarProductOp {
 			ObjectDriver leftSource = leftOperator.getResult(pm);
 			Operator rightOperator = getOperator(1);
 			ObjectDriver rightSource = rightOperator.getResult(pm);
-			ScalarProductDriver ret = new ScalarProductDriver(leftSource,
-					leftSource.getMetadata().getFieldCount(), rightSource,
-					getResultMetadata());
+			ScalarProductDriver ret = null;
+			ret = new ScalarProductDriver(leftSource, leftSource.getMetadata()
+					.getFieldCount(), rightSource, getResultMetadata());
 			String rightTableName = rightOperator.getOptimizationInfo()
 					.getScanOperator().getTableName();
 

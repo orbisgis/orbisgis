@@ -2,7 +2,6 @@ package org.gdms.sql.strategies;
 
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.ExecutionException;
-import org.gdms.data.InitializationException;
 import org.gdms.data.SourceAlreadyExistsException;
 import org.gdms.data.metadata.Metadata;
 import org.gdms.driver.DriverException;
@@ -26,6 +25,11 @@ public class CreateViewOperator extends AbstractOperator implements Operator {
 	protected ObjectDriver getResultContents(IProgressMonitor pm) {
 
 		try {
+
+			for (int i = 0; i < getOperatorCount(); i++) {
+				Operator op = getOperator(i);
+
+			}
 			dsf.getSourceManager().register(viewName, statement);
 		} catch (SourceAlreadyExistsException e) {
 			new ExecutionException("Cannot register view: " + viewName, e);

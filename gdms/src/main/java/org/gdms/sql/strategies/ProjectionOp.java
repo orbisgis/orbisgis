@@ -533,7 +533,6 @@ public class ProjectionOp extends AbstractExpressionOperator implements
 				+ "instructions not yet allowed");
 	}
 
-
 	public void addSelectElement(SelectElement elem) {
 		selectElements.add(elem);
 	}

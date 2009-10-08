@@ -64,6 +64,10 @@ import org.gdms.sql.evaluator.Or;
 import org.gdms.sql.evaluator.Product;
 import org.gdms.sql.evaluator.Substraction;
 import org.gdms.sql.evaluator.Sum;
+import org.gdms.sql.parser.ASTSQLAdd;
+import org.gdms.sql.parser.ASTSQLAddColumn;
+import org.gdms.sql.parser.ASTSQLAddPrimaryKey;
+import org.gdms.sql.parser.ASTSQLAlter;
 import org.gdms.sql.parser.ASTSQLAndExpr;
 import org.gdms.sql.parser.ASTSQLBetweenClause;
 import org.gdms.sql.parser.ASTSQLColRef;
@@ -71,6 +75,7 @@ import org.gdms.sql.parser.ASTSQLCompareExpr;
 import org.gdms.sql.parser.ASTSQLCreate;
 import org.gdms.sql.parser.ASTSQLDelete;
 import org.gdms.sql.parser.ASTSQLDrop;
+import org.gdms.sql.parser.ASTSQLDropColumn;
 import org.gdms.sql.parser.ASTSQLExistsClause;
 import org.gdms.sql.parser.ASTSQLFunction;
 import org.gdms.sql.parser.ASTSQLGroupBy;
@@ -87,6 +92,9 @@ import org.gdms.sql.parser.ASTSQLOrExpr;
 import org.gdms.sql.parser.ASTSQLOrderBy;
 import org.gdms.sql.parser.ASTSQLPattern;
 import org.gdms.sql.parser.ASTSQLProductExpr;
+import org.gdms.sql.parser.ASTSQLRename;
+import org.gdms.sql.parser.ASTSQLRenameColumn;
+import org.gdms.sql.parser.ASTSQLRenameTable;
 import org.gdms.sql.parser.ASTSQLRightJoinClause;
 import org.gdms.sql.parser.ASTSQLSelect;
 import org.gdms.sql.parser.ASTSQLSelectAllCols;
@@ -213,6 +221,61 @@ public class LogicTreeBuilder {
 				op.addChild(new ScanOperator(dsf, tableName, tableName));
 				return op;
 			}
+		} else if (node instanceof ASTSQLAlter) {
+			if (node.first_token.next.kind == SQLEngineConstants.TABLE) {
+				String tableName = getId(node.jjtGetChild(0));
+				Node schemaNode = node.jjtGetChild(1);
+
+				if (schemaNode instanceof ASTSQLAdd) {
+
+					Node subnode = schemaNode.jjtGetChild(0);
+					if (subnode instanceof ASTSQLAddColumn) {
+						String columnName = getId(subnode.jjtGetChild(0));
+						String columnType = getId(subnode.jjtGetChild(1));
+						AddColumnOperator op = new AddColumnOperator(dsf,
+								tableName, columnName, columnType);
+						return op;
+					} else if (subnode instanceof ASTSQLAddPrimaryKey) {
+						SimpleNode node1 = (SimpleNode) subnode.jjtGetChild(0);
+						String columnName = node1.first_token.toString();
+						AddPrimaryKeyOperator op = new AddPrimaryKeyOperator(
+								dsf, tableName, columnName);
+						return op;
+					}
+
+				}
+
+				else if (schemaNode instanceof ASTSQLRename) {
+					Node subnode = schemaNode.jjtGetChild(0);
+					if (subnode instanceof ASTSQLRenameColumn) {
+						String columnName = getId(subnode.jjtGetChild(0));
+						String columnNewName = getId(subnode.jjtGetChild(1));
+						RenameColumnOperator op = new RenameColumnOperator(dsf,
+								tableName, columnName, columnNewName);
+						return op;
+					} else if (subnode instanceof ASTSQLRenameTable) {
+						SimpleNode node1 = (SimpleNode) subnode;
+						RenameTableOperator op = new RenameTableOperator(dsf,
+								tableName, node1.last_token.toString());
+						return op;
+					}
+
+				}
+
+				else if (schemaNode instanceof ASTSQLDropColumn) {
+
+					throw new UnsupportedOperationException("Not yet supported");
+				}
+
+				else {
+
+					throw new UnsupportedOperationException("Not yet supported");
+				}
+
+			}
+
+			throw new UnsupportedOperationException("Not yet supported");
+
 		} else if (node instanceof ASTSQLUnion) {
 			Node tableOrSelect1 = node.jjtGetChild(0);
 			Node tableOrSelect2 = node.jjtGetChild(1);
