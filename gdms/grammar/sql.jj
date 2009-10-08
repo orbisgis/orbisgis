@@ -107,17 +107,33 @@ TOKEN :  /* Keywords */
   | < SPACES: "spaces" >
   | < TABLE: "table" >
   | <VIEW:"view">
+  | <ADD:"add">
+  | <COLUMN:"column">
   | < WHERE: "where" >
 
 //***************************************************************************************
   | < CREATE: "create" >
   | < DELETE: "delete" >
   | < EXISTS: "exists" >
+  | < ALTER: "alter" >
   | < INSERT: "insert" >
   | < INTO: "into" >
   | < SET: "set" >
   | < UPDATE: "update" >
   | < VALUES: "values" >
+  | < RENAME: "rename" >
+  | < TO: "to" >
+
+  //***************************************************************************************
+
+  |<TEXT:"text">
+  |<BOOLEAN:"boolean">
+  |<DATE:"date">
+  |<NUMERIC:"numeric">
+  |<INTERGER:"integer">
+  |<RESTRICT : "restrict">
+  | <CASCADE : "cascade">
+
 }
 
 
@@ -255,6 +271,71 @@ void SQLDrop() :
     (<INDEX> <ON> SQLId() "(" SQLId() ")")
   )
 }
+
+void SQLAlter() :
+{}
+{
+<ALTER> <TABLE>  SQLId()
+(SQLAdd()|SQLDropColumn()|SQLRename())
+
+}
+
+void SQLAdd():
+{}
+{
+<ADD> (SQLAddColumn()|SQLAddPrimaryKey())
+}
+
+void SQLAddColumn() :
+{}
+{
+ <COLUMN>  SQLId() SQLType()
+}
+
+void SQLAddPrimaryKey():
+{}
+{
+ <PRIMARY> <KEY> "("SQLId()")"
+}
+
+void SQLDropColumn():
+{}
+{
+<DROP> <COLUMN> SQLId() [(<RESTRICT> | <CASCADE>)]
+}
+
+void SQLRename():
+{}
+{
+<RENAME>
+(SQLRenameColumn()|SQLRenameTable())
+}
+
+void SQLRenameColumn():
+{}
+{
+<COLUMN> SQLId() <TO> SQLId()
+}
+
+void SQLRenameTable():
+{}
+{
+<TO> SQLId()
+}
+
+void SQLType() :
+{}
+{
+  <TEXT> |
+  <BOOLEAN> |
+  <DATE> |
+  <NUMERIC>|
+  <INTERGER>
+}
+
+
+
+
 void SQLExistsClause() :
 {}
 {
@@ -559,6 +640,7 @@ void SQLStatement() :
   | SQLUnion()
   | SQLCreate()
   | SQLDrop()
+  | SQLAlter()
   ) ";"
 }
 
