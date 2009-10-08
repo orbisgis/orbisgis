@@ -46,7 +46,7 @@ public class GdmsReader {
 		rbm = null;
 	}
 
-	public void readMetadata() throws IOException {
+	public void readMetadata() throws IOException, DriverException {
 		// Read version
 		version = rbm.get();
 		if ((version != 2) && (version != 3)) {
