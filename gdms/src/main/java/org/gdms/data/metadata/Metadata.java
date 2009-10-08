@@ -52,7 +52,7 @@ public interface Metadata {
 	 * @throws DriverException
 	 * @throws SemanticException
 	 */
-	public int getFieldCount() throws DriverException, SemanticException;
+	public int getFieldCount() throws DriverException;
 
 	/**
 	 * Gets the name of the field.
@@ -61,7 +61,7 @@ public interface Metadata {
 	 * @return
 	 * @throws SemanticException
 	 */
-	public String getFieldName(int fieldId) throws DriverException, SemanticException;
+	public String getFieldName(int fieldId) throws DriverException;
 
 	/**
 	 * Gets the type of the field.
@@ -69,5 +69,5 @@ public interface Metadata {
 	 * @return
 	 * @throws SemanticException
 	 */
-	public Type getFieldType(int fieldId) throws DriverException, SemanticException;
+	public Type getFieldType(int fieldId) throws DriverException;
 }
