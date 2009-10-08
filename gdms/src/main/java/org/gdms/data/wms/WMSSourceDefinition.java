@@ -45,7 +45,7 @@ public class WMSSourceDefinition extends AbstractDataSourceDefinition implements
 		}
 	}
 
-	private Metadata getWMSMetadata() {
+	private Metadata getWMSMetadata() throws DriverException {
 		DefaultMetadata metadata = new DefaultMetadata();
 		metadata.addField("host", Type.STRING);
 		metadata.addField("layer", Type.STRING);
@@ -80,7 +80,7 @@ public class WMSSourceDefinition extends AbstractDataSourceDefinition implements
 	public String getTypeName() {
 		return "WMS";
 	}
-	
+
 	public WMSSource getWMSSource() {
 		return wmsSource;
 	}
