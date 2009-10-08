@@ -45,6 +45,9 @@ import org.gdms.SourceTest;
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.DigestUtilities;
+import org.gdms.data.ExecutionException;
+import org.gdms.data.metadata.Metadata;
+import org.gdms.data.metadata.MetadataUtilities;
 import org.gdms.data.types.Constraint;
 import org.gdms.data.types.GeometryConstraint;
 import org.gdms.data.types.Type;
@@ -54,12 +57,10 @@ import org.gdms.data.values.ValueFactory;
 import org.gdms.data.values.ValueWriter;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.memory.ObjectMemoryDriver;
+import org.gdms.sql.parser.ParseException;
 
 import com.vividsolutions.jts.io.WKTReader;
 
-/**
- * @author Fernando Gonzalez Cortes
- */
 public class SQLTest extends SourceTest {
 	public static DataSource d;
 
@@ -70,34 +71,101 @@ public class SQLTest extends SourceTest {
 		dsf.executeSQL("selecT REGisteR('memory')");
 	}
 
-	public void testExcept() throws Exception {
+	public void testDropColumn() throws Exception {
 		dsf.getSourceManager().register("landcover2000",
 				new File(internalData + "landcover2000.shp"));
+		dsf.executeSQL("select register('" + backupDir
+				+ "/addColumn.shp','temp')");
+		dsf.executeSQL("alter table temp drop column type;");
 
-		dsf.executeSQL("select register('/tmp/test.csv','temp')");
-		dsf.executeSQL("create table temp as select *{except type}  from landcover2000");
-		DataSource dsOut = dsf.getDataSource("temp");
+	}
 
-		dsOut.open();
-		assertTrue(dsOut.getFieldIndexByName("type") == -1);
-		dsOut.close();
+	public void testRenameTable() throws Exception {
+		dsf.getSourceManager().register("landcover2000",
+				new File(internalData + "landcover2000.shp"));
+		dsf.executeSQL("select register('" + backupDir
+				+ "/addColumn.shp','temp')");
+		dsf.executeSQL("alter table temp rename to erwan;");
+
+	}
+
+	public void testRenameColumn() throws Exception {
+		dsf.getSourceManager().register("landcover2000",
+				new File(internalData + "landcover2000.shp"));
+		dsf.executeSQL("select register('" + backupDir
+				+ "/addColumn.shp','temp')");
+		dsf.executeSQL("create table temp as select *  from landcover2000");
+		dsf.executeSQL("alter table temp rename column type to erwan");
+
+	}
+
+	public void testRenameColumnExists() throws Exception {
+		dsf.getSourceManager().register("landcover2000",
+				new File(internalData + "landcover2000.shp"));
+		dsf.executeSQL("select register('" + backupDir
+				+ "/addColumn.shp','temp')");
+		dsf.executeSQL("create table temp as select *  from landcover2000");
+		dsf.executeSQL("alter table temp rename column type to type");
+
+	}
+
+	public void testAddColumn() throws Exception {
+		dsf.getSourceManager().register("landcover2000",
+				new File(internalData + "landcover2000.shp"));
+		dsf.executeSQL("select register('" + backupDir
+				+ "/addColumn.shp','temp')");
+		dsf.executeSQL("create table temp as select *  from landcover2000");
+		dsf.executeSQL("alter table temp add column gwen text");
+
+	}
+
+	public void testAddDuplicateColumn() {
+		dsf.getSourceManager().register("landcover2000",
+				new File(internalData + "landcover2000.shp"));
+		try {
+			dsf.executeSQL("select register('" + backupDir
+					+ "/addColumn.shp','temp')");
+			dsf.executeSQL("alter table temp add column gwen text");
+			dsf.executeSQL("alter table temp add column gwen text");
+
+		} catch (ParseException e) {
+			e.printStackTrace();
+		} catch (SemanticException e) {
+			e.printStackTrace();
+		} catch (DriverException e) {
+			e.printStackTrace();
+			assertTrue(true);
+		} catch (ExecutionException e) {
+			e.printStackTrace();
+		}
 
 	}
 
 
+
+	public void testExcept() throws Exception {
+		dsf.getSourceManager().register("landcover2000",
+				new File(internalData + "landcover2000.shp"));
+		dsf.executeSQL("select register('/tmp/test.csv','temp')");
+		dsf
+				.executeSQL("create table temp as select *{except type}  from landcover2000");
+		DataSource dsOut = dsf.getDataSource("temp");
+		dsOut.open();
+		assertTrue(dsOut.getFieldIndexByName("type") == -1);
+		dsOut.close();
+	}
+
 	public void testExceptList() throws Exception {
 		dsf.getSourceManager().register("landcover2000",
 				new File(internalData + "landcover2000.shp"));
-
 		dsf.executeSQL("select register('/tmp/test.csv','temp')");
-		dsf.executeSQL("create table temp as select *{except type, the_geom}  from landcover2000");
+		dsf
+				.executeSQL("create table temp as select *{except type, the_geom}  from landcover2000");
 		DataSource dsOut = dsf.getDataSource("temp");
-
 		dsOut.open();
 		assertTrue(dsOut.getFieldIndexByName("type") == -1);
 		assertTrue(dsOut.getFieldIndexByName("the_geom") == -1);
 		dsOut.close();
-
 	}
 
 	public void testExceptAlias() throws Exception {
@@ -105,7 +173,8 @@ public class SQLTest extends SourceTest {
 				new File(internalData + "landcover2000.shp"));
 
 		dsf.executeSQL("select register('/tmp/test.csv','temp')");
-		dsf.executeSQL("create table temp as select a.*{except the_geom}  from landcover2000 a");
+		dsf
+				.executeSQL("create table temp as select a.*{except the_geom}  from landcover2000 a");
 		DataSource dsOut = dsf.getDataSource("temp");
 
 		dsOut.open();
@@ -113,7 +182,6 @@ public class SQLTest extends SourceTest {
 		dsOut.close();
 
 	}
-
 
 	private void testIsClause(String ds) throws Exception {
 		String fieldName = super.getContainingNullFieldNameFor(ds);
