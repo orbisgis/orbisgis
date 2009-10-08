@@ -36,10 +36,13 @@
  */
 package org.gdms.data.edition;
 
+import java.io.File;
+
 import org.gdms.SourceTest;
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.ListenerCounter;
+import org.gdms.data.metadata.DefaultMetadata;
 import org.gdms.data.metadata.Metadata;
 import org.gdms.data.types.Constraint;
 import org.gdms.data.types.Type;
@@ -69,6 +72,21 @@ public class MetadataTest extends SourceTest {
 		assertTrue(m.getFieldType(fc).getConstraintValue(Constraint.PK) == null);
 		assertTrue(m.getFieldType(fc).getConstraintValue(Constraint.READONLY) == null);
 		d.close();
+	}
+
+	public void testAddFieldExistsMetadata() {
+		DefaultMetadata metadata = new DefaultMetadata();
+		try {
+			// Add a String field
+			metadata.addField("name", Type.STRING);
+			// Add a second string field
+			metadata.addField("surname", Type.STRING);
+			// Add an existing field name
+			metadata.addField("name", Type.STRING);
+		} catch (DriverException e) {
+			assertTrue(true);
+		}
+
 	}
 
 	public void testAddField() throws Exception {
