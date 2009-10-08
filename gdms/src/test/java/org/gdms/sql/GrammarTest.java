@@ -57,6 +57,39 @@ public class GrammarTest extends TestCase {
 		}
 	}
 
+	public void testAddPrimaryKey() throws Exception {
+		parse("alter table toto add primary key (tata);");
+		notParse("alter table toto add primarykey (tata);");
+		notParse("alter table toto add primary key tata;");
+
+	}
+
+	public void testRenameTable() throws Exception {
+		parse("alter table toto rename to tata;");
+		notParse("alter table toto renameto tata;");
+	}
+
+	public void testRenameColumn() throws Exception {
+		parse("alter table toto rename column test to gwen;");
+		parse("alter table toto rename column test to test;");
+	}
+
+	public void testAddColumn() throws Exception {
+		parse("alter table toto add column test text;");
+		parse("alter table toto add column test numeric;");
+		parse("alter table toto add column test integer;");
+		notParse("alter table toto add column  integer test;");
+		notParse("alter table toto, tata add column test text;");
+		notParse("alter table tata add column test text, gwen numeric;");
+	}
+
+	public void testDropColumn() throws Exception {
+		parse("alter table toto drop column test;");
+		parse("alter table toto drop column test restrict;");
+		parse("alter table toto drop column test cascade;");
+
+	}
+
 	public void testExcept() throws Exception {
 		parse("select *{except myfield} from gis;");
 		parse("select a.*{except field} from gis a;");
@@ -81,6 +114,7 @@ public class GrammarTest extends TestCase {
 	public void testQuotedId() throws Exception {
 		parse("select NAME from mytable;");
 		parse("select Name from mytable;");
+		parse ("select * from mytable_0;");
 		notParse("select _field from table;");
 		notParse("select \"table\".\"_field\" from \"table\";");
 		notParse("select \"table\".\"_field\" , \"table\".\"_field2\" from \"table\";");
