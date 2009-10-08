@@ -40,6 +40,7 @@
 package org.gdms.data;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Iterator;
 
 import org.gdms.data.edition.Commiter;
@@ -52,13 +53,12 @@ import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.ReadOnlyDriver;
 import org.gdms.source.Source;
+import org.gdms.sql.strategies.IncompatibleTypesException;
 
-/**
- * @author leduc
- *
- */
 public class AbstractDataSourceDecorator extends AbstractDataSource {
 	private DataSource internalDataSource;
+
+	ArrayList<String> fieldsName = new ArrayList<String>();
 
 	public AbstractDataSourceDecorator(final DataSource internalDataSource) {
 		this.internalDataSource = internalDataSource;
@@ -87,7 +87,15 @@ public class AbstractDataSourceDecorator extends AbstractDataSource {
 	 *      java.lang.String)
 	 */
 	public void addField(String name, Type driverType) throws DriverException {
-		internalDataSource.addField(name, driverType);
+		if (internalDataSource.getFieldIndexByName(name) == -1) {
+			internalDataSource.addField(name, driverType);
+		} else {
+			try {
+				throw new Exception("The field " + name + " already exists.");
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
 	}
 
 	/**
@@ -137,16 +145,17 @@ public class AbstractDataSourceDecorator extends AbstractDataSource {
 	/**
 	 * @throws DriverException
 	 * @throws NonEditableDataSourceException
+	 * @throws SemanticException
 	 * @see org.gdms.data.DataSource#commit()
 	 */
-	public void commit() throws DriverException,
-			NonEditableDataSourceException {
+	public void commit() throws DriverException, NonEditableDataSourceException {
 		internalDataSource.commit();
 	}
 
 	/**
 	 * @param rowId
 	 * @throws DriverException
+	 * @throws SemanticException
 	 * @see org.gdms.data.DataSource#deleteRow(long)
 	 */
 	public void deleteRow(long rowId) throws DriverException {
@@ -164,6 +173,7 @@ public class AbstractDataSourceDecorator extends AbstractDataSource {
 	/**
 	 * @return
 	 * @throws DriverException
+	 * @throws SemanticException
 	 * @see org.gdms.data.DataSource#getMetadata()
 	 */
 	public Metadata getMetadata() throws DriverException {
@@ -191,6 +201,7 @@ public class AbstractDataSourceDecorator extends AbstractDataSource {
 	 * @param fieldId
 	 * @return
 	 * @throws DriverException
+	 * @throws SemanticException
 	 * @see org.gdms.driver.ReadAccess#getFieldValue(long, int)
 	 */
 	public Value getFieldValue(long rowIndex, int fieldId)
@@ -219,10 +230,12 @@ public class AbstractDataSourceDecorator extends AbstractDataSource {
 	 * @param dimension
 	 * @return
 	 * @throws DriverException
+	 * @throws SemanticException
+	 * @throws IncompatibleTypesException
 	 * @see org.gdms.driver.ReadAccess#getScope(int)
 	 */
-	public Number[] getScope(int dimension)
-			throws DriverException {
+	public Number[] getScope(int dimension) throws DriverException,
+			IncompatibleTypesException {
 		return internalDataSource.getScope(dimension);
 	}
 
@@ -238,6 +251,7 @@ public class AbstractDataSourceDecorator extends AbstractDataSource {
 
 	/**
 	 * @throws DriverException
+	 * @throws SemanticException
 	 * @see org.gdms.data.DataSource#insertEmptyRow()
 	 */
 	public void insertEmptyRow() throws DriverException {
@@ -256,6 +270,7 @@ public class AbstractDataSourceDecorator extends AbstractDataSource {
 	/**
 	 * @param values
 	 * @throws DriverException
+	 * @throws SemanticException
 	 * @see org.gdms.data.DataSource#insertFilledRow(org.gdms.data.values.Value[])
 	 */
 	public void insertFilledRow(Value[] values) throws DriverException {
@@ -325,6 +340,7 @@ public class AbstractDataSourceDecorator extends AbstractDataSource {
 	/**
 	 * @param index
 	 * @throws DriverException
+	 * @throws SemanticException
 	 * @see org.gdms.data.DataSource#removeField(int)
 	 */
 	public void removeField(int index) throws DriverException {
@@ -343,6 +359,7 @@ public class AbstractDataSourceDecorator extends AbstractDataSource {
 	 * @param ds
 	 * @throws IllegalStateException
 	 * @throws DriverException
+	 * @throws SemanticException
 	 * @see org.gdms.data.DataSource#saveData(org.gdms.data.DataSource)
 	 */
 	public void saveData(DataSource ds) throws IllegalStateException,
@@ -373,7 +390,15 @@ public class AbstractDataSourceDecorator extends AbstractDataSource {
 	 * @see org.gdms.data.DataSource#setFieldName(int, java.lang.String)
 	 */
 	public void setFieldName(int index, String name) throws DriverException {
-		internalDataSource.setFieldName(index, name);
+		if (internalDataSource.getFieldIndexByName(name) == -1) {
+			internalDataSource.setFieldName(index, name);
+		} else {
+			try {
+				throw new Exception("The field " + name + " already exists.");
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
 	}
 
 	/**
@@ -381,6 +406,7 @@ public class AbstractDataSourceDecorator extends AbstractDataSource {
 	 * @param fieldId
 	 * @param value
 	 * @throws DriverException
+	 * @throws SemanticException
 	 * @see org.gdms.data.DataSource#setFieldValue(long, int,
 	 *      org.gdms.data.values.Value)
 	 */
@@ -401,7 +427,8 @@ public class AbstractDataSourceDecorator extends AbstractDataSource {
 	 * @throws DriverException
 	 * @see org.gdms.data.DataSource#queryIndex(java.lang.String, IndexQuery)
 	 */
-	public Iterator<Integer> queryIndex(IndexQuery indexQuery) throws DriverException {
+	public Iterator<Integer> queryIndex(IndexQuery indexQuery)
+			throws DriverException {
 		return internalDataSource.queryIndex(indexQuery);
 	}
 
@@ -413,9 +440,9 @@ public class AbstractDataSourceDecorator extends AbstractDataSource {
 	}
 
 	public void printStack() {
-		System.out.println("<" + this.getClass().getName()+">");
+		System.out.println("<" + this.getClass().getName() + ">");
 		getDataSource().printStack();
-		System.out.println("</" + this.getClass().getName()+">");
+		System.out.println("</" + this.getClass().getName() + ">");
 	}
 
 	public String[] getReferencedSources() {
@@ -437,4 +464,5 @@ public class AbstractDataSourceDecorator extends AbstractDataSource {
 	public void syncWithSource() throws DriverException {
 		internalDataSource.syncWithSource();
 	}
+
 }
