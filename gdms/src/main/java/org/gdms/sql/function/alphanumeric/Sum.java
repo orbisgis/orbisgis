@@ -104,7 +104,6 @@ public class Sum implements Function {
 
 	@Override
 	public boolean isDesaggregate() {
-		// TODO Auto-generated method stub
 		return false;
 	}
 }
