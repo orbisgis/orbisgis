@@ -101,6 +101,8 @@ import org.orbisgis.core.Services;
 import org.orbisgis.core.renderer.AllowAllRenderPermission;
 import org.orbisgis.core.renderer.symbol.Symbol;
 import org.orbisgis.core.renderer.symbol.SymbolFactory;
+import org.orbisgis.core.ui.editors.map.tools.ToolUtilities;
+import org.orbisgis.core.ui.editors.map.tools.ZoomInTool;
 import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.layerModel.LayerListener;
 import org.orbisgis.core.layerModel.LayerListenerAdapter;
@@ -182,6 +184,8 @@ public class ToolManager extends MouseAdapter implements MouseMotionListener {
 	private MapContext mapContext;
 
 	private ArrayList<ToolListener> listeners = new ArrayList<ToolListener>();
+
+	private boolean showPopup;
 
 	/**
 	 * Creates a new EditionToolAdapter.
@@ -294,7 +298,9 @@ public class ToolManager extends MouseAdapter implements MouseMotionListener {
 				leftClickTransition(e, POINT);
 			}
 		} else if (e.getButton() == MouseEvent.BUTTON3) {
-			toolPopUp.show(component, e.getPoint().x, e.getPoint().y);
+			if (showPopup) {
+				toolPopUp.show(component, e.getPoint().x, e.getPoint().y);
+			}
 		}
 
 	}
@@ -602,28 +608,33 @@ public class ToolManager extends MouseAdapter implements MouseMotionListener {
 	}
 
 	private void configureMenu() {
-		String[] labels = currentTool.getTransitionLabels();
-		String[] codes = currentTool.getTransitionCodes();
-		toolPopUp = new JPopupMenu();
-		for (int i = 0; i < codes.length; i++) {
-			JMenuItem item = new JMenuItem(labels[i]);
-			item.setActionCommand(codes[i]);
-			item.addActionListener(new ActionListener() {
+		if (ToolUtilities.isResctritedPopup(currentTool)) {
+			showPopup = false;
+		} else {
+			showPopup = true;
+			String[] labels = currentTool.getTransitionLabels();
+			String[] codes = currentTool.getTransitionCodes();
+			toolPopUp = new JPopupMenu();
+			for (int i = 0; i < codes.length; i++) {
+				JMenuItem item = new JMenuItem(labels[i]);
+				item.setActionCommand(codes[i]);
+				item.addActionListener(new ActionListener() {
 
-				public void actionPerformed(ActionEvent e) {
-					try {
-						transition(e.getActionCommand());
-						component.repaint();
-					} catch (NoSuchTransitionException e1) {
-						Services.getErrorManager().error("Error in the tool.",
-								e1);
-					} catch (TransitionException e1) {
-						fireToolError(e1);
+					public void actionPerformed(ActionEvent e) {
+						try {
+							transition(e.getActionCommand());
+							component.repaint();
+						} catch (NoSuchTransitionException e1) {
+							Services.getErrorManager().error(
+									"Error in the tool.", e1);
+						} catch (TransitionException e1) {
+							fireToolError(e1);
+						}
 					}
-				}
 
-			});
-			toolPopUp.add(item);
+				});
+				toolPopUp.add(item);
+			}
 		}
 	}
 
