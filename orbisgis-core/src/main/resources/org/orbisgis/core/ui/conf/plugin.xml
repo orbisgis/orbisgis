@@ -127,6 +127,9 @@
 		<action id="org.orbisgis.core.ui.actions.About" text="About OrbisGIS"
 			menu-id="org.orbisgis.core.ui.Help"
 			class="org.orbisgis.core.ui.actions.about.About"/>
+			<action id="org.orbisgis.core.ui.actions.Help" text="Online Help (FR)"
+			menu-id="org.orbisgis.core.ui.Help"
+			class="org.orbisgis.core.ui.actions.help.Help"/>
 	</extension>
 
 	<extension point="org.orbisgis.core.ui.Action" id="org.orbisgis.actions.Workspace">
