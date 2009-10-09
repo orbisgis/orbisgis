@@ -45,6 +45,13 @@ public class SQLDocument extends AbstractSyntaxColoringDocument {
 		kindStyle.put(SQLEngineConstants.DESC, keywordStyle);
 		kindStyle.put(SQLEngineConstants.DISTINCT, keywordStyle);
 		kindStyle.put(SQLEngineConstants.DROP, keywordStyle);
+		kindStyle.put(SQLEngineConstants.ALTER, keywordStyle);
+		kindStyle.put(SQLEngineConstants.ADD, keywordStyle);
+		kindStyle.put(SQLEngineConstants.RENAME, keywordStyle);
+		kindStyle.put(SQLEngineConstants.COLUMN, keywordStyle);
+		kindStyle.put(SQLEngineConstants.TO, keywordStyle);
+		kindStyle.put(SQLEngineConstants.RESTRICT, keywordStyle);
+		kindStyle.put(SQLEngineConstants.CASCADE, keywordStyle);
 		kindStyle.put(SQLEngineConstants.EXISTS, keywordStyle);
 		kindStyle.put(SQLEngineConstants.FLOATING_POINT_LITERAL, literalStyle);
 		kindStyle.put(SQLEngineConstants.FROM, keywordStyle);
@@ -74,6 +81,10 @@ public class SQLDocument extends AbstractSyntaxColoringDocument {
 		kindStyle.put(SQLEngineConstants.UPDATE, keywordStyle);
 		kindStyle.put(SQLEngineConstants.VALUES, keywordStyle);
 		kindStyle.put(SQLEngineConstants.WHERE, keywordStyle);
+		kindStyle.put(SQLEngineConstants.EXCEPT, keywordStyle);
+		kindStyle.put(SQLEngineConstants.NUMERIC, literalStyle);
+		kindStyle.put(SQLEngineConstants.TEXT, literalStyle);
+		kindStyle.put(SQLEngineConstants.INTERGER, literalStyle);
 	}
 
 	public SQLDocument(JTextPane textPane) {
