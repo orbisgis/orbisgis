@@ -65,7 +65,7 @@ public class Help implements IAction {
 
 				} catch (IOException e) {
 					Services.getService(ErrorManager.class).error(
-							"Serveur available ", e);
+							"Serveur not available ", e);
 				} catch (URISyntaxException e) {
 
 					Services.getService(ErrorManager.class).error(
