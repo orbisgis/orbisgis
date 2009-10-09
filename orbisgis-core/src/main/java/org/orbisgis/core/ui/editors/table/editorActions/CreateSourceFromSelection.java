@@ -51,7 +51,7 @@ public class CreateSourceFromSelection implements IEditorAction {
 			String newName;
 			do {
 				index++;
-				newName = original.getName() + "-selection-" + index;
+				newName = original.getName() + "_selection_" + index;
 			} while (sm.getSource(newName) != null);
 			sm.register(newName, dsd);
 
