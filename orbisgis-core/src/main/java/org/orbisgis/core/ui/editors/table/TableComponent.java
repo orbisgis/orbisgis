@@ -12,11 +12,13 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.ByteArrayInputStream;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.TreeSet;
 
 import javax.swing.DefaultListSelectionModel;
@@ -40,17 +42,23 @@ import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
 import org.gdms.data.DataSource;
+import org.gdms.data.DataSourceCreationException;
+import org.gdms.data.DataSourceFactory;
 import org.gdms.data.edition.EditionEvent;
 import org.gdms.data.edition.EditionListener;
 import org.gdms.data.edition.FieldEditionEvent;
 import org.gdms.data.edition.MetadataEditionListener;
 import org.gdms.data.edition.MultipleEditionEvent;
 import org.gdms.data.metadata.Metadata;
+import org.gdms.data.metadata.MetadataUtilities;
 import org.gdms.data.types.Constraint;
 import org.gdms.data.types.Type;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
+import org.gdms.driver.driverManager.DriverLoadException;
+import org.gdms.sql.parser.SQLEngine;
+import org.gdms.sql.strategies.SemanticException;
 import org.gdms.sql.strategies.SortComparator;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.ui.action.IActionAdapter;
@@ -100,6 +108,7 @@ public class TableComponent extends JPanel {
 	// flags
 	private boolean managingSelection;
 	private TableEditor editor;
+	private JTextField txtFilter;
 
 	/**
 	 * This is the default constructor
@@ -118,6 +127,7 @@ public class TableComponent extends JPanel {
 		this.setLayout(new BorderLayout());
 		add(getJScrollPane(), BorderLayout.CENTER);
 		add(getPanelInformation(), BorderLayout.NORTH);
+		add(getJTextField(), BorderLayout.SOUTH);
 	}
 
 	/**
@@ -174,7 +184,6 @@ public class TableComponent extends JPanel {
 		final FlowLayout flowLayout = new FlowLayout();
 		flowLayout.setAlignment(FlowLayout.LEFT);
 		informationPanel.setLayout(flowLayout);
-		informationPanel.add(getJTextField());
 		informationPanel.add(getNbRowsInformation());
 		return informationPanel;
 
@@ -188,11 +197,11 @@ public class TableComponent extends JPanel {
 	}
 
 	private JTextField getJTextField() {
-		final JTextField txtFilter = new JTextField(20);
-		txtFilter.setBackground(Color.ORANGE);
+		txtFilter = new JTextField(20);
+		txtFilter.setBackground(Color.WHITE);
 		txtFilter.setText("Put a text here... +  Enter");
 		txtFilter.setToolTipText("Press enter to find the value");
-
+		txtFilter.setEnabled(false);
 		txtFilter.addKeyListener(new KeyListener() {
 
 			public void keyPressed(KeyEvent e) {
@@ -205,7 +214,25 @@ public class TableComponent extends JPanel {
 						}
 
 					} else {
-						findAValue(text);
+						String columnName = tableModel
+								.getColumnName(selectedColumn);
+						StringBuffer query = new StringBuffer("select "
+								+ columnName + " from " + dataSource.getName()
+								+ " where ");
+						query.append(text + " order by "
+								+ tableModel.getColumnName(selectedColumn)
+								+ " ;");
+						SQLEngine eng = new SQLEngine(new ByteArrayInputStream(
+								query.toString().getBytes()));
+						try {
+							eng.SQLStatement();
+							findAValue(query.toString());
+						} catch (org.gdms.sql.parser.ParseException e1) {
+							txtFilter.setBackground(Color.red);
+							txtFilter.setText("Wrong query");
+							Services.getErrorManager().error(
+									"Semantic error in the query", e1);
+						}
 
 					}
 				}
@@ -284,6 +311,7 @@ public class TableComponent extends JPanel {
 					new HashMap<String, TableCellRenderer>());
 			this.selection = element.getSelection();
 			this.selection.setSelectionListener(selectionListener);
+			selectedRowsCount = selection.getSelectedRows().length;
 			updateTableSelection();
 			updateRowsMessage();
 
@@ -416,6 +444,7 @@ public class TableComponent extends JPanel {
 					model.addSelectionInterval(i, i);
 				}
 			}
+			selectedRowsCount = selection.getSelectedRows().length;
 			model.setValueIsAdjusting(false);
 			managingSelection = false;
 			updateRowsMessage();
@@ -446,63 +475,114 @@ public class TableComponent extends JPanel {
 		}
 	}
 
-	public void findAValue(String value) {
+	public void findAValue(final String text) {
 
-		try {
+		BackgroundManager bm = Services.getService(BackgroundManager.class);
+		bm.backgroundOperation(new BackgroundJob() {
 
-			HashSet<Integer> selectedRowSet = new HashSet<Integer>();
+			@Override
+			public String getTaskName() {
 
-			indexes = new ArrayList<Integer>();
+				return "Searching values";
+			}
 
-			Metadata metadata = dataSource.getMetadata();
+			@Override
+			public void run(IProgressMonitor pm) {
 
-			int fieldsCount = metadata.getFieldCount();
+				try {
 
-			long rowCount = dataSource.getRowCount();
+					DataSourceFactory dsf = dataSource.getDataSourceFactory();
 
-			for (int i = 0; i < rowCount; i++) {
+					DataSource ds = dsf.getDataSourceFromSQL(text);
 
-				for (int j = 0; j < fieldsCount; j++) {
+					indexes = new ArrayList<Integer>();
 
-					Type type = dataSource.getFieldType(j);
+					ds.open();
 
-					if (type.getTypeCode() != Type.GEOMETRY) {
+					long dataSourceRowCount = dataSource.getRowCount();
 
-						String dsValue = dataSource.getFieldValue(i, j)
-								.toString();
+					long dsRowCount = ds.getRowCount();
 
-						if (dsValue.equalsIgnoreCase(value)) {
-							selectedRowSet.add(i);
+					ArrayList<Integer> newSel = new ArrayList<Integer>();
+
+					List<Integer> liste = new ArrayList<Integer>();
+					pm.startTask("Data ordering");
+					for (int i = 0; i < dsRowCount; i++) {
+
+						if (pm.isCancelled()) {
+							break;
+						} else {
+							pm.progressTo((int) (100 * i / dsRowCount));
+						}
+						int value = ds.getFieldValue(i, 0).getAsInt();
+						liste.add(value);
+					}
+					pm.endTask();
+
+					pm.startTask("Data matching");
+					for (int i = 0; i < dataSourceRowCount; i++) {
+						if (pm.isCancelled()) {
+							break;
+						} else {
+							pm.progressTo((int) (100 * i / dataSourceRowCount));
+						}
+						int valuePKds = dataSource.getFieldValue(i,
+								selectedColumn).getAsInt();
+						Iterator<Integer> it = liste.iterator();
+						boolean value = true;
+						while (it.hasNext() && value) {
+							long valuePk = it.next();
+							if (valuePk > valuePKds) {
+								value = false;
+							} else {
+								if (valuePk == valuePKds) {
+									newSel.add(i);
+									indexes.add(i);
+
+									value = false;
+								}
+							}
+						}
+
+					}
+					pm.endTask();
+
+					ds.close();
+
+					for (int i = 0; i < tableModel.getRowCount(); i++) {
+						if (!newSel.contains(i)) {
 							indexes.add(i);
 						}
 					}
 
+					pm.startTask("Preparing selection");
+					int[] sel = new int[newSel.size()];
+					for (int i = 0; i < sel.length; i++) {
+						if (pm.isCancelled()) {
+							break;
+						} else {
+							pm.progressTo((int) (100 * i / sel.length));
+						}
+						sel[i] = newSel.get(i);
+					}
+					pm.endTask();
+					selection.setSelectedRows(sel);
+					fireTableDataChanged();
+
+				} catch (DriverException e) {
+					e.printStackTrace();
+				} catch (DriverLoadException e) {
+					e.printStackTrace();
+				} catch (DataSourceCreationException e) {
+					e.printStackTrace();
+				} catch (org.gdms.sql.parser.ParseException e) {
+					e.printStackTrace();
+				} catch (SemanticException e) {
+					e.printStackTrace();
 				}
-
 			}
 
-			for (int i = 0; i < tableModel.getRowCount(); i++) {
-				if (!selectedRowSet.contains(i)) {
-					indexes.add(i);
-				}
-			}
-
-			Integer[] selected = selectedRowSet.toArray(new Integer[0]);
-
-			selectedRowsCount = selected.length;
-			int[] selectedInt = new int[selectedRowsCount];
-			for (int i = 0; i < selected.length; i++) {
-
-				selectedInt[i] = selected[i];
-
-			}
-
-			selection.setSelectedRows(selectedInt);
-			fireTableDataChanged();
-
-		} catch (DriverException e) {
-			e.printStackTrace();
-		}
+		});
 
 	}
 
@@ -606,6 +686,21 @@ public class TableComponent extends JPanel {
 		private void popup(MouseEvent e) {
 			Component component = getComponent();
 			selectedColumn = table.columnAtPoint(e.getPoint());
+			int type = tableModel.getColumnType(selectedColumn).getTypeCode();
+			if (type == Type.INT || type == Type.LONG) {
+				txtFilter.setEnabled(true);
+			} else {
+
+				txtFilter.setEnabled(false);
+			}
+
+			TableColumn col = table.getTableHeader().getColumnModel()
+					.getColumn(selectedColumn);
+
+			col.setHeaderRenderer(new ButtonHeaderRenderer());
+
+			table.getTableHeader().resizeAndRepaint();
+
 			int clickedRow = table.rowAtPoint(e.getPoint());
 			component.repaint();
 			if (e.isPopupTrigger()) {
@@ -620,6 +715,7 @@ public class TableComponent extends JPanel {
 				}
 				pop.show(component, e.getX(), e.getY());
 			}
+
 		}
 
 		protected void addMenu(JPopupMenu pop, String text, Icon icon,
@@ -741,9 +837,6 @@ public class TableComponent extends JPanel {
 
 	}
 
-	/**
-	 * @author Fernando Gonzalez Cortes
-	 */
 	public class DataSourceDataModel extends AbstractTableModel {
 		private Metadata metadata;
 
