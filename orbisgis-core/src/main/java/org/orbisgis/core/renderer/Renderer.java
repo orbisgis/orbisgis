@@ -394,7 +394,11 @@ public class Renderer {
 			return ret;
 		} else {
 			sym = RenderUtils.buildSymbolToDraw(sym, g);
-			return sym.draw(g2, g, mt.getAffineTransform(), permission);
+			if (sym != null) {
+				return sym.draw(g2, g, mt.getAffineTransform(), permission);
+			} else {
+				return null;
+			}
 		}
 	}
 
@@ -587,11 +591,12 @@ public class Renderer {
 		}
 	}
 
-
 	/**
-	 * Apply some rendering rules
+	 * Apply some rendering rules Look at rendering configuration panel.
+	 *
 	 * @param g2
 	 */
+
 	private void setHints(Graphics2D g2) {
 
 		Properties systemSettings = System.getProperties();
