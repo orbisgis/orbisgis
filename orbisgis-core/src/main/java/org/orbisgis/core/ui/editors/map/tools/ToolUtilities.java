@@ -47,6 +47,7 @@ import org.gdms.driver.DriverException;
 import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.layerModel.MapContext;
 import org.orbisgis.core.ui.components.sif.AskValidValue;
+import org.orbisgis.core.ui.editors.map.tool.Automaton;
 import org.orbisgis.core.ui.editors.map.tool.TransitionException;
 import org.orbisgis.sif.UIFactory;
 
@@ -69,7 +70,7 @@ public class ToolUtilities {
 
 	/**
 	 * Ask the user to input initial values for the non null fields
-	 * 
+	 *
 	 * @param sds
 	 * @param row
 	 * @return
@@ -171,5 +172,20 @@ public class ToolUtilities {
 
 	public static boolean layerCountGreaterThan(MapContext vc, int i) {
 		return vc.getLayerModel().getLayersRecursively().length > i;
+	}
+
+	public static boolean isResctritedPopup(Automaton currentTool) {
+
+		if (currentTool instanceof ZoomInTool) {
+			return true;
+
+		} else if (currentTool instanceof ZoomOutTool) {
+			return true;
+		} else if (currentTool instanceof PanTool) {
+			return true;
+		}
+
+		return true;
+
 	}
 }
