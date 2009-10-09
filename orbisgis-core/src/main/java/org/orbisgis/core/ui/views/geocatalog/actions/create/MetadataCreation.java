@@ -51,8 +51,10 @@ import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeFactory;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.ReadWriteDriver;
+import org.orbisgis.core.Services;
 import org.orbisgis.core.ui.components.listManager.ListManager;
 import org.orbisgis.core.ui.components.listManager.ListManagerListener;
+import org.orbisgis.errorManager.ErrorManager;
 import org.orbisgis.sif.AbstractUIPanel;
 import org.orbisgis.sif.UIFactory;
 import org.orbisgis.sif.UIPanel;
@@ -150,7 +152,11 @@ public class MetadataCreation extends AbstractUIPanel implements UIPanel {
 		public Metadata getMetadata() {
 			DefaultMetadata metadata = new DefaultMetadata();
 			for (int i = 0; i < names.size(); i++) {
-				metadata.addField(names.get(i), types.get(i));
+				try {
+					metadata.addField(names.get(i), types.get(i));
+				} catch (DriverException e) {
+					Services.getService(ErrorManager.class).error("The field already exits. ", e);
+				}
 			}
 
 			return metadata;
