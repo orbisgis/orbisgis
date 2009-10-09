@@ -58,6 +58,7 @@ import java.awt.dnd.DropTargetListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
+import javax.swing.Icon;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
@@ -67,6 +68,9 @@ import javax.swing.tree.TreeCellRenderer;
 import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
+
+import org.orbisgis.images.IconLoader;
+
 
 public abstract class ResourceTree extends JPanel implements
 		DropTargetListener, DragGestureListener, DragSourceListener {
@@ -103,6 +107,8 @@ public abstract class ResourceTree extends JPanel implements
 				}
 			}
 		};
+
+
 		myTreeUI = new MyTreeUI();
 		tree.setUI(myTreeUI);
 		/** *** Register listeners **** */
@@ -131,6 +137,11 @@ public abstract class ResourceTree extends JPanel implements
 
 		/** *** UI stuff **** */
 		add(new JScrollPane(tree));
+		Icon openIcon = IconLoader.getIcon("plus.gif");
+		Icon closedIcon = IconLoader.getIcon("minus.gif");
+
+		((javax.swing.plaf.basic.BasicTreeUI) tree.getUI()).setExpandedIcon(closedIcon);
+		((javax.swing.plaf.basic.BasicTreeUI) tree.getUI()).setCollapsedIcon(openIcon);
 		tree.setRootVisible(false);
 
 	}
