@@ -390,7 +390,7 @@ public class SimplePanel extends JPanel {
 		UIFactory.dsf.getSourceManager().createDataSource(fsc);
 	}
 
-	private Metadata getMetadata(SQLUIPanel sqlPanel) {
+	private Metadata getMetadata(SQLUIPanel sqlPanel) throws DriverException {
 		DefaultMetadata ddm = new DefaultMetadata();
 		String[] names = sqlPanel.getFieldNames();
 		for (int i = 0; i < names.length; i++) {

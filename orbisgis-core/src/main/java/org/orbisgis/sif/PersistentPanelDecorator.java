@@ -109,9 +109,13 @@ public class PersistentPanelDecorator implements SQLUIPanel {
 	private Metadata getMetadata() {
 		DefaultMetadata ddm = new DefaultMetadata();
 		String[] names = getFieldNames();
-		ddm.addField("sifName", Type.STRING);
-		for (int i = 0; i < names.length; i++) {
-			ddm.addField(names[i], Type.STRING);
+		try {
+			ddm.addField("sifName", Type.STRING);
+			for (int i = 0; i < names.length; i++) {
+				ddm.addField(names[i], Type.STRING);
+			}
+		} catch (DriverException e) {
+			e.printStackTrace();
 		}
 		return ddm;
 	}
