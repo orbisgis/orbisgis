@@ -50,8 +50,8 @@ import org.gdms.driver.DriverException;
 import org.gdms.driver.ObjectDriver;
 import org.gdms.driver.driverManager.DriverLoadException;
 import org.gdms.driver.memory.ObjectMemoryDriver;
-import org.gdms.geoutils.CoordinatesUtils;
-import org.gdms.geoutils.GeomUtils;
+import org.gdms.geometryUtils.CoordinatesUtils;
+import org.gdms.geometryUtils.GeometryEditor;
 import org.gdms.sql.customQuery.CustomQuery;
 import org.gdms.sql.customQuery.TableDefinition;
 import org.gdms.sql.function.Argument;
@@ -121,7 +121,7 @@ public class InsertPoint implements CustomQuery {
 				while (ptsIterator.hasNext()) {
 					Coordinate pt = ptsIterator.next();
 
-					Geometry newGeom = GeomUtils.insertPoint(geom, pt);
+					Geometry newGeom = GeometryEditor.insertVertex(geom, pt);
 
 					if (newGeom != null) {
 
