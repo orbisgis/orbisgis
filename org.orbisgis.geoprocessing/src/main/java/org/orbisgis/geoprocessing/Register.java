@@ -43,7 +43,10 @@ import org.gdms.sql.customQuery.spatial.geometry.others.RandomGeometry;
 import org.gdms.sql.customQuery.spatial.geometry.tin.BuildTIN;
 import org.gdms.sql.customQuery.spatial.geometry.topology.ToLineNoder;
 import org.gdms.sql.customQuery.spatial.geometry.topology.TopologyPlanarGraph;
+import org.gdms.sql.customQuery.spatial.geometry.triangulation.CheckCDT;
+import org.gdms.sql.customQuery.spatial.geometry.triangulation.CheckDelaunayProperty;
 import org.gdms.sql.customQuery.spatial.geometry.triangulation.ConstrainedTINProcessing;
+import org.gdms.sql.customQuery.spatial.geometry.triangulation.QualityMeasuresOfTIN;
 import org.gdms.sql.customQuery.spatial.geometry.triangulation.TINProcessing;
 import org.gdms.sql.customQuery.spatial.geometry.update.InsertPoint;
 import org.gdms.sql.customQuery.spatial.geometry.update.UpdateZGeometry;
@@ -71,6 +74,14 @@ import org.gdms.sql.function.spatial.raster.hydrology.FillSinks;
 import org.gdms.sql.function.spatial.raster.hydrology.LSFactor;
 import org.gdms.sql.function.spatial.raster.hydrology.StreamPowerIndex;
 import org.gdms.sql.function.spatial.raster.hydrology.WetnessIndex;
+import org.geoalgorithm.orbisgis.grid.BigCreateGrid;
+import org.geoalgorithm.orbisgis.grid.CreateGrid;
+import org.geoalgorithm.orbisgis.grid.CreateWebGrid;
+import org.geoalgorithm.urbsat.direction.MainDirections;
+import org.geoalgorithm.urbsat.kmeans.KMeans;
+import org.geoalgorithm.urbsat.landcoverIndicators.CircleCompacity;
+import org.geoalgorithm.urbsat.landcoverIndicators.MeanSpacingBetweenBuildingsInACell;
+import org.geoalgorithm.urbsat.topography.GetZDEM;
 import org.orbisgis.pluginManager.PluginActivator;
 
 public class Register implements PluginActivator {
@@ -113,11 +124,23 @@ public class Register implements PluginActivator {
 
 		FunctionManager.addFunction(ToMultiSegments.class);
 		FunctionManager.addFunction(Generalize.class);
+		FunctionManager.addFunction(MeanSpacingBetweenBuildingsInACell.class);
+		FunctionManager.addFunction(CircleCompacity.class);
 
 		QueryManager.registerQuery(TINProcessing.class);
 		QueryManager.registerQuery(ConstrainedTINProcessing.class);
 
 		QueryManager.registerQuery(InsertPoint.class);
+
+		QueryManager.registerQuery(CreateGrid.class);
+		QueryManager.registerQuery(BigCreateGrid.class);
+		QueryManager.registerQuery(GetZDEM.class);
+		QueryManager.registerQuery(CreateWebGrid.class);
+		QueryManager.registerQuery(KMeans.class);
+		QueryManager.registerQuery(MainDirections.class);
+		QueryManager.registerQuery(CheckDelaunayProperty.class);
+		QueryManager.registerQuery(CheckCDT.class);
+		QueryManager.registerQuery(QualityMeasuresOfTIN.class);
 
 	}
 

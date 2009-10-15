@@ -6,7 +6,7 @@ import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.memory.ObjectMemoryDriver;
-import org.gdms.geoutils.CoordinatesUtils;
+import org.gdms.geometryUtils.CoordinatesUtils;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.DataManager;
 import org.orbisgis.core.layerModel.ILayer;

@@ -62,12 +62,12 @@ public class ProcessD8Slope extends AbstractGray16And32Process {
 
 			if (options.equals("radian")) {
 				sql = "select D8Slope(" + defaultGeom
-						+ "\", 'radian') as raster from  " + layerName + "";
+						+ ", 'radian') as raster from  " + layerName + "";
 			} else if (options.equals("degree")) {
 				sql = "select D8Slope(" + defaultGeom
 						+ ", 'degree') as raster from  " + layerName + "";
 			} else if (options.equals("percent")) {
-				sql = "select D8Slope(\"" + defaultGeom
+				sql = "select D8Slope(" + defaultGeom
 						+ ", 'percent') as raster from  " + layerName
 						+ ";";
 			}
