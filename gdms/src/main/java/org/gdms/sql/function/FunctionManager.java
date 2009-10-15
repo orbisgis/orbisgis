@@ -45,6 +45,7 @@ import org.gdms.sql.function.alphanumeric.AutoNumeric;
 import org.gdms.sql.function.alphanumeric.Average;
 import org.gdms.sql.function.alphanumeric.ConcatenateFunction;
 import org.gdms.sql.function.alphanumeric.Count;
+import org.gdms.sql.function.alphanumeric.IsUID;
 import org.gdms.sql.function.alphanumeric.Max;
 import org.gdms.sql.function.alphanumeric.Min;
 import org.gdms.sql.function.alphanumeric.Pk;
@@ -166,6 +167,7 @@ public class FunctionManager {
 		addFunction(MakePoint.class);
 		addFunction(MakeLine.class);
 		addFunction(ReplaceString.class);
+		addFunction(IsUID.class);
 	}
 
 	public static void addFunctionManagerListener(
@@ -175,7 +177,7 @@ public class FunctionManager {
 
 	/**
 	 * Remove the listener if it is present in the listener list
-	 *
+	 * 
 	 * @param listener
 	 * @return true if the listener was successfully removed. False if the
 	 *         specified parameter was not a listener
@@ -187,10 +189,10 @@ public class FunctionManager {
 
 	/**
 	 * Add a new function to the SQL engine
-	 *
+	 * 
 	 * @param function
 	 *            function
-	 *
+	 * 
 	 * @throws IllegalArgumentException
 	 *             If the class is not a valid function implementation with an
 	 *             empty constructor or there is already a function or custom
@@ -232,9 +234,9 @@ public class FunctionManager {
 
 	/**
 	 * Gets the function which name is equal to the parameter
-	 *
+	 * 
 	 * @param name
-	 *
+	 * 
 	 * @return a new function instance or null if there is no function with that
 	 *         name
 	 */
