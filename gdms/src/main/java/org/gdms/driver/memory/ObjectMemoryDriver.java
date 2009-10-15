@@ -124,7 +124,7 @@ public class ObjectMemoryDriver extends GDMSModelDriver implements ObjectReadWri
 		for (int i = 0; i < columnsTypes.length; i++) {
 			columnsTypes[i] = dataSource.getFieldType(i);
 		}
-		
+
 		return false;
 	}
 
@@ -172,7 +172,7 @@ public class ObjectMemoryDriver extends GDMSModelDriver implements ObjectReadWri
 		this.commitable = commitable;
 	}
 
-	public void addValues(Value[] values) {
+	public void addValues(Value... values) {
 		ArrayList<Value> row = new ArrayList<Value>();
 		for (Value value : values) {
 			row.add(value);
