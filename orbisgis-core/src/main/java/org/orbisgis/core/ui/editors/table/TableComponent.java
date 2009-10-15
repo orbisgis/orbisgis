@@ -50,7 +50,6 @@ import org.gdms.data.edition.FieldEditionEvent;
 import org.gdms.data.edition.MetadataEditionListener;
 import org.gdms.data.edition.MultipleEditionEvent;
 import org.gdms.data.metadata.Metadata;
-import org.gdms.data.metadata.MetadataUtilities;
 import org.gdms.data.types.Constraint;
 import org.gdms.data.types.Type;
 import org.gdms.data.values.Value;
@@ -199,8 +198,8 @@ public class TableComponent extends JPanel {
 	private JTextField getJTextField() {
 		txtFilter = new JTextField(20);
 		txtFilter.setBackground(Color.WHITE);
-		txtFilter.setText("Put a text here... +  Enter");
-		txtFilter.setToolTipText("Press enter to find the value");
+		txtFilter.setText("Select a primary key column");
+		txtFilter.setToolTipText("Press enter to search the value");
 		txtFilter.setEnabled(false);
 		txtFilter.addKeyListener(new KeyListener() {
 
@@ -216,20 +215,32 @@ public class TableComponent extends JPanel {
 					} else {
 						String columnName = tableModel
 								.getColumnName(selectedColumn);
+						String currentTableAlias = "a";
 						StringBuffer query = new StringBuffer("select "
-								+ columnName + " from " + dataSource.getName()
-								+ " where ");
-						query.append(text + " order by "
-								+ tableModel.getColumnName(selectedColumn)
-								+ " ;");
+								+ currentTableAlias + "." + columnName);
+
+						if (text.toLowerCase().startsWith("from")) {
+							query.append(" from " + dataSource.getName() + " "
+									+ currentTableAlias + " ,  " + text
+									+ " and isUID ( " + columnName
+									+ " ) order by " + columnName + " ;");
+
+						} else {
+							query.append(" from " + dataSource.getName() + " "
+									+ currentTableAlias + " , ");
+							query.append(text + " and isUID ( " + columnName
+									+ " ) order by " + columnName + " ;");
+						}
 						SQLEngine eng = new SQLEngine(new ByteArrayInputStream(
 								query.toString().getBytes()));
+
+						System.out.println(query.toString());
 						try {
 							eng.SQLStatement();
 							findAValue(query.toString());
 						} catch (org.gdms.sql.parser.ParseException e1) {
 							txtFilter.setBackground(Color.red);
-							txtFilter.setText("Wrong query");
+							txtFilter.setText("Wrong query syntaxe");
 							Services.getErrorManager().error(
 									"Semantic error in the query", e1);
 						}
@@ -490,10 +501,8 @@ public class TableComponent extends JPanel {
 			public void run(IProgressMonitor pm) {
 
 				try {
-
 					DataSourceFactory dsf = dataSource.getDataSourceFactory();
-
-					DataSource ds = dsf.getDataSourceFromSQL(text);
+					DataSource ds = dsf.getDataSourceFromSQL(text, pm);
 
 					indexes = new ArrayList<Integer>();
 
