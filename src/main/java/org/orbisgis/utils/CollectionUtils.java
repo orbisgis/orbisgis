@@ -53,7 +53,7 @@ public class CollectionUtils {
 		String separator = "";
 		for (Object object : array) {
 			ret.append(separator).append(object);
-			separator=", ";
+			separator = ", ";
 		}
 
 		return ret.toString();
@@ -65,8 +65,18 @@ public class CollectionUtils {
 				return true;
 			}
 		}
-		
+
 		return false;
+	}
+
+	public static int indexOf(Object[] array, Object element) {
+		for (int i = 0; i < array.length; i++) {
+			if (array[i] == element) {
+				return i;
+			}
+		}
+		return -1;
+
 	}
 
 }
