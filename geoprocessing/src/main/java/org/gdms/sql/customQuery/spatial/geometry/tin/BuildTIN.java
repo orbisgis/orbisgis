@@ -66,6 +66,7 @@ import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryCollection;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.LineString;
+import com.vividsolutions.jts.geom.LinearRing;
 import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.Polygon;
 
@@ -77,6 +78,7 @@ public class BuildTIN implements CustomQuery {
 		SpatialDataSourceDecorator inSds = new SpatialDataSourceDecorator(
 				tables[0]);
 		try {
+			inSds.open();
 			// populate and mesh the Planar Straight-Line Graph using the unique
 			// table as input data
 			final long rowCount = inSds.getRowCount();
@@ -88,6 +90,7 @@ public class BuildTIN implements CustomQuery {
 						breakLineList);
 			}
 
+			inSds.close();
 			final Triangulation t = new Triangulation(points
 					.toArray(new Coordinate[0]), (int[][]) breakLineList
 					.toArray(new int[][] {}));
@@ -97,12 +100,13 @@ public class BuildTIN implements CustomQuery {
 			final ObjectMemoryDriver driver = new ObjectMemoryDriver(
 					getMetadata(null));
 			final Coordinate[] cc = t.getTriangulatedPoints();
-			long index = 0;
-			for (int i = 0; i < cc.length; i += 3, index++) {
+
+			for (int i = 0; i < cc.length; i += 3) {
 				final Polygon tmpPolygon = gf.createPolygon(gf
 						.createLinearRing(new Coordinate[] { cc[i], cc[i + 1],
-								cc[i + 2], cc[i] }), null);
-				driver.addValues(new Value[] { ValueFactory.createValue(index),
+								cc[i + 2], cc[i] }), new LinearRing[0]);
+				driver.addValues(new Value[] {
+						ValueFactory.createValue(new Integer(i / 3)),
 						ValueFactory.createValue(tmpPolygon) });
 			}
 			return driver;
