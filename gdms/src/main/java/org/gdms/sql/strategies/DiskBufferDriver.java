@@ -17,9 +17,9 @@ import org.gdms.driver.gdms.GdmsWriter;
  * method to a file saving main memory. One all calls to
  * {@link #addValues(Value[])} are done, the method {@link #writingFinished()}
  * must be called.
- * 
- * @author Fernando Gonzalez Cortes
- * 
+ *
+ *
+ *
  */
 public class DiskBufferDriver extends AbstractBasicSQLDriver implements
 		ObjectDriver {
@@ -61,7 +61,7 @@ public class DiskBufferDriver extends AbstractBasicSQLDriver implements
 	/**
 	 * This method must be called when all the contents have been added to the
 	 * file
-	 * 
+	 *
 	 * @throws DriverException
 	 */
 	public void writingFinished() throws DriverException {
@@ -125,7 +125,7 @@ public class DiskBufferDriver extends AbstractBasicSQLDriver implements
 
 	/**
 	 * Add a new row to the file
-	 * 
+	 *
 	 * @param row
 	 * @throws DriverException
 	 */
