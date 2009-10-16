@@ -1,5 +1,5 @@
 <plugins>
-	<plugin dir="../orbisgis_core/"
+	<plugin dir="../orbisgis-core/"
 		configuration="src/main/resources/org/orbisgis/core/ui/conf"/>
 
 	<plugin dir="../org.orbisgis.geoprocessing"
