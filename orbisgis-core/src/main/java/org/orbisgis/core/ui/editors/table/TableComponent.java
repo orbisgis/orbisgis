@@ -227,7 +227,7 @@ public class TableComponent extends JPanel {
 
 						} else {
 							query.append(" from " + dataSource.getName() + " "
-									+ currentTableAlias + " , ");
+									+ currentTableAlias + " where ");
 							query.append(text + " and isUID ( " + columnName
 									+ " ) order by " + columnName + " ;");
 						}
@@ -239,8 +239,7 @@ public class TableComponent extends JPanel {
 							eng.SQLStatement();
 							findAValue(query.toString());
 						} catch (org.gdms.sql.parser.ParseException e1) {
-							txtFilter.setBackground(Color.red);
-							txtFilter.setText("Wrong query syntaxe");
+							txtFilter.setText("Wrong query syntax");
 							Services.getErrorManager().error(
 									"Semantic error in the query", e1);
 						}
