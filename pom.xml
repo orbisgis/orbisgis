@@ -33,7 +33,7 @@
 		<repository>
 			<id>maven</id>
 			<name>maven</name>
-			<url>http://geosysin.iict.ch/irstv-web/maven</url>
+			<url>http://geosysin.iict.ch/irstv-web/maven-repo</url>
 		</repository>				
 	</repositories>	
 	<build>
