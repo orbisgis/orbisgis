@@ -59,7 +59,7 @@ public interface Function {
 	 *             If some error happens and the execution of the query should
 	 *             be stopped
 	 */
-	public Value evaluate(Value[] args) throws FunctionException;
+	public Value evaluate(Value... args) throws FunctionException;
 
 	/**
 	 * Gets the name of the function. This name will be used in SQL statements
@@ -73,9 +73,6 @@ public interface Function {
 	 *         standard SQL
 	 */
 	public boolean isAggregate();
-
-
-	public boolean isDesaggregate();
 
 	/**
 	 * Method called to obtain the result of an aggregate function. If this
