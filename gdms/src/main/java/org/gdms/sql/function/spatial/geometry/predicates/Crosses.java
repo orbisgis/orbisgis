@@ -109,9 +109,4 @@ public class Crosses extends AbstractSpatialPredicateFunction implements
 		return "select Crosses(the_geom1,the_geom2) from myTable;";
 	}
 
-	@Override
-	public boolean isDesaggregate() {
-		// TODO Auto-generated method stub
-		return false;
-	}
 }

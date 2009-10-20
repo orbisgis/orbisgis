@@ -94,9 +94,4 @@ public class MakePoint extends AbstractSpatialFunction {
 		return "select MakePoint(X, Y) from myTable;";
 	}
 
-	@Override
-	public boolean isDesaggregate() {
-		// TODO Auto-generated method stub
-		return false;
-	}
 }

@@ -67,9 +67,4 @@ public class IsValid extends AbstractSpatialPropertyFunction {
 		return "select IsValid(the_geom) from myTable;";
 	}
 
-	@Override
-	public boolean isDesaggregate() {
-		// TODO Auto-generated method stub
-		return false;
-	}
 }

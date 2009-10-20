@@ -84,7 +84,8 @@ import org.gdms.sql.function.FunctionException;
 
 import com.vividsolutions.jts.geom.Geometry;
 
-public class Touches extends AbstractSpatialPredicateFunction implements TwoOverlappingArgumentsFunction {
+public class Touches extends AbstractSpatialPredicateFunction implements
+		TwoOverlappingArgumentsFunction {
 
 	public Value evaluateResult(final Value[] args) throws FunctionException {
 		final Geometry geom1 = args[0].getAsGeometry();
@@ -108,9 +109,4 @@ public class Touches extends AbstractSpatialPredicateFunction implements TwoOver
 		return "select Touches(the_geom1,the_geom2) from myTable;";
 	}
 
-	@Override
-	public boolean isDesaggregate() {
-		// TODO Auto-generated method stub
-		return false;
-	}
 }

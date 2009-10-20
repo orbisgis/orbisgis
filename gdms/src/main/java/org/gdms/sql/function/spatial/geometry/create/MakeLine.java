@@ -85,9 +85,4 @@ public class MakeLine extends AbstractSpatialFunction {
 		return "select MakeLine(geometry1, geometry2) from myTable;";
 	}
 
-	@Override
-	public boolean isDesaggregate() {
-		// TODO Auto-generated method stub
-		return false;
-	}
 }

@@ -109,9 +109,4 @@ public class Intersects extends AbstractSpatialPredicateFunction implements
 		return "select Intersects(the_geom1,the_geom2) from myGeom;";
 	}
 
-	@Override
-	public boolean isDesaggregate() {
-		// TODO Auto-generated method stub
-		return false;
-	}
 }

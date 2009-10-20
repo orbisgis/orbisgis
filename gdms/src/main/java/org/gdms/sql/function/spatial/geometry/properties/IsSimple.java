@@ -71,9 +71,4 @@ public class IsSimple extends AbstractSpatialPropertyFunction {
 		return "select IsSimple(the_geom) from myTable;";
 	}
 
-	@Override
-	public boolean isDesaggregate() {
-		// TODO Auto-generated method stub
-		return false;
-	}
 }

@@ -108,9 +108,5 @@ public class Covers extends AbstractSpatialPredicateFunction implements TwoOverl
 		return "select Covers(the_geom1,the_geom2) from myTable;";
 	}
 
-	@Override
-	public boolean isDesaggregate() {
-		// TODO Auto-generated method stub
-		return false;
-	}
+
 }

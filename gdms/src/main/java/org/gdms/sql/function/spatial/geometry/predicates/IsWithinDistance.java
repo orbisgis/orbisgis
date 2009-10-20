@@ -124,7 +124,7 @@ public class IsWithinDistance implements Function {
 	}
 
 	public String getSqlOrder() {
-		return "select IsWithinDistance(the_geom1,the_geom2) from myTable;";
+		return "select IsWithinDistance(the_geom1,the_geom2, distance) from myTable;";
 	}
 
 	@Override
@@ -132,9 +132,4 @@ public class IsWithinDistance implements Function {
 		return null;
 	}
 
-	@Override
-	public boolean isDesaggregate() {
-		// TODO Auto-generated method stub
-		return false;
-	}
 }

@@ -85,7 +85,7 @@ import org.gdms.sql.function.FunctionException;
 import com.vividsolutions.jts.geom.Geometry;
 
 public class Overlaps extends AbstractSpatialPredicateFunction implements
-		TwoOverlappingArgumentsFunction  {
+		TwoOverlappingArgumentsFunction {
 
 	public Value evaluateResult(final Value[] args) throws FunctionException {
 		final Geometry geom1 = args[0].getAsGeometry();
@@ -109,9 +109,4 @@ public class Overlaps extends AbstractSpatialPredicateFunction implements
 		return "select Overlaps(the_geom1,the_geom2) from myTable;";
 	}
 
-	@Override
-	public boolean isDesaggregate() {
-		// TODO Auto-generated method stub
-		return false;
-	}
 }

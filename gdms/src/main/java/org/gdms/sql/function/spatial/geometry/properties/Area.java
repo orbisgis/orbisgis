@@ -72,9 +72,4 @@ public class Area extends AbstractSpatialPropertyFunction {
 		return "select Area(the_geom) from myTable;";
 	}
 
-	@Override
-	public boolean isDesaggregate() {
-		// TODO Auto-generated method stub
-		return false;
-	}
 }

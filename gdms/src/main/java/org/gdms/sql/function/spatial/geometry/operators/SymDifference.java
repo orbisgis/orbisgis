@@ -79,9 +79,5 @@ public class SymDifference extends AbstractSpatialFunction {
 		return "select SymDifference(the_geom1,the_geom2) from myTable;";
 	}
 
-	@Override
-	public boolean isDesaggregate() {
-		// TODO Auto-generated method stub
-		return false;
-	}
+
 }

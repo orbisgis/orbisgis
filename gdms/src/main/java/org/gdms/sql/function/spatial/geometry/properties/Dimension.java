@@ -71,9 +71,4 @@ public class Dimension extends AbstractSpatialPropertyFunction {
 		return "select Dimension(the_geom) from myTable;";
 	}
 
-	@Override
-	public boolean isDesaggregate() {
-		// TODO Auto-generated method stub
-		return false;
-	}
 }

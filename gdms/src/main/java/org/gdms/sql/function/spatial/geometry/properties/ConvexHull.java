@@ -72,9 +72,4 @@ public class ConvexHull extends AbstractSpatialPropertyFunction {
 		return "select ConvexHull(the_geom) from myTable;";
 	}
 
-	@Override
-	public boolean isDesaggregate() {
-		// TODO Auto-generated method stub
-		return false;
-	}
 }

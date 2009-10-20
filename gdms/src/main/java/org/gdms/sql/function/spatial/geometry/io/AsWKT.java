@@ -73,9 +73,4 @@ public class AsWKT extends AbstractSpatialPropertyFunction {
 		return "select AsWKT(the_geom) from myTable;";
 	}
 
-	@Override
-	public boolean isDesaggregate() {
-		// TODO Auto-generated method stub
-		return false;
-	}
 }

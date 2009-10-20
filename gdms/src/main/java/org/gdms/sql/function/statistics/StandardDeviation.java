@@ -96,9 +96,4 @@ public class StandardDeviation implements Function {
 				/ numberOfValues - average * average));
 	}
 
-	@Override
-	public boolean isDesaggregate() {
-		// TODO Auto-generated method stub
-		return false;
-	}
 }

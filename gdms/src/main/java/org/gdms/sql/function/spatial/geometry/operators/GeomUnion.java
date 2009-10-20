@@ -97,9 +97,4 @@ public class GeomUnion extends AbstractSpatialFunction {
 		return "select GeomUnion(the_geom) from myTable;";
 	}
 
-	@Override
-	public boolean isDesaggregate() {
-		// TODO Auto-generated method stub
-		return false;
-	}
 }

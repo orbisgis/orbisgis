@@ -54,10 +54,4 @@ public class GetY extends AbstractSpatialPropertyFunction implements Function {
 		return "select GetY(the_geom, [index]) from myTable;";
 	}
 
-	@Override
-	public boolean isDesaggregate() {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
 }

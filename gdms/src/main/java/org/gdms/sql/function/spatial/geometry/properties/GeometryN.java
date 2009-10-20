@@ -70,9 +70,4 @@ public class GeometryN extends AbstractSpatialPropertyFunction {
 		return "select GeometryN(the_geom) from myTable;";
 	}
 
-	@Override
-	public boolean isDesaggregate() {
-		// TODO Auto-generated method stub
-		return false;
-	}
 }

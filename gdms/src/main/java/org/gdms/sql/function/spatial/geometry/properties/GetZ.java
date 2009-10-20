@@ -51,7 +51,7 @@ public class GetZ extends AbstractSpatialPropertyFunction {
 	public Value evaluateResult(final Value[] args) throws FunctionException {
 		final Geometry geometry = args[0].getAsGeometry();
 		double z = Double.NaN;
-		if (args.length==1) {
+		if (args.length == 1) {
 			z = geometry.getCoordinate().z;
 		} else {
 			z = geometry.getCoordinates()[args[1].getAsInt()].z;
@@ -89,9 +89,4 @@ public class GetZ extends AbstractSpatialPropertyFunction {
 		return "select GetZ(the_geom, [index]) from myTable;";
 	}
 
-	@Override
-	public boolean isDesaggregate() {
-		// TODO Auto-generated method stub
-		return false;
-	}
 }

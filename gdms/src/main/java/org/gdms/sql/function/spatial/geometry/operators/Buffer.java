@@ -112,9 +112,4 @@ public class Buffer extends AbstractSpatialFunction {
 		return "select Buffer(the_geom, bufferSize[, 'butt'|'square'|'round']) from myTable;";
 	}
 
-	@Override
-	public boolean isDesaggregate() {
-		// TODO Auto-generated method stub
-		return false;
-	}
 }
