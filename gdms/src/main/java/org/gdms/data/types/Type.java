@@ -41,7 +41,6 @@ import org.gdms.data.values.Value;
 /**
  * Interface that represent the type of a field
  *
- * @author Fernando Gonzalez Cortes
  */
 public interface Type {
 
