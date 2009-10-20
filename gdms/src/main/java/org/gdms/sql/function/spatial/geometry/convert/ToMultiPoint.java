@@ -78,9 +78,4 @@ public class ToMultiPoint extends AbstractSpatialFunction {
 		return "select ToMultiPoint(the_geom) from myTable;";
 	}
 
-	@Override
-	public boolean isDesaggregate() {
-		// TODO Auto-generated method stub
-		return true;
-	}
 }

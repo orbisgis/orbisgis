@@ -76,9 +76,4 @@ public class Centroid extends AbstractSpatialFunction {
 		return "select Centroid(the_geom) from myTable;";
 	}
 
-	@Override
-	public boolean isDesaggregate() {
-		// TODO Auto-generated method stub
-		return false;
-	}
 }

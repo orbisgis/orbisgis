@@ -140,9 +140,4 @@ public class ToMultiLine extends AbstractSpatialFunction {
 		return "select ToMultiLine(the_geom) from myTable;";
 	}
 
-	@Override
-	public boolean isDesaggregate() {
-		// TODO Auto-generated method stub
-		return false;
-	}
 }
