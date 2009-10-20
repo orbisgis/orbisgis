@@ -87,10 +87,4 @@ public class ToStringFunction implements Function {
 		return null;
 	}
 
-	@Override
-	public boolean isDesaggregate() {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
 }

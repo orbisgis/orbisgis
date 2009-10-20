@@ -107,9 +107,4 @@ public class Min implements Function {
 		return min;
 	}
 
-	@Override
-	public boolean isDesaggregate() {
-		// TODO Auto-generated method stub
-		return false;
-	}
 }

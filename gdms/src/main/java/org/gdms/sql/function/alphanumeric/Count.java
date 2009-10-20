@@ -102,9 +102,4 @@ public class Count implements Function {
 		return v;
 	}
 
-	@Override
-	public boolean isDesaggregate() {
-		// TODO Auto-generated method stub
-		return false;
-	}
 }

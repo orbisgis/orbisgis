@@ -99,9 +99,4 @@ public class ReplaceString implements Function {
 		return null;
 	}
 
-	@Override
-	public boolean isDesaggregate() {
-		return false;
-	}
-
 }

@@ -83,8 +83,4 @@ public class AutoNumeric implements Function {
 		return null;
 	}
 
-	@Override
-	public boolean isDesaggregate() {
-		return false;
-	}
 }

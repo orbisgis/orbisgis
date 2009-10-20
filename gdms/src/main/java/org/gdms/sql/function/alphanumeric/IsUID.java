@@ -96,11 +96,6 @@ public class IsUID implements Function {
 	}
 
 	@Override
-	public boolean isDesaggregate() {
-		return false;
-	}
-
-	@Override
 	public Type getType(Type[] argsTypes) throws InvalidTypeException {
 
 		return TypeFactory.createType(Type.BOOLEAN);

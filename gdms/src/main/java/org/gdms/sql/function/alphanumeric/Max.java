@@ -94,9 +94,4 @@ public class Max implements Function {
 		return max;
 	}
 
-	@Override
-	public boolean isDesaggregate() {
-		// TODO Auto-generated method stub
-		return false;
-	}
 }

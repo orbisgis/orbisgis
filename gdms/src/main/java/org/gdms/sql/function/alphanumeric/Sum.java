@@ -102,8 +102,5 @@ public class Sum implements Function {
 		return acum;
 	}
 
-	@Override
-	public boolean isDesaggregate() {
-		return false;
-	}
+
 }
