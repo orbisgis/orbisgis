@@ -31,8 +31,8 @@
 			<url>http://maven.geotools.fr/repository</url>
 		</repository>
 		<repository>
-			<id>maven</id>
-			<name>maven</name>
+			<id>geosysin</id>
+			<name>Geosysin repository</name>
 			<url>http://geosysin.iict.ch/irstv-web/maven-repo</url>
 		</repository>				
 	</repositories>
