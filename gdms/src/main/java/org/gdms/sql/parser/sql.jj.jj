@@ -77,7 +77,7 @@ SKIP:
 }
 
 
-TOKEN:  /* Keywords */
+TOKEN :  /* Keywords */
 {
     < ALL: "all" >
   | < AND: "and" >
@@ -89,6 +89,7 @@ TOKEN:  /* Keywords */
   | < DESC: "desc" >
   | < DISTINCT: "distinct" >
   | < DROP: "drop" >
+  | <EXCEPT:"except">
   | < FROM: "from" >
   | < GROUP: "group" >
   | < HAVING: "having" >
@@ -109,17 +110,34 @@ TOKEN:  /* Keywords */
   | < UNION: "union" >
   | < SPACES: "spaces" >
   | < TABLE: "table" >
+  | <VIEW:"view">
+  | <ADD:"add">
+  | <COLUMN:"column">
   | < WHERE: "where" >
 
 //***************************************************************************************
   | < CREATE: "create" >
   | < DELETE: "delete" >
   | < EXISTS: "exists" >
+  | < ALTER: "alter" >
   | < INSERT: "insert" >
   | < INTO: "into" >
   | < SET: "set" >
   | < UPDATE: "update" >
   | < VALUES: "values" >
+  | < RENAME: "rename" >
+  | < TO: "to" >
+
+  //***************************************************************************************
+
+  |<TEXT:"text">
+  |<BOOLEAN:"boolean">
+  |<DATE:"date">
+  |<NUMERIC:"numeric">
+  |<INTERGER:"integer">
+  |<RESTRICT : "restrict">
+  | <CASCADE : "cascade">
+
 }
 
 
@@ -138,16 +156,15 @@ TOKEN:  /* Literals */
 }
 
 
-TOKEN:  /* Identifiers */
+TOKEN :  /* Identifiers */
 {
     < ID: ( <LETTER> )+ ( "_" | "$" | "#" | <DIGIT> | <LETTER> )* >
   | < #LETTER: ["A"-"Z", "a"-"z"] >
   | < #DIGIT: ["0"-"9"] >
-  | < QUOTED_ID: "\"" (~["\n","\r","\""])* "\"" >
 }
 
 
-TOKEN:  /* Separators and operators */
+TOKEN :  /* Separators and operators */
 {
     < ASSIGN: ":=" >
   | < CONCAT: "||" >
@@ -438,9 +455,11 @@ void SQLDrop() :
 {/*@bgen(jjtree) SQLDrop */
   try {
 /*@egen*/
-  <DROP> 
-  ( 
+  <DROP>
+  (
     (<TABLE> SQLTableList())
+  |
+  (<VIEW> SQLTableList())
   |
     (<INDEX> <ON> SQLId() "(" SQLId() ")")
   )/*@bgen(jjtree)*/
@@ -466,6 +485,309 @@ void SQLDrop() :
   }
 /*@egen*/
 }
+
+void SQLAlter() :
+{/*@bgen(jjtree) SQLAlter */
+  ASTSQLAlter jjtn000 = new ASTSQLAlter(JJTSQLALTER);
+  boolean jjtc000 = true;
+  jjtree.openNodeScope(jjtn000);
+  jjtreeOpenNodeScope(jjtn000);
+/*@egen*/}
+{/*@bgen(jjtree) SQLAlter */
+try {
+/*@egen*/
+<ALTER> <TABLE>  SQLId()
+(SQLAdd()|SQLDropColumn()|SQLRename())/*@bgen(jjtree)*/
+} catch (Throwable jjte000) {
+  if (jjtc000) {
+    jjtree.clearNodeScope(jjtn000);
+    jjtc000 = false;
+  } else {
+    jjtree.popNode();
+  }
+  if (jjte000 instanceof RuntimeException) {
+    throw (RuntimeException)jjte000;
+  }
+  if (jjte000 instanceof ParseException) {
+    throw (ParseException)jjte000;
+  }
+  throw (Error)jjte000;
+} finally {
+  if (jjtc000) {
+    jjtree.closeNodeScope(jjtn000, true);
+    jjtreeCloseNodeScope(jjtn000);
+  }
+}
+/*@egen*/
+
+}
+
+void SQLAdd():
+{/*@bgen(jjtree) SQLAdd */
+  ASTSQLAdd jjtn000 = new ASTSQLAdd(JJTSQLADD);
+  boolean jjtc000 = true;
+  jjtree.openNodeScope(jjtn000);
+  jjtreeOpenNodeScope(jjtn000);
+/*@egen*/}
+{/*@bgen(jjtree) SQLAdd */
+try {
+/*@egen*/
+<ADD> (SQLAddColumn()|SQLAddPrimaryKey())/*@bgen(jjtree)*/
+} catch (Throwable jjte000) {
+  if (jjtc000) {
+    jjtree.clearNodeScope(jjtn000);
+    jjtc000 = false;
+  } else {
+    jjtree.popNode();
+  }
+  if (jjte000 instanceof RuntimeException) {
+    throw (RuntimeException)jjte000;
+  }
+  if (jjte000 instanceof ParseException) {
+    throw (ParseException)jjte000;
+  }
+  throw (Error)jjte000;
+} finally {
+  if (jjtc000) {
+    jjtree.closeNodeScope(jjtn000, true);
+    jjtreeCloseNodeScope(jjtn000);
+  }
+}
+/*@egen*/
+}
+
+void SQLAddColumn() :
+{/*@bgen(jjtree) SQLAddColumn */
+  ASTSQLAddColumn jjtn000 = new ASTSQLAddColumn(JJTSQLADDCOLUMN);
+  boolean jjtc000 = true;
+  jjtree.openNodeScope(jjtn000);
+  jjtreeOpenNodeScope(jjtn000);
+/*@egen*/}
+{/*@bgen(jjtree) SQLAddColumn */
+ try {
+/*@egen*/
+ <COLUMN>  SQLId() SQLType()/*@bgen(jjtree)*/
+ } catch (Throwable jjte000) {
+   if (jjtc000) {
+     jjtree.clearNodeScope(jjtn000);
+     jjtc000 = false;
+   } else {
+     jjtree.popNode();
+   }
+   if (jjte000 instanceof RuntimeException) {
+     throw (RuntimeException)jjte000;
+   }
+   if (jjte000 instanceof ParseException) {
+     throw (ParseException)jjte000;
+   }
+   throw (Error)jjte000;
+ } finally {
+   if (jjtc000) {
+     jjtree.closeNodeScope(jjtn000, true);
+     jjtreeCloseNodeScope(jjtn000);
+   }
+ }
+/*@egen*/
+}
+
+void SQLAddPrimaryKey():
+{/*@bgen(jjtree) SQLAddPrimaryKey */
+  ASTSQLAddPrimaryKey jjtn000 = new ASTSQLAddPrimaryKey(JJTSQLADDPRIMARYKEY);
+  boolean jjtc000 = true;
+  jjtree.openNodeScope(jjtn000);
+  jjtreeOpenNodeScope(jjtn000);
+/*@egen*/}
+{/*@bgen(jjtree) SQLAddPrimaryKey */
+ try {
+/*@egen*/
+ <PRIMARY> <KEY> "("SQLId()")"/*@bgen(jjtree)*/
+ } catch (Throwable jjte000) {
+   if (jjtc000) {
+     jjtree.clearNodeScope(jjtn000);
+     jjtc000 = false;
+   } else {
+     jjtree.popNode();
+   }
+   if (jjte000 instanceof RuntimeException) {
+     throw (RuntimeException)jjte000;
+   }
+   if (jjte000 instanceof ParseException) {
+     throw (ParseException)jjte000;
+   }
+   throw (Error)jjte000;
+ } finally {
+   if (jjtc000) {
+     jjtree.closeNodeScope(jjtn000, true);
+     jjtreeCloseNodeScope(jjtn000);
+   }
+ }
+/*@egen*/
+}
+
+void SQLDropColumn():
+{/*@bgen(jjtree) SQLDropColumn */
+  ASTSQLDropColumn jjtn000 = new ASTSQLDropColumn(JJTSQLDROPCOLUMN);
+  boolean jjtc000 = true;
+  jjtree.openNodeScope(jjtn000);
+  jjtreeOpenNodeScope(jjtn000);
+/*@egen*/}
+{/*@bgen(jjtree) SQLDropColumn */
+try {
+/*@egen*/
+<DROP> <COLUMN> SQLId() [(<RESTRICT> | <CASCADE>)]/*@bgen(jjtree)*/
+} catch (Throwable jjte000) {
+  if (jjtc000) {
+    jjtree.clearNodeScope(jjtn000);
+    jjtc000 = false;
+  } else {
+    jjtree.popNode();
+  }
+  if (jjte000 instanceof RuntimeException) {
+    throw (RuntimeException)jjte000;
+  }
+  if (jjte000 instanceof ParseException) {
+    throw (ParseException)jjte000;
+  }
+  throw (Error)jjte000;
+} finally {
+  if (jjtc000) {
+    jjtree.closeNodeScope(jjtn000, true);
+    jjtreeCloseNodeScope(jjtn000);
+  }
+}
+/*@egen*/
+}
+
+void SQLRename():
+{/*@bgen(jjtree) SQLRename */
+  ASTSQLRename jjtn000 = new ASTSQLRename(JJTSQLRENAME);
+  boolean jjtc000 = true;
+  jjtree.openNodeScope(jjtn000);
+  jjtreeOpenNodeScope(jjtn000);
+/*@egen*/}
+{/*@bgen(jjtree) SQLRename */
+try {
+/*@egen*/
+<RENAME>
+(SQLRenameColumn()|SQLRenameTable())/*@bgen(jjtree)*/
+} catch (Throwable jjte000) {
+  if (jjtc000) {
+    jjtree.clearNodeScope(jjtn000);
+    jjtc000 = false;
+  } else {
+    jjtree.popNode();
+  }
+  if (jjte000 instanceof RuntimeException) {
+    throw (RuntimeException)jjte000;
+  }
+  if (jjte000 instanceof ParseException) {
+    throw (ParseException)jjte000;
+  }
+  throw (Error)jjte000;
+} finally {
+  if (jjtc000) {
+    jjtree.closeNodeScope(jjtn000, true);
+    jjtreeCloseNodeScope(jjtn000);
+  }
+}
+/*@egen*/
+}
+
+void SQLRenameColumn():
+{/*@bgen(jjtree) SQLRenameColumn */
+  ASTSQLRenameColumn jjtn000 = new ASTSQLRenameColumn(JJTSQLRENAMECOLUMN);
+  boolean jjtc000 = true;
+  jjtree.openNodeScope(jjtn000);
+  jjtreeOpenNodeScope(jjtn000);
+/*@egen*/}
+{/*@bgen(jjtree) SQLRenameColumn */
+try {
+/*@egen*/
+<COLUMN> SQLId() <TO> SQLId()/*@bgen(jjtree)*/
+} catch (Throwable jjte000) {
+  if (jjtc000) {
+    jjtree.clearNodeScope(jjtn000);
+    jjtc000 = false;
+  } else {
+    jjtree.popNode();
+  }
+  if (jjte000 instanceof RuntimeException) {
+    throw (RuntimeException)jjte000;
+  }
+  if (jjte000 instanceof ParseException) {
+    throw (ParseException)jjte000;
+  }
+  throw (Error)jjte000;
+} finally {
+  if (jjtc000) {
+    jjtree.closeNodeScope(jjtn000, true);
+    jjtreeCloseNodeScope(jjtn000);
+  }
+}
+/*@egen*/
+}
+
+void SQLRenameTable():
+{/*@bgen(jjtree) SQLRenameTable */
+  ASTSQLRenameTable jjtn000 = new ASTSQLRenameTable(JJTSQLRENAMETABLE);
+  boolean jjtc000 = true;
+  jjtree.openNodeScope(jjtn000);
+  jjtreeOpenNodeScope(jjtn000);
+/*@egen*/}
+{/*@bgen(jjtree) SQLRenameTable */
+try {
+/*@egen*/
+<TO> SQLId()/*@bgen(jjtree)*/
+} catch (Throwable jjte000) {
+  if (jjtc000) {
+    jjtree.clearNodeScope(jjtn000);
+    jjtc000 = false;
+  } else {
+    jjtree.popNode();
+  }
+  if (jjte000 instanceof RuntimeException) {
+    throw (RuntimeException)jjte000;
+  }
+  if (jjte000 instanceof ParseException) {
+    throw (ParseException)jjte000;
+  }
+  throw (Error)jjte000;
+} finally {
+  if (jjtc000) {
+    jjtree.closeNodeScope(jjtn000, true);
+    jjtreeCloseNodeScope(jjtn000);
+  }
+}
+/*@egen*/
+}
+
+void SQLType() :
+{/*@bgen(jjtree) SQLType */
+  ASTSQLType jjtn000 = new ASTSQLType(JJTSQLTYPE);
+  boolean jjtc000 = true;
+  jjtree.openNodeScope(jjtn000);
+  jjtreeOpenNodeScope(jjtn000);
+/*@egen*/}
+{/*@bgen(jjtree) SQLType */
+  try {
+/*@egen*/
+  <TEXT> |
+  <BOOLEAN> |
+  <DATE> |
+  <NUMERIC>|
+  <INTERGER>/*@bgen(jjtree)*/
+  } finally {
+    if (jjtc000) {
+      jjtree.closeNodeScope(jjtn000, true);
+      jjtreeCloseNodeScope(jjtn000);
+    }
+  }
+/*@egen*/
+}
+
+
+
+
 void SQLExistsClause() :
 {/*@bgen(jjtree) SQLExistsClause */
   ASTSQLExistsClause jjtn000 = new ASTSQLExistsClause(JJTSQLEXISTSCLAUSE);
@@ -659,13 +981,47 @@ void SQLId() :
 {/*@bgen(jjtree) SQLId */
   try {
 /*@egen*/
-  <ID> | <QUOTED_ID>/*@bgen(jjtree)*/
+  <ID>/*@bgen(jjtree)*/
   } finally {
     if (jjtc000) {
       jjtree.closeNodeScope(jjtn000, true);
       jjtreeCloseNodeScope(jjtn000);
     }
   }
+/*@egen*/
+}
+
+void SQLIdSequence() :
+{/*@bgen(jjtree) SQLIdSequence */
+  ASTSQLIdSequence jjtn000 = new ASTSQLIdSequence(JJTSQLIDSEQUENCE);
+  boolean jjtc000 = true;
+  jjtree.openNodeScope(jjtn000);
+  jjtreeOpenNodeScope(jjtn000);
+/*@egen*/}
+{/*@bgen(jjtree) SQLIdSequence */
+        try {
+/*@egen*/
+	SQLId() (LOOKAHEAD(2) "," SQLId())*/*@bgen(jjtree)*/
+        } catch (Throwable jjte000) {
+          if (jjtc000) {
+            jjtree.clearNodeScope(jjtn000);
+            jjtc000 = false;
+          } else {
+            jjtree.popNode();
+          }
+          if (jjte000 instanceof RuntimeException) {
+            throw (RuntimeException)jjte000;
+          }
+          if (jjte000 instanceof ParseException) {
+            throw (ParseException)jjte000;
+          }
+          throw (Error)jjte000;
+        } finally {
+          if (jjtc000) {
+            jjtree.closeNodeScope(jjtn000, true);
+            jjtreeCloseNodeScope(jjtn000);
+          }
+        }
 /*@egen*/
 }
 
@@ -721,8 +1077,7 @@ void SQLInsert() :
   SQLTableRef()
   [
     "("
-    SQLId()
-    ("," SQLId())*
+    SQLIdSequence()
     ")"
   ]
   <VALUES>
@@ -1303,16 +1658,138 @@ void SQLSelectAllCols() :
   jjtreeOpenNodeScope(jjtn000);
 /*@egen*/}
 {/*@bgen(jjtree) SQLSelectAllCols */
-  try {
+   try {
 /*@egen*/
-  "*"/*@bgen(jjtree)*/
-  } finally {
-    if (jjtc000) {
-      jjtree.closeNodeScope(jjtn000, true);
-      jjtreeCloseNodeScope(jjtn000);
+   "*" [ SQLSelectAllModifier() ]/*@bgen(jjtree)*/
+   } catch (Throwable jjte000) {
+     if (jjtc000) {
+       jjtree.clearNodeScope(jjtn000);
+       jjtc000 = false;
+     } else {
+       jjtree.popNode();
+     }
+     if (jjte000 instanceof RuntimeException) {
+       throw (RuntimeException)jjte000;
+     }
+     if (jjte000 instanceof ParseException) {
+       throw (ParseException)jjte000;
+     }
+     throw (Error)jjte000;
+   } finally {
+     if (jjtc000) {
+       jjtree.closeNodeScope(jjtn000, true);
+       jjtreeCloseNodeScope(jjtn000);
+     }
+   }
+/*@egen*/
+}
+
+void SQLSelectAllModifier() :
+{/*@bgen(jjtree) SQLSelectAllModifier */
+  ASTSQLSelectAllModifier jjtn000 = new ASTSQLSelectAllModifier(JJTSQLSELECTALLMODIFIER);
+  boolean jjtc000 = true;
+  jjtree.openNodeScope(jjtn000);
+  jjtreeOpenNodeScope(jjtn000);
+/*@egen*/}
+{/*@bgen(jjtree) SQLSelectAllModifier */
+    try {
+/*@egen*/
+
+    SQLSelectAllModifierExcept()/*@bgen(jjtree)*/
+    } catch (Throwable jjte000) {
+      if (jjtc000) {
+        jjtree.clearNodeScope(jjtn000);
+        jjtc000 = false;
+      } else {
+        jjtree.popNode();
+      }
+      if (jjte000 instanceof RuntimeException) {
+        throw (RuntimeException)jjte000;
+      }
+      if (jjte000 instanceof ParseException) {
+        throw (ParseException)jjte000;
+      }
+      throw (Error)jjte000;
+    } finally {
+      if (jjtc000) {
+        jjtree.closeNodeScope(jjtn000, true);
+        jjtreeCloseNodeScope(jjtn000);
+      }
     }
-  }
 /*@egen*/
+
+}
+
+void SQLSelectAllModifierExcept() :
+{/*@bgen(jjtree) SQLSelectAllModifierExcept */
+  ASTSQLSelectAllModifierExcept jjtn000 = new ASTSQLSelectAllModifierExcept(JJTSQLSELECTALLMODIFIEREXCEPT);
+  boolean jjtc000 = true;
+  jjtree.openNodeScope(jjtn000);
+  jjtreeOpenNodeScope(jjtn000);
+/*@egen*/}
+{/*@bgen(jjtree) SQLSelectAllModifierExcept */
+try {
+/*@egen*/
+"{"
+  <EXCEPT> [SQLIdSequence()]
+  "}"/*@bgen(jjtree)*/
+} catch (Throwable jjte000) {
+  if (jjtc000) {
+    jjtree.clearNodeScope(jjtn000);
+    jjtc000 = false;
+  } else {
+    jjtree.popNode();
+  }
+  if (jjte000 instanceof RuntimeException) {
+    throw (RuntimeException)jjte000;
+  }
+  if (jjte000 instanceof ParseException) {
+    throw (ParseException)jjte000;
+  }
+  throw (Error)jjte000;
+} finally {
+  if (jjtc000) {
+    jjtree.closeNodeScope(jjtn000, true);
+    jjtreeCloseNodeScope(jjtn000);
+  }
+}
+/*@egen*/
+}
+
+
+void SQLSelectAllInTableModifier() :
+{/*@bgen(jjtree) SQLSelectAllInTableModifier */
+  ASTSQLSelectAllInTableModifier jjtn000 = new ASTSQLSelectAllInTableModifier(JJTSQLSELECTALLINTABLEMODIFIER);
+  boolean jjtc000 = true;
+  jjtree.openNodeScope(jjtn000);
+  jjtreeOpenNodeScope(jjtn000);
+/*@egen*/}
+{/*@bgen(jjtree) SQLSelectAllInTableModifier */
+     try {
+/*@egen*/
+     SQLSelectAllModifierExcept()/*@bgen(jjtree)*/
+     } catch (Throwable jjte000) {
+       if (jjtc000) {
+         jjtree.clearNodeScope(jjtn000);
+         jjtc000 = false;
+       } else {
+         jjtree.popNode();
+       }
+       if (jjte000 instanceof RuntimeException) {
+         throw (RuntimeException)jjte000;
+       }
+       if (jjte000 instanceof ParseException) {
+         throw (ParseException)jjte000;
+       }
+       throw (Error)jjte000;
+     } finally {
+       if (jjtc000) {
+         jjtree.closeNodeScope(jjtn000, true);
+         jjtreeCloseNodeScope(jjtn000);
+       }
+     }
+/*@egen*/
+
 }
 
 void SQLSelectAllColsInTable() :
@@ -1325,7 +1802,7 @@ void SQLSelectAllColsInTable() :
 {/*@bgen(jjtree) SQLSelectAllColsInTable */
   try {
 /*@egen*/
-  SQLId() <DOT> "*"/*@bgen(jjtree)*/
+  SQLId() <DOT> "*" [ SQLSelectAllInTableModifier() ]/*@bgen(jjtree)*/
   } catch (Throwable jjte000) {
     if (jjtc000) {
       jjtree.clearNodeScope(jjtn000);
@@ -1490,6 +1967,7 @@ void SQLStatement() :
   | SQLUnion()
   | SQLCreate()
   | SQLDrop()
+  | SQLAlter()
   ) ";"/*@bgen(jjtree)*/
   } catch (Throwable jjte000) {
     if (jjtc000) {
@@ -1962,10 +2440,13 @@ void SQLCreate() :
 {/*@bgen(jjtree) SQLCreate */
   try {
 /*@egen*/
-  <CREATE> 
+  <CREATE>
   (
   	(<TABLE> SQLId()
     ( "(" SQLCreateArgsList() ")" | <AS> (SQLSelect() | SQLUnion()) ) )
+  |
+  	(<VIEW> SQLId() <AS> (SQLSelect() | SQLUnion())
+  	)
   |
     (<INDEX> <ON> SQLId() "(" SQLId() ")")
   )/*@bgen(jjtree)*/
@@ -2003,7 +2484,7 @@ void SQLCreateArgsList() :
         try {
 /*@egen*/
 	SQLColumnDefinition() (LOOKAHEAD(2) "," SQLColumnDefinition() ) *
-	[ "," <PRIMARY> <KEY> "(" SQLId() ( "," SQLId() ) * ")" ]/*@bgen(jjtree)*/
+	[ "," <PRIMARY> <KEY> "(" SQLIdSequence() ")" ]/*@bgen(jjtree)*/
         } catch (Throwable jjte000) {
           if (jjtc000) {
             jjtree.clearNodeScope(jjtn000);
