@@ -554,6 +554,11 @@ void SQLSelect() :
   ]
 }
 
+void SQLSelectInto() :
+{}
+{
+   SQLSelect() [SQLInto()]
+}
 void SQLSelectAllCols() :
 {}
 {
@@ -633,7 +638,7 @@ void SQLStatement() :
 {}
 {
   (
-    SQLSelect()
+  SQLSelectInto()
   | SQLInsert()
   | SQLUpdate()
   | SQLDelete()
@@ -773,6 +778,12 @@ void SQLCreate() :
   |
     (<INDEX> <ON> SQLId() "(" SQLId() ")")
   )
+}
+
+void SQLInto():
+{}
+{
+<INTO> SQLIdSequence()
 }
 
 void SQLCreateArgsList() :
