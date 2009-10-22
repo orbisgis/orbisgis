@@ -40,22 +40,21 @@ import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
+import org.gdms.sql.function.Argument;
+import org.gdms.sql.function.Arguments;
+import org.gdms.sql.function.Function;
 import org.gdms.sql.function.FunctionException;
 
 import com.vividsolutions.jts.geom.Geometry;
 
-public class GeometryN extends AbstractSpatialPropertyFunction {
-	public Value evaluateResult(final Value[] args) throws FunctionException {
-		final Geometry g = args[0].getAsGeometry();
-		return ValueFactory.createValue(g.getNumGeometries());
-	}
+public class GeometryN implements Function {
 
 	public String getName() {
-		return "GeometryN";
+		return "ST_GeometryN";
 	}
 
 	public Type getType(Type[] types) {
-		return TypeFactory.createType(Type.INT);
+		return TypeFactory.createType(Type.GEOMETRY);
 	}
 
 	public boolean isAggregate() {
@@ -63,11 +62,26 @@ public class GeometryN extends AbstractSpatialPropertyFunction {
 	}
 
 	public String getDescription() {
-		return "Return the number of geometry ";
+		return "Return the 1-based Nth geometry ";
 	}
 
 	public String getSqlOrder() {
-		return "select GeometryN(the_geom) from myTable;";
+		return "select ST_GeometryN(geometry geomA, integer n) from myTable;";
+	}
+
+	@Override
+	public Value evaluate(Value... args) throws FunctionException {
+		final Geometry g = args[0].getAsGeometry();
+		final int n = args[1].getAsInt();
+		return ValueFactory.createValue(g.getGeometryN(n));
+	}
+
+	public Value getAggregateResult() {
+		return null;
+	}
+
+	public Arguments[] getFunctionArguments() {
+		return new Arguments[] { new Arguments(Argument.GEOMETRY, Argument.INT) };
 	}
 
 }
