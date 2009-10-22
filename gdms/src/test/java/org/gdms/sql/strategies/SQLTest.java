@@ -46,8 +46,6 @@ import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.DigestUtilities;
 import org.gdms.data.ExecutionException;
-import org.gdms.data.metadata.Metadata;
-import org.gdms.data.metadata.MetadataUtilities;
 import org.gdms.data.types.Constraint;
 import org.gdms.data.types.GeometryConstraint;
 import org.gdms.data.types.Type;
@@ -63,6 +61,14 @@ import com.vividsolutions.jts.io.WKTReader;
 
 public class SQLTest extends SourceTest {
 	public static DataSource d;
+
+	public void testCreateAsTableCustomQuery() throws Exception {
+		dsf.getSourceManager().register("landcover2000",
+				new File(internalData + "landcover2000.shp"));
+		dsf.executeSQL("select register('/tmp/test.gdms','custom')");
+		dsf
+				.executeSQL("create table custom as select explode() from landcover2000 where gid > 12");
+	}
 
 	public void testCaseInsensitiveness() throws Exception {
 		String name = super.getAnySpatialResource();
@@ -140,8 +146,6 @@ public class SQLTest extends SourceTest {
 		}
 
 	}
-
-
 
 	public void testExcept() throws Exception {
 		dsf.getSourceManager().register("landcover2000",
