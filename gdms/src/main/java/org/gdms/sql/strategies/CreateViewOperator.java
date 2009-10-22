@@ -25,11 +25,6 @@ public class CreateViewOperator extends AbstractOperator implements Operator {
 	protected ObjectDriver getResultContents(IProgressMonitor pm) {
 
 		try {
-
-			for (int i = 0; i < getOperatorCount(); i++) {
-				Operator op = getOperator(i);
-
-			}
 			dsf.getSourceManager().register(viewName, statement);
 		} catch (SourceAlreadyExistsException e) {
 			new ExecutionException("Cannot register view: " + viewName, e);
