@@ -97,5 +97,4 @@ public class Average implements Function {
 		return ValueFactory.createValue(sumOfValues / numberOfValues);
 	}
 
-
 }
