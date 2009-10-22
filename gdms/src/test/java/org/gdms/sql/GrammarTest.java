@@ -114,7 +114,7 @@ public class GrammarTest extends TestCase {
 	public void testQuotedId() throws Exception {
 		parse("select NAME from mytable;");
 		parse("select Name from mytable;");
-		parse ("select * from mytable_0;");
+		parse("select * from mytable_0;");
 		notParse("select _field from table;");
 		notParse("select \"table\".\"_field\" from \"table\";");
 		notParse("select \"table\".\"_field\" , \"table\".\"_field2\" from \"table\";");
@@ -249,6 +249,12 @@ public class GrammarTest extends TestCase {
 		parse("select * from mytable;/* com\nment\n*/select * from mytable;");
 	}
 
+	public void testIntoAsCreateTable() throws Exception {
+		parse("select * from mytable into toto;");
+		parse("select * from mytable into toto, tata;");
+		notParse("create table toto as select * from mytable into toto;");
+	}
+
 	/**
 	 * Add subquery in SQL grammar
 	 *
@@ -256,12 +262,7 @@ public class GrammarTest extends TestCase {
 	 */
 	public void testInSubQuery() throws Exception {
 		parse("select * from mytable where myfield in (3, 4);");
-		// notParse("select * from mytable where myfield "
-		// + "in (3, select id from mtable);");
-		// notParse("select * from mytable where myfield in (select id from
-		// mtable);");
-		// notParse("select * from mytable where myfield "
-		// + "in (select id2 from mtable, select id from mtable);");
+
 	}
 
 	private void notParse(String sql) {
