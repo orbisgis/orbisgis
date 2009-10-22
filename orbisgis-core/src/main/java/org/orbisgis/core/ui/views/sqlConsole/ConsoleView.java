@@ -47,8 +47,6 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 
-import javax.swing.JDialog;
-
 import org.apache.log4j.Logger;
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceCreationException;
@@ -59,7 +57,6 @@ import org.gdms.data.types.Type;
 import org.gdms.driver.DriverException;
 import org.gdms.sql.customQuery.CustomQuery;
 import org.gdms.sql.customQuery.QueryManager;
-import org.gdms.sql.customQuery.showAttributes.Table;
 import org.gdms.sql.function.Function;
 import org.gdms.sql.function.FunctionManager;
 import org.gdms.sql.parser.ParseException;
