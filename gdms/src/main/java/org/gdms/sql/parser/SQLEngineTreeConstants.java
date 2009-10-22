@@ -45,34 +45,36 @@ public interface SQLEngineTreeConstants
   public int JJTSQLRIGHTJOINCLAUSE = 39;
   public int JJTSQLSCRIPT = 40;
   public int JJTSQLSELECT = 41;
-  public int JJTSQLSELECTALLCOLS = 42;
-  public int JJTSQLSELECTALLMODIFIER = 43;
-  public int JJTSQLSELECTALLMODIFIEREXCEPT = 44;
-  public int JJTSQLSELECTALLINTABLEMODIFIER = 45;
-  public int JJTSQLSELECTALLCOLSINTABLE = 46;
-  public int JJTSQLSELECTCOLS = 47;
-  public int JJTSQLSELECTLIMIT = 48;
-  public int JJTSQLSELECTLIST = 49;
-  public int JJTSQLSELECTOFFSET = 50;
-  public int JJTSQLSTATEMENT = 51;
-  public int JJTSQLSUMEXPR = 52;
-  public int JJTSQLSUMSYMBOL = 53;
-  public int JJTSQLTABLELIST = 54;
-  public int JJTSQLTABLEREF = 55;
-  public int JJTSQLTERM = 56;
-  public int JJTSQLUNARYEXPR = 57;
-  public int JJTSQLUNION = 58;
-  public int JJTSQLUPDATE = 59;
-  public int JJTSQLUPDATEASSIGNMENT = 60;
-  public int JJTSQLLVALUEELEMENT = 61;
-  public int JJTSQLVALUELIST = 62;
-  public int JJTSQLWHERE = 63;
-  public int JJTSQLCREATE = 64;
-  public int JJTSQLCREATEARGSLIST = 65;
-  public int JJTSQLCOLUMNDEFINITION = 66;
-  public int JJTSQLDATATYPECONSTRAINT = 67;
-  public int JJTSQLTYPEARGLITERAL = 68;
-  public int JJTSQLTYPEARGS = 69;
+  public int JJTSQLSELECTINTO = 42;
+  public int JJTSQLSELECTALLCOLS = 43;
+  public int JJTSQLSELECTALLMODIFIER = 44;
+  public int JJTSQLSELECTALLMODIFIEREXCEPT = 45;
+  public int JJTSQLSELECTALLINTABLEMODIFIER = 46;
+  public int JJTSQLSELECTALLCOLSINTABLE = 47;
+  public int JJTSQLSELECTCOLS = 48;
+  public int JJTSQLSELECTLIMIT = 49;
+  public int JJTSQLSELECTLIST = 50;
+  public int JJTSQLSELECTOFFSET = 51;
+  public int JJTSQLSTATEMENT = 52;
+  public int JJTSQLSUMEXPR = 53;
+  public int JJTSQLSUMSYMBOL = 54;
+  public int JJTSQLTABLELIST = 55;
+  public int JJTSQLTABLEREF = 56;
+  public int JJTSQLTERM = 57;
+  public int JJTSQLUNARYEXPR = 58;
+  public int JJTSQLUNION = 59;
+  public int JJTSQLUPDATE = 60;
+  public int JJTSQLUPDATEASSIGNMENT = 61;
+  public int JJTSQLLVALUEELEMENT = 62;
+  public int JJTSQLVALUELIST = 63;
+  public int JJTSQLWHERE = 64;
+  public int JJTSQLCREATE = 65;
+  public int JJTSQLINTO = 66;
+  public int JJTSQLCREATEARGSLIST = 67;
+  public int JJTSQLCOLUMNDEFINITION = 68;
+  public int JJTSQLDATATYPECONSTRAINT = 69;
+  public int JJTSQLTYPEARGLITERAL = 70;
+  public int JJTSQLTYPEARGS = 71;
 
 
   public String[] jjtNodeName = {
@@ -118,6 +120,7 @@ public interface SQLEngineTreeConstants
     "SQLRightJoinClause",
     "SQLScript",
     "SQLSelect",
+    "SQLSelectInto",
     "SQLSelectAllCols",
     "SQLSelectAllModifier",
     "SQLSelectAllModifierExcept",
@@ -141,6 +144,7 @@ public interface SQLEngineTreeConstants
     "SQLValueList",
     "SQLWhere",
     "SQLCreate",
+    "SQLInto",
     "SQLCreateArgsList",
     "SQLColumnDefinition",
     "SQLDataTypeConstraint",
@@ -148,4 +152,4 @@ public interface SQLEngineTreeConstants
     "SQLTypeArgs",
   };
 }
-/* JavaCC - OriginalChecksum=d5046d729a00922c09c0df10eac424ad (do not edit this line) */
+/* JavaCC - OriginalChecksum=ac511eb62cd7f20aacc25aa91d2d5142 (do not edit this line) */
