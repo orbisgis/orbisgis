@@ -199,7 +199,7 @@ public class TableComponent extends JPanel {
 		txtFilter = new JTextField(20);
 		txtFilter.setBackground(Color.WHITE);
 		txtFilter.setText("Select a primary key column");
-		txtFilter.setToolTipText("Press enter to search the value");
+		txtFilter.setToolTipText("Press enter to search");
 		txtFilter.setEnabled(false);
 		txtFilter.addKeyListener(new KeyListener() {
 
@@ -215,22 +215,13 @@ public class TableComponent extends JPanel {
 					} else {
 						String columnName = tableModel
 								.getColumnName(selectedColumn);
-						String currentTableAlias = "a";
 						StringBuffer query = new StringBuffer("select "
-								+ currentTableAlias + "." + columnName);
+								+ columnName);
 
-						if (text.toLowerCase().startsWith("from")) {
-							query.append(" from " + dataSource.getName() + " "
-									+ currentTableAlias + " ,  " + text
-									+ " and isUID ( " + columnName
-									+ " ) order by " + columnName + " ;");
+						query.append(" from " + dataSource.getName()
+								+ " where ");
+						query.append(text + "  order by " + columnName + " ;");
 
-						} else {
-							query.append(" from " + dataSource.getName() + " "
-									+ currentTableAlias + " where ");
-							query.append(text + " and isUID ( " + columnName
-									+ " ) order by " + columnName + " ;");
-						}
 						SQLEngine eng = new SQLEngine(new ByteArrayInputStream(
 								query.toString().getBytes()));
 
@@ -503,8 +494,6 @@ public class TableComponent extends JPanel {
 					DataSourceFactory dsf = dataSource.getDataSourceFactory();
 					DataSource ds = dsf.getDataSourceFromSQL(text, pm);
 
-					indexes = new ArrayList<Integer>();
-
 					ds.open();
 
 					long dataSourceRowCount = dataSource.getRowCount();
@@ -545,8 +534,6 @@ public class TableComponent extends JPanel {
 							} else {
 								if (valuePk == valuePKds) {
 									newSel.add(i);
-									indexes.add(i);
-
 									value = false;
 								}
 							}
@@ -557,25 +544,20 @@ public class TableComponent extends JPanel {
 
 					ds.close();
 
-					for (int i = 0; i < tableModel.getRowCount(); i++) {
-						if (!newSel.contains(i)) {
-							indexes.add(i);
-						}
-					}
-
 					pm.startTask("Preparing selection");
-					int[] sel = new int[newSel.size()];
+					int selCount = newSel.size();
+					int[] sel = new int[selCount];
+
 					for (int i = 0; i < sel.length; i++) {
 						if (pm.isCancelled()) {
 							break;
 						} else {
-							pm.progressTo((int) (100 * i / sel.length));
+							pm.progressTo((int) (100 * i / selCount));
 						}
 						sel[i] = newSel.get(i);
 					}
 					pm.endTask();
 					selection.setSelectedRows(sel);
-					fireTableDataChanged();
 
 				} catch (DriverException e) {
 					e.printStackTrace();
