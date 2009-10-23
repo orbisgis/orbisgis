@@ -84,9 +84,4 @@ public class CircleCompacity extends AbstractSpatialPropertyFunction {
 		return "select CircleCompacity(the_geom) from myBuildingsTable;";
 	}
 
-	@Override
-	public boolean isDesaggregate() {
-		// TODO Auto-generated method stub
-		return false;
-	}
 }
