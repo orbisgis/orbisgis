@@ -49,7 +49,6 @@ import org.orbisgis.progress.IProgressMonitor;
 /**
  * Interface to implement by the custom queries
  *
- * @author Fernando Gonzalez Cortes
  */
 public interface CustomQuery {
 	/**
