@@ -88,17 +88,10 @@ public class GeometryToRasterTINInterpolation implements CustomQuery {
 			}
 			sds.close();
 
-			TINToRaster tinToRaster = new TINToRaster(values[1].getAsDouble(), numberOfPoints, xVcl,
-					yVcl, zVcl);
+			TINToRaster tinToRaster = new TINToRaster(values[1].getAsDouble(),
+					numberOfPoints, xVcl, yVcl, zVcl);
 
 			GeoRaster georaster = tinToRaster.getGeoRaster();
-
-			try {
-				georaster.show();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
 
 			/*
 			 * To understand the bug uncomment the code try { georaster.show(); }
