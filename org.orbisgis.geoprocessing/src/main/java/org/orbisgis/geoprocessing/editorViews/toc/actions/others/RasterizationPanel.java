@@ -65,7 +65,7 @@ import org.orbisgis.core.renderer.liteShape.LiteShape;
 import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.layerModel.LayerException;
 import org.orbisgis.core.layerModel.MapContext;
-import org.orbisgis.geoprocessing.ui.sif.RasterExtendPanel;
+import org.orbisgis.geoprocessing.sif.RasterExtendPanel;
 import org.orbisgis.pluginManager.background.BackgroundJob;
 import org.orbisgis.pluginManager.background.BackgroundManager;
 import org.orbisgis.progress.IProgressMonitor;

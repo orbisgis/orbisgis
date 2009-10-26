@@ -44,7 +44,7 @@ import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.layerModel.MapContext;
 import org.orbisgis.core.ui.editorViews.toc.action.ILayerAction;
 import org.orbisgis.geoprocessing.editorViews.toc.actions.utilities.AbstractGray16And32Process;
-import org.orbisgis.geoprocessing.ui.sif.RasterGray16And32LayerCombo;
+import org.orbisgis.geoprocessing.sif.RasterGray16And32LayerCombo;
 import org.orbisgis.sif.UIFactory;
 import org.orbisgis.sif.multiInputPanel.MultiInputPanel;
 
