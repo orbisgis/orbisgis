@@ -18,16 +18,21 @@
 			<artifactId>junit</artifactId>
 			<version>3.8.1</version>
 			<scope>test</scope>
+		</dependency>		
+		<dependency>
+			<groupId>org.jgrapht</groupId>
+			<artifactId>jgrapht</artifactId>
+			<version>0.7.3</version>
+		</dependency>
+		<dependency>
+			<groupId>jdelaunay</groupId>
+			<artifactId>jdelaunay</artifactId>
+			<version>0.2</version>
 		</dependency>
 		<dependency>
 			<groupId>org.orbisgis</groupId>
 			<artifactId>orbisgis-core</artifactId>
 			<version>2.1.0</version>
-		</dependency>
-		<dependency>
-			<groupId>org.orbisgis</groupId>
-			<artifactId>geoprocessing</artifactId>
-			<version>1.2.0</version>
 		</dependency>
 		<dependency>
 			<groupId>org.gdms</groupId>
@@ -43,7 +48,7 @@
 				<configuration>
 					<includes>
 						<include>
-							org/orbisgis/geoview/rasterProcessing/RasterProcessingTests.java</include>
+							org/gdms/sql/LibGDMSTests</include>
 					</includes>
 				</configuration>
 			</plugin>
