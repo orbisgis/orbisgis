@@ -12,8 +12,7 @@
 		<module>gdms</module>
 		<module>grap</module>
 		<module>h2spatial</module>		
-		<module>orbisgis-core</module>		
-		<module>org.orbisgis.geoprocessing</module>		
+		<module>orbisgis-core</module>				
 	</modules>
 	<scm>
 		<connection>
