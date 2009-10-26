@@ -13,7 +13,6 @@
 		<module>grap</module>
 		<module>h2spatial</module>		
 		<module>orbisgis-core</module>		
-		<module>geoprocessing</module>	
 		<module>org.orbisgis.geoprocessing</module>		
 	</modules>
 	<scm>
