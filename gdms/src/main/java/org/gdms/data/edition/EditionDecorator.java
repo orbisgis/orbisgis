@@ -521,7 +521,7 @@ public class EditionDecorator extends AbstractDataSourceDecorator implements
 				}
 			}
 
-			// initialize directions 
+			// initialize directions
 			rowsDirections = new ArrayList<PhysicalDirection>();
 			for (int i = 0; i < rowCount; i++) {
 				PhysicalDirection dir = new OriginalDirection(getDataSource(),
@@ -688,6 +688,15 @@ public class EditionDecorator extends AbstractDataSourceDecorator implements
 
 		public String getFieldName(int fieldId) throws DriverException {
 			return getFields().get(fieldId).getName();
+		}
+
+		public int getFieldIndex(String fieldName) throws DriverException {
+			for (Field field : getFields()) {				
+				if (field.getName().equals(fieldName)) {
+					return field.getOriginalIndex();
+				}
+			}
+			return -1;
 		}
 	}
 
