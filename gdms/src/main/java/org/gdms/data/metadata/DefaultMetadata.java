@@ -38,6 +38,7 @@ package org.gdms.data.metadata;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -50,7 +51,7 @@ import org.gdms.driver.DriverException;
 /**
  * Class that implements the Metadata interface with the contents specified in
  * the constructor and setter methods
- *
+ * 
  * @author Fernando Gonzalez Cortes
  */
 public class DefaultMetadata implements Metadata {
@@ -70,7 +71,7 @@ public class DefaultMetadata implements Metadata {
 	/**
 	 * Creates a DefaultMetadata instance with the specified field names and
 	 * field types
-	 *
+	 * 
 	 * @param fieldsTypes
 	 * @param fieldsNames
 	 */
@@ -82,7 +83,7 @@ public class DefaultMetadata implements Metadata {
 	/**
 	 * Creates a DefaultMetadata instance with the same contents as the metadata
 	 * instance specified as a parameter
-	 *
+	 * 
 	 * @param originalMetadata
 	 * @throws DriverException
 	 *             If there is some exception reading the metadata from the
@@ -122,7 +123,7 @@ public class DefaultMetadata implements Metadata {
 	/**
 	 * Adds a field to the instance. This field will be taken into account by
 	 * the getFieldXXX methods that implement the Metadata interface
-	 *
+	 * 
 	 * @param fieldName
 	 * @param typeCode
 	 * @throws SemanticException
@@ -145,7 +146,7 @@ public class DefaultMetadata implements Metadata {
 	/**
 	 * Adds a field to the instance. This field will be taken into account by
 	 * the getFieldXXX methods that implement the Metadata interface
-	 *
+	 * 
 	 * @param fieldName
 	 * @param typeCode
 	 * @throws InvalidTypeException
@@ -170,7 +171,7 @@ public class DefaultMetadata implements Metadata {
 	 * Adds a field to the instance. This field will be taken into account by
 	 * the getFieldXXX methods that implement the Metadata interface. This
 	 * method gives the type a name to be displayed to the user
-	 *
+	 * 
 	 * @param fieldName
 	 * @param typeCode
 	 * @throws InvalidTypeException
@@ -193,7 +194,7 @@ public class DefaultMetadata implements Metadata {
 	 * Adds a field to the instance. This field will be taken into account by
 	 * the getFieldXXX methods that implement the Metadata interface. This
 	 * method gives the type a name to be displayed to the user
-	 *
+	 * 
 	 * @param fieldName
 	 * @param typeCode
 	 * @throws InvalidTypeException
@@ -219,7 +220,7 @@ public class DefaultMetadata implements Metadata {
 	 * Inserts a field into the specified position. This field will be taken
 	 * into account by the getFieldXXX methods that implement the Metadata
 	 * interface.
-	 *
+	 * 
 	 * @param index
 	 * @param fieldName
 	 * @param typeCode
@@ -244,7 +245,7 @@ public class DefaultMetadata implements Metadata {
 	 * Inserts a field into the specified position. This field will be taken
 	 * into account by the getFieldXXX methods that implement the Metadata
 	 * interface.
-	 *
+	 * 
 	 * @param index
 	 * @param fieldName
 	 * @param typeCode
@@ -271,7 +272,7 @@ public class DefaultMetadata implements Metadata {
 	 * Adds a field with the specified name and type. This field will be taken
 	 * into account by the getFieldXXX methods that implement the Metadata
 	 * interface.
-	 *
+	 * 
 	 * @param fieldName
 	 * @param type
 	 * @throws SemanticException
@@ -289,7 +290,7 @@ public class DefaultMetadata implements Metadata {
 
 	/**
 	 * Check is a field exists
-	 *
+	 * 
 	 * @param fieldName
 	 * @return
 	 */
@@ -299,6 +300,21 @@ public class DefaultMetadata implements Metadata {
 			return true;
 		}
 		return false;
+	}
+
+	/**
+	 * Get the field index. Return -1 is the field doesn't exist.
+	 */
+	public int getFieldIndex(String fieldName) throws DriverException {
+		int i = 0;
+		for (String fieldName_ : fieldsNames) {
+			i++;
+			if (fieldName_.equals(fieldName)) {
+				return i;
+			}
+
+		}
+		return -1;
 	}
 
 }

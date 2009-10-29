@@ -56,7 +56,7 @@ public class MetadataUtilities {
 	/**
 	 * Gets the field names in the metadata instance that have the primary key
 	 * constraint
-	 *
+	 * 
 	 * @param metadata
 	 * @return
 	 * @throws DriverException
@@ -78,7 +78,7 @@ public class MetadataUtilities {
 	/**
 	 * Gets the indexes of the fields in the metadata instance that have the
 	 * primary constraint
-	 *
+	 * 
 	 * @param metadata
 	 * @return
 	 * @throws DriverException
@@ -111,7 +111,7 @@ public class MetadataUtilities {
 
 	/**
 	 * Returns true if the field at the specified index is read only
-	 *
+	 * 
 	 * @param metadata
 	 * @param fieldId
 	 * @return
@@ -133,7 +133,7 @@ public class MetadataUtilities {
 
 	/**
 	 * Returns true if the field at the specified index is primary key
-	 *
+	 * 
 	 * @param metadata
 	 * @param fieldId
 	 * @return
@@ -150,7 +150,7 @@ public class MetadataUtilities {
 
 	/**
 	 * Returns true if the type has a primary key constraint
-	 *
+	 * 
 	 * @param fieldType
 	 * @return
 	 */
@@ -171,7 +171,7 @@ public class MetadataUtilities {
 	/**
 	 * checks that the specified value fits all the constraints of the field at
 	 * the specified index in the specified Metadata instance
-	 *
+	 * 
 	 * @param metadata
 	 * @param fieldId
 	 * @param value
@@ -194,7 +194,7 @@ public class MetadataUtilities {
 
 	/**
 	 * Gets an array with the field types
-	 *
+	 * 
 	 * @param metadata
 	 * @return
 	 * @throws DriverException
@@ -211,7 +211,7 @@ public class MetadataUtilities {
 
 	/**
 	 * True if the field is writable
-	 *
+	 * 
 	 * @param fieldType
 	 * @return
 	 */
@@ -222,7 +222,7 @@ public class MetadataUtilities {
 
 	/**
 	 * Returns true if there is some geometry type in the metadata
-	 *
+	 * 
 	 * @param metadata
 	 * @return
 	 * @throws DriverException
@@ -239,7 +239,7 @@ public class MetadataUtilities {
 
 	/**
 	 * Returns true if the metadata corresponds to the one of a raster source
-	 *
+	 * 
 	 * @param metadata
 	 * @return
 	 * @throws DriverException
@@ -261,5 +261,24 @@ public class MetadataUtilities {
 			metadatas[i] = tables[i].getMetadata();
 		}
 		return metadatas;
+	}
+
+	/**
+	 * Returns the spatial field index.
+	 * @param metadata
+	 * @return
+	 * @throws DriverException
+	 */
+	public static int getSpatialFieldIndex(Metadata metadata)
+			throws DriverException {
+		int spatialFieldIndex = -1;
+		for (int i = 0; i < metadata.getFieldCount(); i++) {
+			int typeCode = metadata.getFieldType(i).getTypeCode();
+			if ((typeCode == Type.GEOMETRY) || (typeCode == Type.RASTER)) {
+				spatialFieldIndex = i;
+				break;
+			}
+		}
+		return spatialFieldIndex;
 	}
 }

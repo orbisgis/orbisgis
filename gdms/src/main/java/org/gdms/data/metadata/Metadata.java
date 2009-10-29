@@ -47,7 +47,7 @@ public interface Metadata {
 
 	/**
 	 * Gets the number of fields
-	 *
+	 * 
 	 * @return
 	 * @throws DriverException
 	 * @throws SemanticException
@@ -56,7 +56,7 @@ public interface Metadata {
 
 	/**
 	 * Gets the name of the field.
-	 *
+	 * 
 	 * @param fieldId
 	 * @return
 	 * @throws SemanticException
@@ -64,8 +64,17 @@ public interface Metadata {
 	public String getFieldName(int fieldId) throws DriverException;
 
 	/**
+	 * Gets the index of the field.
+	 * 
+	 * @param fieldName
+	 * @return
+	 * @throws SemanticException
+	 */
+	public int getFieldIndex(String fieldName) throws DriverException;
+
+	/**
 	 * Gets the type of the field.
-	 *
+	 * 
 	 * @return
 	 * @throws SemanticException
 	 */
