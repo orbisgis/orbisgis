@@ -54,6 +54,24 @@ import org.gdms.driver.ReadWriteDriver;
 
 public class MetadataTest extends SourceTest {
 
+	public void testFieldIndex() throws Exception {
+		DefaultMetadata metadata = new DefaultMetadata();
+		metadata.addField("name", Type.STRING);
+		metadata.addField("surname", Type.STRING);
+		metadata.addField("location", Type.STRING);
+		assertTrue(metadata.getFieldIndex("surname") == 2);
+
+	}
+
+	public void testFieldIndexDataSource()  throws Exception{
+
+		DataSource ds = dsf.getDataSource(new File(internalData
+				+ "landcover2000.shp"));
+		ds.open();
+		assertTrue(ds.getMetadata().getFieldIndex(ds.getMetadata().getFieldName(2))== ds.getFieldIndexByName(ds.getFieldName(2)));
+		ds.close();
+	}
+
 	private void testAddField(String dsName, Type type) throws Exception {
 		DataSource d = dsf.getDataSource(dsName);
 
