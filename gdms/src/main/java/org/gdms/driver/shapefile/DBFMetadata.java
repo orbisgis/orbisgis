@@ -85,4 +85,8 @@ class DBFMetadata implements Metadata {
 		return mapping;
 	}
 
+	public int getFieldIndex(String fieldName) throws DriverException {
+		return metadata.getFieldIndex(fieldName);
+	}
+
 }
