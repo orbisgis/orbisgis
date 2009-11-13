@@ -101,9 +101,11 @@ public class ZoomToSelectedLayer implements IMultipleLayerAction {
 
 		boolean flag = false;
 		for (ILayer lyr : layer) {
-			lyr.getSelection();
-			if (lyr.getSelection().length > 0)
-				flag = true;
+			if (!lyr.isWMS()){
+				lyr.getSelection();
+				if (lyr.getSelection().length > 0)
+					flag = true;
+				}
 		}
 		return flag;
 	}
