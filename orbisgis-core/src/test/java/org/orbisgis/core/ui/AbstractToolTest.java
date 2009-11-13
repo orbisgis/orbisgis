@@ -45,7 +45,7 @@ import junit.framework.TestCase;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeFactory;
-import org.gdms.driver.memory.ObjectMemoryDriver;
+import org.gdms.driver.generic.GenericObjectDriver;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.DataManager;
 import org.orbisgis.core.DefaultDataManager;
@@ -88,7 +88,7 @@ public class AbstractToolTest extends TestCase {
 	}
 
 	private void createSource(String name, Type geomType) {
-		ObjectMemoryDriver omd = new ObjectMemoryDriver(
+		GenericObjectDriver omd = new GenericObjectDriver(
 				new String[] { "the_geom" }, new Type[] { geomType });
 		dataManager.getSourceManager().register(name, omd);
 	}
