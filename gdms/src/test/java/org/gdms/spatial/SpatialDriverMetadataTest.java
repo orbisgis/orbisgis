@@ -44,7 +44,7 @@ import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
-import org.gdms.driver.memory.ObjectMemoryDriver;
+import org.gdms.driver.generic.GenericObjectDriver;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
@@ -97,7 +97,7 @@ public class SpatialDriverMetadataTest extends SourceTest {
 	}
 
 	public void testFullExtentWhenDriverDoesntProvideIt() throws Exception {
-		ObjectMemoryDriver driver = new ObjectMemoryDriver(
+		GenericObjectDriver driver = new GenericObjectDriver(
 				new String[] { "geom" }, new Type[] { TypeFactory
 						.createType(Type.GEOMETRY) });
 		GeometryFactory gf = new GeometryFactory();

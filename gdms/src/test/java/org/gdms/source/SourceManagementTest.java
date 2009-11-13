@@ -60,7 +60,7 @@ import org.gdms.data.types.TypeFactory;
 import org.gdms.data.wms.WMSSource;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.driverManager.DriverManager;
-import org.gdms.driver.memory.ObjectMemoryDriver;
+import org.gdms.driver.generic.GenericObjectDriver;
 import org.gdms.spatial.SeveralSpatialFieldsDriver;
 import org.gdms.sql.customQuery.QueryManager;
 import org.gdms.sql.strategies.SumQuery;
@@ -75,7 +75,7 @@ public class SourceManagementTest extends TestCase {
 	private DBSource testDB;
 	private WMSSource testWMS;
 	private String sql = "select count(id) from myfile;";
-	private ObjectMemoryDriver obj;
+	private GenericObjectDriver obj;
 
 	public void testRegisterTwice() throws Exception {
 		try {
@@ -419,14 +419,14 @@ public class SourceManagementTest extends TestCase {
 	}
 
 	public void testObjectDriverType() throws Exception {
-		ObjectMemoryDriver driver = new ObjectMemoryDriver(new String[] { "pk",
+		GenericObjectDriver driver = new GenericObjectDriver(new String[] { "pk",
 				"geom" }, new Type[] { TypeFactory.createType(Type.INT),
 				TypeFactory.createType(Type.GEOMETRY) });
 		sm.register("spatial", driver);
 		Source src = sm.getSource("spatial");
 		assertTrue((src.getType() & SourceManager.MEMORY) == SourceManager.MEMORY);
 		assertTrue((src.getType() & SourceManager.VECTORIAL) == SourceManager.VECTORIAL);
-		driver = new ObjectMemoryDriver(new String[] { "pk" },
+		driver = new GenericObjectDriver(new String[] { "pk" },
 				new Type[] { TypeFactory.createType(Type.INT) });
 		sm.register("alpha", driver);
 		src = sm.getSource("alpha");
@@ -627,7 +627,7 @@ public class SourceManagementTest extends TestCase {
 				+ "backup/testhsqldb", "sa", "", "gisapps", "jdbc:hsqldb:file");
 		testWMS = new WMSSource("127.0.0.1", "cantons", "EPSG:1234",
 				"format/pig");
-		obj = new ObjectMemoryDriver();
+		obj = new GenericObjectDriver();
 	}
 
 	private void instantiateDSF() {

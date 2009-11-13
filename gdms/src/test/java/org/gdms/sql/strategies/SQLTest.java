@@ -54,7 +54,7 @@ import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.data.values.ValueWriter;
 import org.gdms.driver.DriverException;
-import org.gdms.driver.memory.ObjectMemoryDriver;
+import org.gdms.driver.generic.GenericObjectDriver;
 import org.gdms.sql.parser.ParseException;
 
 import com.vividsolutions.jts.io.WKTReader;
@@ -514,7 +514,7 @@ public class SQLTest extends SourceTest {
 
 	public void testDistinctOnGeometricField() throws Exception {
 		final WKTReader wktr = new WKTReader();
-		final ObjectMemoryDriver driver = new ObjectMemoryDriver(
+		final GenericObjectDriver driver = new GenericObjectDriver(
 				new String[] { "the_geom" }, new Type[] { TypeFactory
 						.createType(Type.GEOMETRY,
 								new Constraint[] { new GeometryConstraint(
@@ -876,7 +876,7 @@ public class SQLTest extends SourceTest {
 
 	public void testFunctionsExecutedTwice() throws Exception {
 		final StringBuffer tics = new StringBuffer("");
-		ObjectMemoryDriver omd = new ObjectMemoryDriver(
+		GenericObjectDriver omd = new GenericObjectDriver(
 				new String[] { "the_geom" }, new Type[] { TypeFactory
 						.createType(Type.GEOMETRY) }) {
 			@Override
@@ -909,7 +909,7 @@ public class SQLTest extends SourceTest {
 	}
 
 	public void testAggregatedExecution() throws Exception {
-		ObjectMemoryDriver omd = new ObjectMemoryDriver(new String[] {
+		GenericObjectDriver omd = new GenericObjectDriver(new String[] {
 				"the_geom", "alpha" }, new Type[] {
 				TypeFactory.createType(Type.GEOMETRY),
 				TypeFactory.createType(Type.STRING) });
@@ -1046,7 +1046,7 @@ public class SQLTest extends SourceTest {
 	}
 
 	private void createSource(String name, String fieldName, int... values) {
-		ObjectMemoryDriver omd = new ObjectMemoryDriver(
+		GenericObjectDriver omd = new GenericObjectDriver(
 				new String[] { fieldName }, new Type[] { TypeFactory
 						.createType(Type.INT) });
 		for (int value : values) {

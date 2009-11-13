@@ -57,7 +57,7 @@ import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
-import org.gdms.driver.memory.ObjectMemoryDriver;
+import org.gdms.driver.generic.GenericObjectDriver;
 import org.gdms.sql.evaluator.Equals;
 import org.gdms.sql.evaluator.Expression;
 import org.gdms.sql.evaluator.Field;
@@ -223,7 +223,7 @@ public class OptimizationTests extends TestCase {
 	}
 
 	public void testNotEquals() throws Exception {
-		ObjectMemoryDriver omd = new ObjectMemoryDriver(new String[] { "id" },
+		GenericObjectDriver omd = new GenericObjectDriver(new String[] { "id" },
 				new Type[] { TypeFactory.createType(Type.STRING) });
 		omd.addValues(new Value[] { ValueFactory.createValue("1") });
 		omd.addValues(new Value[] { ValueFactory.createValue("2") });
@@ -331,7 +331,7 @@ public class OptimizationTests extends TestCase {
 			metadata.addField("o" + sourceMetadata.getFieldName(i),
 					sourceMetadata.getFieldType(i));
 		}
-		ObjectMemoryDriver omd = new ObjectMemoryDriver(metadata);
+		GenericObjectDriver omd = new GenericObjectDriver(metadata);
 		for (int i = 0; i < ds.getRowCount(); i++) {
 			omd.addValues(ds.getRow(i));
 		}
@@ -463,7 +463,7 @@ public class OptimizationTests extends TestCase {
 	}
 
 	public void testSeveralIndexScans() throws Exception {
-		ObjectMemoryDriver omd = new ObjectMemoryDriver(new String[] { "id",
+		GenericObjectDriver omd = new GenericObjectDriver(new String[] { "id",
 				"id2" }, new Type[] { TypeFactory.createType(Type.STRING),
 				TypeFactory.createType(Type.STRING) });
 		omd.addValues(new Value[] { ValueFactory.createValue("1"),

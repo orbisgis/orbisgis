@@ -59,7 +59,7 @@ import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.ReadAccess;
-import org.gdms.driver.memory.ObjectMemoryDriver;
+import org.gdms.driver.generic.GenericObjectDriver;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
@@ -537,7 +537,7 @@ public class SpatialEditionTest extends SourceTest {
 	}
 
 	public void testCommitIndex() throws Exception {
-		ObjectMemoryDriver omd = new ObjectMemoryDriver(
+		GenericObjectDriver omd = new GenericObjectDriver(
 				new String[] { "geom" }, new Type[] { TypeFactory
 						.createType(Type.GEOMETRY) });
 		GeometryFactory gf = new GeometryFactory();

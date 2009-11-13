@@ -46,7 +46,7 @@ import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
-import org.gdms.driver.memory.ObjectMemoryDriver;
+import org.gdms.driver.generic.GenericObjectDriver;
 import org.gdms.sql.strategies.IncompatibleTypesException;
 import org.gdms.sql.strategies.SQLProcessor;
 import org.gdms.sql.strategies.SemanticException;
@@ -107,7 +107,7 @@ public class ExplodeTest extends TestCase {
 	}
 
 	public void testEvaluate() throws Exception {
-		final ObjectMemoryDriver driver1 = new ObjectMemoryDriver(new String[] {
+		final GenericObjectDriver driver1 = new GenericObjectDriver(new String[] {
 				"pk", "geom" }, new Type[] { TypeFactory.createType(Type.INT),
 				TypeFactory.createType(Type.GEOMETRY) });
 
