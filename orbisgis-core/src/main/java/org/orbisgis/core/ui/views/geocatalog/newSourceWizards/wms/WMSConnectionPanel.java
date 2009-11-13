@@ -44,7 +44,6 @@ public class WMSConnectionPanel extends JPanel implements SQLUIPanel {
 		GridBagLayout gl = new GridBagLayout();
 		this.setLayout(gl);
 		GridBagConstraints c = new GridBagConstraints();
-
 		// Connection panel
 		c.fill = GridBagConstraints.HORIZONTAL;
 		c.gridx = 0;
@@ -195,7 +194,7 @@ public class WMSConnectionPanel extends JPanel implements SQLUIPanel {
 
 	@Override
 	public boolean showFavorites() {
-		return true;
+		return false;
 	}
 
 	@Override
