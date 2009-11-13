@@ -115,7 +115,7 @@ public class ConnectionPanel extends MultiInputPanel {
 	}
 
 	public Connection getConnection() throws SQLException {
-		DBSource dbSource = getDBSource(null);
+		DBSource dbSource = getDBSource();
 		Connection connection = getDBDriver().getConnection(dbSource.getHost(),
 				dbSource.getPort(), dbSource.getDbName(), dbSource.getUser(),
 				dbSource.getPassword());
@@ -134,7 +134,7 @@ public class ConnectionPanel extends MultiInputPanel {
 		return null;
 	}
 
-	public DBSource getDBSource(String tableName) {
+	public DBSource getDBSource() {
 		String host = getInput(HOST);
 		int port = Integer.parseInt(getInput(PORT));
 		String dbName = getInput(DBNAME);
@@ -145,7 +145,7 @@ public class ConnectionPanel extends MultiInputPanel {
 			port = dbDriver.getDefaultPort();
 		}
 
-		return new DBSource(host, port, dbName, user, password, tableName,
+		return new DBSource(host, port, dbName, user, password,
 				getDBDriver().getPrefixes()[0]);
 	}
 }
