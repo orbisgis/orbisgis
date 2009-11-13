@@ -49,7 +49,7 @@ import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.driverManager.DriverLoadException;
-import org.gdms.driver.memory.ObjectMemoryDriver;
+import org.gdms.driver.generic.GenericObjectDriver;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.DataManager;
 import org.orbisgis.core.renderer.legend.carto.LegendFactory;
@@ -108,7 +108,7 @@ public class FencePolygonTool extends AbstractPolygonTool {
 
 	private String buildFenceDatasource(Geometry g) {
 		try {
-			final ObjectMemoryDriver driver = new ObjectMemoryDriver(
+			final GenericObjectDriver driver = new GenericObjectDriver(
 					new String[] { "the_geom" }, new Type[] { TypeFactory
 							.createType(Type.GEOMETRY) });
 

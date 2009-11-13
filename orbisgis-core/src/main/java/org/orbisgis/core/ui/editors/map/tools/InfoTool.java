@@ -92,7 +92,7 @@ public class InfoTool extends AbstractRectangleTool {
 					new LinearRing[0]);
 			WKTWriter writer = new WKTWriter();
 			sql = "select * from " + layer.getName() + " where intersects("
-					+ sds.getDefaultGeometry() + ", geomfromtext('"
+					+ sds.getSpatialFieldName() + ", geomfromtext('"
 					+ writer.write(geomEnvelope) + "'));";
 			BackgroundManager bm = (BackgroundManager) Services
 					.getService(BackgroundManager.class);
