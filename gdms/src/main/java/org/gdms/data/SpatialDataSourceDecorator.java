@@ -39,7 +39,8 @@ package org.gdms.data;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.gdms.data.metadata.Metadata;
+import org.gdms.data.feature.Feature;
+import org.gdms.data.metadata.MetadataUtilities;
 import org.gdms.data.types.CRSConstraint;
 import org.gdms.data.types.Constraint;
 import org.gdms.data.types.NullCRS;
@@ -65,13 +66,11 @@ public class SpatialDataSourceDecorator extends AbstractDataSourceDecorator {
 		super(dataSource);
 	}
 
-
-
 	/**
 	 * Gets the full extent of the data accessed
-	 *
+	 * 
 	 * @return Rectangle2D
-	 *
+	 * 
 	 * @throws DriverException
 	 *             if the operation fails
 	 */
@@ -100,7 +99,7 @@ public class SpatialDataSourceDecorator extends AbstractDataSourceDecorator {
 	/**
 	 * Gets the default geometry of the DataSource as a JTS geometry or null if
 	 * the row doesn't have a geometry value
-	 *
+	 * 
 	 * @param rowIndex
 	 * @return
 	 * @throws DriverException
@@ -117,22 +116,15 @@ public class SpatialDataSourceDecorator extends AbstractDataSourceDecorator {
 
 	/**
 	 * Returns the index of the field containing spatial data
-	 *
+	 * 
 	 * @return
 	 * @throws DriverException
 	 */
 	public int getSpatialFieldIndex() throws DriverException {
 		if (spatialFieldIndex == -1) {
-			Metadata m = getMetadata();
-			for (int i = 0; i < m.getFieldCount(); i++) {
-				int typeCode = m.getFieldType(i).getTypeCode();
-				if ((typeCode == Type.GEOMETRY) || (typeCode == Type.RASTER)) {
-					spatialFieldIndex = i;
-					break;
-				}
-			}
+			spatialFieldIndex = MetadataUtilities
+					.getSpatialFieldIndex(getMetadata());
 		}
-
 		return spatialFieldIndex;
 	}
 
@@ -140,19 +132,19 @@ public class SpatialDataSourceDecorator extends AbstractDataSourceDecorator {
 	 * Returns the name of the field which is the default geometry. If the data
 	 * source contains only one spatial field, the default geometry is that
 	 * field initially
-	 *
+	 * 
 	 * @return
 	 * @throws DriverException
 	 */
 
-	public String getDefaultGeometry() throws DriverException {
+	public String getSpatialFieldName() throws DriverException {
 		return getMetadata().getFieldName(getSpatialFieldIndex());
 	}
 
 	/**
 	 * Get the geometry in the specified field in the specified row of the data
 	 * source
-	 *
+	 * 
 	 * @param fieldName
 	 * @param rowIndex
 	 * @return
@@ -160,7 +152,7 @@ public class SpatialDataSourceDecorator extends AbstractDataSourceDecorator {
 	 */
 	public Geometry getGeometry(String fieldName, long rowIndex)
 			throws DriverException {
-		String defaultGeometry = getDefaultGeometry();
+		String defaultGeometry = getSpatialFieldName();
 		setDefaultGeometry(fieldName);
 		Geometry ret = getGeometry(rowIndex);
 		setDefaultGeometry(defaultGeometry);
@@ -171,7 +163,7 @@ public class SpatialDataSourceDecorator extends AbstractDataSourceDecorator {
 	/**
 	 * Get the raster in the specified field in the specified row of the data
 	 * source
-	 *
+	 * 
 	 * @param fieldName
 	 * @param rowIndex
 	 * @return
@@ -179,7 +171,7 @@ public class SpatialDataSourceDecorator extends AbstractDataSourceDecorator {
 	 */
 	public GeoRaster getRaster(String fieldName, long rowIndex)
 			throws DriverException {
-		String defaultGeometry = getDefaultGeometry();
+		String defaultGeometry = getSpatialFieldName();
 		setDefaultGeometry(fieldName);
 		GeoRaster ret = getRaster(rowIndex);
 		setDefaultGeometry(defaultGeometry);
@@ -190,7 +182,7 @@ public class SpatialDataSourceDecorator extends AbstractDataSourceDecorator {
 	/**
 	 * Set the field name for the getGeometry(int) method. If this method is not
 	 * called, the default geometry is the first spatial field
-	 *
+	 * 
 	 * @param fieldName
 	 * @throws DriverException
 	 */
@@ -212,9 +204,9 @@ public class SpatialDataSourceDecorator extends AbstractDataSourceDecorator {
 
 	/**
 	 * Returns the CRS of the geometric field that is given as parameter
-	 *
+	 * 
 	 * @param fieldName
-	 *
+	 * 
 	 * @return
 	 * @throws DriverException
 	 */
@@ -241,7 +233,7 @@ public class SpatialDataSourceDecorator extends AbstractDataSourceDecorator {
 
 	/**
 	 * Sets the CRS of the geometric field that is given as 2nd parameter
-	 *
+	 * 
 	 * @param crs
 	 * @param fieldName
 	 */
@@ -252,7 +244,7 @@ public class SpatialDataSourceDecorator extends AbstractDataSourceDecorator {
 
 	/**
 	 * Sets the default geometry of the DataSource to a JTS geometry
-	 *
+	 * 
 	 * @param rowIndex
 	 * @param geom
 	 * @return
@@ -267,7 +259,7 @@ public class SpatialDataSourceDecorator extends AbstractDataSourceDecorator {
 	/**
 	 * Set the geometry in the specified field in the specified row of the data
 	 * source
-	 *
+	 * 
 	 * @param fieldName
 	 * @param rowIndex
 	 * @param geom
@@ -282,7 +274,7 @@ public class SpatialDataSourceDecorator extends AbstractDataSourceDecorator {
 
 	/**
 	 * Returns true if the default geometry is vectorial and false otherwise
-	 *
+	 * 
 	 * @return
 	 * @throws DriverException
 	 */
@@ -293,12 +285,32 @@ public class SpatialDataSourceDecorator extends AbstractDataSourceDecorator {
 
 	/**
 	 * Returns true if the default geometry is raster and false otherwise
-	 *
+	 * 
 	 * @return
 	 * @throws DriverException
 	 */
 	public boolean isDefaultRaster() throws DriverException {
 		Type fieldType = getMetadata().getFieldType(getSpatialFieldIndex());
 		return fieldType.getTypeCode() == Type.RASTER;
+	}
+
+	public Feature getFeature(long rowIndex) throws DriverException {
+		Feature feature = new Feature(getMetadata());
+		feature.setValues(getRow(rowIndex));
+		return feature;
+	}
+
+	/**
+	 * 
+	 * @param feature
+	 * @throws DriverException
+	 */
+	public void addFeature(Feature feature) throws DriverException {
+		if (feature.getMetadata().equals(getMetadata())) {
+			insertFilledRow(feature.getValues());
+		} else {
+			throw new DriverException(
+					"The feature metadata doesn't match the spatialDatasource metadata");
+		}
 	}
 }
