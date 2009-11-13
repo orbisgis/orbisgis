@@ -61,6 +61,7 @@ import org.orbisgis.core.Services;
 import org.orbisgis.core.renderer.legend.Legend;
 import org.orbisgis.core.renderer.legend.RasterLegend;
 import org.orbisgis.core.renderer.legend.RenderException;
+import org.orbisgis.core.renderer.legend.WMSLegend;
 import org.orbisgis.core.renderer.legend.carto.LegendFactory;
 import org.orbisgis.core.renderer.legend.carto.LegendManager;
 import org.orbisgis.core.renderer.legend.carto.UniqueSymbolLegend;
@@ -100,7 +101,7 @@ public class Layer extends GdmsLayer {
 		Symbol polSym = SymbolFactory.createPolygonSymbol(Color.black, c);
 		Symbol pointSym = SymbolFactory.createPointCircleSymbol(Color.black,
 				Color.red, 10);
-		Symbol lineSym = SymbolFactory.createLineSymbol(Color.black, 2);
+		Symbol lineSym = SymbolFactory.createLineSymbol(Color.black, 1);
 		Symbol composite = SymbolFactory.createSymbolComposite(polSym,
 				pointSym, lineSym);
 		if (gc == null) {
@@ -195,7 +196,7 @@ public class Layer extends GdmsLayer {
 
 	/**
 	 * Sets the legend used to draw this layer
-	 *
+	 * 
 	 * @param legends
 	 * @throws DriverException
 	 *             If there is some problem accessing the contents of the layer
@@ -466,6 +467,11 @@ public class Layer extends GdmsLayer {
 	@Override
 	public WMSConnection getWMSConnection()
 			throws UnsupportedOperationException {
+		throw new UnsupportedOperationException("This is not a WMS layer");
+	}
+
+	@Override
+	public WMSLegend getWMSLegend() {
 		throw new UnsupportedOperationException("This is not a WMS layer");
 	}
 }

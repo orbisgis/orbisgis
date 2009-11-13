@@ -16,6 +16,7 @@ import org.gvsig.remoteClient.wms.WMSStatus;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.orbisgis.core.renderer.legend.Legend;
 import org.orbisgis.core.renderer.legend.RasterLegend;
+import org.orbisgis.core.renderer.legend.WMSLegend;
 import org.orbisgis.core.layerModel.persistence.LayerType;
 
 import com.vividsolutions.jts.geom.Envelope;
@@ -26,6 +27,7 @@ public class WMSLayer extends GdmsLayer {
 	private DataSource ds;
 	private Envelope envelope;
 	private WMSConnection connection;
+	private String wmslayerName;
 
 	public WMSLayer(String name, DataSource ds,
 			CoordinateReferenceSystem coordinateReferenceSystem) {
@@ -62,7 +64,7 @@ public class WMSLayer extends GdmsLayer {
 
 	@Override
 	public Legend[] getRenderingLegend() throws DriverException {
-		return new Legend[0];
+		return new Legend[] { getWMSLegend() };
 	}
 
 	@Override
@@ -80,6 +82,11 @@ public class WMSLayer extends GdmsLayer {
 	public Legend[] getVectorLegend(String fieldName)
 			throws IllegalArgumentException, DriverException {
 		throw new UnsupportedOperationException(NOT_SUPPORTED);
+	}
+
+	public WMSLegend getWMSLegend() {
+		return new WMSLegend(getWMSConnection(), wmslayerName);
+
 	}
 
 	@Override
@@ -101,11 +108,11 @@ public class WMSLayer extends GdmsLayer {
 			WMSClient client = WMSClientPool.getWMSClient(host);
 			client.getCapabilities(null, false, null);
 			WMSStatus status = new WMSStatus();
-			String layerName = ds.getString(0, "layer");
-			status.addLayerName(layerName);
+			wmslayerName = ds.getString(0, "layer");
+			status.addLayerName(wmslayerName);
 			status.setSrs(ds.getString(0, "srs"));
 
-			BoundaryBox bbox = getLayerBoundingBox(layerName, client
+			BoundaryBox bbox = getLayerBoundingBox(wmslayerName, client
 					.getRootLayer(), status.getSrs());
 			status.setExtent(new Rectangle2D.Double(bbox.getXmin(), bbox
 					.getYmin(), bbox.getXmax() - bbox.getXmin(), bbox.getYmax()

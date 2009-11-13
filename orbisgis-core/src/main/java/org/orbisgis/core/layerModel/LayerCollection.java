@@ -47,6 +47,7 @@ import org.grap.model.GeoRaster;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.orbisgis.core.renderer.legend.Legend;
 import org.orbisgis.core.renderer.legend.RasterLegend;
+import org.orbisgis.core.renderer.legend.WMSLegend;
 import org.orbisgis.core.layerModel.persistence.LayerCollectionType;
 import org.orbisgis.core.layerModel.persistence.LayerType;
 
@@ -489,5 +490,11 @@ public class LayerCollection extends AbstractLayer {
 	@Override
 	public boolean isWMS() {
 		return false;
+	}
+
+	@Override
+	public WMSLegend getWMSLegend() {
+		throw new UnsupportedOperationException("Cannot set "
+				+ "a legend on a layer collection");
 	}
 }

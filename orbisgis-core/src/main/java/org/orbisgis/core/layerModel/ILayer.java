@@ -46,6 +46,7 @@ import org.grap.model.GeoRaster;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.orbisgis.core.renderer.legend.Legend;
 import org.orbisgis.core.renderer.legend.RasterLegend;
+import org.orbisgis.core.renderer.legend.WMSLegend;
 import org.orbisgis.core.layerModel.persistence.LayerType;
 
 import com.vividsolutions.jts.geom.Envelope;
@@ -242,6 +243,8 @@ public interface ILayer {
 	 */
 	RasterLegend[] getRasterLegend() throws DriverException,
 			UnsupportedOperationException;
+
+	WMSLegend getWMSLegend();
 
 	/**
 	 * Gets the legends used to draw the default spatial field in this layer if
