@@ -4,7 +4,7 @@ import java.awt.Color;
 
 import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeFactory;
-import org.gdms.driver.memory.ObjectMemoryDriver;
+import org.gdms.driver.generic.GenericObjectDriver;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.DataManager;
 import org.orbisgis.core.renderer.legend.Legend;
@@ -17,7 +17,7 @@ public class GeocognitionUpgradeTest extends AbstractGeocognitionTest {
 
 	public void testUnversioned() throws Exception {
 		DataManager dm = Services.getService(DataManager.class);
-		ObjectMemoryDriver omd = new ObjectMemoryDriver(
+		GenericObjectDriver omd = new GenericObjectDriver(
 				new String[] { "the_geom" }, new Type[] { TypeFactory
 						.createType(Type.GEOMETRY) });
 		dm.getSourceManager().register("source", omd);
