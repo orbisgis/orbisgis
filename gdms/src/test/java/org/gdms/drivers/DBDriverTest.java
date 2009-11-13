@@ -123,8 +123,10 @@ public class DBDriverTest extends SourceTest {
 		}
 	}
 
+//	private DBSource postgreSQLDBSource = new DBSource("127.0.0.1", 5432,
+//			 "gdms", "postgres", "postgres", "alltypes", "jdbc:postgresql");
 	private DBSource postgreSQLDBSource = new DBSource("127.0.0.1", 5432,
-			"gdms", "postgres", "postgres", "alltypes", "jdbc:postgresql");
+			 "GeographicalDataBase", "claudeau", "claudeau", "alltypes", "jdbc:postgresql");
 	private DBTestSource postgreSQLSrc = new DBTestSource("source",
 			"org.postgresql.Driver", SourceTest.internalData
 					+ "postgresAllTypes.sql", postgreSQLDBSource);
@@ -139,6 +141,23 @@ public class DBDriverTest extends SourceTest {
 	private DBTestSource h2Src = new DBTestSource("source", "org.h2.Driver",
 			SourceTest.internalData + "h2AllTypes.sql", h2DBSource);
 
+	private DBSource schemaPostgreSQLDBSource = new DBSource("127.0.0.1", 5432,
+			 "gisdb", "gis", "gis", "gis_schema", "schema_test", "jdbc:postgresql");
+	private DBTestSource schemaPostgreSQLSrc = new DBTestSource("source",
+			"org.postgresql.Driver", SourceTest.internalData
+					+ "postgresSchemaTest.sql", schemaPostgreSQLDBSource);
+	private DBSource schemaHsqldbDBSource = new DBSource(null, 0,
+			SourceTest.backupDir + File.separator + "hsqldbSchemaTest", "sa",
+			null, "gis_schema", "schema_test", "jdbc:hsqldb:file");
+	private DBTestSource schemaHsqldbSrc = new DBTestSource("source",
+			"org.hsqldb.jdbcDriver", SourceTest.internalData
+					+ "hsqldbSchemaTest.sql", schemaHsqldbDBSource);
+	private DBSource schemaH2DBSource = new DBSource(null, 0, SourceTest.backupDir
+			+ File.separator + "h2SchemaTest", "sa", null, "gis_schema", "schema_test", "jdbc:h2");
+	private DBTestSource schemaH2Src = new DBTestSource("source", "org.h2.Driver",
+			SourceTest.internalData + "h2SchemaTest.sql", schemaH2DBSource);
+	
+	
 	private void testReadAllTypes(DBSource dbSource, DBTestSource src)
 			throws Exception {
 		src.backup();
@@ -149,7 +168,7 @@ public class DBDriverTest extends SourceTest {
 			DataSourceCreationException, DriverException,
 			NonEditableDataSourceException {
 		DataSource ds = SourceTest.dsf.getDataSource("source");
-
+		
 		ds.open();
 		Metadata m = ds.getMetadata();
 		Value[] newRow = new Value[m.getFieldCount()];
@@ -176,6 +195,18 @@ public class DBDriverTest extends SourceTest {
 		ds.close();
 	}
 
+	public void testReadSchemaPostgreSQL() throws Exception {
+		testReadAllTypes(schemaPostgreSQLDBSource, schemaPostgreSQLSrc);
+	}
+	
+	public void testReadSchemaHSQLDB() throws Exception {
+		testReadAllTypes(schemaHsqldbDBSource, schemaHsqldbSrc);
+	}
+
+	public void testReadSchemaH2() throws Exception {
+		testReadAllTypes(schemaH2DBSource, schemaH2Src);
+	}
+
 	public void testReadAllTypesPostgreSQL() throws Exception {
 		testReadAllTypes(postgreSQLDBSource, postgreSQLSrc);
 	}
@@ -187,7 +218,7 @@ public class DBDriverTest extends SourceTest {
 	public void testReadAllTypesH2() throws Exception {
 		testReadAllTypes(h2DBSource, h2Src);
 	}
-
+	
 	private void testCreateAllTypes(DBSource dbSource, boolean byte_,
 			boolean stringLength) throws Exception {
 		DefaultMetadata metadata = new DefaultMetadata();
@@ -374,8 +405,12 @@ public class DBDriverTest extends SourceTest {
 
 	public void testShapefile2PostgreSQL() throws Exception {
 		// Delete the table if exists
-		DBSource dbSource = new DBSource("127.0.0.1", 5432, "gdms", "postgres",
-				"postgres", "testShapefile2PostgreSQL", "jdbc:postgresql");
+		// DBSource dbSource = new DBSource("127.0.0.1", 5432, "gdms",
+		// "postgres",
+		// "postgres", "testShapefile2PostgreSQL", "jdbc:postgresql");
+		DBSource dbSource = new DBSource("127.0.0.1", 5432,
+				"gisdb", "gis", "gis",
+				"testShapefile2PostgreSQL", "jdbc:postgresql");
 		try {
 			execute(dbSource, "DROP TABLE \"testShapefile2PostgreSQL\";");
 		} catch (SQLException e) {
@@ -412,6 +447,44 @@ public class DBDriverTest extends SourceTest {
 		file.close();
 	}
 
+	public void testReadSchemaPostGreSQL() throws Exception {
+		DBSource dbSource = new DBSource("127.0.0.1", 5432,
+				"gisdb", "gis", "gis", "gis_schema",
+				"administratif", "jdbc:postgresql");
+
+		dsf.getSourceManager().register("data_source", dbSource);
+
+		dsf.executeSQL("select * from data_source ; ");
+	}
+
+	public void testReadMultiSchemasPostGreSQL() throws Exception {
+		DBSource publicSchemaDbSource = new DBSource("localhost", 5432,
+				"gisdb", "gis", "gis",
+				"landcover2000", "jdbc:postgresql");
+
+		String publicSchemaSourceName = dsf.getSourceManager().getUniqueName(publicSchemaDbSource.getTableName());
+		dsf.getSourceManager().register(publicSchemaSourceName, publicSchemaDbSource);
+	
+		DBSource otherSchemaDbSource = new DBSource("localhost", 5432,
+				"gisdb", "gis", "gis", "gis_schema",
+				"parcels", "jdbc:postgresql");
+		String otherSchemaSourceName = dsf.getSourceManager().getUniqueName(otherSchemaDbSource.getTableName());
+		dsf.getSourceManager().register(otherSchemaSourceName, otherSchemaDbSource);
+		
+		SpatialDataSourceDecorator sds = new SpatialDataSourceDecorator(dsf.getDataSource(otherSchemaDbSource));
+		sds.open();
+		sds.isDefaultVectorial();
+		sds.close();
+
+		assertFalse(otherSchemaSourceName.equals(publicSchemaSourceName));
+		
+		dsf.executeSQL("select * from " + publicSchemaSourceName + " ;");
+				
+		dsf.executeSQL("select * from " + otherSchemaSourceName + " ;");
+
+	}
+
+	
 	public void testShapefile2H2() throws Exception {
 		// Delete the table if exists
 		String fileName = internalData + "/backup/testShapefile2H2";

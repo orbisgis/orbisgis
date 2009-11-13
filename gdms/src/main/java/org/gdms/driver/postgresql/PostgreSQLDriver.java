@@ -49,7 +49,6 @@ import java.util.List;
 import java.util.Set;
 
 import org.gdms.data.WarningListener;
-import org.gdms.data.db.DBSource;
 import org.gdms.data.metadata.Metadata;
 import org.gdms.data.types.Constraint;
 import org.gdms.data.types.DimensionConstraint;
@@ -59,8 +58,8 @@ import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
-import org.gdms.driver.DBReadWriteDriver;
 import org.gdms.driver.DriverException;
+import org.gdms.driver.TableDescription;
 import org.gdms.driver.jdbc.AutonumericRule;
 import org.gdms.driver.jdbc.BooleanRule;
 import org.gdms.driver.jdbc.ConversionRule;
@@ -79,8 +78,7 @@ import com.vividsolutions.jts.io.WKTWriter;
 /**
  *
  */
-public class PostgreSQLDriver extends DefaultDBDriver implements
-		DBReadWriteDriver {
+public class PostgreSQLDriver extends DefaultDBDriver {
 	public static final String DRIVER_NAME = "postgresql";
 
 	private static Exception driverException;
@@ -106,25 +104,27 @@ public class PostgreSQLDriver extends DefaultDBDriver implements
 
 	private int rowCount;
 
+	private boolean isPostGISTable;
+
 	/**
-	 * DOCUMENT ME!
+	 * 
 	 * 
 	 * @param host
-	 *            DOCUMENT ME!
+	 *            for the database.
 	 * @param port
-	 *            DOCUMENT ME!
+	 *            for the database. By default is 5432.
 	 * @param dbName
-	 *            DOCUMENT ME!
+	 *            for the database
 	 * @param user
-	 *            DOCUMENT ME!
+	 *            name for the database
 	 * @param password
-	 *            DOCUMENT ME!
+	 *            for the database
 	 * 
-	 * @return DOCUMENT ME!
+	 * @return a JDBC connection
 	 * 
 	 * @throws SQLException
 	 * @throws RuntimeException
-	 *             DOCUMENT ME!
+	 *             
 	 * 
 	 * @see org.gdms.driver.DBDriver#connect(java.lang.String)
 	 */
@@ -161,16 +161,33 @@ public class PostgreSQLDriver extends DefaultDBDriver implements
 
 	@Override
 	public void open(Connection con, String tableName) throws DriverException {
+		open(con, tableName, null);
+	}
+
+	@Override
+	public void open(Connection con, String tableName, String schemaName)
+			throws DriverException {
+		this.tableName = tableName;
+		this.schemaName = schemaName;
+
 		try {
 			geometryFields = new HashSet<String>();
 			geometryTypes = new HashMap<String, String>();
 			geometryDimensions = new HashMap<String, Integer>();
 			fields = new ArrayList<String>();
 			Statement st = con.createStatement();
-			ResultSet res = st
-					.executeQuery("select * from \"geometry_columns\""
-							+ " where \"f_table_name\" = '" + tableName + "'");
+			ResultSet res = null;
+			if (schemaName != null)
+				if (schemaName.length() != 0)
+					res = st.executeQuery("select * from \"geometry_columns\""
+							+ " where \"f_table_schema\" = '" + schemaName
+							+ "' and \"f_table_name\" = '" + tableName + "'");
+			if (res == null)
+				res = st.executeQuery("select * from \"geometry_columns\""
+						+ " where \"f_table_name\" = '" + tableName + "'");
+
 			while (res.next()) {
+				isPostGISTable = true;
 				String geomFieldName = res.getString("f_geometry_column");
 				geometryFields.add(geomFieldName);
 				geometryTypes.put(geomFieldName, res.getString("type"));
@@ -179,38 +196,144 @@ public class PostgreSQLDriver extends DefaultDBDriver implements
 					getWL().throwWarning(
 							"Dimension of " + geomFieldName + " is wrong: "
 									+ dim);
+					if (this.schemaName == null)
+						this.schemaName = res.getString("f_table_schema");
 				}
 				geometryDimensions.put(geomFieldName, dim);
 			}
 			res.close();
-			res = st.executeQuery("select * from \"" + tableName
-					+ "\" where false");
+			res = st.executeQuery("select * from " + getTableAndSchemaName()
+					+ " where false");
 			ResultSetMetaData metadata = res.getMetaData();
+			if (!isPostGISTable) {
+				boolean geometryFounded = false;
+				for (int i = 0; (i < metadata.getColumnCount() || !geometryFounded); i++) {
+					if (metadata.getColumnTypeName(i + 1).equals("geometry")) {
+						geometryFounded = true;
+						String geomFieldName = metadata.getColumnName(i + 1);
+						geometryFields.add(geomFieldName);
+						geometryTypes.put(geomFieldName, "GEOMETRY");
+						geometryDimensions.put(geomFieldName, Type.GEOMETRY);
+					}
+				}
+			}
+
 			for (int i = 0; i < metadata.getColumnCount(); i++) {
 				fields.add(metadata.getColumnName(i + 1));
 			}
+
 			res.close();
-			res = st.executeQuery("select count(*) from \"" + tableName + "\"");
+			res = st.executeQuery("select count(*) from "
+					+ getTableAndSchemaName() + ";");
 			res.next();
 			rowCount = res.getInt(1);
 			res.close();
 			st.close();
+
 		} catch (SQLException e) {
 			throw new DriverException(e);
 		}
 		wnd = new Window(0);
-		super.open(con, tableName);
+		super.open(con, tableName, this.schemaName);
 	}
 
 	@Override
-	protected String getSelectSQL(String tableName, String orderFieldName)
-			throws DriverException {
-		String sql = "SELECT * FROM \"" + tableName + "\"";
+	protected String getSelectSQL(String orderFieldName) throws DriverException {
+		String sql = "SELECT * FROM " + getTableAndSchemaName();
 		if (orderFieldName != null) {
 			sql += " ORDER BY " + orderFieldName;
 		}
 		sql += " OFFSET " + wnd.offset + " LIMIT " + wnd.length;
 		return sql;
+	}
+
+	@Override
+	public TableDescription[] getTables(Connection c, String catalog,
+			String schemaPattern, String tableNamePattern, String[] types)
+			throws DriverException {
+		TableDescription[] tableDescriptions = super.getTables(c, catalog,
+				schemaPattern, tableNamePattern, types);
+
+		// Retrieves the PostGIS geometryType of each Database.
+		Statement st;
+		ResultSet res = null;
+		try {
+			st = c.createStatement();
+			res = st.executeQuery("select * from \"geometry_columns\"");
+
+			while (res.next()) {
+				for (int i = 0; i < tableDescriptions.length; i++) {
+					if (res.getString("f_table_name").equals(
+							tableDescriptions[i].getName())
+							&& res.getString("f_table_schema").equals(
+									tableDescriptions[i].getSchema())) {
+						String geomType = res.getString("type");
+						if (geomType.equals("MULTIPOLYGON")
+								|| geomType.equals("MULTIPOLYGONM"))
+							tableDescriptions[i]
+									.setGeometryType(GeometryConstraint.MULTI_POLYGON);
+						else if (geomType.equals("POLYGON")
+								|| geomType.equals("POLYGONM"))
+							tableDescriptions[i]
+									.setGeometryType(GeometryConstraint.POLYGON);
+						else if (geomType.equals("POINT")
+								|| geomType.equals("POINTM"))
+							tableDescriptions[i]
+									.setGeometryType(GeometryConstraint.POINT);
+						else if (geomType.equals("LINESTRING")
+								|| geomType.equals("LINESTRINGM"))
+							tableDescriptions[i]
+									.setGeometryType(GeometryConstraint.LINESTRING);
+						else if (geomType.equals("MULTILINESTRING")
+								|| geomType.equals("MULTILINESTRINGM"))
+							tableDescriptions[i]
+									.setGeometryType(GeometryConstraint.MULTI_LINESTRING);
+						else if (geomType.equals("MULTIPOINT")
+								|| geomType.equals("MULTIPOINTM"))
+							tableDescriptions[i]
+									.setGeometryType(GeometryConstraint.MULTI_POINT);
+						else
+							// if the type is GEOMETRY or in any other case, set
+							// the geometry type to ALL
+							tableDescriptions[i]
+									.setGeometryType(GeometryConstraint.ALL);
+						break;
+					}
+				}
+			}
+		} catch (SQLException e) {
+			throw new DriverException(e);
+		}
+
+		// Else, search if there is a geometry object in each column of each
+		// database
+		// If a geometry object is found, the geometry type of the database is
+		// set to ALL
+		try {
+			for (int i = 0; i < tableDescriptions.length; i++) {
+				if (tableDescriptions[i].getGeometryType() == 0) {
+					res = st.executeQuery("SELECT * FROM \""
+							+ tableDescriptions[i].getSchema() + "\".\""
+							+ tableDescriptions[i].getName() + "\" LIMIT 2 ;");
+					ResultSetMetaData md = res.getMetaData();
+					for (int column = 1; column <= md.getColumnCount(); column++) {
+						if (md.getColumnType(column) == java.sql.Types.OTHER) {
+							res.next();
+							Object object = res.getObject(column);
+							if (object instanceof org.postgis.PGgeometry)
+								tableDescriptions[i]
+										.setGeometryType(GeometryConstraint.ALL);
+							break;
+						}
+					}
+
+				}
+			}
+		} catch (SQLException e) {
+			throw new DriverException(e);
+		}
+
+		return tableDescriptions;
 	}
 
 	@Override
@@ -337,38 +460,39 @@ public class PostgreSQLDriver extends DefaultDBDriver implements
 	}
 
 	@Override
-	public String getAddFieldSQL(String tableName, String fieldName,
-			Type fieldType) throws DriverException {
+	public String getAddFieldSQL(String fieldName, Type fieldType)
+			throws DriverException {
 		if (fieldType.getTypeCode() == Type.GEOMETRY) {
-			return getAddGeometryColumn(tableName, fieldName, fieldType);
+			return getAddGeometryColumn(fieldName, fieldType);
 		} else {
-			return super.getAddFieldSQL(tableName, fieldName, fieldType);
+			return super.getAddFieldSQL(fieldName, fieldType);
 		}
 	}
 
 	@Override
-	public String getPostCreateTableSQL(DBSource source, Metadata metadata)
+	public String getPostCreateTableSQL(Metadata metadata)
 			throws DriverException {
 		String ret = "";
 		for (int i = 0; i < metadata.getFieldCount(); i++) {
 			Type fieldType = metadata.getFieldType(i);
 			if (fieldType.getTypeCode() == Type.GEOMETRY) {
-				ret += getAddGeometryColumn(source.getTableName(), metadata
-						.getFieldName(i), metadata.getFieldType(i));
+				ret += getAddGeometryColumn(metadata.getFieldName(i), metadata
+						.getFieldType(i));
 			}
 		}
 
 		return ret;
 	}
 
-	private String getAddGeometryColumn(String tableName, String fieldName,
-			Type fieldType) throws DriverException {
+	private String getAddGeometryColumn(String fieldName, Type fieldType)
+			throws DriverException {
 		Constraint geometryConstraint = fieldType
 				.getConstraint(Constraint.GEOMETRY_TYPE);
 		DimensionConstraint dimensionConstraint = (DimensionConstraint) fieldType
 				.getConstraint(Constraint.GEOMETRY_DIMENSION);
-		return "select AddGeometryColumn('" + tableName + "', '" + fieldName
-				+ "', -1, '" + getGeometryTypeName(geometryConstraint) + "', '"
+		return "select AddGeometryColumn('" + schemaName + "', '" + tableName
+				+ "', '" + fieldName + "', -1, '"
+				+ getGeometryTypeName(geometryConstraint) + "', '"
 				+ getGeometryDimension(dimensionConstraint) + "');";
 	}
 
@@ -422,11 +546,11 @@ public class PostgreSQLDriver extends DefaultDBDriver implements
 	}
 
 	@Override
-	public String getInsertSQL(String tableName, String[] fieldNames,
-			Type[] fieldTypes, Value[] row) throws DriverException {
+	public String getInsertSQL(String[] fieldNames, Type[] fieldTypes,
+			Value[] row) throws DriverException {
 		StringBuffer sql = new StringBuffer();
-		sql.append("INSERT INTO \"").append(tableName).append("\" (\"").append(
-				fieldNames[0]);
+		sql.append("INSERT INTO ").append(getTableAndSchemaName()).append(
+				" (\"").append(fieldNames[0]);
 
 		for (int i = 1; i < fieldNames.length; i++) {
 			sql.append("\", \"").append(fieldNames[i]);
@@ -460,11 +584,11 @@ public class PostgreSQLDriver extends DefaultDBDriver implements
 	}
 
 	@Override
-	public String getUpdateSQL(String tableName, String[] pkNames,
-			Value[] pkValues, String[] fieldNames, Type[] fieldTypes,
-			Value[] row) throws DriverException {
+	public String getUpdateSQL(String[] pkNames, Value[] pkValues,
+			String[] fieldNames, Type[] fieldTypes, Value[] row)
+			throws DriverException {
 		StringBuffer sql = new StringBuffer();
-		sql.append("UPDATE \"").append(tableName).append("\" SET ");
+		sql.append("UPDATE ").append(getTableName()).append(" SET ");
 		String separator = "";
 		for (int i = 0; i < fieldNames.length; i++) {
 			if (isAutoNumerical(fieldTypes[i])) {
@@ -546,4 +670,20 @@ public class PostgreSQLDriver extends DefaultDBDriver implements
 	public String getTypeName() {
 		return "POSTGRESQL";
 	}
+
+	@Override
+	public String[] getSchemas(Connection c) throws DriverException {
+		String[] result = super.getSchemas(c);
+
+		List<String> schemas = new ArrayList<String>();
+		for (int i = 0; i < result.length; i++)
+			schemas.add(result[i]);
+
+		schemas.remove("information_schema");
+		schemas.remove("pg_catalog");
+		schemas.remove("pg_toast_temp_1");
+
+		return schemas.toArray(new String[0]);
+	}
+
 }

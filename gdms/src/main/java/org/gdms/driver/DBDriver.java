@@ -80,34 +80,82 @@ public interface DBDriver extends ReadOnlyDriver {
 	public void close(Connection conn) throws DriverException;
 
 	/**
-	 * Connects to the data source and reads the specified table in the
-	 * specified order
+	 * Connects to the data source and reads the specified table of 
+	 * the default schema in the database. Set this Table as current.
 	 * 
+	 * @param con
+	 * 			Connection to the database
 	 * @param tableName
 	 *            Name of the table where the data is in
-	 * @param host
-	 * @param port
-	 * @param dbName
-	 * @param user
-	 * @param password
 	 * 
 	 * @throws DriverException
 	 */
-	public void open(Connection con, String tableName) throws DriverException;
 
+	public void open(Connection con, String tableName) throws DriverException;
+	
 	/**
-	 * Retrieves all Table names in a database
+	 * Connects to the data source and reads the specified table in the
+	 * specified schema. Set this Table and this schema as current.
+	 * 
+	 * @param con
+	 * 			Connection to the database
+	 * @param tableName
+	 *          Name of the table where the data is in
+	 * @param schemaName
+	 * 			Name of the schema where the table is in
+	 * 
+	 * @throws DriverException
+	 */
+	public void open(Connection con, String tableName, String schemaName) throws DriverException;
+
+	
+	/**
+	 * Retrieves all Table names in a database (with types TABLES or VIEW)
 	 * 
 	 * @param c
-	 * @return A result set
+	 * 		Connection to the database
+	 * 
+	 * @return table of Tables descriptions
+	 * 
 	 * @throws DriverException
 	 */
 	public TableDescription[] getTables(Connection c) throws DriverException;
 
+	
+	/**
+	 * Retrieves all Schema names in a database.
+	 * 
+	 * @param c : the connection
+	 * @return a String table
+	 * 
+	 * @throws DriverException
+	 */
+	public String[] getSchemas(Connection c) throws DriverException;
+
+	
+	/**
+	 * Retrieves all Table names in a database, in specified catalog and schema
+	 * and matches with a "tableNamePattern" and with some types.
+	 * 
+	 * @param c : the database connection.
+	 * @param catalog 
+	 * @param schemaPattern
+	 * @param tableNamePattern
+	 * @param types
+	 * @return a table description of the Tables.
+	 * @throws DriverException
+	 * 
+	 * @see {@link java.sql.DatabaseMetaData#getTables(String, String, String, String[])}
+	 */
+	public TableDescription[] getTables(Connection c, String catalog, 
+			String schemaPattern, String tableNamePattern, String[] types)	throws DriverException;
+	
+
+	
 	/**
 	 * Get the port the dbms accessed by this driver listen by default
 	 * 
-	 * @return
+	 * @return the port number
 	 */
 	int getDefaultPort();
 

@@ -75,7 +75,7 @@ class ValueWriterImpl implements ValueWriter {
 	 * @see org.gdms.data.values.ValueWriter#getStatementString(double, int)
 	 */
 	public String getStatementString(double d, int sqlType) {
-		return df.format(d);
+		return df.format(d).replace(",", ".");
 	}
 
 	/**

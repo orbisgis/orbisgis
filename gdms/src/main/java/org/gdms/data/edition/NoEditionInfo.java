@@ -65,7 +65,7 @@ public class NoEditionInfo extends OriginalEditionInfo {
         return index;
     }
 
-	public String getSQL(String tableName, String[] pkNames, String[] fieldNames, DBReadWriteDriver driver) throws DriverException {
+	public String getSQL(String[] pkNames, String[] fieldNames, DBReadWriteDriver driver) throws DriverException {
 		return null;
 	}
 

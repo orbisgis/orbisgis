@@ -65,18 +65,24 @@ public class RegisterCall implements CustomQuery {
 				final String file = values[0].toString();
 				final String name = values[1].toString();
 				sourceManager.register(name, new FileSourceDefinition(file));
-			} else if ((values.length == 6) || (values.length == 8)) {
+			} else if ((values.length == 6) || (values.length == 8) || (values.length == 9)) {
 				final String vendor = values[0].toString();
 				final String host = values[1].toString();
 				final String port = values[2].toString();
 				final String dbName = values[3].toString();
 				final String user = values[4].toString();
 				final String password = values[5].toString();
+				String schemaName = null;
 				String tableName = null;
 				String name = null;
 				if (values.length == 8) {
 					tableName = values[6].toString();
 					name = values[7].toString();
+				}
+				if (values.length == 9) {
+					schemaName = values[6].toString();
+					tableName = values[7].toString();
+					name = values[8].toString();
 				}
 
 				if (tableName == null) {
@@ -84,13 +90,15 @@ public class RegisterCall implements CustomQuery {
 				}
 				sourceManager.register(name, new DBTableSourceDefinition(
 						new DBSource(host, Integer.parseInt(port), dbName,
-								user, password, tableName, "jdbc:" + vendor)));
+								user, password, schemaName ,tableName, "jdbc:" + vendor)));
 			} else {
 				throw new ExecutionException("Usage: \n"
 						+ "1) select register ('name');\n"
 						+ "2) select register ('path_to_file', 'name');\n"
 						+ "3) select register ('vendor', 'host', port, "
-						+ "dbName, user, password, tableName, dsEntryName);\n");
+						+ "dbName, user, password, tableName, dsEntryName);\n"
+						+ "4) select register ('vendor', 'host', port, "
+						+ "dbName, user, password, schema, tableName, dsEntryName);\n");
 			}
 		} catch (SourceAlreadyExistsException e) {
 			throw new ExecutionException(e);
@@ -124,6 +132,10 @@ public class RegisterCall implements CustomQuery {
 				new Arguments(Argument.STRING, Argument.STRING),
 				new Arguments(Argument.STRING, Argument.STRING,
 						Argument.STRING, Argument.STRING, Argument.STRING,
-						Argument.STRING, Argument.STRING, Argument.STRING) };
+						Argument.STRING, Argument.STRING, Argument.STRING),
+				new Arguments(Argument.STRING, Argument.STRING,
+						Argument.STRING, Argument.STRING, Argument.STRING,
+						Argument.STRING, Argument.STRING, Argument.STRING,
+						Argument.STRING) };
 	}
 }

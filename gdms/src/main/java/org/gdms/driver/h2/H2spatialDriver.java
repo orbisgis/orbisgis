@@ -52,7 +52,6 @@ import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
-import org.gdms.driver.DBReadWriteDriver;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.jdbc.BinaryRule;
 import org.gdms.driver.jdbc.BooleanRule;
@@ -81,8 +80,7 @@ import com.vividsolutions.jts.io.WKTWriter;
  * @author Erwan Bocher
  * 
  */
-public class H2spatialDriver extends DefaultDBDriver implements
-		DBReadWriteDriver {
+public class H2spatialDriver extends DefaultDBDriver {
 	private static Exception driverException;
 
 	private static WKBReader wkbreader = new WKBReader();
@@ -246,7 +244,7 @@ public class H2spatialDriver extends DefaultDBDriver implements
 
 	public String getChangeFieldNameSQL(String tableName, String oldName,
 			String newName) {
-		return "ALTER TABLE \"" + tableName + "\" ALTER COLUMN \"" + oldName
+		return "ALTER TABLE \"" + getTableAndSchemaName() + "\" ALTER COLUMN \"" + oldName
 				+ "\" RENAME TO \"" + newName + "\"";
 	}
 

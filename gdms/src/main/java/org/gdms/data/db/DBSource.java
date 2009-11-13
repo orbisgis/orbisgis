@@ -52,6 +52,8 @@ public class DBSource implements Serializable {
 
 	private String tableName;
 
+	private String schemaName;
+
 	private String user;
 
 	private String dbName;
@@ -61,14 +63,25 @@ public class DBSource implements Serializable {
 	private String prefix;
 
 	public DBSource(String host, int port, String dbName, String user,
-			String password, String tableName, String prefix) {
+			String password, String prefix) {
 		this.host = host;
 		this.port = port;
 		this.dbName = dbName;
 		this.user = user;
 		this.password = password;
-		this.tableName = tableName;
 		this.prefix = prefix;
+	}
+
+	public DBSource(String host, int port, String dbName, String user,
+			String password, String tableName, String prefix) {
+		this(host, port, dbName, user, password, prefix);
+		this.tableName = tableName;
+	}
+
+	public DBSource(String host, int port, String dbName, String user,
+			String password, String schemaName, String tableName, String prefix) {
+		this(host, port, dbName, user, password, tableName, prefix);
+		this.schemaName = schemaName;
 	}
 
 	public String getDbName() {
@@ -105,6 +118,14 @@ public class DBSource implements Serializable {
 
 	public String getTableName() {
 		return tableName;
+	}
+
+	public void setSchemaName(String schemaName) {
+		this.schemaName = schemaName;
+	}
+
+	public String getSchemaName() {
+		return schemaName;
 	}
 
 	public void setTableName(String tableName) {

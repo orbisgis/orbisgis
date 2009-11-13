@@ -71,7 +71,7 @@ public class UpdateEditionInfo extends OriginalEditionInfo {
 		return originalPK;
 	}
 
-	public String getSQL(String tableName, String[] pkNames,
+	public String getSQL(String[] pkNames,
 			String[] fieldNames, DBReadWriteDriver driver)
 			throws DriverException {
 		Metadata metadata = dir.getMetadata();
@@ -83,7 +83,7 @@ public class UpdateEditionInfo extends OriginalEditionInfo {
 		for (int i = 0; i < row.length; i++) {
 			row[i] = dir.getFieldValue(i);
 		}
-		return driver.getUpdateSQL(tableName, pkNames, originalPK.getValues(),
+		return driver.getUpdateSQL(pkNames, originalPK.getValues(),
 				fieldNames, fieldTypes, row);
 	}
 

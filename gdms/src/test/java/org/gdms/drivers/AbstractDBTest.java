@@ -86,7 +86,7 @@ public abstract class AbstractDBTest extends TestCase {
 	}
 
 	protected DBSource getPostgreSQLSource(String tableName) {
-		return new DBSource("127.0.0.1", 5432, "gdms", "postgres", "postgres",
+		return new DBSource("127.0.0.1", 5432, "gisdb", "gis", "gis",
 				tableName, "jdbc:postgresql");
 	}
 

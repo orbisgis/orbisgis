@@ -50,7 +50,7 @@ public class InsertEditionInfo implements EditionInfo {
 		this.dir = dir;
 	}
 
-	public String getSQL(String tableName, String[] pkNames,
+	public String getSQL(String[] pkNames,
 			String[] fieldNames, DBReadWriteDriver driver)
 			throws DriverException {
 		Metadata metadata = dir.getMetadata();
@@ -63,7 +63,7 @@ public class InsertEditionInfo implements EditionInfo {
 			row[i] = dir.getFieldValue(i);
 		}
 
-		return driver.getInsertSQL(tableName, fieldNames, fieldTypes, row);
+		return driver.getInsertSQL(fieldNames, fieldTypes, row);
 	}
 
 }

@@ -49,6 +49,7 @@ import org.gdms.data.values.Value;
  *
  */
 public interface DBReadWriteDriver extends DBDriver, ReadWriteDriver {
+
 	/**
 	 * Executes an instruction against the server
 	 *
@@ -56,8 +57,6 @@ public interface DBReadWriteDriver extends DBDriver, ReadWriteDriver {
 	 *            Connection used to execute the instruction
 	 * @param sql
 	 *            Instruction to execute
-	 * @param props
-	 *            Properties of the overlaying DataSource layer
 	 *
 	 * @throws SQLException
 	 *             If the execution fails
@@ -66,7 +65,7 @@ public interface DBReadWriteDriver extends DBDriver, ReadWriteDriver {
 
 	/**
 	 * Creates a new table. The source argument provides information about the
-	 * name of the table to be created and the host, port and database where the
+	 * name of the table to be created and the host, port, schema and database where the
 	 * table has to be created
 	 *
 	 * @param source
@@ -111,59 +110,51 @@ public interface DBReadWriteDriver extends DBDriver, ReadWriteDriver {
 
 	/**
 	 * Returns the SQL statement that changes the name of the specified name in
-	 * the specified table
+	 * the current table
 	 *
-	 * @param tableName
-	 *            Name of the table
 	 * @param oldName
 	 *            Name of the field to change
 	 * @param newName
 	 *            New name
 	 * @return
 	 */
-	public String getChangeFieldNameSQL(String tableName, String oldName,
+	public String getChangeFieldNameSQL(String oldName,
 			String newName) throws DriverException;
 
 	/**
 	 * Returns the SQL instruction that adds a field with the specified type and
-	 * name in the specified table
+	 * name in the current table.
 	 *
-	 * @param tableName
-	 *            Name of the table
 	 * @param fieldName
 	 *            Name of the field to add
 	 * @param fieldType
 	 *            Type of the field to add
 	 * @return
 	 */
-	public String getAddFieldSQL(String tableName, String fieldName,
+	public String getAddFieldSQL(String fieldName,
 			Type fieldType) throws DriverException;
 
 	/**
-	 * Returns the SQL instruction that deletes the record in the specified
+	 * Returns the SQL instruction that deletes the record in the current
 	 * table that matches the condition of equality between the specified
 	 * primary key and the specified values. The corresponding value for
 	 * pkNames[i] is stored in values[i]
 	 *
-	 * @param tableName
-	 *            Name of the table
 	 * @param pkNames
 	 *            Name of the fields that are primary key
 	 * @param values
 	 *            Values of the pkNames fields in the record to remove
 	 * @return
 	 */
-	public String getDeleteRecordSQL(String tableName, String[] pkNames,
+	public String getDeleteRecordSQL(String[] pkNames,
 			Value[] values) throws DriverException;
 
 	/**
 	 * Returns the SQL instruction that inserts a row containing the values
-	 * specified in 'row' for each field specified in 'fieldNames' in the table
-	 * specified by 'tableName'. The corresponding value for fieldNames[i] is
+	 * specified in 'row' for each field specified in 'fieldNames' in the current table.
+	 * The corresponding value for fieldNames[i] is
 	 * stored in row[i]
 	 *
-	 * @param tableName
-	 *            Name of the table
 	 * @param fieldNames
 	 *            Names of the fields
 	 * @param fieldTypes
@@ -172,20 +163,18 @@ public interface DBReadWriteDriver extends DBDriver, ReadWriteDriver {
 	 *            values for the 'fieldNames'
 	 * @return
 	 */
-	public String getInsertSQL(String tableName, String[] fieldNames,
+	public String getInsertSQL(String[] fieldNames,
 			Type[] fieldTypes, Value[] row) throws DriverException;
 
 	/**
 	 * Returns the SQL instruction that removes field specified by fieldName of
-	 * the table specified in tableName
+	 * the current table
 	 *
-	 * @param tableName
-	 *            Name of the table
 	 * @param fieldName
 	 *            Name of the field to delete
 	 * @return
 	 */
-	public String getDeleteFieldSQL(String tableName, String fieldName)
+	public String getDeleteFieldSQL(String fieldName)
 			throws DriverException;
 
 	/**
@@ -193,8 +182,6 @@ public interface DBReadWriteDriver extends DBDriver, ReadWriteDriver {
 	 * condition of equality between the specified primary key and the specified
 	 * values. The corresponding value for pkNames[i] is stored in values[i].
 	 *
-	 * @param tableName
-	 *            Name of the table
 	 * @param pkNames
 	 *            Name of the fields in the table that are primary key
 	 * @param values
@@ -207,7 +194,7 @@ public interface DBReadWriteDriver extends DBDriver, ReadWriteDriver {
 	 *            Values to update
 	 * @return
 	 */
-	public String getUpdateSQL(String tableName, String[] pkNames,
+	public String getUpdateSQL(String[] pkNames,
 			Value[] values, String[] fieldNames, Type[] fieldTypes, Value[] row)
 			throws DriverException;
 }

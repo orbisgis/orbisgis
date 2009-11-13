@@ -36,6 +36,7 @@
  */
 package org.gdms.data.db;
 
+
 import java.sql.Connection;
 import java.sql.SQLException;
 
@@ -139,7 +140,7 @@ public class DBTableSourceDefinition extends AbstractDataSourceDefinition {
 			try {
 				Type[] fieldTypes = MetadataUtilities.getFieldTypes(contents
 						.getMetadata());
-				String sqlInsert = driver.getInsertSQL(def.getTableName(),
+				String sqlInsert = driver.getInsertSQL(
 						contents.getFieldNames(), fieldTypes, row);
 				((DBReadWriteDriver) driver).execute(con, sqlInsert);
 			} catch (SQLException e) {
@@ -212,6 +213,7 @@ public class DBTableSourceDefinition extends AbstractDataSourceDefinition {
 					&& (dsd.def.getPort() == def.getPort())
 					&& equals(dsd.def.getUser(), def.getUser())
 					&& equals(dsd.def.getTableName(), def.getTableName())
+					&& equals(dsd.def.getSchemaName(), def.getSchemaName())
 					&& equals(dsd.def.getPrefix(), def.getPrefix())) {
 				return true;
 			} else {

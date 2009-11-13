@@ -65,10 +65,10 @@ public class DeleteEditionInfo extends OriginalEditionInfo implements EditionInf
 		return pk;
 	}
 
-	public String getSQL(String tableName, String[] pkNames,
+	public String getSQL(String[] pkNames,
 			String[] fieldNames, DBReadWriteDriver driver)
 			throws DriverException {
-		return driver.getDeleteRecordSQL(tableName, pkNames, pk.getValues());
+		return driver.getDeleteRecordSQL(pkNames, pk.getValues());
 	}
 
 }

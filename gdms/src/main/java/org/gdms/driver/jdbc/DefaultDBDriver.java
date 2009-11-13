@@ -67,22 +67,20 @@ import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
-import org.gdms.driver.DBDriver;
 import org.gdms.driver.DriverException;
+import org.gdms.driver.TableDescription;
 
 /**
  * Class with the implementation of the methods in database driver interfaces
  * that are related to JDBC
  * 
- * @author Fernando Gonzalez Cortes
  */
-public abstract class DefaultDBDriver extends DefaultSQL implements DBDriver {
+public abstract class DefaultDBDriver extends DefaultSQL {
 
 	private ResultSet resultSet;
 	private long rowCount = -1;
 	private Metadata metadata = null;
 	private Connection conn;
-	private String tableName;
 	private ResultSetMetaData resultsetMetadata;
 	private DataSourceFactory dsf;
 	private Statement statement;
@@ -100,7 +98,7 @@ public abstract class DefaultDBDriver extends DefaultSQL implements DBDriver {
 
 				final DatabaseMetaData dbmd = conn.getMetaData();
 
-				final ResultSet pKSet = dbmd.getPrimaryKeys(null, null,
+				final ResultSet pKSet = dbmd.getPrimaryKeys(null, schemaName,
 						tableName);
 				final List<String> pKFieldsList = new LinkedList<String>();
 				while (pKSet.next()) {
@@ -239,7 +237,7 @@ public abstract class DefaultDBDriver extends DefaultSQL implements DBDriver {
 
 	/**
 	 * Gets the order by clause of an instruction that orders by the primary key
-	 * fields
+	 * fields for the specified table in the default schema
 	 * 
 	 * @param c
 	 * @param tableName
@@ -248,8 +246,25 @@ public abstract class DefaultDBDriver extends DefaultSQL implements DBDriver {
 	 */
 	protected static String getOrderFields(Connection c, String tableName)
 			throws SQLException {
+		return getOrderFields(c, tableName, null);
+	}
+	
+	/**
+	 * Gets the order by clause of an instruction that orders by the primary key
+	 * fields for the specified table in the specified schema
+	 * 
+	 * @param c
+	 * @param tableName
+	 * @param schemaName
+	 * @return 
+	 * @throws SQLException
+	 * 
+	 * @see DefaultDBDriver#getOrderFields(Connection, String)
+	 */
+	protected static String getOrderFields(Connection c, String tableName, String schemaName)
+			throws SQLException {
 		DatabaseMetaData metadata = c.getMetaData();
-		ResultSet res = metadata.getPrimaryKeys(null, null, tableName);
+		ResultSet res = metadata.getPrimaryKeys(null, schemaName, tableName);
 
 		String order = null;
 		if (res.next()) {
@@ -263,17 +278,34 @@ public abstract class DefaultDBDriver extends DefaultSQL implements DBDriver {
 	}
 
 	/**
-	 * @see org.gdms.driver.DBDriver#open(java.sql.Connection, java.lang.String)
+	 * @see {@link DriverException.gdms.driver.DBDriver}{@link #open(Connection, String)}
 	 */
 	public void open(Connection con, String tableName) throws DriverException {
+		open(con, tableName, null);
+	}
+
+	
+	/**
+	 * @see {@link DriverException.gdms.driver.DBDriver}{@link #open(Connection, String, String)}
+	 */
+	public void open(Connection con, String tableName, String schemaName) throws DriverException {
 		try {
-			orderFieldName = getOrderFields(con, tableName);
+			orderFieldName = getOrderFields(con, tableName, schemaName);
 
 			statement = con.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,
 					ResultSet.CONCUR_READ_ONLY,
 					ResultSet.CLOSE_CURSORS_AT_COMMIT);
-			conn = con;
+			this.conn = con;
 			this.tableName = tableName;
+			this.schemaName = schemaName;
+			if(this.schemaName == null){
+				for(TableDescription table : getTables(con)){
+					if(table.getName().equals(tableName)){
+						this.schemaName = table.getSchema();
+						break;
+					}
+				}
+			}
 			getData();
 		} catch (SQLException e) {
 			throw new DriverException(e.getMessage(), e);
@@ -286,7 +318,7 @@ public abstract class DefaultDBDriver extends DefaultSQL implements DBDriver {
 	 * @throws DriverException
 	 */
 	protected void getData() throws DriverException {
-		String sql = getSelectSQL(tableName, orderFieldName);
+		String sql = getSelectSQL(orderFieldName);
 		try {
 			resultSet = statement.executeQuery(sql);
 			resultsetMetadata = resultSet.getMetaData();
@@ -298,14 +330,13 @@ public abstract class DefaultDBDriver extends DefaultSQL implements DBDriver {
 	/**
 	 * Gets the Select statement that will be accessed by the driver
 	 * 
-	 * @param tableName
 	 * @param orderFieldName
 	 * @return
 	 * @throws DriverException
 	 */
-	protected String getSelectSQL(String tableName, String orderFieldName)
+	protected String getSelectSQL(String orderFieldName)
 			throws DriverException {
-		String sql = "SELECT * FROM \"" + tableName + "\"";
+		String sql = "SELECT * FROM " + getTableAndSchemaName();
 		if (orderFieldName != null) {
 			sql += " ORDER BY " + orderFieldName;
 		}
@@ -451,6 +482,7 @@ public abstract class DefaultDBDriver extends DefaultSQL implements DBDriver {
 			conn = null;
 			metadata = null;
 			tableName = null;
+			schemaName = null;
 			rowCount = -1;
 		} catch (SQLException e) {
 			throw new DriverException(e);
@@ -508,6 +540,15 @@ public abstract class DefaultDBDriver extends DefaultSQL implements DBDriver {
 	 */
 	protected String getTableName() {
 		return tableName;
+	}
+	
+	/**
+	 * getter for the schema name
+	 * 
+	 * @return
+	 */
+	protected String getSchemaName() {
+		return schemaName;
 	}
 
 }

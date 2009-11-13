@@ -36,20 +36,35 @@
  */
 package org.gdms.driver;
 
+
 /**
  * A description of a table in a remote database.
+ * Contains a name, a type and a schema.
+ * The schema is null if it's the current schema of the database (schema=null).
  *
  * @author Fernando Gonzalez Cortes
  */
 public class TableDescription {
 	private String name;
 	private String type;
+	private String schema;
+	private int geometryType;
 
 	public TableDescription(String name, String type) {
-		this.name = name;
-		this.type = type;
+		this(name,type,null);
 	}
 
+	public TableDescription(String name, String type, String schema) {
+		this(name,type,schema,0);
+	}
+
+	public TableDescription(String name, String type, String schema, int geometryType) {
+		this.name = name;
+		this.type = type;
+		this.schema = schema;
+		this.geometryType = geometryType;
+	}
+	
 	public String getName() {
 		return name;
 	}
@@ -66,4 +81,22 @@ public class TableDescription {
 		this.type = type;
 	}
 
+	public String getSchema() {
+		return schema;
+	}
+
+	public void setSchema(String schema) {
+		this.schema = schema;
+	}
+
+	public void setGeometryType(int geometryType) {
+		this.geometryType = geometryType;
+		
+	}
+	public int getGeometryType() {
+		return this.geometryType;
+		
+	}
+
+	
 }

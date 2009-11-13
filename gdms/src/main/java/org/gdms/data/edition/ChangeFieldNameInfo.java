@@ -50,9 +50,9 @@ public class ChangeFieldNameInfo implements EditionInfo {
 		this.newName = newName;
 	}
 
-	public String getSQL(String tableName, String[] pkNames,
-			String[] fieldNames, DBReadWriteDriver driver)
-			throws DriverException {
-		return driver.getChangeFieldNameSQL(tableName, oldName, newName);
+	public String getSQL(String[] pkNames, String[] fieldNames,
+			DBReadWriteDriver driver) throws DriverException {
+		return driver.getChangeFieldNameSQL(oldName, newName);
 	}
+
 }

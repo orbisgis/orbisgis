@@ -129,8 +129,7 @@ public class DBTableDataSourceAdapter extends DriverDataSource implements
 	public void open() throws DriverException {
 		try {
 			con = getConnection();
-			((DBDriver) driver).open(con, def.getTableName());
-			fireOpen(this);
+			((DBDriver) driver).open(con, def.getTableName(), def.getSchemaName());
 		} catch (SQLException e) {
 			throw new DriverException(e);
 		}
@@ -182,7 +181,7 @@ public class DBTableDataSourceAdapter extends DriverDataSource implements
 			try {
 				Type[] fieldTypes = MetadataUtilities.getFieldTypes(dataSource
 						.getMetadata());
-				String sql = readWriteDriver.getInsertSQL(def.getTableName(),
+				String sql = readWriteDriver.getInsertSQL(
 						dataSource.getFieldNames(), fieldTypes, row);
 
 				readWriteDriver.execute(con, sql);
@@ -232,20 +231,20 @@ public class DBTableDataSourceAdapter extends DriverDataSource implements
 		String sql = null;
 		try {
 			for (EditionInfo info : schemaActions) {
-				sql = info.getSQL(def.getTableName(), getPKNames(), fieldNames,
+				sql = info.getSQL(getPKNames(), fieldNames,
 						(DBReadWriteDriver) driver);
 				((DBReadWriteDriver) driver).execute(con, sql);
 			}
 			for (DeleteEditionInfo info : deletedPKs) {
-				sql = info.getSQL(def.getTableName(), getPKNames(), fieldNames,
+				sql = info.getSQL(getPKNames(), fieldNames,
 						(DBReadWriteDriver) driver);
 				((DBReadWriteDriver) driver).execute(con, sql);
 			}
 			for (EditionInfo info : editionActions) {
-				sql = info.getSQL(def.getTableName(), getPKNames(), fieldNames,
+				sql = info.getSQL(getPKNames(), fieldNames,
 						(DBReadWriteDriver) driver);
 				if (sql != null) {
-					sql = info.getSQL(def.getTableName(), getPKNames(),
+					sql = info.getSQL(getPKNames(),
 							fieldNames, (DBReadWriteDriver) driver);
 					((DBReadWriteDriver) driver).execute(con, sql);
 				}
@@ -304,7 +303,7 @@ public class DBTableDataSourceAdapter extends DriverDataSource implements
 			con.close();
 			con = null;
 			con = getConnection();
-			((DBDriver) driver).open(con, def.getTableName());
+			((DBDriver) driver).open(con, def.getTableName(), def.getSchemaName());
 		} catch (SQLException e) {
 			throw new DriverException("Cannot close driver", e);
 		}

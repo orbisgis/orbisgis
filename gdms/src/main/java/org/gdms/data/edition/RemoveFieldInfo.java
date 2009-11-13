@@ -47,10 +47,10 @@ public class RemoveFieldInfo implements EditionInfo {
 		this.fieldName = fieldName;
 	}
 
-	public String getSQL(String tableName, String[] pkNames,
+	public String getSQL(String[] pkNames,
 			String[] fieldNames, DBReadWriteDriver driver)
 			throws DriverException {
-		return driver.getDeleteFieldSQL(tableName, fieldName);
+		return driver.getDeleteFieldSQL(fieldName);
 	}
 
 }
