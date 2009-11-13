@@ -56,7 +56,7 @@ import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
-import org.gdms.driver.memory.ObjectMemoryDriver;
+import org.gdms.driver.generic.GenericObjectDriver;
 import org.gdms.sql.strategies.DiskBufferDriver;
 
 /**
@@ -557,7 +557,7 @@ public class EditionTests extends SourceTest {
 	}
 
 	public void testInsertWrongNumberOfRows() throws Exception {
-		ObjectMemoryDriver omd = new ObjectMemoryDriver(
+		GenericObjectDriver omd = new GenericObjectDriver(
 				new String[] { "field" }, new Type[] { TypeFactory
 						.createType(Type.STRING) });
 		DataSource ds = dsf.getDataSource(omd);
@@ -578,7 +578,7 @@ public class EditionTests extends SourceTest {
 	}
 
 	public void testCheckValuesInAddedField() throws Exception {
-		ObjectMemoryDriver omd = new ObjectMemoryDriver(
+		GenericObjectDriver omd = new GenericObjectDriver(
 				new String[] { "field" }, new Type[] { TypeFactory
 						.createType(Type.STRING) });
 		DataSource ds = dsf.getDataSource(omd);

@@ -54,6 +54,24 @@ import org.gdms.driver.ReadWriteDriver;
 
 public class MetadataTest extends SourceTest {
 
+	
+	public void testEqualsMetadata() throws Exception{
+		DefaultMetadata metadata1 = new DefaultMetadata();
+		metadata1.addField("name", Type.STRING);
+		metadata1.addField("surname", Type.STRING);
+		metadata1.addField("location", Type.STRING);
+		
+		DefaultMetadata metadata2 = new DefaultMetadata();
+		metadata2.addField("name", Type.STRING);
+		metadata2.addField("gid", Type.INT);
+		
+		assertTrue(metadata1.equals(metadata1));
+		assertTrue(metadata2.equals(metadata2));
+		assertFalse(metadata1.equals(metadata2));
+		
+		
+	}
+	
 	public void testFieldIndex() throws Exception {
 		DefaultMetadata metadata = new DefaultMetadata();
 		metadata.addField("name", Type.STRING);

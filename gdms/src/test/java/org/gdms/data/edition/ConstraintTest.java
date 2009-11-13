@@ -29,7 +29,7 @@ import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueCollection;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
-import org.gdms.driver.memory.ObjectMemoryDriver;
+import org.gdms.driver.generic.GenericObjectDriver;
 import org.gdms.sql.strategies.IncompatibleTypesException;
 
 import com.vividsolutions.jts.geom.Geometry;
@@ -371,7 +371,7 @@ public class ConstraintTest extends TestCase {
 	}
 
 	private DataSource getDataSource() throws DriverException {
-		ObjectMemoryDriver omd = new ObjectMemoryDriver(
+		GenericObjectDriver omd = new GenericObjectDriver(
 				new String[] { "string" }, new Type[] { type });
 		DataSource dataSource = dsf.getDataSource(omd);
 		return dataSource;
