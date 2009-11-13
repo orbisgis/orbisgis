@@ -19,6 +19,7 @@ import org.orbisgis.core.Services;
 import org.orbisgis.core.configuration.BasicConfiguration;
 import org.orbisgis.core.configuration.DefaultBasicConfiguration;
 import org.orbisgis.core.renderer.legend.RasterLegend;
+import org.orbisgis.core.renderer.legend.WMSLegend;
 import org.orbisgis.core.renderer.legend.carto.DefaultLegendManager;
 import org.orbisgis.core.renderer.legend.carto.LegendFactory;
 import org.orbisgis.core.renderer.legend.carto.LegendManager;
@@ -192,6 +193,7 @@ public class OrbisgisCoreServices {
 		lm.addLegend(LegendFactory.createProportionalLegend());
 		lm.addLegend(LegendFactory.createLabelLegend());
 		lm.addLegend(new RasterLegend(LutGenerator.colorModel("gray"), 1));
+		lm.addLegend(new WMSLegend(null, null));
 	}
 
 	private static void installConfigurationService() {
