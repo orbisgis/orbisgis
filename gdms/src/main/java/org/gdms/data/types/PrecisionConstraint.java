@@ -36,6 +36,8 @@
  */
 package org.gdms.data.types;
 
+import java.math.BigDecimal;
+
 import org.gdms.data.values.Value;
 
 /**
@@ -57,17 +59,20 @@ public class PrecisionConstraint extends AbstractIntConstraint {
 	}
 
 	public String check(Value value) {
-		if (!value.isNull()) {
-			double d = value.getAsDouble();
-			int length = value.toString().length();
-			if (d != (long) d) {
-				length--;
-			}
-
-			if (length > constraintValue) {
+		if (!value.isNull()) {			
+			if (getDecimalDigitsCount(value.getAsDouble()) > constraintValue) {
 				return "Too many digits. Only " + constraintValue + " allowed";
 			}
+
 		}
 		return null;
+	}
+	
+	public int getDecimalDigitsCount(double value) {
+		String str = Double.toString(value);
+		if (str.endsWith(".0")) {
+			return 0;
+		}
+		return str.length() - (str.indexOf(".") + 1);
 	}
 }
