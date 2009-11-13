@@ -53,7 +53,7 @@ import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.ObjectDriver;
 import org.gdms.driver.driverManager.DriverLoadException;
-import org.gdms.driver.memory.ObjectMemoryDriver;
+import org.gdms.driver.generic.GenericObjectDriver;
 import org.gdms.sql.function.Argument;
 import org.gdms.sql.function.Arguments;
 import org.orbisgis.progress.IProgressMonitor;
@@ -90,7 +90,7 @@ public class Extrude implements CustomQuery {
 			final int heightFieldIndex = sds
 					.getFieldIndexByName(heightFieldName);
 
-			final ObjectMemoryDriver driver = new ObjectMemoryDriver(
+			final GenericObjectDriver driver = new GenericObjectDriver(
 					getMetadata(null));
 			final int rowCount = (int) sds.getRowCount();
 
@@ -185,7 +185,7 @@ public class Extrude implements CustomQuery {
 	}
 
 	private void extrudePolygon(final Value gid, final Polygon polygon,
-			final double high, final ObjectMemoryDriver driver)
+			final double high, final GenericObjectDriver driver)
 			throws DriverException {
 		Value wallType = ValueFactory.createValue("wall");
 
