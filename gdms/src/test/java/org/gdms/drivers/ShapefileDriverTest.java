@@ -62,7 +62,7 @@ import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
-import org.gdms.driver.memory.ObjectMemoryDriver;
+import org.gdms.driver.generic.GenericObjectDriver;
 import org.orbisgis.utils.FileUtils;
 
 import com.vividsolutions.jts.geom.Coordinate;
@@ -125,7 +125,7 @@ public class ShapefileDriverTest extends TestCase {
 	}
 
 	public void testSaveEmptyGeometries() throws Exception {
-		ObjectMemoryDriver omd = new ObjectMemoryDriver(new String[] {
+		GenericObjectDriver omd = new GenericObjectDriver(new String[] {
 				"the_geom", "id" }, new Type[] {
 				TypeFactory.createType(Type.GEOMETRY,
 						new Constraint[] { new GeometryConstraint(
@@ -157,7 +157,7 @@ public class ShapefileDriverTest extends TestCase {
 	}
 
 	public void testSaveHeterogeneousGeometries() throws Exception {
-		ObjectMemoryDriver omd = new ObjectMemoryDriver(new String[] { "id",
+		GenericObjectDriver omd = new GenericObjectDriver(new String[] { "id",
 				"geom" }, new Type[] { TypeFactory.createType(Type.STRING),
 				TypeFactory.createType(Type.GEOMETRY) });
 		dsf.getSourceManager().register("obj", new ObjectSourceDefinition(omd));
@@ -289,7 +289,7 @@ public class ShapefileDriverTest extends TestCase {
 	}
 
 	public void testNoConstraintWith3DGeom2SHP() throws Exception {
-		ObjectMemoryDriver omd = new ObjectMemoryDriver(
+		GenericObjectDriver omd = new GenericObjectDriver(
 				new String[] { "geom" }, new Type[] { TypeFactory
 						.createType(Type.GEOMETRY) });
 		omd.addValues(new Value[] { ValueFactory
