@@ -11,7 +11,7 @@ import org.gdms.data.types.Type;
 import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.driverManager.DriverLoadException;
-import org.gdms.driver.memory.ObjectMemoryDriver;
+import org.gdms.driver.generic.GenericObjectDriver;
 import org.gdms.sql.parser.ParseException;
 import org.gdms.sql.strategies.SemanticException;
 import org.orbisgis.core.Services;
@@ -74,7 +74,7 @@ public class ShowFieldStatistics implements ITableColumnAction {
 
 					dsResult = dsf.getDataSourceFromSQL(query);
 				} else {
-					ObjectMemoryDriver subds = getSubData(fieldName, ds,
+					GenericObjectDriver subds = getSubData(fieldName, ds,
 							selected);
 
 					query = getQuery(fieldName, dsf.getDataSource(subds))
@@ -124,7 +124,7 @@ public class ShowFieldStatistics implements ITableColumnAction {
 		}
 	}
 
-	private ObjectMemoryDriver getSubData(String fieldName, DataSource ds,
+	private GenericObjectDriver getSubData(String fieldName, DataSource ds,
 			int[] selected) throws DriverException {
 
 		int fieldIndex = ds.getFieldIndexByName(fieldName);
@@ -133,7 +133,7 @@ public class ShowFieldStatistics implements ITableColumnAction {
 		DefaultMetadata metadata = new DefaultMetadata();
 		metadata.addField(fieldName, fieldType);
 
-		ObjectMemoryDriver driver = new ObjectMemoryDriver(metadata);
+		GenericObjectDriver driver = new GenericObjectDriver(metadata);
 
 		for (int i = 0; i < selected.length; i++) {
 
