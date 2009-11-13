@@ -14,7 +14,7 @@ import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.ObjectDriver;
 import org.gdms.driver.ReadOnlyDriver;
-import org.gdms.driver.memory.ObjectMemoryDriver;
+import org.gdms.driver.generic.GenericObjectDriver;
 import org.gdms.source.SourceManager;
 import org.gdms.source.directory.DefinitionType;
 import org.gdms.source.directory.WmsDefinitionType;
@@ -32,7 +32,7 @@ public class WMSSourceDefinition extends AbstractDataSourceDefinition implements
 	@Override
 	protected ReadOnlyDriver getDriverInstance() {
 		try {
-			ObjectMemoryDriver ret = new ObjectMemoryDriver(getWMSMetadata());
+			GenericObjectDriver ret = new GenericObjectDriver(getWMSMetadata());
 			ret.addValues(new Value[] {
 					ValueFactory.createValue(wmsSource.getHost()),
 					ValueFactory.createValue(wmsSource.getLayer()),
