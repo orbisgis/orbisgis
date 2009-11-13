@@ -100,9 +100,11 @@ public class ZoomToSelectedFeatures implements IEditorAction {
 		ILayer[] layers = mc.getLayerModel().getLayersRecursively();
 		boolean flag = false;
 		for (ILayer lyr : layers) {
-			lyr.getSelection();
-			if (lyr.getSelection().length > 0)
-				flag = true;
+			if (!lyr.isWMS()) {
+				lyr.getSelection();
+				if (lyr.getSelection().length > 0)
+					flag = true;
+			}
 
 		}
 		return flag;
