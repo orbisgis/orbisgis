@@ -50,7 +50,7 @@ import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.ObjectDriver;
 import org.gdms.driver.driverManager.DriverLoadException;
-import org.gdms.driver.memory.ObjectMemoryDriver;
+import org.gdms.driver.generic.GenericObjectDriver;
 import org.gdms.sql.customQuery.CustomQuery;
 import org.gdms.sql.customQuery.TableDefinition;
 import org.gdms.sql.function.Argument;
@@ -86,7 +86,7 @@ public class Explode implements CustomQuery {
 				sds.setDefaultGeometry(spatialFieldName);
 			}
 			final int spatialFieldIndex = sds.getSpatialFieldIndex();
-			final ObjectMemoryDriver driver = new ObjectMemoryDriver(
+			final GenericObjectDriver driver = new GenericObjectDriver(
 					getMetadata(MetadataUtilities.fromTablesToMetadatas(tables)));
 
 			long rowCount = sds.getRowCount();
@@ -114,7 +114,7 @@ public class Explode implements CustomQuery {
 		}
 	}
 
-	private void explode(final ObjectMemoryDriver driver,
+	private void explode(final GenericObjectDriver driver,
 			final Value[] fieldsValues, final Geometry geometry,
 			final int spatialFieldIndex) {
 		if (geometry instanceof GeometryCollection) {
