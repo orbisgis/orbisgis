@@ -48,7 +48,7 @@ import org.grap.lut.LutDisplay;
 import org.grap.lut.LutGenerator;
 import org.orbisgis.core.renderer.symbol.Symbol;
 
-public class RasterLegend extends AbstractLegend implements Legend {
+public class RasterLegend extends AbstractLegend  {
 
 	private ColorModel colorModel = null;
 	private float opacity = 1.0f;
