@@ -54,7 +54,7 @@ import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeFactory;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.driverManager.DriverLoadException;
-import org.gdms.driver.memory.ObjectMemoryDriver;
+import org.gdms.driver.generic.GenericObjectDriver;
 import org.gdms.source.SourceManager;
 import org.gdms.sql.strategies.TableNotFoundException;
 
@@ -168,7 +168,7 @@ public class DataSourceFactoryTests extends SourceTest {
 	public void testRegisteringCollission() throws Exception {
 		String name = "e" + System.currentTimeMillis();
 		ObjectSourceDefinition def = new ObjectSourceDefinition(
-				new ObjectMemoryDriver(null, null));
+				new GenericObjectDriver(null, null));
 		sm.register(name, def);
 		try {
 			sm.register(name, def);
@@ -376,7 +376,7 @@ public class DataSourceFactoryTests extends SourceTest {
 	public void testCreationNotRegisteredSource() throws Exception {
 		try {
 			dsf.saveContents("notexists", dsf
-					.getDataSource(new ObjectMemoryDriver()));
+					.getDataSource(new GenericObjectDriver()));
 			assertTrue(false);
 		} catch (IllegalArgumentException e) {
 		}
