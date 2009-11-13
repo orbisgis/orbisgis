@@ -43,7 +43,9 @@ import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
+
 import java.io.IOException;
+
 
 import javax.swing.BoxLayout;
 import javax.swing.Icon;
@@ -86,8 +88,9 @@ public class TocRenderer extends TocAbstractRenderer implements
 			ourJPanel = new LayerRenderPanel();
 			ourJPanel.setNodeCosmetic(tree, (ILayer) value, selected, expanded,
 					leaf, row, hasFocus);
+
 			return ourJPanel.getJPanel();
-		} else  {
+		} else {
 			TocTreeModel.LegendNode legendNode = (TocTreeModel.LegendNode) value;
 			ILayer layer = legendNode.getLayer();
 
@@ -98,13 +101,24 @@ public class TocRenderer extends TocAbstractRenderer implements
 							.getLegendIndex(), selected, expanded, leaf, row,
 							hasFocus);
 					return ourJPanel.getJPanel();
-				} else {
+				}
+
+				else if (layer.isWMS()) {
+					WMSLegendRenderPanel ourJPanel = new WMSLegendRenderPanel();
+					ourJPanel.setNodeCosmetic(tree, legendNode.getLayer(),
+							legendNode.getLegendIndex(), selected, expanded,
+							leaf, row, hasFocus);
+					return ourJPanel.getJPanel();
+				} 
+				
+				else {
 					RasterLegendRenderPanel ourJPanel = new RasterLegendRenderPanel();
 					ourJPanel.setNodeCosmetic(tree, legendNode.getLayer(),
-							legendNode.getLegendIndex(), selected, expanded, leaf,
-							row, hasFocus);
+							legendNode.getLegendIndex(), selected, expanded,
+							leaf, row, hasFocus);
 					return ourJPanel.getJPanel();
 				}
+				
 			} catch (DriverException e) {
 				e.printStackTrace();
 			}
@@ -306,5 +320,50 @@ public class TocRenderer extends TocAbstractRenderer implements
 		}
 
 	}
+
+	public class WMSLegendRenderPanel {
+
+		private JLabel lblLegend;
+		private JPanel jpanel;
+
+		public WMSLegendRenderPanel() {
+			FlowLayout fl = new FlowLayout(FlowLayout.LEADING);
+			fl.setHgap(0);
+			jpanel = new JPanel();
+			jpanel.setLayout(fl);
+			lblLegend = new JLabel();
+			jpanel.add(lblLegend);
+		}
+
+		public void setNodeCosmetic(JTree tree, ILayer node, int legendIndex,
+				boolean selected, boolean expanded, boolean leaf, int row,
+				boolean hasFocus) {
+			try {
+				jpanel.setBackground(DESELECTED);
+				Graphics2D dummyGraphics = new BufferedImage(10, 10,
+						BufferedImage.TYPE_INT_ARGB).createGraphics();
+				Legend legend = node.getRenderingLegend()[legendIndex];
+				int[] imageSize = legend.getImageSize(dummyGraphics);
+				if ((imageSize[0] != 0) && (imageSize[1] != 0)) {
+					BufferedImage legendImage = new BufferedImage(imageSize[0],
+							imageSize[1], BufferedImage.TYPE_INT_ARGB);
+					legend.drawImage(legendImage.createGraphics());
+					ImageIcon imageIcon = new ImageIcon(legendImage);
+					lblLegend.setIcon(imageIcon);
+				}
+			} catch (DriverException e) {
+				Services.getErrorManager().error(
+						"Cannot access the legends in layer " + node.getName(),
+						e);
+			}
+		}
+
+		public Component getJPanel() {
+			return jpanel;
+		}
+
+	}
+
+	
 
 }
