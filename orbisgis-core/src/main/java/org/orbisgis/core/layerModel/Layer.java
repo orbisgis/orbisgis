@@ -98,7 +98,7 @@ public class Layer extends GdmsLayer {
 				.nextInt(256));
 
 		UniqueSymbolLegend legend = LegendFactory.createUniqueSymbolLegend();
-		Symbol polSym = SymbolFactory.createPolygonSymbol(Color.black, c);
+		Symbol polSym = SymbolFactory.createPolygonSymbol(null, c);
 		Symbol pointSym = SymbolFactory.createPointCircleSymbol(Color.black,
 				Color.red, 10);
 		Symbol lineSym = SymbolFactory.createLineSymbol(Color.black, 1);
