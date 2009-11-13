@@ -13,6 +13,7 @@ import java.awt.event.KeyListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.ByteArrayInputStream;
+import java.text.NumberFormat;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -32,6 +33,7 @@ import javax.swing.JPopupMenu;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
+import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
@@ -84,6 +86,8 @@ public class TableComponent extends JPanel {
 	private static final String SORTUP = "SORTUP";
 	private static final String SORTDOWN = "SORTDOWN";
 	private static final String NOSORT = "NOSORT";
+	private static final Color NUMERIC_COLOR = new Color(205,197,191);
+	private static final Color DEFAULT_COLOR = new Color(238,229,222);
 
 	// Swing components
 	private javax.swing.JScrollPane jScrollPane = null;
@@ -111,7 +115,7 @@ public class TableComponent extends JPanel {
 
 	/**
 	 * This is the default constructor
-	 *
+	 * 
 	 * @throws DriverException
 	 */
 	public TableComponent(TableEditor editor) {
@@ -131,7 +135,7 @@ public class TableComponent extends JPanel {
 
 	/**
 	 * This method initializes table
-	 *
+	 * 
 	 * @return javax.swing.JTable
 	 */
 	private javax.swing.JTable getTable() {
@@ -253,7 +257,7 @@ public class TableComponent extends JPanel {
 
 	/**
 	 * This method initializes jScrollPane
-	 *
+	 * 
 	 * @return javax.swing.JScrollPane
 	 */
 	private javax.swing.JScrollPane getJScrollPane() {
@@ -267,7 +271,7 @@ public class TableComponent extends JPanel {
 
 	/**
 	 * Shows a dialog with the error type
-	 *
+	 * 
 	 * @param msg
 	 */
 	private void inputError(String msg, Exception e) {
@@ -307,6 +311,7 @@ public class TableComponent extends JPanel {
 			this.dataSource.addMetadataEditionListener(listener);
 			tableModel = new DataSourceDataModel();
 			table.setModel(tableModel);
+			table.setBackground(DEFAULT_COLOR);
 			autoResizeColWidth(Math.min(5, tableModel.getRowCount()),
 					new HashMap<String, Integer>(),
 					new HashMap<String, TableCellRenderer>());
@@ -327,12 +332,16 @@ public class TableComponent extends JPanel {
 		for (int i = 0; i < tableModel.getColumnCount(); i++) {
 			TableColumn col = new TableColumn(i);
 			String columnName = tableModel.getColumnName(i);
+			int columnType = tableModel.getColumnType(i).getTypeCode();
+
 			col.setHeaderValue(columnName);
 			TableCellRenderer renderer = renderers.get(columnName);
+
 			if (renderer == null) {
 				renderer = new ButtonHeaderRenderer();
 			}
 			col.setHeaderRenderer(renderer);
+
 			Integer width = widths.get(columnName);
 			if (width == null) {
 				width = getColumnOptimalWidth(rowsToCheck, maxWidth, i,
@@ -340,6 +349,20 @@ public class TableComponent extends JPanel {
 			}
 			col.setPreferredWidth(width);
 			colModel.addColumn(col);
+			switch (columnType) {
+			case Type.DOUBLE:
+			case Type.INT:
+			case Type.LONG:
+				NumberFormat formatter = NumberFormat.getCurrencyInstance();
+				FormatRenderer formatRenderer = new FormatRenderer(formatter);
+				formatRenderer.setHorizontalAlignment(SwingConstants.RIGHT);
+				formatRenderer.setBackground(NUMERIC_COLOR);
+				col.setCellRenderer(formatRenderer);
+				break;
+			default:
+				break;
+			}
+
 		}
 		table.setColumnModel(colModel);
 	}
@@ -515,7 +538,8 @@ public class TableComponent extends JPanel {
 						liste.add(value);
 					}
 					pm.endTask();
-
+					ds.close();
+					
 					pm.startTask("Data matching");
 					for (int i = 0; i < dataSourceRowCount; i++) {
 						if (pm.isCancelled()) {
@@ -542,7 +566,6 @@ public class TableComponent extends JPanel {
 					}
 					pm.endTask();
 
-					ds.close();
 
 					pm.startTask("Preparing selection");
 					int selCount = newSel.size();
@@ -841,10 +864,10 @@ public class TableComponent extends JPanel {
 
 		/**
 		 * Returns the name of the field.
-		 *
+		 * 
 		 * @param col
 		 *            index of field
-		 *
+		 * 
 		 * @return Name of field
 		 */
 		public String getColumnName(int col) {
@@ -857,7 +880,7 @@ public class TableComponent extends JPanel {
 
 		/**
 		 * Returns the type of field
-		 *
+		 * 
 		 * @param col
 		 *            index of field
 		 * @return Type of field
@@ -872,7 +895,7 @@ public class TableComponent extends JPanel {
 
 		/**
 		 * Returns the number of fields.
-		 *
+		 * 
 		 * @return number of fields
 		 */
 		public int getColumnCount() {
@@ -885,7 +908,7 @@ public class TableComponent extends JPanel {
 
 		/**
 		 * Returns number of rows.
-		 *
+		 * 
 		 * @return number of rows.
 		 */
 		public int getRowCount() {
