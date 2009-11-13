@@ -48,7 +48,7 @@ import org.gdms.data.values.ValueCollection;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.ObjectDriver;
-import org.gdms.driver.memory.ObjectMemoryDriver;
+import org.gdms.driver.generic.GenericObjectDriver;
 import org.gdms.sql.evaluator.EvaluationException;
 import org.gdms.sql.evaluator.Expression;
 import org.gdms.sql.evaluator.Field;
@@ -142,7 +142,7 @@ public class GroupByOperator extends AbstractExpressionOperator implements
 				pm.endTask();
 
 				pm.startTask("Calculating aggregates");
-				ObjectMemoryDriver omd = new ObjectMemoryDriver(
+				GenericObjectDriver omd = new GenericObjectDriver(
 						getResultMetadata());
 				Iterator<ValueCollection> it = classExpressions.keySet()
 						.iterator();
