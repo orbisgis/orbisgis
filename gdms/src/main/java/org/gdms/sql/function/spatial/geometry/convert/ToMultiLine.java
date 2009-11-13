@@ -73,7 +73,6 @@ public class ToMultiLine extends AbstractSpatialFunction {
 			try {
 				toMultiLineString(geometry, allLineString);
 			} catch (PointException e) {
-				// return ValueFactory.createNullValue();
 				allLineString.clear();
 			}
 
