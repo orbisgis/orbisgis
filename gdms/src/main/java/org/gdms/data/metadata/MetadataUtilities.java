@@ -265,6 +265,7 @@ public class MetadataUtilities {
 
 	/**
 	 * Returns the spatial field index.
+	 * 
 	 * @param metadata
 	 * @return
 	 * @throws DriverException
@@ -280,5 +281,9 @@ public class MetadataUtilities {
 			}
 		}
 		return spatialFieldIndex;
+	}
+
+	public static boolean isSpatial(Metadata metadata) throws DriverException {
+		return getSpatialFieldIndex(metadata) != -1;
 	}
 }
