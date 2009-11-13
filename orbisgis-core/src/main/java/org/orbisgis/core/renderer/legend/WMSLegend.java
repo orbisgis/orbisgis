@@ -22,6 +22,7 @@ public class WMSLegend extends AbstractLegend {
 
 	private WMSConnection wmsConnection;
 	private String layerName;
+	private File file;
 
 	public WMSLegend(WMSConnection wmsConnection, String layerName) {
 		this.wmsConnection = wmsConnection;
@@ -99,8 +100,11 @@ public class WMSLegend extends AbstractLegend {
 		WMSStatus status = connection.getStatus();
 		BufferedImage image = null;
 		try {
-			File file = connection.getClient().getLegendGraphic(status,
-					layerName, null);
+			if (file == null) {
+				file = connection.getClient().getLegendGraphic(status,
+						layerName, null);
+			}
+
 			image = ImageIO.read(file);
 		} catch (WMSException e) {
 			Services.getService(ErrorManager.class).error(
