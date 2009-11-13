@@ -128,19 +128,7 @@ public class CompletionKeyListener extends KeyAdapter {
 			if (txtPoint.x + p.x + popWidth > frmPoint.x + mainFrame.getWidth()) {
 				x1 = x1 - popWidth;
 			}
-			// if (x1 < frmPoint.x) {
-			// x1 = 0;
-			// Dimension newDimension = new Dimension(
-			// 3 * mainFrame.getWidth() / 4, popHeight);
-			// pop.setPreferredSize(newDimension);
-			// }
-			// if (y1 < frmPoint.y) {
-			// y1 = 0;
-			// Dimension newDimension = new Dimension(popWidth, 3 * mainFrame
-			// .getHeight() / 4);
-			// pop.setPreferredSize(newDimension);
-			// }
-			//
+			
 			pop.show(mainFrame, x1, y1);
 		}
 	}
