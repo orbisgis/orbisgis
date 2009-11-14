@@ -190,6 +190,7 @@ public class DBTableSourceDefinition extends AbstractDataSourceDefinition {
 		ret.setPassword(def.getPassword());
 		ret.setUser(def.getUser());
 		ret.setPrefix(def.getPrefix());
+		ret.setSchemaName(def.getSchemaName());
 
 		return ret;
 	}
@@ -197,7 +198,7 @@ public class DBTableSourceDefinition extends AbstractDataSourceDefinition {
 	public static DataSourceDefinition createFromXML(DbDefinitionType definition) {
 		DBSource dbSource = new DBSource(definition.getHost(), Integer
 				.parseInt(definition.getPort()), definition.getDbName(),
-				definition.getUser(), definition.getPassword(), definition
+				definition.getUser(), definition.getPassword(), definition.getSchemaName(), definition
 						.getTableName(), definition.getPrefix());
 		return new DBTableSourceDefinition(dbSource);
 	}
