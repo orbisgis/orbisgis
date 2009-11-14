@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <project name="gdms" default="run jaxb" basedir=".">
 
-	<property name="xjc-path" value="/usr/lib/jvm/java-6-sun-1.6.0.13/bin/xjc" />
+	<property name="xjc-path" value="/usr/lib/jvm/java-6-sun-1.6.0.16/bin/xjc" />
 
 	<target name="run jaxb" depends="Source"/>
 
