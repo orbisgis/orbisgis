@@ -10,7 +10,7 @@
 	<groupId>org.orbisgis</groupId>
 	<artifactId>orbisgis-core</artifactId>
 	<name>orbisgis-core</name>
-	<version>2.1.0</version>
+	<version>2.2.0</version>
 	<url>http://maven.apache.org</url>
 	<dependencies>
 		<dependency>
@@ -62,7 +62,7 @@
 		<dependency>
 			<groupId>org.gdms</groupId>
 			<artifactId>gdms</artifactId>
-			<version>1.4.0</version>
+			<version>1.5.0</version>
 		</dependency>	
 		<dependency>
 			<groupId>bsh</groupId>
