@@ -127,9 +127,12 @@
 		<action id="org.orbisgis.core.ui.actions.About" text="About OrbisGIS"
 			menu-id="org.orbisgis.core.ui.Help"
 			class="org.orbisgis.core.ui.actions.about.About"/>
-			<action id="org.orbisgis.core.ui.actions.Help" text="Online Help (FR)"
+		<action id="org.orbisgis.core.ui.actions.Help_fr" text="Aide en ligne (FR)"
 			menu-id="org.orbisgis.core.ui.Help"
-			class="org.orbisgis.core.ui.actions.help.Help"/>
+			class="org.orbisgis.core.ui.actions.help.Help_fr"/>			
+		<action id="org.orbisgis.core.ui.actions.Help_en" text="Online Help (EN)"
+			menu-id="org.orbisgis.core.ui.Help"
+			class="org.orbisgis.core.ui.actions.help.Help_en"/>
 	</extension>
 
 	<extension point="org.orbisgis.core.ui.Action" id="org.orbisgis.actions.Workspace">
