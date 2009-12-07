@@ -41,16 +41,13 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 
-import javax.swing.JEditorPane;
-import javax.swing.JFrame;
-
 import org.orbisgis.core.Services;
 import org.orbisgis.core.ui.action.IAction;
 import org.orbisgis.errorManager.ErrorManager;
 
-public class Help implements IAction {
+public class Help_fr implements IAction {
 
-	private String url = "http://brehat.ec-nantes.fr/orbisgis_download/documentation/online/orbisgis_help.htm";
+	private String url = "http://brehat.ec-nantes.fr/orbisgis_download/documentation/online/fr/orbisgis_help.htm";
 
 	public void actionPerformed() {
 
