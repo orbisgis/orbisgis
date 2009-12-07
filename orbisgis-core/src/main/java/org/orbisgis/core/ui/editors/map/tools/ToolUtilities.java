@@ -185,7 +185,7 @@ public class ToolUtilities {
 			return true;
 		}
 
-		return true;
+		return false;
 
 	}
 }
