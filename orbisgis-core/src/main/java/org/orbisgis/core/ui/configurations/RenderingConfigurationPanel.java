@@ -67,7 +67,8 @@ public class RenderingConfigurationPanel extends JPanel implements ItemListener 
 		items.add(RenderingConfiguration.items3);
 		items.add(RenderingConfiguration.items4);
 
-		setCompositeCb(new JComboBox(items));
+		compositeCb = new JComboBox(items);
+		if (composite_value!=null)
 		compositeCb.setSelectedItem(composite_value);
 		getCompositeCb().setEnabled(composite);
 		getCompositeCb().addItemListener(this);
