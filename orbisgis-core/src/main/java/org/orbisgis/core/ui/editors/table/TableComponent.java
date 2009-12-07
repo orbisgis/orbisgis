@@ -12,14 +12,12 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.io.ByteArrayInputStream;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.List;
 import java.util.TreeSet;
 
 import javax.swing.DefaultListSelectionModel;
@@ -43,6 +41,7 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
+
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceCreationException;
 import org.gdms.data.DataSourceFactory;
@@ -51,6 +50,10 @@ import org.gdms.data.edition.EditionListener;
 import org.gdms.data.edition.FieldEditionEvent;
 import org.gdms.data.edition.MetadataEditionListener;
 import org.gdms.data.edition.MultipleEditionEvent;
+import org.gdms.data.indexes.DefaultAlphaQuery;
+import org.gdms.data.indexes.IndexException;
+import org.gdms.data.indexes.IndexManager;
+import org.gdms.data.indexes.IndexQuery;
 import org.gdms.data.metadata.Metadata;
 import org.gdms.data.types.Constraint;
 import org.gdms.data.types.Type;
@@ -58,7 +61,6 @@ import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.driverManager.DriverLoadException;
-import org.gdms.sql.parser.SQLEngine;
 import org.gdms.sql.strategies.SemanticException;
 import org.gdms.sql.strategies.SortComparator;
 import org.orbisgis.core.Services;
@@ -86,8 +88,8 @@ public class TableComponent extends JPanel {
 	private static final String SORTUP = "SORTUP";
 	private static final String SORTDOWN = "SORTDOWN";
 	private static final String NOSORT = "NOSORT";
-	private static final Color NUMERIC_COLOR = new Color(205,197,191);
-	private static final Color DEFAULT_COLOR = new Color(238,229,222);
+	private static final Color NUMERIC_COLOR = new Color(205, 197, 191);
+	private static final Color DEFAULT_COLOR = new Color(238, 229, 222);
 
 	// Swing components
 	private javax.swing.JScrollPane jScrollPane = null;
@@ -202,42 +204,28 @@ public class TableComponent extends JPanel {
 	private JTextField getJTextField() {
 		txtFilter = new JTextField(20);
 		txtFilter.setBackground(Color.WHITE);
-		txtFilter.setText("Select a primary key column");
+		txtFilter.setText("Put a where condition here !");
 		txtFilter.setToolTipText("Press enter to search");
-		txtFilter.setEnabled(false);
 		txtFilter.addKeyListener(new KeyListener() {
 
 			public void keyPressed(KeyEvent e) {
 				if (e.getKeyCode() == KeyEvent.VK_ENTER) {
-					final String text = txtFilter.getText();
-					if (text.length() == 0) {
+					final String whereText = txtFilter.getText();
+					if (whereText.length() == 0) {
 						if (selectedRowsCount > 0) {
 							selection.clearSelection();
 							updateRowsMessage();
 						}
 
 					} else {
-						String columnName = tableModel
-								.getColumnName(selectedColumn);
-						StringBuffer query = new StringBuffer("select "
-								+ columnName);
+						String columnName = "pk_" + dataSource.getName();
+						StringBuffer query = new StringBuffer(
+								"select autonumeric() as pk_"
+										+ dataSource.getName() + ", * ");
 
-						query.append(" from " + dataSource.getName()
-								+ " where ");
-						query.append(text + "  order by " + columnName + " ;");
+						query.append(" from " + dataSource.getName());
 
-						SQLEngine eng = new SQLEngine(new ByteArrayInputStream(
-								query.toString().getBytes()));
-
-						System.out.println(query.toString());
-						try {
-							eng.SQLStatement();
-							findAValue(query.toString());
-						} catch (org.gdms.sql.parser.ParseException e1) {
-							txtFilter.setText("Wrong query syntax");
-							Services.getErrorManager().error(
-									"Semantic error in the query", e1);
-						}
+						findAValue(query.toString(), columnName, whereText);
 
 					}
 				}
@@ -499,7 +487,8 @@ public class TableComponent extends JPanel {
 		}
 	}
 
-	public void findAValue(final String text) {
+	public void findAValue(final String text, final String columnName,
+			final String whereText) {
 
 		BackgroundManager bm = Services.getService(BackgroundManager.class);
 		bm.backgroundOperation(new BackgroundJob() {
@@ -515,57 +504,46 @@ public class TableComponent extends JPanel {
 
 				try {
 					DataSourceFactory dsf = dataSource.getDataSourceFactory();
-					DataSource ds = dsf.getDataSourceFromSQL(text, pm);
+					DataSource dsWithPk = dsf.getDataSourceFromSQL(text + " ;",
+							pm);
 
-					ds.open();
+					String dsWithPkName = dsWithPk.getName();
 
-					long dataSourceRowCount = dataSource.getRowCount();
+					DataSource dsWithPkFiltered = dsf.getDataSourceFromSQL(
+							"select * from " + dsWithPk.getName() + " where "
+									+ whereText + " ;", pm);
 
-					long dsRowCount = ds.getRowCount();
+					dsWithPkFiltered.open();
+
+					long dsRowCount = dsWithPkFiltered.getRowCount();
 
 					ArrayList<Integer> newSel = new ArrayList<Integer>();
 
-					List<Integer> liste = new ArrayList<Integer>();
-					pm.startTask("Data ordering");
-					for (int i = 0; i < dsRowCount; i++) {
-
-						if (pm.isCancelled()) {
-							break;
-						} else {
-							pm.progressTo((int) (100 * i / dsRowCount));
-						}
-						int value = ds.getFieldValue(i, 0).getAsInt();
-						liste.add(value);
+					if (!dsf.getIndexManager().isIndexed(dsWithPkName,
+							columnName)) {
+						dsf.getIndexManager().buildIndex(dsWithPkName,
+								columnName,
+								IndexManager.BTREE_ALPHANUMERIC_INDEX, pm);
 					}
-					pm.endTask();
-					ds.close();
-					
+
 					pm.startTask("Data matching");
-					for (int i = 0; i < dataSourceRowCount; i++) {
-						if (pm.isCancelled()) {
-							break;
-						} else {
-							pm.progressTo((int) (100 * i / dataSourceRowCount));
-						}
-						int valuePKds = dataSource.getFieldValue(i,
-								selectedColumn).getAsInt();
-						Iterator<Integer> it = liste.iterator();
-						boolean value = true;
-						while (it.hasNext() && value) {
-							long valuePk = it.next();
-							if (valuePk > valuePKds) {
-								value = false;
-							} else {
-								if (valuePk == valuePKds) {
-									newSel.add(i);
-									value = false;
-								}
-							}
+					dsWithPk.open();
+					for (int i = 0; i < dsRowCount; i++) {
+						Value value = dsWithPkFiltered.getFieldValue(i, 0);
+						IndexQuery DefaultAlphaQuery = new DefaultAlphaQuery(
+								columnName, value);
+						Iterator<Integer> it = dsWithPk
+								.queryIndex(DefaultAlphaQuery);
+
+						while (it.hasNext()) {
+							Integer index = it.next();
+							newSel.add(index);
 						}
 
 					}
+					dsWithPkFiltered.close();
+					dsWithPk.close();
 					pm.endTask();
-
 
 					pm.startTask("Preparing selection");
 					int selCount = newSel.size();
@@ -591,6 +569,8 @@ public class TableComponent extends JPanel {
 				} catch (org.gdms.sql.parser.ParseException e) {
 					e.printStackTrace();
 				} catch (SemanticException e) {
+					e.printStackTrace();
+				} catch (IndexException e) {
 					e.printStackTrace();
 				}
 			}
@@ -699,13 +679,6 @@ public class TableComponent extends JPanel {
 		private void popup(MouseEvent e) {
 			Component component = getComponent();
 			selectedColumn = table.columnAtPoint(e.getPoint());
-			int type = tableModel.getColumnType(selectedColumn).getTypeCode();
-			if (type == Type.INT || type == Type.LONG) {
-				txtFilter.setEnabled(true);
-			} else {
-
-				txtFilter.setEnabled(false);
-			}
 
 			TableColumn col = table.getTableHeader().getColumnModel()
 					.getColumn(selectedColumn);
