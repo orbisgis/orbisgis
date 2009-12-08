@@ -34,7 +34,7 @@ public class OrbisGISApplicationInfo implements ApplicationInfo {
 
 	@Override
 	public String getVersionNumber() {
-		return "2.2c";
+		return "2.2";
 	}
 
 }
