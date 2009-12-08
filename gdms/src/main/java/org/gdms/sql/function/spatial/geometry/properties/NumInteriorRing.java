@@ -71,7 +71,7 @@ public class NumInteriorRing extends AbstractSpatialPropertyFunction {
 	}
 
 	public String getName() {
-		return "NumInteriorRing";
+		return "ST_NumInteriorRings";
 	}
 
 	public Type getType(Type[] types) {
@@ -87,7 +87,7 @@ public class NumInteriorRing extends AbstractSpatialPropertyFunction {
 	}
 
 	public String getSqlOrder() {
-		return "select NumInteriorRing(the_geom) from myTable;";
+		return "select ST_NumInteriorRings(the_geom) from myTable;";
 	}
 
 }

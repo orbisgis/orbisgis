@@ -52,7 +52,7 @@ public class ConvexHull extends AbstractSpatialPropertyFunction {
 	}
 
 	public String getName() {
-		return "ConvexHull";
+		return "ST_ConvexHull";
 	}
 
 	public Type getType(Type[] types) {
@@ -69,7 +69,7 @@ public class ConvexHull extends AbstractSpatialPropertyFunction {
 	}
 
 	public String getSqlOrder() {
-		return "select ConvexHull(the_geom) from myTable;";
+		return "select ST_ConvexHull(the_geom) from myTable;";
 	}
 
 }

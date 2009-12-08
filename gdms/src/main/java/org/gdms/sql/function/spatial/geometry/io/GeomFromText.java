@@ -65,7 +65,7 @@ public class GeomFromText implements Function {
 	}
 
 	public String getName() {
-		return "GeomFromText";
+		return "ST_GeomFromText";
 	}
 
 	public Type getType(Type[] types) {
@@ -85,7 +85,7 @@ public class GeomFromText implements Function {
 	}
 
 	public String getSqlOrder() {
-		return "select GeomFromText(myField) from myTable;";
+		return "select ST_GeomFromText(myField) from myTable;";
 	}
 
 	@Override

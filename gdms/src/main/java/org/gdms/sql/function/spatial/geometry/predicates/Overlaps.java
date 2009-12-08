@@ -94,7 +94,7 @@ public class Overlaps extends AbstractSpatialPredicateFunction implements
 	}
 
 	public String getName() {
-		return "Overlaps";
+		return "ST_Overlaps";
 	}
 
 	public boolean isAggregate() {
@@ -106,7 +106,7 @@ public class Overlaps extends AbstractSpatialPredicateFunction implements
 	}
 
 	public String getSqlOrder() {
-		return "select Overlaps(the_geom1,the_geom2) from myTable;";
+		return "select ST_Overlaps(the_geom1,the_geom2) from myTable;";
 	}
 
 }

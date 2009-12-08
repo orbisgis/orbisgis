@@ -56,7 +56,7 @@ public class Boundary extends AbstractSpatialFunction {
 	}
 
 	public String getName() {
-		return "Boundary";
+		return "ST_Boundary";
 	}
 
 	public Arguments[] getFunctionArguments() {
@@ -72,7 +72,7 @@ public class Boundary extends AbstractSpatialFunction {
 	}
 
 	public String getSqlOrder() {
-		return "select Boundary(the_geom) from myTable;";
+		return "select ST_Boundary(the_geom) from myTable;";
 	}
 
 }

@@ -94,7 +94,7 @@ public class Crosses extends AbstractSpatialPredicateFunction implements
 	}
 
 	public String getName() {
-		return "Crosses";
+		return "ST_Crosses";
 	}
 
 	public boolean isAggregate() {
@@ -106,7 +106,7 @@ public class Crosses extends AbstractSpatialPredicateFunction implements
 	}
 
 	public String getSqlOrder() {
-		return "select Crosses(the_geom1,the_geom2) from myTable;";
+		return "select ST_Crosses(the_geom1,the_geom2) from myTable;";
 	}
 
 }

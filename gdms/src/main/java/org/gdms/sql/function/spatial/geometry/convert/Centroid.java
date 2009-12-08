@@ -1,5 +1,5 @@
 /*
- * OrbisGIS is a GIS application dedicated to scientific spatial simulation.
+s * OrbisGIS is a GIS application dedicated to scientific spatial simulation.
  * This cross-platform GIS is developed at French IRSTV institute and is able
  * to manipulate and create vector and raster spatial information. OrbisGIS
  * is distributed under GPL 3 license. It is produced  by the geo-informatic team of
@@ -57,7 +57,7 @@ public class Centroid extends AbstractSpatialFunction {
 	}
 
 	public String getName() {
-		return "Centroid";
+		return "ST_Centroid";
 	}
 
 	public Arguments[] getFunctionArguments() {
@@ -73,7 +73,7 @@ public class Centroid extends AbstractSpatialFunction {
 	}
 
 	public String getSqlOrder() {
-		return "select Centroid(the_geom) from myTable;";
+		return "select ST_Centroid(the_geom) from myTable;";
 	}
 
 }

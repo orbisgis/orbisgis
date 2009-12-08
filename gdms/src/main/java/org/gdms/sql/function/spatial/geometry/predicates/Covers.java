@@ -93,7 +93,7 @@ public class Covers extends AbstractSpatialPredicateFunction implements TwoOverl
 	}
 
 	public String getName() {
-		return "Covers";
+		return "ST_Covers";
 	}
 
 	public boolean isAggregate() {
@@ -105,7 +105,7 @@ public class Covers extends AbstractSpatialPredicateFunction implements TwoOverl
 	}
 
 	public String getSqlOrder() {
-		return "select Covers(the_geom1,the_geom2) from myTable;";
+		return "select ST_Covers(the_geom1,the_geom2) from myTable;";
 	}
 
 

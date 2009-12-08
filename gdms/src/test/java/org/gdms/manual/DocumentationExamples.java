@@ -60,10 +60,10 @@ import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.GeometryFactory;
 
 /**
- *
+ * 
  * This class demonstrates how to use GDMS with differents kinds of sources.
- *
- *
+ * 
+ * 
  */
 
 public class DocumentationExamples extends TestCase {
@@ -87,7 +87,7 @@ public class DocumentationExamples extends TestCase {
 	/**
 	 * This example demonstrates how to read a csv file and how to display the
 	 * value for the first row for the field named gis.
-	 *
+	 * 
 	 * @throws Exception
 	 */
 	public void testReadCSVAndShowOneValue() throws Exception {
@@ -107,7 +107,7 @@ public class DocumentationExamples extends TestCase {
 
 	/**
 	 * This example shows how to create a csv file.
-	 *
+	 * 
 	 * @throws Exception
 	 */
 
@@ -139,7 +139,7 @@ public class DocumentationExamples extends TestCase {
 
 	/**
 	 * This example demonstrates how to add some values in a csv file.
-	 *
+	 * 
 	 * @throws Exception
 	 */
 	public void testAddValuesInCSV() throws Exception {
@@ -155,7 +155,7 @@ public class DocumentationExamples extends TestCase {
 
 		// populate it
 		ds.setString(0, "name", "micky");
-		//ds.setString(0, "surname", "mouse");
+		// ds.setString(0, "surname", "mouse");
 
 		// SAVE MY RESULTS PLEASE!!
 		ds.commit();
@@ -170,7 +170,7 @@ public class DocumentationExamples extends TestCase {
 
 	/**
 	 * This example shows how to modify a csf file.
-	 *
+	 * 
 	 * @throws Exception
 	 */
 	public void testModifyCSV() throws Exception {
@@ -199,7 +199,7 @@ public class DocumentationExamples extends TestCase {
 
 	/**
 	 * This example demonstrates how to create a dbf file.
-	 *
+	 * 
 	 * @throws Exception
 	 */
 	public void testCreateDBF() throws Exception {
@@ -248,7 +248,7 @@ public class DocumentationExamples extends TestCase {
 	/**
 	 * This example demontrates how to read a shapefile and show the geometries.
 	 * Geometry is a JTS geometry.
-	 *
+	 * 
 	 * @throws Exception
 	 */
 	public void testReadGeometriesInShapefile() throws Exception {
@@ -269,7 +269,7 @@ public class DocumentationExamples extends TestCase {
 
 	/**
 	 * This example demontrates how to create and write a shapefile.
-	 *
+	 * 
 	 * @throws Exception
 	 */
 
@@ -356,8 +356,8 @@ public class DocumentationExamples extends TestCase {
 
 	/**
 	 * This example demontrates how to duplicate a shapefile.
-	 *
-	 *
+	 * 
+	 * 
 	 * @throws Exception
 	 */
 	public void testDuplicateShapefile() throws Exception {
@@ -393,7 +393,7 @@ public class DocumentationExamples extends TestCase {
 	/**
 	 * This example demonstrates how duplicate a new shapefile and add into it a
 	 * new field populate with geometry propreties.
-	 *
+	 * 
 	 * @throws Exception
 	 */
 	public void testAddFieldValuesInShapefile() throws Exception {
@@ -428,7 +428,7 @@ public class DocumentationExamples extends TestCase {
 
 	/**
 	 * This example demontrates how to connect to a postgresql database.
-	 *
+	 * 
 	 * @throws Exception
 	 */
 	public void testConnectPostgreSQL() throws Exception {
@@ -452,7 +452,7 @@ public class DocumentationExamples extends TestCase {
 
 	/**
 	 * This example demonstrates how to add a field into an existing dbf file.
-	 *
+	 * 
 	 * @throws Exception
 	 */
 	public void testSchemaEdition() throws Exception {
@@ -481,7 +481,7 @@ public class DocumentationExamples extends TestCase {
 
 	/**
 	 * This example shows how to use undo method to cancel a modification.
-	 *
+	 * 
 	 * @throws Exception
 	 */
 	public void testUndo() throws Exception {
@@ -515,7 +515,7 @@ public class DocumentationExamples extends TestCase {
 
 	/**
 	 * This examples demonstrates how to convert a dbf file onto a csv file.
-	 *
+	 * 
 	 * @throws Exception
 	 */
 	public void testExportTool() throws Exception {

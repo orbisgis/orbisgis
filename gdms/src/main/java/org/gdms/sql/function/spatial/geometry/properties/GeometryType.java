@@ -52,7 +52,7 @@ public class GeometryType extends AbstractSpatialPropertyFunction {
 	}
 
 	public String getName() {
-		return "GeometryType";
+		return "ST_GeometryType";
 	}
 
 	public Type getType(Type[] types) {
@@ -68,7 +68,7 @@ public class GeometryType extends AbstractSpatialPropertyFunction {
 	}
 
 	public String getSqlOrder() {
-		return "select GeometryType(the_geom) from myTable;";
+		return "select ST_GeometryType(the_geom) from myTable;";
 	}
 
 }

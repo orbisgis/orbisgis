@@ -124,7 +124,7 @@ public class ToMultiLine extends AbstractSpatialFunction {
 	}
 
 	public String getName() {
-		return "ToMultiLine";
+		return "STO_ToMultiLine";
 	}
 
 	public Arguments[] getFunctionArguments() {
@@ -136,7 +136,7 @@ public class ToMultiLine extends AbstractSpatialFunction {
 	}
 
 	public String getSqlOrder() {
-		return "select ToMultiLine(the_geom) from myTable;";
+		return "select STO_ToMultiLine(the_geom) from myTable;";
 	}
 
 }

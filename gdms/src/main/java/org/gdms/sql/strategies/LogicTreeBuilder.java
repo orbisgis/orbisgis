@@ -140,7 +140,7 @@ public class LogicTreeBuilder {
 	/**
 	 * Recursive method that returns the root of the tree of logic operators
 	 * that implement the query. Returns null if no operator has to be applied
-	 *
+	 * 
 	 * @param node
 	 * @return
 	 * @throws SemanticException
@@ -850,9 +850,9 @@ public class LogicTreeBuilder {
 	/**
 	 * Gets the type of the specified node if the node consists of only one
 	 * token Otherwise it returns -1
-	 *
+	 * 
 	 * @param n
-	 *
+	 * 
 	 * @return A constant in {@link SQLEngineConstants}
 	 */
 	private int getType(Node n) {
@@ -867,9 +867,9 @@ public class LogicTreeBuilder {
 
 	/**
 	 * Gets the text of the specified node
-	 *
+	 * 
 	 * @param n
-	 *
+	 * 
 	 * @return
 	 */
 	private String getText(Node n) {

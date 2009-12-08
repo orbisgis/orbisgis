@@ -52,7 +52,7 @@ public class Extent extends AbstractSpatialPropertyFunction {
 	}
 
 	public String getName() {
-		return "Extent";
+		return "ST_Extent";
 	}
 
 	public Type getType(Type[] types) {
@@ -68,7 +68,7 @@ public class Extent extends AbstractSpatialPropertyFunction {
 	}
 
 	public String getSqlOrder() {
-		return "select Extent(the_geom) from myTable;";
+		return "select ST_Extent(the_geom) from myTable;";
 	}
 
 }

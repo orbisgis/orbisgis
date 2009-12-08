@@ -94,7 +94,7 @@ public class Touches extends AbstractSpatialPredicateFunction implements
 	}
 
 	public String getName() {
-		return "Touches";
+		return "ST_Touches";
 	}
 
 	public boolean isAggregate() {
@@ -106,7 +106,7 @@ public class Touches extends AbstractSpatialPredicateFunction implements
 	}
 
 	public String getSqlOrder() {
-		return "select Touches(the_geom1,the_geom2) from myTable;";
+		return "select ST_Touches(the_geom1,the_geom2) from myTable;";
 	}
 
 }

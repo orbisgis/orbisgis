@@ -54,7 +54,7 @@ public class AsWKT extends AbstractSpatialPropertyFunction {
 	}
 
 	public String getName() {
-		return "AsWKT";
+		return "ST_AsWKT";
 	}
 
 	public Type getType(Type[] types) {
@@ -70,7 +70,7 @@ public class AsWKT extends AbstractSpatialPropertyFunction {
 	}
 
 	public String getSqlOrder() {
-		return "select AsWKT(the_geom) from myTable;";
+		return "select ST_AsWKT(the_geom) from myTable;";
 	}
 
 }

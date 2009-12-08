@@ -48,7 +48,7 @@ import com.vividsolutions.jts.geom.Geometry;
 
 public class ToMultiPoint extends AbstractSpatialFunction {
 	public String getName() {
-		return "ToMultiPoint";
+		return "STO_ToMultiPoint";
 	}
 
 	public Value evaluate(final Value[] args) throws FunctionException {
@@ -75,7 +75,7 @@ public class ToMultiPoint extends AbstractSpatialFunction {
 	}
 
 	public String getSqlOrder() {
-		return "select ToMultiPoint(the_geom) from myTable;";
+		return "select STO_ToMultiPoint(the_geom) from myTable;";
 	}
 
 }

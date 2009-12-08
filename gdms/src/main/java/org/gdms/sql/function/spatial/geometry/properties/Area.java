@@ -52,7 +52,7 @@ public class Area extends AbstractSpatialPropertyFunction {
 	}
 
 	public String getName() {
-		return "Area";
+		return "ST_Area";
 	}
 
 	public Type getType(Type[] types) {
@@ -69,7 +69,7 @@ public class Area extends AbstractSpatialPropertyFunction {
 	}
 
 	public String getSqlOrder() {
-		return "select Area(the_geom) from myTable;";
+		return "select ST_Area(the_geom) from myTable;";
 	}
 
 }

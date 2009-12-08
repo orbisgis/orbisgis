@@ -59,7 +59,7 @@ public class Intersection extends AbstractSpatialFunction {
 	}
 
 	public String getName() {
-		return "Intersection";
+		return "ST_Intersection";
 	}
 
 	public Arguments[] getFunctionArguments() {
@@ -76,7 +76,7 @@ public class Intersection extends AbstractSpatialFunction {
 	}
 
 	public String getSqlOrder() {
-		return "select Intersection(the_geom1,the_geom2) from myTable;";
+		return "select ST_Intersection(the_geom1,the_geom2) from myTable;";
 	}
 
 

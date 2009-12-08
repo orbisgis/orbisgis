@@ -62,6 +62,44 @@ import com.vividsolutions.jts.io.WKTReader;
 public class SQLTest extends SourceTest {
 	public static DataSource d;
 
+	/*
+	 * TODO TESTS public void JoinDATA() { GenericObjectDriver omd = new
+	 * GenericObjectDriver(new String[] { "num", "name" }, new Type[] {
+	 * TypeFactory.createType(Type.INT), TypeFactory.createType(Type.STRING) });
+	 * 
+	 * omd.addValues(ValueFactory.createValue(1), ValueFactory
+	 * .createValue("a")); omd.addValues(ValueFactory.createValue(2),
+	 * ValueFactory .createValue("b"));
+	 * omd.addValues(ValueFactory.createValue(3), ValueFactory
+	 * .createValue("c")); dsf.getSourceManager().register("t1", omd);
+	 * 
+	 * omd = new GenericObjectDriver(new String[] { "num", "value" }, new Type[]
+	 * { TypeFactory.createType(Type.INT), TypeFactory.createType(Type.STRING)
+	 * });
+	 * 
+	 * omd.addValues(ValueFactory.createValue(1), ValueFactory
+	 * .createValue("xxx")); omd.addValues(ValueFactory.createValue(3),
+	 * ValueFactory .createValue("yyy"));
+	 * omd.addValues(ValueFactory.createValue(5), ValueFactory
+	 * .createValue("zzz")); dsf.getSourceManager().register("t2", omd);
+	 * 
+	 * }
+	 * 
+	 * public void testLEFTJOIN() throws Exception {
+	 * 
+	 * JoinDATA(); DataSource ds = dsf.getDataSourceFromSQL(
+	 * " select t1.*, t2.value  from t1 a, t2 b where t1.num = t2.num;");
+	 * 
+	 * ds.open(); Metadata met = ds.getMetadata(); for (int i = 0; i <
+	 * ds.getRowCount(); i++) {
+	 * 
+	 * for (int j = 0; j < met.getFieldCount(); j++) {
+	 * 
+	 * System.out.print(ds.getFieldValue(i, j));
+	 * 
+	 * } System.out.println(""); } ds.close(); }
+	 */
+
 	public void testCreateAsTableCustomQuery() throws Exception {
 		dsf.getSourceManager().register("landcover2000",
 				new File(internalData + "landcover2000.shp"));
@@ -581,7 +619,7 @@ public class SQLTest extends SourceTest {
 
 	/**
 	 * Tests a simple select query
-	 *
+	 * 
 	 * @throws Throwable
 	 *             DOCUMENT ME!
 	 */

@@ -66,7 +66,7 @@ public class Difference extends AbstractSpatialFunction {
 	}
 
 	public String getName() {
-		return "Difference";
+		return "ST_Difference";
 	}
 
 	public Arguments[] getFunctionArguments() {
@@ -83,7 +83,7 @@ public class Difference extends AbstractSpatialFunction {
 	}
 
 	public String getSqlOrder() {
-		return "select Difference(the_geom1,the_geom2) from myTable;";
+		return "select ST_Difference(the_geom1,the_geom2) from myTable;";
 	}
 
 }

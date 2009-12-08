@@ -92,7 +92,7 @@ public class Disjoint extends AbstractSpatialPredicateFunction {
 	}
 
 	public String getName() {
-		return "Disjoint";
+		return "ST_Disjoint";
 	}
 
 	public boolean isAggregate() {
@@ -104,7 +104,7 @@ public class Disjoint extends AbstractSpatialPredicateFunction {
 	}
 
 	public String getSqlOrder() {
-		return "select Disjoint(the_geom1,the_geom2) from myTable;";
+		return "select ST_Disjoint(the_geom1,the_geom2) from myTable;";
 	}
 
 }

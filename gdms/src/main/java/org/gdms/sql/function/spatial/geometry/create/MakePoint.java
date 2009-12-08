@@ -72,7 +72,7 @@ public class MakePoint extends AbstractSpatialFunction {
 	}
 
 	public String getName() {
-		return "MakePoint";
+		return "ST_MakePoint";
 	}
 
 	public Arguments[] getFunctionArguments() {
@@ -91,7 +91,7 @@ public class MakePoint extends AbstractSpatialFunction {
 	}
 
 	public String getSqlOrder() {
-		return "select MakePoint(X, Y) from myTable;";
+		return "select ST_MakePoint(X, Y) from myTable;";
 	}
 
 }

@@ -57,6 +57,17 @@ public class GrammarTest extends TestCase {
 		}
 	}
 
+	/*
+	 * TODO tests public void testJoin() throws Exception {
+	 * parse("SELECT * FROM tablea LEFT JOIN tableb USING(id);");parse(
+	 * "SELECT * FROM tablea LEFT JOIN tableb  USING(id) where tablea = 'toto';"
+	 * );notParse(
+	 * "SELECT * FROM tablea LEFT JOIN tableb, tablec ON tablea.id=tableb.id;");
+	 * notParse(
+	 * "SELECT * FROM a LEFT JOIN b ON (a.bid = b.id) LEFT JOIN c ON (a.cid = c.id);"
+	 * ); }
+	 */
+
 	public void testAddPrimaryKey() throws Exception {
 		parse("alter table toto add primary key (tata);");
 		notParse("alter table toto add primarykey (tata);");
@@ -97,7 +108,8 @@ public class GrammarTest extends TestCase {
 
 	public void testOrderBy() throws Exception {
 		parse("select * from gis where a=3 order by a;");
-		parse("select * from gis order by area(the_geom);");
+		parse("select * from gis order by area(geom);");
+		parse("select * from gis order by area(geom) desc;");
 		parse("select * from gis where a=3 order by area(the_geom);");
 	}
 
@@ -195,6 +207,10 @@ public class GrammarTest extends TestCase {
 
 	public void testCaseInsensitiveKeywords() throws Exception {
 		parse("seLect * frOm a;");
+		parse("select * from toto6555;");
+		parse("select * from 6555toto;");
+		notParse("select * from _6555toto;");
+		notParse("select * from 6555;");
 	}
 
 	public void testFunctionIsNull() throws Exception {
@@ -249,15 +265,9 @@ public class GrammarTest extends TestCase {
 		parse("select * from mytable;/* com\nment\n*/select * from mytable;");
 	}
 
-	public void testIntoAsCreateTable() throws Exception {
-		parse("select * from mytable into toto;");
-		parse("select * from mytable into toto, tata;");
-		notParse("create table toto as select * from mytable into toto;");
-	}
-
 	/**
 	 * Add subquery in SQL grammar
-	 *
+	 * 
 	 * @throws Exception
 	 */
 	public void testInSubQuery() throws Exception {

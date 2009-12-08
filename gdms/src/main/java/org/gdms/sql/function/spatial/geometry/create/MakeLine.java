@@ -65,7 +65,7 @@ public class MakeLine extends AbstractSpatialFunction {
 	}
 
 	public String getName() {
-		return "MakeLine";
+		return "ST_MakeLine";
 	}
 
 	public Arguments[] getFunctionArguments() {
@@ -82,7 +82,7 @@ public class MakeLine extends AbstractSpatialFunction {
 	}
 
 	public String getSqlOrder() {
-		return "select MakeLine(geometry1, geometry2) from myTable;";
+		return "select ST_MakeLine(geometry1, geometry2) from myTable;";
 	}
 
 }

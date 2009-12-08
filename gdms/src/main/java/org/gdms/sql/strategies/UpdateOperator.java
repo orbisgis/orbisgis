@@ -118,7 +118,6 @@ public class UpdateOperator extends AbstractExpressionOperator implements
 		} catch (EvaluationException e) {
 			throw new ExecutionException("Cannot evaluate update expression", e);
 		} catch (SemanticException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return null;

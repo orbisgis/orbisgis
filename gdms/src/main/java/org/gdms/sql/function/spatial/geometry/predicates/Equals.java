@@ -94,7 +94,7 @@ public class Equals extends AbstractSpatialPredicateFunction implements
 	}
 
 	public String getName() {
-		return "Equals";
+		return "ST_Equals";
 	}
 
 	public boolean isAggregate() {
@@ -106,7 +106,7 @@ public class Equals extends AbstractSpatialPredicateFunction implements
 	}
 
 	public String getSqlOrder() {
-		return "select Equals(the_geom1,the_geom2) from myTable;";
+		return "select ST_Equals(the_geom1,the_geom2) from myTable;";
 	}
 
 }

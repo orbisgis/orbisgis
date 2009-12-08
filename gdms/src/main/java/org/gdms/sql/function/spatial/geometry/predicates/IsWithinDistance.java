@@ -103,7 +103,7 @@ public class IsWithinDistance implements Function {
 	}
 
 	public String getName() {
-		return "IsWithinDistance";
+		return "ST_DWithin";
 	}
 
 	public boolean isAggregate() {
@@ -124,7 +124,7 @@ public class IsWithinDistance implements Function {
 	}
 
 	public String getSqlOrder() {
-		return "select IsWithinDistance(the_geom1,the_geom2, distance) from myTable;";
+		return "select ST_DWithin(the_geom1,the_geom2, distance) from myTable;";
 	}
 
 	@Override

@@ -59,7 +59,7 @@ public class SymDifference extends AbstractSpatialFunction {
 	}
 
 	public String getName() {
-		return "SymDifference";
+		return "ST_SymDifference";
 	}
 
 	public Arguments[] getFunctionArguments() {
@@ -76,7 +76,7 @@ public class SymDifference extends AbstractSpatialFunction {
 	}
 
 	public String getSqlOrder() {
-		return "select SymDifference(the_geom1,the_geom2) from myTable;";
+		return "select ST_SymDifference(the_geom1,the_geom2) from myTable;";
 	}
 
 

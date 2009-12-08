@@ -92,7 +92,7 @@ public class Relate extends AbstractSpatialPredicateFunction {
 	}
 
 	public String getName() {
-		return "Relate";
+		return "ST_Relate";
 	}
 
 	public boolean isAggregate() {
@@ -104,7 +104,7 @@ public class Relate extends AbstractSpatialPredicateFunction {
 	}
 
 	public String getSqlOrder() {
-		return "select Relate(the_geom1,the_geom2) from myTable;";
+		return "select ST_Relate(the_geom1,the_geom2) from myTable;";
 	}
 
 }

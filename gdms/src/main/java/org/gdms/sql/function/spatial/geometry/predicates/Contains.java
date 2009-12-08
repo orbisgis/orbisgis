@@ -93,7 +93,7 @@ public class Contains extends AbstractSpatialPredicateFunction implements TwoOve
 	}
 
 	public String getName() {
-		return "Contains";
+		return "ST_Contains";
 	}
 
 	public boolean isAggregate() {
@@ -105,7 +105,7 @@ public class Contains extends AbstractSpatialPredicateFunction implements TwoOve
 	}
 
 	public String getSqlOrder() {
-		return "select Contains(the_geom1,the_geom2) from myTable;";
+		return "select ST_Contains(the_geom1,the_geom2) from myTable;";
 	}
 
 

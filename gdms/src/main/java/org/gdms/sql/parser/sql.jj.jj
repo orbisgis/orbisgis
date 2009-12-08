@@ -97,6 +97,7 @@ TOKEN :  /* Keywords */
   | < INDEX: "index" >
   | < IS: "is" >
   | < KEY: "key" >
+  | < LEFT: "left" >
   | < LIKE: "like" >
   | < LIMIT: "limit" >
   | < NOT: "not" >
@@ -114,6 +115,8 @@ TOKEN :  /* Keywords */
   | <ADD:"add">
   | <COLUMN:"column">
   | < WHERE: "where" >
+  | < JOIN: "join" >
+  | < USING: "using" >
 
 //***************************************************************************************
   | < CREATE: "create" >
@@ -158,7 +161,7 @@ TOKEN:  /* Literals */
 
 TOKEN :  /* Identifiers */
 {
-    < ID: ( <LETTER> )+ ( "_" | "$" | "#" | <DIGIT> | <LETTER> )* >
+    < ID: ( <LETTER> | <DIGIT> )+ ( "_" | "$" | "#" | <DIGIT> | <LETTER> )*>
   | < #LETTER: ["A"-"Z", "a"-"z"] >
   | < #DIGIT: ["0"-"9"] >
 }
@@ -936,6 +939,7 @@ void SQLGroupBy() :
 /*@egen*/
 }
 
+
 void SQLGroupByList() :
 {/*@bgen(jjtree) SQLGroupByList */
   ASTSQLGroupByList jjtn000 = new ASTSQLGroupByList(JJTSQLGROUPBYLIST);
@@ -1313,6 +1317,9 @@ void SQLOrderBy() :
 /*@egen*/
 }
 
+
+
+
 void SQLOrderByElem() :
 {/*@bgen(jjtree) SQLOrderByElem */
   ASTSQLOrderByElem jjtn000 = new ASTSQLOrderByElem(JJTSQLORDERBYELEM);
@@ -1321,32 +1328,36 @@ void SQLOrderByElem() :
   jjtreeOpenNodeScope(jjtn000);
 /*@egen*/}
 {/*@bgen(jjtree) SQLOrderByElem */
-  try {
+try {
 /*@egen*/
-  SQLColRef()
+(
+  LOOKAHEAD(2) SQLFunction()
+  | SQLColRef()
+  )
   [ SQLOrderDirection()]/*@bgen(jjtree)*/
-  } catch (Throwable jjte000) {
-    if (jjtc000) {
-      jjtree.clearNodeScope(jjtn000);
-      jjtc000 = false;
-    } else {
-      jjtree.popNode();
-    }
-    if (jjte000 instanceof RuntimeException) {
-      throw (RuntimeException)jjte000;
-    }
-    if (jjte000 instanceof ParseException) {
-      throw (ParseException)jjte000;
-    }
-    throw (Error)jjte000;
-  } finally {
-    if (jjtc000) {
-      jjtree.closeNodeScope(jjtn000, true);
-      jjtreeCloseNodeScope(jjtn000);
-    }
+} catch (Throwable jjte000) {
+  if (jjtc000) {
+    jjtree.clearNodeScope(jjtn000);
+    jjtc000 = false;
+  } else {
+    jjtree.popNode();
   }
+  if (jjte000 instanceof RuntimeException) {
+    throw (RuntimeException)jjte000;
+  }
+  if (jjte000 instanceof ParseException) {
+    throw (ParseException)jjte000;
+  }
+  throw (Error)jjte000;
+} finally {
+  if (jjtc000) {
+    jjtree.closeNodeScope(jjtn000, true);
+    jjtreeCloseNodeScope(jjtn000);
+  }
+}
 /*@egen*/
 }
+
 
 void SQLOrderByList() :
 {/*@bgen(jjtree) SQLOrderByList */
@@ -1625,7 +1636,7 @@ void SQLSelect() :
     [ LOOKAHEAD(2) SQLGroupBy()]
     [ LOOKAHEAD(2) SQLOrderBy()]
     [ LOOKAHEAD(2) SQLSelectLimit()]
-    [ LOOKAHEAD(2) SQLSelectOffset() ]
+    [ LOOKAHEAD(2) SQLSelectOffset() ]   
   ]/*@bgen(jjtree)*/
   } catch (Throwable jjte000) {
     if (jjtc000) {
@@ -1650,39 +1661,7 @@ void SQLSelect() :
 /*@egen*/
 }
 
-void SQLSelectInto() :
-{/*@bgen(jjtree) SQLSelectInto */
-  ASTSQLSelectInto jjtn000 = new ASTSQLSelectInto(JJTSQLSELECTINTO);
-  boolean jjtc000 = true;
-  jjtree.openNodeScope(jjtn000);
-  jjtreeOpenNodeScope(jjtn000);
-/*@egen*/}
-{/*@bgen(jjtree) SQLSelectInto */
-   try {
-/*@egen*/
-   SQLSelect() [SQLInto()]/*@bgen(jjtree)*/
-   } catch (Throwable jjte000) {
-     if (jjtc000) {
-       jjtree.clearNodeScope(jjtn000);
-       jjtc000 = false;
-     } else {
-       jjtree.popNode();
-     }
-     if (jjte000 instanceof RuntimeException) {
-       throw (RuntimeException)jjte000;
-     }
-     if (jjte000 instanceof ParseException) {
-       throw (ParseException)jjte000;
-     }
-     throw (Error)jjte000;
-   } finally {
-     if (jjtc000) {
-       jjtree.closeNodeScope(jjtn000, true);
-       jjtreeCloseNodeScope(jjtn000);
-     }
-   }
-/*@egen*/
-}
+
 void SQLSelectAllCols() :
 {/*@bgen(jjtree) SQLSelectAllCols */
   ASTSQLSelectAllCols jjtn000 = new ASTSQLSelectAllCols(JJTSQLSELECTALLCOLS);
@@ -1993,7 +1972,7 @@ void SQLStatement() :
   try {
 /*@egen*/
   (
-  SQLSelectInto()
+  SQLSelect()
   | SQLInsert()
   | SQLUpdate()
   | SQLDelete()
@@ -2463,6 +2442,7 @@ void SQLWhere() :
 /*@egen*/
 }
 
+
 void SQLCreate() :
 {/*@bgen(jjtree) SQLCreate */
   ASTSQLCreate jjtn000 = new ASTSQLCreate(JJTSQLCREATE);
@@ -2516,7 +2496,7 @@ void SQLInto():
 {/*@bgen(jjtree) SQLInto */
 try {
 /*@egen*/
-<INTO> SQLIdSequence()/*@bgen(jjtree)*/
+<INTO> SQLId()/*@bgen(jjtree)*/
 } catch (Throwable jjte000) {
   if (jjtc000) {
     jjtree.clearNodeScope(jjtn000);

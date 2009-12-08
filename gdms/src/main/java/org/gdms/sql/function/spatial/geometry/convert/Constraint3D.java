@@ -57,11 +57,11 @@ public class Constraint3D implements Function {
 	}
 
 	public String getName() {
-		return "Constraint3D";
+		return "STO_Constraint3D";
 	}
 
 	public String getSqlOrder() {
-		return "select Constraint3D(the_geom) from myTable";
+		return "select ST0_Constraint3D(the_geom) from myTable";
 	}
 
 	public boolean isAggregate() {

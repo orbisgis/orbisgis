@@ -49,7 +49,7 @@ public class NumPoints extends AbstractSpatialPropertyFunction {
 	}
 
 	public String getName() {
-		return "NumPoints";
+		return "ST_NumPoints";
 	}
 
 	public Type getType(Type[] types) {
@@ -65,7 +65,7 @@ public class NumPoints extends AbstractSpatialPropertyFunction {
 	}
 
 	public String getSqlOrder() {
-		return "select NumPoints(the_geom) from myTable;";
+		return "select ST_NumPoints(the_geom) from myTable;";
 	}
 
 }

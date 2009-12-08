@@ -48,7 +48,7 @@ public class IsValid extends AbstractSpatialPropertyFunction {
 	}
 
 	public String getName() {
-		return "IsValid";
+		return "ST_IsValid";
 	}
 
 	public Type getType(Type[] types) {
@@ -64,7 +64,7 @@ public class IsValid extends AbstractSpatialPropertyFunction {
 	}
 
 	public String getSqlOrder() {
-		return "select IsValid(the_geom) from myTable;";
+		return "select ST_IsValid(the_geom) from myTable;";
 	}
 
 }

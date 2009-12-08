@@ -94,7 +94,7 @@ public class Intersects extends AbstractSpatialPredicateFunction implements
 	}
 
 	public String getName() {
-		return "Intersects";
+		return "ST_Intersects";
 	}
 
 	public boolean isAggregate() {
@@ -106,7 +106,7 @@ public class Intersects extends AbstractSpatialPredicateFunction implements
 	}
 
 	public String getSqlOrder() {
-		return "select Intersects(the_geom1,the_geom2) from myGeom;";
+		return "select ST_Intersects(the_geom1,the_geom2) from myGeom;";
 	}
 
 }

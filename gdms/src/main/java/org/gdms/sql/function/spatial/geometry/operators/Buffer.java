@@ -69,7 +69,7 @@ public class Buffer extends AbstractSpatialFunction {
 	}
 
 	public String getName() {
-		return "Buffer";
+		return "ST_Buffer";
 	}
 
 	public Arguments[] getFunctionArguments() {
@@ -109,7 +109,7 @@ public class Buffer extends AbstractSpatialFunction {
 	}
 
 	public String getSqlOrder() {
-		return "select Buffer(the_geom, bufferSize[, 'butt'|'square'|'round']) from myTable;";
+		return "select ST_Buffer(the_geom, bufferSize[, 'butt'|'square'|'round']) from myTable;";
 	}
 
 }

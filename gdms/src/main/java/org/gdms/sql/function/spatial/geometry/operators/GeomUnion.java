@@ -67,9 +67,6 @@ public class GeomUnion extends AbstractSpatialFunction {
 			}
 		} else {
 			toUnite.add(geom);
-			// unionOfGeom =
-			// ValueFactory.createValue(unionOfGeom.getAsGeometry()
-			// .union(geom));
 		}
 	}
 
@@ -78,7 +75,7 @@ public class GeomUnion extends AbstractSpatialFunction {
 	}
 
 	public String getName() {
-		return "GeomUnion";
+		return "ST_Union";
 	}
 
 	public Arguments[] getFunctionArguments() {
@@ -94,7 +91,7 @@ public class GeomUnion extends AbstractSpatialFunction {
 	}
 
 	public String getSqlOrder() {
-		return "select GeomUnion(the_geom) from myTable;";
+		return "select ST_Union(the_geom) from myTable;";
 	}
 
 }

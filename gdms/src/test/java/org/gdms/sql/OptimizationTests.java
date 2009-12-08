@@ -181,7 +181,7 @@ public class OptimizationTests extends TestCase {
 	public void testIndexUsageLess() throws Exception {
 		dsf.getIndexManager().buildIndex("communes", "NOM_COMM",
 				IndexManager.BTREE_ALPHANUMERIC_INDEX, null);
-		String sql = "SELECT * FROM communes" + " WHERE \"NOM_COMM\"<'ARMIX'";
+		String sql = "SELECT * FROM communes" + " WHERE NOM_COMM<'ARMIX'";
 		checkAlphaIndexSpeedUp(sql);
 	}
 

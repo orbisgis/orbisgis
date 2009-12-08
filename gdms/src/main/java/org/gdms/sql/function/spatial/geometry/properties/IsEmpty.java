@@ -51,7 +51,7 @@ public class IsEmpty extends AbstractSpatialPropertyFunction {
 	}
 
 	public String getName() {
-		return "IsEmpty";
+		return "ST_IsEmpty ";
 	}
 
 	public Type getType(Type[] types) {
@@ -67,7 +67,7 @@ public class IsEmpty extends AbstractSpatialPropertyFunction {
 	}
 
 	public String getSqlOrder() {
-		return "select IsEmpty(the_geom) from myTable;";
+		return "select ST_IsEmpty (the_geom) from myTable;";
 	}
 
 }

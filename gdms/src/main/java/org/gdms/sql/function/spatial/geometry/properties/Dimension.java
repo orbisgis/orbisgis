@@ -51,7 +51,7 @@ public class Dimension extends AbstractSpatialPropertyFunction {
 	}
 
 	public String getName() {
-		return "Dimension";
+		return "ST_Dimension";
 	}
 
 	public Type getType(Type[] types) {
@@ -68,7 +68,7 @@ public class Dimension extends AbstractSpatialPropertyFunction {
 	}
 
 	public String getSqlOrder() {
-		return "select Dimension(the_geom) from myTable;";
+		return "select ST_Dimension(the_geom) from myTable;";
 	}
 
 }

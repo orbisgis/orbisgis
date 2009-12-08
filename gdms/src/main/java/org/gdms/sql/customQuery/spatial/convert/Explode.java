@@ -62,11 +62,11 @@ import com.vividsolutions.jts.geom.GeometryCollection;
 
 public class Explode implements CustomQuery {
 	public String getName() {
-		return "Explode";
+		return "ST0_Explode";
 	}
 
 	public String getSqlOrder() {
-		return "select Explode( [geomFieldName] ) from myTable;";
+		return "select ST0_Explode( [geomFieldName] ) from myTable;";
 	}
 
 	public String getDescription() {

@@ -52,7 +52,7 @@ public class IsSimple extends AbstractSpatialPropertyFunction {
 	}
 
 	public String getName() {
-		return "IsSimple";
+		return "ST_IsSimple ";
 	}
 
 	public Type getType(Type[] types) {
@@ -68,7 +68,7 @@ public class IsSimple extends AbstractSpatialPropertyFunction {
 	}
 
 	public String getSqlOrder() {
-		return "select IsSimple(the_geom) from myTable;";
+		return "select ST_IsSimple (the_geom) from myTable;";
 	}
 
 }

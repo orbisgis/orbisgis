@@ -46,7 +46,6 @@ public interface SQLEngineVisitor
   public Object visit(ASTSQLRightJoinClause node, Object data);
   public Object visit(ASTSQLScript node, Object data);
   public Object visit(ASTSQLSelect node, Object data);
-  public Object visit(ASTSQLSelectInto node, Object data);
   public Object visit(ASTSQLSelectAllCols node, Object data);
   public Object visit(ASTSQLSelectAllModifier node, Object data);
   public Object visit(ASTSQLSelectAllModifierExcept node, Object data);
@@ -77,4 +76,4 @@ public interface SQLEngineVisitor
   public Object visit(ASTSQLTypeArgLiteral node, Object data);
   public Object visit(ASTSQLTypeArgs node, Object data);
 }
-/* JavaCC - OriginalChecksum=a6dbaa9bda6145edade479651fb3b81d (do not edit this line) */
+/* JavaCC - OriginalChecksum=582f2f664868d86ff1ac97586222646c (do not edit this line) */

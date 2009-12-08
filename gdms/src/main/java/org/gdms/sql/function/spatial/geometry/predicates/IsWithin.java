@@ -94,7 +94,7 @@ public class IsWithin extends AbstractSpatialPredicateFunction implements
 	}
 
 	public String getName() {
-		return "IsWithin";
+		return "ST_Within";
 	}
 
 	public boolean isAggregate() {
@@ -106,7 +106,7 @@ public class IsWithin extends AbstractSpatialPredicateFunction implements
 	}
 
 	public String getSqlOrder() {
-		return "select IsWithin(the_geom1,the_geom2) from myTable;";
+		return "select ST_Within(the_geom1,the_geom2) from myTable;";
 	}
 
 }
