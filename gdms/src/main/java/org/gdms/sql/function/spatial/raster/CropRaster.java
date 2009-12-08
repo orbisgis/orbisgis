@@ -76,11 +76,11 @@ public class CropRaster implements Function {
 	}
 
 	public String getName() {
-		return "ST0_CropRaster";
+		return "STO_CropRaster";
 	}
 
 	public String getSqlOrder() {
-		return "select ST0_CropRaster(r.raster, f.the_geom) as raster from mytif r, fence f;";
+		return "select STO_CropRaster(r.raster, f.the_geom) as raster from mytif r, fence f;";
 	}
 
 	public Type getType(Type[] argsTypes) throws InvalidTypeException {

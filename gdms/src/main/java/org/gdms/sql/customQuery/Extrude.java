@@ -268,11 +268,11 @@ public class Extrude implements CustomQuery {
 	}
 
 	public String getName() {
-		return "ST0_Extrude";
+		return "STO_Extrude";
 	}
 
 	public String getSqlOrder() {
-		return "select ST0_Extrude(id, height[, the_geom]) from myTable;";
+		return "select STO_Extrude(id, height[, the_geom]) from myTable;";
 	}
 
 	public String getDescription() {

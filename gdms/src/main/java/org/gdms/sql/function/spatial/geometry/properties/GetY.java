@@ -29,7 +29,7 @@ public class GetY extends AbstractSpatialPropertyFunction implements Function {
 	}
 
 	public String getName() {
-		return "ST0_GetY";
+		return "STO_GetY";
 	}
 
 	public Type getType(Type[] types) {
@@ -51,7 +51,7 @@ public class GetY extends AbstractSpatialPropertyFunction implements Function {
 	}
 
 	public String getSqlOrder() {
-		return "select ST0_GetY(the_geom, [index]) from myTable;";
+		return "select STO_GetY(the_geom, [index]) from myTable;";
 	}
 
 }

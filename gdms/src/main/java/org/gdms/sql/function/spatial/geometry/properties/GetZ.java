@@ -64,7 +64,7 @@ public class GetZ extends AbstractSpatialPropertyFunction {
 	}
 
 	public String getName() {
-		return "ST0_GetZ";
+		return "STO_GetZ";
 	}
 
 	public Type getType(Type[] types) {
@@ -86,7 +86,7 @@ public class GetZ extends AbstractSpatialPropertyFunction {
 	}
 
 	public String getSqlOrder() {
-		return "select ST0_GetZ(the_geom, [index]) from myTable;";
+		return "select STO_GetZ(the_geom, [index]) from myTable;";
 	}
 
 }

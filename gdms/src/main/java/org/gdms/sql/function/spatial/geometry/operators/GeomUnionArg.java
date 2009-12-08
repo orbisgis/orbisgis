@@ -76,7 +76,7 @@ public class GeomUnionArg extends AbstractSpatialFunction {
 	}
 
 	public String getName() {
-		return "ST0_UnionArg";
+		return "STO_UnionArg";
 	}
 
 	public Arguments[] getFunctionArguments() {
@@ -93,7 +93,7 @@ public class GeomUnionArg extends AbstractSpatialFunction {
 	}
 
 	public String getSqlOrder() {
-		return "select ST0_UnionArg(the_geom1, the_geom2) from myTable;";
+		return "select STO_UnionArg(the_geom1, the_geom2) from myTable;";
 	}
 
 }
