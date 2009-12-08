@@ -47,7 +47,7 @@ import org.orbisgis.errorManager.ErrorManager;
 
 public class Help_fr implements IAction {
 
-	private String url = "http://brehat.ec-nantes.fr/orbisgis_download/documentation/online/fr/orbisgis_help.htm";
+	private String url = "http://brehat.ec-nantes.fr/orbisgis_download/documentation/online/2-2/fr/orbisgis_help.htm";
 
 	public void actionPerformed() {
 
