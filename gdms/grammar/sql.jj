@@ -93,6 +93,7 @@ TOKEN :  /* Keywords */
   | < INDEX: "index" >
   | < IS: "is" >
   | < KEY: "key" >
+  | < LEFT: "left" >
   | < LIKE: "like" >
   | < LIMIT: "limit" >
   | < NOT: "not" >
@@ -110,6 +111,8 @@ TOKEN :  /* Keywords */
   | <ADD:"add">
   | <COLUMN:"column">
   | < WHERE: "where" >
+  | < JOIN: "join" >
+  | < USING: "using" >
 
 //***************************************************************************************
   | < CREATE: "create" >
@@ -154,7 +157,7 @@ TOKEN:  /* Literals */
 
 TOKEN :  /* Identifiers */
 {
-    < ID: ( <LETTER> )+ ( "_" | "$" | "#" | <DIGIT> | <LETTER> )* >
+    < ID: ( <LETTER> | <DIGIT> )+ ( "_" | "$" | "#" | <DIGIT> | <LETTER> )*>
   | < #LETTER: ["A"-"Z", "a"-"z"] >
   | < #DIGIT: ["0"-"9"] >
 }
@@ -372,6 +375,7 @@ void SQLGroupBy() :
   [<HAVING> SQLOrExpr()]
 }
 
+
 void SQLGroupByList() :
 {}
 {
@@ -469,12 +473,19 @@ void SQLOrderBy() :
   SQLOrderByList()
 }
 
+
+
+
 void SQLOrderByElem() :
 {}
 {
-  SQLColRef()
+(
+  LOOKAHEAD(2) SQLFunction()
+  | SQLColRef()
+  )
   [ SQLOrderDirection()]
 }
+
 
 void SQLOrderByList() :
 {}
@@ -550,15 +561,11 @@ void SQLSelect() :
     [ LOOKAHEAD(2) SQLGroupBy()]
     [ LOOKAHEAD(2) SQLOrderBy()]
     [ LOOKAHEAD(2) SQLSelectLimit()]
-    [ LOOKAHEAD(2) SQLSelectOffset() ]
+    [ LOOKAHEAD(2) SQLSelectOffset() ]   
   ]
 }
 
-void SQLSelectInto() :
-{}
-{
-   SQLSelect() [SQLInto()]
-}
+
 void SQLSelectAllCols() :
 {}
 {
@@ -638,7 +645,7 @@ void SQLStatement() :
 {}
 {
   (
-  SQLSelectInto()
+  SQLSelect()
   | SQLInsert()
   | SQLUpdate()
   | SQLDelete()
@@ -765,6 +772,7 @@ void SQLWhere() :
   <WHERE> SQLOrExpr()
 }
 
+
 void SQLCreate() :
 {}
 {
@@ -783,7 +791,7 @@ void SQLCreate() :
 void SQLInto():
 {}
 {
-<INTO> SQLIdSequence()
+<INTO> SQLId()
 }
 
 void SQLCreateArgsList() :
