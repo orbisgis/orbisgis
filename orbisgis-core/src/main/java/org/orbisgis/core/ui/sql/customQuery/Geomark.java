@@ -134,11 +134,11 @@ public class Geomark implements CustomQuery {
 	}
 
 	public String getName() {
-		return "Geomark";
+		return "ST0_Geomark";
 	}
 
 	public String getSqlOrder() {
-		return "select Geomark( [optionalPrefix] ) from myTable;";
+		return "select ST0_Geomark( [optionalPrefix] ) from myTable;";
 	}
 
 	public String getDescription() {
