@@ -91,8 +91,8 @@ public class InfoTool extends AbstractRectangleTool {
 			Geometry geomEnvelope = gf.createPolygon(envelopeShell,
 					new LinearRing[0]);
 			WKTWriter writer = new WKTWriter();
-			sql = "select * from " + layer.getName() + " where intersects("
-					+ sds.getSpatialFieldName() + ", geomfromtext('"
+			sql = "select * from " + layer.getName() + " where st_intersects("
+					+ sds.getSpatialFieldName() + ", st_geomfromtext('"
 					+ writer.write(geomEnvelope) + "'));";
 			BackgroundManager bm = (BackgroundManager) Services
 					.getService(BackgroundManager.class);
