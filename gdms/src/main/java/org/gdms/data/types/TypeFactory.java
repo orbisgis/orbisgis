@@ -139,6 +139,8 @@ public class TypeFactory {
 			return "float";
 		case Type.GEOMETRY:
 			return "geometry";
+		case Type.POINT:
+			return "Point";
 		case Type.INT:
 			return "int";
 		case Type.LONG:

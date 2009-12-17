@@ -57,6 +57,12 @@ public interface Type {
 	int TIMESTAMP = 1024;
 	int TIME = 2048;
 	int GEOMETRY = 4096;
+	int POINT = 4097;
+	int LINESTRING = 4098;
+	int POLYGON = 4099;
+	int MULTIPOINT = 4100;
+	int MULTILINESTRING = 4101;
+	int MULTIPOLYGON = 4102;
 	int RASTER = 8192;
 
 	int NULL = -1;
