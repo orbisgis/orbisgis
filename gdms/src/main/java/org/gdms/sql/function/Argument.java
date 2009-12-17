@@ -60,6 +60,13 @@ public class Argument {
 	public static final Argument DOUBLE = new Argument(Type.DOUBLE);
 	public static final Argument FLOAT = new Argument(Type.FLOAT);
 	public static final Argument GEOMETRY = new Argument(Type.GEOMETRY);
+	public static final Argument POINT = new Argument(Type.POINT);
+	public static final Argument LINESTRING = new Argument(Type.LINESTRING);
+	public static final Argument POLYGON = new Argument(Type.POLYGON);
+	public static final Argument MULTIPOINT = new Argument(Type.MULTIPOINT);
+	public static final Argument MULTILINESTRING = new Argument(
+			Type.MULTILINESTRING);
+	public static final Argument MULTIPOLYGON = new Argument(Type.MULTIPOLYGON);
 	public static final Argument INT = new Argument(Type.INT);
 	public static final Argument LONG = new Argument(Type.LONG);
 	public static final Argument RASTER = new Argument(Type.RASTER);
@@ -67,8 +74,7 @@ public class Argument {
 	public static final Argument STRING = new Argument(Type.STRING);
 	public static final Argument TIME = new Argument(Type.TIME);
 	public static final Argument TIMESTAMP = new Argument(Type.TIMESTAMP);
-	public static final Argument WHOLE_NUMBER = new Argument(
-			TYPE_WHOLE_NUMBER);
+	public static final Argument WHOLE_NUMBER = new Argument(TYPE_WHOLE_NUMBER);
 	public static final Argument NUMERIC = new Argument(TYPE_NUMERIC);
 	public static final Argument ANY = new Argument(TYPE_ALL);
 
@@ -95,6 +101,18 @@ public class Argument {
 			return "Timestamp parameter";
 		} else if (typeCode == Type.GEOMETRY) {
 			return "Geometry parameter";
+		} else if (typeCode == Type.POINT) {
+			return "Point parameter";
+		} else if (typeCode == Type.LINESTRING) {
+			return "LineString parameter";
+		} else if (typeCode == Type.POLYGON) {
+			return "Polygon parameter";
+		} else if (typeCode == Type.MULTIPOINT) {
+			return "MultiPoint parameter";
+		} else if (typeCode == Type.MULTILINESTRING) {
+			return "MultiLineString parameter";
+		} else if (typeCode == Type.MULTIPOLYGON) {
+			return "MultiPolygon parameter";
 		} else if (typeCode == Type.RASTER) {
 			return "Raster parameter";
 		} else if (typeCode == Type.BOOLEAN) {
