@@ -51,7 +51,7 @@ public class GetX extends AbstractSpatialPropertyFunction implements Function {
 	}
 
 	public String getSqlOrder() {
-		return "select STO_GetXGetX(the_geom, [index]) from myTable;";
+		return "select STO_GetX(the_geom, [index]) from myTable;";
 	}
 
 }
