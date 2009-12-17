@@ -99,6 +99,10 @@ import org.gdms.sql.function.spatial.geometry.properties.Length;
 import org.gdms.sql.function.spatial.geometry.properties.NumGeometries;
 import org.gdms.sql.function.spatial.geometry.properties.NumInteriorRing;
 import org.gdms.sql.function.spatial.geometry.properties.NumPoints;
+import org.gdms.sql.function.spatial.geometry.properties.ST_CENTROID;
+import org.gdms.sql.function.spatial.geometry.properties.ST_X;
+import org.gdms.sql.function.spatial.geometry.properties.ST_Y;
+import org.gdms.sql.function.spatial.geometry.properties.ST_Z;
 import org.gdms.sql.function.spatial.mixed.ToEnvelope;
 import org.gdms.sql.function.spatial.raster.CropRaster;
 import org.gdms.sql.function.statistics.Sqrt;
@@ -170,6 +174,10 @@ public class FunctionManager {
 		addFunction(ReplaceString.class);
 		addFunction(IsUID.class);
 		addFunction(NumGeometries.class);
+		addFunction(ST_X.class);
+		addFunction(ST_Y.class);
+		addFunction(ST_Z.class);
+		addFunction(ST_CENTROID.class);
 	}
 
 	public static void addFunctionManagerListener(
@@ -179,7 +187,7 @@ public class FunctionManager {
 
 	/**
 	 * Remove the listener if it is present in the listener list
-	 *
+	 * 
 	 * @param listener
 	 * @return true if the listener was successfully removed. False if the
 	 *         specified parameter was not a listener
@@ -191,10 +199,10 @@ public class FunctionManager {
 
 	/**
 	 * Add a new function to the SQL engine
-	 *
+	 * 
 	 * @param function
 	 *            function
-	 *
+	 * 
 	 * @throws IllegalArgumentException
 	 *             If the class is not a valid function implementation with an
 	 *             empty constructor or there is already a function or custom
@@ -236,9 +244,9 @@ public class FunctionManager {
 
 	/**
 	 * Gets the function which name is equal to the parameter
-	 *
+	 * 
 	 * @param name
-	 *
+	 * 
 	 * @return a new function instance or null if there is no function with that
 	 *         name
 	 */
