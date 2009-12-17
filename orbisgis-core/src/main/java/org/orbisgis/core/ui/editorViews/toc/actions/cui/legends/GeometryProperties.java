@@ -14,7 +14,7 @@ public class GeometryProperties {
 	private static final String GEOMETRY_Z = "Geometry.Z";
 	private static final String GEOMETRY_START_Z = "Geometry.StartZ";
 	private static final String GEOMETRY_END_Z = "Geometry.EndZ";
-	private static final String GEOMETRY_LENGHT = "Geometry.Lenght";
+	private static final String GEOMETRY_LENGTH = "Geometry.Length";
 	private static final String GEOMETRY_MEAN_Z = "Geometry.MeanZ";
 	private static final String GEOMETRY_AREA = "Geometry.Area";
 	private static final String ENVELOPE_AREA = "Envelope.Area";
@@ -22,7 +22,7 @@ public class GeometryProperties {
 	private static final String GEOMETRY_SLOPE = "Geometry.Slope";
 
 	static String[] propertyNames = new String[] { GEOMETRY_NUMPOINTS,
-			GEOMETRY_Z, GEOMETRY_START_Z, GEOMETRY_END_Z, GEOMETRY_LENGHT,
+			GEOMETRY_Z, GEOMETRY_START_Z, GEOMETRY_END_Z, GEOMETRY_LENGTH,
 			GEOMETRY_MEAN_Z, GEOMETRY_AREA, ENVELOPE_AREA, GEOMETRY_SLOPE };
 
 	public static HashSet<String> getPropertiesName(int geometryType) {
@@ -40,7 +40,7 @@ public class GeometryProperties {
 			names.add(GEOMETRY_NUMPOINTS);
 			names.add(GEOMETRY_START_Z);
 			names.add(GEOMETRY_END_Z);
-			names.add(GEOMETRY_LENGHT);
+			names.add(GEOMETRY_LENGTH);
 			names.add(ENVELOPE_AREA);
 			names.add(GEOMETRY_SLOPE);
 			break;
@@ -48,7 +48,7 @@ public class GeometryProperties {
 
 			names.add(GEOMETRY_NUMPOINTS);
 			names.add(GEOMETRY_MEAN_Z);
-			names.add(GEOMETRY_LENGHT);
+			names.add(GEOMETRY_LENGTH);
 			names.add(GEOMETRY_AREA);
 			names.add(ENVELOPE_AREA);
 			break;
@@ -82,24 +82,20 @@ public class GeometryProperties {
 			v = ValueFactory.createValue(mean);
 		} else if (fieldName.equals(GEOMETRY_AREA)) {
 			v = ValueFactory.createValue(geom.getArea());
-		} else if (fieldName.equals(GEOMETRY_LENGHT)) {
+		} else if (fieldName.equals(GEOMETRY_LENGTH)) {
 			v = ValueFactory.createValue(geom.getLength());
 		} else if (fieldName.equals(GEOMETRY_NUMPOINTS)) {
 			v = ValueFactory.createValue(geom.getNumPoints());
 		} else if (fieldName.equals(GEOMETRY_SLOPE)) {
 			Coordinate coordStart = geom.getCoordinates()[0];
 			Coordinate coordEnd = geom.getCoordinates()[geom.getCoordinates().length - 1];
-			// l'ordre des coordonnees correspond a l'orientation de l'arc
+			// l'ordre des coordonnees correspond a l'orientation de la ligne
 			double dz = coordEnd.z - coordStart.z;
 			// Calcul de la distance horizontale
 			double d = coordStart.distance(coordEnd);
 			double slope = d == 0.0 ? 0.0 : dz / d;
 			v = ValueFactory.createValue(slope);
-
-		}
-
-		else if (fieldName.equals(ENVELOPE_AREA)) {
-
+		} else if (fieldName.equals(ENVELOPE_AREA)) {
 			v = ValueFactory.createValue(geom.getEnvelopeInternal().getArea());
 		}
 
