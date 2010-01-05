@@ -41,9 +41,9 @@ import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.sql.ColumnValue;
 import org.gdms.sql.FunctionTest;
-import org.gdms.sql.function.spatial.geometry.properties.Area;
-import org.gdms.sql.function.spatial.geometry.properties.Dimension;
-import org.gdms.sql.function.spatial.geometry.properties.GeometryN;
+import org.gdms.sql.function.spatial.geometry.properties.ST_Area;
+import org.gdms.sql.function.spatial.geometry.properties.ST_Dimension;
+import org.gdms.sql.function.spatial.geometry.properties.ST_GeometryN;
 import org.gdms.sql.function.spatial.geometry.properties.GeometryType;
 import org.gdms.sql.function.spatial.geometry.properties.GetX;
 import org.gdms.sql.function.spatial.geometry.properties.GetY;
@@ -63,21 +63,21 @@ import com.vividsolutions.jts.geom.Polygon;
 public class PropertiesFunctionTest extends FunctionTest {
 
 	public void testArea() throws Exception {
-		double d = testSpatialFunction(new Area(), g1, 1).getAsDouble();
+		double d = testSpatialFunction(new ST_Area(), g1, 1).getAsDouble();
 		assertTrue(g1.getArea() == d);
 	}
 
 	public void testDimension() throws Exception {
-		int d = testSpatialFunction(new Dimension(), g1, 1).getAsInt();
+		int d = testSpatialFunction(new ST_Dimension(), g1, 1).getAsInt();
 		assertTrue(g1.getDimension() == d);
-		d = testSpatialFunction(new Dimension(), g2, 1).getAsInt();
+		d = testSpatialFunction(new ST_Dimension(), g2, 1).getAsInt();
 		assertTrue(g2.getDimension() == d);
-		d = testSpatialFunction(new Dimension(), g3, 1).getAsInt();
+		d = testSpatialFunction(new ST_Dimension(), g3, 1).getAsInt();
 		assertTrue(g3.getDimension() == d);
 	}
 
 	public void testGeometryN() throws Exception {
-		int d = testSpatialFunction(new GeometryN(), g1, 1).getAsInt();
+		int d = testSpatialFunction(new ST_GeometryN(), g1, 1).getAsInt();
 		assertTrue(g1.getNumGeometries() == d);
 	}
 
