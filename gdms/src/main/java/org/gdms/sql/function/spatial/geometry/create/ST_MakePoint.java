@@ -45,32 +45,41 @@ import org.gdms.sql.function.spatial.geometry.AbstractSpatialFunction;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.GeometryFactory;
-import com.vividsolutions.jts.geom.Point;
 
-public class MakeLine extends AbstractSpatialFunction {
+public class ST_MakePoint extends AbstractSpatialFunction {
 
 	GeometryFactory gf = new GeometryFactory();
 
 	public Value evaluate(final Value[] args) throws FunctionException {
 		if (args.length == 2) {
 
-			final Point pt1 = (Point) args[0].getAsGeometry();
-			final Point pt2 = (Point) args[1].getAsGeometry();
+			final double x = args[0].getAsDouble();
+			final double y = args[1].getAsDouble();
 			return ValueFactory.createValue(gf
-					.createLineString(new Coordinate[] { pt1.getCoordinate(),
-							pt2.getCoordinate() }));
+					.createPoint(new Coordinate(x, y)));
 		}
 
+		else if (args.length == 3) {
+
+			final double x = args[0].getAsDouble();
+			final double y = args[1].getAsDouble();
+			final double z = args[2].getAsDouble();
+
+			return ValueFactory.createValue(gf.createPoint(new Coordinate(x, y,
+					z)));
+		}
 		return ValueFactory.createNullValue();
 	}
 
 	public String getName() {
-		return "ST_MakeLine";
+		return "ST_MakePoint";
 	}
 
 	public Arguments[] getFunctionArguments() {
-		return new Arguments[] { new Arguments(Argument.GEOMETRY,
-				Argument.GEOMETRY) };
+		return new Arguments[] {
+				new Arguments(Argument.NUMERIC, Argument.NUMERIC),
+				new Arguments(Argument.NUMERIC, Argument.NUMERIC,
+						Argument.NUMERIC) };
 	}
 
 	public boolean isAggregate() {
@@ -78,11 +87,11 @@ public class MakeLine extends AbstractSpatialFunction {
 	}
 
 	public String getDescription() {
-		return "Create a line from two point geometries. ";
+		return "Create a point  geometry. ";
 	}
 
 	public String getSqlOrder() {
-		return "select ST_MakeLine(geometry1, geometry2) from myTable;";
+		return "select ST_MakePoint(X, Y) from myTable;";
 	}
 
 }

@@ -31,7 +31,7 @@ public class ST_CENTROID extends AbstractSpatialPropertyFunction implements
 	}
 
 	public Type getType(Type[] types) {
-		return TypeFactory.createType(Type.POINT);
+		return TypeFactory.createType(Type.GEOMETRY);
 	}
 
 	public Arguments[] getFunctionArguments() {

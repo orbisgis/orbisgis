@@ -44,19 +44,19 @@ import org.gdms.sql.function.FunctionException;
 
 import com.vividsolutions.jts.geom.Geometry;
 
-public class Area extends AbstractSpatialPropertyFunction {
+public class ST_ConvexHull extends AbstractSpatialPropertyFunction {
 
 	public Value evaluateResult(final Value[] args) throws FunctionException {
 		final Geometry gv = args[0].getAsGeometry();
-		return ValueFactory.createValue(gv.getArea());
+		return ValueFactory.createValue(gv.convexHull());
 	}
 
 	public String getName() {
-		return "ST_Area";
+		return "ST_ConvexHull";
 	}
 
 	public Type getType(Type[] types) {
-		return TypeFactory.createType(Type.DOUBLE);
+		return TypeFactory.createType(Type.GEOMETRY);
 	}
 
 	public boolean isAggregate() {
@@ -64,12 +64,12 @@ public class Area extends AbstractSpatialPropertyFunction {
 	}
 
 	public String getDescription() {
-		return "Return the area of the geometry (ie 0 if getDimension()"
-				+ " is not equal to 2 !)";
+		return "Computes the smallest convex Polygon "
+				+ "that contains all the points in the Geometry";
 	}
 
 	public String getSqlOrder() {
-		return "select ST_Area(the_geom) from myTable;";
+		return "select ST_ConvexHull(the_geom) from myTable;";
 	}
 
 }

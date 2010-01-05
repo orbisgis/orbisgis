@@ -40,22 +40,29 @@ import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
+import org.gdms.sql.function.Argument;
+import org.gdms.sql.function.Arguments;
 import org.gdms.sql.function.FunctionException;
 
 import com.vividsolutions.jts.geom.Geometry;
 
-public class Dimension extends AbstractSpatialPropertyFunction {
+public class ST_Distance extends AbstractSpatialPropertyFunction {
 	public Value evaluateResult(final Value[] args) throws FunctionException {
-		final Geometry g = args[0].getAsGeometry();
-		return ValueFactory.createValue(g.getDimension());
+		final Geometry g1 = args[0].getAsGeometry();
+		final Geometry g2 = args[0].getAsGeometry();
+		return ValueFactory.createValue(g1.distance(g2));
+	}
+	
+	public Arguments[] getFunctionArguments() {
+		return new Arguments[] { new Arguments(Argument.GEOMETRY,Argument.GEOMETRY ) };
 	}
 
 	public String getName() {
-		return "ST_Dimension";
+		return "ST_Distance";
 	}
 
 	public Type getType(Type[] types) {
-		return TypeFactory.createType(Type.INT);
+		return TypeFactory.createType(Type.DOUBLE);
 	}
 
 	public boolean isAggregate() {
@@ -63,12 +70,11 @@ public class Dimension extends AbstractSpatialPropertyFunction {
 	}
 
 	public String getDescription() {
-		return "Return the geometry dimension (0 for [Multi]Point, 1 for "
-				+ " [Multi]LineString or LinearRing and 2 for [Multi]Polygon)";
+		return "For geometry type returns the 2-dimensional minimum cartesian distance between two geometries in projected units (spatial ref units)";
 	}
 
 	public String getSqlOrder() {
-		return "select ST_Dimension(the_geom) from myTable;";
+		return "select ST_Distance((geometry g1, geometry g2)) from myTable;";
 	}
 
 }

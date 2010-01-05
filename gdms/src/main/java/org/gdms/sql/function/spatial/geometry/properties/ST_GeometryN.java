@@ -40,19 +40,17 @@ import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
+import org.gdms.sql.function.Argument;
+import org.gdms.sql.function.Arguments;
+import org.gdms.sql.function.Function;
 import org.gdms.sql.function.FunctionException;
 
 import com.vividsolutions.jts.geom.Geometry;
 
-public class ConvexHull extends AbstractSpatialPropertyFunction {
-
-	public Value evaluateResult(final Value[] args) throws FunctionException {
-		final Geometry gv = args[0].getAsGeometry();
-		return ValueFactory.createValue(gv.convexHull());
-	}
+public class ST_GeometryN implements Function {
 
 	public String getName() {
-		return "ST_ConvexHull";
+		return "ST_GeometryN";
 	}
 
 	public Type getType(Type[] types) {
@@ -64,12 +62,26 @@ public class ConvexHull extends AbstractSpatialPropertyFunction {
 	}
 
 	public String getDescription() {
-		return "Computes the smallest convex Polygon "
-				+ "that contains all the points in the Geometry";
+		return "Return the 1-based Nth geometry ";
 	}
 
 	public String getSqlOrder() {
-		return "select ST_ConvexHull(the_geom) from myTable;";
+		return "select ST_GeometryN(geometry geomA, integer n) from myTable;";
+	}
+
+	@Override
+	public Value evaluate(Value... args) throws FunctionException {
+		final Geometry g = args[0].getAsGeometry();
+		final int n = args[1].getAsInt();
+		return ValueFactory.createValue(g.getGeometryN(n));
+	}
+
+	public Value getAggregateResult() {
+		return null;
+	}
+
+	public Arguments[] getFunctionArguments() {
+		return new Arguments[] { new Arguments(Argument.GEOMETRY, Argument.INT) };
 	}
 
 }

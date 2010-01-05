@@ -34,52 +34,29 @@
  *    fergonco _at_ gmail.com
  *    thomas.leduc _at_ cerma.archi.fr
  */
-package org.gdms.sql.function.spatial.geometry.create;
+package org.gdms.sql.function.spatial.geometry.properties;
 
+import org.gdms.data.types.Type;
+import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
-import org.gdms.sql.function.Argument;
-import org.gdms.sql.function.Arguments;
 import org.gdms.sql.function.FunctionException;
-import org.gdms.sql.function.spatial.geometry.AbstractSpatialFunction;
 
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.GeometryFactory;
+import com.vividsolutions.jts.geom.Geometry;
 
-public class MakePoint extends AbstractSpatialFunction {
+public class ST_Area extends AbstractSpatialPropertyFunction {
 
-	GeometryFactory gf = new GeometryFactory();
-
-	public Value evaluate(final Value[] args) throws FunctionException {
-		if (args.length == 2) {
-
-			final double x = args[0].getAsDouble();
-			final double y = args[1].getAsDouble();
-			return ValueFactory.createValue(gf
-					.createPoint(new Coordinate(x, y)));
-		}
-
-		else if (args.length == 3) {
-
-			final double x = args[0].getAsDouble();
-			final double y = args[1].getAsDouble();
-			final double z = args[2].getAsDouble();
-
-			return ValueFactory.createValue(gf.createPoint(new Coordinate(x, y,
-					z)));
-		}
-		return ValueFactory.createNullValue();
+	public Value evaluateResult(final Value[] args) throws FunctionException {
+		final Geometry gv = args[0].getAsGeometry();
+		return ValueFactory.createValue(gv.getArea());
 	}
 
 	public String getName() {
-		return "ST_MakePoint";
+		return "ST_Area";
 	}
 
-	public Arguments[] getFunctionArguments() {
-		return new Arguments[] {
-				new Arguments(Argument.NUMERIC, Argument.NUMERIC),
-				new Arguments(Argument.NUMERIC, Argument.NUMERIC,
-						Argument.NUMERIC) };
+	public Type getType(Type[] types) {
+		return TypeFactory.createType(Type.DOUBLE);
 	}
 
 	public boolean isAggregate() {
@@ -87,11 +64,12 @@ public class MakePoint extends AbstractSpatialFunction {
 	}
 
 	public String getDescription() {
-		return "Create a point  geometry. ";
+		return "Return the area of the geometry (ie 0 if getDimension()"
+				+ " is not equal to 2 !)";
 	}
 
 	public String getSqlOrder() {
-		return "select ST_MakePoint(X, Y) from myTable;";
+		return "select ST_Area(the_geom) from myTable;";
 	}
 
 }

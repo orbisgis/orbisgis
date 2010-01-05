@@ -44,7 +44,7 @@ import org.gdms.sql.function.FunctionException;
 
 import com.vividsolutions.jts.geom.Geometry;
 
-public class Extent extends AbstractSpatialPropertyFunction {
+public class ST_Extent extends AbstractSpatialPropertyFunction {
 
 	public Value evaluateResult(final Value[] args) throws FunctionException {
 		final Geometry gv = args[0].getAsGeometry();
