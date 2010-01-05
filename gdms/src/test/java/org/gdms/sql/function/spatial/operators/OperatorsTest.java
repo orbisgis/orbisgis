@@ -47,7 +47,7 @@ import org.gdms.sql.function.spatial.geometry.operators.Difference;
 import org.gdms.sql.function.spatial.geometry.operators.GeomUnion;
 import org.gdms.sql.function.spatial.geometry.operators.Intersection;
 import org.gdms.sql.function.spatial.geometry.operators.SymDifference;
-import org.gdms.sql.function.spatial.geometry.properties.ConvexHull;
+import org.gdms.sql.function.spatial.geometry.properties.ST_ConvexHull;
 import org.gdms.sql.strategies.IncompatibleTypesException;
 
 public class OperatorsTest extends FunctionTest {
@@ -226,7 +226,7 @@ public class OperatorsTest extends FunctionTest {
 
 
 	public void testConvexHull() throws Exception {
-		Function function = new ConvexHull();
+		Function function = new ST_ConvexHull();
 
 		// Test null input
 		Value res = evaluate(function, new ColumnValue(Type.GEOMETRY,
