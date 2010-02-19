@@ -1,3 +1,0 @@
-48;class-JOptionPane
-System.out.println(System.getProperty("a"));
-JOp
