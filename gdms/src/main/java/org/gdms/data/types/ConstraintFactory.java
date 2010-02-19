@@ -65,6 +65,7 @@ public class ConstraintFactory {
 		samples.put(Constraint.READONLY, new ReadOnlyConstraint());
 		samples.put(Constraint.SCALE, new ScaleConstraint(2));
 		samples.put(Constraint.UNIQUE, new UniqueConstraint());
+		samples.put(Constraint.DEFAULT_STRING_VALUE, new DefaultStringConstraint(""));
 	}
 
 	public static Constraint createConstraint(int type, byte[] constraintBytes) {
@@ -115,6 +116,9 @@ public class ConstraintFactory {
 		case Constraint.UNIQUE:
 			c = new UniqueConstraint(constraintBytes);
 			break;
+		case Constraint.DEFAULT_STRING_VALUE:
+			c = new DefaultStringConstraint(constraintBytes);
+			break;
 		default:
 			throw new IllegalArgumentException("Unknown constraint type:"
 					+ type);
@@ -125,7 +129,7 @@ public class ConstraintFactory {
 
 	/**
 	 * Gets the name of the constraint by its code
-	 *
+	 * 
 	 * @param constraintCode
 	 * @return
 	 */
@@ -177,6 +181,9 @@ public class ConstraintFactory {
 		case Constraint.UNIQUE:
 			c = "Unique";
 			break;
+		case Constraint.DEFAULT_STRING_VALUE:
+			c = "Default string";
+			break;
 		default:
 			throw new IllegalArgumentException("Unknown constraint type:"
 					+ constraintCode);
@@ -187,7 +194,7 @@ public class ConstraintFactory {
 
 	/**
 	 * Gets the type of the specified constraints
-	 *
+	 * 
 	 * @param constraintCode
 	 * @return
 	 */
@@ -199,7 +206,7 @@ public class ConstraintFactory {
 	/**
 	 * Returns the available choices for the CONSTRAINT_TYPE_CHOICE constraint
 	 * specified as argument.
-	 *
+	 * 
 	 * @return
 	 * @throws UnsupportedOperationException
 	 *             If the specified constraint is not of type
@@ -213,7 +220,7 @@ public class ConstraintFactory {
 	/**
 	 * Returns the code of the available choices for the specified
 	 * CONSTRAINT_TYPE_CHOICE constraint.
-	 *
+	 * 
 	 * @return
 	 * @throws UnsupportedOperationException
 	 *             If the specified constraint is not of type
@@ -226,7 +233,7 @@ public class ConstraintFactory {
 
 	/**
 	 * Creates a constraint of the specified code with the specified value
-	 *
+	 * 
 	 * @param code
 	 * @param i
 	 * @return
@@ -262,6 +269,8 @@ public class ConstraintFactory {
 		switch (constraintCode) {
 		case Constraint.PATTERN:
 			return new PatternConstraint(value);
+		case Constraint.DEFAULT_STRING_VALUE:
+			return new DefaultStringConstraint(value);
 		default:
 			throw new IllegalArgumentException(
 					"This constraint does not use string:"
