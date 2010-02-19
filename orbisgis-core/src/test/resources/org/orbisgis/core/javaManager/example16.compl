@@ -1,0 +1,7 @@
+144;inlineImplementation-ActionListener
+import java.awt.event.ActionListener;
+import javax.swing.JButton;
+
+
+JButton button = new JButton("Button");
+button.addActionListener(new Actionl

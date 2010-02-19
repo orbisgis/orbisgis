@@ -1,0 +1,34 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+	<xs:element name="windows">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="window" minOccurs="0" maxOccurs="unbounded"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+
+	<xs:element name="window">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="property" minOccurs="0" maxOccurs="unbounded"/>
+			</xs:sequence>
+			<xs:attribute name="id" type="xs:string" use="required"/>
+			<xs:attribute name="class" type="xs:string" use="required"/>
+			<xs:attribute name="x" type="xs:string" use="required"/>
+			<xs:attribute name="y" type="xs:string" use="required"/>
+			<xs:attribute name="width" type="xs:string" use="required"/>
+			<xs:attribute name="height" type="xs:string" use="required"/>
+			<xs:attribute name="open" type="xs:string" use="required"/>
+		</xs:complexType>
+	</xs:element>
+
+	<xs:element name="property">
+		<xs:complexType>
+			<xs:attribute name="name" type="xs:string" use="required"/>
+			<xs:attribute name="value" type="xs:string" use="required"/>
+		</xs:complexType>
+	</xs:element>
+
+</xs:schema>

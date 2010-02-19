@@ -1,0 +1,3 @@
+* Add a new geocognition element and factory
+* Install a new editor in org.orbisgis.core-ui
+

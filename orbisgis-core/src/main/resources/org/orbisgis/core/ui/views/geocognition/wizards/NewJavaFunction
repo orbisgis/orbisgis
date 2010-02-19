@@ -1,0 +1,66 @@
+package org.orbisgis;
+
+import org.gdms.data.types.InvalidTypeException;
+import org.gdms.data.types.Type;
+import org.gdms.data.types.TypeFactory;
+import org.gdms.data.values.Value;
+import org.gdms.data.values.ValueFactory;
+import org.gdms.sql.function.Argument;
+import org.gdms.sql.function.Arguments;
+import org.gdms.sql.function.Function;
+import org.gdms.sql.function.FunctionException;
+
+public class CLASSNAME implements Function {
+
+    public String getDescription() {
+        // Return a description of the operation this function does
+        return "This is a sample function "
+                + "that transforms numbers into strings";
+    }
+
+    public String getName() {
+        return "CLASSNAME";
+    }
+
+    public String getSqlOrder() {
+        // Return a sample order
+        return "select " + getName() + "(5) from mytable;";
+    }
+
+    public Arguments[] getFunctionArguments() {
+        // Return all the possible arguments this function can take. In this
+        // sample implementation one numeric argument is mandatory
+        Arguments[] ret = new Arguments[1];
+        // Int argument version
+        ret[0] = new Arguments(new Argument(Argument.TYPE_WHOLE_NUMBER));
+
+        return ret;
+    }
+
+    public Value evaluate(Value[] args) throws FunctionException {
+        // Do the operation. In this example just transform to string if it is
+        // not null.
+        if (args[0].isNull()) {
+            return ValueFactory.createNullValue();
+        } else {
+            String ret = Integer.toString(args[0].getAsInt());
+            return ValueFactory.createValue(ret);
+        }
+    }
+
+    public Type getType(Type[] argsTypes) throws InvalidTypeException {
+        // Return the type of the values returned by this function. In this
+        // sample implementation a string is returned
+        return TypeFactory.createType(Type.STRING);
+    }
+
+    public boolean isAggregate() {
+        // This is a normal, non aggregate function
+        return false;
+    }
+
+    public Value getAggregateResult() {
+        // Only meaningful in aggregated functions
+        return null;
+    }
+}

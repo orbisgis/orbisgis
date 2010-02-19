@@ -1,0 +1,47 @@
+package org.orbisgis;
+
+import org.gdms.data.types.InvalidTypeException;
+import org.gdms.data.types.Type;
+import org.gdms.data.types.TypeFactory;
+import org.gdms.data.values.Value;
+import org.gdms.data.values.ValueFactory;
+import org.gdms.sql.function.Argument;
+import org.gdms.sql.function.Arguments;
+import org.gdms.sql.function.Function;
+import org.gdms.sql.function.FunctionException;
+
+public class A implements Function {
+
+    public String getDescription() {
+        return "";
+    }
+
+    public String getName() {
+        return "A";
+    }
+
+    public String getSqlOrder() {
+        return "";
+    }
+
+    public Arguments[] getFunctionArguments() {
+        return new Arguments[]{new Arguments()};
+    }
+
+    public Value evaluate(Value[] args) throws FunctionException {
+        
+        return ValueFactory.createNullValue();
+    }
+
+    public Type getType(Type[] argsTypes) throws InvalidTypeException {
+        return TypeFactory.createType(Type.STRING);
+    }
+
+    public boolean isAggregate() {
+        return false;
+    }
+
+    public Value getAggregateResult() {
+        return null;
+    }
+}

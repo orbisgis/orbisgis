@@ -1,0 +1,22 @@
+package org.orbisgis;
+
+import org.orbisgis.action.IAction;
+
+public class NewAction implements IAction {
+
+	public void actionPerformed() {
+		// Method executed when the user selects the icon
+		
+	}
+
+	public boolean isEnabled() {
+		// Always enabled
+		return true;
+	}
+
+	public boolean isVisible() {
+		// Always visible
+		return true;
+	}
+
+}

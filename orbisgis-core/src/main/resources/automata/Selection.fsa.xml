@@ -1,0 +1,43 @@
+<automaton initial-status="Standby"
+	package="org.orbisgis.tools.instances.generated"
+	name="Selection"
+	tooltip="selection_tooltip"
+	command="select">
+
+	<node name="Standby" text="selection_standby">
+		<transition to="OnePoint" code="point"/>
+	</node>
+	<node name="OnePoint">
+		<!--Si hay seleccion-->
+		<transition to="Selection" code="selection"/>
+		<!--Si no hay seleccion falta un punto para hacer un rectángulo-->
+		<transition to="OnePointLeft" code="no-selection"/>
+		<!--Si se ha deseleccionado la última geometría se vuelve a Standby-->
+		<transition to="Standby" code="init"/>
+	</node>
+	<node name="OnePointLeft" text="selection_onepointleft">
+		<transition to="TwoPoints" code="point"/>
+	</node>
+	<node name="TwoPoints">
+		<!--Si el rectángulo selecciona algo-->
+		<transition to="Selection" code="selection"/>
+		<!--El rectángulo no selecciona nada-->
+		<transition to="Standby" code="no-selection"/>
+	</node>
+	<node name="Selection" text="selection_selection">
+		<transition to="PointWithSelection" code="point"/>
+	</node>
+	<node name="PointWithSelection">
+		<!--Se pincha en el handler de una geometría seleccionada-->
+		<transition to="Movement" code="in-handler"/>
+		<!--Se pincha fuera de un handler-->
+		<transition to="OnePoint" code="out-handler"/>
+	</node>
+	<node name="Movement" text="selection_movement">
+		<transition to="MakeMove" code="point"/>
+	</node>
+	<node name="MakeMove">
+		<transition to="Selection" code="empty"/>
+	</node>
+	<transition to="Standby" code="esc" label="cancel"/>
+</automaton>

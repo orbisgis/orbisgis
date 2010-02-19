@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<geocognition-node xmlns:ns2="org.orbisgis.legend" xmlns:ns3="org.orbisgis.symbol"
+	xmlns:ns4="org.orbisgis.mapContext" id="">
+	<geocognition-node id="OrbisGIS">
+		<geocognition-node id="Maps">
+			<geocognition-node id="FirstMap">
+				<node-content
+					content-type-id="org.orbisgis.geocognition.MapContext">
+					<map-context>
+						<layer-collection visible="false" name="root">
+							<layer visible="true" source-name="source"
+								name="source">
+								<legends field-name="the_geom">
+									<simple-legend
+										legend-id="org.orbisgis.legend.UniqueSymbol">
+										<legend-container>
+											<legend-description
+												xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+												xsi:type="unique-symbol-legend-type"
+												name="Unique symbol">
+												<symbol
+													xsi:type="symbol-composite-type">
+													<symbol
+														xsi:type="simple-symbol-type"
+														symbol-type-id="org.orbisgis.symbol.point.Circle">
+														<ns3:property
+															value="-16777216"
+															name="outline-color"/>
+														<ns3:property
+															value="-65536"
+															name="fill-color"/>
+														<ns3:property
+															value="false"
+															name="map-units"/>
+														<ns3:property
+															value="Square in polygon centroid"
+															name="name"/>
+														<ns3:property value="1"
+															name="line-width"/>
+														<ns3:property value="10"
+															name="size"/>
+													</symbol>
+													<symbol
+														xsi:type="simple-symbol-type"
+														symbol-type-id="org.orbisgis.symbol.vertex.Circle">
+														<ns3:property
+															value="-16777216"
+															name="outline-color"/>
+														<ns3:property
+															value="false"
+															name="map-units"/>
+														<ns3:property
+															value="Circle in vertex"
+															name="name"/>
+														<ns3:property value="1"
+															name="line-width"/>
+														<ns3:property value="4"
+															name="size"/>
+													</symbol>
+													<symbol
+														xsi:type="simple-symbol-type"
+														symbol-type-id="org.orbisgis.symbol.square.Vertex">
+														<ns3:property
+															value="-16777216"
+															name="outline-color"/>
+														<ns3:property
+															value="false"
+															name="map-units"/>
+														<ns3:property
+															value="Circle in vertex"
+															name="name"/>
+														<ns3:property value="1"
+															name="line-width"/>
+														<ns3:property value="4"
+															name="size"/>
+													</symbol>
+												</symbol>
+											</legend-description>
+										</legend-container>
+									</simple-legend>
+								</legends>
+							</layer>
+						</layer-collection>
+						<selected-layer name="source"/>
+					</map-context>
+				</node-content>
+			</geocognition-node>
+		</geocognition-node>
+	</geocognition-node>
+	<geocognition-node id="Area">
+		<node-content
+			content-type-id="org.orbisgis.geocognition.BuiltInFunction">
+			<property-set>
+				<property
+					value="org.gdms.sql.function.spatial.geometryProperties.Area"
+					name="class-name"/>
+			</property-set>
+		</node-content>
+	</geocognition-node>
+	<geocognition-node id="CheckSpatialEquivalence">
+		<node-content
+			content-type-id="org.orbisgis.geocognition.BuiltInCustomQuery">
+			<property-set>
+				<property
+					value="org.gdms.sql.customQuery.spatial.geometry.CheckSpatialEquivalence"
+					name="class-name"/>
+			</property-set>
+		</node-content>
+	</geocognition-node>
+	<geocognition-node id="Legend0">
+		<node-content content-type-id="org.orbisgis.legend.UniqueSymbol">
+			<legend-container>
+				<legend-description
+					xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+					xsi:type="unique-symbol-legend-type"/>
+			</legend-container>
+		</node-content>
+	</geocognition-node>
+	<geocognition-node id="Symbol0">
+		<node-content content-type-id="org.orbisgis.geocognition.Symbol">
+			<symbol-list>
+				<symbol xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+					xsi:type="simple-symbol-type"
+					symbol-type-id="org.orbisgis.symbol.polygon.centroid.Square">
+					<ns3:property value="-16777216" name="outline-color"/>
+					<ns3:property value="-65536" name="fill-color"/>
+					<ns3:property value="false" name="map-units"/>
+					<ns3:property value="Square in polygon centroid" name="name"/>
+					<ns3:property value="1" name="line-width"/>
+					<ns3:property value="10" name="size"/>
+				</symbol>
+			</symbol-list>
+		</node-content>
+	</geocognition-node>
+	<geocognition-node id="Symbol1">
+		<node-content content-type-id="org.orbisgis.geocognition.Symbol">
+			<symbol-list>
+				<symbol xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+					xsi:type="simple-symbol-type"
+					symbol-type-id="org.orbisgis.symbol.point.Circle">
+					<ns3:property value="-16777216" name="outline-color"/>
+					<ns3:property value="-65536" name="fill-color"/>
+					<ns3:property value="false" name="map-units"/>
+					<ns3:property value="Circle in point" name="name"/>
+					<ns3:property value="1" name="line-width"/>
+					<ns3:property value="10" name="size"/>
+				</symbol>
+			</symbol-list>
+		</node-content>
+	</geocognition-node>
+	<geocognition-node id="Function0">
+		<node-content content-type-id="org.orbisgis.geocognition.JavaFunction">
+			<property-set>
+				<property
+					value="package org.orbisgis;&#xA;&#xA;import org.gdms.data.types.InvalidTypeException;&#xA;import org.gdms.data.types.Type;&#xA;import org.gdms.data.types.TypeFactory;&#xA;import org.gdms.data.values.Value;&#xA;import org.gdms.data.values.ValueFactory;&#xA;import org.gdms.sql.function.Argument;&#xA;import org.gdms.sql.function.Arguments;&#xA;import org.gdms.sql.function.Function;&#xA;import org.gdms.sql.function.FunctionException;&#xA;&#xA;public class Function0 implements Function {&#xA;&#xA;    public String getDescription() {&#xA;        // Return a description of the operation this function does&#xA;        return &quot;This is a sample function &quot;&#xA;                + &quot;that transforms numbers into strings&quot;;&#xA;    }&#xA;&#xA;    public String getName() {&#xA;        return &quot;Function0&quot;;&#xA;    }&#xA;&#xA;    public String getSqlOrder() {&#xA;        // Return a sample order&#xA;        return &quot;select &quot; + getName() + &quot;(5) from mytable;&quot;;&#xA;    }&#xA;&#xA;    public Arguments[] getFunctionArguments() {&#xA;        // Return all the possible arguments this function can take. In this&#xA;        // sample implementation one numeric argument is mandatory&#xA;        Arguments[] ret = new Arguments[1];&#xA;        // Int argument version&#xA;        ret[0] = new Arguments(new Argument(Argument.TYPE_WHOLE_NUMBER));&#xA;&#xA;        return ret;&#xA;    }&#xA;&#xA;    public Value evaluate(Value[] args) throws FunctionException {&#xA;        // Do the operation. In this example just transform to string if it is&#xA;        // not null.&#xA;        if (args[0].isNull()) {&#xA;            return ValueFactory.createNullValue();&#xA;        } else {&#xA;            String ret = Integer.toString(args[0].getAsInt());&#xA;            return ValueFactory.createValue(ret);&#xA;        }&#xA;    }&#xA;&#xA;    public Type getType(Type[] argsTypes) throws InvalidTypeException {&#xA;        // Return the type of the values returned by this function. In this&#xA;        // sample implementation a string is returned&#xA;        return TypeFactory.createType(Type.STRING);&#xA;    }&#xA;&#xA;    public boolean isAggregate() {&#xA;        // This is a normal, non aggregate function&#xA;        return false;&#xA;    }&#xA;&#xA;}"
+					name="function-code"/>
+			</property-set>
+		</node-content>
+	</geocognition-node>
+</geocognition-node>

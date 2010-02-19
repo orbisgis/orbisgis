@@ -1,0 +1,73 @@
+package org.orbisgis.views.geocognition;
+    
+import org.gdms.data.DataSource;
+import org.gdms.data.DataSourceFactory;
+import org.gdms.data.ExecutionException;
+import org.gdms.data.metadata.Metadata;
+import org.gdms.data.values.Value;
+import org.gdms.driver.DriverException;
+import org.gdms.driver.ObjectDriver;
+import org.gdms.driver.memory.ObjectMemoryDriver;
+import org.gdms.sql.customQuery.CustomQuery;
+import org.gdms.sql.customQuery.TableDefinition;
+import org.gdms.sql.function.Argument;
+import org.gdms.sql.function.Arguments;
+import org.orbisgis.progress.IProgressMonitor;
+
+public class CLASSNAME implements CustomQuery {
+
+    public String getDescription() {
+        // Return a description of the operation this function does
+        return null;
+    }
+
+    public String getName() {
+        return "CLASSNAME";
+    }
+
+    public String getSqlOrder() {
+        // Return a sample order
+        return "select " + getName() + "(5) from mytable;";
+    }
+
+    public Arguments[] getFunctionArguments() {
+        // Return all the possible arguments this function can take. In this
+        // sample implementation one numeric argument is mandatory
+        Arguments[] ret = new Arguments[1];
+        // Int argument version
+        ret[0] = new Arguments(new Argument(Argument.TYPE_WHOLE_NUMBER));
+
+        return ret;
+    }
+
+    public ObjectDriver evaluate(DataSourceFactory dsf, DataSource[] tables,
+            Value[] values, IProgressMonitor pm) throws ExecutionException {
+        // Do the operation. In this example just return the number
+        // of records in the table specified by the function argument
+        ObjectMemoryDriver omd;
+        try {
+            omd = new ObjectMemoryDriver(tables[0].getMetadata());
+            for (int i = 0; i < values[0].getAsInt(); i++) {
+                omd.addValues(tables[0].getRow(i));
+            }
+
+            return omd;
+        } catch (DriverException e) {
+            throw new ExecutionException("Cannot execute query", e);
+        }
+    }
+
+    public TableDefinition[] geTablesDefinitions() {
+        // Return the features the tables used by this custom query must have.
+        // In this sample implementation any table will be ok.
+        return new TableDefinition[] { TableDefinition.ANY };
+    }
+
+    public Metadata getMetadata(Metadata[] tables) throws DriverException {
+        // Return the Metadata of the result of this custom query. In this case
+        // we just copy several rows from the input table, so the metadata is
+        // the same as in the one in the first table
+        return tables[0];
+    }
+
+}
