@@ -1,0 +1,20 @@
+procedure:
+	define what you want to do
+	identify the extension point that will let you do so
+	See the reference for that extension point
+	There are 'id' attributes that are just a String for identification
+	There are other attributes that are like pointers to 'id' attributes
+
+How to add a new view
+
+How to place the view initially
+
+How to access layers from JConsole
+
+How to set the extent
+
+How to create layers
+
+Where to put the extension for certain extension point
+
+How to access EditionContext and ToolManager from a tool

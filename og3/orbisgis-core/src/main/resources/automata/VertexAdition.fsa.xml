@@ -1,0 +1,15 @@
+<automaton initial-status="Standby"
+	package="org.orbisgis.tools.instances.generated"
+	name="VertexAdition"
+	tooltip="vertexAdition_tooltip"
+	command="vertexAdition">
+
+	<node name="Standby" text="vertexAdition_standby">
+		<transition to="Done" code="point"/>
+	</node>
+	<node name="Done">
+		<transition to="Standby" code="init"/>
+	</node>
+	<node name="Cancel"/>
+	<transition to="Cancel" code="esc" label="cancel"/>
+</automaton>

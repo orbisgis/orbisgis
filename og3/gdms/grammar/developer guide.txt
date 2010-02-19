@@ -1,0 +1,5 @@
+Pasos para generar la gram�tica
+
+	(1) delete from the package SimpleNode and TokenSupport
+	(2) execute compilegrammar -> default package
+	(3) move the generated classes to the wanted package with eclipse-refactor

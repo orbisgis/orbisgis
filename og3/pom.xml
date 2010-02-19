@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>org.orbisgis</groupId>
+	<artifactId>platform</artifactId>
+	<packaging>pom</packaging>
+	<version>2.2.0</version>
+	<name>platform</name>
+	<url>http://maven.apache.org</url>
+	<modules>		
+		<module>commons</module>
+		<module>gdms</module>
+		<module>grap</module>
+		<module>h2spatial</module>		
+		<module>orbisgis-core</module>		
+		<module>geoprocessing</module>	
+		<module>org.orbisgis.geoprocessing</module>		
+	</modules>
+	<scm>
+		<connection>
+			scm:svn:http://geosysin.iict.ch/irstv-svn/platform</connection>
+		<developerConnection>
+			scm:svn:http://geosysin.iict.ch/irstv-svn/platform</developerConnection>
+		<tag>HEAD</tag>
+		<url>http://geosysin.iict.ch/irstv-svn/platform</url>
+	</scm>
+	<repositories>		
+		<repository>
+			<id>geotools</id>
+			<name>Geotools repository</name>
+			<url>http://maven.geotools.fr/repository</url>
+		</repository>
+		<repository>
+			<id>geosysin</id>
+			<name>Geosysin repository</name>
+			<url>http://geosysin.iict.ch/irstv-web/maven-repo</url>
+		</repository>				
+	</repositories>
+	<pluginRepositories>
+
+	    <pluginRepository>
+
+		<id>geosysin</id>
+		<name>Geosysin repository</name>
+		<url>http://geosysin.iict.ch/irstv-web/maven-repo</url>
+
+	    </pluginRepository>
+
+	</pluginRepositories>
+	<distributionManagement>
+
+	    <repository>
+
+		<id>geosysin</id>
+		<name>Geosysin repository</name>
+		<url>scp://geosysin.iict.ch:/home/irstv/trac/htdocs/maven-repo/</url>
+
+	    </repository>
+
+	</distributionManagement> 	
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<configuration>
+					<source>1.6</source>
+					<target>1.6</target>
+				</configuration>
+			</plugin>
+			<plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+ 	                <configuration>
+        		    	<useRepositoryLayout>true</useRepositoryLayout>
+        		       	<outputDirectory>../dependencies</outputDirectory>
+			        </configuration>
+			</plugin>
+		</plugins>
+	</build>
+	<reporting>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-javadoc-plugin</artifactId>
+				<configuration>
+					<aggregate>true</aggregate>
+				</configuration>
+			</plugin>
+		</plugins>
+	</reporting>
+</project>
+
+

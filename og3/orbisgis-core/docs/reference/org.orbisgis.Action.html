@@ -1,0 +1,251 @@
+<html xmlns:xs="http://www.w3.org/2001/XMLSchema">
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>org.orbisgis.Action</title>
+</head>
+<body>
+<h1>
+<a name="extension">org.orbisgis.Action</a>
+</h1>
+<h2>Description:</h2> Action that will be installed in the menu, tool bar, etc. of
+				the OrbisGIS frame <h2>Example:</h2>
+<ul>
+			&lt;
+			extension
+				id="
+				org.orbisgis.BasicActions" 
+				point="
+				org.orbisgis.Action" 
+				&gt;
+				<ul>
+<ul>
+			&lt;
+			menu
+				id="
+				org.orbisgis.File" 
+				text="
+				File" 
+				icon="
+				/org/orbisgis/images/house.png"  /&gt;</ul>
+<ul>
+			&lt;
+			menu
+				id="
+				org.orbisgis.Geocatalog" 
+				text="
+				Geocatalog" 
+				icon="
+				/org/orbisgis/images/geocatalog.png"  /&gt;</ul>
+<ul>
+			&lt;
+			menu
+				id="
+				org.orbisgis.Help" 
+				text="
+				Help" 
+				icon="
+				/org/orbisgis/images/help.png"  /&gt;</ul>
+<ul>
+			&lt;
+			toolbar
+				id="
+				org.orbisgis.MainBar" 
+				text="
+				OrbisGIS"  /&gt;</ul>
+<ul>
+			&lt;
+			action
+				id="
+				org.orbisgis.actions.Exit" 
+				text="
+				Exit" 
+				menu-id="
+				org.orbisgis.File" 
+				icon="
+				/org/orbisgis/images/exit.png" 
+				toolbar-id="
+				org.orbisgis.MainBar" 
+				class="
+				org.orbisgis.actions.Exit"  /&gt;</ul>
+<ul>
+			&lt;
+			action
+				id="
+				org.orbisgis.actions.About" 
+				text="
+				About OrbisGIS" 
+				menu-id="
+				org.orbisgis.Help" 
+				class="
+				org.orbisgis.actions.about.About"  /&gt;</ul>
+<ul>
+			&lt;
+			action
+				id="
+				org.orbisgis.actions.Update" 
+				text="
+				Updates..." 
+				menu-id="
+				org.orbisgis.Help" 
+				class="
+				org.orbisgis.actions.Update"  /&gt;</ul>
+<ul>
+			&lt;
+			action
+				id="
+				org.orbisgis.actions.NewResource" 
+				text="
+				New Resource" 
+				menu-id="
+				org.orbisgis.Geocatalog" 
+				icon="
+				/org/orbisgis/images/add.png" 
+				class="
+				org.orbisgis.actions.NewResource"  /&gt;</ul>
+</ul>&lt;/
+				extension&gt; </ul>
+<h2>Content:</h2>
+<table border="1">
+<th>Element name</th><th>minOccurs</th><th>maxOccurs</th>
+<tr>
+<td><a href=" #
+						menu">menu</a></td><td>0</td><td>unbounded</td>
+</tr>
+<tr>
+<td><a href=" #
+						toolbar">toolbar</a></td><td>0</td><td>unbounded</td>
+</tr>
+<tr>
+<td><a href=" #
+						action">action</a></td><td>1</td><td>unbounded</td>
+</tr>
+</table>
+<h2>Attributes:</h2>
+<table border="1">
+<th>Attribute name</th><th>Required</th><th>Description</th>
+<tr>
+<td>point</td><td> required </td><td> Id of the extension point </td>
+</tr>
+<tr>
+<td>id</td><td> optional </td><td> Id of the extension. For debuging purposes
+						only</td>
+</tr>
+<tr>
+<td>name</td><td> optional </td><td> Name of the extension. For debuging purposes
+						only</td>
+</tr>
+</table>
+<h1>
+<a name="toolbar">toolbar</a>
+</h1> Installs a toolbar<h2>Attributes:</h2>
+<table border="1">
+<th>Attribute name</th><th>Required</th><th>Description</th>
+<tr>
+<td>id</td><td> required </td><td>Id of the toolbar, referenced by other
+						attributes</td>
+</tr>
+<tr>
+<td>text</td><td> required </td><td>Text to be shown in the tool bar</td>
+</tr>
+</table>
+<h1>
+<a name="menu">menu</a>
+</h1> Installs a parent menu <h2>Attributes:</h2>
+<table border="1">
+<th>Attribute name</th><th>Required</th><th>Description</th>
+<tr>
+<td>id</td><td> required </td><td>Id of the menu, referenced by other
+						attributes</td>
+</tr>
+<tr>
+<td>text</td><td> required </td><td>Text to be shown in the menu</td>
+</tr>
+<tr>
+<td>parent</td><td> optional </td><td>References the id of another
+						menu</td>
+</tr>
+<tr>
+<td>icon</td><td> optional </td><td>Path to the icon to show in the menu. It has to be in
+						the classpath</td>
+</tr>
+</table>
+<h1>
+<a name="action">action</a>
+</h1> Installs an action in the OrbisGIS frame <h2>Attributes:</h2>
+<table border="1">
+<th>Attribute name</th><th>Required</th><th>Description</th>
+<tr>
+<td>class</td><td> required </td><td>Class that implements the
+						org.orbisgis.action.IAction interface
+						</td>
+</tr>
+<tr>
+<td>id</td><td> required </td><td>Id of the action. Must be
+						unique</td>
+</tr>
+<tr>
+<td>text</td><td> required </td><td>Text that will appear in the menu that triggers
+						this action</td>
+</tr>
+<tr>
+<td>menu-id</td><td> optional </td><td>Id of the menu where this action will be
+						installed</td>
+</tr>
+<tr>
+<td>icon</td><td> optional </td><td>Icon associated to the
+						action</td>
+</tr>
+<tr>
+<td>menu-group</td><td> optional </td><td>The group to associate the actions in the menu.
+						Different groups will be separated
+						visually</td>
+</tr>
+<tr>
+<td>toolbar-id</td><td> optional </td><td>Id of the toolbar where this action will be
+						installed. It is also necessary to specify the icon
+						attribute</td>
+</tr>
+<tr>
+<td>selectable</td><td> optional </td><td>If the action is selectable. If this attribute is
+						set to true the interface to implement by the class attribute
+						becomes
+						org.orbisgis.action.ISelectableAction</td>
+</tr>
+</table>
+<pre>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+				
+</pre>
+</body>
+</html>

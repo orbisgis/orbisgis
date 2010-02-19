@@ -1,0 +1,4 @@
+<plugins>	
+	<!-- <plugin dir="../org.orbisgis.geoprocessing"
+		configuration="src/main/resources/org/orbisgis/geoprocessing/conf"/> -->
+</plugins>

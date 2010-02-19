@@ -1,0 +1,250 @@
+<html xmlns:xs="http://www.w3.org/2001/XMLSchema">
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>org.orbisgis.editors.map.Tool</title>
+</head>
+<body>
+<h1>
+<a name="extension">org.orbisgis.editors.map.Tool</a>
+</h1>
+<h2>Description:</h2> Tool to interactuate with the map <h2>Example:</h2>
+<ul>
+			&lt;
+			extension
+				id="
+				org.orbisgis.editors.map.tools.NavigationTools" 
+				point="
+				org.orbisgis.editors.map.Tool" 
+				&gt;
+				<ul>
+<ul>
+			&lt;
+			menu
+				id="
+				org.orbisgis.editors.map.Tool" 
+				text="
+				Tools" 
+				icon="
+				/org/orbisgis/images/package.png" 
+				parent="
+				org.orbisgis.Map"  /&gt;</ul>
+<ul>
+			&lt;
+			toolbar
+				id="
+				org.orbisgis.editors.map.Navigation" 
+				text="
+				Navigation"  /&gt;</ul>
+<ul>
+			&lt;
+			tool
+				id="
+				org.orbisgis.editors.map.tools.ZoomIn" 
+				menu-id="
+				org.orbisgis.editors.map.Tool" 
+				text="
+				Zoom In" 
+				menu-group="
+				org.orbisgis.editors.map.tools.Selectable" 
+				icon="
+				/org/orbisgis/images/zoom_in.png" 
+				mouse-cursor="
+				/org/orbisgis/images/zoom_in.gif" 
+				toolbar-id="
+				org.orbisgis.editors.map.Navigation" 
+				selectable="
+				true" 
+				class="
+				org.orbisgis.editors.map.tools.ZoomInTool"  /&gt;</ul>
+<ul>
+			&lt;
+			tool
+				id="
+				org.orbisgis.editors.map.tools.ZoomOut" 
+				menu-id="
+				org.orbisgis.editors.map.Tool" 
+				text="
+				Zoom Out" 
+				menu-group="
+				org.orbisgis.editors.map.tools.Selectable" 
+				icon="
+				/org/orbisgis/images/zoom_out.png" 
+				mouse-cursor="
+				/org/orbisgis/images/zoom_out.gif" 
+				toolbar-id="
+				org.orbisgis.editors.map.Navigation" 
+				selectable="
+				true" 
+				class="
+				org.orbisgis.editors.map.tools.ZoomOutTool"  /&gt;</ul>
+<ul>
+			&lt;
+			tool
+				id="
+				org.orbisgis.editors.map.tools.Pan" 
+				menu-id="
+				org.orbisgis.editors.map.Tool" 
+				text="
+				Pan" 
+				menu-group="
+				org.orbisgis.editors.map.tools.Selectable" 
+				icon="
+				/org/orbisgis/images/pan.png" 
+				mouse-cursor="
+				/org/orbisgis/images/pan.gif" 
+				toolbar-id="
+				org.orbisgis.editors.map.Navigation" 
+				selectable="
+				true" 
+				class="
+				org.orbisgis.editors.map.tools.PanTool"  /&gt;</ul>
+</ul>&lt;/
+				extension&gt; </ul>
+<h2>Content:</h2>
+<table border="1">
+<th>Element name</th><th>minOccurs</th><th>maxOccurs</th>
+<tr>
+<td><a href=" #
+						menu">menu</a></td><td>0</td><td>unbounded</td>
+</tr>
+<tr>
+<td><a href=" #
+						toolbar">toolbar</a></td><td>0</td><td>unbounded</td>
+</tr>
+<tr>
+<td><a href=" #
+						tool">tool</a></td><td>1</td><td>unbounded</td>
+</tr>
+</table>
+<h2>Attributes:</h2>
+<table border="1">
+<th>Attribute name</th><th>Required</th><th>Description</th>
+<tr>
+<td>point</td><td> required </td><td> Id of the extension point </td>
+</tr>
+<tr>
+<td>id</td><td> optional </td><td> Id of the extension. For debuging purposes
+						only</td>
+</tr>
+<tr>
+<td>name</td><td> optional </td><td> Name of the extension. For debuging purposes
+						only</td>
+</tr>
+</table>
+<h1>
+<a name="toolbar">toolbar</a>
+</h1> Installs a toolbar<h2>Attributes:</h2>
+<table border="1">
+<th>Attribute name</th><th>Required</th><th>Description</th>
+<tr>
+<td>id</td><td> required </td><td>Id of the toolbar, referenced by other
+						attributes</td>
+</tr>
+<tr>
+<td>text</td><td> required </td><td>Text to be shown in the tool bar</td>
+</tr>
+</table>
+<h1>
+<a name="menu">menu</a>
+</h1> Installs a parent menu <h2>Attributes:</h2>
+<table border="1">
+<th>Attribute name</th><th>Required</th><th>Description</th>
+<tr>
+<td>id</td><td> required </td><td>Id of the menu, referenced by other
+						attributes</td>
+</tr>
+<tr>
+<td>text</td><td> required </td><td>Text to be shown in the menu</td>
+</tr>
+<tr>
+<td>parent</td><td> optional </td><td>References the id of another
+						menu</td>
+</tr>
+<tr>
+<td>icon</td><td> optional </td><td>Path to the icon to show in the menu. It has to be in
+						the classpath of the plug-in</td>
+</tr>
+</table>
+<h1>
+<a name="tool">tool</a>
+</h1> Installs the tool <h2>Attributes:</h2>
+<table border="1">
+<th>Attribute name</th><th>Required</th><th>Description</th>
+<tr>
+<td>class</td><td> required </td><td>Class that implements the tool interface:
+						org.orbisgis.editor.map.tool.Automaton. There are several
+						abstract implementations that make easy this task for simple
+						tools (see automaton hierarchy) </td>
+</tr>
+<tr>
+<td>id</td><td> required </td><td>Id of the tool. Must be
+						unique</td>
+</tr>
+<tr>
+<td>text</td><td> required </td><td>Text that will appear in the menu that selects this
+						tool</td>
+</tr>
+<tr>
+<td>menu-id</td><td> optional </td><td>Id of the menu where this tool will be
+						installed</td>
+</tr>
+<tr>
+<td>icon</td><td> optional </td><td>Icon that will appear in the menus or buttons that
+						select this tool</td>
+</tr>
+<tr>
+<td>mouse-cursor</td><td> optional </td><td>Mouse cursor to show when this tool is selected. If
+						nothing is specified a default 'cross' cursor is
+						shown</td>
+</tr>
+<tr>
+<td>menu-group</td><td> optional </td><td>The group to associate the tools in the menus.
+						Different groups will be separated
+						visually</td>
+</tr>
+<tr>
+<td>toolbar-id</td><td> optional </td><td>Id of the toolbar where this tool will be
+						installed. It is also necessary to specify the icon
+						attribute</td>
+</tr>
+<tr>
+<td>selectable</td><td> optional </td><td>If the tool is selectable.</td>
+</tr>
+</table>
+<pre>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+				
+</pre>
+</body>
+</html>

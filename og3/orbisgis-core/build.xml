@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<project name="org.orbisgis" default="run jaxb" basedir=".">
+
+	<property name="xjc-path" value="/usr/lib/jvm/java-6-sun-1.6.0.13/bin/xjc" />
+
+	<target name="run jaxb" depends="Geocognition">
+	</target>
+
+	<target name="Geocognition">
+		<exec executable="${xjc-path}">
+			<arg value="-d" />
+			<arg value="src/main/java" />
+			<arg value="-p" />
+			<arg value="org.orbisgis.core.geocognition.persistence" />
+			<arg value="src/main/resources/org/orbisgis/core/geocognition/persistence.xsd" />
+		</exec>
+	</target>
+
+</project>
+

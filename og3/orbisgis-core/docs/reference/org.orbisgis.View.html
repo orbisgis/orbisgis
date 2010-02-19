@@ -1,0 +1,118 @@
+<html xmlns:xs="http://www.w3.org/2001/XMLSchema">
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>org.orbisgis.View</title>
+</head>
+<body>
+<h1>
+<a name="extension">org.orbisgis.View</a>
+</h1>
+<h2>Description:</h2>This extension point is used to add new panels inside
+				the main frame of the application <h2>Example:</h2>
+<ul>
+			&lt;
+			extension
+				point="
+				org.orbisgis.View" 
+				&gt;
+				<ul>
+<ul>
+			&lt;
+			view
+				id="
+				org.orbisgis.views.Geocatalog" 
+				icon="
+				/org/orbisgis/images/geocatalog.png" 
+				class="
+				org.orbisgis.views.geocatalog.CatalogView" 
+				title="
+				Geocatalog"  /&gt;</ul>
+</ul>&lt;/
+				extension&gt; </ul>
+<h2>Content:</h2>
+<table border="1">
+<th>Element name</th><th>minOccurs</th><th>maxOccurs</th>
+<tr>
+<td><a href=" #
+						view">view</a></td><td></td><td></td>
+</tr>
+</table>
+<h2>Attributes:</h2>
+<table border="1">
+<th>Attribute name</th><th>Required</th><th>Description</th>
+<tr>
+<td>point</td><td> required </td><td></td>
+</tr>
+<tr>
+<td>id</td><td> optional </td><td></td>
+</tr>
+<tr>
+<td>name</td><td> optional </td><td></td>
+</tr>
+</table>
+<h1>
+<a name="view">view</a>
+</h1> Defines a view to be included in the main application frame
+				<h2>Attributes:</h2>
+<table border="1">
+<th>Attribute name</th><th>Required</th><th>Description</th>
+<tr>
+<td>class</td><td> optional </td><td> Class that implements the
+						org.orbisgis.view.IView that will contain the logic to add the
+						new view </td>
+</tr>
+<tr>
+<td>icon</td><td> optional </td><td>Icon to be shown in the view</td>
+</tr>
+<tr>
+<td>title</td><td> optional </td><td>Title to display in the view</td>
+</tr>
+<tr>
+<td>isEditor</td><td> optional </td><td>True if this view contains all the editors in the
+						system. Only one view can have this attribute to true. If this
+						attribute is true, the class must implement
+						org.orbisgis.view.IEditorsView instead of
+						org.orbisgis.view.IView</td>
+</tr>
+<tr>
+<td>id</td><td> required </td><td>Identifier for internal use. Should be unique
+						</td>
+</tr>
+</table>
+<pre>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+				
+</pre>
+</body>
+</html>

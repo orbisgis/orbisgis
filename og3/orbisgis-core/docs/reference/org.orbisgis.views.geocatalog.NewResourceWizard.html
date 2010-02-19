@@ -1,0 +1,102 @@
+<html xmlns:xs="http://www.w3.org/2001/XMLSchema">
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>org.orbisgis.views.geocatalog.NewResourceWizard</title>
+</head>
+<body>
+<h1>
+<a name="extension">org.orbisgis.views.geocatalog.NewResourceWizard</a>
+</h1>
+<h2>Description:</h2> This extension point can be extended to add new types of
+				sources to the catalog <h2>Example:</h2>
+<ul>
+			&lt;
+			extension
+				point="
+				org.orbisgis.views.geocatalog.NewResourceWizard" 
+				&gt;
+				<ul>
+<ul>
+			&lt;
+			wizard
+				id="
+				org.orbisgis.views.geocatalog.newResourceWizards.NewFile" 
+				class="
+				org.orbisgis.views.geocatalog.newResourceWizards.file.NewFile"  /&gt;</ul>
+</ul>&lt;/
+				extension&gt; </ul>
+<h2>Content:</h2>
+<table border="1">
+<th>Element name</th><th>minOccurs</th><th>maxOccurs</th>
+<tr>
+<td><a href=" #
+						wizard">wizard</a></td><td></td><td></td>
+</tr>
+</table>
+<h2>Attributes:</h2>
+<table border="1">
+<th>Attribute name</th><th>Required</th><th>Description</th>
+<tr>
+<td>point</td><td> required </td><td></td>
+</tr>
+<tr>
+<td>id</td><td> optional </td><td></td>
+</tr>
+<tr>
+<td>name</td><td> optional </td><td></td>
+</tr>
+</table>
+<h1>
+<a name="wizard">wizard</a>
+</h1> Defines the interface to add new resources to the catalog
+				<h2>Attributes:</h2>
+<table border="1">
+<th>Attribute name</th><th>Required</th><th>Description</th>
+<tr>
+<td>class</td><td> optional </td><td> Class that implements the
+						org.orbisgis.views.geocatalog.newResourceWizard.INewResource
+						that will contain the logic to add the new resource to the catalog
+						</td>
+</tr>
+<tr>
+<td>id</td><td> optional </td><td>Identificator for internal use. Should be unique
+						</td>
+</tr>
+</table>
+<pre>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+				
+</pre>
+</body>
+</html>

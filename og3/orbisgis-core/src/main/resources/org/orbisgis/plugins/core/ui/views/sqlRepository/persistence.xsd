@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+	<xs:element name="category">
+		<xs:complexType>
+			<xs:choice maxOccurs="unbounded">
+				<xs:element ref="category"/>
+				<xs:element ref="sql-script"/>
+				<xs:element ref="sql-instruction"/>
+			</xs:choice>
+			<xs:attribute name="label" type="xs:string" use="required"/>
+			<xs:attribute name="id" type="xs:string" use="required"/>
+		</xs:complexType>
+	</xs:element>
+
+	<xs:element name="sql-script">
+		<xs:complexType>
+			<xs:attribute name="resource" type="xs:string" use="required"/>
+			<xs:attribute name="id" type="xs:string" use="required"/>
+		</xs:complexType>
+	</xs:element>
+
+	<xs:element name="sql-instruction">
+		<xs:complexType>
+				<xs:attribute name="class" type="xs:string" use="required"/>
+		</xs:complexType>
+	</xs:element>
+
+</xs:schema>

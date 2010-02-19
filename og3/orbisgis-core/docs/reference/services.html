@@ -1,0 +1,76 @@
+<html xmlns:xs="http://www.w3.org/2001/XMLSchema">
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>
+					OrbisGIS services
+				</title>
+</head>
+<body>
+<H1>Services in OrbisGIS</H1>
+<p>This is the description of the available services in OrbisGIS. An
+					OrbisGIS service is just a java instance that is accessible by a name and
+					that implements a specified interface. From a practical point of view,
+					services will be the entry point to access the different
+					functionalities in OrbisGIS</p>
+<table border="1">
+<th>Service name</th><th>Service interface</th><th>Description</th>
+<tr>
+<td>interface org.orbisgis.ApplicationInfo</td><td>org.orbisgis.ApplicationInfo</td><td>Gets information about the application: name, version, etc.</td>
+</tr>
+<tr>
+<td>interface org.orbisgis.DataManager</td><td>org.orbisgis.DataManager</td><td>Access to the sources, to its properties (indexes, etc.) and its contents, either raster or vectorial</td>
+</tr>
+<tr>
+<td>interface org.orbisgis.configuration.BasicConfiguration</td><td>org.orbisgis.configuration.BasicConfiguration</td><td>Manages the basic configurations (key, value)</td>
+</tr>
+<tr>
+<td>interface org.orbisgis.editors.map.MapContextManager</td><td>org.orbisgis.editors.map.MapContextManager</td><td>Gives access to the current MapContext</td>
+</tr>
+<tr>
+<td>interface org.orbisgis.errorManager.ErrorManager</td><td>org.orbisgis.errorManager.ErrorManager</td><td>Notification of errors to the system</td>
+</tr>
+<tr>
+<td>interface org.orbisgis.geocognition.Geocognition</td><td>org.orbisgis.geocognition.Geocognition</td><td>Registry containing all the artifacts produced and shared by the users</td>
+</tr>
+<tr>
+<td>interface org.orbisgis.javaManager.JavaManager</td><td>org.orbisgis.javaManager.JavaManager</td><td>Execution of java code and java scripts</td>
+</tr>
+<tr>
+<td>interface org.orbisgis.map.export.MapExportManager</td><td>org.orbisgis.map.export.MapExportManager</td><td>Manages the export of MapContexts to different formats.</td>
+</tr>
+<tr>
+<td>interface org.orbisgis.outputManager.OutputManager</td><td>org.orbisgis.outputManager.OutputManager</td><td>Service to send messages to the output system</td>
+</tr>
+<tr>
+<td>interface org.orbisgis.pluginManager.PluginManager</td><td>org.orbisgis.pluginManager.PluginManager</td><td>Gives access to the plug-in system manager. It can stop the application, access the log files, etc.</td>
+</tr>
+<tr>
+<td>interface org.orbisgis.pluginManager.background.BackgroundManager</td><td>org.orbisgis.pluginManager.background.BackgroundManager</td><td>Execute tasks in background processes, showing progress bars. Gives access to the job queue</td>
+</tr>
+<tr>
+<td>interface org.orbisgis.renderer.legend.carto.LegendManager</td><td>org.orbisgis.renderer.legend.carto.LegendManager</td><td>Manages the list of available legend types</td>
+</tr>
+<tr>
+<td>interface org.orbisgis.renderer.symbol.SymbolManager</td><td>org.orbisgis.renderer.symbol.SymbolManager</td><td>Manages the list of available symbol types</td>
+</tr>
+<tr>
+<td>interface org.orbisgis.updates.UpdateManager</td><td>org.orbisgis.updates.UpdateManager</td><td>Service to install updates from a remote site</td>
+</tr>
+<tr>
+<td>interface org.orbisgis.view.ViewManager</td><td>org.orbisgis.view.ViewManager</td><td>Open, close and gets access to the views</td>
+</tr>
+<tr>
+<td>interface org.orbisgis.views.editor.EditorManager</td><td>org.orbisgis.views.editor.EditorManager</td><td>Gets access to the active editor and its document</td>
+</tr>
+<tr>
+<td>interface org.orbisgis.windows.mainFrame.UIManager</td><td>org.orbisgis.windows.mainFrame.UIManager</td><td>Gets access to the main frame</td>
+</tr>
+<tr>
+<td>interface org.orbisgis.workspace.OGWorkspace</td><td>org.orbisgis.workspace.OGWorkspace</td><td>Gives access to directories inside the workspace. You can use the temporal folder in the workspace through this service. It lets the access to the results folder</td>
+</tr>
+<tr>
+<td>interface org.orbisgis.workspace.Workspace</td><td>org.orbisgis.workspace.Workspace</td><td>Change workspace, save files in the workspace, etc.</td>
+</tr>
+</table>
+</body>
+</html>
