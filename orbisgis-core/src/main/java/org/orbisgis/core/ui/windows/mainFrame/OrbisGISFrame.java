@@ -67,6 +67,7 @@ import net.infonode.docking.theme.DockingWindowsTheme;
 import net.infonode.docking.theme.ShapedGradientDockingTheme;
 
 import org.apache.log4j.Logger;
+import org.orbisgis.core.ApplicationInfo;
 import org.orbisgis.core.PersistenceException;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.images.IconLoader;
@@ -248,8 +249,11 @@ public class OrbisGISFrame extends JFrame implements IWindow {
 		orbisWorkbench.runWorkbench(); // PYF
 		initializeViews();
 
+		ApplicationInfo ai = (ApplicationInfo) Services
+		.getService(ApplicationInfo.class);
+		
 		// I18N.loadFile("fr");
-		this.setTitle(I18N.get("orbisgis.platform"));
+		this.setTitle(I18N.get("orbisgis.platform") + " - " + ai.getVersionNumber() + " - " + ai.getVersionName() );
 		// this.setTitle("OrbisGIS Platform");
 		this.setIconImage(IconLoader.getIcon(IconNames.LOGO_MINI).getImage());
 		Toolkit toolkit = Toolkit.getDefaultToolkit();
