@@ -1,0 +1,118 @@
+<html xmlns:xs="http://www.w3.org/2001/XMLSchema">
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>org.orbisgis.EditorView</title>
+</head>
+<body>
+<h1>
+<a name="extension">org.orbisgis.EditorView</a>
+</h1>
+<h2>Description:</h2>This extension point is used to add new panels inside the
+				main frame of the application that are associated with an specific editor
+				<h2>Example:</h2>
+<ul>
+			&lt;
+			extension
+				point="
+				org.orbisgis.EditorView" 
+				&gt;
+				<ul>
+<ul>
+			&lt;
+			editor-view
+				id="
+				org.orbisgis.editorViews.Toc" 
+				class="
+				org.orbisgis.editorViews.toc.TocView" 
+				editor-id="
+				org.orbisgis.editors.Map" 
+				icon="
+				/org/orbisgis/images/map.png" 
+				title="
+				TOC"  /&gt;</ul>
+</ul>&lt;/
+				extension&gt; </ul>
+<h2>Content:</h2>
+<table border="1">
+<th>Element name</th><th>minOccurs</th><th>maxOccurs</th>
+<tr>
+<td><a href=" #
+						editor-view">editor-view</a></td><td></td><td></td>
+</tr>
+</table>
+<h2>Attributes:</h2>
+<table border="1">
+<th>Attribute name</th><th>Required</th><th>Description</th>
+<tr>
+<td>point</td><td> required </td><td></td>
+</tr>
+<tr>
+<td>id</td><td> optional </td><td></td>
+</tr>
+<tr>
+<td>name</td><td> optional </td><td></td>
+</tr>
+</table>
+<h1>
+<a name="editor-view">editor-view</a>
+</h1> Defines a view to be included in the main frame of the
+				application <h2>Attributes:</h2>
+<table border="1">
+<th>Attribute name</th><th>Required</th><th>Description</th>
+<tr>
+<td>class</td><td> optional </td><td> Class that implements the
+						org.orbisgis.views.IEditorView </td>
+</tr>
+<tr>
+<td>icon</td><td> optional </td><td>Icon to be shown in the view</td>
+</tr>
+<tr>
+<td>title</td><td> optional </td><td>Title to display in the view</td>
+</tr>
+<tr>
+<td>editor-id</td><td> required </td><td>Identifier of the associated editor. The view
+						will only be available when an editor with this id is the active
+						editor </td>
+</tr>
+<tr>
+<td>id</td><td> required </td><td>Identifier for internal use. Should be unique
+						</td>
+</tr>
+</table>
+<pre>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+				
+</pre>
+</body>
+</html>

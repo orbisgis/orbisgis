@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<xs:schema xmlns:sym="org.orbisgis.symbol"
+	xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="org.orbisgis.legend"
+	targetNamespace="org.orbisgis.legend">
+	
+	<xs:import namespace="org.orbisgis.symbol"
+		schemaLocation="../symbol/persistence.xsd"/>
+	
+	<xs:element name="legend-container">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="legend-description" type="legend-type"
+					maxOccurs="1"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	
+	<xs:complexType name="legend-type">
+		<xs:attribute name="name" type="xs:string" use="required"/>
+		<xs:attribute name="min-scale" type="xs:int" use="optional"/>
+		<xs:attribute name="max-scale" type="xs:int" use="optional"/>
+	</xs:complexType>
+	
+	<xs:complexType name="unique-symbol-legend-type">
+		<xs:complexContent>
+			<xs:extension base="legend-type">
+				<xs:sequence>
+					<xs:element name="symbol" type="sym:symbol-type"
+						maxOccurs="1"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	
+	<xs:element name="unique-symbol-legend" type="unique-symbol-legend-type"/>
+	
+	<xs:complexType name="classified-legend-type">
+		<xs:complexContent>
+			<xs:extension base="legend-type">
+				<xs:sequence>
+					<xs:element name="default-symbol" type="sym:symbol-type"
+						maxOccurs="1"/>
+				</xs:sequence>
+				<xs:attribute name="default-label" type="xs:string"
+					use="required"/>
+				<xs:attribute name="field-name" type="xs:string" use="required"/>
+				<xs:attribute name="field-type" type="xs:int" use="required"/>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	
+	<xs:element name="value-classification">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="symbol" type="sym:symbol-type" maxOccurs="1"/>
+			</xs:sequence>
+			<xs:attribute name="value" type="xs:string" use="required"/>
+			<xs:attribute name="label" type="xs:string" use="required"/>
+		</xs:complexType>
+	</xs:element>
+	
+	<xs:complexType name="unique-value-legend-type">
+		<xs:complexContent>
+			<xs:extension base="classified-legend-type">
+				<xs:sequence>
+					<xs:element ref="value-classification" minOccurs="0"
+						maxOccurs="unbounded"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	
+	<xs:element name="unique-value-legend" type="unique-value-legend-type"/>
+	
+	<xs:element name="interval-classification">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="symbol" type="sym:symbol-type" maxOccurs="1"/>
+			</xs:sequence>
+			<xs:attribute name="init-value" type="xs:string" use="optional"/>
+			<xs:attribute name="init-included" type="xs:boolean" use="optional"/>
+			<xs:attribute name="end-value" type="xs:string" use="optional"/>
+			<xs:attribute name="end-included" type="xs:boolean" use="optional"/>
+			<xs:attribute name="label" type="xs:string" use="required"/>
+		</xs:complexType>
+	</xs:element>
+	
+	<xs:complexType name="interval-legend-type">
+		<xs:complexContent>
+			<xs:extension base="classified-legend-type">
+				<xs:sequence>
+					<xs:element ref="interval-classification" minOccurs="0"
+						maxOccurs="unbounded"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	
+	<xs:element name="interval-legend" type="interval-legend-type"/>
+	
+	<xs:complexType name="proportional-legend-type">
+		<xs:complexContent>
+			<xs:extension base="legend-type">
+				<xs:sequence>
+					<xs:element name="sample-symbol" type="sym:symbol-type"
+						maxOccurs="1"/>
+				</xs:sequence>
+				<xs:attribute name="max-size" type="xs:int" use="required"/>
+				<xs:attribute name="method" type="xs:int" use="required"/>
+				<xs:attribute name="field-name" type="xs:string" use="required"/>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	
+	<xs:element name="proportional-legend" type="proportional-legend-type"/>
+	
+	<xs:complexType name="label-legend-type">
+		<xs:complexContent>
+			<xs:extension base="legend-type">
+				<xs:attribute name="font-size" type="xs:int" use="required"/>
+				<xs:attribute name="field-font-size" type="xs:string"/>
+				<xs:attribute name="field-name" type="xs:string" use="required"/>
+				<xs:attribute name="smart-placing" type="xs:boolean" use="required"/>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	
+	<xs:element name="label-legend" type="label-legend-type"/>
+
+	<xs:complexType name="raster-legend-type">
+		<xs:complexContent>
+			<xs:extension base="legend-type">
+				<xs:sequence>
+					<xs:element name="color-model-component" type="xs:int"
+						maxOccurs="unbounded"/>
+				</xs:sequence>
+				<xs:attribute name="opacity" type="xs:float" use="required"/>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+
+	<xs:element name="raster-legend" type="raster-legend-type"/>
+
+</xs:schema>

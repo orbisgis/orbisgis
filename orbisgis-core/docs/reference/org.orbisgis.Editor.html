@@ -1,0 +1,107 @@
+<html xmlns:xs="http://www.w3.org/2001/XMLSchema">
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>org.orbisgis.Editor</title>
+</head>
+<body>
+<h1>
+<a name="extension">org.orbisgis.Editor</a>
+</h1>
+<h2>Description:</h2>This extension point is used to add new editors inside
+				geoview <h2>Example:</h2>
+<ul>
+			&lt;
+			extension
+				id="
+				org.orbisgis.editor.Map" 
+				point="
+				org.orbisgis.Editor" 
+				&gt;
+				<ul>
+<ul>
+			&lt;
+			editor
+				id="
+				org.orbisgis.editors.Map" 
+				icon="
+				/org/orbisgis/images/map.png" 
+				class="
+				org.orbisgis.editors.map.MapEditor"  /&gt;</ul>
+</ul>&lt;/
+				extension&gt; </ul>
+<h2>Content:</h2>
+<table border="1">
+<th>Element name</th><th>minOccurs</th><th>maxOccurs</th>
+<tr>
+<td><a href=" #
+						editor">editor</a></td><td></td><td></td>
+</tr>
+</table>
+<h2>Attributes:</h2>
+<table border="1">
+<th>Attribute name</th><th>Required</th><th>Description</th>
+<tr>
+<td>point</td><td> required </td><td></td>
+</tr>
+<tr>
+<td>id</td><td> optional </td><td></td>
+</tr>
+<tr>
+<td>name</td><td> optional </td><td></td>
+</tr>
+</table>
+<h1>
+<a name="editor">editor</a>
+</h1> Adds an editor to the system
+				<h2>Attributes:</h2>
+<table border="1">
+<th>Attribute name</th><th>Required</th><th>Description</th>
+<tr>
+<td>class</td><td> optional </td><td> Class that implements the
+						org.orbisgis.editor.IEditor interface </td>
+</tr>
+<tr>
+<td>icon</td><td> optional </td><td>Icon to be shown in the editor</td>
+</tr>
+<tr>
+<td>id</td><td> required </td><td>Identifier for internal use. Should be unique
+						</td>
+</tr>
+</table>
+<pre>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+				
+</pre>
+</body>
+</html>

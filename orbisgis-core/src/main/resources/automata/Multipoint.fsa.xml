@@ -1,0 +1,19 @@
+<automaton initial-status="Standby"
+	package="org.orbisgis.tools.instances.generated"
+	name="Multipoint"
+	tooltip="multipoint_tooltip"
+	command="multipoint">
+	<node name="Standby" text="multipoint_standby">
+		<transition to="Point" code="press"/>
+	</node>
+	<node name="Point" text="multipoint_point">
+		<transition to="Point" code="press"/>
+		<transition to="Done" code="t" label="multipoint_point_to_done"
+			on-exit="true"/>
+	</node>
+	<node name="Done">
+		<transition to="Standby" code="init"/>
+	</node>
+	<node name="Cancel"/>
+	<transition to="Cancel" code="esc" label="cancel"/>
+</automaton>

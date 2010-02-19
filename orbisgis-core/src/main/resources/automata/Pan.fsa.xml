@@ -1,0 +1,17 @@
+<automaton initial-status="Standby"
+	package="org.orbisgis.tools.instances.generated"
+	name="Pan"
+	tooltip="pan_tooltip"
+	command="pan">
+	<node name="Standby" text="pan_standby">
+		<transition to="OnePointLeft" code="press"/>
+	</node>
+	<node name="OnePointLeft" text="pan_onepointleft">
+		<transition to="RectangleDone" code="release"/>
+	</node>
+	<node name="RectangleDone">
+		<transition to="Standby" code="init"/>
+	</node>
+	<node name="Cancel"/>
+	<transition to="Cancel" code="esc" label="cancel"/>
+</automaton>

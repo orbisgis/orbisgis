@@ -1,0 +1,5 @@
+68;variable-in;variable-out;variable-err;method-arraycopy(Object arg0, int arg1, Object arg2, int arg3, int arg4);method-currentTimeMillis();method-nanoTime();method-identityHashCode(Object arg0);method-exit(int arg0);method-runFinalizersOnExit(boolean arg0);method-setProperty(String arg0, String arg1);method-getProperty(String arg0);method-getProperty(String arg0, String arg1);method-getSecurityManager();method-load(String arg0);method-loadLibrary(String arg0);method-mapLibraryName(String arg0);method-clearProperty(String arg0);method-console();method-gc();method-getProperties();method-getenv(String arg0);method-getenv();method-inheritedChannel();method-runFinalization();method-setErr(PrintStream arg0);method-setIn(InputStream arg0);method-setOut(PrintStream arg0);method-setProperties(Properties arg0);method-setSecurityManager(SecurityManager arg0);method-hashCode();method-getClass();method-wait(long arg0);method-wait(long arg0, int arg1);method-wait();method-equals(Object arg0);method-toString();method-notify();method-notifyAll()
+if (true) {
+  System.exit(0);
+}
+String[] strs = new String[]{System.};

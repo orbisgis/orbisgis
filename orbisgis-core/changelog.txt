@@ -1,0 +1,26 @@
+2009-06-01
+
+UI
+
+- New skin
+- UI simplification
+
+
+New features
+
+- Cascading maps
+- Managing symbols in geocognition
+- Displaying selected features
+- Statistics on features
+- Unselect features
+- Scale visibility
+- Beanshell with code completion
+- QA analysis and topology (planar and network)
+- Constrained triangulation
+- GDMS update and insert
+- OpenJUMP FeatureCollection wrapper
+
+
+Packaging
+
+- One OrbiGIS OS version

@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<xs:schema xmlns:leg="org.orbisgis.legend" xmlns:sym="org.orbisgis.symbol"
+	xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="org.orbisgis.mapContext"
+	targetNamespace="org.orbisgis.mapContext">
+	
+	<xs:import namespace="org.orbisgis.legend"
+		schemaLocation="../renderer/legend/persistence.xsd"/>
+	
+	<xs:element name="selected-layer">
+		<xs:complexType>
+			<xs:attribute name="name" type="xs:string" use="required"/>
+		</xs:complexType>
+	</xs:element>
+	
+	<xs:element name="map-context">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="layer-collection"/>
+				<xs:element ref="selected-layer" maxOccurs="unbounded"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	
+	<xs:element name="simple-legend">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:any/>
+			</xs:sequence>
+			<xs:attribute name="legend-id" type="xs:string" use="required"/>
+		</xs:complexType>
+	</xs:element>
+	
+	<xs:element name="legends">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="simple-legend" minOccurs="1"
+					maxOccurs="unbounded"/>
+			</xs:sequence>
+			<xs:attribute name="field-name" type="xs:string" use="required"/>
+		</xs:complexType>
+	</xs:element>
+	
+	<xs:complexType name="abstract-layer-type" abstract="true">
+		<xs:attribute name="name" type="xs:string" use="required"/>
+		<xs:attribute name="source-name" type="xs:string" use="required"/>
+		<xs:attribute name="visible" type="xs:boolean" use="required"/>
+	</xs:complexType>
+	
+	<xs:complexType name="layer-type">
+		<xs:complexContent>
+			<xs:extension base="abstract-layer-type">
+				<xs:sequence>
+					<xs:element ref="legends" minOccurs="0" maxOccurs="unbounded"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	
+	<xs:element name="layer" type="layer-type"/>
+	
+	<xs:complexType name="layer-collection-type">
+		<xs:complexContent>
+			<xs:extension base="layer-type">
+				<xs:sequence>
+					<xs:element name="layer" type="layer-type" minOccurs="0"
+						maxOccurs="unbounded"/>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	
+	<xs:element name="layer-collection" type="layer-collection-type"/>
+</xs:schema>

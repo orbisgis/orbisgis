@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<category xmlns:xs="http://www.w3.org/2001/XMLSchema" id="orbisgis" label="OrbisGIS">
+<category id="io" label="IO">
+	<sql-instruction class="org.gdms.sql.customQuery.RegisterCall"/>
+	<sql-script id="h2"
+		resource="/org/orbisgis/views/sqlRepository/sqlScripts/register-h2.sql"/>
+	<sql-script id="postgis"
+		resource="/org/orbisgis/views/sqlRepository/sqlScripts/register-postgresql.sql"/>
+</category>
+<category id="alphanumeric" label="ALPHANUMERIC">
+	<sql-instruction class="org.gdms.sql.function.statistics.Abs"/>
+	<sql-instruction class="org.gdms.sql.function.statistics.Power"/>
+	<sql-instruction class="org.gdms.sql.function.statistics.Sqrt"/>
+	<sql-instruction class="org.gdms.sql.function.alphanumeric.Count"/>
+	<sql-instruction class="org.gdms.sql.function.alphanumeric.Sum"/>
+	<sql-instruction class="org.gdms.sql.function.alphanumeric.Average"/>
+	<sql-instruction class="org.gdms.sql.function.statistics.StandardDeviation"/>
+</category>
+<category id="geometry" label="GEOMETRY">
+		<category id="convert" label="CONVERT">
+			<sql-instruction class="org.gdms.sql.function.spatial.io.AsWKT"/>			
+			<sql-instruction
+				class="org.gdms.sql.function.spatial.raster.utilities.ToEnvelope"/>
+			<sql-instruction
+				class="org.gdms.sql.function.spatial.convert.ToMultiPoint"/>
+			<sql-instruction
+				class="org.gdms.sql.function.spatial.convert.ToMultiLine"/>			
+		</category>
+		<category id="operators" label="OGC Operators">
+			<sql-instruction
+				class="org.gdms.sql.function.spatial.geometryProperties.Length"/>
+			<sql-instruction
+				class="org.gdms.sql.function.spatial.geometryProperties.Area"/>			
+			<sql-instruction
+				class="org.gdms.sql.function.spatial.convert.Boundary"/>
+			<sql-instruction
+				class="org.gdms.sql.function.spatial.operators.Buffer"/>
+			<sql-instruction
+				class="org.gdms.sql.function.spatial.convert.Centroid"/>
+			<sql-instruction
+				class="org.gdms.sql.function.spatial.operators.Difference"/>
+			<sql-instruction
+				class="org.gdms.sql.function.spatial.operators.GeomUnion"/>
+			<sql-instruction
+				class="org.gdms.sql.function.spatial.operators.Intersection"/>
+			<sql-instruction
+				class="org.gdms.sql.function.spatial.operators.SymDifference"/>			
+		</category>
+		<category id="predicates" label="OGC Predicates">
+			<sql-instruction
+				class="org.gdms.sql.function.spatial.predicates.Contains"/>
+			<sql-instruction
+				class="org.gdms.sql.function.spatial.predicates.Crosses"/>
+			<sql-instruction
+				class="org.gdms.sql.function.spatial.predicates.Disjoint"/>
+			<sql-instruction
+				class="org.gdms.sql.function.spatial.predicates.Intersects"/>
+			<sql-instruction
+				class="org.gdms.sql.function.spatial.predicates.IsWithin"/>
+			<sql-instruction
+				class="org.gdms.sql.function.spatial.predicates.IsWithinDistance"/>
+			<sql-instruction
+				class="org.gdms.sql.function.spatial.predicates.Overlaps"/>
+			<sql-instruction
+				class="org.gdms.sql.function.spatial.predicates.Relate"/>
+			<sql-instruction
+				class="org.gdms.sql.function.spatial.predicates.Touches"/>
+		</category>		
+</category>
+<category id="other" label="Other">
+		<sql-instruction
+			class="org.gdms.sql.customQuery.showAttributes.ShowCall"/>
+		<sql-instruction class="org.gdms.sql.customQuery.Extrude"/>
+		<sql-instruction class="org.orbisgis.sql.customQuery.Geomark"/>
+</category>
+</category>

@@ -1,0 +1,7 @@
+name;rowCount;isDB;noPKField;hasRepeatedRows;pkField;pkType;newPK;stringField;nullField;numericFieldName;min;max;spatialField;newGeometry;write
+memory_spatial_object;3;false;alpha;false;null;-1;null;alpha;null;null;null;null;geom3;POINT (10 10);false
+testh2;4;true;PRENOM;false;ID;128;4;PRENOM;null;ID;0;3;THE_GEOM;POINT (10 10);true
+testhsqldb;6;true;version;false;id;64;6;version;version;users;5;10;null;POINT (10 10);true
+testcsv;5;false;gis;false;null;-1;null;gis;null;null;null;null;null;POINT (10 10);true
+repeatedRows;5;false;gis;true;null;-1;null;gis;null;null;null;null;null;POINT (10 10);true
+select_source;5;false;gis;false;null;-1;null;gis;null;null;null;null;null;POINT (10 10);false

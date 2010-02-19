@@ -1,0 +1,19 @@
+<automaton initial-status="Standby"
+	package="org.orbisgis.tools.instances.generated"
+	name="Polygon"
+	tooltip="polygon_tooltip"
+	command="polygon">
+	<node name="Standby" text="polygon_standby">
+		<transition to="Point" code="press"/>
+	</node>
+	<node name="Point" text="polygon_point">
+		<transition to="Point" code="press"/>
+		<transition to="Done" code="t"
+			label="polygon_point_to_done" on-exit="true"/>
+	</node>
+	<node name="Done">
+		<transition to="Standby" code="init"/>
+	</node>
+	<node name="Cancel"/>
+	<transition to="Cancel" code="esc" label="cancel"/>
+</automaton>
