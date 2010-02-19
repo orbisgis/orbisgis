@@ -44,8 +44,8 @@ public class OrbisGISApplicationInfo implements ApplicationInfo {
 	}
 
 	@Override
-	public File getHomeFolder() {		
-		return new File(System.getProperty("user.home")+ "/.OrbisGIS");	
+	public File getHomeFolder() {
+		return new File(System.getProperty("user.home") + "/.OrbisGIS");
 	}
 
 	@Override
@@ -65,9 +65,7 @@ public class OrbisGISApplicationInfo implements ApplicationInfo {
 
 	@Override
 	public String getVersionNumber() {
-		return "3";
+		return "3.0";
 	}
-
-	
 
 }
