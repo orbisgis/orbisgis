@@ -11,6 +11,7 @@ import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.types.AutoIncrementConstraint;
 import org.gdms.data.types.Constraint;
+import org.gdms.data.types.DefaultStringConstraint;
 import org.gdms.data.types.DimensionConstraint;
 import org.gdms.data.types.GeometryConstraint;
 import org.gdms.data.types.LengthConstraint;
@@ -69,6 +70,16 @@ public class ConstraintTest extends TestCase {
 		setValidValues(ValueFactory.createValue("1234"), ValueFactory
 				.createValue(""), ValueFactory.createNullValue());
 		setInvalidValues(ValueFactory.createValue("12345"));
+		doEdition();
+	}
+
+	public void testDefaultStringValue() throws Exception {
+		setType(TypeFactory.createType(Type.STRING,
+				new DefaultStringConstraint("erwan")));
+		setValidValues(ValueFactory.createValue("erwan"), ValueFactory
+				.createValue("erwan"), ValueFactory
+				.createValue("erwan"));
+		setInvalidValues(ValueFactory.createValue("bocher"));
 		doEdition();
 	}
 
