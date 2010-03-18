@@ -73,7 +73,7 @@ import org.orbisgis.core.Services;
 import org.orbisgis.core.images.IconLoader;
 import org.orbisgis.core.images.IconNames;
 import org.orbisgis.core.language.I18N;
-import org.orbisgis.core.ui.components.JobPopup;
+import org.orbisgis.core.ui.components.job.JobPopup;
 import org.orbisgis.core.ui.editor.EditorListener;
 import org.orbisgis.core.ui.editor.IEditor;
 import org.orbisgis.core.ui.editorViews.toc.Toc;
@@ -180,7 +180,8 @@ public class OrbisGISFrame extends JFrame implements IWindow {
 	}
 
 	public Toc getToc() {
-		return ((TocViewPlugIn) getViewDecorator(Names.TOC).getView()).getPanel();
+		return ((TocViewPlugIn) getViewDecorator(Names.TOC).getView())
+				.getPanel();
 	}
 
 	public GeocognitionView getGeocognition() {
@@ -189,8 +190,8 @@ public class OrbisGISFrame extends JFrame implements IWindow {
 	}
 
 	public Catalog getGeocatalog() {
-		return ((GeoCatalogViewPlugIn) getViewDecorator(Names.GEOCATALOG).getView())
-				.getPanel();
+		return ((GeoCatalogViewPlugIn) getViewDecorator(Names.GEOCATALOG)
+				.getView()).getPanel();
 	}
 
 	public TableComponent getTableEditor() {
@@ -250,10 +251,11 @@ public class OrbisGISFrame extends JFrame implements IWindow {
 		initializeViews();
 
 		ApplicationInfo ai = (ApplicationInfo) Services
-		.getService(ApplicationInfo.class);
-		
+				.getService(ApplicationInfo.class);
+
 		// I18N.loadFile("fr");
-		this.setTitle(I18N.get("orbisgis.platform") + " - " + ai.getVersionNumber() + " - " + ai.getVersionName() );
+		this.setTitle(I18N.get("orbisgis.platform") + " - "
+				+ ai.getVersionNumber() + " - " + ai.getVersionName());
 		// this.setTitle("OrbisGIS Platform");
 		this.setIconImage(IconLoader.getIcon(IconNames.LOGO_MINI).getImage());
 		Toolkit toolkit = Toolkit.getDefaultToolkit();
@@ -275,7 +277,7 @@ public class OrbisGISFrame extends JFrame implements IWindow {
 		/* Job popup at bootom right to follow processes loading */
 		jobPopup = new JobPopup(this);
 		jobPopup.initialize();
-		this.getContentPane().add(jobPopup.getPanel(), BorderLayout.SOUTH);
+		// this.getContentPane().add(jobPopup.getPanel(), BorderLayout.SOUTH);
 
 		// Status bar : it gives memory informations
 		HeapView heapView = new HeapView();
@@ -303,6 +305,7 @@ public class OrbisGISFrame extends JFrame implements IWindow {
 		statusToolBar.setFloatable(false);
 
 		this.getContentPane().add(statusToolBar, BorderLayout.SOUTH);
+
 	}
 
 	private void initializeViews() {
@@ -533,4 +536,5 @@ public class OrbisGISFrame extends JFrame implements IWindow {
 		}
 
 	}
+
 }
