@@ -309,7 +309,7 @@ public class Renderer {
 				}
 
 				DefaultSpatialIndexQuery query = new DefaultSpatialIndexQuery(
-						extent, sds.getMetadata().getFieldName(
+						mt.getAdjustedExtent(), sds.getMetadata().getFieldName(
 								sds.getSpatialFieldIndex()));
 				Iterator<Integer> it = sds.queryIndex(query);
 				long rowCount = sds.getRowCount();
