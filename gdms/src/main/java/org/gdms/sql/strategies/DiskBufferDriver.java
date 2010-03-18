@@ -127,7 +127,7 @@ public class DiskBufferDriver extends AbstractBasicSQLDriver {
 	 * @param row
 	 * @throws DriverException
 	 */
-	public void addValues(Value[] row) throws DriverException {
+	public void addValues(Value... row) throws DriverException {
 		if (firstRow) {
 			firstRow = false;
 			try {
