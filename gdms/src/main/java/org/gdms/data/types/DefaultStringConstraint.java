@@ -1,7 +1,6 @@
 package org.gdms.data.types;
 
 import org.gdms.data.values.Value;
-import org.orbisgis.utils.ByteUtils;
 
 public class DefaultStringConstraint extends AbstractConstraint {
 
