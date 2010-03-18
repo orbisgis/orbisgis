@@ -59,13 +59,20 @@ import org.gdms.sql.function.alphanumeric.SubString;
 import org.gdms.sql.function.alphanumeric.Sum;
 import org.gdms.sql.function.alphanumeric.ToStringFunction;
 import org.gdms.sql.function.math.Pi;
-import org.gdms.sql.function.spatial.geometry.convert.ST_Force_3D;
+import org.gdms.sql.function.spatial.geometry.affineTransformation.ST_Rotate;
+import org.gdms.sql.function.spatial.geometry.affineTransformation.ST_Scale;
 import org.gdms.sql.function.spatial.geometry.convert.STO_ToMultiLine;
 import org.gdms.sql.function.spatial.geometry.convert.STO_ToMultiPoint;
-import org.gdms.sql.function.spatial.geometry.convert.ST_Boundary;
 import org.gdms.sql.function.spatial.geometry.convert.ST_Centroid;
+import org.gdms.sql.function.spatial.geometry.convert.ST_Force_3D;
+import org.gdms.sql.function.spatial.geometry.create.STO_BoundingCircle;
+import org.gdms.sql.function.spatial.geometry.create.STO_MinimumRectangle;
+import org.gdms.sql.function.spatial.geometry.create.STO_OctogonalEnvelope;
+import org.gdms.sql.function.spatial.geometry.create.ST_Boundary;
+import org.gdms.sql.function.spatial.geometry.create.ST_Densify;
 import org.gdms.sql.function.spatial.geometry.create.ST_MakeLine;
 import org.gdms.sql.function.spatial.geometry.create.ST_MakePoint;
+import org.gdms.sql.function.spatial.geometry.distance.STO_NearestPoints;
 import org.gdms.sql.function.spatial.geometry.edition.STO_AddZToGeometry;
 import org.gdms.sql.function.spatial.geometry.io.ST_AsWKT;
 import org.gdms.sql.function.spatial.geometry.io.ST_GeomFromText;
@@ -180,6 +187,13 @@ public class FunctionManager {
 		addFunction(STO_AddZToGeometry.class);
 		addFunction(ST_Azimut.class);
 		addFunction(Pi.class);
+		addFunction(ST_Densify.class);
+		addFunction(ST_Scale.class);
+		addFunction(ST_Rotate.class);
+		addFunction(STO_BoundingCircle.class);
+		addFunction(STO_MinimumRectangle.class);
+		addFunction(STO_OctogonalEnvelope.class);
+		addFunction(STO_NearestPoints.class);
 	}
 
 	public static void addFunctionManagerListener(
