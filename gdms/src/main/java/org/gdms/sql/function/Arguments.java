@@ -51,11 +51,8 @@ public class Arguments {
 
 	public String isValid(Type[] argsTypes) {
 		if (this == STAR_ARGS) {
-			if (argsTypes.length == 0) {
-				return "At least one argument is mandatory";
-			} else {
-				return null;
-			}
+			return null;
+
 		} else {
 			if (argsTypes.length != argumentsTypes.length) {
 				return "Bad number of arguments";
@@ -73,5 +70,9 @@ public class Arguments {
 
 	public int getArgumentCount() {
 		return argumentsTypes.length;
+	}
+
+	public Argument getArgument(int argIndex) {
+		return argumentsTypes[argIndex];
 	}
 }
