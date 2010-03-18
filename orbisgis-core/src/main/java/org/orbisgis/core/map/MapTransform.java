@@ -259,7 +259,7 @@ public class MapTransform {
 	 */
 	public Point2D toMapPoint(int i, int j) {
 		try {
-			return trans.createInverse().transform(new Point(i, j), null);
+			return trans.createInverse().transform(new Point2D.Double(i, j), null);
 		} catch (NoninvertibleTransformException e) {
 			throw new RuntimeException(e);
 		}
