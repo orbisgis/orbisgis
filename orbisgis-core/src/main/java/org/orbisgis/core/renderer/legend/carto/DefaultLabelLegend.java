@@ -104,7 +104,6 @@ public class DefaultLabelLegend extends AbstractCartoLegend implements
 			throws RenderException {
 		try {
 			Value v;
-
 			if (GeometryProperties.isFieldName(fieldName)) {
 				Geometry geom = sds.getGeometry(row);
 				v = GeometryProperties.getPropertyValue(fieldName, geom);
