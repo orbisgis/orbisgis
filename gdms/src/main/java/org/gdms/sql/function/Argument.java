@@ -135,4 +135,13 @@ public class Argument {
 	public String getDescription() {
 		return description;
 	}
+	
+	/**
+	 * Get a bit-or of this argument accepted parameters
+	 * 
+	 * @return
+	 */
+	public int getTypeCode() {
+		return typeCode;
+	}
 }
