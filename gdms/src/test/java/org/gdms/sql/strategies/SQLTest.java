@@ -978,6 +978,22 @@ public class SQLTest extends SourceTest {
 
 	}
 
+	public void testSelectCountStar() throws Exception {
+		dsf.getSourceManager().register("landcover2000",
+				new File(internalData + "landcover2000.shp"));
+
+		DataSource dsSource = dsf.getDataSource("landcover2000");
+		DataSource ds = dsf
+				.getDataSourceFromSQL("select count(gid) as count, count(*) as star from landcover2000;");
+
+		ds.open();
+		dsSource.open();
+		assertTrue(ds.getFieldValue(0, 0).getAsInt() == dsSource.getRowCount());
+		assertTrue(ds.getFieldValue(0, 1).getAsInt() == dsSource.getRowCount());
+		ds.close();
+		dsSource.close();
+	}
+
 	public void testCreateIndex() throws Exception {
 		String resource = super.getAnySpatialResource();
 		dsf.executeSQL("create index on " + resource + " ("
