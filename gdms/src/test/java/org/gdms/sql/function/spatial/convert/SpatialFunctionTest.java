@@ -49,8 +49,8 @@ import org.gdms.sql.FunctionTest;
 import org.gdms.sql.function.spatial.geometry.convert.ST_Force_3D;
 import org.gdms.sql.function.spatial.geometry.convert.STO_ToMultiLine;
 import org.gdms.sql.function.spatial.geometry.convert.STO_ToMultiPoint;
-import org.gdms.sql.function.spatial.geometry.convert.ST_Boundary;
 import org.gdms.sql.function.spatial.geometry.convert.ST_Centroid;
+import org.gdms.sql.function.spatial.geometry.create.ST_Boundary;
 import org.gdms.sql.strategies.IncompatibleTypesException;
 
 import com.vividsolutions.jts.geom.Geometry;
