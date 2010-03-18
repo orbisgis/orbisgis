@@ -59,6 +59,7 @@ public class QueryManager {
 		registerQuery(ShowCall.class);
 		registerQuery(RegisterFunction.class);
 		registerQuery(Explode.class);
+		registerQuery(FunctionHelp.class);
 	}
 
 	/**
