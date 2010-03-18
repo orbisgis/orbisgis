@@ -72,7 +72,6 @@ import com.vividsolutions.jts.geom.Geometry;
 /**
  * CSV file driver where the first row is used to define the field names
  * 
- * @author Fernando Gonzalez Cortes
  */
 public class CSVStringDriver implements FileReadWriteDriver, ValueWriter {
 	public static final String DRIVER_NAME = "csv string";
