@@ -40,12 +40,15 @@ import java.awt.Color;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Rectangle;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
 import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
 
 import javax.swing.JComponent;
+import javax.swing.Timer;
 
 import org.gdms.data.ClosedDataSourceException;
 import org.gdms.data.DataSource;
@@ -72,7 +75,6 @@ import org.orbisgis.core.ui.editors.map.tool.Automaton;
 import org.orbisgis.core.ui.editors.map.tool.ToolListener;
 import org.orbisgis.core.ui.editors.map.tool.ToolManager;
 import org.orbisgis.core.ui.editors.map.tool.TransitionException;
-import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchContext;
 import org.orbisgis.progress.IProgressMonitor;
 
 import com.vividsolutions.jts.geom.Envelope;
@@ -100,8 +102,6 @@ public class MapControl extends JComponent implements ComponentListener {
 
 	private Color backColor;
 
-	private BufferedImage inProcessImage;
-
 	private MapTransform mapTransform = new MapTransform();
 
 	private MapContext mapContext;
@@ -110,8 +110,8 @@ public class MapControl extends JComponent implements ComponentListener {
 
 	private boolean showCoordinates = true;
 
-	/**getDataSourceFromSQL
-	 * Creates a new NewMapControl.
+	/**
+	 * getDataSourceFromSQL Creates a new NewMapControl.
 	 * 
 	 * @param mapContext
 	 * @param defaultTool
@@ -119,8 +119,8 @@ public class MapControl extends JComponent implements ComponentListener {
 	 * @param ec
 	 * @throws TransitionException
 	 */
-	public MapControl(final MapContext mapContext, EditableElement element,Automaton defaultTool)
-			throws TransitionException {
+	public MapControl(final MapContext mapContext, EditableElement element,
+			Automaton defaultTool) throws TransitionException {
 		synchronized (this) {
 			this.processId = lastProcessId++;
 		}
@@ -154,7 +154,7 @@ public class MapControl extends JComponent implements ComponentListener {
 
 		// events
 		this.addComponentListener(this);
-		
+
 		mapTransform.addTransformListener(new TransformListener() {
 
 			public void imageSizeChanged(int oldWidth, int oldHeight,
@@ -165,17 +165,17 @@ public class MapControl extends JComponent implements ComponentListener {
 			public void extentChanged(Envelope oldExtent,
 					MapTransform mapTransform) {
 				invalidateImage();
-				//Record new BoundingBox value for map context
+				// Record new BoundingBox value for map context
 				mapContext.setBoundingBox(mapTransform.getExtent());
 			}
 
 		});
 
-		//Add editable element listen transform event
-		if(element instanceof LeafElement)
-			mapTransform.addTransformListener((LeafElement)element);	
-		
-		//Set extent with BoundingBox value
+		// Add editable element listen transform event
+		if (element instanceof LeafElement)
+			mapTransform.addTransformListener((LeafElement) element);
+
+		// Set extent with BoundingBox value
 		ILayer rootLayer = mapContext.getLayerModel();
 		Envelope boundingBox = mapContext.getBoundingBox();
 		if (boundingBox != null) {
@@ -183,8 +183,8 @@ public class MapControl extends JComponent implements ComponentListener {
 		} else {
 			mapTransform.setExtent(rootLayer.getEnvelope());
 		}
-		
-		//Add refresh listener
+
+		// Add refresh listener
 		addLayerListenerRecursively(rootLayer, new RefreshLayerListener());
 
 	}
@@ -221,22 +221,37 @@ public class MapControl extends JComponent implements ComponentListener {
 	 * @see javax.swing.JComponent#paintComponent(java.awt.Graphics)
 	 */
 	protected void paintComponent(Graphics g) {
-		if (status == UPDATED) {
-			// If not waiting for an image
-			if ((mapTransform.getImage() == inProcessImage)
-					|| (inProcessImage == null)) {
-				g.drawImage(mapTransform.getImage(), 0, 0, null);
-				toolManager.paintEdition(g);
-			}
-		} else if (status == DIRTY) {
-			inProcessImage = new BufferedImage(this.getWidth(), this
-					.getHeight(), BufferedImage.TYPE_INT_ARGB);
+		BufferedImage mapTransformImage = mapTransform.getImage();
+
+		// If not waiting for an image
+		if (mapTransformImage != null) {
+			g.drawImage(mapTransformImage, 0, 0, null);
+			toolManager.paintEdition(g);
+		} else {
+			g.setColor(backColor);
+			g.fillRect(0, 0, getWidth(), getHeight());
+		}
+		if (status == DIRTY) {
+			BufferedImage inProcessImage = new BufferedImage(this.getWidth(),
+					this.getHeight(), BufferedImage.TYPE_INT_ARGB);
 			Graphics gImg = inProcessImage.createGraphics();
 			gImg.setColor(backColor);
 			gImg.fillRect(0, 0, getWidth(), getHeight());
 			status = UPDATED;
+
 			if (mapTransform.getAdjustedExtent() != null) {
-				drawer = new Drawer();
+				mapTransform.setImage(inProcessImage);
+				// A good idea from gearscape fork
+				Timer timer = new Timer(200, new ActionListener() {
+
+					@Override
+					public void actionPerformed(ActionEvent e) {
+						repaint();
+					}
+				});
+				timer.start();
+				drawer = new Drawer(timer);
+
 				BackgroundManager bm = (BackgroundManager) Services
 						.getService(BackgroundManager.class);
 				bm.nonBlockingBackgroundOperation(new DefaultJobId(
@@ -325,6 +340,12 @@ public class MapControl extends JComponent implements ComponentListener {
 		private boolean cancel = false;
 		private CancellablePM pm;
 
+		private Timer timer;
+
+		public Drawer(Timer timer) {
+			this.timer = timer;
+		}
+
 		public String getTaskName() {
 			return "Drawing";
 		}
@@ -335,9 +356,9 @@ public class MapControl extends JComponent implements ComponentListener {
 				pm = this.pm;
 			}
 			try {
-				mapContext.draw(inProcessImage, mapTransform
+				mapContext.draw(mapTransform.getImage(), mapTransform
 						.getAdjustedExtent(), pm);
-				
+
 			} catch (ClosedDataSourceException e) {
 				if (!cancel) {
 					throw e;
@@ -347,9 +368,9 @@ public class MapControl extends JComponent implements ComponentListener {
 			} catch (Error e) {
 				throw e;
 			} finally {
-				mapTransform.setImage(inProcessImage);
 				MapControl.this.repaint();
-				mapContext.setBoundingBox(mapTransform.getExtent());				
+				mapContext.setBoundingBox(mapTransform.getExtent());
+				timer.stop();
 			}
 		}
 
