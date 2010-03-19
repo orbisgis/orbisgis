@@ -50,6 +50,7 @@ import org.gdms.sql.evaluator.EvaluationException;
 import org.gdms.sql.strategies.IncompatibleTypesException;
 import org.orbisgis.progress.IProgressMonitor;
 
+import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
 
 public class RTreeIndex implements DataSourceIndex {
@@ -121,7 +122,8 @@ public class RTreeIndex implements DataSourceIndex {
 			throws IndexException {
 		SpatialIndexQuery q = (SpatialIndexQuery) query;
 		try {
-			return index.getRow(q.getArea());
+			Envelope area = q.getArea();
+			return index.getRow(area);
 		} catch (IOException e) {
 			throw new IndexException("Cannot access the index", e);
 		} catch (IncompatibleTypesException e) {
