@@ -75,10 +75,7 @@ public class JobPopup {
 				}
 			}
 
-			@Override
-			public void jobFinished(Job job) {
-
-			}
+			
 		});
 	}
 }
