@@ -55,7 +55,6 @@ package org.gdms.driver.shapefile;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Logger;
 
 import org.gdms.driver.ReadBufferManager;
 import org.gdms.driver.WriteBufferManager;
@@ -109,12 +108,12 @@ public class PolygonHandler implements ShapeHandler {
 			if ((testPoint.x == p.x)
 					&& (testPoint.y == p.y)
 					&& ((testPoint.z == p.z) || (!(testPoint.z == testPoint.z))) // nan
-																					// test;
-																					// x!=x
-																					// iff
-																					// x
-																					// is
-																					// nan
+			// test;
+			// x!=x
+			// iff
+			// x
+			// is
+			// nan
 			) {
 				return true;
 			}
@@ -214,14 +213,22 @@ public class PolygonHandler implements ShapeHandler {
 			// basically the area algorithm for polygons
 			// which also tells us vertex order based upon the
 			// sign of the area.
-			Coordinate[] points = new Coordinate[length];
-			// double area = 0;
+			boolean closed = coords[0].equals(coords[coords.length - 1]);
+			Coordinate[] points;
+			if (closed) {
+				points = new Coordinate[length];
+			} else {
+				points = new Coordinate[length + 1];
+			} // double area = 0;
 			// int sx = offset;
 			for (int i = 0; i < length; i++) {
 				points[i] = coords[offset++];
 				// int j = sx + (i + 1) % length;
 				// area += points[i].x * coords[j].y;
 				// area -= points[i].y * coords[j].x;
+			}
+			if (!closed) {
+				points[points.length - 1] = points[0];
 			}
 			// area = -area / 2;
 			// REVISIT: polyons with only 1 or 2 points are not polygons -
@@ -242,7 +249,7 @@ public class PolygonHandler implements ShapeHandler {
 		// quick optimization: if there's only one shell no need to check
 		// for holes inclusion
 		if (shells.size() == 1) {
-			return createMulti((LinearRing) shells.get(0), holes);
+			return createMulti(shells.get(0), holes);
 		}
 		// if for some reason, there is only one hole, we just reverse it and
 		// carry on.
@@ -250,8 +257,7 @@ public class PolygonHandler implements ShapeHandler {
 			// TODO check why ?
 			// Logger.getLogger("org.geotools.data.shapefile").warning(
 			// "only one hole in this polygon record");
-			return createMulti(JTSUtilities.reverseRing((LinearRing) holes
-					.get(0)));
+			return createMulti(JTSUtilities.reverseRing(holes.get(0)));
 		} else {
 
 			// build an association between shells and holes
@@ -300,17 +306,15 @@ public class PolygonHandler implements ShapeHandler {
 
 		// this will do nothing for the "only holes case"
 		for (int i = 0; i < shells.size(); i++) {
-			polygons[i] = geometryFactory.createPolygon((LinearRing) shells
-					.get(i),
-					(LinearRing[]) ((ArrayList<LinearRing>) holesForShells
-							.get(i)).toArray(new LinearRing[0]));
+			polygons[i] = geometryFactory.createPolygon(shells.get(i),
+					(holesForShells.get(i)).toArray(new LinearRing[0]));
 		}
 
 		// this will take care of the "only holes case"
 		// we just reverse each hole
 		if (shells.size() == 0) {
 			for (int i = 0, ii = holes.size(); i < ii; i++) {
-				LinearRing hole = (LinearRing) holes.get(i);
+				LinearRing hole = holes.get(i);
 				polygons[i] = geometryFactory.createPolygon(JTSUtilities
 						.reverseRing(hole), new LinearRing[0]);
 			}
@@ -338,7 +342,7 @@ public class PolygonHandler implements ShapeHandler {
 
 		// find homes
 		for (int i = 0; i < holes.size(); i++) {
-			LinearRing testRing = (LinearRing) holes.get(i);
+			LinearRing testRing = holes.get(i);
 			LinearRing minShell = null;
 			Envelope minEnv = null;
 			Envelope testEnv = testRing.getEnvelopeInternal();
@@ -346,7 +350,7 @@ public class PolygonHandler implements ShapeHandler {
 			LinearRing tryRing;
 
 			for (int j = 0; j < shells.size(); j++) {
-				tryRing = (LinearRing) shells.get(j);
+				tryRing = shells.get(j);
 
 				Envelope tryEnv = tryRing.getEnvelopeInternal();
 				if (minShell != null) {
@@ -372,14 +376,14 @@ public class PolygonHandler implements ShapeHandler {
 			}
 
 			if (minShell == null) {
-				Logger.getLogger("org.geotools.data.shapefile").warning(
-						"polygon found with a hole thats not inside a shell");
+				// Logger.getLogger("org.geotools.data.shapefile").warning(
+				// "polygon found with a hole thats not inside a shell");
 				// now reverse this bad "hole" and turn it into a shell
 				shells.add(JTSUtilities.reverseRing(testRing));
 				holesForShells.add(new ArrayList<LinearRing>());
 			} else {
-				((ArrayList<LinearRing>) holesForShells.get(shells
-						.indexOf(minShell))).add(testRing);
+				(holesForShells.get(shells.indexOf(minShell))).add(testRing);
+
 			}
 		}
 
@@ -393,7 +397,7 @@ public class PolygonHandler implements ShapeHandler {
 	private MultiPolygon createMulti(LinearRing single, List<LinearRing> holes) {
 		return geometryFactory
 				.createMultiPolygon(new Polygon[] { geometryFactory
-						.createPolygon(single, (LinearRing[]) holes
+						.createPolygon(single,  holes
 								.toArray(new LinearRing[holes.size()])) });
 	}
 
