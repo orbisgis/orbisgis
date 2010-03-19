@@ -376,9 +376,11 @@ public class RTreeLeaf extends AbstractRTreeNode implements RTreeNode {
 
 	public Envelope getEnvelope() {
 		if (envelope == null) {
+		if (geometries.size() > 0) {
 			envelope = new Envelope(geometries.get(0));
 			for (int i = 1; i < geometries.size(); i++) {
 				envelope.expandToInclude(geometries.get(i));
+			}
 			}
 		}
 		return envelope;
