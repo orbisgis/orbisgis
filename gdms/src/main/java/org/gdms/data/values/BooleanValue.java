@@ -39,6 +39,7 @@ package org.gdms.data.values;
 import java.io.Serializable;
 
 import org.gdms.data.types.Type;
+import org.gdms.data.types.TypeFactory;
 import org.gdms.sql.strategies.IncompatibleTypesException;
 
 /**
@@ -79,7 +80,9 @@ class BooleanValue extends AbstractValue implements Serializable {
 		}
 
 		if (!(value instanceof BooleanValue)) {
-			throw new IncompatibleTypesException();
+			throw new IncompatibleTypesException(
+					"The specified value is not a boolean:"
+							+ TypeFactory.getTypeName(value.getType()));
 		}
 
 		return ValueFactory.createValue(((BooleanValue) value).value
@@ -92,7 +95,9 @@ class BooleanValue extends AbstractValue implements Serializable {
 		}
 
 		if (!(value instanceof BooleanValue)) {
-			throw new IncompatibleTypesException();
+			throw new IncompatibleTypesException(
+					"The specified value is not a boolean:"
+							+ TypeFactory.getTypeName(value.getType()));
 		}
 
 		return ValueFactory
@@ -137,7 +142,9 @@ class BooleanValue extends AbstractValue implements Serializable {
 			return ValueFactory
 					.createValue(this.value == ((BooleanValue) value).value);
 		} else {
-			throw new IncompatibleTypesException();
+			throw new IncompatibleTypesException(
+					"The specified value is not a boolean:"
+							+ TypeFactory.getTypeName(value.getType()));
 		}
 	}
 
@@ -161,7 +168,9 @@ class BooleanValue extends AbstractValue implements Serializable {
 			return ValueFactory
 					.createValue(this.value != ((BooleanValue) value).value);
 		} else {
-			throw new IncompatibleTypesException();
+			throw new IncompatibleTypesException(
+					"The specified value is not a boolean:"
+							+ TypeFactory.getTypeName(value.getType()));
 		}
 	}
 
@@ -204,7 +213,9 @@ class BooleanValue extends AbstractValue implements Serializable {
 
 			return ret;
 		} else {
-			throw new IncompatibleTypesException();
+			throw new IncompatibleTypesException(
+					"The specified value is not a boolean:"
+							+ TypeFactory.getTypeName(value.getType()));
 		}
 	}
 
@@ -222,7 +233,9 @@ class BooleanValue extends AbstractValue implements Serializable {
 
 			return ret;
 		} else {
-			throw new IncompatibleTypesException();
+			throw new IncompatibleTypesException(
+					"The specified value is not a boolean:"
+							+ TypeFactory.getTypeName(value.getType()));
 		}
 	}
 

@@ -42,6 +42,7 @@ import java.sql.Timestamp;
 import java.util.Date;
 
 import org.gdms.data.types.Type;
+import org.gdms.data.types.TypeFactory;
 import org.gdms.sql.strategies.IncompatibleTypesException;
 
 /**
@@ -84,7 +85,9 @@ abstract class NumericValue extends AbstractValue implements Serializable {
 			return ValueFactory.createNullValue();
 		} else {
 			if (!(value instanceof NumericValue)) {
-				throw new IncompatibleTypesException();
+				throw new IncompatibleTypesException(
+						"The specified value is not a numeric:"
+								+ TypeFactory.getTypeName(value.getType()));
 			}
 
 			return ValueFactory.producto(this, (NumericValue) value);
@@ -96,7 +99,9 @@ abstract class NumericValue extends AbstractValue implements Serializable {
 			return ValueFactory.createNullValue();
 		} else {
 			if (!(value instanceof NumericValue)) {
-				throw new IncompatibleTypesException();
+				throw new IncompatibleTypesException(
+						"The specified value is not a numeric:"
+								+ TypeFactory.getTypeName(value.getType()));
 			}
 
 			return ValueFactory.suma(this, (NumericValue) value);
@@ -127,7 +132,9 @@ abstract class NumericValue extends AbstractValue implements Serializable {
 		}
 
 		if (!(value instanceof NumericValue)) {
-			throw new IncompatibleTypesException();
+			throw new IncompatibleTypesException(
+					"The specified value is not a numeric:"
+							+ TypeFactory.getTypeName(value.getType()));
 		}
 
 		return ValueFactory
@@ -141,7 +148,9 @@ abstract class NumericValue extends AbstractValue implements Serializable {
 		}
 
 		if (!(value instanceof NumericValue)) {
-			throw new IncompatibleTypesException();
+			throw new IncompatibleTypesException(
+					"The specified value is not a numeric:"
+							+ TypeFactory.getTypeName(value.getType()));
 		}
 
 		return ValueFactory
@@ -155,7 +164,9 @@ abstract class NumericValue extends AbstractValue implements Serializable {
 		}
 
 		if (!(value instanceof NumericValue)) {
-			throw new IncompatibleTypesException();
+			throw new IncompatibleTypesException(
+					"The specified value is not a numeric:"
+							+ TypeFactory.getTypeName(value.getType()));
 		}
 
 		return ValueFactory
@@ -183,7 +194,9 @@ abstract class NumericValue extends AbstractValue implements Serializable {
 		}
 
 		if (!(value instanceof NumericValue)) {
-			throw new IncompatibleTypesException();
+			throw new IncompatibleTypesException(
+					"The specified value is not a numeric:"
+							+ TypeFactory.getTypeName(value.getType()));
 		}
 
 		return ValueFactory

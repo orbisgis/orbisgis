@@ -44,6 +44,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 
 import org.gdms.data.types.Type;
+import org.gdms.data.types.TypeFactory;
 import org.gdms.sql.strategies.IncompatibleTypesException;
 
 /**
@@ -119,10 +120,14 @@ class DateValue extends AbstractValue implements Serializable {
 			try {
 				return new Date(getDateFormat().parse(str).getTime());
 			} catch (ParseException e) {
-				throw new IncompatibleTypesException(e);
+				throw new IncompatibleTypesException(
+						"The specified value is not a date:"
+								+ TypeFactory.getTypeName(value.getType()));
 			}
 		} else {
-			throw new IncompatibleTypesException();
+			throw new IncompatibleTypesException(
+					"The specified value is not a date:"
+							+ TypeFactory.getTypeName(value.getType()));
 		}
 	}
 

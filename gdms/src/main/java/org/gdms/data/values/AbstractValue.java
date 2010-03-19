@@ -36,6 +36,7 @@
  */
 package org.gdms.data.values;
 
+import java.io.IOException;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.Date;

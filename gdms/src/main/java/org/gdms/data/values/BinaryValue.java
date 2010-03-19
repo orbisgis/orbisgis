@@ -37,6 +37,7 @@
 package org.gdms.data.values;
 
 import org.gdms.data.types.Type;
+import org.gdms.data.types.TypeFactory;
 import org.gdms.sql.strategies.IncompatibleTypesException;
 
 /**
@@ -109,7 +110,9 @@ class BinaryValue extends AbstractValue {
 			}
 			return ValueFactory.createValue(ret);
 		} else {
-			throw new IncompatibleTypesException();
+			throw new IncompatibleTypesException(
+					"The specified value is not a binary:"
+							+ TypeFactory.getTypeName(value.getType()));
 		}
 	}
 
@@ -125,7 +128,9 @@ class BinaryValue extends AbstractValue {
 			return ValueFactory.createValue(!((BooleanValue) equals(value))
 					.getValue());
 		} else {
-			throw new IncompatibleTypesException();
+			throw new IncompatibleTypesException(
+					"The specified value is not a binary:"
+							+ TypeFactory.getTypeName(value.getType()));
 		}
 	}
 

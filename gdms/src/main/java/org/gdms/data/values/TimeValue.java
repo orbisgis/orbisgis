@@ -44,6 +44,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import org.gdms.data.types.Type;
+import org.gdms.data.types.TypeFactory;
 import org.gdms.sql.strategies.IncompatibleTypesException;
 
 /**
@@ -102,7 +103,9 @@ class TimeValue extends AbstractValue implements Serializable {
 			return new BooleanValue(this.value
 					.equals(((TimeValue) value).value));
 		} else {
-			throw new IncompatibleTypesException();
+			throw new IncompatibleTypesException(
+					"The specified value is not a time:"
+							+ TypeFactory.getTypeName(value.getType()));
 		}
 	}
 
@@ -118,7 +121,9 @@ class TimeValue extends AbstractValue implements Serializable {
 			return new BooleanValue(this.value
 					.compareTo(((TimeValue) value).value) > 0);
 		} else {
-			throw new IncompatibleTypesException();
+			throw new IncompatibleTypesException(
+					"The specified value is not a time:"
+							+ TypeFactory.getTypeName(value.getType()));
 		}
 	}
 
@@ -134,7 +139,9 @@ class TimeValue extends AbstractValue implements Serializable {
 			return new BooleanValue(this.value
 					.compareTo(((TimeValue) value).value) >= 0);
 		} else {
-			throw new IncompatibleTypesException();
+			throw new IncompatibleTypesException(
+					"The specified value is not a time:"
+							+ TypeFactory.getTypeName(value.getType()));
 		}
 	}
 
@@ -182,7 +189,9 @@ class TimeValue extends AbstractValue implements Serializable {
 			return new BooleanValue(!this.value
 					.equals(((TimeValue) value).value));
 		} else {
-			throw new IncompatibleTypesException();
+			throw new IncompatibleTypesException(
+					"The specified value is not a time:"
+							+ TypeFactory.getTypeName(value.getType()));
 		}
 	}
 
