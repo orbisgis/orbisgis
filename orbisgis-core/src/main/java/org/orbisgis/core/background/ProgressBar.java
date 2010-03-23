@@ -147,7 +147,8 @@ public class ProgressBar extends JPanel {
 		SwingUtilities.invokeLater(new Runnable() {
 
 			public void run() {
-				int overallProgress = ProgressBar.this.job.getOverallProgress();
+				int overallProgress = ProgressBar.this.job.getOverallProgress();				
+				overallProgressBar.setIndeterminate(overallProgress==0?true:false);
 				overallProgressBar.setValue(overallProgress);
 				lblProgress.setText(Integer.toString(overallProgress) + "%");
 				changeSubTask();
