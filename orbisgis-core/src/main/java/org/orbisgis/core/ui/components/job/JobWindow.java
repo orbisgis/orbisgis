@@ -36,6 +36,7 @@ public class JobWindow extends JPanel {
 	private Container parent;
 	private HashMap<JobId, Component[]> idBar = new HashMap<JobId, Component[]>();
 	private static final int TOOLBAR_SIZE = 33;
+	private static final int RIGHT_POPUP_OFFSET= 10;
 
 	public JobWindow(JFrame frame) {
 		this.parent = frame;
@@ -46,9 +47,8 @@ public class JobWindow extends JPanel {
 			initUI();
 			
 		}				
-		window.setSize(270, 150);		
+		window.setSize(200, 100);		
 		window.setBackground(Color.GRAY);
-		//window.setLocationRelativeTo(parent);
 		WorkbenchContext wbContext = Services.getService(WorkbenchContext.class);
 		parent = wbContext.getWorkbench().getFrame();
 		centerParent();		
@@ -71,7 +71,7 @@ public class JobWindow extends JPanel {
 		  Dimension mySize = window.getSize();
 
 		  if (parentSize.width > mySize.width) 
-		    x = (parentSize.width - mySize.width) + topLeft.x;
+		    x = ((parentSize.width - mySize.width)-RIGHT_POPUP_OFFSET) + topLeft.x;
 		  else 
 		    x = topLeft.x;
 		   
