@@ -38,18 +38,23 @@ package org.orbisgis.core.background;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.SwingUtilities;
 
+import org.orbisgis.core.images.IconLoader;
 import org.orbisgis.core.sif.CRFlowLayout;
 import org.orbisgis.core.sif.CarriageReturn;
+import org.orbisgis.core.ui.components.button.J3DButton;
+import org.orbisgis.core.ui.components.job.GradientProgressBarUI;
 
 public class ProgressBar extends JPanel {
 
@@ -82,13 +87,25 @@ public class ProgressBar extends JPanel {
 		this.setBackground(new Color(224, 224, 224));
 		this.add(getLabelPanel(), BorderLayout.NORTH);
 		overallProgressBar = new JProgressBar(0, 100);
-		overallProgressBar.setForeground(Color.BLUE);
+		overallProgressBar.setUI(new GradientProgressBarUI());
+		overallProgressBar.setStringPainted(true);
+		overallProgressBar.setFont(new Font("Arial", Font.PLAIN, 10)
+				.deriveFont(Font.BOLD));
+		overallProgressBar.setOpaque(false);
+		overallProgressBar.setBorderPainted(false);
+		overallProgressBar.setBackground(Color.white);
+		overallProgressBar.setForeground(Color.BLUE.darker());
 		int overallProgress = job.getOverallProgress();
 		this.add(overallProgressBar, BorderLayout.CENTER);
 		overallProgressBar.setValue(overallProgress);
 		lblProgress.setText(Integer.toString(overallProgress) + "%");
 		changeSubTask();
-		JButton btn = new JButton("Cancel");
+		ImageIcon icon = IconLoader.getIcon("remove.png");
+		JButton btn = new J3DButton();
+		btn.setIcon(icon);
+		btn.setToolTipText("Stop the process");
+		btn.setPreferredSize(new Dimension(icon.getIconWidth() + 4, icon
+				.getIconHeight() + 4));
 		this.add(btn, BorderLayout.EAST);
 		btn.addActionListener(new ActionListener() {
 
@@ -147,10 +164,12 @@ public class ProgressBar extends JPanel {
 		SwingUtilities.invokeLater(new Runnable() {
 
 			public void run() {
-				int overallProgress = ProgressBar.this.job.getOverallProgress();	
+				int overallProgress = ProgressBar.this.job.getOverallProgress();
 				int currentProgress = job.getCurrentProgress();
-				int progress = overallProgress==0?currentProgress:overallProgress;
-				overallProgressBar.setIndeterminate(progress==0?true:false);
+				int progress = overallProgress == 0 ? currentProgress
+						: overallProgress;
+				overallProgressBar.setIndeterminate(progress == 0 ? true
+						: false);
 				overallProgressBar.setValue(progress);
 				lblProgress.setText(Integer.toString(progress) + "%");
 				changeSubTask();
