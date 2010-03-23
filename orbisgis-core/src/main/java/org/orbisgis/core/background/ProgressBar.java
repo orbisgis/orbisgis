@@ -152,7 +152,7 @@ public class ProgressBar extends JPanel {
 				int progress = overallProgress==0?currentProgress:overallProgress;
 				overallProgressBar.setIndeterminate(progress==0?true:false);
 				overallProgressBar.setValue(progress);
-				lblProgress.setText(Integer.toString(overallProgress) + "%");
+				lblProgress.setText(Integer.toString(progress) + "%");
 				changeSubTask();
 			}
 
