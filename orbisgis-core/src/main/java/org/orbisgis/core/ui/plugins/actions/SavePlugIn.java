@@ -1,31 +1,25 @@
 package org.orbisgis.core.ui.plugins.actions;
 
+import java.io.IOException;
 import java.util.Observable;
 
 import javax.swing.JButton;
-import javax.swing.JMenuItem;
 
 import org.orbisgis.core.Services;
 import org.orbisgis.core.background.BackgroundJob;
 import org.orbisgis.core.background.BackgroundManager;
-import org.orbisgis.core.edition.EditableElementException;
-import org.orbisgis.core.errorManager.ErrorManager;
 import org.orbisgis.core.images.IconNames;
 import org.orbisgis.core.ui.editor.IEditor;
 import org.orbisgis.core.ui.pluginSystem.AbstractPlugIn;
 import org.orbisgis.core.ui.pluginSystem.PlugInContext;
-import org.orbisgis.core.ui.pluginSystem.workbench.Names;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchContext;
 import org.orbisgis.core.ui.plugins.views.editor.EditorManager;
+import org.orbisgis.core.workspace.Workspace;
 import org.orbisgis.progress.IProgressMonitor;
 
 public class SavePlugIn extends AbstractPlugIn {
 
-	
-
-
 	private JButton btn;
-	private JMenuItem menuItem;
 
 	public SavePlugIn() {
 		btn = new JButton(getIcon(IconNames.SAVE_ICON));
@@ -36,35 +30,30 @@ public class SavePlugIn extends AbstractPlugIn {
 		wbcontext.getWorkbench().getFrame().getMainToolBar().addPlugIn(this,
 				btn, context);
 
-		menuItem = context.getFeatureInstaller().addMainMenuItem(this,
-				new String[] { Names.FILE }, Names.SAVE, false,
-				getIcon(IconNames.SAVE_ICON), null, null, context);
-
 	}
 
 	public boolean execute(PlugInContext context) throws Exception {
 
-		final IEditor editor = getEditor();
-		if (editor != null) {
-			BackgroundManager mb = Services.getService(BackgroundManager.class);
-			mb.backgroundOperation(new BackgroundJob() {
+		BackgroundManager mb = Services.getService(BackgroundManager.class);
+		mb.backgroundOperation(new BackgroundJob() {
+			Workspace ws = (Workspace) Services.getService(Workspace.class);
 
-				@Override
-				public void run(IProgressMonitor pm) {
-					try {
-						editor.getElement().save();
-					} catch (EditableElementException e) {
-						Services.getService(ErrorManager.class).error(
-								"Problem saving", e);
-					}
+			@Override
+			public void run(IProgressMonitor pm) {
+				try {
+					ws.saveWorkspace();
+				} catch (IOException e) {
+					Services.getErrorManager()
+							.error("Cannot save workspace", e);
 				}
+			}
 
-				@Override
-				public String getTaskName() {
-					return "Saving...";
-				}
-			});
-		}
+			@Override
+			public String getTaskName() {
+				return "Saving Workspace";
+			}
+		});
+
 		return true;
 	}
 
@@ -79,9 +68,6 @@ public class SavePlugIn extends AbstractPlugIn {
 		btn.setEnabled(isEnabled());
 		btn.setVisible(isVisible());
 
-		menuItem.setEnabled(isEnabled());
-		menuItem.setVisible(isVisible());
-
 	}
 
 	@Override
@@ -94,6 +80,5 @@ public class SavePlugIn extends AbstractPlugIn {
 	public boolean isVisible() {
 		return true;
 	}
-
 
 }
