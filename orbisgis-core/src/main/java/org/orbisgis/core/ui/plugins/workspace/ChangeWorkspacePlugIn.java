@@ -5,7 +5,6 @@ import java.util.Observable;
 
 import javax.swing.JMenuItem;
 
-import org.orbisgis.core.ApplicationInfo;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.images.IconNames;
 import org.orbisgis.core.sif.UIFactory;
@@ -13,7 +12,6 @@ import org.orbisgis.core.ui.pluginSystem.AbstractPlugIn;
 import org.orbisgis.core.ui.pluginSystem.PlugInContext;
 import org.orbisgis.core.ui.pluginSystem.workbench.Names;
 import org.orbisgis.core.ui.workspace.WorkspaceFolderFilePanel;
-import org.orbisgis.core.workspace.DefaultWorkspace;
 import org.orbisgis.core.workspace.Workspace;
 
 public class ChangeWorkspacePlugIn extends AbstractPlugIn {

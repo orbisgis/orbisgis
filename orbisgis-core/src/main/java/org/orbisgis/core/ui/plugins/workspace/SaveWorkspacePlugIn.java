@@ -6,11 +6,14 @@ import java.util.Observable;
 import javax.swing.JMenuItem;
 
 import org.orbisgis.core.Services;
+import org.orbisgis.core.background.BackgroundJob;
+import org.orbisgis.core.background.BackgroundManager;
 import org.orbisgis.core.images.IconNames;
 import org.orbisgis.core.ui.pluginSystem.AbstractPlugIn;
 import org.orbisgis.core.ui.pluginSystem.PlugInContext;
 import org.orbisgis.core.ui.pluginSystem.workbench.Names;
 import org.orbisgis.core.workspace.Workspace;
+import org.orbisgis.progress.IProgressMonitor;
 
 public class SaveWorkspacePlugIn extends AbstractPlugIn {
 
@@ -18,12 +21,25 @@ public class SaveWorkspacePlugIn extends AbstractPlugIn {
 
 	@Override
 	public boolean execute(PlugInContext context) throws Exception {
-		Workspace ws = (Workspace) Services.getService(Workspace.class);
-		try {
-			ws.saveWorkspace();
-		} catch (IOException e) {
-			Services.getErrorManager().error("Cannot save workspace", e);
-		}
+		BackgroundManager mb = Services.getService(BackgroundManager.class);
+		mb.backgroundOperation(new BackgroundJob() {
+			Workspace ws = (Workspace) Services.getService(Workspace.class);
+
+			@Override
+			public void run(IProgressMonitor pm) {
+				try {
+					ws.saveWorkspace();
+				} catch (IOException e) {
+					Services.getErrorManager()
+							.error("Cannot save workspace", e);
+				}
+			}
+
+			@Override
+			public String getTaskName() {
+				return "Saving Workspace";
+			}
+		});
 		return true;
 	}
 
