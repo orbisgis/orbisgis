@@ -10,7 +10,6 @@ import java.awt.Component;
 import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.Point;
-import java.awt.Toolkit;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import java.awt.event.WindowEvent;
@@ -36,6 +35,7 @@ public class JobWindow extends JPanel {
 	private JPanel progressPanel;
 	private Container parent;
 	private HashMap<JobId, Component[]> idBar = new HashMap<JobId, Component[]>();
+	private static final int TOOLBAR_SIZE = 33;
 
 	public JobWindow(JFrame frame) {
 		this.parent = frame;
@@ -48,6 +48,7 @@ public class JobWindow extends JPanel {
 		}				
 		window.setSize(270, 150);		
 		window.setBackground(Color.GRAY);
+		//window.setLocationRelativeTo(parent);
 		WorkbenchContext wbContext = Services.getService(WorkbenchContext.class);
 		parent = wbContext.getWorkbench().getFrame();
 		centerParent();		
@@ -62,27 +63,24 @@ public class JobWindow extends JPanel {
 	public void centerParent () {
 		  int x;
 		  int y;
-		  Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-		  int resolution = Toolkit.getDefaultToolkit().getScreenResolution();
 
 		  // Find out our parent 
 		  Point topLeft = parent.getLocationOnScreen();
 		  Dimension parentSize = parent.getSize();
 
-		  Dimension mySize = getSize();
+		  Dimension mySize = window.getSize();
 
 		  if (parentSize.width > mySize.width) 
-		    x = ((parentSize.width - mySize.width)/2) + topLeft.x;
+		    x = (parentSize.width - mySize.width) + topLeft.x;
 		  else 
 		    x = topLeft.x;
 		   
 		  if (parentSize.height > mySize.height) 
-		    y = ((parentSize.height - mySize.height)/2 -100) + topLeft.y;
+		    y = ((parentSize.height - mySize.height) - TOOLBAR_SIZE) + topLeft.y ;
 		  else 
 		    y = topLeft.y;
 		  
-		  window.setLocation (x + 445, y + 350);
-		 
+		  window.setLocation ( x , y);	 
 	}  
 
 	public void initUI() {		
