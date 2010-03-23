@@ -61,8 +61,6 @@ public class OpenGdmsFilePanel extends OpenFilePanel {
 			String[] extensions = fileDriver.getFileExtensions();
 			this.addFilter(extensions, fileDriver.getTypeDescription());
 		}
-		//PYF : Set filter to .*
-		//this.getFileChooser().setFileFilter(this.getFileChooser().getAcceptAllFileFilter());
 	}
 
 	public String[] getErrorMessages() {
