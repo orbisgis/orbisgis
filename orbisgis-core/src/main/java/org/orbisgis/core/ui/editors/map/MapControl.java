@@ -82,7 +82,7 @@ import com.vividsolutions.jts.geom.Envelope;
 /**
  * MapControl.
  * 
- * @author Fernando Gonzlez Corts
+ * 
  */
 public class MapControl extends JComponent implements ComponentListener {
 
@@ -111,7 +111,7 @@ public class MapControl extends JComponent implements ComponentListener {
 	private boolean showCoordinates = true;
 
 	/**
-	 * getDataSourceFromSQL Creates a new NewMapControl.
+	 * Creates a new NewMapControl.
 	 * 
 	 * @param mapContext
 	 * @param defaultTool
