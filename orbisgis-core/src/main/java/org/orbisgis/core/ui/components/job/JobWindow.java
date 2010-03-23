@@ -116,7 +116,7 @@ public class JobWindow extends JPanel {
 					progressPanel.add(component);
 				}
 			} else {
-				ProgressBar bar = new ProgressBar(job);
+				ProgressBar bar = new ProgressBar(job);				
 				progressPanel.add(bar);
 				CarriageReturn cr = new CarriageReturn();
 				progressPanel.add(cr);
