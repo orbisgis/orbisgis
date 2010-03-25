@@ -984,12 +984,11 @@ public class SQLTest extends SourceTest {
 
 		DataSource dsSource = dsf.getDataSource("landcover2000");
 		DataSource ds = dsf
-				.getDataSourceFromSQL("select count(gid) as count, count(*) as star from landcover2000;");
+				.getDataSourceFromSQL("select  count(*) as star from landcover2000;");
 
 		ds.open();
 		dsSource.open();
 		assertTrue(ds.getFieldValue(0, 0).getAsInt() == dsSource.getRowCount());
-		assertTrue(ds.getFieldValue(0, 1).getAsInt() == dsSource.getRowCount());
 		ds.close();
 		dsSource.close();
 	}
