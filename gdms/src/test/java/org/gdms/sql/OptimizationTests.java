@@ -89,18 +89,12 @@ public class OptimizationTests extends TestCase {
 		}
 		dsf = new DataSourceFactory();
 		dsf.setTempDir(SourceTest.backupDir.getAbsolutePath());
-		dsf.getSourceManager().register(
-				"points",
-				new File(SourceTest.internalData
-						+ "points.shp"));
-		dsf.getSourceManager().register(
-				"hedgerow",
-				new File(SourceTest.internalData
-						+ "hedgerow.shp"));
-		dsf.getSourceManager().register(
-				"landcover2000",
-				new File(SourceTest.internalData
-						+ "landcover2000.shp"));
+		dsf.getSourceManager().register("points",
+				new File(SourceTest.internalData + "points.shp"));
+		dsf.getSourceManager().register("hedgerow",
+				new File(SourceTest.internalData + "hedgerow.shp"));
+		dsf.getSourceManager().register("landcover2000",
+				new File(SourceTest.internalData + "landcover2000.shp"));
 
 		selectionAndScan = new OperatorFilter() {
 
@@ -167,7 +161,7 @@ public class OptimizationTests extends TestCase {
 	}
 
 	public void testAutonumericLiteral() throws Exception {
-		FunctionOperator op = new FunctionOperator("autonumeric");
+		FunctionOperator op = new FunctionOperator("autonumeric", null);
 		assertTrue(op.evaluate().less(op.evaluate()).getAsBoolean());
 	}
 
@@ -223,8 +217,9 @@ public class OptimizationTests extends TestCase {
 	}
 
 	public void testNotEquals() throws Exception {
-		GenericObjectDriver omd = new GenericObjectDriver(new String[] { "id" },
-				new Type[] { TypeFactory.createType(Type.STRING) });
+		GenericObjectDriver omd = new GenericObjectDriver(
+				new String[] { "id" }, new Type[] { TypeFactory
+						.createType(Type.STRING) });
 		omd.addValues(new Value[] { ValueFactory.createValue("1") });
 		omd.addValues(new Value[] { ValueFactory.createValue("2") });
 		dsf.getSourceManager().register("test", omd);
