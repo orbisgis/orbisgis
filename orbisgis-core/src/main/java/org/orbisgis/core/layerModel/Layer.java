@@ -94,10 +94,9 @@ public class Layer extends GdmsLayer {
 				.getConstraint(Constraint.GEOMETRY_TYPE);
 
 		final Random r = new Random();
-		final Color cOutline = new Color(r.nextInt(256), r.nextInt(256), r
-				.nextInt(256));
 		final Color cFill = new Color(r.nextInt(256), r.nextInt(256), r
 				.nextInt(256),255-40);
+		final Color cOutline = cFill.darker();
 
 		UniqueSymbolLegend legend = LegendFactory.createUniqueSymbolLegend();
 		Symbol polSym = SymbolFactory.createPolygonSymbol(cOutline, cFill);
