@@ -42,6 +42,8 @@ import org.apache.log4j.Logger;
 import org.apache.log4j.PatternLayout;
 import org.apache.log4j.PropertyConfigurator;
 import org.apache.log4j.RollingFileAppender;
+import org.gdms.GdmsLibInfo;
+import org.gdms.LibInfo;
 import org.orbisgis.core.background.BackgroundManager;
 import org.orbisgis.core.background.JobQueue;
 import org.orbisgis.core.commandline.CommandLine;
@@ -59,7 +61,7 @@ import org.orbisgis.core.ui.workspace.DefaultSwingWorkspace;
 import org.orbisgis.core.workspace.DefaultWorkspace;
 import org.orbisgis.core.workspace.OrbisGISWorkspace;
 import org.orbisgis.core.workspace.Workspace;
-
+import org.orbisgis.utils.Language;
 public class Main {
 
 	private static Logger logger = Logger.getLogger(Main.class);
@@ -98,11 +100,14 @@ public class Main {
 	private static void init(Splash splash, String[] args) throws Exception {
 		try {
 			initServices();
+			Language i18n = Services.getService(Language.class);
+			i18n.getText("OrbisGIS","toolbar.drawing");	
+			i18n.getText("Gdms","gdms.info");	
 			initProperties();
 			parseCommandLine(args);
 			splash.setVisible(true);
 			splash.updateVersion();
-			splash.updateText(I18N.get("main.loading"));
+			splash.updateText(I18N.get("main.loading"));			
 			Workspace wrsk = Services.getService(Workspace.class);
 			if (commandLine.hasOption(I18N_FILE)) {
 				I18N.loadFile(commandLine.getOption(I18N_FILE).getArg(0));
@@ -164,6 +169,21 @@ public class Main {
 		Services.registerService(ApplicationInfo.class,
 				"Gets information about the application: "
 						+ "name, version, etc.", applicationInfo);
+		//Init I18n
+		//I18n for OrbisGIS core
+		Language i18n = new Language();
+		i18n.addSubProject("fr_FR",
+				applicationInfo.getI18nFile(),
+				OrbisGISApplicationInfo.class);
+		//I18n for OrbisGIS GDMS
+		LibInfo gdmsInfo = new GdmsLibInfo();
+		i18n.addSubProject("fr_FR",
+				gdmsInfo.getI18nFile(),
+				GdmsLibInfo.class);
+		
+		Services.registerService(Language.class,
+				"Translation I18N for OrbisGIS", i18n);			
+				
 
 		// Install OrbisGIS core services
 		OrbisgisCoreServices.installServices();

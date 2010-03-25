@@ -111,7 +111,7 @@ public final class I18N {
 	private static ClassLoader classLoader;
 
 	/** The resource bundle for the I18N instance. */
-	private ResourceBundle resourceBundle;	
+	private ResourceBundle resourceBundle;  
 	public ResourceBundle getResourceBundle() {
 		return resourceBundle;
 	}

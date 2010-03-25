@@ -68,4 +68,9 @@ public class OrbisGISApplicationInfo implements ApplicationInfo {
 		return "3.0";
 	}
 
+	@Override
+	public String getI18nFile() {		
+		return "OrbisGIS";
+	}
+
 }
