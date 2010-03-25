@@ -623,13 +623,13 @@ public class LogicTreeBuilder {
 		return ret;
 	}
 
-	private Expression getSQLExpression(Node node) {
+	private Expression getSQLExpression(Node node) throws SemanticException {
 		Expression ret = getExpression(node);
 
 		return ret;
 	}
 
-	private Expression getExpression(Node theNode) {
+	private Expression getExpression(Node theNode) throws SemanticException {
 		SimpleNode node = (SimpleNode) theNode;
 		if (node instanceof ASTSQLSumExpr) {
 			// Get expressions or bypass if only one child
@@ -702,8 +702,10 @@ public class LogicTreeBuilder {
 			Node argsNode = node.jjtGetChild(0);
 			int numArgs = argsNode.jjtGetNumChildren();
 			if ((numArgs == 1)
-					&& (argsNode.jjtGetChild(0) instanceof ASTSQLSelectAllCols)) {
-				return new FunctionOperator(functionName);
+					&& (argsNode.jjtGetChild(0) instanceof ASTSQLSelectAllCols)) {				
+				ProjectionOp.StarElement star = new StarElement();
+				fillStar(star, (ASTSQLSelectAllCols) argsNode.jjtGetChild(0));
+				return new FunctionOperator(functionName, star);
 			} else {
 				Expression[] args = new Expression[numArgs];
 				for (int i = 0; i < numArgs; i++) {
@@ -887,7 +889,7 @@ public class LogicTreeBuilder {
 	}
 
 	private Expression buildArithmeticOperator(OperatorFactory opFactory,
-			SimpleNode node) {
+			SimpleNode node) throws SemanticException {
 		if (node.jjtGetNumChildren() > 1) {
 			Expression left = getExpression(node.jjtGetChild(0));
 			for (int i = 1; i < node.jjtGetNumChildren(); i = i + 2) {
@@ -902,7 +904,7 @@ public class LogicTreeBuilder {
 	}
 
 	private Expression buildBooleanOperator(OperatorFactory opFactory,
-			SimpleNode node) {
+			SimpleNode node) throws SemanticException {
 		if (node.jjtGetNumChildren() > 1) {
 			Expression left = getExpression(node.jjtGetChild(0));
 			for (int i = 1; i < node.jjtGetNumChildren(); i++) {

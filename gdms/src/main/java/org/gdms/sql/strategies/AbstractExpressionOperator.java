@@ -53,6 +53,7 @@ import org.gdms.sql.function.Function;
 import org.gdms.sql.function.FunctionManager;
 import org.gdms.sql.strategies.ProjectionOp.AbstractStarElement;
 import org.gdms.sql.strategies.ProjectionOp.SelectElement;
+import org.gdms.sql.strategies.ProjectionOp.StarElement;
 
 public abstract class AbstractExpressionOperator extends AbstractOperator {
 
@@ -185,15 +186,16 @@ public abstract class AbstractExpressionOperator extends AbstractOperator {
 			field.setFieldContext(fieldContext);
 		}
 
-		/*// Expand '*' in all function references
+		// Expand '*' in all function references
 		for (Expression expression : getExpressions()) {
 			FunctionOperator[] functionReferences = expression
 					.getFunctionReferences();
 			for (FunctionOperator function : functionReferences) {
-				if (function.hasStar()) {
+				StarElement star = function.getStar();
+				if (star != null) {
 					ArrayList<Expression> arguments = new ArrayList<Expression>();
 					ArrayList<String> alias = new ArrayList<String>();
-					expandStar(arguments, alias, null);
+					expandStar(arguments, new HashMap<Expression, SelectElement>(), alias, null, star);
 					for (Expression expr : arguments) {
 						Field[] fields = expr.getFieldReferences();
 						for (Field field : fields) {
@@ -204,7 +206,7 @@ public abstract class AbstractExpressionOperator extends AbstractOperator {
 							.replaceStarBy(arguments.toArray(new Expression[0]));
 				}
 			}
-		}*/
+		}
 
 	}
 
@@ -250,4 +252,5 @@ public abstract class AbstractExpressionOperator extends AbstractOperator {
 		super.validateFunctionReferences();
 	}
 
+	
 }

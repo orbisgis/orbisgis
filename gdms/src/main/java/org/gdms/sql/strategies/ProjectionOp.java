@@ -79,11 +79,14 @@ public class ProjectionOp extends AbstractExpressionOperator implements
 			throws ExecutionException {
 		ObjectDriver ret = null;
 		try {
-			if (onlyStar()) {
-				ret = getOperator(0).getResult(pm);
-			} else {
-				ret = new ProjectionDriver(getOperator(0).getResult(pm),
-						getExpressions(), getResultMetadata());
+			ObjectDriver result = getOperator(0).getResult(pm);
+			if (!pm.isCancelled()) {
+				if (onlyStar()) {
+					ret = result;
+				} else {
+					ret = new ProjectionDriver(result, getExpressions(),
+							getResultMetadata());
+				}
 			}
 		} catch (DriverException e) {
 			throw new ExecutionException(
@@ -92,7 +95,7 @@ public class ProjectionOp extends AbstractExpressionOperator implements
 			throw new RuntimeException("The preprocessor has failed", e);
 		}
 
-		if (distinct) {
+		if (!pm.isCancelled() && distinct) {
 			ArrayList<Integer> indexes = new ArrayList<Integer>();
 			HashSet<Value> set = new HashSet<Value>();
 
@@ -129,7 +132,14 @@ public class ProjectionOp extends AbstractExpressionOperator implements
 	}
 
 	private boolean onlyStar() throws DriverException, SemanticException {
-		return ((getExpressions().length == 1) && (getExpressions()[0] instanceof StarElement));
+		if (selectElements.size() == 1) {
+			SelectElement selectElement = selectElements.get(0);
+			if (selectElement instanceof StarElement) {
+				StarElement star = (StarElement) selectElement;
+				return star.except.isEmpty() && (star.prefix == null);
+			}
+		}
+		return false;
 	}
 
 	private String[] getAliases() throws DriverException, SemanticException {
@@ -197,7 +207,7 @@ public class ProjectionOp extends AbstractExpressionOperator implements
 	 * field reference its name is used. Finally, if a complex expression is
 	 * found and there is no alias, the string 'unknown' concatenated with the
 	 * index of the field in the resulting metadata is used
-	 *
+	 * 
 	 * @see org.gdms.sql.strategies.Operator#getResultMetadata()
 	 */
 	public Metadata getResultMetadata() throws DriverException {
@@ -311,7 +321,7 @@ public class ProjectionOp extends AbstractExpressionOperator implements
 	 * Returns the aggregated expressions to be added in the groupby operator
 	 * further down. This method assumes the instruction contains at least an
 	 * aggregated function or a group by clause
-	 *
+	 * 
 	 * @param groupByFields
 	 *            The names used in the group by clause
 	 * @return
@@ -498,7 +508,7 @@ public class ProjectionOp extends AbstractExpressionOperator implements
 
 	/**
 	 * Adds an internal field. This field will be used by
-	 *
+	 * 
 	 * @param newField
 	 * @return
 	 */
