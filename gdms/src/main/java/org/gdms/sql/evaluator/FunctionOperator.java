@@ -48,12 +48,14 @@ import org.gdms.sql.function.Function;
 import org.gdms.sql.function.FunctionException;
 import org.gdms.sql.function.FunctionManager;
 import org.gdms.sql.strategies.IncompatibleTypesException;
+import org.gdms.sql.strategies.ProjectionOp;
+import org.gdms.sql.strategies.ProjectionOp.StarElement;
 
 public class FunctionOperator extends AbstractOperator implements Expression {
 
 	private String name;
 	private Function function;
-	private boolean star;
+	private StarElement star;
 	private DataSourceFactory dsf;
 	private boolean lastCall = false;
 	private Value lastReturnValue = null;
@@ -63,12 +65,12 @@ public class FunctionOperator extends AbstractOperator implements Expression {
 		super(arguments);
 		this.dsf = dsf;
 		this.name = name;
-		this.star = false;
+		this.star = null;
 	}
 
-	public FunctionOperator(String name) {
+	public FunctionOperator(String name, ProjectionOp.StarElement star) {
 		super(new Expression[0]);
-		this.star = true;
+		this.star = star;
 		this.name = name;
 	}
 
@@ -182,7 +184,7 @@ public class FunctionOperator extends AbstractOperator implements Expression {
 	}
 
 	public void replaceStarBy(Expression[] expressions) {
-		if (star) {
+		if (star!=null) {
 			super.setChildren(expressions);
 		} else {
 			// ignore
@@ -215,7 +217,7 @@ public class FunctionOperator extends AbstractOperator implements Expression {
 	 * 
 	 * @return
 	 */
-	public boolean hasStar() {
+	public StarElement getStar() {
 		return star;
 	}
 
