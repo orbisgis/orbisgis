@@ -57,7 +57,6 @@ import org.orbisgis.core.ui.pluginSystem.PlugInContext;
 import org.orbisgis.core.ui.pluginSystem.workbench.Names;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchContext;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchFrame;
-import org.orbisgis.core.ui.plugins.views.editor.EditorManager;
 import org.orbisgis.progress.IProgressMonitor;
 
 public class SelectEqualPlugIn extends AbstractPlugIn {
