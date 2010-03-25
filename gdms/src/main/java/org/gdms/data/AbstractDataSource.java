@@ -53,9 +53,8 @@ import org.gdms.sql.strategies.IncompatibleTypesException;
 /**
  * Contains the DataSource methods that are executed by calling other DataSource
  * methods
- *
- * @author Fernando Gonzalez Cortes
- *
+ * 
+ * 
  */
 public abstract class AbstractDataSource implements DataSource {
 
@@ -148,9 +147,9 @@ public abstract class AbstractDataSource implements DataSource {
 
 	/**
 	 * gets a string representation of this datasource
-	 *
+	 * 
 	 * @return String
-	 *
+	 * 
 	 * @throws DriverException
 	 */
 	public String getAsString() throws DriverException {
