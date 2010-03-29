@@ -43,15 +43,21 @@ import org.gdms.data.values.ValueFactory;
 import org.gdms.sql.function.FunctionException;
 
 import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.LineString;
 
-public class ST_IsEmpty extends AbstractSpatialPropertyFunction {
+public class ST_IsClosed extends AbstractSpatialPropertyFunction {
 	public Value evaluateResult(final Value[] args) throws FunctionException {
 		final Geometry g = args[0].getAsGeometry();
-		return ValueFactory.createValue(g.isEmpty());
+
+		if (g instanceof LineString) {
+			return ValueFactory.createValue(((LineString) g).isClosed());
+		}
+		return ValueFactory.createNullValue();
+
 	}
 
 	public String getName() {
-		return "ST_IsEmpty";
+		return "ST_IsClosed";
 	}
 
 	public Type getType(Type[] types) {
@@ -63,11 +69,11 @@ public class ST_IsEmpty extends AbstractSpatialPropertyFunction {
 	}
 
 	public String getDescription() {
-		return "Return true if the geometry is empty";
+		return "Return true if the geometry is closed";
 	}
 
 	public String getSqlOrder() {
-		return "select ST_IsEmpty (the_geom) from myTable;";
+		return "select ST_IsClosed(the_geom) from myTable;";
 	}
 
 }

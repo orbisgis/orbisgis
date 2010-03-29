@@ -41,33 +41,42 @@ import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.sql.function.FunctionException;
+import org.gdms.sql.function.spatial.geometry.properties.AbstractSpatialPropertyFunction;
 
 import com.vividsolutions.jts.geom.Geometry;
 
-public class ST_IsEmpty extends AbstractSpatialPropertyFunction {
+public class ST0_CircleCompacity extends AbstractSpatialPropertyFunction {
+	private final static double DPI = 2 * Math.PI;
+
 	public Value evaluateResult(final Value[] args) throws FunctionException {
-		final Geometry g = args[0].getAsGeometry();
-		return ValueFactory.createValue(g.isEmpty());
+		final Geometry geomBuild = args[0].getAsGeometry();
+		final double sBuild = geomBuild.getArea();
+		final double pBuild = geomBuild.getLength();
+
+		final double correspondingCircleRadius = Math.sqrt(sBuild / Math.PI);
+		final double pCircle = DPI * correspondingCircleRadius;
+		return ValueFactory.createValue(pBuild / pCircle);
+	}
+
+	public String getDescription() {
+		return "Calculate the compacity of each building's geometry compared "
+				+ "to the circle (the one that as the area of the building)";
 	}
 
 	public String getName() {
-		return "ST_IsEmpty";
+		return "STO_CircleCompacity";
 	}
 
-	public Type getType(Type[] types) {
-		return TypeFactory.createType(Type.BOOLEAN);
+	public Type getType(Type[] argsTypes) {
+		return TypeFactory.createType(Type.DOUBLE);
 	}
 
 	public boolean isAggregate() {
 		return false;
 	}
 
-	public String getDescription() {
-		return "Return true if the geometry is empty";
-	}
-
 	public String getSqlOrder() {
-		return "select ST_IsEmpty (the_geom) from myTable;";
+		return "select STO_CircleCompacity(the_geom) from myBuildingsTable;";
 	}
 
 }
