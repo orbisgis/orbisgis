@@ -62,6 +62,16 @@
 			<artifactId>jaxb-api</artifactId>
 			<version>2.0</version>
 		</dependency>
+	 <dependency>
+	  <groupId>org.orbisgis</groupId>
+	  <artifactId>commons</artifactId>
+	  <version>1.1.0</version>
+	 </dependency>
+	 <dependency>
+	  <groupId>ij</groupId>
+	  <artifactId>imagej</artifactId>
+	  <version>1.39p</version>
+	 </dependency>
 	</dependencies>
 	<build>
 		<plugins>
@@ -88,3 +98,5 @@
 		</plugins>
 	</build>
 </project>
+
+
