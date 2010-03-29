@@ -47,6 +47,7 @@ import java.text.NumberFormat;
 import javax.swing.JOptionPane;
 
 import org.gdms.data.SpatialDataSourceDecorator;
+import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
 import org.gdms.sql.strategies.IncompatibleTypesException;
 import org.orbisgis.core.Services;
@@ -62,8 +63,10 @@ import org.orbisgis.core.renderer.symbol.Symbol;
 import org.orbisgis.core.renderer.symbol.SymbolFactory;
 import org.orbisgis.core.renderer.symbol.SymbolManager;
 import org.orbisgis.core.renderer.symbol.collection.persistence.SimpleSymbolType;
+import org.orbisgis.core.ui.editorViews.toc.actions.cui.legends.GeometryProperties;
 
 import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.Point;
 
@@ -125,8 +128,16 @@ public class DefaultProportionalLegend extends AbstractCartoLegend implements
 			// TODO what's the use of this variable
 			int coefType = 1;
 
-			int fieldIndex = sds.getFieldIndexByName(field);
-			double value = sds.getFieldValue(row, fieldIndex).getAsDouble();
+			double value;
+			if (GeometryProperties.isFieldName(field)) {
+				Geometry geom = sds.getGeometry(row);
+				value = GeometryProperties.getPropertyValue(
+						getClassificationField(), geom).getAsDouble();
+			} else {
+
+				int fieldIndex = sds.getFieldIndexByName(field);
+				value = sds.getFieldValue(row, fieldIndex).getAsDouble();
+			}
 
 			double symbolSize = getSize(value, coefType);
 
