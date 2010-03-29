@@ -82,8 +82,8 @@ import com.vividsolutions.jts.geom.Envelope;
 /**
  * MapControl.
  * 
- * 
  */
+
 public class MapControl extends JComponent implements ComponentListener {
 
 	private static int lastProcessId = 0;
@@ -223,15 +223,16 @@ public class MapControl extends JComponent implements ComponentListener {
 	protected void paintComponent(Graphics g) {
 		BufferedImage mapTransformImage = mapTransform.getImage();
 
-		// If not waiting for an image
-		if (mapTransformImage != null) {
-			g.drawImage(mapTransformImage, 0, 0, null);
-			toolManager.paintEdition(g);
-		} else {
-			g.setColor(backColor);
-			g.fillRect(0, 0, getWidth(), getHeight());
-		}
-		if (status == DIRTY) {
+		if (status == UPDATED) {
+			// If not waiting for an image
+			if (mapTransformImage != null) {
+				g.drawImage(mapTransformImage, 0, 0, null);
+				toolManager.paintEdition(g);
+			} else {
+				g.setColor(backColor);
+				g.fillRect(0, 0, getWidth(), getHeight());
+			}
+		} else if (status == DIRTY) {
 			BufferedImage inProcessImage = new BufferedImage(this.getWidth(),
 					this.getHeight(), BufferedImage.TYPE_INT_ARGB);
 			Graphics gImg = inProcessImage.createGraphics();
