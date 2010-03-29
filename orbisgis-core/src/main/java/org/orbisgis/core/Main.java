@@ -42,7 +42,6 @@ import org.apache.log4j.Logger;
 import org.apache.log4j.PatternLayout;
 import org.apache.log4j.PropertyConfigurator;
 import org.apache.log4j.RollingFileAppender;
-import org.gdms.data.DataSourceFactory;
 import org.orbisgis.core.background.BackgroundManager;
 import org.orbisgis.core.background.JobQueue;
 import org.orbisgis.core.commandline.CommandLine;
