@@ -13,9 +13,9 @@ import org.gdms.sql.strategies.SemanticException;
 
 public class Shell {
 
+	private static DataSourceFactory dsf;
 	private final String EOL = System.getProperty("line.separator");
 
-	static DataSourceFactory dsf = new DataSourceFactory();
 
 	public Shell() {
 	}
@@ -58,6 +58,7 @@ public class Shell {
 			String script = args[0];
 
 			if (script != null) {
+				dsf = new DataSourceFactory();
 				new Shell().execute(script);
 			}
 		}
