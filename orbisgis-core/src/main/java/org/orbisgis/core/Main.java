@@ -60,6 +60,7 @@ import org.orbisgis.core.workspace.DefaultWorkspace;
 import org.orbisgis.core.workspace.OrbisGISWorkspace;
 import org.orbisgis.core.workspace.Workspace;
 import org.orbisgis.utils.I18N;
+
 public class Main {
 
 	private static Logger logger = Logger.getLogger(Main.class);
@@ -77,10 +78,11 @@ public class Main {
 	public static void main(String[] args) throws Exception {
 		Splash splash = new Splash();
 		initServices();
-		parseCommandLine(args);		
+		parseCommandLine(args);
 		initI18n(splash);
 		if (!IsVersion(MIN_JAVA_VERSION)) {
-			JOptionPane.showMessageDialog(null, I18N.getText("orbisgis.main.version"));
+			JOptionPane.showMessageDialog(null, I18N
+					.getText("orbisgis.main.version"));
 			splash.setVisible(false);
 			splash.dispose();
 		} else {
@@ -88,19 +90,15 @@ public class Main {
 			splash.setVisible(false);
 			splash.dispose();
 		}
-		
+
 	}
-	
+
 	private static void initI18n(Splash splash) {
 		if (commandLine.hasOption(I18N_FILE))
-			I18N_SETLOCALE = commandLine.getOption(I18N_FILE).getArg(0);		
-		//Init I18n		
+			I18N_SETLOCALE = commandLine.getOption(I18N_FILE).getArg(0);
+		// Init I18n
 		I18N.addI18n(I18N_SETLOCALE, "orbisgis", Main.class);
-		//I18n for OrbisGIS GDMS
-		I18N.addI18n(I18N_SETLOCALE, "gdms", DataSourceFactory.class);		
-		
-		I18N.getText("orbisgis.toolbar.drawing");	
-		I18N.getText("gdms.info");		
+
 	}
 
 	private static boolean IsVersion(String minJavaVersion) {
@@ -111,13 +109,13 @@ public class Main {
 	}
 
 	private static void init(Splash splash, String[] args) throws Exception {
-		try {							
-			initProperties();			
+		try {
+			initProperties();
 			splash.setVisible(true);
 			splash.updateVersion();
-			Splash.updateText(I18N.getText("orbisgis.main.loading"));			
-			Workspace wrsk = Services.getService(Workspace.class);			
-			
+			Splash.updateText(I18N.getText("orbisgis.main.loading"));
+			Workspace wrsk = Services.getService(Workspace.class);
+
 			if (commandLine.hasOption(WORKSPACE)) {
 				wrsk.setWorkspaceFolder(commandLine.getOption(WORKSPACE)
 						.getArg(0));
@@ -134,7 +132,7 @@ public class Main {
 			OrbisgisCoreServices.installConfigurationService();
 			// Initialize configuration
 			EPConfigHelper.loadAndApplyConfigurations();
-			
+
 			BasicConfiguration bc = Services
 					.getService(BasicConfiguration.class);
 			String sTimer = bc.getProperty(WorkspaceConfiguration
