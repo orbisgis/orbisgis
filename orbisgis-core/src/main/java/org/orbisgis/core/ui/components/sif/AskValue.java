@@ -57,11 +57,16 @@ public class AskValue extends AbstractUIPanel implements SQLUIPanel {
 	}
 
 	public AskValue(String title, String sql, String error, String initialValue) {
+		this(title, sql, error, initialValue, STRING);
+	}
+
+	public AskValue(String title, String sql, String error,
+			String initialValue, int type) {
 		this.title = title;
 		this.sql = (sql == null) ? null : new String[] { sql };
 		this.error = (error == null) ? null : new String[] { error };
 		this.initialValue = initialValue;
-		this.type = STRING;
+		this.type = type;
 	}
 
 	public Component getComponent() {
