@@ -63,7 +63,6 @@ import org.gdms.source.Source;
 /**
  * Adapter to the DataSource interface for database drivers
  * 
- * @author Fernando Gonzalez Cortes
  */
 public class DBTableDataSourceAdapter extends DriverDataSource implements
 		Commiter, CommitListener {
