@@ -14,11 +14,8 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipException;
 import java.util.zip.ZipFile;
 
-import javax.swing.JOptionPane;
-
 import org.apache.log4j.Logger;
 import org.orbisgis.core.Splash;
-import org.orbisgis.core.language.I18N;
 import org.orbisgis.core.ui.pluginSystem.utils.StringUtil;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchContext;
 
@@ -47,8 +44,7 @@ public class PlugInManager {
 	
 		classLoader = plugInDirectory != null ? new URLClassLoader(
 				toURLs((File[]) findFilesRecursively(plugInDirectory).toArray(
-						new File[] {}))) : getClass().getClassLoader();
-		I18N.setClassLoader(classLoader);
+						new File[] {}))) : getClass().getClassLoader();		
 		this.context = context;
 		// Find the configurations right away so they get reported to the splash		
 		configurations

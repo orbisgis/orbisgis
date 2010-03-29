@@ -2,8 +2,6 @@ package org.orbisgis.core.ui.pluginSystem;
 
 import java.util.Observer;
 
-import org.orbisgis.core.language.I18N;
-
 public interface PlugIn extends Observer {
 	// Implemented by all PlugIn
 	void initialize(PlugInContext context) throws Exception;
@@ -14,7 +12,7 @@ public interface PlugIn extends Observer {
 	
 	boolean isSelected();
 	
-	I18N getI18n();
+	void getI18n();
 	
 	String getName();
 	

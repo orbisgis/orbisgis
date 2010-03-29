@@ -113,12 +113,9 @@ public class GeocognitionRegisterBuiltInCustomQueryPlugIn extends AbstractPlugIn
 					&& registered
 							.equals(GeocognitionBuiltInCustomQuery.IS_NOT_REGISTERED)) {
 				return true;
-			} else {
-				return false;
 			}
-		} else {
-			return false;
-		}
+		} 
+		return false;
 	}
 
 	public boolean acceptsSelectionCount(Geocognition geocog, int selectionCount) {

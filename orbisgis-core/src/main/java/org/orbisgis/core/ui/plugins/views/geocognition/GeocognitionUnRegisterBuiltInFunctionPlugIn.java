@@ -108,12 +108,9 @@ public class GeocognitionUnRegisterBuiltInFunctionPlugIn extends AbstractPlugIn 
 					&& registered
 							.equals(GeocognitionBuiltInFunction.IS_REGISTERED)) {
 				return true;
-			} else {
-				return false;
 			}
-		} else {
-			return false;
-		}
+		} 
+		return false;
 	}
 
 	public boolean acceptsSelectionCount(Geocognition geocog, int selectionCount) {

@@ -77,7 +77,4 @@ public interface ApplicationInfo {
 	 * @return
 	 */
 	File getHomeFolder();
-	
-	String getI18nFile();
-
 }

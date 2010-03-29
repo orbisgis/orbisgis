@@ -11,6 +11,7 @@ import org.orbisgis.core.ui.plugins.views.OutputViewPlugIn;
 import org.orbisgis.core.ui.plugins.views.SQLConsoleViewPlugIn;
 import org.orbisgis.core.ui.plugins.views.TocViewPlugIn;
 
+//all views plugins so orbisgis UI
 public class OrbisGISConfiguration {
 
 	public static void loadOrbisGISPlugIns(

@@ -8,11 +8,11 @@ import javax.swing.JPanel;
 
 import org.orbisgis.core.PersistenceException;
 import org.orbisgis.core.images.IconLoader;
-import org.orbisgis.core.language.I18N;
 import org.orbisgis.core.ui.editor.IEditor;
 import org.orbisgis.core.ui.editors.map.tool.Automaton;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchContext;
 import org.orbisgis.core.ui.plugins.views.ViewDecorator;
+import org.orbisgis.utils.I18N;
 
 public abstract class ViewPlugIn implements PlugIn {
 
@@ -21,15 +21,25 @@ public abstract class ViewPlugIn implements PlugIn {
 	private Component component;	
 	private PlugInContext plugInContext;
 	
-	private I18N i18n = I18N.getInstance();	
+	// private ResourceBundle i18n;
 	private String langAndCountry;
-
+	// Constructors
+    public ViewPlugIn() {
+    	getI18n();
+    }
 	
-	public void i18nConfigure(String langAndCountry) {		
-		this.langAndCountry = langAndCountry;
+	public void i18nConfigure(String langAndCountry) {
+		delI18n();
+		this.langAndCountry = langAndCountry;	
+		getI18n();
 	}
-	public I18N getI18n(){	
-		return  i18n.configure(langAndCountry, this.getClass());				
+
+	private void delI18n() {
+		I18N.delI18n(null, this.getClass());		
+	}
+	
+	public void getI18n() {
+		I18N.addI18n(langAndCountry, null, this.getClass());
 	}
 
 	public void createPlugInContext(JComponent c, String id,

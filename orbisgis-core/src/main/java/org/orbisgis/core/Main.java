@@ -42,8 +42,7 @@ import org.apache.log4j.Logger;
 import org.apache.log4j.PatternLayout;
 import org.apache.log4j.PropertyConfigurator;
 import org.apache.log4j.RollingFileAppender;
-import org.gdms.GdmsLibInfo;
-import org.gdms.LibInfo;
+import org.gdms.data.DataSourceFactory;
 import org.orbisgis.core.background.BackgroundManager;
 import org.orbisgis.core.background.JobQueue;
 import org.orbisgis.core.commandline.CommandLine;
@@ -52,7 +51,6 @@ import org.orbisgis.core.commandline.ParseException;
 import org.orbisgis.core.configuration.BasicConfiguration;
 import org.orbisgis.core.errorManager.DefaultErrorManager;
 import org.orbisgis.core.errorManager.ErrorManager;
-import org.orbisgis.core.language.I18N;
 import org.orbisgis.core.ui.configuration.EPConfigHelper;
 import org.orbisgis.core.ui.configuration.WorkspaceConfiguration;
 import org.orbisgis.core.ui.errors.CacheMessages;
@@ -61,7 +59,7 @@ import org.orbisgis.core.ui.workspace.DefaultSwingWorkspace;
 import org.orbisgis.core.workspace.DefaultWorkspace;
 import org.orbisgis.core.workspace.OrbisGISWorkspace;
 import org.orbisgis.core.workspace.Workspace;
-import org.orbisgis.utils.Language;
+import org.orbisgis.utils.I18N;
 public class Main {
 
 	private static Logger logger = Logger.getLogger(Main.class);
@@ -78,8 +76,11 @@ public class Main {
 
 	public static void main(String[] args) throws Exception {
 		Splash splash = new Splash();
+		initServices();
+		parseCommandLine(args);		
+		initI18n(splash);
 		if (!IsVersion(MIN_JAVA_VERSION)) {
-			JOptionPane.showMessageDialog(null, I18N.get("main.version"));
+			JOptionPane.showMessageDialog(null, I18N.getText("orbisgis.main.version"));
 			splash.setVisible(false);
 			splash.dispose();
 		} else {
@@ -90,6 +91,18 @@ public class Main {
 		
 	}
 	
+	private static void initI18n(Splash splash) {
+		if (commandLine.hasOption(I18N_FILE))
+			I18N_SETLOCALE = commandLine.getOption(I18N_FILE).getArg(0);		
+		//Init I18n		
+		I18N.addI18n(I18N_SETLOCALE, "orbisgis", Main.class);
+		//I18n for OrbisGIS GDMS
+		I18N.addI18n(I18N_SETLOCALE, "gdms", DataSourceFactory.class);		
+		
+		I18N.getText("orbisgis.toolbar.drawing");	
+		I18N.getText("gdms.info");		
+	}
+
 	private static boolean IsVersion(String minJavaVersion) {
 		String version = System.getProperty("java.version");
 		if (version.indexOf(minJavaVersion) != -1)
@@ -98,21 +111,13 @@ public class Main {
 	}
 
 	private static void init(Splash splash, String[] args) throws Exception {
-		try {
-			initServices();
-			Language i18n = Services.getService(Language.class);
-			i18n.getText("OrbisGIS","toolbar.drawing");	
-			i18n.getText("Gdms","gdms.info");	
-			initProperties();
-			parseCommandLine(args);
+		try {							
+			initProperties();			
 			splash.setVisible(true);
 			splash.updateVersion();
-			splash.updateText(I18N.get("main.loading"));			
-			Workspace wrsk = Services.getService(Workspace.class);
-			if (commandLine.hasOption(I18N_FILE)) {
-				I18N.loadFile(commandLine.getOption(I18N_FILE).getArg(0));
-				I18N_SETLOCALE = commandLine.getOption(I18N_FILE).getArg(0);
-			}
+			Splash.updateText(I18N.getText("orbisgis.main.loading"));			
+			Workspace wrsk = Services.getService(Workspace.class);			
+			
 			if (commandLine.hasOption(WORKSPACE)) {
 				wrsk.setWorkspaceFolder(commandLine.getOption(WORKSPACE)
 						.getArg(0));
@@ -169,22 +174,6 @@ public class Main {
 		Services.registerService(ApplicationInfo.class,
 				"Gets information about the application: "
 						+ "name, version, etc.", applicationInfo);
-		//Init I18n
-		//I18n for OrbisGIS core
-		Language i18n = new Language();
-		i18n.addSubProject("fr_FR",
-				applicationInfo.getI18nFile(),
-				OrbisGISApplicationInfo.class);
-		//I18n for OrbisGIS GDMS
-		LibInfo gdmsInfo = new GdmsLibInfo();
-		i18n.addSubProject("fr_FR",
-				gdmsInfo.getI18nFile(),
-				GdmsLibInfo.class);
-		
-		Services.registerService(Language.class,
-				"Translation I18N for OrbisGIS", i18n);			
-				
-
 		// Install OrbisGIS core services
 		OrbisgisCoreServices.installServices();
 	}

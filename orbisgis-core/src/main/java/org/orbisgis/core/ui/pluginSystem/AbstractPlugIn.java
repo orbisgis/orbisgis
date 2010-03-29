@@ -15,12 +15,12 @@ import org.orbisgis.core.Services;
 import org.orbisgis.core.geocognition.Geocognition;
 import org.orbisgis.core.geocognition.GeocognitionElement;
 import org.orbisgis.core.images.IconLoader;
-import org.orbisgis.core.language.I18N;
 import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.layerModel.MapContext;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchContext;
+import org.orbisgis.utils.I18N;
 
-public abstract class AbstractPlugIn implements PlugIn {
+public class AbstractPlugIn implements PlugIn {
 
 	private String name;
 	private PlugInContext plugInContext;
@@ -29,11 +29,12 @@ public abstract class AbstractPlugIn implements PlugIn {
 	private JComponent actionComponent;
 	private String typeListener;
 	// private ResourceBundle i18n;
-	private I18N i18n = I18N.getInstance();
 	private String langAndCountry;
 
 	// Constructors
-     
+    public AbstractPlugIn() {
+    	getI18n();
+    }
 	
 	
 	// Default PlugIn methods
@@ -45,11 +46,18 @@ public abstract class AbstractPlugIn implements PlugIn {
 	public void update(Observable arg0, Object arg1) {}
 
 	public void i18nConfigure(String langAndCountry) {
-		this.langAndCountry = langAndCountry;
+		delI18n();
+		this.langAndCountry = langAndCountry;				
+		getI18n();
 	}
 
-	public I18N getI18n() {
-		return i18n.configure(langAndCountry, this.getClass());
+	private void delI18n() {
+		I18N.delI18n(null, this.getClass());		
+	}
+
+
+	public void getI18n() {
+		I18N.addI18n(langAndCountry, null, this.getClass());
 	}
 
 	// implemented by PlugIns
@@ -140,9 +148,6 @@ public abstract class AbstractPlugIn implements PlugIn {
 
 	// getters & setters
 
-	public void setI18n(I18N i18n) {
-		this.i18n = i18n;
-	}
 
 	public String getName() {
 		return name == null ? createName(getClass()) : name;

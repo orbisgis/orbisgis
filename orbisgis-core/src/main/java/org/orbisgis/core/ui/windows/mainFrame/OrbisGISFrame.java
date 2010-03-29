@@ -72,7 +72,6 @@ import org.orbisgis.core.PersistenceException;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.images.IconLoader;
 import org.orbisgis.core.images.IconNames;
-import org.orbisgis.core.language.I18N;
 import org.orbisgis.core.ui.components.job.JobPopup;
 import org.orbisgis.core.ui.editor.EditorListener;
 import org.orbisgis.core.ui.editor.IEditor;
@@ -95,6 +94,7 @@ import org.orbisgis.core.ui.plugins.views.geocatalog.Catalog;
 import org.orbisgis.core.ui.window.IWindow;
 import org.orbisgis.core.workspace.DefaultWorkspace;
 import org.orbisgis.core.workspace.Workspace;
+import org.orbisgis.utils.I18N;
 
 public class OrbisGISFrame extends JFrame implements IWindow {
 
@@ -254,7 +254,7 @@ public class OrbisGISFrame extends JFrame implements IWindow {
 				.getService(ApplicationInfo.class);
 
 		// I18N.loadFile("fr");
-		this.setTitle(I18N.get("orbisgis.platform") + " - "
+		this.setTitle(I18N.getText("orbisgis.platform") + " - "
 				+ ai.getVersionNumber() + " - " + ai.getVersionName());
 		// this.setTitle("OrbisGIS Platform");
 		this.setIconImage(IconLoader.getIcon(IconNames.LOGO_MINI).getImage());

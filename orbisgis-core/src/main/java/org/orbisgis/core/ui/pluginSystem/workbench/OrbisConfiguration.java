@@ -191,7 +191,7 @@ public class OrbisConfiguration implements Setup {
 	private ExportMapAsPDFPlugIn exportMapAsPDFPlugIn = new ExportMapAsPDFPlugIn();
 	private ShowXYPlugIn showXYPlugIn = new ShowXYPlugIn();
 
-	// private I18NTestPlugIn i18NTestPlugIn = new I18NTestPlugIn();
+	// private I18NTestPlugIn i18NTestPlugIn = new I18NTestPlugIn();	
 
 	public void setup(WorkbenchContext workbenchContext) throws Exception {
 		// load Main Menu

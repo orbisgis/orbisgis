@@ -86,13 +86,6 @@ public class WorkspaceTest extends TestCase {
 					public String getVersionNumber() {
 						return null;
 					}
-
-					@Override
-					public String getI18nFile() {
-						// TODO Auto-generated method stub
-						return null;
-					}
-
 				});
 
 		File current = new File(homeFile, "currentWorkspace.txt");
