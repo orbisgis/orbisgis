@@ -242,7 +242,7 @@ public class EditionDecorator extends AbstractDataSourceDecorator implements
 					}
 				}
 			} catch (IndexException e) {
-				throw new DriverException(e);
+				throw new DriverException("Cannot update index",e);
 			}
 		}
 	}
@@ -870,6 +870,8 @@ public class EditionDecorator extends AbstractDataSourceDecorator implements
 
 	@Override
 	public String check(int fieldId, Value value) throws DriverException {
+		// In order to build pk indexes
+		initializeEdition();
 		// Check special case of auto-increment not-null fields
 		Type type = getMetadata().getFieldType(fieldId);
 		boolean autoIncrement = type
@@ -896,8 +898,15 @@ public class EditionDecorator extends AbstractDataSourceDecorator implements
 				|| type.getBooleanConstraint(Constraint.PK)) {
 			// We assume a geometry field can't have unique constraint
 			IndexQuery iq = new DefaultAlphaQuery(fieldName, value);
-			if (queryIndex(iq).hasNext()) {
-				return fieldName + " column doesn't admit duplicates";
+			Iterator<Integer> it = queryIndex(iq);
+			while (it.hasNext()) {
+				if (getFieldValue(it.next(), fieldId).equals(value)
+						.getAsBoolean()) {
+					return fieldName + " column doesn't admit duplicates: "
+							+ value;
+				}
+			}
+			if (it.hasNext()) {
 			}
 		}
 
