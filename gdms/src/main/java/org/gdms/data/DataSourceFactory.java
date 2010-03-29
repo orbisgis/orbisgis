@@ -63,6 +63,7 @@ import org.gdms.sql.strategies.SQLProcessor;
 import org.gdms.sql.strategies.SemanticException;
 import org.orbisgis.progress.IProgressMonitor;
 import org.orbisgis.progress.NullProgressMonitor;
+import org.orbisgis.utils.I18N;
 
 /**
  * Factory of DataSource implementations. It has method to register
@@ -73,7 +74,7 @@ import org.orbisgis.progress.NullProgressMonitor;
  * After using the DataSourceFactory it's strongly recommended to call
  * freeResources method.
  * 
- * @author Fernando Gonzalez Cortes
+ * 
  */
 public class DataSourceFactory {
 
@@ -96,6 +97,8 @@ public class DataSourceFactory {
 	 * EDITABLE | STATUS_CHECK
 	 */
 	public final static int DEFAULT = EDITABLE | STATUS_CHECK;
+
+	private String I18N_LOCALE = "";
 
 	private File tempDir = new File(".");
 
@@ -238,7 +241,7 @@ public class DataSourceFactory {
 			return getDataSource(new ObjectSourceDefinition(object), mode,
 					new NullProgressMonitor());
 		} catch (DriverLoadException e) {
-			throw new RuntimeException("bug!");
+			throw new RuntimeException(I18N.getText("gdms.bug"));
 		} catch (DataSourceCreationException e) {
 			throw new RuntimeException("bug!");
 		}
@@ -648,6 +651,14 @@ public class DataSourceFactory {
 		}
 	}
 
+	public String getI18nLocale() {
+		return I18N_LOCALE;
+	}
+
+	public void setI18nLocale(String I18N_LOCALE) {
+		this.I18N_LOCALE = I18N_LOCALE;
+	}
+
 	/**
 	 * Initializes the system
 	 * 
@@ -661,6 +672,7 @@ public class DataSourceFactory {
 	private void initialize(String sourceInfoDir, String tempDir)
 			throws InitializationException {
 		try {
+			I18N.addI18n(I18N_LOCALE, "gdms", this.getClass());
 			indexManager = new IndexManager(this);
 			indexManager.addIndex(IndexManager.RTREE_SPATIAL_INDEX,
 					RTreeIndex.class);
