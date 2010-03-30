@@ -95,7 +95,7 @@ public class OrbisgisCoreServices {
 
 		installApplicationInfoServices();
 
-		// installWorkspaceServices();	
+		// installWorkspaceServices();
 
 		installSymbologyServices();
 
@@ -196,6 +196,11 @@ public class OrbisgisCoreServices {
 
 		sm.addSymbol(SymbolFactory.createPointCircleSymbol(Color.black, 1,
 				Color.red, 10, false));
+		sm.addSymbol(SymbolFactory.createHalfCircleRightPointSymbol(
+				Color.black, 1, Color.green, 10, false));
+		sm.addSymbol(SymbolFactory.createHalfCircleLeftPointSymbol(
+				Color.black, 1, Color.yellow, 10, false));
+		
 		sm.addSymbol(SymbolFactory.createPointSquareSymbol(Color.black, 1,
 				Color.red, 10, false));
 		sm.addSymbol(SymbolFactory.createVertexCircleSymbol(Color.black, 1,
@@ -205,6 +210,10 @@ public class OrbisgisCoreServices {
 		sm.addSymbol(SymbolFactory.createPolygonCentroidSquareSymbol(
 				Color.black, 1, Color.red, 10, false));
 		sm.addSymbol(SymbolFactory.createPolygonCentroidCircleSymbol(
+				Color.black, 1, Color.red, 10, false));
+		sm.addSymbol(SymbolFactory.createPolygonCentroidHalfCircleLeftSymbol(
+				Color.black, 1, Color.red, 10, false));
+		sm.addSymbol(SymbolFactory.createPolygonCentroidHalfCircleRigthSymbol(
 				Color.black, 1, Color.red, 10, false));
 		sm.addSymbol(SymbolFactory.createPolygonSymbol());
 		sm.addSymbol(SymbolFactory.createLineSymbol(Color.black, 1));
