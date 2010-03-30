@@ -73,6 +73,29 @@ public class SymbolFactory {
 				mapUnits);
 	}
 
+	public static Symbol createHalfCircleRightPointSymbol(Color outline,
+			Color fillColor, int size) {
+		return new HalfCircleRightPointSymbol(outline, 1, fillColor, size,
+				false);
+	}
+
+	public static Symbol createHalfCircleRightPointSymbol(Color outline,
+			int lineWidth, Color fillColor, int size, boolean mapUnits) {
+		return new HalfCircleRightPointSymbol(outline, lineWidth, fillColor,
+				size, mapUnits);
+	}
+
+	public static Symbol createHalfCircleLeftPointSymbol(Color outline,
+			Color fillColor, int size) {
+		return new HalfCircleLeftPointSymbol(outline, 1, fillColor, size, false);
+	}
+
+	public static Symbol createHalfCircleLeftPointSymbol(Color outline,
+			int lineWidth, Color fillColor, int size, boolean mapUnits) {
+		return new HalfCircleLeftPointSymbol(outline, lineWidth, fillColor,
+				size, mapUnits);
+	}
+
 	public static Symbol createPointSquareSymbol(Color outline, int lineWidth,
 			Color fillColor, int size, boolean mapUnits) {
 		return new SquarePointSymbol(outline, lineWidth, fillColor, size,
@@ -98,15 +121,28 @@ public class SymbolFactory {
 				false);
 	}
 
-	public static Symbol createPolygonCentroidSquareSymbol(Color outline,
-			int lineWidth, Color fill, int size, boolean mapUnits) {
-		return new PolygonCentroidSquareSymbol(outline, lineWidth, fill, size,
-				mapUnits);
-	}
-
 	public static Symbol createPolygonCentroidCircleSymbol(Color outline,
 			int lineWidth, Color fill, int size, boolean mapUnits) {
 		return new PolygonCentroidCircleSymbol(outline, lineWidth, fill, size,
+				mapUnits);
+	}
+
+	public static Symbol createPolygonCentroidHalfCircleLeftSymbol(
+			Color outline, int lineWidth, Color fill, int size, boolean mapUnits) {
+		return new PolygonCentroidHalfCircleLeftSymbol(outline, lineWidth,
+				fill, size, mapUnits);
+	}
+	
+	public static Symbol createPolygonCentroidHalfCircleRigthSymbol(
+			Color outline, int lineWidth, Color fill, int size, boolean mapUnits) {
+		return new PolygonCentroidHalfCircleRightSymbol(outline, lineWidth,
+				fill, size, mapUnits);
+	}
+
+	
+	public static Symbol createPolygonCentroidSquareSymbol(Color outline,
+			int lineWidth, Color fill, int size, boolean mapUnits) {
+		return new PolygonCentroidSquareSymbol(outline, lineWidth, fill, size,
 				mapUnits);
 	}
 
