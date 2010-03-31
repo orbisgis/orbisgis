@@ -107,7 +107,7 @@ public class LabelSymbol extends AbstractSymbol implements Symbol {
 
 			}
 		}
-		Point interiorPoint = geom.getCentroid();
+		Point interiorPoint = geom.getInteriorPoint();
 		Envelope textMapArea = new Envelope(interiorPoint.getX() - halfWidth,
 				interiorPoint.getX() + halfWidth, interiorPoint.getY()
 						- halfHeight, interiorPoint.getY() + halfHeight);
