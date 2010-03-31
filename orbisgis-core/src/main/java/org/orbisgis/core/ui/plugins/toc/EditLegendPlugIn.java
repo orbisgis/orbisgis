@@ -11,6 +11,7 @@ import org.orbisgis.core.images.IconNames;
 import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.layerModel.MapContext;
 import org.orbisgis.core.map.MapTransform;
+import org.orbisgis.core.renderer.classification.ClassificationMethodException;
 import org.orbisgis.core.renderer.legend.Legend;
 import org.orbisgis.core.sif.UIFactory;
 import org.orbisgis.core.ui.editor.IEditor;
@@ -42,7 +43,6 @@ public class EditLegendPlugIn extends AbstractPlugIn {
 				getIcon(IconNames.POPUP_TOC_LEGEND_ICON), wbContext);
 	}
 
-	
 	public void execute(MapContext mapContext, ILayer layer) {
 		try {
 			Type typ = layer.getDataSource().getMetadata().getFieldType(
@@ -81,6 +81,9 @@ public class EditLegendPlugIn extends AbstractPlugIn {
 				} catch (DriverException e) {
 					Services.getErrorManager().error(
 							Names.ERROR_EDIT_LEGEND_DRIVER, e);
+
+				} catch (ClassificationMethodException e) {
+					Services.getErrorManager().error(e.getMessage());
 				}
 			}
 		} catch (DriverException e) {
