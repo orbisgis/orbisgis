@@ -292,7 +292,7 @@ public class LegendTest extends AbstractTest {
 	}
 
 	public void testFullProportionalPersistence() throws Exception {
-		ProportionalLegend legend = LegendFactory.createProportionalLegend();
+		ProportionalLegend legend = LegendFactory.createProportionalPointLegend();
 		String name = "mylegend";
 		legend.setName(name);
 		Symbol sampleSym = SymbolFactory.createPointCircleSymbol(Color.black,
