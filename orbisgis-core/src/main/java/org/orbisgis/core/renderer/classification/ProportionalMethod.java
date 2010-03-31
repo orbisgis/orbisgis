@@ -38,12 +38,17 @@ package org.orbisgis.core.renderer.classification;
 
 import org.gdms.data.DataSource;
 import org.gdms.driver.DriverException;
+import org.orbisgis.utils.I18N;
 
 /**
  * Adapted from SCAP3 : http://w3.geoprdc.univ-tlse2.fr/scap/java/
  * 
  */
 public class ProportionalMethod {
+
+	int LINEAR = 1;
+	int LOGARITHMIC = 2;
+	int SQUARE = 3;
 
 	private DataSource ds;
 	private String fieldName;
@@ -54,25 +59,34 @@ public class ProportionalMethod {
 	// The surface reference must be greater or equals than 10.
 	private double minSymbolArea;
 	private double minValue;
+	private int method;
 
 	public ProportionalMethod(DataSource ds, String fieldName) {
 		this.ds = ds;
 		this.fieldName = fieldName;
+
 	}
 
 	// TODO what the surfRef parameter is used to
-	public void build(double minSymbolArea) throws DriverException {
+	public void build(double minSymbolArea) throws DriverException,
+			ClassificationMethodException {
 
+		double[] valeurs = ClassificationUtils.getSortedValues(ds, fieldName);
+		maxValue = valeurs[valeurs.length - 1];
+		minValue = valeurs[0];
+
+		if ((method == LOGARITHMIC) && (minValue <= 0)) {
+			throw new ClassificationMethodException(
+					I18N
+							.getText("orbisgis.org.orbisgis.core.renderer.legend.carto.defaultProportionalLegend.symbolSize.logarithmic"));
+
+		}
 		if (minSymbolArea >= 10) {
 			this.minSymbolArea = minSymbolArea;
 		} else {
 			this.minSymbolArea = MIN_SURFACE;
 		}
 
-		double[] valeurs = ClassificationUtils.getSortedValues(ds, fieldName);
-
-		maxValue = valeurs[valeurs.length - 1];
-		minValue = valeurs[0];
 	}
 
 	public double getSymbolCoef() {
@@ -127,6 +141,7 @@ public class ProportionalMethod {
 	public double getLogarithmicSize(double value, int coefType) {
 		double coefSymb = Math.abs(minSymbolArea
 				/ Math.log(Math.abs(getMaxValue())));
+
 		double surface = Math.abs(Math.log(Math.abs(value))) * coefSymb;
 
 		return Math.sqrt(surface / coefType);
@@ -135,4 +150,13 @@ public class ProportionalMethod {
 	public double getMinValue() {
 		return minValue;
 	}
+
+	public void setMethod(int method) {
+		this.method = method;
+	}
+
+	public int getMethod() {
+		return method;
+	}
+
 }
