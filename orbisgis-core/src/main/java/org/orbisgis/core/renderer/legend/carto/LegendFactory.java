@@ -50,8 +50,8 @@ public class LegendFactory {
 		return new DefaultIntervalLegend();
 	}
 
-	public static ProportionalLegend createProportionalLegend() {
-		return new DefaultProportionalLegend();
+	public static ProportionalLegend createProportionalPointLegend() {
+		return new DefaultProportionalPointLegend();
 	}
 
 	public static LabelLegend createLabelLegend() {
