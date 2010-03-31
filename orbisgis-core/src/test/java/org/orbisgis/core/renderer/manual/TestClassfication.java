@@ -39,7 +39,9 @@ package org.orbisgis.core.renderer.manual;
 import java.awt.Color;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.IOException;
 
+import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -51,6 +53,7 @@ import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.driverManager.DriverLoadException;
 import org.orbisgis.core.DataManager;
+import org.orbisgis.core.DefaultDataManager;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.layerModel.LayerException;
@@ -64,6 +67,7 @@ import org.orbisgis.core.renderer.legend.carto.UniqueSymbolLegend;
 import org.orbisgis.core.renderer.symbol.Symbol;
 import org.orbisgis.core.renderer.symbol.SymbolFactory;
 
+import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
 
 public class TestClassfication {
@@ -73,10 +77,12 @@ public class TestClassfication {
 
 	public static void main(String[] args) throws Exception {
 
-		File src = new File("../../datas2tests/shp/bigshape2D/cantons.shp");
+		registerDataManager();
+		File src = new File(
+				"/home/ebocher/Documents/devs/orbisgis/datas2tests/shp/bigshape2D/cantons.shp");
 
-		// testRangeMethod(src);
-		testProportionnalMethod(src);
+		testRangeMethod(src);
+		// testProportionnalMethod(src);
 
 	}
 
@@ -88,7 +94,7 @@ public class TestClassfication {
 			RangeMethod intervalsDicretizationMethod = new RangeMethod(ds,
 					"PTOT90", 4);
 
-			intervalsDicretizationMethod.disecQuantiles();
+			intervalsDicretizationMethod.disecMean();
 
 			ranges = intervalsDicretizationMethod.getRanges();
 
@@ -127,7 +133,10 @@ public class TestClassfication {
 			layer.setLegend(l);
 
 			Envelope extent = layer.getEnvelope();
-			BufferedImage img = new BufferedImage(400, 400,
+			Coordinate centerPOint = extent.centre();
+			//extent = new GeometryFactory().createPoint(centerPOint).buffer(20000)
+				//	.getEnvelopeInternal();
+			BufferedImage img = new BufferedImage(1000, 1000,
 					BufferedImage.TYPE_INT_ARGB);
 			Renderer r = new Renderer();
 			// int size = 350;
@@ -135,6 +144,8 @@ public class TestClassfication {
 			// extent.centre().y - size), new Coordinate(extent.centre().x
 			// + size, extent.centre().y + size));
 			r.draw(img, extent, root);
+			ImageIO.write(img, "png", new File("/tmp/map.png"));
+
 			JFrame frm = new JFrame();
 			frm.getContentPane().add(new JLabel(new ImageIcon(img)));
 			frm.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -154,8 +165,20 @@ public class TestClassfication {
 		} catch (LayerException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 
+	}
+
+	public static void registerDataManager() {
+		// Installation of the service
+		Services
+				.registerService(
+						DataManager.class,
+						"Access to the sources, to its properties (indexes, etc.) and its contents, either raster or vectorial",
+						new DefaultDataManager(dsf));
 	}
 
 	private static DataManager getDataManager() {
@@ -168,7 +191,7 @@ public class TestClassfication {
 		try {
 			ds = dsf.getDataSource(src);
 			ds.open();
-			ProportionalLegend l = LegendFactory.createProportionalLegend();
+			ProportionalLegend l = LegendFactory.createProportionalPointLegend();
 			l.setClassificationField("PTOT90");
 			l.setMaxSize(100);
 			// l.setSquareMethod(2);
