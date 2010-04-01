@@ -37,6 +37,7 @@
 package org.gdms.manual;
 
 import java.io.File;
+import java.util.Iterator;
 
 import junit.framework.TestCase;
 
@@ -48,6 +49,7 @@ import org.gdms.data.WarningListener;
 import org.gdms.data.db.DBSource;
 import org.gdms.data.file.FileSourceCreation;
 import org.gdms.data.file.FileSourceDefinition;
+import org.gdms.data.indexes.DefaultSpatialIndexQuery;
 import org.gdms.data.metadata.DefaultMetadata;
 import org.gdms.data.types.Constraint;
 import org.gdms.data.types.GeometryConstraint;
@@ -57,6 +59,8 @@ import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeFactory;
 
 import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.Envelope;
+import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
 
 /**
@@ -82,7 +86,9 @@ public class DocumentationExamples extends TestCase {
 	private File outshpFile = new File("/tmp/myshp.shp");
 
 	// Create the factory for accessing to datasources
-	private DataSourceFactory dsf = new DataSourceFactory();;
+	private DataSourceFactory dsf = new DataSourceFactory();
+
+	public static String internalData = new String("src/test/resources/");
 
 	/**
 	 * This example demonstrates how to read a csv file and how to display the
@@ -599,17 +605,48 @@ public class DocumentationExamples extends TestCase {
 		ds.close();
 	}
 
-	public void testCommingSoon() throws Exception {
+	public void testBuffer() throws Exception {
+		dsf.getSourceManager().register("landcover2000",
+				new File(internalData + "landcover2000.shp"));
 		DataSource ds = dsf
-				.getDataSourceFromSQL("select buffer(the_geom, 20) from myshapefile where id = 4;");
+				.getDataSourceFromSQL("select st_buffer(the_geom, 20) from landcover2000 where gid = 4;");
 		ds.open();
 		System.out.println(ds.getAsString());
 		ds.close();
 	}
 
+	public void testSpatialIndex() throws Exception {
+		dsf.getSourceManager().register("landcover2000",
+				new File(internalData + "landcover2000.shp"));
+
+		DataSource ds = dsf.getDataSource("landcover2000");
+
+		SpatialDataSourceDecorator sds = new SpatialDataSourceDecorator(ds);
+		sds.open();
+
+		// Find all geometries around a buffer area 200
+
+		Envelope env = sds.getGeometry(0).buffer(200).getEnvelopeInternal();
+
+		DefaultSpatialIndexQuery query = new DefaultSpatialIndexQuery(env, sds
+				.getMetadata().getFieldName(sds.getSpatialFieldIndex()));
+		Iterator<Integer> it = sds.queryIndex(query);
+
+		while (it.hasNext()) {
+			Integer index = it.next();
+
+			Geometry g = sds.getGeometry(index);
+
+			System.out.println(g.toText());
+		}
+
+		sds.close();
+
+	}
+
 	public static void main(String[] args) throws Exception {
 		DocumentationExamples de = new DocumentationExamples();
-		de.testConnectPostgreSQL();
+		/*de.testConnectPostgreSQL();
 		de.testReadCSVAndShowOneValue();
 		de.testCreateDBF();
 		de.testAddValuesInCSV();
@@ -619,6 +656,7 @@ public class DocumentationExamples extends TestCase {
 		de.testSchemaEdition();
 		de.testUndo();
 		de.testExportTool();
-		de.testCommingSoon();
+		de.testBuffer();*/
+		de.testSpatialIndex();
 	}
 }
