@@ -64,6 +64,10 @@ public abstract class ViewPlugIn implements PlugIn {
 	public boolean isSelected(){
 		return false;
 	}
+	
+	public boolean isVisible(){
+		return false;
+	}
 
 	// View PlugIn Icon
 	public static ImageIcon getIcon(String nameIcone) {

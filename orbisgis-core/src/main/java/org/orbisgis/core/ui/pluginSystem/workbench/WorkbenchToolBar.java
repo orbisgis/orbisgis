@@ -1,19 +1,15 @@
 package org.orbisgis.core.ui.pluginSystem.workbench;
 
-import java.awt.Color;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Observable;
 import java.util.Observer;
-import java.util.Set;
 
 import javax.swing.AbstractButton;
 import javax.swing.JButton;
@@ -21,10 +17,8 @@ import javax.swing.JComboBox;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
-import javax.swing.JSeparator;
 import javax.swing.JToggleButton;
 import javax.swing.JToolBar;
-import javax.swing.SwingConstants;
 
 import org.orbisgis.core.Services;
 import org.orbisgis.core.images.IconLoader;
@@ -36,7 +30,6 @@ import org.orbisgis.core.ui.editors.map.tool.TransitionException;
 import org.orbisgis.core.ui.pluginSystem.AbstractPlugIn;
 import org.orbisgis.core.ui.pluginSystem.PlugIn;
 import org.orbisgis.core.ui.pluginSystem.PlugInContext;
-import org.orbisgis.core.ui.pluginSystem.menu.MenuSeparator;
 import org.orbisgis.core.ui.plugins.views.MapEditorPlugIn;
 import org.orbisgis.core.ui.plugins.views.editor.EditorManager;
 
@@ -190,7 +183,7 @@ public class WorkbenchToolBar extends EnableableToolBar implements Observer {
 						.getService(EditorManager.class);
 				IEditor editor = em.getActiveEditor();
 				MapEditorPlugIn mapEditor = (MapEditorPlugIn) editor;
-				if (mapEditor.getComponent() != null) {
+				if (mapEditor!=null && mapEditor.getComponent() != null) {
 					try {						
 						((MapControl) mapEditor.getComponent())
 								.setTool(automaton);						
