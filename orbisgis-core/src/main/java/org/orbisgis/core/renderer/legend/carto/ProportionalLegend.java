@@ -37,10 +37,12 @@
 package org.orbisgis.core.renderer.legend.carto;
 
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 
 import org.gdms.driver.DriverException;
 import org.orbisgis.core.renderer.legend.Legend;
 import org.orbisgis.core.renderer.symbol.StandardPointSymbol;
+import org.orbisgis.core.renderer.symbol.StandardSymbol;
 
 public interface ProportionalLegend extends Legend {
 
@@ -62,14 +64,14 @@ public interface ProportionalLegend extends Legend {
 	 * 
 	 * @return
 	 */
-	StandardPointSymbol getSampleSymbol();
+	StandardSymbol getSampleSymbol();
 
 	/**
 	 * Set the symbol that will be used to create the proportional instances
 	 * 
 	 * @param symbol
 	 */
-	void setSampleSymbol(StandardPointSymbol symbol);
+	void setSampleSymbol(StandardSymbol symbol);
 
 	/**
 	 * Set the method to calculate the proportional size. It can be either
@@ -108,7 +110,7 @@ public interface ProportionalLegend extends Legend {
 	 * @param g
 	 * @param bigSize
 	 */
-	void drawImage(Graphics g, int bigSize);
+	void drawImage(Graphics2D g, int bigSize);
 
 	/**
 	 * Gets the size of an image with the specified size for the bigest point

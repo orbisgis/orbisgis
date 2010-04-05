@@ -54,6 +54,10 @@ public class LegendFactory {
 		return new DefaultProportionalPointLegend();
 	}
 
+	public static ProportionalLegend createProportionalLineLegend() {
+		return new DefaultProportionalLineLegend();
+	}
+
 	public static LabelLegend createLabelLegend() {
 		return new DefaultLabelLegend();
 	}
