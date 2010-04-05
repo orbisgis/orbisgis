@@ -37,6 +37,7 @@
 package org.orbisgis.core.renderer.legend.carto;
 
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -57,19 +58,21 @@ import org.orbisgis.core.renderer.legend.RenderException;
 import org.orbisgis.core.renderer.legend.carto.persistence.LegendContainer;
 import org.orbisgis.core.renderer.legend.carto.persistence.ProportionalLegendType;
 import org.orbisgis.core.renderer.symbol.StandardPointSymbol;
+import org.orbisgis.core.renderer.symbol.StandardSymbol;
 import org.orbisgis.core.renderer.symbol.Symbol;
 import org.orbisgis.core.renderer.symbol.SymbolFactory;
 import org.orbisgis.core.renderer.symbol.SymbolManager;
 import org.orbisgis.core.renderer.symbol.collection.persistence.SimpleSymbolType;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.legends.GeometryProperties;
+import org.orbisgis.utils.FormatUtils;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.Point;
 
-public class DefaultProportionalPointLegend extends AbstractCartoLegend implements
-		ProportionalLegend {
+public class DefaultProportionalPointLegend extends AbstractCartoLegend
+		implements ProportionalLegend {
 
 	private String field;
 	private int maxSize = 3000;
@@ -233,12 +236,12 @@ public class DefaultProportionalPointLegend extends AbstractCartoLegend implemen
 		return maxSize;
 	}
 
-	public StandardPointSymbol getSampleSymbol() {
+	public StandardSymbol getSampleSymbol() {
 		return symbol;
 	}
 
-	public void setSampleSymbol(StandardPointSymbol symbol) {
-		this.symbol = symbol;
+	public void setSampleSymbol(StandardSymbol symbol) {
+		this.symbol = (StandardPointSymbol) symbol;
 	}
 
 	public int getMethod() {
@@ -263,23 +266,31 @@ public class DefaultProportionalPointLegend extends AbstractCartoLegend implemen
 		drawImage(g, bigSize);
 	}
 
-	public void drawImage(Graphics g, int bigSize) {
+	public void drawImage(Graphics2D g, int bigSize) {
+		String text = getHeader();
+		FontMetrics fm = g.getFontMetrics();
+		Rectangle2D bounds = fm.getStringBounds(text, g);
+		g.setColor(Color.black);
+		Font oldFont = g.getFont();
+		g.setFont(g.getFont().deriveFont(Font.BOLD));
+		g.drawString(text, 0, (int) bounds.getHeight());
+		g.setFont(oldFont);
+		g.translate(0, 5);
 		StandardPointSymbol big = (StandardPointSymbol) symbol.cloneSymbol();
 		big.setSize(bigSize);
 		GeometryFactory gf = new GeometryFactory();
 
-		FontMetrics fm = g.getFontMetrics();
 		double maxValue = proportionnalMethod.getMaxValue();
-		String maxText = Double.toString(maxValue);
+		String maxText = Double.toString(FormatUtils.round(maxValue, 3));
 		Rectangle2D r = fm.getStringBounds(maxText, g);
 		int textOffset = (int) r.getHeight();
 
 		// lines x dimension
 		int lineStartX = xOffset + bigSize / 2;
 		int lineEndX = xOffset + bigSize + 5;
-
 		// Draw max text
 		r = fm.getStringBounds(maxText, g);
+
 		g.setColor(Color.black);
 		g.drawString(maxText, lineEndX + 5,
 				(int) (textOffset + r.getHeight() / 2));
@@ -287,7 +298,6 @@ public class DefaultProportionalPointLegend extends AbstractCartoLegend implemen
 		try {
 			Point geom = gf.createPoint(new Coordinate(lineStartX, textOffset
 					+ bigSize / 2));
-
 			RenderPermission renderPermission = new AllowAllRenderPermission();
 			big.draw((Graphics2D) g, geom, new AffineTransform(),
 					renderPermission);
@@ -299,15 +309,16 @@ public class DefaultProportionalPointLegend extends AbstractCartoLegend implemen
 			double meanSize = bigSize * (realMeanSize / realMaxSize);
 			drawCircle(g, bigSize, meanSize, textOffset, lineStartX, lineEndX,
 					renderPermission, NumberFormat.getInstance().format(
-							meanValue));
+							FormatUtils.round(meanValue, 3)));
 
 			double realSmallSize = getSize(minValue, 1);
 			if (!Double.isInfinite(realSmallSize)) {
 				// proportional can give infinity sizes
 				double smallSize = bigSize * (realSmallSize / realMaxSize);
 				drawCircle(g, bigSize, smallSize, textOffset, lineStartX,
-						lineEndX, renderPermission, Double
-								.toString(proportionnalMethod.getMinValue()));
+						lineEndX, renderPermission, Double.toString(FormatUtils
+								.round(minValue, 3)));
+
 			}
 			g.drawLine(lineStartX, textOffset, lineEndX, textOffset);
 		} catch (DriverException e) {
@@ -317,7 +328,7 @@ public class DefaultProportionalPointLegend extends AbstractCartoLegend implemen
 
 	}
 
-	private void drawCircle(Graphics g, int bigSize, double smallSize,
+	private void drawCircle(Graphics2D g, int bigSize, double smallSize,
 			int textOffset, int lineStartX, int lineEndX,
 			RenderPermission renderPermission, String text)
 			throws DriverException {
@@ -336,6 +347,7 @@ public class DefaultProportionalPointLegend extends AbstractCartoLegend implemen
 				renderPermission);
 		g.setColor(Color.black);
 		g.drawLine(lineStartX, topSmall, lineEndX, topSmall);
+
 	}
 
 	public int[] getImageSize(Graphics2D g) {
@@ -348,7 +360,7 @@ public class DefaultProportionalPointLegend extends AbstractCartoLegend implemen
 			double maxValue = proportionnalMethod.getMaxValue();
 			String maxText = Double.toString(maxValue);
 			Rectangle2D r = fm.getStringBounds(maxText, g);
-			int height = (int) (r.getHeight() + bigSize + 1);
+			int height = (int) (r.getHeight() + bigSize + 10);
 			int maxWidth = (int) r.getWidth();
 			double minValue = proportionnalMethod.getMinValue();
 			String minText = Double.toString(minValue);
@@ -359,6 +371,14 @@ public class DefaultProportionalPointLegend extends AbstractCartoLegend implemen
 					+ " (mean)";
 			r = fm.getStringBounds(meanText, g);
 			maxWidth = (int) Math.max(maxWidth, r.getWidth());
+			
+			r = fm.getStringBounds(getHeader(), g);
+
+			double wHeader = r.getWidth();
+
+			if (wHeader > maxWidth) {
+				maxWidth = (int) wHeader;
+			}
 
 			return new int[] { bigSize + xOffset + 10 + maxWidth,
 					(int) (height + r.getHeight() / 2) };
@@ -387,4 +407,9 @@ public class DefaultProportionalPointLegend extends AbstractCartoLegend implemen
 		this.visible = visible;
 
 	}
+
+	private String getHeader() {
+		return "Field: " + getClassificationField();
+	}
+
 }
