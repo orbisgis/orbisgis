@@ -7,6 +7,7 @@ import org.orbisgis.core.ui.editorViews.toc.actions.cui.legends.ArrowSymbolEdito
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.legends.ImageSymbolEditor;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.legends.PnlIntervalLegend;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.legends.PnlLabelLegend;
+import org.orbisgis.core.ui.editorViews.toc.actions.cui.legends.PnlProportionalLineLegend;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.legends.PnlProportionalPointLegend;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.legends.PnlUniqueSymbolLegend;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.legends.PnlUniqueValueLegend;
@@ -34,6 +35,10 @@ public class EPLegendHelper {
 		ILegendPanel pnlProportionalLegend = new PnlProportionalPointLegend();
 		pnlProportionalLegend.initialize(legendContext);
 		legends.add(pnlProportionalLegend);
+		
+		ILegendPanel pnlProportionalLineLegend = new PnlProportionalLineLegend();
+		pnlProportionalLineLegend.initialize(legendContext);
+		legends.add(pnlProportionalLineLegend);
 
 		ILegendPanel pnlLabelLegend = new PnlLabelLegend();
 		pnlLabelLegend.initialize(legendContext);
