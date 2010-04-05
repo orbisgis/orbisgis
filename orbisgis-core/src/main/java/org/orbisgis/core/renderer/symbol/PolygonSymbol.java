@@ -91,4 +91,5 @@ public class PolygonSymbol extends AbstractPolygonSymbol {
 	public Symbol deriveSymbol(Color color) {
 		return new PolygonSymbol(color.darker(), lineWidth, color.brighter());
 	}
+
 }

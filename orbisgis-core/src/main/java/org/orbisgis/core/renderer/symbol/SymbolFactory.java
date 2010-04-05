@@ -112,7 +112,7 @@ public class SymbolFactory {
 	}
 
 	public static Symbol createLineSymbol(Color color, int lineWidth) {
-		return new LineSymbol(color, lineWidth);
+		return new LineSymbol(color, lineWidth, true);
 	}
 
 	public static Symbol createCirclePolygonSymbol(Color outline,
@@ -132,14 +132,13 @@ public class SymbolFactory {
 		return new PolygonCentroidHalfCircleLeftSymbol(outline, lineWidth,
 				fill, size, mapUnits);
 	}
-	
+
 	public static Symbol createPolygonCentroidHalfCircleRigthSymbol(
 			Color outline, int lineWidth, Color fill, int size, boolean mapUnits) {
 		return new PolygonCentroidHalfCircleRightSymbol(outline, lineWidth,
 				fill, size, mapUnits);
 	}
 
-	
 	public static Symbol createPolygonCentroidSquareSymbol(Color outline,
 			int lineWidth, Color fill, int size, boolean mapUnits) {
 		return new PolygonCentroidSquareSymbol(outline, lineWidth, fill, size,

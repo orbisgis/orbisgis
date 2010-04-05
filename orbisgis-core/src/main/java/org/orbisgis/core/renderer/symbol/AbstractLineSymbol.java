@@ -37,6 +37,8 @@
 package org.orbisgis.core.renderer.symbol;
 
 import java.awt.Color;
+import java.awt.geom.AffineTransform;
+import java.awt.geom.NoninvertibleTransformException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -51,10 +53,12 @@ public abstract class AbstractLineSymbol extends AbstractGeometrySymbol
 
 	protected Color outline;
 	protected int lineWidth;
+	protected boolean mapUnits;
 
-	public AbstractLineSymbol(Color outline, int lineWidth) {
+	public AbstractLineSymbol(Color outline, int lineWidth, boolean mapUnits) {
 		this.outline = outline;
 		this.lineWidth = lineWidth;
+		this.mapUnits = mapUnits;
 	}
 
 	public boolean willDrawSimpleGeometry(Geometry geom) {
@@ -94,7 +98,14 @@ public abstract class AbstractLineSymbol extends AbstractGeometrySymbol
 			ret.put("outline-color", Integer.toString(outline.getRGB()));
 		}
 		ret.put("line-width", Integer.toString(lineWidth));
+		ret.put("map-units", Boolean.toString(mapUnits));
 
+		return ret;
+	}
+
+	protected double toPixelUnits(int lineWidth, AffineTransform at)
+			throws NoninvertibleTransformException {
+		double ret = at.getScaleX() * lineWidth;
 		return ret;
 	}
 
@@ -107,6 +118,20 @@ public abstract class AbstractLineSymbol extends AbstractGeometrySymbol
 			outline = null;
 		}
 		lineWidth = Integer.parseInt(props.get("line-width"));
+		String mapUnitsProp = props.get("map-units");
+		if (mapUnitsProp == null) {
+			mapUnits = false;
+		} else {
+			mapUnits = Boolean.parseBoolean(mapUnitsProp);
+		}
+	}
+
+	public boolean isMapUnits() {
+		return mapUnits;
+	}
+
+	public void setMapUnits(boolean mapUnits) {
+		this.mapUnits = mapUnits;
 	}
 
 }

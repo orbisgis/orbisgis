@@ -52,7 +52,7 @@ public abstract class AbstractPolygonSymbol extends AbstractLineSymbol
 	protected Color fillColor;
 
 	public AbstractPolygonSymbol(Color outline, int lineWidth, Color fillColor) {
-		super(outline, lineWidth);
+		super(outline, lineWidth, false);
 		this.fillColor = fillColor;
 	}
 

@@ -40,6 +40,7 @@ import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.geom.AffineTransform;
+import java.awt.geom.NoninvertibleTransformException;
 
 import org.gdms.driver.DriverException;
 import org.orbisgis.core.renderer.RenderPermission;
@@ -50,14 +51,26 @@ import com.vividsolutions.jts.geom.Geometry;
 
 public class LineSymbol extends AbstractLineSymbol {
 
-	LineSymbol(Color outline, int lineWidth) {
-		super(outline, lineWidth);
+	private int drawingSize;
+
+	LineSymbol(Color outline, int lineWidth, boolean mapUnits) {
+		super(outline, lineWidth, mapUnits);
 	}
 
 	public Envelope draw(Graphics2D g, Geometry geom, AffineTransform at,
 			RenderPermission permission) throws DriverException {
 		LiteShape ls = new LiteShape(geom, at, true, 0.5);
-		g.setStroke(new BasicStroke(lineWidth, BasicStroke.CAP_ROUND,
+
+		 drawingSize = lineWidth;
+		if (mapUnits) {
+			try {
+				drawingSize = (int) toPixelUnits(lineWidth, at);
+			} catch (NoninvertibleTransformException e) {
+				throw new DriverException("Cannot convert to map units", e);
+			}
+		}
+
+		g.setStroke(new BasicStroke(drawingSize, BasicStroke.CAP_ROUND,
 				BasicStroke.JOIN_ROUND));
 		g.setColor(outline);
 		g.setPaint(null);
@@ -71,7 +84,7 @@ public class LineSymbol extends AbstractLineSymbol {
 	}
 
 	public StandardSymbol cloneSymbol() {
-		return new LineSymbol(outline, lineWidth);
+		return new LineSymbol(outline, lineWidth, mapUnits);
 	}
 
 	public String getId() {
@@ -80,7 +93,7 @@ public class LineSymbol extends AbstractLineSymbol {
 
 	@Override
 	public Symbol deriveSymbol(Color color) {
-		return new LineSymbol(color, lineWidth);
+		return new LineSymbol(color, lineWidth, mapUnits);
 	}
 
 }
