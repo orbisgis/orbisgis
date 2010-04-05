@@ -73,10 +73,9 @@ import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.classification.ClassificationMethodException;
 import org.orbisgis.core.renderer.legend.Legend;
 import org.orbisgis.core.renderer.legend.RenderException;
-import org.orbisgis.core.renderer.legend.carto.DefaultProportionalPointLegend;
 import org.orbisgis.core.renderer.legend.carto.LegendFactory;
 import org.orbisgis.core.renderer.legend.carto.ProportionalLegend;
-import org.orbisgis.core.renderer.symbol.StandardPointSymbol;
+import org.orbisgis.core.renderer.symbol.StandardLineSymbol;
 import org.orbisgis.core.renderer.symbol.Symbol;
 import org.orbisgis.core.sif.CRFlowLayout;
 import org.orbisgis.core.sif.CarriageReturn;
@@ -92,7 +91,7 @@ import org.orbisgis.core.ui.editorViews.toc.actions.cui.legend.ILegendPanel;
 
 import com.vividsolutions.jts.geom.Envelope;
 
-public class PnlProportionalPointLegend extends JPanel implements ILegendPanel {
+public class PnlProportionalLineLegend extends JPanel implements ILegendPanel {
 
 	private ProportionalLegend legend;
 	private LegendContext legendContext;
@@ -216,7 +215,7 @@ public class PnlProportionalPointLegend extends JPanel implements ILegendPanel {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				StandardPointSymbol sampleSymbol = (StandardPointSymbol) legend
+				StandardLineSymbol sampleSymbol = (StandardLineSymbol) legend
 						.getSampleSymbol();
 				sampleSymbol.setMapUnits(chkMapUnits.isSelected());
 				legend.setSampleSymbol(sampleSymbol);
@@ -240,7 +239,7 @@ public class PnlProportionalPointLegend extends JPanel implements ILegendPanel {
 					// Transform max to pixels
 					int maxSize = Integer.parseInt(txtMaxSize.getText());
 					int pixelHeight;
-					StandardPointSymbol sampleSymbol = (StandardPointSymbol) legend
+					StandardLineSymbol sampleSymbol = (StandardLineSymbol) legend
 							.getSampleSymbol();
 					if (sampleSymbol.isMapUnits()) {
 						MapTransform mt = legendContext
@@ -324,31 +323,24 @@ public class PnlProportionalPointLegend extends JPanel implements ILegendPanel {
 		});
 		editor.setSymbol(canvas.getSymbol());
 		if (UIFactory.showDialog(editor)) {
-			legend.setSampleSymbol((StandardPointSymbol) editor
+			legend.setSampleSymbol((StandardLineSymbol) editor
 					.getSymbolComposite().getSymbol(0));
 			syncWithLegend();
 		}
 	}
 
 	private SymbolFilter getSymbolFilter() {
-		return new CompositeSymbolFilter(new ConstraintSymbolFilter(
-				new GeometryConstraint(GeometryConstraint.POINT),
-				new GeometryConstraint(GeometryConstraint.MULTI_POINT),
-				new GeometryConstraint(GeometryConstraint.POLYGON),
-				new GeometryConstraint(GeometryConstraint.MULTI_POLYGON)),
-				new SymbolFilter() {
+		return new CompositeSymbolFilter(new SymbolFilter() {
 
-					@Override
-					public boolean accept(Symbol symbol) {
-						return symbol instanceof StandardPointSymbol;
-					}
-				});
+			@Override
+			public boolean accept(Symbol symbol) {
+				return symbol instanceof StandardLineSymbol;
+			}
+		});
 	}
 
 	public boolean acceptsGeometryType(int geometryType) {
-		return (geometryType == ILegendPanel.POLYGON)
-				|| (geometryType == ILegendPanel.POINT)
-				|| (geometryType == ILegendPanel.ALL);
+		return (geometryType == ILegendPanel.LINE);
 	}
 
 	public Component getComponent() {
@@ -360,7 +352,7 @@ public class PnlProportionalPointLegend extends JPanel implements ILegendPanel {
 	}
 
 	public ILegendPanel newInstance() {
-		return new PnlProportionalPointLegend();
+		return new PnlProportionalLineLegend();
 	}
 
 	public void setLegend(Legend legend) {
@@ -402,7 +394,7 @@ public class PnlProportionalPointLegend extends JPanel implements ILegendPanel {
 			txtMaxSize.setText("" + legend.getMaxSize());
 
 			// map units
-			StandardPointSymbol sampleSymbol = (StandardPointSymbol) legend
+			StandardLineSymbol sampleSymbol = (StandardLineSymbol) legend
 					.getSampleSymbol();
 
 			chkMapUnits.setSelected(sampleSymbol.isMapUnits());
@@ -433,7 +425,7 @@ public class PnlProportionalPointLegend extends JPanel implements ILegendPanel {
 
 	public void initialize(LegendContext lc) {
 		this.legendContext = lc;
-		legend = LegendFactory.createProportionalPointLegend();
+		legend = LegendFactory.createProportionalLineLegend();
 		legend.setName(legend.getLegendTypeName());
 		init();
 	}
