@@ -37,8 +37,6 @@
 
 package org.orbisgis.core.ui.plugins.views.geocatalog;
 
-import java.util.Observable;
-
 import org.gdms.source.SourceManager;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.images.IconNames;
@@ -66,9 +64,6 @@ public class GeocatalogDeleteSourcePlugIn extends AbstractPlugIn {
 
 	}
 
-	public void update(Observable o, Object arg) {
-	}
-
 	public void execute(SourceManager sourceManager, String currentNode) {
 		try {
 			sourceManager.remove(currentNode);
@@ -92,5 +87,11 @@ public class GeocatalogDeleteSourcePlugIn extends AbstractPlugIn {
 
 	public boolean acceptsSelectionCount(int selectionCount) {
 		return selectionCount > 0;
+	}
+
+	@Override
+	public boolean isSelected() {
+		// TODO Auto-generated method stub
+		return false;
 	}
 }

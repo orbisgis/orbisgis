@@ -37,8 +37,6 @@
 
 package org.orbisgis.core.ui.plugins.views.geocognition;
 
-import java.util.Observable;
-
 import org.gdms.sql.function.Function;
 import org.gdms.sql.function.FunctionManager;
 import org.orbisgis.core.OrbisGISPersitenceConfig;
@@ -47,7 +45,6 @@ import org.orbisgis.core.errorManager.ErrorManager;
 import org.orbisgis.core.geocognition.Geocognition;
 import org.orbisgis.core.geocognition.GeocognitionElement;
 import org.orbisgis.core.geocognition.sql.GeocognitionBuiltInFunction;
-import org.orbisgis.core.geocognition.sql.GeocognitionFunctionFactory;
 import org.orbisgis.core.images.IconNames;
 import org.orbisgis.core.ui.pluginSystem.AbstractPlugIn;
 import org.orbisgis.core.ui.pluginSystem.PlugInContext;
@@ -70,9 +67,6 @@ public class GeocognitionUnRegisterBuiltInFunctionPlugIn extends AbstractPlugIn 
 				new String[] { Names.POPUP_GEOCOGNITION_UNREG_BUILT_PATH1 },
 				Names.POPUP_GEOCOGNITION_UNREG_BUILT_GROUP, false,
 				getIcon(IconNames.POPUP_GEOCOGNITION_UNREG_BUILT_ICON), wbContext);
-	}
-
-	public void update(Observable o, Object arg) {
 	}
 
 	@SuppressWarnings("unchecked")
@@ -115,5 +109,11 @@ public class GeocognitionUnRegisterBuiltInFunctionPlugIn extends AbstractPlugIn 
 
 	public boolean acceptsSelectionCount(Geocognition geocog, int selectionCount) {
 		return selectionCount > 0;
+	}
+
+	@Override
+	public boolean isSelected() {
+		// TODO Auto-generated method stub
+		return false;
 	}
 }

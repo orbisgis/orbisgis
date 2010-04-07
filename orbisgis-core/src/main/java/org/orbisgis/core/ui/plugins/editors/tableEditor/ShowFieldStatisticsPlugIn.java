@@ -64,7 +64,6 @@ import org.orbisgis.core.ui.pluginSystem.workbench.Names;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchContext;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchFrame;
 import org.orbisgis.core.ui.plugins.views.OutputManager;
-import org.orbisgis.core.ui.plugins.views.editor.EditorManager;
 
 public class ShowFieldStatisticsPlugIn extends AbstractPlugIn {
 
@@ -240,5 +239,11 @@ public class ShowFieldStatisticsPlugIn extends AbstractPlugIn {
 			}
 		}
 		return isVisible = false;
+	}
+
+	@Override
+	public boolean isSelected() {
+		// TODO Auto-generated method stub
+		return false;
 	}
 }

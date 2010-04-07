@@ -56,18 +56,14 @@ public abstract class ViewPlugIn implements PlugIn {
 	protected PlugInContext getPlugInContext() {
 		return plugInContext;
 	}
-
-	public void setPlugInContext(PlugInContext context) {
-		this.plugInContext = context;
-	}
-
-	public boolean isSelected(){
-		return false;
-	}
 	
-	public boolean isVisible(){
-		return false;
-	}
+    /**************** Not rule implemented *****************/
+	 //It uses for Abstract PlugIn
+    public boolean isVisible() {return false;}   
+    //It uses for Abstract PlugIn
+    public boolean isSelected(){ return false; }
+    /********************************************************/
+	
 
 	// View PlugIn Icon
 	public static ImageIcon getIcon(String nameIcone) {
@@ -77,11 +73,11 @@ public abstract class ViewPlugIn implements PlugIn {
 	// Get View PlugIn Id
 	public String getId() {
 		return id;
-	}
+	}	
 	
-	public String getName() {
+/*	public String getName() {
 		return name == null ? createName(getClass()) : name;
-	}
+	}*/
 	
 	public static String createName(Class plugInClass) {
 		return plugInClass.getName();

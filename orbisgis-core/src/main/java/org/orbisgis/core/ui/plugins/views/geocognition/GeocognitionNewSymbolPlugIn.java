@@ -37,8 +37,6 @@
 
 package org.orbisgis.core.ui.plugins.views.geocognition;
 
-import java.util.Observable;
-
 import org.orbisgis.core.geocognition.Geocognition;
 import org.orbisgis.core.geocognition.GeocognitionElement;
 import org.orbisgis.core.images.IconNames;
@@ -69,9 +67,6 @@ public class GeocognitionNewSymbolPlugIn extends AbstractPlugIn {
 				getIcon(IconNames.POPUP_GEOCOGNITION_NEW_SYMBOL_ICON), wbContext);
 	}
 
-	public void update(Observable o, Object arg) {
-	}
-
 	public boolean isEnabled() {
 		return true;
 	}
@@ -86,5 +81,11 @@ public class GeocognitionNewSymbolPlugIn extends AbstractPlugIn {
 
 	public boolean acceptsSelectionCount(Geocognition geocog, int selectionCount) {
 		return selectionCount <= 1;
+	}
+
+	@Override
+	public boolean isSelected() {
+		// TODO Auto-generated method stub
+		return false;
 	}
 }

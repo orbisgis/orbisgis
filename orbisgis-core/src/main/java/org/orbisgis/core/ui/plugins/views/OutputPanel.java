@@ -56,7 +56,6 @@ import org.orbisgis.core.Services;
 import org.orbisgis.core.errorManager.ErrorManager;
 import org.orbisgis.core.images.IconLoader;
 import org.orbisgis.core.images.IconNames;
-import org.orbisgis.core.ui.pluginSystem.ViewPlugIn;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchContext;
 
 public class OutputPanel extends JPanel implements OutputManager {

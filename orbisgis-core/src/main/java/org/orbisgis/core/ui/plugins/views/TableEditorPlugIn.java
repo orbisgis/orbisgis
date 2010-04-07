@@ -83,16 +83,17 @@ public class TableEditorPlugIn extends ViewPlugIn implements IEditor {
 		return false;
 	}
 
-	// Observer & PlugIn
+	//View plugin is updated by EditorViewPlugIn
 	public void update(Observable arg0, Object arg1) {
-	}
-
-	public boolean isVisible() {
-		return false;
 	}
 
 	public ViewPlugIn getView() {
 		return this;
+	}
+
+	@Override
+	public String getName() {		
+		return "Table editor view";
 	}
 
 }

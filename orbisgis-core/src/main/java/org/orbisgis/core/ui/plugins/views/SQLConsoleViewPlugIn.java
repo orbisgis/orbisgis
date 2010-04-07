@@ -345,17 +345,13 @@ public class SQLConsoleViewPlugIn extends ViewPlugIn {
 			logger.debug("Execution time: " + ((t2 - t1) / 1000.0));
 		}
 	}
-
+	
 	public void update(Observable o, Object arg) {
-		setSelected();
+		menuItem.setSelected(getPlugInContext().viewIsOpen(getId()));
 	}
-
-	public void setSelected() {
-		menuItem.setSelected(isVisible());
-	}
-
-	public boolean isVisible() {
-		return getPlugInContext().viewIsOpen(getId());
+	
+	public String getName() {		
+		return "SQL view";
 	}
 
 }

@@ -61,7 +61,6 @@ import org.orbisgis.core.renderer.legend.Legend;
 import org.orbisgis.core.sif.SaveFilePanel;
 import org.orbisgis.core.sif.UIFactory;
 import org.orbisgis.core.sif.UIPanel;
-import org.orbisgis.core.ui.editor.IEditor;
 import org.orbisgis.core.ui.editors.map.actions.export.ScaleEditor;
 import org.orbisgis.core.ui.pluginSystem.AbstractPlugIn;
 import org.orbisgis.core.ui.pluginSystem.PlugInContext;
@@ -271,6 +270,12 @@ public class ExportMapAsPDFPlugIn extends AbstractPlugIn {
 		if((getPlugInContext().getMapEditor()) != null){
 			return true;
 		}
+		return false;
+	}
+
+	@Override
+	public boolean isSelected() {
+		// TODO Auto-generated method stub
 		return false;
 	}
 }

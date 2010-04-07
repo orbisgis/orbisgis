@@ -1,13 +1,13 @@
 package org.orbisgis.core.ui.plugins.toc;
 
-import java.util.Observable;
-
 import org.gdms.driver.DriverException;
 import org.orbisgis.core.images.IconNames;
 import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.layerModel.MapContext;
 import org.orbisgis.core.ui.pluginSystem.AbstractPlugIn;
 import org.orbisgis.core.ui.pluginSystem.PlugInContext;
+import org.orbisgis.core.ui.pluginSystem.PlugInContext.LayerSelectionTest;
+import org.orbisgis.core.ui.pluginSystem.PlugInContext.LayerTest;
 import org.orbisgis.core.ui.pluginSystem.workbench.Names;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchContext;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchFrame;
@@ -28,31 +28,21 @@ public class SetActivePlugIn extends AbstractPlugIn {
 				getIcon(IconNames.PENCIL), wbContext);
 	}
 
-	public void update(Observable o, Object arg) {
-	}
-
 	public void execute(MapContext mapContext, ILayer layer) {
 		mapContext.setActiveLayer(layer);
 	}
 
-	public boolean isEnabled() {
-		return true;
-	}
-
 	public boolean isVisible() {
-		return getPlugInContext().checkLayerAvailability();
+		return getPlugInContext().checkLayerAvailability(
+				new LayerSelectionTest[] {LayerSelectionTest.EQUAL},
+				1,
+				new LayerTest[] {LayerTest.VECTORIAL, LayerTest.NOT_ACTIVE_LAYER, LayerTest.IS_EDTABLE}, 
+				false);
 	}
 
-	public boolean accepts(MapContext mc, ILayer layer) {
-		try {
-			return (mc.getActiveLayer() != layer) && layer.isVectorial()
-					&& layer.getDataSource().isEditable();
-		} catch (DriverException e) {
-			return false;
-		}
-	}
-
-	public boolean acceptsSelectionCount(int selectionCount) {
-		return selectionCount == 1;
+	@Override
+	public boolean isSelected() {
+		// TODO Auto-generated method stub
+		return false;
 	}
 }

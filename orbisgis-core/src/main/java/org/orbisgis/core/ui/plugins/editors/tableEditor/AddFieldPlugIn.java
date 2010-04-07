@@ -55,7 +55,6 @@ import org.orbisgis.core.ui.pluginSystem.PlugInContext;
 import org.orbisgis.core.ui.pluginSystem.workbench.Names;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchContext;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchFrame;
-import org.orbisgis.core.ui.plugins.views.editor.EditorManager;
 
 public class AddFieldPlugIn extends AbstractPlugIn {
 
@@ -120,5 +119,11 @@ public class AddFieldPlugIn extends AbstractPlugIn {
 					&& element.getDataSource().isEditable();
 		}
 		return isVisible = false;
+	}
+
+	@Override
+	public boolean isSelected() {
+		// TODO Auto-generated method stub
+		return false;
 	}
 }

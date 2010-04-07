@@ -53,8 +53,8 @@ import org.gdms.source.SourceRemovalEvent;
 import org.orbisgis.core.DataManager;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.ui.editor.IEditor;
-import org.orbisgis.core.ui.pluginSystem.AbstractPlugIn;
 import org.orbisgis.core.ui.plugins.views.editor.EditorManager;
+import org.orbisgis.core.ui.plugins.views.geocatalog.filters.IFilter;
 
 public class SourceListModel extends AbstractListModel implements ListModel {
 
@@ -63,9 +63,9 @@ public class SourceListModel extends AbstractListModel implements ListModel {
 	private String[] names;
 	private SyncSourceListener sourceListener;
 	private String nameFilter = null;
-	private ArrayList<AbstractPlugIn> filters = new ArrayList<AbstractPlugIn>();
+	private ArrayList<IFilter> filters = new ArrayList<IFilter>();
 
-	public ArrayList<AbstractPlugIn> getFilters() {
+	public ArrayList<IFilter> getFilters() {
 		return filters;
 	}
 
@@ -82,7 +82,7 @@ public class SourceListModel extends AbstractListModel implements ListModel {
 		String[] names = sourceManager.getSourceNames();
 		logger.debug("Showing " + names.length + " sources");
 		if (nameFilter != null) {
-			AbstractPlugIn textFilter = new TextFilter();
+			IFilter textFilter = new TextFilter();
 			names = filter(sourceManager, names, textFilter);
 		}
 		logger.debug("Showing " + names.length + " sources");
@@ -108,10 +108,10 @@ public class SourceListModel extends AbstractListModel implements ListModel {
 	}
 
 	private String[] filter(SourceManager sourceManager, String[] names,
-			AbstractPlugIn filter) {
+			IFilter textFilter) {
 		ArrayList<String> filteredNames = new ArrayList<String>();
 		for (String name : names) {
-			if (filter.accepts(sourceManager, name)) {
+			if (textFilter.accepts(sourceManager, name)) {
 				filteredNames.add(name);
 			}
 		}
@@ -134,7 +134,7 @@ public class SourceListModel extends AbstractListModel implements ListModel {
 				.getSourceManager().removeSourceListener(sourceListener);
 	}
 
-	public void filter(String text, ArrayList<AbstractPlugIn> filters) {
+	public void filter(String text, ArrayList<IFilter> filters) {
 		if (text.trim().length() == 0) {
 			text = null;
 		}
@@ -193,7 +193,7 @@ public class SourceListModel extends AbstractListModel implements ListModel {
 		}
 	}
 
-	private final class OrFilter extends AbstractPlugIn {
+	private final class OrFilter implements IFilter {
 
 		@Override
 		public boolean accepts(SourceManager sm, String sourceName) {
@@ -206,17 +206,15 @@ public class SourceListModel extends AbstractListModel implements ListModel {
 		}
 	}
 
-	private final class TextFilter extends AbstractPlugIn {
-
-		@Override
+	private final class TextFilter implements IFilter {
+		
 		public boolean accepts(SourceManager sm, String sourceName) {
 			return sourceName.toLowerCase().contains(nameFilter.toLowerCase());
 		}
 	}
 	
-	private final class GeocatalogFilter extends AbstractPlugIn {
-
-		@Override
+	private final class GeocatalogFilter implements IFilter {
+		
 		public boolean accepts(SourceManager sm, String sourceName) {
 			Source source = sm.getSource(sourceName);
 			return (source != null) && source.isWellKnownName();			

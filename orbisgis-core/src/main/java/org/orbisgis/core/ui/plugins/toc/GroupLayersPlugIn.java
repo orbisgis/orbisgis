@@ -1,7 +1,5 @@
 package org.orbisgis.core.ui.plugins.toc;
 
-import java.util.Observable;
-
 import org.orbisgis.core.DataManager;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.images.IconNames;
@@ -48,10 +46,6 @@ public class GroupLayersPlugIn extends AbstractPlugIn {
 				getIcon(IconNames.POPUP_TOC_LAYERS_GROUP_ICON), wbContext);
 	}
 
-	@Override
-	public void update(Observable o, Object arg) {
-	}
-
 	public boolean isVisible() {
 		return getPlugInContext().IsMultipleLayer();
 	}
@@ -67,5 +61,11 @@ public class GroupLayersPlugIn extends AbstractPlugIn {
 			}
 		}
 		return layer.length > 0;
+	}
+
+	@Override
+	public boolean isSelected() {
+		// TODO Auto-generated method stub
+		return false;
 	}
 }

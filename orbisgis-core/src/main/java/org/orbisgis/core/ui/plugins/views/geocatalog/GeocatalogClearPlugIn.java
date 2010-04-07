@@ -97,4 +97,10 @@ public class GeocatalogClearPlugIn extends AbstractPlugIn {
 	public boolean acceptsSelectionCount(int selectionCount) {
 		return true;
 	}
+
+	@Override
+	public boolean isSelected() {
+		// TODO Auto-generated method stub
+		return false;
+	}
 }

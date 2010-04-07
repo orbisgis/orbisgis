@@ -89,4 +89,10 @@ public class GeocatalogShowTablePlugIn extends AbstractPlugIn {
 	public boolean acceptsSelectionCount(int selectionCount) {
 		return selectionCount > 0;
 	}
+
+	@Override
+	public boolean isSelected() {
+		// TODO Auto-generated method stub
+		return false;
+	}
 }

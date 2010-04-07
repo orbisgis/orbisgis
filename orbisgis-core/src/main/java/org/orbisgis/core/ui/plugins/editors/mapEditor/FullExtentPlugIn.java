@@ -41,11 +41,7 @@ public class FullExtentPlugIn extends AbstractPlugIn {
 		MapContext mc = (MapContext) editor.getElement().getObject();
 		return mc.getLayerModel().getLayerCount() > 0;
 	}
-
-	public boolean isVisible(IEditor editor) {
-		return true;
-	}
-
+	
 	@Override
 	public void update(Observable o, Object arg) {
 		IEditor editor = Services.getService(EditorManager.class)
@@ -54,5 +50,17 @@ public class FullExtentPlugIn extends AbstractPlugIn {
 			btn.setEnabled(isEnabled(editor));
 		else
 			btn.setEnabled(false);
+	}
+
+	@Override
+	public boolean isVisible() {
+		//Never called. It's update method that set plugin context.
+		return false;
+	}
+
+	@Override
+	public boolean isSelected() {
+		// TODO Auto-generated method stub
+		return false;
 	}
 }

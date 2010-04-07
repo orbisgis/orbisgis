@@ -121,19 +121,16 @@ public class TocViewPlugIn extends ViewPlugIn {
 		panel.setMapContext(null, null);
 	}
 
-	public void update(Observable o, Object arg) {
-		setSelected();
-	}
-
-	public void setSelected() {
-		menuItem.setSelected(isVisible());
-	}
-
-	public boolean isVisible() {
-		return getPlugInContext().viewIsOpen(getId());
-	}
 	
 	public void delete() {
 		panel.delete();
+	}
+	
+	public void update(Observable o, Object arg) {
+		menuItem.setSelected(getPlugInContext().viewIsOpen(getId()));
+	}
+	
+	public String getName() {		
+		return "Toc view";
 	}
 }

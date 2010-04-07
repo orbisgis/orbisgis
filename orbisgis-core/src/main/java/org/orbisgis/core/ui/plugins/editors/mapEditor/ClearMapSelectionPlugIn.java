@@ -41,7 +41,6 @@ import java.util.Observable;
 
 import javax.swing.JButton;
 
-import org.orbisgis.core.Services;
 import org.orbisgis.core.edition.EditableElement;
 import org.orbisgis.core.images.IconNames;
 import org.orbisgis.core.layerModel.ILayer;
@@ -52,7 +51,6 @@ import org.orbisgis.core.ui.pluginSystem.AbstractPlugIn;
 import org.orbisgis.core.ui.pluginSystem.PlugInContext;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchContext;
 import org.orbisgis.core.ui.plugins.views.MapEditorPlugIn;
-import org.orbisgis.core.ui.plugins.views.editor.EditorManager;
 
 public class ClearMapSelectionPlugIn extends AbstractPlugIn {
 
@@ -106,5 +104,11 @@ public class ClearMapSelectionPlugIn extends AbstractPlugIn {
 
 	public boolean isVisible() {
 		return true;
+	}
+
+	@Override
+	public boolean isSelected() {
+		// TODO Auto-generated method stub
+		return false;
 	}
 }

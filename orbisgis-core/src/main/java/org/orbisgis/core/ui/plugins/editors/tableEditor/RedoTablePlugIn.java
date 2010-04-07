@@ -39,20 +39,16 @@ package org.orbisgis.core.ui.plugins.editors.tableEditor;
 
 import java.util.Observable;
 
-import javax.swing.ImageIcon;
 import javax.swing.JButton;
 
 import org.gdms.data.DataSource;
 import org.gdms.driver.DriverException;
 import org.orbisgis.core.Services;
-import org.orbisgis.core.images.IconLoader;
 import org.orbisgis.core.images.IconNames;
 import org.orbisgis.core.ui.editor.IEditor;
 import org.orbisgis.core.ui.pluginSystem.AbstractPlugIn;
 import org.orbisgis.core.ui.pluginSystem.PlugInContext;
-import org.orbisgis.core.ui.pluginSystem.workbench.Names;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchContext;
-import org.orbisgis.core.ui.plugins.views.editor.EditorManager;
 
 public class RedoTablePlugIn extends AbstractPlugIn {
 
@@ -99,5 +95,11 @@ public class RedoTablePlugIn extends AbstractPlugIn {
 
 	public boolean isVisible() {
 		return true;
+	}
+
+	@Override
+	public boolean isSelected() {
+		// TODO Auto-generated method stub
+		return false;
 	}
 }

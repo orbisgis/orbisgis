@@ -49,12 +49,10 @@ import org.orbisgis.core.errorManager.ErrorManager;
 import org.orbisgis.core.images.IconNames;
 import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.layerModel.MapContext;
-import org.orbisgis.core.ui.editor.IEditor;
 import org.orbisgis.core.ui.pluginSystem.AbstractPlugIn;
 import org.orbisgis.core.ui.pluginSystem.PlugInContext;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchContext;
 import org.orbisgis.core.ui.plugins.views.MapEditorPlugIn;
-import org.orbisgis.core.ui.plugins.views.editor.EditorManager;
 
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
@@ -149,5 +147,17 @@ public class ZoomToSelectedFeaturesPlugIn extends AbstractPlugIn {
 			return false;
 		}
 		return true;
+	}
+
+	@Override
+	public boolean isVisible() {
+		//Never called
+		return false;
+	}
+
+	@Override
+	public boolean isSelected() {
+		// TODO Auto-generated method stub
+		return false;
 	}
 }

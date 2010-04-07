@@ -27,22 +27,17 @@ public class OutputViewPlugIn extends ViewPlugIn {
 		Services.registerService(OutputManager.class,
 				"Service to send messages to the output system", panel);
 	}
-
-	@Override
+	
 	public boolean execute(PlugInContext context) throws Exception {
 		getPlugInContext().loadView(getId());
 		return true;
 	}
-
+	
 	public void update(Observable o, Object arg) {
-		setSelected();
+		menuItem.setSelected(getPlugInContext().viewIsOpen(getId()));
 	}
-
-	public void setSelected() {
-		menuItem.setSelected(isVisible());
-	}
-
-	public boolean isVisible() {
-		return getPlugInContext().viewIsOpen(getId());
+	
+	public String getName() {		
+		return "Output view";
 	}
 }

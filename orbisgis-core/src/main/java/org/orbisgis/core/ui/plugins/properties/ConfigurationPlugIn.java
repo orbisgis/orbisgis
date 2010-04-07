@@ -81,4 +81,10 @@ public class ConfigurationPlugIn extends AbstractPlugIn {
 	public boolean isVisible() {
 		return true;
 	}
+
+	@Override
+	public boolean isSelected() {
+		// TODO Auto-generated method stub
+		return false;
+	}
 }

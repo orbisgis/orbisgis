@@ -88,4 +88,10 @@ public class GeocatalogSaveInFilePlugIn extends AbstractPlugIn {
 	public boolean acceptsSelectionCount(int selectionCount) {
 		return selectionCount == 1;
 	}
+
+	@Override
+	public boolean isSelected() {
+		// TODO Auto-generated method stub
+		return false;
+	}
 }

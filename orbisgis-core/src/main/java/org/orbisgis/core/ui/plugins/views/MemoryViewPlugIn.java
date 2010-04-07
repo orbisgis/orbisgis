@@ -31,15 +31,11 @@ public class MemoryViewPlugIn extends ViewPlugIn {
 	}
 
 	public void update(Observable o, Object arg) {
-		setSelected();
+		menuItem.setSelected(getPlugInContext().viewIsOpen(getId()));
 	}
-
-	public void setSelected() {
-		menuItem.setSelected(isVisible());
-	}
-
-	public boolean isVisible() {
-		return getPlugInContext().viewIsOpen(getId());
+	
+	public String getName() {		
+		return "Memory view";
 	}
 
 }

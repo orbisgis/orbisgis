@@ -37,8 +37,6 @@
 
 package org.orbisgis.core.ui.plugins.views.geocognition;
 
-import java.util.Observable;
-
 import org.gdms.sql.customQuery.CustomQuery;
 import org.gdms.sql.customQuery.QueryManager;
 import org.orbisgis.core.OrbisGISPersitenceConfig;
@@ -47,7 +45,6 @@ import org.orbisgis.core.errorManager.ErrorManager;
 import org.orbisgis.core.geocognition.Geocognition;
 import org.orbisgis.core.geocognition.GeocognitionElement;
 import org.orbisgis.core.geocognition.sql.GeocognitionBuiltInCustomQuery;
-import org.orbisgis.core.geocognition.sql.GeocognitionCustomQueryFactory;
 import org.orbisgis.core.images.IconNames;
 import org.orbisgis.core.ui.pluginSystem.AbstractPlugIn;
 import org.orbisgis.core.ui.pluginSystem.PlugInContext;
@@ -76,9 +73,6 @@ public class GeocognitionUnRegisterBuiltInCustomQueryPlugIn extends AbstractPlug
 						false,
 						getIcon(IconNames.POPUP_GEOCOGNITION_UNREG_BUILT_QUERY_ICON),
 						wbContext);
-	}
-
-	public void update(Observable o, Object arg) {
 	}
 
 	@SuppressWarnings("unchecked")
@@ -121,5 +115,11 @@ public class GeocognitionUnRegisterBuiltInCustomQueryPlugIn extends AbstractPlug
 
 	public boolean acceptsSelectionCount(Geocognition geocog, int selectionCount) {
 		return selectionCount > 0;
+	}
+
+	@Override
+	public boolean isSelected() {
+		// TODO Auto-generated method stub
+		return false;
 	}
 }

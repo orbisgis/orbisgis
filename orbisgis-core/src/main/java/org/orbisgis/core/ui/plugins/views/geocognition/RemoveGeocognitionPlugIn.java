@@ -37,8 +37,6 @@
 
 package org.orbisgis.core.ui.plugins.views.geocognition;
 
-import java.util.Observable;
-
 import org.orbisgis.core.geocognition.Geocognition;
 import org.orbisgis.core.geocognition.GeocognitionElement;
 import org.orbisgis.core.images.IconNames;
@@ -65,9 +63,6 @@ public class RemoveGeocognitionPlugIn extends AbstractPlugIn {
 				getIcon(IconNames.REMOVE), wbContext);
 	}
 
-	public void update(Observable o, Object arg) {
-	}
-
 	public void execute(Geocognition geocognition, GeocognitionElement element) {
 		geocognition.removeElement(element.getIdPath());
 	}
@@ -86,5 +81,11 @@ public class RemoveGeocognitionPlugIn extends AbstractPlugIn {
 
 	public boolean acceptsSelectionCount(Geocognition geocog, int selectionCount) {
 		return selectionCount > 0;
+	}
+
+	@Override
+	public boolean isSelected() {
+		// TODO Auto-generated method stub
+		return false;
 	}
 }

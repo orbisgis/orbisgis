@@ -1,9 +1,8 @@
 package org.orbisgis.core.ui.plugins.views.geocatalog.filters;
 
 import org.gdms.source.SourceManager;
-import org.orbisgis.core.ui.pluginSystem.AbstractPlugIn;
 
-public class WMS extends AbstractPlugIn {
+public class WMS implements IFilter {
 
 	@Override
 	public boolean accepts(SourceManager sm, String sourceName) {

@@ -11,6 +11,8 @@ import org.orbisgis.core.layerModel.MapContext;
 import org.orbisgis.core.ui.editorViews.toc.EditableLayer;
 import org.orbisgis.core.ui.pluginSystem.AbstractPlugIn;
 import org.orbisgis.core.ui.pluginSystem.PlugInContext;
+import org.orbisgis.core.ui.pluginSystem.PlugInContext.LayerSelectionTest;
+import org.orbisgis.core.ui.pluginSystem.PlugInContext.LayerTest;
 import org.orbisgis.core.ui.pluginSystem.workbench.Names;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchContext;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchFrame;
@@ -49,19 +51,17 @@ public class ShowInTablePlugIn extends AbstractPlugIn {
 						layer)));
 	}
 
-	public boolean isEnabled() {
-		return true;
-	}
-
 	public boolean isVisible() {
-		return getPlugInContext().checkLayerAvailability();
+		return getPlugInContext().checkLayerAvailability(
+				new LayerSelectionTest[] {LayerSelectionTest.EQUAL},
+				1,
+				new LayerTest[] {LayerTest.DATASOURCE_NOT_NULL}, 
+				false);
 	}
 
-	public boolean accepts(MapContext mc, ILayer layer) {
-		return layer.getDataSource() != null;
-	}
-
-	public boolean acceptsSelectionCount(int selectionCount) {
-		return selectionCount == 1;
+	@Override
+	public boolean isSelected() {
+		// TODO Auto-generated method stub
+		return false;
 	}
 }

@@ -39,22 +39,17 @@ package org.orbisgis.core.ui.plugins.editors.mapEditor;
 
 import java.util.Observable;
 
-import javax.swing.ImageIcon;
 import javax.swing.JButton;
 
 import org.gdms.driver.DriverException;
 import org.orbisgis.core.Services;
-import org.orbisgis.core.images.IconLoader;
 import org.orbisgis.core.images.IconNames;
 import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.layerModel.MapContext;
-import org.orbisgis.core.ui.editor.IEditor;
 import org.orbisgis.core.ui.pluginSystem.AbstractPlugIn;
 import org.orbisgis.core.ui.pluginSystem.PlugInContext;
-import org.orbisgis.core.ui.pluginSystem.workbench.Names;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchContext;
 import org.orbisgis.core.ui.plugins.views.MapEditorPlugIn;
-import org.orbisgis.core.ui.plugins.views.editor.EditorManager;
 
 public class UndoMapPlugIn extends AbstractPlugIn {
 
@@ -108,6 +103,12 @@ public class UndoMapPlugIn extends AbstractPlugIn {
 			ILayer activeLayer = mc.getActiveLayer();
 			return activeLayer != null;
 		}
+		return false;
+	}
+
+	@Override
+	public boolean isSelected() {
+		// TODO Auto-generated method stub
 		return false;
 	}
 }

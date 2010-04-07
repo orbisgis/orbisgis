@@ -41,7 +41,6 @@ import java.awt.event.MouseEvent;
 import java.text.ParseException;
 import java.util.Observable;
 
-import javax.swing.ImageIcon;
 import javax.swing.JButton;
 
 import org.gdms.data.DataSource;
@@ -49,7 +48,6 @@ import org.gdms.driver.DriverException;
 import org.gdms.sql.strategies.IncompatibleTypesException;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.errorManager.ErrorManager;
-import org.orbisgis.core.images.IconLoader;
 import org.orbisgis.core.images.IconNames;
 import org.orbisgis.core.sif.UIFactory;
 import org.orbisgis.core.ui.components.sif.AskValidRow;
@@ -60,8 +58,6 @@ import org.orbisgis.core.ui.pluginSystem.PlugInContext;
 import org.orbisgis.core.ui.pluginSystem.workbench.Names;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchContext;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchFrame;
-import org.orbisgis.core.ui.plugins.views.TableEditorPlugIn;
-import org.orbisgis.core.ui.plugins.views.editor.EditorManager;
 
 public class NewRowTablePlugIn extends AbstractPlugIn {
 
@@ -146,5 +142,11 @@ public class NewRowTablePlugIn extends AbstractPlugIn {
 
 	public boolean isVisible() {
 		return menuItemIsVisible && isEnabled();
+	}
+
+	@Override
+	public boolean isSelected() {
+		// TODO Auto-generated method stub
+		return false;
 	}
 }

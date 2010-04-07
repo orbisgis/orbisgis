@@ -3,17 +3,17 @@ package org.orbisgis.core.ui.plugins.views.geocatalog.filters;
 import org.gdms.source.SourceManager;
 import org.orbisgis.core.ui.pluginSystem.AbstractPlugIn;
 
-public class GeocatalogFilterDecorator extends AbstractPlugIn {
+public class GeocatalogFilterDecorator implements IFilter {
 
 	private String id;
 	private String name;
-	private AbstractPlugIn instance;
+	private IFilter instance;
 
 	public GeocatalogFilterDecorator(String id, String name,
-			AbstractPlugIn instance) {
+			IFilter allFilterPlugIn) {
 		this.id = id;
 		this.name = name;
-		this.instance = instance;
+		this.instance = allFilterPlugIn;
 	}
 
 	public String getId() {

@@ -1,7 +1,5 @@
 package org.orbisgis.core.ui.plugins.views.geocognition;
 
-import java.util.Observable;
-
 import org.orbisgis.core.geocognition.Geocognition;
 import org.orbisgis.core.geocognition.GeocognitionElement;
 import org.orbisgis.core.ui.pluginSystem.AbstractPlugIn;
@@ -31,9 +29,6 @@ public class GeocognitionAddMapPlugIn extends AbstractPlugIn {
 				getIcon(null), wbContext);
 	}
 
-	public void update(Observable o, Object arg) {
-	}
-
 	public boolean isEnabled() {
 		return true;
 	}
@@ -48,5 +43,11 @@ public class GeocognitionAddMapPlugIn extends AbstractPlugIn {
 
 	public boolean acceptsSelectionCount(Geocognition geocog, int selectionCount) {
 		return selectionCount <= 1;
+	}
+
+	@Override
+	public boolean isSelected() {
+		// TODO Auto-generated method stub
+		return false;
 	}
 }

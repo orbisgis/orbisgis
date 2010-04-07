@@ -41,7 +41,6 @@ import java.awt.event.MouseEvent;
 import java.util.Arrays;
 import java.util.Observable;
 
-import javax.swing.ImageIcon;
 import javax.swing.JButton;
 
 import org.gdms.data.DataSource;
@@ -49,7 +48,6 @@ import org.gdms.driver.DriverException;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.background.BackgroundJob;
 import org.orbisgis.core.background.BackgroundManager;
-import org.orbisgis.core.images.IconLoader;
 import org.orbisgis.core.images.IconNames;
 import org.orbisgis.core.ui.editor.IEditor;
 import org.orbisgis.core.ui.editors.table.TableEditableElement;
@@ -59,7 +57,6 @@ import org.orbisgis.core.ui.pluginSystem.workbench.Names;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchContext;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchFrame;
 import org.orbisgis.core.ui.plugins.views.TableEditorPlugIn;
-import org.orbisgis.core.ui.plugins.views.editor.EditorManager;
 import org.orbisgis.progress.IProgressMonitor;
 
 public class DeleteTableSelectionPlugIn extends AbstractPlugIn {
@@ -154,5 +151,11 @@ public class DeleteTableSelectionPlugIn extends AbstractPlugIn {
 
 	public boolean isVisible() {
 		return menuItemIsVisible && isEnabled();
+	}
+
+	@Override
+	public boolean isSelected() {
+		// TODO Auto-generated method stub
+		return false;
 	}
 }

@@ -140,4 +140,10 @@ public class ZoomToLayerFromTable extends AbstractPlugIn {
 		}
 		return isVisible = false;
 	}
+
+	@Override
+	public boolean isSelected() {
+		// TODO Auto-generated method stub
+		return false;
+	}
 }

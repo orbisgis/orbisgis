@@ -11,6 +11,8 @@ import org.orbisgis.core.sif.UIPanel;
 import org.orbisgis.core.ui.geocatalog.newSourceWizards.db.ConnectionPanel;
 import org.orbisgis.core.ui.pluginSystem.AbstractPlugIn;
 import org.orbisgis.core.ui.pluginSystem.PlugInContext;
+import org.orbisgis.core.ui.pluginSystem.PlugInContext.LayerSelectionTest;
+import org.orbisgis.core.ui.pluginSystem.PlugInContext.LayerTest;
 import org.orbisgis.core.ui.pluginSystem.workbench.Names;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchContext;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchFrame;
@@ -60,23 +62,17 @@ public class SaveInDataBasePlugIn extends AbstractPlugIn {
 		}
 	}
 
-	public boolean isEnabled() {
-		return true;
-	}
-
 	public boolean isVisible() {
-		return getPlugInContext().checkLayerAvailability();
+		return getPlugInContext().checkLayerAvailability(
+				new LayerSelectionTest[] {LayerSelectionTest.EQUAL},
+				1,
+				new LayerTest[] {LayerTest.VECTORIAL}, 
+				false);
 	}
 
-	public boolean accepts(MapContext mc, ILayer layer) {
-		try {
-			return layer.isVectorial();
-		} catch (DriverException e) {
-			return false;
-		}
-	}
-
-	public boolean acceptsSelectionCount(int selectionCount) {
+	@Override
+	public boolean isSelected() {
+		// TODO Auto-generated method stub
 		return false;
 	}
 

@@ -20,7 +20,7 @@ import org.orbisgis.core.layerModel.MapContext;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchContext;
 import org.orbisgis.utils.I18N;
 
-public class AbstractPlugIn implements PlugIn {
+public abstract class AbstractPlugIn implements PlugIn {
 
 	private String name;
 	private PlugInContext plugInContext;
@@ -34,17 +34,13 @@ public class AbstractPlugIn implements PlugIn {
 	// Constructors
     public AbstractPlugIn() {
     	getI18n();
-    }
-	
-	
-	// Default PlugIn methods
-	public  boolean execute(PlugInContext context) throws Exception {return false;};
-	public  void initialize(PlugInContext context) throws Exception {};	
-/*	public abstract boolean execute(PlugInContext context) throws Exception;
-	public abstract void initialize(PlugInContext context) throws Exception;*/
-	
-	public void update(Observable arg0, Object arg1) {}
-
+    }	
+    /**************** Not rule implemented *****************/
+    //Not always to implement by PlugIn (just for mapEditor or tableEditor PlugIn) because
+    //plugin is not necessary linked with orbisgis context.
+    public void update(Observable o, Object arg) {}
+    /********************************************************/
+    //I18N : defaut language is locale system. But method can be redefine by plugin
 	public void i18nConfigure(String langAndCountry) {
 		delI18n();
 		this.langAndCountry = langAndCountry;				
@@ -55,17 +51,14 @@ public class AbstractPlugIn implements PlugIn {
 		I18N.delI18n(null, this.getClass());		
 	}
 
-
 	public void getI18n() {
 		I18N.addI18n(langAndCountry, null, this.getClass());
 	}
-
 	// implemented by PlugIns
 	// Factory for adapt PlugIn context (Visibility, Enabled)
 	public void createPlugInContext(WorkbenchContext context) {
 		plugInContext = context.createPlugInContext(this);
 	}
-
 	// Specific implemented methods by some PlugIn (use in UdpateFactory)
 	// test in TOC for swing visibility
 	public void execute(MapContext mapContext, ILayer layer) {}
@@ -98,19 +91,7 @@ public class AbstractPlugIn implements PlugIn {
 	public boolean accepts(SourceManager srcManager, String srcName) {
 		return false;
 	}
-
-	public boolean isVisible() {
-		return false;
-	}
-
-	public boolean isEnabled() {
-		return false;
-	}
-
-	public boolean isSelected() {
-		return false;
-	}
-
+	
 	// listeners
 	public static ActionListener toActionListener(final PlugIn plugIn,
 			final WorkbenchContext workbenchContext) {
@@ -147,8 +128,6 @@ public class AbstractPlugIn implements PlugIn {
 	}
 
 	// getters & setters
-
-
 	public String getName() {
 		return name == null ? createName(getClass()) : name;
 	}

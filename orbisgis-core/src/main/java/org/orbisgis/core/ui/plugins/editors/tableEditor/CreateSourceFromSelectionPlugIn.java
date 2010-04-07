@@ -40,7 +40,6 @@ package org.orbisgis.core.ui.plugins.editors.tableEditor;
 import java.io.File;
 import java.util.Observable;
 
-import javax.swing.ImageIcon;
 import javax.swing.JButton;
 
 import org.gdms.data.DataSource;
@@ -58,7 +57,6 @@ import org.gdms.source.SourceManager;
 import org.orbisgis.core.DataManager;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.errorManager.ErrorManager;
-import org.orbisgis.core.images.IconLoader;
 import org.orbisgis.core.images.IconNames;
 import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.layerModel.MapContext;
@@ -66,12 +64,12 @@ import org.orbisgis.core.ui.editor.IEditor;
 import org.orbisgis.core.ui.editors.table.TableEditableElement;
 import org.orbisgis.core.ui.pluginSystem.AbstractPlugIn;
 import org.orbisgis.core.ui.pluginSystem.PlugInContext;
-import org.orbisgis.core.ui.pluginSystem.workbench.Names;
+import org.orbisgis.core.ui.pluginSystem.PlugInContext.LayerSelectionTest;
+import org.orbisgis.core.ui.pluginSystem.PlugInContext.LayerTest;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchContext;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchFrame;
 import org.orbisgis.core.ui.plugins.views.MapEditorPlugIn;
 import org.orbisgis.core.ui.plugins.views.TableEditorPlugIn;
-import org.orbisgis.core.ui.plugins.views.editor.EditorManager;
 
 public class CreateSourceFromSelectionPlugIn extends AbstractPlugIn {
 
@@ -183,10 +181,16 @@ public class CreateSourceFromSelectionPlugIn extends AbstractPlugIn {
 	}
 
 	public boolean isVisible() {
-		return getPlugInContext().checkLayerAvailability();
+/*		return getPlugInContext().
+		checkLayerAvailability();*/
+		return getPlugInContext().checkLayerAvailability(
+										new LayerSelectionTest[] {LayerSelectionTest.EQUAL},
+										1,
+										new LayerTest[] {LayerTest.VECTORIAL}, 
+										true);
 	}
 
-	public boolean accepts(MapContext mc, ILayer layer) {
+/*	public boolean accepts(MapContext mc, ILayer layer) {
 		try {
 			return layer.isVectorial() && layer.getSelection().length > 0;
 		} catch (DriverException e) {
@@ -196,5 +200,11 @@ public class CreateSourceFromSelectionPlugIn extends AbstractPlugIn {
 
 	public boolean acceptsSelectionCount(int selectionCount) {
 		return selectionCount > 0;
+	}*/
+
+	@Override
+	public boolean isSelected() {
+		// TODO Auto-generated method stub
+		return false;
 	}
 }

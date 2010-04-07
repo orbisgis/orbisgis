@@ -92,7 +92,7 @@ public class WorkbenchToolBar extends EnableableToolBar implements Observer {
 	
 	public void addPlugIn(final PlugIn plugIn, Component c, 
 			PlugInContext plugInContext) {	
-		plugIn.setPlugInContext(plugInContext);
+		((AbstractPlugIn)plugIn).setPlugInContext(plugInContext);
 		toolsPlugInObservers.add(plugIn);
 		((JButton) c).addActionListener(AbstractPlugIn
 				.toActionListener(plugIn, context));

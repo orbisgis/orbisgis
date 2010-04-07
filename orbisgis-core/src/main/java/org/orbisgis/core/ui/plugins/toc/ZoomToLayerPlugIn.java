@@ -79,5 +79,11 @@ public class ZoomToLayerPlugIn extends AbstractPlugIn {
 	public String getName() {
 		return "ZoomToLayer";
 	}
+
+	@Override
+	public boolean isSelected() {
+		// TODO Auto-generated method stub
+		return false;
+	}
 	
 }

@@ -87,13 +87,13 @@ import org.orbisgis.core.ui.components.jlist.OGList;
 import org.orbisgis.core.ui.components.sif.AskValue;
 import org.orbisgis.core.ui.components.text.JTextFilter;
 import org.orbisgis.core.ui.geocatalog.newSourceWizards.SourceRenderer;
-import org.orbisgis.core.ui.pluginSystem.AbstractPlugIn;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchFrame;
 import org.orbisgis.core.ui.plugins.views.geocatalog.filters.AllFilterPlugIn;
 import org.orbisgis.core.ui.plugins.views.geocatalog.filters.AlphanumericPlugIn;
 import org.orbisgis.core.ui.plugins.views.geocatalog.filters.DBs;
 import org.orbisgis.core.ui.plugins.views.geocatalog.filters.Files;
 import org.orbisgis.core.ui.plugins.views.geocatalog.filters.GeocatalogFilterDecorator;
+import org.orbisgis.core.ui.plugins.views.geocatalog.filters.IFilter;
 import org.orbisgis.core.ui.plugins.views.geocatalog.filters.Raster;
 import org.orbisgis.core.ui.plugins.views.geocatalog.filters.WMS;
 import org.orbisgis.utils.CollectionUtils;
@@ -246,7 +246,7 @@ public class Catalog extends JPanel implements DragGestureListener,
 
 	private void doFilter() {
 		Object[] filterObjects = lstFilters.getSelectedValues();
-		ArrayList<AbstractPlugIn> filters = new ArrayList<AbstractPlugIn>();
+		ArrayList<IFilter> filters = new ArrayList<IFilter>();
 		for (int i = 0; i < filterObjects.length; i++) {
 			filters.add((GeocatalogFilterDecorator) filterObjects[i]);
 		}
@@ -564,7 +564,7 @@ public class Catalog extends JPanel implements DragGestureListener,
 		selectionModel.setValueIsAdjusting(false);
 	}
 
-	public class TagFilter extends AbstractPlugIn {
+	public class TagFilter implements IFilter {
 
 		private String tag;
 

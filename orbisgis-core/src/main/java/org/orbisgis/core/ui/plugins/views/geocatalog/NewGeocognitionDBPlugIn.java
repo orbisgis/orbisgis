@@ -37,8 +37,6 @@
 
 package org.orbisgis.core.ui.plugins.views.geocatalog;
 
-import java.util.Observable;
-
 import org.gdms.data.db.DBSource;
 import org.gdms.data.db.DBTableSourceDefinition;
 import org.gdms.source.SourceManager;
@@ -88,14 +86,17 @@ public class NewGeocognitionDBPlugIn extends AbstractPlugIn {
 				getIcon(IconNames.POPUP_GEOCATALOG_DB_ICON), wbContext);
 	}
 
-	public void update(Observable o, Object arg) {
-	}
-
 	public boolean isEnabled() {
 		return true;
 	}
 
 	public boolean isVisible() {
 		return true;
+	}
+
+	@Override
+	public boolean isSelected() {
+		// TODO Auto-generated method stub
+		return false;
 	}
 }

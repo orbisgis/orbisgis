@@ -4,7 +4,7 @@ import java.util.Observer;
 
 public interface PlugIn extends Observer {
 	// Implemented by all PlugIn
-	void initialize(PlugInContext context) throws Exception;
+	public void initialize(PlugInContext context) throws Exception;
 
 	boolean execute(PlugInContext context) throws Exception;
 
@@ -12,9 +12,5 @@ public interface PlugIn extends Observer {
 	
 	boolean isSelected();
 	
-	void getI18n();
-	
 	String getName();
-	
-	public void setPlugInContext(PlugInContext plugInContext);
 }

@@ -37,8 +37,6 @@
 
 package org.orbisgis.core.ui.plugins.views.geocognition;
 
-import java.util.Observable;
-
 import org.gdms.sql.function.Function;
 import org.gdms.sql.function.FunctionManager;
 import org.orbisgis.core.OrbisGISPersitenceConfig;
@@ -70,10 +68,7 @@ public class GeocognitionRegisterBuiltInFunctionPlugIn extends AbstractPlugIn {
 				Names.POPUP_GEOCOGNITION_REG_BUILT_GROUP, false,
 				getIcon(IconNames.POPUP_GEOCOGNITION_REG_BUILT_ICON), wbContext);
 	}
-
-	public void update(Observable o, Object arg) {
-	}
-
+	
 	@SuppressWarnings("unchecked")
 	public void execute(Geocognition geocognition, GeocognitionElement element) {
 		if (OrbisGISPersitenceConfig.GeocognitionFunctionFactory_ID.equals(element
@@ -115,5 +110,11 @@ public class GeocognitionRegisterBuiltInFunctionPlugIn extends AbstractPlugIn {
 
 	public boolean acceptsSelectionCount(Geocognition geocog, int selectionCount) {
 		return selectionCount > 0;
+	}
+
+	@Override
+	public boolean isSelected() {
+		// TODO Auto-generated method stub
+		return false;
 	}
 }

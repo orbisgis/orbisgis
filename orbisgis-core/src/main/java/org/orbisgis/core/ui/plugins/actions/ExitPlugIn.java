@@ -48,19 +48,19 @@ public class ExitPlugIn extends AbstractPlugIn {
 	}
 
 	public void update(Observable o, Object arg) {
-		btn.setEnabled(isEnabled());
+		btn.setEnabled(true);
 		btn.setVisible(isVisible());
 
-		menuItem.setEnabled(isEnabled());
+		menuItem.setEnabled(true);
 		menuItem.setVisible(isVisible());
-	}
-
-	public boolean isEnabled() {
-		return true;
 	}
 
 	public boolean isVisible() {
 		return true;
+	}
+	
+	public boolean isSelected() {
+		return false;
 	}
 
 

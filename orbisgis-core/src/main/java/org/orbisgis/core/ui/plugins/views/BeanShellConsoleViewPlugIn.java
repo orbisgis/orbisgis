@@ -72,7 +72,7 @@ public class BeanShellConsoleViewPlugIn extends ViewPlugIn {
 
 	private ConsolePanel panel;
 	private Interpreter interpreter = new Interpreter();;
-	private ByteArrayOutputStream scriptOutput;
+	private ByteArrayOutputStream scriptOutput;	
 	private JMenuItem menuItem;
 
 	public BeanShellConsoleViewPlugIn() {
@@ -223,15 +223,10 @@ public class BeanShellConsoleViewPlugIn extends ViewPlugIn {
 	}
 
 	public void update(Observable o, Object arg) {
-		setSelected();
+		menuItem.setSelected(getPlugInContext().viewIsOpen(getId()));
 	}
-
-	public void setSelected() {
-		menuItem.setSelected(isVisible());
+	
+	public String getName() {		
+		return "BeanShell View";
 	}
-
-	public boolean isVisible() {
-		return getPlugInContext().viewIsOpen(getId());
-	}
-
 }

@@ -37,7 +37,6 @@
 
 package org.orbisgis.core.ui.plugins.views.geocatalog;
 
-import java.util.Observable;
 import java.util.Vector;
 
 import org.gdms.data.wms.WMSSource;
@@ -122,14 +121,17 @@ public class WMSGeocatalogPlugIn extends AbstractPlugIn {
 				getIcon(IconNames.POPUP_GEOCATALOG_WMS_ICON), wbContext);
 	}
 
-	public void update(Observable o, Object arg) {
-	}
-
 	public boolean isEnabled() {
 		return true;
 	}
 
 	public boolean isVisible() {
 		return true;
+	}
+
+	@Override
+	public boolean isSelected() {
+		// TODO Auto-generated method stub
+		return false;
 	}
 }

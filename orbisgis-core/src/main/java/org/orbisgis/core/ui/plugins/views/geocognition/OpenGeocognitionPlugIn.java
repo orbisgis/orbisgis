@@ -1,7 +1,5 @@
 package org.orbisgis.core.ui.plugins.views.geocognition;
 
-import java.util.Observable;
-
 import org.orbisgis.core.Services;
 import org.orbisgis.core.background.BackgroundManager;
 import org.orbisgis.core.geocognition.Geocognition;
@@ -31,9 +29,6 @@ public class OpenGeocognitionPlugIn extends AbstractPlugIn {
 				getIcon(IconNames.POPUP_GEOCOGNITION_OPEN_ICON), wbContext);
 	}
 
-	public void update(Observable o, Object arg) {
-	}
-
 	public void execute(Geocognition geocognition, GeocognitionElement element) {
 		BackgroundManager backgroundManager = (BackgroundManager) Services
 				.getService(BackgroundManager.class);
@@ -56,5 +51,11 @@ public class OpenGeocognitionPlugIn extends AbstractPlugIn {
 
 	public boolean acceptsSelectionCount(Geocognition geocog, int selectionCount) {
 		return selectionCount > 0;
+	}
+
+	@Override
+	public boolean isSelected() {
+		// TODO Auto-generated method stub
+		return false;
 	}
 }

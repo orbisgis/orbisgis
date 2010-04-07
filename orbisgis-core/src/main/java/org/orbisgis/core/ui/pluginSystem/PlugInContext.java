@@ -5,15 +5,19 @@ import java.util.Observer;
 
 import javax.swing.tree.TreePath;
 
+import org.gdms.data.SpatialDataSourceDecorator;
+import org.gdms.driver.DriverException;
 import org.gdms.source.SourceManager;
 import org.orbisgis.core.DataManager;
 import org.orbisgis.core.Services;
+import org.orbisgis.core.errorManager.ErrorManager;
 import org.orbisgis.core.geocognition.Geocognition;
 import org.orbisgis.core.geocognition.GeocognitionElement;
 import org.orbisgis.core.geocognition.mapContext.GeocognitionException;
 import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.layerModel.MapContext;
 import org.orbisgis.core.ui.editor.IEditor;
+import org.orbisgis.core.ui.editors.map.MapContextManager;
 import org.orbisgis.core.ui.editors.map.MapControl;
 import org.orbisgis.core.ui.editors.map.tool.Automaton;
 import org.orbisgis.core.ui.geocognition.GeocognitionTree;
@@ -85,7 +89,82 @@ public class PlugInContext {
 			return false;
 		}
 	}
+	
 
+	public boolean checkLayerAvailability(LayerSelectionTest[] layerSelectionTests, int nbLayers,
+			LayerTest[] layerTests, boolean tableEditor) {		
+		// TODO - refactor
+		MapContext mapContext = workbenchContext.getWorkbench().getFrame()
+				.getToc().getMapContext();
+		
+		if (mapContext != null) {
+			ILayer[] selectedLayers = mapContext.getSelectedLayers();
+			for(LayerSelectionTest test : layerSelectionTests) {
+				switch( test ) {
+					case EQUAL :
+						if(!(selectedLayers.length == nbLayers)) return false;
+						break;
+					case SUPERIOR :
+						if(!(selectedLayers.length > nbLayers)) return false;
+						break;
+					case INFERIOR_EQUAL :
+						if(!(selectedLayers.length <= nbLayers)) return false;
+						break;
+					case ACTIVE_MAPCONTEXT :
+						if(Services.getService(MapContextManager.class).getActiveMapContext() == null) 
+							return false;
+						break;
+					default:
+						break;
+				}
+			}
+			for (ILayer layer : selectedLayers) {
+				for(LayerTest test : layerTests) {
+					switch( test ) {
+						case VECTORIAL :
+							try {							
+								if(tableEditor) 
+									/* get Nb row selected in table editor */
+									if(!(layer.getSelection().length > 0)) return false;
+								if(!layer.isVectorial())	return false;							
+							} catch (DriverException e) {
+								Services.getService(ErrorManager.class).error(
+										"Cannot compute layer availability", e);
+							}
+							break;
+						case ACCEPT_CHILDS:
+							if(!(layer.acceptsChilds())) return false;
+							break;
+						case LAYER_NOT_NULL:
+							if(layer == null) return false;
+							break;
+						case IS_MODIFIED:
+							SpatialDataSourceDecorator dataSource = layer.getDataSource();
+							if( (dataSource == null) || !dataSource.isModified() ) return false;
+							break;
+						case DATASOURCE_NOT_NULL:
+							if( layer.getDataSource() == null ) return false;
+							break;
+						case ACTIVE_LAYER:
+							if( mapContext.getActiveLayer() != layer) return false;
+							break;
+						case NOT_ACTIVE_LAYER:
+							if( mapContext.getActiveLayer() == layer) return false;
+							break;
+						case IS_EDTABLE:
+							if( !layer.getDataSource().isEditable() ) return false;
+						default:
+							break;
+					}
+				}
+				
+			}			
+			return true;
+		} 
+		return false;
+		
+	}
+	
 	
 	// Run PlugIns actions about TOC
 	public void executeLayers() {
@@ -325,5 +404,24 @@ public class PlugInContext {
 		}
 		return null;
 	}
+	
+	 public static enum LayerTest {
+	        VECTORIAL,
+	        ACCEPT_CHILDS,
+	        LAYER_NOT_NULL,
+	        DATASOURCE_NOT_NULL,
+	        IS_MODIFIED,
+	        ACTIVE_LAYER,
+	        NOT_ACTIVE_LAYER,
+	        IS_EDTABLE,
+	 };
+	 
+	 public static enum LayerSelectionTest {
+		 	EQUAL,
+	        SUPERIOR,
+	        INFERIOR, 
+	        INFERIOR_EQUAL, 
+	        ACTIVE_MAPCONTEXT
+	 };
 
 }

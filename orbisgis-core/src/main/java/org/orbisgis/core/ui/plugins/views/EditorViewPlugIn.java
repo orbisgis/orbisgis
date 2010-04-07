@@ -41,21 +41,17 @@ public class EditorViewPlugIn extends ViewPlugIn {
 	public boolean execute(PlugInContext context) throws Exception {
 		getPlugInContext().loadView(getId());
 		return true;
-	}
-
-	public void update(Observable o, Object arg) {
-		setSelected();
-	}
+	}	
 
 	public void saveStatus() {
 		panel.saveAllDocuments();
 	}
 
-	public void setSelected() {
-		menuItem.setSelected(isVisible());
+	public void update(Observable o, Object arg) {
+		menuItem.setSelected(getPlugInContext().viewIsOpen(getId()));
 	}
-
-	public boolean isVisible() {
-		return getPlugInContext().viewIsOpen(getId());
+	
+	public String getName() {		
+		return "Editor view";
 	}
 }

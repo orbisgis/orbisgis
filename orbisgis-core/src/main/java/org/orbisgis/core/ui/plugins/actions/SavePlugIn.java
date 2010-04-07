@@ -69,8 +69,7 @@ public class SavePlugIn extends AbstractPlugIn {
 		btn.setVisible(isVisible());
 
 	}
-
-	@Override
+	
 	public boolean isEnabled() {
 		IEditor editor = getEditor();
 		return editor != null && editor.getElement().isModified();
@@ -79,6 +78,12 @@ public class SavePlugIn extends AbstractPlugIn {
 	@Override
 	public boolean isVisible() {
 		return true;
+	}
+
+	@Override
+	public boolean isSelected() {
+		// TODO Auto-generated method stub
+		return false;
 	}
 
 }

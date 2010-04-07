@@ -88,4 +88,10 @@ public class GeocognitionClearPlugIn extends AbstractPlugIn {
 	public boolean acceptsSelectionCount(Geocognition geocog, int selectionCount) {
 		return selectionCount <= 1;
 	}
+
+	@Override
+	public boolean isSelected() {
+		// TODO Auto-generated method stub
+		return false;
+	}
 }

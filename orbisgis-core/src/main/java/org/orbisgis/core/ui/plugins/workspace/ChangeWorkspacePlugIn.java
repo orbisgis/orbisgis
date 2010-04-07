@@ -46,19 +46,20 @@ public class ChangeWorkspacePlugIn extends AbstractPlugIn {
 
 	@Override
 	public void update(Observable o, Object arg) {
-		menuItem.setEnabled(isEnabled());
+		menuItem.setEnabled(true);
 		menuItem.setVisible(isVisible());
 
 	}
 
 	@Override
-	public boolean isEnabled() {
+	public boolean isVisible() {
 		return true;
 	}
 
 	@Override
-	public boolean isVisible() {
-		return true;
+	public boolean isSelected() {
+		// TODO Auto-generated method stub
+		return false;
 	}
 
 }

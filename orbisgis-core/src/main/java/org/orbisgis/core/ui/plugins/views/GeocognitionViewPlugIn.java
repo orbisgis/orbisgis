@@ -36,10 +36,15 @@ public class GeocognitionViewPlugIn extends ViewPlugIn {
 				new String[] { Names.VIEW }, Names.GEOCOGNITION, true,
 				getIcon(IconNames.GEOCOGNITION_ICON), null, panel, context);
 	}
+	
+	public boolean execute(PlugInContext context) throws Exception {
+		getPlugInContext().loadView(getId());
+		return true;
+	}
 
 	public void update(Observable o, Object arg) {
-		setSelected();
-	}
+		menuItem.setSelected(getPlugInContext().viewIsOpen(getId()));
+	}	
 
 	public void loadStatus() throws PersistenceException {
 		panel.loadStatus();
@@ -48,17 +53,8 @@ public class GeocognitionViewPlugIn extends ViewPlugIn {
 	public void saveStatus() throws PersistenceException {
 		panel.saveStatus();
 	}
-
-	public boolean execute(PlugInContext context) throws Exception {
-		getPlugInContext().loadView(getId());
-		return true;
-	}
-
-	public void setSelected() {
-		menuItem.setSelected(isVisible());
-	}
-
-	public boolean isVisible() {
-		return getPlugInContext().viewIsOpen(getId());
+	
+	public String getName() {		
+		return "Geocognition view";
 	}
 }
