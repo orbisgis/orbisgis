@@ -38,8 +38,9 @@ public class PlugInManager {
 	public PlugInManager(WorkbenchContext context, File plugInDirectory)
 			throws Exception {
 		
-		Assert.isTrue((plugInDirectory == null)
-                || plugInDirectory.isDirectory());
+		
+		/*Assert.isTrue((plugInDirectory == null)
+                || plugInDirectory.isDirectory());*/
 			
 	
 		classLoader = plugInDirectory != null ? new URLClassLoader(

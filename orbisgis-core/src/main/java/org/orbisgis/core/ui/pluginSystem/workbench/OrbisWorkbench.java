@@ -7,6 +7,9 @@ import org.orbisgis.core.ui.pluginSystem.PlugInManager;
 import org.orbisgis.core.ui.pluginSystem.WorkbenchProperties;
 import org.orbisgis.core.ui.windows.mainFrame.OrbisGISFrame;
 
+import com.vividsolutions.jts.util.Assert;
+import com.vividsolutions.jts.util.AssertionFailedException;
+
 //create WorkbenchContext
 public class OrbisWorkbench {
 
@@ -33,6 +36,13 @@ public class OrbisWorkbench {
 
 	public void runWorkbench() {
 		File extensionsDirectory = new File("lib/ext");
+		boolean fileExists = true;
+		try {
+			Assert.isTrue((extensionsDirectory == null)
+	                || extensionsDirectory.isDirectory());
+		} catch (AssertionFailedException e) {
+			fileExists = false;
+		}
 		/*
 		 * File defaultPlugins = new File("default-plugins.xml"); try {
 		 * properties = new WorkbenchPropertiesFile(defaultPlugins); } catch
@@ -42,9 +52,11 @@ public class OrbisWorkbench {
 		 */
 		OrbisConfiguration setup = new OrbisConfiguration();
 		try {
-			plugInManager = new PlugInManager(context, extensionsDirectory);
+			if(fileExists)
+				plugInManager = new PlugInManager(context, extensionsDirectory);
 			setup.setup(context);
-			context.getWorkbench().getPlugInManager().load();
+			if(fileExists && plugInManager!=null)
+				context.getWorkbench().getPlugInManager().load();
 			context.setLastAction("Orbisgis started");
 		} catch (Throwable t) {
 			t.printStackTrace();
