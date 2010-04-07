@@ -37,6 +37,8 @@
 
 package org.orbisgis.core.ui.plugins.toc;
 
+import java.util.Observable;
+
 import javax.swing.JOptionPane;
 
 import org.gdms.data.NonEditableDataSourceException;
@@ -101,5 +103,11 @@ public class SetInactivePlugIn extends AbstractPlugIn {
 	public boolean isSelected() {
 		// TODO Auto-generated method stub
 		return false;
+	}
+
+	@Override
+	public void update(Observable o, Object arg) {
+		// TODO Auto-generated method stub
+		
 	}
 }

@@ -201,6 +201,7 @@ public class IconNames {
 	// general icons
 	public static final String UNDO_ICON = Icon.get("ui.undo.icon");
 	public static final String REDO_ICON = Icon.get("ui.redo.icon");
+	public static final String PLUGIN_ICON = Icon.get("ui.icon.plugin");
 	// Map & Table icons
 	public static final String TABLE_CREATE_SRC_ICON = Icon.get(
 			"ui.toolbar.edition.table.create.src.icon");

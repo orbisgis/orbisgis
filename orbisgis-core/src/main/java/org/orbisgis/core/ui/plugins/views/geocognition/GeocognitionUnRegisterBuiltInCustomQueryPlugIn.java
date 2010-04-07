@@ -37,6 +37,8 @@
 
 package org.orbisgis.core.ui.plugins.views.geocognition;
 
+import java.util.Observable;
+
 import org.gdms.sql.customQuery.CustomQuery;
 import org.gdms.sql.customQuery.QueryManager;
 import org.orbisgis.core.OrbisGISPersitenceConfig;
@@ -91,10 +93,6 @@ public class GeocognitionUnRegisterBuiltInCustomQueryPlugIn extends AbstractPlug
 		}
 	}
 
-	public boolean isEnabled() {
-		return true;
-	}
-
 	public boolean isVisible() {
 		return getPlugInContext().geocognitionIsVisible();
 	}
@@ -121,5 +119,11 @@ public class GeocognitionUnRegisterBuiltInCustomQueryPlugIn extends AbstractPlug
 	public boolean isSelected() {
 		// TODO Auto-generated method stub
 		return false;
+	}
+
+	@Override
+	public void update(Observable o, Object arg) {
+		// TODO Auto-generated method stub
+		
 	}
 }

@@ -34,12 +34,7 @@ public abstract class AbstractPlugIn implements PlugIn {
 	// Constructors
     public AbstractPlugIn() {
     	getI18n();
-    }	
-    /**************** Not rule implemented *****************/
-    //Not always to implement by PlugIn (just for mapEditor or tableEditor PlugIn) because
-    //plugin is not necessary linked with orbisgis context.
-    public void update(Observable o, Object arg) {}
-    /********************************************************/
+    }	    
     //I18N : defaut language is locale system. But method can be redefine by plugin
 	public void i18nConfigure(String langAndCountry) {
 		delI18n();

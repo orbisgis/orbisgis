@@ -1,5 +1,7 @@
 package org.orbisgis.core.ui.plugins.views.geocognition;
 
+import java.util.Observable;
+
 import org.orbisgis.core.Services;
 import org.orbisgis.core.background.BackgroundManager;
 import org.orbisgis.core.geocognition.Geocognition;
@@ -36,10 +38,6 @@ public class OpenGeocognitionPlugIn extends AbstractPlugIn {
 				element));
 	}
 
-	public boolean isEnabled() {
-		return true;
-	}
-
 	public boolean isVisible() {
 		return getPlugInContext().geocognitionIsVisible();
 	}
@@ -57,5 +55,11 @@ public class OpenGeocognitionPlugIn extends AbstractPlugIn {
 	public boolean isSelected() {
 		// TODO Auto-generated method stub
 		return false;
+	}
+
+	@Override
+	public void update(Observable o, Object arg) {
+		// TODO Auto-generated method stub
+		
 	}
 }

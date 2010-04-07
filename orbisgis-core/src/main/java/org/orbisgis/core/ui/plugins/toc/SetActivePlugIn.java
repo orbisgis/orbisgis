@@ -1,5 +1,7 @@
 package org.orbisgis.core.ui.plugins.toc;
 
+import java.util.Observable;
+
 import org.gdms.driver.DriverException;
 import org.orbisgis.core.images.IconNames;
 import org.orbisgis.core.layerModel.ILayer;
@@ -44,5 +46,11 @@ public class SetActivePlugIn extends AbstractPlugIn {
 	public boolean isSelected() {
 		// TODO Auto-generated method stub
 		return false;
+	}
+
+	@Override
+	public void update(Observable o, Object arg) {
+		// TODO Auto-generated method stub
+		
 	}
 }

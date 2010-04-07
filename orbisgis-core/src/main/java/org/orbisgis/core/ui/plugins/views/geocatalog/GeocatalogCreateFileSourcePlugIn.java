@@ -38,6 +38,7 @@
 package org.orbisgis.core.ui.plugins.views.geocatalog;
 
 import java.io.File;
+import java.util.Observable;
 
 import org.gdms.data.DataSourceCreation;
 import org.gdms.data.DataSourceDefinition;
@@ -196,10 +197,6 @@ public class GeocatalogCreateFileSourcePlugIn extends AbstractPlugIn {
 		}
 	}
 
-	public boolean isEnabled() {
-		return true;
-	}
-
 	public boolean isVisible() {
 		return getPlugInContext().geocatalogIsVisible();
 	}
@@ -216,5 +213,11 @@ public class GeocatalogCreateFileSourcePlugIn extends AbstractPlugIn {
 	public boolean isSelected() {
 		// TODO Auto-generated method stub
 		return false;
+	}
+
+	@Override
+	public void update(Observable o, Object arg) {
+		// TODO Auto-generated method stub
+		
 	}
 }

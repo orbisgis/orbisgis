@@ -1,5 +1,7 @@
 package org.orbisgis.core.ui.plugins.toc;
 
+import java.util.Observable;
+
 import org.orbisgis.core.Services;
 import org.orbisgis.core.background.BackgroundJob;
 import org.orbisgis.core.background.BackgroundManager;
@@ -63,11 +65,6 @@ public class ZoomToLayerPlugIn extends AbstractPlugIn {
 				getIcon(IconNames.POPUP_TOC_ZOOM_ICON), wbContext);
 	}
 
-	
-	public boolean isEnabled() {
-		return true;
-	}
-
 	public boolean isVisible() {
 		return getPlugInContext().IsMultipleLayer();
 	}
@@ -84,6 +81,12 @@ public class ZoomToLayerPlugIn extends AbstractPlugIn {
 	public boolean isSelected() {
 		// TODO Auto-generated method stub
 		return false;
+	}
+
+	@Override
+	public void update(Observable o, Object arg) {
+		// TODO Auto-generated method stub
+		
 	}
 	
 }

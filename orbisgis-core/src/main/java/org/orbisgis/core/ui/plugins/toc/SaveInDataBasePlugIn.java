@@ -1,5 +1,7 @@
 package org.orbisgis.core.ui.plugins.toc;
 
+import java.util.Observable;
+
 import org.gdms.driver.DriverException;
 import org.orbisgis.core.DataManager;
 import org.orbisgis.core.Services;
@@ -74,6 +76,12 @@ public class SaveInDataBasePlugIn extends AbstractPlugIn {
 	public boolean isSelected() {
 		// TODO Auto-generated method stub
 		return false;
+	}
+
+	@Override
+	public void update(Observable o, Object arg) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

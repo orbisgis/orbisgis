@@ -1,5 +1,7 @@
 package org.orbisgis.core.ui.plugins.views.geocatalog;
 
+import java.util.Observable;
+
 import org.gdms.source.Source;
 import org.gdms.source.SourceManager;
 import org.orbisgis.core.DataManager;
@@ -54,10 +56,6 @@ public class GeocatalogSaveInDataBasePlugIn extends AbstractPlugIn {
 		}
 	}
 
-	public boolean isEnabled() {
-		return true;
-	}
-
 	public boolean isVisible() {
 		return getPlugInContext().geocatalogIsVisible();
 	}
@@ -75,5 +73,11 @@ public class GeocatalogSaveInDataBasePlugIn extends AbstractPlugIn {
 	public boolean isSelected() {
 		// TODO Auto-generated method stub
 		return false;
+	}
+
+	@Override
+	public void update(Observable o, Object arg) {
+		// TODO Auto-generated method stub
+		
 	}
 }

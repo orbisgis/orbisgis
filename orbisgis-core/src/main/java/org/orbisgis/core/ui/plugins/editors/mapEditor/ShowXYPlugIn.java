@@ -1,5 +1,7 @@
 package org.orbisgis.core.ui.plugins.editors.mapEditor;
 
+import java.util.Observable;
+
 import org.orbisgis.core.Services;
 import org.orbisgis.core.ui.pluginSystem.AbstractPlugIn;
 import org.orbisgis.core.ui.pluginSystem.PlugInContext;
@@ -36,5 +38,11 @@ public class ShowXYPlugIn extends AbstractPlugIn {
 			return getPlugInContext().getMapEditor().getShowInfo();
 		}
 		return false;
+	}
+
+	@Override
+	public void update(Observable o, Object arg) {
+		// TODO Auto-generated method stub
+		
 	}
 }

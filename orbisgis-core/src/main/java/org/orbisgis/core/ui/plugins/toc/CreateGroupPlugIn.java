@@ -1,5 +1,7 @@
 package org.orbisgis.core.ui.plugins.toc;
 
+import java.util.Observable;
+
 import org.orbisgis.core.DataManager;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.images.IconNames;
@@ -51,10 +53,6 @@ public class CreateGroupPlugIn extends AbstractPlugIn {
 		}
 	}
 
-	public boolean isEnabled() {
-		return true;
-	}
-
 	public boolean isVisible() {
 		return getPlugInContext().checkLayerAvailability(
 				new LayerSelectionTest[]{ LayerSelectionTest.INFERIOR_EQUAL , LayerSelectionTest.ACTIVE_MAPCONTEXT},
@@ -67,5 +65,11 @@ public class CreateGroupPlugIn extends AbstractPlugIn {
 	public boolean isSelected() {
 		// TODO Auto-generated method stub
 		return false;
+	}
+
+	@Override
+	public void update(Observable o, Object arg) {
+		// TODO Auto-generated method stub
+		
 	}
 }

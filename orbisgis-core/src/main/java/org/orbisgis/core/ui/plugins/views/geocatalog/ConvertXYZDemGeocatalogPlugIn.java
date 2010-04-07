@@ -40,6 +40,7 @@ package org.orbisgis.core.ui.plugins.views.geocatalog;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.Observable;
 
 import org.gdms.source.SourceManager;
 import org.grap.model.GeoProcessorType;
@@ -109,10 +110,6 @@ public class ConvertXYZDemGeocatalogPlugIn extends AbstractPlugIn {
 						wbContext);
 	}
 
-	public boolean isEnabled() {
-		return true;
-	}
-
 	public boolean isVisible() {
 		return true;
 	}
@@ -121,5 +118,11 @@ public class ConvertXYZDemGeocatalogPlugIn extends AbstractPlugIn {
 	public boolean isSelected() {
 		// TODO Auto-generated method stub
 		return false;
+	}
+
+	@Override
+	public void update(Observable arg0, Object arg1) {
+		// TODO Auto-generated method stub
+		
 	}
 }

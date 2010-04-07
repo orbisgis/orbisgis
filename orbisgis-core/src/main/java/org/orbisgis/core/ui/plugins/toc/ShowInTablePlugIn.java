@@ -1,5 +1,7 @@
 package org.orbisgis.core.ui.plugins.toc;
 
+import java.util.Observable;
+
 import org.orbisgis.core.Services;
 import org.orbisgis.core.background.BackgroundManager;
 import org.orbisgis.core.geocognition.Geocognition;
@@ -63,5 +65,11 @@ public class ShowInTablePlugIn extends AbstractPlugIn {
 	public boolean isSelected() {
 		// TODO Auto-generated method stub
 		return false;
+	}
+
+	@Override
+	public void update(Observable o, Object arg) {
+		// TODO Auto-generated method stub
+		
 	}
 }

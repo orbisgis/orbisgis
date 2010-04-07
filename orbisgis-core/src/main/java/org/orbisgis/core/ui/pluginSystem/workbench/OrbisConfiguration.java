@@ -101,6 +101,7 @@ import org.orbisgis.core.ui.plugins.views.geocognition.RemoveGeocognitionPlugIn;
 import org.orbisgis.core.ui.plugins.workspace.ChangeWorkspacePlugIn;
 import org.orbisgis.core.ui.plugins.workspace.SaveWorkspacePlugIn;
 import org.orbisgis.core.ui.windows.mainFrame.OrbisGISFrame;
+import org.orbisgis.plugin.MenuPlugIn;
 
 public class OrbisConfiguration implements Setup {
 
@@ -192,7 +193,8 @@ public class OrbisConfiguration implements Setup {
 	private ShowXYPlugIn showXYPlugIn = new ShowXYPlugIn();
 
 	// private I18NTestPlugIn i18NTestPlugIn = new I18NTestPlugIn();	
-
+	private MenuPlugIn menuPlugIn;
+	
 	public void setup(WorkbenchContext workbenchContext) throws Exception {
 		// load Main Menu
 		configureMainMenus(workbenchContext);
@@ -244,6 +246,9 @@ public class OrbisConfiguration implements Setup {
 			zoomToLayerPlugIn.initialize(context);
 			revertLayerPlugIn.initialize(context);
 			saveLayerPlugIn.initialize(context);
+			
+			menuPlugIn = new MenuPlugIn();
+			menuPlugIn.initialize(context);
 
 			// Geocognition popup
 			openGeocognitionPlugIn.initialize(context);
@@ -432,7 +437,7 @@ public class OrbisConfiguration implements Setup {
 
 		JMenu helpMenu = (JMenu) FeatureInstaller.installMnemonic(new JMenu(
 				Names.HELP), menuBar);
-		menuBar.add(helpMenu);
+		menuBar.add(helpMenu);		
 	}
 
 	private AbstractButton add(Automaton tool, String icon,

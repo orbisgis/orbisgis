@@ -181,7 +181,8 @@ public class FeatureInstaller {
 			((ViewPlugIn) plugIn).createPlugInContext(panel,
 					I18N.getText(menuItemName), icon, editors, wbContext);
 		else
-			((AbstractPlugIn) plugIn).setPlugInContext(plugInContext);
+			((AbstractPlugIn)plugIn).createPlugInContext(wbContext);
+			//((AbstractPlugIn) plugIn).setPlugInContext(plugInContext);
 		JMenuItem menuItem = installMenuItem(plugIn, menuPath,
 				I18N.getText(menuItemName), checkBox, icon);
 		return menuItem;

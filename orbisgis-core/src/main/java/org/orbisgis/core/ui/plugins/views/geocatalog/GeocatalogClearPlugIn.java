@@ -38,6 +38,7 @@
 package org.orbisgis.core.ui.plugins.views.geocatalog;
 
 import java.io.IOException;
+import java.util.Observable;
 
 import javax.swing.JOptionPane;
 
@@ -82,10 +83,6 @@ public class GeocatalogClearPlugIn extends AbstractPlugIn {
 		}
 	}
 
-	public boolean isEnabled() {
-		return true;
-	}
-
 	public boolean isVisible() {
 		return getPlugInContext().geocatalogIsVisible();
 	}
@@ -102,5 +99,11 @@ public class GeocatalogClearPlugIn extends AbstractPlugIn {
 	public boolean isSelected() {
 		// TODO Auto-generated method stub
 		return false;
+	}
+
+	@Override
+	public void update(Observable o, Object arg) {
+		// TODO Auto-generated method stub
+		
 	}
 }

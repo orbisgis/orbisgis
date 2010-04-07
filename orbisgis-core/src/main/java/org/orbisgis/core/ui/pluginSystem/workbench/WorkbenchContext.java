@@ -52,13 +52,13 @@ public abstract class WorkbenchContext extends Observable {
 		//System.out.println("#############################"+lastAction+":"+countObservers()+"#################");
 		addViewsPlugInObservers();
 		addToolsPlugInObservers();
-		//addTableObservers();
+		addTableObservers();
 		//System.out.println("#############################"+countObservers()+"#################");
 		setChanged();
 		notifyObservers(lastAction);
 		removeToolsPlugInObservers();
 		removeViewsPlugInObservers();
-		//removeTableObservers();
+		removeTableObservers();
 		//System.out.println("#############################"+countObservers()+"#################");		
 	}
 
