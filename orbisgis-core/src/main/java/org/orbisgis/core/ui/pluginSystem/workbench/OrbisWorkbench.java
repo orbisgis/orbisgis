@@ -42,6 +42,7 @@ public class OrbisWorkbench {
 	                || extensionsDirectory.isDirectory());
 		} catch (AssertionFailedException e) {
 			fileExists = false;
+			Services.getErrorManager().error("Plugins not loaded");
 		}
 		/*
 		 * File defaultPlugins = new File("default-plugins.xml"); try {
