@@ -53,11 +53,12 @@ public class OrbisWorkbench {
 		 */
 		OrbisConfiguration setup = new OrbisConfiguration();
 		try {
-			if(fileExists)
+			if(fileExists) {
 				plugInManager = new PlugInManager(context, extensionsDirectory);
-			setup.setup(context);
-			if(fileExists && plugInManager!=null)
 				context.getWorkbench().getPlugInManager().load();
+			}
+			setup.setup(context);			
+				
 			context.setLastAction("Orbisgis started");
 		} catch (Throwable t) {
 			t.printStackTrace();
