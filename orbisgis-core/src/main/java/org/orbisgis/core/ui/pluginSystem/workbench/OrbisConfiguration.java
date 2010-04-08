@@ -101,7 +101,6 @@ import org.orbisgis.core.ui.plugins.views.geocognition.RemoveGeocognitionPlugIn;
 import org.orbisgis.core.ui.plugins.workspace.ChangeWorkspacePlugIn;
 import org.orbisgis.core.ui.plugins.workspace.SaveWorkspacePlugIn;
 import org.orbisgis.core.ui.windows.mainFrame.OrbisGISFrame;
-import org.orbisgis.plugin.MenuPlugIn;
 
 public class OrbisConfiguration implements Setup {
 
@@ -192,9 +191,6 @@ public class OrbisConfiguration implements Setup {
 	private ExportMapAsPDFPlugIn exportMapAsPDFPlugIn = new ExportMapAsPDFPlugIn();
 	private ShowXYPlugIn showXYPlugIn = new ShowXYPlugIn();
 
-	// private I18NTestPlugIn i18NTestPlugIn = new I18NTestPlugIn();	
-	private MenuPlugIn menuPlugIn;
-	
 	public void setup(WorkbenchContext workbenchContext) throws Exception {
 		// load Main Menu
 		configureMainMenus(workbenchContext);
@@ -246,9 +242,6 @@ public class OrbisConfiguration implements Setup {
 			zoomToLayerPlugIn.initialize(context);
 			revertLayerPlugIn.initialize(context);
 			saveLayerPlugIn.initialize(context);
-			
-			menuPlugIn = new MenuPlugIn();
-			menuPlugIn.initialize(context);
 
 			// Geocognition popup
 			openGeocognitionPlugIn.initialize(context);
@@ -304,7 +297,7 @@ public class OrbisConfiguration implements Setup {
 
 		OrbisGISFrame frame = plugInContext.getWorkbenchContext()
 				.getWorkbench().getFrame();
-		
+
 		// Main Toolbar & Main menu -> sont chargés par le PlugIn
 		// lib/ext/MainToolBarPlugIn.jar
 		exitPlugIn.initialize(plugInContext);
@@ -386,7 +379,7 @@ public class OrbisConfiguration implements Setup {
 		WorkbenchToolBar wbSelection = new WorkbenchToolBar(wbContext,
 				Names.TOOLBAR_SELECTION);
 		wbToolBar.add(wbSelection);
-		
+
 		WorkbenchToolBar wbMesureArea = new WorkbenchToolBar(wbContext,
 				Names.TOOLBAR_MESURE, IconNames.MESURELINE_ICON, true);
 		wbToolBar.add(wbMesureArea);
@@ -437,7 +430,7 @@ public class OrbisConfiguration implements Setup {
 
 		JMenu helpMenu = (JMenu) FeatureInstaller.installMnemonic(new JMenu(
 				Names.HELP), menuBar);
-		menuBar.add(helpMenu);		
+		menuBar.add(helpMenu);
 	}
 
 	private AbstractButton add(Automaton tool, String icon,
