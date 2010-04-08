@@ -32,11 +32,13 @@ public abstract class I18N {
 			if(I18NS.get(contextKey) == null )
 				//context not found. No translation : return key
 				return key; 
-			if(I18NS.get(contextKey).getString(key)==null)
+			try {
+				//return translation
+				return I18NS.get(contextKey).getString(key);
+			}catch(MissingResourceException m) {
 				//key not found in context. No translation : return key
 				return key;
-			//return translation
-			return I18NS.get(contextKey).getString(key);			
+			}		
 		}
 		else
 			//context not found. No translation : return key
