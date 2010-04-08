@@ -1,6 +1,5 @@
 package org.orbisgis.utils;
 
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.MissingResourceException;
