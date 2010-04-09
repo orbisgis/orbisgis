@@ -41,7 +41,22 @@ import java.util.HashMap;
 import java.util.Iterator;
 
 import org.gdms.sql.customQuery.showAttributes.ShowCall;
-import org.gdms.sql.customQuery.spatial.convert.Explode;
+import org.gdms.sql.customQuery.spatial.geometry.convert.ST_Explode;
+import org.gdms.sql.customQuery.spatial.geometry.create.ST_BigCreateGrid;
+import org.gdms.sql.customQuery.spatial.geometry.create.ST_CreateGrid;
+import org.gdms.sql.customQuery.spatial.geometry.create.ST_CreateWebGrid;
+import org.gdms.sql.customQuery.spatial.geometry.create.ST_Extrude;
+import org.gdms.sql.customQuery.spatial.geometry.create.ST_RandomGeometry;
+import org.gdms.sql.customQuery.spatial.geometry.qa.ST_InternalGapFinder;
+import org.gdms.sql.customQuery.spatial.geometry.topology.ST_PlanarGraph;
+import org.gdms.sql.customQuery.spatial.geometry.topology.ST_ToLineNoder;
+import org.gdms.sql.customQuery.spatial.raster.convert.ST_RasterToPoints;
+import org.gdms.sql.customQuery.spatial.raster.convert.ST_RasterToPolygons;
+import org.gdms.sql.customQuery.spatial.raster.convert.ST_RasterizeLine;
+import org.gdms.sql.customQuery.spatial.raster.convert.ST_VectorizeLine;
+import org.gdms.sql.customQuery.system.FunctionHelp;
+import org.gdms.sql.customQuery.system.RegisterCall;
+import org.gdms.sql.customQuery.system.RegisterFunction;
 import org.gdms.sql.function.FunctionManager;
 
 /**
@@ -55,11 +70,22 @@ public class QueryManager {
 
 	static {
 		registerQuery(RegisterCall.class);
-		registerQuery(Extrude.class);
+		registerQuery(ST_Extrude.class);
 		registerQuery(ShowCall.class);
 		registerQuery(RegisterFunction.class);
-		registerQuery(Explode.class);
+		registerQuery(ST_Explode.class);
 		registerQuery(FunctionHelp.class);
+		registerQuery(ST_CreateGrid.class);
+		registerQuery(ST_CreateWebGrid.class);
+		registerQuery(ST_BigCreateGrid.class);
+		registerQuery(ST_RandomGeometry.class);
+		registerQuery(ST_InternalGapFinder.class);
+		registerQuery(ST_ToLineNoder.class);
+		registerQuery(ST_PlanarGraph.class);
+		registerQuery(ST_RasterizeLine.class);
+		registerQuery(ST_RasterToPoints.class);
+		registerQuery(ST_RasterToPolygons.class);
+		registerQuery(ST_VectorizeLine.class);
 	}
 
 	/**
