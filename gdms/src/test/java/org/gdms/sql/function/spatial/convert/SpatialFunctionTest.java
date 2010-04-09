@@ -47,8 +47,8 @@ import org.gdms.data.values.ValueFactory;
 import org.gdms.sql.ColumnValue;
 import org.gdms.sql.FunctionTest;
 import org.gdms.sql.function.spatial.geometry.convert.ST_Force_3D;
-import org.gdms.sql.function.spatial.geometry.convert.STO_ToMultiLine;
-import org.gdms.sql.function.spatial.geometry.convert.STO_ToMultiPoint;
+import org.gdms.sql.function.spatial.geometry.convert.ST_ToMultiLine;
+import org.gdms.sql.function.spatial.geometry.convert.ST_ToMultiPoint;
 import org.gdms.sql.function.spatial.geometry.convert.ST_Centroid;
 import org.gdms.sql.function.spatial.geometry.create.ST_Boundary;
 import org.gdms.sql.strategies.IncompatibleTypesException;
@@ -131,13 +131,13 @@ public class SpatialFunctionTest extends FunctionTest {
 	}
 
 	public final void testToMultiline() throws Exception {
-		Geometry g = testSpatialFunction(new STO_ToMultiLine(), g1, 1)
+		Geometry g = testSpatialFunction(new ST_ToMultiLine(), g1, 1)
 				.getAsGeometry();
 		assertTrue(g1.getEnvelopeInternal().equals(g.getEnvelopeInternal()));
 	}
 
 	public final void testToMultipoint() throws Exception {
-		ValueCollection vc = testSpatialFunction(new STO_ToMultiPoint(), g1, 1)
+		ValueCollection vc = testSpatialFunction(new ST_ToMultiPoint(), g1, 1)
 				.getAsValueCollection();
 		for (int i = 0; i < vc.getValueCount(); i++) {
 
