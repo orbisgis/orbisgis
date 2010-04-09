@@ -38,10 +38,14 @@ package org.gdms.sql;
 
 import junit.framework.TestCase;
 
+import org.gdms.data.DataSourceFactory;
+import org.gdms.data.types.Constraint;
+import org.gdms.data.types.PrimaryKeyConstraint;
 import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
+import org.gdms.driver.generic.GenericObjectDriver;
 import org.gdms.sql.evaluator.FunctionOperator;
 import org.gdms.sql.function.Function;
 import org.gdms.sql.function.FunctionException;
@@ -61,6 +65,9 @@ public abstract class FunctionTest extends TestCase {
 	protected Geometry lineString;
 	protected Geometry multiLineString;
 
+	public static DataSourceFactory dsf = new DataSourceFactory();
+
+	
 	@Override
 	protected void setUp() throws Exception {
 		WKTReader wktr = new WKTReader();
@@ -77,6 +84,43 @@ public abstract class FunctionTest extends TestCase {
 		geomCollection = gf.createGeometryCollection(new Geometry[] { g1, g2, g4 });
 		geomCollection = gf.createGeometryCollection(new Geometry[] { g3, g4,
 				geomCollection });
+		
+		
+		// first datasource
+		final GenericObjectDriver driver1 = new GenericObjectDriver(new String[] {
+				"pk", "geom" }, new Type[] {
+				TypeFactory.createType(Type.INT,
+						new Constraint[] { new PrimaryKeyConstraint() }),
+				TypeFactory.createType(Type.GEOMETRY) });
+
+		// insert all filled rows...
+		String g1 = "POLYGON ((0 0, 1 0, 1 1, 0 1, 0 0))";
+		String g2 = "MULTILINESTRING ((1 0, 2 0, 2 1, 1 1, 1 0))";
+		String g3 = "LINESTRING (1 1, 2 1, 2 2, 1 2, 1 1)";
+		String g4 = "MULTIPOLYGON (((0 1, 1 1, 1 2, 0 2, 0 1)))";
+		driver1.addValues(new Value[] { ValueFactory.createValue(1),
+				ValueFactory.createValue(wktr.read(g1)) });
+		driver1.addValues(new Value[] { ValueFactory.createValue(2),
+				ValueFactory.createValue(wktr.read(g2)) });
+		driver1.addValues(new Value[] { ValueFactory.createValue(3),
+				ValueFactory.createValue(wktr.read(g3)) });
+		driver1.addValues(new Value[] { ValueFactory.createValue(4),
+				ValueFactory.createValue(wktr.read(g4)) });
+		// and register this new driver...
+		dsf.getSourceManager().register("ds1", driver1);
+
+		// second datasource
+		final GenericObjectDriver driver2 = new GenericObjectDriver(new String[] {
+				"pk", "geom" }, new Type[] {
+				TypeFactory.createType(Type.INT,
+						new Constraint[] { new PrimaryKeyConstraint() }),
+				TypeFactory.createType(Type.GEOMETRY) });
+		// insert all filled rows...
+		Geometry geometry = wktr.read(g1);
+		driver1.addValues(new Value[] { ValueFactory.createValue(1),
+				ValueFactory.createValue(geometry) });
+		// and register this new driver...
+		dsf.getSourceManager().register("ds2", driver2);
 	}
 
 	protected Value evaluate(Function function, ColumnValue... args)
