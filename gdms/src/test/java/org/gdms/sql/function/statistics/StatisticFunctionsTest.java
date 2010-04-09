@@ -41,6 +41,11 @@ import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.sql.ColumnValue;
 import org.gdms.sql.FunctionTest;
+import org.gdms.sql.function.math.Abs;
+import org.gdms.sql.function.math.Power;
+import org.gdms.sql.function.math.Round;
+import org.gdms.sql.function.math.Sqrt;
+import org.gdms.sql.function.math.StandardDeviation;
 import org.gdms.sql.strategies.IncompatibleTypesException;
 
 public class StatisticFunctionsTest extends FunctionTest {
