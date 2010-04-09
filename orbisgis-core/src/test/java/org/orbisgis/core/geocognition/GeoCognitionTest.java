@@ -7,16 +7,12 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 
-import org.gdms.sql.customQuery.RegisterCall;
+import org.gdms.sql.customQuery.system.RegisterCall;
 import org.gdms.sql.function.spatial.geometry.operators.ST_Buffer;
 import org.orbisgis.core.DataManager;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.errorManager.ErrorListener;
 import org.orbisgis.core.errorManager.ErrorManager;
-import org.orbisgis.core.geocognition.DefaultGeocognition;
-import org.orbisgis.core.geocognition.Geocognition;
-import org.orbisgis.core.geocognition.GeocognitionElement;
-import org.orbisgis.core.geocognition.GeocognitionListener;
 import org.orbisgis.core.geocognition.mapContext.GeocognitionMapContextFactory;
 import org.orbisgis.core.geocognition.symbology.GeocognitionLegendFactory;
 import org.orbisgis.core.geocognition.symbology.GeocognitionSymbolFactory;
