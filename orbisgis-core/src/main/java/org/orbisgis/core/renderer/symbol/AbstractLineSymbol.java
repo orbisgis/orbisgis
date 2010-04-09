@@ -53,7 +53,7 @@ public abstract class AbstractLineSymbol extends AbstractGeometrySymbol
 
 	protected Color outline;
 	protected int lineWidth;
-	protected boolean mapUnits;
+	protected boolean mapUnits = false;
 
 	public AbstractLineSymbol(Color outline, int lineWidth, boolean mapUnits) {
 		this.outline = outline;
