@@ -34,47 +34,79 @@
  *    fergonco _at_ gmail.com
  *    thomas.leduc _at_ cerma.archi.fr
  */
-package org.gdms.sql.function.spatial.geometry.create;
+package org.gdms.sql.function.spatial.geometry.edit;
 
+import org.gdms.data.types.Constraint;
+import org.gdms.data.types.DimensionConstraint;
+import org.gdms.data.types.InvalidTypeException;
+import org.gdms.data.types.Type;
+import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
+import org.gdms.geometryUtils.CoordinatesUtils;
 import org.gdms.sql.function.Argument;
 import org.gdms.sql.function.Arguments;
+import org.gdms.sql.function.Function;
 import org.gdms.sql.function.FunctionException;
-import org.gdms.sql.function.spatial.geometry.AbstractSpatialFunction;
 
-import com.vividsolutions.jts.algorithm.MinimumDiameter;
 import com.vividsolutions.jts.geom.Geometry;
 
-public class STO_MinimumRectangle extends AbstractSpatialFunction {
-	public Value evaluate(final Value[] args) throws FunctionException {
-		if (args[0].isNull()) {
+public class ST_AddZToGeometry implements Function {
+
+	private double ZFieldValue;
+
+	public Value evaluate(Value[] args) throws FunctionException {
+		if ((args[0].isNull()) || (args[1].isNull())) {
 			return ValueFactory.createNullValue();
-		} else {
-			final Geometry geom = args[0].getAsGeometry();
-			return ValueFactory.createValue(new MinimumDiameter(geom)
-					.getMinimumRectangle());
 		}
+
+		Geometry geometry = args[0].getAsGeometry();
+
+		ZFieldValue = args[1].getAsDouble();
+
+		Geometry geom = CoordinatesUtils.updateZ(geometry, ZFieldValue);
+
+		return ValueFactory.createValue(geom);
+
 	}
 
-	public String getName() {
-		return "STO_MinimumRectangle";
+	public String getDescription() {
+		return "This function modify (or set) the z component of (each vertex of) the "
+				+ "geometric parameter to the corresponding value given by a field.";
 	}
 
 	public Arguments[] getFunctionArguments() {
-		return new Arguments[] { new Arguments(Argument.GEOMETRY) };
+
+		return new Arguments[] { new Arguments(Argument.GEOMETRY,
+				Argument.NUMERIC) };
+	}
+
+	public String getName() {
+		return "ST_AddZ";
+	}
+
+	public String getSqlOrder() {
+		return "select ST_AddZ(the_geom, fieldname) from contourlines b;";
+	}
+
+	public Type getType(Type[] argsTypes) throws InvalidTypeException {
+
+		Type type = argsTypes[0];
+		Constraint[] constrs = type.getConstraints(Constraint.ALL
+				& ~Constraint.GEOMETRY_DIMENSION);
+		Constraint[] result = new Constraint[constrs.length + 1];
+		System.arraycopy(constrs, 0, result, 0, constrs.length);
+		result[result.length - 1] = new DimensionConstraint(3);
+
+		return TypeFactory.createType(type.getTypeCode(), result);
+
 	}
 
 	public boolean isAggregate() {
 		return false;
 	}
 
-	public String getDescription() {
-		return "Compute the minimum rectangle to a geometry";
+	public Value getAggregateResult() {
+		return null;
 	}
-
-	public String getSqlOrder() {
-		return "select STO_MinimumRectangle(the_geom) from myTable;";
-	}
-
 }

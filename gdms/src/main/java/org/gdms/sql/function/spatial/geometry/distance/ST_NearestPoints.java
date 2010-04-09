@@ -34,58 +34,48 @@
  *    fergonco _at_ gmail.com
  *    thomas.leduc _at_ cerma.archi.fr
  */
-package org.gdms.sql.function.spatial.geometry.convert;
+package org.gdms.sql.function.spatial.geometry.distance;
 
-import org.gdms.data.types.Constraint;
-import org.gdms.data.types.DimensionConstraint;
-import org.gdms.data.types.Type;
-import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
+import org.gdms.data.values.ValueFactory;
 import org.gdms.sql.function.Argument;
 import org.gdms.sql.function.Arguments;
-import org.gdms.sql.function.Function;
 import org.gdms.sql.function.FunctionException;
+import org.gdms.sql.function.spatial.geometry.AbstractSpatialFunction;
 
-public class ST_Force_3D implements Function {
+import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.operation.distance.DistanceOp;
 
-	public Value evaluate(Value[] args) throws FunctionException {
-		return args[0];
-	}
+public class ST_NearestPoints extends AbstractSpatialFunction {
+	public Value evaluate(final Value[] args) throws FunctionException {
+		final Geometry geomA = args[0].getAsGeometry();
+		final Geometry geomB = args[1].getAsGeometry();
+		Coordinate[] pts = DistanceOp.nearestPoints(geomA, geomB);
+		return ValueFactory.createValue(geomA.getFactory()
+				.createLineString(pts));
 
-	public String getDescription() {
-		return "Changes the metadata of the parameter by setting its dimension to 3D.";
 	}
 
 	public String getName() {
-		return "ST_Constraint3D";
+		return "ST_NearestPoints";
 	}
 
-	public String getSqlOrder() {
-		return "select ST_Constraint3D(the_geom) from myTable";
+	public Arguments[] getFunctionArguments() {
+		return new Arguments[] { new Arguments(Argument.GEOMETRY,
+				Argument.GEOMETRY) };
 	}
 
 	public boolean isAggregate() {
 		return false;
 	}
 
-	public Arguments[] getFunctionArguments() {
-		return new Arguments[] { new Arguments(Argument.GEOMETRY) };
+	public String getDescription() {
+		return "Compute the nearest points of two geometries.";
 	}
 
-	public Type getType(Type[] argsTypes) {
-		Type type = argsTypes[0];
-		Constraint[] constrs = type.getConstraints(Constraint.ALL
-				& ~Constraint.GEOMETRY_DIMENSION);
-		Constraint[] result = new Constraint[constrs.length + 1];
-		System.arraycopy(constrs, 0, result, 0, constrs.length);
-		result[result.length - 1] = new DimensionConstraint(3);
-
-		return TypeFactory.createType(type.getTypeCode(), result);
-	}
-
-	@Override
-	public Value getAggregateResult() {
-		return null;
+	public String getSqlOrder() {
+		return "select ST_NearestPoints(the_geom1, the_geom2) from myTable;";
 	}
 
 }

@@ -55,7 +55,7 @@ import com.vividsolutions.jts.geom.MultiPoint;
 import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.Polygon;
 
-public class STO_ToMultiLine extends AbstractSpatialFunction {
+public class ST_ToMultiLine extends AbstractSpatialFunction {
 	private class PointException extends Exception {
 		// this (internal) exception is only thrown in case of (Multi)Point
 		// geometry... When such an exception is catched, a NullValue is
@@ -124,7 +124,7 @@ public class STO_ToMultiLine extends AbstractSpatialFunction {
 	}
 
 	public String getName() {
-		return "STO_ToMultiLine";
+		return "ST_ToMultiLine";
 	}
 
 	public Arguments[] getFunctionArguments() {
@@ -136,7 +136,7 @@ public class STO_ToMultiLine extends AbstractSpatialFunction {
 	}
 
 	public String getSqlOrder() {
-		return "select STO_ToMultiLine(the_geom) from myTable;";
+		return "select ST_ToMultiLine(the_geom) from myTable;";
 	}
 
 }

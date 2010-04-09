@@ -34,53 +34,69 @@
  *    fergonco _at_ gmail.com
  *    thomas.leduc _at_ cerma.archi.fr
  */
-package org.gdms.sql.function.spatial.geometry.convert;
+/***********************************
+ * <p>Title: CarThema</p>
+ * Perspectives Software Solutions
+ * Copyright (c) 2006
+ * @author Vladimir Peric, Vladimir Cetkovic
+ ***********************************/
 
-import org.gdms.data.types.Constraint;
-import org.gdms.data.types.DimensionConstraint;
+package org.gdms.sql.function.math;
+
 import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
+import org.gdms.data.values.ValueFactory;
 import org.gdms.sql.function.Argument;
 import org.gdms.sql.function.Arguments;
 import org.gdms.sql.function.Function;
 import org.gdms.sql.function.FunctionException;
 
-public class ST_Force_3D implements Function {
+/**
+ * @author Vladimir Peric
+ */
+public class Round implements Function {
 
+	/**
+	 * @see org.gdms.sql.function.Function#evaluate(org.gdms.data.values.Value[])
+	 */
 	public Value evaluate(Value[] args) throws FunctionException {
-		return args[0];
+		if (args[0].isNull()) {
+			return ValueFactory.createNullValue();
+		} else {
+			return ValueFactory.createValue(Math.round(args[0].getAsDouble()));
+		}
 	}
 
-	public String getDescription() {
-		return "Changes the metadata of the parameter by setting its dimension to 3D.";
-	}
-
+	/**
+	 * @see org.gdms.sql.function.Function#getName()
+	 */
 	public String getName() {
-		return "ST_Constraint3D";
+		return "round";
 	}
 
-	public String getSqlOrder() {
-		return "select ST_Constraint3D(the_geom) from myTable";
-	}
-
+	/**
+	 * @see org.gdms.sql.function.Function#isAggregate()
+	 */
 	public boolean isAggregate() {
 		return false;
 	}
 
-	public Arguments[] getFunctionArguments() {
-		return new Arguments[] { new Arguments(Argument.GEOMETRY) };
+	public Type getType(Type[] types) {
+		return TypeFactory.createType(Type.LONG);
 	}
 
-	public Type getType(Type[] argsTypes) {
-		Type type = argsTypes[0];
-		Constraint[] constrs = type.getConstraints(Constraint.ALL
-				& ~Constraint.GEOMETRY_DIMENSION);
-		Constraint[] result = new Constraint[constrs.length + 1];
-		System.arraycopy(constrs, 0, result, 0, constrs.length);
-		result[result.length - 1] = new DimensionConstraint(3);
+	public Arguments[] getFunctionArguments() {
+		return new Arguments[] { new Arguments(Argument.NUMERIC) };
+	}
 
-		return TypeFactory.createType(type.getTypeCode(), result);
+	public String getDescription() {
+
+		return "Return the rounded value";
+	}
+
+	public String getSqlOrder() {
+		return "select Round(myNumericField) from myTable;";
 	}
 
 	@Override

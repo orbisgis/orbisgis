@@ -34,7 +34,7 @@
  *    fergonco _at_ gmail.com
  *    thomas.leduc _at_ cerma.archi.fr
  */
-package org.gdms.sql.function.spatial.geometry.create;
+package org.gdms.sql.function.spatial.geometry.edit;
 
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
@@ -44,22 +44,20 @@ import org.gdms.sql.function.FunctionException;
 import org.gdms.sql.function.spatial.geometry.AbstractSpatialFunction;
 
 import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.OctagonalEnvelope;
 
-public class STO_OctogonalEnvelope extends AbstractSpatialFunction {
+public class ST_Normalize extends AbstractSpatialFunction {
 
 	public Value evaluate(final Value[] args) throws FunctionException {
-		if (args[0].isNull()) {
-			return ValueFactory.createNullValue();
-		} else {
-			final Geometry geom = args[0].getAsGeometry();
-			return ValueFactory.createValue(new OctagonalEnvelope(geom)
-					.toGeometry(geom.getFactory()));
-		}
+
+		Geometry g = args[0].getAsGeometry();
+		g.normalize();
+
+		return ValueFactory.createValue(g);
+
 	}
 
 	public String getName() {
-		return "STO_OctogonalEnvelope";
+		return "ST_Normalize";
 	}
 
 	public Arguments[] getFunctionArguments() {
@@ -71,11 +69,11 @@ public class STO_OctogonalEnvelope extends AbstractSpatialFunction {
 	}
 
 	public String getDescription() {
-		return "Compute the octogonal envelope using a given geometry";
+		return "Converts this Geometry to normal form (canonical form). ";
 	}
 
 	public String getSqlOrder() {
-		return "select STO_OctogonalEnvelope(the_geom) from myTable;";
+		return "select ST_Normalize(the_geom) from myTable;";
 	}
 
 }

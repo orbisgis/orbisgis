@@ -34,58 +34,66 @@
  *    fergonco _at_ gmail.com
  *    thomas.leduc _at_ cerma.archi.fr
  */
-package org.gdms.sql.function.spatial.geometry.convert;
 
-import org.gdms.data.types.Constraint;
-import org.gdms.data.types.DimensionConstraint;
+package org.gdms.sql.function.math;
+
 import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
+import org.gdms.data.values.ValueFactory;
 import org.gdms.sql.function.Argument;
 import org.gdms.sql.function.Arguments;
 import org.gdms.sql.function.Function;
 import org.gdms.sql.function.FunctionException;
 
-public class ST_Force_3D implements Function {
+public class StandardDeviation implements Function {
+	private final static Value nullValue = ValueFactory.createNullValue();
+	private double sumOfValues = 0;
+	private double sumOfSquareValues = 0;
+	private int numberOfValues = 0;
 
 	public Value evaluate(Value[] args) throws FunctionException {
-		return args[0];
-	}
-
-	public String getDescription() {
-		return "Changes the metadata of the parameter by setting its dimension to 3D.";
+		if (!args[0].isNull()) {
+			final double currentValue = args[0].getAsDouble();
+			sumOfValues += currentValue;
+			sumOfSquareValues += currentValue * currentValue;
+			numberOfValues++;
+		}
+		return nullValue;
 	}
 
 	public String getName() {
-		return "ST_Constraint3D";
-	}
-
-	public String getSqlOrder() {
-		return "select ST_Constraint3D(the_geom) from myTable";
+		return "StandardDeviation";
 	}
 
 	public boolean isAggregate() {
-		return false;
+		return true;
+	}
+
+	public Type getType(Type[] types) {
+		return TypeFactory.createType(Type.DOUBLE);
 	}
 
 	public Arguments[] getFunctionArguments() {
-		return new Arguments[] { new Arguments(Argument.GEOMETRY) };
+		return new Arguments[] { new Arguments(Argument.NUMERIC) };
 	}
 
-	public Type getType(Type[] argsTypes) {
-		Type type = argsTypes[0];
-		Constraint[] constrs = type.getConstraints(Constraint.ALL
-				& ~Constraint.GEOMETRY_DIMENSION);
-		Constraint[] result = new Constraint[constrs.length + 1];
-		System.arraycopy(constrs, 0, result, 0, constrs.length);
-		result[result.length - 1] = new DimensionConstraint(3);
+	public String getDescription() {
+		return "Compute the standard deviation value";
+	}
 
-		return TypeFactory.createType(type.getTypeCode(), result);
+	public String getSqlOrder() {
+		return "select StandardDeviation(myNumericField) from myTable;";
 	}
 
 	@Override
 	public Value getAggregateResult() {
-		return null;
+		if (0 == numberOfValues) {
+			return nullValue;
+		}
+		final double average = sumOfValues / numberOfValues;
+		return ValueFactory.createValue(Math.sqrt(sumOfSquareValues
+				/ numberOfValues - average * average));
 	}
 
 }

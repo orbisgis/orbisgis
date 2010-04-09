@@ -34,7 +34,7 @@
  *    fergonco _at_ gmail.com
  *    thomas.leduc _at_ cerma.archi.fr
  */
-package org.gdms.sql.function.spatial.geometry.distance;
+package org.gdms.sql.function.spatial.geometry.create;
 
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
@@ -43,27 +43,26 @@ import org.gdms.sql.function.Arguments;
 import org.gdms.sql.function.FunctionException;
 import org.gdms.sql.function.spatial.geometry.AbstractSpatialFunction;
 
-import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.algorithm.MinimumDiameter;
 import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.operation.distance.DistanceOp;
 
-public class STO_NearestPoints extends AbstractSpatialFunction {
+public class ST_MinimumDiameter extends AbstractSpatialFunction {
 	public Value evaluate(final Value[] args) throws FunctionException {
-		final Geometry geomA = args[0].getAsGeometry();
-		final Geometry geomB = args[1].getAsGeometry();
-		Coordinate[] pts = DistanceOp.nearestPoints(geomA, geomB);
-		return ValueFactory.createValue(geomA.getFactory()
-				.createLineString(pts));
-
+		if (args[0].isNull()) {
+			return ValueFactory.createNullValue();
+		} else {
+			final Geometry geom = args[0].getAsGeometry();
+			return ValueFactory.createValue(new MinimumDiameter(geom)
+					.getDiameter());
+		}
 	}
 
 	public String getName() {
-		return "STO_NearestPoints";
+		return "ST_MinimumDiameter";
 	}
 
 	public Arguments[] getFunctionArguments() {
-		return new Arguments[] { new Arguments(Argument.GEOMETRY,
-				Argument.GEOMETRY) };
+		return new Arguments[] { new Arguments(Argument.GEOMETRY) };
 	}
 
 	public boolean isAggregate() {
@@ -71,11 +70,11 @@ public class STO_NearestPoints extends AbstractSpatialFunction {
 	}
 
 	public String getDescription() {
-		return "Compute the nearest points of two geometries.";
+		return "Compute the minimum diameter to a geometry";
 	}
 
 	public String getSqlOrder() {
-		return "select STO_NearestPoints(the_geom) from myTable;";
+		return "select ST_MinimumDiameter(the_geom) from myTable;";
 	}
 
 }

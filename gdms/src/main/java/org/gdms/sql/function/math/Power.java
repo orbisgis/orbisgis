@@ -34,47 +34,63 @@
  *    fergonco _at_ gmail.com
  *    thomas.leduc _at_ cerma.archi.fr
  */
-package org.gdms.sql.function.spatial.geometry.create;
+/***********************************
+ * <p>Title: CarThema</p>
+ * Perspectives Software Solutions
+ * Copyright (c) 2006
+ * @author Vladimir Peric, Vladimir Cetkovic
+ ***********************************/
 
+package org.gdms.sql.function.math;
+
+import org.gdms.data.types.Type;
+import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.sql.function.Argument;
 import org.gdms.sql.function.Arguments;
+import org.gdms.sql.function.Function;
 import org.gdms.sql.function.FunctionException;
-import org.gdms.sql.function.spatial.geometry.AbstractSpatialFunction;
 
-import com.vividsolutions.jts.algorithm.MinimumBoundingCircle;
-import com.vividsolutions.jts.geom.Geometry;
-
-public class STO_BoundingCircle extends AbstractSpatialFunction {
-	public Value evaluate(final Value[] args) throws FunctionException {
-		if (args[0].isNull()) {
+public class Power implements Function {
+	public Value evaluate(Value[] args) throws FunctionException {
+		if ((args[0].isNull()) || (args[1].isNull())) {
 			return ValueFactory.createNullValue();
 		} else {
-			final Geometry geom = args[0].getAsGeometry();
-			return ValueFactory.createValue(new MinimumBoundingCircle(geom)
-					.getCircle());
+			final double base = args[0].getAsDouble();
+			final double grade = args[1].getAsDouble();
+			return ValueFactory.createValue(Math.pow(base, grade));
 		}
 	}
 
 	public String getName() {
-		return "STO_BoudingCircle";
-	}
-
-	public Arguments[] getFunctionArguments() {
-		return new Arguments[] { new Arguments(Argument.GEOMETRY) };
+		return "power";
 	}
 
 	public boolean isAggregate() {
 		return false;
 	}
 
+	public Type getType(Type[] types) {
+		return TypeFactory.createType(Type.DOUBLE);
+	}
+
+	public Arguments[] getFunctionArguments() {
+		return new Arguments[] { new Arguments(Argument.NUMERIC,
+				Argument.NUMERIC) };
+	}
+
 	public String getDescription() {
-		return "Compute the minimum bounding circle";
+		return "Return the power value";
 	}
 
 	public String getSqlOrder() {
-		return "select STO_BoundingCircle(the_geom) from myTable;";
+		return "select Power(myBaseNumericField,myPowerNumericField) from myTable;";
+	}
+
+	@Override
+	public Value getAggregateResult() {
+		return null;
 	}
 
 }

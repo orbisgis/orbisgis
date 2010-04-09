@@ -36,46 +36,81 @@
  */
 package org.gdms.sql.function.spatial.geometry.convert;
 
+import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
+
+import org.gdms.data.types.InvalidTypeException;
+import org.gdms.data.types.Type;
+import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
-import org.gdms.geometryUtils.GeometryConverter;
 import org.gdms.sql.function.Argument;
 import org.gdms.sql.function.Arguments;
+import org.gdms.sql.function.Function;
 import org.gdms.sql.function.FunctionException;
-import org.gdms.sql.function.spatial.geometry.AbstractSpatialFunction;
 
+import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.GeometryFactory;
+import com.vividsolutions.jts.geom.MultiPoint;
+import com.vividsolutions.jts.geom.Point;
 
-public class STO_ToMultiPoint extends AbstractSpatialFunction {
-	public String getName() {
-		return "STO_ToMultiPoint";
-	}
+public class ST_PointsToLine implements Function {
+	private final static Value nullValue = ValueFactory.createNullValue();
+	private final static GeometryFactory gf = new GeometryFactory();
+	private List<Coordinate> coords = new LinkedList<Coordinate>();
 
-	public Value evaluate(final Value[] args) throws FunctionException {
-		if (args[0].isNull()) {
-			return ValueFactory.createNullValue();
-		} else {
-			final Geometry geom = args[0].getAsGeometry();
-
-			return ValueFactory.createValue(GeometryConverter
-					.toMultiPoint(geom));
+	public Value evaluate(Value[] args) throws FunctionException {
+		if (!args[0].isNull()) {
+			Geometry geometry = args[0].getAsGeometry();
+			if (geometry instanceof Point) {
+				coords.add(((Point) geometry).getCoordinate());
+			} else if (geometry instanceof MultiPoint) {
+				Coordinate[] tmp = ((MultiPoint) geometry).getCoordinates();
+				coords.addAll(Arrays.asList(tmp));
+			} else {
+				throw new FunctionException(
+						"PointsToLine function only processes [Multi]Point as input geometry!");
+			}
 		}
+		return nullValue;
 	}
 
 	public String getDescription() {
-		return "Convert a geometry into a MultiPoint";
+		return "Convert an ordered set of [Multi]Points in a single LineString geometry";
 	}
 
 	public Arguments[] getFunctionArguments() {
 		return new Arguments[] { new Arguments(Argument.GEOMETRY) };
 	}
 
-	public boolean isAggregate() {
-		return false;
+	public String getName() {
+		return "ST_PointsToLine";
 	}
 
 	public String getSqlOrder() {
-		return "select STO_ToMultiPoint(the_geom) from myTable;";
+		return "select ST_PointsToLine(the_geom) from mylayer";
 	}
 
+	public Type getType(Type[] argsTypes) throws InvalidTypeException {
+		return TypeFactory.createType(Type.GEOMETRY);
+	}
+
+	public boolean isAggregate() {
+		return true;
+	}
+
+	public Value getAggregateResult() {
+		if (coords.size() > 2) {
+			return ValueFactory.createValue(gf.createLineString(coords
+					.toArray(new Coordinate[0])));
+		} else {
+			return nullValue;
+		}
+	}
+
+	public boolean isDesaggregate() {
+		return false;
+	}
 }

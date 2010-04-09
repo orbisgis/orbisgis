@@ -34,58 +34,51 @@
  *    fergonco _at_ gmail.com
  *    thomas.leduc _at_ cerma.archi.fr
  */
-package org.gdms.sql.function.spatial.geometry.convert;
+package org.gdms.sql.function.spatial.geometry.edit;
 
-import org.gdms.data.types.Constraint;
-import org.gdms.data.types.DimensionConstraint;
-import org.gdms.data.types.Type;
-import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
+import org.gdms.data.values.ValueFactory;
 import org.gdms.sql.function.Argument;
 import org.gdms.sql.function.Arguments;
-import org.gdms.sql.function.Function;
 import org.gdms.sql.function.FunctionException;
+import org.gdms.sql.function.spatial.geometry.AbstractSpatialFunction;
 
-public class ST_Force_3D implements Function {
+import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.operation.overlay.snap.GeometrySnapper;
 
-	public Value evaluate(Value[] args) throws FunctionException {
-		return args[0];
-	}
+public class ST_Snap extends AbstractSpatialFunction {
 
-	public String getDescription() {
-		return "Changes the metadata of the parameter by setting its dimension to 3D.";
+	public Value evaluate(final Value[] args) throws FunctionException {
+
+		Geometry g1 = args[0].getAsGeometry();
+		Geometry g2 = args[1].getAsGeometry();
+		double distance = args[2].getAsDouble();
+
+		Geometry[] snapped = GeometrySnapper.snap(g1, g2, distance);
+
+		return ValueFactory.createValue(snapped[0]);
+
 	}
 
 	public String getName() {
-		return "ST_Constraint3D";
+		return "ST_Snap";
 	}
 
-	public String getSqlOrder() {
-		return "select ST_Constraint3D(the_geom) from myTable";
+	public Arguments[] getFunctionArguments() {
+		return new Arguments[] { new Arguments(Argument.GEOMETRY,
+				Argument.GEOMETRY, Argument.NUMERIC) };
 	}
 
 	public boolean isAggregate() {
 		return false;
 	}
 
-	public Arguments[] getFunctionArguments() {
-		return new Arguments[] { new Arguments(Argument.GEOMETRY) };
+	public String getDescription() {
+		return "Snaps two geometries together with a given tolerance.";
 	}
 
-	public Type getType(Type[] argsTypes) {
-		Type type = argsTypes[0];
-		Constraint[] constrs = type.getConstraints(Constraint.ALL
-				& ~Constraint.GEOMETRY_DIMENSION);
-		Constraint[] result = new Constraint[constrs.length + 1];
-		System.arraycopy(constrs, 0, result, 0, constrs.length);
-		result[result.length - 1] = new DimensionConstraint(3);
-
-		return TypeFactory.createType(type.getTypeCode(), result);
-	}
-
-	@Override
-	public Value getAggregateResult() {
-		return null;
+	public String getSqlOrder() {
+		return "select ST_Snap(geom1, geom2, distance) from myTable;";
 	}
 
 }

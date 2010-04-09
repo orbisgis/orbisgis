@@ -46,19 +46,19 @@ import org.gdms.sql.function.spatial.geometry.AbstractSpatialFunction;
 import com.vividsolutions.jts.algorithm.MinimumDiameter;
 import com.vividsolutions.jts.geom.Geometry;
 
-public class STO_MinimumDiameter extends AbstractSpatialFunction {
+public class ST_MinimumRectangle extends AbstractSpatialFunction {
 	public Value evaluate(final Value[] args) throws FunctionException {
 		if (args[0].isNull()) {
 			return ValueFactory.createNullValue();
 		} else {
 			final Geometry geom = args[0].getAsGeometry();
 			return ValueFactory.createValue(new MinimumDiameter(geom)
-					.getDiameter());
+					.getMinimumRectangle());
 		}
 	}
 
 	public String getName() {
-		return "STO_MinimumDiameter";
+		return "ST_MinimumRectangle";
 	}
 
 	public Arguments[] getFunctionArguments() {
@@ -70,11 +70,11 @@ public class STO_MinimumDiameter extends AbstractSpatialFunction {
 	}
 
 	public String getDescription() {
-		return "Compute the minimum diameter to a geometry";
+		return "Compute the minimum rectangle to a geometry";
 	}
 
 	public String getSqlOrder() {
-		return "select STO_MinimumDiameter(the_geom) from myTable;";
+		return "select ST_MinimumRectangle(the_geom) from myTable;";
 	}
 
 }
