@@ -61,7 +61,7 @@ public class LineSymbol extends AbstractLineSymbol {
 			RenderPermission permission) throws DriverException {
 		LiteShape ls = new LiteShape(geom, at, true, 0.5);
 
-		 drawingSize = lineWidth;
+		drawingSize = lineWidth;
 		if (mapUnits) {
 			try {
 				drawingSize = (int) toPixelUnits(lineWidth, at);
