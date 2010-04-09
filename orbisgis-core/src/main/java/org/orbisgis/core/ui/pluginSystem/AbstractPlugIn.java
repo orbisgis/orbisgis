@@ -52,7 +52,10 @@ public abstract class AbstractPlugIn implements PlugIn {
 	// implemented by PlugIns
 	// Factory for adapt PlugIn context (Visibility, Enabled)
 	public void createPlugInContext(WorkbenchContext context) {
-		plugInContext = context.createPlugInContext(this);
+		if(plugInContext == null)
+			plugInContext = context.createPlugInContext(this);
+		if(!context.getPopupPlugInObservers().contains(this))
+			context.getPopupPlugInObservers().add(this);	
 	}
 	// Specific implemented methods by some PlugIn (use in UdpateFactory)
 	// test in TOC for swing visibility

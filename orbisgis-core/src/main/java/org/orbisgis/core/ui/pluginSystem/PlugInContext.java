@@ -47,14 +47,12 @@ public class PlugInContext {
 	public PlugInContext(WorkbenchContext context, AbstractPlugIn plugIn) {
 		Assert.isTrue(context != null);
 		this.plugin = plugIn;
-		this.workbenchContext = context;
-		workbenchContext.getPopupPlugInObservers().add(plugIn);	
+		this.workbenchContext = context;		
 	}
 
 	public PlugInContext(WorkbenchContext context, PlugIn plugIn) {
 		Assert.isTrue(context != null);
-		this.workbenchContext = context;
-		workbenchContext.getViewsPlugInObservers().add(plugIn);
+		this.workbenchContext = context;		
 	}
 
 	public WorkbenchContext getWorkbenchContext() {

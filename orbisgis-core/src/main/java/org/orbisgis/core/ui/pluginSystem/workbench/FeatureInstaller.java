@@ -19,6 +19,8 @@ import org.gdms.sql.customQuery.CustomQuery;
 import org.gdms.sql.customQuery.QueryManager;
 import org.gdms.sql.function.Function;
 import org.gdms.sql.function.FunctionManager;
+import org.orbisgis.core.Services;
+import org.orbisgis.core.geocognition.Geocognition;
 import org.orbisgis.core.ui.pluginSystem.AbstractPlugIn;
 import org.orbisgis.core.ui.pluginSystem.PlugIn;
 import org.orbisgis.core.ui.pluginSystem.PlugInContext;
@@ -273,13 +275,23 @@ public class FeatureInstaller {
 	}
 
 	public void addRegisterCustomQuery(Class<? extends CustomQuery> queryClass) {
-		if(QueryManager.getQuery(queryClass.getSimpleName())==null)
+		if(QueryManager.getQuery(queryClass.getSimpleName())==null) {
 			QueryManager.registerQuery(queryClass);
+			addToGeocognition (queryClass.getSimpleName(), queryClass);
+		}
+		
 	}
 
 	public void addRegisterFunction(Class<? extends Function> functionClass) {
-		if(FunctionManager.getFunction(functionClass.getSimpleName())==null)
+		if(FunctionManager.getFunction(functionClass.getSimpleName())==null) {
 			FunctionManager.addFunction(functionClass);
+			addToGeocognition (functionClass.getSimpleName(), functionClass);
+		}
+	}
+	
+	public void addToGeocognition (String name, Class clazz) {
+		Geocognition geocognition = Services.getService(Geocognition.class);
+		geocognition.addElement("SQL/" + name,clazz);
 	}
 
 	/*

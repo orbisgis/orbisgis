@@ -49,8 +49,10 @@ public abstract class ViewPlugIn implements PlugIn {
 		context.getWorkbench().getFrame().getViews().add(
 				new ViewDecorator(this, id, icon,
 						(editors == null) ? new String[0] : editors));
-		
-		plugInContext = context.createPlugInContext(this);	
+		if(plugInContext == null)
+			plugInContext = context.createPlugInContext(this);
+		if(!context.getViewsPlugInObservers().contains(this))
+			context.getViewsPlugInObservers().add(this);		
 	}
 	
 	protected PlugInContext getPlugInContext() {
