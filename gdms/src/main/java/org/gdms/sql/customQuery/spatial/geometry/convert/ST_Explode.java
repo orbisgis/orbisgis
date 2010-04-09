@@ -34,7 +34,7 @@
  *    fergonco _at_ gmail.com
  *    thomas.leduc _at_ cerma.archi.fr
  */
-package org.gdms.sql.customQuery.spatial.convert;
+package org.gdms.sql.customQuery.spatial.geometry.convert;
 
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceFactory;
@@ -60,14 +60,14 @@ import org.orbisgis.progress.IProgressMonitor;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryCollection;
 
-public class Explode implements CustomQuery {
+public class ST_Explode implements CustomQuery {
 
 	public String getName() {
-		return "STO_Explode";
+		return "ST_Explode";
 	}
 
 	public String getSqlOrder() {
-		return "select STO_Explode( [geomFieldName] ) from myTable;";
+		return "select ST_Explode( [geomFieldName] ) from myTable;";
 	}
 
 	public String getDescription() {
