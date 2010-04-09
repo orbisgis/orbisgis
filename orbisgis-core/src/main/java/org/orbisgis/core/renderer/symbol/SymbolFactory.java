@@ -112,7 +112,7 @@ public class SymbolFactory {
 	}
 
 	public static Symbol createLineSymbol(Color color, int lineWidth) {
-		return new LineSymbol(color, lineWidth, true);
+		return new LineSymbol(color, lineWidth, false);
 	}
 
 	public static Symbol createCirclePolygonSymbol(Color outline,
