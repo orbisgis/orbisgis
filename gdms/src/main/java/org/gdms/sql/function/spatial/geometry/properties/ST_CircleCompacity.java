@@ -45,7 +45,7 @@ import org.gdms.sql.function.spatial.geometry.properties.AbstractSpatialProperty
 
 import com.vividsolutions.jts.geom.Geometry;
 
-public class ST0_CircleCompacity extends AbstractSpatialPropertyFunction {
+public class ST_CircleCompacity extends AbstractSpatialPropertyFunction {
 	private final static double DPI = 2 * Math.PI;
 
 	public Value evaluateResult(final Value[] args) throws FunctionException {
@@ -64,7 +64,7 @@ public class ST0_CircleCompacity extends AbstractSpatialPropertyFunction {
 	}
 
 	public String getName() {
-		return "STO_CircleCompacity";
+		return "ST_CircleCompacity";
 	}
 
 	public Type getType(Type[] argsTypes) {
@@ -76,7 +76,7 @@ public class ST0_CircleCompacity extends AbstractSpatialPropertyFunction {
 	}
 
 	public String getSqlOrder() {
-		return "select STO_CircleCompacity(the_geom) from myBuildingsTable;";
+		return "select ST_CircleCompacity(the_geom) from myBuildingsTable;";
 	}
 
 }

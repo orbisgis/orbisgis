@@ -67,7 +67,7 @@ public class ST_IsEmpty extends AbstractSpatialPropertyFunction {
 	}
 
 	public String getSqlOrder() {
-		return "select ST_IsEmpty (the_geom) from myTable;";
+		return "select ST_IsEmpty(the_geom) from myTable;";
 	}
 
 }
