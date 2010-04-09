@@ -7,11 +7,10 @@ import java.util.ResourceBundle;
 
 public abstract class I18N {	
 	
-	private final static String PROPERTIES = "properties";
-	private final static String BACKSLASH = System.getProperty("file.separator");
-	
 	//I18N file must be in "properties/" repository
-	private final static String I18N_PATH = PROPERTIES + BACKSLASH;
+	private final static String PROPERTIES = "properties";
+	private final static String SEPARATOR = "."; //System.getProperty("file.separator");	
+	
 	//Orbisgis loacle. This local would applied to all plugin (if -i18n local has been given by command line)
 	private static Locale I18N_SETLOCALE;
 	//Orbisgis key, for find back Resource bundle about orbisgis Context.
@@ -82,10 +81,10 @@ public abstract class I18N {
 	
 	private static String getBundleBaseName(String fileName, Class<?> loader) {
 		//find classloader package
-		String i18nPackage = loader.getPackage().getName().replace(".", BACKSLASH) + BACKSLASH;	
+		String i18nPackage = loader.getPackage().getName() + SEPARATOR;	
 		//Add properties repository. This is a constraint to create PlugIn
 		//(PlugIn properties must be below properties repository)
-		String i18nRepository = I18N_PATH + fileName ;
+		String i18nRepository = PROPERTIES + SEPARATOR + fileName ;
 		String baseName = i18nPackage + i18nRepository;
 		//return Bundle base name 
 		return baseName;
