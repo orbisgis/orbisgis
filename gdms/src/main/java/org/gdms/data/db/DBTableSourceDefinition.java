@@ -36,7 +36,6 @@
  */
 package org.gdms.data.db;
 
-
 import java.sql.Connection;
 import java.sql.SQLException;
 
@@ -59,15 +58,12 @@ import org.gdms.source.directory.DbDefinitionType;
 import org.gdms.source.directory.DefinitionType;
 import org.orbisgis.progress.IProgressMonitor;
 
-/**
- * @author Fernando Gonzalez Cortes
- */
 public class DBTableSourceDefinition extends AbstractDataSourceDefinition {
 	protected DBSource def;
 
 	/**
 	 * Creates a new DBTableSourceDefinition
-	 *
+	 * 
 	 * @param driverName
 	 *            Name of the driver used to access the data
 	 */
@@ -198,8 +194,9 @@ public class DBTableSourceDefinition extends AbstractDataSourceDefinition {
 	public static DataSourceDefinition createFromXML(DbDefinitionType definition) {
 		DBSource dbSource = new DBSource(definition.getHost(), Integer
 				.parseInt(definition.getPort()), definition.getDbName(),
-				definition.getUser(), definition.getPassword(), definition.getSchemaName(), definition
-						.getTableName(), definition.getPrefix());
+				definition.getUser(), definition.getPassword(), definition
+						.getSchemaName(), definition.getTableName(), definition
+						.getPrefix());
 		return new DBTableSourceDefinition(dbSource);
 	}
 
