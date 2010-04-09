@@ -53,7 +53,7 @@ import org.gdms.driver.driverManager.DriverLoadException;
 import org.gdms.driver.gdms.GdmsDriver;
 import org.gdms.source.Source;
 import org.gdms.sql.customQuery.QueryManager;
-import org.gdms.sql.customQuery.RegisterCall;
+import org.gdms.sql.customQuery.system.RegisterCall;
 import org.gdms.sql.function.FunctionManager;
 import org.gdms.sql.function.spatial.geometry.operators.ST_Buffer;
 import org.gdms.sql.parser.ParseException;
