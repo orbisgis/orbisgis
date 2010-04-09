@@ -187,7 +187,7 @@ public class CreateSourceFromSelectionPlugIn extends AbstractPlugIn {
 										new LayerSelectionTest[] {LayerSelectionTest.EQUAL},
 										1,
 										new LayerTest[] {LayerTest.VECTORIAL}, 
-										true);
+										false);
 	}
 
 /*	public boolean accepts(MapContext mc, ILayer layer) {
