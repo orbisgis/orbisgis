@@ -14,7 +14,7 @@ public class GeometryProperties {
 	private static final String GEOMETRY_Z = "Geometry.Z";
 	private static final String GEOMETRY_START_Z = "Geometry.StartZ";
 	private static final String GEOMETRY_END_Z = "Geometry.EndZ";
-	private static final String GEOMETRY_LENGHT = "Geometry.Lenght";
+	private static final String GEOMETRY_LENGHT = "Geometry.Length";
 	private static final String GEOMETRY_MEAN_Z = "Geometry.MeanZ";
 	private static final String GEOMETRY_AREA = "Geometry.Area";
 	private static final String ENVELOPE_AREA = "Envelope.Area";
