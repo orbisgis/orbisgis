@@ -41,8 +41,6 @@ import java.util.ArrayList;
 import javax.swing.SwingUtilities;
 
 import org.apache.log4j.Logger;
-import org.orbisgis.core.Services;
-import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchContext;
 
 public class JobQueue implements BackgroundManager {
 
