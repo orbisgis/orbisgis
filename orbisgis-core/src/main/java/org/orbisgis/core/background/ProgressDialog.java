@@ -68,7 +68,6 @@ public class ProgressDialog extends JDialog {
 			refreshProgressBar();
 		} else {
 			SwingUtilities.invokeLater(new Runnable() {
-
 				public void run() {
 					refreshProgressBar();
 				}
