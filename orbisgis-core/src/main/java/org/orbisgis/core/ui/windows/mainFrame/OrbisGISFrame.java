@@ -277,11 +277,11 @@ public class OrbisGISFrame extends JFrame implements IWindow {
 		/* Job popup at bootom right to follow processes loading */
 		jobPopup = new JobPopup(this);
 		jobPopup.initialize();
-		// this.getContentPane().add(jobPopup.getPanel(), BorderLayout.SOUTH);
-
+		
 		// Status bar : it gives memory informations
 		HeapView heapView = new HeapView();
 		heapView.setPreferredSize(new Dimension(200, 25));
+
 		JToolBar statusToolBar = new JToolBar();
 
 		DefaultWorkspace workspace = (DefaultWorkspace) Services
