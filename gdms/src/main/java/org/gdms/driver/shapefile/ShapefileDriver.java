@@ -183,12 +183,6 @@ public class ShapefileDriver implements FileReadWriteDriver {
 			if (fieldId == 0) {
 				int offset = shxFile.getOffset((int) rowIndex);
 				Geometry shape = (Geometry) reader.geomAt(offset);
-				/*TODO : What about simple geometry in shapefile. Look the shapefile specifications
-				 * if (shape instanceof MultiPolygon) {
-					if (shape.getNumGeometries() == 1) {
-						shape = shape.getGeometryN(0);
-					}
-				}*/
 				return (null == shape) ? null : ValueFactory.createValue(shape);
 			} else {
 				return dbfDriver.getFieldValue(rowIndex, fieldId - 1);
@@ -268,7 +262,7 @@ public class ShapefileDriver implements FileReadWriteDriver {
 		result.add(new DefaultTypeDefinition("Geometry", Type.GEOMETRY,
 				new int[] { Constraint.GEOMETRY_TYPE,
 						Constraint.GEOMETRY_DIMENSION }));
-		return (TypeDefinition[]) result.toArray(new TypeDefinition[result
+		return  result.toArray(new TypeDefinition[result
 				.size()]);
 	}
 
