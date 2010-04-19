@@ -59,7 +59,9 @@ public class PolygonSymbol extends AbstractPolygonSymbol {
 	public Envelope draw(Graphics2D g, Geometry geom, AffineTransform at,
 			RenderPermission permission) throws DriverException {
 		if (geom instanceof Polygon || geom instanceof MultiPolygon) {
-			LiteShape ls = new LiteShape(geom, at, true, 0.5);
+
+			LiteShape ls = new LiteShape(geom, at, true);			
+			
 			if (fillColor != null) {
 				g.setPaint(fillColor);
 				g.fill(ls);
