@@ -36,7 +36,6 @@
  */
 package org.orbisgis.core.map;
 
-import java.awt.Color;
 import java.awt.Point;
 import java.awt.Toolkit;
 import java.awt.geom.AffineTransform;
@@ -59,8 +58,6 @@ public class MapTransform {
 	private Envelope extent;
 
 	private ArrayList<TransformListener> listeners = new ArrayList<TransformListener>();
-
-	private Color backColor;
 
 	/**
 	 * Sets the painted image
@@ -184,11 +181,11 @@ public class MapTransform {
 		Envelope oldExtent = this.extent;
 		boolean modified = true;
 		/* Set extent when Envelope is modified */
-		if(extent!=null){
-			if(extent.equals(newExtent)) 
+		if (extent != null) {
+			if (extent.equals(newExtent))
 				modified = false;
 		}
-		if(modified){		
+		if (modified) {
 			this.extent = newExtent;
 			calculateAffineTransform();
 			for (TransformListener listener : listeners) {
@@ -259,7 +256,8 @@ public class MapTransform {
 	 */
 	public Point2D toMapPoint(int i, int j) {
 		try {
-			return trans.createInverse().transform(new Point2D.Double(i, j), null);
+			return trans.createInverse().transform(new Point2D.Double(i, j),
+					null);
 		} catch (NoninvertibleTransformException e) {
 			throw new RuntimeException(e);
 		}
