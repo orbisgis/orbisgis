@@ -192,8 +192,6 @@ public class ToolManager extends MouseAdapter implements MouseMotionListener, Mo
 	private ArrayList<ToolListener> listeners = new ArrayList<ToolListener>();
 
 	private boolean showPopup;
-	
-	//private JPanel panel;
 
 	/**
 	 * Creates a new EditionToolAdapter.
