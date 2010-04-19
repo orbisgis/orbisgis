@@ -100,7 +100,7 @@ public class MapControl extends JComponent implements ComponentListener {
 
 	private ToolManager toolManager;
 
-	private Color backColor;
+	private Color backColor = Color.white;
 
 	private MapTransform mapTransform = new MapTransform();
 
@@ -223,16 +223,17 @@ public class MapControl extends JComponent implements ComponentListener {
 	protected void paintComponent(Graphics g) {
 		BufferedImage mapTransformImage = mapTransform.getImage();
 
-		if (status == UPDATED) {
-			// If not waiting for an image
-			if (mapTransformImage != null) {
-				g.drawImage(mapTransformImage, 0, 0, null);
-				toolManager.paintEdition(g);
-			} else {
-				g.setColor(backColor);
-				g.fillRect(0, 0, getWidth(), getHeight());
-			}
-		} else if (status == DIRTY) {
+		// if (status == UPDATED) {
+		// If not waiting for an image
+		if (mapTransformImage != null) {
+			g.drawImage(mapTransformImage, 0, 0, null);
+			toolManager.paintEdition(g);
+		} else {
+			g.setColor(backColor);
+			g.fillRect(0, 0, getWidth(), getHeight());
+		}
+
+		if (status == DIRTY) {
 			BufferedImage inProcessImage = new BufferedImage(this.getWidth(),
 					this.getHeight(), BufferedImage.TYPE_INT_ARGB);
 			Graphics gImg = inProcessImage.createGraphics();
@@ -242,9 +243,11 @@ public class MapControl extends JComponent implements ComponentListener {
 
 			if (mapTransform.getAdjustedExtent() != null) {
 				mapTransform.setImage(inProcessImage);
-				// A good idea from gearscape fork
-				Timer timer = new Timer(200, new ActionListener() {
-
+				// 250 ms wasn't as good as 1 s because less got painted on each
+				// repaint,
+				// making rendering appear to be slower. [Jon Aquino]
+				// LDB: 400 ms is better when using mouse wheel zooming
+				Timer timer = new Timer(400, new ActionListener() {
 					@Override
 					public void actionPerformed(ActionEvent e) {
 						repaint();
@@ -252,7 +255,6 @@ public class MapControl extends JComponent implements ComponentListener {
 				});
 				timer.start();
 				drawer = new Drawer(timer);
-
 				BackgroundManager bm = (BackgroundManager) Services
 						.getService(BackgroundManager.class);
 				bm.nonBlockingBackgroundOperation(new DefaultJobId(
@@ -282,6 +284,7 @@ public class MapControl extends JComponent implements ComponentListener {
 			g.drawString(yCoord, 0, getHeight());
 			g.drawString(scale, scaleRect.x, scaleRect.y);
 		}
+
 	}
 
 	/**
@@ -340,7 +343,6 @@ public class MapControl extends JComponent implements ComponentListener {
 
 		private boolean cancel = false;
 		private CancellablePM pm;
-
 		private Timer timer;
 
 		public Drawer(Timer timer) {
@@ -369,9 +371,9 @@ public class MapControl extends JComponent implements ComponentListener {
 			} catch (Error e) {
 				throw e;
 			} finally {
+				timer.stop();
 				MapControl.this.repaint();
 				mapContext.setBoundingBox(mapTransform.getExtent());
-				timer.stop();
 			}
 		}
 
