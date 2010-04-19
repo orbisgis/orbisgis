@@ -68,12 +68,11 @@ public interface SQLEngineTreeConstants
   public int JJTSQLVALUELIST = 62;
   public int JJTSQLWHERE = 63;
   public int JJTSQLCREATE = 64;
-  public int JJTSQLINTO = 65;
-  public int JJTSQLCREATEARGSLIST = 66;
-  public int JJTSQLCOLUMNDEFINITION = 67;
-  public int JJTSQLDATATYPECONSTRAINT = 68;
-  public int JJTSQLTYPEARGLITERAL = 69;
-  public int JJTSQLTYPEARGS = 70;
+  public int JJTSQLCREATEARGSLIST = 65;
+  public int JJTSQLCOLUMNDEFINITION = 66;
+  public int JJTSQLDATATYPECONSTRAINT = 67;
+  public int JJTSQLTYPEARGLITERAL = 68;
+  public int JJTSQLTYPEARGS = 69;
 
 
   public String[] jjtNodeName = {
@@ -142,7 +141,6 @@ public interface SQLEngineTreeConstants
     "SQLValueList",
     "SQLWhere",
     "SQLCreate",
-    "SQLInto",
     "SQLCreateArgsList",
     "SQLColumnDefinition",
     "SQLDataTypeConstraint",
@@ -150,4 +148,4 @@ public interface SQLEngineTreeConstants
     "SQLTypeArgs",
   };
 }
-/* JavaCC - OriginalChecksum=9e05484b0c701bbce49413a3354dd5aa (do not edit this line) */
+/* JavaCC - OriginalChecksum=d5046d729a00922c09c0df10eac424ad (do not edit this line) */

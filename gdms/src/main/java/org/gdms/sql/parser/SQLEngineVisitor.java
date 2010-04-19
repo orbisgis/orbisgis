@@ -69,11 +69,10 @@ public interface SQLEngineVisitor
   public Object visit(ASTSQLValueList node, Object data);
   public Object visit(ASTSQLWhere node, Object data);
   public Object visit(ASTSQLCreate node, Object data);
-  public Object visit(ASTSQLInto node, Object data);
   public Object visit(ASTSQLCreateArgsList node, Object data);
   public Object visit(ASTSQLColumnDefinition node, Object data);
   public Object visit(ASTSQLDataTypeConstraint node, Object data);
   public Object visit(ASTSQLTypeArgLiteral node, Object data);
   public Object visit(ASTSQLTypeArgs node, Object data);
 }
-/* JavaCC - OriginalChecksum=582f2f664868d86ff1ac97586222646c (do not edit this line) */
+/* JavaCC - OriginalChecksum=cf8ebdd2b18f3267d89af5c24183afaf (do not edit this line) */
