@@ -116,10 +116,6 @@ public class PickCoordinatesPointTool extends AbstractPointTool {
 		om.print("Picked point  : " + g.toText() + "\n", color);
 	}
 
-	public URL getMouseCursorURL() {
-		return null;
-	}
-	
 	public String getName() {
 		return "Pick a coordinate";
 	}

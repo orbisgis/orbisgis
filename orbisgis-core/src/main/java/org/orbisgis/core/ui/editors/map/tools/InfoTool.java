@@ -37,7 +37,6 @@
 package org.orbisgis.core.ui.editors.map.tools;
 
 import java.awt.geom.Rectangle2D;
-import java.net.URL;
 import java.util.Observable;
 
 import javax.swing.AbstractButton;
@@ -55,8 +54,6 @@ import org.orbisgis.core.Services;
 import org.orbisgis.core.background.BackgroundJob;
 import org.orbisgis.core.background.BackgroundManager;
 import org.orbisgis.core.background.DefaultJobId;
-import org.orbisgis.core.images.IconLoader;
-import org.orbisgis.core.images.IconNames;
 import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.layerModel.MapContext;
 import org.orbisgis.core.ui.editors.map.tool.ToolManager;
@@ -191,8 +188,5 @@ public class InfoTool extends AbstractRectangleTool {
 	public String getName() {
 		return "Get feature attributes";
 	}
-	
-	public URL getMouseCursorURL(){		
-		return IconLoader.getIconUrl(IconNames.INFO_ICON);		
-	}
+
 }

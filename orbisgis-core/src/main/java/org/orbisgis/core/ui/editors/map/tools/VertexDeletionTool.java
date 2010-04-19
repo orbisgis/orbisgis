@@ -159,8 +159,8 @@ public class VertexDeletionTool extends VertexDeletion {
 	public boolean isVisible(MapContext vc, ToolManager tm) {
 		return isEnabled(vc, tm);
 	}
-	
-	public URL getMouseCursorURL(){		
-		return IconLoader.getIconUrl(IconNames.VERTEX_DEL_ICON);		
+
+	public String getName() {
+		return "Remove a vertex";
 	}
 }

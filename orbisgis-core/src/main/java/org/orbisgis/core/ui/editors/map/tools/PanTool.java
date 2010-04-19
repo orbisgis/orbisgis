@@ -62,13 +62,10 @@ package org.orbisgis.core.ui.editors.map.tools;
 import java.awt.Graphics;
 import java.awt.Point;
 import java.awt.geom.Point2D;
-import java.net.URL;
 import java.util.Observable;
 
 import javax.swing.AbstractButton;
 
-import org.orbisgis.core.images.IconLoader;
-import org.orbisgis.core.images.IconNames;
 import org.orbisgis.core.layerModel.MapContext;
 import org.orbisgis.core.ui.editors.map.tool.FinishedAutomatonException;
 import org.orbisgis.core.ui.editors.map.tool.NoSuchTransitionException;
@@ -181,10 +178,7 @@ public class PanTool extends Pan {
 		return true;
 	}
 	
-	public URL getMouseCursorURL(){		
-		return IconLoader.getIconUrl(IconNames.PAN_ICON);		
-	}
-	
+		
 	public String getName() {
 		return "Move the map";
 	}
