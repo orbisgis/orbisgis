@@ -36,6 +36,10 @@ public class CompletionKeyListener extends KeyAdapter {
 	private CompletionPopUp pop;
 	private Completion completion;
 
+	private Interpreter interpreter;
+
+	private BeanShellUtils beanShellUtils;
+
 	public CompletionKeyListener(boolean script, JTextComponent txt) {
 		this.txt = txt;
 		this.script = script;
@@ -48,9 +52,10 @@ public class CompletionKeyListener extends KeyAdapter {
 	}
 
 	public CompletionKeyListener(boolean script, JTextComponent txt,
-			Interpreter interpreter) {
+			BeanShellUtils beanShellUtils) {
 		this.txt = txt;
 		this.script = script;
+		this.beanShellUtils = beanShellUtils;
 		try {
 			completion = new Completion(interpreter);
 		} catch (LinkageError e) {
@@ -74,14 +79,16 @@ public class CompletionKeyListener extends KeyAdapter {
 			} catch (Exception e1) {
 				logger.debug("Bug autocompleting", e1);
 			}
+
+		} else if ((e.getKeyCode() == KeyEvent.VK_ALT) && e.isControlDown()) {
+			beanShellUtils.eval(originalText);
+
 		} else if ((e.getKeyCode() == KeyEvent.VK_S) && e.isControlDown()
 				&& e.isShiftDown()) {
 			try {
 				SaveFilePanel sfp = new SaveFilePanel(null,
 						"Save code completion test case");
-				sfp.setCurrentDirectory(new File("/home/fergonco/"
-						+ "ogworkspace/geocognition/orbisgis-core/"
-						+ "src/test/resources/" + "org/orbisgis/javaManager/"));
+				sfp.setCurrentDirectory(new File("./"));
 				sfp.addFilter("compl", "completion file");
 				if (UIFactory.showDialog(sfp)) {
 					Option[] list = completion.getOptions(originalText, txt
