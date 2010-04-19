@@ -127,6 +127,23 @@ public class SQLTest extends SourceTest {
 
 	}
 
+	public void testDropTable() throws Exception {
+		dsf.getSourceManager().register("landcover2000",
+				new File(internalData + "landcover2000.shp"));
+		dsf.executeSQL("drop table landcover2000;");
+	}
+
+	public void testDropTableIfExists() throws Exception {
+		dsf.getSourceManager().register("landcover2000",
+				new File(internalData + "landcover2000.shp"));
+		dsf.executeSQL("drop table if exists toto;");
+		assertTrue(!dsf.getSourceManager().exists("toto"));
+		assertTrue(dsf.getSourceManager().exists("landcover2000"));
+		dsf.executeSQL("drop table if exists landcover2000;");
+		assertTrue(!dsf.getSourceManager().exists("landcover2000"));
+
+	}
+
 	public void testRenameTable() throws Exception {
 		dsf.getSourceManager().register("landcover2000",
 				new File(internalData + "landcover2000.shp"));
