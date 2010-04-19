@@ -204,15 +204,15 @@ public class LogicTreeBuilder {
 			if ((node.first_token.next.kind == SQLEngineConstants.TABLE)
 					|| (node.first_token.next.kind == SQLEngineConstants.VIEW)) {
 				Node tableListNode = node.jjtGetChild(0);
-				DropTableOperator operator = new DropTableOperator();
+				boolean ifExists = node.first_token.next.next.kind == SQLEngineConstants.IF;
+				DropTableOperator operator = new DropTableOperator(ifExists);
 				for (int i = 0; i < tableListNode.jjtGetNumChildren(); i++) {
 					ScanOperator scan = (ScanOperator) getOperator(tableListNode
 							.jjtGetChild(i));
 					operator.addChild(scan);
 				}
 
-				return operator;
-
+				return operator;				
 			} else {
 				String tableName = getId(node.jjtGetChild(0));
 				String fieldName = getId(node.jjtGetChild(1));
@@ -702,7 +702,7 @@ public class LogicTreeBuilder {
 			Node argsNode = node.jjtGetChild(0);
 			int numArgs = argsNode.jjtGetNumChildren();
 			if ((numArgs == 1)
-					&& (argsNode.jjtGetChild(0) instanceof ASTSQLSelectAllCols)) {				
+					&& (argsNode.jjtGetChild(0) instanceof ASTSQLSelectAllCols)) {
 				ProjectionOp.StarElement star = new StarElement();
 				fillStar(star, (ASTSQLSelectAllCols) argsNode.jjtGetChild(0));
 				return new FunctionOperator(functionName, star);

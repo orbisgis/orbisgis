@@ -87,7 +87,7 @@ public class Instruction {
 		ObjectDriver ret = op.getResult(pm);
 		if (doOpenClose) {
 			op.operationFinished();
-		}
+		}		
 		return ret;
 	}
 

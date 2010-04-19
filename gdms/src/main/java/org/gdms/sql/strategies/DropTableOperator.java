@@ -37,12 +37,19 @@
 package org.gdms.sql.strategies;
 
 import org.gdms.data.ExecutionException;
+import org.gdms.data.NoSuchTableException;
 import org.gdms.data.metadata.Metadata;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.ObjectDriver;
 import org.orbisgis.progress.IProgressMonitor;
 
 public class DropTableOperator extends AbstractOperator implements Operator {
+
+	private boolean ifExists;
+
+	public DropTableOperator(boolean ifExists) {
+		this.ifExists = ifExists;
+	}
 
 	public ObjectDriver getResultContents(IProgressMonitor pm)
 			throws ExecutionException {
@@ -58,6 +65,21 @@ public class DropTableOperator extends AbstractOperator implements Operator {
 
 	public Metadata getResultMetadata() throws DriverException {
 		return null;
+	}
+
+	public void validateTableReferences() throws NoSuchTableException,
+			SemanticException, DriverException {
+		if (!ifExists) {
+			super.validateTableReferences();
+		}
+	}
+
+	public void initialize() throws DriverException {
+		// Do nothing
+	}
+
+	public void operationFinished() throws DriverException {
+		// Do nothing
 	}
 
 }
