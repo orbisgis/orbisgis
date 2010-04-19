@@ -45,6 +45,8 @@ import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.RenderingHints;
 import java.awt.geom.AffineTransform;
+import java.awt.geom.NoninvertibleTransformException;
+import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.awt.image.ColorModel;
@@ -76,6 +78,7 @@ import org.orbisgis.core.renderer.legend.Legend;
 import org.orbisgis.core.renderer.legend.RasterLegend;
 import org.orbisgis.core.renderer.legend.RenderException;
 import org.orbisgis.core.renderer.symbol.RenderUtils;
+import org.orbisgis.core.renderer.symbol.SelectionSymbol;
 import org.orbisgis.core.renderer.symbol.Symbol;
 import org.orbisgis.core.ui.configuration.RenderingConfiguration;
 import org.orbisgis.progress.IProgressMonitor;
@@ -96,7 +99,7 @@ public class Renderer {
 
 	/**
 	 * Draws the content of the layer in the specified graphics
-	 *
+	 * 
 	 * @param g2
 	 *            Object to draw to
 	 * @param width
@@ -113,7 +116,6 @@ public class Renderer {
 	public void draw(Graphics2D g2, int width, int height, Envelope extent,
 			ILayer layer, IProgressMonitor pm) {
 		setHints(g2);
-
 		MapTransform mt = new MapTransform();
 		mt.resizeImage(width, height);
 		mt.setExtent(extent);
@@ -195,6 +197,30 @@ public class Renderer {
 			}
 		}
 
+		/*for (int i = layers.length - 1; i >= 0; i--) {
+
+			if (pm.isCancelled()) {
+				break;
+			} else {
+				layer = layers[i];
+				if (layer.isVisible() && extent.intersects(layer.getEnvelope())) {
+					logger.debug("Drawing selected features from "
+							+ layer.getName());
+
+					if (layer.getSelection().length > 0) {
+
+						try {
+							drawSelectedFeatures(mt, layer, g2, width, height,
+									extent, permission, pm);
+						} catch (DriverException e) {
+							e.printStackTrace();
+						}
+					}
+
+				}
+			}
+		}*/
+
 		long total2 = System.currentTimeMillis();
 		logger.info("Total rendering time:" + (total2 - total1));
 	}
@@ -229,7 +255,7 @@ public class Renderer {
 
 	/**
 	 * Draws the content of the layer in the specified image.
-	 *
+	 * 
 	 * @param img
 	 *            Image to draw the data
 	 * @param extent
@@ -291,9 +317,25 @@ public class Renderer {
 
 		Legend[] legends = layer.getRenderingLegend();
 		SpatialDataSourceDecorator sds = layer.getDataSource();
+
+		// draft mode
+		double dist1pixel = 0;
 		try {
+			AffineTransform at;
+			at = mt.getAffineTransform().createInverse();
+			java.awt.Point pPixel = new java.awt.Point(1, 1);
+			Point2D pProv = new Point2D.Double();
+			at.deltaTransform(pPixel, pProv);
+			dist1pixel = pProv.getX();
+		} catch (NoninvertibleTransformException e1) {
+			throw new RuntimeException("bug!", e1);
+		}
+
+		try {
+
 			HashSet<Integer> selected = new HashSet<Integer>();
 			int[] selection = layer.getSelection();
+
 			for (int i = 0; i < selection.length; i++) {
 				selected.add(selection[i]);
 			}
@@ -328,25 +370,44 @@ public class Renderer {
 					Symbol sym = legend.getSymbol(sds, index);
 					if (sym != null) {
 						Geometry g = sds.getGeometry(index);
-						if (g.getEnvelopeInternal().intersects(extent)) {
-							if (selected.contains(index)) {
-								Symbol derivedSymbol = sym
-										.deriveSymbol(new Color(250, 250, 0));
-								if (derivedSymbol != null) {
-									sym = derivedSymbol;
+
+						boolean isPoint = g.getDimension() == 0;
+						Envelope geomEnvelope = g.getEnvelopeInternal();
+
+						// Do not display geom when the envelope is too small
+						if (geomEnvelope.intersects(extent)) {
+							if (((geomEnvelope.getWidth() < dist1pixel) || (geomEnvelope
+									.getHeight() < dist1pixel))
+									&& !isPoint) {
+								Point2D p = new Point2D.Double(geomEnvelope
+										.getMinX(), geomEnvelope.getMinY());
+								p = mt.getAffineTransform().transform(p, null);
+								int x = (int) p.getX();
+								int y = (int) p.getY();
+								if ((x >= 0) && (y >= 0) && (x < width)
+										&& (y < height)) {
+									g2.fillRect(x, y, 1, 1);
 								}
-							}
-							Envelope symbolEnvelope;
-							if (g.getGeometryType()
-									.equals("GeometryCollection")) {
-								symbolEnvelope = drawGeometryCollection(mt, g2,
-										sym, g, permission);
 							} else {
-								symbolEnvelope = sym.draw(g2, g, mt
-										.getAffineTransform(), permission);
-							}
-							if (symbolEnvelope != null) {
-								permission.addUsedArea(symbolEnvelope);
+								if (selected.contains(index)) {
+									Symbol derivedSymbol = new SelectionSymbol(
+											Color.yellow, true, true);
+									if (derivedSymbol != null) {
+										sym = derivedSymbol;
+									}
+								}
+								Envelope symbolEnvelope;
+								if (g.getGeometryType().equals(
+										"GeometryCollection")) {
+									symbolEnvelope = drawGeometryCollection(mt,
+											g2, sym, g, permission);
+								} else {
+									symbolEnvelope = sym.draw(g2, g, mt
+											.getAffineTransform(), permission);
+								}
+								if (symbolEnvelope != null) {
+									permission.addUsedArea(symbolEnvelope);
+								}
 							}
 						}
 					}
@@ -359,6 +420,90 @@ public class Renderer {
 		}
 	}
 
+	private void drawSelectedFeatures(MapTransform mt, ILayer layer,
+			Graphics2D g2, int width, int height, Envelope extent,
+			DefaultRendererPermission permission, IProgressMonitor pm)
+			throws DriverException {
+
+		SpatialDataSourceDecorator sds = layer.getDataSource();
+
+		// draft mode
+		double dist1pixel = 0;
+		try {
+			AffineTransform at;
+			at = mt.getAffineTransform().createInverse();
+			java.awt.Point pPixel = new java.awt.Point(1, 1);
+			Point2D pProv = new Point2D.Double();
+			at.deltaTransform(pPixel, pProv);
+			dist1pixel = pProv.getX();
+		} catch (NoninvertibleTransformException e1) {
+			throw new RuntimeException("bug!", e1);
+		}
+
+		HashSet<Integer> selected = new HashSet<Integer>();
+		int[] selection = layer.getSelection();
+
+		for (int i = 0; i < selection.length; i++) {
+			selected.add(selection[i]);
+		}
+
+		DefaultSpatialIndexQuery query = new DefaultSpatialIndexQuery(mt
+				.getAdjustedExtent(), sds.getMetadata().getFieldName(
+				sds.getSpatialFieldIndex()));
+		Iterator<Integer> it = sds.queryIndex(query);
+		long rowCount = sds.getRowCount();
+		pm.startTask("Drawing " + layer.getName());
+		int i = 0;
+		while (it.hasNext()) {
+			Integer index = it.next();
+			if (i / 1000 == i / 1000.0) {
+				if (pm.isCancelled()) {
+					break;
+				} else {
+					pm.progressTo((int) (100 * i / rowCount));
+				}
+			}
+			i++;
+			Geometry g = sds.getGeometry(index);
+			boolean isPoint = g.getDimension() == 0;
+			Envelope geomEnvelope = g.getEnvelopeInternal();
+
+			// Do not display geom when the envelope is too small
+			if (geomEnvelope.intersects(extent)) {
+				if (((geomEnvelope.getWidth() < dist1pixel) || (geomEnvelope
+						.getHeight() < dist1pixel))
+						&& !isPoint) {
+					Point2D p = new Point2D.Double(geomEnvelope.getMinX(),
+							geomEnvelope.getMinY());
+					p = mt.getAffineTransform().transform(p, null);
+					int x = (int) p.getX();
+					int y = (int) p.getY();
+					if ((x >= 0) && (y >= 0) && (x < width) && (y < height)) {
+						g2.fillRect(x, y, 1, 1);
+					}
+				} else {
+					if (selected.contains(index)) {
+						Symbol sym = new SelectionSymbol(Color.yellow, true,
+								true);
+						Envelope symbolEnvelope;
+						if (g.getGeometryType().equals("GeometryCollection")) {
+							symbolEnvelope = drawGeometryCollection(mt, g2,
+									sym, g, permission);
+						} else {
+							symbolEnvelope = sym.draw(g2, g, mt
+									.getAffineTransform(), permission);
+						}
+						if (symbolEnvelope != null) {
+							permission.addUsedArea(symbolEnvelope);
+						}
+					}
+
+				}
+			}
+			pm.endTask();
+		}
+	}
+
 	private boolean validScale(MapTransform mt, Legend legend) {
 		return (mt.getScaleDenominator() > legend.getMinScale())
 				&& (mt.getScaleDenominator() < legend.getMaxScale());
@@ -367,7 +512,7 @@ public class Renderer {
 	/**
 	 * For geometry collections we need to filter the symbol composite before
 	 * drawing
-	 *
+	 * 
 	 * @param mt
 	 * @param g2
 	 * @param sym
@@ -456,7 +601,7 @@ public class Renderer {
 
 	/**
 	 * Method to change bands order only on the BufferedImage.
-	 *
+	 * 
 	 * @param bufferedImage
 	 * @return new bufferedImage
 	 */
@@ -488,7 +633,7 @@ public class Renderer {
 	/**
 	 * Gets the component specified by the char between the int components
 	 * passed as parameters in red, green blue
-	 *
+	 * 
 	 * @param rgbChar
 	 * @param red
 	 * @param green
@@ -593,7 +738,7 @@ public class Renderer {
 
 	/**
 	 * Apply some rendering rules Look at rendering configuration panel.
-	 *
+	 * 
 	 * @param g2
 	 */
 
