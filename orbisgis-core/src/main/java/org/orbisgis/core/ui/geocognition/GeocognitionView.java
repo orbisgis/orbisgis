@@ -264,7 +264,7 @@ public class GeocognitionView extends JPanel implements WorkbenchFrame {
 
 			if (element != null) {
 				EditorManager em = Services.getService(EditorManager.class);
-				em.open(element);
+				em.open(element, null);
 			} else {
 				Services.getErrorManager().warning("Cannot find initial map");
 			}
