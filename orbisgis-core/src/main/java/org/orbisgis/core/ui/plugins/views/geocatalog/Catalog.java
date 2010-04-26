@@ -57,15 +57,18 @@ import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 
 import javax.swing.BorderFactory;
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.DefaultListModel;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JList;
+import javax.swing.JMenu;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
@@ -452,23 +455,32 @@ public class Catalog extends JPanel implements DragGestureListener,
 			popup.add(menu);
 		}
 
-		// TODO (pyf): A quoi servais le code ci-dessous?
-		// Add tagging menus
-		/*
-		 * if (!tagSources.isEmpty() && lstSources.getSelectedIndices().length >
-		 * 0) { JMenu menu = new JMenu("Tag"); Iterator<String> tagsIterator =
-		 * tagSources.keySet().iterator(); while (tagsIterator.hasNext()) {
-		 * String tag = tagsIterator.next(); JCheckBoxMenuItem item; if
-		 * (isSelectionTagged(tag)) { item = new JCheckBoxMenuItem(tag, true);
-		 * RemoveTagActionListener removeTagAL = new RemoveTagActionListener(
-		 * tag); item.addActionListener(removeTagAL); } else { item = new
-		 * JCheckBoxMenuItem(tag, false); AddTagActionListener addTagAL = new
-		 * AddTagActionListener( tag); item.addActionListener(addTagAL); }
-		 * menu.add(item); } popup.addSeparator(); popup.add(menu); }
-		 */
+		if (!tagSources.isEmpty() && lstSources.getSelectedIndices().length >0) 
+		{ 
+			JMenu menu = new JMenu("Tag"); 
+			Iterator<String> tagsIterator = tagSources.keySet().iterator(); 
+			while (tagsIterator.hasNext()) {
+				String tag = tagsIterator.next(); 
+				JCheckBoxMenuItem item; 
+				if(isSelectionTagged(tag)) { 
+					item = new JCheckBoxMenuItem(tag, true);
+					RemoveTagActionListener removeTagAL = new RemoveTagActionListener(tag); 
+					item.addActionListener(removeTagAL); 
+				} else  { 
+					item = new JCheckBoxMenuItem(tag, false); 
+					AddTagActionListener addTagAL = new AddTagActionListener( tag); 
+					item.addActionListener(addTagAL); 
+				}
+				menu.add(item); 
+			} 
+			popup.addSeparator(); 
+			popup.add(menu); 
+		}
+
 
 		return popup;
 	}
+	
 
 	private boolean isSelectionTagged(String tag) {
 		HashSet<String> tagSourceSet = tagSources.get(tag);
