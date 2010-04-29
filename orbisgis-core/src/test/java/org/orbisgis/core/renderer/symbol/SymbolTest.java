@@ -38,7 +38,6 @@ package org.orbisgis.core.renderer.symbol;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
-import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -48,15 +47,9 @@ import org.gdms.data.types.GeometryConstraint;
 import org.gdms.driver.DriverException;
 import org.orbisgis.core.AbstractTest;
 import org.orbisgis.core.Services;
+import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.AllowAllRenderPermission;
 import org.orbisgis.core.renderer.RenderPermission;
-import org.orbisgis.core.renderer.symbol.AbstractPolygonSymbol;
-import org.orbisgis.core.renderer.symbol.AbstractSymbol;
-import org.orbisgis.core.renderer.symbol.StandardLineSymbol;
-import org.orbisgis.core.renderer.symbol.StandardPointSymbol;
-import org.orbisgis.core.renderer.symbol.Symbol;
-import org.orbisgis.core.renderer.symbol.SymbolFactory;
-import org.orbisgis.core.renderer.symbol.SymbolManager;
 import org.orbisgis.core.renderer.symbol.collection.persistence.SymbolType;
 
 import com.vividsolutions.jts.geom.Envelope;
@@ -78,7 +71,7 @@ public class SymbolTest extends AbstractTest {
 		}
 
 		@Override
-		public Envelope draw(Graphics2D g, Geometry geom, AffineTransform at,
+		public Envelope draw(Graphics2D g, Geometry geom, MapTransform mt,
 				RenderPermission permission) throws DriverException {
 			return null;
 		}
@@ -213,7 +206,7 @@ public class SymbolTest extends AbstractTest {
 		Symbol derived = toDerive.deriveSymbol(Color.pink);
 		BufferedImage bi = new BufferedImage(2, 2, BufferedImage.TYPE_INT_ARGB);
 		derived.draw(bi.createGraphics(), new GeometryFactory()
-				.createMultiPolygon(new Polygon[0]), new AffineTransform(),
+				.createMultiPolygon(new Polygon[0]), new MapTransform(),
 				new AllowAllRenderPermission());
 	}
 
@@ -239,7 +232,7 @@ public class SymbolTest extends AbstractTest {
 		}
 
 		@Override
-		public Envelope draw(Graphics2D g, Geometry geom, AffineTransform at,
+		public Envelope draw(Graphics2D g, Geometry geom, MapTransform at,
 				RenderPermission permission) throws DriverException {
 			return null;
 		}
