@@ -463,7 +463,7 @@ public class ToolManager extends MouseAdapter implements MouseMotionListener, Mo
 				Graphics2D graphics = bi.createGraphics();
 
 				symbol.draw(graphics, geometry, mapTransform
-						.getAffineTransform(), new AllowAllRenderPermission());
+						, new AllowAllRenderPermission());
 
 				g2.drawImage(bi, 0, 0, null);
 			} catch (DriverException e) {
