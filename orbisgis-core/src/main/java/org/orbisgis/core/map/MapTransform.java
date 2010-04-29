@@ -36,6 +36,8 @@
  */
 package org.orbisgis.core.map;
 
+import java.awt.GraphicsConfiguration;
+import java.awt.GraphicsEnvironment;
 import java.awt.Point;
 import java.awt.Toolkit;
 import java.awt.geom.AffineTransform;
@@ -44,10 +46,12 @@ import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 
+import com.vividsolutions.jts.awt.PointTransformation;
+import com.vividsolutions.jts.awt.ShapeWriter;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
 
-public class MapTransform {
+public class MapTransform implements PointTransformation {
 
 	private BufferedImage image = null;
 
@@ -58,6 +62,8 @@ public class MapTransform {
 	private Envelope extent;
 
 	private ArrayList<TransformListener> listeners = new ArrayList<TransformListener>();
+
+	private ShapeWriter converter;
 
 	/**
 	 * Sets the painted image
@@ -203,7 +209,13 @@ public class MapTransform {
 	public void resizeImage(int width, int height) {
 		int oldWidth = getWidth();
 		int oldHeight = getHeight();
-		image = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+		// image = new BufferedImage(width, height,
+		// BufferedImage.TYPE_INT_ARGB);
+		GraphicsConfiguration configuration = GraphicsEnvironment
+				.getLocalGraphicsEnvironment().getDefaultScreenDevice()
+				.getDefaultConfiguration();
+		image = configuration.createCompatibleImage(width, height,
+				BufferedImage.TYPE_INT_ARGB);
 		calculateAffineTransform();
 		for (TransformListener listener : listeners) {
 			listener.imageSizeChanged(oldWidth, oldHeight, this);
@@ -299,6 +311,18 @@ public class MapTransform {
 
 	public void removeTransformListener(TransformListener listener) {
 		listeners.remove(listener);
+	}
+
+	@Override
+	public void transform(Coordinate src, Point2D dest) {
+		dest.setLocation(src.x, src.y);
+		trans.transform(dest, dest);
+	}
+
+	public ShapeWriter getShapeWriter() {
+		if (converter == null)
+			converter = new ShapeWriter(this);
+		return converter;
 	}
 
 }
