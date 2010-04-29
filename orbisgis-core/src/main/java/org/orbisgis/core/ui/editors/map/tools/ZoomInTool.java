@@ -135,12 +135,14 @@ public class ZoomInTool extends AbstractRectangleTool {
 	public boolean isVisible(MapContext vc, ToolManager tm) {
 		return true;
 	}
-	
-	public URL getMouseCursorURL(){		
-		return IconLoader.getIconUrl(IconNames.ZOOMIN_ICON);		
+
+	public URL getMouseCursorURL() {
+		return IconLoader.getIconUrl(IconNames.ZOOMIN_ICON);
 	}
-	
+
 	public String getName() {
 		return "Zoom in";
 	}
+
+	
 }
