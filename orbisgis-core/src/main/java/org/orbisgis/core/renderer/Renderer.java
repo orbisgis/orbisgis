@@ -42,6 +42,8 @@ import java.awt.AlphaComposite;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.GraphicsConfiguration;
+import java.awt.GraphicsEnvironment;
 import java.awt.Image;
 import java.awt.RenderingHints;
 import java.awt.geom.AffineTransform;
@@ -197,30 +199,6 @@ public class Renderer {
 			}
 		}
 
-		/*for (int i = layers.length - 1; i >= 0; i--) {
-
-			if (pm.isCancelled()) {
-				break;
-			} else {
-				layer = layers[i];
-				if (layer.isVisible() && extent.intersects(layer.getEnvelope())) {
-					logger.debug("Drawing selected features from "
-							+ layer.getName());
-
-					if (layer.getSelection().length > 0) {
-
-						try {
-							drawSelectedFeatures(mt, layer, g2, width, height,
-									extent, permission, pm);
-						} catch (DriverException e) {
-							e.printStackTrace();
-						}
-					}
-
-				}
-			}
-		}*/
-
 		long total2 = System.currentTimeMillis();
 		logger.info("Total rendering time:" + (total2 - total1));
 	}
@@ -275,6 +253,9 @@ public class Renderer {
 			int width, int height, Envelope extent, IProgressMonitor pm)
 			throws DriverException, IOException {
 		logger.debug("raster envelope: " + layer.getEnvelope());
+		GraphicsConfiguration configuration = GraphicsEnvironment
+				.getLocalGraphicsEnvironment().getDefaultScreenDevice()
+				.getDefaultConfiguration();
 		RasterLegend[] legends = layer.getRasterLegend();
 		for (RasterLegend legend : legends) {
 			if (!validScale(mt, legend)) {
@@ -286,8 +267,10 @@ public class Renderer {
 				GeoRaster geoRaster = layer.getDataSource().getRaster(i);
 				Envelope layerEnvelope = geoRaster.getMetadata().getEnvelope();
 				Envelope layerPixelEnvelope = null;
-				BufferedImage layerImage = new BufferedImage(width, height,
-						BufferedImage.TYPE_INT_ARGB);
+				// BufferedImage layerImage = new BufferedImage(width, height,
+				// BufferedImage.TYPE_INT_ARGB);
+				BufferedImage layerImage = configuration.createCompatibleImage(
+						width, height, BufferedImage.TYPE_INT_ARGB);
 
 				// part or all of the GeoRaster is visible
 				layerPixelEnvelope = mt.toPixel(layerEnvelope);
@@ -317,19 +300,6 @@ public class Renderer {
 
 		Legend[] legends = layer.getRenderingLegend();
 		SpatialDataSourceDecorator sds = layer.getDataSource();
-
-		// draft mode
-		double dist1pixel = 0;
-		try {
-			AffineTransform at;
-			at = mt.getAffineTransform().createInverse();
-			java.awt.Point pPixel = new java.awt.Point(1, 1);
-			Point2D pProv = new Point2D.Double();
-			at.deltaTransform(pPixel, pProv);
-			dist1pixel = pProv.getX();
-		} catch (NoninvertibleTransformException e1) {
-			throw new RuntimeException("bug!", e1);
-		}
 
 		try {
 
@@ -371,49 +341,36 @@ public class Renderer {
 					if (sym != null) {
 						Geometry g = sds.getGeometry(index);
 
-						boolean isPoint = g.getDimension() == 0;
 						Envelope geomEnvelope = g.getEnvelopeInternal();
 
 						// Do not display geom when the envelope is too small
 						if (geomEnvelope.intersects(extent)) {
-							if (((geomEnvelope.getWidth() < dist1pixel) || (geomEnvelope
-									.getHeight() < dist1pixel))
-									&& !isPoint) {
-								Point2D p = new Point2D.Double(geomEnvelope
-										.getMinX(), geomEnvelope.getMinY());
-								p = mt.getAffineTransform().transform(p, null);
-								int x = (int) p.getX();
-								int y = (int) p.getY();
-								if ((x >= 0) && (y >= 0) && (x < width)
-										&& (y < height)) {
-									g2.fillRect(x, y, 1, 1);
+
+							if (selected.contains(index)) {
+								Symbol derivedSymbol = new SelectionSymbol(
+										Color.yellow, true, true);
+								if (derivedSymbol != null) {
+									sym = derivedSymbol;
 								}
+							}
+							Envelope symbolEnvelope;
+							if (g.getGeometryType()
+									.equals("GeometryCollection")) {
+								symbolEnvelope = drawGeometryCollection(mt, g2,
+										sym, g, permission);
 							} else {
-								if (selected.contains(index)) {
-									Symbol derivedSymbol = new SelectionSymbol(
-											Color.yellow, true, true);
-									if (derivedSymbol != null) {
-										sym = derivedSymbol;
-									}
-								}
-								Envelope symbolEnvelope;
-								if (g.getGeometryType().equals(
-										"GeometryCollection")) {
-									symbolEnvelope = drawGeometryCollection(mt,
-											g2, sym, g, permission);
-								} else {
-									symbolEnvelope = sym.draw(g2, g, mt
-											.getAffineTransform(), permission);
-								}
-								if (symbolEnvelope != null) {
-									permission.addUsedArea(symbolEnvelope);
-								}
+								symbolEnvelope = sym
+										.draw(g2, g, mt, permission);
+							}
+							if (symbolEnvelope != null) {
+								permission.addUsedArea(symbolEnvelope);
 							}
 						}
 					}
 				}
-				pm.endTask();
 			}
+			pm.endTask();
+
 		} catch (RenderException e) {
 			Services.getErrorManager().warning(
 					"Cannot draw layer: " + layer.getName(), e);
@@ -490,8 +447,7 @@ public class Renderer {
 							symbolEnvelope = drawGeometryCollection(mt, g2,
 									sym, g, permission);
 						} else {
-							symbolEnvelope = sym.draw(g2, g, mt
-									.getAffineTransform(), permission);
+							symbolEnvelope = sym.draw(g2, g, mt, permission);
 						}
 						if (symbolEnvelope != null) {
 							permission.addUsedArea(symbolEnvelope);
@@ -540,7 +496,7 @@ public class Renderer {
 		} else {
 			sym = RenderUtils.buildSymbolToDraw(sym, g);
 			if (sym != null) {
-				return sym.draw(g2, g, mt.getAffineTransform(), permission);
+				return sym.draw(g2, g, mt, permission);
 			} else {
 				return null;
 			}
@@ -731,8 +687,9 @@ public class Renderer {
 		RenderPermission renderPermission = new AllowAllRenderPermission();
 		if (symbol.acceptGeometry(geom)) {
 			Symbol sym = RenderUtils.buildSymbolToDraw(symbol, geom);
-			sym.draw((Graphics2D) g, geom, new AffineTransform(),
-					renderPermission);
+			sym
+					.draw((Graphics2D) g, geom, new MapTransform(),
+							renderPermission);
 		}
 	}
 
