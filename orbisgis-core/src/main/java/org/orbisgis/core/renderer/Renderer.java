@@ -46,9 +46,6 @@ import java.awt.GraphicsConfiguration;
 import java.awt.GraphicsEnvironment;
 import java.awt.Image;
 import java.awt.RenderingHints;
-import java.awt.geom.AffineTransform;
-import java.awt.geom.NoninvertibleTransformException;
-import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.awt.image.ColorModel;
@@ -374,89 +371,6 @@ public class Renderer {
 		} catch (RenderException e) {
 			Services.getErrorManager().warning(
 					"Cannot draw layer: " + layer.getName(), e);
-		}
-	}
-
-	private void drawSelectedFeatures(MapTransform mt, ILayer layer,
-			Graphics2D g2, int width, int height, Envelope extent,
-			DefaultRendererPermission permission, IProgressMonitor pm)
-			throws DriverException {
-
-		SpatialDataSourceDecorator sds = layer.getDataSource();
-
-		// draft mode
-		double dist1pixel = 0;
-		try {
-			AffineTransform at;
-			at = mt.getAffineTransform().createInverse();
-			java.awt.Point pPixel = new java.awt.Point(1, 1);
-			Point2D pProv = new Point2D.Double();
-			at.deltaTransform(pPixel, pProv);
-			dist1pixel = pProv.getX();
-		} catch (NoninvertibleTransformException e1) {
-			throw new RuntimeException("bug!", e1);
-		}
-
-		HashSet<Integer> selected = new HashSet<Integer>();
-		int[] selection = layer.getSelection();
-
-		for (int i = 0; i < selection.length; i++) {
-			selected.add(selection[i]);
-		}
-
-		DefaultSpatialIndexQuery query = new DefaultSpatialIndexQuery(mt
-				.getAdjustedExtent(), sds.getMetadata().getFieldName(
-				sds.getSpatialFieldIndex()));
-		Iterator<Integer> it = sds.queryIndex(query);
-		long rowCount = sds.getRowCount();
-		pm.startTask("Drawing " + layer.getName());
-		int i = 0;
-		while (it.hasNext()) {
-			Integer index = it.next();
-			if (i / 1000 == i / 1000.0) {
-				if (pm.isCancelled()) {
-					break;
-				} else {
-					pm.progressTo((int) (100 * i / rowCount));
-				}
-			}
-			i++;
-			Geometry g = sds.getGeometry(index);
-			boolean isPoint = g.getDimension() == 0;
-			Envelope geomEnvelope = g.getEnvelopeInternal();
-
-			// Do not display geom when the envelope is too small
-			if (geomEnvelope.intersects(extent)) {
-				if (((geomEnvelope.getWidth() < dist1pixel) || (geomEnvelope
-						.getHeight() < dist1pixel))
-						&& !isPoint) {
-					Point2D p = new Point2D.Double(geomEnvelope.getMinX(),
-							geomEnvelope.getMinY());
-					p = mt.getAffineTransform().transform(p, null);
-					int x = (int) p.getX();
-					int y = (int) p.getY();
-					if ((x >= 0) && (y >= 0) && (x < width) && (y < height)) {
-						g2.fillRect(x, y, 1, 1);
-					}
-				} else {
-					if (selected.contains(index)) {
-						Symbol sym = new SelectionSymbol(Color.yellow, true,
-								true);
-						Envelope symbolEnvelope;
-						if (g.getGeometryType().equals("GeometryCollection")) {
-							symbolEnvelope = drawGeometryCollection(mt, g2,
-									sym, g, permission);
-						} else {
-							symbolEnvelope = sym.draw(g2, g, mt, permission);
-						}
-						if (symbolEnvelope != null) {
-							permission.addUsedArea(symbolEnvelope);
-						}
-					}
-
-				}
-			}
-			pm.endTask();
 		}
 	}
 
