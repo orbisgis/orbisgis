@@ -41,13 +41,13 @@ import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
 
 import org.gdms.data.SpatialDataSourceDecorator;
 import org.gdms.driver.DriverException;
 import org.gdms.sql.strategies.IncompatibleTypesException;
 import org.orbisgis.core.Services;
+import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.AllowAllRenderPermission;
 import org.orbisgis.core.renderer.RenderPermission;
 import org.orbisgis.core.renderer.classification.ClassificationMethodException;
@@ -302,7 +302,7 @@ public class DefaultProportionalLineLegend extends AbstractCartoLegend
 
 			RenderPermission renderPermission = new AllowAllRenderPermission();
 			double realMaxSize = getSize(maxValue, 1);
-			big.draw((Graphics2D) g, geom, new AffineTransform(),
+			big.draw((Graphics2D) g, geom, new MapTransform(),
 					renderPermission);
 			g.translate(0, 5);
 
@@ -343,7 +343,7 @@ public class DefaultProportionalLineLegend extends AbstractCartoLegend
 				.createLineString(new Coordinate[] { coordStartLine,
 						coordEndLine });
 
-		small.draw((Graphics2D) g, geom2, new AffineTransform(),
+		small.draw((Graphics2D) g, geom2,  new MapTransform(),
 				renderPermission);
 
 	}

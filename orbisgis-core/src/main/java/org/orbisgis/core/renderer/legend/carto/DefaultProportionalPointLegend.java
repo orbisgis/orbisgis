@@ -41,7 +41,6 @@ import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
 import java.text.NumberFormat;
 
@@ -49,6 +48,7 @@ import org.gdms.data.SpatialDataSourceDecorator;
 import org.gdms.driver.DriverException;
 import org.gdms.sql.strategies.IncompatibleTypesException;
 import org.orbisgis.core.Services;
+import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.AllowAllRenderPermission;
 import org.orbisgis.core.renderer.RenderPermission;
 import org.orbisgis.core.renderer.classification.ClassificationMethodException;
@@ -299,8 +299,9 @@ public class DefaultProportionalPointLegend extends AbstractCartoLegend
 			Point geom = gf.createPoint(new Coordinate(lineStartX, textOffset
 					+ bigSize / 2));
 			RenderPermission renderPermission = new AllowAllRenderPermission();
-			big.draw((Graphics2D) g, geom, new AffineTransform(),
-					renderPermission);
+			big
+					.draw((Graphics2D) g, geom, new MapTransform(),
+							renderPermission);
 
 			double realMaxSize = getSize(maxValue, 1);
 			double minValue = proportionnalMethod.getMinValue();
@@ -343,8 +344,7 @@ public class DefaultProportionalPointLegend extends AbstractCartoLegend
 		Point geom2 = new GeometryFactory().createPoint(new Coordinate(
 				lineStartX, textOffset + bigSize - smallSize / 2));
 
-		small.draw((Graphics2D) g, geom2, new AffineTransform(),
-				renderPermission);
+		small.draw((Graphics2D) g, geom2, new MapTransform(), renderPermission);
 		g.setColor(Color.black);
 		g.drawLine(lineStartX, topSmall, lineEndX, topSmall);
 
@@ -371,7 +371,7 @@ public class DefaultProportionalPointLegend extends AbstractCartoLegend
 					+ " (mean)";
 			r = fm.getStringBounds(meanText, g);
 			maxWidth = (int) Math.max(maxWidth, r.getWidth());
-			
+
 			r = fm.getStringBounds(getHeader(), g);
 
 			double wHeader = r.getWidth();
