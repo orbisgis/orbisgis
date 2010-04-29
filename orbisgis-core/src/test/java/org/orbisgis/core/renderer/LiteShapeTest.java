@@ -36,12 +36,12 @@
  */
 package org.orbisgis.core.renderer;
 
-import java.awt.geom.AffineTransform;
+import java.awt.Shape;
 import java.awt.geom.PathIterator;
 
 import junit.framework.TestCase;
 
-import org.orbisgis.core.renderer.liteShape.LiteShape;
+import org.orbisgis.core.map.MapTransform;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
@@ -112,7 +112,8 @@ public class LiteShapeTest extends TestCase {
 	}
 
 	private void doTest(Geometry geometry) {
-		LiteShape ls = new LiteShape(geometry, new AffineTransform(), true);
+		MapTransform mt = new MapTransform();
+		Shape ls = mt.getShapeWriter().toShape(geometry);
 		PathIterator pi = ls.getPathIterator(null);
 
 		iterate(pi);
