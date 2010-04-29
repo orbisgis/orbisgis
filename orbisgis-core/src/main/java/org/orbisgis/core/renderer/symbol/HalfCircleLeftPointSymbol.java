@@ -38,13 +38,13 @@ package org.orbisgis.core.renderer.symbol;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
-import java.awt.geom.AffineTransform;
+import java.awt.Shape;
 import java.awt.geom.NoninvertibleTransformException;
 import java.awt.geom.PathIterator;
 
 import org.gdms.driver.DriverException;
+import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.RenderPermission;
-import org.orbisgis.core.renderer.liteShape.LiteShape;
 
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
@@ -57,16 +57,17 @@ public class HalfCircleLeftPointSymbol extends AbstractHalfCirclePointSymbol {
 	}
 
 	@Override
-	public Envelope draw(Graphics2D g, Geometry geom, AffineTransform at,
+	public Envelope draw(Graphics2D g, Geometry geom, MapTransform mt,
 			RenderPermission permission) throws DriverException {
-		LiteShape ls = new LiteShape(geom, at, false);
+		// LiteShape ls = new LiteShape(geom, at, false);
+		Shape ls = mt.getShapeWriter().toShape(geom);
 		PathIterator pi = ls.getPathIterator(null);
 		double[] coords = new double[6];
 
 		int drawingSize = size;
 		if (mapUnits) {
 			try {
-				drawingSize = (int) toPixelUnits(size, at);
+				drawingSize = (int) toPixelUnits(size, mt.getAffineTransform());
 			} catch (NoninvertibleTransformException e) {
 				throw new DriverException("Cannot convert to map units", e);
 			}

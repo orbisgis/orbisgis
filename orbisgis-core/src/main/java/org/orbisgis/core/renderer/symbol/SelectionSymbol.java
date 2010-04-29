@@ -3,14 +3,14 @@ package org.orbisgis.core.renderer.symbol;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics2D;
+import java.awt.Shape;
 import java.awt.Stroke;
-import java.awt.geom.AffineTransform;
 import java.awt.geom.PathIterator;
 
 import org.gdms.data.types.GeometryConstraint;
 import org.gdms.driver.DriverException;
+import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.RenderPermission;
-import org.orbisgis.core.renderer.liteShape.LiteShape;
 
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
@@ -29,8 +29,7 @@ public class SelectionSymbol extends AbstractGeometrySymbol {
 	public SelectionSymbol(Color color, boolean paintingHandles, boolean filling) {
 		handleFillColor = color;
 		lineColor = color;
-		fillColor = new Color(Color.white.getRed(), Color.white.getGreen(),
-				Color.white.getBlue(), 75);
+		fillColor = color;
 		this.paintingHandles = paintingHandles;
 		this.filling = filling;
 	}
@@ -58,16 +57,23 @@ public class SelectionSymbol extends AbstractGeometrySymbol {
 	}
 
 	@Override
-	public Envelope draw(Graphics2D g, Geometry geom, AffineTransform at,
+	public Envelope draw(Graphics2D g, Geometry geom, MapTransform mt,
 			RenderPermission permission) throws DriverException {
 
-		if ((geom.getDimension() > 0) || (!paintingHandles)) {
-			SymbolUtil.paint(geom, g, at, filling, fillStroke, fillColor, true,
+		if ((geom.getDimension() == 1) || (!paintingHandles)) {
+			SymbolUtil.paint(geom, g, mt, false, fillStroke, fillColor, true,
 					lineStroke, lineColor);
 		}
 
+		else if ((geom.getDimension() == 2) || (!paintingHandles)) {
+			SymbolUtil.paint(geom, g, mt, filling, fillStroke, new Color(
+					fillColor.getRed(), fillColor.getGreen(), fillColor
+							.getBlue(), 50), true, lineStroke, lineColor);
+		}
+
 		if (paintingHandles) {
-			LiteShape ls = new LiteShape(geom, at, false);
+			// LiteShape ls = new LiteShape(geom, at, false);
+			Shape ls = mt.getShapeWriter().toShape(geom);
 			PathIterator pi = ls.getPathIterator(null);
 			double[] coords = new double[6];
 
@@ -81,13 +87,13 @@ public class SelectionSymbol extends AbstractGeometrySymbol {
 		}
 		return null;
 	}
-	
-	
+
 	protected void paintSquare(Graphics2D g, int x, int y, int size) {
 		x = x - size / 2;
 		y = y - size / 2;
 		if (fillColor != null) {
-			g.setPaint(fillColor);
+			g.setPaint(new Color(fillColor.getRed(), fillColor.getGreen(),
+					fillColor.getBlue(), 50));
 			g.fillRect(x, y, size, size);
 		}
 		if (lineColor != null) {

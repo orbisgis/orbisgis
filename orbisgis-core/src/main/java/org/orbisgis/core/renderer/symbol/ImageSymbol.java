@@ -4,7 +4,7 @@ import java.awt.Color;
 import java.awt.FontMetrics;
 import java.awt.Graphics2D;
 import java.awt.Image;
-import java.awt.geom.AffineTransform;
+import java.awt.Shape;
 import java.awt.geom.PathIterator;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
@@ -18,8 +18,8 @@ import javax.imageio.ImageIO;
 
 import org.gdms.data.types.GeometryConstraint;
 import org.gdms.driver.DriverException;
+import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.RenderPermission;
-import org.orbisgis.core.renderer.liteShape.LiteShape;
 
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
@@ -62,9 +62,10 @@ public class ImageSymbol extends AbstractSymbol implements Symbol {
 		return ret;
 	}
 
-	public Envelope draw(Graphics2D g, Geometry geom, AffineTransform at,
+	public Envelope draw(Graphics2D g, Geometry geom, MapTransform mt,
 			RenderPermission permission) throws DriverException {
-		LiteShape ls = new LiteShape(geom, at, false);
+		// LiteShape ls = new LiteShape(geom, at, false);
+		Shape ls = mt.getShapeWriter().toShape(geom);
 		PathIterator pi = ls.getPathIterator(null);
 		double[] coords = new double[6];
 		while (!pi.isDone()) {

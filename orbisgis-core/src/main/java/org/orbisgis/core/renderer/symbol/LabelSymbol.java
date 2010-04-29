@@ -49,6 +49,7 @@ import java.util.Map;
 
 import org.gdms.data.types.GeometryConstraint;
 import org.gdms.driver.DriverException;
+import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.RenderPermission;
 
 import com.vividsolutions.jts.geom.Coordinate;
@@ -69,7 +70,7 @@ public class LabelSymbol extends AbstractSymbol implements Symbol {
 		setName("Label symbol");
 	}
 
-	public Envelope draw(Graphics2D g, Geometry geom, AffineTransform at,
+	public Envelope draw(Graphics2D g, Geometry geom, MapTransform mt,
 			RenderPermission permission) throws DriverException {
 		Font font = g.getFont();
 		g.setFont(font.deriveFont((float) fontSize));
@@ -82,7 +83,7 @@ public class LabelSymbol extends AbstractSymbol implements Symbol {
 		Dimension size = new Dimension(adv + 2, hgt + 2);
 
 		// Get text size in map units
-		AffineTransform inv = new AffineTransform(at);
+		AffineTransform inv = new AffineTransform(mt.getAffineTransform());
 		try {
 			inv.invert();
 		} catch (NoninvertibleTransformException e) {
@@ -118,7 +119,7 @@ public class LabelSymbol extends AbstractSymbol implements Symbol {
 		// Draw label
 		Point2D p = new Point2D.Double(interiorPoint.getX(), interiorPoint
 				.getY());
-		p = at.transform(p, null);
+		p = mt.getAffineTransform().transform(p, null);
 		double width = size.getWidth();
 		double x = p.getX() - width / 2;
 		double height = size.getHeight();

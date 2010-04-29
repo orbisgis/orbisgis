@@ -38,11 +38,11 @@ package org.orbisgis.core.renderer.symbol;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
-import java.awt.geom.AffineTransform;
 import java.util.Map;
 
 import org.gdms.data.types.GeometryConstraint;
 import org.gdms.driver.DriverException;
+import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.RenderPermission;
 
 import com.vividsolutions.jts.geom.Envelope;
@@ -62,7 +62,7 @@ public interface Symbol {
 	 *         account by the RenderPermission
 	 * @throws DriverException
 	 */
-	Envelope draw(Graphics2D g, Geometry geom, AffineTransform at,
+	Envelope draw(Graphics2D g, Geometry geom, MapTransform mt,
 			RenderPermission permission) throws DriverException;
 
 	/**
