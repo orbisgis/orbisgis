@@ -39,6 +39,8 @@ package org.orbisgis.core.ui.editors.map;
 import java.awt.Color;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
+import java.awt.GraphicsConfiguration;
+import java.awt.GraphicsEnvironment;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -234,8 +236,17 @@ public class MapControl extends JComponent implements ComponentListener {
 		}
 
 		if (status == DIRTY) {
-			BufferedImage inProcessImage = new BufferedImage(this.getWidth(),
-					this.getHeight(), BufferedImage.TYPE_INT_ARGB);
+			// BufferedImage inProcessImage = new BufferedImage(this.getWidth(),
+			// this.getHeight(), BufferedImage.TYPE_INT_ARGB);
+
+			int width = this.getWidth();
+			int height = this.getHeight();
+			GraphicsConfiguration configuration = GraphicsEnvironment
+					.getLocalGraphicsEnvironment().getDefaultScreenDevice()
+					.getDefaultConfiguration();
+			BufferedImage inProcessImage = configuration.createCompatibleImage(width,
+					height, BufferedImage.TYPE_INT_ARGB);
+			
 			Graphics gImg = inProcessImage.createGraphics();
 			gImg.setColor(backColor);
 			gImg.fillRect(0, 0, getWidth(), getHeight());
