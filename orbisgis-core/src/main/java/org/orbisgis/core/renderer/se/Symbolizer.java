@@ -1,20 +1,69 @@
 package org.orbisgis.core.renderer.se;
 
-import java.awt.geom.AffineTransform;
-
 import com.vividsolutions.jts.geom.Geometry;
+import org.gdms.data.DataSource;
+import org.orbisgis.core.renderer.se.parameter.geometry.GeometryParameter;
 
-public interface Symbolizer {
 
-	Uom getUom();
+/**
+ * Entry point for all kind of symbolizer
+ * This abstract class contains only the name, the geom and a description of the symbolizer
+ * @todo Add a general draw method that fit well for vectors and raster; implement fetch default geometry
+ * @author maxence
+ */
+public abstract class Symbolizer implements SymbolizerNode {
 
-	void setUom(Uom uom);
+    public Symbolizer(){
+        name = "Symbolizer name";
+        desc = "";
+    }
 
-	Geometry getGeometry();
+    public String getName(){
+        return name;
+    }
 
-	void setGeometry(Geometry geometry);
+    public void setName(String name){
+        this.name = name;
+    }
 
-	AffineTransform getAffineTransform();
+    public String getDescription(){
+        return desc;
+    }
 
-	void setAffineTransform(AffineTransform at);
+    public void setDescription(String description){
+        desc = description;
+    }
+
+    public GeometryParameter getGeometry() {
+        return the_geom;
+    }
+
+    public void setGeometry(GeometryParameter the_geom) {
+        this.the_geom = the_geom;
+    }
+
+    public Geometry getTheGeom(DataSource ds, int fid){
+        if (the_geom != null){
+            return the_geom.getTheGeom(ds, fid);
+        }
+        else{
+            // TODO fetch the default geometry
+            return null;
+        }
+    }
+
+    @Override
+    public SymbolizerNode getParent(){
+        return null;
+    }
+
+    @Override
+    public void setParent(SymbolizerNode node){
+       // TODO Throw symbolizer root
+    }
+   
+
+    private String name;
+    private String desc;
+    private GeometryParameter the_geom;
 }
