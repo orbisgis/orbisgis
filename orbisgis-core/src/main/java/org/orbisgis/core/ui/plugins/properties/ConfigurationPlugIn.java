@@ -39,6 +39,7 @@ package org.orbisgis.core.ui.plugins.properties;
 
 import java.util.Observable;
 
+import javax.swing.JButton;
 import javax.swing.JMenuItem;
 
 import org.orbisgis.core.sif.UIFactory;
@@ -46,10 +47,16 @@ import org.orbisgis.core.ui.configuration.ConfigurationPanel;
 import org.orbisgis.core.ui.pluginSystem.AbstractPlugIn;
 import org.orbisgis.core.ui.pluginSystem.PlugInContext;
 import org.orbisgis.core.ui.pluginSystem.workbench.Names;
+import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchContext;
 
 public class ConfigurationPlugIn extends AbstractPlugIn {
 
 	private JMenuItem menuItem;
+	private JButton btn;
+
+	public ConfigurationPlugIn() {
+		btn = new JButton(getIcon("preferences-system.png"));
+	}
 
 	@Override
 	public boolean execute(PlugInContext context) throws Exception {
@@ -61,14 +68,18 @@ public class ConfigurationPlugIn extends AbstractPlugIn {
 	}
 
 	public void initialize(PlugInContext context) throws Exception {
-		menuItem = context.getFeatureInstaller()
-				.addMainMenuItem(this, new String[] { Names.FILE },
-						"Configuration", false,
-						getIcon("preferences-system.png"), null,
-						null, context);
+		WorkbenchContext wbcontext = context.getWorkbenchContext();
+		wbcontext.getWorkbench().getFrame().getMainToolBar().addPlugIn(this,
+				btn, context);
+		menuItem = context.getFeatureInstaller().addMainMenuItem(this,
+				new String[] { Names.FILE }, "Configuration", false,
+				getIcon("preferences-system.png"), null, null, context);
 	}
 
 	public void update(Observable o, Object arg) {
+		btn.setEnabled(isEnabled());
+		btn.setVisible(isVisible());
+
 		menuItem.setEnabled(isEnabled());
 		menuItem.setVisible(isVisible());
 
@@ -84,7 +95,6 @@ public class ConfigurationPlugIn extends AbstractPlugIn {
 
 	@Override
 	public boolean isSelected() {
-		// TODO Auto-generated method stub
 		return false;
 	}
 }
