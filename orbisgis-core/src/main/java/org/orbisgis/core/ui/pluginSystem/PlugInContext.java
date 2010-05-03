@@ -1,7 +1,6 @@
 package org.orbisgis.core.ui.pluginSystem;
 
 import java.util.ArrayList;
-import java.util.Observer;
 
 import javax.swing.tree.TreePath;
 
