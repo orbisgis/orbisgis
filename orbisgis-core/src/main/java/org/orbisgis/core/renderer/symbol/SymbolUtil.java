@@ -2,20 +2,30 @@ package org.orbisgis.core.renderer.symbol;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
+import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Paint;
+import java.awt.RenderingHints;
 import java.awt.Shape;
 import java.awt.Stroke;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.GeneralPath;
 import java.awt.geom.Point2D;
 
+import org.gdms.driver.DriverException;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.map.MapTransform;
+import org.orbisgis.core.renderer.AllowAllRenderPermission;
+import org.orbisgis.core.renderer.RenderPermission;
 import org.orbisgis.core.ui.util.GUIUtil;
 
+import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryCollection;
+import com.vividsolutions.jts.geom.GeometryFactory;
+import com.vividsolutions.jts.geom.LineString;
+import com.vividsolutions.jts.geom.LinearRing;
+import com.vividsolutions.jts.geom.impl.CoordinateArraySequence;
 
 public class SymbolUtil {
 
@@ -128,4 +138,102 @@ public class SymbolUtil {
 		flash(circle, graphics, Color.red, new BasicStroke(1,
 				BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND), 200);
 	}
+
+	/**
+	 * Draw a symbol preview
+	 * 
+	 * @param g
+	 * @param symbol
+	 * @param width
+	 * @param height
+	 * @param simple
+	 */
+	public static void drawSymbolPreview(Graphics2D g, Symbol symbol,
+			int width, int height, boolean simple) {
+
+		g.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+				RenderingHints.VALUE_ANTIALIAS_ON);
+
+		if (symbol == null) {
+			return;
+		}
+		GeometryFactory gf = new GeometryFactory();
+		Geometry geom = null;
+
+		try {
+			if (simple) {
+				geom = getSimplePolygon(gf, width, height);
+			} else {
+				geom = getComplexPolygon(gf, width, height);
+			}
+			paintGeometry(g, geom, symbol);
+			if (simple) {
+				geom = getSimpleLine(gf, width, height);
+			} else {
+				geom = getComplexLine(gf, width, height);
+			}
+			paintGeometry(g, geom, symbol);
+			geom = gf.createPoint(new Coordinate(width / 2, height / 2));
+			paintGeometry(g, geom, symbol);
+		} catch (DriverException e) {
+			((Graphics2D) g).drawString("Cannot generate preview", 0, 0);
+		} catch (NullPointerException e) {
+			((Graphics2D) g).drawString("Cannot generate preview: ", 0, 0);
+		}
+	}
+
+	private static Geometry getSimpleLine(GeometryFactory gf, int width,
+			int height) {
+		int widthUnit = width / 4;
+		int heightUnit = height / 4;
+		Coordinate[] coordsP = { new Coordinate(widthUnit, heightUnit),
+				new Coordinate(3 * widthUnit, heightUnit),
+				new Coordinate(3 * widthUnit, 3 * heightUnit),
+				new Coordinate(widthUnit, 3 * heightUnit),
+				new Coordinate(widthUnit, heightUnit) };
+		CoordinateArraySequence seqP = new CoordinateArraySequence(coordsP);
+		return gf.createPolygon(new LinearRing(seqP, gf), null);
+	}
+
+	private static Geometry getSimplePolygon(GeometryFactory gf, int width,
+			int height) {
+		return gf.createLineString(new Coordinate[] {
+				new Coordinate(width / 4, height / 2),
+				new Coordinate(3 * width / 4, height / 2) });
+	}
+
+	private static LineString getComplexLine(GeometryFactory gf, int width,
+			int height) {
+		int widthUnit = width / 4;
+		int heightUnit = height / 4;
+		return gf.createLineString(new Coordinate[] {
+				new Coordinate(widthUnit, 3 * heightUnit),
+				new Coordinate(1.5 * widthUnit, 2 * heightUnit),
+				new Coordinate(2 * widthUnit, 3 * heightUnit),
+				new Coordinate(3 * widthUnit, heightUnit) });
+	}
+
+	private static Geometry getComplexPolygon(GeometryFactory gf, int width,
+			int height) {
+		int widthUnit = width / 4;
+		int heightUnit = height / 4;
+		Coordinate[] coordsP = { new Coordinate(widthUnit, heightUnit),
+				new Coordinate(3 * widthUnit, heightUnit),
+				new Coordinate(widthUnit, 3 * heightUnit),
+				new Coordinate(widthUnit, heightUnit) };
+		CoordinateArraySequence seqP = new CoordinateArraySequence(coordsP);
+		return gf.createPolygon(new LinearRing(seqP, gf), null);
+	}
+
+	private static void paintGeometry(Graphics g, Geometry geom, Symbol symbol)
+			throws DriverException {
+		RenderPermission renderPermission = new AllowAllRenderPermission();
+		if (symbol.acceptGeometry(geom)) {
+			Symbol sym = RenderUtils.buildSymbolToDraw(symbol, geom);
+			sym
+					.draw((Graphics2D) g, geom, new MapTransform(),
+							renderPermission);
+		}
+	}
+
 }

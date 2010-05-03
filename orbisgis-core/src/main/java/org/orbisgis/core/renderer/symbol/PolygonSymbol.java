@@ -60,7 +60,6 @@ public class PolygonSymbol extends AbstractPolygonSymbol {
 			RenderPermission permission) throws DriverException {
 		if (geom instanceof Polygon || geom instanceof MultiPolygon) {
 
-			// LiteShape ls = new LiteShape(geom, at, false);
 			Shape ls = mt.getShapeWriter().toShape(geom);
 			if (fillColor != null) {
 				g.setPaint(fillColor);

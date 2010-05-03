@@ -38,9 +38,8 @@ package org.orbisgis.core.renderer.symbol;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
-import java.awt.Shape;
 import java.awt.geom.NoninvertibleTransformException;
-import java.awt.geom.PathIterator;
+import java.awt.geom.Point2D;
 
 import org.gdms.driver.DriverException;
 import org.orbisgis.core.map.MapTransform;
@@ -48,6 +47,7 @@ import org.orbisgis.core.renderer.RenderPermission;
 
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.MultiPoint;
 
 public class CirclePointSymbol extends AbstractCirclePointSymbol {
 
@@ -59,10 +59,6 @@ public class CirclePointSymbol extends AbstractCirclePointSymbol {
 	@Override
 	public Envelope draw(Graphics2D g, Geometry geom, MapTransform mt,
 			RenderPermission permission) throws DriverException {
-		// LiteShape ls = new LiteShape(geom, at, false);
-		Shape ls = mt.getShapeWriter().toShape(geom);
-		PathIterator pi = ls.getPathIterator(null);
-		double[] coords = new double[6];
 
 		int drawingSize = size;
 		if (mapUnits) {
@@ -73,13 +69,30 @@ public class CirclePointSymbol extends AbstractCirclePointSymbol {
 			}
 		}
 
-		while (!pi.isDone()) {
-			pi.currentSegment(coords);
-			paintCircle(g, (int) coords[0], (int) coords[1], drawingSize);
-			pi.next();
+		if (geom instanceof MultiPoint) {
+			paintMultiPoint(geom, g, mt, drawingSize);
+		} else {
+			Point2D p = new Point2D.Double(geom.getCoordinate().x, geom
+					.getCoordinate().y);
+			p = mt.getAffineTransform().transform(p, null);
+
+			paintCircle(g, p.getX(), p.getY(), drawingSize);
 		}
 
 		return null;
+	}
+
+	private void paintMultiPoint(Geometry geom, Graphics2D g, MapTransform mt,
+			int drawingSize) {
+
+		for (int i = 0; i < geom.getNumGeometries(); i++) {
+			Geometry subGeom = geom.getGeometryN(i);
+			Point2D p = new Point2D.Double(subGeom.getCoordinate().x, subGeom
+					.getCoordinate().y);
+			p = mt.getAffineTransform().transform(p, null);
+			paintCircle(g, p.getX(), p.getY(), drawingSize);
+		}
+
 	}
 
 	public String getClassName() {
