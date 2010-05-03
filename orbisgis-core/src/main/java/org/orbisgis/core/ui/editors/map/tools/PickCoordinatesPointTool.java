@@ -60,7 +60,7 @@
 package org.orbisgis.core.ui.editors.map.tools;
 
 import java.awt.Color;
-import java.net.URL;
+import java.awt.Graphics2D;
 import java.util.Observable;
 
 import javax.swing.AbstractButton;
@@ -68,10 +68,14 @@ import javax.swing.AbstractButton;
 import org.gdms.data.types.GeometryConstraint;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.layerModel.MapContext;
+import org.orbisgis.core.renderer.symbol.SymbolUtil;
+import org.orbisgis.core.ui.editor.IEditor;
 import org.orbisgis.core.ui.editors.map.tool.ToolManager;
 import org.orbisgis.core.ui.editors.map.tool.TransitionException;
 import org.orbisgis.core.ui.pluginSystem.PlugInContext;
+import org.orbisgis.core.ui.plugins.views.MapEditorPlugIn;
 import org.orbisgis.core.ui.plugins.views.OutputManager;
+import org.orbisgis.core.ui.plugins.views.editor.EditorManager;
 
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.Point;
@@ -109,6 +113,18 @@ public class PickCoordinatesPointTool extends AbstractPointTool {
 		if (ToolUtilities.geometryTypeIs(mc, GeometryConstraint.MULTI_POINT)) {
 			g = ToolManager.toolsGeometryFactory
 					.createMultiPoint(new Point[] { point });
+		}
+
+		EditorManager em = Services.getService(EditorManager.class);
+		IEditor editor = em.getActiveEditor();
+
+		if (editor != null) {
+			if (editor instanceof MapEditorPlugIn) {
+				final MapEditorPlugIn mapEditor = (MapEditorPlugIn) editor;
+				SymbolUtil.flashPoint(g, (Graphics2D) mapEditor.getMap()
+						.getGraphics(), tm.getMapTransform());
+
+			}
 		}
 		OutputManager om = (OutputManager) Services
 				.getService(OutputManager.class);
