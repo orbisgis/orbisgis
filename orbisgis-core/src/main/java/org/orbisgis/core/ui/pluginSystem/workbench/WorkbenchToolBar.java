@@ -13,6 +13,7 @@ import java.util.Observer;
 
 import javax.swing.AbstractButton;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
@@ -142,6 +143,12 @@ public class WorkbenchToolBar extends EnableableToolBar implements Observer {
 										(AbstractPlugIn) constraints, context));
 					else if (typeListener.equals("action"))
 						((JButton) actionComponent)
+								.addActionListener(AbstractPlugIn
+										.toActionListener(
+												(AbstractPlugIn) constraints,
+												context));
+					else if (typeListener.equals("check"))
+						((JCheckBox) actionComponent)
 								.addActionListener(AbstractPlugIn
 										.toActionListener(
 												(AbstractPlugIn) constraints,
