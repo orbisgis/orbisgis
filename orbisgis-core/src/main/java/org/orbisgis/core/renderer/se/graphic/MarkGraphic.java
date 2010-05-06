@@ -1,16 +1,20 @@
 package org.orbisgis.core.renderer.se.graphic;
 
-import java.awt.Graphics2D;
+import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Shape;
+import java.awt.geom.Rectangle2D;
 import java.io.IOException;
+import javax.media.jai.RenderableGraphics;
 import org.gdms.data.DataSource;
 import org.orbisgis.core.renderer.se.common.Halo;
+import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.fill.Fill;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 import org.orbisgis.core.renderer.se.stroke.Stroke;
 
-public class MarkGraphic extends Graphic{
+public class MarkGraphic extends Graphic {
 
     public Fill getFill() {
         return fill;
@@ -18,7 +22,9 @@ public class MarkGraphic extends Graphic{
 
     public void setFill(Fill fill) {
         this.fill = fill;
-        fill.setParent(this);
+        if (fill != null) {
+            fill.setParent(this);
+        }
     }
 
     public Halo getHalo() {
@@ -54,24 +60,37 @@ public class MarkGraphic extends Graphic{
     public void setViewBox(ViewBox viewBox) {
         this.viewBox = viewBox;
         viewBox.setParent(this);
+        updateGraphic();
     }
 
     public MarkGraphicSource getSource() {
         return source;
     }
 
-    public void setSource(MarkGraphicSource source) throws IOException {
-        this.source = source;
-        try{
-            shape = source.getShape(this.viewBox, null, 0);
-        }
-        catch(ParameterException ex){
+    @Override
+    public void setUom(Uom uom) {
+        this.uom = uom;
+        updateGraphic();
+    }
+
+    /*
+     * This method must be called after each modification of uom, viewbox, source
+     *
+     */
+    private void updateGraphic() {
+        try {
+            shape = source.getShape(viewBox, null, 0);
+        } catch (Exception e) {
             shape = null;
         }
     }
 
+    public void setSource(MarkGraphicSource source) throws IOException {
+        this.source = source;
+        updateGraphic();
+    }
+
     /**
-     * @param g2
      * @param ds
      * @param fid
      * @throws ParameterException
@@ -79,36 +98,77 @@ public class MarkGraphic extends Graphic{
      * @todo implements !
      */
     @Override
-    public void drawGraphic(Graphics2D g2, DataSource ds, int fid) throws ParameterException, IOException{
+    public RenderableGraphics getRenderableGraphics(DataSource ds, int fid) throws ParameterException, IOException {
+
         Shape shp;
-        if (shape == null){
+
+        // If the view box doesn't depends on feature, we used the cached one
+        if (shape == null) {
             shp = source.getShape(viewBox, ds, fid);
-        }
-        else{
+        } else {
             shp = shape;
         }
-        // Apply AT
 
-        Shape atShp = this.transform.getGraphicalAffineTransform(ds, fid, false).createTransformedShape(shape);
-        if (halo != null){
-            halo.draw(g2, atShp, ds, fid);
+        // TODO Add a cache for AT
+        // Apply AT
+        Shape atShp = shp;
+
+        if (transform != null) {
+            atShp = this.transform.getGraphicalAffineTransform(ds, fid, false).createTransformedShape(shp);
         }
-        if (fill != null){
-            fill.draw(g2, atShp, ds, fid);
+
+
+        Rectangle2D bounds = atShp.getBounds2D();
+
+        double margin = this.getMargin(ds, fid);
+        RenderableGraphics rg = Graphic.getNewRenderableGraphics(bounds, margin);
+
+        if (halo != null) {
+            halo.draw(rg, atShp, ds, fid);
         }
+        if (fill != null) {
+            fill.draw(rg, atShp, ds, fid);
+        }
+        if (stroke != null) {
+            stroke.draw(rg, atShp, ds, fid);
+        }
+
+        return rg;
+    }
+
+    public double getMargin(DataSource ds, int fid) throws ParameterException, IOException {
+        double delta = 0.0;
+        
         if (stroke != null){
-            stroke.draw(g2, atShp, ds, fid);
+            delta += stroke.getMaxWidth(ds, fid);
         }
+
+        if (this.halo != null){
+            delta += Uom.toPixel(halo.getRadius().getValue(ds, fid), halo.getUom(), 96, 25000);
+        }
+
+        return delta;
+    }
+
+
+    @Override
+    public double getMaxWidth(DataSource ds, int fid) throws ParameterException, IOException {
+        double delta = 0.0;
+        if (viewBox != null){
+            Dimension dim = viewBox.getDimension(ds, fid, 1);
+            delta = Math.max(dim.getHeight(), dim.getWidth());
+        }
+
+        delta += this.getMargin(ds, fid);
+
+        return delta;
     }
 
     private MarkGraphicSource source;
-    
     private ViewBox viewBox;
-
     private RealParameter opacity;
     private Halo halo;
     private Fill fill;
     private Stroke stroke;
-
     private Shape shape;
 }

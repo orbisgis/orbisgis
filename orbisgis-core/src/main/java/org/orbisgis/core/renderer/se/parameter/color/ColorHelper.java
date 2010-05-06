@@ -8,12 +8,21 @@ import java.awt.Color;
 
 /**
  *
+ * This class provides some tools for managing colors
+ *
  * @author maxence
  */
 public final class ColorHelper {
 
+    /**
+     * return a new color based on the given color with the specified alpha value
+     * @param c
+     * @param alpha
+     * @return new color with alpha channel
+     * @todo is alpha [0;100] or [0.0;1.0] ? 
+     */
     public static final Color getColorWithAlpha(Color c, double alpha) {
-        int a = (int) (255.0 * alpha);
+        int a = (int) (255.0 * alpha/100.0);
 
         if (a < 0) {
             a = 0;
@@ -21,8 +30,6 @@ public final class ColorHelper {
             a = 255;
         }
         
-        Color ac = new Color(c.getRed(), c.getGreen(), c.getBlue(), a);
-        
-        return ac;
+        return new Color(c.getRed(), c.getGreen(), c.getBlue(), a);
     }
 }

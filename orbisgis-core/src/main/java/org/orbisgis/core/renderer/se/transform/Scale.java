@@ -5,7 +5,11 @@
 
 package org.orbisgis.core.renderer.se.transform;
 
+import java.awt.geom.AffineTransform;
 import java.util.ArrayList;
+import org.gdms.data.DataSource;
+import org.orbisgis.core.renderer.se.common.Uom;
+import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 
 /**
@@ -42,16 +46,23 @@ public class Scale implements Transformation {
     }
 
     @Override
-    public ArrayList<Matrix> getMatrix(){
-        ArrayList<Matrix> array = new ArrayList<Matrix>();
-        array.add(new Matrix(x, null, null, y, null, null));
-        return array;
-    }
-
-    @Override
     public boolean allowedForGeometries(){
         return false;
     }
+
+    @Override
+    public AffineTransform getAffineTransform(DataSource ds, int fid, Uom uom) throws ParameterException {
+        double sx = 0.0;
+        if (x != null)
+            sx = Uom.toPixel(x.getValue(ds, fid), uom, 96, 25000);
+
+        double sy = 0.0;
+        if (y != null)
+            sy = Uom.toPixel(y.getValue(ds, fid), uom, 96, 25000);
+
+        return AffineTransform.getScaleInstance(sx, sy);
+    }
+
 
     private RealParameter x;
     private RealParameter y;

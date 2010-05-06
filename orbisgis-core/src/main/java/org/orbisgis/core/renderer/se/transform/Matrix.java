@@ -19,7 +19,8 @@ import org.orbisgis.core.renderer.se.parameter.real.RealLiteral;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 
 /**
- *
+ * Affine Transformation based on RealParameters
+ * Warning: conversion to pixel unit will give strange behavior !
  * @author maxence
  */
 public class Matrix implements Transformation {
@@ -151,29 +152,14 @@ public class Matrix implements Transformation {
     }
 
     @Override
-    public ArrayList<Matrix> getMatrix() {
-        ArrayList<Matrix> array = new ArrayList<Matrix>();
-        array.add(this);
-        return array;
-    }
-
-    public AffineTransformation getSpatialAffineTransform(DataSource ds, int fid) throws ParameterException {
-        return new AffineTransformation(a.getValue(ds, fid),
-                                        b.getValue(ds, fid),
-                                        c.getValue(ds, fid),
-                                        d.getValue(ds, fid),
-                                        e.getValue(ds, fid),
-                                        f.getValue(ds, fid));
-    }
-
-    public AffineTransform getGraphicalAffineTransform(DataSource ds, int fid, Uom uom) throws ParameterException {
+    public AffineTransform getAffineTransform(DataSource ds, int fid, Uom uom) throws ParameterException {
         return new AffineTransform( // TODO DPI !
-                Uom.toPixel(a.getValue(ds, fid), uom, 0.0, 0.0),
-                Uom.toPixel(b.getValue(ds, fid), uom, 0.0, 0.0),
-                Uom.toPixel(c.getValue(ds, fid), uom, 0.0, 0.0),
-                Uom.toPixel(d.getValue(ds, fid), uom, 0.0, 0.0),
-                Uom.toPixel(e.getValue(ds, fid), uom, 0.0, 0.0),
-                Uom.toPixel(f.getValue(ds, fid), uom, 0.0, 0.0)
+                Uom.toPixel(a.getValue(ds, fid), uom, 96, 25000),
+                Uom.toPixel(b.getValue(ds, fid), uom, 96, 25000),
+                Uom.toPixel(c.getValue(ds, fid), uom, 96, 25000),
+                Uom.toPixel(d.getValue(ds, fid), uom, 96, 25000),
+                Uom.toPixel(e.getValue(ds, fid), uom, 96, 25000),
+                Uom.toPixel(f.getValue(ds, fid), uom, 96, 25000)
                );
     }
 
@@ -229,6 +215,7 @@ public class Matrix implements Transformation {
 
         return product;
     }
+
 
     /**
      * This method simplifiy the matrix.

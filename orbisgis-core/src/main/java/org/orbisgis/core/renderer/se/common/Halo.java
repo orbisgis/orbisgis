@@ -61,7 +61,7 @@ public class Halo implements SymbolizerNode {
             double r = radius.getValue(ds, fid);
 
             if (r > 0.0) {
-                r = Uom.toPixel(r, getUom(), 96, 25000); // DPI & Scale
+                r = Uom.toPixel(r, getUom(), 96, 25000); // TODO  DPI & Scale
 
                 Shape haloShp = shp; // TODO poffset !!
 
@@ -69,6 +69,7 @@ public class Halo implements SymbolizerNode {
             }
         }
     }
+    
     private Uom uom;
     private RealParameter radius;
     private Fill fill;

@@ -1,10 +1,20 @@
 package org.orbisgis.core.renderer.se.fill;
 
+import java.awt.BasicStroke;
 import java.awt.Graphics2D;
+
 import java.awt.Shape;
+import java.awt.TexturePaint;
+
+import java.awt.geom.AffineTransform;
+import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
+import java.awt.image.renderable.RenderContext;
 import java.io.IOException;
+
+import javax.media.jai.RenderableGraphics;
 import org.gdms.data.DataSource;
+import org.orbisgis.core.renderer.se.common.RenderContextFactory;
 import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.graphic.GraphicCollection;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
@@ -52,16 +62,25 @@ public class GraphicFill extends Fill{
 
 
     /**
-     *
-     * @param g2 draw within this graphics2d
-     * @param shp fill this shape
-     * @param ds feature came from this datasource
-     * @param fid id of the feature to draw
+     * see Fill
      */
     @Override
     public void draw(Graphics2D g2, Shape shp, DataSource ds, int fid) throws ParameterException, IOException {
+        g2.setPaint(this.getStipplePainter(ds, fid));
+        g2.fill(shp);
+    }
 
-        BufferedImage img = graphic.getGraphic(ds, fid);
+    /**
+     * Create a new TexturePaint according to this GraphicFill
+     * 
+     * @param ds DataSource
+     * @param fid feature id
+     * @return a TexturePain ready to be used
+     * @throws ParameterException
+     * @throws IOException
+     */
+    public TexturePaint getStipplePainter(DataSource ds, int fid) throws ParameterException, IOException{
+        RenderableGraphics img = graphic.getGraphic(ds, fid);
 
         double gX = 0.0;
         double gY = 0.0;
@@ -78,10 +97,21 @@ public class GraphicFill extends Fill{
                gY = 0.0;
         }
 
-        // TODO IMPLEMENT
-        // Create a mosaic with img, moisaic should be consistent with neighbours
-        // It's like the mosaic covers the whole map but is only visible through particular feature
+        gX = Uom.toPixel(gX, getUom(), 96, 35000);
+        gY = Uom.toPixel(gY, getUom(), 96, 35000);
+
+        BufferedImage i = new BufferedImage((int)(img.getWidth() + gX) , (int)(img.getHeight() + gY), BufferedImage.TYPE_INT_ARGB);
+        Graphics2D tile = i.createGraphics();
+
+        RenderContext ctc = RenderContextFactory.getContext();
+
+
+        tile.drawRenderedImage(img.createRendering(ctc), AffineTransform.getTranslateInstance(-img.getMinX() + gX/2.0, -img.getMinY() + gY/2.0));
+        tile.finalize();
+
+        return new TexturePaint(i, new Rectangle2D.Double(0, 0, i.getWidth(), i.getHeight()));
     }
+
 
     private GraphicCollection graphic;
     private Uom uom;

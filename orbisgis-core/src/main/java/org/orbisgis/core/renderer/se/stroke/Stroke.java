@@ -52,6 +52,15 @@ public abstract class Stroke implements SymbolizerNode {
         parent = node;
     }
 
+    /**
+     * Return the max width of the underlaying stroke
+     * @param ds
+     * @param fid
+     * @return
+     */
+    public abstract double getMaxWidth(DataSource ds, int fid) throws ParameterException, IOException;
+
+    //public abstract void getStroke(DataSource ds, int fid);
 
     /**
      *
@@ -62,8 +71,20 @@ public abstract class Stroke implements SymbolizerNode {
      * @param ds feature came from this datasource
      * @param fid id of the feature to draw
      * @throws ParameterException
+     * @throws IOException
      */
     public abstract void draw(Graphics2D g2, Shape shp, DataSource ds, int fid) throws ParameterException, IOException;
+
+
+    /**
+     * Take into account preGap and postGap
+     * @param shp
+     * @return
+     * @todo implements
+     */
+    public Shape getPreparedShape(Shape shp){
+        return shp;
+    }
 
 
     private Uom uom;

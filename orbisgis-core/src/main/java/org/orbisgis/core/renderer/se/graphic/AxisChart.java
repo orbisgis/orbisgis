@@ -1,8 +1,11 @@
 package org.orbisgis.core.renderer.se.graphic;
 
 import java.awt.Graphics2D;
+import java.io.IOException;
+import javax.media.jai.RenderableGraphics;
 import org.gdms.data.DataSource;
 import org.orbisgis.core.renderer.se.fill.Fill;
+import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 import org.orbisgis.core.renderer.se.stroke.Stroke;
 
@@ -71,17 +74,16 @@ public class AxisChart extends Graphic{
         this.normalizedToPercent = normalizedToPercent;
     }
 
-        /**
-     * @param g2
-     * @param ds
-     * @param fid
-     * @todo implements !
-     */
+
     @Override
-    public void drawGraphic(Graphics2D g2, DataSource ds, int fid){
+    public RenderableGraphics getRenderableGraphics(DataSource ds, int fid) throws ParameterException, IOException {
+        return null; // TODO implements
     }
 
-
+    @Override
+    public double getMaxWidth(DataSource ds, int fid) throws ParameterException, IOException {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
 
 
     private boolean normalizedToPercent;

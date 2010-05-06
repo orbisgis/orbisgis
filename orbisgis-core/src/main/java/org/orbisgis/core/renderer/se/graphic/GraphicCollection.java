@@ -1,12 +1,21 @@
 package org.orbisgis.core.renderer.se.graphic;
 
-import java.awt.Graphics2D;
-import java.awt.image.BufferedImage;
+
+import java.awt.Color;
+import java.awt.geom.AffineTransform;
+import java.awt.geom.Rectangle2D;
+import java.awt.image.renderable.RenderContext;
+
 import java.io.IOException;
+
 import java.util.ArrayList;
 import java.util.Iterator;
+
+import javax.media.jai.RenderableGraphics;
+
 import org.gdms.data.DataSource;
 import org.orbisgis.core.renderer.se.SymbolizerNode;
+import org.orbisgis.core.renderer.se.common.RenderContextFactory;
 import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 
@@ -76,25 +85,69 @@ public class GraphicCollection implements SymbolizerNode {
      * @param ds DataSource of the layer
      * @param fid id of the feature to draw
      * @return a specific image for this feature
+     * @throws ParameterException
+     * @throws IOException
      */
-    public BufferedImage getGraphic(DataSource ds, int fid) throws ParameterException, IOException{
+    public RenderableGraphics getGraphic(DataSource ds, int fid) throws ParameterException, IOException{
+        RenderContext ctc = RenderContextFactory.getContext();
 
-        // How to know the size before drawing ?
-        // since the size of a graphic is only known after applying ViewBox and AT
-        BufferedImage img = new BufferedImage(100, 100, BufferedImage.TYPE_INT_RGB);
-        Graphics2D g2 = img.createGraphics();
+        ArrayList<RenderableGraphics> images = new ArrayList<RenderableGraphics>();
+        
+
+
+        double xmin = Double.MAX_VALUE;
+        double ymin = Double.MAX_VALUE;
+        double xmax = Double.MIN_VALUE;
+        double ymax = Double.MIN_VALUE;
+
+        // First, retrieve all graphics composing the collection
+        // and fetch the min/max x, y values
+        Iterator<Graphic> it = graphics.iterator();
+        while (it.hasNext()){
+            Graphic g = it.next();
+            RenderableGraphics img = g.getRenderableGraphics(ds, fid);
+            images.add(img);
+            if (img.getMinX() < xmin)
+                xmin = img.getMinX();
+            if (img.getMinY() < ymin)
+                ymin = img.getMinY();
+            if (img.getMinX() + img.getWidth() > xmax)
+                xmax = img.getMinX() + img.getWidth();
+            if (img.getMinY() + img.getHeight() > ymax)
+                ymax = img.getMinY() + img.getHeight();
+            // TODO fetch minx, miny, maxx, maxy
+        }
+
+        RenderableGraphics rg = new RenderableGraphics(new Rectangle2D.Double(xmin, ymin, xmax - xmin, ymax - ymin));
+
+        Color transparent = new Color(1f, 1f, 1f, 0.0f);
+        rg.setBackground(transparent);
+        rg.clearRect((int) rg.getMinX(), (int) rg.getMinY(), (int) rg.getWidth(), (int) rg.getHeight());
+
+        Iterator<RenderableGraphics> it2 = images.iterator();
+
+        while (it2.hasNext()){
+            RenderableGraphics g = it2.next();
+            rg.drawRenderedImage(g.createRendering(ctc), new AffineTransform());
+        }
+
+        return rg;
+    }
+
+
+    private ArrayList<Graphic> graphics;
+    private SymbolizerNode parent;
+
+    public double getMaxWidth(DataSource ds, int fid) throws ParameterException, IOException {
+        double maxWidth = 0.0;
 
         Iterator<Graphic> it = graphics.iterator();
         while (it.hasNext()){
             Graphic g = it.next();
-            g.drawGraphic(g2, ds, fid);
+            maxWidth = Math.max(g.getMaxWidth(ds, fid), maxWidth);
         }
-        g2.finalize(); // TOOD not sure...
-        return img;
+        return maxWidth;
     }
-
-    private ArrayList<Graphic> graphics;
-    private SymbolizerNode parent;
 
 }
 

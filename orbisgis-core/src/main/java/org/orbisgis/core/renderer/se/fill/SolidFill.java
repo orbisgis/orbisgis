@@ -42,7 +42,6 @@ public class SolidFill extends Fill{
 
     @Override
     public void draw(Graphics2D g2, Shape shp, DataSource ds, int fid) throws ParameterException {
-        // TODO set the color
         if (color != null){
 
             Color c = color.getColor(ds, fid);

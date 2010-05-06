@@ -26,15 +26,16 @@ public abstract class VectorSymbolizer extends Symbolizer{
 
 
     /**
-     * Convert a geoFeatures into a LiteShape, should add parameters to handle
+     * Convert a spatial feature into a LiteShape, should add parameters to handle
      * the scale and to perform a scale dependent generalization !
      * 
-     * @param ds
-     * @param fid
-     * @return
+     * @param ds the data source
+     * @param fid the feature id
+     * @return a liteshape representing the spatial feature
      * @throws ParameterException
+     * @todo fix maxDist for generalization!
      */
-    public LiteShape getLiteShape(DataSource ds, int fid) throws ParameterException{
+    public LiteShape getLiteShape(DataSource ds, int fid) throws ParameterException, IOException{
         Geometry the_geom = this.getTheGeom(ds, fid); // geom + function
 
         AffineTransform at = null;
@@ -43,7 +44,7 @@ public abstract class VectorSymbolizer extends Symbolizer{
             at = transform.getGraphicalAffineTransform(ds, fid, true);
         }
 
-        double maxDist = 10.0; // TODO value ?
+        double maxDist = 10.0;
         return new LiteShape(the_geom, at, true, maxDist);
     }
 

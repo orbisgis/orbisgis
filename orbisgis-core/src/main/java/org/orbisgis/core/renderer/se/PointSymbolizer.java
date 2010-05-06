@@ -2,9 +2,11 @@ package org.orbisgis.core.renderer.se;
 
 
 import java.awt.Graphics2D;
+import java.awt.geom.AffineTransform;
 
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import javax.media.jai.RenderableGraphics;
 import org.gdms.data.DataSource;
 import org.orbisgis.core.renderer.liteShape.LiteShape;
 import org.orbisgis.core.renderer.se.common.Uom;
@@ -46,7 +48,13 @@ public class PointSymbolizer extends VectorSymbolizer {
              * Should this step be done before converting the JTS geom to LiteShape ? 
              */
 
-            BufferedImage img = graphic.getGraphic(ds, fid);
+            
+            RenderableGraphics rg = graphic.getGraphic(ds, fid);
+
+            double x = 0, y = 0; // <- the point where to plot the graphic, should be computed according to the shape and the graphic size
+
+            // Draw the graphic right over the point !
+            g2.drawRenderedImage(rg.createDefaultRendering(), AffineTransform.getTranslateInstance(x, y));
 
             // Plot img over shp !
         }

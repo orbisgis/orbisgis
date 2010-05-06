@@ -5,7 +5,11 @@
 
 package org.orbisgis.core.renderer.se.transform;
 
+import java.awt.geom.AffineTransform;
 import java.util.ArrayList;
+import org.gdms.data.DataSource;
+import org.orbisgis.core.renderer.se.common.Uom;
+import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.real.RealBinaryOperator;
 import org.orbisgis.core.renderer.se.parameter.real.RealBinaryOperatorType;
 import org.orbisgis.core.renderer.se.parameter.real.RealLiteral;
@@ -61,42 +65,25 @@ public class Rotate implements Transformation {
     }
 
     @Override
-    public ArrayList<Matrix> getMatrix(){
-        ArrayList<Matrix> array = new ArrayList<Matrix>();
-        if (x != null && y != null){
+    public AffineTransform getAffineTransform(DataSource ds, int fid, Uom uom) throws ParameterException {
+        double ox = 0.0;
 
-            RealParameter cos = new RealUnitaryOperator(rotation, RealUnitaryOperatorType.COS);
-            RealParameter sin = new RealUnitaryOperator(rotation, RealUnitaryOperatorType.SIN);
-            RealParameter minSin = new RealBinaryOperator(RealLiteral.ZERO, sin, RealBinaryOperatorType.SUB);
+        if (x != null)
+            ox = Uom.toPixel(x.getValue(ds, fid), uom, 96, 25000);
+
+        double oy = 0.0;
+        if (y != null)
+            oy = Uom.toPixel(y.getValue(ds, fid), uom, 96, 25000);
 
 
-            array.add(new Matrix(new RealLiteral(1.0), null,  // A B
-                                 null, new RealLiteral(1.0),  // C D
-                                 new RealBinaryOperator(RealLiteral.ZERO,
-                                                        x,
-                                                        RealBinaryOperatorType.SUB), // E
-                                 new RealBinaryOperator(RealLiteral.ZERO,
-                                                        y,
-                                                        RealBinaryOperatorType.SUB))); // F
-            
-            array.add(new Matrix(cos, sin, minSin, cos, null, null));
+        double theta = 0.0;
+        if (rotation != null)
+            theta = rotation.getValue(ds, fid);
 
-            array.add(new Matrix(new RealLiteral(1.0), null, null, new RealLiteral(1.0), x, y));
-            
-        }
-        else{ // Only rotation (no center specified...)
-            RealParameter cos = new RealUnitaryOperator(rotation, RealUnitaryOperatorType.COS);
-            RealParameter sin = new RealUnitaryOperator(rotation, RealUnitaryOperatorType.SIN);
-            RealParameter minSin = new RealBinaryOperator(RealLiteral.ZERO, sin, RealBinaryOperatorType.SUB);
-
-            array.add(new Matrix(cos, sin, minSin, cos, null, null));
-        }
-
-        return array;
+        return AffineTransform.getRotateInstance(theta, ox, oy);
     }
 
     private RealParameter x;
     private RealParameter y;
     private RealParameter rotation;
-
 }

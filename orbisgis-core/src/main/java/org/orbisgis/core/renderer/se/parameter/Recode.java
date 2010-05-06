@@ -63,7 +63,6 @@ public abstract class Recode<ToType extends SeParameter, FallbackType extends To
 
         if (mapItems.contains(item)){
             //TODO  throw break unique value rules
-            System.out.println("Contient déjà");
         }
         else{
             mapItems.add(item);

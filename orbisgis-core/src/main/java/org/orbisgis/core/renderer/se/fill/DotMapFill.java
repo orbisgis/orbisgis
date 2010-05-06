@@ -4,38 +4,38 @@ import java.awt.Graphics2D;
 import java.awt.Shape;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import javax.media.jai.RenderableGraphics;
 import org.gdms.data.DataSource;
 import org.orbisgis.core.renderer.se.graphic.GraphicCollection;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 
-public class DotMapFill extends Fill{
+public class DotMapFill extends Fill {
 
-    public void setMark(GraphicCollection mark){
+    public void setMark(GraphicCollection mark) {
         this.mark = mark;
         mark.setParent(this);
     }
 
-    public GraphicCollection getMark(){
+    public GraphicCollection getMark() {
         return mark;
     }
 
-    public void setQuantityPerMark(RealParameter quantityPerMark){
+    public void setQuantityPerMark(RealParameter quantityPerMark) {
         this.quantityPerMark = quantityPerMark;
     }
 
-    public RealParameter getQantityPerMark(){
+    public RealParameter getQantityPerMark() {
         return quantityPerMark;
     }
 
-    public void setTotalQuantity(RealParameter totalQuantity){
+    public void setTotalQuantity(RealParameter totalQuantity) {
         this.totalQuantity = totalQuantity;
     }
 
-    public RealParameter getTotalQantity(){
+    public RealParameter getTotalQantity() {
         return totalQuantity;
     }
-
 
     /**
      *
@@ -47,17 +47,19 @@ public class DotMapFill extends Fill{
      */
     @Override
     public void draw(Graphics2D g2, Shape shp, DataSource ds, int fid) throws ParameterException, IOException {
-        BufferedImage m = mark.getGraphic(ds, fid);
+        if (mark != null && totalQuantity != null && quantityPerMark != null) {
+            RenderableGraphics m = mark.getGraphic(ds, fid);
 
-        double total   = totalQuantity.getValue(ds, fid);
-        double perMark = quantityPerMark.getValue(ds, fid);
+            double total = totalQuantity.getValue(ds, fid);
+            double perMark = quantityPerMark.getValue(ds, fid);
 
-        int n = (int)(total / perMark);
+            int n = (int) (total / perMark);
 
-        // TODO IMPLEMENT
-        // The graphics2d m has to be plotted n times within shp
+            // TODO IMPLEMENT
+            // The graphics2d m has to be plotted n times within shp
+            // postOpSymbol();
+        }
     }
-
     private GraphicCollection mark;
     private RealParameter quantityPerMark;
     private RealParameter totalQuantity;

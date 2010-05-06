@@ -16,11 +16,15 @@ public enum Uom {
      * @param scale the current scale (for converting ground meters and ground feet to media units)
      * @return
      * @throws ParameterException
+     *
+     * @todo return integer !!!
      */
     public static double toPixel(double value, Uom uom, double dpi, double scale) throws ParameterException {
+        if (uom == null){
+            return value; // no uom ? => return as Pixel !
+        }
+
         switch (uom){
-            case PX:
-                return value; // [PX]
             case IN:
                 return value * dpi; // [IN] * [PX]/[IN] => [PX]
             case MM:
@@ -31,8 +35,9 @@ public enum Uom {
                 return Uom.toPixel((value/scale)*1000, Uom.MM, dpi, scale); //[G_M]/scale*1000 => [MM]
             case G_FT:
                 return Uom.toPixel((value/scale)*12, Uom.IN, dpi, scale); //[G_M]/scale => [IN]
+            case PX:
             default:
-                throw new ParameterException("Could not convert " + uom.toString() + " to pixel unit");
+                return value; // [PX]
         }
     }
 

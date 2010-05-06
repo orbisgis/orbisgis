@@ -19,6 +19,10 @@ public class ColorLiteral implements ColorParameter{
         color = new Color(r,g,b);
     }
 
+    public ColorLiteral(Color color){
+        this.color = color;
+    }
+
     /**
      * Either "well known color" or "#aabbcc"
      * @param htmlColor

@@ -7,8 +7,11 @@ package org.orbisgis.core.renderer.se.label;
 
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
+import java.io.IOException;
+import javax.media.jai.RenderableGraphics;
 import org.gdms.data.DataSource;
 import org.orbisgis.core.renderer.liteShape.LiteShape;
+import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.real.RealLiteral;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 
@@ -46,8 +49,8 @@ public class PointLabel extends Label {
     }
 
     @Override
-    public void draw(Graphics2D g2, LiteShape shp, DataSource ds, int fid){
-        BufferedImage l = this.label.getImage(ds, fid);
+    public void draw(Graphics2D g2, LiteShape shp, DataSource ds, int fid) throws ParameterException, IOException{
+        RenderableGraphics l = this.label.getImage(ds, fid);
 
         // convert lineShape to a point
         // create AT according to rotation and exclusionZone

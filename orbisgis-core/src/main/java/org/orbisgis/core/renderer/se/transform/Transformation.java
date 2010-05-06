@@ -6,7 +6,12 @@
 
 package org.orbisgis.core.renderer.se.transform;
 
+import java.awt.geom.AffineTransform;
+import java.io.IOException;
 import java.util.ArrayList;
+import org.gdms.data.DataSource;
+import org.orbisgis.core.renderer.se.common.Uom;
+import org.orbisgis.core.renderer.se.parameter.ParameterException;
 
 /**
  * Each implementation represent an affine transformation base on RealParameter.
@@ -15,7 +20,7 @@ import java.util.ArrayList;
  * @author maxence
  */
 public interface Transformation {
-    ArrayList<Matrix> getMatrix();
-
     public boolean allowedForGeometries();
+
+    public AffineTransform getAffineTransform(DataSource ds, int fid, Uom uom) throws ParameterException, IOException;
 }

@@ -1,15 +1,32 @@
 package org.orbisgis.core.renderer.se.graphic;
 
-import java.awt.Graphics2D;
-import java.awt.image.AffineTransformOp;
-import java.awt.image.BufferedImage;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Shape;
+import java.awt.geom.AffineTransform;
+import java.awt.geom.Rectangle2D;
+
+
 import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.media.jai.PlanarImage;
+import javax.media.jai.RenderableGraphics;
 import org.gdms.data.DataSource;
 import org.orbisgis.core.renderer.se.common.Halo;
+import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 
-public class ExternalGraphic extends Graphic{
+/**
+ * an external graphic is an image such as JPG, PNG, SVG.
+ * Available action on such a graphic are affine transfromations.
+ * There is no way to restyle the graphic. 
+ *
+ * @see MarkGraphic, Graphic
+ * @author maxence
+ */
+public class ExternalGraphic extends Graphic {
 
     public Halo getHalo() {
         return halo;
@@ -35,58 +52,103 @@ public class ExternalGraphic extends Graphic{
     public void setViewBox(ViewBox viewBox) {
         this.viewBox = viewBox;
         viewBox.setParent(this);
+        updateGraphic();
     }
 
-    public void setSource(ExternalGraphicSource src) throws IOException{
+    private void updateGraphic() {
+        try {
+            graphic = source.getPlanarImage(viewBox, null, 0);
+        } catch (Exception e) {
+            graphic = null;
+        }
+    }
+
+    public void setSource(ExternalGraphicSource src) throws IOException {
         this.source = src;
-        try{
-            this.graphic = source.getBufferedImage(viewBox, null, 0);
-        }
-        catch(ParameterException ex){
-            this.graphic = null;
-        }
+        updateGraphic();
     }
 
-    /**
-     * @param g2
-     * @param ds 
-     * @param fid
-     * @throws ParameterException
-     * @throws IOException
-     * @todo implements !
-     */
     @Override
-    public void drawGraphic(Graphics2D g2, DataSource ds, int fid) throws ParameterException, IOException {
-        BufferedImage g;
-        // graphic is null if it's viewbox depends on the feature
-        if (graphic == null){
-            g = source.getBufferedImage(viewBox, ds, fid);   
-        }
-        else{
-            g = graphic;
+    public RenderableGraphics getRenderableGraphics(DataSource ds, int fid) throws ParameterException, IOException {
+        AffineTransform at = transform.getGraphicalAffineTransform(ds, fid, false);
+
+        PlanarImage img;
+
+        // Create shape based on image bbox
+
+        if (graphic == null) {
+            img = source.getPlanarImage(viewBox, ds, fid);
+        } else {
+            img = graphic;
         }
 
-        if (halo != null){
-            // TODO 
-            //halo.draw(g2, g.toShape()..., ds, fid);
-            // Find a way to convert the graphic into a fillable element ...
-            // Easy ways is to fetch the bbox
+        double w = img.getWidth();
+        double h = img.getHeight();
+
+        // reserve the place for halo
+        if (halo != null) {
+            double r = Uom.toPixel(halo.getRadius().getValue(ds, fid), halo.getUom(), 96, 25000); // TODO SCALE, DPI...
+            w += 2 * r;
+            h += 2 * r;
         }
 
-        g2.drawImage(g,
-                     new AffineTransformOp(transform.getGraphicalAffineTransform(ds, fid, false),
-                                           AffineTransformOp.TYPE_BICUBIC),
-                      -g.getWidth() / 2,
-                      -g.getHeight() / 2);
+        Rectangle2D bounds = new Rectangle2D.Double(0.0, 0.0, w, h);
+
+        at.concatenate(AffineTransform.getTranslateInstance(-w / 2.0, -h / 2.0));
+
+        // Apply the AT to the bbox
+        Shape atShp = at.createTransformedShape(bounds);
+        Rectangle2D imageSize = atShp.getBounds2D();
+
+        RenderableGraphics rg = Graphic.getNewRenderableGraphics(imageSize, 0);
+
+        if (halo != null) {
+            halo.draw(rg, atShp, ds, fid);
+        }
+
+        // TODO how to set opacity ?
+
+        // apply the AT and draw the ext graphic
+        rg.drawRenderedImage(img, at);
+
+        return rg;
     }
 
+
+    public double getMargin(DataSource ds, int fid) throws ParameterException, IOException {
+        double delta = 0.0;
+        
+        if (this.halo != null) {
+            delta += Uom.toPixel(halo.getRadius().getValue(ds, fid), halo.getUom(), 96, 25000);
+        }
+
+        return delta;
+    }
+
+    @Override
+    public double getMaxWidth(DataSource ds, int fid) throws ParameterException, IOException {
+        double delta = 0.0;
+        if (viewBox != null) {
+            PlanarImage img;
+            if (graphic == null) {
+                img = source.getPlanarImage(viewBox, ds, fid);
+            } else {
+                img = graphic;
+            }
+
+            Dimension dim = viewBox.getDimension(ds, fid, img.getHeight() / img.getWidth());
+
+            delta = Math.max(dim.getHeight(), dim.getWidth());
+        }
+
+        delta += this.getMargin(ds, fid);
+
+        return delta;
+    }
 
     private ExternalGraphicSource source;
-    
     private ViewBox viewBox;
-
     private RealParameter opacity;
     private Halo halo;
-
-    private BufferedImage graphic;
+    private PlanarImage graphic;
 }

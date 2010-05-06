@@ -1,6 +1,7 @@
 package org.orbisgis.core.renderer.se;
 
 import java.awt.Graphics2D;
+import java.io.IOException;
 import org.gdms.data.DataSource;
 import org.orbisgis.core.renderer.liteShape.LiteShape;
 
@@ -28,21 +29,9 @@ public class TextSymbolizer extends VectorSymbolizer {
     }
 
 
-
-    /**
-     *
-     * @param g2
-     * @param ds
-     * @param fid
-     * @throws ParameterException
-     */
     @Override
-    public void draw(Graphics2D g2, DataSource ds, int fid) throws ParameterException{
+    public void draw(Graphics2D g2, DataSource ds, int fid) throws ParameterException, IOException{
 
-        /* TODO Implement
-         * make sure the_geom is an area or a line
-         * fill.draw();
-         */
         LiteShape shp = this.getLiteShape(ds, fid);
 
         if (label != null){

@@ -1,27 +1,33 @@
 package org.orbisgis.core.renderer.se.graphic;
 
+import java.awt.Dimension;
+import org.gdms.data.DataSource;
 import org.orbisgis.core.renderer.se.SymbolizerNode;
 import org.orbisgis.core.renderer.se.common.Uom;
+import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 
 public class ViewBox implements SymbolizerNode {
 
-    public void setWidth(RealParameter width){
+    public ViewBox(RealParameter width) {
+        this.x = width;
+    }
+
+    public void setWidth(RealParameter width) {
         x = width;
     }
-    
-    public RealParameter getWidth(){
+
+    public RealParameter getWidth() {
         return x;
     }
 
-    public void setHeight(RealParameter height){
+    public void setHeight(RealParameter height) {
         y = height;
     }
-    
-    public RealParameter getHeight(){
+
+    public RealParameter getHeight() {
         return y;
     }
-
 
     @Override
     public Uom getUom() {
@@ -38,12 +44,41 @@ public class ViewBox implements SymbolizerNode {
         parent = node;
     }
 
-    public boolean dependsOnFeature(){
+    public boolean dependsOnFeature() {
         return (x != null && x.dependsOnFeature()) || (y != null && y.dependsOnFeature());
     }
 
+    /**
+     * Return the final dimension described by this view box, in [px].
+     * @param ds DataSource, i.e. the layer
+     * @param fid feauture id
+     * @param ratio requierd final ratio (if either width or height isn't defined)
+     * @return
+     * @throws ParameterException
+     */
+    public Dimension getDimension(DataSource ds, int fid, double ratio) throws ParameterException {
+        double dx, dy;
+
+        if (x != null && y != null) {
+            dx = x.getValue(ds, fid);
+            dy = y.getValue(ds, fid);
+        } else if (x != null) {
+            dx = x.getValue(ds, fid);
+            dy = dx/ratio;
+        } else if (y != null) {
+            dy = y.getValue(ds, fid);
+            dx = dy*ratio;
+        } else { // nothing is defined => 10x10uom
+            dx = 10.0;
+            dy = 10.0;
+        }
+        
+        dx = Uom.toPixel(dx, this.getUom(), 96, 25000); // TODO DPI SCAPE !
+        dy = Uom.toPixel(dy, this.getUom(), 96, 25000);
+
+        return new Dimension((int)dx, (int)dy);
+    }
     private SymbolizerNode parent;
     private RealParameter x;
     private RealParameter y;
-
 }

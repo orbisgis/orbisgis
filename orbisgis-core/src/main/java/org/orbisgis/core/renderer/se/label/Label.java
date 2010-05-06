@@ -6,10 +6,12 @@
 package org.orbisgis.core.renderer.se.label;
 
 import java.awt.Graphics2D;
+import java.io.IOException;
 import org.gdms.data.DataSource;
 import org.orbisgis.core.renderer.liteShape.LiteShape;
 import org.orbisgis.core.renderer.se.SymbolizerNode;
 import org.orbisgis.core.renderer.se.common.Uom;
+import org.orbisgis.core.renderer.se.parameter.ParameterException;
 
 /**
  *
@@ -41,7 +43,7 @@ public abstract class Label implements SymbolizerNode {
         label.setParent(this);
     }
 
-    public abstract void draw(Graphics2D g2, LiteShape shp, DataSource ds, int fid);
+    public abstract void draw(Graphics2D g2, LiteShape shp, DataSource ds, int fid) throws ParameterException, IOException;
     
     protected SymbolizerNode parent;
     protected StyledLabel label;
