@@ -1,10 +1,14 @@
 package org.gdms.geometryUtils;
 
+import java.util.Collection;
+import java.util.Iterator;
+
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.CoordinateSequence;
 import com.vividsolutions.jts.geom.CoordinateSequenceFilter;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.LineString;
+import com.vividsolutions.jts.util.Assert;
 
 public class CoordinatesUtils {
 
@@ -147,5 +151,24 @@ public class CoordinatesUtils {
 
 		return lineString;
 	}
+	
+	/**
+     * @param coordinates not empty
+     */
+    public static Coordinate closest(Collection coordinates, Coordinate p) {
+        Assert.isTrue(!coordinates.isEmpty());
+
+        Coordinate closest = (Coordinate) coordinates.iterator().next();
+
+        for (Iterator i = coordinates.iterator(); i.hasNext();) {
+            Coordinate candidate = (Coordinate) i.next();
+
+            if (p.distance(candidate) < p.distance(closest)) {
+                closest = candidate;
+            }
+        }
+
+        return closest;
+    }
 
 }
