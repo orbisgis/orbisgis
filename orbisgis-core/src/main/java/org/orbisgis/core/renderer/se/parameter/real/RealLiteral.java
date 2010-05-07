@@ -13,7 +13,7 @@ public class RealLiteral implements RealParameter{
     }
 
     @Override
-    public double getValue(DataSource ds, int fid){
+    public double getValue(DataSource ds, long fid){
         return v;
     }
 

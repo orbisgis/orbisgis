@@ -19,5 +19,5 @@ public interface ColorParameter extends SeParameter {
     /*
      * TODO Is (DataSource, featureId) the right way to access a feature ?
      */
-    public abstract Color getColor(DataSource ds, int featureId) throws ParameterException;
+    public abstract Color getColor(DataSource ds, long featureId) throws ParameterException;
 }

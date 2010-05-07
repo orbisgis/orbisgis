@@ -10,9 +10,7 @@ import java.awt.Shape;
 import java.awt.geom.Arc2D;
 import java.awt.geom.Rectangle2D;
 import org.gdms.data.DataSource;
-import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
-import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 
 /**
  * Represent Marks 
@@ -32,7 +30,7 @@ public enum WellKnownName implements MarkGraphicSource {
      * @throws ParameterException
      */
     @Override
-    public Shape getShape(ViewBox viewBox, DataSource ds, int fid) throws ParameterException {
+    public Shape getShape(ViewBox viewBox, DataSource ds, long fid) throws ParameterException {
         double x, y;
 
         if (viewBox != null) {

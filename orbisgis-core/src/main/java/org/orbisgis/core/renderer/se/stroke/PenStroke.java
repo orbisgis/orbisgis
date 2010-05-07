@@ -122,7 +122,7 @@ public class PenStroke extends Stroke {
     }
      */
     @Override
-    public void draw(Graphics2D g2, Shape shp, DataSource ds, int fid) throws ParameterException, IOException {
+    public void draw(Graphics2D g2, Shape shp, DataSource ds, long fid) throws ParameterException, IOException {
 
         // remove preGap, postGap from the line
         Shape shape = this.getPreparedShape(shp);
@@ -205,7 +205,7 @@ public class PenStroke extends Stroke {
     }
 
     @Override
-    public double getMaxWidth(DataSource ds, int fid) throws ParameterException {
+    public double getMaxWidth(DataSource ds, long fid) throws ParameterException {
         if (this.width != null) {
             return Uom.toPixel(width.getValue(ds, fid), this.getUom(), 96, 25000);
         } else {

@@ -11,7 +11,7 @@ public class Categorize2Real extends Categorize<RealParameter, RealLiteral> impl
     }
 
     @Override
-    public double getValue(DataSource ds, int fid){
+    public double getValue(DataSource ds, long fid){
         try{
             return getParameter(ds, fid).getValue(ds, fid);
         }

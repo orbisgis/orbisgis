@@ -17,5 +17,5 @@ import org.orbisgis.core.renderer.se.parameter.ParameterException;
  * @todo implement in InlineContent
  */
 public interface ExternalGraphicSource {
-    PlanarImage getPlanarImage(ViewBox viewBox, DataSource ds, int fid) throws IOException, ParameterException;
+    PlanarImage getPlanarImage(ViewBox viewBox, DataSource ds, long fid) throws IOException, ParameterException;
 }

@@ -76,12 +76,12 @@ public class AxisChart extends Graphic{
 
 
     @Override
-    public RenderableGraphics getRenderableGraphics(DataSource ds, int fid) throws ParameterException, IOException {
+    public RenderableGraphics getRenderableGraphics(DataSource ds, long fid) throws ParameterException, IOException {
         return null; // TODO implements
     }
 
     @Override
-    public double getMaxWidth(DataSource ds, int fid) throws ParameterException, IOException {
+    public double getMaxWidth(DataSource ds, long fid) throws ParameterException, IOException {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 

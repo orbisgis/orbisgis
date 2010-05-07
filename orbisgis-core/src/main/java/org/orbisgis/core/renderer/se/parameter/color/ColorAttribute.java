@@ -19,9 +19,9 @@ public class ColorAttribute extends PropertyName implements ColorParameter {
     }
 
     @Override
-    public Color getColor(DataSource ds, int fid) throws ParameterException{
+    public Color getColor(DataSource ds, long fid) throws ParameterException{
         try{
-            return Color.getColor(getFieldValue(ds, fid).getAsString()); //
+            return Color.getColor(getFieldValue(ds, (int)fid).getAsString()); //
         } catch (Exception e) {
             throw new ParameterException("Could not fetch feature attribute \""+ fieldName +"\"");
         }

@@ -25,10 +25,10 @@ public class StringAttribute extends PropertyName implements StringParameter{
 
 
     @Override
-    public String getValue(DataSource ds, int fid) throws ParameterException{ // TODO implement
+    public String getValue(DataSource ds, long fid) throws ParameterException{ // TODO implement
         try {
             // TODO implement
-            return getFieldValue(ds, fid).getAsString();
+            return getFieldValue(ds, (int)fid).getAsString();
         } catch (Exception e) {
             throw new ParameterException("Could not fetch feature attribute \""+ fieldName +"\"");
         }

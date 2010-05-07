@@ -15,6 +15,7 @@ import java.awt.image.DataBuffer;
 import java.awt.image.renderable.RenderContext;
 import javax.media.jai.ImageLayout;
 import javax.media.jai.JAI;
+import org.orbisgis.core.map.MapTransform;
 
 /**
  *
@@ -23,6 +24,20 @@ import javax.media.jai.JAI;
  */
 public class RenderContextFactory {
 
+    private static MapTransform mt;
+    private static RenderContext screen;
+    private static RenderContext current;
+    private static RenderContext draft; // context for fast rendering
+
+
+
+    public static MapTransform getMapTransform() {
+        return mt;
+    }
+
+    public static void setMapTransform(MapTransform mt) {
+        RenderContextFactory.mt = mt;
+    }
 
     public static RenderContext getContext(){
         return current;
@@ -31,10 +46,6 @@ public class RenderContextFactory {
     public static void switchToDraft(){
         current = draft;
     }
-
-    private static RenderContext screen;
-    private static RenderContext current;
-    private static RenderContext draft; // context for fast rendering
 
     static{
         ImageLayout layout = new ImageLayout();
@@ -54,6 +65,7 @@ public class RenderContextFactory {
         RenderingHints hints = new RenderingHints(JAI.KEY_IMAGE_LAYOUT, layout);
         screen = new RenderContext(AffineTransform.getTranslateInstance(0.0, 0.0), hints);
 
+        draft = screen;
         current = screen;
     }
 }

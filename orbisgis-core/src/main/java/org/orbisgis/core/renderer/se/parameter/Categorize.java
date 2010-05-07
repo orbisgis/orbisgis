@@ -149,7 +149,7 @@ public abstract class Categorize<ToType extends SeParameter, FallbackType extend
         Collections.sort(classes);
     }
 
-    protected ToType getParameter(DataSource ds, int fid) {
+    protected ToType getParameter(DataSource ds, long fid) {
         try {
             if (getNumClasses() > 1) {
 

@@ -14,7 +14,7 @@ public class Recode2Color extends Recode<ColorParameter, ColorLiteral> implement
     }
 
     @Override
-    public Color getColor(DataSource ds, int fid){
+    public Color getColor(DataSource ds, long fid){
         try {
             // Should always depend on features !
             return getParameter(ds, fid).getColor(ds, fid);

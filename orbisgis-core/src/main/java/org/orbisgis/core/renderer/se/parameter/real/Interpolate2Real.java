@@ -17,7 +17,7 @@ public class Interpolate2Real extends Interpolate<RealParameter, RealLiteral> im
      * @return
      */
     @Override
-    public double getValue(DataSource ds, int fid){
+    public double getValue(DataSource ds, long fid){
         return 0.0; // TODO compute interpolation
     }
 

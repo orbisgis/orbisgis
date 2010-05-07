@@ -3,10 +3,13 @@ package org.orbisgis.core.renderer.se.fill;
 import java.awt.Graphics2D;
 import java.awt.Paint;
 import java.awt.Shape;
-import java.awt.image.BufferedImage;
+
 import java.io.IOException;
+
 import javax.media.jai.RenderableGraphics;
+
 import org.gdms.data.DataSource;
+
 import org.orbisgis.core.renderer.se.graphic.GraphicCollection;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
@@ -73,7 +76,7 @@ public class DensityFill extends Fill {
      * @throws IOException
      */
     @Override
-    public void draw(Graphics2D g2, Shape shp, DataSource ds, int fid) throws ParameterException, IOException {
+    public void draw(Graphics2D g2, Shape shp, DataSource ds, long fid) throws ParameterException, IOException {
         double percentage = 0.0;
 
         if (percentageCovered != null) {

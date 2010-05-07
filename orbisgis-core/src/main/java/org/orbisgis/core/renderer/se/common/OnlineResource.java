@@ -46,7 +46,7 @@ public class OnlineResource implements ExternalGraphicSource {
     }
 
     @Override
-    public PlanarImage getPlanarImage(ViewBox viewBox, DataSource ds, int fid)
+    public PlanarImage getPlanarImage(ViewBox viewBox, DataSource ds, long fid)
             throws IOException, ParameterException {
         PlanarImage img = JAI.create("url", url);
 

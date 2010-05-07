@@ -2,7 +2,7 @@
 package org.orbisgis.core.renderer.se.parameter.geometry;
 
 import com.vividsolutions.jts.geom.Geometry;
-import org.gdms.data.DataSource;
+import org.gdms.data.SpatialDataSourceDecorator;
 
 
 /**
@@ -12,7 +12,7 @@ import org.gdms.data.DataSource;
  */
 public abstract class GeometryFunction implements GeometryParameter {
     @Override
-    public Geometry getTheGeom(DataSource ds, int fid){
+    public Geometry getTheGeom(SpatialDataSourceDecorator sds, long fid){
         return null;
     }
 }

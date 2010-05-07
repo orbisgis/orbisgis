@@ -52,11 +52,11 @@ public class PropertyNameTest extends TestCase {
      * @throws Exception
      */
     public void testRealAttribute() throws Exception {
-        int n = (int) ds.getRowCount();
+        long n = ds.getRowCount();
 
         RealParameter name = new RealAttribute("DEC01", ds);
 
-        int i;
+        long i;
         for (i=0;i<n;i++){
             System.out.println ("DEC01 " + i + ": " + name.getValue(ds, i));
         }
@@ -67,11 +67,11 @@ public class PropertyNameTest extends TestCase {
      * @throws Exception
      */
     public void testStringAttribute() throws Exception {
-        int n = (int) ds.getRowCount();
+        long n = ds.getRowCount();
 
         StringParameter name = new StringAttribute("NAME_ANSI", ds);
 
-        int i;
+        long i;
         for (i=0;i<n;i++){
             System.out.println ("Name " + i + ": " + name.getValue(ds, i));
         }

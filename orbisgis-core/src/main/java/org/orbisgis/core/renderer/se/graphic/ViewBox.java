@@ -56,7 +56,7 @@ public class ViewBox implements SymbolizerNode {
      * @return
      * @throws ParameterException
      */
-    public Dimension getDimension(DataSource ds, int fid, double ratio) throws ParameterException {
+    public Dimension getDimension(DataSource ds, long fid, double ratio) throws ParameterException {
         double dx, dy;
 
         if (x != null && y != null) {

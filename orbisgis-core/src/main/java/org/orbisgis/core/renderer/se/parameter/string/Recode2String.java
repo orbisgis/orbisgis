@@ -12,12 +12,12 @@ public class Recode2String extends Recode<StringParameter, StringLiteral> implem
 
 
     @Override
-    public String getValue(DataSource ds, int fid){
+    public String getValue(DataSource ds, long fid){
         try{
             return getParameter(ds, fid).getValue(ds, fid);
         }
         catch(ParameterException ex){
-            return this.fallbackValue.getValue(null, 0);
+            return this.fallbackValue.getValue(null, fid);
         }
     }
 

@@ -65,7 +65,7 @@ public class Rotate implements Transformation {
     }
 
     @Override
-    public AffineTransform getAffineTransform(DataSource ds, int fid, Uom uom) throws ParameterException {
+    public AffineTransform getAffineTransform(DataSource ds, long fid, Uom uom) throws ParameterException {
         double ox = 0.0;
 
         if (x != null)
@@ -78,7 +78,7 @@ public class Rotate implements Transformation {
 
         double theta = 0.0;
         if (rotation != null)
-            theta = rotation.getValue(ds, fid);
+            theta = rotation.getValue(ds, fid)*Math.PI/180.0; // convert to rad
 
         return AffineTransform.getRotateInstance(theta, ox, oy);
     }

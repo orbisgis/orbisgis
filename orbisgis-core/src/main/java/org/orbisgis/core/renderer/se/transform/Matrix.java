@@ -152,7 +152,7 @@ public class Matrix implements Transformation {
     }
 
     @Override
-    public AffineTransform getAffineTransform(DataSource ds, int fid, Uom uom) throws ParameterException {
+    public AffineTransform getAffineTransform(DataSource ds, long fid, Uom uom) throws ParameterException {
         return new AffineTransform( // TODO DPI !
                 Uom.toPixel(a.getValue(ds, fid), uom, 96, 25000),
                 Uom.toPixel(b.getValue(ds, fid), uom, 96, 25000),
@@ -246,7 +246,7 @@ public class Matrix implements Transformation {
 
 
 
-    public boolean equals(Matrix matrix, DataSource ds, int fid){
+    public boolean equals(Matrix matrix, DataSource ds, long fid){
         try {
             if (Math.abs(this.a.getValue(ds, fid) - matrix.a.getValue(ds, fid)) > 1e-10) {
                 return false;
@@ -281,7 +281,7 @@ public class Matrix implements Transformation {
      * @param fid
      */
 
-    public void print(DataSource ds, int fid){
+    public void print(DataSource ds, long fid){
         DecimalFormat df = new DecimalFormat("##.###");
         try {
             System.out.println(df.format(this.a.getValue(ds, fid)) + "\t"

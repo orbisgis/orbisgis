@@ -2,13 +2,19 @@ package org.orbisgis.core.renderer.se;
 
 
 import java.awt.Graphics2D;
+import java.awt.Shape;
 import java.awt.geom.AffineTransform;
+import java.awt.geom.Point2D;
+import java.awt.geom.Rectangle2D;
 
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import javax.media.jai.RenderableGraphics;
 import org.gdms.data.DataSource;
+import org.gdms.data.SpatialDataSourceDecorator;
+import org.gdms.driver.DriverException;
 import org.orbisgis.core.renderer.liteShape.LiteShape;
+import org.orbisgis.core.renderer.se.common.RenderContextFactory;
 import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.graphic.GraphicCollection;
 import org.orbisgis.core.renderer.se.graphic.MarkGraphic;
@@ -24,37 +30,36 @@ public class PointSymbolizer extends VectorSymbolizer {
         uom = Uom.MM;
     }
 
+    public GraphicCollection getGraphic() {
+        return graphic;
+    }
+
+    public void setGraphic(GraphicCollection graphic) {
+        this.graphic = graphic;
+    }
+
     /**
      *
      * @param g2
-     * @param ds
+     * @param sds
      * @param fid
      * @throws ParameterException
      * @todo convert the_geom to a point feature; plot img over the point
      */
     @Override
-    public void draw(Graphics2D g2, DataSource ds, int fid) throws ParameterException, IOException{
-
-        /*
-         * TODO Implement
-         */
+    public void draw(Graphics2D g2, SpatialDataSourceDecorator sds, long fid) throws ParameterException, IOException, DriverException{
         if (graphic != null){
-            LiteShape shp = this.getLiteShape(ds, fid);
-            
-            // convert shp to a point !
-            /*
-             * line -> point : middle point
-             * area -> point : a point inside (farest from perimeter or interior ring)
-             * Should this step be done before converting the JTS geom to LiteShape ? 
-             */
+            Point2D pt = this.getPointLiteShape(sds, fid);
 
-            
-            RenderableGraphics rg = graphic.getGraphic(ds, fid);
+            RenderableGraphics rg = graphic.getGraphic(sds, fid);
 
             double x = 0, y = 0; // <- the point where to plot the graphic, should be computed according to the shape and the graphic size
 
+            x = pt.getX();
+            y = pt.getY();
+
             // Draw the graphic right over the point !
-            g2.drawRenderedImage(rg.createDefaultRendering(), AffineTransform.getTranslateInstance(x, y));
+            g2.drawRenderedImage(rg.createRendering(RenderContextFactory.getContext()), AffineTransform.getTranslateInstance(x, y));
 
             // Plot img over shp !
         }

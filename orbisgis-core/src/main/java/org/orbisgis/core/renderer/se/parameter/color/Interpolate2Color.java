@@ -19,7 +19,7 @@ public class Interpolate2Color extends Interpolate<ColorParameter, ColorLiteral>
      * @return
      */
     @Override
-    public Color getColor(DataSource ds, int fid){
+    public Color getColor(DataSource ds, long fid){
         return Color.pink; // TODO compute interpolation
     }
 }

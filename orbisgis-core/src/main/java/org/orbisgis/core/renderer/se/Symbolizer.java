@@ -1,7 +1,8 @@
 package org.orbisgis.core.renderer.se;
 
 import com.vividsolutions.jts.geom.Geometry;
-import org.gdms.data.DataSource;
+import org.gdms.data.SpatialDataSourceDecorator;
+import org.gdms.driver.DriverException;
 import org.orbisgis.core.renderer.se.parameter.geometry.GeometryParameter;
 
 
@@ -42,13 +43,12 @@ public abstract class Symbolizer implements SymbolizerNode {
         this.the_geom = the_geom;
     }
 
-    public Geometry getTheGeom(DataSource ds, int fid){
+    public Geometry getTheGeom(SpatialDataSourceDecorator sds, long fid) throws DriverException{
         if (the_geom != null){
-            return the_geom.getTheGeom(ds, fid);
+            return the_geom.getTheGeom(sds, fid);
         }
         else{
-            // TODO fetch the default geometry
-            return null;
+            return sds.getGeometry(fid);
         }
     }
 

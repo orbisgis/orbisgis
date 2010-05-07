@@ -39,9 +39,10 @@ public abstract class Fill implements SymbolizerNode {
      * @param shp fill this shape
      * @param ds feature came from this datasource
      * @param fid id of the feature to draw
-     * @throws ParameterException 
+     * @throws ParameterException
+     * @throws IOException
      */
-    public abstract void draw(Graphics2D g2, Shape shp, DataSource ds, int fid) throws ParameterException, IOException;
+    public abstract void draw(Graphics2D g2, Shape shp, DataSource ds, long fid) throws ParameterException, IOException;
 
 
     protected SymbolizerNode parent;

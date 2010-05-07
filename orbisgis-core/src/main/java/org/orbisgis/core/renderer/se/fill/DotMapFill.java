@@ -46,7 +46,7 @@ public class DotMapFill extends Fill {
      * @throws IOException
      */
     @Override
-    public void draw(Graphics2D g2, Shape shp, DataSource ds, int fid) throws ParameterException, IOException {
+    public void draw(Graphics2D g2, Shape shp, DataSource ds, long fid) throws ParameterException, IOException {
         if (mark != null && totalQuantity != null && quantityPerMark != null) {
             RenderableGraphics m = mark.getGraphic(ds, fid);
 

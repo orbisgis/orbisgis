@@ -87,7 +87,7 @@ public abstract class Recode<ToType extends SeParameter, FallbackType extends To
         mapItems.remove(item);
     }
 
-    public ToType getParameter(DataSource ds, int fid){
+    public ToType getParameter(DataSource ds, long fid){
         try{
             String key = lookupValue.getValue(ds, fid);
             return getMapItemValue(key);

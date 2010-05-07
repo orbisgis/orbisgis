@@ -49,7 +49,7 @@ public class PointLabel extends Label {
     }
 
     @Override
-    public void draw(Graphics2D g2, LiteShape shp, DataSource ds, int fid) throws ParameterException, IOException{
+    public void draw(Graphics2D g2, LiteShape shp, DataSource ds, long fid) throws ParameterException, IOException{
         RenderableGraphics l = this.label.getImage(ds, fid);
 
         // convert lineShape to a point

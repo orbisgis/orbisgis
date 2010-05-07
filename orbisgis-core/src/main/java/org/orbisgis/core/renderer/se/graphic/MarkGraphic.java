@@ -1,6 +1,5 @@
 package org.orbisgis.core.renderer.se.graphic;
 
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Shape;
 import java.awt.geom.Rectangle2D;
@@ -98,7 +97,7 @@ public class MarkGraphic extends Graphic {
      * @todo implements !
      */
     @Override
-    public RenderableGraphics getRenderableGraphics(DataSource ds, int fid) throws ParameterException, IOException {
+    public RenderableGraphics getRenderableGraphics(DataSource ds, long fid) throws ParameterException, IOException {
 
         Shape shp;
 
@@ -136,7 +135,7 @@ public class MarkGraphic extends Graphic {
         return rg;
     }
 
-    public double getMargin(DataSource ds, int fid) throws ParameterException, IOException {
+    public double getMargin(DataSource ds, long fid) throws ParameterException, IOException {
         double delta = 0.0;
         
         if (stroke != null){
@@ -152,7 +151,7 @@ public class MarkGraphic extends Graphic {
 
 
     @Override
-    public double getMaxWidth(DataSource ds, int fid) throws ParameterException, IOException {
+    public double getMaxWidth(DataSource ds, long fid) throws ParameterException, IOException {
         double delta = 0.0;
         if (viewBox != null){
             Dimension dim = viewBox.getDimension(ds, fid, 1);

@@ -58,7 +58,7 @@ public abstract class Stroke implements SymbolizerNode {
      * @param fid
      * @return
      */
-    public abstract double getMaxWidth(DataSource ds, int fid) throws ParameterException, IOException;
+    public abstract double getMaxWidth(DataSource ds, long fid) throws ParameterException, IOException;
 
     //public abstract void getStroke(DataSource ds, int fid);
 
@@ -73,7 +73,7 @@ public abstract class Stroke implements SymbolizerNode {
      * @throws ParameterException
      * @throws IOException
      */
-    public abstract void draw(Graphics2D g2, Shape shp, DataSource ds, int fid) throws ParameterException, IOException;
+    public abstract void draw(Graphics2D g2, Shape shp, DataSource ds, long fid) throws ParameterException, IOException;
 
 
     /**

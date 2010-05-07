@@ -29,7 +29,7 @@ public class Translate implements Transformation {
     }
 
     @Override
-    public AffineTransform getAffineTransform(DataSource ds, int fid, Uom uom) throws ParameterException {
+    public AffineTransform getAffineTransform(DataSource ds, long fid, Uom uom) throws ParameterException {
         double tx = 0.0;
         if (x != null) {
             tx = Uom.toPixel(x.getValue(ds, fid), uom, 96, 25000);

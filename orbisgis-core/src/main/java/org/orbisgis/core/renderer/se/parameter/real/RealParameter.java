@@ -9,5 +9,5 @@ public interface RealParameter extends SeParameter {
     /*
      * TODO Is (DataSource, featureId) the right way to access a feature ?
      */
-    public double getValue(DataSource ds, int featureId) throws ParameterException;
+    public abstract double getValue(DataSource ds, long fid) throws ParameterException;
 }

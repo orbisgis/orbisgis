@@ -28,7 +28,7 @@ public class TextGraphic extends Graphic{
      * @todo implements !
      */
     @Override
-    public RenderableGraphics getRenderableGraphics(DataSource ds, int fid) throws ParameterException, IOException{
+    public RenderableGraphics getRenderableGraphics(DataSource ds, long fid) throws ParameterException, IOException{
 
         RenderableGraphics label = styledLabel.getImage(ds, fid);
 
@@ -37,6 +37,7 @@ public class TextGraphic extends Graphic{
         
         if (transform != null) {
             AffineTransform at = this.transform.getGraphicalAffineTransform(ds, fid, false);
+            
             Shape atShp = at.createTransformedShape(bounds);
 
             RenderableGraphics rg = Graphic.getNewRenderableGraphics(atShp.getBounds2D(), 0);
@@ -49,7 +50,7 @@ public class TextGraphic extends Graphic{
     }
 
     @Override
-    public double getMaxWidth(DataSource ds, int fid) throws ParameterException, IOException {
+    public double getMaxWidth(DataSource ds, long fid) throws ParameterException, IOException {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 

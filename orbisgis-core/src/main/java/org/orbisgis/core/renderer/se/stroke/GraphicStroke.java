@@ -43,7 +43,7 @@ public class GraphicStroke extends Stroke{
     }
 
     @Override
-    public void draw(Graphics2D g2, Shape shp, DataSource ds, int fid) throws ParameterException, IOException{
+    public void draw(Graphics2D g2, Shape shp, DataSource ds, long fid) throws ParameterException, IOException{
         RenderableGraphics g = graphic.getGraphic(ds, fid);
 
         double l;
@@ -70,7 +70,7 @@ public class GraphicStroke extends Stroke{
     }
 
     @Override
-    public double getMaxWidth(DataSource ds, int fid) throws IOException, ParameterException{
+    public double getMaxWidth(DataSource ds, long fid) throws IOException, ParameterException{
         return graphic.getMaxWidth(ds, fid);
     }
 

@@ -18,6 +18,6 @@ import org.orbisgis.core.renderer.se.parameter.ParameterException;
  * @todo implement in InlineContent(for se InlineContent && GML), OnlineResource
  */
 public interface MarkGraphicSource {
-    Shape getShape(ViewBox viewBox, DataSource ds, int fid)
+    Shape getShape(ViewBox viewBox, DataSource ds, long fid)
             throws ParameterException, IOException;
 }

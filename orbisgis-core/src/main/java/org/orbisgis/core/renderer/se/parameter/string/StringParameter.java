@@ -15,5 +15,5 @@ public interface StringParameter extends SeParameter {
     /*
      * TODO Is (DataSource, featureId) the right way to access a feature ?
      */
-    public String getValue(DataSource ds, int featureId) throws ParameterException;
+    public abstract String getValue(DataSource ds, long fid) throws ParameterException;
 }

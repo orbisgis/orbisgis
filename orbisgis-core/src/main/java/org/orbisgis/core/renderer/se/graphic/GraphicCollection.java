@@ -88,7 +88,7 @@ public class GraphicCollection implements SymbolizerNode {
      * @throws ParameterException
      * @throws IOException
      */
-    public RenderableGraphics getGraphic(DataSource ds, int fid) throws ParameterException, IOException{
+    public RenderableGraphics getGraphic(DataSource ds, long fid) throws ParameterException, IOException{
         RenderContext ctc = RenderContextFactory.getContext();
 
         ArrayList<RenderableGraphics> images = new ArrayList<RenderableGraphics>();
@@ -115,7 +115,6 @@ public class GraphicCollection implements SymbolizerNode {
                 xmax = img.getMinX() + img.getWidth();
             if (img.getMinY() + img.getHeight() > ymax)
                 ymax = img.getMinY() + img.getHeight();
-            // TODO fetch minx, miny, maxx, maxy
         }
 
         RenderableGraphics rg = new RenderableGraphics(new Rectangle2D.Double(xmin, ymin, xmax - xmin, ymax - ymin));
@@ -138,7 +137,7 @@ public class GraphicCollection implements SymbolizerNode {
     private ArrayList<Graphic> graphics;
     private SymbolizerNode parent;
 
-    public double getMaxWidth(DataSource ds, int fid) throws ParameterException, IOException {
+    public double getMaxWidth(DataSource ds, long fid) throws ParameterException, IOException {
         double maxWidth = 0.0;
 
         Iterator<Graphic> it = graphics.iterator();

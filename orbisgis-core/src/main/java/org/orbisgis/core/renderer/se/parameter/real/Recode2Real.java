@@ -12,12 +12,13 @@ public class Recode2Real extends Recode<RealParameter, RealLiteral> implements R
     }
 
     @Override
-    public double getValue(DataSource ds, int fid){
+    public double getValue(DataSource ds, long fid){
         // Should always depend on features !
         try{
-            return getParameter(ds, fid).getValue(ds, fid);
+            return getParameter(ds, (int)fid).getValue(ds, fid);
         }
         catch(ParameterException ex){
+            // Since fallback value is a literal, the following is secure
             return this.fallbackValue.getValue(null, 0);
         }
     }

@@ -22,6 +22,7 @@ import javax.swing.JScrollPane;
 import junit.framework.TestCase;
 
 import org.orbisgis.core.renderer.se.common.OnlineResource;
+import org.orbisgis.core.renderer.se.common.PieChartType;
 import org.orbisgis.core.renderer.se.common.RenderContextFactory;
 import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.fill.GraphicFill;
@@ -66,8 +67,10 @@ public class GraphicCollectionTest extends TestCase {
 
         mark = new MarkGraphic();
         mark.setFill(fill);
-        mark.setStroke(new PenStroke());
-        mark.setSource(WellKnownName.STAR);
+        PenStroke s1 = new PenStroke();
+        s1.setWidth(new RealLiteral(0.1));
+        mark.setStroke(s1);
+        mark.setSource(WellKnownName.CIRCLE);
         mark.setViewBox(new ViewBox(new RealLiteral(6.0)));
         Transform t = new Transform();
         mark.setTransform(t);
@@ -79,8 +82,8 @@ public class GraphicCollectionTest extends TestCase {
 
         GraphicFill gFill = new GraphicFill();
         gFill.setGraphic(collec2);
-        //gFill.setGapX(new RealLiteral(5));
-        //gFill.setGapY(new RealLiteral(5));
+        gFill.setGapX(new RealLiteral(3));
+        gFill.setGapY(new RealLiteral(5));
 
 
         collec = new GraphicCollection();
@@ -112,7 +115,7 @@ public class GraphicCollectionTest extends TestCase {
         ext = new ExternalGraphic();
         ext.setUom(Uom.MM);
         //ext.setSource(new OnlineResource("file:///home/maxence/symbol.jpg"));
-        ext.setSource(new OnlineResource("http://tof.canardpc.com/view/8a85f406-1d3f-4725-81fb-a24a9eab0421.jpg"));
+        ext.setSource(new OnlineResource("http://www.neatimage.com/im/Neat-logo.jpg"));
         ext.setViewBox(new ViewBox(new RealLiteral(48.0)));
         Transform t2 = new Transform();
         t2.addTransformation(new Translate(null, new RealLiteral(50)));
@@ -144,12 +147,83 @@ public class GraphicCollectionTest extends TestCase {
         text3.setTransform(tl3);
         label3.setFontSize(new RealLiteral(18));
 
+
+        PieChart pie = new PieChart();
+
+        Slice slc = new Slice();
+        slc.setFill(new SolidFill());
+        slc.setValue(new RealLiteral(10));
+        pie.addSlice(slc);
+
+        Slice slc1 = new Slice();
+        slc1.setFill(new SolidFill());
+        slc1.setValue(new RealLiteral(20));
+        pie.addSlice(slc1);
+        
+        Slice slc2 = new Slice();
+        slc2.setFill(new SolidFill());
+        slc2.setValue(new RealLiteral(30));
+        pie.addSlice(slc2);
+        
+        Slice slc3 = new Slice();
+        slc3.setFill(new SolidFill());
+        slc3.setValue(new RealLiteral(40));
+        pie.addSlice(slc3);
+        
+
+        pie.setRadius(new RealLiteral(100));
+        pie.setType(PieChartType.HALF);
+        
+        Transform tp1 = new Transform();
+        tp1.addTransformation(new Rotate(new RealLiteral(-90.0)));
+        pie.setTransform(tp1);
+
+        pie.setStroke(new PenStroke());
+        pie.setDisplayValue(true);
+
+
+        PieChart pie2 = new PieChart();
+
+        Slice slc21 = new Slice();
+        slc21.setFill(new SolidFill());
+        slc21.setValue(new RealLiteral(10));
+        pie2.addSlice(slc21);
+
+        Slice slc22 = new Slice();
+        slc22.setFill(new SolidFill());
+        slc22.setValue(new RealLiteral(20));
+        pie2.addSlice(slc22);
+
+        Slice slc23 = new Slice();
+        slc23.setFill(new SolidFill());
+        slc23.setValue(new RealLiteral(30));
+        pie2.addSlice(slc23);
+
+        Slice slc24 = new Slice();
+        slc24.setFill(new SolidFill());
+        slc24.setValue(new RealLiteral(40));
+        pie2.addSlice(slc24);
+
+
+        pie2.setRadius(new RealLiteral(150));
+        pie2.setType(PieChartType.HALF);
+
+        pie2.setStroke(new PenStroke());
+        Transform tp2 = new Transform();
+        tp2.addTransformation(new Rotate(new RealLiteral(90.0)));
+        pie2.setTransform(tp2);
+        pie2.setDisplayValue(true);
+
+        pie2.setHoleRadius(new RealLiteral(100));
+
         collec.addGraphic(ext);
         collec.addGraphic(mark2);
         collec.addGraphic(mark1);
         collec.addGraphic(text);
         collec.addGraphic(text2);
         collec.addGraphic(text3);
+        collec.addGraphic(pie);
+        collec.addGraphic(pie2);
     }
 
     @Override

@@ -3,6 +3,8 @@ package org.orbisgis.core.renderer.se;
 import java.awt.Graphics2D;
 import java.io.IOException;
 import org.gdms.data.DataSource;
+import org.gdms.data.SpatialDataSourceDecorator;
+import org.gdms.driver.DriverException;
 import org.orbisgis.core.renderer.liteShape.LiteShape;
 
 
@@ -30,12 +32,12 @@ public class TextSymbolizer extends VectorSymbolizer {
 
 
     @Override
-    public void draw(Graphics2D g2, DataSource ds, int fid) throws ParameterException, IOException{
+    public void draw(Graphics2D g2, SpatialDataSourceDecorator sds, long fid) throws ParameterException, IOException, DriverException {
 
-        LiteShape shp = this.getLiteShape(ds, fid);
+        LiteShape shp = this.getLiteShape(sds, fid);
 
         if (label != null){
-            label.draw(g2, shp, ds, fid);
+            label.draw(g2, shp, sds, fid);
         }
     }
 

@@ -18,7 +18,7 @@ public class Categorize2Color extends Categorize<ColorParameter, ColorLiteral> i
     }
 
     @Override
-    public Color getColor(DataSource ds, int fid){
+    public Color getColor(DataSource ds, long fid){
         try {
             return getParameter(ds, fid).getColor(ds, fid);
         } catch (ParameterException ex) {

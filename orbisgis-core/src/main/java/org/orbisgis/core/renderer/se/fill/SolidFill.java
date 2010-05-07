@@ -31,7 +31,7 @@ public class SolidFill extends Fill{
         return color;
     }
 
-    public void setOpactity(RealParameter opacity){
+    public void setOpacity(RealParameter opacity){
         this.opacity = opacity;
     }
 
@@ -41,7 +41,7 @@ public class SolidFill extends Fill{
 
 
     @Override
-    public void draw(Graphics2D g2, Shape shp, DataSource ds, int fid) throws ParameterException {
+    public void draw(Graphics2D g2, Shape shp, DataSource ds, long fid) throws ParameterException {
         if (color != null){
 
             Color c = color.getColor(ds, fid);
@@ -49,10 +49,14 @@ public class SolidFill extends Fill{
 
             // Add opacity to the color 
             Color ac = ColorHelper.getColorWithAlpha(c, op);
-
             g2.setColor(ac);
             g2.fill(shp);
         }
+    }
+
+    @Override
+    public String toString(){
+        return "Color: " + color + " alpha: " + opacity;
     }
 
     private ColorParameter color;

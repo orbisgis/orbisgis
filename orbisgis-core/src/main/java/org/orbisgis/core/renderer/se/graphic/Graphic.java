@@ -1,9 +1,8 @@
 package org.orbisgis.core.renderer.se.graphic;
 
 import java.awt.Color;
-import java.awt.Rectangle;
+
 import java.awt.geom.Rectangle2D;
-import java.awt.image.renderable.RenderContext;
 import java.io.IOException;
 import javax.media.jai.RenderableGraphics;
 import org.gdms.data.DataSource;
@@ -56,7 +55,7 @@ public abstract class Graphic implements SymbolizerNode {
      * @throws ParameterException
      * @throws IOException
      */
-    public abstract RenderableGraphics getRenderableGraphics(DataSource ds, int fid)
+    public abstract RenderableGraphics getRenderableGraphics(DataSource ds, long fid)
             throws ParameterException, IOException;
 
     public static RenderableGraphics getNewRenderableGraphics(Rectangle2D bounds, double margin){
@@ -77,7 +76,7 @@ public abstract class Graphic implements SymbolizerNode {
 
     }
 
-    public abstract double getMaxWidth(DataSource ds, int fid) throws ParameterException, IOException;
+    public abstract double getMaxWidth(DataSource ds, long fid) throws ParameterException, IOException;
 
     private SymbolizerNode parent;
 

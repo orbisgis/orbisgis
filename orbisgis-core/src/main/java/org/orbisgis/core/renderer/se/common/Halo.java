@@ -2,14 +2,24 @@ package org.orbisgis.core.renderer.se.common;
 
 import java.awt.Graphics2D;
 import java.awt.Shape;
+
 import java.io.IOException;
+
 import org.gdms.data.DataSource;
+
 import org.orbisgis.core.renderer.se.SymbolizerNode;
 import org.orbisgis.core.renderer.se.fill.Fill;
+import org.orbisgis.core.renderer.se.fill.SolidFill;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
+import org.orbisgis.core.renderer.se.parameter.real.RealLiteral;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 
 public class Halo implements SymbolizerNode {
+
+    public Halo() {
+        setFill(new SolidFill());
+        setRadius(new RealLiteral(5));
+    }
 
     public Halo(Fill fill, RealParameter radius) {
         this.fill = fill;
@@ -56,7 +66,7 @@ public class Halo implements SymbolizerNode {
         parent = node;
     }
 
-    public void draw(Graphics2D g2, Shape shp, DataSource ds, int fid) throws ParameterException, IOException {
+    public void draw(Graphics2D g2, Shape shp, DataSource ds, long fid) throws ParameterException, IOException {
         if (radius != null && fill != null) {
             double r = radius.getValue(ds, fid);
 
@@ -66,10 +76,11 @@ public class Halo implements SymbolizerNode {
                 Shape haloShp = shp; // TODO poffset !!
 
                 fill.draw(g2, haloShp, ds, fid);
+
+                throw new UnsupportedOperationException("Not supported yet. Need PerpendiularOffset");
             }
         }
     }
-    
     private Uom uom;
     private RealParameter radius;
     private Fill fill;

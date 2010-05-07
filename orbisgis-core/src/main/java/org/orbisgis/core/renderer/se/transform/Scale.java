@@ -51,7 +51,7 @@ public class Scale implements Transformation {
     }
 
     @Override
-    public AffineTransform getAffineTransform(DataSource ds, int fid, Uom uom) throws ParameterException {
+    public AffineTransform getAffineTransform(DataSource ds, long fid, Uom uom) throws ParameterException {
         double sx = 0.0;
         if (x != null)
             sx = Uom.toPixel(x.getValue(ds, fid), uom, 96, 25000);

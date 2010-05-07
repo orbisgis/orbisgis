@@ -8,8 +8,7 @@ import java.awt.geom.Rectangle2D;
 
 
 import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
 import javax.media.jai.PlanarImage;
 import javax.media.jai.RenderableGraphics;
 import org.gdms.data.DataSource;
@@ -69,7 +68,7 @@ public class ExternalGraphic extends Graphic {
     }
 
     @Override
-    public RenderableGraphics getRenderableGraphics(DataSource ds, int fid) throws ParameterException, IOException {
+    public RenderableGraphics getRenderableGraphics(DataSource ds, long fid) throws ParameterException, IOException {
         AffineTransform at = transform.getGraphicalAffineTransform(ds, fid, false);
 
         PlanarImage img;
@@ -115,7 +114,7 @@ public class ExternalGraphic extends Graphic {
     }
 
 
-    public double getMargin(DataSource ds, int fid) throws ParameterException, IOException {
+    public double getMargin(DataSource ds, long fid) throws ParameterException, IOException {
         double delta = 0.0;
         
         if (this.halo != null) {
@@ -126,7 +125,7 @@ public class ExternalGraphic extends Graphic {
     }
 
     @Override
-    public double getMaxWidth(DataSource ds, int fid) throws ParameterException, IOException {
+    public double getMaxWidth(DataSource ds, long fid) throws ParameterException, IOException {
         double delta = 0.0;
         if (viewBox != null) {
             PlanarImage img;

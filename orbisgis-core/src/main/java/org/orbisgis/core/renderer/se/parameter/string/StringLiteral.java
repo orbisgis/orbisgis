@@ -13,7 +13,7 @@ public class StringLiteral implements StringParameter{
     }
 
     @Override
-    public String getValue(DataSource ds, int fid){
+    public String getValue(DataSource ds, long fid){
         return v;
     }
 

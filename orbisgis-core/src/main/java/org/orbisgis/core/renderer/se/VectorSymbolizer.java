@@ -6,11 +6,17 @@
 package org.orbisgis.core.renderer.se;
 
 import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.Point;
 import java.awt.Graphics2D;
 import java.awt.geom.AffineTransform;
+import java.awt.geom.Point2D;
 import java.io.IOException;
-import org.gdms.data.DataSource;
+
+import org.gdms.data.SpatialDataSourceDecorator;
+import org.gdms.driver.DriverException;
+import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.liteShape.LiteShape;
+import org.orbisgis.core.renderer.se.common.RenderContextFactory;
 import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.transform.Transform;
@@ -22,31 +28,48 @@ import org.orbisgis.core.renderer.se.transform.Transform;
  */
 public abstract class VectorSymbolizer extends Symbolizer{
 
-    public abstract void draw(Graphics2D g2, DataSource ds, int fid) throws ParameterException, IOException;
+    public abstract void draw(Graphics2D g2, SpatialDataSourceDecorator sds, long fid) throws ParameterException, IOException, DriverException;
 
 
     /**
      * Convert a spatial feature into a LiteShape, should add parameters to handle
      * the scale and to perform a scale dependent generalization !
      * 
-     * @param ds the data source
+     * @param sds the data source
      * @param fid the feature id
      * @return a liteshape representing the spatial feature
      * @throws ParameterException
+     * @throws IOException
+     * @throws DriverException
      * @todo fix maxDist for generalization!
      */
-    public LiteShape getLiteShape(DataSource ds, int fid) throws ParameterException, IOException{
-        Geometry the_geom = this.getTheGeom(ds, fid); // geom + function
+    public LiteShape getLiteShape(SpatialDataSourceDecorator sds, long fid) throws ParameterException, IOException, DriverException{
+        Geometry the_geom = this.getTheGeom(sds, fid); // geom + function
 
-        AffineTransform at = null;
+        MapTransform mt = RenderContextFactory.getMapTransform();
 
-        if (transform != null){
-            at = transform.getGraphicalAffineTransform(ds, fid, true);
-        }
+        AffineTransform at = mt.getAffineTransform();
+        if (transform != null)
+            at.preConcatenate(transform.getGraphicalAffineTransform(sds, fid, true));
 
-        double maxDist = 10.0;
+        double maxDist = 0.5;
+        
         return new LiteShape(the_geom, at, true, maxDist);
     }
+
+    public Point2D getPointLiteShape(SpatialDataSourceDecorator sds, long fid) throws ParameterException, IOException, DriverException{
+        Geometry the_geom = this.getTheGeom(sds, fid); // geom + function
+
+        MapTransform mt = RenderContextFactory.getMapTransform();
+
+        AffineTransform at = mt.getAffineTransform();
+        if (transform != null)
+            at.preConcatenate(transform.getGraphicalAffineTransform(sds, fid, true));
+
+        Point point = the_geom.getCentroid();
+        return at.transform(new Point2D.Double(point.getX(), point.getY()), null);
+    }
+
 
     public Transform getTransform() {
         return transform;

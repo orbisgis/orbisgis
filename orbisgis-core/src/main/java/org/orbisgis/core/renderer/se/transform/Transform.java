@@ -35,7 +35,7 @@ public class Transform implements SymbolizerNode {
      * @return AffineTransofrm
      * @throws ParameterException
      */
-    public AffineTransform getGraphicalAffineTransform(DataSource ds, int fid, boolean isForSpatialFeatures) throws ParameterException, IOException {
+    public AffineTransform getGraphicalAffineTransform(DataSource ds, long fid, boolean isForSpatialFeatures) throws ParameterException, IOException {
         //return consolidateTrasformations(false).getGraphicalAffineTransform();
         this.consolidateTransformations(ds, fid, isForSpatialFeatures);
         
@@ -47,7 +47,7 @@ public class Transform implements SymbolizerNode {
      * This method must be called after each modification of one of its transformations !
      *
      */
-    public void consolidateTransformations(DataSource ds, int fid, boolean forGeometries) throws ParameterException, IOException {
+    public void consolidateTransformations(DataSource ds, long fid, boolean forGeometries) throws ParameterException, IOException {
         int i;
 
         // Result is Identity

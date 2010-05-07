@@ -22,5 +22,5 @@ import org.orbisgis.core.renderer.se.parameter.ParameterException;
 public interface Transformation {
     public boolean allowedForGeometries();
 
-    public AffineTransform getAffineTransform(DataSource ds, int fid, Uom uom) throws ParameterException, IOException;
+    public AffineTransform getAffineTransform(DataSource ds, long fid, Uom uom) throws ParameterException, IOException;
 }

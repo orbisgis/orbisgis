@@ -1,6 +1,5 @@
 package org.orbisgis.core.renderer.se.fill;
 
-import java.awt.BasicStroke;
 import java.awt.Graphics2D;
 
 import java.awt.Shape;
@@ -65,7 +64,7 @@ public class GraphicFill extends Fill{
      * see Fill
      */
     @Override
-    public void draw(Graphics2D g2, Shape shp, DataSource ds, int fid) throws ParameterException, IOException {
+    public void draw(Graphics2D g2, Shape shp, DataSource ds, long fid) throws ParameterException, IOException {
         g2.setPaint(this.getStipplePainter(ds, fid));
         g2.fill(shp);
     }
@@ -79,7 +78,7 @@ public class GraphicFill extends Fill{
      * @throws ParameterException
      * @throws IOException
      */
-    public TexturePaint getStipplePainter(DataSource ds, int fid) throws ParameterException, IOException{
+    public TexturePaint getStipplePainter(DataSource ds, long fid) throws ParameterException, IOException{
         RenderableGraphics img = graphic.getGraphic(ds, fid);
 
         double gX = 0.0;

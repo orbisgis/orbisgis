@@ -43,7 +43,7 @@ public abstract class Label implements SymbolizerNode {
         label.setParent(this);
     }
 
-    public abstract void draw(Graphics2D g2, LiteShape shp, DataSource ds, int fid) throws ParameterException, IOException;
+    public abstract void draw(Graphics2D g2, LiteShape shp, DataSource ds, long fid) throws ParameterException, IOException;
     
     protected SymbolizerNode parent;
     protected StyledLabel label;

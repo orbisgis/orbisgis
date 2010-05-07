@@ -1,6 +1,7 @@
 package org.orbisgis.core.renderer.se.label;
 
 
+import java.awt.Color;
 import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Shape;
@@ -18,6 +19,7 @@ import org.orbisgis.core.renderer.se.fill.Fill;
 import org.orbisgis.core.renderer.se.fill.SolidFill;
 import org.orbisgis.core.renderer.se.graphic.Graphic;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
+import org.orbisgis.core.renderer.se.parameter.color.ColorLiteral;
 import org.orbisgis.core.renderer.se.parameter.real.RealLiteral;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 import org.orbisgis.core.renderer.se.parameter.string.StringLiteral;
@@ -29,14 +31,28 @@ public class StyledLabel implements SymbolizerNode {
 
     
     public StyledLabel(){
-        labelText = new StringLiteral("AagGhHmMyY"); // TODO ...
+        this.labelText = new StringLiteral("Label");
         this.fontFamily = new StringLiteral("Arial");
         this.fontWeight = new StringLiteral("Normal");
         this.fontStyle = new StringLiteral("Normal");
         this.fontSize = new RealLiteral(12);
         
-        setStroke(new PenStroke());
+        //setStroke(new PenStroke());
         setFill(new SolidFill());
+    }
+
+    public StyledLabel(String label){
+        this.labelText = new StringLiteral(label);
+        this.fontFamily = new StringLiteral("Arial");
+        this.fontWeight = new StringLiteral("Normal");
+        this.fontStyle = new StringLiteral("Normal");
+        this.fontSize = new RealLiteral(12);
+
+        SolidFill f = new SolidFill();
+        f.setOpacity(new RealLiteral(100.0));
+        f.setColor(new ColorLiteral(Color.black));
+
+        this.setFill(f);
     }
 
     @Override
@@ -122,7 +138,7 @@ public class StyledLabel implements SymbolizerNode {
     }
 
     // TODO implements
-    public RenderableGraphics getImage(DataSource ds, int fid) throws ParameterException, IOException{
+    public RenderableGraphics getImage(DataSource ds, long fid) throws ParameterException, IOException{
 
         String text = labelText.getValue(ds, fid);
 

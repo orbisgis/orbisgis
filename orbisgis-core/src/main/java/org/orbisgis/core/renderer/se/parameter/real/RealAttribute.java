@@ -18,9 +18,9 @@ public class RealAttribute extends PropertyName implements RealParameter{
     }
 
     @Override
-    public double getValue(DataSource ds, int fid) throws ParameterException{
+    public double getValue(DataSource ds, long fid) throws ParameterException{
         try{
-            return this.getFieldValue(ds, fid).getAsDouble();
+            return this.getFieldValue(ds, (int)fid).getAsDouble();
         } catch (Exception e) {
             throw new ParameterException("Could not fetch feature attribute \""+ fieldName +"\"");
         }

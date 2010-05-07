@@ -57,7 +57,7 @@ public class RealBinaryOperator implements RealParameter{
      * @throws ParameterException
      */
     @Override
-    public double getValue(DataSource ds, int fid) throws ParameterException {
+    public double getValue(DataSource ds, long fid) throws ParameterException {
         double lVal = l.getValue(ds, fid);
         double rVal = r.getValue(ds, fid);
 
