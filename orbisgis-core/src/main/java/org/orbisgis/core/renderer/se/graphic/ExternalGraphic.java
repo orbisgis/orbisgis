@@ -1,11 +1,9 @@
 package org.orbisgis.core.renderer.se.graphic;
 
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Shape;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
-
 
 import java.io.IOException;
 
@@ -13,6 +11,7 @@ import javax.media.jai.PlanarImage;
 import javax.media.jai.RenderableGraphics;
 import org.gdms.data.DataSource;
 import org.orbisgis.core.renderer.se.common.Halo;
+import org.orbisgis.core.renderer.se.common.MapEnv;
 import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
@@ -20,8 +19,10 @@ import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 /**
  * an external graphic is an image such as JPG, PNG, SVG.
  * Available action on such a graphic are affine transfromations.
- * There is no way to restyle the graphic. 
+ * There is no way to restyle the graphic but setting opacity
  *
+ * @todo Opacity not yet implemented !
+ * 
  * @see MarkGraphic, Graphic
  * @author maxence
  */
@@ -55,9 +56,16 @@ public class ExternalGraphic extends Graphic {
     }
 
     private void updateGraphic() {
+        graphic = null;
+
         try {
-            graphic = source.getPlanarImage(viewBox, null, 0);
-        } catch (Exception e) {
+            if (source != null) {
+                graphic = source.getPlanarImage(viewBox, null, 0);
+            }
+        } catch (IOException ex) {
+            graphic = null; // TODO
+        } catch (ParameterException ex) {
+            // Means graphic depends on a feature
             graphic = null;
         }
     }
@@ -86,7 +94,7 @@ public class ExternalGraphic extends Graphic {
 
         // reserve the place for halo
         if (halo != null) {
-            double r = Uom.toPixel(halo.getRadius().getValue(ds, fid), halo.getUom(), 96, 25000); // TODO SCALE, DPI...
+            double r = Uom.toPixel(halo.getRadius().getValue(ds, fid), halo.getUom(), MapEnv.getScaleDenominator()); // TODO SCALE, DPI...
             w += 2 * r;
             h += 2 * r;
         }
@@ -113,12 +121,11 @@ public class ExternalGraphic extends Graphic {
         return rg;
     }
 
-
     public double getMargin(DataSource ds, long fid) throws ParameterException, IOException {
         double delta = 0.0;
-        
+
         if (this.halo != null) {
-            delta += Uom.toPixel(halo.getRadius().getValue(ds, fid), halo.getUom(), 96, 25000);
+            delta += Uom.toPixel(halo.getRadius().getValue(ds, fid), halo.getUom(), MapEnv.getScaleDenominator());
         }
 
         return delta;
@@ -144,7 +151,6 @@ public class ExternalGraphic extends Graphic {
 
         return delta;
     }
-
     private ExternalGraphicSource source;
     private ViewBox viewBox;
     private RealParameter opacity;

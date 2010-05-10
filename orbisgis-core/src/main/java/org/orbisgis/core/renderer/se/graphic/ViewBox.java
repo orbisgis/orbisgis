@@ -3,6 +3,7 @@ package org.orbisgis.core.renderer.se.graphic;
 import java.awt.Dimension;
 import org.gdms.data.DataSource;
 import org.orbisgis.core.renderer.se.SymbolizerNode;
+import org.orbisgis.core.renderer.se.common.MapEnv;
 import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
@@ -73,8 +74,8 @@ public class ViewBox implements SymbolizerNode {
             dy = 10.0;
         }
         
-        dx = Uom.toPixel(dx, this.getUom(), 96, 25000); // TODO DPI SCAPE !
-        dy = Uom.toPixel(dy, this.getUom(), 96, 25000);
+        dx = Uom.toPixel(dx, this.getUom(), MapEnv.getScaleDenominator()); // TODO DPI SCAPE !
+        dy = Uom.toPixel(dy, this.getUom(), MapEnv.getScaleDenominator());
 
         return new Dimension((int)dx, (int)dy);
     }

@@ -6,16 +6,11 @@
 package org.orbisgis.core.renderer.se.transform;
 
 import java.awt.geom.AffineTransform;
-import java.util.ArrayList;
 import org.gdms.data.DataSource;
+import org.orbisgis.core.renderer.se.common.MapEnv;
 import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
-import org.orbisgis.core.renderer.se.parameter.real.RealBinaryOperator;
-import org.orbisgis.core.renderer.se.parameter.real.RealBinaryOperatorType;
-import org.orbisgis.core.renderer.se.parameter.real.RealLiteral;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
-import org.orbisgis.core.renderer.se.parameter.real.RealUnitaryOperator;
-import org.orbisgis.core.renderer.se.parameter.real.RealUnitaryOperatorType;
 
 /**
  *
@@ -69,11 +64,11 @@ public class Rotate implements Transformation {
         double ox = 0.0;
 
         if (x != null)
-            ox = Uom.toPixel(x.getValue(ds, fid), uom, 96, 25000);
+            ox = Uom.toPixel(x.getValue(ds, fid), uom, MapEnv.getScaleDenominator());
 
         double oy = 0.0;
         if (y != null)
-            oy = Uom.toPixel(y.getValue(ds, fid), uom, 96, 25000);
+            oy = Uom.toPixel(y.getValue(ds, fid), uom, MapEnv.getScaleDenominator());
 
 
         double theta = 0.0;

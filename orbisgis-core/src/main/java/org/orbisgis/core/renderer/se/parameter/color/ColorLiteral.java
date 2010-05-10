@@ -17,7 +17,6 @@ public class ColorLiteral implements ColorParameter{
         int g = (int)(rndGenerator.nextFloat()*255);
         int b = (int)(rndGenerator.nextFloat()*255);
         color = new Color(r,g,b);
-        System.out.println ("GenColor: " + color);
     }
 
     public ColorLiteral(Color color){
@@ -30,7 +29,7 @@ public class ColorLiteral implements ColorParameter{
      * @todo create color from htmlColor
      */
     public ColorLiteral(String htmlColor){
-        color = Color.black;
+        this.color = Color.decode(htmlColor);
     }
 
     @Override

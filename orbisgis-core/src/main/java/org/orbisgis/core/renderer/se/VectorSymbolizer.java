@@ -16,7 +16,7 @@ import org.gdms.data.SpatialDataSourceDecorator;
 import org.gdms.driver.DriverException;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.liteShape.LiteShape;
-import org.orbisgis.core.renderer.se.common.RenderContextFactory;
+import org.orbisgis.core.renderer.se.common.MapEnv;
 import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.transform.Transform;
@@ -46,7 +46,7 @@ public abstract class VectorSymbolizer extends Symbolizer{
     public LiteShape getLiteShape(SpatialDataSourceDecorator sds, long fid) throws ParameterException, IOException, DriverException{
         Geometry the_geom = this.getTheGeom(sds, fid); // geom + function
 
-        MapTransform mt = RenderContextFactory.getMapTransform();
+        MapTransform mt = MapEnv.getMapTransform();
 
         AffineTransform at = mt.getAffineTransform();
         if (transform != null)
@@ -60,7 +60,7 @@ public abstract class VectorSymbolizer extends Symbolizer{
     public Point2D getPointLiteShape(SpatialDataSourceDecorator sds, long fid) throws ParameterException, IOException, DriverException{
         Geometry the_geom = this.getTheGeom(sds, fid); // geom + function
 
-        MapTransform mt = RenderContextFactory.getMapTransform();
+        MapTransform mt = MapEnv.getMapTransform();
 
         AffineTransform at = mt.getAffineTransform();
         if (transform != null)

@@ -6,7 +6,7 @@ import java.awt.geom.Rectangle2D;
 import java.io.IOException;
 import javax.media.jai.RenderableGraphics;
 import org.gdms.data.DataSource;
-import org.orbisgis.core.renderer.se.common.RenderContextFactory;
+import org.orbisgis.core.renderer.se.common.MapEnv;
 import org.orbisgis.core.renderer.se.label.StyledLabel;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 
@@ -41,7 +41,7 @@ public class TextGraphic extends Graphic{
             Shape atShp = at.createTransformedShape(bounds);
 
             RenderableGraphics rg = Graphic.getNewRenderableGraphics(atShp.getBounds2D(), 0);
-            rg.drawRenderedImage(label.createRendering(RenderContextFactory.getContext()), at);
+            rg.drawRenderedImage(label.createRendering(MapEnv.getCurrentRenderContext()), at);
             return rg;
         }
         else{

@@ -22,11 +22,11 @@ import javax.swing.JScrollPane;
 import junit.framework.TestCase;
 
 import org.orbisgis.core.renderer.se.common.OnlineResource;
-import org.orbisgis.core.renderer.se.common.PieChartType;
-import org.orbisgis.core.renderer.se.common.RenderContextFactory;
+import org.orbisgis.core.renderer.se.common.MapEnv;
 import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.fill.GraphicFill;
 import org.orbisgis.core.renderer.se.fill.SolidFill;
+import org.orbisgis.core.renderer.se.graphic.PieChart.PieChartType;
 import org.orbisgis.core.renderer.se.label.StyledLabel;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.color.ColorLiteral;
@@ -254,7 +254,7 @@ public class GraphicCollectionTest extends TestCase {
         System.out.println ("RG: " + rg);
         System.out.println ("Rendered : " + rg.createDefaultRendering());
 
-        RenderContext ctc = RenderContextFactory.getContext();
+        RenderContext ctc = MapEnv.getCurrentRenderContext();
 
         rg.setPaint(Color.BLACK);
         rg.drawLine((int)rg.getMinX(), 0, (int)(rg.getMinX() + rg.getWidth()), 0);

@@ -1,7 +1,5 @@
 package org.orbisgis.core.renderer.se.graphic;
 
-import java.awt.Color;
-
 import java.awt.geom.Rectangle2D;
 import java.io.IOException;
 import javax.media.jai.RenderableGraphics;
@@ -19,7 +17,12 @@ public abstract class Graphic implements SymbolizerNode {
 
     @Override
     public Uom getUom(){
-        return uom;
+        if (parent != null){
+            return parent.getUom();
+        }
+        else{
+            return uom;
+        }
     }
 
     public void setUom(Uom uom){
@@ -46,7 +49,7 @@ public abstract class Graphic implements SymbolizerNode {
     }
 
     /**
-     * this method returns the particular subgraphic (BufferedImage)
+     * this method returns the particular subgraphic (RenderableGraphic)
      * 
      *
      * @param ds DataSource of this layer
@@ -58,6 +61,12 @@ public abstract class Graphic implements SymbolizerNode {
     public abstract RenderableGraphics getRenderableGraphics(DataSource ds, long fid)
             throws ParameterException, IOException;
 
+    /**
+     * Create an empty RenderableGraphics based on specified bounds and margin
+     * @param bounds graphics size and positions
+     * @param margin margin (top, bottom, left and right) to add to bounds
+     * @return new empty RenderableGraphcis
+     */
     public static RenderableGraphics getNewRenderableGraphics(Rectangle2D bounds, double margin){
         
 
@@ -66,11 +75,6 @@ public abstract class Graphic implements SymbolizerNode {
                 bounds.getMinY() - margin,
                 bounds.getWidth() + 2*margin,
                 bounds.getHeight() + 2*margin));
-
-
-        Color transparent = new Color(1f, 1f, 1f, 0.0f);
-        rg.setBackground(transparent);
-        rg.clearRect((int) rg.getMinX(), (int) rg.getMinY(), (int) rg.getWidth(), (int) rg.getHeight());
 
         return rg;
 

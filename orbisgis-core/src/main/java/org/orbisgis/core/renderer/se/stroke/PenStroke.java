@@ -8,6 +8,7 @@ import java.awt.TexturePaint;
 import java.io.IOException;
 import java.util.ArrayList;
 import org.gdms.data.DataSource;
+import org.orbisgis.core.renderer.se.common.MapEnv;
 import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.fill.GraphicFill;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
@@ -34,11 +35,16 @@ public class PenStroke extends Stroke {
         MITRE, ROUND, BEVEL;
     }
 
+    /**
+     * Create a standard undashed 0.1mm-wide opaque black stroke
+     */
     public PenStroke() {
-        setColor(new ColorLiteral());
-        setWidth(new RealLiteral(1.0));
-        setOpacity(new RealLiteral(60.0));
+        setColor(new ColorLiteral(Color.BLACK));
+        setWidth(new RealLiteral(0.1));
+        this.setUom(Uom.MM);
+        setOpacity(new RealLiteral(100.0));
         dashArray = new ArrayList<Double>();
+        updateBasicStroke();
     }
 
     /**
@@ -56,11 +62,13 @@ public class PenStroke extends Stroke {
      */
     public void setUseColor(boolean useColor) {
         this.useColor = useColor;
+        updateBasicStroke();
     }
 
     public void setColor(ColorParameter color) {
         this.color = color;
         useColor = true;
+        updateBasicStroke();
     }
 
     public ColorParameter getColor() {
@@ -70,6 +78,7 @@ public class PenStroke extends Stroke {
     public void setStipple(GraphicFill stipple) {
         this.stipple = stipple;
         useColor = false;
+        updateBasicStroke();
     }
 
     public GraphicFill getStipple() {
@@ -77,7 +86,7 @@ public class PenStroke extends Stroke {
     }
 
     public void setLineCap(LineCap cap) {
-        lineCap = cap;
+        lineCap = cap;updateBasicStroke();
     }
 
     public LineCap getLineCap() {
@@ -86,6 +95,7 @@ public class PenStroke extends Stroke {
 
     public void setLineJoin(LineJoin join) {
         lineJoin = join;
+        updateBasicStroke();
     }
 
     public LineJoin getLineJoin() {
@@ -94,6 +104,7 @@ public class PenStroke extends Stroke {
 
     public void setOpacity(RealParameter opacity) {
         this.opacity = opacity;
+        updateBasicStroke();
     }
 
     public RealParameter getOpacity() {
@@ -116,16 +127,18 @@ public class PenStroke extends Stroke {
         this.dashOffset = dashOffset;
     }
 
-    /*
-    public void setDashArray(String dashArray){
-    TODO implment dashArray
-    }
-     */
-    @Override
-    public void draw(Graphics2D g2, Shape shp, DataSource ds, long fid) throws ParameterException, IOException {
 
-        // remove preGap, postGap from the line
-        Shape shape = this.getPreparedShape(shp);
+
+    private void updateBasicStroke() {
+        try{
+            bStroke = createBasicStroke(null, 0);
+        }
+        catch (Exception e){
+            this.bStroke = null;
+        }
+    }
+
+    private BasicStroke createBasicStroke(DataSource ds, long fid) throws ParameterException{
 
         int cap;
         if (this.lineCap == null) {
@@ -168,13 +181,44 @@ public class PenStroke extends Stroke {
         if (width != null) {
             w = width.getValue(ds, fid);
             // TODO add scale and dpi
-            w = Uom.toPixel(w, getUom(), 96, 25000);
+            w = Uom.toPixel(w, getUom(), MapEnv.getScaleDenominator());
         }
 
         // can handle width, cap, join and dash array
-        BasicStroke bStroke = new BasicStroke((float) w, cap, join);
+        return new BasicStroke((float) w, cap, join);
+    }
 
-        g2.setStroke(bStroke);
+    public BasicStroke getBasicStroke(DataSource ds, long fid) throws ParameterException {
+        if (bStroke != null){
+            return bStroke;
+        }
+        else{
+            return this.createBasicStroke(ds, fid);
+        }
+    }
+    
+
+
+    /*
+    public void setDashArray(String dashArray){
+    TODO implment dashArray
+    }
+     */
+    @Override
+    public void draw(Graphics2D g2, Shape shp, DataSource ds, long fid) throws ParameterException, IOException {
+
+        // remove preGap, postGap from the line
+        Shape shape = this.getPreparedShape(shp);
+
+        BasicStroke stroke = null;
+
+        if (this.bStroke == null){
+            stroke = this.createBasicStroke(ds, fid);
+        }
+        else
+            stroke = this.bStroke;
+
+        g2.setStroke(stroke);
 
 
         if (this.useColor == false) {
@@ -207,7 +251,7 @@ public class PenStroke extends Stroke {
     @Override
     public double getMaxWidth(DataSource ds, long fid) throws ParameterException {
         if (this.width != null) {
-            return Uom.toPixel(width.getValue(ds, fid), this.getUom(), 96, 25000);
+            return Uom.toPixel(width.getValue(ds, fid), this.getUom(), MapEnv.getScaleDenominator());
         } else {
             return 0.0;
         }
@@ -222,4 +266,6 @@ public class PenStroke extends Stroke {
     private LineCap lineCap;
     private ArrayList<Double> dashArray;
     private RealParameter dashOffset;
+
+    private BasicStroke bStroke;
 }

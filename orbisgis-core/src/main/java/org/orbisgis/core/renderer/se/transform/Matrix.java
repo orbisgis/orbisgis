@@ -4,13 +4,12 @@
  */
 package org.orbisgis.core.renderer.se.transform;
 
-import com.vividsolutions.jts.geom.util.AffineTransformation;
 import java.awt.geom.AffineTransform;
 import java.text.DecimalFormat;
-import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.gdms.data.DataSource;
+import org.orbisgis.core.renderer.se.common.MapEnv;
 import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.real.RealBinaryOperator;
@@ -154,12 +153,12 @@ public class Matrix implements Transformation {
     @Override
     public AffineTransform getAffineTransform(DataSource ds, long fid, Uom uom) throws ParameterException {
         return new AffineTransform( // TODO DPI !
-                Uom.toPixel(a.getValue(ds, fid), uom, 96, 25000),
-                Uom.toPixel(b.getValue(ds, fid), uom, 96, 25000),
-                Uom.toPixel(c.getValue(ds, fid), uom, 96, 25000),
-                Uom.toPixel(d.getValue(ds, fid), uom, 96, 25000),
-                Uom.toPixel(e.getValue(ds, fid), uom, 96, 25000),
-                Uom.toPixel(f.getValue(ds, fid), uom, 96, 25000)
+                Uom.toPixel(a.getValue(ds, fid), uom, MapEnv.getScaleDenominator()),
+                Uom.toPixel(b.getValue(ds, fid), uom, MapEnv.getScaleDenominator()),
+                Uom.toPixel(c.getValue(ds, fid), uom, MapEnv.getScaleDenominator()),
+                Uom.toPixel(d.getValue(ds, fid), uom, MapEnv.getScaleDenominator()),
+                Uom.toPixel(e.getValue(ds, fid), uom, MapEnv.getScaleDenominator()),
+                Uom.toPixel(f.getValue(ds, fid), uom, MapEnv.getScaleDenominator())
                );
     }
 

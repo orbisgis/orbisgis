@@ -11,8 +11,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import javax.media.jai.RenderableGraphics;
 import org.gdms.data.DataSource;
-import org.orbisgis.core.renderer.se.common.PieChartType;
-import org.orbisgis.core.renderer.se.common.RenderContextFactory;
+import org.orbisgis.core.renderer.se.common.MapEnv;
 import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.fill.Fill;
 import org.orbisgis.core.renderer.se.label.StyledLabel;
@@ -21,6 +20,11 @@ import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 import org.orbisgis.core.renderer.se.stroke.Stroke;
 
 public class PieChart extends Graphic {
+
+    public enum PieChartType{
+        WHOLE, HALF;
+    }
+
 
     public PieChart(){
         slices = new ArrayList<Slice>();
@@ -134,14 +138,14 @@ public class PieChart extends Graphic {
         System.out.println("UOM: " + getUom());
 
         if (radius != null) {
-            r = Uom.toPixel(this.getRadius().getValue(ds, fid), this.getUom(), 96, 25000); // TODO DPI + SCALE
+            r = Uom.toPixel(this.getRadius().getValue(ds, fid), this.getUom(), MapEnv.getScaleDenominator()); // TODO DPI + SCALE
         }
 
         double holeR = 0.0;
 
         Area hole = null;
         if (this.holeRadius != null) {
-            holeR = Uom.toPixel(this.getHoleRadius().getValue(ds, fid), this.getUom(), 96, 25000); // TODO DPI + SCALE
+            holeR = Uom.toPixel(this.getHoleRadius().getValue(ds, fid), this.getUom(), MapEnv.getScaleDenominator()); // TODO DPI + SCALE
 
             hole = new Area(new Arc2D.Double(-holeR, -holeR, 2*holeR, 2*holeR, 0, 260, Arc2D.CHORD));
         }
@@ -155,7 +159,7 @@ public class PieChart extends Graphic {
             stackedValues[i] = total;
             RealParameter gap = slc.getGap();
             if (gap != null) {
-                gaps[i] = Uom.toPixel(slc.getGap().getValue(ds, fid), this.getUom(), 96, 25000);
+                gaps[i] = Uom.toPixel(slc.getGap().getValue(ds, fid), this.getUom(), MapEnv.getScaleDenominator());
             } else {
                 gaps[i] = 0.0;
             }
@@ -272,8 +276,8 @@ public class PieChart extends Graphic {
 
                 Rectangle2D anchor = labelAt.createTransformedShape(new Rectangle2D.Double(0,0, 1, 1)).getBounds2D();
 
-                rg.drawRenderedImage(label.getImage(ds, fid).createRendering(RenderContextFactory.getContext()),
-                        AffineTransform.getTranslateInstance(anchor.getCenterX(), anchor.getCenterY()));
+
+                rg.drawRenderedImage(label.getImage(ds, fid).createRendering(MapEnv.getCurrentRenderContext()),AffineTransform.getTranslateInstance(anchor.getCenterX(), anchor.getCenterY()));
             }
 
         }

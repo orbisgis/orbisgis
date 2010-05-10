@@ -1,6 +1,5 @@
 package org.orbisgis.core.renderer.se.label;
 
-
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.FontMetrics;
@@ -24,24 +23,22 @@ import org.orbisgis.core.renderer.se.parameter.real.RealLiteral;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 import org.orbisgis.core.renderer.se.parameter.string.StringLiteral;
 import org.orbisgis.core.renderer.se.parameter.string.StringParameter;
-import org.orbisgis.core.renderer.se.stroke.PenStroke;
 import org.orbisgis.core.renderer.se.stroke.Stroke;
 
 public class StyledLabel implements SymbolizerNode {
 
-    
-    public StyledLabel(){
+    public StyledLabel() {
         this.labelText = new StringLiteral("Label");
         this.fontFamily = new StringLiteral("Arial");
         this.fontWeight = new StringLiteral("Normal");
         this.fontStyle = new StringLiteral("Normal");
         this.fontSize = new RealLiteral(12);
-        
-        //setStroke(new PenStroke());
-        setFill(new SolidFill());
+
+        setFill(new SolidFill(Color.BLACK, 100.0));
+        setStroke(null);
     }
 
-    public StyledLabel(String label){
+    public StyledLabel(String label) {
         this.labelText = new StringLiteral(label);
         this.fontFamily = new StringLiteral("Arial");
         this.fontWeight = new StringLiteral("Normal");
@@ -76,7 +73,9 @@ public class StyledLabel implements SymbolizerNode {
 
     public void setFill(Fill fill) {
         this.fill = fill;
-        fill.setParent(this);
+        if (fill != null) {
+            fill.setParent(this);
+        }
     }
 
     public Halo getHalo() {
@@ -85,7 +84,9 @@ public class StyledLabel implements SymbolizerNode {
 
     public void setHalo(Halo halo) {
         this.halo = halo;
-        halo.setParent(this);
+        if (halo != null) {
+            halo.setParent(this);
+        }
     }
 
     public StringParameter getLabelText() {
@@ -102,7 +103,9 @@ public class StyledLabel implements SymbolizerNode {
 
     public void setStroke(Stroke stroke) {
         this.stroke = stroke;
-        stroke.setParent(this);
+        if (stroke != null) {
+            stroke.setParent(this);
+        }
     }
 
     public StringParameter getFontFamily() {
@@ -138,7 +141,7 @@ public class StyledLabel implements SymbolizerNode {
     }
 
     // TODO implements
-    public RenderableGraphics getImage(DataSource ds, long fid) throws ParameterException, IOException{
+    public RenderableGraphics getImage(DataSource ds, long fid) throws ParameterException, IOException {
 
         String text = labelText.getValue(ds, fid);
 
@@ -153,20 +156,22 @@ public class StyledLabel implements SymbolizerNode {
 
         int st = Font.PLAIN;
 
-        if (weight.equalsIgnoreCase("bold")){
+        if (weight.equalsIgnoreCase("bold")) {
             st = Font.BOLD;
         }
 
-        if (style.equalsIgnoreCase("italic")){
-            if (st == Font.PLAIN)
+        if (style.equalsIgnoreCase("italic")) {
+            if (st == Font.PLAIN) {
                 st |= Font.ITALIC;
-            else
+            } else {
                 st = Font.ITALIC;
+            }
         }
 
-        
-        Font font = new Font(family, st, (int)size);
-        FontMetrics metrics = new FontMetrics(font) {};
+
+        Font font = new Font(family, st, (int) size);
+        FontMetrics metrics = new FontMetrics(font) {
+        };
         Rectangle2D bounds = metrics.getStringBounds(text, null);
 
         RenderableGraphics rg = new RenderableGraphics(bounds);
@@ -175,23 +180,23 @@ public class StyledLabel implements SymbolizerNode {
 
         double ty;
 
-        ty = - bounds.getMaxY() + bounds.getHeight()/2.0;
+        ty = -bounds.getMaxY() + bounds.getHeight() / 2.0;
 
         Shape outline = tl.getOutline(AffineTransform.getTranslateInstance(-bounds.getCenterX(), ty));
 
         double margin = 0.0;
 
-        if (stroke != null){
+        if (stroke != null) {
             margin = stroke.getMaxWidth(ds, fid);
         }
 
         rg = Graphic.getNewRenderableGraphics(outline.getBounds2D(), margin);
 
-        if (fill != null){
+        if (fill != null) {
             fill.draw(rg, outline, ds, fid);
         }
 
-        if (stroke != null){
+        if (stroke != null) {
             stroke.draw(rg, outline, ds, fid);
         }
 
@@ -199,18 +204,14 @@ public class StyledLabel implements SymbolizerNode {
         return rg;
     }
 
-
     private SymbolizerNode parent;
     private StringParameter labelText;
     //private Font font;
-
     private StringParameter fontFamily;
     private StringParameter fontWeight;
     private StringParameter fontStyle;
     private RealParameter fontSize;
-
     private Stroke stroke;
     private Fill fill;
     private Halo halo;
-
 }

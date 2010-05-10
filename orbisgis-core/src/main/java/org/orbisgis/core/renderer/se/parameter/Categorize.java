@@ -157,18 +157,21 @@ public abstract class Categorize<ToType extends SeParameter, FallbackType extend
 
                 Iterator it = classes.iterator();
 
+                ToType classValue = this.firstClass;
+
                 while (it.hasNext()) {
                     Category<ToType> cat = (Category<ToType>) it.next();
                     double threshold = cat.getThreshold().getValue(ds, fid);
 
                     if ((!succeeding && value <= threshold) || ((value < threshold))) {
-                        return cat.getClassValue();
+                        return classValue;
                     }
+                    classValue = cat.getClassValue();
                 }
+                return classValue;
             } else {
                 return firstClass;
             }
-            return fallbackValue;
 
         } catch (Exception e) {
             return fallbackValue;

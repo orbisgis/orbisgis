@@ -13,7 +13,7 @@ import java.io.IOException;
 
 import javax.media.jai.RenderableGraphics;
 import org.gdms.data.DataSource;
-import org.orbisgis.core.renderer.se.common.RenderContextFactory;
+import org.orbisgis.core.renderer.se.common.MapEnv;
 import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.graphic.GraphicCollection;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
@@ -96,17 +96,14 @@ public class GraphicFill extends Fill{
                gY = 0.0;
         }
 
-        gX = Uom.toPixel(gX, getUom(), 96, 35000);
-        gY = Uom.toPixel(gY, getUom(), 96, 35000);
+        gX = Uom.toPixel(gX, getUom(), MapEnv.getScaleDenominator());
+        gY = Uom.toPixel(gY, getUom(), MapEnv.getScaleDenominator());
 
         BufferedImage i = new BufferedImage((int)(img.getWidth() + gX) , (int)(img.getHeight() + gY), BufferedImage.TYPE_INT_ARGB);
         Graphics2D tile = i.createGraphics();
 
-        RenderContext ctc = RenderContextFactory.getContext();
-
-
+        RenderContext ctc = MapEnv.getCurrentRenderContext();
         tile.drawRenderedImage(img.createRendering(ctc), AffineTransform.getTranslateInstance(-img.getMinX() + gX/2.0, -img.getMinY() + gY/2.0));
-        tile.finalize();
 
         return new TexturePaint(i, new Rectangle2D.Double(0, 0, i.getWidth(), i.getHeight()));
     }

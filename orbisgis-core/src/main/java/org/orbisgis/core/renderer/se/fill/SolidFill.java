@@ -18,9 +18,38 @@ import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
  */
 public class SolidFill extends Fill{
 
+    /**
+     * fill with random color 60% opaque
+     */
     public SolidFill(){
-        this.color = new ColorLiteral();
-        this.opacity = new RealLiteral(60.0);
+        this(new ColorLiteral(), new RealLiteral(60.0));
+    }
+
+    /**
+     * fill with specified color 60% opaque
+     * @param c 
+     */
+    public SolidFill(Color c){
+        this(new ColorLiteral(c), new RealLiteral(60.0));
+    }
+
+    /**
+     * fill with specified color and opacity
+     * @param c
+     * @param opacity
+     */
+    public SolidFill(Color c, double opacity){
+        this(new ColorLiteral(c), new RealLiteral(opacity));
+    }
+
+    /**
+     * fill with specified color and opacity
+     * @param c
+     * @param opacity
+     */
+    public SolidFill(ColorParameter c, RealParameter opacity){
+        this.color = c;
+        this.opacity = opacity;
     }
 
     public void setColor(ColorParameter color){
@@ -46,7 +75,7 @@ public class SolidFill extends Fill{
 
             Color c = color.getColor(ds, fid);
             double op = this.opacity.getValue(ds, fid);
-
+            
             // Add opacity to the color 
             Color ac = ColorHelper.getColorWithAlpha(c, op);
             g2.setColor(ac);

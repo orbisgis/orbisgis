@@ -5,11 +5,10 @@
 package org.orbisgis.core.renderer.se.transform;
 
 import java.awt.geom.AffineTransform;
-import java.util.ArrayList;
 import org.gdms.data.DataSource;
+import org.orbisgis.core.renderer.se.common.MapEnv;
 import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
-import org.orbisgis.core.renderer.se.parameter.real.RealLiteral;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 
 /**
@@ -32,12 +31,12 @@ public class Translate implements Transformation {
     public AffineTransform getAffineTransform(DataSource ds, long fid, Uom uom) throws ParameterException {
         double tx = 0.0;
         if (x != null) {
-            tx = Uom.toPixel(x.getValue(ds, fid), uom, 96, 25000);
+            tx = Uom.toPixel(x.getValue(ds, fid), uom, MapEnv.getScaleDenominator());
         }
 
         double ty = 0.0;
         if (y != null) {
-            ty = Uom.toPixel(y.getValue(ds, fid), uom, 96, 25000);
+            ty = Uom.toPixel(y.getValue(ds, fid), uom, MapEnv.getScaleDenominator());
         }
 
         return AffineTransform.getTranslateInstance(tx, ty);

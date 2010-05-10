@@ -24,8 +24,7 @@ public class PropertyNameTest extends TestCase {
     private DataSource ds;
 
     // Data to test
-    File src = new File("/data/Cartes/Swiss/g4districts98_region.shp");
-    // TODO fetch data2test.. plutot...
+    File src = new File("../../datas2tests/shp/Swiss/g4districts98_region.shp");
 
 
 

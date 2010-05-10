@@ -1,5 +1,6 @@
 package org.orbisgis.core.renderer.se.common;
 
+import java.awt.Toolkit;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 
 public enum Uom {
@@ -19,22 +20,25 @@ public enum Uom {
      *
      * @todo return integer !!!
      */
-    public static double toPixel(double value, Uom uom, double dpi, double scale) throws ParameterException {
+    public static double toPixel(double value, Uom uom, double scale) throws ParameterException {
         if (uom == null){
             return value; // no uom ? => return as Pixel !
         }
+
+        // TODO DPI depends on context ! (e.g pdf 300dpi)
+        double dpi = (int)Toolkit.getDefaultToolkit().getScreenResolution();
 
         switch (uom){
             case IN:
                 return value * dpi; // [IN] * [PX]/[IN] => [PX]
             case MM:
                 return (value/25.4) * dpi; // [MM] * [IN]/[MM] * [PX]/[IN] => [PX]
-            case PT:
+            case PT: // 1PT == 1/72[IN] whatever dpi is
                 return (value / 72.0) * dpi; // 1/72[IN] * 72 *[PX]/[IN] => [PX]
             case G_M:
-                return Uom.toPixel((value/scale)*1000, Uom.MM, dpi, scale); //[G_M]/scale*1000 => [MM]
+                return Uom.toPixel((value/scale)*1000, Uom.MM, scale); //[G_M]/scale*1000 => [MM]
             case G_FT:
-                return Uom.toPixel((value/scale)*12, Uom.IN, dpi, scale); //[G_M]/scale => [IN]
+                return Uom.toPixel((value/scale)*12, Uom.IN, scale); //[G_M]/scale => [IN]
             case PX:
             default:
                 return value; // [PX]

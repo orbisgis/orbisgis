@@ -7,6 +7,7 @@ import java.io.IOException;
 import javax.media.jai.RenderableGraphics;
 import org.gdms.data.DataSource;
 import org.orbisgis.core.renderer.se.common.Halo;
+import org.orbisgis.core.renderer.se.common.MapEnv;
 import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.fill.Fill;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
@@ -101,7 +102,7 @@ public class MarkGraphic extends Graphic {
 
         Shape shp;
 
-        // If the view box doesn't depends on feature, we used the cached one
+        // If the shape doesn't depends on feature (i.e. not null), we used the cached one
         if (shape == null) {
             shp = source.getShape(viewBox, ds, fid);
         } else {
@@ -135,29 +136,40 @@ public class MarkGraphic extends Graphic {
         return rg;
     }
 
-    public double getMargin(DataSource ds, long fid) throws ParameterException, IOException {
-        double delta = 0.0;
+
+    /**
+     * compute required extra space. This extra space equals the max bw stroke width and halo radius
+     * @param ds
+     * @param fid
+     * @return
+     * @throws ParameterException
+     * @throws IOException
+     */
+    private double getMargin(DataSource ds, long fid) throws ParameterException, IOException {
+        double sWidth = 0.0;
+        double haloR = 0.0;
         
         if (stroke != null){
-            delta += stroke.getMaxWidth(ds, fid);
+            sWidth += stroke.getMaxWidth(ds, fid);
         }
 
         if (this.halo != null){
-            delta += Uom.toPixel(halo.getRadius().getValue(ds, fid), halo.getUom(), 96, 25000);
+            haloR = Uom.toPixel(halo.getRadius().getValue(ds, fid), halo.getUom(), MapEnv.getScaleDenominator());
         }
 
-        return delta;
+        return Math.max(sWidth, haloR);
     }
 
 
     @Override
     public double getMaxWidth(DataSource ds, long fid) throws ParameterException, IOException {
         double delta = 0.0;
+        
         if (viewBox != null){
             Dimension dim = viewBox.getDimension(ds, fid, 1);
             delta = Math.max(dim.getHeight(), dim.getWidth());
         }
-
+        
         delta += this.getMargin(ds, fid);
 
         return delta;
@@ -169,5 +181,7 @@ public class MarkGraphic extends Graphic {
     private Halo halo;
     private Fill fill;
     private Stroke stroke;
+
+    // cached shape : only available with shape that doesn't depends on features
     private Shape shape;
 }
