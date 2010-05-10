@@ -10,6 +10,7 @@ import java.util.List;
 import javax.swing.BorderFactory;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import javax.swing.JTree;
 import javax.swing.ToolTipManager;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.TreePath;
@@ -44,6 +45,7 @@ class ConfigurationTree extends JPanel {
 		treePanel.getTree().setRootVisible(false);
 		treePanel.getTree().getSelectionModel().setSelectionMode(
 				TreeSelectionModel.SINGLE_TREE_SELECTION);
+		expandAll(treePanel.getTree());
 		ToolTipManager.sharedInstance().registerComponent(treePanel.getTree());
 
 		JTextField field = new JTextField(10);
@@ -93,5 +95,15 @@ class ConfigurationTree extends JPanel {
 		TreePath selectionPath = treePanel.getTree().getSelectionPath();
 		return (selectionPath == null) ? null : selectionPath
 				.getLastPathComponent();
+	}
+	
+	/**
+	 * Expand configuration tree
+	 * @param tree
+	 */
+	public void expandAll(JTree tree) {  
+	    for (int row = 0; row < tree.getRowCount() ; row++) {
+	      tree.expandRow(row);
+	    }
 	}
 }
