@@ -300,12 +300,13 @@ public class OrbisConfiguration implements Setup {
 
 		// Main Toolbar & Main menu -> sont chargés par le PlugIn
 		// lib/ext/MainToolBarPlugIn.jar
-		exitPlugIn.initialize(plugInContext);
+		
 		savePlugIn.initialize(plugInContext);
 		// Main menus
 		saveWorkspacePlugIn.initialize(plugInContext);
 		changeWorkspacePlugIn.initialize(plugInContext);
 		configuration.initialize(plugInContext);
+		exitPlugIn.initialize(plugInContext);
 		aboutOrbisGIS.initialize(plugInContext);
 		onlineHelpOrbisGIS.initialize(plugInContext);
 
