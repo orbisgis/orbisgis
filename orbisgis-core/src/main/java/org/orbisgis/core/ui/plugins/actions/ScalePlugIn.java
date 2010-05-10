@@ -57,6 +57,7 @@ import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.ui.editor.IEditor;
 import org.orbisgis.core.ui.pluginSystem.AbstractPlugIn;
 import org.orbisgis.core.ui.pluginSystem.PlugInContext;
+import org.orbisgis.core.ui.pluginSystem.workbench.Names;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchContext;
 import org.orbisgis.core.ui.plugins.views.MapEditorPlugIn;
 import org.orbisgis.core.ui.plugins.views.editor.EditorManager;
@@ -171,6 +172,7 @@ public class ScalePlugIn extends AbstractPlugIn {
 
 	public void initialize(PlugInContext context) throws Exception {
 		panel = new JPanel(new BorderLayout());
+		panel.setToolTipText(Names.SCALE_TOOTIP);
 		JLabel label = new JLabel("Scale : ");
 		label.setAlignmentX(Component.LEFT_ALIGNMENT);
 		JComboBox combobox = new JComboBox(new String[] { SCALE_1000,

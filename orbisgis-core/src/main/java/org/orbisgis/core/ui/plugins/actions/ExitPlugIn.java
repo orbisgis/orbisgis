@@ -21,6 +21,7 @@ public class ExitPlugIn extends AbstractPlugIn {
 
 	public ExitPlugIn() {
 		btn = new JButton(getIcon(IconNames.EXIT_ICON));
+		btn.setToolTipText(Names.EXIT);
 	}
 
 	public void initialize(PlugInContext context) throws Exception {

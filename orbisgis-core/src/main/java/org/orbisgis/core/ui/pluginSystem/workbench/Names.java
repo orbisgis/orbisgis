@@ -34,6 +34,7 @@ public abstract class Names {
 	// Save Workspace
 	public static final String SAVE_WS = I18N.getText("orbisgis.ui.menu.file.text.saveWorkspace");	
 
+	
 	// HELP SUB MENUS
 	// About
 	public static final String ABOUT = I18N.getText("orbisgis.ui.menu.help.text.about");
@@ -232,7 +233,7 @@ public abstract class Names {
 	public static final String POPUP_MAP_EXPORT_PDF = I18N.getText("orbisgis.ui.popupmenu.map.export.pdf.path1");
 	public static final String POPUP_MAP_EXPORT_PDF_GROUP = I18N.getText("orbisgis.ui.popupmenu.map.export.pdf.group");
 	//Show coordinate
-	public static final String POPUP_MAP_SHOW_XY = I18N.getText("orbisgis.ui.popupmenu.map.show.xy.path1");
+	public static final String POPUP_MAP_SHOW_XY = I18N.getText("orbisgis.ui.popupmenu.map.show.xy.path1");	
 	/**************************************************** EDITION TOOLS *****************************************************/
 	/**************************************************** OTHERS ************************************************************/	
 	// Workbench context actions
@@ -244,4 +245,10 @@ public abstract class Names {
 	public static final String ERROR_EDIT_LEGEND_EDITOR = I18N.getText("orbisgis.error.edit.legend.editor");
 	public static final String ERROR_EDIT_LEGEND_DRIVER = I18N.getText("orbisgis.error.edit.legend.driver");
 	public static final String ERROR_EDIT_LEGEND_LAYER = I18N.getText("orbisgis.error.edit.legend.layer");
+	
+	//Tool tip Text
+	//Full extent 
+	public static final String FULL_EXTENT_TOOTIP = I18N.getText("orbisgis.ui.tools.fullextent.tooltip");
+	//Scale 
+	public static final String SCALE_TOOTIP = I18N.getText("orbisgis.ui.tools.scale.tooltip");
 }

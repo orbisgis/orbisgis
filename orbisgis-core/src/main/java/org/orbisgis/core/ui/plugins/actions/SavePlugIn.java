@@ -12,6 +12,7 @@ import org.orbisgis.core.images.IconNames;
 import org.orbisgis.core.ui.editor.IEditor;
 import org.orbisgis.core.ui.pluginSystem.AbstractPlugIn;
 import org.orbisgis.core.ui.pluginSystem.PlugInContext;
+import org.orbisgis.core.ui.pluginSystem.workbench.Names;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchContext;
 import org.orbisgis.core.ui.plugins.views.editor.EditorManager;
 import org.orbisgis.core.workspace.Workspace;
@@ -23,6 +24,7 @@ public class SavePlugIn extends AbstractPlugIn {
 
 	public SavePlugIn() {
 		btn = new JButton(getIcon(IconNames.SAVE_ICON));
+		btn.setToolTipText(Names.SAVE);
 	}
 
 	public void initialize(PlugInContext context) throws Exception {

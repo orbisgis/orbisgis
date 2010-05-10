@@ -1,8 +1,10 @@
 package org.orbisgis.core.ui.plugins.editors.mapEditor;
 
+import java.awt.event.MouseEvent;
 import java.util.Observable;
 
 import javax.swing.JButton;
+import javax.swing.JToggleButton;
 
 import org.orbisgis.core.Services;
 import org.orbisgis.core.images.IconNames;
@@ -10,9 +12,11 @@ import org.orbisgis.core.layerModel.MapContext;
 import org.orbisgis.core.ui.editor.IEditor;
 import org.orbisgis.core.ui.pluginSystem.AbstractPlugIn;
 import org.orbisgis.core.ui.pluginSystem.PlugInContext;
+import org.orbisgis.core.ui.pluginSystem.workbench.Names;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchContext;
 import org.orbisgis.core.ui.plugins.views.MapEditorPlugIn;
 import org.orbisgis.core.ui.plugins.views.editor.EditorManager;
+import org.orbisgis.utils.I18N;
 
 public class FullExtentPlugIn extends AbstractPlugIn {
 
@@ -20,6 +24,7 @@ public class FullExtentPlugIn extends AbstractPlugIn {
 
 	public FullExtentPlugIn() {
 		btn = new JButton(getIcon(IconNames.MAP_FULL_EXTENT_ICON));
+		btn.setToolTipText(Names.FULL_EXTENT_TOOTIP);
 	}
 
 	public void initialize(PlugInContext context) throws Exception {

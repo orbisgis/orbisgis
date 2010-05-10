@@ -56,6 +56,7 @@ public class ConfigurationPlugIn extends AbstractPlugIn {
 
 	public ConfigurationPlugIn() {
 		btn = new JButton(getIcon("preferences-system.png"));
+		btn.setToolTipText(Names.CONFIGURATION);
 	}
 
 	@Override
