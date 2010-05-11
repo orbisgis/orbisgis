@@ -106,7 +106,7 @@ public class OpenFilePanel extends AbstractUIPanel implements SQLUIPanel {
 		return id;
 	}
 
-	protected JFileChooser getFileChooser() {
+	public JFileChooser getFileChooser() {
 		if (fileChooser == null) {
 			fileChooser = new JFileChooser();
 			fileChooser.setControlButtonsAreShown(false);
