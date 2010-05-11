@@ -77,7 +77,6 @@ import org.orbisgis.core.ui.editors.map.tool.Automaton;
 import org.orbisgis.core.ui.editors.map.tool.ToolListener;
 import org.orbisgis.core.ui.editors.map.tool.ToolManager;
 import org.orbisgis.core.ui.editors.map.tool.TransitionException;
-import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchContext;
 import org.orbisgis.progress.IProgressMonitor;
 
 import com.vividsolutions.jts.geom.Envelope;
@@ -113,6 +112,12 @@ public class MapControl extends JComponent implements ComponentListener {
 
 	private boolean showCoordinates = true;
 
+	// 250 ms wasn't as good as 1 s because less got painted on each
+	// repaint,
+	// making rendering appear to be slower. [Jon Aquino]
+	// LDB: 400 ms is better when using mouse wheel zooming
+	int timerToDraw = 400;
+
 	/**
 	 * Creates a new NewMapControl.
 	 * 
@@ -144,13 +149,11 @@ public class MapControl extends JComponent implements ComponentListener {
 
 			@Override
 			public void stateChanged(ToolManager toolManager) {
-				
 			}
 
 			@Override
 			public void currentToolChanged(Automaton previous,
 					ToolManager toolManager) {
-			
 			}
 		});
 		this.addMouseListener(toolManager);
@@ -192,6 +195,10 @@ public class MapControl extends JComponent implements ComponentListener {
 		// Add refresh listener
 		addLayerListenerRecursively(rootLayer, new RefreshLayerListener());
 
+	}
+
+	public MapContext getMapContext() {
+		return mapContext;
 	}
 
 	private void addLayerListenerRecursively(ILayer rootLayer,
@@ -239,17 +246,14 @@ public class MapControl extends JComponent implements ComponentListener {
 		}
 
 		if (status == DIRTY) {
-			// BufferedImage inProcessImage = new BufferedImage(this.getWidth(),
-			// this.getHeight(), BufferedImage.TYPE_INT_ARGB);
-
 			int width = this.getWidth();
 			int height = this.getHeight();
 			GraphicsConfiguration configuration = GraphicsEnvironment
 					.getLocalGraphicsEnvironment().getDefaultScreenDevice()
 					.getDefaultConfiguration();
-			BufferedImage inProcessImage = configuration.createCompatibleImage(width,
-					height, BufferedImage.TYPE_INT_ARGB);
-			
+			BufferedImage inProcessImage = configuration.createCompatibleImage(
+					width, height, BufferedImage.TYPE_INT_ARGB);
+
 			Graphics gImg = inProcessImage.createGraphics();
 			gImg.setColor(backColor);
 			gImg.fillRect(0, 0, getWidth(), getHeight());
@@ -257,16 +261,10 @@ public class MapControl extends JComponent implements ComponentListener {
 
 			if (mapTransform.getAdjustedExtent() != null) {
 				mapTransform.setImage(inProcessImage);
-				// 250 ms wasn't as good as 1 s because less got painted on each
-				// repaint,
-				// making rendering appear to be slower. [Jon Aquino]
-				// LDB: 400 ms is better when using mouse wheel zooming
-				Timer timer = new Timer(400, new ActionListener() {
+				Timer timer = new Timer(getTimerToDraw(), new ActionListener() {
 					@Override
 					public void actionPerformed(ActionEvent e) {
 						repaint();
-						WorkbenchContext wbContext = Services.getService(WorkbenchContext.class);
-						wbContext.setLastAction("Update toolbar");
 					}
 				});
 				timer.start();
@@ -301,6 +299,14 @@ public class MapControl extends JComponent implements ComponentListener {
 			g.drawString(scale, scaleRect.x, scaleRect.y);
 		}
 
+	}
+
+	public int getTimerToDraw() {
+		return timerToDraw;
+	}
+
+	public void setTimerToDraw(int timerToDraw) {
+		this.timerToDraw = timerToDraw;
 	}
 
 	/**
@@ -544,4 +550,5 @@ public class MapControl extends JComponent implements ComponentListener {
 	public boolean getShowCoordinates() {
 		return showCoordinates;
 	}
+
 }
