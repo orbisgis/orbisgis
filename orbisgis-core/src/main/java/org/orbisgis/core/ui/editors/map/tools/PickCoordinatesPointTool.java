@@ -121,7 +121,7 @@ public class PickCoordinatesPointTool extends AbstractPointTool {
 		if (editor != null) {
 			if (editor instanceof MapEditorPlugIn) {
 				final MapEditorPlugIn mapEditor = (MapEditorPlugIn) editor;
-				SymbolUtil.flashPoint(g, (Graphics2D) mapEditor.getMap()
+				SymbolUtil.flashPoint(g, (Graphics2D) mapEditor.getMapControl()
 						.getGraphics(), tm.getMapTransform());
 
 			}
