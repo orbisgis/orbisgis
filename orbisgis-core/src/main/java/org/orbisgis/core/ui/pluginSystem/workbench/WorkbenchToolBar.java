@@ -18,12 +18,13 @@ import javax.swing.JComboBox;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
+import javax.swing.JTextField;
 import javax.swing.JToggleButton;
 import javax.swing.JToolBar;
 
 import org.orbisgis.core.Services;
 import org.orbisgis.core.images.IconLoader;
-import org.orbisgis.core.ui.components.DropDownButton;
+import org.orbisgis.core.ui.components.button.DropDownButton;
 import org.orbisgis.core.ui.editor.IEditor;
 import org.orbisgis.core.ui.editors.map.MapControl;
 import org.orbisgis.core.ui.editors.map.tool.Automaton;
@@ -36,22 +37,21 @@ import org.orbisgis.core.ui.plugins.views.editor.EditorManager;
 
 public class WorkbenchToolBar extends EnableableToolBar implements Observer {
 
-	private WorkbenchContext context;	
+	private WorkbenchContext context;
 	private Map<String, WorkbenchToolBar> toolbars = new HashMap<String, WorkbenchToolBar>();
 	private DropDownButton dropDownButton;
 	private JPopupMenu popup = new JPopupMenu();
 	private boolean dropDown;
-	
+
 	private List<Observer> toolsPlugInObservers = new ArrayList<Observer>();
-	
-	
+
 	public DropDownButton getDropDownButton() {
 		return dropDownButton;
 	}
 
 	public WorkbenchToolBar(WorkbenchContext workbenchContext) {
 		this.context = workbenchContext;
-		
+
 	}
 
 	public Map<String, WorkbenchToolBar> getToolbars() {
@@ -67,21 +67,20 @@ public class WorkbenchToolBar extends EnableableToolBar implements Observer {
 		this.context = workbenchContext;
 		setOpaque(false);
 	}
-	
-	
-	public WorkbenchToolBar(WorkbenchContext workbenchContext, 
-			String name, String iconFile, boolean dropDown) {
+
+	public WorkbenchToolBar(WorkbenchContext workbenchContext, String name,
+			String iconFile, boolean dropDown) {
 		super(name);
 		this.context = workbenchContext;
 		this.dropDown = dropDown;
-		dropDownButton = new DropDownButton(iconFile) {		
-			
+		dropDownButton = new DropDownButton(iconFile) {
+
 			protected JPopupMenu getPopupMenu() {
 				return popup;
 			}
-		};		
+		};
 		dropDownButton.addToToolBar(this);
-		dropDownButton.setVisible(false);		
+		dropDownButton.setVisible(false);
 		dropDownButton.setEnabled(false);
 		setOpaque(false);
 	}
@@ -90,23 +89,22 @@ public class WorkbenchToolBar extends EnableableToolBar implements Observer {
 		toolsPlugInObservers.add(plugIn);
 		add(c, plugIn);
 	}
-	
-	public void addPlugIn(final PlugIn plugIn, Component c, 
-			PlugInContext plugInContext) {	
-		((AbstractPlugIn)plugIn).setPlugInContext(plugInContext);
+
+	public void addPlugIn(final PlugIn plugIn, Component c,
+			PlugInContext plugInContext) {
+		((AbstractPlugIn) plugIn).setPlugInContext(plugInContext);
 		toolsPlugInObservers.add(plugIn);
-		((JButton) c).addActionListener(AbstractPlugIn
-				.toActionListener(plugIn, context));
+		((JButton) c).addActionListener(AbstractPlugIn.toActionListener(plugIn,
+				context));
 		add(c, plugIn);
 	}
-/*	
-	public void addDropPlugIn(final PlugIn plugIn, Component c) {
-		context.addObserver((Observer) plugIn);
-		c.setName(plugIn.getName());
-		((JMenuItem) c).addActionListener(AbstractPlugIn
-				.toActionListener(plugIn, context));
-		popup.add(c);		
-	}*/
+
+	/*
+	 * public void addDropPlugIn(final PlugIn plugIn, Component c) {
+	 * context.addObserver((Observer) plugIn); c.setName(plugIn.getName());
+	 * ((JMenuItem) c).addActionListener(AbstractPlugIn
+	 * .toActionListener(plugIn, context)); popup.add(c); }
+	 */
 
 	protected void addImpl(Component comp, final Object constraints, int index) {
 		if (constraints instanceof Automaton) {
@@ -125,7 +123,8 @@ public class WorkbenchToolBar extends EnableableToolBar implements Observer {
 				// "Table Edition tools".
 				// User is on map Editor and this toolbar is out the frame (Map
 				// Edition toolbar).
-				// when he switches to table editor : All MaJToggleButtonp tools are not
+				// when he switches to table editor : All MaJToggleButtonp tools
+				// are not
 				// enabled in "Map Edition toolbar"
 				// But This toolbar is always displayed.
 				((WorkbenchToolBar) comp).setFloatable(false);
@@ -137,17 +136,25 @@ public class WorkbenchToolBar extends EnableableToolBar implements Observer {
 				String typeListener = (String) ((AbstractPlugIn) constraints)
 						.getTypeListener();
 				if (actionComponent != null) {
-					if (typeListener.equals("item"))
+					if (typeListener.equals("item")) {
 						((JComboBox) actionComponent)
 								.addItemListener(AbstractPlugIn.toItemListener(
 										(AbstractPlugIn) constraints, context));
-					else if (typeListener.equals("action"))
-						((JButton) actionComponent)
-								.addActionListener(AbstractPlugIn
-										.toActionListener(
-												(AbstractPlugIn) constraints,
-												context));
-					else if (typeListener.equals("check"))
+					} else if (typeListener.equals("action")) {
+						if (actionComponent instanceof JButton) {
+							((JButton) actionComponent)
+									.addActionListener(AbstractPlugIn
+											.toActionListener(
+													(AbstractPlugIn) constraints,
+													context));
+						} else if (actionComponent instanceof JTextField) {
+							((JTextField) actionComponent)
+									.addActionListener(AbstractPlugIn
+											.toActionListener(
+													(AbstractPlugIn) constraints,
+													context));
+						}
+					} else if (typeListener.equals("check"))
 						((JCheckBox) actionComponent)
 								.addActionListener(AbstractPlugIn
 										.toActionListener(
@@ -162,15 +169,14 @@ public class WorkbenchToolBar extends EnableableToolBar implements Observer {
 	// TOOLBAR Automaton
 	public AbstractButton addAutomaton(final Automaton automaton, String icon) {
 		AbstractButton c = null;
-		if(dropDown) {
+		if (dropDown) {
 			c = new JMenuItem() {
 				public String getToolTipText(MouseEvent event) {
 					return automaton.getName();
 				}
 			};
 			popup.add(c);
-		}
-		else {
+		} else {
 			c = new JToggleButton() {
 				public String getToolTipText(MouseEvent event) {
 					return automaton.getName();
@@ -182,7 +188,8 @@ public class WorkbenchToolBar extends EnableableToolBar implements Observer {
 	}
 
 	private AbstractButton addCursorAutomaton(String tooltip,
-			final Automaton automaton, final AbstractButton button, final String icon) {
+			final Automaton automaton, final AbstractButton button,
+			final String icon) {
 		toolsPlugInObservers.add(automaton);
 		add(button, dropDown, tooltip, new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -190,16 +197,18 @@ public class WorkbenchToolBar extends EnableableToolBar implements Observer {
 						.getService(EditorManager.class);
 				IEditor editor = em.getActiveEditor();
 				MapEditorPlugIn mapEditor = (MapEditorPlugIn) editor;
-				if (mapEditor!=null && mapEditor.getComponent() != null) {
-					try {						
+				if (mapEditor != null && mapEditor.getComponent() != null) {
+					try {
 						((MapControl) mapEditor.getComponent())
-								.setTool(automaton);						
-						WorkbenchContext wbContext = Services.getService(WorkbenchContext.class);				
-						wbContext.getWorkbench().getFrame().getWorkbenchToolBar().clearSelection();
-						if(dropDown){
+								.setTool(automaton);
+						WorkbenchContext wbContext = Services
+								.getService(WorkbenchContext.class);
+						wbContext.getWorkbench().getFrame()
+								.getWorkbenchToolBar().clearSelection();
+						if (dropDown) {
 							dropDownButton.setSelected(true);
 							dropDownButton.setIconFile(icon);
-						}						
+						}
 						wbContext.setLastAction("Set Tool");
 					} catch (TransitionException e1) {
 						Services.getErrorManager().error(
@@ -214,36 +223,36 @@ public class WorkbenchToolBar extends EnableableToolBar implements Observer {
 
 	protected void clearSelection() {
 		for (int i = 0; i < getComponentCount(); i++) {
-			if(((WorkbenchToolBar) getComponent(i)).getDropDownButton() != null) {
-				((WorkbenchToolBar) getComponent(i)).getDropDownButton().setSelected(false);
+			if (((WorkbenchToolBar) getComponent(i)).getDropDownButton() != null) {
+				((WorkbenchToolBar) getComponent(i)).getDropDownButton()
+						.setSelected(false);
 			}
-		}		
+		}
 	}
 
-	public void update(Observable arg0, Object arg1) {	
-		this.setVisible(false);	
+	public void update(Observable arg0, Object arg1) {
+		this.setVisible(false);
 		for (int i = 0; i < getComponentCount(); i++) {
-			if (getComponent(i).isEnabled() 
-					&& getComponent(i).isVisible()
-					&& !(getComponent(i) instanceof Separator) ) {
-				this.setVisible(true);				
-			}			
+			if (getComponent(i).isEnabled() && getComponent(i).isVisible()
+					&& !(getComponent(i) instanceof Separator)) {
+				this.setVisible(true);
+			}
 		}
-		if(dropDownButton != null) {
+		if (dropDownButton != null) {
 			dropDownButton.setEnabled(false);
-			for (int j=0 ; j<popup.getComponentCount(); j++) {
-				if (popup.getComponent(j).isEnabled() 
+			for (int j = 0; j < popup.getComponentCount(); j++) {
+				if (popup.getComponent(j).isEnabled()
 						&& popup.getComponent(j).isVisible()
 						&& !(popup.getComponent(j) instanceof Separator)) {
-					this.setVisible(true);	
+					this.setVisible(true);
 					dropDownButton.setVisible(true);
 					dropDownButton.setEnabled(true);
 				}
 			}
 		}
 	}
-	
-	public List<Observer> getToolsPlugInObservers(){
+
+	public List<Observer> getToolsPlugInObservers() {
 		return toolsPlugInObservers;
-	}	
+	}
 }
