@@ -39,6 +39,8 @@ package org.orbisgis.core.map;
 import java.awt.GraphicsConfiguration;
 import java.awt.GraphicsEnvironment;
 import java.awt.Point;
+import java.awt.Rectangle;
+import java.awt.Shape;
 import java.awt.Toolkit;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.NoninvertibleTransformException;
@@ -46,10 +48,14 @@ import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 
+import org.gdms.geometryUtils.EnvelopeUtil;
+import org.orbisgis.core.ui.editors.map.tool.Rectangle2DDouble;
+
 import com.vividsolutions.jts.awt.PointTransformation;
 import com.vividsolutions.jts.awt.ShapeWriter;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
+import com.vividsolutions.jts.geom.Geometry;
 
 public class MapTransform implements PointTransformation {
 
@@ -184,6 +190,10 @@ public class MapTransform implements PointTransformation {
 	 * @param newExtent
 	 */
 	public void setExtent(Envelope newExtent) {
+		if ((newExtent != null)
+				&& ((newExtent.getWidth() == 0) || (newExtent.getHeight() == 0))) {
+			newExtent.expandBy(10);
+		}
 		Envelope oldExtent = this.extent;
 		boolean modified = true;
 		/* Set extent when Envelope is modified */
@@ -323,6 +333,26 @@ public class MapTransform implements PointTransformation {
 		if (converter == null)
 			converter = new ShapeWriter(this);
 		return converter;
+	}
+
+	public Shape getShape(Geometry geom, boolean isSimplified) {
+
+		Shape ls = null;
+		if (isSimplified) {
+			// A simple method to accelerate the rendering
+			ls = getShapeWriter().toShape(
+					EnvelopeUtil.toGeometry(geom.getEnvelopeInternal()));
+			Rectangle bd = ls.getBounds();
+			if (bd.getHeight() <= 1 && bd.getWidth() <= 1) {
+				ls = new Rectangle2DDouble(bd.getCenterX(), bd.getCenterY(), 1,
+						1);
+			} else {
+				ls = getShapeWriter().toShape(geom);
+			}
+		} else {
+			ls = getShapeWriter().toShape(geom);
+		}
+		return ls;
 	}
 
 }
