@@ -15,11 +15,9 @@ import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-import org.apache.log4j.chainsaw.Main;
 import org.orbisgis.core.ApplicationInfo;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.sif.OpenFilePanel;
-import org.orbisgis.core.sif.SaveFilePanel;
 import org.orbisgis.core.sif.UIFactory;
 import org.orbisgis.core.sif.UIPanel;
 
