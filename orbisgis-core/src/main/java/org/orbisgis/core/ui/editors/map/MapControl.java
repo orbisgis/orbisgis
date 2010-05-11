@@ -77,6 +77,7 @@ import org.orbisgis.core.ui.editors.map.tool.Automaton;
 import org.orbisgis.core.ui.editors.map.tool.ToolListener;
 import org.orbisgis.core.ui.editors.map.tool.ToolManager;
 import org.orbisgis.core.ui.editors.map.tool.TransitionException;
+import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchContext;
 import org.orbisgis.progress.IProgressMonitor;
 
 import com.vividsolutions.jts.geom.Envelope;
@@ -265,6 +266,9 @@ public class MapControl extends JComponent implements ComponentListener {
 					@Override
 					public void actionPerformed(ActionEvent e) {
 						repaint();
+						WorkbenchContext wbContext = Services
+								.getService(WorkbenchContext.class);
+						wbContext.setLastAction("Update toolbar");
 					}
 				});
 				timer.start();
