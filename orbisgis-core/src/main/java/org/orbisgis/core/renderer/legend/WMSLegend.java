@@ -104,7 +104,6 @@ public class WMSLegend extends AbstractLegend {
 				file = connection.getClient().getLegendGraphic(status,
 						layerName, null);
 			}
-
 			image = ImageIO.read(file);
 		} catch (WMSException e) {
 			Services.getService(ErrorManager.class).error(
