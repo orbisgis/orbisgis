@@ -23,7 +23,7 @@ import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchFrame;
 public class MapEditorPlugIn extends ViewPlugIn implements WorkbenchFrame,
 		IEditor {
 
-	private MapControl map;
+	private MapControl mapControl;
 	private String editors[];
 	private EditableElement mapElement;
 	private Automaton defaultTool;
@@ -53,8 +53,8 @@ public class MapEditorPlugIn extends ViewPlugIn implements WorkbenchFrame,
 				.getViewDecorator(Names.EDITOR_MAP_ID) == null)
 			context.getWorkbenchContext().getWorkbench().getFrame().getViews()
 					.add(
-							new ViewDecorator(this, Names.EDITOR_MAP_ID, getIcon("map.png"),
-									editors));
+							new ViewDecorator(this, Names.EDITOR_MAP_ID,
+									getIcon("map.png"), editors));
 	}
 
 	public boolean execute(PlugInContext context) throws Exception {
@@ -63,15 +63,14 @@ public class MapEditorPlugIn extends ViewPlugIn implements WorkbenchFrame,
 	}
 
 	public boolean acceptElement(String typeId) {
-		return typeId
-				.equals("org.orbisgis.core.geocognition.MapContext");
+		return typeId.equals("org.orbisgis.core.geocognition.MapContext");
 	}
 
 	public void setElement(EditableElement element) {
 		MapContext mapContext = (MapContext) element.getObject();
 		try {
-			map = new MapControl(mapContext, element, getIndependentToolInstance(
-					defaultTool, defaultMouseCursor));
+			mapControl = new MapControl(mapContext, element,
+					getIndependentToolInstance(defaultTool, defaultMouseCursor));
 		} catch (TransitionException e) {
 			Services.getErrorManager()
 					.error("The default tool is not valid", e);
@@ -95,15 +94,15 @@ public class MapEditorPlugIn extends ViewPlugIn implements WorkbenchFrame,
 	}
 
 	public void delete() {
-		map.closing();
+		mapControl.closing();
 	}
 
 	public Component getComponent() {
-		return map;
+		return mapControl;
 	}
 
 	public MapTransform getMapTransform() {
-		return map.getMapTransform();
+		return mapControl.getMapTransform();
 	}
 
 	public String getTitle() {
@@ -115,15 +114,15 @@ public class MapEditorPlugIn extends ViewPlugIn implements WorkbenchFrame,
 	}
 
 	public boolean getShowInfo() {
-		return map.getShowCoordinates();
+		return mapControl.getShowCoordinates();
 	}
 
 	public void setShowInfo(boolean showInfo) {
-		map.setShowCoordinates(showInfo);
+		mapControl.setShowCoordinates(showInfo);
 	}
 
-	public MapControl getMap() {
-		return map;
+	public MapControl getMapControl() {
+		return mapControl;
 	}
 
 	public Automaton getDefaultTool() {
@@ -141,10 +140,10 @@ public class MapEditorPlugIn extends ViewPlugIn implements WorkbenchFrame,
 	public void setDefaultMouseCursor(String defaultMouseCursor) {
 		this.defaultMouseCursor = defaultMouseCursor;
 	}
-	
-	//View plugin is updated by EditorViewPlugIn
+
+	// View plugin is updated by EditorViewPlugIn
 	public void update(Observable arg0, Object arg1) {
-	}	
+	}
 
 	public ViewPlugIn getView() {
 		return this;
