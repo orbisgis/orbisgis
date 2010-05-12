@@ -1,8 +1,9 @@
 package org.orbisgis.core.renderer.se.parameter.real;
 
 import org.gdms.data.DataSource;
+import org.orbisgis.core.renderer.se.parameter.Literal;
 
-public class RealLiteral implements RealParameter{
+public class RealLiteral extends Literal implements RealParameter{
 
     public RealLiteral(){
         v = 1.0;
@@ -26,6 +27,14 @@ public class RealLiteral implements RealParameter{
     public boolean dependsOnFeature(){
         return false;
     }
+
+
+    @Override
+    public String toString(){
+        Double v2 = v;
+        return v2.toString();
+    }
+
 
     public static final RealLiteral ZERO = new RealLiteral(0.0);
 

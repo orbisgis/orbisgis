@@ -5,6 +5,9 @@ import java.awt.Shape;
 import java.awt.geom.Rectangle2D;
 import java.io.IOException;
 import javax.media.jai.RenderableGraphics;
+import javax.xml.bind.JAXBElement;
+import org.orbisgis.core.renderer.persistance.se.MarkGraphicType;
+import org.orbisgis.core.renderer.persistance.se.ObjectFactory;
 import org.gdms.data.DataSource;
 import org.orbisgis.core.renderer.se.common.Halo;
 import org.orbisgis.core.renderer.se.common.MapEnv;
@@ -34,14 +37,6 @@ public class MarkGraphic extends Graphic {
     public void setHalo(Halo halo) {
         this.halo = halo;
         halo.setParent(this);
-    }
-
-    public RealParameter getOpacity() {
-        return opacity;
-    }
-
-    public void setOpacity(RealParameter opacity) {
-        this.opacity = opacity;
     }
 
     public Stroke getStroke() {
@@ -175,9 +170,43 @@ public class MarkGraphic extends Graphic {
         return delta;
     }
 
+
+    @Override
+    public JAXBElement<MarkGraphicType> getJAXBInstance(){
+        MarkGraphicType m = new MarkGraphicType();
+
+        if (halo != null){
+            m.setHalo(halo.getJAXBType());
+        }
+
+        source.setJAXBSource(m);
+
+        if (transform != null){
+            m.setTransform(transform.getJAXBType());
+        }
+
+        if (uom != null){
+            m.setUnitOfMeasure(uom.toURN());
+        }
+
+        if (viewBox != null){
+            m.setViewBox(viewBox.getJAXBType());
+        }
+
+        if (fill != null){
+            m.setFill(fill.getJAXBInstance());
+        }
+
+        if (stroke != null){
+            m.setStroke(stroke.getJAXBInstance());
+        }
+
+        ObjectFactory of = new ObjectFactory();
+        return of.createMarkGraphic(m);
+    }
+
     private MarkGraphicSource source;
     private ViewBox viewBox;
-    private RealParameter opacity;
     private Halo halo;
     private Fill fill;
     private Stroke stroke;

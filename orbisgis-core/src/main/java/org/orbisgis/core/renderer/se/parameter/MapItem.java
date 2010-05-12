@@ -19,7 +19,7 @@ public class MapItem<Type>  {
         return key;
     }
 
-    public void setData(String key){
+    public void setKey(String key){
         this.key = key;
     }
 

@@ -1,9 +1,19 @@
 package org.orbisgis.core.renderer.se.parameter.real;
 
+import javax.xml.bind.JAXBElement;
 import org.gdms.data.DataSource;
+import org.orbisgis.core.renderer.persistance.ogc.ExpressionType;
+import org.orbisgis.core.renderer.persistance.se.ObjectFactory;
+import org.orbisgis.core.renderer.persistance.se.ParameterValueType;
+import org.orbisgis.core.renderer.persistance.se.UnitaryOperatorType;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 
 public class RealUnitaryOperator implements RealParameter {
+
+    public enum RealUnitaryOperatorType {
+
+        SQRT, LOG;
+    }
 
     public RealUnitaryOperator() {
     }
@@ -43,16 +53,36 @@ public class RealUnitaryOperator implements RealParameter {
                 return Math.sqrt(value);
             case LOG:
                 return Math.log10(value); // TODO quelle base ?
-            case SIN: // have to convert a clockwise angle [°] in counterclockwise radian
-                value *= -(2 * Math.PI / 360.0);
-                return Math.sin(value);
-            case COS: // have to convert a clockwise angle [°] in counterclockwise radian
-                value *= -(2 * Math.PI / 360.0);
-                return Math.cos(value);
             default:
                 return value;
         }
     }
+
+    @Override
+    public ParameterValueType getJAXBParameterValueType() {
+        ParameterValueType p = new ParameterValueType();
+        p.getContent().add(this.getJAXBExpressionType());
+        return p;
+    }
+
+    @Override
+    public JAXBElement<? extends ExpressionType> getJAXBExpressionType() {
+
+        UnitaryOperatorType o = new UnitaryOperatorType();
+
+        o.setExpression(this.getOperand().getJAXBExpressionType());
+
+        ObjectFactory of = new ObjectFactory();
+
+        switch (op) {
+            case SQRT:
+                return of.createSqrt(o);
+            case LOG:
+                return of.createLog10(o);
+        }
+        return null;
+    }
+
     private RealParameter v;
     private RealUnitaryOperatorType op;
 }

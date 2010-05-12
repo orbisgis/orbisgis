@@ -11,6 +11,8 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import javax.media.jai.RenderableGraphics;
 import org.gdms.data.DataSource;
+import org.orbisgis.core.renderer.persistance.se.FontType;
+import org.orbisgis.core.renderer.persistance.se.StyledLabelType;
 import org.orbisgis.core.renderer.se.SymbolizerNode;
 import org.orbisgis.core.renderer.se.common.Halo;
 import org.orbisgis.core.renderer.se.common.Uom;
@@ -204,13 +206,55 @@ public class StyledLabel implements SymbolizerNode {
         return rg;
     }
 
+    public StyledLabelType getJAXBType() {
+        StyledLabelType l = new StyledLabelType();
+
+        if (labelText != null) {
+            l.setLabelText(labelText.getJAXBParameterValueType());
+        }
+
+        if (halo != null) {
+            l.setHalo(halo.getJAXBType());
+        }
+
+        if (fill != null) {
+            l.setFill(fill.getJAXBInstance());
+        }
+
+        if (stroke != null) {
+            l.setStroke(stroke.getJAXBInstance());
+        }
+
+        FontType font = new FontType();
+        if (fontFamily != null) {
+            font.setFontFamily(fontFamily.getJAXBParameterValueType());
+        }
+
+        if (fontWeight != null) {
+            font.setFontWeight(fontWeight.getJAXBParameterValueType());
+        }
+
+        if (fontSize != null) {
+            font.setFontSize(fontSize.getJAXBParameterValueType());
+        }
+
+        if (fontStyle != null) {
+            font.setFontStyle(fontStyle.getJAXBParameterValueType());
+        }
+
+        l.setFont(font);
+
+        return l;
+    }
     private SymbolizerNode parent;
+
     private StringParameter labelText;
-    //private Font font;
+    
     private StringParameter fontFamily;
     private StringParameter fontWeight;
     private StringParameter fontStyle;
     private RealParameter fontSize;
+
     private Stroke stroke;
     private Fill fill;
     private Halo halo;

@@ -2,6 +2,9 @@ package org.orbisgis.core.renderer.se;
 
 import java.awt.Graphics2D;
 import java.io.IOException;
+import javax.xml.bind.JAXBElement;
+import org.orbisgis.core.renderer.persistance.se.AreaSymbolizerType;
+import org.orbisgis.core.renderer.persistance.se.ObjectFactory;
 
 import org.gdms.data.SpatialDataSourceDecorator;
 import org.gdms.driver.DriverException;
@@ -87,8 +90,34 @@ public class AreaSymbolizer extends VectorSymbolizer {
         }
     }
 
+    @Override
+    public JAXBElement<AreaSymbolizerType> getJAXBInstance() {
+        System.out.println("JAXAreaSymbolizer");
+        ObjectFactory of = new ObjectFactory();
+        AreaSymbolizerType s = of.createAreaSymbolizerType();
 
+        this.setJAXBProperty(s);
 
+        s.setUnitOfMeasure(this.getUom().toURN());
+
+        if (transform != null) {
+            s.setTransform(transform.getJAXBType());
+        }
+
+        if (this.perpendicularOffset != null) {
+            s.setPerpendicularOffset(perpendicularOffset.getJAXBParameterValueType());
+        }
+
+        if (fill != null) {
+            s.setFill(fill.getJAXBInstance());
+        }
+
+        if (stroke != null) {
+            s.setStroke(stroke.getJAXBInstance());
+        }
+
+        return of.createAreaSymbolizer(s);
+    }
     private RealParameter perpendicularOffset;
     private Stroke stroke;
     private Fill fill;

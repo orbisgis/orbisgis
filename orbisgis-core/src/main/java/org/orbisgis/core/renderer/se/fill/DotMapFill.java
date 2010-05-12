@@ -2,9 +2,13 @@ package org.orbisgis.core.renderer.se.fill;
 
 import java.awt.Graphics2D;
 import java.awt.Shape;
-import java.awt.image.BufferedImage;
+
 import java.io.IOException;
 import javax.media.jai.RenderableGraphics;
+import javax.xml.bind.JAXBElement;
+import org.orbisgis.core.renderer.persistance.se.DotMapFillType;
+
+import org.orbisgis.core.renderer.persistance.se.ObjectFactory;
 import org.gdms.data.DataSource;
 import org.orbisgis.core.renderer.se.graphic.GraphicCollection;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
@@ -60,6 +64,35 @@ public class DotMapFill extends Fill {
             // postOpSymbol();
         }
     }
+
+
+    @Override
+    public DotMapFillType getJAXBType(){
+        DotMapFillType f = new DotMapFillType();
+
+        if (mark != null){
+            f.setGraphic(mark.getJAXBInstance());
+        }
+
+        if (quantityPerMark != null){
+            f.setValuePerMark(quantityPerMark.getJAXBParameterValueType());
+        }
+
+        if (totalQuantity != null){
+            f.setValuePerMark(totalQuantity.getJAXBParameterValueType());
+        }
+
+        return f;
+    }
+
+
+    @Override
+    public JAXBElement<DotMapFillType> getJAXBInstance(){
+        ObjectFactory of = new ObjectFactory();
+        return of.createDotMapFill(this.getJAXBType());
+    }
+
+
     private GraphicCollection mark;
     private RealParameter quantityPerMark;
     private RealParameter totalQuantity;

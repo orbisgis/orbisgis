@@ -9,6 +9,9 @@ import java.io.IOException;
 
 import javax.media.jai.PlanarImage;
 import javax.media.jai.RenderableGraphics;
+import javax.xml.bind.JAXBElement;
+import org.orbisgis.core.renderer.persistance.se.ExternalGraphicType;
+import org.orbisgis.core.renderer.persistance.se.ObjectFactory;
 import org.gdms.data.DataSource;
 import org.orbisgis.core.renderer.se.common.Halo;
 import org.orbisgis.core.renderer.se.common.MapEnv;
@@ -150,6 +153,38 @@ public class ExternalGraphic extends Graphic {
         delta += this.getMargin(ds, fid);
 
         return delta;
+    }
+
+    @Override
+    public JAXBElement<ExternalGraphicType> getJAXBInstance() {
+        ExternalGraphicType e = new ExternalGraphicType();
+
+        if (halo != null) {
+            e.setHalo(halo.getJAXBType());
+        }
+
+        if (source != null) {
+            source.setJAXBSource(e);
+        }
+
+        if (opacity != null) {
+            e.setOpacity(opacity.getJAXBParameterValueType());
+        }
+
+        if (transform != null) {
+            e.setTransform(transform.getJAXBType());
+        }
+
+        if (uom != null) {
+            e.setUnitOfMeasure(uom.toURN());
+        }
+
+        if (viewBox != null) {
+            e.setViewBox(viewBox.getJAXBType());
+        }
+
+        ObjectFactory of = new ObjectFactory();
+        return of.createExternalGraphic(e);
     }
     private ExternalGraphicSource source;
     private ViewBox viewBox;

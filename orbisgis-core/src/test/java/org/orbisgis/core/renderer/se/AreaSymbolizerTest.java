@@ -11,12 +11,16 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
 
 import junit.framework.TestCase;
 import org.gdms.data.DataSource;
@@ -26,6 +30,7 @@ import org.gdms.data.SpatialDataSourceDecorator;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.driverManager.DriverLoadException;
 import org.orbisgis.core.map.MapTransform;
+import org.orbisgis.core.renderer.persistance.se.ObjectFactory;
 import org.orbisgis.core.renderer.se.common.MapEnv;
 import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.fill.DensityFill;
@@ -34,7 +39,7 @@ import org.orbisgis.core.renderer.se.fill.SolidFill;
 import org.orbisgis.core.renderer.se.graphic.GraphicCollection;
 import org.orbisgis.core.renderer.se.graphic.MarkGraphic;
 import org.orbisgis.core.renderer.se.graphic.PieChart;
-import org.orbisgis.core.renderer.se.graphic.PieChart.PieChartType;
+import org.orbisgis.core.renderer.se.graphic.PieChart.PieChartSubType;
 import org.orbisgis.core.renderer.se.graphic.Slice;
 import org.orbisgis.core.renderer.se.graphic.TextGraphic;
 import org.orbisgis.core.renderer.se.graphic.ViewBox;
@@ -46,13 +51,17 @@ import org.orbisgis.core.renderer.se.parameter.color.ColorLiteral;
 import org.orbisgis.core.renderer.se.parameter.color.Recode2Color;
 import org.orbisgis.core.renderer.se.parameter.real.RealAttribute;
 import org.orbisgis.core.renderer.se.parameter.real.RealBinaryOperator;
-import org.orbisgis.core.renderer.se.parameter.real.RealBinaryOperatorType;
+import org.orbisgis.core.renderer.se.parameter.real.RealBinaryOperator.RealBinaryOperatorType;
 import org.orbisgis.core.renderer.se.parameter.real.RealLiteral;
 import org.orbisgis.core.renderer.se.parameter.real.RealUnitaryOperator;
-import org.orbisgis.core.renderer.se.parameter.real.RealUnitaryOperatorType;
+import org.orbisgis.core.renderer.se.parameter.real.RealUnitaryOperator.RealUnitaryOperatorType;
 import org.orbisgis.core.renderer.se.parameter.real.Recode2Real;
 import org.orbisgis.core.renderer.se.parameter.string.StringAttribute;
 import org.orbisgis.core.renderer.se.stroke.PenStroke;
+import org.orbisgis.core.renderer.se.transform.Rotate;
+import org.orbisgis.core.renderer.se.transform.Scale;
+import org.orbisgis.core.renderer.se.transform.Transform;
+import org.orbisgis.core.renderer.se.transform.Translate;
 
 /**
  *
@@ -135,7 +144,6 @@ public class AreaSymbolizerTest extends TestCase {
             MarkGraphic mosMark = new MarkGraphic();
             mosMark.setUom(Uom.MM);
             mosMark.setFill(new SolidFill());
-            mosMark.setOpacity(new RealLiteral(100.0));
             mosMark.setViewBox(new ViewBox(new RealLiteral(10.0)));
             mosMark.setSource(WellKnownName.TRIANGLE);
 
@@ -230,11 +238,22 @@ public class AreaSymbolizerTest extends TestCase {
             slc3.setValue(new RealLiteral(40));
             pie.addSlice(slc3);
 
-            pie.setType(PieChartType.WHOLE);
+            pie.setType(PieChartSubType.WHOLE);
 
             pie.setStroke(new PenStroke());
             pie.setDisplayValue(false);
+            pie.setRadius(new RealLiteral(7));
 
+            Transform tPie = new Transform();
+            tPie.addTransformation(new Rotate(new RealLiteral(45.0)));
+            /*
+            tPie.addTransformation(new Rotate(new RealLiteral(45.0), new RealLiteral(1.0), new RealLiteral(1.0)));
+            tPie.addTransformation(new Scale(new RealLiteral(2.0)));
+            tPie.addTransformation(new Scale(new RealLiteral(0.25), new RealLiteral(1.25)));
+            tPie.addTransformation(new Translate(new RealLiteral(10.0), null));
+            tPie.addTransformation(new Translate(null, new RealLiteral(10.0)));
+            */
+            pie.setTransform(tPie);
 
             RealBinaryOperator width = new RealBinaryOperator();
             width.setLeftValue(new RealLiteral(1));
@@ -247,7 +266,7 @@ public class AreaSymbolizerTest extends TestCase {
             width.setRightValue(sqrt);
             width.setOperator(RealBinaryOperatorType.MUL);
 
-            pie.setRadius(width);
+            //pie.setRadius(width);
 
             TextGraphic tGraphic = new TextGraphic();
             StyledLabel sLabel = new StyledLabel();
@@ -263,9 +282,12 @@ public class AreaSymbolizerTest extends TestCase {
 
             GraphicCollection collec = pSymb.getGraphic();
 
-            //collec.addGraphic(pie);
+            collec.addGraphic(pie);
             collec.addGraphic(tGraphic);
 
+
+
+            System.out.println("Avant Symolize");
 
 
             long fid;
@@ -276,6 +298,8 @@ public class AreaSymbolizerTest extends TestCase {
                 pSymb.draw(g2, sds, fid);
             }
             g2.finalize();
+
+            System.out.println("Creation JFrame");
 
             JFrame frame = new JFrame("Test AreaSymbolizer");
 
@@ -291,18 +315,61 @@ public class AreaSymbolizerTest extends TestCase {
 
 
             System.out.print("");
+            System.out.println("Captain marshall");
+
+            ObjectFactory of = new ObjectFactory();
+
+            JAXBContext jaxbContext;
+
+            jaxbContext = JAXBContext.newInstance("org.orbisgis.core.renderer.persistance.se");
+
+            Marshaller marshaller = jaxbContext.createMarshaller();
+            marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT,
+                    new Boolean(true));
+            //Validator validator = jaxbContext.createValidator();
+
+            //System.out.println("Validator returned " + validator.validate(collection));
+            System.out.println("Created a content tree " +
+               "and marshalled it to jaxbOutput2.xml");
+
+            marshaller.marshal(((Symbolizer)(aSymb)).getJAXBInstance(),
+                  new FileOutputStream("/tmp/aSymb.xml"));
+
+
+            marshaller.marshal(((Symbolizer)(aSymb2)).getJAXBInstance(),
+                  new FileOutputStream("/tmp/aSymb2.xml"));
+
+
+            marshaller.marshal(((Symbolizer)(aSymb3)).getJAXBInstance(),
+                  new FileOutputStream("/tmp/aSymb3.xml"));
+
+            marshaller.marshal(((Symbolizer)(pSymb)).getJAXBInstance(),
+                  new FileOutputStream("/tmp/pSymb.xml"));
+
+
+            System.out.println("See output in /tmp/symbolizer.xml " ) ;
 
 
             Thread.sleep(20000);
 
+
+
+
+        } catch (JAXBException ex) {
+            Logger.getLogger(AreaSymbolizerTest.class.getName()).log(Level.SEVERE, null, ex);
+            System.out.println("error");
         } catch (InterruptedException ex) {
             Logger.getLogger(AreaSymbolizerTest.class.getName()).log(Level.SEVERE, null, ex);
+            System.out.println("error");
         } catch (DriverLoadException ex) {
             Logger.getLogger(AreaSymbolizerTest.class.getName()).log(Level.SEVERE, null, ex);
+            System.out.println("error");
         } catch (DataSourceCreationException ex) {
             Logger.getLogger(AreaSymbolizerTest.class.getName()).log(Level.SEVERE, null, ex);
+            System.out.println("error");
         } catch (DriverException ex) {
             Logger.getLogger(AreaSymbolizerTest.class.getName()).log(Level.SEVERE, null, ex);
+            System.out.println("error");
         }
     }
 }

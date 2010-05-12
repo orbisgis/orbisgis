@@ -3,8 +3,9 @@ package org.orbisgis.core.renderer.se.parameter.color;
 import java.util.Random;
 import java.awt.Color;
 import org.gdms.data.DataSource;
+import org.orbisgis.core.renderer.se.parameter.Literal;
 
-public class ColorLiteral implements ColorParameter{
+public class ColorLiteral extends Literal implements ColorParameter{
 
     /**
      * Create a new random color 
@@ -48,7 +49,9 @@ public class ColorLiteral implements ColorParameter{
 
     @Override
     public String toString(){
-        return color.toString();
+        return "#" + String.format("%02X", color.getRed())
+                + String.format("%02X", color.getGreen())
+                + String.format("%02X", color.getBlue());
     }
 
     private Color color;

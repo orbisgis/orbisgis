@@ -39,10 +39,19 @@ public enum Uom {
                 return Uom.toPixel((value/scale)*1000, Uom.MM, scale); //[G_M]/scale*1000 => [MM]
             case G_FT:
                 return Uom.toPixel((value/scale)*12, Uom.IN, scale); //[G_M]/scale => [IN]
+            // TODO case PERCENT:
             case PX:
             default:
                 return value; // [PX]
         }
+    }
+
+    public String toURN(){
+        return "ogc::se:unit:" + this.name();
+    }
+
+    public String toString() {
+        return "";
     }
 
 }

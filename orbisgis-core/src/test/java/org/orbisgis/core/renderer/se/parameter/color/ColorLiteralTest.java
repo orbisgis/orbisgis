@@ -35,11 +35,11 @@ public class ColorLiteralTest extends TestCase {
         ColorLiteral p4 = new ColorLiteral();
         ColorLiteral p5 = new ColorLiteral();
 
-        System.out.println("Color1: " + p1.getColor(null, 0).toString());
-        System.out.println("Color2: " + p2.getColor(null, 0).toString());
-        System.out.println("Color3: " + p3.getColor(null, 0).toString());
-        System.out.println("Color4: " + p4.getColor(null, 0).toString());
-        System.out.println("Color5: " + p5.getColor(null, 0).toString());
+        System.out.println("Color1: " + p1);
+        System.out.println("Color2: " + p2);
+        System.out.println("Color3: " + p3);
+        System.out.println("Color4: " + p4);
+        System.out.println("Color5: " + p5);
 
         //fail("The test case is a prototype.");
         assert(true);

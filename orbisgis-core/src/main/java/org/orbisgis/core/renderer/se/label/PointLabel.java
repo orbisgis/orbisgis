@@ -2,15 +2,19 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package org.orbisgis.core.renderer.se.label;
 
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import javax.media.jai.RenderableGraphics;
+import javax.xml.bind.JAXBElement;
 import org.gdms.data.DataSource;
 import org.orbisgis.core.renderer.liteShape.LiteShape;
+import org.orbisgis.core.renderer.persistance.ogc.LiteralType;
+import org.orbisgis.core.renderer.persistance.se.ObjectFactory;
+import org.orbisgis.core.renderer.persistance.se.ParameterValueType;
+import org.orbisgis.core.renderer.persistance.se.PointLabelType;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.real.RealLiteral;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
@@ -25,7 +29,7 @@ public class PointLabel extends Label {
     /**
      *
      */
-    public PointLabel(){
+    public PointLabel() {
         setLabel(new StyledLabel());
         rotation = new RealLiteral(0.0);
 
@@ -49,19 +53,55 @@ public class PointLabel extends Label {
     }
 
     @Override
-    public void draw(Graphics2D g2, LiteShape shp, DataSource ds, long fid) throws ParameterException, IOException{
+    public void draw(Graphics2D g2, LiteShape shp, DataSource ds, long fid) throws ParameterException, IOException {
         RenderableGraphics l = this.label.getImage(ds, fid);
 
         // convert lineShape to a point
         // create AT according to rotation and exclusionZone
 
         /*g2.drawImage(label,
-                     new AffineTransformOp(AT,
-                                           AffineTransformOp.TYPE_BICUBIC),
-                      -label.getWidth() / 2,
-                      -label.getHeight() / 2);
+        new AffineTransformOp(AT,
+        AffineTransformOp.TYPE_BICUBIC),
+        -label.getWidth() / 2,
+        -label.getHeight() / 2);
 
          */
+    }
+
+    @Override
+    public JAXBElement<PointLabelType> getJAXBInstance() {
+        PointLabelType pl = new PointLabelType();
+
+        if (uom != null) {
+            pl.setUnitOfMeasure(uom.toString());
+        }
+
+        if (exclusionZone != null) {
+            pl.setExclusionZone(exclusionZone.getJAXBInstance());
+        }
+
+        if (hAlign != null) {
+            ParameterValueType h = new ParameterValueType();
+            h.getContent().add(hAlign.toString());
+            pl.setHorizontalAlignment(h);
+        }
+
+        if (hAlign != null) {
+            ParameterValueType v = new ParameterValueType();
+            v.getContent().add(vAlign.toString());
+            pl.setHorizontalAlignment(v);
+        }
+
+        if (rotation != null) {
+            pl.setRotation(rotation.getJAXBParameterValueType());
+        }
+
+        if (label != null) {
+            pl.setStyledLabel(label.getJAXBType());
+        }
+
+        ObjectFactory of = new ObjectFactory();
+        return of.createPointLabel(pl);
     }
 
     private RealParameter rotation;

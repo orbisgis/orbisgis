@@ -2,11 +2,13 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package org.orbisgis.core.renderer.se.transform;
 
 import java.awt.geom.AffineTransform;
+import javax.xml.bind.JAXBElement;
 import org.gdms.data.DataSource;
+import org.orbisgis.core.renderer.persistance.se.ObjectFactory;
+import org.orbisgis.core.renderer.persistance.se.ScaleType;
 import org.orbisgis.core.renderer.se.common.MapEnv;
 import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
@@ -18,16 +20,15 @@ import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
  */
 public class Scale implements Transformation {
 
-    public Scale(RealParameter x, RealParameter y){
+    public Scale(RealParameter x, RealParameter y) {
         this.x = x;
         this.y = y;
     }
-    
-    public Scale(RealParameter xy){
+
+    public Scale(RealParameter xy) {
         this.x = xy;
         this.y = xy;
     }
-
 
     public RealParameter getX() {
         return x;
@@ -46,24 +47,50 @@ public class Scale implements Transformation {
     }
 
     @Override
-    public boolean allowedForGeometries(){
+    public boolean allowedForGeometries() {
         return false;
     }
 
     @Override
     public AffineTransform getAffineTransform(DataSource ds, long fid, Uom uom) throws ParameterException {
         double sx = 0.0;
-        if (x != null)
+        if (x != null) {
             sx = Uom.toPixel(x.getValue(ds, fid), uom, MapEnv.getScaleDenominator());
+        }
 
         double sy = 0.0;
-        if (y != null)
+        if (y != null) {
             sy = Uom.toPixel(y.getValue(ds, fid), uom, MapEnv.getScaleDenominator());
+        }
 
         return AffineTransform.getScaleInstance(sx, sy);
     }
 
+    @Override
+    public JAXBElement<?> getJAXBElement() {
+        ScaleType s = new ScaleType();
 
+        if (y == null || x == null) {
+            RealParameter xy;
+            if (x != null) {
+                xy = x;
+            } else {
+                xy = y;
+            }
+            s.setXY(xy.getJAXBParameterValueType());
+        } else {
+            if (x != null) {
+                s.setX(x.getJAXBParameterValueType());
+            }
+
+            if (y != null) {
+                s.setY(y.getJAXBParameterValueType());
+            }
+        }
+        ObjectFactory of = new ObjectFactory();
+        return of.createScale(s);
+    }
+    
     private RealParameter x;
     private RealParameter y;
 }

@@ -14,40 +14,29 @@ public class InterpolationPoint<Type> implements Comparable {
         this.v = value;
     }
 
-    public RealParameter getData() {
+    public double getData() {
         return d;
     }
 
-    public void setData(RealParameter data) {
+    public void setData(double data) {
         this.d = data;
     }
 
     @Override
     public int compareTo(Object o) {
-
         InterpolationPoint<Type> ip = (InterpolationPoint<Type>) o;
 
-        // In the case points depends on features...
-        if (ip.d.dependsOnFeature() || this.d.dependsOnFeature()) {
-            return 0;
-        } else {
-            try {
-                double l = ip.d.getValue(null, 0);
-                double r = this.d.getValue(null, 0);
+        double l = ip.d;
+        double r = this.d;
 
-                if (l < r) {
-                    return 1;
-                } else if (l > r) {
-                    return -1;
-                } else {
-                    return 0;
-                }
-            } catch (ParameterException ex) {
-                Logger.getLogger(Category.class.getName()).log(Level.SEVERE, null, ex);
-                return 0;
-            }
+        if (l < r) {
+            return 1;
+        } else if (l > r) {
+            return -1;
+        } else {
+            return 0;
         }
     }
-    private RealParameter d = null;
+    private double d;
     private Type v = null;
 }

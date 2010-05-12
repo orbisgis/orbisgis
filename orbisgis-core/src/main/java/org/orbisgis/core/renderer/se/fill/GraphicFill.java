@@ -12,6 +12,12 @@ import java.awt.image.renderable.RenderContext;
 import java.io.IOException;
 
 import javax.media.jai.RenderableGraphics;
+import javax.xml.bind.JAXBElement;
+
+import org.orbisgis.core.renderer.persistance.se.GraphicFillType;
+import org.orbisgis.core.renderer.persistance.se.ObjectFactory;
+import org.orbisgis.core.renderer.persistance.se.TileGapType;
+
 import org.gdms.data.DataSource;
 import org.orbisgis.core.renderer.se.common.MapEnv;
 import org.orbisgis.core.renderer.se.common.Uom;
@@ -107,6 +113,41 @@ public class GraphicFill extends Fill{
 
         return new TexturePaint(i, new Rectangle2D.Double(0, 0, i.getWidth(), i.getHeight()));
     }
+
+    @Override
+    public GraphicFillType getJAXBType(){
+        GraphicFillType f = new GraphicFillType();
+
+        if (uom != null){
+            f.setUnitOfMeasure(uom.toURN());
+        }
+
+        if (graphic != null){
+            f.setGraphic(graphic.getJAXBInstance());
+        }
+
+        if (gapX != null && gapY != null){
+            TileGapType tile = new TileGapType();
+            if (gapX != null){
+                tile.setX(gapX.getJAXBParameterValueType());
+            }
+            if (gapY != null){
+                tile.setY(gapY.getJAXBParameterValueType());
+            }
+            f.setTileGap(tile);
+        }
+        
+        return f;
+    }
+
+
+    @Override
+    public JAXBElement<GraphicFillType> getJAXBInstance(){
+        ObjectFactory of = new ObjectFactory();
+        return of.createGraphicFill(this.getJAXBType());
+    }
+
+
 
 
     private GraphicCollection graphic;

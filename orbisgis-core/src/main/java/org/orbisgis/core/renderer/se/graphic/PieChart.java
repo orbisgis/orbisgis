@@ -5,12 +5,18 @@ import java.awt.Shape;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Arc2D;
 import java.awt.geom.Area;
-import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 import javax.media.jai.RenderableGraphics;
+import javax.xml.bind.JAXBElement;
+
 import org.gdms.data.DataSource;
+import org.orbisgis.core.renderer.persistance.se.ObjectFactory;
+import org.orbisgis.core.renderer.persistance.se.PieChartType;
+import org.orbisgis.core.renderer.persistance.se.SliceType;
+
 import org.orbisgis.core.renderer.se.common.MapEnv;
 import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.fill.Fill;
@@ -21,7 +27,7 @@ import org.orbisgis.core.renderer.se.stroke.Stroke;
 
 public class PieChart extends Graphic {
 
-    public enum PieChartType{
+    public enum PieChartSubType{
         WHOLE, HALF;
     }
 
@@ -36,7 +42,6 @@ public class PieChart extends Graphic {
     }
 
     public Slice getSlice(int i) {
-        System.out.println (getNumSlices() +" slices, fetch " + i);
         if (i >= 0 && i < getNumSlices()) {
             return slices.get(i);
         } else {
@@ -110,11 +115,11 @@ public class PieChart extends Graphic {
         stroke.setParent(this);
     }
 
-    public PieChartType getType() {
+    public PieChartSubType getType() {
         return type;
     }
 
-    public void setType(PieChartType type) {
+    public void setType(PieChartSubType type) {
         this.type = type;
     }
 
@@ -134,8 +139,6 @@ public class PieChart extends Graphic {
         double[] gaps = new double[nSlices];
 
         double r = 30; // 30px by default
-
-        System.out.println("UOM: " + getUom());
 
         if (radius != null) {
             r = Uom.toPixel(this.getRadius().getValue(ds, fid), this.getUom(), MapEnv.getScaleDenominator()); // TODO DPI + SCALE
@@ -163,8 +166,6 @@ public class PieChart extends Graphic {
             } else {
                 gaps[i] = 0.0;
             }
-
-            System.out.println ("Gap : " + gaps[i]);
 
             maxGap = Math.max(gaps[i], maxGap);
         }
@@ -210,7 +211,7 @@ public class PieChart extends Graphic {
 
         double maxDeg = 360.0;
         
-        if (this.getType() == PieChartType.HALF)
+        if (this.getType() == PieChartSubType.HALF)
             maxDeg = 180.0;
 
         // Create slices
@@ -296,7 +297,34 @@ public class PieChart extends Graphic {
     public double getMaxWidth(DataSource ds, long fid) throws ParameterException, IOException {
         throw new UnsupportedOperationException("Not supported yet.");
     }
-    private PieChartType type;
+
+
+    @Override
+    public JAXBElement<PieChartType> getJAXBInstance(){
+
+        PieChartType p = new PieChartType();
+
+        // TODO update JAXB with new schemas => p.setSubtype();
+
+        if (radius != null)
+            p.setRadius(radius.getJAXBParameterValueType());
+
+        if (holeRadius != null)
+            p.setHoleRadius(holeRadius.getJAXBParameterValueType());
+
+        if (stroke != null)
+            p.setStroke(stroke.getJAXBInstance());
+
+        List<SliceType> slcs = p.getSlice();
+        for (Slice s : slices){
+            slcs.add(s.getJAXBType());
+        }
+
+        ObjectFactory of = new ObjectFactory();
+        return of.createPieChart(p);
+    }
+
+    private PieChartSubType type;
     private RealParameter radius;
     private RealParameter holeRadius;
     private boolean displayValue;

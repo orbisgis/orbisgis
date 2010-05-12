@@ -26,7 +26,7 @@ import org.orbisgis.core.renderer.se.common.MapEnv;
 import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.fill.GraphicFill;
 import org.orbisgis.core.renderer.se.fill.SolidFill;
-import org.orbisgis.core.renderer.se.graphic.PieChart.PieChartType;
+import org.orbisgis.core.renderer.se.graphic.PieChart.PieChartSubType;
 import org.orbisgis.core.renderer.se.label.StyledLabel;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.color.ColorLiteral;
@@ -172,7 +172,7 @@ public class GraphicCollectionTest extends TestCase {
         
 
         pie.setRadius(new RealLiteral(100));
-        pie.setType(PieChartType.HALF);
+        pie.setType(PieChartSubType.HALF);
         
         Transform tp1 = new Transform();
         tp1.addTransformation(new Rotate(new RealLiteral(-90.0)));
@@ -206,7 +206,7 @@ public class GraphicCollectionTest extends TestCase {
 
 
         pie2.setRadius(new RealLiteral(150));
-        pie2.setType(PieChartType.HALF);
+        pie2.setType(PieChartSubType.HALF);
 
         pie2.setStroke(new PenStroke());
         Transform tp2 = new Transform();

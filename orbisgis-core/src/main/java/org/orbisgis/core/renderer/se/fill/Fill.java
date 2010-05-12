@@ -3,6 +3,8 @@ package org.orbisgis.core.renderer.se.fill;
 import java.awt.Graphics2D;
 import java.awt.Shape;
 import java.io.IOException;
+import javax.xml.bind.JAXBElement;
+import org.orbisgis.core.renderer.persistance.se.FillType;
 import org.gdms.data.DataSource;
 import org.orbisgis.core.renderer.se.SymbolizerNode;
 import org.orbisgis.core.renderer.se.common.Uom;
@@ -44,6 +46,8 @@ public abstract class Fill implements SymbolizerNode {
      */
     public abstract void draw(Graphics2D g2, Shape shp, DataSource ds, long fid) throws ParameterException, IOException;
 
+    public abstract JAXBElement<? extends FillType> getJAXBInstance();
+    public abstract FillType getJAXBType();
 
     protected SymbolizerNode parent;
 }

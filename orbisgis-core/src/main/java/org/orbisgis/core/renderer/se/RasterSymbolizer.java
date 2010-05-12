@@ -5,6 +5,8 @@
 
 package org.orbisgis.core.renderer.se;
 
+import javax.xml.bind.JAXBElement;
+import org.orbisgis.core.renderer.persistance.se.RasterSymbolizerType;
 import org.orbisgis.core.renderer.se.raster.OverlapBehavior;
 import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.parameter.color.Categorize2Color;
@@ -142,6 +144,11 @@ public class RasterSymbolizer extends Symbolizer {
 
     public void setUseInterpolationForColorMap(boolean useInterpolationForColorMap) {
         this.useInterpolationForColorMap = useInterpolationForColorMap;
+    }
+
+    @Override
+    public JAXBElement<RasterSymbolizerType> getJAXBInstance(){
+        return null;
     }
 
 

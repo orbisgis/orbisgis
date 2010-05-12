@@ -3,6 +3,9 @@ package org.orbisgis.core.renderer.se.fill;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Shape;
+import javax.xml.bind.JAXBElement;
+import org.orbisgis.core.renderer.persistance.se.ObjectFactory;
+import org.orbisgis.core.renderer.persistance.se.SolidFillType;
 import org.gdms.data.DataSource;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.color.ColorHelper;
@@ -86,6 +89,26 @@ public class SolidFill extends Fill{
     @Override
     public String toString(){
         return "Color: " + color + " alpha: " + opacity;
+    }
+
+    @Override
+    public SolidFillType getJAXBType(){
+        SolidFillType f = new SolidFillType();
+
+        if (color != null){
+            f.setColor(color.getJAXBParameterValueType());
+        }
+        if (opacity != null){
+            f.setOpacity(opacity.getJAXBParameterValueType());
+        }
+
+        return f;
+    }
+
+    @Override
+    public JAXBElement<SolidFillType> getJAXBInstance(){
+        ObjectFactory of = new ObjectFactory();
+        return of.createSolidFill(this.getJAXBType());
     }
 
     private ColorParameter color;

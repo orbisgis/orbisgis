@@ -5,7 +5,10 @@
 package org.orbisgis.core.renderer.se.transform;
 
 import java.awt.geom.AffineTransform;
+import javax.xml.bind.JAXBElement;
 import org.gdms.data.DataSource;
+import org.orbisgis.core.renderer.persistance.se.ObjectFactory;
+import org.orbisgis.core.renderer.persistance.se.TranslateType;
 import org.orbisgis.core.renderer.se.common.MapEnv;
 import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
@@ -41,6 +44,21 @@ public class Translate implements Transformation {
 
         return AffineTransform.getTranslateInstance(tx, ty);
     }
+
+    @Override
+    public JAXBElement<?> getJAXBElement(){
+        TranslateType t = new TranslateType();
+
+        if (x != null)
+            t.setX(x.getJAXBParameterValueType());
+
+        if (y != null)
+            t.setY(y.getJAXBParameterValueType());
+
+        ObjectFactory of = new ObjectFactory();
+        return of.createTranslate(t);
+    }
+
     private RealParameter x;
     private RealParameter y;
 }

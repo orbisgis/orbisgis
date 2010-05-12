@@ -8,6 +8,7 @@ package org.orbisgis.core.renderer.se.graphic;
 import java.awt.Shape;
 import java.io.IOException;
 import org.gdms.data.DataSource;
+import org.orbisgis.core.renderer.persistance.se.MarkGraphicType;
 
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 
@@ -20,4 +21,6 @@ import org.orbisgis.core.renderer.se.parameter.ParameterException;
 public interface MarkGraphicSource {
     Shape getShape(ViewBox viewBox, DataSource ds, long fid)
             throws ParameterException, IOException;
+
+    public void setJAXBSource(MarkGraphicType m);
 }

@@ -2,7 +2,6 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package org.orbisgis.core.renderer.se;
 
 import com.vividsolutions.jts.geom.Geometry;
@@ -11,6 +10,7 @@ import java.awt.Graphics2D;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 import java.io.IOException;
+import org.orbisgis.core.renderer.persistance.se.SymbolizerType;
 
 import org.gdms.data.SpatialDataSourceDecorator;
 import org.gdms.driver.DriverException;
@@ -26,10 +26,9 @@ import org.orbisgis.core.renderer.se.transform.Transform;
  * Those vector layers all contains an unit of measure (Uom) and an affine transformation def (transform)
  * @author maxence
  */
-public abstract class VectorSymbolizer extends Symbolizer{
+public abstract class VectorSymbolizer extends Symbolizer {
 
     public abstract void draw(Graphics2D g2, SpatialDataSourceDecorator sds, long fid) throws ParameterException, IOException, DriverException;
-
 
     /**
      * Convert a spatial feature into a LiteShape, should add parameters to handle
@@ -43,49 +42,50 @@ public abstract class VectorSymbolizer extends Symbolizer{
      * @throws DriverException
      * @todo fix maxDist for generalization!
      */
-    public LiteShape getLiteShape(SpatialDataSourceDecorator sds, long fid) throws ParameterException, IOException, DriverException{
+    public LiteShape getLiteShape(SpatialDataSourceDecorator sds, long fid) throws ParameterException, IOException, DriverException {
         Geometry the_geom = this.getTheGeom(sds, fid); // geom + function
 
         MapTransform mt = MapEnv.getMapTransform();
 
         AffineTransform at = mt.getAffineTransform();
-        if (transform != null)
+        if (transform != null) {
             at.preConcatenate(transform.getGraphicalAffineTransform(sds, fid, true));
+        }
 
         double maxDist = 0.5;
-        
+
         return new LiteShape(the_geom, at, true, maxDist);
     }
 
-    public Point2D getPointLiteShape(SpatialDataSourceDecorator sds, long fid) throws ParameterException, IOException, DriverException{
+    public Point2D getPointLiteShape(SpatialDataSourceDecorator sds, long fid) throws ParameterException, IOException, DriverException {
         Geometry the_geom = this.getTheGeom(sds, fid); // geom + function
 
         MapTransform mt = MapEnv.getMapTransform();
 
         AffineTransform at = mt.getAffineTransform();
-        if (transform != null)
+        if (transform != null) {
             at.preConcatenate(transform.getGraphicalAffineTransform(sds, fid, true));
+        }
 
         Point point = the_geom.getCentroid();
         return at.transform(new Point2D.Double(point.getX(), point.getY()), null);
     }
 
-
     public Transform getTransform() {
         return transform;
     }
 
-    
     @Override
-    public Uom getUom(){
+    public Uom getUom() {
         return uom;
     }
 
-    public void setUom(Uom uom){
-        if (uom == null)
+    public void setUom(Uom uom) {
+        if (uom == null) {
             this.uom = uom;
-        else
+        } else {
             this.uom = Uom.MM;
+        }
     }
 
     public void setTransform(Transform transform) {
@@ -93,8 +93,6 @@ public abstract class VectorSymbolizer extends Symbolizer{
         transform.setParent(this);
     }
 
-
     protected Transform transform;
     protected Uom uom;
-    
 }

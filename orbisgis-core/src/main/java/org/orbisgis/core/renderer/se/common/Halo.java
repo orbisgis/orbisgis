@@ -6,6 +6,7 @@ import java.awt.Shape;
 import java.io.IOException;
 
 import org.gdms.data.DataSource;
+import org.orbisgis.core.renderer.persistance.se.HaloType;
 
 import org.orbisgis.core.renderer.se.SymbolizerNode;
 import org.orbisgis.core.renderer.se.fill.Fill;
@@ -81,6 +82,17 @@ public class Halo implements SymbolizerNode {
             }
         }
     }
+
+    public HaloType getJAXBType(){
+        HaloType h = new HaloType();
+
+        h.setFill(fill.getJAXBInstance());
+        h.setRadius(radius.getJAXBParameterValueType());
+        h.setUnitOfMeasure(uom.toURN());
+        
+        return h;
+    }
+
     private Uom uom;
     private RealParameter radius;
     private Fill fill;

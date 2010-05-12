@@ -5,6 +5,10 @@
 
 package org.orbisgis.core.renderer.se.parameter;
 
+import javax.xml.bind.JAXBElement;
+import org.orbisgis.core.renderer.persistance.ogc.ExpressionType;
+import org.orbisgis.core.renderer.persistance.se.ParameterValueType;
+
 /**
  *
  * @author maxence
@@ -19,4 +23,7 @@ public interface SeParameter {
      */
     boolean dependsOnFeature();
 
+    ParameterValueType getJAXBParameterValueType();
+
+    JAXBElement<? extends ExpressionType> getJAXBExpressionType();
 }

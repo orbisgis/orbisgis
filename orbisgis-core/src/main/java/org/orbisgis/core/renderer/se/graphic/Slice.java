@@ -1,6 +1,6 @@
 package org.orbisgis.core.renderer.se.graphic;
 
-
+import org.orbisgis.core.renderer.persistance.se.SliceType;
 import org.orbisgis.core.renderer.se.SymbolizerNode;
 import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.fill.Fill;
@@ -41,7 +41,6 @@ public class Slice implements SymbolizerNode {
         this.value = value;
     }
 
-
     @Override
     public Uom getUom() {
         return parent.getUom();
@@ -56,11 +55,28 @@ public class Slice implements SymbolizerNode {
     public void setParent(SymbolizerNode node) {
         parent = node;
     }
-    
+
+    public SliceType getJAXBType() {
+        SliceType s = new SliceType();
+
+        if (fill != null) {
+            s.setFill(fill.getJAXBInstance());
+        }
+        if (gap != null) {
+            s.setGap(gap.getJAXBParameterValueType());
+        }
+        if (name != null) {
+            s.setName(name);
+        }
+        if (value != null) {
+            s.setValue(value.getJAXBParameterValueType());
+        }
+
+        return s;
+    }
     private String name;
     private RealParameter value;
     private Fill fill;
     private RealParameter gap;
     private SymbolizerNode parent;
-
 }

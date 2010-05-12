@@ -1,8 +1,9 @@
 package org.orbisgis.core.renderer.se.parameter.string;
 
 import org.gdms.data.DataSource;
+import org.orbisgis.core.renderer.se.parameter.Literal;
 
-public class StringLiteral implements StringParameter{
+public class StringLiteral extends Literal implements StringParameter{
 
     public StringLiteral(){
         v = "";
@@ -24,6 +25,11 @@ public class StringLiteral implements StringParameter{
     @Override
     public boolean dependsOnFeature(){
         return false;
+    }
+
+    @Override
+    public String toString(){
+        return v;
     }
 
     private String v;

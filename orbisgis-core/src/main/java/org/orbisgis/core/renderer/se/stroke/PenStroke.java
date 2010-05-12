@@ -7,7 +7,11 @@ import java.awt.Shape;
 import java.awt.TexturePaint;
 import java.io.IOException;
 import java.util.ArrayList;
+import javax.xml.bind.JAXBElement;
+import org.orbisgis.core.renderer.persistance.se.PenStrokeType;
+import org.orbisgis.core.renderer.persistance.se.StrokeType;
 import org.gdms.data.DataSource;
+import org.orbisgis.core.renderer.persistance.se.ObjectFactory;
 import org.orbisgis.core.renderer.se.common.MapEnv;
 import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.fill.GraphicFill;
@@ -256,6 +260,32 @@ public class PenStroke extends Stroke {
             return 0.0;
         }
     }
+
+
+    @Override
+    public JAXBElement<PenStrokeType> getJAXBInstance(){
+        ObjectFactory of = new ObjectFactory();
+        return of.createPenStroke(this.getJAXBType());
+    }
+
+
+    public PenStrokeType getJAXBType(){
+        PenStrokeType s = new PenStrokeType();
+
+        this.setJAXBProperties(s);
+
+        if (useColor){
+            if (color != null)
+                s.setColor(color.getJAXBParameterValueType());
+            }
+        else if (stipple != null){
+            s.setStipple(stipple.getJAXBType());
+        }
+
+        return s;
+    }
+
+
     
     private ColorParameter color;
     private GraphicFill stipple;

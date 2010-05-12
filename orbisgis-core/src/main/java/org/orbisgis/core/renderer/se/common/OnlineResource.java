@@ -15,6 +15,8 @@ import javax.media.jai.JAI;
 import javax.media.jai.PlanarImage;
 
 import org.gdms.data.DataSource;
+import org.orbisgis.core.renderer.persistance.ows._1.OnlineResourceType;
+import org.orbisgis.core.renderer.persistance.se.ExternalGraphicType;
 import org.orbisgis.core.renderer.se.graphic.ExternalGraphicSource;
 import org.orbisgis.core.renderer.se.graphic.ViewBox;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
@@ -77,5 +79,15 @@ public class OnlineResource implements ExternalGraphicSource {
             return img;
         }
     }
+
+    @Override
+    public void setJAXBSource(ExternalGraphicType e){
+        OnlineResourceType o = new OnlineResourceType();
+        
+        o.setHref(url.toExternalForm());
+        
+        e.setOnlineResource(o);
+    }
+
     private URL url;
 }

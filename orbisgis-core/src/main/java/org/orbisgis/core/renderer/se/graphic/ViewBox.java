@@ -2,6 +2,7 @@ package org.orbisgis.core.renderer.se.graphic;
 
 import java.awt.Dimension;
 import org.gdms.data.DataSource;
+import org.orbisgis.core.renderer.persistance.se.ViewBoxType;
 import org.orbisgis.core.renderer.se.SymbolizerNode;
 import org.orbisgis.core.renderer.se.common.MapEnv;
 import org.orbisgis.core.renderer.se.common.Uom;
@@ -65,19 +66,33 @@ public class ViewBox implements SymbolizerNode {
             dy = y.getValue(ds, fid);
         } else if (x != null) {
             dx = x.getValue(ds, fid);
-            dy = dx/ratio;
+            dy = dx / ratio;
         } else if (y != null) {
             dy = y.getValue(ds, fid);
-            dx = dy*ratio;
+            dx = dy * ratio;
         } else { // nothing is defined => 10x10uom
             dx = 10.0;
             dy = 10.0;
         }
-        
+
         dx = Uom.toPixel(dx, this.getUom(), MapEnv.getScaleDenominator()); // TODO DPI SCAPE !
         dy = Uom.toPixel(dy, this.getUom(), MapEnv.getScaleDenominator());
 
-        return new Dimension((int)dx, (int)dy);
+        return new Dimension((int) dx, (int) dy);
+    }
+
+    public ViewBoxType getJAXBType() {
+        ViewBoxType v = new ViewBoxType();
+
+        if (x != null) {
+            v.setWidth(x.getJAXBParameterValueType());
+        }
+
+        if (y != null) {
+            v.setHeight(y.getJAXBParameterValueType());
+        }
+
+        return v;
     }
     private SymbolizerNode parent;
     private RealParameter x;

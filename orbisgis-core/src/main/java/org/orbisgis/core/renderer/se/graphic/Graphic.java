@@ -3,6 +3,8 @@ package org.orbisgis.core.renderer.se.graphic;
 import java.awt.geom.Rectangle2D;
 import java.io.IOException;
 import javax.media.jai.RenderableGraphics;
+import javax.xml.bind.JAXBElement;
+import org.orbisgis.core.renderer.persistance.se.GraphicType;
 import org.gdms.data.DataSource;
 import org.orbisgis.core.renderer.se.SymbolizerNode;
 import org.orbisgis.core.renderer.se.common.Uom;
@@ -80,12 +82,14 @@ public abstract class Graphic implements SymbolizerNode {
 
     }
 
+    public abstract JAXBElement<? extends GraphicType> getJAXBInstance();
+
     public abstract double getMaxWidth(DataSource ds, long fid) throws ParameterException, IOException;
 
     private SymbolizerNode parent;
 
+
     protected Transform transform;
-    
     protected Uom uom;
     
     //private Transform transform;

@@ -1,25 +1,39 @@
 package org.orbisgis.core.renderer.se.graphic;
 
+import org.orbisgis.core.renderer.persistance.se.AxisScaleType;
+import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
+
 public class AxisScale {
 
-
-    public double getValue(){
-        return value;
+    public RealParameter getValue() {
+        return chartValue;
     }
 
-    public void setValue(double value){
-        this.value = value;
+    public void setValue(RealParameter value) {
+        this.chartValue = value;
     }
 
-    public double getData(){
-        return data;
+    public RealParameter getData() {
+        return axisLength;
     }
 
-    public void setData(double data){
-        this.data = data;
+    public void setData(RealParameter data) {
+        this.axisLength = data;
     }
 
+    public AxisScaleType getJAXBType() {
+        AxisScaleType scale = new AxisScaleType();
 
-    private double data;
-    private double value;
+        if (axisLength != null) {
+            scale.setAxisLength(axisLength.getJAXBParameterValueType());
+
+        }
+        if (chartValue != null) {
+            scale.setChartValue(chartValue.getJAXBParameterValueType());
+        }
+
+        return scale;
+    }
+    private RealParameter axisLength;
+    private RealParameter chartValue;
 }

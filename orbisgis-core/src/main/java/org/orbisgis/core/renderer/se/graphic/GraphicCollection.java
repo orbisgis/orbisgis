@@ -9,8 +9,14 @@ import java.io.IOException;
 
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
 import javax.media.jai.RenderableGraphics;
+import javax.xml.bind.JAXBElement;
+import org.orbisgis.core.renderer.persistance.se.CompositeGraphicType;
+import org.orbisgis.core.renderer.persistance.se.GraphicElementType;
+import org.orbisgis.core.renderer.persistance.se.GraphicType;
+import org.orbisgis.core.renderer.persistance.se.ObjectFactory;
 
 import org.gdms.data.DataSource;
 import org.orbisgis.core.renderer.se.SymbolizerNode;
@@ -131,8 +137,7 @@ public class GraphicCollection implements SymbolizerNode {
 
         return rg;
     }
-    private ArrayList<Graphic> graphics;
-    private SymbolizerNode parent;
+
 
     public double getMaxWidth(DataSource ds, long fid) throws ParameterException, IOException {
         double maxWidth = 0.0;
@@ -144,5 +149,32 @@ public class GraphicCollection implements SymbolizerNode {
         }
         return maxWidth;
     }
+
+
+    public JAXBElement<? extends GraphicType> getJAXBInstance(){
+        if (graphics.size() > 0){
+            if (graphics.size() == 1){
+                return graphics.get(0).getJAXBInstance();
+            }
+            else{
+                CompositeGraphicType gc = new CompositeGraphicType();
+                List<GraphicElementType> elems = gc.getGraphicElement();
+                for (Graphic g : graphics){
+                    GraphicElementType el = new GraphicElementType();
+                    el.setGraphic(g.getJAXBInstance());
+                    elems.add(el);
+                }
+                ObjectFactory of = new ObjectFactory();
+                return of.createCompositeGraphic(gc);
+            }
+        }
+        else{
+            return null;
+        }
+    }
+
+
+    private ArrayList<Graphic> graphics;
+    private SymbolizerNode parent;
 }
 

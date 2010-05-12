@@ -1,8 +1,11 @@
 package org.orbisgis.core.renderer.se;
 
 import com.vividsolutions.jts.geom.Geometry;
+import javax.xml.bind.JAXBElement;
+import org.orbisgis.core.renderer.persistance.se.SymbolizerType;
 import org.gdms.data.SpatialDataSourceDecorator;
 import org.gdms.driver.DriverException;
+import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.geometry.GeometryParameter;
 
 
@@ -43,7 +46,7 @@ public abstract class Symbolizer implements SymbolizerNode {
         this.the_geom = the_geom;
     }
 
-    public Geometry getTheGeom(SpatialDataSourceDecorator sds, long fid) throws DriverException{
+    public Geometry getTheGeom(SpatialDataSourceDecorator sds, long fid) throws DriverException, ParameterException{
         if (the_geom != null){
             return the_geom.getTheGeom(sds, fid);
         }
@@ -61,9 +64,16 @@ public abstract class Symbolizer implements SymbolizerNode {
     public void setParent(SymbolizerNode node){
        // TODO Throw symbolizer root
     }
-   
 
-    private String name;
-    private String desc;
-    private GeometryParameter the_geom;
+    public void setJAXBProperty(SymbolizerType s){
+        s.setDescription(null);
+        s.setName(name);
+        s.setVersion("1.9");
+    }
+
+    public abstract JAXBElement<? extends SymbolizerType> getJAXBInstance();
+    
+    protected String name;
+    protected String desc;
+    protected GeometryParameter the_geom;
 }

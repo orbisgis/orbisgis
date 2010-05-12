@@ -5,6 +5,8 @@
 
 package org.orbisgis.core.renderer.se.label;
 
+import javax.xml.bind.JAXBElement;
+import org.orbisgis.core.renderer.persistance.se.ExclusionZoneType;
 import org.orbisgis.core.renderer.se.SymbolizerNode;
 import org.orbisgis.core.renderer.se.common.Uom;
 
@@ -33,6 +35,8 @@ public abstract class ExclusionZone implements SymbolizerNode {
     public void setParent(SymbolizerNode node) {
         parent = node;
     }
+
+    public abstract JAXBElement<? extends ExclusionZoneType> getJAXBInstance();
 
     protected SymbolizerNode parent;
     protected Uom uom;

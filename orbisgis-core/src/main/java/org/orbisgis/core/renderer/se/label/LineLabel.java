@@ -6,11 +6,17 @@
 package org.orbisgis.core.renderer.se.label;
 
 import java.awt.Graphics2D;
-import java.awt.image.BufferedImage;
 import java.io.IOException;
+
 import javax.media.jai.RenderableGraphics;
+import javax.xml.bind.JAXBElement;
+
 import org.gdms.data.DataSource;
+
 import org.orbisgis.core.renderer.liteShape.LiteShape;
+import org.orbisgis.core.renderer.persistance.se.LineLabelType;
+import org.orbisgis.core.renderer.persistance.se.ObjectFactory;
+import org.orbisgis.core.renderer.persistance.se.ParameterValueType;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 
 /**
@@ -40,5 +46,36 @@ public class LineLabel extends Label {
          */
 
     }
+
+
+    @Override
+    public JAXBElement<LineLabelType> getJAXBInstance() {
+        LineLabelType ll = new LineLabelType();
+
+        if (uom != null) {
+            ll.setUnitOfMeasure(uom.toString());
+        }
+
+        if (hAlign != null) {
+            ParameterValueType h = new ParameterValueType();
+            h.getContent().add(hAlign.toString());
+            ll.setHorizontalAlignment(h);
+        }
+
+        if (hAlign != null) {
+            ParameterValueType v = new ParameterValueType();
+            v.getContent().add(vAlign.toString());
+            ll.setHorizontalAlignment(v);
+        }
+
+        if (label != null) {
+            ll.setStyledLabel(label.getJAXBType());
+        }
+
+        ObjectFactory of = new ObjectFactory();
+
+        return of.createLineLabel(ll);
+    }
+
 
 }

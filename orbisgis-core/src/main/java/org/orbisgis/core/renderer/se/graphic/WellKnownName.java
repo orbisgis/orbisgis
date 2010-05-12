@@ -10,6 +10,7 @@ import java.awt.Shape;
 import java.awt.geom.Arc2D;
 import java.awt.geom.Rectangle2D;
 import org.gdms.data.DataSource;
+import org.orbisgis.core.renderer.persistance.se.MarkGraphicType;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 
 /**
@@ -111,5 +112,9 @@ public enum WellKnownName implements MarkGraphicSource {
             default:
                 return new Rectangle2D.Double(-hx, -hy, x, y);
         }
+    }
+
+    public void setJAXBSource(MarkGraphicType m){
+        m.setWellKnownName(this.toString());
     }
 }

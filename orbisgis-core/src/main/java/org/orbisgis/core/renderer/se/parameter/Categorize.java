@@ -3,7 +3,14 @@ package org.orbisgis.core.renderer.se.parameter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
+import java.util.List;
+import javax.xml.bind.JAXBElement;
+import org.orbisgis.core.renderer.persistance.se.CategorizeType;
 import org.gdms.data.DataSource;
+import org.orbisgis.core.renderer.persistance.ogc.ExpressionType;
+import org.orbisgis.core.renderer.persistance.se.ObjectFactory;
+import org.orbisgis.core.renderer.persistance.se.ParameterValueType;
+import org.orbisgis.core.renderer.persistance.se.ThreshholdsBelongToType;
 
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 
@@ -15,7 +22,6 @@ import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
  *
  * @todo implement categorizeBy* methods
  */
-
 public abstract class Categorize<ToType extends SeParameter, FallbackType extends ToType> implements SeParameter {
 
     public Categorize(ToType firstClassValue, FallbackType fallbackValue, RealParameter lookupValue) {
@@ -27,19 +33,21 @@ public abstract class Categorize<ToType extends SeParameter, FallbackType extend
     }
 
     @Override
-    public final boolean dependsOnFeature(){
-        if (this.getLookupValue().dependsOnFeature())
+    public final boolean dependsOnFeature() {
+        if (this.getLookupValue().dependsOnFeature()) {
             return true;
+        }
 
         int i;
-        for (i=0;i<this.getNumClasses();i++){
-           if (this.getClassValue(i).dependsOnFeature())
-               return true;
+        for (i = 0; i < this.getNumClasses(); i++) {
+            if (this.getClassValue(i).dependsOnFeature()) {
+                return true;
+            }
         }
 
         return false;
     }
-    
+
     public final void setFallbackValue(FallbackType fallbackValue) {
         this.fallbackValue = fallbackValue;
     }
@@ -178,13 +186,12 @@ public abstract class Categorize<ToType extends SeParameter, FallbackType extend
         }
     }
 
-
     /**
      *
      * @param ds 
      * @param values the values to affect to classes. number of values give the numbe of classes
      */
-    public void categorizeByEqualsInterval(DataSource ds, ToType[] values){
+    public void categorizeByEqualsInterval(DataSource ds, ToType[] values) {
         method = CategorizeMethod.EQUAL_INTERVAL;
         int n = values.length;
         // compute n-1 thresholds and assign values
@@ -195,19 +202,18 @@ public abstract class Categorize<ToType extends SeParameter, FallbackType extend
      * @param ds
      * @param values the values to affect to classes. number of values give the numbe of classes
      */
-    public void categorizeByNaturalBreaks(DataSource ds, ToType[] values){
+    public void categorizeByNaturalBreaks(DataSource ds, ToType[] values) {
         method = CategorizeMethod.NATURAL_BREAKS;
         int n = values.length;
         // compute n-1 thresholds and assign values
     }
-
 
     /**
      *
      * @param ds
      * @param values the values to affect to classes. number of values give the numbe of classes
      */
-    public void categorizeByQuantile(DataSource ds, ToType[] values){
+    public void categorizeByQuantile(DataSource ds, ToType[] values) {
         method = CategorizeMethod.QUANTILE;
         int n = values.length;
         // compute n-1 thresholds and assign values
@@ -220,18 +226,63 @@ public abstract class Categorize<ToType extends SeParameter, FallbackType extend
      * @param values the values to affect to classes. number of values give the numbe of classes
      * @param factor class (except first and last) interval equals sd*factor
      */
-    public void categorizeByStandardDeviation(DataSource ds, ToType[] values, double factor){
+    public void categorizeByStandardDeviation(DataSource ds, ToType[] values, double factor) {
         method = CategorizeMethod.STANDARD_DEVIATION;
         // even => mean is a threshold
         // odd => mean is the central point of the central class
         int n = values.length;
 
         // compute n-1 thresholds and assign values
-        
+
     }
 
-    private CategorizeMethod method;
 
+    @Override
+    public ParameterValueType getJAXBParameterValueType()
+    {
+        ParameterValueType p = new ParameterValueType();
+        p.getContent().add(this.getJAXBExpressionType());
+        return p;
+    }
+
+
+    @Override
+    public JAXBElement<? extends ExpressionType> getJAXBExpressionType() {
+        CategorizeType c = new CategorizeType();
+
+        if (fallbackValue != null) {
+            c.setFallbackValue(fallbackValue.toString());
+        }
+
+        if (firstClass != null) {
+            c.setFirstValue(firstClass.getJAXBParameterValueType());
+        }
+
+        if (lookupValue != null) {
+            c.setLookupValue(lookupValue.getJAXBParameterValueType());
+        }
+
+        if (this.succeeding) {
+            c.setThreshholdsBelongTo(ThreshholdsBelongToType.SUCCEEDING);
+        } else {
+            c.setThreshholdsBelongTo(ThreshholdsBelongToType.PRECEDING);
+        }
+        ObjectFactory of = new ObjectFactory();
+
+        List<JAXBElement<ParameterValueType>> tv = c.getThresholdAndValue();
+
+        for (Category<ToType> cat : classes){
+            ParameterValueType t = cat.getThreshold().getJAXBParameterValueType();
+            ParameterValueType v = cat.getClassValue().getJAXBParameterValueType();
+
+            tv.add(of.createThreshold(t));
+            tv.add(of.createValue(v));
+        }
+
+        return of.createCategorize(c);
+    }
+    
+    private CategorizeMethod method;
     private boolean succeeding = true;
     private RealParameter lookupValue;
     protected FallbackType fallbackValue;

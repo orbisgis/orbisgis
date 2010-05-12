@@ -10,6 +10,10 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 
 import javax.media.jai.RenderableGraphics;
+import javax.xml.bind.JAXBElement;
+import org.orbisgis.core.renderer.persistance.se.DensityFillType;
+
+import org.orbisgis.core.renderer.persistance.se.ObjectFactory;
 
 import org.gdms.data.DataSource;
 
@@ -187,6 +191,41 @@ public class DensityFill extends Fill {
             }
         }
     }
+
+
+    @Override
+    public DensityFillType getJAXBType(){
+        DensityFillType f = new DensityFillType();
+
+        if (isHatched){
+            if (hatches != null){
+                f.setPenStroke(hatches.getJAXBType());
+            }
+            if (orientation != null){
+                f.setOrientation(orientation.getJAXBParameterValueType());
+            }
+        }
+        else{
+            if (mark != null){
+                f.setGraphic(mark.getJAXBInstance());
+            }
+        }
+
+        if (percentageCovered != null){
+            f.setPercentage(percentageCovered.getJAXBParameterValueType());
+        }
+
+        return f;
+    }
+
+
+    @Override
+    public JAXBElement<DensityFillType> getJAXBInstance(){
+        ObjectFactory of = new ObjectFactory();
+        return of.createDensityFill(this.getJAXBType());
+    }
+
+
     private boolean isHatched;
     private PenStroke hatches;
     private RealParameter orientation;

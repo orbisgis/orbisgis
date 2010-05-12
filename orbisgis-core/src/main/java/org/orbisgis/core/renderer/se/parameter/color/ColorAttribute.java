@@ -14,11 +14,6 @@ public class ColorAttribute extends PropertyName implements ColorParameter {
     }
 
     @Override
-    public boolean dependsOnFeature(){
-        return true;
-    }
-
-    @Override
     public Color getColor(DataSource ds, long fid) throws ParameterException{
         try{
             return Color.getColor(getFieldValue(ds, (int)fid).getAsString()); //

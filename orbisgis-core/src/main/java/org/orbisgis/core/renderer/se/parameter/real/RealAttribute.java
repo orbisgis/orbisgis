@@ -11,12 +11,6 @@ public class RealAttribute extends PropertyName implements RealParameter{
         super(fieldName, ds);
     }
 
-
-    @Override
-    public boolean dependsOnFeature(){
-        return true;
-    }
-
     @Override
     public double getValue(DataSource ds, long fid) throws ParameterException{
         try{

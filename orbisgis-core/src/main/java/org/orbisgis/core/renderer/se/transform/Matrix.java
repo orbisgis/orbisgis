@@ -5,15 +5,14 @@
 package org.orbisgis.core.renderer.se.transform;
 
 import java.awt.geom.AffineTransform;
-import java.text.DecimalFormat;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import javax.xml.bind.JAXBElement;
+
 import org.gdms.data.DataSource;
+import org.orbisgis.core.renderer.persistance.se.MatrixType;
+import org.orbisgis.core.renderer.persistance.se.ObjectFactory;
 import org.orbisgis.core.renderer.se.common.MapEnv;
 import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
-import org.orbisgis.core.renderer.se.parameter.real.RealBinaryOperator;
-import org.orbisgis.core.renderer.se.parameter.real.RealBinaryOperatorType;
 import org.orbisgis.core.renderer.se.parameter.real.RealLiteral;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 
@@ -158,63 +157,13 @@ public class Matrix implements Transformation {
                 Uom.toPixel(c.getValue(ds, fid), uom, MapEnv.getScaleDenominator()),
                 Uom.toPixel(d.getValue(ds, fid), uom, MapEnv.getScaleDenominator()),
                 Uom.toPixel(e.getValue(ds, fid), uom, MapEnv.getScaleDenominator()),
-                Uom.toPixel(f.getValue(ds, fid), uom, MapEnv.getScaleDenominator())
-               );
+                Uom.toPixel(f.getValue(ds, fid), uom, MapEnv.getScaleDenominator()));
     }
 
     @Override
     public boolean allowedForGeometries() {
         return false;
     }
-
-    /**
-     * Return a new matrix which is the product of this x b
-     * Product is done with the help of RealBinaryOperator
-     * @param b
-     * @return
-     */
-    public Matrix product(Matrix b) {
-        Matrix product = new Matrix();
-
-        product.a = new RealBinaryOperator(
-                new RealBinaryOperator(this.a, b.a, RealBinaryOperatorType.MUL),
-                new RealBinaryOperator(this.c, b.b, RealBinaryOperatorType.MUL),
-                RealBinaryOperatorType.ADD);
-
-        product.b = new RealBinaryOperator(
-                new RealBinaryOperator(this.b, b.a, RealBinaryOperatorType.MUL),
-                new RealBinaryOperator(this.d, b.b, RealBinaryOperatorType.MUL),
-                RealBinaryOperatorType.ADD);
-
-        product.c = new RealBinaryOperator(
-                new RealBinaryOperator(this.a, b.c, RealBinaryOperatorType.MUL),
-                new RealBinaryOperator(this.c, b.d, RealBinaryOperatorType.MUL),
-                RealBinaryOperatorType.ADD);
-
-        product.d = new RealBinaryOperator(
-                new RealBinaryOperator(this.b, b.c, RealBinaryOperatorType.MUL),
-                new RealBinaryOperator(this.d, b.d, RealBinaryOperatorType.MUL),
-                RealBinaryOperatorType.ADD);
-
-        product.e = new RealBinaryOperator(
-                new RealBinaryOperator(
-                new RealBinaryOperator(this.a, b.e, RealBinaryOperatorType.MUL),
-                new RealBinaryOperator(this.c, b.f, RealBinaryOperatorType.MUL),
-                RealBinaryOperatorType.ADD),
-                this.e,
-                RealBinaryOperatorType.ADD);
-
-        product.f = new RealBinaryOperator(
-                new RealBinaryOperator(
-                new RealBinaryOperator(this.b, b.e, RealBinaryOperatorType.MUL),
-                new RealBinaryOperator(this.d, b.f, RealBinaryOperatorType.MUL),
-                RealBinaryOperatorType.ADD),
-                this.f,
-                RealBinaryOperatorType.ADD);
-
-        return product;
-    }
-
 
     /**
      * This method simplifiy the matrix.
@@ -243,63 +192,19 @@ public class Matrix implements Transformation {
         }
     }
 
+    @Override
+    public JAXBElement<?> getJAXBElement(){
+        MatrixType r = new MatrixType();
+        r.setA(a.getJAXBParameterValueType());
+        r.setB(b.getJAXBParameterValueType());
+        r.setC(c.getJAXBParameterValueType());
+        r.setD(d.getJAXBParameterValueType());
+        r.setE(e.getJAXBParameterValueType());
+        r.setF(f.getJAXBParameterValueType());
 
-
-    public boolean equals(Matrix matrix, DataSource ds, long fid){
-        try {
-            if (Math.abs(this.a.getValue(ds, fid) - matrix.a.getValue(ds, fid)) > 1e-10) {
-                return false;
-            }
-            if (Math.abs(this.b.getValue(ds, fid) - matrix.b.getValue(ds, fid)) > 1e-10) {
-                return false;
-            }
-            if (Math.abs(this.c.getValue(ds, fid) - matrix.c.getValue(ds, fid)) > 1e-10) {
-                return false;
-            }
-            if (Math.abs(this.d.getValue(ds, fid) - matrix.d.getValue(ds, fid)) > 1e-10) {
-                return false;
-            }
-            if (Math.abs(this.e.getValue(ds, fid) - matrix.e.getValue(ds, fid)) > 1e-10) {
-                return false;
-            }
-            if (Math.abs(this.f.getValue(ds, fid) - matrix.f.getValue(ds, fid)) > 1e-10) {
-                return false;
-            }
-            return true;
-
-        } catch (ParameterException ex) {
-            return false;
-        }
-
+        ObjectFactory of = new ObjectFactory();
+        return of.createMatrix(r);
     }
-
-
-    /**
-     * For testing purpose...
-     * @param ds
-     * @param fid
-     */
-
-    public void print(DataSource ds, long fid){
-        DecimalFormat df = new DecimalFormat("##.###");
-        try {
-            System.out.println(df.format(this.a.getValue(ds, fid)) + "\t"
-                             + df.format(this.c.getValue(ds, fid)) + "\t"
-                             + df.format(this.e.getValue(ds, fid)));
-
-            System.out.println(df.format(this.b.getValue(ds, fid)) + "\t"
-                             + df.format(this.d.getValue(ds, fid)) + "\t"
-                             + df.format(this.f.getValue(ds, fid)));
-
-            System.out.println("0.0\t0.0\t1.0");
-            System.out.println("");
-
-        } catch (ParameterException ex) {
-            Logger.getLogger(Matrix.class.getName()).log(Level.SEVERE, null, ex);
-        }
-
-    }
-
     private RealParameter a;
     private RealParameter b;
     private RealParameter c;

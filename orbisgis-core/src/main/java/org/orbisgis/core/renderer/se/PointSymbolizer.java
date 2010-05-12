@@ -7,12 +7,16 @@ import java.awt.geom.Point2D;
 
 import java.io.IOException;
 import javax.media.jai.RenderableGraphics;
+import javax.xml.bind.JAXBElement;
+import org.orbisgis.core.renderer.persistance.se.ObjectFactory;
+import org.orbisgis.core.renderer.persistance.se.PointSymbolizerType;
+
 import org.gdms.data.SpatialDataSourceDecorator;
 import org.gdms.driver.DriverException;
 import org.orbisgis.core.renderer.se.common.MapEnv;
 import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.graphic.GraphicCollection;
-import org.orbisgis.core.renderer.se.graphic.MarkGraphic;
+
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 
 
@@ -59,6 +63,28 @@ public class PointSymbolizer extends VectorSymbolizer {
         }
     }
 
+
+    @Override
+    public JAXBElement<PointSymbolizerType> getJAXBInstance() {
+        ObjectFactory of = new ObjectFactory();
+        PointSymbolizerType s = of.createPointSymbolizerType();
+        
+        this.setJAXBProperty(s);
+
+
+        s.setUnitOfMeasure(this.getUom().toURN());
+
+        if (transform != null) {
+            s.setTransform(transform.getJAXBType());
+        }
+
+
+        if (graphic != null) {
+            s.setGraphic(graphic.getJAXBInstance());
+        }
+
+        return of.createPointSymbolizer(s);
+    }
     
     private GraphicCollection graphic;
 }

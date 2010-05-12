@@ -7,7 +7,9 @@ package org.orbisgis.core.renderer.se.transform;
 import java.awt.geom.AffineTransform;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 import org.gdms.data.DataSource;
+import org.orbisgis.core.renderer.persistance.se.TransformType;
 import org.orbisgis.core.renderer.se.SymbolizerNode;
 import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
@@ -86,6 +88,21 @@ public class Transform implements SymbolizerNode {
     public void setParent(SymbolizerNode node) {
         parent = node;
     }
+
+
+    public TransformType getJAXBType(){
+        TransformType t = new TransformType();
+
+        List<Object> lists = t.getTranslateOrRotateOrScale();
+
+        for (Transformation tr : transformations){
+            // TODO Check order !!!
+            lists.add(tr.getJAXBElement());
+        }
+
+        return t;
+    }
+
     private SymbolizerNode parent;
     private AffineTransform consolidated;
     private ArrayList<Transformation> transformations;

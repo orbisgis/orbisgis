@@ -19,12 +19,6 @@ public class StringAttribute extends PropertyName implements StringParameter{
     }
 
     @Override
-    public boolean dependsOnFeature(){
-        return true;
-    }
-
-
-    @Override
     public String getValue(DataSource ds, long fid) throws ParameterException{ // TODO implement
         try {
             // TODO implement

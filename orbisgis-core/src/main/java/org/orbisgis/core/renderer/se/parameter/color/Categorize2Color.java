@@ -2,9 +2,8 @@ package org.orbisgis.core.renderer.se.parameter.color;
 
 
 import java.awt.Color;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.gdms.data.DataSource;
+import org.orbisgis.core.renderer.persistance.se.ParameterValueType;
 
 import org.orbisgis.core.renderer.se.parameter.Categorize;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
@@ -27,4 +26,5 @@ public class Categorize2Color extends Categorize<ColorParameter, ColorLiteral> i
             return this.fallbackValue.getColor(null, 0);
         }
     }
+
 }
