@@ -102,6 +102,11 @@ public class SymbolFactory {
 				mapUnits);
 	}
 
+	public static Symbol createPointSquareSymbol(Color outline,
+			Color fillColor, int size) {
+		return new SquarePointSymbol(outline, 1, fillColor, size, false);
+	}
+
 	public static Symbol createSymbolComposite(Symbol... symbols) {
 		return new SymbolComposite(symbols);
 	}
