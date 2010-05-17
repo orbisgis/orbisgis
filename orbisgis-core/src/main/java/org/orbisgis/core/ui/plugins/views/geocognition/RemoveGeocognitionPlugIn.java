@@ -37,13 +37,13 @@
 
 package org.orbisgis.core.ui.plugins.views.geocognition;
 
-import java.util.Observable;
-
 import org.orbisgis.core.geocognition.Geocognition;
 import org.orbisgis.core.geocognition.GeocognitionElement;
 import org.orbisgis.core.images.IconNames;
 import org.orbisgis.core.ui.pluginSystem.AbstractPlugIn;
 import org.orbisgis.core.ui.pluginSystem.PlugInContext;
+import org.orbisgis.core.ui.pluginSystem.PlugInContext.SelectionAvailability;
+import org.orbisgis.core.ui.pluginSystem.PlugInContext.ElementAvailability;
 import org.orbisgis.core.ui.pluginSystem.workbench.Names;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchContext;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchFrame;
@@ -51,7 +51,15 @@ import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchFrame;
 public class RemoveGeocognitionPlugIn extends AbstractPlugIn {
 
 	public boolean execute(PlugInContext context) throws Exception {
-		getPlugInContext().executeGeocognition();
+		Geocognition geocog = getPlugInContext().getGeocognition();
+		GeocognitionElement[] elements = getPlugInContext().getElements();
+		if (elements.length == 0) {
+			execute(geocog, null);
+		} else {
+			for (GeocognitionElement element : elements) {
+				execute(geocog, element);
+			}
+		}
 		return true;
 	}
 
@@ -69,27 +77,15 @@ public class RemoveGeocognitionPlugIn extends AbstractPlugIn {
 		geocognition.removeElement(element.getIdPath());
 	}
 
-	public boolean isVisible() {
-		return getPlugInContext().geocognitionIsVisible();
+	public boolean isEnabled() {
+		return getPlugInContext().checkLayerAvailability(
+				new SelectionAvailability[] {SelectionAvailability.SUPERIOR},
+				0,
+				new ElementAvailability[] {});
 	}
-
-	public boolean accepts(Geocognition geocog, GeocognitionElement element) {
-		return true;
-	}
-
-	public boolean acceptsSelectionCount(Geocognition geocog, int selectionCount) {
-		return selectionCount > 0;
-	}
-
-	@Override
+	
 	public boolean isSelected() {
 		// TODO Auto-generated method stub
 		return false;
-	}
-
-	@Override
-	public void update(Observable o, Object arg) {
-		// TODO Auto-generated method stub
-		
 	}
 }

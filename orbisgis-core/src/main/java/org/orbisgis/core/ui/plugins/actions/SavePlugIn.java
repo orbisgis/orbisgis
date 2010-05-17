@@ -1,7 +1,6 @@
 package org.orbisgis.core.ui.plugins.actions;
 
 import java.io.IOException;
-import java.util.Observable;
 
 import javax.swing.JButton;
 
@@ -64,25 +63,15 @@ public class SavePlugIn extends AbstractPlugIn {
 		IEditor editor = em.getActiveEditor();
 		return editor;
 	}
-
-	@Override
-	public void update(Observable o, Object arg) {
-		btn.setEnabled(isEnabled());
-		btn.setVisible(isVisible());
-
-	}
 	
 	public boolean isEnabled() {
+		boolean isEnabled = false;
 		IEditor editor = getEditor();
-		return editor != null && editor.getElement().isModified();
+		isEnabled = editor != null && editor.getElement().isModified();
+		btn.setEnabled(isEnabled);
+		return isEnabled;
 	}
-
-	@Override
-	public boolean isVisible() {
-		return true;
-	}
-
-	@Override
+	
 	public boolean isSelected() {
 		// TODO Auto-generated method stub
 		return false;

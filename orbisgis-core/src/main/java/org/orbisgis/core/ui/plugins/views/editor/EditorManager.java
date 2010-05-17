@@ -39,7 +39,6 @@ package org.orbisgis.core.ui.plugins.views.editor;
 import org.orbisgis.core.edition.EditableElement;
 import org.orbisgis.core.ui.editor.EditorListener;
 import org.orbisgis.core.ui.editor.IEditor;
-import org.orbisgis.progress.IProgressMonitor;
 
 public interface EditorManager {
 
@@ -90,12 +89,10 @@ public interface EditorManager {
 	 * between elements is done using the {@link Object#equals(Object)} method.
 	 * 
 	 * @param element
-	 * @param pm
 	 * @throws UnsupportedOperationException
 	 *             If there is no valid editor for the specified element
 	 */
-	void open(EditableElement element, IProgressMonitor pm)
-			throws UnsupportedOperationException;
+	void open(EditableElement element) throws UnsupportedOperationException;
 
 	/**
 	 * Gets the editors that edit the specified element

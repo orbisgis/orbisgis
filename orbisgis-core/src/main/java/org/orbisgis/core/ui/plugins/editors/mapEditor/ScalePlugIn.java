@@ -44,11 +44,14 @@ import java.awt.Toolkit;
 import java.util.Observable;
 
 import javax.swing.BoxLayout;
+import javax.swing.ImageIcon;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import org.orbisgis.core.Services;
+import org.orbisgis.core.images.IconLoader;
+import org.orbisgis.core.images.IconNames;
 import org.orbisgis.core.layerModel.MapContext;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.ui.editor.IEditor;
@@ -276,8 +279,24 @@ public class ScalePlugIn extends AbstractPlugIn {
 		return horizontalScale;
 	}
 
-	@Override
+	public boolean isEnabled() {		
+		boolean isVisible = false;
+		IEditor editor = Services.getService(EditorManager.class).getActiveEditor();
+		if (editor != null && editor instanceof MapEditorPlugIn) {
+			MapContext mc = (MapContext) editor.getElement().getObject();
+			isVisible = mc.getLayerModel().getLayerCount() > 0;
+			panel.setEnabled(isVisible);
+		}
+		panel.setVisible(isVisible);
+		return isVisible;		
+	}
+	
 	public boolean isSelected() {
+		// TODO Auto-generated method stub
 		return false;
+	}
+	
+	public static ImageIcon getIcon() {
+		return IconLoader.getIcon(IconNames.EXIT_ICON);
 	}
 }

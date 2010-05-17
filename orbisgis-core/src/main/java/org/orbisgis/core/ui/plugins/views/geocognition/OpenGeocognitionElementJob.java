@@ -24,7 +24,7 @@ public class OpenGeocognitionElementJob implements BackgroundJob {
 	public void run(IProgressMonitor pm) {
 		EditorManager em = Services.getService(EditorManager.class);
 		for (EditableElement element : elements) {
-			em.open(element, pm);
+			em.open(element);
 		}
 	}
 

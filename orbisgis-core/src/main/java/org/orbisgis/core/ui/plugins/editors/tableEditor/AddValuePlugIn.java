@@ -37,8 +37,6 @@
 
 package org.orbisgis.core.ui.plugins.editors.tableEditor;
 
-import java.util.Observable;
-
 import org.gdms.data.DataSource;
 import org.gdms.data.NonEditableDataSourceException;
 import org.gdms.data.metadata.Metadata;
@@ -63,10 +61,8 @@ import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchContext;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchFrame;
 
 public class AddValuePlugIn extends AbstractPlugIn {
-
-	private Integer selectedColumn;
-	private DataSource dataSource;
-	private boolean isVisible;
+	
+	private DataSource dataSource;	
 
 	public boolean execute(PlugInContext context) throws Exception {
 		IEditor editor = context.getActiveEditor();
@@ -76,7 +72,7 @@ public class AddValuePlugIn extends AbstractPlugIn {
 		MultiInputPanel mip = new MultiInputPanel("Add value");
 		try {
 			Metadata metadata = dataSource.getMetadata();
-			Type type = metadata.getFieldType(selectedColumn);
+			Type type = metadata.getFieldType(getSelectedColumn());
 			int typeCode = type.getTypeCode();
 			switch (typeCode) {
 			case Type.BOOLEAN:
@@ -117,21 +113,21 @@ public class AddValuePlugIn extends AbstractPlugIn {
 				switch (typeCode) {
 				case Type.BOOLEAN:
 					setValue(selectedRow, new Boolean(mip.getInput("value")),
-							selectedColumn);
+							getSelectedColumn());
 					break;
 				case Type.DOUBLE:
 				case Type.FLOAT:
 					setValue(selectedRow, new Double(mip.getInput("value")),
-							selectedColumn);
+							getSelectedColumn());
 					break;
 				case Type.INT:
 				case Type.LONG:
 				case Type.SHORT:
 					setValue(selectedRow, new Integer(mip.getInput("value")),
-							(int) selectedColumn);
+							(int) getSelectedColumn());
 					break;
 				case Type.STRING:
-					setValue(selectedRow, mip.getInput("value"), selectedColumn);
+					setValue(selectedRow, mip.getInput("value"), getSelectedColumn());
 					break;
 				default:
 					throw new IllegalArgumentException("Unknown data type: "
@@ -147,8 +143,7 @@ public class AddValuePlugIn extends AbstractPlugIn {
 		}
 		return true;
 	}
-
-	@Override
+	
 	public void initialize(PlugInContext context) throws Exception {
 		WorkbenchContext wbContext = context.getWorkbenchContext();
 		WorkbenchFrame frame = (WorkbenchFrame) wbContext.getWorkbench()
@@ -157,11 +152,6 @@ public class AddValuePlugIn extends AbstractPlugIn {
 				new String[] { Names.POPUP_TABLE_ADDVALUE_PATH1 },
 				Names.POPUP_TABLE_ADDVALUE_GROUP, false,
 				getIcon(IconNames.POPUP_TABLE_ADDVALUE_ICON), wbContext);
-	}
-
-	@Override
-	public void update(Observable o, Object arg) {
-		isVisible(arg);
 	}
 
 	private void setValue(int[] selectedRow, String value,
@@ -196,44 +186,28 @@ public class AddValuePlugIn extends AbstractPlugIn {
 		dataSource.commit();
 	}
 
-	public boolean isEnabled() {
-		return true;
-	}
-
-	public boolean isVisible() {
-		return isVisible;
-	}
-
-	public boolean isVisible(Object arg) {
+	public boolean isEnabled() {		
+		boolean isEnabled = false;		
 		IEditor tableEditor = null;
 		if((tableEditor=getPlugInContext().getTableEditor()) != null){
+			final TableEditableElement element = (TableEditableElement) tableEditor.getElement();
 			try {
-				selectedColumn = (Integer) arg;
-			} catch (Exception e) {
-				return isVisible = false;
-			}
-			final TableEditableElement element = (TableEditableElement) tableEditor
-					.getElement();
-			if (selectedColumn == null)
-				return isVisible = false;
-			try {
-				if ((selectedColumn != -1) && element.isEditable()) {
+				if (element!=null && (getSelectedColumn()!= -1) && element.isEditable()) {
 					Metadata metadata = element.getDataSource().getMetadata();
-					Type type = metadata.getFieldType(selectedColumn);
+					Type type = metadata.getFieldType(getSelectedColumn());
 					int typeCode = type.getTypeCode();
 					if (typeCode != Type.GEOMETRY)
-						return isVisible = true;
+						return isEnabled = true;
 				}
-
+	
 			} catch (DriverException e) {
 				Services.getService(ErrorManager.class).error(
 						"Cannot access field information", e);
 			}
 		}
-		return isVisible = false;
+		return isEnabled;
 	}
 
-	@Override
 	public boolean isSelected() {
 		// TODO Auto-generated method stub
 		return false;

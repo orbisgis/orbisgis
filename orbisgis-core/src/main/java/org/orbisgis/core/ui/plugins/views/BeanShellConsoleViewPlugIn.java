@@ -36,44 +36,69 @@
  */
 package org.orbisgis.core.ui.plugins.views;
 
+import java.awt.Color;
 import java.awt.datatransfer.Transferable;
 import java.io.BufferedWriter;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.PrintStream;
 import java.util.Observable;
 
 import javax.swing.JMenuItem;
 import javax.swing.text.JTextComponent;
 
+import org.orbisgis.core.DataManager;
+import org.orbisgis.core.Services;
 import org.orbisgis.core.images.IconNames;
+import org.orbisgis.core.layerModel.MapContext;
 import org.orbisgis.core.sif.OpenFilePanel;
 import org.orbisgis.core.sif.SaveFilePanel;
 import org.orbisgis.core.sif.UIFactory;
+import org.orbisgis.core.ui.editors.map.MapContextManager;
 import org.orbisgis.core.ui.pluginSystem.PlugInContext;
 import org.orbisgis.core.ui.pluginSystem.ViewPlugIn;
 import org.orbisgis.core.ui.pluginSystem.workbench.Names;
-import org.orbisgis.core.ui.plugins.views.beanShellConsole.BeanShellUtils;
 import org.orbisgis.core.ui.plugins.views.beanShellConsole.CompletionKeyListener;
 import org.orbisgis.core.ui.plugins.views.sqlConsole.ConsoleListener;
 import org.orbisgis.core.ui.plugins.views.sqlConsole.ConsolePanel;
 
+import bsh.EvalError;
+import bsh.Interpreter;
+
 public class BeanShellConsoleViewPlugIn extends ViewPlugIn {
 
 	private ConsolePanel panel;
-
+	private Interpreter interpreter = new Interpreter();;
+	private ByteArrayOutputStream scriptOutput;	
 	private JMenuItem menuItem;
-
-	private BeanShellUtils bshUtils;
 
 	public BeanShellConsoleViewPlugIn() {
 
 	}
 
 	public void initialize(PlugInContext context) throws Exception {
+		
+		try {
+			interpreter.set("bshEditor", this);
 
-		bshUtils = new BeanShellUtils();
+			scriptOutput = new ByteArrayOutputStream();
+
+			PrintStream outStream = new PrintStream(scriptOutput);
+			interpreter.setOut(outStream);
+
+			DataManager dm = Services.getService(DataManager.class);
+
+			interpreter.setClassLoader(dm.getDSF().getClass().getClassLoader());
+			interpreter.set("dsf", dm.getDSF());
+
+			interpreter.eval("setAccessibility(true)");
+
+		} catch (EvalError e) {
+			Services.getErrorManager().error("Cannot initialize bean shell", e);
+		}
 
 		panel = new ConsolePanel(false, new ConsoleListener() {
 
@@ -118,7 +143,7 @@ public class BeanShellConsoleViewPlugIn extends ViewPlugIn {
 
 			public void execute(String text) {
 				if (text.trim().length() > 0) {
-					bshUtils.eval(text);
+					eval(text);
 				} else {
 
 				}
@@ -141,24 +166,73 @@ public class BeanShellConsoleViewPlugIn extends ViewPlugIn {
 		});
 		panel.setText("print(\"" + "Hello world !\"" + ");");
 		JTextComponent txt = panel.getTextComponent();
-		txt.addKeyListener(new CompletionKeyListener(true, txt, bshUtils));
+		txt.addKeyListener(new CompletionKeyListener(true, txt, interpreter));
 
 		menuItem = context.getFeatureInstaller().addMainMenuItem(this,
 				new String[] { Names.VIEW }, Names.BEANSHELL, true,
-				getIcon(IconNames.BEANSHELL_ICON), null, panel, context);
+				getIcon(IconNames.BEANSHELL_ICON), null, panel,	context);
 	}
-
-	@Override
+	
 	public boolean execute(PlugInContext context) throws Exception {
 		getPlugInContext().loadView(getId());
 		return true;
 	}
 
-	public void update(Observable o, Object arg) {
-		menuItem.setSelected(getPlugInContext().viewIsOpen(getId()));
+	private void eval(String text) {
+		OutputManager outputManager = (OutputManager) Services
+				.getService(OutputManager.class);
+		try {
+			MapContext mc = ((MapContextManager) Services
+					.getService(MapContextManager.class)).getActiveMapContext();
+
+			interpreter
+					.getNameSpace()
+					.importCommands(
+							"org.orbisgis.core.ui.plugins.views.beanShellConsole.commands");
+
+			if (mc != null) {
+				interpreter.set("mc", mc);
+			}
+
+			interpreter.eval(text);
+			String out = getOutput();
+			if (out.length() > 0) {
+				outputManager.println("--------BeanShell result ------------",
+						Color.GREEN);
+
+				outputManager.println(out, Color.blue);
+				outputManager.println("--------------------", Color.GREEN);
+			}
+
+		} catch (IllegalArgumentException e) {
+			Services.getErrorManager().error(
+					"Cannot execute the beanshel script.", e);
+		} catch (EvalError e) {
+			outputManager.println("--------BeanShell error ------------",
+					Color.RED);
+			outputManager.println(e.getErrorText(), Color.RED);
+			outputManager.println("--------------------", Color.RED);
+		}
 	}
 
-	public String getName() {
+	private String getOutput() {
+		String ret = new String(scriptOutput.toByteArray());
+		scriptOutput.reset();
+		return ret;
+	}
+
+	public boolean isEnabled() {		
+		return true;
+	}
+	
+	public boolean isSelected() {
+		boolean isSelected = false;
+		isSelected = getPlugInContext().viewIsOpen(getId());
+		menuItem.setSelected(isSelected);
+		return isSelected;
+	}
+	
+	public String getName() {		
 		return "BeanShell View";
 	}
 }

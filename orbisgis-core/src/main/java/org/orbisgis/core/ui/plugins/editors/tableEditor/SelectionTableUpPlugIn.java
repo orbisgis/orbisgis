@@ -37,9 +37,6 @@
 
 package org.orbisgis.core.ui.plugins.editors.tableEditor;
 
-import java.awt.event.MouseEvent;
-import java.util.Observable;
-
 import javax.swing.JButton;
 
 import org.orbisgis.core.images.IconNames;
@@ -54,8 +51,7 @@ import org.orbisgis.core.ui.plugins.views.TableEditorPlugIn;
 
 public class SelectionTableUpPlugIn extends AbstractPlugIn {
 
-	private JButton btn;
-	private boolean menuItemIsVisible;
+	private JButton btn;	
 
 	public SelectionTableUpPlugIn() {
 		btn = new JButton(getIcon(IconNames.POPUP_TABLE_UP_ICON));
@@ -80,28 +76,18 @@ public class SelectionTableUpPlugIn extends AbstractPlugIn {
 				getIcon(IconNames.POPUP_TABLE_UP_ICON), wbContext);
 	}
 
-	// If MouseEvent -> Row selected in Table editor
-	// else header clicked event (cf-TableComponent)
-	public void update(Observable o, Object arg) {
-		btn.setEnabled(isEnabled());
-		btn.setVisible(true);
-		menuItemIsVisible = (arg instanceof MouseEvent) ? true : false;
-	}
-
 	public boolean isEnabled() {
+		boolean isEnabled = false;
 		IEditor editor = null;
-		if((editor=getPlugInContext().getTableEditor()) != null){
-			return ((TableEditableElement) editor.getElement()).getSelection()
-					.getSelectedRows().length > 0;
+		if((editor=getPlugInContext().getTableEditor()) != null
+				&& getSelectedColumn() ==-1){
+			isEnabled= ((TableEditableElement) editor.getElement()).getSelection()
+							.getSelectedRows().length > 0;
 		}
-		return false;
+		btn.setEnabled(isEnabled);
+		return isEnabled;
 	}
-
-	public boolean isVisible() {
-		return menuItemIsVisible && isEnabled();
-	}
-
-	@Override
+	
 	public boolean isSelected() {
 		// TODO Auto-generated method stub
 		return false;

@@ -38,7 +38,6 @@
 package org.orbisgis.core.ui.plugins.editors.tableEditor;
 
 import java.io.File;
-import java.util.Observable;
 
 import javax.swing.JButton;
 
@@ -64,22 +63,19 @@ import org.orbisgis.core.ui.editor.IEditor;
 import org.orbisgis.core.ui.editors.table.TableEditableElement;
 import org.orbisgis.core.ui.pluginSystem.AbstractPlugIn;
 import org.orbisgis.core.ui.pluginSystem.PlugInContext;
-import org.orbisgis.core.ui.pluginSystem.PlugInContext.LayerSelectionTest;
-import org.orbisgis.core.ui.pluginSystem.PlugInContext.LayerTest;
+import org.orbisgis.core.ui.pluginSystem.PlugInContext.SelectionAvailability;
+import org.orbisgis.core.ui.pluginSystem.PlugInContext.LayerAvailability;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchContext;
-import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchFrame;
-import org.orbisgis.core.ui.plugins.views.MapEditorPlugIn;
 import org.orbisgis.core.ui.plugins.views.TableEditorPlugIn;
 
-public class CreateSourceFromSelectionPlugIn extends AbstractPlugIn {
+public class CreateSourceFromTableSelectionPlugIn extends AbstractPlugIn {
 
 	private JButton btn;
 
-	public CreateSourceFromSelectionPlugIn() {
+	public CreateSourceFromTableSelectionPlugIn() {
 		btn = new JButton(getIcon(IconNames.TABLE_CREATE_SRC_ICON));
 	}
-
-	@Override
+	
 	public boolean execute(PlugInContext context) throws Exception {		
 		TableEditorPlugIn tableEditor = null;
 		if((tableEditor=getPlugInContext().getTableEditor()) != null){
@@ -99,22 +95,11 @@ public class CreateSourceFromSelectionPlugIn extends AbstractPlugIn {
 		}
 		return true;
 	}
-
-	@Override
+	
 	public void initialize(PlugInContext context) throws Exception {
 		WorkbenchContext wbContext = context.getWorkbenchContext();
 		wbContext.getWorkbench().getFrame().getEditionTableToolBar().addPlugIn(
 				this, btn, context);
-
-		WorkbenchFrame frame = wbContext.getWorkbench().getFrame().getToc();
-		context.getFeatureInstaller().addPopupMenuItem(frame, this,
-				new String[] { "Create datasource from selection" },
-				"toc.Selection", false, getIcon("table_go.png"), wbContext);
-	}
-
-	@Override
-	public void update(Observable o, Object arg) {
-		btn.setEnabled(isEnabled());
 	}
 
 	public static void createSourceFromSelection(DataSource original,
@@ -164,45 +149,18 @@ public class CreateSourceFromSelectionPlugIn extends AbstractPlugIn {
 			Services.getService(ErrorManager.class).error("Bug", e);
 		}
 	}
-
-	public boolean isEnabled() {
-		IEditor editor = null;
-		if((editor=getPlugInContext().getTableEditor()) != null){
-			editor = (TableEditorPlugIn) editor;
-			TableEditableElement element = (TableEditableElement) editor
-					.getElement();
-			return element.getSelection().getSelectedRows().length > 0;
-		} else if ((editor=getPlugInContext().getMapEditor()) != null) {
-			MapEditorPlugIn mapEditor = (MapEditorPlugIn) editor;
-			MapContext mc = (MapContext) mapEditor.getElement().getObject();
-			return mc.getLayerModel().getSelection().length > 0;
-		}
-		return false;
+	
+	public boolean isEnabled() {		
+		boolean isEnabled = false;
+		isEnabled =  getPlugInContext().getTableEditor() != null &&
+						getPlugInContext().checkLayerAvailability(
+							new SelectionAvailability[] {SelectionAvailability.SUPERIOR},
+							0,
+							new LayerAvailability[] {LayerAvailability.VECTORIAL, LayerAvailability.ROW_SELECTED});
+		btn.setEnabled(isEnabled);
+		return isEnabled;
 	}
 
-	public boolean isVisible() {
-/*		return getPlugInContext().
-		checkLayerAvailability();*/
-		return getPlugInContext().checkLayerAvailability(
-										new LayerSelectionTest[] {LayerSelectionTest.EQUAL},
-										1,
-										new LayerTest[] {LayerTest.VECTORIAL}, 
-										false);
-	}
-
-/*	public boolean accepts(MapContext mc, ILayer layer) {
-		try {
-			return layer.isVectorial() && layer.getSelection().length > 0;
-		} catch (DriverException e) {
-			return false;
-		}
-	}
-
-	public boolean acceptsSelectionCount(int selectionCount) {
-		return selectionCount > 0;
-	}*/
-
-	@Override
 	public boolean isSelected() {
 		// TODO Auto-generated method stub
 		return false;

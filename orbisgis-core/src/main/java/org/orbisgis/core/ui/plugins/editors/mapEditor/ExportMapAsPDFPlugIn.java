@@ -46,7 +46,6 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.util.Observable;
 
 import javax.imageio.ImageIO;
 import javax.swing.JOptionPane;
@@ -254,9 +253,6 @@ public class ExportMapAsPDFPlugIn extends AbstractPlugIn {
 
 	}
 
-	public void update(Observable o, Object arg) {
-	}
-
 	public boolean isEnabled() {
 		MapEditorPlugIn mapEditor = null;
 		if((mapEditor=getPlugInContext().getMapEditor()) != null){
@@ -265,15 +261,7 @@ public class ExportMapAsPDFPlugIn extends AbstractPlugIn {
 		}
 		return false;
 	}
-
-	public boolean isVisible() {
-		if((getPlugInContext().getMapEditor()) != null){
-			return true;
-		}
-		return false;
-	}
-
-	@Override
+	
 	public boolean isSelected() {
 		// TODO Auto-generated method stub
 		return false;

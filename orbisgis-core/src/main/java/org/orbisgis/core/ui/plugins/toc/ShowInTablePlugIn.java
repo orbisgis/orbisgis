@@ -1,7 +1,5 @@
 package org.orbisgis.core.ui.plugins.toc;
 
-import java.util.Observable;
-
 import org.orbisgis.core.Services;
 import org.orbisgis.core.background.BackgroundManager;
 import org.orbisgis.core.geocognition.Geocognition;
@@ -13,8 +11,8 @@ import org.orbisgis.core.layerModel.MapContext;
 import org.orbisgis.core.ui.editorViews.toc.EditableLayer;
 import org.orbisgis.core.ui.pluginSystem.AbstractPlugIn;
 import org.orbisgis.core.ui.pluginSystem.PlugInContext;
-import org.orbisgis.core.ui.pluginSystem.PlugInContext.LayerSelectionTest;
-import org.orbisgis.core.ui.pluginSystem.PlugInContext.LayerTest;
+import org.orbisgis.core.ui.pluginSystem.PlugInContext.SelectionAvailability;
+import org.orbisgis.core.ui.pluginSystem.PlugInContext.LayerAvailability;
 import org.orbisgis.core.ui.pluginSystem.workbench.Names;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchContext;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchFrame;
@@ -23,7 +21,16 @@ import org.orbisgis.core.ui.plugins.views.geocognition.OpenGeocognitionElementJo
 public class ShowInTablePlugIn extends AbstractPlugIn {
 
 	public boolean execute(PlugInContext context) throws Exception {
-		getPlugInContext().executeLayers();
+		MapContext mapContext = getPlugInContext().getMapContext();
+		ILayer[] selectedResources = mapContext.getSelectedLayers();
+
+		if (selectedResources.length == 0) {
+			execute(mapContext, null);
+		} else {
+			for (ILayer resource : selectedResources) {
+				execute(mapContext, resource);
+			}
+		}
 		return true;
 	}
 
@@ -53,23 +60,15 @@ public class ShowInTablePlugIn extends AbstractPlugIn {
 						layer)));
 	}
 
-	public boolean isVisible() {
+	public boolean isEnabled() {
 		return getPlugInContext().checkLayerAvailability(
-				new LayerSelectionTest[] {LayerSelectionTest.EQUAL},
+				new SelectionAvailability[] {SelectionAvailability.EQUAL},
 				1,
-				new LayerTest[] {LayerTest.DATASOURCE_NOT_NULL}, 
-				false);
+				new LayerAvailability[] {LayerAvailability.DATASOURCE_NOT_NULL});
 	}
-
-	@Override
+	
 	public boolean isSelected() {
 		// TODO Auto-generated method stub
 		return false;
-	}
-
-	@Override
-	public void update(Observable o, Object arg) {
-		// TODO Auto-generated method stub
-		
 	}
 }

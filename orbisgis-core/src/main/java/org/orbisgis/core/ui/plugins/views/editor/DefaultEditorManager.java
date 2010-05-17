@@ -42,7 +42,6 @@ import org.orbisgis.core.edition.EditableElementException;
 import org.orbisgis.core.ui.editor.EditorDecorator;
 import org.orbisgis.core.ui.editor.EditorListener;
 import org.orbisgis.core.ui.editor.IEditor;
-import org.orbisgis.progress.IProgressMonitor;
 import org.orbisgis.progress.NullProgressMonitor;
 
 public class DefaultEditorManager implements EditorManager {
@@ -86,7 +85,7 @@ public class DefaultEditorManager implements EditorManager {
 	}
 
 	@Override
-	public void open(EditableElement element, IProgressMonitor pm)
+	public void open(EditableElement element)
 			throws UnsupportedOperationException {
 		EditorDecorator editor = EditorPanel.getFirstEditor(element);
 
@@ -97,7 +96,7 @@ public class DefaultEditorManager implements EditorManager {
 			if (!this.editorPanel.isBeingEdited(element, editor.getEditor()
 					.getClass())) {
 				try {
-					element.open(pm);
+					element.open(new NullProgressMonitor());
 					editor.setElement(element);
 				} catch (EditableElementException e) {
 					logger.debug(

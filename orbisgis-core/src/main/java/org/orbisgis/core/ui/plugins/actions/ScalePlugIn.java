@@ -41,7 +41,6 @@ import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Toolkit;
-import java.util.Observable;
 
 import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
@@ -194,28 +193,6 @@ public class ScalePlugIn extends AbstractPlugIn {
 				.addPanelPlugIn(this, panel);
 	}
 
-	public void update(Observable o, Object arg) {
-		IEditor editor = Services.getService(EditorManager.class)
-				.getActiveEditor();
-		if (editor != null && editor instanceof MapEditorPlugIn)
-			panel.setEnabled(isEnabled(editor));
-		else
-			panel.setEnabled(false);
-	}
-
-	public boolean isEnabled(IEditor editor) {
-		MapContext mc = (MapContext) editor.getElement().getObject();
-		return mc.getLayerModel().getLayerCount() > 0;
-	}
-
-	public boolean isVisible() {
-		return true;
-	}
-
-	public static ImageIcon getIcon() {
-		return IconLoader.getIcon(IconNames.EXIT_ICON);
-	}
-
 	private Envelope getEnveloppeFromScale(Envelope oldEnvelope,
 			int panelWidth, int scale) {
 
@@ -283,11 +260,26 @@ public class ScalePlugIn extends AbstractPlugIn {
 				/ (INCHTOCM / SCREENRES * panelWidth);
 
 		return horizontalScale;
-	}
+	}	
 
-	@Override
+	public boolean isEnabled() {		
+		boolean isVisible = false;
+		IEditor editor = Services.getService(EditorManager.class).getActiveEditor();
+		if (editor != null && editor instanceof MapEditorPlugIn) {
+			MapContext mc = (MapContext) editor.getElement().getObject();
+			isVisible = mc.getLayerModel().getLayerCount() > 0;
+			panel.setEnabled(isVisible);
+		}
+		panel.setVisible(isVisible);
+		return isVisible;		
+	}
+	
 	public boolean isSelected() {
 		// TODO Auto-generated method stub
 		return false;
+	}
+	
+	public static ImageIcon getIcon() {
+		return IconLoader.getIcon(IconNames.EXIT_ICON);
 	}
 }

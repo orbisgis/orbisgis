@@ -8,7 +8,6 @@ import java.util.Map;
 import java.util.Observable;
 import java.util.Observer;
 
-import org.orbisgis.core.ui.editors.map.tool.Automaton;
 import org.orbisgis.core.ui.pluginSystem.AbstractPlugIn;
 import org.orbisgis.core.ui.pluginSystem.PlugIn;
 import org.orbisgis.core.ui.pluginSystem.PlugInContext;
@@ -33,10 +32,6 @@ public abstract class WorkbenchContext extends Observable {
 
 	public OrbisWorkbench getWorkbench() {
 		return null;
-	}
-
-	public PlugInContext createPlugInContext(AbstractPlugIn plugIn) {
-		return new PlugInContext(this,plugIn);
 	}
 	
 	public PlugInContext createPlugInContext(PlugIn plugIn) {

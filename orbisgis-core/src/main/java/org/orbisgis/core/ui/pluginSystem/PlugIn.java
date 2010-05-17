@@ -8,7 +8,7 @@ public interface PlugIn extends Observer {
 
 	boolean execute(PlugInContext context) throws Exception;
 
-	boolean isVisible();
+	boolean isEnabled();
 	
 	boolean isSelected();
 	

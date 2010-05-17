@@ -1,7 +1,5 @@
 package org.orbisgis.core.ui.plugins.toc;
 
-import java.util.Observable;
-
 import org.orbisgis.core.Services;
 import org.orbisgis.core.background.BackgroundJob;
 import org.orbisgis.core.background.BackgroundManager;
@@ -11,6 +9,8 @@ import org.orbisgis.core.layerModel.MapContext;
 import org.orbisgis.core.ui.editor.IEditor;
 import org.orbisgis.core.ui.pluginSystem.AbstractPlugIn;
 import org.orbisgis.core.ui.pluginSystem.PlugInContext;
+import org.orbisgis.core.ui.pluginSystem.PlugInContext.SelectionAvailability;
+import org.orbisgis.core.ui.pluginSystem.PlugInContext.LayerAvailability;
 import org.orbisgis.core.ui.pluginSystem.workbench.Names;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchContext;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchFrame;
@@ -24,9 +24,7 @@ public class ZoomToLayerPlugIn extends AbstractPlugIn {
 
 	public boolean execute(PlugInContext context) throws Exception {
 		
-		final MapContext mapContext = context.getWorkbenchContext().getWorkbench()
-												.getFrame().getToc().getMapContext();
-		
+		final MapContext mapContext = getPlugInContext().getMapContext();		
 		BackgroundManager bm = Services.getService(BackgroundManager.class);
 		bm.backgroundOperation(new BackgroundJob() {
 
@@ -65,28 +63,19 @@ public class ZoomToLayerPlugIn extends AbstractPlugIn {
 				getIcon(IconNames.POPUP_TOC_ZOOM_ICON), wbContext);
 	}
 
-	public boolean isVisible() {
-		return getPlugInContext().IsMultipleLayer();
-	}
-
-	public boolean acceptsAll(ILayer[] layer) {
-		return layer.length > 0;
+	public boolean isEnabled() {
+		return getPlugInContext().checkLayerAvailability(
+				new SelectionAvailability[]{ SelectionAvailability.SUPERIOR , SelectionAvailability.ACTIVE_MAPCONTEXT},
+				0,
+				new LayerAvailability[]{});
 	}
 	
 	public String getName() {
 		return "ZoomToLayer";
 	}
-
-	@Override
+	
 	public boolean isSelected() {
 		// TODO Auto-generated method stub
 		return false;
-	}
-
-	@Override
-	public void update(Observable o, Object arg) {
-		// TODO Auto-generated method stub
-		
-	}
-	
+	}	
 }

@@ -64,7 +64,7 @@ public class AbstractTest extends TestCase {
 		Services.registerService(EditorManager.class, "", new EditorManager() {
 
 			@Override
-			public void open(EditableElement element, IProgressMonitor pm)
+			public void open(EditableElement element)
 					throws UnsupportedOperationException {
 			}
 

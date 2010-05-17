@@ -105,7 +105,7 @@ public class Menu implements IMenu {
 		ret.setName(id);
 		ret.setText(text);
 		if (plugin != null)
-			ret.setVisible(plugin.isVisible());
+			ret.setVisible(plugin.isEnabled());
 		return ret;
 	}
 
@@ -155,7 +155,7 @@ public class Menu implements IMenu {
 			
 		} else 	if (subMenus.getPlugin() != null) {
 			hasElement = hasElement
-					|| subMenus.getPlugin().isVisible();
+					|| subMenus.getPlugin().isEnabled();
 			if(subMenus.isSelectable())
 				subMenus.setSelected(subMenus.getPlugin().isSelected());
 		}			

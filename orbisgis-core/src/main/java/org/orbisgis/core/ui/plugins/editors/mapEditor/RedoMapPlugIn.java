@@ -37,8 +37,6 @@
 
 package org.orbisgis.core.ui.plugins.editors.mapEditor;
 
-import java.util.Observable;
-
 import javax.swing.JButton;
 
 import org.gdms.driver.DriverException;
@@ -58,8 +56,7 @@ public class RedoMapPlugIn extends AbstractPlugIn {
 	public RedoMapPlugIn() {
 		btn = new JButton(getIcon(IconNames.REDO_ICON));
 	}
-
-	@Override
+	
 	public boolean execute(PlugInContext context) throws Exception {
 		MapEditorPlugIn mapEditor = (MapEditorPlugIn) getPlugInContext().getActiveEditor();
 		MapContext mc = (MapContext) mapEditor.getElement().getObject();
@@ -71,45 +68,25 @@ public class RedoMapPlugIn extends AbstractPlugIn {
 		}
 		return true;
 	}
-
-	@Override
+	
 	public void initialize(PlugInContext context) throws Exception {
 		WorkbenchContext wbcontext = context.getWorkbenchContext();
 		wbcontext.getWorkbench().getFrame().getEditionMapToolBar().addPlugIn(
 				this, btn, context);
 	}
 
-	@Override
-	public void update(Observable o, Object arg) {
-		btn.setEnabled(isEnabled());
-		btn.setVisible(isVisible());
-	}
-
 	public boolean isEnabled() {
+		boolean isEnabled = false;
 		MapEditorPlugIn mapEditor = null;
 		if((mapEditor=getPlugInContext().getMapEditor()) != null){
 			MapContext mc = (MapContext) mapEditor.getElement().getObject();
 			ILayer activeLayer = mc.getActiveLayer();
-			if (activeLayer != null) {
-				return activeLayer.getDataSource().canRedo();
-			} else {
-				return false;
-			}
-		}
-		return false;
+			isEnabled = (activeLayer != null) && activeLayer.getDataSource().canRedo();
+		}		
+		btn.setEnabled(isEnabled);
+		return isEnabled;
 	}
-
-	public boolean isVisible() {
-		MapEditorPlugIn mapEditor = null;
-		if((mapEditor=getPlugInContext().getMapEditor()) != null){
-			MapContext mc = (MapContext) mapEditor.getElement().getObject();
-			ILayer activeLayer = mc.getActiveLayer();
-			return activeLayer != null;
-		}
-		return false;
-	}
-
-	@Override
+	
 	public boolean isSelected() {
 		// TODO Auto-generated method stub
 		return false;

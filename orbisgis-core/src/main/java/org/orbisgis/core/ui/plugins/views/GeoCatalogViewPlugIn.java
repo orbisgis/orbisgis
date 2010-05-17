@@ -125,8 +125,15 @@ public class GeoCatalogViewPlugIn extends ViewPlugIn {
 		}
 	}
 
-	public void update(Observable o, Object arg) {
-		menuItem.setSelected(getPlugInContext().viewIsOpen(getId()));
+	public boolean isEnabled() {		
+		return true;
+	}
+	
+	public boolean isSelected() {
+		boolean isSelected = false;
+		isSelected = getPlugInContext().viewIsOpen(getId());
+		menuItem.setSelected(isSelected);
+		return isSelected;
 	}
 	
 	public String getName() {		

@@ -37,8 +37,6 @@
 
 package org.orbisgis.core.ui.plugins.editors.mapEditor;
 
-import java.util.Observable;
-
 import javax.swing.JButton;
 
 import org.orbisgis.core.edition.EditableElement;
@@ -59,8 +57,7 @@ public class ClearMapSelectionPlugIn extends AbstractPlugIn {
 	public ClearMapSelectionPlugIn() {
 		btn = new JButton(getIcon(IconNames.EDIT_CLEAR));
 	}
-
-	@Override
+	
 	public boolean execute(PlugInContext context) throws Exception {
 		IEditor editor = getPlugInContext().getActiveEditor();
 		MapContext mc = (MapContext) editor.getElement().getObject();
@@ -71,42 +68,31 @@ public class ClearMapSelectionPlugIn extends AbstractPlugIn {
 		}
 		return true;
 	}
-
-	@Override
+	
 	public void initialize(PlugInContext context) throws Exception {
 		WorkbenchContext wbcontext = context.getWorkbenchContext();
 		wbcontext.getWorkbench().getFrame().getEditionMapToolBar().addPlugIn(
 				this, btn, context);
 	}
 
-	@Override
-	public void update(Observable o, Object arg) {
-		btn.setEnabled(isEnabled());
-		btn.setVisible(isVisible());
-	}
-
 	public boolean isEnabled() {
-		boolean flag = false;
+		boolean isEnabled = false;		
 		MapEditorPlugIn mapEditor = null;
 		if((mapEditor=getPlugInContext().getMapEditor()) != null){
 			MapContext mc = (MapContext) mapEditor.getElement().getObject();
 			ILayer[] layers = mc.getLayerModel().getLayersRecursively();
 			for (ILayer lyr : layers) {
-			if (!lyr.isWMS()){
-				lyr.getSelection();
-				if (lyr.getSelection().length > 0)
-					flag = true;
+				if (!lyr.isWMS()){
+					lyr.getSelection();
+					if (lyr.getSelection().length > 0)
+						isEnabled = true;
 				}
 			}
 		}
-		return flag;
-	}
-
-	public boolean isVisible() {
+		btn.setEnabled(isEnabled);
 		return true;
 	}
-
-	@Override
+	
 	public boolean isSelected() {
 		// TODO Auto-generated method stub
 		return false;

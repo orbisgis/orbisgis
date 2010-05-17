@@ -266,9 +266,7 @@ public class MapControl extends JComponent implements ComponentListener {
 					@Override
 					public void actionPerformed(ActionEvent e) {
 						repaint();
-						WorkbenchContext wbContext = Services
-								.getService(WorkbenchContext.class);
-						wbContext.setLastAction("Update toolbar");
+						
 					}
 				});
 				timer.start();
@@ -400,6 +398,8 @@ public class MapControl extends JComponent implements ComponentListener {
 				timer.stop();
 				MapControl.this.repaint();
 				mapContext.setBoundingBox(mapTransform.getExtent());
+				WorkbenchContext wbContext = Services.getService(WorkbenchContext.class);
+				wbContext.setLastAction("Update toolbar");
 			}
 		}
 

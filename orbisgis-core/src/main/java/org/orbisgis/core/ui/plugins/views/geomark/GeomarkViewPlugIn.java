@@ -24,7 +24,6 @@ public class GeomarkViewPlugIn extends ViewPlugIn {
 				new String[] { Names.VIEW }, Names.GEOMARK, true,
 				getIcon(IconNames.GEOMARK_ICON), editors, panel, context);
 		context.getFeatureInstaller().addRegisterCustomQuery(Geomark.class);
-		context.getFeatureInstaller().addRegisterCustomQuery(MoveMap.class);
 	}
 
 	public boolean execute(PlugInContext context) throws Exception {
@@ -37,8 +36,15 @@ public class GeomarkViewPlugIn extends ViewPlugIn {
 		return true;
 	}
 
-	public void update(Observable o, Object arg) {
-		menuItem.setSelected(getPlugInContext().viewIsOpen(getId()));
+	public boolean isEnabled() {		
+		return true;
+	}
+	
+	public boolean isSelected() {
+		boolean isSelected = false;
+		isSelected = getPlugInContext().viewIsOpen(getId());
+		menuItem.setSelected(isSelected);
+		return isSelected;
 	}
 	
 	public String getName() {		

@@ -38,7 +38,6 @@
 package org.orbisgis.core.ui.plugins.editors.tableEditor;
 
 import java.awt.Color;
-import java.util.Observable;
 
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceCreationException;
@@ -67,9 +66,6 @@ import org.orbisgis.core.ui.plugins.views.OutputManager;
 
 public class ShowFieldStatisticsPlugIn extends AbstractPlugIn {
 
-	private Integer selectedColumn;
-	private boolean isVisible;
-
 	public boolean execute(PlugInContext context) throws Exception {
 		IEditor editor = context.getActiveEditor();
 		final TableEditableElement element = (TableEditableElement) editor
@@ -82,7 +78,7 @@ public class ShowFieldStatisticsPlugIn extends AbstractPlugIn {
 
 			Metadata metadata = ds.getMetadata();
 
-			String fieldName = metadata.getFieldName(selectedColumn);
+			String fieldName = metadata.getFieldName(getSelectedColumn());
 			DataSource dsResult = null;
 			String query = null;
 			int countSelection = element.getSelection().getSelectedRows().length;
@@ -144,7 +140,6 @@ public class ShowFieldStatisticsPlugIn extends AbstractPlugIn {
 		return true;
 	}
 
-	@Override
 	public void initialize(PlugInContext context) throws Exception {
 		WorkbenchContext wbContext = context.getWorkbenchContext();
 		WorkbenchFrame frame = (WorkbenchFrame) wbContext.getWorkbench()
@@ -153,10 +148,6 @@ public class ShowFieldStatisticsPlugIn extends AbstractPlugIn {
 				new String[] { Names.POPUP_TABLE_SHOWFIELDSTAT_PATH1 },
 				Names.POPUP_TABLE_SHOWFIELDSTAT_GROUP, false,
 				getIcon(IconNames.POPUP_TABLE_SHOWFIELDSTAT_ICON), wbContext);
-	}
-
-	public void update(Observable o, Object arg) {
-		isVisible(arg);
 	}
 
 	private GenericObjectDriver getSubData(String fieldName, DataSource ds,
@@ -200,26 +191,16 @@ public class ShowFieldStatisticsPlugIn extends AbstractPlugIn {
 	}
 
 	public boolean isEnabled() {
-		return true;
-	}
-
-	public boolean isVisible() {
-		return isVisible;
-	}
-
-	public boolean isVisible(Object arg) {
+		boolean isEnabled = false;
 		IEditor editor = null;
-		if((editor=getPlugInContext().getTableEditor()) != null){
+		if((editor=getPlugInContext().getTableEditor()) != null
+				&& getSelectedColumn()!=-1){
 			final TableEditableElement element = (TableEditableElement) editor
 					.getElement();
-			try {
-				selectedColumn = (Integer) arg;
-			} catch (Exception e) {
-				return isVisible = false;
-			}
+			
 			try {
 				Metadata metadata = element.getDataSource().getMetadata();
-				Type type = metadata.getFieldType(selectedColumn);
+				Type type = metadata.getFieldType(getSelectedColumn());
 				int typeCode = type.getTypeCode();
 				switch (typeCode) {
 				case Type.BYTE:
@@ -228,9 +209,9 @@ public class ShowFieldStatisticsPlugIn extends AbstractPlugIn {
 				case Type.INT:
 				case Type.LONG:
 				case Type.SHORT:
-					return isVisible = true;
+					isEnabled = true;
 				default:
-					return isVisible = false;
+					isEnabled = false;
 				}
 
 			} catch (DriverException e) {
@@ -238,10 +219,9 @@ public class ShowFieldStatisticsPlugIn extends AbstractPlugIn {
 						"Cannot access field information", e);
 			}
 		}
-		return isVisible = false;
+		return isEnabled;
 	}
-
-	@Override
+	
 	public boolean isSelected() {
 		// TODO Auto-generated method stub
 		return false;

@@ -31,7 +31,10 @@ import org.orbisgis.core.ui.editors.map.tools.ZoomOutTool;
 import org.orbisgis.core.ui.pluginSystem.PlugInContext;
 import org.orbisgis.core.ui.plugins.actions.ExitPlugIn;
 import org.orbisgis.core.ui.plugins.actions.SavePlugIn;
+import org.orbisgis.core.ui.plugins.demo.extensions.tocMenu.MyTOCMenu;
+import org.orbisgis.core.ui.plugins.demo.extensions.tocMenu.MyTOCMenu;
 import org.orbisgis.core.ui.plugins.editors.mapEditor.ClearMapSelectionPlugIn;
+import org.orbisgis.core.ui.plugins.editors.mapEditor.CreateSourceFromMapSelectionPlugIn;
 import org.orbisgis.core.ui.plugins.editors.mapEditor.DeleteMapSelectionPlugIn;
 import org.orbisgis.core.ui.plugins.editors.mapEditor.ExportMapAsImagePlugIn;
 import org.orbisgis.core.ui.plugins.editors.mapEditor.ExportMapAsPDFPlugIn;
@@ -45,7 +48,7 @@ import org.orbisgis.core.ui.plugins.editors.tableEditor.AddFieldPlugIn;
 import org.orbisgis.core.ui.plugins.editors.tableEditor.AddValuePlugIn;
 import org.orbisgis.core.ui.plugins.editors.tableEditor.ChangeFieldNamePlugIn;
 import org.orbisgis.core.ui.plugins.editors.tableEditor.ClearTableSelectionPlugIn;
-import org.orbisgis.core.ui.plugins.editors.tableEditor.CreateSourceFromSelectionPlugIn;
+import org.orbisgis.core.ui.plugins.editors.tableEditor.CreateSourceFromTableSelectionPlugIn;
 import org.orbisgis.core.ui.plugins.editors.tableEditor.DeleteTableSelectionPlugIn;
 import org.orbisgis.core.ui.plugins.editors.tableEditor.NewRowTablePlugIn;
 import org.orbisgis.core.ui.plugins.editors.tableEditor.RedoTablePlugIn;
@@ -129,6 +132,9 @@ public class OrbisConfiguration implements Setup {
 	private CreateGroupPlugIn createGroupPlugIn = new CreateGroupPlugIn();
 	private ZoomToLayerPlugIn zoomToLayerPlugIn = new ZoomToLayerPlugIn();
 
+	// DEMO
+	//private MyTOCMenu myTOCMenu = new MyTOCMenu();
+
 	// Geocognition popup
 	private OpenGeocognitionPlugIn openGeocognitionPlugIn = new OpenGeocognitionPlugIn();
 	private RemoveGeocognitionPlugIn removeGeocognitionPlugIn = new RemoveGeocognitionPlugIn();
@@ -176,7 +182,7 @@ public class OrbisConfiguration implements Setup {
 	private UndoTablePlugIn undoTablePlugIn = new UndoTablePlugIn();
 	private NewRowTablePlugIn newRowTablePlugIn = new NewRowTablePlugIn();
 	private RedoTablePlugIn redoTablePlugIn = new RedoTablePlugIn();
-	private CreateSourceFromSelectionPlugIn createSourceFromSelectionPlugIn = new CreateSourceFromSelectionPlugIn();
+	private CreateSourceFromTableSelectionPlugIn createSourceFromSelectionPlugIn = new CreateSourceFromTableSelectionPlugIn();
 
 	// Map editor PlugIn
 	private FullExtentPlugIn fullExtentPlugIn = new FullExtentPlugIn();
@@ -185,6 +191,7 @@ public class OrbisConfiguration implements Setup {
 	private UndoMapPlugIn undoMapPlugIn = new UndoMapPlugIn();
 	private RedoMapPlugIn redoMapPlugIn = new RedoMapPlugIn();
 	private DeleteMapSelectionPlugIn deleteMapSelectionPlugIn = new DeleteMapSelectionPlugIn();
+	private CreateSourceFromMapSelectionPlugIn createSourceFromMapSelectionPlugIn = new CreateSourceFromMapSelectionPlugIn();
 
 	// right click on Map
 	private ExportMapAsImagePlugIn exportMasAsImagePlugIn = new ExportMapAsImagePlugIn();
@@ -242,6 +249,10 @@ public class OrbisConfiguration implements Setup {
 			zoomToLayerPlugIn.initialize(context);
 			revertLayerPlugIn.initialize(context);
 			saveLayerPlugIn.initialize(context);
+
+			// DEMO
+
+			//myTOCMenu.initialize(context);
 
 			// Geocognition popup
 			openGeocognitionPlugIn.initialize(context);
@@ -315,6 +326,7 @@ public class OrbisConfiguration implements Setup {
 		undoMapPlugIn.initialize(plugInContext);
 		redoMapPlugIn.initialize(plugInContext);
 		deleteMapSelectionPlugIn.initialize(plugInContext);
+		createSourceFromMapSelectionPlugIn.initialize(plugInContext);
 		add(new ZoomOutTool(), "zoom_out.png", frame.getNavigationToolBar());
 		// ZoomIn/ZoomOut
 		add(new PanTool(), "pan.png", frame.getNavigationToolBar());

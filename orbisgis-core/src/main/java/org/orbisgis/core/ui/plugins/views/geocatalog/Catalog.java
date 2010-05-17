@@ -475,8 +475,7 @@ public class Catalog extends JPanel implements DragGestureListener,
 			} 
 			popup.addSeparator(); 
 			popup.add(menu); 
-		}
-
+		}	 
 
 		return popup;
 	}

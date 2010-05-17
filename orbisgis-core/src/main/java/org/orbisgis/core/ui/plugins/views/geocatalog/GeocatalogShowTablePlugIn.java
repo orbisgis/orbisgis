@@ -37,15 +37,15 @@
 
 package org.orbisgis.core.ui.plugins.views.geocatalog;
 
-import java.util.Observable;
-
-import org.gdms.source.Source;
 import org.gdms.source.SourceManager;
+import org.orbisgis.core.DataManager;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.background.BackgroundManager;
 import org.orbisgis.core.images.IconNames;
 import org.orbisgis.core.ui.pluginSystem.AbstractPlugIn;
 import org.orbisgis.core.ui.pluginSystem.PlugInContext;
+import org.orbisgis.core.ui.pluginSystem.PlugInContext.SelectionAvailability;
+import org.orbisgis.core.ui.pluginSystem.PlugInContext.SourceAvailability;
 import org.orbisgis.core.ui.pluginSystem.workbench.Names;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchContext;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchFrame;
@@ -54,7 +54,15 @@ import org.orbisgis.core.ui.plugins.views.geocognition.OpenGeocognitionElementJo
 public class GeocatalogShowTablePlugIn extends AbstractPlugIn {
 
 	public boolean execute(PlugInContext context) throws Exception {
-		getPlugInContext().executeGeocatalog();
+		DataManager dm = Services.getService(DataManager.class);
+		String[] res = getPlugInContext().getSelectedSources();
+		if (res.length == 0) {
+			execute(dm.getSourceManager(), null);
+		} else {
+			for (String resource : res) {
+				execute(dm.getSourceManager(), resource);
+			}
+		}
 		return true;
 	}
 
@@ -75,28 +83,15 @@ public class GeocatalogShowTablePlugIn extends AbstractPlugIn {
 				new EditableSource(currentNode)));
 	}
 
-	public boolean isVisible() {
-		return getPlugInContext().geocatalogIsVisible();
+	public boolean isEnabled() {
+		return getPlugInContext().checkLayerAvailability(
+				new SelectionAvailability[] {SelectionAvailability.SUPERIOR},
+				0,
+				new SourceAvailability[] {SourceAvailability.RASTER});
 	}
-
-	public boolean accepts(SourceManager sourceManager, String selectedNode) {
-		Source source = sourceManager.getSource(selectedNode);
-		return (source.getType() & SourceManager.RASTER) == 0;
-	}
-
-	public boolean acceptsSelectionCount(int selectionCount) {
-		return selectionCount > 0;
-	}
-
-	@Override
+	
 	public boolean isSelected() {
 		// TODO Auto-generated method stub
 		return false;
-	}
-
-	@Override
-	public void update(Observable o, Object arg) {
-		// TODO Auto-generated method stub
-		
 	}
 }

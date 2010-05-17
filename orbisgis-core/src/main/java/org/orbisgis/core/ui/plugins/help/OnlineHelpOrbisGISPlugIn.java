@@ -41,7 +41,6 @@ import java.awt.Desktop;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.Observable;
 
 import javax.swing.JMenuItem;
 
@@ -87,20 +86,11 @@ public class OnlineHelpOrbisGISPlugIn extends AbstractPlugIn {
 		return true;
 	}
 
-	public void update(Observable o, Object arg) {
-		menuItem.setEnabled(isEnabled());
-		menuItem.setVisible(isVisible());
-	}
-
 	public boolean isEnabled() {
+		menuItem.setEnabled(true);
 		return true;
 	}
-
-	public boolean isVisible() {
-		return true;
-	}
-
-	@Override
+	
 	public boolean isSelected() {
 		// TODO Auto-generated method stub
 		return false;

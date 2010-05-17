@@ -140,16 +140,20 @@ public class MapEditorPlugIn extends ViewPlugIn implements WorkbenchFrame,
 	public void setDefaultMouseCursor(String defaultMouseCursor) {
 		this.defaultMouseCursor = defaultMouseCursor;
 	}
-
-	// View plugin is updated by EditorViewPlugIn
-	public void update(Observable arg0, Object arg1) {
+	
+	//View plugin is updated by EditorViewPlugIn
+	public boolean isEnabled() {		
+		return true;
+	}
+	
+	public boolean isSelected() {
+		return true;
 	}
 
 	public ViewPlugIn getView() {
 		return this;
 	}
-
-	@Override
+	
 	public String getName() {
 		return "Map Editor view";
 	}

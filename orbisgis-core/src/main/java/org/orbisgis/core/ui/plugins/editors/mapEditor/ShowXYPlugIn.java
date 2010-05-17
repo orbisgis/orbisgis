@@ -1,7 +1,5 @@
 package org.orbisgis.core.ui.plugins.editors.mapEditor;
 
-import java.util.Observable;
-
 import org.orbisgis.core.Services;
 import org.orbisgis.core.ui.pluginSystem.AbstractPlugIn;
 import org.orbisgis.core.ui.pluginSystem.PlugInContext;
@@ -29,7 +27,7 @@ public class ShowXYPlugIn extends AbstractPlugIn {
 				Names.POPUP_MAP_EXPORT_PDF_GROUP, true, null, wbContext);
 	}	
 
-	public boolean isVisible() {
+	public boolean isEnabled() {
 		return getPlugInContext().getMapEditor() == null ? false : true;
 	}
 	
@@ -38,11 +36,5 @@ public class ShowXYPlugIn extends AbstractPlugIn {
 			return getPlugInContext().getMapEditor().getShowInfo();
 		}
 		return false;
-	}
-
-	@Override
-	public void update(Observable o, Object arg) {
-		// TODO Auto-generated method stub
-		
 	}
 }

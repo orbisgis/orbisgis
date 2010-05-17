@@ -37,8 +37,6 @@
 
 package org.orbisgis.core.ui.plugins.editors.tableEditor;
 
-import java.util.Observable;
-
 import javax.swing.JButton;
 
 import org.gdms.data.DataSource;
@@ -77,26 +75,18 @@ public class UndoTablePlugIn extends AbstractPlugIn {
 				this, btn, context);
 	}
 
-	public void update(Observable o, Object arg) {
-		btn.setEnabled(isEnabled());
-		btn.setVisible(isVisible());
-	}
-
 	public boolean isEnabled() {
+		boolean isEnabled = false;
 		IEditor editor = null;
 		if((editor=getPlugInContext().getTableEditor()) != null){
 			DataSource dataSource = (DataSource) editor.getElement()
 					.getObject();
-			return dataSource.canUndo();
+			isEnabled =  dataSource.canUndo();
 		}
-		return false;
+		btn.setEnabled(isEnabled);
+		return isEnabled;
 	}
-
-	public boolean isVisible() {
-		return true;
-	}
-
-	@Override
+	
 	public boolean isSelected() {
 		// TODO Auto-generated method stub
 		return false;

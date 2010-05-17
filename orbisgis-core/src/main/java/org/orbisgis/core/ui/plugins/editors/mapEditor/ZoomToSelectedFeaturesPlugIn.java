@@ -37,9 +37,6 @@
 
 package org.orbisgis.core.ui.plugins.editors.mapEditor;
 
-import java.awt.event.MouseEvent;
-import java.util.Observable;
-
 import javax.swing.JButton;
 
 import org.gdms.data.SpatialDataSourceDecorator;
@@ -109,53 +106,31 @@ public class ZoomToSelectedFeaturesPlugIn extends AbstractPlugIn {
 		}
 		return true;
 	}
-
-	@Override
+	
 	public void initialize(PlugInContext context) throws Exception {
 		WorkbenchContext wbcontext = context.getWorkbenchContext();
 		wbcontext.getWorkbench().getFrame().getInfoToolBar().addPlugIn(this,
 				btn, context);
 	}
 
-	@Override
-	public void update(Observable o, Object arg) {
-		btn.setEnabled(isEnabled());
-		btn.setVisible(isVisible(arg));
-	}
-
 	public boolean isEnabled() {
-		boolean flag = false;
+		boolean isEnabled = false;
 		MapEditorPlugIn mapEditor = null;
 		if((mapEditor=getPlugInContext().getMapEditor()) != null){
-			MapContext mc = (MapContext) mapEditor.getElement().getObject();
-			ILayer[] layers = mc.getLayerModel().getLayersRecursively();
-			for (ILayer lyr : layers) {
-			if (!lyr.isWMS()) {
-				lyr.getSelection();
-				if (lyr.getSelection().length > 0)
-					flag = true;
+				MapContext mc = (MapContext) mapEditor.getElement().getObject();
+				ILayer[] layers = mc.getLayerModel().getLayersRecursively();
+				for (ILayer lyr : layers) {
+				if (!lyr.isWMS()) {
+					lyr.getSelection();
+					if (lyr.getSelection().length > 0)
+						isEnabled = true;
+				}
 			}
 		}
-		}
-		return flag;
+		btn.setEnabled(isEnabled);
+		return isEnabled;
 	}
-
-	public boolean isVisible(Object arg) {
-		try {
-			MouseEvent event = (MouseEvent) arg;
-		} catch (Exception e) {
-			return false;
-		}
-		return true;
-	}
-
-	@Override
-	public boolean isVisible() {
-		//Never called
-		return false;
-	}
-
-	@Override
+	
 	public boolean isSelected() {
 		// TODO Auto-generated method stub
 		return false;

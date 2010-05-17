@@ -53,7 +53,6 @@ import java.util.HashSet;
 import java.util.Iterator;
 
 import javax.swing.BorderFactory;
-import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
 
 import net.infonode.docking.DockingWindow;
@@ -61,10 +60,6 @@ import net.infonode.docking.OperationAbortedException;
 import net.infonode.docking.RootWindow;
 import net.infonode.docking.View;
 import net.infonode.docking.properties.DockingWindowProperties;
-import net.infonode.docking.theme.BlueHighlightDockingTheme;
-import net.infonode.docking.theme.DockingWindowsTheme;
-import net.infonode.docking.theme.ShapedGradientDockingTheme;
-import net.infonode.docking.theme.SoftBlueIceDockingTheme;
 import net.infonode.gui.panel.SimplePanel;
 
 import org.apache.log4j.Logger;

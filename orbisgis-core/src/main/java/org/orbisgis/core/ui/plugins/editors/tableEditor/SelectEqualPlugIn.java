@@ -37,9 +37,7 @@
 
 package org.orbisgis.core.ui.plugins.editors.tableEditor;
 
-import java.awt.event.MouseEvent;
 import java.util.ArrayList;
-import java.util.Observable;
 
 import org.gdms.data.DataSource;
 import org.gdms.data.values.Value;
@@ -61,17 +59,14 @@ import org.orbisgis.progress.IProgressMonitor;
 
 public class SelectEqualPlugIn extends AbstractPlugIn {
 
-	private MouseEvent event;
-	private boolean isVisible;
-
 	public boolean execute(PlugInContext context) throws Exception {
 		IEditor editor = context.getActiveEditor();
 		final TableEditableElement element = (TableEditableElement) editor
 				.getElement();
 		final int rowIndex = ((TableComponent) editor.getView().getComponent())
-				.getTable().rowAtPoint(event.getPoint());
+				.getTable().rowAtPoint(getEvent().getPoint());
 		final int columnIndex = ((TableComponent) editor.getView()
-				.getComponent()).getTable().columnAtPoint(event.getPoint());
+				.getComponent()).getTable().columnAtPoint(getEvent().getPoint());
 		BackgroundManager bm = Services.getService(BackgroundManager.class);
 		bm.backgroundOperation(new BackgroundJob() {
 
@@ -118,30 +113,12 @@ public class SelectEqualPlugIn extends AbstractPlugIn {
 				getIcon(IconNames.POPUP_TABLE_EQUALS_ICON), wbContext);
 	}
 
-	@Override
-	public void update(Observable o, Object arg) {
-		isVisible(arg);
-	}
-
 	public boolean isEnabled() {
-		return true;
-	}
-
-	public boolean isVisible() {
-		return isVisible;
-	}
-
-	public boolean isVisible(Object arg) {
-		IEditor editor = null;
-		if((editor=getPlugInContext().getTableEditor()) != null){
-			try {
-				event = (MouseEvent) arg;
-			} catch (Exception e) {
-				return isVisible = false;
-			}
-			return isVisible = true;
+		if((getPlugInContext().getTableEditor()) != null
+				&& getSelectedColumn() ==-1 && getEvent()!=null){			
+			return true;
 		}
-		return isVisible = false;
+		return false;
 	}
 
 	@Override

@@ -38,7 +38,6 @@
 package org.orbisgis.core.ui.plugins.editors.mapEditor;
 
 import java.util.Arrays;
-import java.util.Observable;
 
 import javax.swing.JButton;
 
@@ -88,33 +87,21 @@ public class DeleteMapSelectionPlugIn extends AbstractPlugIn {
 		wbcontext.getWorkbench().getFrame().getEditionMapToolBar().addPlugIn(
 				this, btn, context);
 	}
-
-	public void update(Observable o, Object arg) {
-		btn.setEnabled(isEnabled());
-		btn.setVisible(isVisible());
-	}
-
-	public boolean isEnabled() {
+	
+	public boolean isEnabled() {		
+		boolean isEnabled = false;
 		MapEditorPlugIn mapEditor = null;
 		if((mapEditor=getPlugInContext().getMapEditor()) != null){
 			MapContext map = (MapContext) mapEditor.getElement().getObject();
 			ILayer activeLayer = map.getActiveLayer();
-			return (activeLayer != null)
-					&& activeLayer.getSelection().length > 0;
+			if(activeLayer != null
+					&& activeLayer.getSelection().length > 0) 
+				isEnabled = true;		
 		}
-		return false;
+		btn.setEnabled(isEnabled);
+		return isEnabled;
 	}
-
-	public boolean isVisible() {
-		MapEditorPlugIn mapEditor = null;
-		if((mapEditor=getPlugInContext().getMapEditor()) != null){
-			MapContext map = (MapContext) mapEditor.getElement().getObject();
-			return map.getActiveLayer() != null;
-		}
-		return false;
-	}
-
-	@Override
+	
 	public boolean isSelected() {
 		// TODO Auto-generated method stub
 		return false;

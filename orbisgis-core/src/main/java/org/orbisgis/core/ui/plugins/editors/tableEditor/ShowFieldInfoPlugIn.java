@@ -37,8 +37,6 @@
 
 package org.orbisgis.core.ui.plugins.editors.tableEditor;
 
-import java.util.Observable;
-
 import org.gdms.data.metadata.Metadata;
 import org.gdms.data.types.Constraint;
 import org.gdms.data.types.ConstraintFactory;
@@ -59,9 +57,6 @@ import org.orbisgis.core.ui.plugins.views.OutputManager;
 
 public class ShowFieldInfoPlugIn extends AbstractPlugIn {
 
-	private Integer selectedColumn;
-	private boolean isVisible;
-
 	public boolean execute(PlugInContext context) throws Exception {
 		IEditor editor = context.getActiveEditor();
 		final TableEditableElement element = (TableEditableElement) editor
@@ -69,9 +64,9 @@ public class ShowFieldInfoPlugIn extends AbstractPlugIn {
 		try {
 			Metadata metadata = element.getDataSource().getMetadata();
 			OutputManager om = Services.getService(OutputManager.class);
-			om.print("Field name:" + metadata.getFieldName(selectedColumn)
+			om.print("Field name:" + metadata.getFieldName(getSelectedColumn())
 					+ "\n");
-			Type type = metadata.getFieldType(selectedColumn);
+			Type type = metadata.getFieldType(getSelectedColumn());
 			om.print("Field type:"
 					+ TypeFactory.getTypeName(type.getTypeCode())
 					+ "\nConstraints:\n");
@@ -100,31 +95,11 @@ public class ShowFieldInfoPlugIn extends AbstractPlugIn {
 				getIcon(IconNames.POPUP_TABLE_SHOWFIELD_ICON), wbContext);
 	}
 
-	public void update(Observable o, Object arg) {
-		isVisible(arg);
-	}
-
 	public boolean isEnabled() {
-		return true;
+		return (getPlugInContext().getTableEditor() != null)
+				&& (getSelectedColumn()!=-1);	
 	}
-
-	public boolean isVisible() {
-		return isVisible;
-	}
-
-	public boolean isVisible(Object arg) {
-		if(getPlugInContext().getTableEditor() != null){
-			try {
-				selectedColumn = (Integer) arg;
-			} catch (Exception e) {
-				return isVisible = false;
-			}
-			return isVisible = true;
-		}
-		return isVisible = false;
-	}
-
-	@Override
+	
 	public boolean isSelected() {
 		// TODO Auto-generated method stub
 		return false;

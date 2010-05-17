@@ -37,8 +37,6 @@
 
 package org.orbisgis.core.ui.plugins.editors.mapEditor;
 
-import java.util.Observable;
-
 import javax.swing.JButton;
 
 import org.gdms.driver.DriverException;
@@ -77,36 +75,18 @@ public class UndoMapPlugIn extends AbstractPlugIn {
 				this, btn, context);
 	}
 	
-	public void update(Observable o, Object arg) {
-		btn.setEnabled(isEnabled());
-		btn.setVisible(isVisible());
-	}
-
 	public boolean isEnabled() {
+		boolean isEnabled = false;
 		MapEditorPlugIn mapEditor = null;
 		if((mapEditor=getPlugInContext().getMapEditor()) != null){
 			MapContext mc = (MapContext) mapEditor.getElement().getObject();
 			ILayer activeLayer = mc.getActiveLayer();
-			if (activeLayer != null) {
-				return activeLayer.getDataSource().canUndo();
-			} else {
-				return false;
-			}
-		}
-		return false;
+			isEnabled =  (activeLayer != null) && activeLayer.getDataSource().canUndo();
+		}		
+		btn.setEnabled(isEnabled);
+		return isEnabled;
 	}
-
-	public boolean isVisible() {
-		MapEditorPlugIn mapEditor = null;
-		if((mapEditor=getPlugInContext().getMapEditor()) != null){
-			MapContext mc = (MapContext) mapEditor.getElement().getObject();
-			ILayer activeLayer = mc.getActiveLayer();
-			return activeLayer != null;
-		}
-		return false;
-	}
-
-	@Override
+	
 	public boolean isSelected() {
 		// TODO Auto-generated method stub
 		return false;

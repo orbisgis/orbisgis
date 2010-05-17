@@ -53,7 +53,6 @@ public class SQLDocument extends AbstractSyntaxColoringDocument {
 		kindStyle.put(SQLEngineConstants.RESTRICT, keywordStyle);
 		kindStyle.put(SQLEngineConstants.CASCADE, keywordStyle);
 		kindStyle.put(SQLEngineConstants.EXISTS, keywordStyle);
-		kindStyle.put(SQLEngineConstants.IF, keywordStyle);
 		kindStyle.put(SQLEngineConstants.FLOATING_POINT_LITERAL, literalStyle);
 		kindStyle.put(SQLEngineConstants.FROM, keywordStyle);
 		kindStyle.put(SQLEngineConstants.GROUP, keywordStyle);
