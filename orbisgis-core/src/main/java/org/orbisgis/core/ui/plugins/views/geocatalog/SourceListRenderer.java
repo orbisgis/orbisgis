@@ -115,8 +115,10 @@ public class SourceListRenderer implements ListCellRenderer {
 			if (src != null) {
 
 				if (src.isFileSource()) {
+					if (src.getFile()!=null){
 					if (!src.getFile().exists()) {
 						icon = IconLoader.getIcon(IconNames.REMOVE);
+					}
 					}
 				}
 
