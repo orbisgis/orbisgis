@@ -56,6 +56,7 @@ import org.orbisgis.core.ui.plugins.views.geocognition.wizards.NewMap;
 import org.orbisgis.core.ui.plugins.views.geocognition.wizards.NewRegisteredSQLArtifact;
 import org.orbisgis.core.ui.plugins.views.geocognition.wizards.NewSymbol;
 import org.orbisgis.core.workspace.Workspace;
+import org.orbisgis.progress.NullProgressMonitor;
 
 public class GeocognitionView extends JPanel implements WorkbenchFrame {
 
@@ -264,7 +265,7 @@ public class GeocognitionView extends JPanel implements WorkbenchFrame {
 
 			if (element != null) {
 				EditorManager em = Services.getService(EditorManager.class);
-				em.open(element);
+				em.open(element,new NullProgressMonitor());
 			} else {
 				Services.getErrorManager().warning("Cannot find initial map");
 			}
