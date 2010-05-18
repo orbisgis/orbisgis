@@ -65,8 +65,6 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
 import org.orbisgis.core.Services;
-import org.orbisgis.core.background.BackgroundManager;
-import org.orbisgis.core.background.DefaultJobId;
 import org.orbisgis.core.images.IconLoader;
 import org.orbisgis.core.images.IconNames;
 import org.orbisgis.core.layerModel.MapContext;
@@ -92,8 +90,6 @@ public class GeomarkPanel extends JPanel implements ListSelectionListener {
 	private JTextField geomarkName;
 
 	private MapEditorPlugIn editor;
-
-	private JButton playGeomark;
 
 	private JButton moveUp;
 
@@ -198,49 +194,12 @@ public class GeomarkPanel extends JPanel implements ListSelectionListener {
 			}
 		});
 
-		playGeomark = new JButton();
-		playGeomark.setIcon(IconLoader.getIcon("film.png"));
-		playGeomark.setToolTipText("Move map");
 
-		if (list.getModel().getSize() > 0) {
-			playGeomark.setEnabled(true);
-		} else {
-			playGeomark.setEnabled(false);
-		}
-
-		playGeomark.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				int modelSize = listModel.getSize();
-				MapContext vc = ((MapContextManager) Services
-						.getService(MapContextManager.class))
-						.getActiveMapContext();
-				if (vc != null) {
-
-					int timeInSeconds = 2;
-					DrawGeomarkThread drawGeomarkthread = new DrawGeomarkThread(
-							editor.getMapControl(), timeInSeconds);
-
-					for (int i = 0; i < modelSize; i++) {
-						String geomarkLabel = listModel.get(i).toString();
-
-						Envelope env = geomarksMap.get(geomarkLabel);
-						drawGeomarkthread.setExtend(env);
-						
-						BackgroundManager bm = (BackgroundManager) Services
-								.getService(BackgroundManager.class);
-						bm.backgroundOperation(new DefaultJobId(
-								"org.orbisgis.jobs.MapControl-" + i),
-								drawGeomarkthread);
-					}
-
-				}
-
-			}
-		});
-
+		moveDown.setEnabled(false);
+		moveUp.setEnabled(false);
+		
 		jToolBar.add(moveUp);
 		jToolBar.add(moveDown);
-		jToolBar.add(playGeomark);
 
 		add(jToolBar, BorderLayout.WEST);
 		add(listScrollPane, BorderLayout.CENTER);
@@ -261,7 +220,6 @@ public class GeomarkPanel extends JPanel implements ListSelectionListener {
 
 			if (size == 0) { // Nobody's left, disable firing.
 				fireButton.setEnabled(false);
-				playGeomark.setEnabled(false);
 				moveDown.setEnabled(false);
 				moveUp.setEnabled(false);
 
@@ -347,6 +305,8 @@ public class GeomarkPanel extends JPanel implements ListSelectionListener {
 		private boolean handleEmptyTextField(DocumentEvent e) {
 			if (e.getDocument().getLength() <= 0) {
 				button.setEnabled(false);
+				moveDown.setEnabled(false);
+				moveUp.setEnabled(false);
 				alreadyEnabled = false;
 				return true;
 			}
@@ -361,14 +321,12 @@ public class GeomarkPanel extends JPanel implements ListSelectionListener {
 			if (list.getSelectedIndex() == -1) {
 				// No selection, disable fire button.
 				fireButton.setEnabled(false);
-				playGeomark.setEnabled(false);
 				moveDown.setEnabled(false);
 				moveUp.setEnabled(false);
 
 			} else {
 				// Selection, enable the fire button.
 				fireButton.setEnabled(true);
-				playGeomark.setEnabled(true);
 				moveDown.setEnabled(true);
 				moveUp.setEnabled(true);
 			}
