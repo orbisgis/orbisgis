@@ -15,6 +15,10 @@ public abstract class Names {
 	public static final String TOOLBAR_MAP = I18N.getText("orbisgis.toolbar.edition.map");
 	public static final String TOOLBAR_TABLE = I18N.getText("orbisgis.toolbar.edition.table");
 	public static final String TOOLBAR_RASTER = I18N.getText("orbisgis.toolbar.raster");
+	
+	public static final String MAP_TOOLBAR_NAME = I18N.getText("orbisgis.map.toolbar.main");
+	public static final String MAP_TOOLBAR_SCALE = I18N.getText("orbisgis.map.toolbar.scale");
+	public static final String MAP_TOOLBAR_PROJECTION = I18N.getText("orbisgis.map.toolbar.projection");
 	/**************************************************** MAIN MENU ************************************************************/
 	// MAIN MENU
 	// File

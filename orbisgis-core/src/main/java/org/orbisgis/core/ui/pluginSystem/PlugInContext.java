@@ -444,14 +444,14 @@ public class PlugInContext {
 			MapContext mapContext = (MapContext) mapEditor.getElement()
 					.getObject();
 			if (mapContext != null) {
-				check = automaton.isEnabled(mapContext, ((MapControl) mapEditor
-						.getComponent()).getToolManager());
+				check = automaton.isEnabled(mapContext, mapEditor
+						.getMapControl().getToolManager());
 				automaton.getButton().setEnabled(check);
-				check = automaton.isVisible(mapContext, ((MapControl) mapEditor
-						.getComponent()).getToolManager());
+				check = automaton.isVisible(mapContext, mapEditor
+						.getMapControl().getToolManager());
 				automaton.getButton().setVisible(check);
 				automaton.getButton().setSelected(
-						((MapControl) mapEditor.getComponent()).getTool()
+						mapEditor.getMapControl().getTool()
 								.getClass().equals(automaton.getClass()));
 			}
 		}

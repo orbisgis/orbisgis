@@ -108,8 +108,7 @@ public class EditorDecorator implements IEditor {
 	}
 
 	@Override
-	public void initialize(PlugInContext wbContext, Automaton automaton)
-			throws Exception {
+	public void initialize(PlugInContext wbContext)	throws Exception {
 	}
 
 }

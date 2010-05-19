@@ -36,6 +36,7 @@
  */
 package org.orbisgis.core.ui.editors.map;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
@@ -49,7 +50,9 @@ import java.awt.event.ComponentListener;
 import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
 
+import javax.swing.JButton;
 import javax.swing.JComponent;
+import javax.swing.JMenuBar;
 import javax.swing.Timer;
 
 import org.gdms.data.ClosedDataSourceException;
@@ -60,6 +63,7 @@ import org.gdms.data.edition.EditionListener;
 import org.gdms.data.edition.MultipleEditionEvent;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.background.BackgroundJob;
+import org.orbisgis.core.background.BackgroundListener;
 import org.orbisgis.core.background.BackgroundManager;
 import org.orbisgis.core.background.DefaultJobId;
 import org.orbisgis.core.edition.EditableElement;
@@ -77,8 +81,11 @@ import org.orbisgis.core.ui.editors.map.tool.Automaton;
 import org.orbisgis.core.ui.editors.map.tool.ToolListener;
 import org.orbisgis.core.ui.editors.map.tool.ToolManager;
 import org.orbisgis.core.ui.editors.map.tool.TransitionException;
+import org.orbisgis.core.ui.pluginSystem.workbench.Names;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchContext;
+import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchToolBar;
 import org.orbisgis.progress.IProgressMonitor;
+import org.orbisgis.progress.ProgressMonitor;
 
 import com.vividsolutions.jts.geom.Envelope;
 
@@ -109,7 +116,7 @@ public class MapControl extends JComponent implements ComponentListener {
 
 	private MapContext mapContext;
 
-	private Drawer drawer;
+	//private Drawer drawer;
 
 	private boolean showCoordinates = true;
 
@@ -117,7 +124,9 @@ public class MapControl extends JComponent implements ComponentListener {
 	// repaint,
 	// making rendering appear to be slower. [Jon Aquino]
 	// LDB: 400 ms is better when using mouse wheel zooming
-	int timerToDraw = 400;
+	//int timerToDraw = 400;
+
+	
 
 	/**
 	 * Creates a new NewMapControl.
@@ -195,7 +204,6 @@ public class MapControl extends JComponent implements ComponentListener {
 
 		// Add refresh listener
 		addLayerListenerRecursively(rootLayer, new RefreshLayerListener());
-
 	}
 
 	public MapContext getMapContext() {
@@ -262,7 +270,11 @@ public class MapControl extends JComponent implements ComponentListener {
 
 			if (mapTransform.getAdjustedExtent() != null) {
 				mapTransform.setImage(inProcessImage);
-				Timer timer = new Timer(getTimerToDraw(), new ActionListener() {
+				repaint();
+				mapContext.draw(mapTransform.getImage(), mapTransform
+						.getAdjustedExtent(), new ProgressMonitor(""));
+				mapContext.setBoundingBox(mapTransform.getExtent());
+				/*Timer timer = new Timer(getTimerToDraw(), new ActionListener() {
 					@Override
 					public void actionPerformed(ActionEvent e) {
 						repaint();
@@ -275,6 +287,7 @@ public class MapControl extends JComponent implements ComponentListener {
 						.getService(BackgroundManager.class);
 				bm.nonBlockingBackgroundOperation(new DefaultJobId(
 						"org.orbisgis.jobs.MapControl-" + processId), drawer);
+				bm.addBackgroundListener( Services.getService( WorkbenchContext.class ) );*/
 			}
 		}
 
@@ -303,13 +316,13 @@ public class MapControl extends JComponent implements ComponentListener {
 
 	}
 
-	public int getTimerToDraw() {
+/*	public int getTimerToDraw() {
 		return timerToDraw;
 	}
 
 	public void setTimerToDraw(int timerToDraw) {
 		this.timerToDraw = timerToDraw;
-	}
+	}*/
 
 	/**
 	 * Returns the drawn image
@@ -363,7 +376,7 @@ public class MapControl extends JComponent implements ComponentListener {
 		repaint();
 	}
 
-	public class Drawer implements BackgroundJob {
+/*	public class Drawer implements BackgroundJob {
 
 		private boolean cancel = false;
 		private CancellablePM pm;
@@ -414,7 +427,7 @@ public class MapControl extends JComponent implements ComponentListener {
 			}
 		}
 	}
-
+*/
 	private class CancellablePM implements IProgressMonitor {
 
 		private IProgressMonitor decoratedPM;
@@ -539,9 +552,9 @@ public class MapControl extends JComponent implements ComponentListener {
 	}
 
 	public void closing() {
-		if (drawer != null) {
+		/*if (drawer != null) {
 			drawer.cancel();
-		}
+		}*/
 		toolManager.freeResources();
 		toolManager = null;
 	}

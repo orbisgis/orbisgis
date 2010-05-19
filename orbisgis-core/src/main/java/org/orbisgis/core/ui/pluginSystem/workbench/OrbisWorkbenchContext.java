@@ -1,5 +1,7 @@
 package org.orbisgis.core.ui.pluginSystem.workbench;
 
+import org.orbisgis.core.background.Job;
+
 //WorkbenchContext
 public class OrbisWorkbenchContext extends WorkbenchContext {
 
@@ -12,4 +14,6 @@ public class OrbisWorkbenchContext extends WorkbenchContext {
 	public OrbisWorkbench getWorkbench() {
 		return workbench;
 	}
+
+	
 }

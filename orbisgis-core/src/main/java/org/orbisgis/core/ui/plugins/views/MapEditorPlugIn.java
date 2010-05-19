@@ -1,7 +1,12 @@
 package org.orbisgis.core.ui.plugins.views;
 
+import java.awt.BorderLayout;
 import java.awt.Component;
 import java.util.Observable;
+
+import javax.swing.JButton;
+import javax.swing.JComponent;
+import javax.swing.JPanel;
 
 import org.orbisgis.core.Services;
 import org.orbisgis.core.edition.EditableElement;
@@ -18,16 +23,23 @@ import org.orbisgis.core.ui.pluginSystem.PlugInContext;
 import org.orbisgis.core.ui.pluginSystem.ViewPlugIn;
 import org.orbisgis.core.ui.pluginSystem.menu.MenuTree;
 import org.orbisgis.core.ui.pluginSystem.workbench.Names;
+import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchContext;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchFrame;
+import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchToolBar;
 
 public class MapEditorPlugIn extends ViewPlugIn implements WorkbenchFrame,
 		IEditor {
 
-	private MapControl mapControl;
+	private JComponent mapEditor;
+	private MapControl mapControl;	
+	private WorkbenchToolBar mapToolBar;	
+
+
 	private String editors[];
 	private EditableElement mapElement;
 	private Automaton defaultTool;
-	private String defaultMouseCursor;
+	private String defaultMouseCursor;	
+
 
 	// TODO (pyf): ajouter des plugins dans la popup
 	private org.orbisgis.core.ui.pluginSystem.menu.MenuTree menuTree;
@@ -35,27 +47,31 @@ public class MapEditorPlugIn extends ViewPlugIn implements WorkbenchFrame,
 	public org.orbisgis.core.ui.pluginSystem.menu.MenuTree getMenuTreePopup() {
 		return menuTree;
 	}
-
-	public void initialize(PlugInContext context) throws Exception {
+	
+	public MapEditorPlugIn() {
+		mapEditor = new JPanel();			
+		mapEditor.setLayout(new BorderLayout());		
 	}
 
-	public void initialize(PlugInContext context, Automaton automaton) {
-		menuTree = new MenuTree();
+	public void initialize(PlugInContext context) throws Exception {		
+		menuTree = new MenuTree();		
 		Services.registerService(MapContextManager.class,
 				"Gives access to the current MapContext",
 				new DefaultMapContextManager());
 		Services.registerService(ViewPlugIn.class,
 				"Gives access to the current MapContext", this);
-		this.defaultTool = automaton;
+		
+		Automaton defaultTool = (Automaton) Services.getService(Automaton.class);
+		this.defaultTool = defaultTool;
 		this.defaultMouseCursor = IconNames.ZOOMIN_ICON;
 		editors = new String[0];
 		if (context.getWorkbenchContext().getWorkbench().getFrame()
 				.getViewDecorator(Names.EDITOR_MAP_ID) == null)
 			context.getWorkbenchContext().getWorkbench().getFrame().getViews()
-					.add(
-							new ViewDecorator(this, Names.EDITOR_MAP_ID,
-									getIcon("map.png"), editors));
-	}
+			.add(
+					new ViewDecorator(this, Names.EDITOR_MAP_ID,
+							getIcon("map.png"), editors));
+	}	
 
 	public boolean execute(PlugInContext context) throws Exception {
 		getPlugInContext().loadView(getId());
@@ -71,6 +87,8 @@ public class MapEditorPlugIn extends ViewPlugIn implements WorkbenchFrame,
 		try {
 			mapControl = new MapControl(mapContext, element,
 					getIndependentToolInstance(defaultTool, defaultMouseCursor));
+			mapEditor.add(mapControl, BorderLayout.CENTER);
+			
 		} catch (TransitionException e) {
 			Services.getErrorManager()
 					.error("The default tool is not valid", e);
@@ -98,7 +116,7 @@ public class MapEditorPlugIn extends ViewPlugIn implements WorkbenchFrame,
 	}
 
 	public Component getComponent() {
-		return mapControl;
+		return mapEditor;
 	}
 
 	public MapTransform getMapTransform() {
@@ -156,5 +174,23 @@ public class MapEditorPlugIn extends ViewPlugIn implements WorkbenchFrame,
 	
 	public String getName() {
 		return "Map Editor view";
+	}
+	
+	public WorkbenchToolBar getMapToolBar() {
+		return mapToolBar;
+	}
+	
+	public void setMapToolBar(WorkbenchToolBar mapToolBar) {
+		this.mapToolBar = mapToolBar;
+		mapToolBar.setFloatable(false);	
+		mapEditor.add(mapToolBar, BorderLayout.PAGE_END);
+	}
+	
+	public WorkbenchToolBar getScaleToolBar() {
+		return mapToolBar.getToolbars().get(Names.MAP_TOOLBAR_SCALE);
+	}
+	
+	public WorkbenchToolBar getProjectionToolBar() {
+		return mapToolBar.getToolbars().get(Names.MAP_TOOLBAR_PROJECTION);
 	}
 }

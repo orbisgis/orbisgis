@@ -1,6 +1,8 @@
 package org.orbisgis.core.ui.pluginSystem.workbench;
 
+import java.awt.BorderLayout;
 import java.awt.Component;
+import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
@@ -66,6 +68,7 @@ public class WorkbenchToolBar extends EnableableToolBar implements Observer {
 		super(name);
 		this.context = workbenchContext;
 		setOpaque(false);
+		
 	}
 
 	public WorkbenchToolBar(WorkbenchContext workbenchContext, String name,
@@ -109,7 +112,8 @@ public class WorkbenchToolBar extends EnableableToolBar implements Observer {
 	protected void addImpl(Component comp, final Object constraints, int index) {
 		if (constraints instanceof Automaton) {
 
-		} else {
+		}
+		else {
 			if (comp instanceof JComboBox) {
 				((JComboBox) comp).addItemListener(AbstractPlugIn
 						.toItemListener((PlugIn) constraints, context));
@@ -197,10 +201,9 @@ public class WorkbenchToolBar extends EnableableToolBar implements Observer {
 						.getService(EditorManager.class);
 				IEditor editor = em.getActiveEditor();
 				MapEditorPlugIn mapEditor = (MapEditorPlugIn) editor;
-				if (mapEditor != null && mapEditor.getComponent() != null) {
+				if (mapEditor != null && mapEditor.getMapControl() != null) {
 					try {
-						((MapControl) mapEditor.getComponent())
-								.setTool(automaton);
+						mapEditor.getMapControl().setTool(automaton);
 						WorkbenchContext wbContext = Services
 								.getService(WorkbenchContext.class);
 						wbContext.getWorkbench().getFrame()

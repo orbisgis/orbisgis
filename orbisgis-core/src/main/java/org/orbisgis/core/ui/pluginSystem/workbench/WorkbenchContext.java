@@ -8,11 +8,12 @@ import java.util.Map;
 import java.util.Observable;
 import java.util.Observer;
 
-import org.orbisgis.core.ui.pluginSystem.AbstractPlugIn;
+import org.orbisgis.core.background.BackgroundListener;
+import org.orbisgis.core.background.Job;
 import org.orbisgis.core.ui.pluginSystem.PlugIn;
 import org.orbisgis.core.ui.pluginSystem.PlugInContext;
 
-public abstract class WorkbenchContext extends Observable {
+public abstract class WorkbenchContext extends Observable implements BackgroundListener{
 
 	private String lastAction;
 	private List<Observer> popupPlugInObservers = new ArrayList<Observer>();
@@ -106,6 +107,17 @@ public abstract class WorkbenchContext extends Observable {
 			for (int i = 0; i < observers.size(); i++)									
 				addObserver(observers.get(i));
 		}
+		
+		bars = getWorkbench().getFrame().getMapEditor().getMapToolBar().getToolbars();
+		it = bars.values().iterator();						
+		observers = new ArrayList<Observer>();
+		while(it.hasNext()){	
+			WorkbenchToolBar wb = it.next();			
+			observers = wb.getToolsPlugInObservers();
+			addObserver(wb);
+			for (int i = 0; i < observers.size(); i++)									
+				addObserver(observers.get(i));
+		}
 	}
 	
 	private void  removeToolsPlugInObservers(){
@@ -119,6 +131,33 @@ public abstract class WorkbenchContext extends Observable {
 				deleteObserver(observers.get(i));
 			deleteObserver(wb);			
 		}
+		
+		bars = getWorkbench().getFrame().getMapEditor().getMapToolBar().getToolbars();
+		it = bars.values().iterator();						
+		observers = new ArrayList<Observer>();
+		while(it.hasNext()){	
+			WorkbenchToolBar wb = it.next();						
+			observers = wb.getToolsPlugInObservers();
+			for (int i = 0; i < observers.size(); i++)
+				deleteObserver(observers.get(i));
+			deleteObserver(wb);			
+		}
+	}
+	
+	public void jobRemoved(Job job) {
+		setLastAction("Update toolbar");
+	}
+	
+	@Override
+	public void jobAdded(Job job) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void jobReplaced(Job job) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

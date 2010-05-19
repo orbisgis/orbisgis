@@ -29,9 +29,13 @@ public class OrbisWorkbench {
 				"Gives access to the current WorkbenchContext", this.context);
 		this.frame = frame;
 	}
+	
+
 
 	public OrbisWorkbench() {
 		context = new OrbisWorkbenchContext(this);
+		Services.registerService(WorkbenchContext.class,
+				"Gives access to the current WorkbenchContext", this.context);
 	}
 
 	public void runWorkbench() {
@@ -52,10 +56,10 @@ public class OrbisWorkbench {
 		 * catch block e.printStackTrace(); }
 		 */
 		OrbisConfiguration setup = new OrbisConfiguration();
-		try {
+		try {			
 			if(fileExists)
-				plugInManager = new PlugInManager(context, extensionsDirectory);			
-			setup.setup(context);			
+				plugInManager = new PlugInManager(context, extensionsDirectory);	
+			setup.setup(context);
 			if( fileExists && plugInManager!=null ) 
 				context.getWorkbench().getPlugInManager().load();
 				

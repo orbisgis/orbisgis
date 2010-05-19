@@ -41,7 +41,6 @@ import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Toolkit;
-import java.util.Observable;
 
 import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
@@ -183,31 +182,15 @@ public class ScalePlugIn extends AbstractPlugIn {
 		panel.add(combobox);
 		panel.setLayout(new BoxLayout(panel, BoxLayout.X_AXIS));
 		panel.setOpaque(false);
+		panel.setVisible(true);
 		setActionComponent(combobox);
 		setTypeListener("item");
 		WorkbenchContext wbcontext = context.getWorkbenchContext();
-		wbcontext.getWorkbench().getFrame().getNavigationToolBar()
-				.addSeparator();
-		wbcontext.getWorkbench().getFrame().getNavigationToolBar()
-				.addPanelPlugIn(this, panel);
-	}
-
-	public void update(Observable o, Object arg) {
-		IEditor editor = Services.getService(EditorManager.class)
-				.getActiveEditor();
-		if (editor != null && editor instanceof MapEditorPlugIn)
-			panel.setEnabled(isEnabled(editor));
-		else
-			panel.setEnabled(false);
-	}
-
-	public boolean isEnabled(IEditor editor) {
-		MapContext mc = (MapContext) editor.getElement().getObject();
-		return mc.getLayerModel().getLayerCount() > 0;
-	}
-
-	public boolean isVisible() {
-		return true;
+		
+		wbcontext.getWorkbench().getFrame().getMapEditor()
+							.getScaleToolBar().addSeparator();
+		wbcontext.getWorkbench().getFrame().getMapEditor()
+							.getScaleToolBar().addPanelPlugIn(this,panel);
 	}
 
 	private Envelope getEnveloppeFromScale(Envelope oldEnvelope,
@@ -286,8 +269,7 @@ public class ScalePlugIn extends AbstractPlugIn {
 			MapContext mc = (MapContext) editor.getElement().getObject();
 			isVisible = mc.getLayerModel().getLayerCount() > 0;
 			panel.setEnabled(isVisible);
-		}
-		panel.setVisible(isVisible);
+		}	
 		return isVisible;		
 	}
 	

@@ -44,12 +44,10 @@ import org.orbisgis.core.edition.EditableElement;
 import org.orbisgis.core.edition.EditableElementException;
 import org.orbisgis.core.edition.EditableElementListener;
 import org.orbisgis.core.ui.editor.IEditor;
-import org.orbisgis.core.ui.editors.map.tool.Automaton;
 import org.orbisgis.core.ui.pluginSystem.PlugInContext;
 import org.orbisgis.core.ui.pluginSystem.ViewPlugIn;
 import org.orbisgis.progress.IProgressMonitor;
 
-//TODO (pyf): What's this editor (Is it a View Plugin to do?)
 public class ErrorEditor implements IEditor {
 
 	private String message;
@@ -143,8 +141,7 @@ public class ErrorEditor implements IEditor {
 	}
 
 	@Override
-	public void initialize(PlugInContext wbContext, Automaton automaton)
-			throws Exception {
+	public void initialize(PlugInContext wbContext)	throws Exception {
 		// TODO Auto-generated method stub
 
 	}
