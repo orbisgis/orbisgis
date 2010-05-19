@@ -1,6 +1,5 @@
 package org.orbisgis.core.geocognition.sql;
 
-import org.eclipse.jdt.core.JavaCore;
 import org.orbisgis.core.geocognition.AbstractExtensionElement;
 import org.orbisgis.core.geocognition.GeocognitionElementContentListener;
 import org.orbisgis.core.geocognition.GeocognitionElementFactory;
@@ -9,8 +8,6 @@ import org.orbisgis.core.geocognition.mapContext.GeocognitionException;
 import org.orbisgis.core.geocognition.persistence.Property;
 import org.orbisgis.core.geocognition.persistence.PropertySet;
 import org.orbisgis.progress.IProgressMonitor;
-import org.eclipse.core.runtime.Path;
-
 
 public abstract class AbstractBuiltInSQLArtifact extends
 		AbstractExtensionElement implements GeocognitionExtensionElement {
@@ -31,11 +28,12 @@ public abstract class AbstractBuiltInSQLArtifact extends
 			GeocognitionElementFactory factory) throws ClassNotFoundException {
 		super(factory);
 		String className = properties.getProperty().get(0).getValue();
-		try{
+		try {
 			class_ = Class.forName(className);
-		}catch(ClassNotFoundException ex){
-			//IClassPathEntry libEntry = JavaCore.newLibraryEntry( new Path("/lib/ext"),null,null,false); 
-			//class_ = Class.forName(libEntry);
+		} catch (ClassNotFoundException ex) {
+			// IClassPathEntry libEntry = JavaCore.newLibraryEntry( new
+			// Path("/lib/ext"),null,null,false);
+			// class_ = Class.forName(libEntry);
 		}
 	}
 
