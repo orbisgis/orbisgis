@@ -116,7 +116,7 @@ public class MapControl extends JComponent implements ComponentListener {
 
 	private MapContext mapContext;
 
-	//private Drawer drawer;
+	private Drawer drawer;
 
 	private boolean showCoordinates = true;
 
@@ -280,14 +280,14 @@ public class MapControl extends JComponent implements ComponentListener {
 						repaint();
 						
 					}
-				});
-				timer.start();
-				drawer = new Drawer(timer);
+				});*/
+				//timer.start();
+				drawer = new Drawer(null);
 				BackgroundManager bm = (BackgroundManager) Services
 						.getService(BackgroundManager.class);
 				bm.nonBlockingBackgroundOperation(new DefaultJobId(
 						"org.orbisgis.jobs.MapControl-" + processId), drawer);
-				bm.addBackgroundListener( Services.getService( WorkbenchContext.class ) );*/
+				bm.addBackgroundListener( Services.getService( WorkbenchContext.class ) );
 			}
 		}
 
@@ -376,7 +376,7 @@ public class MapControl extends JComponent implements ComponentListener {
 		repaint();
 	}
 
-/*	public class Drawer implements BackgroundJob {
+	public class Drawer implements BackgroundJob {
 
 		private boolean cancel = false;
 		private CancellablePM pm;
@@ -408,7 +408,7 @@ public class MapControl extends JComponent implements ComponentListener {
 			} catch (Error e) {
 				throw e;
 			} finally {
-				timer.stop();
+				//timer.stop();
 				MapControl.this.repaint();
 				mapContext.setBoundingBox(mapTransform.getExtent());
 				WorkbenchContext wbContext = Services.getService(WorkbenchContext.class);
@@ -427,7 +427,7 @@ public class MapControl extends JComponent implements ComponentListener {
 			}
 		}
 	}
-*/
+
 	private class CancellablePM implements IProgressMonitor {
 
 		private IProgressMonitor decoratedPM;
