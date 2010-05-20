@@ -270,10 +270,10 @@ public class MapControl extends JComponent implements ComponentListener {
 
 			if (mapTransform.getAdjustedExtent() != null) {
 				mapTransform.setImage(inProcessImage);
-				repaint();
+				/*repaint();
 				mapContext.draw(mapTransform.getImage(), mapTransform
 						.getAdjustedExtent(), new ProgressMonitor(""));
-				mapContext.setBoundingBox(mapTransform.getExtent());
+				mapContext.setBoundingBox(mapTransform.getExtent());*/
 				/*Timer timer = new Timer(getTimerToDraw(), new ActionListener() {
 					@Override
 					public void actionPerformed(ActionEvent e) {
@@ -408,11 +408,13 @@ public class MapControl extends JComponent implements ComponentListener {
 			} catch (Error e) {
 				throw e;
 			} finally {
-				//timer.stop();
 				MapControl.this.repaint();
 				mapContext.setBoundingBox(mapTransform.getExtent());
+				//timer.stop();
+				/*MapControl.this.repaint();
+				mapContext.setBoundingBox(mapTransform.getExtent());
 				WorkbenchContext wbContext = Services.getService(WorkbenchContext.class);
-				wbContext.setLastAction("Update toolbar");
+				wbContext.setLastAction("Update toolbar");*/
 			}
 		}
 

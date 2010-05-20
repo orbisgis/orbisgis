@@ -68,7 +68,7 @@ public class WorkbenchToolBar extends EnableableToolBar implements Observer {
 		super(name);
 		this.context = workbenchContext;
 		setOpaque(false);
-		
+		//setLayout(new BorderLayout());
 	}
 
 	public WorkbenchToolBar(WorkbenchContext workbenchContext, String name,

@@ -23,9 +23,9 @@ public class CoordinateReferenceSystemPlugIn extends AbstractPlugIn{
 		WorkbenchContext wbcontext = context.getWorkbenchContext();
 		
 		wbcontext.getWorkbench().getFrame().getMapEditor()
-							.getScaleToolBar().addSeparator();
+							.getProjectionToolBar().addSeparator();
 		wbcontext.getWorkbench().getFrame().getMapEditor()
-							.getScaleToolBar().addPanelPlugIn(this,CRSButton);
+							.getProjectionToolBar().addPlugIn(this,CRSButton,context);
 		
 	}
 
