@@ -190,7 +190,7 @@ public class ScalePlugIn extends AbstractPlugIn {
 		wbcontext.getWorkbench().getFrame().getMapEditor()
 							.getScaleToolBar().addSeparator();
 		wbcontext.getWorkbench().getFrame().getMapEditor()
-							.getScaleToolBar().addPanelPlugIn(this,panel);
+							.getScaleToolBar().addPanelPlugIn(this,panel,context);
 	}
 
 	private Envelope getEnveloppeFromScale(Envelope oldEnvelope,
@@ -265,11 +265,11 @@ public class ScalePlugIn extends AbstractPlugIn {
 	public boolean isEnabled() {		
 		boolean isVisible = false;
 		IEditor editor = Services.getService(EditorManager.class).getActiveEditor();
-		if (editor != null && editor instanceof MapEditorPlugIn) {
+		if (editor != null && editor instanceof MapEditorPlugIn && getPlugInContext().getMapEditor()!=null) {
 			MapContext mc = (MapContext) editor.getElement().getObject();
-			isVisible = mc.getLayerModel().getLayerCount() > 0;
-			panel.setEnabled(isVisible);
+			isVisible = mc.getLayerModel().getLayerCount() > 0;			
 		}	
+		panel.setEnabled(isVisible);
 		return isVisible;		
 	}
 	

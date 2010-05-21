@@ -308,7 +308,7 @@ public class OrbisConfiguration implements Setup {
 			// Map editor : right click on Map
 			exportMasAsImagePlugIn.initialize(context);
 			exportMapAsPDFPlugIn.initialize(context);
-			showXYPlugIn.initialize(context);
+			
 			
 			//testPlugIn.initialize(context);
 
@@ -384,8 +384,9 @@ public class OrbisConfiguration implements Setup {
 		createSourceFromSelectionPlugIn.initialize(plugInContext);
 		
 		//Map tools
-		scalePlugIn.initialize(plugInContext);
-		CRSPlugIn.initialize(plugInContext);
+		//scalePlugIn.initialize(plugInContext);
+		//CRSPlugIn.initialize(plugInContext);
+		//showXYPlugIn.initialize(context);
 	}
 
 	private void configureToolBar(PlugInContext plugInContext) {
@@ -424,25 +425,23 @@ public class OrbisConfiguration implements Setup {
 		//Map editor tool bar
 		WorkbenchToolBar mapToolBar = new WorkbenchToolBar(wbContext, 
 				Names.MAP_TOOLBAR_NAME);
-		mapToolBar.setPreferredSize(new Dimension(frame.getMapEditor().getComponent().getWidth(),25));
 		frame.getMapEditor().setMapToolBar(mapToolBar);
 		
-		
-		WorkbenchToolBar scaleToolBar = new WorkbenchToolBar(wbContext,	
+		//TODO
+		/*WorkbenchToolBar scaleToolBar = new WorkbenchToolBar(wbContext,	
 				Names.MAP_TOOLBAR_SCALE);
 		mapToolBar.add(scaleToolBar);
 		
 		WorkbenchToolBar testToolBar = new WorkbenchToolBar(wbContext, "");
 		JTextArea noneBar = new JTextArea("");		
-		noneBar.setBackground(mapToolBar.getBackground());
-		testToolBar.add(noneBar);
+		testToolBar.add(noneBar);		
 		testToolBar.setPreferredSize(new Dimension(300,25));
 		mapToolBar.add(testToolBar);
 	
 		
 		WorkbenchToolBar projectionToolBar = new WorkbenchToolBar(wbContext, 
 				Names.MAP_TOOLBAR_PROJECTION);
-		mapToolBar.add(projectionToolBar);
+		mapToolBar.add(projectionToolBar,BorderLayout.EAST);*/
 		
 	}
 

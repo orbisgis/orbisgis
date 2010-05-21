@@ -1,6 +1,7 @@
 package org.orbisgis.core.ui.pluginSystem;
 
 import java.awt.Component;
+import java.awt.Container;
 import java.util.Observable;
 
 import javax.swing.ImageIcon;
@@ -57,7 +58,11 @@ public abstract class ViewPlugIn implements PlugIn {
 	}
 	
 	protected PlugInContext getPlugInContext() {
-		return plugInContext;
+			return plugInContext;
+	}
+	
+	public void setPlugInContext(PlugInContext plugInContext) {
+		this.plugInContext = plugInContext;
 	}
 
 	public void update(Observable o, Object arg) {

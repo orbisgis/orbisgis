@@ -30,6 +30,7 @@ public class TableEditorPlugIn extends ViewPlugIn implements IEditor {
 
 	public void initialize(PlugInContext context) {
 		editors = new String[0];
+		setPlugInContext(context);
 		if (context.getWorkbenchContext().getWorkbench().getFrame()
 				.getViewDecorator(Names.EDITOR_TABLE_ID) == null)
 			context.getWorkbenchContext().getWorkbench().getFrame().getViews()

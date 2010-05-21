@@ -88,7 +88,9 @@ public class WorkbenchToolBar extends EnableableToolBar implements Observer {
 		setOpaque(false);
 	}
 
-	public void addPanelPlugIn(final PlugIn plugIn, Component c) {
+	public void addPanelPlugIn(final PlugIn plugIn, Component c,
+			PlugInContext plugInContext) {
+		((AbstractPlugIn) plugIn).setPlugInContext(plugInContext);
 		toolsPlugInObservers.add(plugIn);
 		add(c, plugIn);
 	}

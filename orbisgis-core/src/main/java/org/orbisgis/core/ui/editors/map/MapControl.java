@@ -47,8 +47,14 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
+import java.awt.event.ContainerEvent;
+import java.awt.event.ContainerListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseMotionAdapter;
+import java.awt.event.MouseMotionListener;
 import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
 
 import javax.swing.JButton;
 import javax.swing.JComponent;
@@ -81,6 +87,7 @@ import org.orbisgis.core.ui.editors.map.tool.Automaton;
 import org.orbisgis.core.ui.editors.map.tool.ToolListener;
 import org.orbisgis.core.ui.editors.map.tool.ToolManager;
 import org.orbisgis.core.ui.editors.map.tool.TransitionException;
+import org.orbisgis.core.ui.pluginSystem.AbstractPlugIn;
 import org.orbisgis.core.ui.pluginSystem.workbench.Names;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchContext;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchToolBar;
@@ -94,7 +101,7 @@ import com.vividsolutions.jts.geom.Envelope;
  * 
  */
 
-public class MapControl extends JComponent implements ComponentListener {
+public class MapControl extends JComponent implements ComponentListener, ContainerListener {
 
 	private static int lastProcessId = 0;
 
@@ -116,17 +123,24 @@ public class MapControl extends JComponent implements ComponentListener {
 
 	private MapContext mapContext;
 
+
 	private Drawer drawer;
 
 	private boolean showCoordinates = true;
+	
+	 EditableElement element ;
+	 
+	 Automaton defaultTool;
 
 	// 250 ms wasn't as good as 1 s because less got painted on each
 	// repaint,
 	// making rendering appear to be slower. [Jon Aquino]
 	// LDB: 400 ms is better when using mouse wheel zooming
 	//int timerToDraw = 400;
-
 	
+	public MapControl() {
+		
+	}
 
 	/**
 	 * Creates a new NewMapControl.
@@ -139,6 +153,16 @@ public class MapControl extends JComponent implements ComponentListener {
 	 */
 	public MapControl(final MapContext mapContext, EditableElement element,
 			Automaton defaultTool) throws TransitionException {
+		this.mapContext = mapContext;
+		this.element = element;
+		this.defaultTool = defaultTool;
+		
+		initMapControl();		
+	}
+
+
+	
+	public void  initMapControl() throws TransitionException {
 		synchronized (this) {
 			this.processId = lastProcessId++;
 		}
@@ -204,11 +228,11 @@ public class MapControl extends JComponent implements ComponentListener {
 
 		// Add refresh listener
 		addLayerListenerRecursively(rootLayer, new RefreshLayerListener());
+		
+		setLayout(new BorderLayout());
 	}
+	
 
-	public MapContext getMapContext() {
-		return mapContext;
-	}
 
 	private void addLayerListenerRecursively(ILayer rootLayer,
 			RefreshLayerListener refreshLayerListener) {
@@ -287,31 +311,8 @@ public class MapControl extends JComponent implements ComponentListener {
 						.getService(BackgroundManager.class);
 				bm.nonBlockingBackgroundOperation(new DefaultJobId(
 						"org.orbisgis.jobs.MapControl-" + processId), drawer);
-				bm.addBackgroundListener( Services.getService( WorkbenchContext.class ) );
+				//bm.addBackgroundListener( Services.getService( WorkbenchContext.class ) );
 			}
-		}
-
-		if (showCoordinates) {
-			Point2D point = toolManager.getLastRealMousePosition();
-			String xCoord = "X:" + (int) point.getX();
-			String yCoord = "Y:" + (int) point.getY();
-			String scale = "1:" + (int) mapTransform.getScaleDenominator();
-			FontMetrics fm = g.getFontMetrics();
-			Rectangle coords = new Rectangle(0, getHeight() - fm.getHeight(),
-					Math.max(fm.stringWidth(xCoord), fm.stringWidth(yCoord)),
-					2 * fm.getHeight());
-			Rectangle scaleRect = new Rectangle(getWidth()
-					- fm.stringWidth(scale), getHeight(),
-					fm.stringWidth(scale), fm.getHeight());
-			g.setColor(Color.white);
-			g.fillRect(coords.x, coords.y - fm.getHeight(), coords.width,
-					coords.height);
-			g.fillRect(scaleRect.x, scaleRect.y - fm.getHeight(),
-					scaleRect.width, scaleRect.height);
-			g.setColor(Color.black);
-			g.drawString(xCoord, coords.x, coords.y);
-			g.drawString(yCoord, 0, getHeight());
-			g.drawString(scale, scaleRect.x, scaleRect.y);
 		}
 
 	}
@@ -411,10 +412,10 @@ public class MapControl extends JComponent implements ComponentListener {
 				MapControl.this.repaint();
 				mapContext.setBoundingBox(mapTransform.getExtent());
 				//timer.stop();
-				/*MapControl.this.repaint();
+				MapControl.this.repaint();
 				mapContext.setBoundingBox(mapTransform.getExtent());
 				WorkbenchContext wbContext = Services.getService(WorkbenchContext.class);
-				wbContext.setLastAction("Update toolbar");*/
+				wbContext.setLastAction("Update toolbar");
 			}
 		}
 
@@ -568,6 +569,32 @@ public class MapControl extends JComponent implements ComponentListener {
 
 	public boolean getShowCoordinates() {
 		return showCoordinates;
+	}
+	@Override
+	public void componentAdded(ContainerEvent e) {
+		System.out.println("component added");
+		
+	}
+	@Override
+	public void componentRemoved(ContainerEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+	
+	public void setDefaultTool(Automaton defaultTool) {
+		this.defaultTool = defaultTool;
+	}
+
+	public void setElement(EditableElement element) {
+		this.element = element;
+	}
+
+	public void setMapContext(MapContext mapContext) {
+		this.mapContext = mapContext;
+	}
+	
+	public MapContext getMapContext() {
+		return mapContext;
 	}
 
 }

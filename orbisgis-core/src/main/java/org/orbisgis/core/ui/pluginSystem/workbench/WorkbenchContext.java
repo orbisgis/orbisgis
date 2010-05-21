@@ -8,7 +8,9 @@ import java.util.Map;
 import java.util.Observable;
 import java.util.Observer;
 
+import org.orbisgis.core.Services;
 import org.orbisgis.core.background.BackgroundListener;
+import org.orbisgis.core.background.BackgroundManager;
 import org.orbisgis.core.background.Job;
 import org.orbisgis.core.ui.pluginSystem.PlugIn;
 import org.orbisgis.core.ui.pluginSystem.PlugInContext;
@@ -145,7 +147,7 @@ public abstract class WorkbenchContext extends Observable implements BackgroundL
 	}
 	
 	public void jobRemoved(Job job) {
-		setLastAction("Update toolbar");
+		setLastAction("Update toolbar");		
 	}
 	
 	@Override
