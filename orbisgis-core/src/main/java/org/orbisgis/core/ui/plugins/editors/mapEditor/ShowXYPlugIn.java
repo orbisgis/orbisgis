@@ -4,6 +4,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
 import java.awt.geom.Point2D;
 
+import javax.swing.Box;
 import javax.swing.JLabel;
 
 import org.orbisgis.core.Services;
@@ -43,7 +44,8 @@ public class ShowXYPlugIn extends AbstractPlugIn {
 			}
 			else
 				showXY.setVisible(false);
-
+			xCoord=null;
+			 yCoord=null;scale=null;
 		}
 	};
 	
@@ -54,6 +56,8 @@ public class ShowXYPlugIn extends AbstractPlugIn {
 		
 		wbContext.getWorkbench().getFrame().getMapEditor()
 							.getScaleToolBar().addSeparator();
+		wbContext.getWorkbench().getFrame().getMapEditor()
+		.getScaleToolBar().add(Box.createHorizontalGlue());
 		wbContext.getWorkbench().getFrame().getMapEditor()
 							.getScaleToolBar().addPanelPlugIn(this,showXY,context);
 		wbContext.getWorkbench().getFrame().getMapEditor().getMapControl().addMouseMotionListener(mouseMotionAdapter);

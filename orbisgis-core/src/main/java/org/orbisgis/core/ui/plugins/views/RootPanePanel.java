@@ -12,7 +12,7 @@ import javax.swing.JPanel;
 import javax.swing.JRootPane;
 import javax.swing.RootPaneContainer;
 
-public class RootPanePanel extends JPanel implements RootPaneContainer, ContainerListener {
+public class RootPanePanel extends JPanel implements RootPaneContainer {
 	 
 	private JRootPane rootPane;
 	
@@ -92,17 +92,4 @@ public class RootPanePanel extends JPanel implements RootPaneContainer, Containe
 		return rootPane;
 	}
 	
-
-
-	@Override
-	public void componentAdded(ContainerEvent e) {
-		System.out.println("Component added");
-		
-	}
-
-	@Override
-	public void componentRemoved(ContainerEvent e) {
-		// TODO Auto-generated method stub
-		
-	}
 }

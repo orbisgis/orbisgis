@@ -5,6 +5,9 @@ import javax.swing.JButton;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.images.IconNames;
 import org.orbisgis.core.layerModel.MapContext;
+import org.orbisgis.core.map.projection.ProjectionConfigPanel;
+import org.orbisgis.core.sif.SaveFilePanel;
+import org.orbisgis.core.sif.UIFactory;
 import org.orbisgis.core.ui.editor.IEditor;
 import org.orbisgis.core.ui.pluginSystem.AbstractPlugIn;
 import org.orbisgis.core.ui.pluginSystem.PlugInContext;
@@ -18,7 +21,10 @@ public class CoordinateReferenceSystemPlugIn extends AbstractPlugIn{
 	
 	@Override
 	public boolean execute(PlugInContext context) throws Exception {
-		// TODO Auto-generated method stub
+		final ProjectionConfigPanel projectionPanel = new ProjectionConfigPanel();
+		if (UIFactory.showDialog(projectionPanel)) {
+			
+		}
 		return true;
 	}
 

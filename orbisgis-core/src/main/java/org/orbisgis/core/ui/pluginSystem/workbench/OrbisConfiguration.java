@@ -6,6 +6,7 @@ import java.awt.Dimension;
 import java.awt.GridLayout;
 
 import javax.swing.AbstractButton;
+import javax.swing.Box;
 import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
@@ -384,9 +385,9 @@ public class OrbisConfiguration implements Setup {
 		createSourceFromSelectionPlugIn.initialize(plugInContext);
 		
 		//Map tools
-		//scalePlugIn.initialize(plugInContext);
-		//CRSPlugIn.initialize(plugInContext);
-		//showXYPlugIn.initialize(context);
+		scalePlugIn.initialize(plugInContext);
+		CRSPlugIn.initialize(plugInContext);
+		showXYPlugIn.initialize(plugInContext);
 	}
 
 	private void configureToolBar(PlugInContext plugInContext) {
@@ -428,20 +429,23 @@ public class OrbisConfiguration implements Setup {
 		frame.getMapEditor().setMapToolBar(mapToolBar);
 		
 		//TODO
-		/*WorkbenchToolBar scaleToolBar = new WorkbenchToolBar(wbContext,	
+		WorkbenchToolBar scaleToolBar = new WorkbenchToolBar(wbContext,	
 				Names.MAP_TOOLBAR_SCALE);
 		mapToolBar.add(scaleToolBar);
-		
-		WorkbenchToolBar testToolBar = new WorkbenchToolBar(wbContext, "");
-		JTextArea noneBar = new JTextArea("");		
-		testToolBar.add(noneBar);		
+		mapToolBar.add(Box.createHorizontalGlue());
+	/*	WorkbenchToolBar testToolBar = new WorkbenchToolBar(wbContext, "");
+		JLabel noneBar = new JLabel("");	
 		testToolBar.setPreferredSize(new Dimension(300,25));
-		mapToolBar.add(testToolBar);
+		noneBar.setMinimumSize(new Dimension(300,25));
+		
+		testToolBar.add(noneBar);
+		
+		mapToolBar.add(testToolBar);*/
 	
 		
 		WorkbenchToolBar projectionToolBar = new WorkbenchToolBar(wbContext, 
 				Names.MAP_TOOLBAR_PROJECTION);
-		mapToolBar.add(projectionToolBar,BorderLayout.EAST);*/
+		mapToolBar.add(projectionToolBar);
 		
 	}
 

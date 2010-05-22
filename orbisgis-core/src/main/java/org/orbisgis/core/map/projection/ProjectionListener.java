@@ -1,4 +1,4 @@
-package org.orbisgis.core.projections;
+package org.orbisgis.core.map.projection;
 
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;

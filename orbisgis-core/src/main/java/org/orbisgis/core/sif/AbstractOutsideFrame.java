@@ -52,10 +52,13 @@ import java.awt.event.MouseListener;
 
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
+import javax.swing.JTabbedPane;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 public abstract class AbstractOutsideFrame extends JDialog implements
 		OutsideFrame, ContainerListener, KeyListener, MouseListener,
-		ActionListener, FocusListener {
+		ActionListener, FocusListener, ChangeListener {
 
 	private boolean accepted = false;
 
@@ -194,5 +197,11 @@ public abstract class AbstractOutsideFrame extends JDialog implements
 	@Override
 	public void focusLost(FocusEvent e) {
 	}
+	
+	public void stateChanged(ChangeEvent evt) { 
+		JTabbedPane pane = (JTabbedPane)evt.getSource(); // Get current tab 
+		int sel = pane.getSelectedIndex(); 	
+	}
+	
 
 }

@@ -1,4 +1,4 @@
-package org.orbisgis.core.projections;
+package org.orbisgis.core.map.projection;
 
 import java.awt.BorderLayout;
 
@@ -8,13 +8,13 @@ import javax.swing.JScrollPane;
 import org.orbisgis.core.ui.geocatalog.newSourceWizards.SourceRenderer;
 import org.orbisgis.core.ui.plugins.views.geocatalog.SourceListRenderer;
 
-public class ProjectionPanel extends JPanel {
+public class ProjectionTab extends JPanel {
 	
 	private ProjectionList projectionList;
 	private ProjectionListener projectionListener;
 	private ProjectionModel projectionModel;
 	
-	public ProjectionPanel() {
+	public ProjectionTab() {
 		projectionList = new ProjectionList();
 		projectionListener = new ProjectionListener();
 		projectionList.addMouseListener(projectionListener);
