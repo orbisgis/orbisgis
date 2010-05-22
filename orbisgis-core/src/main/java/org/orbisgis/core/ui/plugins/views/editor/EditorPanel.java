@@ -618,20 +618,20 @@ public class EditorPanel extends Container {
 		return true;
 	}
 
-	// Return an editor
+	// Return an editor	
 	public static EditorDecorator getFirstEditor(EditableElement element) {
-		WorkbenchContext wbContext = Services.getService(WorkbenchContext.class);
+		WorkbenchContext wbContext = Services
+				.getService(WorkbenchContext.class);		
 		PlugInContext plugInContext = wbContext.createPlugInContext();
-		MapEditorPlugIn mapEditor = wbContext.getWorkbench().getFrame().getMapEditor();
 
-		IEditor[] editors = new IEditor[2];		
-		editors[0] = mapEditor==null?new MapEditorPlugIn():mapEditor;
+		IEditor[] editors = new IEditor[2];
+		editors[0] = new MapEditorPlugIn();
 		editors[1] = new TableEditorPlugIn();
 		IEditor editor = null;
 		for (int i = 0; i < editors.length; i++) {
 			if (editors[i].acceptElement(element.getTypeId())) {
 				try {
-					editor = editors[i];
+					editor = editors[i].getClass().newInstance();
 					editor.initialize(plugInContext);
 				} catch (InstantiationException e) {
 					e.printStackTrace();
