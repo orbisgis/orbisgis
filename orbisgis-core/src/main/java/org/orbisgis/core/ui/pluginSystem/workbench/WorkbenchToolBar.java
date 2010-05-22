@@ -238,7 +238,7 @@ public class WorkbenchToolBar extends EnableableToolBar implements Observer {
 	public void update(Observable arg0, Object arg1) {
 		this.setVisible(false);
 		for (int i = 0; i < getComponentCount(); i++) {
-			if (getComponent(i).isEnabled() && getComponent(i).isVisible()
+			if (getComponent(i).isEnabled()
 					&& !(getComponent(i) instanceof Separator)) {
 				this.setVisible(true);
 			}

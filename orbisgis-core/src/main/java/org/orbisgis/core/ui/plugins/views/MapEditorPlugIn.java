@@ -85,17 +85,17 @@ public class MapEditorPlugIn extends ViewPlugIn implements WorkbenchFrame,
 	public void setElement(EditableElement element) {
 		MapContext mapContext = (MapContext) element.getObject();
 		try {
-/*			mapControl = new MapControl(mapContext, element,
-					getIndependentToolInstance(defaultTool, defaultMouseCursor));*/
+			mapControl = new MapControl(mapContext, element,
+					getIndependentToolInstance(defaultTool, defaultMouseCursor));
 			//TODO
-			mapControl.setMapContext(mapContext);
+			/*mapControl.setMapContext(mapContext);
 			mapControl.setElement(element);
 			mapControl.setDefaultTool(getIndependentToolInstance(defaultTool, defaultMouseCursor));
 			mapControl.initMapControl();	
 			mapEditor.setContentPane(mapControl);
 			mapToolBar.setPreferredSize(new Dimension(mapControl.getWidth(),25));
 			mapToolBar.setFloatable(false);		
-			mapEditor.add(mapToolBar, BorderLayout.PAGE_END);
+			mapEditor.add(mapToolBar, BorderLayout.PAGE_END);*/
 					
 			
 		} catch (TransitionException e) {

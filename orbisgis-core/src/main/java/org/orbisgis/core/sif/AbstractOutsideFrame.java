@@ -58,7 +58,7 @@ import javax.swing.event.ChangeListener;
 
 public abstract class AbstractOutsideFrame extends JDialog implements
 		OutsideFrame, ContainerListener, KeyListener, MouseListener,
-		ActionListener, FocusListener, ChangeListener {
+		ActionListener, FocusListener {
 
 	private boolean accepted = false;
 
