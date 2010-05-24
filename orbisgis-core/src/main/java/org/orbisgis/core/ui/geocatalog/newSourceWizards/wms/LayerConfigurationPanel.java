@@ -174,38 +174,42 @@ public class LayerConfigurationPanel extends JPanel implements UIPanel {
 
 	@Override
 	public String initialize() {
-		optionTreeModel = new WMSLayerTreeModel(connectionPanel.getWMSClient());
 
-		GridBagLayout gl = new GridBagLayout();
-		this.setLayout(gl);
+		if (null == optionTreeModel) {
+			optionTreeModel = new WMSLayerTreeModel(connectionPanel
+					.getWMSClient());
 
-		// Option tree
-		GridBagConstraints c = new GridBagConstraints();
-		c.fill = GridBagConstraints.BOTH;
-		c.gridx = 0;
-		c.weightx = 1;
-		c.weighty = 1;
-		this.add(getOptionTree(), c);
+			GridBagLayout gl = new GridBagLayout();
+			this.setLayout(gl);
 
-		// add/remove buttons
-		c.fill = GridBagConstraints.NONE;
-		c.gridx = 1;
-		c.weightx = 0.1;
-		this.add(getAddRemoveButtons(), c);
+			// Option tree
+			GridBagConstraints c = new GridBagConstraints();
+			c.fill = GridBagConstraints.BOTH;
+			c.gridx = 0;
+			c.weightx = 1;
+			c.weighty = 1;
+			this.add(getOptionTree(), c);
 
-		// selection list
-		c.fill = GridBagConstraints.BOTH;
-		c.gridx = 2;
-		c.weightx = 1;
-		this.add(getSelectionList(), c);
+			// add/remove buttons
+			c.fill = GridBagConstraints.NONE;
+			c.gridx = 1;
+			c.weightx = 0.1;
+			this.add(getAddRemoveButtons(), c);
 
-		// sort buttons
-		c.fill = GridBagConstraints.NONE;
-		c.gridx = 3;
-		c.weightx = 0.1;
-		this.add(getOrderButtons(), c);
+			// selection list
+			c.fill = GridBagConstraints.BOTH;
+			c.gridx = 2;
+			c.weightx = 1;
+			this.add(getSelectionList(), c);
 
-		enableDisableButtons();
+			// sort buttons
+			c.fill = GridBagConstraints.NONE;
+			c.gridx = 3;
+			c.weightx = 0.1;
+			this.add(getOrderButtons(), c);
+
+			enableDisableButtons();
+		}
 
 		return null;
 	}

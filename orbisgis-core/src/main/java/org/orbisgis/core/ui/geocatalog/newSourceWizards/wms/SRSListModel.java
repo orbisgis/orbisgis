@@ -48,9 +48,11 @@ public class SRSListModel extends AbstractListModel implements ListModel {
 				}
 			}
 			this.srsNames = names.toArray(new String[0]);
+
 		}
 
 		fireIntervalRemoved(this, 0, getSize());
 		fireIntervalAdded(this, 0, getSize());
+
 	}
 }

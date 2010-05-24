@@ -8,7 +8,6 @@ import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.ListModel;
 import javax.swing.ListSelectionModel;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
@@ -21,8 +20,9 @@ public class SRSPanel extends JPanel implements UIPanel {
 	private WMSConnectionPanel wmsConnection;
 	private JList lstSRS;
 	private JTextFilter txtFilter;
-	private ListModel lstSRSModel;
 	private SRSListModel SRSlistModel;
+	private JPanel searchPanel;
+	private Component scrollPane;
 
 	public SRSPanel(WMSConnectionPanel wmsConnection) {
 		this.wmsConnection = wmsConnection;
@@ -50,42 +50,57 @@ public class SRSPanel extends JPanel implements UIPanel {
 
 	@Override
 	public String initialize() {
-		JLabel label = new JLabel("Search a SRS code : ");
-		txtFilter = new JTextFilter();
-		txtFilter.addDocumentListener(new DocumentListener() {
 
-			@Override
-			public void removeUpdate(DocumentEvent e) {
-				doFilter();
-			}
-
-			@Override
-			public void insertUpdate(DocumentEvent e) {
-				doFilter();
-			}
-
-			@Override
-			public void changedUpdate(DocumentEvent e) {
-				doFilter();
-			}
-		});
-
-		lstSRS = new JList();
-		SRSlistModel = new SRSListModel(wmsConnection.getWMSClient()
-				.getRootLayer().getAllSrs());
-		lstSRS.setModel(SRSlistModel);
-		lstSRS.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-		lstSRSModel = lstSRS.getModel();
-		JScrollPane scrollPane = new JScrollPane(lstSRS);
 		this.setLayout(new BorderLayout());
+		if (null == scrollPane){
+		scrollPane = new JScrollPane(getListSRS());
+		}
 		this.add(scrollPane, BorderLayout.CENTER);
-
-		JPanel searchPanel = new JPanel();
-		searchPanel.add(label);
-		searchPanel.add(txtFilter);
-		this.add(searchPanel, BorderLayout.NORTH);
+		this.add(getSearchSRSPanel(), BorderLayout.NORTH);
 
 		return null;
+	}
+
+	public JList getListSRS() {
+		if (null == lstSRS) {
+			lstSRS = new JList();
+			SRSlistModel = new SRSListModel(wmsConnection.getWMSClient()
+					.getRootLayer().getAllSrs());
+			lstSRS.setModel(SRSlistModel);
+			lstSRS.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		}
+		return lstSRS;
+	}
+
+	public JPanel getSearchSRSPanel() {
+
+		if (null == searchPanel) {
+			searchPanel = new JPanel();
+			JLabel label = new JLabel("Search a SRS code : ");
+
+			txtFilter = new JTextFilter();
+			txtFilter.addDocumentListener(new DocumentListener() {
+
+				@Override
+				public void removeUpdate(DocumentEvent e) {
+					doFilter();
+				}
+
+				@Override
+				public void insertUpdate(DocumentEvent e) {
+					doFilter();
+				}
+
+				@Override
+				public void changedUpdate(DocumentEvent e) {
+					doFilter();
+				}
+			});
+			searchPanel.add(label);
+			searchPanel.add(txtFilter);
+		}
+		return searchPanel;
+
 	}
 
 	private void doFilter() {
