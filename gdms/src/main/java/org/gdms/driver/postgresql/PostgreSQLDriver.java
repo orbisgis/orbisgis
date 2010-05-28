@@ -49,6 +49,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.gdms.data.WarningListener;
+import org.gdms.data.crs.CRSUtil;
 import org.gdms.data.metadata.Metadata;
 import org.gdms.data.types.Constraint;
 import org.gdms.data.types.DimensionConstraint;
@@ -106,6 +107,8 @@ public class PostgreSQLDriver extends DefaultDBDriver {
 
 	private boolean isPostGISTable;
 
+	private int srid;
+
 	/**
 	 * 
 	 * 
@@ -124,7 +127,7 @@ public class PostgreSQLDriver extends DefaultDBDriver {
 	 * 
 	 * @throws SQLException
 	 * @throws RuntimeException
-	 *             
+	 * 
 	 * 
 	 * @see org.gdms.driver.DBDriver#connect(java.lang.String)
 	 */
@@ -200,6 +203,8 @@ public class PostgreSQLDriver extends DefaultDBDriver {
 						this.schemaName = res.getString("f_table_schema");
 				}
 				geometryDimensions.put(geomFieldName, dim);
+				srid = res.getInt("srid");
+
 			}
 			res.close();
 			res = st.executeQuery("select * from " + getTableAndSchemaName()
@@ -259,7 +264,7 @@ public class PostgreSQLDriver extends DefaultDBDriver {
 		ResultSet res = null;
 		try {
 			st = c.createStatement();
-			res = st.executeQuery("select * from \"geometry_columns\"");
+			res = st.executeQuery("select * from \"geometry_columns\";");
 
 			while (res.next()) {
 				for (int i = 0; i < tableDescriptions.length; i++) {
@@ -323,6 +328,7 @@ public class PostgreSQLDriver extends DefaultDBDriver {
 							if (object instanceof org.postgis.PGgeometry)
 								tableDescriptions[i]
 										.setGeometryType(GeometryConstraint.ALL);
+
 							break;
 						}
 					}
@@ -346,14 +352,14 @@ public class PostgreSQLDriver extends DefaultDBDriver {
 			int geometryDimension = geometryDimensions.get(fieldName);
 
 			return TypeFactory.createType(Type.GEOMETRY, getConstraints(
-					geometryType, geometryDimension, getWL()));
+					fieldName, geometryType, geometryDimension, getWL()));
 		} else {
 			return super.getGDMSType(resultsetMetadata, pkFieldsList,
 					jdbcFieldIndex);
 		}
 	}
 
-	private Constraint[] getConstraints(String geometryType,
+	private Constraint[] getConstraints(String fieldName, String geometryType,
 			int geometryDimension, WarningListener wl) throws DriverException {
 		GeometryConstraint gc;
 
@@ -386,10 +392,12 @@ public class PostgreSQLDriver extends DefaultDBDriver {
 			dc = new DimensionConstraint(2);
 		}
 
+		Constraint crsConstraint = CRSUtil.getCRSConstraint(srid);
+
 		if (gc == null) {
-			return new Constraint[] { dc };
+			return new Constraint[] { dc, crsConstraint };
 		} else {
-			return new Constraint[] { gc, dc };
+			return new Constraint[] { gc, dc, crsConstraint };
 		}
 
 	}
