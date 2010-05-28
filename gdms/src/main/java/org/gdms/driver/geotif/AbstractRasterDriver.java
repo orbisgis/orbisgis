@@ -42,8 +42,10 @@ import java.io.IOException;
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.SpatialDataSourceDecorator;
+import org.gdms.data.crs.CRSUtil;
 import org.gdms.data.metadata.DefaultMetadata;
 import org.gdms.data.metadata.Metadata;
+import org.gdms.data.types.Constraint;
 import org.gdms.data.types.RasterTypeConstraint;
 import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeDefinition;
@@ -58,14 +60,18 @@ import org.grap.model.GeoRasterFactory;
 import org.grap.model.RasterMetadata;
 import org.orbisgis.progress.IProgressMonitor;
 import org.orbisgis.utils.FileUtils;
+import org.orbisgis.wkt.parser.PRJUtils;
 
 import com.vividsolutions.jts.geom.Envelope;
+
+import fr.cts.crs.CoordinateReferenceSystem;
 
 public abstract class AbstractRasterDriver implements FileReadWriteDriver {
 
 	protected GeoRaster geoRaster;
 	protected RasterMetadata metadata;
 	protected Envelope envelope;
+	private CoordinateReferenceSystem crs;
 
 	public void open(File file) throws DriverException {
 		try {
@@ -74,6 +80,12 @@ public abstract class AbstractRasterDriver implements FileReadWriteDriver {
 			geoRaster.open();
 			metadata = geoRaster.getMetadata();
 			envelope = metadata.getEnvelope();
+
+			// Check prjFile
+			File prjFile = FileUtils.getFileWithExtension(file, "prj");
+
+			crs = PRJUtils.getCRSFromPRJ(prjFile);
+
 		} catch (IOException e) {
 			throw new DriverException("Cannot access the source: " + file, e);
 		}
@@ -147,8 +159,10 @@ public abstract class AbstractRasterDriver implements FileReadWriteDriver {
 	public Metadata getMetadata() throws DriverException {
 		DefaultMetadata metadata = new DefaultMetadata();
 		try {
+			Constraint crsConstraint = CRSUtil.getCRSConstraint(crs);
 			metadata.addField("raster", TypeFactory.createType(Type.RASTER,
-					new RasterTypeConstraint(geoRaster.getType())));
+					new RasterTypeConstraint(geoRaster.getType()),
+					crsConstraint));
 		} catch (IOException e) {
 			throw new DriverException("Cannot read the raster type", e);
 		}
