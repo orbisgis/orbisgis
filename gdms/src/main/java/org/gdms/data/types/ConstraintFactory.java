@@ -40,16 +40,13 @@ import ij.ImagePlus;
 
 import java.util.HashMap;
 
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
-
 public class ConstraintFactory {
 
 	private static HashMap<Integer, Constraint> samples = new HashMap<Integer, Constraint>();
 
 	static {
 		samples.put(Constraint.AUTO_INCREMENT, new AutoIncrementConstraint());
-		samples.put(Constraint.CRS, new CRSConstraint(
-				(CoordinateReferenceSystem) null));
+		samples.put(Constraint.CRS, new CRSConstraint(-1));
 		samples.put(Constraint.GEOMETRY_DIMENSION, new DimensionConstraint(2));
 		samples.put(Constraint.GEOMETRY_TYPE, new GeometryConstraint(
 				GeometryConstraint.LINESTRING));
@@ -65,7 +62,8 @@ public class ConstraintFactory {
 		samples.put(Constraint.READONLY, new ReadOnlyConstraint());
 		samples.put(Constraint.SCALE, new ScaleConstraint(2));
 		samples.put(Constraint.UNIQUE, new UniqueConstraint());
-		samples.put(Constraint.DEFAULT_STRING_VALUE, new DefaultStringConstraint(""));
+		samples.put(Constraint.DEFAULT_STRING_VALUE,
+				new DefaultStringConstraint(""));
 	}
 
 	public static Constraint createConstraint(int type, byte[] constraintBytes) {
