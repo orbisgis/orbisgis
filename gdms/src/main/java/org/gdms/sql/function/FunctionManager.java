@@ -65,6 +65,7 @@ import org.gdms.sql.function.spatial.geometry.affineTransformation.ST_Rotate;
 import org.gdms.sql.function.spatial.geometry.affineTransformation.ST_Scale;
 import org.gdms.sql.function.spatial.geometry.convert.ST_Centroid;
 import org.gdms.sql.function.spatial.geometry.convert.ST_Force_3D;
+import org.gdms.sql.function.spatial.geometry.convert.ST_InteriorPoint;
 import org.gdms.sql.function.spatial.geometry.convert.ST_PointsToLine;
 import org.gdms.sql.function.spatial.geometry.convert.ST_ToMultiLine;
 import org.gdms.sql.function.spatial.geometry.convert.ST_ToMultiPoint;
@@ -238,6 +239,7 @@ public class FunctionManager {
 		addFunction(ST_LSFactor.class);
 		addFunction(ST_StreamPowerIndex.class);
 		addFunction(ST_WetnessIndex.class);
+		addFunction(ST_InteriorPoint.class);
 	}
 
 	public static void addFunctionManagerListener(
