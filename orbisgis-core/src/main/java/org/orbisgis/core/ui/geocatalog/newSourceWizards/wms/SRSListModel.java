@@ -1,7 +1,6 @@
 package org.orbisgis.core.ui.geocatalog.newSourceWizards.wms;
 
 import java.util.ArrayList;
-import java.util.Vector;
 
 import javax.swing.AbstractListModel;
 import javax.swing.ListModel;
@@ -10,10 +9,10 @@ public class SRSListModel extends AbstractListModel implements ListModel {
 
 	private String[] srsNames;
 	private String nameFilter;
-	private Vector allSrs;
+	private String[] srsNamesIn;
 
-	public SRSListModel(Vector allSrs) {
-		this.allSrs = allSrs;
+	public SRSListModel(String[] srsNamesIn) {
+		this.srsNamesIn = srsNamesIn;
 		refresh();
 	}
 
@@ -36,8 +35,7 @@ public class SRSListModel extends AbstractListModel implements ListModel {
 	}
 
 	private void refresh() {
-		srsNames = new String[allSrs.size()];
-		allSrs.toArray(srsNames);
+		srsNames = srsNamesIn;
 		if (nameFilter != null) {
 
 			ArrayList<String> names = new ArrayList<String>();
@@ -55,4 +53,5 @@ public class SRSListModel extends AbstractListModel implements ListModel {
 		fireIntervalAdded(this, 0, getSize());
 
 	}
+	
 }

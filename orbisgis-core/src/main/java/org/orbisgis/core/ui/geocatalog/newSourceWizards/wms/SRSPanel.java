@@ -3,6 +3,7 @@ package org.orbisgis.core.ui.geocatalog.newSourceWizards.wms;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.net.URL;
+import java.util.Vector;
 
 import javax.swing.JLabel;
 import javax.swing.JList;
@@ -52,8 +53,8 @@ public class SRSPanel extends JPanel implements UIPanel {
 	public String initialize() {
 
 		this.setLayout(new BorderLayout());
-		if (null == scrollPane){
-		scrollPane = new JScrollPane(getListSRS());
+		if (null == scrollPane) {
+			scrollPane = new JScrollPane(getListSRS());
 		}
 		this.add(scrollPane, BorderLayout.CENTER);
 		this.add(getSearchSRSPanel(), BorderLayout.NORTH);
@@ -64,8 +65,11 @@ public class SRSPanel extends JPanel implements UIPanel {
 	public JList getListSRS() {
 		if (null == lstSRS) {
 			lstSRS = new JList();
-			SRSlistModel = new SRSListModel(wmsConnection.getWMSClient()
-					.getRootLayer().getAllSrs());
+			Vector allSrs = wmsConnection.getWMSClient().getRootLayer()
+					.getAllSrs();
+			String[] srsNames = new String[allSrs.size()];
+			allSrs.toArray(srsNames);
+			SRSlistModel = new SRSListModel(srsNames);
 			lstSRS.setModel(SRSlistModel);
 			lstSRS.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		}
