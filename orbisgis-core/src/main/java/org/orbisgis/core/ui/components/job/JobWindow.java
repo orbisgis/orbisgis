@@ -38,8 +38,7 @@ public class JobWindow extends JPanel {
 	private static final int TOOLBAR_SIZE = 33;
 	private static final int RIGHT_POPUP_OFFSET= 10;
 
-	public JobWindow(JFrame frame) {
-		this.parent = frame;
+	public JobWindow() {
 	}
 	
 	public void show() {
