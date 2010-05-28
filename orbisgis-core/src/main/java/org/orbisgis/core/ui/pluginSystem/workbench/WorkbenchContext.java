@@ -14,6 +14,8 @@ import org.orbisgis.core.background.BackgroundManager;
 import org.orbisgis.core.background.Job;
 import org.orbisgis.core.ui.pluginSystem.PlugIn;
 import org.orbisgis.core.ui.pluginSystem.PlugInContext;
+import org.orbisgis.core.ui.plugins.views.MapEditorPlugIn;
+import org.orbisgis.core.ui.plugins.views.editor.EditorManager;
 
 public abstract class WorkbenchContext extends Observable implements BackgroundListener{
 
@@ -110,15 +112,19 @@ public abstract class WorkbenchContext extends Observable implements BackgroundL
 				addObserver(observers.get(i));
 		}
 		
-		bars = getWorkbench().getFrame().getMapEditor().getMapToolBar().getToolbars();
-		it = bars.values().iterator();						
-		observers = new ArrayList<Observer>();
-		while(it.hasNext()){	
-			WorkbenchToolBar wb = it.next();			
-			observers = wb.getToolsPlugInObservers();
-			addObserver(wb);
-			for (int i = 0; i < observers.size(); i++)									
-				addObserver(observers.get(i));
+		EditorManager em = Services.getService(EditorManager.class);
+		MapEditorPlugIn mapEditor = (MapEditorPlugIn)em.getActiveEditor();
+		if(mapEditor!=null) {
+			bars = mapEditor.getMapToolBar().getToolbars();
+			it = bars.values().iterator();						
+			observers = new ArrayList<Observer>();
+			while(it.hasNext()){	
+				WorkbenchToolBar wb = it.next();			
+				observers = wb.getToolsPlugInObservers();
+				addObserver(wb);
+				for (int i = 0; i < observers.size(); i++)									
+					addObserver(observers.get(i));
+			}
 		}
 	}
 	
@@ -134,15 +140,19 @@ public abstract class WorkbenchContext extends Observable implements BackgroundL
 			deleteObserver(wb);			
 		}
 		
-		bars = getWorkbench().getFrame().getMapEditor().getMapToolBar().getToolbars();
-		it = bars.values().iterator();						
-		observers = new ArrayList<Observer>();
-		while(it.hasNext()){	
-			WorkbenchToolBar wb = it.next();						
-			observers = wb.getToolsPlugInObservers();
-			for (int i = 0; i < observers.size(); i++)
-				deleteObserver(observers.get(i));
-			deleteObserver(wb);			
+		EditorManager em = Services.getService(EditorManager.class);
+		MapEditorPlugIn mapEditor = (MapEditorPlugIn)em.getActiveEditor();
+		if(mapEditor!=null) {
+			bars = mapEditor.getMapToolBar().getToolbars();
+			it = bars.values().iterator();						
+			observers = new ArrayList<Observer>();
+			while(it.hasNext()){	
+				WorkbenchToolBar wb = it.next();						
+				observers = wb.getToolsPlugInObservers();
+				for (int i = 0; i < observers.size(); i++)
+					deleteObserver(observers.get(i));
+				deleteObserver(wb);			
+			}
 		}
 	}
 	

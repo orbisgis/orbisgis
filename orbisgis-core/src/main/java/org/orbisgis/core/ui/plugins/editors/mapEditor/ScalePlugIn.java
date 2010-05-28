@@ -56,7 +56,8 @@ import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.ui.editor.IEditor;
 import org.orbisgis.core.ui.pluginSystem.AbstractPlugIn;
 import org.orbisgis.core.ui.pluginSystem.PlugInContext;
-import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchContext;
+import org.orbisgis.core.ui.pluginSystem.workbench.Names;
+import org.orbisgis.core.ui.plugins.editor.PlugInEditorListener;
 import org.orbisgis.core.ui.plugins.views.MapEditorPlugIn;
 import org.orbisgis.core.ui.plugins.views.editor.EditorManager;
 
@@ -69,6 +70,7 @@ public class ScalePlugIn extends AbstractPlugIn {
 	public static final String SCALE_1000 = "1000";
 	public static final String SCALE_5000 = "5000";
 	public static final String SCALE_10000 = "10000";
+	public static final String SCALE_20000 = "20000";
 	public static final String SCALE_25000 = "25000";
 	public static final String SCALE_50000 = "50000";
 	public static final String SCALE_100000 = "100000";
@@ -78,6 +80,8 @@ public class ScalePlugIn extends AbstractPlugIn {
 	public static final String SCALE_10000000 = "10000000";
 
 	private JPanel panel;
+	private JComboBox combobox;
+	private double factor;
 
 	public boolean execute(PlugInContext context) throws Exception {
 		MapEditorPlugIn mapEditor = null;
@@ -112,7 +116,13 @@ public class ScalePlugIn extends AbstractPlugIn {
 
 						mt.setExtent(envelope);
 
-					} else if (scale.equals(SCALE_25000)) {
+					} else if (scale.equals(SCALE_20000)) {
+						envelope = getEnveloppeFromScale(
+								mt.getAdjustedExtent(), mt.getWidth(), 10000);
+
+						mt.setExtent(envelope);
+
+					}else if (scale.equals(SCALE_25000)) {
 						envelope = getEnveloppeFromScale(
 								mt.getAdjustedExtent(), mt.getWidth(), 25000);
 
@@ -172,8 +182,8 @@ public class ScalePlugIn extends AbstractPlugIn {
 		panel = new JPanel(new BorderLayout());
 		JLabel label = new JLabel("Scale : ");
 		label.setAlignmentX(Component.LEFT_ALIGNMENT);
-		JComboBox combobox = new JComboBox(new String[] { SCALE_1000,
-				SCALE_5000, SCALE_10000, SCALE_25000, SCALE_50000,
+		combobox = new JComboBox(new String[] { SCALE_1000,
+				SCALE_5000, SCALE_10000, SCALE_20000, SCALE_25000, SCALE_50000,
 				SCALE_100000, SCALE_500000, SCALE_1000000, SCALE_5000000,
 				SCALE_10000000 });
 		combobox.setAlignmentX(Component.RIGHT_ALIGNMENT);
@@ -185,19 +195,29 @@ public class ScalePlugIn extends AbstractPlugIn {
 		panel.setVisible(true);
 		setActionComponent(combobox);
 		setTypeListener("item");
-		WorkbenchContext wbcontext = context.getWorkbenchContext();
-		
-		wbcontext.getWorkbench().getFrame().getMapEditor()
-							.getScaleToolBar().addSeparator();
-		wbcontext.getWorkbench().getFrame().getMapEditor()
-							.getScaleToolBar().addPanelPlugIn(this,panel,context);
+				
+		EditorManager em = Services.getService(EditorManager.class);
+		em.addEditorListener(new PlugInEditorListener(this,panel,Names.MAP_TOOLBAR_SCALE,
+								null,context, true));
+	}
+	
+	private int getScaleFromEnvelope() {
+		MapEditorPlugIn mapEditor = null;
+		if ((mapEditor = getPlugInContext().getMapEditor()) != null) {
+			MapTransform mt = mapEditor.getMapTransform();
+			int panelWidth = mt.getWidth();
+			if (mt != null) {
+				return (int) (mt.getScaleDenominator()*factor);
+			}
+		}
+		return 1;
 	}
 
 	private Envelope getEnveloppeFromScale(Envelope oldEnvelope,
 			int panelWidth, int scale) {
 
 		// -- get zoom factor
-		double factor = scale / getHorizontalMapScale(panelWidth, oldEnvelope);
+		factor = scale / getHorizontalMapScale(panelWidth, oldEnvelope);
 
 		// --calculating new screen using the envelope of the corner
 		// LineString
@@ -264,8 +284,10 @@ public class ScalePlugIn extends AbstractPlugIn {
 
 	public boolean isEnabled() {		
 		boolean isVisible = false;
+		combobox.setSelectedItem(getScaleFromEnvelope());
 		IEditor editor = Services.getService(EditorManager.class).getActiveEditor();
 		if (editor != null && editor instanceof MapEditorPlugIn && getPlugInContext().getMapEditor()!=null) {
+			MapTransform mt = ((MapEditorPlugIn)editor).getMapTransform();
 			MapContext mc = (MapContext) editor.getElement().getObject();
 			isVisible = mc.getLayerModel().getLayerCount() > 0;			
 		}	
@@ -273,8 +295,7 @@ public class ScalePlugIn extends AbstractPlugIn {
 		return isVisible;		
 	}
 	
-	public boolean isSelected() {
-		// TODO Auto-generated method stub
+	public boolean isSelected() {		
 		return false;
 	}
 	

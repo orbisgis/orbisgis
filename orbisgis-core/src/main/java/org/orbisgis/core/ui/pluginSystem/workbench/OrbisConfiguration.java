@@ -199,6 +199,8 @@ public class OrbisConfiguration implements Setup {
 	private RedoMapPlugIn redoMapPlugIn = new RedoMapPlugIn();
 	private DeleteMapSelectionPlugIn deleteMapSelectionPlugIn = new DeleteMapSelectionPlugIn();
 	private CreateSourceFromMapSelectionPlugIn createSourceFromMapSelectionPlugIn = new CreateSourceFromMapSelectionPlugIn();
+	//Tool bar on map
+	private ShowXYPlugIn showXYPlugIn = new ShowXYPlugIn();
 	// Scale panel plugin is a swing component to execute action on map editor
 	private ScalePlugIn scalePlugIn = new ScalePlugIn();
 	private CoordinateReferenceSystemPlugIn CRSPlugIn = new CoordinateReferenceSystemPlugIn();
@@ -206,7 +208,7 @@ public class OrbisConfiguration implements Setup {
 	// right click on Map
 	private ExportMapAsImagePlugIn exportMasAsImagePlugIn = new ExportMapAsImagePlugIn();
 	private ExportMapAsPDFPlugIn exportMapAsPDFPlugIn = new ExportMapAsPDFPlugIn();
-	private ShowXYPlugIn showXYPlugIn = new ShowXYPlugIn();
+	
 
 	//private TestPlugIn testPlugIn = new TestPlugIn();
 	
@@ -223,10 +225,10 @@ public class OrbisConfiguration implements Setup {
 				"Gives default tool to the editor", defaultTool);
 		// Initialize one Map editor without geocognition elment
 		MapEditorPlugIn mapEditorPlugIn = new MapEditorPlugIn();
-		mapEditorPlugIn.initialize(plugInContext);
+		mapEditorPlugIn.initialize(plugInContext);		
 		// Initialize table editor
 		TableEditorPlugIn tableEditorPlugIn = new TableEditorPlugIn();
-		tableEditorPlugIn.initialize(plugInContext);
+		tableEditorPlugIn.initialize(plugInContext);		
 		// load toolbars (Main toolbar, table toolexceptionbar, Map toolbar)
 		configureToolBar(plugInContext);
 		// load main frame with default tool selected (Zoom in tool)
@@ -385,9 +387,9 @@ public class OrbisConfiguration implements Setup {
 		createSourceFromSelectionPlugIn.initialize(plugInContext);
 		
 		//Map tools
-		scalePlugIn.initialize(plugInContext);
-		CRSPlugIn.initialize(plugInContext);
+		//scalePlugIn.initialize(plugInContext);		
 		showXYPlugIn.initialize(plugInContext);
+		//CRSPlugIn.initialize(plugInContext);
 	}
 
 	private void configureToolBar(PlugInContext plugInContext) {
@@ -423,29 +425,7 @@ public class OrbisConfiguration implements Setup {
 				Names.TOOLBAR_TABLE);
 		wbToolBar.add(wbEditionTable);
 		
-		//Map editor tool bar
-		WorkbenchToolBar mapToolBar = new WorkbenchToolBar(wbContext, 
-				Names.MAP_TOOLBAR_NAME);
-		frame.getMapEditor().setMapToolBar(mapToolBar);
 		
-		//TODO
-		WorkbenchToolBar scaleToolBar = new WorkbenchToolBar(wbContext,	
-				Names.MAP_TOOLBAR_SCALE);
-		mapToolBar.add(scaleToolBar);
-		mapToolBar.add(Box.createHorizontalGlue());
-	/*	WorkbenchToolBar testToolBar = new WorkbenchToolBar(wbContext, "");
-		JLabel noneBar = new JLabel("");	
-		testToolBar.setPreferredSize(new Dimension(300,25));
-		noneBar.setMinimumSize(new Dimension(300,25));
-		
-		testToolBar.add(noneBar);
-		
-		mapToolBar.add(testToolBar);*/
-	
-		
-		WorkbenchToolBar projectionToolBar = new WorkbenchToolBar(wbContext, 
-				Names.MAP_TOOLBAR_PROJECTION);
-		mapToolBar.add(projectionToolBar);
 		
 	}
 

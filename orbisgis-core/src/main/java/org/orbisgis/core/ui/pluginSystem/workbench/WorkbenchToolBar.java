@@ -14,6 +14,7 @@ import java.util.Observable;
 import java.util.Observer;
 
 import javax.swing.AbstractButton;
+import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
@@ -68,7 +69,7 @@ public class WorkbenchToolBar extends EnableableToolBar implements Observer {
 		super(name);
 		this.context = workbenchContext;
 		setOpaque(false);
-		//setLayout(new BorderLayout());
+		setLayout(new BoxLayout(this,BoxLayout.X_AXIS));
 	}
 
 	public WorkbenchToolBar(WorkbenchContext workbenchContext, String name,

@@ -4,6 +4,8 @@ import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
 
+import javax.swing.Box;
+
 import org.orbisgis.core.Services;
 import org.orbisgis.core.edition.EditableElement;
 import org.orbisgis.core.images.IconNames;
@@ -19,6 +21,7 @@ import org.orbisgis.core.ui.pluginSystem.PlugInContext;
 import org.orbisgis.core.ui.pluginSystem.ViewPlugIn;
 import org.orbisgis.core.ui.pluginSystem.menu.MenuTree;
 import org.orbisgis.core.ui.pluginSystem.workbench.Names;
+import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchContext;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchFrame;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchToolBar;
 
@@ -27,6 +30,7 @@ public class MapEditorPlugIn extends ViewPlugIn implements WorkbenchFrame,
 		IEditor {
 
 	private RootPanePanel mapEditor;
+	//private JPanel mapEditor;
 	private MapControl mapControl;
 	private WorkbenchToolBar mapToolBar;	
 
@@ -35,11 +39,8 @@ public class MapEditorPlugIn extends ViewPlugIn implements WorkbenchFrame,
 	private EditableElement mapElement;
 	private Automaton defaultTool;
 	private String defaultMouseCursor;	
-	
-	
 
-
-	// TODO (pyf): ajouter des plugins dans la popup
+	
 	private org.orbisgis.core.ui.pluginSystem.menu.MenuTree menuTree;
 
 	public org.orbisgis.core.ui.pluginSystem.menu.MenuTree getMenuTreePopup() {
@@ -47,9 +48,21 @@ public class MapEditorPlugIn extends ViewPlugIn implements WorkbenchFrame,
 	}
 	
 	public MapEditorPlugIn() {
+		WorkbenchContext wbContext = Services.getService(WorkbenchContext.class);
 		mapEditor = new RootPanePanel ();
 		mapControl = new MapControl();
-		//mapToolBar = null;
+		//Map editor tool bar
+		mapToolBar = new WorkbenchToolBar(wbContext,
+				Names.MAP_TOOLBAR_NAME);
+		
+		WorkbenchToolBar scaleToolBar = new WorkbenchToolBar(wbContext,	
+				Names.MAP_TOOLBAR_SCALE);
+		mapToolBar.add(scaleToolBar);
+		mapToolBar.add(Box.createHorizontalGlue());
+		
+		WorkbenchToolBar projectionToolBar = new WorkbenchToolBar(wbContext, 
+				Names.MAP_TOOLBAR_PROJECTION);
+		mapToolBar.add(projectionToolBar);
 	}
 
 	public void initialize(PlugInContext context) throws Exception {		
@@ -85,17 +98,17 @@ public class MapEditorPlugIn extends ViewPlugIn implements WorkbenchFrame,
 	public void setElement(EditableElement element) {
 		MapContext mapContext = (MapContext) element.getObject();
 		try {
-			mapControl = new MapControl(mapContext, element,
-					getIndependentToolInstance(defaultTool, defaultMouseCursor));
+/*			mapControl = new MapControl(mapContext, element,
+					getIndependentToolInstance(defaultTool, defaultMouseCursor));*/
 			//TODO
-			/*mapControl.setMapContext(mapContext);
+			mapControl.setMapContext(mapContext);
 			mapControl.setElement(element);
 			mapControl.setDefaultTool(getIndependentToolInstance(defaultTool, defaultMouseCursor));
 			mapControl.initMapControl();	
 			mapEditor.setContentPane(mapControl);
-			mapToolBar.setPreferredSize(new Dimension(mapControl.getWidth(),25));
+			mapToolBar.setPreferredSize(new Dimension(mapControl.getWidth(),30));
 			mapToolBar.setFloatable(false);		
-			mapEditor.add(mapToolBar, BorderLayout.PAGE_END);*/
+			mapEditor.add(mapToolBar, BorderLayout.PAGE_END);
 					
 			
 		} catch (TransitionException e) {
@@ -189,10 +202,6 @@ public class MapEditorPlugIn extends ViewPlugIn implements WorkbenchFrame,
 		return mapToolBar;
 	}
 	
-	public void setMapToolBar(WorkbenchToolBar mapToolBar) {
-		this.mapToolBar = mapToolBar;
-		
-	}
 	
 	public WorkbenchToolBar getScaleToolBar() {
 		return mapToolBar.getToolbars().get(Names.MAP_TOOLBAR_SCALE);
@@ -201,10 +210,8 @@ public class MapEditorPlugIn extends ViewPlugIn implements WorkbenchFrame,
 	public WorkbenchToolBar getProjectionToolBar() {
 		return mapToolBar.getToolbars().get(Names.MAP_TOOLBAR_PROJECTION);
 	}
-
-	public RootPanePanel getPane() {
-		return mapEditor;
+	
+	public WorkbenchToolBar getToolBarById(String id) {
+		return mapToolBar.getToolbars().get(id);
 	}
-
-
 }

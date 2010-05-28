@@ -38,27 +38,16 @@ package org.orbisgis.core.ui.editors.map;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.GraphicsConfiguration;
 import java.awt.GraphicsEnvironment;
-import java.awt.Rectangle;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
 import java.awt.event.ContainerEvent;
 import java.awt.event.ContainerListener;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseMotionAdapter;
-import java.awt.event.MouseMotionListener;
-import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
-import java.util.ArrayList;
 
-import javax.swing.JButton;
 import javax.swing.JComponent;
-import javax.swing.JMenuBar;
 import javax.swing.Timer;
 
 import org.gdms.data.ClosedDataSourceException;
@@ -69,7 +58,6 @@ import org.gdms.data.edition.EditionListener;
 import org.gdms.data.edition.MultipleEditionEvent;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.background.BackgroundJob;
-import org.orbisgis.core.background.BackgroundListener;
 import org.orbisgis.core.background.BackgroundManager;
 import org.orbisgis.core.background.DefaultJobId;
 import org.orbisgis.core.edition.EditableElement;
@@ -87,12 +75,8 @@ import org.orbisgis.core.ui.editors.map.tool.Automaton;
 import org.orbisgis.core.ui.editors.map.tool.ToolListener;
 import org.orbisgis.core.ui.editors.map.tool.ToolManager;
 import org.orbisgis.core.ui.editors.map.tool.TransitionException;
-import org.orbisgis.core.ui.pluginSystem.AbstractPlugIn;
-import org.orbisgis.core.ui.pluginSystem.workbench.Names;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchContext;
-import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchToolBar;
 import org.orbisgis.progress.IProgressMonitor;
-import org.orbisgis.progress.ProgressMonitor;
 
 import com.vividsolutions.jts.geom.Envelope;
 
@@ -138,8 +122,10 @@ public class MapControl extends JComponent implements ComponentListener, Contain
 	// LDB: 400 ms is better when using mouse wheel zooming
 	//int timerToDraw = 400;
 	
-	public MapControl() {
-		
+	 /**
+	  * Default constructor
+	  */
+	public MapControl() {		
 	}
 
 	/**
@@ -166,7 +152,6 @@ public class MapControl extends JComponent implements ComponentListener, Contain
 		synchronized (this) {
 			this.processId = lastProcessId++;
 		}
-		this.mapContext = mapContext;
 		setDoubleBuffered(true);
 		setOpaque(true);
 		status = DIRTY;
@@ -230,6 +215,7 @@ public class MapControl extends JComponent implements ComponentListener, Contain
 		addLayerListenerRecursively(rootLayer, new RefreshLayerListener());
 		
 		setLayout(new BorderLayout());
+		
 	}
 	
 

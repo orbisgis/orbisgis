@@ -1,6 +1,6 @@
 package org.orbisgis.core.ui.plugins.views;
 
-import java.util.Observable;
+import java.awt.Component;
 
 import javax.swing.JMenuItem;
 
@@ -106,6 +106,13 @@ public class TocViewPlugIn extends ViewPlugIn {
 				public void activeEditorChanged(IEditor previous,
 						IEditor current) {
 				}
+				
+
+				@Override
+				public void elementLoaded(IEditor editor, Component comp) {					
+				}
+
+				
 			};
 			EditorManager em = Services.getService(EditorManager.class);
 			em.addEditorListener(closingListener);

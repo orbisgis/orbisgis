@@ -4,7 +4,6 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
 import java.awt.geom.Point2D;
 
-import javax.swing.Box;
 import javax.swing.JLabel;
 
 import org.orbisgis.core.Services;
@@ -13,7 +12,8 @@ import org.orbisgis.core.ui.editor.IEditor;
 import org.orbisgis.core.ui.editors.map.tool.ToolManager;
 import org.orbisgis.core.ui.pluginSystem.AbstractPlugIn;
 import org.orbisgis.core.ui.pluginSystem.PlugInContext;
-import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchContext;
+import org.orbisgis.core.ui.pluginSystem.workbench.Names;
+import org.orbisgis.core.ui.plugins.editor.PlugInEditorListener;
 import org.orbisgis.core.ui.plugins.views.MapEditorPlugIn;
 import org.orbisgis.core.ui.plugins.views.editor.EditorManager;
 
@@ -37,40 +37,33 @@ public class ShowXYPlugIn extends AbstractPlugIn {
 				Point2D point = toolManager.getLastRealMousePosition();
 				xCoord = "X:" + (int) point.getX();
 				yCoord = "Y:" + (int) point.getY();
-				scale = "1:"+ toolManager.getMapTransform().getScaleDenominator();
-				showXY.setVisible(true);
+				scale = "1:"+ toolManager.getMapTransform().getScaleDenominator();				
 				showXY.setText(xCoord +  "  "  + yCoord + "  " + scale);
 
 			}
-			else
-				showXY.setVisible(false);
 			xCoord=null;
-			 yCoord=null;scale=null;
+			yCoord=null;scale=null;
 		}
 	};
 	
-	public void initialize(PlugInContext context) throws Exception {		
-		final WorkbenchContext wbContext = context.getWorkbenchContext();	
+	public void initialize(final PlugInContext context) throws Exception {		
 		showXY = new JLabel();
-		showXY.setEnabled(false);
+		showXY.setEnabled(false);		
+		EditorManager em = Services.getService(EditorManager.class);
+		em.addEditorListener(new PlugInEditorListener(this,showXY,Names.MAP_TOOLBAR_PROJECTION,
+								mouseMotionAdapter,context,true));
 		
-		wbContext.getWorkbench().getFrame().getMapEditor()
-							.getScaleToolBar().addSeparator();
-		wbContext.getWorkbench().getFrame().getMapEditor()
-		.getScaleToolBar().add(Box.createHorizontalGlue());
-		wbContext.getWorkbench().getFrame().getMapEditor()
-							.getScaleToolBar().addPanelPlugIn(this,showXY,context);
-		wbContext.getWorkbench().getFrame().getMapEditor().getMapControl().addMouseMotionListener(mouseMotionAdapter);
 	}	
 
 	public boolean isEnabled() {
+		showXY.setText("X:0.0     Y:0.0" );
 		boolean isVisible = false;
 		IEditor editor = Services.getService(EditorManager.class).getActiveEditor();
 		if (editor != null && editor instanceof MapEditorPlugIn && getPlugInContext().getMapEditor()!=null) {
 			MapContext mc = (MapContext) editor.getElement().getObject();
 			isVisible = mc.getLayerModel().getLayerCount() > 0;			
 		}	
-		showXY.setEnabled(isVisible);
+		showXY.setEnabled(isVisible);		
 		return isVisible;
 	}
 	

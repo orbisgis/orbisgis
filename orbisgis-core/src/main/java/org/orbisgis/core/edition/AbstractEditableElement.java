@@ -11,20 +11,18 @@ public abstract class AbstractEditableElement implements EditableElement {
 
 	protected void fireContentChanged() {
 		for (EditableElementListener listener : listeners) {
-			listener.contentChanged(this);
-			WorkbenchContext wbContext = Services
-					.getService(WorkbenchContext.class);
-			wbContext.setLastAction("Toc changes");
+			listener.contentChanged(this);			
 		}
+		WorkbenchContext wbContext = Services.getService(WorkbenchContext.class);
+		wbContext.setLastAction("Toc changes");
 	}
 
 	protected void fireSave() {
 		for (EditableElementListener listener : listeners) {
-			listener.saved(this);
-			WorkbenchContext wbContext = Services
-					.getService(WorkbenchContext.class);
-			wbContext.setLastAction("Toc changes");
+			listener.saved(this);			
 		}
+		WorkbenchContext wbContext = Services.getService(WorkbenchContext.class);
+		wbContext.setLastAction("Toc changes");
 	}
 
 	@Override

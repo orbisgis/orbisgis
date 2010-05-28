@@ -73,7 +73,6 @@ import org.orbisgis.core.images.IconLoader;
 import org.orbisgis.core.ui.editor.EditorDecorator;
 import org.orbisgis.core.ui.editor.EditorListener;
 import org.orbisgis.core.ui.editor.IEditor;
-import org.orbisgis.core.ui.editors.map.tool.Automaton;
 import org.orbisgis.core.ui.pluginSystem.PlugInContext;
 import org.orbisgis.core.ui.pluginSystem.workbench.Names;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchContext;
@@ -86,7 +85,7 @@ public class EditorPanel extends Container {
 
 	private static final Logger logger = Logger.getLogger(EditorPanel.class);
 	private RootWindow root;
-	private ArrayList<EditorInfo> editorsInfo = new ArrayList<EditorInfo>();
+	private static ArrayList<EditorInfo> editorsInfo = new ArrayList<EditorInfo>();
 	private EditorDecorator lastEditor = null;
 	private ChangeNameListener changeNameListener = new ChangeNameListener();
 	private ArrayList<EditorListener> listeners = new ArrayList<EditorListener>();
@@ -251,6 +250,9 @@ public class EditorPanel extends Container {
 				.add(new EditorInfo(view, editor.getElement(), editor, comp));
 
 		editor.getElement().addElementListener(changeNameListener);
+		//inform that element was loaded
+		fireElementLoaded(editor.getEditor(),comp);
+		
 
 	}
 
@@ -439,6 +441,8 @@ public class EditorPanel extends Container {
 					}
 					lastEditor = nextEditor;
 					fireActiveEditorChanged(previous, lastEditor.getEditor());
+					//inform element was loaded
+					fireElementLoaded(lastEditor.getEditor(),focusedView.getComponent());
 				}
 			}
 		}
@@ -617,7 +621,18 @@ public class EditorPanel extends Container {
 
 		return true;
 	}
-
+	
+	@SuppressWarnings("unchecked")
+	private void fireElementLoaded(IEditor editor, Component comp) {
+		ArrayList<EditorListener> l = (ArrayList<EditorListener>) listeners	.clone();
+		for (EditorListener listener : l) {
+			listener.elementLoaded(editor, comp);
+		}		
+		WorkbenchContext wbContext =
+			Services.getService(WorkbenchContext.class);
+		wbContext.setLastAction("Editor changed");		
+	}
+	
 	// Return an editor	
 	public static EditorDecorator getFirstEditor(EditableElement element) {
 		WorkbenchContext wbContext = Services
