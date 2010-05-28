@@ -114,17 +114,7 @@ public class GeocognitionTree extends ResourceTree {
 	}
 
 	@Override
-	public JPopupMenu getPopup() {
-		// MenuTree menuTree = new MenuTree();
-		/*
-		 * GeocognitionActionFactory factory = new GeocognitionActionFactory();
-		 * ContextualActionExtensionPointHelper.createPopup(menuTree, factory,
-		 * "org.orbisgis.core.ui.views.geocognition.Action");
-		 * EPGeocognitionWizardHelper wh = new EPGeocognitionWizardHelper();
-		 * wh.addWizardMenus(menuTree, new GeocognitionWizardActionFactory(),
-		 * "org.orbisgis.core.ui.views.geocognition.New");
-		 * menuTree.removeEmptyMenus();
-		 */
+	public JPopupMenu getPopup() {		
 		JPopupMenu popup = new JPopupMenu();
 		JComponent[] menus = menuTree.getJMenus();
 		for (JComponent menu : menus) {
