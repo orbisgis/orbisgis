@@ -282,7 +282,8 @@ public class FileUtils {
 		return hexString.toString();
 	}
 
-	public static void setContents(File file, String content) throws IOException {
+	public static void setContents(File file, String content)
+			throws IOException {
 		FileOutputStream fos = new FileOutputStream(file);
 		BufferedOutputStream bos = new BufferedOutputStream(fos);
 		bos.write(content.getBytes());
@@ -294,10 +295,25 @@ public class FileUtils {
 		int extensionStart = name.lastIndexOf('.');
 		String ret = name;
 		if (extensionStart != -1) {
-			ret = name.substring(0, name.indexOf(name
-					.substring(extensionStart)));
+			ret = name.substring(0, name
+					.indexOf(name.substring(extensionStart)));
 		}
-		
+
 		return ret;
+	}
+
+	/**
+	 * Get a file according an extension
+	 * 
+	 * @param file
+	 * @param extension
+	 * @return
+	 */
+	public static File getFileWithExtension(File file, String extension) {
+		String filePath = file.getAbsolutePath();
+		int dotPos = filePath.lastIndexOf(".");
+		String fileNamePrefix = filePath.substring(0, dotPos);
+
+		return new File(fileNamePrefix + "." + extension);
 	}
 }
