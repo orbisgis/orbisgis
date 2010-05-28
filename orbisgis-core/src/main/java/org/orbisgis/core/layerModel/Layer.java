@@ -56,7 +56,6 @@ import org.gdms.data.types.GeometryConstraint;
 import org.gdms.data.types.Type;
 import org.gdms.driver.DriverException;
 import org.grap.model.GeoRaster;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.errorManager.ErrorManager;
 import org.orbisgis.core.layerModel.persistence.LayerType;
@@ -81,11 +80,9 @@ public class Layer extends GdmsLayer {
 	private RefreshSelectionEditionListener editionListener;
 	private int[] selection = new int[0];
 
-	public Layer(String name, DataSource ds,
-			final CoordinateReferenceSystem coordinateReferenceSystem) {
-		super(name, coordinateReferenceSystem);
+	public Layer(String name, DataSource ds) {
+		super(name);
 		this.dataSource = new SpatialDataSourceDecorator(ds);
-
 		editionListener = new RefreshSelectionEditionListener();
 	}
 

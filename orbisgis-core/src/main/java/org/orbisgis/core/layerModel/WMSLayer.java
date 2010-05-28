@@ -13,7 +13,6 @@ import org.grap.model.GeoRaster;
 import org.gvsig.remoteClient.utils.BoundaryBox;
 import org.gvsig.remoteClient.wms.WMSClient;
 import org.gvsig.remoteClient.wms.WMSStatus;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.orbisgis.core.layerModel.persistence.LayerType;
 import org.orbisgis.core.renderer.legend.Legend;
 import org.orbisgis.core.renderer.legend.RasterLegend;
@@ -29,9 +28,8 @@ public class WMSLayer extends GdmsLayer {
 	private WMSConnection connection;
 	private String wmslayerName;
 
-	public WMSLayer(String name, DataSource ds,
-			CoordinateReferenceSystem coordinateReferenceSystem) {
-		super(name, coordinateReferenceSystem);
+	public WMSLayer(String name, DataSource ds) {
+		super(name);
 		this.ds = ds;
 	}
 
@@ -62,7 +60,6 @@ public class WMSLayer extends GdmsLayer {
 		throw new UnsupportedOperationException(NOT_SUPPORTED);
 	}
 
-	
 	public Legend[] getRenderingLegend() throws DriverException {
 		return new Legend[] { getWMSLegend() };
 	}

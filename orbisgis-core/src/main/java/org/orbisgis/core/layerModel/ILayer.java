@@ -43,7 +43,6 @@ import org.gdms.data.SpatialDataSourceDecorator;
 import org.gdms.data.types.Type;
 import org.gdms.driver.DriverException;
 import org.grap.model.GeoRaster;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.orbisgis.core.layerModel.persistence.LayerType;
 import org.orbisgis.core.renderer.legend.Legend;
 import org.orbisgis.core.renderer.legend.RasterLegend;
@@ -123,12 +122,6 @@ public interface ILayer {
 	 */
 	ILayer getLayerByName(String layerName);
 
-	CoordinateReferenceSystem getCoordinateReferenceSystem();
-
-	void setCoordinateReferenceSystem(
-			CoordinateReferenceSystem coordinateReferenceSystem)
-			throws LayerException;
-
 	public Envelope getEnvelope();
 
 	boolean acceptsChilds();
@@ -187,9 +180,8 @@ public interface ILayer {
 	 * @throws DriverException
 	 */
 	ILayer[] getRasterLayers() throws DriverException;
-	
-	WMSLegend getWMSLegend();
 
+	WMSLegend getWMSLegend();
 
 	/**
 	 * Gets all the vectorial layers in the tree under this layer
