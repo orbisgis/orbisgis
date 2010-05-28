@@ -43,40 +43,19 @@ import org.gdms.source.SourceListener;
 import org.gdms.source.SourceManager;
 import org.gdms.source.SourceRemovalEvent;
 import org.gdms.sql.strategies.TableNotFoundException;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.orbisgis.core.DataManager;
 import org.orbisgis.core.Services;
 
 public abstract class GdmsLayer extends AbstractLayer {
 
-	private CoordinateReferenceSystem coordinateReferenceSystem;
 	private boolean isVisible = true;
 
 	private String mainName;
 	private SourceListener listener = new NameSourceListener();
 
-	public GdmsLayer(String name,
-			CoordinateReferenceSystem coordinateReferenceSystem) {
+	public GdmsLayer(String name) {
 		super(name);
 		this.mainName = name;
-		this.coordinateReferenceSystem = coordinateReferenceSystem;
-	}
-
-	/**
-	 * 
-	 * @see org.orbisgis.core.layerModel.ILayer#getCoordinateReferenceSystem()
-	 */
-	public CoordinateReferenceSystem getCoordinateReferenceSystem() {
-		return coordinateReferenceSystem;
-	}
-
-	/**
-	 * 
-	 * @see org.orbisgis.core.layerModel.ILayer#setCoordinateReferenceSystem(org.opengis.referencing.crs.CoordinateReferenceSystem)
-	 */
-	public void setCoordinateReferenceSystem(
-			CoordinateReferenceSystem coordinateReferenceSystem) {
-		this.coordinateReferenceSystem = coordinateReferenceSystem;
 	}
 
 	/**
