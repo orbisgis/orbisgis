@@ -18,7 +18,7 @@ import org.orbisgis.core.ui.pluginSystem.PlugInContext;
 import org.orbisgis.core.ui.plugins.views.MapEditorPlugIn;
 import org.orbisgis.core.ui.plugins.views.editor.EditorManager;
 
-public abstract class WorkbenchContext extends Observable implements BackgroundListener{
+public abstract class WorkbenchContext extends Observable {
 
 	private String lastAction;
 	private List<Observer> popupPlugInObservers = new ArrayList<Observer>();
@@ -158,21 +158,4 @@ public abstract class WorkbenchContext extends Observable implements BackgroundL
 			}
 		}
 	}
-	
-	public void jobRemoved(Job job) {
-		setLastAction("Update toolbar");		
-	}
-	
-	@Override
-	public void jobAdded(Job job) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void jobReplaced(Job job) {
-		// TODO Auto-generated method stub
-		
-	}
-
 }
