@@ -250,10 +250,9 @@ public class EditorPanel extends Container {
 				.add(new EditorInfo(view, editor.getElement(), editor, comp));
 
 		editor.getElement().addElementListener(changeNameListener);
-		//inform that element was loaded
-		fireElementLoaded(editor.getEditor(),comp);
-		
-
+		//inform that element was loaded	
+		if(editor.getEditor() instanceof MapEditorPlugIn) 
+			fireElementLoaded(editor.getEditor(),comp);	
 	}
 
 	private View findViewWithEditor(DockingWindow wnd, EditableElement doc,
@@ -442,7 +441,9 @@ public class EditorPanel extends Container {
 					lastEditor = nextEditor;
 					fireActiveEditorChanged(previous, lastEditor.getEditor());
 					//inform element was loaded
-					fireElementLoaded(lastEditor.getEditor(),focusedView.getComponent());
+					IEditor editor = lastEditor.getEditor();
+					if(editor instanceof MapEditorPlugIn) 
+						fireElementLoaded(editor,focusedView.getComponent());					
 				}
 			}
 		}

@@ -12,6 +12,7 @@ import org.orbisgis.core.Services;
 import org.orbisgis.core.background.BackgroundListener;
 import org.orbisgis.core.background.BackgroundManager;
 import org.orbisgis.core.background.Job;
+import org.orbisgis.core.ui.editor.IEditor;
 import org.orbisgis.core.ui.pluginSystem.PlugIn;
 import org.orbisgis.core.ui.pluginSystem.PlugInContext;
 import org.orbisgis.core.ui.plugins.views.MapEditorPlugIn;
@@ -112,18 +113,20 @@ public abstract class WorkbenchContext extends Observable implements BackgroundL
 				addObserver(observers.get(i));
 		}
 		
-		EditorManager em = Services.getService(EditorManager.class);
-		MapEditorPlugIn mapEditor = (MapEditorPlugIn)em.getActiveEditor();
-		if(mapEditor!=null) {
-			bars = mapEditor.getMapToolBar().getToolbars();
-			it = bars.values().iterator();						
-			observers = new ArrayList<Observer>();
-			while(it.hasNext()){	
-				WorkbenchToolBar wb = it.next();			
-				observers = wb.getToolsPlugInObservers();
-				addObserver(wb);
-				for (int i = 0; i < observers.size(); i++)									
-					addObserver(observers.get(i));
+		IEditor editor = Services.getService(EditorManager.class).getActiveEditor();
+		if(editor instanceof MapEditorPlugIn) {
+			MapEditorPlugIn mapEditor = (MapEditorPlugIn)editor;
+			if(mapEditor!=null) {
+				bars = mapEditor.getMapToolBar().getToolbars();
+				it = bars.values().iterator();						
+				observers = new ArrayList<Observer>();
+				while(it.hasNext()){	
+					WorkbenchToolBar wb = it.next();			
+					observers = wb.getToolsPlugInObservers();
+					addObserver(wb);
+					for (int i = 0; i < observers.size(); i++)									
+						addObserver(observers.get(i));
+				}
 			}
 		}
 	}
@@ -140,9 +143,9 @@ public abstract class WorkbenchContext extends Observable implements BackgroundL
 			deleteObserver(wb);			
 		}
 		
-		EditorManager em = Services.getService(EditorManager.class);
-		MapEditorPlugIn mapEditor = (MapEditorPlugIn)em.getActiveEditor();
-		if(mapEditor!=null) {
+		IEditor editor = Services.getService(EditorManager.class).getActiveEditor();
+		if(editor instanceof MapEditorPlugIn) {
+			MapEditorPlugIn mapEditor = (MapEditorPlugIn)editor;
 			bars = mapEditor.getMapToolBar().getToolbars();
 			it = bars.values().iterator();						
 			observers = new ArrayList<Observer>();
