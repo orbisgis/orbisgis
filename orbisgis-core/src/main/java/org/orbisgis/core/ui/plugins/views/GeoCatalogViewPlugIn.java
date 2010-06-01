@@ -6,7 +6,6 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Observable;
 
 import javax.swing.JMenuItem;
 import javax.xml.bind.JAXBContext;

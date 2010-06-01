@@ -45,7 +45,6 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintStream;
-import java.util.Observable;
 
 import javax.swing.JMenuItem;
 import javax.swing.text.JTextComponent;
@@ -62,8 +61,8 @@ import org.orbisgis.core.ui.pluginSystem.PlugInContext;
 import org.orbisgis.core.ui.pluginSystem.ViewPlugIn;
 import org.orbisgis.core.ui.pluginSystem.workbench.Names;
 import org.orbisgis.core.ui.plugins.views.beanShellConsole.CompletionKeyListener;
-import org.orbisgis.core.ui.plugins.views.sqlConsole.ConsoleListener;
-import org.orbisgis.core.ui.plugins.views.sqlConsole.ConsolePanel;
+import org.orbisgis.core.ui.plugins.views.sqlConsole.actions.ConsoleListener;
+import org.orbisgis.core.ui.plugins.views.sqlConsole.ui.ConsolePanel;
 
 import bsh.EvalError;
 import bsh.Interpreter;
@@ -72,7 +71,7 @@ public class BeanShellConsoleViewPlugIn extends ViewPlugIn {
 
 	private ConsolePanel panel;
 	private Interpreter interpreter = new Interpreter();;
-	private ByteArrayOutputStream scriptOutput;	
+	private ByteArrayOutputStream scriptOutput;
 	private JMenuItem menuItem;
 
 	public BeanShellConsoleViewPlugIn() {
@@ -80,7 +79,7 @@ public class BeanShellConsoleViewPlugIn extends ViewPlugIn {
 	}
 
 	public void initialize(PlugInContext context) throws Exception {
-		
+
 		try {
 			interpreter.set("bshEditor", this);
 
@@ -166,13 +165,13 @@ public class BeanShellConsoleViewPlugIn extends ViewPlugIn {
 		});
 		panel.setText("print(\"" + "Hello world !\"" + ");");
 		JTextComponent txt = panel.getTextComponent();
-		txt.addKeyListener(new CompletionKeyListener(true, txt, interpreter));
+		txt.addKeyListener(new CompletionKeyListener(true, txt));
 
 		menuItem = context.getFeatureInstaller().addMainMenuItem(this,
 				new String[] { Names.VIEW }, Names.BEANSHELL, true,
-				getIcon(IconNames.BEANSHELL_ICON), null, panel,	context);
+				getIcon(IconNames.BEANSHELL_ICON), null, panel, context);
 	}
-	
+
 	public boolean execute(PlugInContext context) throws Exception {
 		getPlugInContext().loadView(getId());
 		return true;
@@ -221,18 +220,18 @@ public class BeanShellConsoleViewPlugIn extends ViewPlugIn {
 		return ret;
 	}
 
-	public boolean isEnabled() {		
+	public boolean isEnabled() {
 		return true;
 	}
-	
+
 	public boolean isSelected() {
 		boolean isSelected = false;
 		isSelected = getPlugInContext().viewIsOpen(getId());
 		menuItem.setSelected(isSelected);
 		return isSelected;
 	}
-	
-	public String getName() {		
+
+	public String getName() {
 		return "BeanShell View";
 	}
 }

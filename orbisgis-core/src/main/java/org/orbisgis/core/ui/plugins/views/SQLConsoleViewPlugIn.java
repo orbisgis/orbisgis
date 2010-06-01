@@ -47,6 +47,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 
 import javax.swing.JMenuItem;
+import javax.swing.text.Utilities;
 
 import org.apache.log4j.Logger;
 import org.gdms.data.DataSource;
@@ -83,8 +84,11 @@ import org.orbisgis.core.ui.geocognition.TransferableGeocognitionElement;
 import org.orbisgis.core.ui.pluginSystem.PlugInContext;
 import org.orbisgis.core.ui.pluginSystem.ViewPlugIn;
 import org.orbisgis.core.ui.pluginSystem.workbench.Names;
-import org.orbisgis.core.ui.plugins.views.sqlConsole.ConsoleListener;
-import org.orbisgis.core.ui.plugins.views.sqlConsole.ConsolePanel;
+import org.orbisgis.core.ui.plugins.views.sqlConsole.actions.ConsoleListener;
+import org.orbisgis.core.ui.plugins.views.sqlConsole.ui.ConsolePanel;
+import org.orbisgis.core.ui.plugins.views.sqlConsole.util.CodeError;
+import org.orbisgis.core.ui.plugins.views.sqlConsole.util.CodeErrors;
+import org.orbisgis.core.ui.plugins.views.sqlConsole.util.TextUtilities;
 import org.orbisgis.progress.IProgressMonitor;
 
 public class SQLConsoleViewPlugIn extends ViewPlugIn {
@@ -226,6 +230,7 @@ public class SQLConsoleViewPlugIn extends ViewPlugIn {
 							"Semantic error in the script", e);
 				} catch (ParseException e) {
 					Services.getErrorManager().error("Cannot parse script", e);
+					panel.updateCodeError(CodeErrors.getCodeError(e, script));
 				} catch (TokenMgrError e) {
 					Services.getErrorManager().error("Cannot parse script", e);
 				}
@@ -255,7 +260,7 @@ public class SQLConsoleViewPlugIn extends ViewPlugIn {
 
 							DataSource ds = dsf.getDataSource(instruction,
 									DataSourceFactory.DEFAULT, pm);
-														
+
 							if (pm.isCancelled()) {
 								break;
 							}
@@ -337,26 +342,26 @@ public class SQLConsoleViewPlugIn extends ViewPlugIn {
 				}
 
 			} catch (DriverException e) {
-				Services.getErrorManager().error("Data access error:", e);
+				Services.getErrorManager().error("Data access error :", e);
 			}
 
 			long t2 = System.currentTimeMillis();
 			logger.debug("Execution time: " + ((t2 - t1) / 1000.0));
 		}
 	}
-	
-	public boolean isEnabled() {		
+
+	public boolean isEnabled() {
 		return true;
 	}
-	
+
 	public boolean isSelected() {
 		boolean isSelected = false;
 		isSelected = getPlugInContext().viewIsOpen(getId());
 		menuItem.setSelected(isSelected);
 		return isSelected;
 	}
-	
-	public String getName() {		
+
+	public String getName() {
 		return "SQL view";
 	}
 
