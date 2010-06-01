@@ -74,7 +74,7 @@ public class DataSourceCRSTest extends TestCase {
 	 * @throws Exception : File errors
 	 */
 	public void testSHPCRSTransform() throws Exception {
-		
+		/** Input value to fill in before running test*/
 		final String dataFileName = "clc00r53"; //Shape to convert
 		final String targetCode = "4326"; //target code correspond to CRS target
 		//number ligne of datasource to convert. (to limit transformation when shape file is too big much) 
@@ -85,6 +85,7 @@ public class DataSourceCRSTest extends TestCase {
 		final String backupPrefix = "backup";		
 		final String originalFolder = prjFolder + originalPrefix + "/";
 		final String backupFolder= prjFolder + backupPrefix + "/";
+		/************************************************/
 		
 		//Create CSV metadata
 		DefaultMetadata metadata = new DefaultMetadata();		
