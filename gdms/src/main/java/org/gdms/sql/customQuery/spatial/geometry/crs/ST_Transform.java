@@ -51,7 +51,7 @@ public class ST_Transform implements CustomQuery {
 		SpatialDataSourceDecorator sds = new SpatialDataSourceDecorator(
 				tables[0]);
 
-		targetCRS = (GeodeticCRS) CRSUtil.getCRSFromEPSG("EPSG:" + name);
+		targetCRS = (GeodeticCRS) CRSUtil.getCRSFromEPSG(name);
 		try {
 			sds.open();
 			sourceCRS = (GeodeticCRS) sds.getCRS();
@@ -70,11 +70,14 @@ public class ST_Transform implements CustomQuery {
 	                for (int i = 0 ; i < cc.length ; i++) {
 	                    Coordinate c = cc[i];
 	                    try {
+	                    	//if(cc.length==)
 	                        double[] xyz = cos.transform(new double[]{c.x, c.y, c.z});
 	                        newcs.setOrdinate(i,0,xyz[0]);
 	                        newcs.setOrdinate(i,1,xyz[1]);
-	                        //if(xyz.length > 2)
+	                        if(xyz.length > 2)
 	                        	newcs.setOrdinate(i,2,xyz[2]);
+	                        else
+	                        	newcs.setOrdinate(i,2,Double.NaN);
 	                    } catch(IllegalCoordinateException ice) {ice.printStackTrace();}
 	                }
 	                return newcs;

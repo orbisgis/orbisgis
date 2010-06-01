@@ -2,6 +2,7 @@ package org.orbisgis.core.ui.plugins.editors.mapEditor;
 
 import javax.swing.JButton;
 
+import org.gdms.driver.DriverException;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.images.IconNames;
 import org.orbisgis.core.layerModel.MapContext;
@@ -19,8 +20,8 @@ public class CoordinateReferenceSystemPlugIn extends AbstractPlugIn{
 	private JButton CRSButton;	
 	
 	public boolean execute(PlugInContext context) throws Exception {
-		final ProjectionConfigPanel projectionPanel = new ProjectionConfigPanel(
-				context.getWorkbenchContext().getWorkbench().getFrame(), true);
+		/*final ProjectionConfigPanel projectionPanel = new ProjectionConfigPanel(
+				context.getWorkbenchContext().getWorkbench().getFrame(), true);*/
 			
 		
 		return true;
@@ -39,7 +40,16 @@ public class CoordinateReferenceSystemPlugIn extends AbstractPlugIn{
 		IEditor editor = Services.getService(EditorManager.class).getActiveEditor();
 		if (editor != null && editor instanceof MapEditorPlugIn && getPlugInContext().getMapEditor()!=null) {
 			MapContext mc = (MapContext) editor.getElement().getObject();
-			isVisible = mc.getLayerModel().getLayerCount() > 0;			
+			isVisible = mc.getLayerModel().getLayerCount() > 0;	
+			if(isVisible) {
+				try {
+					CRSButton.setText( mc.getLayerModel().getLayer(0).getDataSource().getCRS().getName());
+				} catch (IllegalStateException e) {
+					Services.getErrorManager().error("CRS not found");
+				} catch (DriverException e) {
+					Services.getErrorManager().error("CRS not found");
+				}
+			}
 		}
 		CRSButton.setEnabled(isVisible);
 		return isVisible;
