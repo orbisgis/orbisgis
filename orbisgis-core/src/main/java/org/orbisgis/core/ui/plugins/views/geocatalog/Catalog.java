@@ -58,6 +58,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Vector;
 
 import javax.swing.BorderFactory;
 import javax.swing.DefaultListCellRenderer;
@@ -97,6 +98,7 @@ import org.orbisgis.core.ui.plugins.views.geocatalog.filters.Files;
 import org.orbisgis.core.ui.plugins.views.geocatalog.filters.GeocatalogFilterDecorator;
 import org.orbisgis.core.ui.plugins.views.geocatalog.filters.IFilter;
 import org.orbisgis.core.ui.plugins.views.geocatalog.filters.Raster;
+import org.orbisgis.core.ui.plugins.views.geocatalog.filters.Vectorial;
 import org.orbisgis.core.ui.plugins.views.geocatalog.filters.WMS;
 import org.orbisgis.utils.CollectionUtils;
 
@@ -313,6 +315,10 @@ public class Catalog extends JPanel implements DragGestureListener,
 
 		filter = new GeocatalogFilterDecorator("geocatalog.filters.Raster",
 				"Raster", new Raster());
+		listModel.getFilters().add(filter);
+
+		filter = new GeocatalogFilterDecorator("geocatalog.filters.Vectorial",
+				"Vectorial", new Vectorial());
 		listModel.getFilters().add(filter);
 
 		lstFilters = new JList(listModel.getFilters().toArray(
