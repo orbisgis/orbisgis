@@ -47,6 +47,7 @@ import org.gdms.sql.customQuery.spatial.geometry.create.ST_CreateGrid;
 import org.gdms.sql.customQuery.spatial.geometry.create.ST_CreateWebGrid;
 import org.gdms.sql.customQuery.spatial.geometry.create.ST_Extrude;
 import org.gdms.sql.customQuery.spatial.geometry.create.ST_RandomGeometry;
+import org.gdms.sql.customQuery.spatial.geometry.crs.ST_Transform;
 import org.gdms.sql.customQuery.spatial.geometry.qa.ST_InternalGapFinder;
 import org.gdms.sql.customQuery.spatial.geometry.topology.ST_PlanarGraph;
 import org.gdms.sql.customQuery.spatial.geometry.topology.ST_ToLineNoder;
@@ -86,6 +87,7 @@ public class QueryManager {
 		registerQuery(ST_RasterToPoints.class);
 		registerQuery(ST_RasterToPolygons.class);
 		registerQuery(ST_VectorizeLine.class);
+		registerQuery(ST_Transform.class);
 	}
 
 	/**

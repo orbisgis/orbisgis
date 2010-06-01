@@ -64,27 +64,24 @@ public class ST_Transform implements CustomQuery {
 					.getMetadata());
 
 			GeometryTransformer gt = new GeometryTransformer() {
-				protected CoordinateSequence transformCoordinates(
-						CoordinateSequence cs, Geometry geom) {
-					Coordinate[] cc = geom.getCoordinates();
-					CoordinateSequence newcs = new CoordinateArraySequence(cc);
-					for (int i = 0; i < cc.length; i++) {
-						Coordinate c = cc[i];
-						try {
-							double[] xyz = cos.transform(new double[] { c.x,
-									c.y, c.z });
-							newcs.setOrdinate(i, 0, xyz[0]);
-							newcs.setOrdinate(i, 1, xyz[1]);
-							newcs.setOrdinate(i, 2, xyz[2]);
-						} catch (IllegalCoordinateException ice) {
-							ice.printStackTrace();
-						}
-					}
-					return newcs;
-				}
-			};
+	            protected CoordinateSequence transformCoordinates(CoordinateSequence cs, Geometry geom){
+	                Coordinate[] cc = geom.getCoordinates();
+	                CoordinateSequence newcs = new CoordinateArraySequence(cc);
+	                for (int i = 0 ; i < cc.length ; i++) {
+	                    Coordinate c = cc[i];
+	                    try {
+	                        double[] xyz = cos.transform(new double[]{c.x, c.y, c.z});
+	                        newcs.setOrdinate(i,0,xyz[0]);
+	                        newcs.setOrdinate(i,1,xyz[1]);
+	                        //if(xyz.length > 2)
+	                        	newcs.setOrdinate(i,2,xyz[2]);
+	                    } catch(IllegalCoordinateException ice) {ice.printStackTrace();}
+	                }
+	                return newcs;
+	            }
+	        };
 
-			int geomIndex = sds.getFieldIndexByName("the_geom");
+			int geomIndex = sds.getSpatialFieldIndex();
 			for (int i = 0; i < sds.getRowCount(); i++) {
 				values = sds.getRow(i);
 				geom = sds.getGeometry(i);
