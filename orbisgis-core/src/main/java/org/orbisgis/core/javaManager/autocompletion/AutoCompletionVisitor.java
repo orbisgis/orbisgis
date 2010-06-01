@@ -20,8 +20,6 @@ import org.orbisgis.core.javaManager.parser.ASTPrimarySuffix;
 import org.orbisgis.core.javaManager.parser.ASTReferenceType;
 import org.orbisgis.core.javaManager.parser.Node;
 
-import bsh.Interpreter;
-
 public class AutoCompletionVisitor extends AbstractVisitor {
 
 	private static final String EXCEPTION_MSG = "Code completion exception";
@@ -39,18 +37,6 @@ public class AutoCompletionVisitor extends AbstractVisitor {
 				}
 
 			});
-
-	private Interpreter interpreter;
-
-	private boolean interpreterActive = false;
-
-	public AutoCompletionVisitor(Interpreter interpreter) {
-		this.interpreter = interpreter;
-
-		if (interpreter != null) {
-			interpreterActive = true;
-		}
-	}
 
 	public AutoCompletionVisitor() {
 	}
