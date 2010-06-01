@@ -41,7 +41,6 @@ import org.orbisgis.core.ui.plugins.actions.ExitPlugIn;
 import org.orbisgis.core.ui.plugins.actions.SavePlugIn;
 import org.orbisgis.core.ui.plugins.demo.extensions.tocMenu.MyTOCMenu;
 import org.orbisgis.core.ui.plugins.demo.extensions.tocMenu.MyTOCMenu;
-import org.orbisgis.core.ui.plugins.editors.mapEditor.CTSPlugIn;
 import org.orbisgis.core.ui.plugins.editors.mapEditor.ClearMapSelectionPlugIn;
 import org.orbisgis.core.ui.plugins.editors.mapEditor.CoordinateReferenceSystemPlugIn;
 import org.orbisgis.core.ui.plugins.editors.mapEditor.CreateSourceFromMapSelectionPlugIn;
@@ -200,7 +199,6 @@ public class OrbisConfiguration implements Setup {
 	private RedoMapPlugIn redoMapPlugIn = new RedoMapPlugIn();
 	private DeleteMapSelectionPlugIn deleteMapSelectionPlugIn = new DeleteMapSelectionPlugIn();
 	private CreateSourceFromMapSelectionPlugIn createSourceFromMapSelectionPlugIn = new CreateSourceFromMapSelectionPlugIn();
-	private CTSPlugIn ctsPlugIn = new CTSPlugIn();
 	//Tool bar on map
 	private ShowXYPlugIn showXYPlugIn = new ShowXYPlugIn();
 	// Scale panel plugin is a swing component to execute action on map editor
@@ -389,10 +387,9 @@ public class OrbisConfiguration implements Setup {
 		createSourceFromSelectionPlugIn.initialize(plugInContext);
 		
 		//Map tools
-		//scalePlugIn.initialize(plugInContext);		
+		scalePlugIn.initialize(plugInContext);		
 		showXYPlugIn.initialize(plugInContext);
-		CRSPlugIn.initialize(plugInContext);
-		//ctsPlugIn.initialize(plugInContext);
+		//CRSPlugIn.initialize(plugInContext);
 	}
 
 	private void configureToolBar(PlugInContext plugInContext) {
