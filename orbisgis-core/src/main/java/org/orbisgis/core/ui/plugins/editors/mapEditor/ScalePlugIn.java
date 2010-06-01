@@ -41,6 +41,7 @@ import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Toolkit;
+import java.util.ArrayList;
 
 import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
@@ -67,18 +68,24 @@ import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
 
 public class ScalePlugIn extends AbstractPlugIn {
-	public static final String SCALE_1000 = "1000";
-	public static final String SCALE_5000 = "5000";
-	public static final String SCALE_10000 = "10000";
-	public static final String SCALE_20000 = "20000";
-	public static final String SCALE_25000 = "25000";
-	public static final String SCALE_50000 = "50000";
-	public static final String SCALE_100000 = "100000";
-	public static final String SCALE_500000 = "500000";
-	public static final String SCALE_1000000 = "1000000";
-	public static final String SCALE_5000000 = "5000000";
-	public static final String SCALE_10000000 = "10000000";
 
+	static ArrayList<String> scales = new ArrayList<String>();
+
+	static {
+		scales.add("1000");
+		scales.add("5000");
+		scales.add("10000");
+		scales.add("20000");
+		scales.add("25000");
+		scales.add("50000");
+		scales.add("75000");
+		scales.add("100000");
+		scales.add("500000");
+		scales.add("1000000");
+		scales.add("5000000");
+		scales.add("10000000");
+		scales.add("50000000");
+	}
 	private JPanel panel;
 	private JComboBox combobox;
 	private double factor;
@@ -96,80 +103,13 @@ public class ScalePlugIn extends AbstractPlugIn {
 					JComboBox cb = (JComboBox) getActionComponent();
 					String scale = (String) cb.getSelectedItem();
 
-					if (scale.equals(SCALE_1000)) {
-
+					if (scales.contains(scale)) {
 						envelope = getEnveloppeFromScale(
-								mt.getAdjustedExtent(), mt.getWidth(), 1000);
-
-						mt.setExtent(envelope);
-
-					} else if (scale.equals(SCALE_5000)) {
-
-						envelope = getEnveloppeFromScale(
-								mt.getAdjustedExtent(), mt.getWidth(), 5000);
-
-						mt.setExtent(envelope);
-
-					} else if (scale.equals(SCALE_10000)) {
-						envelope = getEnveloppeFromScale(
-								mt.getAdjustedExtent(), mt.getWidth(), 10000);
-
-						mt.setExtent(envelope);
-
-					} else if (scale.equals(SCALE_20000)) {
-						envelope = getEnveloppeFromScale(
-								mt.getAdjustedExtent(), mt.getWidth(), 10000);
-
-						mt.setExtent(envelope);
-
-					}else if (scale.equals(SCALE_25000)) {
-						envelope = getEnveloppeFromScale(
-								mt.getAdjustedExtent(), mt.getWidth(), 25000);
-
-						mt.setExtent(envelope);
-
-					} else if (scale.equals(SCALE_50000)) {
-						envelope = getEnveloppeFromScale(
-								mt.getAdjustedExtent(), mt.getWidth(), 50000);
-
-						mt.setExtent(envelope);
-
-					} else if (scale.equals(SCALE_100000)) {
-						envelope = getEnveloppeFromScale(
-								mt.getAdjustedExtent(), mt.getWidth(), 100000);
-
-						mt.setExtent(envelope);
-
-					} else if (scale.equals(SCALE_1000000)) {
-						envelope = getEnveloppeFromScale(
-								mt.getAdjustedExtent(), mt.getWidth(), 1000000);
-
-						mt.setExtent(envelope);
-
-					} else if (scale.equals(SCALE_500000)) {
-						envelope = getEnveloppeFromScale(
-								mt.getAdjustedExtent(), mt.getWidth(), 500000);
-
+								mt.getAdjustedExtent(), mt.getWidth(), Integer
+										.parseInt(scale));
 						mt.setExtent(envelope);
 
 					}
-
-					else if (scale.equals(SCALE_5000000)) {
-						envelope = getEnveloppeFromScale(
-								mt.getAdjustedExtent(), mt.getWidth(), 5000000);
-
-						mt.setExtent(envelope);
-
-					}
-
-					else if (scale.equals(SCALE_10000000)) {
-						envelope = getEnveloppeFromScale(
-								mt.getAdjustedExtent(), mt.getWidth(), 10000000);
-
-						mt.setExtent(envelope);
-
-					}
-
 				}
 			}
 			return true;
@@ -182,10 +122,7 @@ public class ScalePlugIn extends AbstractPlugIn {
 		panel = new JPanel(new BorderLayout());
 		JLabel label = new JLabel("Scale : ");
 		label.setAlignmentX(Component.LEFT_ALIGNMENT);
-		combobox = new JComboBox(new String[] { SCALE_1000,
-				SCALE_5000, SCALE_10000, SCALE_20000, SCALE_25000, SCALE_50000,
-				SCALE_100000, SCALE_500000, SCALE_1000000, SCALE_5000000,
-				SCALE_10000000 });
+		combobox = new JComboBox(scales.toArray(new String[0]));
 		combobox.setAlignmentX(Component.RIGHT_ALIGNMENT);
 		combobox.setMaximumSize(new Dimension(100, 20));
 		panel.add(label);
@@ -195,22 +132,9 @@ public class ScalePlugIn extends AbstractPlugIn {
 		panel.setVisible(true);
 		setActionComponent(combobox);
 		setTypeListener("item");
-				
 		EditorManager em = Services.getService(EditorManager.class);
-		em.addEditorListener(new PlugInEditorListener(this,panel,Names.MAP_TOOLBAR_SCALE,
-								null,context, true));
-	}
-	
-	private int getScaleFromEnvelope() {
-		MapEditorPlugIn mapEditor = null;
-		if ((mapEditor = getPlugInContext().getMapEditor()) != null) {
-			MapTransform mt = mapEditor.getMapTransform();
-			int panelWidth = mt.getWidth();
-			if (mt != null) {
-				return (int) (mt.getScaleDenominator()*factor);
-			}
-		}
-		return 1;
+		em.addEditorListener(new PlugInEditorListener(this, panel,
+				Names.MAP_TOOLBAR_SCALE, null, context, true));
 	}
 
 	private Envelope getEnveloppeFromScale(Envelope oldEnvelope,
@@ -282,23 +206,23 @@ public class ScalePlugIn extends AbstractPlugIn {
 		return horizontalScale;
 	}
 
-	public boolean isEnabled() {		
+	public boolean isEnabled() {
 		boolean isVisible = false;
-		combobox.setSelectedItem(getScaleFromEnvelope());
-		IEditor editor = Services.getService(EditorManager.class).getActiveEditor();
-		if (editor != null && editor instanceof MapEditorPlugIn && getPlugInContext().getMapEditor()!=null) {
-			MapTransform mt = ((MapEditorPlugIn)editor).getMapTransform();
+		IEditor editor = Services.getService(EditorManager.class)
+				.getActiveEditor();
+		if (editor != null && editor instanceof MapEditorPlugIn
+				&& getPlugInContext().getMapEditor() != null) {
 			MapContext mc = (MapContext) editor.getElement().getObject();
-			isVisible = mc.getLayerModel().getLayerCount() > 0;			
-		}	
+			isVisible = mc.getLayerModel().getLayerCount() > 0;
+		}
 		panel.setEnabled(isVisible);
-		return isVisible;		
+		return isVisible;
 	}
-	
-	public boolean isSelected() {		
+
+	public boolean isSelected() {
 		return false;
 	}
-	
+
 	public static ImageIcon getIcon() {
 		return IconLoader.getIcon(IconNames.EXIT_ICON);
 	}

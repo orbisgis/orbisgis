@@ -37,12 +37,12 @@ public class ShowXYPlugIn extends AbstractPlugIn {
 				Point2D point = toolManager.getLastRealMousePosition();
 				xCoord = "X:" + (int) point.getX();
 				yCoord = "Y:" + (int) point.getY();
-				//scale = "1:"+ toolManager.getMapTransform().getScaleDenominator();				
-				showXY.setText(xCoord +  "  "  + yCoord + "  " /*+ scale*/);
+				scale = "1:"+ (int)toolManager.getMapTransform().getScaleDenominator();				
+				showXY.setText(xCoord +  "  "  + yCoord + "  " + scale);
 
 			}
 			xCoord=null;
-			yCoord=null;//scale=null;
+			yCoord=null;scale=null;
 		}
 	};
 	
