@@ -47,6 +47,7 @@ import org.gdms.data.DataSourceFactory;
 import org.gdms.data.DigestUtilities;
 import org.gdms.data.ExecutionException;
 import org.gdms.data.SpatialDataSourceDecorator;
+import org.gdms.data.metadata.DefaultMetadata;
 import org.gdms.data.types.Constraint;
 import org.gdms.data.types.GeometryConstraint;
 import org.gdms.data.types.Type;
@@ -101,6 +102,16 @@ public class SQLTest extends SourceTest {
 	 * 
 	 * } System.out.println(""); } ds.close(); }
 	 */
+
+	public void testInsertWithFunction() throws Exception {
+
+		DefaultMetadata metadata = new DefaultMetadata();
+		metadata.addField("f1", Type.INT);
+		dsf.getSourceManager().register("source",
+				new GenericObjectDriver(metadata));
+		dsf.executeSQL("insert into source (f1) values(1);");
+		dsf.executeSQL("insert into source (f1) values(autonumeric());");
+	}
 
 	public void testCreateAsTableCustomQuery() throws Exception {
 		dsf.getSourceManager().register("landcover2000",
