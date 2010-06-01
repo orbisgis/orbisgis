@@ -34,8 +34,8 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "")
-@XmlRootElement(name = "selected-layer")
-public class SelectedLayer {
+@XmlRootElement(name = "coordinateReferenceSystem")
+public class CoordinateReferenceSystem {
 
     @XmlAttribute(required = true)
     protected String name;
