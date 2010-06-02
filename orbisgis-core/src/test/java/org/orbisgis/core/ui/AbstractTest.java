@@ -48,6 +48,7 @@ import org.orbisgis.core.errorManager.ErrorManager;
 import org.orbisgis.core.ui.editor.EditorListener;
 import org.orbisgis.core.ui.editor.IEditor;
 import org.orbisgis.core.ui.plugins.views.editor.EditorManager;
+import org.orbisgis.progress.IProgressMonitor;
 
 public class AbstractTest extends TestCase {
 
@@ -63,7 +64,7 @@ public class AbstractTest extends TestCase {
 		Services.registerService(EditorManager.class, "", new EditorManager() {
 
 			@Override
-			public void open(EditableElement element)
+			public void open(EditableElement element, IProgressMonitor pm)
 					throws UnsupportedOperationException {
 			}
 

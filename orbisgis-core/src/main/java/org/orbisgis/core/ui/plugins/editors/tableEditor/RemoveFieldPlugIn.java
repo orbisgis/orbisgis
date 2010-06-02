@@ -37,8 +37,6 @@
 
 package org.orbisgis.core.ui.plugins.editors.tableEditor;
 
-import java.util.Observable;
-
 import javax.swing.JOptionPane;
 
 import org.gdms.data.DataSource;
@@ -58,8 +56,6 @@ import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchFrame;
 
 public class RemoveFieldPlugIn extends AbstractPlugIn {
 
-	private Integer selectedColumn;
-	private boolean isVisible;
 
 	public boolean execute(PlugInContext context) throws Exception {
 		IEditor editor = context.getActiveEditor();
@@ -68,10 +64,10 @@ public class RemoveFieldPlugIn extends AbstractPlugIn {
 		try {
 			DataSource dataSource = element.getDataSource();
 			int option = JOptionPane.showConfirmDialog(null, "Delete field "
-					+ dataSource.getFieldName(selectedColumn) + "?",
+					+ dataSource.getFieldName(getSelectedColumn()) + "?",
 					"Remove field", JOptionPane.YES_NO_OPTION);
 			if (option == JOptionPane.YES_OPTION) {
-				dataSource.removeField(selectedColumn);
+				dataSource.removeField(getSelectedColumn());
 			}
 		} catch (DriverException e) {
 			Services.getService(ErrorManager.class).error(
@@ -90,45 +86,29 @@ public class RemoveFieldPlugIn extends AbstractPlugIn {
 				getIcon(IconNames.POPUP_TABLE_REMOVEFIELD_ICON), wbContext);
 	}
 
-	public void update(Observable o, Object arg) {
-		isVisible(arg);
-	}
-
 	public boolean isEnabled() {
-		return true;
-	}
-
-	public boolean isVisible() {
-		return isVisible;
-	}
-
-	public boolean isVisible(Object arg) {
+		boolean isEnabled = false;
 		IEditor editor = null;
-		if((editor=getPlugInContext().getTableEditor()) != null){
-			try {
-				selectedColumn = (Integer) arg;
-			} catch (Exception e) {
-				return isVisible = false;
-			}
+		if((editor=getPlugInContext().getTableEditor()) != null){			
 			final TableEditableElement element = (TableEditableElement) editor
 					.getElement();
 			try {
-				if ((selectedColumn != -1) && element.isEditable()) {
+				if ((getSelectedColumn() != -1) && element.isEditable()) {
 					Metadata metadata = element.getDataSource().getMetadata();
-					Type type = metadata.getFieldType(selectedColumn);
+					Type type = metadata.getFieldType(getSelectedColumn());
 					int typeCode = type.getTypeCode();
 					if (typeCode != Type.GEOMETRY)
-						return isVisible = true;
+						return isEnabled = true;
 				}
 			} catch (DriverException e) {
 				Services.getService(ErrorManager.class).error(
 						"Cannot access field information", e);
+				return isEnabled;
 			}
 		}
-		return isVisible = false;
+		return isEnabled;
 	}
-
-	@Override
+	
 	public boolean isSelected() {
 		// TODO Auto-generated method stub
 		return false;

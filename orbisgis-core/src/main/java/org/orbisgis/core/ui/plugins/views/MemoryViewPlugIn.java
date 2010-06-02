@@ -1,7 +1,5 @@
 package org.orbisgis.core.ui.plugins.views;
 
-import java.util.Observable;
-
 import javax.swing.JMenuItem;
 
 import org.orbisgis.core.images.IconNames;
@@ -30,8 +28,15 @@ public class MemoryViewPlugIn extends ViewPlugIn {
 		return true;
 	}
 
-	public void update(Observable o, Object arg) {
-		menuItem.setSelected(getPlugInContext().viewIsOpen(getId()));
+	public boolean isEnabled() {		
+		return true;
+	}
+	
+	public boolean isSelected() {
+		boolean isSelected = false;
+		isSelected = getPlugInContext().viewIsOpen(getId());
+		menuItem.setSelected(isSelected);
+		return isSelected;
 	}
 	
 	public String getName() {		

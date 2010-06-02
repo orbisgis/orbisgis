@@ -39,12 +39,12 @@ package org.orbisgis.core.renderer.symbol;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics2D;
-import java.awt.geom.AffineTransform;
+import java.awt.Shape;
 import java.awt.geom.NoninvertibleTransformException;
 
 import org.gdms.driver.DriverException;
+import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.RenderPermission;
-import org.orbisgis.core.renderer.liteShape.LiteShape;
 
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
@@ -57,14 +57,15 @@ public class LineSymbol extends AbstractLineSymbol {
 		super(outline, lineWidth, mapUnits);
 	}
 
-	public Envelope draw(Graphics2D g, Geometry geom, AffineTransform at,
+	public Envelope draw(Graphics2D g, Geometry geom, MapTransform mt,
 			RenderPermission permission) throws DriverException {
-		LiteShape ls = new LiteShape(geom, at, true, 0.5);
+		Shape ls = mt.getShape(geom, true);
 
 		drawingSize = lineWidth;
 		if (mapUnits) {
 			try {
-				drawingSize = (int) toPixelUnits(lineWidth, at);
+				drawingSize = (int) toPixelUnits(lineWidth, mt
+						.getAffineTransform());
 			} catch (NoninvertibleTransformException e) {
 				throw new DriverException("Cannot convert to map units", e);
 			}

@@ -38,7 +38,6 @@ package org.orbisgis.core.ui.editors.map.tools;
 
 import java.awt.Color;
 import java.awt.Graphics;
-import java.net.URL;
 import java.text.DecimalFormat;
 import java.util.Observable;
 
@@ -98,7 +97,7 @@ public class MesurePolygonTool extends AbstractPolygonTool {
 	public boolean isVisible(MapContext vc, ToolManager tm) {
 		return true;
 	}
-	
+
 	public void drawIn_Point(Graphics g, MapContext vc, ToolManager tm)
 			throws DrawingException {
 		super.drawIn_Point(g, vc, tm);
@@ -106,11 +105,7 @@ public class MesurePolygonTool extends AbstractPolygonTool {
 		tm.addTextToDraw("Area: " + getArea(geom));
 		tm.addTextToDraw("Perimeter: " + getPerimeter(geom));
 	}
-	
-	public URL getMouseCursorURL(){		
-		return null;		
-	}
-	
+
 	public String getName() {
 		return "Measure an area";
 	}

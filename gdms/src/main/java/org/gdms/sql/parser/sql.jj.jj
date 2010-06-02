@@ -93,6 +93,7 @@ TOKEN :  /* Keywords */
   | < FROM: "from" >
   | < GROUP: "group" >
   | < HAVING: "having" >
+  | < IF: "if" >
   | < IN: "in" >
   | < INDEX: "index" >
   | < IS: "is" >
@@ -460,9 +461,9 @@ void SQLDrop() :
 /*@egen*/
   <DROP>
   (
-    (<TABLE> SQLTableList())
+    (<TABLE> [<IF> <EXISTS>] SQLTableList())
   |
-  (<VIEW> SQLTableList())
+  (<VIEW> [<IF> <EXISTS>] SQLTableList())
   |
     (<INDEX> <ON> SQLId() "(" SQLId() ")")
   )/*@bgen(jjtree)*/
@@ -2486,39 +2487,6 @@ void SQLCreate() :
 /*@egen*/
 }
 
-void SQLInto():
-{/*@bgen(jjtree) SQLInto */
-  ASTSQLInto jjtn000 = new ASTSQLInto(JJTSQLINTO);
-  boolean jjtc000 = true;
-  jjtree.openNodeScope(jjtn000);
-  jjtreeOpenNodeScope(jjtn000);
-/*@egen*/}
-{/*@bgen(jjtree) SQLInto */
-try {
-/*@egen*/
-<INTO> SQLId()/*@bgen(jjtree)*/
-} catch (Throwable jjte000) {
-  if (jjtc000) {
-    jjtree.clearNodeScope(jjtn000);
-    jjtc000 = false;
-  } else {
-    jjtree.popNode();
-  }
-  if (jjte000 instanceof RuntimeException) {
-    throw (RuntimeException)jjte000;
-  }
-  if (jjte000 instanceof ParseException) {
-    throw (ParseException)jjte000;
-  }
-  throw (Error)jjte000;
-} finally {
-  if (jjtc000) {
-    jjtree.closeNodeScope(jjtn000, true);
-    jjtreeCloseNodeScope(jjtn000);
-  }
-}
-/*@egen*/
-}
 
 void SQLCreateArgsList() :
 {/*@bgen(jjtree) SQLCreateArgsList */

@@ -37,7 +37,6 @@
 package org.orbisgis.core.ui.editors.map.tools;
 
 import java.awt.Color;
-import java.net.URL;
 import java.util.Observable;
 
 import javax.swing.AbstractButton;
@@ -56,8 +55,6 @@ import org.gdms.driver.driverManager.DriverLoadException;
 import org.gdms.driver.generic.GenericObjectDriver;
 import org.orbisgis.core.DataManager;
 import org.orbisgis.core.Services;
-import org.orbisgis.core.images.IconLoader;
-import org.orbisgis.core.images.IconNames;
 import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.layerModel.LayerException;
 import org.orbisgis.core.layerModel.MapContext;
@@ -175,12 +172,8 @@ public class FencePolygonTool extends AbstractPolygonTool {
 		}
 		return null;
 	}
-	
-	public URL getMouseCursorURL(){		
-		return IconLoader.getIconUrl(IconNames.FENCE_ICON);		
-	}
-	
+
 	public String getName() {
-		return "Draw a polygon";
+		return "Draw a fence";
 	}
 }

@@ -60,6 +60,7 @@
 package org.orbisgis.core.ui.editors.map.tools;
 
 import java.awt.BasicStroke;
+import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Point;
@@ -380,7 +381,15 @@ public abstract class AbstractSelectionTool extends Selection {
 		} else {
 			((Graphics2D) g).setStroke(new BasicStroke());
 		}
-		g.drawRect(minx, miny, width, height);
+		Rectangle2DDouble shape = new Rectangle2DDouble(minx, miny, width,
+				height);
+		Graphics2D g2 = (Graphics2D) g;
+		g2.setPaint(new Color(255, 204, 51, 50));
+		g2.fill(shape);
+		g2.setStroke(new BasicStroke(1, BasicStroke.CAP_ROUND,
+				BasicStroke.JOIN_ROUND));
+		g2.setColor(new Color(255, 204, 51));
+		g2.draw(shape);
 	}
 
 	/**

@@ -59,7 +59,6 @@
  */
 package org.orbisgis.core.ui.editors.map.tools;
 
-import java.net.URL;
 import java.util.Observable;
 
 import javax.swing.AbstractButton;
@@ -69,8 +68,6 @@ import org.gdms.data.types.GeometryConstraint;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
-import org.orbisgis.core.images.IconLoader;
-import org.orbisgis.core.images.IconNames;
 import org.orbisgis.core.layerModel.MapContext;
 import org.orbisgis.core.ui.editors.map.tool.ToolManager;
 import org.orbisgis.core.ui.editors.map.tool.TransitionException;
@@ -131,9 +128,8 @@ public class PointTool extends AbstractPointTool {
 	public double getInitialZ(MapContext mapContext) {
 		return ToolUtilities.getActiveLayerInitialZ(mapContext);
 	}
-	
-	public URL getMouseCursorURL(){		
-		return IconLoader.getIconUrl(IconNames.POINT_ICON);		
-	}
 
+	public String getName() {
+		return "Draw a point";
+	}
 }

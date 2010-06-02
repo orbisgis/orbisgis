@@ -37,47 +37,53 @@
 package org.gdms.data.types;
 
 import org.gdms.data.values.Value;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
+
+import com.vividsolutions.jts.geom.Geometry;
+
+import fr.cts.crs.CoordinateReferenceSystem;
 
 /**
  * Constraint indicating the coordinate reference system of a spatial type
- *
+ * 
  */
-public class CRSConstraint extends AbstractConstraint {
-	private CoordinateReferenceSystem constraintValue;
+public class CRSConstraint extends AbstractIntConstraint {
 
-	public CRSConstraint(final CoordinateReferenceSystem constraintValue) {
-		this.constraintValue = constraintValue;
+	private CoordinateReferenceSystem crs;
+
+	public CRSConstraint(final int srid) {
+		super(srid);
 	}
 
 	public CRSConstraint(byte[] constraintBytes) {
-		// TODO implement when we have coordinate reference systems
-		throw new UnsupportedOperationException("Not implemented yet");
+		super(constraintBytes);
+	}
+
+	public CRSConstraint(int srid, CoordinateReferenceSystem crs) {
+		super(srid);
+		this.crs = crs;
 	}
 
 	public int getConstraintCode() {
 		return Constraint.CRS;
 	}
 
-	public String getConstraintValue() {
-		return constraintValue.toWKT();
+	public CoordinateReferenceSystem getCRS() {
+		return crs;
 	}
 
 	public String check(Value value) {
+		if (value.getType() == Type.GEOMETRY) {
+			Geometry geom = value.getAsGeometry();
+			if (geom != null) {
+				if ((constraintValue != -1)
+						&& (geom.getSRID() != constraintValue)) {
+					return "Invalid srid in geometry. Expected :"
+							+ constraintValue;
+				}
+			}
+		} else if (value.getType() == Type.RASTER) {
+			// TODO Validate raster CRS
+		}
 		return null;
 	}
-
-	public CoordinateReferenceSystem getCRS() {
-		return constraintValue;
-	}
-
-	public byte[] getBytes() {
-		// TODO implement when we have coordinate reference systems
-		throw new UnsupportedOperationException("Not implemented yet");
-	}
-
-	public int getType() {
-		return CONSTRAINT_TYPE_CHOICE;
-	}
-
 }

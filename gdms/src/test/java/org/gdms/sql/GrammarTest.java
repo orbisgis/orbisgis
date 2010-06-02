@@ -200,6 +200,10 @@ public class GrammarTest extends TestCase {
 	public void testDropTable() throws Exception {
 		parse("drop table table1, table2, table3;");
 	}
+	
+	public void testDropTableIfExists() throws Exception {
+		parse("drop table if exists table1, table2, table3;");
+	}
 
 	public void testUpdateWithExpression() throws Exception {
 		parse("update table_name set field = 3 * abs(field);");

@@ -36,8 +36,11 @@
  */
 package org.orbisgis.core.map;
 
-import java.awt.Color;
+import java.awt.GraphicsConfiguration;
+import java.awt.GraphicsEnvironment;
 import java.awt.Point;
+import java.awt.Rectangle;
+import java.awt.Shape;
 import java.awt.Toolkit;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.NoninvertibleTransformException;
@@ -45,10 +48,16 @@ import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 
+import org.gdms.geometryUtils.EnvelopeUtil;
+import org.orbisgis.core.ui.editors.map.tool.Rectangle2DDouble;
+
+import com.vividsolutions.jts.awt.PointTransformation;
+import com.vividsolutions.jts.awt.ShapeWriter;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
+import com.vividsolutions.jts.geom.Geometry;
 
-public class MapTransform {
+public class MapTransform implements PointTransformation {
 
 	private BufferedImage image = null;
 
@@ -60,7 +69,7 @@ public class MapTransform {
 
 	private ArrayList<TransformListener> listeners = new ArrayList<TransformListener>();
 
-	private Color backColor;
+	private ShapeWriter converter;
 
 	/**
 	 * Sets the painted image
@@ -181,14 +190,18 @@ public class MapTransform {
 	 * @param newExtent
 	 */
 	public void setExtent(Envelope newExtent) {
+		if ((newExtent != null)
+				&& ((newExtent.getWidth() == 0) || (newExtent.getHeight() == 0))) {
+			newExtent.expandBy(10);
+		}
 		Envelope oldExtent = this.extent;
 		boolean modified = true;
 		/* Set extent when Envelope is modified */
-		if(extent!=null){
-			if(extent.equals(newExtent)) 
+		if (extent != null) {
+			if (extent.equals(newExtent))
 				modified = false;
 		}
-		if(modified){		
+		if (modified) {
 			this.extent = newExtent;
 			calculateAffineTransform();
 			for (TransformListener listener : listeners) {
@@ -206,7 +219,13 @@ public class MapTransform {
 	public void resizeImage(int width, int height) {
 		int oldWidth = getWidth();
 		int oldHeight = getHeight();
-		image = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+		// image = new BufferedImage(width, height,
+		// BufferedImage.TYPE_INT_ARGB);
+		GraphicsConfiguration configuration = GraphicsEnvironment
+				.getLocalGraphicsEnvironment().getDefaultScreenDevice()
+				.getDefaultConfiguration();
+		image = configuration.createCompatibleImage(width, height,
+				BufferedImage.TYPE_INT_ARGB);
 		calculateAffineTransform();
 		for (TransformListener listener : listeners) {
 			listener.imageSizeChanged(oldWidth, oldHeight, this);
@@ -259,7 +278,8 @@ public class MapTransform {
 	 */
 	public Point2D toMapPoint(int i, int j) {
 		try {
-			return trans.createInverse().transform(new Point2D.Double(i, j), null);
+			return trans.createInverse().transform(new Point2D.Double(i, j),
+					null);
 		} catch (NoninvertibleTransformException e) {
 			throw new RuntimeException(e);
 		}
@@ -301,6 +321,38 @@ public class MapTransform {
 
 	public void removeTransformListener(TransformListener listener) {
 		listeners.remove(listener);
+	}
+
+	@Override
+	public void transform(Coordinate src, Point2D dest) {
+		dest.setLocation(src.x, src.y);
+		trans.transform(dest, dest);
+	}
+
+	public ShapeWriter getShapeWriter() {
+		if (converter == null)
+			converter = new ShapeWriter(this);
+		return converter;
+	}
+
+	public Shape getShape(Geometry geom, boolean isSimplified) {
+
+		Shape ls = null;
+		if (isSimplified) {
+			// A simple method to accelerate the rendering
+			ls = getShapeWriter().toShape(
+					EnvelopeUtil.toGeometry(geom.getEnvelopeInternal()));
+			Rectangle bd = ls.getBounds();
+			if (bd.getHeight() <= 1 && bd.getWidth() <= 1) {
+				ls = new Rectangle2DDouble(bd.getCenterX(), bd.getCenterY(), 1,
+						1);
+			} else {
+				ls = getShapeWriter().toShape(geom);
+			}
+		} else {
+			ls = getShapeWriter().toShape(geom);
+		}
+		return ls;
 	}
 
 }

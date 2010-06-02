@@ -275,13 +275,13 @@ public class OrbisGISFrame extends JFrame implements IWindow {
 		});
 
 		/* Job popup at bootom right to follow processes loading */
-		jobPopup = new JobPopup(this);
+		jobPopup = new JobPopup();
 		jobPopup.initialize();
-		// this.getContentPane().add(jobPopup.getPanel(), BorderLayout.SOUTH);
-
+		
 		// Status bar : it gives memory informations
-		HeapView heapView = new HeapView();
-		heapView.setPreferredSize(new Dimension(200, 25));
+		//HeapView heapView = new HeapView();
+		//heapView.setPreferredSize(new Dimension(200, 25));
+
 		JToolBar statusToolBar = new JToolBar();
 
 		DefaultWorkspace workspace = (DefaultWorkspace) Services
@@ -299,7 +299,7 @@ public class OrbisGISFrame extends JFrame implements IWindow {
 		BorderLayout layout = new BorderLayout();
 		jPanel.setLayout(layout);
 		jPanel.add(workspaceName, BorderLayout.WEST);
-		jPanel.add(heapView, BorderLayout.EAST);
+		//jPanel.add(heapView, BorderLayout.EAST);
 
 		statusToolBar.add(jPanel);
 		statusToolBar.setFloatable(false);
@@ -346,6 +346,11 @@ public class OrbisGISFrame extends JFrame implements IWindow {
 			@Override
 			public boolean activeEditorClosing(IEditor editor, String editorId) {
 				return true;
+			}			
+
+			
+			@Override
+			public void elementLoaded(IEditor editor, Component comp) {				
 			}
 
 		});

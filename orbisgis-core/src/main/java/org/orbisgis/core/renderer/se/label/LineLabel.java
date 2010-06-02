@@ -6,6 +6,7 @@
 package org.orbisgis.core.renderer.se.label;
 
 import java.awt.Graphics2D;
+import java.awt.Shape;
 import java.io.IOException;
 
 import javax.media.jai.RenderableGraphics;
@@ -13,7 +14,6 @@ import javax.xml.bind.JAXBElement;
 
 import org.gdms.data.DataSource;
 
-import org.orbisgis.core.renderer.liteShape.LiteShape;
 import org.orbisgis.core.renderer.persistance.se.LineLabelType;
 import org.orbisgis.core.renderer.persistance.se.ObjectFactory;
 import org.orbisgis.core.renderer.persistance.se.ParameterValueType;
@@ -34,7 +34,7 @@ public class LineLabel extends Label {
      *
      */
     @Override
-    public void draw(Graphics2D g2, LiteShape shp, DataSource ds, long fid) throws ParameterException, IOException {
+    public void draw(Graphics2D g2, Shape shp, DataSource ds, long fid) throws ParameterException, IOException {
         
         RenderableGraphics l = this.label.getImage(ds, fid);
 

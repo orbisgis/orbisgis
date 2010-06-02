@@ -1,6 +1,8 @@
 package org.orbisgis.core.ui.pluginSystem;
 
 import java.awt.Component;
+import java.awt.Container;
+import java.util.Observable;
 
 import javax.swing.ImageIcon;
 import javax.swing.JComponent;
@@ -56,17 +58,18 @@ public abstract class ViewPlugIn implements PlugIn {
 	}
 	
 	protected PlugInContext getPlugInContext() {
-		return plugInContext;
+			return plugInContext;
 	}
 	
-    /**************** Not rule implemented *****************/
-	 //It uses for Abstract PlugIn
-    public boolean isVisible() {return false;}   
-    //It uses for Abstract PlugIn
-    public boolean isSelected(){ return false; }
-    /********************************************************/
-	
+	public void setPlugInContext(PlugInContext plugInContext) {
+		this.plugInContext = plugInContext;
+	}
 
+	public void update(Observable o, Object arg) {
+		isEnabled();
+		isSelected();		
+	}
+    
 	// View PlugIn Icon
 	public static ImageIcon getIcon(String nameIcone) {
 		return IconLoader.getIcon(nameIcone);

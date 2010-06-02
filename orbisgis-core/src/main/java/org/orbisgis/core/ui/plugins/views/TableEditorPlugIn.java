@@ -30,6 +30,7 @@ public class TableEditorPlugIn extends ViewPlugIn implements IEditor {
 
 	public void initialize(PlugInContext context) {
 		editors = new String[0];
+		setPlugInContext(context);
 		if (context.getWorkbenchContext().getWorkbench().getFrame()
 				.getViewDecorator(Names.EDITOR_TABLE_ID) == null)
 			context.getWorkbenchContext().getWorkbench().getFrame().getViews()
@@ -84,14 +85,18 @@ public class TableEditorPlugIn extends ViewPlugIn implements IEditor {
 	}
 
 	//View plugin is updated by EditorViewPlugIn
-	public void update(Observable arg0, Object arg1) {
+	public boolean isEnabled() {		
+		return true;
+	}
+	
+	public boolean isSelected() {
+		return true;
 	}
 
 	public ViewPlugIn getView() {
 		return this;
 	}
-
-	@Override
+	
 	public String getName() {		
 		return "Table editor view";
 	}

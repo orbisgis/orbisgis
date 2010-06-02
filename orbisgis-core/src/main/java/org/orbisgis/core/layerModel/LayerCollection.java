@@ -41,10 +41,8 @@ import java.util.List;
 import java.util.Set;
 
 import org.gdms.data.SpatialDataSourceDecorator;
-import org.gdms.data.types.NullCRS;
 import org.gdms.driver.DriverException;
 import org.grap.model.GeoRaster;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.orbisgis.core.layerModel.persistence.LayerCollectionType;
 import org.orbisgis.core.layerModel.persistence.LayerType;
 import org.orbisgis.core.renderer.legend.Legend;
@@ -108,7 +106,7 @@ public class LayerCollection extends AbstractLayer {
 	public void insertLayer(final ILayer layer, int index)
 			throws LayerException {
 		insertLayer(layer, index, false);
-			}
+	}
 
 	/**
 	 * Removes the layer from the collection
@@ -158,33 +156,11 @@ public class LayerCollection extends AbstractLayer {
 	 * @throws LayerException
 	 * @see org.orbisgis.core.layerModel.ILayer#setVisible(boolean)
 	 */
-	public void setVisible(boolean isVisible) throws LayerException {		
+	public void setVisible(boolean isVisible) throws LayerException {
 		for (ILayer layer : getChildren()) {
 			layer.setVisible(isVisible);
 		}
 		fireVisibilityChanged();
-	}
-
-	/**
-	 * 
-	 * @see org.orbisgis.core.layerModel.ILayer#getCoordinateReferenceSystem()
-	 */
-	public CoordinateReferenceSystem getCoordinateReferenceSystem() {
-		return (0 < size()) ? getLayer(0).getCoordinateReferenceSystem()
-				: NullCRS.singleton;
-	}
-
-	/**
-	 * 
-	 * @throws LayerException
-	 * @see org.orbisgis.core.layerModel.ILayer#setCoordinateReferenceSystem(org.opengis.referencing.crs.CoordinateReferenceSystem)
-	 */
-	public void setCoordinateReferenceSystem(
-			final CoordinateReferenceSystem coordinateReferenceSystem)
-			throws LayerException {
-		for (ILayer layer : getChildren()) {
-			layer.setCoordinateReferenceSystem(coordinateReferenceSystem);
-		}
 	}
 
 	public static void processLayersLeaves(ILayer root, ILayerAction action) {
@@ -290,13 +266,6 @@ public class LayerCollection extends AbstractLayer {
 				layerCollection.add(layer);
 				layer.setParent(this);
 			} else {
-				if (0 < size()) {
-					if (!layer.getCoordinateReferenceSystem().equals(
-							getCoordinateReferenceSystem())) {
-						throw new LayerException(
-								"new layer don't share LayerCollection's CRS");
-					}
-				}
 				setNamesRecursively(layer, getRoot().getAllLayersNames());
 				layerCollection.add(layer);
 				layer.setParent(this);
@@ -338,13 +307,6 @@ public class LayerCollection extends AbstractLayer {
 				layerCollection.add(index, layer);
 				layer.setParent(this);
 			} else {
-				if (0 < size()) {
-					if (!layer.getCoordinateReferenceSystem().equals(
-							getCoordinateReferenceSystem())) {
-						throw new LayerException(
-								"new layer don't share LayerCollection's CRS");
-					}
-				}
 				setNamesRecursively(layer, getRoot().getAllLayersNames());
 				layerCollection.add(index, layer);
 				layer.setParent(this);
@@ -491,6 +453,7 @@ public class LayerCollection extends AbstractLayer {
 	public boolean isWMS() {
 		return false;
 	}
+
 	@Override
 	public WMSLegend getWMSLegend() {
 		throw new UnsupportedOperationException("Cannot set "

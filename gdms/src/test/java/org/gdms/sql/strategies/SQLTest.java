@@ -47,6 +47,7 @@ import org.gdms.data.DataSourceFactory;
 import org.gdms.data.DigestUtilities;
 import org.gdms.data.ExecutionException;
 import org.gdms.data.SpatialDataSourceDecorator;
+import org.gdms.data.metadata.DefaultMetadata;
 import org.gdms.data.types.Constraint;
 import org.gdms.data.types.GeometryConstraint;
 import org.gdms.data.types.Type;
@@ -102,6 +103,16 @@ public class SQLTest extends SourceTest {
 	 * } System.out.println(""); } ds.close(); }
 	 */
 
+	public void testInsertWithFunction() throws Exception {
+
+		DefaultMetadata metadata = new DefaultMetadata();
+		metadata.addField("f1", Type.INT);
+		dsf.getSourceManager().register("source",
+				new GenericObjectDriver(metadata));
+		dsf.executeSQL("insert into source (f1) values(1);");
+		dsf.executeSQL("insert into source (f1) values(autonumeric());");
+	}
+
 	public void testCreateAsTableCustomQuery() throws Exception {
 		dsf.getSourceManager().register("landcover2000",
 				new File(internalData + "landcover2000.shp"));
@@ -124,6 +135,23 @@ public class SQLTest extends SourceTest {
 		dsf.executeSQL("select register('" + backupDir
 				+ "/addColumn.shp','temp')");
 		dsf.executeSQL("alter table temp drop column type;");
+
+	}
+
+	public void testDropTable() throws Exception {
+		dsf.getSourceManager().register("landcover2000",
+				new File(internalData + "landcover2000.shp"));
+		dsf.executeSQL("drop table landcover2000;");
+	}
+
+	public void testDropTableIfExists() throws Exception {
+		dsf.getSourceManager().register("landcover2000",
+				new File(internalData + "landcover2000.shp"));
+		dsf.executeSQL("drop table if exists toto;");
+		assertTrue(!dsf.getSourceManager().exists("toto"));
+		assertTrue(dsf.getSourceManager().exists("landcover2000"));
+		dsf.executeSQL("drop table if exists landcover2000;");
+		assertTrue(!dsf.getSourceManager().exists("landcover2000"));
 
 	}
 

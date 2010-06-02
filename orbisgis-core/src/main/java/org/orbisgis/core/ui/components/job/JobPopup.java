@@ -16,8 +16,8 @@ public class JobPopup {
 		return panel;
 	}
 
-	public JobPopup(JFrame frame) {
-		panel = new JobWindow(frame);
+	public JobPopup() {
+		panel = new JobWindow();
 	}
 
 	public void initialize() {

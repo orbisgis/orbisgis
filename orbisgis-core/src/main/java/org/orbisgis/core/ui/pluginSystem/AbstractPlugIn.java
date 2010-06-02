@@ -5,18 +5,14 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.awt.event.MouseEvent;
 import java.util.Observable;
 
 import javax.swing.ImageIcon;
 import javax.swing.JComponent;
 
-import org.gdms.source.SourceManager;
 import org.orbisgis.core.Services;
-import org.orbisgis.core.geocognition.Geocognition;
-import org.orbisgis.core.geocognition.GeocognitionElement;
 import org.orbisgis.core.images.IconLoader;
-import org.orbisgis.core.layerModel.ILayer;
-import org.orbisgis.core.layerModel.MapContext;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchContext;
 import org.orbisgis.utils.I18N;
 
@@ -29,7 +25,17 @@ public abstract class AbstractPlugIn implements PlugIn {
 	private JComponent actionComponent;
 	private String typeListener;
 	// private ResourceBundle i18n;
-	private String langAndCountry;
+	private String langAndCountry;	
+	/**
+	 * Selected column in table Editor
+	 */
+	private int selectedColumn;
+	/**
+	 * Event in table editor
+	 */
+	private MouseEvent event;
+
+
 
 	// Constructors
     public AbstractPlugIn() {
@@ -49,6 +55,27 @@ public abstract class AbstractPlugIn implements PlugIn {
 	public void getI18n() {
 		I18N.addI18n(langAndCountry, null, this.getClass());
 	}
+	
+	/**
+	 * 
+	 * For table plug-in Plug-in can be a popup menu on header or row table. 
+	 * Plug-in is notified of event (header or row event) by Observer (WorkbenchContext)
+	 * To identify plug-in on header plug-in receive the number's selected column. In the other case
+	 * plug-in receive MouseEvent. MouseEvent contains the point and then the row selected.
+	 * 
+	 */	
+	public void update(Observable o, Object arg) {		
+		if( arg!=null && !(arg instanceof String)){
+			try {		
+				event = (MouseEvent) arg;
+				selectedColumn = -1;
+			} catch (Exception e) {
+				selectedColumn = (Integer) arg;	
+			}
+		}
+		isEnabled();
+		isSelected();		
+	}
 	// implemented by PlugIns
 	// Factory for adapt PlugIn context (Visibility, Enabled)
 	public void createPlugInContext(WorkbenchContext context) {
@@ -56,38 +83,6 @@ public abstract class AbstractPlugIn implements PlugIn {
 			plugInContext = context.createPlugInContext(this);
 		if(!context.getPopupPlugInObservers().contains(this))
 			context.getPopupPlugInObservers().add(this);	
-	}
-	// Specific implemented methods by some PlugIn (use in UdpateFactory)
-	// test in TOC for swing visibility
-	public void execute(MapContext mapContext, ILayer layer) {}
-	public boolean acceptsSelectionCount(int layerCount) {
-		return false;
-	}
-	public boolean accepts(MapContext mc, ILayer layer) {
-		return false;
-	}
-	public boolean acceptsAll(ILayer[] layers) {
-		return false;
-	}
-
-	// idem for Geocognition
-	public void execute(Geocognition geocognition, GeocognitionElement element) {
-	}
-
-	public boolean accepts(Geocognition geocog, GeocognitionElement element) {
-		return false;
-	}
-
-	public boolean acceptsSelectionCount(Geocognition geocog, int selectionCount) {
-		return false;
-	}
-
-	// idem for Geocatalog
-	public void execute(SourceManager srcManager, String srcName) {
-	}
-
-	public boolean accepts(SourceManager srcManager, String srcName) {
-		return false;
 	}
 	
 	// listeners
@@ -148,6 +143,14 @@ public abstract class AbstractPlugIn implements PlugIn {
 
 	public void setActionComponent(JComponent actionComponent) {
 		this.actionComponent = actionComponent;
+	}
+	
+	public int getSelectedColumn() {
+		return selectedColumn;
+	}
+	
+	public MouseEvent getEvent() {
+		return event;
 	}
 
 	public String getTypeListener() {

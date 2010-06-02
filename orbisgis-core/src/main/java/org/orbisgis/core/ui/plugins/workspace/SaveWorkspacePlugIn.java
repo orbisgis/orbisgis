@@ -1,7 +1,6 @@
 package org.orbisgis.core.ui.plugins.workspace;
 
 import java.io.IOException;
-import java.util.Observable;
 
 import javax.swing.JMenuItem;
 
@@ -18,8 +17,7 @@ import org.orbisgis.progress.IProgressMonitor;
 public class SaveWorkspacePlugIn extends AbstractPlugIn {
 
 	private JMenuItem menuItem;
-
-	@Override
+	
 	public boolean execute(PlugInContext context) throws Exception {
 		BackgroundManager mb = Services.getService(BackgroundManager.class);
 		mb.backgroundOperation(new BackgroundJob() {
@@ -42,27 +40,18 @@ public class SaveWorkspacePlugIn extends AbstractPlugIn {
 		});
 		return true;
 	}
-
-	@Override
+	
 	public void initialize(PlugInContext context) throws Exception {
 		menuItem = context.getFeatureInstaller().addMainMenuItem(this,
 				new String[] { Names.FILE }, Names.SAVE_WS, false,
 				getIcon(IconNames.SAVE_WS_ICON), null, null, context);
 	}
-
-	@Override
-	public void update(Observable o, Object arg) {
+	
+	public boolean isEnabled() {
 		menuItem.setEnabled(true);
-		menuItem.setVisible(isVisible());
-
-	}
-
-	@Override
-	public boolean isVisible() {
 		return true;
 	}
-
-	@Override
+	
 	public boolean isSelected() {
 		// TODO Auto-generated method stub
 		return false;

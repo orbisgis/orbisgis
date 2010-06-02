@@ -82,7 +82,6 @@ public interface IEditor {
 	ViewPlugIn getView();
 
 	// MapEditor needs Default Automaton tool
-	void initialize(PlugInContext wbContext, Automaton automaton)
-			throws Exception;
+	void initialize(PlugInContext wbContext)throws Exception;
 
 }

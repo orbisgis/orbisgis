@@ -1,8 +1,16 @@
 package org.orbisgis.core.ui.pluginSystem.workbench;
 
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.GridLayout;
+
 import javax.swing.AbstractButton;
+import javax.swing.Box;
+import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
+import javax.swing.JTextArea;
 import javax.swing.event.MenuEvent;
 import javax.swing.event.MenuListener;
 
@@ -31,13 +39,17 @@ import org.orbisgis.core.ui.editors.map.tools.ZoomOutTool;
 import org.orbisgis.core.ui.pluginSystem.PlugInContext;
 import org.orbisgis.core.ui.plugins.actions.ExitPlugIn;
 import org.orbisgis.core.ui.plugins.actions.SavePlugIn;
-import org.orbisgis.core.ui.plugins.actions.ScalePlugIn;
+//import org.orbisgis.core.ui.plugins.demo.extensions.tocMenu.MyTOCMenu;
+//import org.orbisgis.core.ui.plugins.demo.extensions.tocMenu.MyTOCMenu;
 import org.orbisgis.core.ui.plugins.editors.mapEditor.ClearMapSelectionPlugIn;
+import org.orbisgis.core.ui.plugins.editors.mapEditor.CoordinateReferenceSystemPlugIn;
+import org.orbisgis.core.ui.plugins.editors.mapEditor.CreateSourceFromMapSelectionPlugIn;
 import org.orbisgis.core.ui.plugins.editors.mapEditor.DeleteMapSelectionPlugIn;
 import org.orbisgis.core.ui.plugins.editors.mapEditor.ExportMapAsImagePlugIn;
 import org.orbisgis.core.ui.plugins.editors.mapEditor.ExportMapAsPDFPlugIn;
 import org.orbisgis.core.ui.plugins.editors.mapEditor.FullExtentPlugIn;
 import org.orbisgis.core.ui.plugins.editors.mapEditor.RedoMapPlugIn;
+import org.orbisgis.core.ui.plugins.editors.mapEditor.ScalePlugIn;
 import org.orbisgis.core.ui.plugins.editors.mapEditor.ShowXYPlugIn;
 import org.orbisgis.core.ui.plugins.editors.mapEditor.UndoMapPlugIn;
 import org.orbisgis.core.ui.plugins.editors.mapEditor.ZoomToSelectedFeaturesPlugIn;
@@ -45,7 +57,7 @@ import org.orbisgis.core.ui.plugins.editors.tableEditor.AddFieldPlugIn;
 import org.orbisgis.core.ui.plugins.editors.tableEditor.AddValuePlugIn;
 import org.orbisgis.core.ui.plugins.editors.tableEditor.ChangeFieldNamePlugIn;
 import org.orbisgis.core.ui.plugins.editors.tableEditor.ClearTableSelectionPlugIn;
-import org.orbisgis.core.ui.plugins.editors.tableEditor.CreateSourceFromSelectionPlugIn;
+import org.orbisgis.core.ui.plugins.editors.tableEditor.CreateSourceFromTableSelectionPlugIn;
 import org.orbisgis.core.ui.plugins.editors.tableEditor.DeleteTableSelectionPlugIn;
 import org.orbisgis.core.ui.plugins.editors.tableEditor.NewRowTablePlugIn;
 import org.orbisgis.core.ui.plugins.editors.tableEditor.RedoTablePlugIn;
@@ -106,9 +118,7 @@ public class OrbisConfiguration implements Setup {
 
 	// OrbisGIS main ToolBar & OrbisGIS main menu
 	private ExitPlugIn exitPlugIn = new ExitPlugIn();
-	private SavePlugIn savePlugIn = new SavePlugIn();
-	// Scale panel plugin is a swing component to execute action on map editor
-	private ScalePlugIn scalePlugIn = new ScalePlugIn();
+	private SavePlugIn savePlugIn = new SavePlugIn();	
 	private SaveWorkspacePlugIn saveWorkspacePlugIn = new SaveWorkspacePlugIn();
 	private ChangeWorkspacePlugIn changeWorkspacePlugIn = new ChangeWorkspacePlugIn();
 	private ConfigurationPlugIn configuration = new ConfigurationPlugIn();
@@ -128,6 +138,9 @@ public class OrbisConfiguration implements Setup {
 	private SaveLayerPlugIn saveLayerPlugIn = new SaveLayerPlugIn();
 	private CreateGroupPlugIn createGroupPlugIn = new CreateGroupPlugIn();
 	private ZoomToLayerPlugIn zoomToLayerPlugIn = new ZoomToLayerPlugIn();
+
+	// DEMO
+	//private MyTOCMenu myTOCMenu = new MyTOCMenu();
 
 	// Geocognition popup
 	private OpenGeocognitionPlugIn openGeocognitionPlugIn = new OpenGeocognitionPlugIn();
@@ -176,7 +189,7 @@ public class OrbisConfiguration implements Setup {
 	private UndoTablePlugIn undoTablePlugIn = new UndoTablePlugIn();
 	private NewRowTablePlugIn newRowTablePlugIn = new NewRowTablePlugIn();
 	private RedoTablePlugIn redoTablePlugIn = new RedoTablePlugIn();
-	private CreateSourceFromSelectionPlugIn createSourceFromSelectionPlugIn = new CreateSourceFromSelectionPlugIn();
+	private CreateSourceFromTableSelectionPlugIn createSourceFromSelectionPlugIn = new CreateSourceFromTableSelectionPlugIn();
 
 	// Map editor PlugIn
 	private FullExtentPlugIn fullExtentPlugIn = new FullExtentPlugIn();
@@ -185,12 +198,20 @@ public class OrbisConfiguration implements Setup {
 	private UndoMapPlugIn undoMapPlugIn = new UndoMapPlugIn();
 	private RedoMapPlugIn redoMapPlugIn = new RedoMapPlugIn();
 	private DeleteMapSelectionPlugIn deleteMapSelectionPlugIn = new DeleteMapSelectionPlugIn();
+	private CreateSourceFromMapSelectionPlugIn createSourceFromMapSelectionPlugIn = new CreateSourceFromMapSelectionPlugIn();
+	//Tool bar on map
+	private ShowXYPlugIn showXYPlugIn = new ShowXYPlugIn();
+	// Scale panel plugin is a swing component to execute action on map editor
+	private ScalePlugIn scalePlugIn = new ScalePlugIn();
+	private CoordinateReferenceSystemPlugIn CRSPlugIn = new CoordinateReferenceSystemPlugIn();
 
 	// right click on Map
 	private ExportMapAsImagePlugIn exportMasAsImagePlugIn = new ExportMapAsImagePlugIn();
 	private ExportMapAsPDFPlugIn exportMapAsPDFPlugIn = new ExportMapAsPDFPlugIn();
-	private ShowXYPlugIn showXYPlugIn = new ShowXYPlugIn();
+	
 
+	//private TestPlugIn testPlugIn = new TestPlugIn();
+	
 	public void setup(WorkbenchContext workbenchContext) throws Exception {
 		// load Main Menu
 		configureMainMenus(workbenchContext);
@@ -204,10 +225,10 @@ public class OrbisConfiguration implements Setup {
 				"Gives default tool to the editor", defaultTool);
 		// Initialize one Map editor without geocognition elment
 		MapEditorPlugIn mapEditorPlugIn = new MapEditorPlugIn();
-		mapEditorPlugIn.initialize(plugInContext, defaultTool);
+		mapEditorPlugIn.initialize(plugInContext);		
 		// Initialize table editor
 		TableEditorPlugIn tableEditorPlugIn = new TableEditorPlugIn();
-		tableEditorPlugIn.initialize(plugInContext);
+		tableEditorPlugIn.initialize(plugInContext);		
 		// load toolbars (Main toolbar, table toolexceptionbar, Map toolbar)
 		configureToolBar(plugInContext);
 		// load main frame with default tool selected (Zoom in tool)
@@ -242,6 +263,10 @@ public class OrbisConfiguration implements Setup {
 			zoomToLayerPlugIn.initialize(context);
 			revertLayerPlugIn.initialize(context);
 			saveLayerPlugIn.initialize(context);
+
+			// DEMO
+
+			//myTOCMenu.initialize(context);
 
 			// Geocognition popup
 			openGeocognitionPlugIn.initialize(context);
@@ -286,7 +311,9 @@ public class OrbisConfiguration implements Setup {
 			// Map editor : right click on Map
 			exportMasAsImagePlugIn.initialize(context);
 			exportMapAsPDFPlugIn.initialize(context);
-			showXYPlugIn.initialize(context);
+			
+			
+			//testPlugIn.initialize(context);
 
 		} catch (Exception e) {
 			Services.getErrorManager().error(Names.ERROR_POPUP_ADD, e);
@@ -300,12 +327,13 @@ public class OrbisConfiguration implements Setup {
 
 		// Main Toolbar & Main menu -> sont chargés par le PlugIn
 		// lib/ext/MainToolBarPlugIn.jar
-		exitPlugIn.initialize(plugInContext);
+		
 		savePlugIn.initialize(plugInContext);
 		// Main menus
 		saveWorkspacePlugIn.initialize(plugInContext);
 		changeWorkspacePlugIn.initialize(plugInContext);
 		configuration.initialize(plugInContext);
+		exitPlugIn.initialize(plugInContext);
 		aboutOrbisGIS.initialize(plugInContext);
 		onlineHelpOrbisGIS.initialize(plugInContext);
 
@@ -314,6 +342,7 @@ public class OrbisConfiguration implements Setup {
 		undoMapPlugIn.initialize(plugInContext);
 		redoMapPlugIn.initialize(plugInContext);
 		deleteMapSelectionPlugIn.initialize(plugInContext);
+		createSourceFromMapSelectionPlugIn.initialize(plugInContext);
 		add(new ZoomOutTool(), "zoom_out.png", frame.getNavigationToolBar());
 		// ZoomIn/ZoomOut
 		add(new PanTool(), "pan.png", frame.getNavigationToolBar());
@@ -356,12 +385,15 @@ public class OrbisConfiguration implements Setup {
 		deleteTableSelectionPlugIn.initialize(plugInContext);
 		newRowTablePlugIn.initialize(plugInContext);
 		createSourceFromSelectionPlugIn.initialize(plugInContext);
-
-		scalePlugIn.initialize(plugInContext);
+		
+		//Map tools
+		scalePlugIn.initialize(plugInContext);		
+		showXYPlugIn.initialize(plugInContext);
+		//CRSPlugIn.initialize(plugInContext);
 	}
 
 	private void configureToolBar(PlugInContext plugInContext) {
-		// get WorkbenchFrame
+		// Frame tool bar
 		OrbisGISFrame frame = plugInContext.getWorkbenchContext()
 				.getWorkbench().getFrame();
 		WorkbenchContext wbContext = plugInContext.getWorkbenchContext();
@@ -392,7 +424,9 @@ public class OrbisConfiguration implements Setup {
 		WorkbenchToolBar wbEditionTable = new WorkbenchToolBar(wbContext,
 				Names.TOOLBAR_TABLE);
 		wbToolBar.add(wbEditionTable);
-
+		
+		
+		
 	}
 
 	private void configureMainMenus(final WorkbenchContext workbenchContext)

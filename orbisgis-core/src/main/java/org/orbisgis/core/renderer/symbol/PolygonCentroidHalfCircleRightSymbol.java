@@ -38,12 +38,12 @@ package org.orbisgis.core.renderer.symbol;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
-import java.awt.geom.AffineTransform;
 import java.awt.geom.NoninvertibleTransformException;
 import java.awt.geom.Point2D;
 
 import org.gdms.data.types.GeometryConstraint;
 import org.gdms.driver.DriverException;
+import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.RenderPermission;
 
 import com.vividsolutions.jts.geom.Envelope;
@@ -52,10 +52,11 @@ import com.vividsolutions.jts.geom.MultiPolygon;
 import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.Polygon;
 
-public class PolygonCentroidHalfCircleRightSymbol extends AbstractHalfCirclePointSymbol {
+public class PolygonCentroidHalfCircleRightSymbol extends
+		AbstractHalfCirclePointSymbol {
 
-	PolygonCentroidHalfCircleRightSymbol(Color outline, int lineWidth, Color fillColor,
-			int size, boolean mapUnits) {
+	PolygonCentroidHalfCircleRightSymbol(Color outline, int lineWidth,
+			Color fillColor, int size, boolean mapUnits) {
 		super(outline, lineWidth, fillColor, size, mapUnits);
 	}
 
@@ -65,15 +66,15 @@ public class PolygonCentroidHalfCircleRightSymbol extends AbstractHalfCirclePoin
 	}
 
 	@Override
-	public Envelope draw(Graphics2D g, Geometry geom, AffineTransform at,
+	public Envelope draw(Graphics2D g, Geometry geom, MapTransform mt,
 			RenderPermission permission) throws DriverException {
 		Point point = geom.getCentroid();
 		Point2D p = new Point2D.Double(point.getX(), point.getY());
-		p = at.transform(p, null);
+		p = mt.getAffineTransform().transform(p, null);
 		double drawingSize = size;
 		if (mapUnits) {
 			try {
-				drawingSize = (int) toPixelUnits(size, at);
+				drawingSize = (int) toPixelUnits(size, mt.getAffineTransform());
 			} catch (NoninvertibleTransformException e) {
 				throw new DriverException("Cannot convert to map units", e);
 			}
@@ -101,8 +102,8 @@ public class PolygonCentroidHalfCircleRightSymbol extends AbstractHalfCirclePoin
 
 	@Override
 	public Symbol cloneSymbol() {
-		return new PolygonCentroidHalfCircleRightSymbol(outline, lineWidth, fillColor,
-				size, mapUnits);
+		return new PolygonCentroidHalfCircleRightSymbol(outline, lineWidth,
+				fillColor, size, mapUnits);
 	}
 
 	@Override
@@ -112,8 +113,8 @@ public class PolygonCentroidHalfCircleRightSymbol extends AbstractHalfCirclePoin
 
 	@Override
 	public Symbol deriveSymbol(Color color) {
-		return new PolygonCentroidHalfCircleRightSymbol(color.darker(), lineWidth, color
-				.brighter(), size, mapUnits);
+		return new PolygonCentroidHalfCircleRightSymbol(color.darker(),
+				lineWidth, color.brighter(), size, mapUnits);
 	}
 
 }

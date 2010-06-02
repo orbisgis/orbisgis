@@ -40,11 +40,11 @@ import ij.process.ColorProcessor;
 
 import java.awt.AlphaComposite;
 import java.awt.Color;
-import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.GraphicsConfiguration;
+import java.awt.GraphicsEnvironment;
 import java.awt.Image;
 import java.awt.RenderingHints;
-import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.awt.image.ColorModel;
@@ -76,18 +76,15 @@ import org.orbisgis.core.renderer.legend.Legend;
 import org.orbisgis.core.renderer.legend.RasterLegend;
 import org.orbisgis.core.renderer.legend.RenderException;
 import org.orbisgis.core.renderer.symbol.RenderUtils;
+import org.orbisgis.core.renderer.symbol.SelectionSymbol;
 import org.orbisgis.core.renderer.symbol.Symbol;
 import org.orbisgis.core.ui.configuration.RenderingConfiguration;
 import org.orbisgis.progress.IProgressMonitor;
 import org.orbisgis.progress.NullProgressMonitor;
 
-import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
-import com.vividsolutions.jts.geom.LineString;
-import com.vividsolutions.jts.geom.LinearRing;
-import com.vividsolutions.jts.geom.impl.CoordinateArraySequence;
 import com.vividsolutions.jts.index.quadtree.Quadtree;
 
 public class Renderer {
@@ -96,7 +93,7 @@ public class Renderer {
 
 	/**
 	 * Draws the content of the layer in the specified graphics
-	 *
+	 * 
 	 * @param g2
 	 *            Object to draw to
 	 * @param width
@@ -113,7 +110,6 @@ public class Renderer {
 	public void draw(Graphics2D g2, int width, int height, Envelope extent,
 			ILayer layer, IProgressMonitor pm) {
 		setHints(g2);
-
 		MapTransform mt = new MapTransform();
 		mt.resizeImage(width, height);
 		mt.setExtent(extent);
@@ -229,7 +225,7 @@ public class Renderer {
 
 	/**
 	 * Draws the content of the layer in the specified image.
-	 *
+	 * 
 	 * @param img
 	 *            Image to draw the data
 	 * @param extent
@@ -249,6 +245,9 @@ public class Renderer {
 			int width, int height, Envelope extent, IProgressMonitor pm)
 			throws DriverException, IOException {
 		logger.debug("raster envelope: " + layer.getEnvelope());
+		GraphicsConfiguration configuration = GraphicsEnvironment
+				.getLocalGraphicsEnvironment().getDefaultScreenDevice()
+				.getDefaultConfiguration();
 		RasterLegend[] legends = layer.getRasterLegend();
 		for (RasterLegend legend : legends) {
 			if (!validScale(mt, legend)) {
@@ -260,8 +259,10 @@ public class Renderer {
 				GeoRaster geoRaster = layer.getDataSource().getRaster(i);
 				Envelope layerEnvelope = geoRaster.getMetadata().getEnvelope();
 				Envelope layerPixelEnvelope = null;
-				BufferedImage layerImage = new BufferedImage(width, height,
-						BufferedImage.TYPE_INT_ARGB);
+				// BufferedImage layerImage = new BufferedImage(width, height,
+				// BufferedImage.TYPE_INT_ARGB);
+				BufferedImage layerImage = configuration.createCompatibleImage(
+						width, height, BufferedImage.TYPE_INT_ARGB);
 
 				// part or all of the GeoRaster is visible
 				layerPixelEnvelope = mt.toPixel(layerEnvelope);
@@ -291,9 +292,12 @@ public class Renderer {
 
 		Legend[] legends = layer.getRenderingLegend();
 		SpatialDataSourceDecorator sds = layer.getDataSource();
+
 		try {
+
 			HashSet<Integer> selected = new HashSet<Integer>();
 			int[] selection = layer.getSelection();
+
 			for (int i = 0; i < selection.length; i++) {
 				selected.add(selection[i]);
 			}
@@ -328,10 +332,15 @@ public class Renderer {
 					Symbol sym = legend.getSymbol(sds, index);
 					if (sym != null) {
 						Geometry g = sds.getGeometry(index);
-						if (g.getEnvelopeInternal().intersects(extent)) {
+
+						Envelope geomEnvelope = g.getEnvelopeInternal();
+
+						// Do not display geom when the envelope is too small
+						if (geomEnvelope.intersects(extent)) {
+
 							if (selected.contains(index)) {
-								Symbol derivedSymbol = sym
-										.deriveSymbol(new Color(250, 250, 0));
+								Symbol derivedSymbol = new SelectionSymbol(
+										Color.yellow, true, true);
 								if (derivedSymbol != null) {
 									sym = derivedSymbol;
 								}
@@ -342,8 +351,8 @@ public class Renderer {
 								symbolEnvelope = drawGeometryCollection(mt, g2,
 										sym, g, permission);
 							} else {
-								symbolEnvelope = sym.draw(g2, g, mt
-										.getAffineTransform(), permission);
+								symbolEnvelope = sym
+										.draw(g2, g, mt, permission);
 							}
 							if (symbolEnvelope != null) {
 								permission.addUsedArea(symbolEnvelope);
@@ -351,8 +360,9 @@ public class Renderer {
 						}
 					}
 				}
-				pm.endTask();
 			}
+			pm.endTask();
+
 		} catch (RenderException e) {
 			Services.getErrorManager().warning(
 					"Cannot draw layer: " + layer.getName(), e);
@@ -367,7 +377,7 @@ public class Renderer {
 	/**
 	 * For geometry collections we need to filter the symbol composite before
 	 * drawing
-	 *
+	 * 
 	 * @param mt
 	 * @param g2
 	 * @param sym
@@ -395,7 +405,7 @@ public class Renderer {
 		} else {
 			sym = RenderUtils.buildSymbolToDraw(sym, g);
 			if (sym != null) {
-				return sym.draw(g2, g, mt.getAffineTransform(), permission);
+				return sym.draw(g2, g, mt, permission);
 			} else {
 				return null;
 			}
@@ -456,7 +466,7 @@ public class Renderer {
 
 	/**
 	 * Method to change bands order only on the BufferedImage.
-	 *
+	 * 
 	 * @param bufferedImage
 	 * @return new bufferedImage
 	 */
@@ -488,7 +498,7 @@ public class Renderer {
 	/**
 	 * Gets the component specified by the char between the int components
 	 * passed as parameters in red, green blue
-	 *
+	 * 
 	 * @param rgbChar
 	 * @param red
 	 * @param green
@@ -508,92 +518,12 @@ public class Renderer {
 		}
 	}
 
-	public void drawSymbolPreview(Graphics g, Symbol symbol, int width,
-			int height, boolean simple) {
+	
 
-		setHints((Graphics2D) g);
-		if (symbol == null) {
-			return;
-		}
-
-		GeometryFactory gf = new GeometryFactory();
-		Geometry geom = null;
-
-		try {
-			if (simple) {
-				geom = getSimplePolygon(gf, width, height);
-			} else {
-				geom = getComplexPolygon(gf, width, height);
-			}
-			paintGeometry(g, geom, symbol);
-			if (simple) {
-				geom = getSimpleLine(gf, width, height);
-			} else {
-				geom = getComplexLine(gf, width, height);
-			}
-			paintGeometry(g, geom, symbol);
-			geom = gf.createPoint(new Coordinate(width / 2, height / 2));
-			paintGeometry(g, geom, symbol);
-
-		} catch (DriverException e) {
-			((Graphics2D) g).drawString("Cannot generate preview", 0, 0);
-		} catch (NullPointerException e) {
-			((Graphics2D) g).drawString("Cannot generate preview: ", 0, 0);
-		}
-	}
-
-	private Geometry getSimpleLine(GeometryFactory gf, int width, int height) {
-		int widthUnit = width / 4;
-		int heightUnit = height / 4;
-		Coordinate[] coordsP = { new Coordinate(widthUnit, heightUnit),
-				new Coordinate(3 * widthUnit, heightUnit),
-				new Coordinate(3 * widthUnit, 3 * heightUnit),
-				new Coordinate(widthUnit, 3 * heightUnit),
-				new Coordinate(widthUnit, heightUnit) };
-		CoordinateArraySequence seqP = new CoordinateArraySequence(coordsP);
-		return gf.createPolygon(new LinearRing(seqP, gf), null);
-	}
-
-	private Geometry getSimplePolygon(GeometryFactory gf, int width, int height) {
-		return gf.createLineString(new Coordinate[] {
-				new Coordinate(width / 4, height / 2),
-				new Coordinate(3 * width / 4, height / 2) });
-	}
-
-	private LineString getComplexLine(GeometryFactory gf, int width, int height) {
-		int widthUnit = width / 4;
-		int heightUnit = height / 4;
-		return gf.createLineString(new Coordinate[] {
-				new Coordinate(widthUnit, 3 * heightUnit),
-				new Coordinate(1.5 * widthUnit, 2 * heightUnit),
-				new Coordinate(2 * widthUnit, 3 * heightUnit),
-				new Coordinate(3 * widthUnit, heightUnit) });
-	}
-
-	private Geometry getComplexPolygon(GeometryFactory gf, int width, int height) {
-		int widthUnit = width / 4;
-		int heightUnit = height / 4;
-		Coordinate[] coordsP = { new Coordinate(widthUnit, heightUnit),
-				new Coordinate(3 * widthUnit, heightUnit),
-				new Coordinate(widthUnit, 3 * heightUnit),
-				new Coordinate(widthUnit, heightUnit) };
-		CoordinateArraySequence seqP = new CoordinateArraySequence(coordsP);
-		return gf.createPolygon(new LinearRing(seqP, gf), null);
-	}
-
-	private void paintGeometry(Graphics g, Geometry geom, Symbol symbol)
-			throws DriverException {
-		RenderPermission renderPermission = new AllowAllRenderPermission();
-		if (symbol.acceptGeometry(geom)) {
-			Symbol sym = RenderUtils.buildSymbolToDraw(symbol, geom);
-			sym.draw((Graphics2D) g, geom, new AffineTransform(),
-					renderPermission);
-		}
-	}
-
+	
 	/**
 	 * Apply some rendering rules Look at rendering configuration panel.
-	 *
+	 * 
 	 * @param g2
 	 */
 

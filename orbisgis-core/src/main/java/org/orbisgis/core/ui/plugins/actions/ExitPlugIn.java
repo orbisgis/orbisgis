@@ -1,7 +1,5 @@
 package org.orbisgis.core.ui.plugins.actions;
 
-import java.util.Observable;
-
 import javax.swing.JButton;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
@@ -21,6 +19,7 @@ public class ExitPlugIn extends AbstractPlugIn {
 
 	public ExitPlugIn() {
 		btn = new JButton(getIcon(IconNames.EXIT_ICON));
+		btn.setToolTipText(Names.EXIT);
 	}
 
 	public void initialize(PlugInContext context) throws Exception {
@@ -46,22 +45,15 @@ public class ExitPlugIn extends AbstractPlugIn {
 			psm.stopPlugins();
 		}
 	}
-
-	public void update(Observable o, Object arg) {
-		btn.setEnabled(true);
-		btn.setVisible(isVisible());
-
-		menuItem.setEnabled(true);
-		menuItem.setVisible(isVisible());
-	}
-
-	public boolean isVisible() {
+	
+	public boolean isEnabled() {
+		btn.setVisible(true);
+		menuItem.setVisible(true);
 		return true;
 	}
 	
 	public boolean isSelected() {
 		return false;
 	}
-
 
 }

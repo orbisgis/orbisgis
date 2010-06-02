@@ -1,6 +1,7 @@
 package org.orbisgis.core.renderer.se;
 
 import java.awt.Graphics2D;
+import java.awt.Shape;
 import java.io.IOException;
 import javax.xml.bind.JAXBElement;
 import org.orbisgis.core.renderer.persistance.se.ObjectFactory;
@@ -8,8 +9,6 @@ import org.orbisgis.core.renderer.persistance.se.TextSymbolizerType;
 
 import org.gdms.data.SpatialDataSourceDecorator;
 import org.gdms.driver.DriverException;
-import org.orbisgis.core.renderer.liteShape.LiteShape;
-
 
 import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.label.Label;
@@ -48,7 +47,7 @@ public class TextSymbolizer extends VectorSymbolizer {
     @Override
     public void draw(Graphics2D g2, SpatialDataSourceDecorator sds, long fid) throws ParameterException, IOException, DriverException {
 
-        LiteShape shp = this.getLiteShape(sds, fid);
+        Shape shp = this.getShape(sds, fid);
 
         if (label != null){
             label.draw(g2, shp, sds, fid);

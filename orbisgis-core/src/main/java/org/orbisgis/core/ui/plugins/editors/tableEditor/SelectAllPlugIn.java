@@ -37,9 +37,6 @@
 
 package org.orbisgis.core.ui.plugins.editors.tableEditor;
 
-import java.awt.event.MouseEvent;
-import java.util.Observable;
-
 import org.gdms.driver.DriverException;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.errorManager.ErrorManager;
@@ -52,9 +49,7 @@ import org.orbisgis.core.ui.pluginSystem.workbench.Names;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchContext;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchFrame;
 
-public class SelectAllPlugIn extends AbstractPlugIn {
-
-	private boolean isVisible;
+public class SelectAllPlugIn extends AbstractPlugIn {	
 
 	public boolean execute(PlugInContext context) throws Exception {
 		IEditor editor = context.getActiveEditor();
@@ -80,42 +75,27 @@ public class SelectAllPlugIn extends AbstractPlugIn {
 				getIcon(IconNames.POPUP_TABLE_ALL_ICON), wbContext);
 	}
 
-	public void update(Observable o, Object arg) {
-		isVisible(arg);
-	}
-
 	public boolean isEnabled() {
-		return true;
-	}
-
-	public boolean isVisible() {
-		return isVisible;
-	}
-
-	public boolean isVisible(Object arg) {
+		boolean isEnabled = false;
 		IEditor editor = null;
-		if((editor=getPlugInContext().getTableEditor()) != null){
-			try {
-				MouseEvent event = (MouseEvent) arg;
-			} catch (Exception e) {
-				return isVisible = false;
-			}
+		if((editor=getPlugInContext().getTableEditor()) != null
+				&& getSelectedColumn() ==-1){
+			
 
 			final TableEditableElement element = (TableEditableElement) editor
 					.getElement();
 			try {
-				return isVisible = element.getDataSource().getRowCount() != element
+				isEnabled = element.getDataSource().getRowCount() != element
 						.getSelection().getSelectedRows().length;
 			} catch (DriverException e) {
 				Services.getService(ErrorManager.class).error(
 						"Cannot read source", e);
-				return isVisible = false;
+				isEnabled = false;
 			}
 		}
-		return isVisible = false;
+		return isEnabled;
 	}
-
-	@Override
+	
 	public boolean isSelected() {
 		// TODO Auto-generated method stub
 		return false;

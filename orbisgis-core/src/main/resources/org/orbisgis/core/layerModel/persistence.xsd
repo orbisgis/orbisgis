@@ -20,6 +20,12 @@
 		</xs:complexType>
 	</xs:element>
 	
+	<xs:element name="coordinateReferenceSystem">
+		<xs:complexType>
+			<xs:attribute name="name" type="xs:string" use="required"/>
+		</xs:complexType>
+	</xs:element>
+	
 	<xs:element name="map-context">
 		<xs:complexType>
 			<xs:sequence>

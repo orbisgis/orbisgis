@@ -92,7 +92,7 @@ public class SourceListModel extends AbstractListModel implements ListModel {
 		}
 		logger.debug("Showing " + names.length + " sources");
 
-		// OULALA
+		
 		names = filter(sourceManager, names, new GeocatalogFilter());
 
 		Arrays.sort(names, new Comparator<String>() {

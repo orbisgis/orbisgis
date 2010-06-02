@@ -210,6 +210,9 @@ public class IconNames {
 	public static final String MAP_FULL_EXTENT_ICON = Icon.get(
 			"ui.toolbar.navigation.full.extent");
 	
+	public static final String MAP_TOOLBAR_PROJECTION = Icon.get(
+			"ui.map.toolbar.projection");
+	
 	/**************************************************** GENERAL ************************************************************/
 
 	public static final String SAVE = Icon.get(

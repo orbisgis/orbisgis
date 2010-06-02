@@ -187,5 +187,5 @@ public class UIFactory {
 
 	public static Window getMainFrame() {
 		return mainFrame;
-	}
+	}	
 }

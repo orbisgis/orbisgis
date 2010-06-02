@@ -37,8 +37,6 @@
 
 package org.orbisgis.core.ui.plugins.editors.tableEditor;
 
-import java.util.Observable;
-
 import javax.swing.JButton;
 
 import org.gdms.data.DataSource;
@@ -57,8 +55,7 @@ public class RedoTablePlugIn extends AbstractPlugIn {
 	public RedoTablePlugIn() {
 		btn = new JButton(getIcon(IconNames.REDO_ICON));
 	}
-
-	@Override
+	
 	public boolean execute(PlugInContext context) throws Exception {
 		IEditor editor = context.getActiveEditor();
 		DataSource dataSource = (DataSource) editor.getElement().getObject();
@@ -69,35 +66,25 @@ public class RedoTablePlugIn extends AbstractPlugIn {
 		}
 		return true;
 	}
-
-	@Override
+	
 	public void initialize(PlugInContext context) throws Exception {
 		WorkbenchContext wbcontext = context.getWorkbenchContext();
 		wbcontext.getWorkbench().getFrame().getEditionTableToolBar().addPlugIn(
 				this, btn, context);
 	}
 
-	@Override
-	public void update(Observable o, Object arg) {
-		btn.setEnabled(isEnabled());
-		btn.setVisible(isVisible());
-	}
-
 	public boolean isEnabled() {
+		boolean isEnabled = false;
 		IEditor tableEditor = null;
 		if((tableEditor=getPlugInContext().getTableEditor()) != null){
 			DataSource dataSource = (DataSource) tableEditor.getElement()
 					.getObject();
-			return dataSource.canRedo();
+			isEnabled = dataSource.canRedo();
 		}
-		return false;
+		btn.setEnabled(isEnabled);
+		return isEnabled;
 	}
-
-	public boolean isVisible() {
-		return true;
-	}
-
-	@Override
+	
 	public boolean isSelected() {
 		// TODO Auto-generated method stub
 		return false;

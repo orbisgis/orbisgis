@@ -153,7 +153,6 @@ public class TableComponent extends JPanel implements WorkbenchFrame {
 			table.setDragEnabled(true);
 			table.getSelectionModel().addListSelectionListener(
 					new ListSelectionListener() {
-
 						@Override
 						public void valueChanged(ListSelectionEvent e) {
 							if (!e.getValueIsAdjusting()) {
@@ -671,8 +670,9 @@ public class TableComponent extends JPanel implements WorkbenchFrame {
 	}
 
 	private abstract class PopupMouseAdapter extends MouseAdapter {
-		WorkbenchContext wbContext = Services.getService(WorkbenchContext.class);
-		
+		WorkbenchContext wbContext = Services
+				.getService(WorkbenchContext.class);
+
 		@Override
 		public void mousePressed(MouseEvent e) {
 			updateContext(e);
@@ -681,23 +681,22 @@ public class TableComponent extends JPanel implements WorkbenchFrame {
 
 		@Override
 		public void mouseReleased(MouseEvent e) {
-			//updateContext(e);		
+			// updateContext(e);
 			popup(e);
 		}
-		
-		private void updateContext(MouseEvent e){
+
+		private void updateContext(MouseEvent e) {
 			if (e.isPopupTrigger()) {
 				if ("ColumnAction".equals(getExtensionPointId()))
 					wbContext.setHeaderSelected(selectedColumn);
 				else
 					wbContext.setRowSelected(e);
-			}
-			else
+			} else
 				wbContext.setRowSelected(e);
 		}
 
 		private void popup(final MouseEvent e) {
-			
+
 			final Component component = getComponent();
 			selectedColumn = table.columnAtPoint(e.getPoint());
 
@@ -709,16 +708,16 @@ public class TableComponent extends JPanel implements WorkbenchFrame {
 			table.getTableHeader().resizeAndRepaint();
 
 			component.repaint();
-			
+
 			JComponent[] menus = null;
-			final JPopupMenu pop = getPopupMenu();			
-			menus = wbContext.getWorkbench().getFrame()
-					.getMenuTableTreePopup().getJMenus();
+			final JPopupMenu pop = getPopupMenu();
+			menus = wbContext.getWorkbench().getFrame().getMenuTableTreePopup()
+					.getJMenus();
 			for (JComponent menu : menus) {
 				pop.add(menu);
-			}				
-			if (e.isPopupTrigger()) 				
-				pop.show(component, e.getX(), e.getY());			
+			}
+			if (e.isPopupTrigger())
+				pop.show(component, e.getX(), e.getY());
 		}
 
 		protected void addMenu(JPopupMenu pop, String text, Icon icon,

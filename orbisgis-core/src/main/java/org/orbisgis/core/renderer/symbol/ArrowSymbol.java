@@ -4,14 +4,14 @@ import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Point;
-import java.awt.geom.AffineTransform;
+import java.awt.Shape;
 import java.awt.geom.PathIterator;
 import java.util.Map;
 
 import org.gdms.data.types.GeometryConstraint;
 import org.gdms.driver.DriverException;
+import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.RenderPermission;
-import org.orbisgis.core.renderer.liteShape.LiteShape;
 
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
@@ -59,9 +59,10 @@ public class ArrowSymbol extends AbstractPointSymbol implements
 	}
 
 	@Override
-	public Envelope draw(Graphics2D g, Geometry geom, AffineTransform at,
+	public Envelope draw(Graphics2D g, Geometry geom, MapTransform mt,
 			RenderPermission permission) throws DriverException {
-		LiteShape ls = new LiteShape(geom, at, true);
+		// LiteShape ls = new LiteShape(geom, at, true);
+		Shape ls = mt.getShapeWriter().toShape(geom);
 		g.setStroke(new BasicStroke(lineWidth, BasicStroke.CAP_ROUND,
 				BasicStroke.JOIN_ROUND));
 		g.setPaint(null);

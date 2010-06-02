@@ -37,8 +37,6 @@
 
 package org.orbisgis.core.ui.plugins.editors.tableEditor;
 
-import java.util.Observable;
-
 import org.gdms.data.DataSource;
 import org.gdms.driver.DriverException;
 import org.orbisgis.core.Services;
@@ -57,9 +55,6 @@ import org.orbisgis.core.ui.plugins.views.TableEditorPlugIn;
 
 public class ChangeFieldNamePlugIn extends AbstractPlugIn {
 
-	private Integer selectedColumn;
-	private boolean isVisible;
-
 	public boolean execute(PlugInContext context) throws Exception {
 		IEditor editor = context.getActiveEditor();
 		final TableEditableElement element = (TableEditableElement) editor
@@ -69,9 +64,9 @@ public class ChangeFieldNamePlugIn extends AbstractPlugIn {
 			FieldNameChooser av = new FieldNameChooser(dataSource
 					.getFieldNames(), "New field name", "strlength(txt) > 0",
 					"Empty name not allowed", dataSource.getMetadata()
-							.getFieldName(selectedColumn));
+							.getFieldName(getSelectedColumn()));
 			if (UIFactory.showDialog(av)) {
-				dataSource.setFieldName(selectedColumn, av.getValue());
+				dataSource.setFieldName(getSelectedColumn(), av.getValue());
 			}
 		} catch (DriverException e) {
 			Services.getService(ErrorManager.class).error(
@@ -79,8 +74,7 @@ public class ChangeFieldNamePlugIn extends AbstractPlugIn {
 		}
 		return true;
 	}
-
-	@Override
+	
 	public void initialize(PlugInContext context) throws Exception {
 		WorkbenchContext wbContext = context.getWorkbenchContext();
 		WorkbenchFrame frame = (WorkbenchFrame) wbContext.getWorkbench()
@@ -91,38 +85,18 @@ public class ChangeFieldNamePlugIn extends AbstractPlugIn {
 				getIcon(IconNames.POPUP_TABLE_CHANGEFIELDNAME_ICON), wbContext);
 	}
 
-	public void update(Observable o, Object arg) {
-		isVisible(arg);
-	}
-
 	public boolean isEnabled() {
-		return true;
-	}
-
-	public boolean isVisible() {
-		return isVisible;
-	}
-
-	public boolean isVisible(Object arg) {
+		boolean isEnabled =  false;		
 		TableEditorPlugIn tableEditor = null;
 		if((tableEditor=getPlugInContext().getTableEditor()) != null){
-			try {
-				selectedColumn = (Integer) arg;
-			} catch (Exception e) {
-				return isVisible = false;
-			}
-
 			final TableEditableElement element = (TableEditableElement) tableEditor
-					.getElement();
-			if (selectedColumn == null)
-				return isVisible = false;
-			return isVisible = (selectedColumn != -1)
+					.getElement();			
+			isEnabled = (getSelectedColumn() != -1)
 					&& element.getDataSource().isEditable();
 		}
-		return isVisible = false;
+		return isEnabled;
 	}
-
-	@Override
+	
 	public boolean isSelected() {
 		// TODO Auto-generated method stub
 		return false;

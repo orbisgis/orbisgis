@@ -43,18 +43,19 @@ import org.gdms.data.feature.Feature;
 import org.gdms.data.metadata.MetadataUtilities;
 import org.gdms.data.types.CRSConstraint;
 import org.gdms.data.types.Constraint;
-import org.gdms.data.types.NullCRS;
 import org.gdms.data.types.Type;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.ReadOnlyDriver;
 import org.grap.model.GeoRaster;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
+
+import fr.cts.crs.CoordinateReferenceSystem;
+import fr.cts.crs.NullCRS;
 
 public class SpatialDataSourceDecorator extends AbstractDataSourceDecorator {
 
@@ -210,25 +211,21 @@ public class SpatialDataSourceDecorator extends AbstractDataSourceDecorator {
 	 * @return
 	 * @throws DriverException
 	 */
-	public CoordinateReferenceSystem getCRS(String fieldName)
-			throws DriverException {
-		if (fieldName == null) {
-			fieldName = getFieldName(getSpatialFieldIndex());
-		}
-		if (crsMap.containsKey(fieldName)) {
-			return crsMap.get(fieldName);
+	public CoordinateReferenceSystem getCRS() throws DriverException {
+
+		String fieldName = getFieldName(getSpatialFieldIndex());
+
+		Type fieldType = getMetadata().getFieldType(
+				getFieldIndexByName(fieldName));
+		CRSConstraint crsConstraint = (CRSConstraint) fieldType
+				.getConstraint(Constraint.CRS);
+
+		if (null == crsConstraint) {
+			return NullCRS.singleton;
 		} else {
-			// delegate to the driver layer
-			CRSConstraint crsConstraint = (CRSConstraint) getMetadata()
-					.getFieldType(getFieldIndexByName(fieldName))
-					.getConstraint(Constraint.CRS);
-			if (null == crsConstraint) {
-				return NullCRS.singleton;
-			} else {
-				setCRS(crsConstraint.getCRS(), fieldName);
-				return crsConstraint.getCRS();
-			}
+			return crsConstraint.getCRS();
 		}
+
 	}
 
 	/**

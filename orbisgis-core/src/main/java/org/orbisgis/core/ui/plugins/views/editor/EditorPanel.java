@@ -53,7 +53,6 @@ import java.util.HashSet;
 import java.util.Iterator;
 
 import javax.swing.BorderFactory;
-import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
 
 import net.infonode.docking.DockingWindow;
@@ -61,10 +60,6 @@ import net.infonode.docking.OperationAbortedException;
 import net.infonode.docking.RootWindow;
 import net.infonode.docking.View;
 import net.infonode.docking.properties.DockingWindowProperties;
-import net.infonode.docking.theme.BlueHighlightDockingTheme;
-import net.infonode.docking.theme.DockingWindowsTheme;
-import net.infonode.docking.theme.ShapedGradientDockingTheme;
-import net.infonode.docking.theme.SoftBlueIceDockingTheme;
 import net.infonode.gui.panel.SimplePanel;
 
 import org.apache.log4j.Logger;
@@ -78,7 +73,6 @@ import org.orbisgis.core.images.IconLoader;
 import org.orbisgis.core.ui.editor.EditorDecorator;
 import org.orbisgis.core.ui.editor.EditorListener;
 import org.orbisgis.core.ui.editor.IEditor;
-import org.orbisgis.core.ui.editors.map.tool.Automaton;
 import org.orbisgis.core.ui.pluginSystem.PlugInContext;
 import org.orbisgis.core.ui.pluginSystem.workbench.Names;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchContext;
@@ -91,7 +85,7 @@ public class EditorPanel extends Container {
 
 	private static final Logger logger = Logger.getLogger(EditorPanel.class);
 	private RootWindow root;
-	private ArrayList<EditorInfo> editorsInfo = new ArrayList<EditorInfo>();
+	private static ArrayList<EditorInfo> editorsInfo = new ArrayList<EditorInfo>();
 	private EditorDecorator lastEditor = null;
 	private ChangeNameListener changeNameListener = new ChangeNameListener();
 	private ArrayList<EditorListener> listeners = new ArrayList<EditorListener>();
@@ -256,7 +250,9 @@ public class EditorPanel extends Container {
 				.add(new EditorInfo(view, editor.getElement(), editor, comp));
 
 		editor.getElement().addElementListener(changeNameListener);
-
+		//inform that element was loaded	
+		if(editor.getEditor() instanceof MapEditorPlugIn) 
+			fireElementLoaded(editor.getEditor(),comp);	
 	}
 
 	private View findViewWithEditor(DockingWindow wnd, EditableElement doc,
@@ -444,6 +440,10 @@ public class EditorPanel extends Container {
 					}
 					lastEditor = nextEditor;
 					fireActiveEditorChanged(previous, lastEditor.getEditor());
+					//inform element was loaded
+					IEditor editor = lastEditor.getEditor();
+					if(editor instanceof MapEditorPlugIn) 
+						fireElementLoaded(editor,focusedView.getComponent());					
 				}
 			}
 		}
@@ -622,13 +622,22 @@ public class EditorPanel extends Container {
 
 		return true;
 	}
-
-	// Return an editor
+	
+	@SuppressWarnings("unchecked")
+	private void fireElementLoaded(IEditor editor, Component comp) {
+		ArrayList<EditorListener> l = (ArrayList<EditorListener>) listeners	.clone();
+		for (EditorListener listener : l) {
+			listener.elementLoaded(editor, comp);
+		}		
+		WorkbenchContext wbContext =
+			Services.getService(WorkbenchContext.class);
+		wbContext.setLastAction("Editor changed");		
+	}
+	
+	// Return an editor	
 	public static EditorDecorator getFirstEditor(EditableElement element) {
 		WorkbenchContext wbContext = Services
-				.getService(WorkbenchContext.class);
-		Automaton defaultTool = (Automaton) Services
-				.getService(Automaton.class);
+				.getService(WorkbenchContext.class);		
 		PlugInContext plugInContext = wbContext.createPlugInContext();
 
 		IEditor[] editors = new IEditor[2];
@@ -639,7 +648,7 @@ public class EditorPanel extends Container {
 			if (editors[i].acceptElement(element.getTypeId())) {
 				try {
 					editor = editors[i].getClass().newInstance();
-					editor.initialize(plugInContext, defaultTool);
+					editor.initialize(plugInContext);
 				} catch (InstantiationException e) {
 					e.printStackTrace();
 				} catch (IllegalAccessException e) {

@@ -1,8 +1,5 @@
 package org.orbisgis.core.ui.plugins.editors.tableEditor;
 
-import java.awt.event.MouseEvent;
-import java.util.Observable;
-
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
 import org.orbisgis.core.Services;
@@ -23,9 +20,6 @@ import org.orbisgis.progress.IProgressMonitor;
 
 public class SetNullPlugIn extends AbstractPlugIn {
 
-	private MouseEvent event;
-	private boolean isVisible;
-
 	public boolean execute(final PlugInContext context) throws Exception {
 		
 		BackgroundManager bm = Services.getService(BackgroundManager.class);
@@ -40,9 +34,9 @@ public class SetNullPlugIn extends AbstractPlugIn {
 				try {
 					element.getDataSource().setFieldValue(
 							((TableComponent) editor.getView().getComponent())
-									.getTable().rowAtPoint(event.getPoint()),
+									.getTable().rowAtPoint(getEvent().getPoint()),
 							((TableComponent) editor.getView().getComponent())
-									.getTable().columnAtPoint(event.getPoint()),
+									.getTable().columnAtPoint(getEvent().getPoint()),
 							ValueFactory.createNullValue());
 				} catch (DriverException e) {
 					Services.getService(ErrorManager.class).error("Cannot set null", e);
@@ -68,48 +62,35 @@ public class SetNullPlugIn extends AbstractPlugIn {
 				getIcon(IconNames.POPUP_TABLE_SETNULL_ICON), wbContext);
 	}
 
-	public void update(Observable o, Object arg) {
-		isVisible(arg);
-	}
-
-	public boolean isEnabled(Object arg) {
-		return true;
-	}
-
-	public boolean isVisible() {
-		return isVisible;
-	}
-
-	public boolean isVisible(Object arg) {
+	public boolean isEnabled() {
+		boolean isEnabled = false;
 		IEditor editor = null;
-		if((editor=getPlugInContext().getTableEditor()) != null){
-			try {
-				event = (MouseEvent) arg;
-			} catch (Exception e) {
-				return isVisible = false;
-			}
-			editor = (TableEditorPlugIn) editor;
-			TableEditableElement element = (TableEditableElement) editor
-					.getElement();
-			try {
-				return isVisible = element.isEditable()
-						&& !element.getDataSource().isNull(
-								((TableComponent) editor.getView()
-										.getComponent()).getTable().rowAtPoint(
-										event.getPoint()),
-								((TableComponent) editor.getView()
-										.getComponent()).getTable()
-										.columnAtPoint(event.getPoint()));
-			} catch (DriverException e) {
-				Services.getService(ErrorManager.class).error(
-						"Cannot set null row", e);
-				return false;
+		int row = -1;
+		int column = -1;
+		if((editor=getPlugInContext().getTableEditor()) != null
+				&& getSelectedColumn() ==-1 && getEvent()!=null ){
+			
+			row = ((TableComponent) editor.getView().getComponent()).
+								getTable().rowAtPoint(getEvent().getPoint());
+			column = ((TableComponent) editor.getView().getComponent())
+								.getTable().columnAtPoint(getEvent().getPoint());
+			if(row!=-1 && column!=-1) {			
+				editor = (TableEditorPlugIn) editor;
+				TableEditableElement element = (TableEditableElement) editor
+						.getElement();
+				try {
+					isEnabled = element.isEditable()
+							&& !element.getDataSource().isNull( row,column );
+				} catch (DriverException e) {
+					Services.getService(ErrorManager.class).error(
+							"Cannot set null row", e);
+					return false;
+				}
 			}
 		}
-		return isVisible = false;
+		return isEnabled;
 	}
-
-	@Override
+	
 	public boolean isSelected() {
 		// TODO Auto-generated method stub
 		return false;

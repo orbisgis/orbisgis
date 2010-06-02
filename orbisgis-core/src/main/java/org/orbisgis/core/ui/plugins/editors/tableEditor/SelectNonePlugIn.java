@@ -37,9 +37,6 @@
 
 package org.orbisgis.core.ui.plugins.editors.tableEditor;
 
-import java.awt.event.MouseEvent;
-import java.util.Observable;
-
 import org.orbisgis.core.Services;
 import org.orbisgis.core.background.BackgroundJob;
 import org.orbisgis.core.background.BackgroundManager;
@@ -55,8 +52,6 @@ import org.orbisgis.core.ui.plugins.views.editor.EditorManager;
 import org.orbisgis.progress.IProgressMonitor;
 
 public class SelectNonePlugIn extends AbstractPlugIn {
-
-	private boolean isVisible;
 
 	public boolean execute(PlugInContext context) throws Exception {
 		BackgroundManager bm = Services.getService(BackgroundManager.class);
@@ -89,33 +84,19 @@ public class SelectNonePlugIn extends AbstractPlugIn {
 				getIcon(IconNames.EDIT_CLEAR), wbContext);
 	}
 
-	public void update(Observable o, Object arg) {
-	}
-
 	public boolean isEnabled() {
-		return true;
-	}
-
-	public boolean isVisible() {
-		return isVisible;
-	}
-
-	public boolean isVisible(Object arg) {
+		boolean isEnabled = false;
 		IEditor editor = null;
-		if((editor=getPlugInContext().getTableEditor()) != null){
-			try {
-				MouseEvent event = (MouseEvent) arg;
-			} catch (Exception e) {
-				return isVisible = false;
-			}
+		if((editor=getPlugInContext().getTableEditor()) != null
+				&& getSelectedColumn() ==-1){
+			
 			final TableEditableElement element = (TableEditableElement) editor
 					.getElement();
-			return isVisible = element.getSelection().getSelectedRows().length > 0;
+			isEnabled = element.getSelection().getSelectedRows().length > 0;
 		}
-		return isVisible = false;
+		return isEnabled;
 	}
-
-	@Override
+	
 	public boolean isSelected() {
 		// TODO Auto-generated method stub
 		return false;

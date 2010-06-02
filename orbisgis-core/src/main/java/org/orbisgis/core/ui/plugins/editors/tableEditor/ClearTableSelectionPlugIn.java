@@ -37,9 +37,6 @@
 
 package org.orbisgis.core.ui.plugins.editors.tableEditor;
 
-import java.awt.event.MouseEvent;
-import java.util.Observable;
-
 import javax.swing.JButton;
 
 import org.orbisgis.core.Services;
@@ -50,7 +47,6 @@ import org.orbisgis.core.ui.editor.IEditor;
 import org.orbisgis.core.ui.editors.table.TableEditableElement;
 import org.orbisgis.core.ui.pluginSystem.AbstractPlugIn;
 import org.orbisgis.core.ui.pluginSystem.PlugInContext;
-import org.orbisgis.core.ui.pluginSystem.workbench.Names;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchContext;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchFrame;
 import org.orbisgis.core.ui.plugins.views.TableEditorPlugIn;
@@ -59,7 +55,6 @@ import org.orbisgis.progress.IProgressMonitor;
 public class ClearTableSelectionPlugIn extends AbstractPlugIn {
 
 	private JButton btn;
-	private boolean menuItemIsVisible;
 
 	public ClearTableSelectionPlugIn() {
 		btn = new JButton(getIcon(IconNames.EDIT_CLEAR));
@@ -92,33 +87,21 @@ public class ClearTableSelectionPlugIn extends AbstractPlugIn {
 				.getFrame().getTableEditor();
 		wbcontext.getWorkbench().getFrame().getEditionTableToolBar().addPlugIn(
 				this, btn, context);
-		context.getFeatureInstaller().addPopupMenuItem(frame, this,
-				new String[] { Names.POPUP_TABLE_CLEAR_PATH1 },
-				Names.POPUP_TABLE_CLEAR_GROUP, false,
-				getIcon(IconNames.EDIT_CLEAR), wbcontext);
-	}
-
-	public void update(Observable o, Object arg) {
-		btn.setEnabled(isEnabled());
-		btn.setVisible(true);
-		menuItemIsVisible = (arg instanceof MouseEvent) ? true : false;
 	}
 
 	public boolean isEnabled() {
+		boolean isEnabled = false;
 		TableEditorPlugIn tableEditor = null;
-		if((tableEditor=getPlugInContext().getTableEditor()) != null){
+		if((tableEditor=getPlugInContext().getTableEditor()) != null
+				&& getSelectedColumn()==-1){
 			TableEditableElement element = (TableEditableElement) tableEditor
 					.getElement();
-			return element.getSelection().getSelectedRows().length > 0;
+			isEnabled = element.getSelection().getSelectedRows().length > 0;
 		}
-		return false;
+		btn.setEnabled(isEnabled);		
+		return isEnabled;
 	}
-
-	public boolean isVisible() {
-		return menuItemIsVisible && isEnabled();
-	}
-
-	@Override
+	
 	public boolean isSelected() {
 		// TODO Auto-generated method stub
 		return false;

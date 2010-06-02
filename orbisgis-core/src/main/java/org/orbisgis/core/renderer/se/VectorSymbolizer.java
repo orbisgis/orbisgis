@@ -7,6 +7,7 @@ package org.orbisgis.core.renderer.se;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.Point;
 import java.awt.Graphics2D;
+import java.awt.Shape;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 import java.io.IOException;
@@ -16,7 +17,7 @@ import org.orbisgis.core.renderer.persistance.se.SymbolizerType;
 import org.gdms.data.SpatialDataSourceDecorator;
 import org.gdms.driver.DriverException;
 import org.orbisgis.core.map.MapTransform;
-import org.orbisgis.core.renderer.liteShape.LiteShape;
+
 import org.orbisgis.core.renderer.se.common.MapEnv;
 import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
@@ -51,22 +52,21 @@ public abstract class VectorSymbolizer extends Symbolizer {
      * @throws DriverException
      * @todo fix maxDist for generalization!
      */
-    public LiteShape getLiteShape(SpatialDataSourceDecorator sds, long fid) throws ParameterException, IOException, DriverException {
+    public Shape getShape(SpatialDataSourceDecorator sds, long fid) throws ParameterException, IOException, DriverException {
         Geometry geom = this.getTheGeom(sds, fid); // geom + function
 
         MapTransform mt = MapEnv.getMapTransform();
+        
+        Shape shape = mt.getShape(geom, true);
 
-        AffineTransform at = mt.getAffineTransform();
         if (transform != null) {
-            at.preConcatenate(transform.getGraphicalAffineTransform(sds, fid, true));
+            shape = transform.getGraphicalAffineTransform(sds, fid, true).createTransformedShape(shape);
         }
 
-        double maxDist = 0.5;
-
-        return new LiteShape(geom, at, true, maxDist);
+        return shape;
     }
 
-    public Point2D getPointLiteShape(SpatialDataSourceDecorator sds, long fid) throws ParameterException, IOException, DriverException {
+    public Point2D getPointShape(SpatialDataSourceDecorator sds, long fid) throws ParameterException, IOException, DriverException {
         Geometry geom = this.getTheGeom(sds, fid); // geom + function
 
         MapTransform mt = MapEnv.getMapTransform();

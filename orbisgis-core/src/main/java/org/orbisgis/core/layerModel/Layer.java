@@ -56,7 +56,6 @@ import org.gdms.data.types.GeometryConstraint;
 import org.gdms.data.types.Type;
 import org.gdms.driver.DriverException;
 import org.grap.model.GeoRaster;
-import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.errorManager.ErrorManager;
 import org.orbisgis.core.layerModel.persistence.LayerType;
@@ -81,11 +80,9 @@ public class Layer extends GdmsLayer {
 	private RefreshSelectionEditionListener editionListener;
 	private int[] selection = new int[0];
 
-	public Layer(String name, DataSource ds,
-			final CoordinateReferenceSystem coordinateReferenceSystem) {
-		super(name, coordinateReferenceSystem);
+	public Layer(String name, DataSource ds) {
+		super(name);
 		this.dataSource = new SpatialDataSourceDecorator(ds);
-
 		editionListener = new RefreshSelectionEditionListener();
 	}
 
@@ -100,8 +97,8 @@ public class Layer extends GdmsLayer {
 
 		UniqueSymbolLegend legend = LegendFactory.createUniqueSymbolLegend();
 		Symbol polSym = SymbolFactory.createPolygonSymbol(cOutline, cFill);
-		Symbol pointSym = SymbolFactory.createPointCircleSymbol(Color.black,
-				Color.red, 10);
+		Symbol pointSym = SymbolFactory.createPointSquareSymbol(Color.black,
+				Color.red, 5);
 		Symbol lineSym = SymbolFactory.createLineSymbol(cOutline, 1);
 		Symbol composite = SymbolFactory.createSymbolComposite(polSym,
 				pointSym, lineSym);

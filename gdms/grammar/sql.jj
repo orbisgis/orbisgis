@@ -89,6 +89,7 @@ TOKEN :  /* Keywords */
   | < FROM: "from" >
   | < GROUP: "group" >
   | < HAVING: "having" >
+  | < IF: "if" >
   | < IN: "in" >
   | < INDEX: "index" >
   | < IS: "is" >
@@ -267,9 +268,9 @@ void SQLDrop() :
 {
   <DROP>
   (
-    (<TABLE> SQLTableList())
+    (<TABLE> [<IF> <EXISTS>] SQLTableList())
   |
-  (<VIEW> SQLTableList())
+  (<VIEW> [<IF> <EXISTS>] SQLTableList())
   |
     (<INDEX> <ON> SQLId() "(" SQLId() ")")
   )
@@ -788,11 +789,6 @@ void SQLCreate() :
   )
 }
 
-void SQLInto():
-{}
-{
-<INTO> SQLId()
-}
 
 void SQLCreateArgsList() :
 {}

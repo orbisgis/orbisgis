@@ -36,6 +36,12 @@
  */
 package org.orbisgis.core.ui.editor;
 
+import java.awt.Component;
+
+import org.orbisgis.core.edition.EditableElement;
+import org.orbisgis.core.ui.pluginSystem.PlugIn;
+import org.orbisgis.core.ui.plugins.editors.mapEditor.ShowXYPlugIn;
+
 /**
  * Listener for edition events
  * 
@@ -43,6 +49,7 @@ package org.orbisgis.core.ui.editor;
  * 
  */
 public interface EditorListener {
+	
 
 	/**
 	 * Notifies the active editor has changed
@@ -70,5 +77,13 @@ public interface EditorListener {
 	 * @return
 	 */
 	boolean activeEditorClosing(IEditor editor, String editorId);
+	
+	/**
+	 * Called when element has loaded in editor
+	 * 
+	 * @param editor
+	 * @param comp : Component loaded in docking view
+	 */
+	void elementLoaded(IEditor editor, Component comp);
 
 }

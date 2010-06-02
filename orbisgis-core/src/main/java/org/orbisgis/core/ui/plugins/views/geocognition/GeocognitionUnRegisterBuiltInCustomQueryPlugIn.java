@@ -37,8 +37,6 @@
 
 package org.orbisgis.core.ui.plugins.views.geocognition;
 
-import java.util.Observable;
-
 import org.gdms.sql.customQuery.CustomQuery;
 import org.gdms.sql.customQuery.QueryManager;
 import org.orbisgis.core.OrbisGISPersitenceConfig;
@@ -46,10 +44,11 @@ import org.orbisgis.core.Services;
 import org.orbisgis.core.errorManager.ErrorManager;
 import org.orbisgis.core.geocognition.Geocognition;
 import org.orbisgis.core.geocognition.GeocognitionElement;
-import org.orbisgis.core.geocognition.sql.GeocognitionBuiltInCustomQuery;
 import org.orbisgis.core.images.IconNames;
 import org.orbisgis.core.ui.pluginSystem.AbstractPlugIn;
 import org.orbisgis.core.ui.pluginSystem.PlugInContext;
+import org.orbisgis.core.ui.pluginSystem.PlugInContext.ElementAvailability;
+import org.orbisgis.core.ui.pluginSystem.PlugInContext.SelectionAvailability;
 import org.orbisgis.core.ui.pluginSystem.workbench.Names;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchContext;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchFrame;
@@ -57,7 +56,15 @@ import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchFrame;
 public class GeocognitionUnRegisterBuiltInCustomQueryPlugIn extends AbstractPlugIn {
 
 	public boolean execute(PlugInContext context) throws Exception {
-		getPlugInContext().executeGeocognition();
+		Geocognition geocog = getPlugInContext().getGeocognition();
+		GeocognitionElement[] elements = getPlugInContext().getElements();
+		if (elements.length == 0) {
+			execute(geocog, null);
+		} else {
+			for (GeocognitionElement element : elements) {
+				execute(geocog, element);
+			}
+		}
 		return true;
 	}
 
@@ -93,37 +100,16 @@ public class GeocognitionUnRegisterBuiltInCustomQueryPlugIn extends AbstractPlug
 		}
 	}
 
-	public boolean isVisible() {
-		return getPlugInContext().geocognitionIsVisible();
+	public boolean isEnabled() {
+		return getPlugInContext().checkLayerAvailability(
+				new SelectionAvailability[] {SelectionAvailability.SUPERIOR},
+				0,
+				new ElementAvailability[] {ElementAvailability.CUSTOM_QUERY_IS_REGISTERED});
 	}
 
-	public boolean accepts(Geocognition geocog, GeocognitionElement element) {
-		if (OrbisGISPersitenceConfig.GeocognitionCustomQueryFactory_id.equals(element
-				.getTypeId())) {
-			String registered = element.getProperties().get(
-					GeocognitionBuiltInCustomQuery.REGISTERED);
-			if ((registered != null)
-					&& registered
-							.equals(GeocognitionBuiltInCustomQuery.IS_REGISTERED)) {
-				return true;
-			}
-		} 
-		return false;
-	}
-
-	public boolean acceptsSelectionCount(Geocognition geocog, int selectionCount) {
-		return selectionCount > 0;
-	}
-
-	@Override
+	
 	public boolean isSelected() {
 		// TODO Auto-generated method stub
 		return false;
-	}
-
-	@Override
-	public void update(Observable o, Object arg) {
-		// TODO Auto-generated method stub
-		
 	}
 }

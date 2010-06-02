@@ -57,15 +57,19 @@ import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Vector;
 
 import javax.swing.BorderFactory;
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.DefaultListModel;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JList;
+import javax.swing.JMenu;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
@@ -77,7 +81,6 @@ import javax.swing.event.DocumentListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
-import org.apache.log4j.Logger;
 import org.gdms.source.SourceManager;
 import org.orbisgis.core.images.IconLoader;
 import org.orbisgis.core.images.IconNames;
@@ -95,6 +98,7 @@ import org.orbisgis.core.ui.plugins.views.geocatalog.filters.Files;
 import org.orbisgis.core.ui.plugins.views.geocatalog.filters.GeocatalogFilterDecorator;
 import org.orbisgis.core.ui.plugins.views.geocatalog.filters.IFilter;
 import org.orbisgis.core.ui.plugins.views.geocatalog.filters.Raster;
+import org.orbisgis.core.ui.plugins.views.geocatalog.filters.Vectorial;
 import org.orbisgis.core.ui.plugins.views.geocatalog.filters.WMS;
 import org.orbisgis.utils.CollectionUtils;
 
@@ -106,8 +110,6 @@ public class Catalog extends JPanel implements DragGestureListener,
 	private static final String AC_BTN_ADD_TAG = "add";
 
 	private static final int FILTER_VISIBLE_ROW_COUNT = 6;
-
-	private static final Logger logger = Logger.getLogger(Catalog.class);
 
 	private HashMap<String, HashSet<String>> tagSources = new HashMap<String, HashSet<String>>();
 
@@ -228,7 +230,8 @@ public class Catalog extends JPanel implements DragGestureListener,
 			}
 		});
 		pnlTextFilter.add(txtFilter);
-		btnToggleFilters = new JToggleButton(IconLoader.getIcon(IconNames.FILTER));
+		btnToggleFilters = new JToggleButton(IconLoader
+				.getIcon(IconNames.FILTER));
 		btnToggleFilters.setMargin(new Insets(0, 0, 0, 0));
 		btnToggleFilters.addActionListener(new ActionListener() {
 
@@ -289,19 +292,6 @@ public class Catalog extends JPanel implements DragGestureListener,
 		ret.setBorder(BorderFactory.createTitledBorder("Filters"));
 		ret.setLayout(new BorderLayout());
 
-		// TODO (pyf): mettre sous forme de plugins filters
-		/*
-		 * context.getFeatureInstaller().addFilter(frame, new All(), wbContext);
-		 * context.getFeatureInstaller().addFilter(frame, new Files(),
-		 * wbContext); context.getFeatureInstaller().addFilter(frame, new DBs(),
-		 * wbContext); context.getFeatureInstaller().addFilter(frame, new
-		 * Alphanumeric(), wbContext);
-		 * context.getFeatureInstaller().addFilter(frame, new WMS(), wbContext);
-		 * context.getFeatureInstaller().addFilter(frame, new Vectorial(),
-		 * wbContext); context.getFeatureInstaller().addFilter(frame, new
-		 * Raster(), wbContext);
-		 */
-
 		GeocatalogFilterDecorator filter = new GeocatalogFilterDecorator(
 				"geocatalog.filters.All", "All", new AllFilterPlugIn());
 		listModel.getFilters().add(filter);
@@ -325,6 +315,10 @@ public class Catalog extends JPanel implements DragGestureListener,
 
 		filter = new GeocatalogFilterDecorator("geocatalog.filters.Raster",
 				"Raster", new Raster());
+		listModel.getFilters().add(filter);
+
+		filter = new GeocatalogFilterDecorator("geocatalog.filters.Vectorial",
+				"Vectorial", new Vectorial());
 		listModel.getFilters().add(filter);
 
 		lstFilters = new JList(listModel.getFilters().toArray(
@@ -374,8 +368,8 @@ public class Catalog extends JPanel implements DragGestureListener,
 		JScrollPane scroll = new JScrollPane(lstTags);
 		ret.add(scroll, BorderLayout.CENTER);
 		JPanel pnlButtons = new JPanel();
-		JButton btnAdd = getTagManagementButton(IconLoader.getIcon(IconNames.ADD),
-				AC_BTN_ADD_TAG);
+		JButton btnAdd = getTagManagementButton(IconLoader
+				.getIcon(IconNames.ADD), AC_BTN_ADD_TAG);
 		btnDelTag = getTagManagementButton(IconLoader.getIcon(IconNames.DEL),
 				AC_BTN_DEL_TAG);
 		btnDelTag.setEnabled(false);
@@ -447,25 +441,33 @@ public class Catalog extends JPanel implements DragGestureListener,
 
 	public JPopupMenu getPopup() {
 		JPopupMenu popup = new JPopupMenu();
-		JComponent[] menus = menuTree.getJMenus();		
+		JComponent[] menus = menuTree.getJMenus();
 		for (JComponent menu : menus) {
 			popup.add(menu);
 		}
 
-		// TODO (pyf): A quoi servais le code ci-dessous?
-		// Add tagging menus
-		/*
-		 * if (!tagSources.isEmpty() && lstSources.getSelectedIndices().length >
-		 * 0) { JMenu menu = new JMenu("Tag"); Iterator<String> tagsIterator =
-		 * tagSources.keySet().iterator(); while (tagsIterator.hasNext()) {
-		 * String tag = tagsIterator.next(); JCheckBoxMenuItem item; if
-		 * (isSelectionTagged(tag)) { item = new JCheckBoxMenuItem(tag, true);
-		 * RemoveTagActionListener removeTagAL = new RemoveTagActionListener(
-		 * tag); item.addActionListener(removeTagAL); } else { item = new
-		 * JCheckBoxMenuItem(tag, false); AddTagActionListener addTagAL = new
-		 * AddTagActionListener( tag); item.addActionListener(addTagAL); }
-		 * menu.add(item); } popup.addSeparator(); popup.add(menu); }
-		 */
+		if (!tagSources.isEmpty() && lstSources.getSelectedIndices().length > 0) {
+			JMenu menu = new JMenu("Tag");
+			Iterator<String> tagsIterator = tagSources.keySet().iterator();
+			while (tagsIterator.hasNext()) {
+				String tag = tagsIterator.next();
+				JCheckBoxMenuItem item;
+				if (isSelectionTagged(tag)) {
+					item = new JCheckBoxMenuItem(tag, true);
+					RemoveTagActionListener removeTagAL = new RemoveTagActionListener(
+							tag);
+					item.addActionListener(removeTagAL);
+				} else {
+					item = new JCheckBoxMenuItem(tag, false);
+					AddTagActionListener addTagAL = new AddTagActionListener(
+							tag);
+					item.addActionListener(addTagAL);
+				}
+				menu.add(item);
+			}
+			popup.addSeparator();
+			popup.add(menu);
+		}
 
 		return popup;
 	}

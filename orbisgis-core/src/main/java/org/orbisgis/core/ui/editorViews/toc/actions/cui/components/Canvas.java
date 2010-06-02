@@ -38,11 +38,12 @@ package org.orbisgis.core.ui.editorViews.toc.actions.cui.components;
 
 import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 
 import javax.swing.JPanel;
 
-import org.orbisgis.core.renderer.Renderer;
 import org.orbisgis.core.renderer.symbol.Symbol;
+import org.orbisgis.core.renderer.symbol.SymbolUtil;
 
 public class Canvas extends JPanel {
 
@@ -57,8 +58,7 @@ public class Canvas extends JPanel {
 	public void paintComponent(Graphics g) {
 		g.setColor(Color.white);
 		g.fillRect(0, 0, getWidth(), getHeight());
-		Renderer renderer = new Renderer();
-		renderer.drawSymbolPreview(g, s, getWidth(), getHeight(), false);
+		SymbolUtil.drawSymbolPreview((Graphics2D) g, s, getWidth(), getHeight(), false);
 	}
 
 	public void setSymbol(Symbol sym) {

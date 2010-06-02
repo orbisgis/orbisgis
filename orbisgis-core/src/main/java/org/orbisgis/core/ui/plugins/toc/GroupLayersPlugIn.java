@@ -1,7 +1,5 @@
 package org.orbisgis.core.ui.plugins.toc;
 
-import java.util.Observable;
-
 import org.orbisgis.core.DataManager;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.images.IconNames;
@@ -10,6 +8,8 @@ import org.orbisgis.core.layerModel.LayerException;
 import org.orbisgis.core.layerModel.MapContext;
 import org.orbisgis.core.ui.pluginSystem.AbstractPlugIn;
 import org.orbisgis.core.ui.pluginSystem.PlugInContext;
+import org.orbisgis.core.ui.pluginSystem.PlugInContext.SelectionAvailability;
+import org.orbisgis.core.ui.pluginSystem.PlugInContext.LayerAvailability;
 import org.orbisgis.core.ui.pluginSystem.workbench.Names;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchContext;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchFrame;
@@ -18,8 +18,7 @@ public class GroupLayersPlugIn extends AbstractPlugIn {
 
 	public boolean execute(PlugInContext context) throws Exception {
 
-		MapContext mapContext = context.getWorkbenchContext().getWorkbench()
-				.getFrame().getToc().getMapContext();
+		MapContext mapContext = getPlugInContext().getMapContext();
 		ILayer[] layers = mapContext.getSelectedLayers();
 
 		DataManager dataManager = (DataManager) Services
@@ -48,28 +47,25 @@ public class GroupLayersPlugIn extends AbstractPlugIn {
 				getIcon(IconNames.POPUP_TOC_LAYERS_GROUP_ICON), wbContext);
 	}
 
-	public boolean isVisible() {
-		return getPlugInContext().IsMultipleLayer();
-	}
-
-	public boolean acceptsAll(ILayer[] layer) {
-		for (int i = 0; i < layer.length - 1; i++) {
-			if (!layer[i].getParent().equals(layer[i + 1].getParent())) {
+	public boolean isEnabled() {
+		MapContext mapContext = getPlugInContext().getMapContext();
+		ILayer[] layers = null;
+		if (mapContext != null)
+			layers = mapContext.getSelectedLayers();
+		if(layers==null) return false;
+		for (int i = 0; i < layers.length - 1; i++) {
+			if (!layers[i].getParent().equals(layers[i + 1].getParent())) {
 				return false;
 			}
 		}
-		return layer.length > 0;
-	}
-
-	@Override
+		return getPlugInContext().checkLayerAvailability(
+				new SelectionAvailability[]{ SelectionAvailability.SUPERIOR , SelectionAvailability.ACTIVE_MAPCONTEXT},
+				1,
+				new LayerAvailability[]{});
+	}	
+	
 	public boolean isSelected() {
 		// TODO Auto-generated method stub
 		return false;
-	}
-
-	@Override
-	public void update(Observable o, Object arg) {
-		// TODO Auto-generated method stub
-		
 	}
 }

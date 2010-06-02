@@ -38,7 +38,6 @@ package org.orbisgis.core.ui.editors.map.tools;
 
 import java.awt.Graphics;
 import java.awt.geom.Point2D;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Observable;
 
@@ -46,8 +45,6 @@ import javax.swing.AbstractButton;
 
 import org.gdms.data.SpatialDataSourceDecorator;
 import org.gdms.driver.DriverException;
-import org.orbisgis.core.images.IconLoader;
-import org.orbisgis.core.images.IconNames;
 import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.layerModel.MapContext;
 import org.orbisgis.core.ui.editors.map.tool.CannotChangeGeometryException;
@@ -159,8 +156,8 @@ public class VertexDeletionTool extends VertexDeletion {
 	public boolean isVisible(MapContext vc, ToolManager tm) {
 		return isEnabled(vc, tm);
 	}
-	
-	public URL getMouseCursorURL(){		
-		return IconLoader.getIconUrl(IconNames.VERTEX_DEL_ICON);		
+
+	public String getName() {
+		return "Remove a vertex";
 	}
 }

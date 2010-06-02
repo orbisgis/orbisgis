@@ -64,7 +64,7 @@ public class EPGeocognitionWizardHelper {
 				GeocognitionElement geocognitionElement = geocog
 						.getGeocognitionElement(id);
 				if (em.hasEditor(geocognitionElement)) {
-					em.open(geocognitionElement);
+					em.open(geocognitionElement, null);
 				}
 			} catch (IllegalArgumentException e) {
 				Services.getErrorManager()

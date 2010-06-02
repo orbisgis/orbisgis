@@ -38,7 +38,6 @@
 package org.orbisgis.core.ui.plugins.views.geocatalog;
 
 import java.io.File;
-import java.util.Observable;
 
 import org.gdms.data.SourceAlreadyExistsException;
 import org.gdms.source.SourceManager;
@@ -95,19 +94,12 @@ public class NewGeocatalogFilePlugIn extends AbstractPlugIn {
 
 	}
 
-	public boolean isVisible() {
+	public boolean isEnabled() {
 		return true;
 	}
-
-	@Override
+	
 	public boolean isSelected() {
 		// TODO Auto-generated method stub
 		return false;
-	}
-
-	@Override
-	public void update(Observable o, Object arg) {
-		// TODO Auto-generated method stub
-		
 	}
 }

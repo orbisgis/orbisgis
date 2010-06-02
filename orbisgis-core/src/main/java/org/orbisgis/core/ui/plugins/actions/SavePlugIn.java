@@ -1,7 +1,6 @@
 package org.orbisgis.core.ui.plugins.actions;
 
 import java.io.IOException;
-import java.util.Observable;
 
 import javax.swing.JButton;
 
@@ -12,6 +11,7 @@ import org.orbisgis.core.images.IconNames;
 import org.orbisgis.core.ui.editor.IEditor;
 import org.orbisgis.core.ui.pluginSystem.AbstractPlugIn;
 import org.orbisgis.core.ui.pluginSystem.PlugInContext;
+import org.orbisgis.core.ui.pluginSystem.workbench.Names;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchContext;
 import org.orbisgis.core.ui.plugins.views.editor.EditorManager;
 import org.orbisgis.core.workspace.Workspace;
@@ -23,6 +23,7 @@ public class SavePlugIn extends AbstractPlugIn {
 
 	public SavePlugIn() {
 		btn = new JButton(getIcon(IconNames.SAVE_ICON));
+		btn.setToolTipText(Names.SAVE);
 	}
 
 	public void initialize(PlugInContext context) throws Exception {
@@ -62,25 +63,15 @@ public class SavePlugIn extends AbstractPlugIn {
 		IEditor editor = em.getActiveEditor();
 		return editor;
 	}
-
-	@Override
-	public void update(Observable o, Object arg) {
-		btn.setEnabled(isEnabled());
-		btn.setVisible(isVisible());
-
-	}
 	
 	public boolean isEnabled() {
+		boolean isEnabled = false;
 		IEditor editor = getEditor();
-		return editor != null && editor.getElement().isModified();
+		isEnabled = editor != null && editor.getElement().isModified();
+		btn.setEnabled(isEnabled);
+		return isEnabled;
 	}
-
-	@Override
-	public boolean isVisible() {
-		return true;
-	}
-
-	@Override
+	
 	public boolean isSelected() {
 		// TODO Auto-generated method stub
 		return false;

@@ -37,8 +37,6 @@
 
 package org.orbisgis.core.ui.plugins.help;
 
-import java.util.Observable;
-
 import javax.swing.JMenuItem;
 
 import org.orbisgis.core.ApplicationInfo;
@@ -71,16 +69,8 @@ public class AboutOrbisGISPlugIn extends AbstractPlugIn {
 		return true;
 	}
 
-	public void update(Observable o, Object arg) {
-		menuItem.setEnabled(isEnabled());
-		menuItem.setVisible(isVisible());
-	}
-
 	public boolean isEnabled() {
-		return true;
-	}
-
-	public boolean isVisible() {
+		menuItem.setEnabled(true);
 		return true;
 	}
 

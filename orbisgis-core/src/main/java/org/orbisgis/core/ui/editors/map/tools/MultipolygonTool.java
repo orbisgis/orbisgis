@@ -36,7 +36,6 @@
  */
 package org.orbisgis.core.ui.editors.map.tools;
 
-import java.net.URL;
 import java.util.Observable;
 
 import javax.swing.AbstractButton;
@@ -46,8 +45,6 @@ import org.gdms.data.types.GeometryConstraint;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
-import org.orbisgis.core.images.IconLoader;
-import org.orbisgis.core.images.IconNames;
 import org.orbisgis.core.layerModel.MapContext;
 import org.orbisgis.core.ui.editors.map.tool.ToolManager;
 import org.orbisgis.core.ui.editors.map.tool.TransitionException;
@@ -58,7 +55,7 @@ import com.vividsolutions.jts.geom.MultiPolygon;
 public class MultipolygonTool extends AbstractMultipolygonTool {
 
 	AbstractButton button;
-	
+
 	public AbstractButton getButton() {
 		return button;
 	}
@@ -66,11 +63,11 @@ public class MultipolygonTool extends AbstractMultipolygonTool {
 	public void setButton(AbstractButton button) {
 		this.button = button;
 	}
-	
+
 	public void update(Observable o, Object arg) {
 		PlugInContext.checkTool(this);
 	}
-	
+
 	protected void multipolygonDone(MultiPolygon mp, MapContext mc,
 			ToolManager tm) throws TransitionException {
 		SpatialDataSourceDecorator sds = mc.getActiveLayer().getDataSource();
@@ -93,12 +90,12 @@ public class MultipolygonTool extends AbstractMultipolygonTool {
 	public boolean isVisible(MapContext vc, ToolManager tm) {
 		return isEnabled(vc, tm);
 	}
-	
+
 	public double getInitialZ(MapContext mapContext) {
 		return ToolUtilities.getActiveLayerInitialZ(mapContext);
 	}
-	
-	public URL getMouseCursorURL(){		
-		return IconLoader.getIconUrl(IconNames.MULTIPOLYGON_ICON);		
+
+	public String getName() {
+		return "Draw a multipolygon";
 	}
 }

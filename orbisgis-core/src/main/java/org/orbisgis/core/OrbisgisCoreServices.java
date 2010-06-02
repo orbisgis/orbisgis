@@ -67,7 +67,6 @@ import org.orbisgis.core.renderer.symbol.ArrowSymbol;
 import org.orbisgis.core.renderer.symbol.DefaultSymbolManager;
 import org.orbisgis.core.renderer.symbol.SymbolFactory;
 import org.orbisgis.core.renderer.symbol.SymbolManager;
-import org.orbisgis.core.ui.configuration.EPConfigHelper;
 import org.orbisgis.core.workspace.DefaultOGWorkspace;
 import org.orbisgis.core.workspace.IOGWorkspace;
 import org.orbisgis.core.workspace.Workspace;

@@ -50,6 +50,7 @@ import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.SpatialDataSourceDecorator;
 import org.gdms.data.WarningListener;
+import org.gdms.data.crs.CRSUtil;
 import org.gdms.data.metadata.DefaultMetadata;
 import org.gdms.data.metadata.Metadata;
 import org.gdms.data.types.Constraint;
@@ -67,6 +68,7 @@ import org.gdms.driver.dbf.DBFDriver;
 import org.gdms.source.SourceManager;
 import org.orbisgis.progress.IProgressMonitor;
 import org.orbisgis.utils.FileUtils;
+import org.orbisgis.wkt.parser.PRJUtils;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
@@ -78,6 +80,8 @@ import com.vividsolutions.jts.geom.MultiPoint;
 import com.vividsolutions.jts.geom.MultiPolygon;
 import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.Polygon;
+
+import fr.cts.crs.CoordinateReferenceSystem;
 
 public class ShapefileDriver implements FileReadWriteDriver {
 
@@ -98,6 +102,8 @@ public class ShapefileDriver implements FileReadWriteDriver {
 	private IndexFile shxFile;
 
 	private DataSourceFactory dataSourceFactory;
+
+	private CoordinateReferenceSystem crs;
 
 	public void close() throws DriverException {
 		try {
@@ -133,11 +139,15 @@ public class ShapefileDriver implements FileReadWriteDriver {
 
 			type = header.getShapeType();
 
-			String strFichDbf = getFile(fileShp, ".dbf");
-
 			dbfDriver = new DBFDriver();
 			dbfDriver.setDataSourceFactory(dataSourceFactory);
-			dbfDriver.open(new File(strFichDbf));
+			dbfDriver.open(getFile(fileShp, ".dbf"));
+
+			// Check prjFile
+			File prjFile = getFile(fileShp, ".prj");
+
+			crs = PRJUtils.getCRSFromPRJ(prjFile);
+
 		} catch (IOException e) {
 			throw new DriverException(e);
 		} catch (ShapefileException e) {
@@ -145,7 +155,7 @@ public class ShapefileDriver implements FileReadWriteDriver {
 		}
 	}
 
-	private String getFile(File baseFile, final String extension)
+	private File getFile(File baseFile, final String extension)
 			throws IOException {
 		String base = baseFile.getAbsolutePath();
 		base = base.substring(0, base.length() - 4);
@@ -170,10 +180,9 @@ public class ShapefileDriver implements FileReadWriteDriver {
 		});
 
 		if (dbfs.length > 0) {
-			return dbfs[0].getAbsolutePath();
+			return dbfs[0];
 		} else {
-			throw new IOException("Cannot find " + extension + " file: "
-					+ baseFile.getAbsolutePath());
+			return null;
 		}
 	}
 
@@ -183,12 +192,6 @@ public class ShapefileDriver implements FileReadWriteDriver {
 			if (fieldId == 0) {
 				int offset = shxFile.getOffset((int) rowIndex);
 				Geometry shape = (Geometry) reader.geomAt(offset);
-				/*TODO : What about simple geometry in shapefile. Look the shapefile specifications
-				 * if (shape instanceof MultiPolygon) {
-					if (shape.getNumGeometries() == 1) {
-						shape = shape.getGeometryN(0);
-					}
-				}*/
 				return (null == shape) ? null : ValueFactory.createValue(shape);
 			} else {
 				return dbfDriver.getFieldValue(rowIndex, fieldId - 1);
@@ -231,9 +234,10 @@ public class ShapefileDriver implements FileReadWriteDriver {
 			} else {
 				throw new DriverException("Unknown geometric type !");
 			}
+			Constraint crsConstraint = CRSUtil.getCRSConstraint(crs);
+			Constraint[] constraints = new Constraint[] { gc, dc, crsConstraint };
+			metadata.addField(0, "the_geom", Type.GEOMETRY, constraints);
 
-			metadata.addField(0, "the_geom", Type.GEOMETRY, new Constraint[] {
-					gc, dc });
 		} catch (InvalidTypeException e) {
 			throw new RuntimeException("Bug in the driver", e);
 		}
@@ -268,16 +272,15 @@ public class ShapefileDriver implements FileReadWriteDriver {
 		result.add(new DefaultTypeDefinition("Geometry", Type.GEOMETRY,
 				new int[] { Constraint.GEOMETRY_TYPE,
 						Constraint.GEOMETRY_DIMENSION }));
-		return (TypeDefinition[]) result.toArray(new TypeDefinition[result
-				.size()]);
+		return result.toArray(new TypeDefinition[result.size()]);
 	}
 
 	public void copy(File in, File out) throws IOException {
-		File inDBF = new File(getFile(in, ".dbf"));
-		File inSHX = new File(getFile(in, ".shx"));
+		File inDBF = getFile(in, ".dbf");
+		File inSHX = getFile(in, ".shx");
 		File outDBF = null;
 		try {
-			outDBF = new File(getFile(out, ".dbf"));
+			outDBF = getFile(out, ".dbf");
 		} catch (IOException e) {
 			String name = in.getAbsolutePath();
 			name = name.substring(0, name.length() - 4);
@@ -285,7 +288,7 @@ public class ShapefileDriver implements FileReadWriteDriver {
 		}
 		File outSHX = null;
 		try {
-			outSHX = new File(getFile(out, ".shx"));
+			outSHX = getFile(out, ".shx");
 		} catch (IOException e) {
 			String name = in.getAbsolutePath();
 			name = name.substring(0, name.length() - 4);

@@ -77,7 +77,7 @@ public abstract class ZoomIn implements Automaton {
 
 		if ("Cancel".equals(status)) {
 
-		}		
+		}
 
 		return ret.toArray(new String[0]);
 	}
@@ -99,7 +99,7 @@ public abstract class ZoomIn implements Automaton {
 
 		if ("Cancel".equals(status)) {
 
-		}	
+		}
 
 		return ret.toArray(new String[0]);
 	}

@@ -39,10 +39,11 @@ package org.orbisgis.core.renderer.legend.carto;
 import java.awt.Color;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.geom.Rectangle2D;
 
-import org.orbisgis.core.renderer.Renderer;
 import org.orbisgis.core.renderer.symbol.Symbol;
+import org.orbisgis.core.renderer.symbol.SymbolUtil;
 
 public class LegendLine {
 
@@ -55,8 +56,7 @@ public class LegendLine {
 	}
 
 	public void drawImage(Graphics g) {
-		Renderer renderer = new Renderer();
-		renderer.drawSymbolPreview(g, symbol, 30, 20, true);
+		SymbolUtil.drawSymbolPreview((Graphics2D) g, symbol, 30, 20, true);
 		g.setColor(Color.black);
 		FontMetrics fm = g.getFontMetrics();
 		Rectangle2D r = fm.getStringBounds(getImageText(), g);

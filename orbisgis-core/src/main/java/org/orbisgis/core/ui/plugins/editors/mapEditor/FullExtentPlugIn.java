@@ -1,7 +1,5 @@
 package org.orbisgis.core.ui.plugins.editors.mapEditor;
 
-import java.util.Observable;
-
 import javax.swing.JButton;
 
 import org.orbisgis.core.Services;
@@ -10,6 +8,7 @@ import org.orbisgis.core.layerModel.MapContext;
 import org.orbisgis.core.ui.editor.IEditor;
 import org.orbisgis.core.ui.pluginSystem.AbstractPlugIn;
 import org.orbisgis.core.ui.pluginSystem.PlugInContext;
+import org.orbisgis.core.ui.pluginSystem.workbench.Names;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchContext;
 import org.orbisgis.core.ui.plugins.views.MapEditorPlugIn;
 import org.orbisgis.core.ui.plugins.views.editor.EditorManager;
@@ -20,6 +19,7 @@ public class FullExtentPlugIn extends AbstractPlugIn {
 
 	public FullExtentPlugIn() {
 		btn = new JButton(getIcon(IconNames.MAP_FULL_EXTENT_ICON));
+		btn.setToolTipText(Names.FULL_EXTENT_TOOTIP);
 	}
 
 	public void initialize(PlugInContext context) throws Exception {
@@ -36,29 +36,19 @@ public class FullExtentPlugIn extends AbstractPlugIn {
 				mc.getLayerModel().getEnvelope());
 		return true;
 	}
-
-	public boolean isEnabled(IEditor editor) {
-		MapContext mc = (MapContext) editor.getElement().getObject();
-		return mc.getLayerModel().getLayerCount() > 0;
+	
+	public boolean isEnabled() {
+		boolean isEnabled = false;
+		IEditor editor = Services.getService(EditorManager.class).getActiveEditor();
+		if (editor != null && editor instanceof MapEditorPlugIn) {
+			MapContext mc = (MapContext) editor.getElement().getObject();
+			isEnabled = mc.getLayerModel().getLayerCount() > 0;
+			btn.setEnabled(isEnabled);
+		}
+		btn.setEnabled(isEnabled);
+		return isEnabled;	
 	}
 	
-	@Override
-	public void update(Observable o, Object arg) {
-		IEditor editor = Services.getService(EditorManager.class)
-				.getActiveEditor();
-		if (editor != null && editor instanceof MapEditorPlugIn)
-			btn.setEnabled(isEnabled(editor));
-		else
-			btn.setEnabled(false);
-	}
-
-	@Override
-	public boolean isVisible() {
-		//Never called. It's update method that set plugin context.
-		return false;
-	}
-
-	@Override
 	public boolean isSelected() {
 		// TODO Auto-generated method stub
 		return false;

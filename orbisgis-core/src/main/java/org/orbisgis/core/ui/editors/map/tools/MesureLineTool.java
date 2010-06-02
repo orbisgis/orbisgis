@@ -38,7 +38,6 @@ package org.orbisgis.core.ui.editors.map.tools;
 
 import java.awt.Color;
 import java.awt.Graphics;
-import java.net.URL;
 import java.text.DecimalFormat;
 import java.util.Observable;
 
@@ -98,10 +97,6 @@ public class MesureLineTool extends AbstractLineTool {
 		tm.addTextToDraw(getLength(geom) + "");
 	}
 
-	public URL getMouseCursorURL() {
-		return null;
-	}
-	
 	public String getName() {
 		return "Measure a length";
 	}

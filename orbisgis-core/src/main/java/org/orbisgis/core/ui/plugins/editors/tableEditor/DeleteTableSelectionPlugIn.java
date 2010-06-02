@@ -37,9 +37,7 @@
 
 package org.orbisgis.core.ui.plugins.editors.tableEditor;
 
-import java.awt.event.MouseEvent;
 import java.util.Arrays;
-import java.util.Observable;
 
 import javax.swing.JButton;
 
@@ -62,13 +60,11 @@ import org.orbisgis.progress.IProgressMonitor;
 public class DeleteTableSelectionPlugIn extends AbstractPlugIn {
 
 	private JButton btn;
-	private boolean menuItemIsVisible;
 
 	public DeleteTableSelectionPlugIn() {
 		btn = new JButton(getIcon(IconNames.REMOVE));
 	}
-
-	@Override
+	
 	public boolean execute(final PlugInContext context) throws Exception {
 		BackgroundManager bm = Services.getService(BackgroundManager.class);
 		bm.backgroundOperation(new BackgroundJob() {
@@ -89,8 +85,7 @@ public class DeleteTableSelectionPlugIn extends AbstractPlugIn {
 		});
 		return true;
 	}
-
-	@Override
+	
 	public void initialize(PlugInContext context) throws Exception {
 		WorkbenchContext wbContext = context.getWorkbenchContext();
 		WorkbenchFrame frame = (WorkbenchFrame) wbContext.getWorkbench()
@@ -103,12 +98,6 @@ public class DeleteTableSelectionPlugIn extends AbstractPlugIn {
 				getIcon(IconNames.REMOVE), wbContext);
 	}
 
-	@Override
-	public void update(Observable o, Object arg) {
-		btn.setEnabled(isEnabled());
-		btn.setVisible(true);
-		menuItemIsVisible = (arg instanceof MouseEvent) ? true : false;
-	}
 
 	public static void removeSelection(TableEditableElement element) {
 		int[] sel = element.getSelection().getSelectedRows().clone();
@@ -127,30 +116,23 @@ public class DeleteTableSelectionPlugIn extends AbstractPlugIn {
 	}
 
 	public boolean isEnabled() {
+		boolean isEnabled = false;
 		TableEditorPlugIn tableEditor = null;
-		if((tableEditor=getPlugInContext().getTableEditor()) != null){
+		if((tableEditor=getPlugInContext().getTableEditor()) != null
+				&& getSelectedColumn()==-1){
 			TableEditableElement element = (TableEditableElement) tableEditor
 					.getElement();
-			if (element.isEditable()) {
-				return true;
-			} else if (element.getMapContext() == null) {
-				return isEnabled(element);
+			if(element.getSelection().getSelectedRows().length > 0) {
+				if( element.isEditable() ) {
+					isEnabled = true;
+				}
+				else if( element.getMapContext() == null ) {
+					isEnabled = element.getDataSource().isEditable();
+				}
 			}
-			return false;
 		}
-		return false;
-	}
-
-	public boolean isEnabled(TableEditableElement element) {
-		if (element.getDataSource().isEditable())
-			return true;
-		else if (element.getMapContext() == null)
-			return element.getDataSource().isEditable();
-		return false;
-	}
-
-	public boolean isVisible() {
-		return menuItemIsVisible && isEnabled();
+		btn.setEnabled(isEnabled);
+		return isEnabled;
 	}
 
 	@Override

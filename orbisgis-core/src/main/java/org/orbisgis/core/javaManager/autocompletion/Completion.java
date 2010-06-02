@@ -8,8 +8,6 @@ import org.orbisgis.core.javaManager.parser.JavaParserConstants;
 import org.orbisgis.core.javaManager.parser.ParseException;
 import org.orbisgis.core.javaManager.parser.SimpleNode;
 
-import bsh.Interpreter;
-
 public class Completion {
 
 	private static final int MAX_ITERATIONS = 10;
@@ -19,9 +17,6 @@ public class Completion {
 		acVisitor = new AutoCompletionVisitor();
 	}
 
-	public Completion(Interpreter interpreter) throws LinkageError {
-		acVisitor = new AutoCompletionVisitor(interpreter);
-	}
 
 	public Option[] getOptions(String text, int caretPosition, boolean script) {
 		ArrayList<String> versions = new ArrayList<String>();

@@ -24,8 +24,6 @@ import org.orbisgis.core.sif.SaveFilePanel;
 import org.orbisgis.core.sif.UIFactory;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchContext;
 
-import bsh.Interpreter;
-
 public class CompletionKeyListener extends KeyAdapter {
 
 	private final static Logger logger = Logger
@@ -41,18 +39,6 @@ public class CompletionKeyListener extends KeyAdapter {
 		this.script = script;
 		try {
 			completion = new Completion();
-		} catch (LinkageError e) {
-			Services.getService(ErrorManager.class).error(
-					"Completion system cannot be initialized", e);
-		}
-	}
-
-	public CompletionKeyListener(boolean script, JTextComponent txt,
-			Interpreter interpreter) {
-		this.txt = txt;
-		this.script = script;
-		try {
-			completion = new Completion(interpreter);
 		} catch (LinkageError e) {
 			Services.getService(ErrorManager.class).error(
 					"Completion system cannot be initialized", e);

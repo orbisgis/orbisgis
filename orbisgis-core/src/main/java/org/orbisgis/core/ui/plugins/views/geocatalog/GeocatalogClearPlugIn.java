@@ -38,11 +38,11 @@
 package org.orbisgis.core.ui.plugins.views.geocatalog;
 
 import java.io.IOException;
-import java.util.Observable;
 
 import javax.swing.JOptionPane;
 
 import org.gdms.source.SourceManager;
+import org.orbisgis.core.DataManager;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.images.IconNames;
 import org.orbisgis.core.ui.pluginSystem.AbstractPlugIn;
@@ -54,7 +54,15 @@ import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchFrame;
 public class GeocatalogClearPlugIn extends AbstractPlugIn {
 
 	public boolean execute(PlugInContext context) throws Exception {
-		getPlugInContext().executeGeocatalog();
+		DataManager dm = Services.getService(DataManager.class);
+		String[] res = getPlugInContext().getSelectedSources();
+		if (res.length == 0) {
+			execute(dm.getSourceManager(), null);
+		} else {
+			for (String resource : res) {
+				execute(dm.getSourceManager(), resource);
+			}
+		}
 		return true;
 	}
 
@@ -83,27 +91,12 @@ public class GeocatalogClearPlugIn extends AbstractPlugIn {
 		}
 	}
 
-	public boolean isVisible() {
-		return getPlugInContext().geocatalogIsVisible();
-	}
-
-	public boolean accepts(SourceManager sourceManager, String currentNode) {
+	public boolean isEnabled() {
 		return true;
 	}
-
-	public boolean acceptsSelectionCount(int selectionCount) {
-		return true;
-	}
-
-	@Override
+	
 	public boolean isSelected() {
 		// TODO Auto-generated method stub
 		return false;
-	}
-
-	@Override
-	public void update(Observable o, Object arg) {
-		// TODO Auto-generated method stub
-		
 	}
 }

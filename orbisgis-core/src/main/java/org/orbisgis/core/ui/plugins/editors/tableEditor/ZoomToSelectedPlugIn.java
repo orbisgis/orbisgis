@@ -37,9 +37,6 @@
 
 package org.orbisgis.core.ui.plugins.editors.tableEditor;
 
-import java.awt.event.MouseEvent;
-import java.util.Observable;
-
 import org.gdms.data.SpatialDataSourceDecorator;
 import org.gdms.driver.DriverException;
 import org.orbisgis.core.Services;
@@ -63,9 +60,7 @@ import org.orbisgis.progress.IProgressMonitor;
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
 
-public class ZoomToSelectedPlugIn extends AbstractPlugIn {
-
-	private boolean isVisible;
+public class ZoomToSelectedPlugIn extends AbstractPlugIn {	
 
 	public boolean execute(PlugInContext context) throws Exception {
 		IEditor editor = context.getActiveEditor();
@@ -139,35 +134,20 @@ public class ZoomToSelectedPlugIn extends AbstractPlugIn {
 				getIcon(IconNames.POPUP_TABLE_ZOOMTOSELECTED_ICON), wbContext);
 	}
 
-	public void update(Observable o, Object arg) {
-		isVisible(arg);
-	}
-
 	public boolean isEnabled() {
-		return true;
-	}
-
-	public boolean isVisible() {
-		return isVisible;
-	}
-
-	public boolean isVisible(Object arg) {
+		boolean isEnabled = false;
 		TableEditorPlugIn tableEditor = null;
-		if((tableEditor=getPlugInContext().getTableEditor()) != null){
-			try {
-				MouseEvent event = (MouseEvent) arg;
-			} catch (Exception e) {
-				return isVisible = false;
-			}
+		if((tableEditor=getPlugInContext().getTableEditor()) != null
+				&& getSelectedColumn()==-1){			
 			final TableEditableElement element = (TableEditableElement) tableEditor
 					.getElement();
 			if (element.getMapContext() != null) {
 				if (element.getSelection().getSelectedRows().length > 0) {
-					return isVisible = true;
+					isEnabled = true;
 				}
 			}
 		}
-		return isVisible = false;
+		return isEnabled;
 	}
 
 	@Override

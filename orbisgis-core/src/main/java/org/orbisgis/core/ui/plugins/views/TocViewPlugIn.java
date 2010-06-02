@@ -1,6 +1,6 @@
 package org.orbisgis.core.ui.plugins.views;
 
-import java.util.Observable;
+import java.awt.Component;
 
 import javax.swing.JMenuItem;
 
@@ -106,6 +106,13 @@ public class TocViewPlugIn extends ViewPlugIn {
 				public void activeEditorChanged(IEditor previous,
 						IEditor current) {
 				}
+				
+
+				@Override
+				public void elementLoaded(IEditor editor, Component comp) {					
+				}
+
+				
 			};
 			EditorManager em = Services.getService(EditorManager.class);
 			em.addEditorListener(closingListener);
@@ -126,8 +133,15 @@ public class TocViewPlugIn extends ViewPlugIn {
 		panel.delete();
 	}
 	
-	public void update(Observable o, Object arg) {
-		menuItem.setSelected(getPlugInContext().viewIsOpen(getId()));
+	public boolean isEnabled() {		
+		return true;
+	}
+	
+	public boolean isSelected() {
+		boolean isSelected = false;
+		isSelected = getPlugInContext().viewIsOpen(getId());
+		menuItem.setSelected(isSelected);
+		return isSelected;
 	}
 	
 	public String getName() {		

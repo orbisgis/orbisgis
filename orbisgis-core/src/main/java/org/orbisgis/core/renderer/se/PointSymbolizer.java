@@ -63,7 +63,7 @@ public class PointSymbolizer extends VectorSymbolizer {
     @Override
     public void draw(Graphics2D g2, SpatialDataSourceDecorator sds, long fid) throws ParameterException, IOException, DriverException {
         if (graphic != null && graphic.getNumGraphics() > 0) {
-            Point2D pt = this.getPointLiteShape(sds, fid);
+            Point2D pt = this.getPointShape(sds, fid);
 
             RenderableGraphics rg = graphic.getGraphic(sds, fid);
 

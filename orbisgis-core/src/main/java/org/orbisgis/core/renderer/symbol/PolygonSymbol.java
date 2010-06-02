@@ -39,16 +39,17 @@ package org.orbisgis.core.renderer.symbol;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics2D;
-import java.awt.geom.AffineTransform;
+import java.awt.Rectangle;
+import java.awt.Shape;
 
 import org.gdms.driver.DriverException;
+import org.gdms.geometryUtils.EnvelopeUtil;
+import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.RenderPermission;
-import org.orbisgis.core.renderer.liteShape.LiteShape;
+import org.orbisgis.core.ui.editors.map.tool.Rectangle2DDouble;
 
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.MultiPolygon;
-import com.vividsolutions.jts.geom.Polygon;
 
 public class PolygonSymbol extends AbstractPolygonSymbol {
 
@@ -56,20 +57,20 @@ public class PolygonSymbol extends AbstractPolygonSymbol {
 		super(outlineColor, lineWidth, fillColor);
 	}
 
-	public Envelope draw(Graphics2D g, Geometry geom, AffineTransform at,
+	public Envelope draw(Graphics2D g, Geometry geom, MapTransform mt,
 			RenderPermission permission) throws DriverException {
-		if (geom instanceof Polygon || geom instanceof MultiPolygon) {
-			LiteShape ls = new LiteShape(geom, at, true, 0.5);
-			if (fillColor != null) {
-				g.setPaint(fillColor);
-				g.fill(ls);
-			}
-			if (outline != null) {
-				g.setStroke(new BasicStroke(lineWidth, BasicStroke.CAP_ROUND,
-						BasicStroke.JOIN_ROUND));
-				g.setColor(outline);
-				g.draw(ls);
-			}
+
+		Shape ls = mt.getShape(geom, true);
+
+		if (fillColor != null) {
+			g.setPaint(fillColor);
+			g.fill(ls);
+		}
+		if (outline != null) {
+			g.setStroke(new BasicStroke(lineWidth, BasicStroke.CAP_ROUND,
+					BasicStroke.JOIN_ROUND));
+			g.setColor(outline);
+			g.draw(ls);
 		}
 
 		return null;

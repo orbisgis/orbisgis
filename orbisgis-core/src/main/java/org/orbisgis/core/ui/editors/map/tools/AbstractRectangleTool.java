@@ -36,13 +36,17 @@
  */
 package org.orbisgis.core.ui.editors.map.tools;
 
+import java.awt.BasicStroke;
+import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 
 import org.orbisgis.core.layerModel.MapContext;
 import org.orbisgis.core.ui.editors.map.tool.FinishedAutomatonException;
+import org.orbisgis.core.ui.editors.map.tool.Rectangle2DDouble;
 import org.orbisgis.core.ui.editors.map.tool.ToolManager;
 import org.orbisgis.core.ui.editors.map.tool.TransitionException;
 import org.orbisgis.core.ui.editors.map.tools.generated.ZoomIn;
@@ -141,7 +145,15 @@ public abstract class AbstractRectangleTool extends ZoomIn {
 		int miny = Math.min(p.y, tm.getLastMouseY());
 		int width = Math.abs(p.x - tm.getLastMouseX());
 		int height = Math.abs(p.y - tm.getLastMouseY());
-		g.drawRect(minx, miny, width, height);
+		Rectangle2DDouble shape = new Rectangle2DDouble(minx, miny, width,
+				height);
+		Graphics2D g2 = (Graphics2D) g;
+		g2.setPaint(new Color(255, 204, 51, 50));
+		g2.fill(shape);
+		g2.setStroke(new BasicStroke(1, BasicStroke.CAP_ROUND,
+				BasicStroke.JOIN_ROUND));
+		g2.setColor(new Color(255, 204, 51));
+		g2.draw(shape);
 	}
 
 	/**

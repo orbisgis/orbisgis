@@ -1,10 +1,8 @@
 package org.orbisgis.core.ui.plugins.toc;
 
 import java.io.File;
-import java.util.Observable;
 
 import org.gdms.data.DataSourceFactory;
-import org.gdms.driver.DriverException;
 import org.gdms.driver.FileDriver;
 import org.gdms.driver.driverManager.Driver;
 import org.gdms.driver.driverManager.DriverManager;
@@ -22,8 +20,8 @@ import org.orbisgis.core.sif.SaveFilePanel;
 import org.orbisgis.core.sif.UIFactory;
 import org.orbisgis.core.ui.pluginSystem.AbstractPlugIn;
 import org.orbisgis.core.ui.pluginSystem.PlugInContext;
-import org.orbisgis.core.ui.pluginSystem.PlugInContext.LayerSelectionTest;
-import org.orbisgis.core.ui.pluginSystem.PlugInContext.LayerTest;
+import org.orbisgis.core.ui.pluginSystem.PlugInContext.SelectionAvailability;
+import org.orbisgis.core.ui.pluginSystem.PlugInContext.LayerAvailability;
 import org.orbisgis.core.ui.pluginSystem.workbench.Names;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchContext;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchFrame;
@@ -31,16 +29,35 @@ import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchFrame;
 public class SaveInFilePlugIn extends AbstractPlugIn {
 
 	public boolean execute(PlugInContext context) {
-		MapContext mapContext = context.getWorkbenchContext().getWorkbench()
-				.getFrame().getToc().getMapContext();
-		ILayer[] selectedResources = mapContext.getSelectedLayers();
+		MapContext mapContext = getPlugInContext().getMapContext();
+		ILayer[] selectedResources = mapContext.getSelectedLayers();		
+		for (ILayer resource : selectedResources) {
+			final SaveFilePanel outfilePanel = new SaveFilePanel(
+					"org.orbisgis.core.ui.editorViews.toc.actions.SaveInFile",
+					"Choose a file format");
 
-		if (selectedResources.length == 0) {
-			execute(mapContext, null);
-		} else {
-			for (ILayer resource : selectedResources) {
-				execute(mapContext, resource);
+			DataManager dm = Services.getService(DataManager.class);
+			final DataSourceFactory dsf = dm.getDSF();
+			SourceManager sourceManager = dm.getSourceManager();
+			DriverManager driverManager = sourceManager.getDriverManager();
+
+			Driver[] filtered = driverManager.getDrivers(new AndDriverFilter(
+					new FileDriverFilter(), new VectorialDriverFilter(),
+					new WritableDriverFilter()));
+			for (int i = 0; i < filtered.length; i++) {
+				FileDriver fileDriver = (FileDriver) filtered[i];
+				String[] extensions = fileDriver.getFileExtensions();
+				outfilePanel.addFilter(extensions, fileDriver.getTypeDescription());
 			}
+
+			if (UIFactory.showDialog(outfilePanel)) {
+				final File savedFile = new File(outfilePanel.getSelectedFile()
+						.getAbsolutePath());
+				BackgroundManager bm = Services.getService(BackgroundManager.class);
+				bm.backgroundOperation(new ExportInFileOperation(dsf, resource
+						.getName(), savedFile));
+
+			}			
 		}
 		return true;
 	}
@@ -56,53 +73,15 @@ public class SaveInFilePlugIn extends AbstractPlugIn {
 				Names.POPUP_TOC_EXPORT_GROUP, false, null, wbContext);
 	}
 
-	public void execute(MapContext mapContext, final ILayer layer) {
-		final SaveFilePanel outfilePanel = new SaveFilePanel(
-				"org.orbisgis.core.ui.editorViews.toc.actions.SaveInFile",
-				"Choose a file format");
-
-		DataManager dm = Services.getService(DataManager.class);
-		final DataSourceFactory dsf = dm.getDSF();
-		SourceManager sourceManager = dm.getSourceManager();
-		DriverManager driverManager = sourceManager.getDriverManager();
-
-		Driver[] filtered = driverManager.getDrivers(new AndDriverFilter(
-				new FileDriverFilter(), new VectorialDriverFilter(),
-				new WritableDriverFilter()));
-		for (int i = 0; i < filtered.length; i++) {
-			FileDriver fileDriver = (FileDriver) filtered[i];
-			String[] extensions = fileDriver.getFileExtensions();
-			outfilePanel.addFilter(extensions, fileDriver.getTypeDescription());
-		}
-
-		if (UIFactory.showDialog(outfilePanel)) {
-			final File savedFile = new File(outfilePanel.getSelectedFile()
-					.getAbsolutePath());
-			BackgroundManager bm = Services.getService(BackgroundManager.class);
-			bm.backgroundOperation(new ExportInFileOperation(dsf, layer
-					.getName(), savedFile));
-
-		}
-
-	}
-
-	public boolean isVisible() {
+	public boolean isEnabled() {
 		return getPlugInContext().checkLayerAvailability(
-				new LayerSelectionTest[] {LayerSelectionTest.SUPERIOR},
+				new SelectionAvailability[] {SelectionAvailability.SUPERIOR},
 				0,
-				new LayerTest[] {LayerTest.VECTORIAL}, 
-				false);
+				new LayerAvailability[] {LayerAvailability.VECTORIAL});
 	}
-
-	@Override
+	
 	public boolean isSelected() {
 		// TODO Auto-generated method stub
 		return false;
-	}
-
-	@Override
-	public void update(Observable o, Object arg) {
-		// TODO Auto-generated method stub
-		
 	}
 }

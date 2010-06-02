@@ -38,11 +38,11 @@ package org.orbisgis.core.renderer.symbol;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
-import java.awt.geom.AffineTransform;
 import java.util.ArrayList;
 
 import org.gdms.data.types.GeometryConstraint;
 import org.gdms.driver.DriverException;
+import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.RenderPermission;
 
 import com.vividsolutions.jts.geom.Envelope;
@@ -57,11 +57,11 @@ class SymbolComposite extends AbstractSymbol implements Symbol {
 		setName("Symbol composite");
 	}
 
-	public Envelope draw(Graphics2D g, Geometry geom, AffineTransform at,
+	public Envelope draw(Graphics2D g, Geometry geom, MapTransform mt,
 			RenderPermission permission) throws DriverException {
 		Envelope ret = null;
 		for (Symbol symbol : symbols) {
-			Envelope area = symbol.draw(g, geom, at, permission);
+			Envelope area = symbol.draw(g, geom, mt, permission);
 			if (ret == null) {
 				ret = area;
 			} else {

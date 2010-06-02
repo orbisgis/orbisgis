@@ -28,7 +28,13 @@ public abstract class AbstractBuiltInSQLArtifact extends
 			GeocognitionElementFactory factory) throws ClassNotFoundException {
 		super(factory);
 		String className = properties.getProperty().get(0).getValue();
-		class_ = Class.forName(className);
+		try {
+			class_ = Class.forName(className);
+		} catch (ClassNotFoundException ex) {
+			// IClassPathEntry libEntry = JavaCore.newLibraryEntry( new
+			// Path("/lib/ext"),null,null,false);
+			// class_ = Class.forName(libEntry);
+		}
 	}
 
 	@Override

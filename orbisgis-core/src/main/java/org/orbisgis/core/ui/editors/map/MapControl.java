@@ -36,15 +36,15 @@
  */
 package org.orbisgis.core.ui.editors.map;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.FontMetrics;
 import java.awt.Graphics;
-import java.awt.Rectangle;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.awt.GraphicsConfiguration;
+import java.awt.GraphicsEnvironment;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
-import java.awt.geom.Point2D;
+import java.awt.event.ContainerEvent;
+import java.awt.event.ContainerListener;
 import java.awt.image.BufferedImage;
 
 import javax.swing.JComponent;
@@ -75,6 +75,7 @@ import org.orbisgis.core.ui.editors.map.tool.Automaton;
 import org.orbisgis.core.ui.editors.map.tool.ToolListener;
 import org.orbisgis.core.ui.editors.map.tool.ToolManager;
 import org.orbisgis.core.ui.editors.map.tool.TransitionException;
+import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchContext;
 import org.orbisgis.progress.IProgressMonitor;
 
 import com.vividsolutions.jts.geom.Envelope;
@@ -84,7 +85,7 @@ import com.vividsolutions.jts.geom.Envelope;
  * 
  */
 
-public class MapControl extends JComponent implements ComponentListener {
+public class MapControl extends JComponent implements ComponentListener, ContainerListener {
 
 	private static int lastProcessId = 0;
 
@@ -100,15 +101,32 @@ public class MapControl extends JComponent implements ComponentListener {
 
 	private ToolManager toolManager;
 
-	private Color backColor;
+	private Color backColor = Color.white;
 
 	private MapTransform mapTransform = new MapTransform();
 
 	private MapContext mapContext;
 
+
 	private Drawer drawer;
 
 	private boolean showCoordinates = true;
+	
+	 EditableElement element ;
+	 
+	 Automaton defaultTool;
+
+	// 250 ms wasn't as good as 1 s because less got painted on each
+	// repaint,
+	// making rendering appear to be slower. [Jon Aquino]
+	// LDB: 400 ms is better when using mouse wheel zooming
+	//int timerToDraw = 400;
+	
+	 /**
+	  * Default constructor
+	  */
+	public MapControl() {		
+	}
 
 	/**
 	 * Creates a new NewMapControl.
@@ -121,10 +139,19 @@ public class MapControl extends JComponent implements ComponentListener {
 	 */
 	public MapControl(final MapContext mapContext, EditableElement element,
 			Automaton defaultTool) throws TransitionException {
+		this.mapContext = mapContext;
+		this.element = element;
+		this.defaultTool = defaultTool;
+		
+		initMapControl();		
+	}
+
+
+	
+	public void  initMapControl() throws TransitionException {
 		synchronized (this) {
 			this.processId = lastProcessId++;
 		}
-		this.mapContext = mapContext;
 		setDoubleBuffered(true);
 		setOpaque(true);
 		status = DIRTY;
@@ -186,8 +213,12 @@ public class MapControl extends JComponent implements ComponentListener {
 
 		// Add refresh listener
 		addLayerListenerRecursively(rootLayer, new RefreshLayerListener());
-
+		
+		setLayout(new BorderLayout());
+		
 	}
+	
+
 
 	private void addLayerListenerRecursively(ILayer rootLayer,
 			RefreshLayerListener refreshLayerListener) {
@@ -223,18 +254,25 @@ public class MapControl extends JComponent implements ComponentListener {
 	protected void paintComponent(Graphics g) {
 		BufferedImage mapTransformImage = mapTransform.getImage();
 
-		if (status == UPDATED) {
-			// If not waiting for an image
-			if (mapTransformImage != null) {
-				g.drawImage(mapTransformImage, 0, 0, null);
-				toolManager.paintEdition(g);
-			} else {
-				g.setColor(backColor);
-				g.fillRect(0, 0, getWidth(), getHeight());
-			}
-		} else if (status == DIRTY) {
-			BufferedImage inProcessImage = new BufferedImage(this.getWidth(),
-					this.getHeight(), BufferedImage.TYPE_INT_ARGB);
+		// if (status == UPDATED) {
+		// If not waiting for an image
+		if (mapTransformImage != null) {
+			g.drawImage(mapTransformImage, 0, 0, null);
+			toolManager.paintEdition(g);
+		} else {
+			g.setColor(backColor);
+			g.fillRect(0, 0, getWidth(), getHeight());
+		}
+
+		if (status == DIRTY) {
+			int width = this.getWidth();
+			int height = this.getHeight();
+			GraphicsConfiguration configuration = GraphicsEnvironment
+					.getLocalGraphicsEnvironment().getDefaultScreenDevice()
+					.getDefaultConfiguration();
+			BufferedImage inProcessImage = configuration.createCompatibleImage(
+					width, height, BufferedImage.TYPE_INT_ARGB);
+
 			Graphics gImg = inProcessImage.createGraphics();
 			gImg.setColor(backColor);
 			gImg.fillRect(0, 0, getWidth(), getHeight());
@@ -242,47 +280,36 @@ public class MapControl extends JComponent implements ComponentListener {
 
 			if (mapTransform.getAdjustedExtent() != null) {
 				mapTransform.setImage(inProcessImage);
-				// A good idea from gearscape fork
-				Timer timer = new Timer(200, new ActionListener() {
-
+				/*repaint();
+				mapContext.draw(mapTransform.getImage(), mapTransform
+						.getAdjustedExtent(), new ProgressMonitor(""));
+				mapContext.setBoundingBox(mapTransform.getExtent());*/
+				/*Timer timer = new Timer(getTimerToDraw(), new ActionListener() {
 					@Override
 					public void actionPerformed(ActionEvent e) {
 						repaint();
+						
 					}
-				});
-				timer.start();
-				drawer = new Drawer(timer);
-
+				});*/
+				//timer.start();
+				drawer = new Drawer(null);
 				BackgroundManager bm = (BackgroundManager) Services
 						.getService(BackgroundManager.class);
 				bm.nonBlockingBackgroundOperation(new DefaultJobId(
 						"org.orbisgis.jobs.MapControl-" + processId), drawer);
+				//bm.addBackgroundListener( Services.getService( WorkbenchContext.class ) );
 			}
 		}
 
-		if (showCoordinates) {
-			Point2D point = toolManager.getLastRealMousePosition();
-			String xCoord = "X:" + (int) point.getX();
-			String yCoord = "Y:" + (int) point.getY();
-			String scale = "1:" + (int) mapTransform.getScaleDenominator();
-			FontMetrics fm = g.getFontMetrics();
-			Rectangle coords = new Rectangle(0, getHeight() - fm.getHeight(),
-					Math.max(fm.stringWidth(xCoord), fm.stringWidth(yCoord)),
-					2 * fm.getHeight());
-			Rectangle scaleRect = new Rectangle(getWidth()
-					- fm.stringWidth(scale), getHeight(),
-					fm.stringWidth(scale), fm.getHeight());
-			g.setColor(Color.white);
-			g.fillRect(coords.x, coords.y - fm.getHeight(), coords.width,
-					coords.height);
-			g.fillRect(scaleRect.x, scaleRect.y - fm.getHeight(),
-					scaleRect.width, scaleRect.height);
-			g.setColor(Color.black);
-			g.drawString(xCoord, coords.x, coords.y);
-			g.drawString(yCoord, 0, getHeight());
-			g.drawString(scale, scaleRect.x, scaleRect.y);
-		}
 	}
+
+/*	public int getTimerToDraw() {
+		return timerToDraw;
+	}
+
+	public void setTimerToDraw(int timerToDraw) {
+		this.timerToDraw = timerToDraw;
+	}*/
 
 	/**
 	 * Returns the drawn image
@@ -340,7 +367,6 @@ public class MapControl extends JComponent implements ComponentListener {
 
 		private boolean cancel = false;
 		private CancellablePM pm;
-
 		private Timer timer;
 
 		public Drawer(Timer timer) {
@@ -371,7 +397,11 @@ public class MapControl extends JComponent implements ComponentListener {
 			} finally {
 				MapControl.this.repaint();
 				mapContext.setBoundingBox(mapTransform.getExtent());
-				timer.stop();
+				//timer.stop();
+				MapControl.this.repaint();
+				mapContext.setBoundingBox(mapTransform.getExtent());
+				WorkbenchContext wbContext = Services.getService(WorkbenchContext.class);
+				wbContext.setLastAction("Update toolbar");
 			}
 		}
 
@@ -511,9 +541,9 @@ public class MapControl extends JComponent implements ComponentListener {
 	}
 
 	public void closing() {
-		if (drawer != null) {
+		/*if (drawer != null) {
 			drawer.cancel();
-		}
+		}*/
 		toolManager.freeResources();
 		toolManager = null;
 	}
@@ -526,4 +556,31 @@ public class MapControl extends JComponent implements ComponentListener {
 	public boolean getShowCoordinates() {
 		return showCoordinates;
 	}
+	@Override
+	public void componentAdded(ContainerEvent e) {
+		System.out.println("component added");
+		
+	}
+	@Override
+	public void componentRemoved(ContainerEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+	
+	public void setDefaultTool(Automaton defaultTool) {
+		this.defaultTool = defaultTool;
+	}
+
+	public void setElement(EditableElement element) {
+		this.element = element;
+	}
+
+	public void setMapContext(MapContext mapContext) {
+		this.mapContext = mapContext;
+	}
+	
+	public MapContext getMapContext() {
+		return mapContext;
+	}
+
 }

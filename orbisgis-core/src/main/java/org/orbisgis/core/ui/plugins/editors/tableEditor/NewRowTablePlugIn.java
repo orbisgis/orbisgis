@@ -37,9 +37,7 @@
 
 package org.orbisgis.core.ui.plugins.editors.tableEditor;
 
-import java.awt.event.MouseEvent;
 import java.text.ParseException;
-import java.util.Observable;
 
 import javax.swing.JButton;
 
@@ -58,17 +56,16 @@ import org.orbisgis.core.ui.pluginSystem.PlugInContext;
 import org.orbisgis.core.ui.pluginSystem.workbench.Names;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchContext;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchFrame;
+import org.orbisgis.core.ui.plugins.views.TableEditorPlugIn;
 
 public class NewRowTablePlugIn extends AbstractPlugIn {
 
 	private JButton btn;
-	private boolean menuItemIsVisible;
 
 	public NewRowTablePlugIn() {
 		btn = new JButton(getIcon(IconNames.POPUP_TABLE_ADDROW_ICON));
 	}
-
-	@Override
+	
 	public boolean execute(PlugInContext context) throws Exception {
 		IEditor editor = context.getActiveEditor();
 		TableEditableElement element = (TableEditableElement) editor
@@ -76,8 +73,7 @@ public class NewRowTablePlugIn extends AbstractPlugIn {
 		addRow(element);
 		return true;
 	}
-
-	@Override
+	
 	public void initialize(PlugInContext context) throws Exception {
 		WorkbenchContext wbContext = context.getWorkbenchContext();
 		WorkbenchFrame frame = (WorkbenchFrame) wbContext.getWorkbench()
@@ -88,13 +84,6 @@ public class NewRowTablePlugIn extends AbstractPlugIn {
 				new String[] { Names.POPUP_TABLE_ADDROW_PATH1 },
 				Names.POPUP_TABLE_ADDROW_GROUP, false,
 				getIcon(IconNames.POPUP_TABLE_ADDROW_ICON), wbContext);
-	}
-
-	@Override
-	public void update(Observable o, Object arg) {
-		btn.setEnabled(isEnabled());
-		btn.setVisible(true);
-		menuItemIsVisible = (arg instanceof MouseEvent) ? true : false;
 	}
 
 	public static void addRow(TableEditableElement element) {
@@ -118,33 +107,26 @@ public class NewRowTablePlugIn extends AbstractPlugIn {
 		}
 	}
 
-	public boolean isEnabled() {
-		IEditor tableEditor = null;
-		if((tableEditor=getPlugInContext().getTableEditor()) != null){
+	public boolean isEnabled() {		
+		boolean isEnabled = false;
+		TableEditorPlugIn tableEditor = null;
+		if((tableEditor=getPlugInContext().getTableEditor()) != null
+				&& getSelectedColumn()==-1){
 			TableEditableElement element = (TableEditableElement) tableEditor
 					.getElement();
-			if (element.isEditable())
-				return true;
-			else if (element.getMapContext() == null)
-				return isEnabled(element);
+			if(element.getSelection().getSelectedRows().length > 0) {
+				if( element.isEditable() ) {
+					isEnabled = true;
+				}
+				else if( element.getMapContext() == null ) {
+					isEnabled = element.getDataSource().isEditable();
+				}
+			}
 		}
-		return false;
+		btn.setEnabled(isEnabled);
+		return isEnabled;
 	}
-
-	public boolean isEnabled(TableEditableElement element) {
-		if (element.getDataSource().isEditable())
-			return true;
-		else if (element.getMapContext() == null) {
-			return element.getDataSource().isEditable();
-		}
-		return false;
-	}
-
-	public boolean isVisible() {
-		return menuItemIsVisible && isEnabled();
-	}
-
-	@Override
+	
 	public boolean isSelected() {
 		// TODO Auto-generated method stub
 		return false;

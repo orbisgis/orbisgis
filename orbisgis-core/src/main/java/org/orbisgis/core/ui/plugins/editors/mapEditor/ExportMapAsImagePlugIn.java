@@ -40,7 +40,6 @@ package org.orbisgis.core.ui.plugins.editors.mapEditor;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.util.Observable;
 
 import javax.imageio.ImageIO;
 import javax.swing.JOptionPane;
@@ -121,9 +120,6 @@ public class ExportMapAsImagePlugIn extends AbstractPlugIn {
 				Names.POPUP_MAP_EXPORT_IMG_GROUP, false, null, wbContext);
 	}
 
-	public void update(Observable o, Object arg) {
-	}
-
 	public boolean isEnabled() {
 		MapEditorPlugIn mapEditor = null;
 		if((mapEditor=getPlugInContext().getMapEditor()) != null){
@@ -132,15 +128,7 @@ public class ExportMapAsImagePlugIn extends AbstractPlugIn {
 		}
 		return false;
 	}
-
-	public boolean isVisible() {
-		if(getPlugInContext().getMapEditor() != null){
-			return true;
-		}
-		return false;
-	}
-
-	@Override
+	
 	public boolean isSelected() {
 		// TODO Auto-generated method stub
 		return false;
