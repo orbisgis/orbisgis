@@ -5,17 +5,18 @@
 package org.orbisgis.core.renderer.se.label;
 
 import java.awt.Graphics2D;
-import java.awt.image.BufferedImage;
+
 import java.io.IOException;
 import javax.media.jai.RenderableGraphics;
 import javax.xml.bind.JAXBElement;
 import org.gdms.data.DataSource;
 import org.orbisgis.core.renderer.liteShape.LiteShape;
-import org.orbisgis.core.renderer.persistance.ogc.LiteralType;
+
 import org.orbisgis.core.renderer.persistance.se.ObjectFactory;
 import org.orbisgis.core.renderer.persistance.se.ParameterValueType;
 import org.orbisgis.core.renderer.persistance.se.PointLabelType;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
+import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
 import org.orbisgis.core.renderer.se.parameter.real.RealLiteral;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 
@@ -32,6 +33,21 @@ public class PointLabel extends Label {
     public PointLabel() {
         setLabel(new StyledLabel());
         rotation = new RealLiteral(0.0);
+
+    }
+
+    PointLabel(JAXBElement<PointLabelType> pl) {
+        super(pl);
+
+        PointLabelType plt = pl.getValue();
+
+        if (plt.getExclusionZone() != null){
+            this.exclusionZone = ExclusionZone.createFromJAXBElement(plt.getExclusionZone());
+        }
+
+        if (plt.getRotation() != null){
+            this.rotation = SeParameterFactory.createRealParameter(plt.getRotation());
+        }
 
     }
 
@@ -69,7 +85,7 @@ public class PointLabel extends Label {
     }
 
     @Override
-    public JAXBElement<PointLabelType> getJAXBInstance() {
+    public JAXBElement<PointLabelType> getJAXBElement() {
         PointLabelType pl = new PointLabelType();
 
         if (uom != null) {
@@ -77,7 +93,7 @@ public class PointLabel extends Label {
         }
 
         if (exclusionZone != null) {
-            pl.setExclusionZone(exclusionZone.getJAXBInstance());
+            pl.setExclusionZone(exclusionZone.getJAXBElement());
         }
 
         if (hAlign != null) {

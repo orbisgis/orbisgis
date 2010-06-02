@@ -1,6 +1,8 @@
 package org.orbisgis.core.renderer.se.parameter.real;
 
+import javax.xml.bind.JAXBElement;
 import org.gdms.data.DataSource;
+import org.orbisgis.core.renderer.persistance.ogc.LiteralType;
 import org.orbisgis.core.renderer.se.parameter.Literal;
 
 public class RealLiteral extends Literal implements RealParameter{
@@ -11,6 +13,14 @@ public class RealLiteral extends Literal implements RealParameter{
 
     public RealLiteral(double literal){
         v = literal;
+    }
+
+    public RealLiteral(String d){
+        this.v = new Double(d);
+    }
+
+    public RealLiteral(JAXBElement<LiteralType> l) {
+        this(l.getValue().getContent().get(0).toString());
     }
 
     @Override

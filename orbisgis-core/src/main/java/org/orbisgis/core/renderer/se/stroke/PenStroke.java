@@ -3,19 +3,22 @@ package org.orbisgis.core.renderer.se.stroke;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics2D;
+import java.awt.Paint;
 import java.awt.Shape;
 import java.awt.TexturePaint;
 import java.io.IOException;
 import java.util.ArrayList;
 import javax.xml.bind.JAXBElement;
 import org.orbisgis.core.renderer.persistance.se.PenStrokeType;
-import org.orbisgis.core.renderer.persistance.se.StrokeType;
+
 import org.gdms.data.DataSource;
 import org.orbisgis.core.renderer.persistance.se.ObjectFactory;
+import org.orbisgis.core.renderer.persistance.se.ParameterValueType;
 import org.orbisgis.core.renderer.se.common.MapEnv;
 import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.fill.GraphicFill;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
+import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
 import org.orbisgis.core.renderer.se.parameter.color.ColorHelper;
 import org.orbisgis.core.renderer.se.parameter.color.ColorLiteral;
 import org.orbisgis.core.renderer.se.parameter.color.ColorParameter;
@@ -32,12 +35,21 @@ public class PenStroke extends Stroke {
     public enum LineCap {
 
         BUTT, ROUND, SQUARE;
+
+        public ParameterValueType getParameterValueType(){
+            return SeParameterFactory.createParameterValueType(this.name().toLowerCase());
+        }
     }
 
     public enum LineJoin {
 
         MITRE, ROUND, BEVEL;
+
+        public ParameterValueType getParameterValueType(){
+            return SeParameterFactory.createParameterValueType(this.name().toLowerCase());
+        }
     }
+
 
     /**
      * Create a standard undashed 0.1mm-wide opaque black stroke
@@ -45,10 +57,53 @@ public class PenStroke extends Stroke {
     public PenStroke() {
         setColor(new ColorLiteral(Color.BLACK));
         setWidth(new RealLiteral(0.1));
-        this.setUom(Uom.MM);
+        setUom(Uom.MM);
         setOpacity(new RealLiteral(100.0));
         dashArray = new ArrayList<Double>();
         updateBasicStroke();
+    }
+
+
+    public PenStroke(PenStrokeType t) {
+        if (t.getColor() != null) {
+            this.setColor(SeParameterFactory.createColorParameter(t.getColor()));
+
+        } else if (t.getStipple() != null) {
+            this.setStipple(new GraphicFill(t.getStipple()));
+        } else {
+            // TODO  Neither color nor stipple
+        }
+
+        if (t.getDashArray() != null) {
+            // TODO Note read as string !
+        }
+
+        if (t.getDashOffset() != null) {
+            this.setDashOffset(SeParameterFactory.createRealParameter(t.getDashOffset()));
+        }
+
+        if (t.getWidth() != null) {
+            this.setWidth(SeParameterFactory.createRealParameter(t.getWidth()));
+        }
+
+        if (t.getLineCap() != null) {
+        }
+
+        if (t.getLineJoin() != null) {
+            // TODO
+        }
+
+        if (t.getOpacity() != null) {
+            this.setOpacity(SeParameterFactory.createRealParameter(t.getOpacity()));
+        }
+
+        if (t.getUnitOfMeasure() != null) {
+            this.setUom(Uom.fromOgcURN(t.getUnitOfMeasure()));
+        }
+    }
+
+    public PenStroke(JAXBElement<PenStrokeType> s) {
+        this(s.getValue());
     }
 
     /**
@@ -81,6 +136,7 @@ public class PenStroke extends Stroke {
 
     public void setStipple(GraphicFill stipple) {
         this.stipple = stipple;
+        stipple.setParent(this);
         useColor = false;
         updateBasicStroke();
     }
@@ -90,7 +146,8 @@ public class PenStroke extends Stroke {
     }
 
     public void setLineCap(LineCap cap) {
-        lineCap = cap;updateBasicStroke();
+        lineCap = cap;
+        updateBasicStroke();
     }
 
     public LineCap getLineCap() {
@@ -117,6 +174,7 @@ public class PenStroke extends Stroke {
 
     public void setWidth(RealParameter width) {
         this.width = width;
+        updateBasicStroke();
     }
 
     public RealParameter getWidth() {
@@ -129,20 +187,18 @@ public class PenStroke extends Stroke {
 
     public void setDashOffset(RealParameter dashOffset) {
         this.dashOffset = dashOffset;
+        updateBasicStroke();
     }
 
-
-
     private void updateBasicStroke() {
-        try{
+        try {
             bStroke = createBasicStroke(null, 0);
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             this.bStroke = null;
         }
     }
 
-    private BasicStroke createBasicStroke(DataSource ds, long fid) throws ParameterException{
+    private BasicStroke createBasicStroke(DataSource ds, long fid) throws ParameterException {
 
         int cap;
         if (this.lineCap == null) {
@@ -193,15 +249,12 @@ public class PenStroke extends Stroke {
     }
 
     public BasicStroke getBasicStroke(DataSource ds, long fid) throws ParameterException {
-        if (bStroke != null){
+        if (bStroke != null) {
             return bStroke;
-        }
-        else{
+        } else {
             return this.createBasicStroke(ds, fid);
         }
     }
-    
-
 
     /*
     public void setDashArray(String dashArray){
@@ -211,24 +264,23 @@ public class PenStroke extends Stroke {
     @Override
     public void draw(Graphics2D g2, Shape shp, DataSource ds, long fid) throws ParameterException, IOException {
 
+        Paint paint= null;
         // remove preGap, postGap from the line
         Shape shape = this.getPreparedShape(shp);
 
         BasicStroke stroke = null;
 
-        if (this.bStroke == null){
+        if (this.bStroke == null) {
             stroke = this.createBasicStroke(ds, fid);
-        }
-        else
+        } else {
             stroke = this.bStroke;
+        }
 
         g2.setStroke(stroke);
 
-
         if (this.useColor == false) {
             if (stipple != null) {
-                TexturePaint tp = stipple.getStipplePainter(ds, fid);
-                g2.setPaint(tp);
+                paint = stipple.getStipplePainter(ds, fid);
             } else {
                 // TOOD Warn Stiple has to be used, but is undefined
             }
@@ -242,14 +294,17 @@ public class PenStroke extends Stroke {
                 c = new ColorLiteral().getColor(ds, fid);
             }
 
-            double op = this.opacity.getValue(ds, fid);
+            Color ac = c;
+            if (this.opacity != null) {
+                paint = ColorHelper.getColorWithAlpha(c, this.opacity.getValue(ds, fid));
+            }
 
-            Color ac = ColorHelper.getColorWithAlpha(c, op);
-            g2.setPaint(ac);
         }
-
-
-        g2.draw(shape);
+        
+        if (paint != null){
+            g2.setPaint(paint);
+            g2.draw(shape);
+        }
     }
 
     @Override
@@ -261,32 +316,63 @@ public class PenStroke extends Stroke {
         }
     }
 
-
     @Override
-    public JAXBElement<PenStrokeType> getJAXBInstance(){
+    public JAXBElement<PenStrokeType> getJAXBElement() {
         ObjectFactory of = new ObjectFactory();
         return of.createPenStroke(this.getJAXBType());
     }
 
-
-    public PenStrokeType getJAXBType(){
+    public PenStrokeType getJAXBType() {
         PenStrokeType s = new PenStrokeType();
 
         this.setJAXBProperties(s);
 
-        if (useColor){
-            if (color != null)
+        if (useColor) {
+            if (color != null) {
                 s.setColor(color.getJAXBParameterValueType());
             }
-        else if (stipple != null){
+        } else if (stipple != null) {
             s.setStipple(stipple.getJAXBType());
+        }
+
+        if (this.uom != null){
+            s.setUnitOfMeasure(uom.toURN());
+        }
+
+        if (this.dashOffset != null){
+            //s.setDashArray(null);
+        }
+
+        if (this.dashOffset != null){
+            s.setDashOffset(this.dashOffset.getJAXBParameterValueType());
+        }
+
+        if (this.lineCap != null){
+            s.setLineCap(this.lineCap.getParameterValueType());
+        }
+
+        if (this.lineJoin != null){
+            s.setLineJoin(this.lineJoin.getParameterValueType());
+        }
+
+        if (this.opacity != null){
+            s.setOpacity(this.opacity.getJAXBParameterValueType());
+        }
+
+        if (this.preGap != null){
+            s.setPreGap(this.preGap.getJAXBParameterValueType());
+        }
+
+        if (this.postGap != null){
+            s.setPostGap(this.postGap.getJAXBParameterValueType());
+        }
+
+        if (this.width != null){
+            s.setWidth(this.width.getJAXBParameterValueType());
         }
 
         return s;
     }
-
-
-    
     private ColorParameter color;
     private GraphicFill stipple;
     private boolean useColor;
@@ -296,6 +382,5 @@ public class PenStroke extends Stroke {
     private LineCap lineCap;
     private ArrayList<Double> dashArray;
     private RealParameter dashOffset;
-
     private BasicStroke bStroke;
 }

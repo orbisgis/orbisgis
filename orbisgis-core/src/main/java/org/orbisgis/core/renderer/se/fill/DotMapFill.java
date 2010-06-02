@@ -16,6 +16,10 @@ import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 
 public class DotMapFill extends Fill {
 
+    DotMapFill(JAXBElement<DotMapFillType> f) {
+        throw new UnsupportedOperationException("Not yet implemented");
+    }
+
     public void setMark(GraphicCollection mark) {
         this.mark = mark;
         mark.setParent(this);
@@ -54,45 +58,42 @@ public class DotMapFill extends Fill {
         if (mark != null && totalQuantity != null && quantityPerMark != null) {
             RenderableGraphics m = mark.getGraphic(ds, fid);
 
-            double total = totalQuantity.getValue(ds, fid);
-            double perMark = quantityPerMark.getValue(ds, fid);
+            if (m != null) {
+                double total = totalQuantity.getValue(ds, fid);
+                double perMark = quantityPerMark.getValue(ds, fid);
 
-            int n = (int) (total / perMark);
+                int n = (int) (total / perMark);
 
-            // TODO IMPLEMENT
-            // The graphics2d m has to be plotted n times within shp
-            // postOpSymbol();
+                // TODO IMPLEMENT
+                // The graphics2d m has to be plotted n times within shp
+            }
         }
     }
 
-
     @Override
-    public DotMapFillType getJAXBType(){
+    public DotMapFillType getJAXBType() {
         DotMapFillType f = new DotMapFillType();
 
-        if (mark != null){
-            f.setGraphic(mark.getJAXBInstance());
+        if (mark != null) {
+            f.setGraphic(mark.getJAXBElement());
         }
 
-        if (quantityPerMark != null){
+        if (quantityPerMark != null) {
             f.setValuePerMark(quantityPerMark.getJAXBParameterValueType());
         }
 
-        if (totalQuantity != null){
+        if (totalQuantity != null) {
             f.setValuePerMark(totalQuantity.getJAXBParameterValueType());
         }
 
         return f;
     }
 
-
     @Override
-    public JAXBElement<DotMapFillType> getJAXBInstance(){
+    public JAXBElement<DotMapFillType> getJAXBElement() {
         ObjectFactory of = new ObjectFactory();
         return of.createDotMapFill(this.getJAXBType());
     }
-
-
     private GraphicCollection mark;
     private RealParameter quantityPerMark;
     private RealParameter totalQuantity;

@@ -2,10 +2,17 @@ package org.orbisgis.core.renderer.se.graphic;
 
 import java.awt.geom.Rectangle2D;
 import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.media.jai.RenderableGraphics;
 import javax.xml.bind.JAXBElement;
 import org.orbisgis.core.renderer.persistance.se.GraphicType;
 import org.gdms.data.DataSource;
+import org.orbisgis.core.renderer.persistance.se.AxisChartType;
+import org.orbisgis.core.renderer.persistance.se.ExternalGraphicType;
+import org.orbisgis.core.renderer.persistance.se.MarkGraphicType;
+import org.orbisgis.core.renderer.persistance.se.PieChartType;
+import org.orbisgis.core.renderer.persistance.se.TextGraphicType;
 import org.orbisgis.core.renderer.se.SymbolizerNode;
 import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
@@ -17,27 +24,55 @@ import org.orbisgis.core.renderer.se.transform.Transform;
  */
 public abstract class Graphic implements SymbolizerNode {
 
-    @Override
-    public Uom getUom(){
-        if (parent != null){
-            return parent.getUom();
+    public static Graphic createFromJAXBElement(JAXBElement<? extends GraphicType> gr) {
+
+        try {
+            if (gr.getDeclaredType() == ExternalGraphicType.class) {
+                return new ExternalGraphic((JAXBElement<ExternalGraphicType>) gr);
+            }
+
+            if (gr.getDeclaredType() == MarkGraphicType.class) {
+                return new MarkGraphic((JAXBElement<MarkGraphicType>) gr);
+            }
+
+            if (gr.getDeclaredType() == TextGraphicType.class) {
+                return new TextGraphic((JAXBElement<TextGraphicType>) gr);
+            }
+
+            if (gr.getDeclaredType() == PieChartType.class) {
+                return new PieChart((JAXBElement<PieChartType>) gr);
+            }
+
+            if (gr.getDeclaredType() == AxisChartType.class) {
+                return new AxisChart((JAXBElement<AxisChartType>) gr);
+            }
+
+        } catch (IOException ex) {
+            return null;
         }
-        else{
+        return null;
+    }
+
+    @Override
+    public Uom getUom() {
+        if (parent != null) {
+            return parent.getUom();
+        } else {
             return uom;
         }
     }
 
-    public void setUom(Uom uom){
+    public void setUom(Uom uom) {
         this.uom = uom;
     }
 
     @Override
-    public SymbolizerNode getParent(){
+    public SymbolizerNode getParent() {
         return parent;
     }
 
     @Override
-    public void setParent(SymbolizerNode node){
+    public void setParent(SymbolizerNode node) {
         parent = node;
     }
 
@@ -69,28 +104,26 @@ public abstract class Graphic implements SymbolizerNode {
      * @param margin margin (top, bottom, left and right) to add to bounds
      * @return new empty RenderableGraphcis
      */
-    public static RenderableGraphics getNewRenderableGraphics(Rectangle2D bounds, double margin){
-        
+    public static RenderableGraphics getNewRenderableGraphics(Rectangle2D bounds, double margin) {
+
 
         RenderableGraphics rg = new RenderableGraphics(new Rectangle2D.Double(
                 bounds.getMinX() - margin,
                 bounds.getMinY() - margin,
-                bounds.getWidth() + 2*margin,
-                bounds.getHeight() + 2*margin));
+                bounds.getWidth() + 2 * margin,
+                bounds.getHeight() + 2 * margin));
 
         return rg;
 
     }
 
-    public abstract JAXBElement<? extends GraphicType> getJAXBInstance();
+    public abstract JAXBElement<? extends GraphicType> getJAXBElement();
 
     public abstract double getMaxWidth(DataSource ds, long fid) throws ParameterException, IOException;
 
+    
     private SymbolizerNode parent;
-
-
     protected Transform transform;
     protected Uom uom;
-    
     //private Transform transform;
 }

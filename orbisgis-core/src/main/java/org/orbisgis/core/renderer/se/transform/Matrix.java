@@ -13,6 +13,7 @@ import org.orbisgis.core.renderer.persistance.se.ObjectFactory;
 import org.orbisgis.core.renderer.se.common.MapEnv;
 import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
+import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
 import org.orbisgis.core.renderer.se.parameter.real.RealLiteral;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 
@@ -81,6 +82,21 @@ public class Matrix implements Transformation {
         this.d = d;
         this.e = e;
         this.f = f;
+    }
+
+    Matrix(MatrixType m) {
+        if (m.getA() != null)
+            this.setA(SeParameterFactory.createRealParameter(m.getA()));
+        if (m.getB() != null)
+            this.setB(SeParameterFactory.createRealParameter(m.getB()));
+        if (m.getC() != null)
+            this.setC(SeParameterFactory.createRealParameter(m.getC()));
+        if (m.getD() != null)
+            this.setD(SeParameterFactory.createRealParameter(m.getD()));
+        if (m.getE() != null)
+            this.setE(SeParameterFactory.createRealParameter(m.getE()));
+        if (m.getF() != null)
+            this.setF(SeParameterFactory.createRealParameter(m.getF()));
     }
 
     public RealParameter getA() {
@@ -194,17 +210,25 @@ public class Matrix implements Transformation {
 
     @Override
     public JAXBElement<?> getJAXBElement(){
-        MatrixType r = new MatrixType();
-        r.setA(a.getJAXBParameterValueType());
-        r.setB(b.getJAXBParameterValueType());
-        r.setC(c.getJAXBParameterValueType());
-        r.setD(d.getJAXBParameterValueType());
-        r.setE(e.getJAXBParameterValueType());
-        r.setF(f.getJAXBParameterValueType());
-
+        MatrixType m = this.getJAXBType();
+        
         ObjectFactory of = new ObjectFactory();
-        return of.createMatrix(r);
+        return of.createMatrix(m);
     }
+
+    @Override
+    public MatrixType getJAXBType(){
+        MatrixType m = new MatrixType();
+        m.setA(a.getJAXBParameterValueType());
+        m.setB(b.getJAXBParameterValueType());
+        m.setC(c.getJAXBParameterValueType());
+        m.setD(d.getJAXBParameterValueType());
+        m.setE(e.getJAXBParameterValueType());
+        m.setF(f.getJAXBParameterValueType());
+
+        return m;
+    }
+
     private RealParameter a;
     private RealParameter b;
     private RealParameter c;

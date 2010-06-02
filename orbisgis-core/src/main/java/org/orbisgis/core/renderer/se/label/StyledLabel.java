@@ -7,7 +7,7 @@ import java.awt.Shape;
 import java.awt.font.TextLayout;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
-import java.awt.image.BufferedImage;
+
 import java.io.IOException;
 import javax.media.jai.RenderableGraphics;
 import org.gdms.data.DataSource;
@@ -20,6 +20,7 @@ import org.orbisgis.core.renderer.se.fill.Fill;
 import org.orbisgis.core.renderer.se.fill.SolidFill;
 import org.orbisgis.core.renderer.se.graphic.Graphic;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
+import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
 import org.orbisgis.core.renderer.se.parameter.color.ColorLiteral;
 import org.orbisgis.core.renderer.se.parameter.real.RealLiteral;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
@@ -52,6 +53,36 @@ public class StyledLabel implements SymbolizerNode {
         f.setColor(new ColorLiteral(Color.black));
 
         this.setFill(f);
+    }
+
+    public StyledLabel(StyledLabelType sl) {
+        if (sl.getFill() != null){
+            this.setFill(Fill.createFromJAXBElement(sl.getFill()));
+        }
+
+        if (sl.getStroke() != null){
+            this.setStroke(Stroke.createFromJAXBElement(sl.getStroke()));
+        }
+
+        if (sl.getFont() != null){
+            FontType font = sl.getFont();
+
+            font.getFontSize();
+            
+            this.setFontSize(SeParameterFactory.createRealParameter(font.getFontSize()));
+
+            this.setFontFamily(SeParameterFactory.createStringParameter(font.getFontFamily()));
+            this.setFontStyle(SeParameterFactory.createStringParameter(font.getFontStyle()));
+            this.setFontWeight(SeParameterFactory.createStringParameter(font.getFontWeight()));
+        }
+
+        if (sl.getHalo() != null){
+            this.setHalo(new Halo(sl.getHalo()));
+        }
+
+        if (sl.getLabelText() != null){
+            this.setLabelText(SeParameterFactory.createStringParameter(sl.getLabelText()));
+        }
     }
 
     @Override
@@ -218,11 +249,11 @@ public class StyledLabel implements SymbolizerNode {
         }
 
         if (fill != null) {
-            l.setFill(fill.getJAXBInstance());
+            l.setFill(fill.getJAXBElement());
         }
 
         if (stroke != null) {
-            l.setStroke(stroke.getJAXBInstance());
+            l.setStroke(stroke.getJAXBElement());
         }
 
         FontType font = new FontType();

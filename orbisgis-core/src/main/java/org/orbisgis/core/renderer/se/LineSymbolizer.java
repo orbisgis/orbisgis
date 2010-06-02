@@ -11,9 +11,11 @@ import org.gdms.driver.DriverException;
 import org.orbisgis.core.renderer.liteShape.LiteShape;
 import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
+import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 import org.orbisgis.core.renderer.se.stroke.PenStroke;
 import org.orbisgis.core.renderer.se.stroke.Stroke;
+import org.orbisgis.core.renderer.se.transform.Transform;
 
 /**
  * Define a style for line features (or area feature's perimeter...)
@@ -29,6 +31,32 @@ public class LineSymbolizer extends VectorSymbolizer {
         super();
         uom = Uom.MM;
         stroke = new PenStroke();
+    }
+
+
+    public LineSymbolizer(JAXBElement<LineSymbolizerType> st){
+        LineSymbolizerType ast = st.getValue();
+
+
+        if (ast.getGeometry() != null){
+            // TODO
+        }
+
+        if (ast.getUnitOfMeasure() != null){
+            this.uom = Uom.fromOgcURN(ast.getUnitOfMeasure());
+        }
+
+        if (ast.getPerpendicularOffset() != null){
+            this.setPerpendicularOffset(SeParameterFactory.createRealParameter(ast.getPerpendicularOffset()));
+        }
+
+        if (ast.getTransform() != null){
+            this.setTransform( new Transform(ast.getTransform()));
+        }
+
+        if (ast.getStroke() != null){
+            this.setStroke(Stroke.createFromJAXBElement(ast.getStroke()));
+        }
     }
 
     public Stroke getStroke() {
@@ -73,7 +101,7 @@ public class LineSymbolizer extends VectorSymbolizer {
     }
 
     @Override
-    public JAXBElement<LineSymbolizerType> getJAXBInstance() {
+    public JAXBElement<LineSymbolizerType> getJAXBElement() {
         ObjectFactory of = new ObjectFactory();
         LineSymbolizerType s = of.createLineSymbolizerType();
         
@@ -92,7 +120,7 @@ public class LineSymbolizer extends VectorSymbolizer {
         }
 
         if (stroke != null) {
-            s.setStroke(stroke.getJAXBInstance());
+            s.setStroke(stroke.getJAXBElement());
         }
 
 

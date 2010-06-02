@@ -7,12 +7,23 @@ import org.orbisgis.core.renderer.se.SymbolizerNode;
 import org.orbisgis.core.renderer.se.common.MapEnv;
 import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
+import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 
 public class ViewBox implements SymbolizerNode {
 
     public ViewBox(RealParameter width) {
         this.x = width;
+    }
+
+    public ViewBox(ViewBoxType viewBox) {
+        if (viewBox.getHeight() != null){
+            this.setHeight(SeParameterFactory.createRealParameter(viewBox.getHeight()));
+        }
+
+        if (viewBox.getWidth() != null){
+            this.setWidth(SeParameterFactory.createRealParameter(viewBox.getWidth()));
+        }
     }
 
     public void setWidth(RealParameter width) {

@@ -24,6 +24,10 @@ import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
  */
 public abstract class Categorize<ToType extends SeParameter, FallbackType extends ToType> implements SeParameter {
 
+    protected Categorize(){
+        this.classes = new ArrayList<Category<ToType>>();
+    }
+
     public Categorize(ToType firstClassValue, FallbackType fallbackValue, RealParameter lookupValue) {
         this.firstClass = firstClassValue;
         this.fallbackValue = fallbackValue;

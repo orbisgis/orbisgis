@@ -10,6 +10,7 @@ import java.awt.Graphics2D;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 import java.io.IOException;
+import javax.xml.bind.JAXBElement;
 import org.orbisgis.core.renderer.persistance.se.SymbolizerType;
 
 import org.gdms.data.SpatialDataSourceDecorator;
@@ -28,6 +29,14 @@ import org.orbisgis.core.renderer.se.transform.Transform;
  */
 public abstract class VectorSymbolizer extends Symbolizer {
 
+    protected VectorSymbolizer(){
+    }
+
+
+    protected VectorSymbolizer(JAXBElement<? extends SymbolizerType> st) {
+        super(st);
+    }
+
     public abstract void draw(Graphics2D g2, SpatialDataSourceDecorator sds, long fid) throws ParameterException, IOException, DriverException;
 
     /**
@@ -43,7 +52,7 @@ public abstract class VectorSymbolizer extends Symbolizer {
      * @todo fix maxDist for generalization!
      */
     public LiteShape getLiteShape(SpatialDataSourceDecorator sds, long fid) throws ParameterException, IOException, DriverException {
-        Geometry the_geom = this.getTheGeom(sds, fid); // geom + function
+        Geometry geom = this.getTheGeom(sds, fid); // geom + function
 
         MapTransform mt = MapEnv.getMapTransform();
 
@@ -54,11 +63,11 @@ public abstract class VectorSymbolizer extends Symbolizer {
 
         double maxDist = 0.5;
 
-        return new LiteShape(the_geom, at, true, maxDist);
+        return new LiteShape(geom, at, true, maxDist);
     }
 
     public Point2D getPointLiteShape(SpatialDataSourceDecorator sds, long fid) throws ParameterException, IOException, DriverException {
-        Geometry the_geom = this.getTheGeom(sds, fid); // geom + function
+        Geometry geom = this.getTheGeom(sds, fid); // geom + function
 
         MapTransform mt = MapEnv.getMapTransform();
 
@@ -67,7 +76,7 @@ public abstract class VectorSymbolizer extends Symbolizer {
             at.preConcatenate(transform.getGraphicalAffineTransform(sds, fid, true));
         }
 
-        Point point = the_geom.getCentroid();
+        Point point = geom.getCentroid();
         return at.transform(new Point2D.Double(point.getX(), point.getY()), null);
     }
 

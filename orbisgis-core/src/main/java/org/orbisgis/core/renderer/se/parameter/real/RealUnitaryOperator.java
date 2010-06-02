@@ -10,6 +10,10 @@ import org.orbisgis.core.renderer.se.parameter.ParameterException;
 
 public class RealUnitaryOperator implements RealParameter {
 
+    public RealUnitaryOperator(JAXBElement<UnitaryOperatorType> jAXBElement) {
+        throw new UnsupportedOperationException("Not yet implemented");
+    }
+
     public enum RealUnitaryOperatorType {
 
         SQRT, LOG;

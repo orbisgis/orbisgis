@@ -9,6 +9,3 @@ package org.orbisgis.core.renderer.se.label;
  *
  * @author maxence
  */
-public enum VerticalAlignment {
-    TOP, MIDDLE, BASELINE, BOTTOM
-}

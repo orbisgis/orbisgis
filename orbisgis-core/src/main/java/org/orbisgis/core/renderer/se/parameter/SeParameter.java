@@ -9,6 +9,7 @@ import javax.xml.bind.JAXBElement;
 import org.orbisgis.core.renderer.persistance.ogc.ExpressionType;
 import org.orbisgis.core.renderer.persistance.se.ParameterValueType;
 
+
 /**
  *
  * @author maxence
@@ -23,7 +24,7 @@ public interface SeParameter {
      */
     boolean dependsOnFeature();
 
-    ParameterValueType getJAXBParameterValueType();
-
-    JAXBElement<? extends ExpressionType> getJAXBExpressionType();
+    public abstract ParameterValueType getJAXBParameterValueType();
+    
+    public abstract JAXBElement<? extends ExpressionType> getJAXBExpressionType();
 }

@@ -2,7 +2,9 @@ package org.orbisgis.core.renderer.se.parameter.color;
 
 import java.util.Random;
 import java.awt.Color;
+import javax.xml.bind.JAXBElement;
 import org.gdms.data.DataSource;
+import org.orbisgis.core.renderer.persistance.ogc.LiteralType;
 import org.orbisgis.core.renderer.se.parameter.Literal;
 
 public class ColorLiteral extends Literal implements ColorParameter{
@@ -31,6 +33,10 @@ public class ColorLiteral extends Literal implements ColorParameter{
      */
     public ColorLiteral(String htmlColor){
         this.color = Color.decode(htmlColor);
+    }
+
+    public ColorLiteral(JAXBElement<LiteralType> l) {
+        this(l.getValue().getContent().get(0).toString());
     }
 
     @Override

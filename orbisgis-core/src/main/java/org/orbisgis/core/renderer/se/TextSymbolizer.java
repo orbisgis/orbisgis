@@ -15,7 +15,9 @@ import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.label.Label;
 import org.orbisgis.core.renderer.se.label.PointLabel;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
+import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
+import org.orbisgis.core.renderer.se.transform.Transform;
 
 public class TextSymbolizer extends VectorSymbolizer {
 
@@ -55,7 +57,7 @@ public class TextSymbolizer extends VectorSymbolizer {
 
     
     @Override
-    public JAXBElement<TextSymbolizerType> getJAXBInstance() {
+    public JAXBElement<TextSymbolizerType> getJAXBElement() {
 
         ObjectFactory of = new ObjectFactory();
         TextSymbolizerType s = of.createTextSymbolizerType();
@@ -75,10 +77,37 @@ public class TextSymbolizer extends VectorSymbolizer {
         }
 
         if (label != null) {
-            s.setLabel(label.getJAXBInstance());
+            s.setLabel(label.getJAXBElement());
         }
 
         return of.createTextSymbolizer(s);
+    }
+
+
+
+    public TextSymbolizer(JAXBElement<TextSymbolizerType> st){
+        TextSymbolizerType tst = st.getValue();
+
+
+        if (tst.getGeometry() != null){
+            // TODO
+        }
+
+        if (tst.getUnitOfMeasure() != null){
+            this.uom = Uom.fromOgcURN(tst.getUnitOfMeasure());
+        }
+
+        if (tst.getPerpendicularOffset() != null){
+            this.setPerpendicularOffset(SeParameterFactory.createRealParameter(tst.getPerpendicularOffset()));
+        }
+
+        if (tst.getTransform() != null){
+            this.setTransform( new Transform(tst.getTransform()));
+        }
+
+        if (tst.getLabel() != null){
+            this.setLabel( Label.createLabelFromJAXBElement(tst.getLabel()));
+        }
     }
 
 

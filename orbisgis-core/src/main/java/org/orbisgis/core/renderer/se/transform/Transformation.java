@@ -8,7 +8,6 @@ package org.orbisgis.core.renderer.se.transform;
 
 import java.awt.geom.AffineTransform;
 import java.io.IOException;
-import java.util.ArrayList;
 import javax.xml.bind.JAXBElement;
 import org.gdms.data.DataSource;
 import org.orbisgis.core.renderer.se.common.Uom;
@@ -26,4 +25,6 @@ public interface Transformation {
     public AffineTransform getAffineTransform(DataSource ds, long fid, Uom uom) throws ParameterException, IOException;
 
     public abstract JAXBElement<?> getJAXBElement();
+
+    public abstract Object getJAXBType();
 }

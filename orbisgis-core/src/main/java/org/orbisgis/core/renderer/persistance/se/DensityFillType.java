@@ -28,12 +28,12 @@ import javax.xml.bind.annotation.XmlType;
  *       &lt;sequence>
  *         &lt;choice>
  *           &lt;sequence>
- *             &lt;element ref="{http://www.opengis.net/se}PenStroke" minOccurs="0"/>
+ *             &lt;element ref="{http://www.opengis.net/se}PenStroke" />
  *             &lt;element ref="{http://www.opengis.net/se}Orientation" minOccurs="0"/>
  *           &lt;/sequence>
- *           &lt;element ref="{http://www.opengis.net/se}Graphic" minOccurs="0"/>
+ *           &lt;element ref="{http://www.opengis.net/se}Graphic" />
  *         &lt;/choice>
- *         &lt;element ref="{http://www.opengis.net/se}Percentage" minOccurs="0"/>
+ *         &lt;element ref="{http://www.opengis.net/se}Percentage" />
  *       &lt;/sequence>
  *     &lt;/extension>
  *   &lt;/complexContent>
@@ -59,7 +59,7 @@ public class DensityFillType
     protected ParameterValueType orientation;
     @XmlElementRef(name = "Graphic", namespace = "http://www.opengis.net/se", type = JAXBElement.class)
     protected JAXBElement<? extends GraphicType> graphic;
-    @XmlElement(name = "Percentage")
+    @XmlElement(name = "Percentage", required = true)
     protected ParameterValueType percentage;
 
     /**

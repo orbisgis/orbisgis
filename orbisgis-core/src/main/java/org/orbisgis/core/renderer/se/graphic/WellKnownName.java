@@ -22,6 +22,30 @@ public enum WellKnownName implements MarkGraphicSource {
 
     SQUARE, CIRCLE, HALFCIRCLE, TRIANGLE, STAR, CROSS, X;
 
+    public static WellKnownName fromString(String token){
+        if (token.equals("SQUARE")){
+            return SQUARE;
+        }
+        else if (token.equals("HALFCIRCLE")){
+            return HALFCIRCLE;
+        }
+        else if (token.equals("TRIANGLE")){
+            return TRIANGLE;
+        }
+        else if (token.equals("STAR")){
+            return STAR;
+        }
+        else if (token.equals("CROSS")){
+            return CROSS;
+        }
+        else if (token.equals("X")){
+            return X;
+        }
+        else{
+            return CIRCLE;
+        }
+    }
+
     /**
      *
      * @param viewBox
@@ -33,6 +57,10 @@ public enum WellKnownName implements MarkGraphicSource {
     @Override
     public Shape getShape(ViewBox viewBox, DataSource ds, long fid) throws ParameterException {
         double x, y;
+
+        if (ds == null && viewBox != null && viewBox.dependsOnFeature()){
+            throw new ParameterException("View box depends on feature");
+        }
 
         if (viewBox != null) {
             Dimension box = viewBox.getDimension(ds, fid, 1.0);

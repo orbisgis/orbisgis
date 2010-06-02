@@ -9,7 +9,11 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import org.gdms.data.DataSource;
+import org.orbisgis.core.renderer.persistance.se.MatrixType;
+import org.orbisgis.core.renderer.persistance.se.RotateType;
+import org.orbisgis.core.renderer.persistance.se.ScaleType;
 import org.orbisgis.core.renderer.persistance.se.TransformType;
+import org.orbisgis.core.renderer.persistance.se.TranslateType;
 import org.orbisgis.core.renderer.se.SymbolizerNode;
 import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
@@ -25,6 +29,27 @@ public class Transform implements SymbolizerNode {
     public Transform() {
         transformations = new ArrayList<Transformation>();
         consolidated = null;
+    }
+
+    public Transform(TransformType t) {
+        transformations = new ArrayList<Transformation>();
+        consolidated = null;
+        
+
+        for (Object o : t.getTranslateOrRotateOrScale()){
+            if (o instanceof TranslateType){
+                this.transformations.add(new Translate((TranslateType)o));
+            }
+            else if (o instanceof RotateType){
+                this.transformations.add(new Rotate((RotateType)o));
+            }
+            else if (o instanceof ScaleType){
+                this.transformations.add(new Scale((ScaleType)o));
+            }
+            else if (o instanceof MatrixType){
+                this.transformations.add(new Matrix((MatrixType)o));
+            }
+        }
     }
 
     /**
@@ -93,11 +118,12 @@ public class Transform implements SymbolizerNode {
     public TransformType getJAXBType(){
         TransformType t = new TransformType();
 
-        List<Object> lists = t.getTranslateOrRotateOrScale();
+        List<Object> list = t.getTranslateOrRotateOrScale();
+
 
         for (Transformation tr : transformations){
-            // TODO Check order !!!
-            lists.add(tr.getJAXBElement());
+            // TODO CHECK ORDER !
+            list.add(tr.getJAXBType());
         }
 
         return t;

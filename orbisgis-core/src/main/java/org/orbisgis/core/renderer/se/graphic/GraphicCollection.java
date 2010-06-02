@@ -1,6 +1,5 @@
 package org.orbisgis.core.renderer.se.graphic;
 
-import java.awt.Color;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.renderable.RenderContext;
@@ -14,7 +13,6 @@ import java.util.List;
 import javax.media.jai.RenderableGraphics;
 import javax.xml.bind.JAXBElement;
 import org.orbisgis.core.renderer.persistance.se.CompositeGraphicType;
-import org.orbisgis.core.renderer.persistance.se.GraphicElementType;
 import org.orbisgis.core.renderer.persistance.se.GraphicType;
 import org.orbisgis.core.renderer.persistance.se.ObjectFactory;
 
@@ -33,6 +31,26 @@ public class GraphicCollection implements SymbolizerNode {
 
     public GraphicCollection() {
         graphics = new ArrayList<Graphic>();
+    }
+
+    public GraphicCollection(JAXBElement<? extends GraphicType> g) {
+        this();
+        if (g.getDeclaredType() == CompositeGraphicType.class) {
+            CompositeGraphicType cg = (CompositeGraphicType) g.getValue();
+            for (JAXBElement<? extends GraphicType> gte : cg.getGraphic()) {
+
+                if (gte.getDeclaredType() == CompositeGraphicType.class) {
+                    GraphicCollection collec2 = new GraphicCollection(gte);
+                    for (Graphic newG : collec2.graphics) {
+                        this.addGraphic(newG);
+                    }
+                } else {
+                    this.addGraphic(Graphic.createFromJAXBElement(gte));
+                }
+            }
+        } else {
+            this.addGraphic(Graphic.createFromJAXBElement(g));
+        }
     }
 
     public int getNumGraphics() {
@@ -98,8 +116,6 @@ public class GraphicCollection implements SymbolizerNode {
 
         ArrayList<RenderableGraphics> images = new ArrayList<RenderableGraphics>();
 
-
-
         double xmin = Double.MAX_VALUE;
         double ymin = Double.MAX_VALUE;
         double xmax = Double.MIN_VALUE;
@@ -111,33 +127,41 @@ public class GraphicCollection implements SymbolizerNode {
         while (it.hasNext()) {
             Graphic g = it.next();
             RenderableGraphics img = g.getRenderableGraphics(ds, fid);
-            images.add(img);
-            if (img.getMinX() < xmin) {
-                xmin = img.getMinX();
-            }
-            if (img.getMinY() < ymin) {
-                ymin = img.getMinY();
-            }
-            if (img.getMinX() + img.getWidth() > xmax) {
-                xmax = img.getMinX() + img.getWidth();
-            }
-            if (img.getMinY() + img.getHeight() > ymax) {
-                ymax = img.getMinY() + img.getHeight();
+            if (img != null) {
+                images.add(img);
+
+                if (img.getMinX() < xmin) {
+                    xmin = img.getMinX();
+                }
+                if (img.getMinY() < ymin) {
+                    ymin = img.getMinY();
+                }
+                if (img.getMinX() + img.getWidth() > xmax) {
+                    xmax = img.getMinX() + img.getWidth();
+                }
+                if (img.getMinY() + img.getHeight() > ymax) {
+                    ymax = img.getMinY() + img.getHeight();
+                }
             }
         }
 
-        RenderableGraphics rg = new RenderableGraphics(new Rectangle2D.Double(xmin, ymin, xmax - xmin, ymax - ymin));
+        double width = xmax - xmin;
+        double height = ymax - ymin;
 
-        Iterator<RenderableGraphics> it2 = images.iterator();
+        if (width > 0 && height > 0) {
 
-        while (it2.hasNext()) {
-            RenderableGraphics g = it2.next();
-            rg.drawRenderedImage(g.createRendering(ctc), new AffineTransform());
+
+            RenderableGraphics rg = new RenderableGraphics(new Rectangle2D.Double(xmin, ymin, xmax - xmin, ymax - ymin));
+
+            for (RenderableGraphics g : images) {
+                rg.drawRenderedImage(g.createRendering(ctc), new AffineTransform());
+            }
+
+            return rg;
+        } else {
+            return null;
         }
-
-        return rg;
     }
-
 
     public double getMaxWidth(DataSource ds, long fid) throws ParameterException, IOException {
         double maxWidth = 0.0;
@@ -150,30 +174,24 @@ public class GraphicCollection implements SymbolizerNode {
         return maxWidth;
     }
 
-
-    public JAXBElement<? extends GraphicType> getJAXBInstance(){
-        if (graphics.size() > 0){
-            if (graphics.size() == 1){
-                return graphics.get(0).getJAXBInstance();
-            }
-            else{
+    public JAXBElement<? extends GraphicType> getJAXBElement() {
+        if (graphics.size() > 0) {
+            if (graphics.size() == 1) {
+                return graphics.get(0).getJAXBElement();
+            } else {
                 CompositeGraphicType gc = new CompositeGraphicType();
-                List<GraphicElementType> elems = gc.getGraphicElement();
-                for (Graphic g : graphics){
-                    GraphicElementType el = new GraphicElementType();
-                    el.setGraphic(g.getJAXBInstance());
-                    elems.add(el);
+                List<JAXBElement<? extends GraphicType>> elems = gc.getGraphic();
+
+                for (Graphic g : graphics) {
+                    elems.add(g.getJAXBElement());
                 }
                 ObjectFactory of = new ObjectFactory();
                 return of.createCompositeGraphic(gc);
             }
-        }
-        else{
+        } else {
             return null;
         }
     }
-
-
     private ArrayList<Graphic> graphics;
     private SymbolizerNode parent;
 }

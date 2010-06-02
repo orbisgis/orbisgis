@@ -54,6 +54,7 @@ public class Categorize2ColorTest extends TestCase {
     public void testAddClasses(){
         try {
             categorize.addClass(t1, class2);
+
             assertTrue(categorize.getNumClasses() == 2);
             assertTrue(categorize.getClassValue(0).getColor(null, 0) == class1.getColor(null, 0));
             assertTrue(categorize.getClassValue(1).getColor(null, 0) == class2.getColor(null, 0));

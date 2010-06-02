@@ -14,6 +14,10 @@ import org.orbisgis.core.renderer.se.parameter.string.*;
 
 public abstract class Recode<ToType extends SeParameter, FallbackType extends ToType> implements SeParameter {
 
+    protected Recode(){
+        mapItems = new ArrayList<MapItem<ToType>>();
+    }
+
     public Recode(FallbackType fallbackValue, StringParameter lookupValue) {
         this.fallbackValue = fallbackValue;
         this.lookupValue = lookupValue;
@@ -124,7 +128,6 @@ public abstract class Recode<ToType extends SeParameter, FallbackType extends To
         }
 
         List<MapItemType> mi = r.getMapItem();
-
 
         for (MapItem<ToType> m : mapItems) {
             MapItemType mt = new MapItemType();

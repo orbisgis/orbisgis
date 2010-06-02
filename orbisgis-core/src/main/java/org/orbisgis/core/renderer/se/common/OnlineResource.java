@@ -39,6 +39,10 @@ public class OnlineResource implements ExternalGraphicSource {
         this.url = new URL(url);
     }
 
+    public OnlineResource(OnlineResourceType onlineResource) throws MalformedURLException {
+        this.url = new URL(onlineResource.getHref());
+    }
+
     public URL getUrl() {
         return url;
     }
@@ -53,41 +57,48 @@ public class OnlineResource implements ExternalGraphicSource {
         PlanarImage img = JAI.create("url", url);
 
         if (viewBox != null) {
+            if (ds == null && viewBox != null && viewBox.dependsOnFeature()) {
+                throw new ParameterException("View box depends on feature");
+            }
+
             ParameterBlock pb = new ParameterBlock();
             pb.addSource(img);
-            
+
             double width = img.getWidth();
             double height = img.getHeight();
 
-            Dimension dim = viewBox.getDimension(ds, fid, height / width );
+            Dimension dim = viewBox.getDimension(ds, fid, height / width);
 
             double widthDst = dim.getWidth();
             double heightDst = dim.getHeight();
 
-            double ratio_x = widthDst / width;
-            double ratio_y = heightDst / height;
+            if (widthDst > 0 && heightDst > 0) {
 
-            pb.add((float)ratio_x);
-            pb.add((float)ratio_y);
-            pb.add(0.0F);
-            pb.add(0.0F);
-            pb.add(new InterpolationBilinear());
+                double ratio_x = widthDst / width;
+                double ratio_y = heightDst / height;
 
-            return JAI.create("scale", pb, null);
-        }
-        else  {
+                pb.add((float) ratio_x);
+                pb.add((float) ratio_y);
+                pb.add(0.0F);
+                pb.add(0.0F);
+                pb.add(new InterpolationBilinear());
+
+                return JAI.create("scale", pb, null);
+            } else {
+                return null;
+            }
+        } else {
             return img;
         }
     }
 
     @Override
-    public void setJAXBSource(ExternalGraphicType e){
+    public void setJAXBSource(ExternalGraphicType e) {
         OnlineResourceType o = new OnlineResourceType();
-        
+
         o.setHref(url.toExternalForm());
-        
+
         e.setOnlineResource(o);
     }
-
     private URL url;
 }

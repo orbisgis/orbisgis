@@ -15,6 +15,7 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementRef;
 import javax.xml.bind.annotation.XmlSchemaType;
 import javax.xml.bind.annotation.XmlType;
+import org.orbisgis.core.renderer.se.fill.Fill;
 
 
 /**
@@ -133,5 +134,4 @@ public class HaloType {
     public void setFill(JAXBElement<? extends FillType> value) {
         this.fill = ((JAXBElement<? extends FillType> ) value);
     }
-
 }

@@ -10,14 +10,21 @@ import java.io.IOException;
 import javax.media.jai.PlanarImage;
 import javax.media.jai.RenderableGraphics;
 import javax.xml.bind.JAXBElement;
+
 import org.orbisgis.core.renderer.persistance.se.ExternalGraphicType;
 import org.orbisgis.core.renderer.persistance.se.ObjectFactory;
+
 import org.gdms.data.DataSource;
+
 import org.orbisgis.core.renderer.se.common.Halo;
 import org.orbisgis.core.renderer.se.common.MapEnv;
+import org.orbisgis.core.renderer.se.common.OnlineResource;
 import org.orbisgis.core.renderer.se.common.Uom;
+
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
+import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
+import org.orbisgis.core.renderer.se.transform.Transform;
 
 /**
  * an external graphic is an image such as JPG, PNG, SVG.
@@ -30,6 +37,40 @@ import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
  * @author maxence
  */
 public class ExternalGraphic extends Graphic {
+
+    public ExternalGraphic(){
+    }
+
+    ExternalGraphic(JAXBElement<ExternalGraphicType> extG) throws IOException {
+        ExternalGraphicType t = extG.getValue();
+
+        System.out.println ("Real ExtGraphic from XML");
+
+        if (t.getHalo() != null){
+            this.setHalo(new Halo(t.getHalo()));
+        }
+
+        if (t.getOpacity() != null){
+            this.setOpacity(SeParameterFactory.createRealParameter(t.getOpacity()));
+        }
+
+        if (t.getTransform() != null){
+            this.setTransform(new Transform(t.getTransform()));
+        }
+
+        if (t.getUnitOfMeasure() != null){
+            this.setUom(Uom.fromOgcURN(t.getUnitOfMeasure()));
+        }
+
+        if (t.getViewBox() != null){
+            this.setViewBox(new ViewBox(t.getViewBox()));
+        }
+
+        
+        if (t.getOnlineResource() != null){
+            this.setSource(new OnlineResource(t.getOnlineResource()));
+        }
+    }
 
     public Halo getHalo() {
         return halo;
@@ -80,7 +121,12 @@ public class ExternalGraphic extends Graphic {
 
     @Override
     public RenderableGraphics getRenderableGraphics(DataSource ds, long fid) throws ParameterException, IOException {
-        AffineTransform at = transform.getGraphicalAffineTransform(ds, fid, false);
+
+        AffineTransform at = new AffineTransform();
+        if (transform != null){
+            at = transform.getGraphicalAffineTransform(ds, fid, false);
+        }
+
 
         PlanarImage img;
 
@@ -92,6 +138,10 @@ public class ExternalGraphic extends Graphic {
             img = graphic;
         }
 
+        if (img == null){
+            return null;
+        }
+        
         double w = img.getWidth();
         double h = img.getHeight();
 
@@ -145,9 +195,14 @@ public class ExternalGraphic extends Graphic {
                 img = graphic;
             }
 
-            Dimension dim = viewBox.getDimension(ds, fid, img.getHeight() / img.getWidth());
+            if (img != null){
+                Dimension dim = viewBox.getDimension(ds, fid, img.getHeight() / img.getWidth());
 
-            delta = Math.max(dim.getHeight(), dim.getWidth());
+                delta = Math.max(dim.getHeight(), dim.getWidth());
+            }
+            else{
+                return 0.0;
+            }
         }
 
         delta += this.getMargin(ds, fid);
@@ -156,7 +211,7 @@ public class ExternalGraphic extends Graphic {
     }
 
     @Override
-    public JAXBElement<ExternalGraphicType> getJAXBInstance() {
+    public JAXBElement<ExternalGraphicType> getJAXBElement() {
         ExternalGraphicType e = new ExternalGraphicType();
 
         if (halo != null) {

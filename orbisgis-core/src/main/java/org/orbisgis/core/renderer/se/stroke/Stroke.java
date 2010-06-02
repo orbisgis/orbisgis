@@ -6,7 +6,10 @@ import java.io.IOException;
 import javax.xml.bind.JAXBElement;
 import org.orbisgis.core.renderer.persistance.se.StrokeType;
 import org.gdms.data.DataSource;
+import org.orbisgis.core.renderer.persistance.se.GraphicFillType;
+import org.orbisgis.core.renderer.persistance.se.GraphicStrokeType;
 import org.orbisgis.core.renderer.persistance.se.ObjectFactory;
+import org.orbisgis.core.renderer.persistance.se.PenStrokeType;
 import org.orbisgis.core.renderer.se.SymbolizerNode;
 import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
@@ -19,6 +22,24 @@ import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
  * @author maxence
  */
 public abstract class Stroke implements SymbolizerNode {
+
+    /**
+     * Create a new fill based on the jaxbelement
+     *
+     * @param s XML Fill
+     * @return Java Fill
+     */
+    public static Stroke createFromJAXBElement(JAXBElement<? extends StrokeType> s){
+        if (s.getDeclaredType() == PenStrokeType.class){
+            return new PenStroke((JAXBElement<PenStrokeType>)s);
+        }
+        else if (s.getDeclaredType() == GraphicStrokeType.class){
+            return new GraphicStroke((JAXBElement<GraphicStrokeType>)s);
+        }
+
+        // TODO Shoudl never occurs !
+        return null;
+    }
 
     public void setUom(Uom uom) {
         this.uom = uom;
@@ -91,7 +112,7 @@ public abstract class Stroke implements SymbolizerNode {
         return shp;
     }
 
-    public abstract JAXBElement<? extends StrokeType> getJAXBInstance();
+    public abstract JAXBElement<? extends StrokeType> getJAXBElement();
 
     protected void setJAXBProperties(StrokeType s) {
         if (postGap != null) {
@@ -105,8 +126,8 @@ public abstract class Stroke implements SymbolizerNode {
         }
     }
 
-    private Uom uom;
+    protected Uom uom;
     protected RealParameter preGap;
     protected RealParameter postGap;
-    private SymbolizerNode parent;
+    protected SymbolizerNode parent;
 }

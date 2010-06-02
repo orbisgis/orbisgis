@@ -8,6 +8,7 @@ import org.orbisgis.core.renderer.persistance.se.ObjectFactory;
 import org.orbisgis.core.renderer.persistance.se.SolidFillType;
 import org.gdms.data.DataSource;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
+import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
 import org.orbisgis.core.renderer.se.parameter.color.ColorHelper;
 import org.orbisgis.core.renderer.se.parameter.color.ColorLiteral;
 import org.orbisgis.core.renderer.se.parameter.color.ColorParameter;
@@ -55,6 +56,16 @@ public class SolidFill extends Fill{
         this.opacity = opacity;
     }
 
+    public SolidFill(JAXBElement<SolidFillType> sf){
+        if (sf.getValue().getColor() != null){
+            this.color = SeParameterFactory.createColorParameter(sf.getValue().getColor());
+        }
+
+        if (sf.getValue().getOpacity() != null){
+            this.opacity = SeParameterFactory.createRealParameter(sf.getValue().getOpacity());
+        }
+    }
+
     public void setColor(ColorParameter color){
         this.color = color;
     }
@@ -77,7 +88,12 @@ public class SolidFill extends Fill{
         if (color != null){
 
             Color c = color.getColor(ds, fid);
-            double op = this.opacity.getValue(ds, fid);
+
+            Double op = 100.0;
+            
+            if (this.opacity != null){
+                op = this.opacity.getValue(ds, fid);
+            }
             
             // Add opacity to the color 
             Color ac = ColorHelper.getColorWithAlpha(c, op);
@@ -106,7 +122,7 @@ public class SolidFill extends Fill{
     }
 
     @Override
-    public JAXBElement<SolidFillType> getJAXBInstance(){
+    public JAXBElement<SolidFillType> getJAXBElement(){
         ObjectFactory of = new ObjectFactory();
         return of.createSolidFill(this.getJAXBType());
     }

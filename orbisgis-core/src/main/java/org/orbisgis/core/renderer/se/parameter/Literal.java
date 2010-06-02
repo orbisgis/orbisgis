@@ -27,19 +27,15 @@ public abstract class Literal implements SeParameter {
     public ParameterValueType getJAXBParameterValueType()
     {
         ParameterValueType p = new ParameterValueType();
-        p.getContent().add(this.getJAXBExpressionType());
+        p.getContent().add(this.toString());
         return p;
     }
 
     @Override
     public JAXBElement<? extends ExpressionType> getJAXBExpressionType() {
-
         LiteralType l = new LiteralType();
-
         l.getContent().add(this.toString());
-
         ObjectFactory of = new ObjectFactory();
-
         return of.createLiteral(l);
     }
 

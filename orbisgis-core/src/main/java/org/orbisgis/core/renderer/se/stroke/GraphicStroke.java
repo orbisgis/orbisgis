@@ -21,6 +21,10 @@ import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 
 public class GraphicStroke extends Stroke {
 
+    GraphicStroke(JAXBElement<GraphicStrokeType> jAXBElement) {
+        throw new UnsupportedOperationException("Not yet implemented");
+    }
+
     public void setGraphicCollection(GraphicCollection graphic) {
         this.graphic = graphic;
     }
@@ -49,26 +53,28 @@ public class GraphicStroke extends Stroke {
     public void draw(Graphics2D g2, Shape shp, DataSource ds, long fid) throws ParameterException, IOException {
         RenderableGraphics g = graphic.getGraphic(ds, fid);
 
-        double l;
-        if (length != null) {
-            l = length.getValue(ds, fid);
-            if (l <= 0.0) {
-                // TODO l \in R-* is forbiden ! Should throw, or set l = line.linearLength()
-                // for the time, let us l = graphic natural length...
+        if (g != null) {
+            double l;
+            if (length != null) {
+                l = length.getValue(ds, fid);
+                if (l <= 0.0) {
+                    // TODO l \in R-* is forbiden ! Should throw, or set l = line.linearLength()
+                    // for the time, let us l = graphic natural length...
+                    l = (double) g.getWidth();
+                }
+            } else {
                 l = (double) g.getWidth();
             }
-        } else {
-            l = (double) g.getWidth();
-        }
 
-        // TODO implements :
-        /*
-         * dont forget to take into account preGap and postGap !!!
-         * Split the line in n part of linear length == l
-         * for each part
-         *   fetch the point at half the linear length
-         *   plot g on this point, according to the orientation
-         */
+            /* TODO implements :
+             *
+             * dont forget to take into account preGap and postGap !!!
+             * Split the line in n part of linear length == l
+             * for each part
+             *   fetch the point at half the linear length
+             *   plot g on this point, according to the orientation
+             */
+        }
     }
 
     @Override
@@ -76,20 +82,19 @@ public class GraphicStroke extends Stroke {
         return graphic.getMaxWidth(ds, fid);
     }
 
-
     @Override
-    public JAXBElement<GraphicStrokeType> getJAXBInstance(){
+    public JAXBElement<GraphicStrokeType> getJAXBElement() {
         ObjectFactory of = new ObjectFactory();
         return of.createGraphicStroke(this.getJAXBType());
     }
- 
+
     private GraphicStrokeType getJAXBType() {
         GraphicStrokeType s = new GraphicStrokeType();
 
         this.setJAXBProperties(s);
 
         if (graphic != null) {
-            s.setGraphic(graphic.getJAXBInstance());
+            s.setGraphic(graphic.getJAXBElement());
         }
         if (length != null) {
             s.setLength(length.getJAXBParameterValueType());
@@ -102,5 +107,4 @@ public class GraphicStroke extends Stroke {
     private GraphicCollection graphic;
     private RealParameter length;
     private RelativeOrientation orientation;
-
 }

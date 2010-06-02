@@ -7,6 +7,7 @@ import org.orbisgis.core.renderer.persistance.ogc.BinaryOperatorType;
 import org.orbisgis.core.renderer.persistance.ogc.ExpressionType;
 import org.orbisgis.core.renderer.persistance.se.ParameterValueType;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
+import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
 
 public class RealBinaryOperator implements RealParameter {
 
@@ -24,6 +25,29 @@ public class RealBinaryOperator implements RealParameter {
         this.l = l;
         this.r = r;
         this.op = op;
+    }
+
+    public RealBinaryOperator(JAXBElement<BinaryOperatorType> expr){
+
+        BinaryOperatorType t = expr.getValue();
+
+        this.setLeftValue(SeParameterFactory.createRealParameter((JAXBElement<? extends ExpressionType>)t.getExpression().get(0)));
+        this.setRightValue(SeParameterFactory.createRealParameter((JAXBElement<? extends ExpressionType>)t.getExpression().get(1)));
+
+        String operator = expr.getName().getLocalPart();
+        
+        if (operator.equals("Add")){
+            this.op = RealBinaryOperatorType.ADD;
+        }
+        else if (operator.equals("Mul")){
+            this.op = RealBinaryOperatorType.MUL;
+        }
+        else if (operator.equals("Sub")){
+            this.op = RealBinaryOperatorType.SUB;
+        }
+        else if (operator.equals("Div")){
+            this.op = RealBinaryOperatorType.DIV;
+        }
     }
 
     public RealParameter getLeftValue() {

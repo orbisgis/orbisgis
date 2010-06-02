@@ -12,6 +12,7 @@ import org.orbisgis.core.renderer.persistance.se.TranslateType;
 import org.orbisgis.core.renderer.se.common.MapEnv;
 import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
+import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 
 /**
@@ -24,6 +25,15 @@ public class Translate implements Transformation {
         this.x = x;
         this.y = y;
     }
+
+    Translate(TranslateType t) {
+        if (t.getX() != null)
+            this.x = SeParameterFactory.createRealParameter(t.getX());
+        if (t.getY() != null)
+            this.y = SeParameterFactory.createRealParameter(t.getY());
+    }
+
+
 
     @Override
     public boolean allowedForGeometries() {
@@ -47,6 +57,13 @@ public class Translate implements Transformation {
 
     @Override
     public JAXBElement<?> getJAXBElement(){
+        TranslateType t = this.getJAXBType();
+        ObjectFactory of = new ObjectFactory();
+        return of.createTranslate(t);
+    }
+
+    @Override
+    public TranslateType getJAXBType(){
         TranslateType t = new TranslateType();
 
         if (x != null)
@@ -55,8 +72,7 @@ public class Translate implements Transformation {
         if (y != null)
             t.setY(y.getJAXBParameterValueType());
 
-        ObjectFactory of = new ObjectFactory();
-        return of.createTranslate(t);
+        return t;
     }
 
     private RealParameter x;

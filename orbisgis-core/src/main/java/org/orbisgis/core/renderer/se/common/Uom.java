@@ -46,8 +46,26 @@ public enum Uom {
         }
     }
 
+
+    public static Uom fromOgcURN(String unitOfMeasure) {
+        if (unitOfMeasure.equals("ogc:se:unit:in"))
+            return Uom.IN;
+        if (unitOfMeasure.equals("ogc:se:unit:px"))
+            return Uom.PX;
+        if (unitOfMeasure.equals("ogc:se:unit:pt"))
+            return Uom.PT;
+        if (unitOfMeasure.equals("ogc:se:unit:percent"))
+            return Uom.PERCENT;
+        if (unitOfMeasure.equals("ogc:se:unit:gm"))
+            return Uom.G_M;
+        if (unitOfMeasure.equals("ogc:se:unit:gf"))
+            return Uom.G_FT;
+        else
+            return Uom.MM;
+    }
+
     public String toURN(){
-        return "ogc::se:unit:" + this.name();
+        return "ogc::se:unit:" + this.name().toLowerCase();
     }
 
     public String toString() {

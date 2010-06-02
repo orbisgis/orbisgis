@@ -21,10 +21,31 @@ import org.orbisgis.core.renderer.se.common.MapEnv;
 
 import org.orbisgis.core.renderer.se.graphic.GraphicCollection;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
+import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 import org.orbisgis.core.renderer.se.stroke.PenStroke;
 
 public class DensityFill extends Fill {
+
+    public DensityFill(){
+    }
+
+    DensityFill(JAXBElement<DensityFillType> f) {
+
+        DensityFillType t = f.getValue();
+
+        if (t.getPenStroke() != null){
+            this.setHatches(new PenStroke(t.getPenStroke()));
+
+            if (t.getOrientation() != null){
+                this.setHatchesOrientation(SeParameterFactory.createRealParameter(t.getOrientation()));
+            }
+        }
+
+        if (t.getPercentage() != null){
+            this.setPercentageCovered(SeParameterFactory.createRealParameter(t.getPercentage()));
+        }
+    }
 
     public void setHatches(PenStroke hatches) {
         this.hatches = hatches;
@@ -151,6 +172,7 @@ public class DensityFill extends Fill {
                 ix = Math.abs(ix);
                 iy = Math.abs(iy);
 
+
                 BufferedImage i = new BufferedImage(ix, iy, BufferedImage.TYPE_4BYTE_ABGR);
                 Graphics2D tile = i.createGraphics();
 
@@ -180,7 +202,11 @@ public class DensityFill extends Fill {
 
             } else if (mark != null) { // Marked
                 RenderableGraphics g = mark.getGraphic(ds, fid);
-                painter = null; // TODO IMPLEMENT: create TexturePaint, see GraphicFill.getTexturePaint
+
+                if (g != null){
+                    // TODO IMPLEMENT: create TexturePaint, see GraphicFill.getTexturePaint
+                    // painter = new TexturePaint(...);
+                }
             } else {
                 throw new ParameterException("Neither marks or hatches are defined");
             }
@@ -207,7 +233,7 @@ public class DensityFill extends Fill {
         }
         else{
             if (mark != null){
-                f.setGraphic(mark.getJAXBInstance());
+                f.setGraphic(mark.getJAXBElement());
             }
         }
 
@@ -220,7 +246,7 @@ public class DensityFill extends Fill {
 
 
     @Override
-    public JAXBElement<DensityFillType> getJAXBInstance(){
+    public JAXBElement<DensityFillType> getJAXBElement(){
         ObjectFactory of = new ObjectFactory();
         return of.createDensityFill(this.getJAXBType());
     }

@@ -27,6 +27,9 @@ public abstract class Interpolate<ToType extends SeParameter, FallbackType exten
         LINEAR, COSINE, CUBIC
     }
 
+    protected Interpolate(){
+    }
+
     public Interpolate(FallbackType fallbackValue) {
         this.fallbackValue = fallbackValue;
         this.i_points = new ArrayList<InterpolationPoint<ToType>>();
@@ -139,8 +142,8 @@ public abstract class Interpolate<ToType extends SeParameter, FallbackType exten
         return of.createInterpolate(i);
     }
 
-    private InterpolationMode mode;
-    private RealParameter lookupValue;
-    private FallbackType fallbackValue;
-    private ArrayList<InterpolationPoint<ToType>> i_points;
+    protected InterpolationMode mode;
+    protected RealParameter lookupValue;
+    protected FallbackType fallbackValue;
+    protected ArrayList<InterpolationPoint<ToType>> i_points;
 }

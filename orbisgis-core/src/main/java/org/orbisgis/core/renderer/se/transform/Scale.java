@@ -12,6 +12,7 @@ import org.orbisgis.core.renderer.persistance.se.ScaleType;
 import org.orbisgis.core.renderer.se.common.MapEnv;
 import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
+import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 
 /**
@@ -28,6 +29,20 @@ public class Scale implements Transformation {
     public Scale(RealParameter xy) {
         this.x = xy;
         this.y = xy;
+    }
+
+    Scale(ScaleType s) {
+        if (s.getXY() != null) {
+            this.x = SeParameterFactory.createRealParameter(s.getXY());
+            this.y = SeParameterFactory.createRealParameter(s.getXY());
+        } else {
+            if (s.getX() != null) {
+                this.x = SeParameterFactory.createRealParameter(s.getX());
+            }
+            if (s.getY() != null) {
+                this.y = SeParameterFactory.createRealParameter(s.getY());
+            }
+        }
     }
 
     public RealParameter getX() {
@@ -68,6 +83,14 @@ public class Scale implements Transformation {
 
     @Override
     public JAXBElement<?> getJAXBElement() {
+        ScaleType s = this.getJAXBType();
+
+        ObjectFactory of = new ObjectFactory();
+        return of.createScale(s);
+    }
+
+    @Override
+    public ScaleType getJAXBType() {
         ScaleType s = new ScaleType();
 
         if (y == null || x == null) {
@@ -87,10 +110,8 @@ public class Scale implements Transformation {
                 s.setY(y.getJAXBParameterValueType());
             }
         }
-        ObjectFactory of = new ObjectFactory();
-        return of.createScale(s);
+        return s;
     }
-    
     private RealParameter x;
     private RealParameter y;
 }

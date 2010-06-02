@@ -1,14 +1,30 @@
 package org.orbisgis.core.renderer.se.parameter.real;
 
+import javax.xml.bind.JAXBElement;
 import org.gdms.data.DataSource;
+import org.orbisgis.core.renderer.persistance.se.MapItemType;
+import org.orbisgis.core.renderer.persistance.se.RecodeType;
+import org.orbisgis.core.renderer.se.parameter.MapItem;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.Recode;
+import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
 import org.orbisgis.core.renderer.se.parameter.string.StringParameter;
 
 public class Recode2Real extends Recode<RealParameter, RealLiteral> implements RealParameter {
 
     public Recode2Real(RealLiteral fallback, StringParameter lookupValue){
         super(fallback, lookupValue);
+    }
+
+    public Recode2Real(JAXBElement<RecodeType> expr) {
+        RecodeType t = expr.getValue();
+
+        this.fallbackValue = new RealLiteral(t.getFallbackValue());
+        this.setLookupValue(SeParameterFactory.createStringParameter(t.getLookupValue()));
+
+        for (MapItemType mi : t.getMapItem()){
+            this.addMapItem(mi.getKey(), SeParameterFactory.createRealParameter(mi.getValue()));
+        }
     }
 
     @Override

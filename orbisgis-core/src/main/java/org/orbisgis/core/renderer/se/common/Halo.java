@@ -12,6 +12,7 @@ import org.orbisgis.core.renderer.se.SymbolizerNode;
 import org.orbisgis.core.renderer.se.fill.Fill;
 import org.orbisgis.core.renderer.se.fill.SolidFill;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
+import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
 import org.orbisgis.core.renderer.se.parameter.real.RealLiteral;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 
@@ -25,6 +26,20 @@ public class Halo implements SymbolizerNode {
     public Halo(Fill fill, RealParameter radius) {
         this.fill = fill;
         this.radius = radius;
+    }
+
+    public Halo(HaloType halo) {
+        if (halo.getFill() != null) {
+            this.setFill(Fill.createFromJAXBElement(halo.getFill()));
+        }
+
+        if (halo.getRadius() != null){
+            this.setRadius(SeParameterFactory.createRealParameter(halo.getRadius()));
+        }
+
+        if (halo.getUnitOfMeasure() != null){
+            this.setUom(Uom.fromOgcURN(halo.getUnitOfMeasure()));
+        }
     }
 
     @Override
@@ -83,16 +98,15 @@ public class Halo implements SymbolizerNode {
         }
     }
 
-    public HaloType getJAXBType(){
+    public HaloType getJAXBType() {
         HaloType h = new HaloType();
 
-        h.setFill(fill.getJAXBInstance());
+        h.setFill(fill.getJAXBElement());
         h.setRadius(radius.getJAXBParameterValueType());
         h.setUnitOfMeasure(uom.toURN());
-        
+
         return h;
     }
-
     private Uom uom;
     private RealParameter radius;
     private Fill fill;

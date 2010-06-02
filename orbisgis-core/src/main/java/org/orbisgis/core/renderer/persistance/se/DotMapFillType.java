@@ -26,9 +26,9 @@ import javax.xml.bind.annotation.XmlType;
  *   &lt;complexContent>
  *     &lt;extension base="{http://www.opengis.net/se}FillType">
  *       &lt;sequence>
- *         &lt;element ref="{http://www.opengis.net/se}Graphic" minOccurs="0"/>
- *         &lt;element ref="{http://www.opengis.net/se}ValuePerMark" minOccurs="0"/>
- *         &lt;element ref="{http://www.opengis.net/se}ValueToRepresent" minOccurs="0"/>
+ *         &lt;element ref="{http://www.opengis.net/se}Graphic" />
+ *         &lt;element ref="{http://www.opengis.net/se}ValuePerMark" />
+ *         &lt;element ref="{http://www.opengis.net/se}ValueToRepresent" />
  *       &lt;/sequence>
  *     &lt;/extension>
  *   &lt;/complexContent>
@@ -49,9 +49,9 @@ public class DotMapFillType
 
     @XmlElementRef(name = "Graphic", namespace = "http://www.opengis.net/se", type = JAXBElement.class)
     protected JAXBElement<? extends GraphicType> graphic;
-    @XmlElement(name = "ValuePerMark")
+    @XmlElement(name = "ValuePerMark", required = true)
     protected ParameterValueType valuePerMark;
-    @XmlElement(name = "ValueToRepresent")
+    @XmlElement(name = "ValueToRepresent", required = true)
     protected ParameterValueType valueToRepresent;
 
     /**

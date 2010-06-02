@@ -10,16 +10,19 @@ import org.gdms.data.SpatialDataSourceDecorator;
 import org.gdms.driver.DriverException;
 
 import org.orbisgis.core.renderer.liteShape.LiteShape;
+import org.orbisgis.core.renderer.persistance.se.SymbolizerType;
 
 import org.orbisgis.core.renderer.se.common.Uom;
 
 import org.orbisgis.core.renderer.se.fill.Fill;
 import org.orbisgis.core.renderer.se.fill.SolidFill;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
+import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 
 import org.orbisgis.core.renderer.se.stroke.PenStroke;
 import org.orbisgis.core.renderer.se.stroke.Stroke;
+import org.orbisgis.core.renderer.se.transform.Transform;
 
 public class AreaSymbolizer extends VectorSymbolizer {
 
@@ -31,6 +34,39 @@ public class AreaSymbolizer extends VectorSymbolizer {
         stroke = new PenStroke();
         stroke.setParent(this);
     }
+
+
+    public AreaSymbolizer(JAXBElement<AreaSymbolizerType> st){
+        super((JAXBElement<? extends SymbolizerType>) st);
+
+        AreaSymbolizerType ast = st.getValue();
+
+        
+        if (ast.getGeometry() != null){
+            // TODO
+        }
+
+        if (ast.getUnitOfMeasure() != null){
+            this.uom = Uom.fromOgcURN(ast.getUnitOfMeasure());
+        }
+
+        if (ast.getPerpendicularOffset() != null){
+            this.setPerpendicularOffset(SeParameterFactory.createRealParameter(ast.getPerpendicularOffset()));
+        }
+
+        if (ast.getTransform() != null){
+            this.setTransform( new Transform(ast.getTransform()));
+        }
+
+        if (ast.getFill() != null){
+            this.setFill(Fill.createFromJAXBElement(ast.getFill()));
+        }
+
+        if (ast.getStroke() != null){
+            this.setStroke(Stroke.createFromJAXBElement(ast.getStroke()));
+        }
+    }
+
 
     public void setStroke(Stroke stroke) {
         if (stroke != null) {
@@ -91,14 +127,15 @@ public class AreaSymbolizer extends VectorSymbolizer {
     }
 
     @Override
-    public JAXBElement<AreaSymbolizerType> getJAXBInstance() {
-        System.out.println("JAXAreaSymbolizer");
+    public JAXBElement<AreaSymbolizerType> getJAXBElement() {
         ObjectFactory of = new ObjectFactory();
         AreaSymbolizerType s = of.createAreaSymbolizerType();
 
         this.setJAXBProperty(s);
 
-        s.setUnitOfMeasure(this.getUom().toURN());
+        if (uom != null){
+            s.setUnitOfMeasure(this.getUom().toURN());
+        }
 
         if (transform != null) {
             s.setTransform(transform.getJAXBType());
@@ -109,11 +146,11 @@ public class AreaSymbolizer extends VectorSymbolizer {
         }
 
         if (fill != null) {
-            s.setFill(fill.getJAXBInstance());
+            s.setFill(fill.getJAXBElement());
         }
 
         if (stroke != null) {
-            s.setStroke(stroke.getJAXBInstance());
+            s.setStroke(stroke.getJAXBElement());
         }
 
         return of.createAreaSymbolizer(s);

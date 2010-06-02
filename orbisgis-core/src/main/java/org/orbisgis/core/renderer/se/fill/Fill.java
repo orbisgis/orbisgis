@@ -6,6 +6,10 @@ import java.io.IOException;
 import javax.xml.bind.JAXBElement;
 import org.orbisgis.core.renderer.persistance.se.FillType;
 import org.gdms.data.DataSource;
+import org.orbisgis.core.renderer.persistance.se.DensityFillType;
+import org.orbisgis.core.renderer.persistance.se.DotMapFillType;
+import org.orbisgis.core.renderer.persistance.se.GraphicFillType;
+import org.orbisgis.core.renderer.persistance.se.SolidFillType;
 import org.orbisgis.core.renderer.se.SymbolizerNode;
 import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
@@ -19,6 +23,32 @@ import org.orbisgis.core.renderer.se.parameter.ParameterException;
  * @author maxence
  */
 public abstract class Fill implements SymbolizerNode {
+
+    /**
+     * Create a new fill based on the jaxbelement
+     *
+     * @param f XML Fill
+     * @return Java Fill
+     */
+    public static Fill createFromJAXBElement(JAXBElement<? extends FillType> f){
+        if (f.getDeclaredType() == SolidFillType.class){
+            return new SolidFill((JAXBElement<SolidFillType>)f);
+        }
+        else if (f.getDeclaredType() == GraphicFillType.class){
+            return new GraphicFill((JAXBElement<GraphicFillType>)f);
+        }
+        else if (f.getDeclaredType() == DensityFillType.class){
+            return new DensityFill((JAXBElement<DensityFillType>)f);
+        }
+        else if (f.getDeclaredType() == DotMapFillType.class){
+            return new DotMapFill((JAXBElement<DotMapFillType>)f);
+        }
+        else{
+            // TODO Throw should never occurs...
+            return new SolidFill();
+        }
+
+    }
 
     @Override
     public void setParent(SymbolizerNode node){
@@ -46,7 +76,7 @@ public abstract class Fill implements SymbolizerNode {
      */
     public abstract void draw(Graphics2D g2, Shape shp, DataSource ds, long fid) throws ParameterException, IOException;
 
-    public abstract JAXBElement<? extends FillType> getJAXBInstance();
+    public abstract JAXBElement<? extends FillType> getJAXBElement();
     public abstract FillType getJAXBType();
 
     protected SymbolizerNode parent;

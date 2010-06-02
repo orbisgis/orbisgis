@@ -26,6 +26,10 @@ import org.orbisgis.core.renderer.se.parameter.ParameterException;
  */
 public class LineLabel extends Label {
 
+    LineLabel(JAXBElement<LineLabelType> l) {
+        super(l);
+    }
+
     /**
      *
      */
@@ -49,7 +53,7 @@ public class LineLabel extends Label {
 
 
     @Override
-    public JAXBElement<LineLabelType> getJAXBInstance() {
+    public JAXBElement<LineLabelType> getJAXBElement() {
         LineLabelType ll = new LineLabelType();
 
         if (uom != null) {

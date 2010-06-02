@@ -250,10 +250,6 @@ public class GraphicCollectionTest extends TestCase {
         RenderableGraphics rg;
         rg = collec.getGraphic(null, 0);
 
-        System.out.println ("DJ: " + dj);
-        System.out.println ("RG: " + rg);
-        System.out.println ("Rendered : " + rg.createDefaultRendering());
-
         RenderContext ctc = MapEnv.getCurrentRenderContext();
 
         rg.setPaint(Color.BLACK);

@@ -12,6 +12,7 @@ import org.orbisgis.core.renderer.persistance.se.RotateType;
 import org.orbisgis.core.renderer.se.common.MapEnv;
 import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
+import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 
 /**
@@ -30,6 +31,20 @@ public class Rotate implements Transformation {
         this.rotation = rotation;
         this.x = ox;
         this.y = oy;
+    }
+
+    Rotate(RotateType r) {
+        if (r.getAngle() != null){
+            this.rotation = SeParameterFactory.createRealParameter(r.getAngle());
+        }
+
+        if (r.getX() != null){
+            this.x = SeParameterFactory.createRealParameter(r.getX());
+        }
+
+        if (r.getY() != null){
+            this.y = SeParameterFactory.createRealParameter(r.getY());
+        }
     }
 
     public RealParameter getRotation() {
@@ -68,28 +83,35 @@ public class Rotate implements Transformation {
         if (x != null) {
             ox = Uom.toPixel(x.getValue(ds, fid), uom, MapEnv.getScaleDenominator());
 
-            
+
         }
         double oy = 0.0;
         if (y != null) {
             oy = Uom.toPixel(y.getValue(ds, fid), uom, MapEnv.getScaleDenominator());
 
 
-            
+
         }
         double theta = 0.0;
         if (rotation != null) {
             theta = rotation.getValue(ds, fid) * Math.PI / 180.0; // convert to rad
 
-            
+
         }
         return AffineTransform.getRotateInstance(theta, ox, oy);
     }
 
     @Override
-    public JAXBElement<?> getJAXBElement(){
-        RotateType r = new RotateType();
+    public JAXBElement<?> getJAXBElement() {
+        RotateType r = this.getJAXBType();
+        ObjectFactory of = new ObjectFactory();
+        return of.createRotate(r);
+    }
 
+    @Override
+    public RotateType getJAXBType(){
+        RotateType r = new RotateType();
+        
         if (rotation != null) {
             r.setAngle(rotation.getJAXBParameterValueType());
         }
@@ -101,9 +123,8 @@ public class Rotate implements Transformation {
         if (y != null) {
             r.setY(y.getJAXBParameterValueType());
         }
-
-        ObjectFactory of = new ObjectFactory();
-        return of.createRotate(r);
+        
+        return r;
     }
     
     private RealParameter x;

@@ -10,10 +10,35 @@ import org.gdms.data.DataSource;
 import org.orbisgis.core.renderer.persistance.se.ObjectFactory;
 import org.orbisgis.core.renderer.persistance.se.TextGraphicType;
 import org.orbisgis.core.renderer.se.common.MapEnv;
+import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.label.StyledLabel;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
+import org.orbisgis.core.renderer.se.transform.Transform;
 
 public class TextGraphic extends Graphic {
+
+    public TextGraphic(){
+    }
+
+    TextGraphic(JAXBElement<TextGraphicType> tge) {
+
+        System.out.println("Dans texyt");
+
+        TextGraphicType tgt = tge.getValue();
+
+        if (tgt.getUnitOfMeasure() != null) {
+            this.setUom(Uom.fromOgcURN(tgt.getUnitOfMeasure()));
+        }
+
+        if (tgt.getTransform() != null) {
+            this.setTransform(new Transform(tgt.getTransform()));
+        }
+
+
+        if (tgt.getStyledLabel() != null){
+            this.setStyledLabel(new StyledLabel(tgt.getStyledLabel()));
+        }
+    }
 
     public StyledLabel getStyledLabel() {
         return styledLabel;
@@ -56,7 +81,7 @@ public class TextGraphic extends Graphic {
     }
 
     @Override
-    public JAXBElement<TextGraphicType> getJAXBInstance() {
+    public JAXBElement<TextGraphicType> getJAXBElement() {
         TextGraphicType t = new TextGraphicType();
 
         if (styledLabel != null) {

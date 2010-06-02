@@ -1,6 +1,5 @@
 package org.orbisgis.core.renderer.se.graphic;
 
-
 import java.io.IOException;
 import javax.media.jai.RenderableGraphics;
 import javax.xml.bind.JAXBElement;
@@ -9,10 +8,13 @@ import org.orbisgis.core.renderer.persistance.se.AxisChartType;
 import org.orbisgis.core.renderer.persistance.se.NormalizeType;
 import org.orbisgis.core.renderer.persistance.se.ObjectFactory;
 import org.orbisgis.core.renderer.persistance.se.PolarChartType;
+import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.fill.Fill;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
+import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 import org.orbisgis.core.renderer.se.stroke.Stroke;
+import org.orbisgis.core.renderer.se.transform.Transform;
 
 /**
  *
@@ -21,9 +23,46 @@ import org.orbisgis.core.renderer.se.stroke.Stroke;
  */
 public class AxisChart extends Graphic {
 
-    public enum AxisType {
+    public AxisChart(){
+        
+    }
 
-        POLAR, DISCRETE;
+    AxisChart(JAXBElement<AxisChartType> chartE) {
+        this();
+        AxisChartType t = chartE.getValue();
+
+        if (t.getUnitOfMeasure() != null) {
+            this.setUom(Uom.fromOgcURN(t.getUnitOfMeasure()));
+        }
+
+        if (t.getTransform() != null) {
+            this.setTransform(new Transform(t.getTransform()));
+        }
+
+        this.setNormalizedToPercent(t.getNormalize() != null);
+
+        this.setAxisType(t.getPolarChart() != null);
+
+
+        if (t.getCategoryWidth() != null) {
+            this.setCategoryWidth(SeParameterFactory.createRealParameter(t.getCategoryWidth()));
+        }
+
+        if (t.getCategoryGap() != null) {
+            this.setCategoryGap(SeParameterFactory.createRealParameter(t.getCategoryGap()));
+        }
+
+        if (t.getFill() != null) {
+            this.setAreaFill(Fill.createFromJAXBElement(t.getFill()));
+        }
+
+        if (t.getStroke() != null) {
+            this.setLineStroke(Stroke.createFromJAXBElement(t.getStroke()));
+        }
+
+        if (t.getAxisScale() != null){
+            this.setAxisScale(new AxisScale(t.getAxisScale()));
+        }
     }
 
     public Fill getAreaFill() {
@@ -43,13 +82,23 @@ public class AxisChart extends Graphic {
         this.axisScale = axisScale;
     }
 
-    public AxisType getAxisType() {
-        return axisType;
+    public boolean isPolarChart() {
+        return isPolarChart;
     }
 
-    public void setAxisType(AxisType axisType) {
-        this.axisType = axisType;
+    public void switchToPolarChart(){
+        isPolarChart = true;
     }
+
+    
+    public void switchToAxisChart(){
+        isPolarChart = true;
+    }
+
+    public void setAxisType(boolean isPolar){
+        this.isPolarChart = isPolar;
+    }
+
 
     public RealParameter getCategoryGap() {
         return categoryGap;
@@ -95,7 +144,7 @@ public class AxisChart extends Graphic {
     }
 
     @Override
-    public JAXBElement<AxisChartType> getJAXBInstance() {
+    public JAXBElement<AxisChartType> getJAXBElement() {
         AxisChartType a = new AxisChartType();
 
         if (axisScale != null) {
@@ -111,19 +160,19 @@ public class AxisChart extends Graphic {
         }
 
         if (areaFill != null) {
-            a.setFill(areaFill.getJAXBInstance());
+            a.setFill(areaFill.getJAXBElement());
         }
 
         if (normalizeToPercent) {
             a.setNormalize(new NormalizeType());
         }
 
-        if (1 == 0) {
+        if (this.isPolarChart) {
             a.setPolarChart(new PolarChartType());
         }
 
         if (lineStroke != null) {
-            a.setStroke(lineStroke.getJAXBInstance());
+            a.setStroke(lineStroke.getJAXBElement());
         }
 
         if (transform != null) {
@@ -137,13 +186,15 @@ public class AxisChart extends Graphic {
         ObjectFactory of = new ObjectFactory();
         return of.createAxisChart(a);
     }
+
     private boolean normalizeToPercent;
+    private boolean isPolarChart;
     private AxisScale axisScale;
     private RealParameter categoryWidth;
     private RealParameter categoryGap;
     private Fill areaFill;
     private Stroke lineStroke;
-    private AxisType axisType;
+    
     // TODO  Other style parameters.... to be defined
     //
     // TODO Add stacked bars

@@ -2,7 +2,6 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package org.orbisgis.core.renderer.se;
 
 import javax.xml.bind.JAXBElement;
@@ -147,39 +146,39 @@ public class RasterSymbolizer extends Symbolizer {
     }
 
     @Override
-    public JAXBElement<RasterSymbolizerType> getJAXBInstance(){
+    public JAXBElement<RasterSymbolizerType> getJAXBElement() {
         return null;
     }
 
+    public RasterSymbolizer(JAXBElement<RasterSymbolizerType> st) {
+        RasterSymbolizerType lst = st.getValue();
+        System.out.println("RasterSymb");
 
+        System.out.println("  Name: " + lst.getName());
+        System.out.println("  UoM: " + lst.getUnitOfMeasure());
+        System.out.println("  Version: " + lst.getVersion());
+        System.out.println("  Desc: " + lst.getDescription());
+        System.out.println("  Geom: " + lst.getGeometry());
+    }
 
+    
     private RealParameter opacity;
     private Channel redChannel;
     private Channel greenChannel;
     private Channel blueChannel;
     private Channel grayChannel;
-
     private boolean isColored; // true => use red, green and blue channels; false => use gray
-
-
     private OverlapBehavior overlapBehavior;
-
-
     private Interpolate2Color interpolatedColorMap;
     private Categorize2Color categorizedColorMap;
-    
     private boolean useInterpolationForColorMap; // true => interpolatedColorMap, False => CategorizedColorMap
-
     private ContrastEnhancement contrastEnhancement;
     private double gamma;
-
     private boolean shadedReliefOnlyBrightness;
     private double shadedReliefFactor;
-    
     /*
      * The standard request either a LineSymbolizer or an AreaSymbolizer
      * Since a line symbolizer is an area one witout the fill element, we only provide the latter
      */
     private AreaSymbolizer outline;
-    
 }

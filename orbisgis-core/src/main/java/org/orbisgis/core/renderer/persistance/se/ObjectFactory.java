@@ -101,7 +101,6 @@ public class ObjectFactory {
     private final static QName _Angle_QNAME = new QName("http://www.opengis.net/se", "Angle");
     private final static QName _Transform_QNAME = new QName("http://www.opengis.net/se", "Transform");
     private final static QName _Threshold_QNAME = new QName("http://www.opengis.net/se", "Threshold");
-    private final static QName _GraphicElement_QNAME = new QName("http://www.opengis.net/se", "GraphicElement");
     private final static QName _RelativeOrientation_QNAME = new QName("http://www.opengis.net/se", "RelativeOrientation");
     private final static QName _Sqrt_QNAME = new QName("http://www.opengis.net/se", "Sqrt");
     private final static QName _MapItem_QNAME = new QName("http://www.opengis.net/se", "MapItem");
@@ -254,14 +253,6 @@ public class ObjectFactory {
      */
     public ScaleType createScaleType() {
         return new ScaleType();
-    }
-
-    /**
-     * Create an instance of {@link GraphicElementType }
-     * 
-     */
-    public GraphicElementType createGraphicElementType() {
-        return new GraphicElementType();
     }
 
     /**
@@ -1249,15 +1240,6 @@ public class ObjectFactory {
     @XmlElementDecl(namespace = "http://www.opengis.net/se", name = "Threshold")
     public JAXBElement<ParameterValueType> createThreshold(ParameterValueType value) {
         return new JAXBElement<ParameterValueType>(_Threshold_QNAME, ParameterValueType.class, null, value);
-    }
-
-    /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link GraphicElementType }{@code >}}
-     * 
-     */
-    @XmlElementDecl(namespace = "http://www.opengis.net/se", name = "GraphicElement")
-    public JAXBElement<GraphicElementType> createGraphicElement(GraphicElementType value) {
-        return new JAXBElement<GraphicElementType>(_GraphicElement_QNAME, GraphicElementType.class, null, value);
     }
 
     /**

@@ -7,6 +7,8 @@ package org.orbisgis.core.renderer.se.label;
 import javax.xml.bind.JAXBElement;
 import org.orbisgis.core.renderer.persistance.se.ExclusionRectangleType;
 import org.orbisgis.core.renderer.persistance.se.ObjectFactory;
+import org.orbisgis.core.renderer.se.common.Uom;
+import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 
 /**
@@ -14,6 +16,22 @@ import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
  * @author maxence
  */
 public class ExclusionRectangle extends ExclusionZone {
+
+    ExclusionRectangle(JAXBElement<ExclusionRectangleType> ert) {
+        ExclusionRectangleType e = ert.getValue();
+
+        if (e.getX() != null){
+            this.x = SeParameterFactory.createRealParameter(e.getX());
+        }
+
+        if (e.getY() != null){
+            this.y = SeParameterFactory.createRealParameter(e.getY());
+        }
+
+        if (e.getUnitOfMeasure() != null){
+            this.uom = Uom.fromOgcURN(e.getUnitOfMeasure());
+        }
+    }
 
     public RealParameter getX() {
         return x;
@@ -32,7 +50,7 @@ public class ExclusionRectangle extends ExclusionZone {
     }
 
     @Override
-    public JAXBElement<ExclusionRectangleType> getJAXBInstance() {
+    public JAXBElement<ExclusionRectangleType> getJAXBElement() {
         ExclusionRectangleType r = new ExclusionRectangleType();
 
         if (uom != null) {

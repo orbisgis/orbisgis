@@ -12,12 +12,26 @@ import org.orbisgis.core.renderer.persistance.se.ParameterValueType;
 public abstract class PropertyName implements SeParameter {
 
     public PropertyName(){
+        this.fieldId = -1;
+    }
+
+    public PropertyName(String fieldName){
+        this.fieldId = -1;
+        this.fieldName = fieldName;
     }
 
     public PropertyName(String fieldName, DataSource ds) throws DriverException{
         setColumnName(fieldName, ds);
     }
 
+    public PropertyName(JAXBElement<PropertyNameType> expr) {
+        if (expr.getValue().getContent().size() == 1) {
+            this.fieldName = (String) expr.getValue().getContent().get(0);
+            this.fieldId = -1;
+        } else {
+            System.out.println("Error in PropertyName(JAXBElement)");
+        }
+    }
 
     @Override
     public boolean dependsOnFeature() {
@@ -36,6 +50,9 @@ public abstract class PropertyName implements SeParameter {
     }
 
     public Value getFieldValue(DataSource ds, int fid) throws DriverException{
+        if (this.fieldId == -1){
+            this.fieldId = ds.getFieldIndexByName(fieldName);
+        }
         return ds.getFieldValue(fid, fieldId);
     }
 

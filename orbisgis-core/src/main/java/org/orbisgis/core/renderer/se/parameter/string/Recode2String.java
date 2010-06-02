@@ -1,25 +1,37 @@
 package org.orbisgis.core.renderer.se.parameter.string;
 
+import javax.xml.bind.JAXBElement;
 import org.gdms.data.DataSource;
+import org.orbisgis.core.renderer.persistance.se.MapItemType;
+import org.orbisgis.core.renderer.persistance.se.RecodeType;
+import org.orbisgis.core.renderer.se.parameter.MapItem;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.Recode;
+import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
 
 public class Recode2String extends Recode<StringParameter, StringLiteral> implements StringParameter {
 
-    public Recode2String(StringLiteral fallback, StringParameter lookupValue){
+    public Recode2String(StringLiteral fallback, StringParameter lookupValue) {
         super(fallback, lookupValue);
     }
 
+    public Recode2String(JAXBElement<RecodeType> expr) {
+        RecodeType t = expr.getValue();
 
-    @Override
-    public String getValue(DataSource ds, long fid){
-        try{
-            return getParameter(ds, fid).getValue(ds, fid);
-        }
-        catch(ParameterException ex){
-            return this.fallbackValue.getValue(null, fid);
+        this.fallbackValue = new StringLiteral(t.getFallbackValue());
+        this.setLookupValue(SeParameterFactory.createStringParameter(t.getLookupValue()));
+
+        for (MapItemType mi : t.getMapItem()) {
+            this.addMapItem(mi.getKey(), SeParameterFactory.createStringParameter(mi.getValue()));
         }
     }
 
-
+    @Override
+    public String getValue(DataSource ds, long fid) {
+        try {
+            return getParameter(ds, fid).getValue(ds, fid);
+        } catch (ParameterException ex) {
+            return this.fallbackValue.getValue(null, fid);
+        }
+    }
 }

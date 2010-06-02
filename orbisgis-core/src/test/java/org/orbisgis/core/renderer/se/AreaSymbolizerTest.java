@@ -11,6 +11,8 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.logging.Level;
@@ -21,6 +23,10 @@ import javax.swing.JPanel;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
+import javax.xml.bind.Unmarshaller;
+import javax.xml.stream.XMLOutputFactory;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamWriter;
 
 import junit.framework.TestCase;
 import org.gdms.data.DataSource;
@@ -31,6 +37,7 @@ import org.gdms.driver.DriverException;
 import org.gdms.driver.driverManager.DriverLoadException;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.persistance.se.ObjectFactory;
+import org.orbisgis.core.renderer.persistance.se.SymbolizerType;
 import org.orbisgis.core.renderer.se.common.MapEnv;
 import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.fill.DensityFill;
@@ -246,13 +253,13 @@ public class AreaSymbolizerTest extends TestCase {
 
             Transform tPie = new Transform();
             tPie.addTransformation(new Rotate(new RealLiteral(45.0)));
-            /*
+            
             tPie.addTransformation(new Rotate(new RealLiteral(45.0), new RealLiteral(1.0), new RealLiteral(1.0)));
             tPie.addTransformation(new Scale(new RealLiteral(2.0)));
             tPie.addTransformation(new Scale(new RealLiteral(0.25), new RealLiteral(1.25)));
             tPie.addTransformation(new Translate(new RealLiteral(10.0), null));
             tPie.addTransformation(new Translate(null, new RealLiteral(10.0)));
-            */
+            
             pie.setTransform(tPie);
 
             RealBinaryOperator width = new RealBinaryOperator();
@@ -275,7 +282,17 @@ public class AreaSymbolizerTest extends TestCase {
 
             tGraphic.setStyledLabel(sLabel);
 
+            Transform tGr = new Transform();
+            tGr.addTransformation(new Rotate(new RealLiteral(45.0)));
+            tGr.addTransformation(new Scale(new RealLiteral(2.0)));
 
+            tGr.addTransformation(new Rotate(new RealLiteral(45.0), new RealLiteral(1.0), new RealLiteral(1.0)));
+            tGr.addTransformation(new Scale(new RealLiteral(2.0)));
+            tGr.addTransformation(new Scale(new RealLiteral(0.25), new RealLiteral(1.25)));
+            tGr.addTransformation(new Translate(new RealLiteral(10.0), null));
+            tGr.addTransformation(new Translate(null, new RealLiteral(10.0)));
+
+            tGraphic.setTransform(tGr);
 
             PointSymbolizer pSymb = new PointSymbolizer();
             pSymb.setUom(Uom.MM);
@@ -285,17 +302,12 @@ public class AreaSymbolizerTest extends TestCase {
             collec.addGraphic(pie);
             collec.addGraphic(tGraphic);
 
-
-
-            System.out.println("Avant Symolize");
-
-
             long fid;
             for (fid = 0; fid < ds.getRowCount(); fid++) {
                 aSymb2.draw(g2, sds, fid);
                 aSymb3.draw(g2, sds, fid);
                 aSymb.draw(g2, sds, fid);
-                pSymb.draw(g2, sds, fid);
+                //pSymb.draw(g2, sds, fid);
             }
             g2.finalize();
 
@@ -317,12 +329,9 @@ public class AreaSymbolizerTest extends TestCase {
             System.out.print("");
             System.out.println("Captain marshall");
 
-            ObjectFactory of = new ObjectFactory();
-
             JAXBContext jaxbContext;
 
-            jaxbContext = JAXBContext.newInstance("org.orbisgis.core.renderer.persistance.se");
-
+            jaxbContext = JAXBContext.newInstance(SymbolizerType.class);
             Marshaller marshaller = jaxbContext.createMarshaller();
             marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT,
                     new Boolean(true));
@@ -332,18 +341,17 @@ public class AreaSymbolizerTest extends TestCase {
             System.out.println("Created a content tree " +
                "and marshalled it to jaxbOutput2.xml");
 
-            marshaller.marshal(((Symbolizer)(aSymb)).getJAXBInstance(),
-                  new FileOutputStream("/tmp/aSymb.xml"));
+            marshaller.marshal(((Symbolizer)(aSymb)).getJAXBElement(),
+                    new FileOutputStream("/tmp/aSymb.xml"));
 
-
-            marshaller.marshal(((Symbolizer)(aSymb2)).getJAXBInstance(),
+            marshaller.marshal(((Symbolizer)(aSymb2)).getJAXBElement(),
                   new FileOutputStream("/tmp/aSymb2.xml"));
 
 
-            marshaller.marshal(((Symbolizer)(aSymb3)).getJAXBInstance(),
+            marshaller.marshal(((Symbolizer)(aSymb3)).getJAXBElement(),
                   new FileOutputStream("/tmp/aSymb3.xml"));
 
-            marshaller.marshal(((Symbolizer)(pSymb)).getJAXBInstance(),
+            marshaller.marshal(((Symbolizer)(pSymb)).getJAXBElement(),
                   new FileOutputStream("/tmp/pSymb.xml"));
 
 

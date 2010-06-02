@@ -60,7 +60,7 @@ public class Slice implements SymbolizerNode {
         SliceType s = new SliceType();
 
         if (fill != null) {
-            s.setFill(fill.getJAXBInstance());
+            s.setFill(fill.getJAXBElement());
         }
         if (gap != null) {
             s.setGap(gap.getJAXBParameterValueType());
