@@ -4,12 +4,12 @@ import java.awt.Graphics2D;
 import java.awt.Shape;
 import java.io.IOException;
 import javax.xml.bind.JAXBElement;
-import org.orbisgis.core.renderer.persistance.se.LineSymbolizerType;
-import org.orbisgis.core.renderer.persistance.se.ObjectFactory;
 
 import org.gdms.data.SpatialDataSourceDecorator;
 import org.gdms.driver.DriverException;
 
+import org.orbisgis.core.renderer.persistance.se.LineSymbolizerType;
+import org.orbisgis.core.renderer.persistance.se.ObjectFactory;
 
 import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;

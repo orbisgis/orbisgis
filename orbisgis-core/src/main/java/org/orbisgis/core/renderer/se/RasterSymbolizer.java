@@ -14,6 +14,7 @@ import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 import org.orbisgis.core.renderer.se.raster.Channel;
 import org.orbisgis.core.renderer.se.raster.ContrastEnhancement;
 
+
 /**
  * @ todo implements almost all...
  * @author maxence

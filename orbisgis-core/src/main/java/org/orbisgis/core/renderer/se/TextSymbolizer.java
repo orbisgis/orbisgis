@@ -4,6 +4,7 @@ import java.awt.Graphics2D;
 import java.awt.Shape;
 import java.io.IOException;
 import javax.xml.bind.JAXBElement;
+
 import org.orbisgis.core.renderer.persistance.se.ObjectFactory;
 import org.orbisgis.core.renderer.persistance.se.TextSymbolizerType;
 

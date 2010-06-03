@@ -12,7 +12,6 @@ import org.gdms.data.DataSource;
 import org.orbisgis.core.renderer.persistance.se.GraphicStrokeType;
 import org.orbisgis.core.renderer.persistance.se.ObjectFactory;
 import org.orbisgis.core.renderer.persistance.se.RelativeOrientationType;
-import org.orbisgis.core.renderer.persistance.se.StrokeType;
 
 import org.orbisgis.core.renderer.se.common.RelativeOrientation;
 import org.orbisgis.core.renderer.se.graphic.GraphicCollection;

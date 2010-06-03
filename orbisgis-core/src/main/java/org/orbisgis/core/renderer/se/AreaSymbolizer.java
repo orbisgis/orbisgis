@@ -35,7 +35,6 @@ public class AreaSymbolizer extends VectorSymbolizer {
         stroke.setParent(this);
     }
 
-
     public AreaSymbolizer(JAXBElement<AreaSymbolizerType> st){
         super((JAXBElement<? extends SymbolizerType>) st);
 
@@ -66,7 +65,6 @@ public class AreaSymbolizer extends VectorSymbolizer {
             this.setStroke(Stroke.createFromJAXBElement(ast.getStroke()));
         }
     }
-
 
     public void setStroke(Stroke stroke) {
         if (stroke != null) {

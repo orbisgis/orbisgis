@@ -78,7 +78,7 @@ public class PointSymbolizer extends VectorSymbolizer {
             }
         }
     }
-
+    
     @Override
     public JAXBElement<PointSymbolizerType> getJAXBElement() {
         ObjectFactory of = new ObjectFactory();
@@ -103,4 +103,5 @@ public class PointSymbolizer extends VectorSymbolizer {
         return of.createPointSymbolizer(s);
     }
     private GraphicCollection graphic;
+
 }
