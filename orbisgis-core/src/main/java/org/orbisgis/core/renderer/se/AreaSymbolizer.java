@@ -108,17 +108,11 @@ public class AreaSymbolizer extends VectorSymbolizer {
      */
     @Override
     public void draw(Graphics2D g2, SpatialDataSourceDecorator sds, long fid) throws ParameterException, IOException, DriverException {
-        long t1 = System.currentTimeMillis();
-
-
         Shape shp = this.getShape(sds, fid);
 
         if (fill != null) {
             fill.draw(g2, shp, sds, fid);
         }
-
-        long t2 = System.currentTimeMillis();
-        System.out.println("   => fill done :" + (t2 - t1) + "[ms]");
 
         if (stroke != null) {
             if (perpendicularOffset != null) {
@@ -128,9 +122,6 @@ public class AreaSymbolizer extends VectorSymbolizer {
             // TODO perpendicular offset !
             stroke.draw(g2, shp, sds, fid);
         }
-
-        long t3 = System.currentTimeMillis();
-        System.out.println("    => Symbolizer done :" + (t3 - t1) + "[ms]");
     }
 
     @Override
