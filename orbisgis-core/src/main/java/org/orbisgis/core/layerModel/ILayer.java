@@ -49,6 +49,7 @@ import org.orbisgis.core.renderer.legend.RasterLegend;
 import org.orbisgis.core.renderer.legend.WMSLegend;
 
 import com.vividsolutions.jts.geom.Envelope;
+import org.orbisgis.core.renderer.se.FeatureTypeStyle;
 
 public interface ILayer {
 
@@ -225,6 +226,10 @@ public interface ILayer {
 	 *         DataSource (Layer collections and WMS layers, for example)
 	 */
 	SpatialDataSourceDecorator getDataSource();
+
+    public FeatureTypeStyle getFeatureTypeStyle();
+
+    public void setFeatureTypeStyle(FeatureTypeStyle fts);
 
 	/**
 	 * Gets the legend used to draw the default spatial field in this layer if

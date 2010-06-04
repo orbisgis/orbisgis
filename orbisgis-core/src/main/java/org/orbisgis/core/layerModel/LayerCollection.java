@@ -50,6 +50,7 @@ import org.orbisgis.core.renderer.legend.RasterLegend;
 import org.orbisgis.core.renderer.legend.WMSLegend;
 
 import com.vividsolutions.jts.geom.Envelope;
+import org.orbisgis.core.renderer.se.FeatureTypeStyle;
 
 public class LayerCollection extends AbstractLayer {
 	private List<ILayer> layerCollection;
@@ -185,6 +186,11 @@ public class LayerCollection extends AbstractLayer {
 		}
 		action.action(root);
 	}
+
+    @Override
+    public void setFeatureTypeStyle(FeatureTypeStyle fts) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
 
 	private class GetEnvelopeLayerAction implements ILayerAction {
 		private Envelope globalEnvelope;
@@ -459,4 +465,10 @@ public class LayerCollection extends AbstractLayer {
 		throw new UnsupportedOperationException("Cannot set "
 				+ "a legend on a layer collection");
 	}
+    
+    @Override
+    public FeatureTypeStyle getFeatureTypeStyle(){
+        throw new UnsupportedOperationException("Cannot set "
+				+ "a legend on a layer collection");
+    }
 }

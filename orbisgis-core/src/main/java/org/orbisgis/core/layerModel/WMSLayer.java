@@ -19,6 +19,7 @@ import org.orbisgis.core.renderer.legend.RasterLegend;
 import org.orbisgis.core.renderer.legend.WMSLegend;
 
 import com.vividsolutions.jts.geom.Envelope;
+import org.orbisgis.core.renderer.se.FeatureTypeStyle;
 
 public class WMSLayer extends GdmsLayer {
 
@@ -209,4 +210,8 @@ public class WMSLayer extends GdmsLayer {
 		throw new UnsupportedOperationException(NOT_SUPPORTED);
 	}
 
+    @Override
+    public FeatureTypeStyle getFeatureTypeStyle(){
+        return null;
+    }
 }

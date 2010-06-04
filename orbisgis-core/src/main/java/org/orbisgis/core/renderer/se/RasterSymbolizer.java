@@ -4,8 +4,13 @@
  */
 package org.orbisgis.core.renderer.se;
 
+import java.awt.Graphics2D;
+import java.io.IOException;
 import javax.xml.bind.JAXBElement;
+import org.gdms.data.SpatialDataSourceDecorator;
+import org.gdms.driver.DriverException;
 import org.orbisgis.core.renderer.persistance.se.RasterSymbolizerType;
+import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.raster.OverlapBehavior;
 import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.parameter.color.Categorize2Color;
@@ -20,6 +25,11 @@ import org.orbisgis.core.renderer.se.raster.ContrastEnhancement;
  * @author maxence
  */
 public class RasterSymbolizer extends Symbolizer {
+
+    @Override
+    public void draw(Graphics2D g2, SpatialDataSourceDecorator sds, long fid) throws ParameterException, IOException, DriverException {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
 
     @Override
     public Uom getUom() {
@@ -182,4 +192,5 @@ public class RasterSymbolizer extends Symbolizer {
      * Since a line symbolizer is an area one witout the fill element, we only provide the latter
      */
     private AreaSymbolizer outline;
+
 }

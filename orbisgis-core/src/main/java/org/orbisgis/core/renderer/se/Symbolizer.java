@@ -1,6 +1,8 @@
 package org.orbisgis.core.renderer.se;
 
 import com.vividsolutions.jts.geom.Geometry;
+import java.awt.Graphics2D;
+import java.io.IOException;
 import javax.xml.bind.JAXBElement;
 import org.orbisgis.core.renderer.persistance.se.AreaSymbolizerType;
 import org.orbisgis.core.renderer.persistance.se.LineSymbolizerType;
@@ -19,7 +21,7 @@ import org.orbisgis.core.renderer.se.parameter.geometry.GeometryParameter;
  * @todo Add a general draw method that fit well for vectors and raster; implement fetch default geometry
  * @author maxence
  */
-public abstract class Symbolizer implements SymbolizerNode {
+public abstract class Symbolizer implements SymbolizerNode, Comparable{
 
     protected static final String DEFAULT_NAME = "Symbolizer Name";
     protected static final String VERSION = "1.9";
@@ -63,6 +65,14 @@ public abstract class Symbolizer implements SymbolizerNode {
         desc = description;
     }
 
+    public int getLevel() {
+        return level;
+    }
+
+    public void setLevel(int level) {
+        this.level = level;
+    }
+
     public GeometryParameter getGeometry() {
         return the_geom;
     }
@@ -81,12 +91,12 @@ public abstract class Symbolizer implements SymbolizerNode {
 
     @Override
     public SymbolizerNode getParent() {
-        return null;
+        return parent;
     }
 
     @Override
     public void setParent(SymbolizerNode node) {
-        // TODO Throw symbolizer root
+        this.parent = node;
     }
 
     public void setJAXBProperty(SymbolizerType s) {
@@ -126,8 +136,38 @@ public abstract class Symbolizer implements SymbolizerNode {
         }
     }
 
+     @Override
+    public int compareTo(Object o) {
+         Symbolizer s = (Symbolizer)o;
+
+         if (s.level < this.level)
+             return 1;
+         else if (s.level == this.level)
+             return 0;
+         else
+             return -1;
+    }
+
+    public Rule getRule(){
+        SymbolizerNode pIt = this.parent;
+        System.out.println ("First parent: " + pIt);
+        while (! (pIt instanceof Rule)){
+            pIt = pIt.getParent();
+            System.out.println ("Parent: " + pIt);
+        }
+
+        return (Rule)pIt;
+    }
+
+    public abstract void draw(Graphics2D g2, SpatialDataSourceDecorator sds, long fid) throws ParameterException, IOException, DriverException;
+
     public abstract JAXBElement<? extends SymbolizerType> getJAXBElement();
     protected String name;
     protected String desc;
     protected GeometryParameter the_geom;
+
+    private SymbolizerNode parent;
+
+    protected int level = -1;
+
 }

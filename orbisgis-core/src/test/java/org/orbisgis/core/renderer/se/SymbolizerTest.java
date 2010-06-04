@@ -80,7 +80,7 @@ public class SymbolizerTest extends TestCase {
 
         //String xml = "../../datas2tests/xmlse/as_gf.xml";
         //String xml = "../../datas2tests/xmlse/pSymb.xml";
-        String xml = "../../datas2tests/xmlse/cs.xml";
+        String xml = "../../datas2tests/xmlse/point.xml";
 
         JAXBContext jaxbContext;
         try {
@@ -132,7 +132,9 @@ public class SymbolizerTest extends TestCase {
 
             DataSourceFactory dsf = new DataSourceFactory();
             DataSource ds;
-            ds = dsf.getDataSource(new File("../../datas2tests/shp/Swiss/g4districts98_region.shp"));
+            //ds = dsf.getDataSource(new File("../../datas2tests/shp/Swiss/g4districts98_region.shp"));
+
+            ds = dsf.getDataSource(new File("/data/Cartes/Europe/EUcountries_them.shp"));
 
             ds.open();
 

@@ -15,6 +15,7 @@ import org.gdms.driver.DriverException;
 import org.orbisgis.core.renderer.persistance.se.CompositeSymbolizerType;
 import org.orbisgis.core.renderer.persistance.se.ObjectFactory;
 import org.orbisgis.core.renderer.persistance.se.SymbolizerType;
+import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 
 /**
@@ -23,7 +24,7 @@ import org.orbisgis.core.renderer.se.parameter.ParameterException;
  *
  * @author maxence
  */
-public class CompositeSymbolizer {
+public class CompositeSymbolizer implements SymbolizerNode {
 
     public JAXBElement<? extends SymbolizerType> getJAXBElement(){
         if (symbolizers.size() == 1){
@@ -82,9 +83,31 @@ public class CompositeSymbolizer {
         symbolizers = new ArrayList<Symbolizer>();
     }
 
+    public ArrayList<Symbolizer> getSymbolizerList(){
+        return this.symbolizers;
+    }
+
     public void addSymbolizer(Symbolizer s){
         symbolizers.add(s);
+        s.setParent(this);
     }
 
     private ArrayList<Symbolizer> symbolizers;
+
+    @Override
+    public Uom getUom() {
+        return null;
+    }
+
+    @Override
+    public SymbolizerNode getParent() {
+        return parent;
+    }
+
+    @Override
+    public void setParent(SymbolizerNode rule) {
+        this.parent = rule;
+    }
+
+    SymbolizerNode parent;
 }

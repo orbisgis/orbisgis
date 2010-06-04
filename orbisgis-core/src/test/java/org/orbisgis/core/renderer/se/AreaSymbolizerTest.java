@@ -113,12 +113,13 @@ public class AreaSymbolizerTest extends TestCase {
             g2.setRenderingHints(MapEnv.getCurrentRenderContext().getRenderingHints());
 
             DataSourceFactory dsf = new DataSourceFactory();
-            DataSource ds = dsf.getDataSource(new File("../../datas2tests/shp/Swiss/g4districts98_region.shp"));
+            //DataSource ds = dsf.getDataSource(new File("../../datas2tests/shp/Swiss/g4districts98_region.shp"));
+            DataSource ds = dsf.getDataSource(new File("/data/Cartes/Europe/EUcountries_them.shp"));
             ds.open();
 
             SpatialDataSourceDecorator sds = new SpatialDataSourceDecorator(ds);
 
-
+/*
 
             AreaSymbolizer aSymb = new AreaSymbolizer();
             AreaSymbolizer aSymb2 = new AreaSymbolizer();
@@ -249,19 +250,8 @@ public class AreaSymbolizerTest extends TestCase {
 
             pie.setStroke(new PenStroke());
             pie.setDisplayValue(false);
-            pie.setRadius(new RealLiteral(7));
-
-            Transform tPie = new Transform();
-            tPie.addTransformation(new Rotate(new RealLiteral(45.0)));
+            //pie.setRadius(new RealLiteral(7));
             
-            tPie.addTransformation(new Rotate(new RealLiteral(45.0), new RealLiteral(1.0), new RealLiteral(1.0)));
-            tPie.addTransformation(new Scale(new RealLiteral(2.0)));
-            tPie.addTransformation(new Scale(new RealLiteral(0.25), new RealLiteral(1.25)));
-            tPie.addTransformation(new Translate(new RealLiteral(10.0), null));
-            tPie.addTransformation(new Translate(null, new RealLiteral(10.0)));
-            
-            pie.setTransform(tPie);
-
             RealBinaryOperator width = new RealBinaryOperator();
             width.setLeftValue(new RealLiteral(1));
 
@@ -273,7 +263,7 @@ public class AreaSymbolizerTest extends TestCase {
             width.setRightValue(sqrt);
             width.setOperator(RealBinaryOperatorType.MUL);
 
-            //pie.setRadius(width);
+            pie.setRadius(width);
 
             TextGraphic tGraphic = new TextGraphic();
             StyledLabel sLabel = new StyledLabel();
@@ -284,6 +274,7 @@ public class AreaSymbolizerTest extends TestCase {
 
             Transform tGr = new Transform();
             tGr.addTransformation(new Rotate(new RealLiteral(45.0)));
+            
             tGr.addTransformation(new Scale(new RealLiteral(2.0)));
 
             tGr.addTransformation(new Rotate(new RealLiteral(45.0), new RealLiteral(1.0), new RealLiteral(1.0)));
@@ -291,23 +282,31 @@ public class AreaSymbolizerTest extends TestCase {
             tGr.addTransformation(new Scale(new RealLiteral(0.25), new RealLiteral(1.25)));
             tGr.addTransformation(new Translate(new RealLiteral(10.0), null));
             tGr.addTransformation(new Translate(null, new RealLiteral(10.0)));
+            */
 
-            tGraphic.setTransform(tGr);
+            //tGraphic.setTransform(tGr);
 
             PointSymbolizer pSymb = new PointSymbolizer();
             pSymb.setUom(Uom.MM);
 
             GraphicCollection collec = pSymb.getGraphic();
 
-            collec.addGraphic(pie);
-            collec.addGraphic(tGraphic);
+            MarkGraphic mosMark = new MarkGraphic();
+            mosMark.setUom(Uom.MM);
+            mosMark.setFill(new SolidFill());
+            mosMark.setViewBox(new ViewBox(new RealLiteral(10.0)));
+            mosMark.setSource(WellKnownName.TRIANGLE);
 
+            //collec.addGraphic(pie);
+            //collec.addGraphic(tGraphic);
+
+            collec.addGraphic(mosMark);
             long fid;
             for (fid = 0; fid < ds.getRowCount(); fid++) {
-                aSymb2.draw(g2, sds, fid);
-                aSymb3.draw(g2, sds, fid);
-                aSymb.draw(g2, sds, fid);
-                //pSymb.draw(g2, sds, fid);
+                //aSymb2.draw(g2, sds, fid);
+                //aSymb3.draw(g2, sds, fid);
+                //aSymb.draw(g2, sds, fid);
+                pSymb.draw(g2, sds, fid);
             }
             g2.finalize();
 
@@ -340,7 +339,7 @@ public class AreaSymbolizerTest extends TestCase {
             //System.out.println("Validator returned " + validator.validate(collection));
             System.out.println("Created a content tree " +
                "and marshalled it to jaxbOutput2.xml");
-
+/*
             marshaller.marshal(((Symbolizer)(aSymb)).getJAXBElement(),
                     new FileOutputStream("/tmp/aSymb.xml"));
 
@@ -356,7 +355,7 @@ public class AreaSymbolizerTest extends TestCase {
 
 
             System.out.println("See output in /tmp/symbolizer.xml " ) ;
-
+*/
 
             Thread.sleep(20000);
 

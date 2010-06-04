@@ -11,7 +11,7 @@ import org.orbisgis.core.renderer.se.common.Uom;
  * @author maxence
  */
 public interface SymbolizerNode{
-    Uom getUom();
+    Uom getUom(); // todo extract !
 
     SymbolizerNode getParent();
 

@@ -45,6 +45,7 @@ import org.gdms.source.SourceRemovalEvent;
 import org.gdms.sql.strategies.TableNotFoundException;
 import org.orbisgis.core.DataManager;
 import org.orbisgis.core.Services;
+import org.orbisgis.core.renderer.se.FeatureTypeStyle;
 
 public abstract class GdmsLayer extends AbstractLayer {
 
@@ -52,6 +53,8 @@ public abstract class GdmsLayer extends AbstractLayer {
 
 	private String mainName;
 	private SourceListener listener = new NameSourceListener();
+    private FeatureTypeStyle fts;
+    
 
 	public GdmsLayer(String name) {
 		super(name);
@@ -225,6 +228,18 @@ public abstract class GdmsLayer extends AbstractLayer {
 		@Override
 		public void sourceRemoved(SourceRemovalEvent e) {
 		}
-
 	}
+
+
+    @Override
+    public FeatureTypeStyle getFeatureTypeStyle() {
+        return fts;
+    }
+
+    @Override
+    public void setFeatureTypeStyle(FeatureTypeStyle fts) {
+        this.fts = fts;
+    }
+
+
 }
