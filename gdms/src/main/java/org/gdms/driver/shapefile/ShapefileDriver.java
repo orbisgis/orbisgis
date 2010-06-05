@@ -82,6 +82,7 @@ import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.Polygon;
 
 import fr.cts.crs.CoordinateReferenceSystem;
+import fr.cts.crs.NullCRS.NullGDMSCRS;
 
 public class ShapefileDriver implements FileReadWriteDriver {
 
@@ -395,11 +396,29 @@ public class ShapefileDriver implements FileReadWriteDriver {
 			ShapeType shapeType = getShapeType(gc.getGeometryType(), dimension);
 			writer.writeHeaders(new Envelope(0, 0, 0, 0), shapeType, 0, 100);
 			writer.close();
+
+			writeprj(replaceExtension(new File(path), ".prj"), metadata);
 		} catch (FileNotFoundException e) {
 			throw new DriverException(e);
 		} catch (IOException e) {
 			throw new DriverException(e);
 		}
+	}
+
+	private void writeprj(File path, Metadata metadata) throws DriverException {
+
+		CoordinateReferenceSystem crs = CRSUtil.getCRS(metadata);
+
+		if (crs instanceof NullGDMSCRS) {
+		}
+		else{
+			try {
+				FileUtils.setContents(path, crs.toWkt());
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+
 	}
 
 	private GeometryConstraint getGeometryType(Metadata metadata)
@@ -542,6 +561,7 @@ public class ShapefileDriver implements FileReadWriteDriver {
 				}
 			}
 			writer.close();
+			writeprj(replaceExtension(file, ".prj"), metadata);
 		} catch (FileNotFoundException e) {
 			throw new DriverException(e);
 		} catch (IOException e) {
