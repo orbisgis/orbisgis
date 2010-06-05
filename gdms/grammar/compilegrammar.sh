@@ -21,4 +21,4 @@ EOF
 
 sed -i 's/class SimpleNode implements/class SimpleNode extends TokenSupport implements/' ${ODIR}/SimpleNode.java
 
-~/applications/javacc-4.1/bin/jjdoc sql.jj
+~/applications/javacc-4.2/bin/jjdoc sql.jj
