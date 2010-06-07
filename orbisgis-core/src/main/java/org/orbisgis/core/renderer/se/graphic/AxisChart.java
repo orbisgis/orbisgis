@@ -134,6 +134,10 @@ public class AxisChart extends Graphic {
     }
 
     @Override
+    public void updateGraphic() {   
+    }
+
+    @Override
     public RenderableGraphics getRenderableGraphics(DataSource ds, long fid) throws ParameterException, IOException {
         return null; // TODO implements
     }

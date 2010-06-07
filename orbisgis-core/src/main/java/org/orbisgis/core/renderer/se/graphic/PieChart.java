@@ -365,6 +365,10 @@ public class PieChart extends Graphic {
     }
 
     @Override
+    public void updateGraphic() {
+    }
+
+    @Override
     public JAXBElement<PieChartType> getJAXBElement() {
 
         PieChartType p = new PieChartType();

@@ -65,6 +65,8 @@ public class PenStroke extends Stroke {
 
 
     public PenStroke(PenStrokeType t) {
+        this();
+        
         if (t.getColor() != null) {
             this.setColor(SeParameterFactory.createColorParameter(t.getColor()));
 
@@ -100,6 +102,8 @@ public class PenStroke extends Stroke {
         if (t.getUnitOfMeasure() != null) {
             this.setUom(Uom.fromOgcURN(t.getUnitOfMeasure()));
         }
+
+        this.updateBasicStroke();
     }
 
     public PenStroke(JAXBElement<PenStrokeType> s) {

@@ -2,8 +2,7 @@ package org.orbisgis.core.renderer.se.graphic;
 
 import java.awt.geom.Rectangle2D;
 import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
 import javax.media.jai.RenderableGraphics;
 import javax.xml.bind.JAXBElement;
 import org.orbisgis.core.renderer.persistance.se.GraphicType;
@@ -55,10 +54,10 @@ public abstract class Graphic implements SymbolizerNode {
 
     @Override
     public Uom getUom() {
-        if (parent != null) {
-            return parent.getUom();
+        if (uom != null) {
+            return this.uom;
         } else {
-            return uom;
+            return parent.getUom();
         }
     }
 
@@ -73,7 +72,7 @@ public abstract class Graphic implements SymbolizerNode {
 
     @Override
     public void setParent(SymbolizerNode node) {
-        parent = node;
+        this.parent = node;
     }
 
     public Transform getTransform() {
@@ -106,13 +105,11 @@ public abstract class Graphic implements SymbolizerNode {
      */
     public static RenderableGraphics getNewRenderableGraphics(Rectangle2D bounds, double margin) {
 
-
         RenderableGraphics rg = new RenderableGraphics(new Rectangle2D.Double(
                 bounds.getMinX() - margin,
                 bounds.getMinY() - margin,
                 bounds.getWidth() + 2 * margin,
                 bounds.getHeight() + 2 * margin));
-
         return rg;
 
     }
@@ -121,9 +118,11 @@ public abstract class Graphic implements SymbolizerNode {
 
     public abstract double getMaxWidth(DataSource ds, long fid) throws ParameterException, IOException;
 
+    public abstract void updateGraphic();
     
     private SymbolizerNode parent;
     protected Transform transform;
     protected Uom uom;
+    
     //private Transform transform;
 }

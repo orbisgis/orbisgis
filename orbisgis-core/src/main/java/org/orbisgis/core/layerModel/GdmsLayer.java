@@ -233,12 +233,16 @@ public abstract class GdmsLayer extends AbstractLayer {
 
     @Override
     public FeatureTypeStyle getFeatureTypeStyle() {
+        if (fts == null){
+            fts = new FeatureTypeStyle(this);
+        }
         return fts;
     }
 
     @Override
     public void setFeatureTypeStyle(FeatureTypeStyle fts) {
         this.fts = fts;
+        this.fireStyleChanged();
     }
 
 

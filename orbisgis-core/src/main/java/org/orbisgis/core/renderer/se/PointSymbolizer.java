@@ -15,16 +15,27 @@ import org.gdms.driver.DriverException;
 import org.orbisgis.core.renderer.se.common.MapEnv;
 import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.graphic.GraphicCollection;
+import org.orbisgis.core.renderer.se.graphic.MarkGraphic;
 
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.transform.Transform;
 
 public class PointSymbolizer extends VectorSymbolizer {
 
+    /*
+     * Create a default pointSymbolizer: Square 10mm
+     *
+     *
+     */
     public PointSymbolizer() {
         graphic = new GraphicCollection();
         graphic.setParent(this);
         uom = Uom.MM;
+
+        MarkGraphic mark = new MarkGraphic();
+        mark.setParent(graphic);
+        mark.setToSquare10();
+        graphic.addGraphic(mark);
     }
 
     public PointSymbolizer(JAXBElement<PointSymbolizerType> st) {
@@ -35,7 +46,9 @@ public class PointSymbolizer extends VectorSymbolizer {
         }
 
         if (ast.getUnitOfMeasure() != null) {
-            this.uom = Uom.fromOgcURN(ast.getUnitOfMeasure());
+            Uom u = Uom.fromOgcURN(ast.getUnitOfMeasure());
+            System.out.println ("This is the UOM: " + u);
+            this.setUom(u);
         }
 
         if (ast.getTransform() != null) {
@@ -43,7 +56,7 @@ public class PointSymbolizer extends VectorSymbolizer {
         }
 
         if (ast.getGraphic() != null) {
-            this.setGraphic(new GraphicCollection(ast.getGraphic()));
+            this.setGraphic(new GraphicCollection(ast.getGraphic(), this));
 
         }
     }

@@ -99,5 +99,10 @@ public class TextGraphic extends Graphic {
         ObjectFactory of = new ObjectFactory();
         return of.createTextGraphic(t);
     }
+
+    @Override
+    public void updateGraphic(){
+    }
+
     private StyledLabel styledLabel;
 }

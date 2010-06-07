@@ -4,11 +4,25 @@
  */
 package org.orbisgis.core.renderer.se;
 
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.xml.bind.JAXBContext;
 
 import javax.xml.bind.JAXBElement;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Unmarshaller;
+import javax.xml.bind.ValidationEvent;
+import javax.xml.bind.ValidationEventLocator;
+import javax.xml.bind.util.ValidationEventCollector;
+import javax.xml.validation.Schema;
+import org.gdms.data.DataSourceCreationException;
+import org.gdms.driver.DriverException;
+import org.gdms.driver.driverManager.DriverLoadException;
 
 import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.map.MapTransform;
@@ -17,7 +31,9 @@ import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.persistance.se.FeatureTypeStyleType;
 import org.orbisgis.core.renderer.persistance.se.ObjectFactory;
 import org.orbisgis.core.renderer.persistance.se.RuleType;
+import org.orbisgis.core.renderer.persistance.se.SymbolizerType;
 import org.orbisgis.core.renderer.se.common.Uom;
+import org.orbisgis.core.renderer.se.parameter.ParameterException;
 
 /**
  *
@@ -29,13 +45,57 @@ public class FeatureTypeStyle implements SymbolizerNode {
         rules = new ArrayList<Rule>();
         this.layer = layer;
         this.byLevel = true;
+
+        this.addRule(new Rule(layer));
     }
 
+    public FeatureTypeStyle(ILayer layer, String seFile) {
+        rules = new ArrayList<Rule>();
+        this.layer = layer;
+        this.byLevel = true;
+
+        JAXBContext jaxbContext;
+        try {
+
+            jaxbContext = JAXBContext.newInstance(FeatureTypeStyleType.class);
+
+            Unmarshaller u = jaxbContext.createUnmarshaller();
+
+
+            Schema schema = u.getSchema();
+            ValidationEventCollector validationCollector = new ValidationEventCollector();
+            u.setEventHandler(validationCollector);
+
+            JAXBElement<FeatureTypeStyleType> fts = (JAXBElement<FeatureTypeStyleType>) u.unmarshal(
+                    new FileInputStream(seFile));
+
+            for (ValidationEvent event : validationCollector.getEvents()) {
+                String msg = event.getMessage();
+                ValidationEventLocator locator = event.getLocator();
+                int line = locator.getLineNumber();
+                int column = locator.getColumnNumber();
+                System.out.println("Error at line " + line + " column " + column);
+            }
+
+            this.setFromJAXB(fts);
+            
+        } catch (IOException ex) {
+            Logger.getLogger(FeatureTypeStyle.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (DriverLoadException ex) {
+            Logger.getLogger(FeatureTypeStyle.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (JAXBException ex) {
+            Logger.getLogger(FeatureTypeStyle.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+    }
 
     public FeatureTypeStyle(JAXBElement<FeatureTypeStyleType> ftst, ILayer layer) {
         this(layer);
-        FeatureTypeStyleType fts = ftst.getValue();
+        this.setFromJAXB(ftst);
+    }
 
+    private void setFromJAXB(JAXBElement<FeatureTypeStyleType> ftst) {
+        FeatureTypeStyleType fts = ftst.getValue();
 
         if (fts.getName() != null) {
             this.name = fts.getName();
@@ -43,7 +103,7 @@ public class FeatureTypeStyle implements SymbolizerNode {
 
         if (fts.getRule() != null) {
             for (RuleType rt : fts.getRule()) {
-                this.addRule(new Rule(rt));
+                this.addRule(new Rule(rt, this.layer));
             }
         }
     }
@@ -88,7 +148,7 @@ public class FeatureTypeStyle implements SymbolizerNode {
             ArrayList<Rule> fallbackRules) {
 
         System.out.println("   GetSymbolizers");
-        
+
         for (Rule r : this.rules) {
 
             System.out.println("      => Rule :" + r);
@@ -96,24 +156,23 @@ public class FeatureTypeStyle implements SymbolizerNode {
             if (r.isDomainAllowed(mt)) {
                 System.out.println("        Domain OK");
                 if (!r.isFallbackRule()) {
-                    System.out.println ("not else filter");
+                    System.out.println("not else filter");
                     rules.add(r);
                 } else {
-                    System.out.println ("else rule");
+                    System.out.println("else rule");
                     fallbackRules.add(r);
                 }
-                
+
                 for (Symbolizer s : r.getCompositeSymbolizer().getSymbolizerList()) {
                     if (s instanceof TextSymbolizer) {
-                        System.out.println ("Overlay");
+                        System.out.println("Overlay");
                         overlaySymbolizers.add(s);
                     } else {
-                        System.out.println ("BaseLayer");
+                        System.out.println("BaseLayer");
                         layerSymbolizers.add(s);
                     }
                 }
-            }
-            else{
+            } else {
                 System.out.println("        Domain NOTOK");
             }
         }
@@ -182,9 +241,6 @@ public class FeatureTypeStyle implements SymbolizerNode {
     public void setRules(ArrayList<Rule> rules) {
         this.rules = rules;
     }
-
-    
-
     private String name;
     private ArrayList<Rule> rules;
     private ILayer layer;

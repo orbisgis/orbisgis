@@ -75,6 +75,11 @@ public abstract class Names {
 	public static final String POPUP_TOC_LEGEND_PATH = I18N.getText("orbisgis.ui.popupmenu.TOC.legend.path1");
 	public static final String POPUP_TOC_LEGEND_GROUP = I18N.getText("orbisgis.ui.popupmenu.TOC.legend.group");
 
+    // Edit SE Legend
+    public static final String POPUP_TOC_FEATURETYPESTYLE_IMPORT = I18N.getText("orbisgis.ui.popupmenu.TOC.featureTypeStype.import");
+    public static final String POPUP_TOC_FEATURETYPESTYLE_EXPORT = I18N.getText("orbisgis.ui.popupmenu.TOC.featureTypeStype.export");
+
+
 	// Export...
 	public static final String POPUP_TOC_EXPORT_PATH1 = I18N.getText("orbisgis.ui.popupmenu.TOC.export.path1");
 	public static final String POPUP_TOC_EXPORT_GROUP = I18N.getText("orbisgis.ui.popupmenu.TOC.export.group");	

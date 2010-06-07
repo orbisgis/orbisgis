@@ -78,6 +78,7 @@ import org.orbisgis.core.ui.plugins.properties.ConfigurationPlugIn;
 import org.orbisgis.core.ui.plugins.toc.CreateGroupPlugIn;
 import org.orbisgis.core.ui.plugins.toc.EditLegendPlugIn;
 import org.orbisgis.core.ui.plugins.toc.GroupLayersPlugIn;
+import org.orbisgis.core.ui.plugins.toc.ImportFeatureTypeStylePlugIn;
 import org.orbisgis.core.ui.plugins.toc.RemoveLayerPlugIn;
 import org.orbisgis.core.ui.plugins.toc.RevertLayerPlugIn;
 import org.orbisgis.core.ui.plugins.toc.SaveInDataBasePlugIn;
@@ -127,6 +128,7 @@ public class OrbisConfiguration implements Setup {
 
 	// TOC
 	private EditLegendPlugIn editLegendPlugIn = new EditLegendPlugIn();
+    private ImportFeatureTypeStylePlugIn importFTSPlugIn = new ImportFeatureTypeStylePlugIn();
 	private ShowInTablePlugIn showInTablePlugIn = new ShowInTablePlugIn();
 	private SaveInFilePlugIn saveInFilePlugIn = new SaveInFilePlugIn();
 	private SaveInDataBasePlugIn saveInDataBasePlugIn = new SaveInDataBasePlugIn();
@@ -252,6 +254,7 @@ public class OrbisConfiguration implements Setup {
 		try {
 			// TOC popup
 			editLegendPlugIn.initialize(context);
+            importFTSPlugIn.initialize(context);
 			showInTablePlugIn.initialize(context);
 			saveInFilePlugIn.initialize(context);
 			saveInDataBasePlugIn.initialize(context);

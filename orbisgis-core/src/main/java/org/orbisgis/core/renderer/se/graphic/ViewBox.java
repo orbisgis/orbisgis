@@ -64,12 +64,12 @@ public class ViewBox implements SymbolizerNode {
     /**
      * Return the final dimension described by this view box, in [px].
      * @param ds DataSource, i.e. the layer
-     * @param fid feauture id
-     * @param ratio requierd final ratio (if either width or height isn't defined)
+     * @param fid feature id
+     * @param ratio required final ratio (if either width or height isn't defined)
      * @return
      * @throws ParameterException
      */
-    public Dimension getDimension(DataSource ds, long fid, double ratio) throws ParameterException {
+    public Dimension getDimensionInPixel(DataSource ds, long fid, double ratio) throws ParameterException {
         double dx, dy;
 
         if (x != null && y != null) {
@@ -105,6 +105,22 @@ public class ViewBox implements SymbolizerNode {
 
         return v;
     }
+
+    public String toString(){
+        String result = "ViewBox:";
+
+        if (this.x != null){
+            result += "  Width: " + x.toString();
+        }
+
+        if (this.y != null){
+            result += "  Height: " + y.toString();
+        }
+
+        return result;
+    }
+
+
     private SymbolizerNode parent;
     private RealParameter x;
     private RealParameter y;

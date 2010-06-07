@@ -194,7 +194,7 @@ public class Layer extends GdmsLayer {
 
 	/**
 	 * Sets the legend used to draw this layer
-	 * 
+	 *
 	 * @param legends
 	 * @throws DriverException
 	 *             If there is some problem accessing the contents of the layer

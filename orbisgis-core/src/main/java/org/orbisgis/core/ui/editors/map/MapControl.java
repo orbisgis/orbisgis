@@ -395,10 +395,12 @@ public class MapControl extends JComponent implements ComponentListener, Contain
 			} catch (Error e) {
 				throw e;
 			} finally {
+                System.out.println("OLA+");
 				MapControl.this.repaint();
 				mapContext.setBoundingBox(mapTransform.getExtent());
 				//timer.stop();
-				MapControl.this.repaint();
+				System.out.println("OLA++++");
+                MapControl.this.repaint();
 				mapContext.setBoundingBox(mapTransform.getExtent());
 				WorkbenchContext wbContext = Services.getService(WorkbenchContext.class);
 				wbContext.setLastAction("Update toolbar");

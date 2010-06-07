@@ -68,7 +68,9 @@ import org.gdms.driver.DriverException;
 import org.gdms.driver.driverManager.DriverLoadException;
 import org.gdms.sql.parser.ParseException;
 import org.gdms.sql.strategies.SemanticException;
+
 import org.grap.model.GeoRaster;
+
 import org.gvsig.remoteClient.exceptions.ServerErrorException;
 import org.gvsig.remoteClient.exceptions.WMSException;
 import org.gvsig.remoteClient.wms.WMSStatus;
@@ -77,13 +79,9 @@ import org.orbisgis.core.errorManager.ErrorManager;
 import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.layerModel.WMSConnection;
 import org.orbisgis.core.map.MapTransform;
-import org.orbisgis.core.renderer.legend.Legend;
-import org.orbisgis.core.renderer.legend.RasterLegend;
-import org.orbisgis.core.renderer.legend.RenderException;
+
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
-import org.orbisgis.core.renderer.symbol.RenderUtils;
-import org.orbisgis.core.renderer.symbol.SelectionSymbol;
-import org.orbisgis.core.renderer.symbol.Symbol;
+
 import org.orbisgis.core.ui.configuration.RenderingConfiguration;
 import org.orbisgis.progress.IProgressMonitor;
 import org.orbisgis.progress.NullProgressMonitor;
@@ -109,6 +107,7 @@ public class Renderer {
      */
     private Iterator<Integer> getFeatureIdInExtent(MapTransform mt, SpatialDataSourceDecorator sds) throws DriverException {
         sds.open();
+        // TODO dont execute the query if mt.getAdjustedExtent > sds.getFullExtent()
         DefaultSpatialIndexQuery query = new DefaultSpatialIndexQuery(
                 mt.getAdjustedExtent(), sds.getMetadata().getFieldName(
                 sds.getSpatialFieldIndex()));
@@ -135,18 +134,17 @@ public class Renderer {
      */
     public void draw(Graphics2D g2, int width, int height, Envelope extent,
             ILayer layer, IProgressMonitor pm) {
-        setHints(g2);
 
-
-        System.out.println ("Youpii dans renderer...");
-        System.out.println ("   -Extent => " + extent);
+        //MapEnv.switchToDraft();
 
         MapTransform mt = new MapTransform();
 
         MapEnv.setMapTransform(mt);
 
         mt.resizeImage(width, height);
+
         mt.setExtent(extent);
+        
         ILayer[] layers;
 
         ArrayList<Symbolizer> overlay = new ArrayList<Symbolizer>();
@@ -243,13 +241,19 @@ public class Renderer {
                                     if (fts.isByLevel()) {
                                         System.out.println("ByLevel");
                                         for (Symbolizer s : symbs) {
+                                            System.out.println ("Draw " + s);
                                             it = rulesFid.get(s.getRule()).iterator();
                                             pm.startTask("Drawing by level" + layer.getName());
                                             Integer fid = 0;
+
+                                            long tf1 = System.currentTimeMillis();
+
                                             while (it.hasNext()) {
                                                 fid = it.next();
                                                 s.draw(g2, sds, fid.longValue());
                                             }
+                                            long tf2 = System.currentTimeMillis();
+                                            System.out.println("Features done :" + (tf2 - tf1));
                                         }
                                     } else {
                                         System.out.println("ByFeature");
@@ -362,12 +366,12 @@ public class Renderer {
                 layer, pm);
     }
 
+    /*
     private boolean validScale(MapTransform mt, Legend legend) {
         return (mt.getScaleDenominator() > legend.getMinScale())
                 && (mt.getScaleDenominator() < legend.getMaxScale());
-
-
     }
+     */
 
     /**
      * For geometry collections we need to filter the symbol composite before
@@ -551,7 +555,7 @@ public class Renderer {
      * Apply some rendering rules Look at rendering configuration panel.
      *
      * @param g2
-     */
+     
     private void setHints(Graphics2D g2) {
 
         Properties systemSettings = System.getProperties();
@@ -581,4 +585,5 @@ public class Renderer {
         }
 
     }
+   */
 }

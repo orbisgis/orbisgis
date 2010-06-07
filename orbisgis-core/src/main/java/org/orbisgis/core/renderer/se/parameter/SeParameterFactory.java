@@ -11,7 +11,7 @@ import org.orbisgis.core.renderer.persistance.ogc.LiteralType;
 import org.orbisgis.core.renderer.persistance.ogc.PropertyNameType;
 import org.orbisgis.core.renderer.persistance.se.CategorizeType;
 import org.orbisgis.core.renderer.persistance.se.InterpolateType;
-import org.orbisgis.core.renderer.persistance.se.ObjectFactory;
+
 import org.orbisgis.core.renderer.persistance.se.ParameterValueType;
 import org.orbisgis.core.renderer.persistance.se.RecodeType;
 import org.orbisgis.core.renderer.persistance.se.UnitaryOperatorType;

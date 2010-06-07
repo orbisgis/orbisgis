@@ -111,9 +111,6 @@ public class MapTransform implements PointTransformation {
 			return;
 		}
 
-		AffineTransform escalado = new AffineTransform();
-		AffineTransform translacion = new AffineTransform();
-
 		double escalaX;
 		double escalaY;
 
@@ -143,17 +140,14 @@ public class MapTransform implements PointTransformation {
 			adjustedExtent = new Envelope(newX, newX + newWidth, newY, newY
 					+ extent.getHeight());
 		}
-
-		translacion.setToTranslation(-adjustedExtent.getMinX(), -adjustedExtent
-				.getMinY()
-				- adjustedExtent.getHeight());
-		escalado.setToScale(scale, -scale);
-
+        
 		trans.setToIdentity();
-		trans.concatenate(escalado);
+        trans.concatenate(AffineTransform.getScaleInstance(scale, -scale));
+		trans.concatenate(AffineTransform
+                .getTranslateInstance(-adjustedExtent.getMinX(),
+                                      -adjustedExtent.getMinY() - adjustedExtent.getHeight()));
 
-		trans.concatenate(translacion);
-
+        
 	}
 
 	/**

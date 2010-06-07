@@ -38,6 +38,7 @@ import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.layerModel.LayerException;
 import org.orbisgis.core.renderer.Renderer;
 import org.orbisgis.core.renderer.persistance.se.FeatureTypeStyleType;
+import org.orbisgis.core.renderer.se.common.MapEnv;
 
 
 
@@ -95,8 +96,6 @@ public class FeatureTypeStyleTest extends TestCase {
             u.setEventHandler(validationCollector);
 
 
-
-
             JAXBElement<FeatureTypeStyleType> ftsElem = (JAXBElement<FeatureTypeStyleType>) u.unmarshal(
                     new FileInputStream(xml));
 
@@ -110,22 +109,15 @@ public class FeatureTypeStyleTest extends TestCase {
                 assertTrue(false);
             }
 
-            //ILayer layer = getDataManager().createLayer(new File("/home/maxence/projects/datas2tests/shp/Swiss/g4districts98_region.shp"));
+            ILayer layer = getDataManager().createLayer(new File("/home/maxence/projects/datas2tests/shp/Swiss/g4districts98_region.shp"));
 
-            ILayer layer = getDataManager().createLayer(new File("/data/Cartes/France/communes2.shp"));
+            //ILayer layer = getDataManager().createLayer(new File("/data/Cartes/France/communes2.shp"));
 
             GdmsLayer gdmsLayer = (GdmsLayer) layer;
 
 
             FeatureTypeStyle fts = new FeatureTypeStyle(ftsElem, layer);
             gdmsLayer.setFeatureTypeStyle(fts);
-
-            System.out.println("Symbolizer: " + layer.getFeatureTypeStyle());
-            System.out.println("Symbolizer: " + layer.getFeatureTypeStyle().getRules());
-            System.out.println("Symbolizer: " + layer.getFeatureTypeStyle().getRules().get(0));
-            System.out.println("Symbolizer: " + layer.getFeatureTypeStyle().getRules().get(0).getCompositeSymbolizer());
-            System.out.println("Symbolizer: " + layer.getFeatureTypeStyle().getRules().get(0).getCompositeSymbolizer().getSymbolizerList());
-            System.out.println("Symbolizer: " + layer.getFeatureTypeStyle().getRules().get(0).getCompositeSymbolizer().getSymbolizerList().get(0));
 
             layer.getDataSource().open();
 
@@ -135,15 +127,18 @@ public class FeatureTypeStyleTest extends TestCase {
             // extent = new
             // GeometryFactory().createPoint(centerPOint).buffer(20000)
             // .getEnvelopeInternal();
-            BufferedImage img = new BufferedImage(1000, 700,
+            BufferedImage img = new BufferedImage(1003, 646,
                     BufferedImage.TYPE_INT_ARGB);
-            
+    
             Renderer r = new Renderer();
+            
             // int size = 350;
             // extent = new Envelope(new Coordinate(extent.centre().x - size,
             // extent.centre().y - size), new Coordinate(extent.centre().x
             // + size, extent.centre().y + size));
+            
             r.draw(img, extent, layer);
+
             // ImageIO.write(img, "png", new File("/tmp/map.png"));
 
             System.out.println ("End of rendering...");

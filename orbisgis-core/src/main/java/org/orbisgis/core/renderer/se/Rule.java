@@ -4,6 +4,9 @@
  */
 package org.orbisgis.core.renderer.se;
 
+import com.vividsolutions.jts.geom.Geometry;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.gdms.data.DataSourceCreationException;
 import org.gdms.data.SpatialDataSourceDecorator;
 import org.gdms.driver.DriverException;
@@ -21,23 +24,50 @@ import org.orbisgis.core.renderer.se.common.Uom;
  */
 public class Rule implements SymbolizerNode {
 
-    public Rule() {
+    public Rule(ILayer layer) {
         symbolizer = new CompositeSymbolizer();
         symbolizer.setParent(this);
+
+        Geometry geometry = null;
+        try {
+            geometry = layer.getDataSource().getGeometry(0);
+        } catch (DriverException ex) {
+        }
+
+        Symbolizer symb;
+
+        if (geometry != null) {
+            switch (geometry.getDimension()) {
+                case 1:
+                    symb = new LineSymbolizer();
+                    break;
+                case 2:
+                    symb = new AreaSymbolizer();
+                    break;
+                case 0:
+                default:
+                    symb = new PointSymbolizer();
+                    break;
+            }
+        } else {
+            symb = new PointSymbolizer();
+        }
+
+        symbolizer.addSymbolizer(symb);
     }
 
-    public Rule(RuleType rt) {
-        this();
+    public Rule(RuleType rt, ILayer layer) {
+        this(layer);
 
-        if (rt.getMinScaleDenominator() != null){
+        if (rt.getMinScaleDenominator() != null) {
             this.setMinScaleDenom(rt.getMinScaleDenominator());
         }
 
-        if (rt.getMaxScaleDenominator() != null){
+        if (rt.getMaxScaleDenominator() != null) {
             this.setMaxScaleDenom(rt.getMaxScaleDenominator());
         }
 
-        if (rt.getSymbolizer() != null){
+        if (rt.getSymbolizer() != null) {
             this.setCompositeSymbolizer(new CompositeSymbolizer(rt.getSymbolizer()));
         }
     }
@@ -54,11 +84,11 @@ public class Rule implements SymbolizerNode {
     public RuleType getJAXBType() {
         RuleType rt = new RuleType();
 
-        if (this.minScaleDenom > 0){
+        if (this.minScaleDenom > 0) {
             rt.setMinScaleDenominator(minScaleDenom);
         }
 
-        if (this.maxScaleDenom > 0){
+        if (this.maxScaleDenom > 0) {
             rt.setMaxScaleDenominator(maxScaleDenom);
         }
 
@@ -98,9 +128,9 @@ public class Rule implements SymbolizerNode {
 
         SpatialDataSourceDecorator ds = layer.getDataSource();
 
-        String query = "select * from "+ ds.getName();
-        
-        if (where != null){
+        String query = "select * from " + ds.getName();
+
+        if (where != null) {
             query += " " + where;
         }
 
@@ -152,7 +182,6 @@ public class Rule implements SymbolizerNode {
                 || (scale > this.minScaleDenom && this.maxScaleDenom < 0)
                 || (scale > this.minScaleDenom && this.maxScaleDenom > scale);
     }
-    
     private SymbolizerNode fts;
     private String where;
     private boolean fallbackRule = false;

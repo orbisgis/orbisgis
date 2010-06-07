@@ -76,7 +76,9 @@ public abstract class VectorSymbolizer extends Symbolizer {
             at.preConcatenate(transform.getGraphicalAffineTransform(sds, fid, true));
         }
 
-        Point point = geom.getCentroid();
+        Point point = geom.getInteriorPoint();
+        //Point point = geom.getCentroid();
+
         return at.transform(new Point2D.Double(point.getX(), point.getY()), null);
     }
 

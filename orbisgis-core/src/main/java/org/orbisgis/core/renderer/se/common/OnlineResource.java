@@ -40,6 +40,7 @@ public class OnlineResource implements ExternalGraphicSource {
     }
 
     public OnlineResource(OnlineResourceType onlineResource) throws MalformedURLException {
+        System.out.println("Read online ressource");
         this.url = new URL(onlineResource.getHref());
     }
 
@@ -56,6 +57,8 @@ public class OnlineResource implements ExternalGraphicSource {
             throws IOException, ParameterException {
         PlanarImage img = JAI.create("url", url);
 
+        System.out.println ("Download external graphic from " + url);
+
         if (viewBox != null) {
             if (ds == null && viewBox != null && viewBox.dependsOnFeature()) {
                 throw new ParameterException("View box depends on feature");
@@ -67,7 +70,7 @@ public class OnlineResource implements ExternalGraphicSource {
             double width = img.getWidth();
             double height = img.getHeight();
 
-            Dimension dim = viewBox.getDimension(ds, fid, height / width);
+            Dimension dim = viewBox.getDimensionInPixel(ds, fid, height / width);
 
             double widthDst = dim.getWidth();
             double heightDst = dim.getHeight();

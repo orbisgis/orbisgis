@@ -37,6 +37,8 @@ import org.orbisgis.core.renderer.persistance.se.UnitaryOperatorType;
     org.orbisgis.core.renderer.persistance.se.FunctionType.class,
     UnitaryOperatorType.class,
     BinaryOperatorType.class,
+    LiteralType.class,
+    PropertyNameType.class,
     org.orbisgis.core.renderer.persistance.ogc.FunctionType.class
 })
 public abstract class ExpressionType {

@@ -35,7 +35,7 @@ public class GraphicFill extends Fill {
 
     public GraphicFill(GraphicFillType gft) {
         if (gft.getGraphic() != null) {
-            this.setGraphic(new GraphicCollection(gft.getGraphic()));
+            this.setGraphic(new GraphicCollection(gft.getGraphic(), this));
         }
 
         if (gft.getTileGap() != null) {

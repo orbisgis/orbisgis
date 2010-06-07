@@ -86,9 +86,7 @@ public class SolidFill extends Fill{
     @Override
     public void draw(Graphics2D g2, Shape shp, DataSource ds, long fid) throws ParameterException {
         if (color != null){
-
             Color c = color.getColor(ds, fid);
-
             Double op = 100.0;
             
             if (this.opacity != null){

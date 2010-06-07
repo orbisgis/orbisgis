@@ -34,7 +34,6 @@ public class Transform implements SymbolizerNode {
     public Transform(TransformType t) {
         transformations = new ArrayList<Transformation>();
         consolidated = null;
-        
 
         for (Object o : t.getTranslateOrRotateOrScale()){
             if (o instanceof TranslateType){

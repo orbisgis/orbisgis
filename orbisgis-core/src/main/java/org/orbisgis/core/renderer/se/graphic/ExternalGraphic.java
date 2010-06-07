@@ -36,15 +36,13 @@ import org.orbisgis.core.renderer.se.transform.Transform;
  * @see MarkGraphic, Graphic
  * @author maxence
  */
-public class ExternalGraphic extends Graphic {
+public final class ExternalGraphic extends Graphic {
 
     public ExternalGraphic(){
     }
 
     ExternalGraphic(JAXBElement<ExternalGraphicType> extG) throws IOException {
         ExternalGraphicType t = extG.getValue();
-
-        System.out.println ("Real ExtGraphic from XML");
 
         if (t.getHalo() != null){
             this.setHalo(new Halo(t.getHalo()));
@@ -65,7 +63,6 @@ public class ExternalGraphic extends Graphic {
         if (t.getViewBox() != null){
             this.setViewBox(new ViewBox(t.getViewBox()));
         }
-
         
         if (t.getOnlineResource() != null){
             this.setSource(new OnlineResource(t.getOnlineResource()));
@@ -99,18 +96,18 @@ public class ExternalGraphic extends Graphic {
         updateGraphic();
     }
 
-    private void updateGraphic() {
+    @Override
+    public void updateGraphic() {
         graphic = null;
 
         try {
             if (source != null) {
                 graphic = source.getPlanarImage(viewBox, null, 0);
+                System.out.println ("External Planar Image in CACHE");
             }
-        } catch (IOException ex) {
-            graphic = null; // TODO
-        } catch (ParameterException ex) {
-            // Means graphic depends on a feature
-            graphic = null;
+        } catch (Exception ex) {
+            System.out.println ("Fail to cache ext graphic" + ex);
+            ex.printStackTrace();
         }
     }
 
@@ -196,7 +193,7 @@ public class ExternalGraphic extends Graphic {
             }
 
             if (img != null){
-                Dimension dim = viewBox.getDimension(ds, fid, img.getHeight() / img.getWidth());
+                Dimension dim = viewBox.getDimensionInPixel(ds, fid, img.getHeight() / img.getWidth());
 
                 delta = Math.max(dim.getHeight(), dim.getWidth());
             }

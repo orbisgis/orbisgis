@@ -52,106 +52,105 @@ import org.orbisgis.progress.IProgressMonitor;
 
 public class AbstractTest extends TestCase {
 
-	@Override
-	protected void setUp() throws Exception {
-		DataSourceFactory dsf = new DataSourceFactory(
-				"src/test/resources/sources", "src/test/resources/temp");
+    @Override
+    protected void setUp() throws Exception {
+        DataSourceFactory dsf = new DataSourceFactory(
+                "src/test/resources/sources", "src/test/resources/temp");
 
-		Services.registerService(DataManager.class, "", new DefaultDataManager(
-				dsf));
-		Services
-				.registerService(ErrorManager.class, "", new FailErrorManager());
-		Services.registerService(EditorManager.class, "", new EditorManager() {
+        Services.registerService(DataManager.class, "", new DefaultDataManager(
+                dsf));
+        Services.registerService(ErrorManager.class, "", new FailErrorManager());
+        Services.registerService(EditorManager.class, "", new EditorManager() {
 
-			@Override
-			public void open(EditableElement element, IProgressMonitor pm)
-					throws UnsupportedOperationException {
-			}
 
-			@Override
-			public boolean hasEditor(EditableElement element) {
-				return false;
-			}
+            @Override
+            public void open(EditableElement element, IProgressMonitor pm) throws UnsupportedOperationException {
+                throw new UnsupportedOperationException("Not supported yet.");
+            }
 
-			@Override
-			public IEditor[] getEditors() {
-				return new IEditor[0];
-			}
+            @Override
+            public boolean hasEditor(EditableElement element) {
+                return false;
+            }
 
-			@Override
-			public IEditor[] getEditor(EditableElement element) {
-				return new IEditor[0];
-			}
+            @Override
+            public IEditor[] getEditors() {
+                return new IEditor[0];
+            }
 
-			@Override
-			public EditableElement getActiveElement() {
-				return null;
-			}
+            @Override
+            public IEditor[] getEditor(EditableElement element) {
+                return new IEditor[0];
+            }
 
-			@Override
-			public IEditor getActiveEditor() {
-				return null;
-			}
+            @Override
+            public EditableElement getActiveElement() {
+                return null;
+            }
 
-			@Override
-			public boolean closeEditor(IEditor editor)
-					throws IllegalArgumentException {
-				return true;
-			}
+            @Override
+            public IEditor getActiveEditor() {
+                return null;
+            }
 
-			@Override
-			public void addEditorListener(EditorListener listener) {
-			}
+            @Override
+            public boolean closeEditor(IEditor editor)
+                    throws IllegalArgumentException {
+                return true;
+            }
 
-			@Override
-			public String getEditorId(IEditor editor) {
-				return null;
-			}
+            @Override
+            public void addEditorListener(EditorListener listener) {
+            }
 
-			@Override
-			public void removeEditorListener(EditorListener listener) {
-			}
+            @Override
+            public String getEditorId(IEditor editor) {
+                return null;
+            }
 
-			@Override
-			public IEditor[] getEditors(String editorId, Object object) {
-				return getEditors();
-			}
+            @Override
+            public void removeEditorListener(EditorListener listener) {
+            }
 
-			@Override
-			public IEditor[] getEditors(String editorId) {
-				return getEditors();
-			}
-		});
-		super.setUp();
-	}
+            @Override
+            public IEditor[] getEditors(String editorId, Object object) {
+                return getEditors();
+            }
 
-	protected DataManager getDataManager() {
-		return (DataManager) Services.getService(DataManager.class);
-	}
+            @Override
+            public IEditor[] getEditors(String editorId) {
+                return getEditors();
+            }
+        });
+        super.setUp();
+    }
 
-	private class FailErrorManager implements ErrorManager {
+    protected DataManager getDataManager() {
+        return (DataManager) Services.getService(DataManager.class);
+    }
 
-		public void addErrorListener(ErrorListener listener) {
-		}
+    private class FailErrorManager implements ErrorManager {
 
-		public void error(String userMsg) {
-			throw new RuntimeException(userMsg);
-		}
+        public void addErrorListener(ErrorListener listener) {
+        }
 
-		public void error(String userMsg, Throwable exception) {
-			throw new RuntimeException(userMsg, exception);
-		}
+        public void error(String userMsg) {
+            throw new RuntimeException(userMsg);
+        }
 
-		public void removeErrorListener(ErrorListener listener) {
-		}
+        public void error(String userMsg, Throwable exception) {
+            throw new RuntimeException(userMsg, exception);
+        }
 
-		public void warning(String userMsg, Throwable exception) {
-			throw new RuntimeException(userMsg, exception);
-		}
+        public void removeErrorListener(ErrorListener listener) {
+        }
 
-		public void warning(String userMsg) {
-			throw new RuntimeException(userMsg);
-		}
+        public void warning(String userMsg, Throwable exception) {
+            throw new RuntimeException(userMsg, exception);
+        }
 
-	}
+        public void warning(String userMsg) {
+            throw new RuntimeException(userMsg);
+        }
+    }
 }

@@ -7,11 +7,23 @@ import org.orbisgis.core.renderer.persistance.se.ObjectFactory;
 import org.orbisgis.core.renderer.persistance.se.ParameterValueType;
 import org.orbisgis.core.renderer.persistance.se.UnitaryOperatorType;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
+import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
 
-public class RealUnitaryOperator implements RealParameter {
+public final class RealUnitaryOperator implements RealParameter {
 
-    public RealUnitaryOperator(JAXBElement<UnitaryOperatorType> jAXBElement) {
-        throw new UnsupportedOperationException("Not yet implemented");
+    public RealUnitaryOperator(JAXBElement<UnitaryOperatorType> expr) {
+        UnitaryOperatorType t = expr.getValue();
+
+        this.setOperand(SeParameterFactory.createRealParameter((JAXBElement<? extends ExpressionType>)t.getExpression()));
+
+        String operator = expr.getName().getLocalPart();
+
+        if (operator.equals("Log")){
+            this.op = RealUnitaryOperatorType.LOG;
+        }
+        else if (operator.equals("Sqrt")){
+            this.op = RealUnitaryOperatorType.SQRT;
+        }
     }
 
     public enum RealUnitaryOperatorType {

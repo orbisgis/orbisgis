@@ -11,6 +11,7 @@ import java.awt.geom.Arc2D;
 import java.awt.geom.Rectangle2D;
 import org.gdms.data.DataSource;
 import org.orbisgis.core.renderer.persistance.se.MarkGraphicType;
+import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 
 /**
@@ -56,17 +57,17 @@ public enum WellKnownName implements MarkGraphicSource {
      */
     @Override
     public Shape getShape(ViewBox viewBox, DataSource ds, long fid) throws ParameterException {
-        double x, y;
+        double x, y; // The size of the shape, [final unit] => [px] 
 
         if (ds == null && viewBox != null && viewBox.dependsOnFeature()){
-            throw new ParameterException("View box depends on feature");
+            return null;
         }
 
         if (viewBox != null) {
-            Dimension box = viewBox.getDimension(ds, fid, 1.0);
+            Dimension box = viewBox.getDimensionInPixel(ds, fid, 1.0);
 
             x = box.getWidth();
-            y = box.getHeight();;
+            y = box.getHeight();
             
         } else {
             x = 10.0;
