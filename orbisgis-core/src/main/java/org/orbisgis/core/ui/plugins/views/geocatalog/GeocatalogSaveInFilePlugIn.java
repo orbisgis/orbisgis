@@ -7,6 +7,7 @@ import org.gdms.driver.FileDriver;
 import org.gdms.driver.driverManager.Driver;
 import org.gdms.driver.driverManager.DriverManager;
 import org.gdms.source.AndDriverFilter;
+import org.gdms.source.CSVFileDriverFilter;
 import org.gdms.source.FileDriverFilter;
 import org.gdms.source.SourceManager;
 import org.gdms.source.VectorialDriverFilter;
@@ -63,8 +64,8 @@ public class GeocatalogSaveInFilePlugIn extends AbstractPlugIn {
 		DriverManager driverManager = sourceManager.getDriverManager();
 
 		Driver[] filtered = driverManager.getDrivers(new AndDriverFilter(
-				new FileDriverFilter(), new VectorialDriverFilter(),
-				new WritableDriverFilter()));
+				new FileDriverFilter(), new CSVFileDriverFilter(),
+				new VectorialDriverFilter(), new WritableDriverFilter()));
 		for (int i = 0; i < filtered.length; i++) {
 			FileDriver fileDriver = (FileDriver) filtered[i];
 			String[] extensions = fileDriver.getFileExtensions();
@@ -83,13 +84,11 @@ public class GeocatalogSaveInFilePlugIn extends AbstractPlugIn {
 
 	public boolean isEnabled() {
 		return getPlugInContext().checkLayerAvailability(
-				new SelectionAvailability[] {SelectionAvailability.EQUAL},
-				1,
-				new SourceAvailability[] {SourceAvailability.WMS});
+				new SelectionAvailability[] { SelectionAvailability.EQUAL }, 1,
+				new SourceAvailability[] { SourceAvailability.WMS });
 	}
-	
+
 	public boolean isSelected() {
-		// TODO Auto-generated method stub
 		return false;
 	}
 }
