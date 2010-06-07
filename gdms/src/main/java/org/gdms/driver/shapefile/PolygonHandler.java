@@ -60,7 +60,9 @@ import org.gdms.driver.ReadBufferManager;
 import org.gdms.driver.WriteBufferManager;
 
 import com.vividsolutions.jts.algorithm.CGAlgorithms;
+import com.vividsolutions.jts.algorithm.RobustDeterminant;
 import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.CoordinateSequence;
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
@@ -164,7 +166,7 @@ public class PolygonHandler implements ShapeHandler {
 	public Geometry read(ReadBufferManager buffer, ShapeType type)
 			throws IOException {
 		if (type == ShapeType.NULL) {
-			return null;
+			return createNull();
 		}
 		// bounds
 		buffer.skip(4 * 8);
@@ -173,6 +175,7 @@ public class PolygonHandler implements ShapeHandler {
 
 		int numParts = buffer.getInt();
 		int numPoints = buffer.getInt();
+		int dimensions = shapeType == ShapeType.POLYGONZ ? 3 : 2;
 
 		partOffsets = new int[numParts];
 
@@ -180,16 +183,17 @@ public class PolygonHandler implements ShapeHandler {
 			partOffsets[i] = buffer.getInt();
 		}
 
-		ArrayList<LinearRing> shells = new ArrayList<LinearRing>();
-		ArrayList<LinearRing> holes = new ArrayList<LinearRing>();
-		Coordinate[] coords = readCoordinates(buffer, numPoints);
+		ArrayList shells = new ArrayList();
+		ArrayList holes = new ArrayList();
+		CoordinateSequence coords = readCoordinates(buffer, numPoints,
+				dimensions);
 
 		if (shapeType == ShapeType.POLYGONZ) {
 			// z
 			buffer.skip(2 * 8);
 
 			for (int t = 0; t < numPoints; t++) {
-				coords[t].z = buffer.getDouble();
+				coords.setOrdinate(t, 2, buffer.getDouble());
 			}
 		}
 
@@ -209,34 +213,24 @@ public class PolygonHandler implements ShapeHandler {
 
 			length = finish - start;
 
-			// Use the progressive CCW algorithm.
-			// basically the area algorithm for polygons
-			// which also tells us vertex order based upon the
-			// sign of the area.
-			boolean closed = coords[0].equals(coords[coords.length - 1]);
-			Coordinate[] points;
-			if (closed) {
-				points = new Coordinate[length];
-			} else {
-				points = new Coordinate[length + 1];
-			} // double area = 0;
+			CoordinateSequence csRing = geometryFactory
+					.getCoordinateSequenceFactory().create(length, dimensions);
+			// double area = 0;
 			// int sx = offset;
 			for (int i = 0; i < length; i++) {
-				points[i] = coords[offset++];
-				// int j = sx + (i + 1) % length;
-				// area += points[i].x * coords[j].y;
-				// area -= points[i].y * coords[j].x;
+				csRing.setOrdinate(i, 0, coords.getOrdinate(offset, 0));
+				csRing.setOrdinate(i, 1, coords.getOrdinate(offset, 1));
+				if (dimensions == 3) {
+					csRing.setOrdinate(i, 2, coords.getOrdinate(offset, 2));
+				}
+				offset++;
 			}
-			if (!closed) {
-				points[points.length - 1] = points[0];
-			}
-			// area = -area / 2;
-			// REVISIT: polyons with only 1 or 2 points are not polygons -
+			// REVISIT: polygons with only 1 or 2 points are not polygons -
 			// geometryFactory will bomb so we skip if we find one.
-			if (points.length == 0 || points.length > 3) {
-				LinearRing ring = geometryFactory.createLinearRing(points);
+			if (csRing.size() == 0 || csRing.size() > 3) {
+				LinearRing ring = geometryFactory.createLinearRing(csRing);
 
-				if (CGAlgorithms.isCCW(points)) {
+				if (isCCW(csRing)) {
 					// counter-clockwise
 					holes.add(ring);
 				} else {
@@ -249,20 +243,17 @@ public class PolygonHandler implements ShapeHandler {
 		// quick optimization: if there's only one shell no need to check
 		// for holes inclusion
 		if (shells.size() == 1) {
-			return createMulti(shells.get(0), holes);
+			return createMulti((LinearRing) shells.get(0), holes);
 		}
 		// if for some reason, there is only one hole, we just reverse it and
 		// carry on.
 		else if (holes.size() == 1 && shells.size() == 0) {
-			// TODO check why ?
-			// Logger.getLogger("org.geotools.data.shapefile").warning(
-			// "only one hole in this polygon record");
-			return createMulti(JTSUtilities.reverseRing(holes.get(0)));
+			return createMulti(JTSUtilities.reverseRing((LinearRing) holes
+					.get(0)));
 		} else {
 
 			// build an association between shells and holes
-			final ArrayList<ArrayList<LinearRing>> holesForShells = assignHolesToShells(
-					shells, holes);
+			final ArrayList holesForShells = assignHolesToShells(shells, holes);
 
 			Geometry g = buildGeometries(shells, holes, holesForShells);
 
@@ -270,20 +261,125 @@ public class PolygonHandler implements ShapeHandler {
 		}
 	}
 
+	private MultiPolygon createNull() {
+		return geometryFactory.createMultiPolygon(null);
+	}
+
+	/**
+	 * Computes whether a ring defined by an array of {@link Coordinate}s is
+	 * oriented counter-clockwise.
+	 * <ul>
+	 * <li>The list of points is assumed to have the first and last points
+	 * equal.
+	 * <li>This will handle coordinate lists which contain repeated points.
+	 * </ul>
+	 * This algorithm is <b>only</b> guaranteed to work with valid rings. If the
+	 * ring is invalid (e.g. self-crosses or touches), the computed result may
+	 * not be correct.
+	 * 
+	 * @param ring
+	 *            an array of Coordinates forming a ring
+	 * @return true if the ring is oriented counter-clockwise.
+	 */
+	public static boolean isCCW(CoordinateSequence ring) {
+		// # of points without closing endpoint
+		int nPts = ring.size() - 1;
+
+		// find highest point
+		double hiy = ring.getOrdinate(0, 1);
+		int hiIndex = 0;
+		for (int i = 1; i <= nPts; i++) {
+			if (ring.getOrdinate(i, 1) > hiy) {
+				hiy = ring.getOrdinate(i, 1);
+				hiIndex = i;
+			}
+		}
+
+		// find distinct point before highest point
+		int iPrev = hiIndex;
+		do {
+			iPrev = iPrev - 1;
+			if (iPrev < 0)
+				iPrev = nPts;
+		} while (equals2D(ring, iPrev, hiIndex) && iPrev != hiIndex);
+
+		// find distinct point after highest point
+		int iNext = hiIndex;
+		do {
+			iNext = (iNext + 1) % nPts;
+		} while (equals2D(ring, iNext, hiIndex) && iNext != hiIndex);
+
+		/**
+		 * This check catches cases where the ring contains an A-B-A
+		 * configuration of points. This can happen if the ring does not contain
+		 * 3 distinct points (including the case where the input array has fewer
+		 * than 4 elements), or it contains coincident line segments.
+		 */
+		if (equals2D(ring, iPrev, hiIndex) || equals2D(ring, iNext, hiIndex)
+				|| equals2D(ring, iPrev, iNext))
+			return false;
+
+		int disc = computeOrientation(ring, iPrev, hiIndex, iNext);
+
+		/**
+		 * If disc is exactly 0, lines are collinear. There are two possible
+		 * cases: (1) the lines lie along the x axis in opposite directions (2)
+		 * the lines lie on top of one another
+		 * 
+		 * (1) is handled by checking if next is left of prev ==> CCW (2) will
+		 * never happen if the ring is valid, so don't check for it (Might want
+		 * to assert this)
+		 */
+		boolean isCCW = false;
+		if (disc == 0) {
+			// poly is CCW if prev x is right of next x
+			isCCW = (ring.getOrdinate(iPrev, 0) > ring.getOrdinate(iNext, 0));
+		} else {
+			// if area is positive, points are ordered CCW
+			isCCW = (disc > 0);
+		}
+		return isCCW;
+	}
+
+	private static boolean equals2D(CoordinateSequence cs, int i, int j) {
+		return cs.getOrdinate(i, 0) == cs.getOrdinate(j, 0)
+				&& cs.getOrdinate(i, 1) == cs.getOrdinate(j, 1);
+	}
+
+	public static int computeOrientation(CoordinateSequence cs, int p1, int p2,
+			int q) {
+		// travelling along p1->p2, turn counter clockwise to get to q return 1,
+		// travelling along p1->p2, turn clockwise to get to q return -1,
+		// p1, p2 and q are colinear return 0.
+		double p1x = cs.getOrdinate(p1, 0);
+		double p1y = cs.getOrdinate(p1, 1);
+		double p2x = cs.getOrdinate(p2, 0);
+		double p2y = cs.getOrdinate(p2, 1);
+		double qx = cs.getOrdinate(q, 0);
+		double qy = cs.getOrdinate(q, 1);
+		double dx1 = p2x - p1x;
+		double dy1 = p2y - p1y;
+		double dx2 = qx - p2x;
+		double dy2 = qy - p2y;
+		return RobustDeterminant.signOfDet2x2(dx1, dy1, dx2, dy2);
+	}
+
 	/**
 	 * @param buffer
 	 * @param numPoints
 	 * @throws IOException
 	 */
-	private Coordinate[] readCoordinates(final ReadBufferManager buffer,
-			final int numPoints) throws IOException {
-		Coordinate[] coords = new Coordinate[numPoints];
+	private CoordinateSequence readCoordinates(final ReadBufferManager buffer,
+			final int numPoints, final int dimensions) throws IOException {
+		CoordinateSequence cs = geometryFactory.getCoordinateSequenceFactory()
+				.create(numPoints, dimensions);
 
 		for (int t = 0; t < numPoints; t++) {
-			coords[t] = new Coordinate(buffer.getDouble(), buffer.getDouble());
+			cs.setOrdinate(t, 0, buffer.getDouble());
+			cs.setOrdinate(t, 1, buffer.getDouble());
 		}
 
-		return coords;
+		return cs;
 	}
 
 	/**
@@ -397,7 +493,7 @@ public class PolygonHandler implements ShapeHandler {
 	private MultiPolygon createMulti(LinearRing single, List<LinearRing> holes) {
 		return geometryFactory
 				.createMultiPolygon(new Polygon[] { geometryFactory
-						.createPolygon(single,  holes
+						.createPolygon(single, holes
 								.toArray(new LinearRing[holes.size()])) });
 	}
 
