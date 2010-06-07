@@ -242,7 +242,6 @@ public class ShapefileDriverTest extends TestCase {
 	}
 
 	public void test2DReadWriteMultipolygon() throws Exception {
-
 		Geometry geom = wktReader
 				.read("MULTIPOLYGON ((( 107 113, 107 293, 368 293, 368 113, 107 113 )), (( 178 246, 178 270, 196 270, 196 246, 178 246 )))");
 		test2DReadWrite(GeometryConstraint.MULTI_POLYGON, geom);
