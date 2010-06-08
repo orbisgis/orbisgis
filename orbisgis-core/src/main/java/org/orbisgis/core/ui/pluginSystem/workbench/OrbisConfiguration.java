@@ -1,16 +1,8 @@
 package org.orbisgis.core.ui.pluginSystem.workbench;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.GridLayout;
-
 import javax.swing.AbstractButton;
-import javax.swing.Box;
-import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
-import javax.swing.JTextArea;
 import javax.swing.event.MenuEvent;
 import javax.swing.event.MenuListener;
 
@@ -39,8 +31,6 @@ import org.orbisgis.core.ui.editors.map.tools.ZoomOutTool;
 import org.orbisgis.core.ui.pluginSystem.PlugInContext;
 import org.orbisgis.core.ui.plugins.actions.ExitPlugIn;
 import org.orbisgis.core.ui.plugins.actions.SavePlugIn;
-import org.orbisgis.core.ui.plugins.demo.extensions.tocMenu.MyTOCMenu;
-import org.orbisgis.core.ui.plugins.demo.extensions.tocMenu.MyTOCMenu;
 import org.orbisgis.core.ui.plugins.editors.mapEditor.ClearMapSelectionPlugIn;
 import org.orbisgis.core.ui.plugins.editors.mapEditor.CoordinateReferenceSystemPlugIn;
 import org.orbisgis.core.ui.plugins.editors.mapEditor.CreateSourceFromMapSelectionPlugIn;
@@ -387,7 +377,7 @@ public class OrbisConfiguration implements Setup {
 		createSourceFromSelectionPlugIn.initialize(plugInContext);
 		
 		//Map tools
-		scalePlugIn.initialize(plugInContext);		
+		//scalePlugIn.initialize(plugInContext);		
 		showXYPlugIn.initialize(plugInContext);
 		//CRSPlugIn.initialize(plugInContext);
 	}
