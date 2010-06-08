@@ -23,10 +23,10 @@ public class Categorize2String extends Categorize<StringParameter, StringLiteral
         this.fallbackValue = new StringLiteral(t.getFallbackValue());
         this.setLookupValue(SeParameterFactory.createRealParameter(t.getLookupValue()));
 
-        this.setClassValue(0, SeParameterFactory.createStringParameter(t.getFirstValue()));
-
 
         Iterator<JAXBElement<ParameterValueType>> it = t.getThresholdAndValue().iterator();
+
+        this.setClassValue(0, SeParameterFactory.createStringParameter(it.next().getValue()));
 
         // Fetch class values and thresholds
         while (it.hasNext()) {

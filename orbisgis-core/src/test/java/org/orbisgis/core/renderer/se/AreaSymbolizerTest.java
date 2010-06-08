@@ -306,7 +306,7 @@ public class AreaSymbolizerTest extends TestCase {
                 //aSymb2.draw(g2, sds, fid);
                 //aSymb3.draw(g2, sds, fid);
                 //aSymb.draw(g2, sds, fid);
-                pSymb.draw(g2, sds, fid);
+                pSymb.draw(g2, sds, fid, false);
             }
             g2.finalize();
 

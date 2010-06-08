@@ -248,7 +248,7 @@ public class GraphicCollectionTest extends TestCase {
         System.out.println(dj.getColorModel());
 
         RenderableGraphics rg;
-        rg = collec.getGraphic(null, 0);
+        rg = collec.getGraphic(null, 0, false);
 
         RenderContext ctc = MapEnv.getCurrentRenderContext();
 

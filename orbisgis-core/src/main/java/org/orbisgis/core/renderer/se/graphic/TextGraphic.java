@@ -21,9 +21,6 @@ public class TextGraphic extends Graphic {
     }
 
     TextGraphic(JAXBElement<TextGraphicType> tge) {
-
-        System.out.println("Dans texyt");
-
         TextGraphicType tgt = tge.getValue();
 
         if (tgt.getUnitOfMeasure() != null) {
@@ -55,9 +52,9 @@ public class TextGraphic extends Graphic {
      * @todo implements !
      */
     @Override
-    public RenderableGraphics getRenderableGraphics(DataSource ds, long fid) throws ParameterException, IOException {
+    public RenderableGraphics getRenderableGraphics(DataSource ds, long fid, boolean selected) throws ParameterException, IOException {
 
-        RenderableGraphics label = styledLabel.getImage(ds, fid);
+        RenderableGraphics label = styledLabel.getImage(ds, fid, selected);
 
         Rectangle2D bounds = new Rectangle2D.Double(label.getMinX(), label.getMinY(), label.getWidth(), label.getHeight());
 

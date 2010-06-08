@@ -34,9 +34,10 @@ public class LineLabel extends Label {
      *
      */
     @Override
-    public void draw(Graphics2D g2, Shape shp, DataSource ds, long fid) throws ParameterException, IOException {
+    public void draw(Graphics2D g2, Shape shp, DataSource ds, long fid, boolean selected) throws ParameterException, IOException {
         
-        RenderableGraphics l = this.label.getImage(ds, fid);
+        RenderableGraphics l = this.label.getImage(ds, fid, selected);
+
 
         // convert lineShape to a point
         // create AT according to rotation and exclusionZone

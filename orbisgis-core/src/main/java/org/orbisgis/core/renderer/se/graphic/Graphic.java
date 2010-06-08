@@ -94,7 +94,7 @@ public abstract class Graphic implements SymbolizerNode {
      * @throws ParameterException
      * @throws IOException
      */
-    public abstract RenderableGraphics getRenderableGraphics(DataSource ds, long fid)
+    public abstract RenderableGraphics getRenderableGraphics(DataSource ds, long fid, boolean selected)
             throws ParameterException, IOException;
 
     /**

@@ -100,7 +100,7 @@ public abstract class Stroke implements SymbolizerNode {
      * @throws ParameterException
      * @throws IOException
      */
-    public abstract void draw(Graphics2D g2, Shape shp, DataSource ds, long fid) throws ParameterException, IOException;
+    public abstract void draw(Graphics2D g2, Shape shp, DataSource ds, long fid, boolean selected) throws ParameterException, IOException;
 
     /**
      * Take into account preGap and postGap

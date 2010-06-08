@@ -1,5 +1,6 @@
 package org.orbisgis.core.renderer.se.fill;
 
+import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Paint;
 import java.awt.Shape;
@@ -22,6 +23,7 @@ import org.orbisgis.core.renderer.se.common.MapEnv;
 import org.orbisgis.core.renderer.se.graphic.GraphicCollection;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
+import org.orbisgis.core.renderer.se.parameter.color.ColorHelper;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 import org.orbisgis.core.renderer.se.stroke.PenStroke;
 
@@ -40,6 +42,9 @@ public class DensityFill extends Fill {
             if (t.getOrientation() != null){
                 this.setHatchesOrientation(SeParameterFactory.createRealParameter(t.getOrientation()));
             }
+        }
+        else{
+            t.getGraphic(); // TODO hangle grain
         }
 
         if (t.getPercentage() != null){
@@ -108,7 +113,7 @@ public class DensityFill extends Fill {
      * @throws IOException
      */
     @Override
-    public void draw(Graphics2D g2, Shape shp, DataSource ds, long fid) throws ParameterException, IOException {
+    public void draw(Graphics2D g2, Shape shp, DataSource ds, long fid, boolean selected) throws ParameterException, IOException {
         double percentage = 0.0;
 
         if (percentageCovered != null) {
@@ -178,7 +183,14 @@ public class DensityFill extends Fill {
 
                 g2.setRenderingHints(MapEnv.getCurrentRenderContext().getRenderingHints());
 
-                tile.setColor(hatches.getColor().getColor(ds, fid));
+                Color c = hatches.getColor().getColor(ds, fid);
+                
+                if (selected){
+                    c = ColorHelper.invert(c);
+                }
+
+                tile.setColor(c);
+
                 tile.setStroke(hatches.getBasicStroke(ds, fid));
 
                 // Draw three line in order to ensure mosaic join
@@ -201,7 +213,7 @@ public class DensityFill extends Fill {
                 painter = new TexturePaint(i, new Rectangle2D.Double(0, 0, ix, iy));
 
             } else if (mark != null) { // Marked
-                RenderableGraphics g = mark.getGraphic(ds, fid);
+                RenderableGraphics g = mark.getGraphic(ds, fid, selected);
 
                 if (g != null){
                     // TODO IMPLEMENT: create TexturePaint, see GraphicFill.getTexturePaint

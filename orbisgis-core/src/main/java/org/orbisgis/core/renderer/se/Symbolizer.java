@@ -150,16 +150,14 @@ public abstract class Symbolizer implements SymbolizerNode, Comparable{
 
     public Rule getRule(){
         SymbolizerNode pIt = this.parent;
-        System.out.println ("First parent: " + pIt);
         while (! (pIt instanceof Rule)){
             pIt = pIt.getParent();
-            System.out.println ("Parent: " + pIt);
         }
 
         return (Rule)pIt;
     }
 
-    public abstract void draw(Graphics2D g2, SpatialDataSourceDecorator sds, long fid) throws ParameterException, IOException, DriverException;
+    public abstract void draw(Graphics2D g2, SpatialDataSourceDecorator sds, long fid, boolean selected) throws ParameterException, IOException, DriverException;
 
     public abstract JAXBElement<? extends SymbolizerType> getJAXBElement();
     protected String name;

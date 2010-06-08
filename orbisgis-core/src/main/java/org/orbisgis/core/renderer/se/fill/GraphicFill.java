@@ -99,9 +99,10 @@ public class GraphicFill extends Fill {
      * see Fill
      */
     @Override
-    public void draw(Graphics2D g2, Shape shp, DataSource ds, long fid) throws ParameterException, IOException {
-        TexturePaint stipple = this.getStipplePainter(ds, fid);
+    public void draw(Graphics2D g2, Shape shp, DataSource ds, long fid, boolean selected) throws ParameterException, IOException {
+        TexturePaint stipple = this.getStipplePainter(ds, fid, selected);
 
+        // TODO handle selected ! 
         if (stipple != null) {
             g2.setPaint(stipple);
             g2.fill(shp);
@@ -117,8 +118,8 @@ public class GraphicFill extends Fill {
      * @throws ParameterException
      * @throws IOException
      */
-    public TexturePaint getStipplePainter(DataSource ds, long fid) throws ParameterException, IOException {
-        RenderableGraphics img = graphic.getGraphic(ds, fid);
+    public TexturePaint getStipplePainter(DataSource ds, long fid, boolean selected) throws ParameterException, IOException {
+        RenderableGraphics img = graphic.getGraphic(ds, fid, selected);
 
         if (img != null) {
             double gX = 0.0;

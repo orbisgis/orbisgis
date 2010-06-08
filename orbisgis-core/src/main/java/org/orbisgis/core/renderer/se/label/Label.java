@@ -119,7 +119,7 @@ public abstract class Label implements SymbolizerNode {
         label.setParent(this);
     }
 
-    public abstract void draw(Graphics2D g2, Shape shp, DataSource ds, long fid) throws ParameterException, IOException;
+    public abstract void draw(Graphics2D g2, Shape shp, DataSource ds, long fid, boolean selected) throws ParameterException, IOException;
 
     public abstract JAXBElement<? extends LabelType> getJAXBElement();
     protected SymbolizerNode parent;

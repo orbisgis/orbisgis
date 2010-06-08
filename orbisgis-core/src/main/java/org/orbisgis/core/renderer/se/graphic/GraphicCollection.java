@@ -114,7 +114,7 @@ public final class GraphicCollection implements SymbolizerNode {
      * @throws ParameterException
      * @throws IOException
      */
-    public RenderableGraphics getGraphic(DataSource ds, long fid) throws ParameterException, IOException {
+    public RenderableGraphics getGraphic(DataSource ds, long fid, boolean selected) throws ParameterException, IOException {
 
         RenderContext ctc = MapEnv.getCurrentRenderContext();
 
@@ -131,7 +131,7 @@ public final class GraphicCollection implements SymbolizerNode {
         Iterator<Graphic> it = graphics.iterator();
         while (it.hasNext()) {
             Graphic g = it.next();
-            RenderableGraphics img = g.getRenderableGraphics(ds, fid);
+            RenderableGraphics img = g.getRenderableGraphics(ds, fid, selected);
             if (img != null) {
                 float mX = img.getMinX();
                 float w = img.getWidth();

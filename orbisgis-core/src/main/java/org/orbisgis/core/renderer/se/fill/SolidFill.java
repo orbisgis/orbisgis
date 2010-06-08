@@ -20,12 +20,12 @@ import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
  *
  * @author maxence
  */
-public class SolidFill extends Fill{
+public class SolidFill extends Fill {
 
     /**
      * fill with random color 60% opaque
      */
-    public SolidFill(){
+    public SolidFill() {
         this(new ColorLiteral(), new RealLiteral(60.0));
     }
 
@@ -33,7 +33,7 @@ public class SolidFill extends Fill{
      * fill with specified color 60% opaque
      * @param c 
      */
-    public SolidFill(Color c){
+    public SolidFill(Color c) {
         this(new ColorLiteral(c), new RealLiteral(60.0));
     }
 
@@ -42,7 +42,7 @@ public class SolidFill extends Fill{
      * @param c
      * @param opacity
      */
-    public SolidFill(Color c, double opacity){
+    public SolidFill(Color c, double opacity) {
         this(new ColorLiteral(c), new RealLiteral(opacity));
     }
 
@@ -51,68 +51,74 @@ public class SolidFill extends Fill{
      * @param c
      * @param opacity
      */
-    public SolidFill(ColorParameter c, RealParameter opacity){
+    public SolidFill(ColorParameter c, RealParameter opacity) {
         this.color = c;
         this.opacity = opacity;
     }
 
-    public SolidFill(JAXBElement<SolidFillType> sf){
-        if (sf.getValue().getColor() != null){
+    public SolidFill(JAXBElement<SolidFillType> sf) {
+        if (sf.getValue().getColor() != null) {
             this.color = SeParameterFactory.createColorParameter(sf.getValue().getColor());
         }
 
-        if (sf.getValue().getOpacity() != null){
+        if (sf.getValue().getOpacity() != null) {
             this.opacity = SeParameterFactory.createRealParameter(sf.getValue().getOpacity());
         }
     }
 
-    public void setColor(ColorParameter color){
+    public void setColor(ColorParameter color) {
         this.color = color;
     }
 
-    public ColorParameter getColor(){
+    public ColorParameter getColor() {
         return color;
     }
 
-    public void setOpacity(RealParameter opacity){
+    public void setOpacity(RealParameter opacity) {
         this.opacity = opacity;
     }
 
-    public RealParameter getOpacity(){
+    public RealParameter getOpacity() {
         return opacity;
     }
 
-
     @Override
-    public void draw(Graphics2D g2, Shape shp, DataSource ds, long fid) throws ParameterException {
-        if (color != null){
+    public void draw(Graphics2D g2, Shape shp, DataSource ds, long fid, boolean selected) throws ParameterException {
+        if (color != null) {
             Color c = color.getColor(ds, fid);
             Double op = 100.0;
-            
-            if (this.opacity != null){
+
+            if (this.opacity != null) {
                 op = this.opacity.getValue(ds, fid);
             }
-            
+
             // Add opacity to the color 
             Color ac = ColorHelper.getColorWithAlpha(c, op);
+
+
+            if (selected) {
+                ac = ColorHelper.invert(ac);
+            }
+
+
             g2.setColor(ac);
             g2.fill(shp);
         }
     }
 
     @Override
-    public String toString(){
+    public String toString() {
         return "Color: " + color + " alpha: " + opacity;
     }
 
     @Override
-    public SolidFillType getJAXBType(){
+    public SolidFillType getJAXBType() {
         SolidFillType f = new SolidFillType();
 
-        if (color != null){
+        if (color != null) {
             f.setColor(color.getJAXBParameterValueType());
         }
-        if (opacity != null){
+        if (opacity != null) {
             f.setOpacity(opacity.getJAXBParameterValueType());
         }
 
@@ -120,12 +126,10 @@ public class SolidFill extends Fill{
     }
 
     @Override
-    public JAXBElement<SolidFillType> getJAXBElement(){
+    public JAXBElement<SolidFillType> getJAXBElement() {
         ObjectFactory of = new ObjectFactory();
         return of.createSolidFill(this.getJAXBType());
     }
-
     private ColorParameter color;
     private RealParameter opacity;
-
 }

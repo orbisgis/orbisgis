@@ -28,19 +28,6 @@ import org.orbisgis.core.renderer.se.transform.Transform;
 
 public class AreaSymbolizer extends VectorSymbolizer {
 
-    
-    public final static AreaSymbolizer selectionOverlaySymbolizer;
-
-    static{
-        selectionOverlaySymbolizer = new AreaSymbolizer();
-
-        SolidFill yellow = new SolidFill();
-        yellow.setColor(new ColorLiteral("#fff3b1"));
-        yellow.setOpacity(new RealLiteral(50.0));
-        selectionOverlaySymbolizer.setFill(yellow);
-
-    }
-
     public AreaSymbolizer() {
         super();
         uom = Uom.MM;
@@ -122,11 +109,11 @@ public class AreaSymbolizer extends VectorSymbolizer {
      * @todo make sure the geom is an area; implement p_offset
      */
     @Override
-    public void draw(Graphics2D g2, SpatialDataSourceDecorator sds, long fid) throws ParameterException, IOException, DriverException {
+    public void draw(Graphics2D g2, SpatialDataSourceDecorator sds, long fid, boolean selected) throws ParameterException, IOException, DriverException {
         Shape shp = this.getShape(sds, fid);
 
         if (fill != null) {
-            fill.draw(g2, shp, sds, fid);
+            fill.draw(g2, shp, sds, fid, selected);
         }
 
         if (stroke != null) {
@@ -135,7 +122,7 @@ public class AreaSymbolizer extends VectorSymbolizer {
                 // apply perpendicular offset to shp !
             }
             // TODO perpendicular offset !
-            stroke.draw(g2, shp, sds, fid);
+            stroke.draw(g2, shp, sds, fid, selected);
         }
     }
 

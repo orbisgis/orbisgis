@@ -54,9 +54,9 @@ public class DotMapFill extends Fill {
      * @throws IOException
      */
     @Override
-    public void draw(Graphics2D g2, Shape shp, DataSource ds, long fid) throws ParameterException, IOException {
+    public void draw(Graphics2D g2, Shape shp, DataSource ds, long fid, boolean selected) throws ParameterException, IOException {
         if (mark != null && totalQuantity != null && quantityPerMark != null) {
-            RenderableGraphics m = mark.getGraphic(ds, fid);
+            RenderableGraphics m = mark.getGraphic(ds, fid, selected);
 
             if (m != null) {
                 double total = totalQuantity.getValue(ds, fid);
@@ -64,6 +64,7 @@ public class DotMapFill extends Fill {
 
                 int n = (int) (total / perMark);
 
+                // TODO handle selected ! 
                 // TODO IMPLEMENT
                 // The graphics2d m has to be plotted n times within shp
             }

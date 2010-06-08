@@ -117,13 +117,14 @@ public final class ExternalGraphic extends Graphic {
     }
 
     @Override
-    public RenderableGraphics getRenderableGraphics(DataSource ds, long fid) throws ParameterException, IOException {
+    public RenderableGraphics getRenderableGraphics(DataSource ds, long fid, boolean selected) throws ParameterException, IOException {
 
         AffineTransform at = new AffineTransform();
         if (transform != null){
             at = transform.getGraphicalAffineTransform(ds, fid, false);
         }
 
+        // TODO Implements SELECTED!
 
         PlanarImage img;
 

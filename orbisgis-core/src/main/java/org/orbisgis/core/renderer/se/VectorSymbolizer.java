@@ -38,7 +38,7 @@ public abstract class VectorSymbolizer extends Symbolizer {
         super(st);
     }
 
-    public abstract void draw(Graphics2D g2, SpatialDataSourceDecorator sds, long fid) throws ParameterException, IOException, DriverException;
+    public abstract void draw(Graphics2D g2, SpatialDataSourceDecorator sds, long fid, boolean selected) throws ParameterException, IOException, DriverException;
 
     /**
      * Convert a spatial feature into a LiteShape, should add parameters to handle

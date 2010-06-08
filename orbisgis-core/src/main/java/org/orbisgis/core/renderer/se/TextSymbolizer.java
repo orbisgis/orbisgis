@@ -44,14 +44,13 @@ public class TextSymbolizer extends VectorSymbolizer {
         this.perpendicularOffset = perpendicularOffset;
     }
 
-
     @Override
-    public void draw(Graphics2D g2, SpatialDataSourceDecorator sds, long fid) throws ParameterException, IOException, DriverException {
+    public void draw(Graphics2D g2, SpatialDataSourceDecorator sds, long fid, boolean selected) throws ParameterException, IOException, DriverException {
 
         Shape shp = this.getShape(sds, fid);
 
         if (label != null){
-            label.draw(g2, shp, sds, fid);
+            label.draw(g2, shp, sds, fid, selected);
         }
     }
 
@@ -113,4 +112,5 @@ public class TextSymbolizer extends VectorSymbolizer {
 
     private RealParameter perpendicularOffset;
     private Label label;
+
 }

@@ -91,7 +91,7 @@ public class Halo implements SymbolizerNode {
 
                 Shape haloShp = shp; // TODO poffset !!
 
-                fill.draw(g2, haloShp, ds, fid);
+                fill.draw(g2, haloShp, ds, fid, false);
 
                 throw new UnsupportedOperationException("Not supported yet. Need PerpendiularOffset");
             }

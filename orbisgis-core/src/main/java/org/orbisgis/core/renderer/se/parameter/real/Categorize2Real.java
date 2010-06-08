@@ -22,10 +22,10 @@ public class Categorize2Real extends Categorize<RealParameter, RealLiteral> impl
         this.fallbackValue = new RealLiteral(t.getFallbackValue());
         this.setLookupValue(SeParameterFactory.createRealParameter(t.getLookupValue()));
 
-        this.setClassValue(0, SeParameterFactory.createRealParameter(t.getFirstValue()));
-        
 
         Iterator<JAXBElement<ParameterValueType>> it = t.getThresholdAndValue().iterator();
+
+        this.setClassValue(0, SeParameterFactory.createRealParameter(it.next().getValue()));
 
         // Fetch class values and thresholds
         while (it.hasNext()){

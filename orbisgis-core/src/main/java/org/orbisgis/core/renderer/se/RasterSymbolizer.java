@@ -27,7 +27,7 @@ import org.orbisgis.core.renderer.se.raster.ContrastEnhancement;
 public class RasterSymbolizer extends Symbolizer {
 
     @Override
-    public void draw(Graphics2D g2, SpatialDataSourceDecorator sds, long fid) throws ParameterException, IOException, DriverException {
+    public void draw(Graphics2D g2, SpatialDataSourceDecorator sds, long fid, boolean selected) throws ParameterException, IOException, DriverException {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 

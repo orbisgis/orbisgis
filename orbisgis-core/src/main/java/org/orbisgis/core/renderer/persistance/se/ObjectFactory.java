@@ -50,7 +50,7 @@ public class ObjectFactory {
     private final static QName _TimePeriod_QNAME = new QName("http://www.opengis.net/se", "TimePeriod");
     private final static QName _FeatureTypeStyleReference_QNAME = new QName("http://www.opengis.net/se", "FeatureTypeStyleReference");
     private final static QName _PieSubtype_QNAME = new QName("http://www.opengis.net/se", "PieSubtype");
-    private final static QName _FirstValue_QNAME = new QName("http://www.opengis.net/se", "FirstValue");
+    private final static QName _FirstValue_QNAME = new QName("http://www.opengis.net/se", "Value"); // Hacked by Maxence in order to have distinct element with same name
     private final static QName _Rotation_QNAME = new QName("http://www.opengis.net/se", "Rotation");
     private final static QName _E_QNAME = new QName("http://www.opengis.net/se", "E");
     private final static QName _D_QNAME = new QName("http://www.opengis.net/se", "D");

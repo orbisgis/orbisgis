@@ -76,7 +76,7 @@ public class SymbolizerTest extends TestCase {
         super.tearDown();
     }
 
-    public void testMarshall() {
+    public void testMarshall() throws ParameterException {
 
         //String xml = "../../datas2tests/xmlse/as_gf.xml";
         //String xml = "../../datas2tests/xmlse/pSymb.xml";
@@ -148,7 +148,7 @@ public class SymbolizerTest extends TestCase {
 
             long fid;
             for (fid = 0; fid < ds.getRowCount(); fid++) {
-                cs.draw(g2, sds, fid);
+                cs.draw(g2, sds, fid, false);
             }
 
 
@@ -182,8 +182,8 @@ public class SymbolizerTest extends TestCase {
             marshaller.marshal(cs.getJAXBElement(),
                     new FileOutputStream("/tmp/resSymb.xml"));
 
-        } catch (ParameterException ex) {
-            Logger.getLogger(SymbolizerTest.class.getName()).log(Level.SEVERE, null, ex);
+        //} catch (ParameterException ex) {
+        //    Logger.getLogger(SymbolizerTest.class.getName()).log(Level.SEVERE, null, ex);
         } catch (DataSourceCreationException ex) {
             Logger.getLogger(SymbolizerTest.class.getName()).log(Level.SEVERE, null, ex);
         } catch (DriverException ex) {

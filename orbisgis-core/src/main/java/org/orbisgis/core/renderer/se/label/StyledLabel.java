@@ -173,8 +173,7 @@ public class StyledLabel implements SymbolizerNode {
         this.fontWeight = fontWeight;
     }
 
-    // TODO implements
-    public RenderableGraphics getImage(DataSource ds, long fid) throws ParameterException, IOException {
+    public RenderableGraphics getImage(DataSource ds, long fid, boolean selected) throws ParameterException, IOException {
 
         String text = labelText.getValue(ds, fid);
 
@@ -226,11 +225,11 @@ public class StyledLabel implements SymbolizerNode {
         rg = Graphic.getNewRenderableGraphics(outline.getBounds2D(), margin);
 
         if (fill != null) {
-            fill.draw(rg, outline, ds, fid);
+            fill.draw(rg, outline, ds, fid, selected);
         }
 
         if (stroke != null) {
-            stroke.draw(rg, outline, ds, fid);
+            stroke.draw(rg, outline, ds, fid, selected);
         }
 
         // HALO, FILL, STROKE

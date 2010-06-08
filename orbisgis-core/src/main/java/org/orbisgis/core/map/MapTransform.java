@@ -56,6 +56,7 @@ import com.vividsolutions.jts.awt.ShapeWriter;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
+import org.orbisgis.core.renderer.se.common.MapEnv;
 
 public class MapTransform implements PointTransformation {
 
@@ -147,7 +148,7 @@ public class MapTransform implements PointTransformation {
                 .getTranslateInstance(-adjustedExtent.getMinX(),
                                       -adjustedExtent.getMinY() - adjustedExtent.getHeight()));
 
-        
+
 	}
 
 	/**

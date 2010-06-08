@@ -206,17 +206,17 @@ public class PenStroke extends Stroke {
 
         int cap;
         if (this.lineCap == null) {
-            cap = BasicStroke.CAP_SQUARE;
+            cap = BasicStroke.CAP_BUTT;
         } else {
             switch (this.lineCap) {
                 case BUTT:
+                default:
                     cap = BasicStroke.CAP_BUTT;
                     break;
                 case ROUND:
-                    cap = BasicStroke.CAP_BUTT;
+                    cap = BasicStroke.CAP_ROUND;
                     break;
                 case SQUARE:
-                default:
                     cap = BasicStroke.CAP_SQUARE;
                     break;
             }
@@ -224,17 +224,17 @@ public class PenStroke extends Stroke {
 
         int join;
         if (this.lineJoin == null) {
-            join = BasicStroke.JOIN_BEVEL;
+            join = BasicStroke.JOIN_ROUND;
         } else {
             switch (this.lineJoin) {
                 case MITRE:
                     join = BasicStroke.JOIN_MITER;
                     break;
                 case ROUND:
+                default:
                     join = BasicStroke.JOIN_ROUND;
                     break;
                 case BEVEL:
-                default:
                     join = BasicStroke.JOIN_BEVEL;
                     break;
             }
@@ -266,7 +266,7 @@ public class PenStroke extends Stroke {
     }
      */
     @Override
-    public void draw(Graphics2D g2, Shape shp, DataSource ds, long fid) throws ParameterException, IOException {
+    public void draw(Graphics2D g2, Shape shp, DataSource ds, long fid, boolean selected) throws ParameterException, IOException {
 
         Paint paint= null;
         // remove preGap, postGap from the line
@@ -284,7 +284,7 @@ public class PenStroke extends Stroke {
 
         if (this.useColor == false) {
             if (stipple != null) {
-                paint = stipple.getStipplePainter(ds, fid);
+                paint = stipple.getStipplePainter(ds, fid, selected);
             } else {
                 // TOOD Warn Stiple has to be used, but is undefined
             }
@@ -293,6 +293,9 @@ public class PenStroke extends Stroke {
 
             if (this.color != null) {
                 c = color.getColor(ds, fid);
+                if (selected){
+                    c = ColorHelper.invert(c);
+                }
             } else {
                 // TOOD Warn Color has to be used, but is undefined (Using a random one)
                 c = new ColorLiteral().getColor(ds, fid);

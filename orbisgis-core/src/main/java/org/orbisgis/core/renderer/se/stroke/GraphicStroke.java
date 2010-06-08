@@ -49,8 +49,8 @@ public class GraphicStroke extends Stroke {
     }
 
     @Override
-    public void draw(Graphics2D g2, Shape shp, DataSource ds, long fid) throws ParameterException, IOException {
-        RenderableGraphics g = graphic.getGraphic(ds, fid);
+    public void draw(Graphics2D g2, Shape shp, DataSource ds, long fid, boolean selected) throws ParameterException, IOException {
+        RenderableGraphics g = graphic.getGraphic(ds, fid, selected);
 
         if (g != null) {
             double l;

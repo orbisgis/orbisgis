@@ -28,26 +28,6 @@ import org.orbisgis.core.renderer.se.transform.Transform;
 
 public class PointSymbolizer extends VectorSymbolizer {
 
-    public static final PointSymbolizer selectionOverlaySymbolizer;
-
-    static {
-
-        selectionOverlaySymbolizer = new PointSymbolizer();
-        MarkGraphic mark = new MarkGraphic();
-
-        try { // will never throw anything because of WellKnownName !
-            mark.setSource(WellKnownName.CIRCLE);
-        } catch (IOException ex) {
-            Logger.getLogger(PointSymbolizer.class.getName()).log(Level.SEVERE, null, ex);
-        }
-
-        SolidFill yellow = new SolidFill();
-        yellow.setColor(new ColorLiteral("#fff3b1"));
-        yellow.setOpacity(new RealLiteral(50.0));
-        mark.setFill(yellow);
-        selectionOverlaySymbolizer.graphic.addGraphic(mark);
-    }
-
     /*
      * Create a default pointSymbolizer: Square 10mm
      *
@@ -100,11 +80,11 @@ public class PointSymbolizer extends VectorSymbolizer {
      * @todo convert the_geom to a point feature; plot img over the point
      */
     @Override
-    public void draw(Graphics2D g2, SpatialDataSourceDecorator sds, long fid) throws ParameterException, IOException, DriverException {
+    public void draw(Graphics2D g2, SpatialDataSourceDecorator sds, long fid, boolean selected) throws ParameterException, IOException, DriverException {
         if (graphic != null && graphic.getNumGraphics() > 0) {
             Point2D pt = this.getPointShape(sds, fid);
 
-            RenderableGraphics rg = graphic.getGraphic(sds, fid);
+            RenderableGraphics rg = graphic.getGraphic(sds, fid, selected);
 
             if (rg != null) {
                 double x = 0, y = 0;

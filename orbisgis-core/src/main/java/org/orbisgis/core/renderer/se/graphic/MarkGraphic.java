@@ -174,7 +174,7 @@ public final class MarkGraphic extends Graphic {
      * @todo implements !
      */
     @Override
-    public RenderableGraphics getRenderableGraphics(DataSource ds, long fid) throws ParameterException, IOException {
+    public RenderableGraphics getRenderableGraphics(DataSource ds, long fid, boolean selected) throws ParameterException, IOException {
         Shape shp;
 
         // If the shape doesn't depends on feature (i.e. not null), we used the cached one
@@ -202,10 +202,10 @@ public final class MarkGraphic extends Graphic {
             halo.draw(rg, atShp, ds, fid);
         }
         if (fill != null) {
-            fill.draw(rg, atShp, ds, fid);
+            fill.draw(rg, atShp, ds, fid, selected);
         }
         if (stroke != null) {
-            stroke.draw(rg, atShp, ds, fid);
+            stroke.draw(rg, atShp, ds, fid, selected);
         }
 
         return rg;

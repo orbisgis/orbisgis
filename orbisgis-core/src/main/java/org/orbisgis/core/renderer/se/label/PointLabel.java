@@ -6,6 +6,7 @@ package org.orbisgis.core.renderer.se.label;
 
 import java.awt.Graphics2D;
 import java.awt.Shape;
+import java.awt.geom.AffineTransform;
 
 import java.io.IOException;
 import javax.media.jai.RenderableGraphics;
@@ -15,6 +16,7 @@ import org.gdms.data.DataSource;
 import org.orbisgis.core.renderer.persistance.se.ObjectFactory;
 import org.orbisgis.core.renderer.persistance.se.ParameterValueType;
 import org.orbisgis.core.renderer.persistance.se.PointLabelType;
+import org.orbisgis.core.renderer.se.common.MapEnv;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
 import org.orbisgis.core.renderer.se.parameter.real.RealLiteral;
@@ -69,19 +71,29 @@ public class PointLabel extends Label {
     }
 
     @Override
-    public void draw(Graphics2D g2, Shape shp, DataSource ds, long fid) throws ParameterException, IOException {
-        RenderableGraphics l = this.label.getImage(ds, fid);
+    public void draw(Graphics2D g2, Shape shp, DataSource ds, long fid, boolean selected) throws ParameterException, IOException {
+        RenderableGraphics l = this.label.getImage(ds, fid, selected);
 
         // convert lineShape to a point
         // create AT according to rotation and exclusionZone
 
-        /*g2.drawImage(label,
-        new AffineTransformOp(AT,
-        AffineTransformOp.TYPE_BICUBIC),
-        -label.getWidth() / 2,
-        -label.getHeight() / 2);
+        double x = shp.getBounds2D().getCenterX() + l.getWidth()/2;
+        double y = shp.getBounds2D().getCenterY() + l.getHeight()/2;
+        
+        if (this.exclusionZone != null){
+            if (this.exclusionZone instanceof ExclusionRadius){
+                double radius = ((ExclusionRadius)(this.exclusionZone)).getRadius().getValue(ds, fid);
+                x += radius;
+                y += radius;
+            }
+            else{
+                x += ((ExclusionRectangle)(this.exclusionZone)).getX().getValue(ds, fid);
+                y += ((ExclusionRectangle)(this.exclusionZone)).getY().getValue(ds, fid);
+            }
+        }
 
-         */
+        g2.drawRenderedImage(l.createRendering(MapEnv.getCurrentRenderContext()), AffineTransform.getTranslateInstance(x, y));
+        
     }
 
     @Override

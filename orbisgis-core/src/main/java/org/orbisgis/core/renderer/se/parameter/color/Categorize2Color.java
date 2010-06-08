@@ -27,10 +27,10 @@ public class Categorize2Color extends Categorize<ColorParameter, ColorLiteral> i
         this.fallbackValue = new ColorLiteral(t.getFallbackValue());
         this.setLookupValue(SeParameterFactory.createRealParameter(t.getLookupValue()));
 
-        this.setClassValue(0, SeParameterFactory.createColorParameter(t.getFirstValue()));
-
-
         Iterator<JAXBElement<ParameterValueType>> it = t.getThresholdAndValue().iterator();
+
+        
+        this.setClassValue(0, SeParameterFactory.createColorParameter(it.next().getValue()));
 
         // Fetch class values and thresholds
         while (it.hasNext()){

@@ -38,13 +38,8 @@ package org.orbisgis.core.renderer;
 
 import ij.process.ColorProcessor;
 
-import java.awt.AlphaComposite;
-import java.awt.Color;
 import java.awt.Graphics2D;
-import java.awt.GraphicsConfiguration;
-import java.awt.GraphicsEnvironment;
 import java.awt.Image;
-import java.awt.RenderingHints;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.awt.image.ColorModel;
@@ -54,7 +49,6 @@ import java.io.IOException;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Properties;
 import java.util.Vector;
 import java.util.logging.Level;
 
@@ -71,7 +65,6 @@ import org.gdms.driver.driverManager.DriverLoadException;
 import org.gdms.sql.parser.ParseException;
 import org.gdms.sql.strategies.SemanticException;
 
-import org.grap.model.GeoRaster;
 
 import org.gvsig.remoteClient.exceptions.ServerErrorException;
 import org.gvsig.remoteClient.exceptions.WMSException;
@@ -84,7 +77,6 @@ import org.orbisgis.core.map.MapTransform;
 
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 
-import org.orbisgis.core.ui.configuration.RenderingConfiguration;
 import org.orbisgis.progress.IProgressMonitor;
 import org.orbisgis.progress.NullProgressMonitor;
 
@@ -156,6 +148,8 @@ public class Renderer {
 
         //MapEnv.switchToDraft();
 
+        g2.setRenderingHints(MapEnv.getCurrentRenderContext().getRenderingHints());
+        
         int count = 0;
 
         MapTransform mt = new MapTransform();
@@ -279,7 +273,7 @@ public class Renderer {
                                             long tf1 = System.currentTimeMillis();
                                             while (it.hasNext()) {
                                                 fid = it.next();
-                                                s.draw(g2, sds, fid.longValue());
+                                                s.draw(g2, sds, fid.longValue(), selected.contains(fid));
                                                 count++;
                                             }
                                             long tf2 = System.currentTimeMillis();
@@ -294,46 +288,11 @@ public class Renderer {
                                             fid = it.next();
                                             for (Symbolizer s : symbs) {
                                                 if (rulesFid.get(s.getRule()).contains(fid)) {
-                                                    s.draw(g2, sds, fid.longValue());
+                                                    s.draw(g2, sds, fid.longValue(), selected.contains(fid));
                                                 }
                                             }
                                         }
                                     }
-
-                                    Geometry geometry = null;
-
-                                    try {
-                                        geometry = layer.getDataSource().getGeometry(0);
-                                    } catch (DriverException ex) {
-                                    }
-
-                                    if (!selected.isEmpty()) {
-                                        Symbolizer symb;
-
-                                        if (geometry != null) {
-                                            switch (geometry.getDimension()) {
-                                                case 1:
-                                                    symb = LineSymbolizer.selectionOverlaySymbolizer;
-                                                    break;
-                                                case 2:
-                                                    symb = AreaSymbolizer.selectionOverlaySymbolizer;
-                                                    break;
-                                                case 0:
-                                                default:
-                                                    symb = PointSymbolizer.selectionOverlaySymbolizer;
-                                                    break;
-                                            }
-                                        } else {
-                                            symb = null;
-                                        }
-
-                                        Iterator<Integer> iterator = selected.iterator();
-                                        while (iterator.hasNext()) {
-                                            long fid = iterator.next().longValue();
-                                            symb.draw(g2, sds, fid);
-                                        }
-                                    }
-
 
                                     long tV3 = System.currentTimeMillis();
                                     System.out.println("Rendering done :" + (tV3 - tV2));
@@ -365,14 +324,12 @@ public class Renderer {
                     }
                     long t2 = System.currentTimeMillis();
                     logger.info("Rendering time:" + (t2 - t1) + " for " + count + " features");
-
                 }
             }
         }
 
         long total2 = System.currentTimeMillis();
         logger.info("Total rendering time:" + (total2 - total1));
-
 
     }
 

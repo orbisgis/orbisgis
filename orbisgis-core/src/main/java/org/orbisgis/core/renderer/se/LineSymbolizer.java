@@ -32,19 +32,6 @@ import org.orbisgis.core.renderer.se.transform.Transform;
  */
 public class LineSymbolizer extends VectorSymbolizer {
 
-    public static final LineSymbolizer selectionOverlaySymbolizer;
-
-    static{
-        selectionOverlaySymbolizer = new LineSymbolizer();
-        PenStroke pStroke = new PenStroke();
-        pStroke.setColor(null);
-        pStroke.setColor(new ColorLiteral("#fff3b1"));
-        pStroke.setOpacity(new RealLiteral(50.0));
-        pStroke.setWidth(new RealLiteral(1));
-        selectionOverlaySymbolizer.setStroke(pStroke);
-
-    }
-
     public LineSymbolizer() {
         super();
         uom = Uom.MM;
@@ -104,7 +91,7 @@ public class LineSymbolizer extends VectorSymbolizer {
      * @todo make sure the geom is a line or an area; implement p_offset
      */
     @Override
-    public void draw(Graphics2D g2, SpatialDataSourceDecorator sds, long fid) throws ParameterException, IOException, DriverException {
+    public void draw(Graphics2D g2, SpatialDataSourceDecorator sds, long fid, boolean selected) throws ParameterException, IOException, DriverException {
         if (stroke != null) {
             Shape shp = this.getShape(sds, fid);
 
@@ -114,7 +101,7 @@ public class LineSymbolizer extends VectorSymbolizer {
             }
 
             // TODO perpendicular offset !
-            stroke.draw(g2, shp, sds, fid);
+            stroke.draw(g2, shp, sds, fid, selected);
         }
     }
 

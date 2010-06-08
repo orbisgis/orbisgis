@@ -27,7 +27,7 @@ import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 import org.orbisgis.core.renderer.se.stroke.Stroke;
 import org.orbisgis.core.renderer.se.transform.Transform;
 
-public class PieChart extends Graphic {
+public final class PieChart extends Graphic {
 
     public enum PieChartSubType {
 
@@ -192,7 +192,7 @@ public class PieChart extends Graphic {
      * @param fid
      */
     @Override
-    public RenderableGraphics getRenderableGraphics(DataSource ds, long fid) throws ParameterException, IOException {
+    public RenderableGraphics getRenderableGraphics(DataSource ds, long fid, boolean selected) throws ParameterException, IOException {
 
         int nSlices = slices.size();
 
@@ -314,7 +314,7 @@ public class PieChart extends Graphic {
 
 
             if (fill != null) {
-                fill.draw(rg, atShp, ds, fid);
+                fill.draw(rg, atShp, ds, fid, selected);
             }
 
 
@@ -344,7 +344,7 @@ public class PieChart extends Graphic {
                 Rectangle2D anchor = labelAt.createTransformedShape(new Rectangle2D.Double(0, 0, 1, 1)).getBounds2D();
 
 
-                rg.drawRenderedImage(label.getImage(ds, fid).createRendering(MapEnv.getCurrentRenderContext()), AffineTransform.getTranslateInstance(anchor.getCenterX(), anchor.getCenterY()));
+                rg.drawRenderedImage(label.getImage(ds, fid, selected).createRendering(MapEnv.getCurrentRenderContext()), AffineTransform.getTranslateInstance(anchor.getCenterX(), anchor.getCenterY()));
             }
 
         }
@@ -352,7 +352,7 @@ public class PieChart extends Graphic {
         // Stokes must be drawn after fills 
         if (stroke != null) {
             for (int i = 0; i < nSlices; i++) {
-                stroke.draw(rg, shapes[i], ds, fid);
+                stroke.draw(rg, shapes[i], ds, fid, selected);
             }
         }
 

@@ -21,7 +21,7 @@ public final class ColorHelper {
      * @return new color with alpha channel
      * @todo is alpha [0;100] or [0.0;1.0] ? 
      */
-    public static final Color getColorWithAlpha(Color c, double alpha) {
+    public static Color getColorWithAlpha(Color c, double alpha) {
         int a = (int) (255.0 * alpha/100.0);
 
         if (a < 0) {
@@ -31,5 +31,21 @@ public final class ColorHelper {
         }
         
         return new Color(c.getRed(), c.getGreen(), c.getBlue(), a);
+    }
+
+    public static Color invert(Color c){
+        int a = c.getAlpha();
+        int r = 255 - c.getRed();
+        int g = 255 - c.getGreen();
+        int b = 255 - c.getBlue();
+
+        // if the resulting color is to light (e.g. initial color is black, resulting color is white...)
+        if (r + g + b > 740){
+            // return a standard yellow
+            return new Color(255, 255, 40, a);
+        }
+        else{
+            return new Color(r,g,b,a);
+        }
     }
 }
