@@ -89,9 +89,4 @@ public class GeocatalogShowTablePlugIn extends AbstractPlugIn {
 				0,
 				new SourceAvailability[] {SourceAvailability.RASTER});
 	}
-	
-	public boolean isSelected() {
-		// TODO Auto-generated method stub
-		return false;
-	}
 }

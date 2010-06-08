@@ -130,9 +130,4 @@ public class ZoomToSelectedFeaturesPlugIn extends AbstractPlugIn {
 		btn.setEnabled(isEnabled);
 		return isEnabled;
 	}
-	
-	public boolean isSelected() {
-		// TODO Auto-generated method stub
-		return false;
-	}
 }

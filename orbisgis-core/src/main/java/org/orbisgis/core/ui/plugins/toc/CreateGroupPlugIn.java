@@ -66,9 +66,4 @@ public class CreateGroupPlugIn extends AbstractPlugIn {
 				1,
 				new LayerAvailability[]{ LayerAvailability.ACCEPT_CHILDS });
 	}
-	
-	public boolean isSelected() {
-		// TODO Auto-generated method stub
-		return false;
-	}
 }

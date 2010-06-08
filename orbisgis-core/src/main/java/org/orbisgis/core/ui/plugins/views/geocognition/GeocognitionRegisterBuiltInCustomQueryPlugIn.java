@@ -106,9 +106,4 @@ public class GeocognitionRegisterBuiltInCustomQueryPlugIn extends AbstractPlugIn
 				0,
 				new ElementAvailability[] {ElementAvailability.CUSTOM_QUERY_IS_NOT_REGISTERED});
 	}
-	
-	public boolean isSelected() {
-		// TODO Auto-generated method stub
-		return false;
-	}
 }

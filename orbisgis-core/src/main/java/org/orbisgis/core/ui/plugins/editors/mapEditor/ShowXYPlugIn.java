@@ -6,6 +6,8 @@ import java.awt.geom.Point2D;
 
 import javax.swing.JLabel;
 
+import org.gdms.data.SpatialDataSourceDecorator;
+import org.gdms.driver.DriverException;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.layerModel.MapContext;
 import org.orbisgis.core.ui.editor.IEditor;
@@ -17,9 +19,18 @@ import org.orbisgis.core.ui.plugins.editor.PlugInEditorListener;
 import org.orbisgis.core.ui.plugins.views.MapEditorPlugIn;
 import org.orbisgis.core.ui.plugins.views.editor.EditorManager;
 
+import com.vividsolutions.jts.geom.Coordinate;
+
+import fr.cts.IllegalCoordinateException;
+import fr.cts.Unit;
+import fr.cts.crs.CoordinateReferenceSystem.Type;
+import fr.cts.op.UnitConversion;
+import fr.cts.util.AngleFormat;
+
 public class ShowXYPlugIn extends AbstractPlugIn {	
 	
 	private JLabel showXY;
+	private final static int MAX_DIGIT = 7;
 	
 	public boolean execute(PlugInContext context) throws Exception {
 		return true;
@@ -30,19 +41,22 @@ public class ShowXYPlugIn extends AbstractPlugIn {
 	{
 		public void mouseMoved(MouseEvent e)
 		{
-			ToolManager toolManager =null;
-			String xCoord="", yCoord="",scale="";
-			if(getPlugInContext().getMapEditor()!=null) {
-				toolManager = getPlugInContext().getMapEditor().getMapControl().getToolManager();
+			String xCoord="",yCoord="";
+			ToolManager toolManager = getPlugInContext().getToolManager();
+			if( toolManager!=null ) {
 				Point2D point = toolManager.getLastRealMousePosition();
-				xCoord = "X:" + (int) point.getX();
-				yCoord = "Y:" + (int) point.getY();
-				scale = "1:"+ (int)toolManager.getMapTransform().getScaleDenominator();				
-				showXY.setText(xCoord +  "  "  + yCoord + "  " + scale);
-
+				if(point!=null) {
+					if(getPlugInContext().isGeographicCRS()) {
+						xCoord = ("Lat:" + AngleFormat.LONGITUDE_FORMATTER.format(point.getX()));
+						yCoord =  ("Lon:" + AngleFormat.LONGITUDE_FORMATTER.format(point.getY()));
+					}
+					else {
+						xCoord = "X:" + (int) point.getX();
+						yCoord = "Y:" + (int) point.getY();
+					}
+				}
 			}
-			xCoord=null;
-			yCoord=null;scale=null;
+			showXY.setText(xCoord +  "   "  + yCoord);
 		}
 	};
 	
@@ -56,21 +70,14 @@ public class ShowXYPlugIn extends AbstractPlugIn {
 	}	
 
 	public boolean isEnabled() {
-		showXY.setText("X:0.0     Y:0.0" );
+		showXY.setText("0.0     0.0" );
 		boolean isVisible = false;
 		IEditor editor = Services.getService(EditorManager.class).getActiveEditor();
 		if (editor != null && editor instanceof MapEditorPlugIn && getPlugInContext().getMapEditor()!=null) {
 			MapContext mc = (MapContext) editor.getElement().getObject();
-			isVisible = mc.getLayerModel().getLayerCount() > 0;			
+			isVisible = mc.getLayerModel().getLayerCount() > 0;
 		}	
 		showXY.setEnabled(isVisible);		
 		return isVisible;
-	}
-	
-	public boolean isSelected() {		
-		if (getPlugInContext().getMapEditor() != null) {			
-			return getPlugInContext().getMapEditor().getShowInfo();
-		}
-		return false;
 	}
 }

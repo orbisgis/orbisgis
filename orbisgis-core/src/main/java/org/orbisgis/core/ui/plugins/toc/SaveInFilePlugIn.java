@@ -79,9 +79,4 @@ public class SaveInFilePlugIn extends AbstractPlugIn {
 				0,
 				new LayerAvailability[] {LayerAvailability.VECTORIAL});
 	}
-	
-	public boolean isSelected() {
-		// TODO Auto-generated method stub
-		return false;
-	}
 }

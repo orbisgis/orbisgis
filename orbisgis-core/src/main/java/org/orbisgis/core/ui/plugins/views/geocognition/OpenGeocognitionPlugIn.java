@@ -51,9 +51,4 @@ public class OpenGeocognitionPlugIn extends AbstractPlugIn {
 				0,
 				new ElementAvailability[] {ElementAvailability.HAS_EDITOR});
 	}
-	
-	public boolean isSelected() {
-		// TODO Auto-generated method stub
-		return false;
-	}
 }

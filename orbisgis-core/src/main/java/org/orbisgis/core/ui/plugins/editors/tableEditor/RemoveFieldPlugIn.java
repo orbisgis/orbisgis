@@ -108,9 +108,4 @@ public class RemoveFieldPlugIn extends AbstractPlugIn {
 		}
 		return isEnabled;
 	}
-	
-	public boolean isSelected() {
-		// TODO Auto-generated method stub
-		return false;
-	}
 }

@@ -83,9 +83,4 @@ public class RemoveGeocognitionPlugIn extends AbstractPlugIn {
 				0,
 				new ElementAvailability[] {});
 	}
-	
-	public boolean isSelected() {
-		// TODO Auto-generated method stub
-		return false;
-	}
 }

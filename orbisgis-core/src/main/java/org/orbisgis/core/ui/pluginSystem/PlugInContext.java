@@ -1,5 +1,6 @@
 package org.orbisgis.core.ui.pluginSystem;
 
+import java.awt.geom.Point2D;
 import java.util.ArrayList;
 
 import javax.swing.tree.TreePath;
@@ -22,6 +23,7 @@ import org.orbisgis.core.ui.editor.IEditor;
 import org.orbisgis.core.ui.editors.map.MapContextManager;
 import org.orbisgis.core.ui.editors.map.MapControl;
 import org.orbisgis.core.ui.editors.map.tool.Automaton;
+import org.orbisgis.core.ui.editors.map.tool.ToolManager;
 import org.orbisgis.core.ui.geocognition.GeocognitionTree;
 import org.orbisgis.core.ui.pluginSystem.workbench.FeatureInstaller;
 import org.orbisgis.core.ui.pluginSystem.workbench.Names;
@@ -35,6 +37,9 @@ import org.orbisgis.core.ui.plugins.views.geocognition.wizard.INewGeocognitionEl
 import org.orbisgis.core.ui.plugins.views.geocognition.wizard.NewGeocognitionObject;
 
 import com.vividsolutions.jts.util.Assert;
+
+import fr.cts.crs.CoordinateReferenceSystem;
+import fr.cts.crs.CoordinateReferenceSystem.Type;
 
 public class PlugInContext {
 	private WorkbenchContext workbenchContext;
@@ -174,6 +179,40 @@ public class PlugInContext {
 			return false;
 		}
 		return false;
+	}
+	
+	public boolean isGeographicCRS() {
+		if(getMapEditor()!=null) {			
+			MapContext mc = (MapContext) getMapEditor().getElement().getObject();
+			if(mc.getLayerModel().getLayerCount() > 0){
+				SpatialDataSourceDecorator sds = new SpatialDataSourceDecorator(
+						mc.getLayerModel().getLayer(0).getDataSource());					
+				Type crsType = null;
+				try {
+					sds.open();
+					CoordinateReferenceSystem crs = sds.getCRS();
+					if(crs != null)
+						crsType = crs.getType();
+					sds.close();					
+				} catch (DriverException e1) {
+					Services.getErrorManager().error(
+							"Unable to load CRS type");
+				}
+				if( crsType!=null && (
+						crsType.equals(Type.GEOGRAPHIC2D) || 
+						crsType.equals(Type.GEOGRAPHIC3D)) ) 
+						
+						return true;				
+			}
+		}
+		return false;
+	}
+	
+	public ToolManager getToolManager() {
+		ToolManager toolManager = null;
+		if(getMapEditor()!=null) 
+			toolManager = getMapEditor().getMapControl().getToolManager();
+		return toolManager;
 	}
 
 	/****** Geocognition PlugIns ******/

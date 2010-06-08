@@ -1,5 +1,6 @@
 package org.orbisgis.core.ui.pluginSystem;
 
+import java.awt.AWTEvent;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -76,7 +77,11 @@ public abstract class AbstractPlugIn implements PlugIn {
 		isEnabled();
 		isSelected();		
 	}
-	// implemented by PlugIns
+	/**
+	 * By default PlugIn is not selectable
+	 */
+	public boolean isSelected(){return false;}
+	
 	// Factory for adapt PlugIn context (Visibility, Enabled)
 	public void createPlugInContext(WorkbenchContext context) {
 		if(plugInContext == null)
@@ -106,12 +111,14 @@ public abstract class AbstractPlugIn implements PlugIn {
 			final WorkbenchContext workbenchContext) {
 		return new ItemListener() {
 			@Override
-			public void itemStateChanged(ItemEvent evt) {
-				System.out.println("JComboBox : itemStateChanged ");
+			public void itemStateChanged(ItemEvent evt) {				
 				try {
 					PlugInContext plugInContext = workbenchContext
 							.createPlugInContext();
-					boolean executeComplete = plugIn.execute(plugInContext);
+					boolean executeComplete = false;
+					
+						executeComplete  = plugIn.execute(plugInContext);
+						
 				} catch (Exception e) {
 					Services.getErrorManager().error(
 							"Add Item listener to plugin failed !", e);

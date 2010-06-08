@@ -86,8 +86,4 @@ public class RedoMapPlugIn extends AbstractPlugIn {
 		btn.setEnabled(isEnabled);
 		return isEnabled;
 	}
-	
-	public boolean isSelected() {
-		return false;
-	}
 }

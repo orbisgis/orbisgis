@@ -41,20 +41,28 @@ import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Toolkit;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseMotionAdapter;
+import java.awt.geom.Point2D;
 import java.util.ArrayList;
+import java.util.ListIterator;
 
 import javax.swing.BoxLayout;
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.ImageIcon;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.xml.transform.sax.TransformerHandler;
 
 import org.orbisgis.core.Services;
 import org.orbisgis.core.images.IconLoader;
 import org.orbisgis.core.images.IconNames;
 import org.orbisgis.core.layerModel.MapContext;
 import org.orbisgis.core.map.MapTransform;
+import org.orbisgis.core.map.TransformListener;
 import org.orbisgis.core.ui.editor.IEditor;
+import org.orbisgis.core.ui.editors.map.tool.ToolManager;
 import org.orbisgis.core.ui.pluginSystem.AbstractPlugIn;
 import org.orbisgis.core.ui.pluginSystem.PlugInContext;
 import org.orbisgis.core.ui.pluginSystem.workbench.Names;
@@ -69,27 +77,29 @@ import com.vividsolutions.jts.geom.GeometryFactory;
 
 public class ScalePlugIn extends AbstractPlugIn {
 
-	static ArrayList<String> scales = new ArrayList<String>();
-
-	static {
-		scales.add("1000");
-		scales.add("5000");
-		scales.add("10000");
-		scales.add("20000");
-		scales.add("25000");
-		scales.add("50000");
-		scales.add("75000");
-		scales.add("100000");
-		scales.add("500000");
-		scales.add("1000000");
-		scales.add("5000000");
-		scales.add("10000000");
-		scales.add("50000000");
-	}
+	static ArrayList<Integer> DefaultScales = new ArrayList<Integer>();
 	private JPanel panel;
 	private JComboBox combobox;
 	private double factor;
-
+		
+	static {		
+		DefaultScales.add(1000);
+		DefaultScales.add(2000);
+		DefaultScales.add(5000);
+		DefaultScales.add(10000);
+		DefaultScales.add(20000);		
+		DefaultScales.add(50000);		
+		DefaultScales.add(100000);
+		DefaultScales.add(200000);
+		DefaultScales.add(500000);		
+		DefaultScales.add(1000000);
+		DefaultScales.add(2000000);
+		DefaultScales.add(5000000);
+		DefaultScales.add(10000000);
+		DefaultScales.add(20000000);
+		DefaultScales.add(50000000);
+	}
+	
 	public boolean execute(PlugInContext context) throws Exception {
 		MapEditorPlugIn mapEditor = null;
 		if ((mapEditor = context.getMapEditor()) != null) {
@@ -101,28 +111,26 @@ public class ScalePlugIn extends AbstractPlugIn {
 				if (envelope != null) {
 
 					JComboBox cb = (JComboBox) getActionComponent();
-					String scale = (String) cb.getSelectedItem();
+					Integer scale = (Integer) cb.getSelectedItem();
 
-					if (scales.contains(scale)) {
+					if (DefaultScales.contains(scale)) {
 						envelope = getEnveloppeFromScale(
-								mt.getAdjustedExtent(), mt.getWidth(), Integer
-										.parseInt(scale));
-						mt.setExtent(envelope);
-
+								mt.getAdjustedExtent(), mt.getWidth(), scale);						
+						mt.setExtent(envelope);	
 					}
 				}
 			}
 			return true;
 		}
-
 		return false;
 	}
-
+	
+	
 	public void initialize(PlugInContext context) throws Exception {
 		panel = new JPanel(new BorderLayout());
 		JLabel label = new JLabel("Scale : ");
 		label.setAlignmentX(Component.LEFT_ALIGNMENT);
-		combobox = new JComboBox(scales.toArray(new String[0]));
+		combobox = new JComboBox(DefaultScales.toArray(new Integer[0]));
 		combobox.setAlignmentX(Component.RIGHT_ALIGNMENT);
 		combobox.setMaximumSize(new Dimension(100, 20));
 		panel.add(label);
@@ -134,7 +142,29 @@ public class ScalePlugIn extends AbstractPlugIn {
 		setTypeListener("item");
 		EditorManager em = Services.getService(EditorManager.class);
 		em.addEditorListener(new PlugInEditorListener(this, panel,
-				Names.MAP_TOOLBAR_SCALE, null, context, true));
+				Names.MAP_TOOLBAR_SCALE, null, context, true));		
+		
+		
+	}
+
+	protected void updateComponent() {
+		combobox.setModel(new DefaultComboBoxModel(DefaultScales.toArray(new Integer[0])));
+		ToolManager toolManager =null;			
+		if(getPlugInContext().getMapEditor()!=null) {
+			toolManager = getPlugInContext().getMapEditor().getMapControl().getToolManager();	
+			int currentScale = (int)toolManager.getMapTransform().getScaleDenominator();	
+			int scaleSelected = 0;
+			for(int i=0; i<DefaultScales.size() ; i++) {
+				if(Math.abs(((Integer)DefaultScales.get(i)) - currentScale) == 0 ||
+						Math.abs(((Integer)DefaultScales.get(i)) - currentScale) == 1)
+					scaleSelected = DefaultScales.get(i);					
+			}			
+			if(scaleSelected == 0) {
+				scaleSelected = new Integer(currentScale);
+				combobox.addItem( scaleSelected );
+			}
+			combobox.setSelectedItem( scaleSelected );
+		}		
 	}
 
 	private Envelope getEnveloppeFromScale(Envelope oldEnvelope,
@@ -213,14 +243,13 @@ public class ScalePlugIn extends AbstractPlugIn {
 		if (editor != null && editor instanceof MapEditorPlugIn
 				&& getPlugInContext().getMapEditor() != null) {
 			MapContext mc = (MapContext) editor.getElement().getObject();
-			isVisible = mc.getLayerModel().getLayerCount() > 0;
+			isVisible = !getPlugInContext().isGeographicCRS();
+			isVisible = isVisible && mc.getLayerModel().getLayerCount() > 0;	
+			if(isVisible)
+				updateComponent();
 		}
 		panel.setEnabled(isVisible);
 		return isVisible;
-	}
-
-	public boolean isSelected() {
-		return false;
 	}
 
 	public static ImageIcon getIcon() {

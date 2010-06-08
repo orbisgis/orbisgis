@@ -120,10 +120,4 @@ public class SelectEqualPlugIn extends AbstractPlugIn {
 		}
 		return false;
 	}
-
-	@Override
-	public boolean isSelected() {
-		// TODO Auto-generated method stub
-		return false;
-	}
 }

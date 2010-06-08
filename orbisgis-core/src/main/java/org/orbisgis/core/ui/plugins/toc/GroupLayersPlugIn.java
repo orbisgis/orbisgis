@@ -62,10 +62,5 @@ public class GroupLayersPlugIn extends AbstractPlugIn {
 				new SelectionAvailability[]{ SelectionAvailability.SUPERIOR , SelectionAvailability.ACTIVE_MAPCONTEXT},
 				1,
 				new LayerAvailability[]{});
-	}	
-	
-	public boolean isSelected() {
-		// TODO Auto-generated method stub
-		return false;
 	}
 }

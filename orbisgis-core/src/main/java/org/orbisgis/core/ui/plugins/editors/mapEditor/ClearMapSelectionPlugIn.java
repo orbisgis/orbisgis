@@ -92,9 +92,4 @@ public class ClearMapSelectionPlugIn extends AbstractPlugIn {
 		btn.setEnabled(isEnabled);
 		return true;
 	}
-	
-	public boolean isSelected() {
-		// TODO Auto-generated method stub
-		return false;
-	}
 }

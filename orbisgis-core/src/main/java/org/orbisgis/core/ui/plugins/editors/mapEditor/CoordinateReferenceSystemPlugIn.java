@@ -54,8 +54,4 @@ public class CoordinateReferenceSystemPlugIn extends AbstractPlugIn{
 		CRSButton.setEnabled(isVisible);
 		return isVisible;
 	}
-	
-	public boolean isSelected() {		
-		return false;
-	}
 }

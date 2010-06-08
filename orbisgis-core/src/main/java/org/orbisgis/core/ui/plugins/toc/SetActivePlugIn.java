@@ -48,9 +48,4 @@ public class SetActivePlugIn extends AbstractPlugIn {
 											LayerAvailability.NOT_ACTIVE_LAYER, 
 											LayerAvailability.IS_EDTABLE});
 	}
-	
-	public boolean isSelected() {
-		// TODO Auto-generated method stub
-		return false;
-	}
 }

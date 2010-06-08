@@ -69,9 +69,4 @@ public class GeocatalogSaveInDataBasePlugIn extends AbstractPlugIn {
 				1,
 				new SourceAvailability[] {SourceAvailability.WMS});
 	}
-	
-	public boolean isSelected() {
-		// TODO Auto-generated method stub
-		return false;
-	}
 }

@@ -51,9 +51,4 @@ public class ExitPlugIn extends AbstractPlugIn {
 		menuItem.setVisible(true);
 		return true;
 	}
-	
-	public boolean isSelected() {
-		return false;
-	}
-
 }

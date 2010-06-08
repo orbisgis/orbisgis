@@ -128,9 +128,4 @@ public class ExportMapAsImagePlugIn extends AbstractPlugIn {
 		}
 		return false;
 	}
-	
-	public boolean isSelected() {
-		// TODO Auto-generated method stub
-		return false;
-	}
 }

@@ -91,9 +91,4 @@ public class GeocatalogDeleteSourcePlugIn extends AbstractPlugIn {
 				0,
 				new SourceAvailability[] {SourceAvailability.NODE_NOT_NULL});
 	}
-	
-	public boolean isSelected() {
-		// TODO Auto-generated method stub
-		return false;
-	}
 }
