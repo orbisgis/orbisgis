@@ -71,11 +71,14 @@ import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.LinearRing;
 import com.vividsolutions.jts.geom.MultiPolygon;
 import com.vividsolutions.jts.geom.Polygon;
+import com.vividsolutions.jts.io.WKTReader;
 
 public class ShapefileDriverTest extends TestCase {
 	private DataSourceFactory dsf;
 
 	private SimpleDateFormat sdf;
+
+	private WKTReader wktReader;
 
 	@Override
 	protected void setUp() throws Exception {
@@ -83,6 +86,7 @@ public class ShapefileDriverTest extends TestCase {
 		dsf = new DataSourceFactory();
 		dsf.setTempDir("src/test/resources/backup");
 		sdf = new SimpleDateFormat("yyyy-MM-dd");
+		wktReader = new WKTReader();
 	}
 
 	public void testOpenShapeWithDifferentCase() throws Exception {
@@ -237,6 +241,41 @@ public class ShapefileDriverTest extends TestCase {
 		assertTrue(listener.warnings.size() == 0);
 	}
 
+	public void test2DReadWriteMultipolygon() throws Exception {
+		Geometry geom = wktReader
+				.read("MULTIPOLYGON ((( 107 113, 107 293, 368 293, 368 113, 107 113 )), (( 178 246, 178 270, 196 270, 196 246, 178 246 )))");
+		test2DReadWrite(GeometryConstraint.MULTI_POLYGON, geom);
+	}
+
+	public void test2DReadWrite(int geometryType, Geometry geom)
+			throws Exception {
+		int nbCoords = geom.getCoordinates().length;
+		DefaultMetadata m = new DefaultMetadata();
+		m.addField("thelongernameintheworld", Type.STRING);
+		m.addField("", Type.GEOMETRY, new Constraint[] {
+				new GeometryConstraint(geometryType),
+				new DimensionConstraint(2) });
+		File shpFile = new File(SourceTest.backupDir,
+				"outputtest2DReadWrite.shp");
+		if (shpFile.exists()) {
+			assertTrue(shpFile.delete());
+		}
+		dsf.createDataSource(new FileSourceCreation(shpFile, m));
+		DataSource ds = dsf.getDataSource(shpFile);
+		ds.open();
+		ds.insertEmptyRow();
+
+		ds.setFieldValue(0, 0, ValueFactory.createValue(geom));
+		ds.commit();
+		ds.close();
+		ds.open();
+		Geometry geomRes = ds.getFieldValue(0, 0).getAsGeometry();
+		Coordinate[] coordinates = geomRes
+				.getCoordinates();
+		ds.close();
+		assertTrue(nbCoords == coordinates.length);
+	}
+
 	public void test3DReadWritePoint() throws Exception {
 		test3DReadWrite(GeometryConstraint.POINT, Geometries.getPoint3D());
 	}
@@ -262,7 +301,7 @@ public class ShapefileDriverTest extends TestCase {
 				.getMultiPoint3D());
 	}
 
-	public void test3DReadWrite(int geometryType, Geometry linestring)
+	public void test3DReadWrite(int geometryType, Geometry geom)
 			throws Exception {
 		DefaultMetadata m = new DefaultMetadata();
 		m.addField("thelongernameintheworld", Type.STRING);
@@ -278,13 +317,13 @@ public class ShapefileDriverTest extends TestCase {
 		DataSource ds = dsf.getDataSource(shpFile);
 		ds.open();
 		ds.insertEmptyRow();
-		ds.setFieldValue(0, 0, ValueFactory.createValue(linestring));
+		ds.setFieldValue(0, 0, ValueFactory.createValue(geom));
 		ds.commit();
 		ds.close();
 		ds.open();
 		Geometry linestring2 = ds.getFieldValue(0, 0).getAsGeometry();
 		ds.close();
-		assertTrue(ValueFactory.createValue(linestring).equals(
+		assertTrue(ValueFactory.createValue(geom).equals(
 				ValueFactory.createValue(linestring2)).getAsBoolean());
 	}
 

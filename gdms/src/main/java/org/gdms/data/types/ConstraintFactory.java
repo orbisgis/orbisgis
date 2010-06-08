@@ -116,7 +116,7 @@ public class ConstraintFactory {
 			break;
 		case Constraint.DEFAULT_STRING_VALUE:
 			c = new DefaultStringConstraint(constraintBytes);
-			break;
+			break;		
 		default:
 			throw new IllegalArgumentException("Unknown constraint type:"
 					+ type);
@@ -242,7 +242,7 @@ public class ConstraintFactory {
 			throws IllegalArgumentException {
 		switch (code) {
 		case Constraint.CRS:
-			throw new UnsupportedOperationException("Not implemented yet");
+			return new CRSConstraint(i);
 		case Constraint.GEOMETRY_DIMENSION:
 			return new DimensionConstraint(i);
 		case Constraint.GEOMETRY_TYPE:
