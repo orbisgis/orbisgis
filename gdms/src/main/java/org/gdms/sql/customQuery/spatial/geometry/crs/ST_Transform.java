@@ -69,8 +69,7 @@ public class ST_Transform implements CustomQuery {
 	                CoordinateSequence newcs = new CoordinateArraySequence(cc);
 	                for (int i = 0 ; i < cc.length ; i++) {
 	                    Coordinate c = cc[i];
-	                    try {
-	                    	//if(cc.length==)
+	                    try {	                    	
 	                        double[] xyz = cos.transform(new double[]{c.x, c.y, c.z});
 	                        newcs.setOrdinate(i,0,xyz[0]);
 	                        newcs.setOrdinate(i,1,xyz[1]);
