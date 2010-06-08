@@ -125,6 +125,7 @@ import org.gdms.sql.function.spatial.geometry.simplify.ST_Simplify;
 import org.gdms.sql.function.spatial.geometry.simplify.ST_SimplifyPreserveTopology;
 import org.gdms.sql.function.spatial.geometry.trigo.ST_Azimut;
 import org.gdms.sql.function.spatial.mixed.ST_Envelope;
+import org.gdms.sql.function.spatial.mixed.ST_SetZ;
 import org.gdms.sql.function.spatial.raster.create.ST_CropRaster;
 import org.gdms.sql.function.spatial.raster.hydrology.ST_D8Accumulation;
 import org.gdms.sql.function.spatial.raster.hydrology.ST_D8AllOutlets;
@@ -240,6 +241,7 @@ public class FunctionManager {
 		addFunction(ST_StreamPowerIndex.class);
 		addFunction(ST_WetnessIndex.class);
 		addFunction(ST_InteriorPoint.class);
+		addFunction(ST_SetZ.class);
 	}
 
 	public static void addFunctionManagerListener(
