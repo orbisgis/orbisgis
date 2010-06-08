@@ -33,11 +33,11 @@ public class Halo implements SymbolizerNode {
             this.setFill(Fill.createFromJAXBElement(halo.getFill()));
         }
 
-        if (halo.getRadius() != null){
+        if (halo.getRadius() != null) {
             this.setRadius(SeParameterFactory.createRealParameter(halo.getRadius()));
         }
 
-        if (halo.getUnitOfMeasure() != null){
+        if (halo.getUnitOfMeasure() != null) {
             this.setUom(Uom.fromOgcURN(halo.getUnitOfMeasure()));
         }
     }
@@ -96,6 +96,16 @@ public class Halo implements SymbolizerNode {
                 throw new UnsupportedOperationException("Not supported yet. Need PerpendiularOffset");
             }
         }
+    }
+
+    public boolean dependsOnFeature() {
+        if (this.fill.dependsOnFeature()){
+            return true;
+        }
+        if (this.radius.dependsOnFeature()){
+            return true;
+        }
+        return false;
     }
 
     public HaloType getJAXBType() {

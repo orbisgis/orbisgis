@@ -208,6 +208,25 @@ public final class ExternalGraphic extends Graphic {
         return delta;
     }
 
+
+    @Override
+    public boolean dependsOnFeature() {
+        if (halo != null && this.getHalo().dependsOnFeature()){
+            return true;
+        }
+        if (opacity != null && this.getOpacity().dependsOnFeature()){
+            return true;
+        }
+        if (transform != null && this.getTransform().dependsOnFeature()){
+            return true;
+        }
+        if (viewBox != null && this.getViewBox().dependsOnFeature()){
+            return true;
+        }
+        
+        return false;
+    }
+
     @Override
     public JAXBElement<ExternalGraphicType> getJAXBElement() {
         ExternalGraphicType e = new ExternalGraphicType();
@@ -244,4 +263,5 @@ public final class ExternalGraphic extends Graphic {
     private RealParameter opacity;
     private Halo halo;
     private PlanarImage graphic;
+
 }

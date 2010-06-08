@@ -130,4 +130,6 @@ public abstract class Stroke implements SymbolizerNode {
     protected RealParameter preGap;
     protected RealParameter postGap;
     protected SymbolizerNode parent;
+
+    public abstract boolean dependsOnFeature();
 }

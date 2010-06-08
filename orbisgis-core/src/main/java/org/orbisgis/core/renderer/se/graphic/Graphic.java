@@ -114,6 +114,8 @@ public abstract class Graphic implements SymbolizerNode {
 
     }
 
+    public abstract boolean dependsOnFeature();
+
     public abstract JAXBElement<? extends GraphicType> getJAXBElement();
 
     public abstract double getMaxWidth(DataSource ds, long fid) throws ParameterException, IOException;

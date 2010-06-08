@@ -191,6 +191,13 @@ public class AxisChart extends Graphic {
         return of.createAxisChart(a);
     }
 
+
+    @Override
+    public boolean dependsOnFeature() {
+        return true;
+    }
+
+
     private boolean normalizeToPercent;
     private boolean isPolarChart;
     private AxisScale axisScale;
@@ -198,7 +205,7 @@ public class AxisChart extends Graphic {
     private RealParameter categoryGap;
     private Fill areaFill;
     private Stroke lineStroke;
-    
+
     // TODO  Other style parameters.... to be defined
     //
     // TODO Add stacked bars

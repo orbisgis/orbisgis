@@ -66,6 +66,12 @@ public class Scale implements Transformation {
         return false;
     }
 
+    
+    @Override
+    public boolean dependsOnFeature(){
+        return (this.x != null && x.dependsOnFeature()) || (this.y != null && y.dependsOnFeature());
+    }
+
     @Override
     public AffineTransform getAffineTransform(DataSource ds, long fid, Uom uom) throws ParameterException {
         double sx = 0.0;

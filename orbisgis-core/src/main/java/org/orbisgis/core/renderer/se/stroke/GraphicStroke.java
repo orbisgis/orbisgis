@@ -81,6 +81,12 @@ public class GraphicStroke extends Stroke {
         return graphic.getMaxWidth(ds, fid);
     }
 
+    
+    @Override
+    public boolean dependsOnFeature() {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
     @Override
     public JAXBElement<GraphicStrokeType> getJAXBElement() {
         ObjectFactory of = new ObjectFactory();
@@ -106,4 +112,5 @@ public class GraphicStroke extends Stroke {
     private GraphicCollection graphic;
     private RealParameter length;
     private RelativeOrientation orientation;
+
 }

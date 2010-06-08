@@ -97,6 +97,12 @@ public class TextGraphic extends Graphic {
         return of.createTextGraphic(t);
     }
 
+
+    @Override
+    public boolean dependsOnFeature() {
+        return true;
+    }
+
     @Override
     public void updateGraphic(){
     }

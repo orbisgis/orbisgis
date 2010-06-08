@@ -154,6 +154,19 @@ public class GraphicFill extends Fill {
         }
     }
 
+
+    @Override
+    public boolean dependsOnFeature() {
+        if (gapX != null && this.gapX.dependsOnFeature())
+            return true;
+        if (gapY != null && this.gapY.dependsOnFeature())
+            return true;
+        if (graphic != null && this.graphic.dependsOnFeature())
+            return true;
+
+        return false;
+    }
+
     @Override
     public GraphicFillType getJAXBType() {
         GraphicFillType f = new GraphicFillType();

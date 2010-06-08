@@ -29,25 +29,24 @@ import org.orbisgis.core.renderer.se.stroke.PenStroke;
 
 public class DensityFill extends Fill {
 
-    public DensityFill(){
+    public DensityFill() {
     }
 
     DensityFill(JAXBElement<DensityFillType> f) {
 
         DensityFillType t = f.getValue();
 
-        if (t.getPenStroke() != null){
+        if (t.getPenStroke() != null) {
             this.setHatches(new PenStroke(t.getPenStroke()));
 
-            if (t.getOrientation() != null){
+            if (t.getOrientation() != null) {
                 this.setHatchesOrientation(SeParameterFactory.createRealParameter(t.getOrientation()));
             }
-        }
-        else{
+        } else {
             t.getGraphic(); // TODO hangle grain
         }
 
-        if (t.getPercentage() != null){
+        if (t.getPercentage() != null) {
             this.setPercentageCovered(SeParameterFactory.createRealParameter(t.getPercentage()));
         }
     }
@@ -184,8 +183,8 @@ public class DensityFill extends Fill {
                 g2.setRenderingHints(MapEnv.getCurrentRenderContext().getRenderingHints());
 
                 Color c = hatches.getColor().getColor(ds, fid);
-                
-                if (selected){
+
+                if (selected) {
                     c = ColorHelper.invert(c);
                 }
 
@@ -194,8 +193,8 @@ public class DensityFill extends Fill {
                 tile.setStroke(hatches.getBasicStroke(ds, fid));
 
                 // Draw three line in order to ensure mosaic join
-                
-                int ipDist = (int)pDist;
+
+                int ipDist = (int) pDist;
 
                 if (idx == 0) { // V-Hatches
                     tile.drawLine(0, -idy, 0, idy);
@@ -215,7 +214,7 @@ public class DensityFill extends Fill {
             } else if (mark != null) { // Marked
                 RenderableGraphics g = mark.getGraphic(ds, fid, selected);
 
-                if (g != null){
+                if (g != null) {
                     // TODO IMPLEMENT: create TexturePaint, see GraphicFill.getTexturePaint
                     // painter = new TexturePaint(...);
                 }
@@ -230,40 +229,71 @@ public class DensityFill extends Fill {
         }
     }
 
+    @Override
+    public boolean dependsOnFeature() {
+        if (useHatches()) {
+            if (hatches != null && this.hatches.dependsOnFeature()) {
+                return true;
+            }
+            if (orientation  != null && this.orientation.dependsOnFeature()) {
+                return true;
+            }
+        } else if (mark != null && this.mark.dependsOnFeature()) {
+            return true;
+        }
+
+        if (percentageCovered != null && this.percentageCovered.dependsOnFeature()){
+            return true;
+        }
+
+        return false;
+    }
 
     @Override
-    public DensityFillType getJAXBType(){
+    public DensityFillType getJAXBType() {
         DensityFillType f = new DensityFillType();
 
-        if (isHatched){
-            if (hatches != null){
+
+
+        if (isHatched) {
+            if (hatches != null) {
                 f.setPenStroke(hatches.getJAXBType());
+
+
             }
-            if (orientation != null){
+            if (orientation != null) {
                 f.setOrientation(orientation.getJAXBParameterValueType());
+
+
             }
-        }
-        else{
-            if (mark != null){
+        } else {
+            if (mark != null) {
                 f.setGraphic(mark.getJAXBElement());
+
+
             }
         }
 
-        if (percentageCovered != null){
+        if (percentageCovered != null) {
             f.setPercentage(percentageCovered.getJAXBParameterValueType());
+
+
         }
 
         return f;
-    }
 
+
+    }
 
     @Override
-    public JAXBElement<DensityFillType> getJAXBElement(){
+    public JAXBElement<DensityFillType> getJAXBElement() {
         ObjectFactory of = new ObjectFactory();
+
+
         return of.createDensityFill(this.getJAXBType());
+
+
     }
-
-
     private boolean isHatched;
     private PenStroke hatches;
     private RealParameter orientation;

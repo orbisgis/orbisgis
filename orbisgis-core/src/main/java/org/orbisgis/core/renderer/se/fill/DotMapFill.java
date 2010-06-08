@@ -70,6 +70,17 @@ public class DotMapFill extends Fill {
             }
         }
     }
+    
+    @Override
+    public boolean dependsOnFeature() {
+        if (mark != null && this.mark.dependsOnFeature())
+            return true;
+        if (this.quantityPerMark != null && quantityPerMark.dependsOnFeature())
+            return true;
+        if (this.totalQuantity != null && totalQuantity.dependsOnFeature())
+            return true;
+        return false;
+    }
 
     @Override
     public DotMapFillType getJAXBType() {
@@ -98,4 +109,5 @@ public class DotMapFill extends Fill {
     private GraphicCollection mark;
     private RealParameter quantityPerMark;
     private RealParameter totalQuantity;
+
 }

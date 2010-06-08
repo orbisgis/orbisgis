@@ -166,6 +166,16 @@ public class Matrix implements Transformation {
     }
 
     @Override
+    public boolean dependsOnFeature(){
+        return (a.dependsOnFeature()
+                || b.dependsOnFeature()
+                || c.dependsOnFeature()
+                || d.dependsOnFeature()
+                ||e.dependsOnFeature()
+                ||f.dependsOnFeature());
+    }
+
+    @Override
     public AffineTransform getAffineTransform(DataSource ds, long fid, Uom uom) throws ParameterException {
         return new AffineTransform( // TODO DPI !
                 Uom.toPixel(a.getValue(ds, fid), uom, MapEnv.getScaleDenominator()),

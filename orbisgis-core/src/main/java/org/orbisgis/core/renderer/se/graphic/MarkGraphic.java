@@ -282,7 +282,31 @@ public final class MarkGraphic extends Graphic {
         ObjectFactory of = new ObjectFactory();
         return of.createMarkGraphic(m);
     }
-    
+
+
+    @Override
+    public boolean dependsOnFeature() {
+        if (viewBox != null && viewBox.dependsOnFeature()){
+            return true;
+        }
+        if (pOffset != null && pOffset.dependsOnFeature()){
+            return true;
+        }
+        if (halo != null && halo.dependsOnFeature()){
+            return true;
+        }
+        if (fill != null && fill.dependsOnFeature()){
+            return true;
+        }
+        if (stroke != null && stroke.dependsOnFeature()){
+            return true;
+        }
+        if (transform != null && this.getTransform().dependsOnFeature()){
+            return true;
+        }
+        return false;
+    }
+
     private MarkGraphicSource source;
     private ViewBox viewBox;
     private RealParameter pOffset;

@@ -65,6 +65,9 @@ public abstract class Fill implements SymbolizerNode {
         return parent.getUom();
     }
 
+    
+    public abstract boolean dependsOnFeature();
+
     /**
      *
      * @param g2 draw within this graphics2d

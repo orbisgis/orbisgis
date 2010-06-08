@@ -27,4 +27,6 @@ public interface Transformation {
     public abstract JAXBElement<?> getJAXBElement();
 
     public abstract Object getJAXBType();
+
+    public boolean dependsOnFeature();
 }

@@ -114,7 +114,16 @@ public final class GraphicCollection implements SymbolizerNode {
      * @throws ParameterException
      * @throws IOException
      */
-    public RenderableGraphics getGraphic(DataSource ds, long fid, boolean selected) throws ParameterException, IOException {
+    public RenderableGraphics getGraphic(DataSource ds, long fid, boolean selected)
+            throws ParameterException, IOException {
+        /*
+         * if the graphics collection doesn't depends on feature and the current
+         * feature is not selected, use cached graphic
+         */
+        if (!selected && ! this.dependsOnFeature() && this.graphicCache != null){
+            return graphicCache;
+        }
+        System.out.println ("Could not get cache : build symbol");
 
         RenderContext ctc = MapEnv.getCurrentRenderContext();
 
@@ -167,10 +176,24 @@ public final class GraphicCollection implements SymbolizerNode {
                 rg.drawRenderedImage(g.createRendering(ctc), new AffineTransform());
             }
 
+            
+            if (!selected && ! this.dependsOnFeature()){
+                graphicCache = rg;
+            }
+            
             return rg;
         } else {
             return null;
         }
+    }
+
+    public final boolean dependsOnFeature() {
+        for (Graphic g : this.graphics){
+            if (g.dependsOnFeature()){
+                return true;
+            }
+        }
+        return false;
     }
 
     public double getMaxWidth(DataSource ds, long fid) throws ParameterException, IOException {
@@ -202,6 +225,9 @@ public final class GraphicCollection implements SymbolizerNode {
             return null;
         }
     }
+
+    RenderableGraphics graphicCache = null;
+    
     private ArrayList<Graphic> graphics;
     private SymbolizerNode parent;
 }

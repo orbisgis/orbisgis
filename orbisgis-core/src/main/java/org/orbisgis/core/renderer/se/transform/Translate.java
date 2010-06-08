@@ -55,6 +55,16 @@ public class Translate implements Transformation {
         return AffineTransform.getTranslateInstance(tx, ty);
     }
 
+
+    @Override
+    public boolean dependsOnFeature() {
+        if (this.x != null && x.dependsOnFeature())
+            return true;
+        if (this.y != null && y.dependsOnFeature())
+            return true;
+        return false;
+    }
+
     @Override
     public JAXBElement<?> getJAXBElement(){
         TranslateType t = this.getJAXBType();

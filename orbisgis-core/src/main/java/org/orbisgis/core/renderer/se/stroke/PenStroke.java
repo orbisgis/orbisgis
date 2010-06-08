@@ -32,11 +32,28 @@ import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
  */
 public class PenStroke extends Stroke {
 
+    @Override
+    public boolean dependsOnFeature() {
+        if (useColor) {
+            if (color != null && color.dependsOnFeature()) {
+                return true;
+            }
+        } else {
+            if (stipple != null && stipple.dependsOnFeature()) {
+                return true;
+            }
+        }
+
+        return (this.dashOffset != null && dashOffset.dependsOnFeature())
+                || (this.opacity != null && opacity.dependsOnFeature())
+                || (this.width != null && width.dependsOnFeature());
+    }
+
     public enum LineCap {
 
         BUTT, ROUND, SQUARE;
 
-        public ParameterValueType getParameterValueType(){
+        public ParameterValueType getParameterValueType() {
             return SeParameterFactory.createParameterValueType(this.name().toLowerCase());
         }
     }
@@ -45,11 +62,10 @@ public class PenStroke extends Stroke {
 
         MITRE, ROUND, BEVEL;
 
-        public ParameterValueType getParameterValueType(){
+        public ParameterValueType getParameterValueType() {
             return SeParameterFactory.createParameterValueType(this.name().toLowerCase());
         }
     }
-
 
     /**
      * Create a standard undashed 0.1mm-wide opaque black stroke
@@ -63,10 +79,9 @@ public class PenStroke extends Stroke {
         updateBasicStroke();
     }
 
-
     public PenStroke(PenStrokeType t) {
         this();
-        
+
         if (t.getColor() != null) {
             this.setColor(SeParameterFactory.createColorParameter(t.getColor()));
 
@@ -268,7 +283,7 @@ public class PenStroke extends Stroke {
     @Override
     public void draw(Graphics2D g2, Shape shp, DataSource ds, long fid, boolean selected) throws ParameterException, IOException {
 
-        Paint paint= null;
+        Paint paint = null;
         // remove preGap, postGap from the line
         Shape shape = this.getPreparedShape(shp);
 
@@ -293,7 +308,7 @@ public class PenStroke extends Stroke {
 
             if (this.color != null) {
                 c = color.getColor(ds, fid);
-                if (selected){
+                if (selected) {
                     c = ColorHelper.invert(c);
                 }
             } else {
@@ -307,8 +322,8 @@ public class PenStroke extends Stroke {
             }
 
         }
-        
-        if (paint != null){
+
+        if (paint != null) {
             g2.setPaint(paint);
             g2.draw(shape);
         }
@@ -342,39 +357,39 @@ public class PenStroke extends Stroke {
             s.setStipple(stipple.getJAXBType());
         }
 
-        if (this.uom != null){
+        if (this.uom != null) {
             s.setUnitOfMeasure(uom.toURN());
         }
 
-        if (this.dashOffset != null){
+        if (this.dashOffset != null) {
             //s.setDashArray(null);
         }
 
-        if (this.dashOffset != null){
+        if (this.dashOffset != null) {
             s.setDashOffset(this.dashOffset.getJAXBParameterValueType());
         }
 
-        if (this.lineCap != null){
+        if (this.lineCap != null) {
             s.setLineCap(this.lineCap.getParameterValueType());
         }
 
-        if (this.lineJoin != null){
+        if (this.lineJoin != null) {
             s.setLineJoin(this.lineJoin.getParameterValueType());
         }
 
-        if (this.opacity != null){
+        if (this.opacity != null) {
             s.setOpacity(this.opacity.getJAXBParameterValueType());
         }
 
-        if (this.preGap != null){
+        if (this.preGap != null) {
             s.setPreGap(this.preGap.getJAXBParameterValueType());
         }
 
-        if (this.postGap != null){
+        if (this.postGap != null) {
             s.setPostGap(this.postGap.getJAXBParameterValueType());
         }
 
-        if (this.width != null){
+        if (this.width != null) {
             s.setWidth(this.width.getJAXBParameterValueType());
         }
 

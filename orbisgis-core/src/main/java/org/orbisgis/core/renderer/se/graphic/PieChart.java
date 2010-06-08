@@ -368,6 +368,12 @@ public final class PieChart extends Graphic {
     public void updateGraphic() {
     }
 
+
+    @Override
+    public boolean dependsOnFeature() {
+        return true;
+    }
+
     @Override
     public JAXBElement<PieChartType> getJAXBElement() {
 

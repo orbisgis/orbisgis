@@ -34,15 +34,15 @@ public class Rotate implements Transformation {
     }
 
     Rotate(RotateType r) {
-        if (r.getAngle() != null){
+        if (r.getAngle() != null) {
             this.rotation = SeParameterFactory.createRealParameter(r.getAngle());
         }
 
-        if (r.getX() != null){
+        if (r.getX() != null) {
             this.x = SeParameterFactory.createRealParameter(r.getX());
         }
 
-        if (r.getY() != null){
+        if (r.getY() != null) {
             this.y = SeParameterFactory.createRealParameter(r.getY());
         }
     }
@@ -73,6 +73,20 @@ public class Rotate implements Transformation {
 
     @Override
     public boolean allowedForGeometries() {
+        return false;
+    }
+
+    @Override
+    public boolean dependsOnFeature() {
+        if (this.x != null && x.dependsOnFeature()) {
+            return true;
+        }
+        if (this.y != null && y.dependsOnFeature()) {
+            return true;
+        }
+        if (this.rotation != null && rotation.dependsOnFeature()) {
+            return true;
+        }
         return false;
     }
 
@@ -109,13 +123,13 @@ public class Rotate implements Transformation {
     }
 
     @Override
-    public RotateType getJAXBType(){
+    public RotateType getJAXBType() {
         RotateType r = new RotateType();
-        
+
         if (rotation != null) {
             r.setAngle(rotation.getJAXBParameterValueType());
         }
-        
+
         if (x != null) {
             r.setX(x.getJAXBParameterValueType());
         }
@@ -123,10 +137,9 @@ public class Rotate implements Transformation {
         if (y != null) {
             r.setY(y.getJAXBParameterValueType());
         }
-        
+
         return r;
     }
-    
     private RealParameter x;
     private RealParameter y;
     private RealParameter rotation;

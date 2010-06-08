@@ -111,6 +111,16 @@ public class SolidFill extends Fill {
         return "Color: " + color + " alpha: " + opacity;
     }
 
+
+    @Override
+    public boolean dependsOnFeature() {
+        if (color != null && this.color.dependsOnFeature())
+            return true;
+        if (opacity != null && this.opacity.dependsOnFeature())
+            return true;
+        return false;
+    }
+
     @Override
     public SolidFillType getJAXBType() {
         SolidFillType f = new SolidFillType();
@@ -132,4 +142,5 @@ public class SolidFill extends Fill {
     }
     private ColorParameter color;
     private RealParameter opacity;
+
 }

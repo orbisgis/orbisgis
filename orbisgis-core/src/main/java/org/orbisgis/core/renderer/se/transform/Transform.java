@@ -131,4 +131,13 @@ public class Transform implements SymbolizerNode {
     private SymbolizerNode parent;
     private AffineTransform consolidated;
     private ArrayList<Transformation> transformations;
+
+    public boolean dependsOnFeature() {
+        for (Transformation t : this.transformations){
+            if (t.dependsOnFeature()){
+                return true;
+            }
+        }
+        return false;
+    }
 }
