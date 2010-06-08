@@ -123,7 +123,6 @@ public final class GraphicCollection implements SymbolizerNode {
         if (!selected && ! this.dependsOnFeature() && this.graphicCache != null){
             return graphicCache;
         }
-        System.out.println ("Could not get cache : build symbol");
 
         RenderContext ctc = MapEnv.getCurrentRenderContext();
 

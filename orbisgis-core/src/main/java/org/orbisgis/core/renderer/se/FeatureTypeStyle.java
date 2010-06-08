@@ -147,28 +147,18 @@ public class FeatureTypeStyle implements SymbolizerNode {
             ArrayList<Rule> rules,
             ArrayList<Rule> fallbackRules) {
 
-        System.out.println("   GetSymbolizers");
-
         for (Rule r : this.rules) {
-
-            System.out.println("      => Rule :" + r);
-
             if (r.isDomainAllowed(mt)) {
-                System.out.println("        Domain OK");
                 if (!r.isFallbackRule()) {
-                    System.out.println("not else filter");
                     rules.add(r);
                 } else {
-                    System.out.println("else rule");
                     fallbackRules.add(r);
                 }
 
                 for (Symbolizer s : r.getCompositeSymbolizer().getSymbolizerList()) {
                     if (s instanceof TextSymbolizer) {
-                        System.out.println("Overlay");
                         overlaySymbolizers.add(s);
                     } else {
-                        System.out.println("BaseLayer");
                         layerSymbolizers.add(s);
                     }
                 }

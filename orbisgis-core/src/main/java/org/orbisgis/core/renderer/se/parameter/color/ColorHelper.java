@@ -33,6 +33,10 @@ public final class ColorHelper {
         return new Color(c.getRed(), c.getGreen(), c.getBlue(), a);
     }
 
+    /*
+     * Return a new inverted color with same alpha.
+     * If the resulting color is too dark or too light, a standard yellow is returned
+     */
     public static Color invert(Color c){
         int a = c.getAlpha();
         int r = 255 - c.getRed();
@@ -40,7 +44,7 @@ public final class ColorHelper {
         int b = 255 - c.getBlue();
 
         // if the resulting color is to light (e.g. initial color is black, resulting color is white...)
-        if (r + g + b > 740){
+        if ((r + g + b > 740) || (r + g + b < 20)){
             // return a standard yellow
             return new Color(255, 255, 40, a);
         }

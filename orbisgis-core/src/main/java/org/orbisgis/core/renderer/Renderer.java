@@ -114,7 +114,9 @@ public class Renderer {
 
         try {
             if (sds.getDataSourceFactory().getIndexManager().getIndex(sds.getName(), sds.getSpatialFieldName()) == null) {
+                pm.startTask("Build spatial index");
                 sds.getDataSourceFactory().getIndexManager().buildIndex(sds.getName(), sds.getSpatialFieldName(), pm);
+                pm.endTask();
             }
         } catch (NoSuchTableException ex) {
             java.util.logging.Logger.getLogger(Renderer.class.getName()).log(Level.SEVERE, null, ex);
@@ -147,7 +149,7 @@ public class Renderer {
             ILayer layer, IProgressMonitor pm) {
 
         //MapEnv.switchToDraft();
-
+        
         g2.setRenderingHints(MapEnv.getCurrentRenderContext().getRenderingHints());
         
         int count = 0;
@@ -223,6 +225,7 @@ public class Renderer {
                                     // fetch symbolizers
                                     fts.getSymbolizers(mt, symbs, overlays, rList, fRList);
 
+
                                     Iterator<Integer> it = this.getFeatureIdInExtent(mt, sds, pm);
 
                                     HashSet<Integer> allFid = new HashSet<Integer>();
@@ -236,17 +239,21 @@ public class Renderer {
                                         allFid.add(next);
                                         elseFid.add(next);
                                     }
+                                    
                                     HashSet<Integer> selected = new HashSet<Integer>();
                                     int[] selection = layer.getSelection();
 
+                                    /* Populate selected fid with only fid within extent */
                                     for (int f_i = 0; f_i < selection.length; f_i++) {
                                         if (allFid.contains(selection[f_i])) {
                                             selected.add(selection[f_i]);
                                         }
                                     }
 
+                                    /*
+                                     * Assign features id to rules
+                                     */
                                     HashMap<Rule, HashSet<Integer>> rulesFid = new HashMap<Rule, HashSet<Integer>>();
-
                                     for (Rule r : rList) {
                                         it = this.getFeatureIdInExtent(mt, r.getFilteredDataSource(), pm);
 
@@ -254,15 +261,23 @@ public class Renderer {
                                         while (it.hasNext()) {
                                             Integer cFid = it.next();
                                             fids.add(cFid);
+                                            /* Each feature which match a rule is removed from the else fid set*/
                                             elseFid.remove(cFid);
                                         }
                                         rulesFid.put(r, fids);
                                     }
 
+                                    //for
+
                                     long tV2 = System.currentTimeMillis();
                                     System.out.println("Filtering done :" + (tV2 - tV1));
 
                                     if (fts.isByLevel()) {
+                                        int total = 0;
+                                        int layerCount = 0;
+                                        for (Symbolizer s : symbs) {
+                                            total += rulesFid.get(s.getRule()).size();
+                                        }
 
                                         for (Symbolizer s : symbs) {
                                             pm.startTask("Drawing " + layer.getName());
@@ -272,9 +287,16 @@ public class Renderer {
 
                                             long tf1 = System.currentTimeMillis();
                                             while (it.hasNext()) {
+                                                if (layerCount % 1000 == 0){
+                                                    if (pm.isCancelled()){
+                                                        return;
+                                                    }
+                                                }
                                                 fid = it.next();
                                                 s.draw(g2, sds, fid.longValue(), selected.contains(fid));
                                                 count++;
+                                                layerCount++;
+                                                pm.progressTo((int)(100*layerCount/total));
                                             }
                                             long tf2 = System.currentTimeMillis();
                                             System.out.println("Features done :" + (tf2 - tf1));
