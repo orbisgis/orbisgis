@@ -134,10 +134,4 @@ public class DeleteTableSelectionPlugIn extends AbstractPlugIn {
 		btn.setEnabled(isEnabled);
 		return isEnabled;
 	}
-
-	@Override
-	public boolean isSelected() {
-		// TODO Auto-generated method stub
-		return false;
-	}
 }

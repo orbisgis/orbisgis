@@ -63,7 +63,7 @@ public class ShowXYPlugIn extends AbstractPlugIn {
 	}	
 
 	public boolean isEnabled() {
-		showXY.setText("X:0.0     Y:0.0" );
+		showXY.setText("0.0     0.0" );
 		boolean isVisible = false;
 		IEditor editor = Services.getService(EditorManager.class).getActiveEditor();
 		if (editor != null && editor instanceof MapEditorPlugIn && getPlugInContext().getMapEditor()!=null) {
@@ -72,12 +72,5 @@ public class ShowXYPlugIn extends AbstractPlugIn {
 		}	
 		showXY.setEnabled(isVisible);		
 		return isVisible;
-	}
-	
-	public boolean isSelected() {		
-		if (getPlugInContext().getMapEditor() != null) {			
-			return getPlugInContext().getMapEditor().getShowInfo();
-		}
-		return false;
 	}
 }

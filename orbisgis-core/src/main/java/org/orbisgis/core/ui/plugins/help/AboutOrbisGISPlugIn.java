@@ -73,10 +73,4 @@ public class AboutOrbisGISPlugIn extends AbstractPlugIn {
 		menuItem.setEnabled(true);
 		return true;
 	}
-
-	@Override
-	public boolean isSelected() {
-		// TODO Auto-generated method stub
-		return false;
-	}
 }

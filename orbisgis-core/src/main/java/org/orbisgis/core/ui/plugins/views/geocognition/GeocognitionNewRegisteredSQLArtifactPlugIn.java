@@ -75,9 +75,4 @@ public class GeocognitionNewRegisteredSQLArtifactPlugIn extends AbstractPlugIn {
 				new ElementAvailability[] {ElementAvailability.FOLDER});
 
 	}
-
-	public boolean isSelected() {
-		// TODO Auto-generated method stub
-		return false;
-	}
 }

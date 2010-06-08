@@ -99,9 +99,4 @@ public class ShowFieldInfoPlugIn extends AbstractPlugIn {
 		return (getPlugInContext().getTableEditor() != null)
 				&& (getSelectedColumn()!=-1);	
 	}
-	
-	public boolean isSelected() {
-		// TODO Auto-generated method stub
-		return false;
-	}
 }

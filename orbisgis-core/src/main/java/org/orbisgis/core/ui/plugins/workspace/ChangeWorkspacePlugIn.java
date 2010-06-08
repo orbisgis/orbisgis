@@ -45,10 +45,4 @@ public class ChangeWorkspacePlugIn extends AbstractPlugIn {
 		menuItem.setEnabled(true);
 		return true;
 	}
-	
-	public boolean isSelected() {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
 }

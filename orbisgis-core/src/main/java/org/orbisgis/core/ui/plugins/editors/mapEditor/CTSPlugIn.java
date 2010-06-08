@@ -297,11 +297,4 @@ public class CTSPlugIn extends AbstractPlugIn {
 		}
 		return false;
 	}
-
-	@Override
-	public boolean isSelected() {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
 }

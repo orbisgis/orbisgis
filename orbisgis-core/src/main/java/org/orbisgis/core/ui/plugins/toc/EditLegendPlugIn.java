@@ -108,9 +108,4 @@ public class EditLegendPlugIn extends AbstractPlugIn {
 				1,
 				new LayerAvailability[] {LayerAvailability.VECTORIAL});
 	}
-	
-	public boolean isSelected() {
-		// TODO Auto-generated method stub
-		return false;
-	}
 }

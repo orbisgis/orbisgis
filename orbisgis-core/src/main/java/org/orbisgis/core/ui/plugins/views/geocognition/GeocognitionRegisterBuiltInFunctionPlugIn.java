@@ -100,10 +100,5 @@ public class GeocognitionRegisterBuiltInFunctionPlugIn extends AbstractPlugIn {
 				new SelectionAvailability[] {SelectionAvailability.SUPERIOR},
 				0,
 				new ElementAvailability[] {ElementAvailability.FUNCTION_QUERY_IS_NOT_REGISTERED});
-	}
-	
-	public boolean isSelected() {
-		// TODO Auto-generated method stub
-		return false;
-	}
+	}	
 }

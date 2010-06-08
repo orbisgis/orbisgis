@@ -89,9 +89,4 @@ public class GeocognitionClearPlugIn extends AbstractPlugIn {
 				1,
 				new ElementAvailability[] {ElementAvailability.FOLDER_OR_NULL});
 	}
-	
-	public boolean isSelected() {
-		// TODO Auto-generated method stub
-		return false;
-	}
 }

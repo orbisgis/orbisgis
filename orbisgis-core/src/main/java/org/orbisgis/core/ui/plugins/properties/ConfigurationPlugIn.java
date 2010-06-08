@@ -77,25 +77,9 @@ public class ConfigurationPlugIn extends AbstractPlugIn {
 				getIcon("preferences-system.png"), null, null, context);
 	}
 
-	public void update(Observable o, Object arg) {
-		btn.setEnabled(isEnabled());
-		btn.setVisible(isVisible());
-
-		menuItem.setEnabled(isEnabled());
-		menuItem.setVisible(isVisible());
-
-	}
-
 	public boolean isEnabled() {
+		btn.setEnabled(true);
+		menuItem.setEnabled(true);
 		return true;
-	}
-
-	public boolean isVisible() {
-		return true;
-	}
-
-	@Override
-	public boolean isSelected() {
-		return false;
 	}
 }

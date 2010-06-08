@@ -104,9 +104,4 @@ public class SetInactivePlugIn extends AbstractPlugIn {
 				1,
 				new LayerAvailability[] {LayerAvailability.ACTIVE_LAYER});
 	}
-	
-	public boolean isSelected() {
-		// TODO Auto-generated method stub
-		return false;
-	}
 }

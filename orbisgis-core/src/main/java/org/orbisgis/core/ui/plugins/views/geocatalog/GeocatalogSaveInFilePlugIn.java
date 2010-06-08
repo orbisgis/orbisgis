@@ -87,8 +87,4 @@ public class GeocatalogSaveInFilePlugIn extends AbstractPlugIn {
 				new SelectionAvailability[] { SelectionAvailability.EQUAL }, 1,
 				new SourceAvailability[] { SourceAvailability.WMS });
 	}
-
-	public boolean isSelected() {
-		return false;
-	}
 }

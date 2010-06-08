@@ -207,9 +207,4 @@ public class AddValuePlugIn extends AbstractPlugIn {
 		}
 		return isEnabled;
 	}
-
-	public boolean isSelected() {
-		// TODO Auto-generated method stub
-		return false;
-	}
 }

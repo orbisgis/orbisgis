@@ -45,10 +45,4 @@ public class RemoveLayerPlugIn extends AbstractPlugIn {
 				0,
 				new LayerAvailability[] {LayerAvailability.LAYER_NOT_NULL});
 	}
-	
-	public boolean isSelected() {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
 }

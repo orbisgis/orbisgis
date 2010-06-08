@@ -52,11 +52,5 @@ public class RevertLayerPlugIn extends AbstractPlugIn {
 				new SelectionAvailability[] {SelectionAvailability.EQUAL},
 				1,
 				new LayerAvailability[] {LayerAvailability.IS_MODIFIED});
-	}
-	
-	public boolean isSelected() {
-		// TODO Auto-generated method stub
-		return false;
-	}
-	
+	}	
 }

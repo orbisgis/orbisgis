@@ -252,10 +252,6 @@ public class ScalePlugIn extends AbstractPlugIn {
 		return isVisible;
 	}
 
-	public boolean isSelected() {
-		return false;
-	}
-
 	public static ImageIcon getIcon() {
 		return IconLoader.getIcon(IconNames.EXIT_ICON);
 	}

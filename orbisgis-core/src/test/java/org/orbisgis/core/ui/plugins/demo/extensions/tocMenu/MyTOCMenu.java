@@ -39,10 +39,4 @@ public class MyTOCMenu extends AbstractPlugIn {
 		}
 		return false;
 	}
-
-	@Override
-	public boolean isSelected() {
-		return false;
-	}
-
 }

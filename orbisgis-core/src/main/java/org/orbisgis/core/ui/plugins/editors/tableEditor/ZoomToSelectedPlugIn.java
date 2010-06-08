@@ -149,10 +149,4 @@ public class ZoomToSelectedPlugIn extends AbstractPlugIn {
 		}
 		return isEnabled;
 	}
-
-	@Override
-	public boolean isSelected() {
-		// TODO Auto-generated method stub
-		return false;
-	}
 }
