@@ -18,7 +18,14 @@ import org.orbisgis.core.ui.pluginSystem.workbench.Names;
 import org.orbisgis.core.ui.plugins.editor.PlugInEditorListener;
 import org.orbisgis.core.ui.plugins.views.MapEditorPlugIn;
 import org.orbisgis.core.ui.plugins.views.editor.EditorManager;
+
+import com.vividsolutions.jts.geom.Coordinate;
+
+import fr.cts.IllegalCoordinateException;
+import fr.cts.Unit;
 import fr.cts.crs.CoordinateReferenceSystem.Type;
+import fr.cts.op.UnitConversion;
+import fr.cts.util.AngleFormat;
 
 public class ShowXYPlugIn extends AbstractPlugIn {	
 	
@@ -39,9 +46,9 @@ public class ShowXYPlugIn extends AbstractPlugIn {
 			if( toolManager!=null ) {
 				Point2D point = toolManager.getLastRealMousePosition();
 				if(point!=null) {
-					if(getPlugInContext().isGeographicCRS()) {							
-						xCoord = ("" + point.getX()).substring(0, MAX_DIGIT);
-						yCoord =  ("" + point.getY()).substring(0, MAX_DIGIT);
+					if(getPlugInContext().isGeographicCRS()) {
+						xCoord = ("Lat:" + AngleFormat.LONGITUDE_FORMATTER.format(point.getX()));
+						yCoord =  ("Lon:" + AngleFormat.LONGITUDE_FORMATTER.format(point.getY()));
 					}
 					else {
 						xCoord = "X:" + (int) point.getX();
@@ -49,7 +56,7 @@ public class ShowXYPlugIn extends AbstractPlugIn {
 					}
 				}
 			}
-			showXY.setText(xCoord +  "  ,"  + yCoord);
+			showXY.setText(xCoord +  "   "  + yCoord);
 		}
 	};
 	
