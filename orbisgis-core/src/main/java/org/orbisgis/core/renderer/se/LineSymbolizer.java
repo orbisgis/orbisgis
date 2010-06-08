@@ -12,22 +12,38 @@ import org.orbisgis.core.renderer.persistance.se.LineSymbolizerType;
 import org.orbisgis.core.renderer.persistance.se.ObjectFactory;
 
 import org.orbisgis.core.renderer.se.common.Uom;
+import org.orbisgis.core.renderer.se.fill.SolidFill;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
+import org.orbisgis.core.renderer.se.parameter.color.ColorLiteral;
+import org.orbisgis.core.renderer.se.parameter.real.RealLiteral;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 import org.orbisgis.core.renderer.se.stroke.PenStroke;
 import org.orbisgis.core.renderer.se.stroke.Stroke;
 import org.orbisgis.core.renderer.se.transform.Transform;
 
 /**
- * Define a style for line features (or area feature's perimeter...)
- * Only conains a stroke
+ * Define a style for line features
+ * Only contains a stroke
  *
  * @todo add perpendicular offset
  *
  * @author maxence
  */
 public class LineSymbolizer extends VectorSymbolizer {
+
+    public static final LineSymbolizer selectionOverlaySymbolizer;
+
+    static{
+        selectionOverlaySymbolizer = new LineSymbolizer();
+        PenStroke pStroke = new PenStroke();
+        pStroke.setColor(null);
+        pStroke.setColor(new ColorLiteral("#fff3b1"));
+        pStroke.setOpacity(new RealLiteral(50.0));
+        pStroke.setWidth(new RealLiteral(1));
+        selectionOverlaySymbolizer.setStroke(pStroke);
+
+    }
 
     public LineSymbolizer() {
         super();

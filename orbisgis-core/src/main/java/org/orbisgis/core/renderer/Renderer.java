@@ -62,8 +62,10 @@ import javax.imageio.ImageIO;
 
 import org.apache.log4j.Logger;
 import org.gdms.data.DataSourceCreationException;
+import org.gdms.data.NoSuchTableException;
 import org.gdms.data.SpatialDataSourceDecorator;
 import org.gdms.data.indexes.DefaultSpatialIndexQuery;
+import org.gdms.data.indexes.IndexException;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.driverManager.DriverLoadException;
 import org.gdms.sql.parser.ParseException;
@@ -92,7 +94,10 @@ import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.index.quadtree.Quadtree;
 import java.util.ArrayList;
 import java.util.HashMap;
+import org.orbisgis.core.renderer.se.AreaSymbolizer;
 import org.orbisgis.core.renderer.se.FeatureTypeStyle;
+import org.orbisgis.core.renderer.se.LineSymbolizer;
+import org.orbisgis.core.renderer.se.PointSymbolizer;
 import org.orbisgis.core.renderer.se.Rule;
 import org.orbisgis.core.renderer.se.Symbolizer;
 import org.orbisgis.core.renderer.se.common.MapEnv;
@@ -105,12 +110,26 @@ public class Renderer {
      *
      * TODO HACK open close pas beau
      */
-    private Iterator<Integer> getFeatureIdInExtent(MapTransform mt, SpatialDataSourceDecorator sds) throws DriverException {
+    private Iterator<Integer> getFeatureIdInExtent(MapTransform mt,
+            SpatialDataSourceDecorator sds,
+            IProgressMonitor pm) throws DriverException
+             {
         sds.open();
         // TODO dont execute the query if mt.getAdjustedExtent > sds.getFullExtent()
         DefaultSpatialIndexQuery query = new DefaultSpatialIndexQuery(
                 mt.getAdjustedExtent(), sds.getMetadata().getFieldName(
                 sds.getSpatialFieldIndex()));
+
+        try {
+            if (sds.getDataSourceFactory().getIndexManager().getIndex(sds.getName(), sds.getSpatialFieldName()) == null) {
+                sds.getDataSourceFactory().getIndexManager().buildIndex(sds.getName(), sds.getSpatialFieldName(), pm);
+            }
+        } catch (NoSuchTableException ex) {
+            java.util.logging.Logger.getLogger(Renderer.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IndexException ex) {
+            java.util.logging.Logger.getLogger(Renderer.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
         Iterator<Integer> queryIndex = sds.queryIndex(query);
         sds.close();
         return queryIndex;
@@ -137,6 +156,8 @@ public class Renderer {
 
         //MapEnv.switchToDraft();
 
+        int count = 0;
+
         MapTransform mt = new MapTransform();
 
         MapEnv.setMapTransform(mt);
@@ -144,7 +165,7 @@ public class Renderer {
         mt.resizeImage(width, height);
 
         mt.setExtent(extent);
-        
+
         ILayer[] layers;
 
         ArrayList<Symbolizer> overlay = new ArrayList<Symbolizer>();
@@ -167,7 +188,7 @@ public class Renderer {
                     logger.debug("Drawing " + layer.getName());
                     long t1 = System.currentTimeMillis();
                     if (layer.isWMS()) {
-                        System.out.println ("   -> WMS Layer...");
+                        System.out.println("   -> WMS Layer...");
                         // Iterate over next layers to make only one call to the
                         // WMS server
                         WMSStatus status = (WMSStatus) layer.getWMSConnection().getStatus().clone();
@@ -193,10 +214,10 @@ public class Renderer {
                             try {
                                 if (sds.isDefaultVectorial() || sds.isDefaultRaster()) {
                                     long tV1 = System.currentTimeMillis();
-                                    System.out.println ("   -> Vector || Raster......");
+                                    System.out.println("   -> Vector || Raster......");
                                     // Extract into drawSeLayer method !
                                     FeatureTypeStyle fts = layer.getFeatureTypeStyle();
-                                    
+
                                     fts.hardSetSymbolizerLevel();
 
                                     ArrayList<Symbolizer> symbs = new ArrayList<Symbolizer>();
@@ -208,26 +229,35 @@ public class Renderer {
                                     // fetch symbolizers
                                     fts.getSymbolizers(mt, symbs, overlays, rList, fRList);
 
-                                    Iterator<Integer> it = this.getFeatureIdInExtent(mt, sds);
+                                    Iterator<Integer> it = this.getFeatureIdInExtent(mt, sds, pm);
 
                                     HashSet<Integer> allFid = new HashSet<Integer>();
                                     HashSet<Integer> elseFid = new HashSet<Integer>();
 
+                                    /* Hash sets wich contain feature in extent
+                                     * elseFis will be used for feature which doesn't match any rule
+                                     */
                                     while (it.hasNext()) {
                                         Integer next = it.next();
                                         allFid.add(next);
                                         elseFid.add(next);
                                     }
+                                    HashSet<Integer> selected = new HashSet<Integer>();
+                                    int[] selection = layer.getSelection();
 
+                                    for (int f_i = 0; f_i < selection.length; f_i++) {
+                                        if (allFid.contains(selection[f_i])) {
+                                            selected.add(selection[f_i]);
+                                        }
+                                    }
 
                                     HashMap<Rule, HashSet<Integer>> rulesFid = new HashMap<Rule, HashSet<Integer>>();
 
                                     for (Rule r : rList) {
-                                        it = this.getFeatureIdInExtent(mt, r.getFilteredDataSource());
+                                        it = this.getFeatureIdInExtent(mt, r.getFilteredDataSource(), pm);
 
                                         HashSet<Integer> fids = new HashSet<Integer>();
                                         while (it.hasNext()) {
-                                            
                                             Integer cFid = it.next();
                                             fids.add(cFid);
                                             elseFid.remove(cFid);
@@ -239,26 +269,26 @@ public class Renderer {
                                     System.out.println("Filtering done :" + (tV2 - tV1));
 
                                     if (fts.isByLevel()) {
-                                        System.out.println("ByLevel");
+
                                         for (Symbolizer s : symbs) {
-                                            System.out.println ("Draw " + s);
+                                            pm.startTask("Drawing " + layer.getName());
                                             it = rulesFid.get(s.getRule()).iterator();
-                                            pm.startTask("Drawing by level" + layer.getName());
+
                                             Integer fid = 0;
 
                                             long tf1 = System.currentTimeMillis();
-
                                             while (it.hasNext()) {
                                                 fid = it.next();
                                                 s.draw(g2, sds, fid.longValue());
+                                                count++;
                                             }
                                             long tf2 = System.currentTimeMillis();
                                             System.out.println("Features done :" + (tf2 - tf1));
+                                            pm.endTask();
                                         }
                                     } else {
-                                        System.out.println("ByFeature");
+                                        // TODO REMOVE THIS (useless, we always want to draw by level !
                                         it = allFid.iterator();
-                                        pm.startTask("Drawing by feature" + layer.getName());
                                         Integer fid = 0;
                                         while (it.hasNext()) {
                                             fid = it.next();
@@ -269,6 +299,41 @@ public class Renderer {
                                             }
                                         }
                                     }
+
+                                    Geometry geometry = null;
+
+                                    try {
+                                        geometry = layer.getDataSource().getGeometry(0);
+                                    } catch (DriverException ex) {
+                                    }
+
+                                    if (!selected.isEmpty()) {
+                                        Symbolizer symb;
+
+                                        if (geometry != null) {
+                                            switch (geometry.getDimension()) {
+                                                case 1:
+                                                    symb = LineSymbolizer.selectionOverlaySymbolizer;
+                                                    break;
+                                                case 2:
+                                                    symb = AreaSymbolizer.selectionOverlaySymbolizer;
+                                                    break;
+                                                case 0:
+                                                default:
+                                                    symb = PointSymbolizer.selectionOverlaySymbolizer;
+                                                    break;
+                                            }
+                                        } else {
+                                            symb = null;
+                                        }
+
+                                        Iterator<Integer> iterator = selected.iterator();
+                                        while (iterator.hasNext()) {
+                                            long fid = iterator.next().longValue();
+                                            symb.draw(g2, sds, fid);
+                                        }
+                                    }
+
 
                                     long tV3 = System.currentTimeMillis();
                                     System.out.println("Rendering done :" + (tV3 - tV2));
@@ -299,8 +364,7 @@ public class Renderer {
 
                     }
                     long t2 = System.currentTimeMillis();
-                    logger.info("Rendering time:" + (t2 - t1));
-
+                    logger.info("Rendering time:" + (t2 - t1) + " for " + count + " features");
 
                 }
             }
@@ -368,11 +432,10 @@ public class Renderer {
 
     /*
     private boolean validScale(MapTransform mt, Legend legend) {
-        return (mt.getScaleDenominator() > legend.getMinScale())
-                && (mt.getScaleDenominator() < legend.getMaxScale());
+    return (mt.getScaleDenominator() > legend.getMinScale())
+    && (mt.getScaleDenominator() < legend.getMaxScale());
     }
      */
-
     /**
      * For geometry collections we need to filter the symbol composite before
      * drawing
@@ -383,38 +446,37 @@ public class Renderer {
      * @param g
      * @param permission
      * @throws DriverException
-     
+
     private Envelope drawGeometryCollection(MapTransform mt, Graphics2D g2,
-            Symbol sym, Geometry g, DefaultRendererPermission permission)
-            throws DriverException {
-        if (g.getGeometryType().equals("GeometryCollection")) {
-            Envelope ret = null;
+    Symbol sym, Geometry g, DefaultRendererPermission permission)
+    throws DriverException {
+    if (g.getGeometryType().equals("GeometryCollection")) {
+    Envelope ret = null;
 
 
-            for (int j = 0; j
-                    < g.getNumGeometries(); j++) {
-                Geometry childGeom = g.getGeometryN(j);
-                Envelope area = drawGeometryCollection(mt, g2, sym, childGeom,
-                        permission);
-                if (ret == null) {
-                    ret = area;
-                } else {
-                    ret.expandToInclude(area);
-                }
-            }
-
-            return ret;
-        } else {
-            sym = RenderUtils.buildSymbolToDraw(sym, g);
-            if (sym != null) {
-                return sym.draw(g2, g, mt, permission);
-            } else {
-                return null;
-            }
-        }
+    for (int j = 0; j
+    < g.getNumGeometries(); j++) {
+    Geometry childGeom = g.getGeometryN(j);
+    Envelope area = drawGeometryCollection(mt, g2, sym, childGeom,
+    permission);
+    if (ret == null) {
+    ret = area;
+    } else {
+    ret.expandToInclude(area);
     }
-    */
+    }
 
+    return ret;
+    } else {
+    sym = RenderUtils.buildSymbolToDraw(sym, g);
+    if (sym != null) {
+    return sym.draw(g2, g, mt, permission);
+    } else {
+    return null;
+    }
+    }
+    }
+     */
     public void draw(BufferedImage img, Envelope extent, ILayer layer) {
         draw(img, extent, layer, new NullProgressMonitor());
     }
@@ -550,40 +612,39 @@ public class Renderer {
 
         }
     }
-
     /**
      * Apply some rendering rules Look at rendering configuration panel.
      *
      * @param g2
-     
+
     private void setHints(Graphics2D g2) {
 
-        Properties systemSettings = System.getProperties();
+    Properties systemSettings = System.getProperties();
 
-        String antialiasing = systemSettings.getProperty(RenderingConfiguration.SYSTEM_ANTIALIASING_STATUS);
-        String composite = systemSettings.getProperty(RenderingConfiguration.SYSTEM_COMPOSITE_STATUS);
-
-
-
-        if (antialiasing != null || composite != null) {
-            if (antialiasing.equals("true")) {
-                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
-                        RenderingHints.VALUE_ANTIALIAS_ON);
+    String antialiasing = systemSettings.getProperty(RenderingConfiguration.SYSTEM_ANTIALIASING_STATUS);
+    String composite = systemSettings.getProperty(RenderingConfiguration.SYSTEM_COMPOSITE_STATUS);
 
 
-            }
 
-            if (composite.equals("true")) {
-                AlphaComposite ac = AlphaComposite.getInstance(AlphaComposite.SRC);
-                ac = AlphaComposite.getInstance(
-                        AlphaComposite.SRC_OVER,
-                        new Float(
-                        systemSettings.getProperty(RenderingConfiguration.SYSTEM_COMPOSITE_VALUE)));
-                g2.setComposite(ac);
+    if (antialiasing != null || composite != null) {
+    if (antialiasing.equals("true")) {
+    g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+    RenderingHints.VALUE_ANTIALIAS_ON);
 
-            }
-        }
 
     }
-   */
+
+    if (composite.equals("true")) {
+    AlphaComposite ac = AlphaComposite.getInstance(AlphaComposite.SRC);
+    ac = AlphaComposite.getInstance(
+    AlphaComposite.SRC_OVER,
+    new Float(
+    systemSettings.getProperty(RenderingConfiguration.SYSTEM_COMPOSITE_VALUE)));
+    g2.setComposite(ac);
+
+    }
+    }
+
+    }
+     */
 }

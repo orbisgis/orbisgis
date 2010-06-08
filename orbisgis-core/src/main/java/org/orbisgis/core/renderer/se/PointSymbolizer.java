@@ -5,6 +5,8 @@ import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 
 import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.media.jai.RenderableGraphics;
 import javax.xml.bind.JAXBElement;
 import org.orbisgis.core.renderer.persistance.se.ObjectFactory;
@@ -14,13 +16,37 @@ import org.gdms.data.SpatialDataSourceDecorator;
 import org.gdms.driver.DriverException;
 import org.orbisgis.core.renderer.se.common.MapEnv;
 import org.orbisgis.core.renderer.se.common.Uom;
+import org.orbisgis.core.renderer.se.fill.SolidFill;
 import org.orbisgis.core.renderer.se.graphic.GraphicCollection;
 import org.orbisgis.core.renderer.se.graphic.MarkGraphic;
+import org.orbisgis.core.renderer.se.graphic.WellKnownName;
 
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
+import org.orbisgis.core.renderer.se.parameter.color.ColorLiteral;
+import org.orbisgis.core.renderer.se.parameter.real.RealLiteral;
 import org.orbisgis.core.renderer.se.transform.Transform;
 
 public class PointSymbolizer extends VectorSymbolizer {
+
+    public static final PointSymbolizer selectionOverlaySymbolizer;
+
+    static {
+
+        selectionOverlaySymbolizer = new PointSymbolizer();
+        MarkGraphic mark = new MarkGraphic();
+
+        try { // will never throw anything because of WellKnownName !
+            mark.setSource(WellKnownName.CIRCLE);
+        } catch (IOException ex) {
+            Logger.getLogger(PointSymbolizer.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        SolidFill yellow = new SolidFill();
+        yellow.setColor(new ColorLiteral("#fff3b1"));
+        yellow.setOpacity(new RealLiteral(50.0));
+        mark.setFill(yellow);
+        selectionOverlaySymbolizer.graphic.addGraphic(mark);
+    }
 
     /*
      * Create a default pointSymbolizer: Square 10mm
@@ -47,7 +73,7 @@ public class PointSymbolizer extends VectorSymbolizer {
 
         if (ast.getUnitOfMeasure() != null) {
             Uom u = Uom.fromOgcURN(ast.getUnitOfMeasure());
-            System.out.println ("This is the UOM: " + u);
+            System.out.println("This is the UOM: " + u);
             this.setUom(u);
         }
 
@@ -91,7 +117,7 @@ public class PointSymbolizer extends VectorSymbolizer {
             }
         }
     }
-    
+
     @Override
     public JAXBElement<PointSymbolizerType> getJAXBElement() {
         ObjectFactory of = new ObjectFactory();
@@ -116,5 +142,4 @@ public class PointSymbolizer extends VectorSymbolizer {
         return of.createPointSymbolizer(s);
     }
     private GraphicCollection graphic;
-
 }

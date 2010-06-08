@@ -18,6 +18,8 @@ import org.orbisgis.core.renderer.se.fill.Fill;
 import org.orbisgis.core.renderer.se.fill.SolidFill;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
+import org.orbisgis.core.renderer.se.parameter.color.ColorLiteral;
+import org.orbisgis.core.renderer.se.parameter.real.RealLiteral;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 
 import org.orbisgis.core.renderer.se.stroke.PenStroke;
@@ -25,6 +27,19 @@ import org.orbisgis.core.renderer.se.stroke.Stroke;
 import org.orbisgis.core.renderer.se.transform.Transform;
 
 public class AreaSymbolizer extends VectorSymbolizer {
+
+    
+    public final static AreaSymbolizer selectionOverlaySymbolizer;
+
+    static{
+        selectionOverlaySymbolizer = new AreaSymbolizer();
+
+        SolidFill yellow = new SolidFill();
+        yellow.setColor(new ColorLiteral("#fff3b1"));
+        yellow.setOpacity(new RealLiteral(50.0));
+        selectionOverlaySymbolizer.setFill(yellow);
+
+    }
 
     public AreaSymbolizer() {
         super();
