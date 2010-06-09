@@ -1,7 +1,11 @@
 package org.orbisgis.core.renderer.se.graphic;
 
+import java.awt.GraphicsConfiguration;
+import java.awt.GraphicsEnvironment;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
+import java.awt.image.RenderedImage;
+import java.awt.image.VolatileImage;
 import java.awt.image.renderable.RenderContext;
 
 import java.io.IOException;
@@ -225,8 +229,21 @@ public final class GraphicCollection implements SymbolizerNode {
         }
     }
 
+	public RenderedImage getCache(DataSource ds, long fid, boolean selected)
+            throws ParameterException, IOException {
+
+        if (!selected && ! this.dependsOnFeature() && rImage != null){
+			return rImage;
+		}
+
+		rImage = this.getGraphic(ds, fid, selected).createRendering(MapEnv.getCurrentRenderContext());
+
+		return rImage;
+
+	}
     RenderableGraphics graphicCache = null;
-    
+    RenderedImage rImage = null;
+
     private ArrayList<Graphic> graphics;
     private SymbolizerNode parent;
 }
