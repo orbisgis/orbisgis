@@ -49,7 +49,7 @@ public final class SeParameterFactory {
             return null;
 
         if (expr.getDeclaredType() == org.orbisgis.core.renderer.persistance.ogc.FunctionType.class) {
-            // TODO ??
+            // TODO (for geometry functions)
         } else if (expr.getDeclaredType() == BinaryOperatorType.class) {
             return new RealBinaryOperator((JAXBElement<BinaryOperatorType>) expr);
 
@@ -81,7 +81,7 @@ public final class SeParameterFactory {
             return null;
 
         String result = "";
-        
+
         for (Object o : p.getContent()) {
             if (o instanceof String) {
                 result += o.toString();

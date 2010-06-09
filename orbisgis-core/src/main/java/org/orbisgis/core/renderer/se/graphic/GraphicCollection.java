@@ -232,17 +232,29 @@ public final class GraphicCollection implements SymbolizerNode {
 	public RenderedImage getCache(DataSource ds, long fid, boolean selected)
             throws ParameterException, IOException {
 
-        if (!selected && ! this.dependsOnFeature() && rImage != null){
-			return rImage;
+        if (!selected && ! this.dependsOnFeature() && imageCache != null){
+			return imageCache;
 		}
 
-		rImage = this.getGraphic(ds, fid, selected).createRendering(MapEnv.getCurrentRenderContext());
+
+		RenderableGraphics rGraphic = this.getGraphic(ds, fid, selected);
+    	RenderedImage rImage = null;
+		if (rGraphic != null){
+			rImage = rGraphic.createRendering(MapEnv.getCurrentRenderContext());
+		}
+
+		/*
+		 * Only cache if the graphic doesn't depends on features attribute
+		 * and only if it's not a selected highlighted graphic
+		 */
+		if (!selected && !this.dependsOnFeature()){
+			this.imageCache = rImage;
+		}
 
 		return rImage;
-
 	}
     RenderableGraphics graphicCache = null;
-    RenderedImage rImage = null;
+    RenderedImage imageCache = null;
 
     private ArrayList<Graphic> graphics;
     private SymbolizerNode parent;

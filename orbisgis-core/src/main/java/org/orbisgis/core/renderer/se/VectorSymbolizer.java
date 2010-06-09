@@ -4,7 +4,9 @@
  */
 package org.orbisgis.core.renderer.se;
 
+import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.Point;
 import java.awt.Graphics2D;
 import java.awt.Shape;
@@ -91,6 +93,22 @@ public abstract class VectorSymbolizer extends Symbolizer {
         //Point point = geom.getCentroid();
 
         return at.transform(new Point2D.Double(point.getX(), point.getY()), null);
+    }
+
+
+    public Point2D getFirstPointShape(SpatialDataSourceDecorator sds, long fid) throws ParameterException, IOException, DriverException {
+        Geometry geom = this.getTheGeom(sds, fid); // geom + function
+
+        MapTransform mt = MapEnv.getMapTransform();
+
+        AffineTransform at = mt.getAffineTransform();
+        if (transform != null) {
+            at.preConcatenate(transform.getGraphicalAffineTransform(sds, fid, true));
+        }
+
+		Coordinate[] coordinates = geom.getCoordinates();
+
+        return at.transform(new Point2D.Double(coordinates[0].x, coordinates[0].y), null);
     }
 
     public Transform getTransform() {

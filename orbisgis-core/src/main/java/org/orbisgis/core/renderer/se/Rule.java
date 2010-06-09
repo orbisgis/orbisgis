@@ -177,6 +177,10 @@ public class Rule implements SymbolizerNode {
 
     public boolean isDomainAllowed(MapTransform mt) {
         double scale = mt.getScaleDenominator();
+		System.out.println ("Current scale is  1:" + scale);
+		System.out.println ("Min : " + this.minScaleDenom);
+		System.out.println ("Max : " + this.maxScaleDenom);
+
         return (this.minScaleDenom < 0 && this.maxScaleDenom < 0)
                 || (this.minScaleDenom < 0 && this.maxScaleDenom > scale)
                 || (scale > this.minScaleDenom && this.maxScaleDenom < 0)

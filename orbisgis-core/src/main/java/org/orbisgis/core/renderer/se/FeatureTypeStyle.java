@@ -5,6 +5,8 @@
 package org.orbisgis.core.renderer.se;
 
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -15,6 +17,7 @@ import javax.xml.bind.JAXBContext;
 
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.bind.ValidationEvent;
 import javax.xml.bind.ValidationEventLocator;
@@ -41,198 +44,213 @@ import org.orbisgis.core.renderer.se.parameter.ParameterException;
  */
 public class FeatureTypeStyle implements SymbolizerNode {
 
-    public FeatureTypeStyle(ILayer layer) {
-        rules = new ArrayList<Rule>();
-        this.layer = layer;
-        this.byLevel = true;
+	public FeatureTypeStyle(ILayer layer) {
+		rules = new ArrayList<Rule>();
+		this.layer = layer;
+		this.byLevel = true;
 
-        this.addRule(new Rule(layer));
-    }
+		this.addRule(new Rule(layer));
+	}
 
-    public FeatureTypeStyle(ILayer layer, String seFile) {
-        rules = new ArrayList<Rule>();
-        this.layer = layer;
-        this.byLevel = true;
+	public FeatureTypeStyle(ILayer layer, String seFile) {
+		rules = new ArrayList<Rule>();
+		this.layer = layer;
+		this.byLevel = true;
 
-        JAXBContext jaxbContext;
-        try {
+		JAXBContext jaxbContext;
+		try {
 
-            jaxbContext = JAXBContext.newInstance(FeatureTypeStyleType.class);
+			jaxbContext = JAXBContext.newInstance(FeatureTypeStyleType.class);
 
-            Unmarshaller u = jaxbContext.createUnmarshaller();
+			Unmarshaller u = jaxbContext.createUnmarshaller();
 
 
-            Schema schema = u.getSchema();
-            ValidationEventCollector validationCollector = new ValidationEventCollector();
-            u.setEventHandler(validationCollector);
+			Schema schema = u.getSchema();
+			ValidationEventCollector validationCollector = new ValidationEventCollector();
+			u.setEventHandler(validationCollector);
 
-            JAXBElement<FeatureTypeStyleType> fts = (JAXBElement<FeatureTypeStyleType>) u.unmarshal(
-                    new FileInputStream(seFile));
+			JAXBElement<FeatureTypeStyleType> fts = (JAXBElement<FeatureTypeStyleType>) u.unmarshal(
+					new FileInputStream(seFile));
 
-            for (ValidationEvent event : validationCollector.getEvents()) {
-                String msg = event.getMessage();
-                ValidationEventLocator locator = event.getLocator();
-                int line = locator.getLineNumber();
-                int column = locator.getColumnNumber();
-                System.out.println("Error at line " + line + " column " + column);
-            }
+			for (ValidationEvent event : validationCollector.getEvents()) {
+				String msg = event.getMessage();
+				ValidationEventLocator locator = event.getLocator();
+				int line = locator.getLineNumber();
+				int column = locator.getColumnNumber();
+				System.out.println("Error at line " + line + " column " + column);
+			}
 
-            this.setFromJAXB(fts);
-            
-        } catch (IOException ex) {
-            Logger.getLogger(FeatureTypeStyle.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (DriverLoadException ex) {
-            Logger.getLogger(FeatureTypeStyle.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (JAXBException ex) {
-            Logger.getLogger(FeatureTypeStyle.class.getName()).log(Level.SEVERE, null, ex);
-        }
+			this.setFromJAXB(fts);
 
-    }
+		} catch (IOException ex) {
+			Logger.getLogger(FeatureTypeStyle.class.getName()).log(Level.SEVERE, null, ex);
+		} catch (DriverLoadException ex) {
+			Logger.getLogger(FeatureTypeStyle.class.getName()).log(Level.SEVERE, null, ex);
+		} catch (JAXBException ex) {
+			Logger.getLogger(FeatureTypeStyle.class.getName()).log(Level.SEVERE, null, ex);
+		}
 
-    public FeatureTypeStyle(JAXBElement<FeatureTypeStyleType> ftst, ILayer layer) {
-        this(layer);
-        this.setFromJAXB(ftst);
-    }
+	}
 
-    private void setFromJAXB(JAXBElement<FeatureTypeStyleType> ftst) {
-        FeatureTypeStyleType fts = ftst.getValue();
+	public FeatureTypeStyle(JAXBElement<FeatureTypeStyleType> ftst, ILayer layer) {
+		this(layer);
+		this.setFromJAXB(ftst);
+	}
 
-        if (fts.getName() != null) {
-            this.name = fts.getName();
-        }
+	private void setFromJAXB(JAXBElement<FeatureTypeStyleType> ftst) {
+		FeatureTypeStyleType fts = ftst.getValue();
 
-        if (fts.getRule() != null) {
-            for (RuleType rt : fts.getRule()) {
-                this.addRule(new Rule(rt, this.layer));
-            }
-        }
-    }
+		if (fts.getName() != null) {
+			this.name = fts.getName();
+		}
 
-    public void addRule(Rule r) {
-        r.setParent(this);
-        rules.add(r);
-    }
+		if (fts.getRule() != null) {
+			for (RuleType rt : fts.getRule()) {
+				this.addRule(new Rule(rt, this.layer));
+			}
+		}
+	}
 
-    public JAXBElement<FeatureTypeStyleType> getJAXBElement() {
-        FeatureTypeStyleType ftst = new FeatureTypeStyleType();
+	public void export(String seFile) {
+		try {
+			JAXBContext jaxbContext = JAXBContext.newInstance(FeatureTypeStyleType.class);
+			Marshaller marshaller = jaxbContext.createMarshaller();
+			marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+			marshaller.marshal(getJAXBElement(), new FileOutputStream(seFile));
+		} catch (FileNotFoundException ex) {
+			Logger.getLogger(FeatureTypeStyle.class.getName()).log(Level.SEVERE, null, ex);
+		} catch (JAXBException ex) {
+			Logger.getLogger(FeatureTypeStyle.class.getName()).log(Level.SEVERE, null, ex);
+		}
 
-        if (this.name != null) {
-            ftst.setName(this.name);
-        }
-        List<RuleType> ruleTypes = ftst.getRule();
-        for (Rule r : rules) {
-            ruleTypes.add(r.getJAXBType());
-        }
 
-        ObjectFactory of = new ObjectFactory();
+	}
 
-        return of.createFeatureTypeStyle(ftst);
-    }
+	public void addRule(Rule r) {
+		r.setParent(this);
+		rules.add(r);
+	}
 
-    /**
-     * Return all symbolizers from rules with a filter but not those from
-     * a ElseFilter (i.e. fallback) rule
-     *
-     * @param mt
-     * @param layerSymbolizers
-     * @param overlaySymbolizers
-     *
-     * @param rules
-     * @param fallbackRules
-     * @todo take into account domain constraint
-     */
-    public void getSymbolizers(MapTransform mt,
-            ArrayList<Symbolizer> layerSymbolizers,
-            ArrayList<Symbolizer> overlaySymbolizers,
-            ArrayList<Rule> rules,
-            ArrayList<Rule> fallbackRules) {
+	public JAXBElement<FeatureTypeStyleType> getJAXBElement() {
+		FeatureTypeStyleType ftst = new FeatureTypeStyleType();
 
-        for (Rule r : this.rules) {
-            if (r.isDomainAllowed(mt)) {
-                if (!r.isFallbackRule()) {
-                    rules.add(r);
-                } else {
-                    fallbackRules.add(r);
-                }
+		if (this.name != null) {
+			ftst.setName(this.name);
+		}
+		List<RuleType> ruleTypes = ftst.getRule();
+		for (Rule r : rules) {
+			ruleTypes.add(r.getJAXBType());
+		}
 
-                for (Symbolizer s : r.getCompositeSymbolizer().getSymbolizerList()) {
-                    if (s instanceof TextSymbolizer) {
-                        overlaySymbolizers.add(s);
-                    } else {
-                        layerSymbolizers.add(s);
-                    }
-                }
-            } else {
-                System.out.println("        Domain NOTOK");
-            }
-        }
+		ObjectFactory of = new ObjectFactory();
 
-        Collections.sort(layerSymbolizers);
-    }
+		return of.createFeatureTypeStyle(ftst);
+	}
 
-    public void hardSetSymbolizerLevel() {
-        int level = 1;
+	/**
+	 * Return all symbolizers from rules with a filter but not those from
+	 * a ElseFilter (i.e. fallback) rule
+	 *
+	 * @param mt
+	 * @param layerSymbolizers
+	 * @param overlaySymbolizers
+	 *
+	 * @param rules
+	 * @param fallbackRules
+	 * @todo take into account domain constraint
+	 */
+	public void getSymbolizers(MapTransform mt,
+			ArrayList<Symbolizer> layerSymbolizers,
+			ArrayList<Symbolizer> overlaySymbolizers,
+			ArrayList<Rule> rules,
+			ArrayList<Rule> fallbackRules) {
 
-        for (Rule r : rules) {
-            for (Symbolizer s : r.getCompositeSymbolizer().getSymbolizerList()) {
-                if (s instanceof TextSymbolizer) {
-                    s.setLevel(Integer.MAX_VALUE);
-                } else {
-                    s.setLevel(level);
-                    level++;
-                }
-            }
-        }
-    }
+		for (Rule r : this.rules) {
+			if (r.isDomainAllowed(mt)) {
+				if (!r.isFallbackRule()) {
+					rules.add(r);
+				} else {
+					fallbackRules.add(r);
+				}
 
-    public ILayer getLayer() {
-        return layer;
-    }
+				for (Symbolizer s : r.getCompositeSymbolizer().getSymbolizerList()) {
+					if (s instanceof TextSymbolizer) {
+						overlaySymbolizers.add(s);
+					} else {
+						layerSymbolizers.add(s);
+					}
+				}
+			} else {
+				System.out.println("        Domain NOTOK");
+			}
+		}
 
-    public void setLayer(ILayer layer) {
-        this.layer = layer;
-    }
+		Collections.sort(layerSymbolizers);
+	}
 
-    @Override
-    public Uom getUom() {
-        return null;
-    }
+	public void hardSetSymbolizerLevel() {
+		int level = 1;
 
-    @Override
-    public SymbolizerNode getParent() {
-        return null;
-    }
+		for (Rule r : rules) {
+			for (Symbolizer s : r.getCompositeSymbolizer().getSymbolizerList()) {
+				if (s instanceof TextSymbolizer) {
+					s.setLevel(Integer.MAX_VALUE);
+				} else {
+					s.setLevel(level);
+					level++;
+				}
+			}
+		}
+	}
 
-    @Override
-    public void setParent(SymbolizerNode node) {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
+	public ILayer getLayer() {
+		return layer;
+	}
 
-    public boolean isByLevel() {
-        return byLevel;
-    }
+	public void setLayer(ILayer layer) {
+		this.layer = layer;
+	}
 
-    public void setByLevel(boolean byLevel) {
-        this.byLevel = byLevel;
-    }
+	@Override
+	public Uom getUom() {
+		return null;
+	}
 
-    public String getName() {
-        return name;
-    }
+	@Override
+	public SymbolizerNode getParent() {
+		return null;
+	}
 
-    public void setName(String name) {
-        this.name = name;
-    }
+	@Override
+	public void setParent(SymbolizerNode node) {
+		throw new UnsupportedOperationException("Not supported yet.");
+	}
 
-    public ArrayList<Rule> getRules() {
-        return rules;
-    }
+	public boolean isByLevel() {
+		return byLevel;
+	}
 
-    public void setRules(ArrayList<Rule> rules) {
-        this.rules = rules;
-    }
-    private String name;
-    private ArrayList<Rule> rules;
-    private ILayer layer;
-    private boolean byLevel = false;
+	public void setByLevel(boolean byLevel) {
+		this.byLevel = byLevel;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public ArrayList<Rule> getRules() {
+		return rules;
+	}
+
+	public void setRules(ArrayList<Rule> rules) {
+		this.rules = rules;
+	}
+	private String name;
+	private ArrayList<Rule> rules;
+	private ILayer layer;
+	private boolean byLevel = false;
 }

@@ -251,11 +251,17 @@ public final class PieChart extends Graphic {
             // Apply the AT to the bbox
             Shape newBounds = at.createTransformedShape(bounds);
 
-            rg = Graphic.getNewRenderableGraphics(newBounds.getBounds2D(), 0);
+			bounds = newBounds.getBounds2D();
         } else {
             at = new AffineTransform();
-            rg = Graphic.getNewRenderableGraphics(bounds, 0);
         }
+		/*
+		 * Graphic is too small => return null
+		 */
+		if (bounds.isEmpty()){
+			return null;
+		}
+        rg = Graphic.getNewRenderableGraphics(bounds, 0);
 
         // Now, the total is defines, we can compute percentages and slices begin/end angles
         double[] percentages = new double[nSlices];

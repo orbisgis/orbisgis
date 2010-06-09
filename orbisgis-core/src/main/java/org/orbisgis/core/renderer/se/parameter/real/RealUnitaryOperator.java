@@ -18,7 +18,7 @@ public final class RealUnitaryOperator implements RealParameter {
 
         String operator = expr.getName().getLocalPart();
 
-        if (operator.equals("Log")){
+        if (operator.equals("Log10")){
             this.op = RealUnitaryOperatorType.LOG;
         }
         else if (operator.equals("Sqrt")){

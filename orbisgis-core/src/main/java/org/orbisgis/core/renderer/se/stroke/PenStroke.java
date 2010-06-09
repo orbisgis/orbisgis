@@ -358,7 +358,7 @@ public class PenStroke extends Stroke {
         }
 
         if (this.uom != null) {
-            s.setUnitOfMeasure(uom.toURN());
+            s.setUnitOfMeasure(this.uom.toURN());
         }
 
         if (this.dashOffset != null) {

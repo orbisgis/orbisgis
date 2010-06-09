@@ -20,8 +20,10 @@ public class SwitchToDraftPlugIn extends AbstractPlugIn {
 	public boolean execute(PlugInContext context) {
 		if (draft) {
 			MapEnv.switchToDefault();
+			System.out.println("DefaultRenderingMode");
 		} else {
 			MapEnv.switchToDraft();
+			System.out.println("Draft RenderingMode");
 		}
 		draft = !draft;
 		return true;

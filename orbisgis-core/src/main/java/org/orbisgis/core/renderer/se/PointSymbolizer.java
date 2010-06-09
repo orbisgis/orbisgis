@@ -77,25 +77,25 @@ public class PointSymbolizer extends VectorSymbolizer {
 		graphic.setParent(this);
 	}
 
-	/**
-	 * @todo convert the_geom to a point feature; plot img over the point
-	 */
 	@Override
 	public void draw(Graphics2D g2, SpatialDataSourceDecorator sds, long fid, boolean selected) throws ParameterException, IOException, DriverException {
 		if (graphic != null && graphic.getNumGraphics() > 0) {
 			Point2D pt = this.getPointShape(sds, fid);
-			//RenderableGraphics rg = graphic.getGraphic(sds, fid, selected);
-			RenderedImage cache = graphic.getCache(sds, fid, selected);
+			
+			//Point2D pt = this.getFirstPointShape(sds, fid); // This is to emulate ExtractFirstPoint geom function !!!
+			RenderableGraphics rg = graphic.getGraphic(sds, fid, selected);
+			//RenderedImage cache = graphic.getCache(sds, fid, selected);
 
-			if (cache != null) {
+			//if (cache != null) {
+			if (rg != null) {
 				double x = 0, y = 0;
 
 				x = pt.getX();
 				y = pt.getY();
 
 				// Draw the graphic right over the point !
-				//g2.drawRenderedImage(rg.createRendering(MapEnv.getCurrentRenderContext()), AffineTransform.getTranslateInstance(x, y));
-				g2.drawRenderedImage(cache, AffineTransform.getTranslateInstance(x, y));
+				g2.drawRenderedImage(rg.createRendering(MapEnv.getCurrentRenderContext()), AffineTransform.getTranslateInstance(x, y));
+				//g2.drawRenderedImage(cache, AffineTransform.getTranslateInstance(x, y));
 			}
 		}
 	}
