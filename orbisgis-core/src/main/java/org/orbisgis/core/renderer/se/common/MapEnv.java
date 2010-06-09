@@ -5,12 +5,8 @@
 package org.orbisgis.core.renderer.se.common;
 
 import java.awt.RenderingHints;
-import java.awt.Transparency;
-import java.awt.color.ColorSpace;
 import java.awt.geom.AffineTransform;
 import java.awt.image.ColorModel;
-import java.awt.image.ComponentColorModel;
-import java.awt.image.DataBuffer;
 import java.awt.image.renderable.RenderContext;
 import javax.media.jai.ImageLayout;
 import javax.media.jai.JAI;

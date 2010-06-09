@@ -32,106 +32,106 @@ import org.orbisgis.core.renderer.se.transform.Transform;
  */
 public class LineSymbolizer extends VectorSymbolizer {
 
-    public LineSymbolizer() {
-        super();
-        uom = Uom.MM;
-        stroke = new PenStroke();
-    }
+	public LineSymbolizer() {
+		super();
+		uom = Uom.MM;
+		stroke = new PenStroke();
+	}
+
+	public LineSymbolizer(JAXBElement<LineSymbolizerType> st) {
+		LineSymbolizerType ast = st.getValue();
 
 
-    public LineSymbolizer(JAXBElement<LineSymbolizerType> st){
-        LineSymbolizerType ast = st.getValue();
+		if (ast.getGeometry() != null) {
+			// TODO
+		}
+
+		if (ast.getUnitOfMeasure() != null) {
+			this.uom = Uom.fromOgcURN(ast.getUnitOfMeasure());
+		}
+
+		if (ast.getPerpendicularOffset() != null) {
+			this.setPerpendicularOffset(SeParameterFactory.createRealParameter(ast.getPerpendicularOffset()));
+		}
+
+		if (ast.getTransform() != null) {
+			this.setTransform(new Transform(ast.getTransform()));
+		}
+
+		if (ast.getStroke() != null) {
+			this.setStroke(Stroke.createFromJAXBElement(ast.getStroke()));
+		}
+	}
+
+	public Stroke getStroke() {
+		return stroke;
+	}
+
+	public void setStroke(Stroke stroke) {
+		this.stroke = stroke;
+		stroke.setParent(this);
+	}
+
+	public RealParameter getPerpendicularOffset() {
+		return perpendicularOffset;
+	}
+
+	public void setPerpendicularOffset(RealParameter perpendicularOffset) {
+		this.perpendicularOffset = perpendicularOffset;
+	}
+
+	/**
+	 *
+	 * @param g2
+	 * @param sds
+	 * @param fid
+	 * @throws ParameterException
+	 * @throws IOException
+	 * @todo make sure the geom is a line or an area; implement p_offset
+	 */
+	@Override
+	public void draw(Graphics2D g2, SpatialDataSourceDecorator sds, long fid, boolean selected) throws ParameterException, IOException, DriverException {
+		if (stroke != null) {
+			Shape shp = this.getShape(sds, fid);
+
+			if (shp != null) {
+				if (perpendicularOffset != null) {
+					double offset = perpendicularOffset.getValue(sds, fid);
+					// TODO apply perpendicular offset
+				}
+
+				// TODO perpendicular offset !
+				stroke.draw(g2, shp, sds, fid, selected);
+			}
+		}
+	}
+
+	@Override
+	public JAXBElement<LineSymbolizerType> getJAXBElement() {
+		ObjectFactory of = new ObjectFactory();
+		LineSymbolizerType s = of.createLineSymbolizerType();
+
+		this.setJAXBProperty(s);
 
 
-        if (ast.getGeometry() != null){
-            // TODO
-        }
+		s.setUnitOfMeasure(this.getUom().toURN());
 
-        if (ast.getUnitOfMeasure() != null){
-            this.uom = Uom.fromOgcURN(ast.getUnitOfMeasure());
-        }
-
-        if (ast.getPerpendicularOffset() != null){
-            this.setPerpendicularOffset(SeParameterFactory.createRealParameter(ast.getPerpendicularOffset()));
-        }
-
-        if (ast.getTransform() != null){
-            this.setTransform( new Transform(ast.getTransform()));
-        }
-
-        if (ast.getStroke() != null){
-            this.setStroke(Stroke.createFromJAXBElement(ast.getStroke()));
-        }
-    }
-
-    public Stroke getStroke() {
-        return stroke;
-    }
-
-    public void setStroke(Stroke stroke) {
-        this.stroke = stroke;
-        stroke.setParent(this);
-    }
-
-    public RealParameter getPerpendicularOffset() {
-        return perpendicularOffset;
-    }
-
-    public void setPerpendicularOffset(RealParameter perpendicularOffset) {
-        this.perpendicularOffset = perpendicularOffset;
-    }
-
-    /**
-     *
-     * @param g2
-     * @param sds
-     * @param fid
-     * @throws ParameterException
-     * @throws IOException
-     * @todo make sure the geom is a line or an area; implement p_offset
-     */
-    @Override
-    public void draw(Graphics2D g2, SpatialDataSourceDecorator sds, long fid, boolean selected) throws ParameterException, IOException, DriverException {
-        if (stroke != null) {
-            Shape shp = this.getShape(sds, fid);
-
-            if (perpendicularOffset != null) {
-                double offset = perpendicularOffset.getValue(sds, fid);
-                // TODO apply perpendicular offset
-            }
-
-            // TODO perpendicular offset !
-            stroke.draw(g2, shp, sds, fid, selected);
-        }
-    }
-
-    @Override
-    public JAXBElement<LineSymbolizerType> getJAXBElement() {
-        ObjectFactory of = new ObjectFactory();
-        LineSymbolizerType s = of.createLineSymbolizerType();
-        
-        this.setJAXBProperty(s);
+		if (transform != null) {
+			s.setTransform(transform.getJAXBType());
+		}
 
 
-        s.setUnitOfMeasure(this.getUom().toURN());
+		if (this.perpendicularOffset != null) {
+			s.setPerpendicularOffset(perpendicularOffset.getJAXBParameterValueType());
+		}
 
-        if (transform != null) {
-            s.setTransform(transform.getJAXBType());
-        }
-
-
-        if (this.perpendicularOffset != null) {
-            s.setPerpendicularOffset(perpendicularOffset.getJAXBParameterValueType());
-        }
-
-        if (stroke != null) {
-            s.setStroke(stroke.getJAXBElement());
-        }
+		if (stroke != null) {
+			s.setStroke(stroke.getJAXBElement());
+		}
 
 
-        return of.createLineSymbolizer(s);
-    }
-
-    private RealParameter perpendicularOffset;
-    private Stroke stroke;
+		return of.createLineSymbolizer(s);
+	}
+	private RealParameter perpendicularOffset;
+	private Stroke stroke;
 }

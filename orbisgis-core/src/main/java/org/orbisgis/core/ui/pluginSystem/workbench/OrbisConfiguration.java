@@ -1,16 +1,9 @@
 package org.orbisgis.core.ui.pluginSystem.workbench;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.GridLayout;
 
 import javax.swing.AbstractButton;
-import javax.swing.Box;
-import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
-import javax.swing.JTextArea;
 import javax.swing.event.MenuEvent;
 import javax.swing.event.MenuListener;
 
@@ -49,8 +42,6 @@ import org.orbisgis.core.ui.plugins.editors.mapEditor.ExportMapAsImagePlugIn;
 import org.orbisgis.core.ui.plugins.editors.mapEditor.ExportMapAsPDFPlugIn;
 import org.orbisgis.core.ui.plugins.editors.mapEditor.FullExtentPlugIn;
 import org.orbisgis.core.ui.plugins.editors.mapEditor.RedoMapPlugIn;
-import org.orbisgis.core.ui.plugins.editors.mapEditor.ScalePlugIn;
-import org.orbisgis.core.ui.plugins.editors.mapEditor.ShowXYPlugIn;
 import org.orbisgis.core.ui.plugins.editors.mapEditor.UndoMapPlugIn;
 import org.orbisgis.core.ui.plugins.editors.mapEditor.ZoomToSelectedFeaturesPlugIn;
 import org.orbisgis.core.ui.plugins.editors.tableEditor.AddFieldPlugIn;
@@ -87,6 +78,7 @@ import org.orbisgis.core.ui.plugins.toc.SaveLayerPlugIn;
 import org.orbisgis.core.ui.plugins.toc.SetActivePlugIn;
 import org.orbisgis.core.ui.plugins.toc.SetInactivePlugIn;
 import org.orbisgis.core.ui.plugins.toc.ShowInTablePlugIn;
+import org.orbisgis.core.ui.plugins.toc.SwitchToDraftPlugIn;
 import org.orbisgis.core.ui.plugins.toc.ZoomToLayerPlugIn;
 import org.orbisgis.core.ui.plugins.views.MapEditorPlugIn;
 import org.orbisgis.core.ui.plugins.views.TableEditorPlugIn;
@@ -128,7 +120,8 @@ public class OrbisConfiguration implements Setup {
 
 	// TOC
 	private EditLegendPlugIn editLegendPlugIn = new EditLegendPlugIn();
-    private ImportFeatureTypeStylePlugIn importFTSPlugIn = new ImportFeatureTypeStylePlugIn();
+        private ImportFeatureTypeStylePlugIn importFTSPlugIn = new ImportFeatureTypeStylePlugIn();
+        private SwitchToDraftPlugIn switchDraft = new SwitchToDraftPlugIn();
 	private ShowInTablePlugIn showInTablePlugIn = new ShowInTablePlugIn();
 	private SaveInFilePlugIn saveInFilePlugIn = new SaveInFilePlugIn();
 	private SaveInDataBasePlugIn saveInDataBasePlugIn = new SaveInDataBasePlugIn();
@@ -255,6 +248,7 @@ public class OrbisConfiguration implements Setup {
 			// TOC popup
 			editLegendPlugIn.initialize(context);
             importFTSPlugIn.initialize(context);
+            switchDraft.initialize(context);
 			showInTablePlugIn.initialize(context);
 			saveInFilePlugIn.initialize(context);
 			saveInDataBasePlugIn.initialize(context);

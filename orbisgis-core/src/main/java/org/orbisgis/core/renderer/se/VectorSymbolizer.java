@@ -10,6 +10,7 @@ import java.awt.Graphics2D;
 import java.awt.Shape;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
+import java.awt.geom.Rectangle2D;
 import java.io.IOException;
 import javax.xml.bind.JAXBElement;
 import org.orbisgis.core.renderer.persistance.se.SymbolizerType;
@@ -24,8 +25,11 @@ import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.transform.Transform;
 
 /**
- * This class contains common element shared by Point,Line,Area an Text Symbolizer.
- * Those vector layers all contains an unit of measure (Uom) and an affine transformation def (transform)
+ * This class contains common element shared by Point,Line,Area 
+ * and Text Symbolizer. Those vector layers all contains :
+ *   - an unit of measure (Uom)
+ *   - an affine transformation def (transform)
+ *
  * @author maxence
  */
 public abstract class VectorSymbolizer extends Symbolizer {
@@ -38,7 +42,9 @@ public abstract class VectorSymbolizer extends Symbolizer {
         super(st);
     }
 
-    public abstract void draw(Graphics2D g2, SpatialDataSourceDecorator sds, long fid, boolean selected) throws ParameterException, IOException, DriverException;
+    public abstract void draw(Graphics2D g2, SpatialDataSourceDecorator sds, 
+			long fid, boolean selected)
+		throws ParameterException, IOException, DriverException;
 
     /**
      * Convert a spatial feature into a LiteShape, should add parameters to handle
@@ -46,11 +52,9 @@ public abstract class VectorSymbolizer extends Symbolizer {
      * 
      * @param sds the data source
      * @param fid the feature id
-     * @return a liteshape representing the spatial feature
      * @throws ParameterException
      * @throws IOException
      * @throws DriverException
-     * @todo fix maxDist for generalization!
      */
     public Shape getShape(SpatialDataSourceDecorator sds, long fid) throws ParameterException, IOException, DriverException {
         Geometry geom = this.getTheGeom(sds, fid); // geom + function
@@ -62,7 +66,14 @@ public abstract class VectorSymbolizer extends Symbolizer {
         if (transform != null) {
             shape = transform.getGraphicalAffineTransform(sds, fid, true).createTransformedShape(shape);
         }
+		
+		Rectangle2D bounds2D = shape.getBounds2D();
 
+		/*
+		if (bounds2D.getHeight() + bounds2D.getWidth() < 5){
+			return null;
+		}
+		*/
         return shape;
     }
 

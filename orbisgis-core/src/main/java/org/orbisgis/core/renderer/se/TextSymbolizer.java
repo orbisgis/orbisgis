@@ -49,7 +49,7 @@ public class TextSymbolizer extends VectorSymbolizer {
 
         Shape shp = this.getShape(sds, fid);
 
-        if (label != null){
+        if (shp != null && label != null){
             label.draw(g2, shp, sds, fid, selected);
         }
     }
