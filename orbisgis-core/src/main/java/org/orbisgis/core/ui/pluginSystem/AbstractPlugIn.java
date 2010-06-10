@@ -1,6 +1,49 @@
+/**
+ * OrbisGIS is a GIS application dedicated to scientific spatial simulation.
+ * This cross-platform GIS is developed at French IRSTV institute and is able to
+ * manipulate and create vector and raster spatial information. OrbisGIS is
+ * distributed under GPL 3 license. It is produced by the geo-informatic team of
+ * the IRSTV Institute <http://www.irstv.cnrs.fr/> CNRS FR 2488.
+ * 
+ *  
+ *  Lead Erwan BOCHER, scientific researcher, 
+ *
+ *  Developer lead : Pierre-Yves FADET, computer engineer. 
+ *  
+ *  User support lead : Gwendall Petit, geomatic engineer. 
+ * 
+ * Previous computer developer : Thomas LEDUC, scientific researcher, Fernando GONZALEZ
+ * CORTES, computer engineer.
+ * 
+ * Copyright (C) 2007 Erwan BOCHER, Fernando GONZALEZ CORTES, Thomas LEDUC
+ * 
+ * Copyright (C) 2010 Erwan BOCHER, Fernando GONZALEZ CORTES, Thomas LEDUC
+ * 
+ * This file is part of OrbisGIS.
+ * 
+ * OrbisGIS is free software: you can redistribute it and/or modify it under the
+ * terms of the GNU General Public License as published by the Free Software
+ * Foundation, either version 3 of the License, or (at your option) any later
+ * version.
+ * 
+ * OrbisGIS is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
+ * A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License along with
+ * OrbisGIS. If not, see <http://www.gnu.org/licenses/>.
+ * 
+ * For more information, please consult: <http://orbisgis.cerma.archi.fr/>
+ * <http://sourcesup.cru.fr/projects/orbisgis/>
+ * 
+ * or contact directly: 
+ * erwan.bocher _at_ ec-nantes.fr 
+ * Pierre-Yves.Fadet _at_ ec-nantes.fr
+ * gwendall.petit _at_ ec-nantes.fr
+ **/
+
 package org.orbisgis.core.ui.pluginSystem;
 
-import java.awt.AWTEvent;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -17,15 +60,37 @@ import org.orbisgis.core.images.IconLoader;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchContext;
 import org.orbisgis.utils.I18N;
 
+/**
+ * Defines common behaviors for plug-in
+ * {@link http://geosysin.iict.ch/irstv-trac/wiki/devs/OrbisGIS_plugin}
+ * @author pierre-yves
+ *
+ */
+
 public abstract class AbstractPlugIn implements PlugIn {
 
+	/**
+	 * Plug-in name
+	 */
 	private String name;
+	/**
+	 * Plug-in Context
+	 */
 	private PlugInContext plugInContext;
-	// Action component (Button) to run plugIn (In case that plugIn made up of
-	// several swing component)
+	/** 
+	 * If plug-in is a container, and not a simple swing component :
+	 * It's necessary to define with which component into this container
+	 * execute plug-in  
+	 */
 	private JComponent actionComponent;
+	/**
+	 * actionComponent include his listener. This String define
+	 * listener related : "item" or "action"
+	 */
 	private String typeListener;
-	// private ResourceBundle i18n;
+	/**
+	 * Plug-in developer can specify a different local than his system
+	 */
 	private String langAndCountry;	
 	/**
 	 * Selected column in table Editor
@@ -36,30 +101,43 @@ public abstract class AbstractPlugIn implements PlugIn {
 	 */
 	private MouseEvent event;
 
-
-
-	// Constructors
+	/**
+	 * 
+	 * Default Constructor : init i18n plug-in 
+	 */
     public AbstractPlugIn() {
     	getI18n();
     }	    
-    //I18N : defaut language is locale system. But method can be redefine by plugin
+   
+    /**
+     * Redefine i18n : defaut language is locale system. 
+     * Method redefines with langAndCountry parameter specific 18n for plug-in 
+     * @param langAndCountry : i18n for plug-in
+     */
 	public void i18nConfigure(String langAndCountry) {
 		delI18n();
 		this.langAndCountry = langAndCountry;				
 		getI18n();
 	}
 
+	/**
+	 * Remove default i18n for plug-in
+	 */
 	private void delI18n() {
 		I18N.delI18n(null, this.getClass());		
 	}
 
+	/**
+	 * Attribute specific i18n with @param langAndCountry
+	 *  
+	 */
 	public void getI18n() {
 		I18N.addI18n(langAndCountry, null, this.getClass());
 	}
 	
 	/**
 	 * 
-	 * For table plug-in Plug-in can be a popup menu on header or row table. 
+	 * For table plug-in can be a popup menu on header or row table. 
 	 * Plug-in is notified of event (header or row event) by Observer (WorkbenchContext)
 	 * To identify plug-in on header plug-in receive the number's selected column. In the other case
 	 * plug-in receive MouseEvent. MouseEvent contains the point and then the row selected.
@@ -77,12 +155,17 @@ public abstract class AbstractPlugIn implements PlugIn {
 		isEnabled();
 		isSelected();		
 	}
+	
 	/**
 	 * By default PlugIn is not selectable
 	 */
-	public boolean isSelected(){return false;}
+	public boolean isSelected(){return false;}	
 	
-	// Factory for adapt PlugIn context (Visibility, Enabled)
+	/**
+	 * Creates plug-in context from Workbench context
+	 * 
+	 * @param WorkbenchContext 
+	 */
 	public void createPlugInContext(WorkbenchContext context) {
 		if(plugInContext == null)
 			plugInContext = context.createPlugInContext(this);
@@ -90,7 +173,14 @@ public abstract class AbstractPlugIn implements PlugIn {
 			context.getPopupPlugInObservers().add(this);	
 	}
 	
-	// listeners
+	/**
+	 * 
+	 * Add action listener to plug-in
+	 * 
+	 * @param plugIn
+	 * @param workbenchContext
+	 * @return implemented plug-in listener
+	 */
 	public static ActionListener toActionListener(final PlugIn plugIn,
 			final WorkbenchContext workbenchContext) {
 		return new ActionListener() {
@@ -107,6 +197,16 @@ public abstract class AbstractPlugIn implements PlugIn {
 		};
 	}
 
+	
+	/**
+	 * 
+	 * Add item listener to plug-in
+	 * 
+	 * @param plugIn
+	 * @param workbenchContext
+	 * @return implemented plug-in listener
+	 * 
+	 */
 	public static ItemListener toItemListener(final PlugIn plugIn,
 			final WorkbenchContext workbenchContext) {
 		return new ItemListener() {
@@ -127,47 +227,93 @@ public abstract class AbstractPlugIn implements PlugIn {
 		};
 	}
 
-	// getters & setters
+	/**
+	 * @return plug-in name
+	 */
 	public String getName() {
 		return name == null ? createName(getClass()) : name;
 	}
 
+	/**
+	 * 
+	 * Creates plug-in name from class
+	 * 
+	 * @param plugInClass
+	 * @return plug-in name from class
+	 */
 	public static String createName(Class plugInClass) {
 		return plugInClass.getName();
 	}
 
+	/**
+	 * 
+	 * @return plug-in context
+	 */
 	protected PlugInContext getPlugInContext() {
 		return plugInContext;
 	}
 
+	/**
+	 * Set plug-in context
+	 * @param context
+	 */
 	public void setPlugInContext(PlugInContext context) {
 		this.plugInContext = context;
 	}
 
+	/**
+	 * (if plug-in is a container)
+	 * @return action component
+	 */
 	public Component getActionComponent() {
 		return actionComponent;
 	}
 
+	/**
+	 * Set action component (if plug-in is a container)
+	 * @param actionComponent
+	 */
 	public void setActionComponent(JComponent actionComponent) {
 		this.actionComponent = actionComponent;
 	}
 	
+	/**
+	 * About table editor plug-in 
+	 * @return selected column
+	 */
 	public int getSelectedColumn() {
 		return selectedColumn;
 	}
 	
+	/**
+	 * About table editor plug-in (header/row) 
+	 * @return mouse event
+	 */
 	public MouseEvent getEvent() {
 		return event;
 	}
 
+	/**
+	 * (if plug-in is a container)
+	 * @return what listener type
+	 */
 	public String getTypeListener() {
 		return typeListener;
 	}
 
+	/**
+	 * (if plug-in is a container)
+	 * @param what listener type
+	 */
 	public void setTypeListener(String typeListener) {
 		this.typeListener = typeListener;
 	}
 
+	/**
+	 * Return icon correspond to name 
+	 * @param nameIcone
+	 * @return icon
+	 */
 	public static ImageIcon getIcon(String nameIcone) {
 		return IconLoader.getIcon(nameIcone);
 	}

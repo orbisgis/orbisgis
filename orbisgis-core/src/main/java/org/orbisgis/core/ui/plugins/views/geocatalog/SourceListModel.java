@@ -1,39 +1,47 @@
-/*
+/**
  * OrbisGIS is a GIS application dedicated to scientific spatial simulation.
- * This cross-platform GIS is developed at French IRSTV institute and is able
- * to manipulate and create vector and raster spatial information. OrbisGIS
- * is distributed under GPL 3 license. It is produced  by the geo-informatic team of
- * the IRSTV Institute <http://www.irstv.cnrs.fr/>, CNRS FR 2488:
- *    Erwan BOCHER, scientific researcher,
- *    Thomas LEDUC, scientific researcher,
- *    Fernando GONZALEZ CORTES, computer engineer.
+ * This cross-platform GIS is developed at French IRSTV institute and is able to
+ * manipulate and create vector and raster spatial information. OrbisGIS is
+ * distributed under GPL 3 license. It is produced by the geo-informatic team of
+ * the IRSTV Institute <http://www.irstv.cnrs.fr/> CNRS FR 2488.
+ * 
+ *  
+ *  Lead Erwan BOCHER, scientific researcher, 
  *
+ *  Developer lead : Pierre-Yves FADET, computer engineer. 
+ *  
+ *  User support lead : Gwendall Petit, geomatic engineer. 
+ * 
+ * Previous computer developer : Thomas LEDUC, scientific researcher, Fernando GONZALEZ
+ * CORTES, computer engineer.
+ * 
  * Copyright (C) 2007 Erwan BOCHER, Fernando GONZALEZ CORTES, Thomas LEDUC
- *
+ * 
+ * Copyright (C) 2010 Erwan BOCHER, Fernando GONZALEZ CORTES, Thomas LEDUC
+ * 
  * This file is part of OrbisGIS.
- *
- * OrbisGIS is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * OrbisGIS is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with OrbisGIS. If not, see <http://www.gnu.org/licenses/>.
- *
- * For more information, please consult:
- *    <http://orbisgis.cerma.archi.fr/>
- *    <http://sourcesup.cru.fr/projects/orbisgis/>
- *
- * or contact directly:
- *    erwan.bocher _at_ ec-nantes.fr
- *    fergonco _at_ gmail.com
- *    thomas.leduc _at_ cerma.archi.fr
- */
+ * 
+ * OrbisGIS is free software: you can redistribute it and/or modify it under the
+ * terms of the GNU General Public License as published by the Free Software
+ * Foundation, either version 3 of the License, or (at your option) any later
+ * version.
+ * 
+ * OrbisGIS is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
+ * A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License along with
+ * OrbisGIS. If not, see <http://www.gnu.org/licenses/>.
+ * 
+ * For more information, please consult: <http://orbisgis.cerma.archi.fr/>
+ * <http://sourcesup.cru.fr/projects/orbisgis/>
+ * 
+ * or contact directly: 
+ * erwan.bocher _at_ ec-nantes.fr 
+ * Pierre-Yves.Fadet _at_ ec-nantes.fr
+ * gwendall.petit _at_ ec-nantes.fr
+ **/
+
 package org.orbisgis.core.ui.plugins.views.geocatalog;
 
 import java.util.ArrayList;
@@ -119,12 +127,10 @@ public class SourceListModel extends AbstractListModel implements ListModel {
 		return array;
 	}
 
-	@Override
 	public Object getElementAt(int index) {
 		return names[index];
 	}
 
-	@Override
 	public int getSize() {
 		return names.length;
 	}
@@ -148,7 +154,6 @@ public class SourceListModel extends AbstractListModel implements ListModel {
 		public synchronized void sourceRemoved(final SourceRemovalEvent e) {
 			SwingUtilities.invokeLater(new Runnable() {
 
-				@Override
 				public void run() {
 					// Close editors
 					closeEditor(e.getName());
@@ -171,7 +176,6 @@ public class SourceListModel extends AbstractListModel implements ListModel {
 		public synchronized void sourceNameChanged(final SourceEvent e) {
 			SwingUtilities.invokeLater(new Runnable() {
 
-				@Override
 				public void run() {
 					if (e.isWellKnownName()) {
 						refresh();
@@ -183,7 +187,6 @@ public class SourceListModel extends AbstractListModel implements ListModel {
 		public synchronized void sourceAdded(final SourceEvent e) {
 			SwingUtilities.invokeLater(new Runnable() {
 
-				@Override
 				public void run() {
 					if (e.isWellKnownName()) {
 						refresh();
@@ -195,7 +198,6 @@ public class SourceListModel extends AbstractListModel implements ListModel {
 
 	private final class OrFilter implements IFilter {
 
-		@Override
 		public boolean accepts(SourceManager sm, String sourceName) {
 			for (int i = 0; i < filters.size(); i++) {
 				if (filters.get(i).accepts(sm, sourceName)) {

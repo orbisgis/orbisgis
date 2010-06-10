@@ -1,3 +1,47 @@
+/**
+ * OrbisGIS is a GIS application dedicated to scientific spatial simulation.
+ * This cross-platform GIS is developed at French IRSTV institute and is able to
+ * manipulate and create vector and raster spatial information. OrbisGIS is
+ * distributed under GPL 3 license. It is produced by the geo-informatic team of
+ * the IRSTV Institute <http://www.irstv.cnrs.fr/> CNRS FR 2488.
+ * 
+ *  
+ *  Lead Erwan BOCHER, scientific researcher, 
+ *
+ *  Developer lead : Pierre-Yves FADET, computer engineer. 
+ *  
+ *  User support lead : Gwendall Petit, geomatic engineer. 
+ * 
+ * Previous computer developer : Thomas LEDUC, scientific researcher, Fernando GONZALEZ
+ * CORTES, computer engineer.
+ * 
+ * Copyright (C) 2007 Erwan BOCHER, Fernando GONZALEZ CORTES, Thomas LEDUC
+ * 
+ * Copyright (C) 2010 Erwan BOCHER, Fernando GONZALEZ CORTES, Thomas LEDUC
+ * 
+ * This file is part of OrbisGIS.
+ * 
+ * OrbisGIS is free software: you can redistribute it and/or modify it under the
+ * terms of the GNU General Public License as published by the Free Software
+ * Foundation, either version 3 of the License, or (at your option) any later
+ * version.
+ * 
+ * OrbisGIS is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
+ * A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License along with
+ * OrbisGIS. If not, see <http://www.gnu.org/licenses/>.
+ * 
+ * For more information, please consult: <http://orbisgis.cerma.archi.fr/>
+ * <http://sourcesup.cru.fr/projects/orbisgis/>
+ * 
+ * or contact directly: 
+ * erwan.bocher _at_ ec-nantes.fr 
+ * Pierre-Yves.Fadet _at_ ec-nantes.fr
+ * gwendall.petit _at_ ec-nantes.fr
+ **/
+
 package org.orbisgis.core.ui.plugins.views.geocatalog;
 
 import org.gdms.data.AlreadyClosedException;
@@ -34,12 +78,10 @@ public class EditableSource extends AbstractTableEditableElement implements
 		this.sourceName = sourceName;
 	}
 
-	@Override
 	public String getId() {
 		return sourceName;
 	}
 
-	@Override
 	public void close(IProgressMonitor progressMonitor)
 			throws UnsupportedOperationException, EditableElementException {
 		super.close(progressMonitor);
@@ -55,12 +97,10 @@ public class EditableSource extends AbstractTableEditableElement implements
 				.removeSourceListener(listener);
 	}
 
-	@Override
 	public String getTypeId() {
 		return EDITABLE_RESOURCE_TYPE;
 	}
 
-	@Override
 	public void open(IProgressMonitor progressMonitor)
 			throws UnsupportedOperationException, EditableElementException {
 		try {
@@ -84,7 +124,6 @@ public class EditableSource extends AbstractTableEditableElement implements
 		}
 	}
 
-	@Override
 	public boolean equals(Object obj) {
 		if (obj instanceof EditableSource) {
 			EditableSource er = (EditableSource) obj;
@@ -94,46 +133,37 @@ public class EditableSource extends AbstractTableEditableElement implements
 		}
 	}
 
-	@Override
 	public int hashCode() {
 		return sourceName.hashCode();
 	}
 
-	@Override
 	public DataSource getDataSource() {
 		return ds;
 	}
 
-	@Override
 	public Selection getSelection() {
 		return resourceSelection;
 	}
 
-	@Override
 	public boolean isEditable() {
 		return ds.isEditable();
 	}
 
-	@Override
 	public MapContext getMapContext() {
 		return null;
 	}
 
 	private class NameChangeSourceListener implements SourceListener {
 
-		@Override
 		public void sourceAdded(SourceEvent e) {
 		}
 
-		@Override
 		public void sourceNameChanged(SourceEvent e) {
 			sourceName = e.getNewName();
 			fireIdChanged();
 		}
 
-		@Override
 		public void sourceRemoved(SourceRemovalEvent e) {
 		}
-
 	}
 }
