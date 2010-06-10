@@ -23,8 +23,6 @@ import javax.xml.bind.ValidationEvent;
 import javax.xml.bind.ValidationEventLocator;
 import javax.xml.bind.util.ValidationEventCollector;
 import javax.xml.validation.Schema;
-import org.gdms.data.DataSourceCreationException;
-import org.gdms.driver.DriverException;
 import org.gdms.driver.driverManager.DriverLoadException;
 
 import org.orbisgis.core.layerModel.ILayer;
@@ -34,9 +32,7 @@ import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.persistance.se.FeatureTypeStyleType;
 import org.orbisgis.core.renderer.persistance.se.ObjectFactory;
 import org.orbisgis.core.renderer.persistance.se.RuleType;
-import org.orbisgis.core.renderer.persistance.se.SymbolizerType;
 import org.orbisgis.core.renderer.se.common.Uom;
-import org.orbisgis.core.renderer.se.parameter.ParameterException;
 
 /**
  *

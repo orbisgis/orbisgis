@@ -7,6 +7,7 @@ package org.orbisgis.core.renderer.se;
 import com.vividsolutions.jts.geom.Geometry;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.xml.bind.JAXBElement;
 import org.gdms.data.DataSourceCreationException;
 import org.gdms.data.SpatialDataSourceDecorator;
 import org.gdms.driver.DriverException;
@@ -15,6 +16,8 @@ import org.gdms.sql.parser.ParseException;
 import org.gdms.sql.strategies.SemanticException;
 import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.map.MapTransform;
+import org.orbisgis.core.renderer.persistance.ogc.ComparisonOpsType;
+import org.orbisgis.core.renderer.persistance.ogc.FilterType;
 import org.orbisgis.core.renderer.persistance.se.RuleType;
 import org.orbisgis.core.renderer.se.common.Uom;
 
@@ -24,171 +27,194 @@ import org.orbisgis.core.renderer.se.common.Uom;
  */
 public class Rule implements SymbolizerNode {
 
-    public Rule(ILayer layer) {
-        symbolizer = new CompositeSymbolizer();
-        symbolizer.setParent(this);
+	public Rule(ILayer layer) {
+		symbolizer = new CompositeSymbolizer();
+		symbolizer.setParent(this);
 
-        Geometry geometry = null;
-        try {
-            geometry = layer.getDataSource().getGeometry(0);
-        } catch (DriverException ex) {
-        }
+		Geometry geometry = null;
+		try {
+			geometry = layer.getDataSource().getGeometry(0);
+		} catch (DriverException ex) {
+		}
 
-        Symbolizer symb;
+		Symbolizer symb;
 
-        if (geometry != null) {
-            switch (geometry.getDimension()) {
-                case 1:
-                    symb = new LineSymbolizer();
-                    break;
-                case 2:
-                    symb = new AreaSymbolizer();
-                    break;
-                case 0:
-                default:
-                    symb = new PointSymbolizer();
-                    break;
-            }
-        } else {
-            symb = new PointSymbolizer();
-        }
+		if (geometry != null) {
+			switch (geometry.getDimension()) {
+				case 1:
+					symb = new LineSymbolizer();
+					break;
+				case 2:
+					symb = new AreaSymbolizer();
+					break;
+				case 0:
+				default:
+					symb = new PointSymbolizer();
+					break;
+			}
+		} else {
+			symb = new PointSymbolizer();
+		}
 
-        symbolizer.addSymbolizer(symb);
-    }
+		symbolizer.addSymbolizer(symb);
+	}
 
-    public Rule(RuleType rt, ILayer layer) {
-        this(layer);
 
-        if (rt.getMinScaleDenominator() != null) {
-            this.setMinScaleDenom(rt.getMinScaleDenominator());
-        }
+	private String readFilter(FilterType filter) {
+		if (filter != null) {
+			if (filter.getComparisonOps() != null) {
 
-        if (rt.getMaxScaleDenominator() != null) {
-            this.setMaxScaleDenom(rt.getMaxScaleDenominator());
-        }
+				//return readComparisonOps(filter.getComparisonOps());
+			} else if (filter.getLogicOps() != null) {
+			}
+		}
+		return "";
+	}
 
-        if (rt.getSymbolizer() != null) {
-            this.setCompositeSymbolizer(new CompositeSymbolizer(rt.getSymbolizer()));
-        }
-    }
+	public Rule(RuleType rt, ILayer layer) {
+		this(layer);
 
-    public void setCompositeSymbolizer(CompositeSymbolizer cs) {
-        this.symbolizer = cs;
-        cs.setParent(this);
-    }
+		/*
+		 * Is a fallback rule ?
+		 */
+		if (rt.getElseFilter() != null) {
+			this.fallbackRule = true;
+		} else {
+			this.fallbackRule = false;
+			this.where = readFilter(rt.getFilter());
+			// TODO Implement "load to where"
+		}
 
-    public CompositeSymbolizer getCompositeSymbolizer() {
-        return symbolizer;
-    }
+		if (rt.getMinScaleDenominator() != null) {
+			this.setMinScaleDenom(rt.getMinScaleDenominator());
+		}
 
-    public RuleType getJAXBType() {
-        RuleType rt = new RuleType();
+		if (rt.getMaxScaleDenominator() != null) {
+			this.setMaxScaleDenom(rt.getMaxScaleDenominator());
+		}
 
-        if (this.minScaleDenom > 0) {
-            rt.setMinScaleDenominator(minScaleDenom);
-        }
+		if (rt.getSymbolizer() != null) {
+			this.setCompositeSymbolizer(new CompositeSymbolizer(rt.getSymbolizer()));
+		}
+	}
 
-        if (this.maxScaleDenom > 0) {
-            rt.setMaxScaleDenominator(maxScaleDenom);
-        }
+	public void setCompositeSymbolizer(CompositeSymbolizer cs) {
+		this.symbolizer = cs;
+		cs.setParent(this);
+	}
 
-        rt.setSymbolizer(this.symbolizer.getJAXBElement());
+	public CompositeSymbolizer getCompositeSymbolizer() {
+		return symbolizer;
+	}
 
-        return rt;
-    }
-    private CompositeSymbolizer symbolizer;
+	public RuleType getJAXBType() {
+		RuleType rt = new RuleType();
 
-    @Override
-    public Uom getUom() {
-        return null;
-    }
+		if (this.minScaleDenom > 0) {
+			rt.setMinScaleDenominator(minScaleDenom);
+		}
 
-    @Override
-    public SymbolizerNode getParent() {
-        return fts;
-    }
+		if (this.maxScaleDenom > 0) {
+			rt.setMaxScaleDenominator(maxScaleDenom);
+		}
 
-    @Override
-    public void setParent(SymbolizerNode fts) {
-        this.fts = fts;
-    }
+		rt.setSymbolizer(this.symbolizer.getJAXBElement());
 
-    public String getWhere() {
-        return where;
-    }
+		return rt;
+	}
+	private CompositeSymbolizer symbolizer;
 
-    public void setWhere(String where) {
-        this.where = where;
-    }
+	@Override
+	public Uom getUom() {
+		return null;
+	}
 
-    public SpatialDataSourceDecorator getFilteredDataSource() throws DriverLoadException, DataSourceCreationException, DriverException, ParseException, SemanticException {
-        FeatureTypeStyle ft = (FeatureTypeStyle) fts;
+	@Override
+	public SymbolizerNode getParent() {
+		return fts;
+	}
 
-        ILayer layer = ft.getLayer();
+	@Override
+	public void setParent(SymbolizerNode fts) {
+		this.fts = fts;
+	}
 
-        SpatialDataSourceDecorator ds = layer.getDataSource();
+	public String getWhere() {
+		return where;
+	}
 
-        String query = "select * from " + ds.getName();
+	public void setWhere(String where) {
+		this.where = where;
+	}
 
-        if (where != null) {
-            query += " " + where;
-        }
+	public SpatialDataSourceDecorator getFilteredDataSource() throws DriverLoadException, DataSourceCreationException, DriverException, ParseException, SemanticException {
+		FeatureTypeStyle ft = (FeatureTypeStyle) fts;
 
-        return new SpatialDataSourceDecorator(layer.getDataSource().getDataSourceFactory().getDataSourceFromSQL(query));
-    }
+		ILayer layer = ft.getLayer();
 
-    /*
-     * Is the feature id fit with this rule filter
-     * 
-     */
-    public boolean isFeatureAllowed(long fid) {
-        try {
-            SpatialDataSourceDecorator filteredDataSource = this.getFilteredDataSource();
-            filteredDataSource.getFeature(fid);
-            return true;
-        } catch (Exception e) {
-            return false;
-        }
-    }
+		SpatialDataSourceDecorator ds = layer.getDataSource();
 
-    public boolean isFallbackRule() {
-        return fallbackRule;
-    }
+		String query = "select * from " + ds.getName();
 
-    public void setFallbackRule(boolean fallbackRule) {
-        this.fallbackRule = fallbackRule;
-    }
+		if (where != null) {
+			query += " " + where;
+		}
 
-    public double getMaxScaleDenom() {
-        return maxScaleDenom;
-    }
+		return new SpatialDataSourceDecorator(layer.getDataSource().getDataSourceFactory().getDataSourceFromSQL(query));
+	}
 
-    public void setMaxScaleDenom(double maxScaleDenom) {
-        this.maxScaleDenom = maxScaleDenom;
-    }
+	/*
+	 * Is the feature id fit with this rule filter
+	 *
+	 */
+	public boolean isFeatureAllowed(long fid) {
+		try {
+			SpatialDataSourceDecorator filteredDataSource = this.getFilteredDataSource();
+			filteredDataSource.getFeature(fid);
+			return true;
+		} catch (Exception e) {
+			return false;
+		}
+	}
 
-    public double getMinScaleDenom() {
-        return minScaleDenom;
-    }
+	public boolean isFallbackRule() {
+		return fallbackRule;
+	}
 
-    public void setMinScaleDenom(double minScaleDenom) {
-        this.minScaleDenom = minScaleDenom;
-    }
+	public void setFallbackRule(boolean fallbackRule) {
+		this.fallbackRule = fallbackRule;
+	}
 
-    public boolean isDomainAllowed(MapTransform mt) {
-        double scale = mt.getScaleDenominator();
-		System.out.println ("Current scale is  1:" + scale);
-		System.out.println ("Min : " + this.minScaleDenom);
-		System.out.println ("Max : " + this.maxScaleDenom);
+	public double getMaxScaleDenom() {
+		return maxScaleDenom;
+	}
 
-        return (this.minScaleDenom < 0 && this.maxScaleDenom < 0)
-                || (this.minScaleDenom < 0 && this.maxScaleDenom > scale)
-                || (scale > this.minScaleDenom && this.maxScaleDenom < 0)
-                || (scale > this.minScaleDenom && this.maxScaleDenom > scale);
-    }
-    private SymbolizerNode fts;
-    private String where;
-    private boolean fallbackRule = false;
-    private double minScaleDenom = -1;
-    private double maxScaleDenom = -1;
+	public void setMaxScaleDenom(double maxScaleDenom) {
+		this.maxScaleDenom = maxScaleDenom;
+	}
+
+	public double getMinScaleDenom() {
+		return minScaleDenom;
+	}
+
+	public void setMinScaleDenom(double minScaleDenom) {
+		this.minScaleDenom = minScaleDenom;
+	}
+
+	public boolean isDomainAllowed(MapTransform mt) {
+		double scale = mt.getScaleDenominator();
+		System.out.println("Current scale is  1:" + scale);
+		System.out.println("Min : " + this.minScaleDenom);
+		System.out.println("Max : " + this.maxScaleDenom);
+
+		return (this.minScaleDenom < 0 && this.maxScaleDenom < 0)
+				|| (this.minScaleDenom < 0 && this.maxScaleDenom > scale)
+				|| (scale > this.minScaleDenom && this.maxScaleDenom < 0)
+				|| (scale > this.minScaleDenom && this.maxScaleDenom > scale);
+	}
+	private SymbolizerNode fts;
+	private String where;
+	private boolean fallbackRule = false;
+	private double minScaleDenom = -1;
+	private double maxScaleDenom = -1;
 }

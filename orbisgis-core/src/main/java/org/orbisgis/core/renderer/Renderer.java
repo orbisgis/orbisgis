@@ -169,23 +169,15 @@ public class Renderer {
 			HashSet<Integer> allFid = new HashSet<Integer>();
 			HashSet<Integer> elseFid = new HashSet<Integer>();
 
-			/* Hash sets wich contain feature in extent
-			 * elseFis will be used for feature which doesn't match any rule
+			/*
+			 * Extract features id
+			 * Hash sets contain features in current extent
+			 * elseFid will be used for feature which doesn't match any rule
 			 */
 			while (it.hasNext()) {
 				Integer next = it.next();
 				allFid.add(next);
 				elseFid.add(next);
-			}
-
-			HashSet<Integer> selected = new HashSet<Integer>();
-			int[] selection = layer.getSelection();
-
-			/* Populate selected fid with only fid within extent */
-			for (int f_i = 0; f_i < selection.length; f_i++) {
-				if (allFid.contains(selection[f_i])) {
-					selected.add(selection[f_i]);
-				}
 			}
 
 			/*
@@ -199,13 +191,26 @@ public class Renderer {
 				while (it.hasNext()) {
 					Integer cFid = it.next();
 					fids.add(cFid);
-					/* Each feature which match a rule is removed from the else fid set*/
+					/* Every feature that match a rule is removed from elsefid set*/
 					elseFid.remove(cFid);
 				}
 				rulesFid.put(r, fids);
 			}
 
-			//for
+			for (Rule elseR : fRList){
+				rulesFid.put(elseR, elseFid);
+			}
+
+			HashSet<Integer> selected = new HashSet<Integer>();
+			int[] selection = layer.getSelection();
+
+			/* Populate selected fid with only fid within extent */
+			for (int f_i = 0; f_i < selection.length; f_i++) {
+				if (allFid.contains(selection[f_i])) {
+					selected.add(selection[f_i]);
+				}
+			}
+
 
 			long tV2 = System.currentTimeMillis();
 			System.out.println("Filtering done :" + (tV2 - tV1));
