@@ -15,6 +15,7 @@ import org.orbisgis.core.renderer.persistance.se.ExternalGraphicType;
 import org.orbisgis.core.renderer.persistance.se.ObjectFactory;
 
 import org.gdms.data.DataSource;
+import org.gdms.data.feature.Feature;
 
 import org.orbisgis.core.renderer.se.common.Halo;
 import org.orbisgis.core.renderer.se.common.MapEnv;
@@ -102,7 +103,7 @@ public final class ExternalGraphic extends Graphic {
 
         try {
             if (source != null) {
-                graphic = source.getPlanarImage(viewBox, null, 0);
+                graphic = source.getPlanarImage(viewBox, null);
                 System.out.println ("External Planar Image in CACHE");
             }
         } catch (Exception ex) {
@@ -117,11 +118,11 @@ public final class ExternalGraphic extends Graphic {
     }
 
     @Override
-    public RenderableGraphics getRenderableGraphics(DataSource ds, long fid, boolean selected) throws ParameterException, IOException {
+    public RenderableGraphics getRenderableGraphics(Feature feat, boolean selected) throws ParameterException, IOException {
 
         AffineTransform at = new AffineTransform();
         if (transform != null){
-            at = transform.getGraphicalAffineTransform(ds, fid, false);
+            at = transform.getGraphicalAffineTransform(feat, false);
         }
 
         // TODO Implements SELECTED!
@@ -131,7 +132,7 @@ public final class ExternalGraphic extends Graphic {
         // Create shape based on image bbox
 
         if (graphic == null) {
-            img = source.getPlanarImage(viewBox, ds, fid);
+            img = source.getPlanarImage(viewBox, feat);
         } else {
             img = graphic;
         }
@@ -145,7 +146,7 @@ public final class ExternalGraphic extends Graphic {
 
         // reserve the place for halo
         if (halo != null) {
-            double r = Uom.toPixel(halo.getRadius().getValue(ds, fid), halo.getUom(), MapEnv.getScaleDenominator()); // TODO SCALE, DPI...
+            double r = Uom.toPixel(halo.getRadius().getValue(feat), halo.getUom(), MapEnv.getScaleDenominator()); // TODO SCALE, DPI...
             w += 2 * r;
             h += 2 * r;
         }
@@ -161,7 +162,7 @@ public final class ExternalGraphic extends Graphic {
         RenderableGraphics rg = Graphic.getNewRenderableGraphics(imageSize, 0);
 
         if (halo != null) {
-            halo.draw(rg, atShp, ds, fid);
+            halo.draw(rg, atShp, feat);
         }
 
         // TODO how to set opacity ?
@@ -172,29 +173,29 @@ public final class ExternalGraphic extends Graphic {
         return rg;
     }
 
-    public double getMargin(DataSource ds, long fid) throws ParameterException, IOException {
+    public double getMargin(Feature feat) throws ParameterException, IOException {
         double delta = 0.0;
 
         if (this.halo != null) {
-            delta += Uom.toPixel(halo.getRadius().getValue(ds, fid), halo.getUom(), MapEnv.getScaleDenominator());
+            delta += Uom.toPixel(halo.getRadius().getValue(feat), halo.getUom(), MapEnv.getScaleDenominator());
         }
 
         return delta;
     }
 
     @Override
-    public double getMaxWidth(DataSource ds, long fid) throws ParameterException, IOException {
+    public double getMaxWidth(Feature feat) throws ParameterException, IOException {
         double delta = 0.0;
         if (viewBox != null) {
             PlanarImage img;
             if (graphic == null) {
-                img = source.getPlanarImage(viewBox, ds, fid);
+                img = source.getPlanarImage(viewBox, feat);
             } else {
                 img = graphic;
             }
 
             if (img != null){
-                Dimension dim = viewBox.getDimensionInPixel(ds, fid, img.getHeight() / img.getWidth());
+                Dimension dim = viewBox.getDimensionInPixel(feat, img.getHeight() / img.getWidth());
 
                 delta = Math.max(dim.getHeight(), dim.getWidth());
             }
@@ -203,7 +204,7 @@ public final class ExternalGraphic extends Graphic {
             }
         }
 
-        delta += this.getMargin(ds, fid);
+        delta += this.getMargin(feat);
 
         return delta;
     }

@@ -4,6 +4,7 @@ import java.io.IOException;
 import javax.media.jai.RenderableGraphics;
 import javax.xml.bind.JAXBElement;
 import org.gdms.data.DataSource;
+import org.gdms.data.feature.Feature;
 import org.orbisgis.core.renderer.persistance.se.AxisChartType;
 import org.orbisgis.core.renderer.persistance.se.NormalizeType;
 import org.orbisgis.core.renderer.persistance.se.ObjectFactory;
@@ -138,12 +139,12 @@ public class AxisChart extends Graphic {
     }
 
     @Override
-    public RenderableGraphics getRenderableGraphics(DataSource ds, long fid, boolean selected) throws ParameterException, IOException {
+    public RenderableGraphics getRenderableGraphics(Feature feat, boolean selected) throws ParameterException, IOException {
         return null; // TODO implements
     }
 
     @Override
-    public double getMaxWidth(DataSource ds, long fid) throws ParameterException, IOException {
+    public double getMaxWidth(Feature feat) throws ParameterException, IOException {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 

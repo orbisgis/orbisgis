@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import org.gdms.data.DataSource;
+import org.gdms.data.feature.Feature;
 import org.orbisgis.core.renderer.persistance.se.MatrixType;
 import org.orbisgis.core.renderer.persistance.se.RotateType;
 import org.orbisgis.core.renderer.persistance.se.ScaleType;
@@ -61,9 +62,9 @@ public class Transform implements SymbolizerNode {
      * @return AffineTransofrm
      * @throws ParameterException
      */
-    public AffineTransform getGraphicalAffineTransform(DataSource ds, long fid, boolean isForSpatialFeatures) throws ParameterException, IOException {
+    public AffineTransform getGraphicalAffineTransform(Feature feat, boolean isForSpatialFeatures) throws ParameterException, IOException {
         //return consolidateTrasformations(false).getGraphicalAffineTransform();
-        this.consolidateTransformations(ds, fid, isForSpatialFeatures);
+        this.consolidateTransformations(feat, isForSpatialFeatures);
         
         return consolidated;
     }
@@ -73,14 +74,14 @@ public class Transform implements SymbolizerNode {
      * This method must be called after each modification of one of its transformations !
      *
      */
-    public void consolidateTransformations(DataSource ds, long fid, boolean forGeometries) throws ParameterException, IOException {
+    public void consolidateTransformations(Feature feat, boolean forGeometries) throws ParameterException, IOException {
         int i;
 
         // Result is Identity
         consolidated = new AffineTransform();
         for (Transformation t : transformations) {
             if (!forGeometries || t.allowedForGeometries()) {
-                AffineTransform at = t.getAffineTransform(ds, fid, this.getUom());
+                AffineTransform at = t.getAffineTransform(feat, this.getUom());
                 consolidated.preConcatenate(at);
             }
         }

@@ -11,6 +11,7 @@ import java.awt.geom.Rectangle2D;
 import java.io.IOException;
 import javax.media.jai.RenderableGraphics;
 import org.gdms.data.DataSource;
+import org.gdms.data.feature.Feature;
 import org.orbisgis.core.renderer.persistance.se.FontType;
 import org.orbisgis.core.renderer.persistance.se.StyledLabelType;
 import org.orbisgis.core.renderer.se.SymbolizerNode;
@@ -173,18 +174,18 @@ public class StyledLabel implements SymbolizerNode {
         this.fontWeight = fontWeight;
     }
 
-    public RenderableGraphics getImage(DataSource ds, long fid, boolean selected) throws ParameterException, IOException {
+    public RenderableGraphics getImage(Feature feat, boolean selected) throws ParameterException, IOException {
 
-        String text = labelText.getValue(ds, fid);
+        String text = labelText.getValue(feat);
 
-        String family = fontFamily.getValue(ds, fid);
+        String family = fontFamily.getValue(feat);
 
         // Family is comma delimeted list of fonts family
         // TODO Choose the first available
 
-        String weight = fontWeight.getValue(ds, fid);
-        String style = fontStyle.getValue(ds, fid);
-        double size = fontSize.getValue(ds, fid);
+        String weight = fontWeight.getValue(feat);
+        String style = fontStyle.getValue(feat);
+        double size = fontSize.getValue(feat);
 
         int st = Font.PLAIN;
 
@@ -219,17 +220,17 @@ public class StyledLabel implements SymbolizerNode {
         double margin = 0.0;
 
         if (stroke != null) {
-            margin = stroke.getMaxWidth(ds, fid);
+            margin = stroke.getMaxWidth(feat);
         }
 
         rg = Graphic.getNewRenderableGraphics(outline.getBounds2D(), margin);
 
         if (fill != null) {
-            fill.draw(rg, outline, ds, fid, selected);
+            fill.draw(rg, outline, feat, selected);
         }
 
         if (stroke != null) {
-            stroke.draw(rg, outline, ds, fid, selected);
+            stroke.draw(rg, outline, feat, selected);
         }
 
         // HALO, FILL, STROKE

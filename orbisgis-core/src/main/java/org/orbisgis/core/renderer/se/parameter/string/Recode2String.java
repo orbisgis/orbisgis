@@ -1,7 +1,7 @@
 package org.orbisgis.core.renderer.se.parameter.string;
 
 import javax.xml.bind.JAXBElement;
-import org.gdms.data.DataSource;
+import org.gdms.data.feature.Feature;
 import org.orbisgis.core.renderer.persistance.se.MapItemType;
 import org.orbisgis.core.renderer.persistance.se.RecodeType;
 import org.orbisgis.core.renderer.se.parameter.MapItem;
@@ -27,11 +27,11 @@ public class Recode2String extends Recode<StringParameter, StringLiteral> implem
     }
 
     @Override
-    public String getValue(DataSource ds, long fid) {
+    public String getValue(Feature feat) {
         try {
-            return getParameter(ds, fid).getValue(ds, fid);
+            return getParameter(feat).getValue(feat);
         } catch (ParameterException ex) {
-            return this.fallbackValue.getValue(null, fid);
+            return this.fallbackValue.getValue( feat);
         }
     }
 }

@@ -12,6 +12,7 @@ import javax.media.jai.RenderableGraphics;
 import javax.xml.bind.JAXBElement;
 
 import org.gdms.data.DataSource;
+import org.gdms.data.feature.Feature;
 import org.orbisgis.core.renderer.persistance.se.ObjectFactory;
 import org.orbisgis.core.renderer.persistance.se.PieChartType;
 import org.orbisgis.core.renderer.persistance.se.PieSubtypeType;
@@ -192,7 +193,7 @@ public final class PieChart extends Graphic {
      * @param fid
      */
     @Override
-    public RenderableGraphics getRenderableGraphics(DataSource ds, long fid, boolean selected) throws ParameterException, IOException {
+    public RenderableGraphics getRenderableGraphics(Feature feat, boolean selected) throws ParameterException, IOException {
 
         int nSlices = slices.size();
 
@@ -204,14 +205,14 @@ public final class PieChart extends Graphic {
         double r = 30; // 30px by default
 
         if (radius != null) {
-            r = Uom.toPixel(this.getRadius().getValue(ds, fid), this.getUom(), MapEnv.getScaleDenominator()); // TODO DPI + SCALE
+            r = Uom.toPixel(this.getRadius().getValue(feat), this.getUom(), MapEnv.getScaleDenominator()); // TODO DPI + SCALE
         }
 
         double holeR = 0.0;
 
         Area hole = null;
         if (this.holeRadius != null) {
-            holeR = Uom.toPixel(this.getHoleRadius().getValue(ds, fid), this.getUom(), MapEnv.getScaleDenominator()); // TODO DPI + SCALE
+            holeR = Uom.toPixel(this.getHoleRadius().getValue(feat), this.getUom(), MapEnv.getScaleDenominator()); // TODO DPI + SCALE
 
             hole = new Area(new Arc2D.Double(-holeR, -holeR, 2 * holeR, 2 * holeR, 0, 260, Arc2D.CHORD));
         }
@@ -220,12 +221,12 @@ public final class PieChart extends Graphic {
 
         for (int i = 0; i < nSlices; i++) {
             Slice slc = slices.get(i);
-            values[i] = slc.getValue().getValue(ds, fid);
+            values[i] = slc.getValue().getValue(feat);
             total += values[i];
             stackedValues[i] = total;
             RealParameter gap = slc.getGap();
             if (gap != null) {
-                gaps[i] = Uom.toPixel(slc.getGap().getValue(ds, fid), this.getUom(), MapEnv.getScaleDenominator());
+                gaps[i] = Uom.toPixel(slc.getGap().getValue(feat), this.getUom(), MapEnv.getScaleDenominator());
             } else {
                 gaps[i] = 0.0;
             }
@@ -236,7 +237,7 @@ public final class PieChart extends Graphic {
         double pieMaxR = r + maxGap;
 
         if (stroke != null) {
-            pieMaxR += stroke.getMaxWidth(ds, fid);
+            pieMaxR += stroke.getMaxWidth(feat);
         }
 
 
@@ -246,7 +247,7 @@ public final class PieChart extends Graphic {
 
         AffineTransform at = null;
         if (this.getTransform() != null) {
-            at = this.getTransform().getGraphicalAffineTransform(ds, fid, false);
+            at = this.getTransform().getGraphicalAffineTransform(feat, false);
 
             // Apply the AT to the bbox
             Shape newBounds = at.createTransformedShape(bounds);
@@ -320,7 +321,7 @@ public final class PieChart extends Graphic {
 
 
             if (fill != null) {
-                fill.draw(rg, atShp, ds, fid, selected);
+                fill.draw(rg, atShp, feat, selected);
             }
 
 
@@ -350,7 +351,7 @@ public final class PieChart extends Graphic {
                 Rectangle2D anchor = labelAt.createTransformedShape(new Rectangle2D.Double(0, 0, 1, 1)).getBounds2D();
 
 
-                rg.drawRenderedImage(label.getImage(ds, fid, selected).createRendering(MapEnv.getCurrentRenderContext()), AffineTransform.getTranslateInstance(anchor.getCenterX(), anchor.getCenterY()));
+                rg.drawRenderedImage(label.getImage(feat, selected).createRendering(MapEnv.getCurrentRenderContext()), AffineTransform.getTranslateInstance(anchor.getCenterX(), anchor.getCenterY()));
             }
 
         }
@@ -358,7 +359,7 @@ public final class PieChart extends Graphic {
         // Stokes must be drawn after fills 
         if (stroke != null) {
             for (int i = 0; i < nSlices; i++) {
-                stroke.draw(rg, shapes[i], ds, fid, selected);
+                stroke.draw(rg, shapes[i], feat, selected);
             }
         }
 
@@ -366,7 +367,7 @@ public final class PieChart extends Graphic {
     }
 
     @Override
-    public double getMaxWidth(DataSource ds, long fid) throws ParameterException, IOException {
+    public double getMaxWidth(Feature feat) throws ParameterException, IOException {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 

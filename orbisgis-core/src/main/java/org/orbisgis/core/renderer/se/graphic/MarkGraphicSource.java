@@ -7,7 +7,7 @@ package org.orbisgis.core.renderer.se.graphic;
 
 import java.awt.Shape;
 import java.io.IOException;
-import org.gdms.data.DataSource;
+import org.gdms.data.feature.Feature;
 import org.orbisgis.core.renderer.persistance.se.MarkGraphicType;
 
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
@@ -19,7 +19,7 @@ import org.orbisgis.core.renderer.se.parameter.ParameterException;
  * @todo implement in InlineContent(for se InlineContent && GML), OnlineResource
  */
 public interface MarkGraphicSource {
-    Shape getShape(ViewBox viewBox, DataSource ds, long fid)
+    public abstract Shape getShape(ViewBox viewBox, Feature feat)
             throws ParameterException, IOException;
 
     public void setJAXBSource(MarkGraphicType m);

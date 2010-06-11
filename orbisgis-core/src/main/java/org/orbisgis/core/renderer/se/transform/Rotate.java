@@ -7,6 +7,7 @@ package org.orbisgis.core.renderer.se.transform;
 import java.awt.geom.AffineTransform;
 import javax.xml.bind.JAXBElement;
 import org.gdms.data.DataSource;
+import org.gdms.data.feature.Feature;
 import org.orbisgis.core.renderer.persistance.se.ObjectFactory;
 import org.orbisgis.core.renderer.persistance.se.RotateType;
 import org.orbisgis.core.renderer.se.common.MapEnv;
@@ -91,24 +92,24 @@ public class Rotate implements Transformation {
     }
 
     @Override
-    public AffineTransform getAffineTransform(DataSource ds, long fid, Uom uom) throws ParameterException {
+    public AffineTransform getAffineTransform(Feature feat, Uom uom) throws ParameterException {
         double ox = 0.0;
 
         if (x != null) {
-            ox = Uom.toPixel(x.getValue(ds, fid), uom, MapEnv.getScaleDenominator());
+            ox = Uom.toPixel(x.getValue(feat), uom, MapEnv.getScaleDenominator());
 
 
         }
         double oy = 0.0;
         if (y != null) {
-            oy = Uom.toPixel(y.getValue(ds, fid), uom, MapEnv.getScaleDenominator());
+            oy = Uom.toPixel(y.getValue(feat), uom, MapEnv.getScaleDenominator());
 
 
 
         }
         double theta = 0.0;
         if (rotation != null) {
-            theta = rotation.getValue(ds, fid) * Math.PI / 180.0; // convert to rad
+            theta = rotation.getValue(feat) * Math.PI / 180.0; // convert to rad
 
 
         }

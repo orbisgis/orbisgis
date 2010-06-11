@@ -6,6 +6,7 @@ import java.awt.Shape;
 import java.io.IOException;
 
 import org.gdms.data.DataSource;
+import org.gdms.data.feature.Feature;
 import org.orbisgis.core.renderer.persistance.se.HaloType;
 
 import org.orbisgis.core.renderer.se.SymbolizerNode;
@@ -82,16 +83,16 @@ public class Halo implements SymbolizerNode {
         parent = node;
     }
 
-    public void draw(Graphics2D g2, Shape shp, DataSource ds, long fid) throws ParameterException, IOException {
+    public void draw(Graphics2D g2, Shape shp, Feature feat) throws ParameterException, IOException {
         if (radius != null && fill != null) {
-            double r = radius.getValue(ds, fid);
+            double r = radius.getValue(feat);
 
             if (r > 0.0) {
                 r = Uom.toPixel(r, getUom(), MapEnv.getScaleDenominator()); // TODO  DPI & Scale
 
                 Shape haloShp = shp; // TODO poffset !!
 
-                fill.draw(g2, haloShp, ds, fid, false);
+                fill.draw(g2, haloShp, feat, false);
 
                 throw new UnsupportedOperationException("Not supported yet. Need PerpendiularOffset");
             }

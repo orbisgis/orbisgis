@@ -19,6 +19,7 @@ import org.orbisgis.core.renderer.persistance.se.ObjectFactory;
 import org.orbisgis.core.renderer.persistance.se.TileGapType;
 
 import org.gdms.data.DataSource;
+import org.gdms.data.feature.Feature;
 import org.orbisgis.core.renderer.se.common.MapEnv;
 import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.graphic.GraphicCollection;
@@ -99,8 +100,8 @@ public class GraphicFill extends Fill {
      * see Fill
      */
     @Override
-    public void draw(Graphics2D g2, Shape shp, DataSource ds, long fid, boolean selected) throws ParameterException, IOException {
-        TexturePaint stipple = this.getStipplePainter(ds, fid, selected);
+    public void draw(Graphics2D g2, Shape shp, Feature feat, boolean selected) throws ParameterException, IOException {
+        TexturePaint stipple = this.getStipplePainter(feat, selected);
 
         // TODO handle selected ! 
         if (stipple != null) {
@@ -118,22 +119,22 @@ public class GraphicFill extends Fill {
      * @throws ParameterException
      * @throws IOException
      */
-    public TexturePaint getStipplePainter(DataSource ds, long fid, boolean selected) throws ParameterException, IOException {
-        RenderableGraphics img = graphic.getGraphic(ds, fid, selected);
+    public TexturePaint getStipplePainter(Feature feat, boolean selected) throws ParameterException, IOException {
+        RenderableGraphics img = graphic.getGraphic(feat, selected);
 
         if (img != null) {
             double gX = 0.0;
             double gY = 0.0;
 
             if (gapX != null) {
-                gX = gapX.getValue(ds, fid);
+                gX = gapX.getValue(feat);
                 if (gX < 0.0) {
                     gX = 0.0;
                 }
             }
 
             if (gapY != null) {
-                gY = gapY.getValue(ds, fid);
+                gY = gapY.getValue(feat);
                 if (gY < 0.0) {
                     gY = 0.0;
                 }

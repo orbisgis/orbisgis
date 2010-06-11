@@ -6,8 +6,8 @@ package org.orbisgis.core.renderer.se.transform;
 
 import java.awt.geom.AffineTransform;
 import javax.xml.bind.JAXBElement;
+import org.gdms.data.feature.Feature;
 
-import org.gdms.data.DataSource;
 import org.orbisgis.core.renderer.persistance.se.MatrixType;
 import org.orbisgis.core.renderer.persistance.se.ObjectFactory;
 import org.orbisgis.core.renderer.se.common.MapEnv;
@@ -176,14 +176,14 @@ public class Matrix implements Transformation {
     }
 
     @Override
-    public AffineTransform getAffineTransform(DataSource ds, long fid, Uom uom) throws ParameterException {
+    public AffineTransform getAffineTransform(Feature feat, Uom uom) throws ParameterException {
         return new AffineTransform( // TODO DPI !
-                Uom.toPixel(a.getValue(ds, fid), uom, MapEnv.getScaleDenominator()),
-                Uom.toPixel(b.getValue(ds, fid), uom, MapEnv.getScaleDenominator()),
-                Uom.toPixel(c.getValue(ds, fid), uom, MapEnv.getScaleDenominator()),
-                Uom.toPixel(d.getValue(ds, fid), uom, MapEnv.getScaleDenominator()),
-                Uom.toPixel(e.getValue(ds, fid), uom, MapEnv.getScaleDenominator()),
-                Uom.toPixel(f.getValue(ds, fid), uom, MapEnv.getScaleDenominator()));
+                Uom.toPixel(a.getValue(feat), uom, MapEnv.getScaleDenominator()),
+                Uom.toPixel(b.getValue(feat), uom, MapEnv.getScaleDenominator()),
+                Uom.toPixel(c.getValue(feat), uom, MapEnv.getScaleDenominator()),
+                Uom.toPixel(d.getValue(feat), uom, MapEnv.getScaleDenominator()),
+                Uom.toPixel(e.getValue(feat), uom, MapEnv.getScaleDenominator()),
+                Uom.toPixel(f.getValue(feat), uom, MapEnv.getScaleDenominator()));
     }
 
     @Override
@@ -199,22 +199,22 @@ public class Matrix implements Transformation {
      */
     public void simplify() throws ParameterException {
         if (!a.dependsOnFeature()) {
-            a = new RealLiteral(a.getValue(null, 0));
+            a = new RealLiteral(a.getValue(null));
         }
         if (!b.dependsOnFeature()) {
-            b = new RealLiteral(b.getValue(null, 0));
+            b = new RealLiteral(b.getValue(null));
         }
         if (!c.dependsOnFeature()) {
-            c = new RealLiteral(c.getValue(null, 0));
+            c = new RealLiteral(c.getValue(null));
         }
         if (!d.dependsOnFeature()) {
-            d = new RealLiteral(d.getValue(null, 0));
+            d = new RealLiteral(d.getValue(null));
         }
         if (!e.dependsOnFeature()) {
-            e = new RealLiteral(e.getValue(null, 0));
+            e = new RealLiteral(e.getValue(null));
         }
         if (!f.dependsOnFeature()) {
-            f = new RealLiteral(f.getValue(null, 0));
+            f = new RealLiteral(f.getValue(null));
         }
     }
 

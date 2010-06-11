@@ -148,7 +148,7 @@ public class SymbolizerTest extends TestCase {
 
             long fid;
             for (fid = 0; fid < ds.getRowCount(); fid++) {
-                cs.draw(g2, sds, fid, false);
+                cs.draw(g2, null, false);
             }
 
 

@@ -10,6 +10,7 @@ import java.awt.geom.AffineTransform;
 import java.io.IOException;
 import javax.xml.bind.JAXBElement;
 import org.gdms.data.DataSource;
+import org.gdms.data.feature.Feature;
 import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 
@@ -22,7 +23,7 @@ import org.orbisgis.core.renderer.se.parameter.ParameterException;
 public interface Transformation {
     public boolean allowedForGeometries();
 
-    public AffineTransform getAffineTransform(DataSource ds, long fid, Uom uom) throws ParameterException, IOException;
+    public abstract AffineTransform getAffineTransform(Feature feat, Uom uom) throws ParameterException, IOException;
 
     public abstract JAXBElement<?> getJAXBElement();
 

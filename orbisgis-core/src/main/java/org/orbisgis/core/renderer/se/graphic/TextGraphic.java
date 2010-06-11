@@ -7,6 +7,7 @@ import java.io.IOException;
 import javax.media.jai.RenderableGraphics;
 import javax.xml.bind.JAXBElement;
 import org.gdms.data.DataSource;
+import org.gdms.data.feature.Feature;
 import org.orbisgis.core.renderer.persistance.se.ObjectFactory;
 import org.orbisgis.core.renderer.persistance.se.TextGraphicType;
 import org.orbisgis.core.renderer.se.common.MapEnv;
@@ -52,15 +53,15 @@ public class TextGraphic extends Graphic {
      * @todo implements !
      */
     @Override
-    public RenderableGraphics getRenderableGraphics(DataSource ds, long fid, boolean selected) throws ParameterException, IOException {
+    public RenderableGraphics getRenderableGraphics(Feature feat, boolean selected) throws ParameterException, IOException {
 
-        RenderableGraphics label = styledLabel.getImage(ds, fid, selected);
+        RenderableGraphics label = styledLabel.getImage(feat, selected);
 
         Rectangle2D bounds = new Rectangle2D.Double(label.getMinX(), label.getMinY(), label.getWidth(), label.getHeight());
 
 
         if (transform != null) {
-            AffineTransform at = this.transform.getGraphicalAffineTransform(ds, fid, false);
+            AffineTransform at = this.transform.getGraphicalAffineTransform(feat, false);
 
             Shape atShp = at.createTransformedShape(bounds);
 
@@ -73,7 +74,7 @@ public class TextGraphic extends Graphic {
     }
 
     @Override
-    public double getMaxWidth(DataSource ds, long fid) throws ParameterException, IOException {
+    public double getMaxWidth(Feature feat) throws ParameterException, IOException {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 

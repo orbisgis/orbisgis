@@ -6,7 +6,6 @@ package org.orbisgis.core.renderer.se;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.Point;
 import java.awt.Graphics2D;
 import java.awt.Shape;
@@ -17,7 +16,7 @@ import java.io.IOException;
 import javax.xml.bind.JAXBElement;
 import org.orbisgis.core.renderer.persistance.se.SymbolizerType;
 
-import org.gdms.data.SpatialDataSourceDecorator;
+import org.gdms.data.feature.Feature;
 import org.gdms.driver.DriverException;
 import org.orbisgis.core.map.MapTransform;
 
@@ -44,8 +43,8 @@ public abstract class VectorSymbolizer extends Symbolizer {
         super(st);
     }
 
-    public abstract void draw(Graphics2D g2, SpatialDataSourceDecorator sds, 
-			long fid, boolean selected)
+	@Override
+    public abstract void draw(Graphics2D g2, Feature feat, boolean selected)
 		throws ParameterException, IOException, DriverException;
 
     /**
@@ -58,15 +57,15 @@ public abstract class VectorSymbolizer extends Symbolizer {
      * @throws IOException
      * @throws DriverException
      */
-    public Shape getShape(SpatialDataSourceDecorator sds, long fid) throws ParameterException, IOException, DriverException {
-        Geometry geom = this.getTheGeom(sds, fid); // geom + function
+    public Shape getShape(Feature feat) throws ParameterException, IOException, DriverException {
+        Geometry geom = this.getTheGeom(feat); // geom + function
 
         MapTransform mt = MapEnv.getMapTransform();
         
         Shape shape = mt.getShape(geom, true);
 
         if (transform != null) {
-            shape = transform.getGraphicalAffineTransform(sds, fid, true).createTransformedShape(shape);
+            shape = transform.getGraphicalAffineTransform(feat, true).createTransformedShape(shape);
         }
 		
 		Rectangle2D bounds2D = shape.getBounds2D();
@@ -79,14 +78,14 @@ public abstract class VectorSymbolizer extends Symbolizer {
         return shape;
     }
 
-    public Point2D getPointShape(SpatialDataSourceDecorator sds, long fid) throws ParameterException, IOException, DriverException {
-        Geometry geom = this.getTheGeom(sds, fid); // geom + function
+    public Point2D getPointShape(Feature feat) throws ParameterException, IOException, DriverException {
+        Geometry geom = this.getTheGeom(feat); // geom + function
 
         MapTransform mt = MapEnv.getMapTransform();
 
         AffineTransform at = mt.getAffineTransform();
         if (transform != null) {
-            at.preConcatenate(transform.getGraphicalAffineTransform(sds, fid, true));
+            at.preConcatenate(transform.getGraphicalAffineTransform(feat, true));
         }
 
         Point point = geom.getInteriorPoint();
@@ -96,14 +95,14 @@ public abstract class VectorSymbolizer extends Symbolizer {
     }
 
 
-    public Point2D getFirstPointShape(SpatialDataSourceDecorator sds, long fid) throws ParameterException, IOException, DriverException {
-        Geometry geom = this.getTheGeom(sds, fid); // geom + function
+    public Point2D getFirstPointShape(Feature feat) throws ParameterException, IOException, DriverException {
+        Geometry geom = this.getTheGeom(feat); // geom + function
 
         MapTransform mt = MapEnv.getMapTransform();
 
         AffineTransform at = mt.getAffineTransform();
         if (transform != null) {
-            at.preConcatenate(transform.getGraphicalAffineTransform(sds, fid, true));
+            at.preConcatenate(transform.getGraphicalAffineTransform(feat, true));
         }
 
 		Coordinate[] coordinates = geom.getCoordinates();

@@ -1,10 +1,9 @@
 package org.orbisgis.core.renderer.se.parameter.real;
 
 import javax.xml.bind.JAXBElement;
-import org.gdms.data.DataSource;
+import org.gdms.data.feature.Feature;
 import org.orbisgis.core.renderer.persistance.se.MapItemType;
 import org.orbisgis.core.renderer.persistance.se.RecodeType;
-import org.orbisgis.core.renderer.se.parameter.MapItem;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.Recode;
 import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
@@ -28,14 +27,14 @@ public class Recode2Real extends Recode<RealParameter, RealLiteral> implements R
     }
 
     @Override
-    public double getValue(DataSource ds, long fid){
+    public double getValue(Feature feat){
         // Should always depend on features !
         try{
-            return getParameter(ds, (int)fid).getValue(ds, fid);
+            return getParameter(feat).getValue(feat);
         }
         catch(ParameterException ex){
             // Since fallback value is a literal, the following is secure
-            return this.fallbackValue.getValue(null, 0);
+            return this.fallbackValue.getValue(feat);
         }
     }
 

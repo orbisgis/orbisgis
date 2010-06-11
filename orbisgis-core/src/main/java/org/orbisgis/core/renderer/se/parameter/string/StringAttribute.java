@@ -2,6 +2,7 @@ package org.orbisgis.core.renderer.se.parameter.string;
 
 import javax.xml.bind.JAXBElement;
 import org.gdms.data.DataSource;
+import org.gdms.data.feature.Feature;
 import org.gdms.driver.DriverException;
 import org.orbisgis.core.renderer.persistance.ogc.PropertyNameType;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
@@ -25,10 +26,10 @@ public class StringAttribute extends PropertyName implements StringParameter{
     }
 
     @Override
-    public String getValue(DataSource ds, long fid) throws ParameterException{ // TODO implement
+    public String getValue(Feature feat) throws ParameterException{ // TODO implement
         try {
             // TODO implement
-            return getFieldValue(ds, (int)fid).getAsString();
+            return getFieldValue(feat).getAsString();
         } catch (Exception e) {
             throw new ParameterException("Could not fetch feature attribute \""+ fieldName +"\"");
         }

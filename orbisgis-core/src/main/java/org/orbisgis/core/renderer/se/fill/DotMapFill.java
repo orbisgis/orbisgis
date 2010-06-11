@@ -6,10 +6,10 @@ import java.awt.Shape;
 import java.io.IOException;
 import javax.media.jai.RenderableGraphics;
 import javax.xml.bind.JAXBElement;
+import org.gdms.data.feature.Feature;
 import org.orbisgis.core.renderer.persistance.se.DotMapFillType;
 
 import org.orbisgis.core.renderer.persistance.se.ObjectFactory;
-import org.gdms.data.DataSource;
 import org.orbisgis.core.renderer.se.graphic.GraphicCollection;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
@@ -54,13 +54,13 @@ public class DotMapFill extends Fill {
      * @throws IOException
      */
     @Override
-    public void draw(Graphics2D g2, Shape shp, DataSource ds, long fid, boolean selected) throws ParameterException, IOException {
+    public void draw(Graphics2D g2, Shape shp, Feature feat, boolean selected) throws ParameterException, IOException {
         if (mark != null && totalQuantity != null && quantityPerMark != null) {
-            RenderableGraphics m = mark.getGraphic(ds, fid, selected);
+            RenderableGraphics m = mark.getGraphic(feat, selected);
 
             if (m != null) {
-                double total = totalQuantity.getValue(ds, fid);
-                double perMark = quantityPerMark.getValue(ds, fid);
+                double total = totalQuantity.getValue(feat);
+                double perMark = quantityPerMark.getValue(feat);
 
                 int n = (int) (total / perMark);
 

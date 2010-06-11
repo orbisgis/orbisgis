@@ -34,9 +34,9 @@ public class RealUnitaryOperatorTest extends TestCase {
     public void testSqrt(){
         try {
             RealUnitaryOperator op1 = new RealUnitaryOperator(new RealLiteral(25.0), RealUnitaryOperatorType.SQRT);
-            assertEquals(5.0, op1.getValue(null, 0));
+            assertEquals(5.0, op1.getValue(null));
             RealUnitaryOperator op2 = new RealUnitaryOperator(new RealLiteral(-25.0), RealUnitaryOperatorType.SQRT);
-            assertEquals(Double.NaN, op2.getValue(null, 0));
+            assertEquals(Double.NaN, op2.getValue(null));
         } catch (ParameterException ex) {
             Logger.getLogger(RealUnitaryOperatorTest.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -46,9 +46,9 @@ public class RealUnitaryOperatorTest extends TestCase {
     public void testLog(){
         try {
             RealUnitaryOperator op1 = new RealUnitaryOperator(new RealLiteral(100), RealUnitaryOperatorType.LOG);
-            assertEquals(2.0, op1.getValue(null, 0));
+            assertEquals(2.0, op1.getValue(null));
             RealUnitaryOperator op2 = new RealUnitaryOperator(new RealLiteral(-100), RealUnitaryOperatorType.LOG);
-            assertEquals(Double.NaN, op2.getValue(null, 0));
+            assertEquals(Double.NaN, op2.getValue(null));
         }
         /*
         public void runTest(){

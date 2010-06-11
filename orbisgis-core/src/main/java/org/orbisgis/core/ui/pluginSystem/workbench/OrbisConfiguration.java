@@ -82,6 +82,7 @@ import org.orbisgis.core.ui.plugins.toc.ShowInTablePlugIn;
 import org.orbisgis.core.ui.plugins.toc.SwitchToDraftPlugIn;
 import org.orbisgis.core.ui.plugins.toc.ZoomToLayerPlugIn;
 import org.orbisgis.core.ui.plugins.views.MapEditorPlugIn;
+import org.orbisgis.core.ui.plugins.views.MemoryViewPlugIn;
 import org.orbisgis.core.ui.plugins.views.TableEditorPlugIn;
 import org.orbisgis.core.ui.plugins.views.geocatalog.ConvertXYZDemGeocatalogPlugIn;
 import org.orbisgis.core.ui.plugins.views.geocatalog.GeocatalogClearPlugIn;
@@ -118,6 +119,7 @@ public class OrbisConfiguration implements Setup {
 	private ConfigurationPlugIn configuration = new ConfigurationPlugIn();
 	private AboutOrbisGISPlugIn aboutOrbisGIS = new AboutOrbisGISPlugIn();
 	private OnlineHelpOrbisGISPlugIn onlineHelpOrbisGIS = new OnlineHelpOrbisGISPlugIn();
+	private MemoryViewPlugIn ramView = new MemoryViewPlugIn();
 
 	// TOC
 	private EditLegendPlugIn editLegendPlugIn = new EditLegendPlugIn();
@@ -264,6 +266,7 @@ public class OrbisConfiguration implements Setup {
 			revertLayerPlugIn.initialize(context);
 			saveLayerPlugIn.initialize(context);
 
+			ramView.initialize(context);
 			// DEMO
 
 			//myTOCMenu.initialize(context);

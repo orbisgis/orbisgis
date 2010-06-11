@@ -6,6 +6,7 @@ import java.io.IOException;
 import javax.xml.bind.JAXBElement;
 import org.orbisgis.core.renderer.persistance.se.FillType;
 import org.gdms.data.DataSource;
+import org.gdms.data.feature.Feature;
 import org.orbisgis.core.renderer.persistance.se.DensityFillType;
 import org.orbisgis.core.renderer.persistance.se.DotMapFillType;
 import org.orbisgis.core.renderer.persistance.se.GraphicFillType;
@@ -72,12 +73,11 @@ public abstract class Fill implements SymbolizerNode {
      *
      * @param g2 draw within this graphics2d
      * @param shp fill this shape
-     * @param ds feature came from this datasource
-     * @param fid id of the feature to draw
+     * @param feat feature which contains potential used attributes
      * @throws ParameterException
      * @throws IOException
      */
-    public abstract void draw(Graphics2D g2, Shape shp, DataSource ds, long fid, boolean selected) throws ParameterException, IOException;
+    public abstract void draw(Graphics2D g2, Shape shp, Feature feat, boolean selected) throws ParameterException, IOException;
 
     public abstract JAXBElement<? extends FillType> getJAXBElement();
     public abstract FillType getJAXBType();

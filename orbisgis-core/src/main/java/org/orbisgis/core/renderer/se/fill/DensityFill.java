@@ -17,6 +17,7 @@ import org.orbisgis.core.renderer.persistance.se.DensityFillType;
 import org.orbisgis.core.renderer.persistance.se.ObjectFactory;
 
 import org.gdms.data.DataSource;
+import org.gdms.data.feature.Feature;
 
 import org.orbisgis.core.renderer.se.common.MapEnv;
 
@@ -112,11 +113,11 @@ public class DensityFill extends Fill {
      * @throws IOException
      */
     @Override
-    public void draw(Graphics2D g2, Shape shp, DataSource ds, long fid, boolean selected) throws ParameterException, IOException {
+    public void draw(Graphics2D g2, Shape shp, Feature feat, boolean selected) throws ParameterException, IOException {
         double percentage = 0.0;
 
         if (percentageCovered != null) {
-            percentage = percentageCovered.getValue(ds, fid);
+            percentage = percentageCovered.getValue(feat);
         }
 
         if (percentage > 100) {
@@ -130,13 +131,13 @@ public class DensityFill extends Fill {
                 double theta = -45.0;
 
                 if (this.orientation != null) {
-                    theta = -this.orientation.getValue(ds, fid) + 90.0;
+                    theta = -this.orientation.getValue(feat) + 90.0;
                 }
 
                 theta *= Math.PI / 180.0;
 
                 // Stroke width
-                double sWidth = hatches.getMaxWidth(ds, fid);
+                double sWidth = hatches.getMaxWidth(feat);
 
                 // Perpendiculat dist bw two hatches
                 double pDist = 100 * sWidth / percentage;
@@ -182,7 +183,7 @@ public class DensityFill extends Fill {
 
                 g2.setRenderingHints(MapEnv.getCurrentRenderContext().getRenderingHints());
 
-                Color c = hatches.getColor().getColor(ds, fid);
+                Color c = hatches.getColor().getColor(feat);
 
                 if (selected) {
                     c = ColorHelper.invert(c);
@@ -190,7 +191,7 @@ public class DensityFill extends Fill {
 
                 tile.setColor(c);
 
-                tile.setStroke(hatches.getBasicStroke(ds, fid));
+                tile.setStroke(hatches.getBasicStroke(feat));
 
                 // Draw three line in order to ensure mosaic join
 
@@ -212,7 +213,7 @@ public class DensityFill extends Fill {
                 painter = new TexturePaint(i, new Rectangle2D.Double(0, 0, ix, iy));
 
             } else if (mark != null) { // Marked
-                RenderableGraphics g = mark.getGraphic(ds, fid, selected);
+                RenderableGraphics g = mark.getGraphic(feat, selected);
 
                 if (g != null) {
                     // TODO IMPLEMENT: create TexturePaint, see GraphicFill.getTexturePaint

@@ -3,15 +3,12 @@ package org.orbisgis.core.renderer.se.graphic;
 import java.awt.Dimension;
 import java.awt.Shape;
 import java.awt.geom.Rectangle2D;
-import java.awt.image.VolatileImage;
 import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.media.jai.RenderableGraphics;
 import javax.xml.bind.JAXBElement;
 import org.orbisgis.core.renderer.persistance.se.MarkGraphicType;
 import org.orbisgis.core.renderer.persistance.se.ObjectFactory;
-import org.gdms.data.DataSource;
+import org.gdms.data.feature.Feature;
 import org.orbisgis.core.renderer.se.common.Halo;
 import org.orbisgis.core.renderer.se.common.MapEnv;
 import org.orbisgis.core.renderer.se.common.OnlineResource;
@@ -150,13 +147,9 @@ public final class MarkGraphic extends Graphic {
     @Override
     public void updateGraphic() {
         try {
-            System.out.println ("SOUrce: " + source);
-            shape = source.getShape(viewBox, null, 0);
-            System.out.println("Mark successfully cached with vBox: " + viewBox);
+            shape = source.getShape(viewBox, null);
 
         } catch (Exception e) {
-            System.out.println("Unable to cache mark graphic" + e);
-            //e.printStackTrace();
             shape = null;
         }
     }
@@ -174,12 +167,12 @@ public final class MarkGraphic extends Graphic {
      * @todo implements !
      */
     @Override
-    public RenderableGraphics getRenderableGraphics(DataSource ds, long fid, boolean selected) throws ParameterException, IOException {
+    public RenderableGraphics getRenderableGraphics(Feature feat, boolean selected) throws ParameterException, IOException {
         Shape shp;
 
         // If the shape doesn't depends on feature (i.e. not null), we used the cached one
         if (shape == null) {
-            shp = source.getShape(viewBox, ds, fid);
+            shp = source.getShape(viewBox, feat);
         } else {
             shp = shape;
         }
@@ -189,23 +182,23 @@ public final class MarkGraphic extends Graphic {
         Shape atShp = shp;
 
         if (transform != null) {
-            atShp = this.transform.getGraphicalAffineTransform(ds, fid, false).createTransformedShape(shp);
+            atShp = this.transform.getGraphicalAffineTransform(feat, false).createTransformedShape(shp);
         }
 
         Rectangle2D bounds = atShp.getBounds2D();
 
-        double margin = this.getMargin(ds, fid);
+        double margin = this.getMargin(feat);
 
         RenderableGraphics rg = Graphic.getNewRenderableGraphics(bounds, margin);
 
         if (halo != null) {
-            halo.draw(rg, atShp, ds, fid);
+            halo.draw(rg, atShp, feat);
         }
         if (fill != null) {
-            fill.draw(rg, atShp, ds, fid, selected);
+            fill.draw(rg, atShp, feat, selected);
         }
         if (stroke != null) {
-            stroke.draw(rg, atShp, ds, fid, selected);
+            stroke.draw(rg, atShp, feat, selected);
         }
 
         return rg;
@@ -220,31 +213,31 @@ public final class MarkGraphic extends Graphic {
      * @throws ParameterException
      * @throws IOException
      */
-    private double getMargin(DataSource ds, long fid) throws ParameterException, IOException {
+    private double getMargin(Feature feat) throws ParameterException, IOException {
         double sWidth = 0.0;
         double haloR = 0.0;
 
         if (stroke != null) {
-            sWidth += stroke.getMaxWidth(ds, fid);
+            sWidth += stroke.getMaxWidth(feat);
         }
 
         if (this.halo != null) {
-            haloR = Uom.toPixel(halo.getRadius().getValue(ds, fid), halo.getUom(), MapEnv.getScaleDenominator());
+            haloR = Uom.toPixel(halo.getRadius().getValue(feat), halo.getUom(), MapEnv.getScaleDenominator());
         }
 
         return Math.max(sWidth, haloR);
     }
 
     @Override
-    public double getMaxWidth(DataSource ds, long fid) throws ParameterException, IOException {
+    public double getMaxWidth(Feature feat) throws ParameterException, IOException {
         double delta = 0.0;
 
         if (viewBox != null) {
-            Dimension dim = viewBox.getDimensionInPixel(ds, fid, 1);
+            Dimension dim = viewBox.getDimensionInPixel(feat, 1);
             delta = Math.max(dim.getHeight(), dim.getWidth());
         }
 
-        delta += this.getMargin(ds, fid);
+        delta += this.getMargin(feat);
 
         return delta;
     }

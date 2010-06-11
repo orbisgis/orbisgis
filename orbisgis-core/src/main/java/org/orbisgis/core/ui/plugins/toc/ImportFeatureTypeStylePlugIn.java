@@ -82,7 +82,6 @@ public class ImportFeatureTypeStylePlugIn extends AbstractPlugIn {
 	}
 
 	public boolean isSelected() {
-		// TODO Auto-generated method stub
 		return false;
 	}
 }

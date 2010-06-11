@@ -2,6 +2,7 @@ package org.orbisgis.core.renderer.se.graphic;
 
 import java.awt.Dimension;
 import org.gdms.data.DataSource;
+import org.gdms.data.feature.Feature;
 import org.orbisgis.core.renderer.persistance.se.ViewBoxType;
 import org.orbisgis.core.renderer.se.SymbolizerNode;
 import org.orbisgis.core.renderer.se.common.MapEnv;
@@ -69,17 +70,17 @@ public class ViewBox implements SymbolizerNode {
      * @return
      * @throws ParameterException
      */
-    public Dimension getDimensionInPixel(DataSource ds, long fid, double ratio) throws ParameterException {
+    public Dimension getDimensionInPixel(Feature feat, double ratio) throws ParameterException {
         double dx, dy;
 
         if (x != null && y != null) {
-            dx = x.getValue(ds, fid);
-            dy = y.getValue(ds, fid);
+            dx = x.getValue(feat);
+            dy = y.getValue(feat);
         } else if (x != null) {
-            dx = x.getValue(ds, fid);
+            dx = x.getValue(feat);
             dy = dx / ratio;
         } else if (y != null) {
-            dy = y.getValue(ds, fid);
+            dy = y.getValue(feat);
             dx = dy * ratio;
         } else { // nothing is defined => 10x10uom
             dx = 10.0;

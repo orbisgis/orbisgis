@@ -5,10 +5,8 @@ import java.awt.Shape;
 import java.io.IOException;
 import javax.xml.bind.JAXBElement;
 import org.orbisgis.core.renderer.persistance.se.StrokeType;
-import org.gdms.data.DataSource;
-import org.orbisgis.core.renderer.persistance.se.GraphicFillType;
+import org.gdms.data.feature.Feature;
 import org.orbisgis.core.renderer.persistance.se.GraphicStrokeType;
-import org.orbisgis.core.renderer.persistance.se.ObjectFactory;
 import org.orbisgis.core.renderer.persistance.se.PenStrokeType;
 import org.orbisgis.core.renderer.se.SymbolizerNode;
 import org.orbisgis.core.renderer.se.common.Uom;
@@ -86,7 +84,7 @@ public abstract class Stroke implements SymbolizerNode {
      * @param fid
      * @return
      */
-    public abstract double getMaxWidth(DataSource ds, long fid) throws ParameterException, IOException;
+    public abstract double getMaxWidth(Feature feat) throws ParameterException, IOException;
 
     //public abstract void getStroke(DataSource ds, int fid);
     /**
@@ -95,15 +93,15 @@ public abstract class Stroke implements SymbolizerNode {
      * @param shp stroke this shape (note this is note a LiteShape, because
      *        stroke can be used to delineate graphics (such as MarkGraphic,
      *        PieChart or AxisChart)
-     * @param ds feature came from this datasource
-     * @param fid id of the feature to draw
+	 * @param feat the feature contains attribute
      * @throws ParameterException
      * @throws IOException
      */
-    public abstract void draw(Graphics2D g2, Shape shp, DataSource ds, long fid, boolean selected) throws ParameterException, IOException;
+    public abstract void draw(Graphics2D g2, Shape shp, Feature feat, boolean selected) throws ParameterException, IOException;
 
     /**
      * Take into account preGap and postGap
+	 *
      * @param shp
      * @return
      * @todo implements

@@ -4,11 +4,11 @@ import java.awt.Graphics2D;
 import java.awt.Shape;
 import java.io.IOException;
 import javax.xml.bind.JAXBElement;
+import org.gdms.data.feature.Feature;
 
 import org.orbisgis.core.renderer.persistance.se.ObjectFactory;
 import org.orbisgis.core.renderer.persistance.se.TextSymbolizerType;
 
-import org.gdms.data.SpatialDataSourceDecorator;
 import org.gdms.driver.DriverException;
 
 import org.orbisgis.core.renderer.se.common.Uom;
@@ -45,12 +45,12 @@ public class TextSymbolizer extends VectorSymbolizer {
     }
 
     @Override
-    public void draw(Graphics2D g2, SpatialDataSourceDecorator sds, long fid, boolean selected) throws ParameterException, IOException, DriverException {
+    public void draw(Graphics2D g2, Feature feat, boolean selected) throws ParameterException, IOException, DriverException {
 
-        Shape shp = this.getShape(sds, fid);
+        Shape shp = this.getShape(feat);
 
         if (shp != null && label != null){
-            label.draw(g2, shp, sds, fid, selected);
+            label.draw(g2, shp, feat, selected);
         }
     }
 

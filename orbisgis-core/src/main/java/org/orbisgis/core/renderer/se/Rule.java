@@ -5,6 +5,7 @@
 package org.orbisgis.core.renderer.se;
 
 import com.vividsolutions.jts.geom.Geometry;
+import java.util.Iterator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.xml.bind.JAXBElement;
@@ -59,18 +60,6 @@ public class Rule implements SymbolizerNode {
 		symbolizer.addSymbolizer(symb);
 	}
 
-
-	private String readFilter(FilterType filter) {
-		if (filter != null) {
-			if (filter.getComparisonOps() != null) {
-
-				//return readComparisonOps(filter.getComparisonOps());
-			} else if (filter.getLogicOps() != null) {
-			}
-		}
-		return "";
-	}
-
 	public Rule(RuleType rt, ILayer layer) {
 		this(layer);
 
@@ -81,8 +70,7 @@ public class Rule implements SymbolizerNode {
 			this.fallbackRule = true;
 		} else {
 			this.fallbackRule = false;
-			this.where = readFilter(rt.getFilter());
-			// TODO Implement "load to where"
+			//this.filter = new FilterOperator(rt.getFilter());
 		}
 
 		if (rt.getMinScaleDenominator() != null) {
@@ -147,34 +135,42 @@ public class Rule implements SymbolizerNode {
 		this.where = where;
 	}
 
-	public SpatialDataSourceDecorator getFilteredDataSource() throws DriverLoadException, DataSourceCreationException, DriverException, ParseException, SemanticException {
-		FeatureTypeStyle ft = (FeatureTypeStyle) fts;
-
-		ILayer layer = ft.getLayer();
-
-		SpatialDataSourceDecorator ds = layer.getDataSource();
-
-		String query = "select * from " + ds.getName();
+	/**
+	 * Return a Spatial data source, according to rule filter and specified extent
+	 * @return
+	 * @throws DriverLoadException
+	 * @throws DataSourceCreationException
+	 * @throws DriverException
+	 * @throws ParseException
+	 * @throws SemanticException
+	 */
+	public SpatialDataSourceDecorator getFilteredDataSource(SpatialDataSourceDecorator sds) throws DriverLoadException, DataSourceCreationException, DriverException, ParseException, SemanticException {
+		String query = "select * from " + sds.getName();
 
 		if (where != null) {
 			query += " " + where;
 		}
 
-		return new SpatialDataSourceDecorator(layer.getDataSource().getDataSourceFactory().getDataSourceFromSQL(query));
+		System.out.println(" here is the where: " + where);
+		return new SpatialDataSourceDecorator(sds.getDataSourceFactory().getDataSourceFromSQL(query));
 	}
 
-	/*
-	 * Is the feature id fit with this rule filter
-	 *
+
+	/**
+	 * Return a Spatial data source, according to rule filter and specified extent
+	 * @return
+	 * @throws DriverLoadException
+	 * @throws DataSourceCreationException
+	 * @throws DriverException
+	 * @throws ParseException
+	 * @throws SemanticException
 	 */
-	public boolean isFeatureAllowed(long fid) {
-		try {
-			SpatialDataSourceDecorator filteredDataSource = this.getFilteredDataSource();
-			filteredDataSource.getFeature(fid);
-			return true;
-		} catch (Exception e) {
-			return false;
-		}
+	public SpatialDataSourceDecorator getFilteredDataSource() throws DriverLoadException, DataSourceCreationException, DriverException, ParseException, SemanticException {
+		FeatureTypeStyle ft = (FeatureTypeStyle) fts;
+
+		ILayer layer = ft.getLayer();
+		SpatialDataSourceDecorator sds = layer.getDataSource();
+		return this.getFilteredDataSource(sds);
 	}
 
 	public boolean isFallbackRule() {

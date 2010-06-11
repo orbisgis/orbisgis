@@ -2,7 +2,7 @@ package org.orbisgis.core.renderer.se.parameter.real;
 
 import java.util.List;
 import javax.xml.bind.JAXBElement;
-import org.gdms.data.DataSource;
+import org.gdms.data.feature.Feature;
 import org.orbisgis.core.renderer.persistance.ogc.BinaryOperatorType;
 import org.orbisgis.core.renderer.persistance.ogc.ExpressionType;
 import org.orbisgis.core.renderer.persistance.se.ParameterValueType;
@@ -87,9 +87,9 @@ public class RealBinaryOperator implements RealParameter {
      * @throws ParameterException
      */
     @Override
-    public double getValue(DataSource ds, long fid) throws ParameterException {
-        double lVal = l.getValue(ds, fid);
-        double rVal = r.getValue(ds, fid);
+    public double getValue(Feature feat) throws ParameterException {
+        double lVal = l.getValue(feat);
+        double rVal = r.getValue(feat);
 
         switch (op) {
             case SUB:

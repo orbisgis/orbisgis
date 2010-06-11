@@ -9,7 +9,7 @@ import org.orbisgis.core.renderer.persistance.se.LineSymbolizerType;
 import org.orbisgis.core.renderer.persistance.se.PointSymbolizerType;
 import org.orbisgis.core.renderer.persistance.se.RasterSymbolizerType;
 import org.orbisgis.core.renderer.persistance.se.SymbolizerType;
-import org.gdms.data.SpatialDataSourceDecorator;
+import org.gdms.data.feature.Feature;
 import org.gdms.driver.DriverException;
 import org.orbisgis.core.renderer.persistance.se.TextSymbolizerType;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
@@ -81,11 +81,11 @@ public abstract class Symbolizer implements SymbolizerNode, Comparable{
         this.the_geom = the_geom;
     }
 
-    public Geometry getTheGeom(SpatialDataSourceDecorator sds, long fid) throws DriverException, ParameterException {
+    public Geometry getTheGeom(Feature feat) throws DriverException, ParameterException {
         if (the_geom != null) {
-            return the_geom.getTheGeom(sds, fid);
+            return the_geom.getTheGeom(feat);
         } else {
-            return sds.getGeometry(fid);
+			return feat.getGeometry();
         }
     }
 
@@ -148,6 +148,9 @@ public abstract class Symbolizer implements SymbolizerNode, Comparable{
              return -1;
     }
 
+	/**
+	 * Go through parent symbolizers and return the rule
+	 */
     public Rule getRule(){
         SymbolizerNode pIt = this.parent;
         while (! (pIt instanceof Rule)){
@@ -157,7 +160,7 @@ public abstract class Symbolizer implements SymbolizerNode, Comparable{
         return (Rule)pIt;
     }
 
-    public abstract void draw(Graphics2D g2, SpatialDataSourceDecorator sds, long fid, boolean selected) throws ParameterException, IOException, DriverException;
+    public abstract void draw(Graphics2D g2, Feature feat, boolean selected) throws ParameterException, IOException, DriverException;
 
     public abstract JAXBElement<? extends SymbolizerType> getJAXBElement();
     protected String name;

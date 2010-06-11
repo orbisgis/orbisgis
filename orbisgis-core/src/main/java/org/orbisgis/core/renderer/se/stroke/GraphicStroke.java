@@ -7,8 +7,8 @@ import java.io.IOException;
 
 import javax.media.jai.RenderableGraphics;
 import javax.xml.bind.JAXBElement;
+import org.gdms.data.feature.Feature;
 
-import org.gdms.data.DataSource;
 import org.orbisgis.core.renderer.persistance.se.GraphicStrokeType;
 import org.orbisgis.core.renderer.persistance.se.ObjectFactory;
 import org.orbisgis.core.renderer.persistance.se.RelativeOrientationType;
@@ -49,13 +49,13 @@ public class GraphicStroke extends Stroke {
     }
 
     @Override
-    public void draw(Graphics2D g2, Shape shp, DataSource ds, long fid, boolean selected) throws ParameterException, IOException {
-        RenderableGraphics g = graphic.getGraphic(ds, fid, selected);
+    public void draw(Graphics2D g2, Shape shp, Feature feat, boolean selected) throws ParameterException, IOException {
+        RenderableGraphics g = graphic.getGraphic(feat, selected);
 
         if (g != null) {
             double l;
             if (length != null) {
-                l = length.getValue(ds, fid);
+                l = length.getValue(feat);
                 if (l <= 0.0) {
                     // TODO l \in R-* is forbiden ! Should throw, or set l = line.linearLength()
                     // for the time, let us l = graphic natural length...
@@ -77,8 +77,8 @@ public class GraphicStroke extends Stroke {
     }
 
     @Override
-    public double getMaxWidth(DataSource ds, long fid) throws IOException, ParameterException {
-        return graphic.getMaxWidth(ds, fid);
+    public double getMaxWidth(Feature feat) throws IOException, ParameterException {
+        return graphic.getMaxWidth(feat);
     }
 
     

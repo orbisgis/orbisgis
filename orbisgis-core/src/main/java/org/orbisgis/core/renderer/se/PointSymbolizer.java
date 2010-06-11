@@ -3,28 +3,21 @@ package org.orbisgis.core.renderer.se;
 import java.awt.Graphics2D;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
-import java.awt.image.RenderedImage;
 
 import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.media.jai.RenderableGraphics;
 import javax.xml.bind.JAXBElement;
+import org.gdms.data.feature.Feature;
 import org.orbisgis.core.renderer.persistance.se.ObjectFactory;
 import org.orbisgis.core.renderer.persistance.se.PointSymbolizerType;
 
-import org.gdms.data.SpatialDataSourceDecorator;
 import org.gdms.driver.DriverException;
 import org.orbisgis.core.renderer.se.common.MapEnv;
 import org.orbisgis.core.renderer.se.common.Uom;
-import org.orbisgis.core.renderer.se.fill.SolidFill;
 import org.orbisgis.core.renderer.se.graphic.GraphicCollection;
 import org.orbisgis.core.renderer.se.graphic.MarkGraphic;
-import org.orbisgis.core.renderer.se.graphic.WellKnownName;
 
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
-import org.orbisgis.core.renderer.se.parameter.color.ColorLiteral;
-import org.orbisgis.core.renderer.se.parameter.real.RealLiteral;
 import org.orbisgis.core.renderer.se.transform.Transform;
 
 public class PointSymbolizer extends VectorSymbolizer {
@@ -78,12 +71,12 @@ public class PointSymbolizer extends VectorSymbolizer {
 	}
 
 	@Override
-	public void draw(Graphics2D g2, SpatialDataSourceDecorator sds, long fid, boolean selected) throws ParameterException, IOException, DriverException {
+	public void draw(Graphics2D g2, Feature feat, boolean selected) throws ParameterException, IOException, DriverException {
 		if (graphic != null && graphic.getNumGraphics() > 0) {
-			Point2D pt = this.getPointShape(sds, fid);
+			Point2D pt = this.getPointShape(feat);
 			
 			//Point2D pt = this.getFirstPointShape(sds, fid); // This is to emulate ExtractFirstPoint geom function !!!
-			RenderableGraphics rg = graphic.getGraphic(sds, fid, selected);
+			RenderableGraphics rg = graphic.getGraphic(feat, selected);
 			//RenderedImage cache = graphic.getCache(sds, fid, selected);
 
 			//if (cache != null) {

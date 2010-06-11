@@ -2,7 +2,7 @@ package org.orbisgis.core.renderer.se.parameter.real;
 
 import java.util.Iterator;
 import javax.xml.bind.JAXBElement;
-import org.gdms.data.DataSource;
+import org.gdms.data.feature.Feature;
 import org.orbisgis.core.renderer.persistance.se.CategorizeType;
 import org.orbisgis.core.renderer.persistance.se.ParameterValueType;
 import org.orbisgis.core.renderer.persistance.se.ThreshholdsBelongToType;
@@ -41,12 +41,12 @@ public class Categorize2Real extends Categorize<RealParameter, RealLiteral> impl
     }
 
     @Override
-    public double getValue(DataSource ds, long fid){
+    public double getValue(Feature feat){
         try{
-            return getParameter(ds, fid).getValue(ds, fid);
+            return getParameter(feat).getValue(feat);
         }
         catch(ParameterException ex){
-            return this.fallbackValue.getValue(null, 0);
+            return this.fallbackValue.getValue(feat);
         }
     }
 }

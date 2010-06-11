@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.xml.bind.JAXBElement;
 import org.gdms.data.SpatialDataSourceDecorator;
+import org.gdms.data.feature.Feature;
 import org.gdms.driver.DriverException;
 import org.orbisgis.core.renderer.persistance.se.CompositeSymbolizerType;
 import org.orbisgis.core.renderer.persistance.se.ObjectFactory;
@@ -72,10 +73,10 @@ public class CompositeSymbolizer implements SymbolizerNode {
     }
 
     
-    public void draw(Graphics2D g2, SpatialDataSourceDecorator sds, long fid, boolean selected) throws ParameterException, IOException, DriverException{
+    public void draw(Graphics2D g2, Feature feat, boolean selected) throws ParameterException, IOException, DriverException{
         for (Symbolizer s : this.symbolizers){
             if (s instanceof VectorSymbolizer){
-                ((VectorSymbolizer)s).draw(g2, sds, fid, selected);
+                ((VectorSymbolizer)s).draw(g2, feat, selected);
             }
         }
     }

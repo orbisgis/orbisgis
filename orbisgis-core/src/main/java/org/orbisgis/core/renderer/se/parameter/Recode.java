@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.xml.bind.JAXBElement;
 import org.gdms.data.DataSource;
+import org.gdms.data.feature.Feature;
 import org.orbisgis.core.renderer.persistance.ogc.ExpressionType;
 import org.orbisgis.core.renderer.persistance.se.MapItemType;
 import org.orbisgis.core.renderer.persistance.se.ObjectFactory;
@@ -98,9 +99,9 @@ public abstract class Recode<ToType extends SeParameter, FallbackType extends To
         mapItems.remove(item);
     }
 
-    public ToType getParameter(DataSource ds, long fid) {
+    public ToType getParameter(Feature feat) {
         try {
-            String key = lookupValue.getValue(ds, fid);
+            String key = lookupValue.getValue(feat);
             return getMapItemValue(key);
         } catch (Exception e) {
             return fallbackValue;

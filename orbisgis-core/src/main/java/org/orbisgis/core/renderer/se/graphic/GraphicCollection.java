@@ -1,11 +1,8 @@
 package org.orbisgis.core.renderer.se.graphic;
 
-import java.awt.GraphicsConfiguration;
-import java.awt.GraphicsEnvironment;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.RenderedImage;
-import java.awt.image.VolatileImage;
 import java.awt.image.renderable.RenderContext;
 
 import java.io.IOException;
@@ -20,12 +17,11 @@ import org.orbisgis.core.renderer.persistance.se.CompositeGraphicType;
 import org.orbisgis.core.renderer.persistance.se.GraphicType;
 import org.orbisgis.core.renderer.persistance.se.ObjectFactory;
 
-import org.gdms.data.DataSource;
+import org.gdms.data.feature.Feature;
 import org.orbisgis.core.renderer.se.SymbolizerNode;
 import org.orbisgis.core.renderer.se.common.MapEnv;
 import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
-import org.orbisgis.core.renderer.se.parameter.color.ColorHelper;
 
 /**
  * This class doesn't exists within XSD. Actually, it the CompositeGraphic element which has been move up
@@ -118,7 +114,7 @@ public final class GraphicCollection implements SymbolizerNode {
      * @throws ParameterException
      * @throws IOException
      */
-    public RenderableGraphics getGraphic(DataSource ds, long fid, boolean selected)
+    public RenderableGraphics getGraphic(Feature feat, boolean selected)
             throws ParameterException, IOException {
         /*
          * if the graphics collection doesn't depends on feature and the current
@@ -143,7 +139,7 @@ public final class GraphicCollection implements SymbolizerNode {
         Iterator<Graphic> it = graphics.iterator();
         while (it.hasNext()) {
             Graphic g = it.next();
-            RenderableGraphics img = g.getRenderableGraphics(ds, fid, selected);
+            RenderableGraphics img = g.getRenderableGraphics(feat, selected);
             if (img != null) {
                 float mX = img.getMinX();
                 float w = img.getWidth();
@@ -199,13 +195,13 @@ public final class GraphicCollection implements SymbolizerNode {
         return false;
     }
 
-    public double getMaxWidth(DataSource ds, long fid) throws ParameterException, IOException {
+    public double getMaxWidth(Feature feat) throws ParameterException, IOException {
         double maxWidth = 0.0;
 
         Iterator<Graphic> it = graphics.iterator();
         while (it.hasNext()) {
             Graphic g = it.next();
-            maxWidth = Math.max(g.getMaxWidth(ds, fid), maxWidth);
+            maxWidth = Math.max(g.getMaxWidth(feat), maxWidth);
         }
         return maxWidth;
     }
@@ -229,7 +225,7 @@ public final class GraphicCollection implements SymbolizerNode {
         }
     }
 
-	public RenderedImage getCache(DataSource ds, long fid, boolean selected)
+	public RenderedImage getCache(Feature feat, boolean selected)
             throws ParameterException, IOException {
 
         if (!selected && ! this.dependsOnFeature() && imageCache != null){
@@ -237,7 +233,7 @@ public final class GraphicCollection implements SymbolizerNode {
 		}
 
 
-		RenderableGraphics rGraphic = this.getGraphic(ds, fid, selected);
+		RenderableGraphics rGraphic = this.getGraphic(feat, selected);
     	RenderedImage rImage = null;
 		if (rGraphic != null){
 			rImage = rGraphic.createRendering(MapEnv.getCurrentRenderContext());

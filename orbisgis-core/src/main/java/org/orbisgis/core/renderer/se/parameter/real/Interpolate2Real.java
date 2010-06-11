@@ -1,7 +1,7 @@
 package org.orbisgis.core.renderer.se.parameter.real;
 
 import javax.xml.bind.JAXBElement;
-import org.gdms.data.DataSource;
+import org.gdms.data.feature.Feature;
 import org.orbisgis.core.renderer.persistance.se.InterpolateType;
 import org.orbisgis.core.renderer.persistance.se.InterpolationPointType;
 import org.orbisgis.core.renderer.persistance.se.ModeType;
@@ -47,7 +47,7 @@ public class Interpolate2Real extends Interpolate<RealParameter, RealLiteral> im
      * @return
      */
     @Override
-    public double getValue(DataSource ds, long fid) {
+    public double getValue(Feature feat) {
         return 0.0; // TODO compute interpolation
     }
 }

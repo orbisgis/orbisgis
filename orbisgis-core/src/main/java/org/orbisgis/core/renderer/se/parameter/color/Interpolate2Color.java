@@ -2,7 +2,7 @@ package org.orbisgis.core.renderer.se.parameter.color;
 
 import java.awt.Color;
 import javax.xml.bind.JAXBElement;
-import org.gdms.data.DataSource;
+import org.gdms.data.feature.Feature;
 import org.orbisgis.core.renderer.persistance.se.InterpolateType;
 import org.orbisgis.core.renderer.persistance.se.InterpolationPointType;
 import org.orbisgis.core.renderer.persistance.se.ModeType;
@@ -50,7 +50,7 @@ public class Interpolate2Color extends Interpolate<ColorParameter, ColorLiteral>
      * @return
      */
     @Override
-    public Color getColor(DataSource ds, long fid){
+    public Color getColor(Feature feat){
         return Color.pink; // TODO compute interpolation
     }
 }

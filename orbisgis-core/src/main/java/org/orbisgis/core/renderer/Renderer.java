@@ -55,6 +55,7 @@ import java.util.logging.Level;
 import javax.imageio.ImageIO;
 
 import org.apache.log4j.Logger;
+import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceCreationException;
 import org.gdms.data.NoSuchTableException;
 import org.gdms.data.SpatialDataSourceDecorator;
@@ -95,18 +96,14 @@ public class Renderer {
 
 	private static Logger logger = Logger.getLogger(Renderer.class.getName());
 
-	/*
-	 *
-	 * TODO HACK open close pas beau
-	 */
 	private Iterator<Integer> getFeatureIdInExtent(MapTransform mt,
 			SpatialDataSourceDecorator sds,
 			IProgressMonitor pm) throws DriverException {
+
 		sds.open();
 		// TODO dont execute the query if mt.getAdjustedExtent > sds.getFullExtent()
 		DefaultSpatialIndexQuery query = new DefaultSpatialIndexQuery(
-				mt.getAdjustedExtent(), sds.getMetadata().getFieldName(
-				sds.getSpatialFieldIndex()));
+				mt.getAdjustedExtent(), sds.getSpatialFieldName());
 
 		try {
 			if (sds.getDataSourceFactory().getIndexManager().getIndex(sds.getName(), sds.getSpatialFieldName()) == null) {
@@ -123,6 +120,35 @@ public class Renderer {
 		Iterator<Integer> queryIndex = sds.queryIndex(query);
 		sds.close();
 		return queryIndex;
+	}
+
+	private SpatialDataSourceDecorator getNewSdsPkFeatureInExtent(MapTransform mt, SpatialDataSourceDecorator sds) {
+		/*
+		if (mt.getAdjustedExtent() > sds.getFullExtent()){
+		}
+		 */
+
+		Envelope extent = mt.getAdjustedExtent();
+
+		try {
+			String query = "select autonumeric() as pk, * from " + sds.getName();
+
+			DataSource dataSourceFromSQL = sds.getDataSourceFactory().getDataSourceFromSQL(query);
+
+			query = "SELECT * from " + dataSourceFromSQL.getName()
+					+ " WHERE ST_Intersects(ST_GeomFromText('POLYGON(("
+					+ extent.getMinX() + " " + extent.getMinY() + ","
+					+ extent.getMinX() + " " + extent.getMaxY() + ","
+					+ extent.getMaxX() + " " + extent.getMaxY() + ","
+					+ extent.getMaxX() + " " + extent.getMinY() + ","
+					+ extent.getMinX() + " " + extent.getMinY() + "))'), " + sds.getSpatialFieldName() + ")";
+
+			return new SpatialDataSourceDecorator(sds.getDataSourceFactory().getDataSourceFromSQL(query));
+		} catch (Exception e) {
+			// Query failed
+			System.out.println("The query fails");
+		}
+		return sds;
 	}
 
 	/**
@@ -155,29 +181,34 @@ public class Renderer {
 			fts.hardSetSymbolizerLevel();
 
 			ArrayList<Symbolizer> symbs = new ArrayList<Symbolizer>();
+			// i.e. TextSymbolizer are always drawn above all other layer !!
 			ArrayList<Symbolizer> overlays = new ArrayList<Symbolizer>();
 
+			// Standard rules (with filter) matching current domain
 			ArrayList<Rule> rList = new ArrayList<Rule>();
+
+			// Rule which match current domain and ElseFilter
 			ArrayList<Rule> fRList = new ArrayList<Rule>();
 
-			// fetch symbolizers
+			// fetch symbolizers and rules
 			fts.getSymbolizers(mt, symbs, overlays, rList, fRList);
 
-
-			Iterator<Integer> it = this.getFeatureIdInExtent(mt, sds, pm);
+			// Create new dataSource with only feature in current extent
+			SpatialDataSourceDecorator featureInExtent = this.getNewSdsPkFeatureInExtent(mt, sds);
 
 			HashSet<Integer> allFid = new HashSet<Integer>();
 			HashSet<Integer> elseFid = new HashSet<Integer>();
 
+			featureInExtent.open();
 			/*
 			 * Extract features id
 			 * Hash sets contain features in current extent
 			 * elseFid will be used for feature which doesn't match any rule
 			 */
-			while (it.hasNext()) {
-				Integer next = it.next();
-				allFid.add(next);
-				elseFid.add(next);
+			for (int i=0;i<featureInExtent.getRowCount();i++){
+				Integer index = featureInExtent.getFieldValue(i, 0).getAsInt() -1;
+				allFid.add(index);
+				elseFid.add(index);
 			}
 
 			/*
@@ -185,19 +216,36 @@ public class Renderer {
 			 */
 			HashMap<Rule, HashSet<Integer>> rulesFid = new HashMap<Rule, HashSet<Integer>>();
 			for (Rule r : rList) {
-				it = this.getFeatureIdInExtent(mt, r.getFilteredDataSource(), pm);
-
-				HashSet<Integer> fids = new HashSet<Integer>();
-				while (it.hasNext()) {
-					Integer cFid = it.next();
-					fids.add(cFid);
-					/* Every feature that match a rule is removed from elsefid set*/
-					elseFid.remove(cFid);
+				
+				if (layer.getName().equals("g4districts98_region")){
+					System.out.println("Toggle where clause...");
+					r.setWhere("WHERE AK = 'VD'");
 				}
+
+				if (layer.getName().equals("cantons")){
+					System.out.println("Toggle where clause: PTOT99 > 10000");
+					r.setWhere("WHERE  PTOT99 > 10000");
+				}
+
+				SpatialDataSourceDecorator filteredDs = r.getFilteredDataSource(featureInExtent);
+
+				filteredDs.open();
+				HashSet<Integer> fids = new HashSet<Integer>();
+
+				for (int i=0;i<filteredDs.getRowCount();i++){
+					Integer index = filteredDs.getFieldValue(i, 0).getAsInt() -1;
+					fids.add(index);
+					/* Every feature that match a rule is removed from elsefid set*/
+					elseFid.remove(index);
+				}
+				filteredDs.close();
+
 				rulesFid.put(r, fids);
 			}
 
-			for (Rule elseR : fRList){
+			// ElseFilter
+			// Assign features which doesn't match any rule to FallbackRules
+			for (Rule elseR : fRList) {
 				rulesFid.put(elseR, elseFid);
 			}
 
@@ -211,58 +259,45 @@ public class Renderer {
 				}
 			}
 
-
 			long tV2 = System.currentTimeMillis();
-			System.out.println("Filtering done :" + (tV2 - tV1));
+			System.out.println("Filtering done in " + (tV2 - tV1) + "[ms]");
 
-			if (fts.isByLevel()) {
-				int total = 0;
-				/*
-				 * How many object to process ?
-				 * - e.g. 1 feature with 3 effective symbolizers is count as 3 objects
-				 */
-				for (Symbolizer s : symbs) {
-					total += rulesFid.get(s.getRule()).size();
-				}
+			//
+			// And now, features will be rendered
+			//
 
-				for (Symbolizer s : symbs) {
-					pm.startTask("Drawing " + layer.getName());
-					it = rulesFid.get(s.getRule()).iterator();
-
-					Integer fid = 0;
-
-					long tf1 = System.currentTimeMillis();
-					while (it.hasNext()) {
-						if (layerCount % 1000 == 0) {
-							if (pm.isCancelled()) {
-								return layerCount;
-							}
-						}
-						fid = it.next();
-						s.draw(g2, sds, fid.longValue(), selected.contains(fid));
-						layerCount++;
-						pm.progressTo((int) (100 * layerCount / total));
-					}
-					long tf2 = System.currentTimeMillis();
-					System.out.println("Features done :" + (tf2 - tf1));
-					pm.endTask();
-				}
-			} else {
-				// TODO REMOVE THIS (useless, we always want to draw by level !
-				it = allFid.iterator();
-				Integer fid = 0;
-				while (it.hasNext()) {
-					fid = it.next();
-					for (Symbolizer s : symbs) {
-						if (rulesFid.get(s.getRule()).contains(fid)) {
-							s.draw(g2, sds, fid.longValue(), selected.contains(fid));
-						}
-					}
-				}
+			// How many object to process ?
+			// - e.g. 1 feature with 3 effective symbolizers is count as 3 objects
+			long total = 0;
+			for (Symbolizer s : symbs) {
+				total += rulesFid.get(s.getRule()).size();
 			}
 
+			for (Symbolizer s : symbs) {
+				pm.startTask("Drawing " + layer.getName());
+				Iterator<Integer> featIt = rulesFid.get(s.getRule()).iterator();
+
+				Integer fid = 0;
+
+				long tf1 = System.currentTimeMillis();
+				while (featIt.hasNext()) {
+					if (layerCount % 1000 == 0) {
+						if (pm.isCancelled()) {
+							return layerCount;
+						}
+					}
+
+					fid = featIt.next();
+					s.draw(g2, sds.getFeature(fid), selected.contains(fid));
+					pm.progressTo((int) (100 * ++layerCount / total));
+				}
+				long tf2 = System.currentTimeMillis();
+				System.out.println("Level done in " + (tf2 - tf1) + "[ms]");
+				pm.endTask();
+			}
+			featureInExtent.close();
 			long tV3 = System.currentTimeMillis();
-			System.out.println("Rendering done :" + (tV3 - tV2) + " (" + layerCount + ")");
+			System.out.println("Rendering done :" + (tV3 - tV2) + "[ms] (" + layerCount + "objects)");
 
 		} catch (DriverException ex) {
 			java.util.logging.Logger.getLogger("Could not draw " + layer.getName()).log(Level.SEVERE, null, ex);

@@ -38,8 +38,8 @@ public class Category<ToType> implements Comparable {
             double t1;
             double t2;
             try {
-                t1 = this.threshold.getValue(null, 0);
-                t2 = c.threshold.getValue(null, 0);
+                t1 = this.threshold.getValue(null);
+                t2 = c.threshold.getValue(null);
 
                 if (t1 < t2) {
                     return -1;

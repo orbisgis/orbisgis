@@ -3,6 +3,7 @@ package org.orbisgis.core.renderer.se.parameter.color;
 import java.awt.Color;
 import javax.xml.bind.JAXBElement;
 import org.gdms.data.DataSource;
+import org.gdms.data.feature.Feature;
 import org.orbisgis.core.renderer.persistance.se.MapItemType;
 import org.orbisgis.core.renderer.persistance.se.RecodeType;
 import org.orbisgis.core.renderer.se.parameter.MapItem;
@@ -31,12 +32,12 @@ public class Recode2Color extends Recode<ColorParameter, ColorLiteral> implement
 
 
     @Override
-    public Color getColor(DataSource ds, long fid){
+    public Color getColor(Feature feat){
         try {
             // Should always depend on features !
-            return getParameter(ds, fid).getColor(ds, fid);
+            return getParameter(feat).getColor(feat);
         } catch (ParameterException ex) {
-            return this.fallbackValue.getColor(ds, fid);
+            return this.fallbackValue.getColor(feat);
         }
     }
 

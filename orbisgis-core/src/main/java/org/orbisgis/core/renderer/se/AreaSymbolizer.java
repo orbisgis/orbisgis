@@ -8,6 +8,7 @@ import org.orbisgis.core.renderer.persistance.se.AreaSymbolizerType;
 import org.orbisgis.core.renderer.persistance.se.ObjectFactory;
 
 import org.gdms.data.SpatialDataSourceDecorator;
+import org.gdms.data.feature.Feature;
 import org.gdms.driver.DriverException;
 
 import org.orbisgis.core.renderer.persistance.se.SymbolizerType;
@@ -109,21 +110,21 @@ public class AreaSymbolizer extends VectorSymbolizer {
 	 * @todo make sure the geom is an area; implement p_offset
 	 */
 	@Override
-	public void draw(Graphics2D g2, SpatialDataSourceDecorator sds, long fid, boolean selected) throws ParameterException, IOException, DriverException {
-		Shape shp = this.getShape(sds, fid);
+	public void draw(Graphics2D g2, Feature feat, boolean selected) throws ParameterException, IOException, DriverException {
+		Shape shp = this.getShape(feat);
 
 		if (shp != null) {
 			if (fill != null) {
-				fill.draw(g2, shp, sds, fid, selected);
+				fill.draw(g2, shp, feat, selected);
 			}
 
 			if (stroke != null) {
 				if (perpendicularOffset != null) {
-					double offset = perpendicularOffset.getValue(sds, fid);
+					double offset = perpendicularOffset.getValue(feat);
 					// apply perpendicular offset to shp !
 				}
 				// TODO perpendicular offset !
-				stroke.draw(g2, shp, sds, fid, selected);
+				stroke.draw(g2, shp, feat, selected);
 			}
 		}
 	}

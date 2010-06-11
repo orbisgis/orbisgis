@@ -5,13 +5,13 @@ import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Paint;
 import java.awt.Shape;
-import java.awt.TexturePaint;
 import java.io.IOException;
 import java.util.ArrayList;
 import javax.xml.bind.JAXBElement;
 import org.orbisgis.core.renderer.persistance.se.PenStrokeType;
 
 import org.gdms.data.DataSource;
+import org.gdms.data.feature.Feature;
 import org.orbisgis.core.renderer.persistance.se.ObjectFactory;
 import org.orbisgis.core.renderer.persistance.se.ParameterValueType;
 import org.orbisgis.core.renderer.se.common.MapEnv;
@@ -211,13 +211,13 @@ public class PenStroke extends Stroke {
 
     private void updateBasicStroke() {
         try {
-            bStroke = createBasicStroke(null, 0);
+            bStroke = createBasicStroke(null);
         } catch (Exception e) {
             this.bStroke = null;
         }
     }
 
-    private BasicStroke createBasicStroke(DataSource ds, long fid) throws ParameterException {
+    private BasicStroke createBasicStroke(Feature feat) throws ParameterException {
 
         int cap;
         if (this.lineCap == null) {
@@ -258,7 +258,7 @@ public class PenStroke extends Stroke {
         double w = 1.0;
 
         if (width != null) {
-            w = width.getValue(ds, fid);
+            w = width.getValue(feat);
             // TODO add scale and dpi
             w = Uom.toPixel(w, getUom(), MapEnv.getScaleDenominator());
         }
@@ -267,11 +267,11 @@ public class PenStroke extends Stroke {
         return new BasicStroke((float) w, cap, join);
     }
 
-    public BasicStroke getBasicStroke(DataSource ds, long fid) throws ParameterException {
+    public BasicStroke getBasicStroke(Feature feat) throws ParameterException {
         if (bStroke != null) {
             return bStroke;
         } else {
-            return this.createBasicStroke(ds, fid);
+            return this.createBasicStroke(feat);
         }
     }
 
@@ -281,7 +281,7 @@ public class PenStroke extends Stroke {
     }
      */
     @Override
-    public void draw(Graphics2D g2, Shape shp, DataSource ds, long fid, boolean selected) throws ParameterException, IOException {
+    public void draw(Graphics2D g2, Shape shp, Feature feat, boolean selected) throws ParameterException, IOException {
 
         Paint paint = null;
         // remove preGap, postGap from the line
@@ -290,7 +290,7 @@ public class PenStroke extends Stroke {
         BasicStroke stroke = null;
 
         if (this.bStroke == null) {
-            stroke = this.createBasicStroke(ds, fid);
+            stroke = this.createBasicStroke(feat);
         } else {
             stroke = this.bStroke;
         }
@@ -299,7 +299,7 @@ public class PenStroke extends Stroke {
 
         if (this.useColor == false) {
             if (stipple != null) {
-                paint = stipple.getStipplePainter(ds, fid, selected);
+                paint = stipple.getStipplePainter(feat, selected);
             } else {
                 // TOOD Warn Stiple has to be used, but is undefined
             }
@@ -307,18 +307,18 @@ public class PenStroke extends Stroke {
             Color c;
 
             if (this.color != null) {
-                c = color.getColor(ds, fid);
+                c = color.getColor(feat);
                 if (selected) {
                     c = ColorHelper.invert(c);
                 }
             } else {
                 // TOOD Warn Color has to be used, but is undefined (Using a random one)
-                c = new ColorLiteral().getColor(ds, fid);
+                c = new ColorLiteral().getColor(feat);
             }
 
             Color ac = c;
             if (this.opacity != null) {
-                paint = ColorHelper.getColorWithAlpha(c, this.opacity.getValue(ds, fid));
+                paint = ColorHelper.getColorWithAlpha(c, this.opacity.getValue(feat));
             }
 
         }
@@ -330,9 +330,9 @@ public class PenStroke extends Stroke {
     }
 
     @Override
-    public double getMaxWidth(DataSource ds, long fid) throws ParameterException {
+    public double getMaxWidth(Feature feat) throws ParameterException {
         if (this.width != null) {
-            return Uom.toPixel(width.getValue(ds, fid), this.getUom(), MapEnv.getScaleDenominator());
+            return Uom.toPixel(width.getValue(feat), this.getUom(), MapEnv.getScaleDenominator());
         } else {
             return 0.0;
         }

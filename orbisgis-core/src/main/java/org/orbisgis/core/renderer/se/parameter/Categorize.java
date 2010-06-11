@@ -7,6 +7,7 @@ import java.util.List;
 import javax.xml.bind.JAXBElement;
 import org.orbisgis.core.renderer.persistance.se.CategorizeType;
 import org.gdms.data.DataSource;
+import org.gdms.data.feature.Feature;
 import org.orbisgis.core.renderer.persistance.ogc.ExpressionType;
 import org.orbisgis.core.renderer.persistance.se.ObjectFactory;
 import org.orbisgis.core.renderer.persistance.se.ParameterValueType;
@@ -161,11 +162,11 @@ public abstract class Categorize<ToType extends SeParameter, FallbackType extend
         Collections.sort(classes);
     }
 
-    protected ToType getParameter(DataSource ds, long fid) {
+    protected ToType getParameter(Feature feat) {
         try {
             if (getNumClasses() > 1) {
 
-                double value = lookupValue.getValue(ds, fid);
+                double value = lookupValue.getValue(feat);
 
                 Iterator it = classes.iterator();
 
@@ -173,7 +174,7 @@ public abstract class Categorize<ToType extends SeParameter, FallbackType extend
 
                 while (it.hasNext()) {
                     Category<ToType> cat = (Category<ToType>) it.next();
-                    double threshold = cat.getThreshold().getValue(ds, fid);
+                    double threshold = cat.getThreshold().getValue(feat);
 
                     if ((!succeeding && value <= threshold) || ((value < threshold))) {
                         return classValue;

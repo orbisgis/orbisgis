@@ -1,7 +1,7 @@
 package org.orbisgis.core.renderer.se.parameter.string;
 
 import javax.xml.bind.JAXBElement;
-import org.gdms.data.DataSource;
+import org.gdms.data.feature.Feature;
 import org.orbisgis.core.renderer.persistance.ogc.LiteralType;
 import org.orbisgis.core.renderer.se.parameter.Literal;
 
@@ -20,7 +20,7 @@ public class StringLiteral extends Literal implements StringParameter{
     }
 
     @Override
-    public String getValue(DataSource ds, long fid){
+    public String getValue(Feature feat){
         return v;
     }
 

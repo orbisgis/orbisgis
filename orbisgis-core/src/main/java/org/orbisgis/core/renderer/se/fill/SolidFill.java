@@ -7,6 +7,7 @@ import javax.xml.bind.JAXBElement;
 import org.orbisgis.core.renderer.persistance.se.ObjectFactory;
 import org.orbisgis.core.renderer.persistance.se.SolidFillType;
 import org.gdms.data.DataSource;
+import org.gdms.data.feature.Feature;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
 import org.orbisgis.core.renderer.se.parameter.color.ColorHelper;
@@ -83,13 +84,13 @@ public class SolidFill extends Fill {
     }
 
     @Override
-    public void draw(Graphics2D g2, Shape shp, DataSource ds, long fid, boolean selected) throws ParameterException {
+    public void draw(Graphics2D g2, Shape shp, Feature feat, boolean selected) throws ParameterException {
         if (color != null) {
-            Color c = color.getColor(ds, fid);
+            Color c = color.getColor(feat);
             Double op = 100.0;
 
             if (this.opacity != null) {
-                op = this.opacity.getValue(ds, fid);
+                op = this.opacity.getValue(feat);
             }
 
             // Add opacity to the color 

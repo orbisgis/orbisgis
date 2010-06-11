@@ -9,9 +9,8 @@ import java.awt.Polygon;
 import java.awt.Shape;
 import java.awt.geom.Arc2D;
 import java.awt.geom.Rectangle2D;
-import org.gdms.data.DataSource;
+import org.gdms.data.feature.Feature;
 import org.orbisgis.core.renderer.persistance.se.MarkGraphicType;
-import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 
 /**
@@ -56,15 +55,15 @@ public enum WellKnownName implements MarkGraphicSource {
      * @throws ParameterException
      */
     @Override
-    public Shape getShape(ViewBox viewBox, DataSource ds, long fid) throws ParameterException {
+    public Shape getShape(ViewBox viewBox, Feature feat) throws ParameterException {
         double x, y; // The size of the shape, [final unit] => [px] 
 
-        if (ds == null && viewBox != null && viewBox.dependsOnFeature()){
+        if (feat == null && viewBox != null && viewBox.dependsOnFeature()){
             return null;
         }
 
         if (viewBox != null) {
-            Dimension box = viewBox.getDimensionInPixel(ds, fid, 1.0);
+            Dimension box = viewBox.getDimensionInPixel(feat, 1.0);
 
             x = box.getWidth();
             y = box.getHeight();
