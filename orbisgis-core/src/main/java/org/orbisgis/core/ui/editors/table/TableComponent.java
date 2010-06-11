@@ -50,6 +50,8 @@ import org.gdms.data.edition.EditionListener;
 import org.gdms.data.edition.FieldEditionEvent;
 import org.gdms.data.edition.MetadataEditionListener;
 import org.gdms.data.edition.MultipleEditionEvent;
+import org.gdms.data.indexes.DefaultAlphaQuery;
+import org.gdms.data.indexes.IndexQuery;
 import org.gdms.data.metadata.Metadata;
 import org.gdms.data.types.Constraint;
 import org.gdms.data.types.Type;
@@ -501,9 +503,10 @@ public class TableComponent extends JPanel implements WorkbenchFrame {
 					DataSourceFactory dsf = dataSource.getDataSourceFactory();
 
 					// Step 1: create a data source with pk
-					// pk will fid + 1
+					// pk number will be fid + 1
 					DataSource dsWithPk = dsf.getDataSourceFromSQL(query + " ;",
 							pm);
+
 
 					// Step 2 select * from data source with pk according to WHERE
 					DataSource dsWithPkFiltered = dsf.getDataSourceFromSQL(
@@ -516,12 +519,9 @@ public class TableComponent extends JPanel implements WorkbenchFrame {
 					pm.startTask("Data matching");
 					dsWithPk.open();
 
-					// Fetch pk_value
 					int[] sel = new int[(int)dsRowCount];
-					for (int i = 0; i < dsRowCount; i++) {
-						// Real ID is (pk_id - 1)
-						int selected = dsWithPkFiltered.getFieldValue(i, 0).getAsInt() - 1;
-						sel[i] = selected;
+					for (int i=0;i<dsRowCount;i++){
+						sel[i] = dsWithPkFiltered.getFieldValue(i, 0).getAsInt() -1;
 					}
 
 					dsWithPkFiltered.close();
