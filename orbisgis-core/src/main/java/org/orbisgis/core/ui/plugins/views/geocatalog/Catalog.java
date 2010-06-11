@@ -1,39 +1,47 @@
-/*
+/**
  * OrbisGIS is a GIS application dedicated to scientific spatial simulation.
- * This cross-platform GIS is developed at French IRSTV institute and is able
- * to manipulate and create vector and raster spatial information. OrbisGIS
- * is distributed under GPL 3 license. It is produced  by the geo-informatic team of
- * the IRSTV Institute <http://www.irstv.cnrs.fr/>, CNRS FR 2488:
- *    Erwan BOCHER, scientific researcher,
- *    Thomas LEDUC, scientific researcher,
- *    Fernando GONZALEZ CORTES, computer engineer.
+ * This cross-platform GIS is developed at French IRSTV institute and is able to
+ * manipulate and create vector and raster spatial information. OrbisGIS is
+ * distributed under GPL 3 license. It is produced by the geo-informatic team of
+ * the IRSTV Institute <http://www.irstv.cnrs.fr/> CNRS FR 2488.
+ * 
+ *  
+ *  Lead Erwan BOCHER, scientific researcher, 
  *
+ *  Developer lead : Pierre-Yves FADET, computer engineer. 
+ *  
+ *  User support lead : Gwendall Petit, geomatic engineer. 
+ * 
+ * Previous computer developer : Thomas LEDUC, scientific researcher, Fernando GONZALEZ
+ * CORTES, computer engineer.
+ * 
  * Copyright (C) 2007 Erwan BOCHER, Fernando GONZALEZ CORTES, Thomas LEDUC
- *
+ * 
+ * Copyright (C) 2010 Erwan BOCHER, Fernando GONZALEZ CORTES, Thomas LEDUC
+ * 
  * This file is part of OrbisGIS.
- *
- * OrbisGIS is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * OrbisGIS is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with OrbisGIS. If not, see <http://www.gnu.org/licenses/>.
- *
- * For more information, please consult:
- *    <http://orbisgis.cerma.archi.fr/>
- *    <http://sourcesup.cru.fr/projects/orbisgis/>
- *
- * or contact directly:
- *    erwan.bocher _at_ ec-nantes.fr
- *    fergonco _at_ gmail.com
- *    thomas.leduc _at_ cerma.archi.fr
- */
+ * 
+ * OrbisGIS is free software: you can redistribute it and/or modify it under the
+ * terms of the GNU General Public License as published by the Free Software
+ * Foundation, either version 3 of the License, or (at your option) any later
+ * version.
+ * 
+ * OrbisGIS is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
+ * A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License along with
+ * OrbisGIS. If not, see <http://www.gnu.org/licenses/>.
+ * 
+ * For more information, please consult: <http://orbisgis.cerma.archi.fr/>
+ * <http://sourcesup.cru.fr/projects/orbisgis/>
+ * 
+ * or contact directly: 
+ * erwan.bocher _at_ ec-nantes.fr 
+ * Pierre-Yves.Fadet _at_ ec-nantes.fr
+ * gwendall.petit _at_ ec-nantes.fr
+ **/
+
 package org.orbisgis.core.ui.plugins.views.geocatalog;
 
 import java.awt.BorderLayout;
@@ -58,7 +66,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.Vector;
 
 import javax.swing.BorderFactory;
 import javax.swing.DefaultListCellRenderer;
@@ -214,17 +221,14 @@ public class Catalog extends JPanel implements DragGestureListener,
 		txtFilter = new JTextFilter();
 		txtFilter.addDocumentListener(new DocumentListener() {
 
-			@Override
 			public void removeUpdate(DocumentEvent e) {
 				doFilter();
 			}
 
-			@Override
 			public void insertUpdate(DocumentEvent e) {
 				doFilter();
 			}
 
-			@Override
 			public void changedUpdate(DocumentEvent e) {
 				doFilter();
 			}
@@ -391,7 +395,6 @@ public class Catalog extends JPanel implements DragGestureListener,
 		JButton ret = new JButton(icon);
 		ret.addActionListener(new ActionListener() {
 
-			@Override
 			public void actionPerformed(ActionEvent e) {
 				if (AC_BTN_ADD_TAG.equals(e.getActionCommand())) {
 					AskValue av = new AskValue("New label", null, null);
@@ -417,26 +420,6 @@ public class Catalog extends JPanel implements DragGestureListener,
 
 	public String[] getTags() {
 		return tagSources.keySet().toArray(new String[0]);
-	}
-
-	private Object[] getAvailableFilters() {
-		/*
-		 * ExtensionPointManager<IGeocatalogFilter> epm = new
-		 * ExtensionPointManager<IGeocatalogFilter>(
-		 * "org.orbisgis.core.ui.views.geocatalog.Filter");
-		 * ArrayList<ItemAttributes<IGeocatalogFilter>> attributes = epm
-		 * .getItemAttributes("/extension/source-filter");
-		 * ArrayList<GeocatalogFilterDecorator> filters = new
-		 * ArrayList<GeocatalogFilterDecorator>(); for
-		 * (ItemAttributes<IGeocatalogFilter> itemAttributes : attributes) {
-		 * IGeocatalogFilter instance = itemAttributes.getInstance("class");
-		 * GeocatalogFilterDecorator filter = new GeocatalogFilterDecorator(
-		 * itemAttributes.getAttribute("id"), itemAttributes
-		 * .getAttribute("name"), instance); filters.add(filter); }
-		 * 
-		 * return filters.toArray(new GeocatalogFilterDecorator[0]);
-		 */
-		return null;
 	}
 
 	public JPopupMenu getPopup() {
@@ -506,7 +489,6 @@ public class Catalog extends JPanel implements DragGestureListener,
 		listModel.freeResources();
 	}
 
-	@Override
 	public void dragGestureRecognized(DragGestureEvent dge) {
 		Transferable dragData = getDragData(dge);
 		if (dragData != null) {
@@ -515,23 +497,18 @@ public class Catalog extends JPanel implements DragGestureListener,
 		}
 	}
 
-	@Override
 	public void dragDropEnd(DragSourceDropEvent dsde) {
 	}
 
-	@Override
 	public void dragEnter(DragSourceDragEvent dsde) {
 	}
 
-	@Override
 	public void dragExit(DragSourceEvent dse) {
 	}
 
-	@Override
 	public void dragOver(DragSourceDragEvent dsde) {
 	}
 
-	@Override
 	public void dropActionChanged(DragSourceDragEvent dsde) {
 	}
 
@@ -574,7 +551,6 @@ public class Catalog extends JPanel implements DragGestureListener,
 			this.tag = tag;
 		}
 
-		@Override
 		public boolean accepts(SourceManager sm, String sourceName) {
 			HashSet<String> sources = tagSources.get(tag);
 			if (sources.contains(sourceName)) {
@@ -592,7 +568,6 @@ public class Catalog extends JPanel implements DragGestureListener,
 			this.tag = tag;
 		}
 
-		@Override
 		public void actionPerformed(ActionEvent e) {
 			Object[] sources = lstSources.getSelectedValues();
 			for (Object source : sources) {
@@ -611,7 +586,6 @@ public class Catalog extends JPanel implements DragGestureListener,
 			this.tag = tag;
 		}
 
-		@Override
 		public void actionPerformed(ActionEvent e) {
 			Object[] sources = lstSources.getSelectedValues();
 			for (Object source : sources) {

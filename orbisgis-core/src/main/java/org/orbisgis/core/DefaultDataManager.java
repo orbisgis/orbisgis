@@ -33,6 +33,7 @@
 package org.orbisgis.core;
 
 import java.io.File;
+import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.gdms.data.AlreadyClosedException;
@@ -42,21 +43,44 @@ import org.gdms.data.DataSourceFactory;
 import org.gdms.data.NoSuchTableException;
 import org.gdms.data.SpatialDataSourceDecorator;
 import org.gdms.data.indexes.IndexManager;
+import org.gdms.data.types.Constraint;
+import org.gdms.data.values.Value;
+import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
+import org.gdms.driver.ReadOnlyDriver;
 import org.gdms.driver.driverManager.DriverLoadException;
+import org.gdms.driver.generic.GenericObjectDriver;
 import org.gdms.source.Source;
 import org.gdms.source.SourceManager;
+import org.gdms.sql.customQuery.spatial.geometry.crs.ST_Transform;
+import org.orbisgis.core.layerModel.DefaultMapContext;
 import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.layerModel.Layer;
 import org.orbisgis.core.layerModel.LayerCollection;
 import org.orbisgis.core.layerModel.LayerException;
+import org.orbisgis.core.layerModel.MapContext;
 import org.orbisgis.core.layerModel.WMSLayer;
+
+import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.CoordinateSequence;
+import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.impl.CoordinateArraySequence;
+import com.vividsolutions.jts.geom.util.GeometryTransformer;
+
+import fr.cts.CoordinateOperation;
+import fr.cts.Identifier;
+import fr.cts.IllegalCoordinateException;
+import fr.cts.crs.CompoundCRS;
+import fr.cts.crs.CoordinateReferenceSystem;
+import fr.cts.op.CoordinateOperationFactory;
+import fr.cts.op.CoordinateOperationSequence;
 
 public class DefaultDataManager implements DataManager {
 
 	private static final Logger logger = Logger
 			.getLogger(DefaultDataManager.class);
 	private DataSourceFactory dsf;
+	private static CoordinateReferenceSystem crs;
 
 	public DefaultDataManager(DataSourceFactory dsf) {
 		this.dsf = dsf;
@@ -101,6 +125,47 @@ public class DefaultDataManager implements DataManager {
 					+ "registered with the name: " + sourceName);
 		}
 	}
+	
+/*	private void doTransformation(SpatialDataSourceDecorator sds,
+			CoordinateReferenceSystem sourceCRS, CoordinateReferenceSystem targetCRS){
+		List<CoordinateOperation> ops = CoordinateOperationFactory
+											.createCoordinateOperations((CompoundCRS)sourceCRS, (CompoundCRS)targetCRS);
+		final CoordinateOperationSequence cos = new CoordinateOperationSequence(new Identifier(
+				ST_Transform.class, "" + " to " + ""), ops);
+
+		ReadOnlyDriver driver = sds.getDataSource().getDriver();
+				
+		Value[] values =null;
+		Geometry geom;
+		GeometryTransformer gt = new GeometryTransformer() {
+			protected CoordinateSequence transformCoordinates(CoordinateSequence cs, Geometry geom){
+				Coordinate[] cc = geom.getCoordinates();
+				CoordinateSequence newcs = new CoordinateArraySequence(cc);
+				for (int i = 0 ; i < cc.length ; i++) {
+					Coordinate c = cc[i];
+					try {	                    	
+						double[] xyz = cos.transform(new double[]{c.x, c.y, c.z});
+						newcs.setOrdinate(i,0,xyz[0]);
+						newcs.setOrdinate(i,1,xyz[1]);
+						if(xyz.length > 2)
+							newcs.setOrdinate(i,2,xyz[2]);
+						else
+							newcs.setOrdinate(i,2,Double.NaN);
+					} catch(IllegalCoordinateException ice) {ice.printStackTrace();}
+				}
+				return newcs;
+			}
+		};
+
+		int geomIndex = sds.getSpatialFieldIndex();
+		for (int i = 0; i < sds.getRowCount(); i++) {
+			values = sds.getRow(i);
+			geom = sds.getGeometry(i);
+			values[geomIndex] = ValueFactory
+			.createValue(gt.transform(geom));
+			driver.addValues(values);
+		}		
+	}*/
 
 	public ILayer createLayer(DataSource ds) throws LayerException {
 		int type = ds.getSource().getType();
@@ -113,8 +178,18 @@ public class DefaultDataManager implements DataManager {
 						ds);
 				int sfi;
 				try {
-					sds.open();
+					sds.open();					
 					sfi = sds.getSpatialFieldIndex();
+					//if(crs==null)
+						crs = sds.getCRS();						
+					//else {
+						//doTransformation(sds,sds.getCRS(),crs);						
+						//sds.setCRS(crs, "the_geom");
+						
+						//TODO : do CRS transformation
+						
+					//}
+						
 					try {
 						sds.close();
 					} catch (AlreadyClosedException e) {

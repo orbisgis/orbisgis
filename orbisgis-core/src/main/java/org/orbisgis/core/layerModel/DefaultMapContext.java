@@ -88,6 +88,7 @@ public class DefaultMapContext implements MapContext{
 	private Envelope boundingBox;
 	
 
+
 	/**
 	 * @param mapControl
 	 */
@@ -226,6 +227,8 @@ public class DefaultMapContext implements MapContext{
 		DataManager dataManager = (DataManager) Services
 				.getService(DataManager.class);
 		ILayer ret = null;
+		
+		
 		if (layer instanceof LayerCollectionType) {
 			LayerCollectionType xmlLayerCollection = (LayerCollectionType) layer;
 			ret = dataManager.createLayerCollection(layer.getName());

@@ -1,39 +1,46 @@
-/*
+/**
  * OrbisGIS is a GIS application dedicated to scientific spatial simulation.
- * This cross-platform GIS is developed at French IRSTV institute and is able
- * to manipulate and create vector and raster spatial information. OrbisGIS
- * is distributed under GPL 3 license. It is produced  by the geo-informatic team of
- * the IRSTV Institute <http://www.irstv.cnrs.fr/>, CNRS FR 2488:
- *    Erwan BOCHER, scientific researcher,
- *    Thomas LEDUC, scientific researcher,
- *    Fernando GONZALEZ CORTES, computer engineer.
+ * This cross-platform GIS is developed at French IRSTV institute and is able to
+ * manipulate and create vector and raster spatial information. OrbisGIS is
+ * distributed under GPL 3 license. It is produced by the geo-informatic team of
+ * the IRSTV Institute <http://www.irstv.cnrs.fr/> CNRS FR 2488.
+ * 
+ *  
+ *  Lead Erwan BOCHER, scientific researcher, 
  *
- * Copyright (C) 2009 Erwan BOCHER, Pierre-yves FADET
- *
+ *  Developer lead : Pierre-Yves FADET, computer engineer. 
+ *  
+ *  User support lead : Gwendall Petit, geomatic engineer. 
+ * 
+ * Previous computer developer : Thomas LEDUC, scientific researcher, Fernando GONZALEZ
+ * CORTES, computer engineer.
+ * 
+ * Copyright (C) 2007 Erwan BOCHER, Fernando GONZALEZ CORTES, Thomas LEDUC
+ * 
+ * Copyright (C) 2010 Erwan BOCHER, Fernando GONZALEZ CORTES, Thomas LEDUC
+ * 
  * This file is part of OrbisGIS.
- *
- * OrbisGIS is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * OrbisGIS is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with OrbisGIS. If not, see <http://www.gnu.org/licenses/>.
- *
- * For more information, please consult:
- *    <http://orbisgis.cerma.archi.fr/>
- *    <http://sourcesup.cru.fr/projects/orbisgis/>
- *
- * or contact directly:
- *    erwan.bocher _at_ ec-nantes.fr
- *    Pierre-Yves.Fadet_at_ec-nantes.fr
- *    thomas.leduc _at_ cerma.archi.fr
- */
+ * 
+ * OrbisGIS is free software: you can redistribute it and/or modify it under the
+ * terms of the GNU General Public License as published by the Free Software
+ * Foundation, either version 3 of the License, or (at your option) any later
+ * version.
+ * 
+ * OrbisGIS is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
+ * A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License along with
+ * OrbisGIS. If not, see <http://www.gnu.org/licenses/>.
+ * 
+ * For more information, please consult: <http://orbisgis.cerma.archi.fr/>
+ * <http://sourcesup.cru.fr/projects/orbisgis/>
+ * 
+ * or contact directly: 
+ * erwan.bocher _at_ ec-nantes.fr 
+ * Pierre-Yves.Fadet _at_ ec-nantes.fr
+ * gwendall.petit _at_ ec-nantes.fr
+ **/
 
 package org.orbisgis.core.ui.plugins.editors.mapEditor;
 
@@ -43,9 +50,7 @@ import java.awt.Dimension;
 import java.awt.Toolkit;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
-import java.awt.geom.Point2D;
 import java.util.ArrayList;
-import java.util.ListIterator;
 
 import javax.swing.BoxLayout;
 import javax.swing.DefaultComboBoxModel;
@@ -53,14 +58,12 @@ import javax.swing.ImageIcon;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.xml.transform.sax.TransformerHandler;
 
 import org.orbisgis.core.Services;
 import org.orbisgis.core.images.IconLoader;
 import org.orbisgis.core.images.IconNames;
 import org.orbisgis.core.layerModel.MapContext;
 import org.orbisgis.core.map.MapTransform;
-import org.orbisgis.core.map.TransformListener;
 import org.orbisgis.core.ui.editor.IEditor;
 import org.orbisgis.core.ui.editors.map.tool.ToolManager;
 import org.orbisgis.core.ui.pluginSystem.AbstractPlugIn;
@@ -74,6 +77,11 @@ import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
+
+/**
+ * Set map scale
+ *
+ */
 
 public class ScalePlugIn extends AbstractPlugIn {
 
@@ -115,8 +123,9 @@ public class ScalePlugIn extends AbstractPlugIn {
 
 					if (DefaultScales.contains(scale)) {
 						envelope = getEnveloppeFromScale(
-								mt.getAdjustedExtent(), mt.getWidth(), scale);						
-						mt.setExtent(envelope);	
+								mt.getAdjustedExtent(), mt.getWidth(), scale);
+						if(!mt.getAdjustedExtent().equals(envelope))
+							mt.setExtent(envelope);	
 					}
 				}
 			}
@@ -125,12 +134,22 @@ public class ScalePlugIn extends AbstractPlugIn {
 		return false;
 	}
 	
+	private MouseMotionAdapter mouseMotionAdapter =
+		new MouseMotionAdapter()
+	{
+		public void mouseMoved(MouseEvent e)
+		{
+			updateComponent();
+		}
+	};
+	private static int scaleSelected;
 	
 	public void initialize(PlugInContext context) throws Exception {
 		panel = new JPanel(new BorderLayout());
 		JLabel label = new JLabel("Scale : ");
 		label.setAlignmentX(Component.LEFT_ALIGNMENT);
 		combobox = new JComboBox(DefaultScales.toArray(new Integer[0]));
+		//combobox = new JComboBox(new ScaleModel());
 		combobox.setAlignmentX(Component.RIGHT_ALIGNMENT);
 		combobox.setMaximumSize(new Dimension(100, 20));
 		panel.add(label);
@@ -142,25 +161,32 @@ public class ScalePlugIn extends AbstractPlugIn {
 		setTypeListener("item");
 		EditorManager em = Services.getService(EditorManager.class);
 		em.addEditorListener(new PlugInEditorListener(this, panel,
-				Names.MAP_TOOLBAR_SCALE, null, context, true));		
-		
-		
+				Names.MAP_TOOLBAR_SCALE, mouseMotionAdapter, context, true));
 	}
 
 	protected void updateComponent() {
+		//((DefaultComboBoxModel) combobox.getModel()).removeElement(scaleSelected);
+		//if(mapListener==null){
+/*			mapListener = new PlugInMapListener(this, panel,
+					Names.MAP_TOOLBAR_SCALE,  getPlugInContext(), true);
+			getPlugInContext().getMapEditor().	
+				getComponent().addMouseListener(mapListener);*/
+		//}
 		combobox.setModel(new DefaultComboBoxModel(DefaultScales.toArray(new Integer[0])));
 		ToolManager toolManager =null;			
 		if(getPlugInContext().getMapEditor()!=null) {
 			toolManager = getPlugInContext().getMapEditor().getMapControl().getToolManager();	
 			int currentScale = (int)toolManager.getMapTransform().getScaleDenominator();	
-			int scaleSelected = 0;
+			scaleSelected = 0;
 			for(int i=0; i<DefaultScales.size() ; i++) {
 				if(Math.abs(((Integer)DefaultScales.get(i)) - currentScale) == 0 ||
 						Math.abs(((Integer)DefaultScales.get(i)) - currentScale) == 1)
-					scaleSelected = DefaultScales.get(i);					
+					scaleSelected = DefaultScales.get(i);	
+					
 			}			
 			if(scaleSelected == 0) {
 				scaleSelected = new Integer(currentScale);
+				//((DefaultComboBoxModel)combobox.getModel()).addElement(scaleSelected);
 				combobox.addItem( scaleSelected );
 			}
 			combobox.setSelectedItem( scaleSelected );
