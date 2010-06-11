@@ -50,10 +50,6 @@ import org.gdms.data.edition.EditionListener;
 import org.gdms.data.edition.FieldEditionEvent;
 import org.gdms.data.edition.MetadataEditionListener;
 import org.gdms.data.edition.MultipleEditionEvent;
-import org.gdms.data.indexes.DefaultAlphaQuery;
-import org.gdms.data.indexes.IndexException;
-import org.gdms.data.indexes.IndexManager;
-import org.gdms.data.indexes.IndexQuery;
 import org.gdms.data.metadata.Metadata;
 import org.gdms.data.types.Constraint;
 import org.gdms.data.types.Type;
@@ -222,14 +218,9 @@ public class TableComponent extends JPanel implements WorkbenchFrame {
 						}
 
 					} else {
-						String columnName = "pk_" + dataSource.getName();
-						StringBuffer query = new StringBuffer(
-								"select autonumeric() as pk_"
-										+ dataSource.getName() + ", * ");
-
-						query.append(" from " + dataSource.getName());
-
-						findAValue(query.toString(), columnName, whereText);
+						String pk_name = "pk_" + dataSource.getName();
+						findAValue("SELECT autonumeric() as " + pk_name + ", *"
+							     + "FROM " + dataSource.getName() , pk_name, whereText);
 
 					}
 				}
@@ -491,7 +482,7 @@ public class TableComponent extends JPanel implements WorkbenchFrame {
 		}
 	}
 
-	public void findAValue(final String text, final String columnName,
+	public void findAValue(final String query, final String pk_columnName,
 			final String whereText) {
 
 		BackgroundManager bm = Services.getService(BackgroundManager.class);
@@ -508,11 +499,13 @@ public class TableComponent extends JPanel implements WorkbenchFrame {
 
 				try {
 					DataSourceFactory dsf = dataSource.getDataSourceFactory();
-					DataSource dsWithPk = dsf.getDataSourceFromSQL(text + " ;",
+
+					// Step 1: create a data source with pk
+					// pk will fid + 1
+					DataSource dsWithPk = dsf.getDataSourceFromSQL(query + " ;",
 							pm);
 
-					String dsWithPkName = dsWithPk.getName();
-
+					// Step 2 select * from data source with pk according to WHERE
 					DataSource dsWithPkFiltered = dsf.getDataSourceFromSQL(
 							"select * from " + dsWithPk.getName() + " where "
 									+ whereText + " ;", pm);
@@ -520,47 +513,20 @@ public class TableComponent extends JPanel implements WorkbenchFrame {
 					dsWithPkFiltered.open();
 
 					long dsRowCount = dsWithPkFiltered.getRowCount();
-
-					ArrayList<Integer> newSel = new ArrayList<Integer>();
-
-					if (!dsf.getIndexManager().isIndexed(dsWithPkName,
-							columnName)) {
-						dsf.getIndexManager().buildIndex(dsWithPkName,
-								columnName,
-								IndexManager.BTREE_ALPHANUMERIC_INDEX, pm);
-					}
-
 					pm.startTask("Data matching");
 					dsWithPk.open();
+
+					// Fetch pk_value
+					int[] sel = new int[(int)dsRowCount];
 					for (int i = 0; i < dsRowCount; i++) {
-						Value value = dsWithPkFiltered.getFieldValue(i, 0);
-						IndexQuery DefaultAlphaQuery = new DefaultAlphaQuery(
-								columnName, value);
-						Iterator<Integer> it = dsWithPk
-								.queryIndex(DefaultAlphaQuery);
-
-						while (it.hasNext()) {
-							Integer index = it.next();
-							newSel.add(index);
-						}
-
+						// Real ID is (pk_id - 1)
+						int selected = dsWithPkFiltered.getFieldValue(i, 0).getAsInt() - 1;
+						sel[i] = selected;
 					}
+
 					dsWithPkFiltered.close();
 					dsWithPk.close();
-					pm.endTask();
 
-					pm.startTask("Preparing selection");
-					int selCount = newSel.size();
-					int[] sel = new int[selCount];
-
-					for (int i = 0; i < sel.length; i++) {
-						if (pm.isCancelled()) {
-							break;
-						} else {
-							pm.progressTo((int) (100 * i / selCount));
-						}
-						sel[i] = newSel.get(i);
-					}
 					pm.endTask();
 					selection.setSelectedRows(sel);
 
@@ -573,8 +539,6 @@ public class TableComponent extends JPanel implements WorkbenchFrame {
 				} catch (org.gdms.sql.parser.ParseException e) {
 					e.printStackTrace();
 				} catch (SemanticException e) {
-					e.printStackTrace();
-				} catch (IndexException e) {
 					e.printStackTrace();
 				}
 			}
