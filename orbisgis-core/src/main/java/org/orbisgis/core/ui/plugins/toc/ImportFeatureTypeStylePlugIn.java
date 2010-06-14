@@ -1,6 +1,5 @@
 package org.orbisgis.core.ui.plugins.toc;
 
-import javax.swing.JOptionPane;
 
 import org.gdms.data.types.Constraint;
 import org.gdms.data.types.GeometryConstraint;
@@ -13,7 +12,6 @@ import org.orbisgis.core.layerModel.MapContext;
 
 import org.orbisgis.core.renderer.se.FeatureTypeStyle;
 import org.orbisgis.core.sif.OpenFilePanel;
-import org.orbisgis.core.sif.SaveFilePanel;
 import org.orbisgis.core.sif.UIFactory;
 
 import org.orbisgis.core.ui.pluginSystem.AbstractPlugIn;
@@ -27,6 +25,7 @@ import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchFrame;
 
 public class ImportFeatureTypeStylePlugIn extends AbstractPlugIn {
 
+	@Override
 	public boolean execute(PlugInContext context) {
 		MapContext mapContext = getPlugInContext().getMapContext();
 		ILayer[] selectedResources = mapContext.getSelectedLayers();
@@ -41,6 +40,7 @@ public class ImportFeatureTypeStylePlugIn extends AbstractPlugIn {
 		return true;
 	}
 
+	@Override
 	public void initialize(PlugInContext context) throws Exception {
 		WorkbenchContext wbContext = context.getWorkbenchContext();
 		WorkbenchFrame frame = wbContext.getWorkbench().getFrame().getToc();
@@ -62,7 +62,7 @@ public class ImportFeatureTypeStylePlugIn extends AbstractPlugIn {
 					"org.orbisgis.core.ui.editorViews.toc.actions.ImportStyle",
 					"Youpiiiiii ICI");
 
-            inputXMLPanel.addFilter("se", "Symbology Encoding FeatureTypeStyle");
+            inputXMLPanel.addFilter("se", "Symbology Encoding 2.0 (FeatureTypeStyle");
 
 			if (UIFactory.showDialog(inputXMLPanel)) {
 				String seFile = inputXMLPanel.getSelectedFile().getAbsolutePath();
@@ -74,14 +74,11 @@ public class ImportFeatureTypeStylePlugIn extends AbstractPlugIn {
 		}
 	}
 
+	@Override
 	public boolean isEnabled() {
 		return getPlugInContext().checkLayerAvailability(
 				new SelectionAvailability[] {SelectionAvailability.EQUAL},
 				1,
 				new LayerAvailability[] {LayerAvailability.VECTORIAL});
-	}
-
-	public boolean isSelected() {
-		return false;
 	}
 }

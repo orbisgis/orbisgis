@@ -39,7 +39,6 @@ package org.orbisgis.core.ui.editorViews.toc;
 import javax.swing.JTree;
 import javax.swing.tree.TreePath;
 
-import org.gdms.driver.DriverException;
 import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.ui.components.resourceTree.AbstractTreeModel;
 
@@ -56,26 +55,24 @@ public class TocTreeModel extends AbstractTreeModel {
 		fireEvent(new TreePath(root));
 	}
 
+	@Override
 	public Object getChild(Object parent, int index) {
 		ILayer l = (ILayer) parent;
 		if (l.acceptsChilds()) {
 			return l.getChildren()[index];
 		} else {
-			return new LegendNode(l, index);
+			return new RuleNode(l, index);
 		}
 	}
 
+	@Override
 	public int getChildCount(Object parent) {
 		if (parent instanceof ILayer) {
 			ILayer layer = (ILayer) parent;
 			if (layer.acceptsChilds()) {
 				return layer.getChildren().length;
 			} else {
-				try {
-					return layer.getRenderingLegend().length;
-				} catch (DriverException e) {
-					return 0;
-				}
+				return layer.getFeatureTypeStyle().getRules().size();
 			}
 		} else {
 			return 0;
@@ -84,8 +81,8 @@ public class TocTreeModel extends AbstractTreeModel {
 
 	public int getIndexOfChild(Object parent, Object child) {
 		if (parent instanceof ILayer) {
-			if (child instanceof LegendNode) {
-				return ((LegendNode) child).getLegendIndex();
+			if (child instanceof RuleNode) {
+				return ((RuleNode) child).getRuleIndex();
 			} else {
 				return ((ILayer) parent).getIndex((ILayer) child);
 			}
@@ -108,26 +105,24 @@ public class TocTreeModel extends AbstractTreeModel {
 	}
 
 	public void valueForPathChanged(TreePath path, Object newValue) {
-
 	}
 
-	class LegendNode {
-		private ILayer layer;
-		private int legendIndex;
+	class RuleNode {
 
-		public LegendNode(ILayer layer, int legendIndex) {
+		private ILayer layer;
+		private int ruleIndex;
+
+		public RuleNode(ILayer layer, int ruleIndex) {
 			this.layer = layer;
-			this.legendIndex = legendIndex;
+			this.ruleIndex = ruleIndex;
 		}
 
 		public ILayer getLayer() {
 			return layer;
 		}
 
-		public int getLegendIndex() {
-			return legendIndex;
+		public int getRuleIndex() {
+			return ruleIndex;
 		}
-
 	}
-
 }

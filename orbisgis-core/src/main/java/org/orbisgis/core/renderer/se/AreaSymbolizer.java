@@ -7,7 +7,6 @@ import javax.xml.bind.JAXBElement;
 import org.orbisgis.core.renderer.persistance.se.AreaSymbolizerType;
 import org.orbisgis.core.renderer.persistance.se.ObjectFactory;
 
-import org.gdms.data.SpatialDataSourceDecorator;
 import org.gdms.data.feature.Feature;
 import org.gdms.driver.DriverException;
 
@@ -19,15 +18,13 @@ import org.orbisgis.core.renderer.se.fill.Fill;
 import org.orbisgis.core.renderer.se.fill.SolidFill;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
-import org.orbisgis.core.renderer.se.parameter.color.ColorLiteral;
-import org.orbisgis.core.renderer.se.parameter.real.RealLiteral;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 
 import org.orbisgis.core.renderer.se.stroke.PenStroke;
 import org.orbisgis.core.renderer.se.stroke.Stroke;
 import org.orbisgis.core.renderer.se.transform.Transform;
 
-public class AreaSymbolizer extends VectorSymbolizer {
+public final class AreaSymbolizer extends VectorSymbolizer {
 
 	public AreaSymbolizer() {
 		super();
@@ -45,7 +42,7 @@ public class AreaSymbolizer extends VectorSymbolizer {
 
 
 		if (ast.getGeometry() != null) {
-			// TODO
+			// TODO createGeometryFunction from XML
 		}
 
 		if (ast.getUnitOfMeasure() != null) {
@@ -107,7 +104,6 @@ public class AreaSymbolizer extends VectorSymbolizer {
 	 * @throws ParameterException
 	 * @throws IOException error while accessing external resource
 	 * @throws DriverException
-	 * @todo make sure the geom is an area; implement p_offset
 	 */
 	@Override
 	public void draw(Graphics2D g2, Feature feat, boolean selected) throws ParameterException, IOException, DriverException {
@@ -121,9 +117,8 @@ public class AreaSymbolizer extends VectorSymbolizer {
 			if (stroke != null) {
 				if (perpendicularOffset != null) {
 					double offset = perpendicularOffset.getValue(feat);
-					// apply perpendicular offset to shp !
+					// TODO apply perpendicular offset to shp !
 				}
-				// TODO perpendicular offset !
 				stroke.draw(g2, shp, feat, selected);
 			}
 		}

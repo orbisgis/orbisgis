@@ -122,7 +122,7 @@ public abstract class Names {
     // Edit SE Legend
     public static final String POPUP_TOC_FEATURETYPESTYLE_IMPORT = I18N.getText("orbisgis.ui.popupmenu.TOC.featureTypeStype.import");
     public static final String POPUP_TOC_FEATURETYPESTYLE_EXPORT = I18N.getText("orbisgis.ui.popupmenu.TOC.featureTypeStype.export");
-
+    public static final String POPUP_TOC_FEATURETYPESTYLE_EDIT_RULE = I18N.getText("orbisgis.ui.popupmenu.TOC.featureTypeStype.rule.edit");
 
 	// Export...
 	public static final String POPUP_TOC_EXPORT_PATH1 = I18N.getText("orbisgis.ui.popupmenu.TOC.export.path1");

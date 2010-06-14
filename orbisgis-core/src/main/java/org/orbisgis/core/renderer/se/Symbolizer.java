@@ -45,7 +45,7 @@ public abstract class Symbolizer implements SymbolizerNode, Comparable{
         }
 
         if (t.getDescription() != null){
-            // TODO 
+            // TODO  implement ows:Description
         }
     }
 
@@ -100,7 +100,8 @@ public abstract class Symbolizer implements SymbolizerNode, Comparable{
     }
 
     public void setJAXBProperty(SymbolizerType s) {
-        s.setDescription(null); // TODO !!
+		// TODO Load description from XML
+        s.setDescription(null);
         s.setName(name);
         s.setVersion("1.9");
     }
@@ -111,7 +112,7 @@ public abstract class Symbolizer implements SymbolizerNode, Comparable{
         }
 
         if (st.getDescription() != null) {
-            // TODO IMplement
+			// TODO Load description from XML
         }
 
         /*if (st.getVersion() != null){

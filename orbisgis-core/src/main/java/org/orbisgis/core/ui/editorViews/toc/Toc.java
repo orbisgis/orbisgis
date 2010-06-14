@@ -44,6 +44,8 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.swing.JComponent;
 import javax.swing.JPopupMenu;
@@ -70,11 +72,11 @@ import org.orbisgis.core.layerModel.LayerListenerEvent;
 import org.orbisgis.core.layerModel.MapContext;
 import org.orbisgis.core.layerModel.MapContextListener;
 import org.orbisgis.core.layerModel.SelectionEvent;
-import org.orbisgis.core.renderer.legend.Legend;
+import org.orbisgis.core.renderer.se.Rule;
 import org.orbisgis.core.ui.components.resourceTree.MyTreeUI;
 import org.orbisgis.core.ui.components.resourceTree.ResourceTree;
 import org.orbisgis.core.ui.editor.IEditor;
-import org.orbisgis.core.ui.editorViews.toc.TocTreeModel.LegendNode;
+import org.orbisgis.core.ui.editorViews.toc.TocTreeModel.RuleNode;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchFrame;
 import org.orbisgis.core.ui.plugins.views.MapEditorPlugIn;
 import org.orbisgis.core.ui.plugins.views.editor.EditorManager;
@@ -84,25 +86,17 @@ import org.orbisgis.progress.IProgressMonitor;
 public class Toc extends ResourceTree implements WorkbenchFrame {
 
 	private MyLayerListener ll;
-
 	private TocRenderer tocRenderer;
-
 	private TocTreeModel treeModel;
-
 	private boolean ignoreSelection = false;
-
 	private MyMapContextListener myMapContextListener;
-
 	private MapContext mapContext = null;
 
 	public MapContext getMapContext() {
 		return mapContext;
 	}
-
 	private EditableElement element = null;
-
 	private MapEditorPlugIn mapEditor;
-
 	private org.orbisgis.core.ui.pluginSystem.menu.MenuTree menuTree;
 
 	public org.orbisgis.core.ui.pluginSystem.menu.MenuTree getMenuTreePopup() {
@@ -115,8 +109,7 @@ public class Toc extends ResourceTree implements WorkbenchFrame {
 		this.ll = new MyLayerListener();
 
 		tocRenderer = new TocRenderer(this);
-		DataManager dataManager = (DataManager) Services
-				.getService(DataManager.class);
+		DataManager dataManager = (DataManager) Services.getService(DataManager.class);
 		treeModel = new TocTreeModel(dataManager.createLayerCollection("root"),
 				getTree());
 		this.setModel(treeModel);
@@ -136,8 +129,7 @@ public class Toc extends ResourceTree implements WorkbenchFrame {
 				if (path != null) {
 					if (path.getLastPathComponent() instanceof ILayer) {
 						ILayer layer = (ILayer) path.getLastPathComponent();
-						Rectangle checkBoxBounds = tocRenderer
-								.getCheckBoxBounds();
+						Rectangle checkBoxBounds = tocRenderer.getCheckBoxBounds();
 						checkBoxBounds.translate(
 								(int) layerNodeLocation.getX(),
 								(int) layerNodeLocation.getY());
@@ -153,12 +145,10 @@ public class Toc extends ResourceTree implements WorkbenchFrame {
 							} catch (LayerException e1) {
 							}
 						}
-					} else if (path.getLastPathComponent() instanceof LegendNode) {
+					} else if (path.getLastPathComponent() instanceof RuleNode) {
 
-						LegendNode legendNode = (LegendNode) path
-								.getLastPathComponent();
-						Rectangle checkBoxBounds = tocRenderer
-								.getCheckBoxBounds();
+						RuleNode ruleNode = (RuleNode) path.getLastPathComponent();
+						Rectangle checkBoxBounds = tocRenderer.getCheckBoxBounds();
 						checkBoxBounds.translate(
 								(int) layerNodeLocation.getX(),
 								(int) layerNodeLocation.getY());
@@ -166,21 +156,21 @@ public class Toc extends ResourceTree implements WorkbenchFrame {
 								&& (MouseEvent.BUTTON1 == mouseButton)
 								&& (1 == e.getClickCount())) {
 							try {
-								Legend legend = legendNode.getLayer()
-										.getRenderingLegend()[legendNode
-										.getLegendIndex()];
-								if (!legend.isVisible()) {
-									legend.setVisible(true);
+								Rule rule;
+									rule = ruleNode.getLayer().getRenderingRule().get(ruleNode.getRuleIndex());
+								if (!rule.isVisible()) {
+									rule.setVisible(true);
 								} else {
-									legend.setVisible(false);
+									rule.setVisible(false);
 								}
-								ILayer layer = legendNode.getLayer();
+								ILayer layer = ruleNode.getLayer();
 								if (layer.isVisible()) {
 									layer.setVisible(true);
 								}
 								tree.repaint();
-							} catch (DriverException e1) {
-								e1.printStackTrace();
+
+							} catch (DriverException ex) {
+								ex.printStackTrace();
 							} catch (LayerException e1) {
 								e1.printStackTrace();
 							}
@@ -189,7 +179,6 @@ public class Toc extends ResourceTree implements WorkbenchFrame {
 					}
 				}
 			}
-
 		});
 
 		myMapContextListener = new MyMapContextListener();
@@ -197,18 +186,23 @@ public class Toc extends ResourceTree implements WorkbenchFrame {
 		this.getTree().getSelectionModel().addTreeSelectionListener(
 				new TreeSelectionListener() {
 
+			@Override
 					public void valueChanged(TreeSelectionEvent e) {
 						if (!ignoreSelection) {
 							TreePath[] selectedPaths = Toc.this.getSelection();
 							ArrayList<ILayer> layers = getSelectedLayers(selectedPaths);
 
 							ignoreSelection = true;
-							mapContext.setSelectedLayers(layers
-									.toArray(new ILayer[0]));
+							if (layers.size() > 0){
+								mapContext.setSelectedLayers(layers.toArray(new ILayer[0]));
+							}
+							else {
+								ArrayList<Rule> rules = getSelectedRules(selectedPaths);
+								mapContext.setSelectedRules(rules);
+							}
 							ignoreSelection = false;
 						}
 					}
-
 				});
 	}
 
@@ -222,6 +216,18 @@ public class Toc extends ResourceTree implements WorkbenchFrame {
 		}
 		return layers;
 	}
+
+	private ArrayList<Rule> getSelectedRules(TreePath[] selectedPaths) {
+		ArrayList<Rule> rules = new ArrayList<Rule>();
+		for (int i = 0; i < selectedPaths.length; i++) {
+			Object lastPathComponent = selectedPaths[i].getLastPathComponent();
+			if (lastPathComponent instanceof Rule) {
+				rules.add((Rule) lastPathComponent);
+			}
+		}
+		return rules;
+	}
+
 
 	@Override
 	public JPopupMenu getPopup() {
@@ -243,8 +249,8 @@ public class Toc extends ResourceTree implements WorkbenchFrame {
 
 		ILayer dropNode;
 
-		if (node instanceof TocTreeModel.LegendNode) {
-			dropNode = ((TocTreeModel.LegendNode) node).getLayer();
+		if (node instanceof TocTreeModel.RuleNode) {
+			dropNode = ((TocTreeModel.RuleNode) node).getLayer();
 		} else {
 			dropNode = (ILayer) node;
 		}
@@ -257,8 +263,7 @@ public class Toc extends ResourceTree implements WorkbenchFrame {
 		try {
 
 			if (trans.isDataFlavorSupported(TransferableLayer.getLayerFlavor())) {
-				ILayer[] draggedLayers = (ILayer[]) trans
-						.getTransferData(TransferableLayer.getLayerFlavor());
+				ILayer[] draggedLayers = (ILayer[]) trans.getTransferData(TransferableLayer.getLayerFlavor());
 				if (dropNode.acceptsChilds()) {
 					for (ILayer layer : draggedLayers) {
 						try {
@@ -279,18 +284,15 @@ public class Toc extends ResourceTree implements WorkbenchFrame {
 								} catch (LayerException e) {
 									Services.getErrorManager().error(
 											"Cannot move layer: "
-													+ layer.getName());
+											+ layer.getName());
 								}
 							}
 						}
 					}
 				}
-			} else if (trans.isDataFlavorSupported(TransferableSource
-					.getResourceFlavor())) {
-				final String[] draggedResources = (String[]) trans
-						.getTransferData(TransferableSource.getResourceFlavor());
-				BackgroundManager bm = (BackgroundManager) Services
-						.getService(BackgroundManager.class);
+			} else if (trans.isDataFlavorSupported(TransferableSource.getResourceFlavor())) {
+				final String[] draggedResources = (String[]) trans.getTransferData(TransferableSource.getResourceFlavor());
+				BackgroundManager bm = (BackgroundManager) Services.getService(BackgroundManager.class);
 				bm.backgroundOperation(new MoveProcess(draggedResources,
 						dropNode));
 
@@ -317,6 +319,7 @@ public class Toc extends ResourceTree implements WorkbenchFrame {
 	}
 
 	private final class MyMapContextListener implements MapContextListener {
+
 		public void layerSelectionChanged(MapContext mapContext) {
 			setTocSelection(mapContext);
 		}
@@ -345,7 +348,7 @@ public class Toc extends ResourceTree implements WorkbenchFrame {
 		public boolean layerRemoving(LayerCollectionEvent e) {
 			// Close editors
 			for (final ILayer layer : e.getAffected()) {
-				ILayer[] layers = new ILayer[] { layer };
+				ILayer[] layers = new ILayer[]{layer};
 				if (layer.acceptsChilds()) {
 					layers = layer.getLayersRecursively();
 				}
@@ -403,7 +406,6 @@ public class Toc extends ResourceTree implements WorkbenchFrame {
 		public void open(DataSource ds) {
 			treeModel.refresh();
 		}
-
 	}
 
 	public void delete() {
@@ -437,8 +439,7 @@ public class Toc extends ResourceTree implements WorkbenchFrame {
 			} else {
 				index = dropNode.getLayerCount();
 			}
-			DataManager dataManager = (DataManager) Services
-					.getService(DataManager.class);
+			DataManager dataManager = (DataManager) Services.getService(DataManager.class);
 			for (int i = 0; i < draggedResources.length; i++) {
 				String sourceName = draggedResources[i];
 				if (pm.isCancelled()) {
@@ -446,8 +447,7 @@ public class Toc extends ResourceTree implements WorkbenchFrame {
 				} else {
 					pm.progressTo(100 * i / draggedResources.length);
 					try {
-						dropNode.insertLayer(dataManager
-								.createLayer(sourceName), index);
+						dropNode.insertLayer(dataManager.createLayer(sourceName), index);
 					} catch (LayerException e) {
 						throw new RuntimeException("Cannot "
 								+ "add the layer to the destination", e);
@@ -459,7 +459,6 @@ public class Toc extends ResourceTree implements WorkbenchFrame {
 		public String getTaskName() {
 			return "Importing resources";
 		}
-
 	}
 
 	private void addLayerListenerRecursively(ILayer rootLayer,
@@ -529,10 +528,8 @@ public class Toc extends ResourceTree implements WorkbenchFrame {
 
 		} else {
 			// Remove the references to the mapContext
-			DataManager dataManager = (DataManager) Services
-					.getService(DataManager.class);
-			treeModel = new TocTreeModel(dataManager
-					.createLayerCollection("root"), getTree());
+			DataManager dataManager = (DataManager) Services.getService(DataManager.class);
+			treeModel = new TocTreeModel(dataManager.createLayerCollection("root"), getTree());
 			ignoreSelection = true;
 			this.setModel(treeModel);
 			ignoreSelection = false;

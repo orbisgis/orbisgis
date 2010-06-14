@@ -168,6 +168,7 @@ public final class SeParameterFactory {
 
         String result = "";
         for (Object o : p.getContent()) {
+			System.out.println ("Read elem: " + o);
             if (o instanceof String) {
                 result += ((String) o);
             } else if (o instanceof JAXBElement) {
@@ -175,6 +176,7 @@ public final class SeParameterFactory {
             }
         }
         // has not return, so it's a literal !
+		System.out.println ("Result: " + result);
         return new StringLiteral(result);
     }
 

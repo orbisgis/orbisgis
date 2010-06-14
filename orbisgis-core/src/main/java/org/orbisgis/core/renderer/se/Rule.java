@@ -5,10 +5,6 @@
 package org.orbisgis.core.renderer.se;
 
 import com.vividsolutions.jts.geom.Geometry;
-import java.util.Iterator;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.xml.bind.JAXBElement;
 import org.gdms.data.DataSourceCreationException;
 import org.gdms.data.SpatialDataSourceDecorator;
 import org.gdms.driver.DriverException;
@@ -17,8 +13,6 @@ import org.gdms.sql.parser.ParseException;
 import org.gdms.sql.strategies.SemanticException;
 import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.map.MapTransform;
-import org.orbisgis.core.renderer.persistance.ogc.ComparisonOpsType;
-import org.orbisgis.core.renderer.persistance.ogc.FilterType;
 import org.orbisgis.core.renderer.persistance.se.RuleType;
 import org.orbisgis.core.renderer.se.common.Uom;
 
@@ -28,9 +22,13 @@ import org.orbisgis.core.renderer.se.common.Uom;
  */
 public class Rule implements SymbolizerNode {
 
+	private static final String DEFAULT_NAME = "Default Rule";
+
 	public Rule(ILayer layer) {
 		symbolizer = new CompositeSymbolizer();
 		symbolizer.setParent(this);
+
+		this.name = "Default Rule";
 
 		Geometry geometry = null;
 		try {
@@ -62,6 +60,13 @@ public class Rule implements SymbolizerNode {
 
 	public Rule(RuleType rt, ILayer layer) {
 		this(layer);
+
+		if (rt.getName() != null){
+			this.name = rt.getName();
+		}
+		else{
+			this.name = Rule.DEFAULT_NAME;
+		}
 
 		/*
 		 * Is a fallback rule ?
@@ -97,6 +102,10 @@ public class Rule implements SymbolizerNode {
 
 	public RuleType getJAXBType() {
 		RuleType rt = new RuleType();
+
+		if (!this.name.equals(Rule.DEFAULT_NAME)){
+			rt.setName(this.name);
+		}
 
 		if (this.minScaleDenom > 0) {
 			rt.setMinScaleDenominator(minScaleDenom);
@@ -197,6 +206,16 @@ public class Rule implements SymbolizerNode {
 		this.minScaleDenom = minScaleDenom;
 	}
 
+	public boolean isVisible() {
+		return visible;
+	}
+
+	public void setVisible(boolean visible) {
+		this.visible = visible;
+	}
+
+
+
 	public boolean isDomainAllowed(MapTransform mt) {
 		double scale = mt.getScaleDenominator();
 		System.out.println("Current scale is  1:" + scale);
@@ -208,6 +227,29 @@ public class Rule implements SymbolizerNode {
 				|| (scale > this.minScaleDenom && this.maxScaleDenom < 0)
 				|| (scale > this.minScaleDenom && this.maxScaleDenom > scale);
 	}
+
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+
+
+	private String name = "";
+	private String description = "";
+
+	private boolean visible = true;
 	private SymbolizerNode fts;
 	private String where;
 	private boolean fallbackRule = false;

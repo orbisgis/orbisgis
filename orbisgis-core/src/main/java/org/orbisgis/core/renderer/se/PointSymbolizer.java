@@ -42,7 +42,7 @@ public class PointSymbolizer extends VectorSymbolizer {
 		PointSymbolizerType ast = st.getValue();
 
 		if (ast.getGeometry() != null) {
-			// TODO
+			// TODO load GeometryFunction !
 		}
 
 		if (ast.getUnitOfMeasure() != null) {
@@ -75,7 +75,9 @@ public class PointSymbolizer extends VectorSymbolizer {
 		if (graphic != null && graphic.getNumGraphics() > 0) {
 			Point2D pt = this.getPointShape(feat);
 			
-			//Point2D pt = this.getFirstPointShape(sds, fid); // This is to emulate ExtractFirstPoint geom function !!!
+			// This is to emulate ExtractFirstPoint geom function !!!
+			//Point2D pt = this.getFirstPointShape(sds, fid);
+
 			RenderableGraphics rg = graphic.getGraphic(feat, selected);
 			//RenderedImage cache = graphic.getCache(sds, fid, selected);
 

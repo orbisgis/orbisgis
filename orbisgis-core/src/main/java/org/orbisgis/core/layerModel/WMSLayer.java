@@ -20,6 +20,7 @@ import org.orbisgis.core.renderer.legend.WMSLegend;
 
 import com.vividsolutions.jts.geom.Envelope;
 import org.orbisgis.core.renderer.se.FeatureTypeStyle;
+import org.orbisgis.core.renderer.se.Rule;
 
 public class WMSLayer extends GdmsLayer {
 
@@ -214,4 +215,9 @@ public class WMSLayer extends GdmsLayer {
     public FeatureTypeStyle getFeatureTypeStyle(){
         return null;
     }
+
+	@Override
+	public ArrayList<Rule> getRenderingRule() throws DriverException {
+		throw new UnsupportedOperationException("Not supported yet.");
+	}
 }

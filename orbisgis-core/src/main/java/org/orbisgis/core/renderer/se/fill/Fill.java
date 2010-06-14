@@ -45,7 +45,7 @@ public abstract class Fill implements SymbolizerNode {
             return new DotMapFill((JAXBElement<DotMapFillType>)f);
         }
         else{
-            // TODO Throw should never occurs...
+			// Will never occurs with a valid XML style
             return new SolidFill();
         }
 

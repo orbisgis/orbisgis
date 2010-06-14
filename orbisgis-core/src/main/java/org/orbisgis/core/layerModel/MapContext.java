@@ -41,6 +41,8 @@ import java.awt.image.BufferedImage;
 import org.orbisgis.progress.IProgressMonitor;
 
 import com.vividsolutions.jts.geom.Envelope;
+import java.util.ArrayList;
+import org.orbisgis.core.renderer.se.Rule;
 
 /**
  * This interface provides information to the tool system and receives
@@ -77,6 +79,16 @@ public interface MapContext {
 	public ILayer[] getSelectedLayers() throws IllegalStateException;
 
 	/**
+	 * Gets the selected rules
+	 *
+	 * @return
+	 * @throws IllegalStateException
+	 *             If the map is closed
+	 */
+	public Rule[] getSelectedRules() throws IllegalStateException;
+
+
+	/**
 	 * Adds a listener for map context events
 	 * 
 	 * @param listener
@@ -101,6 +113,17 @@ public interface MapContext {
 	 * @param listener
 	 */
 	public void removeMapContextListener(MapContextListener listener);
+
+	/**
+	 * Sets the selected layers. If the specified layers are not in the map
+	 * context they are removed from selection.
+	 *
+	 * @param selectedLayers
+	 * @throws IllegalStateException
+	 *             If the map is closed
+	 */
+	public void setSelectedRules(ArrayList<Rule> selectedRules)
+			throws IllegalStateException;
 
 	/**
 	 * Sets the selected layers. If the specified layers are not in the map

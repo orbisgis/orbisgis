@@ -217,10 +217,10 @@ public class Renderer {
 			HashMap<Rule, HashSet<Integer>> rulesFid = new HashMap<Rule, HashSet<Integer>>();
 			for (Rule r : rList) {
 				
-				if (layer.getName().equals("g4districts98_region")){
+				/*if (layer.getName().equals("g4districts98_region")){
 					System.out.println("Toggle where clause...");
 					r.setWhere("WHERE AK = 'VD'");
-				}
+				}*/
 
 				if (layer.getName().equals("cantons")){
 					System.out.println("Toggle where clause: PTOT99 > 10000");

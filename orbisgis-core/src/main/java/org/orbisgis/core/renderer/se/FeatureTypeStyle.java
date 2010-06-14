@@ -162,22 +162,27 @@ public class FeatureTypeStyle implements SymbolizerNode {
 			ArrayList<Rule> fallbackRules) {
 
 		for (Rule r : this.rules) {
-			if (r.isDomainAllowed(mt)) {
-				if (!r.isFallbackRule()) {
-					rules.add(r);
-				} else {
-					fallbackRules.add(r);
-				}
-
-				for (Symbolizer s : r.getCompositeSymbolizer().getSymbolizerList()) {
-					if (s instanceof TextSymbolizer) {
-						overlaySymbolizers.add(s);
+			// Only process visible rules
+			if (r.isVisible()) {
+				// first check the domain
+				if (r.isDomainAllowed(mt)) {
+					// Split standard rules and elseFilter rules
+					if (!r.isFallbackRule()) {
+						rules.add(r);
 					} else {
-						layerSymbolizers.add(s);
+						fallbackRules.add(r);
 					}
-				}
-			} else {
-				System.out.println("        Domain NOTOK");
+
+					for (Symbolizer s : r.getCompositeSymbolizer().getSymbolizerList()) {
+						// Extract TextSymbolizer into specific set =>
+						// Label are always drawn on top
+						if (s instanceof TextSymbolizer) {
+							overlaySymbolizers.add(s);
+						} else {
+							layerSymbolizers.add(s);
+						}
+					}
+				} 
 			}
 		}
 

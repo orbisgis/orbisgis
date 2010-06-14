@@ -112,6 +112,7 @@ import org.orbisgis.core.ui.plugins.help.OnlineHelpOrbisGISPlugIn;
 import org.orbisgis.core.ui.plugins.properties.ConfigurationPlugIn;
 import org.orbisgis.core.ui.plugins.toc.CreateGroupPlugIn;
 import org.orbisgis.core.ui.plugins.toc.EditLegendPlugIn;
+import org.orbisgis.core.ui.plugins.toc.EditRulePlugIn;
 import org.orbisgis.core.ui.plugins.toc.ExportFeatureTypeStylePlugIn;
 import org.orbisgis.core.ui.plugins.toc.GroupLayersPlugIn;
 import org.orbisgis.core.ui.plugins.toc.ImportFeatureTypeStylePlugIn;
@@ -168,6 +169,7 @@ public class OrbisConfiguration implements Setup {
 	// TOC
 	private EditLegendPlugIn editLegendPlugIn = new EditLegendPlugIn();
     private ImportFeatureTypeStylePlugIn importFTSPlugIn = new ImportFeatureTypeStylePlugIn();
+	private EditRulePlugIn editRulePlugIn = new EditRulePlugIn();
     private ExportFeatureTypeStylePlugIn exportFTSPlugIn = new ExportFeatureTypeStylePlugIn();
     private SwitchToDraftPlugIn switchDraft = new SwitchToDraftPlugIn();
 	private ShowInTablePlugIn showInTablePlugIn = new ShowInTablePlugIn();
@@ -297,6 +299,7 @@ public class OrbisConfiguration implements Setup {
 			editLegendPlugIn.initialize(context);
             importFTSPlugIn.initialize(context);
             exportFTSPlugIn.initialize(context);
+			editRulePlugIn.initialize(context);
             switchDraft.initialize(context);
 			showInTablePlugIn.initialize(context);
 			saveInFilePlugIn.initialize(context);

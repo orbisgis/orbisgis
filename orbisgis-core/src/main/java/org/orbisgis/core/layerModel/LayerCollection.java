@@ -51,6 +51,7 @@ import org.orbisgis.core.renderer.legend.WMSLegend;
 
 import com.vividsolutions.jts.geom.Envelope;
 import org.orbisgis.core.renderer.se.FeatureTypeStyle;
+import org.orbisgis.core.renderer.se.Rule;
 
 public class LayerCollection extends AbstractLayer {
 	private List<ILayer> layerCollection;
@@ -191,6 +192,11 @@ public class LayerCollection extends AbstractLayer {
     public void setFeatureTypeStyle(FeatureTypeStyle fts) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
+
+	@Override
+	public ArrayList<Rule> getRenderingRule() throws DriverException {
+		throw new UnsupportedOperationException("A layer collection doesn't have any rule !");
+	}
 
 	private class GetEnvelopeLayerAction implements ILayerAction {
 		private Envelope globalEnvelope;

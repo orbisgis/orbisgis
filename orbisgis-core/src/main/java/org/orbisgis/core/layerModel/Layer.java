@@ -68,6 +68,7 @@ import org.orbisgis.core.renderer.legend.WMSLegend;
 import org.orbisgis.core.renderer.legend.carto.LegendFactory;
 import org.orbisgis.core.renderer.legend.carto.LegendManager;
 import org.orbisgis.core.renderer.legend.carto.UniqueSymbolLegend;
+import org.orbisgis.core.renderer.se.Rule;
 import org.orbisgis.core.renderer.symbol.Symbol;
 import org.orbisgis.core.renderer.symbol.SymbolFactory;
 
@@ -332,6 +333,11 @@ public class Layer extends GdmsLayer {
 					"This layer is not a raster layer");
 		}
 		return getDataSource().getRaster(0);
+	}
+
+	@Override
+	public ArrayList<Rule> getRenderingRule() throws DriverException {
+		return this.getFeatureTypeStyle().getRules();
 	}
 
 	private class RefreshSelectionEditionListener implements EditionListener {

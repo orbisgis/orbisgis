@@ -38,6 +38,7 @@ package org.orbisgis.core.layerModel;
 
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -61,6 +62,7 @@ import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.io.ParseException;
 import com.vividsolutions.jts.io.WKTReader;
+import org.orbisgis.core.renderer.se.Rule;
 
 /**
  * Class that contains the status of the view.
@@ -72,6 +74,7 @@ public class DefaultMapContext implements MapContext{
 	private ILayer root;
 
 	private ILayer[] selectedLayers = new ILayer[0];
+	private Rule[] selectedRules = new Rule[0];
 
 	private ArrayList<MapContextListener> listeners = new ArrayList<MapContextListener>();
 
@@ -109,19 +112,23 @@ public class DefaultMapContext implements MapContext{
 		this.root.addLayerListenerRecursively(openerListener);
 	}
 
+	@Override
 	public void addMapContextListener(MapContextListener listener) {
 		listeners.add(listener);
 	}
 
+	@Override
 	public void removeMapContextListener(MapContextListener listener) {
 		listeners.remove(listener);
 	}
 
+	@Override
 	public ILayer getLayerModel() {
 		checkIsOpen();
 		return root;
 	}
 
+	@Override
 	public Envelope getBoundingBox() {
 		if (boundingBox != null) {
 			return boundingBox;
@@ -130,20 +137,41 @@ public class DefaultMapContext implements MapContext{
 		}
 	}
 
+	@Override
 	public void setBoundingBox(Envelope envelope) {
 		this.boundingBox = envelope;
 	}
 
+	@Override
 	public ILayer[] getLayers() {
 		checkIsOpen();
 		return getLayerModel().getLayersRecursively();
 	}
 
+	@Override
+	public Rule[] getSelectedRules() {
+		checkIsOpen();
+		return selectedRules;
+	}
+
+
+	@Override
 	public ILayer[] getSelectedLayers() {
 		checkIsOpen();
 		return selectedLayers;
 	}
 
+	@Override
+	public void setSelectedRules(ArrayList<Rule> selectedRules) {
+		checkIsOpen();
+		this.selectedRules = selectedRules.toArray(new Rule[0]);
+
+		for (MapContextListener listener : listeners) {
+			listener.layerSelectionChanged(this);
+		}
+	}
+
+	@Override
 	public void setSelectedLayers(ILayer[] selectedLayers) {
 		checkIsOpen();
 		ArrayList<ILayer> filtered = new ArrayList<ILayer>();
@@ -162,6 +190,7 @@ public class DefaultMapContext implements MapContext{
 	private final class OpenerListener extends LayerListenerAdapter implements
 			LayerListener {
 
+		@Override
 		public void layerAdded(LayerCollectionEvent e) {
 			if (isOpen()) {
 				for (final ILayer layer : e.getAffected()) {
@@ -185,6 +214,7 @@ public class DefaultMapContext implements MapContext{
 			}
 		}
 
+		@Override
 		public void layerRemoved(LayerCollectionEvent e) {
 			HashSet<ILayer> newSelection = new HashSet<ILayer>();
 			for (ILayer selectedLayer : selectedLayers) {
@@ -257,6 +287,7 @@ public class DefaultMapContext implements MapContext{
 		return ret;
 	}
 
+	@Override
 	public void draw(BufferedImage inProcessImage, Envelope extent,
 			IProgressMonitor pm) {
 		checkIsOpen();
@@ -270,11 +301,13 @@ public class DefaultMapContext implements MapContext{
 		}
 	}
 
+	@Override
 	public ILayer getActiveLayer() {
 		checkIsOpen();
 		return activeLayer;
 	}
 
+	@Override
 	public void setActiveLayer(ILayer activeLayer) {
 		checkIsOpen();
 		ILayer lastActive = this.activeLayer;
@@ -455,6 +488,7 @@ public class DefaultMapContext implements MapContext{
 			for (final SelectedLayer selectedLayer : selectedLayerList) {
 				LayerCollection.processLayersNodes(root, new ILayerAction() {
 
+					@Override
 					public void action(ILayer layer) {
 						if (selectedLayer.getName().equals(layer.getName())) {
 							selected.add(layer);
@@ -476,14 +510,17 @@ public class DefaultMapContext implements MapContext{
 
 	private final class LayerRemovalSourceListener implements SourceListener {
 
+		@Override
 		public void sourceRemoved(final SourceRemovalEvent e) {
 			LayerCollection.processLayersLeaves(root,
 					new DeleteLayerFromResourceAction(e));
 		}
 
+		@Override
 		public void sourceNameChanged(SourceEvent e) {
 		}
 
+		@Override
 		public void sourceAdded(SourceEvent e) {
 		}
 	}
@@ -495,10 +532,7 @@ public class DefaultMapContext implements MapContext{
 
 		private DeleteLayerFromResourceAction(SourceRemovalEvent e) {
 			String[] aliases = e.getNames();
-			for (String string : aliases) {
-				resourceNames.add(string);
-			}
-
+			resourceNames.addAll(Arrays.asList(aliases));
 			resourceNames.add(e.getName());
 		}
 

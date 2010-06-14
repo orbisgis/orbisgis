@@ -7,10 +7,11 @@ import java.awt.Paint;
 import java.awt.Shape;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.xml.bind.JAXBElement;
 import org.orbisgis.core.renderer.persistance.se.PenStrokeType;
 
-import org.gdms.data.DataSource;
 import org.gdms.data.feature.Feature;
 import org.orbisgis.core.renderer.persistance.se.ObjectFactory;
 import org.orbisgis.core.renderer.persistance.se.ParameterValueType;
@@ -24,13 +25,15 @@ import org.orbisgis.core.renderer.se.parameter.color.ColorLiteral;
 import org.orbisgis.core.renderer.se.parameter.color.ColorParameter;
 import org.orbisgis.core.renderer.se.parameter.real.RealLiteral;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
+import org.orbisgis.core.renderer.se.parameter.string.StringLiteral;
+import org.orbisgis.core.renderer.se.parameter.string.StringParameter;
 
 /**
  * Basic stroke for linear features
  * @todo implement dasharray/dashoffset
  * @author maxence
  */
-public class PenStroke extends Stroke {
+public final class PenStroke extends Stroke {
 
     @Override
     public boolean dependsOnFeature() {
@@ -75,7 +78,7 @@ public class PenStroke extends Stroke {
         setWidth(new RealLiteral(0.1));
         setUom(Uom.MM);
         setOpacity(new RealLiteral(100.0));
-        dashArray = new ArrayList<Double>();
+        dashArray = new StringLiteral("");
         updateBasicStroke();
     }
 
@@ -92,10 +95,13 @@ public class PenStroke extends Stroke {
         }
 
         if (t.getDashArray() != null) {
-            // TODO Note read as string !
-        }
+			System.out.println ("Read DASHARRAY from XML");
+			this.setDashArray(SeParameterFactory.createStringParameter(t.getDashArray()));
+			System.out.println ("This.dashArray => " + this.dashArray);
+		}
 
         if (t.getDashOffset() != null) {
+			System.out.println ("Read dash Offset !");
             this.setDashOffset(SeParameterFactory.createRealParameter(t.getDashOffset()));
         }
 
@@ -117,6 +123,9 @@ public class PenStroke extends Stroke {
         if (t.getUnitOfMeasure() != null) {
             this.setUom(Uom.fromOgcURN(t.getUnitOfMeasure()));
         }
+		else{
+			this.uom = null;
+		}
 
         this.updateBasicStroke();
     }
@@ -209,6 +218,14 @@ public class PenStroke extends Stroke {
         updateBasicStroke();
     }
 
+	public StringParameter getDashArray() {
+		return dashArray;
+	}
+
+	public void setDashArray(StringParameter dashArray) {
+		this.dashArray = dashArray;
+	}
+
     private void updateBasicStroke() {
         try {
             bStroke = createBasicStroke(null);
@@ -263,8 +280,31 @@ public class PenStroke extends Stroke {
             w = Uom.toPixel(w, getUom(), MapEnv.getScaleDenominator());
         }
 
-        // can handle width, cap, join and dash array
-        return new BasicStroke((float) w, cap, join);
+
+		if (this.dashArray != null && ! this.dashArray.getValue(feat).isEmpty()){
+			System.out.println ("DASH!!!!");
+			float dashO = 0.0f;
+			float[] dashA;
+
+			String sDash = this.dashArray.getValue(feat);
+			System.out.println ("The string version : " + sDash);
+			String[] splitedDash = sDash.split(" ");
+			dashA = new float[splitedDash.length];
+			for (int i = 0;i<splitedDash.length;i++){
+            	dashA[i] = (float) Uom.toPixel(Double.parseDouble(splitedDash[i]), getUom(), MapEnv.getScaleDenominator());
+				System.out.println ("This is my new dash element " + dashA[i]);
+			}
+
+			if (this.dashOffset != null){
+				System.out.println ("Offset: " + this.dashOffset);
+            	dashO = (float) Uom.toPixel(this.dashOffset.getValue(feat), getUom(), MapEnv.getScaleDenominator());
+				System.out.println ("Offset double: " + dashO);
+			}
+        	return new BasicStroke((float) w, cap, join, 10.0f, dashA, dashO);
+		}
+		else{
+			return new BasicStroke((float) w, cap, join);
+		}
     }
 
     public BasicStroke getBasicStroke(Feature feat) throws ParameterException {
@@ -275,11 +315,6 @@ public class PenStroke extends Stroke {
         }
     }
 
-    /*
-    public void setDashArray(String dashArray){
-    TODO implment dashArray
-    }
-     */
     @Override
     public void draw(Graphics2D g2, Shape shp, Feature feat, boolean selected) throws ParameterException, IOException {
 
@@ -361,8 +396,9 @@ public class PenStroke extends Stroke {
             s.setUnitOfMeasure(this.uom.toURN());
         }
 
-        if (this.dashOffset != null) {
+        if (this.dashArray != null) {
             //s.setDashArray(null);
+			s.setDashArray(dashArray.getJAXBParameterValueType());
         }
 
         if (this.dashOffset != null) {
@@ -378,7 +414,13 @@ public class PenStroke extends Stroke {
         }
 
         if (this.opacity != null) {
-            s.setOpacity(this.opacity.getJAXBParameterValueType());
+			try {
+				if (this.opacity.getValue(null) != 100.0) {
+					s.setOpacity(this.opacity.getJAXBParameterValueType());
+				}
+			} catch (ParameterException ex) {
+				s.setOpacity(this.opacity.getJAXBParameterValueType());
+			}
         }
 
         if (this.preGap != null) {
@@ -402,7 +444,7 @@ public class PenStroke extends Stroke {
     private RealParameter width;
     private LineJoin lineJoin;
     private LineCap lineCap;
-    private ArrayList<Double> dashArray;
+	private StringParameter dashArray;
     private RealParameter dashOffset;
     private BasicStroke bStroke;
 }

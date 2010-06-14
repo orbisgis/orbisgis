@@ -59,6 +59,7 @@ import org.gdms.driver.DriverException;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.renderer.legend.Legend;
+import org.orbisgis.core.renderer.se.Rule;
 import org.orbisgis.core.sif.CRFlowLayout;
 
 public class TocRenderer extends TocAbstractRenderer implements
@@ -89,30 +90,30 @@ public class TocRenderer extends TocAbstractRenderer implements
 
 			return ourJPanel.getJPanel();
 		} else {
-			TocTreeModel.LegendNode legendNode = (TocTreeModel.LegendNode) value;
-			ILayer layer = legendNode.getLayer();
+			TocTreeModel.RuleNode ruleNode = (TocTreeModel.RuleNode) value;
+			ILayer layer = ruleNode.getLayer();
 
 			try {
 				if (layer.isVectorial()) {
-					ourJPanel = new LegendRenderPanel();
-					ourJPanel.setNodeCosmetic(tree, layer, legendNode
-							.getLegendIndex(), selected, expanded, leaf, row,
+					ourJPanel = new RuleRenderPanel();
+					ourJPanel.setNodeCosmetic(tree, layer, ruleNode
+							.getRuleIndex(), selected, expanded, leaf, row,
 							hasFocus);
 					return ourJPanel.getJPanel();
 				}
 
 				else if (layer.isWMS()) {
 					WMSLegendRenderPanel ourJPanel = new WMSLegendRenderPanel();
-					ourJPanel.setNodeCosmetic(tree, legendNode.getLayer(),
-							legendNode.getLegendIndex(), selected, expanded,
+					ourJPanel.setNodeCosmetic(tree, layer,
+							ruleNode.getRuleIndex(), selected, expanded,
 							leaf, row, hasFocus);
 					return ourJPanel.getJPanel();
-				} 
+				}
 				
 				else {
 					RasterLegendRenderPanel ourJPanel = new RasterLegendRenderPanel();
-					ourJPanel.setNodeCosmetic(tree, legendNode.getLayer(),
-							legendNode.getLegendIndex(), selected, expanded,
+					ourJPanel.setNodeCosmetic(tree, ruleNode.getLayer(),
+							ruleNode.getRuleIndex(), selected, expanded,
 							leaf, row, hasFocus);
 					return ourJPanel.getJPanel();
 				}
@@ -197,68 +198,89 @@ public class TocRenderer extends TocAbstractRenderer implements
 		}
 
 		@Override
-		public void setNodeCosmetic(JTree tree, ILayer layer, int legendIndex,
+		public void setNodeCosmetic(JTree tree, ILayer layer, int ruleIndex,
 				boolean selected, boolean expanded, boolean leaf, int row,
 				boolean hasFocus) {
 		}
 
 	}
 
-	public class LegendRenderPanel implements TOCRenderPanel {
+	public class RuleRenderPanel implements TOCRenderPanel {
 
 		private JCheckBox check;
 
-		private JLabel lblLegend;
+		private JLabel label;
 
 		private JPanel jpanel;
 
 		private JPanel pane;
 
-		public LegendRenderPanel() {
+		public RuleRenderPanel() {
 			jpanel = new JPanel();
 			check = new JCheckBox();
 			check.setAlignmentY(Component.TOP_ALIGNMENT);
-			lblLegend = new JLabel();
-			lblLegend.setAlignmentY(Component.TOP_ALIGNMENT);
+			label = new JLabel();
+			label.setAlignmentY(Component.TOP_ALIGNMENT);
 			pane = new JPanel();
 			pane.setLayout(new BoxLayout(pane, BoxLayout.X_AXIS));
 			pane.add(check);
-			pane.add(lblLegend);
+			pane.add(label);
 			pane.setBackground(DESELECTED);
 			check.setBackground(DESELECTED);
-			jpanel.add(pane);
+			jpanel.add(pane); // really useful ?
 		}
 
-		public void setNodeCosmetic(JTree tree, ILayer node, int legendIndex,
+		@Override
+		public void setNodeCosmetic(JTree tree, ILayer node, int ruleIndex,
 				boolean selected, boolean expanded, boolean leaf, int row,
 				boolean hasFocus) {
 
 			check.setVisible(true);
 
 			try {
-				check.setSelected(node.getRenderingLegend()[legendIndex]
-						.isVisible());
+				check.setSelected(node.getRenderingRule().get(ruleIndex).isVisible());
 				jpanel.setBackground(DESELECTED);
+
 				Graphics2D dummyGraphics = new BufferedImage(10, 10,
 						BufferedImage.TYPE_INT_ARGB).createGraphics();
-				Legend legend = node.getRenderingLegend()[legendIndex];
-				int[] imageSize = legend.getImageSize(dummyGraphics);
+
+				Rule rule = node.getRenderingRule().get(ruleIndex);
+
+
+				if (selected) {
+					jpanel.setBackground(SELECTED);
+					check.setBackground(SELECTED);
+					pane.setBackground(SELECTED);
+					label.setForeground(SELECTED_FONT);
+				} else {
+					jpanel.setBackground(DESELECTED);
+					check.setBackground(DESELECTED);
+					pane.setBackground(DESELECTED);
+					label.setForeground(DESELECTED_FONT);
+				}
+
+				label.setText(rule.getName());
+				label.setVisible(true);
+				
+				// What's the best size to represent this legend ?
+				/*int[] imageSize = rule.getImageSize(dummyGraphics);
 				if ((imageSize[0] != 0) && (imageSize[1] != 0)) {
 					BufferedImage legendImage = new BufferedImage(imageSize[0],
 							imageSize[1], BufferedImage.TYPE_INT_ARGB);
-					legend.drawImage(legendImage.createGraphics());
+					rule.drawImage(legendImage.createGraphics());
 					ImageIcon imageIcon = new ImageIcon(legendImage);
 					lblLegend.setIcon(imageIcon);
 					lblLegend.setVisible(true);
-				}
+				}*/
 
-			} catch (DriverException e) {
+			} catch (Exception e) {
 				Services.getErrorManager().error(
 						"Cannot access the legends in layer " + node.getName(),
 						e);
 			}
 		}
 
+		@Override
 		public Rectangle getCheckBoxBounds() {
 			return check.getBounds();
 
