@@ -76,15 +76,16 @@ public class Main {
 
 	public static void main(String[] args) throws Exception {
 		Splash splash = new Splash();
-		initServices();
-		parseCommandLine(args);
-		initI18n(splash);
+		
 		if (!IsVersion(MIN_JAVA_VERSION)) {
 			JOptionPane.showMessageDialog(null, I18N
 					.getText("orbisgis.main.version"));
 			splash.setVisible(false);
 			splash.dispose();
 		} else {
+			initServices();
+			parseCommandLine(args);
+			initI18n(splash);
 			init(splash, args);
 			splash.setVisible(false);
 			splash.dispose();
