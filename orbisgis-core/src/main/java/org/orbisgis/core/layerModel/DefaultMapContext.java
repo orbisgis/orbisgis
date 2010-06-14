@@ -42,6 +42,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 
+import org.gdms.driver.DriverException;
 import org.gdms.source.SourceEvent;
 import org.gdms.source.SourceListener;
 import org.gdms.source.SourceRemovalEvent;
@@ -55,6 +56,7 @@ import org.orbisgis.core.layerModel.persistence.SelectedLayer;
 import org.orbisgis.core.renderer.Renderer;
 import org.orbisgis.progress.IProgressMonitor;
 import org.orbisgis.progress.NullProgressMonitor;
+import org.orbisgis.wkt.parser.PRJUtils;
 
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
@@ -62,13 +64,17 @@ import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.io.ParseException;
 import com.vividsolutions.jts.io.WKTReader;
 
+import fr.cts.crs.CoordinateReferenceSystem;
+import fr.cts.crs.NullCRS;
+import fr.cts.crs.NullCRS.NullCTSCRS;
+
 /**
  * Class that contains the status of the view.
  * 
  * @author Fernando Gonzalez Cortes
  * 
  */
-public class DefaultMapContext implements MapContext{
+public class DefaultMapContext implements MapContext {
 	private ILayer root;
 
 	private ILayer[] selectedLayers = new ILayer[0];
@@ -86,15 +92,15 @@ public class DefaultMapContext implements MapContext{
 	private org.orbisgis.core.layerModel.persistence.MapContext jaxbMapContext;
 
 	private Envelope boundingBox;
-	
 
+	CoordinateReferenceSystem crs = null;
 
 	/**
 	 * @param mapControl
 	 */
 	public DefaultMapContext() {
 		openerListener = new OpenerListener();
-		sourceListener = new LayerRemovalSourceListener();		
+		sourceListener = new LayerRemovalSourceListener();
 		DataManager dataManager = (DataManager) Services
 				.getService(DataManager.class);
 		setRoot(dataManager.createLayerCollection("root"));
@@ -168,6 +174,7 @@ public class DefaultMapContext implements MapContext{
 					try {
 						layer.open();
 						layer.addLayerListenerRecursively(openerListener);
+						checkLayerCRS(layer);
 					} catch (LayerException ex) {
 						Services.getErrorManager().error(
 								"Cannot open layer: " + layer.getName()
@@ -180,6 +187,8 @@ public class DefaultMapContext implements MapContext{
 									"Cannot remove layer: " + layer.getName(),
 									ex);
 						}
+					} catch (DriverException e1) {
+						e1.printStackTrace();
 					}
 				}
 			}
@@ -214,6 +223,26 @@ public class DefaultMapContext implements MapContext{
 		}
 	}
 
+	private void checkLayerCRS(final ILayer layer) throws LayerException,
+			DriverException {
+
+		CoordinateReferenceSystem layerCRS = layer.getDataSource().getCRS();
+
+		if (crs == null) {
+			crs = layerCRS;
+
+		} else if (!checkCRSProjection(layerCRS)) {
+			throw new LayerException("Cannot add a layer with CRS"
+					+ "' because it's different from map CRS.");
+		}
+	}
+
+	public boolean checkCRSProjection(CoordinateReferenceSystem layerCRS) {
+
+		return (layerCRS.getProjection().equals(crs.getProjection()));
+
+	}
+
 	/**
 	 * Creates a layer from the information obtained in the specified XML mapped
 	 * object. Layers that cannot be created are removed from the layer tree and
@@ -227,8 +256,6 @@ public class DefaultMapContext implements MapContext{
 		DataManager dataManager = (DataManager) Services
 				.getService(DataManager.class);
 		ILayer ret = null;
-		
-		
 		if (layer instanceof LayerCollectionType) {
 			LayerCollectionType xmlLayerCollection = (LayerCollectionType) layer;
 			ret = dataManager.createLayerCollection(layer.getName());
@@ -298,17 +325,25 @@ public class DefaultMapContext implements MapContext{
 			LayerType xmlRootLayer = root.saveLayer();
 			xmlMapContext
 					.setLayerCollection((LayerCollectionType) xmlRootLayer);
-			
-			//get BoundinBox from ,persistence file
+
+			// get BoundinBox from ,persistence file
 			BoundingBox boundingBox = new BoundingBox();
 			if (getBoundingBox() != null) {
-				GeometryFactory geomF= new GeometryFactory();
+				GeometryFactory geomF = new GeometryFactory();
 				Geometry geom = geomF.toGeometry(getBoundingBox());
-				boundingBox.setName(geom.toText());				
+				boundingBox.setName(geom.toText());
 			} else {
 				boundingBox.setName("");
 			}
 			xmlMapContext.setBoundingBox(boundingBox);
+
+			org.orbisgis.core.layerModel.persistence.CoordinateReferenceSystem crs = new org.orbisgis.core.layerModel.persistence.CoordinateReferenceSystem();
+			if (getCoordinateReferenceSystem() ==null) {
+				crs.setName("");
+			} else {
+				crs.setName(getCoordinateReferenceSystem().toWkt());
+			}
+			xmlMapContext.setCoordinateReferenceSystem(crs);
 
 			return xmlMapContext;
 		}
@@ -386,6 +421,13 @@ public class DefaultMapContext implements MapContext{
 			} catch (ParseException e) {
 				Services.getErrorManager().error(
 						"Cannot read the bounding box", e);
+			}
+			String wkt = jaxbMapContext.getCoordinateReferenceSystem()
+					.getName();
+			if (wkt != null) {
+				if (wkt.length() > 0) {
+					crs = PRJUtils.getCRSFromWKT(wkt);
+				}
 			}
 		}
 
@@ -514,5 +556,22 @@ public class DefaultMapContext implements MapContext{
 				}
 			}
 		}
+	}
+
+	/**
+	 * A mapcontext must have only one {@link CoordinateReferenceSystem} By
+	 * default the crs is set to null.
+	 */
+	public CoordinateReferenceSystem getCoordinateReferenceSystem() {
+		return crs;
+	}
+
+	/**
+	 * Set a {@link CoordinateReferenceSystem} to the mapContext
+	 * 
+	 * @param crs
+	 */
+	public void setCoordinateReferenceSystem(CoordinateReferenceSystem crs) {
+		this.crs = crs;
 	}
 }
