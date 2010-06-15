@@ -50,10 +50,6 @@ import org.gdms.data.edition.EditionListener;
 import org.gdms.data.edition.FieldEditionEvent;
 import org.gdms.data.edition.MetadataEditionListener;
 import org.gdms.data.edition.MultipleEditionEvent;
-import org.gdms.data.indexes.DefaultAlphaQuery;
-import org.gdms.data.indexes.IndexException;
-import org.gdms.data.indexes.IndexManager;
-import org.gdms.data.indexes.IndexQuery;
 import org.gdms.data.metadata.Metadata;
 import org.gdms.data.types.Constraint;
 import org.gdms.data.types.Type;
@@ -114,6 +110,7 @@ public class TableComponent extends JPanel implements WorkbenchFrame {
 
 	private org.orbisgis.core.ui.pluginSystem.menu.MenuTree menuTree;
 
+	@Override
 	public org.orbisgis.core.ui.pluginSystem.menu.MenuTree getMenuTreePopup() {
 		return menuTree;
 	}
@@ -212,6 +209,7 @@ public class TableComponent extends JPanel implements WorkbenchFrame {
 		txtFilter.setToolTipText("Press enter to search");
 		txtFilter.addKeyListener(new KeyListener() {
 
+			@Override
 			public void keyPressed(KeyEvent e) {
 				if (e.getKeyCode() == KeyEvent.VK_ENTER) {
 					final String whereText = txtFilter.getText();
@@ -222,22 +220,19 @@ public class TableComponent extends JPanel implements WorkbenchFrame {
 						}
 
 					} else {
-						String columnName = "pk_" + dataSource.getName();
-						StringBuffer query = new StringBuffer(
-								"select autonumeric() as pk_"
-										+ dataSource.getName() + ", * ");
-
-						query.append(" from " + dataSource.getName());
-
-						findAValue(query.toString(), columnName, whereText);
+						String pkName = "pk_" + dataSource.getName();
+						findAValue("SELECT autonumeric() - 1 as " + pkName + ", *"
+                                 + "FROM " + dataSource.getName() , pkName, whereText);
 
 					}
 				}
 			}
 
+			@Override
 			public void keyReleased(KeyEvent e) {
 			}
 
+			@Override
 			public void keyTyped(KeyEvent e) {
 			}
 
@@ -508,59 +503,33 @@ public class TableComponent extends JPanel implements WorkbenchFrame {
 
 				try {
 					DataSourceFactory dsf = dataSource.getDataSourceFactory();
+
+					// Step 1: create a copy of the data source  with the pk_field
 					DataSource dsWithPk = dsf.getDataSourceFromSQL(text + " ;",
 							pm);
 
-					String dsWithPkName = dsWithPk.getName();
-
+					// Step2: execute the filter on the sds with pk
 					DataSource dsWithPkFiltered = dsf.getDataSourceFromSQL(
-							"select * from " + dsWithPk.getName() + " where "
+							"SELECT * FROM " + dsWithPk.getName() + " WHERE "
 									+ whereText + " ;", pm);
 
 					dsWithPkFiltered.open();
 
 					long dsRowCount = dsWithPkFiltered.getRowCount();
 
-					ArrayList<Integer> newSel = new ArrayList<Integer>();
-
-					if (!dsf.getIndexManager().isIndexed(dsWithPkName,
-							columnName)) {
-						dsf.getIndexManager().buildIndex(dsWithPkName,
-								columnName,
-								IndexManager.BTREE_ALPHANUMERIC_INDEX, pm);
-					}
-
 					pm.startTask("Data matching");
 					dsWithPk.open();
+
+					int[] sel = new int[(int)dsRowCount];
 					for (int i = 0; i < dsRowCount; i++) {
-						Value value = dsWithPkFiltered.getFieldValue(i, 0);
-						IndexQuery DefaultAlphaQuery = new DefaultAlphaQuery(
-								columnName, value);
-						Iterator<Integer> it = dsWithPk
-								.queryIndex(DefaultAlphaQuery);
-
-						while (it.hasNext()) {
-							Integer index = it.next();
-							newSel.add(index);
-						}
-
+						sel[i] = dsWithPkFiltered.getFieldValue(i, 0).getAsInt();
 					}
+
 					dsWithPkFiltered.close();
 					dsWithPk.close();
-					pm.endTask();
 
-					pm.startTask("Preparing selection");
-					int selCount = newSel.size();
-					int[] sel = new int[selCount];
+					// TODO : Purge dsWithPk and dsWithPkFiltered
 
-					for (int i = 0; i < sel.length; i++) {
-						if (pm.isCancelled()) {
-							break;
-						} else {
-							pm.progressTo((int) (100 * i / selCount));
-						}
-						sel[i] = newSel.get(i);
-					}
 					pm.endTask();
 					selection.setSelectedRows(sel);
 
@@ -573,8 +542,6 @@ public class TableComponent extends JPanel implements WorkbenchFrame {
 				} catch (org.gdms.sql.parser.ParseException e) {
 					e.printStackTrace();
 				} catch (SemanticException e) {
-					e.printStackTrace();
-				} catch (IndexException e) {
 					e.printStackTrace();
 				}
 			}
@@ -738,14 +705,17 @@ public class TableComponent extends JPanel implements WorkbenchFrame {
 
 	private class HeaderPopupMouseAdapter extends PopupMouseAdapter {
 
+		@Override
 		protected Component getComponent() {
 			return table.getTableHeader();
 		}
 
+		@Override
 		protected String getExtensionPointId() {
 			return "ColumnAction";
 		}
 
+		@Override
 		protected JPopupMenu getPopupMenu() {
 			JPopupMenu pop = new JPopupMenu();
 			addMenu(pop, "Optimal width", IconLoader
@@ -766,14 +736,17 @@ public class TableComponent extends JPanel implements WorkbenchFrame {
 
 	private class CellPopupMouseAdapter extends PopupMouseAdapter {
 
+		@Override
 		protected Component getComponent() {
 			return table;
 		}
 
+		@Override
 		protected String getExtensionPointId() {
 			return "CellAction";
 		}
 
+		@Override
 		protected JPopupMenu getPopupMenu() {
 			return new JPopupMenu();
 		}
@@ -848,6 +821,7 @@ public class TableComponent extends JPanel implements WorkbenchFrame {
 		 * 
 		 * @return Name of field
 		 */
+		@Override
 		public String getColumnName(int col) {
 			try {
 				return getMetadata().getFieldName(col);
@@ -876,6 +850,7 @@ public class TableComponent extends JPanel implements WorkbenchFrame {
 		 * 
 		 * @return number of fields
 		 */
+		@Override
 		public int getColumnCount() {
 			try {
 				return getMetadata().getFieldCount();
@@ -889,6 +864,7 @@ public class TableComponent extends JPanel implements WorkbenchFrame {
 		 * 
 		 * @return number of rows.
 		 */
+		@Override
 		public int getRowCount() {
 			try {
 				return (int) dataSource.getRowCount();
@@ -900,6 +876,7 @@ public class TableComponent extends JPanel implements WorkbenchFrame {
 		/**
 		 * @see javax.swing.table.TableModel#getValueAt(int, int)
 		 */
+		@Override
 		public Object getValueAt(int row, int col) {
 			try {
 				return dataSource.getFieldValue(getRowIndex(row), col)
@@ -912,6 +889,7 @@ public class TableComponent extends JPanel implements WorkbenchFrame {
 		/**
 		 * @see javax.swing.table.TableModel#isCellEditable(int, int)
 		 */
+		@Override
 		public boolean isCellEditable(int rowIndex, int columnIndex) {
 			if (element.isEditable()) {
 				try {
@@ -931,6 +909,7 @@ public class TableComponent extends JPanel implements WorkbenchFrame {
 		 * @see javax.swing.table.TableModel#setValueAt(java.lang.Object, int,
 		 *      int)
 		 */
+		@Override
 		public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
 			try {
 				Type type = getMetadata().getFieldType(columnIndex);
@@ -1009,6 +988,7 @@ public class TableComponent extends JPanel implements WorkbenchFrame {
 			setMargin(new Insets(0, 0, 0, 0));
 		}
 
+		@Override
 		public Component getTableCellRendererComponent(JTable table,
 				Object value, boolean isSelected, boolean hasFocus, int row,
 				int column) {
