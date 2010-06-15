@@ -156,8 +156,8 @@ public class Rule implements SymbolizerNode {
 	public SpatialDataSourceDecorator getFilteredDataSource(SpatialDataSourceDecorator sds) throws DriverLoadException, DataSourceCreationException, DriverException, ParseException, SemanticException {
 		String query = "select * from " + sds.getName();
 
-		if (where != null) {
-			query += " " + where;
+		if (where != null && !where.isEmpty()) {
+			query += " WHERE " + where;
 		}
 
 		System.out.println(" here is the where: " + where);

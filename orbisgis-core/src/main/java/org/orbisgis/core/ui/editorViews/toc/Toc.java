@@ -44,8 +44,6 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import javax.swing.JComponent;
 import javax.swing.JPopupMenu;
@@ -157,7 +155,7 @@ public class Toc extends ResourceTree implements WorkbenchFrame {
 								&& (1 == e.getClickCount())) {
 							try {
 								Rule rule;
-									rule = ruleNode.getLayer().getRenderingRule().get(ruleNode.getRuleIndex());
+								rule = ruleNode.getLayer().getRenderingRule().get(ruleNode.getRuleIndex());
 								if (!rule.isVisible()) {
 									rule.setVisible(true);
 								} else {
@@ -186,19 +184,23 @@ public class Toc extends ResourceTree implements WorkbenchFrame {
 		this.getTree().getSelectionModel().addTreeSelectionListener(
 				new TreeSelectionListener() {
 
-			@Override
+					@Override
 					public void valueChanged(TreeSelectionEvent e) {
 						if (!ignoreSelection) {
-							TreePath[] selectedPaths = Toc.this.getSelection();
-							ArrayList<ILayer> layers = getSelectedLayers(selectedPaths);
-
 							ignoreSelection = true;
-							if (layers.size() > 0){
-								mapContext.setSelectedLayers(layers.toArray(new ILayer[0]));
-							}
-							else {
-								ArrayList<Rule> rules = getSelectedRules(selectedPaths);
-								mapContext.setSelectedRules(rules);
+							TreePath[] selectedPaths = Toc.this.getSelection();
+
+
+							ArrayList<Rule> rules = getSelectedRules(selectedPaths);
+							mapContext.setSelectedRules(rules);
+							if (rules.size() > 0) {
+								mapContext.setSelectedLayers(new ILayer[0]);
+							} else {
+
+								ArrayList<ILayer> layers = getSelectedLayers(selectedPaths);
+								if (layers.size() > 0) {
+									mapContext.setSelectedLayers(layers.toArray(new ILayer[0]));
+								}
 							}
 							ignoreSelection = false;
 						}
@@ -221,13 +223,13 @@ public class Toc extends ResourceTree implements WorkbenchFrame {
 		ArrayList<Rule> rules = new ArrayList<Rule>();
 		for (int i = 0; i < selectedPaths.length; i++) {
 			Object lastPathComponent = selectedPaths[i].getLastPathComponent();
-			if (lastPathComponent instanceof Rule) {
-				rules.add((Rule) lastPathComponent);
+			System.out.println("Selection : " + lastPathComponent.toString());
+			if (lastPathComponent instanceof RuleNode) {
+				rules.add(((RuleNode) lastPathComponent).getRule());
 			}
 		}
 		return rules;
 	}
-
 
 	@Override
 	public JPopupMenu getPopup() {

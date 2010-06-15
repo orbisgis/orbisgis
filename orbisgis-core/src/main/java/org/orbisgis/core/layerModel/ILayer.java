@@ -304,6 +304,12 @@ public interface ILayer {
 	void setLegend(String fieldName, Legend... legends)
 			throws IllegalArgumentException, DriverException;
 
+
+	/**
+	 * We need an entry point for AbstractLayer.fireStyleChanged!
+	 */
+	void fireStyleChangedPublic();
+
 	/**
 	 * If isRaster is true returns the first raster in the layer DataSource.
 	 * Otherwise it throws an {@link UnsupportedOperationException}. The method

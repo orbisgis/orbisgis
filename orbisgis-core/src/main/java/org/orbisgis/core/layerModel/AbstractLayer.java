@@ -91,6 +91,11 @@ public abstract class AbstractLayer implements ILayer {
 		fireNameChanged();
 	}
 
+	@Override
+	public void fireStyleChangedPublic(){
+		this.fireStyleChanged();
+	}
+
 	public Set<String> getAllLayersNames() {
 		final Set<String> result = new HashSet<String>();
 

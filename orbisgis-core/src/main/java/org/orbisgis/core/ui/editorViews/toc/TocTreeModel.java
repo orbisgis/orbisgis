@@ -36,10 +36,14 @@
  */
 package org.orbisgis.core.ui.editorViews.toc;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JTree;
 import javax.swing.tree.TreePath;
+import org.gdms.driver.DriverException;
 
 import org.orbisgis.core.layerModel.ILayer;
+import org.orbisgis.core.renderer.se.Rule;
 import org.orbisgis.core.ui.components.resourceTree.AbstractTreeModel;
 
 public class TocTreeModel extends AbstractTreeModel {
@@ -111,10 +115,16 @@ public class TocTreeModel extends AbstractTreeModel {
 
 		private ILayer layer;
 		private int ruleIndex;
+		private Rule rule;
 
 		public RuleNode(ILayer layer, int ruleIndex) {
 			this.layer = layer;
 			this.ruleIndex = ruleIndex;
+			try {
+				rule = layer.getRenderingRule().get(ruleIndex);
+			} catch (DriverException ex) {
+				Logger.getLogger(TocTreeModel.class.getName()).log(Level.SEVERE, null, ex);
+			}
 		}
 
 		public ILayer getLayer() {
@@ -123,6 +133,10 @@ public class TocTreeModel extends AbstractTreeModel {
 
 		public int getRuleIndex() {
 			return ruleIndex;
+		}
+
+		public Rule getRule(){
+			return rule;
 		}
 	}
 }

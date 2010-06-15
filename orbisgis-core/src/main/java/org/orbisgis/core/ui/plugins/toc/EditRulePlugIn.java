@@ -7,7 +7,12 @@ package org.orbisgis.core.ui.plugins.toc;
 
 import org.orbisgis.core.images.IconNames;
 import org.orbisgis.core.layerModel.MapContext;
+import org.orbisgis.core.renderer.se.FeatureTypeStyle;
 import org.orbisgis.core.renderer.se.Rule;
+import org.orbisgis.core.sif.UIFactory;
+import org.orbisgis.core.sif.multiInputPanel.DoubleType;
+import org.orbisgis.core.sif.multiInputPanel.MultiInputPanel;
+import org.orbisgis.core.sif.multiInputPanel.StringType;
 import org.orbisgis.core.ui.pluginSystem.AbstractPlugIn;
 import org.orbisgis.core.ui.pluginSystem.PlugInContext;
 import org.orbisgis.core.ui.pluginSystem.workbench.Names;
@@ -38,12 +43,48 @@ public class EditRulePlugIn extends AbstractPlugIn {
 		MapContext mapContext = getPlugInContext().getMapContext();
 		Rule[] rules = mapContext.getSelectedRules();
 
-		System.out.println ("There is " + rules.length + " to edit : " );
-		for (Rule r : rules){
-			System.out.println ("  -> Rules " + r.getName());
+
+		if (rules.length == 1){
+			Rule r = rules[0];
+
+			MultiInputPanel mip = new MultiInputPanel("Edit Rule");
+
+			StringType wValue = new StringType(60);
+			wValue.setValue(r.getWhere());
+			mip.addInput("where", "Where:", wValue);
+
+			DoubleType minValue = new DoubleType(8);
+			//if (r.getMinScaleDenom() > 0){
+				minValue.setValue(Double.toString(r.getMaxScaleDenom()));
+			//}
+			mip.addInput("minScale", "Min Scale Denominator", minValue);
+			mip.addValidationExpression(null, null);
+
+			DoubleType maxValue = new DoubleType(8);
+			//if (r.getMaxScaleDenom() > 0){
+				maxValue.setValue(Double.toString(r.getMaxScaleDenom()));
+			//}
+			mip.addInput("maxScale", "Max Scale Denominator", maxValue);
+
+			if (UIFactory.showDialog(mip)){
+
+				r.setWhere(mip.getInput("where"));
+
+				if (!mip.getInput("minScale").isEmpty()){
+					r.setMinScaleDenom(Double.parseDouble(mip.getInput("minScale")));
+				}
+
+				if (!mip.getInput("maxScale").isEmpty()){
+					r.setMaxScaleDenom(Double.parseDouble(mip.getInput("maxScale")));
+				}
+
+				((FeatureTypeStyle)(r.getParent())).getLayer().fireStyleChangedPublic();
+
+
+			}
 		}
 
-		throw new UnsupportedOperationException("Rule edition ! Not supported yet.");
+		return true;
 	}
 
 	@Override
