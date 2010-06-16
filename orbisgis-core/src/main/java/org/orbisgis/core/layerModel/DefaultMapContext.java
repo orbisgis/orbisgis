@@ -1,38 +1,39 @@
 /*
  * OrbisGIS is a GIS application dedicated to scientific spatial simulation.
- * This cross-platform GIS is developed at French IRSTV institute and is able
- * to manipulate and create vector and raster spatial information. OrbisGIS
- * is distributed under GPL 3 license. It is produced  by the geo-informatic team of
- * the IRSTV Institute <http://www.irstv.cnrs.fr/>, CNRS FR 2488:
- *    Erwan BOCHER, scientific researcher,
- *    Thomas LEDUC, scientific researcher,
- *    Fernando GONZALEZ CORTES, computer engineer.
+ * This cross-platform GIS is developed at French IRSTV institute and is able to
+ * manipulate and create vector and raster spatial information. OrbisGIS is
+ * distributed under GPL 3 license. It is produced by the "Atelier SIG" team of
+ * the IRSTV Institute <http://www.irstv.cnrs.fr/> CNRS FR 2488.
+ *
+ * 
+ *  Team leader Erwan BOCHER, scientific researcher,
+ * 
+ *  User support leader : Gwendall Petit, geomatic engineer.
+ *
  *
  * Copyright (C) 2007 Erwan BOCHER, Fernando GONZALEZ CORTES, Thomas LEDUC
  *
+ * Copyright (C) 2010 Erwan BOCHER, Pierre-Yves FADET, Alexis GUEGANNO, Maxence LAURENT
+ *
  * This file is part of OrbisGIS.
  *
- * OrbisGIS is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * OrbisGIS is free software: you can redistribute it and/or modify it under the
+ * terms of the GNU General Public License as published by the Free Software
+ * Foundation, either version 3 of the License, or (at your option) any later
+ * version.
  *
- * OrbisGIS is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
+ * OrbisGIS is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
+ * A PARTICULAR PURPOSE. See the GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
- * along with OrbisGIS. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License along with
+ * OrbisGIS. If not, see <http://www.gnu.org/licenses/>.
  *
- * For more information, please consult:
- *    <http://orbisgis.cerma.archi.fr/>
- *    <http://sourcesup.cru.fr/projects/orbisgis/>
+ * For more information, please consult: <http://www.orbisgis.org/>
  *
  * or contact directly:
- *    erwan.bocher _at_ ec-nantes.fr
- *    fergonco _at_ gmail.com
- *    thomas.leduc _at_ cerma.archi.fr
+ * erwan.bocher _at_ ec-nantes.fr
+ * gwendall.petit _at_ ec-nantes.fr
  */
 package org.orbisgis.core.layerModel;
 
@@ -52,6 +53,7 @@ import org.orbisgis.core.errorManager.ErrorManager;
 import org.orbisgis.core.layerModel.persistence.BoundingBox;
 import org.orbisgis.core.layerModel.persistence.LayerCollectionType;
 import org.orbisgis.core.layerModel.persistence.LayerType;
+import org.orbisgis.core.layerModel.persistence.OgcCrs;
 import org.orbisgis.core.layerModel.persistence.SelectedLayer;
 import org.orbisgis.core.renderer.Renderer;
 import org.orbisgis.progress.IProgressMonitor;
@@ -65,13 +67,11 @@ import com.vividsolutions.jts.io.ParseException;
 import com.vividsolutions.jts.io.WKTReader;
 
 import fr.cts.crs.CoordinateReferenceSystem;
-import fr.cts.crs.NullCRS;
-import fr.cts.crs.NullCRS.NullCTSCRS;
 
 /**
- * Class that contains the status of the view.
+ * Class that contains the status of the map view.
+ *
  * 
- * @author Fernando Gonzalez Cortes
  * 
  */
 public class DefaultMapContext implements MapContext {
@@ -93,7 +93,7 @@ public class DefaultMapContext implements MapContext {
 
 	private Envelope boundingBox;
 
-	CoordinateReferenceSystem crs = null;
+	public CoordinateReferenceSystem crs = null;
 
 	/**
 	 * @param mapControl
@@ -231,10 +231,10 @@ public class DefaultMapContext implements MapContext {
 		if (crs == null) {
 			crs = layerCRS;
 
-		} else if (!checkCRSProjection(layerCRS)) {
+		} /*else if (!checkCRSProjection(layerCRS)) {
 			throw new LayerException("Cannot add a layer with CRS"
 					+ "' because it's different from map CRS.");
-		}
+		}*/
 	}
 
 	public boolean checkCRSProjection(CoordinateReferenceSystem layerCRS) {
@@ -337,13 +337,13 @@ public class DefaultMapContext implements MapContext {
 			}
 			xmlMapContext.setBoundingBox(boundingBox);
 
-			org.orbisgis.core.layerModel.persistence.CoordinateReferenceSystem crs = new org.orbisgis.core.layerModel.persistence.CoordinateReferenceSystem();
-			if (getCoordinateReferenceSystem() ==null) {
-				crs.setName("");
+			OgcCrs ogcCrs = new OgcCrs();
+			if (getCoordinateReferenceSystem() == null) {
+				ogcCrs.setName("");
 			} else {
-				crs.setName(getCoordinateReferenceSystem().toWkt());
+				//ogcCrs.setName(crs.toWkt());
 			}
-			xmlMapContext.setCoordinateReferenceSystem(crs);
+			xmlMapContext.setOgcCrs(ogcCrs);
 
 			return xmlMapContext;
 		}
@@ -422,8 +422,7 @@ public class DefaultMapContext implements MapContext {
 				Services.getErrorManager().error(
 						"Cannot read the bounding box", e);
 			}
-			String wkt = jaxbMapContext.getCoordinateReferenceSystem()
-					.getName();
+			String wkt = jaxbMapContext.getOgcCrs().getName();
 			if (wkt != null) {
 				if (wkt.length() > 0) {
 					crs = PRJUtils.getCRSFromWKT(wkt);
