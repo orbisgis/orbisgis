@@ -34,8 +34,8 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "")
-@XmlRootElement(name = "boundingBox")
-public class BoundingBox {
+@XmlRootElement(name = "ogcCrs")
+public class OgcCrs {
 
     @XmlAttribute(required = true)
     protected String name;
