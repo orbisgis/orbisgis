@@ -131,61 +131,63 @@ public interface SQLEngineConstants {
   /** RegularExpression Id. */
   int CASCADE = 67;
   /** RegularExpression Id. */
-  int INTEGER_LITERAL = 68;
+  int PURGE = 68;
   /** RegularExpression Id. */
-  int FLOATING_POINT_LITERAL = 69;
+  int INTEGER_LITERAL = 69;
   /** RegularExpression Id. */
-  int EXPONENT = 70;
+  int FLOATING_POINT_LITERAL = 70;
   /** RegularExpression Id. */
-  int STRING_LITERAL = 71;
+  int EXPONENT = 71;
   /** RegularExpression Id. */
-  int BOOLEAN_LITERAL = 72;
+  int STRING_LITERAL = 72;
   /** RegularExpression Id. */
-  int ID = 73;
+  int BOOLEAN_LITERAL = 73;
   /** RegularExpression Id. */
-  int LETTER = 74;
+  int ID = 74;
   /** RegularExpression Id. */
-  int DIGIT = 75;
+  int LETTER = 75;
   /** RegularExpression Id. */
-  int ASSIGN = 76;
+  int DIGIT = 76;
   /** RegularExpression Id. */
-  int CONCAT = 77;
+  int ASSIGN = 77;
   /** RegularExpression Id. */
-  int SEMICOLON = 78;
+  int CONCAT = 78;
   /** RegularExpression Id. */
-  int DOT = 79;
+  int SEMICOLON = 79;
   /** RegularExpression Id. */
-  int TILDE = 80;
+  int DOT = 80;
   /** RegularExpression Id. */
-  int LESS = 81;
+  int TILDE = 81;
   /** RegularExpression Id. */
-  int LESSEQUAL = 82;
+  int LESS = 82;
   /** RegularExpression Id. */
-  int GREATER = 83;
+  int LESSEQUAL = 83;
   /** RegularExpression Id. */
-  int GREATEREQUAL = 84;
+  int GREATER = 84;
   /** RegularExpression Id. */
-  int EQUAL = 85;
+  int GREATEREQUAL = 85;
   /** RegularExpression Id. */
-  int NOTEQUAL = 86;
+  int EQUAL = 86;
   /** RegularExpression Id. */
-  int NOTEQUAL2 = 87;
+  int NOTEQUAL = 87;
   /** RegularExpression Id. */
-  int JOINPLUS = 88;
+  int NOTEQUAL2 = 88;
   /** RegularExpression Id. */
-  int OPENPAREN = 89;
+  int JOINPLUS = 89;
   /** RegularExpression Id. */
-  int CLOSEPAREN = 90;
+  int OPENPAREN = 90;
   /** RegularExpression Id. */
-  int ASTERISK = 91;
+  int CLOSEPAREN = 91;
   /** RegularExpression Id. */
-  int SLASH = 92;
+  int ASTERISK = 92;
   /** RegularExpression Id. */
-  int PLUS = 93;
+  int SLASH = 93;
   /** RegularExpression Id. */
-  int MINUS = 94;
+  int PLUS = 94;
   /** RegularExpression Id. */
-  int QUESTIONMARK = 95;
+  int MINUS = 95;
+  /** RegularExpression Id. */
+  int QUESTIONMARK = 96;
 
   /** Lexical state. */
   int DEFAULT = 0;
@@ -266,6 +268,7 @@ public interface SQLEngineConstants {
     "\"integer\"",
     "\"restrict\"",
     "\"cascade\"",
+    "\"purge\"",
     "<INTEGER_LITERAL>",
     "<FLOATING_POINT_LITERAL>",
     "<EXPONENT>",

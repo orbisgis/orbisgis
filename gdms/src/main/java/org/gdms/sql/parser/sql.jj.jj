@@ -141,6 +141,8 @@ TOKEN :  /* Keywords */
   |<INTERGER:"integer">
   |<RESTRICT : "restrict">
   | <CASCADE : "cascade">
+  | <PURGE : "purge">
+  
 
 }
 
@@ -461,7 +463,7 @@ void SQLDrop() :
 /*@egen*/
   <DROP>
   (
-    (<TABLE> [<IF> <EXISTS>] SQLTableList())
+    (<TABLE> [<IF> <EXISTS>] SQLTableList() [<PURGE>])
   |
   (<VIEW> [<IF> <EXISTS>] SQLTableList())
   |
@@ -489,6 +491,7 @@ void SQLDrop() :
   }
 /*@egen*/
 }
+
 
 void SQLAlter() :
 {/*@bgen(jjtree) SQLAlter */
