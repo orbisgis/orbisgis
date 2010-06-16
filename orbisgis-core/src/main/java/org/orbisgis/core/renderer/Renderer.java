@@ -1,38 +1,39 @@
 /*
  * OrbisGIS is a GIS application dedicated to scientific spatial simulation.
- * This cross-platform GIS is developed at French IRSTV institute and is able
- * to manipulate and create vector and raster spatial information. OrbisGIS
- * is distributed under GPL 3 license. It is produced  by the geo-informatic team of
- * the IRSTV Institute <http://www.irstv.cnrs.fr/>, CNRS FR 2488:
- *    Erwan BOCHER, scientific researcher,
- *    Thomas LEDUC, scientific researcher,
- *    Fernando GONZALEZ CORTES, computer engineer.
+ * This cross-platform GIS is developed at French IRSTV institute and is able to
+ * manipulate and create vector and raster spatial information. OrbisGIS is
+ * distributed under GPL 3 license. It is produced by the "Atelier SIG" team of
+ * the IRSTV Institute <http://www.irstv.cnrs.fr/> CNRS FR 2488.
+ *
+ * 
+ *  Team leader Erwan BOCHER, scientific researcher,
+ * 
+ *  User support leader : Gwendall Petit, geomatic engineer.
+ *
  *
  * Copyright (C) 2007 Erwan BOCHER, Fernando GONZALEZ CORTES, Thomas LEDUC
  *
+ * Copyright (C) 2010 Erwan BOCHER, Pierre-Yves FADET, Alexis GUEGANNO, Maxence LAURENT
+ *
  * This file is part of OrbisGIS.
  *
- * OrbisGIS is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * OrbisGIS is free software: you can redistribute it and/or modify it under the
+ * terms of the GNU General Public License as published by the Free Software
+ * Foundation, either version 3 of the License, or (at your option) any later
+ * version.
  *
- * OrbisGIS is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
+ * OrbisGIS is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
+ * A PARTICULAR PURPOSE. See the GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
- * along with OrbisGIS. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License along with
+ * OrbisGIS. If not, see <http://www.gnu.org/licenses/>.
  *
- * For more information, please consult:
- *    <http://orbisgis.cerma.archi.fr/>
- *    <http://sourcesup.cru.fr/projects/orbisgis/>
+ * For more information, please consult: <http://www.orbisgis.org/>
  *
  * or contact directly:
- *    erwan.bocher _at_ ec-nantes.fr
- *    fergonco _at_ gmail.com
- *    thomas.leduc _at_ cerma.archi.fr
+ * erwan.bocher _at_ ec-nantes.fr
+ * gwendall.petit _at_ ec-nantes.fr
  */
 package org.orbisgis.core.renderer;
 
@@ -60,6 +61,7 @@ import java.util.Vector;
 import javax.imageio.ImageIO;
 
 import org.apache.log4j.Logger;
+import org.gdms.data.DataSourceIterator;
 import org.gdms.data.SpatialDataSourceDecorator;
 import org.gdms.data.indexes.DefaultSpatialIndexQuery;
 import org.gdms.driver.DriverException;
@@ -90,6 +92,8 @@ import com.vividsolutions.jts.index.quadtree.Quadtree;
 public class Renderer {
 
 	private static Logger logger = Logger.getLogger(Renderer.class.getName());
+
+	public GeometryFactory gf = new GeometryFactory();
 
 	/**
 	 * Draws the content of the layer in the specified graphics
@@ -312,10 +316,8 @@ public class Renderer {
 					continue;
 				}
 
-				DefaultSpatialIndexQuery query = new DefaultSpatialIndexQuery(
-						mt.getAdjustedExtent(), sds.getMetadata().getFieldName(
-								sds.getSpatialFieldIndex()));
-				Iterator<Integer> it = sds.queryIndex(query);
+				Iterator<Integer> it = getIterator(mt.getAdjustedExtent(), sds);
+
 				long rowCount = sds.getRowCount();
 				pm.startTask("Drawing " + layer.getName());
 				int i = 0;
@@ -357,16 +359,34 @@ public class Renderer {
 							if (symbolEnvelope != null) {
 								permission.addUsedArea(symbolEnvelope);
 							}
+
+							g2.finalize();
+
 						}
+
 					}
 				}
 			}
+
 			pm.endTask();
 
 		} catch (RenderException e) {
 			Services.getErrorManager().warning(
 					"Cannot draw layer: " + layer.getName(), e);
 		}
+	}
+
+	private Iterator<Integer> getIterator(Envelope adjustedExtent,
+			SpatialDataSourceDecorator sds) throws DriverException {
+		if (adjustedExtent.equals(sds.getFullExtent())) {
+			return new DataSourceIterator(sds);
+		} else {
+			DefaultSpatialIndexQuery query = new DefaultSpatialIndexQuery(
+					adjustedExtent, sds.getMetadata().getFieldName(
+							sds.getSpatialFieldIndex()));
+			return sds.queryIndex(query);
+		}
+
 	}
 
 	private boolean validScale(MapTransform mt, Legend legend) {
@@ -518,9 +538,6 @@ public class Renderer {
 		}
 	}
 
-	
-
-	
 	/**
 	 * Apply some rendering rules Look at rendering configuration panel.
 	 * 
