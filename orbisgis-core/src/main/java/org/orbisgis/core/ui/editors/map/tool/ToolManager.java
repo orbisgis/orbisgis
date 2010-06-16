@@ -132,7 +132,8 @@ import com.vividsolutions.jts.geom.Polygon;
  * 
  * @author Fernando Gonzlez Corts
  */
-public class ToolManager extends MouseAdapter implements MouseMotionListener, MouseWheelListener {
+public class ToolManager extends MouseAdapter implements MouseMotionListener,
+		MouseWheelListener {
 
 	public static final String TERMINATE = "t";
 
@@ -307,24 +308,23 @@ public class ToolManager extends MouseAdapter implements MouseMotionListener, Mo
 			if (showPopup) {
 				toolPopUp.show(component, e.getPoint().x, e.getPoint().y);
 			}
-		} 
+		}
 	}
-	
-	public void mouseWheelMoved(MouseWheelEvent e){
+
+	public void mouseWheelMoved(MouseWheelEvent e) {
 		int notches = e.getWheelRotation();
 		Automaton oldTool = getTool();
 		try {
-			if(notches < 0)				
-				setTool(new ZoomInTool());			
-			else 
-				setTool(new ZoomOutTool());	
+			if (notches < 0)
+				setTool(new ZoomInTool());
+			else
+				setTool(new ZoomOutTool());
 			leftClickTransition(e, PRESS);
 			leftClickTransition(e, RELEASE);
 			leftClickTransition(e, POINT);
 			setTool(oldTool);
 		} catch (TransitionException e1) {
-			Services.getErrorManager().error(
-			"cannot set Automaton", e1);
+			Services.getErrorManager().error("cannot set Automaton", e1);
 		}
 	}
 
@@ -372,24 +372,23 @@ public class ToolManager extends MouseAdapter implements MouseMotionListener, Mo
 	public void mousePressed(MouseEvent e) {
 		if (e.getButton() == MouseEvent.BUTTON1) {
 			leftClickTransition(e, PRESS);
-		} else if(e.getButton() == MouseEvent.BUTTON2) {
+		} else if (e.getButton() == MouseEvent.BUTTON2) {
 			try {
 				setTool(new PanTool());
-				leftClickTransition(e, PRESS);				
+				leftClickTransition(e, PRESS);
 			} catch (TransitionException e1) {
-				Services.getErrorManager().error(
-				"cannot set Automaton", e1);
-			}			
+				Services.getErrorManager().error("cannot set Automaton", e1);
+			}
 		}
 	}
 
 	@Override
 	public void mouseReleased(MouseEvent e) {
-		if (e.getButton() == MouseEvent.BUTTON1 ||
-				e.getButton() == MouseEvent.BUTTON2) {
+		if (e.getButton() == MouseEvent.BUTTON1
+				|| e.getButton() == MouseEvent.BUTTON2) {
 			leftClickTransition(e, RELEASE);
-			//panel = new MyPanel();
-			//panel.setVisible(true);
+			// panel = new MyPanel();
+			// panel.setVisible(true);
 		}
 	}
 
@@ -462,8 +461,8 @@ public class ToolManager extends MouseAdapter implements MouseMotionListener, Mo
 						mapTransform.getHeight(), BufferedImage.TYPE_INT_ARGB);
 				Graphics2D graphics = bi.createGraphics();
 
-				symbol.draw(graphics, geometry, mapTransform
-						, new AllowAllRenderPermission());
+				symbol.draw(graphics, geometry, mapTransform,
+						new AllowAllRenderPermission());
 
 				g2.drawImage(bi, 0, 0, null);
 			} catch (DriverException e) {
