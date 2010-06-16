@@ -1,47 +1,40 @@
-/**
+/*
  * OrbisGIS is a GIS application dedicated to scientific spatial simulation.
  * This cross-platform GIS is developed at French IRSTV institute and is able to
  * manipulate and create vector and raster spatial information. OrbisGIS is
- * distributed under GPL 3 license. It is produced by the geo-informatic team of
+ * distributed under GPL 3 license. It is produced by the "Atelier SIG" team of
  * the IRSTV Institute <http://www.irstv.cnrs.fr/> CNRS FR 2488.
- * 
- *  
- *  Lead Erwan BOCHER, scientific researcher, 
  *
- *  Developer lead : Pierre-Yves FADET, computer engineer. 
- *  
- *  User support lead : Gwendall Petit, geomatic engineer. 
  * 
- * Previous computer developer : Thomas LEDUC, scientific researcher, Fernando GONZALEZ
- * CORTES, computer engineer.
+ *  Team leader Erwan BOCHER, scientific researcher,
  * 
+ *  User support leader : Gwendall Petit, geomatic engineer.
+ *
+ *
  * Copyright (C) 2007 Erwan BOCHER, Fernando GONZALEZ CORTES, Thomas LEDUC
- * 
- * Copyright (C) 2010 Erwan BOCHER, Fernando GONZALEZ CORTES, Thomas LEDUC
- * 
+ *
+ * Copyright (C) 2010 Erwan BOCHER, Pierre-Yves FADET, Alexis GUEGANNO, Maxence LAURENT
+ *
  * This file is part of OrbisGIS.
- * 
+ *
  * OrbisGIS is free software: you can redistribute it and/or modify it under the
  * terms of the GNU General Public License as published by the Free Software
  * Foundation, either version 3 of the License, or (at your option) any later
  * version.
- * 
+ *
  * OrbisGIS is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
  * A PARTICULAR PURPOSE. See the GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License along with
  * OrbisGIS. If not, see <http://www.gnu.org/licenses/>.
- * 
- * For more information, please consult: <http://orbisgis.cerma.archi.fr/>
- * <http://sourcesup.cru.fr/projects/orbisgis/>
- * 
- * or contact directly: 
- * erwan.bocher _at_ ec-nantes.fr 
- * Pierre-Yves.Fadet _at_ ec-nantes.fr
+ *
+ * For more information, please consult: <http://www.orbisgis.org/>
+ *
+ * or contact directly:
+ * erwan.bocher _at_ ec-nantes.fr
  * gwendall.petit _at_ ec-nantes.fr
- **/
-
+ */
 package org.orbisgis.core.ui.pluginSystem.workbench;
 
 import org.orbisgis.utils.I18N;
@@ -49,7 +42,7 @@ import org.orbisgis.utils.I18N;
 public abstract class Names {
 
 	/**************************************************** Toolbars Names *******************************************************/
-	public static final String TOOLBAR_NAME = I18N.getText("orbisgis.toolbar.main");
+	public static final String TOOLBAR_MAIN = I18N.getText("orbisgis.toolbar.main");
 	public static final String TOOLBAR_NAVIGATION = I18N.getText("orbisgis.toolbar.navigation");
 	public static final String TOOLBAR_INFO = I18N.getText("orbisgis.toolbar.info");
 	public static final String TOOLBAR_FENCE = I18N.getText("orbisgis.toolbar.fence");
@@ -63,6 +56,11 @@ public abstract class Names {
 	public static final String MAP_TOOLBAR_NAME = I18N.getText("orbisgis.map.toolbar.main");
 	public static final String MAP_TOOLBAR_SCALE = I18N.getText("orbisgis.map.toolbar.scale");
 	public static final String MAP_TOOLBAR_PROJECTION = I18N.getText("orbisgis.map.toolbar.projection");
+	
+	
+	//Main status toolbar
+	public static final String STATUS_TOOLBAR_MAIN = I18N.getText("orbisgis.sttoolbar.main");;
+	
 	/**************************************************** MAIN MENU ************************************************************/
 	// MAIN MENU
 	// File
@@ -213,6 +211,10 @@ public abstract class Names {
 	public static final String POPUP_GEOCATALOG_CLEAR = I18N.getText("orbisgis.ui.popupmenu.geocatalog.clear.path1");
 	public static final String POPUP_GEOCATALOG_CLEAR_GROUP = I18N.getText("orbisgis.ui.popupmenu.geocatalog.clear.group");
 
+	
+	// Describe Table
+	public static final String POPUP_GEOCATALOG_DESCRIBE_TABLE = I18N.getText("orbisgis.ui.popupmenu.geocatalog.table.describe");
+	
 	// Export
 	public static final String POPUP_GEOCATALOG_EXPORT = I18N.getText("orbisgis.ui.popupmenu.geocatalog.export");	
 	public static final String POPUP_GEOCATALOG_EXPORT_INFILE = I18N.getText("orbisgis.ui.popupmenu.geocatalog.export.infile");
@@ -299,4 +301,5 @@ public abstract class Names {
 	public static final String FULL_EXTENT_TOOTIP = I18N.getText("orbisgis.ui.tools.fullextent.tooltip");
 	//Scale 
 	public static final String SCALE_TOOTIP = I18N.getText("orbisgis.ui.tools.scale.tooltip");
+	
 }

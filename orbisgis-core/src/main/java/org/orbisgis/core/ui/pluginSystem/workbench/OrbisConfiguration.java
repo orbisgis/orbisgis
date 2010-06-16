@@ -1,47 +1,40 @@
-/**
+/*
  * OrbisGIS is a GIS application dedicated to scientific spatial simulation.
  * This cross-platform GIS is developed at French IRSTV institute and is able to
  * manipulate and create vector and raster spatial information. OrbisGIS is
- * distributed under GPL 3 license. It is produced by the geo-informatic team of
+ * distributed under GPL 3 license. It is produced by the "Atelier SIG" team of
  * the IRSTV Institute <http://www.irstv.cnrs.fr/> CNRS FR 2488.
- * 
- *  
- *  Lead Erwan BOCHER, scientific researcher, 
  *
- *  Developer lead : Pierre-Yves FADET, computer engineer. 
- *  
- *  User support lead : Gwendall Petit, geomatic engineer. 
  * 
- * Previous computer developer : Thomas LEDUC, scientific researcher, Fernando GONZALEZ
- * CORTES, computer engineer.
+ *  Team leader Erwan BOCHER, scientific researcher,
  * 
+ *  User support leader : Gwendall Petit, geomatic engineer.
+ *
+ *
  * Copyright (C) 2007 Erwan BOCHER, Fernando GONZALEZ CORTES, Thomas LEDUC
- * 
- * Copyright (C) 2010 Erwan BOCHER, Fernando GONZALEZ CORTES, Thomas LEDUC
- * 
+ *
+ * Copyright (C) 2010 Erwan BOCHER, Pierre-Yves FADET, Alexis GUEGANNO, Maxence LAURENT
+ *
  * This file is part of OrbisGIS.
- * 
+ *
  * OrbisGIS is free software: you can redistribute it and/or modify it under the
  * terms of the GNU General Public License as published by the Free Software
  * Foundation, either version 3 of the License, or (at your option) any later
  * version.
- * 
+ *
  * OrbisGIS is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
  * A PARTICULAR PURPOSE. See the GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License along with
  * OrbisGIS. If not, see <http://www.gnu.org/licenses/>.
- * 
- * For more information, please consult: <http://orbisgis.cerma.archi.fr/>
- * <http://sourcesup.cru.fr/projects/orbisgis/>
- * 
- * or contact directly: 
- * erwan.bocher _at_ ec-nantes.fr 
- * Pierre-Yves.Fadet _at_ ec-nantes.fr
+ *
+ * For more information, please consult: <http://www.orbisgis.org/>
+ *
+ * or contact directly:
+ * erwan.bocher _at_ ec-nantes.fr
  * gwendall.petit _at_ ec-nantes.fr
- **/
-
+ */
 package org.orbisgis.core.ui.pluginSystem.workbench;
 
 import javax.swing.AbstractButton;
@@ -109,6 +102,8 @@ import org.orbisgis.core.ui.plugins.editors.tableEditor.ZoomToSelectedPlugIn;
 import org.orbisgis.core.ui.plugins.help.AboutOrbisGISPlugIn;
 import org.orbisgis.core.ui.plugins.help.OnlineHelpOrbisGISPlugIn;
 import org.orbisgis.core.ui.plugins.properties.ConfigurationPlugIn;
+import org.orbisgis.core.ui.plugins.status.FreeDefaultWorkspacePlugIn;
+import org.orbisgis.core.ui.plugins.status.WorkspaceNamePlugin;
 import org.orbisgis.core.ui.plugins.toc.CreateGroupPlugIn;
 import org.orbisgis.core.ui.plugins.toc.EditLegendPlugIn;
 import org.orbisgis.core.ui.plugins.toc.GroupLayersPlugIn;
@@ -152,13 +147,17 @@ public class OrbisConfiguration implements Setup {
 
 	// OrbisGIS main ToolBar & OrbisGIS main menu
 	private ExitPlugIn exitPlugIn = new ExitPlugIn();
-	private SavePlugIn savePlugIn = new SavePlugIn();	
+	private SavePlugIn savePlugIn = new SavePlugIn();
 	private SaveWorkspacePlugIn saveWorkspacePlugIn = new SaveWorkspacePlugIn();
-	private ChangeWorkspacePlugIn changeWorkspacePlugIn = new ChangeWorkspacePlugIn();
 	private ConfigurationPlugIn configuration = new ConfigurationPlugIn();
 	private AboutOrbisGISPlugIn aboutOrbisGIS = new AboutOrbisGISPlugIn();
 	private OnlineHelpOrbisGISPlugIn onlineHelpOrbisGIS = new OnlineHelpOrbisGISPlugIn();
 
+	// OrbisGIS status
+	private WorkspaceNamePlugin workspaceNamePlugin = new WorkspaceNamePlugin();
+	private FreeDefaultWorkspacePlugIn freeDefaultWorkspacePlugIn = new FreeDefaultWorkspacePlugIn();
+	private ChangeWorkspacePlugIn changeWorkspacePlugIn = new ChangeWorkspacePlugIn();
+	
 	// TOC
 	private EditLegendPlugIn editLegendPlugIn = new EditLegendPlugIn();
 	private ShowInTablePlugIn showInTablePlugIn = new ShowInTablePlugIn();
@@ -174,7 +173,7 @@ public class OrbisConfiguration implements Setup {
 	private ZoomToLayerPlugIn zoomToLayerPlugIn = new ZoomToLayerPlugIn();
 
 	// DEMO
-	//private MyTOCMenu myTOCMenu = new MyTOCMenu();
+	// private MyTOCMenu myTOCMenu = new MyTOCMenu();
 
 	// Geocognition popup
 	private OpenGeocognitionPlugIn openGeocognitionPlugIn = new OpenGeocognitionPlugIn();
@@ -233,7 +232,7 @@ public class OrbisConfiguration implements Setup {
 	private RedoMapPlugIn redoMapPlugIn = new RedoMapPlugIn();
 	private DeleteMapSelectionPlugIn deleteMapSelectionPlugIn = new DeleteMapSelectionPlugIn();
 	private CreateSourceFromMapSelectionPlugIn createSourceFromMapSelectionPlugIn = new CreateSourceFromMapSelectionPlugIn();
-	//Tool bar on map
+	// Tool bar on map
 	private ShowXYPlugIn showXYPlugIn = new ShowXYPlugIn();
 	// Scale panel plugin is a swing component to execute action on map editor
 	private ScalePlugIn scalePlugIn = new ScalePlugIn();
@@ -242,10 +241,9 @@ public class OrbisConfiguration implements Setup {
 	// right click on Map
 	private ExportMapAsImagePlugIn exportMasAsImagePlugIn = new ExportMapAsImagePlugIn();
 	private ExportMapAsPDFPlugIn exportMapAsPDFPlugIn = new ExportMapAsPDFPlugIn();
-	
 
-	//private TestPlugIn testPlugIn = new TestPlugIn();
-	
+	// private TestPlugIn testPlugIn = new TestPlugIn();
+
 	public void setup(WorkbenchContext workbenchContext) throws Exception {
 		// load Main Menu
 		configureMainMenus(workbenchContext);
@@ -259,10 +257,10 @@ public class OrbisConfiguration implements Setup {
 				"Gives default tool to the editor", defaultTool);
 		// Initialize one Map editor without geocognition elment
 		MapEditorPlugIn mapEditorPlugIn = new MapEditorPlugIn();
-		mapEditorPlugIn.initialize(plugInContext);		
+		mapEditorPlugIn.initialize(plugInContext);
 		// Initialize table editor
 		TableEditorPlugIn tableEditorPlugIn = new TableEditorPlugIn();
-		tableEditorPlugIn.initialize(plugInContext);		
+		tableEditorPlugIn.initialize(plugInContext);
 		// load toolbars (Main toolbar, table toolexceptionbar, Map toolbar)
 		configureToolBar(plugInContext);
 		// load main frame with default tool selected (Zoom in tool)
@@ -300,7 +298,7 @@ public class OrbisConfiguration implements Setup {
 
 			// DEMO
 
-			//myTOCMenu.initialize(context);
+			// myTOCMenu.initialize(context);
 
 			// Geocognition popup
 			openGeocognitionPlugIn.initialize(context);
@@ -345,9 +343,8 @@ public class OrbisConfiguration implements Setup {
 			// Map editor : right click on Map
 			exportMasAsImagePlugIn.initialize(context);
 			exportMapAsPDFPlugIn.initialize(context);
-			
-			
-			//testPlugIn.initialize(context);
+
+			// testPlugIn.initialize(context);
 
 		} catch (Exception e) {
 			Services.getErrorManager().error(Names.ERROR_POPUP_ADD, e);
@@ -361,15 +358,19 @@ public class OrbisConfiguration implements Setup {
 
 		// Main Toolbar & Main menu -> sont chargés par le PlugIn
 		// lib/ext/MainToolBarPlugIn.jar
-		
+
 		savePlugIn.initialize(plugInContext);
 		// Main menus
 		saveWorkspacePlugIn.initialize(plugInContext);
-		changeWorkspacePlugIn.initialize(plugInContext);
 		configuration.initialize(plugInContext);
 		exitPlugIn.initialize(plugInContext);
 		aboutOrbisGIS.initialize(plugInContext);
 		onlineHelpOrbisGIS.initialize(plugInContext);
+
+		// Status toolbar
+		workspaceNamePlugin.initialize(plugInContext);
+		changeWorkspacePlugIn.initialize(plugInContext);
+		freeDefaultWorkspacePlugIn.initialize(plugInContext);
 
 		// Map Toolbar
 		clearMapSelectionPlugIn.initialize(plugInContext);
@@ -419,11 +420,11 @@ public class OrbisConfiguration implements Setup {
 		deleteTableSelectionPlugIn.initialize(plugInContext);
 		newRowTablePlugIn.initialize(plugInContext);
 		createSourceFromSelectionPlugIn.initialize(plugInContext);
-		
-		//Map tools
-		//scalePlugIn.initialize(plugInContext);		
+
+		// Map tools
+		scalePlugIn.initialize(plugInContext);
 		showXYPlugIn.initialize(plugInContext);
-		//CRSPlugIn.initialize(plugInContext);
+		// CRSPlugIn.initialize(plugInContext);
 	}
 
 	private void configureToolBar(PlugInContext plugInContext) {
@@ -434,7 +435,7 @@ public class OrbisConfiguration implements Setup {
 		WorkbenchToolBar wbToolBar = frame.getWorkbenchToolBar();
 		// Add Toolbars
 		WorkbenchToolBar wbMain = new WorkbenchToolBar(wbContext,
-				Names.TOOLBAR_NAME);
+				Names.TOOLBAR_MAIN);
 		wbToolBar.add(wbMain);
 		WorkbenchToolBar wbNavigation = new WorkbenchToolBar(wbContext,
 				Names.TOOLBAR_NAVIGATION);
@@ -458,9 +459,11 @@ public class OrbisConfiguration implements Setup {
 		WorkbenchToolBar wbEditionTable = new WorkbenchToolBar(wbContext,
 				Names.TOOLBAR_TABLE);
 		wbToolBar.add(wbEditionTable);
-		
-		
-		
+
+		WorkbenchToolBar wbStatusMainToolBar = new WorkbenchToolBar(wbContext,
+				Names.STATUS_TOOLBAR_MAIN);
+		wbToolBar.add(wbStatusMainToolBar);
+
 	}
 
 	private void configureMainMenus(final WorkbenchContext workbenchContext)
