@@ -1,38 +1,39 @@
 /*
  * OrbisGIS is a GIS application dedicated to scientific spatial simulation.
- * This cross-platform GIS is developed at French IRSTV institute and is able
- * to manipulate and create vector and raster spatial information. OrbisGIS
- * is distributed under GPL 3 license. It is produced  by the geo-informatic team of
- * the IRSTV Institute <http://www.irstv.cnrs.fr/>, CNRS FR 2488:
- *    Erwan BOCHER, scientific researcher,
- *    Thomas LEDUC, scientific researcher,
- *    Fernando GONZALEZ CORTES, computer engineer.
+ * This cross-platform GIS is developed at French IRSTV institute and is able to
+ * manipulate and create vector and raster spatial information. OrbisGIS is
+ * distributed under GPL 3 license. It is produced by the "Atelier SIG" team of
+ * the IRSTV Institute <http://www.irstv.cnrs.fr/> CNRS FR 2488.
+ *
+ * 
+ *  Team leader Erwan BOCHER, scientific researcher,
+ * 
+ *  User support leader : Gwendall Petit, geomatic engineer.
+ *
  *
  * Copyright (C) 2007 Erwan BOCHER, Fernando GONZALEZ CORTES, Thomas LEDUC
  *
+ * Copyright (C) 2010 Erwan BOCHER, Pierre-Yves FADET, Alexis GUEGANNO, Maxence LAURENT
+ *
  * This file is part of OrbisGIS.
  *
- * OrbisGIS is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * OrbisGIS is free software: you can redistribute it and/or modify it under the
+ * terms of the GNU General Public License as published by the Free Software
+ * Foundation, either version 3 of the License, or (at your option) any later
+ * version.
  *
- * OrbisGIS is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
+ * OrbisGIS is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
+ * A PARTICULAR PURPOSE. See the GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
- * along with OrbisGIS. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License along with
+ * OrbisGIS. If not, see <http://www.gnu.org/licenses/>.
  *
- * For more information, please consult:
- *    <http://orbisgis.cerma.archi.fr/>
- *    <http://sourcesup.cru.fr/projects/orbisgis/>
+ * For more information, please consult: <http://www.orbisgis.org/>
  *
  * or contact directly:
- *    erwan.bocher _at_ ec-nantes.fr
- *    fergonco _at_ gmail.com
- *    thomas.leduc _at_ cerma.archi.fr
+ * erwan.bocher _at_ ec-nantes.fr
+ * gwendall.petit _at_ ec-nantes.fr
  */
 package org.orbisgis.core.ui.windows.mainFrame;
 
@@ -55,10 +56,8 @@ import java.util.ArrayList;
 import java.util.Map;
 
 import javax.swing.JFrame;
-import javax.swing.JLabel;
 import javax.swing.JMenuBar;
 import javax.swing.JPanel;
-import javax.swing.JToolBar;
 
 import net.infonode.docking.RootWindow;
 import net.infonode.docking.View;
@@ -92,7 +91,6 @@ import org.orbisgis.core.ui.plugins.views.ViewDecorator;
 import org.orbisgis.core.ui.plugins.views.editor.EditorManager;
 import org.orbisgis.core.ui.plugins.views.geocatalog.Catalog;
 import org.orbisgis.core.ui.window.IWindow;
-import org.orbisgis.core.workspace.DefaultWorkspace;
 import org.orbisgis.core.workspace.Workspace;
 import org.orbisgis.utils.I18N;
 
@@ -103,11 +101,11 @@ public class OrbisGISFrame extends JFrame implements IWindow {
 	private JMenuBar actionMenuBar;
 	private JobPopup jobPopup;
 
+	private WorkbenchToolBar workbenchToolBar;
+
 	public JMenuBar getActionMenuBar() {
 		return actionMenuBar;
 	}
-
-	private WorkbenchToolBar workbenchToolBar;
 
 	public WorkbenchToolBar getWorkbenchToolBar() {
 		return workbenchToolBar;
@@ -118,7 +116,6 @@ public class OrbisGISFrame extends JFrame implements IWindow {
 	private MyViewSerializer viewSerializer = new MyViewSerializer();
 	private boolean perspectiveLoaded = false;
 	private WorkbenchContext workbenchContext;
-	// TODO (pyf): le menuTree de la popup TableComponent est pê à déplacer
 	private org.orbisgis.core.ui.pluginSystem.menu.MenuTree menuTableTreePopup;
 
 	public org.orbisgis.core.ui.pluginSystem.menu.MenuTree getMenuTableTreePopup() {
@@ -148,7 +145,7 @@ public class OrbisGISFrame extends JFrame implements IWindow {
 	}
 
 	public WorkbenchToolBar getMainToolBar() {
-		return workbenchToolBar.getToolbars().get(Names.TOOLBAR_NAME);
+		return workbenchToolBar.getToolbars().get(Names.TOOLBAR_MAIN);
 	}
 
 	public WorkbenchToolBar getRasterToolBar() {
@@ -177,6 +174,10 @@ public class OrbisGISFrame extends JFrame implements IWindow {
 
 	public WorkbenchToolBar getEditionTableToolBar() {
 		return workbenchToolBar.getToolbars().get(Names.TOOLBAR_TABLE);
+	}
+
+	public WorkbenchToolBar getMainStatusToolBar() {
+		return workbenchToolBar.getToolbars().get(Names.STATUS_TOOLBAR_MAIN);
 	}
 
 	public Toc getToc() {
@@ -247,7 +248,7 @@ public class OrbisGISFrame extends JFrame implements IWindow {
 		this.setJMenuBar(actionMenuBar);
 
 		Services.registerService(RootWindow.class, "Root window", root);
-		orbisWorkbench.runWorkbench(); // PYF
+		orbisWorkbench.runWorkbench();
 		initializeViews();
 
 		ApplicationInfo ai = (ApplicationInfo) Services
@@ -256,7 +257,7 @@ public class OrbisGISFrame extends JFrame implements IWindow {
 		// I18N.loadFile("fr");
 		this.setTitle(I18N.getText("orbisgis.platform") + " - "
 				+ ai.getVersionNumber() + " - " + ai.getVersionName());
-		// this.setTitle("OrbisGIS Platform");
+
 		this.setIconImage(IconLoader.getIcon(IconNames.LOGO_MINI).getImage());
 		Toolkit toolkit = Toolkit.getDefaultToolkit();
 		Dimension screenSize = toolkit.getScreenSize();
@@ -277,34 +278,12 @@ public class OrbisGISFrame extends JFrame implements IWindow {
 		/* Job popup at bootom right to follow processes loading */
 		jobPopup = new JobPopup();
 		jobPopup.initialize();
-		
-		// Status bar : it gives memory informations
-		//HeapView heapView = new HeapView();
-		//heapView.setPreferredSize(new Dimension(200, 25));
-
-		JToolBar statusToolBar = new JToolBar();
-
-		DefaultWorkspace workspace = (DefaultWorkspace) Services
-				.getService(Workspace.class);
-		String currentWorkspaceName = "Workspace : "
-				+ workspace.getWorkspaceFolder();
-
-		if (currentWorkspaceName.length() > 60) {
-			currentWorkspaceName.substring(60);
-			currentWorkspaceName = currentWorkspaceName + "...";
-		}
-		JLabel workspaceName = new JLabel(currentWorkspaceName);
 
 		JPanel jPanel = new JPanel();
 		BorderLayout layout = new BorderLayout();
 		jPanel.setLayout(layout);
-		jPanel.add(workspaceName, BorderLayout.WEST);
-		//jPanel.add(heapView, BorderLayout.EAST);
 
-		statusToolBar.add(jPanel);
-		statusToolBar.setFloatable(false);
-
-		this.getContentPane().add(statusToolBar, BorderLayout.SOUTH);
+		this.getContentPane().add(getMainStatusToolBar(), BorderLayout.SOUTH);
 
 	}
 
@@ -346,11 +325,10 @@ public class OrbisGISFrame extends JFrame implements IWindow {
 			@Override
 			public boolean activeEditorClosing(IEditor editor, String editorId) {
 				return true;
-			}			
+			}
 
-			
 			@Override
-			public void elementLoaded(IEditor editor, Component comp) {				
+			public void elementLoaded(IEditor editor, Component comp) {
 			}
 
 		});
@@ -492,7 +470,6 @@ public class OrbisGISFrame extends JFrame implements IWindow {
 	 * Writes the id of the view and then writes the status. Reads the id,
 	 * obtains the data from the extension xml and reads the status
 	 * 
-	 * @author Fernando Gonzalez Cortes
 	 */
 	private class MyViewSerializer implements ViewSerializer {
 
