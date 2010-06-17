@@ -174,7 +174,7 @@ public class DefaultMapContext implements MapContext {
 					try {
 						layer.open();
 						layer.addLayerListenerRecursively(openerListener);
-						checkLayerCRS(layer);
+						//checkLayerCRS(layer);
 					} catch (LayerException ex) {
 						Services.getErrorManager().error(
 								"Cannot open layer: " + layer.getName()
@@ -187,8 +187,6 @@ public class DefaultMapContext implements MapContext {
 									"Cannot remove layer: " + layer.getName(),
 									ex);
 						}
-					} catch (DriverException e1) {
-						e1.printStackTrace();
 					}
 				}
 			}
