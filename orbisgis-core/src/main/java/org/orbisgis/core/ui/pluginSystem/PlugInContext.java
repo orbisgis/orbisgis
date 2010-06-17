@@ -73,13 +73,12 @@ import org.orbisgis.core.ui.plugins.views.geocognition.wizard.NewGeocognitionObj
 
 import com.vividsolutions.jts.util.Assert;
 
-import fr.cts.crs.CoordinateReferenceSystem;
-import fr.cts.crs.CoordinateReferenceSystem.Type;
-
 /**
- * Adapt context to OrbisGIS  from OpenJump Project. 
+ * Adapt context to OrbisGIS from OpenJump Project.
  * 
- * Passed to PlugIns to enable them to access the rest of the OrbisGIS Workbench.
+ * Passed to PlugIns to enable them to access the rest of the OrbisGIS
+ * Workbench.
+ * 
  * @see PlugIn
  */
 public class PlugInContext {
@@ -105,246 +104,246 @@ public class PlugInContext {
 	}
 
 	/****** TOC PlugIns ******/
-	
-	public boolean checkLayerAvailability(SelectionAvailability[] selectionAvailability, int nbLayers,
-			LayerAvailability[] layerAvailability) {		
+
+	public boolean checkLayerAvailability(
+			SelectionAvailability[] selectionAvailability, int nbLayers,
+			LayerAvailability[] layerAvailability) {
 		// TODO - refactor
 		MapContext mapContext = workbenchContext.getWorkbench().getFrame()
 				.getToc().getMapContext();
-		
+
 		if (mapContext != null) {
 			ILayer[] selectedLayers = mapContext.getSelectedLayers();
-			if(selectionAvailability!=null) {
-				for(SelectionAvailability test : selectionAvailability) {
-					switch( test ) {
-						case EQUAL :
-							if(!(selectedLayers.length == nbLayers)) return false;
-							break;
-						case SUPERIOR :
-							if(!(selectedLayers.length > nbLayers)) return false;
-							break;
-						case INFERIOR_EQUAL :
-							if(!(selectedLayers.length <= nbLayers)) return false;
-							break;
-						case ACTIVE_MAPCONTEXT :
-							if(Services.getService(MapContextManager.class).getActiveMapContext() == null) 
-								return false;
-							break;
-						default:
-							break;
+			if (selectionAvailability != null) {
+				for (SelectionAvailability test : selectionAvailability) {
+					switch (test) {
+					case EQUAL:
+						if (!(selectedLayers.length == nbLayers))
+							return false;
+						break;
+					case SUPERIOR:
+						if (!(selectedLayers.length > nbLayers))
+							return false;
+						break;
+					case INFERIOR_EQUAL:
+						if (!(selectedLayers.length <= nbLayers))
+							return false;
+						break;
+					case ACTIVE_MAPCONTEXT:
+						if (Services.getService(MapContextManager.class)
+								.getActiveMapContext() == null)
+							return false;
+						break;
+					default:
+						break;
 					}
 				}
 			}
 			for (ILayer layer : selectedLayers) {
-				if( layerAvailability != null ) {
-					for(LayerAvailability test : layerAvailability) {
-						switch( test ) {
-							case VECTORIAL :
-								if(!isVectorial(layer))	return false;								
-								break;
-							case ACCEPT_CHILDS:
-								if(!(layer.acceptsChilds())) return false;
-								break;
-							case LAYER_NOT_NULL:
-								if(layer == null) return false;
-								break;
-							case IS_MODIFIED:
-								SpatialDataSourceDecorator dataSource = layer.getDataSource();
-								if( (dataSource == null) || !dataSource.isModified() ) return false;
-								break;
-							case DATASOURCE_NOT_NULL:
-								if( layer.getDataSource() == null ) return false;
-								break;
-							case ACTIVE_LAYER:
-								if( mapContext.getActiveLayer() != layer) return false;
-								break;
-							case NOT_ACTIVE_LAYER:
-								if( mapContext.getActiveLayer() == layer) return false;
-								break;
-							case IS_EDTABLE:
-								if( !layer.getDataSource().isEditable() ) return false;
-								break;
-							case ROW_SELECTED:
-								if( layer.getSelection().length <= 0 ) return false;
-								break;
-							default:
-								break;
+				if (layerAvailability != null) {
+					for (LayerAvailability test : layerAvailability) {
+						switch (test) {
+						case VECTORIAL:
+							if (!isVectorial(layer))
+								return false;
+							break;
+						case ACCEPT_CHILDS:
+							if (!(layer.acceptsChilds()))
+								return false;
+							break;
+						case LAYER_NOT_NULL:
+							if (layer == null)
+								return false;
+							break;
+						case IS_MODIFIED:
+							SpatialDataSourceDecorator dataSource = layer
+									.getDataSource();
+							if ((dataSource == null)
+									|| !dataSource.isModified())
+								return false;
+							break;
+						case DATASOURCE_NOT_NULL:
+							if (layer.getDataSource() == null)
+								return false;
+							break;
+						case ACTIVE_LAYER:
+							if (mapContext.getActiveLayer() != layer)
+								return false;
+							break;
+						case NOT_ACTIVE_LAYER:
+							if (mapContext.getActiveLayer() == layer)
+								return false;
+							break;
+						case IS_EDTABLE:
+							if (!layer.getDataSource().isEditable())
+								return false;
+							break;
+						case ROW_SELECTED:
+							if (layer.getSelection().length <= 0)
+								return false;
+							break;
+						default:
+							break;
 						}
 					}
-					
+
 				}
 			}
 			return true;
-		} 
-		return false;		
-	}	
-	
-	 public static enum SelectionAvailability {
-		 	EQUAL,
-	        SUPERIOR,
-	        INFERIOR, 
-	        INFERIOR_EQUAL, 
-	        ACTIVE_MAPCONTEXT
-	 };
-	
-	 public static enum LayerAvailability {
-	        VECTORIAL,
-	        ACCEPT_CHILDS,
-	        LAYER_NOT_NULL,
-	        DATASOURCE_NOT_NULL,
-	        IS_MODIFIED,
-	        ACTIVE_LAYER,
-	        NOT_ACTIVE_LAYER,
-	        IS_EDTABLE, 
-	        ROW_SELECTED
-	 };
-	
-	public MapContext getMapContext() {
-		return  workbenchContext.getWorkbench().getFrame()
-						.getToc().getMapContext();
+		}
+		return false;
 	}
-	
+
+	public static enum SelectionAvailability {
+		EQUAL, SUPERIOR, INFERIOR, INFERIOR_EQUAL, ACTIVE_MAPCONTEXT
+	};
+
+	public static enum LayerAvailability {
+		VECTORIAL, ACCEPT_CHILDS, LAYER_NOT_NULL, DATASOURCE_NOT_NULL, IS_MODIFIED, ACTIVE_LAYER, NOT_ACTIVE_LAYER, IS_EDTABLE, ROW_SELECTED
+	};
+
+	public MapContext getMapContext() {
+		return workbenchContext.getWorkbench().getFrame().getToc()
+				.getMapContext();
+	}
+
 	public boolean isVectorial(ILayer layer) {
 		try {
-			if(layer.isVectorial()) return true;
+			if (layer.isVectorial())
+				return true;
 		} catch (DriverException e) {
 			return false;
 		}
 		return false;
 	}
-	
+
 	public boolean isRaster(ILayer layer) {
 		try {
-			if(layer.isRaster()) return true;
+			if (layer.isRaster())
+				return true;
 		} catch (DriverException e) {
 			return false;
 		}
 		return false;
 	}
-	
-	public boolean isGeographicCRS() {
-		if(getMapEditor()!=null) {			
-			MapContext mc = (MapContext) getMapEditor().getElement().getObject();
-			if(mc.getLayerModel().getLayerCount() > 0){
-				SpatialDataSourceDecorator sds = new SpatialDataSourceDecorator(
-						mc.getLayerModel().getLayer(0).getDataSource());					
-				Type crsType = null;
-				try {
-					sds.open();
-					CoordinateReferenceSystem crs = sds.getCRS();
-					if(crs != null)
-						crsType = crs.getType();
-					sds.close();					
-				} catch (DriverException e1) {
-					Services.getErrorManager().error(
-							"Unable to load CRS type");
-				}
-				if( crsType!=null && (
-						crsType.equals(Type.GEOGRAPHIC2D) || 
-						crsType.equals(Type.GEOGRAPHIC3D)) ) 
-						
-						return true;				
-			}
-		}
-		return false;
-	}
-	
+
 	public ToolManager getToolManager() {
 		ToolManager toolManager = null;
-		if(getMapEditor()!=null) 
+		if (getMapEditor() != null)
 			toolManager = getMapEditor().getMapControl().getToolManager();
 		return toolManager;
 	}
 
 	/****** Geocognition PlugIns ******/
-	
-	public boolean checkLayerAvailability(SelectionAvailability[] selectionAvailability, int nbElements,
-			ElementAvailability[] elAvailability) {		
+
+	public boolean checkLayerAvailability(
+			SelectionAvailability[] selectionAvailability, int nbElements,
+			ElementAvailability[] elAvailability) {
 		// TODO - refactor
-		
+
 		GeocognitionElement[] elements = getElements();
-		if(selectionAvailability!=null && elements!=null) {
-			for(SelectionAvailability test : selectionAvailability) {
-				switch( test ) {
-					case EQUAL :
-						if(!(elements.length == nbElements)) return false;
-						break;
-					case SUPERIOR :
-						if(!(elements.length > nbElements)) return false;
-						break;
-					case INFERIOR_EQUAL :
-						if(!(elements.length <= nbElements)) return false;
-						break;
-					case ACTIVE_MAPCONTEXT :
-						if(Services.getService(MapContextManager.class).getActiveMapContext() == null) 
-							return false;
-						break;
-					default:
-						break;
+		if (selectionAvailability != null && elements != null) {
+			for (SelectionAvailability test : selectionAvailability) {
+				switch (test) {
+				case EQUAL:
+					if (!(elements.length == nbElements))
+						return false;
+					break;
+				case SUPERIOR:
+					if (!(elements.length > nbElements))
+						return false;
+					break;
+				case INFERIOR_EQUAL:
+					if (!(elements.length <= nbElements))
+						return false;
+					break;
+				case ACTIVE_MAPCONTEXT:
+					if (Services.getService(MapContextManager.class)
+							.getActiveMapContext() == null)
+						return false;
+					break;
+				default:
+					break;
 				}
 			}
 		}
 		for (GeocognitionElement el : elements) {
-			if( elAvailability != null ) {				
-				for(ElementAvailability test : elAvailability) {
-					switch( test ) {
-						case FOLDER :
-							if( !el.isFolder() ) return false;
-							break;
-						case FOLDER_OR_NULL :
-							if( !(el.isFolder() || el==null) ) return false;
-							break;
-						case HAS_EDITOR :
-							EditorManager em = Services.getService(EditorManager.class);
-							if( !em.hasEditor(el) ) return false;
-							break;
-						case CUSTOM_QUERY_IS_NOT_REGISTERED :
-							if (OrbisGISPersitenceConfig.GeocognitionCustomQueryFactory_id.equals(el.getTypeId())) {
-								String registered = el.getProperties().get(GeocognitionBuiltInCustomQuery.REGISTERED);
-								if ((registered != null) 
-										&& registered.equals(GeocognitionBuiltInCustomQuery.IS_NOT_REGISTERED)) {
-									break;
-								}
-							} 
+			if (elAvailability != null) {
+				for (ElementAvailability test : elAvailability) {
+					switch (test) {
+					case FOLDER:
+						if (!el.isFolder())
 							return false;
-						case FUNCTION_QUERY_IS_NOT_REGISTERED :
-							if (OrbisGISPersitenceConfig.GeocognitionFunctionFactory_ID.equals(el.getTypeId())) {
-								String registered = el.getProperties().get(GeocognitionBuiltInFunction.REGISTERED);
-								if ((registered != null)
-										&& registered.equals(GeocognitionBuiltInFunction.IS_NOT_REGISTERED)) {
-									break;
-								}
-							} 
+						break;
+					case FOLDER_OR_NULL:
+						if (!(el.isFolder() || el == null))
 							return false;
-						case CUSTOM_QUERY_IS_REGISTERED :
-							if (OrbisGISPersitenceConfig.GeocognitionCustomQueryFactory_id.equals(el.getTypeId())) {
-								String registered = el.getProperties().get(GeocognitionBuiltInCustomQuery.REGISTERED);
-								if ((registered != null) 
-										&& registered.equals(GeocognitionBuiltInCustomQuery.IS_REGISTERED)) {
-									break;
-								}
-							} 
+						break;
+					case HAS_EDITOR:
+						EditorManager em = Services
+								.getService(EditorManager.class);
+						if (!em.hasEditor(el))
 							return false;
-						case FUNCTION_QUERY_IS_REGISTERED :
-							if (OrbisGISPersitenceConfig.GeocognitionFunctionFactory_ID.equals(el.getTypeId())) {
-								String registered = el.getProperties().get(GeocognitionBuiltInFunction.REGISTERED);
-								if ((registered != null)
-										&& registered.equals(GeocognitionBuiltInFunction.IS_REGISTERED)) {
-									break;
-								}
-							} 
-							return false;
-	
-						default:
-							break;
+						break;
+					case CUSTOM_QUERY_IS_NOT_REGISTERED:
+						if (OrbisGISPersitenceConfig.GeocognitionCustomQueryFactory_id
+								.equals(el.getTypeId())) {
+							String registered = el.getProperties().get(
+									GeocognitionBuiltInCustomQuery.REGISTERED);
+							if ((registered != null)
+									&& registered
+											.equals(GeocognitionBuiltInCustomQuery.IS_NOT_REGISTERED)) {
+								break;
+							}
+						}
+						return false;
+					case FUNCTION_QUERY_IS_NOT_REGISTERED:
+						if (OrbisGISPersitenceConfig.GeocognitionFunctionFactory_ID
+								.equals(el.getTypeId())) {
+							String registered = el.getProperties().get(
+									GeocognitionBuiltInFunction.REGISTERED);
+							if ((registered != null)
+									&& registered
+											.equals(GeocognitionBuiltInFunction.IS_NOT_REGISTERED)) {
+								break;
+							}
+						}
+						return false;
+					case CUSTOM_QUERY_IS_REGISTERED:
+						if (OrbisGISPersitenceConfig.GeocognitionCustomQueryFactory_id
+								.equals(el.getTypeId())) {
+							String registered = el.getProperties().get(
+									GeocognitionBuiltInCustomQuery.REGISTERED);
+							if ((registered != null)
+									&& registered
+											.equals(GeocognitionBuiltInCustomQuery.IS_REGISTERED)) {
+								break;
+							}
+						}
+						return false;
+					case FUNCTION_QUERY_IS_REGISTERED:
+						if (OrbisGISPersitenceConfig.GeocognitionFunctionFactory_ID
+								.equals(el.getTypeId())) {
+							String registered = el.getProperties().get(
+									GeocognitionBuiltInFunction.REGISTERED);
+							if ((registered != null)
+									&& registered
+											.equals(GeocognitionBuiltInFunction.IS_REGISTERED)) {
+								break;
+							}
+						}
+						return false;
+
+					default:
+						break;
 					}
 				}
 
 			}
 		}
-		return true;		
+		return true;
 	}
-	
+
 	// Run PlugIns actions from one Geocognition element
 	public void executeGeocognitionElement(INewGeocognitionElement element) {
 		EPGeocognitionWizardHelper wh = new EPGeocognitionWizardHelper();
@@ -384,130 +383,132 @@ public class PlugInContext {
 			}
 		}
 	}
-	
-	 public static enum ElementAvailability {
-	        FOLDER,
-	        FOLDER_OR_NULL,
-	        CUSTOM_QUERY_IS_NOT_REGISTERED,
-	        FUNCTION_QUERY_IS_NOT_REGISTERED,
-	        CUSTOM_QUERY_IS_REGISTERED,
-	        FUNCTION_QUERY_IS_REGISTERED,
-	        HAS_EDITOR
-	 };
-	
+
+	public static enum ElementAvailability {
+		FOLDER, FOLDER_OR_NULL, CUSTOM_QUERY_IS_NOT_REGISTERED, FUNCTION_QUERY_IS_NOT_REGISTERED, CUSTOM_QUERY_IS_REGISTERED, FUNCTION_QUERY_IS_REGISTERED, HAS_EDITOR
+	};
+
 	public GeocognitionElement[] getElements() {
 		GeocognitionTree tree = workbenchContext.getWorkbench().getFrame()
-									.getGeocognition().getTree();		
+				.getGeocognition().getTree();
 		TreePath[] res = tree.getSelection();
 		return tree.toElementArray(res);
 	}
-	
+
 	public GeocognitionTree getTree() {
-		return workbenchContext.getWorkbench().getFrame()
-					.getGeocognition().getTree();
+		return workbenchContext.getWorkbench().getFrame().getGeocognition()
+				.getTree();
 	}
-	
+
 	public Geocognition getGeocognition() {
 		return Services.getService(Geocognition.class);
 	}
 
 	/****** Geocatalog PlugIns ******/
-	
-	public boolean checkLayerAvailability(SelectionAvailability[] selectionAvailability, int nbSrc,
-			SourceAvailability[] sourceAvailability) {		
+
+	public boolean checkLayerAvailability(
+			SelectionAvailability[] selectionAvailability, int nbSrc,
+			SourceAvailability[] sourceAvailability) {
 		// TODO - refactor
-		
+
 		String[] res = getSelectedSources();
 		DataManager dataManager = Services.getService(DataManager.class);
-		SourceManager sourceManager = dataManager.getSourceManager();	
+		SourceManager sourceManager = dataManager.getSourceManager();
 
-		if(selectionAvailability!=null && res!=null) {
-			for(SelectionAvailability test : selectionAvailability) {
-				switch( test ) {
-					case EQUAL :
-						if(!(res.length == nbSrc)) return false;
-						break;
-					case SUPERIOR :
-						if(!(res.length > nbSrc)) return false;
-						break;
-					case INFERIOR_EQUAL :
-						if(!(res.length <= nbSrc)) return false;
-						break;
-					case ACTIVE_MAPCONTEXT :
-						if(Services.getService(MapContextManager.class).getActiveMapContext() == null) 
-							return false;
-						break;
-					default:
-						break;
+		if (selectionAvailability != null && res != null) {
+			for (SelectionAvailability test : selectionAvailability) {
+				switch (test) {
+				case EQUAL:
+					if (!(res.length == nbSrc))
+						return false;
+					break;
+				case SUPERIOR:
+					if (!(res.length > nbSrc))
+						return false;
+					break;
+				case INFERIOR_EQUAL:
+					if (!(res.length <= nbSrc))
+						return false;
+					break;
+				case ACTIVE_MAPCONTEXT:
+					if (Services.getService(MapContextManager.class)
+							.getActiveMapContext() == null)
+						return false;
+					break;
+				default:
+					break;
 				}
 			}
 		}
 		for (String src : res) {
-			if( sourceAvailability != null ) {
+			if (sourceAvailability != null) {
 				Source source = null;
-				for(SourceAvailability test : sourceAvailability) {
-					switch( test ) {
-						case NODE_NOT_NULL :
-							if( src==null) return false;
-							break;
-						case WMS :
-							source = sourceManager.getSource(src);
-							if (!((source.getType() & SourceManager.WMS) == 0)) return false;
-							break;
-						case RASTER :
-							source = sourceManager.getSource(src);
-							if (!((source.getType() & SourceManager.RASTER) == 0)) return false;
-							break;
-						default:
-							break;
+				for (SourceAvailability test : sourceAvailability) {
+					switch (test) {
+					case NODE_NOT_NULL:
+						if (src == null)
+							return false;
+						break;
+					case WMS:
+						source = sourceManager.getSource(src);
+						if (!((source.getType() & SourceManager.WMS) == 0))
+							return false;
+						break;
+					case RASTER:
+						source = sourceManager.getSource(src);
+						if (!((source.getType() & SourceManager.RASTER) == 0))
+							return false;
+						break;
+					default:
+						break;
 					}
 				}
-				
+
 			}
-		}		
-		return true;		
+		}
+		return true;
 	}
-	
-	 public static enum SourceAvailability {
-	        NODE_NOT_NULL,
-	        WMS,
-	        RASTER
-	 };
+
+	public static enum SourceAvailability {
+		NODE_NOT_NULL, WMS, RASTER
+	};
 
 	public String[] getSelectedSources() {
-		return workbenchContext.getWorkbench().getFrame()
-						.getGeocatalog().getSelectedSources();
+		return workbenchContext.getWorkbench().getFrame().getGeocatalog()
+				.getSelectedSources();
 	}
 
 	/****** Editors **********************************/
-	public EditorManager getEditorManager(){
+	public EditorManager getEditorManager() {
 		return Services.getService(EditorManager.class);
 	}
-	
-	public IEditor getActiveEditor(){		
+
+	public IEditor getActiveEditor() {
 		return getEditorManager().getActiveEditor();
 	}
-	
-	public String getEditorId(IEditor editor){
+
+	public String getEditorId(IEditor editor) {
 		return getEditorManager().getEditorId(getActiveEditor());
 	}
-	
+
 	/****** Table Editor **********************************/
-	
-	public TableEditorPlugIn getTableEditor(){
+
+	public TableEditorPlugIn getTableEditor() {
 		EditorManager em = Services.getService(EditorManager.class);
 		IEditor editor = em.getActiveEditor();
-		if(Names.EDITOR_TABLE_ID.equals(em.getEditorId(editor)) && editor != null)
+		if (Names.EDITOR_TABLE_ID.equals(em.getEditorId(editor))
+				&& editor != null)
 			return (TableEditorPlugIn) editor;
-		return null;		
+		return null;
 	}
 
-	/****** Map Editor **********************************/	
+	/****** Map Editor **********************************/
 	public MapEditorPlugIn getMapEditor() {
 		EditorManager em = Services.getService(EditorManager.class);
 		IEditor mapEditor = em.getActiveEditor();
-		if (Names.EDITOR_MAP_ID.equals(em.getEditorId(mapEditor)) && mapEditor != null)
-			return (MapEditorPlugIn) mapEditor;		
+		if (Names.EDITOR_MAP_ID.equals(em.getEditorId(mapEditor))
+				&& mapEditor != null)
+			return (MapEditorPlugIn) mapEditor;
 		return null;
 	}
 
@@ -531,8 +532,8 @@ public class PlugInContext {
 						.getMapControl().getToolManager());
 				automaton.getButton().setVisible(check);
 				automaton.getButton().setSelected(
-						mapEditor.getMapControl().getTool()
-								.getClass().equals(automaton.getClass()));
+						mapEditor.getMapControl().getTool().getClass().equals(
+								automaton.getClass()));
 			}
 		}
 	}
@@ -570,219 +571,240 @@ public class PlugInContext {
 		}
 		return null;
 	}
-	 
-	 /* ************************* All prepared methods available for plug-in development ****************************************** */	
+
+	/* 
+	 * ************************* All prepared methods available for plug-in
+	 * development ******************************************
+	 */
 	/**
 	 * All layer types confuse one layer must exists
+	 * 
 	 * @return enable
 	 */
-	public boolean AtLeastOneLayerSelected() {		
+	public boolean AtLeastOneLayerSelected() {
 		MapContext mapContext = null;
-		if (( mapContext = getMapContext() )!=null ) {
+		if ((mapContext = getMapContext()) != null) {
 			ILayer[] selectedLayers = mapContext.getSelectedLayers();
 			return selectedLayers.length > 0;
 		}
 		return false;
 	}
-	
+
 	/**
 	 * Return enable if layer is editable
+	 * 
 	 * @return enable
 	 */
 	public boolean areSelectedLayersSelectedInEditing() {
 		MapContext mapContext = null;
 		SpatialDataSourceDecorator sds = null;
-		if (( mapContext = getMapContext() )!=null ) {
+		if ((mapContext = getMapContext()) != null) {
 			ILayer[] selectedLayers = mapContext.getSelectedLayers();
-			if( selectedLayers.length > 0) {				
+			if (selectedLayers.length > 0) {
 				for (ILayer layer : selectedLayers) {
-					if( (sds=layer.getDataSource())!=null && !sds.isModified() ) return false;
-				}				
+					if ((sds = layer.getDataSource()) != null
+							&& !sds.isModified())
+						return false;
+				}
 			}
 		}
 		return false;
 	}
-	
+
 	/**
 	 * Return enable if layer is under edition
+	 * 
 	 * @return enable
 	 */
 	public boolean areSelectedLayersSelectedEditable() {
 		MapContext mapContext = null;
 		SpatialDataSourceDecorator sds = null;
-		if (( mapContext = getMapContext() )!=null ) {
+		if ((mapContext = getMapContext()) != null) {
 			ILayer[] selectedLayers = mapContext.getSelectedLayers();
-			if( selectedLayers.length > 0) {
+			if (selectedLayers.length > 0) {
 				for (ILayer layer : selectedLayers) {
-					if( (sds=layer.getDataSource())!=null && !sds.isEditable() ) return false;
+					if ((sds = layer.getDataSource()) != null
+							&& !sds.isEditable())
+						return false;
 				}
 			}
 		}
 		return true;
 	}
-	/* **FOR  VECTOR** */
-	
+
+	/*  **FOR VECTOR** */
+
 	/**
 	 * At least one layer of Vector Type must exists
+	 * 
 	 * @return enable
 	 */
-	public boolean AtLeastOneVectorLayerExists() {		
+	public boolean AtLeastOneVectorLayerExists() {
 		MapContext mapContext = null;
-		if (( mapContext = getMapContext() )!=null ) {
+		if ((mapContext = getMapContext()) != null) {
 			ILayer[] layers = mapContext.getLayers();
-			if( layers.length > 0 ) {
+			if (layers.length > 0) {
 				for (ILayer layer : layers) {
-					if( isVectorial(layer) ) return true;
+					if (isVectorial(layer))
+						return true;
 				}
-			}				
+			}
 		}
 		return false;
 	}
-	
+
 	/**
 	 * At least one layer of Vector Type must exists and selected
+	 * 
 	 * @return enable
 	 */
-	public boolean AtLeastOneVectorLayerSelected() {		
+	public boolean AtLeastOneVectorLayerSelected() {
 		MapContext mapContext = null;
-		if (( mapContext = getMapContext() )!=null ) {
+		if ((mapContext = getMapContext()) != null) {
 			ILayer[] selectedLayers = mapContext.getSelectedLayers();
-			if( selectedLayers.length > 0 ) {
+			if (selectedLayers.length > 0) {
 				for (ILayer layer : selectedLayers) {
-					if( isVectorial(layer) ) return true;
+					if (isVectorial(layer))
+						return true;
 				}
-			}				
+			}
 		}
 		return false;
 	}
-	
+
 	/**
 	 * Number layers of Vector Type must be equal or greater than count
+	 * 
 	 * @return enable
 	 */
-	public boolean vectorLayersGreaterOrEqualThan(int count) {		
+	public boolean vectorLayersGreaterOrEqualThan(int count) {
 		MapContext mapContext = null;
-		if (( mapContext = getMapContext() )!=null ) {
+		if ((mapContext = getMapContext()) != null) {
 			ILayer[] layers = mapContext.getLayers();
-			if( layers.length >= count ) {	
-				int i=0;
-				while(count!=0 && i<layers.length) {					
-					if( isVectorial(layers[i]) ) 
-						count--;					
+			if (layers.length >= count) {
+				int i = 0;
+				while (count != 0 && i < layers.length) {
+					if (isVectorial(layers[i]))
+						count--;
 					i++;
 				}
-			}			
+			}
 		}
-		if(count==0) 
+		if (count == 0)
 			return true;
-		else 
+		else
 			return false;
 	}
-	
+
 	/**
 	 * Number layers of Vector Type selected must be equal or greater than count
+	 * 
 	 * @return enable
 	 */
-	public boolean vectorLayersSelectedGreaterOrEqualThan(int count) {		
+	public boolean vectorLayersSelectedGreaterOrEqualThan(int count) {
 		MapContext mapContext = null;
-		if (( mapContext = getMapContext() )!=null ) {
+		if ((mapContext = getMapContext()) != null) {
 			ILayer[] selectedLayers = mapContext.getSelectedLayers();
-			if( selectedLayers.length >= count ) {	
-				int i=0;
-				while(count!=0 && i<selectedLayers.length) {					
-					if( isVectorial(selectedLayers[i]) ) 
-						count--;					
+			if (selectedLayers.length >= count) {
+				int i = 0;
+				while (count != 0 && i < selectedLayers.length) {
+					if (isVectorial(selectedLayers[i]))
+						count--;
 					i++;
 				}
-			}			
+			}
 		}
-		if(count==0) 
+		if (count == 0)
 			return true;
-		else 
+		else
 			return false;
-	}	
-	
-	
-	
-	/* **FOR  RASTER** */
+	}
+
+	/*  **FOR RASTER** */
 	/**
 	 * At least one layer of Raster Type must exists
+	 * 
 	 * @return enable
 	 */
-	public boolean AtLeastOneRasterLayerExists() {		
+	public boolean AtLeastOneRasterLayerExists() {
 		MapContext mapContext = null;
-		if (( mapContext = getMapContext() )!=null ) {
+		if ((mapContext = getMapContext()) != null) {
 			ILayer[] layers = mapContext.getLayers();
-			if( layers.length > 0 ) {
+			if (layers.length > 0) {
 				for (ILayer layer : layers) {
-					if( isRaster(layer) ) return true;
+					if (isRaster(layer))
+						return true;
 				}
-			}				
+			}
 		}
 		return false;
 	}
-	
+
 	/**
 	 * At least one layer of Raster Type must exists and selected
+	 * 
 	 * @return enable
 	 */
-	public boolean AtLeastOneRasterLayerSelected() {		
+	public boolean AtLeastOneRasterLayerSelected() {
 		MapContext mapContext = null;
-		if (( mapContext = getMapContext() )!=null ) {
+		if ((mapContext = getMapContext()) != null) {
 			ILayer[] selectedLayers = mapContext.getSelectedLayers();
-			if( selectedLayers.length > 0 ) {
+			if (selectedLayers.length > 0) {
 				for (ILayer layer : selectedLayers) {
-					if( isRaster(layer) ) return true;
+					if (isRaster(layer))
+						return true;
 				}
-			}				
+			}
 		}
 		return false;
 	}
-	
+
 	/**
 	 * Number layers of Raster Type must be equal or greater than count
+	 * 
 	 * @return enable
 	 */
-	public boolean rasterLayersGreaterOrEqualThan(int count) {		
+	public boolean rasterLayersGreaterOrEqualThan(int count) {
 		MapContext mapContext = null;
-		if (( mapContext = getMapContext() )!=null ) {
+		if ((mapContext = getMapContext()) != null) {
 			ILayer[] layers = mapContext.getLayers();
-			if( layers.length >= count ) {	
-				int i=0;
-				while(count!=0 && i<layers.length) {					
-					if( isRaster(layers[i]) ) 
-						count--;					
+			if (layers.length >= count) {
+				int i = 0;
+				while (count != 0 && i < layers.length) {
+					if (isRaster(layers[i]))
+						count--;
 					i++;
 				}
-			}			
+			}
 		}
-		if(count==0) 
+		if (count == 0)
 			return true;
-		else 
+		else
 			return false;
 	}
-	
+
 	/**
 	 * Number layers of Raster Type selected must be equal or greater than count
+	 * 
 	 * @return enable
 	 */
-	public boolean rasterLayersSelectedGreaterOrEqualThan(int count) {		
+	public boolean rasterLayersSelectedGreaterOrEqualThan(int count) {
 		MapContext mapContext = null;
-		if (( mapContext = getMapContext() )!=null ) {
+		if ((mapContext = getMapContext()) != null) {
 			ILayer[] selectedLayers = mapContext.getSelectedLayers();
-			if( selectedLayers.length >= count ) {	
-				int i=0;
-				while(count!=0 && i<selectedLayers.length) {					
-					if( isRaster(selectedLayers[i]) ) 
-						count--;					
+			if (selectedLayers.length >= count) {
+				int i = 0;
+				while (count != 0 && i < selectedLayers.length) {
+					if (isRaster(selectedLayers[i]))
+						count--;
 					i++;
 				}
-			}			
+			}
 		}
-		if(count==0) 
+		if (count == 0)
 			return true;
-		else 
+		else
 			return false;
-	}	
+	}
 
 }

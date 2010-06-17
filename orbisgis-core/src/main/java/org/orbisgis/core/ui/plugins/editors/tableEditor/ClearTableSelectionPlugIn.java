@@ -49,7 +49,6 @@ import org.orbisgis.core.ui.editors.table.TableEditableElement;
 import org.orbisgis.core.ui.pluginSystem.AbstractPlugIn;
 import org.orbisgis.core.ui.pluginSystem.PlugInContext;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchContext;
-import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchFrame;
 import org.orbisgis.core.ui.plugins.views.TableEditorPlugIn;
 import org.orbisgis.progress.IProgressMonitor;
 
@@ -67,7 +66,7 @@ public class ClearTableSelectionPlugIn extends AbstractPlugIn {
 
 			@Override
 			public void run(IProgressMonitor pm) {
-		
+
 				IEditor editor = context.getActiveEditor();
 				TableEditableElement element = (TableEditableElement) editor
 						.getElement();
@@ -75,7 +74,7 @@ public class ClearTableSelectionPlugIn extends AbstractPlugIn {
 			}
 
 			@Override
-			public String getTaskName() {				
+			public String getTaskName() {
 				return "Clear selection";
 			}
 		});
@@ -84,8 +83,6 @@ public class ClearTableSelectionPlugIn extends AbstractPlugIn {
 
 	public void initialize(PlugInContext context) throws Exception {
 		WorkbenchContext wbcontext = context.getWorkbenchContext();
-		WorkbenchFrame frame = (WorkbenchFrame) wbcontext.getWorkbench()
-				.getFrame().getTableEditor();
 		wbcontext.getWorkbench().getFrame().getEditionTableToolBar().addPlugIn(
 				this, btn, context);
 	}
@@ -93,13 +90,13 @@ public class ClearTableSelectionPlugIn extends AbstractPlugIn {
 	public boolean isEnabled() {
 		boolean isEnabled = false;
 		TableEditorPlugIn tableEditor = null;
-		if((tableEditor=getPlugInContext().getTableEditor()) != null
-				&& getSelectedColumn()==-1){
+		if ((tableEditor = getPlugInContext().getTableEditor()) != null
+				&& getSelectedColumn() == -1) {
 			TableEditableElement element = (TableEditableElement) tableEditor
 					.getElement();
 			isEnabled = element.getSelection().getSelectedRows().length > 0;
 		}
-		btn.setEnabled(isEnabled);		
+		btn.setEnabled(isEnabled);
 		return isEnabled;
 	}
 }

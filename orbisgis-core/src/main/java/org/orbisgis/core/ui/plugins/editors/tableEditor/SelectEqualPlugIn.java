@@ -67,7 +67,8 @@ public class SelectEqualPlugIn extends AbstractPlugIn {
 		final int rowIndex = ((TableComponent) editor.getView().getComponent())
 				.getTable().rowAtPoint(getEvent().getPoint());
 		final int columnIndex = ((TableComponent) editor.getView()
-				.getComponent()).getTable().columnAtPoint(getEvent().getPoint());
+				.getComponent()).getTable()
+				.columnAtPoint(getEvent().getPoint());
 		BackgroundManager bm = Services.getService(BackgroundManager.class);
 		bm.backgroundOperation(new BackgroundJob() {
 
@@ -97,7 +98,7 @@ public class SelectEqualPlugIn extends AbstractPlugIn {
 
 			@Override
 			public String getTaskName() {
-				return "finding matches";
+				return "Finding matches";
 			}
 		});
 		return true;
@@ -115,8 +116,8 @@ public class SelectEqualPlugIn extends AbstractPlugIn {
 	}
 
 	public boolean isEnabled() {
-		if((getPlugInContext().getTableEditor()) != null
-				&& getSelectedColumn() ==-1 && getEvent()!=null){			
+		if ((getPlugInContext().getTableEditor()) != null
+				&& getSelectedColumn() == -1 && getEvent() != null) {
 			return true;
 		}
 		return false;
