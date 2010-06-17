@@ -60,7 +60,7 @@ public abstract class VectorSymbolizer extends Symbolizer {
 
         Geometry geom = this.getTheGeom(feat); // geom + function
 
-        Shape shape = mt.getShape(geom, true);
+        Shape shape = mt.getShape(geom);
 
         if (transform != null) {
             shape = transform.getGraphicalAffineTransform(feat, true, mt).createTransformedShape(shape);

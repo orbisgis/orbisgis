@@ -1,38 +1,39 @@
 /*
  * OrbisGIS is a GIS application dedicated to scientific spatial simulation.
- * This cross-platform GIS is developed at French IRSTV institute and is able
- * to manipulate and create vector and raster spatial information. OrbisGIS
- * is distributed under GPL 3 license. It is produced  by the geo-informatic team of
- * the IRSTV Institute <http://www.irstv.cnrs.fr/>, CNRS FR 2488:
- *    Erwan BOCHER, scientific researcher,
- *    Thomas LEDUC, scientific researcher,
- *    Fernando GONZALEZ CORTES, computer engineer.
+ * This cross-platform GIS is developed at French IRSTV institute and is able to
+ * manipulate and create vector and raster spatial information. OrbisGIS is
+ * distributed under GPL 3 license. It is produced by the "Atelier SIG" team of
+ * the IRSTV Institute <http://www.irstv.cnrs.fr/> CNRS FR 2488.
+ *
+ * 
+ *  Team leader Erwan BOCHER, scientific researcher,
+ * 
+ *  User support leader : Gwendall Petit, geomatic engineer.
+ *
  *
  * Copyright (C) 2007 Erwan BOCHER, Fernando GONZALEZ CORTES, Thomas LEDUC
  *
+ * Copyright (C) 2010 Erwan BOCHER, Pierre-Yves FADET, Alexis GUEGANNO, Maxence LAURENT
+ *
  * This file is part of OrbisGIS.
  *
- * OrbisGIS is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * OrbisGIS is free software: you can redistribute it and/or modify it under the
+ * terms of the GNU General Public License as published by the Free Software
+ * Foundation, either version 3 of the License, or (at your option) any later
+ * version.
  *
- * OrbisGIS is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
+ * OrbisGIS is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
+ * A PARTICULAR PURPOSE. See the GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
- * along with OrbisGIS. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License along with
+ * OrbisGIS. If not, see <http://www.gnu.org/licenses/>.
  *
- * For more information, please consult:
- *    <http://orbisgis.cerma.archi.fr/>
- *    <http://sourcesup.cru.fr/projects/orbisgis/>
+ * For more information, please consult: <http://www.orbisgis.org/>
  *
  * or contact directly:
- *    erwan.bocher _at_ ec-nantes.fr
- *    fergonco _at_ gmail.com
- *    thomas.leduc _at_ cerma.archi.fr
+ * erwan.bocher _at_ ec-nantes.fr
+ * gwendall.petit _at_ ec-nantes.fr
  */
 package org.gdms.data.db;
 
@@ -93,7 +94,8 @@ public class DBTableDataSourceAdapter extends DriverDataSource implements
 			con.close();
 			con = null;
 		} catch (SQLException e) {
-			throw new DriverException(I18N.getText("gdms.datasource.error.datasource.close"), e);
+			throw new DriverException(I18N
+					.getText("gdms.datasource.error.datasource.close"), e);
 		}
 
 		DefaultSourceManager sm = (DefaultSourceManager) getDataSourceFactory()
@@ -129,9 +131,11 @@ public class DBTableDataSourceAdapter extends DriverDataSource implements
 	public void open() throws DriverException {
 		try {
 			con = getConnection();
-			((DBDriver) driver).open(con, def.getTableName(), def.getSchemaName());
+			((DBDriver) driver).open(con, def.getTableName(), def
+					.getSchemaName());
 		} catch (SQLException e) {
-			throw new DriverException(I18N.getText("gdms.driver.error.connection.open"), e);
+			throw new DriverException(I18N
+					.getText("gdms.driver.error.connection.open"), e);
 		}
 
 		DefaultSourceManager sm = (DefaultSourceManager) getDataSourceFactory()
@@ -168,7 +172,8 @@ public class DBTableDataSourceAdapter extends DriverDataSource implements
 				con = getConnection();
 				readWriteDriver.beginTrans(con);
 			} catch (SQLException e) {
-				throw new DriverException(I18N.getText("gdms.driver.error.connection.open"), e);
+				throw new DriverException(I18N
+						.getText("gdms.driver.error.connection.open"), e);
 			}
 		}
 
@@ -181,8 +186,8 @@ public class DBTableDataSourceAdapter extends DriverDataSource implements
 			try {
 				Type[] fieldTypes = MetadataUtilities.getFieldTypes(dataSource
 						.getMetadata());
-				String sql = readWriteDriver.getInsertSQL(
-						dataSource.getFieldNames(), fieldTypes, row);
+				String sql = readWriteDriver.getInsertSQL(dataSource
+						.getFieldNames(), fieldTypes, row);
 
 				readWriteDriver.execute(con, sql);
 			} catch (SQLException e) {
@@ -192,11 +197,14 @@ public class DBTableDataSourceAdapter extends DriverDataSource implements
 						Connection con = getConnection();
 						readWriteDriver.rollBackTrans(con);
 					} catch (SQLException e1) {
-						throw new DriverException(I18N.getText("gdms.driver.error.connection.open"), e1);
+						throw new DriverException(I18N
+								.getText("gdms.driver.error.connection.open"),
+								e1);
 					}
 				}
 
-				throw new DriverException(I18N.getText("gdms.driver.error.connection.open"), e);
+				throw new DriverException(I18N
+						.getText("gdms.driver.error.connection.open"), e);
 			}
 		}
 
@@ -205,7 +213,8 @@ public class DBTableDataSourceAdapter extends DriverDataSource implements
 				Connection con = getConnection();
 				readWriteDriver.commitTrans(con);
 			} catch (SQLException e) {
-				throw new DriverException(I18N.getText("gdms.driver.error.connection.open"), e);
+				throw new DriverException(I18N
+						.getText("gdms.driver.error.connection.open"), e);
 			}
 		}
 
@@ -225,7 +234,8 @@ public class DBTableDataSourceAdapter extends DriverDataSource implements
 		try {
 			((DBReadWriteDriver) driver).beginTrans(getConnection());
 		} catch (SQLException e) {
-			throw new DriverException(I18N.getText("gdms.driver.error.connection.open"), e);
+			throw new DriverException(I18N
+					.getText("gdms.driver.error.connection.open"), e);
 		}
 
 		String sql = null;
@@ -244,8 +254,8 @@ public class DBTableDataSourceAdapter extends DriverDataSource implements
 				sql = info.getSQL(getPKNames(), fieldNames,
 						(DBReadWriteDriver) driver);
 				if (sql != null) {
-					sql = info.getSQL(getPKNames(),
-							fieldNames, (DBReadWriteDriver) driver);
+					sql = info.getSQL(getPKNames(), fieldNames,
+							(DBReadWriteDriver) driver);
 					((DBReadWriteDriver) driver).execute(con, sql);
 				}
 			}
@@ -253,7 +263,8 @@ public class DBTableDataSourceAdapter extends DriverDataSource implements
 			try {
 				((DBReadWriteDriver) driver).rollBackTrans(getConnection());
 			} catch (SQLException e1) {
-				throw new DriverException(I18N.getText("gdms.driver.error.connection.open"), e1);
+				throw new DriverException(I18N
+						.getText("gdms.driver.error.connection.open"), e1);
 			}
 			throw new DriverException(e.getMessage() + ":" + sql, e);
 		}
@@ -261,7 +272,8 @@ public class DBTableDataSourceAdapter extends DriverDataSource implements
 		try {
 			((DBReadWriteDriver) driver).commitTrans(getConnection());
 		} catch (SQLException e) {
-			throw new DriverException(I18N.getText("gdms.driver.error.connection.open"),e);
+			throw new DriverException(I18N
+					.getText("gdms.driver.error.connection.open"), e);
 		}
 
 		fireCommit(this);
@@ -303,9 +315,11 @@ public class DBTableDataSourceAdapter extends DriverDataSource implements
 			con.close();
 			con = null;
 			con = getConnection();
-			((DBDriver) driver).open(con, def.getTableName(), def.getSchemaName());
+			((DBDriver) driver).open(con, def.getTableName(), def
+					.getSchemaName());
 		} catch (SQLException e) {
-			throw new DriverException(I18N.getText("gdms.driver.error.connection.close"), e);
+			throw new DriverException(I18N
+					.getText("gdms.driver.error.connection.close"), e);
 		}
 	}
 

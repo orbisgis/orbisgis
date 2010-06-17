@@ -1,11 +1,219 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
 <HTML>
 <HEAD>
-<TITLE>GDMS SQL grammar</TITLE>
+<TITLE>BNF for sql.jj</TITLE>
 </HEAD>
 <BODY>
+<H1 ALIGN=CENTER>BNF for sql.jj</H1>
+<H2 ALIGN=CENTER>TOKENS</H2>
+<TABLE>
+ <!-- Special token -->
+ <TR>
+  <TD>
+<PRE>
+/***********************************************************************
+ * Token definitions
+ ***********************************************************************/</PRE>
+  </TD>
+ </TR>
+ <!-- Token -->
+ <TR>
+  <TD>
+   <PRE>
+&lt;DEFAULT&gt; SKIP : {
+" "
+| "\n"
+| "\r"
+| "\t"
+}
+
+   </PRE>
+  </TD>
+ </TR>
+ <!-- Token -->
+ <TR>
+  <TD>
+   <PRE>
+&lt;DEFAULT&gt; MORE : {
+"--" : IN_LINE_COMMENT
+| "/*" : IN_MULTI_LINE_COMMENT
+}
+
+   </PRE>
+  </TD>
+ </TR>
+ <!-- Token -->
+ <TR>
+  <TD>
+   <PRE>
+&lt;IN_LINE_COMMENT&gt; SPECIAL : {
+&lt;COMMENT_LINE: (~["\n","\r"])* ("\n" | "\r" | "\r\n")?&gt; : DEFAULT
+}
+
+   </PRE>
+  </TD>
+ </TR>
+ <!-- Token -->
+ <TR>
+  <TD>
+   <PRE>
+&lt;IN_MULTI_LINE_COMMENT&gt; SPECIAL : {
+&lt;MULTI_LINE_COMMENT: "*/"&gt; : DEFAULT
+}
+
+   </PRE>
+  </TD>
+ </TR>
+ <!-- Token -->
+ <TR>
+  <TD>
+   <PRE>
+&lt;IN_LINE_COMMENT,IN_MULTILINE_COMMENT&gt; MORE : {
+&lt;~[]&gt;
+}
+
+   </PRE>
+  </TD>
+ </TR>
+ <!-- Token -->
+ <TR>
+  <TD>
+   <PRE>
+&lt;DEFAULT&gt; SKIP : {
+&lt;COMMENT_BLOCK: "/*" (~["*"])* "*" ("*" | ~["*","/"] (~["*"])* "*")* "/"&gt;
+}
+
+   </PRE>
+  </TD>
+ </TR>
+ <!-- Token -->
+ <TR>
+  <TD>
+   <PRE>
+&lt;DEFAULT&gt; TOKEN : {
+&lt;ALL: "all"&gt;
+| &lt;AND: "and"&gt;
+| &lt;AS: "as"&gt;
+| &lt;ASC: "asc"&gt;
+| &lt;BEGIN: "begin"&gt;
+| &lt;BETWEEN: "between"&gt;
+| &lt;BY: "by"&gt;
+| &lt;DESC: "desc"&gt;
+| &lt;DISTINCT: "distinct"&gt;
+| &lt;DROP: "drop"&gt;
+| &lt;EXCEPT: "except"&gt;
+| &lt;FROM: "from"&gt;
+| &lt;GROUP: "group"&gt;
+| &lt;HAVING: "having"&gt;
+| &lt;IF: "if"&gt;
+| &lt;IN: "in"&gt;
+| &lt;INDEX: "index"&gt;
+| &lt;IS: "is"&gt;
+| &lt;KEY: "key"&gt;
+| &lt;LEFT: "left"&gt;
+| &lt;LIKE: "like"&gt;
+| &lt;LIMIT: "limit"&gt;
+| &lt;NOT: "not"&gt;
+| &lt;NULL: "null"&gt;
+| &lt;OFFSET: "offset"&gt;
+| &lt;ON: "on"&gt;
+| &lt;OR: "or"&gt;
+| &lt;ORDER: "order"&gt;
+| &lt;PRIMARY: "primary"&gt;
+| &lt;SELECT: "select"&gt;
+| &lt;UNION: "union"&gt;
+| &lt;SPACES: "spaces"&gt;
+| &lt;TABLE: "table"&gt;
+| &lt;VIEW: "view"&gt;
+| &lt;ADD: "add"&gt;
+| &lt;COLUMN: "column"&gt;
+| &lt;WHERE: "where"&gt;
+| &lt;JOIN: "join"&gt;
+| &lt;USING: "using"&gt;
+| &lt;CREATE: "create"&gt;
+| &lt;DELETE: "delete"&gt;
+| &lt;EXISTS: "exists"&gt;
+| &lt;ALTER: "alter"&gt;
+| &lt;INSERT: "insert"&gt;
+| &lt;INTO: "into"&gt;
+| &lt;SET: "set"&gt;
+| &lt;UPDATE: "update"&gt;
+| &lt;VALUES: "values"&gt;
+| &lt;RENAME: "rename"&gt;
+| &lt;TO: "to"&gt;
+| &lt;TEXT: "text"&gt;
+| &lt;BOOLEAN: "boolean"&gt;
+| &lt;DATE: "date"&gt;
+| &lt;NUMERIC: "numeric"&gt;
+| &lt;INTERGER: "integer"&gt;
+| &lt;RESTRICT: "restrict"&gt;
+| &lt;CASCADE: "cascade"&gt;
+| &lt;PURGE: "purge"&gt;
+}
+
+   </PRE>
+  </TD>
+ </TR>
+ <!-- Token -->
+ <TR>
+  <TD>
+   <PRE>
+&lt;DEFAULT&gt; TOKEN : {
+&lt;INTEGER_LITERAL: (["0"-"9"])+&gt;
+| &lt;FLOATING_POINT_LITERAL: (["0"-"9"])+ "." (["0"-"9"])+ (&lt;EXPONENT&gt;)? | "." (["0"-"9"])+ (&lt;EXPONENT&gt;)? | (["0"-"9"])+ &lt;EXPONENT&gt; | (["0"-"9"])+ (&lt;EXPONENT&gt;)?&gt;
+| &lt;#EXPONENT: ["e","E"] (["+","-"])? (["0"-"9"])+&gt;
+| &lt;STRING_LITERAL: "\'" (~["\'"])* ("\'\'" (~["\'"])*)* "\'"&gt;
+| &lt;BOOLEAN_LITERAL: "true" | "false"&gt;
+}
+
+   </PRE>
+  </TD>
+ </TR>
+ <!-- Token -->
+ <TR>
+  <TD>
+   <PRE>
+&lt;DEFAULT&gt; TOKEN : {
+&lt;ID: (&lt;LETTER&gt; | &lt;DIGIT&gt;)+ ("_" | "$" | "#" | &lt;DIGIT&gt; | &lt;LETTER&gt;)*&gt;
+| &lt;#LETTER: ["A"-"Z","a"-"z"]&gt;
+| &lt;#DIGIT: ["0"-"9"]&gt;
+}
+
+   </PRE>
+  </TD>
+ </TR>
+ <!-- Token -->
+ <TR>
+  <TD>
+   <PRE>
+&lt;DEFAULT&gt; TOKEN : {
+&lt;ASSIGN: ":="&gt;
+| &lt;CONCAT: "||"&gt;
+| &lt;SEMICOLON: ";"&gt;
+| &lt;DOT: "."&gt;
+| &lt;TILDE: "~"&gt;
+| &lt;LESS: "&lt;"&gt;
+| &lt;LESSEQUAL: "&lt;="&gt;
+| &lt;GREATER: "&gt;"&gt;
+| &lt;GREATEREQUAL: "&gt;="&gt;
+| &lt;EQUAL: "="&gt;
+| &lt;NOTEQUAL: "!="&gt;
+| &lt;NOTEQUAL2: "&lt;&gt;"&gt;
+| &lt;JOINPLUS: "(+)"&gt;
+| &lt;OPENPAREN: "("&gt;
+| &lt;CLOSEPAREN: ")"&gt;
+| &lt;ASTERISK: "*"&gt;
+| &lt;SLASH: "/"&gt;
+| &lt;PLUS: "+"&gt;
+| &lt;MINUS: "-"&gt;
+| &lt;QUESTIONMARK: "?"&gt;
+}
+
+   </PRE>
+  </TD>
+ </TR>
 </TABLE>
-<H2 ALIGN=CENTER>GDMS SQL grammar</H2>
+<H2 ALIGN=CENTER>NON-TERMINALS</H2>
 <TABLE>
 <TR>
 <TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod1">SQLAndExpr</A></TD>
@@ -45,7 +253,7 @@
 <TR>
 <TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod18">SQLDrop</A></TD>
 <TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
-<TD ALIGN=LEFT VALIGN=BASELINE>&lt;DROP&gt; ( ( &lt;TABLE&gt; ( &lt;IF&gt; &lt;EXISTS&gt; )? <A HREF="#prod19">SQLTableList</A> ) | ( &lt;VIEW&gt; ( &lt;IF&gt; &lt;EXISTS&gt; )? <A HREF="#prod19">SQLTableList</A> ) | ( &lt;INDEX&gt; &lt;ON&gt; <A HREF="#prod6">SQLId</A> "(" <A HREF="#prod6">SQLId</A> ")" ) )</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE>&lt;DROP&gt; ( ( &lt;TABLE&gt; ( &lt;IF&gt; &lt;EXISTS&gt; )? <A HREF="#prod19">SQLTableList</A> ( &lt;PURGE&gt; )? ) | ( &lt;VIEW&gt; ( &lt;IF&gt; &lt;EXISTS&gt; )? <A HREF="#prod19">SQLTableList</A> ) | ( &lt;INDEX&gt; &lt;ON&gt; <A HREF="#prod6">SQLId</A> "(" <A HREF="#prod6">SQLId</A> ")" ) )</TD>
 </TR>
 <TR>
 <TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod20">SQLAlter</A></TD>

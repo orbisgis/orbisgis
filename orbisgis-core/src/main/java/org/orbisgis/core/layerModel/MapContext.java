@@ -43,6 +43,7 @@ import java.util.ArrayList;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.se.Rule;
 
+import fr.cts.crs.CoordinateReferenceSystem;
 /**
  * This interface provides information to the tool system and receives
  * notifications from it. Also registers the tool system as a listener in order
@@ -96,12 +97,14 @@ public interface MapContext {
 
 	/**
 	 * Get the mapcontext bounding-box (visible layers)
+	 * 
 	 * @return
 	 */
 	public Envelope getBoundingBox();
-	
+
 	/**
 	 * Set the mapcontext bounding-box (visible layers)
+	 * 
 	 * @param extent
 	 */
 	void setBoundingBox(Envelope extent);
@@ -214,7 +217,21 @@ public interface MapContext {
 	 * @throws IllegalStateException
 	 *             If the map is closed
 	 */
-	void setActiveLayer(ILayer activeLayer) throws IllegalStateException;	
+	void setActiveLayer(ILayer activeLayer) throws IllegalStateException;
+
+	/**
+	 * get the mapcontext {@link CoordinateReferenceSystem}
+	 * 
+	 * @return
+	 */
+	
+	CoordinateReferenceSystem getCoordinateReferenceSystem();
 
 	
+	/**
+	 * set the {@link CoordinateReferenceSystem} to the mapcontext
+	 * 
+	 * @param crs
+	 */
+	void setCoordinateReferenceSystem(CoordinateReferenceSystem crs);
 }

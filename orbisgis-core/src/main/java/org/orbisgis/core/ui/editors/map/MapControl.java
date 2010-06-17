@@ -1,38 +1,39 @@
 /*
  * OrbisGIS is a GIS application dedicated to scientific spatial simulation.
- * This cross-platform GIS is developed at French IRSTV institute and is able
- * to manipulate and create vector and raster spatial information. OrbisGIS
- * is distributed under GPL 3 license. It is produced  by the geo-informatic team of
- * the IRSTV Institute <http://www.irstv.cnrs.fr/>, CNRS FR 2488:
- *    Erwan BOCHER, scientific researcher,
- *    Thomas LEDUC, scientific researcher,
- *    Fernando GONZALEZ CORTES, computer engineer.
+ * This cross-platform GIS is developed at French IRSTV institute and is able to
+ * manipulate and create vector and raster spatial information. OrbisGIS is
+ * distributed under GPL 3 license. It is produced by the "Atelier SIG" team of
+ * the IRSTV Institute <http://www.irstv.cnrs.fr/> CNRS FR 2488.
+ *
+ * 
+ *  Team leader Erwan BOCHER, scientific researcher,
+ * 
+ *  User support leader : Gwendall Petit, geomatic engineer.
+ *
  *
  * Copyright (C) 2007 Erwan BOCHER, Fernando GONZALEZ CORTES, Thomas LEDUC
  *
+ * Copyright (C) 2010 Erwan BOCHER, Pierre-Yves FADET, Alexis GUEGANNO, Maxence LAURENT
+ *
  * This file is part of OrbisGIS.
  *
- * OrbisGIS is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * OrbisGIS is free software: you can redistribute it and/or modify it under the
+ * terms of the GNU General Public License as published by the Free Software
+ * Foundation, either version 3 of the License, or (at your option) any later
+ * version.
  *
- * OrbisGIS is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
+ * OrbisGIS is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
+ * A PARTICULAR PURPOSE. See the GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
- * along with OrbisGIS. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License along with
+ * OrbisGIS. If not, see <http://www.gnu.org/licenses/>.
  *
- * For more information, please consult:
- *    <http://orbisgis.cerma.archi.fr/>
- *    <http://sourcesup.cru.fr/projects/orbisgis/>
+ * For more information, please consult: <http://www.orbisgis.org/>
  *
  * or contact directly:
- *    erwan.bocher _at_ ec-nantes.fr
- *    fergonco _at_ gmail.com
- *    thomas.leduc _at_ cerma.archi.fr
+ * erwan.bocher _at_ ec-nantes.fr
+ * gwendall.petit _at_ ec-nantes.fr
  */
 package org.orbisgis.core.ui.editors.map;
 
@@ -41,6 +42,8 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.GraphicsConfiguration;
 import java.awt.GraphicsEnvironment;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
 import java.awt.event.ContainerEvent;
@@ -85,7 +88,8 @@ import com.vividsolutions.jts.geom.Envelope;
  * 
  */
 
-public class MapControl extends JComponent implements ComponentListener, ContainerListener {
+public class MapControl extends JComponent implements ComponentListener,
+		ContainerListener {
 
 	private static int lastProcessId = 0;
 
@@ -107,25 +111,16 @@ public class MapControl extends JComponent implements ComponentListener, Contain
 
 	private MapContext mapContext;
 
-
 	private Drawer drawer;
 
 	private boolean showCoordinates = true;
-	
-	 EditableElement element ;
-	 
-	 Automaton defaultTool;
 
-	// 250 ms wasn't as good as 1 s because less got painted on each
-	// repaint,
-	// making rendering appear to be slower. [Jon Aquino]
-	// LDB: 400 ms is better when using mouse wheel zooming
-	//int timerToDraw = 400;
-	
-	 /**
-	  * Default constructor
-	  */
-	public MapControl() {		
+	EditableElement element;
+
+	Automaton defaultTool;
+
+	public MapControl() {
+
 	}
 
 	/**
@@ -142,13 +137,11 @@ public class MapControl extends JComponent implements ComponentListener, Contain
 		this.mapContext = mapContext;
 		this.element = element;
 		this.defaultTool = defaultTool;
-		
-		initMapControl();		
+
+		initMapControl();
 	}
 
-
-	
-	public void  initMapControl() throws TransitionException {
+	public void initMapControl() throws TransitionException {
 		synchronized (this) {
 			this.processId = lastProcessId++;
 		}
@@ -213,12 +206,9 @@ public class MapControl extends JComponent implements ComponentListener, Contain
 
 		// Add refresh listener
 		addLayerListenerRecursively(rootLayer, new RefreshLayerListener());
-		
-		setLayout(new BorderLayout());
-		
-	}
-	
 
+		setLayout(new BorderLayout());
+	}
 
 	private void addLayerListenerRecursively(ILayer rootLayer,
 			RefreshLayerListener refreshLayerListener) {
@@ -254,8 +244,6 @@ public class MapControl extends JComponent implements ComponentListener, Contain
 	protected void paintComponent(Graphics g) {
 		BufferedImage mapTransformImage = mapTransform.getImage();
 
-		// if (status == UPDATED) {
-		// If not waiting for an image
 		if (mapTransformImage != null) {
 			g.drawImage(mapTransformImage, 0, 0, null);
 			toolManager.paintEdition(g);
@@ -280,36 +268,32 @@ public class MapControl extends JComponent implements ComponentListener, Contain
 
 			if (mapTransform.getAdjustedExtent() != null) {
 				mapTransform.setImage(inProcessImage);
-				/*repaint();
-				mapContext.draw(mapTransform.getImage(), mapTransform
-						.getAdjustedExtent(), new ProgressMonitor(""));
-				mapContext.setBoundingBox(mapTransform.getExtent());*/
-				/*Timer timer = new Timer(getTimerToDraw(), new ActionListener() {
+				Timer timer = new Timer(200, new ActionListener() {
+
 					@Override
 					public void actionPerformed(ActionEvent e) {
 						repaint();
-						
 					}
-				});*/
-				//timer.start();
-				drawer = new Drawer(null);
+				});
+				timer.start();
+				drawer = new Drawer(timer);
 				BackgroundManager bm = (BackgroundManager) Services
 						.getService(BackgroundManager.class);
 				bm.nonBlockingBackgroundOperation(new DefaultJobId(
 						"org.orbisgis.jobs.MapControl-" + processId), drawer);
-				//bm.addBackgroundListener( Services.getService( WorkbenchContext.class ) );
+				// bm.addBackgroundListener( Services.getService(
+				// WorkbenchContext.class ) );
 			}
 		}
 
 	}
 
-/*	public int getTimerToDraw() {
-		return timerToDraw;
-	}
-
-	public void setTimerToDraw(int timerToDraw) {
-		this.timerToDraw = timerToDraw;
-	}*/
+	/*
+	 * public int getTimerToDraw() { return timerToDraw; }
+	 * 
+	 * public void setTimerToDraw(int timerToDraw) { this.timerToDraw =
+	 * timerToDraw; }
+	 */
 
 	/**
 	 * Returns the drawn image
@@ -383,8 +367,7 @@ public class MapControl extends JComponent implements ComponentListener, Contain
 				pm = this.pm;
 			}
 			try {
-				mapContext.draw(mapTransform.getImage(), mapTransform
-						.getAdjustedExtent(), pm);
+				mapContext.draw(mapTransform, pm);
 
 			} catch (ClosedDataSourceException e) {
 				if (!cancel) {
@@ -395,15 +378,13 @@ public class MapControl extends JComponent implements ComponentListener, Contain
 			} catch (Error e) {
 				throw e;
 			} finally {
-                System.out.println("OLA+");
-				MapControl.this.repaint();
 				mapContext.setBoundingBox(mapTransform.getExtent());
-				//timer.stop();
-				System.out.println("OLA++++");
+				timer.stop();
                 MapControl.this.repaint();
 				mapContext.setBoundingBox(mapTransform.getExtent());
-				WorkbenchContext wbContext = Services.getService(WorkbenchContext.class);
-				wbContext.setLastAction("Update toolbar");
+				WorkbenchContext wbContext = Services
+						.getService(WorkbenchContext.class);
+				wbContext.setLastAction("Update toolbar");				
 			}
 		}
 
@@ -543,9 +524,9 @@ public class MapControl extends JComponent implements ComponentListener, Contain
 	}
 
 	public void closing() {
-		/*if (drawer != null) {
-			drawer.cancel();
-		}*/
+		/*
+		 * if (drawer != null) { drawer.cancel(); }
+		 */
 		toolManager.freeResources();
 		toolManager = null;
 	}
@@ -558,17 +539,18 @@ public class MapControl extends JComponent implements ComponentListener, Contain
 	public boolean getShowCoordinates() {
 		return showCoordinates;
 	}
+
 	@Override
 	public void componentAdded(ContainerEvent e) {
 		System.out.println("component added");
-		
+
 	}
+
 	@Override
-	public void componentRemoved(ContainerEvent e) {
-		// TODO Auto-generated method stub
-		
+	public void componentRemoved(ContainerEvent e) {		
+
 	}
-	
+
 	public void setDefaultTool(Automaton defaultTool) {
 		this.defaultTool = defaultTool;
 	}
@@ -580,7 +562,7 @@ public class MapControl extends JComponent implements ComponentListener, Contain
 	public void setMapContext(MapContext mapContext) {
 		this.mapContext = mapContext;
 	}
-	
+
 	public MapContext getMapContext() {
 		return mapContext;
 	}

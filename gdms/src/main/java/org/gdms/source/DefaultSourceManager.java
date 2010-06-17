@@ -1,38 +1,39 @@
 /*
  * OrbisGIS is a GIS application dedicated to scientific spatial simulation.
- * This cross-platform GIS is developed at French IRSTV institute and is able
- * to manipulate and create vector and raster spatial information. OrbisGIS
- * is distributed under GPL 3 license. It is produced  by the geo-informatic team of
- * the IRSTV Institute <http://www.irstv.cnrs.fr/>, CNRS FR 2488:
- *    Erwan BOCHER, scientific researcher,
- *    Thomas LEDUC, scientific researcher,
- *    Fernando GONZALEZ CORTES, computer engineer.
+ * This cross-platform GIS is developed at French IRSTV institute and is able to
+ * manipulate and create vector and raster spatial information. OrbisGIS is
+ * distributed under GPL 3 license. It is produced by the "Atelier SIG" team of
+ * the IRSTV Institute <http://www.irstv.cnrs.fr/> CNRS FR 2488.
+ *
+ * 
+ *  Team leader Erwan BOCHER, scientific researcher,
+ * 
+ *  User support leader : Gwendall Petit, geomatic engineer.
+ *
  *
  * Copyright (C) 2007 Erwan BOCHER, Fernando GONZALEZ CORTES, Thomas LEDUC
  *
+ * Copyright (C) 2010 Erwan BOCHER, Pierre-Yves FADET, Alexis GUEGANNO, Maxence LAURENT
+ *
  * This file is part of OrbisGIS.
  *
- * OrbisGIS is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * OrbisGIS is free software: you can redistribute it and/or modify it under the
+ * terms of the GNU General Public License as published by the Free Software
+ * Foundation, either version 3 of the License, or (at your option) any later
+ * version.
  *
- * OrbisGIS is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
+ * OrbisGIS is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
+ * A PARTICULAR PURPOSE. See the GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
- * along with OrbisGIS. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License along with
+ * OrbisGIS. If not, see <http://www.gnu.org/licenses/>.
  *
- * For more information, please consult:
- *    <http://orbisgis.cerma.archi.fr/>
- *    <http://sourcesup.cru.fr/projects/orbisgis/>
+ * For more information, please consult: <http://www.orbisgis.org/>
  *
  * or contact directly:
- *    erwan.bocher _at_ ec-nantes.fr
- *    fergonco _at_ gmail.com
- *    thomas.leduc _at_ cerma.archi.fr
+ * erwan.bocher _at_ ec-nantes.fr
+ * gwendall.petit _at_ ec-nantes.fr
  */
 package org.gdms.source;
 
@@ -85,6 +86,7 @@ import org.gdms.driver.solene.ValDriver;
 import org.gdms.driver.vrml.VrmlDriver;
 import org.gdms.source.directory.Source;
 import org.gdms.source.directory.Sources;
+import org.gdms.source.util.SourcesCleaner;
 import org.gdms.sql.parser.ParseException;
 import org.gdms.sql.strategies.Instruction;
 import org.gdms.sql.strategies.SQLProcessor;
@@ -253,7 +255,7 @@ public class DefaultSourceManager implements SourceManager {
 
 	/**
 	 * @throws IOException
-	 *
+	 * 
 	 */
 	public void removeAll() throws IOException {
 		File[] files = new File(baseDir).listFiles();
@@ -277,10 +279,23 @@ public class DefaultSourceManager implements SourceManager {
 	}
 
 	/**
+	 * Remove a source
+	 * 
 	 * @param name
 	 * @return
 	 */
 	public boolean remove(String name) {
+		return remove(name, false);
+	}
+
+	/**
+	 * Remove a source and delete its physic storage
+	 * 
+	 * @param name
+	 * @param purge
+	 * @return
+	 */
+	public boolean remove(String name, boolean purge) {
 		try {
 			name = getMainNameFor(name);
 		} catch (NoSuchTableException e) {
@@ -314,6 +329,12 @@ public class DefaultSourceManager implements SourceManager {
 		}
 
 		toRemove.removeFromXML();
+
+		if (purge) {
+				SourcesCleaner.delete(toRemove);
+			
+		}
+
 		nameSource.remove(name);
 
 		for (String nwk : notWellKnown) {
@@ -323,6 +344,13 @@ public class DefaultSourceManager implements SourceManager {
 		fireSourceRemoved(name);
 
 		return true;
+	}
+
+	/**
+	 * Remove a source and delete its physic storage
+	 */
+	public boolean delete(String name) {
+		return remove(name, true);
 	}
 
 	private void fireSourceRemoved(String name) {
@@ -429,7 +457,7 @@ public class DefaultSourceManager implements SourceManager {
 
 	/**
 	 * Registers the specified DataSourceDefinition with the specified name
-	 *
+	 * 
 	 * @param name
 	 * @param def
 	 * @throws DriverException
@@ -725,7 +753,6 @@ public class DefaultSourceManager implements SourceManager {
 				dataSourceDefinition.freeResources(name);
 			}
 		}
-
 		nameSource.clear();
 	}
 

@@ -1,38 +1,39 @@
 /*
  * OrbisGIS is a GIS application dedicated to scientific spatial simulation.
- * This cross-platform GIS is developed at French IRSTV institute and is able
- * to manipulate and create vector and raster spatial information. OrbisGIS
- * is distributed under GPL 3 license. It is produced  by the geo-informatic team of
- * the IRSTV Institute <http://www.irstv.cnrs.fr/>, CNRS FR 2488:
- *    Erwan BOCHER, scientific researcher,
- *    Thomas LEDUC, scientific researcher,
- *    Fernando GONZALEZ CORTES, computer engineer.
+ * This cross-platform GIS is developed at French IRSTV institute and is able to
+ * manipulate and create vector and raster spatial information. OrbisGIS is
+ * distributed under GPL 3 license. It is produced by the "Atelier SIG" team of
+ * the IRSTV Institute <http://www.irstv.cnrs.fr/> CNRS FR 2488.
+ *
+ * 
+ *  Team leader Erwan BOCHER, scientific researcher,
+ * 
+ *  User support leader : Gwendall Petit, geomatic engineer.
+ *
  *
  * Copyright (C) 2007 Erwan BOCHER, Fernando GONZALEZ CORTES, Thomas LEDUC
  *
+ * Copyright (C) 2010 Erwan BOCHER, Pierre-Yves FADET, Alexis GUEGANNO, Maxence LAURENT
+ *
  * This file is part of OrbisGIS.
  *
- * OrbisGIS is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * OrbisGIS is free software: you can redistribute it and/or modify it under the
+ * terms of the GNU General Public License as published by the Free Software
+ * Foundation, either version 3 of the License, or (at your option) any later
+ * version.
  *
- * OrbisGIS is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
+ * OrbisGIS is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
+ * A PARTICULAR PURPOSE. See the GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
- * along with OrbisGIS. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License along with
+ * OrbisGIS. If not, see <http://www.gnu.org/licenses/>.
  *
- * For more information, please consult:
- *    <http://orbisgis.cerma.archi.fr/>
- *    <http://sourcesup.cru.fr/projects/orbisgis/>
+ * For more information, please consult: <http://www.orbisgis.org/>
  *
  * or contact directly:
- *    erwan.bocher _at_ ec-nantes.fr
- *    fergonco _at_ gmail.com
- *    thomas.leduc _at_ cerma.archi.fr
+ * erwan.bocher _at_ ec-nantes.fr
+ * gwendall.petit _at_ ec-nantes.fr
  */
 package org.orbisgis.core.layerModel;
 
@@ -43,6 +44,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 
+import org.gdms.driver.DriverException;
 import org.gdms.source.SourceEvent;
 import org.gdms.source.SourceListener;
 import org.gdms.source.SourceRemovalEvent;
@@ -52,10 +54,12 @@ import org.orbisgis.core.errorManager.ErrorManager;
 import org.orbisgis.core.layerModel.persistence.BoundingBox;
 import org.orbisgis.core.layerModel.persistence.LayerCollectionType;
 import org.orbisgis.core.layerModel.persistence.LayerType;
+import org.orbisgis.core.layerModel.persistence.OgcCrs;
 import org.orbisgis.core.layerModel.persistence.SelectedLayer;
 import org.orbisgis.core.renderer.Renderer;
 import org.orbisgis.progress.IProgressMonitor;
 import org.orbisgis.progress.NullProgressMonitor;
+import org.orbisgis.wkt.parser.PRJUtils;
 
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
@@ -65,13 +69,15 @@ import com.vividsolutions.jts.io.WKTReader;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.se.Rule;
 
+import fr.cts.crs.CoordinateReferenceSystem;
+
 /**
- * Class that contains the status of the view.
+ * Class that contains the status of the map view.
+ *
  * 
- * @author Fernando Gonzalez Cortes
  * 
  */
-public class DefaultMapContext implements MapContext{
+public class DefaultMapContext implements MapContext {
 	private ILayer root;
 
 	private ILayer[] selectedLayers = new ILayer[0];
@@ -90,15 +96,15 @@ public class DefaultMapContext implements MapContext{
 	private org.orbisgis.core.layerModel.persistence.MapContext jaxbMapContext;
 
 	private Envelope boundingBox;
-	
 
+	public CoordinateReferenceSystem crs = null;
 
 	/**
 	 * @param mapControl
 	 */
 	public DefaultMapContext() {
 		openerListener = new OpenerListener();
-		sourceListener = new LayerRemovalSourceListener();		
+		sourceListener = new LayerRemovalSourceListener();
 		DataManager dataManager = (DataManager) Services
 				.getService(DataManager.class);
 		setRoot(dataManager.createLayerCollection("root"));
@@ -198,6 +204,7 @@ public class DefaultMapContext implements MapContext{
 					try {
 						layer.open();
 						layer.addLayerListenerRecursively(openerListener);
+						checkLayerCRS(layer);
 					} catch (LayerException ex) {
 						Services.getErrorManager().error(
 								"Cannot open layer: " + layer.getName()
@@ -210,6 +217,8 @@ public class DefaultMapContext implements MapContext{
 									"Cannot remove layer: " + layer.getName(),
 									ex);
 						}
+					} catch (DriverException e1) {
+						e1.printStackTrace();
 					}
 				}
 			}
@@ -245,6 +254,26 @@ public class DefaultMapContext implements MapContext{
 		}
 	}
 
+	private void checkLayerCRS(final ILayer layer) throws LayerException,
+			DriverException {
+
+		CoordinateReferenceSystem layerCRS = layer.getDataSource().getCRS();
+
+		if (crs == null) {
+			crs = layerCRS;
+
+		} /*else if (!checkCRSProjection(layerCRS)) {
+			throw new LayerException("Cannot add a layer with CRS"
+					+ "' because it's different from map CRS.");
+		}*/
+	}
+
+	public boolean checkCRSProjection(CoordinateReferenceSystem layerCRS) {
+
+		return (layerCRS.getProjection().equals(crs.getProjection()));
+
+	}
+
 	/**
 	 * Creates a layer from the information obtained in the specified XML mapped
 	 * object. Layers that cannot be created are removed from the layer tree and
@@ -258,8 +287,6 @@ public class DefaultMapContext implements MapContext{
 		DataManager dataManager = (DataManager) Services
 				.getService(DataManager.class);
 		ILayer ret = null;
-		
-		
 		if (layer instanceof LayerCollectionType) {
 			LayerCollectionType xmlLayerCollection = (LayerCollectionType) layer;
 			ret = dataManager.createLayerCollection(layer.getName());
@@ -332,17 +359,25 @@ public class DefaultMapContext implements MapContext{
 			LayerType xmlRootLayer = root.saveLayer();
 			xmlMapContext
 					.setLayerCollection((LayerCollectionType) xmlRootLayer);
-			
-			//get BoundinBox from ,persistence file
+
+			// get BoundinBox from ,persistence file
 			BoundingBox boundingBox = new BoundingBox();
 			if (getBoundingBox() != null) {
-				GeometryFactory geomF= new GeometryFactory();
+				GeometryFactory geomF = new GeometryFactory();
 				Geometry geom = geomF.toGeometry(getBoundingBox());
-				boundingBox.setName(geom.toText());				
+				boundingBox.setName(geom.toText());
 			} else {
 				boundingBox.setName("");
 			}
 			xmlMapContext.setBoundingBox(boundingBox);
+
+			OgcCrs ogcCrs = new OgcCrs();
+			if (getCoordinateReferenceSystem() == null) {
+				ogcCrs.setName("");
+			} else {
+				//ogcCrs.setName(crs.toWkt());
+			}
+			xmlMapContext.setOgcCrs(ogcCrs);
 
 			return xmlMapContext;
 		}
@@ -420,6 +455,12 @@ public class DefaultMapContext implements MapContext{
 			} catch (ParseException e) {
 				Services.getErrorManager().error(
 						"Cannot read the bounding box", e);
+			}
+			String wkt = jaxbMapContext.getOgcCrs().getName();
+			if (wkt != null) {
+				if (wkt.length() > 0) {
+					crs = PRJUtils.getCRSFromWKT(wkt);
+				}
 			}
 		}
 
@@ -549,5 +590,22 @@ public class DefaultMapContext implements MapContext{
 				}
 			}
 		}
+	}
+
+	/**
+	 * A mapcontext must have only one {@link CoordinateReferenceSystem} By
+	 * default the crs is set to null.
+	 */
+	public CoordinateReferenceSystem getCoordinateReferenceSystem() {
+		return crs;
+	}
+
+	/**
+	 * Set a {@link CoordinateReferenceSystem} to the mapContext
+	 * 
+	 * @param crs
+	 */
+	public void setCoordinateReferenceSystem(CoordinateReferenceSystem crs) {
+		this.crs = crs;
 	}
 }

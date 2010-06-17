@@ -187,8 +187,6 @@ public final class MarkGraphic extends Graphic {
 
         double margin = this.getMargin(feat, mt);
 
-		System.out.println("youpi:" + bounds);
-
         RenderableGraphics rg = Graphic.getNewRenderableGraphics(bounds, margin);
 
         if (halo != null) {

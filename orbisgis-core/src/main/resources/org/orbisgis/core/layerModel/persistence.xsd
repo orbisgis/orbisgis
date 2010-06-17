@@ -20,7 +20,7 @@
 		</xs:complexType>
 	</xs:element>
 	
-	<xs:element name="coordinateReferenceSystem">
+	<xs:element name="ogcCrs">
 		<xs:complexType>
 			<xs:attribute name="name" type="xs:string" use="required"/>
 		</xs:complexType>
@@ -32,6 +32,7 @@
 				<xs:element ref="layer-collection"/>
 				<xs:element ref="selected-layer" maxOccurs="unbounded"/>
 				<xs:element ref="boundingBox"/>
+				<xs:element ref="ogcCrs"/>
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>

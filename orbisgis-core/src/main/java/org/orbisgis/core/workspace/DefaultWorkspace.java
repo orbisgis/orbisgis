@@ -1,38 +1,39 @@
 /*
  * OrbisGIS is a GIS application dedicated to scientific spatial simulation.
- * This cross-platform GIS is developed at French IRSTV institute and is able
- * to manipulate and create vector and raster spatial information. OrbisGIS
- * is distributed under GPL 3 license. It is produced  by the geo-informatic team of
- * the IRSTV Institute <http://www.irstv.cnrs.fr/>, CNRS FR 2488:
- *    Erwan BOCHER, scientific researcher,
- *    Thomas LEDUC, scientific researcher,
- *    Fernando GONZALEZ CORTES, computer engineer.
+ * This cross-platform GIS is developed at French IRSTV institute and is able to
+ * manipulate and create vector and raster spatial information. OrbisGIS is
+ * distributed under GPL 3 license. It is produced by the "Atelier SIG" team of
+ * the IRSTV Institute <http://www.irstv.cnrs.fr/> CNRS FR 2488.
+ *
+ * 
+ *  Team leader Erwan BOCHER, scientific researcher,
+ * 
+ *  User support leader : Gwendall Petit, geomatic engineer.
+ *
  *
  * Copyright (C) 2007 Erwan BOCHER, Fernando GONZALEZ CORTES, Thomas LEDUC
  *
+ * Copyright (C) 2010 Erwan BOCHER, Pierre-Yves FADET, Alexis GUEGANNO, Maxence LAURENT
+ *
  * This file is part of OrbisGIS.
  *
- * OrbisGIS is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * OrbisGIS is free software: you can redistribute it and/or modify it under the
+ * terms of the GNU General Public License as published by the Free Software
+ * Foundation, either version 3 of the License, or (at your option) any later
+ * version.
  *
- * OrbisGIS is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
+ * OrbisGIS is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
+ * A PARTICULAR PURPOSE. See the GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
- * along with OrbisGIS. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License along with
+ * OrbisGIS. If not, see <http://www.gnu.org/licenses/>.
  *
- * For more information, please consult:
- *    <http://orbisgis.cerma.archi.fr/>
- *    <http://sourcesup.cru.fr/projects/orbisgis/>
+ * For more information, please consult: <http://www.orbisgis.org/>
  *
  * or contact directly:
- *    erwan.bocher _at_ ec-nantes.fr
- *    fergonco _at_ gmail.com
- *    thomas.leduc _at_ cerma.archi.fr
+ * erwan.bocher _at_ ec-nantes.fr
+ * gwendall.petit _at_ ec-nantes.fr
  */
 package org.orbisgis.core.workspace;
 
@@ -67,11 +68,10 @@ public class DefaultWorkspace implements Workspace {
 	/* Workspace saving timer */
 	private PeriodicSaveWorkspace timer;
 
+	private boolean defaultWorkspace;
+
 	public DefaultWorkspace() {
-		/*File tempDir = getFile(TEMP_FOLDER_NAME);
-		if (!tempDir.exists()) {
-			tempDir.mkdirs();
-		}*/
+
 		timer = new PeriodicSaveWorkspace(this);
 	}
 
@@ -87,7 +87,7 @@ public class DefaultWorkspace implements Workspace {
 	public File getNewFile(String prefix, String suffix) {
 		File ret = null;
 		do {
-			ret = new File(getMetadataFolder(), prefix
+			ret = new File(getWorkspaceFolder(), prefix
 					+ System.currentTimeMillis() + suffix);
 		} while (ret.exists());
 
@@ -105,7 +105,7 @@ public class DefaultWorkspace implements Workspace {
 	 * @see org.orbisgis.core.workspace.Workspace#getFile(java.lang.String)
 	 */
 	public File getFile(String name) {
-		File ret = new File(getMetadataFolder(), name);
+		File ret = new File(getWorkspaceFolder(), name);
 		if (!ret.getParentFile().exists()) {
 			ret.getParentFile().mkdirs();
 		}
@@ -119,17 +119,7 @@ public class DefaultWorkspace implements Workspace {
 	public void init(boolean clean) {
 		try {
 			logger.debug("Initializing workspace");
-			File currentWorkspaceFile = getCurrentWorkspaceFile();
-			if (!currentWorkspaceFile.exists()) {
-				try {
-					PrintWriter pw = new PrintWriter(currentWorkspaceFile);
-					pw.println(Services.getService(ApplicationInfo.class)
-							.getHomeFolder());
-					pw.close();
-				} catch (FileNotFoundException e) {
-					throw new RuntimeException("Cannot initialize system", e);
-				}
-			}
+			File currentWorkspaceFile = getDefaultWorkspaceFile();
 			readCurrentworkspace(currentWorkspaceFile);
 			String error = validateWorkspace();
 			if (error != null) {
@@ -137,14 +127,12 @@ public class DefaultWorkspace implements Workspace {
 			}
 
 			setWorkspaceFolder(workspaceFolder.getAbsolutePath());
-
 			logger
 					.debug("Using workspace "
 							+ workspaceFolder.getAbsolutePath());
 			if (clean) {
-				FileUtils.deleteDir(getMetadataFolder());
+				FileUtils.deleteDir(new File(getWorkspaceFolder()));
 			}
-			//createMetadataDir();
 		} catch (IOException ioe) {
 			Services.getErrorManager().error("Error while init workspace", ioe);
 		}
@@ -164,11 +152,57 @@ public class DefaultWorkspace implements Workspace {
 		}
 	}
 
-	protected File getCurrentWorkspaceFile() throws FileNotFoundException {
+	protected File getDefaultWorkspaceFile() throws FileNotFoundException {
 		ApplicationInfo ogInfo = Services.getService(ApplicationInfo.class);
 		ogInfo.getHomeFolder().mkdirs();
 		File file = new File(ogInfo.getHomeFolder(), "currentWorkspace.txt");
 		return file;
+	}
+
+	protected File getDefaultWorkspacesFile() throws FileNotFoundException {
+		ApplicationInfo ogInfo = Services.getService(ApplicationInfo.class);
+		File file = new File(ogInfo.getHomeFolder(), "workspaces.txt");
+		return file;
+	}
+
+	public ArrayList<String> loadWorkspaces() throws FileNotFoundException {
+		ApplicationInfo ogInfo = Services.getService(ApplicationInfo.class);
+		ArrayList<String> workspacesList = new ArrayList<String>();
+
+		if (getDefaultWorkspacesFile().exists()) {
+			try {
+				BufferedReader fileReader = new BufferedReader(new FileReader(
+						getDefaultWorkspacesFile()));
+
+				String str;
+				while ((str = fileReader.readLine()) != null) {
+					workspacesList.add(str);
+				}
+				fileReader.close();
+
+			} catch (IOException e) {
+				Services.getErrorManager().error("bug!", e);
+			}
+		} else {
+			workspacesList.add(ogInfo.getUserHomeFolder().getAbsolutePath()
+					+ "/OrbisGIS");
+		}
+
+		return workspacesList;
+
+	}
+
+	public void saveWorkspaces(ArrayList<String> workspacesList) {
+		try {
+			PrintWriter pw = new PrintWriter(getDefaultWorkspacesFile());
+
+			for (String workspace : workspacesList) {
+				pw.println(workspace);
+			}
+			pw.close();
+		} catch (FileNotFoundException e) {
+			throw new RuntimeException("Cannot initialize system", e);
+		}
 	}
 
 	protected String validateWorkspace() {
@@ -213,11 +247,7 @@ public class DefaultWorkspace implements Workspace {
 	}
 
 	private File getVersionFile() {
-		return new File(getMetadataFolder(), VERSION_FILE_NAME);
-	}
-
-	protected File getMetadataFolder() {
-		return new File(workspaceFolder, ".metadata");
+		return new File(getWorkspaceFolder(), VERSION_FILE_NAME);
 	}
 
 	/**
@@ -228,12 +258,7 @@ public class DefaultWorkspace implements Workspace {
 
 		File oldWorkspace = workspaceFolder;
 		workspaceFolder = new File(folder);
-		createMetadataDir();
-
-		File file = getCurrentWorkspaceFile();
-		PrintWriter pw = new PrintWriter(file);
-		pw.println(folder);
-		pw.close();
+		createWorkspaceFolder();
 
 		for (WorkspaceListener listener : listeners) {
 			try {
@@ -245,9 +270,10 @@ public class DefaultWorkspace implements Workspace {
 		}
 	}
 
-	protected void createMetadataDir() throws IOException {
-		if (!getMetadataFolder().exists()) {
-			if (!getMetadataFolder().mkdirs()) {
+	protected void createWorkspaceFolder() throws IOException {
+		File workspaceFolderFile = new File(getWorkspaceFolder());
+		if (!workspaceFolderFile.exists()) {
+			if (!workspaceFolderFile.mkdirs()) {
 				throw new IOException("Cannot create metadata directory");
 			} else {
 				writeVersionFile();
@@ -288,6 +314,26 @@ public class DefaultWorkspace implements Workspace {
 		pw.close();
 	}
 
+	public void writeDefaultWorkspaceFile(String workspaceFile)
+			throws IOException {
+
+		if (!getDefaultWorkspaceFile().exists()) {
+			try {
+				PrintWriter pw = new PrintWriter(getDefaultWorkspaceFile());
+				pw.println(workspaceFile);
+				pw.close();
+			} catch (FileNotFoundException e) {
+				throw new RuntimeException("Cannot initialize system", e);
+			}
+		}
+	}
+
+	public void freeDefaultWorkspace() throws IOException {
+		if (getDefaultWorkspaceFile().exists()) {
+			getDefaultWorkspaceFile().delete();
+		}
+	}
+
 	public PeriodicSaveWorkspace getTimer() {
 		return timer;
 	}
@@ -297,6 +343,17 @@ public class DefaultWorkspace implements Workspace {
 	}
 
 	public String getWorkspaceFolder() {
+		if(workspaceFolder!=null){
 		return workspaceFolder.getAbsolutePath();
+		}
+		return null;
+	}
+
+	public void setDefaultWorkspace(boolean defaultWorkspace) {
+		this.defaultWorkspace = defaultWorkspace;
+	}
+
+	public boolean isDefaultWorkspace() {
+		return defaultWorkspace;
 	}
 }

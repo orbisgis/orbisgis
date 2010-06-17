@@ -30,8 +30,10 @@ public class GdmsWriter {
 	private Envelope env = null;
 	private int currentRow = 0;
 	private int rowIndexesDirPos;
+	private File file;
 
 	public GdmsWriter(File file) throws IOException {
+		this.file = file;
 		raf = new RandomAccessFile(file, "rw");
 		bm = new ReadWriteBufferManager(raf.getChannel());
 	}
@@ -186,6 +188,7 @@ public class GdmsWriter {
 			Type type = metadata.getFieldType(i);
 			bm.putInt(type.getTypeCode());
 			Constraint[] constrs = type.getConstraints();
+
 			bm.putInt(constrs.length);
 			for (Constraint constraint : constrs) {
 				bm.putInt(constraint.getConstraintCode());
