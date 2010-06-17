@@ -135,8 +135,18 @@ public class SQLTest extends SourceTest {
 				new File(internalData + "landcover2000.shp"));
 		dsf.executeSQL("select register('" + backupDir
 				+ "/addColumn.shp','temp')");
+		dsf.executeSQL("create table temp as select * from landcover2000;");
 		dsf.executeSQL("alter table temp drop column type;");
 
+	}
+	
+	public void testDeleteTable() throws Exception {
+		dsf.getSourceManager().register("landcover2000",
+				new File(internalData + "landcover2000.shp"));
+		dsf.getSourceManager().register("temp",
+				new File(backupDir + "/delete.shp"));
+		dsf.executeSQL("create table temp as select * from landcover2000;");
+		dsf.executeSQL("delete from temp where gid = 1;");
 	}
 
 	public void testDropTablePurge() throws Exception {
