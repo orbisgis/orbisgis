@@ -9,8 +9,8 @@ import javax.xml.bind.JAXBElement;
 import org.orbisgis.core.renderer.persistance.se.MarkGraphicType;
 import org.orbisgis.core.renderer.persistance.se.ObjectFactory;
 import org.gdms.data.feature.Feature;
+import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.se.common.Halo;
-import org.orbisgis.core.renderer.se.common.MapEnv;
 import org.orbisgis.core.renderer.se.common.OnlineResource;
 import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.fill.Fill;
@@ -30,8 +30,8 @@ public final class MarkGraphic extends Graphic {
 
     public void setToSquare10(){
         try {
-            this.setSource(WellKnownName.SQUARE);
-            this.setViewBox(new ViewBox(new RealLiteral(10.0)));
+            this.setSource(WellKnownName.CIRCLE);
+            this.setViewBox(new ViewBox(new RealLiteral(3.0)));
             this.setFill(new SolidFill());
             this.setStroke(new PenStroke());
         } catch (IOException ex) {
@@ -119,7 +119,7 @@ public final class MarkGraphic extends Graphic {
     public void setViewBox(ViewBox viewBox) {
         this.viewBox = viewBox;
         viewBox.setParent(this);
-        updateGraphic();
+        //updateGraphic();
     }
 
     public MarkGraphicSource getSource() {
@@ -129,7 +129,7 @@ public final class MarkGraphic extends Graphic {
     @Override
     public void setUom(Uom uom) {
         this.uom = uom;
-        updateGraphic();
+        //updateGraphic();
     }
 
     public RealParameter getpOffset() {
@@ -147,8 +147,7 @@ public final class MarkGraphic extends Graphic {
     @Override
     public void updateGraphic() {
         try {
-            shape = source.getShape(viewBox, null);
-
+            shape = source.getShape(viewBox, null, null, null);
         } catch (Exception e) {
             shape = null;
         }
@@ -156,7 +155,7 @@ public final class MarkGraphic extends Graphic {
 
     public void setSource(MarkGraphicSource source) throws IOException {
         this.source = source;
-        updateGraphic();
+        //updateGraphic();
     }
 
     /**
@@ -167,38 +166,39 @@ public final class MarkGraphic extends Graphic {
      * @todo implements !
      */
     @Override
-    public RenderableGraphics getRenderableGraphics(Feature feat, boolean selected) throws ParameterException, IOException {
+    public RenderableGraphics getRenderableGraphics(Feature feat, boolean selected, MapTransform mt) throws ParameterException, IOException {
         Shape shp;
 
         // If the shape doesn't depends on feature (i.e. not null), we used the cached one
         if (shape == null) {
-            shp = source.getShape(viewBox, feat);
+            shp = source.getShape(viewBox, feat, mt.getScaleDenominator(), mt.getDpi());
         } else {
             shp = shape;
         }
 
-        // TODO Add a cache for AT
         // Apply AT
         Shape atShp = shp;
 
         if (transform != null) {
-            atShp = this.transform.getGraphicalAffineTransform(feat, false).createTransformedShape(shp);
+            atShp = this.transform.getGraphicalAffineTransform(feat, false, mt).createTransformedShape(shp);
         }
 
         Rectangle2D bounds = atShp.getBounds2D();
 
-        double margin = this.getMargin(feat);
+        double margin = this.getMargin(feat, mt);
+
+		System.out.println("youpi:" + bounds);
 
         RenderableGraphics rg = Graphic.getNewRenderableGraphics(bounds, margin);
 
         if (halo != null) {
-            halo.draw(rg, atShp, feat);
+            halo.draw(rg, atShp, feat, mt);
         }
         if (fill != null) {
-            fill.draw(rg, atShp, feat, selected);
+            fill.draw(rg, atShp, feat, selected, mt);
         }
         if (stroke != null) {
-            stroke.draw(rg, atShp, feat, selected);
+            stroke.draw(rg, atShp, feat, selected, mt);
         }
 
         return rg;
@@ -213,31 +213,31 @@ public final class MarkGraphic extends Graphic {
      * @throws ParameterException
      * @throws IOException
      */
-    private double getMargin(Feature feat) throws ParameterException, IOException {
+    private double getMargin(Feature feat, MapTransform mt) throws ParameterException, IOException {
         double sWidth = 0.0;
         double haloR = 0.0;
 
         if (stroke != null) {
-            sWidth += stroke.getMaxWidth(feat);
+            sWidth += stroke.getMaxWidth(feat, mt);
         }
 
         if (this.halo != null) {
-            haloR = Uom.toPixel(halo.getRadius().getValue(feat), halo.getUom(), MapEnv.getScaleDenominator());
+            haloR = Uom.toPixel(halo.getRadius().getValue(feat), halo.getUom(), mt.getDpi(), mt.getScaleDenominator(), 0.0);
         }
 
         return Math.max(sWidth, haloR);
     }
 
     @Override
-    public double getMaxWidth(Feature feat) throws ParameterException, IOException {
+    public double getMaxWidth(Feature feat, MapTransform mt) throws ParameterException, IOException {
         double delta = 0.0;
 
         if (viewBox != null) {
-            Dimension dim = viewBox.getDimensionInPixel(feat, 1);
+            Dimension dim = viewBox.getDimensionInPixel(feat, 1, mt.getScaleDenominator(), mt.getDpi());
             delta = Math.max(dim.getHeight(), dim.getWidth());
         }
 
-        delta += this.getMargin(feat);
+        delta += this.getMargin(feat, mt);
 
         return delta;
     }

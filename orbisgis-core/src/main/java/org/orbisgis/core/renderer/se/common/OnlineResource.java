@@ -14,6 +14,7 @@ import javax.media.jai.InterpolationBilinear;
 import javax.media.jai.JAI;
 import javax.media.jai.PlanarImage;
 import org.gdms.data.feature.Feature;
+import org.orbisgis.core.map.MapTransform;
 
 import org.orbisgis.core.renderer.persistance.ows._1.OnlineResourceType;
 import org.orbisgis.core.renderer.persistance.se.ExternalGraphicType;
@@ -53,13 +54,16 @@ public class OnlineResource implements ExternalGraphicSource {
     }
 
     @Override
-    public PlanarImage getPlanarImage(ViewBox viewBox, Feature feat)
+    public PlanarImage getPlanarImage(ViewBox viewBox, Feature feat, MapTransform mt)
             throws IOException, ParameterException {
         PlanarImage img = JAI.create("url", url);
 
         System.out.println ("Download external graphic from " + url);
 
-        if (viewBox != null) {
+        if (viewBox != null && mt != null) {
+			if (mt == null){
+				return null;
+			}
             if (feat == null && viewBox != null && viewBox.dependsOnFeature()) {
                 throw new ParameterException("View box depends on feature");
             }
@@ -70,7 +74,7 @@ public class OnlineResource implements ExternalGraphicSource {
             double width = img.getWidth();
             double height = img.getHeight();
 
-            Dimension dim = viewBox.getDimensionInPixel(feat, height / width);
+            Dimension dim = viewBox.getDimensionInPixel(feat, height / width, mt.getScaleDenominator(), mt.getDpi());
 
             double widthDst = dim.getWidth();
             double heightDst = dim.getHeight();

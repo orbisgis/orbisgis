@@ -8,7 +8,6 @@ import java.awt.TexturePaint;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
-import java.awt.image.renderable.RenderContext;
 import java.io.IOException;
 
 import javax.media.jai.RenderableGraphics;
@@ -18,16 +17,15 @@ import org.orbisgis.core.renderer.persistance.se.GraphicFillType;
 import org.orbisgis.core.renderer.persistance.se.ObjectFactory;
 import org.orbisgis.core.renderer.persistance.se.TileGapType;
 
-import org.gdms.data.DataSource;
 import org.gdms.data.feature.Feature;
-import org.orbisgis.core.renderer.se.common.MapEnv;
+import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.graphic.GraphicCollection;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 
-public class GraphicFill extends Fill {
+public final class GraphicFill extends Fill {
 
     public GraphicFill() {
         this.setGapX(null);
@@ -100,8 +98,8 @@ public class GraphicFill extends Fill {
      * see Fill
      */
     @Override
-    public void draw(Graphics2D g2, Shape shp, Feature feat, boolean selected) throws ParameterException, IOException {
-        TexturePaint stipple = this.getStipplePainter(feat, selected);
+    public void draw(Graphics2D g2, Shape shp, Feature feat, boolean selected, MapTransform mt) throws ParameterException, IOException {
+        TexturePaint stipple = this.getStipplePainter(feat, selected, mt);
 
         // TODO handle selected ! 
         if (stipple != null) {
@@ -119,8 +117,8 @@ public class GraphicFill extends Fill {
      * @throws ParameterException
      * @throws IOException
      */
-    public TexturePaint getStipplePainter(Feature feat, boolean selected) throws ParameterException, IOException {
-        RenderableGraphics img = graphic.getGraphic(feat, selected);
+    public TexturePaint getStipplePainter(Feature feat, boolean selected, MapTransform mt) throws ParameterException, IOException {
+        RenderableGraphics img = graphic.getGraphic(feat, selected, mt);
 
         if (img != null) {
             double gX = 0.0;
@@ -140,14 +138,13 @@ public class GraphicFill extends Fill {
                 }
             }
 
-            gX = Uom.toPixel(gX, getUom(), MapEnv.getScaleDenominator());
-            gY = Uom.toPixel(gY, getUom(), MapEnv.getScaleDenominator());
+            gX = Uom.toPixel(gX, getUom(), mt.getDpi(), mt.getScaleDenominator(), 0.0);
+            gY = Uom.toPixel(gY, getUom(), mt.getDpi(), mt.getScaleDenominator(), 0.0);
 
             BufferedImage i = new BufferedImage((int) (img.getWidth() + gX), (int) (img.getHeight() + gY), BufferedImage.TYPE_INT_ARGB);
             Graphics2D tile = i.createGraphics();
 
-            RenderContext ctc = MapEnv.getCurrentRenderContext();
-            tile.drawRenderedImage(img.createRendering(ctc), AffineTransform.getTranslateInstance(-img.getMinX() + gX / 2.0, -img.getMinY() + gY / 2.0));
+            tile.drawRenderedImage(img.createRendering(mt.getCurrentRenderContext()), AffineTransform.getTranslateInstance(-img.getMinX() + gX / 2.0, -img.getMinY() + gY / 2.0));
 
             return new TexturePaint(i, new Rectangle2D.Double(0, 0, i.getWidth(), i.getHeight()));
         } else {

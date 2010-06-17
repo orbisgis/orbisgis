@@ -56,7 +56,11 @@ import com.vividsolutions.jts.awt.ShapeWriter;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
-import org.orbisgis.core.renderer.se.common.MapEnv;
+import java.awt.RenderingHints;
+import java.awt.image.ColorModel;
+import java.awt.image.renderable.RenderContext;
+import javax.media.jai.ImageLayout;
+import javax.media.jai.JAI;
 
 public class MapTransform implements PointTransformation {
 
@@ -72,6 +76,43 @@ public class MapTransform implements PointTransformation {
 
 	private ShapeWriter converter;
 
+	private RenderContext currentRenderContext = screenContext;
+
+	private static RenderContext draftContext;
+	private static RenderContext screenContext;
+
+	private double dpi = Toolkit.getDefaultToolkit().getScreenResolution();
+
+    static {
+        ImageLayout layout = new ImageLayout();
+        layout.setColorModel(ColorModel.getRGBdefault());
+
+        RenderingHints screenHints = new RenderingHints(JAI.KEY_IMAGE_LAYOUT, layout);
+        screenHints.put(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        screenHints.put(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
+        screenHints.put(RenderingHints.KEY_ALPHA_INTERPOLATION, RenderingHints.VALUE_ALPHA_INTERPOLATION_QUALITY);
+        screenHints.put(RenderingHints.KEY_COLOR_RENDERING, RenderingHints.VALUE_COLOR_RENDER_QUALITY);
+        screenHints.put(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
+        screenHints.put(RenderingHints.KEY_DITHERING, RenderingHints.VALUE_DITHER_ENABLE);
+        screenHints.put(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_NORMALIZE);
+
+        screenContext = new RenderContext(AffineTransform.getTranslateInstance(0.0, 0.0), screenHints);
+
+        RenderingHints draftHints = new RenderingHints(JAI.KEY_IMAGE_LAYOUT, layout);
+
+        draftHints.put(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
+        draftHints.put(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_SPEED);
+        draftHints.put(RenderingHints.KEY_ALPHA_INTERPOLATION, RenderingHints.VALUE_ALPHA_INTERPOLATION_SPEED);
+        draftHints.put(RenderingHints.KEY_COLOR_RENDERING, RenderingHints.VALUE_COLOR_RENDER_SPEED);
+        draftHints.put(RenderingHints.KEY_DITHERING, RenderingHints.VALUE_DITHER_DISABLE);
+        draftHints.put(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_NORMALIZE);
+        draftHints.put(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR);
+        draftHints.put(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_OFF);
+
+
+        draftContext = new RenderContext(AffineTransform.getTranslateInstance(0.0, 0.0), draftHints);
+	}
+
 	/**
 	 * Sets the painted image
 	 * 
@@ -82,6 +123,22 @@ public class MapTransform implements PointTransformation {
 		calculateAffineTransform();
 	}
 
+	public void switchToDraft(){
+		this.currentRenderContext = MapTransform.draftContext;
+	}
+
+	public void switchToScreen(){
+		this.currentRenderContext = MapTransform.screenContext;
+	}
+
+	public RenderContext getCurrentRenderContext(){
+		return this.currentRenderContext;
+	}
+
+	public RenderingHints getRenderingHints(){
+		return this.currentRenderContext.getRenderingHints();
+	}
+
 	/**
 	 * Gets the painted image
 	 * 
@@ -90,6 +147,16 @@ public class MapTransform implements PointTransformation {
 	public BufferedImage getImage() {
 		return image;
 	}
+
+	public double getDpi() {
+		return dpi;
+	}
+
+	public void setDpi(double dpi) {
+		this.dpi = dpi;
+	}
+
+
 
 	/**
 	 * Gets the extent used to calculate the transformation. This extent is the
@@ -348,6 +415,12 @@ public class MapTransform implements PointTransformation {
 			ls = getShapeWriter().toShape(geom);
 		}
 		return ls;
+	}
+
+	public void redraw() {
+		for (TransformListener listener : listeners) {
+			listener.extentChanged(this.adjustedExtent, this);
+		}
 	}
 
 }

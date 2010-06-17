@@ -7,9 +7,9 @@ package org.orbisgis.core.renderer.se.transform;
 import java.awt.geom.AffineTransform;
 import javax.xml.bind.JAXBElement;
 import org.gdms.data.feature.Feature;
+import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.persistance.se.ObjectFactory;
 import org.orbisgis.core.renderer.persistance.se.TranslateType;
-import org.orbisgis.core.renderer.se.common.MapEnv;
 import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
@@ -41,15 +41,15 @@ public class Translate implements Transformation {
     }
 
     @Override
-    public AffineTransform getAffineTransform(Feature feat, Uom uom) throws ParameterException {
+    public AffineTransform getAffineTransform(Feature feat, Uom uom, MapTransform mt) throws ParameterException {
         double tx = 0.0;
         if (x != null) {
-            tx = Uom.toPixel(x.getValue(feat), uom, MapEnv.getScaleDenominator());
+            tx = Uom.toPixel(x.getValue(feat), uom, mt.getDpi(), mt.getScaleDenominator(), 0.0);
         }
 
         double ty = 0.0;
         if (y != null) {
-            ty = Uom.toPixel(y.getValue(feat), uom, MapEnv.getScaleDenominator());
+            ty = Uom.toPixel(y.getValue(feat), uom, mt.getDpi(), mt.getScaleDenominator(), 0.0);
         }
 
         return AffineTransform.getTranslateInstance(tx, ty);

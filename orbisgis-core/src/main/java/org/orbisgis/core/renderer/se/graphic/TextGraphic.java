@@ -6,11 +6,10 @@ import java.awt.geom.Rectangle2D;
 import java.io.IOException;
 import javax.media.jai.RenderableGraphics;
 import javax.xml.bind.JAXBElement;
-import org.gdms.data.DataSource;
 import org.gdms.data.feature.Feature;
+import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.persistance.se.ObjectFactory;
 import org.orbisgis.core.renderer.persistance.se.TextGraphicType;
-import org.orbisgis.core.renderer.se.common.MapEnv;
 import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.label.StyledLabel;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
@@ -53,20 +52,20 @@ public class TextGraphic extends Graphic {
      * @todo implements !
      */
     @Override
-    public RenderableGraphics getRenderableGraphics(Feature feat, boolean selected) throws ParameterException, IOException {
+    public RenderableGraphics getRenderableGraphics(Feature feat, boolean selected, MapTransform mt) throws ParameterException, IOException {
 
-        RenderableGraphics label = styledLabel.getImage(feat, selected);
+        RenderableGraphics label = styledLabel.getImage(feat, selected, mt);
 
         Rectangle2D bounds = new Rectangle2D.Double(label.getMinX(), label.getMinY(), label.getWidth(), label.getHeight());
 
 
         if (transform != null) {
-            AffineTransform at = this.transform.getGraphicalAffineTransform(feat, false);
+            AffineTransform at = this.transform.getGraphicalAffineTransform(feat, false, mt);
 
             Shape atShp = at.createTransformedShape(bounds);
 
             RenderableGraphics rg = Graphic.getNewRenderableGraphics(atShp.getBounds2D(), 0);
-            rg.drawRenderedImage(label.createRendering(MapEnv.getCurrentRenderContext()), at);
+            rg.drawRenderedImage(label.createRendering(mt.getCurrentRenderContext()), at);
             return rg;
         } else {
             return label;
@@ -74,7 +73,7 @@ public class TextGraphic extends Graphic {
     }
 
     @Override
-    public double getMaxWidth(Feature feat) throws ParameterException, IOException {
+    public double getMaxWidth(Feature feat, MapTransform mt) throws ParameterException, IOException {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 

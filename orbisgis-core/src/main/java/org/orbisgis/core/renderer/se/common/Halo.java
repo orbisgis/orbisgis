@@ -5,8 +5,8 @@ import java.awt.Shape;
 
 import java.io.IOException;
 
-import org.gdms.data.DataSource;
 import org.gdms.data.feature.Feature;
+import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.persistance.se.HaloType;
 
 import org.orbisgis.core.renderer.se.SymbolizerNode;
@@ -17,7 +17,7 @@ import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
 import org.orbisgis.core.renderer.se.parameter.real.RealLiteral;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 
-public class Halo implements SymbolizerNode {
+public final class Halo implements SymbolizerNode {
 
     public Halo() {
         setFill(new SolidFill());
@@ -83,16 +83,16 @@ public class Halo implements SymbolizerNode {
         parent = node;
     }
 
-    public void draw(Graphics2D g2, Shape shp, Feature feat) throws ParameterException, IOException {
+    public void draw(Graphics2D g2, Shape shp, Feature feat, MapTransform mt) throws ParameterException, IOException {
         if (radius != null && fill != null) {
             double r = radius.getValue(feat);
 
             if (r > 0.0) {
-                r = Uom.toPixel(r, getUom(), MapEnv.getScaleDenominator()); // TODO  DPI & Scale
+                r = Uom.toPixel(r, getUom(), mt.getDpi(), mt.getScaleDenominator(), 0.0); // TODO  DPI & Scale
 
                 Shape haloShp = shp; // TODO poffset !!
 
-                fill.draw(g2, haloShp, feat, false);
+                fill.draw(g2, haloShp, feat, false, mt);
 
                 throw new UnsupportedOperationException("Not supported yet. Need PerpendiularOffset");
             }

@@ -11,6 +11,7 @@ import org.orbisgis.core.renderer.persistance.se.RasterSymbolizerType;
 import org.orbisgis.core.renderer.persistance.se.SymbolizerType;
 import org.gdms.data.feature.Feature;
 import org.gdms.driver.DriverException;
+import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.persistance.se.TextSymbolizerType;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.geometry.GeometryParameter;
@@ -137,7 +138,7 @@ public abstract class Symbolizer implements SymbolizerNode, Comparable{
         }
     }
 
-     @Override
+    @Override
     public int compareTo(Object o) {
          Symbolizer s = (Symbolizer)o;
 
@@ -161,7 +162,7 @@ public abstract class Symbolizer implements SymbolizerNode, Comparable{
         return (Rule)pIt;
     }
 
-    public abstract void draw(Graphics2D g2, Feature feat, boolean selected) throws ParameterException, IOException, DriverException;
+    public abstract void draw(Graphics2D g2, Feature feat, boolean selected, MapTransform mt) throws ParameterException, IOException, DriverException;
 
     public abstract JAXBElement<? extends SymbolizerType> getJAXBElement();
     protected String name;

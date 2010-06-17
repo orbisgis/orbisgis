@@ -20,7 +20,6 @@ import org.gdms.data.feature.Feature;
 import org.gdms.driver.DriverException;
 import org.orbisgis.core.map.MapTransform;
 
-import org.orbisgis.core.renderer.se.common.MapEnv;
 import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.transform.Transform;
@@ -44,7 +43,7 @@ public abstract class VectorSymbolizer extends Symbolizer {
     }
 
 	@Override
-    public abstract void draw(Graphics2D g2, Feature feat, boolean selected)
+    public abstract void draw(Graphics2D g2, Feature feat, boolean selected, MapTransform mt)
 		throws ParameterException, IOException, DriverException;
 
     /**
@@ -57,15 +56,14 @@ public abstract class VectorSymbolizer extends Symbolizer {
      * @throws IOException
      * @throws DriverException
      */
-    public Shape getShape(Feature feat) throws ParameterException, IOException, DriverException {
+    public Shape getShape(Feature feat, MapTransform mt) throws ParameterException, IOException, DriverException {
+
         Geometry geom = this.getTheGeom(feat); // geom + function
 
-        MapTransform mt = MapEnv.getMapTransform();
-        
         Shape shape = mt.getShape(geom, true);
 
         if (transform != null) {
-            shape = transform.getGraphicalAffineTransform(feat, true).createTransformedShape(shape);
+            shape = transform.getGraphicalAffineTransform(feat, true, mt).createTransformedShape(shape);
         }
 		
 		Rectangle2D bounds2D = shape.getBounds2D();
@@ -78,14 +76,13 @@ public abstract class VectorSymbolizer extends Symbolizer {
         return shape;
     }
 
-    public Point2D getPointShape(Feature feat) throws ParameterException, IOException, DriverException {
+    public Point2D getPointShape(Feature feat, MapTransform mt) throws ParameterException, IOException, DriverException {
         Geometry geom = this.getTheGeom(feat); // geom + function
 
-        MapTransform mt = MapEnv.getMapTransform();
 
         AffineTransform at = mt.getAffineTransform();
         if (transform != null) {
-            at.preConcatenate(transform.getGraphicalAffineTransform(feat, true));
+            at.preConcatenate(transform.getGraphicalAffineTransform(feat, true, mt));
         }
 
         Point point = geom.getInteriorPoint();
@@ -95,14 +92,12 @@ public abstract class VectorSymbolizer extends Symbolizer {
     }
 
 
-    public Point2D getFirstPointShape(Feature feat) throws ParameterException, IOException, DriverException {
+    public Point2D getFirstPointShape(Feature feat, MapTransform mt) throws ParameterException, IOException, DriverException {
         Geometry geom = this.getTheGeom(feat); // geom + function
-
-        MapTransform mt = MapEnv.getMapTransform();
 
         AffineTransform at = mt.getAffineTransform();
         if (transform != null) {
-            at.preConcatenate(transform.getGraphicalAffineTransform(feat, true));
+            at.preConcatenate(transform.getGraphicalAffineTransform(feat, true, mt));
         }
 
 		Coordinate[] coordinates = geom.getCoordinates();
@@ -120,7 +115,7 @@ public abstract class VectorSymbolizer extends Symbolizer {
     }
 
     public void setUom(Uom uom) {
-        if (uom == null) {
+        if (uom != null) {
             this.uom = uom;
         } else {
             this.uom = Uom.MM;

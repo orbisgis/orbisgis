@@ -10,9 +10,11 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import javax.xml.bind.JAXBElement;
-import org.gdms.data.SpatialDataSourceDecorator;
+
 import org.gdms.data.feature.Feature;
 import org.gdms.driver.DriverException;
+import org.orbisgis.core.map.MapTransform;
+
 import org.orbisgis.core.renderer.persistance.se.CompositeSymbolizerType;
 import org.orbisgis.core.renderer.persistance.se.ObjectFactory;
 import org.orbisgis.core.renderer.persistance.se.SymbolizerType;
@@ -25,7 +27,7 @@ import org.orbisgis.core.renderer.se.parameter.ParameterException;
  *
  * @author maxence
  */
-public class CompositeSymbolizer implements SymbolizerNode {
+public final class CompositeSymbolizer implements SymbolizerNode {
 
     public JAXBElement<? extends SymbolizerType> getJAXBElement(){
         if (symbolizers.size() == 1){
@@ -73,10 +75,10 @@ public class CompositeSymbolizer implements SymbolizerNode {
     }
 
     
-    public void draw(Graphics2D g2, Feature feat, boolean selected) throws ParameterException, IOException, DriverException{
+    public void draw(Graphics2D g2, Feature feat, boolean selected, MapTransform mt) throws ParameterException, IOException, DriverException{
         for (Symbolizer s : this.symbolizers){
             if (s instanceof VectorSymbolizer){
-                ((VectorSymbolizer)s).draw(g2, feat, selected);
+                ((VectorSymbolizer)s).draw(g2, feat, selected, mt);
             }
         }
     }

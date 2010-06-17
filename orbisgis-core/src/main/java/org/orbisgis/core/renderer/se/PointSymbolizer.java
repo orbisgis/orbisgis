@@ -12,7 +12,8 @@ import org.orbisgis.core.renderer.persistance.se.ObjectFactory;
 import org.orbisgis.core.renderer.persistance.se.PointSymbolizerType;
 
 import org.gdms.driver.DriverException;
-import org.orbisgis.core.renderer.se.common.MapEnv;
+import org.orbisgis.core.Services;
+import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.graphic.GraphicCollection;
 import org.orbisgis.core.renderer.se.graphic.MarkGraphic;
@@ -71,27 +72,32 @@ public class PointSymbolizer extends VectorSymbolizer {
 	}
 
 	@Override
-	public void draw(Graphics2D g2, Feature feat, boolean selected) throws ParameterException, IOException, DriverException {
+	public void draw(Graphics2D g2, Feature feat, boolean selected, MapTransform mt) throws IOException, DriverException {
 		if (graphic != null && graphic.getNumGraphics() > 0) {
-			Point2D pt = this.getPointShape(feat);
-			
-			// This is to emulate ExtractFirstPoint geom function !!!
-			//Point2D pt = this.getFirstPointShape(sds, fid);
 
-			RenderableGraphics rg = graphic.getGraphic(feat, selected);
-			//RenderedImage cache = graphic.getCache(sds, fid, selected);
+			try {
+				Point2D pt = this.getPointShape(feat, mt);
+				// This is to emulate ExtractFirstPoint geom function !!!
+				//Point2D pt = this.getFirstPointShape(sds, fid);
+				RenderableGraphics rg = graphic.getGraphic(feat, selected, mt);
 
-			//if (cache != null) {
-			if (rg != null) {
-				double x = 0, y = 0;
+				//RenderedImage cache = graphic.getCache(sds, fid, selected);
+				//if (cache != null) {
 
-				x = pt.getX();
-				y = pt.getY();
+				if (rg != null) {
+					double x = 0, y = 0;
 
-				// Draw the graphic right over the point !
-				g2.drawRenderedImage(rg.createRendering(MapEnv.getCurrentRenderContext()), AffineTransform.getTranslateInstance(x, y));
-				//g2.drawRenderedImage(cache, AffineTransform.getTranslateInstance(x, y));
+					x = pt.getX();
+					y = pt.getY();
+
+					// Draw the graphic right over the point !
+					g2.drawRenderedImage(rg.createRendering(mt.getCurrentRenderContext()), AffineTransform.getTranslateInstance(x, y));
+					//g2.drawRenderedImage(cache, AffineTransform.getTranslateInstance(x, y));
+				}
+			} catch (ParameterException ex) {
+				Services.getErrorManager().error("Could not render feature ", ex);
 			}
+
 		}
 	}
 

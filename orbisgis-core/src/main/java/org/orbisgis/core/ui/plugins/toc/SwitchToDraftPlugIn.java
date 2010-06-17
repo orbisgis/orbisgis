@@ -2,8 +2,7 @@ package org.orbisgis.core.ui.plugins.toc;
 
 
 import org.orbisgis.core.images.IconNames;
-
-import org.orbisgis.core.renderer.se.common.MapEnv;
+import org.orbisgis.core.map.MapTransform;
 
 import org.orbisgis.core.ui.pluginSystem.AbstractPlugIn;
 import org.orbisgis.core.ui.pluginSystem.PlugInContext;
@@ -18,14 +17,17 @@ public class SwitchToDraftPlugIn extends AbstractPlugIn {
 
 	@Override
 	public boolean execute(PlugInContext context) {
+		MapTransform mt = context.getMapEditor().getMapTransform();
+
 		if (draft) {
-			MapEnv.switchToDefault();
-			System.out.println("DefaultRenderingMode");
+			mt.switchToScreen();
 		} else {
-			MapEnv.switchToDraft();
-			System.out.println("Draft RenderingMode");
+			mt.switchToDraft();
 		}
 		draft = !draft;
+
+		mt.redraw();
+
 		return true;
 	}
 

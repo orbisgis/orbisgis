@@ -36,12 +36,11 @@
  */
 package org.orbisgis.core.layerModel;
 
-import java.awt.image.BufferedImage;
-
 import org.orbisgis.progress.IProgressMonitor;
 
 import com.vividsolutions.jts.geom.Envelope;
 import java.util.ArrayList;
+import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.se.Rule;
 
 /**
@@ -96,13 +95,13 @@ public interface MapContext {
 	public void addMapContextListener(MapContextListener listener);
 
 	/**
-	 * Get the mapcontext boundingbox (visible layers)
+	 * Get the mapcontext bounding-box (visible layers)
 	 * @return
 	 */
 	public Envelope getBoundingBox();
 	
 	/**
-	 * Set the mapcontext boundingbox (visible layers)
+	 * Set the mapcontext bounding-box (visible layers)
 	 * @param extent
 	 */
 	void setBoundingBox(Envelope extent);
@@ -189,15 +188,14 @@ public interface MapContext {
 	 * 
 	 * @param inProcessImage
 	 *            Image where the drawing will take place
-	 * @param extent
-	 *            Extent of the data to take into account. It must have the same
-	 *            proportions than the image
+	 * @param mt
+	 *            Contain the extent and the image to draw on
 	 * @param pm
-	 *            Object to report process and check the cancelation condition
+	 *            Object to report process and check the cancelled condition
 	 * @throws IllegalStateException
 	 *             If the map is closed
 	 */
-	void draw(BufferedImage inProcessImage, Envelope extent, IProgressMonitor pm)
+	void draw(MapTransform mt, IProgressMonitor pm)
 			throws IllegalStateException;
 
 	/**

@@ -6,6 +6,7 @@ import java.io.IOException;
 import javax.xml.bind.JAXBElement;
 import org.orbisgis.core.renderer.persistance.se.StrokeType;
 import org.gdms.data.feature.Feature;
+import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.persistance.se.GraphicStrokeType;
 import org.orbisgis.core.renderer.persistance.se.PenStrokeType;
 import org.orbisgis.core.renderer.se.SymbolizerNode;
@@ -84,7 +85,7 @@ public abstract class Stroke implements SymbolizerNode {
      * @param fid
      * @return
      */
-    public abstract double getMaxWidth(Feature feat) throws ParameterException, IOException;
+    public abstract double getMaxWidth(Feature feat, MapTransform mt) throws ParameterException, IOException;
 
     //public abstract void getStroke(DataSource ds, int fid);
     /**
@@ -97,7 +98,7 @@ public abstract class Stroke implements SymbolizerNode {
      * @throws ParameterException
      * @throws IOException
      */
-    public abstract void draw(Graphics2D g2, Shape shp, Feature feat, boolean selected) throws ParameterException, IOException;
+    public abstract void draw(Graphics2D g2, Shape shp, Feature feat, boolean selected, MapTransform mt) throws ParameterException, IOException;
 
     /**
      * Take into account preGap and postGap

@@ -10,7 +10,6 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Container;
 
-import java.awt.image.renderable.RenderContext;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -20,9 +19,9 @@ import javax.swing.JFrame;
 import javax.swing.JScrollPane;
 
 import junit.framework.TestCase;
+import org.orbisgis.core.map.MapTransform;
 
 import org.orbisgis.core.renderer.se.common.OnlineResource;
-import org.orbisgis.core.renderer.se.common.MapEnv;
 import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.fill.GraphicFill;
 import org.orbisgis.core.renderer.se.fill.SolidFill;
@@ -35,7 +34,6 @@ import org.orbisgis.core.renderer.se.parameter.string.StringLiteral;
 import org.orbisgis.core.renderer.se.stroke.PenStroke;
 
 import org.orbisgis.core.renderer.se.transform.Rotate;
-import org.orbisgis.core.renderer.se.transform.Scale;
 import org.orbisgis.core.renderer.se.transform.Transform;
 import org.orbisgis.core.renderer.se.transform.Translate;
 
@@ -248,15 +246,14 @@ public class GraphicCollectionTest extends TestCase {
         System.out.println(dj.getColorModel());
 
         RenderableGraphics rg;
-        rg = collec.getGraphic(null, false);
-
-        RenderContext ctc = MapEnv.getCurrentRenderContext();
+		MapTransform mt = new MapTransform();
+        rg = collec.getGraphic(null, false, mt);
 
         rg.setPaint(Color.BLACK);
         rg.drawLine((int)rg.getMinX(), 0, (int)(rg.getMinX() + rg.getWidth()), 0);
         rg.drawLine(0, (int)rg.getMinY(), 0, (int)(rg.getMinY() + rg.getHeight()));
 
-        dj.set(rg.createRendering(ctc), 200, 200);
+        dj.set(rg.createRendering(mt.getCurrentRenderContext()), 200, 200);
 
         // Add to the JFrame’s ContentPane an instance of JScrollPane
         // containing the DisplayJAI instance.

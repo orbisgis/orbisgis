@@ -90,7 +90,6 @@ import java.util.HashMap;
 import org.orbisgis.core.renderer.se.FeatureTypeStyle;
 import org.orbisgis.core.renderer.se.Rule;
 import org.orbisgis.core.renderer.se.Symbolizer;
-import org.orbisgis.core.renderer.se.common.MapEnv;
 
 public class Renderer {
 
@@ -168,7 +167,7 @@ public class Renderer {
 	 *            Progress monitor to report the status of the drawing
 	 * @return the number of rendered objects
 	 */
-	public int drawVector(Graphics2D g2, int width, int height,
+	public int drawVector(Graphics2D g2,
 			MapTransform mt, ILayer layer, IProgressMonitor pm) {
 
 		int layerCount = 0;
@@ -205,8 +204,8 @@ public class Renderer {
 			 * Hash sets contain features in current extent
 			 * elseFid will be used for feature which doesn't match any rule
 			 */
-			for (int i=0;i<featureInExtent.getRowCount();i++){
-				Integer index = featureInExtent.getFieldValue(i, 0).getAsInt() -1;
+			for (int i = 0; i < featureInExtent.getRowCount(); i++) {
+				Integer index = featureInExtent.getFieldValue(i, 0).getAsInt() - 1;
 				allFid.add(index);
 				elseFid.add(index);
 			}
@@ -216,24 +215,19 @@ public class Renderer {
 			 */
 			HashMap<Rule, HashSet<Integer>> rulesFid = new HashMap<Rule, HashSet<Integer>>();
 			for (Rule r : rList) {
-				
-				/*if (layer.getName().equals("g4districts98_region")){
-					System.out.println("Toggle where clause...");
-					r.setWhere("WHERE AK = 'VD'");
-				}*/
 
-				if (layer.getName().equals("cantons")){
-					System.out.println("Toggle where clause: PTOT99 > 10000");
-					r.setWhere("WHERE  PTOT99 > 10000");
-				}
+				/*if (layer.getName().equals("g4districts98_region")){
+				System.out.println("Toggle where clause...");
+				r.setWhere("WHERE AK = 'VD'");
+				}*/
 
 				SpatialDataSourceDecorator filteredDs = r.getFilteredDataSource(featureInExtent);
 
 				filteredDs.open();
 				HashSet<Integer> fids = new HashSet<Integer>();
 
-				for (int i=0;i<filteredDs.getRowCount();i++){
-					Integer index = filteredDs.getFieldValue(i, 0).getAsInt() -1;
+				for (int i = 0; i < filteredDs.getRowCount(); i++) {
+					Integer index = filteredDs.getFieldValue(i, 0).getAsInt() - 1;
 					fids.add(index);
 					/* Every feature that match a rule is removed from elsefid set*/
 					elseFid.remove(index);
@@ -288,7 +282,7 @@ public class Renderer {
 					}
 
 					fid = featIt.next();
-					s.draw(g2, sds.getFeature(fid), selected.contains(fid));
+					s.draw(g2, sds.getFeature(fid), selected.contains(fid), mt);
 					pm.progressTo((int) (100 * ++layerCount / total));
 				}
 				long tf2 = System.currentTimeMillis();
@@ -318,6 +312,16 @@ public class Renderer {
 		return layerCount;
 	}
 
+
+	public void draw(Graphics2D g2dMap, int width, int height,
+			Envelope extent, ILayer layer, IProgressMonitor pm) {
+		MapTransform mt = new MapTransform();
+		mt.resizeImage(width, height);
+		mt.setExtent(extent);
+
+		this.draw(mt, g2dMap, width, height, layer, pm);
+	}
+
 	/**
 	 * Draws the content of the layer in the specified graphics
 	 *
@@ -334,22 +338,40 @@ public class Renderer {
 	 * @param pm
 	 *            Progress monitor to report the status of the drawing
 	 */
-	public void draw(Graphics2D g2, int width, int height, Envelope extent,
+	public void draw(MapTransform mt,
 			ILayer layer, IProgressMonitor pm) {
 
-		//MapEnv.switchToDraft();
+		BufferedImage image = mt.getImage();
+		Graphics2D g2 = image.createGraphics();
 
-		g2.setRenderingHints(MapEnv.getCurrentRenderContext().getRenderingHints());
+		this.draw(mt, g2, image.getWidth(), image.getHeight(), layer, pm);
+	}
+
+
+	/**
+	 * Draws the content of the layer in the specified graphics
+	 *
+	 * @param g2
+	 *            Object to draw to
+	 * @param width
+	 *            Width of the generated image
+	 * @param height
+	 *            Height of the generated image
+	 * @param extent
+	 *            Extent of the data to draw
+	 * @param layer
+	 *            Source of information
+	 * @param pm
+	 *            Progress monitor to report the status of the drawing
+	 */
+	public void draw(MapTransform mt, Graphics2D g2, int width, int height,
+			ILayer layer, IProgressMonitor pm) {
+
+		g2.setRenderingHints(mt.getRenderingHints());
+
+		Envelope extent = mt.getAdjustedExtent();
 
 		int count = 0;
-
-		MapTransform mt = new MapTransform();
-
-		MapEnv.setMapTransform(mt);
-
-		mt.resizeImage(width, height);
-
-		mt.setExtent(extent);
 
 		ILayer[] layers;
 
@@ -362,8 +384,7 @@ public class Renderer {
 		}
 
 		long total1 = System.currentTimeMillis();
-		DefaultRendererPermission permission = new DefaultRendererPermission(
-				extent);
+
 		for (int i = layers.length - 1; i >= 0; i--) {
 			if (pm.isCancelled()) {
 				break;
@@ -398,7 +419,7 @@ public class Renderer {
 						if (sds != null) {
 							try {
 								if (sds.isDefaultVectorial()) {
-									count += this.drawVector(g2, width, height, mt, layer, pm);
+									count += this.drawVector(g2, mt, layer, pm);
 								} else if (sds.isDefaultRaster()) {
 									logger.warn("Raster Not Yet supported => Not drawn: " + layer.getName());
 								} else {
@@ -474,8 +495,10 @@ public class Renderer {
 	 */
 	public void draw(BufferedImage img, Envelope extent, ILayer layer,
 			IProgressMonitor pm) {
-		draw(img.createGraphics(), img.getWidth(), img.getHeight(), extent,
-				layer, pm);
+		MapTransform mt = new MapTransform();
+		mt.setExtent(extent);
+		mt.setImage(img);
+		draw(mt, layer, pm);
 	}
 
 	/*

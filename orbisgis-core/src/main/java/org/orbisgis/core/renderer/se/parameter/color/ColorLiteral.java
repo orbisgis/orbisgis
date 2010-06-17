@@ -32,7 +32,7 @@ public class ColorLiteral extends Literal implements ColorParameter{
      * @todo create color from htmlColor
      */
     public ColorLiteral(String htmlColor){
-        this.color = Color.decode(htmlColor);
+        this.color = Color.decode(htmlColor.trim());
     }
 
     public ColorLiteral(JAXBElement<LiteralType> l) {

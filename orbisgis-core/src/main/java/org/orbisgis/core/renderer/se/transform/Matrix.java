@@ -7,10 +7,10 @@ package org.orbisgis.core.renderer.se.transform;
 import java.awt.geom.AffineTransform;
 import javax.xml.bind.JAXBElement;
 import org.gdms.data.feature.Feature;
+import org.orbisgis.core.map.MapTransform;
 
 import org.orbisgis.core.renderer.persistance.se.MatrixType;
 import org.orbisgis.core.renderer.persistance.se.ObjectFactory;
-import org.orbisgis.core.renderer.se.common.MapEnv;
 import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
@@ -176,14 +176,14 @@ public class Matrix implements Transformation {
     }
 
     @Override
-    public AffineTransform getAffineTransform(Feature feat, Uom uom) throws ParameterException {
+    public AffineTransform getAffineTransform(Feature feat, Uom uom, MapTransform mt) throws ParameterException {
         return new AffineTransform( // TODO DPI !
-                Uom.toPixel(a.getValue(feat), uom, MapEnv.getScaleDenominator()),
-                Uom.toPixel(b.getValue(feat), uom, MapEnv.getScaleDenominator()),
-                Uom.toPixel(c.getValue(feat), uom, MapEnv.getScaleDenominator()),
-                Uom.toPixel(d.getValue(feat), uom, MapEnv.getScaleDenominator()),
-                Uom.toPixel(e.getValue(feat), uom, MapEnv.getScaleDenominator()),
-                Uom.toPixel(f.getValue(feat), uom, MapEnv.getScaleDenominator()));
+                Uom.toPixel(a.getValue(feat), uom, mt.getDpi(), mt.getScaleDenominator(), 0.0),
+                Uom.toPixel(b.getValue(feat), uom, mt.getDpi(), mt.getScaleDenominator(), 0.0),
+                Uom.toPixel(c.getValue(feat), uom, mt.getDpi(), mt.getScaleDenominator(), 0.0),
+                Uom.toPixel(d.getValue(feat), uom, mt.getDpi(), mt.getScaleDenominator(), 0.0),
+                Uom.toPixel(e.getValue(feat), uom, mt.getDpi(), mt.getScaleDenominator(), 0.0),
+                Uom.toPixel(f.getValue(feat), uom, mt.getDpi(), mt.getScaleDenominator(), 0.0));
     }
 
     @Override

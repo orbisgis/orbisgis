@@ -8,6 +8,7 @@ import org.orbisgis.core.renderer.persistance.se.ObjectFactory;
 import org.orbisgis.core.renderer.persistance.se.SolidFillType;
 import org.gdms.data.DataSource;
 import org.gdms.data.feature.Feature;
+import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
 import org.orbisgis.core.renderer.se.parameter.color.ColorHelper;
@@ -84,7 +85,7 @@ public class SolidFill extends Fill {
     }
 
     @Override
-    public void draw(Graphics2D g2, Shape shp, Feature feat, boolean selected) throws ParameterException {
+    public void draw(Graphics2D g2, Shape shp, Feature feat, boolean selected, MapTransform mt) throws ParameterException {
         if (color != null) {
             Color c = color.getColor(feat);
             Double op = 100.0;

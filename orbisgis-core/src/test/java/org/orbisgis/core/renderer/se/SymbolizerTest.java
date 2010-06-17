@@ -10,7 +10,6 @@ import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.logging.Level;
@@ -35,7 +34,6 @@ import org.gdms.driver.DriverException;
 import org.gdms.driver.driverManager.DriverLoadException;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.persistance.se.SymbolizerType;
-import org.orbisgis.core.renderer.se.common.MapEnv;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 
 /**
@@ -123,12 +121,10 @@ public class SymbolizerTest extends TestCase {
 
             extent = mt.getAdjustedExtent();
 
-            MapEnv.setMapTransform(mt);
-
             BufferedImage img = mt.getImage();
             Graphics2D g2 = img.createGraphics();
 
-            g2.setRenderingHints(MapEnv.getCurrentRenderContext().getRenderingHints());
+            g2.setRenderingHints(mt.getCurrentRenderContext().getRenderingHints());
 
             DataSourceFactory dsf = new DataSourceFactory();
             DataSource ds;
@@ -148,7 +144,7 @@ public class SymbolizerTest extends TestCase {
 
             long fid;
             for (fid = 0; fid < ds.getRowCount(); fid++) {
-                cs.draw(g2, null, false);
+                cs.draw(g2, null, false, mt);
             }
 
 

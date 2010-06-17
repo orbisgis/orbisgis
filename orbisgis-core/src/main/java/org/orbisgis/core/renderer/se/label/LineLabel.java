@@ -12,6 +12,7 @@ import java.io.IOException;
 import javax.media.jai.RenderableGraphics;
 import javax.xml.bind.JAXBElement;
 import org.gdms.data.feature.Feature;
+import org.orbisgis.core.map.MapTransform;
 
 import org.orbisgis.core.renderer.persistance.se.LineLabelType;
 import org.orbisgis.core.renderer.persistance.se.ObjectFactory;
@@ -33,9 +34,9 @@ public class LineLabel extends Label {
      *
      */
     @Override
-    public void draw(Graphics2D g2, Shape shp, Feature feat, boolean selected) throws ParameterException, IOException {
+    public void draw(Graphics2D g2, Shape shp, Feature feat, boolean selected, MapTransform mt) throws ParameterException, IOException {
         
-        RenderableGraphics l = this.label.getImage(feat, selected);
+        RenderableGraphics l = this.label.getImage(feat, selected, mt);
 
 
         // convert lineShape to a point

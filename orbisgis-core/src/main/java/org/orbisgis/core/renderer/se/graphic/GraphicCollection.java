@@ -3,7 +3,6 @@ package org.orbisgis.core.renderer.se.graphic;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.RenderedImage;
-import java.awt.image.renderable.RenderContext;
 
 import java.io.IOException;
 
@@ -18,8 +17,8 @@ import org.orbisgis.core.renderer.persistance.se.GraphicType;
 import org.orbisgis.core.renderer.persistance.se.ObjectFactory;
 
 import org.gdms.data.feature.Feature;
+import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.se.SymbolizerNode;
-import org.orbisgis.core.renderer.se.common.MapEnv;
 import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 
@@ -67,7 +66,7 @@ public final class GraphicCollection implements SymbolizerNode {
         if (graphic != null) {
             graphics.add(graphic);
             graphic.setParent(this);
-            graphic.updateGraphic();
+            //graphic.updateGraphic();
         }
     }
 
@@ -108,23 +107,27 @@ public final class GraphicCollection implements SymbolizerNode {
      *    - PointSymbolizer
      *
      *
-     * @param ds DataSource of the layer
-     * @param fid id of the feature to draw
+	 * @param feat The feature the graphic is for
+	 * @param selected is the feature selected ?
+	 * @param mt the current map transform
      * @return a specific image for this feature
      * @throws ParameterException
      * @throws IOException
      */
-    public RenderableGraphics getGraphic(Feature feat, boolean selected)
+    public RenderableGraphics getGraphic(Feature feat, boolean selected, MapTransform mt)
             throws ParameterException, IOException {
         /*
          * if the graphics collection doesn't depends on feature and the current
          * feature is not selected, use cached graphic
+		 * Note that the graphic is regenerated every time the scale change (to
+		 * support gm ant gft units)
          */
-        if (!selected && ! this.dependsOnFeature() && this.graphicCache != null){
+        if (!selected
+				&& ! this.dependsOnFeature()
+				&& this.graphicCache != null
+				&& mt.getScaleDenominator() == this.scaleCache){
             return graphicCache;
         }
-
-        RenderContext ctc = MapEnv.getCurrentRenderContext();
 
         ArrayList<RenderableGraphics> images = new ArrayList<RenderableGraphics>();
 
@@ -139,7 +142,7 @@ public final class GraphicCollection implements SymbolizerNode {
         Iterator<Graphic> it = graphics.iterator();
         while (it.hasNext()) {
             Graphic g = it.next();
-            RenderableGraphics img = g.getRenderableGraphics(feat, selected);
+            RenderableGraphics img = g.getRenderableGraphics(feat, selected, mt);
             if (img != null) {
                 float mX = img.getMinX();
                 float w = img.getWidth();
@@ -167,19 +170,16 @@ public final class GraphicCollection implements SymbolizerNode {
         double height = ymax - ymin;
 
         if (width > 0 && height > 0) {
-
-
             RenderableGraphics rg = new RenderableGraphics(new Rectangle2D.Double(xmin, ymin, xmax - xmin, ymax - ymin));
 
             for (RenderableGraphics g : images) {
-                rg.drawRenderedImage(g.createRendering(ctc), new AffineTransform());
+                rg.drawRenderedImage(g.createRendering(mt.getCurrentRenderContext()), new AffineTransform());
             }
 
-            
             if (!selected && ! this.dependsOnFeature()){
+				scaleCache = mt.getScaleDenominator();
                 graphicCache = rg;
             }
-            
             return rg;
         } else {
             return null;
@@ -195,13 +195,13 @@ public final class GraphicCollection implements SymbolizerNode {
         return false;
     }
 
-    public double getMaxWidth(Feature feat) throws ParameterException, IOException {
+    public double getMaxWidth(Feature feat, MapTransform mt) throws ParameterException, IOException {
         double maxWidth = 0.0;
 
         Iterator<Graphic> it = graphics.iterator();
         while (it.hasNext()) {
             Graphic g = it.next();
-            maxWidth = Math.max(g.getMaxWidth(feat), maxWidth);
+            maxWidth = Math.max(g.getMaxWidth(feat, mt), maxWidth);
         }
         return maxWidth;
     }
@@ -225,18 +225,18 @@ public final class GraphicCollection implements SymbolizerNode {
         }
     }
 
-	public RenderedImage getCache(Feature feat, boolean selected)
+	public RenderedImage getCache(Feature feat, boolean selected, MapTransform mt)
             throws ParameterException, IOException {
 
-        if (!selected && ! this.dependsOnFeature() && imageCache != null){
+        /*if (!selected && ! this.dependsOnFeature() && imageCache != null){
 			return imageCache;
-		}
+		}*/
 
 
-		RenderableGraphics rGraphic = this.getGraphic(feat, selected);
+		RenderableGraphics rGraphic = this.getGraphic(feat, selected, mt);
     	RenderedImage rImage = null;
 		if (rGraphic != null){
-			rImage = rGraphic.createRendering(MapEnv.getCurrentRenderContext());
+			rImage = rGraphic.createRendering(mt.getCurrentRenderContext());
 		}
 
 		/*
@@ -249,8 +249,10 @@ public final class GraphicCollection implements SymbolizerNode {
 
 		return rImage;
 	}
+
     RenderableGraphics graphicCache = null;
     RenderedImage imageCache = null;
+	double scaleCache = -1;
 
     private ArrayList<Graphic> graphics;
     private SymbolizerNode parent;

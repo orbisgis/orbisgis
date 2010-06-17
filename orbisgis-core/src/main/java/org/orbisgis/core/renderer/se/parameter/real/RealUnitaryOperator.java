@@ -19,7 +19,7 @@ public final class RealUnitaryOperator implements RealParameter {
         String operator = expr.getName().getLocalPart();
 
         if (operator.equals("Log10")){
-            this.op = RealUnitaryOperatorType.LOG;
+            this.op = RealUnitaryOperatorType.LOG_10;
         }
         else if (operator.equals("Sqrt")){
             this.op = RealUnitaryOperatorType.SQRT;
@@ -27,8 +27,7 @@ public final class RealUnitaryOperator implements RealParameter {
     }
 
     public enum RealUnitaryOperatorType {
-
-        SQRT, LOG;
+        SQRT, LOG_10;
     }
 
     public RealUnitaryOperator() {
@@ -67,7 +66,7 @@ public final class RealUnitaryOperator implements RealParameter {
         switch (op) {
             case SQRT:
                 return Math.sqrt(value);
-            case LOG:
+            case LOG_10:
                 return Math.log10(value); // TODO quelle base ?
             default:
                 return value;
@@ -93,7 +92,7 @@ public final class RealUnitaryOperator implements RealParameter {
         switch (op) {
             case SQRT:
                 return of.createSqrt(o);
-            case LOG:
+            case LOG_10:
                 return of.createLog10(o);
         }
         return null;

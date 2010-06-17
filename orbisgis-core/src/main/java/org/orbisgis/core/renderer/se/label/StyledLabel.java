@@ -10,8 +10,10 @@ import java.awt.geom.Rectangle2D;
 
 import java.io.IOException;
 import javax.media.jai.RenderableGraphics;
-import org.gdms.data.DataSource;
+
 import org.gdms.data.feature.Feature;
+import org.orbisgis.core.map.MapTransform;
+
 import org.orbisgis.core.renderer.persistance.se.FontType;
 import org.orbisgis.core.renderer.persistance.se.StyledLabelType;
 import org.orbisgis.core.renderer.se.SymbolizerNode;
@@ -29,7 +31,7 @@ import org.orbisgis.core.renderer.se.parameter.string.StringLiteral;
 import org.orbisgis.core.renderer.se.parameter.string.StringParameter;
 import org.orbisgis.core.renderer.se.stroke.Stroke;
 
-public class StyledLabel implements SymbolizerNode {
+public final class StyledLabel implements SymbolizerNode {
 
     public StyledLabel() {
         this.labelText = new StringLiteral("Label");
@@ -174,7 +176,7 @@ public class StyledLabel implements SymbolizerNode {
         this.fontWeight = fontWeight;
     }
 
-    public RenderableGraphics getImage(Feature feat, boolean selected) throws ParameterException, IOException {
+    public RenderableGraphics getImage(Feature feat, boolean selected, MapTransform mt) throws ParameterException, IOException {
 
         String text = labelText.getValue(feat);
 
@@ -205,6 +207,7 @@ public class StyledLabel implements SymbolizerNode {
         Font font = new Font(family, st, (int) size);
         FontMetrics metrics = new FontMetrics(font) {
         };
+
         Rectangle2D bounds = metrics.getStringBounds(text, null);
 
         RenderableGraphics rg = new RenderableGraphics(bounds);
@@ -220,17 +223,17 @@ public class StyledLabel implements SymbolizerNode {
         double margin = 0.0;
 
         if (stroke != null) {
-            margin = stroke.getMaxWidth(feat);
+            margin = stroke.getMaxWidth(feat, mt);
         }
 
         rg = Graphic.getNewRenderableGraphics(outline.getBounds2D(), margin);
 
         if (fill != null) {
-            fill.draw(rg, outline, feat, selected);
+            fill.draw(rg, outline, feat, selected, mt);
         }
 
         if (stroke != null) {
-            stroke.draw(rg, outline, feat, selected);
+            stroke.draw(rg, outline, feat, selected, mt);
         }
 
         // HALO, FILL, STROKE

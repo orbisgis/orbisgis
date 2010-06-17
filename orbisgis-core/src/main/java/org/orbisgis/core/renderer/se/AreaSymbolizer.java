@@ -9,6 +9,7 @@ import org.orbisgis.core.renderer.persistance.se.ObjectFactory;
 
 import org.gdms.data.feature.Feature;
 import org.gdms.driver.DriverException;
+import org.orbisgis.core.map.MapTransform;
 
 import org.orbisgis.core.renderer.persistance.se.SymbolizerType;
 
@@ -43,6 +44,7 @@ public final class AreaSymbolizer extends VectorSymbolizer {
 
 		if (ast.getGeometry() != null) {
 			// TODO createGeometryFunction from XML
+			this.setGeometry(SeParameterFactory.createGeometryParameter(ast.getGeometry()));
 		}
 
 		if (ast.getUnitOfMeasure() != null) {
@@ -106,12 +108,12 @@ public final class AreaSymbolizer extends VectorSymbolizer {
 	 * @throws DriverException
 	 */
 	@Override
-	public void draw(Graphics2D g2, Feature feat, boolean selected) throws ParameterException, IOException, DriverException {
-		Shape shp = this.getShape(feat);
+	public void draw(Graphics2D g2, Feature feat, boolean selected, MapTransform mt) throws ParameterException, IOException, DriverException {
+		Shape shp = this.getShape(feat, mt);
 
 		if (shp != null) {
 			if (fill != null) {
-				fill.draw(g2, shp, feat, selected);
+				fill.draw(g2, shp, feat, selected, mt);
 			}
 
 			if (stroke != null) {
@@ -119,7 +121,7 @@ public final class AreaSymbolizer extends VectorSymbolizer {
 					double offset = perpendicularOffset.getValue(feat);
 					// TODO apply perpendicular offset to shp !
 				}
-				stroke.draw(g2, shp, feat, selected);
+				stroke.draw(g2, shp, feat, selected, mt);
 			}
 		}
 	}

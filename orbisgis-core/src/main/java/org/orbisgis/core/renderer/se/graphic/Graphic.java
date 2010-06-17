@@ -7,6 +7,7 @@ import javax.media.jai.RenderableGraphics;
 import javax.xml.bind.JAXBElement;
 import org.orbisgis.core.renderer.persistance.se.GraphicType;
 import org.gdms.data.feature.Feature;
+import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.persistance.se.AxisChartType;
 import org.orbisgis.core.renderer.persistance.se.ExternalGraphicType;
 import org.orbisgis.core.renderer.persistance.se.MarkGraphicType;
@@ -94,7 +95,7 @@ public abstract class Graphic implements SymbolizerNode {
      * @throws ParameterException
      * @throws IOException
      */
-    public abstract RenderableGraphics getRenderableGraphics(Feature feat, boolean selected)
+    public abstract RenderableGraphics getRenderableGraphics(Feature feat, boolean selected, MapTransform mt)
             throws ParameterException, IOException;
 
     /**
@@ -118,7 +119,7 @@ public abstract class Graphic implements SymbolizerNode {
 
     public abstract JAXBElement<? extends GraphicType> getJAXBElement();
 
-    public abstract double getMaxWidth(Feature feat) throws ParameterException, IOException;
+    public abstract double getMaxWidth(Feature feat, MapTransform mt) throws ParameterException, IOException;
 
     public abstract void updateGraphic();
     

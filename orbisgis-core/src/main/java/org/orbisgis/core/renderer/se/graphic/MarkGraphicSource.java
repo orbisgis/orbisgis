@@ -19,7 +19,7 @@ import org.orbisgis.core.renderer.se.parameter.ParameterException;
  * @todo implement in InlineContent(for se InlineContent && GML), OnlineResource
  */
 public interface MarkGraphicSource {
-    public abstract Shape getShape(ViewBox viewBox, Feature feat)
+    public abstract Shape getShape(ViewBox viewBox, Feature feat, Double scale, Double dpi)
             throws ParameterException, IOException;
 
     public void setJAXBSource(MarkGraphicType m);

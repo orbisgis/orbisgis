@@ -62,6 +62,7 @@ import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.io.ParseException;
 import com.vividsolutions.jts.io.WKTReader;
+import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.se.Rule;
 
 /**
@@ -288,11 +289,11 @@ public class DefaultMapContext implements MapContext{
 	}
 
 	@Override
-	public void draw(BufferedImage inProcessImage, Envelope extent,
+	public void draw(MapTransform mt,
 			IProgressMonitor pm) {
 		checkIsOpen();
 		Renderer renderer = new Renderer();
-		renderer.draw(inProcessImage, extent, getLayerModel(), pm);
+		renderer.draw(mt, getLayerModel(), pm);
 	}
 
 	private void checkIsOpen() {

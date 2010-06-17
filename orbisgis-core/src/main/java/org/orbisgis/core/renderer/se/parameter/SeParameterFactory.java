@@ -10,6 +10,7 @@ import org.orbisgis.core.renderer.persistance.ogc.ExpressionType;
 import org.orbisgis.core.renderer.persistance.ogc.LiteralType;
 import org.orbisgis.core.renderer.persistance.ogc.PropertyNameType;
 import org.orbisgis.core.renderer.persistance.se.CategorizeType;
+import org.orbisgis.core.renderer.persistance.se.GeometryType;
 import org.orbisgis.core.renderer.persistance.se.InterpolateType;
 
 import org.orbisgis.core.renderer.persistance.se.ParameterValueType;
@@ -21,6 +22,8 @@ import org.orbisgis.core.renderer.se.parameter.color.ColorLiteral;
 import org.orbisgis.core.renderer.se.parameter.color.ColorParameter;
 import org.orbisgis.core.renderer.se.parameter.color.Interpolate2Color;
 import org.orbisgis.core.renderer.se.parameter.color.Recode2Color;
+import org.orbisgis.core.renderer.se.parameter.geometry.GeometryAttribute;
+import org.orbisgis.core.renderer.se.parameter.geometry.GeometryParameter;
 import org.orbisgis.core.renderer.se.parameter.real.Categorize2Real;
 import org.orbisgis.core.renderer.se.parameter.real.Interpolate2Real;
 import org.orbisgis.core.renderer.se.parameter.real.RealAttribute;
@@ -43,6 +46,21 @@ public final class SeParameterFactory {
 
     private SeParameterFactory() {
     }
+
+
+	public static GeometryParameter createGeometryParameter(GeometryType gt){
+		JAXBElement<?> expr = gt.getExpression();
+		if (expr.getDeclaredType() == org.orbisgis.core.renderer.persistance.ogc.FunctionType.class){
+			return null;
+		}
+		else if (expr.getDeclaredType() == LiteralType.class){
+			return new GeometryAttribute((LiteralType)expr.getValue());
+		}
+		else{
+			return null;
+		}
+	}
+
 
     public static RealParameter createRealParameter(JAXBElement<? extends ExpressionType> expr) {
         if (expr == null)

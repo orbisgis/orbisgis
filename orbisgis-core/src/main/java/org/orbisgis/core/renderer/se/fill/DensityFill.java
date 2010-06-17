@@ -16,10 +16,8 @@ import org.orbisgis.core.renderer.persistance.se.DensityFillType;
 
 import org.orbisgis.core.renderer.persistance.se.ObjectFactory;
 
-import org.gdms.data.DataSource;
 import org.gdms.data.feature.Feature;
-
-import org.orbisgis.core.renderer.se.common.MapEnv;
+import org.orbisgis.core.map.MapTransform;
 
 import org.orbisgis.core.renderer.se.graphic.GraphicCollection;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
@@ -28,7 +26,7 @@ import org.orbisgis.core.renderer.se.parameter.color.ColorHelper;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 import org.orbisgis.core.renderer.se.stroke.PenStroke;
 
-public class DensityFill extends Fill {
+public final class DensityFill extends Fill {
 
     public DensityFill() {
     }
@@ -64,7 +62,7 @@ public class DensityFill extends Fill {
 
     /**
      *
-     * @param orientation angle in deegree 
+     * @param orientation angle in degree
      */
     public void setHatchesOrientation(RealParameter orientation) {
         this.orientation = orientation;
@@ -104,16 +102,8 @@ public class DensityFill extends Fill {
         return percentageCovered;
     }
 
-    /**
-     *
-     * @param g2 draw within this graphics2d
-     * @param shp fill this shape
-     * @param ds feature came from this datasource
-     * @param fid id of the feature to draw
-     * @throws IOException
-     */
     @Override
-    public void draw(Graphics2D g2, Shape shp, Feature feat, boolean selected) throws ParameterException, IOException {
+    public void draw(Graphics2D g2, Shape shp, Feature feat, boolean selected, MapTransform mt) throws ParameterException, IOException {
         double percentage = 0.0;
 
         if (percentageCovered != null) {
@@ -131,13 +121,14 @@ public class DensityFill extends Fill {
                 double theta = -45.0;
 
                 if (this.orientation != null) {
-                    theta = -this.orientation.getValue(feat) + 90.0;
+					// SE ask for clockwise angle, Math.cos()/sin() want counterclockwise
+                    theta = this.orientation.getValue(feat);
                 }
 
                 theta *= Math.PI / 180.0;
 
                 // Stroke width
-                double sWidth = hatches.getMaxWidth(feat);
+                double sWidth = hatches.getMaxWidth(feat, mt);
 
                 // Perpendiculat dist bw two hatches
                 double pDist = 100 * sWidth / percentage;
@@ -152,8 +143,11 @@ public class DensityFill extends Fill {
                 int ix;
                 int iy;
 
-                // avoid div by zero
+				////
+                // Compute tile size
+
                 if (Math.abs(sinTheta) < 0.001) {
+					// Vertical
                     dx = 0;
                     ix = (int) pDist;
                 } else {
@@ -162,6 +156,7 @@ public class DensityFill extends Fill {
                 }
 
                 if (Math.abs(cosTheta) < 0.001) {
+					// Horizontal
                     dy = 0;
                     iy = (int) pDist;
                 } else {
@@ -181,7 +176,7 @@ public class DensityFill extends Fill {
                 BufferedImage i = new BufferedImage(ix, iy, BufferedImage.TYPE_4BYTE_ABGR);
                 Graphics2D tile = i.createGraphics();
 
-                g2.setRenderingHints(MapEnv.getCurrentRenderContext().getRenderingHints());
+                g2.setRenderingHints(mt.getCurrentRenderContext().getRenderingHints());
 
                 Color c = hatches.getColor().getColor(feat);
 
@@ -191,7 +186,7 @@ public class DensityFill extends Fill {
 
                 tile.setColor(c);
 
-                tile.setStroke(hatches.getBasicStroke(feat));
+                tile.setStroke(hatches.getBasicStroke(feat, mt));
 
                 // Draw three line in order to ensure mosaic join
 
@@ -204,16 +199,18 @@ public class DensityFill extends Fill {
                     tile.drawLine(-idx, 0, idx, 0);
                     tile.drawLine(-idx, ipDist, idx, ipDist);
                 } else {
-                    tile.drawLine(-idx, -idy, idx, idy);
-                    tile.drawLine(0, -idy, 2 * idx, idy);
-                    tile.drawLine(-idx, 0, idx, 2 * idy);
+                    tile.drawLine(-2*idx, -2*idy, 2*idx, 2*idy);
+                    tile.drawLine(-idx,   -2*idy, 2*idx, idy);
+                    tile.drawLine( 0,     -2*idy, 2*idx, 0);
+                    tile.drawLine(-2*idx,   -idy, idx, 2*idy);
+                    tile.drawLine(-2*idx,      0, 0, 2*idy);
                 }
 
 
                 painter = new TexturePaint(i, new Rectangle2D.Double(0, 0, ix, iy));
 
             } else if (mark != null) { // Marked
-                RenderableGraphics g = mark.getGraphic(feat, selected);
+                RenderableGraphics g = mark.getGraphic(feat, selected, mt);
 
                 if (g != null) {
                     // TODO IMPLEMENT: create TexturePaint, see GraphicFill.getTexturePaint

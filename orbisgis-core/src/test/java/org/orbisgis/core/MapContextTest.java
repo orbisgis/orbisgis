@@ -42,7 +42,6 @@ import java.io.FileOutputStream;
 
 import org.gdms.data.DataSource;
 import org.gdms.source.SourceManager;
-import org.orbisgis.core.Services;
 import org.orbisgis.core.layerModel.DefaultMapContext;
 import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.layerModel.LayerException;
@@ -164,7 +163,7 @@ public class MapContextTest extends AbstractTest {
 		} catch (IllegalStateException e) {
 		}
 		try {
-			mc.draw(null, null, null);
+			mc.draw(null, null);
 			assertTrue(false);
 		} catch (IllegalStateException e) {
 		}

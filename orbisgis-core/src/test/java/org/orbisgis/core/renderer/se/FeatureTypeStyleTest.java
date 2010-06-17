@@ -38,7 +38,6 @@ import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.layerModel.LayerException;
 import org.orbisgis.core.renderer.Renderer;
 import org.orbisgis.core.renderer.persistance.se.FeatureTypeStyleType;
-import org.orbisgis.core.renderer.se.common.MapEnv;
 
 
 

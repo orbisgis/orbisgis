@@ -9,6 +9,7 @@ import java.io.IOException;
 import javax.xml.bind.JAXBElement;
 import org.gdms.data.feature.Feature;
 import org.gdms.driver.DriverException;
+import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.persistance.se.RasterSymbolizerType;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.raster.OverlapBehavior;
@@ -27,7 +28,7 @@ import org.orbisgis.core.renderer.se.raster.ContrastEnhancement;
 public class RasterSymbolizer extends Symbolizer {
 
     @Override
-    public void draw(Graphics2D g2, Feature feat, boolean selected) throws ParameterException, IOException, DriverException {
+    public void draw(Graphics2D g2, Feature feat, boolean selected, MapTransform mt) throws ParameterException, IOException, DriverException {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 

@@ -14,11 +14,10 @@ import javax.xml.bind.JAXBElement;
 import org.orbisgis.core.renderer.persistance.se.ExternalGraphicType;
 import org.orbisgis.core.renderer.persistance.se.ObjectFactory;
 
-import org.gdms.data.DataSource;
 import org.gdms.data.feature.Feature;
+import org.orbisgis.core.map.MapTransform;
 
 import org.orbisgis.core.renderer.se.common.Halo;
-import org.orbisgis.core.renderer.se.common.MapEnv;
 import org.orbisgis.core.renderer.se.common.OnlineResource;
 import org.orbisgis.core.renderer.se.common.Uom;
 
@@ -29,8 +28,8 @@ import org.orbisgis.core.renderer.se.transform.Transform;
 
 /**
  * an external graphic is an image such as JPG, PNG, SVG.
- * Available action on such a graphic are affine transfromations.
- * There is no way to restyle the graphic but setting opacity
+ * Available action on such a graphic are affine transformations.
+ * There is no way to re-style the graphic but setting opacity
  *
  * @todo Opacity not yet implemented !
  * 
@@ -103,11 +102,9 @@ public final class ExternalGraphic extends Graphic {
 
         try {
             if (source != null) {
-                graphic = source.getPlanarImage(viewBox, null);
-                System.out.println ("External Planar Image in CACHE");
+                graphic = source.getPlanarImage(viewBox, null, null);
             }
         } catch (Exception ex) {
-            System.out.println ("Fail to cache ext graphic" + ex);
             ex.printStackTrace();
         }
     }
@@ -118,11 +115,11 @@ public final class ExternalGraphic extends Graphic {
     }
 
     @Override
-    public RenderableGraphics getRenderableGraphics(Feature feat, boolean selected) throws ParameterException, IOException {
+    public RenderableGraphics getRenderableGraphics(Feature feat, boolean selected, MapTransform mt) throws ParameterException, IOException {
 
         AffineTransform at = new AffineTransform();
         if (transform != null){
-            at = transform.getGraphicalAffineTransform(feat, false);
+            at = transform.getGraphicalAffineTransform(feat, false, mt);
         }
 
         // TODO Implements SELECTED!
@@ -132,7 +129,7 @@ public final class ExternalGraphic extends Graphic {
         // Create shape based on image bbox
 
         if (graphic == null) {
-            img = source.getPlanarImage(viewBox, feat);
+            img = source.getPlanarImage(viewBox, feat, mt);
         } else {
             img = graphic;
         }
@@ -146,7 +143,7 @@ public final class ExternalGraphic extends Graphic {
 
         // reserve the place for halo
         if (halo != null) {
-            double r = Uom.toPixel(halo.getRadius().getValue(feat), halo.getUom(), MapEnv.getScaleDenominator()); // TODO SCALE, DPI...
+            double r = Uom.toPixel(halo.getRadius().getValue(feat), halo.getUom(), mt.getDpi(), mt.getScaleDenominator(), 0.0); // TODO SCALE, DPI...
             w += 2 * r;
             h += 2 * r;
         }
@@ -162,7 +159,7 @@ public final class ExternalGraphic extends Graphic {
         RenderableGraphics rg = Graphic.getNewRenderableGraphics(imageSize, 0);
 
         if (halo != null) {
-            halo.draw(rg, atShp, feat);
+            halo.draw(rg, atShp, feat, mt);
         }
 
         // TODO how to set opacity ?
@@ -173,29 +170,29 @@ public final class ExternalGraphic extends Graphic {
         return rg;
     }
 
-    public double getMargin(Feature feat) throws ParameterException, IOException {
+    public double getMargin(Feature feat, MapTransform mt) throws ParameterException, IOException {
         double delta = 0.0;
 
         if (this.halo != null) {
-            delta += Uom.toPixel(halo.getRadius().getValue(feat), halo.getUom(), MapEnv.getScaleDenominator());
+            delta += Uom.toPixel(halo.getRadius().getValue(feat), halo.getUom(), mt.getDpi(), mt.getScaleDenominator(), 0.0);
         }
 
         return delta;
     }
 
     @Override
-    public double getMaxWidth(Feature feat) throws ParameterException, IOException {
+    public double getMaxWidth(Feature feat, MapTransform mt) throws ParameterException, IOException {
         double delta = 0.0;
         if (viewBox != null) {
             PlanarImage img;
             if (graphic == null) {
-                img = source.getPlanarImage(viewBox, feat);
+                img = source.getPlanarImage(viewBox, feat, mt);
             } else {
                 img = graphic;
             }
 
             if (img != null){
-                Dimension dim = viewBox.getDimensionInPixel(feat, img.getHeight() / img.getWidth());
+                Dimension dim = viewBox.getDimensionInPixel(feat, img.getHeight() / img.getWidth(), mt.getScaleDenominator(), mt.getDpi());
 
                 delta = Math.max(dim.getHeight(), dim.getWidth());
             }
@@ -204,7 +201,7 @@ public final class ExternalGraphic extends Graphic {
             }
         }
 
-        delta += this.getMargin(feat);
+        delta += this.getMargin(feat, mt);
 
         return delta;
     }
@@ -224,7 +221,7 @@ public final class ExternalGraphic extends Graphic {
         if (viewBox != null && this.getViewBox().dependsOnFeature()){
             return true;
         }
-        
+
         return false;
     }
 

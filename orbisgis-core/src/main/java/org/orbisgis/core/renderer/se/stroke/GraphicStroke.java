@@ -8,6 +8,7 @@ import java.io.IOException;
 import javax.media.jai.RenderableGraphics;
 import javax.xml.bind.JAXBElement;
 import org.gdms.data.feature.Feature;
+import org.orbisgis.core.map.MapTransform;
 
 import org.orbisgis.core.renderer.persistance.se.GraphicStrokeType;
 import org.orbisgis.core.renderer.persistance.se.ObjectFactory;
@@ -49,8 +50,8 @@ public class GraphicStroke extends Stroke {
     }
 
     @Override
-    public void draw(Graphics2D g2, Shape shp, Feature feat, boolean selected) throws ParameterException, IOException {
-        RenderableGraphics g = graphic.getGraphic(feat, selected);
+    public void draw(Graphics2D g2, Shape shp, Feature feat, boolean selected, MapTransform mt) throws ParameterException, IOException {
+        RenderableGraphics g = graphic.getGraphic(feat, selected, mt);
 
         if (g != null) {
             double l;
@@ -77,8 +78,8 @@ public class GraphicStroke extends Stroke {
     }
 
     @Override
-    public double getMaxWidth(Feature feat) throws IOException, ParameterException {
-        return graphic.getMaxWidth(feat);
+    public double getMaxWidth(Feature feat, MapTransform mt) throws IOException, ParameterException {
+        return graphic.getMaxWidth(feat, mt);
     }
 
     

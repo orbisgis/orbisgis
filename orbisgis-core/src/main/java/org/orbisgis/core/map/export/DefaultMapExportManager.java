@@ -61,8 +61,8 @@ public class DefaultMapExportManager implements MapExportManager {
 		BufferedImage bi = new BufferedImage(pixelWidth, pixelHeight,
 				BufferedImage.TYPE_INT_ARGB);
 		mt.setImage(bi);
-		r.draw(bi.createGraphics(), pixelWidth, pixelHeight, mt
-				.getAdjustedExtent(), mapContext.getLayerModel(), pm);
+		r.draw( mt, mapContext
+				.getLayerModel(), pm);
 
 		double batikDefaultDPcm = 0.01 * 90 / 0.0254;
 		int svgWidth = (int) (width * batikDefaultDPcm);

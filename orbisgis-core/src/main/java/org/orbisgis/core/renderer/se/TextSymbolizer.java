@@ -10,6 +10,7 @@ import org.orbisgis.core.renderer.persistance.se.ObjectFactory;
 import org.orbisgis.core.renderer.persistance.se.TextSymbolizerType;
 
 import org.gdms.driver.DriverException;
+import org.orbisgis.core.map.MapTransform;
 
 import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.label.Label;
@@ -45,12 +46,12 @@ public class TextSymbolizer extends VectorSymbolizer {
     }
 
     @Override
-    public void draw(Graphics2D g2, Feature feat, boolean selected) throws ParameterException, IOException, DriverException {
+    public void draw(Graphics2D g2, Feature feat, boolean selected, MapTransform mt) throws ParameterException, IOException, DriverException {
 
-        Shape shp = this.getShape(feat);
+        Shape shp = this.getShape(feat, mt);
 
         if (shp != null && label != null){
-            label.draw(g2, shp, feat, selected);
+            label.draw(g2, shp, feat, selected, mt);
         }
     }
 

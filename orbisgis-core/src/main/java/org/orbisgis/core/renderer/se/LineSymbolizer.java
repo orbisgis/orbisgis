@@ -7,6 +7,7 @@ import javax.xml.bind.JAXBElement;
 import org.gdms.data.feature.Feature;
 
 import org.gdms.driver.DriverException;
+import org.orbisgis.core.map.MapTransform;
 
 import org.orbisgis.core.renderer.persistance.se.LineSymbolizerType;
 import org.orbisgis.core.renderer.persistance.se.ObjectFactory;
@@ -87,9 +88,9 @@ public class LineSymbolizer extends VectorSymbolizer {
 	 * @todo make sure the geom is a line or an area; implement p_offset
 	 */
 	@Override
-	public void draw(Graphics2D g2, Feature feat, boolean selected) throws ParameterException, IOException, DriverException {
+	public void draw(Graphics2D g2, Feature feat, boolean selected, MapTransform mt) throws ParameterException, IOException, DriverException {
 		if (stroke != null) {
-			Shape shp = this.getShape(feat);
+			Shape shp = this.getShape(feat, mt);
 
 			if (shp != null) {
 				if (perpendicularOffset != null) {
@@ -98,7 +99,7 @@ public class LineSymbolizer extends VectorSymbolizer {
 				}
 
 				// TODO perpendicular offset !
-				stroke.draw(g2, shp, feat, selected);
+				stroke.draw(g2, shp, feat, selected, mt);
 			}
 		}
 	}

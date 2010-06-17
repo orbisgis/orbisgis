@@ -1,17 +1,15 @@
 package org.orbisgis.core.renderer.se.graphic;
 
 import java.awt.Dimension;
-import org.gdms.data.DataSource;
 import org.gdms.data.feature.Feature;
 import org.orbisgis.core.renderer.persistance.se.ViewBoxType;
 import org.orbisgis.core.renderer.se.SymbolizerNode;
-import org.orbisgis.core.renderer.se.common.MapEnv;
 import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 
-public class ViewBox implements SymbolizerNode {
+public final class ViewBox implements SymbolizerNode {
 
     public ViewBox(RealParameter width) {
         this.x = width;
@@ -70,7 +68,7 @@ public class ViewBox implements SymbolizerNode {
      * @return
      * @throws ParameterException
      */
-    public Dimension getDimensionInPixel(Feature feat, double ratio) throws ParameterException {
+    public Dimension getDimensionInPixel(Feature feat, double ratio, Double scale, Double dpi) throws ParameterException {
         double dx, dy;
 
         if (x != null && y != null) {
@@ -87,8 +85,12 @@ public class ViewBox implements SymbolizerNode {
             dy = 10.0;
         }
 
-        dx = Uom.toPixel(dx, this.getUom(), MapEnv.getScaleDenominator()); // TODO DPI SCAPE !
-        dy = Uom.toPixel(dy, this.getUom(), MapEnv.getScaleDenominator());
+        dx = Uom.toPixel(dx, this.getUom(), dpi, scale, 0.0); // TODO DPI SCAPE !
+        dy = Uom.toPixel(dy, this.getUom(), dpi, scale, 0.0);
+
+		if (dx <= 0.00021 || dy <= 0.00021){
+			throw new ParameterException("View-box is too small");
+		}
 
         return new Dimension((int) dx, (int) dy);
     }

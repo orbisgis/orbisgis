@@ -5,15 +5,11 @@
 package org.orbisgis.core.renderer.se;
 
 import com.vividsolutions.jts.geom.Envelope;
-import java.awt.Color;
 
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -23,10 +19,6 @@ import javax.swing.JPanel;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
-import javax.xml.bind.Unmarshaller;
-import javax.xml.stream.XMLOutputFactory;
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamWriter;
 
 import junit.framework.TestCase;
 import org.gdms.data.DataSource;
@@ -36,39 +28,15 @@ import org.gdms.data.SpatialDataSourceDecorator;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.driverManager.DriverLoadException;
 import org.orbisgis.core.map.MapTransform;
-import org.orbisgis.core.renderer.persistance.se.ObjectFactory;
 import org.orbisgis.core.renderer.persistance.se.SymbolizerType;
-import org.orbisgis.core.renderer.se.common.MapEnv;
 import org.orbisgis.core.renderer.se.common.Uom;
-import org.orbisgis.core.renderer.se.fill.DensityFill;
-import org.orbisgis.core.renderer.se.fill.GraphicFill;
 import org.orbisgis.core.renderer.se.fill.SolidFill;
 import org.orbisgis.core.renderer.se.graphic.GraphicCollection;
 import org.orbisgis.core.renderer.se.graphic.MarkGraphic;
-import org.orbisgis.core.renderer.se.graphic.PieChart;
-import org.orbisgis.core.renderer.se.graphic.PieChart.PieChartSubType;
-import org.orbisgis.core.renderer.se.graphic.Slice;
-import org.orbisgis.core.renderer.se.graphic.TextGraphic;
 import org.orbisgis.core.renderer.se.graphic.ViewBox;
 import org.orbisgis.core.renderer.se.graphic.WellKnownName;
-import org.orbisgis.core.renderer.se.label.StyledLabel;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
-import org.orbisgis.core.renderer.se.parameter.color.Categorize2Color;
-import org.orbisgis.core.renderer.se.parameter.color.ColorLiteral;
-import org.orbisgis.core.renderer.se.parameter.color.Recode2Color;
-import org.orbisgis.core.renderer.se.parameter.real.RealAttribute;
-import org.orbisgis.core.renderer.se.parameter.real.RealBinaryOperator;
-import org.orbisgis.core.renderer.se.parameter.real.RealBinaryOperator.RealBinaryOperatorType;
 import org.orbisgis.core.renderer.se.parameter.real.RealLiteral;
-import org.orbisgis.core.renderer.se.parameter.real.RealUnitaryOperator;
-import org.orbisgis.core.renderer.se.parameter.real.RealUnitaryOperator.RealUnitaryOperatorType;
-import org.orbisgis.core.renderer.se.parameter.real.Recode2Real;
-import org.orbisgis.core.renderer.se.parameter.string.StringAttribute;
-import org.orbisgis.core.renderer.se.stroke.PenStroke;
-import org.orbisgis.core.renderer.se.transform.Rotate;
-import org.orbisgis.core.renderer.se.transform.Scale;
-import org.orbisgis.core.renderer.se.transform.Transform;
-import org.orbisgis.core.renderer.se.transform.Translate;
 
 /**
  *
@@ -105,12 +73,10 @@ public class AreaSymbolizerTest extends TestCase {
 
             extent = mt.getAdjustedExtent();
 
-            MapEnv.setMapTransform(mt);
-
             BufferedImage img = mt.getImage();
             Graphics2D g2 = img.createGraphics();
 
-            g2.setRenderingHints(MapEnv.getCurrentRenderContext().getRenderingHints());
+            g2.setRenderingHints(mt.getCurrentRenderContext().getRenderingHints());
 
             DataSourceFactory dsf = new DataSourceFactory();
             //DataSource ds = dsf.getDataSource(new File("../../datas2tests/shp/Swiss/g4districts98_region.shp"));
@@ -306,7 +272,7 @@ public class AreaSymbolizerTest extends TestCase {
                 //aSymb2.draw(g2, sds, fid);
                 //aSymb3.draw(g2, sds, fid);
                 //aSymb.draw(g2, sds, fid);
-                pSymb.draw(g2, sds.getFeature(fid), false);
+                pSymb.draw(g2, sds.getFeature(fid), false, mt);
             }
             g2.finalize();
 

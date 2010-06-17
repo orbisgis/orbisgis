@@ -11,13 +11,13 @@ import java.awt.geom.AffineTransform;
 import java.io.IOException;
 import javax.media.jai.RenderableGraphics;
 import javax.xml.bind.JAXBElement;
-import org.gdms.data.DataSource;
+
 import org.gdms.data.feature.Feature;
+import org.orbisgis.core.map.MapTransform;
 
 import org.orbisgis.core.renderer.persistance.se.ObjectFactory;
 import org.orbisgis.core.renderer.persistance.se.ParameterValueType;
 import org.orbisgis.core.renderer.persistance.se.PointLabelType;
-import org.orbisgis.core.renderer.se.common.MapEnv;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
 import org.orbisgis.core.renderer.se.parameter.real.RealLiteral;
@@ -72,8 +72,8 @@ public class PointLabel extends Label {
     }
 
     @Override
-    public void draw(Graphics2D g2, Shape shp, Feature feat, boolean selected) throws ParameterException, IOException {
-        RenderableGraphics l = this.label.getImage(feat, selected);
+    public void draw(Graphics2D g2, Shape shp, Feature feat, boolean selected, MapTransform mt) throws ParameterException, IOException {
+        RenderableGraphics l = this.label.getImage(feat, selected, mt);
 
         // convert lineShape to a point
         // create AT according to rotation and exclusionZone
@@ -93,7 +93,7 @@ public class PointLabel extends Label {
             }
         }
 
-        g2.drawRenderedImage(l.createRendering(MapEnv.getCurrentRenderContext()), AffineTransform.getTranslateInstance(x, y));
+        g2.drawRenderedImage(l.createRendering(mt.getCurrentRenderContext()), AffineTransform.getTranslateInstance(x, y));
         
     }
 

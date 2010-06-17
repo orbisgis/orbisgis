@@ -45,9 +45,9 @@ public class RealUnitaryOperatorTest extends TestCase {
 
     public void testLog(){
         try {
-            RealUnitaryOperator op1 = new RealUnitaryOperator(new RealLiteral(100), RealUnitaryOperatorType.LOG);
+            RealUnitaryOperator op1 = new RealUnitaryOperator(new RealLiteral(100), RealUnitaryOperatorType.LOG_10);
             assertEquals(2.0, op1.getValue(null));
-            RealUnitaryOperator op2 = new RealUnitaryOperator(new RealLiteral(-100), RealUnitaryOperatorType.LOG);
+            RealUnitaryOperator op2 = new RealUnitaryOperator(new RealLiteral(-100), RealUnitaryOperatorType.LOG_10);
             assertEquals(Double.NaN, op2.getValue(null));
         }
         /*

@@ -84,6 +84,7 @@ import com.lowagie.text.pdf.PdfContentByte;
 import com.lowagie.text.pdf.PdfTemplate;
 import com.lowagie.text.pdf.PdfWriter;
 import com.vividsolutions.jts.geom.Envelope;
+import org.orbisgis.core.map.MapTransform;
 
 /**
  * Export Map as PDF format
