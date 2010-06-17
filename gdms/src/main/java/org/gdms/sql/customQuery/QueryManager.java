@@ -41,7 +41,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 
-import org.gdms.sql.customQuery.io.importer.gpx.GPXImporter;
 import org.gdms.sql.customQuery.showAttributes.ShowCall;
 import org.gdms.sql.customQuery.spatial.geometry.convert.ST_Explode;
 import org.gdms.sql.customQuery.spatial.geometry.create.ST_BigCreateGrid;
