@@ -221,8 +221,9 @@ public class TableComponent extends JPanel implements WorkbenchFrame {
 
 					} else {
 						String pkName = "pk_" + dataSource.getName();
-						findAValue("SELECT autonumeric() - 1 as " + pkName + ", *"
-                                 + "FROM " + dataSource.getName() , pkName, whereText);
+						findAValue("SELECT autonumeric() - 1 as " + pkName
+								+ ", *" + "FROM " + dataSource.getName(),
+								pkName, whereText);
 
 					}
 				}
@@ -322,12 +323,12 @@ public class TableComponent extends JPanel implements WorkbenchFrame {
 			int columnType = tableModel.getColumnType(i).getTypeCode();
 
 			col.setHeaderValue(columnName);
-			TableCellRenderer renderer = renderers.get(columnName);
+			TableCellRenderer tableCellRenderer = renderers.get(columnName);
 
-			if (renderer == null) {
-				renderer = new ButtonHeaderRenderer();
+			if (tableCellRenderer == null) {
+				tableCellRenderer = new ButtonHeaderRenderer();
 			}
-			col.setHeaderRenderer(renderer);
+			col.setHeaderRenderer(tableCellRenderer);
 
 			Integer width = widths.get(columnName);
 			if (width == null) {
@@ -504,7 +505,8 @@ public class TableComponent extends JPanel implements WorkbenchFrame {
 				try {
 					DataSourceFactory dsf = dataSource.getDataSourceFactory();
 
-					// Step 1: create a copy of the data source  with the pk_field
+					// Step 1: create a copy of the data source with the
+					// pk_field
 					DataSource dsWithPk = dsf.getDataSourceFromSQL(text + " ;",
 							pm);
 
@@ -520,9 +522,10 @@ public class TableComponent extends JPanel implements WorkbenchFrame {
 					pm.startTask("Data matching");
 					dsWithPk.open();
 
-					int[] sel = new int[(int)dsRowCount];
+					int[] sel = new int[(int) dsRowCount];
 					for (int i = 0; i < dsRowCount; i++) {
-						sel[i] = dsWithPkFiltered.getFieldValue(i, 0).getAsInt();
+						sel[i] = dsWithPkFiltered.getFieldValue(i, 0)
+								.getAsInt();
 					}
 
 					dsWithPkFiltered.close();
@@ -564,10 +567,6 @@ public class TableComponent extends JPanel implements WorkbenchFrame {
 			}
 		}
 		fireTableDataChanged();
-	}
-
-	private TableEditorPlugIn getEditor() {
-		return editor;
 	}
 
 	private class SyncSelectionListener implements SelectionListener {
@@ -644,6 +643,7 @@ public class TableComponent extends JPanel implements WorkbenchFrame {
 		public void mousePressed(MouseEvent e) {
 			updateContext(e);
 			popup(e);
+
 		}
 
 		@Override
@@ -666,25 +666,21 @@ public class TableComponent extends JPanel implements WorkbenchFrame {
 
 			final Component component = getComponent();
 			selectedColumn = table.columnAtPoint(e.getPoint());
-
-			TableColumn col = table.getTableHeader().getColumnModel()
-					.getColumn(selectedColumn);
-
-			col.setHeaderRenderer(new ButtonHeaderRenderer());
-
-			table.getTableHeader().resizeAndRepaint();
-
 			component.repaint();
 
-			JComponent[] menus = null;
-			final JPopupMenu pop = getPopupMenu();
-			menus = wbContext.getWorkbench().getFrame().getMenuTableTreePopup()
-					.getJMenus();
-			for (JComponent menu : menus) {
-				pop.add(menu);
-			}
-			if (e.isPopupTrigger())
+			if (e.isPopupTrigger()) {
+
+				JComponent[] menus = null;
+				final JPopupMenu pop = getPopupMenu();
+				menus = wbContext.getWorkbench().getFrame()
+						.getMenuTableTreePopup().getJMenus();
+				for (JComponent menu : menus) {
+					pop.add(menu);
+				}
+
 				pop.show(component, e.getX(), e.getY());
+			}
+
 		}
 
 		protected void addMenu(JPopupMenu pop, String text, Icon icon,
