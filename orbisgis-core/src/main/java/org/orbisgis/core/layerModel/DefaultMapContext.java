@@ -420,12 +420,12 @@ public class DefaultMapContext implements MapContext {
 				Services.getErrorManager().error(
 						"Cannot read the bounding box", e);
 			}
-			String wkt = jaxbMapContext.getOgcCrs().getName();
+			/*/String wkt = jaxbMapContext.getOgcCrs().getName();
 			if (wkt != null) {
 				if (wkt.length() > 0) {
 					crs = PRJUtils.getCRSFromWKT(wkt);
 				}
-			}
+			}*/
 		}
 
 		// Listen source removal events
