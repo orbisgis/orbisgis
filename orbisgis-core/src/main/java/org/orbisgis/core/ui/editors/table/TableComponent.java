@@ -638,7 +638,7 @@ public class TableComponent extends JPanel implements WorkbenchFrame {
 	private abstract class PopupMouseAdapter extends MouseAdapter {
 		WorkbenchContext wbContext = Services
 				.getService(WorkbenchContext.class);
-
+		
 		@Override
 		public void mousePressed(MouseEvent e) {
 			updateContext(e);
@@ -648,28 +648,35 @@ public class TableComponent extends JPanel implements WorkbenchFrame {
 
 		@Override
 		public void mouseReleased(MouseEvent e) {
-			// updateContext(e);
 			popup(e);
 		}
 
+		/**
+		 * This method is used to update the popup context. Used in plugin to
+		 * determine when it's showing.
+		 * 
+		 * @param e
+		 */
 		private void updateContext(MouseEvent e) {
+			boolean oneColumnHeaderIsSelected = table.getTableHeader().contains(
+					e.getPoint());
+			selectedColumn = table.columnAtPoint(e.getPoint());
 			if (e.isPopupTrigger()) {
-				if ("ColumnAction".equals(getExtensionPointId()))
+				if (oneColumnHeaderIsSelected) {
 					wbContext.setHeaderSelected(selectedColumn);
-				else
+				} else {
 					wbContext.setRowSelected(e);
-			} else
+				}
+			} else {
 				wbContext.setRowSelected(e);
+			}
 		}
 
 		private void popup(final MouseEvent e) {
 
 			final Component component = getComponent();
-			selectedColumn = table.columnAtPoint(e.getPoint());
 			component.repaint();
-
 			if (e.isPopupTrigger()) {
-
 				JComponent[] menus = null;
 				final JPopupMenu pop = getPopupMenu();
 				menus = wbContext.getWorkbench().getFrame()
@@ -677,7 +684,6 @@ public class TableComponent extends JPanel implements WorkbenchFrame {
 				for (JComponent menu : menus) {
 					pop.add(menu);
 				}
-
 				pop.show(component, e.getX(), e.getY());
 			}
 
@@ -978,7 +984,8 @@ public class TableComponent extends JPanel implements WorkbenchFrame {
 		}
 	}
 
-	class ButtonHeaderRenderer extends JButton implements TableCellRenderer {
+	public class ButtonHeaderRenderer extends JButton implements
+			TableCellRenderer {
 
 		public ButtonHeaderRenderer() {
 			setMargin(new Insets(0, 0, 0, 0));
@@ -990,6 +997,9 @@ public class TableComponent extends JPanel implements WorkbenchFrame {
 				int column) {
 			setText((value == null) ? "" : value.toString());
 			boolean isPressed = (column == selectedColumn);
+			if (isPressed) {
+				setPressedColumn(column);
+			}
 			getModel().setPressed(isPressed);
 			getModel().setArmed(isPressed);
 			return this;
@@ -998,5 +1008,9 @@ public class TableComponent extends JPanel implements WorkbenchFrame {
 		public void setPressedColumn(int col) {
 			selectedColumn = col;
 		}
+	}
+
+	public int getSelectedColumn() {
+		return selectedColumn;
 	}
 }
