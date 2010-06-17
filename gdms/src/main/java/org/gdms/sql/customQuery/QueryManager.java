@@ -92,7 +92,7 @@ public class QueryManager {
 		registerQuery(ST_VectorizeLine.class);
 		registerQuery(ST_CreatePointsGrid.class);
 		registerQuery(ST_Transform.class);
-		registerQuery(GPXImporter.class);
+		//registerQuery(GPXImporter.class);
 	}
 
 	/**
