@@ -17,12 +17,26 @@ import org.orbisgis.core.renderer.persistance.se.RelativeOrientationType;
 import org.orbisgis.core.renderer.se.common.RelativeOrientation;
 import org.orbisgis.core.renderer.se.graphic.GraphicCollection;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
+import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 
-public class GraphicStroke extends Stroke {
+public final class GraphicStroke extends Stroke {
 
-    GraphicStroke(JAXBElement<GraphicStrokeType> jAXBElement) {
-        throw new UnsupportedOperationException("Not yet implemented");
+    GraphicStroke(JAXBElement<GraphicStrokeType> elem) {
+		GraphicStrokeType gst = elem.getValue();
+
+		if (gst.getGraphic() != null){
+            this.setGraphicCollection(new GraphicCollection(gst.getGraphic(), this));
+		}
+
+		if (gst.getLength() != null){
+			this.setLength(SeParameterFactory.createRealParameter(gst.getLength()));
+		}
+
+		if (gst.getRelativeOrientation() != null){
+			this.setRelativeOrientation(RelativeOrientation.valueOf(gst.getRelativeOrientation().value()));
+			System.out.println ("RelativeOrientation: " + this.getRelativeOrientation());
+		}
     }
 
     public void setGraphicCollection(GraphicCollection graphic) {
@@ -65,6 +79,8 @@ public class GraphicStroke extends Stroke {
             } else {
                 l = (double) g.getWidth();
             }
+
+			System.out.println ("GraphicStroke not yet implemented");
 
             /* TODO implements :
              *

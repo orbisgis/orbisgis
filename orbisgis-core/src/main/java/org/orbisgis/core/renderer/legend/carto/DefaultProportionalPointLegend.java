@@ -43,6 +43,8 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.geom.Rectangle2D;
 import java.text.NumberFormat;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.gdms.data.SpatialDataSourceDecorator;
 import org.gdms.driver.DriverException;
@@ -57,6 +59,7 @@ import org.orbisgis.core.renderer.legend.Legend;
 import org.orbisgis.core.renderer.legend.RenderException;
 import org.orbisgis.core.renderer.legend.carto.persistence.LegendContainer;
 import org.orbisgis.core.renderer.legend.carto.persistence.ProportionalLegendType;
+import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.symbol.StandardPointSymbol;
 import org.orbisgis.core.renderer.symbol.StandardSymbol;
 import org.orbisgis.core.renderer.symbol.Symbol;
@@ -70,6 +73,7 @@ import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.Point;
+import org.orbisgis.core.renderer.se.parameter.real.RealAttribute;
 
 public class DefaultProportionalPointLegend extends AbstractCartoLegend
 		implements ProportionalLegend {
@@ -85,9 +89,8 @@ public class DefaultProportionalPointLegend extends AbstractCartoLegend
 	private boolean visible = true;
 
 	public DefaultProportionalPointLegend() {
-		symbol = (StandardPointSymbol) SymbolFactory
-				.createPolygonCentroidCircleSymbol(Color.BLACK, 1, Color.pink,
-						10, true);
+		symbol = (StandardPointSymbol) SymbolFactory.createPolygonCentroidCircleSymbol(Color.BLACK, 1, Color.pink,
+				10, true);
 	}
 
 	public void setMaxSize(int maxSize) {
@@ -114,11 +117,12 @@ public class DefaultProportionalPointLegend extends AbstractCartoLegend
 	@Override
 	public void preprocess(SpatialDataSourceDecorator sds)
 			throws RenderException, ClassificationMethodException {
-		proportionnalMethod = new ProportionalMethod(sds, field);
-		proportionnalMethod.setMethod(method);
 		try {
+			proportionnalMethod = new ProportionalMethod(sds, new RealAttribute(field, sds));
+			proportionnalMethod.setMethod(method);
 			proportionnalMethod.build(Math.pow(maxSize, 2));
-
+		} catch (ParameterException ex) {
+			throw new RenderException("Cannot compute the proportional method", ex);
 		} catch (DriverException e) {
 			throw new RenderException("Cannot compute the proportional method",
 					e);
@@ -144,8 +148,7 @@ public class DefaultProportionalPointLegend extends AbstractCartoLegend
 
 			double symbolSize = getSize(value, coefType);
 
-			StandardPointSymbol ret = (StandardPointSymbol) symbol
-					.cloneSymbol();
+			StandardPointSymbol ret = (StandardPointSymbol) symbol.cloneSymbol();
 			ret.setSize((int) Math.round(symbolSize));
 			return ret;
 		} catch (IncompatibleTypesException e) {
@@ -160,23 +163,22 @@ public class DefaultProportionalPointLegend extends AbstractCartoLegend
 		double symbolSize = 0;
 		switch (method) {
 
-		case LINEAR:
-			symbolSize = proportionnalMethod.getLinearSize(value, coefType);
+			case LINEAR:
+				symbolSize = proportionnalMethod.getLinearSize(value, coefType);
 
-			break;
+				break;
 
-		case SQUARE:
-			symbolSize = proportionnalMethod.getSquareSize(value, sqrtFactor,
-					coefType);
+			case SQUARE:
+				symbolSize = proportionnalMethod.getSquareSize(value, sqrtFactor,
+						coefType);
 
-			break;
+				break;
 
-		case LOGARITHMIC:
+			case LOGARITHMIC:
 
-			symbolSize = proportionnalMethod
-					.getLogarithmicSize(value, coefType);
+				symbolSize = proportionnalMethod.getLogarithmicSize(value, coefType);
 
-			break;
+				break;
 		}
 		return symbolSize;
 	}
@@ -192,8 +194,7 @@ public class DefaultProportionalPointLegend extends AbstractCartoLegend
 	public Object getJAXBObject() {
 		ProportionalLegendType xmlLegend = new ProportionalLegendType();
 		save(xmlLegend);
-		SymbolManager sm = (SymbolManager) Services
-				.getService(SymbolManager.class);
+		SymbolManager sm = (SymbolManager) Services.getService(SymbolManager.class);
 		xmlLegend.setSampleSymbol(sm.getJAXBSymbol(symbol));
 		xmlLegend.setMethod(getMethod());
 		xmlLegend.setMaxSize(getMaxSize());
@@ -205,21 +206,18 @@ public class DefaultProportionalPointLegend extends AbstractCartoLegend
 
 	public void setJAXBObject(Object jaxbObject) {
 		LegendContainer xml = (LegendContainer) jaxbObject;
-		ProportionalLegendType xmlLegend = (ProportionalLegendType) xml
-				.getLegendDescription();
+		ProportionalLegendType xmlLegend = (ProportionalLegendType) xml.getLegendDescription();
 		load(xmlLegend);
 		setMethod(xmlLegend.getMethod());
 		setMaxSize(xmlLegend.getMaxSize());
-		SymbolManager sm = (SymbolManager) Services
-				.getService(SymbolManager.class);
+		SymbolManager sm = (SymbolManager) Services.getService(SymbolManager.class);
 		Symbol symbol = sm.getSymbolFromJAXB(xmlLegend.getSampleSymbol());
 		if (symbol != null) {
 			setSampleSymbol((StandardPointSymbol) symbol);
 		} else {
 			Services.getErrorManager().error(
 					"Unknown symbol: "
-							+ ((SimpleSymbolType) xmlLegend.getSampleSymbol())
-									.getSymbolTypeId() + ". Using default");
+					+ ((SimpleSymbolType) xmlLegend.getSampleSymbol()).getSymbolTypeId() + ". Using default");
 		}
 		setClassificationField(xmlLegend.getFieldName());
 	}
@@ -250,15 +248,15 @@ public class DefaultProportionalPointLegend extends AbstractCartoLegend
 
 	public void setMethod(int method) {
 		switch (method) {
-		case LINEAR:
-			setLinearMethod();
-			break;
-		case LOGARITHMIC:
-			setLogarithmicMethod();
-			break;
-		case SQUARE:
-			setSquareMethod(2);
-			break;
+			case LINEAR:
+				setLinearMethod();
+				break;
+			case LOGARITHMIC:
+				setLogarithmicMethod();
+				break;
+			case SQUARE:
+				setSquareMethod(2);
+				break;
 		}
 	}
 
@@ -299,9 +297,8 @@ public class DefaultProportionalPointLegend extends AbstractCartoLegend
 			Point geom = gf.createPoint(new Coordinate(lineStartX, textOffset
 					+ bigSize / 2));
 			RenderPermission renderPermission = new AllowAllRenderPermission();
-			big
-					.draw((Graphics2D) g, geom, new MapTransform(),
-							renderPermission);
+			big.draw((Graphics2D) g, geom, new MapTransform(),
+					renderPermission);
 
 			double realMaxSize = getSize(maxValue, 1);
 			double minValue = proportionnalMethod.getMinValue();
@@ -310,21 +307,19 @@ public class DefaultProportionalPointLegend extends AbstractCartoLegend
 			double meanSize = bigSize * (realMeanSize / realMaxSize);
 			drawCircle(g, bigSize, meanSize, textOffset, lineStartX, lineEndX,
 					renderPermission, NumberFormat.getInstance().format(
-							FormatUtils.round(meanValue, 3)));
+					FormatUtils.round(meanValue, 3)));
 
 			double realSmallSize = getSize(minValue, 1);
 			if (!Double.isInfinite(realSmallSize)) {
 				// proportional can give infinity sizes
 				double smallSize = bigSize * (realSmallSize / realMaxSize);
 				drawCircle(g, bigSize, smallSize, textOffset, lineStartX,
-						lineEndX, renderPermission, Double.toString(FormatUtils
-								.round(minValue, 3)));
+						lineEndX, renderPermission, Double.toString(FormatUtils.round(minValue, 3)));
 
 			}
 			g.drawLine(lineStartX, textOffset, lineEndX, textOffset);
 		} catch (DriverException e) {
-			Services.getErrorManager()
-					.error("Cannot get proportional image", e);
+			Services.getErrorManager().error("Cannot get proportional image", e);
 		}
 
 	}
@@ -380,10 +375,10 @@ public class DefaultProportionalPointLegend extends AbstractCartoLegend
 				maxWidth = (int) wHeader;
 			}
 
-			return new int[] { bigSize + xOffset + 10 + maxWidth,
-					(int) (height + r.getHeight() / 2) };
+			return new int[]{bigSize + xOffset + 10 + maxWidth,
+						(int) (height + r.getHeight() / 2)};
 		} else {
-			return new int[] { 0, 0 };
+			return new int[]{0, 0};
 		}
 	}
 
@@ -411,5 +406,4 @@ public class DefaultProportionalPointLegend extends AbstractCartoLegend
 	private String getHeader() {
 		return "Field: " + getClassificationField();
 	}
-
 }

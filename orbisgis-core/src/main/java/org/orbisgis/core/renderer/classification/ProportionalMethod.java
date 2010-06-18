@@ -36,8 +36,10 @@
  */
 package org.orbisgis.core.renderer.classification;
 
-import org.gdms.data.DataSource;
+import org.gdms.data.SpatialDataSourceDecorator;
 import org.gdms.driver.DriverException;
+import org.orbisgis.core.renderer.se.parameter.ParameterException;
+import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 import org.orbisgis.utils.I18N;
 
 /**
@@ -50,9 +52,9 @@ public class ProportionalMethod {
 	int LOGARITHMIC = 2;
 	int SQUARE = 3;
 
-	private DataSource ds;
-	private String fieldName;
+	private SpatialDataSourceDecorator ds;
 	private double maxValue;
+	private RealParameter value;
 
 	private final static int MIN_SURFACE = 10;
 
@@ -61,17 +63,18 @@ public class ProportionalMethod {
 	private double minValue;
 	private int method;
 
-	public ProportionalMethod(DataSource ds, String fieldName) {
+	public ProportionalMethod(SpatialDataSourceDecorator ds, RealParameter value) {
 		this.ds = ds;
-		this.fieldName = fieldName;
-
+		this.value = value;
 	}
 
 	// TODO what the surfRef parameter is used to
 	public void build(double minSymbolArea) throws DriverException,
-			ClassificationMethodException {
+			ClassificationMethodException,
+			ParameterException {
 
-		double[] valeurs = ClassificationUtils.getSortedValues(ds, fieldName);
+		double[] valeurs = ClassificationUtils.getSortedValues(ds,value);
+
 		maxValue = valeurs[valeurs.length - 1];
 		minValue = valeurs[0];
 

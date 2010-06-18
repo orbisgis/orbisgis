@@ -107,6 +107,14 @@ public class FeatureTypeStyle implements SymbolizerNode {
 		}
 	}
 
+	/**
+	 * This method remove everything in this feature type style
+	 */
+	public void clear() {
+		this.rules.clear();
+	}
+
+
 	public void export(String seFile) {
 		try {
 			JAXBContext jaxbContext = JAXBContext.newInstance(FeatureTypeStyleType.class);

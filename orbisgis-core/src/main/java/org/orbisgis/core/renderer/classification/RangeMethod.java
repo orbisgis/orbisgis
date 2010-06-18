@@ -36,15 +36,17 @@
  */
 package org.orbisgis.core.renderer.classification;
 
-import org.gdms.data.DataSource;
+import org.gdms.data.SpatialDataSourceDecorator;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
 import org.orbisgis.core.renderer.legend.carto.Interval;
+import org.orbisgis.core.renderer.se.parameter.ParameterException;
+import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 
 public class RangeMethod {
 
-	private DataSource ds;
+	private SpatialDataSourceDecorator sds;
 
 	private int nbCl;
 
@@ -52,27 +54,27 @@ public class RangeMethod {
 
 	private int rowCount;
 
-	private String fieldName;
+	private RealParameter value;
 
-	public RangeMethod(DataSource ds, String fieldName, int nbCl)
+	public RangeMethod(SpatialDataSourceDecorator sds, RealParameter value, int nbCl)
 			throws DriverException {
-		this.ds = ds;
+		this.sds = sds;
 		// Number of ranges
 		this.nbCl = nbCl;
-		this.fieldName = fieldName;
+		this.value = value;
 		ranges = new Range[nbCl];
-		rowCount = (int) ds.getRowCount();
+		rowCount = (int) sds.getRowCount();
 	}
 
 	/**
-	 * Quantiles intervalls
+	 * Quantiles intervals
 	 * 
 	 * Adpated from SCAP3 : http://w3.geoprdc.univ-tlse2.fr/scap/java/
 	 * 
 	 * @throws DriverException
 	 * 
 	 */
-	public void disecQuantiles() throws DriverException {
+	public void disecQuantiles() throws DriverException, ParameterException {
 
 		int i = 0;
 
@@ -93,7 +95,7 @@ public class RangeMethod {
 		}
 		// Calcul bornes
 		int compteur = 0;
-		double[] valeurs = ClassificationUtils.getSortedValues(ds, fieldName);
+		double[] valeurs = ClassificationUtils.getSortedValues(sds, value);
 		for (i = 0; i < nbCl; i++) {
 			ranges[i].setMinRange(valeurs[compteur]);
 			compteur += ranges[i].getNumberOfItems();
@@ -104,16 +106,16 @@ public class RangeMethod {
 	}
 
 	/**
-	 * Equal intervalls method (equivalence)
+	 * Equal interval method (equivalence)
 	 * 
 	 * Adpated from SCAP3 : http://w3.geoprdc.univ-tlse2.fr/scap/java/
 	 * 
 	 * @throws DriverException
 	 * 
 	 */
-	public void disecEquivalences() throws DriverException {
+	public void disecEquivalences() throws DriverException, ParameterException {
 		int i = 0;
-		double[] valeurs = ClassificationUtils.getSortedValues(ds, fieldName);
+		double[] valeurs = ClassificationUtils.getSortedValues(sds, value);
 		double min = valeurs[0];
 		double max = valeurs[rowCount - 1];
 		double largeur = (max - min) / nbCl;
@@ -170,14 +172,14 @@ public class RangeMethod {
 	 *             The ranges are available only for 2, 4 and 8.
 	 * 
 	 */
-	public void disecMean() throws DriverException {
+	public void disecMean() throws DriverException, ParameterException {
 
 		if ((nbCl != 2) && ((nbCl != 4) && (nbCl != 8))) {
 			throw new IllegalArgumentException(
 					"Only 2,4 or 8 intervals allowed");
 		}
 
-		double[] valeurs = ClassificationUtils.getSortedValues(ds, fieldName);
+		double[] valeurs = ClassificationUtils.getSortedValues(sds, value);
 		double min = valeurs[0];
 		double max = valeurs[rowCount - 1];
 		double M = 0;
@@ -293,7 +295,7 @@ public class RangeMethod {
 
 	/**
 	 * 
-	 * Standard discretization
+	 * Standard discretisation
 	 * 
 	 * Adpated from SCAP3 : http://w3.geoprdc.univ-tlse2.fr/scap/java/
 	 * 
@@ -301,10 +303,10 @@ public class RangeMethod {
 	 *             Only 3,5 or 7 intervals allowed.
 	 * 
 	 */
-	public void disecStandard() throws DriverException {
+	public void disecStandard() throws DriverException, ParameterException {
 
 		// Discrétisation équivalences : calcul des bornes et des tailles
-		double[] valeurs = ClassificationUtils.getSortedValues(ds, fieldName);
+		double[] valeurs = ClassificationUtils.getSortedValues(sds, value);
 		double moyenne = getMean(valeurs, 0, valeurs.length);
 		double ec = getEcType(valeurs);
 		if ((moyenne - (ec / 2)) < valeurs[0])
@@ -496,11 +498,11 @@ public class RangeMethod {
 	 * @return break values for classes. E.g. for 4 ranges 3 breaks are
 	 *         returned. Min and Max Values are not returned.
 	 */
-	public void disecNaturalBreaks() throws DriverException {
+	public void disecNaturalBreaks() throws DriverException, ParameterException {
 
 		double[] limits = new double[nbCl - 1];
 		int[] itemsCount = new int[nbCl - 1];
-		double[] valeurs = ClassificationUtils.getSortedValues(ds, fieldName);
+		double[] valeurs = ClassificationUtils.getSortedValues(sds, value);
 
 		int numData = valeurs.length;
 
@@ -535,17 +537,12 @@ public class RangeMethod {
 							mat1[l][j] = i3;
 							mat2[l][j] = v + mat2[i4][j - 1];
 						}
-						;
 					}
-					;
 				}
-				;
 			}
-			;
 			mat1[l][1] = 1;
 			mat2[l][1] = v;
 		}
-		;
 
 		int k = numData;
 		int nextK = 0;

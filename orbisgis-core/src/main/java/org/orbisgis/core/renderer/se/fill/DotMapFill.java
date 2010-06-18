@@ -13,12 +13,25 @@ import org.orbisgis.core.renderer.persistance.se.DotMapFillType;
 import org.orbisgis.core.renderer.persistance.se.ObjectFactory;
 import org.orbisgis.core.renderer.se.graphic.GraphicCollection;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
+import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 
-public class DotMapFill extends Fill {
+public final class DotMapFill extends Fill {
 
     DotMapFill(JAXBElement<DotMapFillType> f) {
-        throw new UnsupportedOperationException("Not yet implemented");
+		DotMapFillType dmf = f.getValue();
+
+		if (dmf.getGraphic() != null){
+        	this.setMark(new GraphicCollection(dmf.getGraphic(), this));
+		}
+
+		if (dmf.getValuePerMark() != null){
+			this.setQuantityPerMark(SeParameterFactory.createRealParameter(dmf.getValuePerMark()));
+		}
+
+		if (dmf.getValueToRepresent() != null){
+			this.setTotalQuantity(SeParameterFactory.createRealParameter(dmf.getValueToRepresent()));
+		}
     }
 
     public void setMark(GraphicCollection mark) {
@@ -46,14 +59,6 @@ public class DotMapFill extends Fill {
         return totalQuantity;
     }
 
-    /**
-     *
-     * @param g2 draw within this graphics2d
-     * @param shp fill this shape
-     * @param ds feature came from this datasource
-     * @param fid id of the feature to draw
-     * @throws IOException
-     */
     @Override
     public void draw(Graphics2D g2, Shape shp, Feature feat, boolean selected, MapTransform mt) throws ParameterException, IOException {
         if (mark != null && totalQuantity != null && quantityPerMark != null) {
@@ -65,6 +70,7 @@ public class DotMapFill extends Fill {
 
                 int n = (int) (total / perMark);
 
+				System.out.println ("DotMapFill not yet implemented (n: " + n + ")");
                 // TODO handle selected ! 
                 // TODO IMPLEMENT
                 // The graphics2d m has to be plotted n times within shp

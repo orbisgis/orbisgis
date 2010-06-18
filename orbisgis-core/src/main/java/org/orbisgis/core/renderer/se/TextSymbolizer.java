@@ -20,7 +20,7 @@ import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 import org.orbisgis.core.renderer.se.transform.Transform;
 
-public class TextSymbolizer extends VectorSymbolizer {
+public final class TextSymbolizer extends VectorSymbolizer {
 
     public TextSymbolizer(){
         label = new PointLabel();

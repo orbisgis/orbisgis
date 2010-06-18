@@ -121,6 +121,11 @@ public abstract class Names {
     public static final String POPUP_TOC_FEATURETYPESTYLE_IMPORT = I18N.getText("orbisgis.ui.popupmenu.TOC.featureTypeStype.import");
     public static final String POPUP_TOC_FEATURETYPESTYLE_EXPORT = I18N.getText("orbisgis.ui.popupmenu.TOC.featureTypeStype.export");
     public static final String POPUP_TOC_FEATURETYPESTYLE_EDIT_RULE = I18N.getText("orbisgis.ui.popupmenu.TOC.featureTypeStype.rule.edit");
+    public static final String POPUP_TOC_FEATURETYPE_STYLE_WIZARDS = I18N.getText("orbisgis.ui.popupmenu.TOC.featureTypeStype.wizards");
+
+
+	// Create SE Legend with Wizard
+    public static final String POPUP_TOC_FEATURETYPESTYLE_CREATE_CHOROPLETH = I18N.getText("orbisgis.ui.popupmenu.TOC.featureTypeStype.rule.choroWizard");
 
 	// Export...
 	public static final String POPUP_TOC_EXPORT_PATH1 = I18N.getText("orbisgis.ui.popupmenu.TOC.export.path1");

@@ -42,7 +42,7 @@ public final class DensityFill extends Fill {
                 this.setHatchesOrientation(SeParameterFactory.createRealParameter(t.getOrientation()));
             }
         } else {
-            t.getGraphic(); // TODO hangle grain
+            this.setMark(new GraphicCollection(t.getGraphic(), this));
         }
 
         if (t.getPercentage() != null) {
@@ -213,6 +213,18 @@ public final class DensityFill extends Fill {
                 RenderableGraphics g = mark.getGraphic(feat, selected, mt);
 
                 if (g != null) {
+					// Mark size:
+					double width = g.getWidth();
+					double height = g.getHeight();
+
+					System.out.println ("Percentage to cover: " + percentage);
+
+					// TO draw the mark within the tile
+					// 1) create the tile (BufferedImage)
+					// 2) get Graphics2D: tg = ile.createGraphics();
+					// 3) Draw the marks within the tile
+					//   -> tg.drawRenderedImage(g.createRendering(mt.getCurrentRenderContext()), AffineTransform.getTranslateInstance(x, y));
+
                     // TODO IMPLEMENT: create TexturePaint, see GraphicFill.getTexturePaint
                     // painter = new TexturePaint(...);
                 }

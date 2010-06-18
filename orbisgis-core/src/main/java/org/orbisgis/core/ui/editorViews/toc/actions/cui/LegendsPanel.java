@@ -391,14 +391,17 @@ public class LegendsPanel extends JPanel implements UIPanel, LegendContext {
 		return this;
 	}
 
+	@Override
 	public URL getIconURL() {
 		return UIFactory.getDefaultIcon();
 	}
 
+	@Override
 	public String getInfoText() {
 		return UIFactory.getDefaultOkMessage();
 	}
 
+	@Override
 	public String getTitle() {
 		return "Legend edition";
 	}

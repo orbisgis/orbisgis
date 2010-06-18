@@ -20,13 +20,17 @@ import org.orbisgis.core.renderer.se.common.Uom;
  *
  * @author maxence
  */
-public class Rule implements SymbolizerNode {
+public final class Rule implements SymbolizerNode {
 
 	private static final String DEFAULT_NAME = "Default Rule";
 
-	public Rule(ILayer layer) {
+	public Rule(){
 		symbolizer = new CompositeSymbolizer();
 		symbolizer.setParent(this);
+	}
+
+	public Rule(ILayer layer) {
+		this();
 
 		this.name = "Default Rule";
 

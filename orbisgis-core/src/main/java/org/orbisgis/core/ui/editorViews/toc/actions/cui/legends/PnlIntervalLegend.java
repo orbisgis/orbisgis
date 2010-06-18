@@ -44,11 +44,14 @@ import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import org.gdms.data.SpatialDataSourceDecorator;
 
 import org.gdms.data.types.GeometryConstraint;
 import org.gdms.data.types.TypeFactory;
@@ -62,6 +65,8 @@ import org.orbisgis.core.renderer.legend.Legend;
 import org.orbisgis.core.renderer.legend.carto.Interval;
 import org.orbisgis.core.renderer.legend.carto.IntervalLegend;
 import org.orbisgis.core.renderer.legend.carto.LegendFactory;
+import org.orbisgis.core.renderer.se.parameter.ParameterException;
+import org.orbisgis.core.renderer.se.parameter.real.RealAttribute;
 import org.orbisgis.core.renderer.symbol.Symbol;
 import org.orbisgis.core.renderer.symbol.SymbolFactory;
 import org.orbisgis.core.sif.CRFlowLayout;
@@ -269,8 +274,9 @@ public class PnlIntervalLegend extends PnlAbstractClassifiedLegend {
 	protected void addAllAction() {
 		RangeMethod rm = null;
 		try {
-			rm = new RangeMethod(legendContext.getLayer().getDataSource(),
-					(String) cmbFieldNames.getSelectedItem(),
+			SpatialDataSourceDecorator sds = legendContext.getLayer().getDataSource();
+			rm = new RangeMethod(sds,
+					new RealAttribute((String) cmbFieldNames.getSelectedItem(), sds),
 					(Integer) cmbIntervalCount.getSelectedItem());
 
 			int typeOfIntervals = cmbIntervalType.getSelectedIndex();
@@ -293,6 +299,10 @@ public class PnlIntervalLegend extends PnlAbstractClassifiedLegend {
 				break;
 			}
 
+
+		} catch (ParameterException ex) {
+			Services.getErrorManager().error("Cannot calculate intervals", ex);
+			return;
 		} catch (DriverException e) {
 			Services.getErrorManager().error("Cannot calculate intervals", e);
 			return;

@@ -63,10 +63,13 @@ import org.orbisgis.core.renderer.legend.carto.IntervalLegend;
 import org.orbisgis.core.renderer.legend.carto.LegendFactory;
 import org.orbisgis.core.renderer.legend.carto.ProportionalLegend;
 import org.orbisgis.core.renderer.legend.carto.UniqueSymbolLegend;
+import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.symbol.Symbol;
 import org.orbisgis.core.renderer.symbol.SymbolFactory;
 
 import com.vividsolutions.jts.geom.Envelope;
+import org.gdms.data.SpatialDataSourceDecorator;
+import org.orbisgis.core.renderer.se.parameter.real.RealAttribute;
 
 public class TestClassfication {
 
@@ -89,14 +92,15 @@ public class TestClassfication {
 
 	}
 
-	public static void testRangeMethod(File src) throws LayerException {
+	public static void testRangeMethod(File src) throws LayerException, ParameterException {
 		ILayer layer = getDataManager().createLayer(src);
 		layer.open();
 		DataSource ds;
 		try {
 			ds = layer.getDataSource();
-			RangeMethod intervalsDicretizationMethod = new RangeMethod(ds,
-					"PTOT90", 4);
+			SpatialDataSourceDecorator sds = new SpatialDataSourceDecorator(ds);
+			RangeMethod intervalsDicretizationMethod = new RangeMethod(sds,
+					new RealAttribute("PTOT90", sds), 4);
 
 			intervalsDicretizationMethod.disecMean();
 

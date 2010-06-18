@@ -107,6 +107,7 @@ import org.orbisgis.core.ui.plugins.help.OnlineHelpOrbisGISPlugIn;
 import org.orbisgis.core.ui.plugins.properties.ConfigurationPlugIn;
 import org.orbisgis.core.ui.plugins.status.FreeDefaultWorkspacePlugIn;
 import org.orbisgis.core.ui.plugins.status.WorkspaceNamePlugin;
+import org.orbisgis.core.ui.plugins.toc.CreateChoroplethPlugIn;
 import org.orbisgis.core.ui.plugins.toc.CreateGroupPlugIn;
 import org.orbisgis.core.ui.plugins.toc.EditLegendPlugIn;
 import org.orbisgis.core.ui.plugins.toc.EditRulePlugIn;
@@ -168,10 +169,11 @@ public class OrbisConfiguration implements Setup {
 	private ChangeWorkspacePlugIn changeWorkspacePlugIn = new ChangeWorkspacePlugIn();
 	
 	// TOC
-	private EditLegendPlugIn editLegendPlugIn = new EditLegendPlugIn();
+	//private EditLegendPlugIn editLegendPlugIn = new EditLegendPlugIn();
     private ImportFeatureTypeStylePlugIn importFTSPlugIn = new ImportFeatureTypeStylePlugIn();
-	private EditRulePlugIn editRulePlugIn = new EditRulePlugIn();
     private ExportFeatureTypeStylePlugIn exportFTSPlugIn = new ExportFeatureTypeStylePlugIn();
+    private CreateChoroplethPlugIn createChoroPlugIn = new CreateChoroplethPlugIn();
+	private EditRulePlugIn editRulePlugIn = new EditRulePlugIn();
     private SwitchToDraftPlugIn switchDraft = new SwitchToDraftPlugIn();
 	private ShowInTablePlugIn showInTablePlugIn = new ShowInTablePlugIn();
 	private SaveInFilePlugIn saveInFilePlugIn = new SaveInFilePlugIn();
@@ -296,9 +298,10 @@ public class OrbisConfiguration implements Setup {
 	private void configurePopup(PlugInContext context) {
 		try {
 			// TOC popup
-			editLegendPlugIn.initialize(context);
+			//editLegendPlugIn.initialize(context);
             importFTSPlugIn.initialize(context);
             exportFTSPlugIn.initialize(context);
+			createChoroPlugIn.initialize(context);
 			editRulePlugIn.initialize(context);
             switchDraft.initialize(context);
 			showInTablePlugIn.initialize(context);

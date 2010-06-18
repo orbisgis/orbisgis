@@ -38,32 +38,22 @@ package org.orbisgis.core.renderer.classification;
 
 import java.util.Arrays;
 
-import org.gdms.data.DataSource;
 import org.gdms.data.SpatialDataSourceDecorator;
 import org.gdms.driver.DriverException;
-import org.orbisgis.core.ui.editorViews.toc.actions.cui.legends.GeometryProperties;
+import org.orbisgis.core.renderer.se.parameter.ParameterException;
+import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 
 public class ClassificationUtils {
 
-	public static double[] getSortedValues(DataSource ds, String fieldName)
-			throws DriverException {
+	public static double[] getSortedValues(SpatialDataSourceDecorator sds, RealParameter value)
+			throws DriverException, ParameterException {
 
-		double[] values = new double[(int) ds.getRowCount()];
-		if (GeometryProperties.isFieldName(fieldName)) {
-			for (int i = 0; i < values.length; i++) {
-				values[i] = GeometryProperties.getPropertyValue(fieldName,
-						new SpatialDataSourceDecorator(ds).getGeometry(i))
-						.getAsDouble();
-			}
-		} else {
-			int fieldIndex = ds.getFieldIndexByName(fieldName);
-			for (int i = 0; i < values.length; i++) {
-				values[i] = ds.getFieldValue(i, fieldIndex).getAsDouble();
-			}
+		double[] values = new double[(int) sds.getRowCount()];
+		for (int i = 0; i < values.length; i++) {
+			values[i] = value.getValue(sds.getFeature(i));
 		}
 		Arrays.sort(values);
 		return values;
-
 	}
 
 }

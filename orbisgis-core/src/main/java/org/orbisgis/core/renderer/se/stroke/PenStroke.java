@@ -92,13 +92,10 @@ public final class PenStroke extends Stroke {
         }
 
         if (t.getDashArray() != null) {
-			System.out.println ("Read DASHARRAY from XML");
 			this.setDashArray(SeParameterFactory.createStringParameter(t.getDashArray()));
-			System.out.println ("This.dashArray => " + this.dashArray);
 		}
 
         if (t.getDashOffset() != null) {
-			System.out.println ("Read dash Offset !");
             this.setDashOffset(SeParameterFactory.createRealParameter(t.getDashOffset()));
         }
 
