@@ -185,7 +185,7 @@ public class DefaultWorkspace implements Workspace {
 			}
 		} else {
 			workspacesList.add(ogInfo.getUserHomeFolder().getAbsolutePath()
-					+ "/OrbisGIS");
+					+ File.separator + "OrbisGIS");
 		}
 
 		return workspacesList;
@@ -343,8 +343,8 @@ public class DefaultWorkspace implements Workspace {
 	}
 
 	public String getWorkspaceFolder() {
-		if(workspaceFolder!=null){
-		return workspaceFolder.getAbsolutePath();
+		if (workspaceFolder != null) {
+			return workspaceFolder.getAbsolutePath();
 		}
 		return null;
 	}

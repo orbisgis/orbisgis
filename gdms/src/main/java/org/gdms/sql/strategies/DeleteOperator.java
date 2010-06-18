@@ -36,20 +36,130 @@
  */
 package org.gdms.sql.strategies;
 
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.TreeSet;
+
+import org.gdms.data.DataSource;
+import org.gdms.data.DataSourceCreationException;
 import org.gdms.data.ExecutionException;
+import org.gdms.data.NoSuchTableException;
+import org.gdms.data.NonEditableDataSourceException;
 import org.gdms.data.metadata.Metadata;
+import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.ObjectDriver;
+import org.gdms.driver.driverManager.DriverLoadException;
+import org.gdms.sql.evaluator.EvaluationException;
+import org.gdms.sql.evaluator.Expression;
+import org.gdms.sql.evaluator.Field;
 import org.orbisgis.progress.IProgressMonitor;
+import org.orbisgis.utils.I18N;
 
-public class DeleteOperator extends AbstractOperator implements Operator {
+public class DeleteOperator extends AbstractExpressionOperator implements
+		Operator {
 
-	public ObjectDriver getResultContents(IProgressMonitor pm) throws ExecutionException {
+	private ArrayList<Field> fields = new ArrayList<Field>();
+	private ArrayList<Expression> values = new ArrayList<Expression>();
+	private Expression filterExpression;
+
+	@Override
+	protected Expression[] getExpressions() throws DriverException,
+			SemanticException {
+		ArrayList<Expression> ret = new ArrayList<Expression>();
+		ret.addAll(fields);
+		ret.addAll(values);
+		if (filterExpression != null) {
+			ret.add(filterExpression);
+		}
+
+		return ret.toArray(new Expression[0]);
+	}
+
+	public ObjectDriver getResultContents(IProgressMonitor pm)
+			throws ExecutionException {
+		ObjectDriver source = getOperator(0).getResult(pm);
+
+		try {
+			Field[] fieldReferences = getFieldReferences();
+			DefaultFieldContext selectionFieldContext = new DefaultFieldContext(
+					source);
+			for (Field field : fieldReferences) {
+				field.setFieldContext(selectionFieldContext);
+			}
+
+			ArrayList<Integer> indexes = new ArrayList<Integer>();
+			for (int i = 0; i < source.getRowCount(); i++) {
+				selectionFieldContext.setIndex(i);
+				if ((filterExpression == null)
+						|| evaluatesToTrue(new Expression[] { filterExpression })) {
+					indexes.add(i);
+				}
+			}
+
+			TreeSet<Integer> sorted = new TreeSet<Integer>(
+					new Comparator<Integer>() {
+
+						@Override
+						public int compare(Integer o1, Integer o2) {
+							return o2.compareTo(o1);
+						}
+					});
+			sorted.addAll(indexes);
+
+			String sourceName = getTableName();
+			final DataSource ds = getDataSourceFactory().getDataSource(
+					sourceName);
+
+			ds.open();
+			for (Integer integer : sorted) {
+				ds.deleteRow(integer);
+			}
+			ds.commit();
+
+			ds.close();
+
+		} catch (IncompatibleTypesException e) {
+			throw new ExecutionException(I18N.getText("Cannot filter table"), e);
+		} catch (EvaluationException e) {
+			throw new ExecutionException(I18N.getText("Cannot filter table"), e);
+		} catch (DriverException e) {
+			throw new ExecutionException(I18N.getText("Cannot filter table"), e);
+		} catch (DriverLoadException e) {
+			throw new ExecutionException(I18N.getText("Cannot delete rows"), e);
+		} catch (NoSuchTableException e) {
+			throw new ExecutionException(I18N.getText("Table not found"), e);
+		} catch (DataSourceCreationException e) {
+			throw new ExecutionException(I18N.getText("Cannot access table"), e);
+		} catch (NonEditableDataSourceException e) {
+			throw new ExecutionException(I18N
+					.getText("The source is not editable"), e);
+		} catch (SemanticException e) {
+			throw new ExecutionException("", e);
+		}
+
 		return null;
 	}
 
 	public Metadata getResultMetadata() throws DriverException {
 		return null;
+	}
+
+	private boolean evaluatesToTrue(Expression[] exprs)
+			throws EvaluationException {
+		for (Expression expression : exprs) {
+			if (!evaluatesToTrue(expression)) {
+				return false;
+			}
+		}
+
+		return true;
+	}
+
+	private static boolean evaluatesToTrue(Expression expression)
+			throws IncompatibleTypesException, EvaluationException {
+		Value expressionResult = expression.evaluate();
+		return !expressionResult.isNull() && expressionResult.getAsBoolean();
 	}
 
 }

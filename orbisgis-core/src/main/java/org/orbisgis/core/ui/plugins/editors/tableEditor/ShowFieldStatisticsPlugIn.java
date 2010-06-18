@@ -197,8 +197,7 @@ public class ShowFieldStatisticsPlugIn extends AbstractPlugIn {
 		if((editor=getPlugInContext().getTableEditor()) != null
 				&& getSelectedColumn()!=-1){
 			final TableEditableElement element = (TableEditableElement) editor
-					.getElement();
-			
+					.getElement();			
 			try {
 				Metadata metadata = element.getDataSource().getMetadata();
 				Type type = metadata.getFieldType(getSelectedColumn());
@@ -211,6 +210,7 @@ public class ShowFieldStatisticsPlugIn extends AbstractPlugIn {
 				case Type.LONG:
 				case Type.SHORT:
 					isEnabled = true;
+					break;
 				default:
 					isEnabled = false;
 				}

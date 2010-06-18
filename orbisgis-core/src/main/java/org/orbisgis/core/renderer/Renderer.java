@@ -58,9 +58,8 @@ import javax.imageio.ImageIO;
 import org.apache.log4j.Logger;
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceCreationException;
-import org.gdms.data.NoSuchTableException;
+import org.gdms.data.ExecutionException;
 import org.gdms.data.SpatialDataSourceDecorator;
-import org.gdms.data.indexes.DefaultSpatialIndexQuery;
 import org.gdms.data.indexes.IndexException;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.driverManager.DriverLoadException;
@@ -88,6 +87,8 @@ import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.index.quadtree.Quadtree;
 import java.util.ArrayList;
 import java.util.HashMap;
+import org.gdms.data.NoSuchTableException;
+import org.gdms.data.indexes.DefaultSpatialIndexQuery;
 import org.orbisgis.core.renderer.se.FeatureTypeStyle;
 import org.orbisgis.core.renderer.se.Rule;
 import org.orbisgis.core.renderer.se.Symbolizer;
@@ -122,6 +123,18 @@ public class Renderer {
 		return queryIndex;
 	}
 
+	/**
+	 * This method return a new data source containing only features which are
+	 * in the current map extent
+	 * The returned dataSource is a copy containing a special PK field (fieldID = 0)
+	 * which contains the initial index of the feature is sds
+	 *
+	 * The returned data source must be purged by the caller
+	 *
+	 * @param mt the current map transform
+	 * @param sds the layer to render
+	 * @return
+	 */
 	private SpatialDataSourceDecorator getNewSdsPkFeatureInExtent(MapTransform mt, SpatialDataSourceDecorator sds) {
 		/*
 		if (mt.getAdjustedExtent() > sds.getFullExtent()){
@@ -131,24 +144,38 @@ public class Renderer {
 		Envelope extent = mt.getAdjustedExtent();
 
 		try {
-			String query = "select autonumeric() as pk, * from " + sds.getName();
+			String query = "select autonumeric()-1 as pk, * from " + sds.getName();
 
-			DataSource dataSourceFromSQL = sds.getDataSourceFactory().getDataSourceFromSQL(query);
+			// TODO FIND A WAY TO AVOID THIS DATASOURCE CREATION !
+			DataSource dsWithPk = sds.getDataSourceFactory().getDataSourceFromSQL(query);
 
-			query = "SELECT * from " + dataSourceFromSQL.getName()
-					+ " WHERE ST_Intersects(ST_GeomFromText('POLYGON(("
-					+ extent.getMinX() + " " + extent.getMinY() + ","
-					+ extent.getMinX() + " " + extent.getMaxY() + ","
-					+ extent.getMaxX() + " " + extent.getMaxY() + ","
-					+ extent.getMaxX() + " " + extent.getMinY() + ","
-					+ extent.getMinX() + " " + extent.getMinY() + "))'), " + sds.getSpatialFieldName() + ")";
+			System.out.println("DataSource With PK: " + dsWithPk.getName());
+			SpatialDataSourceDecorator newSds = null;
 
-			return new SpatialDataSourceDecorator(sds.getDataSourceFactory().getDataSourceFromSQL(query));
+			// Test if the current map extent contains the layer full extent,
+			// we don't need to execute the query !
+			if (!extent.contains(sds.getFullExtent())) {
+				// fetch only feature in the current map extent
+				query = "SELECT * from " + dsWithPk.getName()
+						+ " WHERE ST_Intersects(ST_GeomFromText('POLYGON(("
+						+ extent.getMinX() + " " + extent.getMinY() + ","
+						+ extent.getMinX() + " " + extent.getMaxY() + ","
+						+ extent.getMaxX() + " " + extent.getMaxY() + ","
+						+ extent.getMaxX() + " " + extent.getMinY() + ","
+						+ extent.getMinX() + " " + extent.getMinY() + "))'), " + sds.getSpatialFieldName() + ")";
+				newSds = new SpatialDataSourceDecorator(sds.getDataSourceFactory().getDataSourceFromSQL(query));
+				System.out.println("SpatialDataSource with feature in extent : " + newSds.getName());
+			} else {
+				// Return the whole layer with the special PK field (fieldId = 0)
+				newSds = new SpatialDataSourceDecorator(dsWithPk);
+				System.out.println("DataSource with all features: " + newSds.getName());
+			}
+
+			return newSds;
 		} catch (Exception e) {
 			// Query failed
-			System.out.println("The query fails");
+			return null;
 		}
-		return sds;
 	}
 
 	/**
@@ -196,103 +223,118 @@ public class Renderer {
 			// Create new dataSource with only feature in current extent
 			SpatialDataSourceDecorator featureInExtent = this.getNewSdsPkFeatureInExtent(mt, sds);
 
-			HashSet<Integer> allFid = new HashSet<Integer>();
-			HashSet<Integer> elseFid = new HashSet<Integer>();
+			if (featureInExtent != null) {
 
-			featureInExtent.open();
-			/*
-			 * Extract features id
-			 * Hash sets contain features in current extent
-			 * elseFid will be used for feature which doesn't match any rule
-			 */
-			for (int i = 0; i < featureInExtent.getRowCount(); i++) {
-				Integer index = featureInExtent.getFieldValue(i, 0).getAsInt() - 1;
-				allFid.add(index);
-				elseFid.add(index);
-			}
+				HashSet<Integer> allFid = new HashSet<Integer>();
+				HashSet<Integer> elseFid = new HashSet<Integer>();
 
-			/*
-			 * Assign features id to rules
-			 */
-			HashMap<Rule, HashSet<Integer>> rulesFid = new HashMap<Rule, HashSet<Integer>>();
-			for (Rule r : rList) {
-
-				/*if (layer.getName().equals("g4districts98_region")){
-				System.out.println("Toggle where clause...");
-				r.setWhere("WHERE AK = 'VD'");
-				}*/
-
-				SpatialDataSourceDecorator filteredDs = r.getFilteredDataSource(featureInExtent);
-
-				filteredDs.open();
-				HashSet<Integer> fids = new HashSet<Integer>();
-
-				for (int i = 0; i < filteredDs.getRowCount(); i++) {
-					Integer index = filteredDs.getFieldValue(i, 0).getAsInt() - 1;
-					fids.add(index);
-					/* Every feature that match a rule is removed from elsefid set*/
-					elseFid.remove(index);
+				featureInExtent.open();
+				/*
+				 * Extract features id
+				 * Hash sets contain features in current extent
+				 * elseFid will be used for feature which doesn't match any rule
+				 */
+				for (int i = 0; i < featureInExtent.getRowCount(); i++) {
+					Integer index = featureInExtent.getFieldValue(i, 0).getAsInt();
+					allFid.add(index);
+					elseFid.add(index);
 				}
-				filteredDs.close();
 
-				rulesFid.put(r, fids);
-			}
+				/*
+				 * Assign features id to rules
+				 */
+				HashMap<Rule, HashSet<Integer>> rulesFid = new HashMap<Rule, HashSet<Integer>>();
+				for (Rule r : rList) {
 
-			// ElseFilter
-			// Assign features which doesn't match any rule to FallbackRules
-			for (Rule elseR : fRList) {
-				rulesFid.put(elseR, elseFid);
-			}
+					/*if (layer.getName().equals("g4districts98_region")){
+					System.out.println("Toggle where clause...");
+					r.setWhere("WHERE AK = 'VD'");
+					}*/
 
-			HashSet<Integer> selected = new HashSet<Integer>();
-			int[] selection = layer.getSelection();
+					SpatialDataSourceDecorator filteredDs = r.getFilteredDataSource(featureInExtent);
 
-			/* Populate selected fid with only fid within extent */
-			for (int f_i = 0; f_i < selection.length; f_i++) {
-				if (allFid.contains(selection[f_i])) {
-					selected.add(selection[f_i]);
-				}
-			}
+					filteredDs.open();
+					HashSet<Integer> fids = new HashSet<Integer>();
 
-			long tV2 = System.currentTimeMillis();
-			System.out.println("Filtering done in " + (tV2 - tV1) + "[ms]");
-
-			//
-			// And now, features will be rendered
-			//
-
-			// How many object to process ?
-			// - e.g. 1 feature with 3 effective symbolizers is count as 3 objects
-			long total = 0;
-			for (Symbolizer s : symbs) {
-				total += rulesFid.get(s.getRule()).size();
-			}
-
-			for (Symbolizer s : symbs) {
-				pm.startTask("Drawing " + layer.getName());
-				Iterator<Integer> featIt = rulesFid.get(s.getRule()).iterator();
-
-				Integer fid = 0;
-
-				long tf1 = System.currentTimeMillis();
-				while (featIt.hasNext()) {
-					if (layerCount % 1000 == 0) {
-						if (pm.isCancelled()) {
-							return layerCount;
-						}
+					for (int i = 0; i < filteredDs.getRowCount(); i++) {
+						Integer index = filteredDs.getFieldValue(i, 0).getAsInt();
+						fids.add(index);
+						/* Every feature that match a rule is removed from elsefid set*/
+						elseFid.remove(index);
+					}
+					filteredDs.close();
+					try {
+						// Once we have fids into hash set, we doesn't need filteredDs anymore
+						filteredDs.getDataSourceFactory().executeSQL("DROP TABLE " + filteredDs.getName() + " PURGE;");
+					} catch (ExecutionException ex) {
+						java.util.logging.Logger.getLogger(Renderer.class.getName()).log(Level.SEVERE, "Could nod purge internal datasource!", ex);
 					}
 
-					fid = featIt.next();
-					s.draw(g2, sds.getFeature(fid), selected.contains(fid), mt);
-					pm.progressTo((int) (100 * ++layerCount / total));
+					rulesFid.put(r, fids);
 				}
-				long tf2 = System.currentTimeMillis();
-				System.out.println("Level done in " + (tf2 - tf1) + "[ms]");
-				pm.endTask();
+
+				featureInExtent.close();
+				try {
+					featureInExtent.getDataSourceFactory().executeSQL("DROP TABLE " + featureInExtent.getName() + " PURGE;");
+				} catch (ExecutionException ex) {
+					java.util.logging.Logger.getLogger(Renderer.class.getName()).log(Level.SEVERE, "Could not purge 'inExtent' internal DataSource!", ex);
+				}
+
+				// ElseFilter
+				// Assign features which doesn't match any rule to FallbackRules
+				for (Rule elseR : fRList) {
+					rulesFid.put(elseR, elseFid);
+				}
+
+				HashSet<Integer> selected = new HashSet<Integer>();
+				int[] selection = layer.getSelection();
+
+				/* Populate selected fid with only fid within extent */
+				for (int f_i = 0; f_i < selection.length; f_i++) {
+					if (allFid.contains(selection[f_i])) {
+						selected.add(selection[f_i]);
+					}
+				}
+
+				long tV2 = System.currentTimeMillis();
+				System.out.println("Filtering done in " + (tV2 - tV1) + "[ms]");
+
+				//
+				// And now, features will be rendered
+				//
+
+				// How many object to process ?
+				// - e.g. 1 feature with 3 effective symbolizers is count as 3 objects
+				long total = 0;
+				for (Symbolizer s : symbs) {
+					total += rulesFid.get(s.getRule()).size();
+				}
+
+				for (Symbolizer s : symbs) {
+					pm.startTask("Drawing " + layer.getName());
+					Iterator<Integer> featIt = rulesFid.get(s.getRule()).iterator();
+
+					Integer fid = 0;
+
+					long tf1 = System.currentTimeMillis();
+					while (featIt.hasNext()) {
+						if (layerCount % 1000 == 0) {
+							if (pm.isCancelled()) {
+								return layerCount;
+							}
+						}
+
+						fid = featIt.next();
+						s.draw(g2, sds.getFeature(fid), selected.contains(fid), mt);
+						pm.progressTo((int) (100 * ++layerCount / total));
+					}
+					long tf2 = System.currentTimeMillis();
+					System.out.println("Level done in " + (tf2 - tf1) + "[ms]");
+					pm.endTask();
+				}
+				long tV3 = System.currentTimeMillis();
+				System.out.println("Rendering done :" + (tV3 - tV2) + "[ms] (" + layerCount + "objects)");
 			}
-			featureInExtent.close();
-			long tV3 = System.currentTimeMillis();
-			System.out.println("Rendering done :" + (tV3 - tV2) + "[ms] (" + layerCount + "objects)");
 
 		} catch (DriverException ex) {
 			java.util.logging.Logger.getLogger("Could not draw " + layer.getName()).log(Level.SEVERE, null, ex);
@@ -309,10 +351,8 @@ public class Renderer {
 		} catch (IOException ex) {
 			java.util.logging.Logger.getLogger(Renderer.class.getName()).log(Level.SEVERE, null, ex);
 		}
-
 		return layerCount;
 	}
-
 
 	public void draw(Graphics2D g2dMap, int width, int height,
 			Envelope extent, ILayer layer, IProgressMonitor pm) {
@@ -345,9 +385,12 @@ public class Renderer {
 		BufferedImage image = mt.getImage();
 		Graphics2D g2 = image.createGraphics();
 
-		this.draw(mt, g2, image.getWidth(), image.getHeight(), layer, pm);
-	}
 
+
+		this.draw(mt, g2, image.getWidth(), image.getHeight(), layer, pm);
+
+
+	}
 
 	/**
 	 * Draws the content of the layer in the specified graphics
@@ -386,7 +429,8 @@ public class Renderer {
 
 		long total1 = System.currentTimeMillis();
 
-		for (int i = layers.length - 1; i >= 0; i--) {
+		for (int i = layers.length - 1; i
+				>= 0; i--) {
 			if (pm.isCancelled()) {
 				break;
 			} else {
@@ -400,7 +444,8 @@ public class Renderer {
 						// WMS server
 						WMSStatus status = (WMSStatus) layer.getWMSConnection().getStatus().clone();
 						if (i > 0) {
-							for (int j = i - 1; (j >= 0)
+							for (int j = i - 1;
+									(j >= 0)
 									&& (layers[j].isWMS() || !layers[j].isVisible()); j--) {
 								if (layers[j].isVisible()) {
 									i = j;
@@ -414,7 +459,8 @@ public class Renderer {
 							}
 						}
 						WMSConnection conn = new WMSConnection(layer.getWMSConnection().getClient(), status);
-						drawWMS(g2, width, height, extent, conn);
+						drawWMS(
+								g2, width, height, extent, conn);
 					} else {
 						SpatialDataSourceDecorator sds = layer.getDataSource();
 						if (sds != null) {
@@ -431,12 +477,16 @@ public class Renderer {
 							}
 							pm.progressTo(100
 									- (100 * i) / layers.length);
+
+
 						}
 
 
 					}
 					long t2 = System.currentTimeMillis();
 					logger.info("Rendering time:" + (t2 - t1) + " for " + count + " features");
+
+
 				}
 			}
 		}
@@ -444,11 +494,15 @@ public class Renderer {
 		long total2 = System.currentTimeMillis();
 		logger.info("Total rendering time:" + (total2 - total1));
 
+
+
 	}
 
 	private boolean sameServer(ILayer layer, ILayer layer2) {
 		return layer.getWMSConnection().getClient().getHost().equals(
 				layer2.getWMSConnection().getClient().getHost());
+
+
 
 
 	}
@@ -461,10 +515,15 @@ public class Renderer {
 		status.setExtent(new Rectangle2D.Double(extent.getMinX(), extent.getMinY(), extent.getWidth(), extent.getHeight()));
 
 
+
+
 		try {
 			File file = connection.getClient().getMap(status, null);
 			BufferedImage image = ImageIO.read(file);
 			g2.drawImage(image, 0, 0, null);
+
+
+
 
 
 
@@ -478,6 +537,8 @@ public class Renderer {
 			Services.getService(ErrorManager.class).error(
 					"Cannot get WMS image", e);
 		}
+
+
 
 
 	}
@@ -499,20 +560,23 @@ public class Renderer {
 		MapTransform mt = new MapTransform();
 		mt.setExtent(extent);
 		mt.setImage(img);
-		draw(mt, layer, pm);
+		draw(
+				mt, layer, pm);
+
+
 	}
 
 	/*
 	private Iterator<Integer> getIterator(Envelope adjustedExtent,
-			SpatialDataSourceDecorator sds) throws DriverException {
-		if (adjustedExtent.equals(sds.getFullExtent())) {
-			return new DataSourceIterator(sds);
-		} else {
-			DefaultSpatialIndexQuery query = new DefaultSpatialIndexQuery(
-					adjustedExtent, sds.getMetadata().getFieldName(
-							sds.getSpatialFieldIndex()));
-			return sds.queryIndex(query);
-		}
+	SpatialDataSourceDecorator sds) throws DriverException {
+	if (adjustedExtent.equals(sds.getFullExtent())) {
+	return new DataSourceIterator(sds);
+	} else {
+	DefaultSpatialIndexQuery query = new DefaultSpatialIndexQuery(
+	adjustedExtent, sds.getMetadata().getFieldName(
+	sds.getSpatialFieldIndex()));
+	return sds.queryIndex(query);
+	}
 
 	}
 
@@ -564,6 +628,16 @@ public class Renderer {
 	 */
 	public void draw(BufferedImage img, Envelope extent, ILayer layer) {
 		draw(img, extent, layer, new NullProgressMonitor());
+
+
+
+
+
+
+
+
+
+
 	}
 
 	private class DefaultRendererPermission implements RenderPermission {
@@ -624,20 +698,32 @@ public class Renderer {
 
 
 
+
+
 		if (colorModel instanceof DirectColorModel) {
 			DirectColorModel directColorModel = (DirectColorModel) colorModel;
+
+
 
 
 			int red = directColorModel.getRedMask();
 
 
+
+
 			int blue = directColorModel.getBlueMask();
+
+
 
 
 			int green = directColorModel.getGreenMask();
 
 
+
+
 			int alpha = directColorModel.getAlphaMask();
+
+
 
 
 			int[] components = new int[3];
@@ -658,11 +744,17 @@ public class Renderer {
 			colorProcessor.setColorModel(directColorModel);
 
 
+
+
 			return colorProcessor.createImage();
+
+
 
 
 		}
 		return bufferedImage;
+
+
 
 
 	}
@@ -682,17 +774,24 @@ public class Renderer {
 			return red;
 
 
+
+
 		} else if (rgbChar == 'g') {
 			return green;
+
+
 
 
 		} else if (rgbChar == 'b') {
 			return blue;
 
 
+
+
 		} else {
 			throw new IllegalArgumentException(
 					"The RGB code doesn't contain RGB codes");
+
 
 
 		}

@@ -19,6 +19,8 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.TreeSet;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.swing.DefaultListSelectionModel;
 import javax.swing.Icon;
@@ -45,6 +47,7 @@ import javax.swing.table.TableColumnModel;
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceCreationException;
 import org.gdms.data.DataSourceFactory;
+import org.gdms.data.ExecutionException;
 import org.gdms.data.edition.EditionEvent;
 import org.gdms.data.edition.EditionListener;
 import org.gdms.data.edition.FieldEditionEvent;
@@ -221,8 +224,9 @@ public class TableComponent extends JPanel implements WorkbenchFrame {
 
 					} else {
 						String pkName = "pk_" + dataSource.getName();
-						findAValue("SELECT autonumeric() - 1 as " + pkName + ", *"
-                                 + "FROM " + dataSource.getName() , pkName, whereText);
+						findAValue("SELECT autonumeric() - 1 as " + pkName
+								+ ", *" + "FROM " + dataSource.getName(),
+								pkName, whereText);
 					}
 				}
 			}
@@ -321,12 +325,12 @@ public class TableComponent extends JPanel implements WorkbenchFrame {
 			int columnType = tableModel.getColumnType(i).getTypeCode();
 
 			col.setHeaderValue(columnName);
-			TableCellRenderer renderer = renderers.get(columnName);
+			TableCellRenderer tableCellRenderer = renderers.get(columnName);
 
-			if (renderer == null) {
-				renderer = new ButtonHeaderRenderer();
+			if (tableCellRenderer == null) {
+				tableCellRenderer = new ButtonHeaderRenderer();
 			}
-			col.setHeaderRenderer(renderer);
+			col.setHeaderRenderer(tableCellRenderer);
 
 			Integer width = widths.get(columnName);
 			if (width == null) {
@@ -503,7 +507,8 @@ public class TableComponent extends JPanel implements WorkbenchFrame {
 				try {
 					DataSourceFactory dsf = dataSource.getDataSourceFactory();
 
-					// Step 1: create a copy of the data source  with the pk_field
+					// Step 1: create a copy of the data source with the
+					// pk_field
 					DataSource dsWithPk = dsf.getDataSourceFromSQL(query + " ;",
 							pm);
 
@@ -519,13 +524,21 @@ public class TableComponent extends JPanel implements WorkbenchFrame {
 					pm.startTask("Data matching");
 					dsWithPk.open();
 
-					int[] sel = new int[(int)dsRowCount];
+					int[] sel = new int[(int) dsRowCount];
 					for (int i = 0; i < dsRowCount; i++) {
-						sel[i] = dsWithPkFiltered.getFieldValue(i, 0).getAsInt();
+						sel[i] = dsWithPkFiltered.getFieldValue(i, 0)
+								.getAsInt();
 					}
 
 					dsWithPkFiltered.close();
 					dsWithPk.close();
+					try {
+						dsf.executeSQL("DROP TABLE " + dsWithPk.getName() + " PURGE;");
+						dsf.executeSQL("DROP TABLE " + dsWithPkFiltered.getName() + " PURGE;");
+					} catch (ExecutionException ex) {
+						Logger.getLogger(TableComponent.class.getName()).log(Level.SEVERE, "Could not purge internal data source", ex);
+					}
+
 
 					// TODO : Purge dsWithPk and dsWithPkFiltered
 
@@ -563,10 +576,6 @@ public class TableComponent extends JPanel implements WorkbenchFrame {
 			}
 		}
 		fireTableDataChanged();
-	}
-
-	private TableEditorPlugIn getEditor() {
-		return editor;
 	}
 
 	private class SyncSelectionListener implements SelectionListener {
@@ -638,52 +647,55 @@ public class TableComponent extends JPanel implements WorkbenchFrame {
 	private abstract class PopupMouseAdapter extends MouseAdapter {
 		WorkbenchContext wbContext = Services
 				.getService(WorkbenchContext.class);
-
+		
 		@Override
 		public void mousePressed(MouseEvent e) {
 			updateContext(e);
 			popup(e);
+
 		}
 
 		@Override
 		public void mouseReleased(MouseEvent e) {
-			// updateContext(e);
 			popup(e);
 		}
 
+		/**
+		 * This method is used to update the popup context. Used in plugin to
+		 * determine when it's showing.
+		 * 
+		 * @param e
+		 */
 		private void updateContext(MouseEvent e) {
+			boolean oneColumnHeaderIsSelected = table.getTableHeader().contains(
+					e.getPoint());
+			selectedColumn = table.columnAtPoint(e.getPoint());
 			if (e.isPopupTrigger()) {
-				if ("ColumnAction".equals(getExtensionPointId()))
+				if (oneColumnHeaderIsSelected) {
 					wbContext.setHeaderSelected(selectedColumn);
-				else
+				} else {
 					wbContext.setRowSelected(e);
-			} else
+				}
+			} else {
 				wbContext.setRowSelected(e);
+			}
 		}
 
 		private void popup(final MouseEvent e) {
 
 			final Component component = getComponent();
-			selectedColumn = table.columnAtPoint(e.getPoint());
-
-			TableColumn col = table.getTableHeader().getColumnModel()
-					.getColumn(selectedColumn);
-
-			col.setHeaderRenderer(new ButtonHeaderRenderer());
-
-			table.getTableHeader().resizeAndRepaint();
-
 			component.repaint();
-
-			JComponent[] menus = null;
-			final JPopupMenu pop = getPopupMenu();
-			menus = wbContext.getWorkbench().getFrame().getMenuTableTreePopup()
-					.getJMenus();
-			for (JComponent menu : menus) {
-				pop.add(menu);
-			}
-			if (e.isPopupTrigger())
+			if (e.isPopupTrigger()) {
+				JComponent[] menus = null;
+				final JPopupMenu pop = getPopupMenu();
+				menus = wbContext.getWorkbench().getFrame()
+						.getMenuTableTreePopup().getJMenus();
+				for (JComponent menu : menus) {
+					pop.add(menu);
+				}
 				pop.show(component, e.getX(), e.getY());
+			}
+
 		}
 
 		protected void addMenu(JPopupMenu pop, String text, Icon icon,
@@ -981,7 +993,8 @@ public class TableComponent extends JPanel implements WorkbenchFrame {
 		}
 	}
 
-	class ButtonHeaderRenderer extends JButton implements TableCellRenderer {
+	public class ButtonHeaderRenderer extends JButton implements
+			TableCellRenderer {
 
 		public ButtonHeaderRenderer() {
 			setMargin(new Insets(0, 0, 0, 0));
@@ -993,6 +1006,9 @@ public class TableComponent extends JPanel implements WorkbenchFrame {
 				int column) {
 			setText((value == null) ? "" : value.toString());
 			boolean isPressed = (column == selectedColumn);
+			if (isPressed) {
+				setPressedColumn(column);
+			}
 			getModel().setPressed(isPressed);
 			getModel().setArmed(isPressed);
 			return this;
@@ -1001,5 +1017,9 @@ public class TableComponent extends JPanel implements WorkbenchFrame {
 		public void setPressedColumn(int col) {
 			selectedColumn = col;
 		}
+	}
+
+	public int getSelectedColumn() {
+		return selectedColumn;
 	}
 }

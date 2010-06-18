@@ -204,7 +204,7 @@ public class DefaultMapContext implements MapContext {
 					try {
 						layer.open();
 						layer.addLayerListenerRecursively(openerListener);
-						checkLayerCRS(layer);
+						//checkLayerCRS(layer);
 					} catch (LayerException ex) {
 						Services.getErrorManager().error(
 								"Cannot open layer: " + layer.getName()
@@ -217,8 +217,6 @@ public class DefaultMapContext implements MapContext {
 									"Cannot remove layer: " + layer.getName(),
 									ex);
 						}
-					} catch (DriverException e1) {
-						e1.printStackTrace();
 					}
 				}
 			}
@@ -456,12 +454,12 @@ public class DefaultMapContext implements MapContext {
 				Services.getErrorManager().error(
 						"Cannot read the bounding box", e);
 			}
-			String wkt = jaxbMapContext.getOgcCrs().getName();
+			/*/String wkt = jaxbMapContext.getOgcCrs().getName();
 			if (wkt != null) {
 				if (wkt.length() > 0) {
 					crs = PRJUtils.getCRSFromWKT(wkt);
 				}
-			}
+			}*/
 		}
 
 		// Listen source removal events

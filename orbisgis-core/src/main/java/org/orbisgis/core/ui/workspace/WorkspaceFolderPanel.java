@@ -250,7 +250,6 @@ public class WorkspaceFolderPanel extends JPanel implements UIPanel {
 				}
 			}
 		}
-
 		return null;
 
 	}

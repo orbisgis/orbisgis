@@ -149,7 +149,8 @@ public final class Rule implements SymbolizerNode {
 	}
 
 	/**
-	 * Return a Spatial data source, according to rule filter and specified extent
+	 * Return a new Spatial data source, according to rule filter and specified extent
+	 * This data source must be purged by the caller
 	 * @return
 	 * @throws DriverLoadException
 	 * @throws DataSourceCreationException
@@ -165,7 +166,10 @@ public final class Rule implements SymbolizerNode {
 		}
 
 		System.out.println(" here is the where: " + where);
-		return new SpatialDataSourceDecorator(sds.getDataSourceFactory().getDataSourceFromSQL(query));
+		SpatialDataSourceDecorator filteredSds = new SpatialDataSourceDecorator(sds.getDataSourceFactory().getDataSourceFromSQL(query));
+		System.out.println(" and the filtered DataSource: " + filteredSds.getName());
+
+		return filteredSds;
 	}
 
 

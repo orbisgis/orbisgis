@@ -98,6 +98,6 @@ public class ShowFieldInfoPlugIn extends AbstractPlugIn {
 
 	public boolean isEnabled() {
 		return (getPlugInContext().getTableEditor() != null)
-				&& (getSelectedColumn()!=-1);	
+				&& (getSelectedColumn() != -1);
 	}
 }
