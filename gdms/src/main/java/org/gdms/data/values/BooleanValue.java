@@ -1,38 +1,39 @@
 /*
  * OrbisGIS is a GIS application dedicated to scientific spatial simulation.
- * This cross-platform GIS is developed at French IRSTV institute and is able
- * to manipulate and create vector and raster spatial information. OrbisGIS
- * is distributed under GPL 3 license. It is produced  by the geo-informatic team of
- * the IRSTV Institute <http://www.irstv.cnrs.fr/>, CNRS FR 2488:
- *    Erwan BOCHER, scientific researcher,
- *    Thomas LEDUC, scientific researcher,
- *    Fernando GONZALEZ CORTES, computer engineer.
+ * This cross-platform GIS is developed at French IRSTV institute and is able to
+ * manipulate and create vector and raster spatial information. OrbisGIS is
+ * distributed under GPL 3 license. It is produced by the "Atelier SIG" team of
+ * the IRSTV Institute <http://www.irstv.cnrs.fr/> CNRS FR 2488.
+ *
+ *
+ *  Team leader Erwan BOCHER, scientific researcher,
+ *
+ *  User support leader : Gwendall Petit, geomatic engineer.
+ *
  *
  * Copyright (C) 2007 Erwan BOCHER, Fernando GONZALEZ CORTES, Thomas LEDUC
  *
+ * Copyright (C) 2010 Erwan BOCHER, Pierre-Yves FADET, Alexis GUEGANNO, Maxence LAURENT
+ *
  * This file is part of OrbisGIS.
  *
- * OrbisGIS is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * OrbisGIS is free software: you can redistribute it and/or modify it under the
+ * terms of the GNU General Public License as published by the Free Software
+ * Foundation, either version 3 of the License, or (at your option) any later
+ * version.
  *
- * OrbisGIS is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
+ * OrbisGIS is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
+ * A PARTICULAR PURPOSE. See the GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
- * along with OrbisGIS. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License along with
+ * OrbisGIS. If not, see <http://www.gnu.org/licenses/>.
  *
- * For more information, please consult:
- *    <http://orbisgis.cerma.archi.fr/>
- *    <http://sourcesup.cru.fr/projects/orbisgis/>
+ * For more information, please consult: <http://www.orbisgis.org/>
  *
  * or contact directly:
- *    erwan.bocher _at_ ec-nantes.fr
- *    fergonco _at_ gmail.com
- *    thomas.leduc _at_ cerma.archi.fr
+ * erwan.bocher _at_ ec-nantes.fr
+ * gwendall.petit _at_ ec-nantes.fr
  */
 package org.gdms.data.values;
 
@@ -44,10 +45,19 @@ import org.gdms.sql.strategies.IncompatibleTypesException;
 
 /**
  * Wrapper for boolean
- * 
+ * Ir provides some conveniency methods for comparison between two booleans.
  * @author Fernando Gonzalez Cortes
  */
 class BooleanValue extends AbstractValue implements Serializable {
+        /**
+         * Test if this&gt;value. It's true if and only if this is true and value is false.
+         * @param value
+         *          a Value
+         * @return 
+         *          a BooleanValue as Value : true if this&gt;value
+         * @throws IncompatibleTypesException
+         *          if value is not an instance of BooleanValue
+         */
 	public Value greater(Value value) throws IncompatibleTypesException {
 		if (value instanceof NullValue) {
 			return ValueFactory.createValue(false);
@@ -60,7 +70,13 @@ class BooleanValue extends AbstractValue implements Serializable {
 		return ValueFactory.createValue((!((BooleanValue) value).value)
 				&& this.value);
 	}
-
+        /**
+         * Test if this&gt;=value. True if and only if this is true or valueis false.
+         * @param value
+         * @return 
+         *              a BooleanValue : true if this&gt;=value
+         * @throws IncompatibleTypesException if value is not an instance of BooleanValue
+         */
 	public Value greaterEqual(Value value) throws IncompatibleTypesException {
 		if (value instanceof NullValue) {
 			return ValueFactory.createValue(false);
@@ -73,7 +89,14 @@ class BooleanValue extends AbstractValue implements Serializable {
 		return ValueFactory
 				.createValue(!(((BooleanValue) value).value && !this.value));
 	}
-
+        /**
+         * Test if this &lt; value. True if and only if ths is false and value is true.
+         * @param value
+         * @return
+         *          a BooleanValue : true if this&lt;value
+         * @throws IncompatibleTypesException
+         *          if value is not an instance of BooleanValue
+         */
 	public Value less(Value value) throws IncompatibleTypesException {
 		if (value instanceof NullValue) {
 			return ValueFactory.createValue(true);
@@ -88,7 +111,14 @@ class BooleanValue extends AbstractValue implements Serializable {
 		return ValueFactory.createValue(((BooleanValue) value).value
 				&& !(this.value));
 	}
-
+        /**
+         * Test if this &lt;= value. True if and only if this is false or value is true.
+         * @param value
+         * @return
+         *          a BooleanValue : true if this&lt;=value
+         * @throws IncompatibleTypesException
+         *          if value is not an instance of BooleanValue
+         */
 	public Value lessEqual(Value value) throws IncompatibleTypesException {
 		if (value instanceof NullValue) {
 			return ValueFactory.createValue(true);
@@ -110,7 +140,7 @@ class BooleanValue extends AbstractValue implements Serializable {
 	 * Creates a new BooleanValue object.
 	 * 
 	 * @param value
-	 *            Valor booleano que tendr� este objeto
+	 *            boolean vlue which will be contained in this object
 	 */
 	BooleanValue(boolean value) {
 		this.value = value;
@@ -123,15 +153,15 @@ class BooleanValue extends AbstractValue implements Serializable {
 	}
 
 	/**
-	 * DOCUMENT ME!
+	 * Test if this and values contain the same boolean value.
 	 * 
 	 * @param value
-	 *            DOCUMENT ME!
+	 *            The value to be compared to.
 	 * 
-	 * @return DOCUMENT ME!
-	 * 
+	 * @return 
+	 *             A BooleanValue which contains true if this and value  contains the same boolean value.
 	 * @throws IncompatibleTypesException
-	 *             DOCUMENT ME!
+	 *             If value is not an instance of BooleanValue.
 	 */
 	public Value equals(Value value) throws IncompatibleTypesException {
 		if (value instanceof NullValue) {
@@ -149,15 +179,15 @@ class BooleanValue extends AbstractValue implements Serializable {
 	}
 
 	/**
-	 * DOCUMENT ME!
+	 * Test if this and value are not equal.
 	 * 
 	 * @param value
-	 *            DOCUMENT ME!
+	 *         Another BooleanValue
 	 * 
-	 * @return DOCUMENT ME!
-	 * 
+	 * @return 
+	 *             A BooleanValue that contains true if and only if this and value are different.
 	 * @throws IncompatibleTypesException
-	 *             DOCUMENT ME!
+	 *             If value is not an instance of BooleanValue.
 	 */
 	public Value notEquals(Value value) throws IncompatibleTypesException {
 		if (value instanceof NullValue) {
@@ -175,7 +205,7 @@ class BooleanValue extends AbstractValue implements Serializable {
 	}
 
 	/**
-	 * Establece el valor de este objeto
+	 * Set the boolean stored in this object.
 	 * 
 	 * @param value
 	 */
@@ -184,7 +214,7 @@ class BooleanValue extends AbstractValue implements Serializable {
 	}
 
 	/**
-	 * Obtiene el valor de este objeto
+	 * Get the boolean stored in this object.
 	 * 
 	 * @return
 	 */
@@ -266,20 +296,43 @@ class BooleanValue extends AbstractValue implements Serializable {
 	public int getType() {
 		return Type.BOOLEAN;
 	}
-
+        /**
+         * Get the boolean value as a byte.
+         * @return A  byte table that contain one value :  one if ths is true, 0 if this is false.
+         */
 	public byte[] getBytes() {
 		return new byte[] { (value) ? (byte) 1 : 0 };
 	}
-
+        /**
+         * Create a new BooleanValue by testing the first element of buffer.
+         * If it equals 1, the new Value will be true, falser either
+         * @param buffer
+         * @return
+         *          a BooleanValue.
+         */
 	public static Value readBytes(byte[] buffer) {
 		return new BooleanValue(buffer[0] == 1);
 	}
-
+        /**
+         *
+         * @return
+         *          The boolean value stored in this object.
+         * @throws IncompatibleTypesException
+         */
 	@Override
 	public boolean getAsBoolean() throws IncompatibleTypesException {
 		return value;
 	}
-
+        /**
+         * Try to cast this Value to another value type. The only type codes possible here
+         * are BOOLEAN and STRING
+         * @param typeCode
+         *          Must be {@link org.gdms.data.types.Type#BOOLEAN} or {@link org.gdms.data.types.Type#STRING}
+         * @return
+         *          the new Value.
+         * @throws IncompatibleTypesException
+         *          if typeCode is not {@link org.gdms.data.types.Type#BOOLEAN} or {@link org.gdms.data.types.Type#STRING}
+         */
 	@Override
 	public Value toType(int typeCode) throws IncompatibleTypesException {
 		switch (typeCode) {

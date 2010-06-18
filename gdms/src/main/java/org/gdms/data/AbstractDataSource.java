@@ -71,6 +71,14 @@ public abstract class AbstractDataSource implements DataSource {
 		return ret;
 	}
 
+        /**
+         * This method select the rows in the datasource where the value at fieldId match value
+         * @param fieldId the field where it lookups
+         * @param value the value to match
+         * @return rows where value at fieldId match value
+         * @throws DriverException
+         */
+
 	public ArrayList<Value[]> getRows(int fieldId, Value value)
 			throws DriverException {
 

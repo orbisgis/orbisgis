@@ -46,6 +46,11 @@ import org.gdms.source.DefaultSourceManager;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
 
+/**
+ *
+ *
+ */
+
 public class CacheDecorator extends AbstractDataSourceDecorator implements
 		CommitListener {
 

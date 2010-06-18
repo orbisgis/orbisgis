@@ -1,38 +1,39 @@
 /*
  * OrbisGIS is a GIS application dedicated to scientific spatial simulation.
- * This cross-platform GIS is developed at French IRSTV institute and is able
- * to manipulate and create vector and raster spatial information. OrbisGIS
- * is distributed under GPL 3 license. It is produced  by the geo-informatic team of
- * the IRSTV Institute <http://www.irstv.cnrs.fr/>, CNRS FR 2488:
- *    Erwan BOCHER, scientific researcher,
- *    Thomas LEDUC, scientific researcher,
- *    Fernando GONZALEZ CORTES, computer engineer.
+ * This cross-platform GIS is developed at French IRSTV institute and is able to
+ * manipulate and create vector and raster spatial information. OrbisGIS is
+ * distributed under GPL 3 license. It is produced by the "Atelier SIG" team of
+ * the IRSTV Institute <http://www.irstv.cnrs.fr/> CNRS FR 2488.
+ *
+ *
+ *  Team leader Erwan BOCHER, scientific researcher,
+ *
+ *  User support leader : Gwendall Petit, geomatic engineer.
+ *
  *
  * Copyright (C) 2007 Erwan BOCHER, Fernando GONZALEZ CORTES, Thomas LEDUC
  *
+ * Copyright (C) 2010 Erwan BOCHER, Pierre-Yves FADET, Alexis GUEGANNO, Maxence LAURENT
+ *
  * This file is part of OrbisGIS.
  *
- * OrbisGIS is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * OrbisGIS is free software: you can redistribute it and/or modify it under the
+ * terms of the GNU General Public License as published by the Free Software
+ * Foundation, either version 3 of the License, or (at your option) any later
+ * version.
  *
- * OrbisGIS is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
+ * OrbisGIS is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
+ * A PARTICULAR PURPOSE. See the GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
- * along with OrbisGIS. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License along with
+ * OrbisGIS. If not, see <http://www.gnu.org/licenses/>.
  *
- * For more information, please consult:
- *    <http://orbisgis.cerma.archi.fr/>
- *    <http://sourcesup.cru.fr/projects/orbisgis/>
+ * For more information, please consult: <http://www.orbisgis.org/>
  *
  * or contact directly:
- *    erwan.bocher _at_ ec-nantes.fr
- *    fergonco _at_ gmail.com
- *    thomas.leduc _at_ cerma.archi.fr
+ * erwan.bocher _at_ ec-nantes.fr
+ * gwendall.petit _at_ ec-nantes.fr
  */
 package org.gdms.data.values;
 
@@ -41,29 +42,30 @@ import org.gdms.data.types.TypeFactory;
 import org.gdms.sql.strategies.IncompatibleTypesException;
 
 /**
- *
+ * This cass is intended to store binary values, as a table of bytes.
  */
 class BinaryValue extends AbstractValue {
+        //the set of values.
 	private byte[] value;
 
 	/**
-	 *
-	 */
+         * Constructor
+         * @param bytes : the table taht contains the values
+         */
 	BinaryValue(byte[] bytes) {
 		value = bytes;
 	}
 
 	/**
-	 * Crea un nuevo BinaryValue.
+	 * Create a new empty BinaryValue
 	 */
 	BinaryValue() {
 	}
 
 	/**
-	 * DOCUMENT ME!
-	 * 
-	 * @return DOCUMENT ME!
-	 */
+         * Return the contet of the Value as a String
+         * @return the value as a String
+         */
 	public String toString() {
 		StringBuffer sb = new StringBuffer();
 
@@ -80,16 +82,12 @@ class BinaryValue extends AbstractValue {
 	}
 
 	/**
-	 * DOCUMENT ME!
-	 * 
-	 * @param value
-	 *            DOCUMENT ME!
-	 * 
-	 * @return DOCUMENT ME!
-	 * 
-	 * @throws IncompatibleTypesException
-	 *             DOCUMENT ME!
-	 */
+         * Evaluate if <code>this</code> is equal to <code>value</code>.
+         * Two BynaryValues are equal if an only if they contain exactly the same byte values.
+         * @param value The value to be compared with
+         * @return a BooleanValue, which is "true" if this and value are equals.
+         * @throws IncompatibleTypesException if value's type is neither NullValue nor BinaryValue
+         */
 	public Value equals(Value value) throws IncompatibleTypesException {
 		if (value instanceof NullValue) {
 			return ValueFactory.createValue(false);
@@ -142,7 +140,7 @@ class BinaryValue extends AbstractValue {
 	}
 
 	/**
-	 * @return
+	 * @return the byte table
 	 */
 	public byte[] getValue() {
 		return value;
@@ -161,15 +159,26 @@ class BinaryValue extends AbstractValue {
 	public int getType() {
 		return Type.BINARY;
 	}
-
+        /**
+         *
+         * @return the byte table that contains the byte values
+         */
 	public byte[] getBytes() {
 		return value;
 	}
-
+        /**
+         * Create a new BinaryValue withe the byte tabe buffer
+         * @param buffer
+         * @return a new BinaryValue as a Value.
+         */
 	public static Value readBytes(byte[] buffer) {
 		return new BinaryValue(buffer);
 	}
-
+        /**
+         *
+         * @return The byte table
+         * @throws IncompatibleTypesException
+         */
 	@Override
 	public byte[] getAsBinary() throws IncompatibleTypesException {
 		return value;
