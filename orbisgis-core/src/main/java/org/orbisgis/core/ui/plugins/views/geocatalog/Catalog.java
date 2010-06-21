@@ -89,7 +89,6 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
 import org.gdms.source.SourceManager;
-import org.orbisgis.core.images.IconLoader;
 import org.orbisgis.core.images.OrbisGISIcon;
 import org.orbisgis.core.sif.CRFlowLayout;
 import org.orbisgis.core.sif.UIFactory;
@@ -139,8 +138,6 @@ public class Catalog extends JPanel implements DragGestureListener,
 	private JButton btnDelTag;
 
 	private DefaultListModel tagListModel;
-
-	// private EPSourceWizardHelper wh;
 
 	private org.orbisgis.core.ui.pluginSystem.menu.MenuTree menuTree;
 
@@ -371,7 +368,8 @@ public class Catalog extends JPanel implements DragGestureListener,
 		JScrollPane scroll = new JScrollPane(lstTags);
 		ret.add(scroll, BorderLayout.CENTER);
 		JPanel pnlButtons = new JPanel();
-		JButton btnAdd = getTagManagementButton(OrbisGISIcon.ADD, AC_BTN_ADD_TAG);
+		JButton btnAdd = getTagManagementButton(OrbisGISIcon.ADD,
+				AC_BTN_ADD_TAG);
 		btnDelTag = getTagManagementButton(OrbisGISIcon.DEL, AC_BTN_DEL_TAG);
 		btnDelTag.setEnabled(false);
 		pnlButtons.add(btnAdd);
