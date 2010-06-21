@@ -39,21 +39,32 @@ package org.orbisgis.core.ui.plugins.workspace;
 
 import java.io.IOException;
 
+import javax.swing.JButton;
 import javax.swing.JMenuItem;
 
 import org.orbisgis.core.Services;
 import org.orbisgis.core.background.BackgroundJob;
 import org.orbisgis.core.background.BackgroundManager;
 import org.orbisgis.core.images.OrbisGISIcon;
+import org.orbisgis.core.ui.editor.IEditor;
 import org.orbisgis.core.ui.pluginSystem.AbstractPlugIn;
 import org.orbisgis.core.ui.pluginSystem.PlugInContext;
 import org.orbisgis.core.ui.pluginSystem.workbench.Names;
+import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchContext;
+import org.orbisgis.core.ui.plugins.views.editor.EditorManager;
 import org.orbisgis.core.workspace.Workspace;
 import org.orbisgis.progress.IProgressMonitor;
 
 public class SaveWorkspacePlugIn extends AbstractPlugIn {
 
 	private JMenuItem menuItem;
+	private JButton btn;
+	
+	
+	public SaveWorkspacePlugIn() {
+		btn = new JButton(OrbisGISIcon.SAVE_ICON);
+		btn.setToolTipText(Names.SAVE);
+	}
 
 	public boolean execute(PlugInContext context) throws Exception {
 		BackgroundManager mb = Services.getService(BackgroundManager.class);
@@ -82,10 +93,26 @@ public class SaveWorkspacePlugIn extends AbstractPlugIn {
 		menuItem = context.getFeatureInstaller().addMainMenuItem(this,
 				new String[] { Names.FILE }, Names.SAVE_WS, false,
 				OrbisGISIcon.SAVE, null, null, context);
+		WorkbenchContext wbcontext = context.getWorkbenchContext();
+		wbcontext.getWorkbench().getFrame().getMainToolBar().addPlugIn(this,
+				btn, context);
+	}
+	
+	
+	private IEditor getEditor() {
+		EditorManager em = Services.getService(EditorManager.class);
+		IEditor editor = em.getActiveEditor();
+		return editor;
 	}
 
+
 	public boolean isEnabled() {
-		menuItem.setEnabled(true);
-		return true;
+		boolean isEnabled = false;
+		IEditor editor = getEditor();
+		isEnabled = editor != null && editor.getElement().isModified();
+		
+		btn.setEnabled(isEnabled);
+		menuItem.setEnabled(isEnabled);
+		return isEnabled;
 	}
 }
