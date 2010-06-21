@@ -5,9 +5,9 @@
  * distributed under GPL 3 license. It is produced by the "Atelier SIG" team of
  * the IRSTV Institute <http://www.irstv.cnrs.fr/> CNRS FR 2488.
  *
- * 
+ *
  *  Team leader Erwan BOCHER, scientific researcher,
- * 
+ *
  *  User support leader : Gwendall Petit, geomatic engineer.
  *
  *
@@ -43,7 +43,7 @@ import javax.swing.JButton;
 import org.gdms.data.DataSource;
 import org.gdms.driver.DriverException;
 import org.orbisgis.core.Services;
-import org.orbisgis.core.images.IconNames;
+import org.orbisgis.core.images.OrbisGISIcon;
 import org.orbisgis.core.ui.editor.IEditor;
 import org.orbisgis.core.ui.pluginSystem.AbstractPlugIn;
 import org.orbisgis.core.ui.pluginSystem.PlugInContext;
@@ -54,9 +54,9 @@ public class RedoTablePlugIn extends AbstractPlugIn {
 	private JButton btn;
 
 	public RedoTablePlugIn() {
-		btn = new JButton(getIcon(IconNames.REDO_ICON));
+		btn = new JButton(OrbisGISIcon.REDO_ICON);
 	}
-	
+
 	public boolean execute(PlugInContext context) throws Exception {
 		IEditor editor = context.getActiveEditor();
 		DataSource dataSource = (DataSource) editor.getElement().getObject();
@@ -67,7 +67,7 @@ public class RedoTablePlugIn extends AbstractPlugIn {
 		}
 		return true;
 	}
-	
+
 	public void initialize(PlugInContext context) throws Exception {
 		WorkbenchContext wbcontext = context.getWorkbenchContext();
 		wbcontext.getWorkbench().getFrame().getEditionTableToolBar().addPlugIn(

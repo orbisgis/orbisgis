@@ -5,9 +5,9 @@
  * distributed under GPL 3 license. It is produced by the "Atelier SIG" team of
  * the IRSTV Institute <http://www.irstv.cnrs.fr/> CNRS FR 2488.
  *
- * 
+ *
  *  Team leader Erwan BOCHER, scientific researcher,
- * 
+ *
  *  User support leader : Gwendall Petit, geomatic engineer.
  *
  *
@@ -42,7 +42,7 @@ import org.orbisgis.core.background.BackgroundManager;
 import org.orbisgis.core.geocognition.Geocognition;
 import org.orbisgis.core.geocognition.GeocognitionElement;
 import org.orbisgis.core.geocognition.GeocognitionFilter;
-import org.orbisgis.core.images.IconNames;
+import org.orbisgis.core.images.OrbisGISIcon;
 import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.layerModel.MapContext;
 import org.orbisgis.core.ui.editorViews.toc.EditableLayer;
@@ -78,7 +78,7 @@ public class ShowInTablePlugIn extends AbstractPlugIn {
 		context.getFeatureInstaller().addPopupMenuItem(frame, this,
 				new String[] { Names.POPUP_TOC_TABLE_PATH1 },
 				Names.POPUP_TOC_TABLE_GROUP, false,
-				getIcon(IconNames.POPUP_TOC_TABLE_ICON), wbContext);
+				OrbisGISIcon.SHOW_ATTRIBUTES, wbContext);
 	}
 
 
@@ -103,7 +103,7 @@ public class ShowInTablePlugIn extends AbstractPlugIn {
 				1,
 				new LayerAvailability[] {LayerAvailability.DATASOURCE_NOT_NULL});
 	}
-	
+
 	public boolean isSelected() {
 		// TODO Auto-generated method stub
 		return false;

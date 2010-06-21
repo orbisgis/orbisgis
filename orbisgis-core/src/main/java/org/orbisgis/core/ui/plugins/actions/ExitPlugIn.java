@@ -5,9 +5,9 @@
  * distributed under GPL 3 license. It is produced by the "Atelier SIG" team of
  * the IRSTV Institute <http://www.irstv.cnrs.fr/> CNRS FR 2488.
  *
- * 
+ *
  *  Team leader Erwan BOCHER, scientific researcher,
- * 
+ *
  *  User support leader : Gwendall Petit, geomatic engineer.
  *
  *
@@ -42,7 +42,7 @@ import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 
 import org.orbisgis.core.Services;
-import org.orbisgis.core.images.IconNames;
+import org.orbisgis.core.images.OrbisGISIcon;
 import org.orbisgis.core.ui.pluginSystem.AbstractPlugIn;
 import org.orbisgis.core.ui.pluginSystem.PlugInContext;
 import org.orbisgis.core.ui.pluginSystem.workbench.Names;
@@ -50,12 +50,12 @@ import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchContext;
 import org.orbisgis.core.workspace.OrbisGISWorkspace;
 
 public class ExitPlugIn extends AbstractPlugIn {
-	
+
 	private JButton btn;
 	private JMenuItem menuItem;
 
 	public ExitPlugIn() {
-		btn = new JButton(getIcon(IconNames.EXIT_ICON));
+		btn = new JButton(OrbisGISIcon.EXIT_ICON);
 		btn.setToolTipText(Names.EXIT);
 	}
 
@@ -65,7 +65,7 @@ public class ExitPlugIn extends AbstractPlugIn {
 				btn, context);
 		menuItem = context.getFeatureInstaller().addMainMenuItem(this,
 				new String[] { Names.FILE }, Names.EXIT, false,
-				getIcon(IconNames.EXIT_ICON), null, null, context);
+				OrbisGISIcon.EXIT_ICON, null, null, context);
 	}
 
 	public boolean execute(PlugInContext context) throws Exception {
@@ -82,7 +82,7 @@ public class ExitPlugIn extends AbstractPlugIn {
 			psm.stopPlugins();
 		}
 	}
-	
+
 	public boolean isEnabled() {
 		btn.setVisible(true);
 		menuItem.setVisible(true);

@@ -5,9 +5,9 @@
  * distributed under GPL 3 license. It is produced by the "Atelier SIG" team of
  * the IRSTV Institute <http://www.irstv.cnrs.fr/> CNRS FR 2488.
  *
- * 
+ *
  *  Team leader Erwan BOCHER, scientific researcher,
- * 
+ *
  *  User support leader : Gwendall Petit, geomatic engineer.
  *
  *
@@ -39,7 +39,7 @@ package org.orbisgis.core.ui.plugins.toc;
 
 import org.orbisgis.core.DataManager;
 import org.orbisgis.core.Services;
-import org.orbisgis.core.images.IconNames;
+import org.orbisgis.core.images.OrbisGISIcon;
 import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.layerModel.LayerException;
 import org.orbisgis.core.layerModel.MapContext;
@@ -81,7 +81,7 @@ public class GroupLayersPlugIn extends AbstractPlugIn {
 		context.getFeatureInstaller().addPopupMenuItem(frame, this,
 				new String[] { Names.POPUP_TOC_LAYERS_GROUP_PATH1 },
 				Names.POPUP_TOC_LAYERS_GROUP_GROUP, false,
-				getIcon(IconNames.POPUP_TOC_LAYERS_GROUP_ICON), wbContext);
+				OrbisGISIcon.GROUP_LAYERS, wbContext);
 	}
 
 	public boolean isEnabled() {

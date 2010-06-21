@@ -5,9 +5,9 @@
  * distributed under GPL 3 license. It is produced by the "Atelier SIG" team of
  * the IRSTV Institute <http://www.irstv.cnrs.fr/> CNRS FR 2488.
  *
- * 
+ *
  *  Team leader Erwan BOCHER, scientific researcher,
- * 
+ *
  *  User support leader : Gwendall Petit, geomatic engineer.
  *
  *
@@ -52,7 +52,7 @@ import org.gdms.source.SourceManager;
 import org.orbisgis.core.DataManager;
 import org.orbisgis.core.PersistenceException;
 import org.orbisgis.core.Services;
-import org.orbisgis.core.images.IconNames;
+import org.orbisgis.core.images.OrbisGISIcon;
 import org.orbisgis.core.ui.geocatalog.persistence.ActiveFilter;
 import org.orbisgis.core.ui.geocatalog.persistence.Tag;
 import org.orbisgis.core.ui.pluginSystem.PlugInContext;
@@ -76,7 +76,7 @@ public class GeoCatalogViewPlugIn extends ViewPlugIn {
 		panel = new Catalog();
 		menuItem = context.getFeatureInstaller().addMainMenuItem(this,
 				new String[] { Names.VIEW }, Names.GEOCATALOG, true,
-				getIcon(IconNames.GEOCATALOG_ICON), null, panel,context);
+				OrbisGISIcon.GEOCATALOG_ICON, null, panel, context);
 	}
 
 	@Override
@@ -161,18 +161,18 @@ public class GeoCatalogViewPlugIn extends ViewPlugIn {
 		}
 	}
 
-	public boolean isEnabled() {		
+	public boolean isEnabled() {
 		return true;
 	}
-	
+
 	public boolean isSelected() {
 		boolean isSelected = false;
 		isSelected = getPlugInContext().viewIsOpen(getId());
 		menuItem.setSelected(isSelected);
 		return isSelected;
 	}
-	
-	public String getName() {		
+
+	public String getName() {
 		return "Geocatalog view";
 	}
 }

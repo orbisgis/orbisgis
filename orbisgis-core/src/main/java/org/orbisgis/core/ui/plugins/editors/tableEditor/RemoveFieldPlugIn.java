@@ -5,9 +5,9 @@
  * distributed under GPL 3 license. It is produced by the "Atelier SIG" team of
  * the IRSTV Institute <http://www.irstv.cnrs.fr/> CNRS FR 2488.
  *
- * 
+ *
  *  Team leader Erwan BOCHER, scientific researcher,
- * 
+ *
  *  User support leader : Gwendall Petit, geomatic engineer.
  *
  *
@@ -46,7 +46,7 @@ import org.gdms.data.types.Type;
 import org.gdms.driver.DriverException;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.errorManager.ErrorManager;
-import org.orbisgis.core.images.IconNames;
+import org.orbisgis.core.images.OrbisGISIcon;
 import org.orbisgis.core.ui.editor.IEditor;
 import org.orbisgis.core.ui.editors.table.TableEditableElement;
 import org.orbisgis.core.ui.pluginSystem.AbstractPlugIn;
@@ -84,13 +84,13 @@ public class RemoveFieldPlugIn extends AbstractPlugIn {
 		context.getFeatureInstaller().addPopupMenuItem(frame, this,
 				new String[] { Names.POPUP_TABLE_REMOVEFIELD_PATH1 },
 				Names.POPUP_TABLE_REMOVEFIELD_GROUP, false,
-				getIcon(IconNames.POPUP_TABLE_REMOVEFIELD_ICON), wbContext);
+				OrbisGISIcon.TABLE_REMOVEFIELD, wbContext);
 	}
 
 	public boolean isEnabled() {
 		boolean isEnabled = false;
 		IEditor editor = null;
-		if((editor=getPlugInContext().getTableEditor()) != null){			
+		if((editor=getPlugInContext().getTableEditor()) != null){
 			final TableEditableElement element = (TableEditableElement) editor
 					.getElement();
 			try {

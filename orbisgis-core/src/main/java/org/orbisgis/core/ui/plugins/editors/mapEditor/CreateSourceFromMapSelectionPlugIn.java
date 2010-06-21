@@ -5,9 +5,9 @@
  * distributed under GPL 3 license. It is produced by the "Atelier SIG" team of
  * the IRSTV Institute <http://www.irstv.cnrs.fr/> CNRS FR 2488.
  *
- * 
+ *
  *  Team leader Erwan BOCHER, scientific researcher,
- * 
+ *
  *  User support leader : Gwendall Petit, geomatic engineer.
  *
  *
@@ -57,7 +57,7 @@ import org.gdms.source.SourceManager;
 import org.orbisgis.core.DataManager;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.errorManager.ErrorManager;
-import org.orbisgis.core.images.IconNames;
+import org.orbisgis.core.images.OrbisGISIcon;
 import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.layerModel.MapContext;
 import org.orbisgis.core.ui.editor.IEditor;
@@ -75,12 +75,12 @@ public class CreateSourceFromMapSelectionPlugIn extends AbstractPlugIn {
 	private JButton btn;
 
 	public CreateSourceFromMapSelectionPlugIn() {
-		btn = new JButton(getIcon(IconNames.TABLE_CREATE_SRC_ICON));
+		btn = new JButton(OrbisGISIcon.TABLE_CREATE_SRC_ICON);
 	}
-	
-	public boolean execute(PlugInContext context) throws Exception {		
+
+	public boolean execute(PlugInContext context) throws Exception {
 		TableEditorPlugIn tableEditor = null;
-		if((tableEditor=getPlugInContext().getTableEditor()) != null){
+		if ((tableEditor = getPlugInContext().getTableEditor()) != null) {
 			TableEditableElement element = (TableEditableElement) tableEditor
 					.getElement();
 			int[] selectedRows = element.getSelection().getSelectedRows();
@@ -97,7 +97,7 @@ public class CreateSourceFromMapSelectionPlugIn extends AbstractPlugIn {
 		}
 		return true;
 	}
-	
+
 	public void initialize(PlugInContext context) throws Exception {
 		WorkbenchContext wbContext = context.getWorkbenchContext();
 		wbContext.getWorkbench().getFrame().getEditionMapToolBar().addPlugIn(
@@ -106,7 +106,8 @@ public class CreateSourceFromMapSelectionPlugIn extends AbstractPlugIn {
 		WorkbenchFrame frame = wbContext.getWorkbench().getFrame().getToc();
 		context.getFeatureInstaller().addPopupMenuItem(frame, this,
 				new String[] { "Create datasource from selection" },
-				"toc.Selection", false, getIcon("table_go.png"), wbContext);
+				"toc.Selection", false, OrbisGISIcon.TABLE_CREATE_SRC_ICON,
+				wbContext);
 	}
 
 	public static void createSourceFromSelection(DataSource original,
@@ -156,14 +157,17 @@ public class CreateSourceFromMapSelectionPlugIn extends AbstractPlugIn {
 			Services.getService(ErrorManager.class).error("Bug", e);
 		}
 	}
-	
-	public boolean isEnabled() {		
-		boolean isEnabled = false;		
-		isEnabled =  getPlugInContext().getMapEditor() != null && 
-				getPlugInContext().checkLayerAvailability(
-					new SelectionAvailability[] {SelectionAvailability.SUPERIOR},
-					0,
-					new LayerAvailability[] {LayerAvailability.VECTORIAL, LayerAvailability.ROW_SELECTED});	
+
+	public boolean isEnabled() {
+		boolean isEnabled = false;
+		isEnabled = getPlugInContext().getMapEditor() != null
+				&& getPlugInContext()
+						.checkLayerAvailability(
+								new SelectionAvailability[] { SelectionAvailability.SUPERIOR },
+								0,
+								new LayerAvailability[] {
+										LayerAvailability.VECTORIAL,
+										LayerAvailability.ROW_SELECTED });
 		btn.setEnabled(isEnabled);
 		return isEnabled;
 	}

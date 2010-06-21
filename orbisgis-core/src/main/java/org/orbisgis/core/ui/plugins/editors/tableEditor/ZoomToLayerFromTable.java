@@ -5,9 +5,9 @@
  * distributed under GPL 3 license. It is produced by the "Atelier SIG" team of
  * the IRSTV Institute <http://www.irstv.cnrs.fr/> CNRS FR 2488.
  *
- * 
+ *
  *  Team leader Erwan BOCHER, scientific researcher,
- * 
+ *
  *  User support leader : Gwendall Petit, geomatic engineer.
  *
  *
@@ -44,7 +44,7 @@ import org.orbisgis.core.Services;
 import org.orbisgis.core.background.BackgroundJob;
 import org.orbisgis.core.background.BackgroundManager;
 import org.orbisgis.core.errorManager.ErrorManager;
-import org.orbisgis.core.images.IconNames;
+import org.orbisgis.core.images.OrbisGISIcon;
 import org.orbisgis.core.ui.editor.IEditor;
 import org.orbisgis.core.ui.editors.table.TableEditableElement;
 import org.orbisgis.core.ui.pluginSystem.AbstractPlugIn;
@@ -59,7 +59,7 @@ import org.orbisgis.progress.IProgressMonitor;
 
 import com.vividsolutions.jts.geom.Envelope;
 
-public class ZoomToLayerFromTable extends AbstractPlugIn {	
+public class ZoomToLayerFromTable extends AbstractPlugIn {
 
 	public boolean execute(PlugInContext context) throws Exception {
 		IEditor editor = context.getActiveEditor();
@@ -107,7 +107,7 @@ public class ZoomToLayerFromTable extends AbstractPlugIn {
 		context.getFeatureInstaller().addPopupMenuItem(frame, this,
 				new String[] { Names.POPUP_TABLE_ZOOMTOLAYER_PATH1 },
 				Names.POPUP_TABLE_ZOOMTOLAYER_GROUP, false,
-				getIcon(IconNames.POPUP_TABLE_ZOOMTOLAYER_ICON), wbContext);
+				OrbisGISIcon.ZOOM, wbContext);
 	}
 
 	public boolean isEnabled() {
@@ -115,7 +115,7 @@ public class ZoomToLayerFromTable extends AbstractPlugIn {
 		TableEditorPlugIn tableEditor = null;
 		if((tableEditor=getPlugInContext().getTableEditor()) != null
 				&& getSelectedColumn()==-1){
-			
+
 			final TableEditableElement element = (TableEditableElement) tableEditor
 					.getElement();
 			isEnabled = element.getMapContext() != null;

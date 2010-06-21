@@ -5,9 +5,9 @@
  * distributed under GPL 3 license. It is produced by the "Atelier SIG" team of
  * the IRSTV Institute <http://www.irstv.cnrs.fr/> CNRS FR 2488.
  *
- * 
+ *
  *  Team leader Erwan BOCHER, scientific researcher,
- * 
+ *
  *  User support leader : Gwendall Petit, geomatic engineer.
  *
  *
@@ -39,7 +39,7 @@ package org.orbisgis.core.ui.plugins.toc;
 
 import org.gdms.driver.DriverException;
 import org.orbisgis.core.Services;
-import org.orbisgis.core.images.IconNames;
+import org.orbisgis.core.images.OrbisGISIcon;
 import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.layerModel.MapContext;
 import org.orbisgis.core.ui.pluginSystem.AbstractPlugIn;
@@ -52,7 +52,7 @@ import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchFrame;
 
 public class RevertLayerPlugIn extends AbstractPlugIn {
 
-	public boolean execute(PlugInContext context) throws Exception {		
+	public boolean execute(PlugInContext context) throws Exception {
 		MapContext mapContext = getPlugInContext().getMapContext();
 		ILayer[] selectedResources = mapContext.getSelectedLayers();
 
@@ -72,7 +72,7 @@ public class RevertLayerPlugIn extends AbstractPlugIn {
 		context.getFeatureInstaller().addPopupMenuItem(frame, this,
 				new String[] { Names.POPUP_TOC_REVERT_PATH1 },
 				Names.POPUP_TOC_INACTIVE_GROUP, false,
-				getIcon(IconNames.POPUP_TOC_REVERT_ICON), wbContext);
+				OrbisGISIcon.REVERT, wbContext);
 	}
 
 	public void execute(MapContext mapContext, ILayer layer) {
@@ -89,5 +89,5 @@ public class RevertLayerPlugIn extends AbstractPlugIn {
 				new SelectionAvailability[] {SelectionAvailability.EQUAL},
 				1,
 				new LayerAvailability[] {LayerAvailability.IS_MODIFIED});
-	}	
+	}
 }

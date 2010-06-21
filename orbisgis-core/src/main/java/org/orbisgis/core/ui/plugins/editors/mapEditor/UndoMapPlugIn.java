@@ -5,9 +5,9 @@
  * distributed under GPL 3 license. It is produced by the "Atelier SIG" team of
  * the IRSTV Institute <http://www.irstv.cnrs.fr/> CNRS FR 2488.
  *
- * 
+ *
  *  Team leader Erwan BOCHER, scientific researcher,
- * 
+ *
  *  User support leader : Gwendall Petit, geomatic engineer.
  *
  *
@@ -41,7 +41,7 @@ import javax.swing.JButton;
 
 import org.gdms.driver.DriverException;
 import org.orbisgis.core.Services;
-import org.orbisgis.core.images.IconNames;
+import org.orbisgis.core.images.OrbisGISIcon;
 import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.layerModel.MapContext;
 import org.orbisgis.core.ui.pluginSystem.AbstractPlugIn;
@@ -54,9 +54,9 @@ public class UndoMapPlugIn extends AbstractPlugIn {
 	private JButton btn;
 
 	public UndoMapPlugIn() {
-		btn = new JButton(getIcon(IconNames.UNDO_ICON));
+		btn = new JButton(OrbisGISIcon.UNDO_ICON);
 	}
-	
+
 	public boolean execute(PlugInContext context) throws Exception {
 		MapEditorPlugIn mapEditor = (MapEditorPlugIn) getPlugInContext().getActiveEditor();
 		MapContext mc = (MapContext) mapEditor.getElement().getObject();
@@ -68,13 +68,13 @@ public class UndoMapPlugIn extends AbstractPlugIn {
 		}
 		return true;
 	}
-	
+
 	public void initialize(PlugInContext context) throws Exception {
 		WorkbenchContext wbcontext = context.getWorkbenchContext();
 		wbcontext.getWorkbench().getFrame().getEditionMapToolBar().addPlugIn(
 				this, btn, context);
 	}
-	
+
 	public boolean isEnabled() {
 		boolean isEnabled = false;
 		MapEditorPlugIn mapEditor = null;
@@ -82,7 +82,7 @@ public class UndoMapPlugIn extends AbstractPlugIn {
 			MapContext mc = (MapContext) mapEditor.getElement().getObject();
 			ILayer activeLayer = mc.getActiveLayer();
 			isEnabled =  (activeLayer != null) && activeLayer.getDataSource().canUndo();
-		}		
+		}
 		btn.setEnabled(isEnabled);
 		return isEnabled;
 	}

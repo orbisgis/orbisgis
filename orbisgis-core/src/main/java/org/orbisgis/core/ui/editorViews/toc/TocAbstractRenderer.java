@@ -49,7 +49,7 @@ import org.gdms.data.types.GeometryConstraint;
 import org.gdms.data.types.Type;
 import org.gdms.driver.DriverException;
 import org.orbisgis.core.images.IconLoader;
-import org.orbisgis.core.images.IconNames;
+import org.orbisgis.core.images.OrbisGISIcon;
 import org.orbisgis.core.layerModel.ILayer;
 
 public abstract class TocAbstractRenderer {
@@ -57,10 +57,10 @@ public abstract class TocAbstractRenderer {
 	protected Icon getLayerIcon(ILayer layer) throws DriverException,
 			IOException {
 		if (layer.acceptsChilds()) {
-			return IconLoader.getIcon(IconNames.LAYERS);
+			return OrbisGISIcon.LAYERS;
 		} else {
 			if (layer.isWMS()) {
-				return IconLoader.getIcon(IconNames.SERVER_CONNECT);
+				return OrbisGISIcon.SERVER_CONNECT;
 			} else {
 				SpatialDataSourceDecorator dataSource = layer.getDataSource();
 				if (!dataSource.isOpen()) {
@@ -74,19 +74,19 @@ public abstract class TocAbstractRenderer {
 					GeometryConstraint geomTypeConstraint = (GeometryConstraint) fieldType
 							.getConstraint(Constraint.GEOMETRY_TYPE);
 					if (geomTypeConstraint == null) {
-						return IconLoader.getIcon(IconNames.LAYER_MIXE);
+						return OrbisGISIcon.LAYER_MIXE;
 					} else {
 						int geomType = geomTypeConstraint.getGeometryType();
 
 						if ((geomType == GeometryConstraint.POLYGON)
 								|| (geomType == GeometryConstraint.MULTI_POLYGON)) {
-							return IconLoader.getIcon(IconNames.LAYER_POLYGON);
+							return OrbisGISIcon.LAYER_POLYGON;
 						} else if ((geomType == GeometryConstraint.LINESTRING)
 								|| (geomType == GeometryConstraint.MULTI_LINESTRING)) {
-							return IconLoader.getIcon(IconNames.LAYER_LINE);
+							return OrbisGISIcon.LAYER_LINE;
 						} else if ((geomType == GeometryConstraint.POINT)
 								|| (geomType == GeometryConstraint.MULTI_POINT)) {
-							return IconLoader.getIcon(IconNames.LAYER_POINT);
+							return OrbisGISIcon.LAYER_POINT;
 						} else {
 							throw new RuntimeException("Bug");
 						}
@@ -94,9 +94,9 @@ public abstract class TocAbstractRenderer {
 
 				} else {
 					if (layer.getRaster().getType() == ImagePlus.COLOR_RGB) {
-						return IconLoader.getIcon(IconNames.LAYER_RGB);
+						return OrbisGISIcon.LAYER_RGB;
 					} else {
-						return IconLoader.getIcon(IconNames.RASTER);
+						return OrbisGISIcon.RASTER;
 					}
 
 				}

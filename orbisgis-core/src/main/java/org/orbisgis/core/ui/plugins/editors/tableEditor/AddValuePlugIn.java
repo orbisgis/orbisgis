@@ -5,9 +5,9 @@
  * distributed under GPL 3 license. It is produced by the "Atelier SIG" team of
  * the IRSTV Institute <http://www.irstv.cnrs.fr/> CNRS FR 2488.
  *
- * 
+ *
  *  Team leader Erwan BOCHER, scientific researcher,
- * 
+ *
  *  User support leader : Gwendall Petit, geomatic engineer.
  *
  *
@@ -45,7 +45,7 @@ import org.gdms.data.types.Type;
 import org.gdms.driver.DriverException;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.errorManager.ErrorManager;
-import org.orbisgis.core.images.IconNames;
+import org.orbisgis.core.images.OrbisGISIcon;
 import org.orbisgis.core.sif.UIFactory;
 import org.orbisgis.core.sif.multiInputPanel.CheckBoxChoice;
 import org.orbisgis.core.sif.multiInputPanel.ComboBoxChoice;
@@ -62,8 +62,8 @@ import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchContext;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchFrame;
 
 public class AddValuePlugIn extends AbstractPlugIn {
-	
-	private DataSource dataSource;	
+
+	private DataSource dataSource;
 
 	public boolean execute(PlugInContext context) throws Exception {
 		IEditor editor = context.getActiveEditor();
@@ -144,7 +144,7 @@ public class AddValuePlugIn extends AbstractPlugIn {
 		}
 		return true;
 	}
-	
+
 	public void initialize(PlugInContext context) throws Exception {
 		WorkbenchContext wbContext = context.getWorkbenchContext();
 		WorkbenchFrame frame = (WorkbenchFrame) wbContext.getWorkbench()
@@ -152,7 +152,7 @@ public class AddValuePlugIn extends AbstractPlugIn {
 		context.getFeatureInstaller().addPopupMenuItem(frame, this,
 				new String[] { Names.POPUP_TABLE_ADDVALUE_PATH1 },
 				Names.POPUP_TABLE_ADDVALUE_GROUP, false,
-				getIcon(IconNames.POPUP_TABLE_ADDVALUE_ICON), wbContext);
+				OrbisGISIcon.TABLE_ADDVALUE, wbContext);
 	}
 
 	private void setValue(int[] selectedRow, String value,
@@ -187,8 +187,8 @@ public class AddValuePlugIn extends AbstractPlugIn {
 		dataSource.commit();
 	}
 
-	public boolean isEnabled() {		
-		boolean isEnabled = false;		
+	public boolean isEnabled() {
+		boolean isEnabled = false;
 		IEditor tableEditor = null;
 		if((tableEditor=getPlugInContext().getTableEditor()) != null){
 			final TableEditableElement element = (TableEditableElement) tableEditor.getElement();
@@ -200,7 +200,7 @@ public class AddValuePlugIn extends AbstractPlugIn {
 					if (typeCode != Type.GEOMETRY)
 						return isEnabled = true;
 				}
-	
+
 			} catch (DriverException e) {
 				Services.getService(ErrorManager.class).error(
 						"Cannot access field information", e);

@@ -5,9 +5,9 @@
  * distributed under GPL 3 license. It is produced by the "Atelier SIG" team of
  * the IRSTV Institute <http://www.irstv.cnrs.fr/> CNRS FR 2488.
  *
- * 
+ *
  *  Team leader Erwan BOCHER, scientific researcher,
- * 
+ *
  *  User support leader : Gwendall Petit, geomatic engineer.
  *
  *
@@ -38,7 +38,7 @@
 package org.orbisgis.core.ui.plugins.toc;
 
 import org.orbisgis.core.Services;
-import org.orbisgis.core.images.IconNames;
+import org.orbisgis.core.images.OrbisGISIcon;
 import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.layerModel.LayerException;
 import org.orbisgis.core.layerModel.MapContext;
@@ -58,13 +58,13 @@ public class RemoveLayerPlugIn extends AbstractPlugIn {
 		context.getFeatureInstaller().addPopupMenuItem(frame, this,
 				new String[] { Names.POPUP_TOC_LAYERS_REMOVE_PATH1 },
 				Names.POPUP_TOC_LAYERS_REMOVE_GROUP, false,
-				getIcon(IconNames.REMOVE), wbContext);
+				OrbisGISIcon.REMOVE, wbContext);
 	}
 
 	@Override
 	public boolean execute(PlugInContext context) throws Exception {
 		MapContext mapContext = getPlugInContext().getMapContext();
-		ILayer[] selectedResources = mapContext.getSelectedLayers();				
+		ILayer[] selectedResources = mapContext.getSelectedLayers();
 		for (ILayer resource : selectedResources) {
 			try {
 				resource.getParent().remove(resource);
@@ -72,7 +72,7 @@ public class RemoveLayerPlugIn extends AbstractPlugIn {
 				Services.getErrorManager().error(
 						"Cannot delete layer: " + e.getMessage(), e);
 			}
-		}		
+		}
 		return true;
 	}
 

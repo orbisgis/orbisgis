@@ -5,9 +5,9 @@
  * distributed under GPL 3 license. It is produced by the "Atelier SIG" team of
  * the IRSTV Institute <http://www.irstv.cnrs.fr/> CNRS FR 2488.
  *
- * 
+ *
  *  Team leader Erwan BOCHER, scientific researcher,
- * 
+ *
  *  User support leader : Gwendall Petit, geomatic engineer.
  *
  *
@@ -40,7 +40,7 @@ package org.orbisgis.core.ui.plugins.editors.mapEditor;
 import javax.swing.JButton;
 
 import org.orbisgis.core.Services;
-import org.orbisgis.core.images.IconNames;
+import org.orbisgis.core.images.OrbisGISIcon;
 import org.orbisgis.core.layerModel.MapContext;
 import org.orbisgis.core.ui.editor.IEditor;
 import org.orbisgis.core.ui.pluginSystem.AbstractPlugIn;
@@ -55,7 +55,7 @@ public class FullExtentPlugIn extends AbstractPlugIn {
 	private JButton btn;
 
 	public FullExtentPlugIn() {
-		btn = new JButton(getIcon(IconNames.MAP_FULL_EXTENT_ICON));
+		btn = new JButton(OrbisGISIcon.FULL_EXTENT);
 		btn.setToolTipText(Names.FULL_EXTENT_TOOTIP);
 	}
 
@@ -73,7 +73,7 @@ public class FullExtentPlugIn extends AbstractPlugIn {
 				mc.getLayerModel().getEnvelope());
 		return true;
 	}
-	
+
 	public boolean isEnabled() {
 		boolean isEnabled = false;
 		IEditor editor = Services.getService(EditorManager.class).getActiveEditor();
@@ -83,6 +83,6 @@ public class FullExtentPlugIn extends AbstractPlugIn {
 			btn.setEnabled(isEnabled);
 		}
 		btn.setEnabled(isEnabled);
-		return isEnabled;	
+		return isEnabled;
 	}
 }

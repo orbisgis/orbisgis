@@ -5,9 +5,9 @@
  * distributed under GPL 3 license. It is produced by the "Atelier SIG" team of
  * the IRSTV Institute <http://www.irstv.cnrs.fr/> CNRS FR 2488.
  *
- * 
+ *
  *  Team leader Erwan BOCHER, scientific researcher,
- * 
+ *
  *  User support leader : Gwendall Petit, geomatic engineer.
  *
  *
@@ -44,7 +44,7 @@ import javax.swing.JButton;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.background.BackgroundJob;
 import org.orbisgis.core.background.BackgroundManager;
-import org.orbisgis.core.images.IconNames;
+import org.orbisgis.core.images.OrbisGISIcon;
 import org.orbisgis.core.ui.editor.IEditor;
 import org.orbisgis.core.ui.pluginSystem.AbstractPlugIn;
 import org.orbisgis.core.ui.pluginSystem.PlugInContext;
@@ -59,7 +59,7 @@ public class SavePlugIn extends AbstractPlugIn {
 	private JButton btn;
 
 	public SavePlugIn() {
-		btn = new JButton(getIcon(IconNames.SAVE_ICON));
+		btn = new JButton(OrbisGISIcon.SAVE_ICON);
 		btn.setToolTipText(Names.SAVE);
 	}
 
@@ -100,7 +100,7 @@ public class SavePlugIn extends AbstractPlugIn {
 		IEditor editor = em.getActiveEditor();
 		return editor;
 	}
-	
+
 	public boolean isEnabled() {
 		boolean isEnabled = false;
 		IEditor editor = getEditor();

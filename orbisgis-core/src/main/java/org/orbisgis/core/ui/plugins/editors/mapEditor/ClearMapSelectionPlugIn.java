@@ -5,9 +5,9 @@
  * distributed under GPL 3 license. It is produced by the "Atelier SIG" team of
  * the IRSTV Institute <http://www.irstv.cnrs.fr/> CNRS FR 2488.
  *
- * 
+ *
  *  Team leader Erwan BOCHER, scientific researcher,
- * 
+ *
  *  User support leader : Gwendall Petit, geomatic engineer.
  *
  *
@@ -41,7 +41,7 @@ package org.orbisgis.core.ui.plugins.editors.mapEditor;
 import javax.swing.JButton;
 
 import org.orbisgis.core.edition.EditableElement;
-import org.orbisgis.core.images.IconNames;
+import org.orbisgis.core.images.OrbisGISIcon;
 import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.layerModel.MapContext;
 import org.orbisgis.core.ui.editor.IEditor;
@@ -56,9 +56,9 @@ public class ClearMapSelectionPlugIn extends AbstractPlugIn {
 	private JButton btn;
 
 	public ClearMapSelectionPlugIn() {
-		btn = new JButton(getIcon(IconNames.EDIT_CLEAR));
+		btn = new JButton(OrbisGISIcon.EDIT_CLEAR);
 	}
-	
+
 	public boolean execute(PlugInContext context) throws Exception {
 		IEditor editor = getPlugInContext().getActiveEditor();
 		MapContext mc = (MapContext) editor.getElement().getObject();
@@ -69,7 +69,7 @@ public class ClearMapSelectionPlugIn extends AbstractPlugIn {
 		}
 		return true;
 	}
-	
+
 	public void initialize(PlugInContext context) throws Exception {
 		WorkbenchContext wbcontext = context.getWorkbenchContext();
 		wbcontext.getWorkbench().getFrame().getEditionMapToolBar().addPlugIn(
@@ -77,7 +77,7 @@ public class ClearMapSelectionPlugIn extends AbstractPlugIn {
 	}
 
 	public boolean isEnabled() {
-		boolean isEnabled = false;		
+		boolean isEnabled = false;
 		MapEditorPlugIn mapEditor = null;
 		if((mapEditor=getPlugInContext().getMapEditor()) != null){
 			MapContext mc = (MapContext) mapEditor.getElement().getObject();

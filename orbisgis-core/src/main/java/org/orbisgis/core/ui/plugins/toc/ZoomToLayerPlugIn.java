@@ -5,9 +5,9 @@
  * distributed under GPL 3 license. It is produced by the "Atelier SIG" team of
  * the IRSTV Institute <http://www.irstv.cnrs.fr/> CNRS FR 2488.
  *
- * 
+ *
  *  Team leader Erwan BOCHER, scientific researcher,
- * 
+ *
  *  User support leader : Gwendall Petit, geomatic engineer.
  *
  *
@@ -40,7 +40,7 @@ package org.orbisgis.core.ui.plugins.toc;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.background.BackgroundJob;
 import org.orbisgis.core.background.BackgroundManager;
-import org.orbisgis.core.images.IconNames;
+import org.orbisgis.core.images.OrbisGISIcon;
 import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.layerModel.MapContext;
 import org.orbisgis.core.ui.editor.IEditor;
@@ -60,17 +60,17 @@ import com.vividsolutions.jts.geom.Envelope;
 public class ZoomToLayerPlugIn extends AbstractPlugIn {
 
 	public boolean execute(PlugInContext context) throws Exception {
-		
-		final MapContext mapContext = getPlugInContext().getMapContext();		
+
+		final MapContext mapContext = getPlugInContext().getMapContext();
 		BackgroundManager bm = Services.getService(BackgroundManager.class);
 		bm.backgroundOperation(new BackgroundJob() {
 
 			@Override
 			public void run(IProgressMonitor pm) {
-		
-				
+
+
 				ILayer[] layers = mapContext.getSelectedLayers();
-		
+
 				Envelope env = new Envelope(layers[0].getEnvelope());
 				for (ILayer layer : layers) {
 					env.expandToInclude(layer.getEnvelope());
@@ -84,7 +84,7 @@ public class ZoomToLayerPlugIn extends AbstractPlugIn {
 			}
 
 			@Override
-			public String getTaskName() {				
+			public String getTaskName() {
 				return "Zoom to layer";
 			}
 		});
@@ -97,7 +97,7 @@ public class ZoomToLayerPlugIn extends AbstractPlugIn {
 		context.getFeatureInstaller().addPopupMenuItem(frame, this,
 				new String[] { Names.POPUP_TOC_ZOOM_PATH1 },
 				Names.POPUP_TOC_ZOOM_GROUP, false,
-				getIcon(IconNames.POPUP_TOC_ZOOM_ICON), wbContext);
+				OrbisGISIcon.ZOOM, wbContext);
 	}
 
 	public boolean isEnabled() {
@@ -106,7 +106,7 @@ public class ZoomToLayerPlugIn extends AbstractPlugIn {
 				0,
 				new LayerAvailability[]{});
 	}
-	
+
 	public String getName() {
 		return "ZoomToLayer";
 	}

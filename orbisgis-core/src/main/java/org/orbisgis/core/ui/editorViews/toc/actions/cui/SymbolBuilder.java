@@ -66,8 +66,7 @@ import javax.swing.event.ListSelectionListener;
 
 import org.orbisgis.core.Services;
 import org.orbisgis.core.geocognition.Geocognition;
-import org.orbisgis.core.images.IconLoader;
-import org.orbisgis.core.images.IconNames;
+import org.orbisgis.core.images.OrbisGISIcon;
 import org.orbisgis.core.renderer.symbol.Symbol;
 import org.orbisgis.core.renderer.symbol.SymbolFactory;
 import org.orbisgis.core.renderer.symbol.SymbolManager;
@@ -80,7 +79,7 @@ import org.orbisgis.core.ui.editorViews.toc.actions.cui.components.SymbolSelecti
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.legend.ISymbolEditor;
 
 /**
- * 
+ *
  * @author david
  */
 public class SymbolBuilder extends JPanel implements UIPanel,
@@ -204,7 +203,7 @@ public class SymbolBuilder extends JPanel implements UIPanel,
 
 	/**
 	 * returns a symbolcomposite with all the symbols in the list
-	 * 
+	 *
 	 * @return
 	 */
 	public Symbol getSymbolComposite() {
@@ -257,7 +256,7 @@ public class SymbolBuilder extends JPanel implements UIPanel,
 		jToolBar1.setFloatable(false);
 		jToolBar1.setRollover(true);
 
-		jButtonSymbolUp.setIcon(IconLoader.getIcon(IconNames.GO_UP));
+		jButtonSymbolUp.setIcon(OrbisGISIcon.GO_UP);
 		jButtonSymbolUp.setToolTipText("Up");
 		jButtonSymbolUp.setFocusable(false);
 		jButtonSymbolUp.setHorizontalTextPosition(SwingConstants.CENTER);
@@ -269,7 +268,7 @@ public class SymbolBuilder extends JPanel implements UIPanel,
 		});
 		jToolBar1.add(jButtonSymbolUp);
 
-		jButtonSymbolDown.setIcon(IconLoader.getIcon(IconNames.GO_DOWN));
+		jButtonSymbolDown.setIcon(OrbisGISIcon.GO_DOWN);
 		jButtonSymbolDown.setToolTipText("Down");
 		jButtonSymbolDown.setFocusable(false);
 		jButtonSymbolDown.setHorizontalTextPosition(SwingConstants.CENTER);
@@ -281,7 +280,7 @@ public class SymbolBuilder extends JPanel implements UIPanel,
 		});
 		jToolBar1.add(jButtonSymbolDown);
 
-		jButtonSymbolAdd.setIcon(IconLoader.getIcon(IconNames.ADD));
+		jButtonSymbolAdd.setIcon(OrbisGISIcon.ADD);
 		jButtonSymbolAdd.setToolTipText("Add");
 		jButtonSymbolAdd.setFocusable(false);
 		jButtonSymbolAdd.setHorizontalTextPosition(SwingConstants.CENTER);
@@ -293,7 +292,7 @@ public class SymbolBuilder extends JPanel implements UIPanel,
 		});
 		jToolBar1.add(jButtonSymbolAdd);
 
-		jButtonSymbolDel.setIcon(IconLoader.getIcon(IconNames.DEL));
+		jButtonSymbolDel.setIcon(OrbisGISIcon.DEL);
 		jButtonSymbolDel.setToolTipText("Delete");
 		jButtonSymbolDel.setFocusable(false);
 		jButtonSymbolDel.setHorizontalTextPosition(SwingConstants.CENTER);
@@ -305,7 +304,7 @@ public class SymbolBuilder extends JPanel implements UIPanel,
 		});
 		jToolBar1.add(jButtonSymbolDel);
 
-		jButtonSymbolRename.setIcon(IconLoader.getIcon(IconNames.PENCIL));
+		jButtonSymbolRename.setIcon(OrbisGISIcon.PENCIL);
 		jButtonSymbolRename.setToolTipText("Rename");
 		jButtonSymbolRename.setFocusable(false);
 		jButtonSymbolRename.setHorizontalTextPosition(SwingConstants.CENTER);
@@ -339,7 +338,7 @@ public class SymbolBuilder extends JPanel implements UIPanel,
 		jPanelButtonsCollection.setLayout(new BoxLayout(
 				jPanelButtonsCollection, BoxLayout.PAGE_AXIS));
 
-		btnToCollection.setIcon(IconLoader.getIcon(IconNames.SAVE));
+		btnToCollection.setIcon(OrbisGISIcon.SAVE);
 		btnToCollection.setToolTipText("Save");
 		btnToCollection.setFocusable(false);
 		btnToCollection.setHorizontalTextPosition(SwingConstants.CENTER);
@@ -351,7 +350,7 @@ public class SymbolBuilder extends JPanel implements UIPanel,
 		});
 		jPanelButtonsCollection.add(btnToCollection);
 
-		btnFromCollection.setIcon(IconLoader.getIcon(IconNames.ADD));
+		btnFromCollection.setIcon(OrbisGISIcon.ADD);
 		btnFromCollection.setToolTipText("Add");
 		btnFromCollection.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
@@ -368,7 +367,7 @@ public class SymbolBuilder extends JPanel implements UIPanel,
 
 	/**
 	 * open the collection window in order to select one symbol.
-	 * 
+	 *
 	 * @param evt
 	 */
 	private void jButtonFromCollectionActionPerformed(ActionEvent evt) {
@@ -398,7 +397,7 @@ public class SymbolBuilder extends JPanel implements UIPanel,
 
 	/**
 	 * move up the selected symbol in the list
-	 * 
+	 *
 	 * @param evt
 	 */
 	private void jButtonSymbolUpActionPerformed(ActionEvent evt) {
@@ -413,7 +412,7 @@ public class SymbolBuilder extends JPanel implements UIPanel,
 	/**
 	 * When the selected value in the list is changed we will call to the
 	 * refresh functions with the new symbol.
-	 * 
+	 *
 	 * @param evt
 	 *            ;
 	 */
@@ -455,7 +454,7 @@ public class SymbolBuilder extends JPanel implements UIPanel,
 
 	/**
 	 * moves down the symbol
-	 * 
+	 *
 	 * @param evt
 	 */
 	private void jButtonSymbolDownActionPerformed(ActionEvent evt) {
@@ -469,7 +468,7 @@ public class SymbolBuilder extends JPanel implements UIPanel,
 
 	/**
 	 * adds a symbol in the list
-	 * 
+	 *
 	 * @param evt
 	 */
 	private void jButtonSymbolAddActionPerformed(ActionEvent evt) {
@@ -497,7 +496,7 @@ public class SymbolBuilder extends JPanel implements UIPanel,
 
 	/**
 	 * delete the selected symbols
-	 * 
+	 *
 	 * @param evt
 	 */
 	private void jButtonSymbolDelActionPerformed(ActionEvent evt) {
@@ -515,7 +514,7 @@ public class SymbolBuilder extends JPanel implements UIPanel,
 
 	/**
 	 * rename the selected symbol
-	 * 
+	 *
 	 * @param evt
 	 */
 	private void jButtonSymbolRenameActionPerformed(ActionEvent evt) {
@@ -539,7 +538,7 @@ public class SymbolBuilder extends JPanel implements UIPanel,
 
 	/**
 	 * gets the symbols and adds to the collection as a new Composite
-	 * 
+	 *
 	 * @param evt
 	 */
 	private void jButtonToCollectionActionPerformed(ActionEvent evt) {
