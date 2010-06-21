@@ -11,7 +11,7 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
 import org.orbisgis.core.images.IconLoader;
-import org.orbisgis.core.images.IconNames;
+import org.orbisgis.core.images.OrbisGISIcon;
 
 public class JTextFilter extends JPanel {
 
@@ -42,7 +42,7 @@ public class JTextFilter extends JPanel {
 			}
 		});
 		this.add(txtFilter);
-		btnClear = new JButton(IconLoader.getIcon(IconNames.REMOVE));
+		btnClear = new JButton(OrbisGISIcon.REMOVE);
 		btnClear.setVisible(false);
 		btnClear.setMargin(new Insets(0, 0, 0, 0));
 		btnClear.addActionListener(new ActionListener() {

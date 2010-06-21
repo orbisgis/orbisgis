@@ -38,8 +38,9 @@
 package org.orbisgis.core.ui.editors.map.tools.generated;
 
 import java.awt.Graphics;
-import java.net.URL;
 import java.util.ArrayList;
+
+import javax.swing.ImageIcon;
 
 import org.apache.log4j.Logger;
 import org.orbisgis.core.layerModel.MapContext;
@@ -73,7 +74,7 @@ public abstract class Point implements Automaton {
 
 		if ("Cancel".equals(status)) {
 
-		}		
+		}
 
 		return ret.toArray(new String[0]);
 	}
@@ -91,7 +92,7 @@ public abstract class Point implements Automaton {
 
 		if ("Cancel".equals(status)) {
 
-		}		
+		}
 
 		return ret.toArray(new String[0]);
 	}
@@ -270,17 +271,17 @@ public abstract class Point implements Automaton {
 		return Messages.getString("point_tooltip");
 	}
 
-	private String mouseCursor;
+	private ImageIcon mouseCursor;
 
-	public URL getMouseCursorURL() {
+	public ImageIcon getImageIcon() {
 		if (mouseCursor != null) {
-			return this.getClass().getResource(mouseCursor);
+			return mouseCursor;
 		} else {
 			return null;
 		}
 	}
 
-	public void setMouseCursor(String mouseCursor) {
+	public void setMouseCursor(ImageIcon mouseCursor) {
 		this.mouseCursor = mouseCursor;
 	}
 

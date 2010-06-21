@@ -61,13 +61,12 @@ package org.orbisgis.core.ui.editors.map.tools;
 
 import java.awt.Point;
 import java.awt.geom.Rectangle2D;
-import java.net.URL;
 import java.util.Observable;
 
 import javax.swing.AbstractButton;
+import javax.swing.ImageIcon;
 
-import org.orbisgis.core.images.IconLoader;
-import org.orbisgis.core.images.IconNames;
+import org.orbisgis.core.images.OrbisGISIcon;
 import org.orbisgis.core.layerModel.MapContext;
 import org.orbisgis.core.ui.editors.map.tool.ToolManager;
 import org.orbisgis.core.ui.editors.map.tool.TransitionException;
@@ -77,7 +76,7 @@ import com.vividsolutions.jts.geom.Envelope;
 
 /**
  * Tool to zoom in
- * 
+ *
  * @author Fernando Gonzalez Cortes
  */
 public class ZoomInTool extends AbstractRectangleTool {
@@ -136,13 +135,13 @@ public class ZoomInTool extends AbstractRectangleTool {
 		return true;
 	}
 
-	public URL getMouseCursorURL() {
-		return IconLoader.getIconUrl(IconNames.ZOOMIN_ICON);
+	public ImageIcon getImageIcon() {
+		return OrbisGISIcon.ZOOMIN;
 	}
 
 	public String getName() {
 		return "Zoom in";
 	}
 
-	
+
 }

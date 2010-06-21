@@ -61,10 +61,10 @@ package org.orbisgis.core.ui.editors.map.tool;
 
 import java.awt.Graphics;
 import java.awt.Point;
-import java.net.URL;
 import java.util.Observer;
 
 import javax.swing.AbstractButton;
+import javax.swing.ImageIcon;
 
 import org.orbisgis.core.layerModel.MapContext;
 
@@ -92,7 +92,7 @@ public interface Automaton extends Observer {
 	/**
 	 * Null to use the cross cursor
 	 */
-	public URL getMouseCursorURL();	
+	public ImageIcon getImageIcon();
 
 	public boolean isEnabled(MapContext vc, ToolManager tm);
 
@@ -104,7 +104,7 @@ public interface Automaton extends Observer {
 
 	public Point getHotSpotOffset();
 
-	public void setMouseCursor(String mouseCursor);
+	public void setMouseCursor(ImageIcon mouseCursor);
 
 	public AbstractButton getButton();
 

@@ -64,7 +64,7 @@ import org.orbisgis.core.background.BackgroundJob;
 import org.orbisgis.core.background.BackgroundManager;
 import org.orbisgis.core.errorManager.ErrorManager;
 import org.orbisgis.core.images.IconLoader;
-import org.orbisgis.core.images.IconNames;
+import org.orbisgis.core.images.OrbisGISIcon;
 import org.orbisgis.core.sif.SQLUIPanel;
 import org.orbisgis.core.sif.UIFactory;
 import org.orbisgis.core.ui.components.sif.AskValue;
@@ -117,7 +117,7 @@ public class TableComponent extends JPanel implements WorkbenchFrame {
 
 	/**
 	 * This is the default constructor
-	 * 
+	 *
 	 * @throws DriverException
 	 */
 	public TableComponent(TableEditorPlugIn editor) {
@@ -138,7 +138,7 @@ public class TableComponent extends JPanel implements WorkbenchFrame {
 
 	/**
 	 * This method initializes table
-	 * 
+	 *
 	 * @return javax.swing.JTable
 	 */
 	public javax.swing.JTable getTable() {
@@ -245,7 +245,7 @@ public class TableComponent extends JPanel implements WorkbenchFrame {
 
 	/**
 	 * This method initializes jScrollPane
-	 * 
+	 *
 	 * @return javax.swing.JScrollPane
 	 */
 	private javax.swing.JScrollPane getJScrollPane() {
@@ -259,7 +259,7 @@ public class TableComponent extends JPanel implements WorkbenchFrame {
 
 	/**
 	 * Shows a dialog with the error type
-	 * 
+	 *
 	 * @param msg
 	 */
 	private void inputError(String msg, Exception e) {
@@ -638,7 +638,7 @@ public class TableComponent extends JPanel implements WorkbenchFrame {
 	private abstract class PopupMouseAdapter extends MouseAdapter {
 		WorkbenchContext wbContext = Services
 				.getService(WorkbenchContext.class);
-		
+
 		@Override
 		public void mousePressed(MouseEvent e) {
 			updateContext(e);
@@ -652,23 +652,24 @@ public class TableComponent extends JPanel implements WorkbenchFrame {
 		}
 
 		/**
-		 * This method is used to update the popup context. Used in plugin to
+		 * This method is used to update the popup context. Used by plugins to
 		 * determine when it's showing.
-		 * 
+		 *
 		 * @param e
 		 */
 		private void updateContext(MouseEvent e) {
-			boolean oneColumnHeaderIsSelected = table.getTableHeader().contains(
-					e.getPoint());
+			boolean oneColumnHeaderIsSelected = table.getTableHeader()
+					.contains(e.getPoint());
 			selectedColumn = table.columnAtPoint(e.getPoint());
-			if (e.isPopupTrigger()) {
-				if (oneColumnHeaderIsSelected) {
-					wbContext.setHeaderSelected(selectedColumn);
-				} else {
-					wbContext.setRowSelected(e);
-				}
+			int clickedRow = table.rowAtPoint(e.getPoint());
+			if (oneColumnHeaderIsSelected) {
+				wbContext.setHeaderSelected(selectedColumn);
 			} else {
 				wbContext.setRowSelected(e);
+				if (!table.isRowSelected(clickedRow)) {
+					selection.setSelectedRows(new int[] { clickedRow });
+					updateTableSelection();
+				}
 			}
 		}
 
@@ -729,8 +730,7 @@ public class TableComponent extends JPanel implements WorkbenchFrame {
 						.getIcon("thumb_up.png"), SORTUP);
 				addMenu(pop, "Sort descending", IconLoader
 						.getIcon("thumb_down.png"), SORTDOWN);
-				addMenu(pop, "No Sort", IconLoader
-						.getIcon(IconNames.TABLE_REFRESH), NOSORT);
+				addMenu(pop, "No Sort", OrbisGISIcon.TABLE_REFRESH, NOSORT);
 			}
 			return pop;
 		}
@@ -817,10 +817,10 @@ public class TableComponent extends JPanel implements WorkbenchFrame {
 
 		/**
 		 * Returns the name of the field.
-		 * 
+		 *
 		 * @param col
 		 *            index of field
-		 * 
+		 *
 		 * @return Name of field
 		 */
 		@Override
@@ -834,7 +834,7 @@ public class TableComponent extends JPanel implements WorkbenchFrame {
 
 		/**
 		 * Returns the type of field
-		 * 
+		 *
 		 * @param col
 		 *            index of field
 		 * @return Type of field
@@ -849,7 +849,7 @@ public class TableComponent extends JPanel implements WorkbenchFrame {
 
 		/**
 		 * Returns the number of fields.
-		 * 
+		 *
 		 * @return number of fields
 		 */
 		@Override
@@ -863,7 +863,7 @@ public class TableComponent extends JPanel implements WorkbenchFrame {
 
 		/**
 		 * Returns number of rows.
-		 * 
+		 *
 		 * @return number of rows.
 		 */
 		@Override

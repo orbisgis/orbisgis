@@ -38,8 +38,9 @@
 package org.orbisgis.core.ui.editors.map.tools.generated;
 
 import java.awt.Graphics;
-import java.net.URL;
 import java.util.ArrayList;
+
+import javax.swing.ImageIcon;
 
 import org.apache.log4j.Logger;
 import org.orbisgis.core.layerModel.MapContext;
@@ -64,7 +65,7 @@ public abstract class Multiline implements Automaton {
 		ArrayList<String> ret = new ArrayList<String>();
 
 		if ("Standby".equals(status)) {
-			
+
 			ret.add(Messages.getString("cancel"));
 
 			ret.add(Messages.getString("multiline_standby_to_done"));
@@ -72,7 +73,7 @@ public abstract class Multiline implements Automaton {
 		}
 
 		if ("Point".equals(status)) {
-			
+
 			ret.add(Messages.getString("cancel"));
 
 			ret.add(Messages.getString("multiline_point_to_line"));
@@ -93,8 +94,6 @@ public abstract class Multiline implements Automaton {
 
 		}
 
-		
-
 		return ret.toArray(new String[0]);
 	}
 
@@ -102,7 +101,7 @@ public abstract class Multiline implements Automaton {
 		ArrayList<String> ret = new ArrayList<String>();
 
 		if ("Standby".equals(status)) {
-			
+
 			ret.add("esc");
 
 			ret.add("t");
@@ -110,7 +109,7 @@ public abstract class Multiline implements Automaton {
 		}
 
 		if ("Point".equals(status)) {
-			
+
 			ret.add("esc");
 
 			ret.add("l");
@@ -129,7 +128,7 @@ public abstract class Multiline implements Automaton {
 
 		if ("Cancel".equals(status)) {
 
-		}		
+		}
 
 		return ret.toArray(new String[0]);
 	}
@@ -456,17 +455,17 @@ public abstract class Multiline implements Automaton {
 		return Messages.getString("multiline_tooltip");
 	}
 
-	private String mouseCursor;
+	private ImageIcon mouseCursor;
 
-	public URL getMouseCursorURL() {
+	public ImageIcon getImageIcon() {
 		if (mouseCursor != null) {
-			return this.getClass().getResource(mouseCursor);
+			return mouseCursor;
 		} else {
 			return null;
 		}
 	}
 
-	public void setMouseCursor(String mouseCursor) {
+	public void setMouseCursor(ImageIcon mouseCursor) {
 		this.mouseCursor = mouseCursor;
 	}
 
