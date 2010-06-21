@@ -21,13 +21,13 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
 import org.orbisgis.core.images.IconLoader;
-import org.orbisgis.core.images.IconNames;
+import org.orbisgis.core.images.OrbisGISIcon;
 import org.orbisgis.core.sif.CRFlowLayout;
 import org.orbisgis.core.sif.CarriageReturn;
 
 /**
  * Numeric spinner
- * 
+ *
  * @author fergonco
  */
 public class JNumericSpinner extends JPanel {
@@ -72,10 +72,10 @@ public class JNumericSpinner extends JPanel {
 		incTimer.setCoalesce(true);
 		incTimer.setRepeats(true);
 		incTimer.setInitialDelay(100);
-		up = createButton(IconLoader.getIcon(IconNames.SPINNER_UP), 1);
+		up = createButton(OrbisGISIcon.SPINNER_UP, 1);
 		pnlButtons.add(up);
 		pnlButtons.add(new CarriageReturn());
-		down = createButton(IconLoader.getIcon(IconNames.SPINNER_DOWN), -1);
+		down = createButton(OrbisGISIcon.SPINNER_DOWN, -1);
 		pnlButtons.add(down);
 		this.add(pnlButtons, BorderLayout.EAST);
 	}
@@ -106,7 +106,7 @@ public class JNumericSpinner extends JPanel {
 
 	/**
 	 * Sets the value of the spinner
-	 * 
+	 *
 	 * @param value
 	 */
 	public void setValue(double value) {
@@ -128,7 +128,7 @@ public class JNumericSpinner extends JPanel {
 
 	/**
 	 * Get the value of the spinner
-	 * 
+	 *
 	 * @return
 	 */
 	public double getValue() {
@@ -141,7 +141,7 @@ public class JNumericSpinner extends JPanel {
 
 	/**
 	 * Set the primary increment the spinner buttons use
-	 * 
+	 *
 	 * @param inc
 	 */
 	public void setInc(double inc) {
@@ -186,7 +186,7 @@ public class JNumericSpinner extends JPanel {
 
 	/**
 	 * Sets a number format in this spinner.
-	 * 
+	 *
 	 * @param numberFormat
 	 */
 	public void setNumberFormat(NumberFormat numberFormat) {
@@ -195,7 +195,7 @@ public class JNumericSpinner extends JPanel {
 
 	/**
 	 * Sets the minimum value the buttons can take the value
-	 * 
+	 *
 	 * @param min
 	 */
 	public void setMin(int min) {
@@ -204,7 +204,7 @@ public class JNumericSpinner extends JPanel {
 
 	/**
 	 * Sets the minimum value the buttons can take the value
-	 * 
+	 *
 	 * @param min
 	 */
 	public void setMax(int max) {
