@@ -5,9 +5,9 @@
  * distributed under GPL 3 license. It is produced by the "Atelier SIG" team of
  * the IRSTV Institute <http://www.irstv.cnrs.fr/> CNRS FR 2488.
  *
- * 
+ *
  *  Team leader Erwan BOCHER, scientific researcher,
- * 
+ *
  *  User support leader : Gwendall Petit, geomatic engineer.
  *
  *
@@ -97,7 +97,9 @@ public class Main {
 	private static void initApplication(Splash splash, String[] args)
 			throws Exception {
 		splash.setVisible(true);
+		splash.updateText("OrbisGIS services initialization.");
 		initServices();
+		splash.updateText("OrbisGIS services initialization ready.");
 		parseCommandLine(args);
 		initI18n(splash);
 		init(splash, args);

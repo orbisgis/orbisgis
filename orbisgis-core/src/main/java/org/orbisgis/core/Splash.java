@@ -47,12 +47,11 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
-import org.orbisgis.core.images.IconLoader;
-import org.orbisgis.core.images.IconNames;
+import org.orbisgis.core.images.OrbisGISIcon;
 
 /**
  * A splash screen to show while the main program is loading. A typical use is:
- * 
+ *
  * <pre>
  * public static void main(String[] args) {
  * 	Splash s = new Splash(delay1);
@@ -60,7 +59,7 @@ import org.orbisgis.core.images.IconNames;
  * 	s.dispose(delay2);
  * }
  * </pre>
- * 
+ *
  * The first line creates a Splash that will appear until another frame hides it
  * (MainProgram), but at least during "delay1" milliseconds.<br>
  * To distroy the Splash you can either call "s.dispose()" or
@@ -75,14 +74,14 @@ public class Splash extends JFrame {
 	/**
 	 * Creates a Splash that will appear until another frame hides it, but at
 	 * least during "delay" milliseconds.
-	 * 
+	 *
 	 * @param delay
 	 *            the delay in milliseconds
 	 */
 	public Splash() {
 		JPanel p = new JPanel();
 		p.setLayout(new BorderLayout());
-		p.add(new JLabel(IconLoader.getIcon(IconNames.LOGO)), BorderLayout.CENTER);
+		p.add(new JLabel(OrbisGISIcon.ORBISGIS_SPLASH), BorderLayout.CENTER);
 		versionLabel = new JLabel("Starting...");
 		p.add(versionLabel, BorderLayout.SOUTH);
 		p.setBorder(BorderFactory.createLineBorder(Color.WHITE, 3));
