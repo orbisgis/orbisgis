@@ -3,11 +3,11 @@ package org.orbisgis.core.ui.plugins.demo.extensions.tools;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Point;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Observable;
 
 import javax.swing.AbstractButton;
+import javax.swing.ImageIcon;
 
 import org.orbisgis.core.Services;
 import org.orbisgis.core.layerModel.MapContext;
@@ -52,7 +52,7 @@ public class Hello implements Automaton {
 	}
 
 	@Override
-	public URL getMouseCursorURL() {
+	public ImageIcon getImageIcon() {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -111,7 +111,7 @@ public class Hello implements Automaton {
 	public void setButton(AbstractButton button) {
 	}
 
-	public void setMouseCursor(String mouseCursor) {
+	public void setMouseCursor(ImageIcon mouseCursor) {
 	}
 
 	public void toolFinished(MapContext vc, ToolManager tm)
