@@ -5,9 +5,9 @@
  * distributed under GPL 3 license. It is produced by the "Atelier SIG" team of
  * the IRSTV Institute <http://www.irstv.cnrs.fr/> CNRS FR 2488.
  *
- * 
+ *
  *  Team leader Erwan BOCHER, scientific researcher,
- * 
+ *
  *  User support leader : Gwendall Petit, geomatic engineer.
  *
  *
@@ -69,8 +69,7 @@ import org.apache.log4j.Logger;
 import org.orbisgis.core.ApplicationInfo;
 import org.orbisgis.core.PersistenceException;
 import org.orbisgis.core.Services;
-import org.orbisgis.core.images.IconLoader;
-import org.orbisgis.core.images.IconNames;
+import org.orbisgis.core.images.OrbisGISIcon;
 import org.orbisgis.core.ui.components.job.JobPopup;
 import org.orbisgis.core.ui.editor.EditorListener;
 import org.orbisgis.core.ui.editor.IEditor;
@@ -258,7 +257,7 @@ public class OrbisGISFrame extends JFrame implements IWindow {
 		this.setTitle(I18N.getText("orbisgis.platform") + " - "
 				+ ai.getVersionNumber() + " - " + ai.getVersionName());
 
-		this.setIconImage(IconLoader.getIcon(IconNames.LOGO_MINI).getImage());
+		this.setIconImage(OrbisGISIcon.ORBISGIS_LOGOMINI.getImage());
 		Toolkit toolkit = Toolkit.getDefaultToolkit();
 		Dimension screenSize = toolkit.getScreenSize();
 		this.setSize((int) screenSize.width, (int) screenSize.height);
@@ -469,7 +468,7 @@ public class OrbisGISFrame extends JFrame implements IWindow {
 	/**
 	 * Writes the id of the view and then writes the status. Reads the id,
 	 * obtains the data from the extension xml and reads the status
-	 * 
+	 *
 	 */
 	private class MyViewSerializer implements ViewSerializer {
 

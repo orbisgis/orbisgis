@@ -5,9 +5,9 @@
  * distributed under GPL 3 license. It is produced by the "Atelier SIG" team of
  * the IRSTV Institute <http://www.irstv.cnrs.fr/> CNRS FR 2488.
  *
- * 
+ *
  *  Team leader Erwan BOCHER, scientific researcher,
- * 
+ *
  *  User support leader : Gwendall Petit, geomatic engineer.
  *
  *
@@ -103,7 +103,7 @@ public class FeatureInstaller {
 		}
 		return null;
 	}
-	
+
 	public String[] behead(String[] a1) {
 		String[] a2 = new String[a1.length - 1];
 		System.arraycopy(a1, 1, a2, 0, a2.length);
@@ -113,13 +113,15 @@ public class FeatureInstaller {
 	/**
 	 * @return the leaf
 	 */
-	public JMenu createMenusIfNecessary(PlugIn plugIn, JMenu parent, String[] menuPath) {
+	public JMenu createMenusIfNecessary(PlugIn plugIn, JMenu parent,
+			String[] menuPath) {
 		if (menuPath.length == 0) {
 			return parent;
 		}
 		JMenu child = (JMenu) childMenuItem(I18N.getText(menuPath[0]), parent);
 		if (child == null) {
-			child = (JMenu) installMnemonic(new JMenu(I18N.getText(menuPath[0])), parent);
+			child = (JMenu) installMnemonic(
+					new JMenu(I18N.getText(menuPath[0])), parent);
 			parent.add(child);
 		}
 		return createMenusIfNecessary(plugIn, child, behead(menuPath));
@@ -213,17 +215,17 @@ public class FeatureInstaller {
 
 	public JMenuItem addMainMenuItem(PlugIn plugIn, String[] menuPath,
 			String menuItemName, boolean checkBox, ImageIcon icon,
-			String[] editors, JComponent panel, PlugInContext plugInContext) {	
-		WorkbenchContext wbContext = plugInContext.getWorkbenchContext(); 
+			String[] editors, JComponent panel, PlugInContext plugInContext) {
+		WorkbenchContext wbContext = plugInContext.getWorkbenchContext();
 		// If PlugIn is a View PlugIn get is panel Component
 		if (wbContext != null && panel != null)
-			((ViewPlugIn) plugIn).createPlugInContext(panel,
-					I18N.getText(menuItemName), icon, editors, wbContext);
+			((ViewPlugIn) plugIn).createPlugInContext(panel, I18N
+					.getText(menuItemName), icon, editors, wbContext);
 		else
-			((AbstractPlugIn)plugIn).createPlugInContext(wbContext);
-			//((AbstractPlugIn) plugIn).setPlugInContext(plugInContext);
-		JMenuItem menuItem = installMenuItem(plugIn, menuPath,
-				I18N.getText(menuItemName), checkBox, icon);
+			((AbstractPlugIn) plugIn).createPlugInContext(wbContext);
+		// ((AbstractPlugIn) plugIn).setPlugInContext(plugInContext);
+		JMenuItem menuItem = installMenuItem(plugIn, menuPath, I18N
+				.getText(menuItemName), checkBox, icon);
 		return menuItem;
 	}
 
@@ -231,13 +233,14 @@ public class FeatureInstaller {
 			String menuItemName, boolean checkBox, Icon icon) {
 		JMenu menu = menuBarMenu(I18N.getText(menuPath[0]));
 		if (menu == null) {
-			menu = (JMenu) installMnemonic(new JMenu(I18N.getText(menuPath[0])), menuBar());
+			menu = (JMenu) installMnemonic(
+					new JMenu(I18N.getText(menuPath[0])), menuBar());
 			addToMenuBar(menu);
 		}
-		JMenu parent = createMenusIfNecessary(plugIn,menu, behead(menuPath));
+		JMenu parent = createMenusIfNecessary(plugIn, menu, behead(menuPath));
 		final JMenuItem menuItem = installMnemonic(
-				checkBox ? new JCheckBoxMenuItem(I18N.getText(menuItemName)) : new JMenuItem(
-						I18N.getText(menuItemName)), parent);
+				checkBox ? new JCheckBoxMenuItem(I18N.getText(menuItemName))
+						: new JMenuItem(I18N.getText(menuItemName)), parent);
 		menuItem.setIcon(icon);
 		associate(menuItem, plugIn);
 		insert(menuItem, createMenu(parent), null);
@@ -291,44 +294,73 @@ public class FeatureInstaller {
 
 	private void associate(JMenuItem menuItem, PlugIn plugIn) {
 		menuItem.addActionListener(AbstractPlugIn.toActionListener(plugIn,
-				workbenchContext));		
+				workbenchContext));
 	}
 
-	public JMenu addPopupMenuItem(WorkbenchFrame frame,
-			AbstractPlugIn plugIn, String[] menuPath, String group,
-			boolean checkBox, ImageIcon icon, WorkbenchContext wbContext) {
+	/**
+	 * Create a popupmenu without icon
+	 *
+	 * @param frame
+	 * @param plugIn
+	 * @param menuPath
+	 * @param group
+	 * @param checkBox
+	 * @param wbContext
+	 * @return
+	 */
+	public JMenu addPopupMenuItem(WorkbenchFrame frame, AbstractPlugIn plugIn,
+			String[] menuPath, String group, boolean checkBox,
+			WorkbenchContext wbContext) {
+		return addPopupMenuItem(frame, plugIn, menuPath, group, checkBox, null,
+				wbContext);
+	}
+
+	/**
+	 * Create a popup memu, attached to an orbisgis workbenchFrame.
+	 * @param frame
+	 * @param plugIn
+	 * @param menuPath
+	 * @param group
+	 * @param checkBox
+	 * @param icon
+	 * @param wbContext
+	 * @return
+	 */
+	public JMenu addPopupMenuItem(WorkbenchFrame frame, AbstractPlugIn plugIn,
+			String[] menuPath, String group, boolean checkBox, ImageIcon icon,
+			WorkbenchContext wbContext) {
 		plugIn.createPlugInContext(wbContext);
 		Menu mymenu = null;
 		for (int i = 0; i < menuPath.length; i++) {
 			String parent = i == 0 ? null : I18N.getText(menuPath[i - 1]);
 			mymenu = new Menu(parent, I18N.getText(menuPath[i]),
-					i != menuPath.length - 1 ? null : group, I18N.getText(menuPath[i]),
+					i != menuPath.length - 1 ? null : group, I18N
+							.getText(menuPath[i]),
 					i != menuPath.length - 1 ? null : icon,
-					i != menuPath.length - 1 ? null : plugIn,
-					checkBox);
+					i != menuPath.length - 1 ? null : plugIn, checkBox);
 			frame.getMenuTreePopup().addMenu(mymenu);
 		}
 		return null;
 	}
 
 	public void addRegisterCustomQuery(Class<? extends CustomQuery> queryClass) {
-		if(QueryManager.getQuery(queryClass.getSimpleName())==null) {
+		if (QueryManager.getQuery(queryClass.getSimpleName()) == null) {
 			QueryManager.registerQuery(queryClass);
-			addToGeocognition (queryClass.getSimpleName(), queryClass);
+			addToGeocognition(queryClass.getSimpleName(), queryClass);
 		}
-		
+
 	}
 
 	public void addRegisterFunction(Class<? extends Function> functionClass) {
-		if(FunctionManager.getFunction(functionClass.getSimpleName())==null) {
+		if (FunctionManager.getFunction(functionClass.getSimpleName()) == null) {
 			FunctionManager.addFunction(functionClass);
-			addToGeocognition (functionClass.getSimpleName(), functionClass);
+			addToGeocognition(functionClass.getSimpleName(), functionClass);
 		}
 	}
-	
-	public void addToGeocognition (String name, Class clazz) {
+
+	public void addToGeocognition(String name, Class clazz) {
 		Geocognition geocognition = Services.getService(Geocognition.class);
-		geocognition.addElement("SQL/" + name,clazz);
+		geocognition.addElement("SQL/" + name, clazz);
 	}
 
 	/*

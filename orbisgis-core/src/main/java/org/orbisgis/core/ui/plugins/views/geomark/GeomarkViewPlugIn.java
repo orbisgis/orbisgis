@@ -5,9 +5,9 @@
  * distributed under GPL 3 license. It is produced by the "Atelier SIG" team of
  * the IRSTV Institute <http://www.irstv.cnrs.fr/> CNRS FR 2488.
  *
- * 
+ *
  *  Team leader Erwan BOCHER, scientific researcher,
- * 
+ *
  *  User support leader : Gwendall Petit, geomatic engineer.
  *
  *
@@ -40,7 +40,7 @@ package org.orbisgis.core.ui.plugins.views.geomark;
 
 import javax.swing.JMenuItem;
 
-import org.orbisgis.core.images.IconNames;
+import org.orbisgis.core.images.OrbisGISIcon;
 import org.orbisgis.core.ui.editor.IEditor;
 import org.orbisgis.core.ui.pluginSystem.PlugInContext;
 import org.orbisgis.core.ui.pluginSystem.ViewPlugIn;
@@ -58,7 +58,7 @@ public class GeomarkViewPlugIn extends ViewPlugIn {
 		editors[0] = Names.EDITOR_MAP_ID;
 		menuItem = context.getFeatureInstaller().addMainMenuItem(this,
 				new String[] { Names.VIEW }, Names.GEOMARK, true,
-				getIcon(IconNames.GEOMARK_ICON), editors, panel, context);
+				OrbisGISIcon.GEOMARK_ICON, editors, panel, context);
 		context.getFeatureInstaller().addRegisterCustomQuery(Geomark.class);
 	}
 
@@ -72,18 +72,18 @@ public class GeomarkViewPlugIn extends ViewPlugIn {
 		return true;
 	}
 
-	public boolean isEnabled() {		
+	public boolean isEnabled() {
 		return true;
 	}
-	
+
 	public boolean isSelected() {
 		boolean isSelected = false;
 		isSelected = getPlugInContext().viewIsOpen(getId());
 		menuItem.setSelected(isSelected);
 		return isSelected;
 	}
-	
-	public String getName() {		
+
+	public String getName() {
 		return "Geomark view";
 	}
 

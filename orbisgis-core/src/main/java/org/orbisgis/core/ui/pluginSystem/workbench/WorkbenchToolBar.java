@@ -5,9 +5,9 @@
  * distributed under GPL 3 license. It is produced by the "Atelier SIG" team of
  * the IRSTV Institute <http://www.irstv.cnrs.fr/> CNRS FR 2488.
  *
- * 
+ *
  *  Team leader Erwan BOCHER, scientific researcher,
- * 
+ *
  *  User support leader : Gwendall Petit, geomatic engineer.
  *
  *
@@ -50,6 +50,7 @@ import java.util.Observer;
 
 import javax.swing.AbstractButton;
 import javax.swing.BoxLayout;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
@@ -107,7 +108,7 @@ public class WorkbenchToolBar extends EnableableToolBar implements Observer {
 	}
 
 	public WorkbenchToolBar(WorkbenchContext workbenchContext, String name,
-			String iconFile, boolean dropDown) {
+			ImageIcon iconFile, boolean dropDown) {
 		super(name);
 		this.context = workbenchContext;
 		this.dropDown = dropDown;
@@ -200,7 +201,7 @@ public class WorkbenchToolBar extends EnableableToolBar implements Observer {
 	}
 
 	// TOOLBAR Automaton
-	public AbstractButton addAutomaton(final Automaton automaton, String icon) {
+	public AbstractButton addAutomaton(final Automaton automaton, ImageIcon icon) {
 		AbstractButton c = null;
 		if (dropDown) {
 			c = new JMenuItem() {
@@ -216,13 +217,13 @@ public class WorkbenchToolBar extends EnableableToolBar implements Observer {
 				}
 			};
 		}
-		c.setIcon(IconLoader.getIcon(icon));
+		c.setIcon(icon);
 		return addCursorAutomaton(automaton.getName(), automaton, c, icon);
 	}
 
 	private AbstractButton addCursorAutomaton(String tooltip,
 			final Automaton automaton, final AbstractButton button,
-			final String icon) {
+			final ImageIcon icon) {
 		toolsPlugInObservers.add(automaton);
 		add(button, dropDown, tooltip, new ActionListener() {
 			public void actionPerformed(ActionEvent e) {

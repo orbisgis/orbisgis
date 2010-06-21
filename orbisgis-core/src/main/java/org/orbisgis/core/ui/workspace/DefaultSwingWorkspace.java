@@ -85,7 +85,8 @@ public class DefaultSwingWorkspace extends DefaultWorkspace implements
 	public void createWorkspaceFolderPanelChooser() throws IOException {
 		WorkspaceFolderPanel workspaceFolderPanel = new WorkspaceFolderPanel(
 				loadWorkspaces());
-		if (UIFactory.showDialog(workspaceFolderPanel)) {
+		boolean ok = UIFactory.showDialog(workspaceFolderPanel);
+		if (ok) {
 			String currentWorkspace = workspaceFolderPanel.getWorkspacePath();
 			workspaceFolder = new File(currentWorkspace);
 			setWorkspaceFolder(workspaceFolder.getAbsolutePath());

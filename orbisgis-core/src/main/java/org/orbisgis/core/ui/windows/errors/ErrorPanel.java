@@ -63,7 +63,7 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
 import org.orbisgis.core.images.IconLoader;
-import org.orbisgis.core.images.IconNames;
+import org.orbisgis.core.images.OrbisGISIcon;
 import org.orbisgis.core.sif.CRFlowLayout;
 import org.orbisgis.core.sif.CarriageReturn;
 
@@ -71,9 +71,9 @@ public class ErrorPanel extends JPanel {
 
 	private static final String CLOSE = "CLOSE";
 
-	private final static Icon warningIcon = IconLoader.getIcon(IconNames.WARNING);
+	private final static Icon warningIcon = OrbisGISIcon.WARNING;
 
-	private final static Icon errorIcon = IconLoader.getIcon(IconNames.ERROR);
+	private final static Icon errorIcon = OrbisGISIcon.ERROR;
 
 	private static final String SHOW = "Show";
 	private static final String DELETE = "Delete";
