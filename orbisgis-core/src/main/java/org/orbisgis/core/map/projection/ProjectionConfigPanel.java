@@ -107,4 +107,13 @@ public class ProjectionConfigPanel extends JDialog implements ActionListener {
 
 	}
 
+	public static void main(String[] args) {
+
+		JFrame frame = new JFrame();
+
+		frame.add(new ProjectionConfigPanel(frame,false));
+
+		frame.show();
+	}
+
 }
