@@ -1,12 +1,11 @@
 package org.orbisgis.core.ui.components.button;
 
 import java.awt.Graphics2D;
+import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
-import java.io.IOException;
 
-import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import javax.swing.JPopupMenu;
 import javax.swing.JToggleButton;
@@ -16,99 +15,90 @@ import javax.swing.event.ChangeListener;
 import javax.swing.event.PopupMenuEvent;
 import javax.swing.event.PopupMenuListener;
 
-import org.orbisgis.core.Services;
-import org.orbisgis.core.images.IconLoader;
-import org.orbisgis.core.images.IconNames;
+import org.orbisgis.core.images.OrbisGISIcon;
 
-public abstract class DropDownButton extends JToggleButton 
-	implements ChangeListener, PopupMenuListener, ActionListener{ 
-		private final DropDownButton mainButton = this;		
-		private boolean popupVisible = false; 
-		private String iconFile ;
-		private final static String dropIconFile = IconNames.BTN_DROPDOWN;
+public abstract class DropDownButton extends JToggleButton implements
+		ChangeListener, PopupMenuListener, ActionListener {
+	private final DropDownButton mainButton = this;
+	private boolean popupVisible = false;
+	private ImageIcon iconFile;
+	private final static ImageIcon dropIconFile = OrbisGISIcon.BTN_DROPDOWN;
 
-		public DropDownButton(String iconFile){ 			
-			this.iconFile = iconFile;
-			setIcon(calculIcon());
-			mainButton.getModel().addChangeListener(this);
-			mainButton.addActionListener(this); 			
-		} 
-		
-		private ImageIcon calculIcon() {
-			BufferedImage resultImage = null;
-			BufferedImage firstImage = null;
-			BufferedImage secondImage = null;
-			try {
-				firstImage = ImageIO.read(IconLoader.getIconUrl(iconFile));
-				secondImage = ImageIO.read(IconLoader.getIconUrl(dropIconFile));				
-			} catch (IOException e) {
-				Services.getErrorManager().error("Error during image loding in drop down button");
-			}	
-			
-			int w = firstImage.getWidth() + secondImage.getWidth();
-			int h = Math.max(firstImage.getHeight(), secondImage.getHeight());
-			resultImage = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
-			Graphics2D g2 = resultImage.createGraphics();
-			g2.drawImage(firstImage, 0, 0, null);
-			g2.drawImage(secondImage, firstImage.getWidth(), 0, null);
-			return new ImageIcon(resultImage);
+	public DropDownButton(ImageIcon iconFile) {
+		this.iconFile = iconFile;
+		setIcon(calculIcon());
+		mainButton.getModel().addChangeListener(this);
+		mainButton.addActionListener(this);
+	}
+
+	private ImageIcon calculIcon() {
+		BufferedImage resultImage = null;
+		Image firstImage = null;
+		Image secondImage = null;
+		firstImage = iconFile.getImage();
+		secondImage = dropIconFile.getImage();
+
+		int w = firstImage.getWidth(null) + secondImage.getWidth(null);
+		int h = Math.max(firstImage.getHeight(null), secondImage
+				.getHeight(null));
+		resultImage = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
+		Graphics2D g2 = resultImage.createGraphics();
+		g2.drawImage(firstImage, 0, 0, null);
+		g2.drawImage(secondImage, firstImage.getWidth(null), 0, null);
+		return new ImageIcon(resultImage);
+	}
+
+	public void setIconFile(ImageIcon iconFile) {
+		this.iconFile = iconFile;
+		setIcon(calculIcon());
+	}
+
+	/*------------------------------[ ChangeListener ]---------------------------------------------------*/
+
+	public void stateChanged(ChangeEvent e) {
+		if (e.getSource() == mainButton.getModel()) {
+			if (popupVisible && !mainButton.getModel().isRollover()) {
+				mainButton.getModel().setRollover(true);
+				return;
+			}
+		} else {
 		}
+	}
 
+	/*------------------------------[ ActionListener ]---------------------------------------------------*/
 
-		
-		public void setIconFile(String iconFile){
-			this.iconFile = iconFile;
-			setIcon(calculIcon());
-		}
-		
+	public void actionPerformed(ActionEvent ae) {
+		JPopupMenu popup = getPopupMenu();
+		popup.addPopupMenuListener(this);
+		popup.show(mainButton, 0, mainButton.getHeight());
+	}
 
-		/*------------------------------[ ChangeListener ]---------------------------------------------------*/ 
+	/*------------------------------[ PopupMenuListener ]---------------------------------------------------*/
 
-		public void stateChanged(ChangeEvent e){ 
-			if(e.getSource()==mainButton.getModel()){ 
-				if(popupVisible && !mainButton.getModel().isRollover()){ 
-					mainButton.getModel().setRollover(true); 
-					return; 
-				} 				
-			}else{ 
-			} 
-		} 
+	public void popupMenuWillBecomeVisible(PopupMenuEvent e) {
+		popupVisible = true;
+		mainButton.getModel().setRollover(true);
+		mainButton.getModel().setSelected(true);
+	}
 
-		/*------------------------------[ ActionListener ]---------------------------------------------------*/ 
+	public void popupMenuWillBecomeInvisible(PopupMenuEvent e) {
+		popupVisible = false;
 
-		public void actionPerformed(ActionEvent ae){ 
-			JPopupMenu popup = getPopupMenu(); 
-			popup.addPopupMenuListener(this); 
-			popup.show(mainButton, 0, mainButton.getHeight()); 
-		} 
+		mainButton.getModel().setRollover(false);
+		mainButton.getModel().setSelected(false);
+		((JPopupMenu) e.getSource()).removePopupMenuListener(this);
+	}
 
-		/*------------------------------[ PopupMenuListener ]---------------------------------------------------*/ 
+	public void popupMenuCanceled(PopupMenuEvent e) {
+		popupVisible = false;
+	}
 
-		public void popupMenuWillBecomeVisible(PopupMenuEvent e){ 
-			popupVisible = true; 
-			mainButton.getModel().setRollover(true); 
-			mainButton.getModel().setSelected(true); 
-		} 
+	/*------------------------------[ Other Methods ]---------------------------------------------------*/
 
-		public void popupMenuWillBecomeInvisible(PopupMenuEvent e){ 
-			popupVisible = false; 
+	protected abstract JPopupMenu getPopupMenu();
 
-			mainButton.getModel().setRollover(false); 
-			mainButton.getModel().setSelected(false); 
-			((JPopupMenu)e.getSource()).removePopupMenuListener(this); 
-		} 
-
-		public void popupMenuCanceled(PopupMenuEvent e){ 
-			popupVisible = false; 
-		} 
-
-		/*------------------------------[ Other Methods ]---------------------------------------------------*/ 
-
-		protected abstract JPopupMenu getPopupMenu(); 
-
-		public JToggleButton addToToolBar(JToolBar toolbar){ 
-			toolbar.add(mainButton);
-			return mainButton; 
-		} 	
+	public JToggleButton addToToolBar(JToolBar toolbar) {
+		toolbar.add(mainButton);
+		return mainButton;
+	}
 }
-
