@@ -68,7 +68,6 @@ import org.orbisgis.core.ui.editors.map.tools.ZoomInTool;
 import org.orbisgis.core.ui.editors.map.tools.ZoomOutTool;
 import org.orbisgis.core.ui.pluginSystem.PlugInContext;
 import org.orbisgis.core.ui.plugins.actions.ExitPlugIn;
-import org.orbisgis.core.ui.plugins.actions.SavePlugIn;
 import org.orbisgis.core.ui.plugins.editors.mapEditor.ClearMapSelectionPlugIn;
 import org.orbisgis.core.ui.plugins.editors.mapEditor.CoordinateReferenceSystemPlugIn;
 import org.orbisgis.core.ui.plugins.editors.mapEditor.CreateSourceFromMapSelectionPlugIn;
@@ -148,7 +147,6 @@ public class OrbisConfiguration implements Setup {
 
 	// OrbisGIS main ToolBar & OrbisGIS main menu
 	private ExitPlugIn exitPlugIn = new ExitPlugIn();
-	private SavePlugIn savePlugIn = new SavePlugIn();
 	private SaveWorkspacePlugIn saveWorkspacePlugIn = new SaveWorkspacePlugIn();
 	private ConfigurationPlugIn configuration = new ConfigurationPlugIn();
 	private AboutOrbisGISPlugIn aboutOrbisGIS = new AboutOrbisGISPlugIn();
@@ -357,10 +355,6 @@ public class OrbisConfiguration implements Setup {
 		OrbisGISFrame frame = plugInContext.getWorkbenchContext()
 				.getWorkbench().getFrame();
 
-		// Main Toolbar & Main menu -> sont chargés par le PlugIn
-		// lib/ext/MainToolBarPlugIn.jar
-
-		savePlugIn.initialize(plugInContext);
 		// Main menus
 		saveWorkspacePlugIn.initialize(plugInContext);
 		configuration.initialize(plugInContext);
@@ -392,18 +386,23 @@ public class OrbisConfiguration implements Setup {
 				.getDrawingToolBar());
 		add(new PickCoordinatesPointTool(), OrbisGISIcon.PICKPOINT, frame
 				.getDrawingToolBar());
-		add(new MesurePolygonTool(), OrbisGISIcon.MESUREAREA, frame.getMesureToolBar());
-		add(new MesureLineTool(), OrbisGISIcon.MESURELINE, frame.getMesureToolBar());
-		add(new CompassTool(), OrbisGISIcon.MESUREANGLE, frame.getMesureToolBar());
+		add(new MesurePolygonTool(), OrbisGISIcon.MESUREAREA, frame
+				.getMesureToolBar());
+		add(new MesureLineTool(), OrbisGISIcon.MESURELINE, frame
+				.getMesureToolBar());
+		add(new CompassTool(), OrbisGISIcon.MESUREANGLE, frame
+				.getMesureToolBar());
 		// Tool in Edition Map Toolbar
-		add(new PolygonTool(), OrbisGISIcon.POLYGON, frame.getEditionMapToolBar());
+		add(new PolygonTool(), OrbisGISIcon.POLYGON, frame
+				.getEditionMapToolBar());
 		add(new EditionSelectionTool(), OrbisGISIcon.SELECT, frame
 				.getEditionMapToolBar());
 		add(new PointTool(), OrbisGISIcon.POINT, frame.getEditionMapToolBar());
 		add(new MultipointTool(), OrbisGISIcon.MULTIPOINT, frame
 				.getEditionMapToolBar());
 		add(new LineTool(), OrbisGISIcon.LINE, frame.getEditionMapToolBar());
-		add(new MultilineTool(), OrbisGISIcon.MULTILINE, frame.getEditionMapToolBar());
+		add(new MultilineTool(), OrbisGISIcon.MULTILINE, frame
+				.getEditionMapToolBar());
 		add(new MultipolygonTool(), OrbisGISIcon.MULTIPOLYGON, frame
 				.getEditionMapToolBar());
 		add(new VertexAditionTool(), OrbisGISIcon.VERTEX_ADD, frame
