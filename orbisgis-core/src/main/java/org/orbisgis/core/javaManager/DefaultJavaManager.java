@@ -25,6 +25,7 @@ import javax.tools.StandardLocation;
 import javax.tools.ToolProvider;
 import javax.tools.JavaCompiler.CompilationTask;
 
+import org.eclipse.jdt.internal.compiler.tool.EclipseCompiler;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.javaManager.autocompletion.AbstractVisitor;
 import org.orbisgis.core.javaManager.autocompletion.NodeUtils;
@@ -52,7 +53,7 @@ public class DefaultJavaManager implements JavaManager {
 	private PackageReflection pr;
 
 	public DefaultJavaManager() {
-		compiler = ToolProvider.getSystemJavaCompiler();
+		compiler = new EclipseCompiler();
 	}
 
 	public void execute(String code, DiagnosticListener<JavaFileObject> listener)
@@ -86,7 +87,8 @@ public class DefaultJavaManager implements JavaManager {
 		stdFileManager
 				.setLocation(StandardLocation.CLASS_PATH, systemClassPath);
 
-		IOGWorkspace ws = (IOGWorkspace) Services.getService(IOGWorkspace.class);
+		IOGWorkspace ws = (IOGWorkspace) Services
+				.getService(IOGWorkspace.class);
 
 		CodeInfo codeInfo = prepareCode(code, 0);
 		String packageName = codeInfo.getPackageName();
