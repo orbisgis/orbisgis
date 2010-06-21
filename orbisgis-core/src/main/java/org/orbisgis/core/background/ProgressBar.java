@@ -50,7 +50,7 @@ import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.SwingUtilities;
 
-import org.orbisgis.core.images.IconLoader;
+import org.orbisgis.core.images.OrbisGISIcon;
 import org.orbisgis.core.sif.CRFlowLayout;
 import org.orbisgis.core.sif.CarriageReturn;
 import org.orbisgis.core.ui.components.button.J3DButton;
@@ -94,7 +94,7 @@ public class ProgressBar extends JPanel {
 		overallProgressBar.setValue(overallProgress);
 		lblProgress.setText(Integer.toString(overallProgress) + "%");
 		changeSubTask();
-		ImageIcon icon = IconLoader.getIcon("remove.png");
+		ImageIcon icon = OrbisGISIcon.REMOVE;
 		JButton btn = new J3DButton();
 		btn.setIcon(icon);
 		btn.setToolTipText("Stop the process");
