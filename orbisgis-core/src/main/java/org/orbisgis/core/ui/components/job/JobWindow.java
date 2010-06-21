@@ -52,6 +52,7 @@ import java.util.HashMap;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JWindow;
+import javax.swing.SwingUtilities;
 
 import org.orbisgis.core.Services;
 import org.orbisgis.core.background.BackgroundManager;
@@ -162,6 +163,7 @@ public class JobWindow extends JPanel {
 		}
 		System.out.println("Added job " + job.getId());
 		window.setVisible(true);
+		SwingUtilities.windowForComponent(progressPanel).pack();
 	}
 
 	private BackgroundManager getBackgroundManager() {
@@ -193,5 +195,6 @@ public class JobWindow extends JPanel {
 		ProgressBar bar = (ProgressBar) comps[0];
 		bar.setJob(job);
 		System.out.println("Replaced job " + job.getId());
+		SwingUtilities.windowForComponent(progressPanel).pack();
 	}
 }
