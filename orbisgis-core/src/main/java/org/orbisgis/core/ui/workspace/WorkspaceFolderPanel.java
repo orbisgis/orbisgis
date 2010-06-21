@@ -62,7 +62,6 @@ import javax.swing.SwingUtilities;
 
 import org.orbisgis.core.Services;
 import org.orbisgis.core.images.IconLoader;
-import org.orbisgis.core.images.OrbisGISIcon;
 import org.orbisgis.core.sif.UIFactory;
 import org.orbisgis.core.sif.UIPanel;
 import org.orbisgis.core.workspace.DefaultWorkspace;
@@ -139,6 +138,7 @@ public class WorkspaceFolderPanel extends JPanel implements UIPanel {
 
 		add(panel, BorderLayout.NORTH);
 		add(jCheckBox, BorderLayout.CENTER);
+		setPreferredSize(new Dimension(400, 50));
 	}
 
 	@Override
