@@ -135,7 +135,7 @@ public class Renderer {
 	 * @param sds the layer to render
 	 * @return
 	 */
-	private SpatialDataSourceDecorator getNewSdsPkFeatureInExtent(MapTransform mt, SpatialDataSourceDecorator sds) {
+	private SpatialDataSourceDecorator getNewSdsPkFeatureInExtent(MapTransform mt, SpatialDataSourceDecorator sds, IProgressMonitor pm) {
 		/*
 		if (mt.getAdjustedExtent() > sds.getFullExtent()){
 		}
@@ -221,7 +221,7 @@ public class Renderer {
 			fts.getSymbolizers(mt, symbs, overlays, rList, fRList);
 
 			// Create new dataSource with only feature in current extent
-			SpatialDataSourceDecorator featureInExtent = this.getNewSdsPkFeatureInExtent(mt, sds);
+			SpatialDataSourceDecorator featureInExtent = this.getNewSdsPkFeatureInExtent(mt, sds, pm);
 
 			if (featureInExtent != null) {
 
@@ -246,14 +246,14 @@ public class Renderer {
 				HashMap<Rule, HashSet<Integer>> rulesFid = new HashMap<Rule, HashSet<Integer>>();
 				for (Rule r : rList) {
 
-					/*if (layer.getName().equals("g4districts98_region")){
-					System.out.println("Toggle where clause...");
-					r.setWhere("WHERE AK = 'VD'");
-					}*/
-
 					SpatialDataSourceDecorator filteredDs = r.getFilteredDataSource(featureInExtent);
 
-					filteredDs.open();
+					boolean newDataSource = ! filteredDs.getName().equalsIgnoreCase(featureInExtent.getName());
+
+					if (newDataSource) {
+						filteredDs.open();
+					}
+
 					HashSet<Integer> fids = new HashSet<Integer>();
 
 					for (int i = 0; i < filteredDs.getRowCount(); i++) {
@@ -262,12 +262,14 @@ public class Renderer {
 						/* Every feature that match a rule is removed from elsefid set*/
 						elseFid.remove(index);
 					}
-					filteredDs.close();
-					try {
-						// Once we have fids into hash set, we doesn't need filteredDs anymore
-						filteredDs.getDataSourceFactory().executeSQL("DROP TABLE " + filteredDs.getName() + " PURGE;");
-					} catch (ExecutionException ex) {
-						java.util.logging.Logger.getLogger(Renderer.class.getName()).log(Level.SEVERE, "Could nod purge internal datasource!", ex);
+					if (newDataSource) {
+						filteredDs.close();
+						try {
+							// Once we have fids into hash set, we doesn't need filteredDs anymore
+							filteredDs.getDataSourceFactory().executeSQL("DROP TABLE " + filteredDs.getName() + " PURGE;");
+						} catch (ExecutionException ex) {
+							java.util.logging.Logger.getLogger(Renderer.class.getName()).log(Level.SEVERE, "Could nod purge internal datasource!", ex);
+						}
 					}
 
 					rulesFid.put(r, fids);
@@ -311,7 +313,7 @@ public class Renderer {
 				}
 
 				for (Symbolizer s : symbs) {
-					pm.startTask("Drawing " + layer.getName());
+					pm.startTask("Drawing " + layer.getName() + " (" + s.getName() + ")");
 					Iterator<Integer> featIt = rulesFid.get(s.getRule()).iterator();
 
 					Integer fid = 0;
@@ -336,20 +338,8 @@ public class Renderer {
 				System.out.println("Rendering done :" + (tV3 - tV2) + "[ms] (" + layerCount + "objects)");
 			}
 
-		} catch (DriverException ex) {
-			java.util.logging.Logger.getLogger("Could not draw " + layer.getName()).log(Level.SEVERE, null, ex);
-		} catch (DriverLoadException ex) {
-			java.util.logging.Logger.getLogger(Renderer.class.getName()).log(Level.SEVERE, null, ex);
-		} catch (DataSourceCreationException ex) {
-			java.util.logging.Logger.getLogger(Renderer.class.getName()).log(Level.SEVERE, null, ex);
-		} catch (ParseException ex) {
-			java.util.logging.Logger.getLogger(Renderer.class.getName()).log(Level.SEVERE, null, ex);
-		} catch (SemanticException ex) {
-			java.util.logging.Logger.getLogger(Renderer.class.getName()).log(Level.SEVERE, null, ex);
-		} catch (ParameterException ex) {
-			java.util.logging.Logger.getLogger(Renderer.class.getName()).log(Level.SEVERE, null, ex);
-		} catch (IOException ex) {
-			java.util.logging.Logger.getLogger(Renderer.class.getName()).log(Level.SEVERE, null, ex);
+		} catch (Exception ex) {
+			java.util.logging.Logger.getLogger("Could not draw " + layer.getName()).log(Level.SEVERE, "Error while drawing " + layer.getName(), ex);
 		}
 		return layerCount;
 	}

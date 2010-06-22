@@ -150,7 +150,10 @@ public final class Rule implements SymbolizerNode {
 
 	/**
 	 * Return a new Spatial data source, according to rule filter and specified extent
-	 * This data source must be purged by the caller
+	 * In the case there is no filter to apply, sds is returned
+	 *
+	 * If the returned data source not equals sds, the new new datasource must be purged
+	 *
 	 * @return
 	 * @throws DriverLoadException
 	 * @throws DataSourceCreationException
@@ -159,17 +162,19 @@ public final class Rule implements SymbolizerNode {
 	 * @throws SemanticException
 	 */
 	public SpatialDataSourceDecorator getFilteredDataSource(SpatialDataSourceDecorator sds) throws DriverLoadException, DataSourceCreationException, DriverException, ParseException, SemanticException {
-		String query = "select * from " + sds.getName();
 
 		if (where != null && !where.isEmpty()) {
-			query += " WHERE " + where;
+			String query = "select * from " + sds.getName() + " WHERE " + where;
+
+			System.out.println(" here is the where: " + where);
+			SpatialDataSourceDecorator filteredSds = new SpatialDataSourceDecorator(sds.getDataSourceFactory().getDataSourceFromSQL(query));
+			System.out.println(" and the filtered DataSource: " + filteredSds.getName());
+
+			return filteredSds;
 		}
-
-		System.out.println(" here is the where: " + where);
-		SpatialDataSourceDecorator filteredSds = new SpatialDataSourceDecorator(sds.getDataSourceFactory().getDataSourceFromSQL(query));
-		System.out.println(" and the filtered DataSource: " + filteredSds.getName());
-
-		return filteredSds;
+		else{
+			return sds;
+		}
 	}
 
 
