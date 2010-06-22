@@ -81,6 +81,7 @@ public class ConsolePanel extends JPanel {
 	// An instance of the private subclass of the default highlight painter
 	Highlighter.HighlightPainter myHighlightPainter = (HighlightPainter) new WordHighlightPainter(
 			new Color(205, 235, 255));
+	private JPanel pnlTextFilter;
 
 	/**
 	 * Creates a console for sql or java.
@@ -91,7 +92,7 @@ public class ConsolePanel extends JPanel {
 		setLayout(new BorderLayout());
 		add(getCenterPanel(sql, listener), BorderLayout.CENTER);
 		if (listener.showControlButtons()) {
-			add(getNorthPanel(), BorderLayout.NORTH);
+			add(getButtonToolBar(), BorderLayout.NORTH);
 		}
 		setButtonsStatus();
 		add(getStatusToolBar(), BorderLayout.SOUTH);
@@ -101,22 +102,18 @@ public class ConsolePanel extends JPanel {
 	}
 
 	// getters
-	private JPanel getNorthPanel() {
-		final JPanel northPanel = new JPanel();
-		CRFlowLayout flowLayout = new CRFlowLayout();
-		flowLayout.setAlignment(CRFlowLayout.LEFT);
-		northPanel.setLayout(flowLayout);
-
+	private JToolBar getButtonToolBar() {
+		final JToolBar northPanel = new JToolBar();
 		northPanel.add(getBtExecute());
 		northPanel.add(getBtClear());
 		northPanel.add(getBtOpen());
 		northPanel.add(getBtSave());
 		northPanel.add(new JLabel("Find a text "));
-		northPanel.add(getJTextField());
-
+		northPanel.add(getJTextFieldPanel());
 		setBtExecute();
 		setBtClear();
 		setBtSave();
+		northPanel.setFloatable(false);
 
 		return northPanel;
 	}
@@ -147,9 +144,13 @@ public class ConsolePanel extends JPanel {
 		statusMessage.setText(message);
 	}
 
-	private JTextFilter getJTextField() {
-		if (null == searchTextField) {
-			searchTextField = new JTextFilter();			
+	private JPanel getJTextFieldPanel() {
+		if (null == pnlTextFilter) {
+			pnlTextFilter = new JPanel();
+			CRFlowLayout layout = new CRFlowLayout();
+			layout.setAlignment(CRFlowLayout.LEFT);
+			pnlTextFilter.setLayout(layout);
+			searchTextField = new JTextFilter();
 			searchTextField.addDocumentListener(new DocumentListener() {
 
 				public void removeUpdate(DocumentEvent e) {
@@ -164,8 +165,9 @@ public class ConsolePanel extends JPanel {
 					search();
 				}
 			});
+			pnlTextFilter.add(searchTextField);
 		}
-		return searchTextField;
+		return pnlTextFilter;
 	}
 
 	public void search() {
