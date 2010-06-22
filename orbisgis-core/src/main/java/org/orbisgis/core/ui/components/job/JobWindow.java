@@ -195,6 +195,5 @@ public class JobWindow extends JPanel {
 		ProgressBar bar = (ProgressBar) comps[0];
 		bar.setJob(job);
 		System.out.println("Replaced job " + job.getId());
-		SwingUtilities.windowForComponent(progressPanel).pack();
 	}
 }

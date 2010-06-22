@@ -137,8 +137,7 @@ public class WorkspaceFolderPanel extends JPanel implements UIPanel {
 		panel.setOpaque(false);
 
 		add(panel, BorderLayout.NORTH);
-		add(jCheckBox, BorderLayout.CENTER);
-		setPreferredSize(new Dimension(400, 50));
+		add(jCheckBox, BorderLayout.CENTER);		
 	}
 
 	@Override
@@ -153,7 +152,7 @@ public class WorkspaceFolderPanel extends JPanel implements UIPanel {
 
 	@Override
 	public String getInfoText() {
-		return "Select a workspace to start OrbisGIS application.";
+		return "... to start OrbisGIS application.";
 	}
 
 	@Override

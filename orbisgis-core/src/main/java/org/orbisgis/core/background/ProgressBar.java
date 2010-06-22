@@ -54,6 +54,7 @@ import org.orbisgis.core.images.OrbisGISIcon;
 import org.orbisgis.core.sif.CRFlowLayout;
 import org.orbisgis.core.sif.CarriageReturn;
 import org.orbisgis.core.ui.components.button.J3DButton;
+import org.orbisgis.core.ui.components.job.GradientProgressBarUI;
 
 public class ProgressBar extends JPanel {
 
@@ -86,6 +87,7 @@ public class ProgressBar extends JPanel {
 		this.setBackground(new Color(224, 224, 224));
 		this.add(getLabelPanel(), BorderLayout.NORTH);
 		overallProgressBar = new JProgressBar(0, 100);
+		overallProgressBar.setUI(new GradientProgressBarUI());
 		overallProgressBar.setBorderPainted(false);
 		overallProgressBar.setBackground(Color.white);
 		overallProgressBar.setForeground(Color.BLUE.darker());
@@ -162,11 +164,11 @@ public class ProgressBar extends JPanel {
 				int currentProgress = job.getCurrentProgress();
 				int progress = overallProgress == 0 ? currentProgress
 						: overallProgress;
-				overallProgressBar.setIndeterminate(progress == 0 ? true
-						: false);
 				overallProgressBar.setValue(progress);
 				lblProgress.setText(Integer.toString(progress) + "%");
 				changeSubTask();
+				overallProgressBar.setIndeterminate(progress == 0 ? true
+						: false);
 			}
 
 		});

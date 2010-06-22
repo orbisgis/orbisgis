@@ -387,8 +387,6 @@ public class ToolManager extends MouseAdapter implements MouseMotionListener,
 		if (e.getButton() == MouseEvent.BUTTON1
 				|| e.getButton() == MouseEvent.BUTTON2) {
 			leftClickTransition(e, RELEASE);
-			// panel = new MyPanel();
-			// panel.setVisible(true);
 		}
 	}
 

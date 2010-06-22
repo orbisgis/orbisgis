@@ -409,7 +409,6 @@ public class PlugInContext {
 	public boolean checkLayerAvailability(
 			SelectionAvailability[] selectionAvailability, int nbSrc,
 			SourceAvailability[] sourceAvailability) {
-		// TODO - refactor
 
 		String[] res = getSelectedSources();
 		DataManager dataManager = Services.getService(DataManager.class);
@@ -470,7 +469,7 @@ public class PlugInContext {
 	}
 
 	public static enum SourceAvailability {
-		NODE_NOT_NULL, WMS, RASTER
+		NODE_NOT_NULL, WMS, RASTER, VECTOR
 	};
 
 	public String[] getSelectedSources() {
@@ -572,7 +571,7 @@ public class PlugInContext {
 		return null;
 	}
 
-	/* 
+	/*
 	 * ************************* All prepared methods available for plug-in
 	 * development ******************************************
 	 */
@@ -632,7 +631,7 @@ public class PlugInContext {
 		return true;
 	}
 
-	/*  **FOR VECTOR** */
+	/*   **FOR VECTOR** */
 
 	/**
 	 * At least one layer of Vector Type must exists
@@ -720,7 +719,7 @@ public class PlugInContext {
 			return false;
 	}
 
-	/*  **FOR RASTER** */
+	/*   **FOR RASTER** */
 	/**
 	 * At least one layer of Raster Type must exists
 	 * 

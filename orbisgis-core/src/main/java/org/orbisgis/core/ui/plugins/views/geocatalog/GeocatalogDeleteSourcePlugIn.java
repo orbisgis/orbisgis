@@ -61,13 +61,9 @@ public class GeocatalogDeleteSourcePlugIn extends AbstractPlugIn {
 	public boolean execute(PlugInContext context) throws Exception {
 		DataManager dm = Services.getService(DataManager.class);
 		String[] res = getPlugInContext().getSelectedSources();
-		if (res.length == 0) {
-			execute(dm.getSourceManager(), null);
-		} else {
-			for (String resource : res) {
-				execute(dm.getSourceManager(), resource);
-			}
-		}
+		for (String resource : res) {
+			execute(dm.getSourceManager(), resource);		}
+
 		return true;
 	}
 
@@ -92,9 +88,16 @@ public class GeocatalogDeleteSourcePlugIn extends AbstractPlugIn {
 	}
 
 	public boolean isEnabled() {
-		return getPlugInContext().checkLayerAvailability(
-				new SelectionAvailability[] { SelectionAvailability.SUPERIOR },
-				0,
-				new SourceAvailability[] { SourceAvailability.NODE_NOT_NULL });
+
+		WorkbenchContext workbenchContext = getPlugInContext()
+				.getWorkbenchContext();
+		String[] res = workbenchContext.getWorkbench().getFrame()
+				.getGeocatalog().getSelectedSources();
+		boolean acceptsAllSources = false;
+		if (res.length > 0) {
+			acceptsAllSources = true;
+		}
+
+		return acceptsAllSources;
 	}
 }

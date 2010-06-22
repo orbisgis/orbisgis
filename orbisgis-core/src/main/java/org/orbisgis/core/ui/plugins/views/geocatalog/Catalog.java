@@ -110,7 +110,6 @@ import org.orbisgis.utils.CollectionUtils;
 
 public class Catalog extends JPanel implements DragGestureListener,
 		DragSourceListener, WorkbenchFrame {
-
 	private static final String AC_BTN_DEL_TAG = "del";
 
 	private static final String AC_BTN_ADD_TAG = "add";
@@ -545,7 +544,7 @@ public class Catalog extends JPanel implements DragGestureListener,
 		public TagFilter(String tag) {
 			this.tag = tag;
 		}
-
+		@Override
 		public boolean accepts(SourceManager sm, String sourceName) {
 			HashSet<String> sources = tagSources.get(tag);
 			if (sources.contains(sourceName)) {
@@ -562,7 +561,7 @@ public class Catalog extends JPanel implements DragGestureListener,
 		public AddTagActionListener(String tag) {
 			this.tag = tag;
 		}
-
+		@Override
 		public void actionPerformed(ActionEvent e) {
 			Object[] sources = lstSources.getSelectedValues();
 			for (Object source : sources) {
@@ -580,7 +579,7 @@ public class Catalog extends JPanel implements DragGestureListener,
 		public RemoveTagActionListener(String tag) {
 			this.tag = tag;
 		}
-
+        @Override
 		public void actionPerformed(ActionEvent e) {
 			Object[] sources = lstSources.getSelectedValues();
 			for (Object source : sources) {

@@ -293,7 +293,6 @@ public class Toc extends ResourceTree implements WorkbenchFrame {
 						.getService(BackgroundManager.class);
 				bm.backgroundOperation(new MoveProcess(draggedResources,
 						dropNode));
-
 			} else {
 				return false;
 			}
