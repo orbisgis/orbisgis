@@ -1,5 +1,6 @@
 package org.orbisgis.core.images;
 
+import javax.swing.Icon;
 import javax.swing.ImageIcon;
 
 public class OrbisGISIcon {
@@ -332,5 +333,8 @@ public class OrbisGISIcon {
 			.getIcon("watershed.png");
 
 	public static final ImageIcon WAND = IconLoader.getIcon("wizard.png");
+
+	public static final Icon RASTERALGEBRA = IconLoader
+			.getIcon("calculator.png");
 
 }

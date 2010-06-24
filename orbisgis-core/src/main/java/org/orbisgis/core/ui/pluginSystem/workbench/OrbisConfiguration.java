@@ -78,6 +78,7 @@ import org.orbisgis.core.ui.plugins.editors.mapEditor.DeleteMapSelectionPlugIn;
 import org.orbisgis.core.ui.plugins.editors.mapEditor.ExportMapAsImagePlugIn;
 import org.orbisgis.core.ui.plugins.editors.mapEditor.ExportMapAsPDFPlugIn;
 import org.orbisgis.core.ui.plugins.editors.mapEditor.FullExtentPlugIn;
+import org.orbisgis.core.ui.plugins.editors.mapEditor.RasterAlgebraPlugIn;
 import org.orbisgis.core.ui.plugins.editors.mapEditor.RedoMapPlugIn;
 import org.orbisgis.core.ui.plugins.editors.mapEditor.ScalePlugIn;
 import org.orbisgis.core.ui.plugins.editors.mapEditor.ShowXYPlugIn;
@@ -238,6 +239,7 @@ public class OrbisConfiguration implements Setup {
 	private RedoMapPlugIn redoMapPlugIn = new RedoMapPlugIn();
 	private DeleteMapSelectionPlugIn deleteMapSelectionPlugIn = new DeleteMapSelectionPlugIn();
 	private CreateSourceFromMapSelectionPlugIn createSourceFromMapSelectionPlugIn = new CreateSourceFromMapSelectionPlugIn();
+	private RasterAlgebraPlugIn rasterAlgebraPlugIn = new RasterAlgebraPlugIn();
 	// Tool bar on map
 	private ShowXYPlugIn showXYPlugIn = new ShowXYPlugIn();
 	// Scale panel plugin is a swing component to execute action on map editor
@@ -441,6 +443,9 @@ public class OrbisConfiguration implements Setup {
 		scalePlugIn.initialize(plugInContext);
 		showXYPlugIn.initialize(plugInContext);
 		// CRSPlugIn.initialize(plugInContext);
+
+		// Raster Tool bar
+		rasterAlgebraPlugIn.initialize(plugInContext);
 	}
 
 	private void configureToolBar(PlugInContext plugInContext) {

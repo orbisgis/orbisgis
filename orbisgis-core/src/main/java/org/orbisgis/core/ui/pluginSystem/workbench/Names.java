@@ -304,5 +304,6 @@ public abstract class Names {
 	public static final String FULL_EXTENT_TOOTIP = I18N.getText("orbisgis.ui.tools.fullextent.tooltip");
 	//Scale
 	public static final String SCALE_TOOTIP = I18N.getText("orbisgis.ui.tools.scale.tooltip");
+	public static final String RASTERALGEBRA_TOOTIP = I18N.getText("orbisgis.ui.tools.raster.calculator");;
 
 }
