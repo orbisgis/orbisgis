@@ -42,9 +42,9 @@ import java.io.IOException;
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.SpatialDataSourceDecorator;
-import org.gdms.data.crs.CRSUtil;
 import org.gdms.data.metadata.DefaultMetadata;
 import org.gdms.data.metadata.Metadata;
+import org.gdms.data.metadata.MetadataUtilities;
 import org.gdms.data.types.Constraint;
 import org.gdms.data.types.RasterTypeConstraint;
 import org.gdms.data.types.Type;
@@ -61,10 +61,12 @@ import org.grap.model.RasterMetadata;
 import org.orbisgis.progress.IProgressMonitor;
 import org.orbisgis.utils.FileUtils;
 import org.orbisgis.wkt.parser.PRJUtils;
+import org.orbisgis.wkt.parser.ParseException;
 
 import com.vividsolutions.jts.geom.Envelope;
 
 import fr.cts.crs.CoordinateReferenceSystem;
+import fr.cts.crs.NullCRS;
 
 public abstract class AbstractRasterDriver implements FileReadWriteDriver {
 
@@ -84,7 +86,11 @@ public abstract class AbstractRasterDriver implements FileReadWriteDriver {
 			// Check prjFile
 			File prjFile = FileUtils.getFileWithExtension(file, "prj");
 
-			crs = PRJUtils.getCRSFromPRJ(prjFile);
+			try {
+				crs = PRJUtils.getCRSFromPRJ(prjFile);
+			} catch (ParseException e) {
+				crs = NullCRS.singleton;
+			}
 
 		} catch (IOException e) {
 			throw new DriverException("Cannot access the source: " + file, e);
@@ -159,7 +165,7 @@ public abstract class AbstractRasterDriver implements FileReadWriteDriver {
 	public Metadata getMetadata() throws DriverException {
 		DefaultMetadata metadata = new DefaultMetadata();
 		try {
-			Constraint crsConstraint = CRSUtil.getCRSConstraint(crs);
+			Constraint crsConstraint = MetadataUtilities.getCRSConstraint(crs);
 			metadata.addField("raster", TypeFactory.createType(Type.RASTER,
 					new RasterTypeConstraint(geoRaster.getType()),
 					crsConstraint));
