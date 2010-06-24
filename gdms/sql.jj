@@ -1,0 +1,1058 @@
+options{
+  STATIC = false;
+}
+PARSER_BEGIN(SQLEngine)
+package org.gdms.sql.parser;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+public class SQLEngine{
+	public static void main( String[] args )
+		throws ParseException, TokenMgrError, FileNotFoundException {
+    SQLEngine parser = new SQLEngine(new FileInputStream(args[0]));
+    parser.SQLStatement();
+  }
+  private void jjtreeOpenNodeScope(Node node){
+    ((SimpleNode)node).first_token = getToken(1);
+  }
+  private void jjtreeCloseNodeScope(Node node){
+    ((SimpleNode)node).last_token = getToken(0);
+  }
+  public Node getRootNode(){
+    return jjtree.rootNode();
+  }
+  public void resetTree(){
+    jjtree.reset();
+  }
+}
+PARSER_END(SQLEngine)
+/***********************************************************************
+ * Token definitions
+ ***********************************************************************/
+
+SKIP:
+{
+  " "
+  | "\n"
+  | "\r"
+  | "\t"
+}
+
+
+MORE:
+{
+  "--":IN_LINE_COMMENT
+  |
+  "/*" : IN_MULTI_LINE_COMMENT
+}
+<IN_LINE_COMMENT>
+SPECIAL_TOKEN :
+{
+	<COMMENT_LINE: (~["\n","\r"])* ("\n"|"\r"|"\r\n")? > : DEFAULT
+}
+<IN_MULTI_LINE_COMMENT>
+SPECIAL_TOKEN :
+{
+  <MULTI_LINE_COMMENT:"*/">:DEFAULT
+}
+
+<IN_LINE_COMMENT, IN_MULTILINE_COMMENT>
+MORE :
+{
+  <~[]>
+}
+
+SKIP:
+{
+  <COMMENT_BLOCK: "/*" (~["*"])* "*" ("*" | (~["*","/"] (~["*"])* "*"))* "/">
+}
+
+TOKEN:/* Keywords */
+{
+  <ALL:"all">
+  | <AND:"and">
+  | <ANY:"any">
+  | <AS:"as">
+  | <ASC:"asc">
+  | <AUTOINCREMENT:"autoincrement">
+  | <BEGIN:"begin">
+  | <BETWEEN:"between">
+  | <BINARY:"binary">
+  | <BOOLEAN:"boolean">
+  | <BY:"by">
+  | <BYTE:"byte">
+  | <CALL:"call">
+  | <COMMIT:"commit">
+  | <CONFLICT:"conflict">
+  | <DATE:"date">
+  | <DB:"db">
+  | <DESC:"desc">
+  | <DECLARE:"declare">
+  | <DEFAULT_KEYWORD:"default">
+  | <DIM2D:"2D">
+  | <DIM3D:"3D">
+  | <DISTINCT:"distinct">
+  | <DOC:"doc">
+  | <DOUBLE:"double">
+  | <DROP:"drop">
+  | <EXCEPT:"except">
+  | <EXPRESSION:"expression">
+  | <FIELDS:"fields">
+  | <FILE:"file">
+  | <FLOAT:"float">
+  | <FROM:"from">
+  | <GEOMETRY:"geometry">
+  | <GROUP:"group">
+  | <HAVING:"having">
+  | <IF:"if">
+  | <IN:"in">
+  | <INDEX:"index">
+  | <INT:"int">
+  | <IS:"is">
+  | <KEY:"key">
+  | <LIKE:"like">
+  | <LIMIT:"limit">
+  | <LINESTRING:"linestring">
+  | <LONG:"long">
+  | <MULTIPOINT:"multipoint">
+  | <MULTILINESTRING:"multilinestring">
+  | <MULTIPOLYGON:"multipolygon">
+  | <NOT:"not">
+  | <NULL:"null">
+  | <OFFSET:"offset">
+  | <ON:"on">
+  | <OR:"or">
+  | <ORDER:"order">
+  | <PARAM:"param">
+  | <POINT:"point">
+  | <POLYGON:"polygon">
+  | <PREFIX:"prefix">
+  | <PRIMARY:"primary">
+  | <RASTER:"raster">
+  | <REGISTER:"register">
+  | <ROLLBACK:"rollback">
+  | <SELECT:"select">
+  | <SHORT:"short">
+  | <STRING:"string">
+  | <TEMP:"temp">
+  | <TIME:"time">
+  | <TIMESTAMP:"timestamp">
+  | <UNION:"union">
+  | <UNIQUE:"unique">
+  | <SPACES:"spaces">
+  | <TABLE:"table">
+  | <VIEW:"view">
+  | <WHERE:"where">
+  | <WITH:"with">
+  //***************************************************************************************
+| <CREATE:"create">
+  | <DELETE:"delete">
+  | <EXISTS:"exists">
+  | <INSERT:"insert">
+  | <INTO:"into">
+  | <SET:"set">
+  | <UPDATE:"update">
+  | <VALUES:"values">
+}
+TOKEN:/* Literals */
+{
+  <INTEGER_LITERAL:(["0"-"9"])+>
+  | < FLOATING_POINT_LITERAL:
+          (["0"-"9"])+ "." (["0"-"9"])+ (<EXPONENT>)?
+  | "."(["0"-"9"])+(<EXPONENT>)?
+  | (["0"-"9"])+<EXPONENT>
+        | (["0"-"9"])+ (<EXPONENT>)?
+    >
+  | <#EXPONENT:["e", "E"](["+", "-"])?(["0"-"9"])+>
+  | <STRING_LITERAL:"'"(~["'"])*("''"(~["'"])*)*"'">
+  | < BOOLEAN_LITERAL: "true" | "false" >
+}
+TOKEN:/* Identifiers */
+{
+    < ID: ( <LETTER> )+ ( "_" | "#" | <DIGIT> | <LETTER> )* >
+  | <#LETTER:["A"-"Z", "a"-"z"]>
+  | <#DIGIT:["0"-"9"]>
+  | <QUOTED_ID:"\""(~["\n", "\r", "\""])*"\"">
+}
+TOKEN:/* Separators and operators */
+{
+  <ASSIGN:":=">
+  | <CONCAT:"||">
+  | <SEMICOLON:";">
+  | <DOT:".">
+  | <TILDE:"~">
+  | <LESS:"<">
+  | <LESSEQUAL:"<=">
+  | <GREATER:">">
+  | <GREATEREQUAL:">=">
+  | <EQUAL:"=">
+  | <NOTEQUAL:"!=">
+  | <NOTEQUAL2:"<>">
+  | <JOINPLUS:"(+)">
+  | <OPENPAREN:"(">
+  | <CLOSEPAREN:")">
+  | <ASTERISK:"*">
+  | <SLASH:"/">
+  | <PLUS:"+">
+  | <MINUS:"-">
+  | <QUESTIONMARK:"?">
+}
+
+
+
+void SQLAndExpr() :
+{}
+{
+  SQLNotExpr()
+  ( LOOKAHEAD(2) <AND>
+	 SQLNotExpr() )*
+}
+
+void SQLBegin() :
+{}
+{
+  <BEGIN>
+}
+
+void SQLBetweenClause() :
+{}
+{
+  [ <NOT> ]
+  <BETWEEN>
+  SQLSumExpr()
+  <AND>
+  SQLSumExpr()
+}
+
+void SQLCall() :
+{
+}
+{
+  <CALL> SQLId() [<WITH> SQLCallArgument() ( "," SQLCallArgument() )* ]
+}
+
+void SQLCallArgument() :
+{}
+{
+  <NULL> | SQLSumExpr()}
+
+void SQLColRef() :
+{
+}
+{
+  SQLId()
+  [ <DOT> SQLId() ]
+}
+
+void SQLCommit() :
+{}
+{
+  <COMMIT>
+}
+
+void SQLCompareExpr() :
+{
+}
+{
+  (
+    LOOKAHEAD (SQLSumExpr() <IS>) SQLIsClause()
+  | SQLExistsClause()
+  | SQLSumExpr() [ SQLCompareExprRight() ]
+  )
+}
+
+void SQLCompareExprRight() :
+{}
+{
+  (
+    LOOKAHEAD(2) SQLLikeClause()
+  | LOOKAHEAD(2)SQLInClause()
+  | SQLLeftJoinClause()
+  | LOOKAHEAD(SQLCompareOp()SQLSumExpr()"(+)")SQLRightJoinClause()
+  | SQLBetweenClause()
+  | SQLCompareOp()
+    SQLSumExpr()
+  )
+}
+
+void SQLCompareOp() :
+{}
+{
+  (
+    <EQUAL>
+  | <NOTEQUAL>
+  | <NOTEQUAL2>
+  | <GREATER>
+  | <GREATEREQUAL>
+  | <LESS>
+  | <LESSEQUAL>
+  )
+}
+
+void SQLDelete() :
+{}
+{
+  <DELETE> <FROM>
+  SQLId()
+  [ SQLWhere() ]
+}
+
+void SQLDrop() :
+{}
+{
+  <DROP> 
+  ( 
+    (<TABLE> [<IF> <EXISTS>] SQLTableList())
+  |
+    (<VIEW> [<IF> <EXISTS>] SQLTableList())
+  |
+    (<INDEX> <ON> SQLId() "(" SQLId() ")")
+  )
+}
+void SQLExistsClause() :
+{}
+{
+  <EXISTS>
+  "(" SQLSelect() ")"
+}
+
+void SQLFunction() :
+{}
+{
+  <ID>
+    SQLFunctionArgs()
+}
+
+void SQLFunctionArgs() :
+{}
+{
+  "("
+    [
+      (
+        (SQLSumExpr() ( "," SQLSumExpr() )* )
+        |
+        SQLSelectAllCols()
+      )
+    ]
+  ")"
+}
+
+void SQLGroupBy() :
+{}
+{
+  <GROUP> <BY>
+  SQLGroupByList()
+  [<HAVING> SQLOrExpr()]
+}
+
+void SQLGroupByList() :
+{}
+{
+  SQLColRef()
+  (LOOKAHEAD(2) "," SQLColRef())*
+}
+
+void SQLId() :
+{}
+{
+  <ID> | <QUOTED_ID>
+}
+
+void SQLIdSequence() :
+{}
+{
+	SQLId() ("," SQLId())*
+}
+
+void SQLInClause() :
+{}
+{
+  [ <NOT> ]
+  <IN>
+  "("
+  ( SQLValueList() | SQLSelect()) 
+  ")"
+}
+
+void SQLInsert() :
+{}
+{
+  <INSERT> <INTO>
+  SQLTableRef()
+  [
+    "("
+    SQLIdSequence()
+    ")"
+  ]
+  <VALUES>
+  "("
+    SQLSumExpr()
+    ("," SQLSumExpr())*
+  ")"
+}
+
+void SQLIsClause() :
+{}
+{
+  SQLSumExpr()
+  <IS>
+  [ <NOT>  ]
+  <NULL>
+}
+
+void SQLLeftJoinClause() :
+{
+}
+{
+  "(+)" SQLCompareOp()
+  SQLSumExpr()
+}
+
+void SQLLikeClause() :
+{}
+{
+  [ <NOT>  ]
+  <LIKE>
+  SQLPattern()
+}
+
+void SQLLiteral() :
+{
+}
+{
+  (<STRING_LITERAL>
+  | <INTEGER_LITERAL>
+  | <FLOATING_POINT_LITERAL>
+  | <BOOLEAN_LITERAL>
+  | <SPACES>
+  )
+}
+
+void SQLNotExpr() :
+{}
+{
+  [ <NOT> ]
+  SQLCompareExpr()
+}
+
+void SQLOrderBy() :
+{}
+{
+  <ORDER> <BY>
+  SQLOrderByList()
+}
+
+void SQLOrderByElem() :
+{}
+{
+  SQLColRef()
+  [ SQLOrderDirection()]
+}
+
+void SQLOrderByList() :
+{}
+{
+  SQLOrderByElem()
+  ( LOOKAHEAD(2)
+    ","
+    SQLOrderByElem() )*
+}
+
+void SQLOrderDirection() :
+{}
+{
+  (
+    <ASC>
+  | <DESC>
+  )
+}
+
+void SQLOrExpr() :
+{}
+{
+  SQLAndExpr()
+  ( LOOKAHEAD(2) <OR>
+	SQLAndExpr() )*
+}
+
+void SQLPattern() :
+{
+}
+{
+  (<STRING_LITERAL>
+  | SQLColRef()
+  )
+}
+
+void SQLProductExpr() :
+{}
+{
+  SQLUnaryExpr()
+  ( SQLProductSymbol() SQLUnaryExpr())*
+}
+
+void SQLProductSymbol() :
+{}
+{
+	( "*" | "/")
+}
+
+void SQLRegister() :
+{}
+{
+  <REGISTER> SQLRegisterSourceDefinition() <AS> SQLId()
+}
+
+void SQLRegisterSourceDefinition() :
+{}
+{
+  (
+    SQLSourceDefinitionFile()
+    | SQLSourceDefinitionDB()
+  )
+}
+
+void SQLRightJoinClause() :
+{
+}
+{
+  SQLCompareOp()
+  SQLSumExpr()
+  "(+)"
+}
+
+void SQLRollBack() :
+{}
+{
+  <ROLLBACK>
+}
+
+void SQLScript() :
+{}
+{
+  (SQLParamDeclaration())*
+  SQLStatement()(SQLStatement())*
+}
+
+void SQLSelect() :
+{}
+{
+  <SELECT>
+  SQLSelectCols()
+  <FROM>
+  SQLTableList()
+    [ SQLWhere()]
+    [ LOOKAHEAD(2) SQLGroupBy()]
+    [ LOOKAHEAD(2) SQLOrderBy()]
+    [ LOOKAHEAD(2) SQLSelectLimit()]
+    [ LOOKAHEAD(2) SQLSelectOffset() ]
+}
+
+void SQLSelectAllCols() :
+{}
+{
+  "*" [ SQLSelectAllModifier() ]
+}
+
+void SQLSelectAllColsInTable() :
+{}
+{
+  SQLId()<DOT>"*" [ SQLSelectAllInTableModifier() ]
+}
+
+void SQLSelectAllModifier() :
+{}
+{
+  "{"
+    [SQLSelectAllModifierExcept()] 
+    [SQLSelectAllModifierExpression()]
+    [SQLSelectAllModifierPrefix()]
+  "}"
+}
+
+void SQLSelectAllModifierExcept() :
+{}
+{
+  <EXCEPT> SQLIdSequence()
+}
+
+void SQLSelectAllModifierExpression() :
+{}
+{
+  <EXPRESSION> SQLOrExpr() [<AS> SQLId()] 
+    ("," SQLOrExpr() [<AS> SQLId()])*
+}
+
+void SQLSelectAllModifierParam() :
+{}
+{
+  <PARAM> SQLId()
+}
+
+void SQLSelectAllModifierPrefix() :
+{}
+{
+  [<CONFLICT>] <PREFIX> <STRING_LITERAL>
+}
+
+void SQLSelectAllInTableModifier() :
+{}
+{
+  "{"
+    (
+      SQLSelectAllModifierParam() 
+      | 
+      (
+        [SQLSelectAllModifierExpression()]
+        [SQLSelectAllModifierExcept()] 
+        [SQLSelectAllModifierPrefix()]
+      )
+    )
+  "}"
+}
+
+void SQLSelectCols() :
+{}
+{
+  [
+    <ALL>
+    | <DISTINCT>
+  ]
+  (SQLSelectList())
+}
+
+void SQLSelectLimit() :
+{}
+{
+  <LIMIT><INTEGER_LITERAL>
+}
+
+void SQLSelectList() :
+{}
+{
+  (
+    SQLSelectAllCols()
+    | LOOKAHEAD(3)SQLSelectAllColsInTable()
+    | (SQLOrExpr() [<AS> SQLId()])
+  )
+  (LOOKAHEAD(2) ","
+    (
+      SQLSelectAllCols()
+      | LOOKAHEAD(3)SQLSelectAllColsInTable()
+      | (SQLOrExpr() [<AS> SQLId()])
+    )
+  )*
+}
+
+void SQLSelectOffset() :
+{}
+{
+  <OFFSET><INTEGER_LITERAL>
+}
+
+void SQLSourceDefinitionTemp() :
+{
+}
+{
+    <TEMP>
+}
+
+void SQLSourceDefinitionFile() :
+{
+}
+{
+    <FILE> "(" <STRING_LITERAL> ")"
+}
+
+void SQLSourceDefinitionDB() :
+{
+}
+{
+    <DB> "(" 
+    	(LOOKAHEAD(2) 
+    	  (<STRING_LITERAL> ","
+	  	  <STRING_LITERAL> ","
+	  	  <INTEGER_LITERAL> ","
+	  	  <STRING_LITERAL> ","
+	  	  <STRING_LITERAL> ","
+	  	  <STRING_LITERAL> ","
+	  	  <STRING_LITERAL> ) 
+	  	  | 
+  	      <STRING_LITERAL>
+  	    )
+  	")"
+}
+
+void SQLStatement() :
+{}
+{
+  (
+    SQLSelect()
+  | SQLCall()
+  | SQLInsert()
+  | SQLUpdate()
+  | SQLDelete()
+  | SQLUnion()
+  | SQLCreate()
+  | SQLDrop()
+  | SQLBegin()
+  | SQLCommit()
+  | SQLRollBack()
+  | SQLRegister()
+  ) ";"
+}
+
+void SQLSumExpr() :
+{}
+{
+    SQLProductExpr()
+     ( SQLSumSymbol() SQLProductExpr()  )*
+}
+
+void SQLSumSymbol() :
+{}
+{
+	( "+" | "-")
+}
+
+void SQLTableList() :
+{}
+{
+  SQLTableRef()
+  ( LOOKAHEAD(2) "," SQLTableRef() )*
+}
+
+
+void SQLTableRef() :
+{
+}
+{
+  (SQLId())[[<AS>]SQLId()]
+}
+
+void SQLTerm() :
+{
+}
+{
+  ( ("(" (SQLSelect() | SQLOrExpr()) ")")
+  | LOOKAHEAD(2)SQLFunction()
+  | SQLColRef()
+  | SQLLiteral()
+  )
+}
+
+void SQLUnaryExpr() :
+{}
+{
+  [("+"
+    | "-"
+    )
+  ] SQLTerm()
+}
+
+void SQLUnion() :
+{}
+{
+	(SQLTableRef() | <OPENPAREN> SQLSelect() <CLOSEPAREN> )
+	(
+	  <UNION>
+	  (SQLTableRef() | <OPENPAREN> SQLSelect() <CLOSEPAREN> )
+	)+
+}
+
+void SQLUpdate() :
+{}
+{
+  <UPDATE>
+  SQLId()
+  <SET>
+  (
+    SQLUpdateAssignment()
+    [
+      ","
+    ]
+  )+
+
+  [ SQLWhere() ]
+}
+
+void SQLUpdateAssignment() :
+{}
+{
+  SQLId()"="SQLSumExpr()
+}
+
+void SQLLValueElement() :
+{}
+{
+  (<NULL>
+  | SQLSumExpr())
+}
+
+void SQLValueList() :
+{}
+{
+  SQLLValueElement()
+  ( ","
+    SQLLValueElement()
+  )*
+}
+
+void SQLWhere() :
+{}
+{
+  <WHERE>SQLOrExpr()
+}
+
+void SQLCreate() :
+{}
+{
+  <CREATE> 
+  (
+  	(<TABLE> SQLId()
+      ( "(" SQLCreateArgsList() ")" | <AS> (SQLSelect() | SQLCall() | SQLUnion()) ) 
+      [ <ON> SQLCreateTableSourceDefinition() ]
+    )
+  |
+  	(<VIEW> SQLId() <AS> (SQLSelect() | SQLCall() | SQLUnion())
+  	)
+  |
+    (<INDEX> <ON> SQLId() "(" SQLId() ")")
+  )
+}
+
+void SQLCreateArgsList() :
+{}
+{	
+	SQLCreateDefinition() ("," SQLCreateDefinition() ) *
+}
+
+void SQLCreateTableSourceDefinition() :
+{}
+{
+  (
+    SQLSourceDefinitionFile()
+    | SQLSourceDefinitionDB()
+    | SQLSourceDefinitionTemp()
+  )
+}
+
+void SQLCreateDefinition() :
+{}
+{
+  (
+    SQLId() SQLCreateType() (SQLFieldConstraints())*
+  |
+    <PRIMARY> <KEY> "(" SQLIdSequence() ")"
+  ) 
+}
+
+void SQLCreateType() :
+{}{
+  <BINARY> |
+  <BOOLEAN> |
+  <BYTE> |
+  <DATE> |
+  <DOUBLE> |
+  <FLOAT> |
+  <INT> |
+  <LONG> |
+  <SHORT> |
+  <STRING> [ <OPENPAREN> SQLStringLength() <CLOSEPAREN> ] |
+  <TIMESTAMP> |
+  <TIME> |
+  <GEOMETRY> [<OPENPAREN> SQLGeometryType() ["," SQLDimension() ["," SQLSrid()]] <CLOSEPAREN>] |
+  <RASTER> <OPENPAREN> SQLRasterType() ["," SQLBandCount() ["," SQLSrid()]] <CLOSEPAREN>
+}
+
+void SQLDimension() :
+{}
+{
+  <DIM2D> | <DIM3D> | <ANY>
+}
+
+void SQLStringLength() :
+{}
+{
+  <INTEGER_LITERAL>
+}
+
+void SQLBandCount() :
+{}
+{
+  <INTEGER_LITERAL>
+}
+
+void SQLSrid() :
+{}
+{
+  <INTEGER_LITERAL>
+}
+
+void SQLGeometryType() :
+{}
+{
+  <POINT> |
+  <MULTIPOINT> |
+  <LINESTRING> |
+  <MULTILINESTRING> |
+  <POLYGON> |
+  <MULTIPOLYGON> |
+  <ANY>
+}
+
+void SQLRasterType() :
+{}
+{
+  <BYTE> |
+  <INT> |
+  <FLOAT> |
+  <DOUBLE>
+}
+
+void SQLFieldConstraints() :
+{}
+{
+  (    <PRIMARY> <KEY>
+  |
+  	<AUTOINCREMENT>
+  |
+ 	<NOT> <NULL>
+  |
+    <UNIQUE>
+  )
+}
+
+void SQLTypeArgLiteral() :
+{
+}
+{
+  (<STRING_LITERAL>
+  | <INTEGER_LITERAL>
+  | <FLOATING_POINT_LITERAL>
+  )
+}
+
+void SQLTypeArgs() :
+{}
+{
+	(
+	(SQLTypeArgLiteral()
+	| SQLFunction())
+	( "," (SQLTypeArgLiteral()
+	| SQLFunction()) )*
+
+	)
+}
+
+/* PARAMETER GRAMMAR */
+
+void SQLParamDeclaration() : 
+{}
+{
+	[SQLDoc()]
+	SQLDeclare()
+}
+
+void SQLDeclare() : 
+{}
+{
+  <DECLARE> 
+  (
+    LOOKAHEAD(3) SQLTableParameter() 
+    | LOOKAHEAD(3) SQLScalarParameter() 
+    | SQLStarParameter() 
+   ) ";"
+}
+
+void SQLDoc() : 
+{}
+{
+  <DOC> "("(SQLLiteral())* ")" ";"
+}
+
+void SQLTableParameter() :
+{}
+{
+  SQLId() [":"] <TABLE> ["(" SQLFieldParameterList() ")"]
+}
+
+void SQLFieldParameterList() :
+{}
+{
+  SQLFieldParameter() ("," SQLFieldParameter())*
+}
+
+void SQLFieldParameter() :
+{}
+{
+  SQLId() [":"] 
+  (
+    (SQLDeclaredFieldType()) 
+    | 
+    <ANY>
+  )
+}
+
+void SQLScalarParameter() : 
+{}
+{
+  SQLId() 
+  ( 
+  	( [":"] SQLUnconstrainedType() 
+  	  [<VALUES> "(" SQLLiteralList() ")" ] 
+  	  [<DEFAULT_KEYWORD> SQLLiteral()] )
+  	|
+  	(<VALUES> <FROM> SQLColRef())
+  )
+}
+
+void SQLStarParameter() : 
+{}
+{
+  SQLId() 
+  <FIELDS> [ SQLIdSequence() ] 
+    <FROM> SQLId() [ <EXCEPT> SQLIdSequence() ]
+}
+
+void SQLLiteralList() : 
+{}
+{
+  SQLLiteral() ("," SQLLiteral())*
+}
+
+void SQLUnconstrainedType() :
+{}
+{
+  <BINARY> |
+  <BOOLEAN> |
+  <BYTE> |
+  <DATE> |
+  <DOUBLE> |
+  <FLOAT> |
+  <INT> |
+  <LONG> |
+  <SHORT> |
+  <STRING> |
+  <TIMESTAMP> |
+  <TIME> |
+  <GEOMETRY> |
+  <RASTER>
+}
+void SQLDeclaredFieldType() :
+{}
+{
+  <BINARY> |
+  <BOOLEAN> |
+  <BYTE> |
+  <DATE> |
+  <DOUBLE> |
+  <FLOAT> |
+  <INT> |
+  <LONG> |
+  <SHORT> |
+  <STRING> |
+  <TIMESTAMP> |
+  <TIME> |
+  <GEOMETRY> [<OPENPAREN> SQLGeometryType() (<OR> SQLGeometryType())* ["," SQLDimension() [<OR> SQLDimension()]] <CLOSEPAREN>] |
+  <RASTER> <OPENPAREN> SQLRasterType() (<OR> SQLRasterType())* <CLOSEPAREN>
+}
