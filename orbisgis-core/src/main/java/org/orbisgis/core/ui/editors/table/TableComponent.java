@@ -4,7 +4,9 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.FlowLayout;
+import java.awt.Font;
 import java.awt.Insets;
+import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -20,6 +22,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.TreeSet;
 
+import javax.swing.BorderFactory;
 import javax.swing.DefaultListSelectionModel;
 import javax.swing.Icon;
 import javax.swing.JButton;
@@ -117,7 +120,7 @@ public class TableComponent extends JPanel implements WorkbenchFrame {
 
 	/**
 	 * This is the default constructor
-	 *
+	 * 
 	 * @throws DriverException
 	 */
 	public TableComponent(TableEditorPlugIn editor) {
@@ -138,7 +141,7 @@ public class TableComponent extends JPanel implements WorkbenchFrame {
 
 	/**
 	 * This method initializes table
-	 *
+	 * 
 	 * @return javax.swing.JTable
 	 */
 	public javax.swing.JTable getTable() {
@@ -245,7 +248,7 @@ public class TableComponent extends JPanel implements WorkbenchFrame {
 
 	/**
 	 * This method initializes jScrollPane
-	 *
+	 * 
 	 * @return javax.swing.JScrollPane
 	 */
 	private javax.swing.JScrollPane getJScrollPane() {
@@ -259,7 +262,7 @@ public class TableComponent extends JPanel implements WorkbenchFrame {
 
 	/**
 	 * Shows a dialog with the error type
-	 *
+	 * 
 	 * @param msg
 	 */
 	private void inputError(String msg, Exception e) {
@@ -654,7 +657,7 @@ public class TableComponent extends JPanel implements WorkbenchFrame {
 		/**
 		 * This method is used to update the popup context. Used by plugins to
 		 * determine when it's showing.
-		 *
+		 * 
 		 * @param e
 		 */
 		private void updateContext(MouseEvent e) {
@@ -663,7 +666,16 @@ public class TableComponent extends JPanel implements WorkbenchFrame {
 			selectedColumn = table.columnAtPoint(e.getPoint());
 			int clickedRow = table.rowAtPoint(e.getPoint());
 			if (oneColumnHeaderIsSelected) {
-				wbContext.setHeaderSelected(selectedColumn);
+				if ("ColumnAction".equals(getExtensionPointId())) {
+					wbContext.setHeaderSelected(selectedColumn);
+				}
+				else {
+					wbContext.setRowSelected(e);
+					if (!table.isRowSelected(clickedRow)) {
+						selection.setSelectedRows(new int[] { clickedRow });
+						updateTableSelection();
+					}
+				}
 			} else {
 				wbContext.setRowSelected(e);
 				if (!table.isRowSelected(clickedRow)) {
@@ -817,10 +829,10 @@ public class TableComponent extends JPanel implements WorkbenchFrame {
 
 		/**
 		 * Returns the name of the field.
-		 *
+		 * 
 		 * @param col
 		 *            index of field
-		 *
+		 * 
 		 * @return Name of field
 		 */
 		@Override
@@ -834,7 +846,7 @@ public class TableComponent extends JPanel implements WorkbenchFrame {
 
 		/**
 		 * Returns the type of field
-		 *
+		 * 
 		 * @param col
 		 *            index of field
 		 * @return Type of field
@@ -849,7 +861,7 @@ public class TableComponent extends JPanel implements WorkbenchFrame {
 
 		/**
 		 * Returns the number of fields.
-		 *
+		 * 
 		 * @return number of fields
 		 */
 		@Override
@@ -863,7 +875,7 @@ public class TableComponent extends JPanel implements WorkbenchFrame {
 
 		/**
 		 * Returns number of rows.
-		 *
+		 * 
 		 * @return number of rows.
 		 */
 		@Override
