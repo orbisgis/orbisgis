@@ -43,7 +43,7 @@ import org.gdms.sql.function.Function;
 
 public abstract class AbstractRasterFunction implements Function {
 	final public Type getType(Type[] types) {
-		return TypeFactory.createType(Type.GEOMETRY);
+		return TypeFactory.createType(Type.RASTER);
 	}
 	
 	@Override
