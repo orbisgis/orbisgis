@@ -126,6 +126,7 @@ import org.gdms.sql.function.spatial.geometry.simplify.ST_SimplifyPreserveTopolo
 import org.gdms.sql.function.spatial.geometry.trigo.ST_Azimut;
 import org.gdms.sql.function.spatial.mixed.ST_Envelope;
 import org.gdms.sql.function.spatial.mixed.ST_SetZ;
+import org.gdms.sql.function.spatial.raster.algebra.ST_RasterAlgebra;
 import org.gdms.sql.function.spatial.raster.create.ST_CropRaster;
 import org.gdms.sql.function.spatial.raster.hydrology.ST_D8Accumulation;
 import org.gdms.sql.function.spatial.raster.hydrology.ST_D8AllOutlets;
@@ -139,6 +140,8 @@ import org.gdms.sql.function.spatial.raster.hydrology.ST_FillSinks;
 import org.gdms.sql.function.spatial.raster.hydrology.ST_LSFactor;
 import org.gdms.sql.function.spatial.raster.hydrology.ST_StreamPowerIndex;
 import org.gdms.sql.function.spatial.raster.hydrology.ST_WetnessIndex;
+import org.gdms.sql.function.spatial.raster.morphology.ST_Shadow;
+import org.gdms.sql.function.spatial.raster.properties.ST_Count;
 
 public class FunctionManager {
 	private static HashMap<String, Class<? extends Function>> nameFunction = new HashMap<String, Class<? extends Function>>();
@@ -242,6 +245,9 @@ public class FunctionManager {
 		addFunction(ST_WetnessIndex.class);
 		addFunction(ST_InteriorPoint.class);
 		addFunction(ST_SetZ.class);
+		addFunction(ST_RasterAlgebra.class);
+		addFunction(ST_Count.class);
+		addFunction(ST_Shadow.class);
 	}
 
 	public static void addFunctionManagerListener(
