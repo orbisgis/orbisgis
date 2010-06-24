@@ -86,8 +86,8 @@ public class GeocatalogSaveInFilePlugIn extends AbstractPlugIn {
 		context.getFeatureInstaller().addPopupMenuItem(
 				frame,
 				this,
-				new String[] { Names.POPUP_GEOCATALOG_EXPORT,
-						Names.POPUP_GEOCATALOG_EXPORT_INFILE },
+				new String[] { Names.POPUP_TOC_EXPORT_SAVE,
+						Names.TOC_EXPORT_SAVEIN_FILE },
 				Names.POPUP_GEOCATALOG_EXPORT_INFILE, false, null, wbContext);
 
 	}
