@@ -41,6 +41,7 @@ import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
 import org.gdms.sql.strategies.IncompatibleTypesException;
+import org.gdms.sql.strategies.Operator;
 
 public class Literal extends Operand {
 
@@ -77,5 +78,10 @@ public class Literal extends Operand {
 
 	public boolean isLiteral() {
 		return true;
+	}
+
+	@Override
+	public Operator[] getSubqueries() {
+		return new Operator[0];
 	}
 }
