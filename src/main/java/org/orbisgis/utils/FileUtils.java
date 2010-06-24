@@ -44,6 +44,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -85,7 +86,7 @@ public class FileUtils {
 	}
 
 	public static boolean deleteFileInDir(File dir) {
-		if (parentDir == null){
+		if (parentDir == null) {
 			parentDir = dir;
 		}
 		if (dir.isDirectory()) {
@@ -358,12 +359,36 @@ public class FileUtils {
 	 * @param file
 	 * @param extension
 	 * @return
+	 * @throws IOException
 	 */
-	public static File getFileWithExtension(File file, String extension) {
-		String filePath = file.getAbsolutePath();
-		int dotPos = filePath.lastIndexOf(".");
-		String fileNamePrefix = filePath.substring(0, dotPos);
+	public static File getFileWithExtension(File file, final String extension)
+			throws IOException {
+		if (!file.isDirectory()) {
+			final String ret = FileUtils.getFileNameWithoutExtensionU(file);
+			File[] files = file.getParentFile().listFiles(new FilenameFilter() {
 
-		return new File(fileNamePrefix + "." + extension);
+				@Override
+				public boolean accept(File arg0, String name) {
+
+					if (name.toLowerCase().endsWith(extension)) {
+						int extensionStart = name.lastIndexOf('.');
+						String ret2 = name.substring(0, name.indexOf(name
+								.substring(extensionStart)));
+						return ret2.equals(ret);
+					}
+					return false;
+
+				}
+
+			});
+			if (files.length > 0) {
+				return new File(files[0].getAbsolutePath());
+			} else {
+				return null;
+			}
+		}
+
+		throw new IOException(file.getAbsolutePath() + " is a directory");
 	}
+
 }
