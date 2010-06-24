@@ -149,7 +149,7 @@ public class OrbisGISIcon {
 
 	/**
 	 * Configuration panel
-	 *
+	 * 
 	 */
 
 	public static final ImageIcon PREFERENCES_SYSTEM = IconLoader
@@ -324,5 +324,13 @@ public class OrbisGISIcon {
 
 	public static final ImageIcon EDIT_CLEAR = IconLoader
 			.getIcon("edit-clear.png");
+
+	public static final ImageIcon RASTERINFO = IconLoader
+			.getIcon("rasterinfo.png");
+
+	public static final ImageIcon WATERSHED = IconLoader
+			.getIcon("watershed.png");
+
+	public static final ImageIcon WAND = IconLoader.getIcon("wizard.png");
 
 }
