@@ -116,9 +116,12 @@ public abstract class Names {
 	// Edit Legend
 	public static final String POPUP_TOC_LEGEND_PATH = I18N.getText("orbisgis.ui.popupmenu.TOC.legend.path1");
 	public static final String POPUP_TOC_LEGEND_GROUP = I18N.getText("orbisgis.ui.popupmenu.TOC.legend.group");
-
+	public static final String POPUP_TOC_LEGEND_RASTER = I18N.getText("orbisgis.ui.popupmenu.TOC.legend.raster");
+	
+	
 	// Export...
-	public static final String POPUP_TOC_EXPORT_PATH1 = I18N.getText("orbisgis.ui.popupmenu.TOC.export.path1");
+	public static final String POPUP_TOC_EXPORT_SAVE = I18N.getText("orbisgis.ui.popupmenu.TOC.export.save");
+
 	public static final String POPUP_TOC_EXPORT_GROUP = I18N.getText("orbisgis.ui.popupmenu.TOC.export.group");
 
 	public static final String TOC_EXPORT_SAVEIN_DB = I18N.getText("orbisgis.ui.popupmenu.TOC.export.saveindb");

@@ -66,6 +66,9 @@ import org.orbisgis.core.ui.editors.map.tools.VertexAditionTool;
 import org.orbisgis.core.ui.editors.map.tools.VertexDeletionTool;
 import org.orbisgis.core.ui.editors.map.tools.ZoomInTool;
 import org.orbisgis.core.ui.editors.map.tools.ZoomOutTool;
+import org.orbisgis.core.ui.editors.map.tools.raster.RasterInfoTool;
+import org.orbisgis.core.ui.editors.map.tools.raster.WandTool;
+import org.orbisgis.core.ui.editors.map.tools.raster.WatershedTool;
 import org.orbisgis.core.ui.pluginSystem.PlugInContext;
 import org.orbisgis.core.ui.plugins.actions.ExitPlugIn;
 import org.orbisgis.core.ui.plugins.editors.mapEditor.ClearMapSelectionPlugIn;
@@ -116,6 +119,8 @@ import org.orbisgis.core.ui.plugins.toc.SetActivePlugIn;
 import org.orbisgis.core.ui.plugins.toc.SetInactivePlugIn;
 import org.orbisgis.core.ui.plugins.toc.ShowInTablePlugIn;
 import org.orbisgis.core.ui.plugins.toc.ZoomToLayerPlugIn;
+import org.orbisgis.core.ui.plugins.toc.raster.nodata.SetnodataValuePlugIn;
+import org.orbisgis.core.ui.plugins.toc.raster.style.RasterDefaultStylePlugIn;
 import org.orbisgis.core.ui.plugins.views.MapEditorPlugIn;
 import org.orbisgis.core.ui.plugins.views.TableEditorPlugIn;
 import org.orbisgis.core.ui.plugins.views.geocatalog.ConvertXYZDemGeocatalogPlugIn;
@@ -159,6 +164,8 @@ public class OrbisConfiguration implements Setup {
 
 	// TOC
 	private EditLegendPlugIn editLegendPlugIn = new EditLegendPlugIn();
+	private RasterDefaultStylePlugIn rasterDefaultStylePlugIn = new RasterDefaultStylePlugIn();
+	private SetnodataValuePlugIn setnodataValuePlugIn = new SetnodataValuePlugIn();
 	private ShowInTablePlugIn showInTablePlugIn = new ShowInTablePlugIn();
 	private SaveInFilePlugIn saveInFilePlugIn = new SaveInFilePlugIn();
 	private SaveInDataBasePlugIn saveInDataBasePlugIn = new SaveInDataBasePlugIn();
@@ -283,6 +290,8 @@ public class OrbisConfiguration implements Setup {
 		try {
 			// TOC popup
 			editLegendPlugIn.initialize(context);
+			rasterDefaultStylePlugIn.initialize(context);
+			setnodataValuePlugIn.initialize(context);
 			showInTablePlugIn.initialize(context);
 			saveInFilePlugIn.initialize(context);
 			saveInDataBasePlugIn.initialize(context);
@@ -381,6 +390,8 @@ public class OrbisConfiguration implements Setup {
 		fullExtentPlugIn.initialize(plugInContext); // after Zoom out for group
 		// Tools in Info toolbar
 		add(new InfoTool(), OrbisGISIcon.INFO, frame.getInfoToolBar());
+		add(new RasterInfoTool(), OrbisGISIcon.RASTERINFO, frame
+				.getInfoToolBar());
 		add(new SelectionTool(), OrbisGISIcon.SELECT, frame.getInfoToolBar());
 		add(new FencePolygonTool(), OrbisGISIcon.FENCE, frame
 				.getDrawingToolBar());
@@ -409,6 +420,10 @@ public class OrbisConfiguration implements Setup {
 				.getEditionMapToolBar());
 		add(new VertexDeletionTool(), OrbisGISIcon.VERTEX_DELETE, frame
 				.getEditionMapToolBar());
+		// Raster toolbar
+		add(new WandTool(), OrbisGISIcon.WAND, frame.getRasterToolBar());
+		add(new WatershedTool(), OrbisGISIcon.WATERSHED, frame
+				.getRasterToolBar());
 
 		// Info Toolbar
 		clearTableSelectionPlugIn.initialize(plugInContext);
@@ -454,6 +469,9 @@ public class OrbisConfiguration implements Setup {
 		WorkbenchToolBar wbDrawing = new WorkbenchToolBar(wbContext,
 				Names.TOOLBAR_DRAWING, OrbisGISIcon.FENCE, true);
 		wbToolBar.add(wbDrawing);
+		WorkbenchToolBar wbRasterToolBar = new WorkbenchToolBar(wbContext,
+				Names.TOOLBAR_RASTER, OrbisGISIcon.WAND, true);
+		wbToolBar.add(wbRasterToolBar);
 		WorkbenchToolBar wbEditionMap = new WorkbenchToolBar(wbContext,
 				Names.TOOLBAR_MAP);
 		wbToolBar.add(wbEditionMap);
