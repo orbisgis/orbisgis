@@ -142,6 +142,16 @@ public class SQLTest extends SourceTest {
 				+ super.getSHPTABLE());
 		dsf.executeSQL("delete from temp where gid = 1;");
 	}
+	
+	public void testDeleteExistsTable() throws Exception {
+		dsf.getSourceManager().register("temp",
+				new File(backupDir + "/delete.shp"));
+		dsf.executeSQL("create table temp as select * from "
+				+ super.getSHPTABLE());		
+		dsf.executeSQL("create table centroid as select gid, st_centroid(the_geom) as the_geom from "
+				+ super.getSHPTABLE());		
+		dsf.executeSQL("delete from temp where exists (select a.gid from centroid a, temp b where st_intersects(a.the_geom, b.the_geom));");
+	}
 
 	public void testDropTablePurge() throws Exception {
 		dsf.getSourceManager().register("temp",
@@ -685,7 +695,7 @@ public class SQLTest extends SourceTest {
 
 	}
 
-	public void testExists() throws Exception {
+	public void testWhereExists() throws Exception {
 
 		String data = super.getAnySpatialResource();
 
@@ -1062,6 +1072,35 @@ public class SQLTest extends SourceTest {
 		assertTrue(ds.getMetadata().getFieldCount() == 1);
 		ds.close();
 	}
+	
+	public void testInSelect() throws Exception {
+		Type intType = TypeFactory.createType(Type.INT);
+		Type stringType = TypeFactory.createType(Type.STRING);
+		GenericObjectDriver dict = new GenericObjectDriver(new String[] { "code",
+				"text" }, new Type[] { intType, stringType });
+		dict.addValues(ValueFactory.createValue(0), ValueFactory
+				.createValue("good"));
+		dict.addValues(ValueFactory.createValue(1), ValueFactory
+				.createValue("bad"));
+		GenericObjectDriver thetable = new GenericObjectDriver(
+				new String[] { "dict_code" }, new Type[] { intType });
+		thetable.addValues(ValueFactory.createValue(0));
+		thetable.addValues(ValueFactory.createValue(1));
+		thetable.addValues(ValueFactory.createValue(0));
+		thetable.addValues(ValueFactory.createValue(1));
+		thetable.addValues(ValueFactory.createValue(1));
+		thetable.addValues(ValueFactory.createValue(0));
+		dsf.getSourceManager().register("dict", dict);
+		dsf.getSourceManager().register("thetable", thetable);
+		DataSource ds = dsf.getDataSourceFromSQL(
+				"select * from thetable " + "where dict_code in "
+						+ "(select code from dict where text = 'good');");
+		ds.open();
+		for (int i = 0; i < ds.getRowCount(); i++) {
+			assertTrue(ds.getInt(i, 0) == 0);
+		}
+		ds.close();
+	}
 
 	public void testExecuteTwiceOnTwoSourcesWithSameName() throws Exception {
 		createSource("source", "a", 1, 2, 3);
@@ -1123,6 +1162,19 @@ public class SQLTest extends SourceTest {
 		ds.open();
 		assertTrue(ds.getRowCount() == 4);
 		assertTrue(ds.getInt(0, 0) == 1);
+		ds.close();
+	}
+	
+	public void testUpdateSubquery() throws Exception {
+		createSource("sub", "b", 0, 1, 2, 3);
+		createSource("source", "a", 0, 1, 2, 3);
+		dsf.executeSQL(
+				"update source SET a = 1 "
+						+ "WHERE a = (select * from sub where b=2)", null);
+		DataSource ds = dsf.getDataSource("source");
+		ds.open();
+		assertTrue(ds.getRowCount() == 4);
+		assertTrue(ds.getInt(2, 0) == 1);
 		ds.close();
 	}
 
