@@ -38,6 +38,7 @@
 package org.gdms.source.util;
 
 import java.io.File;
+import java.io.IOException;
 
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceCreationException;
@@ -104,7 +105,6 @@ public class SourcesCleaner {
 		} else if (def instanceof DBTableSourceDefinition) {
 			throw new IllegalStateException("Not yet implemented");
 		} else {
-
 			throw new IllegalStateException("Not yet implemented");
 		}
 	}
@@ -113,24 +113,30 @@ public class SourcesCleaner {
 	 * A simple method to delete all shape files : dbf, shp, shx, prj.
 	 * 
 	 * @param fileShp
+	 * @throws IOException
 	 * @throws DriverException
 	 */
 	public static void deleteSHPFiles(File fileShp) {
 		if (fileShp.exists()) {
 			fileShp.delete();
 		}
-		File fileShx = FileUtils.getFileWithExtension(fileShp, "shx");
-		File fileDbf = FileUtils.getFileWithExtension(fileShp, "dbf");
-		File filePrj = FileUtils.getFileWithExtension(fileShp, "prj");
+		try {
+			File fileShx = FileUtils.getFileWithExtension(fileShp, "shx");
+			File fileDbf = FileUtils.getFileWithExtension(fileShp, "dbf");
+			File filePrj = FileUtils.getFileWithExtension(fileShp, "prj");
 
-		if (fileShx.exists()) {
-			fileShx.delete();
-		}
-		if (fileDbf.exists()) {
-			fileDbf.delete();
-		}
-		if (filePrj.exists()) {
-			filePrj.delete();
+			if (fileShx.exists()) {
+				fileShx.delete();
+			}
+			if (fileDbf.exists()) {
+				fileDbf.delete();
+			}
+			if (filePrj.exists()) {
+				filePrj.delete();
+			}
+
+		} catch (IOException e) {
+			throw new DriverLoadException(e);
 		}
 
 	}
