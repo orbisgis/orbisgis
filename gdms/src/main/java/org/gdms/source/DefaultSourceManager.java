@@ -329,12 +329,6 @@ public class DefaultSourceManager implements SourceManager {
 		}
 
 		toRemove.removeFromXML();
-
-		if (purge) {
-				SourcesCleaner.delete(toRemove);
-			
-		}
-
 		nameSource.remove(name);
 
 		for (String nwk : notWellKnown) {
@@ -342,6 +336,10 @@ public class DefaultSourceManager implements SourceManager {
 		}
 
 		fireSourceRemoved(name);
+
+		if (purge) {
+			SourcesCleaner.delete(toRemove);
+		}
 
 		return true;
 	}
