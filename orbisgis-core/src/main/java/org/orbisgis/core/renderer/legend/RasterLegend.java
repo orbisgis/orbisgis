@@ -45,7 +45,6 @@ import java.awt.image.ColorModel;
 
 import org.gdms.data.SpatialDataSourceDecorator;
 import org.grap.lut.LutDisplay;
-import org.grap.lut.LutGenerator;
 import org.orbisgis.core.renderer.symbol.Symbol;
 
 public class RasterLegend extends AbstractLegend implements Legend {
@@ -63,6 +62,10 @@ public class RasterLegend extends AbstractLegend implements Legend {
 	 */
 	public RasterLegend(ColorModel colorModel, float opacity) {
 		this.colorModel = colorModel;
+		this.opacity = opacity;
+	}
+
+	public RasterLegend(float opacity) {
 		this.opacity = opacity;
 	}
 
@@ -109,7 +112,7 @@ public class RasterLegend extends AbstractLegend implements Legend {
 	}
 
 	public Legend newInstance() {
-		return new RasterLegend(LutGenerator.colorModel("gray"), 1);
+		return new RasterLegend(1);
 	}
 
 	public void drawImage(Graphics2D g) {

@@ -263,16 +263,17 @@ public class Renderer {
 				GeoRaster geoRaster = layer.getDataSource().getRaster(i);
 				Envelope layerEnvelope = geoRaster.getMetadata().getEnvelope();
 				Envelope layerPixelEnvelope = null;
-				// BufferedImage layerImage = new BufferedImage(width, height,
-				// BufferedImage.TYPE_INT_ARGB);
 				BufferedImage layerImage = configuration.createCompatibleImage(
 						width, height, BufferedImage.TYPE_INT_ARGB);
 
 				// part or all of the GeoRaster is visible
 				layerPixelEnvelope = mt.toPixel(layerEnvelope);
 				Graphics2D gLayer = layerImage.createGraphics();
-				Image dataImage = geoRaster.getImage(((RasterLegend) legend)
-						.getColorModel());
+				ColorModel cm = ((RasterLegend) legend).getColorModel();
+				if (cm == null) {
+					cm = geoRaster.getDefaultColorModel();
+				}
+				Image dataImage = geoRaster.getImage(cm);				
 				gLayer.drawImage(dataImage, (int) layerPixelEnvelope.getMinX(),
 						(int) layerPixelEnvelope.getMinY(),
 						(int) layerPixelEnvelope.getWidth() + 1,

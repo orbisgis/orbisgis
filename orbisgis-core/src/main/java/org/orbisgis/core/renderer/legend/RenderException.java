@@ -39,8 +39,8 @@ package org.orbisgis.core.renderer.legend;
 /**
  * The layer cannot be drawn
  * 
- * @author Fernando Gonzalez Cortes
  */
+
 public class RenderException extends Exception {
 
 	public RenderException() {

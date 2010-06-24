@@ -73,7 +73,7 @@ public class RasterDefaultStylePanel extends JPanel {
 
 		selectedColorModel = null;
 		final LutDisplay lutDisplay = new LutDisplay(legend.getColorModel());
-
+		
 		jLabel = new JLabel();
 		jLabel.setIcon(new ImageIcon(lutDisplay.getImagePlus().getImage()));
 

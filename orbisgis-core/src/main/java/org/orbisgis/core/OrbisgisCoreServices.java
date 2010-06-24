@@ -226,7 +226,7 @@ public class OrbisgisCoreServices {
 		lm.addLegend(LegendFactory.createProportionalPointLegend());
 		lm.addLegend(LegendFactory.createProportionalLineLegend());
 		lm.addLegend(LegendFactory.createLabelLegend());
-		lm.addLegend(new RasterLegend(LutGenerator.colorModel("gray"), 1));
+		lm.addLegend(new RasterLegend(1));
 		lm.addLegend(new WMSLegend(null, null));
 
 	}
