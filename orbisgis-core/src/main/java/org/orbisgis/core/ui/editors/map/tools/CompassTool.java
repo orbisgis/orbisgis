@@ -182,10 +182,6 @@ public class CompassTool extends Compass {
 		return button;
 	}
 
-	public ImageIcon getImageIcon() {
-		return null;
-	}
-
 	@Override
 	public void setButton(AbstractButton button) {
 		this.button = button;
