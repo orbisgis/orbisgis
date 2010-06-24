@@ -147,6 +147,10 @@ public class PlugInContext {
 							if (!isVectorial(layer))
 								return false;
 							break;
+						case RASTER:
+							if (!isRaster(layer))
+								return false;
+							break;
 						case ACCEPT_CHILDS:
 							if (!(layer.acceptsChilds()))
 								return false;
@@ -199,7 +203,7 @@ public class PlugInContext {
 	};
 
 	public static enum LayerAvailability {
-		VECTORIAL, ACCEPT_CHILDS, LAYER_NOT_NULL, DATASOURCE_NOT_NULL, IS_MODIFIED, ACTIVE_LAYER, NOT_ACTIVE_LAYER, IS_EDTABLE, ROW_SELECTED
+		VECTORIAL, RASTER,ACCEPT_CHILDS, LAYER_NOT_NULL, DATASOURCE_NOT_NULL, IS_MODIFIED, ACTIVE_LAYER, NOT_ACTIVE_LAYER, IS_EDTABLE, ROW_SELECTED
 	};
 
 	public MapContext getMapContext() {
