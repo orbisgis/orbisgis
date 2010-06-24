@@ -10,9 +10,10 @@ import javax.swing.ListSelectionModel;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
-import org.gdms.data.crs.CRSUtil;
 import org.orbisgis.core.ui.components.text.JTextFilter;
 import org.orbisgis.core.ui.geocatalog.newSourceWizards.wms.SRSListModel;
+
+import fr.cts.util.CRSUtil;
 
 public class ProjectionTab extends JPanel {
 

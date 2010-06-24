@@ -13,9 +13,8 @@ import javax.swing.JTabbedPane;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
-import org.gdms.data.crs.CRSUtil;
-
 import fr.cts.crs.NullCRS;
+import fr.cts.util.CRSUtil;
 
 public class ProjectionConfigPanel extends JDialog implements ActionListener {
 
