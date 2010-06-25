@@ -86,15 +86,14 @@ import org.gdms.sql.function.Arguments;
 import org.gdms.sql.function.Function;
 import org.gdms.sql.function.FunctionException;
 
-public class String2DoubleFunction implements Function {
+public class LongToDoubleFunction implements Function {
 	public Value evaluate(Value[] args) throws FunctionException {
 		if (args[0].getType() == Type.NULL) {
 			return ValueFactory.createNullValue();
 		}
 
 		try {
-			return ValueFactory.createValue(Double.parseDouble(args[0]
-					.getAsString()));
+			return ValueFactory.createValue(new Double(args[0].getAsLong()));
 		} catch (NumberFormatException e) {
 			throw new FunctionException("impossible to convert " + args[0]
 					+ " into a double value", e);
@@ -102,7 +101,7 @@ public class String2DoubleFunction implements Function {
 	}
 
 	public String getName() {
-		return "StringToDouble";
+		return "LongToDouble";
 	}
 
 	public boolean isAggregate() {
@@ -117,16 +116,16 @@ public class String2DoubleFunction implements Function {
 	}
 
 	public Arguments[] getFunctionArguments() {
-		return new Arguments[] { new Arguments(Argument.STRING) };
+		return new Arguments[] { new Arguments(Argument.LONG) };
 	}
 
 	public String getDescription() {
 
-		return "Convert a string into double";
+		return "Convert a long into double";
 	}
 
 	public String getSqlOrder() {
-		return "select StringToDouble(myStringField) from myTable;";
+		return "select LongToDouble(mylongfield) from myTable;";
 	}
 
 	@Override
