@@ -46,6 +46,7 @@ import org.gdms.sql.function.alphanumeric.Average;
 import org.gdms.sql.function.alphanumeric.ConcatenateFunction;
 import org.gdms.sql.function.alphanumeric.Count;
 import org.gdms.sql.function.alphanumeric.IsUID;
+import org.gdms.sql.function.alphanumeric.LongToDoubleFunction;
 import org.gdms.sql.function.alphanumeric.Max;
 import org.gdms.sql.function.alphanumeric.Min;
 import org.gdms.sql.function.alphanumeric.Pk;
@@ -151,6 +152,7 @@ public class FunctionManager {
 		addFunction(String2DateFunction.class);
 		addFunction(String2IntFunction.class);
 		addFunction(String2DoubleFunction.class);
+		addFunction(LongToDoubleFunction.class);
 		addFunction(String2BooleanFunction.class);
 		addFunction(Count.class);
 		addFunction(Sum.class);
