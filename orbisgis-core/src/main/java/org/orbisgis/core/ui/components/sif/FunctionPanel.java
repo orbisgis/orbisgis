@@ -43,29 +43,37 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 
-import javax.swing.DefaultListModel;
 import javax.swing.JButton;
+import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.ListSelectionModel;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 
 import org.orbisgis.core.sif.AbstractUIPanel;
 import org.orbisgis.core.sif.CRFlowLayout;
 import org.orbisgis.core.sif.CarriageReturn;
+import org.orbisgis.core.ui.components.text.JTextFilter;
+import org.orbisgis.core.ui.pluginSystem.workbench.Names;
+import org.orbisgis.utils.I18N;
 
-public class ChoosePanel extends AbstractUIPanel {
+public class FunctionPanel extends AbstractUIPanel {
 
 	private String[] names;
 	private String title;
 	private JList lst;
-	private DefaultListModel model;
 	private Object[] ids;
 	private boolean multiple = false;
 	private JPanel pnlButtons;
 	private JPanel pane;
+	private FunctionPanelFilter functionPanelFilter;
+	private JPanel searchPanel;
+	private JTextFilter txtFilter;
+	private JLabel functionLabelCount;
 
-	public ChoosePanel(String title, String[] names, Object[] ids) {
+	public FunctionPanel(String title, String[] names, Object[] ids) {
 		this.title = title;
 		this.names = names;
 		this.ids = ids;
@@ -90,18 +98,15 @@ public class ChoosePanel extends AbstractUIPanel {
 	private void initComponent() {
 		pane = new JPanel();
 		pane.setLayout(new BorderLayout());
-		lst = new JList();
-		model = new DefaultListModel();
-		for (int i = 0; i < names.length; i++) {
-			model.addElement(names[i]);
-		}
-		lst.setModel(model);
+
+		pane.add(getSearchSRSPanel(), BorderLayout.NORTH);
+		lst = getJListFunction();
 		pane.add(new JScrollPane(lst), BorderLayout.CENTER);
 		pnlButtons = new JPanel();
 		CRFlowLayout flowLayout = new CRFlowLayout();
 		flowLayout.setAlignment(CRFlowLayout.LEFT);
 		pnlButtons.setLayout(flowLayout);
-		JButton btnAll = new JButton("Select All");
+		JButton btnAll = new JButton(I18N.getText(Names.SELECT_ALL));
 		btnAll.addActionListener(new ActionListener() {
 
 			@Override
@@ -111,7 +116,7 @@ public class ChoosePanel extends AbstractUIPanel {
 			}
 
 		});
-		JButton btnNone = new JButton("Select none");
+		JButton btnNone = new JButton(I18N.getText(Names.SELECT_NONE));
 		btnNone.addActionListener(new ActionListener() {
 
 			@Override
@@ -125,6 +130,58 @@ public class ChoosePanel extends AbstractUIPanel {
 		pnlButtons.add(btnNone);
 		pnlButtons.setVisible(multiple);
 		pane.add(pnlButtons, BorderLayout.EAST);
+		functionLabelCount = new JLabel(I18N
+				.getText(Names.FUNCTION_PANEL_NUMBER + " : " + names.length));
+		pane.add(functionLabelCount, BorderLayout.SOUTH);
+	}
+
+	public int getNbAvailableFunctions() {
+		return functionPanelFilter.ids.length;
+	}
+	
+
+	public JList getJListFunction() {
+		if (null == lst) {
+			lst = new JList();
+			functionPanelFilter = new FunctionPanelFilter(names, ids);
+			lst.setModel(functionPanelFilter);
+		}
+		return lst;
+	}
+
+	public JPanel getSearchSRSPanel() {
+
+		if (null == searchPanel) {
+			searchPanel = new JPanel();
+			JLabel label = new JLabel(I18N.getText(Names.SEARCH) + " : ");
+
+			txtFilter = new JTextFilter();
+			txtFilter.addDocumentListener(new DocumentListener() {
+
+				@Override
+				public void removeUpdate(DocumentEvent e) {
+					doFilter();
+				}
+
+				@Override
+				public void insertUpdate(DocumentEvent e) {
+					doFilter();
+				}
+
+				@Override
+				public void changedUpdate(DocumentEvent e) {
+					doFilter();
+				}
+			});
+			searchPanel.add(label);
+			searchPanel.add(txtFilter);
+		}
+		return searchPanel;
+
+	}
+
+	private void doFilter() {
+		functionPanelFilter.filter(txtFilter.getText());
 	}
 
 	public String getTitle() {
@@ -135,23 +192,27 @@ public class ChoosePanel extends AbstractUIPanel {
 		if (lst.getSelectedIndex() == -1) {
 			return "An item must be selected";
 		}
-
 		return null;
 	}
 
 	public Object getSelected() {
-		return ids[lst.getSelectedIndex()];
+		return functionPanelFilter.ids[lst.getSelectedIndex()];
 	}
 
 	public int getSelectedIndex() {
 		return lst.getSelectedIndex();
 	}
 
+	/**
+	 * Get the selected function in the function panel
+	 * 
+	 * @return
+	 */
 	public Object[] getSelectedElements() {
 		ArrayList<Object> ret = new ArrayList<Object>();
 		int[] indexes = lst.getSelectedIndices();
 		for (int index : indexes) {
-			ret.add(ids[index]);
+			ret.add(functionPanelFilter.ids[index]);
 		}
 
 		return ret.toArray();

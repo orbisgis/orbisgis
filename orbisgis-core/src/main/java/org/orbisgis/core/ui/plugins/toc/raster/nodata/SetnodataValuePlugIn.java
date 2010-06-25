@@ -44,6 +44,7 @@ import org.gdms.data.SpatialDataSourceDecorator;
 import org.gdms.driver.DriverException;
 import org.grap.model.GeoRaster;
 import org.orbisgis.core.Services;
+import org.orbisgis.core.images.IconLoader;
 import org.orbisgis.core.images.OrbisGISIcon;
 import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.layerModel.MapContext;
@@ -131,7 +132,7 @@ public class SetnodataValuePlugIn extends AbstractPlugIn {
 		WorkbenchFrame frame = wbContext.getWorkbench().getFrame().getToc();
 		context.getFeatureInstaller().addPopupMenuItem(frame, this,
 				new String[] { "Change nodata" }, Names.POPUP_TOC_LEGEND_GROUP,
-				false, OrbisGISIcon.EDIT_LEGEND, wbContext);
+				false, IconLoader.getIcon("contrast.png"), wbContext);
 
 	}
 

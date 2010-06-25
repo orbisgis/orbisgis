@@ -117,7 +117,8 @@ public abstract class Names {
 	public static final String POPUP_TOC_LEGEND_PATH = I18N.getText("orbisgis.ui.popupmenu.TOC.legend.path1");
 	public static final String POPUP_TOC_LEGEND_GROUP = I18N.getText("orbisgis.ui.popupmenu.TOC.legend.group");
 	public static final String POPUP_TOC_LEGEND_RASTER = I18N.getText("orbisgis.ui.popupmenu.TOC.legend.raster");
-	
+	public static final String POPUP_TOC_RASTER_THRESHOLD = I18N.getText("orbisgis.ui.popupmenu.TOC.raster.threshold");
+
 	
 	// Export...
 	public static final String POPUP_TOC_EXPORT_SAVE = I18N.getText("orbisgis.ui.popupmenu.TOC.export.save");
@@ -306,4 +307,8 @@ public abstract class Names {
 	public static final String SCALE_TOOTIP = I18N.getText("orbisgis.ui.tools.scale.tooltip");
 	public static final String RASTERALGEBRA_TOOTIP = I18N.getText("orbisgis.ui.tools.raster.calculator");;
 
+	public static final String FUNCTION_PANEL_NUMBER = I18N.getText("orbisgis.ui.panel.function.number");
+	public static final String SELECT_NONE = I18N.getText("orbisgis.selection.no");
+	public static final String SELECT_ALL = I18N.getText("orbisgis.selection.all");
+	public static final String SEARCH = I18N.getText("orbisgis.search");
 }

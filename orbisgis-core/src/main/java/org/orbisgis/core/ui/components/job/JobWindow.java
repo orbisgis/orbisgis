@@ -63,11 +63,10 @@ import org.orbisgis.core.sif.CRFlowLayout;
 import org.orbisgis.core.sif.CarriageReturn;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchContext;
 
-
 /**
  * Job popup at bootom right to follow processes loading
  */
- 
+
 public class JobWindow extends JPanel {
 
 	private JWindow window;
@@ -75,55 +74,58 @@ public class JobWindow extends JPanel {
 	private Container parent;
 	private HashMap<JobId, Component[]> idBar = new HashMap<JobId, Component[]>();
 	private static final int TOOLBAR_SIZE = 33;
-	private static final int RIGHT_POPUP_OFFSET= 10;
+	private static final int RIGHT_POPUP_OFFSET = 10;
 
 	public JobWindow() {
 	}
-	
+
 	public void show() {
 		if (window == null) {
 			initUI();
-			
-		}				
-		window.setSize(200, 100);		
+
+		}
+		window.setSize(200, 100);
 		window.setBackground(Color.GRAY);
-		WorkbenchContext wbContext = Services.getService(WorkbenchContext.class);
+		WorkbenchContext wbContext = Services
+				.getService(WorkbenchContext.class);
 		parent = wbContext.getWorkbench().getFrame();
-		centerParent();		
+		centerParent();
 	}
 
 	public void hide() {
 		if (window != null) {
 			window.setVisible(false);
 		}
-	}	
-	
-	public void centerParent () {
-		  int x;
-		  int y;
+	}
 
-		  // Find out our parent 
-		  Point topLeft = parent.getLocationOnScreen();
-		  Dimension parentSize = parent.getSize();
+	public void centerParent() {
+		int x;
+		int y;
 
-		  Dimension mySize = window.getSize();
+		// Find out our parent
+		Point topLeft = parent.getLocationOnScreen();
+		Dimension parentSize = parent.getSize();
 
-		  if (parentSize.width > mySize.width) 
-		    x = ((parentSize.width - mySize.width)-RIGHT_POPUP_OFFSET) + topLeft.x;
-		  else 
-		    x = topLeft.x;
-		   
-		  if (parentSize.height > mySize.height) 
-		    y = ((parentSize.height - mySize.height) - TOOLBAR_SIZE) + topLeft.y ;
-		  else 
-		    y = topLeft.y;
-		  
-		  window.setLocation ( x , y);	 
-	}  
+		Dimension mySize = window.getSize();
 
-	public void initUI() {		
+		if (parentSize.width > mySize.width)
+			x = ((parentSize.width - mySize.width) - RIGHT_POPUP_OFFSET)
+					+ topLeft.x;
+		else
+			x = topLeft.x;
+
+		if (parentSize.height > mySize.height)
+			y = ((parentSize.height - mySize.height) - TOOLBAR_SIZE)
+					+ topLeft.y;
+		else
+			y = topLeft.y;
+
+		window.setLocation(x, y);
+	}
+
+	public void initUI() {
 		window = new JWindow();
-		
+
 		progressPanel = new JPanel();
 		progressPanel.setLayout(new CRFlowLayout());
 		JScrollPane scrollPane = new JScrollPane(progressPanel);
@@ -154,7 +156,7 @@ public class JobWindow extends JPanel {
 					progressPanel.add(component);
 				}
 			} else {
-				ProgressBar bar = new ProgressBar(job);				
+				ProgressBar bar = new ProgressBar(job);
 				progressPanel.add(bar);
 				CarriageReturn cr = new CarriageReturn();
 				progressPanel.add(cr);
@@ -163,7 +165,6 @@ public class JobWindow extends JPanel {
 		}
 		System.out.println("Added job " + job.getId());
 		window.setVisible(true);
-		SwingUtilities.windowForComponent(progressPanel).pack();
 	}
 
 	private BackgroundManager getBackgroundManager() {
@@ -188,7 +189,6 @@ public class JobWindow extends JPanel {
 		if (idBar.isEmpty())
 			hide();
 	}
-
 
 	public void replaceJob(Job job) {
 		Component[] comps = idBar.get(job.getId());
