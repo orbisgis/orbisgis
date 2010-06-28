@@ -32,27 +32,22 @@
 			<id>geosysin</id>
 			<name>Geosysin repository</name>
 			<url>http://geosysin.iict.ch/irstv-web/maven-repo</url>
-		</repository>				
+		</repository>		
 	</repositories>
 	<pluginRepositories>
 
 	    <pluginRepository>
-
 		<id>geosysin</id>
 		<name>Geosysin repository</name>
 		<url>http://geosysin.iict.ch/irstv-web/maven-repo</url>
-
 	    </pluginRepository>
 
 	</pluginRepositories>
 	<distributionManagement>
-
 	    <repository>
-
 		<id>geosysin</id>
 		<name>Geosysin repository</name>
-		<url>scp://geosysin.iict.ch:/home/irstv/trac/htdocs/maven-repo/</url>
-
+		<url>scp://geosysin.iict.ch:/var/www/geosysin.iict.ch/irstv/trac/trac/htdocs/maven-repo/</url>
 	    </repository>
 
 	</distributionManagement> 	
@@ -73,7 +68,7 @@
         		    	<useRepositoryLayout>true</useRepositoryLayout>
         		       	<outputDirectory>../dependencies</outputDirectory>
 			        </configuration>
-			</plugin>
+			</plugin>			
 		</plugins>
 	</build>
 	<reporting>
