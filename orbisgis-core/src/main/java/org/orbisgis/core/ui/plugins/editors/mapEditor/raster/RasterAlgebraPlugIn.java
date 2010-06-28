@@ -67,7 +67,6 @@ import org.orbisgis.core.ui.plugins.views.MapEditorPlugIn;
 import org.orbisgis.core.ui.plugins.views.editor.EditorManager;
 
 public class RasterAlgebraPlugIn extends AbstractPlugIn {
-	public static final String DIALOG_ID = "org.orbisgis.geoview.rasterProcessing.ImageCalculator";
 
 	private JButton btn;
 
