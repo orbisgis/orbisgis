@@ -37,9 +37,11 @@
 package org.gdms.sql.evaluator;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 import org.gdms.data.values.Value;
 import org.gdms.sql.strategies.IncompatibleTypesException;
+import org.gdms.sql.strategies.Operator;
 
 public abstract class AbstractOperator extends AbstractExpression implements
 		Expression {
@@ -126,6 +128,17 @@ public abstract class AbstractOperator extends AbstractExpression implements
 		} else {
 			return evaluateExpression();
 		}
+	}
+	
+	@Override
+	public Operator[] getSubqueries() {
+		ArrayList<Operator> ret = new ArrayList<Operator>();
+		for (Expression argument : children) {
+			Operator[] subqueries = argument.getSubqueries();
+			Collections.addAll(ret, subqueries);
+		}
+
+		return ret.toArray(new Operator[0]);
 	}
 
 	protected abstract Value evaluateExpression() throws EvaluationException,

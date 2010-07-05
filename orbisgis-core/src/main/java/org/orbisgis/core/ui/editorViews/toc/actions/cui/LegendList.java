@@ -55,8 +55,7 @@ import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
-import org.orbisgis.core.images.IconLoader;
-import org.orbisgis.core.images.IconNames;
+import org.orbisgis.core.images.OrbisGISIcon;
 import org.orbisgis.core.renderer.legend.Legend;
 import org.orbisgis.core.sif.UIFactory;
 import org.orbisgis.core.ui.components.sif.AskValue;
@@ -82,7 +81,7 @@ public class LegendList extends JPanel {
 		toolBar.setFloatable(false);
 
 		jButtonMenuUp = new JButton();
-		jButtonMenuUp.setIcon(IconLoader.getIcon(IconNames.GO_UP));
+		jButtonMenuUp.setIcon(OrbisGISIcon.GO_UP);
 		jButtonMenuUp.setToolTipText("Up");
 		jButtonMenuUp.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
@@ -92,7 +91,7 @@ public class LegendList extends JPanel {
 		toolBar.add(jButtonMenuUp);
 
 		jButtonMenuDown = new JButton();
-		jButtonMenuDown.setIcon(IconLoader.getIcon(IconNames.GO_DOWN));
+		jButtonMenuDown.setIcon(OrbisGISIcon.GO_DOWN);
 		jButtonMenuDown.setToolTipText("Down");
 		jButtonMenuDown.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
@@ -102,7 +101,7 @@ public class LegendList extends JPanel {
 		toolBar.add(jButtonMenuDown);
 
 		jButtonMenuAdd = new JButton();
-		jButtonMenuAdd.setIcon(IconLoader.getIcon(IconNames.PICTURE_ADD));
+		jButtonMenuAdd.setIcon(OrbisGISIcon.PICTURE_ADD);
 		jButtonMenuAdd.setToolTipText("Add");
 		jButtonMenuAdd.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
@@ -112,7 +111,7 @@ public class LegendList extends JPanel {
 		toolBar.add(jButtonMenuAdd);
 
 		jButtonMenuDel = new JButton();
-		jButtonMenuDel.setIcon(IconLoader.getIcon(IconNames.PICTURE_DEL));
+		jButtonMenuDel.setIcon(OrbisGISIcon.PICTURE_DEL);
 		jButtonMenuDel.setToolTipText("Delete");
 		jButtonMenuDel.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
@@ -122,7 +121,7 @@ public class LegendList extends JPanel {
 		toolBar.add(jButtonMenuDel);
 
 		jButtonMenuRename = new JButton();
-		jButtonMenuRename.setIcon(IconLoader.getIcon(IconNames.PICTURE_EDI));
+		jButtonMenuRename.setIcon(OrbisGISIcon.PICTURE_EDI);
 		jButtonMenuRename.setToolTipText("Rename");
 		jButtonMenuRename.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
@@ -226,7 +225,7 @@ public class LegendList extends JPanel {
 
 	/**
 	 * rename of a selected value in the list.
-	 * 
+	 *
 	 * @param evt
 	 */
 	private void jButtonMenuRenameActionPerformed(ActionEvent evt) {// GEN-FIRST:
@@ -245,7 +244,7 @@ public class LegendList extends JPanel {
 
 	/**
 	 * remove a selected values
-	 * 
+	 *
 	 * @param evt
 	 */
 	private void jButtonMenuDelActionPerformed(ActionEvent evt) {
@@ -259,7 +258,7 @@ public class LegendList extends JPanel {
 
 	/**
 	 * adds a new legend
-	 * 
+	 *
 	 * @param evt
 	 */
 	private void jButtonMenuAddActionPerformed(ActionEvent evt) {// GEN-FIRST:
@@ -287,7 +286,7 @@ public class LegendList extends JPanel {
 
 	/**
 	 * move down the selected legend
-	 * 
+	 *
 	 * @param evt
 	 */
 	private void jButtonMenuDownActionPerformed(ActionEvent evt) {
@@ -298,7 +297,7 @@ public class LegendList extends JPanel {
 
 	/**
 	 * moves up the selected legend
-	 * 
+	 *
 	 * @param evt
 	 */
 	private void jButtonMenuUpActionPerformed(ActionEvent evt) {
@@ -310,7 +309,7 @@ public class LegendList extends JPanel {
 	/**
 	 * selection of a new legend in the list. it will fire this event and will
 	 * open the appropriate panel for these legend.
-	 * 
+	 *
 	 * @param evt
 	 */
 	private void jList1ValueChanged(ListSelectionEvent evt) {
@@ -319,7 +318,7 @@ public class LegendList extends JPanel {
 
 	/**
 	 * Returns true
-	 * 
+	 *
 	 * @return
 	 */
 	public int getSelectedIndex() {

@@ -5,9 +5,9 @@
  * distributed under GPL 3 license. It is produced by the "Atelier SIG" team of
  * the IRSTV Institute <http://www.irstv.cnrs.fr/> CNRS FR 2488.
  *
- * 
+ *
  *  Team leader Erwan BOCHER, scientific researcher,
- * 
+ *
  *  User support leader : Gwendall Petit, geomatic engineer.
  *
  *
@@ -44,7 +44,7 @@ import org.gdms.driver.DriverException;
 import org.gdms.driver.ReadWriteDriver;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.errorManager.ErrorManager;
-import org.orbisgis.core.images.IconNames;
+import org.orbisgis.core.images.OrbisGISIcon;
 import org.orbisgis.core.sif.UIFactory;
 import org.orbisgis.core.ui.editor.IEditor;
 import org.orbisgis.core.ui.editors.table.TableEditableElement;
@@ -55,7 +55,7 @@ import org.orbisgis.core.ui.pluginSystem.workbench.Names;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchContext;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchFrame;
 
-public class AddFieldPlugIn extends AbstractPlugIn {	
+public class AddFieldPlugIn extends AbstractPlugIn {
 
 	public boolean execute(PlugInContext context) throws Exception {
 		IEditor editor = context.getActiveEditor();
@@ -83,14 +83,14 @@ public class AddFieldPlugIn extends AbstractPlugIn {
 		context.getFeatureInstaller().addPopupMenuItem(frame, this,
 				new String[] { Names.POPUP_TABLE_ADDFIELD_PATH1 },
 				Names.POPUP_TABLE_ADDFIELD_GROUP, false,
-				getIcon(IconNames.POPUP_TABLE_ADDFIELD_ICON), wbContext);
+				OrbisGISIcon.TABLE_ADDFIELD, wbContext);
 	}
 
 	public boolean isEnabled() {
 		boolean isEnabled = false;
 		IEditor tableEditor = null;
 		if((tableEditor=getPlugInContext().getTableEditor()) != null) {
-			final TableEditableElement element = 
+			final TableEditableElement element =
 				(TableEditableElement) tableEditor.getElement();
 			isEnabled = getSelectedColumn()!=-1 && element.getDataSource().isEditable();
 		}

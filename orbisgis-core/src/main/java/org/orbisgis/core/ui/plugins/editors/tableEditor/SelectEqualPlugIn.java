@@ -5,9 +5,9 @@
  * distributed under GPL 3 license. It is produced by the "Atelier SIG" team of
  * the IRSTV Institute <http://www.irstv.cnrs.fr/> CNRS FR 2488.
  *
- * 
+ *
  *  Team leader Erwan BOCHER, scientific researcher,
- * 
+ *
  *  User support leader : Gwendall Petit, geomatic engineer.
  *
  *
@@ -47,7 +47,7 @@ import org.orbisgis.core.Services;
 import org.orbisgis.core.background.BackgroundJob;
 import org.orbisgis.core.background.BackgroundManager;
 import org.orbisgis.core.errorManager.ErrorManager;
-import org.orbisgis.core.images.IconNames;
+import org.orbisgis.core.images.OrbisGISIcon;
 import org.orbisgis.core.ui.editor.IEditor;
 import org.orbisgis.core.ui.editors.table.TableComponent;
 import org.orbisgis.core.ui.editors.table.TableEditableElement;
@@ -56,6 +56,7 @@ import org.orbisgis.core.ui.pluginSystem.PlugInContext;
 import org.orbisgis.core.ui.pluginSystem.workbench.Names;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchContext;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchFrame;
+import org.orbisgis.core.ui.plugins.views.TableEditorPlugIn;
 import org.orbisgis.progress.IProgressMonitor;
 
 public class SelectEqualPlugIn extends AbstractPlugIn {
@@ -112,13 +113,20 @@ public class SelectEqualPlugIn extends AbstractPlugIn {
 		context.getFeatureInstaller().addPopupMenuItem(frame, this,
 				new String[] { Names.POPUP_TABLE_EQUALS_PATH1 },
 				Names.POPUP_TABLE_EQUALS_GROUP, false,
-				getIcon(IconNames.POPUP_TABLE_EQUALS_ICON), wbContext);
+				OrbisGISIcon.TABLE_SELECT_SAME_VALUE, wbContext);
 	}
 
 	public boolean isEnabled() {
-		if ((getPlugInContext().getTableEditor()) != null
-				&& getSelectedColumn() == -1 && getEvent() != null) {
-			return true;
+
+		TableEditorPlugIn table = getPlugInContext().getTableEditor();
+		if (table != null && getSelectedColumn() == -1 && getEvent() != null) {
+			int rowCountSelected = ((TableComponent) table.getView()
+					.getComponent()).getTable().getSelectedRowCount();
+			if (rowCountSelected == 1) {
+				return true;
+			}
+
+			return false;
 		}
 		return false;
 	}

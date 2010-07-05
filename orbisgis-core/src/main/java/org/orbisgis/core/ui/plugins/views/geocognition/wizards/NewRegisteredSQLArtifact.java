@@ -1,47 +1,40 @@
-/**
+/*
  * OrbisGIS is a GIS application dedicated to scientific spatial simulation.
  * This cross-platform GIS is developed at French IRSTV institute and is able to
  * manipulate and create vector and raster spatial information. OrbisGIS is
- * distributed under GPL 3 license. It is produced by the geo-informatic team of
+ * distributed under GPL 3 license. It is produced by the "Atelier SIG" team of
  * the IRSTV Institute <http://www.irstv.cnrs.fr/> CNRS FR 2488.
- * 
- *  
- *  Lead Erwan BOCHER, scientific researcher, 
  *
- *  Developer lead : Pierre-Yves FADET, computer engineer. 
- *  
- *  User support lead : Gwendall Petit, geomatic engineer. 
  * 
- * Previous computer developer : Thomas LEDUC, scientific researcher, Fernando GONZALEZ
- * CORTES, computer engineer.
+ *  Team leader Erwan BOCHER, scientific researcher,
  * 
+ *  User support leader : Gwendall Petit, geomatic engineer.
+ *
+ *
  * Copyright (C) 2007 Erwan BOCHER, Fernando GONZALEZ CORTES, Thomas LEDUC
- * 
- * Copyright (C) 2010 Erwan BOCHER, Fernando GONZALEZ CORTES, Thomas LEDUC
- * 
+ *
+ * Copyright (C) 2010 Erwan BOCHER, Pierre-Yves FADET, Alexis GUEGANNO, Maxence LAURENT
+ *
  * This file is part of OrbisGIS.
- * 
+ *
  * OrbisGIS is free software: you can redistribute it and/or modify it under the
  * terms of the GNU General Public License as published by the Free Software
  * Foundation, either version 3 of the License, or (at your option) any later
  * version.
- * 
+ *
  * OrbisGIS is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
  * A PARTICULAR PURPOSE. See the GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License along with
  * OrbisGIS. If not, see <http://www.gnu.org/licenses/>.
- * 
- * For more information, please consult: <http://orbisgis.cerma.archi.fr/>
- * <http://sourcesup.cru.fr/projects/orbisgis/>
- * 
- * or contact directly: 
- * erwan.bocher _at_ ec-nantes.fr 
- * Pierre-Yves.Fadet _at_ ec-nantes.fr
+ *
+ * For more information, please consult: <http://www.orbisgis.org/>
+ *
+ * or contact directly:
+ * erwan.bocher _at_ ec-nantes.fr
  * gwendall.petit _at_ ec-nantes.fr
- **/
-
+ */
 
 package org.orbisgis.core.ui.plugins.views.geocognition.wizards;
 
@@ -53,6 +46,7 @@ import java.util.Map;
 import java.util.TreeSet;
 
 import javax.swing.Icon;
+import javax.swing.JOptionPane;
 
 import org.gdms.sql.customQuery.CustomQuery;
 import org.gdms.sql.customQuery.QueryManager;
@@ -69,9 +63,10 @@ import org.orbisgis.core.geocognition.sql.GeocognitionBuiltInFunction;
 import org.orbisgis.core.geocognition.sql.GeocognitionCustomQueryFactory;
 import org.orbisgis.core.geocognition.sql.GeocognitionFunctionFactory;
 import org.orbisgis.core.images.IconLoader;
-import org.orbisgis.core.images.IconNames;
+import org.orbisgis.core.images.OrbisGISIcon;
 import org.orbisgis.core.sif.UIFactory;
 import org.orbisgis.core.ui.components.sif.ChoosePanel;
+import org.orbisgis.core.ui.components.sif.FunctionPanel;
 import org.orbisgis.core.ui.plugins.views.geocognition.wizard.ElementRenderer;
 import org.orbisgis.core.ui.plugins.views.geocognition.wizard.INewGeocognitionElement;
 
@@ -94,10 +89,9 @@ public class NewRegisteredSQLArtifact implements INewGeocognitionElement {
 					if ((registered != null)
 							&& registered
 									.equals(GeocognitionBuiltInCustomQuery.IS_REGISTERED)) {
-						return IconLoader.getIcon(IconNames.BUILT_QUERY);
+						return OrbisGISIcon.BUILT_QUERY;
 					} else {
-						return IconLoader
-								.getIcon(IconNames.BUILT_QUERY_ERR);
+						return OrbisGISIcon.BUILT_QUERY_ERR;
 					}
 				} else if (OrbisGISPersitenceConfig.GeocognitionFunctionFactory_ID
 						.equals(contentTypeId)) {
@@ -106,7 +100,7 @@ public class NewRegisteredSQLArtifact implements INewGeocognitionElement {
 					if ((registered != null)
 							&& registered
 									.equals(GeocognitionBuiltInFunction.IS_REGISTERED)) {
-						return IconLoader.getIcon(IconNames.BUILT_FUNCTION);
+						return OrbisGISIcon.BUILT_FUNCTION;
 					} else {
 						return IconLoader
 								.getIcon("builtinfunctionmaperror.png");
@@ -126,8 +120,10 @@ public class NewRegisteredSQLArtifact implements INewGeocognitionElement {
 			@Override
 			public String getTooltip(GeocognitionElement element) {
 				try {
-					if (element.getTypeId().equals(
-							OrbisGISPersitenceConfig.GeocognitionCustomQueryFactory_id)) {
+					if (element
+							.getTypeId()
+							.equals(
+									OrbisGISPersitenceConfig.GeocognitionCustomQueryFactory_id)) {
 						Class<? extends CustomQuery> cqClass = (Class<? extends CustomQuery>) element
 								.getObject();
 						if (cqClass != null) {
@@ -135,8 +131,10 @@ public class NewRegisteredSQLArtifact implements INewGeocognitionElement {
 						} else {
 							return "Custom query class not found";
 						}
-					} else if (element.getTypeId().equals(
-							OrbisGISPersitenceConfig.GeocognitionFunctionFactory_ID)) {
+					} else if (element
+							.getTypeId()
+							.equals(
+									OrbisGISPersitenceConfig.GeocognitionFunctionFactory_ID)) {
 						Class<? extends Function> cqClass = (Class<? extends Function>) element
 								.getObject();
 						return cqClass.newInstance().getDescription();
@@ -210,29 +208,37 @@ public class NewRegisteredSQLArtifact implements INewGeocognitionElement {
 						"Cannot add function: " + functionClass, e);
 			}
 		}
-		ChoosePanel cp = new ChoosePanel("Select registered functions to add",
-				names, ids);
+
+		FunctionPanel cp = new FunctionPanel(
+				"Select registered functions to add", names, ids);
 		cp.setMultiple(true);
+
 		artifacts = new ArrayList<Object>();
 		artifactNames = new ArrayList<String>();
-		if (UIFactory.showDialog(cp)) {
-			Object[] functionClasses = cp.getSelectedElements();
-			for (Object object : functionClasses) {
-				try {
-					artifactNames
-							.add(getName(((Class<?>) object).newInstance()));
-					artifacts.add(object);
-				} catch (IllegalArgumentException e) {
-					Services.getErrorManager().error(
-							"Cannot add function: " + object, e);
-				} catch (InstantiationException e) {
-					Services.getErrorManager().error(
-							"Cannot add function: " + object, e);
-				} catch (IllegalAccessException e) {
-					Services.getErrorManager().error(
-							"Cannot add function: " + object, e);
+		if (names.length > 0) {
+			if (UIFactory.showDialog(cp)) {
+				Object[] functionClasses = cp.getSelectedElements();
+				for (Object object : functionClasses) {
+					try {
+						artifactNames.add(getName(((Class<?>) object)
+								.newInstance()));
+						artifacts.add(object);
+					} catch (IllegalArgumentException e) {
+						Services.getErrorManager().error(
+								"Cannot add function: " + object, e);
+					} catch (InstantiationException e) {
+						Services.getErrorManager().error(
+								"Cannot add function: " + object, e);
+					} catch (IllegalAccessException e) {
+						Services.getErrorManager().error(
+								"Cannot add function: " + object, e);
+					}
 				}
 			}
+		} else {
+			JOptionPane
+					.showMessageDialog(null,
+							"All functions have been added into the Geocognition view.");
 		}
 
 	}

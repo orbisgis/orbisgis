@@ -43,7 +43,6 @@ import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.ExecutionException;
 import org.gdms.data.SpatialDataSourceDecorator;
-import org.gdms.data.crs.CRSUtil;
 import org.gdms.data.metadata.Metadata;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
@@ -68,6 +67,7 @@ import fr.cts.IllegalCoordinateException;
 import fr.cts.crs.GeodeticCRS;
 import fr.cts.op.CoordinateOperationFactory;
 import fr.cts.op.CoordinateOperationSequence;
+import fr.cts.util.CRSUtil;
 
 public class ST_Transform implements CustomQuery {
 

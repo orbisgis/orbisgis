@@ -5,9 +5,9 @@
  * distributed under GPL 3 license. It is produced by the "Atelier SIG" team of
  * the IRSTV Institute <http://www.irstv.cnrs.fr/> CNRS FR 2488.
  *
- * 
+ *
  *  Team leader Erwan BOCHER, scientific researcher,
- * 
+ *
  *  User support leader : Gwendall Petit, geomatic engineer.
  *
  *
@@ -46,8 +46,7 @@ import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.ListCellRenderer;
 
-import org.orbisgis.core.images.IconLoader;
-import org.orbisgis.core.images.IconNames;
+import org.orbisgis.core.images.OrbisGISIcon;
 import org.orbisgis.core.javaManager.autocompletion.ClassOption;
 import org.orbisgis.core.javaManager.autocompletion.ConstructorOption;
 import org.orbisgis.core.javaManager.autocompletion.FieldOption;
@@ -74,22 +73,22 @@ public class CompletionRenderer extends JPanel implements ListCellRenderer {
 	public Component getListCellRendererComponent(JList list, Object value,
 			int index, boolean isSelected, boolean cellHasFocus) {
 		if (value instanceof VariableOption) {
-			lbl.setIcon(IconLoader.getIcon(IconNames.COMPL_LOCAL));
+			lbl.setIcon(OrbisGISIcon.COMPLETION_LOCAL);
 		} else if (value instanceof FieldOption) {
-			lbl.setIcon(IconLoader.getIcon(IconNames.COMPL_MEMBER));
+			lbl.setIcon(OrbisGISIcon.COMPLETION_MEMBER);
 		} else if (value instanceof ConstructorOption) {
-			lbl.setIcon(IconLoader.getIcon(IconNames.COMPL_CLASS));
+			lbl.setIcon(OrbisGISIcon.COMPLETION_CLASS);
 		} else if (value instanceof MethodOption) {
-			lbl.setIcon(IconLoader.getIcon(IconNames.COMPL_MEMBER));
+			lbl.setIcon(OrbisGISIcon.COMPLETION_MEMBER);
 		} else if (value instanceof ClassOption) {
 			ClassOption opt = (ClassOption) value;
 			if (opt.isInterface()) {
-				lbl.setIcon(IconLoader.getIcon(IconNames.COMPL_INTER));
+				lbl.setIcon(OrbisGISIcon.COMPLETION_INTER);
 			} else {
-				lbl.setIcon(IconLoader.getIcon(IconNames.COMPL_CLASS));
+				lbl.setIcon(OrbisGISIcon.COMPLETION_CLASS);
 			}
 		} else if (value instanceof InlineImplementationOption) {
-			lbl.setIcon(IconLoader.getIcon(IconNames.COMPL_INTER));
+			lbl.setIcon(OrbisGISIcon.COMPLETION_INTER);
 		} else {
 			lbl.setIcon(null);
 		}

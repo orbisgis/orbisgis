@@ -5,9 +5,9 @@
  * distributed under GPL 3 license. It is produced by the "Atelier SIG" team of
  * the IRSTV Institute <http://www.irstv.cnrs.fr/> CNRS FR 2488.
  *
- * 
+ *
  *  Team leader Erwan BOCHER, scientific researcher,
- * 
+ *
  *  User support leader : Gwendall Petit, geomatic engineer.
  *
  *
@@ -52,7 +52,7 @@ import javax.swing.text.JTextComponent;
 
 import org.orbisgis.core.DataManager;
 import org.orbisgis.core.Services;
-import org.orbisgis.core.images.IconNames;
+import org.orbisgis.core.images.OrbisGISIcon;
 import org.orbisgis.core.layerModel.MapContext;
 import org.orbisgis.core.sif.OpenFilePanel;
 import org.orbisgis.core.sif.SaveFilePanel;
@@ -91,7 +91,8 @@ public class BeanShellConsoleViewPlugIn extends ViewPlugIn {
 
 			DataManager dm = Services.getService(DataManager.class);
 
-			interpreter.setClassLoader(dm.getDataSourceFactory().getClass().getClassLoader());
+			interpreter.setClassLoader(dm.getDataSourceFactory().getClass()
+					.getClassLoader());
 			interpreter.set("dsf", dm.getDataSourceFactory());
 
 			interpreter.eval("setAccessibility(true)");
@@ -170,7 +171,7 @@ public class BeanShellConsoleViewPlugIn extends ViewPlugIn {
 
 		menuItem = context.getFeatureInstaller().addMainMenuItem(this,
 				new String[] { Names.VIEW }, Names.BEANSHELL, true,
-				getIcon(IconNames.BEANSHELL_ICON), null, panel, context);
+				OrbisGISIcon.BEANSHELL_ICON, null, panel, context);
 	}
 
 	public boolean execute(PlugInContext context) throws Exception {

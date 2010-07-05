@@ -5,9 +5,9 @@
  * distributed under GPL 3 license. It is produced by the "Atelier SIG" team of
  * the IRSTV Institute <http://www.irstv.cnrs.fr/> CNRS FR 2488.
  *
- * 
+ *
  *  Team leader Erwan BOCHER, scientific researcher,
- * 
+ *
  *  User support leader : Gwendall Petit, geomatic engineer.
  *
  *
@@ -57,7 +57,7 @@ import org.gdms.source.SourceManager;
 import org.orbisgis.core.DataManager;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.errorManager.ErrorManager;
-import org.orbisgis.core.images.IconNames;
+import org.orbisgis.core.images.OrbisGISIcon;
 import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.layerModel.MapContext;
 import org.orbisgis.core.ui.editor.IEditor;
@@ -74,10 +74,10 @@ public class CreateSourceFromTableSelectionPlugIn extends AbstractPlugIn {
 	private JButton btn;
 
 	public CreateSourceFromTableSelectionPlugIn() {
-		btn = new JButton(getIcon(IconNames.TABLE_CREATE_SRC_ICON));
+		btn = new JButton(OrbisGISIcon.TABLE_CREATE_SRC_ICON);
 	}
-	
-	public boolean execute(PlugInContext context) throws Exception {		
+
+	public boolean execute(PlugInContext context) throws Exception {
 		TableEditorPlugIn tableEditor = null;
 		if((tableEditor=getPlugInContext().getTableEditor()) != null){
 			TableEditableElement element = (TableEditableElement) tableEditor
@@ -96,7 +96,7 @@ public class CreateSourceFromTableSelectionPlugIn extends AbstractPlugIn {
 		}
 		return true;
 	}
-	
+
 	public void initialize(PlugInContext context) throws Exception {
 		WorkbenchContext wbContext = context.getWorkbenchContext();
 		wbContext.getWorkbench().getFrame().getEditionTableToolBar().addPlugIn(
@@ -150,8 +150,8 @@ public class CreateSourceFromTableSelectionPlugIn extends AbstractPlugIn {
 			Services.getService(ErrorManager.class).error("Bug", e);
 		}
 	}
-	
-	public boolean isEnabled() {		
+
+	public boolean isEnabled() {
 		boolean isEnabled = false;
 		isEnabled =  getPlugInContext().getTableEditor() != null &&
 						getPlugInContext().checkLayerAvailability(

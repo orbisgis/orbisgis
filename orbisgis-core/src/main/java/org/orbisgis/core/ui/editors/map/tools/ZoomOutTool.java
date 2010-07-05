@@ -60,13 +60,12 @@
 package org.orbisgis.core.ui.editors.map.tools;
 
 import java.awt.Graphics;
-import java.net.URL;
 import java.util.Observable;
 
 import javax.swing.AbstractButton;
+import javax.swing.ImageIcon;
 
-import org.orbisgis.core.images.IconLoader;
-import org.orbisgis.core.images.IconNames;
+import org.orbisgis.core.images.OrbisGISIcon;
 import org.orbisgis.core.layerModel.MapContext;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.ui.editors.map.tool.FinishedAutomatonException;
@@ -79,7 +78,7 @@ import com.vividsolutions.jts.geom.Envelope;
 
 /**
  * Tool to zoom out
- * 
+ *
  * @author Fernando Gonzalez Cortes
  */
 public class ZoomOutTool extends ZoomOut {
@@ -160,11 +159,11 @@ public class ZoomOutTool extends ZoomOut {
 	public boolean isVisible(MapContext vc, ToolManager tm) {
 		return true;
 	}
-	
-	public URL getMouseCursorURL(){		
-		return IconLoader.getIconUrl(IconNames.ZOOMOUT_ICON);		
+
+	public ImageIcon getImageIcon() {
+		return OrbisGISIcon.ZOOMOUT;
 	}
-	
+
 	public String getName() {
 		return "Zoom out";
 	}

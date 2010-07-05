@@ -53,6 +53,7 @@ import org.gdms.sql.customQuery.spatial.geometry.crs.ST_Transform;
 import org.gdms.sql.customQuery.spatial.geometry.qa.ST_InternalGapFinder;
 import org.gdms.sql.customQuery.spatial.geometry.topology.ST_PlanarGraph;
 import org.gdms.sql.customQuery.spatial.geometry.topology.ST_ToLineNoder;
+import org.gdms.sql.customQuery.spatial.raster.Interpolation.ST_Interpolate;
 import org.gdms.sql.customQuery.spatial.raster.convert.ST_RasterToPoints;
 import org.gdms.sql.customQuery.spatial.raster.convert.ST_RasterToPolygons;
 import org.gdms.sql.customQuery.spatial.raster.convert.ST_RasterizeLine;
@@ -91,7 +92,7 @@ public class QueryManager {
 		registerQuery(ST_VectorizeLine.class);
 		registerQuery(ST_CreatePointsGrid.class);
 		registerQuery(ST_Transform.class);
-		//registerQuery(GPXImporter.class);
+		registerQuery(ST_Interpolate.class);
 	}
 
 	/**

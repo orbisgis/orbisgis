@@ -5,9 +5,9 @@
  * distributed under GPL 3 license. It is produced by the "Atelier SIG" team of
  * the IRSTV Institute <http://www.irstv.cnrs.fr/> CNRS FR 2488.
  *
- * 
+ *
  *  Team leader Erwan BOCHER, scientific researcher,
- * 
+ *
  *  User support leader : Gwendall Petit, geomatic engineer.
  *
  *
@@ -39,13 +39,14 @@ package org.orbisgis.core.ui.pluginSystem.workbench;
 
 
 import javax.swing.AbstractButton;
+import javax.swing.ImageIcon;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.event.MenuEvent;
 import javax.swing.event.MenuListener;
 
 import org.orbisgis.core.Services;
-import org.orbisgis.core.images.IconNames;
+import org.orbisgis.core.images.OrbisGISIcon;
 import org.orbisgis.core.ui.editors.map.tool.Automaton;
 import org.orbisgis.core.ui.editors.map.tools.CompassTool;
 import org.orbisgis.core.ui.editors.map.tools.EditionSelectionTool;
@@ -66,9 +67,11 @@ import org.orbisgis.core.ui.editors.map.tools.VertexAditionTool;
 import org.orbisgis.core.ui.editors.map.tools.VertexDeletionTool;
 import org.orbisgis.core.ui.editors.map.tools.ZoomInTool;
 import org.orbisgis.core.ui.editors.map.tools.ZoomOutTool;
+import org.orbisgis.core.ui.editors.map.tools.raster.RasterInfoTool;
+import org.orbisgis.core.ui.editors.map.tools.raster.WandTool;
+import org.orbisgis.core.ui.editors.map.tools.raster.WatershedTool;
 import org.orbisgis.core.ui.pluginSystem.PlugInContext;
 import org.orbisgis.core.ui.plugins.actions.ExitPlugIn;
-import org.orbisgis.core.ui.plugins.actions.SavePlugIn;
 //import org.orbisgis.core.ui.plugins.demo.extensions.tocMenu.MyTOCMenu;
 //import org.orbisgis.core.ui.plugins.demo.extensions.tocMenu.MyTOCMenu;
 import org.orbisgis.core.ui.plugins.editors.mapEditor.ClearMapSelectionPlugIn;
@@ -83,6 +86,7 @@ import org.orbisgis.core.ui.plugins.editors.mapEditor.ScalePlugIn;
 import org.orbisgis.core.ui.plugins.editors.mapEditor.ShowXYPlugIn;
 import org.orbisgis.core.ui.plugins.editors.mapEditor.UndoMapPlugIn;
 import org.orbisgis.core.ui.plugins.editors.mapEditor.ZoomToSelectedFeaturesPlugIn;
+import org.orbisgis.core.ui.plugins.editors.mapEditor.raster.RasterAlgebraPlugIn;
 import org.orbisgis.core.ui.plugins.editors.tableEditor.AddFieldPlugIn;
 import org.orbisgis.core.ui.plugins.editors.tableEditor.AddValuePlugIn;
 import org.orbisgis.core.ui.plugins.editors.tableEditor.ChangeFieldNamePlugIn;
@@ -109,7 +113,6 @@ import org.orbisgis.core.ui.plugins.status.FreeDefaultWorkspacePlugIn;
 import org.orbisgis.core.ui.plugins.status.WorkspaceNamePlugin;
 import org.orbisgis.core.ui.plugins.toc.CreateChoroplethPlugIn;
 import org.orbisgis.core.ui.plugins.toc.CreateGroupPlugIn;
-import org.orbisgis.core.ui.plugins.toc.EditLegendPlugIn;
 import org.orbisgis.core.ui.plugins.toc.EditRulePlugIn;
 import org.orbisgis.core.ui.plugins.toc.ExportFeatureTypeStylePlugIn;
 import org.orbisgis.core.ui.plugins.toc.GroupLayersPlugIn;
@@ -124,6 +127,9 @@ import org.orbisgis.core.ui.plugins.toc.SetInactivePlugIn;
 import org.orbisgis.core.ui.plugins.toc.ShowInTablePlugIn;
 import org.orbisgis.core.ui.plugins.toc.SwitchToDraftPlugIn;
 import org.orbisgis.core.ui.plugins.toc.ZoomToLayerPlugIn;
+import org.orbisgis.core.ui.plugins.toc.raster.nodata.SetnodataValuePlugIn;
+import org.orbisgis.core.ui.plugins.toc.raster.style.RasterDefaultStylePlugIn;
+import org.orbisgis.core.ui.plugins.toc.raster.threshold.RasterThresholdPlugIn;
 import org.orbisgis.core.ui.plugins.views.MapEditorPlugIn;
 import org.orbisgis.core.ui.plugins.views.MemoryViewPlugIn;
 import org.orbisgis.core.ui.plugins.views.TableEditorPlugIn;
@@ -156,7 +162,6 @@ public class OrbisConfiguration implements Setup {
 
 	// OrbisGIS main ToolBar & OrbisGIS main menu
 	private ExitPlugIn exitPlugIn = new ExitPlugIn();
-	private SavePlugIn savePlugIn = new SavePlugIn();
 	private SaveWorkspacePlugIn saveWorkspacePlugIn = new SaveWorkspacePlugIn();
 	private ConfigurationPlugIn configuration = new ConfigurationPlugIn();
 	private AboutOrbisGISPlugIn aboutOrbisGIS = new AboutOrbisGISPlugIn();
@@ -167,7 +172,7 @@ public class OrbisConfiguration implements Setup {
 	private WorkspaceNamePlugin workspaceNamePlugin = new WorkspaceNamePlugin();
 	private FreeDefaultWorkspacePlugIn freeDefaultWorkspacePlugIn = new FreeDefaultWorkspacePlugIn();
 	private ChangeWorkspacePlugIn changeWorkspacePlugIn = new ChangeWorkspacePlugIn();
-	
+
 	// TOC
 	//private EditLegendPlugIn editLegendPlugIn = new EditLegendPlugIn();
     private ImportFeatureTypeStylePlugIn importFTSPlugIn = new ImportFeatureTypeStylePlugIn();
@@ -175,6 +180,9 @@ public class OrbisConfiguration implements Setup {
     private CreateChoroplethPlugIn createChoroPlugIn = new CreateChoroplethPlugIn();
 	private EditRulePlugIn editRulePlugIn = new EditRulePlugIn();
     private SwitchToDraftPlugIn switchDraft = new SwitchToDraftPlugIn();
+	private RasterDefaultStylePlugIn rasterDefaultStylePlugIn = new RasterDefaultStylePlugIn();
+	private SetnodataValuePlugIn setnodataValuePlugIn = new SetnodataValuePlugIn();
+	private RasterThresholdPlugIn rasterThresholdPlugIn = new RasterThresholdPlugIn();
 	private ShowInTablePlugIn showInTablePlugIn = new ShowInTablePlugIn();
 	private SaveInFilePlugIn saveInFilePlugIn = new SaveInFilePlugIn();
 	private SaveInDataBasePlugIn saveInDataBasePlugIn = new SaveInDataBasePlugIn();
@@ -247,6 +255,7 @@ public class OrbisConfiguration implements Setup {
 	private RedoMapPlugIn redoMapPlugIn = new RedoMapPlugIn();
 	private DeleteMapSelectionPlugIn deleteMapSelectionPlugIn = new DeleteMapSelectionPlugIn();
 	private CreateSourceFromMapSelectionPlugIn createSourceFromMapSelectionPlugIn = new CreateSourceFromMapSelectionPlugIn();
+	private RasterAlgebraPlugIn rasterAlgebraPlugIn = new RasterAlgebraPlugIn();
 	// Tool bar on map
 	private ShowXYPlugIn showXYPlugIn = new ShowXYPlugIn();
 	// Scale panel plugin is a swing component to execute action on map editor
@@ -280,7 +289,7 @@ public class OrbisConfiguration implements Setup {
 		configureToolBar(plugInContext);
 		// load main frame with default tool selected (Zoom in tool)
 		OrbisGISFrame frame = workbenchContext.getWorkbench().getFrame();
-		add(defaultTool, "zoom_in.png", frame.getNavigationToolBar());
+		add(defaultTool, OrbisGISIcon.ZOOMIN, frame.getNavigationToolBar());
 		// load views (Geocognition, Toc, editors, Beanshell ....)
 		OrbisGISConfiguration.loadOrbisGISPlugIns(workbenchContext);
 		// Initialize buttons PlugIns in toolbar & Mains menu
@@ -304,6 +313,9 @@ public class OrbisConfiguration implements Setup {
 			createChoroPlugIn.initialize(context);
 			editRulePlugIn.initialize(context);
             switchDraft.initialize(context);
+			rasterDefaultStylePlugIn.initialize(context);
+			setnodataValuePlugIn.initialize(context);
+			rasterThresholdPlugIn.initialize(context);
 			showInTablePlugIn.initialize(context);
 			saveInFilePlugIn.initialize(context);
 			saveInDataBasePlugIn.initialize(context);
@@ -377,10 +389,6 @@ public class OrbisConfiguration implements Setup {
 		OrbisGISFrame frame = plugInContext.getWorkbenchContext()
 				.getWorkbench().getFrame();
 
-		// Main Toolbar & Main menu -> sont chargés par le PlugIn
-		// lib/ext/MainToolBarPlugIn.jar
-
-		savePlugIn.initialize(plugInContext);
 		// Main menus
 		saveWorkspacePlugIn.initialize(plugInContext);
 		configuration.initialize(plugInContext);
@@ -399,36 +407,48 @@ public class OrbisConfiguration implements Setup {
 		redoMapPlugIn.initialize(plugInContext);
 		deleteMapSelectionPlugIn.initialize(plugInContext);
 		createSourceFromMapSelectionPlugIn.initialize(plugInContext);
-		add(new ZoomOutTool(), "zoom_out.png", frame.getNavigationToolBar());
+		add(new ZoomOutTool(), OrbisGISIcon.ZOOMOUT, frame
+				.getNavigationToolBar());
 		// ZoomIn/ZoomOut
-		add(new PanTool(), "pan.png", frame.getNavigationToolBar());
+		add(new PanTool(), OrbisGISIcon.PAN, frame.getNavigationToolBar());
 		// Tools in Navigation toolbar
 		fullExtentPlugIn.initialize(plugInContext); // after Zoom out for group
 		// Tools in Info toolbar
-		add(new InfoTool(), "information.png", frame.getInfoToolBar());
-		add(new SelectionTool(), "select.png", frame.getInfoToolBar());
-		add(new FencePolygonTool(), "shape_polygon_edit.png", frame
+		add(new InfoTool(), OrbisGISIcon.INFO, frame.getInfoToolBar());
+		add(new RasterInfoTool(), OrbisGISIcon.RASTERINFO, frame
+				.getInfoToolBar());
+		add(new SelectionTool(), OrbisGISIcon.SELECT, frame.getInfoToolBar());
+		add(new FencePolygonTool(), OrbisGISIcon.FENCE, frame
 				.getDrawingToolBar());
-		add(new PickCoordinatesPointTool(), "coordinate_capture.png", frame
+		add(new PickCoordinatesPointTool(), OrbisGISIcon.PICKPOINT, frame
 				.getDrawingToolBar());
-		add(new MesurePolygonTool(), "mesurearea.png", frame.getMesureToolBar());
-		add(new MesureLineTool(), "mesurelength.png", frame.getMesureToolBar());
-		add(new CompassTool(), "angle.png", frame.getMesureToolBar());
+		add(new MesurePolygonTool(), OrbisGISIcon.MESUREAREA, frame
+				.getMesureToolBar());
+		add(new MesureLineTool(), OrbisGISIcon.MESURELINE, frame
+				.getMesureToolBar());
+		add(new CompassTool(), OrbisGISIcon.MESUREANGLE, frame
+				.getMesureToolBar());
 		// Tool in Edition Map Toolbar
-		add(new PolygonTool(), "polygon.png", frame.getEditionMapToolBar());
-		add(new EditionSelectionTool(), "select.png", frame
+		add(new PolygonTool(), OrbisGISIcon.POLYGON, frame
 				.getEditionMapToolBar());
-		add(new PointTool(), "point.png", frame.getEditionMapToolBar());
-		add(new MultipointTool(), "multipoint.png", frame
+		add(new EditionSelectionTool(), OrbisGISIcon.SELECT, frame
 				.getEditionMapToolBar());
-		add(new LineTool(), "line.png", frame.getEditionMapToolBar());
-		add(new MultilineTool(), "multiline.png", frame.getEditionMapToolBar());
-		add(new MultipolygonTool(), "multipolygon.png", frame
+		add(new PointTool(), OrbisGISIcon.POINT, frame.getEditionMapToolBar());
+		add(new MultipointTool(), OrbisGISIcon.MULTIPOINT, frame
 				.getEditionMapToolBar());
-		add(new VertexAditionTool(), "vertexadition.png", frame
+		add(new LineTool(), OrbisGISIcon.LINE, frame.getEditionMapToolBar());
+		add(new MultilineTool(), OrbisGISIcon.MULTILINE, frame
 				.getEditionMapToolBar());
-		add(new VertexDeletionTool(), "vertexdeletion.png", frame
+		add(new MultipolygonTool(), OrbisGISIcon.MULTIPOLYGON, frame
 				.getEditionMapToolBar());
+		add(new VertexAditionTool(), OrbisGISIcon.VERTEX_ADD, frame
+				.getEditionMapToolBar());
+		add(new VertexDeletionTool(), OrbisGISIcon.VERTEX_DELETE, frame
+				.getEditionMapToolBar());
+		// Raster toolbar
+		add(new WandTool(), OrbisGISIcon.WAND, frame.getRasterToolBar());
+		add(new WatershedTool(), OrbisGISIcon.WATERSHED, frame
+				.getRasterToolBar());
 
 		// Info Toolbar
 		clearTableSelectionPlugIn.initialize(plugInContext);
@@ -446,6 +466,9 @@ public class OrbisConfiguration implements Setup {
 		scalePlugIn.initialize(plugInContext);
 		showXYPlugIn.initialize(plugInContext);
 		// CRSPlugIn.initialize(plugInContext);
+
+		// Raster Tool bar
+		rasterAlgebraPlugIn.initialize(plugInContext);
 	}
 
 	private void configureToolBar(PlugInContext plugInContext) {
@@ -469,11 +492,14 @@ public class OrbisConfiguration implements Setup {
 		wbToolBar.add(wbSelection);
 
 		WorkbenchToolBar wbMesureArea = new WorkbenchToolBar(wbContext,
-				Names.TOOLBAR_MESURE, IconNames.MESURELINE_ICON, true);
+				Names.TOOLBAR_MESURE, OrbisGISIcon.MESURELINE, true);
 		wbToolBar.add(wbMesureArea);
 		WorkbenchToolBar wbDrawing = new WorkbenchToolBar(wbContext,
-				Names.TOOLBAR_DRAWING, IconNames.FENCE_ICON, true);
+				Names.TOOLBAR_DRAWING, OrbisGISIcon.FENCE, true);
 		wbToolBar.add(wbDrawing);
+		WorkbenchToolBar wbRasterToolBar = new WorkbenchToolBar(wbContext,
+				Names.TOOLBAR_RASTER, OrbisGISIcon.WAND, true);
+		wbToolBar.add(wbRasterToolBar);
 		WorkbenchToolBar wbEditionMap = new WorkbenchToolBar(wbContext,
 				Names.TOOLBAR_MAP);
 		wbToolBar.add(wbEditionMap);
@@ -525,7 +551,7 @@ public class OrbisConfiguration implements Setup {
 		menuBar.add(helpMenu);
 	}
 
-	private AbstractButton add(Automaton tool, String icon,
+	private AbstractButton add(Automaton tool, ImageIcon icon,
 			WorkbenchToolBar wbToolbar) {
 		return wbToolbar.addAutomaton(tool, icon);
 	}

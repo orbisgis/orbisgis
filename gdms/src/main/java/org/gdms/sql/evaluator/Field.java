@@ -40,15 +40,16 @@ import org.gdms.data.types.Type;
 import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
 import org.gdms.sql.strategies.IncompatibleTypesException;
+import org.gdms.sql.strategies.Operator;
 
 /**
  * Class that evaluates field references. Before evaluating an expression with
  * field references it is necessary to get all the instances of this class in
  * the expression tree and set the FieldContext and the field index in the
  * context
- *
+ * 
  * @author Fernando Gonzalez Cortes
- *
+ * 
  */
 public class Field extends Operand {
 
@@ -164,11 +165,16 @@ public class Field extends Operand {
 	/**
 	 * outerEvaluation means that this field is evaluated against the outer
 	 * datasource in the join nested loop
-	 *
+	 * 
 	 * @param inLoop
 	 */
 	public void setOuterEvaluation(boolean outerEvaluation) {
 		this.outerEvaluation = outerEvaluation;
+	}
+
+	@Override
+	public Operator[] getSubqueries() {
+		return new Operator[0];
 	}
 
 }

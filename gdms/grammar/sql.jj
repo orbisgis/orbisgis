@@ -1,11 +1,10 @@
 options {
-	STATIC = false ;
+STATIC = false;
 }
 PARSER_BEGIN(SQLEngine)
 package org.gdms.sql.parser;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-
 public class SQLEngine {
 	public static void main( String[] args )
 		throws ParseException, TokenMgrError, FileNotFoundException {
@@ -30,14 +29,13 @@ public class SQLEngine {
 	}
 }
 PARSER_END(SQLEngine)
-
 /***********************************************************************
  * Token definitions
  ***********************************************************************/
 
 SKIP:
 {
-    " "
+  " "
   | "\n"
   | "\r"
   | "\t"
@@ -46,7 +44,7 @@ SKIP:
 
 MORE:
 {
-  "--" : IN_LINE_COMMENT
+  "--":IN_LINE_COMMENT
   |
   "/*" : IN_MULTI_LINE_COMMENT
 }
@@ -58,13 +56,13 @@ SPECIAL_TOKEN :
 <IN_MULTI_LINE_COMMENT>
 SPECIAL_TOKEN :
 {
-  <MULTI_LINE_COMMENT: "*/" > : DEFAULT
+  <MULTI_LINE_COMMENT: "*/">:DEFAULT
 }
 
 <IN_LINE_COMMENT, IN_MULTILINE_COMMENT>
 MORE :
 {
-  < ~[] >
+  <~[]>
 }
 
 SKIP:
@@ -73,7 +71,7 @@ SKIP:
 }
 
 
-TOKEN :  /* Keywords */
+TOKEN :/*Keywords */
 {
     < ALL: "all" >
   | < AND: "and" >
@@ -136,8 +134,8 @@ TOKEN :  /* Keywords */
   |<NUMERIC:"numeric">
   |<INTERGER:"integer">
   |<RESTRICT : "restrict">
-  | <CASCADE : "cascade">
-  | <PURGE : "purge">
+  |<CASCADE : "cascade">
+  |<PURGE : "purge">
   
 
 }
@@ -191,6 +189,19 @@ TOKEN :  /* Separators and operators */
 }
 
 
+void SQLAlter() :
+{}
+{
+<ALTER> <TABLE>  SQLId()
+(SQLAdd()|SQLDropColumn()|SQLRename())
+
+}
+
+void SQLAdd():
+{}
+{
+<ADD> (SQLAddColumn()|SQLAddPrimaryKey())
+}
 
 void SQLAndExpr() :
 {}
@@ -229,14 +240,15 @@ void SQLCompareExpr() :
   )
 }
 
+
 void SQLCompareExprRight() :
 {}
 {
   (
     LOOKAHEAD(2) SQLLikeClause()
-  | LOOKAHEAD(2) SQLInClause()
+  | LOOKAHEAD(2)SQLInClause()
   | SQLLeftJoinClause()
-  | LOOKAHEAD(SQLCompareOp() SQLSumExpr() "(+)") SQLRightJoinClause()
+  | LOOKAHEAD(SQLCompareOp()SQLSumExpr()"(+)")SQLRightJoinClause()
   | SQLBetweenClause()
   | SQLCompareOp()
     SQLSumExpr()
@@ -278,20 +290,13 @@ void SQLDrop() :
   )
 }
 
-
-void SQLAlter() :
+void SQLExistsClause() :
 {}
 {
-<ALTER> <TABLE>  SQLId()
-(SQLAdd()|SQLDropColumn()|SQLRename())
-
+  <EXISTS>
+  "(" SQLSelect() ")"
 }
 
-void SQLAdd():
-{}
-{
-<ADD> (SQLAddColumn()|SQLAddPrimaryKey())
-}
 
 void SQLAddColumn() :
 {}
@@ -341,15 +346,6 @@ void SQLType() :
 }
 
 
-
-
-void SQLExistsClause() :
-{}
-{
-  <EXISTS>
-  "(" SQLSelect() ")"
-}
-
 void SQLFunction() :
 {}
 {
@@ -379,7 +375,6 @@ void SQLGroupBy() :
   [<HAVING> SQLOrExpr()]
 }
 
-
 void SQLGroupByList() :
 {}
 {
@@ -396,7 +391,7 @@ void SQLId() :
 void SQLIdSequence() :
 {}
 {
-	SQLId() (LOOKAHEAD(2) "," SQLId())*
+	SQLId() ("," SQLId())*
 }
 
 void SQLInClause() :
@@ -405,7 +400,7 @@ void SQLInClause() :
   [ <NOT> ]
   <IN>
   "("
-  SQLValueList()
+  ( SQLValueList() | SQLSelect()) 
   ")"
 }
 
@@ -455,7 +450,7 @@ void SQLLiteral() :
 {
 }
 {
-  ( <STRING_LITERAL>
+  (<STRING_LITERAL>
   | <INTEGER_LITERAL>
   | <FLOATING_POINT_LITERAL>
   | <BOOLEAN_LITERAL>
@@ -476,8 +471,6 @@ void SQLOrderBy() :
   <ORDER> <BY>
   SQLOrderByList()
 }
-
-
 
 
 void SQLOrderByElem() :
@@ -521,7 +514,7 @@ void SQLPattern() :
 {
 }
 {
-  ( <STRING_LITERAL>
+  (<STRING_LITERAL>
   | SQLColRef()
   )
 }
@@ -694,7 +687,7 @@ void SQLTerm() :
 {
   (
     "("
-    SQLOrExpr()
+    (SQLSelect()|SQLOrExpr())
     ")"
   | LOOKAHEAD(2) SQLFunction()
   | SQLColRef()
@@ -757,8 +750,7 @@ void SQLLValueElement() :
 {}
 {
   ( <NULL>
-  | SQLSumExpr()
-  | SQLSelect())
+  | SQLSumExpr())
 }
 
 void SQLValueList() :

@@ -1,6 +1,5 @@
 package org.orbisgis.core.ui.plugins.toc;
 
-import javax.swing.JOptionPane;
 
 import org.gdms.data.types.Constraint;
 import org.gdms.data.types.GeometryConstraint;
@@ -8,11 +7,10 @@ import org.gdms.data.types.Type;
 import org.gdms.driver.DriverException;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.images.IconNames;
+import org.orbisgis.core.images.OrbisGISIcon;
 import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.layerModel.MapContext;
 
-import org.orbisgis.core.renderer.se.FeatureTypeStyle;
-import org.orbisgis.core.sif.OpenFilePanel;
 import org.orbisgis.core.sif.SaveFilePanel;
 import org.orbisgis.core.sif.UIFactory;
 
@@ -48,7 +46,7 @@ public class ExportFeatureTypeStylePlugIn extends AbstractPlugIn {
 		context.getFeatureInstaller().addPopupMenuItem(frame, this,
 				new String[] { Names.POPUP_TOC_FEATURETYPESTYLE_EXPORT },
 				Names.POPUP_TOC_LEGEND_GROUP, false,
-				getIcon(IconNames.POPUP_TOC_LEGEND_ICON), wbContext);
+				OrbisGISIcon.EDIT_LEGEND, wbContext);
 	}
 
 	public void execute(MapContext mapContext, ILayer layer) {

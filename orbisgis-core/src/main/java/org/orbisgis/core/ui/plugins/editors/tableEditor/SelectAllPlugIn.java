@@ -5,9 +5,9 @@
  * distributed under GPL 3 license. It is produced by the "Atelier SIG" team of
  * the IRSTV Institute <http://www.irstv.cnrs.fr/> CNRS FR 2488.
  *
- * 
+ *
  *  Team leader Erwan BOCHER, scientific researcher,
- * 
+ *
  *  User support leader : Gwendall Petit, geomatic engineer.
  *
  *
@@ -41,7 +41,7 @@ package org.orbisgis.core.ui.plugins.editors.tableEditor;
 import org.gdms.driver.DriverException;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.errorManager.ErrorManager;
-import org.orbisgis.core.images.IconNames;
+import org.orbisgis.core.images.OrbisGISIcon;
 import org.orbisgis.core.ui.editor.IEditor;
 import org.orbisgis.core.ui.editors.table.TableEditableElement;
 import org.orbisgis.core.ui.pluginSystem.AbstractPlugIn;
@@ -50,7 +50,7 @@ import org.orbisgis.core.ui.pluginSystem.workbench.Names;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchContext;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchFrame;
 
-public class SelectAllPlugIn extends AbstractPlugIn {	
+public class SelectAllPlugIn extends AbstractPlugIn {
 
 	public boolean execute(PlugInContext context) throws Exception {
 		IEditor editor = context.getActiveEditor();
@@ -71,23 +71,23 @@ public class SelectAllPlugIn extends AbstractPlugIn {
 		WorkbenchFrame frame = (WorkbenchFrame) wbContext.getWorkbench()
 				.getFrame().getTableEditor();
 		context.getFeatureInstaller().addPopupMenuItem(frame, this,
-				new String[] { Names.POPUP_TABLE_ALL_PATH1 },
+				new String[] { Names.POPUP_TABLE_SELECT_ALLROW },
 				Names.POPUP_TABLE_ALL_GROUP, false,
-				getIcon(IconNames.POPUP_TABLE_ALL_ICON), wbContext);
+				OrbisGISIcon.TABLE_SELECT_ALL_ROW, wbContext);
 	}
 
 	public boolean isEnabled() {
 		boolean isEnabled = false;
 		IEditor editor = null;
-		if((editor=getPlugInContext().getTableEditor()) != null
-				&& getSelectedColumn() ==-1){
-			
+		if ((editor = getPlugInContext().getTableEditor()) != null
+				&& getSelectedColumn() == -1) {
 
 			final TableEditableElement element = (TableEditableElement) editor
 					.getElement();
 			try {
 				isEnabled = element.getDataSource().getRowCount() != element
 						.getSelection().getSelectedRows().length;
+
 			} catch (DriverException e) {
 				Services.getService(ErrorManager.class).error(
 						"Cannot read source", e);

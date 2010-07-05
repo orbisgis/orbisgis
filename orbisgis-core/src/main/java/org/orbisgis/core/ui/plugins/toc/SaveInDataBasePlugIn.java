@@ -58,7 +58,7 @@ public class SaveInDataBasePlugIn extends AbstractPlugIn {
 	public boolean execute(PlugInContext context) {
 		MapContext mapContext = getPlugInContext().getMapContext();
 		ILayer[] selectedResources = mapContext.getSelectedLayers();
-		
+
 		for (ILayer resource : selectedResources) {
 			final ConnectionPanel firstPanel = new ConnectionPanel();
 			final SchemaSelectionPanel schemaSelectionPanel = new SchemaSelectionPanel(
@@ -69,12 +69,14 @@ public class SaveInDataBasePlugIn extends AbstractPlugIn {
 				DataManager dm = Services.getService(DataManager.class);
 				String layerName = schemaSelectionPanel.getSourceName();
 				String schemaName = schemaSelectionPanel.getSelectedSchema();
-				BackgroundManager bm = Services.getService(BackgroundManager.class);
-				bm.backgroundOperation(new ExportInDatabaseOperation(dm.getDataSourceFactory(),
-						resource.getName(), layerName, schemaName, firstPanel
-								.getDBSource(), firstPanel.getDBDriver()));
+				BackgroundManager bm = Services
+						.getService(BackgroundManager.class);
+				bm.backgroundOperation(new ExportInDatabaseOperation(dm
+						.getDataSourceFactory(), resource.getName(), layerName,
+						schemaName, firstPanel.getDBSource(), firstPanel
+								.getDBDriver()));
 			}
-		}		
+		}
 		return true;
 	}
 
@@ -84,17 +86,14 @@ public class SaveInDataBasePlugIn extends AbstractPlugIn {
 		context.getFeatureInstaller().addPopupMenuItem(
 				frame,
 				this,
-				new String[] { Names.POPUP_TOC_EXPORT_PATH1,
-						Names.TOC_EXPORT_SAVEIN_DB},
+				new String[] { Names.POPUP_TOC_EXPORT_SAVE,
+						Names.TOC_EXPORT_SAVEIN_DB },
 				Names.POPUP_TOC_EXPORT_GROUP, false, null, wbContext);
 	}
 
-
-
 	public boolean isEnabled() {
 		return getPlugInContext().checkLayerAvailability(
-				new SelectionAvailability[] {SelectionAvailability.EQUAL},
-				1,
-				new LayerAvailability[] {LayerAvailability.VECTORIAL});
+				new SelectionAvailability[] { SelectionAvailability.EQUAL }, 1,
+				new LayerAvailability[] { LayerAvailability.VECTORIAL });
 	}
 }

@@ -5,9 +5,9 @@
  * distributed under GPL 3 license. It is produced by the "Atelier SIG" team of
  * the IRSTV Institute <http://www.irstv.cnrs.fr/> CNRS FR 2488.
  *
- * 
+ *
  *  Team leader Erwan BOCHER, scientific researcher,
- * 
+ *
  *  User support leader : Gwendall Petit, geomatic engineer.
  *
  *
@@ -43,7 +43,7 @@ import javax.swing.JOptionPane;
 import org.gdms.data.NonEditableDataSourceException;
 import org.gdms.driver.DriverException;
 import org.orbisgis.core.Services;
-import org.orbisgis.core.images.IconNames;
+import org.orbisgis.core.images.OrbisGISIcon;
 import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.layerModel.MapContext;
 import org.orbisgis.core.ui.pluginSystem.AbstractPlugIn;
@@ -76,7 +76,7 @@ public class SetInactivePlugIn extends AbstractPlugIn {
 		context.getFeatureInstaller().addPopupMenuItem(frame, this,
 				new String[] { Names.POPUP_TOC_INACTIVE_PATH1 },
 				Names.POPUP_TOC_INACTIVE_GROUP, false,
-				getIcon(IconNames.POPUP_TOC_INACTIVE_ICON), wbContext);
+				OrbisGISIcon.LAYER_STOPEDITION, wbContext);
 	}
 
 	public void execute(MapContext mapContext, ILayer layer) {

@@ -212,6 +212,10 @@ public class GrammarTest extends TestCase {
 	public void testUpdateWithExpression() throws Exception {
 		parse("update table_name set field = 3 * abs(field);");
 	}
+	
+	public void testUpdateWhereSelect() throws Exception {
+		parse("update table_name set field = 3 where a = (select * from toto);");
+	}
 
 	public void testCaseInsensitiveKeywords() throws Exception {
 		parse("seLect * frOm a;");

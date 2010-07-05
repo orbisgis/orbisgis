@@ -1,9 +1,9 @@
-
 package org.orbisgis.core.ui.editors.map.tools.generated;
 
 import java.awt.Graphics;
-import java.net.URL;
 import java.util.ArrayList;
+
+import javax.swing.ImageIcon;
 
 import org.apache.log4j.Logger;
 import org.orbisgis.core.layerModel.MapContext;
@@ -26,79 +26,78 @@ public abstract class Compass implements Automaton {
 
 	public String[] getTransitionLabels() {
 		ArrayList<String> ret = new ArrayList<String>();
-		
+
 		if ("Standby".equals(status)) {
-			
+
 		}
-		
+
 		if ("OnePoint".equals(status)) {
-			
+
 		}
-		
+
 		if ("TwoPoints".equals(status)) {
-			
+
 		}
-		
+
 		if ("ThreePoints".equals(status)) {
-			
+
 		}
-		
+
 		if ("Cancel".equals(status)) {
-			
+
 		}
-		
-			ret.add(Messages.getString("cancel"));
-			
+
+		ret.add(Messages.getString("cancel"));
 
 		return ret.toArray(new String[0]);
 	}
 
 	public String[] getTransitionCodes() {
 		ArrayList<String> ret = new ArrayList<String>();
-		
+
 		if ("Standby".equals(status)) {
-			
+
 		}
-		
+
 		if ("OnePoint".equals(status)) {
-			
+
 		}
-		
+
 		if ("TwoPoints".equals(status)) {
-			
+
 		}
-		
+
 		if ("ThreePoints".equals(status)) {
-			
+
 		}
-		
+
 		if ("Cancel".equals(status)) {
-			
+
 		}
-		
-			ret.add("esc");
-			
+
+		ret.add("esc");
 
 		return ret.toArray(new String[0]);
 	}
 
-	public void init(MapContext mc, ToolManager tm) throws TransitionException, FinishedAutomatonException {
+	public void init(MapContext mc, ToolManager tm) throws TransitionException,
+			FinishedAutomatonException {
 		logger.info("status: " + status);
 		this.mc = mc;
 		this.tm = tm;
 		status = "Standby";
 		transitionTo_Standby(mc, tm);
-		if (isFinished(status)){
+		if (isFinished(status)) {
 			throw new FinishedAutomatonException();
 		}
 	}
 
-	public void transition(String code) throws NoSuchTransitionException, TransitionException, FinishedAutomatonException {
+	public void transition(String code) throws NoSuchTransitionException,
+			TransitionException, FinishedAutomatonException {
 		logger.info("transition code: " + code);
 
-		
 		if ("Standby".equals(status)) {
-			
+
 			if ("press".equals(code)) {
 				String preStatus = status;
 				try {
@@ -109,7 +108,7 @@ public abstract class Compass implements Automaton {
 						logger.info("value: " + v[i]);
 					}
 					transitionTo_OnePoint(mc, tm);
-					if (isFinished(status)){
+					if (isFinished(status)) {
 						throw new FinishedAutomatonException();
 					}
 					return;
@@ -118,11 +117,11 @@ public abstract class Compass implements Automaton {
 					throw e;
 				}
 			}
-			
+
 		}
-		
+
 		if ("OnePoint".equals(status)) {
-			
+
 			if ("press".equals(code)) {
 				String preStatus = status;
 				try {
@@ -133,7 +132,7 @@ public abstract class Compass implements Automaton {
 						logger.info("value: " + v[i]);
 					}
 					transitionTo_TwoPoints(mc, tm);
-					if (isFinished(status)){
+					if (isFinished(status)) {
 						throw new FinishedAutomatonException();
 					}
 					return;
@@ -142,11 +141,11 @@ public abstract class Compass implements Automaton {
 					throw e;
 				}
 			}
-			
+
 		}
-		
+
 		if ("TwoPoints".equals(status)) {
-			
+
 			if ("press".equals(code)) {
 				String preStatus = status;
 				try {
@@ -157,7 +156,7 @@ public abstract class Compass implements Automaton {
 						logger.info("value: " + v[i]);
 					}
 					transitionTo_ThreePoints(mc, tm);
-					if (isFinished(status)){
+					if (isFinished(status)) {
 						throw new FinishedAutomatonException();
 					}
 					return;
@@ -166,11 +165,11 @@ public abstract class Compass implements Automaton {
 					throw e;
 				}
 			}
-			
+
 		}
-		
+
 		if ("ThreePoints".equals(status)) {
-			
+
 			if ("press".equals(code)) {
 				String preStatus = status;
 				try {
@@ -181,7 +180,7 @@ public abstract class Compass implements Automaton {
 						logger.info("value: " + v[i]);
 					}
 					transitionTo_ThreePoints(mc, tm);
-					if (isFinished(status)){
+					if (isFinished(status)) {
 						throw new FinishedAutomatonException();
 					}
 					return;
@@ -190,104 +189,113 @@ public abstract class Compass implements Automaton {
 					throw e;
 				}
 			}
-			
+
 		}
-		
+
 		if ("Cancel".equals(status)) {
-			
+
 		}
-		
+
 		if ("esc".equals(code)) {
 			status = "Cancel";
 			transitionTo_Cancel(mc, tm);
-			if (isFinished(status)){
+			if (isFinished(status)) {
 				throw new FinishedAutomatonException();
 			}
 			return;
 		}
-		
 
 		throw new NoSuchTransitionException(code);
 	}
 
 	public boolean isFinished(String status) {
 
-		
 		if ("Standby".equals(status)) {
-			
-				return false;
-			
+
+			return false;
+
 		}
-		
+
 		if ("OnePoint".equals(status)) {
-			
-				return false;
-			
+
+			return false;
+
 		}
-		
+
 		if ("TwoPoints".equals(status)) {
-			
-				return false;
-			
+
+			return false;
+
 		}
-		
+
 		if ("ThreePoints".equals(status)) {
-			
-				return false;
-			
+
+			return false;
+
 		}
-		
+
 		if ("Cancel".equals(status)) {
-			
-				return true;
-			
+
+			return true;
+
 		}
-		
 
 		throw new RuntimeException("Invalid status: " + status);
 	}
 
-
 	public void draw(Graphics g) throws DrawingException {
-		
+
 		if ("Standby".equals(status)) {
 			drawIn_Standby(g, mc, tm);
 		}
-		
+
 		if ("OnePoint".equals(status)) {
 			drawIn_OnePoint(g, mc, tm);
 		}
-		
+
 		if ("TwoPoints".equals(status)) {
 			drawIn_TwoPoints(g, mc, tm);
 		}
-		
+
 		if ("ThreePoints".equals(status)) {
 			drawIn_ThreePoints(g, mc, tm);
 		}
-		
+
 		if ("Cancel".equals(status)) {
 			drawIn_Cancel(g, mc, tm);
 		}
-		
+
 	}
 
-	
-	public abstract void transitionTo_Standby(MapContext mc, ToolManager tm) throws FinishedAutomatonException, TransitionException;
-	public abstract void drawIn_Standby(Graphics g, MapContext mc, ToolManager tm) throws DrawingException;
-	
-	public abstract void transitionTo_OnePoint(MapContext mc, ToolManager tm) throws FinishedAutomatonException, TransitionException;
-	public abstract void drawIn_OnePoint(Graphics g, MapContext mc, ToolManager tm) throws DrawingException;
-	
-	public abstract void transitionTo_TwoPoints(MapContext mc, ToolManager tm) throws FinishedAutomatonException, TransitionException;
-	public abstract void drawIn_TwoPoints(Graphics g, MapContext mc, ToolManager tm) throws DrawingException;
-	
-	public abstract void transitionTo_ThreePoints(MapContext mc, ToolManager tm) throws FinishedAutomatonException, TransitionException;
-	public abstract void drawIn_ThreePoints(Graphics g, MapContext mc, ToolManager tm) throws DrawingException;
-	
-	public abstract void transitionTo_Cancel(MapContext mc, ToolManager tm) throws FinishedAutomatonException, TransitionException;
-	public abstract void drawIn_Cancel(Graphics g, MapContext mc, ToolManager tm) throws DrawingException;
-	
+	public abstract void transitionTo_Standby(MapContext mc, ToolManager tm)
+			throws FinishedAutomatonException, TransitionException;
+
+	public abstract void drawIn_Standby(Graphics g, MapContext mc,
+			ToolManager tm) throws DrawingException;
+
+	public abstract void transitionTo_OnePoint(MapContext mc, ToolManager tm)
+			throws FinishedAutomatonException, TransitionException;
+
+	public abstract void drawIn_OnePoint(Graphics g, MapContext mc,
+			ToolManager tm) throws DrawingException;
+
+	public abstract void transitionTo_TwoPoints(MapContext mc, ToolManager tm)
+			throws FinishedAutomatonException, TransitionException;
+
+	public abstract void drawIn_TwoPoints(Graphics g, MapContext mc,
+			ToolManager tm) throws DrawingException;
+
+	public abstract void transitionTo_ThreePoints(MapContext mc, ToolManager tm)
+			throws FinishedAutomatonException, TransitionException;
+
+	public abstract void drawIn_ThreePoints(Graphics g, MapContext mc,
+			ToolManager tm) throws DrawingException;
+
+	public abstract void transitionTo_Cancel(MapContext mc, ToolManager tm)
+			throws FinishedAutomatonException, TransitionException;
+
+	public abstract void drawIn_Cancel(Graphics g, MapContext mc, ToolManager tm)
+			throws DrawingException;
 
 	protected void setStatus(String status) throws NoSuchTransitionException {
 		this.status = status;
@@ -302,27 +310,26 @@ public abstract class Compass implements Automaton {
 	}
 
 	public String getMessage() {
-		
+
 		if ("Standby".equals(status)) {
 			return Messages.getString("");
 		}
-		
+
 		if ("OnePoint".equals(status)) {
 			return Messages.getString("");
 		}
-		
+
 		if ("TwoPoints".equals(status)) {
 			return Messages.getString("");
 		}
-		
+
 		if ("ThreePoints".equals(status)) {
 			return Messages.getString("");
 		}
-		
+
 		if ("Cancel".equals(status)) {
 			return Messages.getString("");
 		}
-		
 
 		throw new RuntimeException();
 	}
@@ -335,48 +342,50 @@ public abstract class Compass implements Automaton {
 		return Messages.getString("compass_tooltip");
 	}
 
-	private String mouseCursor;
+	private ImageIcon mouseCursor;
 
-	public URL getMouseCursorURL() {
+	public ImageIcon getImageIcon() {
 		if (mouseCursor != null) {
-			return this.getClass().getResource(mouseCursor);
+			return mouseCursor;
 		} else {
 			return null;
 		}
 	}
 
-	public void setMouseCursor(String mouseCursor) {
+	public void setMouseCursor(ImageIcon mouseCursor) {
 		this.mouseCursor = mouseCursor;
 	}
 
-	public void toolFinished(MapContext mc, ToolManager tm) throws NoSuchTransitionException, TransitionException, FinishedAutomatonException {
-		
+	public void toolFinished(MapContext mc, ToolManager tm)
+			throws NoSuchTransitionException, TransitionException,
+			FinishedAutomatonException {
+
 		if ("Standby".equals(status)) {
-			
+
 		}
-		
+
 		if ("OnePoint".equals(status)) {
-			
+
 		}
-		
+
 		if ("TwoPoints".equals(status)) {
-			
+
 		}
-		
+
 		if ("ThreePoints".equals(status)) {
-			
+
 		}
-		
+
 		if ("Cancel".equals(status)) {
-			
+
 		}
-		
+
 	}
 
 	public java.awt.Point getHotSpotOffset() {
-		
+
 		return new java.awt.Point(8, 8);
-		
+
 	}
 
 }

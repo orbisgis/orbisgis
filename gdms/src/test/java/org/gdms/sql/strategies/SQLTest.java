@@ -46,7 +46,6 @@ import org.gdms.SourceTest;
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.DigestUtilities;
-import org.gdms.data.ExecutionException;
 import org.gdms.data.SpatialDataSourceDecorator;
 import org.gdms.data.metadata.DefaultMetadata;
 import org.gdms.data.types.Constraint;
@@ -58,7 +57,6 @@ import org.gdms.data.values.ValueFactory;
 import org.gdms.data.values.ValueWriter;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.generic.GenericObjectDriver;
-import org.gdms.sql.parser.ParseException;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.io.WKTReader;
@@ -115,57 +113,62 @@ public class SQLTest extends SourceTest {
 	}
 
 	public void testCreateAsTableCustomQuery() throws Exception {
-		dsf.getSourceManager().register("landcover2000",
-				new File(internalData + "landcover2000.shp"));
 		dsf.executeSQL("select register('/tmp/test.gdms','custom')");
-		dsf
-				.executeSQL("create table custom as select sto_explode() from landcover2000 where gid > 12");
+		dsf.executeSQL("create table custom as select st_explode() from "
+				+ super.getSHPTABLE() + " where gid > 12");
 
 	}
 
 	public void testCaseInsensitiveness() throws Exception {
 		String name = super.getAnySpatialResource();
-		dsf.executeSQL("seLECt BuffER(" + super.getSpatialFieldName(name)
+		dsf.executeSQL("seLECt st_BuffER(" + super.getSpatialFieldName(name)
 				+ ", 20) From " + name);
 		dsf.executeSQL("selecT REGisteR('memory')");
 	}
 
 	public void testDropColumn() throws Exception {
-		dsf.getSourceManager().register("landcover2000",
-				new File(internalData + "landcover2000.shp"));
 		dsf.executeSQL("select register('" + backupDir
 				+ "/addColumn.shp','temp')");
-		dsf.executeSQL("create table temp as select * from landcover2000;");
+		dsf.executeSQL("create table temp as select * from "
+				+ super.getSHPTABLE());
 		dsf.executeSQL("alter table temp drop column type;");
 
 	}
-	
+
 	public void testDeleteTable() throws Exception {
-		dsf.getSourceManager().register("landcover2000",
-				new File(internalData + "landcover2000.shp"));
 		dsf.getSourceManager().register("temp",
 				new File(backupDir + "/delete.shp"));
-		dsf.executeSQL("create table temp as select * from landcover2000;");
+		dsf.executeSQL("create table temp as select * from "
+				+ super.getSHPTABLE());
 		dsf.executeSQL("delete from temp where gid = 1;");
+	}
+	
+	public void testDeleteExistsTable() throws Exception {
+		dsf.getSourceManager().register("temp",
+				new File(backupDir + "/delete.shp"));
+		dsf.executeSQL("create table temp as select * from "
+				+ super.getSHPTABLE());		
+		dsf.executeSQL("create table centroid as select gid, st_centroid(the_geom) as the_geom from "
+				+ super.getSHPTABLE());		
+		dsf.executeSQL("delete from temp where exists (select a.gid from centroid a, temp b where st_intersects(a.the_geom, b.the_geom));");
 	}
 
 	public void testDropTablePurge() throws Exception {
-		dsf.getSourceManager().register("landcover2000",
-				new File(internalData + "landcover2000.shp"));
 		dsf.getSourceManager().register("temp",
 				new File(backupDir + "/todrop.shp"));
-		dsf.executeSQL("create table temp as select * from landcover2000;");
+		dsf.executeSQL("create table temp as select * from "
+				+ super.getSHPTABLE());
 		dsf.executeSQL("drop table temp purge;");
-		dsf.executeSQL("create table tatoche as select * from landcover2000;");
+		dsf.executeSQL("create table tatoche as select * from "
+				+ super.getSHPTABLE());
 		dsf.executeSQL("drop table tatoche purge;");
-		dsf.executeSQL("create view diwall as select * from landcover2000;");
+		dsf.executeSQL("create view diwall as select * from "
+				+ super.getSHPTABLE());
 		dsf.executeSQL("drop table diwall purge;");
 	}
 
 	public void testDropTable() throws Exception {
-		dsf.getSourceManager().register("landcover2000",
-				new File(internalData + "landcover2000.shp"));
-		dsf.executeSQL("drop table landcover2000;");
+		dsf.executeSQL("drop table " + super.getSHPTABLE());
 	}
 
 	public void testDropTableIfExists() throws Exception {
@@ -189,63 +192,46 @@ public class SQLTest extends SourceTest {
 	}
 
 	public void testRenameColumn() throws Exception {
-		dsf.getSourceManager().register("landcover2000",
-				new File(internalData + "landcover2000.shp"));
 		dsf.executeSQL("select register('" + backupDir
 				+ "/addColumn.shp','temp')");
-		dsf.executeSQL("create table temp as select *  from landcover2000");
+		dsf.executeSQL("create table temp as select *  from "
+				+ super.getSHPTABLE());
 		dsf.executeSQL("alter table temp rename column type to erwan");
 
 	}
 
 	public void testRenameColumnExists() throws Exception {
-		dsf.getSourceManager().register("landcover2000",
-				new File(internalData + "landcover2000.shp"));
 		dsf.executeSQL("select register('" + backupDir
 				+ "/addColumn.shp','temp')");
-		dsf.executeSQL("create table temp as select *  from landcover2000");
+		dsf.executeSQL("create table temp as select *  from "
+				+ super.getSHPTABLE());
 		dsf.executeSQL("alter table temp rename column type to type");
 
 	}
 
 	public void testAddColumn() throws Exception {
-		dsf.getSourceManager().register("landcover2000",
-				new File(internalData + "landcover2000.shp"));
 		dsf.executeSQL("select register('" + backupDir
 				+ "/addColumn.shp','temp')");
-		dsf.executeSQL("create table temp as select *  from landcover2000");
+		dsf.executeSQL("create table temp as select *  from "
+				+ super.getSHPTABLE());
 		dsf.executeSQL("alter table temp add column gwen text");
 
 	}
 
-	public void testAddDuplicateColumn() {
-		dsf.getSourceManager().register("landcover2000",
-				new File(internalData + "landcover2000.shp"));
-		try {
-			dsf.executeSQL("select register('" + backupDir
-					+ "/addColumn.shp','temp')");
-			dsf.executeSQL("alter table temp add column gwen text");
-			dsf.executeSQL("alter table temp add column gwen text");
+	public void testAddDuplicateColumn() throws Exception {
 
-		} catch (ParseException e) {
-			e.printStackTrace();
-		} catch (SemanticException e) {
-			e.printStackTrace();
-		} catch (DriverException e) {
-			e.printStackTrace();
-			assertTrue(true);
-		} catch (ExecutionException e) {
-			e.printStackTrace();
-		}
-
+		dsf.executeSQL("select register('" + backupDir
+				+ "/addColumn.shp','temp')");
+		dsf.executeSQL("create table temp as select * from "
+				+ super.getSHPTABLE());
+		dsf.executeSQL("alter table temp add column gwen text");
+		dsf.executeSQL("alter table temp add column gwen text");
 	}
 
 	public void testExcept() throws Exception {
-		dsf.getSourceManager().register("landcover2000",
-				new File(internalData + "landcover2000.shp"));
 		dsf.executeSQL("select register('/tmp/test.csv','temp')");
-		dsf
-				.executeSQL("create table temp as select *{except type}  from landcover2000");
+		dsf.executeSQL("create table temp as select *{except type}  from "
+				+ super.getSHPTABLE());
 		DataSource dsOut = dsf.getDataSource("temp");
 		dsOut.open();
 		assertTrue(dsOut.getFieldIndexByName("type") == -1);
@@ -266,12 +252,10 @@ public class SQLTest extends SourceTest {
 	}
 
 	public void testExceptAlias() throws Exception {
-		dsf.getSourceManager().register("landcover2000",
-				new File(internalData + "landcover2000.shp"));
-
 		dsf.executeSQL("select register('/tmp/test.csv','temp')");
 		dsf
-				.executeSQL("create table temp as select a.*{except the_geom}  from landcover2000 a");
+				.executeSQL("create table temp as select a.*{except the_geom}  from "
+						+ super.getSHPTABLE() + "  a");
 		DataSource dsOut = dsf.getDataSource("temp");
 
 		dsOut.open();
@@ -398,12 +382,8 @@ public class SQLTest extends SourceTest {
 	}
 
 	public void testOrderByFunction() throws Exception {
-		String name = "landcover2000";
-
-		dsf.getSourceManager().register("landcover2000",
-				new File(internalData + "landcover2000.shp"));
 		DataSource resultDataSource = dsf.getDataSourceFromSQL("select * from "
-				+ name + " order by ST_Area(the_geom);");
+				+ super.getSHPTABLE() + " order by ST_Area(the_geom);");
 		resultDataSource.open();
 		assertTrue(resultDataSource.getRowCount() > 0);
 		resultDataSource.close();
@@ -704,9 +684,8 @@ public class SQLTest extends SourceTest {
 
 	public void testSelectWhere() throws Exception {
 
-		dsf.getSourceManager().register("landcover2000",
-				new File(internalData + "landcover2000.shp"));
-		String query = "SELECT * FROM landcover2000 where runoff_win = 0.05";
+		String query = "SELECT * FROM " + super.getSHPTABLE()
+				+ " where runoff_win = 0.05";
 		DataSource ds = dsf.getDataSourceFromSQL(query);
 		ds.open();
 		assertTrue(ds.getRowCount() > 0);
@@ -716,7 +695,7 @@ public class SQLTest extends SourceTest {
 
 	}
 
-	public void testExists() throws Exception {
+	public void testWhereExists() throws Exception {
 
 		String data = super.getAnySpatialResource();
 
@@ -757,12 +736,13 @@ public class SQLTest extends SourceTest {
 	}
 
 	public void testCreateAsSelect() throws Exception {
-		String source = super.getAnySpatialResource();
+
 		dsf.executeSQL("select register ('" + backupDir + "/"
 				+ "testCreate.shp', 'newShape') ");
-		dsf.executeSQL("create table newShape as select * from " + source);
+		dsf.executeSQL("create table newShape as select * from "
+				+ super.getSHPTABLE());
 		DataSource newDs = dsf.getDataSource("newShape");
-		DataSource sourceDs = dsf.getDataSource(source);
+		DataSource sourceDs = dsf.getDataSource(super.getSHPTABLE());
 		newDs.open();
 		sourceDs.open();
 		byte[] d1 = DigestUtilities.getDigest(newDs);
@@ -773,13 +753,12 @@ public class SQLTest extends SourceTest {
 	}
 
 	public void testCreateAsUnion() throws Exception {
-		String source = super.getAnySpatialResource();
 		dsf.executeSQL("select register ('" + backupDir + "/"
 				+ "testCreate.shp', 'newShape') ");
-		dsf.executeSQL("create table newShape as " + source + " union "
-				+ source);
+		dsf.executeSQL("create table newShape as " + super.getSHPTABLE()
+				+ " union " + super.getSHPTABLE());
 		DataSource newDs = dsf.getDataSource("newShape");
-		DataSource sourceDs = dsf.getDataSource(source);
+		DataSource sourceDs = dsf.getDataSource(super.getSHPTABLE());
 		newDs.open();
 		sourceDs.open();
 		assertTrue(newDs.getRowCount() / 2.0 == sourceDs.getRowCount());
@@ -809,7 +788,7 @@ public class SQLTest extends SourceTest {
 	public void testAliasInFunction() throws Exception {
 		String dsName = super.getAnySpatialResource();
 		String alias = "myalias";
-		DataSource ds = dsf.getDataSourceFromSQL("select Buffer("
+		DataSource ds = dsf.getDataSourceFromSQL("select st_Buffer("
 				+ super.getSpatialFieldName(dsName) + ", 20) as " + alias
 				+ " from " + dsName);
 		ds.open();
@@ -1093,6 +1072,35 @@ public class SQLTest extends SourceTest {
 		assertTrue(ds.getMetadata().getFieldCount() == 1);
 		ds.close();
 	}
+	
+	public void testInSelect() throws Exception {
+		Type intType = TypeFactory.createType(Type.INT);
+		Type stringType = TypeFactory.createType(Type.STRING);
+		GenericObjectDriver dict = new GenericObjectDriver(new String[] { "code",
+				"text" }, new Type[] { intType, stringType });
+		dict.addValues(ValueFactory.createValue(0), ValueFactory
+				.createValue("good"));
+		dict.addValues(ValueFactory.createValue(1), ValueFactory
+				.createValue("bad"));
+		GenericObjectDriver thetable = new GenericObjectDriver(
+				new String[] { "dict_code" }, new Type[] { intType });
+		thetable.addValues(ValueFactory.createValue(0));
+		thetable.addValues(ValueFactory.createValue(1));
+		thetable.addValues(ValueFactory.createValue(0));
+		thetable.addValues(ValueFactory.createValue(1));
+		thetable.addValues(ValueFactory.createValue(1));
+		thetable.addValues(ValueFactory.createValue(0));
+		dsf.getSourceManager().register("dict", dict);
+		dsf.getSourceManager().register("thetable", thetable);
+		DataSource ds = dsf.getDataSourceFromSQL(
+				"select * from thetable " + "where dict_code in "
+						+ "(select code from dict where text = 'good');");
+		ds.open();
+		for (int i = 0; i < ds.getRowCount(); i++) {
+			assertTrue(ds.getInt(i, 0) == 0);
+		}
+		ds.close();
+	}
 
 	public void testExecuteTwiceOnTwoSourcesWithSameName() throws Exception {
 		createSource("source", "a", 1, 2, 3);
@@ -1154,6 +1162,19 @@ public class SQLTest extends SourceTest {
 		ds.open();
 		assertTrue(ds.getRowCount() == 4);
 		assertTrue(ds.getInt(0, 0) == 1);
+		ds.close();
+	}
+	
+	public void testUpdateSubquery() throws Exception {
+		createSource("sub", "b", 0, 1, 2, 3);
+		createSource("source", "a", 0, 1, 2, 3);
+		dsf.executeSQL(
+				"update source SET a = 1 "
+						+ "WHERE a = (select * from sub where b=2)", null);
+		DataSource ds = dsf.getDataSource("source");
+		ds.open();
+		assertTrue(ds.getRowCount() == 4);
+		assertTrue(ds.getInt(2, 0) == 1);
 		ds.close();
 	}
 

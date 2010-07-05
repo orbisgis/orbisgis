@@ -4,40 +4,40 @@
  * manipulate and create vector and raster spatial information. OrbisGIS is
  * distributed under GPL 3 license. It is produced by the geo-informatic team of
  * the IRSTV Institute <http://www.irstv.cnrs.fr/> CNRS FR 2488.
- * 
- *  
- *  Lead Erwan BOCHER, scientific researcher, 
  *
- *  Developer lead : Pierre-Yves FADET, computer engineer. 
- *  
- *  User support lead : Gwendall Petit, geomatic engineer. 
- * 
+ *
+ *  Lead Erwan BOCHER, scientific researcher,
+ *
+ *  Developer lead : Pierre-Yves FADET, computer engineer.
+ *
+ *  User support lead : Gwendall Petit, geomatic engineer.
+ *
  * Previous computer developer : Thomas LEDUC, scientific researcher, Fernando GONZALEZ
  * CORTES, computer engineer.
- * 
+ *
  * Copyright (C) 2007 Erwan BOCHER, Fernando GONZALEZ CORTES, Thomas LEDUC
- * 
+ *
  * Copyright (C) 2010 Erwan BOCHER, Fernando GONZALEZ CORTES, Thomas LEDUC
- * 
+ *
  * This file is part of OrbisGIS.
- * 
+ *
  * OrbisGIS is free software: you can redistribute it and/or modify it under the
  * terms of the GNU General Public License as published by the Free Software
  * Foundation, either version 3 of the License, or (at your option) any later
  * version.
- * 
+ *
  * OrbisGIS is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
  * A PARTICULAR PURPOSE. See the GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License along with
  * OrbisGIS. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  * For more information, please consult: <http://orbisgis.cerma.archi.fr/>
  * <http://sourcesup.cru.fr/projects/orbisgis/>
- * 
- * or contact directly: 
- * erwan.bocher _at_ ec-nantes.fr 
+ *
+ * or contact directly:
+ * erwan.bocher _at_ ec-nantes.fr
  * Pierre-Yves.Fadet _at_ ec-nantes.fr
  * gwendall.petit _at_ ec-nantes.fr
  **/
@@ -67,8 +67,7 @@ import javax.swing.event.ListSelectionListener;
 
 import org.orbisgis.core.Services;
 import org.orbisgis.core.geocognition.Geocognition;
-import org.orbisgis.core.images.IconLoader;
-import org.orbisgis.core.images.IconNames;
+import org.orbisgis.core.images.OrbisGISIcon;
 import org.orbisgis.core.renderer.symbol.Symbol;
 import org.orbisgis.core.renderer.symbol.SymbolFactory;
 import org.orbisgis.core.renderer.symbol.SymbolManager;
@@ -86,7 +85,7 @@ import org.orbisgis.core.ui.editorViews.toc.actions.cui.legend.ISymbolEditor;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.legends.StandardSymbolFilter;
 
 /**
- * 
+ *
  * @author david
  */
 public class GeoCognitionSymbolBuilder extends JPanel implements UIPanel,
@@ -201,7 +200,7 @@ public class GeoCognitionSymbolBuilder extends JPanel implements UIPanel,
 
 	/**
 	 * returns a symbolcomposite with all the symbols in the list
-	 * 
+	 *
 	 * @return
 	 */
 	public Symbol getSymbolComposite() {
@@ -251,7 +250,7 @@ public class GeoCognitionSymbolBuilder extends JPanel implements UIPanel,
 		jToolBar1.setFloatable(false);
 		jToolBar1.setRollover(true);
 
-		jButtonSymbolUp.setIcon(IconLoader.getIcon(IconNames.GO_UP));
+		jButtonSymbolUp.setIcon(OrbisGISIcon.GO_UP);
 		jButtonSymbolUp.setToolTipText("Up");
 		jButtonSymbolUp.setFocusable(false);
 		jButtonSymbolUp.setHorizontalTextPosition(SwingConstants.CENTER);
@@ -263,7 +262,7 @@ public class GeoCognitionSymbolBuilder extends JPanel implements UIPanel,
 		});
 		jToolBar1.add(jButtonSymbolUp);
 
-		jButtonSymbolDown.setIcon(IconLoader.getIcon(IconNames.GO_DOWN));
+		jButtonSymbolDown.setIcon(OrbisGISIcon.GO_DOWN);
 		jButtonSymbolDown.setToolTipText("Down");
 		jButtonSymbolDown.setFocusable(false);
 		jButtonSymbolDown.setHorizontalTextPosition(SwingConstants.CENTER);
@@ -275,7 +274,7 @@ public class GeoCognitionSymbolBuilder extends JPanel implements UIPanel,
 		});
 		jToolBar1.add(jButtonSymbolDown);
 
-		jButtonSymbolAdd.setIcon(IconLoader.getIcon(IconNames.ADD));
+		jButtonSymbolAdd.setIcon(OrbisGISIcon.ADD);
 		jButtonSymbolAdd.setToolTipText("Add");
 		jButtonSymbolAdd.setFocusable(false);
 		jButtonSymbolAdd.setHorizontalTextPosition(SwingConstants.CENTER);
@@ -287,7 +286,7 @@ public class GeoCognitionSymbolBuilder extends JPanel implements UIPanel,
 		});
 		jToolBar1.add(jButtonSymbolAdd);
 
-		jButtonSymbolDel.setIcon(IconLoader.getIcon(IconNames.DEL));
+		jButtonSymbolDel.setIcon(OrbisGISIcon.DEL);
 		jButtonSymbolDel.setToolTipText("Delete");
 		jButtonSymbolDel.setFocusable(false);
 		jButtonSymbolDel.setHorizontalTextPosition(SwingConstants.CENTER);
@@ -299,7 +298,7 @@ public class GeoCognitionSymbolBuilder extends JPanel implements UIPanel,
 		});
 		jToolBar1.add(jButtonSymbolDel);
 
-		jButtonSymbolRename.setIcon(IconLoader.getIcon(IconNames.PENCIL));
+		jButtonSymbolRename.setIcon(OrbisGISIcon.PENCIL);
 		jButtonSymbolRename.setToolTipText("Rename");
 		jButtonSymbolRename.setFocusable(false);
 		jButtonSymbolRename.setHorizontalTextPosition(SwingConstants.CENTER);
@@ -336,7 +335,7 @@ public class GeoCognitionSymbolBuilder extends JPanel implements UIPanel,
 
 	/**
 	 * move up the selected symbol in the list
-	 * 
+	 *
 	 * @param evt
 	 */
 	private void jButtonSymbolUpActionPerformed(ActionEvent evt) {
@@ -351,7 +350,7 @@ public class GeoCognitionSymbolBuilder extends JPanel implements UIPanel,
 	/**
 	 * When the selected value in the list is changed we will call to the
 	 * refresh functions with the new symbol.
-	 * 
+	 *
 	 * @param evt
 	 *            ;
 	 */
@@ -393,7 +392,7 @@ public class GeoCognitionSymbolBuilder extends JPanel implements UIPanel,
 
 	/**
 	 * moves down the symbol
-	 * 
+	 *
 	 * @param evt
 	 */
 	private void jButtonSymbolDownActionPerformed(ActionEvent evt) {
@@ -407,7 +406,7 @@ public class GeoCognitionSymbolBuilder extends JPanel implements UIPanel,
 
 	/**
 	 * adds a symbol in the list
-	 * 
+	 *
 	 * @param evt
 	 */
 	private void jButtonSymbolAddActionPerformed(ActionEvent evt) {
@@ -441,7 +440,7 @@ public class GeoCognitionSymbolBuilder extends JPanel implements UIPanel,
 
 	/**
 	 * delete the selected symbols
-	 * 
+	 *
 	 * @param evt
 	 */
 	private void jButtonSymbolDelActionPerformed(ActionEvent evt) {
@@ -459,7 +458,7 @@ public class GeoCognitionSymbolBuilder extends JPanel implements UIPanel,
 
 	/**
 	 * rename the selected symbol
-	 * 
+	 *
 	 * @param evt
 	 */
 	private void jButtonSymbolRenameActionPerformed(ActionEvent evt) {
@@ -483,7 +482,7 @@ public class GeoCognitionSymbolBuilder extends JPanel implements UIPanel,
 
 	/**
 	 * gets the symbols and adds to the collection as a new Composite
-	 * 
+	 *
 	 * @param evt
 	 */
 	private void jButtonToCollectionActionPerformed(ActionEvent evt) {

@@ -2,12 +2,12 @@ package org.orbisgis.core.ui.editors.map.tools;
 
 import java.awt.Color;
 import java.awt.Graphics;
-import java.net.URL;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Observable;
 
 import javax.swing.AbstractButton;
+import javax.swing.ImageIcon;
 
 import org.orbisgis.core.Services;
 import org.orbisgis.core.layerModel.MapContext;
@@ -182,10 +182,6 @@ public class CompassTool extends Compass {
 		return button;
 	}
 
-	public URL getMouseCursorURL(){		
-		return null;		
-	}
-
 	@Override
 	public void setButton(AbstractButton button) {
 		this.button = button;
@@ -196,7 +192,7 @@ public class CompassTool extends Compass {
 	public void update(Observable arg0, Object arg1) {
 		PlugInContext.checkTool(this);
 	}
-	
+
 	public String getName() {
 		return "Measure an angle";
 	}

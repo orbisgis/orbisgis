@@ -57,14 +57,10 @@ import javax.imageio.ImageIO;
 
 import org.apache.log4j.Logger;
 import org.gdms.data.DataSource;
-import org.gdms.data.DataSourceCreationException;
 import org.gdms.data.ExecutionException;
 import org.gdms.data.SpatialDataSourceDecorator;
 import org.gdms.data.indexes.IndexException;
 import org.gdms.driver.DriverException;
-import org.gdms.driver.driverManager.DriverLoadException;
-import org.gdms.sql.parser.ParseException;
-import org.gdms.sql.strategies.SemanticException;
 
 
 import org.gvsig.remoteClient.exceptions.ServerErrorException;
@@ -76,7 +72,6 @@ import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.layerModel.WMSConnection;
 import org.orbisgis.core.map.MapTransform;
 
-import org.orbisgis.core.renderer.se.parameter.ParameterException;
 
 import org.orbisgis.progress.IProgressMonitor;
 import org.orbisgis.progress.NullProgressMonitor;
@@ -248,7 +243,7 @@ public class Renderer {
 
 					SpatialDataSourceDecorator filteredDs = r.getFilteredDataSource(featureInExtent);
 
-					boolean newDataSource = ! filteredDs.getName().equalsIgnoreCase(featureInExtent.getName());
+					boolean newDataSource = !filteredDs.getName().equalsIgnoreCase(featureInExtent.getName());
 
 					if (newDataSource) {
 						filteredDs.open();
@@ -491,10 +486,6 @@ public class Renderer {
 	private boolean sameServer(ILayer layer, ILayer layer2) {
 		return layer.getWMSConnection().getClient().getHost().equals(
 				layer2.getWMSConnection().getClient().getHost());
-
-
-
-
 	}
 
 	private void drawWMS(Graphics2D g2, int width, int height, Envelope extent,
@@ -504,19 +495,10 @@ public class Renderer {
 		status.setHeight(height);
 		status.setExtent(new Rectangle2D.Double(extent.getMinX(), extent.getMinY(), extent.getWidth(), extent.getHeight()));
 
-
-
-
 		try {
 			File file = connection.getClient().getMap(status, null);
 			BufferedImage image = ImageIO.read(file);
 			g2.drawImage(image, 0, 0, null);
-
-
-
-
-
-
 		} catch (WMSException e) {
 			Services.getService(ErrorManager.class).error(
 					"Cannot get WMS image", e);
@@ -527,10 +509,6 @@ public class Renderer {
 			Services.getService(ErrorManager.class).error(
 					"Cannot get WMS image", e);
 		}
-
-
-
-
 	}
 
 	/**
@@ -550,10 +528,7 @@ public class Renderer {
 		MapTransform mt = new MapTransform();
 		mt.setExtent(extent);
 		mt.setImage(img);
-		draw(
-				mt, layer, pm);
-
-
+		draw(mt, layer, pm);
 	}
 
 	/*
@@ -686,67 +661,27 @@ public class Renderer {
 
 		ColorModel colorModel = bufferedImage.getColorModel();
 
-
-
-
-
 		if (colorModel instanceof DirectColorModel) {
 			DirectColorModel directColorModel = (DirectColorModel) colorModel;
-
-
-
-
 			int red = directColorModel.getRedMask();
-
-
-
-
 			int blue = directColorModel.getBlueMask();
-
-
-
-
 			int green = directColorModel.getGreenMask();
-
-
-
-
 			int alpha = directColorModel.getAlphaMask();
-
-
-
 
 			int[] components = new int[3];
 			bands = bands.toLowerCase();
-			components[
-
-0] = getComponent(bands.charAt(0), red, green, blue);
-			components[
-
-1] = getComponent(bands.charAt(1), red, green, blue);
-			components[
-
-2] = getComponent(bands.charAt(2), red, green, blue);
+			components[0] = getComponent(bands.charAt(0), red, green, blue);
+			components[1] = getComponent(bands.charAt(1), red, green, blue);
+			components[2] = getComponent(bands.charAt(2), red, green, blue);
 
 			directColorModel = new DirectColorModel(32, components[0],
 					components[1], components[2], alpha);
 			ColorProcessor colorProcessor = new ColorProcessor(bufferedImage);
 			colorProcessor.setColorModel(directColorModel);
 
-
-
-
 			return colorProcessor.createImage();
-
-
-
-
 		}
 		return bufferedImage;
-
-
-
-
 	}
 
 	/**

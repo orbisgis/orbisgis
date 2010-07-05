@@ -292,6 +292,13 @@ public class SpatialDataSourceDecorator extends AbstractDataSourceDecorator {
 		return fieldType.getTypeCode() == Type.RASTER;
 	}
 
+        /**
+         *
+         * @param rowIndex
+         * @return
+         * @throws DriverException
+         */
+
 	public Feature getFeature(long rowIndex) throws DriverException {
 		Feature feature = new Feature(getMetadata());
 		feature.setValues(getRow(rowIndex));

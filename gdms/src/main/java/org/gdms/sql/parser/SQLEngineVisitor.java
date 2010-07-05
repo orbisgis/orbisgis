@@ -4,6 +4,8 @@ package org.gdms.sql.parser;
 public interface SQLEngineVisitor
 {
   public Object visit(SimpleNode node, Object data);
+  public Object visit(ASTSQLAlter node, Object data);
+  public Object visit(ASTSQLAdd node, Object data);
   public Object visit(ASTSQLAndExpr node, Object data);
   public Object visit(ASTSQLBetweenClause node, Object data);
   public Object visit(ASTSQLColRef node, Object data);
@@ -12,8 +14,7 @@ public interface SQLEngineVisitor
   public Object visit(ASTSQLCompareOp node, Object data);
   public Object visit(ASTSQLDelete node, Object data);
   public Object visit(ASTSQLDrop node, Object data);
-  public Object visit(ASTSQLAlter node, Object data);
-  public Object visit(ASTSQLAdd node, Object data);
+  public Object visit(ASTSQLExistsClause node, Object data);
   public Object visit(ASTSQLAddColumn node, Object data);
   public Object visit(ASTSQLAddPrimaryKey node, Object data);
   public Object visit(ASTSQLDropColumn node, Object data);
@@ -21,7 +22,6 @@ public interface SQLEngineVisitor
   public Object visit(ASTSQLRenameColumn node, Object data);
   public Object visit(ASTSQLRenameTable node, Object data);
   public Object visit(ASTSQLType node, Object data);
-  public Object visit(ASTSQLExistsClause node, Object data);
   public Object visit(ASTSQLFunction node, Object data);
   public Object visit(ASTSQLFunctionArgs node, Object data);
   public Object visit(ASTSQLGroupBy node, Object data);
@@ -75,4 +75,4 @@ public interface SQLEngineVisitor
   public Object visit(ASTSQLTypeArgLiteral node, Object data);
   public Object visit(ASTSQLTypeArgs node, Object data);
 }
-/* JavaCC - OriginalChecksum=cf8ebdd2b18f3267d89af5c24183afaf (do not edit this line) */
+/* JavaCC - OriginalChecksum=f2c8fdaa940c9ac847f88eedc2689180 (do not edit this line) */

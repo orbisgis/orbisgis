@@ -13,9 +13,8 @@ import javax.swing.JTabbedPane;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
-import org.gdms.data.crs.CRSUtil;
-
 import fr.cts.crs.NullCRS;
+import fr.cts.util.CRSUtil;
 
 public class ProjectionConfigPanel extends JDialog implements ActionListener {
 
@@ -105,6 +104,15 @@ public class ProjectionConfigPanel extends JDialog implements ActionListener {
 
 	public void setSelectedSRS(String srs) {
 
+	}
+
+	public static void main(String[] args) {
+
+		JFrame frame = new JFrame();
+
+		frame.add(new ProjectionConfigPanel(frame,false));
+
+		frame.show();
 	}
 
 }

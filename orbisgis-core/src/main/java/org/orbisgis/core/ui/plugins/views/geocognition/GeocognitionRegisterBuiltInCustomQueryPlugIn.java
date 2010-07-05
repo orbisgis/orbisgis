@@ -5,9 +5,9 @@
  * distributed under GPL 3 license. It is produced by the "Atelier SIG" team of
  * the IRSTV Institute <http://www.irstv.cnrs.fr/> CNRS FR 2488.
  *
- * 
+ *
  *  Team leader Erwan BOCHER, scientific researcher,
- * 
+ *
  *  User support leader : Gwendall Petit, geomatic engineer.
  *
  *
@@ -45,7 +45,7 @@ import org.orbisgis.core.Services;
 import org.orbisgis.core.errorManager.ErrorManager;
 import org.orbisgis.core.geocognition.Geocognition;
 import org.orbisgis.core.geocognition.GeocognitionElement;
-import org.orbisgis.core.images.IconNames;
+import org.orbisgis.core.images.OrbisGISIcon;
 import org.orbisgis.core.ui.pluginSystem.AbstractPlugIn;
 import org.orbisgis.core.ui.pluginSystem.PlugInContext;
 import org.orbisgis.core.ui.pluginSystem.PlugInContext.ElementAvailability;
@@ -80,7 +80,7 @@ public class GeocognitionRegisterBuiltInCustomQueryPlugIn extends AbstractPlugIn
 						this,
 						new String[] { Names.POPUP_GEOCOGNITION_REG_BUILT_QUERY_PATH1 },
 						Names.POPUP_GEOCOGNITION_REG_BUILT_QUERY_GROUP, false,
-						getIcon(IconNames.POPUP_GEOCOGNITION_REG_BUILT_QUERY_ICON),
+						OrbisGISIcon.GEOCOGNITION_REG_BUILT_QUERY,
 						wbContext);
 	}
 

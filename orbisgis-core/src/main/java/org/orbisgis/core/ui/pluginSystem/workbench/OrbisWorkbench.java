@@ -66,8 +66,6 @@ public class OrbisWorkbench {
 				"Gives access to the current WorkbenchContext", this.context);
 		this.frame = frame;
 	}
-	
-
 
 	public OrbisWorkbench() {
 		context = new OrbisWorkbenchContext(this);
@@ -80,26 +78,21 @@ public class OrbisWorkbench {
 		boolean fileExists = true;
 		try {
 			Assert.isTrue((extensionsDirectory == null)
-	                || extensionsDirectory.isDirectory());
+					|| extensionsDirectory.isDirectory());
 		} catch (AssertionFailedException e) {
 			fileExists = false;
-			Services.getErrorManager().error("Plugins not loaded");
+			Services.getErrorManager().error(
+					"Plugins not loaded. No lib/ext folder");
 		}
-		/*
-		 * File defaultPlugins = new File("default-plugins.xml"); try {
-		 * properties = new WorkbenchPropertiesFile(defaultPlugins); } catch
-		 * (JDOMException e) { // TODO Auto-generated catch block
-		 * e.printStackTrace(); } catch (IOException e) { // TODO Auto-generated
-		 * catch block e.printStackTrace(); }
-		 */
+
 		OrbisConfiguration setup = new OrbisConfiguration();
-		try {			
-			if(fileExists)
-				plugInManager = new PlugInManager(context, extensionsDirectory);	
+		try {
+			if (fileExists)
+				plugInManager = new PlugInManager(context, extensionsDirectory);
 			setup.setup(context);
-			if( fileExists && plugInManager!=null ) 
+			if (fileExists && plugInManager != null)
 				context.getWorkbench().getPlugInManager().load();
-				
+
 			context.setLastAction("Orbisgis started");
 		} catch (Throwable t) {
 			t.printStackTrace();

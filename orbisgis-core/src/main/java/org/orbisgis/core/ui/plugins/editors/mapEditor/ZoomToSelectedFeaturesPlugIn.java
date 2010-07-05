@@ -5,9 +5,9 @@
  * distributed under GPL 3 license. It is produced by the "Atelier SIG" team of
  * the IRSTV Institute <http://www.irstv.cnrs.fr/> CNRS FR 2488.
  *
- * 
+ *
  *  Team leader Erwan BOCHER, scientific researcher,
- * 
+ *
  *  User support leader : Gwendall Petit, geomatic engineer.
  *
  *
@@ -44,7 +44,7 @@ import org.gdms.data.SpatialDataSourceDecorator;
 import org.gdms.driver.DriverException;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.errorManager.ErrorManager;
-import org.orbisgis.core.images.IconNames;
+import org.orbisgis.core.images.OrbisGISIcon;
 import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.layerModel.MapContext;
 import org.orbisgis.core.ui.pluginSystem.AbstractPlugIn;
@@ -60,7 +60,7 @@ public class ZoomToSelectedFeaturesPlugIn extends AbstractPlugIn {
 	private JButton btn;
 
 	public ZoomToSelectedFeaturesPlugIn() {
-		btn = new JButton(getIcon(IconNames.MAP_ZOOM_SELECTED_ICON));
+		btn = new JButton(OrbisGISIcon.ZOOM_SELECTED);
 	}
 
 	public boolean execute(PlugInContext context) throws Exception {
@@ -107,7 +107,7 @@ public class ZoomToSelectedFeaturesPlugIn extends AbstractPlugIn {
 		}
 		return true;
 	}
-	
+
 	public void initialize(PlugInContext context) throws Exception {
 		WorkbenchContext wbcontext = context.getWorkbenchContext();
 		wbcontext.getWorkbench().getFrame().getInfoToolBar().addPlugIn(this,

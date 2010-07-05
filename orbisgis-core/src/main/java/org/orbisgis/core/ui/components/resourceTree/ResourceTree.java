@@ -70,7 +70,7 @@ import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 
 import org.orbisgis.core.images.IconLoader;
-import org.orbisgis.core.images.IconNames;
+import org.orbisgis.core.images.OrbisGISIcon;
 
 public abstract class ResourceTree extends JPanel implements
 		DropTargetListener, DragGestureListener, DragSourceListener {
@@ -120,13 +120,13 @@ public abstract class ResourceTree extends JPanel implements
 
 		/***********************************************************************
 		 * DO NOT UNCOMMENT *
-		 * 
+		 *
 		 * setDragEnabled(true);
-		 * 
+		 *
 		 * This method is a swing method while our DnD is using awt. Using both
 		 * swing and awt creates horrible exceptions... Please use DragSource
 		 * instead
-		 * 
+		 *
 		 */
 
 		/** *** Drag and Drop stuff **** */
@@ -137,8 +137,8 @@ public abstract class ResourceTree extends JPanel implements
 
 		/** *** UI stuff **** */
 		add(new JScrollPane(tree));
-		Icon openIcon = IconLoader.getIcon(IconNames.TREE_PLUS);
-		Icon closedIcon = IconLoader.getIcon(IconNames.TREE_MINUS);
+		Icon openIcon = OrbisGISIcon.TREE_PLUS;
+		Icon closedIcon = OrbisGISIcon.TREE_MINUS;
 
 		((javax.swing.plaf.basic.BasicTreeUI) tree.getUI())
 				.setExpandedIcon(closedIcon);

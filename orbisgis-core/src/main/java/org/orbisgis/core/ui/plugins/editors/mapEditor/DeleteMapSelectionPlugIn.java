@@ -5,9 +5,9 @@
  * distributed under GPL 3 license. It is produced by the "Atelier SIG" team of
  * the IRSTV Institute <http://www.irstv.cnrs.fr/> CNRS FR 2488.
  *
- * 
+ *
  *  Team leader Erwan BOCHER, scientific researcher,
- * 
+ *
  *  User support leader : Gwendall Petit, geomatic engineer.
  *
  *
@@ -46,7 +46,7 @@ import org.gdms.data.DataSource;
 import org.gdms.data.SpatialDataSourceDecorator;
 import org.gdms.driver.DriverException;
 import org.orbisgis.core.Services;
-import org.orbisgis.core.images.IconNames;
+import org.orbisgis.core.images.OrbisGISIcon;
 import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.layerModel.MapContext;
 import org.orbisgis.core.ui.editor.IEditor;
@@ -60,7 +60,7 @@ public class DeleteMapSelectionPlugIn extends AbstractPlugIn {
 	private JButton btn;
 
 	public DeleteMapSelectionPlugIn() {
-		btn = new JButton(getIcon(IconNames.REMOVE));
+		btn = new JButton(OrbisGISIcon.REMOVE);
 	}
 
 	public boolean execute(PlugInContext context) throws Exception {
@@ -88,16 +88,16 @@ public class DeleteMapSelectionPlugIn extends AbstractPlugIn {
 		wbcontext.getWorkbench().getFrame().getEditionMapToolBar().addPlugIn(
 				this, btn, context);
 	}
-	
-	public boolean isEnabled() {		
+
+	public boolean isEnabled() {
 		boolean isEnabled = false;
 		MapEditorPlugIn mapEditor = null;
 		if((mapEditor=getPlugInContext().getMapEditor()) != null){
 			MapContext map = (MapContext) mapEditor.getElement().getObject();
 			ILayer activeLayer = map.getActiveLayer();
 			if(activeLayer != null
-					&& activeLayer.getSelection().length > 0) 
-				isEnabled = true;		
+					&& activeLayer.getSelection().length > 0)
+				isEnabled = true;
 		}
 		btn.setEnabled(isEnabled);
 		return isEnabled;

@@ -7,6 +7,7 @@ import org.gdms.data.types.Type;
 import org.gdms.driver.DriverException;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.images.IconNames;
+import org.orbisgis.core.images.OrbisGISIcon;
 import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.layerModel.MapContext;
 
@@ -48,7 +49,7 @@ public class ImportFeatureTypeStylePlugIn extends AbstractPlugIn {
 		context.getFeatureInstaller().addPopupMenuItem(frame, this,
 				new String[] { Names.POPUP_TOC_FEATURETYPESTYLE_IMPORT },
 				Names.POPUP_TOC_LEGEND_GROUP, false,
-				getIcon(IconNames.POPUP_TOC_LEGEND_ICON), wbContext);
+				OrbisGISIcon.EDIT_LEGEND, wbContext);
 	}
 
 	public void execute(MapContext mapContext, ILayer layer) {

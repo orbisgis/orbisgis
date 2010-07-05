@@ -85,15 +85,12 @@ import org.gdms.sql.function.Argument;
 import org.gdms.sql.function.Arguments;
 import org.gdms.sql.function.Function;
 import org.gdms.sql.function.FunctionException;
-import org.gdms.sql.function.FunctionValidator;
 
 public class String2DoubleFunction implements Function {
 	public Value evaluate(Value[] args) throws FunctionException {
 		if (args[0].getType() == Type.NULL) {
 			return ValueFactory.createNullValue();
 		}
-
-		FunctionValidator.failIfNotOfType(args[0], Type.STRING);
 
 		try {
 			return ValueFactory.createValue(Double.parseDouble(args[0]
@@ -129,7 +126,7 @@ public class String2DoubleFunction implements Function {
 	}
 
 	public String getSqlOrder() {
-		return "select string2double(myStringField) from myTable;";
+		return "select StringToDouble(myStringField) from myTable;";
 	}
 
 	@Override

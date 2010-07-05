@@ -147,6 +147,10 @@ public class PlugInContext {
 							if (!isVectorial(layer))
 								return false;
 							break;
+						case RASTER:
+							if (!isRaster(layer))
+								return false;
+							break;
 						case ACCEPT_CHILDS:
 							if (!(layer.acceptsChilds()))
 								return false;
@@ -199,7 +203,7 @@ public class PlugInContext {
 	};
 
 	public static enum LayerAvailability {
-		VECTORIAL, ACCEPT_CHILDS, LAYER_NOT_NULL, DATASOURCE_NOT_NULL, IS_MODIFIED, ACTIVE_LAYER, NOT_ACTIVE_LAYER, IS_EDTABLE, ROW_SELECTED
+		VECTORIAL, RASTER,ACCEPT_CHILDS, LAYER_NOT_NULL, DATASOURCE_NOT_NULL, IS_MODIFIED, ACTIVE_LAYER, NOT_ACTIVE_LAYER, IS_EDTABLE, ROW_SELECTED
 	};
 
 	public MapContext getMapContext() {
@@ -409,7 +413,6 @@ public class PlugInContext {
 	public boolean checkLayerAvailability(
 			SelectionAvailability[] selectionAvailability, int nbSrc,
 			SourceAvailability[] sourceAvailability) {
-		// TODO - refactor
 
 		String[] res = getSelectedSources();
 		DataManager dataManager = Services.getService(DataManager.class);
@@ -470,7 +473,7 @@ public class PlugInContext {
 	}
 
 	public static enum SourceAvailability {
-		NODE_NOT_NULL, WMS, RASTER
+		NODE_NOT_NULL, WMS, RASTER, VECTOR
 	};
 
 	public String[] getSelectedSources() {
@@ -572,7 +575,7 @@ public class PlugInContext {
 		return null;
 	}
 
-	/* 
+	/*
 	 * ************************* All prepared methods available for plug-in
 	 * development ******************************************
 	 */
@@ -632,7 +635,7 @@ public class PlugInContext {
 		return true;
 	}
 
-	/*  **FOR VECTOR** */
+	/*   **FOR VECTOR** */
 
 	/**
 	 * At least one layer of Vector Type must exists
@@ -720,7 +723,7 @@ public class PlugInContext {
 			return false;
 	}
 
-	/*  **FOR RASTER** */
+	/*   **FOR RASTER** */
 	/**
 	 * At least one layer of Raster Type must exists
 	 * 

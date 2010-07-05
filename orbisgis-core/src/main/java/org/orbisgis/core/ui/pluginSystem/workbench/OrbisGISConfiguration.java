@@ -43,6 +43,7 @@ import org.orbisgis.core.ui.plugins.views.EditorViewPlugIn;
 import org.orbisgis.core.ui.plugins.views.GeoCatalogViewPlugIn;
 import org.orbisgis.core.ui.plugins.views.GeocognitionViewPlugIn;
 import org.orbisgis.core.ui.plugins.views.InformationViewPlugIn;
+import org.orbisgis.core.ui.plugins.views.MemoryViewPlugIn;
 import org.orbisgis.core.ui.plugins.views.OutputViewPlugIn;
 import org.orbisgis.core.ui.plugins.views.SQLConsoleViewPlugIn;
 import org.orbisgis.core.ui.plugins.views.TocViewPlugIn;
@@ -62,7 +63,7 @@ public class OrbisGISConfiguration {
 		outputViewPlugIn.initialize(pluginContext);
 
 		GeocognitionViewPlugIn geocognitionPlugin = new GeocognitionViewPlugIn();
-		geocognitionPlugin.initialize(pluginContext);	
+		geocognitionPlugin.initialize(pluginContext);
 
 		BeanShellConsoleViewPlugIn beanShellConsoleViewPlugIn = new BeanShellConsoleViewPlugIn();
 		beanShellConsoleViewPlugIn.initialize(pluginContext);
@@ -81,5 +82,8 @@ public class OrbisGISConfiguration {
 
 		TocViewPlugIn tocViewPlugIn = new TocViewPlugIn();
 		tocViewPlugIn.initialize(pluginContext);
+
+		MemoryViewPlugIn memoryViewPlugIn = new MemoryViewPlugIn();
+		memoryViewPlugIn.initialize(pluginContext);
 	}
 }

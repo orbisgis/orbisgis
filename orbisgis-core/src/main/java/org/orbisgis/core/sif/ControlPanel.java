@@ -62,7 +62,7 @@ import javax.swing.event.ListSelectionListener;
 import org.gdms.data.DataSourceCreationException;
 import org.gdms.driver.DriverException;
 import org.orbisgis.core.images.IconLoader;
-import org.orbisgis.core.images.IconNames;
+import org.orbisgis.core.images.OrbisGISIcon;
 
 public class ControlPanel extends JPanel {
 	private JList list;
@@ -111,7 +111,7 @@ public class ControlPanel extends JPanel {
 		btnSave = new JButton();
 		btnSave.setMargin(new Insets(0, 0, 0, 0));
 		btnSave.setVisible(false);
-		btnSave.setIcon(IconLoader.getIcon(IconNames.SAVE_ICON));
+		btnSave.setIcon(OrbisGISIcon.SAVE_ICON);
 		btnSave.setToolTipText("Clic here to save a favorite");
 
 		btnSave.addActionListener(new ActionListener() {
@@ -127,7 +127,7 @@ public class ControlPanel extends JPanel {
 		south.add(txtNew);
 		this.add(south, BorderLayout.SOUTH);
 		btnDelete = new JButton();
-		btnDelete.setIcon(IconLoader.getIcon(IconNames.CANCEL));
+		btnDelete.setIcon(OrbisGISIcon.CANCEL);
 		btnDelete.setToolTipText("Clic here to delete a favorite");
 		btnDelete.addActionListener(new ActionListener() {
 
@@ -138,7 +138,7 @@ public class ControlPanel extends JPanel {
 
 		});
 		btnLoad = new JButton();
-		btnLoad.setIcon(IconLoader.getIcon(IconNames.FOLDER_USER));
+		btnLoad.setIcon(OrbisGISIcon.FOLDER_USER);
 		btnLoad.setToolTipText("Clic here to load a favorite");
 		btnLoad.addActionListener(new ActionListener() {
 

@@ -5,9 +5,9 @@
  * distributed under GPL 3 license. It is produced by the "Atelier SIG" team of
  * the IRSTV Institute <http://www.irstv.cnrs.fr/> CNRS FR 2488.
  *
- * 
+ *
  *  Team leader Erwan BOCHER, scientific researcher,
- * 
+ *
  *  User support leader : Gwendall Petit, geomatic engineer.
  *
  *
@@ -46,14 +46,11 @@ import java.util.ArrayList;
 
 import javax.swing.BoxLayout;
 import javax.swing.DefaultComboBoxModel;
-import javax.swing.ImageIcon;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import org.orbisgis.core.Services;
-import org.orbisgis.core.images.IconLoader;
-import org.orbisgis.core.images.IconNames;
 import org.orbisgis.core.layerModel.MapContext;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.ui.editor.IEditor;
@@ -75,17 +72,17 @@ public class ScalePlugIn extends AbstractPlugIn {
 	private JPanel panel;
 	private JComboBox combobox;
 	private double factor;
-		
-	static {		
+
+	static {
 		DefaultScales.add(1000);
 		DefaultScales.add(2000);
 		DefaultScales.add(5000);
 		DefaultScales.add(10000);
-		DefaultScales.add(20000);		
-		DefaultScales.add(50000);		
+		DefaultScales.add(20000);
+		DefaultScales.add(50000);
 		DefaultScales.add(100000);
 		DefaultScales.add(200000);
-		DefaultScales.add(500000);		
+		DefaultScales.add(500000);
 		DefaultScales.add(1000000);
 		DefaultScales.add(2000000);
 		DefaultScales.add(5000000);
@@ -93,7 +90,7 @@ public class ScalePlugIn extends AbstractPlugIn {
 		DefaultScales.add(20000000);
 		DefaultScales.add(50000000);
 	}
-	
+
 	public boolean execute(PlugInContext context) throws Exception {
 		MapEditorPlugIn mapEditor = null;
 		if ((mapEditor = context.getMapEditor()) != null) {
@@ -109,8 +106,8 @@ public class ScalePlugIn extends AbstractPlugIn {
 
 					if (DefaultScales.contains(scale)) {
 						envelope = getEnveloppeFromScale(
-								mt.getAdjustedExtent(), mt.getWidth(), scale);						
-						mt.setExtent(envelope);	
+								mt.getAdjustedExtent(), mt.getWidth(), scale);
+						mt.setExtent(envelope);
 					}
 				}
 			}
@@ -118,8 +115,7 @@ public class ScalePlugIn extends AbstractPlugIn {
 		}
 		return false;
 	}
-	
-	
+
 	public void initialize(PlugInContext context) throws Exception {
 		panel = new JPanel(new BorderLayout());
 		JLabel label = new JLabel("Scale : ");
@@ -136,29 +132,31 @@ public class ScalePlugIn extends AbstractPlugIn {
 		setTypeListener("item");
 		EditorManager em = Services.getService(EditorManager.class);
 		em.addEditorListener(new PlugInEditorListener(this, panel,
-				Names.MAP_TOOLBAR_SCALE, null, context, true));		
-		
-		
+				Names.MAP_TOOLBAR_SCALE, null, context, true));
+
 	}
 
 	protected void updateComponent() {
-		combobox.setModel(new DefaultComboBoxModel(DefaultScales.toArray(new Integer[0])));
-		MapTransform mapTransform =null;			
-		if(getPlugInContext().getMapEditor()!=null) {
-			mapTransform = getPlugInContext().getMapEditor().getMapControl().getMapTransform();	
-			int currentScale = (int)mapTransform.getScaleDenominator();	
+		combobox.setModel(new DefaultComboBoxModel(DefaultScales
+				.toArray(new Integer[0])));
+		MapTransform mapTransform = null;
+		if (getPlugInContext().getMapEditor() != null) {
+			mapTransform = getPlugInContext().getMapEditor().getMapControl()
+					.getMapTransform();
+			int currentScale = (int) mapTransform.getScaleDenominator();
 			int scaleSelected = 0;
-			for(int i=0; i<DefaultScales.size() ; i++) {
-				if(Math.abs(((Integer)DefaultScales.get(i)) - currentScale) == 0 ||
-						Math.abs(((Integer)DefaultScales.get(i)) - currentScale) == 1)
-					scaleSelected = DefaultScales.get(i);					
-			}			
-			if(scaleSelected == 0) {
-				scaleSelected = new Integer(currentScale);
-				combobox.addItem( scaleSelected );
+			for (int i = 0; i < DefaultScales.size(); i++) {
+				if (Math.abs(((Integer) DefaultScales.get(i)) - currentScale) == 0
+						|| Math.abs(((Integer) DefaultScales.get(i))
+								- currentScale) == 1)
+					scaleSelected = DefaultScales.get(i);
 			}
-			combobox.setSelectedItem( scaleSelected );
-		}		
+			if (scaleSelected == 0) {
+				scaleSelected = new Integer(currentScale);
+				combobox.addItem(scaleSelected);
+			}
+			combobox.setSelectedItem(scaleSelected);
+		}
 	}
 
 	private Envelope getEnveloppeFromScale(Envelope oldEnvelope,
@@ -184,19 +182,19 @@ public class ScalePlugIn extends AbstractPlugIn {
 	}
 
 	/**
-	 * 
+	 *
 	 * This method has been copied from openjump GIS : http://wwww.openjump.org
-	 * 
+	 *
 	 * OpenJUMP is distributed under GPL 2 license. Delivers the scale of the
 	 * map shown on the display. The scale is calculated for the horizontal map
 	 * direction
 	 * <p>
 	 * note: The scale may differ for horizontal and vertical direction due to
 	 * the type of map projection.
-	 * 
+	 *
 	 * @param panel
 	 *            width and current envelope
-	 * 
+	 *
 	 * @return actual scale
 	 */
 
@@ -237,16 +235,13 @@ public class ScalePlugIn extends AbstractPlugIn {
 		if (editor != null && editor instanceof MapEditorPlugIn
 				&& getPlugInContext().getMapEditor() != null) {
 			MapContext mc = (MapContext) editor.getElement().getObject();
-			//isVisible = !getPlugInContext().isGeographicCRS();
-			isVisible = isVisible && mc.getLayerModel().getLayerCount() > 0;	
-			if(isVisible)
+			// isVisible = !getPlugInContext().isGeographicCRS();
+			isVisible = isVisible && mc.getLayerModel().getLayerCount() > 0;
+			if (isVisible)
 				updateComponent();
 		}
 		panel.setEnabled(isVisible);
 		return isVisible;
 	}
 
-	public static ImageIcon getIcon() {
-		return IconLoader.getIcon(IconNames.EXIT_ICON);
-	}
 }

@@ -10,7 +10,7 @@ public class Icon {
 	public static String get(final String key) {
 		try {
 			return rb.getString(key);
-		} catch (java.util.MissingResourceException e) {			
+		} catch (java.util.MissingResourceException e) {
 			return key;
 		}
 	}	

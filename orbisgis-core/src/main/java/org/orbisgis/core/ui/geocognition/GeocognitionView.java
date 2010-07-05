@@ -36,7 +36,7 @@ import org.orbisgis.core.geocognition.sql.GeocognitionCustomQueryFactory;
 import org.orbisgis.core.geocognition.sql.GeocognitionFunctionFactory;
 import org.orbisgis.core.geocognition.symbology.GeocognitionSymbolFactory;
 import org.orbisgis.core.images.IconLoader;
-import org.orbisgis.core.images.IconNames;
+import org.orbisgis.core.images.OrbisGISIcon;
 import org.orbisgis.core.layerModel.DefaultMapContext;
 import org.orbisgis.core.layerModel.MapContext;
 import org.orbisgis.core.sif.CRFlowLayout;
@@ -144,15 +144,15 @@ public class GeocognitionView extends JPanel implements WorkbenchFrame {
 		 * iconURL = this.getClass().getResource(iconAttribute); JToggleButton
 		 * btn = new JToggleButton(new ImageIcon(iconURL)); btn.setMargin(new
 		 * Insets(0, 0, 0, 0)); btn.addActionListener(new ActionListener() {
-		 * 
+		 *
 		 * @Override public void actionPerformed(ActionEvent e) { doFilter(); }
-		 * 
+		 *
 		 * }); btnPanel.add(btn); IGeocognitionFilter filter =
 		 * itemAttributes.getInstance("class"); filterButtons.add(new
 		 * FilterButton(filter, btn)); }
 		 */
 
-		JToggleButton btn = new JToggleButton(IconLoader.getIcon(IconNames.MAP));
+		JToggleButton btn = new JToggleButton(OrbisGISIcon.MAP);
 		btn.setMargin(new Insets(0, 0, 0, 0));
 		btn.addActionListener(new ActionListener() {
 
@@ -166,7 +166,7 @@ public class GeocognitionView extends JPanel implements WorkbenchFrame {
 		IGeocognitionFilter filter = new Map();
 		filterButtons.add(new FilterButton(filter, btn));
 
-		btn = new JToggleButton(IconLoader.getIcon(IconNames.SCRIPT_CODE));
+		btn = new JToggleButton(OrbisGISIcon.SCRIPT_CODE);
 		btn.setMargin(new Insets(0, 0, 0, 0));
 		btn.addActionListener(new ActionListener() {
 
@@ -179,7 +179,7 @@ public class GeocognitionView extends JPanel implements WorkbenchFrame {
 		btnPanel.add(btn);
 		filter = new SQL();
 		filterButtons.add(new FilterButton(filter, btn));
-		btn = new JToggleButton(IconLoader.getIcon(IconNames.PALETTE));
+		btn = new JToggleButton(OrbisGISIcon.PALETTE);
 		btn.setMargin(new Insets(0, 0, 0, 0));
 		btn.addActionListener(new ActionListener() {
 
@@ -277,7 +277,7 @@ public class GeocognitionView extends JPanel implements WorkbenchFrame {
 
 	/**
 	 * A simple method to populate the geocognition on the fly
-	 * 
+	 *
 	 * @param geocognition
 	 */
 	private void populateGeoCognitionWithOGCFunctions(Geocognition geocognition) {

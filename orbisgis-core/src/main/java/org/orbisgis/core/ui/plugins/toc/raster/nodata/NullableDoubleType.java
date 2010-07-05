@@ -34,66 +34,61 @@
  *    fergonco _at_ gmail.com
  *    thomas.leduc _at_ cerma.archi.fr
  */
-package org.orbisgis.core.background;
+package org.orbisgis.core.ui.plugins.toc.raster.nodata;
 
-import java.awt.BorderLayout;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
+import java.awt.Component;
 
-import javax.swing.JDialog;
-import javax.swing.SwingUtilities;
+import javax.swing.JCheckBox;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
-public class ProgressDialog extends JDialog {
+import org.orbisgis.core.sif.SQLUIPanel;
+import org.orbisgis.core.sif.multiInputPanel.InputType;
 
-	private Job job;
+public class NullableDoubleType implements InputType, ChangeListener {
 
-	public ProgressDialog() {
-		this.setModal(true);
-		this.getContentPane().setLayout(new BorderLayout());
-		this.setLocationRelativeTo(null);
-		this.addComponentListener(new ComponentAdapter() {
+	private JPanel panel = new JPanel();
+	private JCheckBox jCheckBox = new JCheckBox();
+	private JTextField jTextField = new JTextField();
 
-			@Override
-			public void componentShown(ComponentEvent e) {
-				job.start();
-			}
-
-		});
-		this.setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
+	public NullableDoubleType(int columns) {
+		jCheckBox.setSelected(false);
+		jCheckBox.addChangeListener(this);
+		jTextField.setColumns(columns);
+		jTextField.setEnabled(false);
+		panel.add(jCheckBox);
+		panel.add(jTextField);
 	}
 
-	public void setJob(final Job job) {
-		this.job = job;
-		if (SwingUtilities.isEventDispatchThread()) {
-			refreshProgressBar();
-		} else {
-			SwingUtilities.invokeLater(new Runnable() {
-				public void run() {
-					refreshProgressBar();
-				}
+	public Component getComponent() {
+		return panel;
+	}
 
-			});
+	public int getType() {
+		return SQLUIPanel.DOUBLE;
+	}
+
+	public String getValue() {
+		if (jCheckBox.isSelected()) {
+			return jTextField.getText();
 		}
+		return null;
 	}
 
-	private void refreshProgressBar() {
-		this.getContentPane().removeAll();
-		this.getContentPane().add(new ProgressBar(job));
-		this.pack();
+	public boolean isPersistent() {
+		return true;
 	}
 
-	public void jobFinished() {
-		job = null;
-		if (!SwingUtilities.isEventDispatchThread()) {
-			SwingUtilities.invokeLater(new Runnable() {
+	public void setValue(String value) {
+		jCheckBox.setSelected(value != null);
+		jTextField.setText(value);
 
-				public void run() {
-					setVisible(false);
-				}
-
-			});
-		} else {
-			setVisible(false);
-		}
 	}
+
+	public void stateChanged(ChangeEvent e) {
+		jTextField.setEnabled(jCheckBox.isSelected());
+	}
+
 }

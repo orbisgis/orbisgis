@@ -5,9 +5,9 @@
  * distributed under GPL 3 license. It is produced by the "Atelier SIG" team of
  * the IRSTV Institute <http://www.irstv.cnrs.fr/> CNRS FR 2488.
  *
- * 
+ *
  *  Team leader Erwan BOCHER, scientific researcher,
- * 
+ *
  *  User support leader : Gwendall Petit, geomatic engineer.
  *
  *
@@ -43,7 +43,7 @@ import javax.swing.JButton;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.background.BackgroundJob;
 import org.orbisgis.core.background.BackgroundManager;
-import org.orbisgis.core.images.IconNames;
+import org.orbisgis.core.images.OrbisGISIcon;
 import org.orbisgis.core.ui.editor.IEditor;
 import org.orbisgis.core.ui.editors.table.TableEditableElement;
 import org.orbisgis.core.ui.pluginSystem.AbstractPlugIn;
@@ -57,7 +57,7 @@ public class ClearTableSelectionPlugIn extends AbstractPlugIn {
 	private JButton btn;
 
 	public ClearTableSelectionPlugIn() {
-		btn = new JButton(getIcon(IconNames.EDIT_CLEAR));
+		btn = new JButton(OrbisGISIcon.EDIT_CLEAR);
 	}
 
 	public boolean execute(final PlugInContext context) throws Exception {

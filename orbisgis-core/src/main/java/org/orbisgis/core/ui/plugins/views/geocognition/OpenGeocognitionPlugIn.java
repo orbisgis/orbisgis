@@ -5,9 +5,9 @@
  * distributed under GPL 3 license. It is produced by the "Atelier SIG" team of
  * the IRSTV Institute <http://www.irstv.cnrs.fr/> CNRS FR 2488.
  *
- * 
+ *
  *  Team leader Erwan BOCHER, scientific researcher,
- * 
+ *
  *  User support leader : Gwendall Petit, geomatic engineer.
  *
  *
@@ -42,7 +42,7 @@ import org.orbisgis.core.Services;
 import org.orbisgis.core.background.BackgroundManager;
 import org.orbisgis.core.geocognition.Geocognition;
 import org.orbisgis.core.geocognition.GeocognitionElement;
-import org.orbisgis.core.images.IconNames;
+import org.orbisgis.core.images.OrbisGISIcon;
 import org.orbisgis.core.ui.pluginSystem.AbstractPlugIn;
 import org.orbisgis.core.ui.pluginSystem.PlugInContext;
 import org.orbisgis.core.ui.pluginSystem.PlugInContext.ElementAvailability;
@@ -73,7 +73,7 @@ public class OpenGeocognitionPlugIn extends AbstractPlugIn {
 		context.getFeatureInstaller().addPopupMenuItem(frame, this,
 				new String[] { Names.POPUP_GEOCOGNITION_OPEN_PATH1 },
 				Names.POPUP_GEOCOGNITION_OPEN_GROUP, false,
-				getIcon(IconNames.POPUP_GEOCOGNITION_OPEN_ICON), wbContext);
+				OrbisGISIcon.OPEN_WINDOW, wbContext);
 	}
 
 	public void execute(Geocognition geocognition, GeocognitionElement element) {
@@ -84,9 +84,10 @@ public class OpenGeocognitionPlugIn extends AbstractPlugIn {
 	}
 
 	public boolean isEnabled() {
-		return getPlugInContext().checkLayerAvailability(
-				new SelectionAvailability[] {SelectionAvailability.SUPERIOR},
-				0,
-				new ElementAvailability[] {ElementAvailability.HAS_EDITOR});
+		return getPlugInContext()
+				.checkLayerAvailability(
+						new SelectionAvailability[] { SelectionAvailability.SUPERIOR },
+						0,
+						new ElementAvailability[] { ElementAvailability.HAS_EDITOR });
 	}
 }

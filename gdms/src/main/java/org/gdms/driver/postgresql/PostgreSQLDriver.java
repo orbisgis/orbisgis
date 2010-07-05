@@ -49,8 +49,8 @@ import java.util.List;
 import java.util.Set;
 
 import org.gdms.data.WarningListener;
-import org.gdms.data.crs.CRSUtil;
 import org.gdms.data.metadata.Metadata;
+import org.gdms.data.metadata.MetadataUtilities;
 import org.gdms.data.types.Constraint;
 import org.gdms.data.types.DimensionConstraint;
 import org.gdms.data.types.GeometryConstraint;
@@ -392,7 +392,7 @@ public class PostgreSQLDriver extends DefaultDBDriver {
 			dc = new DimensionConstraint(2);
 		}
 
-		Constraint crsConstraint = CRSUtil.getCRSConstraint(srid);
+		Constraint crsConstraint = MetadataUtilities.getCRSConstraint(srid);
 
 		if (gc == null) {
 			return new Constraint[] { dc, crsConstraint };

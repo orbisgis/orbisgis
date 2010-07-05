@@ -5,9 +5,9 @@
  * distributed under GPL 3 license. It is produced by the "Atelier SIG" team of
  * the IRSTV Institute <http://www.irstv.cnrs.fr/> CNRS FR 2488.
  *
- * 
+ *
  *  Team leader Erwan BOCHER, scientific researcher,
- * 
+ *
  *  User support leader : Gwendall Petit, geomatic engineer.
  *
  *
@@ -55,7 +55,7 @@ import org.gdms.sql.strategies.SemanticException;
 import org.orbisgis.core.DataManager;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.errorManager.ErrorManager;
-import org.orbisgis.core.images.IconNames;
+import org.orbisgis.core.images.OrbisGISIcon;
 import org.orbisgis.core.ui.editor.IEditor;
 import org.orbisgis.core.ui.editors.table.TableEditableElement;
 import org.orbisgis.core.ui.pluginSystem.AbstractPlugIn;
@@ -148,7 +148,7 @@ public class ShowFieldStatisticsPlugIn extends AbstractPlugIn {
 		context.getFeatureInstaller().addPopupMenuItem(frame, this,
 				new String[] { Names.POPUP_TABLE_SHOWFIELDSTAT_PATH1 },
 				Names.POPUP_TABLE_SHOWFIELDSTAT_GROUP, false,
-				getIcon(IconNames.POPUP_TABLE_SHOWFIELDSTAT_ICON), wbContext);
+				OrbisGISIcon.TABLE_SHOWFIELDSTAT, wbContext);
 	}
 
 	private GenericObjectDriver getSubData(String fieldName, DataSource ds,
@@ -197,7 +197,7 @@ public class ShowFieldStatisticsPlugIn extends AbstractPlugIn {
 		if((editor=getPlugInContext().getTableEditor()) != null
 				&& getSelectedColumn()!=-1){
 			final TableEditableElement element = (TableEditableElement) editor
-					.getElement();			
+					.getElement();
 			try {
 				Metadata metadata = element.getDataSource().getMetadata();
 				Type type = metadata.getFieldType(getSelectedColumn());

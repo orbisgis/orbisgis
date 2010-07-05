@@ -40,11 +40,13 @@ package org.orbisgis.core.ui.plugins.toc;
 import java.io.File;
 
 import org.gdms.data.DataSourceFactory;
+import org.gdms.driver.DriverException;
 import org.gdms.driver.FileDriver;
 import org.gdms.driver.driverManager.Driver;
 import org.gdms.driver.driverManager.DriverManager;
 import org.gdms.source.AndDriverFilter;
 import org.gdms.source.FileDriverFilter;
+import org.gdms.source.RasterDriverFilter;
 import org.gdms.source.SourceManager;
 import org.gdms.source.VectorialDriverFilter;
 import org.gdms.source.WritableDriverFilter;
@@ -65,9 +67,9 @@ import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchFrame;
 
 public class SaveInFilePlugIn extends AbstractPlugIn {
 
-	public boolean execute(PlugInContext context) {
+	public boolean execute(PlugInContext context) throws DriverException {
 		MapContext mapContext = getPlugInContext().getMapContext();
-		ILayer[] selectedResources = mapContext.getSelectedLayers();		
+		ILayer[] selectedResources = mapContext.getSelectedLayers();
 		for (ILayer resource : selectedResources) {
 			final SaveFilePanel outfilePanel = new SaveFilePanel(
 					"org.orbisgis.core.ui.editorViews.toc.actions.SaveInFile",
@@ -77,24 +79,32 @@ public class SaveInFilePlugIn extends AbstractPlugIn {
 			final DataSourceFactory dsf = dm.getDataSourceFactory();
 			SourceManager sourceManager = dm.getSourceManager();
 			DriverManager driverManager = sourceManager.getDriverManager();
-
-			Driver[] filtered = driverManager.getDrivers(new AndDriverFilter(
-					new FileDriverFilter(), new VectorialDriverFilter(),
-					new WritableDriverFilter()));
+			Driver[] filtered = null;
+			if (resource.isRaster()) {
+				filtered = driverManager.getDrivers(new AndDriverFilter(
+						new FileDriverFilter(), new RasterDriverFilter(),
+						new WritableDriverFilter()));
+			} else if (resource.isVectorial()) {
+				filtered = driverManager.getDrivers(new AndDriverFilter(
+						new FileDriverFilter(), new VectorialDriverFilter(),
+						new WritableDriverFilter()));
+			}
 			for (int i = 0; i < filtered.length; i++) {
 				FileDriver fileDriver = (FileDriver) filtered[i];
 				String[] extensions = fileDriver.getFileExtensions();
-				outfilePanel.addFilter(extensions, fileDriver.getTypeDescription());
+				outfilePanel.addFilter(extensions, fileDriver
+						.getTypeDescription());
 			}
 
 			if (UIFactory.showDialog(outfilePanel)) {
 				final File savedFile = new File(outfilePanel.getSelectedFile()
 						.getAbsolutePath());
-				BackgroundManager bm = Services.getService(BackgroundManager.class);
+				BackgroundManager bm = Services
+						.getService(BackgroundManager.class);
 				bm.backgroundOperation(new ExportInFileOperation(dsf, resource
 						.getName(), savedFile));
 
-			}			
+			}
 		}
 		return true;
 	}
@@ -105,15 +115,15 @@ public class SaveInFilePlugIn extends AbstractPlugIn {
 		context.getFeatureInstaller().addPopupMenuItem(
 				frame,
 				this,
-				new String[] { Names.POPUP_TOC_EXPORT_PATH1, 
-						Names.TOC_EXPORT_SAVEIN_FILE},
+				new String[] { Names.POPUP_TOC_EXPORT_SAVE,
+						Names.TOC_EXPORT_SAVEIN_FILE },
 				Names.POPUP_TOC_EXPORT_GROUP, false, null, wbContext);
 	}
 
 	public boolean isEnabled() {
 		return getPlugInContext().checkLayerAvailability(
-				new SelectionAvailability[] {SelectionAvailability.SUPERIOR},
+				new SelectionAvailability[] { SelectionAvailability.SUPERIOR },
 				0,
-				new LayerAvailability[] {LayerAvailability.VECTORIAL});
+				new LayerAvailability[] { });
 	}
 }

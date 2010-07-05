@@ -5,9 +5,9 @@
  * distributed under GPL 3 license. It is produced by the "Atelier SIG" team of
  * the IRSTV Institute <http://www.irstv.cnrs.fr/> CNRS FR 2488.
  *
- * 
+ *
  *  Team leader Erwan BOCHER, scientific researcher,
- * 
+ *
  *  User support leader : Gwendall Petit, geomatic engineer.
  *
  *
@@ -43,7 +43,7 @@ import javax.swing.JMenuItem;
 
 import org.orbisgis.core.Services;
 import org.orbisgis.core.edition.EditableElement;
-import org.orbisgis.core.images.IconNames;
+import org.orbisgis.core.images.OrbisGISIcon;
 import org.orbisgis.core.layerModel.MapContext;
 import org.orbisgis.core.ui.editor.EditorListener;
 import org.orbisgis.core.ui.editor.IEditor;
@@ -75,8 +75,8 @@ public class TocViewPlugIn extends ViewPlugIn {
 		// setComponent(panel,"Memory", getIcon("utilities-system-monitor.png"),
 		// context);
 		menuItem = context.getFeatureInstaller().addMainMenuItem(this,
-				new String[] { Names.VIEW }, Names.TOC, true,
-				getIcon(IconNames.MAP), editors, panel,context);
+				new String[] { Names.VIEW }, Names.TOC, true, OrbisGISIcon.MAP,
+				editors, panel, context);
 	}
 
 	public boolean execute(PlugInContext context) throws Exception {
@@ -95,7 +95,8 @@ public class TocViewPlugIn extends ViewPlugIn {
 			MapContext mapContext = tableElement.getMapContext();
 			// Get MapContext element
 			EditorManager em = Services.getService(EditorManager.class);
-			IEditor[] mapEditors = em.getEditors(Names.EDITOR_MAP_ID, mapContext);
+			IEditor[] mapEditors = em.getEditors(Names.EDITOR_MAP_ID,
+					mapContext);
 			if (mapEditors.length > 0) {
 				panel.setMapContext(mapEditors[0].getElement());
 				return true;
@@ -120,7 +121,8 @@ public class TocViewPlugIn extends ViewPlugIn {
 								.getObject();
 						EditorManager em = Services
 								.getService(EditorManager.class);
-						IEditor[] editors = em.getEditors(Names.EDITOR_TABLE_ID);
+						IEditor[] editors = em
+								.getEditors(Names.EDITOR_TABLE_ID);
 						for (IEditor openEditor : editors) {
 							AbstractTableEditableElement el = (AbstractTableEditableElement) openEditor
 									.getElement();
@@ -143,13 +145,11 @@ public class TocViewPlugIn extends ViewPlugIn {
 				public void activeEditorChanged(IEditor previous,
 						IEditor current) {
 				}
-				
 
 				@Override
-				public void elementLoaded(IEditor editor, Component comp) {					
+				public void elementLoaded(IEditor editor, Component comp) {
 				}
 
-				
 			};
 			EditorManager em = Services.getService(EditorManager.class);
 			em.addEditorListener(closingListener);
@@ -165,23 +165,22 @@ public class TocViewPlugIn extends ViewPlugIn {
 		panel.setMapContext(null, null);
 	}
 
-	
 	public void delete() {
 		panel.delete();
 	}
-	
-	public boolean isEnabled() {		
+
+	public boolean isEnabled() {
 		return true;
 	}
-	
+
 	public boolean isSelected() {
 		boolean isSelected = false;
 		isSelected = getPlugInContext().viewIsOpen(getId());
 		menuItem.setSelected(isSelected);
 		return isSelected;
 	}
-	
-	public String getName() {		
+
+	public String getName() {
 		return "Toc view";
 	}
 }

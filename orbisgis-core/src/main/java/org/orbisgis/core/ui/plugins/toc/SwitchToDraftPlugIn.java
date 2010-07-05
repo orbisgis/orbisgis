@@ -2,6 +2,7 @@ package org.orbisgis.core.ui.plugins.toc;
 
 
 import org.orbisgis.core.images.IconNames;
+import org.orbisgis.core.images.OrbisGISIcon;
 import org.orbisgis.core.map.MapTransform;
 
 import org.orbisgis.core.ui.pluginSystem.AbstractPlugIn;
@@ -39,7 +40,7 @@ public class SwitchToDraftPlugIn extends AbstractPlugIn {
 		context.getFeatureInstaller().addPopupMenuItem(frame, this,
 			new String[]{"toogle rendering mode"},
 			Names.POPUP_TOC_LEGEND_GROUP, false,
-			getIcon(IconNames.POPUP_TOC_LEGEND_ICON), wbContext);
+			OrbisGISIcon.EDIT_LEGEND, wbContext);
 	}
 
 	@Override

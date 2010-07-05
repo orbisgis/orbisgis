@@ -63,6 +63,7 @@ import org.gdms.sql.evaluator.Not;
 import org.gdms.sql.evaluator.NotEquals;
 import org.gdms.sql.evaluator.Or;
 import org.gdms.sql.evaluator.Product;
+import org.gdms.sql.evaluator.SelectResultOperator;
 import org.gdms.sql.evaluator.Substraction;
 import org.gdms.sql.evaluator.Sum;
 import org.gdms.sql.parser.ASTSQLAdd;
@@ -207,7 +208,8 @@ public class LogicTreeBuilder {
 				Node tableListNode = node.jjtGetChild(0);
 				boolean ifExists = node.first_token.next.next.kind == SQLEngineConstants.IF;
 				boolean purge = node.last_token.kind == SQLEngineConstants.PURGE;
-				DropTableOperator operator = new DropTableOperator(ifExists, purge);
+				DropTableOperator operator = new DropTableOperator(ifExists,
+						purge);
 				for (int i = 0; i < tableListNode.jjtGetNumChildren(); i++) {
 					ScanOperator scan = (ScanOperator) getOperator(tableListNode
 							.jjtGetChild(i));
@@ -623,13 +625,12 @@ public class LogicTreeBuilder {
 		return ret;
 	}
 
-	private Expression getSQLExpression(Node node) throws SemanticException {
+	private Expression getSQLExpression(Node node) throws SemanticException, DriverException {
 		Expression ret = getExpression(node);
-
 		return ret;
 	}
 
-	private Expression getExpression(Node theNode) throws SemanticException {
+	private Expression getExpression(Node theNode) throws SemanticException, DriverException {
 		SimpleNode node = (SimpleNode) theNode;
 		if (node instanceof ASTSQLSumExpr) {
 			// Get expressions or bypass if only one child
@@ -744,7 +745,9 @@ public class LogicTreeBuilder {
 			return is;
 
 		} else if (node instanceof ASTSQLExistsClause) {
-			throw new UnsupportedOperationException("Exist is not supported");
+			throw new UnsupportedOperationException("Exists is not supported");
+		} else if (node instanceof ASTSQLSelect) {
+			return new SelectResultOperator(getOperator(node));
 		} else if (node instanceof ASTSQLPattern) {
 			if (node.jjtGetNumChildren() == 0) {
 				// literal
@@ -889,7 +892,7 @@ public class LogicTreeBuilder {
 	}
 
 	private Expression buildArithmeticOperator(OperatorFactory opFactory,
-			SimpleNode node) throws SemanticException {
+			SimpleNode node) throws SemanticException, DriverException {
 		if (node.jjtGetNumChildren() > 1) {
 			Expression left = getExpression(node.jjtGetChild(0));
 			for (int i = 1; i < node.jjtGetNumChildren(); i = i + 2) {
@@ -904,7 +907,7 @@ public class LogicTreeBuilder {
 	}
 
 	private Expression buildBooleanOperator(OperatorFactory opFactory,
-			SimpleNode node) throws SemanticException {
+			SimpleNode node) throws SemanticException, DriverException {
 		if (node.jjtGetNumChildren() > 1) {
 			Expression left = getExpression(node.jjtGetChild(0));
 			for (int i = 1; i < node.jjtGetNumChildren(); i++) {
