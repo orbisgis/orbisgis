@@ -141,16 +141,27 @@ public class SQLTest extends SourceTest {
 		dsf.executeSQL("create table temp as select * from "
 				+ super.getSHPTABLE());
 		dsf.executeSQL("delete from temp where gid = 1;");
+
+		DataSource ds = dsf.getDataSource("temp");
+
+		int fieldIndex = ds.getFieldIndexByName("gid");
+		for (int i = 0; i < ds.getRowCount(); i++) {
+			int value = ds.getFieldValue(i, fieldIndex).getAsInt();
+			assertTrue(value != 1);
+
+		}
 	}
-	
+
 	public void testDeleteExistsTable() throws Exception {
 		dsf.getSourceManager().register("temp",
 				new File(backupDir + "/delete.shp"));
 		dsf.executeSQL("create table temp as select * from "
-				+ super.getSHPTABLE());		
-		dsf.executeSQL("create table centroid as select gid, st_centroid(the_geom) as the_geom from "
-				+ super.getSHPTABLE());		
-		dsf.executeSQL("delete from temp where exists (select a.gid from centroid a, temp b where st_intersects(a.the_geom, b.the_geom));");
+				+ super.getSHPTABLE());
+		dsf
+				.executeSQL("create table centroid as select gid, st_centroid(the_geom) as the_geom from "
+						+ super.getSHPTABLE());
+		dsf
+				.executeSQL("delete from temp where exists (select a.gid from centroid a, temp b where st_intersects(a.the_geom, b.the_geom));");
 	}
 
 	public void testDropTablePurge() throws Exception {
@@ -998,7 +1009,7 @@ public class SQLTest extends SourceTest {
 				ValueFactory.createValue("b") });
 		dsf.getSourceManager().register("source", omd);
 		DataSource ds = dsf
-				.getDataSourceFromSQL("select geomunion(the_geom) from source "
+				.getDataSourceFromSQL("select st_union(the_geom) from source "
 						+ "group by alpha");
 		ds.open();
 		assertTrue(ds.getRowCount() == 2);
@@ -1072,12 +1083,12 @@ public class SQLTest extends SourceTest {
 		assertTrue(ds.getMetadata().getFieldCount() == 1);
 		ds.close();
 	}
-	
+
 	public void testInSelect() throws Exception {
 		Type intType = TypeFactory.createType(Type.INT);
 		Type stringType = TypeFactory.createType(Type.STRING);
-		GenericObjectDriver dict = new GenericObjectDriver(new String[] { "code",
-				"text" }, new Type[] { intType, stringType });
+		GenericObjectDriver dict = new GenericObjectDriver(new String[] {
+				"code", "text" }, new Type[] { intType, stringType });
 		dict.addValues(ValueFactory.createValue(0), ValueFactory
 				.createValue("good"));
 		dict.addValues(ValueFactory.createValue(1), ValueFactory
@@ -1092,9 +1103,9 @@ public class SQLTest extends SourceTest {
 		thetable.addValues(ValueFactory.createValue(0));
 		dsf.getSourceManager().register("dict", dict);
 		dsf.getSourceManager().register("thetable", thetable);
-		DataSource ds = dsf.getDataSourceFromSQL(
-				"select * from thetable " + "where dict_code in "
-						+ "(select code from dict where text = 'good');");
+		DataSource ds = dsf.getDataSourceFromSQL("select * from thetable "
+				+ "where dict_code in "
+				+ "(select code from dict where text = 'good');");
 		ds.open();
 		for (int i = 0; i < ds.getRowCount(); i++) {
 			assertTrue(ds.getInt(i, 0) == 0);
@@ -1164,13 +1175,12 @@ public class SQLTest extends SourceTest {
 		assertTrue(ds.getInt(0, 0) == 1);
 		ds.close();
 	}
-	
+
 	public void testUpdateSubquery() throws Exception {
 		createSource("sub", "b", 0, 1, 2, 3);
 		createSource("source", "a", 0, 1, 2, 3);
-		dsf.executeSQL(
-				"update source SET a = 1 "
-						+ "WHERE a = (select * from sub where b=2)", null);
+		dsf.executeSQL("update source SET a = 1 "
+				+ "WHERE a = (select * from sub where b=2)", null);
 		DataSource ds = dsf.getDataSource("source");
 		ds.open();
 		assertTrue(ds.getRowCount() == 4);
