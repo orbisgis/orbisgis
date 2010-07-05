@@ -163,13 +163,13 @@ public class LogicTreeBuilder {
 			ScalarProductOp identity = new ScalarProductOp();
 			identity.addChild(tableRef);
 			Operator top = identity;
+			DeleteOperator deleteOperator = new DeleteOperator();
 			SimpleNode whereNode = getChildNode(node, ASTSQLWhere.class);
 			if (whereNode != null) {
-				Operator where = getOperator(whereNode);
-				where.addChild(top);
-				top = where;
+				Expression whereExpr = getSQLExpression(whereNode
+						.jjtGetChild(0));
+				deleteOperator.setExpressions(whereExpr);
 			}
-			Operator deleteOperator = new DeleteOperator();
 			deleteOperator.addChild(top);
 			return deleteOperator;
 		} else if (node instanceof ASTSQLInsert) {
@@ -625,12 +625,14 @@ public class LogicTreeBuilder {
 		return ret;
 	}
 
-	private Expression getSQLExpression(Node node) throws SemanticException, DriverException {
+	private Expression getSQLExpression(Node node) throws SemanticException,
+			DriverException {
 		Expression ret = getExpression(node);
 		return ret;
 	}
 
-	private Expression getExpression(Node theNode) throws SemanticException, DriverException {
+	private Expression getExpression(Node theNode) throws SemanticException,
+			DriverException {
 		SimpleNode node = (SimpleNode) theNode;
 		if (node instanceof ASTSQLSumExpr) {
 			// Get expressions or bypass if only one child
