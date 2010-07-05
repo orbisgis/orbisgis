@@ -49,7 +49,7 @@ import com.vividsolutions.jts.geom.Geometry;
 public class ST_Distance extends AbstractSpatialPropertyFunction {
 	public Value evaluateResult(final Value[] args) throws FunctionException {
 		final Geometry g1 = args[0].getAsGeometry();
-		final Geometry g2 = args[0].getAsGeometry();
+		final Geometry g2 = args[1].getAsGeometry();
 		return ValueFactory.createValue(g1.distance(g2));
 	}
 	
