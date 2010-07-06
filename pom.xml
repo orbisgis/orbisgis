@@ -47,7 +47,7 @@
 	    <repository>
 		<id>geosysin</id>
 		<name>Geosysin repository</name>
-		<url>scp://geosysin.iict.ch:/var/www/geosysin.iict.ch/irstv/trac/trac/htdocs/maven-repo/</url>
+		<url>scp://irstv@geosysin.iict.ch:/var/www/geosysin.iict.ch/irstv/trac/htdocs/maven-repo</url>
 	    </repository>
 
 	</distributionManagement> 	
