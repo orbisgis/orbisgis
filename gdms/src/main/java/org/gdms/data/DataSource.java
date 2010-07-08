@@ -59,7 +59,6 @@ import org.gdms.sql.strategies.IncompatibleTypesException;
 /**
  * Interface to access any data source
  * 
- * @author Fernando Gonzalez Cortes
  */
 public interface DataSource extends ReadAccess {
 	/**
