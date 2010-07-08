@@ -50,6 +50,7 @@ import org.gdms.sql.function.spatial.geometry.convert.ST_Force_3D;
 import org.gdms.sql.function.spatial.geometry.convert.ST_ToMultiLine;
 import org.gdms.sql.function.spatial.geometry.convert.ST_ToMultiPoint;
 import org.gdms.sql.function.spatial.geometry.convert.ST_Centroid;
+import org.gdms.sql.function.spatial.geometry.convert.ST_ToMultiSegments;
 import org.gdms.sql.function.spatial.geometry.create.ST_Boundary;
 import org.gdms.sql.strategies.IncompatibleTypesException;
 
@@ -92,6 +93,19 @@ public class SpatialFunctionTest extends FunctionTest {
 		type = evaluate(function, type);
 		assertTrue(type.getTypeCode() == Type.GEOMETRY);
 		assertTrue(type.getIntConstraint(Constraint.GEOMETRY_DIMENSION) == 3);
+	}
+
+	public void testST_ToMultiSegments() throws Exception {
+
+		ST_ToMultiSegments function = new ST_ToMultiSegments();
+		Value res = evaluate(function, new ColumnValue(Type.GEOMETRY,
+				ValueFactory.createNullValue()));
+		assertTrue(res.isNull());
+
+		Value vg1 = ValueFactory.createValue(g2);
+		res = evaluate(function, vg1);
+
+		assertTrue(res.getAsGeometry().getNumGeometries() == 3);
 	}
 
 	public void testBoundary() throws Exception {
@@ -148,7 +162,8 @@ public class SpatialFunctionTest extends FunctionTest {
 	}
 
 	public final void testCentroid() throws Exception {
-		Geometry g = testSpatialFunction(new ST_Centroid(), g1, 1).getAsGeometry();
+		Geometry g = testSpatialFunction(new ST_Centroid(), g1, 1)
+				.getAsGeometry();
 		assertTrue(g1.getCentroid().equals(g));
 	}
 
