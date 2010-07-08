@@ -37,46 +37,58 @@
  */
 package org.gdms.sql.function.spatial.geometry.convert;
 
+import java.util.List;
+
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
-import org.gdms.geometryUtils.GeometryConverter;
 import org.gdms.sql.function.Argument;
 import org.gdms.sql.function.Arguments;
 import org.gdms.sql.function.FunctionException;
 import org.gdms.sql.function.spatial.geometry.AbstractSpatialFunction;
 
 import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.GeometryFactory;
+import com.vividsolutions.jts.geom.LineString;
 
-public class ST_ToMultiPoint extends AbstractSpatialFunction {
-	public String getName() {
-		return "ST_ToMultiPoint";
-	}
+public class ST_ToMultiSegments extends AbstractSpatialFunction {
+	private final static GeometryFactory factory = new GeometryFactory();
 
-	public Value evaluate(final Value[] args) throws FunctionException {
+	public Value evaluate(Value[] args) throws FunctionException {
 		if (args[0].isNull()) {
 			return ValueFactory.createNullValue();
 		} else {
 			final Geometry geom = args[0].getAsGeometry();
-
-			return ValueFactory.createValue(GeometryConverter
-					.toMultiPoint(geom));
+			final UniqueSegmentsExtracter uniqueSegmentsExtracter = new UniqueSegmentsExtracter(
+					geom);
+			final List<LineString> lineList = uniqueSegmentsExtracter
+					.getSegmentAsLineString();
+			return ValueFactory
+					.createValue(factory.createMultiLineString(lineList
+							.toArray(new LineString[0])));
 		}
 	}
 
 	public String getDescription() {
-		return "Convert a geometry into a MultiPoint";
+		return "Convert a geometry into a set of unique segments stored in a MultiLineString ";
 	}
 
-	public Arguments[] getFunctionArguments() {
-		return new Arguments[] { new Arguments(Argument.GEOMETRY) };
+	public String getName() {
+		return "ST_ToMultiSegments";
+	}
+
+	public String getSqlOrder() {
+		return "select ST_ToMultiSegments(the_geom) from myTable;";
 	}
 
 	public boolean isAggregate() {
 		return false;
 	}
 
-	public String getSqlOrder() {
-		return "select ST_ToMultiPoint(the_geom) from myTable;";
+	public Arguments[] getFunctionArguments() {
+		return new Arguments[] { new Arguments(Argument.GEOMETRY) };
 	}
 
+	public boolean isDesaggregate() {
+		return false;
+	}
 }
