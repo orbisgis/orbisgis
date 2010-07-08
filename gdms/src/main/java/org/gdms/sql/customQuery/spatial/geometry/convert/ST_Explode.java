@@ -55,6 +55,7 @@ import org.gdms.sql.customQuery.CustomQuery;
 import org.gdms.sql.customQuery.TableDefinition;
 import org.gdms.sql.function.Argument;
 import org.gdms.sql.function.Arguments;
+import org.gdms.sql.strategies.DiskBufferDriver;
 import org.orbisgis.progress.IProgressMonitor;
 
 import com.vividsolutions.jts.geom.Geometry;
@@ -93,7 +94,7 @@ public class ST_Explode implements CustomQuery {
 					"explod_id");
 			metadata.addField(field, TypeFactory.createType(Type.INT));
 
-			final GenericObjectDriver driver = new GenericObjectDriver(metadata);
+			final DiskBufferDriver driver = new DiskBufferDriver(dsf, metadata);
 
 			long rowCount = sds.getRowCount();
 			for (long rowIndex = 0; rowIndex < rowCount; rowIndex++) {
@@ -113,6 +114,7 @@ public class ST_Explode implements CustomQuery {
 				final Geometry geometry = sds.getGeometry(rowIndex);
 				explode(driver, newValues, geometry, spatialFieldIndex);
 			}
+			driver.writingFinished();
 			sds.close();
 			return driver;
 		} catch (DriverLoadException e) {
@@ -122,9 +124,9 @@ public class ST_Explode implements CustomQuery {
 		}
 	}
 
-	private void explode(final GenericObjectDriver driver,
+	private void explode(final DiskBufferDriver driver,
 			final Value[] fieldsValues, final Geometry geometry,
-			final int spatialFieldIndex) {
+			final int spatialFieldIndex) throws DriverException {
 		int gid = 1;
 		if (geometry instanceof GeometryCollection) {
 			final int nbOfGeometries = geometry.getNumGeometries();
