@@ -5,9 +5,9 @@
  * distributed under GPL 3 license. It is produced by the "Atelier SIG" team of
  * the IRSTV Institute <http://www.irstv.cnrs.fr/> CNRS FR 2488.
  *
- * 
+ *
  *  Team leader Erwan BOCHER, scientific researcher,
- * 
+ *
  *  User support leader : Gwendall Petit, geomatic engineer.
  *
  *
@@ -57,7 +57,6 @@ import org.orbisgis.core.Services;
 import org.orbisgis.core.configuration.BasicConfiguration;
 import org.orbisgis.core.errorManager.ErrorManager;
 import org.orbisgis.core.images.IconLoader;
-import org.orbisgis.core.images.IconNames;
 import org.orbisgis.core.sif.UIFactory;
 import org.orbisgis.core.ui.configuration.EPConfigHelper;
 import org.orbisgis.core.ui.editor.IEditor;
@@ -114,7 +113,7 @@ public class OrbisGISWorkspace implements WorkspaceListener {
 		UIFactory.setPersistencyDirectory(sifDir);
 		UIFactory.setTempDirectory(Services.getService(IOGWorkspace.class)
 				.getTempFolder());
-		UIFactory.setDefaultIcon(IconLoader.getIconUrl(IconNames.LOGO_MINI));
+		UIFactory.setDefaultIcon(IconLoader.getIconUrl("mini_orbisgis.png"));
 		WorkbenchContext wbContext = Services
 				.getService(WorkbenchContext.class);
 		UIFactory.setMainFrame(wbContext.getWorkbench().getFrame());

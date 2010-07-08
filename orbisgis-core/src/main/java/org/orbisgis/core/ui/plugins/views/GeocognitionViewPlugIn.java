@@ -5,9 +5,9 @@
  * distributed under GPL 3 license. It is produced by the "Atelier SIG" team of
  * the IRSTV Institute <http://www.irstv.cnrs.fr/> CNRS FR 2488.
  *
- * 
+ *
  *  Team leader Erwan BOCHER, scientific researcher,
- * 
+ *
  *  User support leader : Gwendall Petit, geomatic engineer.
  *
  *
@@ -42,7 +42,7 @@ import java.awt.Component;
 import javax.swing.JMenuItem;
 
 import org.orbisgis.core.PersistenceException;
-import org.orbisgis.core.images.IconNames;
+import org.orbisgis.core.images.OrbisGISIcon;
 import org.orbisgis.core.ui.geocognition.GeocognitionView;
 import org.orbisgis.core.ui.pluginSystem.PlugInContext;
 import org.orbisgis.core.ui.pluginSystem.ViewPlugIn;
@@ -70,18 +70,18 @@ public class GeocognitionViewPlugIn extends ViewPlugIn {
 		panel.initialize();
 		menuItem = context.getFeatureInstaller().addMainMenuItem(this,
 				new String[] { Names.VIEW }, Names.GEOCOGNITION, true,
-				getIcon(IconNames.GEOCOGNITION_ICON), null, panel, context);
+				OrbisGISIcon.GEOCOGNITION_ICON, null, panel, context);
 	}
-	
+
 	public boolean execute(PlugInContext context) throws Exception {
 		getPlugInContext().loadView(getId());
 		return true;
 	}
 
-	public boolean isEnabled() {		
+	public boolean isEnabled() {
 		return true;
 	}
-	
+
 	public boolean isSelected() {
 		boolean isSelected = false;
 		isSelected = getPlugInContext().viewIsOpen(getId());
@@ -96,8 +96,8 @@ public class GeocognitionViewPlugIn extends ViewPlugIn {
 	public void saveStatus() throws PersistenceException {
 		panel.saveStatus();
 	}
-	
-	public String getName() {		
+
+	public String getName() {
 		return "Geocognition view";
 	}
 }

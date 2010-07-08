@@ -3,24 +3,24 @@ package org.gdms.sql.parser;
 
 public interface SQLEngineTreeConstants
 {
-  public int JJTSQLANDEXPR = 0;
-  public int JJTSQLBETWEENCLAUSE = 1;
-  public int JJTSQLCOLREF = 2;
-  public int JJTSQLCOMPAREEXPR = 3;
-  public int JJTSQLCOMPAREEXPRRIGHT = 4;
-  public int JJTSQLCOMPAREOP = 5;
-  public int JJTSQLDELETE = 6;
-  public int JJTSQLDROP = 7;
-  public int JJTSQLALTER = 8;
-  public int JJTSQLADD = 9;
-  public int JJTSQLADDCOLUMN = 10;
-  public int JJTSQLADDPRIMARYKEY = 11;
-  public int JJTSQLDROPCOLUMN = 12;
-  public int JJTSQLRENAME = 13;
-  public int JJTSQLRENAMECOLUMN = 14;
-  public int JJTSQLRENAMETABLE = 15;
-  public int JJTSQLTYPE = 16;
-  public int JJTSQLEXISTSCLAUSE = 17;
+  public int JJTSQLALTER = 0;
+  public int JJTSQLADD = 1;
+  public int JJTSQLANDEXPR = 2;
+  public int JJTSQLBETWEENCLAUSE = 3;
+  public int JJTSQLCOLREF = 4;
+  public int JJTSQLCOMPAREEXPR = 5;
+  public int JJTSQLCOMPAREEXPRRIGHT = 6;
+  public int JJTSQLCOMPAREOP = 7;
+  public int JJTSQLDELETE = 8;
+  public int JJTSQLDROP = 9;
+  public int JJTSQLEXISTSCLAUSE = 10;
+  public int JJTSQLADDCOLUMN = 11;
+  public int JJTSQLADDPRIMARYKEY = 12;
+  public int JJTSQLDROPCOLUMN = 13;
+  public int JJTSQLRENAME = 14;
+  public int JJTSQLRENAMECOLUMN = 15;
+  public int JJTSQLRENAMETABLE = 16;
+  public int JJTSQLTYPE = 17;
   public int JJTSQLFUNCTION = 18;
   public int JJTSQLFUNCTIONARGS = 19;
   public int JJTSQLGROUPBY = 20;
@@ -76,6 +76,8 @@ public interface SQLEngineTreeConstants
 
 
   public String[] jjtNodeName = {
+    "SQLAlter",
+    "SQLAdd",
     "SQLAndExpr",
     "SQLBetweenClause",
     "SQLColRef",
@@ -84,8 +86,7 @@ public interface SQLEngineTreeConstants
     "SQLCompareOp",
     "SQLDelete",
     "SQLDrop",
-    "SQLAlter",
-    "SQLAdd",
+    "SQLExistsClause",
     "SQLAddColumn",
     "SQLAddPrimaryKey",
     "SQLDropColumn",
@@ -93,7 +94,6 @@ public interface SQLEngineTreeConstants
     "SQLRenameColumn",
     "SQLRenameTable",
     "SQLType",
-    "SQLExistsClause",
     "SQLFunction",
     "SQLFunctionArgs",
     "SQLGroupBy",
@@ -148,4 +148,4 @@ public interface SQLEngineTreeConstants
     "SQLTypeArgs",
   };
 }
-/* JavaCC - OriginalChecksum=d5046d729a00922c09c0df10eac424ad (do not edit this line) */
+/* JavaCC - OriginalChecksum=b865866137a4b08b71d3c6bfbf8b4235 (do not edit this line) */

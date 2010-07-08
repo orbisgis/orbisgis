@@ -8,11 +8,23 @@ import org.grap.model.GeoRaster;
 
 import com.vividsolutions.jts.geom.Geometry;
 
+/**
+ * A feature is constituted of a metadata and a set of values stored in a table.
+ *
+ */
+
+
 public class Feature implements IFeature {
 
 	private Metadata metadata;
 	private Value[] values;
 	private int spatialFieldIndex = -1;
+
+        /**
+         * Public constructor. It's generated given a Metadata instance.
+         * @param metadata
+         * @throws DriverException
+         */
 
 	public Feature(Metadata metadata) throws DriverException {
 		this.metadata = metadata;

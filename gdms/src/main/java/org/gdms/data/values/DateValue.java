@@ -1,38 +1,39 @@
 /*
  * OrbisGIS is a GIS application dedicated to scientific spatial simulation.
- * This cross-platform GIS is developed at French IRSTV institute and is able
- * to manipulate and create vector and raster spatial information. OrbisGIS
- * is distributed under GPL 3 license. It is produced  by the geo-informatic team of
- * the IRSTV Institute <http://www.irstv.cnrs.fr/>, CNRS FR 2488:
- *    Erwan BOCHER, scientific researcher,
- *    Thomas LEDUC, scientific researcher,
- *    Fernando GONZALEZ CORTES, computer engineer.
+ * This cross-platform GIS is developed at French IRSTV institute and is able to
+ * manipulate and create vector and raster spatial information. OrbisGIS is
+ * distributed under GPL 3 license. It is produced by the "Atelier SIG" team of
+ * the IRSTV Institute <http://www.irstv.cnrs.fr/> CNRS FR 2488.
+ *
+ *
+ *  Team leader Erwan BOCHER, scientific researcher,
+ *
+ *  User support leader : Gwendall Petit, geomatic engineer.
+ *
  *
  * Copyright (C) 2007 Erwan BOCHER, Fernando GONZALEZ CORTES, Thomas LEDUC
  *
+ * Copyright (C) 2010 Erwan BOCHER, Pierre-Yves FADET, Alexis GUEGANNO, Maxence LAURENT
+ *
  * This file is part of OrbisGIS.
  *
- * OrbisGIS is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * OrbisGIS is free software: you can redistribute it and/or modify it under the
+ * terms of the GNU General Public License as published by the Free Software
+ * Foundation, either version 3 of the License, or (at your option) any later
+ * version.
  *
- * OrbisGIS is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
+ * OrbisGIS is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
+ * A PARTICULAR PURPOSE. See the GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
- * along with OrbisGIS. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License along with
+ * OrbisGIS. If not, see <http://www.gnu.org/licenses/>.
  *
- * For more information, please consult:
- *    <http://orbisgis.cerma.archi.fr/>
- *    <http://sourcesup.cru.fr/projects/orbisgis/>
+ * For more information, please consult: <http://www.orbisgis.org/>
  *
  * or contact directly:
- *    erwan.bocher _at_ ec-nantes.fr
- *    fergonco _at_ gmail.com
- *    thomas.leduc _at_ cerma.archi.fr
+ * erwan.bocher _at_ ec-nantes.fr
+ * gwendall.petit _at_ ec-nantes.fr
  */
 package org.gdms.data.values;
 
@@ -63,14 +64,14 @@ class DateValue extends AbstractValue implements Serializable {
 	 * Creates a new DateValue object.
 	 *
 	 * @param d
-	 *            Data to set
+	 *            Date to set
 	 */
 	DateValue(Date d) {
 		value = d;
 	}
 
 	/**
-	 *
+	 * Creates a new DateValue
 	 */
 	DateValue() {
 	}
@@ -81,10 +82,10 @@ class DateValue extends AbstractValue implements Serializable {
 	}
 
 	/**
-	 * Establece el valor
+	 * Set the stored datvalue.
 	 *
 	 * @param d
-	 *            valor
+	 *            The new date
 	 */
 	public void setValue(java.util.Date d) {
 		value = new Date(d.getTime());
@@ -216,6 +217,11 @@ class DateValue extends AbstractValue implements Serializable {
 	public int getType() {
 		return Type.DATE;
 	}
+        /**
+         * Puts the date in an array of bytes.
+         * @return
+         *          the date, put in a long value, and then in an array of bytes.
+         */
 
 	public byte[] getBytes() {
 		long v = value.getTime();
@@ -223,16 +229,34 @@ class DateValue extends AbstractValue implements Serializable {
 
 		return ret;
 	}
-
+        /**
+         * Create a new DateValue, give a array of bytes.
+         * @param buffer
+         *      The array to be read
+         * @return
+         *      a new DateValue
+         */
 	public static Value readBytes(byte[] buffer) {
 		return new DateValue(new Date(LongValue.getLong(buffer)));
 	}
-
+        /**
+         *
+         * @return
+         *      the {@link java.util.Date} stored in this object.
+         * @throws IncompatibleTypesException
+         */
 	@Override
 	public java.util.Date getAsDate() throws IncompatibleTypesException {
 		return value;
 	}
-
+        /**
+         * Try to cast ths Objet to anther type.Valid {@link org.gdms.data.types.Type}s are
+         * {@link org.gdms.data.types.Type#DATE}, {@link org.gdms.data.types.Type#TIME}, {@link org.gdms.data.types.Type#TIMESTAMP}
+         * and {@link org.gdms.data.types.Type#STRING}
+         * @param typeCode
+         * @return
+         * @throws IncompatibleTypesException
+         */
 	@Override
 	public Value toType(int typeCode) throws IncompatibleTypesException {
 		switch (typeCode) {

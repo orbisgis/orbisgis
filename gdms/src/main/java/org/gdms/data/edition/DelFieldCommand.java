@@ -1,39 +1,42 @@
 /*
  * OrbisGIS is a GIS application dedicated to scientific spatial simulation.
- * This cross-platform GIS is developed at French IRSTV institute and is able
- * to manipulate and create vector and raster spatial information. OrbisGIS
- * is distributed under GPL 3 license. It is produced  by the geo-informatic team of
- * the IRSTV Institute <http://www.irstv.cnrs.fr/>, CNRS FR 2488:
- *    Erwan BOCHER, scientific researcher,
- *    Thomas LEDUC, scientific researcher,
- *    Fernando GONZALEZ CORTES, computer engineer.
+ * This cross-platform GIS is developed at French IRSTV institute and is able to
+ * manipulate and create vector and raster spatial information. OrbisGIS is
+ * distributed under GPL 3 license. It is produced by the "Atelier SIG" team of
+ * the IRSTV Institute <http://www.irstv.cnrs.fr/> CNRS FR 2488.
+ *
+ *
+ *  Team leader Erwan BOCHER, scientific researcher,
+ *
+ *  User support leader : Gwendall Petit, geomatic engineer.
+ *
+ * Previous computer developer : Pierre-Yves FADET, computer engineer, Thomas LEDUC, scientific researcher, Fernando GONZALEZ
+ * CORTES, computer engineer.
  *
  * Copyright (C) 2007 Erwan BOCHER, Fernando GONZALEZ CORTES, Thomas LEDUC
  *
+ * Copyright (C) 2010 Erwan BOCHER, Pierre-Yves FADET, Alexis GUEGANNO, Maxence LAURENT
+ *
  * This file is part of OrbisGIS.
  *
- * OrbisGIS is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * OrbisGIS is free software: you can redistribute it and/or modify it under the
+ * terms of the GNU General Public License as published by the Free Software
+ * Foundation, either version 3 of the License, or (at your option) any later
+ * version.
  *
- * OrbisGIS is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
+ * OrbisGIS is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
+ * A PARTICULAR PURPOSE. See the GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
- * along with OrbisGIS. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License along with
+ * OrbisGIS. If not, see <http://www.gnu.org/licenses/>.
  *
- * For more information, please consult:
- *    <http://orbisgis.cerma.archi.fr/>
- *    <http://sourcesup.cru.fr/projects/orbisgis/>
+ * For more information, please consult: <http://www.orbisgis.org/>
  *
  * or contact directly:
- *    erwan.bocher _at_ ec-nantes.fr
- *    fergonco _at_ gmail.com
- *    thomas.leduc _at_ cerma.archi.fr
- */
+ * erwan.bocher _at_ ec-nantes.fr
+ * gwendall.petit _at_ ec-nantes.fr
+ **/
 package org.gdms.data.edition;
 
 import java.io.DataInputStream;
@@ -51,6 +54,11 @@ import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.WriteBufferManager;
 
+/**
+ * Command to delete a {@link org.gdms.data.edition.Field} in a datasource
+ * 
+ */
+
 public class DelFieldCommand implements Command {
 
 	private EditionDecorator dataSource;
@@ -58,16 +66,26 @@ public class DelFieldCommand implements Command {
 	private int fieldIndex;
 
 	private DelFieldInfo info;
-
+        /**
+         * Public constructor
+         * @param dataSource The datasource where the command will occur
+         * @param index the index of the field
+         */
 	public DelFieldCommand(EditionDecorator dataSource, int index) {
 		this.dataSource = dataSource;
 		this.fieldIndex = index;
 	}
-
+        /**
+         * @see org.gdms.data.edition.Command#redo()
+         * @throws DriverException
+         */
 	public void redo() throws DriverException {
 		info = dataSource.doRemoveField(fieldIndex);
 	}
-
+        /**
+         * @see org.gdms.data.edition.Command#undo()
+         * @throws DriverException
+         */
 	public void undo() throws DriverException {
 		try {
 			dataSource.undoDeleteField(info.fieldIndex, info.field,
@@ -76,16 +94,30 @@ public class DelFieldCommand implements Command {
 			throw new DriverException(e);
 		}
 	}
-
+        /**
+         * Inner class. Used to store datas of a field before itis deleted, so the delete command can be undone.
+         */
 	public static class DelFieldInfo {
+                /**
+                 * The index of the field
+                 */
 		public int fieldIndex;
-
+                /**
+                 * The field
+                 */
 		public Field field;
-
+                //A factory used to write datas to fieldFile
 		private DataSourceFactory factory;
-
+                //The file were datas are stored
 		private File fieldFile;
-
+                /**
+                 * Public constructor. Called when a Field is deleted.
+                 * @param factory   factory used to write the datas
+                 * @param fieldIndex index of the field
+                 * @param field field to be deleted
+                 * @param fieldValues {@link org.gdms.data.values.Value} associated to the field.
+                 * @throws IOException If there is an error durring the writeValues step
+                 */
 		public DelFieldInfo(DataSourceFactory factory, int fieldIndex,
 				Field field, Value[] fieldValues) throws IOException {
 			super();
@@ -94,7 +126,11 @@ public class DelFieldCommand implements Command {
 			this.factory = factory;
 			writeValues(fieldValues);
 		}
-
+                /**
+                 * Extract the values stored in the fieldFile
+                 * @return the values stored in the file
+                 * @throws IOException if there is a pproblem during the file reading
+                 */
 		public Value[] getFieldValues() throws IOException {
 			FileInputStream fis = new FileInputStream(fieldFile);
 			DataInputStream dis = new DataInputStream(fis);
@@ -105,7 +141,11 @@ public class DelFieldCommand implements Command {
 
 			return ret.getValues();
 		}
-
+                /*
+                 * write the values on disk
+                 * @param fieldValues
+                 * @throws IOException
+                 */
 		private void writeValues(Value[] fieldValues) throws IOException {
 			fieldFile = new File(factory.getTempFile());
 			FileChannel channel = new FileOutputStream(fieldFile).getChannel();

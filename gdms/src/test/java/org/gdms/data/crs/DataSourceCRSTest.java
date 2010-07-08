@@ -24,6 +24,7 @@ import fr.cts.IllegalCoordinateException;
 import fr.cts.crs.GeodeticCRS;
 import fr.cts.op.CoordinateOperationFactory;
 import fr.cts.op.CoordinateOperationSequence;
+import fr.cts.util.CRSUtil;
 
 public class DataSourceCRSTest extends TestCase {
 

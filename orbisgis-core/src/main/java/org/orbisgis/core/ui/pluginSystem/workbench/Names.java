@@ -5,9 +5,9 @@
  * distributed under GPL 3 license. It is produced by the "Atelier SIG" team of
  * the IRSTV Institute <http://www.irstv.cnrs.fr/> CNRS FR 2488.
  *
- * 
+ *
  *  Team leader Erwan BOCHER, scientific researcher,
- * 
+ *
  *  User support leader : Gwendall Petit, geomatic engineer.
  *
  *
@@ -52,15 +52,15 @@ public abstract class Names {
 	public static final String TOOLBAR_MAP = I18N.getText("orbisgis.toolbar.edition.map");
 	public static final String TOOLBAR_TABLE = I18N.getText("orbisgis.toolbar.edition.table");
 	public static final String TOOLBAR_RASTER = I18N.getText("orbisgis.toolbar.raster");
-	
+
 	public static final String MAP_TOOLBAR_NAME = I18N.getText("orbisgis.map.toolbar.main");
 	public static final String MAP_TOOLBAR_SCALE = I18N.getText("orbisgis.map.toolbar.scale");
 	public static final String MAP_TOOLBAR_PROJECTION = I18N.getText("orbisgis.map.toolbar.projection");
-	
-	
+
+
 	//Main status toolbar
 	public static final String STATUS_TOOLBAR_MAIN = I18N.getText("orbisgis.sttoolbar.main");;
-	
+
 	/**************************************************** MAIN MENU ************************************************************/
 	// MAIN MENU
 	// File
@@ -72,15 +72,15 @@ public abstract class Names {
 
 	// FILE SUB MENUS
 	// Exit
-	public static final String EXIT = I18N.getText("orbisgis.ui.menu.file.text.exit");	
+	public static final String EXIT = I18N.getText("orbisgis.ui.menu.file.text.exit");
 	// Save
-	public static final String SAVE = I18N.getText("orbisgis.ui.menu.file.text.save");	
+	public static final String SAVE = I18N.getText("orbisgis.ui.menu.file.text.save");
 	// Change Workspace
-	public static final String CHANGE_WS = I18N.getText("orbisgis.ui.menu.file.text.changeWorkspace");	
+	public static final String CHANGE_WS = I18N.getText("orbisgis.ui.menu.file.text.changeWorkspace");
 	// Save Workspace
-	public static final String SAVE_WS = I18N.getText("orbisgis.ui.menu.file.text.saveWorkspace");	
+	public static final String SAVE_WS = I18N.getText("orbisgis.ui.menu.file.text.saveWorkspace");
 
-	
+
 	// HELP SUB MENUS
 	// About
 	public static final String ABOUT = I18N.getText("orbisgis.ui.menu.help.text.about");
@@ -96,7 +96,7 @@ public abstract class Names {
 	// Memory
 	public static final String MEMORY = I18N.getText("orbisgis.ui.menu.view.text.memory");
 	// Geocognition
-	public static final String GEOCOGNITION = I18N.getText("orbisgis.ui.menu.view.text.geocognition");	
+	public static final String GEOCOGNITION = I18N.getText("orbisgis.ui.menu.view.text.geocognition");
 	// Beanshell
 	public static final String BEANSHELL = I18N.getText("orbisgis.ui.menu.view.text.beanshell");
 	// Information
@@ -107,8 +107,8 @@ public abstract class Names {
 	public static final String SQLCONSOLE = I18N.getText("orbisgis.ui.menu.view.text.sqlconsole");
 	// Geomark
 	public static final String GEOMARK = I18N.getText("orbisgis.ui.menu.view.text.geomark");
-	// Configuration panel	
-	public static final String CONFIGURATION = I18N.getText("orbisgis.org.orbisgis.core.ui.plugins.properties.configuration");	
+	// Configuration panel
+	public static final String CONFIGURATION = I18N.getText("orbisgis.org.orbisgis.core.ui.plugins.properties.configuration");
 	// TOC
 	public static final String TOC = I18N.getText("orbisgis.ui.menu.view.text.toc");
 	/**************************************************** MENU & POPUPMENU ********************************************************/
@@ -116,6 +116,8 @@ public abstract class Names {
 	// Edit Legend
 	public static final String POPUP_TOC_LEGEND_PATH = I18N.getText("orbisgis.ui.popupmenu.TOC.legend.path1");
 	public static final String POPUP_TOC_LEGEND_GROUP = I18N.getText("orbisgis.ui.popupmenu.TOC.legend.group");
+	public static final String POPUP_TOC_LEGEND_RASTER = I18N.getText("orbisgis.ui.popupmenu.TOC.legend.raster");
+	public static final String POPUP_TOC_RASTER_THRESHOLD = I18N.getText("orbisgis.ui.popupmenu.TOC.raster.threshold");
 
     // Edit SE Legend
     public static final String POPUP_TOC_FEATURETYPESTYLE_IMPORT = I18N.getText("orbisgis.ui.popupmenu.TOC.featureTypeStype.import");
@@ -128,11 +130,12 @@ public abstract class Names {
     public static final String POPUP_TOC_FEATURETYPESTYLE_CREATE_CHOROPLETH = I18N.getText("orbisgis.ui.popupmenu.TOC.featureTypeStype.rule.choroWizard");
 
 	// Export...
-	public static final String POPUP_TOC_EXPORT_PATH1 = I18N.getText("orbisgis.ui.popupmenu.TOC.export.path1");
-	public static final String POPUP_TOC_EXPORT_GROUP = I18N.getText("orbisgis.ui.popupmenu.TOC.export.group");	
+	public static final String POPUP_TOC_EXPORT_SAVE = I18N.getText("orbisgis.ui.popupmenu.TOC.export.save");
+
+	public static final String POPUP_TOC_EXPORT_GROUP = I18N.getText("orbisgis.ui.popupmenu.TOC.export.group");
 
 	public static final String TOC_EXPORT_SAVEIN_DB = I18N.getText("orbisgis.ui.popupmenu.TOC.export.saveindb");
-	
+
 	public static final String TOC_EXPORT_SAVEIN_FILE = I18N.getText("orbisgis.ui.popupmenu.TOC.export.saveinfile");
 	// Table
 	public static final String POPUP_TOC_TABLE_PATH1 = I18N.getText("orbisgis.ui.popupmenu.TOC.table.path1");
@@ -152,7 +155,7 @@ public abstract class Names {
 	// Set Inactive
 	public static final String POPUP_TOC_INACTIVE_PATH1 = I18N.getText("orbisgis.ui.popupmenu.TOC.inactive.path1");
 	public static final String POPUP_TOC_INACTIVE_GROUP = I18N.getText("orbisgis.ui.popupmenu.TOC.inactive.group");
-	//Revert 
+	//Revert
 	public static final String POPUP_TOC_REVERT_PATH1 = I18N.getText("orbisgis.ui.popupmenu.TOC.revert.path1");
 	//Save
 	public static final String POPUP_TOC_SAVE_PATH1 = I18N.getText("orbisgis.ui.popupmenu.TOC.save.path1");
@@ -221,16 +224,16 @@ public abstract class Names {
 	public static final String POPUP_GEOCATALOG_CLEAR = I18N.getText("orbisgis.ui.popupmenu.geocatalog.clear.path1");
 	public static final String POPUP_GEOCATALOG_CLEAR_GROUP = I18N.getText("orbisgis.ui.popupmenu.geocatalog.clear.group");
 
-	
+
 	// Describe Table
 	public static final String POPUP_GEOCATALOG_DESCRIBE_TABLE = I18N.getText("orbisgis.ui.popupmenu.geocatalog.table.describe");
-	
+
 	// Export
-	public static final String POPUP_GEOCATALOG_EXPORT = I18N.getText("orbisgis.ui.popupmenu.geocatalog.export");	
+	public static final String POPUP_GEOCATALOG_EXPORT = I18N.getText("orbisgis.ui.popupmenu.geocatalog.export");
 	public static final String POPUP_GEOCATALOG_EXPORT_INFILE = I18N.getText("orbisgis.ui.popupmenu.geocatalog.export.infile");
 	public static final String POPUP_GEOCATALOG_EXPORT_INDB = I18N.getText("orbisgis.ui.popupmenu.geocatalog.export.indb");
-	
-	
+
+
 	//Table Editor
 	public static final String EDITOR_TABLE_ID = I18N.getText("orbisgis.ui.table.id");
 	// Popup Table editor
@@ -241,13 +244,13 @@ public abstract class Names {
 	public static final String POPUP_TABLE_CLEAR_PATH1 = I18N.getText("orbisgis.ui.popupmenu.table.clear.path1");
 	public static final String POPUP_TABLE_CLEAR_GROUP = I18N.getText("orbisgis.ui.popupmenu.table.clear.group");
 	// Add row
-	public static final String POPUP_TABLE_ADDROW_PATH1 = I18N.getText("orbisgis.ui.popupmenu.table.addrow.path1");
+	public static final String POPUP_TABLE_ADDROW = I18N.getText("orbisgis.ui.popupmenu.table.addrow");
 	public static final String POPUP_TABLE_ADDROW_GROUP = I18N.getText("orbisgis.ui.popupmenu.table.addrow.group");
 	// select equals rows
 	public static final String POPUP_TABLE_EQUALS_PATH1 = I18N.getText("orbisgis.ui.popupmenu.table.equals.path1");
 	public static final String POPUP_TABLE_EQUALS_GROUP = I18N.getText("orbisgis.ui.popupmenu.table.equals.group");
 	// Select all rows
-	public static final String POPUP_TABLE_ALL_PATH1 = I18N.getText("orbisgis.ui.popupmenu.table.all.path1");
+	public static final String POPUP_TABLE_SELECT_ALLROW = I18N.getText("orbisgis.ui.popupmenu.table.selectallrow");
 	public static final String POPUP_TABLE_ALL_GROUP = I18N.getText("orbisgis.ui.popupmenu.table.all.group");
 	// Select all rows
 	public static final String POPUP_TABLE_NONE_PATH1 = I18N.getText("orbisgis.ui.popupmenu.table.none.path1");
@@ -293,9 +296,9 @@ public abstract class Names {
 	public static final String POPUP_MAP_EXPORT_PDF = I18N.getText("orbisgis.ui.popupmenu.map.export.pdf.path1");
 	public static final String POPUP_MAP_EXPORT_PDF_GROUP = I18N.getText("orbisgis.ui.popupmenu.map.export.pdf.group");
 	//Show coordinate
-	public static final String POPUP_MAP_SHOW_XY = I18N.getText("orbisgis.ui.popupmenu.map.show.xy.path1");	
+	public static final String POPUP_MAP_SHOW_XY = I18N.getText("orbisgis.ui.popupmenu.map.show.xy.path1");
 	/**************************************************** EDITION TOOLS *****************************************************/
-	/**************************************************** OTHERS ************************************************************/	
+	/**************************************************** OTHERS ************************************************************/
 	// Workbench context actions
 	public static final String ACTION_MENU_FILE = I18N.getText("orbisgis.action.menu.main");
 	public static final String ACTION_MENU_VIEW = I18N.getText("orbisgis.action.menu.view");
@@ -305,11 +308,16 @@ public abstract class Names {
 	public static final String ERROR_EDIT_LEGEND_EDITOR = I18N.getText("orbisgis.error.edit.legend.editor");
 	public static final String ERROR_EDIT_LEGEND_DRIVER = I18N.getText("orbisgis.error.edit.legend.driver");
 	public static final String ERROR_EDIT_LEGEND_LAYER = I18N.getText("orbisgis.error.edit.legend.layer");
-	
+
 	//Tool tip Text
-	//Full extent 
+	//Full extent
 	public static final String FULL_EXTENT_TOOTIP = I18N.getText("orbisgis.ui.tools.fullextent.tooltip");
-	//Scale 
+	//Scale
 	public static final String SCALE_TOOTIP = I18N.getText("orbisgis.ui.tools.scale.tooltip");
-	
+	public static final String RASTERALGEBRA_TOOTIP = I18N.getText("orbisgis.ui.tools.raster.calculator");;
+
+	public static final String FUNCTION_PANEL_NUMBER = I18N.getText("orbisgis.ui.panel.function.number");
+	public static final String SELECT_NONE = I18N.getText("orbisgis.selection.no");
+	public static final String SELECT_ALL = I18N.getText("orbisgis.selection.all");
+	public static final String SEARCH = I18N.getText("orbisgis.search");
 }

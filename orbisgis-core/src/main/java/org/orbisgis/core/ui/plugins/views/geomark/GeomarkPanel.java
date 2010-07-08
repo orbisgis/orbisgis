@@ -4,40 +4,40 @@
  * manipulate and create vector and raster spatial information. OrbisGIS is
  * distributed under GPL 3 license. It is produced by the geo-informatic team of
  * the IRSTV Institute <http://www.irstv.cnrs.fr/> CNRS FR 2488.
- * 
- *  
- *  Lead Erwan BOCHER, scientific researcher, 
  *
- *  Developer lead : Pierre-Yves FADET, computer engineer. 
- *  
- *  User support lead : Gwendall Petit, geomatic engineer. 
- * 
+ *
+ *  Lead Erwan BOCHER, scientific researcher,
+ *
+ *  Developer lead : Pierre-Yves FADET, computer engineer.
+ *
+ *  User support lead : Gwendall Petit, geomatic engineer.
+ *
  * Previous computer developer : Thomas LEDUC, scientific researcher, Fernando GONZALEZ
  * CORTES, computer engineer.
- * 
+ *
  * Copyright (C) 2007 Erwan BOCHER, Fernando GONZALEZ CORTES, Thomas LEDUC
- * 
+ *
  * Copyright (C) 2010 Erwan BOCHER, Fernando GONZALEZ CORTES, Thomas LEDUC
- * 
+ *
  * This file is part of OrbisGIS.
- * 
+ *
  * OrbisGIS is free software: you can redistribute it and/or modify it under the
  * terms of the GNU General Public License as published by the Free Software
  * Foundation, either version 3 of the License, or (at your option) any later
  * version.
- * 
+ *
  * OrbisGIS is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
  * A PARTICULAR PURPOSE. See the GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License along with
  * OrbisGIS. If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  * For more information, please consult: <http://orbisgis.cerma.archi.fr/>
  * <http://sourcesup.cru.fr/projects/orbisgis/>
- * 
- * or contact directly: 
- * erwan.bocher _at_ ec-nantes.fr 
+ *
+ * or contact directly:
+ * erwan.bocher _at_ ec-nantes.fr
  * Pierre-Yves.Fadet _at_ ec-nantes.fr
  * gwendall.petit _at_ ec-nantes.fr
  **/
@@ -73,8 +73,7 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
 import org.orbisgis.core.Services;
-import org.orbisgis.core.images.IconLoader;
-import org.orbisgis.core.images.IconNames;
+import org.orbisgis.core.images.OrbisGISIcon;
 import org.orbisgis.core.layerModel.MapContext;
 import org.orbisgis.core.ui.editor.IEditor;
 import org.orbisgis.core.ui.editors.map.MapContextManager;
@@ -131,7 +130,7 @@ public class GeomarkPanel extends JPanel implements ListSelectionListener {
 		JScrollPane listScrollPane = new JScrollPane(list);
 
 		JButton hireButton = new JButton();
-		hireButton.setIcon(IconLoader.getIcon(IconNames.WORLD_ADD));
+		hireButton.setIcon(OrbisGISIcon.WORLD_ADD);
 		hireButton.setToolTipText("Press the button to add a geomark!");
 		HireListener hireListener = new HireListener(hireButton);
 		hireButton.setActionCommand(addString);
@@ -139,7 +138,7 @@ public class GeomarkPanel extends JPanel implements ListSelectionListener {
 		hireButton.setEnabled(false);
 
 		fireButton = new JButton();
-		fireButton.setIcon(IconLoader.getIcon(IconNames.WORLD_DEL));
+		fireButton.setIcon(OrbisGISIcon.WORLD_DEL);
 		fireButton.setToolTipText("Press the button to delete a geomark!");
 		fireButton.setActionCommand(removeString);
 		fireButton.addActionListener(new FireListener());
@@ -169,7 +168,7 @@ public class GeomarkPanel extends JPanel implements ListSelectionListener {
 		JToolBar jToolBar = new JToolBar(JToolBar.VERTICAL);
 		jToolBar.setFloatable(false);
 		moveDown = new JButton();
-		moveDown.setIcon(IconLoader.getIcon("go-down.png"));
+		moveDown.setIcon(OrbisGISIcon.GO_DOWN);
 		moveDown.setToolTipText("Move down");
 		moveDown.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -186,7 +185,7 @@ public class GeomarkPanel extends JPanel implements ListSelectionListener {
 		});
 
 		moveUp = new JButton();
-		moveUp.setIcon(IconLoader.getIcon("go-up.png"));
+		moveUp.setIcon(OrbisGISIcon.GO_UP);
 		moveUp.setToolTipText("Move up");
 		moveUp.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -202,10 +201,9 @@ public class GeomarkPanel extends JPanel implements ListSelectionListener {
 			}
 		});
 
-
 		moveDown.setEnabled(false);
 		moveUp.setEnabled(false);
-		
+
 		jToolBar.add(moveUp);
 		jToolBar.add(moveDown);
 

@@ -48,8 +48,7 @@ import javax.swing.tree.DefaultTreeCellRenderer;
 
 import org.gdms.data.types.GeometryConstraint;
 import org.gdms.driver.TableDescription;
-import org.orbisgis.core.images.IconLoader;
-import org.orbisgis.core.images.IconNames;
+import org.orbisgis.core.images.OrbisGISIcon;
 
 
 /**
@@ -59,19 +58,19 @@ import org.orbisgis.core.images.IconNames;
 public class TableTreeCellRenderer extends DefaultTreeCellRenderer {
 		private static final long serialVersionUID = -4952164947192738782L;
 		@Override
-		public Component getTreeCellRendererComponent(JTree tree, 
-				Object value, boolean selected, boolean expanded, 
+		public Component getTreeCellRendererComponent(JTree tree,
+				Object value, boolean selected, boolean expanded,
 				boolean leaf, int row, boolean hasFocus) {
 
-			// Get default label with its icon, background and focus colors 
-			JLabel label = (JLabel)super.getTreeCellRendererComponent( 
+			// Get default label with its icon, background and focus colors
+			JLabel label = (JLabel)super.getTreeCellRendererComponent(
 					tree, value, selected, expanded, leaf, row, hasFocus);
-			
+
 			if(value instanceof DefaultMutableTreeNode){
 				Object object = ((DefaultMutableTreeNode)value).getUserObject();
 
 				// Change label icons
-				
+
 				if (object instanceof TableNode) {
 					TableNode tableNode = (TableNode)object;
 					label.setIcon(tableNode.getIcon());
@@ -81,20 +80,20 @@ public class TableTreeCellRenderer extends DefaultTreeCellRenderer {
 					label.setIcon(schemaNode.getIcon());
 				}
 				else if (object.toString().equals("Tables")){
-					Icon icon = IconLoader.getIcon(IconNames.TABLE);
+					Icon icon = OrbisGISIcon.TABLE;
 					label.setIcon(icon);
 				}
 				else if (object.toString().equals("Views")){
-					Icon icon = IconLoader.getIcon(IconNames.EYE);
+					Icon icon = OrbisGISIcon.EYE;
 					label.setIcon(icon);
 				}
 				// root is the database
-				else if (row==0){	
-					Icon icon = IconLoader.getIcon(IconNames.DATABASE);
+				else if (row==0){
+					Icon icon = OrbisGISIcon.DATABASE;
 					label.setIcon(icon);
 				}
-				
-				
+
+
 			}
 			return label;
 		}
@@ -112,52 +111,52 @@ class SchemaNode {
 	}
 
 	public Icon getIcon() {
-		return IconLoader.getIcon(IconNames.TABLE_MULTIPLE);
+		return OrbisGISIcon.TABLE_MULTIPLE;
 	}
 
 	public String toString() {
 		return this.schemaName;
 	}
-	
+
 }
 
 class TableNode {
 	private TableDescription tableDescription;
-	
+
 	public TableNode (TableDescription tableDescription){
 		this.tableDescription = tableDescription;
 	}
-	
+
 	public String toString(){
 		return tableDescription.getName();
-		
+
 	}
 
 	public Icon getIcon(){
-		
+
 		int geomType = tableDescription.getGeometryType();
-		
+
 		if ((geomType == GeometryConstraint.POLYGON)
 				|| (geomType == GeometryConstraint.MULTI_POLYGON)) {
-			return IconLoader.getIcon(IconNames.LAYER_POLYGON);
+			return OrbisGISIcon.LAYER_POLYGON;
 		} else if ((geomType == GeometryConstraint.LINESTRING)
 				|| (geomType == GeometryConstraint.MULTI_LINESTRING)) {
-			return IconLoader.getIcon(IconNames.LAYER_LINE);
+			return OrbisGISIcon.LAYER_LINE;
 		} else if ((geomType == GeometryConstraint.POINT)
 				|| (geomType == GeometryConstraint.MULTI_POINT)) {
-			return IconLoader.getIcon(IconNames.LAYER_POINT);
+			return OrbisGISIcon.LAYER_POINT;
 		}//any other geom type
 		else if (geomType != 0)
-			return IconLoader.getIcon(IconNames.LAYER_MIXE);
-			
-		return IconLoader.getIcon(IconNames.TABLE);
-		
+			return OrbisGISIcon.LAYER_MIXE;
+
+		return OrbisGISIcon.TABLE;
+
 	}
-	
+
 	public String getName(){
 		return tableDescription.getName();
-	}	
-	
+	}
+
 	public boolean isView(){
 		if (tableDescription.getType().equals("VIEW"))
 			return true;
@@ -175,6 +174,6 @@ class ViewNode extends TableNode{
 	}
 	@Override
 	public Icon getIcon(){
-		return IconLoader.getIcon(IconNames.EYE);
+		return OrbisGISIcon.EYE;
 	}
 }

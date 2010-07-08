@@ -40,6 +40,7 @@ import org.gdms.data.types.Type;
 import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
 import org.gdms.sql.strategies.IncompatibleTypesException;
+import org.gdms.sql.strategies.Operator;
 
 public interface Expression {
 
@@ -151,5 +152,13 @@ public interface Expression {
 	public Expression changeOrForNotAnd();
 
 	public Expression[] splitAnds();
+	
+	/**
+	 * Return the subqueries in this expression
+	 * 
+	 * @return
+	 */
+	Operator[] getSubqueries();
+
 
 }

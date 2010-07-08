@@ -540,11 +540,11 @@ public class SourceManagementTest extends TestCase {
 	public void testSQLSourceType() throws Exception {
 		sm.register("spatial source", new SeveralSpatialFieldsDriver());
 		sm.register("myraster", new File("src/test/resources/sample.png"));
-		sm.register("alphasql", "select * from \"" + SOURCE + "\";");
-		sm.register("spatialsql", "select * from \"spatial source\";");
-		sm.register("rastersql", "select * from \"myraster\";");
+		sm.register("alphasql", "select * from " + SOURCE + ";");
+		sm.register("spatialsql", "select * from spatial source;");
+		sm.register("rastersql", "select * from myraster;");
 		sm.register("mixedsql",
-				"select * from \"myraster\", \"spatial source\";");
+				"select * from myraster, spatial source;");
 		assertTrue((sm.getSource("alphasql").getType() & SourceManager.SQL) == SourceManager.SQL);
 		assertTrue((sm.getSource("alphasql").getType() & SourceManager.VECTORIAL) == 0);
 		assertTrue((sm.getSource("spatialsql").getType() & SourceManager.SQL) == SourceManager.SQL);

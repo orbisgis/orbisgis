@@ -131,7 +131,7 @@ public class UIFactory {
 		} else {
 			dlg = getWizard(panels);
 		}
-		dlg.setModal(true);
+		dlg.setModal(true);		
 		dlg.pack();
 		dlg.setLocationRelativeTo(null);
 		dlg.setVisible(true);
@@ -187,5 +187,5 @@ public class UIFactory {
 
 	public static Window getMainFrame() {
 		return mainFrame;
-	}	
+	}
 }

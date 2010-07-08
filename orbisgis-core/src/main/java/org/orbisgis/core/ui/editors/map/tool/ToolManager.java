@@ -129,7 +129,7 @@ import com.vividsolutions.jts.geom.Polygon;
 /**
  * Adapter from the MapControl Behaviours to Automaton's interface. It's also
  * the EditionContext of the system.
- * 
+ *
  * @author Fernando Gonzlez Corts
  */
 public class ToolManager extends MouseAdapter implements MouseMotionListener,
@@ -196,7 +196,7 @@ public class ToolManager extends MouseAdapter implements MouseMotionListener,
 
 	/**
 	 * Creates a new EditionToolAdapter.
-	 * 
+	 *
 	 * @param defaultTool
 	 * @param mapContext
 	 * @param mapTransform
@@ -387,8 +387,6 @@ public class ToolManager extends MouseAdapter implements MouseMotionListener,
 		if (e.getButton() == MouseEvent.BUTTON1
 				|| e.getButton() == MouseEvent.BUTTON2) {
 			leftClickTransition(e, RELEASE);
-			// panel = new MyPanel();
-			// panel.setVisible(true);
 		}
 	}
 
@@ -512,7 +510,7 @@ public class ToolManager extends MouseAdapter implements MouseMotionListener,
 	/**
 	 * Draws the cursor at the mouse cursor position or at the adjusted point if
 	 * any
-	 * 
+	 *
 	 * @param g
 	 */
 	private void drawCursor(Graphics g) {
@@ -540,7 +538,7 @@ public class ToolManager extends MouseAdapter implements MouseMotionListener,
 
 	private void updateCursor() {
 		Cursor c = null;
-		URL cursor = getTool().getMouseCursorURL();
+		ImageIcon cursor = getTool().getImageIcon();
 		if (cursor == null) {
 			BufferedImage image = GraphicsEnvironment
 					.getLocalGraphicsEnvironment().getDefaultScreenDevice()
@@ -561,7 +559,7 @@ public class ToolManager extends MouseAdapter implements MouseMotionListener,
 					.getLocalGraphicsEnvironment().getDefaultScreenDevice()
 					.getDefaultConfiguration().createCompatibleImage(
 							size.width, size.height, Transparency.BITMASK);
-			Image image = new ImageIcon(cursor).getImage();
+			Image image = cursor.getImage();
 			int xOffset = (size.width - image.getWidth(null)) / 2;
 			int yOffset = (size.height - image.getHeight(null)) / 2;
 			bi.createGraphics().drawImage(image, xOffset, yOffset, null);
@@ -611,8 +609,8 @@ public class ToolManager extends MouseAdapter implements MouseMotionListener,
 		if (!currentTool.isEnabled(mapContext, this)
 				&& (!currentTool.getClass().equals(defaultTool))) {
 			/*
-			 * Services.getService(ErrorManager.class).error(
-			 * "The current tool is not enabled");
+			 * Services.getService(ErrorManager.class).error( "The current tool
+			 * is not enabled");
 			 */
 			// throw new TransitionException("The current tool is not enabled");
 		} else {

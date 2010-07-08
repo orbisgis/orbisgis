@@ -50,9 +50,9 @@ import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.SpatialDataSourceDecorator;
 import org.gdms.data.WarningListener;
-import org.gdms.data.crs.CRSUtil;
 import org.gdms.data.metadata.DefaultMetadata;
 import org.gdms.data.metadata.Metadata;
+import org.gdms.data.metadata.MetadataUtilities;
 import org.gdms.data.types.Constraint;
 import org.gdms.data.types.DefaultTypeDefinition;
 import org.gdms.data.types.DimensionConstraint;
@@ -69,6 +69,7 @@ import org.gdms.source.SourceManager;
 import org.orbisgis.progress.IProgressMonitor;
 import org.orbisgis.utils.FileUtils;
 import org.orbisgis.wkt.parser.PRJUtils;
+import org.orbisgis.wkt.parser.ParseException;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
@@ -82,7 +83,9 @@ import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.Polygon;
 
 import fr.cts.crs.CoordinateReferenceSystem;
+import fr.cts.crs.NullCRS;
 import fr.cts.crs.NullCRS.NullCTSCRS;
+import org.orbisgis.wkt.parser.ParseException;
 
 public class ShapefileDriver implements FileReadWriteDriver {
 
@@ -148,7 +151,11 @@ public class ShapefileDriver implements FileReadWriteDriver {
 			// Check prjFile
 			File prjFile = FileUtils.getFileWithExtension(fileShp, "prj");
 
-			crs = PRJUtils.getCRSFromPRJ(prjFile);
+			try {
+				crs = PRJUtils.getCRSFromPRJ(prjFile);
+			} catch (ParseException e) {
+				crs = NullCRS.singleton;
+			}
 
 		} catch (IOException e) {
 			throw new DriverException(e);
@@ -157,6 +164,7 @@ public class ShapefileDriver implements FileReadWriteDriver {
 		}
 	}
 
+	@Override
 	public Value getFieldValue(long rowIndex, int fieldId)
 			throws DriverException {
 		try {
@@ -205,7 +213,7 @@ public class ShapefileDriver implements FileReadWriteDriver {
 			} else {
 				throw new DriverException("Unknown geometric type !");
 			}
-			Constraint crsConstraint = CRSUtil.getCRSConstraint(crs);
+			Constraint crsConstraint = MetadataUtilities.getCRSConstraint(crs);
 			Constraint[] constraints = new Constraint[] { gc, dc, crsConstraint };
 			metadata.addField(0, "the_geom", Type.GEOMETRY, constraints);
 
@@ -363,7 +371,7 @@ public class ShapefileDriver implements FileReadWriteDriver {
 
 	private void writeprj(File path, Metadata metadata) throws DriverException {
 
-		CoordinateReferenceSystem crs = CRSUtil.getCRS(metadata);
+		CoordinateReferenceSystem crs = MetadataUtilities.getCRS(metadata);
 
 		if (crs instanceof NullCTSCRS) {
 		} else {

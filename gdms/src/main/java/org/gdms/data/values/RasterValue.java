@@ -1,39 +1,42 @@
 /*
  * OrbisGIS is a GIS application dedicated to scientific spatial simulation.
- * This cross-platform GIS is developed at French IRSTV institute and is able
- * to manipulate and create vector and raster spatial information. OrbisGIS
- * is distributed under GPL 3 license. It is produced  by the geo-informatic team of
- * the IRSTV Institute <http://www.irstv.cnrs.fr/>, CNRS FR 2488:
- *    Erwan BOCHER, scientific researcher,
- *    Thomas LEDUC, scientific researcher,
- *    Fernando GONZALEZ CORTES, computer engineer.
+ * This cross-platform GIS is developed at French IRSTV institute and is able to
+ * manipulate and create vector and raster spatial information. OrbisGIS is
+ * distributed under GPL 3 license. It is produced by the "Atelier SIG" team of
+ * the IRSTV Institute <http://www.irstv.cnrs.fr/> CNRS FR 2488.
+ *
+ *
+ *  Team leader Erwan BOCHER, scientific researcher,
+ *
+ *  User support leader : Gwendall Petit, geomatic engineer.
+ *
+ * Previous computer developer : Pierre-Yves FADET, computer engineer, Thomas LEDUC, scientific researcher, Fernando GONZALEZ
+ * CORTES, computer engineer.
  *
  * Copyright (C) 2007 Erwan BOCHER, Fernando GONZALEZ CORTES, Thomas LEDUC
  *
+ * Copyright (C) 2010 Erwan BOCHER, Pierre-Yves FADET, Alexis GUEGANNO, Maxence LAURENT
+ *
  * This file is part of OrbisGIS.
  *
- * OrbisGIS is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * OrbisGIS is free software: you can redistribute it and/or modify it under the
+ * terms of the GNU General Public License as published by the Free Software
+ * Foundation, either version 3 of the License, or (at your option) any later
+ * version.
  *
- * OrbisGIS is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
+ * OrbisGIS is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
+ * A PARTICULAR PURPOSE. See the GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
- * along with OrbisGIS. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License along with
+ * OrbisGIS. If not, see <http://www.gnu.org/licenses/>.
  *
- * For more information, please consult:
- *    <http://orbisgis.cerma.archi.fr/>
- *    <http://sourcesup.cru.fr/projects/orbisgis/>
+ * For more information, please consult: <http://www.orbisgis.org/>
  *
  * or contact directly:
- *    erwan.bocher _at_ ec-nantes.fr
- *    fergonco _at_ gmail.com
- *    thomas.leduc _at_ cerma.archi.fr
- */
+ * erwan.bocher _at_ ec-nantes.fr
+ * gwendall.petit _at_ ec-nantes.fr
+ **/
 package org.gdms.data.values;
 
 import ij.ImagePlus;
@@ -59,9 +62,21 @@ import org.orbisgis.utils.ByteUtils;
 
 public class RasterValue extends AbstractValue {
 
+        /**
+         * the length, in bytes, of a RasterMetadata object. Used to be stored efficiently in GDMS, particularly in
+         * {@link org.gdms.driver.gdms.GdmsReader}
+         */
+
 	public static int HEADER_SIZE = 0;
 
+        //The Geoaster that contains the value.
+
 	private GeoRaster geoRaster;
+
+        /*
+         * Code used to compute the size of the Header. Computed only once, and proof to changes in RasterMetadata
+         */
+
 
 	static {
 		ByteArrayOutputStream bos = new ByteArrayOutputStream();
@@ -76,18 +91,37 @@ public class RasterValue extends AbstractValue {
 		HEADER_SIZE = bos.toByteArray().length;
 	}
 
+        /**
+         * Package-public constructor
+         * @param geoRaster the {@link org.grap.model.GeoRaster} which stores the datas
+         */
+
 	RasterValue(GeoRaster geoRaster) {
 		this.geoRaster = geoRaster;
 	}
+
+        /**
+         * Get the type of the Value as a String
+         * @param writer
+         * @return "Raster"
+         */
 
 	public String getStringValue(ValueWriter writer) {
 		return "Raster";
 	}
 
+        /**
+         * get the type of the value as a type
+         * @return Type.RASTER
+         */
 	public int getType() {
 		return Type.RASTER;
 	}
 
+        /**
+         *
+         * @return the HashCode associated to the GeoRaster.
+         */
 	public int doHashCode() {
 		return geoRaster.hashCode();
 	}
@@ -262,7 +296,7 @@ public class RasterValue extends AbstractValue {
 	 * Builds a lazy RasterValue. The metadata and cached values are recovered
 	 * immediately and the pixel data will be read through the specified
 	 * {@link ByteProvider}
-	 * 
+	 *
 	 * @param buffer
 	 *            Buffer containing the metadata
 	 * @param byteProvider

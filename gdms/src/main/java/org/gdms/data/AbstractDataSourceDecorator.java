@@ -56,6 +56,12 @@ import org.gdms.source.Source;
 import org.gdms.sql.strategies.IncompatibleTypesException;
 import org.gdms.sql.strategies.SemanticException;
 
+
+/**
+ * This is the base class for the DataSourceDecorator
+ *
+ */
+
 public class AbstractDataSourceDecorator extends AbstractDataSource {
 	private DataSource internalDataSource;
 

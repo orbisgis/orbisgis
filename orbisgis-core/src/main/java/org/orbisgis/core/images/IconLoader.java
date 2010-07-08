@@ -44,24 +44,24 @@ import javax.swing.ImageIcon;
  * Gets an icon from this class' package.
  */
 public class IconLoader {
-	public static ImageIcon getIcon( String filename) {
+	public static ImageIcon getIcon(String filename) {
 		if (filename == null)
 			return null;
 		else {
-			URL url = IconLoader.class.getResource(filename);			
+			URL url = IconLoader.class.getResource(filename);
 			if (url != null) {
 				return new ImageIcon(url);
 			} else {
 				return null;
-			}			
+			}
 		}
 	}
-	
+
 	public static URL getIconUrl( String filename) {
 		if (filename == null)
 			return null;
-		else 
+		else
 			return IconLoader.class.getResource(filename);
-			
+
 	}
 }

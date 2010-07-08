@@ -5,9 +5,9 @@
  * distributed under GPL 3 license. It is produced by the "Atelier SIG" team of
  * the IRSTV Institute <http://www.irstv.cnrs.fr/> CNRS FR 2488.
  *
- * 
+ *
  *  Team leader Erwan BOCHER, scientific researcher,
- * 
+ *
  *  User support leader : Gwendall Petit, geomatic engineer.
  *
  *
@@ -41,7 +41,7 @@ package org.orbisgis.core.ui.plugins.editors.tableEditor;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.background.BackgroundJob;
 import org.orbisgis.core.background.BackgroundManager;
-import org.orbisgis.core.images.IconNames;
+import org.orbisgis.core.images.OrbisGISIcon;
 import org.orbisgis.core.ui.editor.IEditor;
 import org.orbisgis.core.ui.editors.table.TableEditableElement;
 import org.orbisgis.core.ui.pluginSystem.AbstractPlugIn;
@@ -68,7 +68,7 @@ public class SelectNonePlugIn extends AbstractPlugIn {
 			}
 
 			@Override
-			public String getTaskName() {				
+			public String getTaskName() {
 				return "Select none";
 			}
 		});
@@ -82,7 +82,7 @@ public class SelectNonePlugIn extends AbstractPlugIn {
 		context.getFeatureInstaller().addPopupMenuItem(frame, this,
 				new String[] { Names.POPUP_TABLE_NONE_PATH1 },
 				Names.POPUP_TABLE_NONE_GROUP, false,
-				getIcon(IconNames.EDIT_CLEAR), wbContext);
+				OrbisGISIcon.EDIT_CLEAR, wbContext);
 	}
 
 	public boolean isEnabled() {
@@ -90,7 +90,7 @@ public class SelectNonePlugIn extends AbstractPlugIn {
 		IEditor editor = null;
 		if((editor=getPlugInContext().getTableEditor()) != null
 				&& getSelectedColumn() ==-1){
-			
+
 			final TableEditableElement element = (TableEditableElement) editor
 					.getElement();
 			isEnabled = element.getSelection().getSelectedRows().length > 0;

@@ -6,6 +6,7 @@
 package org.orbisgis.core.ui.plugins.toc;
 
 import org.orbisgis.core.images.IconNames;
+import org.orbisgis.core.images.OrbisGISIcon;
 import org.orbisgis.core.layerModel.MapContext;
 import org.orbisgis.core.renderer.se.FeatureTypeStyle;
 import org.orbisgis.core.renderer.se.Rule;
@@ -33,7 +34,7 @@ public class EditRulePlugIn extends AbstractPlugIn {
 		context.getFeatureInstaller().addPopupMenuItem(frame, this,
 				new String[] { Names.POPUP_TOC_FEATURETYPESTYLE_EDIT_RULE },
 				Names.POPUP_TOC_LEGEND_GROUP, false,
-				getIcon(IconNames.POPUP_TOC_LEGEND_ICON), wbContext);
+				OrbisGISIcon.EDIT_LEGEND, wbContext);
 
 	}
 

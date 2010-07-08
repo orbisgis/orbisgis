@@ -5,9 +5,9 @@
  * distributed under GPL 3 license. It is produced by the "Atelier SIG" team of
  * the IRSTV Institute <http://www.irstv.cnrs.fr/> CNRS FR 2488.
  *
- * 
+ *
  *  Team leader Erwan BOCHER, scientific researcher,
- * 
+ *
  *  User support leader : Gwendall Petit, geomatic engineer.
  *
  *
@@ -58,6 +58,7 @@ import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
 
 import org.orbisgis.core.Services;
 import org.orbisgis.core.images.IconLoader;
@@ -113,6 +114,7 @@ public class WorkspaceFolderPanel extends JPanel implements UIPanel {
 						combobox.setSelectedIndex(0);
 						comboList.add(savedFile);
 						jCheckBox.setSelected(false);
+						SwingUtilities.windowForComponent(panel).pack();
 					}
 
 				}
@@ -135,8 +137,7 @@ public class WorkspaceFolderPanel extends JPanel implements UIPanel {
 		panel.setOpaque(false);
 
 		add(panel, BorderLayout.NORTH);
-		add(jCheckBox, BorderLayout.CENTER);
-		setPreferredSize(new Dimension(400, 60));
+		add(jCheckBox, BorderLayout.CENTER);		
 	}
 
 	@Override
@@ -146,12 +147,12 @@ public class WorkspaceFolderPanel extends JPanel implements UIPanel {
 
 	@Override
 	public URL getIconURL() {
-		return UIFactory.getDefaultIcon();
+		return IconLoader.getIconUrl("mini_orbisgis.png");
 	}
 
 	@Override
 	public String getInfoText() {
-		return "Select a workspace to start OrbisGIS application.";
+		return "... to start OrbisGIS application.";
 	}
 
 	@Override

@@ -5,9 +5,9 @@
  * distributed under GPL 3 license. It is produced by the "Atelier SIG" team of
  * the IRSTV Institute <http://www.irstv.cnrs.fr/> CNRS FR 2488.
  *
- * 
+ *
  *  Team leader Erwan BOCHER, scientific researcher,
- * 
+ *
  *  User support leader : Gwendall Petit, geomatic engineer.
  *
  *
@@ -45,11 +45,9 @@ import java.awt.event.ItemListener;
 import java.awt.event.MouseEvent;
 import java.util.Observable;
 
-import javax.swing.ImageIcon;
 import javax.swing.JComponent;
 
 import org.orbisgis.core.Services;
-import org.orbisgis.core.images.IconLoader;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchContext;
 import org.orbisgis.utils.I18N;
 
@@ -63,21 +61,21 @@ public abstract class AbstractPlugIn implements PlugIn {
 	 * Plug-in Context
 	 */
 	private PlugInContext plugInContext;
-	/** 
-	 * If plug-in is a container, and not a simple swing component :
-	 * It's necessary to define with which component into this container
-	 * execute plug-in  
+	/**
+	 * If plug-in is a container, and not a simple swing component : It's
+	 * necessary to define with which component into this container execute
+	 * plug-in
 	 */
 	private JComponent actionComponent;
 	/**
-	 * actionComponent include his listener. This String define
-	 * listener related : "item" or "action"
+	 * actionComponent include his listener. This String define listener related
+	 * : "item" or "action"
 	 */
 	private String typeListener;
 	/**
 	 * Plug-in developer can specify a different local than his system
 	 */
-	private String langAndCountry;	
+	private String langAndCountry;
 	/**
 	 * Selected column in table Editor
 	 */
@@ -89,20 +87,22 @@ public abstract class AbstractPlugIn implements PlugIn {
 
 	/**
 	 * 
-	 * Default Constructor : init i18n plug-in 
+	 * Default Constructor : init i18n plug-in
 	 */
-    public AbstractPlugIn() {
-    	getI18n();
-    }	    
-   
-    /**
-     * Redefine i18n : defaut language is locale system. 
-     * Method redefines with langAndCountry parameter specific 18n for plug-in 
-     * @param langAndCountry : i18n for plug-in
-     */
+	public AbstractPlugIn() {
+		getI18n();
+	}
+
+	/**
+	 * Redefine i18n : defaut language is locale system. Method redefines with
+	 * langAndCountry parameter specific 18n for plug-in
+	 * 
+	 * @param langAndCountry
+	 *            : i18n for plug-in
+	 */
 	public void i18nConfigure(String langAndCountry) {
 		delI18n();
-		this.langAndCountry = langAndCountry;				
+		this.langAndCountry = langAndCountry;
 		getI18n();
 	}
 
@@ -110,55 +110,60 @@ public abstract class AbstractPlugIn implements PlugIn {
 	 * Remove default i18n for plug-in
 	 */
 	private void delI18n() {
-		I18N.delI18n(null, this.getClass());		
+		I18N.delI18n(null, this.getClass());
 	}
 
 	/**
-	 * Attribute specific i18n with @param langAndCountry
-	 *  
+	 * Attribute specific i18n with
+	 * 
+	 * @param langAndCountry
+	 * 
 	 */
 	public void getI18n() {
 		I18N.addI18n(langAndCountry, null, this.getClass());
 	}
-	
+
 	/**
 	 * 
-	 * For table plug-in can be a popup menu on header or row table. 
-	 * Plug-in is notified of event (header or row event) by Observer (WorkbenchContext)
-	 * To identify plug-in on header plug-in receive the number's selected column. In the other case
-	 * plug-in receive MouseEvent. MouseEvent contains the point and then the row selected.
+	 * For table plug-in can be a popup menu on header or row table. Plug-in is
+	 * notified of event (header or row event) by Observer (WorkbenchContext) To
+	 * identify plug-in on header plug-in receive the number's selected column.
+	 * In the other case plug-in receive MouseEvent. MouseEvent contains the
+	 * point and then the row selected.
 	 * 
-	 */	
-	public void update(Observable o, Object arg) {		
-		if( arg!=null && !(arg instanceof String)){
-			try {		
+	 */
+	public void update(Observable o, Object arg) {
+		if (arg != null && !(arg instanceof String)) {
+			try {
 				event = (MouseEvent) arg;
 				selectedColumn = -1;
 			} catch (Exception e) {
-				selectedColumn = (Integer) arg;	
+				selectedColumn = (Integer) arg;
 			}
 		}
 		isEnabled();
-		isSelected();		
+		isSelected();
 	}
-	
+
 	/**
 	 * By default PlugIn is not selectable
 	 */
-	public boolean isSelected(){return false;}
-	
+	public boolean isSelected() {
+		return false;
+	}
+
 	/**
 	 * Creates plug-in context from Workbench context
 	 * 
-	 * @param WorkbenchContext 
+	 * @param WorkbenchContext
 	 */
 	public void createPlugInContext(WorkbenchContext context) {
-		if(plugInContext == null)
+		if (plugInContext == null)
 			plugInContext = context.createPlugInContext(this);
-		if(!context.getPopupPlugInObservers().contains(this))
-			context.getPopupPlugInObservers().add(this);	
+		if (!context.getPopupPlugInObservers().contains(this))
+			context.getPopupPlugInObservers().add(this);
 	}
-	
+
 	/**
 	 * 
 	 * Add action listener to plug-in
@@ -174,7 +179,7 @@ public abstract class AbstractPlugIn implements PlugIn {
 				try {
 					PlugInContext plugInContext = workbenchContext
 							.createPlugInContext();
-					boolean executeComplete = plugIn.execute(plugInContext);
+					plugIn.execute(plugInContext);
 				} catch (Exception e) {
 					Services.getErrorManager().error(
 							"Add Action listener to plugin failed !", e);
@@ -183,7 +188,6 @@ public abstract class AbstractPlugIn implements PlugIn {
 		};
 	}
 
-	
 	/**
 	 * 
 	 * Add item listener to plug-in
@@ -197,14 +201,12 @@ public abstract class AbstractPlugIn implements PlugIn {
 			final WorkbenchContext workbenchContext) {
 		return new ItemListener() {
 			@Override
-			public void itemStateChanged(ItemEvent evt) {				
+			public void itemStateChanged(ItemEvent evt) {
 				try {
 					PlugInContext plugInContext = workbenchContext
 							.createPlugInContext();
-					boolean executeComplete = false;
-					
-						executeComplete  = plugIn.execute(plugInContext);
-						
+					plugIn.execute(plugInContext);
+
 				} catch (Exception e) {
 					Services.getErrorManager().error(
 							"Add Item listener to plugin failed !", e);
@@ -241,6 +243,7 @@ public abstract class AbstractPlugIn implements PlugIn {
 
 	/**
 	 * Set plug-in context
+	 * 
 	 * @param context
 	 */
 	public void setPlugInContext(PlugInContext context) {
@@ -249,6 +252,7 @@ public abstract class AbstractPlugIn implements PlugIn {
 
 	/**
 	 * (if plug-in is a container)
+	 * 
 	 * @return action component
 	 */
 	public Component getActionComponent() {
@@ -257,22 +261,25 @@ public abstract class AbstractPlugIn implements PlugIn {
 
 	/**
 	 * Set action component (if plug-in is a container)
+	 * 
 	 * @param actionComponent
 	 */
 	public void setActionComponent(JComponent actionComponent) {
 		this.actionComponent = actionComponent;
 	}
-	
+
 	/**
-	 * About table editor plug-in 
+	 * About table editor plug-in
+	 * 
 	 * @return selected column
 	 */
 	public int getSelectedColumn() {
 		return selectedColumn;
 	}
-	
+
 	/**
-	 * About table editor plug-in (header/row) 
+	 * About table editor plug-in (header/row)
+	 * 
 	 * @return mouse event
 	 */
 	public MouseEvent getEvent() {
@@ -281,6 +288,7 @@ public abstract class AbstractPlugIn implements PlugIn {
 
 	/**
 	 * (if plug-in is a container)
+	 * 
 	 * @return what listener type
 	 */
 	public String getTypeListener() {
@@ -289,18 +297,12 @@ public abstract class AbstractPlugIn implements PlugIn {
 
 	/**
 	 * (if plug-in is a container)
-	 * @param what listener type
+	 * 
+	 * @param what
+	 *            listener type
 	 */
 	public void setTypeListener(String typeListener) {
 		this.typeListener = typeListener;
 	}
 
-	/**
-	 * Return icon correspond to name 
-	 * @param nameIcone
-	 * @return icon
-	 */
-	public static ImageIcon getIcon(String nameIcone) {
-		return IconLoader.getIcon(nameIcone);
-	}
 }

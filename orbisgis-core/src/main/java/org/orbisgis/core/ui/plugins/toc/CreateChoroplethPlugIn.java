@@ -10,17 +10,10 @@ import org.gdms.data.types.Constraint;
 import org.gdms.data.types.GeometryConstraint;
 import org.gdms.data.types.Type;
 import org.gdms.driver.DriverException;
-import org.orbisgis.core.images.IconNames;
+import org.orbisgis.core.images.OrbisGISIcon;
 import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.layerModel.MapContext;
-import org.orbisgis.core.renderer.se.AreaSymbolizer;
 import org.orbisgis.core.renderer.se.Rule;
-import org.orbisgis.core.renderer.se.fill.SolidFill;
-import org.orbisgis.core.renderer.se.parameter.color.Categorize2Color;
-import org.orbisgis.core.renderer.se.parameter.color.ColorLiteral;
-import org.orbisgis.core.renderer.se.parameter.real.RealAttribute;
-import org.orbisgis.core.renderer.se.parameter.real.RealLiteral;
-import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 import org.orbisgis.core.sif.UIFactory;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.ChoroplethWizardPanel;
 import org.orbisgis.core.ui.pluginSystem.AbstractPlugIn;
@@ -58,7 +51,7 @@ public class CreateChoroplethPlugIn extends AbstractPlugIn {
 		context.getFeatureInstaller().addPopupMenuItem(frame, this,
 				new String[]{Names.POPUP_TOC_FEATURETYPE_STYLE_WIZARDS, Names.POPUP_TOC_FEATURETYPESTYLE_CREATE_CHOROPLETH},
 				Names.POPUP_TOC_FEATURETYPE_STYLE_WIZARDS, false,
-				getIcon(IconNames.POPUP_TOC_LEGEND_ICON), wbContext);
+				OrbisGISIcon.EDIT_LEGEND, wbContext);
 	}
 
 	public void execute(MapContext mapContext, ILayer layer) {

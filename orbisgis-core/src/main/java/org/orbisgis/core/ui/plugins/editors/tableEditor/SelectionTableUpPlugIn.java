@@ -5,9 +5,9 @@
  * distributed under GPL 3 license. It is produced by the "Atelier SIG" team of
  * the IRSTV Institute <http://www.irstv.cnrs.fr/> CNRS FR 2488.
  *
- * 
+ *
  *  Team leader Erwan BOCHER, scientific researcher,
- * 
+ *
  *  User support leader : Gwendall Petit, geomatic engineer.
  *
  *
@@ -40,7 +40,7 @@ package org.orbisgis.core.ui.plugins.editors.tableEditor;
 
 import javax.swing.JButton;
 
-import org.orbisgis.core.images.IconNames;
+import org.orbisgis.core.images.OrbisGISIcon;
 import org.orbisgis.core.ui.editor.IEditor;
 import org.orbisgis.core.ui.editors.table.TableEditableElement;
 import org.orbisgis.core.ui.pluginSystem.AbstractPlugIn;
@@ -52,10 +52,10 @@ import org.orbisgis.core.ui.plugins.views.TableEditorPlugIn;
 
 public class SelectionTableUpPlugIn extends AbstractPlugIn {
 
-	private JButton btn;	
+	private JButton btn;
 
 	public SelectionTableUpPlugIn() {
-		btn = new JButton(getIcon(IconNames.POPUP_TABLE_UP_ICON));
+		btn = new JButton(OrbisGISIcon.TABLE_ROW_UP);
 	}
 
 	public boolean execute(PlugInContext context) throws Exception {
@@ -74,7 +74,7 @@ public class SelectionTableUpPlugIn extends AbstractPlugIn {
 		context.getFeatureInstaller().addPopupMenuItem(frame, this,
 				new String[] { Names.POPUP_TABLE_UP_PATH1 },
 				Names.POPUP_TABLE_UP_GROUP, false,
-				getIcon(IconNames.POPUP_TABLE_UP_ICON), wbContext);
+				OrbisGISIcon.TABLE_ROW_UP, wbContext);
 	}
 
 	public boolean isEnabled() {

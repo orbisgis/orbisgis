@@ -70,11 +70,11 @@ public class OrbisGISApplicationInfo implements ApplicationInfo {
 
 	@Override
 	public String getVersionName() {
-		return "Paris";
+		return "Barcelona";
 	}
 
 	@Override
 	public String getVersionNumber() {
-		return "3.0";
+		return "3.0 Beta";
 	}
 }

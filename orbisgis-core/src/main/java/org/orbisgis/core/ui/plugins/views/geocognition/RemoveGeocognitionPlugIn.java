@@ -5,9 +5,9 @@
  * distributed under GPL 3 license. It is produced by the "Atelier SIG" team of
  * the IRSTV Institute <http://www.irstv.cnrs.fr/> CNRS FR 2488.
  *
- * 
+ *
  *  Team leader Erwan BOCHER, scientific researcher,
- * 
+ *
  *  User support leader : Gwendall Petit, geomatic engineer.
  *
  *
@@ -40,7 +40,7 @@ package org.orbisgis.core.ui.plugins.views.geocognition;
 
 import org.orbisgis.core.geocognition.Geocognition;
 import org.orbisgis.core.geocognition.GeocognitionElement;
-import org.orbisgis.core.images.IconNames;
+import org.orbisgis.core.images.OrbisGISIcon;
 import org.orbisgis.core.ui.pluginSystem.AbstractPlugIn;
 import org.orbisgis.core.ui.pluginSystem.PlugInContext;
 import org.orbisgis.core.ui.pluginSystem.PlugInContext.ElementAvailability;
@@ -71,7 +71,7 @@ public class RemoveGeocognitionPlugIn extends AbstractPlugIn {
 		context.getFeatureInstaller().addPopupMenuItem(frame, this,
 				new String[] { Names.POPUP_GEOCOGNITION_REMOVE_PATH1 },
 				Names.POPUP_GEOCOGNITION_REMOVE_GROUP, false,
-				getIcon(IconNames.REMOVE), wbContext);
+				OrbisGISIcon.REMOVE, wbContext);
 	}
 
 	public void execute(Geocognition geocognition, GeocognitionElement element) {
@@ -80,8 +80,7 @@ public class RemoveGeocognitionPlugIn extends AbstractPlugIn {
 
 	public boolean isEnabled() {
 		return getPlugInContext().checkLayerAvailability(
-				new SelectionAvailability[] {SelectionAvailability.SUPERIOR},
-				0,
-				new ElementAvailability[] {});
+				new SelectionAvailability[] { SelectionAvailability.SUPERIOR },
+				0, new ElementAvailability[] {});
 	}
 }

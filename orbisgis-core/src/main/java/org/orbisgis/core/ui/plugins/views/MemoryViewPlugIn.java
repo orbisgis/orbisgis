@@ -5,9 +5,9 @@
  * distributed under GPL 3 license. It is produced by the "Atelier SIG" team of
  * the IRSTV Institute <http://www.irstv.cnrs.fr/> CNRS FR 2488.
  *
- * 
+ *
  *  Team leader Erwan BOCHER, scientific researcher,
- * 
+ *
  *  User support leader : Gwendall Petit, geomatic engineer.
  *
  *
@@ -39,7 +39,7 @@ package org.orbisgis.core.ui.plugins.views;
 
 import javax.swing.JMenuItem;
 
-import org.orbisgis.core.images.IconNames;
+import org.orbisgis.core.images.OrbisGISIcon;
 import org.orbisgis.core.ui.pluginSystem.PlugInContext;
 import org.orbisgis.core.ui.pluginSystem.ViewPlugIn;
 import org.orbisgis.core.ui.pluginSystem.workbench.Names;
@@ -57,7 +57,7 @@ public class MemoryViewPlugIn extends ViewPlugIn {
 		panel = new ViewPanel();
 		menuItem = context.getFeatureInstaller().addMainMenuItem(this,
 				new String[] { Names.VIEW }, Names.MEMORY, true,
-				getIcon(IconNames.MEMORY_ICON), null, panel,context);
+				OrbisGISIcon.MEMORY_ICON, null, panel, context);
 	}
 
 	public boolean execute(PlugInContext context) throws Exception {
@@ -65,18 +65,18 @@ public class MemoryViewPlugIn extends ViewPlugIn {
 		return true;
 	}
 
-	public boolean isEnabled() {		
+	public boolean isEnabled() {
 		return true;
 	}
-	
+
 	public boolean isSelected() {
 		boolean isSelected = false;
 		isSelected = getPlugInContext().viewIsOpen(getId());
 		menuItem.setSelected(isSelected);
 		return isSelected;
 	}
-	
-	public String getName() {		
+
+	public String getName() {
 		return "Memory view";
 	}
 

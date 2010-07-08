@@ -40,6 +40,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.gdms.data.DataSource;
+import org.gdms.data.types.CRSConstraint;
 import org.gdms.data.types.Constraint;
 import org.gdms.data.types.PrimaryKeyConstraint;
 import org.gdms.data.types.ReadOnlyConstraint;
@@ -47,6 +48,10 @@ import org.gdms.data.types.Type;
 import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
 import org.gdms.sql.strategies.SemanticException;
+
+import fr.cts.crs.CoordinateReferenceSystem;
+import fr.cts.crs.NullCRS;
+import fr.cts.util.CRSUtil;
 
 /**
  * An utility class to help the exploration of Metadata instances
@@ -292,9 +297,42 @@ public class MetadataUtilities {
 		int index = metadata.getFieldIndex(fieldName);
 
 		if (index == -1) {
-			return fieldName ;
+			return fieldName;
 
 		}
-		return fieldName+ "_" + 1;
+		return fieldName + "_" + 1;
+	}
+
+	public static Constraint getCRSConstraint(CoordinateReferenceSystem crs) {
+
+		return new CRSConstraint(-1, crs);
+	}
+
+	public static Constraint getCRSConstraint(int srid) {
+
+		if (srid == -1) {
+			return new CRSConstraint(-1, NullCRS.singleton);
+		} else {
+			return new CRSConstraint(srid, CRSUtil.getCRSFromEPSG(Integer
+					.toString(srid)));
+		}
+	}
+
+	public static CoordinateReferenceSystem getCRS(Metadata metadata)
+			throws DriverException {
+		CoordinateReferenceSystem crs = NullCRS.singleton;
+		for (int i = 0; i < metadata.getFieldCount(); i++) {
+			Type fieldType = metadata.getFieldType(i);
+			if (fieldType.getTypeCode() == Type.GEOMETRY) {
+				CRSConstraint crsConstraint = (CRSConstraint) fieldType
+						.getConstraint(Constraint.CRS);
+				if ((crsConstraint != null)
+						&& (crsConstraint.getConstraintCode() != -1)) {
+					crs = crsConstraint.getCRS();
+					break;
+				}
+			}
+		}
+		return crs;
 	}
 }

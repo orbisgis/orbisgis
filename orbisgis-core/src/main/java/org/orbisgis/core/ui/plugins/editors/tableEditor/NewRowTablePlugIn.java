@@ -5,9 +5,9 @@
  * distributed under GPL 3 license. It is produced by the "Atelier SIG" team of
  * the IRSTV Institute <http://www.irstv.cnrs.fr/> CNRS FR 2488.
  *
- * 
+ *
  *  Team leader Erwan BOCHER, scientific researcher,
- * 
+ *
  *  User support leader : Gwendall Petit, geomatic engineer.
  *
  *
@@ -47,7 +47,7 @@ import org.gdms.driver.DriverException;
 import org.gdms.sql.strategies.IncompatibleTypesException;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.errorManager.ErrorManager;
-import org.orbisgis.core.images.IconNames;
+import org.orbisgis.core.images.OrbisGISIcon;
 import org.orbisgis.core.sif.UIFactory;
 import org.orbisgis.core.ui.components.sif.AskValidRow;
 import org.orbisgis.core.ui.editor.IEditor;
@@ -64,9 +64,9 @@ public class NewRowTablePlugIn extends AbstractPlugIn {
 	private JButton btn;
 
 	public NewRowTablePlugIn() {
-		btn = new JButton(getIcon(IconNames.POPUP_TABLE_ADDROW_ICON));
+		btn = new JButton(OrbisGISIcon.TABLE_ADDROW);
 	}
-	
+
 	public boolean execute(PlugInContext context) throws Exception {
 		IEditor editor = context.getActiveEditor();
 		TableEditableElement element = (TableEditableElement) editor
@@ -74,7 +74,7 @@ public class NewRowTablePlugIn extends AbstractPlugIn {
 		addRow(element);
 		return true;
 	}
-	
+
 	public void initialize(PlugInContext context) throws Exception {
 		WorkbenchContext wbContext = context.getWorkbenchContext();
 		WorkbenchFrame frame = (WorkbenchFrame) wbContext.getWorkbench()
@@ -82,9 +82,9 @@ public class NewRowTablePlugIn extends AbstractPlugIn {
 		wbContext.getWorkbench().getFrame().getEditionTableToolBar().addPlugIn(
 				this, btn, context);
 		context.getFeatureInstaller().addPopupMenuItem(frame, this,
-				new String[] { Names.POPUP_TABLE_ADDROW_PATH1 },
+				new String[] { Names.POPUP_TABLE_ADDROW },
 				Names.POPUP_TABLE_ADDROW_GROUP, false,
-				getIcon(IconNames.POPUP_TABLE_ADDROW_ICON), wbContext);
+				OrbisGISIcon.TABLE_ADDROW, wbContext);
 	}
 
 	public static void addRow(TableEditableElement element) {
@@ -108,14 +108,14 @@ public class NewRowTablePlugIn extends AbstractPlugIn {
 		}
 	}
 
-	public boolean isEnabled() {		
+	public boolean isEnabled() {
 		boolean isEnabled = false;
 		TableEditorPlugIn tableEditor = null;
 		if((tableEditor=getPlugInContext().getTableEditor()) != null
 				&& getSelectedColumn()==-1){
 			TableEditableElement element = (TableEditableElement) tableEditor
 					.getElement();
-			if(element.getSelection().getSelectedRows().length > 0) {
+			if(element.getSelection().getSelectedRows().length == 1) {
 				if( element.isEditable() ) {
 					isEnabled = true;
 				}

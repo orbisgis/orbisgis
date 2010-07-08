@@ -5,9 +5,9 @@
  * distributed under GPL 3 license. It is produced by the "Atelier SIG" team of
  * the IRSTV Institute <http://www.irstv.cnrs.fr/> CNRS FR 2488.
  *
- * 
+ *
  *  Team leader Erwan BOCHER, scientific researcher,
- * 
+ *
  *  User support leader : Gwendall Petit, geomatic engineer.
  *
  *
@@ -47,7 +47,7 @@ import org.gdms.driver.DriverException;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.background.BackgroundJob;
 import org.orbisgis.core.background.BackgroundManager;
-import org.orbisgis.core.images.IconNames;
+import org.orbisgis.core.images.OrbisGISIcon;
 import org.orbisgis.core.ui.editor.IEditor;
 import org.orbisgis.core.ui.editors.table.TableEditableElement;
 import org.orbisgis.core.ui.pluginSystem.AbstractPlugIn;
@@ -63,30 +63,30 @@ public class DeleteTableSelectionPlugIn extends AbstractPlugIn {
 	private JButton btn;
 
 	public DeleteTableSelectionPlugIn() {
-		btn = new JButton(getIcon(IconNames.REMOVE));
+		btn = new JButton(OrbisGISIcon.REMOVE);
 	}
-	
+
 	public boolean execute(final PlugInContext context) throws Exception {
 		BackgroundManager bm = Services.getService(BackgroundManager.class);
 		bm.backgroundOperation(new BackgroundJob() {
 
 			@Override
 			public void run(IProgressMonitor pm) {
-		
+
 				IEditor editor = context.getActiveEditor();
 				TableEditableElement element = (TableEditableElement) editor
 						.getElement();
-				removeSelection(element);				
+				removeSelection(element);
 			}
 
 			@Override
-			public String getTaskName() {				
+			public String getTaskName() {
 				return "Delete selection";
 			}
 		});
 		return true;
 	}
-	
+
 	public void initialize(PlugInContext context) throws Exception {
 		WorkbenchContext wbContext = context.getWorkbenchContext();
 		WorkbenchFrame frame = (WorkbenchFrame) wbContext.getWorkbench()
@@ -96,7 +96,7 @@ public class DeleteTableSelectionPlugIn extends AbstractPlugIn {
 		context.getFeatureInstaller().addPopupMenuItem(frame, this,
 				new String[] { Names.POPUP_TABLE_REMOVE_PATH1 },
 				Names.POPUP_TABLE_REMOVE_GROUP, false,
-				getIcon(IconNames.REMOVE), wbContext);
+				OrbisGISIcon.REMOVE, wbContext);
 	}
 
 

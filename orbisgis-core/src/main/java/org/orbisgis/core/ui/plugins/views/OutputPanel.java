@@ -5,9 +5,9 @@
  * distributed under GPL 3 license. It is produced by the "Atelier SIG" team of
  * the IRSTV Institute <http://www.irstv.cnrs.fr/> CNRS FR 2488.
  *
- * 
+ *
  *  Team leader Erwan BOCHER, scientific researcher,
- * 
+ *
  *  User support leader : Gwendall Petit, geomatic engineer.
  *
  *
@@ -55,8 +55,7 @@ import javax.swing.text.StyleContext;
 
 import org.orbisgis.core.Services;
 import org.orbisgis.core.errorManager.ErrorManager;
-import org.orbisgis.core.images.IconLoader;
-import org.orbisgis.core.images.IconNames;
+import org.orbisgis.core.images.OrbisGISIcon;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchContext;
 
 public class OutputPanel extends JPanel implements OutputManager {
@@ -83,7 +82,7 @@ public class OutputPanel extends JPanel implements OutputManager {
 		flowLayout.setAlignment(FlowLayout.LEFT);
 		buttonsPanel.setLayout(flowLayout);
 		JButton deleteBt = new JButton();
-		deleteBt.setIcon(IconLoader.getIcon(IconNames.EDIT_CLEAR));
+		deleteBt.setIcon(OrbisGISIcon.EDIT_CLEAR);
 		deleteBt.setToolTipText("Clear the text");
 		deleteBt.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ae) {
@@ -96,22 +95,22 @@ public class OutputPanel extends JPanel implements OutputManager {
 	}
 
 	@Override
-	public void println(String out) {		
+	public void println(String out) {
 		print(out + "\n");
 	}
 
 	@Override
-	public void println(String text, Color color) {		
+	public void println(String text, Color color) {
 		print(text + "\n", color);
 	}
 
 	@Override
-	public void print(String out) {		
+	public void print(String out) {
 		print(out, Color.black);
 	}
 
 	@Override
-	public void print(String text, Color color) {		
+	public void print(String text, Color color) {
 		StyleContext sc = StyleContext.getDefaultStyleContext();
 		AttributeSet aset = sc.addAttribute(SimpleAttributeSet.EMPTY,
 				StyleConstants.Foreground, color);

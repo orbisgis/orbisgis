@@ -5,9 +5,9 @@
  * distributed under GPL 3 license. It is produced by the "Atelier SIG" team of
  * the IRSTV Institute <http://www.irstv.cnrs.fr/> CNRS FR 2488.
  *
- * 
+ *
  *  Team leader Erwan BOCHER, scientific researcher,
- * 
+ *
  *  User support leader : Gwendall Petit, geomatic engineer.
  *
  *
@@ -41,6 +41,7 @@ package org.orbisgis.core.ui.plugins.properties;
 import javax.swing.JButton;
 import javax.swing.JMenuItem;
 
+import org.orbisgis.core.images.OrbisGISIcon;
 import org.orbisgis.core.sif.UIFactory;
 import org.orbisgis.core.ui.configuration.ConfigurationPanel;
 import org.orbisgis.core.ui.pluginSystem.AbstractPlugIn;
@@ -54,7 +55,7 @@ public class ConfigurationPlugIn extends AbstractPlugIn {
 	private JButton btn;
 
 	public ConfigurationPlugIn() {
-		btn = new JButton(getIcon("preferences-system.png"));
+		btn = new JButton(OrbisGISIcon.PREFERENCES_SYSTEM );
 		btn.setToolTipText(Names.CONFIGURATION);
 	}
 
@@ -73,7 +74,7 @@ public class ConfigurationPlugIn extends AbstractPlugIn {
 				btn, context);
 		menuItem = context.getFeatureInstaller().addMainMenuItem(this,
 				new String[] { Names.FILE }, "Configuration", false,
-				getIcon("preferences-system.png"), null, null, context);
+				OrbisGISIcon.PREFERENCES_SYSTEM, null, null, context);
 	}
 
 	public boolean isEnabled() {

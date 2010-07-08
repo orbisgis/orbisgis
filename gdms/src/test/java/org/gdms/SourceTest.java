@@ -75,6 +75,8 @@ public class SourceTest extends BaseTest {
 
 	private static final int SMALL_THRESHOLD = 5000;
 
+	private static final String SHPTABLE = "landcover2000shp";
+
 	public static DataSourceFactory dsf = new DataSourceFactory();
 
 	private static List<TestData> testMetaData = new ArrayList<TestData>();
@@ -116,7 +118,7 @@ public class SourceTest extends BaseTest {
 					internalData + "hedgerow.sql", new DBSource("127.0.0.1",
 							-1, "gdms", "postgres", "postgres", "hedgerow",
 							"jdbc:postgresql")));
-			toTest.add(new FileTestSource("landcover2000shp", internalData
+			toTest.add(new FileTestSource(SHPTABLE, internalData
 					+ "landcover2000.shp"));
 			toTest.add(new ObjectTestSource("memory_spatial_object",
 					new SeveralSpatialFieldsDriver()));
@@ -389,7 +391,7 @@ public class SourceTest extends BaseTest {
 
 	/**
 	 * returns the resources with less than SMALL_THRESOLD number of rows
-	 *
+	 * 
 	 * @return
 	 * @throws IOException
 	 */
@@ -403,7 +405,7 @@ public class SourceTest extends BaseTest {
 
 	/**
 	 * returns the resources with less than SMALL_THRESOLD number of rows
-	 *
+	 * 
 	 * @return
 	 * @throws IOException
 	 */
@@ -450,9 +452,9 @@ public class SourceTest extends BaseTest {
 	/**
 	 * If the test is going to write creates a backup and adds the backup to the
 	 * DataSourceFactory
-	 *
+	 * 
 	 * @param testSource
-	 *
+	 * 
 	 * @return The name of the backup in the DataSourceFactory
 	 * @throws IOException
 	 */
@@ -467,7 +469,7 @@ public class SourceTest extends BaseTest {
 
 	/**
 	 * Get all the resources with primary keys
-	 *
+	 * 
 	 * @return
 	 * @throws IOException
 	 */
@@ -493,7 +495,7 @@ public class SourceTest extends BaseTest {
 	 * Gets a new unique primary key for the specified resource. This method
 	 * only should receive as parameters the return values from
 	 * getResourcesWithPK
-	 *
+	 * 
 	 * @param dsName
 	 * @return
 	 */
@@ -505,7 +507,7 @@ public class SourceTest extends BaseTest {
 	 * Gets the primary key field index for the specified resource. This method
 	 * only should receive as parameters the return values from
 	 * getResourcesWithPK
-	 *
+	 * 
 	 * @param dsName
 	 * @return
 	 */
@@ -520,7 +522,7 @@ public class SourceTest extends BaseTest {
 
 	/**
 	 * Gets the index of a string field in the specified resource
-	 *
+	 * 
 	 * @param dsName
 	 * @return
 	 */
@@ -530,7 +532,7 @@ public class SourceTest extends BaseTest {
 
 	/**
 	 * Gets database resources
-	 *
+	 * 
 	 * @return
 	 * @throws IOException
 	 */
@@ -545,7 +547,7 @@ public class SourceTest extends BaseTest {
 	/**
 	 * returns the index of a field that can be set to null and doesn't have to
 	 * have unique values
-	 *
+	 * 
 	 * @param dsName
 	 * @return
 	 */
@@ -555,7 +557,7 @@ public class SourceTest extends BaseTest {
 
 	/**
 	 * Gets any resource without spatial fields
-	 *
+	 * 
 	 * @return
 	 * @throws IOException
 	 */
@@ -570,7 +572,7 @@ public class SourceTest extends BaseTest {
 
 	/**
 	 * Gets any resource with spatial fields
-	 *
+	 * 
 	 * @return
 	 * @throws IOException
 	 */
@@ -585,7 +587,7 @@ public class SourceTest extends BaseTest {
 
 	/**
 	 * Gets resources with null values
-	 *
+	 * 
 	 * @return
 	 * @throws IOException
 	 */
@@ -600,7 +602,7 @@ public class SourceTest extends BaseTest {
 
 	/**
 	 * Returns any numeric field for the given resource.
-	 *
+	 * 
 	 * @param resource
 	 * @return
 	 */
@@ -610,7 +612,7 @@ public class SourceTest extends BaseTest {
 
 	/**
 	 * Return resources which have at leasst one numeric field
-	 *
+	 * 
 	 * @return
 	 * @throws IOException
 	 */
@@ -624,7 +626,7 @@ public class SourceTest extends BaseTest {
 
 	/**
 	 * Returns resources that contain null values
-	 *
+	 * 
 	 * @return
 	 * @throws IOException
 	 */
@@ -639,7 +641,7 @@ public class SourceTest extends BaseTest {
 	/**
 	 * Returns the name of a field containing null values in the specified data
 	 * source
-	 *
+	 * 
 	 * @param ds
 	 * @return
 	 */
@@ -650,7 +652,7 @@ public class SourceTest extends BaseTest {
 	/**
 	 * Gets the minimum value for the specified field in the specified data
 	 * source
-	 *
+	 * 
 	 * @param ds
 	 * @param numericFieldName
 	 * @return
@@ -662,7 +664,7 @@ public class SourceTest extends BaseTest {
 	/**
 	 * Gets the maximum value for the specified field in the specified data
 	 * source
-	 *
+	 * 
 	 * @param ds
 	 * @param numericFieldName
 	 * @return
@@ -673,7 +675,7 @@ public class SourceTest extends BaseTest {
 
 	/**
 	 * Gets the resources with repeated rows
-	 *
+	 * 
 	 * @return
 	 * @throws IOException
 	 */
@@ -688,7 +690,7 @@ public class SourceTest extends BaseTest {
 	/**
 	 * Gets new geometries of a type suitable to be added to the specified data
 	 * source
-	 *
+	 * 
 	 * @param dsName
 	 * @return
 	 */
@@ -699,7 +701,7 @@ public class SourceTest extends BaseTest {
 	/**
 	 * Gets new geometries of a type suitable to be added to the specified data
 	 * source
-	 *
+	 * 
 	 * @param dsName
 	 * @return
 	 */
@@ -709,7 +711,7 @@ public class SourceTest extends BaseTest {
 
 	/**
 	 * returns all the spatial resources
-	 *
+	 * 
 	 * @return
 	 * @throws IOException
 	 */
@@ -737,7 +739,7 @@ public class SourceTest extends BaseTest {
 	/**
 	 * Tell the test system that the tests are going to perform modifications in
 	 * the data sources
-	 *
+	 * 
 	 * @param writeTests
 	 */
 	public void setWritingTests(boolean writingTests) {
@@ -766,4 +768,14 @@ public class SourceTest extends BaseTest {
 
 		});
 	}
+
+	public String getSHPTABLE() throws Exception {
+		getTABLE(SHPTABLE);
+		return SHPTABLE;
+	}
+
+	public void getTABLE(final String tableName) throws Exception {
+		backup(getTestSource(tableName));
+	}
+
 }
