@@ -71,6 +71,7 @@ import org.gdms.sql.function.spatial.geometry.convert.ST_InteriorPoint;
 import org.gdms.sql.function.spatial.geometry.convert.ST_PointsToLine;
 import org.gdms.sql.function.spatial.geometry.convert.ST_ToMultiLine;
 import org.gdms.sql.function.spatial.geometry.convert.ST_ToMultiPoint;
+import org.gdms.sql.function.spatial.geometry.convert.ST_ToMultiSegments;
 import org.gdms.sql.function.spatial.geometry.create.ST_Boundary;
 import org.gdms.sql.function.spatial.geometry.create.ST_BoundingCircle;
 import org.gdms.sql.function.spatial.geometry.create.ST_Densify;
@@ -251,6 +252,7 @@ public class FunctionManager {
 		addFunction(ST_RasterAlgebra.class);
 		addFunction(ST_Count.class);
 		addFunction(ST_Shadow.class);
+		addFunction(ST_ToMultiSegments.class);
 	}
 
 	public static void addFunctionManagerListener(
