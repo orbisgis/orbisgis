@@ -2,6 +2,7 @@ package org.orbisgis.core.renderer.se.parameter;
 
 import java.util.ArrayList;
 import java.util.List;
+import javax.swing.JPanel;
 import javax.xml.bind.JAXBElement;
 import org.gdms.data.DataSource;
 import org.gdms.data.feature.Feature;
@@ -12,6 +13,7 @@ import org.orbisgis.core.renderer.persistance.se.ParameterValueType;
 import org.orbisgis.core.renderer.persistance.se.RecodeType;
 
 import org.orbisgis.core.renderer.se.parameter.string.*;
+import org.orbisgis.core.ui.editorViews.toc.actions.cui.EditFeatureTypeStylePanel;
 
 public abstract class Recode<ToType extends SeParameter, FallbackType extends ToType> implements SeParameter {
 
@@ -139,6 +141,12 @@ public abstract class Recode<ToType extends SeParameter, FallbackType extends To
         ObjectFactory of = new ObjectFactory();
         return of.createRecode(r);
     }
+
+	@Override
+	public JPanel getEditionPanel(EditFeatureTypeStylePanel ftsPanel){
+		throw new UnsupportedOperationException("Not yet implemented ("+ this.getClass() + " )");
+	}
+
 
     protected FallbackType fallbackValue;
     protected StringParameter lookupValue;

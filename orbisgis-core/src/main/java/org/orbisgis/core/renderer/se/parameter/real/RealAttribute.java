@@ -10,6 +10,12 @@ import org.orbisgis.core.renderer.se.parameter.PropertyName;
 
 public class RealAttribute extends PropertyName implements RealParameter{
 
+	private Double min;
+	private Double max;
+
+	public RealAttribute(){
+	}
+
     public RealAttribute(String fieldName, DataSource ds) throws DriverException{
         super(fieldName, ds);
     }
@@ -26,4 +32,14 @@ public class RealAttribute extends PropertyName implements RealParameter{
             throw new ParameterException("Could not fetch feature attribute \""+ fieldName +"\"");
         }
     }
+
+	@Override
+	public void setMinValue(Double min) {
+		this.min = min;
+	}
+
+	@Override
+	public void setMaxValue(Double max) {
+		this.max = max;
+	}
 }

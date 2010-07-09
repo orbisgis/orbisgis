@@ -3,6 +3,7 @@ package org.orbisgis.core.renderer.se;
 import java.awt.Graphics2D;
 import java.awt.Shape;
 import java.io.IOException;
+import javax.swing.JPanel;
 import javax.xml.bind.JAXBElement;
 import org.gdms.data.feature.Feature;
 
@@ -28,10 +29,14 @@ import org.orbisgis.core.renderer.se.transform.Transform;
  *
  * @author maxence
  */
-public class LineSymbolizer extends VectorSymbolizer {
+public class LineSymbolizer extends VectorSymbolizer implements StrokeNode  {
+
+	private RealParameter perpendicularOffset;
+	private Stroke stroke;
 
 	public LineSymbolizer() {
 		super();
+		this.name = "Line Symbolizer";
 		uom = Uom.MM;
 		stroke = new PenStroke();
 	}
@@ -61,10 +66,12 @@ public class LineSymbolizer extends VectorSymbolizer {
 		}
 	}
 
+	@Override
 	public Stroke getStroke() {
 		return stroke;
 	}
 
+	@Override
 	public void setStroke(Stroke stroke) {
 		this.stroke = stroke;
 		stroke.setParent(this);
@@ -130,6 +137,4 @@ public class LineSymbolizer extends VectorSymbolizer {
 
 		return of.createLineSymbolizer(s);
 	}
-	private RealParameter perpendicularOffset;
-	private Stroke stroke;
 }

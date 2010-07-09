@@ -15,7 +15,6 @@ import org.orbisgis.core.ui.editorViews.toc.actions.cui.legends.StandardSymbolEd
 
 public class EPLegendHelper {
 
-	// TODO (pyf): à mettre sous forme de plugin
 	public static ILegendPanel[] getLegendPanels(LegendContext legendContext) {
 
 		ArrayList<ILegendPanel> legends = new ArrayList<ILegendPanel>();

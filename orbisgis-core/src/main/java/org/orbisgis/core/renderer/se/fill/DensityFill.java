@@ -18,6 +18,7 @@ import org.orbisgis.core.renderer.persistance.se.ObjectFactory;
 
 import org.gdms.data.feature.Feature;
 import org.orbisgis.core.map.MapTransform;
+import org.orbisgis.core.renderer.se.GraphicNode;
 
 import org.orbisgis.core.renderer.se.graphic.GraphicCollection;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
@@ -26,7 +27,7 @@ import org.orbisgis.core.renderer.se.parameter.color.ColorHelper;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 import org.orbisgis.core.renderer.se.stroke.PenStroke;
 
-public final class DensityFill extends Fill {
+public final class DensityFill extends Fill implements GraphicNode {
 
     public DensityFill() {
     }
@@ -42,7 +43,7 @@ public final class DensityFill extends Fill {
                 this.setHatchesOrientation(SeParameterFactory.createRealParameter(t.getOrientation()));
             }
         } else {
-            this.setMark(new GraphicCollection(t.getGraphic(), this));
+            this.setGraphicCollection(new GraphicCollection(t.getGraphic(), this));
         }
 
         if (t.getPercentage() != null) {
@@ -72,13 +73,15 @@ public final class DensityFill extends Fill {
         return orientation;
     }
 
-    public void setMark(GraphicCollection mark) {
+	@Override
+    public void setGraphicCollection(GraphicCollection mark) {
         this.mark = mark;
         this.isHatched = false;
         mark.setParent(this);
     }
 
-    public GraphicCollection getMark() {
+	@Override
+    public GraphicCollection getGraphicCollection() {
         return mark;
     }
 

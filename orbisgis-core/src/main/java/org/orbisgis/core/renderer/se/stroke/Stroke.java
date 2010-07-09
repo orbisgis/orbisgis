@@ -10,6 +10,7 @@ import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.persistance.se.GraphicStrokeType;
 import org.orbisgis.core.renderer.persistance.se.PenStrokeType;
 import org.orbisgis.core.renderer.se.SymbolizerNode;
+import org.orbisgis.core.renderer.se.UomNode;
 import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
@@ -20,7 +21,7 @@ import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
  * @todo create subclasses : TextStroke, CompoundStroke and StrokeReference
  * @author maxence
  */
-public abstract class Stroke implements SymbolizerNode {
+public abstract class Stroke implements SymbolizerNode, UomNode {
 
     /**
      * Create a new fill based on the jaxbelement
@@ -40,9 +41,14 @@ public abstract class Stroke implements SymbolizerNode {
         return null;
     }
 
+	@Override
     public void setUom(Uom uom) {
         this.uom = uom;
     }
+
+	public Uom getOwnUom(){
+		return uom;
+	}
 
     @Override
     public Uom getUom() {

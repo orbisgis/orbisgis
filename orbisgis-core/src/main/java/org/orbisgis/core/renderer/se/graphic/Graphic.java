@@ -14,6 +14,7 @@ import org.orbisgis.core.renderer.persistance.se.MarkGraphicType;
 import org.orbisgis.core.renderer.persistance.se.PieChartType;
 import org.orbisgis.core.renderer.persistance.se.TextGraphicType;
 import org.orbisgis.core.renderer.se.SymbolizerNode;
+import org.orbisgis.core.renderer.se.UomNode;
 import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.transform.Transform;
@@ -22,7 +23,7 @@ import org.orbisgis.core.renderer.se.transform.Transform;
  * @todo create subclasses: AlternativeGraphic, GraphicReference
  * @author maxence
  */
-public abstract class Graphic implements SymbolizerNode {
+public abstract class Graphic implements SymbolizerNode, UomNode {
 
     public static Graphic createFromJAXBElement(JAXBElement<? extends GraphicType> gr) {
 
@@ -62,6 +63,11 @@ public abstract class Graphic implements SymbolizerNode {
         }
     }
 
+	public Uom getOwnUom(){
+		return uom;
+	}
+
+	@Override
     public void setUom(Uom uom) {
         this.uom = uom;
     }

@@ -16,6 +16,8 @@ import org.orbisgis.core.map.MapTransform;
 
 import org.orbisgis.core.renderer.persistance.se.FontType;
 import org.orbisgis.core.renderer.persistance.se.StyledLabelType;
+import org.orbisgis.core.renderer.se.FillNode;
+import org.orbisgis.core.renderer.se.StrokeNode;
 import org.orbisgis.core.renderer.se.SymbolizerNode;
 import org.orbisgis.core.renderer.se.common.Halo;
 import org.orbisgis.core.renderer.se.common.Uom;
@@ -31,7 +33,7 @@ import org.orbisgis.core.renderer.se.parameter.string.StringLiteral;
 import org.orbisgis.core.renderer.se.parameter.string.StringParameter;
 import org.orbisgis.core.renderer.se.stroke.Stroke;
 
-public final class StyledLabel implements SymbolizerNode {
+public final class StyledLabel implements SymbolizerNode, FillNode, StrokeNode {
 
     public StyledLabel() {
         this.labelText = new StringLiteral("Label");
@@ -103,10 +105,12 @@ public final class StyledLabel implements SymbolizerNode {
         parent = node;
     }
 
+	@Override
     public Fill getFill() {
         return fill;
     }
 
+	@Override
     public void setFill(Fill fill) {
         this.fill = fill;
         if (fill != null) {
@@ -133,10 +137,12 @@ public final class StyledLabel implements SymbolizerNode {
         this.labelText = labelText;
     }
 
+	@Override
     public Stroke getStroke() {
         return stroke;
     }
 
+	@Override
     public void setStroke(Stroke stroke) {
         this.stroke = stroke;
         if (stroke != null) {

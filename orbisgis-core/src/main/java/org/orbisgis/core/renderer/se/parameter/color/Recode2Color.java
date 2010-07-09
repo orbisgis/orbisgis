@@ -2,11 +2,9 @@ package org.orbisgis.core.renderer.se.parameter.color;
 
 import java.awt.Color;
 import javax.xml.bind.JAXBElement;
-import org.gdms.data.DataSource;
 import org.gdms.data.feature.Feature;
 import org.orbisgis.core.renderer.persistance.se.MapItemType;
 import org.orbisgis.core.renderer.persistance.se.RecodeType;
-import org.orbisgis.core.renderer.se.parameter.MapItem;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 
 import org.orbisgis.core.renderer.se.parameter.Recode;
@@ -40,5 +38,4 @@ public class Recode2Color extends Recode<ColorParameter, ColorLiteral> implement
             return this.fallbackValue.getColor(feat);
         }
     }
-
 }

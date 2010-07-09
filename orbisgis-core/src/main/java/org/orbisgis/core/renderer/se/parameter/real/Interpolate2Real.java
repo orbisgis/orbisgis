@@ -9,10 +9,16 @@ import org.orbisgis.core.renderer.se.parameter.Interpolate;
 import org.orbisgis.core.renderer.se.parameter.InterpolationPoint;
 import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
 
-public class Interpolate2Real extends Interpolate<RealParameter, RealLiteral> implements RealParameter {
+public final class Interpolate2Real extends Interpolate<RealParameter, RealLiteral> implements RealParameter {
 
-    public Interpolate2Real(RealLiteral fallback) {
+
+	private Double min;
+	private Double max;
+
+    public Interpolate2Real(RealLiteral fallback, Double min, Double max) {
         super(fallback);
+		this.setMinValue(min);
+		this.setMaxValue(max);
     }
 
     public Interpolate2Real(JAXBElement<InterpolateType> expr) {
@@ -40,14 +46,43 @@ public class Interpolate2Real extends Interpolate<RealParameter, RealLiteral> im
 
     }
 
-    /**
-     * 
-     * @param ds
-     * @param fid
-     * @return
-     */
     @Override
     public double getValue(Feature feat) {
         return 0.0; // TODO compute interpolation
     }
+
+	@Override
+	public void setFallbackValue(RealLiteral l){
+		super.setFallbackValue(l);
+		l.setMaxValue(max);
+		l.setMinValue(min);
+	}
+
+	@Override
+	public void addInterpolationPoint(InterpolationPoint<RealParameter> point){
+		RealParameter value = point.getValue();
+		value.setMaxValue(max);
+		value.setMinValue(min);
+		super.addInterpolationPoint(point);
+	}
+
+	@Override
+	public void setMinValue(Double min) {
+		this.min = min;
+		this.fallbackValue.setMaxValue(min);
+		for (InterpolationPoint<RealParameter> ip : this.i_points){
+			RealParameter value = ip.getValue();
+			value.setMinValue(min);
+		}
+	}
+
+	@Override
+	public void setMaxValue(Double max) {
+		this.max = max;
+		this.fallbackValue.setMaxValue(max);
+		for (InterpolationPoint<RealParameter> ip : this.i_points){
+			RealParameter value = ip.getValue();
+			value.setMaxValue(max);
+		}
+	}
 }

@@ -6,6 +6,7 @@ package org.orbisgis.core.renderer.se;
 
 import java.awt.Graphics2D;
 import java.io.IOException;
+import javax.swing.JPanel;
 import javax.xml.bind.JAXBElement;
 import org.gdms.data.feature.Feature;
 import org.gdms.driver.DriverException;
@@ -188,8 +189,9 @@ public class RasterSymbolizer extends Symbolizer {
     private double gamma;
     private boolean shadedReliefOnlyBrightness;
     private double shadedReliefFactor;
+
     /*
-     * The standard request either a LineSymbolizer or an AreaSymbolizer
+     * SE request either a LineSymbolizer or an AreaSymbolizer
      * Since a line symbolizer is an area one witout the fill element, we only provide the latter
      */
     private AreaSymbolizer outline;

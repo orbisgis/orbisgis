@@ -17,6 +17,7 @@ import org.orbisgis.core.renderer.persistance.se.ObjectFactory;
 import org.orbisgis.core.renderer.persistance.se.PieChartType;
 import org.orbisgis.core.renderer.persistance.se.PieSubtypeType;
 import org.orbisgis.core.renderer.persistance.se.SliceType;
+import org.orbisgis.core.renderer.se.StrokeNode;
 
 import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.fill.Fill;
@@ -27,7 +28,7 @@ import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 import org.orbisgis.core.renderer.se.stroke.Stroke;
 import org.orbisgis.core.renderer.se.transform.Transform;
 
-public final class PieChart extends Graphic {
+public final class PieChart extends Graphic implements StrokeNode {
 
     public enum PieChartSubType {
 
@@ -169,10 +170,12 @@ public final class PieChart extends Graphic {
         this.radius = radius;
     }
 
+	@Override
     public Stroke getStroke() {
         return stroke;
     }
 
+	@Override
     public void setStroke(Stroke stroke) {
         this.stroke = stroke;
         stroke.setParent(this);

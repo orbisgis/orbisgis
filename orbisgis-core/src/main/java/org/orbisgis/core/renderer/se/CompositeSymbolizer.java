@@ -96,6 +96,27 @@ public final class CompositeSymbolizer implements SymbolizerNode {
         s.setParent(this);
     }
 
+	public void moveSymbolizerDown(Symbolizer s){
+		int index = symbolizers.indexOf(s);
+		if (index > -1 && index < symbolizers.size()-1){
+			symbolizers.remove(index);
+			symbolizers.add(index+1, s);
+		}
+	}
+
+
+	public void moveSymbolizerUp(Symbolizer s){
+		int index = symbolizers.indexOf(s);
+		if (index > 0){
+			symbolizers.remove(index);
+			symbolizers.add(index-1, s);
+		}
+	}
+
+	public void removeSymbolizer(Symbolizer s){
+		symbolizers.remove(s);
+	}
+
     private ArrayList<Symbolizer> symbolizers;
 
     @Override

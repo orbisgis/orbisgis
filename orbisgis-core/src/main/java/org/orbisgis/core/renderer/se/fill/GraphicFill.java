@@ -19,13 +19,14 @@ import org.orbisgis.core.renderer.persistance.se.TileGapType;
 
 import org.gdms.data.feature.Feature;
 import org.orbisgis.core.map.MapTransform;
+import org.orbisgis.core.renderer.se.UomNode;
 import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.graphic.GraphicCollection;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 
-public final class GraphicFill extends Fill {
+public final class GraphicFill extends Fill implements UomNode {
 
     public GraphicFill() {
         this.setGapX(null);
@@ -65,9 +66,14 @@ public final class GraphicFill extends Fill {
         return graphic;
     }
 
+	@Override
     public void setUom(Uom uom) {
         this.uom = uom;
     }
+
+	public Uom getOwnUom(){
+		return uom;
+	}
 
     @Override
     public Uom getUom() {

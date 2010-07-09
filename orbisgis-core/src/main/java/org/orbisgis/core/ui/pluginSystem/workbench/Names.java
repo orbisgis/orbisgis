@@ -120,6 +120,7 @@ public abstract class Names {
 	public static final String POPUP_TOC_RASTER_THRESHOLD = I18N.getText("orbisgis.ui.popupmenu.TOC.raster.threshold");
 
     // Edit SE Legend
+    public static final String POPUP_TOC_FEATURETYPESTYLE_EDIT = I18N.getText("orbisgis.ui.popupmenu.TOC.featureTypeStype.edit");
     public static final String POPUP_TOC_FEATURETYPESTYLE_IMPORT = I18N.getText("orbisgis.ui.popupmenu.TOC.featureTypeStype.import");
     public static final String POPUP_TOC_FEATURETYPESTYLE_EXPORT = I18N.getText("orbisgis.ui.popupmenu.TOC.featureTypeStype.export");
     public static final String POPUP_TOC_FEATURETYPESTYLE_EDIT_RULE = I18N.getText("orbisgis.ui.popupmenu.TOC.featureTypeStype.rule.edit");

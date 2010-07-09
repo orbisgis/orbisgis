@@ -200,7 +200,7 @@ public class Renderer {
 			// Extract into drawSeLayer method !
 			FeatureTypeStyle fts = layer.getFeatureTypeStyle();
 
-			fts.hardSetSymbolizerLevel();
+			fts.resetSymbolizerLevels();
 
 			ArrayList<Symbolizer> symbs = new ArrayList<Symbolizer>();
 			// i.e. TextSymbolizer are always drawn above all other layer !!
@@ -241,33 +241,37 @@ public class Renderer {
 				HashMap<Rule, HashSet<Integer>> rulesFid = new HashMap<Rule, HashSet<Integer>>();
 				for (Rule r : rList) {
 
-					SpatialDataSourceDecorator filteredDs = r.getFilteredDataSource(featureInExtent);
+					try {
+						SpatialDataSourceDecorator filteredDs = r.getFilteredDataSource(featureInExtent);
 
-					boolean newDataSource = !filteredDs.getName().equalsIgnoreCase(featureInExtent.getName());
+						boolean newDataSource = !filteredDs.getName().equalsIgnoreCase(featureInExtent.getName());
 
-					if (newDataSource) {
-						filteredDs.open();
-					}
-
-					HashSet<Integer> fids = new HashSet<Integer>();
-
-					for (int i = 0; i < filteredDs.getRowCount(); i++) {
-						Integer index = filteredDs.getFieldValue(i, 0).getAsInt();
-						fids.add(index);
-						/* Every feature that match a rule is removed from elsefid set*/
-						elseFid.remove(index);
-					}
-					if (newDataSource) {
-						filteredDs.close();
-						try {
-							// Once we have fids into hash set, we doesn't need filteredDs anymore
-							filteredDs.getDataSourceFactory().executeSQL("DROP TABLE " + filteredDs.getName() + " PURGE;");
-						} catch (ExecutionException ex) {
-							java.util.logging.Logger.getLogger(Renderer.class.getName()).log(Level.SEVERE, "Could nod purge internal datasource!", ex);
+						if (newDataSource) {
+							filteredDs.open();
 						}
-					}
 
-					rulesFid.put(r, fids);
+						HashSet<Integer> fids = new HashSet<Integer>();
+
+						for (int i = 0; i < filteredDs.getRowCount(); i++) {
+							Integer index = filteredDs.getFieldValue(i, 0).getAsInt();
+							fids.add(index);
+							/* Every feature that match a rule is removed from elsefid set*/
+							elseFid.remove(index);
+						}
+						if (newDataSource) {
+							filteredDs.close();
+							try {
+								// Once we have fids into hash set, we doesn't need filteredDs anymore
+								filteredDs.getDataSourceFactory().executeSQL("DROP TABLE " + filteredDs.getName() + " PURGE;");
+							} catch (ExecutionException ex) {
+								java.util.logging.Logger.getLogger(Renderer.class.getName()).log(Level.SEVERE, "Could nod purge internal datasource!", ex);
+							}
+						}
+
+						rulesFid.put(r, fids);
+					}catch(Exception ex){
+						java.util.logging.Logger.getLogger(Renderer.class.getName()).log(Level.SEVERE, "Unable to process rule " + r.getName(), ex);
+					}
 				}
 
 				featureInExtent.close();

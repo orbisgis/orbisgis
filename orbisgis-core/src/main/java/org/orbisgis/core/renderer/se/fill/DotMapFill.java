@@ -11,18 +11,19 @@ import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.persistance.se.DotMapFillType;
 
 import org.orbisgis.core.renderer.persistance.se.ObjectFactory;
+import org.orbisgis.core.renderer.se.GraphicNode;
 import org.orbisgis.core.renderer.se.graphic.GraphicCollection;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 
-public final class DotMapFill extends Fill {
+public final class DotMapFill extends Fill implements GraphicNode {
 
     DotMapFill(JAXBElement<DotMapFillType> f) {
 		DotMapFillType dmf = f.getValue();
 
 		if (dmf.getGraphic() != null){
-        	this.setMark(new GraphicCollection(dmf.getGraphic(), this));
+        	this.setGraphicCollection(new GraphicCollection(dmf.getGraphic(), this));
 		}
 
 		if (dmf.getValuePerMark() != null){
@@ -34,12 +35,14 @@ public final class DotMapFill extends Fill {
 		}
     }
 
-    public void setMark(GraphicCollection mark) {
+	@Override
+    public void setGraphicCollection(GraphicCollection mark) {
         this.mark = mark;
         mark.setParent(this);
     }
 
-    public GraphicCollection getMark() {
+	@Override
+    public GraphicCollection getGraphicCollection() {
         return mark;
     }
 

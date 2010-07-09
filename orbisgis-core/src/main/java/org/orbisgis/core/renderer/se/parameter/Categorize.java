@@ -6,6 +6,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JPanel;
 import javax.xml.bind.JAXBElement;
 import org.orbisgis.core.renderer.persistance.se.CategorizeType;
 import org.gdms.data.DataSource;
@@ -16,6 +17,7 @@ import org.orbisgis.core.renderer.persistance.se.ParameterValueType;
 import org.orbisgis.core.renderer.persistance.se.ThreshholdsBelongToType;
 
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
+import org.orbisgis.core.ui.editorViews.toc.actions.cui.EditFeatureTypeStylePanel;
 
 /**
  *
@@ -59,7 +61,7 @@ public abstract class Categorize<ToType extends SeParameter, FallbackType extend
 		return false;
 	}
 
-	public final void setFallbackValue(FallbackType fallbackValue) {
+	public void setFallbackValue(FallbackType fallbackValue) {
 		this.fallbackValue = fallbackValue;
 	}
 
@@ -67,7 +69,7 @@ public abstract class Categorize<ToType extends SeParameter, FallbackType extend
 		return fallbackValue;
 	}
 
-	public final void setLookupValue(RealParameter lookupValue) {
+	public void setLookupValue(RealParameter lookupValue) {
 		this.lookupValue = lookupValue;
 	}
 
@@ -256,10 +258,6 @@ public abstract class Categorize<ToType extends SeParameter, FallbackType extend
 			c.setFallbackValue(fallbackValue.toString());
 		}
 
-		if (firstClass != null) {
-			c.setFirstValue(firstClass.getJAXBParameterValueType());
-		}
-
 		if (lookupValue != null) {
 			c.setLookupValue(lookupValue.getJAXBParameterValueType());
 		}
@@ -273,6 +271,11 @@ public abstract class Categorize<ToType extends SeParameter, FallbackType extend
 
 		List<JAXBElement<ParameterValueType>> tv = c.getThresholdAndValue();
 
+		if (firstClass != null) {
+			tv.add(of.createValue(firstClass.getJAXBParameterValueType()));
+			//c.setFirstValue(firstClass.getJAXBParameterValueType());
+		}
+
 		for (Category<ToType> cat : classes) {
 			ParameterValueType t = cat.getThreshold().getJAXBParameterValueType();
 			ParameterValueType v = cat.getClassValue().getJAXBParameterValueType();
@@ -283,6 +286,13 @@ public abstract class Categorize<ToType extends SeParameter, FallbackType extend
 
 		return of.createCategorize(c);
 	}
+
+
+	@Override
+	public JPanel getEditionPanel(EditFeatureTypeStylePanel ftsPanel){
+		throw new UnsupportedOperationException("Not yet implemented ("+ this.getClass() + " )");
+	}
+
 	private CategorizeMethod method;
 	private boolean succeeding = true;
 	private RealParameter lookupValue;

@@ -10,6 +10,8 @@ import org.orbisgis.core.renderer.persistance.se.MarkGraphicType;
 import org.orbisgis.core.renderer.persistance.se.ObjectFactory;
 import org.gdms.data.feature.Feature;
 import org.orbisgis.core.map.MapTransform;
+import org.orbisgis.core.renderer.se.FillNode;
+import org.orbisgis.core.renderer.se.StrokeNode;
 import org.orbisgis.core.renderer.se.common.Halo;
 import org.orbisgis.core.renderer.se.common.OnlineResource;
 import org.orbisgis.core.renderer.se.common.Uom;
@@ -23,7 +25,7 @@ import org.orbisgis.core.renderer.se.stroke.PenStroke;
 import org.orbisgis.core.renderer.se.stroke.Stroke;
 import org.orbisgis.core.renderer.se.transform.Transform;
 
-public final class MarkGraphic extends Graphic {
+public final class MarkGraphic extends Graphic implements FillNode, StrokeNode {
 
     public MarkGraphic() {
     }
@@ -83,10 +85,12 @@ public final class MarkGraphic extends Graphic {
         }
     }
 
+	@Override
     public Fill getFill() {
         return fill;
     }
 
+	@Override
     public void setFill(Fill fill) {
         this.fill = fill;
         if (fill != null) {
@@ -103,10 +107,12 @@ public final class MarkGraphic extends Graphic {
         halo.setParent(this);
     }
 
+	@Override
     public Stroke getStroke() {
         return stroke;
     }
 
+	@Override
     public void setStroke(Stroke stroke) {
         this.stroke = stroke;
         stroke.setParent(this);
@@ -124,12 +130,6 @@ public final class MarkGraphic extends Graphic {
 
     public MarkGraphicSource getSource() {
         return source;
-    }
-
-    @Override
-    public void setUom(Uom uom) {
-        this.uom = uom;
-        //updateGraphic();
     }
 
     public RealParameter getpOffset() {

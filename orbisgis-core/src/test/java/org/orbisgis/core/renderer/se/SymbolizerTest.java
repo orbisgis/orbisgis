@@ -147,9 +147,6 @@ public class SymbolizerTest extends TestCase {
                 cs.draw(g2, null, false, mt);
             }
 
-
-            g2.finalize();
-
             System.out.println("Creation JFrame");
 
             JFrame frame = new JFrame("Test AreaSymbolizer");
@@ -172,8 +169,7 @@ public class SymbolizerTest extends TestCase {
 
 
             Marshaller marshaller = jaxbContext.createMarshaller();
-            marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT,
-                    new Boolean(true));
+            marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
 
             marshaller.marshal(cs.getJAXBElement(),
                     new FileOutputStream("/tmp/resSymb.xml"));

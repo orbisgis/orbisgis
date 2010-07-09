@@ -5,16 +5,19 @@
 
 package org.orbisgis.core.renderer.se.parameter;
 
+import javax.swing.JPanel;
 import javax.xml.bind.JAXBElement;
 import org.orbisgis.core.renderer.persistance.ogc.ExpressionType;
 import org.orbisgis.core.renderer.persistance.se.ParameterValueType;
+import org.orbisgis.core.renderer.se.PanelableNode;
+import org.orbisgis.core.ui.editorViews.toc.actions.cui.EditFeatureTypeStylePanel;
 
 
 /**
  *
  * @author maxence
  */
-public interface SeParameter {
+public interface SeParameter extends PanelableNode {
 
     /**
      * return true if the parameter depends on a feature.
@@ -24,7 +27,7 @@ public interface SeParameter {
      */
     boolean dependsOnFeature();
 
-    public abstract ParameterValueType getJAXBParameterValueType();
-    
-    public abstract JAXBElement<? extends ExpressionType> getJAXBExpressionType();
+    ParameterValueType getJAXBParameterValueType();
+   
+    JAXBElement<? extends ExpressionType> getJAXBExpressionType();
 }

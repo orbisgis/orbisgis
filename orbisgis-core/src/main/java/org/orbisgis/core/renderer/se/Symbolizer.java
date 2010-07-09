@@ -3,6 +3,7 @@ package org.orbisgis.core.renderer.se;
 import com.vividsolutions.jts.geom.Geometry;
 import java.awt.Graphics2D;
 import java.io.IOException;
+import javax.swing.JPanel;
 import javax.xml.bind.JAXBElement;
 import org.orbisgis.core.renderer.persistance.se.AreaSymbolizerType;
 import org.orbisgis.core.renderer.persistance.se.LineSymbolizerType;
@@ -15,6 +16,8 @@ import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.persistance.se.TextSymbolizerType;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.geometry.GeometryParameter;
+import org.orbisgis.core.ui.editorViews.toc.actions.cui.EditFeatureTypeStylePanel;
+import org.orbisgis.core.ui.editorViews.toc.actions.cui.EditSymbolizerPanel;
 
 /**
  * Entry point for all kind of symbolizer
@@ -22,15 +25,30 @@ import org.orbisgis.core.renderer.se.parameter.geometry.GeometryParameter;
  * @todo Add a general draw method that fit well for vectors and raster; implement fetch default geometry
  * @author maxence
  */
-public abstract class Symbolizer implements SymbolizerNode, Comparable{
+public abstract class Symbolizer implements SymbolizerNode, Comparable, PanelableNode {
 
-    protected static final String DEFAULT_NAME = "Symbolizer Name";
+    protected static final String DEFAULT_NAME = "Default Symbolizer";
     protected static final String VERSION = "1.9";
+
+ 	protected String name;
+    protected String desc;
+    protected GeometryParameter the_geom;
+
+    private SymbolizerNode parent;
+
+    protected int level = -1;
+
+
 
     public Symbolizer() {
         name = Symbolizer.DEFAULT_NAME;
         desc = "";
     }
+
+	@Override
+	public String toString(){
+		return name;
+	}
 
     public Symbolizer(JAXBElement<? extends SymbolizerType> st) {
         SymbolizerType t = st.getValue();
@@ -55,7 +73,10 @@ public abstract class Symbolizer implements SymbolizerNode, Comparable{
     }
 
     public void setName(String name) {
-        this.name = name;
+		if (name == null || name.equalsIgnoreCase(""))
+			this.name = Symbolizer.DEFAULT_NAME;
+		else
+        	this.name = name;
     }
 
     public String getDescription() {
@@ -165,12 +186,10 @@ public abstract class Symbolizer implements SymbolizerNode, Comparable{
     public abstract void draw(Graphics2D g2, Feature feat, boolean selected, MapTransform mt) throws ParameterException, IOException, DriverException;
 
     public abstract JAXBElement<? extends SymbolizerType> getJAXBElement();
-    protected String name;
-    protected String desc;
-    protected GeometryParameter the_geom;
 
-    private SymbolizerNode parent;
 
-    protected int level = -1;
-
+	@Override
+	public JPanel getEditionPanel(EditFeatureTypeStylePanel ftsPanel){
+		return new EditSymbolizerPanel(ftsPanel, this);
+	}
 }

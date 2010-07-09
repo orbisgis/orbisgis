@@ -1,5 +1,6 @@
 package org.orbisgis.core.renderer.se.parameter;
 
+import javax.swing.JPanel;
 import javax.xml.bind.JAXBElement;
 import org.gdms.data.DataSource;
 import org.gdms.data.feature.Feature;
@@ -9,6 +10,7 @@ import org.orbisgis.core.renderer.persistance.ogc.ExpressionType;
 import org.orbisgis.core.renderer.persistance.ogc.ObjectFactory;
 import org.orbisgis.core.renderer.persistance.ogc.PropertyNameType;
 import org.orbisgis.core.renderer.persistance.se.ParameterValueType;
+import org.orbisgis.core.ui.editorViews.toc.actions.cui.EditFeatureTypeStylePanel;
 
 public abstract class PropertyName implements SeParameter {
 
@@ -73,7 +75,12 @@ public abstract class PropertyName implements SeParameter {
         p.getContent().add(fieldName);
         ObjectFactory of = new ObjectFactory();
         return of.createPropertyName(p);
-    }
+	}
+
+	@Override
+	public JPanel getEditionPanel(EditFeatureTypeStylePanel ftsPanel){
+		throw new UnsupportedOperationException("Not yet implemented ("+ this.getClass() + " )");
+	}
 
     protected String fieldName;
     private int fieldId;
