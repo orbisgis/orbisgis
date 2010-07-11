@@ -49,14 +49,13 @@ import org.gdms.driver.driverManager.DriverLoadException;
 import org.gdms.sql.evaluator.And;
 import org.gdms.sql.evaluator.Division;
 import org.gdms.sql.evaluator.Equals;
+import org.gdms.sql.evaluator.ExistsOperator;
 import org.gdms.sql.evaluator.Expression;
 import org.gdms.sql.evaluator.Field;
 import org.gdms.sql.evaluator.FunctionOperator;
 import org.gdms.sql.evaluator.GreaterThan;
-import org.gdms.sql.evaluator.GreaterThanOrEqual;
+import org.gdms.sql.evaluator.InOperator;
 import org.gdms.sql.evaluator.IsOperator;
-import org.gdms.sql.evaluator.LessThan;
-import org.gdms.sql.evaluator.LessThanOrEqual;
 import org.gdms.sql.evaluator.LikeOperator;
 import org.gdms.sql.evaluator.Literal;
 import org.gdms.sql.evaluator.Not;
@@ -747,7 +746,17 @@ public class LogicTreeBuilder {
 			return is;
 
 		} else if (node instanceof ASTSQLExistsClause) {
-			throw new UnsupportedOperationException("Exists is not supported");
+			Node valueList = node.jjtGetChild(0);
+			Token token = node.first_token;
+			boolean not = token.next.kind == SQLEngineConstants.NOT;
+
+			if (not) {
+				throw new UnsupportedOperationException(
+						"Not Exists is not supported");
+			}
+
+			return new ExistsOperator(getOperator(valueList));
+
 		} else if (node instanceof ASTSQLSelect) {
 			return new SelectResultOperator(getOperator(node));
 		} else if (node instanceof ASTSQLPattern) {
@@ -824,8 +833,17 @@ public class LogicTreeBuilder {
 								last = or;
 							}
 
+							if (rightExpression.first_token.kind == SQLEngineConstants.NOT) {
+								last = new Not(last);
+							}
 							return last;
+						} else {
+							InOperator ret = new InOperator(ref,
+									getOperator(valueList));
+
+							return ret;
 						}
+
 					} else if (rightExpression instanceof ASTSQLLeftJoinClause) {
 					} else if (rightExpression instanceof ASTSQLRightJoinClause) {
 					} else if (rightExpression instanceof ASTSQLBetweenClause) {
