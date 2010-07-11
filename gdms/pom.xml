@@ -70,7 +70,7 @@
 	 <dependency>
 	  <groupId>ij</groupId>
 	  <artifactId>imagej</artifactId>
-	  <version>1.39p</version>
+	  <version>1.43</version>
 	 </dependency>
 	 <dependency>
 			<groupId>com.vividsolutions</groupId>
