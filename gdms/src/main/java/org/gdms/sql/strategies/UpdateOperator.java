@@ -65,8 +65,7 @@ public class UpdateOperator extends AbstractExpressionOperator implements
 	private Expression filterExpression;
 
 	@Override
-	protected Expression[] getExpressions() throws DriverException,
-			SemanticException {
+	protected Expression[] getExpressions() {
 		ArrayList<Expression> ret = new ArrayList<Expression>();
 		ret.addAll(fields);
 		ret.addAll(values);
@@ -152,7 +151,7 @@ public class UpdateOperator extends AbstractExpressionOperator implements
 
 	/**
 	 * Validates that the assignment is possible
-	 *
+	 * 
 	 * @see org.gdms.sql.strategies.AbstractExpressionOperator#validateExpressionTypes()
 	 */
 	@Override

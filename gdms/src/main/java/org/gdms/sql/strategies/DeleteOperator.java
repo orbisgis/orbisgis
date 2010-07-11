@@ -62,8 +62,7 @@ public class DeleteOperator extends AbstractExpressionOperator implements
 	private Expression[] expressions = new Expression[0];
 
 	@Override
-	protected Expression[] getExpressions() throws DriverException,
-			SemanticException {
+	protected Expression[] getExpressions() {
 		return expressions;
 	}
 

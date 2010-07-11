@@ -150,7 +150,7 @@ public class ProjectionOp extends AbstractExpressionOperator implements
 		return aliasList;
 	}
 
-	private void expandStars() throws DriverException, SemanticException {
+	public void expandStars() throws DriverException, SemanticException {
 		// Replace the select elements by Expression instances
 		ArrayList<Expression> expressions = new ArrayList<Expression>();
 		ArrayList<String> aliases = new ArrayList<String>();
@@ -177,10 +177,16 @@ public class ProjectionOp extends AbstractExpressionOperator implements
 
 	}
 
-	protected Expression[] getExpressions() throws DriverException,
-			SemanticException {
+	protected Expression[] getExpressions() {
 		if (expressionList == null) {
-			expandStars();
+			try {
+				//TODO : Change this
+				expandStars();
+			} catch (DriverException e) {
+				e.printStackTrace();
+			} catch (SemanticException e) {
+				e.printStackTrace();
+			}
 		}
 
 		return expressionList;
@@ -286,19 +292,15 @@ public class ProjectionOp extends AbstractExpressionOperator implements
 	}
 
 	public boolean isAggregated() {
-		try {
-			Expression[] exprs = getExpressions();
-			for (Expression expression : exprs) {
-				FunctionOperator[] functions = expression
-						.getFunctionReferences();
-				for (FunctionOperator functionOperator : functions) {
-					if (isAggregated(functionOperator)) {
-						return true;
-					}
+		Expression[] exprs = getExpressions();
+		for (Expression expression : exprs) {
+			FunctionOperator[] functions = expression
+					.getFunctionReferences();
+			for (FunctionOperator functionOperator : functions) {
+				if (isAggregated(functionOperator)) {
+					return true;
 				}
 			}
-		} catch (DriverException e) {
-		} catch (SemanticException e) {
 		}
 
 		return false;
@@ -413,7 +415,6 @@ public class ProjectionOp extends AbstractExpressionOperator implements
 			} else {
 				return false;
 			}
-		} catch (DriverException e) {
 		} catch (SemanticException e) {
 		}
 		return false;

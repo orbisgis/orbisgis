@@ -181,8 +181,7 @@ public class CustomQueryOperator extends AbstractExpressionOperator implements
 	}
 
 	@Override
-	protected Expression[] getExpressions() throws DriverException,
-			SemanticException {
+	protected Expression[] getExpressions()  {
 		return expressions;
 	}
 

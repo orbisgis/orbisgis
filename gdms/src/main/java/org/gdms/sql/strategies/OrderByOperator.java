@@ -59,8 +59,7 @@ public class OrderByOperator extends AbstractExpressionOperator implements
 	private ArrayList<Boolean> orders = new ArrayList<Boolean>();
 
 	@Override
-	protected Expression[] getExpressions() throws DriverException,
-			SemanticException {
+	protected Expression[] getExpressions() {
 		return fields.toArray(new Expression[0]);
 	}
 

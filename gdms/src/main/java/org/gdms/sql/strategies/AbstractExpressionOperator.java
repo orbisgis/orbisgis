@@ -37,8 +37,12 @@
 package org.gdms.sql.strategies;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Set;
 
+import org.gdms.data.NoSuchTableException;
 import org.gdms.data.metadata.Metadata;
 import org.gdms.data.types.Type;
 import org.gdms.data.values.Value;
@@ -57,8 +61,7 @@ import org.gdms.sql.strategies.ProjectionOp.StarElement;
 
 public abstract class AbstractExpressionOperator extends AbstractOperator {
 
-	protected abstract Expression[] getExpressions() throws DriverException,
-			SemanticException;
+	protected abstract Expression[] getExpressions() throws DriverException;
 
 	protected Field[] getFieldReferences() throws DriverException,
 			SemanticException {
@@ -76,7 +79,7 @@ public abstract class AbstractExpressionOperator extends AbstractOperator {
 	/**
 	 * Resolves the field references setting the index in the metadata of the
 	 * nearest child operator that implements ChangesMetadata
-	 *
+	 * 
 	 * @see org.gdms.sql.strategies.AbstractOperator#validateFieldReferences()
 	 */
 	public void validateFieldReferences() throws SemanticException,
@@ -107,13 +110,80 @@ public abstract class AbstractExpressionOperator extends AbstractOperator {
 				field.setFieldIndex(fieldIndex);
 			}
 		}
+
+		Operator[] subqueries = getSubQueries();
+		for (Operator operator : subqueries) {
+			operator.validateFieldReferences();
+		}
+	}
+
+	@Override
+	public void validateDuplicateFields() throws SemanticException,
+			DriverException {
+		Metadata metadata = getResultMetadata();
+		if (metadata != null) {
+			Set<String> fieldNames = new HashSet<String>();
+			for (int i = 0; i < metadata.getFieldCount(); i++) {
+				String fieldName = metadata.getFieldName(i);
+				if (fieldNames.contains(fieldName)) {
+					throw new SemanticException("Field {0} is duplicated"
+							+ fieldName);
+				} else {
+					fieldNames.add(fieldName);
+				}
+			}
+		}
+		Operator[] subqueries = getSubQueries();
+		for (Operator operator : subqueries) {
+			operator.validateDuplicateFields();
+		}
+	}
+
+	private Operator[] getSubQueries() throws DriverException {
+		ArrayList<Operator> ret = new ArrayList<Operator>();
+		Expression[] expressions = getExpressions();
+		if (expressions != null) {
+			for (Expression expr : expressions) {
+				Operator[] operators = expr.getSubqueries();
+				Collections.addAll(ret, operators);
+			}
+		}
+
+		return ret.toArray(new Operator[0]);
+	}
+	
+	@Override
+	public void expandStars() throws DriverException, SemanticException {
+		// Expand '*' in all function references
+		for (Expression expression : getExpressions()) {
+			FunctionOperator[] functionReferences = expression
+					.getFunctionReferences();
+			for (FunctionOperator function : functionReferences) {
+				StarElement star = function.getStar();
+				if (star != null) {
+					ArrayList<Expression> arguments = new ArrayList<Expression>();
+					ArrayList<String> alias = new ArrayList<String>();
+					expandStar(arguments,
+							new HashMap<Expression, SelectElement>(), alias,
+							null, star);
+					function
+							.replaceStarBy(arguments.toArray(new Expression[0]));
+				}
+			}
+		}
+
+		Operator[] subqueries = getSubQueries();
+		for (Operator operator : subqueries) {
+			operator.expandStars();
+		}
+
+		super.expandStars();
 	}
 
 	protected void expandStar(ArrayList<Expression> expressions,
 			HashMap<Expression, SelectElement> expressionSelectElement,
 			ArrayList<String> aliases, String tableName,
-			AbstractStarElement star)
-			throws DriverException, SemanticException {
+			AbstractStarElement star) throws DriverException, SemanticException {
 		String[] tableNames;
 		if (tableName == null) {
 			tableNames = getReferencedTables();
@@ -128,12 +198,10 @@ public abstract class AbstractExpressionOperator extends AbstractOperator {
 				for (int i = 0; i < m.getFieldCount(); i++) {
 					String fieldName = m.getFieldName(i);
 					if (star.except.contains(fieldName)) {
-						int exceptFieldIndex = star.except
-								.indexOf(fieldName);
+						int exceptFieldIndex = star.except.indexOf(fieldName);
 						if (exceptUsed[exceptFieldIndex]) {
 							throw new SemanticException(
-									"Ambiguous excluded field: "
-											+ fieldName);
+									"Ambiguous excluded field: " + fieldName);
 						}
 						exceptUsed[exceptFieldIndex] = true;
 					} else {
@@ -163,7 +231,7 @@ public abstract class AbstractExpressionOperator extends AbstractOperator {
 	/**
 	 * Sets the field context for all the field references and expands the '*'
 	 * in functions
-	 *
+	 * 
 	 * @see org.gdms.sql.strategies.AbstractOperator#prepareValidation()
 	 */
 	public void prepareValidation() throws DriverException, SemanticException {
@@ -195,7 +263,9 @@ public abstract class AbstractExpressionOperator extends AbstractOperator {
 				if (star != null) {
 					ArrayList<Expression> arguments = new ArrayList<Expression>();
 					ArrayList<String> alias = new ArrayList<String>();
-					expandStar(arguments, new HashMap<Expression, SelectElement>(), alias, null, star);
+					expandStar(arguments,
+							new HashMap<Expression, SelectElement>(), alias,
+							null, star);
 					for (Expression expr : arguments) {
 						Field[] fields = expr.getFieldReferences();
 						for (Field field : fields) {
@@ -207,12 +277,17 @@ public abstract class AbstractExpressionOperator extends AbstractOperator {
 				}
 			}
 		}
+		
+		Operator[] subqueries = getSubQueries();
+		for (Operator operator : subqueries) {
+			operator.prepareValidation();
+		}
 
 	}
 
 	/**
 	 * Validates the types of the expressions in the operator
-	 *
+	 * 
 	 * @see org.gdms.sql.strategies.AbstractOperator#validateExpressionTypes()
 	 */
 	@Override
@@ -222,12 +297,18 @@ public abstract class AbstractExpressionOperator extends AbstractOperator {
 		for (Expression expression : exps) {
 			expression.validateTypes();
 		}
+		
+		Operator[] subqueries = getSubQueries();
+		for (Operator operator : subqueries) {
+			operator.validateExpressionTypes();
+		}
+		
 		super.validateExpressionTypes();
 	}
 
 	/**
 	 * Checks that the functions exist
-	 *
+	 * 
 	 * @see org.gdms.sql.strategies.AbstractOperator#validateFunctionReferences()
 	 */
 	@Override
@@ -249,8 +330,40 @@ public abstract class AbstractExpressionOperator extends AbstractOperator {
 			}
 
 		}
+		
+		Operator[] subqueries = getSubQueries();
+		for (Operator operator : subqueries) {
+			operator.validateFunctionReferences();
+		}
+		
 		super.validateFunctionReferences();
 	}
-
 	
+	@Override
+	public void validateTableReferences() throws NoSuchTableException,
+			SemanticException, DriverException {
+		Operator[] subqueries = getSubQueries();
+		for (Operator operator : subqueries) {
+			operator.validateTableReferences();
+		}
+		super.validateTableReferences();
+	}
+
+	@Override
+	public void initialize() throws DriverException {
+		Operator[] subqueries = getSubQueries();
+		for (Operator operator : subqueries) {
+			operator.initialize();
+		}
+		super.initialize();
+	}
+
+	@Override
+	public void operationFinished() throws DriverException {
+		Operator[] subqueries = getSubQueries();
+		for (Operator operator : subqueries) {
+			operator.operationFinished();
+		}
+		super.operationFinished();
+	}
 }

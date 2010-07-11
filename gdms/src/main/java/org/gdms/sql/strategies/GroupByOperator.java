@@ -208,7 +208,7 @@ public class GroupByOperator extends AbstractExpressionOperator implements
 	 * clause and one field for each of the aggregated function in the select
 	 * clause. This aggregated functions will have as name the string 'groupby'
 	 * concatenated with the index in the field array of the resulting metadata
-	 *
+	 * 
 	 * @see org.gdms.sql.strategies.Operator#getResultMetadata()
 	 */
 	public Metadata getResultMetadata() throws DriverException {
@@ -231,8 +231,7 @@ public class GroupByOperator extends AbstractExpressionOperator implements
 	}
 
 	@Override
-	protected Expression[] getExpressions() throws DriverException,
-			SemanticException {
+	protected Expression[] getExpressions() {
 		return fields.toArray(new Expression[0]);
 	}
 
