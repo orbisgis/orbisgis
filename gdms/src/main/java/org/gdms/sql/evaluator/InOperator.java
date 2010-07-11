@@ -44,7 +44,8 @@ import org.gdms.data.ExecutionException;
 import org.gdms.data.metadata.Metadata;
 import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeFactory;
-import org.gdms.data.values.Valuemport org.gdms.data.values.ValueFactory;
+import org.gdms.data.values.Value;
+import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.ObjectDriver;
 import org.gdms.sql.strategies.IncompatibleTypesException;
@@ -68,7 +69,7 @@ public class InOperator extends ComparisonOperator implements Expression {
 	}
 
 	@Override
-	protected ValValueateExpression() throws EvaluationException,
+	protected Value evaluateExpression() throws EvaluationException,
 			IncompatibleTypesException {
 		try {
 
