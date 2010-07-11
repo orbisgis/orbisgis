@@ -359,7 +359,7 @@ public class ShapefileDriver implements FileReadWriteDriver {
 			writer.writeHeaders(new Envelope(0, 0, 0, 0), shapeType, 0, 100);
 			writer.close();
 
-			writeprj(replaceExtension(new File(path), ".prj"), metadata);
+			//writeprj(replaceExtension(new File(path), ".prj"), metadata);
 		} catch (FileNotFoundException e) {
 			throw new DriverException(e);
 		} catch (IOException e) {
@@ -522,7 +522,7 @@ public class ShapefileDriver implements FileReadWriteDriver {
 				}
 			}
 			writer.close();
-			writeprj(replaceExtension(file, ".prj"), metadata);
+			//writeprj(replaceExtension(file, ".prj"), metadata);
 		} catch (FileNotFoundException e) {
 			throw new DriverException(e);
 		} catch (IOException e) {
