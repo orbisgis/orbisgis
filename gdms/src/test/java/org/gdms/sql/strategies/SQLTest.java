@@ -1084,11 +1084,70 @@ public class SQLTest extends SourceTest {
 		ds.close();
 	}
 
+	/**
+	 * Table town information 
+	 * town sales 
+	 * plourivo 1500 
+	 * paimpol 250 
+	 * nantes 300
+	 * nozay 700
+	 * 
+	 * Table geography 
+	 * region_name town 
+	 * bretagne plourivo 
+	 * bretagne paimpol 
+	 * pays	de la loire nantes 
+	 * pays de la loire nozay
+	 * 
+	 * @throws Exception
+	 */
+	public void testExistsSelect() throws Exception {
+
+		Type intType = TypeFactory.createType(Type.INT);
+		Type stringType = TypeFactory.createType(Type.STRING);
+
+		GenericObjectDriver town = new GenericObjectDriver(new String[] {
+				"town", "sales" }, new Type[] { stringType, intType });
+		town.addValues(ValueFactory.createValue("plourivo"), ValueFactory
+				.createValue(1500));
+		town.addValues(ValueFactory.createValue("paimpol"), ValueFactory
+				.createValue(250));
+		town.addValues(ValueFactory.createValue("nantes"), ValueFactory
+				.createValue(300));
+		town.addValues(ValueFactory.createValue("nozay"), ValueFactory
+				.createValue(700));
+
+		GenericObjectDriver geography = new GenericObjectDriver(new String[] {
+				"region_name", "town" }, new Type[] { stringType, intType });
+		geography.addValues(ValueFactory.createValue("bretagne"), ValueFactory
+				.createValue("plourivo"));
+		geography.addValues(ValueFactory.createValue("bretagne"), ValueFactory
+				.createValue("paimpol"));
+		geography.addValues(ValueFactory.createValue("pays de la loire"),
+				ValueFactory.createValue("nantes"));
+		geography.addValues(ValueFactory.createValue("pays de la loire"),
+				ValueFactory.createValue("nozay"));
+
+		dsf.getSourceManager().register("town", town);
+		dsf.getSourceManager().register("geography", geography);
+
+		String query = "SELECT SUM(sales) FROM town " + "WHERE EXISTS "
+				+ "(SELECT * FROM geography WHERE region_name = 'bretagne')";
+
+		DataSource ds = dsf.getDataSourceFromSQL(query);
+		ds.open();
+
+		assertTrue(ds.getInt(0, 0) == 2750);
+
+		ds.close();
+
+	}
+
 	public void testInSelect() throws Exception {
 		Type intType = TypeFactory.createType(Type.INT);
 		Type stringType = TypeFactory.createType(Type.STRING);
 		GenericObjectDriver dict = new GenericObjectDriver(new String[] {
-				"code", "text" }, new Type[] { intType, stringType });
+				"code", "data" }, new Type[] { intType, stringType });
 		dict.addValues(ValueFactory.createValue(0), ValueFactory
 				.createValue("good"));
 		dict.addValues(ValueFactory.createValue(1), ValueFactory
@@ -1105,7 +1164,7 @@ public class SQLTest extends SourceTest {
 		dsf.getSourceManager().register("thetable", thetable);
 		DataSource ds = dsf.getDataSourceFromSQL("select * from thetable "
 				+ "where dict_code in "
-				+ "(select code from dict where text = 'good');");
+				+ "(select code from dict where data = 'good');");
 		ds.open();
 		for (int i = 0; i < ds.getRowCount(); i++) {
 			assertTrue(ds.getInt(i, 0) == 0);
