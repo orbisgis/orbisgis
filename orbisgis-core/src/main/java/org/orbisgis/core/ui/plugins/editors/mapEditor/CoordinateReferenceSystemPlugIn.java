@@ -34,7 +34,7 @@
  * or contact directly:
  * erwan.bocher _at_ ec-nantes.fr
  * gwendall.petit _at_ ec-nantes.fr
- */
+ 
 package org.orbisgis.core.ui.plugins.editors.mapEditor;
 
 import javax.swing.JButton;
@@ -56,8 +56,8 @@ public class CoordinateReferenceSystemPlugIn extends AbstractPlugIn{
 	private JButton CRSButton;
 
 	public boolean execute(PlugInContext context) throws Exception {
-		/*final ProjectionConfigPanel projectionPanel = new ProjectionConfigPanel(
-				context.getWorkbenchContext().getWorkbench().getFrame(), true);*/
+		final ProjectionConfigPanel projectionPanel = new ProjectionConfigPanel(
+				context.getWorkbenchContext().getWorkbench().getFrame(), true);
 
 
 		return true;
@@ -91,3 +91,4 @@ public class CoordinateReferenceSystemPlugIn extends AbstractPlugIn{
 		return isVisible;
 	}
 }
+*/

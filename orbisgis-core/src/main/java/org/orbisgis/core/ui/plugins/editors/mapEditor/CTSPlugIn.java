@@ -40,7 +40,7 @@
  * erwan.bocher _at_ ec-nantes.fr 
  * Pierre-Yves.Fadet _at_ ec-nantes.fr
  * gwendall.petit _at_ ec-nantes.fr
- **/
+ **//*
 
 
 package org.orbisgis.core.ui.plugins.editors.mapEditor;
@@ -101,10 +101,10 @@ import fr.cts.op.projection.LambertConicConformal2SP;
 import fr.cts.op.transformation.FrenchGeocentricNTF2RGF;
 import fr.cts.op.transformation.NTv2GridShiftTransformation;
 
-/**
+*//**
  * Test CTS with GDMS
  *
- */
+ *//*
 
 public class CTSPlugIn extends AbstractPlugIn {
 
@@ -347,3 +347,4 @@ public class CTSPlugIn extends AbstractPlugIn {
 		return false;
 	}
 }
+*/
