@@ -83,12 +83,7 @@
 			<groupId>commons-net</groupId>
 			<artifactId>commons-net</artifactId>
 			<version>1.4.1</version>
-		</dependency>		
-		<dependency>
-			<groupId>fr.cts</groupId>
-			<artifactId>cts</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
-		</dependency>	
+		</dependency>
 		<dependency>
             <groupId>org.eclipse.jdt.compiler</groupId>
             <artifactId>tool</artifactId>
