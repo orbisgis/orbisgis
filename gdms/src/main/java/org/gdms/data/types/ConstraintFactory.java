@@ -46,7 +46,6 @@ public class ConstraintFactory {
 
 	static {
 		samples.put(Constraint.AUTO_INCREMENT, new AutoIncrementConstraint());
-		samples.put(Constraint.CRS, new CRSConstraint(-1));
 		samples.put(Constraint.GEOMETRY_DIMENSION, new DimensionConstraint(2));
 		samples.put(Constraint.GEOMETRY_TYPE, new GeometryConstraint(
 				GeometryConstraint.LINESTRING));
@@ -71,9 +70,6 @@ public class ConstraintFactory {
 		switch (type) {
 		case Constraint.AUTO_INCREMENT:
 			c = new AutoIncrementConstraint(constraintBytes);
-			break;
-		case Constraint.CRS:
-			c = new CRSConstraint(constraintBytes);
 			break;
 		case Constraint.GEOMETRY_DIMENSION:
 			c = new DimensionConstraint(constraintBytes);
@@ -116,7 +112,7 @@ public class ConstraintFactory {
 			break;
 		case Constraint.DEFAULT_STRING_VALUE:
 			c = new DefaultStringConstraint(constraintBytes);
-			break;		
+			break;
 		default:
 			throw new IllegalArgumentException("Unknown constraint type:"
 					+ type);
@@ -241,8 +237,6 @@ public class ConstraintFactory {
 	public static Constraint createConstraint(int code, int i)
 			throws IllegalArgumentException {
 		switch (code) {
-		case Constraint.CRS:
-			return new CRSConstraint(i);
 		case Constraint.GEOMETRY_DIMENSION:
 			return new DimensionConstraint(i);
 		case Constraint.GEOMETRY_TYPE:

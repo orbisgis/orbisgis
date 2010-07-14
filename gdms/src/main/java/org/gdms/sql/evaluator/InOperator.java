@@ -50,7 +50,7 @@ import org.gdms.driver.DriverException;
 import org.gdms.driver.ObjectDriver;
 import org.gdms.sql.strategies.IncompatibleTypesException;
 import org.gdms.sql.strategies.Operator;
-import org.orbisgis.progress.NullProgressMonitor;
+import org.orbisgis.progress.IProgressMonitor;
 
 public class InOperator extends ComparisonOperator implements Expression {
 
@@ -69,18 +69,25 @@ public class InOperator extends ComparisonOperator implements Expression {
 	}
 
 	@Override
-	protected Value evaluateExpression() throws EvaluationException,
-			IncompatibleTypesException {
+	protected Value evaluateExpression(IProgressMonitor pm)
+			throws EvaluationException, IncompatibleTypesException {
 		try {
 
-			ObjectDriver res = select.getResult(new NullProgressMonitor());
+			pm.startTask("Executing subquery");
+			ObjectDriver res = select.getResult(pm);
+
+			if (pm.isCancelled()) {
+				return ValueFactory.createNullValue();
+			}
+
 			for (int i = 0; i < res.getRowCount(); i++) {
-				if (res.getFieldValue(i, 0).equals(refExpr.evaluate())
+				if (res.getFieldValue(i, 0).equals(refExpr.evaluate(pm))
 						.getAsBoolean()) {
 					return ValueFactory.createValue(true);
 				}
 			}
-
+			pm.startTask("End subquery");
+			
 			return ValueFactory.createValue(false);
 		} catch (ExecutionException e) {
 			throw new EvaluationException("Cannot evaluate subquery", e);
@@ -124,4 +131,5 @@ public class InOperator extends ComparisonOperator implements Expression {
 	public Operator[] getSubqueries() {
 		return new Operator[] { select };
 	}
+
 }

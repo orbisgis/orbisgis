@@ -136,7 +136,7 @@ public class GroupByOperator extends AbstractExpressionOperator implements
 						exprs = newClassExpressions;
 					}
 					for (int k = 0; k < exprs.length; k++) {
-						exprs[k].evaluate();
+						exprs[k].evaluate(pm);
 					}
 				}
 				pm.endTask();
@@ -171,7 +171,7 @@ public class GroupByOperator extends AbstractExpressionOperator implements
 							function.lastCall();
 						}
 
-						exprResults[j] = expressions[j].evaluate();
+						exprResults[j] = expressions[j].evaluate(pm);
 					}
 					Value[] row = new Value[fields.size()];
 					int fieldValuesIndex = 0;

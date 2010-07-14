@@ -87,7 +87,7 @@ public class InsertOperator extends AbstractExpressionOperator implements
 				Field field = (Field) fields.get(i);
 				System.out.println(field.getFieldName());
 				int fieldIndex = ds.getFieldIndexByName(field.getFieldName());
-				row[fieldIndex] = values.get(i).evaluate();
+				row[fieldIndex] = values.get(i).evaluate(pm);
 			}
 			ds.insertFilledRow(row);
 			ds.commit();

@@ -45,7 +45,7 @@ import org.gdms.driver.DriverException;
 import org.gdms.driver.ObjectDriver;
 import org.gdms.sql.strategies.IncompatibleTypesException;
 import org.gdms.sql.strategies.Operator;
-import org.orbisgis.progress.NullProgressMonitor;
+import org.orbisgis.progress.IProgressMonitor;
 import org.orbisgis.utils.I18N;
 
 public class SelectResultOperator extends Operand implements Expression {
@@ -83,9 +83,9 @@ public class SelectResultOperator extends Operand implements Expression {
 	}
 
 	@Override
-	public Value evaluate() throws EvaluationException {
+	public Value evaluate(IProgressMonitor pm) throws EvaluationException {
 		try {
-			ObjectDriver res = operator.getResult(new NullProgressMonitor());
+			ObjectDriver res = operator.getResult(pm);
 			return res.getFieldValue(0, 0);
 		} catch (ExecutionException e) {
 			throw new EvaluationException(I18N

@@ -9,6 +9,7 @@ import org.gdms.driver.DriverException;
 import org.gdms.driver.ObjectDriver;
 import org.gdms.sql.strategies.IncompatibleTypesException;
 import org.gdms.sql.strategies.Operator;
+import org.orbisgis.progress.IProgressMonitor;
 import org.orbisgis.progress.NullProgressMonitor;
 
 public class ExistsOperator extends BooleanOperator {
@@ -20,10 +21,10 @@ public class ExistsOperator extends BooleanOperator {
 	}
 
 	@Override
-	protected Value evaluateExpression() throws EvaluationException,
+	protected Value evaluateExpression(IProgressMonitor pm) throws EvaluationException,
 			IncompatibleTypesException {
 		try {
-			ObjectDriver res = select.getResult(new NullProgressMonitor());
+			ObjectDriver res = select.getResult(pm);
 			long count = res.getRowCount();
 
 			if (count > 0) {

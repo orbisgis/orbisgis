@@ -80,7 +80,6 @@ public class DiskBufferDriver extends AbstractBasicSQLDriver {
 	@Override
 	public void start() throws DriverException {
 		writingFinished();
-
 		try {
 			// Open file
 			reader = new GdmsReader(file);
@@ -102,6 +101,7 @@ public class DiskBufferDriver extends AbstractBasicSQLDriver {
 		// Close writing
 		try {
 			if (writer != null) {
+				writeMetadataOnce();
 				writer.writeRowIndexes();
 				writer.writeExtent();
 				writer.writeWritenRowCount();
@@ -164,18 +164,22 @@ public class DiskBufferDriver extends AbstractBasicSQLDriver {
 	 * @throws DriverException
 	 */
 	public void addValues(Value... row) throws DriverException {
-		if (firstRow) {
-			firstRow = false;
-			try {
-				writer.writeMetadata(0, getMetadata());
-			} catch (IOException e) {
-				throw new DriverException("Cannot write metadata", e);
-			}
-		}
+		writeMetadataOnce();
 		writer.addValues(row);
 	}
 
 	public File getFile() {
 		return file;
+	}
+
+	private void writeMetadataOnce() throws DriverException {
+		if (firstRow) {
+			try {
+				writer.writeMetadata(0, getMetadata());
+				firstRow = false;
+			} catch (IOException e) {
+				throw new DriverException("Cannot write metadata", e);
+			}
+		}
 	}
 }

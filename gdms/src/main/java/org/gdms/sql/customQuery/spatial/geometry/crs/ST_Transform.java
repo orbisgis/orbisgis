@@ -34,7 +34,7 @@
  * or contact directly:
  * erwan.bocher _at_ ec-nantes.fr
  * gwendall.petit _at_ ec-nantes.fr
- */
+ 
 package org.gdms.sql.customQuery.spatial.geometry.crs;
 
 import java.util.List;
@@ -44,6 +44,7 @@ import org.gdms.data.DataSourceFactory;
 import org.gdms.data.ExecutionException;
 import org.gdms.data.SpatialDataSourceDecorator;
 import org.gdms.data.metadata.Metadata;
+import org.gdms.data.metadata.MetadataUtilities;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
@@ -83,6 +84,8 @@ public class ST_Transform implements CustomQuery {
 	public ObjectDriver evaluate(DataSourceFactory dsf, DataSource[] tables,
 			Value[] values, IProgressMonitor pm) throws ExecutionException {
 
+		String geomField = values[0].toString();
+
 		String name = values[1].toString();
 
 		SpatialDataSourceDecorator sds = new SpatialDataSourceDecorator(
@@ -90,6 +93,8 @@ public class ST_Transform implements CustomQuery {
 
 		targetCRS = (GeodeticCRS) CRSUtil.getCRSFromEPSG(name);
 		try {
+			sds.setDefaultGeometry(geomField);
+
 			sds.open();
 			sourceCRS = (GeodeticCRS) sds.getCRS();
 			List<CoordinateOperation> ops = CoordinateOperationFactory
@@ -97,8 +102,9 @@ public class ST_Transform implements CustomQuery {
 			cos = new CoordinateOperationSequence(new Identifier(
 					ST_Transform.class, "" + " to " + ""), ops);
 
-			GenericObjectDriver driver = new GenericObjectDriver(sds
-					.getMetadata());
+			Metadata metaData = MetadataUtilities.addCRSConstraint(sds
+					.getMetadata(), geomField, targetCRS);
+			GenericObjectDriver driver = new GenericObjectDriver(metaData);
 
 			GeometryTransformer gt = new GeometryTransformer() {
 				protected CoordinateSequence transformCoordinates(
@@ -149,8 +155,7 @@ public class ST_Transform implements CustomQuery {
 
 	@Override
 	public String getDescription() {
-
-		return null;
+		return "Transform a geometry from a specific CRS to an EPSG CRS";
 	}
 
 	@Override
@@ -167,12 +172,13 @@ public class ST_Transform implements CustomQuery {
 
 	@Override
 	public String getName() {
-		return "ST_TRANSFORM";
+		return "ST_Transform";
 	}
 
 	@Override
 	public String getSqlOrder() {
-		return "SELECT ST_TRANSFORM(the_geom, '4326') from myTable";
+		return "Select ST_Transform(the_geom, '4326') from myTable";
 	}
 
 }
+*/

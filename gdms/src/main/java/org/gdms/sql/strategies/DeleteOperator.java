@@ -84,7 +84,7 @@ public class DeleteOperator extends AbstractExpressionOperator implements
 			ArrayList<Integer> indexes = new ArrayList<Integer>();
 			for (int i = 0; i < source.getRowCount(); i++) {
 				selectionFieldContext.setIndex(i);
-				if ((expressions == null) || evaluatesToTrue(expressions)) {
+				if ((expressions == null) || evaluatesToTrue(expressions, pm)) {
 					indexes.add(i);
 				}
 			}
@@ -137,10 +137,10 @@ public class DeleteOperator extends AbstractExpressionOperator implements
 		return null;
 	}
 
-	private boolean evaluatesToTrue(Expression[] exprs)
+	private boolean evaluatesToTrue(Expression[] exprs, IProgressMonitor pm)
 			throws EvaluationException {
 		for (Expression expression : exprs) {
-			if (!evaluatesToTrue(expression)) {
+			if (!evaluatesToTrue(expression, pm)) {
 				return false;
 			}
 		}
@@ -148,9 +148,10 @@ public class DeleteOperator extends AbstractExpressionOperator implements
 		return true;
 	}
 
-	private static boolean evaluatesToTrue(Expression expression)
-			throws IncompatibleTypesException, EvaluationException {
-		Value expressionResult = expression.evaluate();
+	private static boolean evaluatesToTrue(Expression expression,
+			IProgressMonitor pm) throws IncompatibleTypesException,
+			EvaluationException {
+		Value expressionResult = expression.evaluate(pm);
 		return !expressionResult.isNull() && expressionResult.getAsBoolean();
 	}
 

@@ -85,7 +85,7 @@ public class ProjectionOp extends AbstractExpressionOperator implements
 					ret = result;
 				} else {
 					ret = new ProjectionDriver(result, getExpressions(),
-							getResultMetadata());
+							getResultMetadata(), pm);
 				}
 			}
 		} catch (DriverException e) {

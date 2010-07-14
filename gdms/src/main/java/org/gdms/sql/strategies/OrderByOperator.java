@@ -103,7 +103,7 @@ public class OrderByOperator extends AbstractExpressionOperator implements
 						columnCache[i][field] = source.getFieldValue(i,
 								fieldIndexes[field]);
 					} else if (expre instanceof FunctionOperator) {
-						columnCache[i][field] = expre.evaluate();
+						columnCache[i][field] = expre.evaluate(pm);
 					}
 				}
 			}

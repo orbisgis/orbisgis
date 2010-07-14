@@ -220,7 +220,7 @@ public class SelectionOp extends AbstractExpressionOperator implements Operator 
 						}
 					}
 					selectionFieldContext.setIndex(i);
-					if (evaluatesToTrue()) {
+					if (evaluatesToTrue(pm)) {
 						indexes.add(i);
 					}
 
@@ -249,10 +249,10 @@ public class SelectionOp extends AbstractExpressionOperator implements Operator 
 	 * @throws IncompatibleTypesException
 	 * @throws EvaluationException
 	 */
-	private boolean evaluatesToTrue() throws IncompatibleTypesException,
-			EvaluationException {
+	private boolean evaluatesToTrue(IProgressMonitor pm)
+			throws IncompatibleTypesException, EvaluationException {
 		for (Expression expression : expressions) {
-			if (!evaluatesToTrue(expression)) {
+			if (!evaluatesToTrue(expression, pm)) {
 				return false;
 			}
 		}
@@ -260,9 +260,9 @@ public class SelectionOp extends AbstractExpressionOperator implements Operator 
 		return true;
 	}
 
-	private boolean evaluatesToTrue(Expression expression)
+	private boolean evaluatesToTrue(Expression expression, IProgressMonitor pm)
 			throws IncompatibleTypesException, EvaluationException {
-		Value expressionResult = expression.evaluate();
+		Value expressionResult = expression.evaluate(pm);
 		return !expressionResult.isNull() && expressionResult.getAsBoolean();
 	}
 

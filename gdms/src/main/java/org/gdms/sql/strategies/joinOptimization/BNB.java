@@ -72,7 +72,7 @@ public class BNB {
 		// Find the scalar product
 		Operator[] selections = op.getOperators(new OperatorFilter() {
 
-			public boolean accept(Operator op) {
+			public boolean accept(Operator op) {				
 				return op instanceof SelectionOp;
 			}
 

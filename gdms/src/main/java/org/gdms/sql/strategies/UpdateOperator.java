@@ -91,12 +91,12 @@ public class UpdateOperator extends AbstractExpressionOperator implements
 			for (int i = 0; i < ds.getRowCount(); i++) {
 				dsFieldContext.setIndex(i);
 				if ((filterExpression == null)
-						|| evaluatesToTrue(new Expression[] { filterExpression })) {
+						|| evaluatesToTrue(new Expression[] { filterExpression }, pm)) {
 					for (int j = 0; j < fields.size(); j++) {
 						int fieldIndex = ds.getFieldIndexByName(fields.get(j)
 								.getFieldName());
 						ds.setFieldValue(i, fieldIndex, values.get(j)
-								.evaluate());
+								.evaluate(pm));
 					}
 				}
 			}
@@ -123,10 +123,10 @@ public class UpdateOperator extends AbstractExpressionOperator implements
 
 	}
 
-	private boolean evaluatesToTrue(Expression[] exprs)
+	private boolean evaluatesToTrue(Expression[] exprs, IProgressMonitor pm)
 			throws EvaluationException {
 		for (Expression expression : exprs) {
-			if (!evaluatesToTrue(expression)) {
+			if (!evaluatesToTrue(expression, pm)) {
 				return false;
 			}
 		}
@@ -134,9 +134,9 @@ public class UpdateOperator extends AbstractExpressionOperator implements
 		return true;
 	}
 
-	private static boolean evaluatesToTrue(Expression expression)
+	private static boolean evaluatesToTrue(Expression expression, IProgressMonitor pm)
 			throws IncompatibleTypesException, EvaluationException {
-		Value expressionResult = expression.evaluate();
+		Value expressionResult = expression.evaluate(pm);
 		return !expressionResult.isNull() && expressionResult.getAsBoolean();
 	}
 

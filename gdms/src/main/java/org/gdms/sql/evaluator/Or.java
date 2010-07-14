@@ -39,6 +39,7 @@ package org.gdms.sql.evaluator;
 import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
+import org.orbisgis.progress.IProgressMonitor;
 
 public class Or extends BooleanOperator {
 
@@ -46,10 +47,11 @@ public class Or extends BooleanOperator {
 		super(children);
 	}
 
-	public Value evaluateExpression() throws EvaluationException {
-		Value leftValue = getLeftOperator().evaluate();
+	public Value evaluateExpression(IProgressMonitor pm)
+			throws EvaluationException {
+		Value leftValue = getLeftOperator().evaluate(pm);
 		if (!leftValue.getAsBoolean()) {
-			Value rightValue = getRightOperator().evaluate();
+			Value rightValue = getRightOperator().evaluate(pm);
 			return leftValue.or(rightValue);
 		} else {
 			return leftValue;

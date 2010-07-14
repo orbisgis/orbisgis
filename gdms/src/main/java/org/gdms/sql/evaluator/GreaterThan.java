@@ -39,6 +39,7 @@ package org.gdms.sql.evaluator;
 import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
+import org.orbisgis.progress.IProgressMonitor;
 
 public class GreaterThan extends ComparisonOperator {
 
@@ -46,9 +47,9 @@ public class GreaterThan extends ComparisonOperator {
 		super(children);
 	}
 
-	public Value evaluateExpression() throws EvaluationException {
-		Value leftValue = getLeftOperator().evaluate();
-		Value rightValue = getRightOperator().evaluate();
+	public Value evaluateExpression(IProgressMonitor pm) throws EvaluationException {
+		Value leftValue = getLeftOperator().evaluate(pm);
+		Value rightValue = getRightOperator().evaluate(pm);
 		return leftValue.greater(rightValue);
 	}
 
