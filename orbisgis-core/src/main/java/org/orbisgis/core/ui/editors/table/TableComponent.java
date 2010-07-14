@@ -48,6 +48,7 @@ import javax.swing.table.TableColumnModel;
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceCreationException;
 import org.gdms.data.DataSourceFactory;
+import org.gdms.data.ExecutionException;
 import org.gdms.data.edition.EditionEvent;
 import org.gdms.data.edition.EditionListener;
 import org.gdms.data.edition.FieldEditionEvent;
@@ -534,7 +535,9 @@ public class TableComponent extends JPanel implements WorkbenchFrame {
 					dsWithPkFiltered.close();
 					dsWithPk.close();
 
-					// TODO : Purge dsWithPk and dsWithPkFiltered
+					dsf.executeSQL("drop table if exists "
+							+ dsWithPkFiltered.getName() + " , "
+							+ dsWithPk.getName() + " purge");
 
 					pm.endTask();
 					selection.setSelectedRows(sel);
@@ -548,6 +551,8 @@ public class TableComponent extends JPanel implements WorkbenchFrame {
 				} catch (org.gdms.sql.parser.ParseException e) {
 					e.printStackTrace();
 				} catch (SemanticException e) {
+					e.printStackTrace();
+				} catch (ExecutionException e) {
 					e.printStackTrace();
 				}
 			}
@@ -668,8 +673,7 @@ public class TableComponent extends JPanel implements WorkbenchFrame {
 			if (oneColumnHeaderIsSelected) {
 				if ("ColumnAction".equals(getExtensionPointId())) {
 					wbContext.setHeaderSelected(selectedColumn);
-				}
-				else {
+				} else {
 					wbContext.setRowSelected(e);
 					if (!table.isRowSelected(clickedRow)) {
 						selection.setSelectedRows(new int[] { clickedRow });
