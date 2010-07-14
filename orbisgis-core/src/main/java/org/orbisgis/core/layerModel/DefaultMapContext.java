@@ -43,7 +43,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 
-import org.gdms.driver.DriverException;
 import org.gdms.source.SourceEvent;
 import org.gdms.source.SourceListener;
 import org.gdms.source.SourceRemovalEvent;
@@ -53,12 +52,10 @@ import org.orbisgis.core.errorManager.ErrorManager;
 import org.orbisgis.core.layerModel.persistence.BoundingBox;
 import org.orbisgis.core.layerModel.persistence.LayerCollectionType;
 import org.orbisgis.core.layerModel.persistence.LayerType;
-import org.orbisgis.core.layerModel.persistence.OgcCrs;
 import org.orbisgis.core.layerModel.persistence.SelectedLayer;
 import org.orbisgis.core.renderer.Renderer;
 import org.orbisgis.progress.IProgressMonitor;
 import org.orbisgis.progress.NullProgressMonitor;
-import org.orbisgis.wkt.parser.PRJUtils;
 
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
@@ -66,11 +63,9 @@ import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.io.ParseException;
 import com.vividsolutions.jts.io.WKTReader;
 
-import fr.cts.crs.CoordinateReferenceSystem;
-
 /**
  * Class that contains the status of the map view.
- *
+ * 
  * 
  * 
  */
@@ -92,8 +87,6 @@ public class DefaultMapContext implements MapContext {
 	private org.orbisgis.core.layerModel.persistence.MapContext jaxbMapContext;
 
 	private Envelope boundingBox;
-
-	public CoordinateReferenceSystem crs = null;
 
 	/**
 	 * @param mapControl
@@ -174,7 +167,7 @@ public class DefaultMapContext implements MapContext {
 					try {
 						layer.open();
 						layer.addLayerListenerRecursively(openerListener);
-						//checkLayerCRS(layer);
+						// checkLayerCRS(layer);
 					} catch (LayerException ex) {
 						Services.getErrorManager().error(
 								"Cannot open layer: " + layer.getName()
@@ -221,25 +214,26 @@ public class DefaultMapContext implements MapContext {
 		}
 	}
 
-	private void checkLayerCRS(final ILayer layer) throws LayerException,
-			DriverException {
-
-		CoordinateReferenceSystem layerCRS = layer.getDataSource().getCRS();
-
-		if (crs == null) {
-			crs = layerCRS;
-
-		} /*else if (!checkCRSProjection(layerCRS)) {
-			throw new LayerException("Cannot add a layer with CRS"
-					+ "' because it's different from map CRS.");
-		}*/
-	}
-
-	public boolean checkCRSProjection(CoordinateReferenceSystem layerCRS) {
-
-		return (layerCRS.getProjection().equals(crs.getProjection()));
-
-	}
+	/*
+	 * private void checkLayerCRS(final ILayer layer) throws LayerException,
+	 * DriverException {
+	 * 
+	 * CoordinateReferenceSystem layerCRS = layer.getDataSource().getCRS();
+	 * 
+	 * if (crs == null) { crs = layerCRS;
+	 * 
+	 * } else if (!checkCRSProjection(layerCRS)) { throw new
+	 * LayerException("Cannot add a layer with CRS" +
+	 * "' because it's different from map CRS."); }
+	 * 
+	 * }
+	 * 
+	 * public boolean checkCRSProjection(CoordinateReferenceSystem layerCRS) {
+	 * 
+	 * return (layerCRS.getProjection().equals(crs.getProjection()));
+	 * 
+	 * }
+	 */
 
 	/**
 	 * Creates a layer from the information obtained in the specified XML mapped
@@ -335,13 +329,11 @@ public class DefaultMapContext implements MapContext {
 			}
 			xmlMapContext.setBoundingBox(boundingBox);
 
-			OgcCrs ogcCrs = new OgcCrs();
-			if (getCoordinateReferenceSystem() == null) {
-				ogcCrs.setName("");
-			} else {
-				//ogcCrs.setName(crs.toWkt());
-			}
-			xmlMapContext.setOgcCrs(ogcCrs);
+			/*
+			 * OgcCrs ogcCrs = new OgcCrs(); if (getCoordinateReferenceSystem()
+			 * == null) { ogcCrs.setName(""); } else { //
+			 * ogcCrs.setName(crs.toWkt()); } xmlMapContext.setOgcCrs(ogcCrs);
+			 */
 
 			return xmlMapContext;
 		}
@@ -420,12 +412,11 @@ public class DefaultMapContext implements MapContext {
 				Services.getErrorManager().error(
 						"Cannot read the bounding box", e);
 			}
-			/*/String wkt = jaxbMapContext.getOgcCrs().getName();
-			if (wkt != null) {
-				if (wkt.length() > 0) {
-					crs = PRJUtils.getCRSFromWKT(wkt);
-				}
-			}*/
+			/*
+			 * /String wkt = jaxbMapContext.getOgcCrs().getName(); if (wkt !=
+			 * null) { if (wkt.length() > 0) { crs =
+			 * PRJUtils.getCRSFromWKT(wkt); } }
+			 */
 		}
 
 		// Listen source removal events
@@ -559,16 +550,15 @@ public class DefaultMapContext implements MapContext {
 	 * A mapcontext must have only one {@link CoordinateReferenceSystem} By
 	 * default the crs is set to null.
 	 */
-	public CoordinateReferenceSystem getCoordinateReferenceSystem() {
-		return crs;
-	}
-
-	/**
-	 * Set a {@link CoordinateReferenceSystem} to the mapContext
+	/*
+	 * public CoordinateReferenceSystem getCoordinateReferenceSystem() { return
+	 * crs; }
+	 * 
+	 * /** Set a {@link CoordinateReferenceSystem} to the mapContext
 	 * 
 	 * @param crs
-	 */
-	public void setCoordinateReferenceSystem(CoordinateReferenceSystem crs) {
-		this.crs = crs;
-	}
+	 *//*
+		 * public void setCoordinateReferenceSystem(CoordinateReferenceSystem
+		 * crs) { this.crs = crs; }
+		 */
 }

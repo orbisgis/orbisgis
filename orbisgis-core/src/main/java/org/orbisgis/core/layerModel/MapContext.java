@@ -41,8 +41,6 @@ import java.awt.image.BufferedImage;
 import org.orbisgis.progress.IProgressMonitor;
 
 import com.vividsolutions.jts.geom.Envelope;
-
-import fr.cts.crs.CoordinateReferenceSystem;
 /**
  * This interface provides information to the tool system and receives
  * notifications from it. Also registers the tool system as a listener in order
@@ -204,7 +202,7 @@ public interface MapContext {
 	 * @return
 	 */
 	
-	CoordinateReferenceSystem getCoordinateReferenceSystem();
+	//CoordinateReferenceSystem getCoordinateReferenceSystem();
 
 	
 	/**
@@ -212,5 +210,5 @@ public interface MapContext {
 	 * 
 	 * @param crs
 	 */
-	void setCoordinateReferenceSystem(CoordinateReferenceSystem crs);
+	//void setCoordinateReferenceSystem(CoordinateReferenceSystem crs);
 }
