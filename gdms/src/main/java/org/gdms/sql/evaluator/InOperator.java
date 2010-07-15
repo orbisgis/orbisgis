@@ -75,7 +75,7 @@ public class InOperator extends ComparisonOperator implements Expression {
 
 			pm.startTask("Executing subquery");
 			ObjectDriver res = select.getResult(pm);
-
+						
 			if (pm.isCancelled()) {
 				return ValueFactory.createNullValue();
 			}

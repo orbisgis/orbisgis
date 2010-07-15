@@ -35,7 +35,7 @@
  * erwan.bocher _at_ ec-nantes.fr
  * gwendall.petit _at_ ec-nantes.fr
  */
-package org.gdms.sql.strategies;
+package org.gdms.driver;
 
 import java.io.File;
 import java.io.IOException;
@@ -43,10 +43,10 @@ import java.io.IOException;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.metadata.Metadata;
 import org.gdms.data.values.Value;
-import org.gdms.driver.DriverException;
 import org.gdms.driver.gdms.GdmsDriver;
 import org.gdms.driver.gdms.GdmsReader;
 import org.gdms.driver.gdms.GdmsWriter;
+import org.gdms.sql.strategies.AbstractBasicSQLDriver;
 
 /**
  * This driver writes all the content added with the {@link #addValues(Value[])}

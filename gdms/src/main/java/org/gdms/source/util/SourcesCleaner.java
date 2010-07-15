@@ -76,7 +76,6 @@ public class SourcesCleaner {
 			throws IllegalStateException {
 
 		DataSourceDefinition def = source.getDef();
-		String tableName = source.getName();
 		if (def instanceof FileSourceDefinition) {
 
 			File file = ((FileSourceDefinition) def).getFile();
@@ -91,15 +90,10 @@ public class SourcesCleaner {
 
 		} else if (def instanceof SQLSourceDefinition) {
 			try {
-				DataSource dataSource = ((SQLSourceDefinition) def)
-						.getDataSourceFactory().getDataSource(tableName);
 				deleteFile(((SQLSourceDefinition) def).getFile());
 			} catch (DriverLoadException e) {
-				e.printStackTrace();
-			} catch (NoSuchTableException e) {
-				e.printStackTrace();
-			} catch (DataSourceCreationException e) {
-				e.printStackTrace();
+				throw new DriverLoadException("Cannot purge "
+						+ source.getName(), e);
 			}
 
 		} else if (def instanceof DBTableSourceDefinition) {
@@ -117,26 +111,20 @@ public class SourcesCleaner {
 	 * @throws DriverException
 	 */
 	public static void deleteSHPFiles(File fileShp) {
-		if (fileShp.exists()) {
-			fileShp.delete();
-		}
+
 		try {
 			File fileShx = FileUtils.getFileWithExtension(fileShp, "shx");
 			File fileDbf = FileUtils.getFileWithExtension(fileShp, "dbf");
 			File filePrj = FileUtils.getFileWithExtension(fileShp, "prj");
 
-			if (fileShx.exists()) {
-				fileShx.delete();
-			}
-			if (fileDbf.exists()) {
-				fileDbf.delete();
-			}
-			if (filePrj.exists()) {
-				filePrj.delete();
-			}
+			deleteFile(fileShp);
+			deleteFile(fileShx);
+			deleteFile(fileDbf);
+			deleteFile(filePrj);
 
 		} catch (IOException e) {
-			throw new DriverLoadException(e);
+			throw new DriverLoadException("Cannot purge "
+					+ fileShp.getAbsolutePath(), e);
 		}
 
 	}
@@ -147,7 +135,7 @@ public class SourcesCleaner {
 	 * @param file
 	 */
 	public static void deleteFile(File file) {
-		if (file.exists()) {
+		if (file != null && file.exists()) {
 			file.delete();
 		}
 	}

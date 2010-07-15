@@ -10,7 +10,6 @@ import org.gdms.driver.ObjectDriver;
 import org.gdms.sql.strategies.IncompatibleTypesException;
 import org.gdms.sql.strategies.Operator;
 import org.orbisgis.progress.IProgressMonitor;
-import org.orbisgis.progress.NullProgressMonitor;
 
 public class ExistsOperator extends BooleanOperator {
 
