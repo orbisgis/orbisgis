@@ -68,7 +68,6 @@ public class MapEditorPlugIn extends ViewPlugIn implements WorkbenchFrame,
 		IEditor {
 
 	private RootPanePanel mapEditor;
-	//private JPanel mapEditor;
 	private MapControl mapControl;
 	private WorkbenchToolBar mapToolBar;
 
