@@ -95,7 +95,7 @@ public class ST_Explode implements CustomQuery {
 			metadata.addField(field, TypeFactory.createType(Type.INT));
 
 			final DiskBufferDriver driver = new DiskBufferDriver(dsf, metadata);
-
+			int gid = 1;
 			long rowCount = sds.getRowCount();
 			for (long rowIndex = 0; rowIndex < rowCount; rowIndex++) {
 
@@ -111,6 +111,8 @@ public class ST_Explode implements CustomQuery {
 				final Value[] newValues = new Value[fieldsValues.length + 1];
 				System.arraycopy(fieldsValues, 0, newValues, 0,
 						fieldsValues.length);
+				newValues[fieldsValues.length] = ValueFactory
+						.createValue(gid++);
 				final Geometry geometry = sds.getGeometry(rowIndex);
 				explode(driver, newValues, geometry, spatialFieldIndex);
 			}

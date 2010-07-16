@@ -182,4 +182,18 @@ public class DiskBufferDriver extends AbstractBasicSQLDriver {
 			}
 		}
 	}
+	
+	/**
+	 * Get all value for a row index
+	 * @param rowIndex
+	 * @return
+	 * @throws DriverException
+	 */
+	public Value[] getRow(long rowIndex) throws DriverException {
+		Value[] ret = new Value[getMetadata().getFieldCount()];
+		for (int i = 0; i < ret.length; i++) {
+			ret[i] = getFieldValue(rowIndex, i);
+		}
+		return ret;
+	}
 }

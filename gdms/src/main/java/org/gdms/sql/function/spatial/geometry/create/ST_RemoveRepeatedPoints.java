@@ -42,28 +42,27 @@ package org.gdms.sql.function.spatial.geometry.create;
 
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
+import org.gdms.geometryUtils.GeometryEditor;
 import org.gdms.sql.function.Argument;
 import org.gdms.sql.function.Arguments;
 import org.gdms.sql.function.FunctionException;
 import org.gdms.sql.function.spatial.geometry.AbstractSpatialFunction;
 
 import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.OctagonalEnvelope;
 
-public class ST_OctogonalEnvelope extends AbstractSpatialFunction {
+public class ST_RemoveRepeatedPoints extends AbstractSpatialFunction {
 
 	public Value evaluate(final Value[] args) throws FunctionException {
-		if (args[0].isNull()) {
-			return ValueFactory.createNullValue();
-		} else {
-			final Geometry geom = args[0].getAsGeometry();
-			return ValueFactory.createValue(new OctagonalEnvelope(geom)
-					.toGeometry(geom.getFactory()));
-		}
+
+		final Geometry geom = args[0].getAsGeometry();
+		GeometryEditor geometryEditor = new GeometryEditor();
+		return ValueFactory.createValue(geometryEditor
+				.removeRepeatedPoints(geom));
+
 	}
 
 	public String getName() {
-		return "ST_OctogonalEnvelope";
+		return "ST_RemoveRepeatedPoints";
 	}
 
 	public Arguments[] getFunctionArguments() {
@@ -75,11 +74,11 @@ public class ST_OctogonalEnvelope extends AbstractSpatialFunction {
 	}
 
 	public String getDescription() {
-		return "Compute the octogonal envelope using a given geometry";
+		return "Remove repeated points into a geometry. ";
 	}
 
 	public String getSqlOrder() {
-		return "select ST_OctogonalEnvelope(the_geom) from myTable;";
+		return "select ST_RemoveRepeatedPoints(geometry) from myTable;";
 	}
 
 }

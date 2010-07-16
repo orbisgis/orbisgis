@@ -39,10 +39,8 @@ package org.gdms.sql.customQuery.spatial.geometry.topology;
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.ExecutionException;
-import org.gdms.data.NoSuchTableException;
 import org.gdms.data.NonEditableDataSourceException;
 import org.gdms.data.SpatialDataSourceDecorator;
-import org.gdms.data.indexes.IndexException;
 import org.gdms.data.metadata.Metadata;
 import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
@@ -55,20 +53,18 @@ import org.gdms.sql.function.Argument;
 import org.gdms.sql.function.Arguments;
 import org.orbisgis.progress.IProgressMonitor;
 
-public class ST_PlanarGraph implements CustomQuery {
-
-	public String EDGES = "edges";
+public class ST_Graph implements CustomQuery {
 
 	public String getName() {
-		return "ST_PlanarGraph";
+		return "ST_Graph";
 	}
 
 	public String getSqlOrder() {
-		return "select ST_PlanarGraph(the_geom) from myTable;";
+		return "select ST_Graph(the_geom) from myTable;";
 	}
 
 	public String getDescription() {
-		return "Build a planar graph based on polygons";
+		return "Build a graph based on geometries";
 	}
 
 	public ObjectDriver evaluate(DataSourceFactory dsf, DataSource[] tables,
@@ -89,16 +85,11 @@ public class ST_PlanarGraph implements CustomQuery {
 
 			GenericObjectDriver nodes = planarGraph.createNodes(edges);
 
-			GenericObjectDriver faces = planarGraph.createFaces(sds, edges);
-
 			dsf.getSourceManager().register(
 					dsf.getSourceManager().getUniqueName("edges"), edges);
 
 			dsf.getSourceManager().register(
 					dsf.getSourceManager().getUniqueName("nodes"), nodes);
-
-			dsf.getSourceManager().register(
-					dsf.getSourceManager().getUniqueName("faces"), faces);
 
 			return null;
 		} catch (DriverLoadException e) {
@@ -106,10 +97,6 @@ public class ST_PlanarGraph implements CustomQuery {
 		} catch (DriverException e) {
 			throw new ExecutionException(e);
 		} catch (NonEditableDataSourceException e) {
-			throw new ExecutionException(e);
-		} catch (NoSuchTableException e) {
-			throw new ExecutionException(e);
-		} catch (IndexException e) {
 			throw new ExecutionException(e);
 		}
 	}

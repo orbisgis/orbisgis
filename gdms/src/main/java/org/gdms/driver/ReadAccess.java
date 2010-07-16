@@ -40,7 +40,7 @@ import org.gdms.data.values.Value;
 
 /**
  * Interface that defines the read methods in gdms
- *
+ * 
  * @author Fernando Gonzalez Cortes
  */
 public interface ReadAccess {
@@ -54,16 +54,16 @@ public interface ReadAccess {
 	public static final int TIME = 3;
 
 	/**
-	 * Obtiene el valor que se encuentra en la fila y columna indicada
-	 *
+	 * Get the value in the row according to a column
+	 * 
 	 * @param rowIndex
-	 *            fila
+	 *            row
 	 * @param fieldId
-	 *            columna
-	 *
+	 *            column
+	 * 
 	 * @return subclase de Value con el valor del origen de datos. Never null
 	 *         (use ValueFactory.createNullValue() instead)
-	 *
+	 * 
 	 * @throws DriverException
 	 *             Si se produce un error accediendo al DataSource
 	 */
@@ -72,9 +72,9 @@ public interface ReadAccess {
 
 	/**
 	 * Get the number of elements in the source of data
-	 *
+	 * 
 	 * @return
-	 *
+	 * 
 	 * @throws DriverException
 	 *             If some error happens accessing the data source
 	 */
@@ -82,7 +82,7 @@ public interface ReadAccess {
 
 	/**
 	 * returns the scope of the data source.
-	 *
+	 * 
 	 * @param dimension
 	 *            Currently X, Y, Z or can be anything that a driver
 	 *            implementation is waiting for, for example: TIME
