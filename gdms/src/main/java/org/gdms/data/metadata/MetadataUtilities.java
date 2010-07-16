@@ -41,6 +41,7 @@ import java.util.List;
 
 import org.gdms.data.DataSource;
 import org.gdms.data.types.Constraint;
+import org.gdms.data.types.GeometryConstraint;
 import org.gdms.data.types.PrimaryKeyConstraint;
 import org.gdms.data.types.ReadOnlyConstraint;
 import org.gdms.data.types.Type;
@@ -261,6 +262,35 @@ public class MetadataUtilities {
 			metadatas[i] = tables[i].getMetadata();
 		}
 		return metadatas;
+	}
+
+	public static int getGeometryDimension(Metadata metadata, int spatialField) throws DriverException {
+
+		Type fieldType = metadata.getFieldType(spatialField);
+		if (fieldType.getTypeCode() == Type.GEOMETRY) {
+			GeometryConstraint geomTypeConstraint = (GeometryConstraint) fieldType
+					.getConstraint(Constraint.GEOMETRY_TYPE);
+			if (geomTypeConstraint == null) {
+				return -1;
+			} else {
+				int geomType = geomTypeConstraint.getGeometryType();
+
+				if ((geomType == GeometryConstraint.POLYGON)
+						|| (geomType == GeometryConstraint.MULTI_POLYGON)) {
+					return 2;
+				} else if ((geomType == GeometryConstraint.LINESTRING)
+						|| (geomType == GeometryConstraint.MULTI_LINESTRING)) {
+					return 1;
+				} else if ((geomType == GeometryConstraint.POINT)
+						|| (geomType == GeometryConstraint.MULTI_POINT)) {
+					return 0;
+				} else {
+					throw new RuntimeException("Bug");
+				}
+			}
+		}
+		return -1;
+
 	}
 
 	/**
