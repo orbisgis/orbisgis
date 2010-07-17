@@ -34,9 +34,9 @@
  *    fergonco _at_ gmail.com
  *    thomas.leduc _at_ cerma.archi.fr
  */
-package org.example4;
+package org.orbisgis.core.sif.tutorial.example4;
 
-import org.sif.UIFactory;
+import org.orbisgis.core.sif.UIFactory;
 
 public class Main {
 	public static void main(String[] args) {

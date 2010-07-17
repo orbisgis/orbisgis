@@ -34,11 +34,11 @@
  *    fergonco _at_ gmail.com
  *    thomas.leduc _at_ cerma.archi.fr
  */
-package org.example8;
+package org.orbisgis.core.sif.tutorial.example8;
 
-import org.sif.DynamicUIPanel;
-import org.sif.SQLUIPanel;
-import org.sif.UIFactory;
+import org.orbisgis.core.sif.DynamicUIPanel;
+import org.orbisgis.core.sif.SQLUIPanel;
+import org.orbisgis.core.sif.UIFactory;
 
 public class Main {
 	public static void main(String[] args) {

@@ -34,12 +34,12 @@
  *    fergonco _at_ gmail.com
  *    thomas.leduc _at_ cerma.archi.fr
  */
-package org.example2;
+package org.orbisgis.core.sif.tutorial.example2;
 
 import java.awt.Component;
 import java.net.URL;
 
-import org.sif.UIPanel;
+import org.orbisgis.core.sif.UIPanel;
 
 public class MyUIClass implements UIPanel {
 	public Component getComponent() {
@@ -72,6 +72,12 @@ public class MyUIClass implements UIPanel {
 	}
 
 	public String validateInput() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public String postProcess() {
 		// TODO Auto-generated method stub
 		return null;
 	}

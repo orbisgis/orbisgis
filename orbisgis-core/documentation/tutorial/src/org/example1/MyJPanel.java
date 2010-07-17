@@ -34,7 +34,7 @@
  *    fergonco _at_ gmail.com
  *    thomas.leduc _at_ cerma.archi.fr
  */
-package org.example1;
+package org.orbisgis.core.sif.tutorial.example1;
 
 import java.awt.Component;
 

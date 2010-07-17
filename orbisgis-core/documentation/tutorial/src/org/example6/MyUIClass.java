@@ -34,12 +34,12 @@
  *    fergonco _at_ gmail.com
  *    thomas.leduc _at_ cerma.archi.fr
  */
-package org.example6;
+package org.orbisgis.core.sif.tutorial.example6;
 
 import java.awt.Component;
 import java.net.URL;
 
-import org.sif.SQLUIPanel;
+import org.orbisgis.core.sif.SQLUIPanel;
 
 public class MyUIClass implements SQLUIPanel {
 	// our UI is like a table with a single row (retrieve name, value and type
@@ -127,6 +127,18 @@ public class MyUIClass implements SQLUIPanel {
 	}
 
 	public String validateInput() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public boolean showFavorites() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public String postProcess() {
 		// TODO Auto-generated method stub
 		return null;
 	}
