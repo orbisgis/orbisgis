@@ -66,7 +66,6 @@ public abstract class AbstractRasterDriver implements FileReadWriteDriver {
 	protected GeoRaster geoRaster;
 	protected RasterMetadata metadata;
 	protected Envelope envelope;
-	private String crsasWKT;
 
 	public void open(File file) throws DriverException {
 		try {
