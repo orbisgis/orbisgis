@@ -1,0 +1,590 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+<HEAD>
+<TITLE>BNF for sql.jj</TITLE>
+</HEAD>
+<BODY>
+<H1 ALIGN=CENTER>BNF for sql.jj</H1>
+<H2 ALIGN=CENTER>TOKENS</H2>
+<TABLE>
+ <!-- Special token -->
+ <TR>
+  <TD>
+<PRE>
+/***********************************************************************
+ * Token definitions
+ ***********************************************************************/</PRE>
+  </TD>
+ </TR>
+ <!-- Token -->
+ <TR>
+  <TD>
+   <PRE>
+&lt;DEFAULT&gt; SKIP : {
+" "
+| "\n"
+| "\r"
+| "\t"
+}
+
+   </PRE>
+  </TD>
+ </TR>
+ <!-- Token -->
+ <TR>
+  <TD>
+   <PRE>
+&lt;DEFAULT&gt; MORE : {
+"--" : IN_LINE_COMMENT
+| "/*" : IN_MULTI_LINE_COMMENT
+}
+
+   </PRE>
+  </TD>
+ </TR>
+ <!-- Token -->
+ <TR>
+  <TD>
+   <PRE>
+&lt;IN_LINE_COMMENT&gt; SPECIAL : {
+&lt;COMMENT_LINE: (~["\n","\r"])* ("\n" | "\r" | "\r\n")?&gt; : DEFAULT
+}
+
+   </PRE>
+  </TD>
+ </TR>
+ <!-- Token -->
+ <TR>
+  <TD>
+   <PRE>
+&lt;IN_MULTI_LINE_COMMENT&gt; SPECIAL : {
+&lt;MULTI_LINE_COMMENT: "*/"&gt; : DEFAULT
+}
+
+   </PRE>
+  </TD>
+ </TR>
+ <!-- Token -->
+ <TR>
+  <TD>
+   <PRE>
+&lt;IN_LINE_COMMENT,IN_MULTILINE_COMMENT&gt; MORE : {
+&lt;~[]&gt;
+}
+
+   </PRE>
+  </TD>
+ </TR>
+ <!-- Token -->
+ <TR>
+  <TD>
+   <PRE>
+&lt;DEFAULT&gt; SKIP : {
+&lt;COMMENT_BLOCK: "/*" (~["*"])* "*" ("*" | ~["*","/"] (~["*"])* "*")* "/"&gt;
+}
+
+   </PRE>
+  </TD>
+ </TR>
+ <!-- Token -->
+ <TR>
+  <TD>
+   <PRE>
+&lt;DEFAULT&gt; TOKEN : {
+&lt;ALL: "all"&gt;
+| &lt;AND: "and"&gt;
+| &lt;AS: "as"&gt;
+| &lt;ASC: "asc"&gt;
+| &lt;BEGIN: "begin"&gt;
+| &lt;BETWEEN: "between"&gt;
+| &lt;BY: "by"&gt;
+| &lt;DESC: "desc"&gt;
+| &lt;DISTINCT: "distinct"&gt;
+| &lt;DROP: "drop"&gt;
+| &lt;EXCEPT: "except"&gt;
+| &lt;FROM: "from"&gt;
+| &lt;GROUP: "group"&gt;
+| &lt;HAVING: "having"&gt;
+| &lt;IF: "if"&gt;
+| &lt;IN: "in"&gt;
+| &lt;INDEX: "index"&gt;
+| &lt;IS: "is"&gt;
+| &lt;KEY: "key"&gt;
+| &lt;LEFT: "left"&gt;
+| &lt;LIKE: "like"&gt;
+| &lt;LIMIT: "limit"&gt;
+| &lt;NOT: "not"&gt;
+| &lt;NULL: "null"&gt;
+| &lt;OFFSET: "offset"&gt;
+| &lt;ON: "on"&gt;
+| &lt;OR: "or"&gt;
+| &lt;ORDER: "order"&gt;
+| &lt;PRIMARY: "primary"&gt;
+| &lt;SELECT: "select"&gt;
+| &lt;UNION: "union"&gt;
+| &lt;SPACES: "spaces"&gt;
+| &lt;TABLE: "table"&gt;
+| &lt;VIEW: "view"&gt;
+| &lt;ADD: "add"&gt;
+| &lt;COLUMN: "column"&gt;
+| &lt;WHERE: "where"&gt;
+| &lt;JOIN: "join"&gt;
+| &lt;USING: "using"&gt;
+| &lt;CREATE: "create"&gt;
+| &lt;DELETE: "delete"&gt;
+| &lt;EXISTS: "exists"&gt;
+| &lt;ALTER: "alter"&gt;
+| &lt;INSERT: "insert"&gt;
+| &lt;INTO: "into"&gt;
+| &lt;SET: "set"&gt;
+| &lt;UPDATE: "update"&gt;
+| &lt;VALUES: "values"&gt;
+| &lt;RENAME: "rename"&gt;
+| &lt;TO: "to"&gt;
+| &lt;TEXT: "text"&gt;
+| &lt;BOOLEAN: "boolean"&gt;
+| &lt;DATE: "date"&gt;
+| &lt;NUMERIC: "numeric"&gt;
+| &lt;INTERGER: "integer"&gt;
+| &lt;RESTRICT: "restrict"&gt;
+| &lt;CASCADE: "cascade"&gt;
+| &lt;PURGE: "purge"&gt;
+}
+
+   </PRE>
+  </TD>
+ </TR>
+ <!-- Token -->
+ <TR>
+  <TD>
+   <PRE>
+&lt;DEFAULT&gt; TOKEN : {
+&lt;INTEGER_LITERAL: (["0"-"9"])+&gt;
+| &lt;FLOATING_POINT_LITERAL: (["0"-"9"])+ "." (["0"-"9"])+ (&lt;EXPONENT&gt;)? | "." (["0"-"9"])+ (&lt;EXPONENT&gt;)? | (["0"-"9"])+ &lt;EXPONENT&gt; | (["0"-"9"])+ (&lt;EXPONENT&gt;)?&gt;
+| &lt;#EXPONENT: ["e","E"] (["+","-"])? (["0"-"9"])+&gt;
+| &lt;STRING_LITERAL: "\'" (~["\'"])* ("\'\'" (~["\'"])*)* "\'"&gt;
+| &lt;BOOLEAN_LITERAL: "true" | "false"&gt;
+}
+
+   </PRE>
+  </TD>
+ </TR>
+ <!-- Token -->
+ <TR>
+  <TD>
+   <PRE>
+&lt;DEFAULT&gt; TOKEN : {
+&lt;ID: (&lt;LETTER&gt; | &lt;DIGIT&gt;)+ ("_" | "$" | "#" | &lt;DIGIT&gt; | &lt;LETTER&gt;)*&gt;
+| &lt;#LETTER: ["A"-"Z","a"-"z"]&gt;
+| &lt;#DIGIT: ["0"-"9"]&gt;
+}
+
+   </PRE>
+  </TD>
+ </TR>
+ <!-- Token -->
+ <TR>
+  <TD>
+   <PRE>
+&lt;DEFAULT&gt; TOKEN : {
+&lt;ASSIGN: ":="&gt;
+| &lt;CONCAT: "||"&gt;
+| &lt;SEMICOLON: ";"&gt;
+| &lt;DOT: "."&gt;
+| &lt;TILDE: "~"&gt;
+| &lt;LESS: "&lt;"&gt;
+| &lt;LESSEQUAL: "&lt;="&gt;
+| &lt;GREATER: "&gt;"&gt;
+| &lt;GREATEREQUAL: "&gt;="&gt;
+| &lt;EQUAL: "="&gt;
+| &lt;NOTEQUAL: "!="&gt;
+| &lt;NOTEQUAL2: "&lt;&gt;"&gt;
+| &lt;JOINPLUS: "(+)"&gt;
+| &lt;OPENPAREN: "("&gt;
+| &lt;CLOSEPAREN: ")"&gt;
+| &lt;ASTERISK: "*"&gt;
+| &lt;SLASH: "/"&gt;
+| &lt;PLUS: "+"&gt;
+| &lt;MINUS: "-"&gt;
+| &lt;QUESTIONMARK: "?"&gt;
+}
+
+   </PRE>
+  </TD>
+ </TR>
+</TABLE>
+<H2 ALIGN=CENTER>NON-TERMINALS</H2>
+<TABLE>
+<TR>
+<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod1">SQLAlter</A></TD>
+<TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE>&lt;ALTER&gt; &lt;TABLE&gt; <A HREF="#prod2">SQLId</A> ( <A HREF="#prod3">SQLAdd</A> | <A HREF="#prod4">SQLDropColumn</A> | <A HREF="#prod5">SQLRename</A> )</TD>
+</TR>
+<TR>
+<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod3">SQLAdd</A></TD>
+<TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE>&lt;ADD&gt; ( <A HREF="#prod6">SQLAddColumn</A> | <A HREF="#prod7">SQLAddPrimaryKey</A> )</TD>
+</TR>
+<TR>
+<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod8">SQLAndExpr</A></TD>
+<TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE><A HREF="#prod9">SQLNotExpr</A> ( &lt;AND&gt; <A HREF="#prod9">SQLNotExpr</A> )*</TD>
+</TR>
+<TR>
+<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod10">SQLBetweenClause</A></TD>
+<TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE>( &lt;NOT&gt; )? &lt;BETWEEN&gt; <A HREF="#prod11">SQLSumExpr</A> &lt;AND&gt; <A HREF="#prod11">SQLSumExpr</A></TD>
+</TR>
+<TR>
+<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod12">SQLColRef</A></TD>
+<TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE><A HREF="#prod2">SQLId</A> ( &lt;DOT&gt; <A HREF="#prod2">SQLId</A> )?</TD>
+</TR>
+<TR>
+<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod13">SQLCompareExpr</A></TD>
+<TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE>( <A HREF="#prod14">SQLIsClause</A> | <A HREF="#prod15">SQLExistsClause</A> | <A HREF="#prod11">SQLSumExpr</A> ( <A HREF="#prod16">SQLCompareExprRight</A> )? )</TD>
+</TR>
+<TR>
+<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod16">SQLCompareExprRight</A></TD>
+<TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE>( <A HREF="#prod17">SQLLikeClause</A> | <A HREF="#prod18">SQLInClause</A> | <A HREF="#prod19">SQLLeftJoinClause</A> | <A HREF="#prod20">SQLRightJoinClause</A> | <A HREF="#prod10">SQLBetweenClause</A> | <A HREF="#prod21">SQLCompareOp</A> <A HREF="#prod11">SQLSumExpr</A> )</TD>
+</TR>
+<TR>
+<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod21">SQLCompareOp</A></TD>
+<TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE>( &lt;EQUAL&gt; | &lt;NOTEQUAL&gt; | &lt;NOTEQUAL2&gt; | &lt;GREATER&gt; | &lt;GREATEREQUAL&gt; | &lt;LESS&gt; | &lt;LESSEQUAL&gt; )</TD>
+</TR>
+<TR>
+<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod22">SQLDelete</A></TD>
+<TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE>&lt;DELETE&gt; &lt;FROM&gt; <A HREF="#prod2">SQLId</A> ( <A HREF="#prod23">SQLWhere</A> )?</TD>
+</TR>
+<TR>
+<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod24">SQLDrop</A></TD>
+<TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE>&lt;DROP&gt; ( ( &lt;TABLE&gt; ( &lt;IF&gt; &lt;EXISTS&gt; )? <A HREF="#prod25">SQLTableList</A> ( &lt;PURGE&gt; )? ) | ( &lt;VIEW&gt; ( &lt;IF&gt; &lt;EXISTS&gt; )? <A HREF="#prod25">SQLTableList</A> ) | ( &lt;INDEX&gt; &lt;ON&gt; <A HREF="#prod2">SQLId</A> "(" <A HREF="#prod2">SQLId</A> ")" ) )</TD>
+</TR>
+<TR>
+<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod15">SQLExistsClause</A></TD>
+<TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE>&lt;EXISTS&gt; "(" <A HREF="#prod26">SQLSelect</A> ")"</TD>
+</TR>
+<TR>
+<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod6">SQLAddColumn</A></TD>
+<TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE>&lt;COLUMN&gt; <A HREF="#prod2">SQLId</A> <A HREF="#prod27">SQLType</A></TD>
+</TR>
+<TR>
+<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod7">SQLAddPrimaryKey</A></TD>
+<TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE>&lt;PRIMARY&gt; &lt;KEY&gt; "(" <A HREF="#prod2">SQLId</A> ")"</TD>
+</TR>
+<TR>
+<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod4">SQLDropColumn</A></TD>
+<TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE>&lt;DROP&gt; &lt;COLUMN&gt; <A HREF="#prod2">SQLId</A> ( ( &lt;RESTRICT&gt; | &lt;CASCADE&gt; ) )?</TD>
+</TR>
+<TR>
+<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod5">SQLRename</A></TD>
+<TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE>&lt;RENAME&gt; ( <A HREF="#prod28">SQLRenameColumn</A> | <A HREF="#prod29">SQLRenameTable</A> )</TD>
+</TR>
+<TR>
+<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod28">SQLRenameColumn</A></TD>
+<TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE>&lt;COLUMN&gt; <A HREF="#prod2">SQLId</A> &lt;TO&gt; <A HREF="#prod2">SQLId</A></TD>
+</TR>
+<TR>
+<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod29">SQLRenameTable</A></TD>
+<TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE>&lt;TO&gt; <A HREF="#prod2">SQLId</A></TD>
+</TR>
+<TR>
+<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod27">SQLType</A></TD>
+<TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE>&lt;TEXT&gt;</TD>
+</TR>
+<TR>
+<TD ALIGN=RIGHT VALIGN=BASELINE></TD>
+<TD ALIGN=CENTER VALIGN=BASELINE>|</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE>&lt;BOOLEAN&gt;</TD>
+</TR>
+<TR>
+<TD ALIGN=RIGHT VALIGN=BASELINE></TD>
+<TD ALIGN=CENTER VALIGN=BASELINE>|</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE>&lt;DATE&gt;</TD>
+</TR>
+<TR>
+<TD ALIGN=RIGHT VALIGN=BASELINE></TD>
+<TD ALIGN=CENTER VALIGN=BASELINE>|</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE>&lt;NUMERIC&gt;</TD>
+</TR>
+<TR>
+<TD ALIGN=RIGHT VALIGN=BASELINE></TD>
+<TD ALIGN=CENTER VALIGN=BASELINE>|</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE>&lt;INTERGER&gt;</TD>
+</TR>
+<TR>
+<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod30">SQLFunction</A></TD>
+<TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE>&lt;ID&gt; <A HREF="#prod31">SQLFunctionArgs</A></TD>
+</TR>
+<TR>
+<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod31">SQLFunctionArgs</A></TD>
+<TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE>"(" ( ( ( <A HREF="#prod11">SQLSumExpr</A> ( "," <A HREF="#prod11">SQLSumExpr</A> )* ) | <A HREF="#prod32">SQLSelectAllCols</A> ) )? ")"</TD>
+</TR>
+<TR>
+<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod33">SQLGroupBy</A></TD>
+<TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE>&lt;GROUP&gt; &lt;BY&gt; <A HREF="#prod34">SQLGroupByList</A> ( &lt;HAVING&gt; <A HREF="#prod35">SQLOrExpr</A> )?</TD>
+</TR>
+<TR>
+<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod34">SQLGroupByList</A></TD>
+<TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE><A HREF="#prod12">SQLColRef</A> ( "," <A HREF="#prod12">SQLColRef</A> )*</TD>
+</TR>
+<TR>
+<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod2">SQLId</A></TD>
+<TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE>&lt;ID&gt;</TD>
+</TR>
+<TR>
+<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod36">SQLIdSequence</A></TD>
+<TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE><A HREF="#prod2">SQLId</A> ( "," <A HREF="#prod2">SQLId</A> )*</TD>
+</TR>
+<TR>
+<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod18">SQLInClause</A></TD>
+<TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE>( &lt;NOT&gt; )? &lt;IN&gt; "(" ( <A HREF="#prod37">SQLValueList</A> | <A HREF="#prod26">SQLSelect</A> ) ")"</TD>
+</TR>
+<TR>
+<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod38">SQLInsert</A></TD>
+<TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE>&lt;INSERT&gt; &lt;INTO&gt; <A HREF="#prod39">SQLTableRef</A> ( "(" <A HREF="#prod36">SQLIdSequence</A> ")" )? &lt;VALUES&gt; "(" <A HREF="#prod11">SQLSumExpr</A> ( "," <A HREF="#prod11">SQLSumExpr</A> )* ")"</TD>
+</TR>
+<TR>
+<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod14">SQLIsClause</A></TD>
+<TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE><A HREF="#prod11">SQLSumExpr</A> &lt;IS&gt; ( &lt;NOT&gt; )? &lt;NULL&gt;</TD>
+</TR>
+<TR>
+<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod19">SQLLeftJoinClause</A></TD>
+<TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE>"(+)" <A HREF="#prod21">SQLCompareOp</A> <A HREF="#prod11">SQLSumExpr</A></TD>
+</TR>
+<TR>
+<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod17">SQLLikeClause</A></TD>
+<TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE>( &lt;NOT&gt; )? &lt;LIKE&gt; <A HREF="#prod40">SQLPattern</A></TD>
+</TR>
+<TR>
+<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod41">SQLLiteral</A></TD>
+<TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE>( &lt;STRING_LITERAL&gt; | &lt;INTEGER_LITERAL&gt; | &lt;FLOATING_POINT_LITERAL&gt; | &lt;BOOLEAN_LITERAL&gt; | &lt;SPACES&gt; )</TD>
+</TR>
+<TR>
+<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod9">SQLNotExpr</A></TD>
+<TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE>( &lt;NOT&gt; )? <A HREF="#prod13">SQLCompareExpr</A></TD>
+</TR>
+<TR>
+<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod42">SQLOrderBy</A></TD>
+<TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE>&lt;ORDER&gt; &lt;BY&gt; <A HREF="#prod43">SQLOrderByList</A></TD>
+</TR>
+<TR>
+<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod44">SQLOrderByElem</A></TD>
+<TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE>( <A HREF="#prod30">SQLFunction</A> | <A HREF="#prod12">SQLColRef</A> ) ( <A HREF="#prod45">SQLOrderDirection</A> )?</TD>
+</TR>
+<TR>
+<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod43">SQLOrderByList</A></TD>
+<TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE><A HREF="#prod44">SQLOrderByElem</A> ( "," <A HREF="#prod44">SQLOrderByElem</A> )*</TD>
+</TR>
+<TR>
+<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod45">SQLOrderDirection</A></TD>
+<TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE>( &lt;ASC&gt; | &lt;DESC&gt; )</TD>
+</TR>
+<TR>
+<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod35">SQLOrExpr</A></TD>
+<TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE><A HREF="#prod8">SQLAndExpr</A> ( &lt;OR&gt; <A HREF="#prod8">SQLAndExpr</A> )*</TD>
+</TR>
+<TR>
+<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod40">SQLPattern</A></TD>
+<TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE>( &lt;STRING_LITERAL&gt; | <A HREF="#prod12">SQLColRef</A> )</TD>
+</TR>
+<TR>
+<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod46">SQLProductExpr</A></TD>
+<TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE><A HREF="#prod47">SQLUnaryExpr</A> ( <A HREF="#prod48">SQLProductSymbol</A> <A HREF="#prod47">SQLUnaryExpr</A> )*</TD>
+</TR>
+<TR>
+<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod48">SQLProductSymbol</A></TD>
+<TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE>( "*" | "/" )</TD>
+</TR>
+<TR>
+<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod20">SQLRightJoinClause</A></TD>
+<TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE><A HREF="#prod21">SQLCompareOp</A> <A HREF="#prod11">SQLSumExpr</A> "(+)"</TD>
+</TR>
+<TR>
+<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod49">SQLScript</A></TD>
+<TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE><A HREF="#prod50">SQLStatement</A> ( <A HREF="#prod50">SQLStatement</A> )*</TD>
+</TR>
+<TR>
+<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod26">SQLSelect</A></TD>
+<TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE>&lt;SELECT&gt; <A HREF="#prod51">SQLSelectCols</A> ( &lt;FROM&gt; <A HREF="#prod25">SQLTableList</A> ( <A HREF="#prod23">SQLWhere</A> )? ( <A HREF="#prod33">SQLGroupBy</A> )? ( <A HREF="#prod42">SQLOrderBy</A> )? ( <A HREF="#prod52">SQLSelectLimit</A> )? ( <A HREF="#prod53">SQLSelectOffset</A> )? )?</TD>
+</TR>
+<TR>
+<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod32">SQLSelectAllCols</A></TD>
+<TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE>"*" ( <A HREF="#prod54">SQLSelectAllModifier</A> )?</TD>
+</TR>
+<TR>
+<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod54">SQLSelectAllModifier</A></TD>
+<TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE><A HREF="#prod55">SQLSelectAllModifierExcept</A></TD>
+</TR>
+<TR>
+<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod55">SQLSelectAllModifierExcept</A></TD>
+<TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE>"{" &lt;EXCEPT&gt; ( <A HREF="#prod36">SQLIdSequence</A> )? "}"</TD>
+</TR>
+<TR>
+<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod56">SQLSelectAllInTableModifier</A></TD>
+<TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE><A HREF="#prod55">SQLSelectAllModifierExcept</A></TD>
+</TR>
+<TR>
+<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod57">SQLSelectAllColsInTable</A></TD>
+<TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE><A HREF="#prod2">SQLId</A> &lt;DOT&gt; "*" ( <A HREF="#prod56">SQLSelectAllInTableModifier</A> )?</TD>
+</TR>
+<TR>
+<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod51">SQLSelectCols</A></TD>
+<TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE>( &lt;ALL&gt; | &lt;DISTINCT&gt; )? ( <A HREF="#prod58">SQLSelectList</A> )</TD>
+</TR>
+<TR>
+<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod52">SQLSelectLimit</A></TD>
+<TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE>&lt;LIMIT&gt; &lt;INTEGER_LITERAL&gt;</TD>
+</TR>
+<TR>
+<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod58">SQLSelectList</A></TD>
+<TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE>( <A HREF="#prod32">SQLSelectAllCols</A> | <A HREF="#prod57">SQLSelectAllColsInTable</A> | ( <A HREF="#prod35">SQLOrExpr</A> ( &lt;AS&gt; <A HREF="#prod2">SQLId</A> )? ) ) ( "," ( <A HREF="#prod32">SQLSelectAllCols</A> | <A HREF="#prod57">SQLSelectAllColsInTable</A> | ( <A HREF="#prod35">SQLOrExpr</A> ( &lt;AS&gt; <A HREF="#prod2">SQLId</A> )? ) ) )*</TD>
+</TR>
+<TR>
+<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod53">SQLSelectOffset</A></TD>
+<TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE>&lt;OFFSET&gt; &lt;INTEGER_LITERAL&gt;</TD>
+</TR>
+<TR>
+<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod50">SQLStatement</A></TD>
+<TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE>( <A HREF="#prod26">SQLSelect</A> | <A HREF="#prod38">SQLInsert</A> | <A HREF="#prod59">SQLUpdate</A> | <A HREF="#prod22">SQLDelete</A> | <A HREF="#prod60">SQLUnion</A> | <A HREF="#prod61">SQLCreate</A> | <A HREF="#prod24">SQLDrop</A> | <A HREF="#prod1">SQLAlter</A> ) ";"</TD>
+</TR>
+<TR>
+<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod11">SQLSumExpr</A></TD>
+<TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE><A HREF="#prod46">SQLProductExpr</A> ( <A HREF="#prod62">SQLSumSymbol</A> <A HREF="#prod46">SQLProductExpr</A> )*</TD>
+</TR>
+<TR>
+<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod62">SQLSumSymbol</A></TD>
+<TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE>( "+" | "-" )</TD>
+</TR>
+<TR>
+<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod25">SQLTableList</A></TD>
+<TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE><A HREF="#prod39">SQLTableRef</A> ( "," <A HREF="#prod39">SQLTableRef</A> )*</TD>
+</TR>
+<TR>
+<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod39">SQLTableRef</A></TD>
+<TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE>( <A HREF="#prod2">SQLId</A> ) ( ( &lt;AS&gt; )? <A HREF="#prod2">SQLId</A> )?</TD>
+</TR>
+<TR>
+<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod63">SQLTerm</A></TD>
+<TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE>( "(" ( <A HREF="#prod26">SQLSelect</A> | <A HREF="#prod35">SQLOrExpr</A> ) ")" | <A HREF="#prod30">SQLFunction</A> | <A HREF="#prod12">SQLColRef</A> | <A HREF="#prod41">SQLLiteral</A> )</TD>
+</TR>
+<TR>
+<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod47">SQLUnaryExpr</A></TD>
+<TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE>( ( "+" | "-" ) )? <A HREF="#prod63">SQLTerm</A></TD>
+</TR>
+<TR>
+<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod60">SQLUnion</A></TD>
+<TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE>( <A HREF="#prod39">SQLTableRef</A> | &lt;OPENPAREN&gt; <A HREF="#prod26">SQLSelect</A> &lt;CLOSEPAREN&gt; ) &lt;UNION&gt; ( <A HREF="#prod39">SQLTableRef</A> | &lt;OPENPAREN&gt; <A HREF="#prod26">SQLSelect</A> &lt;CLOSEPAREN&gt; )</TD>
+</TR>
+<TR>
+<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod59">SQLUpdate</A></TD>
+<TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE>&lt;UPDATE&gt; <A HREF="#prod2">SQLId</A> &lt;SET&gt; ( <A HREF="#prod64">SQLUpdateAssignment</A> ( "," )? )+ ( <A HREF="#prod23">SQLWhere</A> )?</TD>
+</TR>
+<TR>
+<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod64">SQLUpdateAssignment</A></TD>
+<TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE><A HREF="#prod2">SQLId</A> "=" <A HREF="#prod11">SQLSumExpr</A></TD>
+</TR>
+<TR>
+<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod65">SQLLValueElement</A></TD>
+<TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE>( &lt;NULL&gt; | <A HREF="#prod11">SQLSumExpr</A> )</TD>
+</TR>
+<TR>
+<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod37">SQLValueList</A></TD>
+<TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE><A HREF="#prod65">SQLLValueElement</A> ( "," <A HREF="#prod65">SQLLValueElement</A> )*</TD>
+</TR>
+<TR>
+<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod23">SQLWhere</A></TD>
+<TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE>&lt;WHERE&gt; <A HREF="#prod35">SQLOrExpr</A></TD>
+</TR>
+<TR>
+<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod61">SQLCreate</A></TD>
+<TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE>&lt;CREATE&gt; ( ( &lt;TABLE&gt; <A HREF="#prod2">SQLId</A> ( "(" <A HREF="#prod66">SQLCreateArgsList</A> ")" | &lt;AS&gt; ( <A HREF="#prod26">SQLSelect</A> | <A HREF="#prod60">SQLUnion</A> ) ) ) | ( &lt;VIEW&gt; <A HREF="#prod2">SQLId</A> &lt;AS&gt; ( <A HREF="#prod26">SQLSelect</A> | <A HREF="#prod60">SQLUnion</A> ) ) | ( &lt;INDEX&gt; &lt;ON&gt; <A HREF="#prod2">SQLId</A> "(" <A HREF="#prod2">SQLId</A> ")" ) )</TD>
+</TR>
+<TR>
+<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod66">SQLCreateArgsList</A></TD>
+<TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE><A HREF="#prod67">SQLColumnDefinition</A> ( "," <A HREF="#prod67">SQLColumnDefinition</A> )* ( "," &lt;PRIMARY&gt; &lt;KEY&gt; "(" <A HREF="#prod36">SQLIdSequence</A> ")" )?</TD>
+</TR>
+<TR>
+<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod67">SQLColumnDefinition</A></TD>
+<TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE><A HREF="#prod2">SQLId</A> &lt;ID&gt; "(" ( <A HREF="#prod68">SQLDataTypeConstraint</A> ( "," <A HREF="#prod68">SQLDataTypeConstraint</A> )* )? ")"</TD>
+</TR>
+<TR>
+<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod68">SQLDataTypeConstraint</A></TD>
+<TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE>&lt;ID&gt; "(" ( <A HREF="#prod69">SQLTypeArgs</A> )? ")"</TD>
+</TR>
+<TR>
+<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod70">SQLTypeArgLiteral</A></TD>
+<TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE>( &lt;STRING_LITERAL&gt; | &lt;INTEGER_LITERAL&gt; | &lt;FLOATING_POINT_LITERAL&gt; )</TD>
+</TR>
+<TR>
+<TD ALIGN=RIGHT VALIGN=BASELINE><A NAME="prod69">SQLTypeArgs</A></TD>
+<TD ALIGN=CENTER VALIGN=BASELINE>::=</TD>
+<TD ALIGN=LEFT VALIGN=BASELINE>( ( <A HREF="#prod70">SQLTypeArgLiteral</A> | <A HREF="#prod30">SQLFunction</A> ) ( "," ( <A HREF="#prod70">SQLTypeArgLiteral</A> | <A HREF="#prod30">SQLFunction</A> ) )* )</TD>
+</TR>
+</TABLE>
+</BODY>
+</HTML>
