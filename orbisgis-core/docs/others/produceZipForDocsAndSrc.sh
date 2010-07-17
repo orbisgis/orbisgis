@@ -1,6 +1,7 @@
 #! /bin/sh
 # ======================================================================
 # Thomas LEDUC - le 10/01/2008
+# Erwan BOCHER - le 12/04/2010
 # ======================================================================
 BASE_DIRECTORY="/tmp";
 DST_SVN_DIRECTORY="${BASE_DIRECTORY}/orbisgis-svn";
@@ -53,7 +54,7 @@ copyTheProducedJars() {
 createZip() {
 	cd ${DST_JAR_DIRECTORY};
 	for r in gdms h2spatial grap; do
-		cp --archive ${DST_SVN_DIRECTORY}/platform/plugin-manager/docs/license.txt ${r}/;
+		cp --archive ${DST_SVN_DIRECTORY}/platform/orbisgis_core/docs/license.txt ${r}/;
 		zip -r ${r}-${1}.zip ${r};
 	done
 

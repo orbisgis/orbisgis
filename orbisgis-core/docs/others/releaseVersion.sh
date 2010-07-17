@@ -1,6 +1,7 @@
 #! /bin/bash
 # ======================================================================
 # Thomas LEDUC - le 09/01/2008
+# Erwan BOCHER - le 12/04/2010
 # ======================================================================
 PLUGIN_LIST="org.orbisgis.core-ui org.orbisgis.games org.orbisgis.processing org.urbsat";
 
