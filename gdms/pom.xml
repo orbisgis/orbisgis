@@ -14,8 +14,7 @@
 	<version>1.5.0</version>
 	<name>gdms</name>
 	<url>http://www.orbisgis.org</url>
-	<dependencies>
-	
+	<dependencies>	
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
