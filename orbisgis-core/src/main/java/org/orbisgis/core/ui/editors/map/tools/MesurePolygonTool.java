@@ -50,6 +50,7 @@ import org.orbisgis.core.ui.editors.map.tool.ToolManager;
 import org.orbisgis.core.ui.editors.map.tool.TransitionException;
 import org.orbisgis.core.ui.pluginSystem.PlugInContext;
 import org.orbisgis.core.ui.plugins.views.OutputManager;
+import org.orbisgis.utils.I18N;
 
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.Polygon;
@@ -107,6 +108,6 @@ public class MesurePolygonTool extends AbstractPolygonTool {
 	}
 
 	public String getName() {
-		return "Measure an area";
+		return I18N.getText("orbisgis.core.ui.editors.map.tool.mesure.area");
 	}
 }

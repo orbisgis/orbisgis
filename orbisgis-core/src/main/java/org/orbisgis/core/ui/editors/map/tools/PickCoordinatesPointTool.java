@@ -76,6 +76,7 @@ import org.orbisgis.core.ui.pluginSystem.PlugInContext;
 import org.orbisgis.core.ui.plugins.views.MapEditorPlugIn;
 import org.orbisgis.core.ui.plugins.views.OutputManager;
 import org.orbisgis.core.ui.plugins.views.editor.EditorManager;
+import org.orbisgis.utils.I18N;
 
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.Point;
@@ -129,11 +130,14 @@ public class PickCoordinatesPointTool extends AbstractPointTool {
 		OutputManager om = (OutputManager) Services
 				.getService(OutputManager.class);
 		Color color = Color.blue;
-		om.print("Picked point  : " + g.toText() + "\n", color);
+		om.print(I18N
+				.getText("orbisgis.core.ui.editors.map.tool.pickCoordinate")
+				+ " : " + g.toText() + "\n", color);
 	}
 
 	public String getName() {
-		return "Pick a coordinate";
+		return I18N
+				.getText("orbisgis.core.ui.editors.map.tool.pickCoordinate_tooltip");
 	}
 
 }

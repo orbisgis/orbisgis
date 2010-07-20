@@ -589,7 +589,7 @@ public abstract class Selection implements Automaton {
 	public String getMessage() {
 
 		if ("Standby".equals(status)) {
-			return I18N.getText("org.orbisgis.core.ui.editors.map.tool.selection_standby");
+			return I18N.getText("orbisgis.core.ui.editors.map.tool.selection_standby");
 		}
 
 		if ("OnePoint".equals(status)) {
@@ -605,7 +605,7 @@ public abstract class Selection implements Automaton {
 		}
 
 		if ("Selection".equals(status)) {
-			return I18N.getText("org.orbisgis.core.ui.editors.map.tool.selection_selection");
+			return I18N.getText("orbisgis.core.ui.editors.map.tool.selection_selection");
 		}
 
 		if ("PointWithSelection".equals(status)) {
@@ -613,7 +613,7 @@ public abstract class Selection implements Automaton {
 		}
 
 		if ("Movement".equals(status)) {
-			return I18N.getText("org.orbisgis.core.ui.editors.map.tool.selection_movement");
+			return I18N.getText("orbisgis.core.ui.editors.map.tool.selection_movement");
 		}
 
 		if ("MakeMove".equals(status)) {
@@ -628,7 +628,7 @@ public abstract class Selection implements Automaton {
 	}
 
 	public String getTooltip() {
-		return I18N.getText("org.orbisgis.core.ui.editors.map.tool.selection_tooltip");
+		return I18N.getText("orbisgis.core.ui.editors.map.tool.selection_tooltip");
 	}
 
 	private ImageIcon mouseCursor;

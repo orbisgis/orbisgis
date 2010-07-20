@@ -62,6 +62,7 @@ import org.orbisgis.core.ui.editors.map.tool.TransitionException;
 import org.orbisgis.core.ui.pluginSystem.PlugInContext;
 import org.orbisgis.core.ui.plugins.views.information.InformationManager;
 import org.orbisgis.progress.IProgressMonitor;
+import org.orbisgis.utils.I18N;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
@@ -187,7 +188,7 @@ public class InfoTool extends AbstractRectangleTool {
 	}
 
 	public String getName() {
-		return "Get feature attributes";
+		return I18N.getText("orbisgis.core.ui.editors.map.tool.information");
 	}
 
 }

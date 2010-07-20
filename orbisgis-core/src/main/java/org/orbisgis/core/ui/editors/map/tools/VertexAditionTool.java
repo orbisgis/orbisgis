@@ -54,6 +54,7 @@ import org.orbisgis.core.ui.editors.map.tool.ToolManager;
 import org.orbisgis.core.ui.editors.map.tool.TransitionException;
 import org.orbisgis.core.ui.editors.map.tools.generated.VertexAdition;
 import org.orbisgis.core.ui.pluginSystem.PlugInContext;
+import org.orbisgis.utils.I18N;
 
 import com.vividsolutions.jts.geom.Geometry;
 
@@ -160,6 +161,7 @@ public class VertexAditionTool extends VertexAdition {
 	}
 
 	public String getName() {
-		return "Add a vertex";
+		return I18N
+				.getText("orbisgis.core.ui.editors.map.tool.vertexAdition_tooltip");
 	}
 }

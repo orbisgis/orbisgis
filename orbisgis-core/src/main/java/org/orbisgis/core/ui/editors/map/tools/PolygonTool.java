@@ -49,6 +49,7 @@ import org.orbisgis.core.layerModel.MapContext;
 import org.orbisgis.core.ui.editors.map.tool.ToolManager;
 import org.orbisgis.core.ui.editors.map.tool.TransitionException;
 import org.orbisgis.core.ui.pluginSystem.PlugInContext;
+import org.orbisgis.utils.I18N;
 
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.Polygon;
@@ -100,13 +101,14 @@ public class PolygonTool extends AbstractPolygonTool {
 	public boolean isVisible(MapContext vc, ToolManager tm) {
 		return isEnabled(vc, tm);
 	}
-	
+
 	public double getInitialZ(MapContext mapContext) {
 		return ToolUtilities.getActiveLayerInitialZ(mapContext);
 	}
-	
+
 	public String getName() {
-		return "Draw a polygon";
+		return I18N
+				.getText("orbisgis.core.ui.editors.map.tool.polygon_tooltip");
 	}
 
 }

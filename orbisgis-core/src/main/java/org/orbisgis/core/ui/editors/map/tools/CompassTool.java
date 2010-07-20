@@ -7,7 +7,6 @@ import java.util.ArrayList;
 import java.util.Observable;
 
 import javax.swing.AbstractButton;
-import javax.swing.ImageIcon;
 
 import org.orbisgis.core.Services;
 import org.orbisgis.core.layerModel.MapContext;
@@ -18,6 +17,7 @@ import org.orbisgis.core.ui.editors.map.tool.TransitionException;
 import org.orbisgis.core.ui.editors.map.tools.generated.Compass;
 import org.orbisgis.core.ui.pluginSystem.PlugInContext;
 import org.orbisgis.core.ui.plugins.views.OutputManager;
+import org.orbisgis.utils.I18N;
 
 import com.vividsolutions.jts.algorithm.Angle;
 import com.vividsolutions.jts.geom.Coordinate;
@@ -194,7 +194,7 @@ public class CompassTool extends Compass {
 	}
 
 	public String getName() {
-		return "Measure an angle";
+		return I18N.getText("orbisgis.core.ui.editors.map.tool.mesure.angle");
 	}
 
 }
