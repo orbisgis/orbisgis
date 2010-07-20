@@ -46,12 +46,6 @@ public class Hello implements Automaton {
 	}
 
 	@Override
-	public String getMessage() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
 	public ImageIcon getImageIcon() {
 		// TODO Auto-generated method stub
 		return null;
