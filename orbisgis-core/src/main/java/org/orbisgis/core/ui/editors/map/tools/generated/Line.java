@@ -50,6 +50,7 @@ import org.orbisgis.core.ui.editors.map.tool.FinishedAutomatonException;
 import org.orbisgis.core.ui.editors.map.tool.NoSuchTransitionException;
 import org.orbisgis.core.ui.editors.map.tool.ToolManager;
 import org.orbisgis.core.ui.editors.map.tool.TransitionException;
+import org.orbisgis.utils.I18N;
 
 public abstract class Line implements Automaton {
 
@@ -70,9 +71,12 @@ public abstract class Line implements Automaton {
 
 		if ("Point".equals(status)) {
 
-			ret.add(Messages.getString("cancel"));
+			ret.add(I18N
+					.getText("org.orbisgis.core.ui.editors.map.tool.cancel"));
 
-			ret.add(Messages.getString("line_point_to_done"));
+			ret
+					.add(I18N
+							.getText("org.orbisgis.core.ui.editors.map.tool.line_point_to_done"));
 
 		}
 
@@ -325,19 +329,21 @@ public abstract class Line implements Automaton {
 	public String getMessage() {
 
 		if ("Standby".equals(status)) {
-			return Messages.getString("line_standby");
+			return I18N
+					.getText("org.orbisgis.core.ui.editors.map.tool.line_standby");
 		}
 
 		if ("Point".equals(status)) {
-			return Messages.getString("line_point");
+			return I18N
+					.getText("org.orbisgis.core.ui.editors.map.tool.line_point");
 		}
 
 		if ("Done".equals(status)) {
-			return Messages.getString("");
+			return "";
 		}
 
 		if ("Cancel".equals(status)) {
-			return Messages.getString("");
+			return "";
 		}
 
 		throw new RuntimeException();
@@ -348,7 +354,8 @@ public abstract class Line implements Automaton {
 	}
 
 	public String getTooltip() {
-		return Messages.getString("line_tooltip");
+		return I18N
+				.getText("org.orbisgis.core.ui.editors.map.tool.line_tooltip");
 	}
 
 	private ImageIcon mouseCursor;

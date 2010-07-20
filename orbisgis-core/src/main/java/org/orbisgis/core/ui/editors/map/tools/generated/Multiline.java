@@ -50,6 +50,7 @@ import org.orbisgis.core.ui.editors.map.tool.FinishedAutomatonException;
 import org.orbisgis.core.ui.editors.map.tool.NoSuchTransitionException;
 import org.orbisgis.core.ui.editors.map.tool.ToolManager;
 import org.orbisgis.core.ui.editors.map.tool.TransitionException;
+import org.orbisgis.utils.I18N;
 
 public abstract class Multiline implements Automaton {
 
@@ -65,20 +66,20 @@ public abstract class Multiline implements Automaton {
 		ArrayList<String> ret = new ArrayList<String>();
 
 		if ("Standby".equals(status)) {
+			
+			ret.add(I18N.getText("org.orbisgis.core.ui.editors.map.tool.cancel"));
 
-			ret.add(Messages.getString("cancel"));
-
-			ret.add(Messages.getString("multiline_standby_to_done"));
+			ret.add(I18N.getText("org.orbisgis.core.ui.editors.map.tool.multiline_standby_to_done"));
 
 		}
 
 		if ("Point".equals(status)) {
 
-			ret.add(Messages.getString("cancel"));
+			ret.add(I18N.getText("org.orbisgis.core.ui.editors.map.tool.cancel"));
 
-			ret.add(Messages.getString("multiline_point_to_line"));
+			ret.add(I18N.getText("org.orbisgis.core.ui.editors.map.tool.multiline_point_to_line"));
 
-			ret.add(Messages.getString("multiline_point_to_done"));
+			ret.add(I18N.getText("org.orbisgis.core.ui.editors.map.tool.multiline_point_to_done"));
 
 		}
 
@@ -425,23 +426,23 @@ public abstract class Multiline implements Automaton {
 	public String getMessage() {
 
 		if ("Standby".equals(status)) {
-			return Messages.getString("multiline_standby");
+			return I18N.getText("org.orbisgis.core.ui.editors.map.tool.multiline_standby");
 		}
 
 		if ("Point".equals(status)) {
-			return Messages.getString("multiline_point");
+			return I18N.getText("org.orbisgis.core.ui.editors.map.tool.multiline_point");
 		}
 
 		if ("Line".equals(status)) {
-			return Messages.getString("");
+			return "";
 		}
 
 		if ("Done".equals(status)) {
-			return Messages.getString("");
+			return "";
 		}
 
 		if ("Cancel".equals(status)) {
-			return Messages.getString("");
+			return "";
 		}
 
 		throw new RuntimeException();
@@ -452,7 +453,7 @@ public abstract class Multiline implements Automaton {
 	}
 
 	public String getTooltip() {
-		return Messages.getString("multiline_tooltip");
+		return I18N.getText("org.orbisgis.core.ui.editors.map.tool.multiline_tooltip");
 	}
 
 	private ImageIcon mouseCursor;

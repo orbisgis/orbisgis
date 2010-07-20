@@ -13,6 +13,7 @@ import org.orbisgis.core.ui.editors.map.tool.FinishedAutomatonException;
 import org.orbisgis.core.ui.editors.map.tool.NoSuchTransitionException;
 import org.orbisgis.core.ui.editors.map.tool.ToolManager;
 import org.orbisgis.core.ui.editors.map.tool.TransitionException;
+import org.orbisgis.utils.I18N;
 
 public abstract class Compass implements Automaton {
 
@@ -47,7 +48,7 @@ public abstract class Compass implements Automaton {
 
 		}
 
-		ret.add(Messages.getString("cancel"));
+		ret.add(I18N.getText("org.orbisgis.core.ui.editors.map.tool.cancel"));
 
 		return ret.toArray(new String[0]);
 	}
@@ -312,23 +313,23 @@ public abstract class Compass implements Automaton {
 	public String getMessage() {
 
 		if ("Standby".equals(status)) {
-			return Messages.getString("");
+			return "";
 		}
 
 		if ("OnePoint".equals(status)) {
-			return Messages.getString("");
+			return "";
 		}
 
 		if ("TwoPoints".equals(status)) {
-			return Messages.getString("");
+			return "";
 		}
 
 		if ("ThreePoints".equals(status)) {
-			return Messages.getString("");
+			return "";
 		}
 
 		if ("Cancel".equals(status)) {
-			return Messages.getString("");
+			return "";
 		}
 
 		throw new RuntimeException();
@@ -339,7 +340,8 @@ public abstract class Compass implements Automaton {
 	}
 
 	public String getTooltip() {
-		return Messages.getString("compass_tooltip");
+		return I18N
+				.getText("org.orbisgis.core.ui.editors.map.tool.compass_tooltip");
 	}
 
 	private ImageIcon mouseCursor;

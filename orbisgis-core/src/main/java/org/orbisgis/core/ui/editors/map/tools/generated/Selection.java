@@ -50,6 +50,7 @@ import org.orbisgis.core.ui.editors.map.tool.FinishedAutomatonException;
 import org.orbisgis.core.ui.editors.map.tool.NoSuchTransitionException;
 import org.orbisgis.core.ui.editors.map.tool.ToolManager;
 import org.orbisgis.core.ui.editors.map.tool.TransitionException;
+import org.orbisgis.utils.I18N;
 
 public abstract class Selection implements Automaton {
 
@@ -588,35 +589,35 @@ public abstract class Selection implements Automaton {
 	public String getMessage() {
 
 		if ("Standby".equals(status)) {
-			return Messages.getString("selection_standby");
+			return I18N.getText("org.orbisgis.core.ui.editors.map.tool.selection_standby");
 		}
 
 		if ("OnePoint".equals(status)) {
-			return Messages.getString("");
+			return "";
 		}
 
 		if ("OnePointLeft".equals(status)) {
-			return Messages.getString("selection_onepointleft");
+			return I18N.getText("org.orbisgis.core.ui.editors.map.tool.selection_onepointleft");
 		}
 
 		if ("TwoPoints".equals(status)) {
-			return Messages.getString("");
+			return "";
 		}
 
 		if ("Selection".equals(status)) {
-			return Messages.getString("selection_selection");
+			return I18N.getText("org.orbisgis.core.ui.editors.map.tool.selection_selection");
 		}
 
 		if ("PointWithSelection".equals(status)) {
-			return Messages.getString("");
+			return "";
 		}
 
 		if ("Movement".equals(status)) {
-			return Messages.getString("selection_movement");
+			return I18N.getText("org.orbisgis.core.ui.editors.map.tool.selection_movement");
 		}
 
 		if ("MakeMove".equals(status)) {
-			return Messages.getString("");
+			return "";
 		}
 
 		throw new RuntimeException();
@@ -627,7 +628,7 @@ public abstract class Selection implements Automaton {
 	}
 
 	public String getTooltip() {
-		return Messages.getString("selection_tooltip");
+		return I18N.getText("org.orbisgis.core.ui.editors.map.tool.selection_tooltip");
 	}
 
 	private ImageIcon mouseCursor;

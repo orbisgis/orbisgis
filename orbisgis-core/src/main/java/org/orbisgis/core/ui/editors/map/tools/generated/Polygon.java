@@ -50,6 +50,7 @@ import org.orbisgis.core.ui.editors.map.tool.FinishedAutomatonException;
 import org.orbisgis.core.ui.editors.map.tool.NoSuchTransitionException;
 import org.orbisgis.core.ui.editors.map.tool.ToolManager;
 import org.orbisgis.core.ui.editors.map.tool.TransitionException;
+import org.orbisgis.utils.I18N;
 
 public abstract class Polygon implements Automaton {
 
@@ -70,8 +71,8 @@ public abstract class Polygon implements Automaton {
 
 		if ("Point".equals(status)) {
 
-			ret.add(Messages.getString("polygon_point_to_done"));
-			ret.add(Messages.getString("cancel"));
+			ret.add(I18N.getText("org.orbisgis.core.ui.editors.map.tool.polygon_point_to_done"));
+			ret.add(I18N.getText("org.orbisgis.core.ui.editors.map.tool.cancel"));
 
 		}
 
@@ -327,19 +328,19 @@ public abstract class Polygon implements Automaton {
 	public String getMessage() {
 
 		if ("Standby".equals(status)) {
-			return Messages.getString("polygon_standby");
+			return I18N.getText("org.orbisgis.core.ui.editors.map.tool.polygon_standby");
 		}
 
 		if ("Point".equals(status)) {
-			return Messages.getString("polygon_point");
+			return I18N.getText("org.orbisgis.core.ui.editors.map.tool.polygon_point");
 		}
 
 		if ("Done".equals(status)) {
-			return Messages.getString("");
+			return "";
 		}
 
 		if ("Cancel".equals(status)) {
-			return Messages.getString("");
+			return "";
 		}
 
 		throw new RuntimeException();
@@ -350,7 +351,7 @@ public abstract class Polygon implements Automaton {
 	}
 
 	public String getTooltip() {
-		return Messages.getString("polygon_tooltip");
+		return I18N.getText("org.orbisgis.core.ui.editors.map.tool.polygon_tooltip");
 	}
 
 	private ImageIcon mouseCursor;

@@ -83,6 +83,7 @@ import org.orbisgis.core.ui.editors.map.tool.Rectangle2DDouble;
 import org.orbisgis.core.ui.editors.map.tool.ToolManager;
 import org.orbisgis.core.ui.editors.map.tool.TransitionException;
 import org.orbisgis.core.ui.editors.map.tools.generated.Selection;
+import org.orbisgis.utils.I18N;
 
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
@@ -297,8 +298,9 @@ public abstract class AbstractSelectionTool extends Selection {
 
 			if (p.distance(handler.getPoint()) < tm.getTolerance()) {
 				if (!ToolUtilities.isActiveLayerEditable(mc)) {
-					throw new TransitionException(Messages
-							.getString("SelectionTool.10")); //$NON-NLS-1$
+					throw new TransitionException(
+							I18N
+									.getText("org.orbisgis.core.ui.editors.map.tool.SelectionTool.10")); //$NON-NLS-1$
 				}
 				selected.add(handler);
 				geom.set(handler.getGeometryIndex());
@@ -429,7 +431,8 @@ public abstract class AbstractSelectionTool extends Selection {
 			}
 		} catch (CannotChangeGeometryException e) {
 			throw new DrawingException(
-					Messages.getString("SelectionTool.11") + e.getMessage()); //$NON-NLS-1$
+					I18N
+							.getText("org.orbisgis.core.ui.editors.map.tool.SelectionTool.11") + e.getMessage()); //$NON-NLS-1$
 		}
 	}
 

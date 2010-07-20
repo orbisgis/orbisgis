@@ -55,6 +55,7 @@ import org.orbisgis.core.ui.editors.map.tool.ToolManager;
 import org.orbisgis.core.ui.editors.map.tool.TransitionException;
 import org.orbisgis.core.ui.editors.map.tools.generated.VertexDeletion;
 import org.orbisgis.core.ui.pluginSystem.PlugInContext;
+import org.orbisgis.utils.I18N;
 
 import com.vividsolutions.jts.geom.Geometry;
 
@@ -130,8 +131,9 @@ public class VertexDeletionTool extends VertexDeletion {
 					}
 				}
 			} catch (CannotChangeGeometryException e) {
-				throw new DrawingException(Messages
-						.getString("VertexDeletionTool.1")); //$NON-NLS-1$
+				throw new DrawingException(
+						I18N
+								.getText("org.orbisgis.core.ui.editors.map.tool.VertexDeletionTool.1")); //$NON-NLS-1$
 			}
 		}
 	}
