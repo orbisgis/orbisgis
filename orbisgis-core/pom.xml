@@ -99,7 +99,7 @@
 				<configuration>
 					<useSystemClassLoader>false</useSystemClassLoader>
 					<includes>
-						<include> org/orbisgis/AllTests.java</include>
+						<include>org/orbisgis/core/AllTests.java</include>
 					</includes>
 				</configuration>
 			</plugin>
