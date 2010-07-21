@@ -62,6 +62,12 @@ import com.vividsolutions.jts.geom.Envelope;
 
 public class MapContextTest extends AbstractTest {
 
+	@Override
+	protected void setUp() throws Exception {
+		super.setUp();
+		super.registerDataManager();
+	}
+
 	public void testRemoveSelectedLayer() throws Exception {
 		MapContext mc = new DefaultMapContext();
 		mc.open(null);
@@ -407,7 +413,8 @@ public class MapContextTest extends AbstractTest {
 		layer.setLegend(labelLegend);
 		mc.close(null);
 
-		DataSource ds = getDataManager().getDataSourceFactory().getDataSource(shp);
+		DataSource ds = getDataManager().getDataSourceFactory().getDataSource(
+				shp);
 		ds.open();
 		ds.removeField(legendFieldIndex);
 		ds.commit();
