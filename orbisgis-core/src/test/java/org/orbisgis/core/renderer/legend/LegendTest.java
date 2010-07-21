@@ -75,7 +75,7 @@ public class LegendTest extends AbstractTest {
 
 	public void testRendererWithNullSymbols() throws Exception {
 		ILayer layer = getDataManager().createLayer(
-				new File("src/test/resources/bv_sap.shp"));
+				new File("src/test/resources/data/bv_sap.shp"));
 		layer.open();
 		UniqueValueLegend legend = LegendFactory.createUniqueValueLegend();
 		legend.setClassificationField(layer.getDataSource().getFieldName(1),
@@ -93,11 +93,11 @@ public class LegendTest extends AbstractTest {
 	public void testSetLegend() throws Exception {
 		MapContext mc = new DefaultMapContext();
 		mc.open(null);
-		ILayer layer1 = getDataManager().createLayer(
-				new File("src/test/resources/bv_sap.shp"));
+		ILayer layer1 = getDataManager().createLayer("myVectorLegend",
+				new File("src/test/resources/data/bv_sap.shp"));
 		mc.getLayerModel().addLayer(layer1);
-		ILayer layer2 = getDataManager().createLayer(
-				new File("src/test/resources/ace.tiff"));
+		ILayer layer2 = getDataManager().createLayer("myRasterLegend",
+				new File("src/test/resources/data/ace.tiff"));
 		mc.getLayerModel().addLayer(layer2);
 		Renderer r = new Renderer();
 		BufferedImage img = new BufferedImage(100, 100,
@@ -292,7 +292,8 @@ public class LegendTest extends AbstractTest {
 	}
 
 	public void testFullProportionalPersistence() throws Exception {
-		ProportionalLegend legend = LegendFactory.createProportionalPointLegend();
+		ProportionalLegend legend = LegendFactory
+				.createProportionalPointLegend();
 		String name = "mylegend";
 		legend.setName(name);
 		Symbol sampleSym = SymbolFactory.createPointCircleSymbol(Color.black,
@@ -399,6 +400,8 @@ public class LegendTest extends AbstractTest {
 		fieldName = "long";
 
 		lm = (LegendManager) Services.getService(LegendManager.class);
+
+		super.registerDataManager(dsf);
 	}
 
 	@Override
