@@ -140,7 +140,6 @@ public class Main {
 						"services.html"));
 			}
 			// Install OrbisGIS core services
-			OrbisgisCoreServices.installServices();
 			new OrbisGISWorkspace();
 			OrbisgisCoreServices.installConfigurationService();
 			// Initialize configuration
@@ -166,6 +165,9 @@ public class Main {
 		}
 	}
 
+	/**
+	 *  Install OrbisGIS core services
+	 */
 	private static void initServices() {
 		Services
 				.registerService(
