@@ -201,9 +201,8 @@ public class OrbisgisCoreServices {
 				Color.red, 10, false));
 		sm.addSymbol(SymbolFactory.createHalfCircleRightPointSymbol(
 				Color.black, 1, Color.green, 10, false));
-		sm.addSymbol(SymbolFactory.createHalfCircleLeftPointSymbol(
-				Color.black, 1, Color.yellow, 10, false));
-		
+		sm.addSymbol(SymbolFactory.createHalfCircleLeftPointSymbol(Color.black,
+				1, Color.yellow, 10, false));
 		sm.addSymbol(SymbolFactory.createPointSquareSymbol(Color.black, 1,
 				Color.red, 10, false));
 		sm.addSymbol(SymbolFactory.createVertexCircleSymbol(Color.black, 1,
