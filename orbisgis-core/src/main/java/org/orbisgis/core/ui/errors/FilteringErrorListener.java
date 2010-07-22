@@ -55,7 +55,6 @@ public class FilteringErrorListener implements ErrorListener {
 
 	private void error(String userMsg, Throwable e, boolean error) {
 		ErrorMessage errorMessage = new ErrorMessage(userMsg, e, error);
-
 		// Show the message to the user
 		if (shouldRepport(userMsg)) {
 			// Pipe the message to the output manager
