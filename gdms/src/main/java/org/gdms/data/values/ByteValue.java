@@ -42,23 +42,23 @@ import java.sql.Types;
 import org.gdms.data.types.Type;
 
 /**
- *
+ * Numeric value dedicated to the storage of Byte.
  */
 class ByteValue extends NumericValue {
 	private byte value;
 
 	/**
-	 * Crea un nuevo ByteValue.
+	 * Create a new ByteValue
 	 *
 	 * @param value
-	 *            DOCUMENT ME!
+	 *            
 	 */
 	ByteValue(byte value) {
 		this.value = value;
 	}
 
 	/**
-	 * Crea un nuevo ByteValue.
+	 * create a new ByteValue
 	 */
 	ByteValue() {
 	}
@@ -127,11 +127,21 @@ class ByteValue extends NumericValue {
 	public byte getValue() {
 		return value;
 	}
-
+        /**
+         * Get the content as this value as an array of bytes.
+         * @return
+         *          An array of bytes of size one. Contain only the value stored in this object.
+         */
 	public byte[] getBytes() {
 		return new byte[] { value };
 	}
-
+        /**
+         * Create a new ByteValue, given an array of bytes.
+         * @param buffer
+         *              The array of bytes.
+         * @return
+         *              A new ByteValue as a Value, containing the first element of the array.
+         */
 	public static Value readBytes(byte[] buffer) {
 		return new ByteValue(buffer[0]);
 	}
