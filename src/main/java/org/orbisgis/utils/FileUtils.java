@@ -85,6 +85,14 @@ public class FileUtils {
 		}
 	}
 
+        /**
+         * Delete all the files in the directory.
+         * This method takes care to remove all the files in the child directories (recursively) before removing
+         * the directories
+         * @param dir
+         * @return
+         *      false is a problem is encountered, true otherwise
+         */
 	public static boolean deleteFileInDir(File dir) {
 		if (parentDir == null) {
 			parentDir = dir;
@@ -106,12 +114,27 @@ public class FileUtils {
 		return dir.delete();
 	}
 
+        /**
+         * Delete a deirectory and his contents
+         * @param dir
+         * @return
+         *      tru if no problems are encontered.
+         */
 	public static boolean deleteDir(File dir) {
 
 		deleteFileInDir(dir);
 		return dir.delete();
 	}
 
+        /**
+         * Copy file in the directory destDir. If destDir doesn't exist, it will be created.
+         * @param file
+         *          The file to  be copied
+         * @param destDir
+         *          the destination directory.
+         * @throws IOException
+         *          If destDir does'nt exist and can't be crated.
+         */
 	public static void copyFileToDirectory(File file, File destDir)
 			throws IOException {
 		if (!destDir.exists()) {
@@ -124,6 +147,14 @@ public class FileUtils {
 		copy(file, output);
 	}
 
+        /**
+         * Copy the content of input in output.
+         * @param input
+         * @param output
+         * @return
+         * @throws IOException
+         *          If there is a problem while copying the file.
+         */
 	public static long copy(File input, File output) throws IOException {
 		FileInputStream in = null;
 		try {
@@ -139,6 +170,15 @@ public class FileUtils {
 		}
 	}
 
+        /**
+         * Copy input into output, using a given Buffer to transmit the datas.
+         * @param input
+         * @param output
+         * @param copyBuffer
+         * @return
+         * @throws IOException
+         *          If a problem is encountered during the copy.
+         */
 	public static long copy(File input, File output, byte[] copyBuffer)
 			throws IOException {
 		FileInputStream in = null;
@@ -163,6 +203,14 @@ public class FileUtils {
 		}
 	}
 
+        /**
+         * Copy the content of in in the outputFile.
+         * @param in
+         * @param outputFile
+         * @return
+         * @throws IOException
+         *      If a probem is encountered during the copy.
+         */
 	public static long copy(InputStream in, File outputFile) throws IOException {
 		FileOutputStream out = null;
 		try {
@@ -178,12 +226,29 @@ public class FileUtils {
 		}
 	}
 
+        /**
+         * Copy the stream in to the stream out
+         * @param in
+         * @param out
+         * @return
+         * @throws IOException
+         *      If a problem is encountered during the copy.
+         */
 	public static long copy(InputStream in, OutputStream out)
 			throws IOException {
 		byte[] buf = new byte[BUF_SIZE];
 		return copy(in, out, buf);
 	}
 
+        /**
+         * Copy the stream in to the stream out, given an intermediate copy buffer
+         * @param in
+         * @param out
+         * @param copyBuffer
+         * @return
+         * @throws IOException
+         *      If a problem is encountered during the copy.
+         */
 	public static long copy(InputStream in, OutputStream out, byte[] copyBuffer)
 			throws IOException {
 		long bytesCopied = 0;
@@ -196,6 +261,13 @@ public class FileUtils {
 		return bytesCopied;
 	}
 
+        /**
+         * Retrieve a file pointed by url, store it in file.
+         * @param url
+         * @param file
+         * @throws IOException
+         *          If a problem is encountered while downloading the file.
+         */
 	public static void download(URL url, File file) throws IOException {
 		OutputStream out = null;
 		InputStream in = null;
@@ -266,6 +338,12 @@ public class FileUtils {
 		in.close();
 	}
 
+        /**
+         * Unzip an archive into the directory destDir.
+         * @param zipFile
+         * @param destDir
+         * @throws IOException
+         */
 	public static void unzip(File zipFile, File destDir) throws IOException {
 		BufferedOutputStream dest = null;
 		FileInputStream fis = new FileInputStream(zipFile);
@@ -293,6 +371,12 @@ public class FileUtils {
 		zis.close();
 	}
 
+        /**
+         * get the relative path to file,  according to the path to base
+         * @param base
+         * @param file
+         * @return
+         */
 	public static String getRelativePath(File base, File file) {
 		String absolutePath = file.getAbsolutePath();
 		String path = absolutePath.substring(base.getAbsolutePath().length());
@@ -302,12 +386,26 @@ public class FileUtils {
 		return path;
 	}
 
+        /**
+         * Retrieve the content of the file as an array of bytes.
+         * @param file
+         * @return
+         * @throws FileNotFoundException
+         * @throws IOException
+         */
 	public static byte[] getContent(File file) throws FileNotFoundException,
 			IOException {
 		FileInputStream fis = new FileInputStream(file);
 		return getContent(fis);
 	}
 
+        /**
+         * Retrieve the content of the Inputstream as an array of bytes.
+         * @param fis
+         * @return
+         * @throws FileNotFoundException
+         * @throws IOException
+         */
 	public static byte[] getContent(InputStream fis) throws IOException {
 		DataInputStream dis = new DataInputStream(fis);
 		byte[] buffer = new byte[dis.available()];
@@ -316,6 +414,17 @@ public class FileUtils {
 		return buffer;
 	}
 
+        /**
+         * compute the MD5 sum of the file.
+         * @param file
+         * @return
+         * @throws FileNotFoundException
+         *      if the file doesn't exist.
+         * @throws IOException
+         *      if there is a problem while computing the file
+         * @throws NoSuchAlgorithmException
+         *      if the MD5 algorithm can't be found.
+         */
 	public static byte[] getMD5(File file) throws FileNotFoundException,
 			IOException, NoSuchAlgorithmException {
 		byte[] content = getContent(file);
@@ -324,6 +433,11 @@ public class FileUtils {
 		return m.digest();
 	}
 
+        /**
+         * Transform an array of bytes to a hexadecimal String
+         * @param messageDigest
+         * @return
+         */
 	public static String toHexString(byte[] messageDigest) {
 		StringBuffer hexString = new StringBuffer();
 		for (int i = 0; i < messageDigest.length; i++) {
@@ -333,6 +447,12 @@ public class FileUtils {
 		return hexString.toString();
 	}
 
+        /**
+         * Write content into file
+         * @param file
+         * @param content
+         * @throws IOException
+         */
 	public static void setContents(File file, String content)
 			throws IOException {
 		FileOutputStream fos = new FileOutputStream(file);
@@ -341,6 +461,11 @@ public class FileUtils {
 		bos.close();
 	}
 
+        /**
+         * Get the name of a filie without its extension.
+         * @param file
+         * @return
+         */
 	public static String getFileNameWithoutExtensionU(File file) {
 		String name = file.getName();
 		int extensionStart = name.lastIndexOf('.');
