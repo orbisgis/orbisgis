@@ -50,6 +50,7 @@ import org.orbisgis.core.ui.editors.map.tool.FinishedAutomatonException;
 import org.orbisgis.core.ui.editors.map.tool.NoSuchTransitionException;
 import org.orbisgis.core.ui.editors.map.tool.ToolManager;
 import org.orbisgis.core.ui.editors.map.tool.TransitionException;
+import org.orbisgis.utils.I18N;
 
 public abstract class Multipolygon implements Automaton {
 
@@ -67,19 +68,19 @@ public abstract class Multipolygon implements Automaton {
 
 		if ("Standby".equals(status)) {
 
-			ret.add(Messages.getString("cancel"));
+			ret.add(I18N.getText("orbisgis.core.ui.editors.map.tool.cancel"));
 
-			ret.add(Messages.getString("multipolygon_standby_to_done"));
+			ret.add(I18N.getText("orbisgis.core.ui.editors.map.tool.multipolygon_standby_to_done"));
 
 		}
 
 		if ("Point".equals(status)) {
 
-			ret.add(Messages.getString("cancel"));
+			ret.add(I18N.getText("orbisgis.core.ui.editors.map.tool.cancel"));
 
-			ret.add(Messages.getString("multipolygon_point_to_line"));
+			ret.add(I18N.getText("orbisgis.core.ui.editors.map.tool.multipolygon_point_to_line"));
 
-			ret.add(Messages.getString("multipolygon_point_to_done"));
+			ret.add(I18N.getText("orbisgis.core.ui.editors.map.tool.multipolygon_point_to_done"));
 
 		}
 
@@ -430,23 +431,23 @@ public abstract class Multipolygon implements Automaton {
 	public String getMessage() {
 
 		if ("Standby".equals(status)) {
-			return Messages.getString("multipolygon_standby");
+			return I18N.getText("orbisgis.core.ui.editors.map.tool.multipolygon_standby");
 		}
 
 		if ("Point".equals(status)) {
-			return Messages.getString("multipolygon_point");
+			return I18N.getText("orbisgis.core.ui.editors.map.tool.multipolygon_point");
 		}
 
 		if ("Line".equals(status)) {
-			return Messages.getString("");
+			return "";
 		}
 
 		if ("Done".equals(status)) {
-			return Messages.getString("");
+			return "";
 		}
 
 		if ("Cancel".equals(status)) {
-			return Messages.getString("");
+			return "";
 		}
 
 		throw new RuntimeException();
@@ -457,7 +458,7 @@ public abstract class Multipolygon implements Automaton {
 	}
 
 	public String getTooltip() {
-		return Messages.getString("multipolygon_tooltip");
+		return I18N.getText("orbisgis.core.ui.editors.map.tool.multipolygon_tooltip");
 	}
 
 	private ImageIcon mouseCursor;

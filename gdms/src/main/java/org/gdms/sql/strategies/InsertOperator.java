@@ -61,8 +61,7 @@ public class InsertOperator extends AbstractExpressionOperator implements
 	private ArrayList<Expression> values = new ArrayList<Expression>();
 
 	@Override
-	protected Expression[] getExpressions() throws DriverException,
-			SemanticException {
+	protected Expression[] getExpressions() throws DriverException {
 		return getFields().toArray(new Expression[0]);
 	}
 
@@ -88,7 +87,7 @@ public class InsertOperator extends AbstractExpressionOperator implements
 				Field field = (Field) fields.get(i);
 				System.out.println(field.getFieldName());
 				int fieldIndex = ds.getFieldIndexByName(field.getFieldName());
-				row[fieldIndex] = values.get(i).evaluate();
+				row[fieldIndex] = values.get(i).evaluate(pm);
 			}
 			ds.insertFilledRow(row);
 			ds.commit();
@@ -132,7 +131,7 @@ public class InsertOperator extends AbstractExpressionOperator implements
 	 * Validates that the number of values to insert is equal to the number of
 	 * specified fields. Also checks that the assignment between the types is
 	 * possible
-	 *
+	 * 
 	 * @see org.gdms.sql.strategies.AbstractExpressionOperator#validateExpressionTypes()
 	 */
 	@Override
@@ -155,7 +154,7 @@ public class InsertOperator extends AbstractExpressionOperator implements
 
 	/**
 	 * Validates that there is no field reference in the values to assign
-	 *
+	 * 
 	 * @see org.gdms.sql.strategies.AbstractExpressionOperator#validateFieldReferences()
 	 */
 	@Override

@@ -54,11 +54,13 @@ import javax.xml.transform.stream.StreamSource;
 import org.orbisgis.core.errorManager.ErrorManager;
 
 /**
+ * 
+ * An OrbisGIS service is just a java instance that is accessible by a name and that implements a specified interface. 
+ * From a practical point of view, services will be the entry point to access the different functionalities in OrbisGIS
  * Class to manage the services
  * 
- * @author Fernando Gonzalez Cortes
- * 
  */
+
 public class Services {
 
 	private static HashMap<Class<?>, Object> services = new HashMap<Class<?>, Object>();

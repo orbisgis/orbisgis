@@ -273,7 +273,7 @@ public class SQLConsoleViewPlugIn extends ViewPlugIn {
 
 								} catch (LayerException e) {
 									Services.getErrorManager().error(
-											"Impossible to create the layer:"
+											"Cannot create the layer:"
 													+ ds.getName(), e);
 									break;
 								}
@@ -345,6 +345,7 @@ public class SQLConsoleViewPlugIn extends ViewPlugIn {
 
 			long t2 = System.currentTimeMillis();
 			logger.debug("Execution time: " + ((t2 - t1) / 1000.0));
+			panel.setStatusMessage("Execution time: " + ((t2 - t1) / 1000.0));
 		}
 	}
 

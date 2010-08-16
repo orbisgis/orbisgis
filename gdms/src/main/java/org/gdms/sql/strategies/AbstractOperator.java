@@ -116,6 +116,13 @@ public abstract class AbstractOperator implements Operator {
 
 		return ret.toArray(new Operator[0]);
 	}
+	
+	@Override
+	public void expandStars() throws DriverException, SemanticException {
+		for (int i = 0; i < getOperatorCount(); i++) {
+			getOperator(i).expandStars();
+		}
+	}
 
 	public void validateFieldReferences() throws SemanticException,
 			DriverException {
@@ -155,6 +162,14 @@ public abstract class AbstractOperator implements Operator {
 		}
 
 		return ret.toArray(new String[0]);
+	}
+
+	@Override
+	public void validateDuplicateFields() throws SemanticException,
+			DriverException {
+		for (int i = 0; i < getOperatorCount(); i++) {
+			getOperator(i).validateDuplicateFields();
+		}
 	}
 
 	public void prepareValidation() throws SemanticException, DriverException {

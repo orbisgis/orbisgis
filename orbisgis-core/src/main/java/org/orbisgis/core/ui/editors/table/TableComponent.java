@@ -4,9 +4,7 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.FlowLayout;
-import java.awt.Font;
 import java.awt.Insets;
-import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -24,7 +22,6 @@ import java.util.TreeSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.swing.BorderFactory;
 import javax.swing.DefaultListSelectionModel;
 import javax.swing.Icon;
 import javax.swing.JButton;
@@ -542,8 +539,9 @@ public class TableComponent extends JPanel implements WorkbenchFrame {
 						Logger.getLogger(TableComponent.class.getName()).log(Level.SEVERE, "Could not purge internal data source", ex);
 					}
 
-
-					// TODO : Purge dsWithPk and dsWithPkFiltered
+					dsf.executeSQL("drop table if exists "
+							+ dsWithPkFiltered.getName() + " , "
+							+ dsWithPk.getName() + " purge");
 
 					pm.endTask();
 					selection.setSelectedRows(sel);
@@ -557,6 +555,8 @@ public class TableComponent extends JPanel implements WorkbenchFrame {
 				} catch (org.gdms.sql.parser.ParseException e) {
 					e.printStackTrace();
 				} catch (SemanticException e) {
+					e.printStackTrace();
+				} catch (ExecutionException e) {
 					e.printStackTrace();
 				}
 			}
@@ -677,8 +677,7 @@ public class TableComponent extends JPanel implements WorkbenchFrame {
 			if (oneColumnHeaderIsSelected) {
 				if ("ColumnAction".equals(getExtensionPointId())) {
 					wbContext.setHeaderSelected(selectedColumn);
-				}
-				else {
+				} else {
 					wbContext.setRowSelected(e);
 					if (!table.isRowSelected(clickedRow)) {
 						selection.setSelectedRows(new int[] { clickedRow });

@@ -42,6 +42,7 @@ import org.gdms.sql.evaluator.EvaluationException;
 import org.gdms.sql.evaluator.Expression;
 import org.gdms.sql.evaluator.Field;
 import org.gdms.sql.strategies.IncompatibleTypesException;
+import org.orbisgis.progress.NullProgressMonitor;
 
 import com.vividsolutions.jts.geom.Envelope;
 
@@ -59,7 +60,7 @@ public class ExpressionBasedSpatialIndexQuery implements
 
 	public Envelope getArea() throws IncompatibleTypesException,
 			EvaluationException {
-		return area.evaluate().getAsGeometry().getEnvelopeInternal();
+		return area.evaluate(new NullProgressMonitor()).getAsGeometry().getEnvelopeInternal();
 	}
 
 	public String getFieldName() {

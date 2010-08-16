@@ -64,9 +64,9 @@ public class GeoCognitionTest extends AbstractGeocognitionTest {
 		} catch (IllegalArgumentException e) {
 		}
 		gc.addFolder("myfolder");
-		gc.addElement("/myfolder/org.wont.add/Buffer", ST_Buffer.class);
+		gc.addElement("/myfolder/org.wont.add/ST_Buffer", ST_Buffer.class);
 		try {
-			gc.addElement("/myfolder/org.wont.add/Buffer", ST_Buffer.class);
+			gc.addElement("/myfolder/org.wont.add/ST_Buffer", ST_Buffer.class);
 			assertTrue(false);
 		} catch (IllegalArgumentException e) {
 		}
@@ -78,14 +78,14 @@ public class GeoCognitionTest extends AbstractGeocognitionTest {
 	}
 
 	public void testAddParentDoesNotExist() throws Exception {
-		gc.addElement("/it.will.be.created/Buffer", ST_Buffer.class);
+		gc.addElement("/it.will.be.created/ST_Buffer", ST_Buffer.class);
 		assertTrue(gc.getGeocognitionElement("it.will.be.created") != null);
 	}
 
 	public void testFunctionPersistence() throws Exception {
-		gc.addElement("/Buffer", ST_Buffer.class);
+		gc.addElement("/ST_Buffer", ST_Buffer.class);
 		saveAndLoad();
-		Class<?> classFunction = gc.getElement("/Buffer", Class.class);
+		Class<?> classFunction = gc.getElement("/ST_Buffer", Class.class);
 		assertTrue(classFunction.getName().equals(ST_Buffer.class.getName()));
 	}
 
@@ -115,7 +115,8 @@ public class GeoCognitionTest extends AbstractGeocognitionTest {
 		MapContext mc = new DefaultMapContext();
 		mc.open(null);
 		DataManager dm = (DataManager) Services.getService(DataManager.class);
-		ILayer lyr = dm.createLayer(new File("src/test/resources/bv_sap.shp"));
+		ILayer lyr = dm.createLayer(new File(
+				"src/test/resources/data/bv_sap.shp"));
 		mc.getLayerModel().addLayer(lyr);
 		mc.close(null);
 		gc.addElement("org.mymap", mc);
@@ -130,7 +131,8 @@ public class GeoCognitionTest extends AbstractGeocognitionTest {
 		MapContext mc = new DefaultMapContext();
 		mc.open(null);
 		DataManager dm = (DataManager) Services.getService(DataManager.class);
-		ILayer lyr = dm.createLayer(new File("src/test/resources/bv_sap.shp"));
+		ILayer lyr = dm.createLayer(new File(
+				"src/test/resources/data/bv_sap.shp"));
 		mc.getLayerModel().addLayer(lyr);
 		mc.getLayerModel().addLayer(dm.createLayerCollection("group"));
 		mc.close(null);
@@ -180,9 +182,9 @@ public class GeoCognitionTest extends AbstractGeocognitionTest {
 	public void testRemovalCancellation() throws Exception {
 		TestListener listener = new TestListener();
 		gc.addGeocognitionListener(listener);
-		gc.addElement("/Buffer", ST_Buffer.class);
+		gc.addElement("/ST_Buffer", ST_Buffer.class);
 		listener.cancel = true;
-		assertTrue(gc.removeElement("/Buffer") == null);
+		assertTrue(gc.removeElement("/ST_Buffer") == null);
 	}
 
 	public void testListenAdd() throws Exception {
@@ -220,71 +222,56 @@ public class GeoCognitionTest extends AbstractGeocognitionTest {
 		assertTrue(gc.getRoot().getElementCount() == 0);
 	}
 
-	public void testOpenSaveCloseMap() throws Exception {
-		MapContext mc = new DefaultMapContext();
-		gc.addElement("id", mc);
-		GeocognitionElement element = gc.getGeocognitionElement("id");
-		element.open(new NullProgressMonitor());
-		String rootLayerName = "root test layer";
-		mc.getLayerModel().setName(rootLayerName);
-		element.save();
-		element.close(new NullProgressMonitor());
-		try {
-			mc.getLayerModel();
-			assertTrue(false);
-		} catch (IllegalStateException e) {
-		}
-		element.open(new NullProgressMonitor());
-		assertTrue(mc.getLayerModel().getName().equals(rootLayerName));
-		mc.getLayerModel().setName("This will not be saved");
-		element.close(new NullProgressMonitor());
-		element.open(new NullProgressMonitor());
-		assertTrue(mc.getLayerModel().getName().equals(rootLayerName));
-		element.close(new NullProgressMonitor());
-	}
-
-	public void testOpenSaveCloseLegend() throws Exception {
-		UniqueSymbolLegend legend = LegendFactory.createUniqueSymbolLegend();
-		gc.addElement("id", legend);
-		GeocognitionElement element = gc.getGeocognitionElement("id");
-		element.open(new NullProgressMonitor());
-		Symbol symbol = SymbolFactory.createPolygonSymbol(Color.pink);
-		legend.setSymbol(symbol);
-		element.save();
-		element.close(new NullProgressMonitor());
-		element.open(new NullProgressMonitor());
-		assertTrue(legend.getSymbol().getPersistentProperties().equals(
-				symbol.getPersistentProperties()));
-		legend.setSymbol(null);
-		element.close(new NullProgressMonitor());
-		element.open(new NullProgressMonitor());
-		assertTrue(legend.getSymbol().getPersistentProperties().equals(
-				symbol.getPersistentProperties()));
-		element.close(new NullProgressMonitor());
-	}
-
-	public void testOpenSaveCloseSymbol() throws Exception {
-		StandardPolygonSymbol symbol = (StandardPolygonSymbol) SymbolFactory
-				.createPolygonSymbol();
-		gc.addElement("id", symbol);
-		GeocognitionElement element = gc.getGeocognitionElement("id");
-		element.open(new NullProgressMonitor());
-		symbol.setFillColor(Color.pink);
-		element.save();
-		element.close(new NullProgressMonitor());
-		element.open(new NullProgressMonitor());
-		assertTrue(symbol.getFillColor().equals(Color.pink));
-		symbol.setFillColor(Color.black);
-		element.close(new NullProgressMonitor());
-		element.open(new NullProgressMonitor());
-		assertTrue(symbol.getFillColor().equals(Color.pink));
-		element.close(new NullProgressMonitor());
-	}
+	/*
+	 * TODO : plugin initialization public void testOpenSaveCloseMap() throws
+	 * Exception {
+	 * 
+	 * MapContext mc = new DefaultMapContext(); gc.addElement("id", mc);
+	 * GeocognitionElement element = gc.getGeocognitionElement("id");
+	 * element.open(new NullProgressMonitor()); String rootLayerName =
+	 * "root test layer"; mc.getLayerModel().setName(rootLayerName);
+	 * element.save(); element.close(new NullProgressMonitor()); try {
+	 * mc.getLayerModel(); assertTrue(false); } catch (IllegalStateException e)
+	 * { } element.open(new NullProgressMonitor());
+	 * assertTrue(mc.getLayerModel().getName().equals(rootLayerName));
+	 * mc.getLayerModel().setName("This will not be saved"); element.close(new
+	 * NullProgressMonitor()); element.open(new NullProgressMonitor());
+	 * assertTrue(mc.getLayerModel().getName().equals(rootLayerName));
+	 * element.close(new NullProgressMonitor()); }
+	 * 
+	 * public void testOpenSaveCloseLegend() throws Exception {
+	 * UniqueSymbolLegend legend = LegendFactory.createUniqueSymbolLegend();
+	 * gc.addElement("id", legend); GeocognitionElement element =
+	 * gc.getGeocognitionElement("id"); element.open(new NullProgressMonitor());
+	 * Symbol symbol = SymbolFactory.createPolygonSymbol(Color.pink);
+	 * legend.setSymbol(symbol); element.save(); element.close(new
+	 * NullProgressMonitor()); element.open(new NullProgressMonitor());
+	 * assertTrue(legend.getSymbol().getPersistentProperties().equals(
+	 * symbol.getPersistentProperties())); legend.setSymbol(null);
+	 * element.close(new NullProgressMonitor()); element.open(new
+	 * NullProgressMonitor());
+	 * assertTrue(legend.getSymbol().getPersistentProperties().equals(
+	 * symbol.getPersistentProperties())); element.close(new
+	 * NullProgressMonitor()); }
+	 * 
+	 * public void testOpenSaveCloseSymbol() throws Exception {
+	 * StandardPolygonSymbol symbol = (StandardPolygonSymbol) SymbolFactory
+	 * .createPolygonSymbol(); gc.addElement("id", symbol); GeocognitionElement
+	 * element = gc.getGeocognitionElement("id"); element.open(new
+	 * NullProgressMonitor()); symbol.setFillColor(Color.pink); element.save();
+	 * element.close(new NullProgressMonitor()); element.open(new
+	 * NullProgressMonitor());
+	 * assertTrue(symbol.getFillColor().equals(Color.pink));
+	 * symbol.setFillColor(Color.black); element.close(new
+	 * NullProgressMonitor()); element.open(new NullProgressMonitor());
+	 * assertTrue(symbol.getFillColor().equals(Color.pink)); element.close(new
+	 * NullProgressMonitor()); }
+	 */
 
 	public void testOpenSaveCloseBuiltinSQL() throws Exception {
 		Class<?> buffer = ST_Buffer.class;
-		gc.addElement("/Buffer", buffer);
-		unsupportedBuiltInSQLEdition("/Buffer");
+		gc.addElement("/ST_Buffer", buffer);
+		unsupportedBuiltInSQLEdition("/ST_Buffer");
 		Class<?> register = RegisterCall.class;
 		gc.addElement("/register", register);
 		unsupportedBuiltInSQLEdition("/register");
@@ -313,7 +300,7 @@ public class GeoCognitionTest extends AbstractGeocognitionTest {
 		MapContext mc = new DefaultMapContext();
 		mc.open(null);
 		ILayer layer = getDataManager().createLayer("linestring",
-				new File("src/test/resources/linestring.shp"));
+				new File("src/test/resources/data/linestring.shp"));
 		mc.getLayerModel().addLayer(layer);
 		mc.close(null);
 
@@ -393,7 +380,8 @@ public class GeoCognitionTest extends AbstractGeocognitionTest {
 		MapContext mc = new DefaultMapContext();
 		mc.open(null);
 		DataManager dm = (DataManager) Services.getService(DataManager.class);
-		ILayer lyr = dm.createLayer(new File("src/test/resources/bv_sap.shp"));
+		ILayer lyr = dm.createLayer(new File(
+				"src/test/resources/data/bv_sap.shp"));
 		mc.getLayerModel().addLayer(lyr);
 		mc.close(null);
 		gc.addElement("mymap", mc);
@@ -420,14 +408,14 @@ public class GeoCognitionTest extends AbstractGeocognitionTest {
 	}
 
 	public void testFixedName() throws Exception {
-		gc.addElement("Buffer", ST_Buffer.class);
+		gc.addElement("ST_Buffer", ST_Buffer.class);
 		try {
 			gc.addElement("SuperBuffer", ST_Buffer.class);
 			assertTrue(false);
 		} catch (IllegalArgumentException e) {
 		}
 		try {
-			gc.getGeocognitionElement("Buffer").setId("fails");
+			gc.getGeocognitionElement("ST_Buffer").setId("fails");
 			assertTrue(false);
 		} catch (IllegalArgumentException e) {
 		}
@@ -437,7 +425,8 @@ public class GeoCognitionTest extends AbstractGeocognitionTest {
 		MapContext mc = new DefaultMapContext();
 		mc.open(null);
 		DataManager dm = (DataManager) Services.getService(DataManager.class);
-		ILayer lyr = dm.createLayer(new File("src/test/resources/bv_sap.shp"));
+		ILayer lyr = dm.createLayer(new File(
+				"src/test/resources/data/bv_sap.shp"));
 		mc.getLayerModel().addLayer(lyr);
 		mc.close(null);
 		gc.addElement("org.mymap", mc);

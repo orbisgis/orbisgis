@@ -84,6 +84,7 @@ import org.gdms.driver.ObjectDriver;
 import org.gdms.sql.evaluator.EvaluationException;
 import org.gdms.sql.evaluator.Expression;
 import org.gdms.sql.evaluator.Field;
+import org.orbisgis.progress.IProgressMonitor;
 
 public class ProjectionDriver extends AbstractMetadataSQLDriver implements ObjectDriver {
 
@@ -92,6 +93,8 @@ public class ProjectionDriver extends AbstractMetadataSQLDriver implements Objec
 	private DefaultFieldContext fieldContext;
 
 	private ObjectDriver source;
+
+	private IProgressMonitor pm;
 
 	/**
 	 * Builds a ProjectionPipeline that will have the same number of rows and in
@@ -103,13 +106,15 @@ public class ProjectionDriver extends AbstractMetadataSQLDriver implements Objec
 	 *
 	 * @param source
 	 * @param fields
+	 * @param pm 
 	 * @param aliases
 	 */
 	public ProjectionDriver(ObjectDriver source, Expression[] fields,
-			Metadata metadata) {
+			Metadata metadata, IProgressMonitor pm) {
 		super(metadata);
 		this.source = source;
 		this.fields = fields;
+		this.pm =pm;
 
 		fieldContext = new DefaultFieldContext(source);
 
@@ -130,7 +135,7 @@ public class ProjectionDriver extends AbstractMetadataSQLDriver implements Objec
 		try {
 			fieldContext.setIndex(rowIndex);
 			Expression exp = getFieldByIndex(fieldId);
-			return exp.evaluate();
+			return exp.evaluate(pm);
 		} catch (EvaluationException e) {
 			throw new DriverException(e);
 		}

@@ -34,19 +34,7 @@ public class Hello implements Automaton {
 	}
 
 	@Override
-	public String getConsoleCommand() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
 	public Point getHotSpotOffset() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public String getMessage() {
 		// TODO Auto-generated method stub
 		return null;
 	}

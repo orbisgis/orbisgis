@@ -41,7 +41,6 @@ import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
 import org.orbisgis.core.geocognition.GeoCognitionTest;
-import org.orbisgis.core.geocognition.GeocognitionUpgradeTest;
 import org.orbisgis.core.geocognition.ImportExportTest;
 import org.orbisgis.core.layerModel.LayerModelTest;
 import org.orbisgis.core.renderer.ClassificationTest;
@@ -64,7 +63,6 @@ public class AllTests extends TestCase {
 		suite.addTestSuite(MapTransformTest.class);
 		suite.addTestSuite(SymbolTest.class);
 		suite.addTestSuite(GeoCognitionTest.class);
-		suite.addTestSuite(GeocognitionUpgradeTest.class);
 		suite.addTestSuite(ImportExportTest.class);
 		// $JUnit-END$
 		return suite;

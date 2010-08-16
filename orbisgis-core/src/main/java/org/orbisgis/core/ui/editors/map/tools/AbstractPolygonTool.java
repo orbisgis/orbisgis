@@ -46,6 +46,7 @@ import org.orbisgis.core.ui.editors.map.tool.FinishedAutomatonException;
 import org.orbisgis.core.ui.editors.map.tool.ToolManager;
 import org.orbisgis.core.ui.editors.map.tool.TransitionException;
 import org.orbisgis.core.ui.editors.map.tools.generated.Polygon;
+import org.orbisgis.utils.I18N;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
@@ -77,8 +78,9 @@ public abstract class AbstractPolygonTool extends Polygon implements
 			throws FinishedAutomatonException, TransitionException {
 		points = ToolUtilities.removeDuplicated(points);
 		if (points.size() < 3) {
-			throw new TransitionException(Messages
-					.getString("MultipolygonTool.0")); //$NON-NLS-1$
+			throw new TransitionException(
+					I18N
+							.getText("orbisgis.core.ui.editors.map.tool.multipolygonTool_0")); //$NON-NLS-1$
 		}
 		ArrayList<Coordinate> tempPoints = (ArrayList<Coordinate>) points
 				.clone();
@@ -90,7 +92,9 @@ public abstract class AbstractPolygonTool extends Polygon implements
 				.createLinearRing(polygonCoordinates), new LinearRing[0]);
 
 		if (!pol.isValid()) {
-			throw new TransitionException(Messages.getString("PolygonTool.1")); //$NON-NLS-1$
+			throw new TransitionException(
+					I18N
+							.getText("orbisgis.core.ui.editors.map.tool.polygonTool_1")); //$NON-NLS-1$
 		}
 		polygonDone(pol, vc, tm);
 
@@ -128,7 +132,9 @@ public abstract class AbstractPolygonTool extends Polygon implements
 			tm.addGeomToDraw(geom);
 
 			if (!geom.isValid()) {
-				throw new DrawingException(Messages.getString("PolygonTool.1")); //$NON-NLS-1$
+				throw new DrawingException(
+						I18N
+								.getText("orbisgis.core.ui.editors.map.tool.polygonTool_1")); //$NON-NLS-1$
 			}
 		}
 	}

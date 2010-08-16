@@ -42,6 +42,7 @@ import java.util.Collections;
 import org.gdms.data.values.Value;
 import org.gdms.sql.strategies.IncompatibleTypesException;
 import org.gdms.sql.strategies.Operator;
+import org.orbisgis.progress.IProgressMonitor;
 
 public abstract class AbstractOperator extends AbstractExpression implements
 		Expression {
@@ -119,17 +120,17 @@ public abstract class AbstractOperator extends AbstractExpression implements
 		return true;
 	}
 
-	public Value evaluate() throws EvaluationException {
+	public Value evaluate(IProgressMonitor pm) throws EvaluationException {
 		if (isLiteral()) {
 			if (lastValue == null) {
-				lastValue = evaluateExpression();
+				lastValue = evaluateExpression(pm);
 			}
 			return lastValue;
 		} else {
-			return evaluateExpression();
+			return evaluateExpression(pm);
 		}
 	}
-	
+
 	@Override
 	public Operator[] getSubqueries() {
 		ArrayList<Operator> ret = new ArrayList<Operator>();
@@ -141,6 +142,6 @@ public abstract class AbstractOperator extends AbstractExpression implements
 		return ret.toArray(new Operator[0]);
 	}
 
-	protected abstract Value evaluateExpression() throws EvaluationException,
-			IncompatibleTypesException;
+	protected abstract Value evaluateExpression(IProgressMonitor pm)
+			throws EvaluationException, IncompatibleTypesException;
 }

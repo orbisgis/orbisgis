@@ -75,7 +75,6 @@ import org.orbisgis.core.ui.plugins.actions.ExitPlugIn;
 //import org.orbisgis.core.ui.plugins.demo.extensions.tocMenu.MyTOCMenu;
 //import org.orbisgis.core.ui.plugins.demo.extensions.tocMenu.MyTOCMenu;
 import org.orbisgis.core.ui.plugins.editors.mapEditor.ClearMapSelectionPlugIn;
-import org.orbisgis.core.ui.plugins.editors.mapEditor.CoordinateReferenceSystemPlugIn;
 import org.orbisgis.core.ui.plugins.editors.mapEditor.CreateSourceFromMapSelectionPlugIn;
 import org.orbisgis.core.ui.plugins.editors.mapEditor.DeleteMapSelectionPlugIn;
 import org.orbisgis.core.ui.plugins.editors.mapEditor.ExportMapAsImagePlugIn;
@@ -261,7 +260,7 @@ public class OrbisConfiguration implements Setup {
 	private ShowXYPlugIn showXYPlugIn = new ShowXYPlugIn();
 	// Scale panel plugin is a swing component to execute action on map editor
 	private ScalePlugIn scalePlugIn = new ScalePlugIn();
-	private CoordinateReferenceSystemPlugIn CRSPlugIn = new CoordinateReferenceSystemPlugIn();
+	//private CoordinateReferenceSystemPlugIn CRSPlugIn = new CoordinateReferenceSystemPlugIn();
 
 	// right click on Map
 	private ExportMapAsImagePlugIn exportMasAsImagePlugIn = new ExportMapAsImagePlugIn();

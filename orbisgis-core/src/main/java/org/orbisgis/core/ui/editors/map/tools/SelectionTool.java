@@ -68,6 +68,7 @@ import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.layerModel.MapContext;
 import org.orbisgis.core.ui.editors.map.tool.ToolManager;
 import org.orbisgis.core.ui.pluginSystem.PlugInContext;
+import org.orbisgis.utils.I18N;
 
 /**
  * Tool to select geometries
@@ -117,6 +118,7 @@ public class SelectionTool extends AbstractSelectionTool {
 	}
 
 	public String getName() {
-		return "Select a feature";
+		return I18N
+				.getText("orbisgis.core.ui.editors.map.tool.selection_tooltip");
 	}
 }

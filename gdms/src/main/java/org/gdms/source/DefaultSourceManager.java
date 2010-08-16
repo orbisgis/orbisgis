@@ -93,6 +93,7 @@ import org.gdms.sql.strategies.SQLProcessor;
 import org.gdms.sql.strategies.SemanticException;
 import org.gdms.sql.strategies.TableNotFoundException;
 import org.orbisgis.progress.IProgressMonitor;
+import org.orbisgis.progress.NullProgressMonitor;
 import org.orbisgis.utils.FileUtils;
 
 public class DefaultSourceManager implements SourceManager {

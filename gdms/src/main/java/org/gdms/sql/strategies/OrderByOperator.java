@@ -59,8 +59,7 @@ public class OrderByOperator extends AbstractExpressionOperator implements
 	private ArrayList<Boolean> orders = new ArrayList<Boolean>();
 
 	@Override
-	protected Expression[] getExpressions() throws DriverException,
-			SemanticException {
+	protected Expression[] getExpressions() {
 		return fields.toArray(new Expression[0]);
 	}
 
@@ -104,7 +103,7 @@ public class OrderByOperator extends AbstractExpressionOperator implements
 						columnCache[i][field] = source.getFieldValue(i,
 								fieldIndexes[field]);
 					} else if (expre instanceof FunctionOperator) {
-						columnCache[i][field] = expre.evaluate();
+						columnCache[i][field] = expre.evaluate(pm);
 					}
 				}
 			}

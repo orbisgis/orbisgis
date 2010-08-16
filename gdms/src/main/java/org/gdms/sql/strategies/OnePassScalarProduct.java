@@ -208,7 +208,7 @@ public class OnePassScalarProduct extends ScalarProductOp {
 					innerFieldContext.setIndex(index);
 					boolean allTrue = true;
 					for (Expression expression : indexExpressions) {
-						if (!expression.evaluate().getAsBoolean()) {
+						if (!expression.evaluate(pm).getAsBoolean()) {
 							allTrue = false;
 							break;
 						}

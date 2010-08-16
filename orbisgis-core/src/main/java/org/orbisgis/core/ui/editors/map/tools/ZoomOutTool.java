@@ -73,12 +73,14 @@ import org.orbisgis.core.ui.editors.map.tool.ToolManager;
 import org.orbisgis.core.ui.editors.map.tool.TransitionException;
 import org.orbisgis.core.ui.editors.map.tools.generated.ZoomOut;
 import org.orbisgis.core.ui.pluginSystem.PlugInContext;
+import org.orbisgis.core.ui.pluginSystem.workbench.Names;
+import org.orbisgis.utils.I18N;
 
 import com.vividsolutions.jts.geom.Envelope;
 
 /**
  * Tool to zoom out
- *
+ * 
  * @author Fernando Gonzalez Cortes
  */
 public class ZoomOutTool extends ZoomOut {
@@ -165,6 +167,7 @@ public class ZoomOutTool extends ZoomOut {
 	}
 
 	public String getName() {
-		return "Zoom out";
+		return I18N
+				.getText("orbisgis.core.ui.editors.map.tool.zoomout_tooltip");
 	}
 }

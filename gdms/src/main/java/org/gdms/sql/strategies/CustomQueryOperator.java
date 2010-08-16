@@ -96,7 +96,7 @@ public class CustomQueryOperator extends AbstractExpressionOperator implements
 				for (Field field : fieldReferences) {
 					field.setFieldContext(fc);
 				}
-				values[i] = expressions[i].evaluate();
+				values[i] = expressions[i].evaluate(pm);
 			} catch (EvaluationException e) {
 				throw new ExecutionException("Cannot evaluate the "
 						+ "parameters of the function", e);
@@ -181,8 +181,7 @@ public class CustomQueryOperator extends AbstractExpressionOperator implements
 	}
 
 	@Override
-	protected Expression[] getExpressions() throws DriverException,
-			SemanticException {
+	protected Expression[] getExpressions()  {
 		return expressions;
 	}
 

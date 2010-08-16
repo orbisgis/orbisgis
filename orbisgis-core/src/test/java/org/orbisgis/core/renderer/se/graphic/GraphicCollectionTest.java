@@ -4,8 +4,8 @@
  */
 package org.orbisgis.core.renderer.se.graphic;
 
-import com.sun.media.jai.widget.DisplayJAI;
 
+import com.sun.media.jai.widget.DisplayJAI;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Container;
@@ -13,8 +13,8 @@ import java.awt.Container;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
 import javax.media.jai.RenderableGraphics;
+
 import javax.swing.JFrame;
 import javax.swing.JScrollPane;
 

@@ -62,7 +62,6 @@ public class GeometryEditor {
 
 	private static final double EPSILON = 1E-6;
 
-
 	public GeometryEditor() {
 	}
 
@@ -359,7 +358,20 @@ public class GeometryEditor {
 	}
 
 	/**
-	 * Insert a coordinate onto a geometry
+	 * Insert a coordinate on a geometry
+	 * 
+	 * @param geometry
+	 * @param target
+	 * @return
+	 */
+	
+	public static Geometry insertVertex(Geometry geometry, Point target) {
+		return insertVertex(geometry, target.getCoordinate());
+	}
+
+	/**
+	 * Insert a coordinate on a geometry
+	 * 
 	 * @param geometry
 	 * @param target
 	 * @return

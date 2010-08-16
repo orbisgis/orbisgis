@@ -53,6 +53,7 @@ public class AbstractGeocognitionTest extends AbstractTest {
 	@Override
 	protected void setUp() throws Exception {
 		super.setUp();
+		super.registerDataManager();
 
 		gc = new DefaultGeocognition();
 		gc.addElementFactory(new GeocognitionSymbolFactory());

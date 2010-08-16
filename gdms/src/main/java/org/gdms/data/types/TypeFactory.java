@@ -37,6 +37,8 @@
  */
 package org.gdms.data.types;
 
+import java.util.HashMap;
+
 /**
  * factory to create data type instances
  * 
@@ -175,5 +177,72 @@ public class TypeFactory {
 
 	public static boolean isSpatial(int typeCode) {
 		return (typeCode == Type.GEOMETRY) || (typeCode == Type.RASTER);
+	}
+	
+	/**
+	 * 
+	 * Return the type being able to accept all the values the other type
+	 * accepts. Returns -1 if the types are not compatible.
+	 * 
+	 * @param type1
+	 * @param type2
+	 * @return
+	 * 
+	 * @author gearscape
+	 */
+	public static int getBroaderType(int type1, int type2) {
+		if (isNumerical(type1) && isNumerical(type2)) {
+			HashMap<Integer, Integer> typeSort = new HashMap<Integer, Integer>();
+			typeSort.put(Type.BYTE, 0);
+			typeSort.put(Type.SHORT, 1);
+			typeSort.put(Type.INT, 2);
+			typeSort.put(Type.LONG, 3);
+			typeSort.put(Type.FLOAT, 4);
+			typeSort.put(Type.DOUBLE, 5);
+			HashMap<Integer, Integer> sortType = new HashMap<Integer, Integer>();
+			sortType.put(0, Type.BYTE);
+			sortType.put(1, Type.SHORT);
+			sortType.put(2, Type.INT);
+			sortType.put(3, Type.LONG);
+			sortType.put(4, Type.FLOAT);
+			sortType.put(5, Type.DOUBLE);
+
+			Integer sort1 = typeSort.get(type1);
+			Integer sort2 = typeSort.get(type2);
+			int sort = Math.max(sort1, sort2);
+			return sortType.get(sort);
+		} else if (isTime(type1) && isTime(type2)) {
+			HashMap<Integer, Integer> typeSort = new HashMap<Integer, Integer>();
+			typeSort.put(Type.DATE, 0);
+			typeSort.put(Type.TIME, 1);
+			typeSort.put(Type.TIMESTAMP, 2);
+			HashMap<Integer, Integer> sortType = new HashMap<Integer, Integer>();
+			sortType.put(0, Type.DATE);
+			sortType.put(1, Type.TIME);
+			sortType.put(2, Type.TIMESTAMP);
+
+			Integer sort1 = typeSort.get(type1);
+			Integer sort2 = typeSort.get(type2);
+			int sort = Math.max(sort1, sort2);
+			return sortType.get(sort);
+		} else {
+			if (type1 == type2) {
+				return type1;
+			}
+		}
+
+		return -1;
+	}
+	
+	/**
+	 * 
+	 * @param typeCode
+	 * @return
+	 * 
+	 * @author gearscape
+	 */
+	public static boolean isTime(int typeCode) {
+		return (typeCode == Type.DATE) || (typeCode == Type.TIME)
+				|| (typeCode == Type.TIMESTAMP);
 	}
 }

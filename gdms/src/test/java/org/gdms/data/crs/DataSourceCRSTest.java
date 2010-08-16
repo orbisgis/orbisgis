@@ -1,4 +1,4 @@
-package org.gdms.data.crs;
+/*package org.gdms.data.crs;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -31,9 +31,9 @@ public class DataSourceCRSTest extends TestCase {
 	private DataSourceFactory dsf;
 	private ArrayList<Geometry> geometriesWithCRSCode;
 
-	/**
+	*//**
 	 * A class to test CRS projection
-	 */
+	 *//*
 	@Override
 	protected void setUp() throws Exception {
 		super.setUp();
@@ -57,7 +57,6 @@ public class DataSourceCRSTest extends TestCase {
 	}
 
 	public void testSHPWithPRJ() throws Exception {
-
 		String crsName = "NTF_Lambert_II_étendu";
 		File file = new File(BaseTest.internalData + "landcover2000.shp");
 		DataSource ds = dsf.getDataSource(file);
@@ -137,11 +136,11 @@ public class DataSourceCRSTest extends TestCase {
 		}
 	}
 
-	/**
+	*//**
 	 * Transform a geometry in 27572 to wgs84
 	 * 
 	 * @throws Exception
-	 */
+	 *//*
 	public void testCRSTransform() throws Exception {
 
 		// In target crs
@@ -154,29 +153,29 @@ public class DataSourceCRSTest extends TestCase {
 				+ "landcover2000_4326.shp");
 		dsf.getSourceManager().register("landcover_4326", file4326);
 
-		DataSource dsTransform = dsf
-				.getDataSourceFromSQL("select st_transform(the_geom, '"
-						+ targetCode + "') from " + tableName
-						+ ";");
+		// dsf.executeSQL("select register('/tmp/target.shp','target')");
+		dsf.executeSQL("create table target as select st_transform(the_geom, '"
+				+ targetCode + "') from " + tableName + ";");
 
 		SpatialDataSourceDecorator sds_4326 = new SpatialDataSourceDecorator(
 				dsf.getDataSource("landcover_4326"));
 		sds_4326.open();
 
-		System.out.println(sds_4326.getCRS().toWkt());
+		System.out.println("CRS source " + sds_4326.getCRS().toWkt());
 
 		SpatialDataSourceDecorator transformedSDS = new SpatialDataSourceDecorator(
-				dsTransform);
-
+				dsf.getDataSource("target"));
 		transformedSDS.open();
 
-		for (int i = 0; i < transformedSDS.getRowCount(); i++) {			
+		for (int i = 0; i < transformedSDS.getRowCount(); i++) {
 			Geometry geomTrans = transformedSDS.getGeometry(i);
 			assertTrue(sds_4326.getGeometry(i).equals(geomTrans));
 		}
+
+		System.out.println("CRS target " + transformedSDS.getCRS().toWkt());
 		transformedSDS.close();
 		sds_4326.close();
 
 	}
-
 }
+*/

@@ -50,6 +50,7 @@ import org.gdms.sql.function.FunctionManager;
 import org.gdms.sql.strategies.IncompatibleTypesException;
 import org.gdms.sql.strategies.ProjectionOp;
 import org.gdms.sql.strategies.ProjectionOp.StarElement;
+import org.orbisgis.progress.IProgressMonitor;
 
 public class FunctionOperator extends AbstractOperator implements Expression {
 
@@ -74,7 +75,7 @@ public class FunctionOperator extends AbstractOperator implements Expression {
 		this.name = name;
 	}
 
-	public Value evaluateExpression() throws EvaluationException {
+	public Value evaluateExpression(IProgressMonitor pm) throws EvaluationException {
 		Function fnc = getFunction();
 		try {
 			if (lastCall) {
@@ -87,7 +88,7 @@ public class FunctionOperator extends AbstractOperator implements Expression {
 			} else {
 				Value[] args = new Value[getChildCount()];
 				for (int i = 0; i < args.length; i++) {
-					args[i] = getChild(i).evaluate();
+					args[i] = getChild(i).evaluate(pm);
 				}
 				lastReturnValue = fnc.evaluate(args);
 				return lastReturnValue;
@@ -114,10 +115,11 @@ public class FunctionOperator extends AbstractOperator implements Expression {
 	}
 
 	public Type getType() throws DriverException {
-		Type[] argsTypes = getArgumentsTypes();
+		Type[] argsTypes = getArgumentsTypes();		
 		return getFunction().getType(argsTypes);
 	}
-
+	
+	
 	private Type[] getArgumentsTypes() throws DriverException {
 		Type[] argsTypes = new Type[getChildCount()];
 		for (int i = 0; i < argsTypes.length; i++) {

@@ -71,6 +71,9 @@ import org.gdms.sql.function.spatial.geometry.convert.ST_InteriorPoint;
 import org.gdms.sql.function.spatial.geometry.convert.ST_PointsToLine;
 import org.gdms.sql.function.spatial.geometry.convert.ST_ToMultiLine;
 import org.gdms.sql.function.spatial.geometry.convert.ST_ToMultiPoint;
+import org.gdms.sql.function.spatial.geometry.convert.ST_ToMultiSegments;
+import org.gdms.sql.function.spatial.geometry.create.ST_AddPoint;
+import org.gdms.sql.function.spatial.geometry.create.ST_AddPoints;
 import org.gdms.sql.function.spatial.geometry.create.ST_Boundary;
 import org.gdms.sql.function.spatial.geometry.create.ST_BoundingCircle;
 import org.gdms.sql.function.spatial.geometry.create.ST_Densify;
@@ -78,6 +81,7 @@ import org.gdms.sql.function.spatial.geometry.create.ST_MakeLine;
 import org.gdms.sql.function.spatial.geometry.create.ST_MakePoint;
 import org.gdms.sql.function.spatial.geometry.create.ST_MinimumRectangle;
 import org.gdms.sql.function.spatial.geometry.create.ST_OctogonalEnvelope;
+import org.gdms.sql.function.spatial.geometry.create.ST_RemoveRepeatedPoints;
 import org.gdms.sql.function.spatial.geometry.distance.ST_NearestPoints;
 import org.gdms.sql.function.spatial.geometry.edit.ST_AddZToGeometry;
 import org.gdms.sql.function.spatial.geometry.edit.ST_Normalize;
@@ -251,6 +255,10 @@ public class FunctionManager {
 		addFunction(ST_RasterAlgebra.class);
 		addFunction(ST_Count.class);
 		addFunction(ST_Shadow.class);
+		addFunction(ST_ToMultiSegments.class);
+		addFunction(ST_RemoveRepeatedPoints.class);
+		addFunction(ST_AddPoint.class);
+		addFunction(ST_AddPoints.class);
 	}
 
 	public static void addFunctionManagerListener(

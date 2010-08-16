@@ -38,6 +38,7 @@ package org.gdms.sql.evaluator;
 
 import org.gdms.data.values.Value;
 import org.gdms.sql.strategies.IncompatibleTypesException;
+import org.orbisgis.progress.IProgressMonitor;
 
 public class Sum extends ArithmeticOperator {
 
@@ -45,9 +46,9 @@ public class Sum extends ArithmeticOperator {
 		super(children);
 	}
 
-	public Value evaluateExpression() throws EvaluationException,
+	public Value evaluateExpression(IProgressMonitor pm) throws EvaluationException,
 			IncompatibleTypesException {
-		return getLeftOperator().evaluate().suma(getRightOperator().evaluate());
+		return getLeftOperator().evaluate(pm).suma(getRightOperator().evaluate(pm));
 	}
 
 	@Override

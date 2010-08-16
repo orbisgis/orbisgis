@@ -1,4 +1,4 @@
-package org.orbisgis.core.map.projection;
+/*package org.orbisgis.core.map.projection;
 
 import java.awt.BorderLayout;
 
@@ -88,3 +88,4 @@ public class ProjectionTab extends JPanel {
 	}
 
 }
+*/

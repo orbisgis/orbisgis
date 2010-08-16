@@ -50,6 +50,7 @@ import org.gdms.sql.parser.SQLEngine;
 import org.gdms.sql.parser.SimpleNode;
 import org.gdms.sql.parser.Token;
 import org.orbisgis.progress.IProgressMonitor;
+import org.orbisgis.progress.NullProgressMonitor;
 
 public class SQLProcessor {
 
@@ -93,8 +94,8 @@ public class SQLProcessor {
 		}
 	}
 
-	private Operator parse(String sql) throws ParseException,
-			SemanticException, DriverException {
+	public Operator parse(String sql) throws ParseException, SemanticException,
+			DriverException {
 		if (!sql.trim().endsWith(";")) {
 			sql += ";";
 		}

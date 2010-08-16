@@ -80,8 +80,7 @@ public class CreateIndexOperator extends AbstractExpressionOperator implements
 	}
 
 	@Override
-	protected Expression[] getExpressions() throws DriverException,
-			SemanticException {
+	protected Expression[] getExpressions() {
 		return new Expression[] { new Field(fieldName) };
 	}
 

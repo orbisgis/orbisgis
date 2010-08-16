@@ -66,6 +66,7 @@ import org.orbisgis.core.renderer.symbol.SymbolFactory;
 import org.orbisgis.core.ui.editors.map.tool.ToolManager;
 import org.orbisgis.core.ui.editors.map.tool.TransitionException;
 import org.orbisgis.core.ui.pluginSystem.PlugInContext;
+import org.orbisgis.utils.I18N;
 
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.Polygon;
@@ -175,6 +176,6 @@ public class FencePolygonTool extends AbstractPolygonTool {
 	}
 
 	public String getName() {
-		return "Draw a fence";
+		return I18N.getText("orbisgis.core.ui.editors.map.tool.fence");
 	}
 }

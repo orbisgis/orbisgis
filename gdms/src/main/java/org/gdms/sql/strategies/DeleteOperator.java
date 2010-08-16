@@ -59,27 +59,20 @@ import org.orbisgis.utils.I18N;
 public class DeleteOperator extends AbstractExpressionOperator implements
 		Operator {
 
-	private ArrayList<Field> fields = new ArrayList<Field>();
-	private ArrayList<Expression> values = new ArrayList<Expression>();
-	private Expression filterExpression;
+	private Expression[] expressions = new Expression[0];
 
 	@Override
-	protected Expression[] getExpressions() throws DriverException,
-			SemanticException {
-		ArrayList<Expression> ret = new ArrayList<Expression>();
-		ret.addAll(fields);
-		ret.addAll(values);
-		if (filterExpression != null) {
-			ret.add(filterExpression);
-		}
+	protected Expression[] getExpressions() {
+		return expressions;
+	}
 
-		return ret.toArray(new Expression[0]);
+	public void setExpressions(Expression... expressions) {
+		this.expressions = expressions;
 	}
 
 	public ObjectDriver getResultContents(IProgressMonitor pm)
 			throws ExecutionException {
 		ObjectDriver source = getOperator(0).getResult(pm);
-
 		try {
 			Field[] fieldReferences = getFieldReferences();
 			DefaultFieldContext selectionFieldContext = new DefaultFieldContext(
@@ -91,8 +84,7 @@ public class DeleteOperator extends AbstractExpressionOperator implements
 			ArrayList<Integer> indexes = new ArrayList<Integer>();
 			for (int i = 0; i < source.getRowCount(); i++) {
 				selectionFieldContext.setIndex(i);
-				if ((filterExpression == null)
-						|| evaluatesToTrue(new Expression[] { filterExpression })) {
+				if ((expressions == null) || evaluatesToTrue(expressions, pm)) {
 					indexes.add(i);
 				}
 			}
@@ -145,10 +137,10 @@ public class DeleteOperator extends AbstractExpressionOperator implements
 		return null;
 	}
 
-	private boolean evaluatesToTrue(Expression[] exprs)
+	private boolean evaluatesToTrue(Expression[] exprs, IProgressMonitor pm)
 			throws EvaluationException {
 		for (Expression expression : exprs) {
-			if (!evaluatesToTrue(expression)) {
+			if (!evaluatesToTrue(expression, pm)) {
 				return false;
 			}
 		}
@@ -156,9 +148,10 @@ public class DeleteOperator extends AbstractExpressionOperator implements
 		return true;
 	}
 
-	private static boolean evaluatesToTrue(Expression expression)
-			throws IncompatibleTypesException, EvaluationException {
-		Value expressionResult = expression.evaluate();
+	private static boolean evaluatesToTrue(Expression expression,
+			IProgressMonitor pm) throws IncompatibleTypesException,
+			EvaluationException {
+		Value expressionResult = expression.evaluate(pm);
 		return !expressionResult.isNull() && expressionResult.getAsBoolean();
 	}
 

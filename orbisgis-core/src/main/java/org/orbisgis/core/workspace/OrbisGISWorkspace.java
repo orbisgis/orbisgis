@@ -55,7 +55,6 @@ import org.orbisgis.core.DataManager;
 import org.orbisgis.core.OrbisgisCoreServices;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.configuration.BasicConfiguration;
-import org.orbisgis.core.errorManager.ErrorManager;
 import org.orbisgis.core.images.IconLoader;
 import org.orbisgis.core.sif.UIFactory;
 import org.orbisgis.core.ui.configuration.EPConfigHelper;
@@ -69,10 +68,8 @@ public class OrbisGISWorkspace implements WorkspaceListener {
 
 	private RefreshViewFunctionManagerListener refreshFMListener = new RefreshViewFunctionManagerListener();
 	Workspace workspace;
-	private final ErrorManager errorService;
 
 	public OrbisGISWorkspace() {
-		errorService = Services.getService(ErrorManager.class);
 		initializeWorkspace();
 		workspace = Services.getService(Workspace.class);
 		workspace.addWorkspaceListener(this);
