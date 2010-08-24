@@ -691,7 +691,7 @@ public class PostgreSQLDriver extends DefaultDBDriver {
 		schemas.remove("pg_catalog");
 		schemas.remove("pg_toast_temp_1");
 
-		return schemas.toArray(new String[0]);
+		return schemas.toArray(new String[schemas.size()]);
 	}
 
 }
