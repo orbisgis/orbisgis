@@ -105,7 +105,7 @@ public class ExpressionBasedAlphaQuery implements ExpressionBasedIndexQuery,
 		addFields(ret, min);
 		addFields(ret, max);
 
-		return ret.toArray(new Field[0]);
+		return ret.toArray(new Field[ret.size()]);
 	}
 
 	private void addFields(ArrayList<Field> ret, Expression expression) {
