@@ -51,7 +51,7 @@ public class MultipleEditionEvent {
 	}
 
 	public EditionEvent[] getEvents() {
-		return events.toArray(new EditionEvent[0]);
+		return events.toArray(new EditionEvent[events.size()]);
 	}
 
 }
