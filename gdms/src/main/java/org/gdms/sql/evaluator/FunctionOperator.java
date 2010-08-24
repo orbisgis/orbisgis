@@ -111,7 +111,7 @@ public class FunctionOperator extends AbstractOperator implements Expression {
 		}
 		ret.add(this);
 
-		return ret.toArray(new FunctionOperator[0]);
+		return ret.toArray(new FunctionOperator[ret.size()]);
 	}
 
 	public Type getType() throws DriverException {

@@ -63,7 +63,7 @@ public abstract class AbstractOperator extends AbstractExpression implements
 			}
 		}
 
-		return ret.toArray(new Field[0]);
+		return ret.toArray(new Field[ret.size()]);
 	}
 
 	public FunctionOperator[] getFunctionReferences() {
@@ -75,7 +75,7 @@ public abstract class AbstractOperator extends AbstractExpression implements
 			}
 		}
 
-		return ret.toArray(new FunctionOperator[0]);
+		return ret.toArray(new FunctionOperator[ret.size()]);
 	}
 
 	public Expression getChild(int index) {
@@ -139,7 +139,7 @@ public abstract class AbstractOperator extends AbstractExpression implements
 			Collections.addAll(ret, subqueries);
 		}
 
-		return ret.toArray(new Operator[0]);
+		return ret.toArray(new Operator[ret.size()]);
 	}
 
 	protected abstract Value evaluateExpression(IProgressMonitor pm)
