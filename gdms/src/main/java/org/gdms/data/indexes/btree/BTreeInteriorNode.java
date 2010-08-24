@@ -592,7 +592,7 @@ public class BTreeInteriorNode extends AbstractBTreeNode implements BTreeNode {
 
 		// Write a ValueCollection with the used values
 		ValueCollection vc = ValueFactory.createValue(values
-				.toArray(new Value[0]));
+				.toArray(new Value[values.size()]));
 		byte[] valuesBytes = vc.getBytes();
 		dos.writeInt(valuesBytes.length);
 		dos.write(valuesBytes);
@@ -773,7 +773,7 @@ public class BTreeInteriorNode extends AbstractBTreeNode implements BTreeNode {
 			}
 		}
 
-		return ret.toArray(new Value[0]);
+		return ret.toArray(new Value[ret.size()]);
 	}
 
 	public Value getSmallestValue() throws IOException {
