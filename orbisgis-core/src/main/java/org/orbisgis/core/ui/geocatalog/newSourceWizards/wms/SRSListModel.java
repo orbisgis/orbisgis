@@ -45,7 +45,7 @@ public class SRSListModel extends AbstractListModel implements ListModel {
 					names.add(srsName);
 				}
 			}
-			this.srsNames = names.toArray(new String[0]);
+			this.srsNames = names.toArray(new String[names.size()]);
 
 		}
 
