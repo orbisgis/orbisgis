@@ -120,7 +120,6 @@ public class MapControl extends JComponent implements ComponentListener,
 	Automaton defaultTool;
 
 	public MapControl() {
-
 	}
 
 	/**
@@ -386,7 +385,7 @@ public class MapControl extends JComponent implements ComponentListener,
 				mapContext.setBoundingBox(mapTransform.getExtent());
 				WorkbenchContext wbContext = Services
 						.getService(WorkbenchContext.class);
-				wbContext.setLastAction("Update toolbar");				
+				wbContext.setLastAction("Update toolbar");
 			}
 		}
 
@@ -549,7 +548,7 @@ public class MapControl extends JComponent implements ComponentListener,
 	}
 
 	@Override
-	public void componentRemoved(ContainerEvent e) {		
+	public void componentRemoved(ContainerEvent e) {
 
 	}
 
