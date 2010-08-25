@@ -214,7 +214,8 @@ public class AutoCompletionVisitor extends AbstractVisitor {
 										.getType(
 												primaryPrefix,
 												previousSuffixes
-														.toArray(new ASTPrimarySuffix[0]));
+														.toArray(new ASTPrimarySuffix[previousSuffixes
+																.size()]));
 								completeMembersOfClass(prefix, type);
 							} catch (SecurityException e) {
 								logger.warn(EXCEPTION_MSG, e);
@@ -300,6 +301,6 @@ public class AutoCompletionVisitor extends AbstractVisitor {
 	}
 
 	public Option[] getOptions() {
-		return options.toArray(new Option[0]);
+		return options.toArray(new Option[options.size()]);
 	}
 }

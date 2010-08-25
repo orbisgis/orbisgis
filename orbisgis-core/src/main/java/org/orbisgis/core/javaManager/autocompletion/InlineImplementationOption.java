@@ -85,6 +85,6 @@ public class InlineImplementationOption extends AbstractPrefixedOption
 
 	@Override
 	public ImportOption[] getImports() {
-		return imports.toArray(new ImportOption[0]);
+		return imports.toArray(new ImportOption[imports.size()]);
 	}
 }

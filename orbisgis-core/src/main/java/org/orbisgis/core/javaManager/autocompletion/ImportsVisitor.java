@@ -73,7 +73,7 @@ public class ImportsVisitor extends AbstractVisitor {
 		}
 
 		// sort entries
-		String[] retImps = imps.toArray(new String[0]);
+		String[] retImps = imps.toArray(new String[imps.size()]);
 		Arrays.sort(retImps);
 
 		String ret = "";

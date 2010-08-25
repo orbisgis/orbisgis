@@ -260,7 +260,7 @@ public class CompletionUtils {
 				ret.add(etv.getType());
 			}
 
-			return ret.toArray(new Class<?>[0]);
+			return ret.toArray(new Class<?>[ret.size()]);
 		}
 	}
 
