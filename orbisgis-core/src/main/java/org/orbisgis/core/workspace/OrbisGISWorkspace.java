@@ -151,7 +151,7 @@ public class OrbisGISWorkspace implements WorkspaceListener {
 		boolean ret;
 		if (memoryResources.size() > 0) {
 			String resourceList = CollectionUtils
-					.getCommaSeparated(memoryResources.toArray(new String[0]));
+					.getCommaSeparated(memoryResources.toArray(new String[memoryResources.size()]));
 
 			int exit = JOptionPane
 					.showConfirmDialog(
