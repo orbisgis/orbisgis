@@ -85,7 +85,7 @@ public class WorkspaceFolderPanel extends JPanel implements UIPanel {
 		panel = new JPanel(new BorderLayout());
 		JLabel label = new JLabel(I18N.getText("orbisgis.core.ui.workspace")
 				+ " : ");
-		combobox = new JComboBox(workspaces.toArray(new String[0]));
+		combobox = new JComboBox(workspaces.toArray(new String[workspaces.size()]));
 		combobox.addActionListener(new ActionListener() {
 
 			@Override
