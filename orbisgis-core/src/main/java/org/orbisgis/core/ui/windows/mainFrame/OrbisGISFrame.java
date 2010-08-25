@@ -41,6 +41,7 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.Insets;
 import java.awt.Rectangle;
 import java.awt.Toolkit;
 import java.awt.event.WindowAdapter;
@@ -55,6 +56,7 @@ import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.Map;
 
+import javax.swing.BorderFactory;
 import javax.swing.JFrame;
 import javax.swing.JMenuBar;
 import javax.swing.JPanel;
@@ -218,8 +220,15 @@ public class OrbisGISFrame extends JFrame implements IWindow {
 		// Initialize views
 		root = new RootWindow(viewSerializer);
 
+		root.getRootWindowProperties().getComponentProperties().setInsets(
+				new Insets(0, 0, 0, 0));
 		root.getRootWindowProperties().getSplitWindowProperties()
 				.setContinuousLayoutEnabled(false);
+
+		root.getRootWindowProperties().getWindowAreaProperties().setInsets(
+				new Insets(0, 0, 0, 0));
+		root.getRootWindowProperties().getWindowAreaProperties().setBorder(
+				BorderFactory.createEmptyBorder());
 
 		root.getRootWindowProperties().getTabWindowProperties()
 				.getTabProperties().getFocusedProperties()
@@ -468,7 +477,7 @@ public class OrbisGISFrame extends JFrame implements IWindow {
 	/**
 	 * Writes the id of the view and then writes the status. Reads the id,
 	 * obtains the data from the extension xml and reads the status
-	 *
+	 * 
 	 */
 	private class MyViewSerializer implements ViewSerializer {
 
