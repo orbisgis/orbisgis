@@ -244,7 +244,7 @@ public class OrbisConfiguration implements Setup {
 	// Tool bar on map
 	private ShowXYPlugIn showXYPlugIn = new ShowXYPlugIn();
 	// Scale panel plugin is a swing component to execute action on map editor
-	private ScalePlugIn scalePlugIn = new ScalePlugIn();
+	//private ScalePlugIn scalePlugIn = new ScalePlugIn();
 	//private CoordinateReferenceSystemPlugIn CRSPlugIn = new CoordinateReferenceSystemPlugIn();
 
 	// right click on Map
@@ -442,7 +442,7 @@ public class OrbisConfiguration implements Setup {
 		createSourceFromSelectionPlugIn.initialize(plugInContext);
 
 		// Map tools
-		scalePlugIn.initialize(plugInContext);
+		//scalePlugIn.initialize(plugInContext);
 		showXYPlugIn.initialize(plugInContext);
 		// CRSPlugIn.initialize(plugInContext);
 
