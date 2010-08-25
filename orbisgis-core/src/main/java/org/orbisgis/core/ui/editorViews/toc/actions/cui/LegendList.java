@@ -275,7 +275,7 @@ public class LegendList extends JPanel {
 			}
 		}
 		LegendPicker legendPicker = new LegendPicker(paneNames
-				.toArray(new String[0]), ids.toArray(new ILegendPanel[0]));
+				.toArray(new String[paneNames.size()]), ids.toArray(new ILegendPanel[ids.size()]));
 
 		if (UIFactory.showDialog(legendPicker)) {
 			ILegendPanel panel = (ILegendPanel) legendPicker.getSelected();
