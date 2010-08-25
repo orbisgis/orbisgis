@@ -129,7 +129,7 @@ class SymbolComposite extends AbstractSymbol implements Symbol {
 			}
 		}
 
-		return new SymbolComposite(newSymbols.toArray(new Symbol[0]));
+		return new SymbolComposite(newSymbols.toArray(new Symbol[newSymbols.size()]));
 	}
 
 }
