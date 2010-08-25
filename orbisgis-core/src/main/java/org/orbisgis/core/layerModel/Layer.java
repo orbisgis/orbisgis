@@ -216,7 +216,7 @@ public class Layer extends GdmsLayer {
 				ret.add(legendDecorator);
 			}
 		}
-		return ret.toArray(new Legend[0]);
+		return ret.toArray(new Legend[ret.size()]);
 	}
 
 	public Legend[] getVectorLegend() throws DriverException {
@@ -434,7 +434,7 @@ public class Layer extends GdmsLayer {
 				fieldLegends.add(legend);
 			}
 			try {
-				setLegend(fieldName, fieldLegends.toArray(new Legend[0]));
+				setLegend(fieldName, fieldLegends.toArray(new Legend[fieldLegends.size()]));
 			} catch (DriverException e) {
 				throw new LayerException("Cannot restore legends", e);
 			}

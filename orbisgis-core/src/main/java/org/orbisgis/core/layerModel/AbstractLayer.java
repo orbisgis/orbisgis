@@ -151,7 +151,7 @@ public abstract class AbstractLayer implements ILayer {
 			}
 		}
 
-		return ret.toArray(new ILayer[0]);
+		return ret.toArray(new ILayer[ret.size()]);
 	}
 
 	public ILayer[] getLayerPath() {
@@ -169,7 +169,7 @@ public abstract class AbstractLayer implements ILayer {
 			path2.add(i, path.get(l - i - 1));
 		}
 
-		return path2.toArray(new ILayer[0]);
+		return path2.toArray(new ILayer[path2.size()]);
 	}
 
 	public void moveTo(ILayer layer, int index) throws LayerException {

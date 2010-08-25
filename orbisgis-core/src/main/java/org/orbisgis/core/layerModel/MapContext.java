@@ -41,6 +41,7 @@ import java.awt.image.BufferedImage;
 import org.orbisgis.progress.IProgressMonitor;
 
 import com.vividsolutions.jts.geom.Envelope;
+
 /**
  * This interface provides information to the tool system and receives
  * notifications from it. Also registers the tool system as a listener in order
@@ -81,6 +82,14 @@ public interface MapContext {
 	 * @param listener
 	 */
 	public void addMapContextListener(MapContextListener listener);
+
+	/**
+	 * This method is uses instead of get id to have a unique id for a
+	 * mapcontext that cannot change.Based on time creation
+	 * 
+	 * @return a unique identifier for the mapContext
+	 */
+	long getIdTime();
 
 	/**
 	 * Get the mapcontext boundingbox (visible layers)
@@ -201,14 +210,14 @@ public interface MapContext {
 	 * 
 	 * @return
 	 */
-	
-	//CoordinateReferenceSystem getCoordinateReferenceSystem();
 
-	
+	// CoordinateReferenceSystem getCoordinateReferenceSystem();
+
 	/**
 	 * set the {@link CoordinateReferenceSystem} to the mapcontext
 	 * 
 	 * @param crs
 	 */
-	//void setCoordinateReferenceSystem(CoordinateReferenceSystem crs);
+	// void setCoordinateReferenceSystem(CoordinateReferenceSystem crs);
+
 }
