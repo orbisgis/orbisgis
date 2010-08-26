@@ -62,7 +62,7 @@ public class InsertOperator extends AbstractExpressionOperator implements
 
 	@Override
 	protected Expression[] getExpressions() throws DriverException {
-		return getFields().toArray(new Expression[0]);
+		return getFields().toArray(new Expression[getFields().size()]);
 	}
 
 	private ArrayList<Expression> getFields() throws DriverException {
@@ -142,9 +142,11 @@ public class InsertOperator extends AbstractExpressionOperator implements
 					+ "number of values and fields");
 		}
 
+		// TODO take into account function operator
 		for (int i = 0; i < getFields().size(); i++) {
-			if (getFields().get(i).getType().getTypeCode() != values.get(i)
-					.getType().getTypeCode()) {
+			Expression exp = values.get(i);
+			if (getFields().get(i).getType().getTypeCode() != exp.getType()
+					.getTypeCode()) {
 				throw new IncompatibleTypesException("The types in the " + i
 						+ "th assignment are not the same");
 			}

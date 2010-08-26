@@ -186,9 +186,9 @@ public class LogicTreeBuilder {
 			InsertOperator ret = new InsertOperator();
 			ret.addChild(top);
 			int valueStartIndex;
-			if (node.jjtGetChild(1) instanceof ASTSQLId) {
+			if (node.jjtGetChild(1) instanceof ASTSQLIdSequence) {
 				int i = 1;
-				while (node.jjtGetChild(i) instanceof ASTSQLId) {
+				while (node.jjtGetChild(i) instanceof ASTSQLIdSequence) {
 					ret.addField(getId(node.jjtGetChild(i)));
 					i++;
 				}
