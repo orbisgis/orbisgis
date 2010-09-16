@@ -35,7 +35,7 @@ public class MapContextDemo {
 		MapContext mc = new DefaultMapContext();
 		mc.open(null);
 		ILayer layer = getDataManager().createLayer(
-				new File("src/test/resources/bv_sap.shp"));
+				new File("src/test/resources/data/bv_sap.shp"));
 		mc.getLayerModel().addLayer(layer);
 
 		DefaultMetadata metadata = new DefaultMetadata(new Type[] {

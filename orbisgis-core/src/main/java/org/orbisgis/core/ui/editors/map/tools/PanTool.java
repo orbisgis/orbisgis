@@ -73,6 +73,7 @@ import org.orbisgis.core.ui.editors.map.tool.ToolManager;
 import org.orbisgis.core.ui.editors.map.tool.TransitionException;
 import org.orbisgis.core.ui.editors.map.tools.generated.Pan;
 import org.orbisgis.core.ui.pluginSystem.PlugInContext;
+import org.orbisgis.utils.I18N;
 
 import com.vividsolutions.jts.geom.Envelope;
 
@@ -83,7 +84,7 @@ import com.vividsolutions.jts.geom.Envelope;
 public class PanTool extends Pan {
 
 	AbstractButton button;
-	
+
 	public AbstractButton getButton() {
 		return button;
 	}
@@ -91,7 +92,7 @@ public class PanTool extends Pan {
 	public void setButton(AbstractButton button) {
 		this.button = button;
 	}
-	
+
 	public void update(Observable o, Object arg) {
 		PlugInContext.checkTool(this);
 	}
@@ -100,14 +101,14 @@ public class PanTool extends Pan {
 
 	/**
 	 * @see org.orbisgis.plugins.core.ui.editors.map.tools.generated.estouro.tools.generated.Pan#transitionTo_Standby()
-	 */	
+	 */
 	public void transitionTo_Standby(MapContext vc, ToolManager tm)
 			throws TransitionException {
 	}
 
 	/**
 	 * @see org.orbisgis.plugins.core.ui.editors.map.tools.generated.estouro.tools.generated.Pan#transitionTo_OnePointLeft()
-	 */	
+	 */
 	public void transitionTo_OnePointLeft(MapContext vc, ToolManager tm)
 			throws TransitionException {
 		firstPoint = tm.getValues();
@@ -117,7 +118,7 @@ public class PanTool extends Pan {
 	 * @throws FinishedAutomatonException
 	 * @throws NoSuchTransitionException
 	 * @see org.orbisgis.plugins.core.ui.editors.map.tools.generated.estouro.tools.generated.Pan#transitionTo_RectangleDone()
-	 */	
+	 */
 	public void transitionTo_RectangleDone(MapContext vc, ToolManager tm)
 			throws TransitionException, FinishedAutomatonException {
 		double[] v = tm.getValues();
@@ -134,20 +135,20 @@ public class PanTool extends Pan {
 
 	/**
 	 * @see org.orbisgis.plugins.core.ui.editors.map.tools.generated.estouro.tools.generated.Pan#transitionTo_Cancel()
-	 */	
+	 */
 	public void transitionTo_Cancel(MapContext vc, ToolManager tm)
 			throws TransitionException {
 	}
 
 	/**
 	 * @see org.orbisgis.plugins.core.ui.editors.map.tools.generated.estouro.tools.generated.Pan#drawIn_Standby(java.awt.Graphics)
-	 */	
+	 */
 	public void drawIn_Standby(Graphics g, MapContext vc, ToolManager tm) {
 	}
 
 	/**
 	 * @see org.orbisgis.plugins.core.ui.editors.map.tools.generated.estouro.tools.generated.Pan#drawIn_OnePointLeft(java.awt.Graphics)
-	 */	
+	 */
 	public void drawIn_OnePointLeft(Graphics g, MapContext vc, ToolManager tm) {
 		Point p = tm.getMapTransform().fromMapPoint(
 				new Point2D.Double(firstPoint[0], firstPoint[1]));
@@ -160,13 +161,13 @@ public class PanTool extends Pan {
 
 	/**
 	 * @see org.orbisgis.plugins.core.ui.editors.map.tools.generated.estouro.tools.generated.Pan#drawIn_RectangleDone(java.awt.Graphics)
-	 */	
+	 */
 	public void drawIn_RectangleDone(Graphics g, MapContext vc, ToolManager tm) {
 	}
 
 	/**
 	 * @see org.orbisgis.plugins.core.ui.editors.map.tools.generated.estouro.tools.generated.Pan#drawIn_Cancel(java.awt.Graphics)
-	 */	
+	 */
 	public void drawIn_Cancel(Graphics g, MapContext vc, ToolManager tm) {
 	}
 
@@ -177,9 +178,8 @@ public class PanTool extends Pan {
 	public boolean isVisible(MapContext vc, ToolManager tm) {
 		return true;
 	}
-	
-		
+
 	public String getName() {
-		return "Move the map";
+		return I18N.getText("orbisgis.core.ui.editors.map.tool.pan_tooltip");
 	}
 }

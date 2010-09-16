@@ -55,9 +55,9 @@ import org.gdms.data.types.TypeDefinition;
 import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
+import org.gdms.driver.DiskBufferDriver;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.generic.GenericObjectDriver;
-import org.gdms.sql.strategies.DiskBufferDriver;
 
 /**
  * DOCUMENT ME!

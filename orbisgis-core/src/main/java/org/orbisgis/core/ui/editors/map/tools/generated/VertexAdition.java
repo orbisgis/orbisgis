@@ -50,6 +50,7 @@ import org.orbisgis.core.ui.editors.map.tool.FinishedAutomatonException;
 import org.orbisgis.core.ui.editors.map.tool.NoSuchTransitionException;
 import org.orbisgis.core.ui.editors.map.tool.ToolManager;
 import org.orbisgis.core.ui.editors.map.tool.TransitionException;
+import org.orbisgis.utils.I18N;
 
 public abstract class VertexAdition implements Automaton {
 
@@ -250,15 +251,15 @@ public abstract class VertexAdition implements Automaton {
 	public String getMessage() {
 
 		if ("Standby".equals(status)) {
-			return Messages.getString("vertexAdition_standby");
+			return I18N.getText("orbisgis.core.ui.editors.map.tool.vertexAdition_standby");
 		}
 
 		if ("Done".equals(status)) {
-			return Messages.getString("");
+			return "";
 		}
 
 		if ("Cancel".equals(status)) {
-			return Messages.getString("");
+			return "";
 		}
 
 		throw new RuntimeException();
@@ -269,7 +270,7 @@ public abstract class VertexAdition implements Automaton {
 	}
 
 	public String getTooltip() {
-		return Messages.getString("vertexAdition_tooltip");
+		return I18N.getText("orbisgis.core.ui.editors.map.tool.vertexAdition_tooltip");
 	}
 
 	private ImageIcon mouseCursor;

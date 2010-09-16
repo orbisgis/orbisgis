@@ -75,7 +75,6 @@ import org.orbisgis.core.ui.plugins.actions.ExitPlugIn;
 //import org.orbisgis.core.ui.plugins.demo.extensions.tocMenu.MyTOCMenu;
 //import org.orbisgis.core.ui.plugins.demo.extensions.tocMenu.MyTOCMenu;
 import org.orbisgis.core.ui.plugins.editors.mapEditor.ClearMapSelectionPlugIn;
-import org.orbisgis.core.ui.plugins.editors.mapEditor.CoordinateReferenceSystemPlugIn;
 import org.orbisgis.core.ui.plugins.editors.mapEditor.CreateSourceFromMapSelectionPlugIn;
 import org.orbisgis.core.ui.plugins.editors.mapEditor.DeleteMapSelectionPlugIn;
 import org.orbisgis.core.ui.plugins.editors.mapEditor.ExportMapAsImagePlugIn;
@@ -113,7 +112,7 @@ import org.orbisgis.core.ui.plugins.status.FreeDefaultWorkspacePlugIn;
 import org.orbisgis.core.ui.plugins.status.WorkspaceNamePlugin;
 import org.orbisgis.core.ui.plugins.toc.CreateChoroplethPlugIn;
 import org.orbisgis.core.ui.plugins.toc.CreateGroupPlugIn;
-import org.orbisgis.core.ui.plugins.toc.EditRulePlugIn;
+import org.orbisgis.core.ui.plugins.toc.EditFeatureTypeStylePlugIn;
 import org.orbisgis.core.ui.plugins.toc.ExportFeatureTypeStylePlugIn;
 import org.orbisgis.core.ui.plugins.toc.GroupLayersPlugIn;
 import org.orbisgis.core.ui.plugins.toc.ImportFeatureTypeStylePlugIn;
@@ -175,11 +174,12 @@ public class OrbisConfiguration implements Setup {
 
 	// TOC
 	//private EditLegendPlugIn editLegendPlugIn = new EditLegendPlugIn();
+	private EditFeatureTypeStylePlugIn editFts = new EditFeatureTypeStylePlugIn();
     private ImportFeatureTypeStylePlugIn importFTSPlugIn = new ImportFeatureTypeStylePlugIn();
     private ExportFeatureTypeStylePlugIn exportFTSPlugIn = new ExportFeatureTypeStylePlugIn();
     private CreateChoroplethPlugIn createChoroPlugIn = new CreateChoroplethPlugIn();
-	private EditRulePlugIn editRulePlugIn = new EditRulePlugIn();
     private SwitchToDraftPlugIn switchDraft = new SwitchToDraftPlugIn();
+
 	private RasterDefaultStylePlugIn rasterDefaultStylePlugIn = new RasterDefaultStylePlugIn();
 	private SetnodataValuePlugIn setnodataValuePlugIn = new SetnodataValuePlugIn();
 	private RasterThresholdPlugIn rasterThresholdPlugIn = new RasterThresholdPlugIn();
@@ -260,7 +260,7 @@ public class OrbisConfiguration implements Setup {
 	private ShowXYPlugIn showXYPlugIn = new ShowXYPlugIn();
 	// Scale panel plugin is a swing component to execute action on map editor
 	private ScalePlugIn scalePlugIn = new ScalePlugIn();
-	private CoordinateReferenceSystemPlugIn CRSPlugIn = new CoordinateReferenceSystemPlugIn();
+	//private CoordinateReferenceSystemPlugIn CRSPlugIn = new CoordinateReferenceSystemPlugIn();
 
 	// right click on Map
 	private ExportMapAsImagePlugIn exportMasAsImagePlugIn = new ExportMapAsImagePlugIn();
@@ -308,10 +308,10 @@ public class OrbisConfiguration implements Setup {
 		try {
 			// TOC popup
 			//editLegendPlugIn.initialize(context);
+            editFts.initialize(context);
             importFTSPlugIn.initialize(context);
             exportFTSPlugIn.initialize(context);
 			createChoroPlugIn.initialize(context);
-			editRulePlugIn.initialize(context);
             switchDraft.initialize(context);
 			rasterDefaultStylePlugIn.initialize(context);
 			setnodataValuePlugIn.initialize(context);

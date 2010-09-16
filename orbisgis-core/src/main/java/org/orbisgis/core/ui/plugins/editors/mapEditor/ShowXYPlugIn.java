@@ -59,13 +59,15 @@ public class ShowXYPlugIn extends AbstractPlugIn {
 	private JLabel showXY;
 	private final static int MAX_DIGIT = 7;
 
+	@Override
 	public boolean execute(PlugInContext context) throws Exception {
 		return true;
 	}
 
 	private MouseMotionAdapter mouseMotionAdapter = new MouseMotionAdapter() {
+		@Override
 		public void mouseMoved(MouseEvent e) {
-			String xCoord = "", yCoord = "";
+			String xCoord = "", yCoord = "", scale = "";
 			ToolManager toolManager = getPlugInContext().getToolManager();
 			if (toolManager != null) {
 				Point2D point = toolManager.getLastRealMousePosition();
@@ -78,11 +80,13 @@ public class ShowXYPlugIn extends AbstractPlugIn {
 						yCoord = "Y:" + (int) point.getY();
 					//}
 				}
+				scale = "1:" + (int)toolManager.getMapTransform().getScaleDenominator();
 			}
-			showXY.setText(xCoord + "  ," + yCoord);
+			showXY.setText(xCoord + "  ," + yCoord + "  ," + scale);
 		}
 	};
 
+	@Override
 	public void initialize(final PlugInContext context) throws Exception {
 		showXY = new JLabel();
 		showXY.setEnabled(false);
@@ -94,6 +98,7 @@ public class ShowXYPlugIn extends AbstractPlugIn {
 
 	}
 
+	@Override
 	public boolean isEnabled() {
 		showXY.setText("0.0     0.0");
 		boolean isVisible = false;

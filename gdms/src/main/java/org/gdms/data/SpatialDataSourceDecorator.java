@@ -37,13 +37,8 @@
  */
 package org.gdms.data;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.gdms.data.feature.Feature;
 import org.gdms.data.metadata.MetadataUtilities;
-import org.gdms.data.types.CRSConstraint;
-import org.gdms.data.types.Constraint;
 import org.gdms.data.types.Type;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
@@ -55,14 +50,9 @@ import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
 
-import fr.cts.crs.CoordinateReferenceSystem;
-import fr.cts.crs.NullCRS;
-
 public class SpatialDataSourceDecorator extends AbstractDataSourceDecorator {
 
 	private int spatialFieldIndex = -1;
-
-	private Map<String, CoordinateReferenceSystem> crsMap = new HashMap<String, CoordinateReferenceSystem>();
 
 	public SpatialDataSourceDecorator(DataSource dataSource) {
 		super(dataSource);
@@ -204,6 +194,7 @@ public class SpatialDataSourceDecorator extends AbstractDataSourceDecorator {
 		}
 	}
 
+	
 	/**
 	 * Returns the CRS of the geometric field that is given as parameter
 	 * 
@@ -212,7 +203,7 @@ public class SpatialDataSourceDecorator extends AbstractDataSourceDecorator {
 	 * @return
 	 * @throws DriverException
 	 */
-	public CoordinateReferenceSystem getCRS() throws DriverException {
+	/*public CoordinateReferenceSystem getCRS() throws DriverException {
 
 		String fieldName = getFieldName(getSpatialFieldIndex());
 
@@ -224,21 +215,22 @@ public class SpatialDataSourceDecorator extends AbstractDataSourceDecorator {
 		if (null == crsConstraint) {
 			return NullCRS.singleton;
 		} else {
-			return crsConstraint.getCRS();
+			return crsConstraint.getCrs();
 		}
 
-	}
+	}*/
 
+	
 	/**
 	 * Sets the CRS of the geometric field that is given as 2nd parameter
 	 * 
 	 * @param crs
 	 * @param fieldName
-	 */
+	 *//*
 	public void setCRS(final CoordinateReferenceSystem crs,
 			final String fieldName) {
 		crsMap.put(fieldName, crs);
-	}
+	}*/
 
 	/**
 	 * Sets the default geometry of the DataSource to a JTS geometry
@@ -292,12 +284,12 @@ public class SpatialDataSourceDecorator extends AbstractDataSourceDecorator {
 		return fieldType.getTypeCode() == Type.RASTER;
 	}
 
-        /**
-         *
-         * @param rowIndex
-         * @return
-         * @throws DriverException
-         */
+	/**
+	 * 
+	 * @param rowIndex
+	 * @return
+	 * @throws DriverException
+	 */
 
 	public Feature getFeature(long rowIndex) throws DriverException {
 		Feature feature = new Feature(getMetadata());
@@ -317,5 +309,5 @@ public class SpatialDataSourceDecorator extends AbstractDataSourceDecorator {
 			throw new DriverException(
 					"The feature metadata doesn't match the spatialDatasource metadata");
 		}
-	}	
+	}
 }

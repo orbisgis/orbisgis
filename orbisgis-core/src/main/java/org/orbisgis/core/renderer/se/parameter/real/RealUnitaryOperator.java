@@ -1,5 +1,6 @@
 package org.orbisgis.core.renderer.se.parameter.real;
 
+import javax.swing.JPanel;
 import javax.xml.bind.JAXBElement;
 import org.gdms.data.feature.Feature;
 import org.orbisgis.core.renderer.persistance.ogc.ExpressionType;
@@ -8,8 +9,15 @@ import org.orbisgis.core.renderer.persistance.se.ParameterValueType;
 import org.orbisgis.core.renderer.persistance.se.UnitaryOperatorType;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
+import org.orbisgis.core.ui.editorViews.toc.actions.cui.EditFeatureTypeStylePanel;
 
 public final class RealUnitaryOperator implements RealParameter {
+
+	private Double min;
+	private Double max;
+
+    private RealParameter v;
+    private RealUnitaryOperatorType op;
 
     public RealUnitaryOperator(JAXBElement<UnitaryOperatorType> expr) {
         UnitaryOperatorType t = expr.getValue();
@@ -25,6 +33,21 @@ public final class RealUnitaryOperator implements RealParameter {
             this.op = RealUnitaryOperatorType.SQRT;
         }
     }
+
+	@Override
+	public JPanel getEditionPanel(EditFeatureTypeStylePanel ftsPanel){
+		throw new UnsupportedOperationException("Not yet implemented ("+ this.getClass() + " )");
+	}
+
+	@Override
+	public void setMinValue(Double min) {
+		this.min = min;
+	}
+
+	@Override
+	public void setMaxValue(Double max) {
+		this.max = max;
+	}
 
     public enum RealUnitaryOperatorType {
         SQRT, LOG_10;
@@ -97,7 +120,4 @@ public final class RealUnitaryOperator implements RealParameter {
         }
         return null;
     }
-
-    private RealParameter v;
-    private RealUnitaryOperatorType op;
 }

@@ -47,6 +47,7 @@ import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
+import org.gdms.driver.DiskBufferDriver;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.ObjectDriver;
 import org.gdms.driver.driverManager.DriverLoadException;
@@ -93,8 +94,8 @@ public class ST_Explode implements CustomQuery {
 					"explod_id");
 			metadata.addField(field, TypeFactory.createType(Type.INT));
 
-			final GenericObjectDriver driver = new GenericObjectDriver(metadata);
-
+			final DiskBufferDriver driver = new DiskBufferDriver(dsf, metadata);
+			int gid = 1;
 			long rowCount = sds.getRowCount();
 			for (long rowIndex = 0; rowIndex < rowCount; rowIndex++) {
 
@@ -110,9 +111,12 @@ public class ST_Explode implements CustomQuery {
 				final Value[] newValues = new Value[fieldsValues.length + 1];
 				System.arraycopy(fieldsValues, 0, newValues, 0,
 						fieldsValues.length);
+				newValues[fieldsValues.length] = ValueFactory
+						.createValue(gid++);
 				final Geometry geometry = sds.getGeometry(rowIndex);
 				explode(driver, newValues, geometry, spatialFieldIndex);
 			}
+			driver.writingFinished();
 			sds.close();
 			return driver;
 		} catch (DriverLoadException e) {
@@ -122,9 +126,9 @@ public class ST_Explode implements CustomQuery {
 		}
 	}
 
-	private void explode(final GenericObjectDriver driver,
+	private void explode(final DiskBufferDriver driver,
 			final Value[] fieldsValues, final Geometry geometry,
-			final int spatialFieldIndex) {
+			final int spatialFieldIndex) throws DriverException {
 		int gid = 1;
 		if (geometry instanceof GeometryCollection) {
 			final int nbOfGeometries = geometry.getNumGeometries();

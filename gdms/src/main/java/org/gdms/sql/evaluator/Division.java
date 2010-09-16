@@ -41,6 +41,7 @@ import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
 import org.gdms.sql.strategies.IncompatibleTypesException;
+import org.orbisgis.progress.IProgressMonitor;
 
 public class Division extends ArithmeticOperator {
 
@@ -48,10 +49,10 @@ public class Division extends ArithmeticOperator {
 		super(children);
 	}
 
-	public Value evaluateExpression() throws EvaluationException,
+	public Value evaluateExpression(IProgressMonitor pm) throws EvaluationException,
 			IncompatibleTypesException {
-		return getLeftOperator().evaluate().producto(
-				getRightOperator().evaluate().inversa());
+		return getLeftOperator().evaluate(pm).producto(
+				getRightOperator().evaluate(pm).inversa());
 	}
 
 	@Override

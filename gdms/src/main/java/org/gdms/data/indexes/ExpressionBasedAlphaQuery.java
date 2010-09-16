@@ -44,6 +44,7 @@ import org.gdms.sql.evaluator.EvaluationException;
 import org.gdms.sql.evaluator.Expression;
 import org.gdms.sql.evaluator.Field;
 import org.gdms.sql.evaluator.Literal;
+import org.orbisgis.progress.NullProgressMonitor;
 
 public class ExpressionBasedAlphaQuery implements ExpressionBasedIndexQuery,
 		AlphaQuery {
@@ -84,7 +85,7 @@ public class ExpressionBasedAlphaQuery implements ExpressionBasedIndexQuery,
 	}
 
 	public Value getMin() throws EvaluationException {
-		return min.evaluate();
+		return min.evaluate(new NullProgressMonitor());
 	}
 
 	public boolean isMinIncluded() {
@@ -96,7 +97,7 @@ public class ExpressionBasedAlphaQuery implements ExpressionBasedIndexQuery,
 	}
 
 	public Value getMax() throws EvaluationException {
-		return max.evaluate();
+		return max.evaluate(new NullProgressMonitor());
 	}
 
 	public Field[] getFields() {

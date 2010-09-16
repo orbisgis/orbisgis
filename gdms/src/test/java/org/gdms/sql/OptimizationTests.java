@@ -162,7 +162,7 @@ public class OptimizationTests extends TestCase {
 
 	public void testAutonumericLiteral() throws Exception {
 		FunctionOperator op = new FunctionOperator("autonumeric", null);
-		assertTrue(op.evaluate().less(op.evaluate()).getAsBoolean());
+		assertTrue(op.evaluate(new NullProgressMonitor()).less(op.evaluate(new NullProgressMonitor())).getAsBoolean());
 	}
 
 	public void testIndexUsageEquals() throws Exception {

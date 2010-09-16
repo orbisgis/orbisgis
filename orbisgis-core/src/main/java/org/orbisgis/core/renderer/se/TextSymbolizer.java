@@ -3,6 +3,7 @@ package org.orbisgis.core.renderer.se;
 import java.awt.Graphics2D;
 import java.awt.Shape;
 import java.io.IOException;
+import javax.swing.JPanel;
 import javax.xml.bind.JAXBElement;
 import org.gdms.data.feature.Feature;
 
@@ -23,6 +24,8 @@ import org.orbisgis.core.renderer.se.transform.Transform;
 public final class TextSymbolizer extends VectorSymbolizer {
 
     public TextSymbolizer(){
+		super();
+		this.name = "Label";
         label = new PointLabel();
         uom = Uom.MM;
     }
@@ -109,7 +112,6 @@ public final class TextSymbolizer extends VectorSymbolizer {
             this.setLabel( Label.createLabelFromJAXBElement(tst.getLabel()));
         }
     }
-
 
     private RealParameter perpendicularOffset;
     private Label label;

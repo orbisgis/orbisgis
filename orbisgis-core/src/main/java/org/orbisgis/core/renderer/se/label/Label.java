@@ -16,6 +16,7 @@ import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.persistance.se.LineLabelType;
 import org.orbisgis.core.renderer.persistance.se.PointLabelType;
 import org.orbisgis.core.renderer.se.SymbolizerNode;
+import org.orbisgis.core.renderer.se.UomNode;
 import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
@@ -24,7 +25,7 @@ import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
  *
  * @author maxence
  */
-public abstract class Label implements SymbolizerNode {
+public abstract class Label implements SymbolizerNode, UomNode{
 
     public enum HorizontalAlignment {
 
@@ -89,6 +90,10 @@ public abstract class Label implements SymbolizerNode {
         }
     }
 
+	public Uom getOwnUom(){
+		return uom;
+	}
+
     @Override
     public Uom getUom() {
         if (uom != null) {
@@ -98,6 +103,7 @@ public abstract class Label implements SymbolizerNode {
         }
     }
 
+	@Override
     public void setUom(Uom uom) {
         this.uom = uom;
     }

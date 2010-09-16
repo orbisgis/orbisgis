@@ -38,6 +38,12 @@
 
 package org.orbisgis.core.ui.plugins.editors.mapEditor;
 
+import com.itextpdf.text.Document;
+import com.itextpdf.text.DocumentException;
+import com.itextpdf.text.PageSize;
+import com.itextpdf.text.pdf.PdfContentByte;
+import com.itextpdf.text.pdf.PdfTemplate;
+import com.itextpdf.text.pdf.PdfWriter;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
@@ -71,14 +77,7 @@ import org.orbisgis.core.ui.plugins.views.MapEditorPlugIn;
 import org.orbisgis.core.ui.plugins.views.editor.EditorManager;
 import org.orbisgis.progress.NullProgressMonitor;
 
-import com.lowagie.text.Document;
-import com.lowagie.text.DocumentException;
-import com.lowagie.text.PageSize;
-import com.lowagie.text.pdf.PdfContentByte;
-import com.lowagie.text.pdf.PdfTemplate;
-import com.lowagie.text.pdf.PdfWriter;
 import com.vividsolutions.jts.geom.Envelope;
-import org.orbisgis.core.map.MapTransform;
 
 public class ExportMapAsPDFPlugIn extends AbstractPlugIn {
 
@@ -167,7 +166,7 @@ public class ExportMapAsPDFPlugIn extends AbstractPlugIn {
 						pageWidth, 50);
 
 				g2dMap.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING,
-						RenderingHints.VALUE_TEXT_ANTIALIAS_OFF);
+						RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
 
 				r.draw(g2dMap, width, height, envelope, layer,
 						new NullProgressMonitor());

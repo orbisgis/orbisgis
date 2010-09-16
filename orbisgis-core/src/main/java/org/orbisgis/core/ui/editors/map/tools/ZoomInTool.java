@@ -71,12 +71,13 @@ import org.orbisgis.core.layerModel.MapContext;
 import org.orbisgis.core.ui.editors.map.tool.ToolManager;
 import org.orbisgis.core.ui.editors.map.tool.TransitionException;
 import org.orbisgis.core.ui.pluginSystem.PlugInContext;
+import org.orbisgis.utils.I18N;
 
 import com.vividsolutions.jts.geom.Envelope;
 
 /**
  * Tool to zoom in
- *
+ * 
  * @author Fernando Gonzalez Cortes
  */
 public class ZoomInTool extends AbstractRectangleTool {
@@ -140,8 +141,7 @@ public class ZoomInTool extends AbstractRectangleTool {
 	}
 
 	public String getName() {
-		return "Zoom in";
+		return I18N.getText("orbisgis.core.ui.editors.map.tool.zoomin_tooltip");
 	}
-
 
 }

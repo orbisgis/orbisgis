@@ -6,6 +6,7 @@ import java.awt.geom.Point2D;
 
 import java.io.IOException;
 import javax.media.jai.RenderableGraphics;
+import javax.swing.JPanel;
 import javax.xml.bind.JAXBElement;
 import org.gdms.data.feature.Feature;
 import org.orbisgis.core.renderer.persistance.se.ObjectFactory;
@@ -21,7 +22,7 @@ import org.orbisgis.core.renderer.se.graphic.MarkGraphic;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.transform.Transform;
 
-public class PointSymbolizer extends VectorSymbolizer {
+public final class PointSymbolizer extends VectorSymbolizer implements GraphicNode {
 
 	/*
 	 * Create a default pointSymbolizer: Square 10mm
@@ -29,6 +30,8 @@ public class PointSymbolizer extends VectorSymbolizer {
 	 *
 	 */
 	public PointSymbolizer() {
+		super();
+		this.name = "Point symbolizer";
 		graphic = new GraphicCollection();
 		graphic.setParent(this);
 		uom = Uom.MM;
@@ -57,16 +60,18 @@ public class PointSymbolizer extends VectorSymbolizer {
 		}
 
 		if (ast.getGraphic() != null) {
-			this.setGraphic(new GraphicCollection(ast.getGraphic(), this));
+			this.setGraphicCollection(new GraphicCollection(ast.getGraphic(), this));
 
 		}
 	}
 
-	public GraphicCollection getGraphic() {
+	@Override
+	public GraphicCollection getGraphicCollection() {
 		return graphic;
 	}
 
-	public void setGraphic(GraphicCollection graphic) {
+	@Override
+	public void setGraphicCollection(GraphicCollection graphic) {
 		this.graphic = graphic;
 		graphic.setParent(this);
 	}
@@ -124,5 +129,6 @@ public class PointSymbolizer extends VectorSymbolizer {
 
 		return of.createPointSymbolizer(s);
 	}
+
 	private GraphicCollection graphic;
 }

@@ -50,6 +50,7 @@ import org.orbisgis.core.ui.editors.map.tool.FinishedAutomatonException;
 import org.orbisgis.core.ui.editors.map.tool.NoSuchTransitionException;
 import org.orbisgis.core.ui.editors.map.tool.ToolManager;
 import org.orbisgis.core.ui.editors.map.tool.TransitionException;
+import org.orbisgis.utils.I18N;
 
 public abstract class ZoomIn implements Automaton {
 
@@ -298,19 +299,19 @@ public abstract class ZoomIn implements Automaton {
 	public String getMessage() {
 
 		if ("Standby".equals(status)) {
-			return Messages.getString("zoomin_standby");
+			return I18N.getText("orbisgis.core.ui.editors.map.tool.zoomin_standby");
 		}
 
 		if ("OnePointLeft".equals(status)) {
-			return Messages.getString("zoomin_onepointleft");
+			return I18N.getText("orbisgis.core.ui.editors.map.tool.zoomin_onepointleft");
 		}
 
 		if ("RectangleDone".equals(status)) {
-			return Messages.getString("");
+			return "";
 		}
 
 		if ("Cancel".equals(status)) {
-			return Messages.getString("");
+			return "";
 		}
 
 		throw new RuntimeException();
@@ -321,7 +322,7 @@ public abstract class ZoomIn implements Automaton {
 	}
 
 	public String getTooltip() {
-		return Messages.getString("zoomin_tooltip");
+		return I18N.getText("orbisgis.core.ui.editors.map.tool.zoomin_tooltip");
 	}
 
 	private ImageIcon mouseCursor;

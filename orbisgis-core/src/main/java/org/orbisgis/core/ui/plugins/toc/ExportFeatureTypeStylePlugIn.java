@@ -6,7 +6,6 @@ import org.gdms.data.types.GeometryConstraint;
 import org.gdms.data.types.Type;
 import org.gdms.driver.DriverException;
 import org.orbisgis.core.Services;
-import org.orbisgis.core.images.IconNames;
 import org.orbisgis.core.images.OrbisGISIcon;
 import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.layerModel.MapContext;
@@ -25,6 +24,7 @@ import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchFrame;
 
 public class ExportFeatureTypeStylePlugIn extends AbstractPlugIn {
 
+	@Override
 	public boolean execute(PlugInContext context) {
 		MapContext mapContext = getPlugInContext().getMapContext();
 		ILayer[] selectedResources = mapContext.getSelectedLayers();
@@ -39,6 +39,7 @@ public class ExportFeatureTypeStylePlugIn extends AbstractPlugIn {
 		return true;
 	}
 
+	@Override
 	public void initialize(PlugInContext context) throws Exception {
 		WorkbenchContext wbContext = context.getWorkbenchContext();
 		WorkbenchFrame frame = wbContext.getWorkbench().getFrame().getToc();
@@ -72,15 +73,11 @@ public class ExportFeatureTypeStylePlugIn extends AbstractPlugIn {
 		}
 	}
 
+	@Override
 	public boolean isEnabled() {
 		return getPlugInContext().checkLayerAvailability(
 				new SelectionAvailability[] {SelectionAvailability.EQUAL},
 				1,
 				new LayerAvailability[] {LayerAvailability.VECTORIAL});
-	}
-
-	public boolean isSelected() {
-		// TODO Auto-generated method stub
-		return false;
 	}
 }

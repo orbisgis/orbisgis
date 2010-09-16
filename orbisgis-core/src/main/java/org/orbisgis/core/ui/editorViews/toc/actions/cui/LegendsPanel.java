@@ -461,10 +461,12 @@ public class LegendsPanel extends JPanel implements UIPanel, LegendContext {
 		return ret;
 	}
 
+	@Override
 	public GeometryConstraint getGeometryConstraint() {
 		return gc;
 	}
 
+	@Override
 	public ILayer getLayer() {
 		return layer;
 	}

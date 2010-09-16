@@ -49,7 +49,6 @@ import org.gdms.sql.customQuery.spatial.geometry.create.ST_CreatePointsGrid;
 import org.gdms.sql.customQuery.spatial.geometry.create.ST_CreateWebGrid;
 import org.gdms.sql.customQuery.spatial.geometry.create.ST_Extrude;
 import org.gdms.sql.customQuery.spatial.geometry.create.ST_RandomGeometry;
-import org.gdms.sql.customQuery.spatial.geometry.crs.ST_Transform;
 import org.gdms.sql.customQuery.spatial.geometry.qa.ST_InternalGapFinder;
 import org.gdms.sql.customQuery.spatial.geometry.topology.ST_PlanarGraph;
 import org.gdms.sql.customQuery.spatial.geometry.topology.ST_ToLineNoder;
@@ -91,7 +90,7 @@ public class QueryManager {
 		registerQuery(ST_RasterToPolygons.class);
 		registerQuery(ST_VectorizeLine.class);
 		registerQuery(ST_CreatePointsGrid.class);
-		registerQuery(ST_Transform.class);
+		// registerQuery(ST_Transform.class);
 		registerQuery(ST_Interpolate.class);
 	}
 
@@ -121,9 +120,9 @@ public class QueryManager {
 
 		if (FunctionManager.getFunction(queryName) != null) {
 			throw new IllegalArgumentException(
-					"There is already a function with that name");
+					"There is already a function with the name  " + queryName);
 		} else if (queries.get(queryName) != null) {
-			throw new IllegalArgumentException("Query already registered: "
+			throw new IllegalArgumentException("Query already registered : "
 					+ queryName);
 		} else {
 			queries.put(queryName, queryClass);

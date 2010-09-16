@@ -392,12 +392,12 @@ public class PostgreSQLDriver extends DefaultDBDriver {
 			dc = new DimensionConstraint(2);
 		}
 
-		Constraint crsConstraint = MetadataUtilities.getCRSConstraint(srid);
+		//Constraint crsConstraint = MetadataUtilities.getCRSConstraint(srid);
 
 		if (gc == null) {
-			return new Constraint[] { dc, crsConstraint };
+			return new Constraint[] { dc};
 		} else {
-			return new Constraint[] { gc, dc, crsConstraint };
+			return new Constraint[] { gc, dc };
 		}
 
 	}

@@ -39,8 +39,10 @@ package org.gdms.sql.customQuery.spatial.geometry.topology;
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.ExecutionException;
+import org.gdms.data.NoSuchTableException;
 import org.gdms.data.NonEditableDataSourceException;
 import org.gdms.data.SpatialDataSourceDecorator;
+import org.gdms.data.indexes.IndexException;
 import org.gdms.data.metadata.Metadata;
 import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
@@ -81,17 +83,16 @@ public class ST_PlanarGraph implements CustomQuery {
 
 			sds.close();
 
-			PlanarGraph planarGraph = new PlanarGraph();
+			PlanarGraph planarGraph = new PlanarGraph(pm);
 
-			GenericObjectDriver edges = planarGraph.createEdges(sds, pm);
+			GenericObjectDriver edges = planarGraph.createEdges(sds);
 
 			GenericObjectDriver nodes = planarGraph.createNodes(edges);
 
-			GenericObjectDriver faces = planarGraph.createFaces(edges);
+			GenericObjectDriver faces = planarGraph.createFaces(sds, edges);
 
 			dsf.getSourceManager().register(
 					dsf.getSourceManager().getUniqueName("edges"), edges);
-
 
 			dsf.getSourceManager().register(
 					dsf.getSourceManager().getUniqueName("nodes"), nodes);
@@ -105,6 +106,10 @@ public class ST_PlanarGraph implements CustomQuery {
 		} catch (DriverException e) {
 			throw new ExecutionException(e);
 		} catch (NonEditableDataSourceException e) {
+			throw new ExecutionException(e);
+		} catch (NoSuchTableException e) {
+			throw new ExecutionException(e);
+		} catch (IndexException e) {
 			throw new ExecutionException(e);
 		}
 	}

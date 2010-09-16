@@ -40,18 +40,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.gdms.data.DataSource;
-import org.gdms.data.types.CRSConstraint;
 import org.gdms.data.types.Constraint;
+import org.gdms.data.types.GeometryConstraint;
 import org.gdms.data.types.PrimaryKeyConstraint;
 import org.gdms.data.types.ReadOnlyConstraint;
 import org.gdms.data.types.Type;
 import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
 import org.gdms.sql.strategies.SemanticException;
-
-import fr.cts.crs.CoordinateReferenceSystem;
-import fr.cts.crs.NullCRS;
-import fr.cts.util.CRSUtil;
 
 /**
  * An utility class to help the exploration of Metadata instances
@@ -268,6 +264,35 @@ public class MetadataUtilities {
 		return metadatas;
 	}
 
+	public static int getGeometryDimension(Metadata metadata, int spatialField) throws DriverException {
+
+		Type fieldType = metadata.getFieldType(spatialField);
+		if (fieldType.getTypeCode() == Type.GEOMETRY) {
+			GeometryConstraint geomTypeConstraint = (GeometryConstraint) fieldType
+					.getConstraint(Constraint.GEOMETRY_TYPE);
+			if (geomTypeConstraint == null) {
+				return -1;
+			} else {
+				int geomType = geomTypeConstraint.getGeometryType();
+
+				if ((geomType == GeometryConstraint.POLYGON)
+						|| (geomType == GeometryConstraint.MULTI_POLYGON)) {
+					return 2;
+				} else if ((geomType == GeometryConstraint.LINESTRING)
+						|| (geomType == GeometryConstraint.MULTI_LINESTRING)) {
+					return 1;
+				} else if ((geomType == GeometryConstraint.POINT)
+						|| (geomType == GeometryConstraint.MULTI_POINT)) {
+					return 0;
+				} else {
+					throw new RuntimeException("Bug");
+				}
+			}
+		}
+		return -1;
+
+	}
+
 	/**
 	 * Returns the spatial field index.
 	 * 
@@ -303,36 +328,42 @@ public class MetadataUtilities {
 		return fieldName + "_" + 1;
 	}
 
-	public static Constraint getCRSConstraint(CoordinateReferenceSystem crs) {
-
-		return new CRSConstraint(-1, crs);
-	}
-
-	public static Constraint getCRSConstraint(int srid) {
-
-		if (srid == -1) {
-			return new CRSConstraint(-1, NullCRS.singleton);
-		} else {
-			return new CRSConstraint(srid, CRSUtil.getCRSFromEPSG(Integer
-					.toString(srid)));
-		}
-	}
-
-	public static CoordinateReferenceSystem getCRS(Metadata metadata)
-			throws DriverException {
-		CoordinateReferenceSystem crs = NullCRS.singleton;
-		for (int i = 0; i < metadata.getFieldCount(); i++) {
-			Type fieldType = metadata.getFieldType(i);
-			if (fieldType.getTypeCode() == Type.GEOMETRY) {
-				CRSConstraint crsConstraint = (CRSConstraint) fieldType
-						.getConstraint(Constraint.CRS);
-				if ((crsConstraint != null)
-						&& (crsConstraint.getConstraintCode() != -1)) {
-					crs = crsConstraint.getCRS();
-					break;
-				}
-			}
-		}
-		return crs;
-	}
+	/*
+	 * public static Constraint getCRSConstraint(int srid) {
+	 * 
+	 * if (srid == -1) { return new
+	 * CRSConstraint(CRSUtil.getCRSFromEPSG("4326").toWkt()); } else { return
+	 * new CRSConstraint(CRSUtil.getCRSFromEPSG(
+	 * Integer.toString(srid)).toWkt()); } }
+	 * 
+	 * 
+	 * public static CoordinateReferenceSystem getCRS(Metadata metadata) throws
+	 * DriverException { CoordinateReferenceSystem crs = NullCRS.singleton; for
+	 * (int i = 0; i < metadata.getFieldCount(); i++) { Type fieldType =
+	 * metadata.getFieldType(i); if (fieldType.getTypeCode() == Type.GEOMETRY) {
+	 * CRSConstraint crsConstraint = (CRSConstraint) fieldType
+	 * .getConstraint(Constraint.CRS); if ((crsConstraint != null) &&
+	 * (crsConstraint.getConstraintCode() != -1)) { crs =
+	 * crsConstraint.getCrs(); break; } } } return crs; }
+	 * 
+	 * public static Metadata addCRSConstraint(Metadata metadata, String
+	 * geomField, GeodeticCRS targetCRS) throws DriverException {
+	 * DefaultMetadata defaultMetadata = new DefaultMetadata(); for (int i = 0;
+	 * i < metadata.getFieldCount(); i++) { String fieldName =
+	 * metadata.getFieldName(i); Type fieldType = metadata.getFieldType(i); if
+	 * (fieldName.equals(geomField)) { Constraint[] constrs =
+	 * fieldType.getConstraints(Constraint.ALL &
+	 * ~Constraint.GEOMETRY_DIMENSION); ArrayList<Constraint> constTarget = new
+	 * ArrayList<Constraint>(); for (Constraint constraint : constrs) {
+	 * 
+	 * if (!(constraint instanceof CRSConstraint)) {
+	 * constTarget.add(constraint); }
+	 * 
+	 * } constTarget.add(new CRSConstraint(targetCRS.toWkt()));
+	 * defaultMetadata.addField(fieldName, TypeFactory.createType(
+	 * Type.GEOMETRY, constTarget.toArray(new Constraint[0])));
+	 * 
+	 * } else { defaultMetadata.addField(fieldName, fieldType); } } return
+	 * defaultMetadata; }
+	 */
 }

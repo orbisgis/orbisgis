@@ -186,7 +186,8 @@ public class GdmsWriter {
 
 			// write type
 			Type type = metadata.getFieldType(i);
-			bm.putInt(type.getTypeCode());
+			int typeCode = type.getTypeCode();
+			bm.putInt(typeCode);
 			Constraint[] constrs = type.getConstraints();
 
 			bm.putInt(constrs.length);

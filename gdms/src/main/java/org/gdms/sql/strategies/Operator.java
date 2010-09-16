@@ -111,8 +111,20 @@ public interface Operator {
 
 	public void validateFunctionReferences() throws DriverException,
 			SemanticException;
+	
+	public void validateDuplicateFields() throws SemanticException,
+	DriverException;
 
 	public void setDataSourceFactory(DataSourceFactory dsf);
+	
+	/**
+	 * Expands the '*' occurrences by the corresponding field references
+	 * 
+	 * @throws SemanticException
+	 * @throws DriverException
+	 */
+	public void expandStars() throws DriverException, SemanticException;
+
 
 	/**
 	 * Method to perform the necessary initialization. Typically open the

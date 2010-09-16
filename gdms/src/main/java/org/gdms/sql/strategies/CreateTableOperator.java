@@ -62,15 +62,18 @@ public class CreateTableOperator extends AbstractOperator implements Operator {
 			SourceManager sourceManager = dsf.getSourceManager();
 			if (!sourceManager.exists(tableName)) {
 				sourceManager.register(tableName, dsf.getResultFile());
+				ds = dsf.getDataSource(getOperator(0).getResult(pm),
+						DataSourceFactory.NORMAL);
+				if (!pm.isCancelled()) {
+					pm.startTask("Saving result");
+					dsf.saveContents(tableName, ds, pm);
+					pm.endTask();
+				}
+			} else {
+				throw new ExecutionException(
+						"Cannot create table. The source already exists: "
+								+ tableName);
 			}
-			ds = dsf.getDataSource(getOperator(0).getResult(pm),
-					DataSourceFactory.NORMAL);
-			if (!pm.isCancelled()) {
-				pm.startTask("Saving result");
-				dsf.saveContents(tableName, ds, pm);
-				pm.endTask();
-			}
-			sourceManager.remove(ds.getName());
 			return null;
 		} catch (DriverException e1) {
 			throw new ExecutionException("Cannot create table:" + tableName, e1);

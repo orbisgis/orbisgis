@@ -6,7 +6,6 @@ import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.SeParameter;
 
 
-
 /**
  * represent a color parameter
  * According to XSD, this color should not embed any alpha value !
@@ -16,8 +15,5 @@ import org.orbisgis.core.renderer.se.parameter.SeParameter;
  */
 public interface ColorParameter extends SeParameter {
     
-    /*
-     * TODO Is (DataSource, featureId) the right way to access a feature ?
-     */
-    public abstract Color getColor(Feature feat) throws ParameterException;
+    Color getColor(Feature feat) throws ParameterException;
 }

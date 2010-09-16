@@ -46,6 +46,7 @@ import org.orbisgis.core.ui.editors.map.tool.FinishedAutomatonException;
 import org.orbisgis.core.ui.editors.map.tool.ToolManager;
 import org.orbisgis.core.ui.editors.map.tool.TransitionException;
 import org.orbisgis.core.ui.editors.map.tools.generated.Multipolygon;
+import org.orbisgis.utils.I18N;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.GeometryFactory;
@@ -77,8 +78,9 @@ public abstract class AbstractMultipolygonTool extends Multipolygon implements
 			throws FinishedAutomatonException, TransitionException {
 		points = ToolUtilities.removeDuplicated(points);
 		if (points.size() < 3)
-			throw new TransitionException(Messages
-					.getString("MultipolygonTool.0")); //$NON-NLS-1$
+			throw new TransitionException(
+					I18N
+							.getText("orbisgis.core.ui.editors.map.tool.multipolygonTool_0")); //$NON-NLS-1$
 
 		addPolygon(vc);
 
@@ -95,8 +97,9 @@ public abstract class AbstractMultipolygonTool extends Multipolygon implements
 		Polygon p = gf.createPolygon(gf.createLinearRing(coords),
 				new LinearRing[0]);
 		if (!p.isValid()) {
-			throw new TransitionException(Messages
-					.getString("MultipolygonTool.2")); //$NON-NLS-1$
+			throw new TransitionException(
+					I18N
+							.getText("orbisgis.core.ui.editors.map.tool.multipolygonTool_2")); //$NON-NLS-1$
 		}
 		polygons.add(p);
 	}
@@ -116,16 +119,18 @@ public abstract class AbstractMultipolygonTool extends Multipolygon implements
 		points = ToolUtilities.removeDuplicated(points);
 		if (((points.size() < 3) && (points.size() > 0))
 				|| ((points.size() == 0) && (polygons.size() == 0)))
-			throw new TransitionException(Messages
-					.getString("MultipolygonTool.0")); //$NON-NLS-1$
+			throw new TransitionException(
+					I18N
+							.getText("orbisgis.core.ui.editors.map.tool.multipolygonTool_0")); //$NON-NLS-1$
 		if (points.size() > 0) {
 			addPolygon(vc);
 		}
 		MultiPolygon mp = gf.createMultiPolygon(polygons
 				.toArray(new Polygon[0]));
 		if (!mp.isValid()) {
-			throw new TransitionException(Messages
-					.getString("MultipolygonTool.2")); //$NON-NLS-1$
+			throw new TransitionException(
+					I18N
+							.getText("orbisgis.core.ui.editors.map.tool.multipolygonTool_2")); //$NON-NLS-1$
 		}
 		multipolygonDone(mp, vc, tm);
 
@@ -172,7 +177,9 @@ public abstract class AbstractMultipolygonTool extends Multipolygon implements
 		tm.addGeomToDraw(mp);
 
 		if (!mp.isValid()) {
-			throw new DrawingException(Messages.getString("MultipolygonTool.2")); //$NON-NLS-1$
+			throw new DrawingException(
+					I18N
+							.getText("orbisgis.core.ui.editors.map.tool.multipolygonTool_2")); //$NON-NLS-1$
 		}
 	}
 

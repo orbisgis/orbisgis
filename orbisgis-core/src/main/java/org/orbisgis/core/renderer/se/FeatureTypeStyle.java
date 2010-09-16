@@ -38,12 +38,11 @@ import org.orbisgis.core.renderer.se.common.Uom;
  *
  * @author maxence
  */
-public class FeatureTypeStyle implements SymbolizerNode {
+public final class FeatureTypeStyle implements SymbolizerNode {
 
 	public FeatureTypeStyle(ILayer layer) {
 		rules = new ArrayList<Rule>();
 		this.layer = layer;
-		this.byLevel = true;
 
 		this.addRule(new Rule(layer));
 	}
@@ -51,7 +50,6 @@ public class FeatureTypeStyle implements SymbolizerNode {
 	public FeatureTypeStyle(ILayer layer, String seFile) {
 		rules = new ArrayList<Rule>();
 		this.layer = layer;
-		this.byLevel = true;
 
 		JAXBContext jaxbContext;
 		try {
@@ -89,7 +87,8 @@ public class FeatureTypeStyle implements SymbolizerNode {
 	}
 
 	public FeatureTypeStyle(JAXBElement<FeatureTypeStyleType> ftst, ILayer layer) {
-		this(layer);
+		rules = new ArrayList<Rule>();
+		this.layer = layer;
 		this.setFromJAXB(ftst);
 	}
 
@@ -114,7 +113,6 @@ public class FeatureTypeStyle implements SymbolizerNode {
 		this.rules.clear();
 	}
 
-
 	public void export(String seFile) {
 		try {
 			JAXBContext jaxbContext = JAXBContext.newInstance(FeatureTypeStyleType.class);
@@ -128,11 +126,6 @@ public class FeatureTypeStyle implements SymbolizerNode {
 		}
 
 
-	}
-
-	public void addRule(Rule r) {
-		r.setParent(this);
-		rules.add(r);
 	}
 
 	public JAXBElement<FeatureTypeStyleType> getJAXBElement() {
@@ -190,14 +183,14 @@ public class FeatureTypeStyle implements SymbolizerNode {
 							layerSymbolizers.add(s);
 						}
 					}
-				} 
+				}
 			}
 		}
 
 		Collections.sort(layerSymbolizers);
 	}
 
-	public void hardSetSymbolizerLevel() {
+	public void resetSymbolizerLevels() {
 		int level = 1;
 
 		for (Rule r : rules) {
@@ -235,14 +228,6 @@ public class FeatureTypeStyle implements SymbolizerNode {
 		throw new UnsupportedOperationException("Not supported yet.");
 	}
 
-	public boolean isByLevel() {
-		return byLevel;
-	}
-
-	public void setByLevel(boolean byLevel) {
-		this.byLevel = byLevel;
-	}
-
 	public String getName() {
 		return name;
 	}
@@ -255,11 +240,39 @@ public class FeatureTypeStyle implements SymbolizerNode {
 		return rules;
 	}
 
-	public void setRules(ArrayList<Rule> rules) {
-		this.rules = rules;
+	public void moveRuleUp(int i) {
+		try {
+			if (i > 0) {
+				Rule r = rules.remove(i);
+				rules.add(i - 1, r);
+			}
+		} catch (IndexOutOfBoundsException ex) {
+		}
+	}
+
+	public void moveRuleDown(int i) {
+		try {
+			if (i < rules.size() - 1) {
+				Rule r = rules.remove(i);
+				rules.add(i + 1, r);
+			}
+
+		} catch (IndexOutOfBoundsException ex) {
+		}
+	}
+
+	public void addRule(Rule r) {
+		r.setParent(this);
+		rules.add(r);
+	}
+
+	public void deleteRule(int i) {
+		try {
+			rules.remove(i);
+		} catch (IndexOutOfBoundsException ex) {
+		}
 	}
 	private String name;
 	private ArrayList<Rule> rules;
 	private ILayer layer;
-	private boolean byLevel = false;
 }

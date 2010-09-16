@@ -66,6 +66,7 @@ import org.orbisgis.core.sif.UIFactory;
 import org.orbisgis.core.sif.UIPanel;
 import org.orbisgis.core.workspace.DefaultWorkspace;
 import org.orbisgis.core.workspace.Workspace;
+import org.orbisgis.utils.I18N;
 
 public class WorkspaceFolderPanel extends JPanel implements UIPanel {
 
@@ -82,7 +83,8 @@ public class WorkspaceFolderPanel extends JPanel implements UIPanel {
 		setLayout(new BorderLayout());
 		this.comboList = workspaces;
 		panel = new JPanel(new BorderLayout());
-		JLabel label = new JLabel("Workspace : ");
+		JLabel label = new JLabel(I18N.getText("orbisgis.core.ui.workspace")
+				+ " : ");
 		combobox = new JComboBox(workspaces.toArray(new String[0]));
 		combobox.addActionListener(new ActionListener() {
 
@@ -93,7 +95,8 @@ public class WorkspaceFolderPanel extends JPanel implements UIPanel {
 		});
 		btFolder = new JButton();
 		btFolder.setIcon(IconLoader.getIcon("open.png"));
-		btFolder.setToolTipText("Choose a folder");
+		btFolder.setToolTipText(I18N
+				.getText("orbisgis.core.file.choose_folder"));
 		btFolder.setPreferredSize(new Dimension(30, 20));
 		btFolder.addActionListener(new ActionListener() {
 			@Override
@@ -122,7 +125,8 @@ public class WorkspaceFolderPanel extends JPanel implements UIPanel {
 			}
 		});
 
-		jCheckBox = new JCheckBox("Use as default workspace");
+		jCheckBox = new JCheckBox(I18N
+				.getText("orbisgis.core.ui.workspace.default"));
 		jCheckBox.setEnabled(true);
 		jCheckBox.setSelected(selected);
 		jCheckBox.addItemListener(new ItemListener() {
@@ -137,7 +141,7 @@ public class WorkspaceFolderPanel extends JPanel implements UIPanel {
 		panel.setOpaque(false);
 
 		add(panel, BorderLayout.NORTH);
-		add(jCheckBox, BorderLayout.CENTER);		
+		add(jCheckBox, BorderLayout.CENTER);
 	}
 
 	@Override
@@ -152,12 +156,14 @@ public class WorkspaceFolderPanel extends JPanel implements UIPanel {
 
 	@Override
 	public String getInfoText() {
-		return "... to start OrbisGIS application.";
+		return I18N
+				.getText("orbisgis.core.ui.workspace.selectWorkspaceFilePanel.infoText");
 	}
 
 	@Override
 	public String getTitle() {
-		return "Select a workspace";
+		return I18N
+				.getText("orbisgis.core.ui.workspace.selectWorkspaceFilePanel.title");
 	}
 
 	@Override
@@ -190,7 +196,7 @@ public class WorkspaceFolderPanel extends JPanel implements UIPanel {
 			return null;
 		} else if (file.exists() && !file.isDirectory()) {
 			setCheckBoxSelected(false);
-			return "The selection must be a directory";
+			return I18N.getText("orbisgis.core.file.must_be_a_directory ");
 		} else {
 			return checkWorkspace(file);
 		}
@@ -216,10 +222,12 @@ public class WorkspaceFolderPanel extends JPanel implements UIPanel {
 					version = Integer.parseInt(strVersion.trim());
 				} catch (IOException e1) {
 					setCheckBoxSelected(false);
-					return "Cannot read workspace version";
+					return I18N
+							.getText("orbisgis.core.ui.workspace.cannot_read_version");
 				} catch (NumberFormatException e) {
 					setCheckBoxSelected(false);
-					return "Cannot read workspace version";
+					return I18N
+							.getText("orbisgis.core.ui.workspace.cannot_read_version");
 				}
 			} else {
 				version = DefaultWorkspace.WORKSPACE_VERSION;
@@ -228,15 +236,14 @@ public class WorkspaceFolderPanel extends JPanel implements UIPanel {
 					.getService(Workspace.class);
 			if (dw.getWsVersion() != version) {
 				setCheckBoxSelected(false);
-				return "Workspace version mistmatch. Either"
-						+ " clean or select another folder.";
+				return I18N.getText("orbisgis.core.ui.workspace.bad_version");
 			}
 		} else if (file.exists() && file.isDirectory()) {
 
 			File versionFile = new File(file, "org.orbisgis.version.txt");
 			if (!versionFile.exists()) {
 				setCheckBoxSelected(false);
-				return "This folder is not a valid OrbisGIS workspace.";
+				return I18N.getText("orbisgis.core.ui.workspace.invalid");
 			} else {
 				DefaultWorkspace workspace = (DefaultWorkspace) Services
 						.getService(Workspace.class);
@@ -246,7 +253,8 @@ public class WorkspaceFolderPanel extends JPanel implements UIPanel {
 
 					if (file.getAbsolutePath().equals(currentWorkspacefolder)
 							&& !isSelected()) {
-						return "This workspace is aleardy used.";
+						return I18N
+								.getText("orbisgis.core.ui.workspace.already_used");
 					}
 				}
 			}
@@ -257,17 +265,6 @@ public class WorkspaceFolderPanel extends JPanel implements UIPanel {
 
 	public ArrayList<String> getWorkspacesList() {
 		return comboList;
-	}
-
-	public static void main(String[] args) {
-		ArrayList<String> list = new ArrayList<String>();
-		list.add(" /home/ebocher");
-		WorkspaceFolderPanel workspaceFolderPanel = new WorkspaceFolderPanel(
-				list);
-		if (UIFactory.showDialog(workspaceFolderPanel)) {
-			System.out.println(workspaceFolderPanel.getWorkspacePath());
-			System.out.println(workspaceFolderPanel.isSelected());
-		}
 	}
 
 }

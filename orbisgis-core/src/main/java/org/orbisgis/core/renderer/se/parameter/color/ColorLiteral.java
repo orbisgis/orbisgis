@@ -2,10 +2,13 @@ package org.orbisgis.core.renderer.se.parameter.color;
 
 import java.util.Random;
 import java.awt.Color;
+import javax.swing.JPanel;
 import javax.xml.bind.JAXBElement;
 import org.gdms.data.feature.Feature;
 import org.orbisgis.core.renderer.persistance.ogc.LiteralType;
 import org.orbisgis.core.renderer.se.parameter.Literal;
+import org.orbisgis.core.ui.editorViews.toc.actions.cui.EditColorLiteralPanel;
+import org.orbisgis.core.ui.editorViews.toc.actions.cui.EditFeatureTypeStylePanel;
 
 public class ColorLiteral extends Literal implements ColorParameter{
 
@@ -59,6 +62,12 @@ public class ColorLiteral extends Literal implements ColorParameter{
                 + String.format("%02X", color.getGreen())
                 + String.format("%02X", color.getBlue());
     }
+
+	@Override
+	public JPanel getEditionPanel(EditFeatureTypeStylePanel ftsPanel){
+		return new EditColorLiteralPanel(this);
+	}
+
 
     private Color color;
 

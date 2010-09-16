@@ -72,6 +72,7 @@ import org.orbisgis.core.layerModel.MapContext;
 import org.orbisgis.core.ui.editors.map.tool.ToolManager;
 import org.orbisgis.core.ui.editors.map.tool.TransitionException;
 import org.orbisgis.core.ui.pluginSystem.PlugInContext;
+import org.orbisgis.utils.I18N;
 
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.Point;
@@ -130,6 +131,6 @@ public class PointTool extends AbstractPointTool {
 	}
 
 	public String getName() {
-		return "Draw a point";
+		return I18N.getText("orbisgis.core.ui.editors.map.tool.point_tooltip");
 	}
 }

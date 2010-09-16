@@ -69,7 +69,7 @@ public class SelectionOp extends AbstractExpressionOperator implements Operator 
 
 	/**
 	 * Set the expression to filter
-	 *
+	 * 
 	 * @param operator
 	 */
 	public void setExpression(Expression operator) {
@@ -80,7 +80,7 @@ public class SelectionOp extends AbstractExpressionOperator implements Operator 
 	 * Sets the expressions to filter. The overall value of the selection
 	 * expression is the AND operation of all the expressions specified as
 	 * parameters
-	 *
+	 * 
 	 * @param operator
 	 */
 	public void setExpressions(Expression[] operator) {
@@ -116,7 +116,7 @@ public class SelectionOp extends AbstractExpressionOperator implements Operator 
 	 * returns null if the scan strategy has not been yet chosen. Returns the
 	 * array of index queries used in the scan strategy. Zero length array means
 	 * table-scan
-	 *
+	 * 
 	 * @return
 	 */
 	public IndexQuery[] getIndexQueries() {
@@ -220,7 +220,7 @@ public class SelectionOp extends AbstractExpressionOperator implements Operator 
 						}
 					}
 					selectionFieldContext.setIndex(i);
-					if (evaluatesToTrue()) {
+					if (evaluatesToTrue(pm)) {
 						indexes.add(i);
 					}
 
@@ -244,15 +244,15 @@ public class SelectionOp extends AbstractExpressionOperator implements Operator 
 
 	/**
 	 * Evaluates the and expressions and stops at the first false
-	 *
+	 * 
 	 * @return
 	 * @throws IncompatibleTypesException
 	 * @throws EvaluationException
 	 */
-	private boolean evaluatesToTrue() throws IncompatibleTypesException,
-			EvaluationException {
+	private boolean evaluatesToTrue(IProgressMonitor pm)
+			throws IncompatibleTypesException, EvaluationException {
 		for (Expression expression : expressions) {
-			if (!evaluatesToTrue(expression)) {
+			if (!evaluatesToTrue(expression, pm)) {
 				return false;
 			}
 		}
@@ -260,9 +260,9 @@ public class SelectionOp extends AbstractExpressionOperator implements Operator 
 		return true;
 	}
 
-	private boolean evaluatesToTrue(Expression expression)
+	private boolean evaluatesToTrue(Expression expression, IProgressMonitor pm)
 			throws IncompatibleTypesException, EvaluationException {
-		Value expressionResult = expression.evaluate();
+		Value expressionResult = expression.evaluate(pm);
 		return !expressionResult.isNull() && expressionResult.getAsBoolean();
 	}
 
@@ -283,14 +283,13 @@ public class SelectionOp extends AbstractExpressionOperator implements Operator 
 	}
 
 	@Override
-	public Expression[] getExpressions() throws DriverException,
-			SemanticException {
+	public Expression[] getExpressions() {
 		return expressions;
 	}
 
 	/**
 	 * Checks there is no aggregate function in the where clause
-	 *
+	 * 
 	 * @see org.gdms.sql.strategies.AbstractExpressionOperator#validateFunctionReferences()
 	 */
 	@Override

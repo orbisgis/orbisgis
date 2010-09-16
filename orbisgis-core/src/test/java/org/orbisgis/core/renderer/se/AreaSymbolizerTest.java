@@ -255,7 +255,7 @@ public class AreaSymbolizerTest extends TestCase {
             PointSymbolizer pSymb = new PointSymbolizer();
             pSymb.setUom(Uom.MM);
 
-            GraphicCollection collec = pSymb.getGraphic();
+            GraphicCollection collec = pSymb.getGraphicCollection();
 
             MarkGraphic mosMark = new MarkGraphic();
             mosMark.setUom(Uom.MM);

@@ -42,6 +42,7 @@ import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
 import org.gdms.sql.strategies.IncompatibleTypesException;
 import org.gdms.sql.strategies.Operator;
+import org.orbisgis.progress.IProgressMonitor;
 
 public class Literal extends Operand {
 
@@ -51,7 +52,7 @@ public class Literal extends Operand {
 		this.value = value;
 	}
 
-	public Value evaluate() throws IncompatibleTypesException {
+	public Value evaluate(IProgressMonitor pm) throws IncompatibleTypesException {
 		return value;
 	}
 

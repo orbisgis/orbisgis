@@ -42,6 +42,7 @@ import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
 import org.gdms.sql.strategies.IncompatibleTypesException;
+import org.orbisgis.progress.IProgressMonitor;
 
 public class IsOperator extends AbstractOperator {
 
@@ -58,8 +59,8 @@ public class IsOperator extends AbstractOperator {
 		// always valid
 	}
 
-	public Value evaluateExpression() throws EvaluationException {
-		boolean ret = getChild(0).evaluate().isNull();
+	public Value evaluateExpression(IProgressMonitor  pm) throws EvaluationException {
+		boolean ret = getChild(0).evaluate(pm).isNull();
 		if (not) {
 			ret = !ret;
 		}

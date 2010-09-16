@@ -1,6 +1,7 @@
 package org.orbisgis.core.renderer.se.parameter.real;
 
 import java.util.List;
+import javax.swing.JPanel;
 import javax.xml.bind.JAXBElement;
 import org.gdms.data.feature.Feature;
 import org.orbisgis.core.renderer.persistance.ogc.BinaryOperatorType;
@@ -8,8 +9,16 @@ import org.orbisgis.core.renderer.persistance.ogc.ExpressionType;
 import org.orbisgis.core.renderer.persistance.se.ParameterValueType;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
+import org.orbisgis.core.ui.editorViews.toc.actions.cui.EditFeatureTypeStylePanel;
 
-public class RealBinaryOperator implements RealParameter {
+public final class RealBinaryOperator implements RealParameter {
+
+    private RealBinaryOperatorType op;
+    private RealParameter l;
+    private RealParameter r;
+
+	private Double min;
+	private Double max;
 
     public enum RealBinaryOperatorType {
         ADD, SUB, MUL, DIV
@@ -22,9 +31,9 @@ public class RealBinaryOperator implements RealParameter {
     }
 
     public RealBinaryOperator(RealParameter l, RealParameter r, RealBinaryOperatorType op) {
-        this.l = l;
-        this.r = r;
         this.op = op;
+		setLeftValue(l);
+		setRightValue(r);
     }
 
     public RealBinaryOperator(JAXBElement<BinaryOperatorType> expr){
@@ -142,8 +151,20 @@ public class RealBinaryOperator implements RealParameter {
         return p;
     }
 
+	@Override
+	public JPanel getEditionPanel(EditFeatureTypeStylePanel ftsPanel){
+		throw new UnsupportedOperationException("Not yet implemented ("+ this.getClass() + " )");
+	}
 
-    private RealBinaryOperatorType op;
-    private RealParameter l;
-    private RealParameter r;
+	@Override
+	public void setMinValue(Double min) {
+		this.min = min;
+	}
+
+	@Override
+	public void setMaxValue(Double max) {
+		this.max = max;
+	}
+
+
 }

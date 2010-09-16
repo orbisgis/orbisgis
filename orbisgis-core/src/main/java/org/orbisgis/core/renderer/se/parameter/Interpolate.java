@@ -3,6 +3,7 @@ package org.orbisgis.core.renderer.se.parameter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import javax.swing.JPanel;
 import javax.xml.bind.JAXBElement;
 import org.orbisgis.core.renderer.persistance.ogc.ExpressionType;
 import org.orbisgis.core.renderer.persistance.se.InterpolateType;
@@ -12,6 +13,7 @@ import org.orbisgis.core.renderer.persistance.se.ObjectFactory;
 import org.orbisgis.core.renderer.persistance.se.ParameterValueType;
 
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
+import org.orbisgis.core.ui.editorViews.toc.actions.cui.EditFeatureTypeStylePanel;
 
 /**
  *
@@ -141,6 +143,11 @@ public abstract class Interpolate<ToType extends SeParameter, FallbackType exten
         ObjectFactory of = new ObjectFactory();
         return of.createInterpolate(i);
     }
+
+	@Override
+	public JPanel getEditionPanel(EditFeatureTypeStylePanel ftsPanel){
+		throw new UnsupportedOperationException("Not yet implemented ("+ this.getClass() + " )");
+	}
 
     protected InterpolationMode mode;
     protected RealParameter lookupValue;

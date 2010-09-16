@@ -1,11 +1,19 @@
 package org.orbisgis.core.renderer.se.parameter.real;
 
+import javax.swing.JPanel;
 import javax.xml.bind.JAXBElement;
 import org.gdms.data.feature.Feature;
 import org.orbisgis.core.renderer.persistance.ogc.LiteralType;
 import org.orbisgis.core.renderer.se.parameter.Literal;
+import org.orbisgis.core.ui.editorViews.toc.actions.cui.EditFeatureTypeStylePanel;
+import org.orbisgis.core.ui.editorViews.toc.actions.cui.EditRealLiteralPanel;
 
 public class RealLiteral extends Literal implements RealParameter{
+
+    public static final RealLiteral ZERO = new RealLiteral(0.0);
+    private double v;
+	private Double min;
+	private Double max;
 
     public RealLiteral(){
         v = 1.0;
@@ -45,8 +53,26 @@ public class RealLiteral extends Literal implements RealParameter{
         return v2.toString();
     }
 
+	@Override
+	public JPanel getEditionPanel(EditFeatureTypeStylePanel ftsPanel){
+		return new EditRealLiteralPanel(this);
+	}
 
-    public static final RealLiteral ZERO = new RealLiteral(0.0);
+	@Override
+	public void setMinValue(Double min) {
+		this.min = min;
+	}
 
-    private double v;
+	@Override
+	public void setMaxValue(Double max) {
+		this.max = max;
+	}
+
+	public Double getMinValue() {
+		return min;
+	}
+
+	public Double getMaxValue() {
+		return max;
+	}
 }

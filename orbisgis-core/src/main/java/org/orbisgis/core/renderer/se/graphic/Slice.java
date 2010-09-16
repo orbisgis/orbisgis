@@ -1,17 +1,20 @@
 package org.orbisgis.core.renderer.se.graphic;
 
 import org.orbisgis.core.renderer.persistance.se.SliceType;
+import org.orbisgis.core.renderer.se.FillNode;
 import org.orbisgis.core.renderer.se.SymbolizerNode;
 import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.fill.Fill;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 
-public class Slice implements SymbolizerNode {
+public class Slice implements SymbolizerNode, FillNode {
 
+	@Override
     public Fill getFill() {
         return fill;
     }
 
+	@Override
     public void setFill(Fill fill) {
         this.fill = fill;
         fill.setParent(this);

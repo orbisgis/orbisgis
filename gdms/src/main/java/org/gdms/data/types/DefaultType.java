@@ -62,6 +62,7 @@ public class DefaultType implements Type {
 	}
 
 	/**
+         * Create a new Type with an empty array of constraints, using the given typeCode
 	 * @param description
 	 * @param typeCode
 	 * @throws InvalidTypeException
@@ -71,6 +72,7 @@ public class DefaultType implements Type {
 	}
 
 	/**
+         * Create a new Type, using the given typeCode and constraints array.
 	 * @param constraints
 	 * @param description
 	 * @param typeCode

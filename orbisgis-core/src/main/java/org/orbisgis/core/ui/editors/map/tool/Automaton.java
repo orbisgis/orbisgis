@@ -81,10 +81,6 @@ public interface Automaton extends Observer {
 
 	public void draw(Graphics g) throws DrawingException;
 
-	public String getMessage();
-
-	public String getConsoleCommand();
-
 	public String getTooltip();
 
 	public String getName();

@@ -42,6 +42,7 @@ import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
 import org.gdms.sql.strategies.IncompatibleTypesException;
+import org.orbisgis.progress.IProgressMonitor;
 
 public class LikeOperator extends AbstractOperator {
 
@@ -72,12 +73,12 @@ public class LikeOperator extends AbstractOperator {
 		}
 	}
 
-	public Value evaluateExpression() throws EvaluationException {
-		Value value = getRef().evaluate();
+	public Value evaluateExpression(IProgressMonitor pm) throws EvaluationException {
+		Value value = getRef().evaluate(pm);
 		if (value.isNull()) {
 			return ValueFactory.createValue(false);
 		} else {
-			Value ret = value.like(getPattern().evaluate());
+			Value ret = value.like(getPattern().evaluate(pm));
 			if (not) {
 				ret = ret.inversa();
 			}

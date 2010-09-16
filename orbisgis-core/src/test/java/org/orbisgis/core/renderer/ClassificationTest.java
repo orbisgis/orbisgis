@@ -53,13 +53,11 @@ public class ClassificationTest extends TestCase {
 	private DataSourceFactory dsf = new DataSourceFactory();
 
 	// Data to test
-	File src = new File("../../datas2tests/shp/bigshape2D/cantons.shp");
-	File landcover = new File(
-			"../../datas2tests/shp/mediumshape2D/landcover2000.shp");
+	File landcover = new File("src/test/resources/data//landcover2000.shp");
 
 	public void testStandard() throws Exception {
 
-		DataSource ds = dsf.getDataSource(src);
+		DataSource ds = dsf.getDataSource(landcover);
 		SpatialDataSourceDecorator sds = new SpatialDataSourceDecorator(ds);
 		sds.open();
 
@@ -68,14 +66,14 @@ public class ClassificationTest extends TestCase {
 		rm.disecStandard();
 
 		Range[] ranges = rm.getRanges();
-		assertTrue(checkRange(ranges[0], 0, 2608));
-		assertTrue(checkRange(ranges[1], 2608, 27377));
-		assertTrue(checkRange(ranges[2], 27377, 807726));
+		assertTrue(checkRange(ranges[0], 0.05, 0.2));
+		assertTrue(checkRange(ranges[1], 0.2, 0.4));
+		assertTrue(checkRange(ranges[2], 0.4, 1));
 		ds.close();
 
 	}
 
-	private boolean checkRange(Range range, int min, int max) {
+	private boolean checkRange(Range range, double min, double max) {
 
 		if ((range.getMinRange() == min) && (range.getMaxRange() == max)) {
 			return true;
@@ -139,7 +137,7 @@ public class ClassificationTest extends TestCase {
 
 	public void testEquivalences() throws Exception {
 
-		DataSource ds = dsf.getDataSource(src);
+		DataSource ds = dsf.getDataSource(landcover);
 		SpatialDataSourceDecorator sds = new SpatialDataSourceDecorator(ds);
 		sds.open();
 
@@ -148,49 +146,17 @@ public class ClassificationTest extends TestCase {
 		rm.disecEquivalences();
 
 		Range[] ranges = rm.getRanges();
-		assertTrue(checkRange(ranges[0], 0, 203533));
-		assertTrue(checkRange(ranges[1], 203533, 422444));
-		assertTrue(checkRange(ranges[2], 422444, 807726));
-		assertTrue(checkRange(ranges[3], 807726, 807726));
+		assertTrue(checkRange(ranges[0], 0.05, 0.4));
+		assertTrue(checkRange(ranges[1], 0.4, 1));
+		assertTrue(checkRange(ranges[2], 1, 1));
+		assertTrue(checkRange(ranges[3], 1, 1));
 		sds.close();
 	}
 
-	// public void testLandcoverEquivalences() throws Exception {
-	//
-	// DataSource ds = dsf.getDataSource(landcover);
-	// ds.open();
-	//
-	// RangeMethod rm = new RangeMethod(ds, "runoff_win", 7);
-	// rm.disecStandard();
-	// testGoodIntervals(rm);
-	//
-	// rm = new RangeMethod(ds, "runoff_win", 6);
-	// rm.disecEquivalences();
-	// testGoodIntervals(rm);
-	//
-	// rm = new RangeMethod(ds, "runoff_win", 6);
-	// rm.disecMean();
-	// testGoodIntervals(rm);
-	//
-	// rm = new RangeMethod(ds, "runoff_win", 6);
-	// rm.disecQuantiles();
-	// testGoodIntervals(rm);
-	//
-	// ds.close();
-	// }
-	//
-	// private void testGoodIntervals(RangeMethod rm) {
-	// Range[] ranges = rm.getRanges();
-	// for (int i = 0; i < ranges.length - 1; i++) {
-	// assertTrue(ranges[i].getMaxRange() <= ranges[i + 1].getMinRange());
-	// assertTrue(ranges[i].getMaxRange() < ranges[i + 1].getMaxRange());
-	//
-	// }
-	// }
 
 	public void testMoyennes() throws Exception {
 
-		DataSource ds = dsf.getDataSource(src);
+		DataSource ds = dsf.getDataSource(landcover);
 		SpatialDataSourceDecorator sds = new SpatialDataSourceDecorator(ds);
 		sds.open();
 
@@ -199,16 +165,16 @@ public class ClassificationTest extends TestCase {
 		rm.disecMean();
 
 		Range[] ranges = rm.getRanges();
-		assertTrue(checkRange(ranges[0], 0, 6889));
-		assertTrue(checkRange(ranges[1], 6889, 14989));
-		assertTrue(checkRange(ranges[2], 14989, 33312));
-		assertTrue(checkRange(ranges[3], 33312, 807726));
+		assertTrue(checkRange(ranges[0], 1, 310));
+		assertTrue(checkRange(ranges[1], 310, 619));
+		assertTrue(checkRange(ranges[2], 619, 929));
+		assertTrue(checkRange(ranges[3], 929, 1237));
 		sds.close();
 	}
 
 	public void testQuantiles() throws Exception {
 
-		DataSource ds = dsf.getDataSource(src);
+		DataSource ds = dsf.getDataSource(landcover);
 		SpatialDataSourceDecorator sds = new SpatialDataSourceDecorator(ds);
 		sds.open();
 
@@ -217,15 +183,15 @@ public class ClassificationTest extends TestCase {
 		rm.disecQuantiles();
 
 		Range[] ranges = rm.getRanges();
-		assertTrue(checkRange(ranges[0], 0, 4971));
-		assertTrue(checkRange(ranges[1], 4971, 9177));
-		assertTrue(checkRange(ranges[2], 9177, 17889));
-		assertTrue(checkRange(ranges[3], 17889, 807726));
+		assertTrue(checkRange(ranges[0], 1, 310));
+		assertTrue(checkRange(ranges[1], 310, 620));
+		assertTrue(checkRange(ranges[2], 620, 930));
+		assertTrue(checkRange(ranges[3], 930, 1237));
 		sds.close();
 	}
 
 	public void testProportionalMethods() throws Exception {
-		DataSource ds = dsf.getDataSource(src);
+		DataSource ds = dsf.getDataSource(landcover);
 		SpatialDataSourceDecorator sds = new SpatialDataSourceDecorator(ds);
 		sds.open();
 
@@ -234,40 +200,24 @@ public class ClassificationTest extends TestCase {
 		pm.build(3000);
 
 		int coefType = 1;
-		assertTrue(pm.getLinearSize(18155, coefType) == 8.211579893462739);
-		assertTrue(pm.getLinearSize(3153, coefType) == 3.422083335566387);
-		assertTrue(pm.getLinearSize(7096, coefType) == 5.1337580804787715);
-		assertTrue(pm.getLinearSize(94162, coefType) == 18.701069025383298);
-		;
+		assertTrue(pm.getLinearSize(1, coefType) == 1.5573125286997695);
+		assertTrue(pm.getLinearSize(10, coefType) == 4.92465461940761);
+		assertTrue(pm.getLinearSize(100, coefType) == 15.573125286997696);
+		assertTrue(pm.getLinearSize(300, coefType) == 26.973444229715664);
+		
 
 		int sqrtFactor = 2;
-		assertTrue(pm.getSquareSize(3871, sqrtFactor, coefType) == 14.411208598469774);
-		assertTrue(pm.getSquareSize(32711, sqrtFactor, coefType) == 24.570730414560927);
-		assertTrue(pm.getSquareSize(18747, sqrtFactor, coefType) == 21.378516067988976);
-		assertTrue(pm.getSquareSize(7499, sqrtFactor, coefType) == 17.001821415072314);
+		assertTrue(pm.getSquareSize(1, sqrtFactor, coefType) == 9.235665655783968);
+		assertTrue(pm.getSquareSize(10, sqrtFactor, coefType) == 16.423594073684257);
+		assertTrue(pm.getSquareSize(100, sqrtFactor, coefType) == 29.205739180069987);
+		assertTrue(pm.getSquareSize(300, sqrtFactor, coefType) == 38.43691436395855);
 
-		assertTrue(pm.getLogarithmicSize(8214, coefType) == 44.58703754496408);
-		assertTrue(pm.getLogarithmicSize(32990, coefType) == 47.902581954727424);
-		assertTrue(pm.getLogarithmicSize(3678, coefType) == 42.55341898566016);
-		assertTrue(pm.getLogarithmicSize(94162, coefType) == 50.25912203356446);
+		assertTrue(pm.getLogarithmicSize(1, coefType) == 0.0);
+		assertTrue(pm.getLogarithmicSize(10, coefType) == 31.146906757706503);
+		assertTrue(pm.getLogarithmicSize(100, coefType) == 44.048377962718746);
+		assertTrue(pm.getLogarithmicSize(300, coefType) == 49.02172119415002);
 
 	}
-	//
-	// public void testProportionalLogarithmicMethodInLandCover() throws
-	// Exception {
-	// DataSource ds = dsf.getDataSource(landcover);
-	// ds.open();
-	//
-	// ProportionalMethod pm = new ProportionalMethod(ds, "runoff_win");
-	// pm.build(3000);
-	//
-	// for (int i = 0; i < ds.getRowCount(); i++) {
-	// assertTrue(pm.getLogarithmicSize(ds.getDouble(i, "runoff_win"), 1) !=
-	// Double.POSITIVE_INFINITY);
-	// }
-	//
-	// ds.close();
-	//
-	// }
+	
 
 }

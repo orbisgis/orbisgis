@@ -72,12 +72,13 @@ public class LayerModelTest extends AbstractTest {
 		dsf.getSourceManager().register("vector3", omd);
 		dummy3 = dsf.getDataSource("vector3");
 		super.setUp();
+		super.registerDataManager();
 	}
 
 	public void testTreeExploring() throws Exception {
 		ILayer vl = getDataManager().createLayer((DataSource) dummy);
 		ILayer rl = getDataManager().createLayer("my tiff",
-				new File("src/test/resources/ace.tif"));
+				new File("src/test/resources/data/ace.tiff"));
 		ILayer lc = getDataManager().createLayerCollection("my data");
 		lc.addLayer(vl);
 		lc.addLayer(rl);
@@ -173,7 +174,7 @@ public class LayerModelTest extends AbstractTest {
 				.getService(DataManager.class)).getDataSourceFactory();
 		SourceManager sourceManager = dsf.getSourceManager();
 		sourceManager.register("mySource", new File(
-				"src/test/resources/bv_sap.shp"));
+				"src/test/resources/data/bv_sap.shp"));
 		ILayer lc = getDataManager().createLayerCollection("firstLevel");
 		ILayer vl1 = getDataManager().createLayer("mySource");
 		ILayer vl2 = getDataManager().createLayer("mySource");

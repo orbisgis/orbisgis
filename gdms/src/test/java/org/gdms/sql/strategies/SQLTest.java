@@ -108,8 +108,7 @@ public class SQLTest extends SourceTest {
 		metadata.addField("f1", Type.INT);
 		dsf.getSourceManager().register("source",
 				new GenericObjectDriver(metadata));
-		dsf.executeSQL("insert into source (f1) values(1);");
-		dsf.executeSQL("insert into source (f1) values(autonumeric());");
+		dsf.executeSQL("insert into source (f1) values(ABS(2));");
 	}
 
 	public void testCreateAsTableCustomQuery() throws Exception {
@@ -141,16 +140,36 @@ public class SQLTest extends SourceTest {
 		dsf.executeSQL("create table temp as select * from "
 				+ super.getSHPTABLE());
 		dsf.executeSQL("delete from temp where gid = 1;");
+
+		DataSource ds = dsf.getDataSource("temp");
+
+		ds.open();
+		int fieldIndex = ds.getFieldIndexByName("gid");
+		for (int i = 0; i < ds.getRowCount(); i++) {
+			int value = ds.getFieldValue(i, fieldIndex).getAsInt();
+			assertTrue(value != 1);
+
+		}
+		ds.close();
 	}
-	
+
 	public void testDeleteExistsTable() throws Exception {
 		dsf.getSourceManager().register("temp",
 				new File(backupDir + "/delete.shp"));
 		dsf.executeSQL("create table temp as select * from "
-				+ super.getSHPTABLE());		
-		dsf.executeSQL("create table centroid as select gid, st_centroid(the_geom) as the_geom from "
-				+ super.getSHPTABLE());		
-		dsf.executeSQL("delete from temp where exists (select a.gid from centroid a, temp b where st_intersects(a.the_geom, b.the_geom));");
+				+ super.getSHPTABLE());
+		dsf
+				.executeSQL("create table centroid as select gid, st_centroid(the_geom) as the_geom from "
+						+ super.getSHPTABLE());
+		dsf
+				.executeSQL("delete from temp where exists (select a.gid from centroid a, temp b where st_intersects(a.the_geom, b.the_geom));");
+	
+		DataSource ds = dsf.getDataSource("temp");
+
+		ds.open();
+		assertTrue(ds.getRowCount()==0);
+		ds.close();
+	
 	}
 
 	public void testDropTablePurge() throws Exception {
@@ -523,14 +542,14 @@ public class SQLTest extends SourceTest {
 		}
 	}
 
-	public void testDistinctOnCommunesCase() throws Exception {
-		dsf.getSourceManager().register("communes",
-				new File("../../datas2tests/shp/bigshape2D/communes.shp"));
+	public void testDistinctOnOneFieldCase() throws Exception {
+		dsf.getSourceManager().register("landcover",
+				new File(internalData + "landcover2000.shp"));
 		DataSource d = dsf
-				.getDataSourceFromSQL("select distinct STATUT from communes ;");
+				.getDataSourceFromSQL("select distinct runoff_win from landcover ;");
 
 		d.open();
-		int fieldIndex = d.getFieldIndexByName("STATUT");
+		int fieldIndex = d.getFieldIndexByName("runoff_win");
 		Set<Value> valueSet = new HashSet<Value>();
 		for (int i = 0; i < d.getRowCount(); i++) {
 			assertTrue(!valueSet.contains(d.getFieldValue(i, fieldIndex)));
@@ -695,7 +714,7 @@ public class SQLTest extends SourceTest {
 
 	}
 
-	public void testWhereExists() throws Exception {
+	public void testSelectWhereExists() throws Exception {
 
 		String data = super.getAnySpatialResource();
 
@@ -963,7 +982,7 @@ public class SQLTest extends SourceTest {
 		omd.addValues(new Value[] { ValueFactory.createValue(Geometries
 				.getPoint()) });
 		dsf.getSourceManager().register("oneline", omd);
-		dsf.getDataSourceFromSQL("select buffer(the_geom, 10) from oneline",
+		dsf.getDataSourceFromSQL("select st_buffer(the_geom, 10) from oneline",
 				DataSourceFactory.NORMAL);
 		assertTrue(tics.length() == 1);
 	}
@@ -998,7 +1017,7 @@ public class SQLTest extends SourceTest {
 				ValueFactory.createValue("b") });
 		dsf.getSourceManager().register("source", omd);
 		DataSource ds = dsf
-				.getDataSourceFromSQL("select geomunion(the_geom) from source "
+				.getDataSourceFromSQL("select st_union(the_geom) from source "
 						+ "group by alpha");
 		ds.open();
 		assertTrue(ds.getRowCount() == 2);
@@ -1072,12 +1091,63 @@ public class SQLTest extends SourceTest {
 		assertTrue(ds.getMetadata().getFieldCount() == 1);
 		ds.close();
 	}
-	
-	public void testInSelect() throws Exception {
+
+	/**
+	 * Table town information town sales plourivo 1500 paimpol 250 nantes 300
+	 * nozay 700
+	 * 
+	 * Table geography region_name town bretagne plourivo bretagne paimpol pays
+	 * de la loire nantes pays de la loire nozay
+	 * 
+	 * @throws Exception
+	 */
+	public void testExistsSelect() throws Exception {
+
 		Type intType = TypeFactory.createType(Type.INT);
 		Type stringType = TypeFactory.createType(Type.STRING);
-		GenericObjectDriver dict = new GenericObjectDriver(new String[] { "code",
-				"text" }, new Type[] { intType, stringType });
+
+		GenericObjectDriver town = new GenericObjectDriver(new String[] {
+				"town", "sales" }, new Type[] { stringType, intType });
+		town.addValues(ValueFactory.createValue("plourivo"), ValueFactory
+				.createValue(1500));
+		town.addValues(ValueFactory.createValue("paimpol"), ValueFactory
+				.createValue(250));
+		town.addValues(ValueFactory.createValue("nantes"), ValueFactory
+				.createValue(300));
+		town.addValues(ValueFactory.createValue("nozay"), ValueFactory
+				.createValue(700));
+
+		GenericObjectDriver geography = new GenericObjectDriver(new String[] {
+				"region_name", "town" }, new Type[] { stringType, intType });
+		geography.addValues(ValueFactory.createValue("bretagne"), ValueFactory
+				.createValue("plourivo"));
+		geography.addValues(ValueFactory.createValue("bretagne"), ValueFactory
+				.createValue("paimpol"));
+		geography.addValues(ValueFactory.createValue("pays de la loire"),
+				ValueFactory.createValue("nantes"));
+		geography.addValues(ValueFactory.createValue("pays de la loire"),
+				ValueFactory.createValue("nozay"));
+
+		dsf.getSourceManager().register("town", town);
+		dsf.getSourceManager().register("geography", geography);
+
+		String query = "SELECT SUM(sales) FROM town " + "WHERE EXISTS "
+				+ "(SELECT * FROM geography WHERE region_name = 'bretagne')";
+
+		DataSource ds = dsf.getDataSourceFromSQL(query);
+		ds.open();
+
+		assertTrue(ds.getInt(0, 0) == 2750);
+
+		ds.close();
+
+	}
+
+	public void testSelectWhereInSubquery() throws Exception {
+		Type intType = TypeFactory.createType(Type.INT);
+		Type stringType = TypeFactory.createType(Type.STRING);
+		GenericObjectDriver dict = new GenericObjectDriver(new String[] {
+				"code", "data" }, new Type[] { intType, stringType });
 		dict.addValues(ValueFactory.createValue(0), ValueFactory
 				.createValue("good"));
 		dict.addValues(ValueFactory.createValue(1), ValueFactory
@@ -1092,9 +1162,9 @@ public class SQLTest extends SourceTest {
 		thetable.addValues(ValueFactory.createValue(0));
 		dsf.getSourceManager().register("dict", dict);
 		dsf.getSourceManager().register("thetable", thetable);
-		DataSource ds = dsf.getDataSourceFromSQL(
-				"select * from thetable " + "where dict_code in "
-						+ "(select code from dict where text = 'good');");
+		DataSource ds = dsf.getDataSourceFromSQL("select * from thetable "
+				+ "where dict_code in "
+				+ "(select code from dict where data = 'good');");
 		ds.open();
 		for (int i = 0; i < ds.getRowCount(); i++) {
 			assertTrue(ds.getInt(i, 0) == 0);
@@ -1136,8 +1206,7 @@ public class SQLTest extends SourceTest {
 		dsf.executeSQL("select register('" + backupDir
 				+ "/addColumn.shp','temp')");
 		dsf
-				.executeSQL("create table temp as select sto_addz(the_geom, gid ) as the_geom, gid  from landcover2000 where gid = 1");
-		// dsf.executeSQL("update temp set the_geom = sto_addz(the_geom, gid )");
+				.executeSQL("create table temp as select st_addz(the_geom, gid ) as the_geom, gid  from landcover2000 where gid = 1");
 
 		DataSource ds = dsf.getDataSource("temp");
 
@@ -1164,17 +1233,35 @@ public class SQLTest extends SourceTest {
 		assertTrue(ds.getInt(0, 0) == 1);
 		ds.close();
 	}
-	
-	public void testUpdateSubquery() throws Exception {
-		createSource("sub", "b", 0, 1, 2, 3);
-		createSource("source", "a", 0, 1, 2, 3);
-		dsf.executeSQL(
-				"update source SET a = 1 "
-						+ "WHERE a = (select * from sub where b=2)", null);
-		DataSource ds = dsf.getDataSource("source");
+
+	public void testUpdateInSubquery() throws Exception {
+		dsf.getSourceManager().register("landcover",
+				new File(internalData + "landcover2000.shp"));
+		dsf.getSourceManager().register("communes",
+				new File(internalData + "communes2000.shp"));
+
+		String subQuery = "select a.gid from communes b, landcover a where st_intersects(a.the_geom, b.the_geom)";
+
+		DataSource dsSubQuery = dsf.getDataSourceFromSQL(subQuery);
+		dsSubQuery.open();
+		long count = dsSubQuery.getRowCount();
+		dsSubQuery.close();
+
+		dsf
+				.executeSQL("create table landcoverUpdated as select * from landcover");
+
+		dsf.executeSQL("update landcoverUpdated SET gid= 9999 "
+				+ "WHERE gid in (" + subQuery + ")", null);
+
+		DataSource dsResultQuery = dsf
+				.getDataSourceFromSQL("select * from landcoverUpdated where gid =9999");
+		dsResultQuery.open();
+		long countRes = dsResultQuery.getRowCount();
+		dsResultQuery.close();
+
+		DataSource ds = dsf.getDataSource("landcoverUpdated");
 		ds.open();
-		assertTrue(ds.getRowCount() == 4);
-		assertTrue(ds.getInt(2, 0) == 1);
+		assertTrue(countRes == count);
 		ds.close();
 	}
 

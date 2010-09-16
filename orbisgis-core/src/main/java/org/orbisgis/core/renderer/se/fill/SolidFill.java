@@ -22,7 +22,7 @@ import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
  *
  * @author maxence
  */
-public class SolidFill extends Fill {
+public final class SolidFill extends Fill {
 
     /**
      * fill with random color 60% opaque
@@ -54,17 +54,17 @@ public class SolidFill extends Fill {
      * @param opacity
      */
     public SolidFill(ColorParameter c, RealParameter opacity) {
-        this.color = c;
-        this.opacity = opacity;
+		this.setColor(c);
+		this.setOpacity(opacity);
     }
 
     public SolidFill(JAXBElement<SolidFillType> sf) {
         if (sf.getValue().getColor() != null) {
-            this.color = SeParameterFactory.createColorParameter(sf.getValue().getColor());
+            setColor(SeParameterFactory.createColorParameter(sf.getValue().getColor()));
         }
 
         if (sf.getValue().getOpacity() != null) {
-            this.opacity = SeParameterFactory.createRealParameter(sf.getValue().getOpacity());
+            setOpacity(SeParameterFactory.createRealParameter(sf.getValue().getOpacity()));
         }
     }
 
@@ -78,6 +78,11 @@ public class SolidFill extends Fill {
 
     public void setOpacity(RealParameter opacity) {
         this.opacity = opacity;
+
+		if (opacity != null){
+			this.opacity.setMinValue(0.0);
+			this.opacity.setMaxValue(100.0);
+		}
     }
 
     public RealParameter getOpacity() {

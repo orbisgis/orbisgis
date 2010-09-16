@@ -72,6 +72,7 @@ import org.orbisgis.core.layerModel.MapContext;
 import org.orbisgis.core.ui.editors.map.tool.ToolManager;
 import org.orbisgis.core.ui.editors.map.tool.TransitionException;
 import org.orbisgis.core.ui.pluginSystem.PlugInContext;
+import org.orbisgis.utils.I18N;
 
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.LineString;
@@ -130,7 +131,7 @@ public class LineTool extends AbstractLineTool {
 	}
 
 	public String getName() {
-		return "Draw a line";
+		return I18N.getText("orbisgis.core.ui.editors.map.tool.line_tooltip");
 	}
 
 }

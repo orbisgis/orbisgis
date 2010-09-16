@@ -39,6 +39,8 @@ package org.orbisgis.core;
 
 import junit.framework.TestCase;
 
+import org.gdms.data.DataSourceFactory;
+import org.gdms.source.SourceManager;
 import org.orbisgis.core.errorManager.ErrorListener;
 import org.orbisgis.core.errorManager.ErrorManager;
 import org.orbisgis.core.ui.TestWorkspace;
@@ -55,7 +57,31 @@ public class AbstractTest extends TestCase {
 		TestWorkspace workspace = new TestWorkspace();
 		workspace.setWorkspaceFolder("target");
 		Services.registerService(Workspace.class, "", workspace);
+		ApplicationInfo applicationInfo = new OrbisGISApplicationInfo();
+		Services.registerService(ApplicationInfo.class,
+				"Gets information about the application: "
+						+ "name, version, etc.", applicationInfo);
+
 		OrbisgisCoreServices.installServices();
+
+	}
+
+	public static void registerDataManager(DataSourceFactory dsf) {
+		// Installation of the service
+		Services
+				.registerService(
+						DataManager.class,
+						"Access to the sources, to its properties (indexes, etc.) and its contents, either raster or vectorial",
+						new DefaultDataManager(dsf));
+	}
+
+	public static void registerDataManager() {
+		DataSourceFactory dsf = new DataSourceFactory();
+		registerDataManager(dsf);
+	}
+
+	protected SourceManager getsSourceManager() {
+		return getDataManager().getSourceManager();
 	}
 
 	protected DataManager getDataManager() {
@@ -106,4 +132,5 @@ public class AbstractTest extends TestCase {
 		}
 
 	}
+
 }

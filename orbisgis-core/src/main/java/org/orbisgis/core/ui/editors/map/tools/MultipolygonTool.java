@@ -49,6 +49,7 @@ import org.orbisgis.core.layerModel.MapContext;
 import org.orbisgis.core.ui.editors.map.tool.ToolManager;
 import org.orbisgis.core.ui.editors.map.tool.TransitionException;
 import org.orbisgis.core.ui.pluginSystem.PlugInContext;
+import org.orbisgis.utils.I18N;
 
 import com.vividsolutions.jts.geom.MultiPolygon;
 
@@ -96,6 +97,6 @@ public class MultipolygonTool extends AbstractMultipolygonTool {
 	}
 
 	public String getName() {
-		return "Draw a multipolygon";
+		return I18N.getText("orbisgis.core.ui.editors.map.tool.multipolygon_tooltip"); 
 	}
 }

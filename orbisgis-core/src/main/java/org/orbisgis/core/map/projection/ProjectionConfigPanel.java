@@ -1,4 +1,4 @@
-package org.orbisgis.core.map.projection;
+/*package org.orbisgis.core.map.projection;
 
 import java.awt.BorderLayout;
 import java.awt.GridLayout;
@@ -116,3 +116,4 @@ public class ProjectionConfigPanel extends JDialog implements ActionListener {
 	}
 
 }
+*/

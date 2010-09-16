@@ -38,6 +38,7 @@ package org.gdms.sql.evaluator;
 
 import org.gdms.data.values.Value;
 import org.gdms.sql.strategies.IncompatibleTypesException;
+import org.orbisgis.progress.IProgressMonitor;
 
 public class Product extends ArithmeticOperator {
 
@@ -45,10 +46,10 @@ public class Product extends ArithmeticOperator {
 		super(children);
 	}
 
-	public Value evaluateExpression() throws EvaluationException,
+	public Value evaluateExpression(IProgressMonitor pm) throws EvaluationException,
 			IncompatibleTypesException {
-		return getLeftOperator().evaluate().producto(
-				getRightOperator().evaluate());
+		return getLeftOperator().evaluate(pm).producto(
+				getRightOperator().evaluate(pm));
 	}
 
 	@Override

@@ -8,8 +8,10 @@ import java.util.List;
 import java.util.Map;
 
 import org.gdms.data.DataSourceFactory;
+import org.gdms.data.NoSuchTableException;
 import org.gdms.data.NonEditableDataSourceException;
 import org.gdms.data.SpatialDataSourceDecorator;
+import org.gdms.data.indexes.IndexException;
 import org.gdms.data.metadata.DefaultMetadata;
 import org.gdms.data.types.Constraint;
 import org.gdms.data.types.GeometryConstraint;
@@ -42,6 +44,8 @@ public class PlanarGraph {
 
 	private DataSourceFactory dsf = new DataSourceFactory();
 
+	private IProgressMonitor pm;
+
 	private static String ID = "id";
 
 	private static String LEFT_FACE = "left_polygon";
@@ -54,15 +58,15 @@ public class PlanarGraph {
 
 	public final static Integer MINUS_ONE = new Integer(-1);
 
-	public PlanarGraph() {
-
+	public PlanarGraph(IProgressMonitor pm) {
+		this.pm = pm;
 	}
 
 	// ************************************************
 	// Create edge layer/
 	// ************************************************
-	public GenericObjectDriver createEdges(SpatialDataSourceDecorator sds,
-			IProgressMonitor pm) {
+	public GenericObjectDriver createEdges(SpatialDataSourceDecorator sds) {
+
 		// Schema edge
 		try {
 			pm.startTask("Create edges graph");
@@ -196,8 +200,10 @@ public class PlanarGraph {
 	// ************************************************
 	// Create face layer
 	// ************************************************
-	public GenericObjectDriver createFaces(GenericObjectDriver omEdges)
-			throws DriverException, NonEditableDataSourceException {
+	public GenericObjectDriver createFaces(SpatialDataSourceDecorator inputSDS,
+			GenericObjectDriver omEdges) throws DriverException,
+			NonEditableDataSourceException, NoSuchTableException,
+			IndexException {
 		// Create the face layer
 
 		DefaultMetadata faceMedata = new DefaultMetadata(new Type[] {
@@ -343,4 +349,5 @@ public class PlanarGraph {
 
 		return queryResult;
 	}
+
 }

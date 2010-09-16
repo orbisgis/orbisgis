@@ -5,6 +5,7 @@
 package org.orbisgis.core.renderer.se;
 
 import com.vividsolutions.jts.geom.Geometry;
+import javax.swing.JPanel;
 import org.gdms.data.DataSourceCreationException;
 import org.gdms.data.SpatialDataSourceDecorator;
 import org.gdms.driver.DriverException;
@@ -15,18 +16,39 @@ import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.persistance.se.RuleType;
 import org.orbisgis.core.renderer.se.common.Uom;
+import org.orbisgis.core.ui.editorViews.toc.actions.cui.EditFeatureTypeStylePanel;
+import org.orbisgis.core.ui.editorViews.toc.actions.cui.EditRulePanel;
 
 /**
  *
  * @author maxence
  */
-public final class Rule implements SymbolizerNode {
+public final class Rule implements SymbolizerNode, PanelableNode {
 
-	private static final String DEFAULT_NAME = "Default Rule";
+	public static final String DEFAULT_NAME = "Default Rule";
 
-	public Rule(){
+	private String name = "";
+	private String description = "";
+	private boolean visible = true;
+	private SymbolizerNode fts;
+	private String where;
+	private boolean fallbackRule = false;
+	private Double minScaleDenom = null;
+	private Double maxScaleDenom = null;
+
+
+	public Rule() {
 		symbolizer = new CompositeSymbolizer();
 		symbolizer.setParent(this);
+	}
+
+	@Override
+	public String toString() {
+		if (name != null && !name.equalsIgnoreCase("")) {
+			return name;
+		} else {
+			return "Untitled rule";
+		}
 	}
 
 	public Rule(ILayer layer) {
@@ -65,10 +87,9 @@ public final class Rule implements SymbolizerNode {
 	public Rule(RuleType rt, ILayer layer) {
 		this(layer);
 
-		if (rt.getName() != null){
+		if (rt.getName() != null) {
 			this.name = rt.getName();
-		}
-		else{
+		} else {
 			this.name = Rule.DEFAULT_NAME;
 		}
 
@@ -107,15 +128,15 @@ public final class Rule implements SymbolizerNode {
 	public RuleType getJAXBType() {
 		RuleType rt = new RuleType();
 
-		if (!this.name.equals(Rule.DEFAULT_NAME)){
+		if (!this.name.equals(Rule.DEFAULT_NAME)) {
 			rt.setName(this.name);
 		}
 
-		if (this.minScaleDenom > 0) {
+		if (this.minScaleDenom != null) {
 			rt.setMinScaleDenominator(minScaleDenom);
 		}
 
-		if (this.maxScaleDenom > 0) {
+		if (this.maxScaleDenom != null) {
 			rt.setMaxScaleDenominator(maxScaleDenom);
 		}
 
@@ -171,12 +192,10 @@ public final class Rule implements SymbolizerNode {
 			System.out.println(" and the filtered DataSource: " + filteredSds.getName());
 
 			return filteredSds;
-		}
-		else{
+		} else {
 			return sds;
 		}
 	}
-
 
 	/**
 	 * Return a Spatial data source, according to rule filter and specified extent
@@ -203,20 +222,26 @@ public final class Rule implements SymbolizerNode {
 		this.fallbackRule = fallbackRule;
 	}
 
-	public double getMaxScaleDenom() {
+	public Double getMaxScaleDenom() {
 		return maxScaleDenom;
 	}
 
-	public void setMaxScaleDenom(double maxScaleDenom) {
-		this.maxScaleDenom = maxScaleDenom;
+	public void setMaxScaleDenom(Double maxScaleDenom) {
+		if (maxScaleDenom != null && maxScaleDenom > 0)
+			this.maxScaleDenom = maxScaleDenom;
+		else
+			this.maxScaleDenom = null;
 	}
 
-	public double getMinScaleDenom() {
+	public Double getMinScaleDenom() {
 		return minScaleDenom;
 	}
 
-	public void setMinScaleDenom(double minScaleDenom) {
-		this.minScaleDenom = minScaleDenom;
+	public void setMinScaleDenom(Double minScaleDenom) {
+		if (minScaleDenom != null && minScaleDenom > 0)
+			this.minScaleDenom = minScaleDenom;
+		else
+			this.minScaleDenom = null;
 	}
 
 	public boolean isVisible() {
@@ -227,18 +252,16 @@ public final class Rule implements SymbolizerNode {
 		this.visible = visible;
 	}
 
-
-
 	public boolean isDomainAllowed(MapTransform mt) {
 		double scale = mt.getScaleDenominator();
 		System.out.println("Current scale is  1:" + scale);
 		System.out.println("Min : " + this.minScaleDenom);
 		System.out.println("Max : " + this.maxScaleDenom);
 
-		return (this.minScaleDenom < 0 && this.maxScaleDenom < 0)
-				|| (this.minScaleDenom < 0 && this.maxScaleDenom > scale)
-				|| (scale > this.minScaleDenom && this.maxScaleDenom < 0)
-				|| (scale > this.minScaleDenom && this.maxScaleDenom > scale);
+		return (this.minScaleDenom == null && this.maxScaleDenom == null)
+				|| (this.minScaleDenom == null && this.maxScaleDenom != null && this.maxScaleDenom > scale)
+				|| (this.minScaleDenom != null && scale > this.minScaleDenom && this.maxScaleDenom == null)
+				|| (this.minScaleDenom != null && this.maxScaleDenom != null && scale > this.minScaleDenom && this.maxScaleDenom > scale);
 	}
 
 	public String getDescription() {
@@ -257,15 +280,8 @@ public final class Rule implements SymbolizerNode {
 		this.name = name;
 	}
 
-
-
-	private String name = "";
-	private String description = "";
-
-	private boolean visible = true;
-	private SymbolizerNode fts;
-	private String where;
-	private boolean fallbackRule = false;
-	private double minScaleDenom = -1;
-	private double maxScaleDenom = -1;
+	@Override
+	public JPanel getEditionPanel(EditFeatureTypeStylePanel ftsPanel) {
+		return new EditRulePanel(this, ftsPanel);
+	}
 }

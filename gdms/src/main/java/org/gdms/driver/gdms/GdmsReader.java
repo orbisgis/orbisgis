@@ -1,3 +1,41 @@
+/*
+ * OrbisGIS is a GIS application dedicated to scientific spatial simulation.
+ * This cross-platform GIS is developed at French IRSTV institute and is able to
+ * manipulate and create vector and raster spatial information. OrbisGIS is
+ * distributed under GPL 3 license. It is produced by the "Atelier SIG" team of
+ * the IRSTV Institute <http://www.irstv.cnrs.fr/> CNRS FR 2488.
+ *
+ *
+ *  Team leader Erwan BOCHER, scientific researcher,
+ *
+ *  User support leader : Gwendall Petit, geomatic engineer.
+ *
+ *
+ * Copyright (C) 2007 Erwan BOCHER, Fernando GONZALEZ CORTES, Thomas LEDUC
+ *
+ * Copyright (C) 2010 Erwan BOCHER, Pierre-Yves FADET, Alexis GUEGANNO, Maxence LAURENT
+ *
+ * This file is part of OrbisGIS.
+ *
+ * OrbisGIS is free software: you can redistribute it and/or modify it under the
+ * terms of the GNU General Public License as published by the Free Software
+ * Foundation, either version 3 of the License, or (at your option) any later
+ * version.
+ *
+ * OrbisGIS is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
+ * A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along with
+ * OrbisGIS. If not, see <http://www.gnu.org/licenses/>.
+ *
+ * For more information, please consult: <http://www.orbisgis.org/>
+ *
+ * or contact directly:
+ * erwan.bocher _at_ ec-nantes.fr
+ * gwendall.petit _at_ ec-nantes.fr
+ */
+
 package org.gdms.driver.gdms;
 
 import java.awt.Point;
@@ -22,7 +60,10 @@ import org.gdms.driver.ReadBufferManager;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
-
+/**
+ * Reader dedicated to the GDMS file format. Used by the GdmsDriver to retrieve informations.
+ *
+ */
 public class GdmsReader {
 
 	private FileInputStream fis;
@@ -35,17 +76,34 @@ public class GdmsReader {
 	private HashMap<Point, Value> rasterValueCache = new HashMap<Point, Value>();
 	private byte version;
 
+        /**
+         * Create a new GdmsReader instance
+         * @param file
+         *              the GDMS file.
+         * @throws IOException if there is a problem when opening the file.
+         */
 	public GdmsReader(File file) throws IOException {
 		fis = new FileInputStream(file);
 		rbm = new ReadBufferManager(fis.getChannel());
 	}
 
+        /**
+         * Close the reader. It will close the inpu stream associated with the reader.
+         * @throws IOException
+         */
 	public void close() throws IOException {
 		fis.close();
 		fis = null;
 		rbm = null;
 	}
 
+        /**
+         * Retrieve the metadatas contained in the gdms file.
+         * @throws IOException
+         *                  If the file format is not supported
+         * @throws DriverException
+         *                  If there is a problem while reading the metadatas.
+         */
 	public void readMetadata() throws IOException, DriverException {
 		// Read version
 		version = rbm.get();
@@ -110,10 +168,21 @@ public class GdmsReader {
 		}
 	}
 
+        /**
+         * get the metadatas contained in the GDMS file.
+         * @return
+         */
 	public Metadata getMetadata() {
 		return metadata;
 	}
 
+        /**
+         * Get the value stored at row rowIndex, in the field fieldId
+         * @param rowIndex
+         * @param fieldId
+         * @return
+         * @throws DriverException
+         */
 	public Value getFieldValue(long rowIndex, int fieldId)
 			throws DriverException {
 		synchronized (this) {
@@ -204,10 +273,18 @@ public class GdmsReader {
 		}
 	}
 
+        /**
+         * Get the envelope which contains these datas
+         * @return
+         */
 	public Envelope getFullExtent() {
 		return fullExtent;
 	}
 
+        /**
+         * Get the number of rows in the table
+         * @return
+         */
 	public long getRowCount() {
 		return rowCount;
 	}

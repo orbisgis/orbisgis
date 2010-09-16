@@ -32,7 +32,10 @@ import org.orbisgis.core.renderer.se.transform.Transform;
  *
  * @author maxence
  */
-public abstract class VectorSymbolizer extends Symbolizer {
+public abstract class VectorSymbolizer extends Symbolizer implements UomNode {
+
+    protected Transform transform;
+    protected Uom uom;
 
     protected VectorSymbolizer(){
     }
@@ -114,6 +117,11 @@ public abstract class VectorSymbolizer extends Symbolizer {
         return uom;
     }
 
+	public Uom getOwnUom(){
+		return uom;
+	}
+
+	@Override
     public void setUom(Uom uom) {
         if (uom != null) {
             this.uom = uom;
@@ -127,6 +135,4 @@ public abstract class VectorSymbolizer extends Symbolizer {
         transform.setParent(this);
     }
 
-    protected Transform transform;
-    protected Uom uom;
 }

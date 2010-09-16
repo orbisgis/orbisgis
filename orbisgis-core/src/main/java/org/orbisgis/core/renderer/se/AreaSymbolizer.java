@@ -25,10 +25,12 @@ import org.orbisgis.core.renderer.se.stroke.PenStroke;
 import org.orbisgis.core.renderer.se.stroke.Stroke;
 import org.orbisgis.core.renderer.se.transform.Transform;
 
-public final class AreaSymbolizer extends VectorSymbolizer {
+public final class AreaSymbolizer extends VectorSymbolizer implements FillNode, StrokeNode {
+
 
 	public AreaSymbolizer() {
 		super();
+		name = "Area symbolizer";
 		uom = Uom.MM;
 		fill = new SolidFill();
 		fill.setParent(this);
@@ -68,6 +70,7 @@ public final class AreaSymbolizer extends VectorSymbolizer {
 		}
 	}
 
+	@Override
 	public void setStroke(Stroke stroke) {
 		if (stroke != null) {
 			stroke.setParent(this);
@@ -75,10 +78,12 @@ public final class AreaSymbolizer extends VectorSymbolizer {
 		this.stroke = stroke;
 	}
 
+	@Override
 	public Stroke getStroke() {
 		return stroke;
 	}
 
+	@Override
 	public void setFill(Fill fill) {
 		if (fill != null) {
 			fill.setParent(this);
@@ -86,6 +91,7 @@ public final class AreaSymbolizer extends VectorSymbolizer {
 		this.fill = fill;
 	}
 
+	@Override
 	public Fill getFill() {
 		return fill;
 	}
@@ -155,7 +161,9 @@ public final class AreaSymbolizer extends VectorSymbolizer {
 
 		return of.createAreaSymbolizer(s);
 	}
+
 	private RealParameter perpendicularOffset;
 	private Stroke stroke;
 	private Fill fill;
+
 }

@@ -10,10 +10,15 @@ import org.orbisgis.core.renderer.se.parameter.Categorize;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
 
-public class Categorize2Real extends Categorize<RealParameter, RealLiteral> implements RealParameter {
+public final class Categorize2Real extends Categorize<RealParameter, RealLiteral> implements RealParameter {
+
+	private Double min;
+	private Double max;
 
     public Categorize2Real(RealParameter initialClass, RealLiteral fallback, RealParameter lookupValue){
         super(initialClass, fallback, lookupValue);
+		this.setMinValue(null);
+		this.setMaxValue(null);
     }
 
     public Categorize2Real(JAXBElement<CategorizeType> expr) {
@@ -49,4 +54,42 @@ public class Categorize2Real extends Categorize<RealParameter, RealLiteral> impl
             return this.fallbackValue.getValue(feat);
         }
     }
+
+
+	@Override
+	public void setClassValue(int i, RealParameter value){
+		super.setClassValue(i, value);
+		value.setMinValue(min);
+		value.setMaxValue(max);
+	}
+
+	@Override
+	public void setFallbackValue(RealLiteral l){
+		super.setFallbackValue(l);
+		l.setMinValue(min);
+		l.setMaxValue(max);
+	}
+
+
+
+	@Override
+	public void setMinValue(Double min) {
+		this.min = min;
+		this.fallbackValue.setMinValue(min);
+
+		for (int i=0; i<this.getNumClasses();i++){
+			RealParameter classValue = this.getClassValue(i);
+			classValue.setMinValue(min);
+		}
+	}
+
+	@Override
+	public void setMaxValue(Double max) {
+		this.max = max;
+		this.fallbackValue.setMaxValue(max);
+		for (int i=0; i<this.getNumClasses();i++){
+			RealParameter classValue = this.getClassValue(i);
+			classValue.setMaxValue(max);
+		}
+	}
 }

@@ -33,13 +33,20 @@
  *    erwan.bocher _at_ ec-nantes.fr
  *    fergonco _at_ gmail.com
  *    thomas.leduc _at_ cerma.archi.fr
+ *    
+ *    Metadata part from gearscape
  */
+
 package org.gdms.sql.strategies;
 
+import java.util.ArrayList;
+
 import org.gdms.data.ExecutionException;
+import org.gdms.data.metadata.DefaultMetadata;
 import org.gdms.data.metadata.Metadata;
 import org.gdms.data.types.Constraint;
 import org.gdms.data.types.Type;
+import org.gdms.data.types.TypeFactory;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.ObjectDriver;
 import org.orbisgis.progress.IProgressMonitor;
@@ -51,7 +58,8 @@ public class UnionOperator extends AbstractOperator implements Operator {
 		this.addChild(op2);
 	}
 
-	public ObjectDriver getResultContents(IProgressMonitor pm) throws ExecutionException {
+	public ObjectDriver getResultContents(IProgressMonitor pm)
+			throws ExecutionException {
 		try {
 			return new UnionDriver(getOperator(0).getResult(pm), getOperator(1)
 					.getResult(pm), getResultMetadata());
@@ -62,17 +70,17 @@ public class UnionOperator extends AbstractOperator implements Operator {
 	}
 
 	public Metadata getResultMetadata() throws DriverException {
-		return getOperator(1).getResultMetadata();
+		try {
+			return getUnionMetadata();
+		} catch (SemanticException e) {
+			// Preprocessor should have catched this error
+			throw new RuntimeException("bug", e);
+		}
 	}
 
-	/**
-	 * Checks that the metadata of both sources is identical
-	 *
-	 * @see org.gdms.sql.strategies.AbstractOperator#validateExpressionTypes()
-	 */
-	@Override
-	public void validateExpressionTypes() throws SemanticException,
-			DriverException {
+	private DefaultMetadata getUnionMetadata() throws DriverException,
+			SemanticException {
+		DefaultMetadata dm = new DefaultMetadata();
 		Metadata m1 = getOperator(0).getResultMetadata();
 		Metadata m2 = getOperator(1).getResultMetadata();
 		if (m1.getFieldCount() != m2.getFieldCount()) {
@@ -80,35 +88,42 @@ public class UnionOperator extends AbstractOperator implements Operator {
 					+ "union on sources with different field count");
 		}
 		for (int i = 0; i < m1.getFieldCount(); i++) {
-			if (!m1.getFieldName(i).equals(m2.getFieldName(i))) {
-				throw new SemanticException("Cannot evaluate union: " + (i + 1)
-						+ "th field name does not match");
-			}
 			Type t1 = m1.getFieldType(i);
 			Type t2 = m2.getFieldType(i);
-			if (t1.getTypeCode() != t2.getTypeCode()) {
-				throw new SemanticException("Cannot evaluate union: " + (i + 1)
-						+ "th field type does not match");
+			int type1Code = t1.getTypeCode();
+			int type2Code = t2.getTypeCode();
+			int type = TypeFactory.getBroaderType(type1Code, type2Code);
+			if (type == -1) {
+				throw new SemanticException("Cannot evaluate union: {0}"
+						+ "th field type does not match: {1}" + " and {2}"
+						+ ". Left type: {3}" + ". Right type:{4}");
 			}
-			if (t1.getConstraints().length != t2.getConstraints().length) {
-				throw new SemanticException("Cannot evaluate union: " + (i + 1)
-						+ "th field constraints does not match");
-			}
+			ArrayList<Constraint> constraints = new ArrayList<Constraint>();
 			for (int j = 0; j < t1.getConstraints().length; j++) {
 				Constraint c1 = t1.getConstraints()[j];
 				Constraint c2 = t2.getConstraint(c1.getConstraintCode());
 				if (c2 == null) {
-					throw new SemanticException("Cannot evaluate union: "
-							+ "missing " + c1.getConstraintCode()
-							+ " constraint in second operator");
-				}
-				if (!c1.getConstraintValue().equals(c2.getConstraintValue())) {
-					throw new SemanticException("Cannot evaluate union: "
-							+ c1.getConstraintCode()
-							+ " constraints does not match");
+					continue;
+				} else if (c1.getConstraintValue().equals(
+						c2.getConstraintValue())) {
+					constraints.add(c1);
 				}
 			}
+			dm.addField(m1.getFieldName(i), TypeFactory.createType(type,
+					constraints.toArray(new Constraint[0])));
 		}
+		return dm;
+	}
+
+	/**
+	 * Checks that the metadata of both sources is identical
+	 * 
+	 * @see org.gdms.sql.strategies.AbstractOperator#validateExpressionTypes()
+	 */
+	@Override
+	public void validateExpressionTypes() throws SemanticException,
+			DriverException {
+		getUnionMetadata();
 		super.validateExpressionTypes();
 	}
 

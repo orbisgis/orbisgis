@@ -41,6 +41,7 @@ import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
 import org.gdms.sql.strategies.IncompatibleTypesException;
+import org.orbisgis.progress.IProgressMonitor;
 
 public class NotEquals extends ComparisonOperator {
 
@@ -48,9 +49,9 @@ public class NotEquals extends ComparisonOperator {
 		super(children);
 	}
 
-	public Value evaluateExpression() throws EvaluationException {
-		Value leftValue = getLeftOperator().evaluate();
-		Value rightValue = getRightOperator().evaluate();
+	public Value evaluateExpression(IProgressMonitor pm) throws EvaluationException {
+		Value leftValue = getLeftOperator().evaluate(pm);
+		Value rightValue = getRightOperator().evaluate(pm);
 		return leftValue.notEquals(rightValue);
 	}
 

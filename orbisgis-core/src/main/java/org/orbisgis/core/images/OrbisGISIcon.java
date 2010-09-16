@@ -253,8 +253,8 @@ public class OrbisGISIcon {
 
 	public static final ImageIcon PICTURE_ADD = IconLoader.getIcon("add.png");
 	public static final ImageIcon PICTURE_DEL = IconLoader
-			.getIcon("delete.png");
-	public static final ImageIcon PICTURE_EDI = IconLoader.getIcon("edit.png");
+			.getIcon("remove.png");
+	public static final ImageIcon PICTURE_EDI = IconLoader.getIcon("pencil.png");
 
 	public static final ImageIcon TABLE = IconLoader.getIcon("table.png");
 

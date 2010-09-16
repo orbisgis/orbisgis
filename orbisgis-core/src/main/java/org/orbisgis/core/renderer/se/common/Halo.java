@@ -8,8 +8,10 @@ import java.io.IOException;
 import org.gdms.data.feature.Feature;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.persistance.se.HaloType;
+import org.orbisgis.core.renderer.se.FillNode;
 
 import org.orbisgis.core.renderer.se.SymbolizerNode;
+import org.orbisgis.core.renderer.se.UomNode;
 import org.orbisgis.core.renderer.se.fill.Fill;
 import org.orbisgis.core.renderer.se.fill.SolidFill;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
@@ -17,7 +19,7 @@ import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
 import org.orbisgis.core.renderer.se.parameter.real.RealLiteral;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 
-public final class Halo implements SymbolizerNode {
+public final class Halo implements SymbolizerNode, UomNode, FillNode {
 
     public Halo() {
         setFill(new SolidFill());
@@ -52,6 +54,12 @@ public final class Halo implements SymbolizerNode {
         }
     }
 
+	@Override
+	public Uom getOwnUom(){
+		return uom;
+	}
+
+	@Override
     public void setUom(Uom uom) {
         this.uom = uom;
     }
@@ -60,11 +68,13 @@ public final class Halo implements SymbolizerNode {
         this.radius = radius;
     }
 
+	@Override
     public void setFill(Fill fill) {
         this.fill = fill;
         fill.setParent(this);
     }
 
+	@Override
     public Fill getFill() {
         return fill;
     }

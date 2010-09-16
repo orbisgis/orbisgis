@@ -48,28 +48,27 @@ public class FormatTest extends AbstractTest {
 	@Override
 	protected void setUp() throws Exception {
 		super.setUp();
+		super.registerDataManager();
 		sourceManager = ((DataManager) Services.getService(DataManager.class))
 				.getDataSourceFactory().getSourceManager();
 		sourceManager.removeAll();
+		
 	}
 
 	public void testTiff() throws Exception {
-		File file = new File("src/test/resources/ace.tif");
-		sourceManager.register("tif", file);
-		getDataManager().createLayer("tif");
-		file = new File("src/test/resources/ace.tiff");
+		File file = new File("src/test/resources/data/ace.tiff");
 		sourceManager.register("tiff", file);
 		getDataManager().createLayer("tiff");
 	}
 
 	public void testAsc() throws Exception {
-		File file = new File("src/test/resources/3x3.asc");
+		File file = new File("src/test/resources/data/3x3.asc");
 		sourceManager.register("asc", file);
 		getDataManager().createLayer("asc");
 	}
 
 	public void testShapefile() throws Exception {
-		File file = new File("src/test/resources/bv_sap.shp");
+		File file = new File("src/test/resources/data/bv_sap.shp");
 		sourceManager.register("shp", file);
 		getDataManager().createLayer("shp");
 	}
