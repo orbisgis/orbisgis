@@ -20,6 +20,8 @@ import org.gdms.data.feature.Feature;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.se.GraphicNode;
 
+import java.awt.geom.AffineTransform;
+
 import org.orbisgis.core.renderer.se.graphic.GraphicCollection;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
@@ -217,19 +219,31 @@ public final class DensityFill extends Fill implements GraphicNode {
 
                 if (g != null) {
 					// Mark size:
-					double width = g.getWidth();
-					double height = g.getHeight();
-
-					System.out.println ("Percentage to cover: " + percentage);
-
-					// TO draw the mark within the tile
-					// 1) create the tile (BufferedImage)
-					// 2) get Graphics2D: tg = ile.createGraphics();
-					// 3) Draw the marks within the tile
-					//   -> tg.drawRenderedImage(g.createRendering(mt.getCurrentRenderContext()), AffineTransform.getTranslateInstance(x, y));
-
-                    // TODO IMPLEMENT: create TexturePaint, see GraphicFill.getTexturePaint
-                    // painter = new TexturePaint(...);
+					double mWidth = g.getWidth();
+					double mHeight = g.getHeight();
+                                        //Final Texture square size
+                                        double TextureSize = getTextureSize(mWidth, mHeight, percentage);
+                                        
+                                        System.out.println ("DensityFill: " + percentage + " / TextureSize:" + TextureSize + "x" + TextureSize);
+                                        //Create image to which to paint the marks
+                                        BufferedImage i = new BufferedImage((int)TextureSize, (int) TextureSize, BufferedImage.TYPE_INT_ARGB);
+                                        //Create graphics from the image
+                                        Graphics2D tg = i.createGraphics();
+                                        //Draw the mark to the image
+                                        //Draw centered full mark if percentage is smaller or equal to 50
+                                        if (percentage <= 50)
+                                            tg.drawRenderedImage(g.createRendering(mt.getCurrentRenderContext()), AffineTransform.getTranslateInstance(TextureSize/2, TextureSize/2));
+                                        //Draw mark quarters
+                                        //Top left corner quarter mark
+                                        tg.drawRenderedImage(g.createRendering(mt.getCurrentRenderContext()), AffineTransform.getTranslateInstance(0, 0));
+                                        //Top right corner quarter mark
+                                        tg.drawRenderedImage(g.createRendering(mt.getCurrentRenderContext()), AffineTransform.getTranslateInstance(TextureSize, 0));
+                                        //Bottom right corner quarter mark
+                                        tg.drawRenderedImage(g.createRendering(mt.getCurrentRenderContext()), AffineTransform.getTranslateInstance(TextureSize, TextureSize));
+                                        //Bottom left corner quarter mark
+                                        tg.drawRenderedImage(g.createRendering(mt.getCurrentRenderContext()), AffineTransform.getTranslateInstance(0, TextureSize));
+                                        //finally set the painter
+                                        painter = new TexturePaint(i, new Rectangle2D.Double(0, 0, i.getWidth(), i.getHeight()));
                 }
             } else {
                 throw new ParameterException("Neither marks or hatches are defined");
@@ -240,6 +254,18 @@ public final class DensityFill extends Fill implements GraphicNode {
                 g2.fill(shp);
             }
         }
+    }
+
+    private double getTextureSize(double markWidth, double markHeight, double percentage)
+    {
+        /* Square size depends on the percentage. Lower or equal to 50, the mark
+         * will be drawn 2 times in total (1 full, 4/4 quarters).
+         * Higher then 50, the mark will be drawn 1 time ( 4/4 quarters).
+         */
+        double TextureSurface = (markWidth * markHeight * 100) / percentage;
+        if(percentage < 50)
+            TextureSurface = (markWidth * markHeight * 2 * 100) / percentage;
+        return Math.round(Math.sqrt(TextureSurface));
     }
 
     @Override
