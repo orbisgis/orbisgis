@@ -3,6 +3,7 @@ package org.orbisgis.core.renderer.se;
 import java.awt.Graphics2D;
 import java.awt.Shape;
 import java.io.IOException;
+import java.util.ArrayList;
 import javax.xml.bind.JAXBElement;
 import org.orbisgis.core.renderer.persistance.se.AreaSymbolizerType;
 import org.orbisgis.core.renderer.persistance.se.ObjectFactory;
@@ -26,7 +27,6 @@ import org.orbisgis.core.renderer.se.stroke.Stroke;
 import org.orbisgis.core.renderer.se.transform.Transform;
 
 public final class AreaSymbolizer extends VectorSymbolizer implements FillNode, StrokeNode {
-
 
 	public AreaSymbolizer() {
 		super();
@@ -115,19 +115,23 @@ public final class AreaSymbolizer extends VectorSymbolizer implements FillNode, 
 	 */
 	@Override
 	public void draw(Graphics2D g2, Feature feat, boolean selected, MapTransform mt) throws ParameterException, IOException, DriverException {
-		Shape shp = this.getShape(feat, mt);
+		ArrayList<Shape> shapes = this.getShape(feat, mt);
 
-		if (shp != null) {
-			if (fill != null) {
-				fill.draw(g2, shp, feat, selected, mt);
-			}
+		if (shapes != null) {
+			for (Shape shp : shapes) {
+				if (fill != null) {
 
-			if (stroke != null) {
-				if (perpendicularOffset != null) {
-					double offset = perpendicularOffset.getValue(feat);
-					// TODO apply perpendicular offset to shp !
+					System.out.println("Shape type is : " + shp.getClass());
+					fill.draw(g2, shp, feat, selected, mt);
 				}
-				stroke.draw(g2, shp, feat, selected, mt);
+
+				if (stroke != null) {
+					if (perpendicularOffset != null) {
+						double offset = perpendicularOffset.getValue(feat);
+						// TODO apply perpendicular offset to shp !
+					}
+					stroke.draw(g2, shp, feat, selected, mt);
+				}
 			}
 		}
 	}
@@ -161,9 +165,7 @@ public final class AreaSymbolizer extends VectorSymbolizer implements FillNode, 
 
 		return of.createAreaSymbolizer(s);
 	}
-
 	private RealParameter perpendicularOffset;
 	private Stroke stroke;
 	private Fill fill;
-
 }
