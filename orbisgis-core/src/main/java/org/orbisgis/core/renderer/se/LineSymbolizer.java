@@ -3,6 +3,7 @@ package org.orbisgis.core.renderer.se;
 import java.awt.Graphics2D;
 import java.awt.Shape;
 import java.io.IOException;
+import java.util.ArrayList;
 import javax.swing.JPanel;
 import javax.xml.bind.JAXBElement;
 import org.gdms.data.feature.Feature;
@@ -29,7 +30,7 @@ import org.orbisgis.core.renderer.se.transform.Transform;
  *
  * @author maxence
  */
-public class LineSymbolizer extends VectorSymbolizer implements StrokeNode  {
+public class LineSymbolizer extends VectorSymbolizer implements StrokeNode {
 
 	private RealParameter perpendicularOffset;
 	private Stroke stroke;
@@ -97,16 +98,20 @@ public class LineSymbolizer extends VectorSymbolizer implements StrokeNode  {
 	@Override
 	public void draw(Graphics2D g2, Feature feat, boolean selected, MapTransform mt) throws ParameterException, IOException, DriverException {
 		if (stroke != null) {
-			Shape shp = this.getShape(feat, mt);
+			ArrayList<Shape> shapes = this.getShape(feat, mt);
 
-			if (shp != null) {
-				if (perpendicularOffset != null) {
-					double offset = perpendicularOffset.getValue(feat);
-					// TODO apply perpendicular offset
+			if (shapes != null) {
+				for (Shape shp : shapes) {
+					if (shp != null) {
+						if (perpendicularOffset != null) {
+							double offset = perpendicularOffset.getValue(feat);
+							// TODO apply perpendicular offset
+						}
+
+						// TODO perpendicular offset !
+						stroke.draw(g2, shp, feat, selected, mt);
+					}
 				}
-
-				// TODO perpendicular offset !
-				stroke.draw(g2, shp, feat, selected, mt);
 			}
 		}
 	}
