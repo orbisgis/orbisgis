@@ -4,6 +4,10 @@ import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.awt.Shape;
 import java.awt.geom.AffineTransform;
+import java.awt.Point;
+import java.awt.Polygon;
+import java.awt.geom.PathIterator;
+import java.util.*;
 
 import java.io.IOException;
 import javax.media.jai.RenderableGraphics;
@@ -67,9 +71,9 @@ public final class DotMapFill extends Fill implements GraphicNode {
     @Override
     public void draw(Graphics2D g2, Shape shp, Feature feat, boolean selected, MapTransform mt) throws ParameterException, IOException {
         if (mark != null && totalQuantity != null && quantityPerMark != null) {
-            RenderableGraphics m = mark.getGraphic(feat, selected, mt);
+            RenderableGraphics gmark = mark.getGraphic(feat, selected, mt);
 
-            if (m != null) {
+            if (gmark != null) {
                 /* Pre-written code which gives the amount of times
                  * the mark should be printed
                  */
@@ -77,134 +81,100 @@ public final class DotMapFill extends Fill implements GraphicNode {
                 double perMark = quantityPerMark.getValue(feat);
                 int n = (int) (total / perMark);
                 //Mark width and height
-                int mWidth = (int)Math.round(m.getWidth());
-                int mHeight = (int)Math.round(m.getHeight());
-                // Shape (world) width and height expressed as Mark size multiplyers.
-                // wWidth * wHeight = nbr times Mark can fit in shape
-                int wWidth = (int)shp.getBounds2D().getWidth()/mWidth;
-                int wHeight = (int)shp.getBounds2D().getHeight()/mHeight;
-                //Shape start location
-                int x = (int)shp.getBounds2D().getX();
-                int y = (int)shp.getBounds2D().getY();
-                //Layout marks randomly on the 2D surface
-                int[][] world = layoutMarks(shp, x, y, wWidth, wHeight, mWidth, mHeight, n);
+                int gMarkWidth = (int)Math.round(gmark.getWidth());
+                int gMarkHeight = (int)Math.round(gmark.getHeight());
+                //Shape (polygon) bound rectangle
+                int shapeWidth = (int)shp.getBounds2D().getWidth();
+                int shapeHeight = (int)shp.getBounds2D().getHeight();
+                //discretised shape rectangle (includes marks)
+                int discreteWidth = shapeWidth/gMarkWidth;
+                int discreteHeight = shapeHeight/gMarkHeight;
+                //Transform shap to Polygon (not pretty but JTS shape object does
+                //not implement the contains() method which is needed)
+                //@TODO : transforming the shape to polygon is not the best sollution here
+                //        The goal is to use the .contains() method which is not implemented in the
+                //        com.vividsolutions.jts.awt.PolygonShape Class
+                Polygon poly = ShapeToPolygon(shp);
+                //Retreive list of all points which are included in the actual region of the shape
+                ArrayList availableCoordinates = intiCoordinates(poly, discreteWidth, discreteHeight,  (int)shp.getBounds2D().getX(),  (int)shp.getBounds2D().getY(), gMarkWidth, gMarkHeight);
+                //Actual list of coordinates which will be used to print the mark
+                ArrayList Coordinates = new ArrayList();
+                int NbrAvailableSpaces = availableCoordinates.size();
+                //System.out.println("*****************************");
+                //System.out.println("Nbr of marks to draw : " + n);
+                //System.out.println("Available spots      : " + NbrAvailableSpaces);
+                //System.out.println("Shape width & height : " + "(" + shapeWidth + ":" + shapeHeight + ")");
+                //System.out.println("Mark width & height  : " + "(" + gMarkWidth + ":" + gMarkHeight + ")");
+                //Check that there are enough points to print all n marks
+                if(n < NbrAvailableSpaces)
+                {
+                    int cpt = 0;
+                    int index = 0;
+                    //Loop until n points have been selected
+                    while (cpt < n)
+                    {
+                        //choose a random coordinate in the available points
+                        index = random(0, availableCoordinates.size());
+                        Coordinates.add( availableCoordinates.get(index));
+                        //remove the chosen point from the list of available ones
+                        availableCoordinates.remove(index);
+                        //Increment counter
+                        cpt++;
+                    }
+                }else if (n >= NbrAvailableSpaces)
+                {
+                    //print all available coordinates if the overall surface
+                    //is to small or equal to the required surface
+                    Coordinates.addAll(availableCoordinates);
+                }else
+                    System.out.println("WARNING (DotMapFill.java, draw()) : Not enough space to draw marks in shape");
+
                 //Create the mark buffered image
-                BufferedImage bImg = new BufferedImage(mWidth, mHeight, BufferedImage.TYPE_INT_ARGB);
+                BufferedImage bImg = new BufferedImage(gMarkWidth, gMarkHeight, BufferedImage.TYPE_INT_ARGB);
                 //Create graphics from the image
                 Graphics2D tg = bImg.createGraphics();
                 //Draw the mark to the image
-                tg.drawRenderedImage(m.createRendering(mt.getCurrentRenderContext()), AffineTransform.getTranslateInstance(mWidth/2, mHeight/2));
+                tg.drawRenderedImage(gmark.createRendering(mt.getCurrentRenderContext()), AffineTransform.getTranslateInstance(gMarkWidth/2, gMarkHeight/2));
                 //Set clipping reagion to shape region
                 g2.setClip(shp);
-                //Loop threw 2D surface and print MARK where value == 1
-                for(int i = 0; i < wWidth; i++)
-                    for(int j = 0; j <wHeight; j++)
-                    {
-                        if(world[i][j] == 1)
-                            g2.drawImage(bImg, null, x + i * mWidth, y + j * mHeight);
-                    }
-                // NOT SURE what the next phrase means:
-                // The graphics2d m has to be plotted n times within shp
-                // method shp.Contains(double x, double y) is not implemented in
-                // the jts library so don't really see how to detect marks are
-                // contained in the actual shape and not its boundries.
-                // For the moment, marks are layed out randomly in the boundry
-                // rectangle
+                //Loop through chosen coordinates
+                for(int i= 0; i < Coordinates.size(); i++)
+                {
+                    //Retreive coordinates
+                    String coord = (String)Coordinates.get(i);
+                    //Split the string to x and y coordinates
+                    String[] point = coord.split(":");
+                    //Draw the mark at those coordinates
+                    g2.drawImage(bImg, null, Integer.parseInt(point[0]), Integer.parseInt(point[1]));
+                }
             }
         }
     }
 
-    private int[][] layoutMarks(Shape shp, int wX, int wY, int wWidth, int wHeight, int mWidth, int mHeight, int numberOfMarks)
+    private ArrayList intiCoordinates(Polygon poly, int width, int height, int polyStartX, int polyStartY, int gMarkWidth, int gMarkHeight)
     {
-        //Create a 2D array representing the 2D world
-        int[][] world = new int[wWidth][wHeight];
-        //Initialize values to 0
-        for(int i = 0; i < wWidth; i++)
+        ArrayList coordinates = new ArrayList();
+        for(int y= 0; y < height; y++)
         {
-            world[i] = new int[wHeight];
-            for(int j = 0; j < wHeight; j++)
-                world[i][j] = 0;
-        }
-        //Check available space compared to amount of marks which have to be printed
-        int totalCaseDispo = wWidth * wHeight;
-        if((totalCaseDispo - numberOfMarks) > 0)
-        {
-            int cpt = 0;
-            //Collect the numberOfMarks points
-            while(cpt < numberOfMarks)
+            for(int x= 0; x < width; x++)
             {
-                //Get a random point
-                int[] newPoint = getPoint(0, wWidth, 0, wHeight);
-                //This next line cannot be used for the moment because
-                //the method contains() is not implemented.
-                /*while(!shp.contains(wX + newPoint[0] * mWidth, wY + newPoint[1] * mHeight))
-                      newPoint = getPoint(0, wWidth, 0, wHeight);*/
-
-                //Check if no collision with an other mark
-                if(!collision(world, wWidth, wHeight, newPoint))
-                    cpt++;
+                /* Calculate the 5 coordinates for each mark to check if all
+                 * fit in the polygon.
+                 * Top left and right corners.
+                 * Bottom left and right corners.
+                 * Lastly the center point.
+                 */
+                Point center = new Point(polyStartX + x * gMarkWidth, polyStartY + y * gMarkHeight);
+                Point topLeft = new Point(center.x - gMarkWidth / 2, center.y - gMarkHeight / 2);
+                Point topRight = new Point(center.x + gMarkWidth / 2, center.y - gMarkHeight / 2);
+                Point botRight = new Point(center.x + gMarkWidth / 2, center.y + gMarkHeight / 2);
+                Point botLeft = new Point(center.x - gMarkWidth / 2, center.y + gMarkHeight / 2);
+                //Make sure the points fit in the shape and add the center to the list of coordinates
+                if(poly.contains(center) && poly.contains(topLeft) && poly.contains(topRight) && poly.contains(botRight) && poly.contains(botLeft))
+                    coordinates.add("" + center.x + ":" + center.y);
             }
         }
-        else if ((totalCaseDispo - numberOfMarks) == 0)
-        {
-            //Available space = amount of marks
-            //Set all free spaces to 1
-            for(int i = 0; i < wWidth; i++)
-                for(int j = 0; j < wHeight; j++)
-                    world[i][j] = 1;
-        }
-        else
-        {
-            //Cannot display the specified amount of marks on the
-            //shape surface. Surface must be grater or mark size should be lower.
-            System.out.println("#@°#~^Cannot draw RenderableGraphics objects " + numberOfMarks + " times on the total surface " + totalCaseDispo + ". Total surface is to small.");
-        }
-
-        //Print array to console
-        /*
-        for(int i = 0; i < wWidth; i++)
-        {
-            for(int j = 0; j < wHeight; j++)
-                System.out.print(world[i][j]);
-            System.out.println("");
-        }*/
-        return world;
-    }
-
-    private boolean collision(int[][] world, int wWidth, int wHeight, int[] point)
-    {
-        //System.out.println("    DETECT COL. de (" + point[0] + ":" + point[1] + ")");
-        //Loop while the spot is not available
-        while(world[point[0]][point[1]] != 0)
-        {
-            //System.out.println("      COLLISION");
-            //if collision, increase x or y if possible (world bounderies)
-            //else just send back true for collision
-            //a new set of coordinates will be sent
-            if(point[0] + 1 < wWidth)
-                point[0]++;
-            else if(point[1] + 1 < wHeight)
-                point[1]++;
-            else
-            {
-                //System.out.println("      NOUVELLE PROPOSITION DE POINT RANDOM");
-                return true;
-            }
-            //System.out.println("      NOUVEAU POINT (" + point[0] + ":" + point[1] + ")");
-        }
-        //Set empty case to occupied
-        world[point[0]][point[1]] = 1;
-        return false;
-    }
-
-    private int[] getPoint(int xMin, int xMax, int yMin, int yMax)
-    {
-        int[] Result = new int[2];
-        //Get X random value
-        Result[0] = random(xMin, xMax);
-        //Get Y random value
-        Result[1] = random(yMin, yMax);
-        return Result;
+        return coordinates;
     }
 
     private int random(int lower, int higher)
@@ -212,6 +182,19 @@ public final class DotMapFill extends Fill implements GraphicNode {
         //Returns a random value v
         // v >= lower et v < higher
         return (int)(Math.random() * (higher-lower)) + lower;
+    }
+
+    private Polygon ShapeToPolygon(Shape shp)
+    {
+            Polygon p = new Polygon();
+            PathIterator pathIterator = shp.getPathIterator(null);
+            double[] seg = new double[6];
+            while (!pathIterator.isDone()) {
+                pathIterator.currentSegment(seg);
+                p.addPoint((int) seg[0], (int) seg[1]);
+                pathIterator.next();
+            }
+            return p;
     }
     
     @Override
