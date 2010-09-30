@@ -121,7 +121,7 @@ public final class AreaSymbolizer extends VectorSymbolizer implements FillNode, 
 			for (Shape shp : shapes) {
 				if (fill != null) {
 
-					System.out.println("Shape type is : " + shp.getClass());
+					//System.out.println("Shape type is : " + shp.getClass());
 					fill.draw(g2, shp, feat, selected, mt);
 				}
 
