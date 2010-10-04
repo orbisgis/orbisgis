@@ -37,22 +37,17 @@
  */
 package org.orbisgis.core.ui.editorViews.toc.actions.cui;
 
-import java.awt.BorderLayout;
 import java.util.ArrayList;
 import java.util.Iterator;
 import javax.swing.Icon;
-import javax.swing.JDialog;
-import javax.swing.JPanel;
-import javax.swing.SwingUtilities;
 
 /**
  *
  * @author maxence
  */
-public abstract class LegendUIComponent extends JPanel {
+public abstract class LegendUIComponent extends LegendUIAbstractPanel {
 
 	protected float weight;
-	protected LegendUIController controller;
 	// The direct parent
 	protected LegendUIComponent parent;
 	// this.parent is null if this component has to be rendered into its own panel
@@ -63,10 +58,9 @@ public abstract class LegendUIComponent extends JPanel {
 
 	//private String name;
 	public LegendUIComponent(String name, LegendUIController controller, LegendUIComponent parent, float weight) {
-		super(new BorderLayout());
+		super(controller);
 
 		this.weight = weight;
-		this.controller = controller;
 		this.parent = parent;
 
 		super.setName(name);
@@ -279,41 +273,4 @@ public abstract class LegendUIComponent extends JPanel {
 
 		this.mountComponent();
 	}
-
-	protected void add(LegendUIComponent comp) {
-		if (comp != null) {
-			if (comp.isNested()) {
-				LegendUILinkToComplexPanel link = new LegendUILinkToComplexPanel(controller, comp);
-				super.add(link);
-			} else {
-				super.add(comp);
-			}
-		}
-	}
-
-	public void add(LegendUIComponent comp, Object constraints) {
-		if (comp != null) {
-			if (comp.isNested()) {
-				LegendUILinkToComplexPanel link = new LegendUILinkToComplexPanel(controller, comp);
-				super.add(link, constraints);
-			} else {
-				super.add(comp, constraints);
-			}
-		}
-	}
-
-
-	public void pack(){
-		this.revalidate();
-
-		JDialog dlg = (JDialog) SwingUtilities.getAncestorOfClass(JDialog.class, this);
-
-		if (dlg != null){
-			dlg.pack();
-		}
-		this.updateUI();
-
-	}
-
-
 }

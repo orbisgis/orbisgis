@@ -53,7 +53,6 @@ import java.util.ArrayList;
 import javax.swing.Icon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
-import javax.swing.JPanel;
 import org.gdms.data.SpatialDataSourceDecorator;
 
 import org.orbisgis.core.images.OrbisGISIcon;
@@ -74,6 +73,7 @@ import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 import org.orbisgis.core.renderer.se.parameter.string.StringLiteral;
 import org.orbisgis.core.renderer.se.parameter.string.StringParameter;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.LegendUIAbstractMetaPanel;
+import org.orbisgis.core.ui.editorViews.toc.actions.cui.LegendUIAbstractPanel;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.LegendUIComponent;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.LegendUIController;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.components.RadioSwitch;
@@ -92,27 +92,35 @@ public final class LegendUICategorizePanel extends LegendUIComponent
 	private Categorize categorize;
 	private LegendUIComponent fallbackPanel;
 	private RadioSwitch thresholdsSwitch;
-	private JPanel classes;
 	private JButton add;
 	private ArrayList<LegendUIAbstractMetaPanel> values;
 	private ArrayList<LegendUIComponent> thresholds;
 
-	private JPanel left;
-	private JPanel right;
-	private JPanel header;
-	private JPanel content;
-	private JPanel footer;
+	private LegendUIAbstractPanel toolbar;
+	private LegendUIAbstractPanel left;
+	private LegendUIAbstractPanel right;
+	private LegendUIAbstractPanel header;
+	private LegendUIAbstractPanel content;
+	private LegendUIAbstractPanel footer;
+
+	private LegendUIAbstractPanel classes;
 
 	public LegendUICategorizePanel(String name, LegendUIController controller, LegendUIComponent parent, Categorize c) {
 		super(name, controller, parent, 0);
 
-		header = new JPanel(new BorderLayout());
-		content = new JPanel(new BorderLayout());
-		footer = new JPanel(new BorderLayout());
+		left = new LegendUIAbstractPanel(controller);
+		right = new LegendUIAbstractPanel(controller);
 
-		left = new JPanel(new BorderLayout());
-		right = new JPanel(new GridLayout(0, 1));
-		classes = new JPanel(new GridLayout(0, 3));
+		header = new LegendUIAbstractPanel(controller);
+		footer = new LegendUIAbstractPanel(controller);
+
+		toolbar = new LegendUIAbstractPanel(controller);
+
+		content = new LegendUIAbstractPanel(controller);
+		classes = new LegendUIAbstractPanel(controller);
+
+		right.setLayout(new GridLayout(0,1));
+		classes.setLayout(new GridLayout(0,3));
 
 		this.categorize = c;
 
@@ -199,15 +207,15 @@ public final class LegendUICategorizePanel extends LegendUIComponent
 
 	@Override
 	protected void mountComponent() {
-
+		header.removeAll();
 		header.add(lookupPanel, BorderLayout.WEST);
 		header.add(thresholdsSwitch, BorderLayout.CENTER);
 		header.add(fallbackPanel, BorderLayout.EAST);
 
 
+		left.removeAll();
 		left.add(header, BorderLayout.NORTH);
 
-		//classes = new JPanel(new BorderLayout());
 		classes.removeAll();
 
 		for (int i = 0; i < values.size(); i++) {
@@ -228,6 +236,7 @@ public final class LegendUICategorizePanel extends LegendUIComponent
 			}
 		}
 
+		content.removeAll();
 		content.add(classes, BorderLayout.CENTER);
 		content.add(add, BorderLayout.SOUTH);
 		left.add(content, BorderLayout.CENTER);

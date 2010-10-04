@@ -49,7 +49,6 @@ import org.orbisgis.core.ui.editorViews.toc.actions.cui.parameter.color.LegendUI
 import javax.swing.Icon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
-import javax.swing.JPanel;
 import org.orbisgis.core.images.OrbisGISIcon;
 import org.orbisgis.core.renderer.se.parameter.Recode;
 import org.orbisgis.core.renderer.se.parameter.SeParameter;
@@ -61,6 +60,7 @@ import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 import org.orbisgis.core.renderer.se.parameter.real.Recode2Real;
 import org.orbisgis.core.renderer.se.parameter.string.Recode2String;
 import org.orbisgis.core.renderer.se.parameter.string.StringLiteral;
+import org.orbisgis.core.ui.editorViews.toc.actions.cui.LegendUIAbstractPanel;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.LegendUIComponent;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.LegendUIController;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.components.TextInput;
@@ -73,7 +73,6 @@ import org.orbisgis.core.ui.editorViews.toc.actions.cui.parameter.string.LegendU
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.parameter.string.LegendUIStringLiteralPanel;
 
 /**
- * @todo MetaString  !
  * @author maxence
  */
 public class LegendUIRecodePanel extends LegendUIComponent
@@ -88,9 +87,9 @@ public class LegendUIRecodePanel extends LegendUIComponent
 	private ArrayList<RmButton> rmBtns;
 
 	private JButton addBtn;
-	private JPanel mapItems;
-	private JPanel toolbar;
-	private JPanel footer;
+	private LegendUIAbstractPanel mapItems;
+	private LegendUIAbstractPanel toolbar;
+	private LegendUIAbstractPanel footer;
 
 	/**
 	 *
@@ -104,9 +103,10 @@ public class LegendUIRecodePanel extends LegendUIComponent
 		super(name, controller, parent, 0);
 
 		this.recode = r;
-		this.mapItems = new JPanel(new GridLayout(0, 3));
-		this.toolbar = new JPanel(new BorderLayout());
-		this.footer = new JPanel(new BorderLayout());
+		this.mapItems = new LegendUIAbstractPanel(controller);
+		mapItems.setLayout(new GridLayout(0,3));
+		this.toolbar = new LegendUIAbstractPanel(controller);
+		this.footer = new LegendUIAbstractPanel(controller);
 
 
 		this.lookupValue = new LegendUIMetaStringPanel("Lookup value", controller, this, recode.getLookupValue()) {
@@ -213,16 +213,12 @@ public class LegendUIRecodePanel extends LegendUIComponent
 
 	@Override
 	protected void mountComponent() {
-		System.out.println ("Mount Recode");
-		Iterator<LegendUIComponent> it = this.getChildrenIterator();
-		while(it.hasNext()){
-			System.out.println (" -> " + it.next());
-		}
-
-
+		toolbar.removeAll();
 		toolbar.add(lookupValue, BorderLayout.WEST);
 		toolbar.add(fallbackPanel, BorderLayout.EAST);
+
 		this.add(toolbar, BorderLayout.NORTH);
+
 
 		int i;
 		mapItems.removeAll();
@@ -240,6 +236,7 @@ public class LegendUIRecodePanel extends LegendUIComponent
 
 		this.add(mapItems, BorderLayout.CENTER);
 
+		footer.removeAll();
 		footer.add(addBtn, BorderLayout.WEST);
 		this.add(footer, BorderLayout.SOUTH);
 	}

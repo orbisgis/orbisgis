@@ -41,12 +41,9 @@
 package org.orbisgis.core.ui.editorViews.toc.actions.cui.stroke;
 
 import java.awt.BorderLayout;
-import java.awt.GridLayout;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.swing.BoxLayout;
 import javax.swing.Icon;
-import javax.swing.JPanel;
 import org.orbisgis.core.images.OrbisGISIcon;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.color.ColorParameter;
@@ -56,6 +53,7 @@ import org.orbisgis.core.renderer.se.stroke.PenStroke;
 import org.orbisgis.core.renderer.se.stroke.PenStroke.LineCap;
 import org.orbisgis.core.renderer.se.stroke.PenStroke.LineJoin;
 import org.orbisgis.core.renderer.se.stroke.Stroke;
+import org.orbisgis.core.ui.editorViews.toc.actions.cui.LegendUIAbstractPanel;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.LegendUIComponent;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.LegendUIController;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.components.ComboBoxInput;
@@ -81,8 +79,9 @@ public class LegendUIPenStrokePanel extends LegendUIComponent implements LegendU
 	private final LineCap[] lCapValues;
 	private final LineJoin[] lJoinValues;
 
-	private JPanel content;
-	private JPanel content2;
+	private LegendUIAbstractPanel content;
+	private LegendUIAbstractPanel content2;
+	private LegendUIAbstractPanel toolbar;
 
 	private UomInput uom;
 
@@ -90,13 +89,12 @@ public class LegendUIPenStrokePanel extends LegendUIComponent implements LegendU
 	private ComboBoxInput lineJoin;
 
 	private TextInput dashArray;
-	private JPanel toolbar;
 
 
 	public LegendUIPenStrokePanel(LegendUIController controller, LegendUIComponent parent, PenStroke pStroke) {
 		super("pen stroke", controller, parent, 0);
 		//this.setLayout(new GridLayout(0,2));
-		this.toolbar = new JPanel(new BorderLayout());
+		this.toolbar = new LegendUIAbstractPanel(controller);
 		this.penStroke = pStroke;
 
 		this.color = new LegendUIMetaColorPanel("color", controller, this, penStroke.getColor()) {
@@ -171,8 +169,8 @@ public class LegendUIPenStrokePanel extends LegendUIComponent implements LegendU
 
 		uom = new UomInput(pStroke);
 
-		content = new JPanel(new BorderLayout());
-		content2 = new JPanel(new BorderLayout());
+		this.content = new LegendUIAbstractPanel(controller);
+		this.content2 = new LegendUIAbstractPanel(controller);
 	}
 
 	@Override
@@ -182,6 +180,7 @@ public class LegendUIPenStrokePanel extends LegendUIComponent implements LegendU
 
 	@Override
 	protected void mountComponent() {
+		toolbar.removeAll();
 		toolbar.add(uom, BorderLayout.WEST);
 		toolbar.add(lineCap, BorderLayout.CENTER);
 		toolbar.add(lineJoin, BorderLayout.CENTER);

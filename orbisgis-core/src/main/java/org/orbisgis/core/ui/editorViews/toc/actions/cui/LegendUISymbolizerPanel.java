@@ -40,11 +40,9 @@ package org.orbisgis.core.ui.editorViews.toc.actions.cui;
 import org.orbisgis.core.renderer.se.StrokeNode;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.stroke.LegendUIMetaStrokePanel;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.fill.LegendUIMetaFillPanel;
-import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 
 import javax.swing.Icon;
-import javax.swing.JPanel;
 
 import org.orbisgis.core.images.OrbisGISIcon;
 
@@ -142,7 +140,7 @@ public class LegendUISymbolizerPanel extends LegendUIComponent {
 
 		this.removeAll();
 
-		JPanel topBar = new JPanel();
+		LegendUIAbstractPanel topBar = new LegendUIAbstractPanel(controller);
 		topBar.setLayout(new BoxLayout(topBar, BoxLayout.X_AXIS));
 
 		topBar.add(nameInput);

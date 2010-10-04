@@ -242,7 +242,7 @@ public class LegendUITOCPanel extends JPanel implements TreeSelectionListener, L
 		sTree.setEditable(false);
 
 		sTree.addTreeSelectionListener(this);
-		sTree.setRootVisible(true);
+		sTree.setRootVisible(false);
 		sTree.setExpandsSelectedPaths(true);
 		sTree.setCellRenderer(new CellRenderer());
 
