@@ -51,12 +51,14 @@ import org.orbisgis.core.DataManager;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.errorManager.ErrorManager;
 import org.orbisgis.core.layerModel.persistence.BoundingBox;
+import org.orbisgis.core.layerModel.persistence.IdTime;
 import org.orbisgis.core.layerModel.persistence.LayerCollectionType;
 import org.orbisgis.core.layerModel.persistence.LayerType;
 import org.orbisgis.core.layerModel.persistence.SelectedLayer;
 import org.orbisgis.core.renderer.Renderer;
 import org.orbisgis.progress.IProgressMonitor;
 import org.orbisgis.progress.NullProgressMonitor;
+import org.orbisgis.utils.I18N;
 
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
@@ -92,6 +94,8 @@ public class DefaultMapContext implements MapContext {
 
 	private Envelope boundingBox;
 
+	private long idTime;
+
 	/**
 	 * @param mapControl
 	 */
@@ -102,6 +106,7 @@ public class DefaultMapContext implements MapContext {
 				.getService(DataManager.class);
 		setRoot(dataManager.createLayerCollection("root"));
 		this.jaxbMapContext = null;
+		idTime = System.currentTimeMillis();
 	}
 
 	private void setRoot(ILayer newRoot) {
@@ -128,7 +133,10 @@ public class DefaultMapContext implements MapContext {
 		return root;
 	}
 
-	@Override
+	public long getIdTime() {
+		return idTime;
+	}
+
 	public Envelope getBoundingBox() {
 		if (boundingBox != null) {
 			return boundingBox;
@@ -180,7 +188,7 @@ public class DefaultMapContext implements MapContext {
 				filtered.add(layer);
 			}
 		}
-		this.selectedLayers = filtered.toArray(new ILayer[0]);
+		this.selectedLayers = filtered.toArray(new ILayer[filtered.size()]);
 
 		for (MapContextListener listener : listeners) {
 			listener.layerSelectionChanged(this);
@@ -241,7 +249,7 @@ public class DefaultMapContext implements MapContext {
 				}
 			}
 
-			selectedLayers = newSelection.toArray(new ILayer[0]);
+			selectedLayers = newSelection.toArray(new ILayer[newSelection.size()]);
 		}
 	}
 
@@ -317,7 +325,9 @@ public class DefaultMapContext implements MapContext {
 
 	private void checkIsOpen() {
 		if (!isOpen()) {
-			throw new IllegalStateException("The map is closed");
+			throw new IllegalStateException(
+					I18N
+							.getText("orbisgis.core.ui.plugins.views.geocognition.wizards.newMap"));
 		}
 	}
 
@@ -343,14 +353,12 @@ public class DefaultMapContext implements MapContext {
 			return jaxbMapContext;
 		} else {
 			org.orbisgis.core.layerModel.persistence.MapContext xmlMapContext = new org.orbisgis.core.layerModel.persistence.MapContext();
-			for (ILayer selected : selectedLayers) {
-				SelectedLayer sl = new SelectedLayer();
-				sl.setName(selected.getName());
-				xmlMapContext.getSelectedLayer().add(sl);
-			}
-			LayerType xmlRootLayer = root.saveLayer();
-			xmlMapContext
-					.setLayerCollection((LayerCollectionType) xmlRootLayer);
+
+			// Set the id time
+			IdTime idTime = new IdTime();
+			idTime.setName(getIdTime());
+
+			xmlMapContext.setIdTime(idTime);
 
 			// get BoundinBox from ,persistence file
 			BoundingBox boundingBox = new BoundingBox();
@@ -362,6 +370,15 @@ public class DefaultMapContext implements MapContext {
 				boundingBox.setName("");
 			}
 			xmlMapContext.setBoundingBox(boundingBox);
+
+			for (ILayer selected : selectedLayers) {
+				SelectedLayer sl = new SelectedLayer();
+				sl.setName(selected.getName());
+				xmlMapContext.getSelectedLayer().add(sl);
+			}
+			LayerType xmlRootLayer = root.saveLayer();
+			xmlMapContext
+					.setLayerCollection((LayerCollectionType) xmlRootLayer);
 
 			/*
 			 * OgcCrs ogcCrs = new OgcCrs(); if (getCoordinateReferenceSystem()
@@ -433,6 +450,11 @@ public class DefaultMapContext implements MapContext {
 			ILayer newRoot = recoverTree(layer, layerPersistenceMap);
 			setRoot(newRoot);
 			try {
+
+				if (jaxbMapContext.getIdTime() != null) {
+					idTime = jaxbMapContext.getIdTime().getName();
+				}
+
 				String boundingBoxValue = jaxbMapContext.getBoundingBox()
 						.getName();
 
@@ -529,7 +551,7 @@ public class DefaultMapContext implements MapContext {
 
 				});
 			}
-			setSelectedLayers(selected.toArray(new ILayer[0]));
+			setSelectedLayers(selected.toArray(new ILayer[selected.size()]));
 		}
 		jaxbMapContext = null;
 	}

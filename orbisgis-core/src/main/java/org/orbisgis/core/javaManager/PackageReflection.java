@@ -249,7 +249,7 @@ public class PackageReflection {
 			}
 		}
 
-		return ret.toArray(new String[0]);
+		return ret.toArray(new String[ret.size()]);
 	}
 
 	private Node getNode(Node startingNode, ArrayList<String> path) {

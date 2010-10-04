@@ -220,7 +220,7 @@ public class MultiInputPanel implements SQLUIPanel {
 	}
 
 	public String[] getErrorMessages() {
-		return errors.toArray(new String[0]);
+		return errors.toArray(new String[errors.size()]);
 	}
 
 	public String[] getFieldNames() {
@@ -231,7 +231,7 @@ public class MultiInputPanel implements SQLUIPanel {
 			}
 		}
 
-		return ret.toArray(new String[0]);
+		return ret.toArray(new String[ret.size()]);
 	}
 
 	public int[] getFieldTypes() {
@@ -253,7 +253,7 @@ public class MultiInputPanel implements SQLUIPanel {
 	}
 
 	public String[] getValidationExpressions() {
-		return expressions.toArray(new String[0]);
+		return expressions.toArray(new String[expressions.size()]);
 	}
 
 	public String[] getValues() {

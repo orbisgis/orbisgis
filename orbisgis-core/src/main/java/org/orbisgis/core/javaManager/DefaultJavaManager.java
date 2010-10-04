@@ -340,7 +340,7 @@ public class DefaultJavaManager implements JavaManager {
 				StandardJavaFileManager stdFileManager = compiler
 						.getStandardFileManager(null, null, null);
 				HashSet<File> systemClassPath = getBuildPath(stdFileManager);
-				pr = new PackageReflection(systemClassPath.toArray(new File[0]));
+				pr = new PackageReflection(systemClassPath.toArray(new File[systemClassPath.size()]));
 			} catch (LinkageError e) {
 				throw new RuntimeException("Bug. Malformed classpaths", e);
 			}

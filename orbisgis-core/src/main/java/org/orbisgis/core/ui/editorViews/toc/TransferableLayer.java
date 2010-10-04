@@ -64,7 +64,7 @@ public class TransferableLayer implements Transferable {
 				nodes.add(node[i]);
 			}
 		}
-		this.nodes = nodes.toArray(new ILayer[0]);
+		this.nodes = nodes.toArray(new ILayer[nodes.size()]);
 	}
 
 	public Object getTransferData(DataFlavor flavor)

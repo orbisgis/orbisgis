@@ -21,7 +21,7 @@ public class ScriptMethodVisitor extends AbstractVisitor {
 	public Object visit(ASTMethodDeclarator node, Object data) {
 		methodName = node.first_token.image;
 		super.visit(node, data);
-		methods.add(new Method(methodName, types.toArray(new Class<?>[0])));
+		methods.add(new Method(methodName, types.toArray(new Class<?>[types.size()])));
 		types.clear();
 		methodName = null;
 
@@ -69,6 +69,6 @@ public class ScriptMethodVisitor extends AbstractVisitor {
 			}
 		}
 
-		return ret.toArray(new Method[0]);
+		return ret.toArray(new Method[ret.size()]);
 	}
 }

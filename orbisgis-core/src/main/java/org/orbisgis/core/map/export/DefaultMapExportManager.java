@@ -149,6 +149,6 @@ public class DefaultMapExportManager implements MapExportManager {
 			}
 		}
 
-		return ret.toArray(new Scale[0]);
+		return ret.toArray(new Scale[ret.size()]);
 	}
 }

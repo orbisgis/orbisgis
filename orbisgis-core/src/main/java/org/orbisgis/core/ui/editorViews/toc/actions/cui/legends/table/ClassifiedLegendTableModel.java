@@ -134,7 +134,7 @@ public abstract class ClassifiedLegendTableModel extends AbstractTableModel
 				values.add(new Integer(i));
 			}
 
-			valueIndex = values.toArray(new Integer[0]);
+			valueIndex = values.toArray(new Integer[values.size()]);
 		}
 
 		return valueIndex[index];

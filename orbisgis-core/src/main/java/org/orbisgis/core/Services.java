@@ -140,7 +140,7 @@ public class Services {
 			ret.add(service + " -> " + servicesDoc.get(service));
 		}
 
-		return ret.toArray(new Class<?>[0]);
+		return ret.toArray(new Class<?>[ret.size()]);
 	}
 
 	/**

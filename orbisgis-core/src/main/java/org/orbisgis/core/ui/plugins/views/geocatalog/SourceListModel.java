@@ -117,7 +117,7 @@ public class SourceListModel extends AbstractListModel implements ListModel {
 				filteredNames.add(name);
 			}
 		}
-		String[] array = filteredNames.toArray(new String[0]);
+		String[] array = filteredNames.toArray(new String[filteredNames.size()]);
 		return array;
 	}
 

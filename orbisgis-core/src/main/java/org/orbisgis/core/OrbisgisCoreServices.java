@@ -267,7 +267,7 @@ public class OrbisgisCoreServices {
 		Services.registerService(JavaManager.class,
 				"Execution of java code and java scripts", javaManager);
 		javaManager.addFilesToClassPath(Arrays.asList(buildPath
-				.toArray(new File[0])));
+				.toArray(new File[buildPath.size()])));
 
 	}
 }

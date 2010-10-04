@@ -69,7 +69,7 @@ public class RenderUtils {
 				return null;
 			} else {
 				return SymbolFactory.createSymbolComposite(symbols
-						.toArray(new Symbol[0]));
+						.toArray(new Symbol[symbols.size()]));
 			}
 		} else {
 			if (symbol.acceptGeometry(geometry)) {

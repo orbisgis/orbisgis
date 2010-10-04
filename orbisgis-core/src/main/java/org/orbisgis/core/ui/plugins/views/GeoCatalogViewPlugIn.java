@@ -100,7 +100,7 @@ public class GeoCatalogViewPlugIn extends ViewPlugIn {
 				for (ActiveFilter activeFilter : filters) {
 					filterIds.add(activeFilter.getId());
 				}
-				panel.setActiveFiltersId(filterIds.toArray(new String[0]));
+				panel.setActiveFiltersId(filterIds.toArray(new String[filterIds.size()]));
 
 				List<Tag> tags = cat.getTag();
 				SourceManager sm = Services.getService(DataManager.class)
@@ -119,7 +119,7 @@ public class GeoCatalogViewPlugIn extends ViewPlugIn {
 						activeLabels.add(tag.getText());
 					}
 				}
-				panel.setActiveLabels(activeLabels.toArray(new String[0]));
+				panel.setActiveLabels(activeLabels.toArray(new String[activeLabels.size()]));
 			} catch (JAXBException e) {
 				throw new PersistenceException("Cannot load geocatalog", e);
 			}

@@ -372,7 +372,7 @@ public class LayerCollection extends AbstractLayer {
 			}
 		}
 
-		return filterLayer.toArray(new ILayer[0]);
+		return filterLayer.toArray(new ILayer[filterLayer.size()]);
 	}
 
 	public ILayer[] getVectorLayers() throws DriverException {
@@ -387,7 +387,7 @@ public class LayerCollection extends AbstractLayer {
 			}
 		}
 
-		return filterLayer.toArray(new ILayer[0]);
+		return filterLayer.toArray(new ILayer[filterLayer.size()]);
 	}
 
 	public boolean isRaster() {
