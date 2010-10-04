@@ -38,24 +38,26 @@
 
 
 
-package org.orbisgis.core.ui.editorViews.toc.actions.cui;
+package org.orbisgis.core.ui.editorViews.toc.actions.cui.stroke;
 
-import java.awt.BorderLayout;
-import javax.swing.BorderFactory;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import org.orbisgis.core.renderer.se.StrokeNode;
+import org.orbisgis.core.renderer.se.stroke.PenStroke;
+import org.orbisgis.core.ui.editorViews.toc.actions.cui.LegendUIComponent;
+import org.orbisgis.core.ui.editorViews.toc.actions.cui.LegendUIController;
+import org.orbisgis.core.ui.editorViews.toc.actions.cui.type.LegendUIType;
 
 /**
  *
  * @author maxence
  */
-public class EditStrokePanel extends JPanel {
+class LegendUIPenStrokeType extends LegendUIType {
 
-	public EditStrokePanel(StrokeNode sNode){
-		super(new BorderLayout());
-		this.setBorder(BorderFactory.createTitledBorder("Stroke"));
-		this.add(new JLabel("Stroke"));
+	public LegendUIPenStrokeType(LegendUIController controller) {
+		super("Pen Stroke", controller);
 	}
 
+	@Override
+	public LegendUIComponent getUIComponent() {
+		PenStroke ps = new PenStroke();
+		return new LegendUIPenStrokePanel(controller, null, ps);
+	}
 }

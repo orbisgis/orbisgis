@@ -2,9 +2,7 @@ package org.orbisgis.core.renderer.se.parameter;
 
 import java.util.ArrayList;
 import java.util.List;
-import javax.swing.JPanel;
 import javax.xml.bind.JAXBElement;
-import org.gdms.data.DataSource;
 import org.gdms.data.feature.Feature;
 import org.orbisgis.core.renderer.persistance.ogc.ExpressionType;
 import org.orbisgis.core.renderer.persistance.se.MapItemType;
@@ -13,7 +11,6 @@ import org.orbisgis.core.renderer.persistance.se.ParameterValueType;
 import org.orbisgis.core.renderer.persistance.se.RecodeType;
 
 import org.orbisgis.core.renderer.se.parameter.string.*;
-import org.orbisgis.core.ui.editorViews.toc.actions.cui.EditFeatureTypeStylePanel;
 
 public abstract class Recode<ToType extends SeParameter, FallbackType extends ToType> implements SeParameter {
 
@@ -72,21 +69,31 @@ public abstract class Recode<ToType extends SeParameter, FallbackType extends To
      * Add a new map item
      * @param key
      * @param value
+	 * @return index of new map item or -1 when key already exists
      */
-    public void addMapItem(String key, ToType value) {
+    public int addMapItem(String key, ToType value) {
         MapItem<ToType> item = new MapItem<ToType>(value, key);
+		System.out.println ("MapItem: " + key + " => " + value);
 
         if (mapItems.contains(item)) {
-            //TODO  throw break unique value rules
+			return -1;
         } else {
             mapItems.add(item);
         }
+
+		return mapItems.size() - 1;
     }
 
     public ToType getMapItemValue(String key) {
         MapItem<ToType> item = new MapItem<ToType>(null, key);
         return mapItems.get(mapItems.indexOf(item)).getValue();
     }
+
+
+	public MapItem<ToType> getMapItem(int i){
+		return mapItems.get(i);
+	}
+
 
     public ToType getMapItemValue(int i) {
         return mapItems.get(i).getValue();
@@ -100,6 +107,12 @@ public abstract class Recode<ToType extends SeParameter, FallbackType extends To
         MapItem<ToType> item = new MapItem<ToType>(null, key);
         mapItems.remove(item);
     }
+
+	public void removeMapItem(int i){
+		if (i >= 0 && i < mapItems.size()){
+			mapItems.remove(i);
+		}
+	}
 
     public ToType getParameter(Feature feat) {
         try {
@@ -141,12 +154,6 @@ public abstract class Recode<ToType extends SeParameter, FallbackType extends To
         ObjectFactory of = new ObjectFactory();
         return of.createRecode(r);
     }
-
-	@Override
-	public JPanel getEditionPanel(EditFeatureTypeStylePanel ftsPanel){
-		throw new UnsupportedOperationException("Not yet implemented ("+ this.getClass() + " )");
-	}
-
 
     protected FallbackType fallbackValue;
     protected StringParameter lookupValue;

@@ -337,4 +337,14 @@ public class OrbisGISIcon {
 	public static final Icon RASTERALGEBRA = IconLoader
 			.getIcon("calculator.png");
 
+
+	/**
+	 * ************************************************** Legend UI Icons
+	 * ***********************************************************
+	 */
+
+	public static final Icon SE_STYLE = IconLoader
+			.getIcon("sld_file.png");
+
+
 }

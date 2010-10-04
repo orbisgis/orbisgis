@@ -1,12 +1,9 @@
 package org.orbisgis.core.renderer.se.parameter.real;
 
-import javax.swing.JPanel;
 import javax.xml.bind.JAXBElement;
 import org.gdms.data.feature.Feature;
 import org.orbisgis.core.renderer.persistance.ogc.LiteralType;
 import org.orbisgis.core.renderer.se.parameter.Literal;
-import org.orbisgis.core.ui.editorViews.toc.actions.cui.EditFeatureTypeStylePanel;
-import org.orbisgis.core.ui.editorViews.toc.actions.cui.EditRealLiteralPanel;
 
 public class RealLiteral extends Literal implements RealParameter{
 
@@ -49,14 +46,8 @@ public class RealLiteral extends Literal implements RealParameter{
 
     @Override
     public String toString(){
-        Double v2 = v;
-        return v2.toString();
+		return Double.toString(v);
     }
-
-	@Override
-	public JPanel getEditionPanel(EditFeatureTypeStylePanel ftsPanel){
-		return new EditRealLiteralPanel(this);
-	}
 
 	@Override
 	public void setMinValue(Double min) {

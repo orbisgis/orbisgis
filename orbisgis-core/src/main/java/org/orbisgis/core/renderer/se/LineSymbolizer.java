@@ -30,7 +30,7 @@ import org.orbisgis.core.renderer.se.transform.Transform;
  *
  * @author maxence
  */
-public class LineSymbolizer extends VectorSymbolizer implements StrokeNode {
+public final class LineSymbolizer extends VectorSymbolizer implements StrokeNode {
 
 	private RealParameter perpendicularOffset;
 	private Stroke stroke;

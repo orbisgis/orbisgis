@@ -55,7 +55,7 @@ public abstract class ComboBoxInput extends JPanel implements ActionListener {
 
 	JComboBox combo;
 
-	public ComboBoxInput(String[] possibilities, int defaultChoice) {
+	public ComboBoxInput(Object[] possibilities, int defaultChoice) {
 		super();
 
 		combo = new JComboBox(possibilities);

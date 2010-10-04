@@ -1,7 +1,6 @@
 package org.orbisgis.core.renderer.se.parameter.real;
 
 import java.util.List;
-import javax.swing.JPanel;
 import javax.xml.bind.JAXBElement;
 import org.gdms.data.feature.Feature;
 import org.orbisgis.core.renderer.persistance.ogc.BinaryOperatorType;
@@ -9,7 +8,6 @@ import org.orbisgis.core.renderer.persistance.ogc.ExpressionType;
 import org.orbisgis.core.renderer.persistance.se.ParameterValueType;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
-import org.orbisgis.core.ui.editorViews.toc.actions.cui.EditFeatureTypeStylePanel;
 
 public final class RealBinaryOperator implements RealParameter {
 
@@ -150,11 +148,6 @@ public final class RealBinaryOperator implements RealParameter {
         p.getContent().add(this.getJAXBExpressionType());
         return p;
     }
-
-	@Override
-	public JPanel getEditionPanel(EditFeatureTypeStylePanel ftsPanel){
-		throw new UnsupportedOperationException("Not yet implemented ("+ this.getClass() + " )");
-	}
 
 	@Override
 	public void setMinValue(Double min) {

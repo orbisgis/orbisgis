@@ -4,7 +4,6 @@ import javax.xml.bind.JAXBElement;
 import org.gdms.data.feature.Feature;
 import org.orbisgis.core.renderer.persistance.se.MapItemType;
 import org.orbisgis.core.renderer.persistance.se.RecodeType;
-import org.orbisgis.core.renderer.se.parameter.MapItem;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.Recode;
 import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;

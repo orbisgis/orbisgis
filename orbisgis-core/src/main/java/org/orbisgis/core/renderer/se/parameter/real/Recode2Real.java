@@ -43,10 +43,10 @@ public class Recode2Real extends Recode<RealParameter, RealLiteral> implements R
     }
 
 	@Override
-	public void addMapItem(String key, RealParameter p){
+	public int addMapItem(String key, RealParameter p){
 		p.setMaxValue(max);
 		p.setMinValue(min);
-		super.addMapItem(key, p);
+		return super.addMapItem(key, p);
 	}
 
 	@Override

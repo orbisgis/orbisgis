@@ -1,9 +1,4 @@
 /*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
-
-/*
  * OrbisGIS is a GIS application dedicated to scientific spatial simulation.
  * This cross-platform GIS is developed at French IRSTV institute and is able to
  * manipulate and create vector and raster spatial information. OrbisGIS is
@@ -43,27 +38,14 @@
 
 
 
-package org.orbisgis.core.ui.editorViews.toc.actions.cui;
+package org.orbisgis.core.ui.editorViews.toc.actions.cui.fill;
 
-import java.awt.FlowLayout;
-import javax.swing.BorderFactory;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import org.orbisgis.core.renderer.se.GraphicNode;
+import org.orbisgis.core.renderer.se.fill.Fill;
 
 /**
  *
  * @author maxence
  */
-public class EditGraphicCollectionPanel extends JPanel {
-
-	private GraphicNode gNode;
-
-	EditGraphicCollectionPanel(GraphicNode gNode){
-		super(new FlowLayout());
-		this.gNode = gNode;
-		this.setBorder(BorderFactory.createTitledBorder("Graphic Collection"));
-		this.add(new JLabel("Graphic Collection"));
-	}
-
+public interface LegendUIFillComponent {
+	public abstract Fill getFill();
 }

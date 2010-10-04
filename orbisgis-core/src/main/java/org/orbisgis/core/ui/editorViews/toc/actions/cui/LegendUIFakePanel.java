@@ -40,16 +40,56 @@
 
 package org.orbisgis.core.ui.editorViews.toc.actions.cui;
 
-import javax.swing.JLabel;
+import java.awt.Component;
+import java.net.URL;
 import javax.swing.JPanel;
+import org.orbisgis.core.sif.UIFactory;
+import org.orbisgis.core.sif.UIPanel;
 
 /**
  *
  * @author maxence
  */
-public class EmptyPanel extends JPanel {
-	public EmptyPanel(String note){
-		super();
-		this.add(new JLabel(note));
+public class LegendUIFakePanel extends JPanel implements UIPanel {
+
+	public LegendUIFakePanel(JPanel content){
+		this.add(content);
 	}
+
+
+	@Override
+	public URL getIconURL() {
+		return UIFactory.getDefaultIcon();
+	}
+
+	@Override
+	public String getTitle() {
+		return "Fake panel";
+	}
+
+	@Override
+	public String initialize() {
+		return null;
+	}
+
+	@Override
+	public String postProcess() {
+		return null;
+	}
+
+	@Override
+	public String validateInput() {
+		return null;
+	}
+
+	@Override
+	public Component getComponent() {
+		return this;
+	}
+
+	@Override
+	public String getInfoText() {
+		return UIFactory.getDefaultOkMessage();
+	}
+
 }

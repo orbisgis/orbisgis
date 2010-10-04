@@ -17,7 +17,6 @@ import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.persistance.se.FontType;
 import org.orbisgis.core.renderer.persistance.se.StyledLabelType;
 import org.orbisgis.core.renderer.se.FillNode;
-import org.orbisgis.core.renderer.se.StrokeNode;
 import org.orbisgis.core.renderer.se.SymbolizerNode;
 import org.orbisgis.core.renderer.se.common.Halo;
 import org.orbisgis.core.renderer.se.common.Uom;
@@ -32,6 +31,7 @@ import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 import org.orbisgis.core.renderer.se.parameter.string.StringLiteral;
 import org.orbisgis.core.renderer.se.parameter.string.StringParameter;
 import org.orbisgis.core.renderer.se.stroke.Stroke;
+import org.orbisgis.core.renderer.se.StrokeNode;
 
 public final class StyledLabel implements SymbolizerNode, FillNode, StrokeNode {
 

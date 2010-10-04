@@ -3,7 +3,6 @@ package org.orbisgis.core.renderer.se.parameter.color;
 
 import java.awt.Color;
 import java.util.Iterator;
-import javax.swing.JPanel;
 import javax.xml.bind.JAXBElement;
 import org.gdms.data.feature.Feature;
 import org.orbisgis.core.renderer.persistance.se.CategorizeType;
@@ -14,8 +13,6 @@ import org.orbisgis.core.renderer.se.parameter.Categorize;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
-import org.orbisgis.core.ui.editorViews.toc.actions.cui.EditCategorizePanel;
-import org.orbisgis.core.ui.editorViews.toc.actions.cui.EditFeatureTypeStylePanel;
 
 
 public class Categorize2Color extends Categorize<ColorParameter, ColorLiteral> implements ColorParameter {
@@ -59,12 +56,5 @@ public class Categorize2Color extends Categorize<ColorParameter, ColorLiteral> i
             return this.fallbackValue.getColor(feat);
         }
     }
-
-	@Override
-	public JPanel getEditionPanel(EditFeatureTypeStylePanel ftsPanel){
-		return new EditCategorizePanel(this);
-	}
-
-
 
 }

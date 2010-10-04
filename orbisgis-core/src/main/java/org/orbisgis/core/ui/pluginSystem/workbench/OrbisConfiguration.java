@@ -112,7 +112,7 @@ import org.orbisgis.core.ui.plugins.status.FreeDefaultWorkspacePlugIn;
 import org.orbisgis.core.ui.plugins.status.WorkspaceNamePlugin;
 import org.orbisgis.core.ui.plugins.toc.CreateChoroplethPlugIn;
 import org.orbisgis.core.ui.plugins.toc.CreateGroupPlugIn;
-import org.orbisgis.core.ui.plugins.toc.EditFeatureTypeStylePlugIn;
+import org.orbisgis.core.ui.plugins.toc.EditSELegendPlugIn;
 import org.orbisgis.core.ui.plugins.toc.ExportFeatureTypeStylePlugIn;
 import org.orbisgis.core.ui.plugins.toc.GroupLayersPlugIn;
 import org.orbisgis.core.ui.plugins.toc.ImportFeatureTypeStylePlugIn;
@@ -174,7 +174,7 @@ public class OrbisConfiguration implements Setup {
 
 	// TOC
 	//private EditLegendPlugIn editLegendPlugIn = new EditLegendPlugIn();
-	private EditFeatureTypeStylePlugIn editFts = new EditFeatureTypeStylePlugIn();
+	private EditSELegendPlugIn editFts = new EditSELegendPlugIn();
     private ImportFeatureTypeStylePlugIn importFTSPlugIn = new ImportFeatureTypeStylePlugIn();
     private ExportFeatureTypeStylePlugIn exportFTSPlugIn = new ExportFeatureTypeStylePlugIn();
     private CreateChoroplethPlugIn createChoroPlugIn = new CreateChoroplethPlugIn();

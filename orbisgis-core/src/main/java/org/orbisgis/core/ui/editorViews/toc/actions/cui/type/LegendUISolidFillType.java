@@ -35,54 +35,26 @@
  * erwan.bocher _at_ ec-nantes.fr
  * gwendall.petit _at_ ec-nantes.fr
  */
+package org.orbisgis.core.ui.editorViews.toc.actions.cui.type;
 
-package org.orbisgis.core.ui.editorViews.toc.actions.cui;
-
-import javax.swing.BoxLayout;
-import javax.swing.JPanel;
-import org.orbisgis.core.renderer.se.fill.Fill;
 import org.orbisgis.core.renderer.se.fill.SolidFill;
-import org.orbisgis.core.renderer.se.parameter.color.ColorParameter;
-import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
+import org.orbisgis.core.ui.editorViews.toc.actions.cui.LegendUIComponent;
+import org.orbisgis.core.ui.editorViews.toc.actions.cui.LegendUIController;
+import org.orbisgis.core.ui.editorViews.toc.actions.cui.fill.LegendUISolidFillPanel;
 
 /**
  *
  * @author maxence
  */
-class EditSolidFillPanel extends JPanel implements AbstractEditFillPanel {
+public class LegendUISolidFillType extends LegendUIType {
 
-	private SolidFill fill;
-	private MetaRealParameterPanel opacity;
-
-	private MetaColorParameterPanel colorPanel;
-
-	public EditSolidFillPanel(SolidFill f){
-		super();
-		this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
-		// First, be sure fill is not null
-		this.fill = f;
-
-		colorPanel = new MetaColorParameterPanel(this.fill.getColor()) {
-			@Override
-			public void colorChanged(ColorParameter newColor) {
-				fill.setColor(newColor);
-			}
-		};
-		this.add(colorPanel);
-
-		opacity = new MetaRealParameterPanel(fill.getOpacity()) {
-			@Override
-			public void realChanged(RealParameter newReal) {
-				fill.setOpacity(newReal);
-			}
-		};
-
-		this.add(opacity);
-
+	public LegendUISolidFillType(LegendUIController controller) {
+		super("Solid fill", controller);
 	}
 
 	@Override
-	public Fill getFill(){
-		return fill;
+	public LegendUIComponent getUIComponent() {
+		SolidFill sFill = new SolidFill();
+		return new LegendUISolidFillPanel(controller, null, sFill);
 	}
 }

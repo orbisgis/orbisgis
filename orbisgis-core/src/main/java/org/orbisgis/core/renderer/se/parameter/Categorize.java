@@ -6,7 +6,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.swing.JPanel;
 import javax.xml.bind.JAXBElement;
 import org.orbisgis.core.renderer.persistance.se.CategorizeType;
 import org.gdms.data.DataSource;
@@ -17,7 +16,6 @@ import org.orbisgis.core.renderer.persistance.se.ParameterValueType;
 import org.orbisgis.core.renderer.persistance.se.ThreshholdsBelongToType;
 
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
-import org.orbisgis.core.ui.editorViews.toc.actions.cui.EditFeatureTypeStylePanel;
 
 /**
  *
@@ -28,6 +26,33 @@ import org.orbisgis.core.ui.editorViews.toc.actions.cui.EditFeatureTypeStylePane
  */
 public abstract class Categorize<ToType extends SeParameter, FallbackType extends ToType> implements SeParameter {
 
+
+	private ArrayList<CategorizeListener> listeners;
+
+	private void fireClassAdded(int index) {
+		for (CategorizeListener l : listeners){
+			l.classAdded(index);
+		}
+	}
+
+	private void fireClassRemoved(int index) {
+		for (CategorizeListener l : listeners){
+			l.classRemoved(index);
+		}
+	}
+
+	private void fireClassMoved(int i, int j){
+		for (CategorizeListener l : listeners){
+			l.classMoved(i, j);
+		}
+	}
+
+	public void register(CategorizeListener l){
+		if (!listeners.contains(l)){
+			listeners.add(l);
+		}
+	}
+
 	public enum CategorizeMethod {
 
 		MANUAL, NATURAL_BREAKS, QUANTILE, EQUAL_INTERVAL, STANDARD_DEVIATION
@@ -35,6 +60,7 @@ public abstract class Categorize<ToType extends SeParameter, FallbackType extend
 
 	protected Categorize() {
 		this.classes = new ArrayList<Category<ToType>>();
+		this.listeners = new ArrayList<CategorizeListener>();
 	}
 
 	public Categorize(ToType firstClassValue, FallbackType fallbackValue, RealParameter lookupValue) {
@@ -43,6 +69,7 @@ public abstract class Categorize<ToType extends SeParameter, FallbackType extend
 		this.lookupValue = lookupValue;
 		this.classes = new ArrayList<Category<ToType>>();
 		this.method = CategorizeMethod.MANUAL;
+		this.listeners = new ArrayList<CategorizeListener>();
 	}
 
 	@Override
@@ -94,12 +121,16 @@ public abstract class Categorize<ToType extends SeParameter, FallbackType extend
 	 * @param value
 	 */
 	public final void addClass(RealParameter threshold, ToType value) {
-		classes.add(new Category<ToType>(value, threshold));
+		int index;
+		Category<ToType> category = new Category<ToType>(value, threshold);
+		classes.add(category);
 		sortClasses();
+		index = classes.indexOf(category) + 1; // take into account first class
 		this.method = CategorizeMethod.MANUAL;
+		fireClassAdded(index);
 	}
 
-	public void removeClass(int i) {
+	public boolean removeClass(int i) {
 		if (getNumClasses() > 1) {
 			if (i < getNumClasses() && i >= 0) {
 				if (i == 0) {
@@ -109,13 +140,12 @@ public abstract class Categorize<ToType extends SeParameter, FallbackType extend
 				} else {
 					Category<ToType> cat = classes.remove(i - 1);
 				}
-			} else {
-                // TODO Throws
+				this.method = CategorizeMethod.MANUAL;
+				fireClassRemoved(i);
+				return true;
 			}
-		} else {
-			// TODO throws must have at least 1 category !!!
 		}
-		this.method = CategorizeMethod.MANUAL;
+		return false;
 	}
 
 	public ToType getClassValue(int i) {
@@ -127,6 +157,7 @@ public abstract class Categorize<ToType extends SeParameter, FallbackType extend
 	}
 
 	public void setClassValue(int i, ToType value) {
+		System.out.println ("Set Class " + i + " value (" + Integer.toHexString(System.identityHashCode(this)) + " to " + value);
 		if (i == 0) {
 			firstClass = value;
 		} else if (i > 0 && i < getNumClasses() - 1) {
@@ -137,9 +168,20 @@ public abstract class Categorize<ToType extends SeParameter, FallbackType extend
 	}
 
 	public void setThresholdValue(int i, RealParameter threshold) {
+		System.out.println ("Set threshold (" + this.getNumClasses());
 		if (i >= 0 && i < getNumClasses() - 1) {
-			classes.get(i).setThreshold(threshold);
-			sortClasses();
+			//try {
+			//	int index = findPlace(threshold.getValue(null));
+				classes.get(i).setThreshold(threshold);
+				sortClasses();
+
+			System.out.println ("Set threshold (" + this.getNumClasses());
+			//	if (i != index){
+			//		fireClassMoved(i, index);
+			//	}
+			//} catch (ParameterException ex) {
+			//}
+
 		} else {
 			// TODO throw
 		}
@@ -170,6 +212,22 @@ public abstract class Categorize<ToType extends SeParameter, FallbackType extend
 		Collections.sort(classes);
 	}
 
+	private int findPlace(double threshold){
+		int i;
+
+		System.out.println ("Threshold is : "  + threshold);
+		for (i=0;i<classes.size()-1;i++){
+			try {
+				if (threshold < classes.get(i).getThreshold().getValue(null)) {
+					break;
+				}
+			} catch (ParameterException ex) {
+				return -1;
+			}
+		}
+		return i+1;
+	}
+
 	protected ToType getParameter(Feature feat) {
 		try {
 			if (getNumClasses() > 1) {
@@ -185,12 +243,14 @@ public abstract class Categorize<ToType extends SeParameter, FallbackType extend
 					classValue = cat.getClassValue();
 				}
 				return classValue;
+			} else{ // Means nbClass == 1
+				return firstClass;
 			}
 
 		} catch (ParameterException ex) {
-			Logger.getLogger(Categorize.class.getName()).log(Level.SEVERE, "Unable to categorize the feature", ex);
+			Logger.getLogger(Categorize.class.getName()).log(Level.WARNING, "Unable to categorize the feature", ex);
 		}
-		return firstClass;
+		return fallbackValue;
 	}
 
 	/**
@@ -285,12 +345,6 @@ public abstract class Categorize<ToType extends SeParameter, FallbackType extend
 		}
 
 		return of.createCategorize(c);
-	}
-
-
-	@Override
-	public JPanel getEditionPanel(EditFeatureTypeStylePanel ftsPanel){
-		throw new UnsupportedOperationException("Not yet implemented ("+ this.getClass() + " )");
 	}
 
 	private CategorizeMethod method;

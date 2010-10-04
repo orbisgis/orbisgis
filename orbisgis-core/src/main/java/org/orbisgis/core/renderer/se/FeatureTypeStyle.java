@@ -240,25 +240,29 @@ public final class FeatureTypeStyle implements SymbolizerNode {
 		return rules;
 	}
 
-	public void moveRuleUp(int i) {
+	public boolean moveRuleUp(int i) {
 		try {
 			if (i > 0) {
 				Rule r = rules.remove(i);
 				rules.add(i - 1, r);
+				return true;
 			}
 		} catch (IndexOutOfBoundsException ex) {
 		}
+		return false;
 	}
 
-	public void moveRuleDown(int i) {
+	public boolean moveRuleDown(int i) {
 		try {
 			if (i < rules.size() - 1) {
 				Rule r = rules.remove(i);
 				rules.add(i + 1, r);
+				return true;
 			}
 
 		} catch (IndexOutOfBoundsException ex) {
 		}
+		return false;
 	}
 
 	public void addRule(Rule r) {
@@ -266,12 +270,15 @@ public final class FeatureTypeStyle implements SymbolizerNode {
 		rules.add(r);
 	}
 
-	public void deleteRule(int i) {
+	public boolean deleteRule(int i) {
 		try {
 			rules.remove(i);
+			return true;
 		} catch (IndexOutOfBoundsException ex) {
+			return false;
 		}
 	}
+
 	private String name;
 	private ArrayList<Rule> rules;
 	private ILayer layer;

@@ -11,7 +11,6 @@ import org.orbisgis.core.renderer.persistance.se.ObjectFactory;
 import org.gdms.data.feature.Feature;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.se.FillNode;
-import org.orbisgis.core.renderer.se.StrokeNode;
 import org.orbisgis.core.renderer.se.common.Halo;
 import org.orbisgis.core.renderer.se.common.OnlineResource;
 import org.orbisgis.core.renderer.se.common.Uom;
@@ -24,6 +23,7 @@ import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 import org.orbisgis.core.renderer.se.stroke.PenStroke;
 import org.orbisgis.core.renderer.se.stroke.Stroke;
 import org.orbisgis.core.renderer.se.transform.Transform;
+import org.orbisgis.core.renderer.se.StrokeNode;
 
 public final class MarkGraphic extends Graphic implements FillNode, StrokeNode {
 

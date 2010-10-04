@@ -5,7 +5,6 @@
 package org.orbisgis.core.renderer.se;
 
 import com.vividsolutions.jts.geom.Geometry;
-import javax.swing.JPanel;
 import org.gdms.data.DataSourceCreationException;
 import org.gdms.data.SpatialDataSourceDecorator;
 import org.gdms.driver.DriverException;
@@ -16,14 +15,12 @@ import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.persistance.se.RuleType;
 import org.orbisgis.core.renderer.se.common.Uom;
-import org.orbisgis.core.ui.editorViews.toc.actions.cui.EditFeatureTypeStylePanel;
-import org.orbisgis.core.ui.editorViews.toc.actions.cui.EditRulePanel;
 
 /**
  *
  * @author maxence
  */
-public final class Rule implements SymbolizerNode, PanelableNode {
+public final class Rule implements SymbolizerNode {
 
 	public static final String DEFAULT_NAME = "Default Rule";
 
@@ -35,6 +32,7 @@ public final class Rule implements SymbolizerNode, PanelableNode {
 	private boolean fallbackRule = false;
 	private Double minScaleDenom = null;
 	private Double maxScaleDenom = null;
+
 
 
 	public Rule() {
@@ -278,10 +276,5 @@ public final class Rule implements SymbolizerNode, PanelableNode {
 
 	public void setName(String name) {
 		this.name = name;
-	}
-
-	@Override
-	public JPanel getEditionPanel(EditFeatureTypeStylePanel ftsPanel) {
-		return new EditRulePanel(this, ftsPanel);
 	}
 }

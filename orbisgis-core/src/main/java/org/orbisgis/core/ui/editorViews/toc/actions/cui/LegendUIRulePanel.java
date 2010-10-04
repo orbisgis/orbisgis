@@ -6,6 +6,7 @@ package org.orbisgis.core.ui.editorViews.toc.actions.cui;
 
 import java.awt.BorderLayout;
 import java.awt.GridLayout;
+import java.util.ArrayList;
 import javax.swing.BorderFactory;
 import javax.swing.JPanel;
 import org.orbisgis.core.renderer.se.Rule;
@@ -17,21 +18,26 @@ import org.orbisgis.core.ui.editorViews.toc.actions.cui.components.TextInput;
  *
  * @author maxence
  */
-public class EditRulePanel extends JPanel {
+public class LegendUIRulePanel extends JPanel {
 
 	private RealLiteralInput minScaleInput;
 	private RealLiteralInput maxScaleInput;
 	private TextInput whereInput;
 	private TextInput nameInput;
+
 	private RadioSwitch filterSwitch;
-	private EditFeatureTypeStylePanel ftsPanel;
 
 	private Rule rule;
 
-	public EditRulePanel(Rule r, EditFeatureTypeStylePanel ftsPnl) {
+	private ArrayList<LegendUIComponentListener> listeners;
+
+
+	public LegendUIRulePanel(Rule r) {
 		super(new GridLayout(0,1));
 		this.rule = r;
-		this.ftsPanel = ftsPnl;
+
+		listeners = new ArrayList<LegendUIComponentListener>();
+
 		updateBorder();
 
 		minScaleInput = new RealLiteralInput("Min. scale", r.getMinScaleDenom(), 0.0, null) {
@@ -61,6 +67,7 @@ public class EditRulePanel extends JPanel {
 			protected void valueChanged(String s) {
 				rule.setName(s);
 				updateBorder();
+				fireNameChanged();
 			}
 		};
 
@@ -90,8 +97,24 @@ public class EditRulePanel extends JPanel {
 		this.add(maxScaleInput, BorderLayout.PAGE_END);
 	}
 
-	private void updateBorder() {
-		this.ftsPanel.setEditorTitle("Rule " + rule.getName());
+	@Override
+	public String toString(){
+		return rule.toString();
 	}
-	
+
+	private void updateBorder() {
+		this.setBorder(BorderFactory.createTitledBorder("Rule " + rule.getName()));
+	}
+
+	public void register(LegendUIComponentListener l) {
+		if (!listeners.contains(l)){
+			listeners.add(l);
+		}
+	}
+
+	protected void fireNameChanged(){
+		for (LegendUIComponentListener l : listeners){
+			l.nameChanged();
+		}
+	}
 }

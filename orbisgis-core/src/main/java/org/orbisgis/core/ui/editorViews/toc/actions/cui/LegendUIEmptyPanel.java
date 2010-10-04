@@ -35,52 +35,71 @@
  * erwan.bocher _at_ ec-nantes.fr
  * gwendall.petit _at_ ec-nantes.fr
  */
+
+
+
 package org.orbisgis.core.ui.editorViews.toc.actions.cui;
 
-import javax.swing.BorderFactory;
-import javax.swing.JPanel;
-import org.orbisgis.core.renderer.se.FillNode;
-import org.orbisgis.core.renderer.se.fill.DensityFill;
-import org.orbisgis.core.renderer.se.fill.DotMapFill;
+import org.orbisgis.core.renderer.se.parameter.string.StringParameter;
+import org.orbisgis.core.ui.editorViews.toc.actions.cui.stroke.LegendUIStrokeComponent;
+import org.orbisgis.core.ui.editorViews.toc.actions.cui.parameter.color.LegendUIColorComponent;
+import org.orbisgis.core.ui.editorViews.toc.actions.cui.parameter.real.LegendUIRealComponent;
+import org.orbisgis.core.ui.editorViews.toc.actions.cui.fill.LegendUIFillComponent;
+import javax.swing.Icon;
+import javax.swing.JLabel;
+import org.orbisgis.core.images.OrbisGISIcon;
 import org.orbisgis.core.renderer.se.fill.Fill;
-import org.orbisgis.core.renderer.se.fill.GraphicFill;
-import org.orbisgis.core.renderer.se.fill.SolidFill;
+import org.orbisgis.core.renderer.se.parameter.color.ColorParameter;
+import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
+import org.orbisgis.core.renderer.se.stroke.Stroke;
+import org.orbisgis.core.ui.editorViews.toc.actions.cui.parameter.string.LegendUIStringComponent;
 
 /**
- * Meta-Panel for fill edition
- * This panel will provide the ability to select fill type
  *
  * @author maxence
  */
-public class MetaFillPanel extends JPanel {
+public class LegendUIEmptyPanel extends LegendUIComponent
+		implements LegendUIFillComponent, LegendUIColorComponent,
+		           LegendUIRealComponent, LegendUIStrokeComponent,
+				   LegendUIStringComponent {
 
-	private FillNode fillNode;
-
-	private AbstractEditFillPanel currentPanel;
-
-	private EditSolidFillPanel sfPanel;
-
-	public MetaFillPanel(FillNode fNode) {
-		super();
-		this.fillNode = fNode;
-		this.setBorder(BorderFactory.createTitledBorder("Fill"));
-
-		Fill f = fNode.getFill();
-
-		if (f == null){
-			this.add(new EmptyPanel("No fill"));
-			currentPanel = null;
-		} else if(f instanceof SolidFill) {
-			sfPanel = new EditSolidFillPanel((SolidFill) f);
-			currentPanel = sfPanel;
-		} else if (f instanceof GraphicFill) {
-		} else if (f instanceof DensityFill) {
-		} else if (f instanceof DotMapFill) {
-		} else {
-		}
-
-		this.add((JPanel)currentPanel);
+	public LegendUIEmptyPanel(String name, LegendUIController controller, LegendUIComponent parent){
+		super(name, controller, parent, 0);
 	}
 
+	@Override
+	public Icon getIcon() {
+		return OrbisGISIcon.ERROR;
+	}
+
+	@Override
+	public Fill getFill() {
+		return null;
+	}
+
+	@Override
+	public ColorParameter getColorParameter() {
+		return null;
+	}
+
+	@Override
+	public RealParameter getRealParameter() {
+		return null;
+	}
+
+	@Override
+	protected void mountComponent() {
+		this.add(new JLabel("n/a"));
+	}
+
+	@Override
+	public Stroke getStroke() {
+		return null;
+	}
+
+	@Override
+	public StringParameter getStringParameter() {
+		return null;
+	}
 
 }

@@ -29,8 +29,13 @@ public final class ColorHelper {
         } else if (a > 255) {
             a = 255;
         }
-        
-        return new Color(c.getRed(), c.getGreen(), c.getBlue(), a);
+
+		if (c != null){
+        	return new Color(c.getRed(), c.getGreen(), c.getBlue(), a);
+		}else{
+        	return new Color(255, 255, 255, a); // WhiteTrans
+		}
+
     }
 
     /*

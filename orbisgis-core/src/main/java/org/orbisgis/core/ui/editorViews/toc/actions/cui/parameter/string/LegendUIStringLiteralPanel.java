@@ -38,33 +38,54 @@
 
 
 
-package org.orbisgis.core.ui.editorViews.toc.actions.cui;
+package org.orbisgis.core.ui.editorViews.toc.actions.cui.parameter.string;
 
-import javax.swing.JPanel;
-import org.orbisgis.core.renderer.se.parameter.real.RealLiteral;
-import org.orbisgis.core.ui.editorViews.toc.actions.cui.components.RealLiteralInput;
+import javax.swing.Icon;
+import org.orbisgis.core.images.OrbisGISIcon;
+import org.orbisgis.core.renderer.se.parameter.string.StringLiteral;
+import org.orbisgis.core.renderer.se.parameter.string.StringParameter;
+import org.orbisgis.core.ui.editorViews.toc.actions.cui.LegendUIComponent;
+import org.orbisgis.core.ui.editorViews.toc.actions.cui.LegendUIController;
+import org.orbisgis.core.ui.editorViews.toc.actions.cui.components.TextInput;
 
 /**
  *
  * @author maxence
  */
-public class EditRealLiteralPanel extends JPanel {
+public class LegendUIStringLiteralPanel extends LegendUIComponent
+		implements LegendUIStringComponent {
 
-	private RealLiteral literal;
-	private RealLiteralInput input;
+	private StringLiteral string;
+	private TextInput input;
 
-	public EditRealLiteralPanel(RealLiteral realLiteral) {
-		super();
-		this.literal = realLiteral;
-		input = new RealLiteralInput(null, literal.getValue(null),
-				literal.getMinValue(), literal.getMaxValue()) {
+	public LegendUIStringLiteralPanel(String name, LegendUIController controller,
+			LegendUIComponent parent, StringLiteral s) {
+		super(name, controller, parent, 0);
+		this.string = s;
+
+		//label = new JLabel(name + ": ");
+		input = new TextInput(name, string.getValue(null), 20) {
+
 			@Override
-			protected void valueChanged(Double v) {
-				if (v != null){
-					literal.setValue(v);
-				}
+			protected void valueChanged(String s) {
+				LegendUIStringLiteralPanel.this.string.setValue(s);
 			}
 		};
+	}
+
+	@Override
+	public Icon getIcon() {
+		return OrbisGISIcon.PENCIL;
+	}
+
+	@Override
+	protected void mountComponent() {
 		this.add(input);
 	}
+
+	@Override
+	public StringParameter getStringParameter() {
+		return string;
+	}
+
 }

@@ -32,6 +32,17 @@ import org.orbisgis.core.renderer.se.parameter.string.StringParameter;
  */
 public final class PenStroke extends Stroke {
 
+    private ColorParameter color;
+    private GraphicFill stipple;
+    private boolean useColor;
+    private RealParameter opacity;
+    private RealParameter width;
+    private LineJoin lineJoin;
+    private LineCap lineCap;
+	private StringParameter dashArray;
+    private RealParameter dashOffset;
+    private BasicStroke bStroke;
+
     @Override
     public boolean dependsOnFeature() {
         if (useColor) {
@@ -71,11 +82,20 @@ public final class PenStroke extends Stroke {
      * Create a standard undashed 0.1mm-wide opaque black stroke
      */
     public PenStroke() {
+        setUom(Uom.MM);
+		setStipple(null);
+
         setColor(new ColorLiteral(Color.BLACK));
         setWidth(new RealLiteral(0.1));
-        setUom(Uom.MM);
+
         setOpacity(new RealLiteral(100.0));
-        dashArray = new StringLiteral("");
+
+		setDashArray(new StringLiteral(""));
+		setDashOffset(new RealLiteral(0.0));
+
+		setLineCap(LineCap.ROUND);
+		setLineJoin(LineJoin.BEVEL);
+
         updateBasicStroke();
     }
 
@@ -158,9 +178,11 @@ public final class PenStroke extends Stroke {
 
     public void setStipple(GraphicFill stipple) {
         this.stipple = stipple;
-        stipple.setParent(this);
-        useColor = false;
-        updateBasicStroke();
+		if (stipple != null){
+    	    stipple.setParent(this);
+	        useColor = false;
+        	updateBasicStroke();
+		}
     }
 
     public GraphicFill getStipple() {
@@ -440,14 +462,5 @@ public final class PenStroke extends Stroke {
 
         return s;
     }
-    private ColorParameter color;
-    private GraphicFill stipple;
-    private boolean useColor;
-    private RealParameter opacity;
-    private RealParameter width;
-    private LineJoin lineJoin;
-    private LineCap lineCap;
-	private StringParameter dashArray;
-    private RealParameter dashOffset;
-    private BasicStroke bStroke;
+
 }
