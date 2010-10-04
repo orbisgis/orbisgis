@@ -110,7 +110,7 @@ public class UnionOperator extends AbstractOperator implements Operator {
 				}
 			}
 			dm.addField(m1.getFieldName(i), TypeFactory.createType(type,
-					constraints.toArray(new Constraint[0])));
+					constraints.toArray(new Constraint[constraints.size()])));
 		}
 		return dm;
 	}

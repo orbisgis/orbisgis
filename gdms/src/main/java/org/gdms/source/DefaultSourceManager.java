@@ -93,7 +93,6 @@ import org.gdms.sql.strategies.SQLProcessor;
 import org.gdms.sql.strategies.SemanticException;
 import org.gdms.sql.strategies.TableNotFoundException;
 import org.orbisgis.progress.IProgressMonitor;
-import org.orbisgis.progress.NullProgressMonitor;
 import org.orbisgis.utils.FileUtils;
 
 public class DefaultSourceManager implements SourceManager {
@@ -368,7 +367,7 @@ public class DefaultSourceManager implements SourceManager {
 				.clone();
 		for (SourceListener listener : list) {
 			listener.sourceRemoved(new SourceRemovalEvent(name, names
-					.toArray(new String[0]), true, this));
+					.toArray(new String[names.size()]), true, this));
 		}
 	}
 
@@ -873,7 +872,7 @@ public class DefaultSourceManager implements SourceManager {
 	}
 
 	public String[] getSourceNames() {
-		return nameSource.keySet().toArray(new String[0]);
+		return nameSource.keySet().toArray(new String[nameSource.size()]);
 	}
 
 	public void addCommitListener(CommitListener listener) {

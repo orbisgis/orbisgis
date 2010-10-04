@@ -73,7 +73,7 @@ public abstract class AbstractExpressionOperator extends AbstractOperator {
 			}
 		}
 
-		return ret.toArray(new Field[0]);
+		return ret.toArray(new Field[ret.size()]);
 	}
 
 	/**
@@ -149,7 +149,7 @@ public abstract class AbstractExpressionOperator extends AbstractOperator {
 			}
 		}
 
-		return ret.toArray(new Operator[0]);
+		return ret.toArray(new Operator[ret.size()]);
 	}
 	
 	@Override
@@ -167,7 +167,7 @@ public abstract class AbstractExpressionOperator extends AbstractOperator {
 							new HashMap<Expression, SelectElement>(), alias,
 							null, star);
 					function
-							.replaceStarBy(arguments.toArray(new Expression[0]));
+							.replaceStarBy(arguments.toArray(new Expression[arguments.size()]));
 				}
 			}
 		}
@@ -273,7 +273,7 @@ public abstract class AbstractExpressionOperator extends AbstractOperator {
 						}
 					}
 					function
-							.replaceStarBy(arguments.toArray(new Expression[0]));
+							.replaceStarBy(arguments.toArray(new Expression[arguments.size()]));
 				}
 			}
 		}

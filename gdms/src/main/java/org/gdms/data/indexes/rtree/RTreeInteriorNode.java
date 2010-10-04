@@ -671,7 +671,7 @@ public class RTreeInteriorNode extends AbstractRTreeNode implements RTreeNode {
 			}
 		}
 
-		return ret.toArray(new Envelope[0]);
+		return ret.toArray(new Envelope[ret.size()]);
 	}
 
 	public int[] getRows(Envelope value) throws IOException {

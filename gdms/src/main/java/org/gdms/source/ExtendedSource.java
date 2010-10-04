@@ -394,12 +394,12 @@ public class ExtendedSource implements org.gdms.source.Source {
 
 	public String[] getReferencingSources() {
 		HashSet<String> deps = getReferencingSources(name);
-		return deps.toArray(new String[0]);
+		return deps.toArray(new String[deps.size()]);
 	}
 
 	public String[] getReferencedSources() {
 		HashSet<String> deps = getReferencedSources(name);
-		return deps.toArray(new String[0]);
+		return deps.toArray(new String[deps.size()]);
 	}
 
 	@Override

@@ -172,8 +172,8 @@ public class ProjectionOp extends AbstractExpressionOperator implements
 			}
 		}
 
-		aliasList = aliases.toArray(new String[0]);
-		expressionList = expressions.toArray(new Expression[0]);
+		aliasList = aliases.toArray(new String[aliases.size()]);
+		expressionList = expressions.toArray(new Expression[expressions.size()]);
 
 	}
 
@@ -363,7 +363,7 @@ public class ProjectionOp extends AbstractExpressionOperator implements
 			}
 		}
 
-		return ret.toArray(new Expression[0]);
+		return ret.toArray(new Expression[ret.size()]);
 	}
 
 	private ArrayList<FunctionOperator> getAggregatedFunctions(
@@ -533,8 +533,8 @@ public class ProjectionOp extends AbstractExpressionOperator implements
 		}
 		newExprs.add(newField);
 		newAliases.add(newField.getFieldName());
-		expressionList = newExprs.toArray(new Expression[0]);
-		aliasList = newAliases.toArray(new String[0]);
+		expressionList = newExprs.toArray(new Expression[newExprs.size()]);
+		aliasList = newAliases.toArray(new String[newAliases.size()]);
 
 		return expressionList.length - 1;
 	}

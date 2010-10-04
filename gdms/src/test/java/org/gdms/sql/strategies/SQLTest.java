@@ -108,7 +108,7 @@ public class SQLTest extends SourceTest {
 		metadata.addField("f1", Type.INT);
 		dsf.getSourceManager().register("source",
 				new GenericObjectDriver(metadata));
-		dsf.executeSQL("insert into source (f1) values(ABS(2));");
+		dsf.executeSQL("insert into source (f1) values(AVG(2));");
 	}
 
 	public void testCreateAsTableCustomQuery() throws Exception {

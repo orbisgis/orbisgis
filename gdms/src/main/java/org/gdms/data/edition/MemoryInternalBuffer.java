@@ -91,7 +91,7 @@ public class MemoryInternalBuffer implements InternalBuffer {
 			ret.add(row.remove(index));
 		}
 
-		return ret.toArray(new Value[0]);
+		return ret.toArray(new Value[ret.size()]);
 	}
 
 	public void addField() {

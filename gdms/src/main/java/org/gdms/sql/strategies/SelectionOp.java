@@ -165,7 +165,7 @@ public class SelectionOp extends AbstractExpressionOperator implements Operator 
 					toRemove.add(expression);
 				}
 			}
-			this.queries = queries.toArray(new IndexQuery[0]);
+			this.queries = queries.toArray(new IndexQuery[queries.size()]);
 
 			// Remove unnecessary expressions
 			for (Expression expression : toRemove) {
@@ -329,7 +329,7 @@ public class SelectionOp extends AbstractExpressionOperator implements Operator 
 			}
 		}
 
-		return ret.toArray(new FunctionOperator[0]);
+		return ret.toArray(new FunctionOperator[ret.size()]);
 	}
 
 	@Override
@@ -350,7 +350,7 @@ public class SelectionOp extends AbstractExpressionOperator implements Operator 
 			}
 		}
 
-		expressions = newExpressions.toArray(new Expression[0]);
+		expressions = newExpressions.toArray(new Expression[newExpressions.size()]);
 	}
 
 	public void setQueries(IndexQuery[] queries) {

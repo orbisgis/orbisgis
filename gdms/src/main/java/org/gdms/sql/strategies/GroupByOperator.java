@@ -232,7 +232,7 @@ public class GroupByOperator extends AbstractExpressionOperator implements
 
 	@Override
 	protected Expression[] getExpressions() {
-		return fields.toArray(new Expression[0]);
+		return fields.toArray(new Expression[fields.size()]);
 	}
 
 	public void addAggregatedFunction(Expression[] expressions) {

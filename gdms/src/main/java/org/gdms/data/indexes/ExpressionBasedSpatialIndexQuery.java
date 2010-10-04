@@ -78,7 +78,7 @@ public class ExpressionBasedSpatialIndexQuery implements
 			ret.add(field);
 		}
 
-		return ret.toArray(new Field[0]);
+		return ret.toArray(new Field[ret.size()]);
 	}
 
 }

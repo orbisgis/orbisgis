@@ -170,6 +170,6 @@ public class DefaultType implements Type {
 			}
 		}
 
-		return ret.toArray(new Constraint[0]);
+		return ret.toArray(new Constraint[ret.size()]);
 	}
 }

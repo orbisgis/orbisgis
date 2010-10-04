@@ -114,7 +114,7 @@ public abstract class AbstractOperator implements Operator {
 			}
 		}
 
-		return ret.toArray(new Operator[0]);
+		return ret.toArray(new Operator[ret.size()]);
 	}
 	
 	@Override
@@ -161,7 +161,7 @@ public abstract class AbstractOperator implements Operator {
 			}
 		}
 
-		return ret.toArray(new String[0]);
+		return ret.toArray(new String[ret.size()]);
 	}
 
 	@Override
