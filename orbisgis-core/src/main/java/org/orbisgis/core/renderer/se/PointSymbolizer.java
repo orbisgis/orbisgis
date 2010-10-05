@@ -43,6 +43,7 @@ public final class PointSymbolizer extends VectorSymbolizer implements GraphicNo
 	}
 
 	public PointSymbolizer(JAXBElement<PointSymbolizerType> st) {
+		super(st);
 		PointSymbolizerType ast = st.getValue();
 
 		if (ast.getGeometry() != null) {

@@ -180,6 +180,7 @@ public class LegendUITOCPanel extends JPanel implements TreeSelectionListener, L
 
 				// Create the new node
 				DefaultMutableTreeNode newNode = new DefaultMutableTreeNode(comp);
+				System.out.println ("Comp name: " + comp.toString());
 
 				root.add(newNode);
 				System.out.println("Insert " + newNode + " As top element");
@@ -242,7 +243,7 @@ public class LegendUITOCPanel extends JPanel implements TreeSelectionListener, L
 		sTree.setEditable(false);
 
 		sTree.addTreeSelectionListener(this);
-		sTree.setRootVisible(false);
+		sTree.setRootVisible(true);
 		sTree.setExpandsSelectedPaths(true);
 		sTree.setCellRenderer(new CellRenderer());
 
@@ -254,7 +255,7 @@ public class LegendUITOCPanel extends JPanel implements TreeSelectionListener, L
 		toc.removeAll();
 		toc.add(sTree);
 
-		this.updateUI();
+		controller.packMainPanel();
 		System.out.println ("END REFRESH TOC");
 	}
 

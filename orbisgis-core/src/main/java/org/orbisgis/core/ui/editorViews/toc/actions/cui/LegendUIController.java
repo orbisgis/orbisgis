@@ -42,7 +42,9 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JDialog;
 import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
 import org.gdms.data.types.Constraint;
 import org.gdms.data.types.GeometryConstraint;
 import org.gdms.data.types.Type;
@@ -425,4 +427,19 @@ public final class LegendUIController {
 
 		this.editRule(ruleID);
 	}
+
+
+	/**
+	 *
+	 */
+	public void packMainPanel(){
+		mainPanel.revalidate();
+		JDialog dlg = (JDialog) SwingUtilities.getAncestorOfClass(JDialog.class, mainPanel);
+		if (dlg != null){
+			dlg.pack();
+			mainPanel.updateUI();
+		}
+	}
+
+
 }

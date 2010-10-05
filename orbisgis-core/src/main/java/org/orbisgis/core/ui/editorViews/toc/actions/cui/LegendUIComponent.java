@@ -56,6 +56,8 @@ public abstract class LegendUIComponent extends LegendUIAbstractPanel {
 	private ArrayList<LegendUIComponent> children;
 	private ArrayList<LegendUIComponentListener> listeners;
 
+	private String name;
+
 	//private String name;
 	public LegendUIComponent(String name, LegendUIController controller, LegendUIComponent parent, float weight) {
 		super(controller);
@@ -63,7 +65,7 @@ public abstract class LegendUIComponent extends LegendUIAbstractPanel {
 		this.weight = weight;
 		this.parent = parent;
 
-		super.setName(name);
+		this.name = name;
 
 		listeners = new ArrayList<LegendUIComponentListener>();
 
@@ -72,6 +74,17 @@ public abstract class LegendUIComponent extends LegendUIAbstractPanel {
 		if (this.parent != null) {
 			this.parent.registerChild(this);
 		}
+	}
+
+	@Override
+	public String getName(){
+		return this.name;
+	}
+
+	@Override
+	public void setName(String name){
+		super.setName(name);
+		this.name = name;
 	}
 
 	@Override
@@ -240,6 +253,7 @@ public abstract class LegendUIComponent extends LegendUIAbstractPanel {
 
 	public void register(LegendUIComponentListener l) {
 		if (!listeners.contains(l)) {
+			System.out.println (l + " is now listen to "  + this);
 			listeners.add(l);
 		}
 	}

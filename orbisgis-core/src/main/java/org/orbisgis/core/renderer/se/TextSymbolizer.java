@@ -91,6 +91,7 @@ public final class TextSymbolizer extends VectorSymbolizer {
 	}
 
 	public TextSymbolizer(JAXBElement<TextSymbolizerType> st) {
+		super(st);
 		TextSymbolizerType tst = st.getValue();
 
 

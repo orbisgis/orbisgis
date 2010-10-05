@@ -39,7 +39,7 @@ public final class AreaSymbolizer extends VectorSymbolizer implements FillNode, 
 	}
 
 	public AreaSymbolizer(JAXBElement<AreaSymbolizerType> st) {
-		super((JAXBElement<? extends SymbolizerType>) st);
+		super(st);
 
 		AreaSymbolizerType ast = st.getValue();
 

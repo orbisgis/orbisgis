@@ -164,6 +164,7 @@ public class RasterSymbolizer extends Symbolizer {
     }
 
     public RasterSymbolizer(JAXBElement<RasterSymbolizerType> st) {
+		super(st);
         RasterSymbolizerType lst = st.getValue();
         System.out.println("RasterSymb");
 

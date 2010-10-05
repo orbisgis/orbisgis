@@ -43,6 +43,7 @@ public final class LineSymbolizer extends VectorSymbolizer implements StrokeNode
 	}
 
 	public LineSymbolizer(JAXBElement<LineSymbolizerType> st) {
+		super(st);
 		LineSymbolizerType ast = st.getValue();
 
 

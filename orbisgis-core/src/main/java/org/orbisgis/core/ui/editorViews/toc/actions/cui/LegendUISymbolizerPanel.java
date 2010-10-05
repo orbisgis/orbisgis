@@ -84,7 +84,7 @@ public class LegendUISymbolizerPanel extends LegendUIComponent {
 			@Override
 			protected void valueChanged(String s) {
 				symbolizer.setName(s);
-				super.setName(s);
+				LegendUISymbolizerPanel.this.setName(s);
 				fireNameChanged();
 			}
 		};
