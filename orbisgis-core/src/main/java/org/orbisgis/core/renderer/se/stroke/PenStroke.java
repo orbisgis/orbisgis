@@ -6,6 +6,8 @@ import java.awt.Graphics2D;
 import java.awt.Paint;
 import java.awt.Shape;
 import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.xml.bind.JAXBElement;
 import org.orbisgis.core.renderer.persistance.se.PenStrokeType;
 
@@ -43,22 +45,6 @@ public final class PenStroke extends Stroke {
     private RealParameter dashOffset;
     private BasicStroke bStroke;
 
-    @Override
-    public boolean dependsOnFeature() {
-        if (useColor) {
-            if (color != null && color.dependsOnFeature()) {
-                return true;
-            }
-        } else {
-            if (stipple != null && stipple.dependsOnFeature()) {
-                return true;
-            }
-        }
-
-        return (this.dashOffset != null && dashOffset.dependsOnFeature())
-                || (this.opacity != null && opacity.dependsOnFeature())
-                || (this.width != null && width.dependsOnFeature());
-    }
 
     public enum LineCap {
 
@@ -99,16 +85,17 @@ public final class PenStroke extends Stroke {
         updateBasicStroke();
     }
 
+	/**
+	 * @todo line cap line join !
+	 * @param t
+	 */
     public PenStroke(PenStrokeType t) {
         this();
 
         if (t.getColor() != null) {
             this.setColor(SeParameterFactory.createColorParameter(t.getColor()));
-
         } else if (t.getStipple() != null) {
             this.setStipple(new GraphicFill(t.getStipple()));
-        } else {
-            // TODO  Neither color nor stipple
         }
 
         if (t.getDashArray() != null) {
@@ -124,10 +111,21 @@ public final class PenStroke extends Stroke {
         }
 
         if (t.getLineCap() != null) {
+			try {
+				StringParameter lCap = SeParameterFactory.createStringParameter(t.getLineCap());
+				this.setLineCap(LineCap.valueOf(lCap.getValue(null).toUpperCase()));
+			} catch (Exception ex) {
+				Logger.getLogger(PenStroke.class.getName()).log(Level.SEVERE, "Could not convert line cap", ex);
+			}
         }
 
         if (t.getLineJoin() != null) {
-            // TODO
+			try {
+				StringParameter lJoin = SeParameterFactory.createStringParameter(t.getLineJoin());
+				this.setLineJoin(LineJoin.valueOf(lJoin.getValue(null).toUpperCase()));
+			} catch (Exception ex) {
+				Logger.getLogger(PenStroke.class.getName()).log(Level.SEVERE, "Could not convert line join", ex);
+			}
         }
 
         if (t.getOpacity() != null) {
@@ -147,6 +145,26 @@ public final class PenStroke extends Stroke {
     public PenStroke(JAXBElement<PenStrokeType> s) {
         this(s.getValue());
     }
+
+
+    @Override
+    public boolean dependsOnFeature() {
+        if (useColor) {
+            if (color != null && color.dependsOnFeature()) {
+                return true;
+            }
+        } else {
+            if (stipple != null && stipple.dependsOnFeature()) {
+                return true;
+            }
+        }
+
+        return (this.dashOffset != null && dashOffset.dependsOnFeature())
+                || (this.opacity != null && opacity.dependsOnFeature())
+                || (this.width != null && width.dependsOnFeature());
+    }
+
+
 
     /**
      * default painter is either a solid color or a stipple
@@ -246,6 +264,7 @@ public final class PenStroke extends Stroke {
         try {
             bStroke = createBasicStroke(null, null);
         } catch (Exception e) {
+			// thrown if the stroke depends on the feature
             this.bStroke = null;
         }
     }

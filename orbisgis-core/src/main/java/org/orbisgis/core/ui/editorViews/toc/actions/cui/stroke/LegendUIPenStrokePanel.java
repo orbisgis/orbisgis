@@ -183,7 +183,8 @@ public class LegendUIPenStrokePanel extends LegendUIComponent implements LegendU
 		toolbar.removeAll();
 		toolbar.add(uom, BorderLayout.WEST);
 		toolbar.add(lineCap, BorderLayout.CENTER);
-		toolbar.add(lineJoin, BorderLayout.CENTER);
+		toolbar.add(lineJoin, BorderLayout.EAST);
+
 		this.add(toolbar, BorderLayout.NORTH);
 
 		content.removeAll();
