@@ -36,24 +36,31 @@
  * gwendall.petit _at_ ec-nantes.fr
  */
 
-package org.orbisgis.core.renderer.se.graphic;
 
-import java.awt.Shape;
-import java.io.IOException;
-import org.gdms.data.feature.Feature;
-import org.orbisgis.core.renderer.persistance.se.MarkGraphicType;
 
-import org.orbisgis.core.renderer.se.parameter.ParameterException;
+package org.orbisgis.core.ui.editorViews.toc.actions.cui.graphic;
+
+import org.orbisgis.core.renderer.se.graphic.MarkGraphic;
+import org.orbisgis.core.ui.editorViews.toc.actions.cui.LegendUIComponent;
+import org.orbisgis.core.ui.editorViews.toc.actions.cui.LegendUIController;
+import org.orbisgis.core.ui.editorViews.toc.actions.cui.type.LegendUIType;
 
 /**
- * This interface allow to fetch a mark graphic for many sources,
  *
  * @author maxence
- * @todo implement in InlineContent(for se InlineContent && GML), OnlineResource
  */
-public interface MarkGraphicSource {
-    public abstract Shape getShape(ViewBox viewBox, Feature feat, Double scale, Double dpi)
-            throws ParameterException, IOException;
+public class LegendUIWellKnownNameType extends LegendUIType{
 
-    public void setJAXBSource(MarkGraphicType m);
+	private MarkGraphic mg;
+
+	public LegendUIWellKnownNameType(LegendUIController controller, MarkGraphic mg) {
+		super("WKN", controller);
+		this.mg = mg;
+	}
+
+	@Override
+	public LegendUIComponent getUIComponent() {
+		return new LegendUIWellKnownNamePanel(controller, null, mg);
+	}
+
 }

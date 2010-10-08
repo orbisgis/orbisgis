@@ -148,7 +148,7 @@ public abstract class LegendUIComponent extends LegendUIAbstractPanel {
 		return current;
 	}
 
-	protected void makeOrphan() {
+	public void makeOrphan() {
 		LegendUIComponent p = getParentComponent();
 
 		if (p != null){
@@ -178,7 +178,7 @@ public abstract class LegendUIComponent extends LegendUIAbstractPanel {
 		this.children.add(child);
 	}
 
-	protected void addChild(LegendUIComponent child) {
+	public void addChild(LegendUIComponent child) {
 		this.registerChild(child);
 		child.parent = this;
 	}

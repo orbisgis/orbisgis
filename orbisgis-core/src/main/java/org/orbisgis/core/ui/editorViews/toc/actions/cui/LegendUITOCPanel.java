@@ -138,7 +138,7 @@ public class LegendUITOCPanel extends JPanel implements TreeSelectionListener, L
 	}
 
 	public void refresh() {
-		if (currentRuleId >= 0){
+		if (currentRuleId >= 0) {
 			this.refresh(currentRuleId);
 		}
 	}
@@ -150,113 +150,115 @@ public class LegendUITOCPanel extends JPanel implements TreeSelectionListener, L
 
 		btnRm.setEnabled(false);
 
-		ArrayList<LegendUIComponent> symbolizers = controller.getSymbolizerPanels(ruleID);
+		if (ruleID >= 0) {
+			ArrayList<LegendUIComponent> symbolizers = controller.getSymbolizerPanels(ruleID);
 
-		// root node
-		DefaultMutableTreeNode root = new DefaultMutableTreeNode(symbolizers);
+			// root node
+			DefaultMutableTreeNode root = new DefaultMutableTreeNode(symbolizers);
 
-		ArrayList<LegendUIComponent> stack = new ArrayList<LegendUIComponent>();
+			ArrayList<LegendUIComponent> stack = new ArrayList<LegendUIComponent>();
 
-		for (LegendUIComponent c : symbolizers) {
-			stack.add(0, c);
-		}
+			for (LegendUIComponent c : symbolizers) {
+				stack.add(0, c);
+			}
 
-		/*
-		 * Build the tree model
-		 */
-		DefaultTreeModel treeModel = new DefaultTreeModel(root);
+			/*
+			 * Build the tree model
+			 */
+			DefaultTreeModel treeModel = new DefaultTreeModel(root);
 
-		LegendUIComponent comp;
+			LegendUIComponent comp;
 
-		while (stack.size() > 0) {
-			comp = stack.remove(0);
+			while (stack.size() > 0) {
+				comp = stack.remove(0);
 
-			// Does this comp requieres a new entry point in the tree ?
-			// two cases : top element or nested element
+				// Does this comp requieres a new entry point in the tree ?
+				// two cases : top element or nested element
 
-			if (comp.isTopElement()) {
-				System.out.println("Is top Element");
-				// So add to root
+				if (comp.isTopElement()) {
+					System.out.println("Is top Element");
+					// So add to root
 
-				// Create the new node
-				DefaultMutableTreeNode newNode = new DefaultMutableTreeNode(comp);
-				System.out.println ("Comp name: " + comp.toString());
+					// Create the new node
+					DefaultMutableTreeNode newNode = new DefaultMutableTreeNode(comp);
+					System.out.println("Comp name: " + comp.toString());
 
-				root.add(newNode);
-				System.out.println("Insert " + newNode + " As top element");
-				comp.register(this);
+					root.add(newNode);
+					System.out.println("Insert " + newNode + " As top element");
+					comp.register(this);
 
-			} else if (comp.isNested()) {
-				System.out.println("Is NeSTED : " + comp);
-				// Is nested so
-				// find the element to anchor on (scope parent of parent...)
-				LegendUIComponent parentTopElement = comp.getParentComponent().getScopeParent();
-				System.out.println("Parent is : " + parentTopElement);
+				} else if (comp.isNested()) {
+					System.out.println("Is NeSTED : " + comp);
+					// Is nested so
+					// find the element to anchor on (scope parent of parent...)
+					LegendUIComponent parentTopElement = comp.getParentComponent().getScopeParent();
+					System.out.println("Parent is : " + parentTopElement);
 
-				DefaultMutableTreeNode parent = null;
-				DefaultMutableTreeNode node;
+					DefaultMutableTreeNode parent = null;
+					DefaultMutableTreeNode node;
 
-				// Find parentTopElement within tree model
-				ArrayList<DefaultMutableTreeNode> queue = new ArrayList<DefaultMutableTreeNode>();
-				queue.add(root);
-				do {
-					node = queue.remove(0);
-					System.out.println("Current node: " + node);
+					// Find parentTopElement within tree model
+					ArrayList<DefaultMutableTreeNode> queue = new ArrayList<DefaultMutableTreeNode>();
+					queue.add(root);
+					do {
+						node = queue.remove(0);
+						System.out.println("Current node: " + node);
 
-					if (node.getUserObject().equals(parentTopElement)) {
-						parent = node;
-						System.out.println("   FOUND!!!");
-					} else {
-						int i;
-						for (i = 0; i < node.getChildCount(); i++) {
-							queue.add((DefaultMutableTreeNode) node.getChildAt(i));
+						if (node.getUserObject().equals(parentTopElement)) {
+							parent = node;
+							System.out.println("   FOUND!!!");
+						} else {
+							int i;
+							for (i = 0; i < node.getChildCount(); i++) {
+								queue.add((DefaultMutableTreeNode) node.getChildAt(i));
+							}
 						}
+					} while (queue.size() > 0 && parent == null);
+
+					// Create the new node
+					DefaultMutableTreeNode newNode = new DefaultMutableTreeNode(comp);
+
+					if (parent == null) {
+						parent = root;
 					}
-				} while (queue.size() > 0 && parent == null);
 
-				// Create the new node
-				DefaultMutableTreeNode newNode = new DefaultMutableTreeNode(comp);
-
-				if (parent == null) {
-					parent = root;
+					// And add it in the tree model
+					parent.add(newNode);
+					System.out.println("Insert " + newNode + " As " + parent + " child");
+					comp.register(this);
 				}
-
-				// And add it in the tree model
-				parent.add(newNode);
-				System.out.println("Insert " + newNode + " As " + parent + " child");
-				comp.register(this);
+				// Stack children
+				Iterator<LegendUIComponent> it = comp.getChildrenIterator();
+				while (it.hasNext()) {
+					stack.add(0, it.next());
+				}
 			}
-			// Stack children
-			Iterator<LegendUIComponent> it = comp.getChildrenIterator();
-			while (it.hasNext()) {
-				stack.add(0, it.next());
+
+			if (sTree != null) {
+				sTree.removeTreeSelectionListener(this);
 			}
+
+			sTree = new JTree(treeModel);
+			sTree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
+
+			sTree.setEditable(false);
+
+			sTree.addTreeSelectionListener(this);
+			sTree.setRootVisible(true);
+			sTree.setExpandsSelectedPaths(true);
+			sTree.setCellRenderer(new CellRenderer());
+
+			int i;
+			for (i = 1; i < sTree.getRowCount(); i++) {
+				sTree.expandRow(i);
+			}
+
+			toc.removeAll();
+			toc.add(sTree);
+
+			controller.packMainPanel();
 		}
-
-		if (sTree != null) {
-			sTree.removeTreeSelectionListener(this);
-		}
-
-		sTree = new JTree(treeModel);
-		sTree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
-
-		sTree.setEditable(false);
-
-		sTree.addTreeSelectionListener(this);
-		sTree.setRootVisible(true);
-		sTree.setExpandsSelectedPaths(true);
-		sTree.setCellRenderer(new CellRenderer());
-
-		int i;
-		for (i = 1; i < sTree.getRowCount(); i++) {
-			sTree.expandRow(i);
-		}
-
-		toc.removeAll();
-		toc.add(sTree);
-
-		controller.packMainPanel();
-		System.out.println ("END REFRESH TOC");
+		System.out.println("END REFRESH TOC");
 	}
 
 	@Override

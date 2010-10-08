@@ -41,11 +41,11 @@ public class AxisChart extends Graphic {
             this.setTransform(new Transform(t.getTransform()));
         }
 
-        this.setNormalizedToPercent(t.getNormalize() != null);
+        //this.setNormalizedToPercent(t.getNormalization() != null);
 
-        this.setAxisType(t.getPolarChart() != null);
-
-
+        //this.setAxisType(t.getPolarChart() != null);
+		//t.get
+/*
         if (t.getCategoryWidth() != null) {
             this.setCategoryWidth(SeParameterFactory.createRealParameter(t.getCategoryWidth()));
         }
@@ -60,7 +60,7 @@ public class AxisChart extends Graphic {
 
         if (t.getStroke() != null) {
             this.setLineStroke(Stroke.createFromJAXBElement(t.getStroke()));
-        }
+        }*/
 
         if (t.getAxisScale() != null){
             this.setAxisScale(new AxisScale(t.getAxisScale()));
@@ -151,6 +151,8 @@ public class AxisChart extends Graphic {
 
     @Override
     public JAXBElement<AxisChartType> getJAXBElement() {
+		return null;
+		/*
         AxisChartType a = new AxisChartType();
 
         if (axisScale != null) {
@@ -191,6 +193,7 @@ public class AxisChart extends Graphic {
 
         ObjectFactory of = new ObjectFactory();
         return of.createAxisChart(a);
+	*/
     }
 
 

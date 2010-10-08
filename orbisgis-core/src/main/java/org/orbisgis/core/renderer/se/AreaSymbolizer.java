@@ -12,7 +12,6 @@ import org.gdms.data.feature.Feature;
 import org.gdms.driver.DriverException;
 import org.orbisgis.core.map.MapTransform;
 
-import org.orbisgis.core.renderer.persistance.se.SymbolizerType;
 
 import org.orbisgis.core.renderer.se.common.Uom;
 
@@ -55,6 +54,10 @@ public final class AreaSymbolizer extends VectorSymbolizer implements FillNode, 
 
 		if (ast.getPerpendicularOffset() != null) {
 			this.setPerpendicularOffset(SeParameterFactory.createRealParameter(ast.getPerpendicularOffset()));
+		}
+
+		if (ast.getLevel() != null){
+			this.setLevel(ast.getLevel());
 		}
 
 		if (ast.getTransform() != null) {
@@ -147,6 +150,10 @@ public final class AreaSymbolizer extends VectorSymbolizer implements FillNode, 
 
 		if (transform != null) {
 			s.setTransform(transform.getJAXBType());
+		}
+
+		if (level >= 0){
+			s.setLevel(level);
 		}
 
 		if (this.perpendicularOffset != null) {

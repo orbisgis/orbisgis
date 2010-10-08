@@ -1,3 +1,40 @@
+/*
+ * OrbisGIS is a GIS application dedicated to scientific spatial simulation.
+ * This cross-platform GIS is developed at French IRSTV institute and is able to
+ * manipulate and create vector and raster spatial information. OrbisGIS is
+ * distributed under GPL 3 license. It is produced by the "Atelier SIG" team of
+ * the IRSTV Institute <http://www.irstv.cnrs.fr/> CNRS FR 2488.
+ *
+ *
+ *  Team leader Erwan BOCHER, scientific researcher,
+ *
+ *  User support leader : Gwendall Petit, geomatic engineer.
+ *
+ *
+ * Copyright (C) 2007 Erwan BOCHER, Fernando GONZALEZ CORTES, Thomas LEDUC
+ *
+ * Copyright (C) 2010 Erwan BOCHER, Pierre-Yves FADET, Alexis GUEGANNO, Maxence LAURENT
+ *
+ * This file is part of OrbisGIS.
+ *
+ * OrbisGIS is free software: you can redistribute it and/or modify it under the
+ * terms of the GNU General Public License as published by the Free Software
+ * Foundation, either version 3 of the License, or (at your option) any later
+ * version.
+ *
+ * OrbisGIS is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
+ * A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along with
+ * OrbisGIS. If not, see <http://www.gnu.org/licenses/>.
+ *
+ * For more information, please consult: <http://www.orbisgis.org/>
+ *
+ * or contact directly:
+ * erwan.bocher _at_ ec-nantes.fr
+ * gwendall.petit _at_ ec-nantes.fr
+ */
 package org.orbisgis.core.renderer.se.graphic;
 
 import java.awt.Dimension;
@@ -24,286 +61,294 @@ import org.orbisgis.core.renderer.se.stroke.PenStroke;
 import org.orbisgis.core.renderer.se.stroke.Stroke;
 import org.orbisgis.core.renderer.se.transform.Transform;
 import org.orbisgis.core.renderer.se.StrokeNode;
+import org.orbisgis.core.renderer.se.ViewBoxNode;
 
-public final class MarkGraphic extends Graphic implements FillNode, StrokeNode {
+public final class MarkGraphic extends Graphic implements FillNode, StrokeNode, ViewBoxNode {
 
-    public MarkGraphic() {
-    }
+	public MarkGraphic() {
+	}
 
-    public void setToSquare10(){
-        try {
-            this.setSource(WellKnownName.CIRCLE);
-            this.setViewBox(new ViewBox(new RealLiteral(3.0)));
-            this.setFill(new SolidFill());
-            this.setStroke(new PenStroke());
-        } catch (IOException ex) {
-            // Will never occurs while WellKnownName doesn't throw anything
-        }
-    }
+	public void setToCircle10() {
+		this.setSource(WellKnownName.CIRCLE);
+		this.setViewBox(new ViewBox(new RealLiteral(3.0)));
+		this.setFill(new SolidFill());
+		((RealLiteral) ((SolidFill) this.getFill()).getOpacity()).setValue(100.0);
+		this.setStroke(new PenStroke());
+	}
 
-    MarkGraphic(JAXBElement<MarkGraphicType> markG) throws IOException {
-        MarkGraphicType t = markG.getValue();
+	MarkGraphic(JAXBElement<MarkGraphicType> markG) throws IOException {
+		MarkGraphicType t = markG.getValue();
 
-        if (t.getUnitOfMeasure() != null) {
-            this.setUom(Uom.fromOgcURN(t.getUnitOfMeasure()));
-        }
+		if (t.getUnitOfMeasure() != null) {
+			this.setUom(Uom.fromOgcURN(t.getUnitOfMeasure()));
+		}
 
-        if (t.getViewBox() != null) {
-            this.setViewBox(new ViewBox(t.getViewBox()));
-        }
+		if (t.getViewBox() != null) {
+			this.setViewBox(new ViewBox(t.getViewBox()));
+		}
 
-        if (t.getPerpendicularOffset() != null) {
-            this.setpOffset(SeParameterFactory.createRealParameter(t.getPerpendicularOffset()));
-        }
+		if (t.getPerpendicularOffset() != null) {
+			this.setpOffset(SeParameterFactory.createRealParameter(t.getPerpendicularOffset()));
+		}
 
-        if (t.getTransform() != null) {
-            this.setTransform(new Transform(t.getTransform()));
-        }
+		if (t.getTransform() != null) {
+			this.setTransform(new Transform(t.getTransform()));
+		}
 
-        if (t.getHalo() != null) {
-            this.setHalo(new Halo(t.getHalo()));
-        }
+		if (t.getHalo() != null) {
+			this.setHalo(new Halo(t.getHalo()));
+		}
 
-        if (t.getFill() != null) {
-            this.setFill(Fill.createFromJAXBElement(t.getFill()));
-        }
+		if (t.getFill() != null) {
+			this.setFill(Fill.createFromJAXBElement(t.getFill()));
+		}
 
-        if (t.getStroke() != null) {
-            this.setStroke(Stroke.createFromJAXBElement(t.getStroke()));
-        }
+		if (t.getStroke() != null) {
+			this.setStroke(Stroke.createFromJAXBElement(t.getStroke()));
+		}
 
 
-        // Source 
-        if (t.getWellKnownName() != null) {
-            this.setSource(WellKnownName.fromString(t.getWellKnownName()));
-        } else {
-            if (t.getOnlineResource() != null) {
-                this.setSource((MarkGraphicSource) new OnlineResource(t.getOnlineResource()));
-            } else if (t.getInlineContent() != null) {
-                // TODO Not yer implemented
-            }
-        }
-    }
+		// Source
+		if (t.getWellKnownName() != null) {
+			this.setSource(WellKnownName.fromString(t.getWellKnownName()));
+		} else {
+			if (t.getOnlineResource() != null) {
+				this.setSource((MarkGraphicSource) new OnlineResource(t.getOnlineResource()));
+			} else if (t.getInlineContent() != null) {
+				// TODO Not yer implemented
+			}
+		}
+	}
 
 	@Override
-    public Fill getFill() {
-        return fill;
-    }
+	public Fill getFill() {
+		return fill;
+	}
 
 	@Override
-    public void setFill(Fill fill) {
-        this.fill = fill;
-        if (fill != null) {
-            fill.setParent(this);
-        }
-    }
+	public void setFill(Fill fill) {
+		this.fill = fill;
+		if (fill != null) {
+			fill.setParent(this);
+		}
+	}
 
-    public Halo getHalo() {
-        return halo;
-    }
+	public Halo getHalo() {
+		return halo;
+	}
 
-    public void setHalo(Halo halo) {
-        this.halo = halo;
-        halo.setParent(this);
-    }
-
-	@Override
-    public Stroke getStroke() {
-        return stroke;
-    }
+	public void setHalo(Halo halo) {
+		this.halo = halo;
+		if (halo != null) {
+			halo.setParent(this);
+		}
+	}
 
 	@Override
-    public void setStroke(Stroke stroke) {
-        this.stroke = stroke;
-        stroke.setParent(this);
-    }
+	public Stroke getStroke() {
+		return stroke;
+	}
 
-    public ViewBox getViewBox() {
-        return viewBox;
-    }
+	@Override
+	public void setStroke(Stroke stroke) {
+		this.stroke = stroke;
+		if (stroke != null) {
+			stroke.setParent(this);
+		}
+	}
 
-    public void setViewBox(ViewBox viewBox) {
-        this.viewBox = viewBox;
-        viewBox.setParent(this);
-        //updateGraphic();
-    }
+	@Override
+	public ViewBox getViewBox() {
+		return viewBox;
+	}
 
-    public MarkGraphicSource getSource() {
-        return source;
-    }
+	@Override
+	public void setViewBox(ViewBox viewBox) {
 
-    public RealParameter getpOffset() {
-        return pOffset;
-    }
+		if (viewBox == null) {
+			viewBox = new ViewBox();
+		}
 
-    public void setpOffset(RealParameter pOffset) {
-        this.pOffset = pOffset;
-    }
+		this.viewBox = viewBox;
 
-    /*
-     * This method must be called after each modification of uom, viewbox, source
-     *
-     */
-    @Override
-    public void updateGraphic() {
-        try {
-            shape = source.getShape(viewBox, null, null, null);
-        } catch (Exception e) {
-            shape = null;
-        }
-    }
+		viewBox.setParent(this);
+		//updateGraphic();
+	}
 
-    public void setSource(MarkGraphicSource source) throws IOException {
-        this.source = source;
-        //updateGraphic();
-    }
+	public MarkGraphicSource getSource() {
+		return source;
+	}
 
-    /**
-     * @param ds
-     * @param fid
-     * @throws ParameterException
-     * @throws IOException 
-     * @todo implements !
-     */
-    @Override
-    public RenderableGraphics getRenderableGraphics(Feature feat, boolean selected, MapTransform mt) throws ParameterException, IOException {
-        Shape shp;
+	public RealParameter getpOffset() {
+		return pOffset;
+	}
 
-        // If the shape doesn't depends on feature (i.e. not null), we used the cached one
-        if (shape == null) {
-            shp = source.getShape(viewBox, feat, mt.getScaleDenominator(), mt.getDpi());
-        } else {
-            shp = shape;
-        }
+	public void setpOffset(RealParameter pOffset) {
+		this.pOffset = pOffset;
+	}
 
-        // Apply AT
-        Shape atShp = shp;
+	/*
+	 * This method must be called after each modification of uom, viewbox, source
+	 *
+	 */
+	@Override
+	public void updateGraphic() {
+		try {
+			shape = source.getShape(viewBox, null, null, null);
+		} catch (Exception e) {
+			shape = null;
+		}
+	}
 
-        if (transform != null) {
-            atShp = this.transform.getGraphicalAffineTransform(feat, false, mt).createTransformedShape(shp);
-        }
+	public void setSource(MarkGraphicSource source) {
+		this.source = source;
+		//updateGraphic();
+	}
 
-        Rectangle2D bounds = atShp.getBounds2D();
+	/**
+	 * @param ds
+	 * @param fid
+	 * @throws ParameterException
+	 * @throws IOException
+	 * @todo implements !
+	 */
+	@Override
+	public RenderableGraphics getRenderableGraphics(Feature feat, boolean selected, MapTransform mt) throws ParameterException, IOException {
+		Shape shp;
 
-        double margin = this.getMargin(feat, mt);
+		// If the shape doesn't depends on feature (i.e. not null), we used the cached one
+		if (shape == null) {
+			shp = source.getShape(viewBox, feat, mt.getScaleDenominator(), mt.getDpi());
+		} else {
+			shp = shape;
+		}
 
-        RenderableGraphics rg = Graphic.getNewRenderableGraphics(bounds, margin);
+		// Apply AT
+		Shape atShp = shp;
 
-        if (halo != null) {
-            halo.draw(rg, atShp, feat, mt);
-        }
-        if (fill != null) {
-            fill.draw(rg, atShp, feat, selected, mt);
-        }
-        if (stroke != null) {
-            stroke.draw(rg, atShp, feat, selected, mt);
-        }
+		if (transform != null) {
+			atShp = this.transform.getGraphicalAffineTransform(feat, false, mt).createTransformedShape(shp);
+		}
 
-        return rg;
+		Rectangle2D bounds = atShp.getBounds2D();
 
-    }
+		double margin = this.getMargin(feat, mt);
 
-    /**
-     * compute required extra space. This extra space equals the max bw stroke width and halo radius
-     * @param ds
-     * @param fid
-     * @return
-     * @throws ParameterException
-     * @throws IOException
-     */
-    private double getMargin(Feature feat, MapTransform mt) throws ParameterException, IOException {
-        double sWidth = 0.0;
-        double haloR = 0.0;
+		RenderableGraphics rg = Graphic.getNewRenderableGraphics(bounds, margin);
 
-        if (stroke != null) {
-            sWidth += stroke.getMaxWidth(feat, mt);
-        }
+		if (halo != null) {
+			halo.draw(rg, atShp, feat, mt);
+		}
+		if (fill != null) {
+			fill.draw(rg, atShp, feat, selected, mt);
+		}
+		if (stroke != null) {
+			stroke.draw(rg, atShp, feat, selected, mt);
+		}
 
-        if (this.halo != null) {
-            haloR = Uom.toPixel(halo.getRadius().getValue(feat), halo.getUom(), mt.getDpi(), mt.getScaleDenominator(), 0.0);
-        }
+		return rg;
 
-        return Math.max(sWidth, haloR);
-    }
+	}
 
-    @Override
-    public double getMaxWidth(Feature feat, MapTransform mt) throws ParameterException, IOException {
-        double delta = 0.0;
+	/**
+	 * compute required extra space. This extra space equals the max bw stroke width and halo radius
+	 * @param ds
+	 * @param fid
+	 * @return
+	 * @throws ParameterException
+	 * @throws IOException
+	 */
+	private double getMargin(Feature feat, MapTransform mt) throws ParameterException, IOException {
+		double sWidth = 0.0;
+		double haloR = 0.0;
 
-        if (viewBox != null) {
-            Dimension dim = viewBox.getDimensionInPixel(feat, 1, mt.getScaleDenominator(), mt.getDpi());
-            delta = Math.max(dim.getHeight(), dim.getWidth());
-        }
+		if (stroke != null) {
+			sWidth += stroke.getMaxWidth(feat, mt);
+		}
 
-        delta += this.getMargin(feat, mt);
+		if (this.halo != null) {
+			haloR = Uom.toPixel(halo.getRadius().getValue(feat), halo.getUom(), mt.getDpi(), mt.getScaleDenominator(), 0.0);
+		}
 
-        return delta;
-    }
+		return Math.max(sWidth, haloR);
+	}
 
-    @Override
-    public JAXBElement<MarkGraphicType> getJAXBElement() {
-        MarkGraphicType m = new MarkGraphicType();
+	@Override
+	public double getMaxWidth(Feature feat, MapTransform mt) throws ParameterException, IOException {
+		double delta = 0.0;
 
-        if (halo != null) {
-            m.setHalo(halo.getJAXBType());
-        }
+		if (viewBox != null) {
+			Dimension dim = viewBox.getDimensionInPixel(feat, 1, mt.getScaleDenominator(), mt.getDpi());
+			delta = Math.max(dim.getHeight(), dim.getWidth());
+		}
 
-        source.setJAXBSource(m);
+		delta += this.getMargin(feat, mt);
 
-        if (transform != null) {
-            m.setTransform(transform.getJAXBType());
-        }
+		return delta;
+	}
 
-        if (uom != null) {
-            m.setUnitOfMeasure(uom.toURN());
-        }
+	@Override
+	public JAXBElement<MarkGraphicType> getJAXBElement() {
+		MarkGraphicType m = new MarkGraphicType();
 
-        if (viewBox != null) {
-            m.setViewBox(viewBox.getJAXBType());
-        }
+		if (halo != null) {
+			m.setHalo(halo.getJAXBType());
+		}
 
-        if (fill != null) {
-            m.setFill(fill.getJAXBElement());
-        }
+		source.setJAXBSource(m);
 
-        if (stroke != null) {
-            m.setStroke(stroke.getJAXBElement());
-        }
+		if (transform != null) {
+			m.setTransform(transform.getJAXBType());
+		}
 
-        ObjectFactory of = new ObjectFactory();
-        return of.createMarkGraphic(m);
-    }
+		if (uom != null) {
+			m.setUnitOfMeasure(uom.toURN());
+		}
 
+		if (viewBox != null) {
+			m.setViewBox(viewBox.getJAXBType());
+		}
 
-    @Override
-    public boolean dependsOnFeature() {
-        if (viewBox != null && viewBox.dependsOnFeature()){
-            return true;
-        }
-        if (pOffset != null && pOffset.dependsOnFeature()){
-            return true;
-        }
-        if (halo != null && halo.dependsOnFeature()){
-            return true;
-        }
-        if (fill != null && fill.dependsOnFeature()){
-            return true;
-        }
-        if (stroke != null && stroke.dependsOnFeature()){
-            return true;
-        }
-        if (transform != null && this.getTransform().dependsOnFeature()){
-            return true;
-        }
-        return false;
-    }
+		if (fill != null) {
+			m.setFill(fill.getJAXBElement());
+		}
 
-    private MarkGraphicSource source;
-    private ViewBox viewBox;
-    private RealParameter pOffset;
-    private Halo halo;
-    private Fill fill;
-    private Stroke stroke;
-    // cached shape : only available with shape that doesn't depends on features
-    private Shape shape;
+		if (stroke != null) {
+			m.setStroke(stroke.getJAXBElement());
+		}
+
+		ObjectFactory of = new ObjectFactory();
+		return of.createMarkGraphic(m);
+	}
+
+	@Override
+	public boolean dependsOnFeature() {
+		if (viewBox != null && viewBox.dependsOnFeature()) {
+			return true;
+		}
+		if (pOffset != null && pOffset.dependsOnFeature()) {
+			return true;
+		}
+		if (halo != null && halo.dependsOnFeature()) {
+			return true;
+		}
+		if (fill != null && fill.dependsOnFeature()) {
+			return true;
+		}
+		if (stroke != null && stroke.dependsOnFeature()) {
+			return true;
+		}
+		if (transform != null && this.getTransform().dependsOnFeature()) {
+			return true;
+		}
+		return false;
+	}
+	private MarkGraphicSource source;
+	private ViewBox viewBox;
+	private RealParameter pOffset;
+	private Halo halo;
+	private Fill fill;
+	private Stroke stroke;
+	// cached shape : only available with shape that doesn't depends on features
+	private Shape shape;
 }

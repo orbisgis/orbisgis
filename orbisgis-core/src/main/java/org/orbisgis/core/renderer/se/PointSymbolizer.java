@@ -6,7 +6,6 @@ import java.awt.geom.Point2D;
 
 import java.io.IOException;
 import javax.media.jai.RenderableGraphics;
-import javax.swing.JPanel;
 import javax.xml.bind.JAXBElement;
 import org.gdms.data.feature.Feature;
 import org.orbisgis.core.renderer.persistance.se.ObjectFactory;
@@ -38,7 +37,7 @@ public final class PointSymbolizer extends VectorSymbolizer implements GraphicNo
 
 		MarkGraphic mark = new MarkGraphic();
 		mark.setParent(graphic);
-		mark.setToSquare10();
+		mark.setToCircle10();
 		graphic.addGraphic(mark);
 	}
 
@@ -58,6 +57,10 @@ public final class PointSymbolizer extends VectorSymbolizer implements GraphicNo
 
 		if (ast.getTransform() != null) {
 			this.setTransform(new Transform(ast.getTransform()));
+		}
+
+		if (ast.getLevel() != null){
+			this.setLevel(ast.getLevel());
 		}
 
 		if (ast.getGraphic() != null) {
@@ -121,6 +124,10 @@ public final class PointSymbolizer extends VectorSymbolizer implements GraphicNo
 
 		if (transform != null) {
 			s.setTransform(transform.getJAXBType());
+		}
+
+		if (this.level >= 0){
+			s.setLevel(level);
 		}
 
 

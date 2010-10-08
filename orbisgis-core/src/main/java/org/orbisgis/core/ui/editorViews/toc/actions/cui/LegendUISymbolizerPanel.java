@@ -56,6 +56,7 @@ import org.orbisgis.core.renderer.se.TextSymbolizer;
 import org.orbisgis.core.renderer.se.VectorSymbolizer;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.components.TextInput;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.components.UomInput;
+import org.orbisgis.core.ui.editorViews.toc.actions.cui.graphic.LegendUICompositeGraphicPanel;
 
 /**
  *
@@ -66,6 +67,7 @@ public class LegendUISymbolizerPanel extends LegendUIComponent {
 	private final Symbolizer symbolizer;
 	private LegendUIMetaFillPanel mFill;
 	private LegendUIMetaStrokePanel mStroke;
+	private LegendUICompositeGraphicPanel gCollection;
 
 	private TextInput nameInput;
 	private UomInput uomInput;
@@ -91,6 +93,7 @@ public class LegendUISymbolizerPanel extends LegendUIComponent {
 
 		if (symb instanceof VectorSymbolizer){
 			uomInput = new UomInput((VectorSymbolizer)symbolizer);
+			// Transform @todo
 		}
 
 		if (symb instanceof AreaSymbolizer) {
@@ -106,6 +109,7 @@ public class LegendUISymbolizerPanel extends LegendUIComponent {
 			//mStroke = new LegendUIMetaStrokePanel(controller, parent, (StrokeNode)symbolizer);
 		} else if (symb instanceof PointSymbolizer) {
 			//graphics = new LegendUIGraphicCollectionPanel(controller, parent, ((PointSymbolizer)symbolizer).getGraphicCollection());
+			gCollection = new LegendUICompositeGraphicPanel(controller, this, ((PointSymbolizer)symb).getGraphicCollection());
 		} else if (symb instanceof TextSymbolizer) {
 		} else if (symb instanceof RasterSymbolizer) { // ??
 		}
@@ -150,14 +154,9 @@ public class LegendUISymbolizerPanel extends LegendUIComponent {
 		}
 
 		this.add(topBar);
-
-		if (mStroke != null) {
-			this.add(mStroke);
-		}
-
-		if (mFill != null) {
-			this.add(mFill);
-		}
+		this.add(mStroke);
+		this.add(mFill);
+		this.add(gCollection);
 
 		// Should be useless...
 		if (this.symbolizer instanceof AreaSymbolizer) {

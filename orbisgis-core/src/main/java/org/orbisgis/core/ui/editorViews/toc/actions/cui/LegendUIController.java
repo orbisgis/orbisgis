@@ -192,9 +192,12 @@ public final class LegendUIController {
 				structureChanged(c, false);
 			}
 
-			Rule r = typeStyle.getRules().get(i);
+			//Rule r = typeStyle.getRules().get(i);
 			mainPanel.editRule(i);
+		}else{
+			mainPanel.editRule(-1);
 		}
+
 	}
 
 	/*

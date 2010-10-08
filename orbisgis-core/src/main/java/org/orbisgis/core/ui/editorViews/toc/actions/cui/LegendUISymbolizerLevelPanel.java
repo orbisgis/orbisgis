@@ -36,24 +36,62 @@
  * gwendall.petit _at_ ec-nantes.fr
  */
 
-package org.orbisgis.core.renderer.se.graphic;
 
-import java.awt.Shape;
-import java.io.IOException;
-import org.gdms.data.feature.Feature;
-import org.orbisgis.core.renderer.persistance.se.MarkGraphicType;
 
-import org.orbisgis.core.renderer.se.parameter.ParameterException;
+package org.orbisgis.core.ui.editorViews.toc.actions.cui;
+
+import java.awt.GridLayout;
+import java.util.ArrayList;
+import org.orbisgis.core.renderer.se.Rule;
+import org.orbisgis.core.renderer.se.Symbolizer;
+import org.orbisgis.core.ui.editorViews.toc.actions.cui.components.RealLiteralInput;
 
 /**
- * This interface allow to fetch a mark graphic for many sources,
  *
  * @author maxence
- * @todo implement in InlineContent(for se InlineContent && GML), OnlineResource
  */
-public interface MarkGraphicSource {
-    public abstract Shape getShape(ViewBox viewBox, Feature feat, Double scale, Double dpi)
-            throws ParameterException, IOException;
+public class LegendUISymbolizerLevelPanel extends LegendUIAbstractPanel {
 
-    public void setJAXBSource(MarkGraphicType m);
+	ArrayList<RealLiteralInput> levels;
+
+	public LegendUISymbolizerLevelPanel(LegendUIController controller){
+		super(controller);
+		this.setLayout(new GridLayout(0,1));
+
+		ArrayList<Rule> rules = controller.getEditedFeatureTypeStyle().getRules();
+
+		levels = new ArrayList<RealLiteralInput>();
+
+		int sum = 0;
+		for (Rule r : rules){
+			sum += r.getCompositeSymbolizer().getSymbolizerList().size();
+		}
+
+		System.out.println ("Bornes: " + ((double)sum));
+		for (Rule r : rules){
+			ArrayList<Symbolizer> ss = r.getCompositeSymbolizer().getSymbolizerList();
+			for (Symbolizer s: ss){
+				levels.add(new RealLiteralInputImpl(s.getName(), (double)s.getLevel(), 0.0, (double)sum, s));
+			}
+		}
+
+		for (RealLiteralInput input : levels){
+			this.add(input);
+		}
+	}
+
+	private static class RealLiteralInputImpl extends RealLiteralInput {
+
+		private final Symbolizer s;
+
+		public RealLiteralInputImpl(String name, Double initialValue, Double min, Double max, Symbolizer s) {
+			super(name, initialValue, min, max);
+			this.s = s;
+		}
+
+		@Override
+		protected void valueChanged(Double v) {
+			s.setLevel(v.intValue());
+		}
+	}
 }

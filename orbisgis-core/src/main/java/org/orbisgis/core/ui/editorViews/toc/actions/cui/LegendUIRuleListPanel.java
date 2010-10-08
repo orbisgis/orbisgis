@@ -82,6 +82,8 @@ public class LegendUIRuleListPanel extends JPanel implements LegendUIComponentLi
 		// Make this accessible from inner classes !(ugly hack)
 		model = new DefaultListModel();
 
+		model.addElement("General");
+
 		// First step: create the list model
 		for (LegendUIRulePanel r : rulesUI) {
 			model.addElement(r);
@@ -104,7 +106,7 @@ public class LegendUIRuleListPanel extends JPanel implements LegendUIComponentLi
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				int i = list.getSelectedIndex();
+				int i = list.getSelectedIndex() - 1;
 				if (controller.moveRuleUp(i)){
 					// reflect the new order in the UI
 					DefaultListModel model = (DefaultListModel) list.getModel();
@@ -119,7 +121,7 @@ public class LegendUIRuleListPanel extends JPanel implements LegendUIComponentLi
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				int i = list.getSelectedIndex();
+				int i = list.getSelectedIndex() - 1;
 				if (controller.moveRuleDown(i)){
 					// reflect the new order in the UI
 					DefaultListModel model = (DefaultListModel) list.getModel();
@@ -151,7 +153,7 @@ public class LegendUIRuleListPanel extends JPanel implements LegendUIComponentLi
 				int showConfirmDialog = JOptionPane.showConfirmDialog(controller.getMainPanel(), "Sur ?", "Sur ?", JOptionPane.YES_NO_OPTION);
 
 				if (showConfirmDialog == 0) {
-					int i = list.getSelectedIndex();
+					int i = list.getSelectedIndex() -1;
 					if (controller.deleteRule(i)){
 						DefaultListModel model = (DefaultListModel) list.getModel();
 						model.remove(i);
@@ -186,13 +188,13 @@ public class LegendUIRuleListPanel extends JPanel implements LegendUIComponentLi
 				btnDown.setEnabled(false);
 				btnRm.setEnabled(false);
 
-				if (index >= 0) {
+				if (index > 0) {
 					// First, update button status
-					if (list.getModel().getSize() > 1){ //dont delete the last rule
+					if (list.getModel().getSize() > 2){ //dont delete the last rule
 						btnRm.setEnabled(true);
 					}
 
-					if (index > 0) {
+					if (index > 1) {
 						// Turn the move down button on
 						btnUp.setEnabled(true);
 					}
@@ -200,8 +202,9 @@ public class LegendUIRuleListPanel extends JPanel implements LegendUIComponentLi
 						btnDown.setEnabled(true);
 					}
 
-					controller.editRule(index);
 				}
+
+				controller.editRule(index - 1);
 			}
 		});
 

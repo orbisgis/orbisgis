@@ -54,6 +54,12 @@ public abstract class Graphic implements SymbolizerNode, UomNode {
         return null;
     }
 
+	@Override
+	public String toString(){
+		return this.getClass().getSimpleName();
+	}
+
+
     @Override
     public Uom getUom() {
         if (uom != null) {
@@ -63,6 +69,7 @@ public abstract class Graphic implements SymbolizerNode, UomNode {
         }
     }
 
+	@Override
 	public Uom getOwnUom(){
 		return uom;
 	}

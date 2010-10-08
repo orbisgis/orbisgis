@@ -13,29 +13,26 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementRef;
-import javax.xml.bind.annotation.XmlSchemaType;
 import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * <p>Java class for AreaSymbolizerType complex type.
+ * <p>Java class for CategoryType complex type.
  * 
  * <p>The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
- * &lt;complexType name="AreaSymbolizerType">
+ * &lt;complexType name="CategoryType">
  *   &lt;complexContent>
- *     &lt;extension base="{http://www.opengis.net/se}SymbolizerType">
+ *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;sequence>
- *         &lt;element ref="{http://www.opengis.net/se}Geometry" minOccurs="0"/>
- *         &lt;element ref="{http://www.opengis.net/se}UnitOfMeasure" minOccurs="0"/>
- *         &lt;element ref="{http://www.opengis.net/se}Level" minOccurs="0"/>
- *         &lt;element ref="{http://www.opengis.net/se}PerpendicularOffset" minOccurs="0"/>
- *         &lt;element ref="{http://www.opengis.net/se}Transform" minOccurs="0"/>
+ *         &lt;element ref="{http://www.opengis.net/se}Name"/>
+ *         &lt;element ref="{http://www.opengis.net/se}Measure"/>
  *         &lt;element ref="{http://www.opengis.net/se}Fill" minOccurs="0"/>
  *         &lt;element ref="{http://www.opengis.net/se}Stroke" minOccurs="0"/>
+ *         &lt;element ref="{http://www.opengis.net/se}MarkGraphic" minOccurs="0"/>
  *       &lt;/sequence>
- *     &lt;/extension>
+ *     &lt;/restriction>
  *   &lt;/complexContent>
  * &lt;/complexType>
  * </pre>
@@ -43,158 +40,76 @@ import javax.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "AreaSymbolizerType", propOrder = {
-    "geometry",
-    "unitOfMeasure",
-    "level",
-    "perpendicularOffset",
-    "transform",
+@XmlType(name = "CategoryType", propOrder = {
+    "name",
+    "measure",
     "fill",
-    "stroke"
+    "stroke",
+    "markGraphic"
 })
-public class AreaSymbolizerType
-    extends SymbolizerType
-{
+public class CategoryType {
 
-    @XmlElement(name = "Geometry")
-    protected GeometryType geometry;
-    @XmlElement(name = "UnitOfMeasure")
-    @XmlSchemaType(name = "anyURI")
-    protected String unitOfMeasure;
-    @XmlElement(name = "Level")
-    @XmlSchemaType(name = "unsignedInt")
-    protected Long level;
-    @XmlElement(name = "PerpendicularOffset")
-    protected ParameterValueType perpendicularOffset;
-    @XmlElement(name = "Transform")
-    protected TransformType transform;
+    @XmlElement(name = "Name", required = true)
+    protected String name;
+    @XmlElement(name = "Measure", required = true)
+    protected ParameterValueType measure;
     @XmlElementRef(name = "Fill", namespace = "http://www.opengis.net/se", type = JAXBElement.class)
     protected JAXBElement<? extends FillType> fill;
     @XmlElementRef(name = "Stroke", namespace = "http://www.opengis.net/se", type = JAXBElement.class)
     protected JAXBElement<? extends StrokeType> stroke;
+    @XmlElement(name = "MarkGraphic")
+    protected MarkGraphicType markGraphic;
 
     /**
-     * Gets the value of the geometry property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link GeometryType }
-     *     
-     */
-    public GeometryType getGeometry() {
-        return geometry;
-    }
-
-    /**
-     * Sets the value of the geometry property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link GeometryType }
-     *     
-     */
-    public void setGeometry(GeometryType value) {
-        this.geometry = value;
-    }
-
-    /**
-     * Gets the value of the unitOfMeasure property.
+     * Gets the value of the name property.
      * 
      * @return
      *     possible object is
      *     {@link String }
      *     
      */
-    public String getUnitOfMeasure() {
-        return unitOfMeasure;
+    public String getName() {
+        return name;
     }
 
     /**
-     * Sets the value of the unitOfMeasure property.
+     * Sets the value of the name property.
      * 
      * @param value
      *     allowed object is
      *     {@link String }
      *     
      */
-    public void setUnitOfMeasure(String value) {
-        this.unitOfMeasure = value;
+    public void setName(String value) {
+        this.name = value;
     }
 
     /**
-     * Gets the value of the level property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link Long }
-     *     
-     */
-    public Long getLevel() {
-        return level;
-    }
-
-    /**
-     * Sets the value of the level property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link Long }
-     *     
-     */
-    public void setLevel(Long value) {
-        this.level = value;
-    }
-
-    /**
-     * Gets the value of the perpendicularOffset property.
+     * Gets the value of the measure property.
      * 
      * @return
      *     possible object is
      *     {@link ParameterValueType }
      *     
      */
-    public ParameterValueType getPerpendicularOffset() {
-        return perpendicularOffset;
+    public ParameterValueType getMeasure() {
+        return measure;
     }
 
     /**
-     * Sets the value of the perpendicularOffset property.
+     * Sets the value of the measure property.
      * 
      * @param value
      *     allowed object is
      *     {@link ParameterValueType }
      *     
      */
-    public void setPerpendicularOffset(ParameterValueType value) {
-        this.perpendicularOffset = value;
+    public void setMeasure(ParameterValueType value) {
+        this.measure = value;
     }
 
     /**
-     * Gets the value of the transform property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link TransformType }
-     *     
-     */
-    public TransformType getTransform() {
-        return transform;
-    }
-
-    /**
-     * Sets the value of the transform property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link TransformType }
-     *     
-     */
-    public void setTransform(TransformType value) {
-        this.transform = value;
-    }
-
-    /**
-     * Gets the value of the fill property.
+     * if defined, fill a bar
      * 
      * @return
      *     possible object is
@@ -226,7 +141,7 @@ public class AreaSymbolizerType
     }
 
     /**
-     * Gets the value of the stroke property.
+     * if defined, outline the bar
      * 
      * @return
      *     possible object is
@@ -251,6 +166,30 @@ public class AreaSymbolizerType
      */
     public void setStroke(JAXBElement<? extends StrokeType> value) {
         this.stroke = ((JAXBElement<? extends StrokeType> ) value);
+    }
+
+    /**
+     * if defined, plot the graphic over the point
+     * 
+     * @return
+     *     possible object is
+     *     {@link MarkGraphicType }
+     *     
+     */
+    public MarkGraphicType getMarkGraphic() {
+        return markGraphic;
+    }
+
+    /**
+     * Sets the value of the markGraphic property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link MarkGraphicType }
+     *     
+     */
+    public void setMarkGraphic(MarkGraphicType value) {
+        this.markGraphic = value;
     }
 
 }

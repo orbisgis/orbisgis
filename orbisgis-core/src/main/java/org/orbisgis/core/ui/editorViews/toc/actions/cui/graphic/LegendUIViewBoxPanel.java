@@ -36,24 +36,62 @@
  * gwendall.petit _at_ ec-nantes.fr
  */
 
-package org.orbisgis.core.renderer.se.graphic;
 
-import java.awt.Shape;
-import java.io.IOException;
-import org.gdms.data.feature.Feature;
-import org.orbisgis.core.renderer.persistance.se.MarkGraphicType;
 
-import org.orbisgis.core.renderer.se.parameter.ParameterException;
+package org.orbisgis.core.ui.editorViews.toc.actions.cui.graphic;
+
+import java.awt.BorderLayout;
+import javax.swing.Icon;
+import org.orbisgis.core.images.OrbisGISIcon;
+import org.orbisgis.core.renderer.se.graphic.ViewBox;
+import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
+import org.orbisgis.core.ui.editorViews.toc.actions.cui.LegendUIComponent;
+import org.orbisgis.core.ui.editorViews.toc.actions.cui.LegendUIController;
+import org.orbisgis.core.ui.editorViews.toc.actions.cui.parameter.real.LegendUIMetaRealPanel;
 
 /**
- * This interface allow to fetch a mark graphic for many sources,
  *
  * @author maxence
- * @todo implement in InlineContent(for se InlineContent && GML), OnlineResource
  */
-public interface MarkGraphicSource {
-    public abstract Shape getShape(ViewBox viewBox, Feature feat, Double scale, Double dpi)
-            throws ParameterException, IOException;
+public class LegendUIViewBoxPanel extends LegendUIComponent {
 
-    public void setJAXBSource(MarkGraphicType m);
+	private ViewBox viewbox;
+
+	private LegendUIMetaRealPanel width;
+	private LegendUIMetaRealPanel height;
+
+	public LegendUIViewBoxPanel(LegendUIController controller, LegendUIComponent parent, ViewBox vbox){
+		super("View Box", controller, parent, 0);
+		this.viewbox = vbox;
+
+		height = new LegendUIMetaRealPanel("h" , controller, this, vbox.getHeight()) {
+
+			@Override
+			public void realChanged(RealParameter newReal) {
+				viewbox.setHeight(newReal);
+			}
+		};
+		height.init();
+
+		width = new LegendUIMetaRealPanel("w" , controller, this, vbox.getWidth()) {
+
+			@Override
+			public void realChanged(RealParameter newReal) {
+				viewbox.setWidth(newReal);
+			}
+		};
+		width.init();
+	}
+
+	@Override
+	public Icon getIcon() {
+		return OrbisGISIcon.PALETTE;
+	}
+
+	@Override
+	protected void mountComponent() {
+		this.add(width, BorderLayout.NORTH);
+		this.add(height, BorderLayout.SOUTH);
+	}
+
 }

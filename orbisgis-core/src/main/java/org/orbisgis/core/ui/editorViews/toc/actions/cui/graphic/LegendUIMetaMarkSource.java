@@ -36,24 +36,54 @@
  * gwendall.petit _at_ ec-nantes.fr
  */
 
-package org.orbisgis.core.renderer.se.graphic;
 
-import java.awt.Shape;
-import java.io.IOException;
-import org.gdms.data.feature.Feature;
-import org.orbisgis.core.renderer.persistance.se.MarkGraphicType;
 
-import org.orbisgis.core.renderer.se.parameter.ParameterException;
+package org.orbisgis.core.ui.editorViews.toc.actions.cui.graphic;
+
+import javax.swing.Icon;
+import org.orbisgis.core.images.OrbisGISIcon;
+import org.orbisgis.core.renderer.se.graphic.MarkGraphic;
+import org.orbisgis.core.ui.editorViews.toc.actions.cui.LegendUIAbstractMetaPanel;
+import org.orbisgis.core.ui.editorViews.toc.actions.cui.LegendUIComponent;
+import org.orbisgis.core.ui.editorViews.toc.actions.cui.LegendUIController;
+import org.orbisgis.core.ui.editorViews.toc.actions.cui.type.LegendUIType;
 
 /**
- * This interface allow to fetch a mark graphic for many sources,
  *
  * @author maxence
- * @todo implement in InlineContent(for se InlineContent && GML), OnlineResource
  */
-public interface MarkGraphicSource {
-    public abstract Shape getShape(ViewBox viewBox, Feature feat, Double scale, Double dpi)
-            throws ParameterException, IOException;
+class LegendUIMetaMarkSource extends LegendUIAbstractMetaPanel{
 
-    public void setJAXBSource(MarkGraphicType m);
+	private LegendUIType initialType;
+	private LegendUIComponent initialPanel;
+	private LegendUIType[] types;
+
+	private MarkGraphic mark;
+
+	public LegendUIMetaMarkSource(LegendUIController ctrl, LegendUIComponent parent, MarkGraphic mark){
+		super("Source", ctrl, parent, 0);
+		this.mark = mark;
+
+		types = new LegendUIType[1];
+
+		types[0] = new LegendUIWellKnownNameType(controller, mark);
+
+		initialType = types[0];
+		initialPanel = new LegendUIWellKnownNamePanel(controller, this, mark);
+	}
+
+	@Override
+	public Icon getIcon() {
+		return OrbisGISIcon.PALETTE;
+	}
+
+	@Override
+	public void init() {
+		init(types, initialType, initialPanel);
+	}
+
+	@Override
+	protected void switchTo(LegendUIType type, LegendUIComponent newActiveComp) {
+		//this.mark
+	}
 }

@@ -36,24 +36,49 @@
  * gwendall.petit _at_ ec-nantes.fr
  */
 
-package org.orbisgis.core.renderer.se.graphic;
 
-import java.awt.Shape;
-import java.io.IOException;
-import org.gdms.data.feature.Feature;
-import org.orbisgis.core.renderer.persistance.se.MarkGraphicType;
 
-import org.orbisgis.core.renderer.se.parameter.ParameterException;
+package org.orbisgis.core.ui.editorViews.toc.actions.cui.graphic;
+
+import javax.swing.Icon;
+import org.orbisgis.core.images.OrbisGISIcon;
+import org.orbisgis.core.renderer.se.graphic.MarkGraphic;
+import org.orbisgis.core.renderer.se.graphic.WellKnownName;
+import org.orbisgis.core.ui.editorViews.toc.actions.cui.LegendUIComponent;
+import org.orbisgis.core.ui.editorViews.toc.actions.cui.LegendUIController;
+import org.orbisgis.core.ui.editorViews.toc.actions.cui.components.ComboBoxInput;
 
 /**
- * This interface allow to fetch a mark graphic for many sources,
  *
  * @author maxence
- * @todo implement in InlineContent(for se InlineContent && GML), OnlineResource
  */
-public interface MarkGraphicSource {
-    public abstract Shape getShape(ViewBox viewBox, Feature feat, Double scale, Double dpi)
-            throws ParameterException, IOException;
+public class LegendUIWellKnownNamePanel extends LegendUIComponent {
 
-    public void setJAXBSource(MarkGraphicType m);
+
+	MarkGraphic mg;
+
+	ComboBoxInput wknInput;
+
+	public LegendUIWellKnownNamePanel(LegendUIController controller, LegendUIComponent parent, MarkGraphic m) {
+		super("WKG", controller, parent, 0);
+		this.mg = m;
+		wknInput = new ComboBoxInput(WellKnownName.values(), ((WellKnownName)mg.getSource()).ordinal()) {
+
+			@Override
+			protected void valueChanged(int i) {
+				mg.setSource(WellKnownName.values()[i]);
+			}
+		};
+	}
+
+	@Override
+	public Icon getIcon() {
+		return OrbisGISIcon.PALETTE;
+	}
+
+	@Override
+	protected void mountComponent() {
+		this.add(wknInput);
+	}
+
 }

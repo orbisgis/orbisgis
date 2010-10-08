@@ -94,8 +94,14 @@ public final class CompositeSymbolizer implements SymbolizerNode {
     public void addSymbolizer(Symbolizer s){
         symbolizers.add(s);
         s.setParent(this);
+		if (s.getLevel() < 0){
+			s.setLevel(symbolizers.size());
+		}
     }
 
+	/**
+	 * @deprecated
+	 */
 	public void moveSymbolizerDown(Symbolizer s){
 		int index = symbolizers.indexOf(s);
 		if (index > -1 && index < symbolizers.size()-1){
@@ -105,6 +111,9 @@ public final class CompositeSymbolizer implements SymbolizerNode {
 	}
 
 
+	/**
+	 * @deprecated
+	 */
 	public void moveSymbolizerUp(Symbolizer s){
 		int index = symbolizers.indexOf(s);
 		if (index > 0){

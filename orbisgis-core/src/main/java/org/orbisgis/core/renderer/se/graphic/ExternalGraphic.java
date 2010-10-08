@@ -38,6 +38,12 @@ import org.orbisgis.core.renderer.se.transform.Transform;
  */
 public final class ExternalGraphic extends Graphic {
 
+    private ExternalGraphicSource source;
+    private ViewBox viewBox;
+    private RealParameter opacity;
+    private Halo halo;
+    private PlanarImage graphic;
+
     public ExternalGraphic(){
     }
 
@@ -256,10 +262,4 @@ public final class ExternalGraphic extends Graphic {
         ObjectFactory of = new ObjectFactory();
         return of.createExternalGraphic(e);
     }
-    private ExternalGraphicSource source;
-    private ViewBox viewBox;
-    private RealParameter opacity;
-    private Halo halo;
-    private PlanarImage graphic;
-
 }

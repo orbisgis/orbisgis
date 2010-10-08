@@ -200,7 +200,7 @@ public class Renderer {
 			// Extract into drawSeLayer method !
 			FeatureTypeStyle fts = layer.getFeatureTypeStyle();
 
-			fts.resetSymbolizerLevels();
+			//fts.resetSymbolizerLevels();
 
 			ArrayList<Symbolizer> symbs = new ArrayList<Symbolizer>();
 			// i.e. TextSymbolizer are always drawn above all other layer !!

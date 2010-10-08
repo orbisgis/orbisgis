@@ -5,7 +5,6 @@ import java.awt.Graphics2D;
 import java.awt.Paint;
 import java.awt.Shape;
 import java.awt.TexturePaint;
-import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 
@@ -192,13 +191,19 @@ public final class DensityFill extends Fill implements GraphicNode {
 					c = ColorHelper.invert(c);
 				}
 
+            	Color ac = c;
+	            if (this.hatches.getOpacity() != null) {
+    	            ac = ColorHelper.getColorWithAlpha(c, this.hatches.getOpacity().getValue(feat));
+        	    }
+
+
 				tile.setColor(c);
 
 				tile.setStroke(hatches.getBasicStroke(feat, mt));
 
 				// Draw three line in order to ensure mosaic join
-
 				int ipDist = (int) pDist;
+
 
 				if (idx == 0) { // V-Hatches
 					tile.drawLine(0, -idy, 0, idy);

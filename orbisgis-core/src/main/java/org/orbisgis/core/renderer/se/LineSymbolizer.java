@@ -59,6 +59,10 @@ public final class LineSymbolizer extends VectorSymbolizer implements StrokeNode
 			this.setPerpendicularOffset(SeParameterFactory.createRealParameter(ast.getPerpendicularOffset()));
 		}
 
+		if (ast.getLevel() != null){
+			this.setLevel(ast.getLevel());
+		}
+
 		if (ast.getTransform() != null) {
 			this.setTransform(new Transform(ast.getTransform()));
 		}
@@ -131,6 +135,9 @@ public final class LineSymbolizer extends VectorSymbolizer implements StrokeNode
 			s.setTransform(transform.getJAXBType());
 		}
 
+		if (level >= 0){
+			s.setLevel(level);
+		}
 
 		if (this.perpendicularOffset != null) {
 			s.setPerpendicularOffset(perpendicularOffset.getJAXBParameterValueType());

@@ -33,11 +33,12 @@ public abstract class Symbolizer implements SymbolizerNode, Comparable {
 
     private SymbolizerNode parent;
 
-    protected int level = -1;
+    protected long level;
 
     public Symbolizer() {
         name = Symbolizer.DEFAULT_NAME;
         desc = "";
+		level = -1;
     }
 
 	@Override
@@ -61,6 +62,7 @@ public abstract class Symbolizer implements SymbolizerNode, Comparable {
         if (t.getDescription() != null){
             // TODO  implement ows:Description
         }
+		level = -1;
     }
 
     public String getName() {
@@ -82,11 +84,11 @@ public abstract class Symbolizer implements SymbolizerNode, Comparable {
         desc = description;
     }
 
-    public int getLevel() {
+    public long getLevel() {
         return level;
     }
 
-    public void setLevel(int level) {
+    public void setLevel(long level) {
         this.level = level;
     }
 

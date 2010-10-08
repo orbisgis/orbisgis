@@ -109,8 +109,8 @@ public final class LegendUIMainPanel extends JPanel  implements UIPanel  {
 		/*
 		 * TODO: Switch to global style editor (i.e. symbolizer level editor)
 		 */
-		//editRule(0);
-		editor.add(new JLabel("Symbolizer order !"));
+		editRule(-1);
+		//editor.add(new JLabel("Symbolizer order !"));
 	}
 
 	void refreshTOC(){
@@ -120,12 +120,15 @@ public final class LegendUIMainPanel extends JPanel  implements UIPanel  {
 	void editRule(int ruleID){
 		tocPanel.refresh(ruleID);
 
-		LegendUIRulePanel rPanel = controller.getRulePanel(ruleID);
 		this.editor.removeAll();
-		this.editor.add(rPanel);
+		if (ruleID >= 0){
+			LegendUIRulePanel rPanel = controller.getRulePanel(ruleID);
+			this.editor.add(rPanel);
+		}else{
+			this.editor.add(new LegendUISymbolizerLevelPanel(controller));
+		}
 
 		this.pack();
-		this.updateUI();
 	}
 
 	public void pack(){
@@ -137,6 +140,7 @@ public final class LegendUIMainPanel extends JPanel  implements UIPanel  {
 			dlg.pack();
 		}
 
+		this.updateUI();
 	}
 
 	public void editComponent(LegendUIComponent comp){
