@@ -142,7 +142,7 @@ public abstract class FunctionTest extends TestCase {
 	private Value evaluateFunction(Function function, Value[] values)
 			throws FunctionException {
 		if (function.isAggregate()) {
-			Value lastEvaluation = function.evaluate(values);
+			Value lastEvaluation = function.evaluate(dsf,values);
 			Value lastCall = function.getAggregateResult();
 			if (lastCall != null) {
 				return lastCall;
@@ -150,7 +150,7 @@ public abstract class FunctionTest extends TestCase {
 				return lastEvaluation;
 			}
 		} else {
-			return function.evaluate(values);
+			return function.evaluate(dsf,values);
 		}
 	}
 
