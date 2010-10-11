@@ -73,6 +73,7 @@ import org.gdms.driver.asc.AscDriver;
 import org.gdms.driver.csvstring.CSVStringDriver;
 import org.gdms.driver.dbf.DBFDriver;
 import org.gdms.driver.driverManager.DriverManager;
+import org.gdms.driver.dxf.DXFDriver;
 import org.gdms.driver.gdms.GdmsDriver;
 import org.gdms.driver.geotif.TifDriver;
 import org.gdms.driver.h2.H2spatialDriver;
@@ -140,6 +141,7 @@ public class DefaultSourceManager implements SourceManager {
 		dm.registerDriver(AscDriver.class);
 		dm.registerDriver(JPGDriver.class);
 		dm.registerDriver(PngDriver.class);
+		dm.registerDriver(DXFDriver.class);
 		this.dsf = dsf;
 		changeSourceInfoDirectory(baseDir);
 	}
