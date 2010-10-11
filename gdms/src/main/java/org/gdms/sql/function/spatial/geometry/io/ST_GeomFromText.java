@@ -36,6 +36,7 @@
  */
 package org.gdms.sql.function.spatial.geometry.io;
 
+import org.gdms.data.DataSourceFactory;
 import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
@@ -51,7 +52,7 @@ import com.vividsolutions.jts.io.WKTReader;
 public class ST_GeomFromText implements Function {
 	private static WKTReader reader = new WKTReader();
 
-	public Value evaluate(Value[] args) throws FunctionException {
+	public Value evaluate(DataSourceFactory dsf,Value[] args) throws FunctionException {
 		if (args[0].isNull()) {
 			return ValueFactory.createNullValue();
 		} else {

@@ -36,6 +36,7 @@ s * OrbisGIS is a GIS application dedicated to scientific spatial simulation.
  */
 package org.gdms.sql.function.spatial.geometry.convert;
 
+import org.gdms.data.DataSourceFactory;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.sql.function.Argument;
@@ -47,7 +48,7 @@ import com.vividsolutions.jts.geom.Geometry;
 
 public class ST_Centroid extends AbstractSpatialFunction {
 
-	public Value evaluate(final Value[] args) throws FunctionException {
+	public Value evaluate(DataSourceFactory dsf, Value[] args) throws FunctionException {
 		if (args[0].isNull()) {
 			return ValueFactory.createNullValue();
 		} else {

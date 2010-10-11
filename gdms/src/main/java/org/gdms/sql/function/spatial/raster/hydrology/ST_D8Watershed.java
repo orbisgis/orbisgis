@@ -36,6 +36,7 @@
  */
 package org.gdms.sql.function.spatial.raster.hydrology;
 
+import org.gdms.data.DataSourceFactory;
 import org.gdms.data.types.InvalidTypeException;
 import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeFactory;
@@ -57,7 +58,7 @@ import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.Point;
 
 public class ST_D8Watershed implements Function {
-	public Value evaluate(Value[] args) throws FunctionException {
+	public Value evaluate(DataSourceFactory dsf,Value[] args) throws FunctionException {
 		try {
 			GeoRaster grD8Direction = args[0].getAsRaster();
 			Operation allWatersheds;

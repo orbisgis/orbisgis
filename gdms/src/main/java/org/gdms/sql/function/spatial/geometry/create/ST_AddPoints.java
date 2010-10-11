@@ -39,6 +39,7 @@
  */
 package org.gdms.sql.function.spatial.geometry.create;
 
+import org.gdms.data.DataSourceFactory;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.geometryUtils.GeometryEditor;
@@ -52,7 +53,7 @@ import com.vividsolutions.jts.geom.Point;
 
 public class ST_AddPoints extends AbstractSpatialFunction {
 
-	public Value evaluate(final Value[] args) throws FunctionException {
+	public Value evaluate(DataSourceFactory dsf, Value[] args) throws FunctionException {
 
 		Geometry geom = args[0].getAsGeometry();
 		final Geometry geom1 = args[1].getAsGeometry();

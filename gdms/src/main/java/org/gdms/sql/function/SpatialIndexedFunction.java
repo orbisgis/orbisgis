@@ -37,6 +37,6 @@
 package org.gdms.sql.function;
 
 
-public interface TwoOverlappingArgumentsFunction extends Function {
+public interface SpatialIndexedFunction extends Function {
 
 }

@@ -39,6 +39,7 @@ package org.gdms.sql.function.alphanumeric;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.gdms.data.DataSourceFactory;
 import org.gdms.data.types.InvalidTypeException;
 import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeFactory;
@@ -53,7 +54,8 @@ import org.gdms.sql.function.FunctionValidator;
 public class IsUID implements Function {
 	private Set<Value> setOfUniqValues;
 
-	public Value evaluate(Value[] args) throws FunctionException {
+	public Value evaluate(DataSourceFactory dsf, Value[] args)
+			throws FunctionException {
 		FunctionValidator.failIfNull(args[0]);
 		if (null == setOfUniqValues) {
 			setOfUniqValues = new HashSet<Value>();

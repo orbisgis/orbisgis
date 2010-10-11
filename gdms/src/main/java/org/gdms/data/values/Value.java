@@ -65,16 +65,16 @@ public interface Value {
 	public Value or(Value value) throws IncompatibleTypesException;
 
 	/**
-	 * @see com.hardcode.gdbms.engine.instruction.Operations#producto(com.hardcode.gdbms.engine.values.value)
+	 * @see com.hardcode.gdbms.engine.instruction.Operations#multiply(com.hardcode.gdbms.engine.values.value)
 	 *      ;
 	 */
-	public Value producto(Value value) throws IncompatibleTypesException;
+	public Value multiply(Value value) throws IncompatibleTypesException;
 
 	/**
-	 * @see com.hardcode.gdbms.engine.instruction.Operations#suma(com.hardcode.gdbms.engine.values.value)
+	 * @see com.hardcode.gdbms.engine.instruction.Operations#sum(com.hardcode.gdbms.engine.values.value)
 	 *      ;
 	 */
-	public Value suma(Value value) throws IncompatibleTypesException;
+	public Value sum(Value value) throws IncompatibleTypesException;
 
 	/**
 	 * DOCUMENT ME!

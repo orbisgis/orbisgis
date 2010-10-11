@@ -41,6 +41,7 @@ import ij.process.ImageProcessor;
 import java.awt.geom.Point2D;
 import java.io.IOException;
 
+import org.gdms.data.DataSourceFactory;
 import org.gdms.data.types.InvalidTypeException;
 import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeFactory;
@@ -61,7 +62,7 @@ public class ST_AddZFromRaster implements Function {
 
 	private ImageProcessor demIp = null;
 
-	public Value evaluate(Value[] args) throws FunctionException {
+	public Value evaluate(DataSourceFactory dsf, Value[] args) throws FunctionException {
 		if ((args[0].isNull()) || (args[1].isNull())) {
 			return ValueFactory.createNullValue();
 		}

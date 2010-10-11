@@ -60,9 +60,22 @@ import org.gdms.sql.function.alphanumeric.String2IntFunction;
 import org.gdms.sql.function.alphanumeric.SubString;
 import org.gdms.sql.function.alphanumeric.Sum;
 import org.gdms.sql.function.alphanumeric.ToStringFunction;
+import org.gdms.sql.function.math.ACos;
+import org.gdms.sql.function.math.ASin;
+import org.gdms.sql.function.math.ATan;
+import org.gdms.sql.function.math.Ceil;
+import org.gdms.sql.function.math.Cos;
+import org.gdms.sql.function.math.Exp;
+import org.gdms.sql.function.math.Floor;
+import org.gdms.sql.function.math.Log;
 import org.gdms.sql.function.math.Pi;
+import org.gdms.sql.function.math.Random;
+import org.gdms.sql.function.math.Sin;
 import org.gdms.sql.function.math.Sqrt;
 import org.gdms.sql.function.math.StandardDeviation;
+import org.gdms.sql.function.math.Tan;
+import org.gdms.sql.function.math.ToDegrees;
+import org.gdms.sql.function.math.ToRadians;
 import org.gdms.sql.function.spatial.geometry.affineTransformation.ST_Rotate;
 import org.gdms.sql.function.spatial.geometry.affineTransformation.ST_Scale;
 import org.gdms.sql.function.spatial.geometry.convert.ST_Centroid;
@@ -259,6 +272,19 @@ public class FunctionManager {
 		addFunction(ST_RemoveRepeatedPoints.class);
 		addFunction(ST_AddPoint.class);
 		addFunction(ST_AddPoints.class);
+		addFunction(Log.class);
+		addFunction(Tan.class);
+		addFunction(ATan.class);
+		addFunction(ACos.class);
+		addFunction(Cos.class);
+		addFunction(Sin.class);
+		addFunction(ASin.class);
+		addFunction(Exp.class);
+		addFunction(Floor.class);
+		addFunction(Ceil.class);
+		addFunction(Random.class);
+		addFunction(ToDegrees.class);
+		addFunction(ToRadians.class);
 	}
 
 	public static void addFunctionManagerListener(

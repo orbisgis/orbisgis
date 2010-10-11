@@ -64,7 +64,7 @@ public class ST_Graph implements CustomQuery {
 	}
 
 	public String getDescription() {
-		return "Build a graph based on geometries";
+		return "Build a graph based on geometries order";
 	}
 
 	public ObjectDriver evaluate(DataSourceFactory dsf, DataSource[] tables,
@@ -77,26 +77,15 @@ public class ST_Graph implements CustomQuery {
 			final String spatialFieldName = values[0].toString();
 			sds.setDefaultGeometry(spatialFieldName);
 
+			
+			
 			sds.close();
 
-			PlanarGraph planarGraph = new PlanarGraph(pm);
-
-			GenericObjectDriver edges = planarGraph.createEdges(sds);
-
-			GenericObjectDriver nodes = planarGraph.createNodes(edges);
-
-			dsf.getSourceManager().register(
-					dsf.getSourceManager().getUniqueName("edges"), edges);
-
-			dsf.getSourceManager().register(
-					dsf.getSourceManager().getUniqueName("nodes"), nodes);
-
+			
 			return null;
 		} catch (DriverLoadException e) {
 			throw new ExecutionException(e);
 		} catch (DriverException e) {
-			throw new ExecutionException(e);
-		} catch (NonEditableDataSourceException e) {
 			throw new ExecutionException(e);
 		}
 	}
@@ -110,6 +99,6 @@ public class ST_Graph implements CustomQuery {
 	}
 
 	public Arguments[] getFunctionArguments() {
-		return new Arguments[] { new Arguments(Argument.GEOMETRY) };
+		return new Arguments[] { new Arguments(Argument.GEOMETRY, Argument.BOOLEAN) };
 	}
 }

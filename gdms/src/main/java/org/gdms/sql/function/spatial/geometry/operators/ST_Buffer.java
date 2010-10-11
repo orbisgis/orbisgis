@@ -36,6 +36,7 @@
  */
 package org.gdms.sql.function.spatial.geometry.operators;
 
+import org.gdms.data.DataSourceFactory;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.sql.function.Argument;
@@ -51,7 +52,7 @@ public class ST_Buffer extends AbstractSpatialFunction {
 	private static final String CAP_STYLE_SQUARE = "square";
 	private static final String CAP_STYLE_BUTT = "butt";
 
-	public Value evaluate(final Value[] args) throws FunctionException {
+	public Value evaluate(DataSourceFactory dsf, Value[] args) throws FunctionException {
 		if ((args[0].isNull()) || (args[1].isNull())) {
 			return ValueFactory.createNullValue();
 		} else {

@@ -36,6 +36,7 @@
  */
 package org.gdms.sql.function.spatial.raster.hydrology;
 
+import org.gdms.data.DataSourceFactory;
 import org.gdms.data.types.InvalidTypeException;
 import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeFactory;
@@ -51,7 +52,7 @@ import org.grap.processing.OperationException;
 import org.grap.processing.operation.hydrology.D8OpStrahlerStreamOrder;
 
 public class ST_D8StrahlerStreamOrder implements Function {
-	public Value evaluate(Value[] args) throws FunctionException {
+	public Value evaluate(DataSourceFactory dsf,Value[] args) throws FunctionException {
 		GeoRaster grD8Direction = args[0].getAsRaster();
 		GeoRaster grD8Accumulation = args[1].getAsRaster();
 		int riverThreshold = args[2].getAsInt();

@@ -64,12 +64,12 @@ class NullValue extends AbstractValue implements Serializable {
 	}
 
 	@Override
-	public Value producto(Value value) throws IncompatibleTypesException {
+	public Value multiply(Value value) throws IncompatibleTypesException {
 		return ValueFactory.createNullValue();
 	}
 
 	@Override
-	public Value suma(Value value) throws IncompatibleTypesException {
+	public Value sum(Value value) throws IncompatibleTypesException {
 		return ValueFactory.createNullValue();
 	}
 

@@ -38,6 +38,7 @@ package org.gdms.sql.function.spatial.raster.hydrology;
 
 import java.io.IOException;
 
+import org.gdms.data.DataSourceFactory;
 import org.gdms.data.types.InvalidTypeException;
 import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeFactory;
@@ -53,7 +54,7 @@ import org.grap.processing.OperationException;
 import org.grap.processing.operation.hydrology.D8OpRiverDistance;
 
 public class ST_D8RiverDistance implements Function {
-	public Value evaluate(Value[] args) throws FunctionException {
+	public Value evaluate(DataSourceFactory dsf,Value[] args) throws FunctionException {
 		final GeoRaster grD8Direction = args[0].getAsRaster();
 		final GeoRaster grD8Accumulation = args[1].getAsRaster();
 		int riverThreshold = args[2].getAsInt();

@@ -40,6 +40,7 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.gdms.data.DataSourceFactory;
 import org.gdms.data.types.InvalidTypeException;
 import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeFactory;
@@ -61,7 +62,7 @@ public class ST_PointsToLine implements Function {
 	private final static GeometryFactory gf = new GeometryFactory();
 	private List<Coordinate> coords = new LinkedList<Coordinate>();
 
-	public Value evaluate(Value[] args) throws FunctionException {
+	public Value evaluate(DataSourceFactory dsf,Value[] args) throws FunctionException {
 		if (!args[0].isNull()) {
 			Geometry geometry = args[0].getAsGeometry();
 			if (geometry instanceof Point) {

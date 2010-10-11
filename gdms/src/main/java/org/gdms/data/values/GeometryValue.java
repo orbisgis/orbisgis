@@ -45,23 +45,11 @@ import com.vividsolutions.jts.geom.CoordinateSequenceFilter;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryCollection;
 import com.vividsolutions.jts.io.ParseException;
-import com.vividsolutions.jts.io.WKBReader;
-import com.vividsolutions.jts.io.WKBWriter;
-import com.vividsolutions.jts.io.WKTReader;
-import com.vividsolutions.jts.io.WKTWriter;
 
 class GeometryValue extends AbstractValue {
 
 	private Geometry geom;
-
-	private static final WKBWriter writer3D = new WKBWriter(3);
-	private static final WKBWriter writer2D = new WKBWriter();
-
-	private static final WKTWriter textWriter3D = new WKTWriter(3);
-	private static final WKTWriter textWriter2D = new WKTWriter();
-
-	private static final WKBReader wkbReader = new WKBReader();
-	private static final WKTReader wktReader = new WKTReader();
+	private long rowIndex = -1;
 
 	public GeometryValue(Geometry g) {
 		this.geom = g;
@@ -144,9 +132,9 @@ class GeometryValue extends AbstractValue {
 
 	public String toString() {
 		if (Double.isNaN(geom.getCoordinate().z)) {
-			return textWriter2D.write(geom);
+			return WKBUtil.getTextWKTWriter2DInstance().write(geom);
 		} else {
-			return textWriter3D.write(geom);
+			return WKBUtil.getTextWKTWriter3DInstance().write(geom);
 		}
 	}
 
@@ -154,15 +142,16 @@ class GeometryValue extends AbstractValue {
 		GetDimensionSequenceFilter sf = new GetDimensionSequenceFilter();
 		geom.apply(sf);
 		if (sf.dimension == 3) {
-			return writer3D.write(geom);
+			return WKBUtil.getWKBWriter3DInstance().write(geom);
 		} else {
-			return writer2D.write(geom);
+			return WKBUtil.getWKBWriter2DInstance().write(geom);
 		}
 	}
 
 	public static Value readBytes(byte[] buffer) {
 		try {
-			return new GeometryValue(wkbReader.read(buffer));
+			return new GeometryValue(WKBUtil.getWKBReaderInstance()
+					.read(buffer));
 		} catch (ParseException e) {
 			throw new RuntimeException(e);
 		}
@@ -196,11 +185,15 @@ class GeometryValue extends AbstractValue {
 	}
 
 	public static Value parseString(String text) throws ParseException {
-		Geometry readGeometry = wktReader.read(text);
+		Geometry readGeometry = WKBUtil.getWKTReaderInstance().read(text);
 		if (readGeometry != null) {
 			return new GeometryValue(readGeometry);
 		} else {
 			throw new ParseException("Cannot parse geometry: " + text);
 		}
+	}
+
+	public long getRowIndex() {
+		return rowIndex;
 	}
 }
