@@ -44,7 +44,7 @@ import org.orbisgis.core.renderer.se.FillNode;
 import org.orbisgis.core.renderer.se.fill.DensityFill;
 import org.orbisgis.core.renderer.se.fill.Fill;
 import org.orbisgis.core.renderer.se.fill.SolidFill;
-import org.orbisgis.core.ui.editorViews.toc.actions.cui.LegendUIEmptyPanelType;
+import org.orbisgis.core.ui.editorViews.toc.actions.cui.type.LegendUIEmptyPanelType;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.LegendUIAbstractMetaPanel;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.LegendUIComponent;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.LegendUIController;

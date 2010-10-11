@@ -26,5 +26,5 @@ public abstract class LegendUIType {
 		return name;
 	}
 
-	public abstract LegendUIComponent getUIComponent();
+	public abstract LegendUIComponent getUIComponent(LegendUIComponent parent);
 }

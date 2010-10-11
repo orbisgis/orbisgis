@@ -38,26 +38,33 @@
 
 
 
-package org.orbisgis.core.ui.editorViews.toc.actions.cui.stroke;
+package org.orbisgis.core.ui.editorViews.toc.actions.cui.type;
 
-import org.orbisgis.core.renderer.se.stroke.PenStroke;
+import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
+import org.orbisgis.core.renderer.se.parameter.real.RealParameterFactory;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.LegendUIComponent;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.LegendUIController;
-import org.orbisgis.core.ui.editorViews.toc.actions.cui.type.LegendUIType;
+import org.orbisgis.core.ui.editorViews.toc.actions.cui.parameter.real.LegendUIAlgebricalPanel;
+import org.orbisgis.core.ui.editorViews.toc.actions.cui.parameter.real.LegendUIMetaRealPanel;
 
 /**
  *
  * @author maxence
  */
-class LegendUIPenStrokeType extends LegendUIType {
+public class LegendUIAlgebricalType  extends LegendUIType {
 
-	public LegendUIPenStrokeType(LegendUIController controller) {
-		super("Pen Stroke", controller);
+	public LegendUIAlgebricalType(String name, LegendUIController controller) {
+		super(name, controller);
 	}
 
 	@Override
-	public LegendUIComponent getUIComponent() {
-		PenStroke ps = new PenStroke();
-		return new LegendUIPenStrokePanel(controller, null, ps);
+	public LegendUIComponent getUIComponent(LegendUIComponent parent) {
+		return new LegendUIAlgebricalPanel("alg.", controller, parent, RealParameterFactory.createFromString("10 * 2", null)) {
+
+			@Override
+			public void realChanged(RealParameter newReal) {
+				((LegendUIMetaRealPanel)parent).switchTo(LegendUIAlgebricalType.this, this);
+			}
+		};
 	}
 }

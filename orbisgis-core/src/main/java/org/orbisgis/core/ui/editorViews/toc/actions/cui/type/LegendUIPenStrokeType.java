@@ -38,29 +38,26 @@
 
 
 
-package org.orbisgis.core.ui.editorViews.toc.actions.cui.graphic;
+package org.orbisgis.core.ui.editorViews.toc.actions.cui.type;
 
-import org.orbisgis.core.renderer.se.graphic.MarkGraphic;
+import org.orbisgis.core.renderer.se.stroke.PenStroke;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.LegendUIComponent;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.LegendUIController;
-import org.orbisgis.core.ui.editorViews.toc.actions.cui.type.LegendUIType;
+import org.orbisgis.core.ui.editorViews.toc.actions.cui.stroke.LegendUIPenStrokePanel;
 
 /**
  *
  * @author maxence
  */
-public class LegendUIWellKnownNameType extends LegendUIType{
+public class LegendUIPenStrokeType extends LegendUIType {
 
-	private MarkGraphic mg;
-
-	public LegendUIWellKnownNameType(LegendUIController controller, MarkGraphic mg) {
-		super("WKN", controller);
-		this.mg = mg;
+	public LegendUIPenStrokeType(LegendUIController controller) {
+		super("Pen Stroke", controller);
 	}
 
 	@Override
-	public LegendUIComponent getUIComponent() {
-		return new LegendUIWellKnownNamePanel(controller, null, mg);
+	public LegendUIComponent getUIComponent(LegendUIComponent parent) {
+		PenStroke ps = new PenStroke();
+		return new LegendUIPenStrokePanel(controller, parent, ps);
 	}
-
 }

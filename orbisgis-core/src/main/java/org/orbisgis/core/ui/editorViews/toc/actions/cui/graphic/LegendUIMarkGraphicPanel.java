@@ -48,7 +48,6 @@ import org.orbisgis.core.renderer.se.StrokeNode;
 import org.orbisgis.core.renderer.se.graphic.Graphic;
 import org.orbisgis.core.renderer.se.graphic.MarkGraphic;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
-import org.orbisgis.core.ui.editorViews.toc.actions.cui.LegendUIAbstractMetaPanel;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.LegendUIAbstractPanel;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.LegendUIComponent;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.LegendUIController;

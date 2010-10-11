@@ -159,5 +159,21 @@ public final class RealBinaryOperator implements RealParameter {
 		this.max = max;
 	}
 
+	public String toString(){
+		String str = "(" + this.l.toString();
+		if (this.op == RealBinaryOperatorType.ADD){
+			str += " + ";
+		}else if (this.op == RealBinaryOperatorType.SUB){
+			str += " - ";
+		}else if (this.op == RealBinaryOperatorType.MUL){
+			str += "*";
+		}else if (this.op == RealBinaryOperatorType.DIV){
+			str += "/";
+		}
+
+		str += this.r.toString() + ")";
+
+		return str;
+	}
 
 }

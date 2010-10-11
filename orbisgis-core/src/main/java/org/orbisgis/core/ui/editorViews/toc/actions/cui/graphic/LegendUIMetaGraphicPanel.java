@@ -49,7 +49,7 @@ import org.orbisgis.core.ui.editorViews.toc.actions.cui.LegendUIAbstractMetaPane
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.LegendUIComponent;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.LegendUIController;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.LegendUIEmptyPanel;
-import org.orbisgis.core.ui.editorViews.toc.actions.cui.LegendUIEmptyPanelType;
+import org.orbisgis.core.ui.editorViews.toc.actions.cui.type.LegendUIEmptyPanelType;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.type.LegendUIType;
 
 /**

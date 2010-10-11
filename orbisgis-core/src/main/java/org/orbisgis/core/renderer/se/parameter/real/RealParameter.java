@@ -10,4 +10,7 @@ public interface RealParameter extends SeParameter {
 	void setMaxValue(Double max);
 
     double getValue(Feature feat) throws ParameterException;
+
+	@Override
+	String toString();
 }

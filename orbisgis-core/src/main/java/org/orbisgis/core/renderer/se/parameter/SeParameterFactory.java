@@ -30,7 +30,7 @@ import org.orbisgis.core.renderer.se.parameter.real.RealAttribute;
 import org.orbisgis.core.renderer.se.parameter.real.RealBinaryOperator;
 import org.orbisgis.core.renderer.se.parameter.real.RealLiteral;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
-import org.orbisgis.core.renderer.se.parameter.real.RealUnitaryOperator;
+import org.orbisgis.core.renderer.se.parameter.real.RealUnaryOperator;
 import org.orbisgis.core.renderer.se.parameter.real.Recode2Real;
 import org.orbisgis.core.renderer.se.parameter.string.Categorize2String;
 import org.orbisgis.core.renderer.se.parameter.string.Recode2String;
@@ -87,7 +87,7 @@ public final class SeParameterFactory {
             return new Interpolate2Real((JAXBElement<InterpolateType>) expr);
 
         } else if (expr.getDeclaredType() == org.orbisgis.core.renderer.persistance.se.UnitaryOperatorType.class) {
-            return new RealUnitaryOperator((JAXBElement<UnitaryOperatorType>) expr);
+            return new RealUnaryOperator((JAXBElement<UnitaryOperatorType>) expr);
         }
 
         return null;

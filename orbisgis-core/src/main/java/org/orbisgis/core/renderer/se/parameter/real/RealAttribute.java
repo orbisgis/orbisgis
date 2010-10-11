@@ -42,4 +42,9 @@ public class RealAttribute extends PropertyName implements RealParameter{
 	public void setMaxValue(Double max) {
 		this.max = max;
 	}
+
+	@Override
+	public String toString(){
+		return "<" + this.fieldName + ">";
+	}
 }

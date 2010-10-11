@@ -135,7 +135,7 @@ public abstract class LegendUIAbstractMetaPanel extends LegendUIComponent {
 
 			if (index >= 0) {
 				if (comps[index] == null) {
-					comps[index] = newType.getUIComponent();
+					comps[index] = newType.getUIComponent(LegendUIAbstractMetaPanel.this);
 				}
 
 				currentType = newType;

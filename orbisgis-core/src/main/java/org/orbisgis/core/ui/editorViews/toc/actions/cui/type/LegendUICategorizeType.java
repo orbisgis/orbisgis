@@ -69,7 +69,7 @@ public class LegendUICategorizeType extends LegendUIType {
 
 
 	@Override
-	public LegendUIComponent getUIComponent() {
+	public LegendUIComponent getUIComponent(LegendUIComponent parent) {
 		Categorize c = null;
 		DataSource ds = controller.getEditedFeatureTypeStyle().getLayer().getDataSource();
 
@@ -82,7 +82,7 @@ public class LegendUICategorizeType extends LegendUIType {
 				c = new Categorize2String(new StringLiteral("Class1"), new StringLiteral("Fallback"), new RealAttribute(null, ds));
 			}
 
-			return new LegendUICategorizePanel(name, controller, null, c);
+			return new LegendUICategorizePanel(name, controller, parent, c);
 
 		} catch (DriverException ex) {
 			Logger.getLogger(LegendUICategorizeType.class.getName()).log(Level.SEVERE, null, ex);

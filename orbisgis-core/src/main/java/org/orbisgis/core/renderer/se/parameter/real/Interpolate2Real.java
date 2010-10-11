@@ -85,4 +85,8 @@ public final class Interpolate2Real extends Interpolate<RealParameter, RealLiter
 			value.setMaxValue(max);
 		}
 	}
+
+	public String toString(){
+		return "NA";
+	}
 }

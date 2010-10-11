@@ -56,9 +56,9 @@ public class LegendUIStringLiteralPanelType extends LegendUIType {
 	}
 
 	@Override
-	public LegendUIComponent getUIComponent() {
+	public LegendUIComponent getUIComponent(LegendUIComponent parent) {
 		RealLiteral r = new RealLiteral();
-		return new LegendUIRealLiteralPanel(name, controller, null, r);
+		return new LegendUIRealLiteralPanel(name, controller, parent, r);
 	}
 }
 

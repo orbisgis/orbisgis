@@ -55,7 +55,7 @@ import org.orbisgis.core.ui.editorViews.toc.actions.cui.LegendUIAbstractMetaPane
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.LegendUIComponent;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.LegendUIController;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.LegendUIEmptyPanel;
-import org.orbisgis.core.ui.editorViews.toc.actions.cui.LegendUIEmptyPanelType;
+import org.orbisgis.core.ui.editorViews.toc.actions.cui.type.LegendUIEmptyPanelType;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.parameter.LegendUICategorizePanel;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.parameter.LegendUIPropertyNamePanel;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.parameter.LegendUIRecodePanel;

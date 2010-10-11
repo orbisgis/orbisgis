@@ -67,5 +67,9 @@ public class Recode2Real extends Recode<RealParameter, RealLiteral> implements R
 		}
 	}
 
+	public String toString(){
+		return "NA";
+	}
+
 }
 

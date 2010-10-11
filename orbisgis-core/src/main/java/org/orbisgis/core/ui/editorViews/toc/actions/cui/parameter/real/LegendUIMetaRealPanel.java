@@ -42,7 +42,7 @@ package org.orbisgis.core.ui.editorViews.toc.actions.cui.parameter.real;
 
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.type.LegendUIPropertyNameType;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.type.LegendUICategorizeType;
-import org.orbisgis.core.ui.editorViews.toc.actions.cui.type.LegendUIRealLiteralPanelType;
+import org.orbisgis.core.ui.editorViews.toc.actions.cui.type.LegendUIRealLiteralType;
 import javax.swing.Icon;
 import org.orbisgis.core.images.OrbisGISIcon;
 import org.orbisgis.core.renderer.se.parameter.Categorize;
@@ -52,7 +52,7 @@ import org.orbisgis.core.renderer.se.parameter.real.RealAttribute;
 import org.orbisgis.core.renderer.se.parameter.real.RealLiteral;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 import org.orbisgis.core.renderer.se.parameter.real.Recode2Real;
-import org.orbisgis.core.ui.editorViews.toc.actions.cui.LegendUIEmptyPanelType;
+import org.orbisgis.core.ui.editorViews.toc.actions.cui.type.LegendUIEmptyPanelType;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.LegendUIAbstractMetaPanel;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.LegendUIComponent;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.LegendUIController;
@@ -60,6 +60,7 @@ import org.orbisgis.core.ui.editorViews.toc.actions.cui.LegendUIEmptyPanel;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.parameter.LegendUICategorizePanel;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.parameter.LegendUIPropertyNamePanel;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.parameter.LegendUIRecodePanel;
+import org.orbisgis.core.ui.editorViews.toc.actions.cui.type.LegendUIAlgebricalType;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.type.LegendUIRecodeType;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.type.LegendUIType;
 
@@ -80,16 +81,20 @@ public abstract class LegendUIMetaRealPanel extends LegendUIAbstractMetaPanel {
 
 		this.real = r;
 
-		types = new LegendUIType[5];
+		types = new LegendUIType[6];
 
 		types[0] = new LegendUIEmptyPanelType("no " + name, controller);
-		types[1] = new LegendUIRealLiteralPanelType("Constant " + name, controller);
+		types[1] = new LegendUIRealLiteralType("Constant " + name, controller);
 		types[2] = new LegendUIPropertyNameType("Attribute " + name, controller, RealAttribute.class);
 		types[3] = new LegendUICategorizeType("Categorized " + name, controller, Categorize2Real.class);
 		types[4] = new LegendUIRecodeType("UniqueValue map " + name, controller, Recode2Real.class);
+		types[5] = new LegendUIAlgebricalType("Alg. " + name, controller);
 
 
-		if (this.real instanceof RealLiteral) {
+		if (this.real == null){
+			initialType = types[0];
+			initialPanel = new LegendUIEmptyPanel("no " + name, controller, this);
+ 		} else if (this.real instanceof RealLiteral) {
 			initialType = types[1];
 			initialPanel = new LegendUIRealLiteralPanel("Constant " + name, controller, this, (RealLiteral) real);
 		} else if (this.real instanceof RealAttribute) {
@@ -102,8 +107,14 @@ public abstract class LegendUIMetaRealPanel extends LegendUIAbstractMetaPanel {
 			initialType = types[4];
 			initialPanel = new LegendUIRecodePanel("UniqueValue map " + name, controller, this, (Recode) this.real);
 		} else {
-			initialType = types[0];
-			initialPanel = new LegendUIEmptyPanel("no " + name, controller, this);
+			initialType = types[5];
+			initialPanel = new LegendUIAlgebricalPanel("Alg. " + name, controller, this, this.real){
+
+				@Override
+				public void realChanged(RealParameter newReal) {
+					switchTo(initialType, initialPanel);
+				}
+			};
 		}
 
 	}
@@ -113,8 +124,13 @@ public abstract class LegendUIMetaRealPanel extends LegendUIAbstractMetaPanel {
 		init(types, initialType, initialPanel);
 	}
 
+	/**
+	 * use with caution !
+	 * @param type
+	 * @param comp
+	 */
 	@Override
-	protected void switchTo(LegendUIType type, LegendUIComponent comp) {
+	public void switchTo(LegendUIType type, LegendUIComponent comp) {
 		this.real = ((LegendUIRealComponent)comp).getRealParameter();
 		this.realChanged(real);
 	}

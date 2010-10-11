@@ -53,8 +53,8 @@ public class LegendUISolidFillType extends LegendUIType {
 	}
 
 	@Override
-	public LegendUIComponent getUIComponent() {
+	public LegendUIComponent getUIComponent(LegendUIComponent parent) {
 		SolidFill sFill = new SolidFill();
-		return new LegendUISolidFillPanel(controller, null, sFill);
+		return new LegendUISolidFillPanel(controller, parent, sFill);
 	}
 }

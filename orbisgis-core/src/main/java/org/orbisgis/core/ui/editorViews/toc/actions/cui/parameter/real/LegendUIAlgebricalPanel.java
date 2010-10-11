@@ -35,22 +35,63 @@
  * erwan.bocher _at_ ec-nantes.fr
  * gwendall.petit _at_ ec-nantes.fr
  */
-package org.orbisgis.core.ui.editorViews.toc.actions.cui;
 
-import org.orbisgis.core.ui.editorViews.toc.actions.cui.type.LegendUIType;
+
+
+package org.orbisgis.core.ui.editorViews.toc.actions.cui.parameter.real;
+
+import javax.swing.Icon;
+import org.orbisgis.core.images.OrbisGISIcon;
+import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
+import org.orbisgis.core.renderer.se.parameter.real.RealParameterFactory;
+import org.orbisgis.core.ui.editorViews.toc.actions.cui.LegendUIComponent;
+import org.orbisgis.core.ui.editorViews.toc.actions.cui.LegendUIController;
+import org.orbisgis.core.ui.editorViews.toc.actions.cui.components.TextInput;
 
 /**
  *
  * @author maxence
  */
-public class LegendUIEmptyPanelType extends LegendUIType {
+public abstract class LegendUIAlgebricalPanel extends LegendUIComponent implements LegendUIRealComponent {
 
-	public LegendUIEmptyPanelType(String name, LegendUIController controller) {
-		super(name, controller);
+
+	TextInput input;
+	RealParameter r;
+
+	public LegendUIAlgebricalPanel(String name, final LegendUIController controller, LegendUIComponent parent, RealParameter realParameter) {
+		super(name, controller, parent, 0);
+		this.r = realParameter;
+
+		System.out.println ("RealParameter = " + this.r);
+
+		input = new TextInput("alg.", realParameter.toString(), 40) {
+
+			@Override
+			protected void valueChanged(String s) {
+				r = RealParameterFactory.createFromString(s, controller.getEditedFeatureTypeStyle().getLayer().getDataSource());
+				if (r != null){
+					realChanged(r);
+				}
+			}
+		};
 	}
 
 	@Override
-	public LegendUIComponent getUIComponent() {
-		return new LegendUIEmptyPanel(name, controller, null);
+	public Icon getIcon() {
+		return OrbisGISIcon.PALETTE;
 	}
+
+	@Override
+	protected void mountComponent() {
+		this.add(input);
+	}
+
+	@Override
+	public RealParameter getRealParameter() {
+		return r;
+	}
+
+
+	public abstract void realChanged(RealParameter newReal);
+
 }

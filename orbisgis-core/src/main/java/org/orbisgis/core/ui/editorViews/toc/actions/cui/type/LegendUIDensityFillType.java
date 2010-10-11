@@ -56,9 +56,9 @@ public class LegendUIDensityFillType  extends LegendUIType {
 	}
 
 	@Override
-	public LegendUIComponent getUIComponent() {
+	public LegendUIComponent getUIComponent(LegendUIComponent parent) {
 		DensityFill dFill = new DensityFill();
-		return new LegendUIDensityFillPanel(controller, null, dFill);
+		return new LegendUIDensityFillPanel(controller, parent, dFill);
 	}
 
 

@@ -41,12 +41,14 @@
 package org.orbisgis.core.ui.editorViews.toc.actions.cui.graphic;
 
 import java.awt.BorderLayout;
+import java.awt.Component;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
+import javax.swing.DefaultListCellRenderer;
 import javax.swing.DefaultListModel;
 import javax.swing.Icon;
 import javax.swing.JButton;
@@ -107,6 +109,7 @@ public class LegendUICompositeGraphicPanel extends LegendUIComponent {
 		}
 
 		list = new JList(model);
+		list.setCellRenderer(new CellRenderer());
 		list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
 		btnRm = new JButton(OrbisGISIcon.REMOVE);
@@ -259,7 +262,7 @@ public class LegendUICompositeGraphicPanel extends LegendUIComponent {
 		try{
 			LegendUIMetaGraphicPanelImpl g = graphics.get(currentGraphic);
 			LegendUICompositeGraphicPanel.this.addChild(g);
-			controller.structureChanged(g);
+			controller.structureChanged(g.getCurrentComponent());
 		}
 		catch (Exception e){
 			controller.structureChanged(this);
@@ -319,5 +322,17 @@ public class LegendUICompositeGraphicPanel extends LegendUIComponent {
 		}
 	}
 
+	private class CellRenderer extends DefaultListCellRenderer {
 
+		@Override
+		public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+			super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+
+			Graphic g = (Graphic)value;
+
+			this.setIcon(OrbisGISIcon.IMAGE);
+
+			return this;
+		}
+	}
 }

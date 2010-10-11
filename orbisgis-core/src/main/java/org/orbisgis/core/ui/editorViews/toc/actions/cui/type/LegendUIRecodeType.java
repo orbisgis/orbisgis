@@ -67,7 +67,7 @@ public class LegendUIRecodeType extends LegendUIType {
 	}
 
 	@Override
-	public LegendUIComponent getUIComponent() {
+	public LegendUIComponent getUIComponent(LegendUIComponent parent) {
 		Recode r = null;
 		DataSource ds = controller.getEditedFeatureTypeStyle().getLayer().getDataSource();
 
@@ -80,7 +80,7 @@ public class LegendUIRecodeType extends LegendUIType {
 				r = new Recode2String(new StringLiteral("n/a"), new StringAttribute(null, ds));
 			}
 
-			return new LegendUIRecodePanel(name, controller, null, r);
+			return new LegendUIRecodePanel(name, controller, parent, r);
 
 		} catch (DriverException ex) {
 			Logger.getLogger(LegendUICategorizeType.class.getName()).log(Level.SEVERE, null, ex);

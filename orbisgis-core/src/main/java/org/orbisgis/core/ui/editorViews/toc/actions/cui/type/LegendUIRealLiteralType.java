@@ -49,15 +49,15 @@ import org.orbisgis.core.ui.editorViews.toc.actions.cui.parameter.real.LegendUIR
  *
  * @author maxence
  */
-public class LegendUIRealLiteralPanelType extends LegendUIType {
+public class LegendUIRealLiteralType extends LegendUIType {
 
-	public LegendUIRealLiteralPanelType(String name, LegendUIController controller) {
+	public LegendUIRealLiteralType(String name, LegendUIController controller) {
 		super(name, controller);
 	}
 
 	@Override
-	public LegendUIComponent getUIComponent() {
+	public LegendUIComponent getUIComponent(LegendUIComponent parent) {
 		RealLiteral r = new RealLiteral();
-		return new LegendUIRealLiteralPanel(name, controller, null, r);
+		return new LegendUIRealLiteralPanel(name, controller, parent, r);
 	}
 }

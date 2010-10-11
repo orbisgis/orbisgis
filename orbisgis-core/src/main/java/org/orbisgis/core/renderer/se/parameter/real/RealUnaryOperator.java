@@ -9,7 +9,7 @@ import org.orbisgis.core.renderer.persistance.se.UnitaryOperatorType;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
 
-public final class RealUnitaryOperator implements RealParameter {
+public final class RealUnaryOperator implements RealParameter {
 
 	private Double min;
 	private Double max;
@@ -17,7 +17,19 @@ public final class RealUnitaryOperator implements RealParameter {
     private RealParameter v;
     private RealUnitaryOperatorType op;
 
-    public RealUnitaryOperator(JAXBElement<UnitaryOperatorType> expr) {
+    public enum RealUnitaryOperatorType {
+        SQRT, LOG;
+    }
+
+    public RealUnaryOperator() {
+    }
+
+    public RealUnaryOperator(RealParameter value, RealUnitaryOperatorType op) {
+        v = value;
+        this.op = op;
+    }
+
+    public RealUnaryOperator(JAXBElement<UnitaryOperatorType> expr) {
         UnitaryOperatorType t = expr.getValue();
 
         this.setOperand(SeParameterFactory.createRealParameter((JAXBElement<? extends ExpressionType>)t.getExpression()));
@@ -25,7 +37,7 @@ public final class RealUnitaryOperator implements RealParameter {
         String operator = expr.getName().getLocalPart();
 
         if (operator.equals("Log10")){
-            this.op = RealUnitaryOperatorType.LOG_10;
+            this.op = RealUnitaryOperatorType.LOG;
         }
         else if (operator.equals("Sqrt")){
             this.op = RealUnitaryOperatorType.SQRT;
@@ -41,18 +53,6 @@ public final class RealUnitaryOperator implements RealParameter {
 	public void setMaxValue(Double max) {
 		this.max = max;
 	}
-
-    public enum RealUnitaryOperatorType {
-        SQRT, LOG_10;
-    }
-
-    public RealUnitaryOperator() {
-    }
-
-    public RealUnitaryOperator(RealParameter value, RealUnitaryOperatorType op) {
-        v = value;
-        this.op = op;
-    }
 
     public RealParameter getOperand() {
         return v;
@@ -82,7 +82,7 @@ public final class RealUnitaryOperator implements RealParameter {
         switch (op) {
             case SQRT:
                 return Math.sqrt(value);
-            case LOG_10:
+            case LOG:
                 return Math.log10(value); // TODO quelle base ?
             default:
                 return value;
@@ -108,9 +108,13 @@ public final class RealUnitaryOperator implements RealParameter {
         switch (op) {
             case SQRT:
                 return of.createSqrt(o);
-            case LOG_10:
+            case LOG:
                 return of.createLog10(o);
         }
         return null;
     }
+
+	public String toString(){
+		return this.op.toString() + "(" + this.v.toString() + ")";
+	}
 }

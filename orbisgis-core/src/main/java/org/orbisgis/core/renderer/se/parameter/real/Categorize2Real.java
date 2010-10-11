@@ -92,4 +92,8 @@ public final class Categorize2Real extends Categorize<RealParameter, RealLiteral
 			classValue.setMaxValue(max);
 		}
 	}
+
+	public String toString(){
+		return "NA";
+	}
 }

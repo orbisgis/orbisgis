@@ -50,7 +50,7 @@ import org.orbisgis.core.renderer.se.parameter.color.ColorAttribute;
 import org.orbisgis.core.renderer.se.parameter.color.ColorLiteral;
 import org.orbisgis.core.renderer.se.parameter.color.ColorParameter;
 import org.orbisgis.core.renderer.se.parameter.color.Recode2Color;
-import org.orbisgis.core.ui.editorViews.toc.actions.cui.LegendUIEmptyPanelType;
+import org.orbisgis.core.ui.editorViews.toc.actions.cui.type.LegendUIEmptyPanelType;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.LegendUIAbstractMetaPanel;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.LegendUIComponent;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.LegendUIController;

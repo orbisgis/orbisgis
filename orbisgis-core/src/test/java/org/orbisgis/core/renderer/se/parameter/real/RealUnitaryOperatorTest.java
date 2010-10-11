@@ -9,7 +9,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import junit.framework.TestCase;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
-import org.orbisgis.core.renderer.se.parameter.real.RealUnitaryOperator.RealUnitaryOperatorType;
+import org.orbisgis.core.renderer.se.parameter.real.RealUnaryOperator.RealUnitaryOperatorType;
 
 /**
  *
@@ -33,9 +33,9 @@ public class RealUnitaryOperatorTest extends TestCase {
 
     public void testSqrt(){
         try {
-            RealUnitaryOperator op1 = new RealUnitaryOperator(new RealLiteral(25.0), RealUnitaryOperatorType.SQRT);
+            RealUnaryOperator op1 = new RealUnaryOperator(new RealLiteral(25.0), RealUnitaryOperatorType.SQRT);
             assertEquals(5.0, op1.getValue(null));
-            RealUnitaryOperator op2 = new RealUnitaryOperator(new RealLiteral(-25.0), RealUnitaryOperatorType.SQRT);
+            RealUnaryOperator op2 = new RealUnaryOperator(new RealLiteral(-25.0), RealUnitaryOperatorType.SQRT);
             assertEquals(Double.NaN, op2.getValue(null));
         } catch (ParameterException ex) {
             Logger.getLogger(RealUnitaryOperatorTest.class.getName()).log(Level.SEVERE, null, ex);
@@ -45,9 +45,9 @@ public class RealUnitaryOperatorTest extends TestCase {
 
     public void testLog(){
         try {
-            RealUnitaryOperator op1 = new RealUnitaryOperator(new RealLiteral(100), RealUnitaryOperatorType.LOG_10);
+            RealUnaryOperator op1 = new RealUnaryOperator(new RealLiteral(100), RealUnitaryOperatorType.LOG);
             assertEquals(2.0, op1.getValue(null));
-            RealUnitaryOperator op2 = new RealUnitaryOperator(new RealLiteral(-100), RealUnitaryOperatorType.LOG_10);
+            RealUnaryOperator op2 = new RealUnaryOperator(new RealLiteral(-100), RealUnitaryOperatorType.LOG);
             assertEquals(Double.NaN, op2.getValue(null));
         }
         /*

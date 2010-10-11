@@ -40,11 +40,12 @@
 
 package org.orbisgis.core.ui.editorViews.toc.actions.cui.stroke;
 
+import org.orbisgis.core.ui.editorViews.toc.actions.cui.type.LegendUIPenStrokeType;
 import javax.swing.Icon;
 import org.orbisgis.core.images.OrbisGISIcon;
 import org.orbisgis.core.renderer.se.stroke.PenStroke;
 import org.orbisgis.core.renderer.se.stroke.Stroke;
-import org.orbisgis.core.ui.editorViews.toc.actions.cui.LegendUIEmptyPanelType;
+import org.orbisgis.core.ui.editorViews.toc.actions.cui.type.LegendUIEmptyPanelType;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.LegendUIAbstractMetaPanel;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.LegendUIComponent;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.LegendUIController;

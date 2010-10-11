@@ -35,58 +35,33 @@
  * erwan.bocher _at_ ec-nantes.fr
  * gwendall.petit _at_ ec-nantes.fr
  */
+
+
+
 package org.orbisgis.core.ui.editorViews.toc.actions.cui.type;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import org.gdms.data.DataSource;
-import org.gdms.driver.DriverException;
-import org.orbisgis.core.renderer.se.parameter.PropertyName;
-import org.orbisgis.core.renderer.se.parameter.color.ColorAttribute;
-import org.orbisgis.core.renderer.se.parameter.real.RealAttribute;
-import org.orbisgis.core.renderer.se.parameter.string.StringAttribute;
+import org.orbisgis.core.renderer.se.graphic.MarkGraphic;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.LegendUIComponent;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.LegendUIController;
-import org.orbisgis.core.ui.editorViews.toc.actions.cui.parameter.LegendUIPropertyNamePanel;
+import org.orbisgis.core.ui.editorViews.toc.actions.cui.graphic.LegendUIWellKnownNamePanel;
+import org.orbisgis.core.ui.editorViews.toc.actions.cui.type.LegendUIType;
 
 /**
  *
  * @author maxence
  */
-public class LegendUIPropertyNameType extends LegendUIType {
+public class LegendUIWellKnownNameType extends LegendUIType{
 
-	Class<? extends PropertyName> type;
+	private MarkGraphic mg;
 
-	public LegendUIPropertyNameType(String name, LegendUIController controller, Class<? extends PropertyName> type) {
-		super(name, controller);
-		this.type = type;
+	public LegendUIWellKnownNameType(LegendUIController controller, MarkGraphic mg) {
+		super("WKN", controller);
+		this.mg = mg;
 	}
 
 	@Override
 	public LegendUIComponent getUIComponent(LegendUIComponent parent) {
-		PropertyName p = null;
-		try {
-			DataSource ds = controller.getEditedFeatureTypeStyle().getLayer().getDataSource();
-
-			System.out.println("Type is " + type.getSimpleName());
-
-
-			if (type.getSimpleName().equals("ColorAttribute")) {
-				p = new ColorAttribute(null, ds);
-			} else if (type.getSimpleName().equals("StringAttribute")) {
-				p = new StringAttribute(null, ds);
-			} else if (type.getSimpleName().equals("RealAttribute")) {
-				p = new RealAttribute(null, ds);
-			} else if (type.getSimpleName().equals("GeometryAttribute")) {
-				throw new DriverException("Not yet implemented for geometries");
-			}
-
-			return new LegendUIPropertyNamePanel(name, controller, parent, p);
-
-		} catch (DriverException ex) {
-			Logger.getLogger(LegendUIPropertyNameType.class.getName()).log(Level.SEVERE, null, ex);
-			return null;
-		}
-
+		return new LegendUIWellKnownNamePanel(controller, parent, mg);
 	}
+
 }

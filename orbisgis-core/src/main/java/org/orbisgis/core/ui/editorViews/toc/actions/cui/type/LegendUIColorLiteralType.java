@@ -56,9 +56,9 @@ public class LegendUIColorLiteralType extends LegendUIType {
 	}
 
 	@Override
-	public LegendUIComponent getUIComponent() {
+	public LegendUIComponent getUIComponent(LegendUIComponent parent) {
 		ColorLiteral c = new ColorLiteral();
-		return new LegendUIColorLiteralPanel(name, controller, null, c);
+		return new LegendUIColorLiteralPanel(name, controller, parent, c);
 	}
 
 }

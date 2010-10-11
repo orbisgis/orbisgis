@@ -56,9 +56,9 @@ public class LegendUIMarkGraphicType extends LegendUIType {
 	}
 
 	@Override
-	public LegendUIComponent getUIComponent() {
+	public LegendUIComponent getUIComponent(LegendUIComponent parent) {
 		MarkGraphic mark = new MarkGraphic();
-		return new LegendUIMarkGraphicPanel(controller, null, mark);
+		return new LegendUIMarkGraphicPanel(controller, parent, mark);
 	}
 
 }
