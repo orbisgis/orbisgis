@@ -23,11 +23,17 @@ import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
  */
 public abstract class Interpolate<ToType extends SeParameter, FallbackType extends ToType> implements SeParameter {
 
+    protected InterpolationMode mode;
+    protected RealParameter lookupValue;
+    protected FallbackType fallbackValue;
+    protected ArrayList<InterpolationPoint<ToType>> i_points;
+
     public enum InterpolationMode {
         LINEAR, COSINE, CUBIC
     }
 
     protected Interpolate(){
+        this.i_points = new ArrayList<InterpolationPoint<ToType>>();
     }
 
     public Interpolate(FallbackType fallbackValue) {
@@ -142,8 +148,14 @@ public abstract class Interpolate<ToType extends SeParameter, FallbackType exten
         return of.createInterpolate(i);
     }
 
-    protected InterpolationMode mode;
-    protected RealParameter lookupValue;
-    protected FallbackType fallbackValue;
-    protected ArrayList<InterpolationPoint<ToType>> i_points;
+	protected int getFirstIP(double data) {
+		int i = -1;
+		for (InterpolationPoint ip : i_points) {
+			if (ip.getData() > data) {
+				return i;
+			}
+			i++;
+		}
+		return -1;
+	}
 }

@@ -94,7 +94,7 @@ public final class LegendUICategorizePanel extends LegendUIComponent
 	private RadioSwitch thresholdsSwitch;
 	private JButton add;
 	private ArrayList<LegendUIAbstractMetaPanel> values;
-	private ArrayList<LegendUIComponent> thresholds;
+	private ArrayList<MetaRealThreshold> thresholds;
 
 	private LegendUIAbstractPanel toolbar;
 	private LegendUIAbstractPanel left;
@@ -124,7 +124,7 @@ public final class LegendUICategorizePanel extends LegendUIComponent
 
 		this.categorize = c;
 
-		this.lookupPanel = new LegendUIMetaRealPanelImpl(controller, this, c.getLookupValue());
+		this.lookupPanel = new LookupValuePanel(controller, this, c.getLookupValue());
 
 		if (categorize.getFallbackValue() instanceof ColorLiteral) {
 			fallbackPanel = new LegendUIColorLiteralPanel("Fallback color",
@@ -173,7 +173,7 @@ public final class LegendUICategorizePanel extends LegendUIComponent
 			}
 		});
 		values = new ArrayList<LegendUIAbstractMetaPanel>();
-		thresholds = new ArrayList<LegendUIComponent>();
+		thresholds = new ArrayList<MetaRealThreshold>();
 
 		// classes
 		for (int i = 0; i < categorize.getNumClasses(); i++) {
@@ -284,7 +284,13 @@ public final class LegendUICategorizePanel extends LegendUIComponent
 
 		thresholds.remove(ti);
 
+		for (;ti<thresholds.size();ti++){
+			thresholds.get(ti).setIndex(ti);
+		}
+
 		literalChanged();
+
+
 	}
 
 	@Override
@@ -305,7 +311,7 @@ public final class LegendUICategorizePanel extends LegendUIComponent
 	public void classMoved(int i, int j) {
 		System.out.println("Moving ! " + i + " to " + j);
 		if (i < thresholds.size()) {
-			LegendUIComponent c = thresholds.remove(i);
+			MetaRealThreshold c = thresholds.remove(i);
 			thresholds.add(j, c);
 		}
 		LegendUIAbstractMetaPanel c = values.remove(i);
@@ -376,6 +382,10 @@ public final class LegendUICategorizePanel extends LegendUIComponent
 		public void realChanged(RealParameter newReal) {
 			((Categorize2Real)categorize).setClassValue(i, newReal);
 		}
+
+		private void setIndex(int i) {
+			this.i = i;
+		}
 	}
 
 	private class MetaRealThreshold extends LegendUIMetaRealPanel {
@@ -393,6 +403,10 @@ public final class LegendUICategorizePanel extends LegendUIComponent
 		public void realChanged(RealParameter newReal) {
 			categorize.setThresholdValue(i, newReal);
 			fireChange();
+		}
+
+		private void setIndex(int i) {
+			this.i = i;
 		}
 	}
 
@@ -417,6 +431,10 @@ public final class LegendUICategorizePanel extends LegendUIComponent
 
 			categorize.setClassValue(i, newColor);
 		}
+
+		private void setIndex(int i) {
+			this.i = i;
+		}
 	}
 
 	private class RmListener implements ActionListener {
@@ -433,11 +451,15 @@ public final class LegendUICategorizePanel extends LegendUIComponent
 				fireChange();
 			}
 		}
+
+		private void setIndex(int i) {
+			this.i = i;
+		}
 	}
 
-	private class LegendUIMetaRealPanelImpl extends LegendUIMetaRealPanel {
+	private class LookupValuePanel extends LegendUIMetaRealPanel {
 
-		public LegendUIMetaRealPanelImpl(LegendUIController controller, LegendUICategorizePanel parent, RealParameter r) {
+		public LookupValuePanel(LegendUIController controller, LegendUICategorizePanel parent, RealParameter r) {
 			super("Lookup value", controller, parent, r);
 			init();
 		}

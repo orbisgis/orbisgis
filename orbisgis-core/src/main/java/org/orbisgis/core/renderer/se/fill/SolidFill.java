@@ -2,9 +2,7 @@ package org.orbisgis.core.renderer.se.fill;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
-import java.awt.Polygon;
 import java.awt.Shape;
-import java.awt.geom.PathIterator;
 
 import javax.xml.bind.JAXBElement;
 

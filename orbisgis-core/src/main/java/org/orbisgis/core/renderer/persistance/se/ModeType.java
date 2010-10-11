@@ -51,7 +51,7 @@ public enum ModeType {
 
     public static ModeType fromValue(String v) {
         for (ModeType c: ModeType.values()) {
-            if (c.value.equals(v)) {
+            if (c.value.equalsIgnoreCase(v)) {
                 return c;
             }
         }

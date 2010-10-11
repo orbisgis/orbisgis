@@ -27,6 +27,16 @@ import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 public abstract class Categorize<ToType extends SeParameter, FallbackType extends ToType> implements SeParameter {
 
 
+	private CategorizeMethod method;
+	private boolean succeeding = true;
+	private RealParameter lookupValue;
+	protected FallbackType fallbackValue;
+	private ToType firstClass;
+	//private ArrayList<Category<ToType>> classes;
+
+	private ArrayList<ToType> classValues;
+	private ArrayList<RealParameter> thresholds;
+
 	private ArrayList<CategorizeListener> listeners;
 
 	private void fireClassAdded(int index) {
@@ -59,17 +69,18 @@ public abstract class Categorize<ToType extends SeParameter, FallbackType extend
 	}
 
 	protected Categorize() {
-		this.classes = new ArrayList<Category<ToType>>();
+		//this.classes = new ArrayList<Category<ToType>>();
+		this.classValues = new ArrayList<ToType>();
+		this.thresholds = new ArrayList<RealParameter>();
 		this.listeners = new ArrayList<CategorizeListener>();
 	}
 
 	public Categorize(ToType firstClassValue, FallbackType fallbackValue, RealParameter lookupValue) {
+		this();
 		this.firstClass = firstClassValue;
 		this.fallbackValue = fallbackValue;
 		this.lookupValue = lookupValue;
-		this.classes = new ArrayList<Category<ToType>>();
 		this.method = CategorizeMethod.MANUAL;
-		this.listeners = new ArrayList<CategorizeListener>();
 	}
 
 	@Override
@@ -111,7 +122,7 @@ public abstract class Categorize<ToType extends SeParameter, FallbackType extend
 	 *  @return number of defined class
 	 */
 	public final int getNumClasses() {
-		return classes.size() + 1;
+		return classValues.size() + 1;
 	}
 
 	/**
@@ -122,12 +133,11 @@ public abstract class Categorize<ToType extends SeParameter, FallbackType extend
 	 */
 	public final void addClass(RealParameter threshold, ToType value) {
 		int index;
-		Category<ToType> category = new Category<ToType>(value, threshold);
-		classes.add(category);
-		sortClasses();
-		index = classes.indexOf(category) + 1; // take into account first class
+		thresholds.add(threshold);
+		int tIndex = thresholds.indexOf(threshold);
+		classValues.add(tIndex, value);
 		this.method = CategorizeMethod.MANUAL;
-		fireClassAdded(index);
+		fireClassAdded(tIndex+1);
 	}
 
 	public boolean removeClass(int i) {
@@ -135,10 +145,11 @@ public abstract class Categorize<ToType extends SeParameter, FallbackType extend
 			if (i < getNumClasses() && i >= 0) {
 				if (i == 0) {
 					// when the first class is remove, the second one takes its place
-					Category<ToType> cat = classes.remove(0);
-					firstClass = cat.getClassValue();
+					firstClass = classValues.remove(0);
+					thresholds.remove(0);
 				} else {
-					Category<ToType> cat = classes.remove(i - 1);
+					classValues.remove(i-1);
+					thresholds.remove(i-1);
 				}
 				this.method = CategorizeMethod.MANUAL;
 				fireClassRemoved(i);
@@ -152,7 +163,7 @@ public abstract class Categorize<ToType extends SeParameter, FallbackType extend
 		if (i == 0) {
 			return firstClass;
 		} else {
-			return classes.get(i - 1).getClassValue();
+			return classValues.get(i - 1);
 		}
 	}
 
@@ -161,7 +172,9 @@ public abstract class Categorize<ToType extends SeParameter, FallbackType extend
 		if (i == 0) {
 			firstClass = value;
 		} else if (i > 0 && i < getNumClasses() - 1) {
-			classes.get(i - 1).setClassValue(value);
+			//classes.get(i - 1).setClassValue(value);
+			classValues.remove(i);
+			classValues.add(i,value);
 		} else {
 			// TODO throw
 		}
@@ -170,18 +183,9 @@ public abstract class Categorize<ToType extends SeParameter, FallbackType extend
 	public void setThresholdValue(int i, RealParameter threshold) {
 		System.out.println ("Set threshold (" + this.getNumClasses());
 		if (i >= 0 && i < getNumClasses() - 1) {
-			//try {
-			//	int index = findPlace(threshold.getValue(null));
-				classes.get(i).setThreshold(threshold);
+				thresholds.remove(i);
+				thresholds.add(i, threshold);
 				sortClasses();
-
-			System.out.println ("Set threshold (" + this.getNumClasses());
-			//	if (i != index){
-			//		fireClassMoved(i, index);
-			//	}
-			//} catch (ParameterException ex) {
-			//}
-
 		} else {
 			// TODO throw
 		}
@@ -189,7 +193,7 @@ public abstract class Categorize<ToType extends SeParameter, FallbackType extend
 	}
 
 	public RealParameter getThresholdValue(int i) {
-		return classes.get(i).getThreshold();
+		return thresholds.get(i);
 	}
 
 	public void setThresholdsSucceeding() {
@@ -209,10 +213,11 @@ public abstract class Categorize<ToType extends SeParameter, FallbackType extend
 	}
 
 	private void sortClasses() {
-		Collections.sort(classes);
+		//Collections.sort(thresholds);
+
 	}
 
-	private int findPlace(double threshold){
+	/*private int findPlace(double threshold){
 		int i;
 
 		System.out.println ("Threshold is : "  + threshold);
@@ -226,21 +231,22 @@ public abstract class Categorize<ToType extends SeParameter, FallbackType extend
 			}
 		}
 		return i+1;
-	}
+	}*/
 
 	protected ToType getParameter(Feature feat) {
 		try {
 			if (getNumClasses() > 1) {
 				double value = lookupValue.getValue(feat);
-				Iterator it = classes.iterator();
+				Iterator<ToType> cIt = classValues.iterator();
+				Iterator<RealParameter> tIt = thresholds.iterator();
 				ToType classValue = this.firstClass;
-				while (it.hasNext()) {
-					Category<ToType> cat = (Category<ToType>) it.next();
-					double threshold = cat.getThreshold().getValue(feat);
+				while (cIt.hasNext()) {
+					double threshold = tIt.next().getValue(feat);
+
 					if ((!succeeding && value <= threshold) || ((value < threshold))) {
 						return classValue;
 					}
-					classValue = cat.getClassValue();
+					classValue = cIt.next();
 				}
 				return classValue;
 			} else{ // Means nbClass == 1
@@ -335,22 +341,15 @@ public abstract class Categorize<ToType extends SeParameter, FallbackType extend
 			tv.add(of.createValue(firstClass.getJAXBParameterValueType()));
 			//c.setFirstValue(firstClass.getJAXBParameterValueType());
 		}
+		Iterator<RealParameter> tIt = thresholds.iterator();
+		Iterator<ToType> cIt = classValues.iterator();
 
-		for (Category<ToType> cat : classes) {
-			ParameterValueType t = cat.getThreshold().getJAXBParameterValueType();
-			ParameterValueType v = cat.getClassValue().getJAXBParameterValueType();
-
-			tv.add(of.createThreshold(t));
-			tv.add(of.createValue(v));
+		while (tIt.hasNext()){
+			tv.add(of.createThreshold(tIt.next().getJAXBParameterValueType()));
+			tv.add(of.createValue(cIt.next().getJAXBParameterValueType()));
 		}
 
 		return of.createCategorize(c);
 	}
 
-	private CategorizeMethod method;
-	private boolean succeeding = true;
-	private RealParameter lookupValue;
-	protected FallbackType fallbackValue;
-	private ToType firstClass;
-	private ArrayList<Category<ToType>> classes;
 }

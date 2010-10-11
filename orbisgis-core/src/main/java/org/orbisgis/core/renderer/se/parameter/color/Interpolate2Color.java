@@ -9,6 +9,7 @@ import org.orbisgis.core.renderer.persistance.se.ModeType;
 
 import org.orbisgis.core.renderer.se.parameter.Interpolate;
 import org.orbisgis.core.renderer.se.parameter.InterpolationPoint;
+import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
 
 
@@ -50,7 +51,38 @@ public class Interpolate2Color extends Interpolate<ColorParameter, ColorLiteral>
      * @return
      */
     @Override
-    public Color getColor(Feature feat){
+    public Color getColor(Feature feat) throws ParameterException{
+		double value = this.lookupValue.getValue(feat);
+
+		if (i_points.get(0).getData() > value){
+			return i_points.get(0).getValue().getColor(feat);
+		}
+
+		if (i_points.get(i_points.size()-1).getData() < value){
+			return i_points.get(i_points.size()-1).getValue().getColor(feat);
+		}
+
+
+		switch(this.mode){
+		case COSINE:
+		case CUBIC:
+		case LINEAR:
+			int ip1 = getFirstIP(value);
+			int ip2 = ip1 + 1;
+
+			double d1 = i_points.get(ip1).getData();
+			double d2 = i_points.get(ip2).getData();
+
+			Color c1 = i_points.get(ip1).getValue().getColor(feat);
+			Color c2 = i_points.get(ip2).getValue().getColor(feat);
+
+
+			return new Color((int)(c1.getRed() + (c2.getRed() - c1.getRed())*(value - d1)/(d2-d1)),
+					(int)(c1.getGreen() + (c2.getGreen() - c1.getGreen())*(value - d1)/(d2-d1)),
+					(int)(c1.getBlue() + (c2.getBlue() - c1.getBlue())*(value - d1)/(d2-d1)));
+
+
+		}
         return Color.pink; // TODO compute interpolation
     }
 }

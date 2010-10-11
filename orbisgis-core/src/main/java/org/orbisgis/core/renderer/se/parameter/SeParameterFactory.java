@@ -101,6 +101,7 @@ public final class SeParameterFactory {
         String result = "";
 
         for (Object o : p.getContent()) {
+			System.out.println ("Content: " + o);
             if (o instanceof String) {
                 result += o.toString();
             } else if (o instanceof JAXBElement) {
@@ -145,6 +146,7 @@ public final class SeParameterFactory {
 
         String result = "";
         for (Object o : p.getContent()) {
+			System.out.println ("Content: " + o);
             if (o instanceof String) {
                 result += ((String) o);
             } else if (o instanceof JAXBElement) {
