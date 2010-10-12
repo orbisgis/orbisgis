@@ -62,21 +62,20 @@ public final class Interpolate2Real extends Interpolate<RealParameter, RealLiter
 		}
 
 
+
+		int k = getFirstIP(value);
+
+		InterpolationPoint<RealParameter> ip1 = i_points.get(k);
+		InterpolationPoint<RealParameter> ip2 = i_points.get(k+1);
+
 		switch(this.mode){
-		case COSINE:
 		case CUBIC:
+		case COSINE:
+			return cosineInterpolation(ip1.getData(), ip2.getData(), value,
+			ip1.getValue().getValue(feat), ip2.getValue().getValue(feat));
 		case LINEAR:
-			int ip1 = getFirstIP(value);
-			int ip2 = ip1 + 1;
-
-			double d1 = i_points.get(ip1).getData();
-			double d2 = i_points.get(ip2).getData();
-
-			double v1 = i_points.get(ip1).getValue().getValue(feat);
-			double v2 = i_points.get(ip2).getValue().getValue(feat);
-
-
-			return v1 + (v2-v1)*(value - d1)/(d2-d1);
+			return linearInterpolation(ip1.getData(), ip2.getData(), value,
+			ip1.getValue().getValue(feat), ip2.getValue().getValue(feat));
 
 		}
         return 0.0; // TODO compute interpolation

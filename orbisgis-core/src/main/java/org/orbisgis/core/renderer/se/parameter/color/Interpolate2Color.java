@@ -5,6 +5,7 @@ import javax.xml.bind.JAXBElement;
 import org.gdms.data.feature.Feature;
 import org.orbisgis.core.renderer.persistance.se.InterpolateType;
 import org.orbisgis.core.renderer.persistance.se.InterpolationPointType;
+import org.orbisgis.core.renderer.persistance.se.MethodType;
 import org.orbisgis.core.renderer.persistance.se.ModeType;
 
 import org.orbisgis.core.renderer.se.parameter.Interpolate;
@@ -26,11 +27,12 @@ public class Interpolate2Color extends Interpolate<ColorParameter, ColorLiteral>
 
         this.setLookupValue(SeParameterFactory.createRealParameter(t.getLookupValue()));
 
-        if (t.getMode() == ModeType.COSINE) {
+		if (t.getMode() == ModeType.COSINE) {
             this.setInterpolationMode(InterpolationMode.COSINE);
         } else if (t.getMode() == ModeType.CUBIC) {
             this.setInterpolationMode(InterpolationMode.CUBIC);
         } else {
+			System.out.println ("Fallback to linear mode !");
             this.setInterpolationMode(InterpolationMode.LINEAR);
         }
 
@@ -63,25 +65,28 @@ public class Interpolate2Color extends Interpolate<ColorParameter, ColorLiteral>
 		}
 
 
+		int k = getFirstIP(value);
+
+		InterpolationPoint<ColorParameter> ip1 = i_points.get(k);
+		InterpolationPoint<ColorParameter> ip2 = i_points.get(k+1);
+		double d1 = ip1.getData();
+		double d2 = ip2.getData();
+
+		Color c1 = ip1.getValue().getColor(feat);
+		Color c2 = ip2.getValue().getColor(feat);
+
+
 		switch(this.mode){
-		case COSINE:
 		case CUBIC:
+
+		case COSINE:
+			return new Color((int)cosineInterpolation(d1, d2, value, c1.getRed(), c2.getRed()),
+					(int)cosineInterpolation(d1, d2, value, c1.getGreen(), c2.getGreen()),
+					(int)cosineInterpolation(d1, d2, value, c1.getBlue(), c2.getBlue()));
 		case LINEAR:
-			int ip1 = getFirstIP(value);
-			int ip2 = ip1 + 1;
-
-			double d1 = i_points.get(ip1).getData();
-			double d2 = i_points.get(ip2).getData();
-
-			Color c1 = i_points.get(ip1).getValue().getColor(feat);
-			Color c2 = i_points.get(ip2).getValue().getColor(feat);
-
-
-			return new Color((int)(c1.getRed() + (c2.getRed() - c1.getRed())*(value - d1)/(d2-d1)),
-					(int)(c1.getGreen() + (c2.getGreen() - c1.getGreen())*(value - d1)/(d2-d1)),
-					(int)(c1.getBlue() + (c2.getBlue() - c1.getBlue())*(value - d1)/(d2-d1)));
-
-
+			return new Color((int)linearInterpolation(d1, d2, value, c1.getRed(), c2.getRed()),
+					(int)linearInterpolation(d1, d2, value, c1.getGreen(), c2.getGreen()),
+					(int)linearInterpolation(d1, d2, value, c1.getBlue(), c2.getBlue()));
 		}
         return Color.pink; // TODO compute interpolation
     }
