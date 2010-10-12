@@ -27,9 +27,8 @@ public class DXFDriver implements FileDriver {
 
 	@Override
 	public void open(File file) throws DriverException {
-		DxfFile dxfFile;
 		try {
-			dxfFile = DxfFile.createFromFile(file);
+			DxfFile dxfFile = DxfFile.createFromFile(file);
 			result = dxfFile.read();
 			System.gc();
 		} catch (IOException e) {
