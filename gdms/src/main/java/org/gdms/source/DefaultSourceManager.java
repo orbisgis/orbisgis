@@ -79,6 +79,7 @@ import org.gdms.driver.geotif.TifDriver;
 import org.gdms.driver.h2.H2spatialDriver;
 import org.gdms.driver.hsqldb.HSQLDBDriver;
 import org.gdms.driver.jpg.JPGDriver;
+import org.gdms.driver.mifmid.MifMidDriver;
 import org.gdms.driver.png.PngDriver;
 import org.gdms.driver.postgresql.PostgreSQLDriver;
 import org.gdms.driver.shapefile.ShapefileDriver;
@@ -142,6 +143,7 @@ public class DefaultSourceManager implements SourceManager {
 		dm.registerDriver(JPGDriver.class);
 		dm.registerDriver(PngDriver.class);
 		dm.registerDriver(DXFDriver.class);
+		dm.registerDriver(MifMidDriver.class);
 		this.dsf = dsf;
 		changeSourceInfoDirectory(baseDir);
 	}
