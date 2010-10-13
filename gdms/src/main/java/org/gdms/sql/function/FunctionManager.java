@@ -79,9 +79,12 @@ import org.gdms.sql.function.math.ToRadians;
 import org.gdms.sql.function.spatial.geometry.affineTransformation.ST_Rotate;
 import org.gdms.sql.function.spatial.geometry.affineTransformation.ST_Scale;
 import org.gdms.sql.function.spatial.geometry.convert.ST_Centroid;
+import org.gdms.sql.function.spatial.geometry.convert.ST_EndPoint;
 import org.gdms.sql.function.spatial.geometry.convert.ST_Force_3D;
 import org.gdms.sql.function.spatial.geometry.convert.ST_InteriorPoint;
+import org.gdms.sql.function.spatial.geometry.convert.ST_PointN;
 import org.gdms.sql.function.spatial.geometry.convert.ST_PointsToLine;
+import org.gdms.sql.function.spatial.geometry.convert.ST_StartPoint;
 import org.gdms.sql.function.spatial.geometry.convert.ST_ToMultiLine;
 import org.gdms.sql.function.spatial.geometry.convert.ST_ToMultiPoint;
 import org.gdms.sql.function.spatial.geometry.convert.ST_ToMultiSegments;
@@ -285,6 +288,9 @@ public class FunctionManager {
 		addFunction(Random.class);
 		addFunction(ToDegrees.class);
 		addFunction(ToRadians.class);
+		addFunction(ST_StartPoint.class);
+		addFunction(ST_EndPoint.class);
+		addFunction(ST_PointN.class);
 	}
 
 	public static void addFunctionManagerListener(
