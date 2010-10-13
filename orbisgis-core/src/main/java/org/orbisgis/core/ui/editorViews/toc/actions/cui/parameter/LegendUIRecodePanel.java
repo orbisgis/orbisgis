@@ -183,10 +183,7 @@ public class LegendUIRecodePanel extends LegendUIComponent
 		keys = new ArrayList<KeyInput>();
 		rmBtns = new ArrayList<RmButton>();
 
-		System.out.println ("Num Map Item:" + recode.getNumMapItem());
-
 		for (i = 0; i < recode.getNumMapItem(); i++) {
-			System.out.println ("Map Item !");
 			keys.add(new KeyInput(i, null, recode.getMapItemKey(i), 10));
 			SeParameter value = recode.getMapItemValue(i);
 
@@ -223,7 +220,6 @@ public class LegendUIRecodePanel extends LegendUIComponent
 		int i;
 		mapItems.removeAll();
 		for (i = 0; i < values.size(); i++) {
-			System.out.println ("Add key, value, rm");
 			mapItems.add(keys.get(i));
 
 			mapItems.add(values.get(i));
@@ -279,7 +275,6 @@ public class LegendUIRecodePanel extends LegendUIComponent
 
 		@Override
 		protected void valueChanged(String s) {
-			System.out.println ("Index is : " + index);
 			LegendUIRecodePanel.this.recode.getMapItem(index).setKey(s);
 		}
 
@@ -300,7 +295,6 @@ public class LegendUIRecodePanel extends LegendUIComponent
 			super(name, controller, parent, c);
 			this.index = index;
 			super.init();
-			System.out.println (" Color: Parent is " + parent);
 		}
 
 		@Override

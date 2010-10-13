@@ -185,9 +185,7 @@ public final class Rule implements SymbolizerNode {
 		if (where != null && !where.isEmpty()) {
 			String query = "select * from " + sds.getName() + " WHERE " + where;
 
-			System.out.println(" here is the where: " + where);
 			SpatialDataSourceDecorator filteredSds = new SpatialDataSourceDecorator(sds.getDataSourceFactory().getDataSourceFromSQL(query));
-			System.out.println(" and the filtered DataSource: " + filteredSds.getName());
 
 			return filteredSds;
 		} else {
@@ -252,9 +250,6 @@ public final class Rule implements SymbolizerNode {
 
 	public boolean isDomainAllowed(MapTransform mt) {
 		double scale = mt.getScaleDenominator();
-		System.out.println("Current scale is  1:" + scale);
-		System.out.println("Min : " + this.minScaleDenom);
-		System.out.println("Max : " + this.maxScaleDenom);
 
 		return (this.minScaleDenom == null && this.maxScaleDenom == null)
 				|| (this.minScaleDenom == null && this.maxScaleDenom != null && this.maxScaleDenom > scale)

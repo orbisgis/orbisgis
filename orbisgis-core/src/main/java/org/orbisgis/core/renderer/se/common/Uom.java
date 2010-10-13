@@ -34,10 +34,8 @@ public enum Uom {
 
 		switch (uom) {
 			case IN:
-				//System.out.println ("From Inch: " + value + " * " + dpi + " = " + value * dpi);
 				return value * dpi; // [IN] * [PX]/[IN] => [PX]
 			case MM:
-				//System.out.println ("From mm: " + value + "/25.4 * " + dpi + " = " + (value / 25.4) * dpi);
 				return (value / 25.4) * dpi; // [MM] * [IN]/[MM] * [PX]/[IN] => [PX]
 			case PT: // 1PT == 1/72[IN] whatever dpi is
 				return (value / 72.0) * dpi; // 1/72[IN] * 72 *[PX]/[IN] => [PX]
@@ -45,7 +43,6 @@ public enum Uom {
 				if (scale == null){
 					throw new ParameterException("Scale is invalid");
 				}
-				//System.out.println ("From gm: "+ ((value * 1000 * dpi) / (scale * 25.4)));
 				return (value * 1000 * dpi) / (scale * 25.4);
 			case GFT:
 				if (scale == null){
@@ -57,7 +54,6 @@ public enum Uom {
 					return value;
 					//throw new ParameterException("100% value is invalid");
 				}
-				System.out.println ("Convert " + value + " to percent : " + value + "*" + v100p + "/ 100.0");
 				return value * v100p / 100.0;
 			case PX:
 			default:

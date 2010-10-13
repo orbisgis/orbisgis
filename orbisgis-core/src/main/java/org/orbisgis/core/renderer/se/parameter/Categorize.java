@@ -168,7 +168,6 @@ public abstract class Categorize<ToType extends SeParameter, FallbackType extend
 	}
 
 	public void setClassValue(int i, ToType value) {
-		System.out.println ("Set Class " + i + " value (" + Integer.toHexString(System.identityHashCode(this)) + " to " + value);
 		if (i == 0) {
 			firstClass = value;
 		} else if (i > 0 && i < getNumClasses() - 1) {
@@ -181,7 +180,6 @@ public abstract class Categorize<ToType extends SeParameter, FallbackType extend
 	}
 
 	public void setThresholdValue(int i, RealParameter threshold) {
-		System.out.println ("Set threshold (" + this.getNumClasses());
 		if (i >= 0 && i < getNumClasses() - 1) {
 				thresholds.remove(i);
 				thresholds.add(i, threshold);
@@ -216,22 +214,6 @@ public abstract class Categorize<ToType extends SeParameter, FallbackType extend
 		//Collections.sort(thresholds);
 
 	}
-
-	/*private int findPlace(double threshold){
-		int i;
-
-		System.out.println ("Threshold is : "  + threshold);
-		for (i=0;i<classes.size()-1;i++){
-			try {
-				if (threshold < classes.get(i).getThreshold().getValue(null)) {
-					break;
-				}
-			} catch (ParameterException ex) {
-				return -1;
-			}
-		}
-		return i+1;
-	}*/
 
 	protected ToType getParameter(Feature feat) {
 		try {

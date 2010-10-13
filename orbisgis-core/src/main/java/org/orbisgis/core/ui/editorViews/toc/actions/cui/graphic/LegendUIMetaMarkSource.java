@@ -40,13 +40,17 @@
 
 package org.orbisgis.core.ui.editorViews.toc.actions.cui.graphic;
 
+import org.orbisgis.core.renderer.se.graphic.MarkGraphicSource;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.type.LegendUIWellKnownNameType;
 import javax.swing.Icon;
 import org.orbisgis.core.images.OrbisGISIcon;
 import org.orbisgis.core.renderer.se.graphic.MarkGraphic;
+import org.orbisgis.core.renderer.se.graphic.WellKnownName;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.LegendUIAbstractMetaPanel;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.LegendUIComponent;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.LegendUIController;
+import org.orbisgis.core.ui.editorViews.toc.actions.cui.LegendUIEmptyPanel;
+import org.orbisgis.core.ui.editorViews.toc.actions.cui.type.LegendUIEmptyPanelType;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.type.LegendUIType;
 
 /**
@@ -65,12 +69,20 @@ class LegendUIMetaMarkSource extends LegendUIAbstractMetaPanel{
 		super("Source", ctrl, parent, 0);
 		this.mark = mark;
 
-		types = new LegendUIType[1];
+		types = new LegendUIType[2];
 
 		types[0] = new LegendUIWellKnownNameType(controller, mark);
+		types[1] = new LegendUIEmptyPanelType("no source...", controller);
 
-		initialType = types[0];
-		initialPanel = new LegendUIWellKnownNamePanel(controller, this, mark);
+		MarkGraphicSource source = mark.getSource();
+
+		if (source instanceof WellKnownName){
+			initialType = types[0];
+			initialPanel = new LegendUIWellKnownNamePanel(controller, this, mark);
+		} else {
+			initialType = types[1];
+			initialPanel = new LegendUIEmptyPanel("no source", controller, this);
+		}
 	}
 
 	@Override

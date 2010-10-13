@@ -34,6 +34,7 @@ import org.orbisgis.core.renderer.se.graphic.ExternalGraphicSource;
 import org.orbisgis.core.renderer.se.graphic.MarkGraphicSource;
 import org.orbisgis.core.renderer.se.graphic.ViewBox;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
+import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 
 /**
  *
@@ -125,13 +126,15 @@ public class OnlineResource implements ExternalGraphicSource, MarkGraphicSource 
 		e.setOnlineResource(o);
 	}
 
-	private Shape getTrueTypeGlyph(ViewBox viewBox, Feature feat, Double scale, Double dpi, int markIndex) throws ParameterException, IOException {
+	private Shape getTrueTypeGlyph(ViewBox viewBox, Feature feat, Double scale, Double dpi, RealParameter markIndex) throws ParameterException, IOException {
 
 		try {
 			InputStream iStream = url.openStream();
 			Font font = Font.createFont(Font.TRUETYPE_FONT, iStream);
-			System.out.println("MarkIndex is " + markIndex);
-			char[] data = {(char) markIndex};
+
+			double value = markIndex.getValue(feat);
+
+			char[] data = {(char) value};
 
 			String text = String.copyValueOf(data);
 
@@ -177,7 +180,7 @@ public class OnlineResource implements ExternalGraphicSource, MarkGraphicSource 
 	}
 
 	@Override
-	public Shape getShape(ViewBox viewBox, Feature feat, Double scale, Double dpi, int markIndex, String mimeType) throws ParameterException, IOException {
+	public Shape getShape(ViewBox viewBox, Feature feat, Double scale, Double dpi, RealParameter markIndex, String mimeType) throws ParameterException, IOException {
 
 		if (mimeType != null){
 			if (mimeType.equalsIgnoreCase("application/x-font-ttf")) {

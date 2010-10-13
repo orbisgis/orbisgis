@@ -47,6 +47,7 @@ import org.gdms.data.feature.Feature;
 
 import org.orbisgis.core.renderer.persistance.se.MarkGraphicType;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
+import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 
 /**
  * Represent Marks 
@@ -82,7 +83,7 @@ public enum WellKnownName implements MarkGraphicSource {
     }
 
     @Override
-    public Shape getShape(ViewBox viewBox, Feature feat, Double scale, Double dpi, int markIndex, String mimeType) throws ParameterException {
+    public Shape getShape(ViewBox viewBox, Feature feat, Double scale, Double dpi, RealParameter markIndex, String mimeType) throws ParameterException {
         double x=10.0, y=10.0; // The size of the shape, [final unit] => [px]
 
         if (feat == null && viewBox != null && viewBox.dependsOnFeature()){

@@ -47,14 +47,13 @@ public class Categorize2Color extends Categorize<ColorParameter, ColorLiteral> i
     }
 
     @Override
-    public Color getColor(Feature feat){
-        try {
-            return getParameter(feat).getColor(feat);
-        } catch (ParameterException ex) {
-            // fetch the fallback  value
-            // it's a literal so no need to access the feature
-            return this.fallbackValue.getColor(feat);
-        }
+    public Color getColor(Feature feat) throws ParameterException{
+
+		if (feat == null){
+			throw new ParameterException("No feature");
+		}
+
+        return getParameter(feat).getColor(feat);
     }
 
 }

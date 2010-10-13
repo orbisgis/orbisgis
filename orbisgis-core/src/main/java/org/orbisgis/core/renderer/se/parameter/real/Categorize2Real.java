@@ -46,13 +46,13 @@ public final class Categorize2Real extends Categorize<RealParameter, RealLiteral
     }
 
     @Override
-    public double getValue(Feature feat){
-        try{
-            return getParameter(feat).getValue(feat);
-        }
-        catch(ParameterException ex){
-            return this.fallbackValue.getValue(feat);
-        }
+    public double getValue(Feature feat) throws ParameterException{
+
+		if (feat == null){
+			throw new ParameterException("No feature");
+		}
+
+		return getParameter(feat).getValue(feat);
     }
 
 

@@ -160,9 +160,6 @@ public abstract class Interpolate<ToType extends SeParameter, FallbackType exten
 	}
 
 	protected double cosineInterpolation(double d1, double d2, double x, double v1, double v2) {
-
-		System.out.println ("Domain: [" + d1 + ";" + d2+ "]   " + "x: " + x + "  image: [" + v1 + ";" + v2 + "]");
-
 		double x1 = (x - d1) / (d2 - d1);
 		double cosXPi = Math.cos(x1 * Math.PI);
 		return v1 + (v1 * (cosXPi - 1) + v2 * (1 - cosXPi)) * 0.5;

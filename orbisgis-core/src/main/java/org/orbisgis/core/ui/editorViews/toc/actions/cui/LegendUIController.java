@@ -185,19 +185,16 @@ public final class LegendUIController {
 	}
 
 	public void editRule(int i) {
-		System.out.println("Edit rule n°" + i);
 		if (i >= 0 && i < rootPanels.size()) {
 
 			for (LegendUIComponent c : rootPanels.get(i)) {
 				structureChanged(c, false);
 			}
-
 			//Rule r = typeStyle.getRules().get(i);
 			mainPanel.editRule(i);
 		}else{
 			mainPanel.editRule(-1);
 		}
-
 	}
 
 	/*
@@ -298,7 +295,6 @@ public final class LegendUIController {
 	}
 
 	private LegendUIComponent findChildToDetach(LegendUIComponent parent) {
-		System.out.println ("Fild child to detach:");
 		ArrayList<LegendUIComponent> childrenQueue = new ArrayList<LegendUIComponent>();
 
 		Iterator<LegendUIComponent> it = parent.getChildrenIterator();
@@ -323,17 +319,13 @@ public final class LegendUIController {
 
 			parent.mountComponentForChildren();
 
-			System.out.println("   Parent Size : " + parent.getSize());
 			parent.pack();
-			System.out.println("   Parent Size : " + parent.getSize());
 			Dimension newParentSize = parent.getSize();
 
 			child.mountComponentForChildren();
 
 			Dimension childSize = child.getSize();
-			System.out.println("   Child Size : " + child.getSize());
 			child.pack();
-			System.out.println("   Child Size : " + child.getSize());
 
 			double ratio = totalArea
 					/ (newParentSize.height * newParentSize.width
@@ -341,12 +333,6 @@ public final class LegendUIController {
 
 
 			if (ratio > bestRatio) {
-				System.out.println("New BEST " + child);
-				System.out.println("   Initial Size : " + size);
-				System.out.println("   Parent Size : " + newParentSize);
-				System.out.println("   Child Size : " + child.getSize());
-				System.out.println("   => Ratio" + ratio);
-
 				toNest = child;
 				bestRatio = ratio;
 			}
@@ -364,8 +350,6 @@ public final class LegendUIController {
 			parent.mountComponentForChildren();
 		}
 
-		System.out.println ("Selected child is : " + toNest + "(" + bestRatio + ")");
-
 		return toNest;
 	}
 
@@ -381,9 +365,7 @@ public final class LegendUIController {
 
 			mainPanel.setVisible(false);
 			while (mainQueue.size() > 0) {
-				System.out.println("");
 				LegendUIComponent current = mainQueue.remove(0);
-				System.out.println("Split => " + current);
 				// Mount the panel
 				current.mountComponentForChildren();
 				current.pack();
@@ -391,13 +373,9 @@ public final class LegendUIController {
 
 				Dimension totalSize = current.getSize();
 				if (totalSize.height > maxAllowedSize.height /*|| totalSize.width > maxAllowedSize.width*/) {
-
-					System.out.println("Toooo big");
-
 					LegendUIComponent child = findChildToDetach(current);
 
 					if (child != null) {
-						System.out.println("Nest " + child);
 						// Now queue the two panel
 						child.extractFromParent();
 						mainQueue.add(current);

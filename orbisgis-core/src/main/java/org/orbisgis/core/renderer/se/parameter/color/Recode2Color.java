@@ -30,12 +30,10 @@ public class Recode2Color extends Recode<ColorParameter, ColorLiteral> implement
 
 
     @Override
-    public Color getColor(Feature feat){
-        try {
-            // Should always depend on features !
-            return getParameter(feat).getColor(feat);
-        } catch (ParameterException ex) {
-            return this.fallbackValue.getColor(feat);
-        }
+    public Color getColor(Feature feat) throws ParameterException{
+		if (feat == null){
+			throw new ParameterException("No feature");
+		}
+        return getParameter(feat).getColor(feat);
     }
 }

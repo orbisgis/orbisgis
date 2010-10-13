@@ -122,8 +122,6 @@ public final class ViewBox implements SymbolizerNode {
 
 		double ratio = height / width;
 
-		System.out.println(this);
-
         if (x != null && y != null) {
             dx = x.getValue(feat);
             dy = y.getValue(feat);

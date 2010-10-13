@@ -215,11 +215,7 @@ public final class MarkGraphic extends Graphic implements FillNode, StrokeNode, 
 	@Override
 	public void updateGraphic() {
 		try {
-			int index = -1;
-			if (markIndex != null){
-				index = (int) markIndex.getValue(null);
-			}
-			shape = source.getShape(viewBox, null, null, null, index, mimeType);
+			shape = source.getShape(viewBox, null, null, null, markIndex, mimeType);
 		} catch (Exception e) {
 			shape = null;
 		}
@@ -243,11 +239,7 @@ public final class MarkGraphic extends Graphic implements FillNode, StrokeNode, 
 
 		// If the shape doesn't depends on feature (i.e. not null), we used the cached one
 		if (shape == null) {
-			int index = -1;
-			if (markIndex != null){
-				index = (int) markIndex.getValue(feat);
-			}
-			shp = source.getShape(viewBox, feat, mt.getScaleDenominator(), mt.getDpi(), index, mimeType);
+			shp = source.getShape(viewBox, feat, mt.getScaleDenominator(), mt.getDpi(), markIndex, mimeType);
 		} else {
 			shp = shape;
 		}
@@ -331,6 +323,10 @@ public final class MarkGraphic extends Graphic implements FillNode, StrokeNode, 
 			m.setMarkIndex(markIndex.getJAXBParameterValueType());
 		}
 
+		if (mimeType != null){
+			m.setFormat(mimeType);
+		}
+
 		if (transform != null) {
 			m.setTransform(transform.getJAXBType());
 		}
@@ -375,6 +371,11 @@ public final class MarkGraphic extends Graphic implements FillNode, StrokeNode, 
 		if (transform != null && this.getTransform().dependsOnFeature()) {
 			return true;
 		}
+
+		if (markIndex != null && markIndex.dependsOnFeature()){
+			return true;
+		}
+
 		return false;
 	}
 

@@ -247,6 +247,10 @@ public final class ExternalGraphic extends Graphic {
             source.setJAXBSource(e);
         }
 
+		if (mimeType != null){
+			e.setFormat(mimeType);
+		}
+
         if (opacity != null) {
             e.setOpacity(opacity.getJAXBParameterValueType());
         }

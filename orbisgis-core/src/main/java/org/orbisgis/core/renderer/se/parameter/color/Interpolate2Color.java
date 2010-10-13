@@ -5,7 +5,6 @@ import javax.xml.bind.JAXBElement;
 import org.gdms.data.feature.Feature;
 import org.orbisgis.core.renderer.persistance.se.InterpolateType;
 import org.orbisgis.core.renderer.persistance.se.InterpolationPointType;
-import org.orbisgis.core.renderer.persistance.se.MethodType;
 import org.orbisgis.core.renderer.persistance.se.ModeType;
 
 import org.orbisgis.core.renderer.se.parameter.Interpolate;

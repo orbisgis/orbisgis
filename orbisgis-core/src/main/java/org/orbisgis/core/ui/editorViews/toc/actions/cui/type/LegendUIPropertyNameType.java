@@ -68,9 +68,6 @@ public class LegendUIPropertyNameType extends LegendUIType {
 		try {
 			DataSource ds = controller.getEditedFeatureTypeStyle().getLayer().getDataSource();
 
-			System.out.println("Type is " + type.getSimpleName());
-
-
 			if (type.getSimpleName().equals("ColorAttribute")) {
 				p = new ColorAttribute(null, ds);
 			} else if (type.getSimpleName().equals("StringAttribute")) {

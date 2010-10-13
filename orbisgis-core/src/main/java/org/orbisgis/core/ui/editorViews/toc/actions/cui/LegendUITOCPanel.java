@@ -144,8 +144,6 @@ public class LegendUITOCPanel extends JPanel implements TreeSelectionListener, L
 	}
 
 	public final void refresh(int ruleID) {
-		System.out.println("");
-		System.out.println("   REFRESH TOC");
 		this.currentRuleId = ruleID;
 
 		btnRm.setEnabled(false);
@@ -176,23 +174,17 @@ public class LegendUITOCPanel extends JPanel implements TreeSelectionListener, L
 				// two cases : top element or nested element
 
 				if (comp.isTopElement()) {
-					System.out.println("Is top Element");
 					// So add to root
-
 					// Create the new node
 					DefaultMutableTreeNode newNode = new DefaultMutableTreeNode(comp);
-					System.out.println("Comp name: " + comp.toString());
 
 					root.add(newNode);
-					System.out.println("Insert " + newNode + " As top element");
 					comp.register(this);
 
 				} else if (comp.isNested()) {
-					System.out.println("Is NeSTED : " + comp);
 					// Is nested so
 					// find the element to anchor on (scope parent of parent...)
 					LegendUIComponent parentTopElement = comp.getParentComponent().getScopeParent();
-					System.out.println("Parent is : " + parentTopElement);
 
 					DefaultMutableTreeNode parent = null;
 					DefaultMutableTreeNode node;
@@ -202,11 +194,9 @@ public class LegendUITOCPanel extends JPanel implements TreeSelectionListener, L
 					queue.add(root);
 					do {
 						node = queue.remove(0);
-						System.out.println("Current node: " + node);
 
 						if (node.getUserObject().equals(parentTopElement)) {
 							parent = node;
-							System.out.println("   FOUND!!!");
 						} else {
 							int i;
 							for (i = 0; i < node.getChildCount(); i++) {
@@ -224,7 +214,6 @@ public class LegendUITOCPanel extends JPanel implements TreeSelectionListener, L
 
 					// And add it in the tree model
 					parent.add(newNode);
-					System.out.println("Insert " + newNode + " As " + parent + " child");
 					comp.register(this);
 				}
 				// Stack children
@@ -258,7 +247,6 @@ public class LegendUITOCPanel extends JPanel implements TreeSelectionListener, L
 
 			controller.packMainPanel();
 		}
-		System.out.println("END REFRESH TOC");
 	}
 
 	@Override
@@ -281,7 +269,6 @@ public class LegendUITOCPanel extends JPanel implements TreeSelectionListener, L
 
 	@Override
 	public void nameChanged() {
-		System.out.println("Change name !!");
 		this.refresh(this.currentRuleId);
 	}
 

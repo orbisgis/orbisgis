@@ -44,6 +44,7 @@ import org.gdms.data.feature.Feature;
 import org.orbisgis.core.renderer.persistance.se.MarkGraphicType;
 
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
+import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 
 /**
  * This interface allow to fetch a mark graphic for many sources,
@@ -65,7 +66,7 @@ public interface MarkGraphicSource {
 	 * @throws ParameterException
 	 * @throws IOException
 	 */
-    public abstract Shape getShape(ViewBox viewBox, Feature feat, Double scale, Double dpi, int markIndex, String format)
+    public abstract Shape getShape(ViewBox viewBox, Feature feat, Double scale, Double dpi, RealParameter markIndex, String format)
             throws ParameterException, IOException;
 
     public void setJAXBSource(MarkGraphicType m);
