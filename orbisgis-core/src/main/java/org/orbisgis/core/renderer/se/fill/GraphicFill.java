@@ -144,8 +144,8 @@ public final class GraphicFill extends Fill implements UomNode {
                 }
             }
 
-            gX = Uom.toPixel(gX, getUom(), mt.getDpi(), mt.getScaleDenominator(), 0.0);
-            gY = Uom.toPixel(gY, getUom(), mt.getDpi(), mt.getScaleDenominator(), 0.0);
+            gX = Uom.toPixel(gX, getUom(), mt.getDpi(), mt.getScaleDenominator(), (double)img.getWidth());
+            gY = Uom.toPixel(gY, getUom(), mt.getDpi(), mt.getScaleDenominator(), (double)img.getHeight());
 
             BufferedImage i = new BufferedImage((int) (img.getWidth() + gX), (int) (img.getHeight() + gY), BufferedImage.TYPE_INT_ARGB);
             Graphics2D tile = i.createGraphics();

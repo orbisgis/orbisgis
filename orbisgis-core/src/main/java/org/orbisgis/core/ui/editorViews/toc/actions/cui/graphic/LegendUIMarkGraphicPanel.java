@@ -51,6 +51,7 @@ import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.LegendUIAbstractPanel;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.LegendUIComponent;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.LegendUIController;
+import org.orbisgis.core.ui.editorViews.toc.actions.cui.components.UomInput;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.fill.LegendUIMetaFillPanel;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.parameter.real.LegendUIMetaRealPanel;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.stroke.LegendUIMetaStrokePanel;
@@ -71,6 +72,8 @@ public class LegendUIMarkGraphicPanel extends LegendUIComponent implements Legen
 	private LegendUIMetaRealPanel pOffset;
 
 	private LegendUIMetaMarkSource mSource;
+
+	private UomInput uomInput;
 
 	public LegendUIMarkGraphicPanel(LegendUIController controller, LegendUIComponent parent, MarkGraphic m) {
 		super("Mark graphic", controller, parent, 0);
@@ -97,6 +100,8 @@ public class LegendUIMarkGraphicPanel extends LegendUIComponent implements Legen
 
 		this.mSource = new LegendUIMetaMarkSource(controller, parent, mark);
 		mSource.init();
+
+		this.uomInput = new UomInput(m);
 	}
 
 	@Override
@@ -107,14 +112,17 @@ public class LegendUIMarkGraphicPanel extends LegendUIComponent implements Legen
 	@Override
 	protected void mountComponent() {
 		LegendUIAbstractPanel content1 = new LegendUIAbstractPanel(controller);
+		LegendUIAbstractPanel content2 = new LegendUIAbstractPanel(controller);
 
-		this.add(mSource, BorderLayout.NORTH);
+		content1.add(mSource, BorderLayout.WEST);
+		content1.add(uomInput, BorderLayout.EAST);
 
-		content1.add(mFill, BorderLayout.NORTH);
-		content1.add(mStroke, BorderLayout.CENTER);
-		content1.add(vBox, BorderLayout.SOUTH);
+		content2.add(mFill, BorderLayout.NORTH);
+		content2.add(mStroke, BorderLayout.CENTER);
+		content2.add(vBox, BorderLayout.SOUTH);
 
-		this.add(content1, BorderLayout.CENTER);
+		this.add(content1, BorderLayout.NORTH);
+		this.add(content2, BorderLayout.CENTER);
 		this.add(pOffset, BorderLayout.SOUTH);
 	}
 
@@ -122,5 +130,4 @@ public class LegendUIMarkGraphicPanel extends LegendUIComponent implements Legen
 	public Graphic getGraphic() {
 		return mark;
 	}
-
 }

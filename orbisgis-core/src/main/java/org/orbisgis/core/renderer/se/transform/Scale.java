@@ -73,15 +73,15 @@ public class Scale implements Transformation {
     }
 
     @Override
-    public AffineTransform getAffineTransform(Feature feat, Uom uom, MapTransform mt) throws ParameterException {
+    public AffineTransform getAffineTransform(Feature feat, Uom uom, MapTransform mt, Double width, Double height) throws ParameterException {
         double sx = 0.0;
         if (x != null) {
-            sx = Uom.toPixel(x.getValue(feat), uom, mt.getDpi(), mt.getScaleDenominator(), 0.0);
+            sx = Uom.toPixel(x.getValue(feat), uom, mt.getDpi(), mt.getScaleDenominator(), null);
         }
 
         double sy = 0.0;
         if (y != null) {
-            sy = Uom.toPixel(y.getValue(feat), uom, mt.getDpi(), mt.getScaleDenominator(), 0.0);
+            sy = Uom.toPixel(y.getValue(feat), uom, mt.getDpi(), mt.getScaleDenominator(), null);
         }
 
         return AffineTransform.getScaleInstance(sx, sy);

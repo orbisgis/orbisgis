@@ -41,15 +41,15 @@ public class Translate implements Transformation {
     }
 
     @Override
-    public AffineTransform getAffineTransform(Feature feat, Uom uom, MapTransform mt) throws ParameterException {
+    public AffineTransform getAffineTransform(Feature feat, Uom uom, MapTransform mt, Double width, Double height) throws ParameterException {
         double tx = 0.0;
         if (x != null) {
-            tx = Uom.toPixel(x.getValue(feat), uom, mt.getDpi(), mt.getScaleDenominator(), 0.0);
+            tx = Uom.toPixel(x.getValue(feat), uom, mt.getDpi(), mt.getScaleDenominator(), width);
         }
 
         double ty = 0.0;
         if (y != null) {
-            ty = Uom.toPixel(y.getValue(feat), uom, mt.getDpi(), mt.getScaleDenominator(), 0.0);
+            ty = Uom.toPixel(y.getValue(feat), uom, mt.getDpi(), mt.getScaleDenominator(), height);
         }
 
         return AffineTransform.getTranslateInstance(tx, ty);

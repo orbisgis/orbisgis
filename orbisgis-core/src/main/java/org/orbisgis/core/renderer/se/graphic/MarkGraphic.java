@@ -65,12 +65,27 @@ import org.orbisgis.core.renderer.se.ViewBoxNode;
 
 public final class MarkGraphic extends Graphic implements FillNode, StrokeNode, ViewBoxNode {
 
+	public static final double defaultSize = 3;
+
+	private MarkGraphicSource source;
+	private ViewBox viewBox;
+	private RealParameter pOffset;
+	private Halo halo;
+	private Fill fill;
+	private Stroke stroke;
+
+	RealParameter markIndex;
+
+	// cached shape : only available with shape that doesn't depends on features
+	private Shape shape;
+	private String mimeType;
+
 	public MarkGraphic() {
 	}
 
 	public void setToCircle10() {
 		this.setSource(WellKnownName.CIRCLE);
-		this.setViewBox(new ViewBox(new RealLiteral(3.0)));
+		this.setViewBox(new ViewBox(new RealLiteral(defaultSize)));
 		this.setFill(new SolidFill());
 		((RealLiteral) ((SolidFill) this.getFill()).getOpacity()).setValue(100.0);
 		this.setStroke(new PenStroke());
@@ -117,6 +132,12 @@ public final class MarkGraphic extends Graphic implements FillNode, StrokeNode, 
 			} else if (t.getInlineContent() != null) {
 				// TODO Not yer implemented
 			}
+
+			if (t.getMarkIndex() != null){
+				this.markIndex = SeParameterFactory.createRealParameter(t.getMarkIndex());
+			}
+
+			this.mimeType = t.getFormat();
 		}
 	}
 
@@ -194,7 +215,11 @@ public final class MarkGraphic extends Graphic implements FillNode, StrokeNode, 
 	@Override
 	public void updateGraphic() {
 		try {
-			shape = source.getShape(viewBox, null, null, null);
+			int index = -1;
+			if (markIndex != null){
+				index = (int) markIndex.getValue(null);
+			}
+			shape = source.getShape(viewBox, null, null, null, index, mimeType);
 		} catch (Exception e) {
 			shape = null;
 		}
@@ -218,7 +243,11 @@ public final class MarkGraphic extends Graphic implements FillNode, StrokeNode, 
 
 		// If the shape doesn't depends on feature (i.e. not null), we used the cached one
 		if (shape == null) {
-			shp = source.getShape(viewBox, feat, mt.getScaleDenominator(), mt.getDpi());
+			int index = -1;
+			if (markIndex != null){
+				index = (int) markIndex.getValue(feat);
+			}
+			shp = source.getShape(viewBox, feat, mt.getScaleDenominator(), mt.getDpi(), index, mimeType);
 		} else {
 			shp = shape;
 		}
@@ -227,7 +256,8 @@ public final class MarkGraphic extends Graphic implements FillNode, StrokeNode, 
 		Shape atShp = shp;
 
 		if (transform != null) {
-			atShp = this.transform.getGraphicalAffineTransform(feat, false, mt).createTransformedShape(shp);
+			atShp = this.transform.getGraphicalAffineTransform(feat, false, mt, shp.getBounds().getWidth(),
+				shp.getBounds().getHeight()).createTransformedShape(shp);
 		}
 
 		Rectangle2D bounds = atShp.getBounds2D();
@@ -267,7 +297,7 @@ public final class MarkGraphic extends Graphic implements FillNode, StrokeNode, 
 		}
 
 		if (this.halo != null) {
-			haloR = Uom.toPixel(halo.getRadius().getValue(feat), halo.getUom(), mt.getDpi(), mt.getScaleDenominator(), 0.0);
+			haloR = halo.getHaloRadius(feat, mt);
 		}
 
 		return Math.max(sWidth, haloR);
@@ -277,8 +307,8 @@ public final class MarkGraphic extends Graphic implements FillNode, StrokeNode, 
 	public double getMaxWidth(Feature feat, MapTransform mt) throws ParameterException, IOException {
 		double delta = 0.0;
 
-		if (viewBox != null) {
-			Dimension dim = viewBox.getDimensionInPixel(feat, 1, mt.getScaleDenominator(), mt.getDpi());
+		if (viewBox != null && viewBox.usable()) {
+			Dimension dim = viewBox.getDimensionInPixel(feat, defaultSize, defaultSize, mt.getScaleDenominator(), mt.getDpi());
 			delta = Math.max(dim.getHeight(), dim.getWidth());
 		}
 
@@ -296,6 +326,10 @@ public final class MarkGraphic extends Graphic implements FillNode, StrokeNode, 
 		}
 
 		source.setJAXBSource(m);
+
+		if (markIndex != null){
+			m.setMarkIndex(markIndex.getJAXBParameterValueType());
+		}
 
 		if (transform != null) {
 			m.setTransform(transform.getJAXBType());
@@ -343,12 +377,5 @@ public final class MarkGraphic extends Graphic implements FillNode, StrokeNode, 
 		}
 		return false;
 	}
-	private MarkGraphicSource source;
-	private ViewBox viewBox;
-	private RealParameter pOffset;
-	private Halo halo;
-	private Fill fill;
-	private Stroke stroke;
-	// cached shape : only available with shape that doesn't depends on features
-	private Shape shape;
+
 }

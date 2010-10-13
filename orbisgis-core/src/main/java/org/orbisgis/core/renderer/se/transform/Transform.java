@@ -16,6 +16,7 @@ import org.orbisgis.core.renderer.persistance.se.ScaleType;
 import org.orbisgis.core.renderer.persistance.se.TransformType;
 import org.orbisgis.core.renderer.persistance.se.TranslateType;
 import org.orbisgis.core.renderer.se.SymbolizerNode;
+import org.orbisgis.core.renderer.se.UomNode;
 import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 
@@ -25,7 +26,14 @@ import org.orbisgis.core.renderer.se.parameter.ParameterException;
  *
  * @author maxence
  */
-public class Transform implements SymbolizerNode {
+public class Transform implements SymbolizerNode, UomNode {
+	private Uom uom;
+
+    private SymbolizerNode parent;
+    private AffineTransform consolidated;
+    private ArrayList<Transformation> transformations;
+
+
 
     public Transform() {
         transformations = new ArrayList<Transformation>();
@@ -35,6 +43,10 @@ public class Transform implements SymbolizerNode {
     public Transform(TransformType t) {
         transformations = new ArrayList<Transformation>();
         consolidated = null;
+
+		if (t.getUnitOfMeasure() != null) {
+			this.setUom(Uom.fromOgcURN(t.getUnitOfMeasure()));
+		}
 
         for (Object o : t.getTranslateOrRotateOrScale()){
             if (o instanceof TranslateType){
@@ -62,10 +74,9 @@ public class Transform implements SymbolizerNode {
      * @return AffineTransofrm
      * @throws ParameterException
      */
-    public AffineTransform getGraphicalAffineTransform(Feature feat, boolean isForSpatialFeatures, MapTransform mt) throws ParameterException, IOException {
+    public AffineTransform getGraphicalAffineTransform(Feature feat, boolean isForSpatialFeatures, MapTransform mt, Double width, Double height) throws ParameterException, IOException {
         //return consolidateTrasformations(false).getGraphicalAffineTransform();
-        this.consolidateTransformations(feat, isForSpatialFeatures, mt);
-        
+        this.consolidateTransformations(feat, isForSpatialFeatures, mt, width, height);
         return consolidated;
     }
 
@@ -74,14 +85,14 @@ public class Transform implements SymbolizerNode {
      * This method must be called after each modification of one of its transformations !
      *
      */
-    public void consolidateTransformations(Feature feat, boolean forGeometries, MapTransform mt) throws ParameterException, IOException {
+    public void consolidateTransformations(Feature feat, boolean forGeometries, MapTransform mt, Double width, Double height) throws ParameterException, IOException {
         int i;
 
         // Result is Identity
         consolidated = new AffineTransform();
         for (Transformation t : transformations) {
             if (!forGeometries || t.allowedForGeometries()) {
-                AffineTransform at = t.getAffineTransform(feat, this.getUom(), mt);
+                AffineTransform at = t.getAffineTransform(feat, this.getUom(), mt, width, height);
                 consolidated.preConcatenate(at);
             }
         }
@@ -100,11 +111,6 @@ public class Transform implements SymbolizerNode {
     }
 
     @Override
-    public Uom getUom() {
-        return parent.getUom();
-    }
-
-    @Override
     public SymbolizerNode getParent() {
         return parent;
     }
@@ -118,21 +124,18 @@ public class Transform implements SymbolizerNode {
     public TransformType getJAXBType(){
         TransformType t = new TransformType();
 
+		if (uom != null) {
+			t.setUnitOfMeasure(uom.toURN());
+		}
+
         List<Object> list = t.getTranslateOrRotateOrScale();
 
-
         for (Transformation tr : transformations){
-            // TODO CHECK ORDER !
             list.add(tr.getJAXBType());
         }
 
         return t;
     }
-
-    private SymbolizerNode parent;
-    private AffineTransform consolidated;
-    private ArrayList<Transformation> transformations;
-
     public boolean dependsOnFeature() {
         for (Transformation t : this.transformations){
             if (t.dependsOnFeature()){
@@ -140,5 +143,24 @@ public class Transform implements SymbolizerNode {
             }
         }
         return false;
+    }
+
+    @Override
+    public Uom getUom() {
+        if (uom != null) {
+            return this.uom;
+        } else {
+            return parent.getUom();
+        }
+    }
+
+	@Override
+	public Uom getOwnUom(){
+		return uom;
+	}
+
+	@Override
+    public void setUom(Uom uom) {
+        this.uom = uom;
     }
 }

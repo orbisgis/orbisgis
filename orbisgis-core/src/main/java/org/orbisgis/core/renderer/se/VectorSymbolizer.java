@@ -78,7 +78,7 @@ public abstract class VectorSymbolizer extends Symbolizer implements UomNode {
 			} else {
 				Shape shape = mt.getShape(geom);
 				if (transform != null) {
-					shape = transform.getGraphicalAffineTransform(feat, true, mt).createTransformedShape(shape);
+					shape = transform.getGraphicalAffineTransform(feat, true, mt, null, null).createTransformedShape(shape); // TODO widht and height?
 				}
 				shapes.add(shape);
 			}
@@ -100,7 +100,7 @@ public abstract class VectorSymbolizer extends Symbolizer implements UomNode {
 
 		AffineTransform at = mt.getAffineTransform();
 		if (transform != null) {
-			at.preConcatenate(transform.getGraphicalAffineTransform(feat, true, mt));
+			at.preConcatenate(transform.getGraphicalAffineTransform(feat, true, mt, null, null)); // TODO width and height
 		}
 
 		Point point = geom.getInteriorPoint();
@@ -114,7 +114,7 @@ public abstract class VectorSymbolizer extends Symbolizer implements UomNode {
 
 		AffineTransform at = mt.getAffineTransform();
 		if (transform != null) {
-			at.preConcatenate(transform.getGraphicalAffineTransform(feat, true, mt));
+			at.preConcatenate(transform.getGraphicalAffineTransform(feat, true, mt, null, null)); // TODO width and height
 		}
 
 		Coordinate[] coordinates = geom.getCoordinates();
@@ -131,6 +131,7 @@ public abstract class VectorSymbolizer extends Symbolizer implements UomNode {
 		return uom;
 	}
 
+	@Override
 	public Uom getOwnUom() {
 		return uom;
 	}

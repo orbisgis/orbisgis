@@ -176,7 +176,7 @@ public class Matrix implements Transformation {
     }
 
     @Override
-    public AffineTransform getAffineTransform(Feature feat, Uom uom, MapTransform mt) throws ParameterException {
+    public AffineTransform getAffineTransform(Feature feat, Uom uom, MapTransform mt, Double width, Double height) throws ParameterException {
         return new AffineTransform( // TODO DPI !
                 Uom.toPixel(a.getValue(feat), uom, mt.getDpi(), mt.getScaleDenominator(), 0.0),
                 Uom.toPixel(b.getValue(feat), uom, mt.getDpi(), mt.getScaleDenominator(), 0.0),

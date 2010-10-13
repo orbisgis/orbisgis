@@ -199,7 +199,7 @@ public final class DensityFill extends Fill implements GraphicNode {
 
 				tile.setColor(c);
 
-				tile.setStroke(hatches.getBasicStroke(feat, mt));
+				tile.setStroke(hatches.getBasicStroke(feat, mt, null));
 
 				// Draw three line in order to ensure mosaic join
 				int ipDist = (int) pDist;

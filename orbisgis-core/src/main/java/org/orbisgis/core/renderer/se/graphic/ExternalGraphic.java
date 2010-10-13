@@ -44,6 +44,8 @@ public final class ExternalGraphic extends Graphic {
     private Halo halo;
     private PlanarImage graphic;
 
+	private String mimeType;
+
     public ExternalGraphic(){
     }
 
@@ -73,6 +75,8 @@ public final class ExternalGraphic extends Graphic {
         if (t.getOnlineResource() != null){
             this.setSource(new OnlineResource(t.getOnlineResource()));
         }
+
+		this.mimeType = t.getFormat();
     }
 
     public Halo getHalo() {
@@ -105,14 +109,14 @@ public final class ExternalGraphic extends Graphic {
     @Override
     public void updateGraphic() {
         graphic = null;
-
+		/*
         try {
             if (source != null) {
                 graphic = source.getPlanarImage(viewBox, null, null);
             }
         } catch (Exception ex) {
             ex.printStackTrace();
-        }
+        }*/
     }
 
     public void setSource(ExternalGraphicSource src) throws IOException {
@@ -122,12 +126,6 @@ public final class ExternalGraphic extends Graphic {
 
     @Override
     public RenderableGraphics getRenderableGraphics(Feature feat, boolean selected, MapTransform mt) throws ParameterException, IOException {
-
-        AffineTransform at = new AffineTransform();
-        if (transform != null){
-            at = transform.getGraphicalAffineTransform(feat, false, mt);
-        }
-
         // TODO Implements SELECTED!
 
         PlanarImage img;
@@ -135,7 +133,7 @@ public final class ExternalGraphic extends Graphic {
         // Create shape based on image bbox
 
         if (graphic == null) {
-            img = source.getPlanarImage(viewBox, feat, mt);
+            img = source.getPlanarImage(viewBox, feat, mt, mimeType);
         } else {
             img = graphic;
         }
@@ -147,9 +145,15 @@ public final class ExternalGraphic extends Graphic {
         double w = img.getWidth();
         double h = img.getHeight();
 
+        AffineTransform at = new AffineTransform();
+        if (transform != null){
+            at = transform.getGraphicalAffineTransform(feat, false, mt, w, h);
+        }
+
+
         // reserve the place for halo
         if (halo != null) {
-            double r = Uom.toPixel(halo.getRadius().getValue(feat), halo.getUom(), mt.getDpi(), mt.getScaleDenominator(), 0.0); // TODO SCALE, DPI...
+			double r = halo.getHaloRadius(feat, mt);
             w += 2 * r;
             h += 2 * r;
         }
@@ -180,7 +184,7 @@ public final class ExternalGraphic extends Graphic {
         double delta = 0.0;
 
         if (this.halo != null) {
-            delta += Uom.toPixel(halo.getRadius().getValue(feat), halo.getUom(), mt.getDpi(), mt.getScaleDenominator(), 0.0);
+			delta += halo.getHaloRadius(feat, mt);
         }
 
         return delta;
@@ -189,16 +193,16 @@ public final class ExternalGraphic extends Graphic {
     @Override
     public double getMaxWidth(Feature feat, MapTransform mt) throws ParameterException, IOException {
         double delta = 0.0;
-        if (viewBox != null) {
+        if (viewBox != null && viewBox.usable()) {
             PlanarImage img;
             if (graphic == null) {
-                img = source.getPlanarImage(viewBox, feat, mt);
+                img = source.getPlanarImage(viewBox, feat, mt, mimeType);
             } else {
                 img = graphic;
             }
 
             if (img != null){
-                Dimension dim = viewBox.getDimensionInPixel(feat, img.getHeight() / img.getWidth(), mt.getScaleDenominator(), mt.getDpi());
+                Dimension dim = viewBox.getDimensionInPixel(feat, img.getHeight(), img.getWidth(), mt.getScaleDenominator(), mt.getDpi());
 
                 delta = Math.max(dim.getHeight(), dim.getWidth());
             }

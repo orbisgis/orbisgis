@@ -60,7 +60,7 @@ public class TextGraphic extends Graphic {
 
 
         if (transform != null) {
-            AffineTransform at = this.transform.getGraphicalAffineTransform(feat, false, mt);
+            AffineTransform at = this.transform.getGraphicalAffineTransform(feat, false, mt, (double)label.getWidth(), (double)label.getHeight());
 
             Shape atShp = at.createTransformedShape(bounds);
 

@@ -15,6 +15,7 @@ import org.gdms.data.feature.Feature;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.persistance.se.ObjectFactory;
 import org.orbisgis.core.renderer.persistance.se.ParameterValueType;
+import org.orbisgis.core.renderer.se.common.ShapeHelper;
 import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.fill.GraphicFill;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
@@ -39,11 +40,15 @@ public final class PenStroke extends Stroke {
     private boolean useColor;
     private RealParameter opacity;
     private RealParameter width;
+
     private LineJoin lineJoin;
     private LineCap lineCap;
+
 	private StringParameter dashArray;
     private RealParameter dashOffset;
-    private BasicStroke bStroke;
+
+
+	//private BasicStroke bStroke;
 
 
     public enum LineCap {
@@ -82,7 +87,7 @@ public final class PenStroke extends Stroke {
 		setLineCap(LineCap.ROUND);
 		setLineJoin(LineJoin.BEVEL);
 
-        updateBasicStroke();
+        //updateBasicStroke();
     }
 
 	/**
@@ -139,7 +144,7 @@ public final class PenStroke extends Stroke {
 			this.uom = null;
 		}
 
-        this.updateBasicStroke();
+        //this.updateBasicStroke();
     }
 
     public PenStroke(JAXBElement<PenStrokeType> s) {
@@ -181,13 +186,13 @@ public final class PenStroke extends Stroke {
      */
     public void setUseColor(boolean useColor) {
         this.useColor = useColor;
-        updateBasicStroke();
+        //updateBasicStroke();
     }
 
     public void setColor(ColorParameter color) {
         this.color = color;
         useColor = true;
-        updateBasicStroke();
+        //updateBasicStroke();
     }
 
     public ColorParameter getColor() {
@@ -199,7 +204,7 @@ public final class PenStroke extends Stroke {
 		if (stipple != null){
     	    stipple.setParent(this);
 	        useColor = false;
-        	updateBasicStroke();
+        	//updateBasicStroke();
 		}
     }
 
@@ -209,7 +214,7 @@ public final class PenStroke extends Stroke {
 
     public void setLineCap(LineCap cap) {
         lineCap = cap;
-        updateBasicStroke();
+        //updateBasicStroke();
     }
 
     public LineCap getLineCap() {
@@ -218,7 +223,7 @@ public final class PenStroke extends Stroke {
 
     public void setLineJoin(LineJoin join) {
         lineJoin = join;
-        updateBasicStroke();
+        //updateBasicStroke();
     }
 
     public LineJoin getLineJoin() {
@@ -227,7 +232,7 @@ public final class PenStroke extends Stroke {
 
     public void setOpacity(RealParameter opacity) {
         this.opacity = opacity;
-        updateBasicStroke();
+        //updateBasicStroke();
     }
 
     public RealParameter getOpacity() {
@@ -236,7 +241,7 @@ public final class PenStroke extends Stroke {
 
     public void setWidth(RealParameter width) {
         this.width = width;
-        updateBasicStroke();
+        //updateBasicStroke();
     }
 
     public RealParameter getWidth() {
@@ -249,7 +254,7 @@ public final class PenStroke extends Stroke {
 
     public void setDashOffset(RealParameter dashOffset) {
         this.dashOffset = dashOffset;
-        updateBasicStroke();
+        //updateBasicStroke();
     }
 
 	public StringParameter getDashArray() {
@@ -260,6 +265,7 @@ public final class PenStroke extends Stroke {
 		this.dashArray = dashArray;
 	}
 
+	/*
     private void updateBasicStroke() {
         try {
             bStroke = createBasicStroke(null, null);
@@ -267,9 +273,9 @@ public final class PenStroke extends Stroke {
 			// thrown if the stroke depends on the feature
             this.bStroke = null;
         }
-    }
+    }*/
 
-    private BasicStroke createBasicStroke(Feature feat, MapTransform mt) throws ParameterException {
+    private BasicStroke createBasicStroke(Feature feat, MapTransform mt, Double v100p) throws ParameterException {
 
 
 		Double scale = null;
@@ -321,28 +327,25 @@ public final class PenStroke extends Stroke {
         if (width != null) {
             w = width.getValue(feat);
             // TODO add scale and dpi
-            w = Uom.toPixel(w, getUom(), mt.getDpi(), mt.getScaleDenominator(), 0.0);
+            w = Uom.toPixel(w, getUom(), mt.getDpi(), mt.getScaleDenominator(), null);
         }
 
 
 		if (this.dashArray != null && ! this.dashArray.getValue(feat).isEmpty()){
-			System.out.println ("DASH!!!!");
+
 			float dashO = 0.0f;
 			float[] dashA;
 
 			String sDash = this.dashArray.getValue(feat);
-			System.out.println ("The string version : " + sDash);
 			String[] splitedDash = sDash.split(" ");
+
 			dashA = new float[splitedDash.length];
 			for (int i = 0;i<splitedDash.length;i++){
-            	dashA[i] = (float) Uom.toPixel(Double.parseDouble(splitedDash[i]), getUom(), mt.getDpi(), mt.getScaleDenominator(), 0.0);
-				System.out.println ("This is my new dash element " + dashA[i]);
+            	dashA[i] = (float) Uom.toPixel(Double.parseDouble(splitedDash[i]), getUom(), mt.getDpi(), mt.getScaleDenominator(), v100p);
 			}
 
 			if (this.dashOffset != null){
-				System.out.println ("Offset: " + this.dashOffset);
-            	dashO = (float) Uom.toPixel(this.dashOffset.getValue(feat), getUom(), mt.getDpi(), mt.getScaleDenominator(), 0.0);
-				System.out.println ("Offset double: " + dashO);
+            	dashO = (float) Uom.toPixel(this.dashOffset.getValue(feat), getUom(), mt.getDpi(), mt.getScaleDenominator(), v100p);
 			}
         	return new BasicStroke((float) w, cap, join, 10.0f, dashA, dashO);
 		}
@@ -351,12 +354,13 @@ public final class PenStroke extends Stroke {
 		}
     }
 
-    public BasicStroke getBasicStroke(Feature feat, MapTransform mt) throws ParameterException {
-        if (bStroke != null) {
-            return bStroke;
-        } else {
-            return this.createBasicStroke(feat, mt);
-        }
+    public BasicStroke getBasicStroke(Feature feat, MapTransform mt, Double v100p) throws ParameterException {
+        //if (bStroke != null) {
+        //    return bStroke;
+        //} else {
+    		return this.createBasicStroke(feat, mt, v100p);
+        //}
+
     }
 
     @Override
@@ -368,11 +372,11 @@ public final class PenStroke extends Stroke {
 
         BasicStroke stroke = null;
 
-        if (this.bStroke == null) {
-            stroke = this.createBasicStroke(feat, mt);
-        } else {
-            stroke = this.bStroke;
-        }
+        //if (this.bStroke == null) {
+        stroke = this.createBasicStroke(feat, mt, ShapeHelper.getShapePerimeter(shp));
+        //} else {
+        //    stroke = this.bStroke;
+        //}
 
         g2.setStroke(stroke);
 
@@ -411,7 +415,7 @@ public final class PenStroke extends Stroke {
     @Override
     public double getMaxWidth(Feature feat, MapTransform mt) throws ParameterException {
         if (this.width != null) {
-            return Uom.toPixel(width.getValue(feat), this.getUom(), mt.getDpi(), mt.getScaleDenominator(), 0.0);
+            return Uom.toPixel(width.getValue(feat), this.getUom(), mt.getDpi(), mt.getScaleDenominator(), null);
         } else {
             return 0.0;
         }

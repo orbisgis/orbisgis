@@ -69,6 +69,11 @@ public final class ViewBox implements SymbolizerNode {
         }
     }
 
+	public boolean usable() {
+		return this.x != null || this.y != null;
+	}
+
+
     public void setWidth(RealParameter width) {
         x = width;
     }
@@ -112,25 +117,30 @@ public final class ViewBox implements SymbolizerNode {
      * @return
      * @throws ParameterException
      */
-    public Dimension getDimensionInPixel(Feature feat, double ratio, Double scale, Double dpi) throws ParameterException {
+    public Dimension getDimensionInPixel(Feature feat, double height, double width, Double scale, Double dpi) throws ParameterException {
         double dx, dy;
+
+		double ratio = height / width;
+
+		System.out.println(this);
 
         if (x != null && y != null) {
             dx = x.getValue(feat);
             dy = y.getValue(feat);
         } else if (x != null) {
             dx = x.getValue(feat);
-            dy = dx / ratio;
+            dy = dx * ratio;
         } else if (y != null) {
             dy = y.getValue(feat);
-            dx = dy * ratio;
-        } else { // nothing is defined => 10x10uom
-            dx = 10.0;
-            dy = 10.0;
+            dx = dy / ratio;
+        } else { // nothing is defined
+            dx = width;
+            dy = height;
+			return null;
         }
 
-        dx = Uom.toPixel(dx, this.getUom(), dpi, scale, 0.0); // TODO DPI SCAPE !
-        dy = Uom.toPixel(dy, this.getUom(), dpi, scale, 0.0);
+        dx = Uom.toPixel(dx, this.getUom(), dpi, scale, width);
+        dy = Uom.toPixel(dy, this.getUom(), dpi, scale, height);
 
 		if (dx <= 0.00021 || dy <= 0.00021){
 			throw new ParameterException("View-box is too small");

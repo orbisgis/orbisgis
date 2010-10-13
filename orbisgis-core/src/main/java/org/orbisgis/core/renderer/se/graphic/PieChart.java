@@ -207,15 +207,14 @@ public final class PieChart extends Graphic implements StrokeNode {
         double r = 30; // 30px by default
 
         if (radius != null) {
-            r = Uom.toPixel(this.getRadius().getValue(feat), this.getUom(), mt.getDpi(), mt.getScaleDenominator(), 0.0); // TODO DPI + SCALE
+            r = Uom.toPixel(this.getRadius().getValue(feat), this.getUom(), mt.getDpi(), mt.getScaleDenominator(), null); // TODO 100%
         }
 
         double holeR = 0.0;
 
         Area hole = null;
         if (this.holeRadius != null) {
-            holeR = Uom.toPixel(this.getHoleRadius().getValue(feat), this.getUom(), mt.getDpi(), mt.getScaleDenominator(), 0.0); // TODO DPI + SCALE
-
+            holeR = Uom.toPixel(this.getHoleRadius().getValue(feat), this.getUom(), mt.getDpi(), mt.getScaleDenominator(), r);
             hole = new Area(new Arc2D.Double(-holeR, -holeR, 2 * holeR, 2 * holeR, 0, 260, Arc2D.CHORD));
         }
 
@@ -228,7 +227,7 @@ public final class PieChart extends Graphic implements StrokeNode {
             stackedValues[i] = total;
             RealParameter gap = slc.getGap();
             if (gap != null) {
-                gaps[i] = Uom.toPixel(slc.getGap().getValue(feat), this.getUom(), mt.getDpi(), mt.getScaleDenominator(), 0.0);
+                gaps[i] = Uom.toPixel(slc.getGap().getValue(feat), this.getUom(), mt.getDpi(), mt.getScaleDenominator(), r);
             } else {
                 gaps[i] = 0.0;
             }
@@ -249,7 +248,7 @@ public final class PieChart extends Graphic implements StrokeNode {
 
         AffineTransform at = null;
         if (this.getTransform() != null) {
-            at = this.getTransform().getGraphicalAffineTransform(feat, false, mt);
+            at = this.getTransform().getGraphicalAffineTransform(feat, false, mt, r, r);
 
             // Apply the AT to the bbox
             Shape newBounds = at.createTransformedShape(bounds);

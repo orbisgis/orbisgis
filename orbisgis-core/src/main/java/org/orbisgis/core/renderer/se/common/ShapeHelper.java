@@ -36,37 +36,56 @@
  * gwendall.petit _at_ ec-nantes.fr
  */
 
-package org.orbisgis.core.renderer.se.graphic;
+
+
+package org.orbisgis.core.renderer.se.common;
 
 import java.awt.Shape;
-import java.io.IOException;
-import org.gdms.data.feature.Feature;
-import org.orbisgis.core.renderer.persistance.se.MarkGraphicType;
-
-import org.orbisgis.core.renderer.se.parameter.ParameterException;
+import java.awt.geom.PathIterator;
 
 /**
- * This interface allow to fetch a mark graphic for many sources,
  *
  * @author maxence
- * @todo implement in InlineContent(for se InlineContent && GML), OnlineResource
  */
-public interface MarkGraphicSource {
-	/**
-	 *
-	 * @param viewBox
-	 * @param feat
-	 * @param scale
-	 * @param dpi
-	 * @param markIndex
-	 *
-	 * @return
-	 *
-	 * @throws ParameterException
-	 * @throws IOException
-	 */
-    public abstract Shape getShape(ViewBox viewBox, Feature feat, Double scale, Double dpi, int markIndex, String format)
-            throws ParameterException, IOException;
+public class ShapeHelper {
 
-    public void setJAXBSource(MarkGraphicType m);
+
+	/**
+	 * Compute the perimeter of the shape
+	 * @todo test and move
+	 * @param shp
+	 * @return
+	 */
+	public static double getShapePerimeter(Shape shp){
+		PathIterator it = shp.getPathIterator(null);
+
+		double coords[] = new double[6];
+
+		double p = 0.0;
+
+		Double x1 = null;
+		Double y1 = null;
+
+		while (!it.isDone()){
+			it.currentSegment(coords);
+
+			double x2 = coords[0];
+			double y2 = coords[1];
+
+			if (x1 != null && y1 != null){
+				double xx, yy;
+				xx = x2-x1;
+				yy = y2-y1;
+				p += Math.sqrt(xx*xx + yy*yy);
+			}
+
+			x1 = x2;
+			y1 = y2;
+
+			it.next();
+		}
+
+		return p;
+	}
+
 }

@@ -18,7 +18,7 @@ import org.orbisgis.core.renderer.se.parameter.ParameterException;
  * @todo implement in InlineContent
  */
 public interface ExternalGraphicSource {
-    public abstract PlanarImage getPlanarImage(ViewBox viewBox, Feature feat, MapTransform mt) throws IOException, ParameterException;
+    public abstract PlanarImage getPlanarImage(ViewBox viewBox, Feature feat, MapTransform mt, String mimeType) throws IOException, ParameterException;
 
     public void setJAXBSource(ExternalGraphicType e);
 }

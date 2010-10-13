@@ -63,15 +63,23 @@ public class LegendUISymbolizerLevelPanel extends LegendUIAbstractPanel {
 		levels = new ArrayList<RealLiteralInput>();
 
 		int sum = 0;
+		int maxLevel = 1;
 		for (Rule r : rules){
 			sum += r.getCompositeSymbolizer().getSymbolizerList().size();
+			for (Symbolizer s : r.getCompositeSymbolizer().getSymbolizerList()){
+				if (s.getLevel() > maxLevel){
+					maxLevel = (int) s.getLevel();
+				}
+			}
 		}
+
+		int max = Math.max(sum, maxLevel);
 
 		System.out.println ("Bornes: " + ((double)sum));
 		for (Rule r : rules){
 			ArrayList<Symbolizer> ss = r.getCompositeSymbolizer().getSymbolizerList();
 			for (Symbolizer s: ss){
-				levels.add(new RealLiteralInputImpl(s.getName(), (double)s.getLevel(), 0.0, (double)sum, s));
+				levels.add(new RealLiteralInputImpl(s.getName(), (double)s.getLevel(), 0.0, (double)max, s));
 			}
 		}
 

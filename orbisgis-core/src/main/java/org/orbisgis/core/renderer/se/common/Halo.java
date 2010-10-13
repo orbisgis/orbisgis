@@ -93,17 +93,17 @@ public final class Halo implements SymbolizerNode, UomNode, FillNode {
         parent = node;
     }
 
+	public double getHaloRadius(Feature feat, MapTransform mt) throws ParameterException{
+        return Uom.toPixel(radius.getValue(feat), getUom(), mt.getDpi(), mt.getScaleDenominator(), null); // TODO 100%
+	}
+
     public void draw(Graphics2D g2, Shape shp, Feature feat, MapTransform mt) throws ParameterException, IOException {
         if (radius != null && fill != null) {
-            double r = radius.getValue(feat);
+            double r = this.getHaloRadius(feat, mt);
 
             if (r > 0.0) {
-                r = Uom.toPixel(r, getUom(), mt.getDpi(), mt.getScaleDenominator(), 0.0); // TODO  DPI & Scale
-
                 Shape haloShp = shp; // TODO poffset !!
-
                 fill.draw(g2, haloShp, feat, false, mt);
-
                 throw new UnsupportedOperationException("Not supported yet. Need PerpendiularOffset");
             }
         }

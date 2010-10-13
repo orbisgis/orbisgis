@@ -81,24 +81,16 @@ public enum WellKnownName implements MarkGraphicSource {
         }
     }
 
-    /**
-     *
-     * @param viewBox
-     * @param ds
-     * @param fid
-     * @return
-     * @throws ParameterException
-     */
     @Override
-    public Shape getShape(ViewBox viewBox, Feature feat, Double scale, Double dpi) throws ParameterException {
+    public Shape getShape(ViewBox viewBox, Feature feat, Double scale, Double dpi, int markIndex, String mimeType) throws ParameterException {
         double x=10.0, y=10.0; // The size of the shape, [final unit] => [px]
 
         if (feat == null && viewBox != null && viewBox.dependsOnFeature()){
             return null;
         }
 
-        if (viewBox != null) {
-            Dimension box = viewBox.getDimensionInPixel(feat, 1.0, scale, dpi);
+        if (viewBox != null && viewBox.usable()) {
+            Dimension box = viewBox.getDimensionInPixel(feat, MarkGraphic.defaultSize, MarkGraphic.defaultSize, scale, dpi);
             x = box.getWidth();
             y = box.getHeight();
         }

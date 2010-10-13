@@ -12,9 +12,10 @@ public enum Uom {
 	 * Note that converting ground unit to pixel is done by using a constant scale
 	 *
 	 * @param value the value to convert
-	 * @param uom the value base uom
+	 * @param uom unit of measure for value
 	 * @param dpi the current resolution
 	 * @param scale the current scale (for converting ground meters and ground feet to media units)
+	 * @param v100p the value to return when uom is "percent" and value is 100 (%)
 	 * @return
 	 * @throws ParameterException
 	 *
@@ -53,8 +54,10 @@ public enum Uom {
 				return (value * 12 * dpi) / (scale);
 			case PERCENT:
 				if (v100p == null){
-					throw new ParameterException("100% value is invalid");
+					return value;
+					//throw new ParameterException("100% value is invalid");
 				}
+				System.out.println ("Convert " + value + " to percent : " + value + "*" + v100p + "/ 100.0");
 				return value * v100p / 100.0;
 			case PX:
 			default:
