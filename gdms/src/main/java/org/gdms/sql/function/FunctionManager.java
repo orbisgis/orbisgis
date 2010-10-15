@@ -112,6 +112,7 @@ import org.gdms.sql.function.spatial.geometry.operators.ST_GeomUnionArg;
 import org.gdms.sql.function.spatial.geometry.operators.ST_Intersection;
 import org.gdms.sql.function.spatial.geometry.operators.ST_RingBuffer;
 import org.gdms.sql.function.spatial.geometry.operators.ST_SymDifference;
+import org.gdms.sql.function.spatial.geometry.other.ST_MeanSpacing;
 import org.gdms.sql.function.spatial.geometry.polygonize.ST_Polygonize;
 import org.gdms.sql.function.spatial.geometry.predicates.ST_Contains;
 import org.gdms.sql.function.spatial.geometry.predicates.ST_Crosses;
@@ -137,6 +138,7 @@ import org.gdms.sql.function.spatial.geometry.properties.ST_IsRectangle;
 import org.gdms.sql.function.spatial.geometry.properties.ST_IsSimple;
 import org.gdms.sql.function.spatial.geometry.properties.ST_IsValid;
 import org.gdms.sql.function.spatial.geometry.properties.ST_Length;
+import org.gdms.sql.function.spatial.geometry.properties.ST_MaxDiagonal;
 import org.gdms.sql.function.spatial.geometry.properties.ST_NumGeometries;
 import org.gdms.sql.function.spatial.geometry.properties.ST_NumInteriorRing;
 import org.gdms.sql.function.spatial.geometry.properties.ST_NumPoints;
@@ -291,6 +293,7 @@ public class FunctionManager {
 		addFunction(ST_StartPoint.class);
 		addFunction(ST_EndPoint.class);
 		addFunction(ST_PointN.class);
+		addFunction(ST_MeanSpacing.class);
 	}
 
 	public static void addFunctionManagerListener(
