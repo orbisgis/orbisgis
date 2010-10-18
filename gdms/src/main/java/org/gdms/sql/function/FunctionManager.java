@@ -138,7 +138,6 @@ import org.gdms.sql.function.spatial.geometry.properties.ST_IsRectangle;
 import org.gdms.sql.function.spatial.geometry.properties.ST_IsSimple;
 import org.gdms.sql.function.spatial.geometry.properties.ST_IsValid;
 import org.gdms.sql.function.spatial.geometry.properties.ST_Length;
-import org.gdms.sql.function.spatial.geometry.properties.ST_MaxDiagonal;
 import org.gdms.sql.function.spatial.geometry.properties.ST_NumGeometries;
 import org.gdms.sql.function.spatial.geometry.properties.ST_NumInteriorRing;
 import org.gdms.sql.function.spatial.geometry.properties.ST_NumPoints;
