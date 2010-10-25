@@ -33,8 +33,6 @@
  *
  * or contact directly:
  * info _at_ orbisgis.org
- *  
- * 
  */
 package org.gdms.sql.function.math;
 
@@ -68,7 +66,7 @@ public class Random implements Function {
 	}
 
 	public Type getType(Type[] types) {
-		return TypeFactory.createType(types[0].getTypeCode());
+		return TypeFactory.createType(Type.DOUBLE);
 	}
 
 	public Arguments[] getFunctionArguments() {
