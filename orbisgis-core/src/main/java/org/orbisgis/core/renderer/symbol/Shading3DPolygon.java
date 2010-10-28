@@ -8,7 +8,7 @@ import java.awt.Stroke;
 
 import org.gdms.driver.DriverException;
 import org.orbisgis.core.map.MapTransform;
-import org.orbisgis.core.renderer.RenderPermission;
+import org.orbisgis.core.renderer.RenderContext;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
@@ -139,7 +139,7 @@ public class Shading3DPolygon extends AbstractPolygonSymbol implements
 
 	@Override
 	public Envelope draw(Graphics2D g, Geometry geom, MapTransform mt,
-			RenderPermission permission) throws DriverException {
+			RenderContext permission) throws DriverException {
 
 		// LiteShape ls = new LiteShape(geom, at, false);
 		Shape ls = mt.getShapeWriter().toShape(geom);

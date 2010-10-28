@@ -44,7 +44,7 @@ import java.awt.geom.PathIterator;
 
 import org.gdms.driver.DriverException;
 import org.orbisgis.core.map.MapTransform;
-import org.orbisgis.core.renderer.RenderPermission;
+import org.orbisgis.core.renderer.RenderContext;
 
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
@@ -58,7 +58,7 @@ public class HalfCircleLeftPointSymbol extends AbstractHalfCirclePointSymbol {
 
 	@Override
 	public Envelope draw(Graphics2D g, Geometry geom, MapTransform mt,
-			RenderPermission permission) throws DriverException {
+			RenderContext permission) throws DriverException {
 		// LiteShape ls = new LiteShape(geom, at, false);
 		Shape ls = mt.getShapeWriter().toShape(geom);
 		PathIterator pi = ls.getPathIterator(null);
