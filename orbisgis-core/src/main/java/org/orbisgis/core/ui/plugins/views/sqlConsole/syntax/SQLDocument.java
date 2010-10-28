@@ -42,6 +42,7 @@ import java.awt.Color;
 import java.io.ByteArrayInputStream;
 import java.util.HashMap;
 
+import javax.swing.JTextArea;
 import javax.swing.JTextPane;
 import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
@@ -52,7 +53,8 @@ import org.gdms.sql.parser.SQLEngineTokenManager;
 import org.gdms.sql.parser.SimpleCharStream;
 import org.gdms.sql.parser.Token;
 import org.gdms.sql.parser.TokenMgrError;
-import org.orbisgis.core.javaManager.autocompletion.NodeUtils;
+import org.orbisgis.core.ui.components.text.AbstractSyntaxColoringDocument;
+import org.orbisgis.core.ui.plugins.views.beanShellConsole.javaManager.autocompletion.NodeUtils;
 
 public class SQLDocument extends AbstractSyntaxColoringDocument {
 
