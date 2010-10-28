@@ -45,10 +45,10 @@ import com.vividsolutions.jts.geom.Geometry;
  * draw there. The other symbols will know where to draw by asking to this
  * interface.
  * 
- * @author Fernando Gonzalez Cortes
+ * 
  * 
  */
-public interface RenderPermission {
+public interface RenderContext {
 
 	/**
 	 * Return true if the specified area can be drawn

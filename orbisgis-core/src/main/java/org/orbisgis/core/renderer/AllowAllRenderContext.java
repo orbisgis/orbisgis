@@ -3,7 +3,7 @@ package org.orbisgis.core.renderer;
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
 
-public class AllowAllRenderPermission implements RenderPermission {
+public class AllowAllRenderContext implements RenderContext {
 
 	@Override
 	public boolean canDraw(Envelope env) {
