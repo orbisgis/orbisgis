@@ -35,7 +35,6 @@ import org.orbisgis.core.geocognition.mapContext.GeocognitionMapContextFactory;
 import org.orbisgis.core.geocognition.sql.GeocognitionCustomQueryFactory;
 import org.orbisgis.core.geocognition.sql.GeocognitionFunctionFactory;
 import org.orbisgis.core.geocognition.symbology.GeocognitionSymbolFactory;
-import org.orbisgis.core.images.IconLoader;
 import org.orbisgis.core.images.OrbisGISIcon;
 import org.orbisgis.core.layerModel.DefaultMapContext;
 import org.orbisgis.core.layerModel.MapContext;
@@ -128,29 +127,8 @@ public class GeocognitionView extends JPanel implements WorkbenchFrame {
 
 	private JPanel getFilterButtonPanel() {
 		JPanel btnPanel = new JPanel();
-		// TODO (pyf): mettre les filtres sous forme de plugins
-
-		/*
-		 * ExtensionPointManager<IGeocognitionFilter> epm = new
-		 * ExtensionPointManager<IGeocognitionFilter>(
-		 * "org.orbisgis.core.ui.views.geocognition.Filter");
-		 * ArrayList<ItemAttributes<IGeocognitionFilter>> attributes = epm
-		 * .getItemAttributes("/extension/filter");
-		 */
+		// TODO : PUT filter as plugin
 		filterButtons = new ArrayList<FilterButton>();
-		/*
-		 * for (ItemAttributes<IGeocognitionFilter> itemAttributes : attributes)
-		 * { String iconAttribute = itemAttributes.getAttribute("icon"); URL
-		 * iconURL = this.getClass().getResource(iconAttribute); JToggleButton
-		 * btn = new JToggleButton(new ImageIcon(iconURL)); btn.setMargin(new
-		 * Insets(0, 0, 0, 0)); btn.addActionListener(new ActionListener() {
-		 *
-		 * @Override public void actionPerformed(ActionEvent e) { doFilter(); }
-		 *
-		 * }); btnPanel.add(btn); IGeocognitionFilter filter =
-		 * itemAttributes.getInstance("class"); filterButtons.add(new
-		 * FilterButton(filter, btn)); }
-		 */
 
 		JToggleButton btn = new JToggleButton(OrbisGISIcon.MAP);
 		btn.setMargin(new Insets(0, 0, 0, 0));
@@ -265,7 +243,7 @@ public class GeocognitionView extends JPanel implements WorkbenchFrame {
 
 			if (element != null) {
 				EditorManager em = Services.getService(EditorManager.class);
-				em.open(element,new NullProgressMonitor());
+				em.open(element, new NullProgressMonitor());
 			} else {
 				Services.getErrorManager().warning("Cannot find initial map");
 			}
@@ -277,7 +255,7 @@ public class GeocognitionView extends JPanel implements WorkbenchFrame {
 
 	/**
 	 * A simple method to populate the geocognition on the fly
-	 *
+	 * 
 	 * @param geocognition
 	 */
 	private void populateGeoCognitionWithOGCFunctions(Geocognition geocognition) {
