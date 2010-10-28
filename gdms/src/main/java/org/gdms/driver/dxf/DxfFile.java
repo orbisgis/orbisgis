@@ -34,6 +34,8 @@ import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 
 import org.gdms.data.metadata.DefaultMetadata;
+import org.gdms.data.types.Constraint;
+import org.gdms.data.types.GeometryConstraint;
 import org.gdms.data.types.Type;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.generic.GenericObjectDriver;
@@ -89,7 +91,9 @@ public class DxfFile {
 	public static void initializeDXF_SCHEMA() throws DriverException {
 		if (DXF_SCHEMA.getFieldCount() != 0)
 			return;
-		DXF_SCHEMA.addField("GEOMETRY", Type.GEOMETRY);
+		DXF_SCHEMA.addField("GEOMETRY", Type.GEOMETRY,
+				new Constraint[] { new GeometryConstraint(
+						GeometryConstraint.GEOMETRY_COLLECTION) });
 		DXF_SCHEMA.addField("LAYER", Type.STRING);
 		DXF_SCHEMA.addField("LTYPE", Type.STRING);
 		DXF_SCHEMA.addField("ELEVATION", Type.DOUBLE);
@@ -159,8 +163,6 @@ public class DxfFile {
 	public GenericObjectDriver read() {
 		return driver;
 	}
-	
-	
 
 	/*
 	 * public static void write(FeatureCollection features, String[] layerNames,
