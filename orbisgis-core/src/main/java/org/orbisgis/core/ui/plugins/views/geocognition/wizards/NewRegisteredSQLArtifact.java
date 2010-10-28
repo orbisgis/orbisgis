@@ -65,7 +65,6 @@ import org.orbisgis.core.geocognition.sql.GeocognitionFunctionFactory;
 import org.orbisgis.core.images.IconLoader;
 import org.orbisgis.core.images.OrbisGISIcon;
 import org.orbisgis.core.sif.UIFactory;
-import org.orbisgis.core.ui.components.sif.ChoosePanel;
 import org.orbisgis.core.ui.components.sif.FunctionPanel;
 import org.orbisgis.core.ui.plugins.views.geocognition.wizard.ElementRenderer;
 import org.orbisgis.core.ui.plugins.views.geocognition.wizard.INewGeocognitionElement;
