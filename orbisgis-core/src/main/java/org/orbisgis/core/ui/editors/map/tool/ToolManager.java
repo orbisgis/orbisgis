@@ -109,7 +109,7 @@ import org.orbisgis.core.layerModel.MapContextListener;
 import org.orbisgis.core.layerModel.SelectionEvent;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.map.TransformListener;
-import org.orbisgis.core.renderer.AllowAllRenderPermission;
+import org.orbisgis.core.renderer.AllowAllRenderContext;
 import org.orbisgis.core.renderer.symbol.Symbol;
 import org.orbisgis.core.renderer.symbol.SymbolFactory;
 import org.orbisgis.core.ui.editors.map.tools.PanTool;
@@ -460,7 +460,7 @@ public class ToolManager extends MouseAdapter implements MouseMotionListener,
 				Graphics2D graphics = bi.createGraphics();
 
 				symbol.draw(graphics, geometry, mapTransform,
-						new AllowAllRenderPermission());
+						new AllowAllRenderContext());
 
 				g2.drawImage(bi, 0, 0, null);
 			} catch (DriverException e) {
