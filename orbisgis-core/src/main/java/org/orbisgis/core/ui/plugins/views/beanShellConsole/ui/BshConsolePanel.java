@@ -279,6 +279,7 @@ public class BshConsolePanel extends JPanel {
 
 	public void setText(String text) {
 		scriptPanel.setText(text);
+		setButtonsStatus();
 	}
 
 	public void insertString(String string) throws BadLocationException {
