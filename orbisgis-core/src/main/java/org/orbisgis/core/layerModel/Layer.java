@@ -93,7 +93,7 @@ public class Layer extends GdmsLayer {
 
 		final Random r = new Random();
 		final Color cFill = new Color(r.nextInt(256), r.nextInt(256), r
-				.nextInt(256),255-40);
+				.nextInt(256), 255 - 40);
 		final Color cOutline = cFill.darker();
 
 		UniqueSymbolLegend legend = LegendFactory.createUniqueSymbolLegend();
@@ -118,6 +118,9 @@ public class Layer extends GdmsLayer {
 			case GeometryConstraint.POLYGON:
 			case GeometryConstraint.MULTI_POLYGON:
 				legend.setSymbol(polSym);
+				break;
+			case GeometryConstraint.GEOMETRY_COLLECTION:
+				legend.setSymbol(composite);
 				break;
 			}
 		}
@@ -434,7 +437,8 @@ public class Layer extends GdmsLayer {
 				fieldLegends.add(legend);
 			}
 			try {
-				setLegend(fieldName, fieldLegends.toArray(new Legend[fieldLegends.size()]));
+				setLegend(fieldName, fieldLegends
+						.toArray(new Legend[fieldLegends.size()]));
 			} catch (DriverException e) {
 				throw new LayerException("Cannot restore legends", e);
 			}
