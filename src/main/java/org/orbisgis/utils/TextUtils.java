@@ -2,6 +2,15 @@ package org.orbisgis.utils;
 
 public class TextUtils {
 
+	  /**
+     * Returns the platform-specific line separator, or "\n" if it is not defined for some reason.
+     * 
+     * @return the platform-specific line separator.
+     */
+    public static String getEolStr() {
+   	 return System.getProperty("line.separator", "\n");
+    }
+    
 	/**
 	 * Convert a string to HTML. From S. Bayer.
 	 * 
