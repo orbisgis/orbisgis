@@ -54,15 +54,15 @@ import javax.swing.event.DocumentListener;
 import javax.swing.text.BadLocationException;
 
 import org.orbisgis.core.Services;
-import org.orbisgis.core.ui.plugins.views.sqlConsole.ui.ConsolePanel;
+import org.orbisgis.core.ui.plugins.views.sqlConsole.ui.SQLConsolePanel;
 
 public class ActionsListener implements ActionListener, DocumentListener {
 
-	private ConsolePanel consolePanel;
+	private SQLConsolePanel consolePanel;
 
 	private ConsoleListener listener;
 
-	public ActionsListener(ConsoleListener listener, ConsolePanel consolePanel) {
+	public ActionsListener(ConsoleListener listener, SQLConsolePanel consolePanel) {
 		this.consolePanel = consolePanel;
 		this.listener = listener;
 	}
@@ -70,15 +70,15 @@ public class ActionsListener implements ActionListener, DocumentListener {
 	public void actionPerformed(ActionEvent e) {
 		switch (new Integer(e.getActionCommand())) {
 		case ConsoleAction.EXECUTE:
-			listener.execute(consolePanel.getText());
+			listener.execute(consolePanel.getScriptPanel().getSQLToBeExecuted());
 			break;
 		case ConsoleAction.CLEAR:
-			if (consolePanel.getText().trim().length() > 0) {
+			if (consolePanel.getScriptPanel().getText().trim().length() > 0) {
 				int answer = JOptionPane.showConfirmDialog(null,
 						"Do you want to clear the contents of the console?",
 						"Clear script", JOptionPane.YES_NO_OPTION);
 				if (answer == JOptionPane.YES_OPTION) {
-					consolePanel.setText("");
+					consolePanel.getScriptPanel().setText("");
 				}
 			}
 			break;
@@ -97,11 +97,11 @@ public class ActionsListener implements ActionListener, DocumentListener {
 					}
 
 					if (answer == JOptionPane.YES_OPTION) {
-						consolePanel.setText("");
+						consolePanel.getScriptPanel().setText("");
 					}
 
 					if (answer != JOptionPane.CANCEL_OPTION) {
-						consolePanel.insertString(script);
+						consolePanel.getScriptPanel().insertString(script);
 					}
 				}
 			} catch (BadLocationException e1) {
