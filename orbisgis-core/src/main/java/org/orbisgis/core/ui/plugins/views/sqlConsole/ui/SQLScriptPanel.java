@@ -64,18 +64,17 @@ import javax.swing.text.JTextComponent;
 import javax.swing.text.StyledDocument;
 
 import org.orbisgis.core.Services;
+import org.orbisgis.core.ui.components.jtextComponent.BracketMatcher;
+import org.orbisgis.core.ui.components.jtextComponent.RedZigZagPainter;
+import org.orbisgis.core.ui.components.jtextComponent.TextLineNumber;
 import org.orbisgis.core.ui.components.text.UndoRedoInstaller;
 import org.orbisgis.core.ui.editorViews.toc.TransferableLayer;
 import org.orbisgis.core.ui.plugins.views.geocatalog.TransferableSource;
 import org.orbisgis.core.ui.plugins.views.sqlConsole.actions.ActionsListener;
 import org.orbisgis.core.ui.plugins.views.sqlConsole.actions.ConsoleListener;
-import org.orbisgis.core.ui.plugins.views.sqlConsole.syntax.BracketMatcher;
-import org.orbisgis.core.ui.plugins.views.sqlConsole.syntax.JavaDocument;
-import org.orbisgis.core.ui.plugins.views.sqlConsole.syntax.RedZigZagPainter;
 import org.orbisgis.core.ui.plugins.views.sqlConsole.syntax.SQLDocument;
-import org.orbisgis.core.ui.plugins.views.sqlConsole.syntax.TextLineNumber;
 
-public class ScriptPanel extends JScrollPane implements DropTargetListener {
+public class SQLScriptPanel extends JScrollPane implements DropTargetListener {
 
 	private ActionsListener actionAndKeyListener;
 
@@ -86,24 +85,20 @@ public class ScriptPanel extends JScrollPane implements DropTargetListener {
 
 	private ConsoleListener listener;
 
-	public ScriptPanel(final ActionsListener actionAndKeyListener,
-			ConsoleListener listener, boolean sql) {
+	public SQLScriptPanel(final ActionsListener actionAndKeyListener,
+			ConsoleListener listener) {
 		this.actionAndKeyListener = actionAndKeyListener;
 		this.listener = listener;
-		setViewportView(getJTextPane(sql));
+		setViewportView(getJTextPane());
 		this.getVerticalScrollBar().setBlockIncrement(10);
 		this.getVerticalScrollBar().setUnitIncrement(5);
 	}
 
-	public JTextPane getJTextPane(boolean sql) {
+	public JTextPane getJTextPane() {
 		if (jTextPane == null) {
 			jTextPane = new JTextPane();
 			jTextPane.setCaretPosition(0);
-			if (sql) {
-				document = new SQLDocument(jTextPane);
-			} else {
-				document = new JavaDocument(jTextPane);
-			}
+			document = new SQLDocument(jTextPane);
 			jTextPane.setDocument(document);
 			jTextPane.setDropTarget(new DropTarget(this, this));
 			jTextPane.getDocument().addDocumentListener(actionAndKeyListener);
@@ -180,11 +175,166 @@ public class ScriptPanel extends JScrollPane implements DropTargetListener {
 	}
 
 	public void setText(String text) {
-		jTextPane.setText(text);
+		setText(text, true);
 	}
+
+	/**
+	 * Replace the contents of the SQL entry area with the passed SQL script and
+	 * specify whether to select it.
+	 * 
+	 * @param sqlScript
+	 *            The script to be placed in the SQL entry area..
+	 * @param select
+	 *            If <TT>true</TT> then select the passed script in the sql
+	 *            entry area.
+	 */
+	public void setText(String sqlScript, boolean select) {
+		jTextPane.setText(sqlScript);
+		if (select) {
+			setSelectionEnd(getText().length());
+			setSelectionStart(0);
+		}
+		jTextPane.setCaretPosition(0);
+	}
+
+	/**
+	 * 
+	 */
+	public int getSelectionStart() {
+		return jTextPane.getSelectionStart();
+	}
+
+	/**
+	 * 
+	 */
+	public void setSelectionStart(int pos) {
+		jTextPane.setSelectionStart(pos);
+	}
+
+	public int getSelectionEnd() {
+		return jTextPane.getSelectionEnd();
+	}
+
+	/**
+	 * 
+	 */
+	public void setSelectionEnd(int pos) {
+		jTextPane.setSelectionEnd(pos);
+	}
+
+	/**
+	 * Return the entire contents of the SQL entry area.
+	 * 
+	 * @return the entire contents of the SQL entry area.
+	 */
 
 	public String getText() {
 		return jTextPane.getText();
+	}
+
+	/**
+	 * Return the selected contents of the SQL entry area.
+	 * 
+	 * @return the selected contents of the SQL entry area.
+	 */
+	public String getSelectedText() {
+		return jTextPane.getSelectedText();
+	}
+
+	public String getSQLToBeExecuted() {
+		String sql = getSelectedText();
+		if (sql == null || sql.trim().length() == 0) {
+			sql = getText();
+			int[] bounds = getBoundsOfSQLToBeExecuted();
+
+			if (bounds[0] >= bounds[1]) {
+				sql = "";
+			} else {
+				sql = sql.substring(bounds[0], bounds[1]).trim();
+			}
+		}
+		return sql != null ? sql : "";
+	}
+
+	public int[] getBoundsOfSQLToBeExecuted() {
+		int[] bounds = new int[2];
+		bounds[0] = getSelectionStart();
+		bounds[1] = getSelectionEnd();
+
+		if (bounds[0] == bounds[1]) {
+			bounds = getSqlBoundsBySeparatorRule(jTextPane.getCaretPosition());
+		}
+
+		return bounds;
+	}
+
+	private int[] getSqlBoundsBySeparatorRule(int iCaretPos) {
+		int[] bounds = new int[2];
+
+		String sql = getText();
+
+		bounds[0] = lastIndexOfStateSep(sql, iCaretPos);
+		bounds[1] = indexOfStateSep(sql, iCaretPos);
+
+		return bounds;
+
+	}
+
+	private static int indexOfStateSep(String sql, int pos) {
+		int ix = pos;
+
+		int newLinteCount = 0;
+		for (;;) {
+			if (sql.length() == ix) {
+				return sql.length();
+			}
+
+			if (false == Character.isWhitespace(sql.charAt(ix))) {
+				newLinteCount = 0;
+			}
+
+			if ('\n' == sql.charAt(ix)) {
+				++newLinteCount;
+				if (2 == newLinteCount) {
+					return ix - 1;
+				}
+			}
+
+			++ix;
+		}
+	}
+
+	private static int lastIndexOfStateSep(String sql, int pos) {
+		int ix = pos;
+
+		int newLinteCount = 0;
+		for (;;) {
+
+			if (ix == sql.length()) {
+				if (ix == 0) {
+					return ix;
+				} else {
+					ix--;
+				}
+			}
+
+			if (false == Character.isWhitespace(sql.charAt(ix))) {
+				newLinteCount = 0;
+			}
+
+			if ('\n' == sql.charAt(ix)) {
+				++newLinteCount;
+				if (2 == newLinteCount) {
+					return ix + newLinteCount;
+				}
+			}
+
+			if (0 == ix) {
+				return 0 + newLinteCount;
+			}
+
+			--ix;
+		}
 	}
 
 	public void insertString(String string) throws BadLocationException {
@@ -206,4 +356,9 @@ public class ScriptPanel extends JScrollPane implements DropTargetListener {
 		}
 
 	}
+
+	public void replaceSelection(String text) {
+		jTextPane.replaceSelection(text);
+	}
+
 }

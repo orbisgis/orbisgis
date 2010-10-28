@@ -50,19 +50,18 @@ import javax.swing.event.DocumentListener;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
 import javax.swing.text.Highlighter;
-import javax.swing.text.JTextComponent;
 import javax.swing.text.Highlighter.HighlightPainter;
 
 import org.orbisgis.core.sif.CRFlowLayout;
+import org.orbisgis.core.ui.components.jtextComponent.SearchWord;
+import org.orbisgis.core.ui.components.jtextComponent.WordHighlightPainter;
 import org.orbisgis.core.ui.components.text.JTextFilter;
 import org.orbisgis.core.ui.plugins.views.sqlConsole.actions.ActionsListener;
 import org.orbisgis.core.ui.plugins.views.sqlConsole.actions.ConsoleAction;
 import org.orbisgis.core.ui.plugins.views.sqlConsole.actions.ConsoleListener;
-import org.orbisgis.core.ui.plugins.views.sqlConsole.syntax.SearchWord;
-import org.orbisgis.core.ui.plugins.views.sqlConsole.syntax.WordHighlightPainter;
 import org.orbisgis.core.ui.plugins.views.sqlConsole.util.CodeError;
 
-public class ConsolePanel extends JPanel {
+public class SQLConsolePanel extends JPanel {
 	private JButton btExecute = null;
 	private JButton btClear = null;
 	private JButton btOpen = null;
@@ -71,7 +70,9 @@ public class ConsolePanel extends JPanel {
 	private ActionsListener actionAndKeyListener;
 	private JPanel centerPanel;
 
-	private ScriptPanel scriptPanel;
+	private SQLScriptPanel scriptPanel;
+	
+
 	private JTextFilter searchTextField;
 	private JToolBar toolBar;
 	private JLabel statusMessage;
@@ -83,13 +84,13 @@ public class ConsolePanel extends JPanel {
 	private JPanel pnlTextFilter;
 
 	/**
-	 * Creates a console for sql or java.
+	 * Creates a console for sql.
 	 */
-	public ConsolePanel(boolean sql, ConsoleListener listener) {
+	public SQLConsolePanel(ConsoleListener listener) {
 		actionAndKeyListener = new ActionsListener(listener, this);
 
 		setLayout(new BorderLayout());
-		add(getCenterPanel(sql, listener), BorderLayout.CENTER);
+		add(getCenterPanel(listener), BorderLayout.CENTER);
 		if (listener.showControlButtons()) {
 			add(getButtonToolBar(), BorderLayout.NORTH);
 		}
@@ -117,11 +118,11 @@ public class ConsolePanel extends JPanel {
 		return northPanel;
 	}
 
-	private JPanel getCenterPanel(boolean sql, ConsoleListener listener) {
+	private JPanel getCenterPanel(ConsoleListener listener) {
 		if (centerPanel == null) {
 			centerPanel = new JPanel();
 			centerPanel.setLayout(new BorderLayout());
-			scriptPanel = new ScriptPanel(actionAndKeyListener, listener, sql);
+			scriptPanel = new SQLScriptPanel(actionAndKeyListener, listener);
 			centerPanel.add(scriptPanel, BorderLayout.CENTER);
 		}
 		return centerPanel;
@@ -276,17 +277,10 @@ public class ConsolePanel extends JPanel {
 		setBtSave();
 	}
 
-	public void setText(String text) {
-		scriptPanel.setText(text);
+	public SQLScriptPanel getScriptPanel() {
+		return scriptPanel;
 	}
 
-	public void insertString(String string) throws BadLocationException {
-		scriptPanel.insertString(string);
-	}
-
-	public JTextComponent getTextComponent() {
-		return scriptPanel.getTextComponent();
-	}
 
 	public void updateCodeError(CodeError codeError) {
 		scriptPanel.updateCodeError(codeError.getStart(), codeError.getEnd());
