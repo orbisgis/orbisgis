@@ -48,8 +48,8 @@ import org.gdms.driver.DriverException;
 import org.gdms.sql.strategies.IncompatibleTypesException;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.map.MapTransform;
-import org.orbisgis.core.renderer.AllowAllRenderPermission;
-import org.orbisgis.core.renderer.RenderPermission;
+import org.orbisgis.core.renderer.AllowAllRenderContext;
+import org.orbisgis.core.renderer.RenderContext;
 import org.orbisgis.core.renderer.classification.ClassificationMethodException;
 import org.orbisgis.core.renderer.classification.ProportionalMethod;
 import org.orbisgis.core.renderer.legend.Legend;
@@ -300,7 +300,7 @@ public class DefaultProportionalLineLegend extends AbstractCartoLegend
 					.createLineString(new Coordinate[] { coordStartLine,
 							coordEndLine });
 
-			RenderPermission renderPermission = new AllowAllRenderPermission();
+			RenderContext renderPermission = new AllowAllRenderContext();
 			double realMaxSize = getSize(maxValue, 1);
 			big.draw((Graphics2D) g, geom, new MapTransform(),
 					renderPermission);
@@ -324,7 +324,7 @@ public class DefaultProportionalLineLegend extends AbstractCartoLegend
 
 	private void drawLine(Graphics2D g, int bigSize, double smallSize,
 			int textOffset, int lineStartX, int lineEndX,
-			RenderPermission renderPermission, String text)
+			RenderContext renderPermission, String text)
 			throws DriverException {
 		StandardLineSymbol small = (StandardLineSymbol) symbol.cloneSymbol();
 		small.setLineWidth((int) smallSize);
