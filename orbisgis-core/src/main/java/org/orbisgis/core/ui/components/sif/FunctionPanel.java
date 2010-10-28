@@ -52,6 +52,8 @@ import javax.swing.ListSelectionModel;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
+import org.gdms.sql.customQuery.QueryManager;
+import org.gdms.sql.function.FunctionManager;
 import org.orbisgis.core.sif.AbstractUIPanel;
 import org.orbisgis.core.sif.CRFlowLayout;
 import org.orbisgis.core.sif.CarriageReturn;
@@ -72,6 +74,11 @@ public class FunctionPanel extends AbstractUIPanel {
 	private JPanel searchPanel;
 	private JTextFilter txtFilter;
 	private JLabel functionLabelCount;
+	private static int functionsCount;
+	static {
+		functionsCount = FunctionManager.getFunctionNames().length
+				+ QueryManager.getQueryNames().length;
+	}
 
 	public FunctionPanel(String title, String[] names, Object[] ids) {
 		this.title = title;
@@ -131,14 +138,15 @@ public class FunctionPanel extends AbstractUIPanel {
 		pnlButtons.setVisible(multiple);
 		pane.add(pnlButtons, BorderLayout.EAST);
 		functionLabelCount = new JLabel(I18N
-				.getText(Names.FUNCTION_PANEL_NUMBER + " : " + names.length));
+				.getText(Names.FUNCTION_PANEL_NUMBER + " : " + names.length)
+				+ " on " + functionsCount + " functions.");
 		pane.add(functionLabelCount, BorderLayout.SOUTH);
+
 	}
 
 	public int getNbAvailableFunctions() {
 		return functionPanelFilter.ids.length;
 	}
-	
 
 	public JList getJListFunction() {
 		if (null == lst) {
