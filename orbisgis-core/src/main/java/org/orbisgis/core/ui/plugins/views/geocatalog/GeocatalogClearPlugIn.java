@@ -51,12 +51,12 @@ import javax.swing.JOptionPane;
 import org.gdms.source.SourceManager;
 import org.orbisgis.core.DataManager;
 import org.orbisgis.core.Services;
-import org.orbisgis.core.images.OrbisGISIcon;
 import org.orbisgis.core.ui.pluginSystem.AbstractPlugIn;
 import org.orbisgis.core.ui.pluginSystem.PlugInContext;
 import org.orbisgis.core.ui.pluginSystem.workbench.Names;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchContext;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchFrame;
+import org.orbisgis.core.ui.preferences.lookandfeel.OrbisGISIcon;
 
 public class GeocatalogClearPlugIn extends AbstractPlugIn {
 
@@ -91,6 +91,7 @@ public class GeocatalogClearPlugIn extends AbstractPlugIn {
 		if (option == JOptionPane.YES_OPTION) {
 			try {
 				sourceManager.removeAll();
+				sourceManager.loadSystemTables();
 			} catch (IOException e) {
 				Services.getErrorManager().error("Cannot clear catalog", e);
 			}

@@ -48,7 +48,6 @@ import org.gdms.source.SourceManager;
 import org.orbisgis.core.DataManager;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.background.BackgroundManager;
-import org.orbisgis.core.images.OrbisGISIcon;
 import org.orbisgis.core.ui.pluginSystem.AbstractPlugIn;
 import org.orbisgis.core.ui.pluginSystem.PlugInContext;
 import org.orbisgis.core.ui.pluginSystem.PlugInContext.SelectionAvailability;
@@ -57,6 +56,7 @@ import org.orbisgis.core.ui.pluginSystem.workbench.Names;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchContext;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchFrame;
 import org.orbisgis.core.ui.plugins.views.geocognition.OpenGeocognitionElementJob;
+import org.orbisgis.core.ui.preferences.lookandfeel.OrbisGISIcon;
 
 public class GeocatalogShowTablePlugIn extends AbstractPlugIn {
 
@@ -64,10 +64,10 @@ public class GeocatalogShowTablePlugIn extends AbstractPlugIn {
 		DataManager dm = Services.getService(DataManager.class);
 		String[] res = getPlugInContext().getSelectedSources();
 		if (res.length == 0) {
-			execute(dm.getSourceManager(), null);
+			openTable(null);
 		} else {
 			for (String resource : res) {
-				execute(dm.getSourceManager(), resource);
+				openTable(resource);
 			}
 		}
 		return true;
@@ -84,7 +84,7 @@ public class GeocatalogShowTablePlugIn extends AbstractPlugIn {
 
 	}
 
-	public void execute(SourceManager sourceManager, String currentNode) {
+	public void openTable(String currentNode) {
 		BackgroundManager bm = Services.getService(BackgroundManager.class);
 		bm.backgroundOperation(new OpenGeocognitionElementJob(
 				new EditableSource(currentNode)));

@@ -68,6 +68,8 @@ public class EditableSource extends AbstractTableEditableElement implements
 
 	private NameChangeSourceListener listener = new NameChangeSourceListener();
 
+	private boolean isSystemTable;
+
 	public EditableSource(String sourceName) {
 		this.sourceName = sourceName;
 	}
@@ -101,6 +103,8 @@ public class EditableSource extends AbstractTableEditableElement implements
 			DataManager dataManager = Services.getService(DataManager.class);
 			if (ds == null) {
 				DataSourceFactory dsf = dataManager.getDataSourceFactory();
+				isSystemTable = dsf.getSourceManager().getSource(sourceName)
+						.isSystemTableSource();
 				ds = dsf.getDataSource(sourceName);
 			}
 			ds.open();
@@ -140,6 +144,9 @@ public class EditableSource extends AbstractTableEditableElement implements
 	}
 
 	public boolean isEditable() {
+		if (isSystemTable) {
+			return false;
+		}
 		return ds.isEditable();
 	}
 

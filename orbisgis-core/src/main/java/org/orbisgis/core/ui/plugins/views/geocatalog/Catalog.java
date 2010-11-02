@@ -89,7 +89,6 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
 import org.gdms.source.SourceManager;
-import org.orbisgis.core.images.OrbisGISIcon;
 import org.orbisgis.core.sif.CRFlowLayout;
 import org.orbisgis.core.sif.UIFactory;
 import org.orbisgis.core.ui.components.jlist.OGList;
@@ -106,6 +105,7 @@ import org.orbisgis.core.ui.plugins.views.geocatalog.filters.IFilter;
 import org.orbisgis.core.ui.plugins.views.geocatalog.filters.Raster;
 import org.orbisgis.core.ui.plugins.views.geocatalog.filters.Vectorial;
 import org.orbisgis.core.ui.plugins.views.geocatalog.filters.WMS;
+import org.orbisgis.core.ui.preferences.lookandfeel.OrbisGISIcon;
 import org.orbisgis.utils.CollectionUtils;
 
 public class Catalog extends JPanel implements DragGestureListener,

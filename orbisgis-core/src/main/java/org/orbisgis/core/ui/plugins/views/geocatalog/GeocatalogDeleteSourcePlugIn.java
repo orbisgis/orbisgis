@@ -47,14 +47,12 @@ package org.orbisgis.core.ui.plugins.views.geocatalog;
 import org.gdms.source.SourceManager;
 import org.orbisgis.core.DataManager;
 import org.orbisgis.core.Services;
-import org.orbisgis.core.images.OrbisGISIcon;
 import org.orbisgis.core.ui.pluginSystem.AbstractPlugIn;
 import org.orbisgis.core.ui.pluginSystem.PlugInContext;
-import org.orbisgis.core.ui.pluginSystem.PlugInContext.SelectionAvailability;
-import org.orbisgis.core.ui.pluginSystem.PlugInContext.SourceAvailability;
 import org.orbisgis.core.ui.pluginSystem.workbench.Names;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchContext;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchFrame;
+import org.orbisgis.core.ui.preferences.lookandfeel.OrbisGISIcon;
 
 public class GeocatalogDeleteSourcePlugIn extends AbstractPlugIn {
 
@@ -62,7 +60,8 @@ public class GeocatalogDeleteSourcePlugIn extends AbstractPlugIn {
 		DataManager dm = Services.getService(DataManager.class);
 		String[] res = getPlugInContext().getSelectedSources();
 		for (String resource : res) {
-			execute(dm.getSourceManager(), resource);		}
+			execute(dm.getSourceManager(), resource);
+		}
 
 		return true;
 	}
@@ -95,6 +94,13 @@ public class GeocatalogDeleteSourcePlugIn extends AbstractPlugIn {
 				.getGeocatalog().getSelectedSources();
 		boolean acceptsAllSources = false;
 		if (res.length > 0) {
+			DataManager dm = Services.getService(DataManager.class);
+			SourceManager sourceManager = dm.getSourceManager();
+			for (int i = 0; i < res.length; i++) {
+				if (sourceManager.getSource(res[i]).isSystemTableSource()) {
+					return false;
+				}
+			}
 			acceptsAllSources = true;
 		}
 
