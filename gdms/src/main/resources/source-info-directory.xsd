@@ -53,6 +53,16 @@
 	</xs:complexType>
 
 	<xs:element name="file-definition" type="file-definition-type"/>
+	
+	<xs:complexType name="system-definition-type">
+		<xs:complexContent>
+			<xs:extension base="definition-type">
+				<xs:attribute name="path" type="xs:string" use="required"/>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+
+	<xs:element name="system-definition" type="system-definition-type"/>
 
 	<xs:complexType name="object-definition-type">
 		<xs:complexContent>
@@ -103,4 +113,5 @@
 	</xs:complexType>
 
 	<xs:element name="wms-definition" type="wms-definition-type"/>
+	
 </xs:schema>
