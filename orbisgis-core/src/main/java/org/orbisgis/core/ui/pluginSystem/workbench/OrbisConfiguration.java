@@ -45,7 +45,6 @@ import javax.swing.event.MenuEvent;
 import javax.swing.event.MenuListener;
 
 import org.orbisgis.core.Services;
-import org.orbisgis.core.images.OrbisGISIcon;
 import org.orbisgis.core.ui.editors.map.tool.Automaton;
 import org.orbisgis.core.ui.editors.map.tools.CompassTool;
 import org.orbisgis.core.ui.editors.map.tools.EditionSelectionTool;
@@ -147,6 +146,7 @@ import org.orbisgis.core.ui.plugins.views.geocognition.OpenGeocognitionPlugIn;
 import org.orbisgis.core.ui.plugins.views.geocognition.RemoveGeocognitionPlugIn;
 import org.orbisgis.core.ui.plugins.workspace.ChangeWorkspacePlugIn;
 import org.orbisgis.core.ui.plugins.workspace.SaveWorkspacePlugIn;
+import org.orbisgis.core.ui.preferences.lookandfeel.OrbisGISIcon;
 import org.orbisgis.core.ui.windows.mainFrame.OrbisGISFrame;
 
 public class OrbisConfiguration implements Setup {

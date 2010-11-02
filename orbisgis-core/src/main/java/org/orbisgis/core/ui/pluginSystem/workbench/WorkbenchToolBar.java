@@ -62,7 +62,6 @@ import javax.swing.JToggleButton;
 import javax.swing.JToolBar;
 
 import org.orbisgis.core.Services;
-import org.orbisgis.core.images.IconLoader;
 import org.orbisgis.core.ui.components.button.DropDownButton;
 import org.orbisgis.core.ui.editor.IEditor;
 import org.orbisgis.core.ui.editors.map.tool.Automaton;

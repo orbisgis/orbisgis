@@ -41,13 +41,13 @@ package org.orbisgis.core.ui.plugins.views.geomark;
 import javax.swing.JMenuItem;
 
 import org.orbisgis.core.PersistenceException;
-import org.orbisgis.core.images.OrbisGISIcon;
 import org.orbisgis.core.layerModel.MapContext;
 import org.orbisgis.core.ui.editor.IEditor;
 import org.orbisgis.core.ui.pluginSystem.PlugInContext;
 import org.orbisgis.core.ui.pluginSystem.ViewPlugIn;
 import org.orbisgis.core.ui.pluginSystem.workbench.Names;
 import org.orbisgis.core.ui.plugins.views.MapEditorPlugIn;
+import org.orbisgis.core.ui.preferences.lookandfeel.OrbisGISIcon;
 
 public class GeomarkViewPlugIn extends ViewPlugIn {
 

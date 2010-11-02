@@ -71,11 +71,11 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
 import org.orbisgis.core.Services;
-import org.orbisgis.core.images.OrbisGISIcon;
 import org.orbisgis.core.layerModel.MapContext;
 import org.orbisgis.core.ui.editor.IEditor;
 import org.orbisgis.core.ui.editors.map.MapContextManager;
 import org.orbisgis.core.ui.plugins.views.MapEditorPlugIn;
+import org.orbisgis.core.ui.preferences.lookandfeel.OrbisGISIcon;
 import org.orbisgis.core.workspace.DefaultWorkspace;
 import org.orbisgis.core.workspace.Workspace;
 

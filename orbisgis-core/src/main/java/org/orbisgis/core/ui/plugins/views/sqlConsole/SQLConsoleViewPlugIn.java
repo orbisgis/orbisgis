@@ -73,7 +73,6 @@ import org.orbisgis.core.Services;
 import org.orbisgis.core.background.BackgroundJob;
 import org.orbisgis.core.background.BackgroundManager;
 import org.orbisgis.core.geocognition.GeocognitionElement;
-import org.orbisgis.core.images.OrbisGISIcon;
 import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.layerModel.LayerException;
 import org.orbisgis.core.layerModel.MapContext;
@@ -92,6 +91,7 @@ import org.orbisgis.core.ui.plugins.views.sqlConsole.codereformat.CodeReformator
 import org.orbisgis.core.ui.plugins.views.sqlConsole.codereformat.CommentSpec;
 import org.orbisgis.core.ui.plugins.views.sqlConsole.ui.SQLConsolePanel;
 import org.orbisgis.core.ui.plugins.views.sqlConsole.util.CodeErrors;
+import org.orbisgis.core.ui.preferences.lookandfeel.OrbisGISIcon;
 import org.orbisgis.progress.IProgressMonitor;
 
 public class SQLConsoleViewPlugIn extends ViewPlugIn {
