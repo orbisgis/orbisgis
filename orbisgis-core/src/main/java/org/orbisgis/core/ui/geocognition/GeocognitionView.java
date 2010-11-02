@@ -35,7 +35,6 @@ import org.orbisgis.core.geocognition.mapContext.GeocognitionMapContextFactory;
 import org.orbisgis.core.geocognition.sql.GeocognitionCustomQueryFactory;
 import org.orbisgis.core.geocognition.sql.GeocognitionFunctionFactory;
 import org.orbisgis.core.geocognition.symbology.GeocognitionSymbolFactory;
-import org.orbisgis.core.images.OrbisGISIcon;
 import org.orbisgis.core.layerModel.DefaultMapContext;
 import org.orbisgis.core.layerModel.MapContext;
 import org.orbisgis.core.sif.CRFlowLayout;
@@ -54,6 +53,7 @@ import org.orbisgis.core.ui.plugins.views.geocognition.wizards.NewFolder;
 import org.orbisgis.core.ui.plugins.views.geocognition.wizards.NewMap;
 import org.orbisgis.core.ui.plugins.views.geocognition.wizards.NewRegisteredSQLArtifact;
 import org.orbisgis.core.ui.plugins.views.geocognition.wizards.NewSymbol;
+import org.orbisgis.core.ui.preferences.lookandfeel.OrbisGISIcon;
 import org.orbisgis.core.workspace.Workspace;
 import org.orbisgis.progress.NullProgressMonitor;
 
