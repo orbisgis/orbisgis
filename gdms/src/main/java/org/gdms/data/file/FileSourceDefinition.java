@@ -55,8 +55,8 @@ import org.orbisgis.utils.I18N;
 
 /**
  * Definition of file sources
- *
- * @author Fernando Gonzalez Cortes
+ * 
+ * 
  */
 public class FileSourceDefinition extends AbstractDataSourceDefinition {
 	public File file;
@@ -72,7 +72,8 @@ public class FileSourceDefinition extends AbstractDataSourceDefinition {
 	public DataSource createDataSource(String tableName, IProgressMonitor pm)
 			throws DataSourceCreationException {
 		if (!file.exists()) {
-			throw new DataSourceCreationException(file + " " + I18N.getText("gdms.datasource.error.noexits"));
+			throw new DataSourceCreationException(file + " "
+					+ I18N.getText("gdms.datasource.error.noexits"));
 		}
 		((ReadOnlyDriver) getDriver())
 				.setDataSourceFactory(getDataSourceFactory());
@@ -91,7 +92,8 @@ public class FileSourceDefinition extends AbstractDataSourceDefinition {
 		return file;
 	}
 
-	public void createDataSource(DataSource contents, IProgressMonitor pm) throws DriverException {
+	public void createDataSource(DataSource contents, IProgressMonitor pm)
+			throws DriverException {
 		FileReadWriteDriver d = (FileReadWriteDriver) getDriver();
 		d.setDataSourceFactory(getDataSourceFactory());
 		contents.open();
