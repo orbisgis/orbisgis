@@ -52,7 +52,6 @@ import javax.swing.text.JTextComponent;
 
 import org.orbisgis.core.DataManager;
 import org.orbisgis.core.Services;
-import org.orbisgis.core.images.OrbisGISIcon;
 import org.orbisgis.core.layerModel.MapContext;
 import org.orbisgis.core.sif.OpenFilePanel;
 import org.orbisgis.core.sif.SaveFilePanel;
@@ -65,6 +64,7 @@ import org.orbisgis.core.ui.plugins.views.OutputManager;
 import org.orbisgis.core.ui.plugins.views.beanShellConsole.actions.BshCompletionKeyListener;
 import org.orbisgis.core.ui.plugins.views.beanShellConsole.actions.BshConsoleListener;
 import org.orbisgis.core.ui.plugins.views.beanShellConsole.ui.BshConsolePanel;
+import org.orbisgis.core.ui.preferences.lookandfeel.OrbisGISIcon;
 
 import bsh.EvalError;
 import bsh.Interpreter;

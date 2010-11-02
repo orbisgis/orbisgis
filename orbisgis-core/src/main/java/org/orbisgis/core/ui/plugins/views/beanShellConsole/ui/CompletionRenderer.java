@@ -46,13 +46,13 @@ import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.ListCellRenderer;
 
-import org.orbisgis.core.images.OrbisGISIcon;
 import org.orbisgis.core.ui.plugins.views.beanShellConsole.javaManager.autocompletion.ClassOption;
 import org.orbisgis.core.ui.plugins.views.beanShellConsole.javaManager.autocompletion.ConstructorOption;
 import org.orbisgis.core.ui.plugins.views.beanShellConsole.javaManager.autocompletion.FieldOption;
 import org.orbisgis.core.ui.plugins.views.beanShellConsole.javaManager.autocompletion.InlineImplementationOption;
 import org.orbisgis.core.ui.plugins.views.beanShellConsole.javaManager.autocompletion.MethodOption;
 import org.orbisgis.core.ui.plugins.views.beanShellConsole.javaManager.autocompletion.VariableOption;
+import org.orbisgis.core.ui.preferences.lookandfeel.OrbisGISIcon;
 
 public class CompletionRenderer extends JPanel implements ListCellRenderer {
 

@@ -52,13 +52,13 @@ import org.gdms.source.SourceManager;
 import org.orbisgis.core.DataManager;
 import org.orbisgis.core.PersistenceException;
 import org.orbisgis.core.Services;
-import org.orbisgis.core.images.OrbisGISIcon;
 import org.orbisgis.core.ui.geocatalog.persistence.ActiveFilter;
 import org.orbisgis.core.ui.geocatalog.persistence.Tag;
 import org.orbisgis.core.ui.pluginSystem.PlugInContext;
 import org.orbisgis.core.ui.pluginSystem.ViewPlugIn;
 import org.orbisgis.core.ui.pluginSystem.workbench.Names;
 import org.orbisgis.core.ui.plugins.views.geocatalog.Catalog;
+import org.orbisgis.core.ui.preferences.lookandfeel.OrbisGISIcon;
 import org.orbisgis.core.ui.window.EPWindowHelper;
 import org.orbisgis.core.workspace.Workspace;
 

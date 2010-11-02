@@ -55,8 +55,8 @@ import javax.swing.text.StyleContext;
 
 import org.orbisgis.core.Services;
 import org.orbisgis.core.errorManager.ErrorManager;
-import org.orbisgis.core.images.OrbisGISIcon;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchContext;
+import org.orbisgis.core.ui.preferences.lookandfeel.OrbisGISIcon;
 
 public class OutputPanel extends JPanel implements OutputManager {
 
