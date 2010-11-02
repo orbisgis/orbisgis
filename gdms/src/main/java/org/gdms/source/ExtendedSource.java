@@ -53,6 +53,7 @@ import org.gdms.data.db.DBSource;
 import org.gdms.data.db.DBTableSourceDefinition;
 import org.gdms.data.file.FileSourceDefinition;
 import org.gdms.data.object.ObjectSourceDefinition;
+import org.gdms.data.system.SystemSourceDefinition;
 import org.gdms.data.wms.WMSSource;
 import org.gdms.data.wms.WMSSourceDefinition;
 import org.gdms.driver.DriverException;
@@ -67,6 +68,7 @@ import org.gdms.source.directory.Property;
 import org.gdms.source.directory.Source;
 import org.gdms.source.directory.Sources;
 import org.gdms.source.directory.SqlDefinitionType;
+import org.gdms.source.directory.SystemDefinitionType;
 import org.gdms.source.directory.WmsDefinitionType;
 
 public class ExtendedSource implements org.gdms.source.Source {
@@ -74,7 +76,7 @@ public class ExtendedSource implements org.gdms.source.Source {
 	private DataSource dataSource;
 
 	DataSourceDefinition def;
-	
+
 	private String baseDir;
 
 	private String name;
@@ -133,6 +135,9 @@ public class ExtendedSource implements org.gdms.source.Source {
 			} else if (definitionType instanceof WmsDefinitionType) {
 				this.def = WMSSourceDefinition.createFromXML(dsf,
 						(WmsDefinitionType) definitionType);
+			} else if (definitionType instanceof SystemDefinitionType) {
+				this.def = SystemSourceDefinition
+						.createFromXML((SystemDefinitionType) definitionType);
 			} else {
 				throw new RuntimeException("Not recognized source type: "
 						+ definitionType.getClass().getCanonicalName());
@@ -475,6 +480,11 @@ public class ExtendedSource implements org.gdms.source.Source {
 
 	public boolean isSQLSource() {
 		return (getType() & SourceManager.SQL) == SourceManager.SQL;
+	}
+
+	@Override
+	public boolean isSystemTableSource() {
+		return (getType() & SourceManager.SYSTEM_TABLE) == SourceManager.SYSTEM_TABLE;
 	}
 
 	public void init() throws DriverException {

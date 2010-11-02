@@ -276,4 +276,10 @@ public interface Source {
 	 */
 	boolean isSQLSource();
 
+	/**
+	 * 
+	 * @return source is a system table. False otherwise
+	 */
+	boolean isSystemTableSource();
+
 }

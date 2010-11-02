@@ -65,6 +65,8 @@ import org.gdms.data.db.DBSource;
 import org.gdms.data.db.DBTableSourceDefinition;
 import org.gdms.data.file.FileSourceDefinition;
 import org.gdms.data.object.ObjectSourceDefinition;
+import org.gdms.data.system.SystemSource;
+import org.gdms.data.system.SystemSourceDefinition;
 import org.gdms.data.wms.WMSSource;
 import org.gdms.data.wms.WMSSourceDefinition;
 import org.gdms.driver.DriverException;
@@ -125,6 +127,8 @@ public class DefaultSourceManager implements SourceManager {
 	private JAXBContext jc;
 
 	private String lastUID = "gdms" + System.currentTimeMillis();
+
+	public static final String SPATIAL_REF_SYSTEM = "spatial_ref_table";
 
 	public DefaultSourceManager(DataSourceFactory dsf, String baseDir)
 			throws IOException {
@@ -873,6 +877,24 @@ public class DefaultSourceManager implements SourceManager {
 		} catch (DriverException e) {
 			throw new InitializationException(e);
 		}
+
+		loadSystemTables();
+	}
+
+	/**
+	 * A method used to register some table system TODO : Must be change with
+	 * GDMS 2.0
+	 */
+	public void loadSystemTables() {
+
+		// create spatial_ref_sys source
+		if (!exists(SPATIAL_REF_SYSTEM)) {
+			register(SPATIAL_REF_SYSTEM, new SystemSourceDefinition(
+					new SystemSource(new File(this.getClass().getResource(
+							"spatial_ref_sys_extended.gdms").getFile()))));
+
+		}
+
 	}
 
 	public String[] getSourceNames() {
