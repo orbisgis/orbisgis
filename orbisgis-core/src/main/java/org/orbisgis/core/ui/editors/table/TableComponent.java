@@ -19,6 +19,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.TreeSet;
+import java.util.regex.Pattern;
 
 import javax.swing.DefaultListSelectionModel;
 import javax.swing.Icon;
@@ -30,6 +31,7 @@ import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JTable;
 import javax.swing.JTextField;
+import javax.swing.JToolBar;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
@@ -64,16 +66,18 @@ import org.orbisgis.core.Services;
 import org.orbisgis.core.background.BackgroundJob;
 import org.orbisgis.core.background.BackgroundManager;
 import org.orbisgis.core.errorManager.ErrorManager;
-import org.orbisgis.core.images.IconLoader;
-import org.orbisgis.core.images.OrbisGISIcon;
 import org.orbisgis.core.sif.SQLUIPanel;
 import org.orbisgis.core.sif.UIFactory;
 import org.orbisgis.core.ui.components.sif.AskValue;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchContext;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchFrame;
 import org.orbisgis.core.ui.plugins.views.TableEditorPlugIn;
+import org.orbisgis.core.ui.preferences.lookandfeel.OrbisGISIcon;
+import org.orbisgis.core.ui.preferences.lookandfeel.UIColorPreferences;
+import org.orbisgis.core.ui.preferences.lookandfeel.images.IconLoader;
 import org.orbisgis.progress.IProgressMonitor;
 import org.orbisgis.progress.NullProgressMonitor;
+import org.orbisgis.utils.I18N;
 
 public class TableComponent extends JPanel implements WorkbenchFrame {
 
@@ -107,9 +111,10 @@ public class TableComponent extends JPanel implements WorkbenchFrame {
 	// flags
 	private boolean managingSelection;
 	private TableEditorPlugIn editor;
-	private JTextField txtFilter;
 
 	private org.orbisgis.core.ui.pluginSystem.menu.MenuTree menuTree;
+
+	private int patternCaseOption = Pattern.CASE_INSENSITIVE;
 
 	@Override
 	public org.orbisgis.core.ui.pluginSystem.menu.MenuTree getMenuTreePopup() {
@@ -133,8 +138,8 @@ public class TableComponent extends JPanel implements WorkbenchFrame {
 		menuTree = new org.orbisgis.core.ui.pluginSystem.menu.MenuTree();
 		this.setLayout(new BorderLayout());
 		add(getJScrollPane(), BorderLayout.CENTER);
-		add(getPanelInformation(), BorderLayout.NORTH);
-		add(getJTextField(), BorderLayout.SOUTH);
+		add(getTableToolBar(), BorderLayout.NORTH);
+		add(getWhereTextField(), BorderLayout.SOUTH);
 	}
 
 	/**
@@ -145,6 +150,8 @@ public class TableComponent extends JPanel implements WorkbenchFrame {
 	public javax.swing.JTable getTable() {
 		if (table == null) {
 			table = new JTable();
+			table
+					.setSelectionBackground(UIColorPreferences.TABLE_EDITOR_SELECTION_BACKGROUND);
 			table.setAutoResizeMode(javax.swing.JTable.AUTO_RESIZE_OFF);
 			table.getSelectionModel().setSelectionMode(
 					ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
@@ -167,7 +174,6 @@ public class TableComponent extends JPanel implements WorkbenchFrame {
 									selectedRowsCount = selectedRows.length;
 									selection.setSelectedRows(selectedRows);
 									managingSelection = false;
-
 									updateRowsMessage();
 
 								}
@@ -186,6 +192,14 @@ public class TableComponent extends JPanel implements WorkbenchFrame {
 		return table;
 	}
 
+	private Component getTableToolBar() {
+		JToolBar toolBar = new JToolBar();
+		toolBar.setFloatable(false);
+		toolBar.add(getPanelInformation(), BorderLayout.NORTH);
+		toolBar.add(getRegexTextField(), BorderLayout.SOUTH);
+		return toolBar;
+	}
+
 	public JPanel getPanelInformation() {
 		final JPanel informationPanel = new JPanel();
 		final FlowLayout flowLayout = new FlowLayout();
@@ -196,18 +210,142 @@ public class TableComponent extends JPanel implements WorkbenchFrame {
 
 	}
 
+	private JPanel getRegexTextField() {
+		final JPanel regexPanel = new JPanel();
+		final FlowLayout flowLayout = new FlowLayout();
+		flowLayout.setAlignment(FlowLayout.RIGHT);
+		regexPanel.setLayout(flowLayout);
+		JLabel label = new JLabel(
+				I18N
+						.getText("orbisgis.org.orbisgis.core.ui.editors.table.TableComponent.search"));
+		final JTextField regexTxtFilter = new JTextField(20);
+		regexTxtFilter.setBackground(Color.WHITE);
+		regexTxtFilter
+				.setText(I18N
+						.getText("orbisgis.org.orbisgis.core.ui.editors.table.TableComponent.put_a_text"));
+		regexTxtFilter
+				.setToolTipText(I18N
+						.getText("orbisgis.org.orbisgis.core.ui.editors.table.TableComponent.searchEnter"));
+
+		regexTxtFilter.addKeyListener(new KeyListener() {
+
+			@Override
+			public void keyTyped(KeyEvent e) {
+
+			}
+
+			@Override
+			public void keyReleased(KeyEvent e) {
+
+			}
+
+			@Override
+			public void keyPressed(KeyEvent e) {
+				if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+					final String whereText = regexTxtFilter.getText();
+					if (whereText.length() == 0) {
+						if (selectedRowsCount > 0) {
+							selection.clearSelection();
+							updateRowsMessage();
+						}
+
+					} else {
+						findTextPattern(whereText);
+					}
+
+				}
+			}
+		});
+		regexPanel.add(label);
+		regexPanel.add(regexTxtFilter);
+		return regexPanel;
+	}
+
+	public void findTextPattern(final String text) {
+
+		String quote = "\\Q";
+		String endQuote = "\\E";
+
+		String regex = quote + text + endQuote;
+		final Pattern pattern = Pattern.compile(regex, patternCaseOption);
+		BackgroundManager bm = Services.getService(BackgroundManager.class);
+		bm.backgroundOperation(new BackgroundJob() {
+
+			@Override
+			public void run(IProgressMonitor pm) {
+				try {
+					ArrayList<Integer> filtered = new ArrayList<Integer>();
+					pm.startTask("Searching...");
+					for (int i = 0; i < tableModel.getRowCount(); i++) {
+						if (i / 100 == i / 100.0) {
+							if (pm.isCancelled()) {
+								break;
+							} else {
+								pm.progressTo((int) (100 * i / tableModel
+										.getRowCount()));
+							}
+						}
+						Value[] values = dataSource.getRow(i);
+						boolean select = false;
+						for (int j = 0; j < values.length; j++) {
+							Value value = values[j];
+							if (value.getType() == Type.GEOMETRY) {
+								continue;
+							}
+							String valueString = value.toString();
+							pattern.matcher(valueString).reset();
+							select = select
+									|| (pattern.matcher(valueString).find());
+						}
+						pm.endTask();
+
+						if (select) {
+							filtered.add(i);
+						}
+
+					}
+
+					int[] sel = new int[filtered.size()];
+
+					for (int i = 0; i < sel.length; i++) {
+						sel[i] = filtered.get(i);
+					}
+					selection.setSelectedRows(sel);
+					updateTableSelection();
+
+				} catch (DriverException e1) {
+					e1.printStackTrace();
+				}
+
+			}
+
+			@Override
+			public String getTaskName() {
+				return I18N
+						.getText("orbisgis.org.orbisgis.core.ui.editors.table.TableComponent.searching");
+			}
+		});
+
+	}
+
 	private JLabel getNbRowsInformation() {
 		JLabel nbRowsMessage = new JLabel();
-		nbRowsMessage.setText("Row number : ");
+		nbRowsMessage
+				.setText(I18N
+						.getText("orbisgis.org.orbisgis.core.ui.editors.table.TableComponent.rowNumber"));
 		nbRowsSelectedLabel = nbRowsMessage;
 		return nbRowsMessage;
 	}
 
-	private JTextField getJTextField() {
-		txtFilter = new JTextField(20);
+	private JTextField getWhereTextField() {
+		final JTextField txtFilter = new JTextField(20);
 		txtFilter.setBackground(Color.WHITE);
-		txtFilter.setText("Put a where condition here !");
-		txtFilter.setToolTipText("Press enter to search");
+		txtFilter
+				.setText(I18N
+						.getText("orbisgis.org.orbisgis.core.ui.editors.table.TableComponent.put_a_sqlwhere"));
+		txtFilter
+				.setToolTipText(I18N
+						.getText("orbisgis.org.orbisgis.core.ui.editors.table.TableComponent.searchEnter"));
 		txtFilter.addKeyListener(new KeyListener() {
 
 			@Override
@@ -222,8 +360,9 @@ public class TableComponent extends JPanel implements WorkbenchFrame {
 
 					} else {
 						String pkName = "pk_" + dataSource.getName();
-						findAValue("SELECT autonumeric() - 1 as " + pkName
-								+ ", *" + "FROM " + dataSource.getName(),
+						findAValueFromWhereClause(
+								"SELECT autonumeric() - 1 as " + pkName + ", *"
+										+ "FROM " + dataSource.getName(),
 								pkName, whereText);
 
 					}
@@ -428,8 +567,12 @@ public class TableComponent extends JPanel implements WorkbenchFrame {
 				}
 			}
 		} catch (DriverException e) {
-			Services.getService(ErrorManager.class).warning(
-					"Cannot keep table configuration", e);
+			Services
+					.getService(ErrorManager.class)
+					.warning(
+							I18N
+									.getText("orbisgis.org.orbisgis.core.ui.editors.table.TableComponent.refreshTableStructure"),
+							e);
 		}
 		tableModel.fireTableStructureChanged();
 		autoResizeColWidth(Math.min(5, tableModel.getRowCount()), widths,
@@ -480,16 +623,20 @@ public class TableComponent extends JPanel implements WorkbenchFrame {
 	public void updateRowsMessage() {
 
 		if (selectedRowsCount > 0) {
-			nbRowsSelectedLabel.setText("Row selected : " + selectedRowsCount
-					+ " / " + table.getRowCount() + " total rows");
+			nbRowsSelectedLabel
+					.setText(I18N
+							.getText("orbisgis.org.orbisgis.core.ui.editors.table.TableComponent.rowSelected")
+							+ selectedRowsCount + " / " + table.getRowCount());
 		} else {
-			nbRowsSelectedLabel.setText("Row number : "
-					+ tableModel.getRowCount());
+			nbRowsSelectedLabel
+					.setText(I18N
+							.getText("orbisgis.org.orbisgis.core.ui.editors.table.TableComponent.rowNumber")
+							+ tableModel.getRowCount());
 		}
 	}
 
-	public void findAValue(final String text, final String columnName,
-			final String whereText) {
+	public void findAValueFromWhereClause(final String text,
+			final String columnName, final String whereText) {
 
 		BackgroundManager bm = Services.getService(BackgroundManager.class);
 		bm.backgroundOperation(new BackgroundJob() {
@@ -497,7 +644,8 @@ public class TableComponent extends JPanel implements WorkbenchFrame {
 			@Override
 			public String getTaskName() {
 
-				return "Searching values";
+				return I18N
+						.getText("orbisgis.org.orbisgis.core.ui.editors.table.TableComponent.searching");
 			}
 
 			@Override
@@ -532,6 +680,7 @@ public class TableComponent extends JPanel implements WorkbenchFrame {
 					dsWithPkFiltered.close();
 					dsWithPk.close();
 
+					// Step 3 : delete the table used to apply the where clause
 					dsf.executeSQL("drop table if exists "
 							+ dsWithPkFiltered.getName() + " , "
 							+ dsWithPk.getName() + " purge");
@@ -610,14 +759,17 @@ public class TableComponent extends JPanel implements WorkbenchFrame {
 
 					@Override
 					public String getTaskName() {
-						return "Calculating optimal width";
+						return I18N
+								.getText("orbisgis.org.orbisgis.core.ui.editors.table.TableComponent.columnOptimalWidth");
 					}
 				});
 			} else if (SETWIDTH.equals(e.getActionCommand())) {
 				TableColumn selectedTableColumn = table.getTableHeader()
 						.getColumnModel().getColumn(selectedColumn);
-				AskValue av = new AskValue("New column width", null, null,
-						Integer.toString(selectedTableColumn
+				AskValue av = new AskValue(
+						I18N
+								.getText("orbisgis.org.orbisgis.core.ui.editors.table.TableComponent.newColumnWidth"),
+						null, null, Integer.toString(selectedTableColumn
 								.getPreferredWidth()));
 				av.setType(SQLUIPanel.INT);
 				if (UIFactory.showDialog(av)) {
@@ -734,16 +886,33 @@ public class TableComponent extends JPanel implements WorkbenchFrame {
 		@Override
 		protected JPopupMenu getPopupMenu() {
 			JPopupMenu pop = new JPopupMenu();
-			addMenu(pop, "Optimal width", IconLoader
-					.getIcon("text_letterspacing.png"), OPTIMALWIDTH);
-			addMenu(pop, "Set width", null, SETWIDTH);
+			addMenu(
+					pop,
+					I18N
+							.getText("orbisgis.org.orbisgis.core.ui.editors.table.TableComponent.optimalWidth"),
+					IconLoader.getIcon("text_letterspacing.png"), OPTIMALWIDTH);
+			addMenu(
+					pop,
+					I18N
+							.getText("orbisgis.org.orbisgis.core.ui.editors.table.TableComponent.setWidth"),
+					null, SETWIDTH);
 			pop.addSeparator();
 			if (tableModel.getColumnType(selectedColumn).getTypeCode() != Type.GEOMETRY) {
-				addMenu(pop, "Sort ascending", IconLoader
-						.getIcon("thumb_up.png"), SORTUP);
-				addMenu(pop, "Sort descending", IconLoader
-						.getIcon("thumb_down.png"), SORTDOWN);
-				addMenu(pop, "No Sort", OrbisGISIcon.TABLE_REFRESH, NOSORT);
+				addMenu(
+						pop,
+						I18N
+								.getText("orbisgis.org.orbisgis.core.ui.editors.table.TableComponent.sortAscending"),
+						IconLoader.getIcon("thumb_up.png"), SORTUP);
+				addMenu(
+						pop,
+						I18N
+								.getText("orbisgis.org.orbisgis.core.ui.editors.table.TableComponent.sortDescending"),
+						IconLoader.getIcon("thumb_down.png"), SORTDOWN);
+				addMenu(
+						pop,
+						I18N
+								.getText("orbisgis.org.orbisgis.core.ui.editors.table.TableComponent.noSort"),
+						OrbisGISIcon.TABLE_REFRESH, NOSORT);
 			}
 			return pop;
 		}
@@ -993,7 +1162,8 @@ public class TableComponent extends JPanel implements WorkbenchFrame {
 
 		@Override
 		public String getTaskName() {
-			return "Sorting";
+			return I18N
+					.getText("orbisgis.org.orbisgis.core.ui.editors.table.TableComponent.sorting");
 		}
 	}
 
