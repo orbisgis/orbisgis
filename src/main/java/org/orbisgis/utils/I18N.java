@@ -8,7 +8,7 @@ import java.util.ResourceBundle;
 public abstract class I18N {	
 	
 	//I18N file must be in "properties/" repository
-	private final static String PROPERTIES = "properties";
+	private final static String PROPERTIES = "language";
 	private final static String SEPARATOR = "."; //System.getProperty("file.separator");	
 	
 	//Orbisgis loacle. This local would applied to all plugin (if -i18n local has been given by command line)
