@@ -48,7 +48,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
-import org.orbisgis.core.images.OrbisGISIcon;
+import org.orbisgis.core.ui.preferences.lookandfeel.OrbisGISIcon;
 
 /**
  * A splash screen to show while the main program is loading. A typical use is:
