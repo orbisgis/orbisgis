@@ -61,9 +61,9 @@ import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
 import org.orbisgis.core.Services;
-import org.orbisgis.core.images.IconLoader;
 import org.orbisgis.core.sif.UIFactory;
 import org.orbisgis.core.sif.UIPanel;
+import org.orbisgis.core.ui.preferences.lookandfeel.images.IconLoader;
 import org.orbisgis.core.workspace.DefaultWorkspace;
 import org.orbisgis.core.workspace.Workspace;
 import org.orbisgis.utils.I18N;
