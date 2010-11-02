@@ -2,9 +2,9 @@ package org.orbisgis.core.ui.configuration;
 
 import javax.swing.JTree;
 
-import org.orbisgis.core.images.OrbisGISIcon;
 import org.orbisgis.core.ui.components.resourceTree.AbstractTreeRenderer;
 import org.orbisgis.core.ui.pluginSystem.menu.IMenu;
+import org.orbisgis.core.ui.preferences.lookandfeel.OrbisGISIcon;
 
 class ConfigurationTreeRenderer extends AbstractTreeRenderer {
 	@Override
