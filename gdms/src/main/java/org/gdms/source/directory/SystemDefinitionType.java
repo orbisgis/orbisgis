@@ -15,15 +15,15 @@ import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * <p>Java class for sql-definition-type complex type.
+ * <p>Java class for system-definition-type complex type.
  * 
  * <p>The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
- * &lt;complexType name="sql-definition-type">
+ * &lt;complexType name="system-definition-type">
  *   &lt;complexContent>
  *     &lt;extension base="{}definition-type">
- *       &lt;attribute name="sql" use="required" type="{http://www.w3.org/2001/XMLSchema}string" />
+ *       &lt;attribute name="path" use="required" type="{http://www.w3.org/2001/XMLSchema}string" />
  *     &lt;/extension>
  *   &lt;/complexContent>
  * &lt;/complexType>
@@ -32,36 +32,36 @@ import javax.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "sql-definition-type")
-public class SqlDefinitionType
+@XmlType(name = "system-definition-type")
+public class SystemDefinitionType
     extends DefinitionType
 {
 
     @XmlAttribute(required = true)
-    protected String sql;
+    protected String path;
 
     /**
-     * Gets the value of the sql property.
+     * Gets the value of the path property.
      * 
      * @return
      *     possible object is
      *     {@link String }
      *     
      */
-    public String getSql() {
-        return sql;
+    public String getPath() {
+        return path;
     }
 
     /**
-     * Sets the value of the sql property.
+     * Sets the value of the path property.
      * 
      * @param value
      *     allowed object is
      *     {@link String }
      *     
      */
-    public void setSql(String value) {
-        this.sql = value;
+    public void setPath(String value) {
+        this.path = value;
     }
 
 }
