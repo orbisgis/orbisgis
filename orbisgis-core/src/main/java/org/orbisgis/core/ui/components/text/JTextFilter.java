@@ -10,7 +10,7 @@ import javax.swing.JTextField;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
-import org.orbisgis.core.images.OrbisGISIcon;
+import org.orbisgis.core.ui.preferences.lookandfeel.OrbisGISIcon;
 
 public class JTextFilter extends JPanel {
 
