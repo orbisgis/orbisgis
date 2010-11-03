@@ -366,11 +366,11 @@ public class LogicTreeBuilder {
 		} else if (node instanceof ASTSQLSelect) {
 			Operator last = null;
 
-			// Scalar product
+			// Scalar product or ScanOperator if only 1 table
 			SimpleNode tableListNode = getChildNode(node, ASTSQLTableList.class);
 			Operator scalarProductOp = null;
 			if (tableListNode != null) {
-				scalarProductOp = getOperator(node.jjtGetChild(1));
+                               scalarProductOp = getOperator(tableListNode);
 				last = scalarProductOp;
 			}
 
@@ -577,10 +577,13 @@ public class LogicTreeBuilder {
 			}
 			return ret;
 		} else if (node instanceof ASTSQLTableList) {
+                    if (node.jjtGetNumChildren() == 1) {
+                        return getOperator(node.jjtGetChild(0));
+                    }
 			ScalarProductOp ret = new ScalarProductOp();
 			for (int i = 0; i < node.jjtGetNumChildren(); i++) {
 				SimpleNode tableRefNode = (SimpleNode) node.jjtGetChild(i);
-				ScanOperator tableScanOperator = (ScanOperator) getOperator(tableRefNode);
+				Operator tableScanOperator = getOperator(tableRefNode);
 				ret.addChild(tableScanOperator);
 			}
 			return ret;
@@ -592,10 +595,9 @@ public class LogicTreeBuilder {
 			}
 			return new ScanOperator(dsf, tableName, tableAlias);
 		} else if (node instanceof ASTSQLWhere) {
+                    Expression ex = getSQLExpression((SimpleNode) node.jjtGetChild(0));
 			SelectionOp ret = new SelectionOp();
-			ret
-					.setExpression(getSQLExpression((SimpleNode) node
-							.jjtGetChild(0)));
+			ret.setExpression(ex);
 			return ret;
 		} else {
 			/*
