@@ -87,7 +87,6 @@ public class GeocatalogDeleteSourcePlugIn extends AbstractPlugIn {
 	}
 
 	public boolean isEnabled() {
-
 		WorkbenchContext workbenchContext = getPlugInContext()
 				.getWorkbenchContext();
 		String[] res = workbenchContext.getWorkbench().getFrame()
