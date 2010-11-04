@@ -46,10 +46,11 @@ package org.orbisgis.core.ui.plugins.views.geocatalog.filters;
 
 import org.gdms.source.SourceManager;
 
-public class AllFilterPlugIn implements IFilter {
+public class WMSFilter implements IFilter {
 
 	public boolean accepts(SourceManager sm, String sourceName) {
-		return true;
+		int type = sm.getSource(sourceName).getType();
+		return (type & SourceManager.WMS) == SourceManager.WMS;
 	}
 
 }
