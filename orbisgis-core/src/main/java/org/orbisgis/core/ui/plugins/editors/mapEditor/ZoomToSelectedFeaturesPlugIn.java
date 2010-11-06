@@ -64,7 +64,8 @@ public class ZoomToSelectedFeaturesPlugIn extends AbstractPlugIn {
 	}
 
 	public boolean execute(PlugInContext context) throws Exception {
-		MapEditorPlugIn mapEditor = (MapEditorPlugIn) getPlugInContext().getActiveEditor();
+		MapEditorPlugIn mapEditor = (MapEditorPlugIn) getPlugInContext()
+				.getActiveEditor();
 		MapContext mc = (MapContext) mapEditor.getElement().getObject();
 		ILayer[] layers = mc.getLayerModel().getLayersRecursively();
 		Envelope rect = null;
@@ -117,10 +118,10 @@ public class ZoomToSelectedFeaturesPlugIn extends AbstractPlugIn {
 	public boolean isEnabled() {
 		boolean isEnabled = false;
 		MapEditorPlugIn mapEditor = null;
-		if((mapEditor=getPlugInContext().getMapEditor()) != null){
-				MapContext mc = (MapContext) mapEditor.getElement().getObject();
-				ILayer[] layers = mc.getLayerModel().getLayersRecursively();
-				for (ILayer lyr : layers) {
+		if ((mapEditor = getPlugInContext().getMapEditor()) != null) {
+			MapContext mc = (MapContext) mapEditor.getElement().getObject();
+			ILayer[] layers = mc.getLayerModel().getLayersRecursively();
+			for (ILayer lyr : layers) {
 				if (!lyr.isWMS()) {
 					lyr.getSelection();
 					if (lyr.getSelection().length > 0)
