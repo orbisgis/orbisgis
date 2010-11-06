@@ -85,7 +85,8 @@ public class WorkspaceFolderPanel extends JPanel implements UIPanel {
 		panel = new JPanel(new BorderLayout());
 		JLabel label = new JLabel(I18N.getText("orbisgis.core.ui.workspace")
 				+ " : ");
-		combobox = new JComboBox(workspaces.toArray(new String[workspaces.size()]));
+		combobox = new JComboBox(workspaces.toArray(new String[workspaces
+				.size()]));
 		combobox.addActionListener(new ActionListener() {
 
 			@Override
@@ -94,6 +95,7 @@ public class WorkspaceFolderPanel extends JPanel implements UIPanel {
 			}
 		});
 		btFolder = new JButton();
+		btFolder.setBorderPainted(false);
 		btFolder.setIcon(IconLoader.getIcon("open.png"));
 		btFolder.setToolTipText(I18N
 				.getText("orbisgis.core.file.choose_folder"));

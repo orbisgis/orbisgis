@@ -120,6 +120,7 @@ public class WorkbenchToolBar extends EnableableToolBar implements Observer {
 		dropDownButton.addToToolBar(this);
 		dropDownButton.setVisible(false);
 		dropDownButton.setEnabled(false);
+		dropDownButton.setBorderPainted(false);
 		setOpaque(false);
 	}
 
@@ -134,6 +135,7 @@ public class WorkbenchToolBar extends EnableableToolBar implements Observer {
 			PlugInContext plugInContext) {
 		((AbstractPlugIn) plugIn).setPlugInContext(plugInContext);
 		toolsPlugInObservers.add(plugIn);
+		((JButton) c).setBorderPainted(false);
 		((JButton) c).addActionListener(AbstractPlugIn.toActionListener(plugIn,
 				context));
 		add(c, plugIn);
@@ -217,6 +219,8 @@ public class WorkbenchToolBar extends EnableableToolBar implements Observer {
 			};
 		}
 		c.setIcon(icon);
+		c.setBorderPainted(false);
+
 		return addCursorAutomaton(automaton.getName(), automaton, c, icon);
 	}
 
@@ -224,6 +228,7 @@ public class WorkbenchToolBar extends EnableableToolBar implements Observer {
 			final Automaton automaton, final AbstractButton button,
 			final ImageIcon icon) {
 		toolsPlugInObservers.add(automaton);
+		button.setBorderPainted(false);
 		add(button, dropDown, tooltip, new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				EditorManager em = (EditorManager) Services

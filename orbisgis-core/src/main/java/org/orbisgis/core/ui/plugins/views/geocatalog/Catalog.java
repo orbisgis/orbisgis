@@ -96,6 +96,7 @@ import org.orbisgis.core.ui.components.sif.AskValue;
 import org.orbisgis.core.ui.components.text.JTextFilter;
 import org.orbisgis.core.ui.geocatalog.newSourceWizards.SourceRenderer;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchFrame;
+import org.orbisgis.core.ui.plugins.views.geocatalog.filters.AllExcludeSytemTableFilter;
 import org.orbisgis.core.ui.plugins.views.geocatalog.filters.AllFilter;
 import org.orbisgis.core.ui.plugins.views.geocatalog.filters.AlphanumericFilter;
 import org.orbisgis.core.ui.plugins.views.geocatalog.filters.DBsFilter;
@@ -294,15 +295,20 @@ public class Catalog extends JPanel implements DragGestureListener,
 		ret.setLayout(new BorderLayout());
 
 		GeocatalogFilterDecorator filter = new GeocatalogFilterDecorator(
-				"geocatalog.filters.AllFilter", "All", new AllFilter());
+				"geocatalog.filters.AllFilter", "All*", new AllFilter());
+		listModel.getFilters().add(filter);
+
+		filter = new GeocatalogFilterDecorator(
+				"geocatalog.filters.AllExcludeSystemTable", "All",
+				new AllExcludeSytemTableFilter());
 		listModel.getFilters().add(filter);
 
 		filter = new GeocatalogFilterDecorator("geocatalog.filters.GeoFilter",
 				"Geo", new GeoFilter());
 		listModel.getFilters().add(filter);
-		
-		filter = new GeocatalogFilterDecorator("geocatalog.filters.FilesFilter",
-				"Files", new FilesFilter());
+
+		filter = new GeocatalogFilterDecorator(
+				"geocatalog.filters.FilesFilter", "Files", new FilesFilter());
 		listModel.getFilters().add(filter);
 
 		filter = new GeocatalogFilterDecorator("geocatalog.filters.DBsFilter",
@@ -314,24 +320,26 @@ public class Catalog extends JPanel implements DragGestureListener,
 				new AlphanumericFilter());
 		listModel.getFilters().add(filter);
 
-		filter = new GeocatalogFilterDecorator("geocatalog.filters.WMSFilter", "WMS",
-				new WMSFilter());
+		filter = new GeocatalogFilterDecorator("geocatalog.filters.WMSFilter",
+				"WMS", new WMSFilter());
 		listModel.getFilters().add(filter);
 
-		filter = new GeocatalogFilterDecorator("geocatalog.filters.RasterFilter",
-				"Raster", new RasterFilter());
+		filter = new GeocatalogFilterDecorator(
+				"geocatalog.filters.RasterFilter", "Raster", new RasterFilter());
 		listModel.getFilters().add(filter);
 
-		filter = new GeocatalogFilterDecorator("geocatalog.filters.VectorialFilter",
-				"Vectorial", new VectorialFilter());
-		listModel.getFilters().add(filter);
-		
-		filter = new GeocatalogFilterDecorator("geocatalog.filters.SystemTableFilter",
-				"System table", new TableSystemFilter());
+		filter = new GeocatalogFilterDecorator(
+				"geocatalog.filters.VectorialFilter", "Vectorial",
+				new VectorialFilter());
 		listModel.getFilters().add(filter);
 
-		//TODO maybe improve the default filter set. 
-		//new GeocatalogFilterDecorator[1]
+		filter = new GeocatalogFilterDecorator(
+				"geocatalog.filters.SystemTableFilter", "System table",
+				new TableSystemFilter());
+		listModel.getFilters().add(filter);
+
+		// TODO maybe improve the default filter set.
+		// new GeocatalogFilterDecorator[1]
 		lstFilters = new JList(listModel.getFilters().toArray(
 				new GeocatalogFilterDecorator[1])/* getAvailableFilters() */);
 		lstFilters.setCellRenderer(new DefaultListCellRenderer() {
@@ -556,6 +564,7 @@ public class Catalog extends JPanel implements DragGestureListener,
 		public TagFilter(String tag) {
 			this.tag = tag;
 		}
+
 		@Override
 		public boolean accepts(SourceManager sm, String sourceName) {
 			HashSet<String> sources = tagSources.get(tag);
@@ -573,6 +582,7 @@ public class Catalog extends JPanel implements DragGestureListener,
 		public AddTagActionListener(String tag) {
 			this.tag = tag;
 		}
+
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			Object[] sources = lstSources.getSelectedValues();
@@ -591,7 +601,8 @@ public class Catalog extends JPanel implements DragGestureListener,
 		public RemoveTagActionListener(String tag) {
 			this.tag = tag;
 		}
-        @Override
+
+		@Override
 		public void actionPerformed(ActionEvent e) {
 			Object[] sources = lstSources.getSelectedValues();
 			for (Object source : sources) {

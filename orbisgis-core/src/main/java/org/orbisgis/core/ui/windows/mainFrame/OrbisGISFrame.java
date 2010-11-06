@@ -59,7 +59,6 @@ import java.util.Map;
 import javax.swing.BorderFactory;
 import javax.swing.JFrame;
 import javax.swing.JMenuBar;
-import javax.swing.JPanel;
 
 import net.infonode.docking.RootWindow;
 import net.infonode.docking.View;
@@ -262,7 +261,6 @@ public class OrbisGISFrame extends JFrame implements IWindow {
 		ApplicationInfo ai = (ApplicationInfo) Services
 				.getService(ApplicationInfo.class);
 
-		// I18N.loadFile("fr");
 		this.setTitle(I18N.getText("orbisgis.platform") + " - "
 				+ ai.getVersionNumber() + " - " + ai.getVersionName());
 
@@ -286,10 +284,6 @@ public class OrbisGISFrame extends JFrame implements IWindow {
 		/* Job popup at bootom right to follow processes loading */
 		jobPopup = new JobPopup();
 		jobPopup.initialize();
-
-		JPanel jPanel = new JPanel();
-		BorderLayout layout = new BorderLayout();
-		jPanel.setLayout(layout);
 
 		this.getContentPane().add(getMainStatusToolBar(), BorderLayout.SOUTH);
 
