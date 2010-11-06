@@ -78,34 +78,41 @@ public class ZoomToSelectedPlugIn extends AbstractPlugIn {
 
 					SpatialDataSourceDecorator sds = new SpatialDataSourceDecorator(
 							element.getDataSource());
-
 					Envelope rect = null;
-					Geometry geometry = null;
-					Envelope geometryEnvelope = null;
-					for (int i = 0; i < selectedRow.length; i++) {
-						if (sds.isDefaultVectorial()) {
-							geometry = sds.getGeometry(selectedRow[i]);
-							if (geometry != null) {
-								geometryEnvelope = geometry.buffer(0.01)
-										.getEnvelopeInternal();
+
+					int rowSelected = selectedRow.length;
+					if (rowSelected == sds.getRowCount()) {
+						rect = sds.getFullExtent();
+					} else {
+
+						Geometry geometry = null;
+						Envelope geometryEnvelope = null;
+						for (int i = 0; i < selectedRow.length; i++) {
+							if (sds.isDefaultVectorial()) {
+								geometry = sds.getGeometry(selectedRow[i]);
+								if (geometry != null) {
+									geometryEnvelope = geometry.buffer(0.01)
+											.getEnvelopeInternal();
+								}
+							} else if (sds.isDefaultRaster()) {
+								geometryEnvelope = sds
+										.getRaster(selectedRow[i])
+										.getMetadata().getEnvelope();
 							}
-						} else if (sds.isDefaultRaster()) {
-							geometryEnvelope = sds.getRaster(selectedRow[i])
-									.getMetadata().getEnvelope();
-						}
 
-						if (rect == null) {
-							rect = new Envelope(geometryEnvelope);
-						} else {
-							rect.expandToInclude(geometryEnvelope);
-						}
+							if (rect == null) {
+								rect = new Envelope(geometryEnvelope);
+							} else {
+								rect.expandToInclude(geometryEnvelope);
+							}
 
+						}
 					}
 
 					EditorManager em = (EditorManager) Services
 							.getService(EditorManager.class);
-					IEditor[] editors = em.getEditors(Names.EDITOR_MAP_ID, element
-							.getMapContext());
+					IEditor[] editors = em.getEditors(Names.EDITOR_MAP_ID,
+							element.getMapContext());
 					for (IEditor mapEditorPlugIn : editors) {
 						((MapEditorPlugIn) mapEditorPlugIn).getMapTransform()
 								.setExtent(rect);
@@ -138,8 +145,8 @@ public class ZoomToSelectedPlugIn extends AbstractPlugIn {
 	public boolean isEnabled() {
 		boolean isEnabled = false;
 		TableEditorPlugIn tableEditor = null;
-		if((tableEditor=getPlugInContext().getTableEditor()) != null
-				&& getSelectedColumn()==-1){
+		if ((tableEditor = getPlugInContext().getTableEditor()) != null
+				&& getSelectedColumn() == -1) {
 			final TableEditableElement element = (TableEditableElement) tableEditor
 					.getElement();
 			if (element.getMapContext() != null) {
