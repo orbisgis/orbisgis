@@ -44,6 +44,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 
+import javax.swing.JButton;
 import javax.swing.JMenuItem;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -57,6 +58,7 @@ import org.orbisgis.core.ui.geocatalog.persistence.Tag;
 import org.orbisgis.core.ui.pluginSystem.PlugInContext;
 import org.orbisgis.core.ui.pluginSystem.ViewPlugIn;
 import org.orbisgis.core.ui.pluginSystem.workbench.Names;
+import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchContext;
 import org.orbisgis.core.ui.plugins.views.geocatalog.Catalog;
 import org.orbisgis.core.ui.preferences.lookandfeel.OrbisGISIcon;
 import org.orbisgis.core.ui.window.EPWindowHelper;
@@ -67,6 +69,12 @@ public class GeoCatalogViewPlugIn extends ViewPlugIn {
 	private static final String CATALOG_PERSISTENCE_FILE = "org.orbisgis.core.ui.GeoCatalog.xml";
 	private Catalog panel;
 	private JMenuItem menuItem;
+	private JButton btn;
+
+	public GeoCatalogViewPlugIn() {
+		btn = new JButton(OrbisGISIcon.GEOCATALOG_ICON);
+		btn.setToolTipText(Names.GEOCATALOG);
+	}
 
 	public Catalog getPanel() {
 		return panel;
@@ -77,6 +85,9 @@ public class GeoCatalogViewPlugIn extends ViewPlugIn {
 		menuItem = context.getFeatureInstaller().addMainMenuItem(this,
 				new String[] { Names.VIEW }, Names.GEOCATALOG, true,
 				OrbisGISIcon.GEOCATALOG_ICON, null, panel, context);
+		WorkbenchContext wbcontext = context.getWorkbenchContext();
+		wbcontext.getWorkbench().getFrame().getViewToolBar().addPlugIn(this,
+				btn, context);
 	}
 
 	@Override
@@ -100,7 +111,8 @@ public class GeoCatalogViewPlugIn extends ViewPlugIn {
 				for (ActiveFilter activeFilter : filters) {
 					filterIds.add(activeFilter.getId());
 				}
-				panel.setActiveFiltersId(filterIds.toArray(new String[filterIds.size()]));
+				panel.setActiveFiltersId(filterIds.toArray(new String[filterIds
+						.size()]));
 
 				List<Tag> tags = cat.getTag();
 				SourceManager sm = Services.getService(DataManager.class)
@@ -119,7 +131,8 @@ public class GeoCatalogViewPlugIn extends ViewPlugIn {
 						activeLabels.add(tag.getText());
 					}
 				}
-				panel.setActiveLabels(activeLabels.toArray(new String[activeLabels.size()]));
+				panel.setActiveLabels(activeLabels
+						.toArray(new String[activeLabels.size()]));
 			} catch (JAXBException e) {
 				throw new PersistenceException("Cannot load geocatalog", e);
 			}
