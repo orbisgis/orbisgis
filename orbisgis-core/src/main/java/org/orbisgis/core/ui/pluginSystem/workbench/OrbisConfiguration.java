@@ -244,8 +244,9 @@ public class OrbisConfiguration implements Setup {
 	// Tool bar on map
 	private ShowXYPlugIn showXYPlugIn = new ShowXYPlugIn();
 	// Scale panel plugin is a swing component to execute action on map editor
-	//private ScalePlugIn scalePlugIn = new ScalePlugIn();
-	//private CoordinateReferenceSystemPlugIn CRSPlugIn = new CoordinateReferenceSystemPlugIn();
+	// private ScalePlugIn scalePlugIn = new ScalePlugIn();
+	// private CoordinateReferenceSystemPlugIn CRSPlugIn = new
+	// CoordinateReferenceSystemPlugIn();
 
 	// right click on Map
 	private ExportMapAsImagePlugIn exportMasAsImagePlugIn = new ExportMapAsImagePlugIn();
@@ -442,7 +443,7 @@ public class OrbisConfiguration implements Setup {
 		createSourceFromSelectionPlugIn.initialize(plugInContext);
 
 		// Map tools
-		//scalePlugIn.initialize(plugInContext);
+		// scalePlugIn.initialize(plugInContext);
 		showXYPlugIn.initialize(plugInContext);
 		// CRSPlugIn.initialize(plugInContext);
 
@@ -450,6 +451,11 @@ public class OrbisConfiguration implements Setup {
 		rasterAlgebraPlugIn.initialize(plugInContext);
 	}
 
+	/**
+	 * Create here all toolbars available in the plugincontext.
+	 * 
+	 * @param plugInContext
+	 */
 	private void configureToolBar(PlugInContext plugInContext) {
 		// Frame tool bar
 		OrbisGISFrame frame = plugInContext.getWorkbenchContext()
@@ -487,8 +493,12 @@ public class OrbisConfiguration implements Setup {
 		wbToolBar.add(wbEditionTable);
 
 		WorkbenchToolBar wbStatusMainToolBar = new WorkbenchToolBar(wbContext,
-				Names.STATUS_TOOLBAR_MAIN);
+				Names.MAIN_STATUS_TOOLBAR_MAIN);
 		wbToolBar.add(wbStatusMainToolBar);
+
+		WorkbenchToolBar wbViewToolBar = new WorkbenchToolBar(wbContext,
+				Names.VIEW_TOOLBAR);
+		wbToolBar.add(wbViewToolBar);
 
 	}
 

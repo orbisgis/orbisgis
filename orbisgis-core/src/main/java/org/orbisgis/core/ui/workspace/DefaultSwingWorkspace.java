@@ -82,6 +82,10 @@ public class DefaultSwingWorkspace extends DefaultWorkspace implements
 		}
 	}
 
+	/**
+	 * Open a window to select a workspace
+	 * @throws IOException
+	 */
 	public void createWorkspaceFolderPanelChooser() throws IOException {
 		WorkspaceFolderPanel workspaceFolderPanel = new WorkspaceFolderPanel(
 				loadWorkspaces());

@@ -76,6 +76,7 @@ import org.orbisgis.core.ui.plugins.views.sqlConsole.actions.ConsoleAction;
 import org.orbisgis.core.ui.plugins.views.sqlConsole.actions.ConsoleListener;
 import org.orbisgis.core.ui.plugins.views.sqlConsole.syntax.SQLCompletionProvider;
 import org.orbisgis.core.ui.plugins.views.sqlConsole.util.CodeError;
+import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 
 public class SQLConsolePanel extends JPanel implements DropTargetListener {
 	private JButton btExecute = null;

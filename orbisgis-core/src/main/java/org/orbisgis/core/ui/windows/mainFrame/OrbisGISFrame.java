@@ -59,6 +59,7 @@ import java.util.Map;
 import javax.swing.BorderFactory;
 import javax.swing.JFrame;
 import javax.swing.JMenuBar;
+import javax.swing.JPanel;
 
 import net.infonode.docking.RootWindow;
 import net.infonode.docking.View;
@@ -177,7 +178,12 @@ public class OrbisGISFrame extends JFrame implements IWindow {
 	}
 
 	public WorkbenchToolBar getMainStatusToolBar() {
-		return workbenchToolBar.getToolbars().get(Names.STATUS_TOOLBAR_MAIN);
+		return workbenchToolBar.getToolbars().get(
+				Names.MAIN_STATUS_TOOLBAR_MAIN);
+	}
+
+	public WorkbenchToolBar getViewToolBar() {
+		return workbenchToolBar.getToolbars().get(Names.VIEW_TOOLBAR);
 	}
 
 	public Toc getToc() {
@@ -285,7 +291,14 @@ public class OrbisGISFrame extends JFrame implements IWindow {
 		jobPopup = new JobPopup();
 		jobPopup.initialize();
 
-		this.getContentPane().add(getMainStatusToolBar(), BorderLayout.SOUTH);
+		// A panel to display the statustoolbar on the left side and the viewtoolbar on the rigth side
+		JPanel jPanel = new JPanel();
+		BorderLayout layout = new BorderLayout();
+		jPanel.setLayout(layout);
+		jPanel.add(getMainStatusToolBar(), BorderLayout.WEST);
+		jPanel.add(getViewToolBar(), BorderLayout.EAST);
+
+		this.getContentPane().add(jPanel, BorderLayout.SOUTH);
 
 	}
 

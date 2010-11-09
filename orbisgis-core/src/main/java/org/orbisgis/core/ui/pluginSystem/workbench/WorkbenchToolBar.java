@@ -69,6 +69,7 @@ import org.orbisgis.core.ui.editors.map.tool.TransitionException;
 import org.orbisgis.core.ui.pluginSystem.AbstractPlugIn;
 import org.orbisgis.core.ui.pluginSystem.PlugIn;
 import org.orbisgis.core.ui.pluginSystem.PlugInContext;
+import org.orbisgis.core.ui.pluginSystem.ViewPlugIn;
 import org.orbisgis.core.ui.plugins.views.MapEditorPlugIn;
 import org.orbisgis.core.ui.plugins.views.editor.EditorManager;
 
@@ -133,7 +134,12 @@ public class WorkbenchToolBar extends EnableableToolBar implements Observer {
 
 	public void addPlugIn(final PlugIn plugIn, Component c,
 			PlugInContext plugInContext) {
+		if (plugIn instanceof ViewPlugIn){
+			((ViewPlugIn) plugIn).setPlugInContext(plugInContext);
+		}
+		else{
 		((AbstractPlugIn) plugIn).setPlugInContext(plugInContext);
+		}
 		toolsPlugInObservers.add(plugIn);
 		((JButton) c).setBorderPainted(false);
 		((JButton) c).addActionListener(AbstractPlugIn.toActionListener(plugIn,
@@ -149,7 +155,7 @@ public class WorkbenchToolBar extends EnableableToolBar implements Observer {
 				((JComboBox) comp).addItemListener(AbstractPlugIn
 						.toItemListener((PlugIn) constraints, context));
 			} else if (comp instanceof JToolBar) {
-				// TODO : For the moment tool bar is not floatable. This resolve
+				// TODO : Currently toolbar is not floatable. This resolve
 				// a problem, but not the solution
 				// Maybe we'll extend JToolbar parent to modify toolbar
 				// comportment.
