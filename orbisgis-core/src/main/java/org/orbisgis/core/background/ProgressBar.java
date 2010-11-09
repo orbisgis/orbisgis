@@ -13,7 +13,7 @@
  *
  * Copyright (C) 2007 Erwan BOCHER, Fernando GONZALEZ CORTES, Thomas LEDUC
  *
- * Copyright (C) 2010 Erwan BOCHER
+ * Copyright (C) 2010 Erwan BOCHER, Adelin PIAU
  *
  * This file is part of OrbisGIS.
  *
@@ -34,6 +34,7 @@
  * or contact directly:
  * erwan.bocher _at_ ec-nantes.fr
  * gwendall.petit _at_ ec-nantes.fr
+ * adelin.piau _at_ ec-nantes.fr
  */
 package org.orbisgis.core.background;
 
@@ -95,6 +96,7 @@ public class ProgressBar extends JPanel {
 		int overallProgress = job.getOverallProgress();
 		this.add(overallProgressBar, BorderLayout.CENTER);
 		overallProgressBar.setValue(overallProgress);
+		lblProgress.setFont(new Font(lblProgress.getFont().getFontName(), lblProgress.getFont().getStyle(), 10));// change font size
 		lblProgress.setText(Integer.toString(overallProgress) + "%");
 		changeSubTask();
 		ImageIcon icon = OrbisGISIcon.REMOVE;
@@ -130,8 +132,9 @@ public class ProgressBar extends JPanel {
 		ret.add(lblProgress);
 		ret.add(new CarriageReturn());
 		lblSubTask = new JLabel("");
-		Font taskFont = lblTask.getFont();
-		lblSubTask.setFont(taskFont.deriveFont(taskFont.getSize() - 2));
+		lblSubTask.setFont(new Font(lblProgress.getFont().getFontName(), lblProgress.getFont().getStyle(), 10));// change font size
+		lblTask.setFont(new Font(lblProgress.getFont().getFontName(), lblProgress.getFont().getStyle(), 10));// change font size
+		lblProgress.setFont(new Font(lblProgress.getFont().getFontName(), lblProgress.getFont().getStyle(), 10));// change font size
 		ret.add(lblSubTask);
 		return ret;
 	}
@@ -148,7 +151,7 @@ public class ProgressBar extends JPanel {
 	private void changeSubTask() {
 		String currentTaskName = job.getCurrentTaskName();
 		if (currentTaskName != null) {
-			lblSubTask.setText(currentTaskName + "(" + job.getCurrentProgress()
+			lblSubTask.setText(currentTaskName + " (" + job.getCurrentProgress()
 					+ "%)");
 		} else if (job.isStarted()) {
 			lblSubTask.setText("processing...");

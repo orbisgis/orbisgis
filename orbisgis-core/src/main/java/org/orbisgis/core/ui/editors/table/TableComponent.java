@@ -256,6 +256,21 @@ public class TableComponent extends JPanel implements WorkbenchFrame {
 				}
 			}
 		});
+		
+		regexTxtFilter.addMouseListener( new  MouseAdapter(){
+			 public void mousePressed(MouseEvent e) {
+				 if(regexTxtFilter.getText().equals(I18N
+							 			.getText("orbisgis.org.orbisgis.core.ui.editors.table.TableComponent.put_a_text")))
+				 regexTxtFilter.setText("");
+			   }
+			 public void mouseExited(MouseEvent e) {
+				 if(regexTxtFilter.getText().equals(""))
+					 regexTxtFilter.setText(I18N
+							 			.getText("orbisgis.org.orbisgis.core.ui.editors.table.TableComponent.put_a_text"));
+			 }
+		});
+
+		
 		regexPanel.add(label);
 		regexPanel.add(regexTxtFilter);
 		return regexPanel;
@@ -377,6 +392,20 @@ public class TableComponent extends JPanel implements WorkbenchFrame {
 			public void keyTyped(KeyEvent e) {
 			}
 
+		});
+		
+		
+		txtFilter.addMouseListener( new  MouseAdapter(){
+			 public void mousePressed(MouseEvent e) {
+				 if(txtFilter.getText().equals(I18N
+							 			.getText("orbisgis.org.orbisgis.core.ui.editors.table.TableComponent.put_a_sqlwhere")))
+					 txtFilter.setText("");
+			   }
+			 public void mouseExited(MouseEvent e) {
+				 if(txtFilter.getText().equals(""))
+					 txtFilter.setText(I18N
+							 			.getText("orbisgis.org.orbisgis.core.ui.editors.table.TableComponent.put_a_sqlwhere"));
+			 }
 		});
 
 		return txtFilter;
