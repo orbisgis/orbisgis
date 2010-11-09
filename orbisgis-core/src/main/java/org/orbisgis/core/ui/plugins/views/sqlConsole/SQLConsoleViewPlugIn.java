@@ -198,7 +198,7 @@ public class SQLConsoleViewPlugIn extends ViewPlugIn {
 		CodeReformator codeReformator = new CodeReformator(";", COMMENT_SPECS);
 
 		//panel.setText("-- SELECT * FROM myTable;");
-		JTextComponent txt = panel.getScriptPanel().getTextComponent();
+		JTextComponent txt = panel.getScriptPanel();
 		txt.addKeyListener(new SQLConsoleKeyListener(panel, codeReformator));
 
 		menuItem = context.getFeatureInstaller().addMainMenuItem(this,

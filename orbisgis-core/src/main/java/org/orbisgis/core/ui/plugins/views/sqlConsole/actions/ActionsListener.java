@@ -70,7 +70,7 @@ public class ActionsListener implements ActionListener, DocumentListener {
 	public void actionPerformed(ActionEvent e) {
 		switch (new Integer(e.getActionCommand())) {
 		case ConsoleAction.EXECUTE:
-			listener.execute(consolePanel.getScriptPanel().getSQLToBeExecuted());
+			listener.execute(consolePanel.getSQLToBeExecuted());
 			break;
 		case ConsoleAction.CLEAR:
 			if (consolePanel.getScriptPanel().getText().trim().length() > 0) {
@@ -101,7 +101,7 @@ public class ActionsListener implements ActionListener, DocumentListener {
 					}
 
 					if (answer != JOptionPane.CANCEL_OPTION) {
-						consolePanel.getScriptPanel().insertString(script);
+						consolePanel.insertString(script);
 					}
 				}
 			} catch (BadLocationException e1) {

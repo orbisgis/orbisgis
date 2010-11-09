@@ -1,11 +1,11 @@
 package org.orbisgis.core.ui.plugins.views.sqlConsole.blockComment;
 
-import org.orbisgis.core.ui.plugins.views.sqlConsole.ui.SQLScriptPanel;
+import org.orbisgis.core.ui.plugins.views.sqlConsole.ui.SQLConsolePanel;
 import org.orbisgis.core.ui.plugins.views.sqlConsole.util.QuoteUtilities;
 
 public class QuoteSQL {
 
-	public static void quoteSQL(SQLScriptPanel entryPanel, boolean sbAppend) {
+	public static void quoteSQL(SQLConsolePanel entryPanel, boolean sbAppend) {
 		int[] bounds = entryPanel.getBoundsOfSQLToBeExecuted();
 
 		if (bounds[0] == bounds[1]) {
@@ -20,12 +20,12 @@ public class QuoteSQL {
 
 		String quotedText = QuoteUtilities.quoteText(textToQuote, sbAppend);
 
-		entryPanel.setSelectionStart(bounds[0]);
-		entryPanel.setSelectionEnd(bounds[1]);
-		entryPanel.replaceSelection(quotedText);
+		entryPanel.getScriptPanel().setSelectionStart(bounds[0]);
+		entryPanel.getScriptPanel().setSelectionEnd(bounds[1]);
+		entryPanel.getScriptPanel().replaceSelection(quotedText);
 	}
 
-	public static void unquoteSQL(SQLScriptPanel entryPanel) {
+	public static void unquoteSQL(SQLConsolePanel entryPanel) {
 		int[] bounds = entryPanel.getBoundsOfSQLToBeExecuted();
 
 		if (bounds[0] == bounds[1]) {
@@ -40,8 +40,8 @@ public class QuoteSQL {
 
 		String unquotedText = QuoteUtilities.unquoteText(textToUnquote);
 
-		entryPanel.setSelectionStart(bounds[0]);
-		entryPanel.setSelectionEnd(bounds[1]);
-		entryPanel.replaceSelection(unquotedText);
+		entryPanel.getScriptPanel().setSelectionStart(bounds[0]);
+		entryPanel.getScriptPanel().setSelectionEnd(bounds[1]);
+		entryPanel.getScriptPanel().replaceSelection(unquotedText);
 	}
 }

@@ -73,7 +73,7 @@ public class SQLConsoleKeyListener extends KeyAdapter {
 	}
 
 	public void keyPressed(KeyEvent e) {
-		String originalText = panel.getScriptPanel().getSQLToBeExecuted();
+		String originalText = panel.getSQLToBeExecuted();
 		if ((e.getKeyCode() == KeyEvent.VK_ENTER) && e.isControlDown()) {
 			BackgroundManager bm = (BackgroundManager) Services
 					.getService(BackgroundManager.class);
@@ -108,13 +108,13 @@ public class SQLConsoleKeyListener extends KeyAdapter {
 		// Quote SQL
 		else if ((e.getKeyCode() == KeyEvent.VK_SLASH) && e.isControlDown()
 				&& e.isShiftDown()) {
-			QuoteSQL.quoteSQL(panel.getScriptPanel(), false);
+			QuoteSQL.quoteSQL(panel, false);
 
 		}
 		// Unquote SQL
 		else if ((e.getKeyCode() == KeyEvent.VK_BACK_SLASH)
 				&& e.isControlDown() && e.isShiftDown()) {
-			QuoteSQL.unquoteSQL(panel.getScriptPanel());
+			QuoteSQL.unquoteSQL(panel);
 
 		} else if ((e.getKeyCode() == KeyEvent.VK_O) && e.isControlDown()
 				&& e.isShiftDown()) {
@@ -136,7 +136,7 @@ public class SQLConsoleKeyListener extends KeyAdapter {
 					}
 
 					if (answer != JOptionPane.CANCEL_OPTION) {
-						panel.getScriptPanel().insertString(script);
+						panel.insertString(script);
 					}
 				}
 			} catch (BadLocationException e1) {

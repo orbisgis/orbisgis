@@ -40,6 +40,16 @@ package org.orbisgis.core.ui.plugins.views.sqlConsole.ui;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.Transferable;
+import java.awt.datatransfer.UnsupportedFlavorException;
+import java.awt.dnd.DnDConstants;
+import java.awt.dnd.DropTarget;
+import java.awt.dnd.DropTargetDragEvent;
+import java.awt.dnd.DropTargetDropEvent;
+import java.awt.dnd.DropTargetEvent;
+import java.awt.dnd.DropTargetListener;
+import java.io.IOException;
 
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -51,26 +61,33 @@ import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
 import javax.swing.text.Highlighter;
 import javax.swing.text.Highlighter.HighlightPainter;
+import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
+import org.fife.ui.rtextarea.RTextScrollPane;
+import org.orbisgis.core.Services;
 
 import org.orbisgis.core.sif.CRFlowLayout;
 import org.orbisgis.core.ui.components.jtextComponent.SearchWord;
 import org.orbisgis.core.ui.components.jtextComponent.WordHighlightPainter;
 import org.orbisgis.core.ui.components.text.JTextFilter;
+import org.orbisgis.core.ui.editorViews.toc.TransferableLayer;
+import org.orbisgis.core.ui.plugins.views.geocatalog.TransferableSource;
 import org.orbisgis.core.ui.plugins.views.sqlConsole.actions.ActionsListener;
 import org.orbisgis.core.ui.plugins.views.sqlConsole.actions.ConsoleAction;
 import org.orbisgis.core.ui.plugins.views.sqlConsole.actions.ConsoleListener;
+import org.orbisgis.core.ui.plugins.views.sqlConsole.syntax.SQLCompletionProvider;
 import org.orbisgis.core.ui.plugins.views.sqlConsole.util.CodeError;
 
-public class SQLConsolePanel extends JPanel {
+public class SQLConsolePanel extends JPanel implements DropTargetListener {
 	private JButton btExecute = null;
 	private JButton btClear = null;
 	private JButton btOpen = null;
 	private JButton btSave = null;
 
 	private ActionsListener actionAndKeyListener;
-	private JPanel centerPanel;
+        private ConsoleListener listener;
+	private RTextScrollPane centerPanel;
 
-	private SQLScriptPanel scriptPanel;
+	private RSyntaxTextArea scriptPanel;
 	
 
 	private JTextFilter searchTextField;
@@ -87,8 +104,8 @@ public class SQLConsolePanel extends JPanel {
 	 * Creates a console for sql.
 	 */
 	public SQLConsolePanel(ConsoleListener listener) {
+                this.listener = listener;
 		actionAndKeyListener = new ActionsListener(listener, this);
-
 		setLayout(new BorderLayout());
 		add(getCenterPanel(listener), BorderLayout.CENTER);
 		if (listener.showControlButtons()) {
@@ -97,7 +114,7 @@ public class SQLConsolePanel extends JPanel {
 		setButtonsStatus();
 		add(getStatusToolBar(), BorderLayout.SOUTH);
 
-		searchWord = new SearchWord(scriptPanel.getTextComponent());
+		searchWord = new SearchWord(scriptPanel);
 
 	}
 
@@ -118,12 +135,15 @@ public class SQLConsolePanel extends JPanel {
 		return northPanel;
 	}
 
-	private JPanel getCenterPanel(ConsoleListener listener) {
+	private RTextScrollPane getCenterPanel(ConsoleListener listener) {
 		if (centerPanel == null) {
-			centerPanel = new JPanel();
-			centerPanel.setLayout(new BorderLayout());
-			scriptPanel = new SQLScriptPanel(actionAndKeyListener, listener);
-			centerPanel.add(scriptPanel, BorderLayout.CENTER);
+                        scriptPanel = new RSyntaxTextArea();
+                        scriptPanel.setSyntaxEditingStyle(RSyntaxTextArea.SYNTAX_STYLE_SQL);
+                        scriptPanel.getDocument().addDocumentListener(actionAndKeyListener);
+                        scriptPanel.setDropTarget(new DropTarget(centerPanel, this));
+                        SQLCompletionProvider cpl = new SQLCompletionProvider(scriptPanel);
+                        cpl.install();
+			centerPanel = new RTextScrollPane(scriptPanel);
 		}
 		return centerPanel;
 	}
@@ -179,9 +199,9 @@ public class SQLConsolePanel extends JPanel {
 		}
 
 		try {
-			Highlighter hilite = scriptPanel.getTextComponent()
+			Highlighter hilite = scriptPanel
 					.getHighlighter();
-			Document doc = scriptPanel.getTextComponent().getDocument();
+			Document doc = scriptPanel.getDocument();
 			String text = doc.getText(0, doc.getLength());
 			int pos = 0;
 
@@ -277,13 +297,179 @@ public class SQLConsolePanel extends JPanel {
 		setBtSave();
 	}
 
-	public SQLScriptPanel getScriptPanel() {
+	public RSyntaxTextArea getScriptPanel() {
 		return scriptPanel;
 	}
 
 
 	public void updateCodeError(CodeError codeError) {
-		scriptPanel.updateCodeError(codeError.getStart(), codeError.getEnd());
+//		scriptPanel.updateCodeError(codeError.getStart(), codeError.getEnd());
 	}
 
+
+        public String getSQLToBeExecuted() {
+		String sql = scriptPanel.getSelectedText();
+		if (sql == null || sql.trim().length() == 0) {
+			sql = getText();
+			int[] bounds = getBoundsOfSQLToBeExecuted();
+
+			if (bounds[0] >= bounds[1]) {
+				sql = "";
+			} else {
+				sql = sql.substring(bounds[0], bounds[1]).trim();
+			}
+		}
+		return sql != null ? sql : "";
+	}
+
+	public int[] getBoundsOfSQLToBeExecuted() {
+		int[] bounds = new int[2];
+		bounds[0] = scriptPanel.getSelectionStart();
+		bounds[1] = scriptPanel.getSelectionEnd();
+
+		if (bounds[0] == bounds[1]) {
+			bounds = getSqlBoundsBySeparatorRule(scriptPanel.getCaretPosition());
+		}
+
+		return bounds;
+	}
+
+	private int[] getSqlBoundsBySeparatorRule(int iCaretPos) {
+		int[] bounds = new int[2];
+
+		String sql = getText();
+
+		bounds[0] = lastIndexOfStateSep(sql, iCaretPos);
+		bounds[1] = indexOfStateSep(sql, iCaretPos);
+
+		return bounds;
+
+	}
+
+	private static int indexOfStateSep(String sql, int pos) {
+		int ix = pos;
+
+		int newLinteCount = 0;
+		for (;;) {
+			if (sql.length() == ix) {
+				return sql.length();
+			}
+
+			if (false == Character.isWhitespace(sql.charAt(ix))) {
+				newLinteCount = 0;
+			}
+
+			if ('\n' == sql.charAt(ix)) {
+				++newLinteCount;
+				if (2 == newLinteCount) {
+					return ix - 1;
+				}
+			}
+
+			++ix;
+		}
+	}
+
+	private static int lastIndexOfStateSep(String sql, int pos) {
+		int ix = pos;
+
+		int newLinteCount = 0;
+		for (;;) {
+
+			if (ix == sql.length()) {
+				if (ix == 0) {
+					return ix;
+				} else {
+					ix--;
+				}
+			}
+
+			if (false == Character.isWhitespace(sql.charAt(ix))) {
+				newLinteCount = 0;
+			}
+
+			if ('\n' == sql.charAt(ix)) {
+				++newLinteCount;
+				if (2 == newLinteCount) {
+					return ix + newLinteCount;
+				}
+			}
+
+			if (0 == ix) {
+				return 0 + newLinteCount;
+			}
+
+			--ix;
+		}
+	}
+
+        public void insertString(String string) throws BadLocationException {
+		scriptPanel.getDocument().insertString(scriptPanel.getDocument().getLength(), string, null);
+	}
+
+    @Override
+    public void dragEnter(DropTargetDragEvent dtde) {
+
+    }
+
+    @Override
+    public void dragOver(DropTargetDragEvent dtde) {
+
+    }
+
+    @Override
+    public void dropActionChanged(DropTargetDragEvent dtde) {
+
+    }
+
+    @Override
+    public void dragExit(DropTargetEvent dte) {
+
+    }
+
+    @Override
+    public void drop(DropTargetDropEvent dtde) {
+        final Transferable t = dtde.getTransferable();
+
+		String query = listener.doDrop(t);
+		if (query == null) {
+			try {
+				if ((t.isDataFlavorSupported(TransferableSource
+						.getResourceFlavor()))
+						|| (t.isDataFlavorSupported(TransferableLayer
+								.getLayerFlavor()))) {
+					dtde.acceptDrop(DnDConstants.ACTION_COPY_OR_MOVE);
+					String s = (String) t
+							.getTransferData(DataFlavor.stringFlavor);
+					dtde.getDropTargetContext().dropComplete(true);
+					query = s;
+				} else if (t.isDataFlavorSupported(DataFlavor.stringFlavor)) {
+					dtde.acceptDrop(DnDConstants.ACTION_COPY_OR_MOVE);
+					String s = (String) t
+							.getTransferData(DataFlavor.stringFlavor);
+					dtde.getDropTargetContext().dropComplete(true);
+					query = s;
+				}
+			} catch (IOException e) {
+				dtde.rejectDrop();
+			} catch (UnsupportedFlavorException e) {
+				dtde.rejectDrop();
+			}
+		}
+
+		if (query != null) {
+			// Cursor position
+			int position = scriptPanel.viewToModel(dtde.getLocation());
+			try {
+				scriptPanel.getDocument().insertString(position, query, null);
+			} catch (BadLocationException e) {
+				Services.getErrorManager().error("Cannot place the text there",
+						e);
+			}
+		} else {
+			dtde.rejectDrop();
+		}
+
+		setButtonsStatus();
+    }
 }
