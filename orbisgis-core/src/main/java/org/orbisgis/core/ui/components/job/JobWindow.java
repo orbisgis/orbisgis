@@ -52,7 +52,6 @@ import java.util.HashMap;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JWindow;
-import javax.swing.SwingUtilities;
 
 import org.orbisgis.core.Services;
 import org.orbisgis.core.background.BackgroundManager;
