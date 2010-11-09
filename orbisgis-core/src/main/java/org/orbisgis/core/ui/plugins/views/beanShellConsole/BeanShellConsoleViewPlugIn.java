@@ -47,6 +47,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintStream;
 
+import javax.swing.JButton;
 import javax.swing.JMenuItem;
 import javax.swing.text.JTextComponent;
 
@@ -60,6 +61,7 @@ import org.orbisgis.core.ui.editors.map.MapContextManager;
 import org.orbisgis.core.ui.pluginSystem.PlugInContext;
 import org.orbisgis.core.ui.pluginSystem.ViewPlugIn;
 import org.orbisgis.core.ui.pluginSystem.workbench.Names;
+import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchContext;
 import org.orbisgis.core.ui.plugins.views.OutputManager;
 import org.orbisgis.core.ui.plugins.views.beanShellConsole.actions.BshCompletionKeyListener;
 import org.orbisgis.core.ui.plugins.views.beanShellConsole.actions.BshConsoleListener;
@@ -75,9 +77,11 @@ public class BeanShellConsoleViewPlugIn extends ViewPlugIn {
 	private Interpreter interpreter = new Interpreter();;
 	private ByteArrayOutputStream scriptOutput;
 	private JMenuItem menuItem;
+	private JButton btn;
 
 	public BeanShellConsoleViewPlugIn() {
-
+		btn = new JButton(OrbisGISIcon.BEANSHELL_ICON);
+		btn.setToolTipText(Names.BEANSHELL);
 	}
 
 	public void initialize(PlugInContext context) throws Exception {
@@ -173,6 +177,9 @@ public class BeanShellConsoleViewPlugIn extends ViewPlugIn {
 		menuItem = context.getFeatureInstaller().addMainMenuItem(this,
 				new String[] { Names.VIEW }, Names.BEANSHELL, true,
 				OrbisGISIcon.BEANSHELL_ICON, null, panel, context);
+		WorkbenchContext wbcontext = context.getWorkbenchContext();
+		wbcontext.getWorkbench().getFrame().getViewToolBar().addPlugIn(this,
+				btn, context);
 	}
 
 	public boolean execute(PlugInContext context) throws Exception {
