@@ -288,7 +288,14 @@ public class ToolManager extends MouseAdapter implements MouseMotionListener,
 	public void mouseMoved(MouseEvent e) {
 		lastMouseX = e.getPoint().x;
 		lastMouseY = e.getPoint().y;
+
+                // hack to go around bad Swing drawing when the MapControl
+                // is empty AND when the new sqlConsole plugin is loaded
+                // (very weird !)
+                // TODO : change this one day
+                if (mapContext.getLayerModel().getLayerCount() != 0) {
 		component.repaint();
+                }
 
 		setAdjustedHandler();
 	}
