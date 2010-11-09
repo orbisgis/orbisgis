@@ -47,6 +47,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 
+import javax.swing.JButton;
 import javax.swing.JMenuItem;
 import javax.swing.text.JTextComponent;
 
@@ -84,6 +85,7 @@ import org.orbisgis.core.ui.geocognition.TransferableGeocognitionElement;
 import org.orbisgis.core.ui.pluginSystem.PlugInContext;
 import org.orbisgis.core.ui.pluginSystem.ViewPlugIn;
 import org.orbisgis.core.ui.pluginSystem.workbench.Names;
+import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchContext;
 import org.orbisgis.core.ui.plugins.views.OutputManager;
 import org.orbisgis.core.ui.plugins.views.sqlConsole.actions.ConsoleListener;
 import org.orbisgis.core.ui.plugins.views.sqlConsole.actions.SQLConsoleKeyListener;
@@ -101,9 +103,15 @@ public class SQLConsoleViewPlugIn extends ViewPlugIn {
 			.getLogger(SQLConsoleViewPlugIn.class);
 	private final String EOL = System.getProperty("line.separator");
 	private JMenuItem menuItem;
+	private JButton btn;
 
 	static CommentSpec[] COMMENT_SPECS = new CommentSpec[] {
 			new CommentSpec("/*", "*/"), new CommentSpec("--", "\n") };
+
+	public SQLConsoleViewPlugIn() {
+		btn = new JButton(OrbisGISIcon.SQLCONSOLE_ICON);
+		btn.setToolTipText(Names.SQLCONSOLE);
+	}
 
 	public void initialize(PlugInContext context) throws Exception {
 		panel = new SQLConsolePanel(new ConsoleListener() {
@@ -197,13 +205,18 @@ public class SQLConsoleViewPlugIn extends ViewPlugIn {
 
 		CodeReformator codeReformator = new CodeReformator(";", COMMENT_SPECS);
 
-		//panel.setText("-- SELECT * FROM myTable;");
+		// panel.setText("-- SELECT * FROM myTable;");
 		JTextComponent txt = panel.getScriptPanel();
 		txt.addKeyListener(new SQLConsoleKeyListener(panel, codeReformator));
 
 		menuItem = context.getFeatureInstaller().addMainMenuItem(this,
 				new String[] { Names.VIEW }, Names.SQLCONSOLE, true,
 				OrbisGISIcon.SQLCONSOLE_ICON, null, panel, context);
+
+		WorkbenchContext wbcontext = context.getWorkbenchContext();
+		wbcontext.getWorkbench().getFrame().getViewToolBar().addPlugIn(this,
+				btn, context);
+
 	}
 
 	@Override
