@@ -84,6 +84,7 @@ public class OutputPanel extends JPanel implements OutputManager {
 		JButton deleteBt = new JButton();
 		deleteBt.setIcon(OrbisGISIcon.EDIT_CLEAR);
 		deleteBt.setToolTipText("Clear the text");
+		deleteBt.setBorderPainted(false);
 		deleteBt.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ae) {
 				jTextArea.setText(null);

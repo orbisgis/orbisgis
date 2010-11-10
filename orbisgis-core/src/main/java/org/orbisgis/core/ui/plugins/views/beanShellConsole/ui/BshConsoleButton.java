@@ -64,5 +64,6 @@ public class BshConsoleButton extends JButton {
 		setToolTipText(BshConsoleAction.getToolTipText(actionCommandType));
 		setActionCommand(actionCommandType.toString());
 		addActionListener(actionsListener);
+		setBorderPainted(false);
 	}
 }

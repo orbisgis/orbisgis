@@ -155,10 +155,12 @@ public class GeomarkPanel extends JPanel implements ListSelectionListener {
 		addButton.setActionCommand(addString);
 		addButton.addActionListener(hireListener);
 		addButton.setEnabled(false);
+		addButton.setBorderPainted(false);
 
 		deleteButton = new JButton();
 		deleteButton.setIcon(OrbisGISIcon.WORLD_DEL);
 		deleteButton.setToolTipText("Press the button to delete a geomark!");
+		deleteButton.setBorderPainted(false);
 		deleteButton.setActionCommand(removeString);
 		deleteButton.addActionListener(new FireListener());
 

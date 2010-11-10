@@ -52,7 +52,6 @@ import javax.swing.JButton;
 import org.orbisgis.core.ui.plugins.views.sqlConsole.actions.ActionsListener;
 import org.orbisgis.core.ui.plugins.views.sqlConsole.actions.ConsoleAction;
 
-
 public class ConsoleButton extends JButton {
 
 	public ConsoleButton(final Integer actionCommandType,
@@ -64,5 +63,6 @@ public class ConsoleButton extends JButton {
 		setToolTipText(ConsoleAction.getToolTipText(actionCommandType));
 		setActionCommand(actionCommandType.toString());
 		addActionListener(actionsListener);
+		setBorderPainted(false);
 	}
 }
