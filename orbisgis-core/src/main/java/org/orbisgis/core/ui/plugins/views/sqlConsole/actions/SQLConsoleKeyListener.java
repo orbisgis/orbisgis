@@ -88,7 +88,7 @@ public class SQLConsoleKeyListener extends KeyAdapter {
 		}
 		// Format SQL code
 		else if ((e.getKeyCode() == KeyEvent.VK_F) && e.isControlDown()) {
-			panel.getScriptPanel().setText(
+			panel.replaceCurrentSQLStatement(
 					codeReformator.reformat(panel.getCurrentSQLStatement()));
 
 		}
