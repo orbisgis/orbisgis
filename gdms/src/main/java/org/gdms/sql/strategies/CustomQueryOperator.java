@@ -114,7 +114,12 @@ public class CustomQueryOperator extends AbstractExpressionOperator implements
 					throw new ExecutionException("Cannot obtain "
 							+ "the sources in the sql", e);
 				}
-			} else {
+			} else  {
+                                if (scalar.getOperatorCount() == 0) {
+                                    // no scalar operator : juste a scanOperator
+                                    scalar = this;
+                                }
+
 				tables = new DataSource[scalar.getOperatorCount()];
 				for (int i = 0; i < tables.length; i++) {
 					ObjectDriver source = scalar.getOperator(i).getResult(pm);
@@ -210,11 +215,16 @@ public class CustomQueryOperator extends AbstractExpressionOperator implements
 	private Metadata[] getTablesMetadata() throws DriverException {
 		if (getOperatorCount() > 0) {
 			Operator scalar = getOperator(0);
+                        if (scalar.getOperatorCount() > 0) {
 			Metadata[] tables = new Metadata[scalar.getOperatorCount()];
 			for (int i = 0; i < tables.length; i++) {
 				tables[i] = scalar.getOperator(i).getResultMetadata();
 			}
 			return tables;
+                        } else {
+                            return new Metadata[] { scalar.getResultMetadata() };
+                        }
+
 		} else {
 			return new Metadata[0];
 		}
