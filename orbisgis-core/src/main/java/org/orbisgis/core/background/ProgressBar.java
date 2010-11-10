@@ -151,8 +151,12 @@ public class ProgressBar extends JPanel {
 	private void changeSubTask() {
 		String currentTaskName = job.getCurrentTaskName();
 		if (currentTaskName != null) {
-			lblSubTask.setText(currentTaskName + " (" + job.getCurrentProgress()
-					+ "%)");
+			if(currentTaskName.length()>20)
+				lblSubTask.setText(currentTaskName.substring(0,20) + "... (" + job.getCurrentProgress()
+						+ "%)");
+			else
+				lblSubTask.setText(currentTaskName + " (" + job.getCurrentProgress()
+						+ "%)");
 		} else if (job.isStarted()) {
 			lblSubTask.setText("processing...");
 		} else {

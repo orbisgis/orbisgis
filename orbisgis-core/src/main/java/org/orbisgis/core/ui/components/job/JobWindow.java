@@ -78,7 +78,7 @@ public class JobWindow extends JPanel {
 	private Container parent;
 	private HashMap<JobId, Component[]> idBar = new HashMap<JobId, Component[]>();
 	private static final int TOOLBAR_SIZE = 90;
-	private static final int RIGHT_POPUP_OFFSET = 37;
+	private static final int RIGHT_POPUP_OFFSET = 10;
 
 	public JobWindow() {
 	}
@@ -104,7 +104,6 @@ public class JobWindow extends JPanel {
 
 	public void centerParent() {
 		int x;
-		int y;
 
 		// Find out our parent
 		Point topLeft = parent.getLocationOnScreen();
@@ -118,13 +117,7 @@ public class JobWindow extends JPanel {
 		else
 			x = topLeft.x;
 
-		if (parentSize.height > mySize.height)
-			y = ((parentSize.height - mySize.height) - TOOLBAR_SIZE)
-					+ topLeft.y;
-		else
-			y = topLeft.y;
-
-		window.setLocation(x, y);
+		window.setLocation(x, topLeft.y+47);
 	}
 
 	public void initUI() {
