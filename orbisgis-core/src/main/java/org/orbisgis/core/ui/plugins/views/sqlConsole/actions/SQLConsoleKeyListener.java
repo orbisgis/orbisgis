@@ -73,14 +73,13 @@ public class SQLConsoleKeyListener extends KeyAdapter {
 	}
 
 	public void keyPressed(KeyEvent e) {
-		String originalText = panel.getSQLToBeExecuted();
+		String originalText = panel.getText();
 		if ((e.getKeyCode() == KeyEvent.VK_ENTER) && e.isControlDown()) {
 			BackgroundManager bm = (BackgroundManager) Services
 					.getService(BackgroundManager.class);
 			bm.backgroundOperation(new ExecuteScriptProcess(originalText));
 
-		} else if ((e.getKeyCode() == KeyEvent.VK_S) && e.isControlDown()
-				&& e.isShiftDown()) {
+		} else if ((e.getKeyCode() == KeyEvent.VK_S) && e.isControlDown()) {
 			try {
 				final SaveFilePanel outfilePanel = new SaveFilePanel(
 						"org.orbisgis.core.ui.views.sqlConsoleOutFile",
@@ -95,38 +94,35 @@ public class SQLConsoleKeyListener extends KeyAdapter {
 				}
 			} catch (IOException e1) {
 				Services.getErrorManager().error(
-						"Cannot save code completion test case", e1);
+						"Cannot save file", e1);
 			}
 		}
 		// Format SQL code
-		else if ((e.getKeyCode() == KeyEvent.VK_F) && e.isControlDown()
-				&& e.isShiftDown()) {
+		else if ((e.getKeyCode() == KeyEvent.VK_F) && e.isControlDown()) {
 			panel.getScriptPanel().setText(
-					codeReformator.reformat(originalText));
+					codeReformator.reformat(panel.getCurrentSQLStatement()));
 
 		}
 		// Quote SQL
-		else if ((e.getKeyCode() == KeyEvent.VK_SLASH) && e.isControlDown()
-				&& e.isShiftDown()) {
+		else if ((e.getKeyCode() == KeyEvent.VK_SLASH) && e.isControlDown()) {
 			QuoteSQL.quoteSQL(panel, false);
 
 		}
 		// Unquote SQL
 		else if ((e.getKeyCode() == KeyEvent.VK_BACK_SLASH)
-				&& e.isControlDown() && e.isShiftDown()) {
+				&& e.isControlDown()) {
 			QuoteSQL.unquoteSQL(panel);
 
-		} else if ((e.getKeyCode() == KeyEvent.VK_O) && e.isControlDown()
-				&& e.isShiftDown()) {
+		} else if ((e.getKeyCode() == KeyEvent.VK_O) && e.isControlDown()) {
 			try {
 				String script = originalText;
 				if (script != null) {
-					int answer = JOptionPane.NO_OPTION;
+					int answer = JOptionPane.CANCEL_OPTION;
 					if (originalText.trim().length() > 0) {
 						answer = JOptionPane
 								.showConfirmDialog(
 										null,
-										"Do you want to clear all before loadding the file ?",
+										"Do you want to clear all before loading the file ?",
 										"Open file",
 										JOptionPane.YES_NO_CANCEL_OPTION);
 					}
@@ -142,9 +138,6 @@ public class SQLConsoleKeyListener extends KeyAdapter {
 			} catch (BadLocationException e1) {
 				Services.getErrorManager().error("Cannot add script", e1);
 			}
-
-		} else if ((e.getKeyCode() == KeyEvent.VK_SPACE) && e.isControlDown()) {
-			// TODO : implement here the completion
 		}
 	}
 }

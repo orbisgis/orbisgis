@@ -6,13 +6,13 @@ import org.orbisgis.core.ui.plugins.views.sqlConsole.util.QuoteUtilities;
 public class QuoteSQL {
 
 	public static void quoteSQL(SQLConsolePanel entryPanel, boolean sbAppend) {
-		int[] bounds = entryPanel.getBoundsOfSQLToBeExecuted();
+		int[] bounds = entryPanel.getBoundsOfCurrentSQLStatement();
 
 		if (bounds[0] == bounds[1]) {
 			return;
 		}
 
-		String textToQuote = entryPanel.getSQLToBeExecuted();
+		String textToQuote = entryPanel.getCurrentSQLStatement();
 
 		if (null == textToQuote) {
 			return;
@@ -26,13 +26,13 @@ public class QuoteSQL {
 	}
 
 	public static void unquoteSQL(SQLConsolePanel entryPanel) {
-		int[] bounds = entryPanel.getBoundsOfSQLToBeExecuted();
+		int[] bounds = entryPanel.getBoundsOfCurrentSQLStatement();
 
 		if (bounds[0] == bounds[1]) {
 			return;
 		}
 
-		String textToUnquote = entryPanel.getSQLToBeExecuted();
+		String textToUnquote = entryPanel.getCurrentSQLStatement();
 
 		if (null == textToUnquote) {
 			return;

@@ -303,11 +303,11 @@ public class SQLConsolePanel extends JPanel implements DropTargetListener {
 		// codeError.getEnd());
 	}
 
-	public String getSQLToBeExecuted() {
+	public String getCurrentSQLStatement() {
 		String sql = scriptPanel.getSelectedText();
 		if (sql == null || sql.trim().length() == 0) {
 			sql = getText();
-			int[] bounds = getBoundsOfSQLToBeExecuted();
+			int[] bounds = getBoundsOfCurrentSQLStatement();
 
 			if (bounds[0] >= bounds[1]) {
 				sql = "";
@@ -318,7 +318,7 @@ public class SQLConsolePanel extends JPanel implements DropTargetListener {
 		return sql != null ? sql : "";
 	}
 
-	public int[] getBoundsOfSQLToBeExecuted() {
+	public int[] getBoundsOfCurrentSQLStatement() {
 		int[] bounds = new int[2];
 		bounds[0] = scriptPanel.getSelectionStart();
 		bounds[1] = scriptPanel.getSelectionEnd();

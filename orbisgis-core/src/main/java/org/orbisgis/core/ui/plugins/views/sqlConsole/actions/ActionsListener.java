@@ -70,7 +70,7 @@ public class ActionsListener implements ActionListener, DocumentListener {
 	public void actionPerformed(ActionEvent e) {
 		switch (new Integer(e.getActionCommand())) {
 		case ConsoleAction.EXECUTE:
-			listener.execute(consolePanel.getSQLToBeExecuted());
+			listener.execute(consolePanel.getText());
 			break;
 		case ConsoleAction.CLEAR:
 			if (consolePanel.getScriptPanel().getText().trim().length() > 0) {
