@@ -72,6 +72,9 @@ import org.orbisgis.core.ui.plugins.views.geocatalog.TransferableSource;
 import org.orbisgis.core.ui.plugins.views.sqlConsole.actions.ActionsListener;
 import org.orbisgis.core.ui.plugins.views.sqlConsole.actions.ConsoleAction;
 import org.orbisgis.core.ui.plugins.views.sqlConsole.actions.ConsoleListener;
+import org.orbisgis.core.ui.plugins.views.sqlConsole.actions.SQLConsoleKeyListener;
+import org.orbisgis.core.ui.plugins.views.sqlConsole.codereformat.CodeReformator;
+import org.orbisgis.core.ui.plugins.views.sqlConsole.codereformat.CommentSpec;
 import org.orbisgis.core.ui.plugins.views.sqlConsole.syntax.SQLCompletionProvider;
 import org.orbisgis.core.ui.plugins.views.sqlConsole.util.CodeError;
 
@@ -96,6 +99,10 @@ public class SQLConsolePanel extends JPanel implements DropTargetListener {
 	Highlighter.HighlightPainter myHighlightPainter = (HighlightPainter) new WordHighlightPainter(
 			new Color(205, 235, 255));
 	private JPanel pnlTextFilter;
+
+
+        static CommentSpec[] COMMENT_SPECS = new CommentSpec[] {
+			new CommentSpec("/*", "*/"), new CommentSpec("--", "\n") };
 
 	/**
 	 * Creates a console for sql.
@@ -140,6 +147,11 @@ public class SQLConsolePanel extends JPanel implements DropTargetListener {
 			scriptPanel.setDropTarget(new DropTarget(centerPanel, this));
 			SQLCompletionProvider cpl = new SQLCompletionProvider(scriptPanel);
 			cpl.install();
+
+                        CodeReformator codeReformator = new CodeReformator(";", COMMENT_SPECS);
+
+                        scriptPanel.addKeyListener(new SQLConsoleKeyListener(this, codeReformator,actionAndKeyListener));
+
 			centerPanel = new RTextScrollPane(scriptPanel);
 		}
 		return centerPanel;

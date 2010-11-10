@@ -49,7 +49,6 @@ import java.io.IOException;
 
 import javax.swing.JButton;
 import javax.swing.JMenuItem;
-import javax.swing.text.JTextComponent;
 
 import org.apache.log4j.Logger;
 import org.gdms.data.DataSource;
@@ -104,9 +103,6 @@ public class SQLConsoleViewPlugIn extends ViewPlugIn {
 	private final String EOL = System.getProperty("line.separator");
 	private JMenuItem menuItem;
 	private JButton btn;
-
-	static CommentSpec[] COMMENT_SPECS = new CommentSpec[] {
-			new CommentSpec("/*", "*/"), new CommentSpec("--", "\n") };
 
 	public SQLConsoleViewPlugIn() {
 		btn = new JButton(OrbisGISIcon.SQLCONSOLE_ICON);
@@ -202,12 +198,6 @@ public class SQLConsoleViewPlugIn extends ViewPlugIn {
 			}
 
 		});
-
-		CodeReformator codeReformator = new CodeReformator(";", COMMENT_SPECS);
-
-		// panel.setText("-- SELECT * FROM myTable;");
-		JTextComponent txt = panel.getScriptPanel();
-		txt.addKeyListener(new SQLConsoleKeyListener(panel, codeReformator));
 
 		menuItem = context.getFeatureInstaller().addMainMenuItem(this,
 				new String[] { Names.VIEW }, Names.SQLCONSOLE, true,

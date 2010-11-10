@@ -44,6 +44,7 @@
 
 package org.orbisgis.core.ui.plugins.views.sqlConsole.actions;
 
+import java.awt.event.ActionEvent;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.io.BufferedWriter;
@@ -65,11 +66,13 @@ public class SQLConsoleKeyListener extends KeyAdapter {
 
 	private SQLConsolePanel panel;
 	private CodeReformator codeReformator;
+        private ActionsListener actionsListener;
 
 	public SQLConsoleKeyListener(SQLConsolePanel panel,
-			CodeReformator codeReformator) {
+			CodeReformator codeReformator, ActionsListener listener) {
 		this.panel = panel;
 		this.codeReformator = codeReformator;
+                this.actionsListener = listener;
 	}
 
 	public void keyPressed(KeyEvent e) {
@@ -80,22 +83,8 @@ public class SQLConsoleKeyListener extends KeyAdapter {
 			bm.backgroundOperation(new ExecuteScriptProcess(originalText));
 
 		} else if ((e.getKeyCode() == KeyEvent.VK_S) && e.isControlDown()) {
-			try {
-				final SaveFilePanel outfilePanel = new SaveFilePanel(
-						"org.orbisgis.core.ui.views.sqlConsoleOutFile",
-						"Save script");
-				outfilePanel.addFilter("sql", "SQL script (*.sql)");
-
-				if (UIFactory.showDialog(outfilePanel)) {
-					final BufferedWriter out = new BufferedWriter(
-							new FileWriter(outfilePanel.getSelectedFile()));
-					out.write(originalText);
-					out.close();
-				}
-			} catch (IOException e1) {
-				Services.getErrorManager().error(
-						"Cannot save file", e1);
-			}
+                    ActionEvent ev = new ActionEvent(this, ConsoleAction.SAVE, String.valueOf(ConsoleAction.SAVE));
+                    actionsListener.actionPerformed(ev);
 		}
 		// Format SQL code
 		else if ((e.getKeyCode() == KeyEvent.VK_F) && e.isControlDown()) {
@@ -114,30 +103,8 @@ public class SQLConsoleKeyListener extends KeyAdapter {
 			QuoteSQL.unquoteSQL(panel);
 
 		} else if ((e.getKeyCode() == KeyEvent.VK_O) && e.isControlDown()) {
-			try {
-				String script = originalText;
-				if (script != null) {
-					int answer = JOptionPane.CANCEL_OPTION;
-					if (originalText.trim().length() > 0) {
-						answer = JOptionPane
-								.showConfirmDialog(
-										null,
-										"Do you want to clear all before loading the file ?",
-										"Open file",
-										JOptionPane.YES_NO_CANCEL_OPTION);
-					}
-
-					if (answer == JOptionPane.YES_OPTION) {
-						panel.getScriptPanel().setText("");
-					}
-
-					if (answer != JOptionPane.CANCEL_OPTION) {
-						panel.insertString(script);
-					}
-				}
-			} catch (BadLocationException e1) {
-				Services.getErrorManager().error("Cannot add script", e1);
-			}
+			ActionEvent ev = new ActionEvent(this, ConsoleAction.OPEN, String.valueOf(ConsoleAction.OPEN));
+                    actionsListener.actionPerformed(ev);
 		}
 	}
 }
