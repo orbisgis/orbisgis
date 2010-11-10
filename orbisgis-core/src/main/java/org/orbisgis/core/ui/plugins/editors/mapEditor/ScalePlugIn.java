@@ -8,12 +8,11 @@
  *
  *  Team leader Erwan BOCHER, scientific researcher,
  *
- *  User support leader : Gwendall Petit, geomatic engineer.
  *
  *
  * Copyright (C) 2007 Erwan BOCHER, Fernando GONZALEZ CORTES, Thomas LEDUC
  *
- * Copyright (C) 2010 Erwan BOCHER, Pierre-Yves FADET, Alexis GUEGANNO, Maxence LAURENT
+ * Copyright (C) 2010 Erwan BOCHER,  Alexis GUEGANNO, Antoine GOURLAY, Adelin PIAU, Gwendall PETIT
  *
  * This file is part of OrbisGIS.
  *
@@ -32,8 +31,7 @@
  * For more information, please consult: <http://www.orbisgis.org/>
  *
  * or contact directly:
- * erwan.bocher _at_ ec-nantes.fr
- * gwendall.petit _at_ ec-nantes.fr
+ * info _at_ orbisgis.org
  */
 
 package org.orbisgis.core.ui.plugins.editors.mapEditor;
@@ -182,19 +180,19 @@ public class ScalePlugIn extends AbstractPlugIn {
 	}
 
 	/**
-	 *
+	 * 
 	 * This method has been copied from openjump GIS : http://wwww.openjump.org
-	 *
+	 * 
 	 * OpenJUMP is distributed under GPL 2 license. Delivers the scale of the
 	 * map shown on the display. The scale is calculated for the horizontal map
 	 * direction
 	 * <p>
 	 * note: The scale may differ for horizontal and vertical direction due to
 	 * the type of map projection.
-	 *
+	 * 
 	 * @param panel
 	 *            width and current envelope
-	 *
+	 * 
 	 * @return actual scale
 	 */
 
@@ -236,7 +234,7 @@ public class ScalePlugIn extends AbstractPlugIn {
 				&& getPlugInContext().getMapEditor() != null) {
 			MapContext mc = (MapContext) editor.getElement().getObject();
 			// isVisible = !getPlugInContext().isGeographicCRS();
-			isVisible = isVisible && mc.getLayerModel().getLayerCount() > 0;
+			isVisible = mc.getLayerModel().getLayerCount() > 0;
 			if (isVisible)
 				updateComponent();
 		}

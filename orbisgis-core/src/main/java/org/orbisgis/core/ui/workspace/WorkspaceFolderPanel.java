@@ -8,12 +8,11 @@
  *
  *  Team leader Erwan BOCHER, scientific researcher,
  *
- *  User support leader : Gwendall Petit, geomatic engineer.
  *
  *
  * Copyright (C) 2007 Erwan BOCHER, Fernando GONZALEZ CORTES, Thomas LEDUC
  *
- * Copyright (C) 2010 Erwan BOCHER, Pierre-Yves FADET, Alexis GUEGANNO, Maxence LAURENT
+ * Copyright (C) 2010 Erwan BOCHER,  Alexis GUEGANNO, Antoine GOURLAY, Adelin PIAU, Gwendall PETIT
  *
  * This file is part of OrbisGIS.
  *
@@ -32,8 +31,7 @@
  * For more information, please consult: <http://www.orbisgis.org/>
  *
  * or contact directly:
- * erwan.bocher _at_ ec-nantes.fr
- * gwendall.petit _at_ ec-nantes.fr
+ * info _at_ orbisgis.org
  */
 package org.orbisgis.core.ui.workspace;
 
@@ -96,6 +94,7 @@ public class WorkspaceFolderPanel extends JPanel implements UIPanel {
 		});
 		btFolder = new JButton();
 		btFolder.setBorderPainted(false);
+		btFolder.setContentAreaFilled(false);
 		btFolder.setIcon(IconLoader.getIcon("open.png"));
 		btFolder.setToolTipText(I18N
 				.getText("orbisgis.core.file.choose_folder"));

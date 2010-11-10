@@ -8,12 +8,11 @@
  *
  *  Team leader Erwan BOCHER, scientific researcher,
  *
- *  User support leader : Gwendall Petit, geomatic engineer.
  *
  *
  * Copyright (C) 2007 Erwan BOCHER, Fernando GONZALEZ CORTES, Thomas LEDUC
  *
- * Copyright (C) 2010 Erwan BOCHER, Pierre-Yves FADET, Alexis GUEGANNO, Maxence LAURENT
+ * Copyright (C) 2010 Erwan BOCHER,  Alexis GUEGANNO, Antoine GOURLAY, Adelin PIAU, Gwendall PETIT
  *
  * This file is part of OrbisGIS.
  *
@@ -32,8 +31,7 @@
  * For more information, please consult: <http://www.orbisgis.org/>
  *
  * or contact directly:
- * erwan.bocher _at_ ec-nantes.fr
- * gwendall.petit _at_ ec-nantes.fr
+ * info _at_ orbisgis.org
  */
 package org.orbisgis.core.ui.windows.mainFrame;
 
@@ -76,6 +74,7 @@ import org.orbisgis.core.ui.editor.EditorListener;
 import org.orbisgis.core.ui.editor.IEditor;
 import org.orbisgis.core.ui.editorViews.toc.Toc;
 import org.orbisgis.core.ui.editors.table.TableComponent;
+import org.orbisgis.core.ui.geocatalog.Catalog;
 import org.orbisgis.core.ui.geocognition.GeocognitionView;
 import org.orbisgis.core.ui.pluginSystem.workbench.Names;
 import org.orbisgis.core.ui.pluginSystem.workbench.OrbisWorkbench;
@@ -89,7 +88,6 @@ import org.orbisgis.core.ui.plugins.views.TableEditorPlugIn;
 import org.orbisgis.core.ui.plugins.views.TocViewPlugIn;
 import org.orbisgis.core.ui.plugins.views.ViewDecorator;
 import org.orbisgis.core.ui.plugins.views.editor.EditorManager;
-import org.orbisgis.core.ui.plugins.views.geocatalog.Catalog;
 import org.orbisgis.core.ui.preferences.lookandfeel.OrbisGISIcon;
 import org.orbisgis.core.ui.window.IWindow;
 import org.orbisgis.core.workspace.Workspace;
@@ -250,7 +248,7 @@ public class OrbisGISFrame extends JFrame implements IWindow {
 		root.getRootWindowProperties().getTabWindowProperties()
 				.getUndockButtonProperties().setVisible(false);
 
-		DockingWindowsTheme theme = new ShapedGradientDockingTheme();
+		DockingWindowsTheme theme = new ShapedGradientDockingTheme();		
 		// Apply theme
 		root.getRootWindowProperties().addSuperObject(
 				theme.getRootWindowProperties());

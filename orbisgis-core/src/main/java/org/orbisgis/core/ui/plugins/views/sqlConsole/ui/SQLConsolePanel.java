@@ -5,15 +5,14 @@
  * distributed under GPL 3 license. It is produced by the "Atelier SIG" team of
  * the IRSTV Institute <http://www.irstv.cnrs.fr/> CNRS FR 2488.
  *
- * 
+ *
  *  Team leader Erwan BOCHER, scientific researcher,
- * 
- *  User support leader : Gwendall Petit, geomatic engineer.
+ *
  *
  *
  * Copyright (C) 2007 Erwan BOCHER, Fernando GONZALEZ CORTES, Thomas LEDUC
  *
- * Copyright (C) 2010 Erwan BOCHER, Pierre-Yves FADET, Alexis GUEGANNO, Maxence LAURENT
+ * Copyright (C) 2010 Erwan BOCHER,  Alexis GUEGANNO, Antoine GOURLAY, Adelin PIAU, Gwendall PETIT
  *
  * This file is part of OrbisGIS.
  *
@@ -32,8 +31,7 @@
  * For more information, please consult: <http://www.orbisgis.org/>
  *
  * or contact directly:
- * erwan.bocher _at_ ec-nantes.fr
- * gwendall.petit _at_ ec-nantes.fr
+ * info _at_ orbisgis.org
  */
 
 package org.orbisgis.core.ui.plugins.views.sqlConsole.ui;
@@ -61,14 +59,14 @@ import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
 import javax.swing.text.Highlighter;
 import javax.swing.text.Highlighter.HighlightPainter;
+
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 import org.fife.ui.rtextarea.RTextScrollPane;
 import org.orbisgis.core.Services;
-
 import org.orbisgis.core.sif.CRFlowLayout;
 import org.orbisgis.core.ui.components.jtextComponent.SearchWord;
 import org.orbisgis.core.ui.components.jtextComponent.WordHighlightPainter;
-import org.orbisgis.core.ui.components.text.JTextFilter;
+import org.orbisgis.core.ui.components.text.JButtonTextField;
 import org.orbisgis.core.ui.editorViews.toc.TransferableLayer;
 import org.orbisgis.core.ui.plugins.views.geocatalog.TransferableSource;
 import org.orbisgis.core.ui.plugins.views.sqlConsole.actions.ActionsListener;
@@ -76,7 +74,6 @@ import org.orbisgis.core.ui.plugins.views.sqlConsole.actions.ConsoleAction;
 import org.orbisgis.core.ui.plugins.views.sqlConsole.actions.ConsoleListener;
 import org.orbisgis.core.ui.plugins.views.sqlConsole.syntax.SQLCompletionProvider;
 import org.orbisgis.core.ui.plugins.views.sqlConsole.util.CodeError;
-import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 
 public class SQLConsolePanel extends JPanel implements DropTargetListener {
 	private JButton btExecute = null;
@@ -85,13 +82,12 @@ public class SQLConsolePanel extends JPanel implements DropTargetListener {
 	private JButton btSave = null;
 
 	private ActionsListener actionAndKeyListener;
-        private ConsoleListener listener;
+	private ConsoleListener listener;
 	private RTextScrollPane centerPanel;
 
 	private RSyntaxTextArea scriptPanel;
-	
 
-	private JTextFilter searchTextField;
+	private JButtonTextField searchTextField;
 	private JToolBar toolBar;
 	private JLabel statusMessage;
 	private SearchWord searchWord;
@@ -105,7 +101,7 @@ public class SQLConsolePanel extends JPanel implements DropTargetListener {
 	 * Creates a console for sql.
 	 */
 	public SQLConsolePanel(ConsoleListener listener) {
-                this.listener = listener;
+		this.listener = listener;
 		actionAndKeyListener = new ActionsListener(listener, this);
 		setLayout(new BorderLayout());
 		add(getCenterPanel(listener), BorderLayout.CENTER);
@@ -138,12 +134,12 @@ public class SQLConsolePanel extends JPanel implements DropTargetListener {
 
 	private RTextScrollPane getCenterPanel(ConsoleListener listener) {
 		if (centerPanel == null) {
-                        scriptPanel = new RSyntaxTextArea();
-                        scriptPanel.setSyntaxEditingStyle(RSyntaxTextArea.SYNTAX_STYLE_SQL);
-                        scriptPanel.getDocument().addDocumentListener(actionAndKeyListener);
-                        scriptPanel.setDropTarget(new DropTarget(centerPanel, this));
-                        SQLCompletionProvider cpl = new SQLCompletionProvider(scriptPanel);
-                        cpl.install();
+			scriptPanel = new RSyntaxTextArea();
+			scriptPanel.setSyntaxEditingStyle(RSyntaxTextArea.SYNTAX_STYLE_SQL);
+			scriptPanel.getDocument().addDocumentListener(actionAndKeyListener);
+			scriptPanel.setDropTarget(new DropTarget(centerPanel, this));
+			SQLCompletionProvider cpl = new SQLCompletionProvider(scriptPanel);
+			cpl.install();
 			centerPanel = new RTextScrollPane(scriptPanel);
 		}
 		return centerPanel;
@@ -171,21 +167,22 @@ public class SQLConsolePanel extends JPanel implements DropTargetListener {
 			CRFlowLayout layout = new CRFlowLayout();
 			layout.setAlignment(CRFlowLayout.LEFT);
 			pnlTextFilter.setLayout(layout);
-			searchTextField = new JTextFilter();
-			searchTextField.addDocumentListener(new DocumentListener() {
+			searchTextField = new JButtonTextField();
+			searchTextField.getDocument().addDocumentListener(
+					new DocumentListener() {
 
-				public void removeUpdate(DocumentEvent e) {
-					search();
-				}
+						public void removeUpdate(DocumentEvent e) {
+							search();
+						}
 
-				public void insertUpdate(DocumentEvent e) {
-					search();
-				}
+						public void insertUpdate(DocumentEvent e) {
+							search();
+						}
 
-				public void changedUpdate(DocumentEvent e) {
-					search();
-				}
-			});
+						public void changedUpdate(DocumentEvent e) {
+							search();
+						}
+					});
 			pnlTextFilter.add(searchTextField);
 		}
 		return pnlTextFilter;
@@ -200,8 +197,7 @@ public class SQLConsolePanel extends JPanel implements DropTargetListener {
 		}
 
 		try {
-			Highlighter hilite = scriptPanel
-					.getHighlighter();
+			Highlighter hilite = scriptPanel.getHighlighter();
 			Document doc = scriptPanel.getDocument();
 			String text = doc.getText(0, doc.getLength());
 			int pos = 0;
@@ -302,13 +298,12 @@ public class SQLConsolePanel extends JPanel implements DropTargetListener {
 		return scriptPanel;
 	}
 
-
 	public void updateCodeError(CodeError codeError) {
-//		scriptPanel.updateCodeError(codeError.getStart(), codeError.getEnd());
+		// scriptPanel.updateCodeError(codeError.getStart(),
+		// codeError.getEnd());
 	}
 
-
-        public String getSQLToBeExecuted() {
+	public String getSQLToBeExecuted() {
 		String sql = scriptPanel.getSelectedText();
 		if (sql == null || sql.trim().length() == 0) {
 			sql = getText();
@@ -404,33 +399,34 @@ public class SQLConsolePanel extends JPanel implements DropTargetListener {
 		}
 	}
 
-        public void insertString(String string) throws BadLocationException {
-		scriptPanel.getDocument().insertString(scriptPanel.getDocument().getLength(), string, null);
+	public void insertString(String string) throws BadLocationException {
+		scriptPanel.getDocument().insertString(
+				scriptPanel.getDocument().getLength(), string, null);
 	}
 
-    @Override
-    public void dragEnter(DropTargetDragEvent dtde) {
+	@Override
+	public void dragEnter(DropTargetDragEvent dtde) {
 
-    }
+	}
 
-    @Override
-    public void dragOver(DropTargetDragEvent dtde) {
+	@Override
+	public void dragOver(DropTargetDragEvent dtde) {
 
-    }
+	}
 
-    @Override
-    public void dropActionChanged(DropTargetDragEvent dtde) {
+	@Override
+	public void dropActionChanged(DropTargetDragEvent dtde) {
 
-    }
+	}
 
-    @Override
-    public void dragExit(DropTargetEvent dte) {
+	@Override
+	public void dragExit(DropTargetEvent dte) {
 
-    }
+	}
 
-    @Override
-    public void drop(DropTargetDropEvent dtde) {
-        final Transferable t = dtde.getTransferable();
+	@Override
+	public void drop(DropTargetDropEvent dtde) {
+		final Transferable t = dtde.getTransferable();
 
 		String query = listener.doDrop(t);
 		if (query == null) {
@@ -472,5 +468,5 @@ public class SQLConsolePanel extends JPanel implements DropTargetListener {
 		}
 
 		setButtonsStatus();
-    }
+	}
 }

@@ -1,3 +1,38 @@
+/*
+ * OrbisGIS is a GIS application dedicated to scientific spatial simulation.
+ * This cross-platform GIS is developed at French IRSTV institute and is able to
+ * manipulate and create vector and raster spatial information. OrbisGIS is
+ * distributed under GPL 3 license. It is produced by the "Atelier SIG" team of
+ * the IRSTV Institute <http://www.irstv.cnrs.fr/> CNRS FR 2488.
+ *
+ *
+ *  Team leader Erwan BOCHER, scientific researcher,
+ *
+ *
+ *
+ * Copyright (C) 2007 Erwan BOCHER, Fernando GONZALEZ CORTES, Thomas LEDUC
+ *
+ * Copyright (C) 2010 Erwan BOCHER,  Alexis GUEGANNO, Antoine GOURLAY, Adelin PIAU, Gwendall PETIT
+ *
+ * This file is part of OrbisGIS.
+ *
+ * OrbisGIS is free software: you can redistribute it and/or modify it under the
+ * terms of the GNU General Public License as published by the Free Software
+ * Foundation, either version 3 of the License, or (at your option) any later
+ * version.
+ *
+ * OrbisGIS is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
+ * A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along with
+ * OrbisGIS. If not, see <http://www.gnu.org/licenses/>.
+ *
+ * For more information, please consult: <http://www.orbisgis.org/>
+ *
+ * or contact directly:
+ * info _at_ orbisgis.org
+ */
 package org.orbisgis.core.ui.editors.table;
 
 import java.awt.BorderLayout;
@@ -69,6 +104,7 @@ import org.orbisgis.core.errorManager.ErrorManager;
 import org.orbisgis.core.sif.SQLUIPanel;
 import org.orbisgis.core.sif.UIFactory;
 import org.orbisgis.core.ui.components.sif.AskValue;
+import org.orbisgis.core.ui.components.text.JButtonTextField;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchContext;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchFrame;
 import org.orbisgis.core.ui.plugins.views.TableEditorPlugIn;
@@ -218,7 +254,7 @@ public class TableComponent extends JPanel implements WorkbenchFrame {
 		JLabel label = new JLabel(
 				I18N
 						.getText("orbisgis.org.orbisgis.core.ui.editors.table.TableComponent.search"));
-		final JTextField regexTxtFilter = new JTextField(20);
+		final JButtonTextField regexTxtFilter = new JButtonTextField(20);
 		regexTxtFilter.setBackground(Color.WHITE);
 		regexTxtFilter
 				.setText(I18N
@@ -256,21 +292,25 @@ public class TableComponent extends JPanel implements WorkbenchFrame {
 				}
 			}
 		});
-		
-		regexTxtFilter.addMouseListener( new  MouseAdapter(){
-			 public void mousePressed(MouseEvent e) {
-				 if(regexTxtFilter.getText().equals(I18N
-							 			.getText("orbisgis.org.orbisgis.core.ui.editors.table.TableComponent.put_a_text")))
-				 regexTxtFilter.setText("");
-			   }
-			 public void mouseExited(MouseEvent e) {
-				 if(regexTxtFilter.getText().equals(""))
-					 regexTxtFilter.setText(I18N
-							 			.getText("orbisgis.org.orbisgis.core.ui.editors.table.TableComponent.put_a_text"));
-			 }
+
+		regexTxtFilter.addMouseListener(new MouseAdapter() {
+			public void mousePressed(MouseEvent e) {
+				if (regexTxtFilter
+						.getText()
+						.equals(
+								I18N
+										.getText("orbisgis.org.orbisgis.core.ui.editors.table.TableComponent.put_a_text")))
+					regexTxtFilter.setText("");
+			}
+
+			public void mouseExited(MouseEvent e) {
+				if (regexTxtFilter.getText().equals(""))
+					regexTxtFilter
+							.setText(I18N
+									.getText("orbisgis.org.orbisgis.core.ui.editors.table.TableComponent.put_a_text"));
+			}
 		});
 
-		
 		regexPanel.add(label);
 		regexPanel.add(regexTxtFilter);
 		return regexPanel;
@@ -353,7 +393,7 @@ public class TableComponent extends JPanel implements WorkbenchFrame {
 	}
 
 	private JTextField getWhereTextField() {
-		final JTextField txtFilter = new JTextField(20);
+		final JButtonTextField txtFilter = new JButtonTextField(20);
 		txtFilter.setBackground(Color.WHITE);
 		txtFilter
 				.setText(I18N
@@ -393,19 +433,23 @@ public class TableComponent extends JPanel implements WorkbenchFrame {
 			}
 
 		});
-		
-		
-		txtFilter.addMouseListener( new  MouseAdapter(){
-			 public void mousePressed(MouseEvent e) {
-				 if(txtFilter.getText().equals(I18N
-							 			.getText("orbisgis.org.orbisgis.core.ui.editors.table.TableComponent.put_a_sqlwhere")))
-					 txtFilter.setText("");
-			   }
-			 public void mouseExited(MouseEvent e) {
-				 if(txtFilter.getText().equals(""))
-					 txtFilter.setText(I18N
-							 			.getText("orbisgis.org.orbisgis.core.ui.editors.table.TableComponent.put_a_sqlwhere"));
-			 }
+
+		txtFilter.addMouseListener(new MouseAdapter() {
+			public void mousePressed(MouseEvent e) {
+				if (txtFilter
+						.getText()
+						.equals(
+								I18N
+										.getText("orbisgis.org.orbisgis.core.ui.editors.table.TableComponent.put_a_sqlwhere")))
+					txtFilter.setText("");
+			}
+
+			public void mouseExited(MouseEvent e) {
+				if (txtFilter.getText().equals(""))
+					txtFilter
+							.setText(I18N
+									.getText("orbisgis.org.orbisgis.core.ui.editors.table.TableComponent.put_a_sqlwhere"));
+			}
 		});
 
 		return txtFilter;

@@ -5,15 +5,14 @@
  * distributed under GPL 3 license. It is produced by the "Atelier SIG" team of
  * the IRSTV Institute <http://www.irstv.cnrs.fr/> CNRS FR 2488.
  *
- * 
+ *
  *  Team leader Erwan BOCHER, scientific researcher,
- * 
- *  User support leader : Gwendall Petit, geomatic engineer.
+ *
  *
  *
  * Copyright (C) 2007 Erwan BOCHER, Fernando GONZALEZ CORTES, Thomas LEDUC
  *
- * Copyright (C) 2010 Erwan BOCHER, Pierre-Yves FADET, Alexis GUEGANNO, Maxence LAURENT
+ * Copyright (C) 2010 Erwan BOCHER,  Alexis GUEGANNO, Antoine GOURLAY, Adelin PIAU, Gwendall PETIT
  *
  * This file is part of OrbisGIS.
  *
@@ -32,8 +31,7 @@
  * For more information, please consult: <http://www.orbisgis.org/>
  *
  * or contact directly:
- * erwan.bocher _at_ ec-nantes.fr
- * gwendall.petit _at_ ec-nantes.fr
+ * info _at_ orbisgis.org
  */
 
 package org.orbisgis.core.ui.plugins.views.beanShellConsole.ui;
@@ -56,7 +54,7 @@ import javax.swing.text.Highlighter.HighlightPainter;
 import org.orbisgis.core.sif.CRFlowLayout;
 import org.orbisgis.core.ui.components.jtextComponent.SearchWord;
 import org.orbisgis.core.ui.components.jtextComponent.WordHighlightPainter;
-import org.orbisgis.core.ui.components.text.JTextFilter;
+import org.orbisgis.core.ui.components.text.JButtonTextField;
 import org.orbisgis.core.ui.plugins.views.beanShellConsole.actions.BshActionsListener;
 import org.orbisgis.core.ui.plugins.views.beanShellConsole.actions.BshConsoleAction;
 import org.orbisgis.core.ui.plugins.views.beanShellConsole.actions.BshConsoleListener;
@@ -71,7 +69,7 @@ public class BshConsolePanel extends JPanel {
 	private JPanel centerPanel;
 
 	private BshScriptPanel scriptPanel;
-	private JTextFilter searchTextField;
+	private JButtonTextField searchTextField;
 	private JToolBar toolBar;
 	private JLabel statusMessage;
 	private SearchWord searchWord;
@@ -148,21 +146,22 @@ public class BshConsolePanel extends JPanel {
 			CRFlowLayout layout = new CRFlowLayout();
 			layout.setAlignment(CRFlowLayout.LEFT);
 			pnlTextFilter.setLayout(layout);
-			searchTextField = new JTextFilter();
-			searchTextField.addDocumentListener(new DocumentListener() {
+			searchTextField = new JButtonTextField();
+			searchTextField.getDocument().addDocumentListener(
+					new DocumentListener() {
 
-				public void removeUpdate(DocumentEvent e) {
-					search();
-				}
+						public void removeUpdate(DocumentEvent e) {
+							search();
+						}
 
-				public void insertUpdate(DocumentEvent e) {
-					search();
-				}
+						public void insertUpdate(DocumentEvent e) {
+							search();
+						}
 
-				public void changedUpdate(DocumentEvent e) {
-					search();
-				}
-			});
+						public void changedUpdate(DocumentEvent e) {
+							search();
+						}
+					});
 			pnlTextFilter.add(searchTextField);
 		}
 		return pnlTextFilter;
