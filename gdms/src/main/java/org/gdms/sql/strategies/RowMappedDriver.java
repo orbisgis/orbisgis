@@ -116,4 +116,8 @@ public class RowMappedDriver extends AbstractMetadataSQLDriver implements
 	public long getRowCount() throws DriverException {
 		return map.size();
 	}
+
+        public long getOriginalIndex(long rowIndex) {
+            return map.get((int) rowIndex);
+        }
 }
