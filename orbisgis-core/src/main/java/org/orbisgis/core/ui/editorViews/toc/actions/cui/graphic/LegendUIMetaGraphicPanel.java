@@ -35,12 +35,8 @@
  * erwan.bocher _at_ ec-nantes.fr
  * gwendall.petit _at_ ec-nantes.fr
  */
-
-
-
 package org.orbisgis.core.ui.editorViews.toc.actions.cui.graphic;
 
-import org.orbisgis.core.ui.editorViews.toc.actions.cui.type.LegendUIMarkGraphicType;
 import javax.swing.Icon;
 import org.orbisgis.core.images.OrbisGISIcon;
 import org.orbisgis.core.renderer.se.graphic.Graphic;
@@ -48,9 +44,6 @@ import org.orbisgis.core.renderer.se.graphic.MarkGraphic;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.LegendUIAbstractMetaPanel;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.LegendUIComponent;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.LegendUIController;
-import org.orbisgis.core.ui.editorViews.toc.actions.cui.LegendUIEmptyPanel;
-import org.orbisgis.core.ui.editorViews.toc.actions.cui.type.LegendUIEmptyPanelType;
-import org.orbisgis.core.ui.editorViews.toc.actions.cui.type.LegendUIType;
 
 /**
  *
@@ -59,40 +52,51 @@ import org.orbisgis.core.ui.editorViews.toc.actions.cui.type.LegendUIType;
 public abstract class LegendUIMetaGraphicPanel extends LegendUIAbstractMetaPanel {
 
 	private Graphic graphic;
+	private LegendUIComponent comp;
+	private Class[] classes;
 
-	private LegendUIType initialType;
-	private LegendUIComponent initialPanel;
-	private LegendUIType[] types;
-
-	public LegendUIMetaGraphicPanel(String name, LegendUIController controller, LegendUIComponent parent, Graphic g) {
-		super(name, controller, parent, 0);
+	public LegendUIMetaGraphicPanel(String name, LegendUIController controller, LegendUIComponent parent, Graphic g, boolean isNullable) {
+		super(name, controller, parent, 0, isNullable);
 
 		this.graphic = g;
 
-		types = new LegendUIType[2];
+		classes = new Class[1];
+		classes[0] = MarkGraphic.class;
 
-		types[0] = new LegendUIEmptyPanelType("no " + name, controller);
-		types[1] = new LegendUIMarkGraphicType("Mark " + name, controller);
-
-		if (g instanceof MarkGraphic){
-			System.out.println ("Graphic is :" + g);
-			initialType = types[1];
-			initialPanel = new LegendUIMarkGraphicPanel(controller, this, (MarkGraphic) g);
-		}else{
-			initialType = types[0];
-			initialPanel = new LegendUIEmptyPanel("not yet implemented (" + name  + ")", controller, this);
+		comp = null;
+		if (graphic != null) {
+			comp = getCompForClass(graphic.getClass());
 		}
 	}
 
 	@Override
-	public void init(){
-		init(types, initialType, initialPanel);
+	protected final LegendUIComponent getCompForClass(Class newClass) {
+		if (newClass == MarkGraphic.class) {
+			MarkGraphic mg;
+			if (graphic instanceof MarkGraphic) {
+				mg = (MarkGraphic) graphic;
+			} else {
+				mg = new MarkGraphic();
+			}
+			return new LegendUIMarkGraphicPanel(controller, this, mg);
+		} else {
+			return null;
+		}
 	}
 
 	@Override
-	protected void switchTo(LegendUIType type, LegendUIComponent comp) {
-		this.graphic = ((LegendUIGraphicComponent)comp).getGraphic();
-		this.graphicChanged(graphic);
+	public void init() {
+		init(classes, comp);
+	}
+
+	@Override
+	protected void switchTo(LegendUIComponent comp) {
+		if (comp != null) {
+			this.graphic = ((LegendUIGraphicComponent) comp).getGraphic();
+			this.graphicChanged(graphic);
+		} else {
+			this.graphicChanged(null);
+		}
 	}
 
 	@Override
@@ -102,7 +106,8 @@ public abstract class LegendUIMetaGraphicPanel extends LegendUIAbstractMetaPanel
 
 	public abstract void graphicChanged(Graphic newGraphic);
 
-
-
-
+	@Override
+	public Class getEditedClass() {
+		return graphic.getClass();
+	}
 }

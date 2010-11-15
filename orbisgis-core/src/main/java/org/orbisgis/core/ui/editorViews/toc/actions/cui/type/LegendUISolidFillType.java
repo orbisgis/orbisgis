@@ -46,7 +46,7 @@ import org.orbisgis.core.ui.editorViews.toc.actions.cui.fill.LegendUISolidFillPa
  *
  * @author maxence
  */
-public class LegendUISolidFillType extends LegendUIType {
+/*public class LegendUISolidFillType extends LegendUIType {
 
 	public LegendUISolidFillType(LegendUIController controller) {
 		super("Solid fill", controller);
@@ -58,3 +58,4 @@ public class LegendUISolidFillType extends LegendUIType {
 		return new LegendUISolidFillPanel(controller, parent, sFill);
 	}
 }
+ */

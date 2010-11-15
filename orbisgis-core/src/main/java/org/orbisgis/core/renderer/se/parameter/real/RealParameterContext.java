@@ -37,25 +37,57 @@
  */
 
 
+
 package org.orbisgis.core.renderer.se.parameter.real;
 
-import org.gdms.data.feature.Feature;
-import org.orbisgis.core.renderer.se.parameter.ParameterException;
-import org.orbisgis.core.renderer.se.parameter.SeParameter;
+import java.awt.Font;
 
-public interface RealParameter extends SeParameter {
+/**
+ *
+ * @author maxence
+ */
+public class RealParameterContext {
 
-	//void setMinValue(Double min);
-	//void setMaxValue(Double max);
+	protected Double min;
+	protected Double max;
 
-	//void setBounds(Double min, Double max);
+	public RealParameterContext(Double min, Double max){
+		this.min = min;
+		this.max = max;
+	}
 
-	void setContext(RealParameterContext ctx);
+	public Double getMin(){
+		return min;
+	}
+	public Double getMax(){
+		return max;
+	}
 
-	RealParameterContext getContext();
+	public String toString(){
+		return " [" + min + ";" + max + "]";
+	}
 
-    double getValue(Feature feat) throws ParameterException;
+	static {
+		percentageContext = new RealParameterContext(0.0, 100.0);
+		nonNegativeContext = new RealParameterContext(0.0, null);
+		realContext = new RealParameterContext(null, null);
+	};
 
-	@Override
-	String toString();
+	public static RealParameterContext percentageContext;
+	public static RealParameterContext nonNegativeContext;
+	public static RealParameterContext realContext;
+
+	public class MarkIndexContext extends RealParameterContext {
+
+		private Font font;
+		public MarkIndexContext(Font font){
+			super(0.0, 0.0);
+			this.font = font;
+			this.max = (double)(font.getNumGlyphs() - 1);
+		}
+
+		public Font getFont(){
+			return font;
+		}
+	}
 }

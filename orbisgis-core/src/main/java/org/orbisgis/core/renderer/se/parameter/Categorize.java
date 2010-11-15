@@ -1,7 +1,6 @@
 package org.orbisgis.core.renderer.se.parameter;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Level;
@@ -16,6 +15,7 @@ import org.orbisgis.core.renderer.persistance.se.ParameterValueType;
 import org.orbisgis.core.renderer.persistance.se.ThreshholdsBelongToType;
 
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
+import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
 
 /**
  *
@@ -77,9 +77,9 @@ public abstract class Categorize<ToType extends SeParameter, FallbackType extend
 
 	public Categorize(ToType firstClassValue, FallbackType fallbackValue, RealParameter lookupValue) {
 		this();
-		this.firstClass = firstClassValue;
-		this.fallbackValue = fallbackValue;
-		this.lookupValue = lookupValue;
+		setClassValue(0, firstClassValue);
+		setFallbackValue(fallbackValue);
+		setLookupValue(lookupValue);
 		this.method = CategorizeMethod.MANUAL;
 	}
 
@@ -109,6 +109,9 @@ public abstract class Categorize<ToType extends SeParameter, FallbackType extend
 
 	public void setLookupValue(RealParameter lookupValue) {
 		this.lookupValue = lookupValue;
+		if (lookupValue != null){
+			lookupValue.setContext(RealParameterContext.realContext);
+		}
 	}
 
 	public final RealParameter getLookupValue() {
@@ -134,6 +137,8 @@ public abstract class Categorize<ToType extends SeParameter, FallbackType extend
 	public final void addClass(RealParameter threshold, ToType value) {
 		int index;
 		thresholds.add(threshold);
+		threshold.setContext(RealParameterContext.realContext);
+
 		int tIndex = thresholds.indexOf(threshold);
 		classValues.add(tIndex, value);
 		this.method = CategorizeMethod.MANUAL;
@@ -183,6 +188,7 @@ public abstract class Categorize<ToType extends SeParameter, FallbackType extend
 		if (i >= 0 && i < getNumClasses() - 1) {
 				thresholds.remove(i);
 				thresholds.add(i, threshold);
+				threshold.setContext(RealParameterContext.realContext);
 				sortClasses();
 		} else {
 			// TODO throw

@@ -59,14 +59,20 @@ public class LegendUIWellKnownNamePanel extends LegendUIComponent {
 
 	ComboBoxInput wknInput;
 
+	WellKnownName wkn;
+
 	public LegendUIWellKnownNamePanel(LegendUIController controller, LegendUIComponent parent, MarkGraphic m) {
-		super("WKG", controller, parent, 0);
+		super("WKG", controller, parent, 0, false);
 		this.mg = m;
+		this.wkn = (WellKnownName) mg.getSource();
+
+
 		wknInput = new ComboBoxInput(WellKnownName.values(), ((WellKnownName)mg.getSource()).ordinal()) {
 
 			@Override
 			protected void valueChanged(int i) {
-				mg.setSource(WellKnownName.values()[i]);
+				wkn = WellKnownName.values()[i];
+				mg.setSource(wkn);
 			}
 		};
 	}
@@ -78,7 +84,23 @@ public class LegendUIWellKnownNamePanel extends LegendUIComponent {
 
 	@Override
 	protected void mountComponent() {
-		this.add(wknInput);
+		editor.add(wknInput);
 	}
+
+	@Override
+	protected void turnOff() {
+		mg.setSource(null);
+	}
+
+	@Override
+	protected void turnOn() {
+		mg.setSource(this.wkn);
+	}
+
+	@Override
+	public Class getEditedClass() {
+		return WellKnownName.class;
+	}
+
 
 }

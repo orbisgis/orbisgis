@@ -47,6 +47,7 @@ import org.orbisgis.core.ui.editorViews.toc.actions.cui.parameter.color.LegendUI
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.GridLayout;
+import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
@@ -83,20 +84,19 @@ import org.orbisgis.core.ui.editorViews.toc.actions.cui.parameter.string.LegendU
  * @todo BUG !!!!
  * @author maxence
  */
-public final class LegendUICategorizePanel extends LegendUIComponent
+public abstract class LegendUICategorizePanel extends LegendUIComponent
 		implements LegendUIRealComponent, LegendUIColorComponent,
 		LegendUIStringComponent,
 		CategorizeListener, PropertyNameListener, LiteralListener {
 
 	private LegendUIMetaRealPanel lookupPanel;
-	private Categorize categorize;
+	protected Categorize categorize;
 	private LegendUIComponent fallbackPanel;
 	private RadioSwitch thresholdsSwitch;
 	private JButton add;
 	private ArrayList<LegendUIAbstractMetaPanel> values;
 	private ArrayList<MetaRealThreshold> thresholds;
 
-	private LegendUIAbstractPanel toolbar;
 	private LegendUIAbstractPanel left;
 	private LegendUIAbstractPanel right;
 	private LegendUIAbstractPanel header;
@@ -105,8 +105,8 @@ public final class LegendUICategorizePanel extends LegendUIComponent
 
 	private LegendUIAbstractPanel classes;
 
-	public LegendUICategorizePanel(String name, LegendUIController controller, LegendUIComponent parent, Categorize c) {
-		super(name, controller, parent, 0);
+	public LegendUICategorizePanel(String name, LegendUIController controller, LegendUIComponent parent, Categorize c, boolean isNullable) {
+		super(name, controller, parent, 0, isNullable);
 
 		left = new LegendUIAbstractPanel(controller);
 		right = new LegendUIAbstractPanel(controller);
@@ -114,7 +114,7 @@ public final class LegendUICategorizePanel extends LegendUIComponent
 		header = new LegendUIAbstractPanel(controller);
 		footer = new LegendUIAbstractPanel(controller);
 
-		toolbar = new LegendUIAbstractPanel(controller);
+		//toolbar = new LegendUIAbstractPanel(controller);
 
 		content = new LegendUIAbstractPanel(controller);
 		classes = new LegendUIAbstractPanel(controller);
@@ -128,13 +128,32 @@ public final class LegendUICategorizePanel extends LegendUIComponent
 
 		if (categorize.getFallbackValue() instanceof ColorLiteral) {
 			fallbackPanel = new LegendUIColorLiteralPanel("Fallback color",
-					controller, this, (ColorLiteral) categorize.getFallbackValue());
+					controller, this, (ColorLiteral) categorize.getFallbackValue(), false) {
+
+				@Override
+				protected void colorChanged(ColorLiteral color) {
+					categorize.setFallbackValue(color);
+				}
+
+			};
 		} else if (categorize.getFallbackValue() instanceof RealLiteral) {
 			fallbackPanel = new LegendUIRealLiteralPanel("Fallback value",
-					controller, this, (RealLiteral) categorize.getFallbackValue());
+					controller, this, (RealLiteral) categorize.getFallbackValue(), false) {
+				@Override
+				protected void realChanged(RealLiteral real) {
+					categorize.setFallbackValue(real);
+				}
+			};
 		} else if (categorize.getFallbackValue() instanceof StringParameter) {
 			fallbackPanel = new LegendUIStringLiteralPanel("Fallback value",
-					controller, this, (StringLiteral) categorize.getFallbackValue());
+					controller, this, (StringLiteral) categorize.getFallbackValue(), false) {
+
+				@Override
+				protected void stringChanged(StringLiteral string) {
+					categorize.setFallbackValue(string);
+				}
+
+			};
 		}
 
 		String[] options = {"Pre.", "Suc."};
@@ -228,7 +247,9 @@ public final class LegendUICategorizePanel extends LegendUIComponent
 			}
 
 			if (values.size() > 1) {
-				JButton rm = new JButton("rm");
+				JButton rm = new JButton(OrbisGISIcon.REMOVE);
+				rm.setMargin(new Insets(0, 0, 0, 0));
+
 				rm.addActionListener(new RmListener(i));
 				classes.add(rm, BorderLayout.EAST);
 			} else {
@@ -242,8 +263,8 @@ public final class LegendUICategorizePanel extends LegendUIComponent
 		left.add(content, BorderLayout.CENTER);
 		left.add(footer, BorderLayout.SOUTH);
 
-		this.add(left, BorderLayout.WEST);
-		this.add(right, BorderLayout.EAST);
+		editor.add(left, BorderLayout.WEST);
+		editor.add(right, BorderLayout.EAST);
 	}
 
 	@Override
@@ -322,7 +343,7 @@ public final class LegendUICategorizePanel extends LegendUIComponent
 	 * Called when one of the color has changed (only for literal colors)
 	 */
 	@Override
-	public void literalChanged(){
+	public final void literalChanged(){
 		right.removeAll();
 		System.out.println ("LiteralChanged");
 		for (LegendUIAbstractMetaPanel v : values){
@@ -373,7 +394,7 @@ public final class LegendUICategorizePanel extends LegendUIComponent
 		private int i;
 
 		public MetaRealValue(LegendUIController controller, LegendUIComponent parent, RealParameter value, int i) {
-			super("Value", controller, parent, value);
+			super("Value", controller, parent, value, false);
 			this.i = i;
 			init();
 		}
@@ -393,7 +414,7 @@ public final class LegendUICategorizePanel extends LegendUIComponent
 		private int i;
 
 		public MetaRealThreshold(LegendUIController controller, LegendUIComponent parent, RealParameter value, int i) {
-			super("Threshold", controller, parent, value);
+			super("Threshold", controller, parent, value, false);
 			System.out.println("Threshold: " + value);
 			this.i = i;
 			init();
@@ -415,7 +436,7 @@ public final class LegendUICategorizePanel extends LegendUIComponent
 		private int i;
 
 		public MetaColor(LegendUIController controller, LegendUIComponent parent, ColorParameter value, int i) {
-			super("color value", controller, parent, value);
+			super("color value", controller, parent, value, false);
 			System.out.println("NEw meta color => i is " + i);
 			this.i = i;
 			init();
@@ -460,7 +481,7 @@ public final class LegendUICategorizePanel extends LegendUIComponent
 	private class LookupValuePanel extends LegendUIMetaRealPanel {
 
 		public LookupValuePanel(LegendUIController controller, LegendUICategorizePanel parent, RealParameter r) {
-			super("Lookup value", controller, parent, r);
+			super("Lookup value", controller, parent, r, false);
 			init();
 		}
 
@@ -473,5 +494,11 @@ public final class LegendUICategorizePanel extends LegendUIComponent
 			}
 			categorize.setLookupValue(newReal);
 		}
+	}
+
+
+	@Override
+	public Class getEditedClass() {
+		return categorize.getClass();
 	}
 }

@@ -2,7 +2,6 @@ package org.orbisgis.core.renderer.se.parameter.string;
 
 import javax.xml.bind.JAXBElement;
 
-import org.gdms.data.DataSource;
 import org.gdms.data.feature.Feature;
 
 import org.gdms.driver.DriverException;
@@ -19,8 +18,8 @@ public class StringAttribute extends PropertyName implements StringParameter{
      * @param ds
      * @throws DriverException
      */
-    public StringAttribute(String fieldName, DataSource ds) throws DriverException{
-        super(fieldName, ds);
+    public StringAttribute(String fieldName) {
+        super(fieldName);
     }
 
     public StringAttribute(JAXBElement<PropertyNameType> expr) {

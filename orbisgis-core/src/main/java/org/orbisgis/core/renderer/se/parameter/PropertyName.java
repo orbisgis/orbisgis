@@ -2,7 +2,6 @@ package org.orbisgis.core.renderer.se.parameter;
 
 import java.util.ArrayList;
 import javax.xml.bind.JAXBElement;
-import org.gdms.data.DataSource;
 import org.gdms.data.feature.Feature;
 import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
@@ -24,10 +23,6 @@ public abstract class PropertyName implements SeParameter {
 	public PropertyName(String fieldName) {
 		this.fieldId = -1;
 		this.fieldName = fieldName;
-	}
-
-	public PropertyName(String fieldName, DataSource ds) throws DriverException {
-		setColumnName(fieldName, ds);
 	}
 
 	public PropertyName(JAXBElement<PropertyNameType> expr) {
@@ -62,11 +57,10 @@ public abstract class PropertyName implements SeParameter {
 		return true;
 	}
 
-	public final void setColumnName(String fieldName, DataSource ds) throws DriverException {
+	public final void setColumnName(String fieldName) {
 		// look for field before assigning the name !
-		this.fieldId = ds.getFieldIndexByName(fieldName);
+		this.fieldId = -1;
 		this.fieldName = fieldName;
-
 		firePropertyNameChange();
 	}
 

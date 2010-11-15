@@ -3,6 +3,7 @@ package org.orbisgis.core.renderer.se.graphic;
 import java.awt.Dimension;
 import java.awt.Shape;
 import java.awt.geom.AffineTransform;
+import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 
 import java.io.IOException;
@@ -24,6 +25,7 @@ import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
+import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
 import org.orbisgis.core.renderer.se.transform.Transform;
 
 /**
@@ -94,6 +96,9 @@ public final class ExternalGraphic extends Graphic {
 
     public void setOpacity(RealParameter opacity) {
         this.opacity = opacity;
+		if (this.opacity != null){
+			this.opacity.setContext(RealParameterContext.percentageContext);
+		}
     }
 
     public ViewBox getViewBox() {
@@ -202,9 +207,9 @@ public final class ExternalGraphic extends Graphic {
             }
 
             if (img != null){
-                Dimension dim = viewBox.getDimensionInPixel(feat, img.getHeight(), img.getWidth(), mt.getScaleDenominator(), mt.getDpi());
+                Point2D dim = viewBox.getDimensionInPixel(feat, img.getHeight(), img.getWidth(), mt.getScaleDenominator(), mt.getDpi());
 
-                delta = Math.max(dim.getHeight(), dim.getWidth());
+                delta = Math.max(dim.getY(), dim.getX());
             }
             else{
                 return 0.0;

@@ -35,34 +35,25 @@
  * erwan.bocher _at_ ec-nantes.fr
  * gwendall.petit _at_ ec-nantes.fr
  */
-
-
-
 package org.orbisgis.core.ui.editorViews.toc.actions.cui.parameter.real;
 
-import org.orbisgis.core.ui.editorViews.toc.actions.cui.type.LegendUIPropertyNameType;
-import org.orbisgis.core.ui.editorViews.toc.actions.cui.type.LegendUICategorizeType;
-import org.orbisgis.core.ui.editorViews.toc.actions.cui.type.LegendUIRealLiteralType;
 import javax.swing.Icon;
+import org.gdms.data.DataSource;
 import org.orbisgis.core.images.OrbisGISIcon;
-import org.orbisgis.core.renderer.se.parameter.Categorize;
-import org.orbisgis.core.renderer.se.parameter.Recode;
 import org.orbisgis.core.renderer.se.parameter.real.Categorize2Real;
+import org.orbisgis.core.renderer.se.parameter.real.Interpolate2Real;
 import org.orbisgis.core.renderer.se.parameter.real.RealAttribute;
 import org.orbisgis.core.renderer.se.parameter.real.RealLiteral;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 import org.orbisgis.core.renderer.se.parameter.real.Recode2Real;
-import org.orbisgis.core.ui.editorViews.toc.actions.cui.type.LegendUIEmptyPanelType;
+import org.orbisgis.core.renderer.se.parameter.string.StringAttribute;
+import org.orbisgis.core.renderer.se.parameter.string.StringLiteral;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.LegendUIAbstractMetaPanel;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.LegendUIComponent;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.LegendUIController;
-import org.orbisgis.core.ui.editorViews.toc.actions.cui.LegendUIEmptyPanel;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.parameter.LegendUICategorizePanel;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.parameter.LegendUIPropertyNamePanel;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.parameter.LegendUIRecodePanel;
-import org.orbisgis.core.ui.editorViews.toc.actions.cui.type.LegendUIAlgebricalType;
-import org.orbisgis.core.ui.editorViews.toc.actions.cui.type.LegendUIRecodeType;
-import org.orbisgis.core.ui.editorViews.toc.actions.cui.type.LegendUIType;
 
 /**
  *
@@ -71,57 +62,136 @@ import org.orbisgis.core.ui.editorViews.toc.actions.cui.type.LegendUIType;
 public abstract class LegendUIMetaRealPanel extends LegendUIAbstractMetaPanel {
 
 	private RealParameter real;
+	private Class[] classes;
+	private LegendUIComponent comp;
 
-	private LegendUIType initialType;
-	private LegendUIComponent initialPanel;
-	private LegendUIType[] types;
-
-	public LegendUIMetaRealPanel(String name, LegendUIController controller, LegendUIComponent parent, RealParameter r) {
-		super(name, controller, parent, 0);
+	public LegendUIMetaRealPanel(String name, LegendUIController controller, LegendUIComponent parent, RealParameter r, boolean isNullable) {
+		super(name, controller, parent, 0, isNullable);
 
 		this.real = r;
 
-		types = new LegendUIType[6];
+		classes = new Class[4];
+		classes[0] = RealLiteral.class;
+		classes[1] = RealAttribute.class;
+		classes[2] = Categorize2Real.class;
+		classes[3] = Recode2Real.class;
 
-		types[0] = new LegendUIEmptyPanelType("no " + name, controller);
-		types[1] = new LegendUIRealLiteralType("Constant " + name, controller);
-		types[2] = new LegendUIPropertyNameType("Attribute " + name, controller, RealAttribute.class);
-		types[3] = new LegendUICategorizeType("Categorized " + name, controller, Categorize2Real.class);
-		types[4] = new LegendUIRecodeType("UniqueValue map " + name, controller, Recode2Real.class);
-		types[5] = new LegendUIAlgebricalType("Alg. " + name, controller);
+		comp = null;
+		if (real != null) {
+			comp = getCompForClass(r.getClass());
+		}
+	}
 
+	@Override
+	protected final LegendUIComponent getCompForClass(Class newClass) {
 
-		if (this.real == null){
-			initialType = types[0];
-			initialPanel = new LegendUIEmptyPanel("no " + name, controller, this);
- 		} else if (this.real instanceof RealLiteral) {
-			initialType = types[1];
-			initialPanel = new LegendUIRealLiteralPanel("Constant " + name, controller, this, (RealLiteral) real);
-		} else if (this.real instanceof RealAttribute) {
-			initialType = types[2];
-			initialPanel = new LegendUIPropertyNamePanel("Attribute " + name, controller, this, (RealAttribute) real);
-		} else if (this.real instanceof Categorize2Real) {
-			initialType = types[3];
-			initialPanel = new LegendUICategorizePanel("Categorized " + name, controller, this, (Categorize) this.real);
-		} else if (this.real instanceof Recode2Real) {
-			initialType = types[4];
-			initialPanel = new LegendUIRecodePanel("UniqueValue map " + name, controller, this, (Recode) this.real);
-		} else {
-			initialType = types[5];
-			initialPanel = new LegendUIAlgebricalPanel("Alg. " + name, controller, this, this.real){
+		if (newClass == RealLiteral.class) {
+			RealLiteral literal;
+			if (real instanceof RealLiteral) {
+				literal = (RealLiteral) real;
+			} else {
+				literal = new RealLiteral();
+			}
+
+			return new LegendUIRealLiteralPanel("Constant " + getName(), controller, this, literal, false) {
 
 				@Override
-				public void realChanged(RealParameter newReal) {
-					switchTo(initialType, initialPanel);
+				protected void realChanged(RealLiteral real) {
+					throw new UnsupportedOperationException("Unreachable code.");
 				}
 			};
+		} else if (newClass == RealAttribute.class) {
+			RealAttribute pName;
+			if (real instanceof RealAttribute) {
+				pName = (RealAttribute) real;
+			} else {
+				pName = new RealAttribute("");
+			}
+
+
+			return new LegendUIPropertyNamePanel("Attribute " + getName(), controller, this, pName, false) {
+
+				@Override
+				protected void turnOff() {
+					throw new UnsupportedOperationException("Unreachable code.");
+				}
+
+				@Override
+				protected void turnOn() {
+					throw new UnsupportedOperationException("Unreachable code.");
+				}
+			};
+
+
+		} else if (newClass == Categorize2Real.class) {
+			Categorize2Real categorize;
+			if (real instanceof Categorize2Real) {
+				categorize = (Categorize2Real) real;
+			} else {
+				categorize = new Categorize2Real(new RealLiteral(),
+						new RealLiteral(), new RealAttribute(""));
+			}
+
+			return new LegendUICategorizePanel("Categorized " + getName(), controller, this, categorize, false) {
+
+				@Override
+				protected void turnOff() {
+					throw new UnsupportedOperationException("Unreachable code.");
+				}
+
+				@Override
+				protected void turnOn() {
+					throw new UnsupportedOperationException("Unreachable code.");
+				}
+			};
+
+		} else if (newClass == Recode2Real.class) {
+			Recode2Real recode;
+			if (real instanceof Recode2Real) {
+				recode = (Recode2Real) real;
+			} else {
+				recode = new Recode2Real(new RealLiteral(), new StringAttribute(""));
+			}
+			return new LegendUIRecodePanel("UniqueValue map " + getName(), controller, this, recode, false) {
+
+				@Override
+				protected void turnOff() {
+					throw new UnsupportedOperationException("Unreachable code.");
+				}
+
+				@Override
+				protected void turnOn() {
+					throw new UnsupportedOperationException("Unreachable code.");
+				}
+			};
+
+
+		} else if (newClass == Interpolate2Real.class) {
+			Interpolate2Real interpol;
+			if (real instanceof Interpolate2Real) {
+				interpol = (Interpolate2Real) real;
+			} else {
+				interpol = new Interpolate2Real(new RealLiteral());
+			}
+
+			return null;
+			//_return new LegendUIInterpolll...I("UniqueValue map " + name, controller, this, interpol);
+
+			/*comps[4] = new LegendUIAlgebricalPanel("Alg. " + name, controller, this, real){
+			@Override
+			public void realChanged(RealParameter newReal) {
+			switchTo(comps[4]);
+			}
+			};*/
+		} else {
+			return null;
 		}
 
 	}
 
 	@Override
-	public void init(){
-		init(types, initialType, initialPanel);
+	public void init() {
+		init(classes, comp);
 	}
 
 	/**
@@ -130,9 +200,13 @@ public abstract class LegendUIMetaRealPanel extends LegendUIAbstractMetaPanel {
 	 * @param comp
 	 */
 	@Override
-	public void switchTo(LegendUIType type, LegendUIComponent comp) {
-		this.real = ((LegendUIRealComponent)comp).getRealParameter();
-		this.realChanged(real);
+	public void switchTo(LegendUIComponent comp) {
+		if (comp != null) {
+			this.real = ((LegendUIRealComponent) comp).getRealParameter();
+			this.realChanged(real);
+		} else {
+			this.realChanged(null);
+		}
 	}
 
 	@Override
@@ -142,4 +216,8 @@ public abstract class LegendUIMetaRealPanel extends LegendUIAbstractMetaPanel {
 
 	public abstract void realChanged(RealParameter newReal);
 
+	@Override
+	public Class getEditedClass() {
+		return real.getClass();
+	}
 }

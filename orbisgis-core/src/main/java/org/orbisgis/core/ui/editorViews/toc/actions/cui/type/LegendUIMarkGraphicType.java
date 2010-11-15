@@ -49,6 +49,7 @@ import org.orbisgis.core.ui.editorViews.toc.actions.cui.graphic.LegendUIMarkGrap
  *
  * @author maxence
  */
+/*
 public class LegendUIMarkGraphicType extends LegendUIType {
 
 	public LegendUIMarkGraphicType(String string, LegendUIController controller) {
@@ -62,3 +63,5 @@ public class LegendUIMarkGraphicType extends LegendUIType {
 	}
 
 }
+ *
+ */

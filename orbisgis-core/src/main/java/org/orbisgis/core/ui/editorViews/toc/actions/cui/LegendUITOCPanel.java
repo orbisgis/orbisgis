@@ -39,6 +39,7 @@ package org.orbisgis.core.ui.editorViews.toc.actions.cui;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
+import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
@@ -90,6 +91,9 @@ public class LegendUITOCPanel extends JPanel implements TreeSelectionListener, L
 
 		btnAdd = new JButton(OrbisGISIcon.ADD);
 		btnRm = new JButton(OrbisGISIcon.REMOVE);
+
+		btnRm.setMargin(new Insets(0, 0, 0, 0));
+		btnAdd.setMargin(new Insets(0, 0, 0, 0));
 
 		btnRm.addActionListener(new ActionListener() {
 
@@ -170,6 +174,8 @@ public class LegendUITOCPanel extends JPanel implements TreeSelectionListener, L
 			while (stack.size() > 0) {
 				comp = stack.remove(0);
 
+				System.out.println ("   -> " + comp);
+
 				// Does this comp requieres a new entry point in the tree ?
 				// two cases : top element or nested element
 
@@ -219,7 +225,11 @@ public class LegendUITOCPanel extends JPanel implements TreeSelectionListener, L
 				// Stack children
 				Iterator<LegendUIComponent> it = comp.getChildrenIterator();
 				while (it.hasNext()) {
-					stack.add(0, it.next());
+					LegendUIComponent next = it.next();
+					if (!next.isNullComponent){
+						stack.add(0, next);
+						System.out.println ("   :: -> " + next);
+					}
 				}
 			}
 

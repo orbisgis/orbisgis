@@ -52,15 +52,15 @@ import org.orbisgis.core.ui.editorViews.toc.actions.cui.components.TextInput;
  *
  * @author maxence
  */
-public class LegendUIStringLiteralPanel extends LegendUIComponent
+public abstract class LegendUIStringLiteralPanel extends LegendUIComponent
 		implements LegendUIStringComponent {
 
 	private StringLiteral string;
 	private TextInput input;
 
 	public LegendUIStringLiteralPanel(String name, LegendUIController controller,
-			LegendUIComponent parent, StringLiteral s) {
-		super(name, controller, parent, 0);
+			LegendUIComponent parent, StringLiteral s, boolean isNullable) {
+		super(name, controller, parent, 0, isNullable);
 		this.string = s;
 
 		//label = new JLabel(name + ": ");
@@ -80,7 +80,7 @@ public class LegendUIStringLiteralPanel extends LegendUIComponent
 
 	@Override
 	protected void mountComponent() {
-		this.add(input);
+		editor.add(input);
 	}
 
 	@Override
@@ -88,4 +88,21 @@ public class LegendUIStringLiteralPanel extends LegendUIComponent
 		return string;
 	}
 
+	@Override
+	public Class getEditedClass(){
+		return StringLiteral.class;
+	}
+
+
+	@Override
+	protected void turnOff() {
+		stringChanged(null);
+	}
+
+	@Override
+	protected void turnOn() {
+		stringChanged(this.string);
+	}
+
+	protected abstract void stringChanged(StringLiteral string);
 }

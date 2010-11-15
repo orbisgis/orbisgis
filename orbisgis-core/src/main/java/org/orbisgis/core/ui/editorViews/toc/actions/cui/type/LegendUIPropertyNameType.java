@@ -53,6 +53,8 @@ import org.orbisgis.core.ui.editorViews.toc.actions.cui.parameter.LegendUIProper
  *
  * @author maxence
  */
+
+/*
 public class LegendUIPropertyNameType extends LegendUIType {
 
 	Class<? extends PropertyName> type;
@@ -87,3 +89,5 @@ public class LegendUIPropertyNameType extends LegendUIType {
 
 	}
 }
+
+*/

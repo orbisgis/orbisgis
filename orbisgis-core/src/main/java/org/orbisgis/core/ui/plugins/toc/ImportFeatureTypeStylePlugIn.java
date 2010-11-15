@@ -1,6 +1,9 @@
 package org.orbisgis.core.ui.plugins.toc;
 
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.JOptionPane;
 import org.gdms.data.types.Constraint;
 import org.gdms.data.types.GeometryConstraint;
 import org.gdms.data.types.Type;
@@ -11,8 +14,10 @@ import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.layerModel.MapContext;
 
 import org.orbisgis.core.renderer.se.FeatureTypeStyle;
+import org.orbisgis.core.renderer.se.FeatureTypeStyleException;
 import org.orbisgis.core.sif.OpenFilePanel;
 import org.orbisgis.core.sif.UIFactory;
+import org.orbisgis.core.sif.UIPanel;
 
 import org.orbisgis.core.ui.pluginSystem.AbstractPlugIn;
 import org.orbisgis.core.ui.pluginSystem.PlugInContext;
@@ -66,7 +71,11 @@ public class ImportFeatureTypeStylePlugIn extends AbstractPlugIn {
 
 			if (UIFactory.showDialog(inputXMLPanel)) {
 				String seFile = inputXMLPanel.getSelectedFile().getAbsolutePath();
-                layer.setFeatureTypeStyle(new FeatureTypeStyle(layer, seFile));
+				try {
+					layer.setFeatureTypeStyle(new FeatureTypeStyle(layer, seFile));
+				} catch (FeatureTypeStyleException ex) {
+					JOptionPane.showMessageDialog(null, ex.getMessage(), "Error while loading the style", JOptionPane.ERROR_MESSAGE);
+				}
 			}
 
 		} catch (DriverException e) {

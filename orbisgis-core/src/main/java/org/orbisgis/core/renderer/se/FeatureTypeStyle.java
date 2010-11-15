@@ -8,6 +8,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.lang.Exception;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -18,6 +19,7 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
+import javax.xml.bind.UnmarshalException;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.bind.ValidationEvent;
 import javax.xml.bind.ValidationEventLocator;
@@ -47,7 +49,7 @@ public final class FeatureTypeStyle implements SymbolizerNode {
 		this.addRule(new Rule(layer));
 	}
 
-	public FeatureTypeStyle(ILayer layer, String seFile) {
+	public FeatureTypeStyle(ILayer layer, String seFile) throws FeatureTypeStyleException {
 		rules = new ArrayList<Rule>();
 		this.layer = layer;
 
@@ -66,22 +68,24 @@ public final class FeatureTypeStyle implements SymbolizerNode {
 			JAXBElement<FeatureTypeStyleType> fts = (JAXBElement<FeatureTypeStyleType>) u.unmarshal(
 					new FileInputStream(seFile));
 
+			String errors = "";
 			for (ValidationEvent event : validationCollector.getEvents()) {
 				String msg = event.getMessage();
 				ValidationEventLocator locator = event.getLocator();
 				int line = locator.getLineNumber();
 				int column = locator.getColumnNumber();
-				System.out.println("Error at line " + line + " column " + column);
+				errors = errors + "Error at line " + line + " column " + column + " (" + msg + ")\n";
 			}
 
-			this.setFromJAXB(fts);
+			if (errors.isEmpty()){
+				this.setFromJAXB(fts);
+			}else{
+				throw new FeatureTypeStyleException(errors);
+			}
 
-		} catch (IOException ex) {
-			Logger.getLogger(FeatureTypeStyle.class.getName()).log(Level.SEVERE, null, ex);
-		} catch (DriverLoadException ex) {
-			Logger.getLogger(FeatureTypeStyle.class.getName()).log(Level.SEVERE, null, ex);
-		} catch (JAXBException ex) {
-			Logger.getLogger(FeatureTypeStyle.class.getName()).log(Level.SEVERE, null, ex);
+		} catch (Exception ex){
+			Logger.getLogger(FeatureTypeStyle.class.getName()).log(Level.SEVERE, "Error while loading style", ex);
+			throw new FeatureTypeStyleException("Error while loading the style: " + ex);
 		}
 
 	}

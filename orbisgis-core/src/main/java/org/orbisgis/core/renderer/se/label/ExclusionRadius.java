@@ -10,22 +10,23 @@ import org.orbisgis.core.renderer.persistance.se.ObjectFactory;
 import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
+import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
 
 /**
  *
  * @author maxence
  */
-public class ExclusionRadius extends ExclusionZone {
+public final class ExclusionRadius extends ExclusionZone {
 
     ExclusionRadius(JAXBElement<ExclusionRadiusType> ert) {
         ExclusionRadiusType e = ert.getValue();
 
         if (e.getRadius() != null){
-            this.radius = SeParameterFactory.createRealParameter(e.getRadius());
+            setRadius(SeParameterFactory.createRealParameter(e.getRadius()));
         }
 
         if (e.getUnitOfMeasure() != null){
-            this.uom = Uom.fromOgcURN(e.getUnitOfMeasure());
+            setUom(Uom.fromOgcURN(e.getUnitOfMeasure()));
         }
     }
 
@@ -35,6 +36,9 @@ public class ExclusionRadius extends ExclusionZone {
 
     public void setRadius(RealParameter radius) {
         this.radius = radius;
+		if (this.radius != null){
+			this.radius.setContext(RealParameterContext.percentageContext);
+		}
     }
 
     @Override

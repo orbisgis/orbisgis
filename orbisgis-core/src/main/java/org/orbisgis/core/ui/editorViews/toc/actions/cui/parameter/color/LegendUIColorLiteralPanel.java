@@ -35,9 +35,6 @@
  * erwan.bocher _at_ ec-nantes.fr
  * gwendall.petit _at_ ec-nantes.fr
  */
-
-
-
 package org.orbisgis.core.ui.editorViews.toc.actions.cui.parameter.color;
 
 import java.awt.Color;
@@ -60,15 +57,15 @@ import org.orbisgis.core.ui.editorViews.toc.actions.cui.components.ColorPicker;
  *
  * @author maxence
  */
-public class LegendUIColorLiteralPanel extends LegendUIComponent implements LegendUIColorComponent {
+public abstract class LegendUIColorLiteralPanel extends LegendUIComponent implements LegendUIColorComponent {
 
 	private static final int size = 16;
 	private ColorLiteral color;
 	private BufferedImage img;
 	private JLabel label;
 
-	public LegendUIColorLiteralPanel(String name, LegendUIController controller, LegendUIComponent parent, ColorLiteral c){
-		super(name, controller, parent, 0);
+	public LegendUIColorLiteralPanel(String name, LegendUIController controller, LegendUIComponent parent, ColorLiteral c, boolean isNullable) {
+		super(name, controller, parent, 0, isNullable);
 		this.color = c;
 
 		img = new BufferedImage(size, size, BufferedImage.TYPE_3BYTE_BGR);
@@ -77,6 +74,7 @@ public class LegendUIColorLiteralPanel extends LegendUIComponent implements Lege
 		label = new JLabel(new ImageIcon(img));
 
 		label.addMouseListener(new MouseAdapter() {
+
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				super.mouseClicked(e);
@@ -109,7 +107,7 @@ public class LegendUIColorLiteralPanel extends LegendUIComponent implements Lege
 
 	@Override
 	protected void mountComponent() {
-		this.add(label);
+		editor.add(label);
 		updateButton(color.getColor(null));
 	}
 
@@ -117,4 +115,21 @@ public class LegendUIColorLiteralPanel extends LegendUIComponent implements Lege
 	public ColorParameter getColorParameter() {
 		return this.color;
 	}
+
+	@Override
+	public Class getEditedClass() {
+		return ColorLiteral.class;
+	}
+
+	@Override
+	protected void turnOff() {
+		colorChanged(null);
+	}
+
+	@Override
+	protected void turnOn() {
+		colorChanged(this.color);
+	}
+
+	protected abstract void colorChanged(ColorLiteral color);
 }

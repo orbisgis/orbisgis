@@ -35,12 +35,10 @@
  * erwan.bocher _at_ ec-nantes.fr
  * gwendall.petit _at_ ec-nantes.fr
  */
-
-
-
 package org.orbisgis.core.ui.editorViews.toc.actions.cui.graphic;
 
 import java.awt.BorderLayout;
+import javax.swing.BorderFactory;
 import javax.swing.Icon;
 import org.orbisgis.core.images.OrbisGISIcon;
 import org.orbisgis.core.renderer.se.graphic.ViewBox;
@@ -53,18 +51,24 @@ import org.orbisgis.core.ui.editorViews.toc.actions.cui.parameter.real.LegendUIM
  *
  * @author maxence
  */
-public class LegendUIViewBoxPanel extends LegendUIComponent {
+public abstract class LegendUIViewBoxPanel extends LegendUIComponent {
 
-	private ViewBox viewbox;
-
+	protected ViewBox viewbox;
 	private LegendUIMetaRealPanel width;
 	private LegendUIMetaRealPanel height;
 
-	public LegendUIViewBoxPanel(LegendUIController controller, LegendUIComponent parent, ViewBox vbox){
-		super("View Box", controller, parent, 0);
+	public LegendUIViewBoxPanel(LegendUIController controller, LegendUIComponent parent, ViewBox vbox, boolean isNullable) {
+		super("View Box", controller, parent, 0, isNullable);
 		this.viewbox = vbox;
 
-		height = new LegendUIMetaRealPanel("h" , controller, this, vbox.getHeight()) {
+		if (viewbox == null){
+			viewbox = new ViewBox();
+			isNullable = true;
+		}
+
+		this.setBorder(BorderFactory.createTitledBorder(getName()));
+
+		height = new LegendUIMetaRealPanel("h", controller, this, vbox.getHeight(), true) {
 
 			@Override
 			public void realChanged(RealParameter newReal) {
@@ -73,7 +77,7 @@ public class LegendUIViewBoxPanel extends LegendUIComponent {
 		};
 		height.init();
 
-		width = new LegendUIMetaRealPanel("w" , controller, this, vbox.getWidth()) {
+		width = new LegendUIMetaRealPanel("w", controller, this, vbox.getWidth(), true) {
 
 			@Override
 			public void realChanged(RealParameter newReal) {
@@ -90,8 +94,24 @@ public class LegendUIViewBoxPanel extends LegendUIComponent {
 
 	@Override
 	protected void mountComponent() {
-		this.add(width, BorderLayout.NORTH);
-		this.add(height, BorderLayout.SOUTH);
+		editor.add(width, BorderLayout.NORTH);
+		editor.add(height, BorderLayout.SOUTH);
 	}
 
+	@Override
+	public Class getEditedClass() {
+		return ViewBox.class;
+	}
+
+	@Override
+	protected void turnOff() {
+		viewBoxChanged(null);
+	}
+
+	@Override
+	protected void turnOn() {
+		viewBoxChanged(viewbox);
+	}
+
+	public abstract void viewBoxChanged(ViewBox newViewBox);
 }

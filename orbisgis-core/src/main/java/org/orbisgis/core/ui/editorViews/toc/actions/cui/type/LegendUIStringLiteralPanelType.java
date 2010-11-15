@@ -49,6 +49,7 @@ import org.orbisgis.core.ui.editorViews.toc.actions.cui.parameter.real.LegendUIR
  *
  * @author maxence
  */
+/*
 public class LegendUIStringLiteralPanelType extends LegendUIType {
 
 	public LegendUIStringLiteralPanelType(String name, LegendUIController controller) {
@@ -61,4 +62,4 @@ public class LegendUIStringLiteralPanelType extends LegendUIType {
 		return new LegendUIRealLiteralPanel(name, controller, parent, r);
 	}
 }
-
+*/

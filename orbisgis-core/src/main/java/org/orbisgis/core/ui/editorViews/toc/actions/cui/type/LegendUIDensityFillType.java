@@ -49,17 +49,20 @@ import org.orbisgis.core.ui.editorViews.toc.actions.cui.fill.LegendUIDensityFill
  *
  * @author maxence
  */
-public class LegendUIDensityFillType  extends LegendUIType {
+
+/*public class LegendUIDensityFillType  extends LegendUIType {
 
 	public LegendUIDensityFillType(LegendUIController controller) {
 		super("Density fill", controller);
 	}
 
 	@Override
-	public LegendUIComponent getUIComponent(LegendUIComponent parent) {
-		DensityFill dFill = new DensityFill();
-		return new LegendUIDensityFillPanel(controller, parent, dFill);
+	//public LegendUIComponent getUIComponent(LegendUIComponent parent) {
+		//DensityFill dFill = new DensityFill();
+		//return new LegendUIDensityFillPanel(controller, parent, dFill);
 	}
 
 
+
 }
+*/

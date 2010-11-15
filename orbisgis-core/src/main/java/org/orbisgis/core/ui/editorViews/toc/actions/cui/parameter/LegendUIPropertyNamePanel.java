@@ -64,15 +64,15 @@ import org.orbisgis.core.ui.editorViews.toc.actions.cui.LegendUIController;
  *
  * @author maxence
  */
-public class LegendUIPropertyNamePanel extends LegendUIComponent
+public abstract class LegendUIPropertyNamePanel extends LegendUIComponent
 		implements LegendUIColorComponent, LegendUIRealComponent,
 				   LegendUIStringComponent {
 
 	private ComboBoxInput fieldList;
 	private PropertyName p;
 
-	public LegendUIPropertyNamePanel(String name, LegendUIController controller, LegendUIComponent parent, PropertyName p) {
-		super(name, controller, parent, 0);
+	public LegendUIPropertyNamePanel(String name, LegendUIController controller, LegendUIComponent parent, PropertyName p, boolean isNullable) {
+		super(name, controller, parent, 0, isNullable);
 		this.p = p;
 
 		Metadata meta;
@@ -117,7 +117,7 @@ public class LegendUIPropertyNamePanel extends LegendUIComponent
 		}
 
 
-		fieldList = new ComboBoxInputImpl(possibilities.toArray(new String[0]), current, p, ds);
+		fieldList = new ComboBoxInputImpl(possibilities.toArray(new String[0]), current, p);
 	}
 
 	@Override
@@ -127,7 +127,7 @@ public class LegendUIPropertyNamePanel extends LegendUIComponent
 
 	@Override
 	protected void mountComponent() {
-		this.add(fieldList);
+		editor.add(fieldList);
 	}
 
 	@Override
@@ -161,22 +161,22 @@ public class LegendUIPropertyNamePanel extends LegendUIComponent
 
 		private String[] possibilities;
 		private PropertyName pName;
-		private DataSource ds;
 
-		private ComboBoxInputImpl(String[] possibilities, int current, PropertyName pName, DataSource ds) {
+		private ComboBoxInputImpl(String[] possibilities, int current, PropertyName pName) {
 			super(possibilities, current);
 			this.possibilities = possibilities;
 			this.pName = pName;
-			this.ds = ds;
 		}
 
 		@Override
 		protected void valueChanged(int i) {
-			try {
-				pName.setColumnName(possibilities[i], ds);
-			} catch (DriverException ex) {
-				Logger.getLogger(LegendUIPropertyNamePanel.class.getName()).log(Level.SEVERE, null, ex);
-			}
+			pName.setColumnName(possibilities[i]);
 		}
 	}
+	
+	@Override
+	public Class getEditedClass() {
+		return p.getClass();
+	}
+
 }

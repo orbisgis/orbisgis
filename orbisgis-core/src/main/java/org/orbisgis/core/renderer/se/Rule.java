@@ -13,6 +13,7 @@ import org.gdms.sql.parser.ParseException;
 import org.gdms.sql.strategies.SemanticException;
 import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.map.MapTransform;
+import org.orbisgis.core.renderer.persistance.se.DomainConstraintsType;
 import org.orbisgis.core.renderer.persistance.se.RuleType;
 import org.orbisgis.core.renderer.se.common.Uom;
 
@@ -112,6 +113,10 @@ public final class Rule implements SymbolizerNode {
 		if (rt.getSymbolizer() != null) {
 			this.setCompositeSymbolizer(new CompositeSymbolizer(rt.getSymbolizer()));
 		}
+
+		if (rt.getDomainConstraints() != null && rt.getDomainConstraints().getTimePeriod() != null){
+			this.setWhere(rt.getDomainConstraints().getTimePeriod());
+		}
 	}
 
 	public void setCompositeSymbolizer(CompositeSymbolizer cs) {
@@ -136,6 +141,11 @@ public final class Rule implements SymbolizerNode {
 
 		if (this.maxScaleDenom != null) {
 			rt.setMaxScaleDenominator(maxScaleDenom);
+		}
+
+		if (this.getWhere() != null && ! this.getWhere().isEmpty()){
+			rt.setDomainConstraints(new DomainConstraintsType());
+		    rt.getDomainConstraints().setTimePeriod(this.getWhere());
 		}
 
 		rt.setSymbolizer(this.symbolizer.getJAXBElement());

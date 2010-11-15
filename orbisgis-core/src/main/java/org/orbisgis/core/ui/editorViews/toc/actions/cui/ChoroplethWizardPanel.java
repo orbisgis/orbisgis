@@ -101,7 +101,7 @@ public class ChoroplethWizardPanel extends JPanel implements UIPanel {
 
 		if (retainedFiledName != null) {
 			try {
-				RealAttribute field = new RealAttribute(retainedFiledName, layer.getDataSource());
+				RealAttribute field = new RealAttribute(retainedFiledName);
 				RangeMethod rangesHelper = new RangeMethod(layer.getDataSource(), field, 4);
 
 				rangesHelper.disecMean();

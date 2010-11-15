@@ -59,7 +59,7 @@ public abstract class LegendUIAlgebricalPanel extends LegendUIComponent implemen
 	RealParameter r;
 
 	public LegendUIAlgebricalPanel(String name, final LegendUIController controller, LegendUIComponent parent, RealParameter realParameter) {
-		super(name, controller, parent, 0);
+		super(name, controller, parent, 0, true);
 		this.r = realParameter;
 
 		System.out.println ("RealParameter = " + this.r);
@@ -83,7 +83,7 @@ public abstract class LegendUIAlgebricalPanel extends LegendUIComponent implemen
 
 	@Override
 	protected void mountComponent() {
-		this.add(input);
+		editor.add(input);
 	}
 
 	@Override

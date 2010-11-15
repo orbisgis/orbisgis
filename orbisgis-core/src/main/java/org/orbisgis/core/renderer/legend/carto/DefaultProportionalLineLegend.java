@@ -42,8 +42,6 @@ import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.geom.Rectangle2D;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.gdms.data.SpatialDataSourceDecorator;
 import org.gdms.driver.DriverException;
@@ -117,7 +115,7 @@ public class DefaultProportionalLineLegend extends AbstractCartoLegend
 	public void preprocess(SpatialDataSourceDecorator sds)
 			throws RenderException, ClassificationMethodException {
 		try {
-			proportionnalMethod = new ProportionalMethod(sds, new RealAttribute(field, sds));
+			proportionnalMethod = new ProportionalMethod(sds, new RealAttribute(field));
 			proportionnalMethod.setMethod(method);
 			proportionnalMethod.build(Math.pow(maxSize, 2));
 

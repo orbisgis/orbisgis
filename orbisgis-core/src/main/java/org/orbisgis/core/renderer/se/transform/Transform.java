@@ -34,6 +34,14 @@ public class Transform implements SymbolizerNode, UomNode {
     private ArrayList<Transformation> transformations;
 
 
+	@Override
+	public String toString(){
+		String r = "";
+		for (Transformation t : transformations){
+			r += t.toString();
+		}
+		return r;
+	}
 
     public Transform() {
         transformations = new ArrayList<Transformation>();

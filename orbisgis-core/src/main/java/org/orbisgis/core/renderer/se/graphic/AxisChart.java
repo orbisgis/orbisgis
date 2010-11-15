@@ -3,18 +3,15 @@ package org.orbisgis.core.renderer.se.graphic;
 import java.io.IOException;
 import javax.media.jai.RenderableGraphics;
 import javax.xml.bind.JAXBElement;
-import org.gdms.data.DataSource;
 import org.gdms.data.feature.Feature;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.persistance.se.AxisChartType;
-import org.orbisgis.core.renderer.persistance.se.NormalizeType;
-import org.orbisgis.core.renderer.persistance.se.ObjectFactory;
-import org.orbisgis.core.renderer.persistance.se.PolarChartType;
 import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.fill.Fill;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
+import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
 import org.orbisgis.core.renderer.se.stroke.Stroke;
 import org.orbisgis.core.renderer.se.transform.Transform;
 
@@ -25,6 +22,17 @@ import org.orbisgis.core.renderer.se.transform.Transform;
  */
 public class AxisChart extends Graphic {
 
+    private RealParameter normalizeTo;
+    private boolean isPolarChart;
+    private AxisScale axisScale;
+    private RealParameter categoryWidth;
+    private RealParameter categoryGap;
+    private Fill areaFill;
+    private Stroke lineStroke;
+
+    // TODO  Other style parameters.... to be defined
+    //
+    // TODO Add stacked bars
     public AxisChart(){
         
     }
@@ -41,7 +49,9 @@ public class AxisChart extends Graphic {
             this.setTransform(new Transform(t.getTransform()));
         }
 
-        //this.setNormalizedToPercent(t.getNormalization() != null);
+		if (t.getNormalization() != null){
+			this.setNormalizedTo(SeParameterFactory.createRealParameter(t.getNormalization()));
+		}
 
         //this.setAxisType(t.getPolarChart() != null);
 		//t.get
@@ -108,6 +118,9 @@ public class AxisChart extends Graphic {
 
     public void setCategoryGap(RealParameter categoryGap) {
         this.categoryGap = categoryGap;
+		if (this.categoryGap != null){
+			this.categoryGap.setContext(RealParameterContext.nonNegativeContext);
+		}
     }
 
     public RealParameter getCategoryWidth() {
@@ -116,6 +129,9 @@ public class AxisChart extends Graphic {
 
     public void setCategoryWidth(RealParameter categoryWidth) {
         this.categoryWidth = categoryWidth;
+		if (categoryWidth != null){
+			categoryWidth.setContext(RealParameterContext.nonNegativeContext);
+		}
     }
 
     public Stroke getLineStroke() {
@@ -127,12 +143,12 @@ public class AxisChart extends Graphic {
         lineStroke.setParent(this);
     }
 
-    public boolean isNormalizedToPercent() {
-        return normalizeToPercent;
+    public RealParameter getNormalizedTo() {
+        return normalizeTo;
     }
 
-    public void setNormalizedToPercent(boolean normalizedToPercent) {
-        this.normalizeToPercent = normalizedToPercent;
+    public void setNormalizedTo(RealParameter normalizedTo) {
+        this.normalizeTo = normalizedTo;
     }
 
     @Override
@@ -203,15 +219,4 @@ public class AxisChart extends Graphic {
     }
 
 
-    private boolean normalizeToPercent;
-    private boolean isPolarChart;
-    private AxisScale axisScale;
-    private RealParameter categoryWidth;
-    private RealParameter categoryGap;
-    private Fill areaFill;
-    private Stroke lineStroke;
-
-    // TODO  Other style parameters.... to be defined
-    //
-    // TODO Add stacked bars
 }

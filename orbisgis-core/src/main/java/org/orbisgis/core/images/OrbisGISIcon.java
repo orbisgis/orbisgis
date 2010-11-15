@@ -346,5 +346,7 @@ public class OrbisGISIcon {
 	public static final Icon SE_STYLE = IconLoader
 			.getIcon("sld_file.png");
 
+	public static final ImageIcon SE_CHANGE_TYPE = IconLoader
+			.getIcon("arrow_refresh.png");
 
 }

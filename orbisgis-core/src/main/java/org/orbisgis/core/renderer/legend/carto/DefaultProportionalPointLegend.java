@@ -118,7 +118,7 @@ public class DefaultProportionalPointLegend extends AbstractCartoLegend
 	public void preprocess(SpatialDataSourceDecorator sds)
 			throws RenderException, ClassificationMethodException {
 		try {
-			proportionnalMethod = new ProportionalMethod(sds, new RealAttribute(field, sds));
+			proportionnalMethod = new ProportionalMethod(sds, new RealAttribute(field));
 			proportionnalMethod.setMethod(method);
 			proportionnalMethod.build(Math.pow(maxSize, 2));
 		} catch (ParameterException ex) {

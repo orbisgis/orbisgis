@@ -49,6 +49,7 @@ import org.orbisgis.core.ui.editorViews.toc.actions.cui.stroke.LegendUIPenStroke
  *
  * @author maxence
  */
+/*
 public class LegendUIPenStrokeType extends LegendUIType {
 
 	public LegendUIPenStrokeType(LegendUIController controller) {
@@ -61,3 +62,4 @@ public class LegendUIPenStrokeType extends LegendUIType {
 		return new LegendUIPenStrokePanel(controller, parent, ps);
 	}
 }
+*/

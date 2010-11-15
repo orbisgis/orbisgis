@@ -42,7 +42,6 @@ import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
-import java.util.Iterator;
 import org.orbisgis.core.renderer.se.parameter.string.StringParameter;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.parameter.real.LegendUIRealComponent;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.parameter.color.LegendUIColorComponent;
@@ -75,20 +74,18 @@ import org.orbisgis.core.ui.editorViews.toc.actions.cui.parameter.string.LegendU
 /**
  * @author maxence
  */
-public class LegendUIRecodePanel extends LegendUIComponent
+public abstract class LegendUIRecodePanel extends LegendUIComponent
 		implements LegendUIRealComponent, LegendUIColorComponent, LegendUIStringComponent {
 
 	private Recode recode;
 	private LegendUIMetaStringPanel lookupValue;
 	private LegendUIComponent fallbackPanel;
-
 	private ArrayList<LegendUIComponent> values;
 	private ArrayList<KeyInput> keys;
 	private ArrayList<RmButton> rmBtns;
-
 	private JButton addBtn;
 	private LegendUIAbstractPanel mapItems;
-	private LegendUIAbstractPanel toolbar;
+	private LegendUIAbstractPanel header;
 	private LegendUIAbstractPanel footer;
 
 	/**
@@ -99,17 +96,17 @@ public class LegendUIRecodePanel extends LegendUIComponent
 	 * @param r
 	 */
 	public LegendUIRecodePanel(final String name, LegendUIController controller,
-			LegendUIComponent parent, Recode r) {
-		super(name, controller, parent, 0);
+			LegendUIComponent parent, Recode r, boolean isNullable) {
+		super(name, controller, parent, 0, isNullable);
 
 		this.recode = r;
 		this.mapItems = new LegendUIAbstractPanel(controller);
-		mapItems.setLayout(new GridLayout(0,3));
-		this.toolbar = new LegendUIAbstractPanel(controller);
+		mapItems.setLayout(new GridLayout(0, 3));
+		this.header = new LegendUIAbstractPanel(controller);
 		this.footer = new LegendUIAbstractPanel(controller);
 
 
-		this.lookupValue = new LegendUIMetaStringPanel("Lookup value", controller, this, recode.getLookupValue()) {
+		this.lookupValue = new LegendUIMetaStringPanel("Lookup value", controller, this, recode.getLookupValue(), false) {
 
 			@Override
 			public void stringChanged(StringParameter newString) {
@@ -121,13 +118,33 @@ public class LegendUIRecodePanel extends LegendUIComponent
 
 		if (recode.getFallbackValue() instanceof ColorLiteral) {
 			fallbackPanel = new LegendUIColorLiteralPanel("Fallback color",
-					controller, this, (ColorLiteral) recode.getFallbackValue());
+					controller, this, (ColorLiteral) recode.getFallbackValue(), false) {
+
+				@Override
+				protected void colorChanged(ColorLiteral color) {
+					recode.setFallbackValue(color);
+				}
+			};
 		} else if (recode.getFallbackValue() instanceof RealLiteral) {
 			fallbackPanel = new LegendUIRealLiteralPanel("Fallback value",
-					controller, this, (RealLiteral) recode.getFallbackValue());
+					controller, this, (RealLiteral) recode.getFallbackValue(), false) {
+
+				@Override
+				protected void realChanged(RealLiteral real) {
+					recode.setFallbackValue(real);
+				}
+
+			};
 		} else if (recode.getFallbackValue() instanceof StringParameter) {
 			fallbackPanel = new LegendUIStringLiteralPanel("Fallback value",
-					controller, this, (StringLiteral) recode.getFallbackValue());
+					controller, this, (StringLiteral) recode.getFallbackValue(), false) {
+
+				@Override
+				protected void stringChanged(StringLiteral string) {
+					recode.setFallbackValue(string);
+				}
+
+			};
 		}
 
 
@@ -151,7 +168,7 @@ public class LegendUIRecodePanel extends LegendUIComponent
 					//categorize.addClass(new RealLiteral(1000.0), new StringLiteral(""));
 				}
 
-				if (index >= 0){
+				if (index >= 0) {
 					keys.add(new KeyInput(index, null, recode.getMapItemKey(index), 10));
 					SeParameter value = recode.getMapItemValue(index);
 
@@ -160,7 +177,7 @@ public class LegendUIRecodePanel extends LegendUIComponent
 								LegendUIRecodePanel.this.controller,
 								LegendUIRecodePanel.this, (ColorParameter) value));
 					} else if (value instanceof RealParameter) {
-						values.add(new RealValueMetaInput(index, name, 
+						values.add(new RealValueMetaInput(index, name,
 								LegendUIRecodePanel.this.controller,
 								LegendUIRecodePanel.this, (RealParameter) value));
 					} else if (value instanceof StringParameter) {
@@ -173,7 +190,6 @@ public class LegendUIRecodePanel extends LegendUIComponent
 
 					fireChange();
 				}
-
 			}
 		});
 
@@ -210,11 +226,10 @@ public class LegendUIRecodePanel extends LegendUIComponent
 
 	@Override
 	protected void mountComponent() {
-		toolbar.removeAll();
-		toolbar.add(lookupValue, BorderLayout.WEST);
-		toolbar.add(fallbackPanel, BorderLayout.EAST);
+		header.removeAll();
+		header.add(lookupValue, BorderLayout.WEST);
+		header.add(fallbackPanel, BorderLayout.EAST);
 
-		this.add(toolbar, BorderLayout.NORTH);
 
 
 		int i;
@@ -230,11 +245,13 @@ public class LegendUIRecodePanel extends LegendUIComponent
 			}
 		}
 
-		this.add(mapItems, BorderLayout.CENTER);
 
 		footer.removeAll();
 		footer.add(addBtn, BorderLayout.WEST);
-		this.add(footer, BorderLayout.SOUTH);
+
+		editor.add(header, BorderLayout.NORTH);
+		editor.add(mapItems, BorderLayout.CENTER);
+		editor.add(footer, BorderLayout.SOUTH);
 	}
 
 	@Override
@@ -278,12 +295,13 @@ public class LegendUIRecodePanel extends LegendUIComponent
 			LegendUIRecodePanel.this.recode.getMapItem(index).setKey(s);
 		}
 
-		public void setIndex(int index){
+		public void setIndex(int index) {
 			this.index = index;
 		}
 	}
 
 	private interface Reindexable {
+
 		public void setIndex(int index);
 	}
 
@@ -292,7 +310,7 @@ public class LegendUIRecodePanel extends LegendUIComponent
 		int index;
 
 		public ColorValueMetaInput(int index, String name, LegendUIController controller, LegendUIComponent parent, ColorParameter c) {
-			super(name, controller, parent, c);
+			super(name, controller, parent, c, false);
 			this.index = index;
 			super.init();
 		}
@@ -303,7 +321,7 @@ public class LegendUIRecodePanel extends LegendUIComponent
 		}
 
 		@Override
-		public void setIndex(int index){
+		public void setIndex(int index) {
 			this.index = index;
 		}
 	}
@@ -313,7 +331,7 @@ public class LegendUIRecodePanel extends LegendUIComponent
 		int index;
 
 		public RealValueMetaInput(int index, String name, LegendUIController controller, LegendUIComponent parent, RealParameter s) {
-			super(name, controller, parent, s);
+			super(name, controller, parent, s, false);
 			this.index = index;
 			super.init();
 		}
@@ -324,7 +342,7 @@ public class LegendUIRecodePanel extends LegendUIComponent
 		}
 
 		@Override
-		public void setIndex(int index){
+		public void setIndex(int index) {
 			this.index = index;
 		}
 	}
@@ -334,7 +352,7 @@ public class LegendUIRecodePanel extends LegendUIComponent
 		int index;
 
 		public StringValueMetaInput(int index, String name, LegendUIController controller, LegendUIComponent parent, StringParameter s) {
-			super(name, controller, parent, s);
+			super(name, controller, parent, s, false);
 			this.index = index;
 			super.init();
 		}
@@ -345,15 +363,16 @@ public class LegendUIRecodePanel extends LegendUIComponent
 		}
 
 		@Override
-		public void setIndex(int index){
+		public void setIndex(int index) {
 			this.index = index;
 		}
 	}
 
 	private class RmButton extends JButton {
+
 		private int index;
 
-		public RmButton(int i){
+		public RmButton(int i) {
 			super("rm");
 			this.index = i;
 
@@ -369,9 +388,9 @@ public class LegendUIRecodePanel extends LegendUIComponent
 
 					int i;
 					// When a map item is removed, have to change index of nexts map items
-					for (i = index;i<keys.size();i++){
+					for (i = index; i < keys.size(); i++) {
 						keys.get(i).setIndex(i);
-						((Reindexable)values.get(i)).setIndex(i);
+						((Reindexable) values.get(i)).setIndex(i);
 						rmBtns.get(i).setIndex(i);
 					}
 
@@ -381,8 +400,14 @@ public class LegendUIRecodePanel extends LegendUIComponent
 			});
 		}
 
-		public void setIndex(int index){
+		public void setIndex(int index) {
 			this.index = index;
 		}
+	}
+
+
+	@Override
+	public Class getEditedClass() {
+		return recode.getClass();
 	}
 }

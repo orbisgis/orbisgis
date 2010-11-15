@@ -37,25 +37,16 @@
  */
 
 
-package org.orbisgis.core.renderer.se.parameter.real;
 
-import org.gdms.data.feature.Feature;
-import org.orbisgis.core.renderer.se.parameter.ParameterException;
-import org.orbisgis.core.renderer.se.parameter.SeParameter;
+package org.orbisgis.core.renderer.se;
 
-public interface RealParameter extends SeParameter {
+/**
+ *
+ * @author maxence
+ */
+public class FeatureTypeStyleException extends Exception {
 
-	//void setMinValue(Double min);
-	//void setMaxValue(Double max);
-
-	//void setBounds(Double min, Double max);
-
-	void setContext(RealParameterContext ctx);
-
-	RealParameterContext getContext();
-
-    double getValue(Feature feat) throws ParameterException;
-
-	@Override
-	String toString();
+    public FeatureTypeStyleException(String arg0){
+        super(arg0);
+    }
 }

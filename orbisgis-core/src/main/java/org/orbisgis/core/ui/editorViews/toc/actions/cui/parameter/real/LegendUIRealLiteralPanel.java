@@ -58,11 +58,11 @@ import org.orbisgis.core.ui.editorViews.toc.actions.cui.LegendUIController;
  *
  * @author maxence
  */
-public class LegendUIRealLiteralPanel extends LegendUIComponent implements LegendUIRealComponent {
+public abstract class LegendUIRealLiteralPanel extends LegendUIComponent implements LegendUIRealComponent {
 
 	private final RealLiteral real;
 	private JSlider slider;
-	private JLabel sliderValue;
+	private JLabel label;
 
 	private JTextField input;
 
@@ -72,8 +72,8 @@ public class LegendUIRealLiteralPanel extends LegendUIComponent implements Legen
 
 	private final static int nbColumns = 10;
 
-	public LegendUIRealLiteralPanel(String name, LegendUIController controller, LegendUIComponent parent, RealLiteral realLiteral) {
-		super(name, controller, parent, 0);
+	public LegendUIRealLiteralPanel(String name, LegendUIController controller, LegendUIComponent parent, RealLiteral realLiteral, boolean isNullable) {
+		super(name, controller, parent, 0, isNullable);
 		this.real = realLiteral;
 	}
 
@@ -84,8 +84,8 @@ public class LegendUIRealLiteralPanel extends LegendUIComponent implements Legen
 
 	@Override
 	protected void mountComponent() {
-		min = real.getMinValue();
-		max = real.getMaxValue();
+		min = real.getContext().getMin();
+		max = real.getContext().getMax();
 		initial = real.getValue(null);
 
 		boolean useSlider = min != null && max != null;
@@ -95,7 +95,7 @@ public class LegendUIRealLiteralPanel extends LegendUIComponent implements Legen
 				throw new IndexOutOfBoundsException("Bounds are invalid (min > max)");
 			}
 			slider = new JSlider(min.intValue(), max.intValue(), initial.intValue());
-			sliderValue = new JLabel();
+			label = new JLabel();
 			updateSliderValue();
 
 			slider.setMajorTickSpacing(10);
@@ -113,12 +113,29 @@ public class LegendUIRealLiteralPanel extends LegendUIComponent implements Legen
 					updateSliderValue();
 				}
 			});
-			this.add(slider, BorderLayout.WEST);
-			this.add(sliderValue, BorderLayout.EAST);
+			editor.add(slider, BorderLayout.WEST);
+			editor.add(label, BorderLayout.EAST);
 
 		} else {
 			input = new JTextField(initial.toString());
 			input.setColumns(LegendUIRealLiteralPanel.nbColumns);
+
+			String text = "[";
+			if (min != null){
+				text += min;
+			} else{
+				text += "-\u221E";
+			}
+			text += ";";
+			if (max != null){
+				text += max;
+			} else{
+				text += "\u221E";
+			}
+			text += "]";
+
+
+			label = new JLabel(text);
 
 			/*
 			 * This listener will be fired each time the text field content will be changed
@@ -155,7 +172,8 @@ public class LegendUIRealLiteralPanel extends LegendUIComponent implements Legen
 				}
 			});
 
-			this.add(input);
+			editor.add(input, BorderLayout.WEST);
+			editor.add(label, BorderLayout.EAST);
 		}
 	}
 
@@ -172,7 +190,7 @@ public class LegendUIRealLiteralPanel extends LegendUIComponent implements Legen
 
 	private void updateSliderValue() {
 		int digit = (int)(Math.log10(Math.max(Math.abs(min), Math.abs(max)))) + 2;
-		sliderValue.setText(String.format("%" + digit + "d %%", slider.getValue()));
+		label.setText(String.format("%" + digit + "d %%", slider.getValue()));
 	}
 
 	private void updateValue(boolean resetOnError) {
@@ -205,5 +223,21 @@ public class LegendUIRealLiteralPanel extends LegendUIComponent implements Legen
 		}
 	}
 
+	@Override
+	public Class getEditedClass(){
+		return RealLiteral.class;
+	}
 
+
+	@Override
+	protected void turnOff() {
+		realChanged(null);
+	}
+
+	@Override
+	protected void turnOn() {
+		realChanged(this.real);
+	}
+
+	protected abstract void realChanged(RealLiteral real);
 }

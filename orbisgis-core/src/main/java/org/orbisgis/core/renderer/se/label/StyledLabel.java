@@ -32,6 +32,7 @@ import org.orbisgis.core.renderer.se.parameter.string.StringLiteral;
 import org.orbisgis.core.renderer.se.parameter.string.StringParameter;
 import org.orbisgis.core.renderer.se.stroke.Stroke;
 import org.orbisgis.core.renderer.se.StrokeNode;
+import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
 
 public final class StyledLabel implements SymbolizerNode, FillNode, StrokeNode {
 
@@ -164,6 +165,9 @@ public final class StyledLabel implements SymbolizerNode, FillNode, StrokeNode {
 
     public void setFontSize(RealParameter fontSize) {
         this.fontSize = fontSize;
+		if (this.fontSize != null){
+			this.fontSize.setContext(RealParameterContext.percentageContext);
+		}
     }
 
     public StringParameter getFontStyle() {
@@ -183,7 +187,7 @@ public final class StyledLabel implements SymbolizerNode, FillNode, StrokeNode {
     }
 
     public RenderableGraphics getImage(Feature feat, boolean selected, MapTransform mt) throws ParameterException, IOException {
-
+		// TODO DEFAULT VALUES !!!
         String text = labelText.getValue(feat);
 
         String family = fontFamily.getValue(feat);

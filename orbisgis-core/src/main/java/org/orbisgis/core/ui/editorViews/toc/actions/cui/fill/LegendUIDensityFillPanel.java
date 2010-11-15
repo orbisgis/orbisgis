@@ -46,6 +46,7 @@ import org.orbisgis.core.images.OrbisGISIcon;
 import org.orbisgis.core.renderer.se.fill.DensityFill;
 import org.orbisgis.core.renderer.se.fill.Fill;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
+import org.orbisgis.core.renderer.se.stroke.PenStroke;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.LegendUIComponent;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.LegendUIController;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.parameter.real.LegendUIMetaRealPanel;
@@ -55,20 +56,31 @@ import org.orbisgis.core.ui.editorViews.toc.actions.cui.stroke.LegendUIPenStroke
  *
  * @author maxence
  */
-public class LegendUIDensityFillPanel extends LegendUIComponent implements LegendUIFillComponent {
+public abstract class LegendUIDensityFillPanel extends LegendUIComponent implements LegendUIFillComponent {
 
 	private DensityFill dFill;
 	private LegendUIPenStrokePanel pStroke;
 	private LegendUIMetaRealPanel orientation;
 	private LegendUIMetaRealPanel percentage;
 
-	public LegendUIDensityFillPanel(LegendUIController ctrl, LegendUIComponent parent, final DensityFill dFill) {
-		super("Density fill", ctrl, parent, 0);
+	public LegendUIDensityFillPanel(LegendUIController ctrl, LegendUIComponent parent, final DensityFill dFill, boolean isNullable) {
+		super("Density fill", ctrl, parent, 0, isNullable);
 		this.dFill = dFill;
 
-		pStroke = new LegendUIPenStrokePanel(controller, this, dFill.getHatches());
+		pStroke = new LegendUIPenStrokePanel(controller, this, dFill.getHatches(), true) {
 
-		orientation = new LegendUIMetaRealPanel("orientation", controller, this, dFill.getHatchesOrientation()) {
+			@Override
+			protected void turnOff() {
+				dFill.setHatches(null);
+			}
+
+			@Override
+			protected void turnOn(){
+				dFill.setHatches((PenStroke) this.getStroke());
+			}
+		};
+
+		orientation = new LegendUIMetaRealPanel("orientation", controller, this, dFill.getHatchesOrientation(), true) {
 			@Override
 			public void realChanged(RealParameter newReal) {
 				dFill.setHatchesOrientation(newReal);
@@ -77,7 +89,7 @@ public class LegendUIDensityFillPanel extends LegendUIComponent implements Legen
 		};
 		orientation.init();
 
-		percentage = new LegendUIMetaRealPanel("Percentage", controller, this, dFill.getPercentageCovered()) {
+		percentage = new LegendUIMetaRealPanel("Percentage", controller, this, dFill.getPercentageCovered(), true) {
 			@Override
 			public void realChanged(RealParameter newReal) {
 				dFill.setPercentageCovered(newReal);
@@ -99,9 +111,15 @@ public class LegendUIDensityFillPanel extends LegendUIComponent implements Legen
 
 	@Override
 	protected void mountComponent() {
-		this.add(pStroke, BorderLayout.NORTH);
-		this.add(orientation, BorderLayout.CENTER);
-		this.add(percentage, BorderLayout.SOUTH);
+		editor.add(pStroke, BorderLayout.NORTH);
+		editor.add(orientation, BorderLayout.CENTER);
+		editor.add(percentage, BorderLayout.SOUTH);
+	}
+
+
+	@Override
+	public Class getEditedClass() {
+		return DensityFill.class;
 	}
 
 

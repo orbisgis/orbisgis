@@ -35,13 +35,9 @@
  * erwan.bocher _at_ ec-nantes.fr
  * gwendall.petit _at_ ec-nantes.fr
  */
-
-
-
 package org.orbisgis.core.ui.editorViews.toc.actions.cui.graphic;
 
 import org.orbisgis.core.renderer.se.graphic.MarkGraphicSource;
-import org.orbisgis.core.ui.editorViews.toc.actions.cui.type.LegendUIWellKnownNameType;
 import javax.swing.Icon;
 import org.orbisgis.core.images.OrbisGISIcon;
 import org.orbisgis.core.renderer.se.graphic.MarkGraphic;
@@ -49,39 +45,36 @@ import org.orbisgis.core.renderer.se.graphic.WellKnownName;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.LegendUIAbstractMetaPanel;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.LegendUIComponent;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.LegendUIController;
-import org.orbisgis.core.ui.editorViews.toc.actions.cui.LegendUIEmptyPanel;
-import org.orbisgis.core.ui.editorViews.toc.actions.cui.type.LegendUIEmptyPanelType;
-import org.orbisgis.core.ui.editorViews.toc.actions.cui.type.LegendUIType;
 
 /**
  *
  * @author maxence
  */
-class LegendUIMetaMarkSource extends LegendUIAbstractMetaPanel{
+public class LegendUIMetaMarkSource extends LegendUIAbstractMetaPanel {
 
-	private LegendUIType initialType;
-	private LegendUIComponent initialPanel;
-	private LegendUIType[] types;
-
+	private Class[] classes;
+	private LegendUIComponent comp;
 	private MarkGraphic mark;
 
-	public LegendUIMetaMarkSource(LegendUIController ctrl, LegendUIComponent parent, MarkGraphic mark){
-		super("Source", ctrl, parent, 0);
+	public LegendUIMetaMarkSource(LegendUIController ctrl, LegendUIComponent parent, MarkGraphic mark) {
+		super("Source", ctrl, parent, 0, false);
 		this.mark = mark;
 
-		types = new LegendUIType[2];
+		classes = new Class[1];
+		classes[0] = WellKnownName.class;
 
-		types[0] = new LegendUIWellKnownNameType(controller, mark);
-		types[1] = new LegendUIEmptyPanelType("no source...", controller);
+		comp = null;
+		if (mark.getSource() != null) {
+			comp = getCompForClass(mark.getSource().getClass());
+		}
+	}
 
-		MarkGraphicSource source = mark.getSource();
-
-		if (source instanceof WellKnownName){
-			initialType = types[0];
-			initialPanel = new LegendUIWellKnownNamePanel(controller, this, mark);
+	@Override
+	protected final LegendUIComponent getCompForClass(Class newClass) {
+		if (newClass == WellKnownName.class) {
+			return new LegendUIWellKnownNamePanel(controller, this, mark);
 		} else {
-			initialType = types[1];
-			initialPanel = new LegendUIEmptyPanel("no source", controller, this);
+			return null;
 		}
 	}
 
@@ -92,11 +85,16 @@ class LegendUIMetaMarkSource extends LegendUIAbstractMetaPanel{
 
 	@Override
 	public void init() {
-		init(types, initialType, initialPanel);
+		init(classes, comp);
 	}
 
 	@Override
-	protected void switchTo(LegendUIType type, LegendUIComponent newActiveComp) {
-		//this.mark
+	protected void switchTo(LegendUIComponent newActiveComp) {
+		//this.mark TODO
+	}
+
+	@Override
+	public Class getEditedClass() {
+		return mark.getSource().getClass();
 	}
 }

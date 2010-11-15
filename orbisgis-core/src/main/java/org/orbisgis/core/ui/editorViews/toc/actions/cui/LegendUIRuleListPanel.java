@@ -41,6 +41,7 @@
 package org.orbisgis.core.ui.editorViews.toc.actions.cui;
 
 import java.awt.BorderLayout;
+import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
@@ -101,6 +102,13 @@ public class LegendUIRuleListPanel extends JPanel implements LegendUIComponentLi
 		btnAdd = new JButton(OrbisGISIcon.ADD);
 		btnDown = new JButton(OrbisGISIcon.GO_DOWN);
 		btnUp = new JButton(OrbisGISIcon.GO_UP);
+
+		btnRm.setMargin(new Insets(0, 0, 0, 0));
+		btnAdd.setMargin(new Insets(0, 0, 0, 0));
+		btnUp.setMargin(new Insets(0, 0, 0, 0));
+		btnDown.setMargin(new Insets(0, 0, 0, 0));
+
+
 
 		btnUp.addActionListener(new ActionListener() {
 

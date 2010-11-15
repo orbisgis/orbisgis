@@ -68,15 +68,14 @@ public class LegendUISymbolizerPanel extends LegendUIComponent {
 	private LegendUIMetaFillPanel mFill;
 	private LegendUIMetaStrokePanel mStroke;
 	private LegendUICompositeGraphicPanel gCollection;
-
 	private TextInput nameInput;
 	private UomInput uomInput;
 
 	public LegendUISymbolizerPanel(LegendUIController controller, LegendUIComponent parent,
-			Symbolizer symb) {
-		super(symb.getName(), controller, parent, 0);
+			final Symbolizer symb) {
+		super(symb.getName(), controller, parent, 0, false);
 
-		this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+		// A symbolizer UI always starts in a new panel !
 		this.extractFromParent();
 
 		this.symbolizer = symb;
@@ -91,31 +90,31 @@ public class LegendUISymbolizerPanel extends LegendUIComponent {
 			}
 		};
 
-		if (symb instanceof VectorSymbolizer){
-			uomInput = new UomInput((VectorSymbolizer)symbolizer);
+		if (symb instanceof VectorSymbolizer) {
+			uomInput = new UomInput((VectorSymbolizer) symbolizer);
 			// Transform @todo
 		}
 
 		if (symb instanceof AreaSymbolizer) {
-			mFill = new LegendUIMetaFillPanel(controller, this, (FillNode) symbolizer);
+			mFill = new LegendUIMetaFillPanel(controller, this, (FillNode) symbolizer, true);
 			mFill.init();
 
-			mStroke = new LegendUIMetaStrokePanel(controller, this, (StrokeNode) symbolizer);
+			mStroke = new LegendUIMetaStrokePanel(controller, this, (StrokeNode) symbolizer, true);
 			mStroke.init();
 			//mStroke = new LegendUIMetaStrokePanel(controller, parent, (StrokeNode)symbolizer);
 		} else if (symb instanceof LineSymbolizer) {
-			mStroke = new LegendUIMetaStrokePanel(controller, this, (StrokeNode) symbolizer);
+			mStroke = new LegendUIMetaStrokePanel(controller, this, (StrokeNode) symbolizer, false);
 			mStroke.init();
 			//mStroke = new LegendUIMetaStrokePanel(controller, parent, (StrokeNode)symbolizer);
 		} else if (symb instanceof PointSymbolizer) {
 			//graphics = new LegendUIGraphicCollectionPanel(controller, parent, ((PointSymbolizer)symbolizer).getGraphicCollection());
-			gCollection = new LegendUICompositeGraphicPanel(controller, this, ((PointSymbolizer)symb).getGraphicCollection());
+			gCollection = new LegendUICompositeGraphicPanel(controller, this, ((PointSymbolizer) symb).getGraphicCollection());
 		} else if (symb instanceof TextSymbolizer) {
 		} else if (symb instanceof RasterSymbolizer) { // ??
 		}
 	}
 
-	public Symbolizer getSymbolizer(){
+	public Symbolizer getSymbolizer() {
 		return symbolizer;
 	}
 
@@ -140,32 +139,50 @@ public class LegendUISymbolizerPanel extends LegendUIComponent {
 
 	@Override
 	protected void mountComponent() {
-		//this.mountComponentForChildren();
-
-		this.removeAll();
+		editor.removeAll();
 
 		LegendUIAbstractPanel topBar = new LegendUIAbstractPanel(controller);
 		topBar.setLayout(new BoxLayout(topBar, BoxLayout.X_AXIS));
 
 		topBar.add(nameInput);
 
-		if (uomInput != null){
+
+		LegendUIAbstractPanel symbEditor = new LegendUIAbstractPanel(controller);
+		symbEditor.setLayout(new BoxLayout(symbEditor, BoxLayout.Y_AXIS));
+
+
+		if (uomInput != null) {
 			topBar.add(uomInput);
 		}
 
-		this.add(topBar);
-		this.add(mStroke);
-		this.add(mFill);
-		this.add(gCollection);
+		symbEditor.add(topBar);
 
-		// Should be useless...
-		if (this.symbolizer instanceof AreaSymbolizer) {
-			//mStroke = new LegendUIMetaStrokePanel(controller, parent, (StrokeNode)symbolizer);
-		} else if (symbolizer instanceof LineSymbolizer) {
-		} else if (symbolizer instanceof PointSymbolizer) {
-			//graphics = new LegendUIGraphicCollectionPanel(controller, parent, ((PointSymbolizer)symbolizer).getGraphicCollection());
-		} else if (symbolizer instanceof TextSymbolizer) {
-		} else if (symbolizer instanceof RasterSymbolizer) { // ??
+		if (mStroke != null) {
+			symbEditor.add(mStroke);
 		}
+
+		if (mFill != null) {
+			symbEditor.add(mFill);
+		}
+
+		if (gCollection != null) {
+			symbEditor.add(gCollection);
+		}
+
+		editor.add(symbEditor);
 	}
+
+	@Override
+	protected void turnOff() {
+	}
+
+	@Override
+	protected void turnOn() {
+	}
+
+	@Override
+	public Class getEditedClass() {
+		return symbolizer.getClass();
+	}
+
 }

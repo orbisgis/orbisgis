@@ -6,7 +6,6 @@ package org.orbisgis.core.renderer.se;
 
 import java.awt.Graphics2D;
 import java.io.IOException;
-import javax.swing.JPanel;
 import javax.xml.bind.JAXBElement;
 import org.gdms.data.feature.Feature;
 import org.gdms.driver.DriverException;
@@ -18,6 +17,7 @@ import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.parameter.color.Categorize2Color;
 import org.orbisgis.core.renderer.se.parameter.color.Interpolate2Color;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
+import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
 import org.orbisgis.core.renderer.se.raster.Channel;
 import org.orbisgis.core.renderer.se.raster.ContrastEnhancement;
 
@@ -108,6 +108,9 @@ public class RasterSymbolizer extends Symbolizer {
 
     public void setOpacity(RealParameter opacity) {
         this.opacity = opacity;
+		if (this.opacity != null){
+			this.opacity.setContext(RealParameterContext.percentageContext);
+		}
     }
 
     public AreaSymbolizer getOutline() {

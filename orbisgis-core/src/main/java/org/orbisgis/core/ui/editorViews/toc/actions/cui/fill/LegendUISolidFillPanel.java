@@ -53,14 +53,14 @@ import org.orbisgis.core.ui.editorViews.toc.actions.cui.parameter.real.LegendUIM
  *
  * @author maxence
  */
-public class LegendUISolidFillPanel extends LegendUIComponent implements LegendUIFillComponent {
+public abstract class LegendUISolidFillPanel extends LegendUIComponent implements LegendUIFillComponent {
 
 	private SolidFill sFill;
 	private LegendUIMetaColorPanel mColor;
 	private LegendUIMetaRealPanel opacity;
 
-	public LegendUISolidFillPanel(LegendUIController controller, LegendUIComponent parent, final SolidFill sFill) {
-		super("solid fill", controller, parent, 0);
+	public LegendUISolidFillPanel(LegendUIController controller, LegendUIComponent parent, final SolidFill sFill, boolean isNullable) {
+		super("solid fill", controller, parent, 0, isNullable);
 		this.sFill = sFill;
 		this.mColor = new LegendUIMetaColorPanelImpl(controller, this, sFill.getColor(), sFill);
 
@@ -79,12 +79,8 @@ public class LegendUISolidFillPanel extends LegendUIComponent implements LegendU
 
 	@Override
 	protected void mountComponent() {
-		if (mColor != null) {
-			this.add(mColor, BorderLayout.NORTH);
-		}
-		if (opacity != null) {
-			this.add(opacity, BorderLayout.SOUTH);
-		}
+		editor.add(mColor, BorderLayout.NORTH);
+		editor.add(opacity, BorderLayout.SOUTH);
 	}
 
 	private static class LegendUIMetaColorPanelImpl extends LegendUIMetaColorPanel {
@@ -92,7 +88,7 @@ public class LegendUISolidFillPanel extends LegendUIComponent implements LegendU
 		private final SolidFill sFill;
 
 		public LegendUIMetaColorPanelImpl(LegendUIController controller, LegendUIComponent parent, ColorParameter c, SolidFill sFill) {
-			super("color", controller, parent, c);
+			super("color", controller, parent, c, true);
 			this.sFill = sFill;
 			init();
 		}
@@ -108,7 +104,7 @@ public class LegendUISolidFillPanel extends LegendUIComponent implements LegendU
 		private final SolidFill sFill;
 
 		public LegendUIMetaRealPanelImpl(LegendUIController controller, LegendUIComponent parent, RealParameter r, SolidFill sFill) {
-			super("opacity", controller, parent, r);
+			super("opacity", controller, parent, r, true);
 			this.sFill = sFill;
 			init();
 		}
@@ -118,4 +114,11 @@ public class LegendUISolidFillPanel extends LegendUIComponent implements LegendU
 			sFill.setOpacity(newReal);
 		}
 	}
+
+	@Override
+	public Class getEditedClass() {
+		return SolidFill.class;
+	}
+
+
 }

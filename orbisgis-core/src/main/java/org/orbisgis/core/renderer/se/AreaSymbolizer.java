@@ -20,6 +20,7 @@ import org.orbisgis.core.renderer.se.fill.SolidFill;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
+import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
 
 import org.orbisgis.core.renderer.se.stroke.PenStroke;
 import org.orbisgis.core.renderer.se.stroke.Stroke;
@@ -31,10 +32,8 @@ public final class AreaSymbolizer extends VectorSymbolizer implements FillNode, 
 		super();
 		name = "Area symbolizer";
 		uom = Uom.MM;
-		fill = new SolidFill();
-		fill.setParent(this);
-		stroke = new PenStroke();
-		stroke.setParent(this);
+		this.setFill(new SolidFill());
+		this.setStroke(new PenStroke());
 	}
 
 	public AreaSymbolizer(JAXBElement<AreaSymbolizerType> st) {
@@ -105,6 +104,9 @@ public final class AreaSymbolizer extends VectorSymbolizer implements FillNode, 
 
 	public void setPerpendicularOffset(RealParameter perpendicularOffset) {
 		this.perpendicularOffset = perpendicularOffset;
+		if (this.perpendicularOffset != null){
+			this.perpendicularOffset.setContext(RealParameterContext.realContext);
+		}
 	}
 
 	/**

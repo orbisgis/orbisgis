@@ -43,6 +43,7 @@ package org.orbisgis.core.ui.editorViews.toc.actions.cui.graphic;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.FlowLayout;
+import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
@@ -90,8 +91,8 @@ public class LegendUICompositeGraphicPanel extends LegendUIComponent {
 	private int currentGraphic;
 
 
-	public LegendUICompositeGraphicPanel(LegendUIController ctrl, LegendUIComponent parent, GraphicCollection graphicCollection){
-		super("Graphic collection", ctrl, parent, 0);
+	public LegendUICompositeGraphicPanel(LegendUIController ctrl, LegendUIComponent parent, GraphicCollection graphicCollection) {
+		super("Graphic collection", ctrl, parent, 0, false);
 		this.gc = graphicCollection;
 
 		graphics = new ArrayList<LegendUIMetaGraphicPanelImpl>();
@@ -116,6 +117,12 @@ public class LegendUICompositeGraphicPanel extends LegendUIComponent {
 		btnAdd = new JButton(OrbisGISIcon.ADD);
 		btnDown = new JButton(OrbisGISIcon.GO_DOWN);
 		btnUp = new JButton(OrbisGISIcon.GO_UP);
+
+
+		btnRm.setMargin(new Insets(0, 0, 0, 0));
+		btnAdd.setMargin(new Insets(0, 0, 0, 0));
+		btnUp.setMargin(new Insets(0, 0, 0, 0));
+		btnDown.setMargin(new Insets(0, 0, 0, 0));
 
 		btnUp.addActionListener(new ActionListener() {
 
@@ -166,7 +173,7 @@ public class LegendUICompositeGraphicPanel extends LegendUIComponent {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				MarkGraphic g = new MarkGraphic();
-				g.setToCircle10();
+				g.setTo3mmCircle();
 
 				gc.addGraphic(g);
 				DefaultListModel model = (DefaultListModel) list.getModel();
@@ -296,8 +303,16 @@ public class LegendUICompositeGraphicPanel extends LegendUIComponent {
 			right.add(new JLabel("Please select one!"));
 		}
 
-		this.add(left, BorderLayout.WEST);
-		this.add(right, BorderLayout.EAST);
+		editor.add(left, BorderLayout.WEST);
+		editor.add(right, BorderLayout.EAST);
+	}
+
+	@Override
+	protected void turnOff() {
+	}
+
+	@Override
+	protected void turnOn() {
 	}
 
 	private class LegendUIMetaGraphicPanelImpl extends LegendUIMetaGraphicPanel {
@@ -305,7 +320,7 @@ public class LegendUICompositeGraphicPanel extends LegendUIComponent {
 		private int index;
 
 		public LegendUIMetaGraphicPanelImpl(String name, LegendUIController controller, LegendUIComponent parent, Graphic g, int i) {
-			super(name, controller, parent, g);
+			super(name, controller, parent, g, false);
 			this.index = i;
 			this.init();
 		}
@@ -335,4 +350,11 @@ public class LegendUICompositeGraphicPanel extends LegendUIComponent {
 			return this;
 		}
 	}
+
+	@Override
+	public Class getEditedClass() {
+		return GraphicCollection.class;
+	}
+
+
 }

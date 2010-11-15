@@ -49,6 +49,7 @@ import org.orbisgis.core.ui.editorViews.toc.actions.cui.parameter.color.LegendUI
  *
  * @author maxence
  */
+/*
 public class LegendUIColorLiteralType extends LegendUIType {
 
 	public LegendUIColorLiteralType(String name, LegendUIController controller) {
@@ -62,3 +63,4 @@ public class LegendUIColorLiteralType extends LegendUIType {
 	}
 
 }
+*/

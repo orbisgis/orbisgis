@@ -25,6 +25,7 @@ import org.orbisgis.core.renderer.se.graphic.GraphicCollection;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
+import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
 
 public final class GraphicFill extends Fill implements UomNode {
 
@@ -71,6 +72,7 @@ public final class GraphicFill extends Fill implements UomNode {
         this.uom = uom;
     }
 
+	@Override
 	public Uom getOwnUom(){
 		return uom;
 	}
@@ -86,10 +88,16 @@ public final class GraphicFill extends Fill implements UomNode {
 
     public void setGapX(RealParameter gap) {
         gapX = gap;
+		if (gap != null){
+			gap.setContext(RealParameterContext.realContext);
+		}
     }
 
     public void setGapY(RealParameter gap) {
         gapY = gap;
+		if (gap != null){
+			gap.setContext(RealParameterContext.realContext);
+		}
     }
 
     public RealParameter getGapX() {

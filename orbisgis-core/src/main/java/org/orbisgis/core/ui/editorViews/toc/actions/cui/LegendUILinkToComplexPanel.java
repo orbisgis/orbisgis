@@ -60,7 +60,7 @@ public class LegendUILinkToComplexPanel extends JPanel {
 		this.ctrler = controller;
 		//this.setBorder(BorderFactory.createTitledBorder(complexChild.toString()));
 
-		link = new JLabel("<html><u>Edit complex " + complexChild.toString() + "</u></html>");
+		link = new JLabel("<html><u>Edit " + complexChild.toString() + "</u></html>");
 		link.setForeground(Color.blue);
 
 		link.addMouseListener(new MouseListener() {

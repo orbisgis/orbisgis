@@ -42,6 +42,7 @@ import java.awt.Dimension;
 import java.awt.Polygon;
 import java.awt.Shape;
 import java.awt.geom.Arc2D;
+import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import org.gdms.data.feature.Feature;
 
@@ -84,41 +85,42 @@ public enum WellKnownName implements MarkGraphicSource {
 
     @Override
     public Shape getShape(ViewBox viewBox, Feature feat, Double scale, Double dpi, RealParameter markIndex, String mimeType) throws ParameterException {
-        double x=10.0, y=10.0; // The size of the shape, [final unit] => [px]
-
         if (feat == null && viewBox != null && viewBox.dependsOnFeature()){
             return null;
         }
 
+        double x=10.0, y=10.0; // The size of the shape, [final unit] => [px]
+
         if (viewBox != null && viewBox.usable()) {
-            Dimension box = viewBox.getDimensionInPixel(feat, MarkGraphic.defaultSize, MarkGraphic.defaultSize, scale, dpi);
-            x = box.getWidth();
-            y = box.getHeight();
+            Point2D box = viewBox.getDimensionInPixel(feat, MarkGraphic.defaultSize, MarkGraphic.defaultSize, scale, dpi);
+            x = box.getX();
+            y = box.getY();
         }
 
-        double hx = x / 2.0;
-        double hy = y / 2.0;
+        int x2 = (int)(x / 2.0);
+        int y2 = (int)(y / 2.0);
+		int minxy6 = (int)Math.min(x/6, y/6);
 
         switch (this.valueOf(this.name())) {
             // TODO Implement other well known name !
             case HALFCIRCLE:
-                return new Arc2D.Double(-hx, -hy, x, y, 90, 180, Arc2D.PIE);
+                return new Arc2D.Double(-x2, -y2, x, y, 90, 180, Arc2D.PIE);
             case CIRCLE:
-                return new Arc2D.Double(-hx, -hy, x, y, 0, 360, Arc2D.CHORD);
+                return new Arc2D.Double(-x2, -y2, x, y, 0, 360, Arc2D.CHORD);
             case TRIANGLE: {
-                int h3 = (int) (x / 3);
+                int h3 = (int) (y / 3);
                 Polygon polygon = new Polygon();
-                polygon.addPoint((int) hx, h3);
+                polygon.addPoint((int) x2, h3);
                 polygon.addPoint(0, -2 * h3);
-                polygon.addPoint((int) -hx, h3);
+                polygon.addPoint((int) -x2, h3);
                 return polygon;
             }
             case STAR: // 5 branches
             {
-                double crx = hx * (2.0 / 5.0);
-                double cry = hy * (2.0 / 5.0);
+                double crx = x2 * (2.0 / 5.0);
+                double cry = y2 * (2.0 / 5.0);
 
-                Polygon polygon = new Polygon();
+                Polygon star = new Polygon();
 
                 double cos1 = 0.587785252292472915058851867798;
                 double cos2 = 0.951056516295153531181938433292;
@@ -126,45 +128,96 @@ public enum WellKnownName implements MarkGraphicSource {
                 double sin2 = 0.309016994374947617796323129369;
 
                 // alpha = 270
-                polygon.addPoint(0, (int) (-cry + 0.5));
+                star.addPoint(0, (int) (cry - 0.5));
 
                 // alpha = 306
-                polygon.addPoint((int) (cos1 * hx + 0.5), (int) (-sin1 * hy + 0.5));
+                star.addPoint((int) (cos1 * x2 + 0.5), (int) (sin1 * y2 - 0.5));
 
                 // alpha = 342
-                polygon.addPoint((int) (cos2 * crx + 0.5), (int) (-sin2 * cry + 0.5));
+                star.addPoint((int) (cos2 * crx + 0.5), (int) (sin2 * cry - 0.5));
 
                 // alpha = 18
-                polygon.addPoint((int) (cos2 * hx + 0.5), (int) (sin2 * hy + 0.5));
+                star.addPoint((int) (cos2 * x2 + 0.5), (int) (-sin2 * y2 - 0.5));
 
                 // alpha = 54
-                polygon.addPoint((int) (cos1 * crx + 0.5), (int) (sin1 * cry + 0.5));
+                star.addPoint((int) (cos1 * crx + 0.5), (int) (-sin1 * cry - 0.5));
 
                 // alpha = 90
-                polygon.addPoint(0, (int) (hy + 0.5));
+                star.addPoint(0, (int) (-y2 - 0.5));
 
                 // alpha = 126
-                polygon.addPoint((int) (-cos1 * crx + 0.5), (int) (sin1 * cry + 0.5));
+                star.addPoint((int) (-cos1 * crx + 0.5), (int) (-sin1 * cry - 0.5));
 
                 // alpha = 162
-                polygon.addPoint((int) (-cos2 * hx + 0.5), (int) (sin2 * hy + 0.5));
+                star.addPoint((int) (-cos2 * x2 + 0.5), (int) (-sin2 * y2 - 0.5));
 
                 // alpha = 198
-                polygon.addPoint((int) (-cos2 * crx + 0.5), (int) (-sin2 * cry + 0.5));
+                star.addPoint((int) (-cos2 * crx + 0.5), (int) (sin2 * cry - 0.5));
 
                 // alpha = 234
-                polygon.addPoint((int) (-cos1 * hx + 0.5), (int) (-sin1 * hy + 0.5));
+                star.addPoint((int) (-cos1 * x2 + 0.5), (int) (sin1 * y2 - 0.5));
 
-                return polygon;
+                return star;
             }
             case CROSS:// TODO IMPLEMENT
+
+                Polygon cross = new Polygon();
+
+				cross.addPoint(-minxy6, -y2);
+				cross.addPoint(minxy6, -y2);
+
+				cross.addPoint(minxy6, -minxy6);
+
+				cross.addPoint(x2, -minxy6);
+				cross.addPoint(x2, minxy6);
+
+				cross.addPoint(minxy6, minxy6);
+
+				cross.addPoint(minxy6, y2);
+				cross.addPoint(-minxy6, y2);
+
+				cross.addPoint(-minxy6, minxy6);
+
+				cross.addPoint(-x2, minxy6);
+				cross.addPoint(-x2, -minxy6);
+
+				cross.addPoint(-minxy6, -minxy6);
+
+				return cross;
+
+
             case X: // TODO IMPLEMENT
+
+                Polygon xShape = new Polygon();
+
+				xShape.addPoint(0, -minxy6);
+
+				xShape.addPoint(x2 - minxy6, - y2);
+				xShape.addPoint(x2, - y2 +minxy6);
+
+				xShape.addPoint(minxy6, 0);
+
+				xShape.addPoint(x2, y2 - minxy6);
+				xShape.addPoint(x2 - minxy6, y2);
+
+				xShape.addPoint(0, minxy6);
+
+				xShape.addPoint(- x2 + minxy6, y2);
+				xShape.addPoint(- x2, y2 - minxy6);
+
+				xShape.addPoint(-minxy6, 0);
+
+				xShape.addPoint(- x2, - y2 +minxy6);
+				xShape.addPoint(- x2 + minxy6, - y2);
+
+				return xShape;
             case SQUARE:
             default:
-                return new Rectangle2D.Double(-hx, -hy, x, y);
+                return new Rectangle2D.Double(-x2, -y2, x, y);
         }
     }
 
+	@Override
     public void setJAXBSource(MarkGraphicType m){
         m.setWellKnownName(this.toString());
     }

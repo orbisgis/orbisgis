@@ -57,6 +57,7 @@ import org.orbisgis.core.ui.editorViews.toc.actions.cui.parameter.LegendUIRecode
  *
  * @author maxence
  */
+/*
 public class LegendUIRecodeType extends LegendUIType {
 
 	Class<? extends Recode> type;
@@ -88,3 +89,4 @@ public class LegendUIRecodeType extends LegendUIType {
 		}
 	}
 }
+*/

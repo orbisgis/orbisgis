@@ -119,11 +119,22 @@ public abstract class Graphic implements SymbolizerNode, UomNode {
      */
     public static RenderableGraphics getNewRenderableGraphics(Rectangle2D bounds, double margin) {
 
+		double width = bounds.getWidth() + 2 * margin;
+		double height = bounds.getHeight() + 2 * margin;
+
+		if (width < 1){
+			width = 1;
+		}
+
+		if (height < 1){
+			height = 1;
+		}
+
         RenderableGraphics rg = new RenderableGraphics(new Rectangle2D.Double(
                 bounds.getMinX() - margin,
                 bounds.getMinY() - margin,
-                bounds.getWidth() + 2 * margin,
-                bounds.getHeight() + 2 * margin));
+                width, height));
+
         return rg;
 
     }

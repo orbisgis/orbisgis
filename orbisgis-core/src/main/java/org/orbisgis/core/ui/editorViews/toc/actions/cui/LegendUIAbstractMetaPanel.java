@@ -37,15 +37,13 @@
  */
 package org.orbisgis.core.ui.editorViews.toc.actions.cui;
 
-import org.orbisgis.core.ui.editorViews.toc.actions.cui.type.LegendUIType;
-import java.awt.BorderLayout;
+import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
-import javax.swing.JLabel;
 import javax.swing.JOptionPane;
-import javax.swing.border.TitledBorder;
+import org.orbisgis.core.images.OrbisGISIcon;
 
 /**
  *
@@ -54,15 +52,24 @@ import javax.swing.border.TitledBorder;
 public abstract class LegendUIAbstractMetaPanel extends LegendUIComponent {
 
 	private JButton changeType;
-	private LegendUIType[] types;
+	//private LegendUIType[] types;
 	private LegendUIComponent[] comps;
-	private LegendUIType currentType;
-	private LegendUIComponent currentComp;
+	//private LegendUIType currentType;
+	private int currentComp;
+
+	private ClassWrapper[] classes;
 
 	public LegendUIAbstractMetaPanel(String name, LegendUIController controller, LegendUIComponent parent,
-			float weight) {
-		super(name, controller, parent, weight);
+			float weight, boolean isNullable) {
+		super(name, controller, parent, weight, isNullable);
 
+		this.setBorder(BorderFactory.createTitledBorder(name));
+
+		changeType = new JButton(OrbisGISIcon.SE_CHANGE_TYPE);
+		changeType.setMargin(new Insets(0, 0, 0, 0));
+		changeType.addActionListener(new ChangeTypeListener(this));
+
+		currentComp = 0;
 	}
 
 	/**
@@ -71,48 +78,77 @@ public abstract class LegendUIAbstractMetaPanel extends LegendUIComponent {
 	 * @param initialType
 	 * @param initialPanel
 	 */
-	protected void init(LegendUIType[] availableTypes, LegendUIType initialType, LegendUIComponent initialPanel) {
-		types = availableTypes;
-		comps = new LegendUIComponent[availableTypes.length];
+	protected void init(Class[] classes, LegendUIComponent comp) {
+		this.classes = new ClassWrapper[classes.length];
 
-		this.currentType = initialType;
-		this.currentComp = initialPanel;
+		int i = 0;
+		for (Class cl : classes){
+			this.classes[i] = new ClassWrapper(cl);
+			i++;
+		}
 
-		this.setBorder(BorderFactory.createTitledBorder(""));
-
-		int typeIndex = getTypeIndex(initialType);
-
-		comps[typeIndex] = currentComp;
-
-		switchTo(initialType, currentComp);
+		this.comps = new LegendUIComponent[classes.length];
+		if (comp != null){
+			this.currentComp = getIndex(comp);
+			comps[currentComp] = comp;
+			switchTo(comps[currentComp]);
+		} else {
+			isNullComponent = true;
+		}
 	}
 
 	/**
-	 * call right after create new instances !
+	 * call right after creating new instances !
 	 */
 	public abstract void init();
+
+
+
+	@Override
+	protected void turnOff(){
+		this.isNullComponent = true;
+		switchTo(null);
+		controller.structureChanged(this.getParentComponent());
+	}
+
+	@Override
+	protected void turnOn(){
+		this.isNullComponent = false;
+
+		if (comps[currentComp] == null){
+			comps[currentComp] = getCompForClass(classes[currentComp].mClass);
+		}
+
+		switchTo(comps[currentComp]);
+		controller.structureChanged(this.getParentComponent());
+	}
 
 	/**
 	 *
 	 * @param type the new type of sub panel as selected by the user
 	 * @param newActiveComp the corresponding UI component
 	 */
-	protected abstract void switchTo(LegendUIType type, LegendUIComponent newActiveComp);
+	protected abstract void switchTo(LegendUIComponent newActiveComp);
 
-	//protected abstract void changeType(Object newType);
-	private void setTitle() {
-		TitledBorder border = (TitledBorder) this.getBorder();
-		border.setTitle(currentComp.getName());
-	}
-
-	private int getTypeIndex(LegendUIType type) {
+	private int getIndex(LegendUIComponent comp) {
+		Class cl = comp.getEditedClass();
 		int i;
-		for (i = 0; i < types.length; i++) {
-			if (types[i].equals(type)) {
+		for (i = 0; i < classes.length; i++) {
+			if (classes[i].mClass.equals(cl)) {
 				return i;
 			}
 		}
-		return -1;
+		return 0;
+	}
+
+	private int getClassIndex(Class cl) {
+		int i;
+		for (i = 0; i < classes.length; i++) {
+			if (classes[i].mClass.equals(cl)) {
+				return i;
+			}
+		}
+		return 0;
 	}
 
 	private class ChangeTypeListener implements ActionListener {
@@ -126,57 +162,55 @@ public abstract class LegendUIAbstractMetaPanel extends LegendUIComponent {
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			LegendUIType newType = (LegendUIType) JOptionPane.showInputDialog(null,
+			ClassWrapper newClass = (ClassWrapper) JOptionPane.showInputDialog(null,
 					"Choose a new type", "Choose a new type",
 					JOptionPane.PLAIN_MESSAGE, null,
-					types, currentType);
+					classes, classes[currentComp]);
 
-			int index = getTypeIndex(newType);
+			if (newClass != null) {
+				currentComp = getClassIndex(newClass.mClass);
 
-			if (index >= 0) {
-				if (comps[index] == null) {
-					comps[index] = newType.getUIComponent(LegendUIAbstractMetaPanel.this);
+				if (comps[currentComp] == null){
+					comps[currentComp] = getCompForClass(newClass.mClass);
 				}
-
-				currentType = newType;
-
 				// Update tree
-				currentComp.makeOrphan();
-				currentComp = comps[index];
-				metaPanel.addChild(currentComp);
+				comps[currentComp].makeOrphan();
+				metaPanel.addChild(comps[currentComp]);
 
-				switchTo(currentType, currentComp);
-				controller.structureChanged(currentComp);
+				switchTo(comps[currentComp]);
+				controller.structureChanged(comps[currentComp]);
+
 			}
 		}
+
 	}
+
+	protected abstract LegendUIComponent getCompForClass(Class newClass);
 
 	@Override
 	protected void mountComponent() {
-		//this.removeAll();
-		//this.mountComponentForChildren();
+		toolbar.add(changeType);
 
-		changeType = new JButton("ct");
-		changeType.addActionListener(new ChangeTypeListener(this));
-		this.add(changeType, BorderLayout.EAST);
-
-		if (currentComp != null) {
-			/*if (currentComp.isNested()) {
-				LegendUILinkToComplexPanel link = new LegendUILinkToComplexPanel(controller, currentComp);
-				this.add(link, BorderLayout.WEST);
-			} else {
-				this.add(currentComp, BorderLayout.WEST);
-			}*/
-			this.add(currentComp);
-
-			setTitle();
-		}else{
-			this.add(new JLabel("Empty!"));
+		if (comps[currentComp] == null){
+			comps[currentComp] = getCompForClass(classes[currentComp].mClass);
 		}
 
+		editor.add(comps[currentComp]);
 	}
 
 	public LegendUIComponent getCurrentComponent(){
-		return this.currentComp;
+		return this.comps[currentComp];
+	}
+
+	private class ClassWrapper {
+		Class mClass;
+		public ClassWrapper(Class theClass){
+			mClass = theClass;
+		}
+
+		@Override
+		public String toString(){
+			return mClass.getSimpleName();
+		}
 	}
 }

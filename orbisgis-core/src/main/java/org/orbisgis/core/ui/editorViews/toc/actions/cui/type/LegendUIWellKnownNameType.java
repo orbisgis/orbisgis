@@ -44,12 +44,12 @@ import org.orbisgis.core.renderer.se.graphic.MarkGraphic;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.LegendUIComponent;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.LegendUIController;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.graphic.LegendUIWellKnownNamePanel;
-import org.orbisgis.core.ui.editorViews.toc.actions.cui.type.LegendUIType;
 
 /**
  *
  * @author maxence
  */
+/*
 public class LegendUIWellKnownNameType extends LegendUIType{
 
 	private MarkGraphic mg;
@@ -65,3 +65,4 @@ public class LegendUIWellKnownNameType extends LegendUIType{
 	}
 
 }
+*/

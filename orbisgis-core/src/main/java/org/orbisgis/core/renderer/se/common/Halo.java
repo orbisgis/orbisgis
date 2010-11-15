@@ -2,6 +2,7 @@ package org.orbisgis.core.renderer.se.common;
 
 import java.awt.Graphics2D;
 import java.awt.Shape;
+import java.awt.geom.Rectangle2D;
 
 import java.io.IOException;
 
@@ -18,6 +19,7 @@ import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
 import org.orbisgis.core.renderer.se.parameter.real.RealLiteral;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
+import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
 
 public final class Halo implements SymbolizerNode, UomNode, FillNode {
 
@@ -66,6 +68,9 @@ public final class Halo implements SymbolizerNode, UomNode, FillNode {
 
     public void setRadius(RealParameter radius) {
         this.radius = radius;
+		if (this.radius != null){
+			this.radius.setContext(RealParameterContext.realContext);
+		}
     }
 
 	@Override
@@ -102,9 +107,12 @@ public final class Halo implements SymbolizerNode, UomNode, FillNode {
             double r = this.getHaloRadius(feat, mt);
 
             if (r > 0.0) {
-                Shape haloShp = shp; // TODO poffset !!
+				// Should be perpendicular offset !
+				Rectangle2D bounds2D = shp.getBounds2D();
+				Shape haloShp = new Rectangle2D.Double(bounds2D.getX()-r, bounds2D.getY()-r, bounds2D.getWidth()+2*r, bounds2D.getHeight()+2*r);
+
                 fill.draw(g2, haloShp, feat, false, mt);
-                throw new UnsupportedOperationException("Not supported yet. Need PerpendiularOffset");
+                //throw new UnsupportedOperationException("Not supported yet. Need PerpendiularOffset");
             }
         }
     }
@@ -122,9 +130,17 @@ public final class Halo implements SymbolizerNode, UomNode, FillNode {
     public HaloType getJAXBType() {
         HaloType h = new HaloType();
 
-        h.setFill(fill.getJAXBElement());
+		if (fill != null){
+        	h.setFill(fill.getJAXBElement());
+		}
+
+		if (radius != null){
         h.setRadius(radius.getJAXBParameterValueType());
-        h.setUnitOfMeasure(uom.toURN());
+		}
+
+		if (uom != null){
+        	h.setUnitOfMeasure(uom.toURN());
+		}
 
         return h;
     }

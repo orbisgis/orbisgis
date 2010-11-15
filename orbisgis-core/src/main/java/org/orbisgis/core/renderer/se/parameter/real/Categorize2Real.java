@@ -14,11 +14,11 @@ public final class Categorize2Real extends Categorize<RealParameter, RealLiteral
 
 	private Double min;
 	private Double max;
+	private RealParameterContext ctx;
 
     public Categorize2Real(RealParameter initialClass, RealLiteral fallback, RealParameter lookupValue){
         super(initialClass, fallback, lookupValue);
-		this.setMinValue(null);
-		this.setMaxValue(null);
+		this.setContext(ctx);
     }
 
     public Categorize2Real(JAXBElement<CategorizeType> expr) {
@@ -59,41 +59,39 @@ public final class Categorize2Real extends Categorize<RealParameter, RealLiteral
 	@Override
 	public void setClassValue(int i, RealParameter value){
 		super.setClassValue(i, value);
-		value.setMinValue(min);
-		value.setMaxValue(max);
+		if (value != null){
+			value.setContext(ctx);
+		}
 	}
 
 	@Override
 	public void setFallbackValue(RealLiteral l){
 		super.setFallbackValue(l);
-		l.setMinValue(min);
-		l.setMaxValue(max);
-	}
-
-
-
-	@Override
-	public void setMinValue(Double min) {
-		this.min = min;
-		this.fallbackValue.setMinValue(min);
-
-		for (int i=0; i<this.getNumClasses();i++){
-			RealParameter classValue = this.getClassValue(i);
-			classValue.setMinValue(min);
+		if (l != null){
+			l.setContext(ctx);
 		}
 	}
 
 	@Override
-	public void setMaxValue(Double max) {
-		this.max = max;
-		this.fallbackValue.setMaxValue(max);
+	public void setContext(RealParameterContext ctx) {
+		this.ctx = ctx;
+		this.fallbackValue.setContext(ctx);
+
 		for (int i=0; i<this.getNumClasses();i++){
 			RealParameter classValue = this.getClassValue(i);
-			classValue.setMaxValue(max);
+			classValue.setContext(ctx);
 		}
+
 	}
 
+	@Override
 	public String toString(){
 		return "NA";
 	}
+
+	@Override
+	public RealParameterContext getContext() {
+		return ctx;
+	}
+
 }

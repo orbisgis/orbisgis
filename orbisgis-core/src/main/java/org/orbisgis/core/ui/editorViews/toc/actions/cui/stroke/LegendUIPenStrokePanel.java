@@ -41,14 +41,11 @@
 package org.orbisgis.core.ui.editorViews.toc.actions.cui.stroke;
 
 import java.awt.BorderLayout;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.Icon;
 import org.orbisgis.core.images.OrbisGISIcon;
-import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.color.ColorParameter;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
-import org.orbisgis.core.renderer.se.parameter.string.StringLiteral;
+import org.orbisgis.core.renderer.se.parameter.string.StringParameter;
 import org.orbisgis.core.renderer.se.stroke.PenStroke;
 import org.orbisgis.core.renderer.se.stroke.PenStroke.LineCap;
 import org.orbisgis.core.renderer.se.stroke.PenStroke.LineJoin;
@@ -57,16 +54,17 @@ import org.orbisgis.core.ui.editorViews.toc.actions.cui.LegendUIAbstractPanel;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.LegendUIComponent;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.LegendUIController;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.components.ComboBoxInput;
-import org.orbisgis.core.ui.editorViews.toc.actions.cui.components.TextInput;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.components.UomInput;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.parameter.color.LegendUIMetaColorPanel;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.parameter.real.LegendUIMetaRealPanel;
+import org.orbisgis.core.ui.editorViews.toc.actions.cui.parameter.string.LegendUIMetaStringPanel;
 
 /**
  *
  * @author maxence
  */
-public class LegendUIPenStrokePanel extends LegendUIComponent implements LegendUIStrokeComponent{
+public abstract class LegendUIPenStrokePanel extends LegendUIComponent implements LegendUIStrokeComponent{
+
 	private final PenStroke penStroke;
 	private final LegendUIMetaColorPanel color;
 	private final LegendUIMetaRealPanel strokeWidth;
@@ -81,23 +79,24 @@ public class LegendUIPenStrokePanel extends LegendUIComponent implements LegendU
 
 	private LegendUIAbstractPanel content;
 	private LegendUIAbstractPanel content2;
-	private LegendUIAbstractPanel toolbar;
+	private LegendUIAbstractPanel header;
 
 	private UomInput uom;
 
 	private ComboBoxInput lineCap;
 	private ComboBoxInput lineJoin;
 
-	private TextInput dashArray;
+	//private TextInput dashArray;
+	private LegendUIMetaStringPanel dashArray;
 
 
-	public LegendUIPenStrokePanel(LegendUIController controller, LegendUIComponent parent, PenStroke pStroke) {
-		super("pen stroke", controller, parent, 0);
+	public LegendUIPenStrokePanel(LegendUIController controller, LegendUIComponent parent, PenStroke pStroke, boolean isNullable) {
+		super("pen stroke", controller, parent, 0, isNullable);
 		//this.setLayout(new GridLayout(0,2));
-		this.toolbar = new LegendUIAbstractPanel(controller);
+		this.header = new LegendUIAbstractPanel(controller);
 		this.penStroke = pStroke;
 
-		this.color = new LegendUIMetaColorPanel("color", controller, this, penStroke.getColor()) {
+		this.color = new LegendUIMetaColorPanel("color", controller, this, penStroke.getColor(), true) {
 
 			@Override
 			public void colorChanged(ColorParameter newColor) {
@@ -106,7 +105,7 @@ public class LegendUIPenStrokePanel extends LegendUIComponent implements LegendU
 		};
 		color.init();
 
-		this.opacity = new LegendUIMetaRealPanel("opacity", controller, this, penStroke.getOpacity()) {
+		this.opacity = new LegendUIMetaRealPanel("opacity", controller, this, penStroke.getOpacity(), true) {
 
 			@Override
 			public void realChanged(RealParameter newReal) {
@@ -115,7 +114,7 @@ public class LegendUIPenStrokePanel extends LegendUIComponent implements LegendU
 		};
 		this.opacity.init();
 
-		this.strokeWidth = new LegendUIMetaRealPanel("width", controller, this, penStroke.getWidth()) {
+		this.strokeWidth = new LegendUIMetaRealPanel("width", controller, this, penStroke.getWidth(), true) {
 
 			@Override
 			public void realChanged(RealParameter newReal) {
@@ -124,7 +123,7 @@ public class LegendUIPenStrokePanel extends LegendUIComponent implements LegendU
 		};
 		strokeWidth.init();
 
-		this.dashOffset = new LegendUIMetaRealPanel("dash offset", controller, this, penStroke.getWidth()) {
+		this.dashOffset = new LegendUIMetaRealPanel("dash offset", controller, this, penStroke.getDashOffset(), true) {
 
 			@Override
 			public void realChanged(RealParameter newReal) {
@@ -132,20 +131,15 @@ public class LegendUIPenStrokePanel extends LegendUIComponent implements LegendU
 			}
 		};
 		dashOffset.init();
-		try {
-			dashArray = new TextInput("DashArray", penStroke.getDashArray().getValue(null), 10) {
 
-				@Override
-				protected void valueChanged(String s) {
-					StringLiteral l = (StringLiteral) penStroke.getDashArray();
-					l.setValue(s);
-				}
-			};
-		} catch (ParameterException ex) {
-			Logger.getLogger(LegendUIPenStrokePanel.class.getName()).log(Level.SEVERE, null, ex);
-		}
+		dashArray = new LegendUIMetaStringPanel("Dash Aray", controller, this, penStroke.getDashArray(), true) {
 
-		//penStroke.setDashArray(StringParameter);
+			@Override
+			public void stringChanged(StringParameter newString) {
+				penStroke.setDashArray(newString);
+			}
+		};
+		dashArray.init();
 
 		lCapValues = LineCap.values();
 		lJoinValues = LineJoin.values();
@@ -180,12 +174,12 @@ public class LegendUIPenStrokePanel extends LegendUIComponent implements LegendU
 
 	@Override
 	protected void mountComponent() {
-		toolbar.removeAll();
-		toolbar.add(uom, BorderLayout.WEST);
-		toolbar.add(lineCap, BorderLayout.CENTER);
-		toolbar.add(lineJoin, BorderLayout.EAST);
+		header.removeAll();
+		header.add(uom, BorderLayout.WEST);
+		header.add(lineCap, BorderLayout.CENTER);
+		header.add(lineJoin, BorderLayout.EAST);
 
-		this.add(toolbar, BorderLayout.NORTH);
+		editor.add(header, BorderLayout.NORTH);
 
 		content.removeAll();
 
@@ -198,11 +192,16 @@ public class LegendUIPenStrokePanel extends LegendUIComponent implements LegendU
 		content2.add(dashArray, BorderLayout.CENTER);
 		content2.add(dashOffset, BorderLayout.SOUTH);
 
-		this.add(content2, BorderLayout.SOUTH);
+		editor.add(content2, BorderLayout.SOUTH);
 	}
 
 	@Override
 	public Stroke getStroke() {
 		return this.penStroke;
+	}
+
+	@Override
+	public Class getEditedClass() {
+		return PenStroke.class;
 	}
 }

@@ -25,6 +25,7 @@ import org.orbisgis.core.renderer.se.parameter.color.ColorLiteral;
 import org.orbisgis.core.renderer.se.parameter.color.ColorParameter;
 import org.orbisgis.core.renderer.se.parameter.real.RealLiteral;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
+import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
 import org.orbisgis.core.renderer.se.parameter.string.StringLiteral;
 import org.orbisgis.core.renderer.se.parameter.string.StringParameter;
 
@@ -73,16 +74,15 @@ public final class PenStroke extends Stroke {
      * Create a standard undashed 0.1mm-wide opaque black stroke
      */
     public PenStroke() {
-        setUom(Uom.MM);
-		setStipple(null);
-
         setColor(new ColorLiteral(Color.BLACK));
         setWidth(new RealLiteral(0.1));
-
         setOpacity(new RealLiteral(100.0));
 
-		setDashArray(new StringLiteral(""));
-		setDashOffset(new RealLiteral(0.0));
+        setUom(null);
+		setStipple(null);
+
+		setDashArray(null);
+		setDashOffset(null);
 
 		setLineCap(LineCap.ROUND);
 		setLineJoin(LineJoin.BEVEL);
@@ -232,6 +232,10 @@ public final class PenStroke extends Stroke {
 
     public void setOpacity(RealParameter opacity) {
         this.opacity = opacity;
+
+		if (opacity != null) {
+			this.opacity.setContext(RealParameterContext.percentageContext);
+		}
         //updateBasicStroke();
     }
 
@@ -241,6 +245,10 @@ public final class PenStroke extends Stroke {
 
     public void setWidth(RealParameter width) {
         this.width = width;
+
+		if (width != null){
+			width.setContext(RealParameterContext.nonNegativeContext);
+		}
         //updateBasicStroke();
     }
 
@@ -254,6 +262,9 @@ public final class PenStroke extends Stroke {
 
     public void setDashOffset(RealParameter dashOffset) {
         this.dashOffset = dashOffset;
+		if (dashOffset != null){
+			dashOffset.setContext(RealParameterContext.realContext);
+		}
         //updateBasicStroke();
     }
 
@@ -327,7 +338,7 @@ public final class PenStroke extends Stroke {
         if (width != null) {
             w = width.getValue(feat);
             // TODO add scale and dpi
-            w = Uom.toPixel(w, getUom(), mt.getDpi(), mt.getScaleDenominator(), null);
+            w = Uom.toPixel(w, getUom(), mt.getDpi(), mt.getScaleDenominator(), null); // 100% based on view box height or width ?
         }
 
 
@@ -391,13 +402,14 @@ public final class PenStroke extends Stroke {
 
             if (this.color != null) {
                 c = color.getColor(feat);
-                if (selected) {
-                    c = ColorHelper.invert(c);
-                }
             } else {
-                // TOOD Warn Color has to be used, but is undefined (Using a random one)
-                c = new ColorLiteral().getColor(feat);
+                c = Color.BLACK;
             }
+
+			if (selected) {
+                c = ColorHelper.invert(c);
+            }
+
 
             Color ac = c;
             if (this.opacity != null) {

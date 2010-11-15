@@ -35,10 +35,12 @@
  * erwan.bocher _at_ ec-nantes.fr
  * gwendall.petit _at_ ec-nantes.fr
  */
+
+
 package org.orbisgis.core.renderer.se.graphic;
 
-import java.awt.Dimension;
 import java.awt.Shape;
+import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.io.IOException;
 import javax.media.jai.RenderableGraphics;
@@ -62,6 +64,7 @@ import org.orbisgis.core.renderer.se.stroke.Stroke;
 import org.orbisgis.core.renderer.se.transform.Transform;
 import org.orbisgis.core.renderer.se.StrokeNode;
 import org.orbisgis.core.renderer.se.ViewBoxNode;
+import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
 
 public final class MarkGraphic extends Graphic implements FillNode, StrokeNode, ViewBoxNode {
 
@@ -74,7 +77,7 @@ public final class MarkGraphic extends Graphic implements FillNode, StrokeNode, 
 	private Fill fill;
 	private Stroke stroke;
 
-	RealParameter markIndex;
+	private RealParameter markIndex;
 
 	// cached shape : only available with shape that doesn't depends on features
 	private Shape shape;
@@ -83,7 +86,8 @@ public final class MarkGraphic extends Graphic implements FillNode, StrokeNode, 
 	public MarkGraphic() {
 	}
 
-	public void setToCircle10() {
+	public void setTo3mmCircle() {
+		this.setUom(Uom.MM);
 		this.setSource(WellKnownName.CIRCLE);
 		this.setViewBox(new ViewBox(new RealLiteral(defaultSize)));
 		this.setFill(new SolidFill());
@@ -103,7 +107,7 @@ public final class MarkGraphic extends Graphic implements FillNode, StrokeNode, 
 		}
 
 		if (t.getPerpendicularOffset() != null) {
-			this.setpOffset(SeParameterFactory.createRealParameter(t.getPerpendicularOffset()));
+			this.setPerpendicularOffset(SeParameterFactory.createRealParameter(t.getPerpendicularOffset()));
 		}
 
 		if (t.getTransform() != null) {
@@ -134,7 +138,7 @@ public final class MarkGraphic extends Graphic implements FillNode, StrokeNode, 
 			}
 
 			if (t.getMarkIndex() != null){
-				this.markIndex = SeParameterFactory.createRealParameter(t.getMarkIndex());
+				this.setMarkIndex(SeParameterFactory.createRealParameter(t.getMarkIndex()));
 			}
 
 			this.mimeType = t.getFormat();
@@ -204,8 +208,16 @@ public final class MarkGraphic extends Graphic implements FillNode, StrokeNode, 
 		return pOffset;
 	}
 
-	public void setpOffset(RealParameter pOffset) {
+	public void setPerpendicularOffset(RealParameter pOffset) {
 		this.pOffset = pOffset;
+		if (this.pOffset != null){
+			this.pOffset.setContext(RealParameterContext.realContext);
+		}
+	}
+
+	private void setMarkIndex(RealParameter mIndex) {
+		this.markIndex = mIndex;
+		this.markIndex.setContext(RealParameterContext.nonNegativeContext);
 	}
 
 	/*
@@ -223,6 +235,10 @@ public final class MarkGraphic extends Graphic implements FillNode, StrokeNode, 
 
 	public void setSource(MarkGraphicSource source) {
 		this.source = source;
+
+		if (source instanceof OnlineResource){
+			// Add listener which update markIndex context!
+		}
 		//updateGraphic();
 	}
 
@@ -259,12 +275,17 @@ public final class MarkGraphic extends Graphic implements FillNode, StrokeNode, 
 		RenderableGraphics rg = Graphic.getNewRenderableGraphics(bounds, margin);
 
 		if (halo != null) {
+			System.out.println ("Halo" + halo);
 			halo.draw(rg, atShp, feat, mt);
 		}
+
 		if (fill != null) {
+			System.out.println ("Fill" + fill);
 			fill.draw(rg, atShp, feat, selected, mt);
 		}
+
 		if (stroke != null) {
+			System.out.println ("Stroke");
 			stroke.draw(rg, atShp, feat, selected, mt);
 		}
 
@@ -300,8 +321,8 @@ public final class MarkGraphic extends Graphic implements FillNode, StrokeNode, 
 		double delta = 0.0;
 
 		if (viewBox != null && viewBox.usable()) {
-			Dimension dim = viewBox.getDimensionInPixel(feat, defaultSize, defaultSize, mt.getScaleDenominator(), mt.getDpi());
-			delta = Math.max(dim.getHeight(), dim.getWidth());
+			Point2D dim = viewBox.getDimensionInPixel(feat, defaultSize, defaultSize, mt.getScaleDenominator(), mt.getDpi());
+			delta = Math.max(dim.getY(), dim.getY());
 		}
 
 		delta += this.getMargin(feat, mt);
@@ -313,11 +334,12 @@ public final class MarkGraphic extends Graphic implements FillNode, StrokeNode, 
 	public JAXBElement<MarkGraphicType> getJAXBElement() {
 		MarkGraphicType m = new MarkGraphicType();
 
-		if (halo != null) {
-			m.setHalo(halo.getJAXBType());
+		source.setJAXBSource(m);
+
+		if (uom != null) {
+			m.setUnitOfMeasure(uom.toURN());
 		}
 
-		source.setJAXBSource(m);
 
 		if (markIndex != null){
 			m.setMarkIndex(markIndex.getJAXBParameterValueType());
@@ -331,8 +353,8 @@ public final class MarkGraphic extends Graphic implements FillNode, StrokeNode, 
 			m.setTransform(transform.getJAXBType());
 		}
 
-		if (uom != null) {
-			m.setUnitOfMeasure(uom.toURN());
+		if (halo != null) {
+			m.setHalo(halo.getJAXBType());
 		}
 
 		if (viewBox != null) {
@@ -378,5 +400,4 @@ public final class MarkGraphic extends Graphic implements FillNode, StrokeNode, 
 
 		return false;
 	}
-
 }

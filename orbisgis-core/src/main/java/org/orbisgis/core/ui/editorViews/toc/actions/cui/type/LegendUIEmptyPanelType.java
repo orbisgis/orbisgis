@@ -37,15 +37,11 @@
  */
 package org.orbisgis.core.ui.editorViews.toc.actions.cui.type;
 
-import org.orbisgis.core.ui.editorViews.toc.actions.cui.LegendUIComponent;
-import org.orbisgis.core.ui.editorViews.toc.actions.cui.LegendUIController;
-import org.orbisgis.core.ui.editorViews.toc.actions.cui.LegendUIEmptyPanel;
-
 /**
  *
  * @author maxence
  */
-public class LegendUIEmptyPanelType extends LegendUIType {
+/*public class LegendUIEmptyPanelType extends LegendUIType {
 
 	public LegendUIEmptyPanelType(String name, LegendUIController controller) {
 		super(name, controller);
@@ -56,3 +52,5 @@ public class LegendUIEmptyPanelType extends LegendUIType {
 		return new LegendUIEmptyPanel(name, controller, parent);
 	}
 }
+ *
+ */

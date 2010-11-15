@@ -15,15 +15,16 @@ public final class Interpolate2Real extends Interpolate<RealParameter, RealLiter
 
 	private Double min;
 	private Double max;
+	private RealParameterContext ctx;
 
-    public Interpolate2Real(RealLiteral fallback, Double min, Double max) {
+    public Interpolate2Real(RealLiteral fallback) {
         super(fallback);
-		this.setMinValue(min);
-		this.setMaxValue(max);
+		ctx = RealParameterContext.realContext;
     }
 
     public Interpolate2Real(JAXBElement<InterpolateType> expr) {
 		super();
+		ctx = RealParameterContext.realContext;
         InterpolateType t = expr.getValue();
 
         this.fallbackValue = new RealLiteral(t.getFallbackValue());
@@ -84,39 +85,35 @@ public final class Interpolate2Real extends Interpolate<RealParameter, RealLiter
 	@Override
 	public void setFallbackValue(RealLiteral l){
 		super.setFallbackValue(l);
-		l.setMaxValue(max);
-		l.setMinValue(min);
+		if (l != null){
+			l.setContext(ctx);
+		}
 	}
 
 	@Override
 	public void addInterpolationPoint(InterpolationPoint<RealParameter> point){
 		RealParameter value = point.getValue();
-		value.setMaxValue(max);
-		value.setMinValue(min);
+		value.setContext(ctx);
 		super.addInterpolationPoint(point);
 	}
 
 	@Override
-	public void setMinValue(Double min) {
-		this.min = min;
-		this.fallbackValue.setMaxValue(min);
+	public String toString(){
+		return "NA";
+	}
+
+	@Override
+	public void setContext(RealParameterContext ctx) {
+		this.ctx = ctx;
+		this.fallbackValue.setContext(ctx);
 		for (InterpolationPoint<RealParameter> ip : this.i_points){
 			RealParameter value = ip.getValue();
-			value.setMinValue(min);
+			value.setContext(ctx);
 		}
 	}
 
 	@Override
-	public void setMaxValue(Double max) {
-		this.max = max;
-		this.fallbackValue.setMaxValue(max);
-		for (InterpolationPoint<RealParameter> ip : this.i_points){
-			RealParameter value = ip.getValue();
-			value.setMaxValue(max);
-		}
-	}
-
-	public String toString(){
-		return "NA";
+	public RealParameterContext getContext() {
+		return ctx;
 	}
 }

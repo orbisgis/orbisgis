@@ -82,7 +82,7 @@ public final class LegendUIController {
 
 		availableSymbolizers = new ArrayList<String>();
 
-		maxAllowedSize = new Dimension(1000, 650);
+		maxAllowedSize = new Dimension(1000, 750);
 
 		GeometryConstraint cons = null;
 		try {

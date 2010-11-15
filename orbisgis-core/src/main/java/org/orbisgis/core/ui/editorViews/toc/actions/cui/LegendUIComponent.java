@@ -37,35 +37,79 @@
  */
 package org.orbisgis.core.ui.editorViews.toc.actions.cui;
 
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Insets;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.util.ArrayList;
 import java.util.Iterator;
+import javax.swing.BoxLayout;
 import javax.swing.Icon;
+import javax.swing.JButton;
+import javax.swing.JLabel;
+import org.orbisgis.core.images.OrbisGISIcon;
 
 /**
+ *
+ * An UI Element, which edit and manage UI for one SE element
+ *
  *
  * @author maxence
  */
 public abstract class LegendUIComponent extends LegendUIAbstractPanel {
 
-	protected float weight;
+	protected float weight; // TODO en faire qqch...
 	// The direct parent
 	protected LegendUIComponent parent;
 	// this.parent is null if this component has to be rendered into its own panel
 	// In this case, the initial parent is set to parent before setting it to null
 	private LegendUIComponent initialParent;
+	// Children list
 	private ArrayList<LegendUIComponent> children;
 	private ArrayList<LegendUIComponentListener> listeners;
-
 	private String name;
+	// Is the (this) UI represents a NULL element (such as no fill) ?
+	protected boolean isNullComponent;
+	// Panel in which mount UI element
+	protected LegendUIAbstractPanel editor;
+	// Panel reserved for special
+	protected LegendUIAbstractPanel toolbar;
+	private JButton nullifier;
 
-	//private String name;
-	public LegendUIComponent(String name, LegendUIController controller, LegendUIComponent parent, float weight) {
+	/**
+	 *
+	 * @param name
+	 * @param controller
+	 * @param parent
+	 * @param weight unused
+	 * @param nullable does the edited element be null ?
+	 */
+	public LegendUIComponent(String name, LegendUIController controller, LegendUIComponent parent, float weight, boolean nullable) {
 		super(controller);
 
 		this.weight = weight;
 		this.parent = parent;
 
 		this.name = name;
+
+		if (nullable) {
+			this.nullifier = new JButton(OrbisGISIcon.DEL);
+			nullifier.setMargin(new Insets(0, 0, 0, 0));
+			this.nullifier.addActionListener(new ActionListener() {
+
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					isNullComponent = true;
+					turnOff();
+
+				}
+			});
+		} else {
+			this.nullifier = null;
+		}
 
 		listeners = new ArrayList<LegendUIComponentListener>();
 
@@ -74,15 +118,17 @@ public abstract class LegendUIComponent extends LegendUIAbstractPanel {
 		if (this.parent != null) {
 			this.parent.registerChild(this);
 		}
+
+		//this.setBorder(BorderFactory.createTitledBorder(name));
 	}
 
 	@Override
-	public String getName(){
+	public String getName() {
 		return this.name;
 	}
 
 	@Override
-	public void setName(String name){
+	public void setName(String name) {
 		super.setName(name);
 		this.name = name;
 	}
@@ -110,6 +156,13 @@ public abstract class LegendUIComponent extends LegendUIAbstractPanel {
 	}
 
 	/**
+	 *  Does this component define anything or not ?
+	 */
+	public boolean isNull() {
+		return isNullComponent;
+	}
+
+	/**
 	 * @return true if this component has no parent
 	 */
 	public boolean isTopElement() {
@@ -117,7 +170,7 @@ public abstract class LegendUIComponent extends LegendUIAbstractPanel {
 	}
 
 	/**
-	 *
+	 * Return the top-most UIComponent in the current panel
 	 */
 	public LegendUIComponent getScopeParent() {
 		LegendUIComponent current = this;
@@ -130,6 +183,9 @@ public abstract class LegendUIComponent extends LegendUIAbstractPanel {
 		return current;
 	}
 
+	/**
+	 * @return Component parent
+	 */
 	public LegendUIComponent getParentComponent() {
 		if (this.parent != null) {
 			return this.parent;
@@ -138,6 +194,10 @@ public abstract class LegendUIComponent extends LegendUIAbstractPanel {
 		}
 	}
 
+	/**
+	 *
+	 * @return Return the symbolizer UI component
+	 */
 	public LegendUIComponent getTopParent() {
 		LegendUIComponent current = this;
 
@@ -151,7 +211,7 @@ public abstract class LegendUIComponent extends LegendUIAbstractPanel {
 	public void makeOrphan() {
 		LegendUIComponent p = getParentComponent();
 
-		if (p != null){
+		if (p != null) {
 			p.removeChildInternal(this);
 		}
 
@@ -159,14 +219,14 @@ public abstract class LegendUIComponent extends LegendUIAbstractPanel {
 		this.initialParent = null;
 	}
 
-	private void removeChildInternal(LegendUIComponent child){
-		if (children.contains(child)){
+	private void removeChildInternal(LegendUIComponent child) {
+		if (children.contains(child)) {
 			children.remove(child);
 		}
 	}
 
-	protected void removeChild(LegendUIComponent child){
-		if (children.contains(child)){
+	protected void removeChild(LegendUIComponent child) {
+		if (children.contains(child)) {
 			child.makeOrphan();
 		}
 	}
@@ -219,11 +279,15 @@ public abstract class LegendUIComponent extends LegendUIAbstractPanel {
 			this.initialParent = null;
 		}
 
-		if (this.parent == null){
+		if (this.parent == null) {
 			System.out.println("I'm a lonly orpan: " + this);
 		}
 	}
 
+
+	/*
+	 * Inline all children (recursivly)
+	 */
 	public void unnestChildren() {
 		for (LegendUIComponent child : this.children) {
 			if (child.isNested()) {
@@ -247,13 +311,13 @@ public abstract class LegendUIComponent extends LegendUIAbstractPanel {
 		children.clear();
 	}
 
-	public void clearListener(){
+	public void clearListener() {
 		listeners.clear();
 	}
 
 	public void register(LegendUIComponentListener l) {
 		if (!listeners.contains(l)) {
-			System.out.println (l + " is now listen to "  + this);
+			System.out.println(l + " is now listen to " + this);
 			listeners.add(l);
 		}
 	}
@@ -263,6 +327,101 @@ public abstract class LegendUIComponent extends LegendUIAbstractPanel {
 			l.nameChanged();
 		}
 	}
+
+	/**
+	 * Deep-build the interface from this to button
+	 */
+	protected void mountComponentForChildren() {
+		this.removeAll();
+
+		/*   _______________
+		 *  |               |
+		 *  |    toolbar    |
+		 *  |_______________|
+		 *  |               |
+		 *  |    editor     |
+		 *  |_______________|
+		 */
+
+		toolbar = new LegendUIAbstractPanel(controller);
+		//toolbar.setLayout(new FlowLayout(FlowLayout.LEFT, 5, 0));
+		toolbar.setLayout(new BoxLayout(toolbar, BoxLayout.X_AXIS));
+
+		editor = new LegendUIAbstractPanel(controller);
+
+		this.add(toolbar, BorderLayout.NORTH);
+		this.add(editor, BorderLayout.SOUTH);
+
+		// List of null parameters (will be listed (by name) in the toolbar)
+		ArrayList<LegendUIComponent> nullList = new ArrayList<LegendUIComponent>();
+
+		Iterator<LegendUIComponent> it = this.getChildrenIterator();
+		while (it.hasNext()) {
+			LegendUIComponent child = it.next();
+
+			// Child is not null => create its interface
+			if (!child.isNull()) {
+				child.mountComponentForChildren();
+				child.mountComponent();
+			} else {
+				// Child is null => in the list of unused parameters
+				nullList.add(child);
+			}
+		}
+
+		if (nullList.size() > 0) {
+			/*
+			 * For each null parameter, create at SetUpLabel, and puch it in the toolbar
+			 */
+			Iterator<LegendUIComponent> nullIt = nullList.iterator();
+			while (nullIt.hasNext()) {
+				LegendUIComponent next = nullIt.next();
+				toolbar.add(new SetUpParam(next));
+			}
+
+		}
+
+		if (nullifier != null) {
+			// Add a button to nullifiy this component (so it will be listed in its parent toolbar)
+			toolbar.add(nullifier);
+		}
+
+		this.mountComponent();
+	}
+
+	private class SetUpParam extends JLabel {
+
+		LegendUIComponent comp;
+
+		public SetUpParam(final LegendUIComponent comp) {
+			super("<html><u><i>" + comp.getName() + "</i></u></html>");
+			this.comp = comp;
+			setForeground(new Color(160, 160, 160));
+			this.addMouseListener(new MouseListener() {
+
+				@Override
+				public void mouseClicked(MouseEvent e) {
+					comp.turnOn();
+				}
+
+				@Override
+				public void mousePressed(MouseEvent e) {
+				}
+
+				@Override
+				public void mouseReleased(MouseEvent e) {
+				}
+
+				@Override
+				public void mouseEntered(MouseEvent e) {
+				}
+
+				@Override
+				public void mouseExited(MouseEvent e) {
+				}
+			});
+		}
+	};
 
 	/**
 	 *
@@ -275,16 +434,10 @@ public abstract class LegendUIComponent extends LegendUIAbstractPanel {
 	 */
 	protected abstract void mountComponent();
 
-	protected void mountComponentForChildren() {
-		this.removeAll();
+	protected abstract void turnOff();
+	protected abstract void turnOn();
 
-		Iterator<LegendUIComponent> it = this.getChildrenIterator();
-		while (it.hasNext()) {
-			LegendUIComponent child = it.next();
-			child.mountComponentForChildren();
-			child.mountComponent();
-		}
 
-		this.mountComponent();
-	}
+	public abstract Class getEditedClass();
+
 }

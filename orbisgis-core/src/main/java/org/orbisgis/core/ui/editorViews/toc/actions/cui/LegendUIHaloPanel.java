@@ -35,39 +35,83 @@
  * erwan.bocher _at_ ec-nantes.fr
  * gwendall.petit _at_ ec-nantes.fr
  */
+package org.orbisgis.core.ui.editorViews.toc.actions.cui;
 
-
-
-package org.orbisgis.core.ui.editorViews.toc.actions.cui.type;
-
+import java.awt.BorderLayout;
+import javax.swing.BorderFactory;
+import javax.swing.Icon;
+import org.orbisgis.core.images.OrbisGISIcon;
+import org.orbisgis.core.renderer.se.common.Halo;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
-import org.orbisgis.core.renderer.se.parameter.real.RealParameterFactory;
-import org.orbisgis.core.ui.editorViews.toc.actions.cui.LegendUIComponent;
-import org.orbisgis.core.ui.editorViews.toc.actions.cui.LegendUIController;
-import org.orbisgis.core.ui.editorViews.toc.actions.cui.parameter.real.LegendUIAlgebricalPanel;
+import org.orbisgis.core.ui.editorViews.toc.actions.cui.components.UomInput;
+import org.orbisgis.core.ui.editorViews.toc.actions.cui.fill.LegendUIMetaFillPanel;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.parameter.real.LegendUIMetaRealPanel;
 
 /**
  *
  * @author maxence
  */
+public abstract class LegendUIHaloPanel extends LegendUIComponent {
 
-/*
-public class LegendUIAlgebricalType  extends LegendUIType {
+	protected Halo halo;
+	private UomInput uomInput;
+	private LegendUIMetaRealPanel radius;
+	private LegendUIMetaFillPanel fill;
 
-	public LegendUIAlgebricalType(String name, LegendUIController controller) {
-		super(name, controller);
-	}
+	public LegendUIHaloPanel(LegendUIController ctrl, LegendUIComponent parent, Halo h) {
+		super("halo", ctrl, parent, 0, true);
 
-	@Override
-	public LegendUIComponent getUIComponent(LegendUIComponent parent) {
-		return new LegendUIAlgebricalPanel("alg.", controller, parent, RealParameterFactory.createFromString("10 * 2", null)) {
+		this.setBorder(BorderFactory.createTitledBorder(getName()));
+
+		this.halo = h;
+
+		if (this.halo == null) {
+			this.halo = new Halo();
+			this.isNullComponent = true;
+		}
+
+		this.radius = new LegendUIMetaRealPanel("Radius", controller, this, halo.getRadius(), false) {
 
 			@Override
 			public void realChanged(RealParameter newReal) {
-				((LegendUIMetaRealPanel)parent).switchTo(LegendUIAlgebricalType.this, this);
+				halo.setRadius(newReal);
 			}
 		};
+
+		radius.init();
+
+		uomInput = new UomInput(halo);
+
+		fill = new LegendUIMetaFillPanel(controller, this, halo, false);
+		fill.init();
 	}
+
+	@Override
+	public Icon getIcon() {
+		return OrbisGISIcon.PALETTE;
+	}
+
+	@Override
+	protected void mountComponent() {
+		editor.add(uomInput, BorderLayout.EAST);
+		editor.add(radius, BorderLayout.CENTER);
+		editor.add(fill, BorderLayout.SOUTH);
+	}
+
+	@Override
+	public Class getEditedClass() {
+		return Halo.class;
+	}
+
+	@Override
+	protected void turnOff() {
+		haloChanged(null);
+	}
+
+	@Override
+	protected void turnOn() {
+		haloChanged(halo);
+	}
+
+	protected abstract void haloChanged(Halo halo);
 }
-*/

@@ -4,7 +4,6 @@ import java.awt.Graphics2D;
 import java.awt.Shape;
 import java.io.IOException;
 import java.util.ArrayList;
-import javax.swing.JPanel;
 import javax.xml.bind.JAXBElement;
 import org.gdms.data.feature.Feature;
 
@@ -20,6 +19,7 @@ import org.orbisgis.core.renderer.se.label.PointLabel;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
+import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
 import org.orbisgis.core.renderer.se.transform.Transform;
 
 public final class TextSymbolizer extends VectorSymbolizer {
@@ -46,6 +46,9 @@ public final class TextSymbolizer extends VectorSymbolizer {
 
 	public void setPerpendicularOffset(RealParameter perpendicularOffset) {
 		this.perpendicularOffset = perpendicularOffset;
+		if (this.perpendicularOffset != null){
+			this.perpendicularOffset.setContext(RealParameterContext.realContext);
+		}
 	}
 
 	@Override

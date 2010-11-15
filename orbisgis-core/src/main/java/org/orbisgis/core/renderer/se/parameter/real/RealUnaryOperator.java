@@ -16,20 +16,24 @@ public final class RealUnaryOperator implements RealParameter {
 
     private RealParameter v;
     private RealUnitaryOperatorType op;
+	private RealParameterContext ctx;
 
     public enum RealUnitaryOperatorType {
         SQRT, LOG;
     }
 
     public RealUnaryOperator() {
+		ctx = RealParameterContext.realContext;
     }
 
     public RealUnaryOperator(RealParameter value, RealUnitaryOperatorType op) {
-        v = value;
+		this();
         this.op = op;
+		setOperand(value);
     }
 
     public RealUnaryOperator(JAXBElement<UnitaryOperatorType> expr) {
+		this();
         UnitaryOperatorType t = expr.getValue();
 
         this.setOperand(SeParameterFactory.createRealParameter((JAXBElement<? extends ExpressionType>)t.getExpression()));
@@ -44,22 +48,16 @@ public final class RealUnaryOperator implements RealParameter {
         }
     }
 
-	@Override
-	public void setMinValue(Double min) {
-		this.min = min;
-	}
-
-	@Override
-	public void setMaxValue(Double max) {
-		this.max = max;
-	}
-
     public RealParameter getOperand() {
         return v;
     }
 
     public void setOperand(RealParameter value) {
         v = value;
+
+		if (v != null){
+			v.setContext(ctx);
+		}
     }
 
     public void setOperator(RealUnitaryOperatorType operator) {
@@ -114,7 +112,21 @@ public final class RealUnaryOperator implements RealParameter {
         return null;
     }
 
+	@Override
 	public String toString(){
 		return this.op.toString() + "(" + this.v.toString() + ")";
+	}
+
+	@Override
+	public void setContext(RealParameterContext ctx) {
+		this.ctx = ctx;
+		if (v != null){
+			v.setContext(ctx);
+		}
+	}
+
+	@Override
+	public RealParameterContext getContext() {
+		return ctx;
 	}
 }

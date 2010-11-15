@@ -12,6 +12,7 @@ import org.orbisgis.core.ui.editorViews.toc.actions.cui.LegendUIController;
  *
  * @author maxence
  */
+/*
 public abstract class LegendUIType {
 	protected final LegendUIController controller;
 	protected final String name;
@@ -28,3 +29,4 @@ public abstract class LegendUIType {
 
 	public abstract LegendUIComponent getUIComponent(LegendUIComponent parent);
 }
+*/

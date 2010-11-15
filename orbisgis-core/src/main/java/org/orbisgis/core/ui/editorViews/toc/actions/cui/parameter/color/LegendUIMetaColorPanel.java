@@ -37,29 +37,23 @@
  */
 package org.orbisgis.core.ui.editorViews.toc.actions.cui.parameter.color;
 
-import org.orbisgis.core.ui.editorViews.toc.actions.cui.type.LegendUIPropertyNameType;
-import org.orbisgis.core.ui.editorViews.toc.actions.cui.type.LegendUICategorizeType;
-import org.orbisgis.core.ui.editorViews.toc.actions.cui.type.LegendUIColorLiteralType;
 import javax.swing.Icon;
+import org.gdms.data.DataSource;
 import org.orbisgis.core.images.OrbisGISIcon;
-import org.orbisgis.core.renderer.se.parameter.Categorize;
-import org.orbisgis.core.renderer.se.parameter.PropertyName;
-import org.orbisgis.core.renderer.se.parameter.Recode;
 import org.orbisgis.core.renderer.se.parameter.color.Categorize2Color;
 import org.orbisgis.core.renderer.se.parameter.color.ColorAttribute;
 import org.orbisgis.core.renderer.se.parameter.color.ColorLiteral;
 import org.orbisgis.core.renderer.se.parameter.color.ColorParameter;
+import org.orbisgis.core.renderer.se.parameter.color.Interpolate2Color;
 import org.orbisgis.core.renderer.se.parameter.color.Recode2Color;
-import org.orbisgis.core.ui.editorViews.toc.actions.cui.type.LegendUIEmptyPanelType;
+import org.orbisgis.core.renderer.se.parameter.real.RealAttribute;
+import org.orbisgis.core.renderer.se.parameter.string.StringLiteral;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.LegendUIAbstractMetaPanel;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.LegendUIComponent;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.LegendUIController;
-import org.orbisgis.core.ui.editorViews.toc.actions.cui.LegendUIEmptyPanel;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.parameter.LegendUICategorizePanel;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.parameter.LegendUIPropertyNamePanel;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.parameter.LegendUIRecodePanel;
-import org.orbisgis.core.ui.editorViews.toc.actions.cui.type.LegendUIType;
-import org.orbisgis.core.ui.editorViews.toc.actions.cui.type.LegendUIRecodeType;
 
 /**
  *
@@ -68,58 +62,161 @@ import org.orbisgis.core.ui.editorViews.toc.actions.cui.type.LegendUIRecodeType;
 public abstract class LegendUIMetaColorPanel extends LegendUIAbstractMetaPanel {
 
 	private ColorParameter color;
+	private int initial;
+	private LegendUIComponent comp;
+	private Class[] classes;
 
-	private LegendUIType initialType;
-	private LegendUIComponent initialPanel;
-	private LegendUIType[] types;
-
-
-	public LegendUIMetaColorPanel(String name, LegendUIController controller, LegendUIComponent parent, ColorParameter c) {
-		super(name, controller, parent, 0);
+	public LegendUIMetaColorPanel(String name, LegendUIController controller, LegendUIComponent parent, ColorParameter c, boolean isNullable) {
+		super(name, controller, parent, 0, isNullable);
 
 		this.color = c;
 
-		types = new LegendUIType[5];
+		classes = new Class[4];
+		classes[0] = ColorLiteral.class;
+		classes[1] = ColorAttribute.class;
+		classes[2] = Categorize2Color.class;
+		classes[3] = Recode2Color.class;
 
-		types[0] = new LegendUIEmptyPanelType("no " + name, controller);
-		types[1] = new LegendUIColorLiteralType("Constant " + name, controller);
-		types[2] = new LegendUIPropertyNameType("Attribute " + name, controller, ColorAttribute.class);
-		types[3] = new LegendUICategorizeType("Categorized " + name, controller, Categorize2Color.class);
-		types[4] = new LegendUIRecodeType("UniqueValue mapping " + name, controller, Recode2Color.class);
+		System.out.println ("Color is: " + color);
 
-		if (this.color instanceof ColorLiteral) {
-			initialType = types[1];
-			initialPanel = new LegendUIColorLiteralPanel("Constant " + name, controller, this, (ColorLiteral) color);
-		} else if (this.color instanceof PropertyName) {
-			initialType = types[2];
-			initialPanel = new LegendUIPropertyNamePanel("Attribute " + name, controller, this, (ColorAttribute)c);
-		} else if (this.color instanceof Categorize) {
-			initialType = types[3];
-			initialPanel = new LegendUICategorizePanel("Categorized " + name, controller, this, (Categorize) this.color);
-		} else if (this.color instanceof Recode) {
-			initialType = types[4];
-			initialPanel = new LegendUIRecodePanel("UniqueValue map " + name, controller, this, (Recode) this.color);
-		}else{
-			initialType = types[0];
-			initialPanel = new LegendUIEmptyPanel("no " + name, controller, this);
+
+		if (color == null) {
+			comp = null;
+		} else {
+			comp = getCompForClass(color.getClass());
 		}
 	}
 
 	@Override
-	public void init(){
-		init(types, initialType, initialPanel);
+	protected final LegendUIComponent getCompForClass(Class newClass) {
+		if (newClass == ColorLiteral.class) {
+			ColorLiteral literal;
+			if (color instanceof ColorLiteral) {
+				literal = (ColorLiteral) color;
+			} else {
+				literal = new ColorLiteral();
+			}
+
+			return new LegendUIColorLiteralPanel("Constant " + getName(), controller, this, literal, false) {
+
+				@Override
+				protected void colorChanged(ColorLiteral color) {
+					throw new UnsupportedOperationException("Unreachable code.");
+				}
+			};
+		} else if (newClass == ColorAttribute.class) {
+			ColorAttribute pName;
+			if (color instanceof ColorAttribute) {
+				pName = (ColorAttribute) color;
+			} else {
+				pName = new ColorAttribute("");
+			}
+
+
+			return new LegendUIPropertyNamePanel("Attribute " + getName(), controller, this, pName, false) {
+
+				@Override
+				protected void turnOff() {
+					throw new UnsupportedOperationException("Unreachable code.");
+				}
+
+				@Override
+				protected void turnOn() {
+					throw new UnsupportedOperationException("Unreachable code.");
+				}
+			};
+
+
+		} else if (newClass == Categorize2Color.class) {
+			Categorize2Color categorize;
+			if (color instanceof Categorize2Color) {
+				categorize = (Categorize2Color) color;
+			} else {
+				categorize = new Categorize2Color(new ColorLiteral(),
+						new ColorLiteral(), new RealAttribute(""));
+			}
+
+			return new LegendUICategorizePanel("Categorized " + getName(), controller, this, categorize, false) {
+
+				@Override
+				protected void turnOff() {
+					throw new UnsupportedOperationException("Unreachable code.");
+				}
+
+				@Override
+				protected void turnOn() {
+					throw new UnsupportedOperationException("Unreachable code.");
+				}
+			};
+
+		} else if (newClass == Recode2Color.class) {
+			Recode2Color recode;
+			if (color instanceof Recode2Color) {
+				recode = (Recode2Color) color;
+			} else {
+				recode = new Recode2Color(new ColorLiteral(), new StringLiteral("key"));
+			}
+			return new LegendUIRecodePanel("UniqueValue map " + getName(), controller, this, recode, false) {
+
+				@Override
+				protected void turnOff() {
+					throw new UnsupportedOperationException("Unreachable code.");
+				}
+
+				@Override
+				protected void turnOn() {
+					throw new UnsupportedOperationException("Unreachable code.");
+				}
+			};
+
+
+		} else if (newClass == Interpolate2Color.class) {
+			Interpolate2Color interpol;
+			if (color instanceof Interpolate2Color) {
+				interpol = (Interpolate2Color) color;
+			} else {
+				interpol = new Interpolate2Color(new ColorLiteral());
+			}
+
+			return null;
+			//_return new LegendUIInterpolll...I("UniqueValue map " + name, controller, this, interpol, false);
+
+			/*comps[4] = new LegendUIAlgebricalPanel("Alg. " + name, controller, this, color){
+			@Override
+			public void colorChanged(ColorParameter newColor) {
+			switchTo(comps[4]);
+			}
+			};*/
+		} else {
+			return null;
+		}
+
 	}
 
 	@Override
-	protected void switchTo(LegendUIType type, LegendUIComponent comp) {
-		this.color = ((LegendUIColorComponent)comp).getColorParameter();
-		this.colorChanged(color);
+	public void init() {
+		init(classes, comp);
+	}
+
+	@Override
+	protected void switchTo(LegendUIComponent comp) {
+		if (comp != null) {
+			this.color = ((LegendUIColorComponent) comp).getColorParameter();
+			this.colorChanged(color);
+		} else {
+			this.colorChanged(null);
+		}
 	}
 
 	@Override
 	public Icon getIcon() {
 		return OrbisGISIcon.PALETTE;
 	}
-	
+
 	public abstract void colorChanged(ColorParameter newColor);
+
+	@Override
+	public Class getEditedClass() {
+		return color.getClass();
+	}
 }

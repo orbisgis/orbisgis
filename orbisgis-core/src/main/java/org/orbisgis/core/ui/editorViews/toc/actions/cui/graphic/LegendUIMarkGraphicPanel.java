@@ -35,9 +35,6 @@
  * erwan.bocher _at_ ec-nantes.fr
  * gwendall.petit _at_ ec-nantes.fr
  */
-
-
-
 package org.orbisgis.core.ui.editorViews.toc.actions.cui.graphic;
 
 import java.awt.BorderLayout;
@@ -45,12 +42,15 @@ import javax.swing.Icon;
 import org.orbisgis.core.images.OrbisGISIcon;
 import org.orbisgis.core.renderer.se.FillNode;
 import org.orbisgis.core.renderer.se.StrokeNode;
+import org.orbisgis.core.renderer.se.common.Halo;
 import org.orbisgis.core.renderer.se.graphic.Graphic;
 import org.orbisgis.core.renderer.se.graphic.MarkGraphic;
+import org.orbisgis.core.renderer.se.graphic.ViewBox;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.LegendUIAbstractPanel;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.LegendUIComponent;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.LegendUIController;
+import org.orbisgis.core.ui.editorViews.toc.actions.cui.LegendUIHaloPanel;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.components.UomInput;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.fill.LegendUIMetaFillPanel;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.parameter.real.LegendUIMetaRealPanel;
@@ -63,40 +63,53 @@ import org.orbisgis.core.ui.editorViews.toc.actions.cui.stroke.LegendUIMetaStrok
 public class LegendUIMarkGraphicPanel extends LegendUIComponent implements LegendUIGraphicComponent {
 
 	private MarkGraphic mark;
-
 	private LegendUIMetaFillPanel mFill;
 	private LegendUIMetaStrokePanel mStroke;
-
 	private LegendUIViewBoxPanel vBox;
-
 	private LegendUIMetaRealPanel pOffset;
-
 	private LegendUIMetaMarkSource mSource;
-
+	private LegendUIHaloPanel halo;
 	private UomInput uomInput;
 
 	public LegendUIMarkGraphicPanel(LegendUIController controller, LegendUIComponent parent, MarkGraphic m) {
-		super("Mark graphic", controller, parent, 0);
+		super("Mark graphic", controller, parent, 0, false);
 		this.mark = m;
 
-
-		this.mFill = new LegendUIMetaFillPanel(controller, this, (FillNode) mark);
+		this.mFill = new LegendUIMetaFillPanel(controller, this, (FillNode) mark, true);
 		this.mFill.init();
 
-		this.mStroke = new LegendUIMetaStrokePanel(controller, this, (StrokeNode) mark);
+		this.mStroke = new LegendUIMetaStrokePanel(controller, this, (StrokeNode) mark, true);
 		this.mStroke.init();
 
-		this.pOffset = new LegendUIMetaRealPanel("POffset", controller, this, mark.getpOffset()) {
+		this.pOffset = new LegendUIMetaRealPanel("POffset", controller, this, mark.getpOffset(), true) {
 
 			@Override
 			public void realChanged(RealParameter newReal) {
-				mark.setpOffset(newReal);
+				mark.setPerpendicularOffset(newReal);
+			}
+		};
+		this.pOffset.init();
+
+		this.halo = new LegendUIHaloPanel(controller, this, mark.getHalo()) {
+
+			@Override
+			protected void haloChanged(Halo halo) {
+				mark.setHalo(halo);
+				controller.structureChanged(this);
 			}
 		};
 
 		//mark.getHalo(); TODO
 
-		this.vBox = new LegendUIViewBoxPanel(controller, this, mark.getViewBox());
+		this.vBox = new LegendUIViewBoxPanel(controller, this, mark.getViewBox(), true) {
+
+			@Override
+			public void viewBoxChanged(ViewBox newViewBox) {
+				mark.setViewBox(viewbox);
+				controller.structureChanged(this);
+			}
+
+		};
 
 		this.mSource = new LegendUIMetaMarkSource(controller, parent, mark);
 		mSource.init();
@@ -113,6 +126,7 @@ public class LegendUIMarkGraphicPanel extends LegendUIComponent implements Legen
 	protected void mountComponent() {
 		LegendUIAbstractPanel content1 = new LegendUIAbstractPanel(controller);
 		LegendUIAbstractPanel content2 = new LegendUIAbstractPanel(controller);
+		LegendUIAbstractPanel content3 = new LegendUIAbstractPanel(controller);
 
 		content1.add(mSource, BorderLayout.WEST);
 		content1.add(uomInput, BorderLayout.EAST);
@@ -121,13 +135,31 @@ public class LegendUIMarkGraphicPanel extends LegendUIComponent implements Legen
 		content2.add(mStroke, BorderLayout.CENTER);
 		content2.add(vBox, BorderLayout.SOUTH);
 
-		this.add(content1, BorderLayout.NORTH);
-		this.add(content2, BorderLayout.CENTER);
-		this.add(pOffset, BorderLayout.SOUTH);
+		content3.add(pOffset, BorderLayout.NORTH);
+		content3.add(halo, BorderLayout.SOUTH);
+
+		editor.add(content1, BorderLayout.NORTH);
+		editor.add(content2, BorderLayout.CENTER);
+		editor.add(content3, BorderLayout.SOUTH);
 	}
 
 	@Override
 	public Graphic getGraphic() {
 		return mark;
+	}
+
+	@Override
+	public Class getEditedClass() {
+		return MarkGraphic.class;
+	}
+
+	@Override
+	protected void turnOff() {
+		throw new UnsupportedOperationException("Unreachable code.");
+	}
+
+	@Override
+	protected void turnOn() {
+		throw new UnsupportedOperationException("Unreachable code.");
 	}
 }

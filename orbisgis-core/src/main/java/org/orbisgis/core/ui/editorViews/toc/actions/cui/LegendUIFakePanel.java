@@ -50,6 +50,8 @@ import org.orbisgis.core.sif.UIPanel;
  *
  * @author maxence
  */
+
+/*
 public class LegendUIFakePanel extends JPanel implements UIPanel {
 
 	public LegendUIFakePanel(JPanel content){
@@ -93,3 +95,4 @@ public class LegendUIFakePanel extends JPanel implements UIPanel {
 	}
 
 }
+*/

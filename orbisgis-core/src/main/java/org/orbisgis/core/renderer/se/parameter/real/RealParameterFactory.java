@@ -43,7 +43,6 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.gdms.data.DataSource;
-import org.gdms.driver.DriverException;
 
 /**
  *
@@ -67,12 +66,12 @@ public class RealParameterFactory {
 	public static RealParameter createFromString(String expression, DataSource ds) {
 		try {
 			String expr = expression.trim();
-			if (expr.length() == 0){
+			if (expr.length() == 0) {
 				return null;
 			}
 			ArrayList<Token> tokens = tokenize(expr);
 			RealParameter p = createFromList(tokens, ds);
-			System.out.println ("Created from list: " + p);
+			System.out.println("Created from list: " + p);
 			return p;
 		} catch (Exception ex) {
 			Logger.getLogger(RealParameterFactory.class.getName()).log(Level.SEVERE, null, ex);
@@ -86,18 +85,18 @@ public class RealParameterFactory {
 		Token top = tokens.get(i);
 		TokenType type = top.getType();
 
-		System.out.println ("Type: " + type);
+		System.out.println("Type: " + type);
 
 		RealParameter param;
 
 		if (type == TokenType.ADD || type == TokenType.SUB
-		|| type == TokenType.MUL || type == TokenType.DIV){
+				|| type == TokenType.MUL || type == TokenType.DIV) {
 			RealBinaryOperator p = new RealBinaryOperator();
-			if (type == TokenType.ADD){
+			if (type == TokenType.ADD) {
 				p.setOperator(RealBinaryOperator.RealBinaryOperatorType.ADD);
-			} else if (type == TokenType.SUB){
+			} else if (type == TokenType.SUB) {
 				p.setOperator(RealBinaryOperator.RealBinaryOperatorType.SUB);
-			} else if (type == TokenType.MUL){
+			} else if (type == TokenType.MUL) {
 				p.setOperator(RealBinaryOperator.RealBinaryOperatorType.MUL);
 			} else if (type == TokenType.DIV) {
 				p.setOperator(RealBinaryOperator.RealBinaryOperatorType.DIV);
@@ -106,31 +105,27 @@ public class RealParameterFactory {
 			p.setLeftValue(createFromList(tokens.subList(0, i), ds));
 			p.setRightValue(createFromList(tokens.subList(i + 1, tokens.size()), ds));
 			param = p;
-		} else if (type == TokenType.LOG || type == TokenType.SQRT){
+		} else if (type == TokenType.LOG || type == TokenType.SQRT) {
 			RealUnaryOperator p = new RealUnaryOperator();
-			if (type == TokenType.LOG){
+			if (type == TokenType.LOG) {
 				p.setOperator(RealUnaryOperator.RealUnitaryOperatorType.LOG);
-			}else{
+			} else {
 				p.setOperator(RealUnaryOperator.RealUnitaryOperatorType.SQRT);
 			}
 			p.setOperand(createFromList(tokens.subList(1, tokens.size()), ds));
 
 			param = p;
 
-		} else if (type == TokenType.ATTR){
+		} else if (type == TokenType.ATTR) {
 			RealAttribute p = null;
-			try {
-				System.out.println ("Attr ->" + top.token.substring(1, top.token.length() -1)+ "<-");
-				p = new RealAttribute(top.token.substring(1, top.token.length() - 1), ds);
-			} catch (DriverException ex) {
-				Logger.getLogger(RealParameterFactory.class.getName()).log(Level.SEVERE, null, ex);
-			}
+			System.out.println("Attr ->" + top.token.substring(1, top.token.length() - 1) + "<-");
+			p = new RealAttribute(top.token.substring(1, top.token.length() - 1));
 			return p;
-		} else if (type == TokenType.CST){
+		} else if (type == TokenType.CST) {
 			RealLiteral p = new RealLiteral(top.token);
 			return p;
-		} else if (type == TokenType.GROUP){
-			return createFromString(top.token.substring(1, top.token.length()-1), ds);
+		} else if (type == TokenType.GROUP) {
+			return createFromString(top.token.substring(1, top.token.length() - 1), ds);
 		} else {
 			param = null;
 		}
@@ -167,7 +162,7 @@ public class RealParameterFactory {
 				} else if (str.charAt(0) == '-') {
 					tokens.add(new Token("-"));
 					str = str.substring(1);
-				}else{
+				} else {
 					throw new Exception("Invalid string");
 				}
 			} else {
@@ -179,11 +174,13 @@ public class RealParameterFactory {
 					str = str.substring(4);
 				} else if (str.charAt(0) == '(') {
 					wantBinaryOp = true;
-					int i1 = 1;
+					int i1 = 0;
 					int i2;
+					int k;
 					do {
-						i1 = str.indexOf(')', i1);
-						i2 = str.indexOf('(', i1);
+						k = i1 + 1;
+						i1 = str.indexOf(')', k);
+						i2 = str.indexOf('(', k);
 						System.out.println("i1 => " + i1 + "    ;;;; i2 => " + i2);
 					} while (i1 > i2 && i2 > -1);
 					if (i1 > -1) {
@@ -206,13 +203,12 @@ public class RealParameterFactory {
 					int i = 0;
 					char charAt = str.charAt(i);
 					while (i < str.length()
-							&&     ((charAt >= '0' && charAt <= '9')
-							    || charAt == '.'
-								|| charAt == 'E'
-								|| charAt == 'e'
-								|| charAt == '+' 
-								|| charAt == '-'
-							)){
+							&& ((charAt >= '0' && charAt <= '9')
+							|| charAt == '.'
+							|| charAt == 'E'
+							|| charAt == 'e'
+							|| charAt == '+'
+							|| charAt == '-')) {
 						i++;
 						if (i < str.length()) {
 							charAt = str.charAt(i);
@@ -221,12 +217,18 @@ public class RealParameterFactory {
 
 					tokens.add(new Token(str.substring(0, i)));
 					str = str.substring(i);
-				} else{
+				} else {
 					throw new Exception("Invalid string");
 				}
 
 			}
 		}
+
+		for (Token t : tokens) {
+			System.out.println("Token: ->" + t + "<-");
+		}
+		System.out.println();
+
 		return tokens;
 	}
 
@@ -234,7 +236,7 @@ public class RealParameterFactory {
 		List<Token> clone = new ArrayList<Token>();
 
 		int i;
-		for (i=0;i<tokens.size();i++){
+		for (i = 0; i < tokens.size(); i++) {
 			clone.add(tokens.get(i));
 		}
 
@@ -270,7 +272,7 @@ public class RealParameterFactory {
 			return "Token is ->" + token + "<- (" + type + ")";
 		}
 
-		public TokenType getType(){
+		public TokenType getType() {
 			return type;
 		}
 

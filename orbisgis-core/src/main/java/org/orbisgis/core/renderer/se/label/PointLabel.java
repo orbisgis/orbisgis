@@ -22,13 +22,14 @@ import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
 import org.orbisgis.core.renderer.se.parameter.real.RealLiteral;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
+import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
 
 /**
  *
  * @author maxence
  * @todo implements
  */
-public class PointLabel extends Label {
+public final class PointLabel extends Label {
 
     /**
      *
@@ -45,11 +46,11 @@ public class PointLabel extends Label {
         PointLabelType plt = pl.getValue();
 
         if (plt.getExclusionZone() != null){
-            this.exclusionZone = ExclusionZone.createFromJAXBElement(plt.getExclusionZone());
+            setExclusionZone(ExclusionZone.createFromJAXBElement(plt.getExclusionZone()));
         }
 
         if (plt.getRotation() != null){
-            this.rotation = SeParameterFactory.createRealParameter(plt.getRotation());
+            setRotation(SeParameterFactory.createRealParameter(plt.getRotation()));
         }
 
     }
@@ -69,6 +70,9 @@ public class PointLabel extends Label {
 
     public void setRotation(RealParameter rotation) {
         this.rotation = rotation;
+		if (this.rotation != null){
+			this.rotation.setContext(RealParameterContext.realContext);
+		}
     }
 
     @Override

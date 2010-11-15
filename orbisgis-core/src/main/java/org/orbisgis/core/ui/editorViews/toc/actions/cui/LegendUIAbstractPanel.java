@@ -37,7 +37,6 @@
  */
 
 
-
 package org.orbisgis.core.ui.editorViews.toc.actions.cui;
 
 import java.awt.BorderLayout;
@@ -59,7 +58,7 @@ public class LegendUIAbstractPanel extends JPanel {
 
 
 	protected void add(LegendUIComponent comp) {
-		if (comp != null) {
+		if (comp != null && !comp.isNullComponent) {
 			if (comp.isNested()) {
 				LegendUILinkToComplexPanel link = new LegendUILinkToComplexPanel(controller, comp);
 				super.add(link);
@@ -70,7 +69,7 @@ public class LegendUIAbstractPanel extends JPanel {
 	}
 
 	public void add(LegendUIComponent comp, Object constraints) {
-		if (comp != null) {
+		if (comp != null && !comp.isNullComponent) {
 			if (comp.isNested()) {
 				LegendUILinkToComplexPanel link = new LegendUILinkToComplexPanel(controller, comp);
 				super.add(link, constraints);
@@ -79,7 +78,6 @@ public class LegendUIAbstractPanel extends JPanel {
 			}
 		}
 	}
-
 
 	public void pack(){
 		this.revalidate();
@@ -90,9 +88,5 @@ public class LegendUIAbstractPanel extends JPanel {
 			dlg.pack();
 		}
 		this.updateUI();
-
 	}
-
-
-
 }

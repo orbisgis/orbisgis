@@ -37,20 +37,15 @@
  */
 package org.orbisgis.core.ui.editorViews.toc.actions.cui.fill;
 
-import org.orbisgis.core.ui.editorViews.toc.actions.cui.type.LegendUISolidFillType;
 import javax.swing.Icon;
 import org.orbisgis.core.images.OrbisGISIcon;
 import org.orbisgis.core.renderer.se.FillNode;
 import org.orbisgis.core.renderer.se.fill.DensityFill;
 import org.orbisgis.core.renderer.se.fill.Fill;
 import org.orbisgis.core.renderer.se.fill.SolidFill;
-import org.orbisgis.core.ui.editorViews.toc.actions.cui.type.LegendUIEmptyPanelType;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.LegendUIAbstractMetaPanel;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.LegendUIComponent;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.LegendUIController;
-import org.orbisgis.core.ui.editorViews.toc.actions.cui.LegendUIEmptyPanel;
-import org.orbisgis.core.ui.editorViews.toc.actions.cui.type.LegendUIDensityFillType;
-import org.orbisgis.core.ui.editorViews.toc.actions.cui.type.LegendUIType;
 
 /**
  * Meta-Panel for fill edition
@@ -61,40 +56,72 @@ import org.orbisgis.core.ui.editorViews.toc.actions.cui.type.LegendUIType;
 public class LegendUIMetaFillPanel extends LegendUIAbstractMetaPanel {
 
 	private FillNode fNode;
+	private LegendUIComponent comp;
+	private Class[] classes;
 
-	private LegendUIType initialType;
-	private LegendUIComponent initialPanel;
-	private LegendUIType[] types;
-
-	public LegendUIMetaFillPanel(LegendUIController controller, LegendUIComponent parent, FillNode fillNode) {
-		super("fill", controller, parent, 0);
+	public LegendUIMetaFillPanel(LegendUIController controller, LegendUIComponent parent, FillNode fillNode, boolean isNullable) {
+		super("fill", controller, parent, 0, isNullable);
 
 		this.fNode = fillNode;
 
 		Fill f = fNode.getFill();
 
-		types = new LegendUIType[3];
+		classes = new Class[2];
+		classes[0] = SolidFill.class;
+		classes[1] = DensityFill.class;
 
-		types[0] = new LegendUIEmptyPanelType("no fill", controller);
-		types[1] = new LegendUISolidFillType(controller);
-		types[2] = new LegendUIDensityFillType(controller);
-
-
-		if (f instanceof SolidFill) {
-			initialType = types[1];
-			initialPanel = new LegendUISolidFillPanel(controller, this, (SolidFill) f);
-		} else if (f instanceof DensityFill) {
-			initialType = types[2];
-			initialPanel = new LegendUIDensityFillPanel(controller, this, (DensityFill) f);
-		} else {
-			initialType = types[0];
-			initialPanel = new LegendUIEmptyPanel("no fill", controller, this);
+		comp = null;
+		if (f != null) {
+			comp = getCompForClass(f.getClass());
 		}
 	}
 
 	@Override
-	public void init(){
-		init(types, initialType, initialPanel);
+	protected final LegendUIComponent getCompForClass(Class newClass) {
+		Fill f = fNode.getFill();
+		if (newClass == SolidFill.class) {
+			SolidFill sFill;
+			if (f instanceof SolidFill) {
+				sFill = (SolidFill) f;
+			} else {
+				sFill = new SolidFill();
+			}
+			return new LegendUISolidFillPanel(controller, this, sFill, false) {
+
+				@Override
+				protected void turnOff() {
+				}
+
+				@Override
+				protected void turnOn() {
+				}
+			};
+		} else if (newClass == DensityFill.class) {
+			DensityFill dFill;
+			if (f instanceof DensityFill) {
+				dFill = (DensityFill) f;
+			} else {
+				dFill = new DensityFill();
+			}
+
+			return new LegendUIDensityFillPanel(controller, this, dFill, false) {
+
+				@Override
+				protected void turnOff() {
+				}
+
+				@Override
+				protected void turnOn() {
+				}
+			};
+		} else {
+			return null;
+		}
+	}
+
+	@Override
+	public void init() {
+		init(classes, comp);
 	}
 
 	@Override
@@ -103,11 +130,18 @@ public class LegendUIMetaFillPanel extends LegendUIAbstractMetaPanel {
 	}
 
 	@Override
-	protected void switchTo(LegendUIType type, LegendUIComponent comp) {
-		Fill f = ((LegendUIFillComponent) comp).getFill();
-		//this.fillChanged(f);
-		fNode.setFill(f);
+	protected void switchTo(LegendUIComponent comp) {
+		if (comp != null){
+			Fill f = ((LegendUIFillComponent) comp).getFill();
+			fNode.setFill(f);
+		} else {
+			fNode.setFill(null);
+		}
 	}
 
+	@Override
+	public Class getEditedClass() {
+		return fNode.getFill().getClass();
+	}
 	//public abstract void fillChanged(Fill newFill);
 }

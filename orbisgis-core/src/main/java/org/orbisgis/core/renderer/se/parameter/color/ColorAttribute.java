@@ -4,7 +4,6 @@ import java.awt.Color;
 import javax.xml.bind.JAXBElement;
 import org.gdms.data.DataSource;
 import org.gdms.data.feature.Feature;
-import org.gdms.driver.DriverException;
 import org.orbisgis.core.renderer.persistance.ogc.PropertyNameType;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 
@@ -12,8 +11,8 @@ import org.orbisgis.core.renderer.se.parameter.PropertyName;
 
 public class ColorAttribute extends PropertyName implements ColorParameter {
 
-    public ColorAttribute(String fieldName, DataSource ds) throws DriverException {
-        super(fieldName, ds);
+    public ColorAttribute(String fieldName) {
+        super(fieldName);
     }
 
     public ColorAttribute(JAXBElement<PropertyNameType> expr) {

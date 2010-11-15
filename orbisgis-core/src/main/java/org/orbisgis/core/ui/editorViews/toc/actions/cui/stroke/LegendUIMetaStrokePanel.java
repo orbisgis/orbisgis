@@ -35,22 +35,15 @@
  * erwan.bocher _at_ ec-nantes.fr
  * gwendall.petit _at_ ec-nantes.fr
  */
-
-
-
 package org.orbisgis.core.ui.editorViews.toc.actions.cui.stroke;
 
-import org.orbisgis.core.ui.editorViews.toc.actions.cui.type.LegendUIPenStrokeType;
 import javax.swing.Icon;
 import org.orbisgis.core.images.OrbisGISIcon;
 import org.orbisgis.core.renderer.se.stroke.PenStroke;
 import org.orbisgis.core.renderer.se.stroke.Stroke;
-import org.orbisgis.core.ui.editorViews.toc.actions.cui.type.LegendUIEmptyPanelType;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.LegendUIAbstractMetaPanel;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.LegendUIComponent;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.LegendUIController;
-import org.orbisgis.core.ui.editorViews.toc.actions.cui.LegendUIEmptyPanel;
-import org.orbisgis.core.ui.editorViews.toc.actions.cui.type.LegendUIType;
 import org.orbisgis.core.renderer.se.StrokeNode;
 
 /**
@@ -60,36 +53,53 @@ import org.orbisgis.core.renderer.se.StrokeNode;
 public class LegendUIMetaStrokePanel extends LegendUIAbstractMetaPanel {
 
 	private StrokeNode sNode;
+	private LegendUIComponent comp;
+	private Class[] classes;
 
-	private LegendUIType initialType;
-	private LegendUIComponent initialPanel;
-	private LegendUIType[] types;
-
-	public LegendUIMetaStrokePanel(LegendUIController controller, LegendUIComponent parent, StrokeNode strokeNode) {
-		super("stroke", controller, parent, 0);
+	public LegendUIMetaStrokePanel(LegendUIController controller, LegendUIComponent parent, StrokeNode strokeNode, boolean isNullable) {
+		super("stroke", controller, parent, 0, isNullable);
 
 		this.sNode = strokeNode;
 
-		Stroke s = sNode.getStroke();
+		classes = new Class[1];
+		classes[0] = PenStroke.class;
 
-		types = new LegendUIType[2];
-
-		types[0] = new LegendUIEmptyPanelType("no stroke", controller);
-		types[1] = new LegendUIPenStrokeType(controller);
-
-
-		if (s instanceof PenStroke) {
-			initialType = types[1];
-			initialPanel = new LegendUIPenStrokePanel(controller, this, (PenStroke) s);
-		} else {
-			initialType = types[0];
-			initialPanel = new LegendUIEmptyPanel("no stroke", controller, this);
+		comp = null;
+		if (sNode.getStroke() != null) {
+			comp = getCompForClass(sNode.getStroke().getClass());
 		}
 	}
 
 	@Override
-	public void init(){
-		init(types, initialType, initialPanel);
+	protected final LegendUIComponent getCompForClass(Class newClass) {
+		if (newClass == PenStroke.class) {
+			PenStroke pStroke;
+			if (sNode.getStroke() instanceof PenStroke) {
+				pStroke = (PenStroke) sNode.getStroke();
+			} else {
+				pStroke = new PenStroke();
+			}
+
+			return new LegendUIPenStrokePanel(controller, parent, pStroke, false) {
+
+				@Override
+				protected void turnOff() {
+					throw new UnsupportedOperationException("Unreachable code.");
+				}
+
+				@Override
+				protected void turnOn() {
+					throw new UnsupportedOperationException("Unreachable code.");
+				}
+			};
+		} else {
+			return null;
+		}
+	}
+
+	@Override
+	public void init() {
+		init(classes, comp);
 	}
 
 	@Override
@@ -98,10 +108,17 @@ public class LegendUIMetaStrokePanel extends LegendUIAbstractMetaPanel {
 	}
 
 	@Override
-	protected void switchTo(LegendUIType type, LegendUIComponent comp) {
-		Stroke s = ((LegendUIStrokeComponent) comp).getStroke();
-		sNode.setStroke(s);
+	protected void switchTo(LegendUIComponent comp) {
+		if (comp != null) {
+			Stroke s = ((LegendUIStrokeComponent) comp).getStroke();
+			sNode.setStroke(s);
+		} else {
+			sNode.setStroke(null);
+		}
 	}
 
-	//public abstract void fillChanged(Fill newFill);
+	@Override
+	public Class getEditedClass() {
+		return sNode.getStroke().getClass();
+	}
 }

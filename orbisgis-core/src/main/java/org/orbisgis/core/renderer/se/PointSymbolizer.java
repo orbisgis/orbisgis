@@ -31,13 +31,11 @@ public final class PointSymbolizer extends VectorSymbolizer implements GraphicNo
 	public PointSymbolizer() {
 		super();
 		this.name = "Point symbolizer";
-		graphic = new GraphicCollection();
-		graphic.setParent(this);
+		setGraphicCollection(new GraphicCollection());
 		uom = Uom.MM;
 
 		MarkGraphic mark = new MarkGraphic();
-		mark.setParent(graphic);
-		mark.setToCircle10();
+		mark.setTo3mmCircle();
 		graphic.addGraphic(mark);
 	}
 

@@ -20,8 +20,13 @@ import org.orbisgis.core.renderer.se.graphic.GraphicCollection;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
+import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
 
 public final class GraphicStroke extends Stroke implements GraphicNode {
+
+    private GraphicCollection graphic;
+    private RealParameter length;
+    private RelativeOrientation orientation;
 
     GraphicStroke(JAXBElement<GraphicStrokeType> elem) {
 		GraphicStrokeType gst = elem.getValue();
@@ -52,6 +57,9 @@ public final class GraphicStroke extends Stroke implements GraphicNode {
 
     public void setLength(RealParameter length) {
         this.length = length;
+		if (this.length != null){
+			this.length.setContext(RealParameterContext.nonNegativeContext);
+		}
     }
 
     public RealParameter getLength() {
@@ -129,8 +137,4 @@ public final class GraphicStroke extends Stroke implements GraphicNode {
         }
         return s;
     }
-    private GraphicCollection graphic;
-    private RealParameter length;
-    private RelativeOrientation orientation;
-
 }

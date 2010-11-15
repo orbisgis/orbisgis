@@ -35,35 +35,27 @@
  * erwan.bocher _at_ ec-nantes.fr
  * gwendall.petit _at_ ec-nantes.fr
  */
-
-
-
 package org.orbisgis.core.ui.editorViews.toc.actions.cui.parameter.string;
 
 import javax.swing.Icon;
+import org.gdms.data.DataSource;
 import org.orbisgis.core.images.OrbisGISIcon;
-import org.orbisgis.core.renderer.se.parameter.Categorize;
-import org.orbisgis.core.renderer.se.parameter.Literal;
-import org.orbisgis.core.renderer.se.parameter.PropertyName;
-import org.orbisgis.core.renderer.se.parameter.Recode;
+
+import org.orbisgis.core.renderer.se.parameter.real.RealAttribute;
+
 import org.orbisgis.core.renderer.se.parameter.string.Categorize2String;
 import org.orbisgis.core.renderer.se.parameter.string.Recode2String;
 import org.orbisgis.core.renderer.se.parameter.string.StringAttribute;
 import org.orbisgis.core.renderer.se.parameter.string.StringLiteral;
 import org.orbisgis.core.renderer.se.parameter.string.StringParameter;
+
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.LegendUIAbstractMetaPanel;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.LegendUIComponent;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.LegendUIController;
-import org.orbisgis.core.ui.editorViews.toc.actions.cui.LegendUIEmptyPanel;
-import org.orbisgis.core.ui.editorViews.toc.actions.cui.type.LegendUIEmptyPanelType;
+
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.parameter.LegendUICategorizePanel;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.parameter.LegendUIPropertyNamePanel;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.parameter.LegendUIRecodePanel;
-import org.orbisgis.core.ui.editorViews.toc.actions.cui.type.LegendUICategorizeType;
-import org.orbisgis.core.ui.editorViews.toc.actions.cui.type.LegendUIType;
-import org.orbisgis.core.ui.editorViews.toc.actions.cui.type.LegendUIPropertyNameType;
-import org.orbisgis.core.ui.editorViews.toc.actions.cui.type.LegendUIRecodeType;
-import org.orbisgis.core.ui.editorViews.toc.actions.cui.type.LegendUIStringLiteralPanelType;
 
 /**
  *
@@ -72,52 +64,125 @@ import org.orbisgis.core.ui.editorViews.toc.actions.cui.type.LegendUIStringLiter
 public abstract class LegendUIMetaStringPanel extends LegendUIAbstractMetaPanel {
 
 	private StringParameter string;
+	private LegendUIComponent comp;
+	private Class[] classes;
 
-	private LegendUIType initialType;
-	private LegendUIComponent initialPanel;
-	private LegendUIType[] types;
-
-	public LegendUIMetaStringPanel(String name, LegendUIController controller, LegendUIComponent parent, StringParameter s) {
-		super(name, controller, parent, 0);
+	public LegendUIMetaStringPanel(String name, LegendUIController controller, LegendUIComponent parent, StringParameter s, boolean isNullable) {
+		super(name, controller, parent, 0, isNullable);
 
 		this.string = s;
 
-		types = new LegendUIType[5];
+		classes = new Class[4];
 
-		types[0] = new LegendUIEmptyPanelType("no " + name, controller);
-		types[1] = new LegendUIStringLiteralPanelType("Constant " + name, controller);
-		types[2] = new LegendUIPropertyNameType("Attribute " + name, controller, StringAttribute.class);
-		types[3] = new LegendUICategorizeType("Categorized " + name, controller, Categorize2String.class);
-		types[4] = new LegendUIRecodeType("Unique value mapping " + name, controller, Recode2String.class);
+		classes[0] = StringLiteral.class;
+		classes[1] = StringAttribute.class;
+		classes[2] = Categorize2String.class;
+		classes[3] = Recode2String.class;
 
+		comp = null;
+		if (string != null) {
+			comp = getCompForClass(string.getClass());
+		}
+	}
 
-		if (this.string instanceof Literal){
-			initialType = types[1];
-			initialPanel = new LegendUIStringLiteralPanel("Constant" + name, controller, this, (StringLiteral)this.string);
-		} else if (this.string instanceof PropertyName) {
-			initialType = types[2];
-			initialPanel = new LegendUIPropertyNamePanel("Attribute " + name, controller, this, (StringAttribute) this.string);
-		} else if (this.string instanceof Categorize) {
-			initialType = types[3];
-			initialPanel = new LegendUICategorizePanel("Categorized " + name, controller, this, (Categorize) this.string);
-		} else if (this.string instanceof Recode) {
-			initialType = types[4];
-			initialPanel = new LegendUIRecodePanel("UniqueValue mapping " + name, controller, this, (Recode) this.string);
+	@Override
+	protected final LegendUIComponent getCompForClass(Class newClass) {
+		if (newClass == StringLiteral.class) {
+			StringLiteral s;
+			if (string instanceof StringLiteral) {
+				s = (StringLiteral) string;
+			} else {
+				s = new StringLiteral();
+			}
+
+			return new LegendUIStringLiteralPanel("Constant" + getName(), controller, this, s, false) {
+
+				@Override
+				protected void stringChanged(StringLiteral string) {
+					throw new UnsupportedOperationException("Unreachable code.");
+				}
+
+			};
+		} else if (newClass == StringAttribute.class) {
+			StringAttribute s;
+			if (string instanceof StringAttribute) {
+				s = (StringAttribute) string;
+			} else {
+				s = new StringAttribute("");
+			}
+
+			return new LegendUIPropertyNamePanel("Attribute " + getName(), controller, this, s, false) {
+
+				@Override
+				protected void turnOff() {
+					throw new UnsupportedOperationException("Unreachable code.");
+				}
+
+				@Override
+				protected void turnOn() {
+					throw new UnsupportedOperationException("Unreachable code.");
+				}
+			};
+		} else if (newClass == Categorize2String.class) {
+			Categorize2String s;
+			if (string instanceof Categorize2String) {
+				s = (Categorize2String) string;
+			} else {
+				s = new Categorize2String(new StringLiteral("Class1"),
+						new StringLiteral("FallbackValue"),
+						new RealAttribute(""));
+			}
+
+			return new LegendUICategorizePanel("Categorized " + getName(), controller, this, s, false) {
+
+				@Override
+				protected void turnOff() {
+					throw new UnsupportedOperationException("Unreachable code.");
+				}
+
+				@Override
+				protected void turnOn() {
+					throw new UnsupportedOperationException("Unreachable code.");
+				}
+			};
+		} else if (newClass == Recode2String.class) {
+			Recode2String s;
+
+			if (string instanceof Recode2String) {
+				s = (Recode2String) string;
+			} else {
+				s = new Recode2String(new StringLiteral("n/a"), new StringAttribute(""));
+			}
+			return new LegendUIRecodePanel("UniqueValue mapping " + getName(), controller, this, s, false) {
+
+				@Override
+				protected void turnOff() {
+					throw new UnsupportedOperationException("Unreachable code.");
+				}
+
+				@Override
+				protected void turnOn() {
+					throw new UnsupportedOperationException("Unreachable code.");
+				}
+			};
 		} else {
-			initialType = types[0];
-			initialPanel = new LegendUIEmptyPanel("no " + name, controller, this);
+			return null;
 		}
 	}
 
 	@Override
 	public void init() {
-		init(types, initialType, initialPanel);
+		init(classes, comp);
 	}
 
 	@Override
-	protected void switchTo(LegendUIType type, LegendUIComponent comp) {
-		this.string = ((LegendUIStringComponent)comp).getStringParameter();
-		this.stringChanged(string);
+	protected void switchTo(LegendUIComponent comp) {
+		if (comp != null) {
+			this.string = ((LegendUIStringComponent) comp).getStringParameter();
+			this.stringChanged(string);
+		} else {
+			this.stringChanged(null);
+		}
 	}
 
 	@Override
@@ -127,4 +192,8 @@ public abstract class LegendUIMetaStringPanel extends LegendUIAbstractMetaPanel 
 
 	public abstract void stringChanged(StringParameter newString);
 
+	@Override
+	public Class getEditedClass() {
+		return string.getClass();
+	}
 }

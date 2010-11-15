@@ -40,6 +40,7 @@
 
 package org.orbisgis.core.ui.editorViews.toc.actions.cui;
 
+import org.orbisgis.core.renderer.se.graphic.Graphic;
 import org.orbisgis.core.renderer.se.parameter.string.StringParameter;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.stroke.LegendUIStrokeComponent;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.parameter.color.LegendUIColorComponent;
@@ -52,16 +53,18 @@ import org.orbisgis.core.renderer.se.fill.Fill;
 import org.orbisgis.core.renderer.se.parameter.color.ColorParameter;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 import org.orbisgis.core.renderer.se.stroke.Stroke;
+import org.orbisgis.core.ui.editorViews.toc.actions.cui.graphic.LegendUIGraphicComponent;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.parameter.string.LegendUIStringComponent;
 
 /**
  *
  * @author maxence
  */
+/*
 public class LegendUIEmptyPanel extends LegendUIComponent
 		implements LegendUIFillComponent, LegendUIColorComponent,
 		           LegendUIRealComponent, LegendUIStrokeComponent,
-				   LegendUIStringComponent {
+				   LegendUIStringComponent, LegendUIGraphicComponent {
 
 	public LegendUIEmptyPanel(String name, LegendUIController controller, LegendUIComponent parent){
 		super(name, controller, parent, 0);
@@ -102,4 +105,15 @@ public class LegendUIEmptyPanel extends LegendUIComponent
 		return null;
 	}
 
+	@Override
+	public Graphic getGraphic() {
+		return null;
+	}
+
+	@Override
+	protected void nullify() {
+		throw new UnsupportedOperationException("Not supported yet.");
+	}
 }
+ *
+ */

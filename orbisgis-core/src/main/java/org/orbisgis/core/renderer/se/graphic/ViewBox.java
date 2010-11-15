@@ -39,7 +39,7 @@
 
 package org.orbisgis.core.renderer.se.graphic;
 
-import java.awt.Dimension;
+import java.awt.geom.Point2D;
 import org.gdms.data.feature.Feature;
 import org.orbisgis.core.renderer.persistance.se.ViewBoxType;
 import org.orbisgis.core.renderer.se.SymbolizerNode;
@@ -47,16 +47,17 @@ import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
+import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
 
 public final class ViewBox implements SymbolizerNode {
 
 	public ViewBox(){
-		this.x = null;
-		this.y = null;
+		setWidth(null);
+		setHeight(null);
 	}
 
     public ViewBox(RealParameter width) {
-        this.x = width;
+		setWidth(width);
     }
 
     public ViewBox(ViewBoxType viewBox) {
@@ -76,6 +77,9 @@ public final class ViewBox implements SymbolizerNode {
 
     public void setWidth(RealParameter width) {
         x = width;
+		if (x!= null){
+			x.setContext(RealParameterContext.realContext);
+		}
     }
 
     public RealParameter getWidth() {
@@ -84,6 +88,9 @@ public final class ViewBox implements SymbolizerNode {
 
     public void setHeight(RealParameter height) {
         y = height;
+		if (y!= null){
+			y.setContext(RealParameterContext.realContext);
+		}
     }
 
     public RealParameter getHeight() {
@@ -117,7 +124,7 @@ public final class ViewBox implements SymbolizerNode {
      * @return
      * @throws ParameterException
      */
-    public Dimension getDimensionInPixel(Feature feat, double height, double width, Double scale, Double dpi) throws ParameterException {
+    public Point2D getDimensionInPixel(Feature feat, double height, double width, Double scale, Double dpi) throws ParameterException {
         double dx, dy;
 
 		double ratio = height / width;
@@ -137,14 +144,16 @@ public final class ViewBox implements SymbolizerNode {
 			return null;
         }
 
+		System.out.println ("DX DY: " + dx + ";" + dy);
+
         dx = Uom.toPixel(dx, this.getUom(), dpi, scale, width);
         dy = Uom.toPixel(dy, this.getUom(), dpi, scale, height);
 
-		if (dx <= 0.00021 || dy <= 0.00021){
-			throw new ParameterException("View-box is too small");
+		if (Math.abs(dx) <= 0.00021 || Math.abs(dy) <= 0.00021){
+			throw new ParameterException("View-box is too small: (" + dx + ";" + dy + ")");
 		}
 
-        return new Dimension((int) dx, (int) dy);
+        return new Point2D.Double(dx, dy);
     }
 
     public ViewBoxType getJAXBType() {

@@ -5,9 +5,12 @@ import java.awt.geom.AffineTransform;
 import java.awt.geom.Arc2D;
 import java.awt.geom.Area;
 import java.awt.geom.Rectangle2D;
+
 import java.io.IOException;
+
 import java.util.ArrayList;
 import java.util.List;
+
 import javax.media.jai.RenderableGraphics;
 import javax.xml.bind.JAXBElement;
 
@@ -27,11 +30,11 @@ import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 import org.orbisgis.core.renderer.se.stroke.Stroke;
 import org.orbisgis.core.renderer.se.transform.Transform;
 import org.orbisgis.core.renderer.se.StrokeNode;
+import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
 
 public final class PieChart extends Graphic implements StrokeNode {
 
     public enum PieChartSubType {
-
         WHOLE, HALF;
     }
 
@@ -160,6 +163,16 @@ public final class PieChart extends Graphic implements StrokeNode {
 
     public void setHoleRadius(RealParameter holeRadius) {
         this.holeRadius = holeRadius;
+		if (holeRadius != null){
+			if (this.radius != null && !this.radius.dependsOnFeature()){
+				try {
+					holeRadius.setContext(new RealParameterContext(0.0, radius.getValue(null)));
+				} catch (ParameterException ex) {
+					// don't throw anything since radius does not depends on features
+				}
+			}
+			holeRadius.setContext(RealParameterContext.nonNegativeContext);
+		}
     }
 
     public RealParameter getRadius() {
@@ -168,6 +181,9 @@ public final class PieChart extends Graphic implements StrokeNode {
 
     public void setRadius(RealParameter radius) {
         this.radius = radius;
+		if (radius != null){
+			radius.setContext(RealParameterContext.nonNegativeContext);
+		}
     }
 
 	@Override
@@ -215,7 +231,7 @@ public final class PieChart extends Graphic implements StrokeNode {
         Area hole = null;
         if (this.holeRadius != null) {
             holeR = Uom.toPixel(this.getHoleRadius().getValue(feat), this.getUom(), mt.getDpi(), mt.getScaleDenominator(), r);
-            hole = new Area(new Arc2D.Double(-holeR, -holeR, 2 * holeR, 2 * holeR, 0, 260, Arc2D.CHORD));
+            hole = new Area(new Arc2D.Double(-holeR, -holeR, 2 * holeR, 2 * holeR, 0, 360, Arc2D.CHORD));
         }
 
         double maxGap = 0.0;

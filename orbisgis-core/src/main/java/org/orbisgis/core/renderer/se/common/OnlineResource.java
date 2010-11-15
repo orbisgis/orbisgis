@@ -1,7 +1,42 @@
 /*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+ * OrbisGIS is a GIS application dedicated to scientific spatial simulation.
+ * This cross-platform GIS is developed at French IRSTV institute and is able to
+ * manipulate and create vector and raster spatial information. OrbisGIS is
+ * distributed under GPL 3 license. It is produced by the "Atelier SIG" team of
+ * the IRSTV Institute <http://www.irstv.cnrs.fr/> CNRS FR 2488.
+ *
+ *
+ *  Team leader Erwan BOCHER, scientific researcher,
+ *
+ *  User support leader : Gwendall Petit, geomatic engineer.
+ *
+ *
+ * Copyright (C) 2007 Erwan BOCHER, Fernando GONZALEZ CORTES, Thomas LEDUC
+ *
+ * Copyright (C) 2010 Erwan BOCHER, Pierre-Yves FADET, Alexis GUEGANNO, Maxence LAURENT
+ *
+ * This file is part of OrbisGIS.
+ *
+ * OrbisGIS is free software: you can redistribute it and/or modify it under the
+ * terms of the GNU General Public License as published by the Free Software
+ * Foundation, either version 3 of the License, or (at your option) any later
+ * version.
+ *
+ * OrbisGIS is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
+ * A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along with
+ * OrbisGIS. If not, see <http://www.gnu.org/licenses/>.
+ *
+ * For more information, please consult: <http://www.orbisgis.org/>
+ *
+ * or contact directly:
+ * erwan.bocher _at_ ec-nantes.fr
+ * gwendall.petit _at_ ec-nantes.fr
  */
+
+
 package org.orbisgis.core.renderer.se.common;
 
 import java.awt.Dimension;
@@ -11,6 +46,7 @@ import java.awt.Shape;
 import java.awt.font.FontRenderContext;
 import java.awt.font.TextLayout;
 import java.awt.geom.AffineTransform;
+import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.renderable.ParameterBlock;
 import java.io.IOException;
@@ -90,16 +126,16 @@ public class OnlineResource implements ExternalGraphicSource, MarkGraphicSource 
 			double width = img.getWidth();
 			double height = img.getHeight();
 
-			Dimension dim = viewBox.getDimensionInPixel(feat, height, width, mt.getScaleDenominator(), mt.getDpi());
+			Point2D dim = viewBox.getDimensionInPixel(feat, height, width, mt.getScaleDenominator(), mt.getDpi());
 
-			double widthDst = dim.getWidth();
-			double heightDst = dim.getHeight();
+			double widthDst = dim.getX();
+			double heightDst = dim.getY();
 
 			if (widthDst > 0 && heightDst > 0) {
 				double ratio_x = widthDst / width;
 				double ratio_y = heightDst / height;
 
-				System.out.println("Ratios: " + ratio_x + ";" + ratio_y);
+				//System.out.println("Ratios: " + ratio_x + ";" + ratio_y);
 
 				pb.add((float) ratio_x);
 				pb.add((float) ratio_y);
@@ -126,11 +162,30 @@ public class OnlineResource implements ExternalGraphicSource, MarkGraphicSource 
 		e.setOnlineResource(o);
 	}
 
+	public Font getFont(){
+		InputStream iStream = null;
+		try {
+			iStream = url.openStream();
+			return Font.createFont(Font.TRUETYPE_FONT, iStream);
+		} catch (FontFormatException ex) {
+		} catch (IOException ex) {
+		} finally {
+			try {
+				iStream.close();
+			} catch (IOException ex) {
+			}
+		}
+		return null;
+	}
+
 	private Shape getTrueTypeGlyph(ViewBox viewBox, Feature feat, Double scale, Double dpi, RealParameter markIndex) throws ParameterException, IOException {
 
 		try {
 			InputStream iStream = url.openStream();
 			Font font = Font.createFont(Font.TRUETYPE_FONT, iStream);
+			iStream.close();
+
+			System.out.println ("Font: " + font.getNumGlyphs());
 
 			double value = markIndex.getValue(feat);
 
@@ -154,13 +209,13 @@ public class OnlineResource implements ExternalGraphicSource, MarkGraphicSource 
 			double height = bounds2D.getHeight();
 
 			if (viewBox != null && viewBox.usable()) {
-				Dimension dim = viewBox.getDimensionInPixel(feat, height, width, scale, dpi);
-				if (dim.getWidth() <= 0 || dim.getHeight() <= 0) {
+				Point2D dim = viewBox.getDimensionInPixel(feat, height, width, scale, dpi);
+				if (Math.abs(dim.getX()) <= 0 || Math.abs(dim.getY()) <= 0) {
 					return null;
 				}
 
-				at = AffineTransform.getScaleInstance(dim.getWidth() / width,
-						dim.getHeight() / height);
+				at = AffineTransform.getScaleInstance(dim.getX() / width,
+						dim.getY() / height);
 
 				fontCtx = new FontRenderContext(at, true, true);
 				tl = new TextLayout(text, font, fontCtx);

@@ -58,6 +58,7 @@ import org.orbisgis.core.ui.editorViews.toc.actions.cui.parameter.LegendUICatego
  *
  * @author maxence
  */
+/*
 public class LegendUICategorizeType extends LegendUIType {
 
 	Class<? extends Categorize> type;
@@ -90,3 +91,4 @@ public class LegendUICategorizeType extends LegendUIType {
 		}
 	}
 }
+*/

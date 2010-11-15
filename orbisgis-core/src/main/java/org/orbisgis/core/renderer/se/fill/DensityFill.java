@@ -5,6 +5,7 @@ import java.awt.Graphics2D;
 import java.awt.Paint;
 import java.awt.Shape;
 import java.awt.TexturePaint;
+import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 
@@ -26,6 +27,7 @@ import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
 import org.orbisgis.core.renderer.se.parameter.color.ColorHelper;
 import org.orbisgis.core.renderer.se.parameter.real.RealLiteral;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
+import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
 import org.orbisgis.core.renderer.se.stroke.PenStroke;
 
 public final class DensityFill extends Fill implements GraphicNode {
@@ -71,6 +73,9 @@ public final class DensityFill extends Fill implements GraphicNode {
 	 */
 	public void setHatchesOrientation(RealParameter orientation) {
 		this.orientation = orientation;
+		if (this.orientation != null){
+			this.orientation.setContext(RealParameterContext.realContext);
+		}
 	}
 
 	public RealParameter getHatchesOrientation() {
@@ -103,6 +108,9 @@ public final class DensityFill extends Fill implements GraphicNode {
 	 */
 	public void setPercentageCovered(RealParameter percent) {
 		this.percentageCovered = percent;
+		if (this.percentageCovered != null){
+			this.percentageCovered.setContext(RealParameterContext.percentageContext);
+		}
 	}
 
 	public RealParameter getPercentageCovered() {
@@ -180,8 +188,8 @@ public final class DensityFill extends Fill implements GraphicNode {
 				iy = Math.abs(iy);
 
 
-				BufferedImage i = new BufferedImage(ix, iy, BufferedImage.TYPE_4BYTE_ABGR);
-				Graphics2D tile = i.createGraphics();
+				BufferedImage img = new BufferedImage(ix, iy, BufferedImage.TYPE_INT_ARGB);
+				Graphics2D tile = img.createGraphics();
 
 				g2.setRenderingHints(mt.getCurrentRenderContext().getRenderingHints());
 
@@ -197,13 +205,11 @@ public final class DensityFill extends Fill implements GraphicNode {
         	    }
 
 
-				tile.setColor(c);
+				tile.setColor(ac);
 
 				tile.setStroke(hatches.getBasicStroke(feat, mt, null));
 
-				// Draw three line in order to ensure mosaic join
 				int ipDist = (int) pDist;
-
 
 				if (idx == 0) { // V-Hatches
 					tile.drawLine(0, -idy, 0, idy);
@@ -219,28 +225,39 @@ public final class DensityFill extends Fill implements GraphicNode {
 					tile.drawLine(-2 * idx, 0, 0, 2 * idy);
 				}
 
-
-				painter = new TexturePaint(i, new Rectangle2D.Double(0, 0, ix, iy));
-
+				painter = new TexturePaint(img, new Rectangle2D.Double(0, 0, ix, iy));
 			} else if (mark != null) { // Marked
 				RenderableGraphics g = mark.getGraphic(feat, selected, mt);
 
+
 				if (g != null) {
-					// Mark size:
-					double width = g.getWidth();
-					double height = g.getHeight();
-
-					System.out.println ("Percentage to cover: " + percentage);
-
-					// TO draw the mark within the tile
-					// 1) create the tile (BufferedImage)
-					// 2) get Graphics2D: tg = ile.createGraphics();
-					// 3) Draw the marks within the tile
-					//   -> tg.drawRenderedImage(g.createRendering(mt.getCurrentRenderContext()), AffineTransform.getTranslateInstance(x, y));
-
-                    // TODO IMPLEMENT: create TexturePaint, see GraphicFill.getTexturePaint
-                    // painter = new TexturePaint(...);
-					}
+                    // Mark size:
+                    double mWidth = g.getWidth();
+                    double mHeight = g.getHeight();
+                    //Final Texture square size
+                    double TextureSize = getTextureSize(mWidth, mHeight, percentage);
+                    //
+                    System.out.println ("DensityFill: " + percentage + " / TextureSize:" + TextureSize + "x" + TextureSize);
+                    //Create image to which to paint the marks
+                    BufferedImage i = new BufferedImage((int)TextureSize, (int) TextureSize, BufferedImage.TYPE_INT_ARGB);
+                    //Create graphics from the image
+                    Graphics2D tg = i.createGraphics();
+                    //Draw the mark to the image
+                    //Draw centered full mark if percentage is smaller or equal to 50
+                    if (percentage <= 50)
+                        tg.drawRenderedImage(g.createRendering(mt.getCurrentRenderContext()), AffineTransform.getTranslateInstance(TextureSize/2, TextureSize/2));
+                    //Draw mark quarters
+                    //Top left corner quarter mark
+                    tg.drawRenderedImage(g.createRendering(mt.getCurrentRenderContext()), AffineTransform.getTranslateInstance(0, 0));
+                    //Top right corner quarter mark
+                    tg.drawRenderedImage(g.createRendering(mt.getCurrentRenderContext()), AffineTransform.getTranslateInstance(TextureSize, 0));
+                    //Bottom right corner quarter mark
+                    tg.drawRenderedImage(g.createRendering(mt.getCurrentRenderContext()), AffineTransform.getTranslateInstance(TextureSize, TextureSize));
+                    //Bottom left corner quarter mark
+                    tg.drawRenderedImage(g.createRendering(mt.getCurrentRenderContext()), AffineTransform.getTranslateInstance(0, TextureSize));
+                    //finally set the painter
+                    painter = new TexturePaint(i, new Rectangle2D.Double(0, 0, i.getWidth(), i.getHeight()));
+                }
 			} else {
 				throw new ParameterException("Neither marks or hatches are defined");
 			}

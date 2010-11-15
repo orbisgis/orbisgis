@@ -14,6 +14,7 @@ import org.orbisgis.core.renderer.se.UomNode;
 import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
+import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
 
 /**
  * Style description for linear features (Area or Line)
@@ -46,6 +47,7 @@ public abstract class Stroke implements SymbolizerNode, UomNode {
         this.uom = uom;
     }
 
+	@Override
 	public Uom getOwnUom(){
 		return uom;
 	}
@@ -61,10 +63,16 @@ public abstract class Stroke implements SymbolizerNode, UomNode {
 
     public void setPreGap(RealParameter gap) {
         preGap = gap;
+		if (preGap != null){
+			preGap.setContext(RealParameterContext.nonNegativeContext);
+		}
     }
 
     public void setPostGap(RealParameter gap) {
         postGap = gap;
+		if (postGap != null){
+			postGap.setContext(RealParameterContext.nonNegativeContext);
+		}
     }
 
     public RealParameter getPostGap() {
