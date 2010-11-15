@@ -38,7 +38,6 @@
 package org.orbisgis.core.ui.editorViews.toc.actions.cui.fill;
 
 import javax.swing.Icon;
-import org.orbisgis.core.images.OrbisGISIcon;
 import org.orbisgis.core.renderer.se.FillNode;
 import org.orbisgis.core.renderer.se.fill.DensityFill;
 import org.orbisgis.core.renderer.se.fill.Fill;
@@ -46,6 +45,7 @@ import org.orbisgis.core.renderer.se.fill.SolidFill;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.LegendUIAbstractMetaPanel;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.LegendUIComponent;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.LegendUIController;
+import org.orbisgis.core.ui.preferences.lookandfeel.OrbisGISIcon;
 
 /**
  * Meta-Panel for fill edition

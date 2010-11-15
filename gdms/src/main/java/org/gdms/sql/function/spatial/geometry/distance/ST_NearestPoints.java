@@ -36,6 +36,7 @@
  */
 package org.gdms.sql.function.spatial.geometry.distance;
 
+import org.gdms.data.DataSourceFactory;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.sql.function.Argument;
@@ -48,7 +49,7 @@ import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.operation.distance.DistanceOp;
 
 public class ST_NearestPoints extends AbstractSpatialFunction {
-	public Value evaluate(final Value[] args) throws FunctionException {
+	public Value evaluate(DataSourceFactory dsf, Value[] args) throws FunctionException {
 		final Geometry geomA = args[0].getAsGeometry();
 		final Geometry geomB = args[1].getAsGeometry();
 		Coordinate[] pts = DistanceOp.nearestPoints(geomA, geomB);

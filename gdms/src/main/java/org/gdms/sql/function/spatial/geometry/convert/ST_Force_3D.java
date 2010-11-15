@@ -37,6 +37,7 @@
  */
 package org.gdms.sql.function.spatial.geometry.convert;
 
+import org.gdms.data.DataSourceFactory;
 import org.gdms.data.types.Constraint;
 import org.gdms.data.types.DimensionConstraint;
 import org.gdms.data.types.Type;
@@ -49,7 +50,7 @@ import org.gdms.sql.function.FunctionException;
 
 public class ST_Force_3D implements Function {
 
-	public Value evaluate(Value[] args) throws FunctionException {
+	public Value evaluate(DataSourceFactory dsf,Value[] args) throws FunctionException {
 		return args[0];
 	}
 

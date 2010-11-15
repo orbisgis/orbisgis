@@ -62,10 +62,10 @@ import javax.swing.UIManager;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
-import org.orbisgis.core.images.IconLoader;
-import org.orbisgis.core.images.OrbisGISIcon;
 import org.orbisgis.core.sif.CRFlowLayout;
 import org.orbisgis.core.sif.CarriageReturn;
+import org.orbisgis.core.ui.preferences.lookandfeel.OrbisGISIcon;
+import org.orbisgis.core.ui.preferences.lookandfeel.images.IconLoader;
 
 public class ErrorPanel extends JPanel {
 

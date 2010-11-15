@@ -48,8 +48,8 @@ import org.gdms.driver.DriverException;
 import org.orbisgis.core.AbstractTest;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.map.MapTransform;
-import org.orbisgis.core.renderer.AllowAllRenderPermission;
-import org.orbisgis.core.renderer.RenderPermission;
+import org.orbisgis.core.renderer.AllowAllRenderContext;
+import org.orbisgis.core.renderer.RenderContext;
 import org.orbisgis.core.renderer.symbol.collection.persistence.SymbolType;
 
 import com.vividsolutions.jts.geom.Envelope;
@@ -72,7 +72,7 @@ public class SymbolTest extends AbstractTest {
 
 		@Override
 		public Envelope draw(Graphics2D g, Geometry geom, MapTransform mt,
-				RenderPermission permission) throws DriverException {
+				RenderContext permission) throws DriverException {
 			return null;
 		}
 
@@ -207,7 +207,7 @@ public class SymbolTest extends AbstractTest {
 		BufferedImage bi = new BufferedImage(2, 2, BufferedImage.TYPE_INT_ARGB);
 		derived.draw(bi.createGraphics(), new GeometryFactory()
 				.createMultiPolygon(new Polygon[0]), new MapTransform(),
-				new AllowAllRenderPermission());
+				new AllowAllRenderContext());
 	}
 
 	private class NullDerivedSymbol extends AbstractPolygonSymbol implements
@@ -233,7 +233,7 @@ public class SymbolTest extends AbstractTest {
 
 		@Override
 		public Envelope draw(Graphics2D g, Geometry geom, MapTransform at,
-				RenderPermission permission) throws DriverException {
+				RenderContext permission) throws DriverException {
 			return null;
 		}
 

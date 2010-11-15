@@ -44,14 +44,13 @@ import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.Icon;
-import org.gdms.data.DataSource;
 import org.gdms.data.SpatialDataSourceDecorator;
 import org.gdms.data.metadata.Metadata;
 import org.gdms.driver.DriverException;
-import org.orbisgis.core.images.OrbisGISIcon;
 import org.orbisgis.core.renderer.se.parameter.PropertyName;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.components.ComboBoxInput;
+import org.orbisgis.core.ui.preferences.lookandfeel.OrbisGISIcon;
 
 import org.gdms.data.types.Type;
 import org.orbisgis.core.renderer.se.parameter.color.ColorParameter;

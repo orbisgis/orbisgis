@@ -48,7 +48,6 @@ import org.orbisgis.core.ui.editorViews.toc.actions.cui.parameter.color.LegendUI
 import javax.swing.Icon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
-import org.orbisgis.core.images.OrbisGISIcon;
 import org.orbisgis.core.renderer.se.parameter.Recode;
 import org.orbisgis.core.renderer.se.parameter.SeParameter;
 import org.orbisgis.core.renderer.se.parameter.color.ColorLiteral;
@@ -70,6 +69,7 @@ import org.orbisgis.core.ui.editorViews.toc.actions.cui.parameter.real.LegendUIR
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.parameter.string.LegendUIMetaStringPanel;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.parameter.string.LegendUIStringComponent;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.parameter.string.LegendUIStringLiteralPanel;
+import org.orbisgis.core.ui.preferences.lookandfeel.OrbisGISIcon;
 
 /**
  * @author maxence

@@ -44,13 +44,13 @@ import org.gdms.data.SpatialDataSourceDecorator;
 import org.gdms.driver.DriverException;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.errorManager.ErrorManager;
-import org.orbisgis.core.images.OrbisGISIcon;
 import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.layerModel.MapContext;
 import org.orbisgis.core.ui.pluginSystem.AbstractPlugIn;
 import org.orbisgis.core.ui.pluginSystem.PlugInContext;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchContext;
 import org.orbisgis.core.ui.plugins.views.MapEditorPlugIn;
+import org.orbisgis.core.ui.preferences.lookandfeel.OrbisGISIcon;
 
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
@@ -64,7 +64,8 @@ public class ZoomToSelectedFeaturesPlugIn extends AbstractPlugIn {
 	}
 
 	public boolean execute(PlugInContext context) throws Exception {
-		MapEditorPlugIn mapEditor = (MapEditorPlugIn) getPlugInContext().getActiveEditor();
+		MapEditorPlugIn mapEditor = (MapEditorPlugIn) getPlugInContext()
+				.getActiveEditor();
 		MapContext mc = (MapContext) mapEditor.getElement().getObject();
 		ILayer[] layers = mc.getLayerModel().getLayersRecursively();
 		Envelope rect = null;
@@ -117,10 +118,10 @@ public class ZoomToSelectedFeaturesPlugIn extends AbstractPlugIn {
 	public boolean isEnabled() {
 		boolean isEnabled = false;
 		MapEditorPlugIn mapEditor = null;
-		if((mapEditor=getPlugInContext().getMapEditor()) != null){
-				MapContext mc = (MapContext) mapEditor.getElement().getObject();
-				ILayer[] layers = mc.getLayerModel().getLayersRecursively();
-				for (ILayer lyr : layers) {
+		if ((mapEditor = getPlugInContext().getMapEditor()) != null) {
+			MapContext mc = (MapContext) mapEditor.getElement().getObject();
+			ILayer[] layers = mc.getLayerModel().getLayersRecursively();
+			for (ILayer lyr : layers) {
 				if (!lyr.isWMS()) {
 					lyr.getSelection();
 					if (lyr.getSelection().length > 0)

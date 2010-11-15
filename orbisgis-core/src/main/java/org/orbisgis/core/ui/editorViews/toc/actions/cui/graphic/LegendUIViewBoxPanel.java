@@ -40,12 +40,12 @@ package org.orbisgis.core.ui.editorViews.toc.actions.cui.graphic;
 import java.awt.BorderLayout;
 import javax.swing.BorderFactory;
 import javax.swing.Icon;
-import org.orbisgis.core.images.OrbisGISIcon;
 import org.orbisgis.core.renderer.se.graphic.ViewBox;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.LegendUIComponent;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.LegendUIController;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.parameter.real.LegendUIMetaRealPanel;
+import org.orbisgis.core.ui.preferences.lookandfeel.OrbisGISIcon;
 
 /**
  *

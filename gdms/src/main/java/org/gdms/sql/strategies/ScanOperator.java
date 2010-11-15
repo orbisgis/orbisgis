@@ -66,7 +66,7 @@ import org.gdms.sql.evaluator.LessThanOrEqual;
 import org.gdms.sql.evaluator.NotEquals;
 import org.gdms.sql.function.Function;
 import org.gdms.sql.function.FunctionManager;
-import org.gdms.sql.function.TwoOverlappingArgumentsFunction;
+import org.gdms.sql.function.SpatialIndexedFunction;
 import org.orbisgis.progress.IProgressMonitor;
 
 public class ScanOperator extends AbstractOperator {
@@ -210,7 +210,7 @@ public class ScanOperator extends AbstractOperator {
 		} else if (expression instanceof FunctionOperator) {
 			FunctionOperator fop = (FunctionOperator) expression;
 			Function fct = FunctionManager.getFunction(fop.getFunctionName());
-			if (fct instanceof TwoOverlappingArgumentsFunction) {
+			if (fct instanceof SpatialIndexedFunction) {
 				IndexQuery spatialQuery = getSpatialQuery(joinContext,
 						indexField, expression);
 				if (spatialQuery != null) {

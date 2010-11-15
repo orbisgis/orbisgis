@@ -38,7 +38,7 @@
 package org.orbisgis.core.ui.editorViews.toc.actions.cui.graphic;
 
 import javax.swing.Icon;
-import org.orbisgis.core.images.OrbisGISIcon;
+import org.orbisgis.core.ui.preferences.lookandfeel.OrbisGISIcon;
 import org.orbisgis.core.renderer.se.graphic.Graphic;
 import org.orbisgis.core.renderer.se.graphic.MarkGraphic;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.LegendUIAbstractMetaPanel;

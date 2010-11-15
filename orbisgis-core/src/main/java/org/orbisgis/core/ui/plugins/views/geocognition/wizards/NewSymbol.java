@@ -53,13 +53,13 @@ import org.orbisgis.core.Services;
 import org.orbisgis.core.geocognition.GeocognitionElement;
 import org.orbisgis.core.geocognition.GeocognitionElementFactory;
 import org.orbisgis.core.geocognition.symbology.GeocognitionSymbolFactory;
-import org.orbisgis.core.images.OrbisGISIcon;
 import org.orbisgis.core.renderer.symbol.Symbol;
 import org.orbisgis.core.renderer.symbol.SymbolManager;
 import org.orbisgis.core.sif.UIFactory;
 import org.orbisgis.core.ui.components.sif.ChoosePanel;
 import org.orbisgis.core.ui.plugins.views.geocognition.wizard.ElementRenderer;
 import org.orbisgis.core.ui.plugins.views.geocognition.wizard.INewGeocognitionElement;
+import org.orbisgis.core.ui.preferences.lookandfeel.OrbisGISIcon;
 
 public class NewSymbol implements INewGeocognitionElement {
 

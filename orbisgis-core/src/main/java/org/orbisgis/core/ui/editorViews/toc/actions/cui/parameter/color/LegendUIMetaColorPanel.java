@@ -38,8 +38,7 @@
 package org.orbisgis.core.ui.editorViews.toc.actions.cui.parameter.color;
 
 import javax.swing.Icon;
-import org.gdms.data.DataSource;
-import org.orbisgis.core.images.OrbisGISIcon;
+import org.orbisgis.core.ui.preferences.lookandfeel.OrbisGISIcon;
 import org.orbisgis.core.renderer.se.parameter.color.Categorize2Color;
 import org.orbisgis.core.renderer.se.parameter.color.ColorAttribute;
 import org.orbisgis.core.renderer.se.parameter.color.ColorLiteral;

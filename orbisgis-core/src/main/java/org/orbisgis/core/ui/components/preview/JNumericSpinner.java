@@ -20,10 +20,10 @@ import javax.swing.event.ChangeListener;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
-import org.orbisgis.core.images.IconLoader;
-import org.orbisgis.core.images.OrbisGISIcon;
 import org.orbisgis.core.sif.CRFlowLayout;
 import org.orbisgis.core.sif.CarriageReturn;
+import org.orbisgis.core.ui.preferences.lookandfeel.OrbisGISIcon;
+import org.orbisgis.core.ui.preferences.lookandfeel.images.IconLoader;
 
 /**
  * Numeric spinner

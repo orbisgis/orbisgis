@@ -68,7 +68,7 @@ public class ShowXYPlugIn extends AbstractPlugIn {
 	private MouseMotionAdapter mouseMotionAdapter = new MouseMotionAdapter() {
 		@Override
 		public void mouseMoved(MouseEvent e) {
-			String xCoord = "", yCoord = "", scale = "";
+			String xCoord = "", yCoord = "";
 			ToolManager toolManager = getPlugInContext().getToolManager();
 			if (toolManager != null) {
 				Point2D point = toolManager.getLastRealMousePosition();
@@ -79,14 +79,14 @@ public class ShowXYPlugIn extends AbstractPlugIn {
 					// } else {
 					xCoord = "X:" + (int) point.getX();
 					yCoord = "Y:" + (int) point.getY();
-					scale = "SCALE: 1/"
-							+ (int) getPlugInContext().getMapEditor()
-									.getMapTransform().getScaleDenominator();
+					//scale = "SCALE: 1/"
+						//	+ (int) getPlugInContext().getMapEditor()
+							//		.getMapTransform().getScaleDenominator();
 					// }
 				}
-				scale = "1:" + (int)toolManager.getMapTransform().getScaleDenominator();
+				//scale = "1:" + (int)toolManager.getMapTransform().getScaleDenominator();
 			}
-			showXY.setText(xCoord + "  " + yCoord + "  " + scale);
+			showXY.setText(xCoord + "  " + yCoord );
 		}
 	};
 
@@ -105,7 +105,7 @@ public class ShowXYPlugIn extends AbstractPlugIn {
 
 	@Override
 	public boolean isEnabled() {
-		showXY.setText("0.0     0.0    0");
+		showXY.setText("0.0     0.0  ");
 		boolean isVisible = false;
 		IEditor editor = Services.getService(EditorManager.class)
 				.getActiveEditor();

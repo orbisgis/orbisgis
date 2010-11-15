@@ -385,7 +385,7 @@ public class SourceTest extends BaseTest {
 		if (max == null) {
 			return "1";
 		} else {
-			return max.suma(ValueFactory.createValue(1)).toString();
+			return max.sum(ValueFactory.createValue(1)).toString();
 		}
 	}
 

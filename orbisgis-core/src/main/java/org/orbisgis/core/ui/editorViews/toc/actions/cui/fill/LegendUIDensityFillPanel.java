@@ -42,7 +42,6 @@ package org.orbisgis.core.ui.editorViews.toc.actions.cui.fill;
 
 import java.awt.BorderLayout;
 import javax.swing.Icon;
-import org.orbisgis.core.images.OrbisGISIcon;
 import org.orbisgis.core.renderer.se.fill.DensityFill;
 import org.orbisgis.core.renderer.se.fill.Fill;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
@@ -51,6 +50,7 @@ import org.orbisgis.core.ui.editorViews.toc.actions.cui.LegendUIComponent;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.LegendUIController;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.parameter.real.LegendUIMetaRealPanel;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.stroke.LegendUIPenStrokePanel;
+import org.orbisgis.core.ui.preferences.lookandfeel.OrbisGISIcon;
 
 /**
  *

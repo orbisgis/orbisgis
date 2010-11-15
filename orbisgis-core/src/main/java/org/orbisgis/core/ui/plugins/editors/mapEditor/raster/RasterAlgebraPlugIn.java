@@ -50,7 +50,6 @@ import org.grap.processing.OperationException;
 import org.grap.processing.operation.GeoRasterCalculator;
 import org.orbisgis.core.DataManager;
 import org.orbisgis.core.Services;
-import org.orbisgis.core.images.OrbisGISIcon;
 import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.layerModel.LayerException;
 import org.orbisgis.core.layerModel.MapContext;
@@ -65,6 +64,7 @@ import org.orbisgis.core.ui.pluginSystem.workbench.Names;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchContext;
 import org.orbisgis.core.ui.plugins.views.MapEditorPlugIn;
 import org.orbisgis.core.ui.plugins.views.editor.EditorManager;
+import org.orbisgis.core.ui.preferences.lookandfeel.OrbisGISIcon;
 
 public class RasterAlgebraPlugIn extends AbstractPlugIn {
 

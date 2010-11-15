@@ -1,5 +1,6 @@
 package org.gdms.sql.function.spatial.raster.morphology;
 
+import org.gdms.data.DataSourceFactory;
 import org.gdms.data.types.InvalidTypeException;
 import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeFactory;
@@ -16,7 +17,7 @@ import org.grap.processing.operation.GeoRasterResample;
 public class ST_Resample implements Function {
 
 	@Override
-	public Value evaluate(Value... args) throws FunctionException {
+	public Value evaluate(DataSourceFactory dsf,Value... args) throws FunctionException {
 
 		GeoRaster geoRasterSrc = args[0].getAsRaster();
 		float size = args[1].getAsFloat();

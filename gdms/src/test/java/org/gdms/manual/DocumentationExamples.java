@@ -644,19 +644,17 @@ public class DocumentationExamples extends TestCase {
 
 	}
 
+	
+
 	public static void main(String[] args) throws Exception {
 		DocumentationExamples de = new DocumentationExamples();
-		/*de.testConnectPostgreSQL();
-		de.testReadCSVAndShowOneValue();
-		de.testCreateDBF();
-		de.testAddValuesInCSV();
-		de.testAddFieldValuesInShapefile();
-		de.testDuplicateShapefile();
-		de.testBadModification();
-		de.testSchemaEdition();
-		de.testUndo();
-		de.testExportTool();
-		de.testBuffer();*/
+		/*
+		 * de.testConnectPostgreSQL(); de.testReadCSVAndShowOneValue();
+		 * de.testCreateDBF(); de.testAddValuesInCSV();
+		 * de.testAddFieldValuesInShapefile(); de.testDuplicateShapefile();
+		 * de.testBadModification(); de.testSchemaEdition(); de.testUndo();
+		 * de.testExportTool(); de.testBuffer();
+		 */
 		de.testSpatialIndex();
 	}
 }

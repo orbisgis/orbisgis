@@ -63,5 +63,6 @@ public class ConsoleButton extends JButton {
 		setToolTipText(ConsoleAction.getToolTipText(actionCommandType));
 		setActionCommand(actionCommandType.toString());
 		addActionListener(actionsListener);
+		setBorderPainted(false);
 	}
 }

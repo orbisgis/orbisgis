@@ -39,6 +39,7 @@ package org.gdms.sql.function.spatial.geometry.polygonize;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import org.gdms.data.DataSourceFactory;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.sql.function.Argument;
@@ -56,7 +57,7 @@ public class ST_Polygonize extends AbstractSpatialFunction {
 
 	Polygonizer polygonizer = new Polygonizer();
 
-	public Value evaluate(Value[] args) throws FunctionException {
+	public Value evaluate(DataSourceFactory dsf,Value[] args) throws FunctionException {
 		if (!args[0].isNull()) {
 			final Geometry geom = args[0].getAsGeometry();
 			polygonizer.add(geom);

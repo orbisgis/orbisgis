@@ -55,12 +55,12 @@ import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
-import org.orbisgis.core.images.OrbisGISIcon;
 import org.orbisgis.core.renderer.legend.Legend;
 import org.orbisgis.core.sif.UIFactory;
 import org.orbisgis.core.ui.components.sif.AskValue;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.components.LegendPicker;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.legend.ILegendPanel;
+import org.orbisgis.core.ui.preferences.lookandfeel.OrbisGISIcon;
 
 public class LegendList extends JPanel {
 	private JToolBar toolBar;

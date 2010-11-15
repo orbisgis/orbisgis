@@ -51,6 +51,8 @@ import org.gdms.data.indexes.BTreeIndex;
 import org.gdms.data.indexes.IndexManager;
 import org.gdms.data.indexes.RTreeIndex;
 import org.gdms.data.object.ObjectSourceDefinition;
+import org.gdms.data.system.SystemSource;
+import org.gdms.data.system.SystemSourceDefinition;
 import org.gdms.data.wms.WMSSource;
 import org.gdms.data.wms.WMSSourceDefinition;
 import org.gdms.driver.DriverException;
@@ -479,6 +481,43 @@ public class DataSourceFactory {
 	public DataSource getDataSource(WMSSource wmsSource, int mode)
 			throws DataSourceCreationException, DriverException {
 		return getDataSource(new WMSSourceDefinition(wmsSource), mode,
+				new NullProgressMonitor());
+	}
+
+	/**
+	 * Gets a DataSource instance to access the system table source with the
+	 * {@link #DEFAULT} mode
+	 * 
+	 * @param systemSource
+	 *            source to access
+	 * @return
+	 * 
+	 * @throws DataSourceCreationException
+	 *             If the instance creation fails
+	 * @throws DriverException
+	 */
+	public DataSource getDataSource(SystemSource systemSource)
+			throws DataSourceCreationException, DriverException {
+		return getDataSource(new SystemSourceDefinition(systemSource), DEFAULT,
+				new NullProgressMonitor());
+	}
+
+	/**
+	 * Gets a DataSource instance to access the system table source
+	 * 
+	 * @param systemSource
+	 *            source to access
+	 * @param mode
+	 *            To enable undo/redo operations UNDOABLE. NORMAL otherwise
+	 * @return
+	 * 
+	 * @throws DataSourceCreationException
+	 *             If the instance creation fails
+	 * @throws DriverException
+	 */
+	public DataSource getDataSource(SystemSource systemSource, int mode)
+			throws DataSourceCreationException, DriverException {
+		return getDataSource(new SystemSourceDefinition(systemSource), mode,
 				new NullProgressMonitor());
 	}
 

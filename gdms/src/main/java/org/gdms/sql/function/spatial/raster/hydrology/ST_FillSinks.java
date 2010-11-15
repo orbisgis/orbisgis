@@ -36,6 +36,7 @@
  */
 package org.gdms.sql.function.spatial.raster.hydrology;
 
+import org.gdms.data.DataSourceFactory;
 import org.gdms.data.types.InvalidTypeException;
 import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeFactory;
@@ -51,7 +52,7 @@ import org.grap.processing.OperationException;
 import org.grap.processing.operation.hydrology.OpFillSinks;
 
 public class ST_FillSinks implements Function {
-	public Value evaluate(Value[] args) throws FunctionException {
+	public Value evaluate(DataSourceFactory dsf,Value[] args) throws FunctionException {
 		final GeoRaster geoRasterSrc = args[0].getAsRaster();
 
 		final double slope = args[1].getAsDouble();

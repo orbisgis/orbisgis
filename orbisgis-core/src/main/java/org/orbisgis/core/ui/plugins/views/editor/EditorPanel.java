@@ -71,7 +71,6 @@ import org.orbisgis.core.edition.EditableElement;
 import org.orbisgis.core.edition.EditableElementException;
 import org.orbisgis.core.edition.EditableElementListener;
 import org.orbisgis.core.errorManager.ErrorManager;
-import org.orbisgis.core.images.IconLoader;
 import org.orbisgis.core.ui.editor.EditorDecorator;
 import org.orbisgis.core.ui.editor.EditorListener;
 import org.orbisgis.core.ui.editor.IEditor;
@@ -81,6 +80,7 @@ import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchContext;
 import org.orbisgis.core.ui.plugins.views.MapEditorPlugIn;
 import org.orbisgis.core.ui.plugins.views.TableEditorPlugIn;
 import org.orbisgis.core.ui.plugins.views.geocognition.OpenGeocognitionElementJob;
+import org.orbisgis.core.ui.preferences.lookandfeel.images.IconLoader;
 import org.orbisgis.progress.NullProgressMonitor;
 
 public class EditorPanel extends Container {

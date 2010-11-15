@@ -44,7 +44,7 @@ import javax.swing.BoxLayout;
 
 import javax.swing.Icon;
 
-import org.orbisgis.core.images.OrbisGISIcon;
+import org.orbisgis.core.ui.preferences.lookandfeel.OrbisGISIcon;
 
 import org.orbisgis.core.renderer.se.AreaSymbolizer;
 import org.orbisgis.core.renderer.se.FillNode;

@@ -38,19 +38,22 @@
 package org.orbisgis.core.ui.editorViews.toc.actions.cui.parameter.real;
 
 import javax.swing.Icon;
-import org.gdms.data.DataSource;
-import org.orbisgis.core.images.OrbisGISIcon;
+
+import org.orbisgis.core.ui.preferences.lookandfeel.OrbisGISIcon;
+
 import org.orbisgis.core.renderer.se.parameter.real.Categorize2Real;
 import org.orbisgis.core.renderer.se.parameter.real.Interpolate2Real;
 import org.orbisgis.core.renderer.se.parameter.real.RealAttribute;
 import org.orbisgis.core.renderer.se.parameter.real.RealLiteral;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 import org.orbisgis.core.renderer.se.parameter.real.Recode2Real;
+
 import org.orbisgis.core.renderer.se.parameter.string.StringAttribute;
-import org.orbisgis.core.renderer.se.parameter.string.StringLiteral;
+
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.LegendUIAbstractMetaPanel;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.LegendUIComponent;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.LegendUIController;
+
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.parameter.LegendUICategorizePanel;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.parameter.LegendUIPropertyNamePanel;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.parameter.LegendUIRecodePanel;

@@ -56,7 +56,6 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import org.gdms.data.SpatialDataSourceDecorator;
 
-import org.orbisgis.core.images.OrbisGISIcon;
 import org.orbisgis.core.renderer.classification.Range;
 import org.orbisgis.core.renderer.classification.RangeMethod;
 import org.orbisgis.core.renderer.se.parameter.Categorize;
@@ -79,6 +78,7 @@ import org.orbisgis.core.ui.editorViews.toc.actions.cui.LegendUIComponent;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.LegendUIController;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.components.RadioSwitch;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.parameter.string.LegendUIStringLiteralPanel;
+import org.orbisgis.core.ui.preferences.lookandfeel.OrbisGISIcon;
 
 /**
  * @todo BUG !!!!

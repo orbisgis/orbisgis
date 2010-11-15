@@ -38,6 +38,7 @@ package org.gdms.sql.function.spatial.geometry.operators;
 
 import java.util.ArrayList;
 
+import org.gdms.data.DataSourceFactory;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.sql.function.Argument;
@@ -52,7 +53,7 @@ public class ST_GeomUnion extends AbstractSpatialFunction {
 
 	private ArrayList<Geometry> toUnite = new ArrayList<Geometry>();
 
-	public Value evaluate(Value[] args) throws FunctionException {
+	public Value evaluate(DataSourceFactory dsf,Value[] args) throws FunctionException {
 		if (!args[0].isNull()) {
 			final Geometry geom = args[0].getAsGeometry();
 			addGeometry(geom);

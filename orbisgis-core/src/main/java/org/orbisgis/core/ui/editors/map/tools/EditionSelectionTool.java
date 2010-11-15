@@ -5,11 +5,11 @@ import java.util.Observable;
 import javax.swing.AbstractButton;
 import javax.swing.ImageIcon;
 
-import org.orbisgis.core.images.OrbisGISIcon;
 import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.layerModel.MapContext;
 import org.orbisgis.core.ui.editors.map.tool.ToolManager;
 import org.orbisgis.core.ui.pluginSystem.PlugInContext;
+import org.orbisgis.core.ui.preferences.lookandfeel.OrbisGISIcon;
 
 public class EditionSelectionTool extends AbstractSelectionTool {
 

@@ -40,6 +40,7 @@
  */
 package org.gdms.sql.function.spatial.geometry.create;
 
+import org.gdms.data.DataSourceFactory;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.geometryUtils.GeometryEditor;
@@ -52,7 +53,7 @@ import com.vividsolutions.jts.geom.Geometry;
 
 public class ST_RemoveRepeatedPoints extends AbstractSpatialFunction {
 
-	public Value evaluate(final Value[] args) throws FunctionException {
+	public Value evaluate(DataSourceFactory dsf, Value[] args) throws FunctionException {
 
 		final Geometry geom = args[0].getAsGeometry();
 		GeometryEditor geometryEditor = new GeometryEditor();

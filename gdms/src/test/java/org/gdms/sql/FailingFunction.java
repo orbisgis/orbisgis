@@ -39,6 +39,7 @@
  */
 package org.gdms.sql;
 
+import org.gdms.data.DataSourceFactory;
 import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
@@ -48,7 +49,7 @@ import org.gdms.sql.function.FunctionException;
 
 public class FailingFunction implements Function {
 
-	public Value evaluate(Value[] args) throws FunctionException {
+	public Value evaluate(DataSourceFactory dsf, Value[] args) throws FunctionException {
 		throw new RuntimeException();
 	}
 

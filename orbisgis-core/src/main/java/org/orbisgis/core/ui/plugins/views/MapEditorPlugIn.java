@@ -46,7 +46,6 @@ import javax.swing.ImageIcon;
 
 import org.orbisgis.core.Services;
 import org.orbisgis.core.edition.EditableElement;
-import org.orbisgis.core.images.OrbisGISIcon;
 import org.orbisgis.core.layerModel.MapContext;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.ui.editor.IEditor;
@@ -62,6 +61,7 @@ import org.orbisgis.core.ui.pluginSystem.workbench.Names;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchContext;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchFrame;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchToolBar;
+import org.orbisgis.core.ui.preferences.lookandfeel.OrbisGISIcon;
 import org.orbisgis.utils.I18N;
 
 public class MapEditorPlugIn extends ViewPlugIn implements WorkbenchFrame,

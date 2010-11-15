@@ -86,9 +86,9 @@ class StringValue extends AbstractValue implements Serializable {
 	}
 
 	/**
-	 * @see org.gdms.sql.instruction.expression.Operations#suma(org.gdms.sql.instruction.expression.Value)
+	 * @see org.gdms.sql.instruction.expression.Operations#sum(org.gdms.sql.instruction.expression.Value)
 	 */
-	public Value suma(Value v) throws IncompatibleTypesException {
+	public Value sum(Value v) throws IncompatibleTypesException {
 		if (v instanceof IntValue) {
 			try {
 				DoubleValue ret = new DoubleValue();
@@ -150,9 +150,9 @@ class StringValue extends AbstractValue implements Serializable {
 	}
 
 	/**
-	 * @see org.gdms.sql.instruction.expression.Operations#producto(org.gdms.sql.instruction.expression.Value)
+	 * @see org.gdms.sql.instruction.expression.Operations#multiply(org.gdms.sql.instruction.expression.Value)
 	 */
-	public Value producto(Value v) throws IncompatibleTypesException {
+	public Value multiply(Value v) throws IncompatibleTypesException {
 		if (v instanceof IntValue) {
 			try {
 				DoubleValue ret = new DoubleValue();

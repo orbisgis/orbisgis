@@ -46,6 +46,7 @@ import org.orbisgis.core.ui.editors.map.tool.Automaton;
 
 public class EnableableToolBar extends JToolBar {
 	public EnableableToolBar() {
+		setBorderPainted(false);
 	}
 
 	public EnableableToolBar(String name) {

@@ -38,8 +38,6 @@
 package org.orbisgis.core.ui.editorViews.toc.actions.cui.parameter.string;
 
 import javax.swing.Icon;
-import org.gdms.data.DataSource;
-import org.orbisgis.core.images.OrbisGISIcon;
 
 import org.orbisgis.core.renderer.se.parameter.real.RealAttribute;
 
@@ -56,6 +54,7 @@ import org.orbisgis.core.ui.editorViews.toc.actions.cui.LegendUIController;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.parameter.LegendUICategorizePanel;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.parameter.LegendUIPropertyNamePanel;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.parameter.LegendUIRecodePanel;
+import org.orbisgis.core.ui.preferences.lookandfeel.OrbisGISIcon;
 
 /**
  *

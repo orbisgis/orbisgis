@@ -42,7 +42,6 @@ import org.orbisgis.core.background.BackgroundManager;
 import org.orbisgis.core.geocognition.Geocognition;
 import org.orbisgis.core.geocognition.GeocognitionElement;
 import org.orbisgis.core.geocognition.GeocognitionFilter;
-import org.orbisgis.core.images.OrbisGISIcon;
 import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.layerModel.MapContext;
 import org.orbisgis.core.ui.editorViews.toc.EditableLayer;
@@ -54,6 +53,7 @@ import org.orbisgis.core.ui.pluginSystem.workbench.Names;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchContext;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchFrame;
 import org.orbisgis.core.ui.plugins.views.geocognition.OpenGeocognitionElementJob;
+import org.orbisgis.core.ui.preferences.lookandfeel.OrbisGISIcon;
 
 public class ShowInTablePlugIn extends AbstractPlugIn {
 

@@ -77,16 +77,17 @@
  */
 package org.gdms.sql.function.spatial.geometry.predicates;
 
+import org.gdms.data.DataSourceFactory;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.sql.function.FunctionException;
-import org.gdms.sql.function.TwoOverlappingArgumentsFunction;
+import org.gdms.sql.function.SpatialIndexedFunction;
 
 import com.vividsolutions.jts.geom.Geometry;
 
-public class ST_Covers extends AbstractSpatialPredicateFunction implements TwoOverlappingArgumentsFunction {
+public class ST_Covers extends AbstractSpatialPredicateFunction implements SpatialIndexedFunction {
 
-	public Value evaluateResult(final Value[] args) throws FunctionException {
+	public Value evaluateResult(DataSourceFactory dsf, Value[] args) throws FunctionException {
 		final Geometry geom1 = args[0].getAsGeometry();
 		final Geometry geom2 = args[1].getAsGeometry();
 		return ValueFactory.createValue(geom1.covers(geom2));

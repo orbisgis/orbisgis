@@ -384,7 +384,7 @@ public class AlphanumericFunctionTest extends FunctionTest {
 
 		// Test redundancy
 		try {
-			function.evaluate(new Value[] { ValueFactory.createValue(54) });
+			function.evaluate(dsf, new Value[] { ValueFactory.createValue(54) });
 			assertTrue(false);
 		} catch (FunctionException e) {
 		}

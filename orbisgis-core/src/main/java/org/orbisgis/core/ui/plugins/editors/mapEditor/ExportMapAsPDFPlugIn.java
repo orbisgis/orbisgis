@@ -58,7 +58,6 @@ import javax.imageio.ImageIO;
 import javax.swing.JOptionPane;
 
 import org.orbisgis.core.Services;
-import org.orbisgis.core.images.IconLoader;
 import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.layerModel.MapContext;
 import org.orbisgis.core.map.export.Scale;
@@ -75,6 +74,7 @@ import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchContext;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchFrame;
 import org.orbisgis.core.ui.plugins.views.MapEditorPlugIn;
 import org.orbisgis.core.ui.plugins.views.editor.EditorManager;
+import org.orbisgis.core.ui.preferences.lookandfeel.images.IconLoader;
 import org.orbisgis.progress.NullProgressMonitor;
 
 import com.vividsolutions.jts.geom.Envelope;

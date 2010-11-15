@@ -71,11 +71,11 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
 import org.orbisgis.core.Services;
-import org.orbisgis.core.images.OrbisGISIcon;
 import org.orbisgis.core.layerModel.MapContext;
 import org.orbisgis.core.ui.editor.IEditor;
 import org.orbisgis.core.ui.editors.map.MapContextManager;
 import org.orbisgis.core.ui.plugins.views.MapEditorPlugIn;
+import org.orbisgis.core.ui.preferences.lookandfeel.OrbisGISIcon;
 import org.orbisgis.core.workspace.DefaultWorkspace;
 import org.orbisgis.core.workspace.Workspace;
 
@@ -155,10 +155,12 @@ public class GeomarkPanel extends JPanel implements ListSelectionListener {
 		addButton.setActionCommand(addString);
 		addButton.addActionListener(hireListener);
 		addButton.setEnabled(false);
+		addButton.setBorderPainted(false);
 
 		deleteButton = new JButton();
 		deleteButton.setIcon(OrbisGISIcon.WORLD_DEL);
 		deleteButton.setToolTipText("Press the button to delete a geomark!");
+		deleteButton.setBorderPainted(false);
 		deleteButton.setActionCommand(removeString);
 		deleteButton.addActionListener(new FireListener());
 

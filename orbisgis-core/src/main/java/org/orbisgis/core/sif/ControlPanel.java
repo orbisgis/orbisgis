@@ -61,8 +61,8 @@ import javax.swing.event.ListSelectionListener;
 
 import org.gdms.data.DataSourceCreationException;
 import org.gdms.driver.DriverException;
-import org.orbisgis.core.images.IconLoader;
-import org.orbisgis.core.images.OrbisGISIcon;
+import org.orbisgis.core.ui.preferences.lookandfeel.OrbisGISIcon;
+import org.orbisgis.core.ui.preferences.lookandfeel.images.IconLoader;
 
 public class ControlPanel extends JPanel {
 	private JList list;

@@ -37,6 +37,7 @@
  */
 package org.gdms.sql.function;
 
+import org.gdms.data.DataSourceFactory;
 import org.gdms.data.types.InvalidTypeException;
 import org.gdms.data.types.Type;
 import org.gdms.data.values.Value;
@@ -60,7 +61,7 @@ public interface Function {
 	 *             If some error happens and the execution of the query should
 	 *             be stopped
 	 */
-	public Value evaluate(Value... args) throws FunctionException;
+	public Value evaluate(DataSourceFactory dsf, Value... args) throws FunctionException;
 
 	/**
 	 * Gets the name of the function. This name will be used in SQL statements

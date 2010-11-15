@@ -60,7 +60,7 @@ public class FunctionOperator extends AbstractOperator implements Expression {
 	private DataSourceFactory dsf;
 	private boolean lastCall = false;
 	private Value lastReturnValue = null;
-	private Type returnType =null;
+	private Type returnType = null;
 
 	public FunctionOperator(DataSourceFactory dsf, String name,
 			Expression[] arguments) {
@@ -92,7 +92,7 @@ public class FunctionOperator extends AbstractOperator implements Expression {
 				for (int i = 0; i < args.length; i++) {
 					args[i] = getChild(i).evaluate(pm);
 				}
-				lastReturnValue = fnc.evaluate(args);
+				lastReturnValue = fnc.evaluate(dsf, args);
 				return lastReturnValue;
 			}
 		} catch (RuntimeException e) {

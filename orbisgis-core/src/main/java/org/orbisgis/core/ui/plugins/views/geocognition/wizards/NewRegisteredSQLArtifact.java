@@ -62,13 +62,12 @@ import org.orbisgis.core.geocognition.sql.GeocognitionBuiltInCustomQuery;
 import org.orbisgis.core.geocognition.sql.GeocognitionBuiltInFunction;
 import org.orbisgis.core.geocognition.sql.GeocognitionCustomQueryFactory;
 import org.orbisgis.core.geocognition.sql.GeocognitionFunctionFactory;
-import org.orbisgis.core.images.IconLoader;
-import org.orbisgis.core.images.OrbisGISIcon;
 import org.orbisgis.core.sif.UIFactory;
-import org.orbisgis.core.ui.components.sif.ChoosePanel;
 import org.orbisgis.core.ui.components.sif.FunctionPanel;
 import org.orbisgis.core.ui.plugins.views.geocognition.wizard.ElementRenderer;
 import org.orbisgis.core.ui.plugins.views.geocognition.wizard.INewGeocognitionElement;
+import org.orbisgis.core.ui.preferences.lookandfeel.OrbisGISIcon;
+import org.orbisgis.core.ui.preferences.lookandfeel.images.IconLoader;
 
 public class NewRegisteredSQLArtifact implements INewGeocognitionElement {
 

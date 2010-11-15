@@ -51,7 +51,7 @@ public class Division extends ArithmeticOperator {
 
 	public Value evaluateExpression(IProgressMonitor pm) throws EvaluationException,
 			IncompatibleTypesException {
-		return getLeftOperator().evaluate(pm).producto(
+		return getLeftOperator().evaluate(pm).multiply(
 				getRightOperator().evaluate(pm).inversa());
 	}
 

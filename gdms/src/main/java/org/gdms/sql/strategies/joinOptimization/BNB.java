@@ -82,24 +82,34 @@ public class BNB {
 			return null;
 		}
 
-		ScalarProductOp scalarProduct = null;
+		Operator scalarProduct = null;
 		SelectionOp selection = null;
 		for (Operator selectionOp : selections) {
 			Operator child = selectionOp.getOperator(0);
 			if (child instanceof ScalarProductOp) {
-				scalarProduct = (ScalarProductOp) child;
+				scalarProduct = child;
 				selection = (SelectionOp) selectionOp;
 				break;
-			}
+			} else if (child instanceof ScanOperator) {
+                            selection = (SelectionOp) selectionOp;
+                            break;
+                        }
 		}
+                ArrayList<Operator> tables = new ArrayList<Operator>();
+                
+                if (scalarProduct != null) {
+                    createTableIndexesCache(scalarProduct);
 
-		createTableIndexesCache(scalarProduct);
-
-		ArrayList<Operator> tables = new ArrayList<Operator>();
 		// Create root node empty
 		for (int i = 0; i < scalarProduct.getOperatorCount(); i++) {
 			tables.add(scalarProduct.getOperator(i));
 		}
+                } else {
+                    Operator scan = selection.getOperator(0);
+                    createTableIndexesCache(scan);
+                    tables.add(scan);
+                }
+
 		BNBNode root = new BNBNode(tables);
 
 		// Initialize best solution to Double.MAX_VALUE
@@ -170,7 +180,7 @@ public class BNB {
 		return argBest;
 	}
 
-	private void createTableIndexesCache(ScalarProductOp scalarProduct) {
+	private void createTableIndexesCache(Operator scalarProduct) {
 		tableIndexes = new HashMap<String, ArrayList<String>>();
 		String[] tables = scalarProduct.getReferencedTables();
 		for (String table : tables) {

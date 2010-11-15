@@ -38,6 +38,7 @@ package org.gdms.sql.function.spatial.raster.create;
 
 import java.awt.geom.Rectangle2D;
 
+import org.gdms.data.DataSourceFactory;
 import org.gdms.data.types.InvalidTypeException;
 import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeFactory;
@@ -54,7 +55,7 @@ import org.grap.processing.operation.Crop;
 import com.vividsolutions.jts.geom.Envelope;
 
 public class ST_CropRaster implements Function {
-	public Value evaluate(Value[] args) throws FunctionException {
+	public Value evaluate(DataSourceFactory dsf,Value[] args) throws FunctionException {
 		GeoRaster gr = args[0].getAsRaster();
 		Envelope g = args[1].getAsGeometry().getEnvelopeInternal();
 

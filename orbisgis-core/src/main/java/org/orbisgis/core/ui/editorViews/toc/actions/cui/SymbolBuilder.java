@@ -66,7 +66,6 @@ import javax.swing.event.ListSelectionListener;
 
 import org.orbisgis.core.Services;
 import org.orbisgis.core.geocognition.Geocognition;
-import org.orbisgis.core.images.OrbisGISIcon;
 import org.orbisgis.core.renderer.symbol.Symbol;
 import org.orbisgis.core.renderer.symbol.SymbolFactory;
 import org.orbisgis.core.renderer.symbol.SymbolManager;
@@ -77,6 +76,7 @@ import org.orbisgis.core.ui.editorViews.toc.actions.cui.components.Canvas;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.components.SymbolCollection;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.components.SymbolSelection;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.legend.ISymbolEditor;
+import org.orbisgis.core.ui.preferences.lookandfeel.OrbisGISIcon;
 
 /**
  *

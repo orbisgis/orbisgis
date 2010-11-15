@@ -37,6 +37,7 @@
  */
 package org.gdms.sql.function.spatial.geometry.edit;
 
+import org.gdms.data.DataSourceFactory;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.sql.function.Argument;
@@ -48,7 +49,7 @@ import com.vividsolutions.jts.geom.Geometry;
 
 public class ST_Normalize extends AbstractSpatialFunction {
 
-	public Value evaluate(final Value[] args) throws FunctionException {
+	public Value evaluate(DataSourceFactory dsf, Value[] args) throws FunctionException {
 
 		Geometry g = args[0].getAsGeometry();
 		g.normalize();

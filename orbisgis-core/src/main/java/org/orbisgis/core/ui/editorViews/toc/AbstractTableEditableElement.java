@@ -43,6 +43,7 @@ public abstract class AbstractTableEditableElement extends
 	public void save() throws UnsupportedOperationException,
 			EditableElementException {
 		try {
+			if (isEditable())
 			getDataSource().commit();
 		} catch (DriverException e) {
 			throw new EditableElementException("Could not save", e);

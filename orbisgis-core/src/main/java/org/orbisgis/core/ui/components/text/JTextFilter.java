@@ -1,3 +1,38 @@
+/*
+ * OrbisGIS is a GIS application dedicated to scientific spatial simulation.
+ * This cross-platform GIS is developed at French IRSTV institute and is able to
+ * manipulate and create vector and raster spatial information. OrbisGIS is
+ * distributed under GPL 3 license. It is produced by the "Atelier SIG" team of
+ * the IRSTV Institute <http://www.irstv.cnrs.fr/> CNRS FR 2488.
+ *
+ *
+ *  Team leader Erwan BOCHER, scientific researcher,
+ *
+ *
+ *
+ * Copyright (C) 2007 Erwan BOCHER, Fernando GONZALEZ CORTES, Thomas LEDUC
+ *
+ * Copyright (C) 2010 Erwan BOCHER,  Alexis GUEGANNO, Antoine GOURLAY, Adelin PIAU, Gwendall PETIT
+ *
+ * This file is part of OrbisGIS.
+ *
+ * OrbisGIS is free software: you can redistribute it and/or modify it under the
+ * terms of the GNU General Public License as published by the Free Software
+ * Foundation, either version 3 of the License, or (at your option) any later
+ * version.
+ *
+ * OrbisGIS is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
+ * A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along with
+ * OrbisGIS. If not, see <http://www.gnu.org/licenses/>.
+ *
+ * For more information, please consult: <http://www.orbisgis.org/>
+ *
+ * or contact directly:
+ * info _at_ orbisgis.org
+ */
 package org.orbisgis.core.ui.components.text;
 
 import java.awt.Insets;
@@ -10,7 +45,8 @@ import javax.swing.JTextField;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
-import org.orbisgis.core.images.OrbisGISIcon;
+import org.orbisgis.core.ui.preferences.lookandfeel.OrbisGISIcon;
+import org.orbisgis.core.ui.preferences.lookandfeel.images.IconLoader;
 
 public class JTextFilter extends JPanel {
 
@@ -18,7 +54,8 @@ public class JTextFilter extends JPanel {
 	private JButton btnClear;
 
 	public JTextFilter() {
-		txtFilter = new JTextField(8);
+		txtFilter = new JButtonTextField(
+				IconLoader.getIcon("small_search.png"), 8);
 		txtFilter.getDocument().addDocumentListener(new DocumentListener() {
 
 			@Override
@@ -42,6 +79,8 @@ public class JTextFilter extends JPanel {
 		});
 		this.add(txtFilter);
 		btnClear = new JButton(OrbisGISIcon.REMOVE);
+		btnClear.setBorderPainted(false);
+		btnClear.setBackground(null);
 		btnClear.setVisible(false);
 		btnClear.setMargin(new Insets(0, 0, 0, 0));
 		btnClear.addActionListener(new ActionListener() {

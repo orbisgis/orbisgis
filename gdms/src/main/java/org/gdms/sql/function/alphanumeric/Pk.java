@@ -42,6 +42,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
+import org.gdms.data.DataSourceFactory;
 import org.gdms.data.types.Constraint;
 import org.gdms.data.types.InvalidTypeException;
 import org.gdms.data.types.PrimaryKeyConstraint;
@@ -57,7 +58,8 @@ import org.gdms.sql.function.FunctionValidator;
 public class Pk implements Function {
 	private Set<Value> setOfUniqValues;
 
-	public Value evaluate(Value[] args) throws FunctionException {
+	public Value evaluate(DataSourceFactory dsf, Value[] args)
+			throws FunctionException {
 		FunctionValidator.failIfNull(args[0]);
 		if (null == setOfUniqValues) {
 			setOfUniqValues = new HashSet<Value>();

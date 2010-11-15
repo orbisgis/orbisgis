@@ -48,9 +48,8 @@ import org.gdms.data.types.Constraint;
 import org.gdms.data.types.GeometryConstraint;
 import org.gdms.data.types.Type;
 import org.gdms.driver.DriverException;
-import org.orbisgis.core.images.IconLoader;
-import org.orbisgis.core.images.OrbisGISIcon;
 import org.orbisgis.core.layerModel.ILayer;
+import org.orbisgis.core.ui.preferences.lookandfeel.OrbisGISIcon;
 
 public abstract class TocAbstractRenderer {
 
@@ -87,6 +86,8 @@ public abstract class TocAbstractRenderer {
 						} else if ((geomType == GeometryConstraint.POINT)
 								|| (geomType == GeometryConstraint.MULTI_POINT)) {
 							return OrbisGISIcon.LAYER_POINT;
+						} else if ((geomType == GeometryConstraint.GEOMETRY_COLLECTION)) {
+							return OrbisGISIcon.LAYER_MIXE;
 						} else {
 							throw new RuntimeException("Bug");
 						}

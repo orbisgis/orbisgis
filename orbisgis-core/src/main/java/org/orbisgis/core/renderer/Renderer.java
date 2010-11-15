@@ -609,7 +609,7 @@ public class Renderer {
 
 	}
 
-	private class DefaultRendererPermission implements RenderPermission {
+	private class DefaultRendererPermission implements RenderContext {
 
 		private Quadtree quadtree;
 		private Envelope drawExtent;

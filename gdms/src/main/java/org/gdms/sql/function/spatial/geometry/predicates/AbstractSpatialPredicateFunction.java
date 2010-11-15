@@ -36,6 +36,7 @@
  */
 package org.gdms.sql.function.spatial.geometry.predicates;
 
+import org.gdms.data.DataSourceFactory;
 import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
@@ -46,15 +47,16 @@ import org.gdms.sql.function.Function;
 import org.gdms.sql.function.FunctionException;
 
 public abstract class AbstractSpatialPredicateFunction implements Function {
-	final public Value evaluate(Value[] args) throws FunctionException {
+	final public Value evaluate(DataSourceFactory dsf, Value[] args)
+			throws FunctionException {
 		if ((args[0].isNull()) || (args[1].isNull())) {
 			return ValueFactory.createNullValue();
 		} else {
-			return evaluateResult(args);
+			return evaluateResult(dsf, args);
 		}
 	}
 
-	protected abstract Value evaluateResult(Value[] args)
+	protected abstract Value evaluateResult(DataSourceFactory dsf, Value[] args)
 			throws FunctionException;
 
 	public Type getType(Type[] types) {
@@ -65,7 +67,7 @@ public abstract class AbstractSpatialPredicateFunction implements Function {
 		return new Arguments[] { new Arguments(Argument.GEOMETRY,
 				Argument.GEOMETRY) };
 	}
-	
+
 	@Override
 	public Value getAggregateResult() {
 		return null;

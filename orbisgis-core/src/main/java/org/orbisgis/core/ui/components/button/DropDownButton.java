@@ -15,7 +15,7 @@ import javax.swing.event.ChangeListener;
 import javax.swing.event.PopupMenuEvent;
 import javax.swing.event.PopupMenuListener;
 
-import org.orbisgis.core.images.OrbisGISIcon;
+import org.orbisgis.core.ui.preferences.lookandfeel.OrbisGISIcon;
 
 public abstract class DropDownButton extends JToggleButton implements
 		ChangeListener, PopupMenuListener, ActionListener {

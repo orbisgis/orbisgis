@@ -37,6 +37,7 @@
  */
 package org.gdms.sql.function.spatial.geometry.convert;
 
+import org.gdms.data.DataSourceFactory;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.geometryUtils.GeometryConverter;
@@ -52,7 +53,7 @@ public class ST_ToMultiPoint extends AbstractSpatialFunction {
 		return "ST_ToMultiPoint";
 	}
 
-	public Value evaluate(final Value[] args) throws FunctionException {
+	public Value evaluate(DataSourceFactory dsf, Value[] args) throws FunctionException {
 		if (args[0].isNull()) {
 			return ValueFactory.createNullValue();
 		} else {

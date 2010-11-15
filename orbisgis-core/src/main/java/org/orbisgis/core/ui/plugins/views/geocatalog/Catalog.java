@@ -1,23 +1,18 @@
-/**
+/*
  * OrbisGIS is a GIS application dedicated to scientific spatial simulation.
  * This cross-platform GIS is developed at French IRSTV institute and is able to
  * manipulate and create vector and raster spatial information. OrbisGIS is
- * distributed under GPL 3 license. It is produced by the geo-informatic team of
+ * distributed under GPL 3 license. It is produced by the "Atelier SIG" team of
  * the IRSTV Institute <http://www.irstv.cnrs.fr/> CNRS FR 2488.
  *
  *
- *  Lead Erwan BOCHER, scientific researcher,
+ *  Team leader Erwan BOCHER, scientific researcher,
  *
- *  Developer lead : Pierre-Yves FADET, computer engineer.
  *
- *  User support lead : Gwendall Petit, geomatic engineer.
- *
- * Previous computer developer : Thomas LEDUC, scientific researcher, Fernando GONZALEZ
- * CORTES, computer engineer.
  *
  * Copyright (C) 2007 Erwan BOCHER, Fernando GONZALEZ CORTES, Thomas LEDUC
  *
- * Copyright (C) 2010 Erwan BOCHER, Fernando GONZALEZ CORTES, Thomas LEDUC
+ * Copyright (C) 2010 Erwan BOCHER,  Alexis GUEGANNO, Antoine GOURLAY, Adelin PIAU, Gwendall PETIT
  *
  * This file is part of OrbisGIS.
  *
@@ -33,15 +28,11 @@
  * You should have received a copy of the GNU General Public License along with
  * OrbisGIS. If not, see <http://www.gnu.org/licenses/>.
  *
- * For more information, please consult: <http://orbisgis.cerma.archi.fr/>
- * <http://sourcesup.cru.fr/projects/orbisgis/>
+ * For more information, please consult: <http://www.orbisgis.org/>
  *
  * or contact directly:
- * erwan.bocher _at_ ec-nantes.fr
- * Pierre-Yves.Fadet _at_ ec-nantes.fr
- * gwendall.petit _at_ ec-nantes.fr
- **/
-
+ * info _at_ orbisgis.org
+ */
 package org.orbisgis.core.ui.plugins.views.geocatalog;
 
 import java.awt.BorderLayout;
@@ -89,23 +80,26 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
 import org.gdms.source.SourceManager;
-import org.orbisgis.core.images.OrbisGISIcon;
 import org.orbisgis.core.sif.CRFlowLayout;
 import org.orbisgis.core.sif.UIFactory;
 import org.orbisgis.core.ui.components.jlist.OGList;
 import org.orbisgis.core.ui.components.sif.AskValue;
-import org.orbisgis.core.ui.components.text.JTextFilter;
+import org.orbisgis.core.ui.components.text.JButtonTextField;
 import org.orbisgis.core.ui.geocatalog.newSourceWizards.SourceRenderer;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchFrame;
-import org.orbisgis.core.ui.plugins.views.geocatalog.filters.AllFilterPlugIn;
-import org.orbisgis.core.ui.plugins.views.geocatalog.filters.AlphanumericPlugIn;
-import org.orbisgis.core.ui.plugins.views.geocatalog.filters.DBs;
-import org.orbisgis.core.ui.plugins.views.geocatalog.filters.Files;
+import org.orbisgis.core.ui.plugins.views.geocatalog.filters.AllExcludeSytemTableFilter;
+import org.orbisgis.core.ui.plugins.views.geocatalog.filters.AllFilter;
+import org.orbisgis.core.ui.plugins.views.geocatalog.filters.AlphanumericFilter;
+import org.orbisgis.core.ui.plugins.views.geocatalog.filters.DBsFilter;
+import org.orbisgis.core.ui.plugins.views.geocatalog.filters.FilesFilter;
+import org.orbisgis.core.ui.plugins.views.geocatalog.filters.GeoFilter;
 import org.orbisgis.core.ui.plugins.views.geocatalog.filters.GeocatalogFilterDecorator;
 import org.orbisgis.core.ui.plugins.views.geocatalog.filters.IFilter;
-import org.orbisgis.core.ui.plugins.views.geocatalog.filters.Raster;
-import org.orbisgis.core.ui.plugins.views.geocatalog.filters.Vectorial;
-import org.orbisgis.core.ui.plugins.views.geocatalog.filters.WMS;
+import org.orbisgis.core.ui.plugins.views.geocatalog.filters.RasterFilter;
+import org.orbisgis.core.ui.plugins.views.geocatalog.filters.TableSystemFilter;
+import org.orbisgis.core.ui.plugins.views.geocatalog.filters.VectorialFilter;
+import org.orbisgis.core.ui.plugins.views.geocatalog.filters.WMSFilter;
+import org.orbisgis.core.ui.preferences.lookandfeel.OrbisGISIcon;
 import org.orbisgis.utils.CollectionUtils;
 
 public class Catalog extends JPanel implements DragGestureListener,
@@ -124,7 +118,7 @@ public class Catalog extends JPanel implements DragGestureListener,
 
 	private DragSource dragSource;
 
-	private JTextFilter txtFilter;
+	private JButtonTextField txtFilter;
 
 	private JToggleButton btnToggleFilters;
 
@@ -214,8 +208,8 @@ public class Catalog extends JPanel implements DragGestureListener,
 		CRFlowLayout layout = new CRFlowLayout();
 		layout.setAlignment(CRFlowLayout.LEFT);
 		pnlTextFilter.setLayout(layout);
-		txtFilter = new JTextFilter();
-		txtFilter.addDocumentListener(new DocumentListener() {
+		txtFilter = new JButtonTextField();
+		txtFilter.getDocument().addDocumentListener(new DocumentListener() {
 
 			public void removeUpdate(DocumentEvent e) {
 				doFilter();
@@ -239,6 +233,8 @@ public class Catalog extends JPanel implements DragGestureListener,
 				pnlFilters.setVisible(!pnlFilters.isVisible());
 			}
 		});
+		btnToggleFilters.setBorderPainted(false);
+		btnToggleFilters.setContentAreaFilled(false);
 		pnlTextFilter.add(btnToggleFilters);
 		ret.add(pnlTextFilter, BorderLayout.NORTH);
 		JPanel pnlFilters = getFilterAndTagPanel();
@@ -292,36 +288,53 @@ public class Catalog extends JPanel implements DragGestureListener,
 		ret.setLayout(new BorderLayout());
 
 		GeocatalogFilterDecorator filter = new GeocatalogFilterDecorator(
-				"geocatalog.filters.All", "All", new AllFilterPlugIn());
-		listModel.getFilters().add(filter);
-
-		filter = new GeocatalogFilterDecorator("geocatalog.filters.Files",
-				"Files", new Files());
-		listModel.getFilters().add(filter);
-
-		filter = new GeocatalogFilterDecorator("geocatalog.filters.DBs",
-				"Databases", new DBs());
+				"geocatalog.filters.AllFilter", "All*", new AllFilter());
 		listModel.getFilters().add(filter);
 
 		filter = new GeocatalogFilterDecorator(
-				"geocatalog.filters.Alphanumeric", "Alphanumeric",
-				new AlphanumericPlugIn());
+				"geocatalog.filters.AllExcludeSystemTable", "All",
+				new AllExcludeSytemTableFilter());
 		listModel.getFilters().add(filter);
 
-		filter = new GeocatalogFilterDecorator("geocatalog.filters.WMS", "WMS",
-				new WMS());
+		filter = new GeocatalogFilterDecorator("geocatalog.filters.GeoFilter",
+				"Geo", new GeoFilter());
 		listModel.getFilters().add(filter);
 
-		filter = new GeocatalogFilterDecorator("geocatalog.filters.Raster",
-				"Raster", new Raster());
+		filter = new GeocatalogFilterDecorator(
+				"geocatalog.filters.FilesFilter", "Files", new FilesFilter());
 		listModel.getFilters().add(filter);
 
-		filter = new GeocatalogFilterDecorator("geocatalog.filters.Vectorial",
-				"Vectorial", new Vectorial());
+		filter = new GeocatalogFilterDecorator("geocatalog.filters.DBsFilter",
+				"Databases", new DBsFilter());
 		listModel.getFilters().add(filter);
 
+		filter = new GeocatalogFilterDecorator(
+				"geocatalog.filters.AlphanumericFilter", "Alphanumeric",
+				new AlphanumericFilter());
+		listModel.getFilters().add(filter);
+
+		filter = new GeocatalogFilterDecorator("geocatalog.filters.WMSFilter",
+				"WMS", new WMSFilter());
+		listModel.getFilters().add(filter);
+
+		filter = new GeocatalogFilterDecorator(
+				"geocatalog.filters.RasterFilter", "Raster", new RasterFilter());
+		listModel.getFilters().add(filter);
+
+		filter = new GeocatalogFilterDecorator(
+				"geocatalog.filters.VectorialFilter", "Vectorial",
+				new VectorialFilter());
+		listModel.getFilters().add(filter);
+
+		filter = new GeocatalogFilterDecorator(
+				"geocatalog.filters.SystemTableFilter", "System table",
+				new TableSystemFilter());
+		listModel.getFilters().add(filter);
+
+		// TODO maybe improve the default filter set.
+		// new GeocatalogFilterDecorator[1]
 		lstFilters = new JList(listModel.getFilters().toArray(
-				new GeocatalogFilterDecorator[0])/* getAvailableFilters() */);
+				new GeocatalogFilterDecorator[1])/* getAvailableFilters() */);
 		lstFilters.setCellRenderer(new DefaultListCellRenderer() {
 			@Override
 			public Component getListCellRendererComponent(JList list,
@@ -369,8 +382,12 @@ public class Catalog extends JPanel implements DragGestureListener,
 		JPanel pnlButtons = new JPanel();
 		JButton btnAdd = getTagManagementButton(OrbisGISIcon.ADD,
 				AC_BTN_ADD_TAG);
+		btnAdd.setBorderPainted(false);
+		btnAdd.setContentAreaFilled(false);
 		btnDelTag = getTagManagementButton(OrbisGISIcon.DEL, AC_BTN_DEL_TAG);
 		btnDelTag.setEnabled(false);
+		btnDelTag.setBorderPainted(false);
+		btnDelTag.setContentAreaFilled(false);
 		pnlButtons.add(btnAdd);
 		pnlButtons.add(btnDelTag);
 		ret.add(pnlButtons, BorderLayout.SOUTH);
@@ -544,6 +561,7 @@ public class Catalog extends JPanel implements DragGestureListener,
 		public TagFilter(String tag) {
 			this.tag = tag;
 		}
+
 		@Override
 		public boolean accepts(SourceManager sm, String sourceName) {
 			HashSet<String> sources = tagSources.get(tag);
@@ -561,6 +579,7 @@ public class Catalog extends JPanel implements DragGestureListener,
 		public AddTagActionListener(String tag) {
 			this.tag = tag;
 		}
+
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			Object[] sources = lstSources.getSelectedValues();
@@ -579,7 +598,8 @@ public class Catalog extends JPanel implements DragGestureListener,
 		public RemoveTagActionListener(String tag) {
 			this.tag = tag;
 		}
-        @Override
+
+		@Override
 		public void actionPerformed(ActionEvent e) {
 			Object[] sources = lstSources.getSelectedValues();
 			for (Object source : sources) {

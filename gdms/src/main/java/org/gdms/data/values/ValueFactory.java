@@ -52,7 +52,7 @@ import com.vividsolutions.jts.geom.Geometry;
 
 /**
  * Factory to instantiate Value instances from basic types
- *
+ * 
  */
 public class ValueFactory {
 
@@ -62,9 +62,9 @@ public class ValueFactory {
 
 	/**
 	 * Creates a Value instance that contains the specified int value
-	 *
+	 * 
 	 * @param n
-	 *
+	 * 
 	 */
 	public static Value createValue(int n) {
 		IntValue ret = new IntValue();
@@ -75,7 +75,7 @@ public class ValueFactory {
 
 	/**
 	 * Creates a Value instance that contains the specified long value
-	 *
+	 * 
 	 * @param l
 	 */
 	public static Value createValue(long l) {
@@ -87,7 +87,7 @@ public class ValueFactory {
 
 	/**
 	 * Creates a Value instance that contains the specified byte value
-	 *
+	 * 
 	 * @param b
 	 */
 	public static Value createValue(byte b) {
@@ -96,7 +96,7 @@ public class ValueFactory {
 
 	/**
 	 * Creates a Value instance that contains the specified short value
-	 *
+	 * 
 	 * @param l
 	 */
 	public static Value createValue(short l) {
@@ -105,7 +105,7 @@ public class ValueFactory {
 
 	/**
 	 * Creates a Value instance that contains the specified String value
-	 *
+	 * 
 	 * @param s
 	 */
 	public static Value createValue(String s) {
@@ -121,7 +121,7 @@ public class ValueFactory {
 
 	/**
 	 * Creates a Value instance that contains the specified float value
-	 *
+	 * 
 	 * @param f
 	 */
 	public static Value createValue(float f) {
@@ -133,7 +133,7 @@ public class ValueFactory {
 
 	/**
 	 * Creates a Value instance that contains the specified double value
-	 *
+	 * 
 	 * @param d
 	 */
 	public static Value createValue(double d) {
@@ -145,7 +145,7 @@ public class ValueFactory {
 
 	/**
 	 * Creates a Value instance that contains the specified date value
-	 *
+	 * 
 	 * @param d
 	 */
 	public static Value createValue(Date d) {
@@ -161,7 +161,7 @@ public class ValueFactory {
 
 	/**
 	 * Creates a Value instance that contains the specified time value
-	 *
+	 * 
 	 * @param t
 	 */
 	public static Value createValue(Time t) {
@@ -177,7 +177,7 @@ public class ValueFactory {
 
 	/**
 	 * Creates a TimestampValue object
-	 *
+	 * 
 	 * @param t
 	 */
 	public static Value createValue(Timestamp t) {
@@ -193,7 +193,7 @@ public class ValueFactory {
 
 	/**
 	 * Creates a Value instance that contains the specified boolean value
-	 *
+	 * 
 	 * @param b
 	 */
 	public static Value createValue(boolean b) {
@@ -205,7 +205,7 @@ public class ValueFactory {
 
 	/**
 	 * Creates a Value collection
-	 *
+	 * 
 	 * @param values
 	 */
 	public static ValueCollection createValue(Value[] values) {
@@ -217,7 +217,7 @@ public class ValueFactory {
 
 	/**
 	 * Creates a Value instance with the specified literal
-	 *
+	 * 
 	 * @param text
 	 *            Text containing the value
 	 * @param type
@@ -225,8 +225,8 @@ public class ValueFactory {
 	 *            SQLEngineConstants.STRING_LITERAL,
 	 *            SQLEngineConstants.INTEGER_LITERAL or
 	 *            SQLEngineConstants.FLOATING_POINT_LITERAL
-	 *
-	 *
+	 * 
+	 * 
 	 * @throws SemanticException
 	 *             If the literal type is not valid
 	 */
@@ -281,15 +281,15 @@ public class ValueFactory {
 	/**
 	 * Instantiates a value of the specified type containing the value with the
 	 * specified textual representation
-	 *
+	 * 
 	 * @param text
 	 *            Textual representation of the value to instantiate
 	 * @param type
 	 *            Type of the value. Must be one of the constants of the Type
 	 *            interface
-	 *
+	 * 
 	 * @return
-	 *
+	 * 
 	 * @throws ParseException
 	 *             If the textual representation cannot be converted to the
 	 *             specified type
@@ -398,7 +398,7 @@ public class ValueFactory {
 
 	/**
 	 * Creates a new null Value
-	 *
+	 * 
 	 * @return NullValue
 	 */
 	public static Value createNullValue() {
@@ -407,12 +407,12 @@ public class ValueFactory {
 
 	/**
 	 * Gets a Value with the value v1 plus v2
-	 *
+	 * 
 	 * @param v1
 	 *            first value
 	 * @param v2
 	 *            second value
-	 *
+	 * 
 	 * @return a numeric value with the operation
 	 */
 	static Value suma(NumericValue v1, NumericValue v2) {
@@ -477,12 +477,12 @@ public class ValueFactory {
 
 	/**
 	 * Gets the value of the operation v1 v2
-	 *
+	 * 
 	 * @param v1
 	 *            first value
 	 * @param v2
 	 *            second value
-	 *
+	 * 
 	 * @return a numeric value with the operation
 	 */
 	static Value producto(NumericValue v1, NumericValue v2) {
@@ -535,9 +535,9 @@ public class ValueFactory {
 
 	/**
 	 * Gets the inverse value (1/v) of the specified parameter.
-	 *
+	 * 
 	 * @param v
-	 *
+	 * 
 	 * @return
 	 */
 	static Value inversa(NumericValue v) {
@@ -550,10 +550,10 @@ public class ValueFactory {
 
 	/**
 	 * Creates a byte array value
-	 *
+	 * 
 	 * @param bytes
 	 *            bytes of the value
-	 *
+	 * 
 	 * @return
 	 */
 	public static Value createValue(byte[] bytes) {
@@ -564,7 +564,7 @@ public class ValueFactory {
 
 	/**
 	 * Creates a Value instance that contains the specified geometry value
-	 *
+	 * 
 	 * @param geom
 	 * @return
 	 */
@@ -574,11 +574,12 @@ public class ValueFactory {
 		} else {
 			return createNullValue();
 		}
-	}
+	}	
+
 
 	/**
 	 * Creates a Value instance that contains the specified raster value
-	 *
+	 * 
 	 * @param raster
 	 * @return
 	 */
@@ -593,12 +594,12 @@ public class ValueFactory {
 	/**
 	 * Creates a Value from the specified bytes. Those bytes must have been
 	 * obtained by a previous call to Value.getBytes
-	 *
+	 * 
 	 * @param valueType
 	 *            The type of the value. one of the constants in Type interface
 	 * @param buffer
 	 *            byte representation of the value
-	 *
+	 * 
 	 * @return
 	 */
 	public static Value createValue(int valueType, byte[] buffer) {
@@ -649,7 +650,7 @@ public class ValueFactory {
 	 * <p>
 	 * Note that this method only supports Rasters right now.
 	 * </p>
-	 *
+	 * 
 	 * @param valueType
 	 * @param buffer
 	 * @param byteProvider
