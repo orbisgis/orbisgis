@@ -38,18 +38,11 @@
 package org.orbisgis.core.ui.pluginSystem.workbench;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 
-import org.orbisgis.core.ApplicationInfo;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.ui.pluginSystem.PlugInManager;
 import org.orbisgis.core.ui.pluginSystem.WorkbenchProperties;
 import org.orbisgis.core.ui.windows.mainFrame.OrbisGISFrame;
-import org.orbisgis.core.ui.workspace.DefaultSwingWorkspace;
-import org.orbisgis.core.workspace.DefaultWorkspace;
-
-import com.vividsolutions.jts.util.Assert;
-import com.vividsolutions.jts.util.AssertionFailedException;
 
 //create WorkbenchContext
 public class OrbisWorkbench {
