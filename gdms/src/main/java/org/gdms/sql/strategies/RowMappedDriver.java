@@ -110,11 +110,13 @@ public class RowMappedDriver extends AbstractMetadataSQLDriver implements
 		this.map = map;
 	}
 
+        @Override
 	public Value getFieldValue(long rowIndex, int fieldId)
 			throws DriverException {
 		return source.getFieldValue(map.get((int) rowIndex), fieldId);
 	}
 
+        @Override
 	public long getRowCount() throws DriverException {
 		return map.size();
 	}
@@ -124,6 +126,6 @@ public class RowMappedDriver extends AbstractMetadataSQLDriver implements
         }
 
         public List<Integer> getIndexMap() {
-            return Collections.unmodifiableList(map);
+            return map;
         }
 }

@@ -39,7 +39,11 @@
 
 package org.gdms.data;
 
+import java.util.Collections;
 import java.util.List;
+import org.gdms.data.edition.EditionEvent;
+import org.gdms.data.edition.EditionListener;
+import org.gdms.data.edition.MultipleEditionEvent;
 import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
 import org.gdms.sql.strategies.RowMappedDriver;
@@ -73,6 +77,9 @@ public class FilterDataSourceDecorator extends AbstractDataSourceDecorator {
     public FilterDataSourceDecorator(DataSource internalDataSource, String filter) throws DriverException {
         super(internalDataSource);
         setFilter(filter);
+        if (internalDataSource.isEditable()) {
+                internalDataSource.addEditionListener(new FilterDataSourceDecoratorEditionListener());
+        }
     }
 
     @Override
@@ -160,6 +167,28 @@ public class FilterDataSourceDecorator extends AbstractDataSourceDecorator {
         if (mapDriver == null) {
             mapDriver = getMapDriver();
         }
-        return mapDriver.getIndexMap();
+        return Collections.unmodifiableList(mapDriver.getIndexMap());
+    }
+
+    private class FilterDataSourceDecoratorEditionListener implements EditionListener {
+
+                @Override
+                public void singleModification(EditionEvent e) {
+                        if (e.getType() == EditionEvent.DELETE) {
+                               mapDriver.getIndexMap().remove((Integer)(int)e.getRowIndex());
+                        } else {
+                              mapDriver = null;
+                        }
+                }
+
+                @Override
+                public void multipleModification(MultipleEditionEvent e) {
+                        for (int i = 0; i < e.getEvents().length; i++) {
+                                if (mapDriver == null) {
+                                        break;
+                                }
+                                singleModification(e.getEvents()[i]);
+                        }
+                }
     }
 }
