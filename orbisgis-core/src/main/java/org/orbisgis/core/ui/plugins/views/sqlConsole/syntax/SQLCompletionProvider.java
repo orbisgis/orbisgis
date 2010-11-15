@@ -355,6 +355,10 @@ public class SQLCompletionProvider extends DefaultCompletionProvider implements 
                 StringBuilder str = new StringBuilder();
                 str.append("Fields :<br>");
                 Metadata m = getMetadataForDataSource(s[i]);
+                if (m == null) {
+                    // cannot mount the datasource
+                    continue;
+                }
                 try {
                     for (int j = 0; j < m.getFieldCount(); j++) {
                         str.append(m.getFieldName(j));
