@@ -82,6 +82,7 @@ public class SQLCompletionProvider extends DefaultCompletionProvider implements 
     // Workaround to fix parser inconsistency
     private boolean idAdded;
     private String currentWord = "";
+    private String rootText;
 
     /**
      * Default constructor
@@ -90,6 +91,21 @@ public class SQLCompletionProvider extends DefaultCompletionProvider implements 
     public SQLCompletionProvider(JTextComponent textC) {
         this.textC = textC;
     }
+
+    /**
+     * This constructor allows the use of a fixed string like
+     * "SELECT * FROM toto WHERE" to filter the completion inside the
+     * JTextComponent. The content of the JTextComponent is added to rootText
+     * and then processed by the completion parser.
+     * @param textC the JTextComponent that needs auto-completion.
+     * @param rootText a fixed string to be append before the completion starts
+     */
+        public SQLCompletionProvider(JTextComponent textC, String rootText) {
+                this.textC = textC;
+                this.rootText = rootText;
+        }
+
+
 
     /**
      * Installs and enables auto-completion.
@@ -129,6 +145,10 @@ public class SQLCompletionProvider extends DefaultCompletionProvider implements 
         if (content.endsWith(";") || content.endsWith("*") || content.endsWith("  ")
                 || content.endsWith(")")) {
             auto.hideChildWindows();
+        }
+
+        if (rootText != null) {
+                content = rootText.trim() + ' ' + content;
         }
 
         doCompletion(content);
