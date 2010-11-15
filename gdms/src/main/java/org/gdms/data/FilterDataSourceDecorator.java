@@ -39,6 +39,7 @@
 
 package org.gdms.data;
 
+import java.util.List;
 import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
 import org.gdms.sql.strategies.RowMappedDriver;
@@ -134,5 +135,9 @@ public class FilterDataSourceDecorator extends AbstractDataSourceDecorator {
      */
     public void setFilter(String filter) {
         this.filter = filter;
+    }
+
+    public List<Integer> getIndexMap() {
+        return mapDriver.getIndexMap();
     }
 }

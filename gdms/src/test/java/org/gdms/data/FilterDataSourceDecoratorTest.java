@@ -40,6 +40,7 @@
 package org.gdms.data;
 
 import java.io.File;
+import java.util.List;
 import org.gdms.SourceTest;
 
 public class FilterDataSourceDecoratorTest extends SourceTest {
@@ -67,6 +68,14 @@ public class FilterDataSourceDecoratorTest extends SourceTest {
             assertTrue(decorator.getFieldValue(i, decorator.getFieldIndexByName("type")).toString().equals("cereals"));
             for (int j = 0; j < cols; j++) {
                 assertTrue(decorator.getFieldValue(i, j).doEquals(original.getFieldValue(o, j)));
+            }
+        }
+
+        List<Integer> map = decorator.getIndexMap();
+        for (int i = 0; i < map.size(); i++) {
+            assertTrue(decorator.getFieldValue(i, decorator.getFieldIndexByName("type")).toString().equals("cereals"));
+            for (int j = 0; j < cols; j++) {
+                assertTrue(decorator.getFieldValue(i, j).doEquals(original.getFieldValue(map.get(i), j)));
             }
         }
 
