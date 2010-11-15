@@ -13,7 +13,7 @@
  *
  * Copyright (C) 2007 Erwan BOCHER, Fernando GONZALEZ CORTES, Thomas LEDUC
  *
- * Copyright (C) 2010 Erwan BOCHER, Pierre-Yves FADET, Alexis GUEGANNO, Maxence LAURENT
+ * Copyright (C) 2010 Erwan BOCHER, Pierre-Yves FADET, Alexis GUEGANNO, Maxence LAURENT, Adelin PIAU
  *
  * This file is part of OrbisGIS.
  *
@@ -38,11 +38,15 @@
 package org.orbisgis.core.ui.pluginSystem.workbench;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 
+import org.orbisgis.core.ApplicationInfo;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.ui.pluginSystem.PlugInManager;
 import org.orbisgis.core.ui.pluginSystem.WorkbenchProperties;
 import org.orbisgis.core.ui.windows.mainFrame.OrbisGISFrame;
+import org.orbisgis.core.ui.workspace.DefaultSwingWorkspace;
+import org.orbisgis.core.workspace.DefaultWorkspace;
 
 import com.vividsolutions.jts.util.Assert;
 import com.vividsolutions.jts.util.AssertionFailedException;
@@ -75,15 +79,11 @@ public class OrbisWorkbench {
 
 	public void runWorkbench() {
 		File extensionsDirectory = new File("lib/ext");
-		boolean fileExists = true;
-		try {
-			Assert.isTrue((extensionsDirectory == null)
-					|| extensionsDirectory.isDirectory());
-		} catch (AssertionFailedException e) {
-			fileExists = false;
+		boolean fileExists = extensionsDirectory.exists() && extensionsDirectory.isDirectory();
+
+		if(!fileExists)
 			Services.getErrorManager().error(
-					"Plugins not loaded. No lib/ext folder");
-		}
+					"Plugins not loaded. No ext folder in "+extensionsDirectory.getParentFile().getAbsolutePath());
 
 		OrbisConfiguration setup = new OrbisConfiguration();
 		try {
