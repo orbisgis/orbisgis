@@ -108,6 +108,7 @@ import org.orbisgis.core.ui.components.text.JButtonTextField;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchContext;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchFrame;
 import org.orbisgis.core.ui.plugins.views.TableEditorPlugIn;
+import org.orbisgis.core.ui.plugins.views.sqlConsole.syntax.SQLCompletionProvider;
 import org.orbisgis.core.ui.preferences.lookandfeel.OrbisGISIcon;
 import org.orbisgis.core.ui.preferences.lookandfeel.UIColorPreferences;
 import org.orbisgis.core.ui.preferences.lookandfeel.images.IconLoader;
@@ -130,6 +131,7 @@ public class TableComponent extends JPanel implements WorkbenchFrame {
 	private javax.swing.JScrollPane jScrollPane = null;
 	private JTable table = null;
 	private JLabel nbRowsSelectedLabel = null;
+        private SQLCompletionProvider cpl;
 
 	// Model
 	private int selectedColumn = -1;
@@ -394,6 +396,8 @@ public class TableComponent extends JPanel implements WorkbenchFrame {
 
 	private JTextField getWhereTextField() {
 		final JButtonTextField txtFilter = new JButtonTextField(20);
+                cpl = new SQLCompletionProvider(txtFilter);
+                cpl.install();
 		txtFilter.setBackground(Color.WHITE);
 		txtFilter
 				.setText(I18N
@@ -510,6 +514,8 @@ public class TableComponent extends JPanel implements WorkbenchFrame {
 			this.dataSource = element.getDataSource();
 			this.dataSource.addEditionListener(listener);
 			this.dataSource.addMetadataEditionListener(listener);
+                        this.cpl.setRootText("SELECT * FROM " + dataSource.getName() + " WHERE");
+
 			tableModel = new DataSourceDataModel();
 			table.setModel(tableModel);
 			table.setBackground(DEFAULT_COLOR);
