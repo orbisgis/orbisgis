@@ -106,7 +106,6 @@ public class SQLCompletionProvider extends DefaultCompletionProvider implements 
         }
 
 
-
     /**
      * Installs and enables auto-completion.
      */
@@ -298,11 +297,16 @@ public class SQLCompletionProvider extends DefaultCompletionProvider implements 
             return;
         }
 
+        boolean tableWithFields = false;
+        if (e.currentToken.kind == SQLEngineConstants.WHERE || e.currentToken.kind == SQLEngineConstants.SELECT) {
+                tableWithFields = true;
+        }
+
         HashSet words = new HashSet();
         for (int i = 0; i < e.expectedTokenSequences.length; i++) {
             if (e.expectedTokenSequences[i].length > 0) {
                 int token = e.expectedTokenSequences[i][e.expectedTokenSequences[i].length - 1];
-                words.addAll(getCompletions(token, e.tokenImage, e.currentToken.kind));
+                words.addAll(getCompletions(token, e.tokenImage, e.currentToken.kind, tableWithFields));
             }
         }
         addCompletions(new ArrayList(words));
@@ -402,7 +406,7 @@ public class SQLCompletionProvider extends DefaultCompletionProvider implements 
      * @param tokenImage reference to the list of token names
      * @return the Completion items to add
      */
-    private ArrayList getCompletions(int token, String[] tokenImage, int currentToken) {
+    private ArrayList getCompletions(int token, String[] tokenImage, int currentToken, boolean tablesWithFields) {
         ArrayList a = new ArrayList();
         // secial (useless) tokens
         if (0 <= token && token <= 11) {
@@ -430,7 +434,7 @@ public class SQLCompletionProvider extends DefaultCompletionProvider implements 
                     // adding function completions
                     a.addAll(getFunctionCompletions());
                     // adding sources completions
-                    a.addAll(getSourceNamesCompletion(false));
+                    a.addAll(getSourceNamesCompletion(tablesWithFields));
                 }
             }
         } else {
@@ -517,4 +521,18 @@ public class SQLCompletionProvider extends DefaultCompletionProvider implements 
         }
         return content.substring(start, content.length());
     }
+
+        /**
+         * @return the rootText
+         */
+        public String getRootText() {
+                return rootText;
+        }
+
+        /**
+         * @param rootText the rootText to set
+         */
+        public void setRootText(String rootText) {
+                this.rootText = rootText;
+        }
 }
