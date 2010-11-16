@@ -59,27 +59,27 @@ import com.vividsolutions.jts.geom.Polygon;
 public class PropertiesFunctionTest extends FunctionTest {
 
 	public void testArea() throws Exception {
-		double d = testSpatialFunction(new ST_Area(), g1, 1).getAsDouble();
-		assertTrue(g1.getArea() == d);
+		double d = testSpatialFunction(new ST_Area(), JTSMultiPolygon2D, 1).getAsDouble();
+		assertTrue(JTSMultiPolygon2D.getArea() == d);
 	}
 
 	public void testDimension() throws Exception {
-		int d = testSpatialFunction(new ST_Dimension(), g1, 1).getAsInt();
-		assertTrue(g1.getDimension() == d);
-		d = testSpatialFunction(new ST_Dimension(), g2, 1).getAsInt();
-		assertTrue(g2.getDimension() == d);
-		d = testSpatialFunction(new ST_Dimension(), g3, 1).getAsInt();
-		assertTrue(g3.getDimension() == d);
+		int d = testSpatialFunction(new ST_Dimension(), JTSMultiPolygon2D, 1).getAsInt();
+		assertTrue(JTSMultiPolygon2D.getDimension() == d);
+		d = testSpatialFunction(new ST_Dimension(), JTSMultiLineString2D, 1).getAsInt();
+		assertTrue(JTSMultiLineString2D.getDimension() == d);
+		d = testSpatialFunction(new ST_Dimension(), JTSMultiPoint2D, 1).getAsInt();
+		assertTrue(JTSMultiPoint2D.getDimension() == d);
 	}
 
 	public void testGeometryN() throws Exception {
-		int d = testSpatialFunction(new ST_GeometryN(), g1, 1).getAsInt();
-		assertTrue(g1.getNumGeometries() == d);
+		int d = testSpatialFunction(new ST_GeometryN(), JTSMultiPolygon2D, 1).getAsInt();
+		assertTrue(JTSMultiPolygon2D.getNumGeometries() == d);
 	}
 
 	public void testGeometryType() throws Exception {
-		String v = testSpatialFunction(new ST_GeometryType(), g1, 1).getAsString();
-		assertTrue(g1.getGeometryType().equals(v));
+		String v = testSpatialFunction(new ST_GeometryType(), JTSMultiPolygon2D, 1).getAsString();
+		assertTrue(JTSMultiPolygon2D.getGeometryType().equals(v));
 	}
 
 	public void testGetZValue() throws Exception {
@@ -120,32 +120,32 @@ public class PropertiesFunctionTest extends FunctionTest {
 	}
 
 	public void testIsSimple() throws Exception {
-		boolean v = testSpatialFunction(new ST_IsSimple(), g2, 1).getAsBoolean();
-		assertTrue(v == g2.isSimple());
+		boolean v = testSpatialFunction(new ST_IsSimple(), JTSMultiLineString2D, 1).getAsBoolean();
+		assertTrue(v == JTSMultiLineString2D.isSimple());
 	}
 
 	public void testIsValid() throws Exception {
-		boolean v = testSpatialFunction(new ST_IsValid(), g2, 1).getAsBoolean();
-		assertTrue(v == g2.isValid());
+		boolean v = testSpatialFunction(new ST_IsValid(), JTSMultiLineString2D, 1).getAsBoolean();
+		assertTrue(v == JTSMultiLineString2D.isValid());
 	}
 
 	public void testLength() throws Exception {
-		double v = testSpatialFunction(new ST_Length(), g2, 1).getAsDouble();
-		assertTrue(v == g2.getLength());
+		double v = testSpatialFunction(new ST_Length(), JTSMultiLineString2D, 1).getAsDouble();
+		assertTrue(v == JTSMultiLineString2D.getLength());
 	}
 
 	public void testNumPoints() throws Exception {
-		int v = testSpatialFunction(new ST_NumPoints(), g2, 1).getAsInt();
-		assertTrue(v == g2.getNumPoints());
+		int v = testSpatialFunction(new ST_NumPoints(), JTSMultiLineString2D, 1).getAsInt();
+		assertTrue(v == JTSMultiLineString2D.getNumPoints());
 	}
 
 	public void testNumInteriorRing() throws Exception {
-		int v = testSpatialFunction(new ST_NumInteriorRing(), g4, 1).getAsInt();
-		Polygon p = (Polygon) g4;
+		int v = testSpatialFunction(new ST_NumInteriorRing(), JTSPolygon2D, 1).getAsInt();
+		Polygon p = (Polygon) JTSPolygon2D;
 		assertTrue(p.getNumInteriorRing() == v);
 
 		// Test with geometry collections
-		v = testSpatialFunction(new ST_NumInteriorRing(), geomCollection, 1)
+		v = testSpatialFunction(new ST_NumInteriorRing(), JTSGeometryCollection, 1)
 				.getAsInt();
 		assertTrue(v == 4);
 	}

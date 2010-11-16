@@ -80,6 +80,7 @@ import org.gdms.sql.function.spatial.geometry.affineTransformation.ST_Rotate;
 import org.gdms.sql.function.spatial.geometry.affineTransformation.ST_Scale;
 import org.gdms.sql.function.spatial.geometry.convert.ST_Centroid;
 import org.gdms.sql.function.spatial.geometry.convert.ST_EndPoint;
+import org.gdms.sql.function.spatial.geometry.convert.ST_Force_2D;
 import org.gdms.sql.function.spatial.geometry.convert.ST_Force_3D;
 import org.gdms.sql.function.spatial.geometry.convert.ST_InteriorPoint;
 import org.gdms.sql.function.spatial.geometry.convert.ST_PointN;
@@ -295,6 +296,7 @@ public class FunctionManager {
 		addFunction(ST_PointN.class);
 		addFunction(ST_MeanSpacing.class);
 		addFunction(ST_Transform.class);
+		addFunction(ST_Force_2D.class);
 	}
 
 	public static void addFunctionManagerListener(
