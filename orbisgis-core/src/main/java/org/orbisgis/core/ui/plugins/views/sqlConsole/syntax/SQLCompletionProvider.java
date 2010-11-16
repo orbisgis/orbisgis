@@ -515,6 +515,9 @@ public class SQLCompletionProvider extends DefaultCompletionProvider implements 
                 try {
                         // get all text to caret
                         content = textC.getDocument().getText(0, textC.getCaretPosition()).replace('\n', ' ');
+                        if (rootText != null) {
+                                content = rootText.trim() + ' ' + content;
+                        }
                 } catch (BadLocationException ex) {
                         // never happens !
                         return "";
@@ -563,6 +566,9 @@ public class SQLCompletionProvider extends DefaultCompletionProvider implements 
                 try {
                         // get all text to caret
                         content = textC.getDocument().getText(0, textC.getCaretPosition()).replace('\n', ' ');
+                        if (rootText != null) {
+                                content = rootText.trim() + ' ' + content;
+                        }
                 } catch (BadLocationException ex) {
                         // never happens !
                         return false;
