@@ -406,7 +406,7 @@ public class TableComponent extends JPanel implements WorkbenchFrame {
 
 			@Override
 			public void keyPressed(KeyEvent e) {
-				if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+				if ((e.getKeyCode() == KeyEvent.VK_ENTER) && e.isControlDown()) {
 					final String whereText = txtFilter.getText();
 					if (whereText.length() == 0) {
 						if (selectedRowsCount > 0) {
