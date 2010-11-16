@@ -153,13 +153,10 @@ public class FilterDataSourceDecoratorTest extends SourceTest {
 				+ "the_geom" + ")";
 		filterDataSourceDecorator.setFilter(filter);
 		
+		filterDataSourceDecorator.open();
 		long filterCount = filterDataSourceDecorator.getRowCount();
-		
+		filterDataSourceDecorator.close();
 		assertTrue(filterCount==waintingResult);
 		
-		
-		
-		
-
 	}
 }
