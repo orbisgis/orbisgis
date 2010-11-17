@@ -192,6 +192,7 @@ public final class FeatureTypeStyle implements SymbolizerNode {
 		}
 
 		Collections.sort(layerSymbolizers);
+		Collections.sort(overlaySymbolizers);
 	}
 
 	public void resetSymbolizerLevels() {

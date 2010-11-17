@@ -186,7 +186,6 @@ public class Renderer {
 						boolean newDataSource = filteredDs != featureInExtent;
 
 						if (newDataSource) {
-							System.out.println ("New data source:!");
 							filteredDs.open();
 						}
 
@@ -237,6 +236,9 @@ public class Renderer {
 				// How many object to process ?
 				// - e.g. 1 feature with 3 effective symbolizers is count as 3 objects
 				long total = 0;
+
+				symbs.addAll(overlays);
+
 				for (Symbolizer s : symbs) {
 					total += rulesFid.get(s.getRule()).size();
 				}

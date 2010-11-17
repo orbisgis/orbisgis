@@ -27,7 +27,7 @@ public final class TextSymbolizer extends VectorSymbolizer {
 	public TextSymbolizer() {
 		super();
 		this.name = "Label";
-		label = new PointLabel();
+		setLabel(new PointLabel());
 		uom = Uom.MM;
 	}
 
@@ -57,8 +57,6 @@ public final class TextSymbolizer extends VectorSymbolizer {
 
 		if (shapes != null) {
 			for (Shape shp : shapes) {
-
-
 				if (shp != null && label != null) {
 					label.draw(g2, shp, feat, selected, mt);
 				}
@@ -75,7 +73,9 @@ public final class TextSymbolizer extends VectorSymbolizer {
 		this.setJAXBProperty(s);
 
 
-		s.setUnitOfMeasure(this.getUom().toURN());
+		if (this.getUom() != null){
+			s.setUnitOfMeasure(this.getUom().toURN());
+		}
 
 		if (transform != null) {
 			s.setTransform(transform.getJAXBType());
