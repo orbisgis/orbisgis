@@ -180,6 +180,8 @@ public abstract class LegendUIComponent extends LegendUIAbstractPanel {
 			current = current.parent;
 			System.out.println("  -> Current : " + current);
 		}
+		System.out.println("  Parent is " + current);
+
 		return current;
 	}
 
@@ -235,7 +237,9 @@ public abstract class LegendUIComponent extends LegendUIAbstractPanel {
 	 * @param child
 	 */
 	private void registerChild(LegendUIComponent child) {
-		this.children.add(child);
+		if (!children.contains(child)) {
+			this.children.add(child);
+		}
 	}
 
 	public void addChild(LegendUIComponent child) {

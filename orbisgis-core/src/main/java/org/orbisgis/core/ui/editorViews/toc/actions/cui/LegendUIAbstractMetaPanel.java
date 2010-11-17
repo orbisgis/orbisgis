@@ -168,16 +168,22 @@ public abstract class LegendUIAbstractMetaPanel extends LegendUIComponent {
 					classes, classes[currentComp]);
 
 			if (newClass != null) {
+				// First detach old-child
+				comps[currentComp].makeOrphan();
+
+				// then be sure the new child is OK
 				currentComp = getClassIndex(newClass.mClass);
 
 				if (comps[currentComp] == null){
+					// If child doesn't exists, request it !
 					comps[currentComp] = getCompForClass(newClass.mClass);
 				}
-				// Update tree
-				comps[currentComp].makeOrphan();
+				// Insert the new one in the tree
 				metaPanel.addChild(comps[currentComp]);
 
+				// Update SE Model
 				switchTo(comps[currentComp]);
+				// And finally update the UI Structure
 				controller.structureChanged(comps[currentComp]);
 
 			}
