@@ -48,7 +48,6 @@ import java.awt.image.DirectColorModel;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
 import java.util.logging.Level;
@@ -57,6 +56,7 @@ import javax.imageio.ImageIO;
 
 import org.apache.log4j.Logger;
 import org.gdms.data.SpatialDataSourceDecorator;
+import org.gdms.data.feature.Feature;
 import org.gdms.driver.DriverException;
 
 
@@ -80,6 +80,7 @@ import com.vividsolutions.jts.index.quadtree.Quadtree;
 import java.util.ArrayList;
 import java.util.HashMap;
 import org.gdms.data.FilterDataSourceDecorator;
+import org.gdms.data.metadata.Metadata;
 import org.orbisgis.core.renderer.se.FeatureTypeStyle;
 import org.orbisgis.core.renderer.se.Rule;
 import org.orbisgis.core.renderer.se.Symbolizer;
@@ -96,19 +97,19 @@ public class Renderer {
 	 * @return
 	 * @throws DriverException
 	 */
-	public FilterDataSourceDecorator featureInExtent(MapTransform mt, SpatialDataSourceDecorator sds, IProgressMonitor pm) throws DriverException {
+	public FilterDataSourceDecorator featureInExtent(MapTransform mt,
+			SpatialDataSourceDecorator sds,
+			IProgressMonitor pm) throws DriverException {
 		Envelope extent = mt.getAdjustedExtent();
 
 		return new FilterDataSourceDecorator(sds, "ST_Intersects(ST_GeomFromText('POLYGON(("
-								+ extent.getMinX() + " " + extent.getMinY() + ","
-								+ extent.getMinX() + " " + extent.getMaxY() + ","
-								+ extent.getMaxX() + " " + extent.getMaxY() + ","
-								+ extent.getMaxX() + " " + extent.getMinY() + ","
-								+ extent.getMinX() + " " + extent.getMinY() + "))'), "
-								+ sds.getSpatialFieldName() + ")"
-				);
+				+ extent.getMinX() + " " + extent.getMinY() + ","
+				+ extent.getMinX() + " " + extent.getMaxY() + ","
+				+ extent.getMaxX() + " " + extent.getMaxY() + ","
+				+ extent.getMaxX() + " " + extent.getMinY() + ","
+				+ extent.getMinX() + " " + extent.getMinY() + "))'), "
+				+ sds.getSpatialFieldName() + ")");
 	}
-
 
 	/**
 	 * Draws the content of the Vector Layer
@@ -128,13 +129,17 @@ public class Renderer {
 	 * @return the number of rendered objects
 	 */
 	public int drawVector(Graphics2D g2,
-			MapTransform mt, ILayer layer, IProgressMonitor pm) {
+			MapTransform mt, ILayer layer, IProgressMonitor pm) throws DriverException {
 
 		int layerCount = 0;
 		try {
 			long tV1 = System.currentTimeMillis();
 
 			SpatialDataSourceDecorator sds = layer.getDataSource();
+			sds.open();
+
+			Metadata metadata = sds.getMetadata();
+
 			// Extract into drawSeLayer method !
 			FeatureTypeStyle style = layer.getFeatureTypeStyle();
 
@@ -156,83 +161,53 @@ public class Renderer {
 			FilterDataSourceDecorator featureInExtent = featureInExtent(mt, sds, pm);
 
 			if (featureInExtent != null) {
-				HashSet<Long> allFid = new HashSet<Long>();
-				HashSet<Long> elseFid = new HashSet<Long>();
-
 				featureInExtent.open();
 
-				/*
-				 * Extract features id
-				 * Hash sets contain features in current extent
-				 * elseFid will be used for feature which doesn't match any rule
-				 */
-				for (int i = 0; i < featureInExtent.getRowCount(); i++) {
-					Long index = featureInExtent.getOriginalIndex(i);
-					allFid.add(index);
-					elseFid.add(index);
-				}
+				// Assign filtered data source to each rule
+				HashMap<Rule, FilterDataSourceDecorator> rulesDs = new HashMap<Rule, FilterDataSourceDecorator>();
 
-				/*
-				 * Assign features id to rules
-				 */
-				HashMap<Rule, HashSet<Long>> rulesFid = new HashMap<Rule, HashSet<Long>>();
-
+				String elseWhere = "";
 				// Foreach rList without ElseFilter
 				for (Rule r : rList) {
 
-					try {
-						FilterDataSourceDecorator filteredDs = r.getFilteredDataSource(featureInExtent);
+					FilterDataSourceDecorator filteredDs = r.getFilteredDataSource(featureInExtent);
 
-						boolean newDataSource = filteredDs != featureInExtent;
+					if (filteredDs != featureInExtent) {
+						filteredDs.open();
+					}
 
-						if (newDataSource) {
-							filteredDs.open();
+					ArrayList<Integer> fids = new ArrayList<Integer>();
+					fids.addAll(filteredDs.getIndexMap());
+
+					rulesDs.put(r, filteredDs);
+
+					if (r.getWhere() != null) {
+						if (elseWhere.isEmpty()) {
+							elseWhere += "not (" + r.getWhere() + ")";
+						} else {
+							elseWhere += "and not(" + r.getWhere() + ")";
 						}
-
-						HashSet<Long> fids = new HashSet<Long>();
-
-						for (int i = 0; i < filteredDs.getRowCount(); i++) {
-							Long index = filteredDs.getOriginalIndex(i);
-							fids.add(index);
-							/* Every feature that match a rule is removed from elsefid set*/
-							elseFid.remove(index);
-						}
-
-						if (newDataSource) {
-							filteredDs.close();
-						}
-
-						rulesFid.put(r, fids);
-					}catch(Exception ex){
-						java.util.logging.Logger.getLogger(Renderer.class.getName()).log(Level.SEVERE, "Unable to process rule " + r.getName(), ex);
+					} else {
+						elseWhere = "1 = 0";
 					}
 				}
 
-				featureInExtent.close();
 
-				// ElseFilter
-				// Assign features which doesn't match any rule to FallbackRules
+				FilterDataSourceDecorator elseDs = new FilterDataSourceDecorator(featureInExtent, elseWhere);
+
 				for (Rule elseR : fRList) {
-					rulesFid.put(elseR, elseFid);
+					rulesDs.put(elseR, elseDs);
 				}
 
-				HashSet<Long> selected = new HashSet<Long>();
-				int[] selection = layer.getSelection();
-
-				/* Populate selected fid with only fid within extent */
-				for (int f_i = 0; f_i < selection.length; f_i++) {
-					if (allFid.contains((long)selection[f_i])) {
-						selected.add((long)selection[f_i]);
-					}
+				HashSet<Integer> selected = new HashSet<Integer>();
+				for (long sFid : layer.getSelection()){
+					selected.add((int)sFid);
 				}
 
 				long tV2 = System.currentTimeMillis();
 				System.out.println("Filtering done in " + (tV2 - tV1) + "[ms]");
 
-				//
 				// And now, features will be rendered
-				//
-
 				// How many object to process ?
 				// - e.g. 1 feature with 3 effective symbolizers is count as 3 objects
 				long total = 0;
@@ -240,31 +215,51 @@ public class Renderer {
 				symbs.addAll(overlays);
 
 				for (Symbolizer s : symbs) {
-					total += rulesFid.get(s.getRule()).size();
+					total += rulesDs.get(s.getRule()).getRowCount();
 				}
+				long tLoad = 0;
 
 				for (Symbolizer s : symbs) {
 					pm.startTask("Drawing " + layer.getName() + " (" + s.getName() + ")");
-					Iterator<Long> featIt = rulesFid.get(s.getRule()).iterator();
 
-					Long fid = 0l;
+					FilterDataSourceDecorator fds = rulesDs.get(s.getRule());
+
+					int fid = 0;
 
 					long tf1 = System.currentTimeMillis();
-					while (featIt.hasNext()) {
+
+					for (fid = 0; fid < fds.getRowCount(); fid++) {
 						if (layerCount % 1000 == 0) {
 							if (pm.isCancelled()) {
 								return layerCount;
 							}
 						}
 
-						fid = featIt.next();
-						s.draw(g2, sds.getFeature(fid), selected.contains(fid), mt);
+						long tBefore = System.currentTimeMillis();
+						Feature feat = new Feature(metadata);
+						feat.setValues(fds.getRow(fid));
+
+						long tAfter = System.currentTimeMillis();
+						tLoad += tAfter - tBefore;
+
+						s.draw(g2, feat, selected.contains((int) fds.getOriginalIndex(fid)), mt);
+
 						pm.progressTo((int) (100 * ++layerCount / total));
 					}
 					long tf2 = System.currentTimeMillis();
-					System.out.println("Level done in " + (tf2 - tf1) + "[ms]");
+					System.out.println("Level done in " + (tf2 - tf1) + "[ms]  (data access: " + tLoad + " [ms])");
 					pm.endTask();
 				}
+
+				for (Rule r : rulesDs.keySet()) {
+					FilterDataSourceDecorator fds = rulesDs.get(r);
+					if (fds.isOpen() && fds != featureInExtent) {
+						fds.close();
+					}
+				}
+
+				featureInExtent.close();
+
 				long tV3 = System.currentTimeMillis();
 				System.out.println("Rendering done :" + (tV3 - tV2) + "[ms] (" + layerCount + "objects)");
 			}

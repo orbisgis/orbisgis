@@ -286,7 +286,7 @@ public abstract class LegendUIRecodePanel extends LegendUIComponent
 		private int index;
 
 		public KeyInput(int index, String name, String initialValue, int size) {
-			super(name, initialValue, size);
+			super(name, initialValue, size, false);
 			this.index = index;
 		}
 

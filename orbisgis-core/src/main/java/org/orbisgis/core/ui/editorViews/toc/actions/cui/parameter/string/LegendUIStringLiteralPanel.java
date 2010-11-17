@@ -64,7 +64,7 @@ public abstract class LegendUIStringLiteralPanel extends LegendUIComponent
 		this.string = s;
 
 		//label = new JLabel(name + ": ");
-		input = new TextInput(name, string.getValue(null), 20) {
+		input = new TextInput(name, string.getValue(null), 20, false) {
 
 			@Override
 			protected void valueChanged(String s) {

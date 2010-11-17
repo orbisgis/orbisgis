@@ -81,7 +81,6 @@ public final class TextSymbolizer extends VectorSymbolizer {
 			s.setTransform(transform.getJAXBType());
 		}
 
-
 		if (perpendicularOffset != null) {
 			s.setPerpendicularOffset(perpendicularOffset.getJAXBParameterValueType());
 		}

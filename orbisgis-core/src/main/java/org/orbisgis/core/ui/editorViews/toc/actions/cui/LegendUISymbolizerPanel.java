@@ -80,7 +80,7 @@ public class LegendUISymbolizerPanel extends LegendUIComponent {
 
 		this.symbolizer = symb;
 
-		nameInput = new TextInput("Name", symbolizer.getName(), 30) {
+		nameInput = new TextInput("Name", symbolizer.getName(), 30, false) {
 
 			@Override
 			protected void valueChanged(String s) {

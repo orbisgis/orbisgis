@@ -121,6 +121,8 @@ public final class LegendUIMainPanel extends JPanel  implements UIPanel  {
 		tocPanel.refresh(ruleID);
 
 		this.editor.removeAll();
+
+		//rules.updateSelection(ruleID);
 		if (ruleID >= 0){
 			LegendUIRulePanel rPanel = controller.getRulePanel(ruleID);
 			this.editor.add(rPanel);

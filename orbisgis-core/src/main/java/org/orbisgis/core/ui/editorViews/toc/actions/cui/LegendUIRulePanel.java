@@ -54,7 +54,7 @@ public class LegendUIRulePanel extends JPanel {
 			}
 		};
 
-		whereInput = new TextInput("Where", rule.getWhere(), 40) {
+		whereInput = new TextInput("Where", rule.getWhere(), 40, true) {
 			@Override
 			protected void valueChanged(String s) {
 				rule.setWhere(s);
@@ -62,7 +62,7 @@ public class LegendUIRulePanel extends JPanel {
 		};
 		whereInput.setEnabled(!rule.isFallbackRule());
 
-		nameInput = new TextInput("Name", rule.getName(), 40) {
+		nameInput = new TextInput("Name", rule.getName(), 40, false) {
 			@Override
 			protected void valueChanged(String s) {
 				rule.setName(s);

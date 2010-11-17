@@ -55,15 +55,17 @@ public abstract class TextInput extends JPanel {
 
 	private JTextField input;
 	private String initial;
+	private boolean allowBlank;
 
 	/**
 	 *
 	 * @param min
 	 * @param max
 	 */
-	public TextInput(String name, String initialValue, int size) {
+	public TextInput(String name, String initialValue, int size, boolean allowBlank) {
 		super();
 		this.initial = initialValue;
+		this.allowBlank = allowBlank;
 
 		this.add(new JLabel(name + ":"));
 
@@ -116,7 +118,8 @@ public abstract class TextInput extends JPanel {
 
 	private void updateValue(boolean resetOnError) {
 		String inputText = input.getText();
-		if (resetOnError && (inputText == null || inputText.equalsIgnoreCase(""))){
+		if (resetOnError && (inputText == null || 
+				(!allowBlank && inputText.equalsIgnoreCase("")))){
 			inputText = this.initial;
 			this.input.setText(initial);
 		}

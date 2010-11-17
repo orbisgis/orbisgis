@@ -5,12 +5,14 @@
 package org.orbisgis.core.renderer.se;
 
 import com.vividsolutions.jts.geom.Geometry;
+
 import org.gdms.data.DataSourceCreationException;
 import org.gdms.data.FilterDataSourceDecorator;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.driverManager.DriverLoadException;
 import org.gdms.sql.parser.ParseException;
 import org.gdms.sql.strategies.SemanticException;
+
 import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.persistance.se.DomainConstraintsType;
@@ -34,7 +36,7 @@ public final class Rule implements SymbolizerNode {
 	private boolean fallbackRule = false;
 	private Double minScaleDenom = null;
 	private Double maxScaleDenom = null;
-
+	private CompositeSymbolizer symbolizer;
 
 
 	public Rule() {
@@ -160,7 +162,6 @@ public final class Rule implements SymbolizerNode {
 
 		return rt;
 	}
-	private CompositeSymbolizer symbolizer;
 
 	@Override
 	public Uom getUom() {

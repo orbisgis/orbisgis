@@ -64,7 +64,7 @@ public abstract class LegendUIAlgebricalPanel extends LegendUIComponent implemen
 
 		System.out.println ("RealParameter = " + this.r);
 
-		input = new TextInput("alg.", realParameter.toString(), 40) {
+		input = new TextInput("alg.", realParameter.toString(), 40, true) {
 
 			@Override
 			protected void valueChanged(String s) {

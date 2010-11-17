@@ -54,6 +54,8 @@ import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.ListSelectionModel;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import org.orbisgis.core.ui.preferences.lookandfeel.OrbisGISIcon;
 import org.orbisgis.core.renderer.se.Rule;
 
@@ -93,6 +95,35 @@ public class LegendUIRuleListPanel extends JPanel implements LegendUIComponentLi
 
 		list = new JList(model);
 		list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		list.addListSelectionListener(new ListSelectionListener() {
+
+			@Override
+			public void valueChanged(ListSelectionEvent e) {
+				int index = list.getSelectedIndex();
+
+				btnUp.setEnabled(false);
+				btnDown.setEnabled(false);
+				btnRm.setEnabled(false);
+
+				if (index > 0) {
+					// First, update button status
+					if (list.getModel().getSize() > 2 && index > 0){ //dont delete the last rule
+						btnRm.setEnabled(true);
+					}
+
+					if (index > 1) {
+						// Turn the move down button on
+						btnUp.setEnabled(true);
+					}
+					if (index > 0 && index < list.getModel().getSize() - 1) {
+						btnDown.setEnabled(true);
+					}
+
+				}
+
+				controller.editRule(index - 1);
+			}
+		});
 
 		this.add(list, BorderLayout.NORTH);
 		this.setBorder(BorderFactory.createTitledBorder("Rules"));
@@ -118,9 +149,9 @@ public class LegendUIRuleListPanel extends JPanel implements LegendUIComponentLi
 				if (controller.moveRuleUp(i)){
 					// reflect the new order in the UI
 					DefaultListModel model = (DefaultListModel) list.getModel();
-					Rule r = (Rule) model.remove(i);
-					model.add(i - 1, r);
-					list.setSelectedIndex(i - 1);
+					Rule r = (Rule) model.remove(i+1);
+					model.add(i, r);
+					list.setSelectedIndex(i);
 				}
 			}
 		});
@@ -148,9 +179,9 @@ public class LegendUIRuleListPanel extends JPanel implements LegendUIComponentLi
 
 				DefaultListModel model = (DefaultListModel) list.getModel();
 				model.addElement(r);
-				int index = model.getSize() -2;
+				int index = model.getSize() - 2;
 
-				list.setSelectedIndex(index);
+				list.setSelectedIndex(index + 2);
 
 				controller.getRulePanel(index).register(LegendUIRuleListPanel.this);
 				controller.editRule(index);
@@ -161,11 +192,12 @@ public class LegendUIRuleListPanel extends JPanel implements LegendUIComponentLi
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				int confirmation = JOptionPane.showConfirmDialog(controller.getMainPanel(), "Sur ?", "Sur ?", JOptionPane.YES_NO_OPTION);
+				int confirmation = JOptionPane.showConfirmDialog(controller.getMainPanel(),
+						"Sur ?", "Sur ?", JOptionPane.YES_NO_OPTION);
 
 				if (confirmation == 0) {
-					int i = list.getSelectedIndex() -1;
-					if (controller.deleteRule(i)){
+					int i = list.getSelectedIndex();
+					if (controller.deleteRule(i-1)){
 						DefaultListModel model = (DefaultListModel) list.getModel();
 						model.remove(i);
 						list.setSelectedIndex(-1);
@@ -193,33 +225,8 @@ public class LegendUIRuleListPanel extends JPanel implements LegendUIComponentLi
 			public void mouseClicked(MouseEvent e){
 				int index = list.locationToIndex(e.getPoint());
 				list.setSelectedIndex(index);
-
-
-				btnUp.setEnabled(false);
-				btnDown.setEnabled(false);
-				btnRm.setEnabled(false);
-
-				if (index > 0) {
-					// First, update button status
-					if (list.getModel().getSize() > 2){ //dont delete the last rule
-						btnRm.setEnabled(true);
-					}
-
-					if (index > 1) {
-						// Turn the move down button on
-						btnUp.setEnabled(true);
-					}
-					if (index < list.getModel().getSize() - 1) {
-						btnDown.setEnabled(true);
-					}
-
-				}
-
-				controller.editRule(index - 1);
 			}
 		});
-
-
 	}
 
 	@Override
