@@ -91,6 +91,8 @@ public class SQLConsolePanel extends JPanel implements DropTargetListener {
     private JToolBar toolBar;
     private JLabel statusMessage;
     private SearchWord searchWord;
+    private int lastSQLStatementToReformatStart;
+    private int lastSQLStatementToReformatEnd;
     // An instance of the private subclass of the default highlight painter
     Highlighter.HighlightPainter myHighlightPainter = (HighlightPainter) new WordHighlightPainter(
             new Color(205, 235, 255));
@@ -311,33 +313,28 @@ public class SQLConsolePanel extends JPanel implements DropTargetListener {
 
     public String getCurrentSQLStatement() {
         String sql = scriptPanel.getSelectedText();
+        lastSQLStatementToReformatEnd = scriptPanel.getSelectionEnd();
+        lastSQLStatementToReformatStart = scriptPanel.getSelectionStart();
         if (sql == null || sql.trim().length() == 0) {
             sql = getText();
-            int[] bounds = getBoundsOfCurrentSQLStatement();
-
-            if (bounds[0] >= bounds[1]) {
-                sql = "";
-            } else {
-                sql = sql.substring(bounds[0], bounds[1]).trim();
-            }
+            lastSQLStatementToReformatEnd = -2;
+//            int[] bounds = getBoundsOfCurrentSQLStatement();
+//
+//            if (bounds[0] >= bounds[1]) {
+//                sql = "";
+//            } else {
+//                sql = sql.substring(bounds[0], bounds[1]).trim();
+//            }
         }
         return sql != null ? sql : "";
     }
 
     public void replaceCurrentSQLStatement(String st) {
-        int start = scriptPanel.getSelectionStart();
-        int end = scriptPanel.getSelectionEnd();
-        if (start >= end) {
+        
+        if (lastSQLStatementToReformatStart >= lastSQLStatementToReformatEnd) {
             scriptPanel.replaceRange(st, 0, scriptPanel.getDocument().getLength());
         } else {
-            try {
-                if (scriptPanel.getLineStartOffset(scriptPanel.getLineOfOffset(start)) < start) {
-                    start--;
-                    st = '\n' + st;
-                }
-            } catch (BadLocationException ex) {
-            }
-            scriptPanel.replaceRange(st, start, end);
+            scriptPanel.replaceRange(st, lastSQLStatementToReformatStart, lastSQLStatementToReformatEnd);
         }
     }
 

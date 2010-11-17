@@ -78,8 +78,7 @@ public class SQLConsoleKeyListener extends KeyAdapter {
 	public void keyPressed(KeyEvent e) {
 		String originalText = panel.getText();
 		if ((e.getKeyCode() == KeyEvent.VK_ENTER) && e.isControlDown()) {
-			BackgroundManager bm = (BackgroundManager) Services
-					.getService(BackgroundManager.class);
+			BackgroundManager bm = Services.getService(BackgroundManager.class);
 			bm.backgroundOperation(new ExecuteScriptProcess(originalText));
 
 		} else if ((e.getKeyCode() == KeyEvent.VK_S) && e.isControlDown()) {
