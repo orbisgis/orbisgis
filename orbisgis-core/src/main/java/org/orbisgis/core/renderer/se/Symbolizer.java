@@ -151,7 +151,7 @@ public abstract class Symbolizer implements SymbolizerNode, Comparable {
         } else if (st.getDeclaredType() == org.orbisgis.core.renderer.persistance.se.RasterSymbolizerType.class) {
             return new RasterSymbolizer((JAXBElement<RasterSymbolizerType>) st);
         } else {
-            System.out.println("NULLLLLLL => " + st.getDeclaredType());
+            System.out.println("NULL => " + st.getDeclaredType());
             return null;
         }
     }

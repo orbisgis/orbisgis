@@ -6,7 +6,7 @@ package org.orbisgis.core.renderer.se;
 
 import com.vividsolutions.jts.geom.Geometry;
 import org.gdms.data.DataSourceCreationException;
-import org.gdms.data.SpatialDataSourceDecorator;
+import org.gdms.data.FilterDataSourceDecorator;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.driverManager.DriverLoadException;
 import org.gdms.sql.parser.ParseException;
@@ -14,6 +14,7 @@ import org.gdms.sql.strategies.SemanticException;
 import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.persistance.se.DomainConstraintsType;
+import org.orbisgis.core.renderer.persistance.se.ElseFilterType;
 import org.orbisgis.core.renderer.persistance.se.RuleType;
 import org.orbisgis.core.renderer.se.common.Uom;
 
@@ -95,12 +96,15 @@ public final class Rule implements SymbolizerNode {
 		/*
 		 * Is a fallback rule ?
 		 */
-		if (rt.getElseFilter() != null) {
+		/*if (rt.getElseFilter() != null) {
 			this.fallbackRule = true;
 		} else {
 			this.fallbackRule = false;
 			//this.filter = new FilterOperator(rt.getFilter());
-		}
+		}*/
+
+		// If a ElseFilter is defined, this rule is a fallback one
+		this.fallbackRule = rt.getElseFilter() != null;
 
 		if (rt.getMinScaleDenominator() != null) {
 			this.setMinScaleDenom(rt.getMinScaleDenominator());
@@ -143,7 +147,11 @@ public final class Rule implements SymbolizerNode {
 			rt.setMaxScaleDenominator(maxScaleDenom);
 		}
 
-		if (this.getWhere() != null && ! this.getWhere().isEmpty()){
+		if (this.isFallbackRule()){
+			rt.setElseFilter(new ElseFilterType());
+		} else if(this.getWhere() != null && !this.getWhere().isEmpty())
+		{
+			// Temp HACK TODO !! Serialize Filters !!!!
 			rt.setDomainConstraints(new DomainConstraintsType());
 		    rt.getDomainConstraints().setTimePeriod(this.getWhere());
 		}
@@ -190,16 +198,11 @@ public final class Rule implements SymbolizerNode {
 	 * @throws ParseException
 	 * @throws SemanticException
 	 */
-	public SpatialDataSourceDecorator getFilteredDataSource(SpatialDataSourceDecorator sds) throws DriverLoadException, DataSourceCreationException, DriverException, ParseException, SemanticException {
-
+	public FilterDataSourceDecorator getFilteredDataSource(FilterDataSourceDecorator fds) throws DriverLoadException, DataSourceCreationException, DriverException, ParseException, SemanticException {
 		if (where != null && !where.isEmpty()) {
-			String query = "select * from " + sds.getName() + " WHERE " + where;
-
-			SpatialDataSourceDecorator filteredSds = new SpatialDataSourceDecorator(sds.getDataSourceFactory().getDataSourceFromSQL(query));
-
-			return filteredSds;
+			return new FilterDataSourceDecorator(fds, where);
 		} else {
-			return sds;
+			return fds;
 		}
 	}
 
@@ -212,13 +215,14 @@ public final class Rule implements SymbolizerNode {
 	 * @throws ParseException
 	 * @throws SemanticException
 	 */
-	public SpatialDataSourceDecorator getFilteredDataSource() throws DriverLoadException, DataSourceCreationException, DriverException, ParseException, SemanticException {
+	/*
+	public FilterDataSourceDecorator getFilteredDataSource() throws DriverLoadException, DataSourceCreationException, DriverException, ParseException, SemanticException {
 		FeatureTypeStyle ft = (FeatureTypeStyle) fts;
 
 		ILayer layer = ft.getLayer();
 		SpatialDataSourceDecorator sds = layer.getDataSource();
 		return this.getFilteredDataSource(sds);
-	}
+	}*/
 
 	public boolean isFallbackRule() {
 		return fallbackRule;

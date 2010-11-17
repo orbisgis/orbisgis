@@ -79,7 +79,6 @@ public abstract class VectorSymbolizer extends Symbolizer implements UomNode {
 				Shape shape = mt.getShape(geom);
 
 				if (transform != null) {
-					System.out.println (transform.getGraphicalAffineTransform(feat, false, mt, (double)mt.getWidth(), (double)mt.getHeight()));
 					shape = transform.getGraphicalAffineTransform(feat, false, mt, (double)mt.getWidth(),(double) mt.getHeight()).createTransformedShape(shape); // TODO widht and height?
 				}
 				shapes.add(shape);
@@ -102,9 +101,7 @@ public abstract class VectorSymbolizer extends Symbolizer implements UomNode {
 
 		AffineTransform at = mt.getAffineTransform();
 
-		System.out.println ("Transform : " + transform);
 		if (transform != null) {
-			System.out.println ("Extent : " + mt.getAdjustedExtent());
 			at.preConcatenate(transform.getGraphicalAffineTransform(feat, false, mt, (double)mt.getWidth(), (double)mt.getHeight()));
 		}
 

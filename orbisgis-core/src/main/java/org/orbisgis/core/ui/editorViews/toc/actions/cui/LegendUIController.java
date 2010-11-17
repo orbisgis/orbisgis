@@ -63,7 +63,7 @@ public final class LegendUIController {
 
 	private int geometryType;
 	private LegendUIMainPanel mainPanel;
-	private FeatureTypeStyle typeStyle;
+	private FeatureTypeStyle style;
 	// First index is for rules, second for symbolizer
 	private ArrayList<ArrayList<LegendUIComponent>> rootPanels;
 	private ArrayList<LegendUIRulePanel> rulePanels;
@@ -75,7 +75,7 @@ public final class LegendUIController {
 	 */
 	public LegendUIController(FeatureTypeStyle fts) {
 
-		this.typeStyle = new FeatureTypeStyle(fts.getJAXBElement(), fts.getLayer());
+		this.style = new FeatureTypeStyle(fts.getJAXBElement(), fts.getLayer());
 
 		rootPanels = new ArrayList<ArrayList<LegendUIComponent>>();
 		rulePanels = new ArrayList<LegendUIRulePanel>();
@@ -86,7 +86,7 @@ public final class LegendUIController {
 
 		GeometryConstraint cons = null;
 		try {
-			ILayer layer = typeStyle.getLayer();
+			ILayer layer = style.getLayer();
 			Type type = layer.getDataSource().getMetadata().getFieldType(layer.getDataSource().getSpatialFieldIndex());
 			cons = (GeometryConstraint) type.getConstraint(Constraint.GEOMETRY_TYPE);
 		} catch (DriverException ex) {
@@ -117,9 +117,9 @@ public final class LegendUIController {
 
 
 		int i;
-		for (i = 0; i < typeStyle.getRules().size(); i++) {
+		for (i = 0; i < style.getRules().size(); i++) {
 
-			Rule rule = typeStyle.getRules().get(i);
+			Rule rule = style.getRules().get(i);
 			ArrayList<LegendUIComponent> sList = new ArrayList<LegendUIComponent>();
 			rootPanels.add(sList);
 
@@ -133,7 +133,7 @@ public final class LegendUIController {
 				structureChanged(symbPanel, false);
 			}
 		}
-		mainPanel = new LegendUIMainPanel(this, typeStyle);
+		mainPanel = new LegendUIMainPanel(this, style);
 	}
 
 	public int getGeometryType() {
@@ -145,7 +145,7 @@ public final class LegendUIController {
 	 * @return the new edited style
 	 */
 	public FeatureTypeStyle getEditedFeatureTypeStyle() {
-		return typeStyle;
+		return style;
 	}
 
 	public JPanel getMainPanel() {
@@ -157,8 +157,8 @@ public final class LegendUIController {
 	}
 
 	public Rule createNewRule() {
-		Rule r = new Rule(typeStyle.getLayer());
-		typeStyle.addRule(r);
+		Rule r = new Rule(style.getLayer());
+		style.addRule(r);
 
 		ArrayList<LegendUIComponent> root = new ArrayList<LegendUIComponent>();
 		rootPanels.add(root);
@@ -176,7 +176,7 @@ public final class LegendUIController {
 	}
 
 	public boolean deleteRule(int i) {
-		boolean deleted = typeStyle.deleteRule(i);
+		boolean deleted = style.deleteRule(i);
 		if (deleted) {
 			rootPanels.remove(i);
 			rulePanels.remove(i);
@@ -190,7 +190,7 @@ public final class LegendUIController {
 			for (LegendUIComponent c : rootPanels.get(i)) {
 				structureChanged(c, false);
 			}
-			//Rule r = typeStyle.getRules().get(i);
+			//Rule r = style.getRules().get(i);
 			mainPanel.editRule(i);
 		}else{
 			mainPanel.editRule(-1);
@@ -201,7 +201,7 @@ public final class LegendUIController {
 	 * return true if the was moved, false otherwise
 	 */
 	boolean moveRuleUp(int i) {
-		boolean moved = typeStyle.moveRuleUp(i);
+		boolean moved = style.moveRuleUp(i);
 
 		if (moved) {
 			ArrayList<LegendUIComponent> comp = rootPanels.remove(i);
@@ -215,7 +215,7 @@ public final class LegendUIController {
 	}
 
 	boolean moveRuleDown(int i) {
-		boolean moved = typeStyle.moveRuleDown(i);
+		boolean moved = style.moveRuleDown(i);
 
 		if (moved) {
 			ArrayList<LegendUIComponent> comp = rootPanels.remove(i);
@@ -229,7 +229,7 @@ public final class LegendUIController {
 	}
 
 	private String getName() {
-		return typeStyle.getName();
+		return style.getName();
 	}
 
 	public LegendUIRulePanel getRulePanel(int ruleID) {
@@ -248,7 +248,7 @@ public final class LegendUIController {
 	}
 
 	void addSymbolizerToRule(int ruleID, Symbolizer s) {
-		Rule r = typeStyle.getRules().get(ruleID);
+		Rule r = style.getRules().get(ruleID);
 
 		r.getCompositeSymbolizer().addSymbolizer(s);
 		ArrayList<LegendUIComponent> rootPanel = rootPanels.get(ruleID);
@@ -389,7 +389,7 @@ public final class LegendUIController {
 	}
 
 	void removeSymbolizerFromRule(LegendUISymbolizerPanel sPanel, int ruleID) {
-		Rule rule = this.typeStyle.getRules().get(ruleID);
+		Rule rule = this.style.getRules().get(ruleID);
 		Symbolizer symbolizer = sPanel.getSymbolizer();
 
 		//sPanel.makeOrphan();

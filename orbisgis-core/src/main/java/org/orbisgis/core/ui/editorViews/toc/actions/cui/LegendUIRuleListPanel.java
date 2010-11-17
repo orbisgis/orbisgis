@@ -145,10 +145,13 @@ public class LegendUIRuleListPanel extends JPanel implements LegendUIComponentLi
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				Rule r = controller.createNewRule();
+
 				DefaultListModel model = (DefaultListModel) list.getModel();
 				model.addElement(r);
-				int index = list.getModel().getSize() -1;
+				int index = model.getSize() -2;
+
 				list.setSelectedIndex(index);
+
 				controller.getRulePanel(index).register(LegendUIRuleListPanel.this);
 				controller.editRule(index);
 			}
@@ -158,9 +161,9 @@ public class LegendUIRuleListPanel extends JPanel implements LegendUIComponentLi
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				int showConfirmDialog = JOptionPane.showConfirmDialog(controller.getMainPanel(), "Sur ?", "Sur ?", JOptionPane.YES_NO_OPTION);
+				int confirmation = JOptionPane.showConfirmDialog(controller.getMainPanel(), "Sur ?", "Sur ?", JOptionPane.YES_NO_OPTION);
 
-				if (showConfirmDialog == 0) {
+				if (confirmation == 0) {
 					int i = list.getSelectedIndex() -1;
 					if (controller.deleteRule(i)){
 						DefaultListModel model = (DefaultListModel) list.getModel();
