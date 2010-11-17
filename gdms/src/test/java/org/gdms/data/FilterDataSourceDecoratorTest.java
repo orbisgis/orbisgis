@@ -96,6 +96,37 @@ public class FilterDataSourceDecoratorTest extends SourceTest {
 		original.close();
 	}
 
+        public void testEditableListener() throws Exception {
+                dsf.getSourceManager().register("landcover2000",
+				new File(internalData + "landcover2000.shp"));
+                dsf.executeSQL("CREATE TABLE test AS SELECT * FROM landcover2000;");
+                DataSource original = dsf.getDataSource("test", DataSourceFactory.EDITABLE);
+
+                FilterDataSourceDecorator decorator = new FilterDataSourceDecorator(
+				original);
+		decorator.setFilter("runoff_win = 0.2");
+                long rowC = decorator.getRowCount();
+                assertFalse(rowC == 0);
+
+                original.open();
+                original.deleteRow(decorator.getOriginalIndex(0));
+                original.commit();
+                original.close();
+
+                assertFalse(rowC == decorator.getRowCount());
+                assertTrue(rowC - 1 == decorator.getRowCount());
+                rowC = decorator.getRowCount();
+
+                original.open();
+                original.setDouble(decorator.getOriginalIndex(1), "runoff_win", 0.3);
+                original.commit();
+                original.close();
+
+                assertFalse(rowC == decorator.getRowCount());
+                assertTrue(rowC - 1 == decorator.getRowCount());
+                rowC = decorator.getRowCount();
+        }
+
 	public void testSpatialFilter() throws Exception {
 
 		dsf.getSourceManager().register("landcover2000",
@@ -122,13 +153,10 @@ public class FilterDataSourceDecoratorTest extends SourceTest {
 				+ "the_geom" + ")";
 		filterDataSourceDecorator.setFilter(filter);
 		
+		filterDataSourceDecorator.open();
 		long filterCount = filterDataSourceDecorator.getRowCount();
-		
+		filterDataSourceDecorator.close();
 		assertTrue(filterCount==waintingResult);
 		
-		
-		
-		
-
 	}
 }

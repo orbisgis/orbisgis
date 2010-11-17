@@ -53,6 +53,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.TreeSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -82,9 +83,7 @@ import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
 
 import org.gdms.data.DataSource;
-import org.gdms.data.DataSourceCreationException;
-import org.gdms.data.DataSourceFactory;
-import org.gdms.data.ExecutionException;
+import org.gdms.data.FilterDataSourceDecorator;
 import org.gdms.data.edition.EditionEvent;
 import org.gdms.data.edition.EditionListener;
 import org.gdms.data.edition.FieldEditionEvent;
@@ -96,8 +95,6 @@ import org.gdms.data.types.Type;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
-import org.gdms.driver.driverManager.DriverLoadException;
-import org.gdms.sql.strategies.SemanticException;
 import org.gdms.sql.strategies.SortComparator;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.background.BackgroundJob;
@@ -133,7 +130,7 @@ public class TableComponent extends JPanel implements WorkbenchFrame {
 	private javax.swing.JScrollPane jScrollPane = null;
 	private JTable table = null;
 	private JLabel nbRowsSelectedLabel = null;
-        private SQLCompletionProvider cpl;
+	private SQLCompletionProvider cpl;
 
 	// Model
 	private int selectedColumn = -1;
@@ -398,8 +395,8 @@ public class TableComponent extends JPanel implements WorkbenchFrame {
 
 	private JTextField getWhereTextField() {
 		final JButtonTextField txtFilter = new JButtonTextField(20);
-                cpl = new SQLCompletionProvider(txtFilter);
-                cpl.install();
+		cpl = new SQLCompletionProvider(txtFilter);
+		cpl.install();
 		txtFilter.setBackground(Color.WHITE);
 		txtFilter
 				.setText(I18N
@@ -411,7 +408,7 @@ public class TableComponent extends JPanel implements WorkbenchFrame {
 
 			@Override
 			public void keyPressed(KeyEvent e) {
-				if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+				if ((e.getKeyCode() == KeyEvent.VK_ENTER) && e.isControlDown()) {
 					final String whereText = txtFilter.getText();
 					if (whereText.length() == 0) {
 						if (selectedRowsCount > 0) {
@@ -420,11 +417,28 @@ public class TableComponent extends JPanel implements WorkbenchFrame {
 						}
 
 					} else {
-						String pkName = "pk_" + dataSource.getName();
-						findAValueFromWhereClause(
-								"SELECT autonumeric() - 1 as " + pkName + ", *"
-										+ "FROM " + dataSource.getName(),
-								pkName, whereText);
+						try {
+							FilterDataSourceDecorator filterDataSourceDecorator = new FilterDataSourceDecorator(
+									dataSource);
+							filterDataSourceDecorator.setFilter(whereText);
+
+							long dsRowCount = filterDataSourceDecorator
+									.getRowCount();
+
+							List<Integer> map = filterDataSourceDecorator
+									.getIndexMap();
+							int[] sel = new int[map.size()];
+							for (int i = 0; i < dsRowCount; i++) {
+								sel[i] = (int) filterDataSourceDecorator
+										.getOriginalIndex(i);
+							}
+
+							selection.setSelectedRows(sel);
+
+						} catch (DriverException e1) {
+							e1.printStackTrace();
+						}
+
 					}
 				}
 			}
@@ -515,7 +529,8 @@ public class TableComponent extends JPanel implements WorkbenchFrame {
 			this.dataSource = element.getDataSource();
 			this.dataSource.addEditionListener(listener);
 			this.dataSource.addMetadataEditionListener(listener);
-                        this.cpl.setRootText("SELECT * FROM " + dataSource.getName() + " WHERE");
+			this.cpl.setRootText("SELECT * FROM " + dataSource.getName()
+					+ " WHERE");
 
 			tableModel = new DataSourceDataModel();
 			table.setModel(tableModel);
@@ -713,84 +728,6 @@ public class TableComponent extends JPanel implements WorkbenchFrame {
 							.getText("orbisgis.org.orbisgis.core.ui.editors.table.TableComponent.rowNumber")
 							+ tableModel.getRowCount());
 		}
-	}
-
-	public void findAValueFromWhereClause(final String text,
-			final String columnName, final String whereText) {
-
-		BackgroundManager bm = Services.getService(BackgroundManager.class);
-		bm.backgroundOperation(new BackgroundJob() {
-
-			@Override
-			public String getTaskName() {
-
-				return I18N
-						.getText("orbisgis.org.orbisgis.core.ui.editors.table.TableComponent.searching");
-			}
-
-			@Override
-			public void run(IProgressMonitor pm) {
-
-				try {
-					DataSourceFactory dsf = dataSource.getDataSourceFactory();
-
-					// Step 1: create a copy of the data source with the
-					// pk_field
-					DataSource dsWithPk = dsf.getDataSourceFromSQL(text + " ;",
-							pm);
-
-					// Step2: execute the filter on the sds with pk
-					DataSource dsWithPkFiltered = dsf.getDataSourceFromSQL(
-							"SELECT * FROM " + dsWithPk.getName() + " WHERE "
-									+ whereText + " ;", pm);
-
-					dsWithPkFiltered.open();
-
-					long dsRowCount = dsWithPkFiltered.getRowCount();
-
-					pm.startTask("Data matching");
-					dsWithPk.open();
-
-					int[] sel = new int[(int) dsRowCount];
-					for (int i = 0; i < dsRowCount; i++) {
-						sel[i] = dsWithPkFiltered.getFieldValue(i, 0)
-								.getAsInt();
-					}
-
-					dsWithPkFiltered.close();
-					dsWithPk.close();
-					try {
-						dsf.executeSQL("DROP TABLE " + dsWithPk.getName() + " PURGE;");
-						dsf.executeSQL("DROP TABLE " + dsWithPkFiltered.getName() + " PURGE;");
-					} catch (ExecutionException ex) {
-						Logger.getLogger(TableComponent.class.getName()).log(Level.SEVERE, "Could not purge internal data source", ex);
-					}
-
-					// Step 3 : delete the table used to apply the where clause
-					dsf.executeSQL("drop table if exists "
-							+ dsWithPkFiltered.getName() + " , "
-							+ dsWithPk.getName() + " purge");
-
-					pm.endTask();
-					selection.setSelectedRows(sel);
-
-				} catch (DriverException e) {
-					e.printStackTrace();
-				} catch (DriverLoadException e) {
-					e.printStackTrace();
-				} catch (DataSourceCreationException e) {
-					e.printStackTrace();
-				} catch (org.gdms.sql.parser.ParseException e) {
-					e.printStackTrace();
-				} catch (SemanticException e) {
-					e.printStackTrace();
-				} catch (ExecutionException e) {
-					e.printStackTrace();
-				}
-			}
-
-		});
-
 	}
 
 	public void moveSelectionUp() {

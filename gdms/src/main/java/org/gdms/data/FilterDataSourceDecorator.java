@@ -39,14 +39,30 @@
 
 package org.gdms.data;
 
+import java.util.Collections;
 import java.util.List;
+import org.gdms.data.edition.EditionEvent;
+import org.gdms.data.edition.EditionListener;
+import org.gdms.data.edition.MultipleEditionEvent;
 import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
 import org.gdms.sql.strategies.RowMappedDriver;
 import org.gdms.sql.strategies.SQLProcessor;
 
 /**
+ * This Decorator can filter a underlying DataSource with a SQL Expression.
  *
+ * It does not produce a new DataSource, but rather allows access through getFieldValue()
+ * to the filtered results.
+ * This class does not replicate the data, it simply builds an list of rowIndexes from
+ * the original DataSource that match the Expression, and use it to return the data
+ * from the real DataSource. The list of indexes is stored in memory only.
+ *
+ * It is not necessary to call the open and close methods to access methods that do not
+ * read any data in the original DataSource : getOriginalIndex, getRowCount and getIndexMap
+ * can be called without the DataSourceDecorator or the actual DataSource being opened.
+ * The first call to any of these will trigger the filtering.
+ * 
  * @author Antoine Gourlay
  */
 public class FilterDataSourceDecorator extends AbstractDataSourceDecorator {
@@ -60,20 +76,23 @@ public class FilterDataSourceDecorator extends AbstractDataSourceDecorator {
 
     public FilterDataSourceDecorator(DataSource internalDataSource, String filter) throws DriverException {
         super(internalDataSource);
-        this.filter = filter;
+        setFilter(filter);
+        if (internalDataSource.isEditable()) {
+                internalDataSource.addEditionListener(new FilterDataSourceDecoratorEditionListener());
+        }
     }
 
     @Override
     public Value getFieldValue(long rowIndex, int fieldId) throws DriverException {
         if (mapDriver == null) {
-            mapDriver = getMapDriver();
+            throw new DriverException("This datasource is closed. it has to be opened to call this method.");
         }
         return mapDriver.getFieldValue(rowIndex, fieldId);
     }
 
     /**
      * Returns the index in the original datasource (unfiltered). This index
-     * is kept in-memory only, it is NOT written to disk.
+     * is kept in memory only, it is NOT written to disk.
      * {@inheritDoc}
      */
     public long getOriginalIndex(long rowIndex) throws DriverException {
@@ -96,17 +115,18 @@ public class FilterDataSourceDecorator extends AbstractDataSourceDecorator {
         if (mapDriver == null) {
             mapDriver = getMapDriver();
         }
+        getDataSource().open();
     }
 
     @Override
     public void close() throws DriverException, AlreadyClosedException {
-        
+        getDataSource().close();
     }
 
 
 
     /**
-     * Returns the Drive used by the SelectionOp when processing the query
+     * Returns the Driver used by the SelectionOp when processing the query
      * @return the driver
      * @throws DriverException
      */
@@ -114,7 +134,7 @@ public class FilterDataSourceDecorator extends AbstractDataSourceDecorator {
         if (getFilter() == null || getFilter().isEmpty()) {
             throw new NullPointerException("The filter condition cannot be null or empty.");
         }
-        String rq = "SELECT * FROM " + getDataSource().getName() + " WHERE " + getFilter() + ";";
+        String rq = "SELECT * FROM " + getDataSource().getName() + " WHERE " + filter + ";";
         SQLProcessor p = new SQLProcessor(getDataSourceFactory());
         try {
             return (RowMappedDriver) p.execute(rq, null);
@@ -133,11 +153,42 @@ public class FilterDataSourceDecorator extends AbstractDataSourceDecorator {
     /**
      * @param filter the filter to set
      */
-    public void setFilter(String filter) {
-        this.filter = filter;
+    public final void setFilter(String filter) {
+        this.filter = filter == null ? "" : filter;
     }
 
-    public List<Integer> getIndexMap() {
-        return mapDriver.getIndexMap();
+    /**
+     * Returns the readonly list of rowIndexes from the original datasource
+     * that correspond to the filtered results
+     * @return
+     * @throws DriverException
+     */
+    public List<Integer> getIndexMap() throws DriverException {
+        if (mapDriver == null) {
+            mapDriver = getMapDriver();
+        }
+        return Collections.unmodifiableList(mapDriver.getIndexMap());
+    }
+
+    private class FilterDataSourceDecoratorEditionListener implements EditionListener {
+
+                @Override
+                public void singleModification(EditionEvent e) {
+                        if (e.getType() == EditionEvent.DELETE) {
+                               mapDriver.getIndexMap().remove((Integer)(int)e.getRowIndex());
+                        } else {
+                              mapDriver = null;
+                        }
+                }
+
+                @Override
+                public void multipleModification(MultipleEditionEvent e) {
+                        for (int i = 0; i < e.getEvents().length; i++) {
+                                if (mapDriver == null) {
+                                        break;
+                                }
+                                singleModification(e.getEvents()[i]);
+                        }
+                }
     }
 }
