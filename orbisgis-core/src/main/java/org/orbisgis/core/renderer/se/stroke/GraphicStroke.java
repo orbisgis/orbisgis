@@ -49,7 +49,7 @@ public final class GraphicStroke extends Stroke implements GraphicNode {
 		}
 
 		if (gst.getRelativeOrientation() != null){
-			this.setRelativeOrientation(RelativeOrientation.valueOf(gst.getRelativeOrientation().value()));
+			this.setRelativeOrientation(RelativeOrientation.readFromToken(gst.getRelativeOrientation().value()));
 			System.out.println ("RelativeOrientation: " + this.getRelativeOrientation());
 		}
     }
@@ -80,7 +80,11 @@ public final class GraphicStroke extends Stroke implements GraphicNode {
     }
 
     public RelativeOrientation getRelativeOrientation() {
-        return orientation;
+		if (orientation != null){
+        	return orientation;
+		} else {
+			return RelativeOrientation.NORMAL_UP;
+		}
     }
 
     @Override
@@ -88,10 +92,14 @@ public final class GraphicStroke extends Stroke implements GraphicNode {
         RenderableGraphics g = graphic.getGraphic(feat, selected, mt);
 		RenderedImage createRendering = g.createRendering(mt.getCurrentRenderContext());
 
+
         if (g != null) {
             double segLength;
 
+			double gWidth = g.getWidth();
 			double lineLength = ShapeHelper.getLineLength(shp);
+
+			RelativeOrientation rOrient = this.getRelativeOrientation();
 
             if (length != null) {
 				segLength = Uom.toPixel(length.getValue(feat), getUom(), mt.getDpi(), mt.getScaleDenominator(), lineLength); // TODO 100%
@@ -100,15 +108,55 @@ public final class GraphicStroke extends Stroke implements GraphicNode {
                     segLength = lineLength;
                 }
             } else {
-                segLength = (double) g.getWidth(); // TODO Take into account relative orientation ! (i.e normal  == width; line == height; portrayal == ??)
+				switch (rOrient){
+					case NORMAL:
+					case NORMAL_UP:
+                		segLength = gWidth;
+						break;
+					case LINE:
+					case LINE_UP:
+						segLength = g.getHeight();
+						break;
+					case PORTRAYAL:
+					default:
+						segLength = Math.sqrt(gWidth*gWidth + g.getHeight()*g.getHeight());
+						break;
+
+				}
             }
 
 			int nbSegments = (int)((lineLength / segLength) + 0.5);
+
+			segLength = lineLength/nbSegments;
+
 			ArrayList<Shape> segments = ShapeHelper.splitLine(shp, nbSegments);
 
 			for (Shape seg : segments){
-				Point2D.Double pt = ShapeHelper.getLineMiddle(seg);
-				g2.drawRenderedImage(createRendering, AffineTransform.getTranslateInstance(pt.x, pt.y));
+				Point2D.Double pt = ShapeHelper.getPointAt(seg, segLength/2);
+				AffineTransform at = AffineTransform.getTranslateInstance(pt.x, pt.y);
+
+
+				if (rOrient != RelativeOrientation.PORTRAYAL){
+					Point2D.Double ptA = ShapeHelper.getPointAt(seg, 0.5 * (segLength - gWidth));
+					Point2D.Double ptB = ShapeHelper.getPointAt(seg, 0.75 * (segLength - gWidth));
+
+					double theta = Math.atan2(ptB.y - ptA.y, ptB.x - ptA.x);
+					System.out.println("("+ ptA.x + ";" + ptA.y +")"  + "(" + ptB.x + ";" + ptB.y+ ")" + "   => Angle: " + (theta/0.0175));
+
+					switch (rOrient){
+						case LINE:
+							theta += 0.5*Math.PI;
+							break;
+						case NORMAL_UP:
+							if (theta < -Math.PI/2 || theta > Math.PI/2){
+								theta += Math.PI;
+							}
+							break;
+					}
+
+					at.concatenate(AffineTransform.getRotateInstance(theta));
+				}
+				g2.drawRenderedImage(createRendering, at);
 			}
         }
     }
@@ -142,7 +190,20 @@ public final class GraphicStroke extends Stroke implements GraphicNode {
             s.setLength(length.getJAXBParameterValueType());
         }
         if (orientation != null) {
-            s.setRelativeOrientation(RelativeOrientationType.LINE);
+			switch (orientation){
+				case LINE:
+            		s.setRelativeOrientation(RelativeOrientationType.LINE);
+					break;
+				case NORMAL:
+            		s.setRelativeOrientation(RelativeOrientationType.NORMAL);
+					break;
+				case NORMAL_UP:
+            		s.setRelativeOrientation(RelativeOrientationType.NORMAL_UP);
+					break;
+				case PORTRAYAL:
+            		s.setRelativeOrientation(RelativeOrientationType.PORTRAYAL);
+					break;
+			}
         }
         return s;
     }

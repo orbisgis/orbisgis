@@ -66,9 +66,6 @@ public class MapItem<Type>  {
     public boolean equals(Object o){
         MapItem<Type> item = (MapItem<Type>) o;
 
-		System.out.println ("Keys: " + item.key.toString() + " <=> " + this.key);
-        // TODO Check type
-
         return item.key.toString().equals(this.key);
     }
 

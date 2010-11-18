@@ -93,11 +93,20 @@ public class ShapeHelper {
 	}
 
 
+	/**
+	 * @see getAreaPerimeter
+	 */
 	public static double getLineLength(Shape line){
 		return getAreaPerimeterLength(line);
 	}
 
 
+	/**
+	 * Split a linear feature in the specified number of part, which have all the same length
+	 * @param line  the line to split
+	 * @param nbPart the number of part to create
+	 * @return list of equal-length segment
+	 */
 	public static ArrayList<Shape> splitLine(Shape line, int nbPart){
 		ArrayList<Shape> shapes = new ArrayList<Shape>();
 		double perimeter = getLineLength(line);
@@ -167,6 +176,18 @@ public class ShapeHelper {
 		return shapes;
 	}
 
+
+	/**
+	 * return coordinates which are:
+	 * 	1) at the specified distance from point (x1,y1)
+	 *  2) on the line going through points (x1,y1) and (x2,y2)
+	 * @param x1 first point x coordinate
+	 * @param y1 first point y coordinate
+	 * @param x2 second point x coordinate
+	 * @param y2 second point y coordinate
+	 * @param distance the distance between first point (x1,y1) and the returned one
+	 * @return the coordinate, nested in a point
+	 */
 	private static Point2D.Double getPointAt(double x1, double y1, double x2, double y2, double distance){
 		double length = Math.sqrt((x2-x1)*(x2-x1) + (y2-y1)*(y2-y1));
 
@@ -176,11 +197,14 @@ public class ShapeHelper {
 	}
 
 
-	public static Point2D.Double getLineMiddle(Shape shp){
 
-		double m = getLineLength(shp) / 2;
-
-
+	/**
+	 * Go along a line shape and return the point at the specified distance from the beginning of the line
+	 * @param shp  the line
+	 * @param distance
+	 * @return point representing the point at the linear length distance
+	 */
+	public static Point2D.Double getPointAt(Shape shp, double distance){
 		PathIterator it = shp.getPathIterator(null);
 
 		double coords[] = new double[6];
@@ -207,8 +231,9 @@ public class ShapeHelper {
 				segLength = Math.sqrt(xx*xx + yy*yy);
 				p += segLength;
 
-				if (p > m)
+				if (p > distance){
 					break;
+				}
 			}
 
 			x1 = x2;
@@ -217,6 +242,6 @@ public class ShapeHelper {
 			it.next();
 		}
 
-		return getPointAt(x1, y1, x2, y2, segLength - (p-m));
+		return getPointAt(x1, y1, x2, y2, segLength - (p-distance));
 	}
 }

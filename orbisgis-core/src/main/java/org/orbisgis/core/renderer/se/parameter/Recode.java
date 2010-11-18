@@ -153,13 +153,10 @@ public abstract class Recode<ToType extends SeParameter, FallbackType extends To
 	}
 
     public ToType getParameter(Feature feat) {
-		System.out.println ("Ola");
         try {
             String key = lookupValue.getValue(feat);
             return getMapItemValue(key);
         } catch (Exception e) {
-			System.out.println("Exception in Recode: " + e);
-			e.printStackTrace(System.out);
             return fallbackValue;
         }
     }
