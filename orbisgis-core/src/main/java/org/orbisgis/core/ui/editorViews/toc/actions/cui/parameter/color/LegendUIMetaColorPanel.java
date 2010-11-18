@@ -46,6 +46,7 @@ import org.orbisgis.core.renderer.se.parameter.color.ColorParameter;
 import org.orbisgis.core.renderer.se.parameter.color.Interpolate2Color;
 import org.orbisgis.core.renderer.se.parameter.color.Recode2Color;
 import org.orbisgis.core.renderer.se.parameter.real.RealAttribute;
+import org.orbisgis.core.renderer.se.parameter.string.StringAttribute;
 import org.orbisgis.core.renderer.se.parameter.string.StringLiteral;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.LegendUIAbstractMetaPanel;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.LegendUIComponent;
@@ -75,9 +76,6 @@ public abstract class LegendUIMetaColorPanel extends LegendUIAbstractMetaPanel {
 		classes[1] = ColorAttribute.class;
 		classes[2] = Categorize2Color.class;
 		classes[3] = Recode2Color.class;
-
-		System.out.println ("Color is: " + color);
-
 
 		if (color == null) {
 			comp = null;
@@ -153,7 +151,7 @@ public abstract class LegendUIMetaColorPanel extends LegendUIAbstractMetaPanel {
 			if (color instanceof Recode2Color) {
 				recode = (Recode2Color) color;
 			} else {
-				recode = new Recode2Color(new ColorLiteral(), new StringLiteral("key"));
+				recode = new Recode2Color(new ColorLiteral(), new StringAttribute((String)null));
 			}
 			return new LegendUIRecodePanel("UniqueValue map " + getName(), controller, this, recode, false) {
 

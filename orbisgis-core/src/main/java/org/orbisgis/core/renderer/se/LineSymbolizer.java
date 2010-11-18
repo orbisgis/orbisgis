@@ -38,8 +38,8 @@ public final class LineSymbolizer extends VectorSymbolizer implements StrokeNode
 	public LineSymbolizer() {
 		super();
 		this.name = "Line Symbolizer";
-		uom = Uom.MM;
-		stroke = new PenStroke();
+		setUom(Uom.MM);
+		setStroke(new PenStroke());
 	}
 
 	public LineSymbolizer(JAXBElement<LineSymbolizerType> st) {

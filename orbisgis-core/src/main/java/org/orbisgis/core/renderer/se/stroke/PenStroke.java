@@ -384,7 +384,7 @@ public final class PenStroke extends Stroke {
         BasicStroke stroke = null;
 
         //if (this.bStroke == null) {
-        stroke = this.createBasicStroke(feat, mt, ShapeHelper.getShapePerimeter(shp));
+        stroke = this.createBasicStroke(feat, mt, ShapeHelper.getAreaPerimeterLength(shp));
         //} else {
         //    stroke = this.bStroke;
         //}

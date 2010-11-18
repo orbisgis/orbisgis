@@ -2,8 +2,12 @@ package org.orbisgis.core.renderer.se.stroke;
 
 import java.awt.Graphics2D;
 import java.awt.Shape;
+import java.awt.geom.AffineTransform;
+import java.awt.geom.Point2D;
+import java.awt.image.RenderedImage;
 
 import java.io.IOException;
+import java.util.ArrayList;
 
 import javax.media.jai.RenderableGraphics;
 import javax.xml.bind.JAXBElement;
@@ -16,6 +20,8 @@ import org.orbisgis.core.renderer.persistance.se.RelativeOrientationType;
 import org.orbisgis.core.renderer.se.GraphicNode;
 
 import org.orbisgis.core.renderer.se.common.RelativeOrientation;
+import org.orbisgis.core.renderer.se.common.ShapeHelper;
+import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.graphic.GraphicCollection;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
@@ -23,6 +29,9 @@ import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
 
 public final class GraphicStroke extends Stroke implements GraphicNode {
+
+	public final static double MIN_LENGTH = 1; // In pixel !
+
 
     private GraphicCollection graphic;
     private RealParameter length;
@@ -77,30 +86,30 @@ public final class GraphicStroke extends Stroke implements GraphicNode {
     @Override
     public void draw(Graphics2D g2, Shape shp, Feature feat, boolean selected, MapTransform mt) throws ParameterException, IOException {
         RenderableGraphics g = graphic.getGraphic(feat, selected, mt);
+		RenderedImage createRendering = g.createRendering(mt.getCurrentRenderContext());
 
         if (g != null) {
-            double l;
+            double segLength;
+
+			double lineLength = ShapeHelper.getLineLength(shp);
+
             if (length != null) {
-                l = length.getValue(feat);
-                if (l <= 0.0) {
-                    // TODO l \in R-* is forbiden ! Should throw, or set l = line.linearLength()
-                    // for the time, let us l = graphic natural length...
-                    l = (double) g.getWidth();
+				segLength = Uom.toPixel(length.getValue(feat), getUom(), mt.getDpi(), mt.getScaleDenominator(), lineLength); // TODO 100%
+
+                if (segLength <= GraphicStroke.MIN_LENGTH || segLength > lineLength) {
+                    segLength = lineLength;
                 }
             } else {
-                l = (double) g.getWidth();
+                segLength = (double) g.getWidth(); // TODO Take into account relative orientation ! (i.e normal  == width; line == height; portrayal == ??)
             }
 
-			System.out.println ("GraphicStroke not yet implemented");
+			int nbSegments = (int)((lineLength / segLength) + 0.5);
+			ArrayList<Shape> segments = ShapeHelper.splitLine(shp, nbSegments);
 
-            /* TODO implements :
-             *
-             * dont forget to take into account preGap and postGap !!!
-             * Split the line in n part of linear length == l
-             * for each part
-             *   fetch the point at half the linear length
-             *   plot g on this point, according to the orientation
-             */
+			for (Shape seg : segments){
+				Point2D.Double pt = ShapeHelper.getLineMiddle(seg);
+				g2.drawRenderedImage(createRendering, AffineTransform.getTranslateInstance(pt.x, pt.y));
+			}
         }
     }
 
