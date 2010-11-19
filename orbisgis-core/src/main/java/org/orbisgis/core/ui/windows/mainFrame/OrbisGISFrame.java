@@ -248,7 +248,7 @@ public class OrbisGISFrame extends JFrame implements IWindow {
 		root.getRootWindowProperties().getTabWindowProperties()
 				.getUndockButtonProperties().setVisible(false);
 
-		DockingWindowsTheme theme = new ShapedGradientDockingTheme();		
+		DockingWindowsTheme theme = new ShapedGradientDockingTheme();
 		// Apply theme
 		root.getRootWindowProperties().addSuperObject(
 				theme.getRootWindowProperties());
@@ -280,7 +280,8 @@ public class OrbisGISFrame extends JFrame implements IWindow {
 
 			@Override
 			public void windowClosing(WindowEvent e) {
-				ExitPlugIn.execute();
+				ExitPlugIn.openExitDialog(workbenchContext.getWorkbench()
+						.getFrame());
 			}
 
 		});
@@ -289,7 +290,8 @@ public class OrbisGISFrame extends JFrame implements IWindow {
 		jobPopup = new JobPopup();
 		jobPopup.initialize();
 
-		// A panel to display the statustoolbar on the left side and the viewtoolbar on the rigth side
+		// A panel to display the statustoolbar on the left side and the
+		// viewtoolbar on the rigth side
 		JPanel jPanel = new JPanel();
 		BorderLayout layout = new BorderLayout();
 		jPanel.setLayout(layout);
