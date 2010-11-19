@@ -54,7 +54,7 @@ public class MemoryViewPlugIn extends ViewPlugIn {
 
 	public MemoryViewPlugIn() {
 		btn = new JButton(OrbisGISIcon.MEMORY_ICON);
-		btn.setToolTipText(Names.BEANSHELL);
+		btn.setToolTipText(Names.MEMORY);
 	}
 
 	public void initialize(PlugInContext context) throws Exception {
