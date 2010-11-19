@@ -12,6 +12,7 @@ import org.orbisgis.core.map.MapTransform;
 
 import org.orbisgis.core.renderer.persistance.se.LineSymbolizerType;
 import org.orbisgis.core.renderer.persistance.se.ObjectFactory;
+import org.orbisgis.core.renderer.se.common.ShapeHelper;
 
 import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
@@ -112,12 +113,12 @@ public final class LineSymbolizer extends VectorSymbolizer implements StrokeNode
 				for (Shape shp : shapes) {
 					if (shp != null) {
 						if (perpendicularOffset != null) {
-							double offset = perpendicularOffset.getValue(feat);
-							// TODO apply perpendicular offset
+							double offset = Uom.toPixel(perpendicularOffset.getValue(feat), 
+									getUom(), mt.getDpi(), mt.getScaleDenominator(), null);
+							stroke.draw(g2, ShapeHelper.perpendicularOffset(shp, offset), feat, selected, mt);
+						} else {
+							stroke.draw(g2, shp, feat, selected, mt);
 						}
-
-						// TODO perpendicular offset !
-						stroke.draw(g2, shp, feat, selected, mt);
 					}
 				}
 			}

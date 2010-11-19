@@ -40,6 +40,7 @@
 
 package org.orbisgis.core.renderer.se.common;
 
+import java.awt.Polygon;
 import java.awt.Shape;
 import java.awt.geom.Path2D;
 
@@ -53,6 +54,7 @@ import java.util.ArrayList;
  */
 public class ShapeHelper {
 
+	public static final double _0_0175 = 180/Math.PI;
 
 	/**
 	 * Compute the perimeter of the shape
@@ -243,5 +245,154 @@ public class ShapeHelper {
 		}
 
 		return getPointAt(x1, y1, x2, y2, segLength - (p-distance));
+	}
+
+	private static Polygon perpendicularOffsetForArea(){
+		return null;
+	}
+
+	private static Path2D.Double perpendicularOffsetForLine(Shape shp, double offset){
+		Path2D.Double newShp = new Path2D.Double();
+
+		offset *= -1;
+
+		PathIterator it = shp.getPathIterator(null);
+		ArrayList<Double> x = new ArrayList<Double>();
+		ArrayList<Double> y = new ArrayList<Double>();
+
+		double absOffset = Math.abs(offset);
+
+		double coords[] = new double[6];
+
+		// Want a direct access to coordinates !!!
+		while (!it.isDone()){
+			it.currentSegment(coords);
+			x.add(coords[0]);
+			y.add(coords[1]);
+			it.next();
+		}
+
+		int i;
+
+		double gamma;
+		double theta = Math.PI/2;
+
+		if (offset < 0){
+			theta *= -1;
+		}
+
+		for (i=0;i<x.size();i++){
+			if (i==0){
+				// First point (linear case)
+				gamma = Math.atan2(y.get(i+1)-y.get(i), x.get(i+1) - x.get(i)) + theta;
+
+				newShp.moveTo(x.get(i) + Math.cos(gamma)*absOffset,
+							  y.get(i) + Math.sin(gamma)*absOffset);
+
+			} else if (i == x.size()-1){
+				// Last point (linear case)
+				gamma = Math.atan2(y.get(i)-y.get(i-1), x.get(i) - x.get(i-1)) + theta;
+
+				newShp.lineTo(x.get(i) + Math.cos(gamma)*absOffset,
+							  y.get(i) + Math.sin(gamma)*absOffset);
+			} else {
+
+				// other point
+
+				/*
+				 *    a  (i-1)
+				 *    \
+				 *     \
+				 *      \ (i)          (i+1)
+				 *       \_____________
+				 *       b             c
+				 */
+
+				// AB line orientation
+				double alpha = Math.atan2(y.get(i-1) - y.get(i), x.get(i-1) - x.get(i));
+				// BC line orientation
+				double beta = Math.atan2(y.get(i+1) - y.get(i), x.get(i+1) - x.get(i));
+
+				// ABC Angle
+				gamma = alpha - beta;
+
+				if (       offset < 0 && gamma > Math.PI
+						|| offset > 0 && gamma < Math.PI
+						|| offset < 0 && gamma < 0 && gamma > -Math.PI){
+
+					gamma = (alpha + beta)/2;
+
+					double a1, a2;
+					double b1, b2;
+
+					a1 = (y.get(i-1) - y.get(i)) / (x.get(i-1) - x.get(i));
+					a2 = (y.get(i+1) - y.get(i)) / (x.get(i+1) - x.get(i));
+
+					b1 = y.get(i) - a1*x.get(i);
+					b2 = y.get(i) - a2*x.get(i);
+
+					b1 -= offset/Math.cos(alpha);
+					b2 += offset/Math.cos(beta);
+
+					double x2 = 0, y2 = 0;
+
+					double localXOffset;
+					if (beta > 0){
+						localXOffset = -offset;
+					} else {
+						localXOffset = offset;
+					}
+
+					if (Double.isInfinite(a1) && Double.isInfinite(a2)){
+						System.out.println ("Should never occurs !!!");
+					} else if (Double.isInfinite(a1)){
+							x2 = x.get(i) + localXOffset;
+							y2 = a2*x2 + b2;
+							newShp.lineTo(x2, y2);
+					} else if (Double.isInfinite(a2)){
+							x2 = x.get(i) + localXOffset;
+							y2 = a1*x2 + b1;
+							newShp.lineTo(x2, y2);
+					} else {
+						x2 = (b2 - b1) / (a1 - a2);
+						y2 = a1*x2 + b1;
+						newShp.lineTo(x2, y2);
+					}
+				} else {
+					double a1 = alpha - theta;
+
+					double x1, y1;
+					double x2, y2;
+
+					// Arc beginning
+					x1 = x.get(i) + Math.cos(a1)*absOffset;
+				  	y1 = y.get(i) + Math.sin(a1)*absOffset;
+
+					// Arc end
+					double a2 = beta + theta;
+
+					x2 = x.get(i) + Math.cos(a2)*absOffset;
+					y2 = y.get(i) + Math.sin(a2)*absOffset;
+
+					// Move to arc begin
+					newShp.lineTo(x1, y1);
+
+					double dx = (x1 + x2)/2 - x.get(i);
+					double dy = (y1 + y2)/2 - y.get(i);
+
+					double h = Math.sqrt(dx*dx + dy*dy);
+
+					double x3 = x.get(i) + dx*absOffset / h;
+					double y3 = y.get(i) + dy*absOffset / h;
+
+					newShp.quadTo(x3, y3, x2, y2);
+				}
+			}
+		}
+		return newShp;
+	}
+
+	public static Shape perpendicularOffset(Shape shp, double offset){
+		return perpendicularOffsetForLine(shp, offset);
 	}
 }

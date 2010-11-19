@@ -38,6 +38,7 @@
 package org.orbisgis.core.ui.editorViews.toc.actions.cui;
 
 import org.orbisgis.core.renderer.se.StrokeNode;
+import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.stroke.LegendUIMetaStrokePanel;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.fill.LegendUIMetaFillPanel;
 import javax.swing.BoxLayout;
@@ -57,6 +58,7 @@ import org.orbisgis.core.renderer.se.VectorSymbolizer;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.components.TextInput;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.components.UomInput;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.graphic.LegendUICompositeGraphicPanel;
+import org.orbisgis.core.ui.editorViews.toc.actions.cui.parameter.real.LegendUIMetaRealPanel;
 
 /**
  *
@@ -65,9 +67,15 @@ import org.orbisgis.core.ui.editorViews.toc.actions.cui.graphic.LegendUIComposit
 public class LegendUISymbolizerPanel extends LegendUIComponent {
 
 	private final Symbolizer symbolizer;
+
 	private LegendUIMetaFillPanel mFill;
+
 	private LegendUIMetaStrokePanel mStroke;
+
+	private LegendUIMetaRealPanel pOffset;
+
 	private LegendUICompositeGraphicPanel gCollection;
+
 	private TextInput nameInput;
 	private UomInput uomInput;
 
@@ -101,10 +109,32 @@ public class LegendUISymbolizerPanel extends LegendUIComponent {
 
 			mStroke = new LegendUIMetaStrokePanel(controller, this, (StrokeNode) symbolizer, true);
 			mStroke.init();
+
+
+			pOffset = new LegendUIMetaRealPanel("POffset", controller, this, ((AreaSymbolizer)symbolizer).getPerpendicularOffset(), true) {
+
+				@Override
+				public void realChanged(RealParameter newReal) {
+					((AreaSymbolizer)symbolizer).setPerpendicularOffset(newReal);
+				}
+			};
+			pOffset.init();
+
 			//mStroke = new LegendUIMetaStrokePanel(controller, parent, (StrokeNode)symbolizer);
 		} else if (symb instanceof LineSymbolizer) {
 			mStroke = new LegendUIMetaStrokePanel(controller, this, (StrokeNode) symbolizer, false);
 			mStroke.init();
+
+
+			pOffset = new LegendUIMetaRealPanel("POffset", controller, this, ((LineSymbolizer)symbolizer).getPerpendicularOffset(), true) {
+
+				@Override
+				public void realChanged(RealParameter newReal) {
+					((LineSymbolizer)symbolizer).setPerpendicularOffset(newReal);
+				}
+			};
+			pOffset.init();
+
 			//mStroke = new LegendUIMetaStrokePanel(controller, parent, (StrokeNode)symbolizer);
 		} else if (symb instanceof PointSymbolizer) {
 			//graphics = new LegendUIGraphicCollectionPanel(controller, parent, ((PointSymbolizer)symbolizer).getGraphicCollection());
@@ -156,6 +186,10 @@ public class LegendUISymbolizerPanel extends LegendUIComponent {
 		}
 
 		symbEditor.add(topBar);
+
+		if (pOffset != null){
+			symbEditor.add(pOffset);
+		}
 
 		if (mStroke != null) {
 			symbEditor.add(mStroke);

@@ -11,6 +11,7 @@ import org.orbisgis.core.renderer.persistance.se.ObjectFactory;
 import org.gdms.data.feature.Feature;
 import org.gdms.driver.DriverException;
 import org.orbisgis.core.map.MapTransform;
+import org.orbisgis.core.renderer.se.common.ShapeHelper;
 
 
 import org.orbisgis.core.renderer.se.common.Uom;
@@ -27,6 +28,10 @@ import org.orbisgis.core.renderer.se.stroke.Stroke;
 import org.orbisgis.core.renderer.se.transform.Transform;
 
 public final class AreaSymbolizer extends VectorSymbolizer implements FillNode, StrokeNode {
+
+	private RealParameter perpendicularOffset;
+	private Stroke stroke;
+	private Fill fill;
 
 	public AreaSymbolizer() {
 		super();
@@ -124,15 +129,16 @@ public final class AreaSymbolizer extends VectorSymbolizer implements FillNode, 
 
 		if (shapes != null) {
 			for (Shape shp : shapes) {
+				if (perpendicularOffset != null) {
+					double offset = perpendicularOffset.getValue(feat);
+					shp = ShapeHelper.perpendicularOffset(shp, offset);
+				}
+
 				if (fill != null) {
 					fill.draw(g2, shp, feat, selected, mt);
 				}
 
 				if (stroke != null) {
-					if (perpendicularOffset != null) {
-						double offset = perpendicularOffset.getValue(feat);
-						// TODO apply perpendicular offset to shp !
-					}
 					stroke.draw(g2, shp, feat, selected, mt);
 				}
 			}
@@ -172,7 +178,5 @@ public final class AreaSymbolizer extends VectorSymbolizer implements FillNode, 
 
 		return of.createAreaSymbolizer(s);
 	}
-	private RealParameter perpendicularOffset;
-	private Stroke stroke;
-	private Fill fill;
+
 }

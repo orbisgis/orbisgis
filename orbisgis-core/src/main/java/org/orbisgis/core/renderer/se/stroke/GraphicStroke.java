@@ -141,7 +141,7 @@ public final class GraphicStroke extends Stroke implements GraphicNode {
 					Point2D.Double ptB = ShapeHelper.getPointAt(seg, 0.75 * (segLength - gWidth));
 
 					double theta = Math.atan2(ptB.y - ptA.y, ptB.x - ptA.x);
-					System.out.println("("+ ptA.x + ";" + ptA.y +")"  + "(" + ptB.x + ";" + ptB.y+ ")" + "   => Angle: " + (theta/0.0175));
+					//System.out.println("("+ ptA.x + ";" + ptA.y +")"  + "(" + ptB.x + ";" + ptB.y+ ")" + "   => Angle: " + (theta/0.0175));
 
 					switch (rOrient){
 						case LINE:
