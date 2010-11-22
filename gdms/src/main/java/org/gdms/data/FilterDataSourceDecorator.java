@@ -36,7 +36,6 @@
  * or contact directly:
  * info@orbisgis.org
  **/
-
 package org.gdms.data;
 
 import java.util.Collections;
@@ -46,8 +45,12 @@ import org.gdms.data.edition.EditionListener;
 import org.gdms.data.edition.MultipleEditionEvent;
 import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
+import org.gdms.sql.strategies.Instruction;
+import org.gdms.sql.strategies.Operator;
+import org.gdms.sql.strategies.OperatorFilter;
 import org.gdms.sql.strategies.RowMappedDriver;
 import org.gdms.sql.strategies.SQLProcessor;
+import org.gdms.sql.strategies.ScanOperator;
 
 /**
  * This Decorator can filter a underlying DataSource with a SQL Expression.
@@ -67,117 +70,127 @@ import org.gdms.sql.strategies.SQLProcessor;
  */
 public class FilterDataSourceDecorator extends AbstractDataSourceDecorator {
 
-    private RowMappedDriver mapDriver;
-    private String filter;
+        private RowMappedDriver mapDriver;
+        private String filter;
 
-    public FilterDataSourceDecorator(DataSource internalDataSource) throws DriverException {
-        this(internalDataSource, null);
-    }
-
-    public FilterDataSourceDecorator(DataSource internalDataSource, String filter) throws DriverException {
-        super(internalDataSource);
-        setFilter(filter);
-        if (internalDataSource.isEditable()) {
-                internalDataSource.addEditionListener(new FilterDataSourceDecoratorEditionListener());
+        public FilterDataSourceDecorator(DataSource internalDataSource) throws DriverException {
+                this(internalDataSource, null);
         }
-    }
 
-    @Override
-    public Value getFieldValue(long rowIndex, int fieldId) throws DriverException {
-        if (mapDriver == null) {
-            throw new DriverException("This datasource is closed. it has to be opened to call this method.");
+        public FilterDataSourceDecorator(DataSource internalDataSource, String filter) throws DriverException {
+                super(internalDataSource);
+                setFilter(filter);
+                if (internalDataSource.isEditable()) {
+                        internalDataSource.addEditionListener(new FilterDataSourceDecoratorEditionListener());
+                }
         }
-        return mapDriver.getFieldValue(rowIndex, fieldId);
-    }
 
-    /**
-     * Returns the index in the original datasource (unfiltered). This index
-     * is kept in memory only, it is NOT written to disk.
-     * {@inheritDoc}
-     */
-    public long getOriginalIndex(long rowIndex) throws DriverException {
-        if (mapDriver == null) {
-            mapDriver = getMapDriver();
+        @Override
+        public Value getFieldValue(long rowIndex, int fieldId) throws DriverException {
+                if (mapDriver == null) {
+                        throw new DriverException("This datasource is closed. it has to be opened to call this method.");
+                }
+                return mapDriver.getFieldValue(rowIndex, fieldId);
         }
-        return mapDriver.getOriginalIndex(rowIndex);
-    }
 
-    @Override
-    public long getRowCount() throws DriverException {
-        if (mapDriver == null) {
-            mapDriver = getMapDriver();
+        /**
+         * Returns the index in the original datasource (unfiltered). This index
+         * is kept in memory only, it is NOT written to disk.
+         * {@inheritDoc}
+         */
+        public long getOriginalIndex(long rowIndex) throws DriverException {
+                if (mapDriver == null) {
+                        mapDriver = getMapDriver();
+                }
+                return mapDriver.getOriginalIndex(rowIndex);
         }
-        return mapDriver.getRowCount();
-    }
 
-    @Override
-    public void open() throws DriverException {
-        if (mapDriver == null) {
-            mapDriver = getMapDriver();
+        @Override
+        public long getRowCount() throws DriverException {
+                if (mapDriver == null) {
+                        mapDriver = getMapDriver();
+                }
+                return mapDriver.getRowCount();
         }
-        getDataSource().open();
-    }
 
-    @Override
-    public void close() throws DriverException, AlreadyClosedException {
-        getDataSource().close();
-    }
-
-
-
-    /**
-     * Returns the Driver used by the SelectionOp when processing the query
-     * @return the driver
-     * @throws DriverException
-     */
-    private RowMappedDriver getMapDriver() throws DriverException {
-        if (getFilter() == null || getFilter().isEmpty()) {
-            throw new NullPointerException("The filter condition cannot be null or empty.");
+        @Override
+        public void open() throws DriverException {
+                if (mapDriver == null) {
+                        mapDriver = getMapDriver();
+                }
+                getDataSource().open();
         }
-        String rq = "SELECT * FROM " + getDataSource().getName() + " WHERE " + filter + ";";
-        SQLProcessor p = new SQLProcessor(getDataSourceFactory());
-        try {
-            return (RowMappedDriver) p.execute(rq, null);
-        } catch (Exception ex) {
-            throw new DriverException(ex);
+
+        @Override
+        public void close() throws DriverException, AlreadyClosedException {
+                getDataSource().close();
         }
-    }
 
-    /**
-     * @return the filter
-     */
-    public String getFilter() {
-        return filter;
-    }
+        /**
+         * Returns the Driver used by the SelectionOp when processing the query
+         * @return the driver
+         * @throws DriverException
+         */
+        private RowMappedDriver getMapDriver() throws DriverException {
+                if (getFilter() == null || getFilter().isEmpty()) {
+                        throw new NullPointerException("The filter condition cannot be null or empty.");
+                }
+                String rq = "SELECT * FROM " + getDataSource().getName() + " WHERE " + filter + ";";
+                SQLProcessor p = new SQLProcessor(getDataSourceFactory());
+                try {
+                        Operator op = p.parse(rq);
+                        Operator[] ops = op.getOperators(new OperatorFilter() {
 
-    /**
-     * @param filter the filter to set
-     */
-    public final void setFilter(String filter) {
-        this.filter = filter == null ? "" : filter;
-    }
-
-    /**
-     * Returns the readonly list of rowIndexes from the original datasource
-     * that correspond to the filtered results
-     * @return
-     * @throws DriverException
-     */
-    public List<Integer> getIndexMap() throws DriverException {
-        if (mapDriver == null) {
-            mapDriver = getMapDriver();
+                                @Override
+                                public boolean accept(Operator op) {
+                                        return op instanceof ScanOperator;
+                                }
+                        });
+                        ScanOperator scan = (ScanOperator) ops[0];
+                        scan.setDataSource(getDataSource());
+                        op.initialize();
+                        Instruction instr = p.prepareInstruction(op, rq, false);
+                        return (RowMappedDriver) instr.execute(null);
+                } catch (Exception ex) {
+                        throw new DriverException(ex);
+                }
         }
-        return Collections.unmodifiableList(mapDriver.getIndexMap());
-    }
 
-    private class FilterDataSourceDecoratorEditionListener implements EditionListener {
+        /**
+         * @return the filter
+         */
+        public String getFilter() {
+                return filter;
+        }
+
+        /**
+         * @param filter the filter to set
+         */
+        public final void setFilter(String filter) {
+                this.filter = filter == null ? "" : filter;
+        }
+
+        /**
+         * Returns the readonly list of rowIndexes from the original datasource
+         * that correspond to the filtered results
+         * @return
+         * @throws DriverException
+         */
+        public List<Integer> getIndexMap() throws DriverException {
+                if (mapDriver == null) {
+                        mapDriver = getMapDriver();
+                }
+                return Collections.unmodifiableList(mapDriver.getIndexMap());
+        }
+
+        private class FilterDataSourceDecoratorEditionListener implements EditionListener {
 
                 @Override
                 public void singleModification(EditionEvent e) {
                         if (e.getType() == EditionEvent.DELETE) {
-                               mapDriver.getIndexMap().remove((Integer)(int)e.getRowIndex());
+                                mapDriver.getIndexMap().remove((Integer) (int) e.getRowIndex());
                         } else {
-                              mapDriver = null;
+                                mapDriver = null;
                         }
                 }
 
@@ -190,5 +203,5 @@ public class FilterDataSourceDecorator extends AbstractDataSourceDecorator {
                                 singleModification(e.getEvents()[i]);
                         }
                 }
-    }
+        }
 }
