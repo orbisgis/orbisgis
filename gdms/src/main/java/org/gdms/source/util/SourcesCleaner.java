@@ -13,7 +13,7 @@
  *
  * Copyright (C) 2007 Erwan BOCHER, Fernando GONZALEZ CORTES, Thomas LEDUC
  *
- * Copyright (C) 2010 Erwan BOCHER, Pierre-Yves FADET, Alexis GUEGANNO, Maxence LAURENT
+ * Copyright (C) 2010 Erwan BOCHER, Pierre-Yves FADET, Alexis GUEGANNO, Antoine GOURLAY, Maxence LAURENT
  *
  * This file is part of OrbisGIS.
  *
@@ -32,18 +32,14 @@
  * For more information, please consult: <http://www.orbisgis.org/>
  *
  * or contact directly:
- * erwan.bocher _at_ ec-nantes.fr
- * gwendall.petit _at_ ec-nantes.fr
+ * info _at_ orbisgis.org
  */
 package org.gdms.source.util;
 
 import java.io.File;
 import java.io.IOException;
 
-import org.gdms.data.DataSource;
-import org.gdms.data.DataSourceCreationException;
 import org.gdms.data.DataSourceDefinition;
-import org.gdms.data.NoSuchTableException;
 import org.gdms.data.SQLSourceDefinition;
 import org.gdms.data.db.DBTableSourceDefinition;
 import org.gdms.data.file.FileSourceDefinition;
