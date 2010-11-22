@@ -42,15 +42,14 @@ import org.gdms.data.types.GeometryConstraint;
 import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
-import org.gdms.data.values.ValueCollection;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.sql.ColumnValue;
 import org.gdms.sql.FunctionTest;
+import org.gdms.sql.function.spatial.geometry.convert.ST_Centroid;
 import org.gdms.sql.function.spatial.geometry.convert.ST_Force_2D;
 import org.gdms.sql.function.spatial.geometry.convert.ST_Force_3D;
 import org.gdms.sql.function.spatial.geometry.convert.ST_ToMultiLine;
 import org.gdms.sql.function.spatial.geometry.convert.ST_ToMultiPoint;
-import org.gdms.sql.function.spatial.geometry.convert.ST_Centroid;
 import org.gdms.sql.function.spatial.geometry.convert.ST_ToMultiSegments;
 import org.gdms.sql.function.spatial.geometry.create.ST_Boundary;
 import org.gdms.sql.strategies.IncompatibleTypesException;
@@ -99,10 +98,13 @@ public class SpatialFunctionTest extends FunctionTest {
 
 		// Test coordinates
 		try {
-			res = evaluate(function, ValueFactory.createValue(true));
+			res = evaluate(function, new ColumnValue(Type.GEOMETRY,
+					ValueFactory.createValue(JTSPoint3D)));
 			Coordinate coordResult = res.getAsGeometry().getCoordinate();
 
 			Coordinate coordSource = JTSPoint3D.getCoordinate();
+
+			System.out.println(JTSPoint3D.getCoordinate().z);
 			assertTrue(coordResult.equals2D(coordSource));
 
 		} catch (IncompatibleTypesException e) {
