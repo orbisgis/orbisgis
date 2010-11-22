@@ -4,12 +4,6 @@ import java.io.File;
 
 import org.gdms.SourceTest;
 import org.gdms.data.DataSource;
-import org.gdms.data.DataSourceCreationException;
-import org.gdms.data.crs.SpatialReferenceSystem;
-import org.gdms.driver.DriverException;
-import org.gdms.driver.driverManager.DriverLoadException;
-import org.gdms.sql.parser.ParseException;
-import org.gdms.sql.strategies.SemanticException;
 
 import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.io.WKTReader;

@@ -61,7 +61,7 @@ public class SpatialDataSourceDecorator extends AbstractDataSourceDecorator {
 	/**
 	 * Gets the full extent of the data accessed
 	 * 
-	 * @return Rectangle2D
+	 * @return Envelope
 	 * 
 	 * @throws DriverException
 	 *             if the operation fails
