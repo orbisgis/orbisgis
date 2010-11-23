@@ -866,7 +866,7 @@ public class TableComponent extends JPanel implements WorkbenchFrame {
 			component.repaint();
 			if (e.isPopupTrigger()) {
 				JComponent[] menus = null;
-				final JPopupMenu pop = getPopupMenu();
+				final JPopupMenu pop = getPopupMenu();				
 				menus = wbContext.getWorkbench().getFrame()
 						.getMenuTableTreePopup().getJMenus();
 				for (JComponent menu : menus) {

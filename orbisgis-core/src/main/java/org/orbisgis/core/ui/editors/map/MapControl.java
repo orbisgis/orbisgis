@@ -244,47 +244,47 @@ public class MapControl extends JComponent implements ComponentListener,
 	protected void paintComponent(Graphics g) {
 		BufferedImage mapTransformImage = mapTransform.getImage();
 
-                // we always fill the Graphics with an opaque color
-                // before drawing anything.
-                g.setColor(backColor);
+		// we always fill the Graphics with an opaque color
+		// before drawing anything.
+		g.setColor(backColor);
 		g.fillRect(0, 0, getWidth(), getHeight());
 
-                // then we render on top the already computed image
-                // if it exists
+		// then we render on top the already computed image
+		// if it exists
 		if (mapTransformImage != null) {
 			g.drawImage(mapTransformImage, 0, 0, null);
 			toolManager.paintEdition(g);
-		} 
+		}
 
-
-                // if the image itself is dirty
-		if (status == DIRTY) {		
+		// if the image itself is dirty
+		if (status == DIRTY) {
 			status = UPDATED;
 
-                        // is never null, except at first loading with no layer
-                        // in that case we do not draw anything
+			// is never null, except at first loading with no layer
+			// in that case we do not draw anything
 			if (mapTransform.getAdjustedExtent() != null) {
-                                int width = this.getWidth();
-                                int height = this.getHeight();
+				int width = this.getWidth();
+				int height = this.getHeight();
 
-                                // getting an image to draw in
-                                GraphicsConfiguration configuration = GraphicsEnvironment
-					.getLocalGraphicsEnvironment().getDefaultScreenDevice()
-					.getDefaultConfiguration();
-                                BufferedImage inProcessImage = configuration.createCompatibleImage(
-					width, height, BufferedImage.TYPE_INT_ARGB);
+				// getting an image to draw in
+				GraphicsConfiguration configuration = GraphicsEnvironment
+						.getLocalGraphicsEnvironment().getDefaultScreenDevice()
+						.getDefaultConfiguration();
+				BufferedImage inProcessImage = configuration
+						.createCompatibleImage(width, height,
+								BufferedImage.TYPE_INT_ARGB);
 
-                                Graphics gImg = inProcessImage.createGraphics();
+				Graphics gImg = inProcessImage.createGraphics();
 
-                                // filling image
-                                gImg.setColor(backColor);
-                                gImg.fillRect(0, 0, getWidth(), getHeight());
+				// filling image
+				gImg.setColor(backColor);
+				gImg.fillRect(0, 0, getWidth(), getHeight());
 
-                                // this is the new image
-                                // mapTransform will update the AffineTransform
+				// this is the new image
+				// mapTransform will update the AffineTransform
 				mapTransform.setImage(inProcessImage);
 
-                                // let's show the rendering while it is being made
+				// let's show the rendering while it is being made
 				Timer timer = new Timer(200, new ActionListener() {
 
 					@Override
@@ -293,9 +293,10 @@ public class MapControl extends JComponent implements ComponentListener,
 					}
 				});
 				timer.start();
-                                // now we start the actual drawer
+				// now we start the actual drawer
 				drawer = new Drawer(timer);
-				BackgroundManager bm = Services.getService(BackgroundManager.class);
+				BackgroundManager bm = Services
+						.getService(BackgroundManager.class);
 				bm.nonBlockingBackgroundOperation(new DefaultJobId(
 						"org.orbisgis.jobs.MapControl-" + processId), drawer);
 				// bm.addBackgroundListener( Services.getService(
@@ -479,7 +480,7 @@ public class MapControl extends JComponent implements ComponentListener,
 		public void layerAdded(LayerCollectionEvent listener) {
 			for (ILayer layer : listener.getAffected()) {
 				addLayerListenerRecursively(layer, this);
-				if (mapTransform.getAdjustedExtent() == null) {
+				if (mapTransform.getExtent() == null) {
 					final Envelope e = layer.getEnvelope();
 					if (e != null) {
 						mapTransform.setExtent(e);
