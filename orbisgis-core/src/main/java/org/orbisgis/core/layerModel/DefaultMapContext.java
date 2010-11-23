@@ -99,7 +99,6 @@ public class DefaultMapContext implements MapContext {
 		DataManager dataManager = (DataManager) Services
 				.getService(DataManager.class);
 		setRoot(dataManager.createLayerCollection("root"));
-		setBoundingBox(new Envelope());
 		this.jaxbMapContext = null;
 		idTime = System.currentTimeMillis();
 	}
@@ -218,7 +217,8 @@ public class DefaultMapContext implements MapContext {
 				}
 			}
 
-			selectedLayers = newSelection.toArray(new ILayer[newSelection.size()]);
+			selectedLayers = newSelection.toArray(new ILayer[newSelection
+					.size()]);
 		}
 	}
 
