@@ -401,7 +401,7 @@ public class TableComponent extends JPanel implements WorkbenchFrame {
 						.getText("orbisgis.org.orbisgis.core.ui.editors.table.TableComponent.put_a_sqlwhere"));
 		txtFilter
 				.setToolTipText(I18N
-						.getText("orbisgis.org.orbisgis.core.ui.editors.table.TableComponent.searchEnter"));
+						.getText("orbisgis.org.orbisgis.core.ui.editors.table.TableComponent.searchCtrlEnter"));
 		txtFilter.addKeyListener(new KeyListener() {
 
 			@Override
