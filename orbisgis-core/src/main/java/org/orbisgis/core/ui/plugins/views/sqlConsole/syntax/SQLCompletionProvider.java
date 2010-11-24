@@ -512,7 +512,7 @@ public class SQLCompletionProvider extends DefaultCompletionProvider implements 
          */
         private String ReadCurrentWord(String content) {
 
-                
+
                 if (content.trim().endsWith(",")) {
                         return ",";
                 }
@@ -538,6 +538,31 @@ public class SQLCompletionProvider extends DefaultCompletionProvider implements 
                 try {
                         String content = textC.getDocument().getText(0, textC.getCaretPosition());
 
+                        // removing multi-line comments
+                        int sComm = content.indexOf("/*");
+                        int eComm = content.indexOf("*/");
+                        if (eComm < sComm) {
+                                content = content.substring(sComm);
+                                sComm = content.indexOf("/*");
+                                eComm = content.indexOf("*/");
+                        }
+                        while (sComm != -1) {
+                                if (eComm != - 1) {
+                                        if (eComm < sComm) {
+                                                content = content.substring(sComm);
+                                                sComm = content.indexOf("/*");
+                                                eComm = content.indexOf("*/");
+                                        }
+                                        content = content.substring(0, sComm)
+                                                + content.substring(eComm + 2);
+                                } else {
+                                        content = content.substring(0, sComm);
+                                }
+                                sComm = content.indexOf("/*");
+                                eComm = content.indexOf("*/");
+                        }
+
+                        // removing single-line comments
                         int comm = content.indexOf("--");
                         int ret = content.indexOf('\n');
                         while (comm != -1) {
@@ -551,6 +576,7 @@ public class SQLCompletionProvider extends DefaultCompletionProvider implements 
                                 comm = content.indexOf("--");
                                 ret = content.indexOf('\n', comm + 2);
                         }
+
                         while (content.contains("\n\n")) {
                                 content = content.replace("\n\n", "\n");
                         }
