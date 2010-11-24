@@ -127,7 +127,6 @@ public class JobWindow extends JPanel {
 		progressPanel.setLayout(new CRFlowLayout());
 		JScrollPane scrollPane = new JScrollPane(progressPanel);
 		window.requestFocus();
-		window.setAlwaysOnTop(true);
 		window.addFocusListener(new FocusAdapter() {
 			public void focusGained(FocusEvent e) {
 				window.dispatchEvent(new WindowEvent(window,
