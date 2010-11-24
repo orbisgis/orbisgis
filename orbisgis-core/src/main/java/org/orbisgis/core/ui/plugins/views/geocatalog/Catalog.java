@@ -298,7 +298,7 @@ public class Catalog extends JPanel implements DragGestureListener,
 		listModel.getFilters().add(filter);
 
 		filter = new GeocatalogFilterDecorator("geocatalog.filters.GeoFilter",
-				I18N.getText("orbisgis.org.orbisgis.core.ui.plugins.views.geocatalog.geofilter"), new GeoFilter());
+				I18N.getText("orbisgis.org.orbisgis.core.ui.plugins.views.geocatalog.geoFilter"), new GeoFilter());
 		listModel.getFilters().add(filter);
 
 		filter = new GeocatalogFilterDecorator(
