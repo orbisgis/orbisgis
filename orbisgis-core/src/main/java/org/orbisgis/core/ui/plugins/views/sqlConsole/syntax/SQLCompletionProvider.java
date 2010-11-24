@@ -42,6 +42,7 @@ import java.io.ByteArrayInputStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
+import javax.swing.JTextArea;
 import javax.swing.event.CaretEvent;
 import javax.swing.event.CaretListener;
 import javax.swing.text.BadLocationException;
@@ -126,14 +127,10 @@ public class SQLCompletionProvider extends DefaultCompletionProvider implements 
          */
         @Override
         public void caretUpdate(CaretEvent ce) {
-                String content = "";
-                try {
-                        // get all text to caret
-                        content = textC.getDocument().getText(0, textC.getCaretPosition());
-                } catch (BadLocationException ex) {
-                        // never happens !
-                        return;
-                }
+                String content;
+
+                // get all text to caret
+                content = getTextContent();
 
                 // closes the list when :
                 // - right after a ; --> end of SQL Statement
@@ -145,9 +142,6 @@ public class SQLCompletionProvider extends DefaultCompletionProvider implements 
                         auto.hideChildWindows();
                 }
 
-                if (rootText != null) {
-                        content = rootText.trim() + ' ' + content;
-                }
 
                 doCompletion(content);
         }
@@ -157,11 +151,17 @@ public class SQLCompletionProvider extends DefaultCompletionProvider implements 
          * @param content text on which completion is done
          */
         private void doCompletion(String content) {
+                // no completion in a comment
+                if (isWithinComment()) {
+                        clear();
+                        return;
+                }
+
                 // get the correct part of the text
                 String sql = getCurrentSQLStatement(content);
 
                 // check if we moved enough the caret to have to refill the list
-                String word = ReadCurrentWord();
+                String word = ReadCurrentWord(sql);
 
                 if (word.startsWith(",")) {
                         clear();
@@ -225,7 +225,7 @@ public class SQLCompletionProvider extends DefaultCompletionProvider implements 
                         }
 
                         // SQL Statement not complete, auto-completion needed
-                        doNormalCompletion(e,sql,tableFielsdToo);
+                        doNormalCompletion(e, sql, tableFielsdToo);
                 } catch (TokenMgrError e) {
                         // never happens, but still...
                 }
@@ -315,7 +315,7 @@ public class SQLCompletionProvider extends DefaultCompletionProvider implements 
                 }
 
 
-                
+
                 if (tokenKind == SQLEngineConstants.WHERE || tokenKind == SQLEngineConstants.SELECT) {
                         tableWithFields = true;
                 }
@@ -385,7 +385,7 @@ public class SQLCompletionProvider extends DefaultCompletionProvider implements 
         private ArrayList getSourceNamesCompletion(boolean addfields) {
                 ArrayList a = new ArrayList();
                 // adds the source names
-                DataManager dataManager = (DataManager) Services.getService(DataManager.class);
+                DataManager dataManager = Services.getService(DataManager.class);
                 String[] s = dataManager.getSourceManager().getSourceNames();
                 for (int i = 0; i < s.length; i++) {
                         if (!s[i].startsWith("gdms")) {
@@ -488,7 +488,7 @@ public class SQLCompletionProvider extends DefaultCompletionProvider implements 
          * @return the <code>Metadata</code> object containing the field names and types
          */
         private Metadata getMetadataForDataSource(String sourceName) {
-                DataManager dataManager = (DataManager) Services.getService(DataManager.class);
+                DataManager dataManager = Services.getService(DataManager.class);
                 DataSourceFactory dsf = dataManager.getDataSourceFactory();
                 SQLProcessor sqlProcessor = new SQLProcessor(dsf);
 
@@ -510,18 +510,9 @@ public class SQLCompletionProvider extends DefaultCompletionProvider implements 
          *  dot, ..., but not whitespace
          * @return the word
          */
-        private String ReadCurrentWord() {
-                String content;
-                try {
-                        // get all text to caret
-                        content = textC.getDocument().getText(0, textC.getCaretPosition()).replace('\n', ' ');
-                        if (rootText != null) {
-                                content = rootText.trim() + ' ' + content;
-                        }
-                } catch (BadLocationException ex) {
-                        // never happens !
-                        return "";
-                }
+        private String ReadCurrentWord(String content) {
+
+                
                 if (content.trim().endsWith(",")) {
                         return ",";
                 }
@@ -541,6 +532,40 @@ public class SQLCompletionProvider extends DefaultCompletionProvider implements 
                         return "";
                 }
                 return content.substring(start, content.length());
+        }
+
+        private String getTextContent() {
+                try {
+                        String content = textC.getDocument().getText(0, textC.getCaretPosition());
+
+                        int comm = content.indexOf("--");
+                        int ret = content.indexOf('\n');
+                        while (comm != -1) {
+                                if (ret != - 1) {
+                                        content = content.substring(0, comm)
+                                                + content.substring(ret);
+                                } else {
+                                        content = content.substring(0, comm);
+                                }
+
+                                comm = content.indexOf("--");
+                                ret = content.indexOf('\n', comm + 2);
+                        }
+                        while (content.contains("\n\n")) {
+                                content = content.replace("\n\n", "\n");
+                        }
+                        if (content.endsWith("\n")) {
+                                content = content.substring(0, content.length() - 1);
+                        }
+
+                        if (rootText != null) {
+                                content = rootText.trim() + ' ' + content;
+                        }
+
+                        return content;
+                } catch (BadLocationException ex) {
+                        return "";
+                }
         }
 
         /**
@@ -563,16 +588,13 @@ public class SQLCompletionProvider extends DefaultCompletionProvider implements 
          */
         private boolean isAfterWhereStatement() {
                 String content;
-                try {
-                        // get all text to caret
-                        content = textC.getDocument().getText(0, textC.getCaretPosition()).replace('\n', ' ');
-                        if (rootText != null) {
-                                content = rootText.trim() + ' ' + content;
-                        }
-                } catch (BadLocationException ex) {
-                        // never happens !
-                        return false;
+
+                // get all text to caret
+                content = getTextContent().replace('\n', ' ');
+                if (rootText != null) {
+                        content = rootText.trim() + ' ' + content;
                 }
+
                 int wPos = content.toLowerCase().lastIndexOf("where");
                 if (wPos == -1) {
                         return false;
@@ -586,5 +608,22 @@ public class SQLCompletionProvider extends DefaultCompletionProvider implements 
                         }
                 }
                 return true;
+        }
+
+        private boolean isWithinComment() {
+                try {
+                        String content = textC.getDocument().getText(0, textC.getCaretPosition());
+                        if (textC instanceof JTextArea) {
+                                JTextArea area = (JTextArea) textC;
+                                int comm = content.lastIndexOf("--");
+
+                                int line = area.getLineOfOffset(comm);
+
+                                return line == area.getLineOfOffset(area.getCaretPosition());
+
+                        }
+                } catch (BadLocationException ex) {
+                }
+                return false;
         }
 }
