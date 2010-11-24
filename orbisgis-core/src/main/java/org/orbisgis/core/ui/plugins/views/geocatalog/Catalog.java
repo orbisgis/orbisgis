@@ -101,6 +101,7 @@ import org.orbisgis.core.ui.plugins.views.geocatalog.filters.VectorialFilter;
 import org.orbisgis.core.ui.plugins.views.geocatalog.filters.WMSFilter;
 import org.orbisgis.core.ui.preferences.lookandfeel.OrbisGISIcon;
 import org.orbisgis.utils.CollectionUtils;
+import org.orbisgis.utils.I18N;
 
 public class Catalog extends JPanel implements DragGestureListener,
 		DragSourceListener, WorkbenchFrame {
@@ -269,7 +270,7 @@ public class Catalog extends JPanel implements DragGestureListener,
 		c.weightx = 1;
 		c.weighty = 0;
 		c.gridwidth = 2;
-		pnlFilters.add(new JLabel("Tip: Unselect with 'Ctrl'+" + "'click'"), c);
+		pnlFilters.add(new JLabel(I18N.getText("orbisgis.org.orbisgis.core.ui.plugins.views.geocatalog.openFilter")), c);
 		c.fill = GridBagConstraints.BOTH;
 		c.weightx = 0.5;
 		c.weighty = 1;
@@ -284,50 +285,50 @@ public class Catalog extends JPanel implements DragGestureListener,
 
 	private JPanel getFilterPanel() {
 		JPanel ret = new JPanel();
-		ret.setBorder(BorderFactory.createTitledBorder("Filters"));
+		ret.setBorder(BorderFactory.createTitledBorder(I18N.getText("orbisgis.org.orbisgis.core.ui.plugins.views.geocatalog.filters")));
 		ret.setLayout(new BorderLayout());
 
 		GeocatalogFilterDecorator filter = new GeocatalogFilterDecorator(
-				"geocatalog.filters.AllFilter", "All*", new AllFilter());
+				"geocatalog.filters.AllFilter", I18N.getText("orbisgis.org.orbisgis.core.ui.plugins.views.geocatalog.allFilter"), new AllFilter());
 		listModel.getFilters().add(filter);
 
 		filter = new GeocatalogFilterDecorator(
-				"geocatalog.filters.AllExcludeSystemTable", "All",
+				"geocatalog.filters.AllExcludeSystemTable", I18N.getText("orbisgis.org.orbisgis.core.ui.plugins.views.geocatalog.allExceptFilter"),
 				new AllExcludeSytemTableFilter());
 		listModel.getFilters().add(filter);
 
 		filter = new GeocatalogFilterDecorator("geocatalog.filters.GeoFilter",
-				"Geo", new GeoFilter());
+				I18N.getText("orbisgis.org.orbisgis.core.ui.plugins.views.geocatalog.geofilter"), new GeoFilter());
 		listModel.getFilters().add(filter);
 
 		filter = new GeocatalogFilterDecorator(
-				"geocatalog.filters.FilesFilter", "Files", new FilesFilter());
+				"geocatalog.filters.FilesFilter", I18N.getText("orbisgis.org.orbisgis.core.ui.plugins.views.geocatalog.fileFilter"), new FilesFilter());
 		listModel.getFilters().add(filter);
 
 		filter = new GeocatalogFilterDecorator("geocatalog.filters.DBsFilter",
-				"Databases", new DBsFilter());
+				I18N.getText("orbisgis.org.orbisgis.core.ui.plugins.views.geocatalog.dbFilter"), new DBsFilter());
 		listModel.getFilters().add(filter);
 
 		filter = new GeocatalogFilterDecorator(
-				"geocatalog.filters.AlphanumericFilter", "Alphanumeric",
+				"geocatalog.filters.AlphanumericFilter", I18N.getText("orbisgis.org.orbisgis.core.ui.plugins.views.geocatalog.alphanumericFilter"),
 				new AlphanumericFilter());
 		listModel.getFilters().add(filter);
 
 		filter = new GeocatalogFilterDecorator("geocatalog.filters.WMSFilter",
-				"WMS", new WMSFilter());
+				I18N.getText("orbisgis.org.orbisgis.core.ui.plugins.views.geocatalog.wmsFilter"), new WMSFilter());
 		listModel.getFilters().add(filter);
 
 		filter = new GeocatalogFilterDecorator(
-				"geocatalog.filters.RasterFilter", "Raster", new RasterFilter());
+				"geocatalog.filters.RasterFilter", I18N.getText("orbisgis.org.orbisgis.core.ui.plugins.views.geocatalog.rasterFilter"), new RasterFilter());
 		listModel.getFilters().add(filter);
 
 		filter = new GeocatalogFilterDecorator(
-				"geocatalog.filters.VectorialFilter", "Vectorial",
+				"geocatalog.filters.VectorialFilter", I18N.getText("orbisgis.org.orbisgis.core.ui.plugins.views.geocatalog.vectorialFilter"),
 				new VectorialFilter());
 		listModel.getFilters().add(filter);
 
 		filter = new GeocatalogFilterDecorator(
-				"geocatalog.filters.SystemTableFilter", "System table",
+				"geocatalog.filters.SystemTableFilter",I18N.getText("orbisgis.org.orbisgis.core.ui.plugins.views.geocatalog.systemTableFilter"),
 				new TableSystemFilter());
 		listModel.getFilters().add(filter);
 
@@ -361,7 +362,7 @@ public class Catalog extends JPanel implements DragGestureListener,
 
 	private JPanel getTagPanel() {
 		JPanel ret = new JPanel();
-		ret.setBorder(BorderFactory.createTitledBorder("Labels"));
+		ret.setBorder(BorderFactory.createTitledBorder(I18N.getText("orbisgis.org.orbisgis.core.ui.plugins.views.geocatalog.tags")));
 		ret.setLayout(new BorderLayout());
 		lstTags = new JList();
 		tagListModel = new DefaultListModel();
@@ -408,7 +409,7 @@ public class Catalog extends JPanel implements DragGestureListener,
 
 			public void actionPerformed(ActionEvent e) {
 				if (AC_BTN_ADD_TAG.equals(e.getActionCommand())) {
-					AskValue av = new AskValue("New label", null, null);
+					AskValue av = new AskValue(I18N.getText("orbisgis.org.orbisgis.core.ui.plugins.views.geocatalog.newTag"), null, null);
 					if (UIFactory.showDialog(av)) {
 						String tagText = av.getValue();
 						addTag(tagText);
@@ -441,7 +442,7 @@ public class Catalog extends JPanel implements DragGestureListener,
 		}
 
 		if (!tagSources.isEmpty() && lstSources.getSelectedIndices().length > 0) {
-			JMenu menu = new JMenu("Tag");
+			JMenu menu = new JMenu(I18N.getText("orbisgis.org.orbisgis.core.ui.plugins.views.geocatalog.tag"));
 			Iterator<String> tagsIterator = tagSources.keySet().iterator();
 			while (tagsIterator.hasNext()) {
 				String tag = tagsIterator.next();
