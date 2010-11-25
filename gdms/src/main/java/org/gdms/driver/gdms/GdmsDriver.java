@@ -103,6 +103,9 @@ public class GdmsDriver extends GDMSModelDriver implements FileReadWriteDriver {
         }
 
         public Metadata getMetadata() throws DriverException {
+                if (reader == null) {
+                        return null;
+                }
                 return reader.getMetadata();
         }
 
