@@ -134,10 +134,7 @@ public class MapEditorPlugIn extends ViewPlugIn implements WorkbenchFrame,
 
 	public void setElement(EditableElement element) {
 		MapContext mapContext = (MapContext) element.getObject();
-		try {
-			if (mapContext.getBoundingBox()==null){
-				mapContext = new DefaultMapContext();				
-			}
+		try {			
 			mapControl.setMapContext(mapContext);
 			mapControl.setElement(element);
 			mapControl.setDefaultTool(getIndependentToolInstance(defaultTool,
