@@ -6,6 +6,7 @@ package org.orbisgis.core.ui.plugins.toc;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.gdms.data.SpatialDataSourceDecorator;
 import org.gdms.data.types.Constraint;
 import org.gdms.data.types.GeometryConstraint;
 import org.gdms.data.types.Type;
@@ -89,8 +90,10 @@ public class CreateChoroplethPlugIn extends AbstractPlugIn {
 			ILayer[] selectedResources = mapContext.getSelectedLayers();
 			try {
 				// Only 1 layer is selected, ans it's a layer of polygons
-				return (selectedResources.length == 1
-						&& selectedResources[0].getDataSource().getGeometry(0).getGeometryType().contains("Polygon"));
+				if (selectedResources.length == 1){
+					SpatialDataSourceDecorator sds = selectedResources[0].getDataSource();
+					return sds.getRowCount() > 0 && sds.getGeometry(0).getGeometryType().contains("Polygon");
+				}
 			} catch (DriverException ex) {
 				return false;
 			}
