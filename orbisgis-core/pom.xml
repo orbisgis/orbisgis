@@ -11,7 +11,7 @@
 	<artifactId>orbisgis-core</artifactId>
 	<name>orbisgis-core</name>
 	<version>3.0</version>
-	<url>http://maven.apache.org</url>
+	<url>http://orbisgis.org</url>
 	<dependencies>
 		<dependency>
 			<groupId>junit</groupId>
