@@ -96,6 +96,9 @@ public interface SourceManager {
 	 */
 	public static final int WMS = 64;
 
+	/**
+	 * The source is a system table
+	 */
 	public static final int SYSTEM_TABLE = 128;
 
 	/**
