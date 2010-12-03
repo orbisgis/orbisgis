@@ -54,7 +54,7 @@ import java.util.ArrayList;
  */
 public class ShapeHelper {
 
-	public static final double _0_0175 = 180/Math.PI;
+	public static final double _0_0175 = Math.PI/180.0;
 
 	/**
 	 * Compute the perimeter of the shape
@@ -313,10 +313,21 @@ public class ShapeHelper {
 				// BC line orientation
 				double beta = Math.atan2(y.get(i+1) - y.get(i), x.get(i+1) - x.get(i));
 
+				System.out.println ("Alpha: " + alpha / _0_0175);
+				System.out.println ("Beta: " + beta / _0_0175);
+
 				// ABC Angle
 				gamma = alpha - beta;
 
-				if (       offset < 0 && gamma > Math.PI
+				System.out.println ("gamma: " + gamma / _0_0175);
+
+				System.out.println ("Offset: " + offset);
+
+
+				if (offset < 0 && gamma > Math.PI
+
+				//if (Math.abs(gamma) > _0_0175
+				//	&& (   offset < 0 && gamma > Math.PI
 						|| offset > 0 && gamma < Math.PI
 						|| offset < 0 && gamma < 0 && gamma > -Math.PI){
 
@@ -382,10 +393,26 @@ public class ShapeHelper {
 
 					double h = Math.sqrt(dx*dx + dy*dy);
 
-					double x3 = x.get(i) + dx*absOffset / h;
-					double y3 = y.get(i) + dy*absOffset / h;
+					double x3;
+					double y3;
+
+					System.out.println ("H: " + h);
+
+					if (Math.abs(h) < 0.001){
+						dx = x.get(i) - x1;
+						dy = y.get(i) - y1;
+						x3 = x.get(i) + dy;
+						y3 = y.get(i) - dx;
+					} else {
+						x3 = x.get(i) + dx*absOffset / h;
+						y3 = y.get(i) + dy*absOffset / h;
+					}
 
 					newShp.quadTo(x3, y3, x2, y2);
+
+					System.out.println ("A: " + x1 + " " + y1);
+					System.out.println ("B: " + x2 + " " + y2);
+					System.out.println ("Ctrl: " + x3 + " " + y3);
 				}
 			}
 		}

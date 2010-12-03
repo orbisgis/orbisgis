@@ -39,7 +39,6 @@
 
 package org.orbisgis.core.renderer.se.common;
 
-import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.FontFormatException;
 import java.awt.Shape;

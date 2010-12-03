@@ -29,6 +29,11 @@ import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
 
 public final class GraphicFill extends Fill implements UomNode {
 
+    private GraphicCollection graphic;
+    private Uom uom;
+    private RealParameter gapX;
+    private RealParameter gapY;
+
     public GraphicFill() {
         this.setGapX(null);
         this.setGapY(null);
@@ -210,8 +215,4 @@ public final class GraphicFill extends Fill implements UomNode {
         ObjectFactory of = new ObjectFactory();
         return of.createGraphicFill(this.getJAXBType());
     }
-    private GraphicCollection graphic;
-    private Uom uom;
-    private RealParameter gapX;
-    private RealParameter gapY;
 }

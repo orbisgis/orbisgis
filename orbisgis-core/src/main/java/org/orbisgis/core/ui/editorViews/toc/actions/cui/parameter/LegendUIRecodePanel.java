@@ -237,7 +237,7 @@ public abstract class LegendUIRecodePanel extends LegendUIComponent
 		for (i = 0; i < values.size(); i++) {
 			mapItems.add(keys.get(i));
 
-			mapItems.add(values.get(i));
+			mapItems.add((LegendUIComponent)values.get(i));
 			if (values.size() > 1) {
 				mapItems.add(rmBtns.get(i));
 			} else {

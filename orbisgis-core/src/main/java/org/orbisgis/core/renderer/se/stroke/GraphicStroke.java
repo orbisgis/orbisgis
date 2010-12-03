@@ -50,7 +50,6 @@ public final class GraphicStroke extends Stroke implements GraphicNode {
 
 		if (gst.getRelativeOrientation() != null){
 			this.setRelativeOrientation(RelativeOrientation.readFromToken(gst.getRelativeOrientation().value()));
-			System.out.println ("RelativeOrientation: " + this.getRelativeOrientation());
 		}
     }
 
@@ -83,7 +82,7 @@ public final class GraphicStroke extends Stroke implements GraphicNode {
 		if (orientation != null){
         	return orientation;
 		} else {
-			return RelativeOrientation.NORMAL_UP;
+			return RelativeOrientation.PORTRAYAL;
 		}
     }
 

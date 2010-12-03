@@ -229,34 +229,7 @@ public final class DensityFill extends Fill implements GraphicNode {
 			} else if (mark != null) { // Marked
 				RenderableGraphics g = mark.getGraphic(feat, selected, mt);
 
-
 				if (g != null) {
-                    // Mark size:
-                    double mWidth = g.getWidth();
-                    double mHeight = g.getHeight();
-                    //Final Texture square size
-                    double TextureSize = getTextureSize(mWidth, mHeight, percentage);
-                    //
-                    System.out.println ("DensityFill: " + percentage + " / TextureSize:" + TextureSize + "x" + TextureSize);
-                    //Create image to which to paint the marks
-                    BufferedImage i = new BufferedImage((int)TextureSize, (int) TextureSize, BufferedImage.TYPE_INT_ARGB);
-                    //Create graphics from the image
-                    Graphics2D tg = i.createGraphics();
-                    //Draw the mark to the image
-                    //Draw centered full mark if percentage is smaller or equal to 50
-                    if (percentage <= 50)
-                        tg.drawRenderedImage(g.createRendering(mt.getCurrentRenderContext()), AffineTransform.getTranslateInstance(TextureSize/2, TextureSize/2));
-                    //Draw mark quarters
-                    //Top left corner quarter mark
-                    tg.drawRenderedImage(g.createRendering(mt.getCurrentRenderContext()), AffineTransform.getTranslateInstance(0, 0));
-                    //Top right corner quarter mark
-                    tg.drawRenderedImage(g.createRendering(mt.getCurrentRenderContext()), AffineTransform.getTranslateInstance(TextureSize, 0));
-                    //Bottom right corner quarter mark
-                    tg.drawRenderedImage(g.createRendering(mt.getCurrentRenderContext()), AffineTransform.getTranslateInstance(TextureSize, TextureSize));
-                    //Bottom left corner quarter mark
-                    tg.drawRenderedImage(g.createRendering(mt.getCurrentRenderContext()), AffineTransform.getTranslateInstance(0, TextureSize));
-                    //finally set the painter
-                    painter = new TexturePaint(i, new Rectangle2D.Double(0, 0, i.getWidth(), i.getHeight()));
                 }
 			} else {
 				throw new ParameterException("Neither marks or hatches are defined");
