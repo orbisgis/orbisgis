@@ -141,6 +141,7 @@ public class SQLConsolePanel extends JPanel implements DropTargetListener {
             scriptPanel.setSyntaxEditingStyle(RSyntaxTextArea.SYNTAX_STYLE_SQL);
             scriptPanel.getDocument().addDocumentListener(actionAndKeyListener);
             scriptPanel.setDropTarget(new DropTarget(centerPanel, this));
+            scriptPanel.setLineWrap(true);
             SQLCompletionProvider cpl = new SQLCompletionProvider(scriptPanel);
             cpl.install();
 
