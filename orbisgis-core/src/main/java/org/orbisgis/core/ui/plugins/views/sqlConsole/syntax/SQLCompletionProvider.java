@@ -43,8 +43,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.JTextArea;
 import javax.swing.event.CaretEvent;
 import javax.swing.event.CaretListener;
@@ -188,8 +186,10 @@ public class SQLCompletionProvider extends DefaultCompletionProvider implements 
             return;
 
             // hack to go around parser limitation
-        } else if (!word.equals("(") && !word.startsWith(";")) {
-            sql = sql.substring(0, sql.lastIndexOf(word));
+        } else if (word.startsWith("(")) {
+            sql = sql.substring(0, sql.lastIndexOf(word)) + '(';
+        } else if (!word.isEmpty() && !word.equals(" ") && !word.startsWith(";")) {
+            sql = sql.substring(0, sql.lastIndexOf(word)) + ' ';
         }
 
         // hack to go around parser limitation (bis)
@@ -565,39 +565,26 @@ public class SQLCompletionProvider extends DefaultCompletionProvider implements 
 
         if (content.trim().endsWith(",")) {
             return ",";
-
-
         }
         if (content.endsWith(" ")) {
             return " ";
-
-
         }
 
         int start = content.length();
 
-
         while (start > 0) {
             start--;
 
-
             char ch = content.charAt(start);
-
 
             if (ch == ' ' || ch == '.' || ch == ',' || ch == '(' || ch == ')' || ch == ';') {
                 break;
-
-
             }
         }
         if (start == content.length()) {
             return "";
-
-
         }
         return content.substring(start, content.length());
-
-
     }
 
     private String getTextContent() {
@@ -606,18 +593,13 @@ public class SQLCompletionProvider extends DefaultCompletionProvider implements 
 
             // removing multi-line comments
 
-
             int sComm = content.indexOf("/*");
-
-
             int eComm = content.indexOf("*/");
-
 
             if (eComm < sComm) {
                 content = content.substring(sComm);
                 sComm = content.indexOf("/*");
                 eComm = content.indexOf("*/");
-
 
             }
             while (sComm != -1) {
@@ -627,70 +609,46 @@ public class SQLCompletionProvider extends DefaultCompletionProvider implements 
                         sComm = content.indexOf("/*");
                         eComm = content.indexOf("*/");
 
-
                     }
                     content = content.substring(0, sComm)
                             + content.substring(eComm + 2);
 
-
                 } else {
                     content = content.substring(0, sComm);
-
 
                 }
                 sComm = content.indexOf("/*");
                 eComm = content.indexOf("*/");
 
-
             } // removing single-line comments
             int comm = content.indexOf("--");
-
-
             int ret = content.indexOf('\n');
-
 
             while (comm != -1) {
                 if (ret != - 1) {
                     content = content.substring(0, comm)
                             + content.substring(ret);
 
-
                 } else {
                     content = content.substring(0, comm);
-
-
                 }
-
                 comm = content.indexOf("--");
                 ret = content.indexOf('\n', comm + 2);
-
-
             }
-
             while (content.contains("\n\n")) {
                 content = content.replace("\n\n", "\n");
-
-
             }
             if (content.endsWith("\n")) {
                 content = content.substring(0, content.length() - 1);
-
-
             }
-
             if (rootText != null) {
                 content = rootText.trim() + ' ' + content;
-
-
             }
 
             return content;
 
-
         } catch (BadLocationException ex) {
             return "";
-
-
         }
     }
 
@@ -699,8 +657,6 @@ public class SQLCompletionProvider extends DefaultCompletionProvider implements 
      */
     public String getRootText() {
         return rootText;
-
-
     }
 
     /**
@@ -708,8 +664,6 @@ public class SQLCompletionProvider extends DefaultCompletionProvider implements 
      */
     public void setRootText(String rootText) {
         this.rootText = rootText;
-
-
     }
 
     /**
@@ -722,63 +676,39 @@ public class SQLCompletionProvider extends DefaultCompletionProvider implements 
         // get all text to caret
         content = getTextContent().replace('\n', ' ');
 
-
         if (rootText != null) {
             content = rootText.trim() + ' ' + content;
-
-
         }
 
         int wPos = content.toLowerCase().lastIndexOf("where");
 
-
         if (wPos == -1) {
             return false;
-
-
         }
         int start = content.length();
 
-
         while (start > wPos + 5) {
             start--;
-
-
             char ch = content.charAt(start);
-
 
             if (ch == ',' || ch == ';') {
                 return false;
-
-
             }
         }
         return true;
-
-
     }
 
     private boolean isWithinComment() {
         try {
             String content = textC.getDocument().getText(0, textC.getCaretPosition());
 
-
             if (textC instanceof JTextArea) {
                 JTextArea area = (JTextArea) textC;
 
-
                 int comm = content.lastIndexOf("--");
-
-
-
                 int line = area.getLineOfOffset(comm);
 
-
-
                 return line == area.getLineOfOffset(area.getCaretPosition());
-
-
-
             }
         } catch (BadLocationException ex) {
         }
