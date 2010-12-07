@@ -48,6 +48,8 @@ import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 
+import org.orbisgis.core.ui.editors.map.tool.Rectangle2DDouble;
+
 import com.vividsolutions.jts.awt.PointTransformation;
 import com.vividsolutions.jts.awt.ShapeWriter;
 import com.vividsolutions.jts.geom.Coordinate;
@@ -250,10 +252,10 @@ public class MapTransform implements PointTransformation {
 	/**
 	 * Transforms an envelope in map units to image units
 	 * 
-	 * @param geographicEnvelope
-	 * @return
+	 * @param geographic envelope
+	 * @return Rectangle2DDouble
 	 */
-	public Envelope toPixel(Envelope geographicEnvelope) {
+	public Rectangle2DDouble toPixel(Envelope geographicEnvelope) {
 		final Point2D lowerRight = new Point2D.Double(geographicEnvelope
 				.getMaxX(), geographicEnvelope.getMinY());
 		final Point2D upperLeft = new Point2D.Double(geographicEnvelope
@@ -262,8 +264,7 @@ public class MapTransform implements PointTransformation {
 		final Point2D ul = trans.transform(upperLeft, null);
 		final Point2D lr = trans.transform(lowerRight, null);
 
-		return new Envelope(new Coordinate(ul.getX(), ul.getY()),
-				new Coordinate(lr.getX(), lr.getY()));
+		return new Rectangle2DDouble(ul.getX(), ul.getY(), lr.getX(), lr.getY());
 	}
 
 	/**

@@ -81,6 +81,7 @@ import org.orbisgis.core.renderer.symbol.RenderUtils;
 import org.orbisgis.core.renderer.symbol.SelectionSymbol;
 import org.orbisgis.core.renderer.symbol.Symbol;
 import org.orbisgis.core.ui.configuration.RenderingConfiguration;
+import org.orbisgis.core.ui.editors.map.tool.Rectangle2DDouble;
 import org.orbisgis.progress.IProgressMonitor;
 import org.orbisgis.progress.NullProgressMonitor;
 
@@ -262,18 +263,17 @@ public class Renderer {
 			for (int i = 0; i < layer.getDataSource().getRowCount(); i++) {
 				GeoRaster geoRaster = layer.getDataSource().getRaster(i);
 				Envelope layerEnvelope = geoRaster.getMetadata().getEnvelope();
-				Envelope layerPixelEnvelope = null;
 				BufferedImage layerImage = configuration.createCompatibleImage(
 						width, height, BufferedImage.TYPE_INT_ARGB);
 
 				// part or all of the GeoRaster is visible
-				layerPixelEnvelope = mt.toPixel(layerEnvelope);
+				Rectangle2DDouble layerPixelEnvelope = mt.toPixel(layerEnvelope);
 				Graphics2D gLayer = layerImage.createGraphics();
 				ColorModel cm = ((RasterLegend) legend).getColorModel();
 				if (cm == null) {
 					cm = geoRaster.getDefaultColorModel();
 				}
-				Image dataImage = geoRaster.getImage(cm);				
+				Image dataImage = geoRaster.getImage(cm);
 				gLayer.drawImage(dataImage, (int) layerPixelEnvelope.getMinX(),
 						(int) layerPixelEnvelope.getMinY(),
 						(int) layerPixelEnvelope.getWidth() + 1,
@@ -316,6 +316,21 @@ public class Renderer {
 				if (!legend.isVisible()) {
 					continue;
 				}
+
+				/*
+				 * FilterDataSourceDecorator filterDataSourceDecorator = new
+				 * FilterDataSourceDecorator( sds,
+				 * "ST_Intersects(ST_GeomFromText('POLYGON((" + extent.getMinX()
+				 * + " " + extent.getMinY() + "," + extent.getMinX() + " " +
+				 * extent.getMaxY() + "," + extent.getMaxX() + " " +
+				 * extent.getMaxY() + "," + extent.getMaxX() + " " +
+				 * extent.getMinY() + "," + extent.getMinX() + " " +
+				 * extent.getMinY() + "))'), " + sds.getSpatialFieldName() +
+				 * ")");
+				 * 
+				 * Iterator<Integer> it =
+				 * filterDataSourceDecorator.getIndexMap().iterator();
+				 */
 
 				Iterator<Integer> it = getIterator(mt.getAdjustedExtent(), sds);
 
