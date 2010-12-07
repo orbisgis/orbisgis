@@ -52,6 +52,7 @@ import org.gdms.driver.DriverException;
 import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.renderer.se.FeatureTypeStyle;
 import org.orbisgis.core.renderer.se.Rule;
+import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.Symbolizer;
 
 /**
@@ -73,7 +74,7 @@ public final class LegendUIController {
 	/**
 	 * @param fts the style to edit.
 	 */
-	public LegendUIController(FeatureTypeStyle fts) {
+	public LegendUIController(FeatureTypeStyle fts) throws InvalidStyle {
 
 		this.style = new FeatureTypeStyle(fts.getJAXBElement(), fts.getLayer());
 
@@ -244,7 +245,6 @@ public final class LegendUIController {
 		if (mainPanel != null) {
 			mainPanel.editComponent(comp);
 		}
-
 	}
 
 	void addSymbolizerToRule(int ruleID, Symbolizer s) {
@@ -272,7 +272,8 @@ public final class LegendUIController {
 	}
 
 	private void structureChanged(LegendUIComponent focusOn, boolean updateUI) {
-		System.out.println("Structure Changed !");
+		//System.out.println("Structure Changed !");
+		//Thread.dumpStack();
 
 		LegendUIComponent topPanel = focusOn.getTopParent();
 
@@ -280,7 +281,6 @@ public final class LegendUIController {
 			this.splitPanel(topPanel);
 		} else {
 			System.out.println("Not able to found a root panel !");
-			// AIe aie aie
 		}
 
 		LegendUIComponent panelToFocusOn = focusOn.getScopeParent();
@@ -300,7 +300,8 @@ public final class LegendUIController {
 		Iterator<LegendUIComponent> it = parent.getChildrenIterator();
 		while (it.hasNext()) {
 			LegendUIComponent next = it.next();
-			if (!next.isNested()) {
+			if (next.isInlinedAndNotNull()) {
+				System.out.println ("   queue child" + next);
 				childrenQueue.add(next);
 			}
 		}
@@ -312,8 +313,10 @@ public final class LegendUIController {
 		double bestRatio = 0;
 
 		while (!childrenQueue.isEmpty()) {
+
 			LegendUIComponent child = childrenQueue.remove(0);
 
+			System.out.println ("   Process" + child);
 
 			child.extractFromParent();
 
@@ -341,8 +344,9 @@ public final class LegendUIController {
 			it = child.getChildrenIterator();
 			while (it.hasNext()) {
 				LegendUIComponent next = it.next();
-				if (!next.isNested()) {
+				if (next.isInlinedAndNotNull()) {
 					childrenQueue.add(next);
+					System.out.println ("     Queue.." + next);
 				}
 			}
 
@@ -366,6 +370,7 @@ public final class LegendUIController {
 			mainPanel.setVisible(false);
 			while (mainQueue.size() > 0) {
 				LegendUIComponent current = mainQueue.remove(0);
+				System.out.println ("Process : " + current);
 				// Mount the panel
 				current.mountComponentForChildren();
 				current.pack();
@@ -376,6 +381,7 @@ public final class LegendUIController {
 					LegendUIComponent child = findChildToDetach(current);
 
 					if (child != null) {
+						System.out.println (" Nest: " + child);
 						// Now queue the two panel
 						child.extractFromParent();
 						mainQueue.add(current);

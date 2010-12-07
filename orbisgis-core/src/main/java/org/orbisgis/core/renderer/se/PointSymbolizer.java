@@ -56,6 +56,7 @@ import org.orbisgis.core.renderer.persistance.se.PointSymbolizerType;
 import org.gdms.driver.DriverException;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.map.MapTransform;
+import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.graphic.GraphicCollection;
 import org.orbisgis.core.renderer.se.graphic.MarkGraphic;
@@ -81,7 +82,7 @@ public final class PointSymbolizer extends VectorSymbolizer implements GraphicNo
 		graphic.addGraphic(mark);
 	}
 
-	public PointSymbolizer(JAXBElement<PointSymbolizerType> st) {
+	public PointSymbolizer(JAXBElement<PointSymbolizerType> st) throws InvalidStyle {
 		super(st);
 		PointSymbolizerType ast = st.getValue();
 

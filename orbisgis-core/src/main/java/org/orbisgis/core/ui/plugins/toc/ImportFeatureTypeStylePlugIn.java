@@ -11,7 +11,7 @@ import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.layerModel.MapContext;
 
 import org.orbisgis.core.renderer.se.FeatureTypeStyle;
-import org.orbisgis.core.renderer.se.FeatureTypeStyleException;
+import org.orbisgis.core.renderer.se.SeExceptions;
 import org.orbisgis.core.sif.OpenFilePanel;
 import org.orbisgis.core.sif.UIFactory;
 
@@ -70,7 +70,7 @@ public class ImportFeatureTypeStylePlugIn extends AbstractPlugIn {
 				String seFile = inputXMLPanel.getSelectedFile().getAbsolutePath();
 				try {
 					layer.setFeatureTypeStyle(new FeatureTypeStyle(layer, seFile));
-				} catch (FeatureTypeStyleException ex) {
+				} catch (SeExceptions.InvalidStyle ex) {
 					JOptionPane.showMessageDialog(null, ex.getMessage(), "Error while loading the style", JOptionPane.ERROR_MESSAGE);
 				}
 			}

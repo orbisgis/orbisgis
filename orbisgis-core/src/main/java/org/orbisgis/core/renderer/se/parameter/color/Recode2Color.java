@@ -5,6 +5,7 @@ import javax.xml.bind.JAXBElement;
 import org.gdms.data.feature.Feature;
 import org.orbisgis.core.renderer.persistance.se.MapItemType;
 import org.orbisgis.core.renderer.persistance.se.RecodeType;
+import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 
 import org.orbisgis.core.renderer.se.parameter.Recode;
@@ -17,7 +18,7 @@ public class Recode2Color extends Recode<ColorParameter, ColorLiteral> implement
         super(fallback, lookupValue);
     }
 
-    public Recode2Color(JAXBElement<RecodeType> expr) {
+    public Recode2Color(JAXBElement<RecodeType> expr) throws InvalidStyle {
         RecodeType t = expr.getValue();
 
         this.fallbackValue = new ColorLiteral(t.getFallbackValue());

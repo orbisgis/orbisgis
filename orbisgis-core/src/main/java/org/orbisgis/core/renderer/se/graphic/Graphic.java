@@ -13,6 +13,7 @@ import org.orbisgis.core.renderer.persistance.se.ExternalGraphicType;
 import org.orbisgis.core.renderer.persistance.se.MarkGraphicType;
 import org.orbisgis.core.renderer.persistance.se.PieChartType;
 import org.orbisgis.core.renderer.persistance.se.TextGraphicType;
+import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.SymbolizerNode;
 import org.orbisgis.core.renderer.se.UomNode;
 import org.orbisgis.core.renderer.se.common.Uom;
@@ -25,7 +26,7 @@ import org.orbisgis.core.renderer.se.transform.Transform;
  */
 public abstract class Graphic implements SymbolizerNode, UomNode {
 
-    public static Graphic createFromJAXBElement(JAXBElement<? extends GraphicType> gr) {
+    public static Graphic createFromJAXBElement(JAXBElement<? extends GraphicType> gr) throws InvalidStyle {
 
         try {
             if (gr.getDeclaredType() == ExternalGraphicType.class) {

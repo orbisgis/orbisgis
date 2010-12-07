@@ -50,6 +50,7 @@ import org.orbisgis.core.renderer.Drawer;
 
 import org.orbisgis.core.renderer.persistance.se.LineSymbolizerType;
 import org.orbisgis.core.renderer.persistance.se.ObjectFactory;
+import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.common.ShapeHelper;
 
 import org.orbisgis.core.renderer.se.common.Uom;
@@ -81,7 +82,7 @@ public final class LineSymbolizer extends VectorSymbolizer implements StrokeNode
 		setStroke(new PenStroke());
 	}
 
-	public LineSymbolizer(JAXBElement<LineSymbolizerType> st) {
+	public LineSymbolizer(JAXBElement<LineSymbolizerType> st) throws InvalidStyle {
 		super(st);
 		LineSymbolizerType ast = st.getValue();
 

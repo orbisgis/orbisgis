@@ -8,6 +8,7 @@ import org.gdms.data.feature.Feature;
 import org.orbisgis.core.renderer.persistance.se.CategorizeType;
 import org.orbisgis.core.renderer.persistance.se.ParameterValueType;
 import org.orbisgis.core.renderer.persistance.se.ThreshholdsBelongToType;
+import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 
 import org.orbisgis.core.renderer.se.parameter.Categorize;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
@@ -21,7 +22,7 @@ public class Categorize2Color extends Categorize<ColorParameter, ColorLiteral> i
         super(initialClass, fallback, lookupValue);
     }
 
-    public Categorize2Color(JAXBElement<CategorizeType> expr) {
+    public Categorize2Color(JAXBElement<CategorizeType> expr) throws InvalidStyle {
         CategorizeType t = expr.getValue();
 
         this.fallbackValue = new ColorLiteral(t.getFallbackValue());

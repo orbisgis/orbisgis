@@ -19,6 +19,7 @@ import org.orbisgis.core.renderer.persistance.se.TileGapType;
 
 import org.gdms.data.feature.Feature;
 import org.orbisgis.core.map.MapTransform;
+import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.UomNode;
 import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.graphic.GraphicCollection;
@@ -39,7 +40,7 @@ public final class GraphicFill extends Fill implements UomNode {
         this.setGapY(null);
     }
 
-    public GraphicFill(GraphicFillType gft) {
+    public GraphicFill(GraphicFillType gft) throws InvalidStyle {
         if (gft.getGraphic() != null) {
             this.setGraphic(new GraphicCollection(gft.getGraphic(), this));
         }
@@ -59,7 +60,7 @@ public final class GraphicFill extends Fill implements UomNode {
         }
     }
 
-    GraphicFill(JAXBElement<GraphicFillType> f) {
+    GraphicFill(JAXBElement<GraphicFillType> f) throws InvalidStyle {
         this(f.getValue());
     }
 

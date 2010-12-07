@@ -11,6 +11,7 @@ import org.orbisgis.core.map.MapTransform;
 
 import org.orbisgis.core.renderer.persistance.se.MatrixType;
 import org.orbisgis.core.renderer.persistance.se.ObjectFactory;
+import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
@@ -86,7 +87,7 @@ public final class Matrix implements Transformation {
         }
     }
 
-    Matrix(MatrixType m) {
+    Matrix(MatrixType m) throws InvalidStyle {
 		this();
         if (m.getA() != null)
             this.setA(SeParameterFactory.createRealParameter(m.getA()));

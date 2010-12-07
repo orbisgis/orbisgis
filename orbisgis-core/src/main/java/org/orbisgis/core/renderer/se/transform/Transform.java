@@ -15,6 +15,7 @@ import org.orbisgis.core.renderer.persistance.se.RotateType;
 import org.orbisgis.core.renderer.persistance.se.ScaleType;
 import org.orbisgis.core.renderer.persistance.se.TransformType;
 import org.orbisgis.core.renderer.persistance.se.TranslateType;
+import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.SymbolizerNode;
 import org.orbisgis.core.renderer.se.UomNode;
 import org.orbisgis.core.renderer.se.common.Uom;
@@ -48,7 +49,7 @@ public class Transform implements SymbolizerNode, UomNode {
         consolidated = null;
     }
 
-    public Transform(TransformType t) {
+    public Transform(TransformType t) throws InvalidStyle {
         transformations = new ArrayList<Transformation>();
         consolidated = null;
 

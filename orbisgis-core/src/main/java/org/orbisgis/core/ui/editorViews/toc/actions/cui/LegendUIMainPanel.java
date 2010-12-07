@@ -45,13 +45,15 @@ import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.net.URL;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JDialog;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 import org.orbisgis.core.renderer.se.FeatureTypeStyle;
+import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.sif.UIFactory;
 import org.orbisgis.core.sif.UIPanel;
 
@@ -70,14 +72,11 @@ public final class LegendUIMainPanel extends JPanel  implements UIPanel  {
 	private LegendUIRuleListPanel rules;
 	private LegendUITOCPanel tocPanel;
 
-	private FeatureTypeStyle fts;
-
 	private JButton apply;
 
 	public LegendUIMainPanel (LegendUIController controller, FeatureTypeStyle fts){
 		super(new BorderLayout());
 		this.controller = controller;
-		this.fts = fts;
 
 		leftMenu = new JPanel(new BorderLayout());
 		editor = new JPanel();
@@ -151,7 +150,6 @@ public final class LegendUIMainPanel extends JPanel  implements UIPanel  {
 			editor.add(comp);
 		}
 		this.pack();
-		this.updateUI();
 	}
 
 	void setEditorTitle(String title){
@@ -208,9 +206,13 @@ public final class LegendUIMainPanel extends JPanel  implements UIPanel  {
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			FeatureTypeStyle eFts = controller.getEditedFeatureTypeStyle();
-			FeatureTypeStyle fts = new FeatureTypeStyle(eFts.getJAXBElement(), eFts.getLayer());
-			eFts.getLayer().setFeatureTypeStyle(fts);
+			try {
+				FeatureTypeStyle eFts = controller.getEditedFeatureTypeStyle();
+				FeatureTypeStyle fts = new FeatureTypeStyle(eFts.getJAXBElement(), eFts.getLayer());
+				eFts.getLayer().setFeatureTypeStyle(fts);
+			} catch (InvalidStyle ex) {
+				Logger.getLogger(LegendUIMainPanel.class.getName()).log(Level.SEVERE, null, ex);
+			}
 		}
 	}
 }

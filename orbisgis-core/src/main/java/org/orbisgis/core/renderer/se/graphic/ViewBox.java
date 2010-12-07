@@ -42,6 +42,7 @@ package org.orbisgis.core.renderer.se.graphic;
 import java.awt.geom.Point2D;
 import org.gdms.data.feature.Feature;
 import org.orbisgis.core.renderer.persistance.se.ViewBoxType;
+import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.SymbolizerNode;
 import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
@@ -60,7 +61,7 @@ public final class ViewBox implements SymbolizerNode {
 		setWidth(width);
     }
 
-    public ViewBox(ViewBoxType viewBox) {
+    public ViewBox(ViewBoxType viewBox) throws InvalidStyle {
         if (viewBox.getHeight() != null){
             this.setHeight(SeParameterFactory.createRealParameter(viewBox.getHeight()));
         }

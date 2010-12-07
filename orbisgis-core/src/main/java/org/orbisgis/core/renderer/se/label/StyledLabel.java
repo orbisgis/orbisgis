@@ -17,6 +17,7 @@ import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.persistance.se.FontType;
 import org.orbisgis.core.renderer.persistance.se.StyledLabelType;
 import org.orbisgis.core.renderer.se.FillNode;
+import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.SymbolizerNode;
 import org.orbisgis.core.renderer.se.common.Halo;
 import org.orbisgis.core.renderer.se.common.Uom;
@@ -61,7 +62,7 @@ public final class StyledLabel implements SymbolizerNode, FillNode, StrokeNode {
         this.setFill(f);
     }
 
-    public StyledLabel(StyledLabelType sl) {
+    public StyledLabel(StyledLabelType sl) throws InvalidStyle {
         if (sl.getFill() != null){
             this.setFill(Fill.createFromJAXBElement(sl.getFill()));
         }
@@ -302,4 +303,12 @@ public final class StyledLabel implements SymbolizerNode, FillNode, StrokeNode {
     private Stroke stroke;
     private Fill fill;
     private Halo halo;
+
+	public boolean dependsOnFeature() {
+        return (labelText != null && labelText.dependsOnFeature())
+        || (fontFamily != null && fontFamily.dependsOnFeature())
+        || (fontWeight != null && fontWeight.dependsOnFeature())
+        || (fontStyle != null && fontStyle.dependsOnFeature())
+        || (fontSize != null && fontSize.dependsOnFeature());
+	}
 }

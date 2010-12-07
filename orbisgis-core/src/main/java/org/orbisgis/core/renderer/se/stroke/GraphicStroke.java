@@ -18,6 +18,7 @@ import org.orbisgis.core.renderer.persistance.se.GraphicStrokeType;
 import org.orbisgis.core.renderer.persistance.se.ObjectFactory;
 import org.orbisgis.core.renderer.persistance.se.RelativeOrientationType;
 import org.orbisgis.core.renderer.se.GraphicNode;
+import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 
 import org.orbisgis.core.renderer.se.common.RelativeOrientation;
 import org.orbisgis.core.renderer.se.common.ShapeHelper;
@@ -37,7 +38,7 @@ public final class GraphicStroke extends Stroke implements GraphicNode {
     private RealParameter length;
     private RelativeOrientation orientation;
 
-    GraphicStroke(JAXBElement<GraphicStrokeType> elem) {
+    GraphicStroke(JAXBElement<GraphicStrokeType> elem) throws InvalidStyle {
 		GraphicStrokeType gst = elem.getValue();
 
 		if (gst.getGraphic() != null){
@@ -85,6 +86,7 @@ public final class GraphicStroke extends Stroke implements GraphicNode {
 			return RelativeOrientation.PORTRAYAL;
 		}
     }
+
 
     @Override
     public void draw(Graphics2D g2, Shape shp, Feature feat, boolean selected, MapTransform mt) throws ParameterException, IOException {
@@ -185,25 +187,14 @@ public final class GraphicStroke extends Stroke implements GraphicNode {
         if (graphic != null) {
             s.setGraphic(graphic.getJAXBElement());
         }
+
         if (length != null) {
             s.setLength(length.getJAXBParameterValueType());
         }
+
         if (orientation != null) {
-			switch (orientation){
-				case LINE:
-            		s.setRelativeOrientation(RelativeOrientationType.LINE);
-					break;
-				case NORMAL:
-            		s.setRelativeOrientation(RelativeOrientationType.NORMAL);
-					break;
-				case NORMAL_UP:
-            		s.setRelativeOrientation(RelativeOrientationType.NORMAL_UP);
-					break;
-				case PORTRAYAL:
-            		s.setRelativeOrientation(RelativeOrientationType.PORTRAYAL);
-					break;
-			}
-        }
+            s.setRelativeOrientation(orientation.getJaxbType());
+		}
         return s;
     }
 }

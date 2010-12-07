@@ -7,6 +7,7 @@ package org.orbisgis.core.renderer.se.label;
 import javax.xml.bind.JAXBElement;
 import org.orbisgis.core.renderer.persistance.se.ExclusionRectangleType;
 import org.orbisgis.core.renderer.persistance.se.ObjectFactory;
+import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
@@ -21,7 +22,7 @@ public final class ExclusionRectangle extends ExclusionZone {
     private RealParameter x;
     private RealParameter y;
 
-    ExclusionRectangle(JAXBElement<ExclusionRectangleType> ert) {
+    ExclusionRectangle(JAXBElement<ExclusionRectangleType> ert) throws InvalidStyle {
         ExclusionRectangleType e = ert.getValue();
 
         if (e.getX() != null){
@@ -79,5 +80,10 @@ public final class ExclusionRectangle extends ExclusionZone {
 
         return of.createExclusionRectangle(r);
     }
+
+	@Override
+	public boolean dependsOnFeature() {
+		return (x != null && x.dependsOnFeature()) || (y != null && y.dependsOnFeature());
+	}
 
 }

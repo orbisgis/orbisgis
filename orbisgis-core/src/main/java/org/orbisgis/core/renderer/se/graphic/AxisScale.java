@@ -1,31 +1,32 @@
 package org.orbisgis.core.renderer.se.graphic;
 
 import org.orbisgis.core.renderer.persistance.se.AxisScaleType;
+import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
 
 public final class AxisScale {
 
-    AxisScale(AxisScaleType as) {
+    AxisScale(AxisScaleType as) throws InvalidStyle {
 		
        if (as.getAxisLength() != null){
            this.setAxisLength(SeParameterFactory.createRealParameter(as.getAxisLength()));
        }
 
-       if (as.getMeasureValue() != null){
-           this.setMeasureValue(SeParameterFactory.createRealParameter(as.getMeasureValue()));
+       if (as.getMeasure() != null){
+           this.setMeasure(SeParameterFactory.createRealParameter(as.getMeasure()));
        }
     }
 
     public RealParameter getMeasureValue() {
-        return measureValue;
+        return measure;
     }
 
-    public void setMeasureValue(RealParameter value) {
-        this.measureValue = value;
-		if (measureValue != null){
-			measureValue.setContext(RealParameterContext.realContext);
+    public void setMeasure(RealParameter value) {
+        this.measure = value;
+		if (measure != null){
+			measure.setContext(RealParameterContext.realContext);
 		}
     }
 
@@ -47,12 +48,12 @@ public final class AxisScale {
             scale.setAxisLength(axisLength.getJAXBParameterValueType());
 
         }
-        if (measureValue != null) {
-            scale.setMeasureValue(measureValue.getJAXBParameterValueType());
+        if (measure != null) {
+            scale.setMeasure(measure.getJAXBParameterValueType());
         }
 
         return scale;
     }
     private RealParameter axisLength;
-    private RealParameter measureValue;
+    private RealParameter measure;
 }

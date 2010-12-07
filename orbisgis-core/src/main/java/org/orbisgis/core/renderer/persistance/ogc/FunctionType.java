@@ -19,7 +19,7 @@ import javax.xml.bind.annotation.XmlType;
 import org.orbisgis.core.renderer.persistance.se.CategorizeType;
 import org.orbisgis.core.renderer.persistance.se.InterpolateType;
 import org.orbisgis.core.renderer.persistance.se.RecodeType;
-import org.orbisgis.core.renderer.persistance.se.UnitaryOperatorType;
+import org.orbisgis.core.renderer.persistance.se.UnaryOperatorType;
 
 
 

@@ -54,7 +54,7 @@ import org.orbisgis.core.ui.preferences.lookandfeel.OrbisGISIcon;
 
 import org.gdms.data.types.Type;
 import org.orbisgis.core.renderer.se.parameter.color.ColorParameter;
-import org.orbisgis.core.renderer.se.parameter.geometry.GeometryParameter;
+import org.orbisgis.core.renderer.se.parameter.geometry.GeometryAttribute;
 import org.orbisgis.core.renderer.se.parameter.string.StringParameter;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.LegendUIComponent;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.LegendUIController;
@@ -93,7 +93,7 @@ public abstract class LegendUIPropertyNamePanel extends LegendUIComponent
 				mask = Type.BINARY + Type.BOOLEAN + Type.BYTE + Type.DATE
 						+ Type.DOUBLE + Type.FLOAT + Type.INT + Type.LONG
 						+ Type.SHORT + Type.STRING + Type.TIMESTAMP + Type.TIME;
-			} else if (p instanceof GeometryParameter) {
+			} else if (p instanceof GeometryAttribute) {
 				mask = Type.GEOMETRY + Type.RASTER;
 			} else if (p instanceof ColorParameter) {
 				mask = Type.STRING;

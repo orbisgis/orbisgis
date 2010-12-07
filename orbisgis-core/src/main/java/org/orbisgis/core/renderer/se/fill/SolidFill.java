@@ -12,6 +12,7 @@ import org.orbisgis.core.renderer.persistance.se.SolidFillType;
 import org.gdms.data.feature.Feature;
 
 import org.orbisgis.core.map.MapTransform;
+import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
@@ -67,7 +68,7 @@ public final class SolidFill extends Fill {
 		this.setOpacity(opacity);
 	}
 
-	public SolidFill(JAXBElement<SolidFillType> sf) {
+	public SolidFill(JAXBElement<SolidFillType> sf) throws InvalidStyle {
 		if (sf.getValue().getColor() != null) {
 			setColor(SeParameterFactory.createColorParameter(sf.getValue().getColor()));
 		}

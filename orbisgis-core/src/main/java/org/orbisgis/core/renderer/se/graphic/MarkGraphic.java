@@ -48,6 +48,7 @@ import org.orbisgis.core.renderer.persistance.se.ObjectFactory;
 import org.gdms.data.feature.Feature;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.se.FillNode;
+import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.common.Halo;
 import org.orbisgis.core.renderer.se.common.OnlineResource;
 import org.orbisgis.core.renderer.se.common.Uom;
@@ -91,7 +92,7 @@ public final class MarkGraphic extends Graphic implements FillNode, StrokeNode, 
 		this.setStroke(new PenStroke());
 	}
 
-	MarkGraphic(JAXBElement<MarkGraphicType> markG) throws IOException {
+	MarkGraphic(JAXBElement<MarkGraphicType> markG) throws IOException, InvalidStyle {
 		MarkGraphicType t = markG.getValue();
 
 		if (t.getUnitOfMeasure() != null) {
@@ -243,7 +244,6 @@ public final class MarkGraphic extends Graphic implements FillNode, StrokeNode, 
 	 * @param fid
 	 * @throws ParameterException
 	 * @throws IOException
-	 * @todo implements !
 	 */
 	@Override
 	public RenderableGraphics getRenderableGraphics(Feature feat, boolean selected, MapTransform mt) throws ParameterException, IOException {

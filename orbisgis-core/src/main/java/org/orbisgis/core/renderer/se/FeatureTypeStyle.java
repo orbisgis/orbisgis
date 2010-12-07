@@ -30,6 +30,7 @@ import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.persistance.se.FeatureTypeStyleType;
 import org.orbisgis.core.renderer.persistance.se.ObjectFactory;
 import org.orbisgis.core.renderer.persistance.se.RuleType;
+import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.common.Uom;
 
 /**
@@ -45,7 +46,7 @@ public final class FeatureTypeStyle implements SymbolizerNode {
 		this.addRule(new Rule(layer));
 	}
 
-	public FeatureTypeStyle(ILayer layer, String seFile) throws FeatureTypeStyleException {
+	public FeatureTypeStyle(ILayer layer, String seFile) throws InvalidStyle {
 		rules = new ArrayList<Rule>();
 		this.layer = layer;
 
@@ -76,23 +77,23 @@ public final class FeatureTypeStyle implements SymbolizerNode {
 			if (errors.isEmpty()){
 				this.setFromJAXB(fts);
 			}else{
-				throw new FeatureTypeStyleException(errors);
+				throw new SeExceptions.InvalidStyle(errors);
 			}
 
 		} catch (Exception ex){
 			Logger.getLogger(FeatureTypeStyle.class.getName()).log(Level.SEVERE, "Error while loading style", ex);
-			throw new FeatureTypeStyleException("Error while loading the style: " + ex);
+			throw new SeExceptions.InvalidStyle("Error while loading the style: " + ex);
 		}
 
 	}
 
-	public FeatureTypeStyle(JAXBElement<FeatureTypeStyleType> ftst, ILayer layer) {
+	public FeatureTypeStyle(JAXBElement<FeatureTypeStyleType> ftst, ILayer layer) throws InvalidStyle {
 		rules = new ArrayList<Rule>();
 		this.layer = layer;
 		this.setFromJAXB(ftst);
 	}
 
-	private void setFromJAXB(JAXBElement<FeatureTypeStyleType> ftst) {
+	private void setFromJAXB(JAXBElement<FeatureTypeStyleType> ftst) throws InvalidStyle {
 		FeatureTypeStyleType fts = ftst.getValue();
 
 		if (fts.getName() != null) {

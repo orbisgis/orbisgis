@@ -1,16 +1,9 @@
 package org.orbisgis.core.renderer.se.fill;
 
 import java.awt.Graphics2D;
-import java.awt.Point;
-import java.awt.Polygon;
 import java.awt.Shape;
-import java.awt.geom.AffineTransform;
-import java.awt.geom.PathIterator;
-import java.awt.image.BufferedImage;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import javax.media.jai.RenderableGraphics;
 import javax.xml.bind.JAXBElement;
 import org.gdms.data.feature.Feature;
 import org.orbisgis.core.map.MapTransform;
@@ -18,6 +11,7 @@ import org.orbisgis.core.renderer.persistance.se.DotMapFillType;
 
 import org.orbisgis.core.renderer.persistance.se.ObjectFactory;
 import org.orbisgis.core.renderer.se.GraphicNode;
+import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.graphic.GraphicCollection;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
@@ -26,7 +20,7 @@ import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
 
 public final class DotMapFill extends Fill implements GraphicNode {
 
-	DotMapFill(JAXBElement<DotMapFillType> f) {
+	DotMapFill(JAXBElement<DotMapFillType> f) throws InvalidStyle {
 		DotMapFillType dmf = f.getValue();
 
 		if (dmf.getGraphic() != null) {

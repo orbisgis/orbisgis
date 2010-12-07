@@ -15,11 +15,11 @@ import org.orbisgis.core.map.MapTransform;
 
 import org.orbisgis.core.renderer.persistance.se.LineLabelType;
 import org.orbisgis.core.renderer.persistance.se.PointLabelType;
+import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.SymbolizerNode;
 import org.orbisgis.core.renderer.se.UomNode;
 import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
-import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
 
 /**
  *
@@ -57,7 +57,13 @@ public abstract class Label implements SymbolizerNode, UomNode{
         }
     }
 
-    public static Label createLabelFromJAXBElement(JAXBElement<? extends LabelType> l) {
+	protected SymbolizerNode parent;
+    protected Uom uom;
+    protected StyledLabel label;
+    protected HorizontalAlignment hAlign;
+    protected VerticalAlignment vAlign;
+
+    public static Label createLabelFromJAXBElement(JAXBElement<? extends LabelType> l) throws InvalidStyle {
         if (l.getDeclaredType() == PointLabelType.class) {
             return new PointLabel((JAXBElement<PointLabelType>)l);
         } else if (l.getDeclaredType() == LineLabelType.class) {
@@ -70,9 +76,7 @@ public abstract class Label implements SymbolizerNode, UomNode{
     protected Label(){
     }
 
-    protected Label(JAXBElement<? extends LabelType> l) {
-        LabelType t = (LabelType) l.getValue();
-
+	protected Label(LabelType t) throws InvalidStyle{
         if (t.getUnitOfMeasure() != null) {
             this.uom = Uom.fromOgcURN(t.getUnitOfMeasure());
         }
@@ -80,16 +84,13 @@ public abstract class Label implements SymbolizerNode, UomNode{
         if (t.getStyledLabel() != null) {
             this.setLabel(new StyledLabel(t.getStyledLabel()));
         }
+	}
 
-        if (t.getHorizontalAlignment() != null) {
-            this.hAlign = HorizontalAlignment.fromString(SeParameterFactory.extractToken(t.getHorizontalAlignment()));
-        }
+    protected Label(JAXBElement<? extends LabelType> l) throws InvalidStyle {
+		this(l.getValue());
+  }
 
-        if (t.getVerticalAlignment() != null) {
-            this.vAlign = VerticalAlignment.fromString(SeParameterFactory.extractToken(t.getVerticalAlignment()));
-        }
-    }
-
+	@Override
 	public Uom getOwnUom(){
 		return uom;
 	}
@@ -122,7 +123,7 @@ public abstract class Label implements SymbolizerNode, UomNode{
         return label;
     }
 
-    public void setLabel(StyledLabel label) {
+    public final void setLabel(StyledLabel label) {
         this.label = label;
         label.setParent(this);
     }
@@ -130,9 +131,6 @@ public abstract class Label implements SymbolizerNode, UomNode{
     public abstract void draw(Graphics2D g2, Shape shp, Feature feat, boolean selected, MapTransform mt) throws ParameterException, IOException;
 
     public abstract JAXBElement<? extends LabelType> getJAXBElement();
-    protected SymbolizerNode parent;
-    protected Uom uom;
-    protected StyledLabel label;
-    protected HorizontalAlignment hAlign;
-    protected VerticalAlignment vAlign;
+
+    public abstract boolean dependsOnFeature();
 }

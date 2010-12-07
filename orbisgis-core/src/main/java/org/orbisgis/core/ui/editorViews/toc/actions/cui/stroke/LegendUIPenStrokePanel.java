@@ -96,7 +96,7 @@ public abstract class LegendUIPenStrokePanel extends LegendUIComponent implement
 		this.header = new LegendUIAbstractPanel(controller);
 		this.penStroke = pStroke;
 
-		this.color = new LegendUIMetaColorPanel("color", controller, this, penStroke.getColor(), true) {
+		this.color = new LegendUIMetaColorPanel("Color", controller, this, penStroke.getColor(), true) {
 
 			@Override
 			public void colorChanged(ColorParameter newColor) {
@@ -105,7 +105,7 @@ public abstract class LegendUIPenStrokePanel extends LegendUIComponent implement
 		};
 		color.init();
 
-		this.opacity = new LegendUIMetaRealPanel("opacity", controller, this, penStroke.getOpacity(), true) {
+		this.opacity = new LegendUIMetaRealPanel("Opacity", controller, this, penStroke.getOpacity(), true) {
 
 			@Override
 			public void realChanged(RealParameter newReal) {
@@ -114,7 +114,7 @@ public abstract class LegendUIPenStrokePanel extends LegendUIComponent implement
 		};
 		this.opacity.init();
 
-		this.strokeWidth = new LegendUIMetaRealPanel("width", controller, this, penStroke.getWidth(), true) {
+		this.strokeWidth = new LegendUIMetaRealPanel("Width", controller, this, penStroke.getWidth(), true) {
 
 			@Override
 			public void realChanged(RealParameter newReal) {
@@ -123,7 +123,7 @@ public abstract class LegendUIPenStrokePanel extends LegendUIComponent implement
 		};
 		strokeWidth.init();
 
-		this.dashOffset = new LegendUIMetaRealPanel("dash offset", controller, this, penStroke.getDashOffset(), true) {
+		this.dashOffset = new LegendUIMetaRealPanel("Dash Offset", controller, this, penStroke.getDashOffset(), true) {
 
 			@Override
 			public void realChanged(RealParameter newReal) {
@@ -132,7 +132,7 @@ public abstract class LegendUIPenStrokePanel extends LegendUIComponent implement
 		};
 		dashOffset.init();
 
-		dashArray = new LegendUIMetaStringPanel("Dash Aray", controller, this, penStroke.getDashArray(), true) {
+		dashArray = new LegendUIMetaStringPanel("Dash Array", controller, this, penStroke.getDashArray(), true) {
 
 			@Override
 			public void stringChanged(StringParameter newString) {

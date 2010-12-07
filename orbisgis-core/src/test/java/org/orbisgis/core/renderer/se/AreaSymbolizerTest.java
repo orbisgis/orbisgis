@@ -80,7 +80,7 @@ public class AreaSymbolizerTest extends TestCase {
 
             DataSourceFactory dsf = new DataSourceFactory();
             //DataSource ds = dsf.getDataSource(new File("../../datas2tests/shp/Swiss/g4districts98_region.shp"));
-            DataSource ds = dsf.getDataSource(new File("/data/Cartes/Europe/EUcountries_them.shp"));
+            DataSource ds = dsf.getDataSource(new File("/data/Geodata/Europe/EUcountries_them.shp"));
             ds.open();
 
             SpatialDataSourceDecorator sds = new SpatialDataSourceDecorator(ds);

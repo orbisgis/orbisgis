@@ -18,6 +18,7 @@ import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.persistance.se.CompositeSymbolizerType;
 import org.orbisgis.core.renderer.persistance.se.ObjectFactory;
 import org.orbisgis.core.renderer.persistance.se.SymbolizerType;
+import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 
@@ -49,7 +50,7 @@ public final class CompositeSymbolizer implements SymbolizerNode {
     }
 
 
-    public CompositeSymbolizer(JAXBElement<? extends SymbolizerType> st) {
+    public CompositeSymbolizer(JAXBElement<? extends SymbolizerType> st) throws InvalidStyle {
         symbolizers = new ArrayList<Symbolizer>();
         
         if (st.getDeclaredType() == org.orbisgis.core.renderer.persistance.se.CompositeSymbolizerType.class){

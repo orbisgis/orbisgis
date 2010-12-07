@@ -8,6 +8,7 @@ import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
 
 import org.orbisgis.core.renderer.persistance.ogc.PropertyNameType;
+import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.PropertyName;
 
@@ -23,7 +24,7 @@ public class StringAttribute extends PropertyName implements StringParameter{
         super(fieldName);
     }
 
-    public StringAttribute(JAXBElement<PropertyNameType> expr) {
+    public StringAttribute(JAXBElement<PropertyNameType> expr) throws InvalidStyle {
         super(expr);
     }
 

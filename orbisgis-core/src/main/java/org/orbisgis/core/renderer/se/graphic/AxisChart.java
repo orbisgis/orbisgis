@@ -6,6 +6,7 @@ import javax.xml.bind.JAXBElement;
 import org.gdms.data.feature.Feature;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.persistance.se.AxisChartType;
+import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.fill.Fill;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
@@ -20,7 +21,7 @@ import org.orbisgis.core.renderer.se.transform.Transform;
  * @author maxence
  * @todo Implements drawGraphic
  */
-public class AxisChart extends Graphic {
+public final class AxisChart extends Graphic {
 
     private RealParameter normalizeTo;
     private boolean isPolarChart;
@@ -37,7 +38,7 @@ public class AxisChart extends Graphic {
         
     }
 
-    AxisChart(JAXBElement<AxisChartType> chartE) {
+    AxisChart(JAXBElement<AxisChartType> chartE) throws InvalidStyle {
         this();
         AxisChartType t = chartE.getValue();
 

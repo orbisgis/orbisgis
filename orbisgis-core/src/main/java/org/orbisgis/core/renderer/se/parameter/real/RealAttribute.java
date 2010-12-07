@@ -3,6 +3,7 @@ package org.orbisgis.core.renderer.se.parameter.real;
 import javax.xml.bind.JAXBElement;
 import org.gdms.data.feature.Feature;
 import org.orbisgis.core.renderer.persistance.ogc.PropertyNameType;
+import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.PropertyName;
 
@@ -19,7 +20,7 @@ public class RealAttribute extends PropertyName implements RealParameter{
 		ctx = RealParameterContext.realContext;
     }
 
-    public RealAttribute(JAXBElement<PropertyNameType> expr) {
+    public RealAttribute(JAXBElement<PropertyNameType> expr) throws InvalidStyle {
         super(expr);
 		ctx = RealParameterContext.realContext;
     }

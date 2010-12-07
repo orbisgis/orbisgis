@@ -10,6 +10,7 @@ import org.gdms.data.feature.Feature;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.persistance.se.ObjectFactory;
 import org.orbisgis.core.renderer.persistance.se.TextGraphicType;
+import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.label.StyledLabel;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
@@ -20,7 +21,7 @@ public class TextGraphic extends Graphic {
     public TextGraphic(){
     }
 
-    TextGraphic(JAXBElement<TextGraphicType> tge) {
+    TextGraphic(JAXBElement<TextGraphicType> tge) throws InvalidStyle {
         TextGraphicType tgt = tge.getValue();
 
         if (tgt.getUnitOfMeasure() != null) {

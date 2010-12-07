@@ -5,13 +5,13 @@ import java.awt.Shape;
 import java.io.IOException;
 import javax.xml.bind.JAXBElement;
 import org.orbisgis.core.renderer.persistance.se.FillType;
-import org.gdms.data.DataSource;
 import org.gdms.data.feature.Feature;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.persistance.se.DensityFillType;
 import org.orbisgis.core.renderer.persistance.se.DotMapFillType;
 import org.orbisgis.core.renderer.persistance.se.GraphicFillType;
 import org.orbisgis.core.renderer.persistance.se.SolidFillType;
+import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.SymbolizerNode;
 import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
@@ -32,7 +32,7 @@ public abstract class Fill implements SymbolizerNode {
      * @param f XML Fill
      * @return Java Fill
      */
-    public static Fill createFromJAXBElement(JAXBElement<? extends FillType> f){
+    public static Fill createFromJAXBElement(JAXBElement<? extends FillType> f) throws InvalidStyle{
         if (f.getDeclaredType() == SolidFillType.class){
             return new SolidFill((JAXBElement<SolidFillType>)f);
         }

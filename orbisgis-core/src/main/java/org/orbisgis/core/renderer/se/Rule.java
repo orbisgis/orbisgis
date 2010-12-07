@@ -18,6 +18,7 @@ import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.persistance.se.DomainConstraintsType;
 import org.orbisgis.core.renderer.persistance.se.ElseFilterType;
 import org.orbisgis.core.renderer.persistance.se.RuleType;
+import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.common.Uom;
 
 /**
@@ -86,7 +87,7 @@ public final class Rule implements SymbolizerNode {
 		symbolizer.addSymbolizer(symb);
 	}
 
-	public Rule(RuleType rt, ILayer layer) {
+	public Rule(RuleType rt, ILayer layer) throws InvalidStyle {
 		this(layer);
 
 		if (rt.getName() != null) {

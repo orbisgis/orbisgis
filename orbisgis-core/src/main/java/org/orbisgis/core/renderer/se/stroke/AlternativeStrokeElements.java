@@ -35,18 +35,49 @@
  * erwan.bocher _at_ ec-nantes.fr
  * gwendall.petit _at_ ec-nantes.fr
  */
+package org.orbisgis.core.renderer.se.stroke;
 
-
-
-package org.orbisgis.core.renderer.se;
+import java.util.ArrayList;
+import java.util.List;
+import org.orbisgis.core.renderer.persistance.se.AlternativeStrokeElementsType;
+import org.orbisgis.core.renderer.persistance.se.StrokeElementType;
+import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 
 /**
  *
  * @author maxence
  */
-public class FeatureTypeStyleException extends Exception {
+public class AlternativeStrokeElements extends CompoundStrokeElement {
 
-    public FeatureTypeStyleException(String arg0){
-        super(arg0);
-    }
+	private ArrayList<StrokeElement> elements;
+
+	AlternativeStrokeElements(AlternativeStrokeElementsType aset) throws InvalidStyle {
+		elements = new ArrayList<StrokeElement>();
+		for (StrokeElementType se : aset.getStrokeElement()) {
+			elements.add(new StrokeElement(se));
+		}
+	}
+
+	@Override
+	public Object getJaxbType() {
+		AlternativeStrokeElementsType aset = new AlternativeStrokeElementsType();
+
+		List<StrokeElementType> strokeElement = aset.getStrokeElement();
+
+		for (StrokeElement elem : this.elements) {
+			strokeElement.add((StrokeElementType) elem.getJaxbType());
+		}
+
+		return aset;
+	}
+
+	@Override
+	public boolean dependsOnFeature() {
+		for (StrokeElement elem : elements) {
+			if (elem.dependsOnFeature()) {
+				return true;
+			}
+		}
+		return false;
+	}
 }

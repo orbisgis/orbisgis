@@ -20,6 +20,7 @@ import org.orbisgis.core.renderer.persistance.se.ObjectFactory;
 import org.gdms.data.feature.Feature;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.se.GraphicNode;
+import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 
 import org.orbisgis.core.renderer.se.graphic.GraphicCollection;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
@@ -38,7 +39,7 @@ public final class DensityFill extends Fill implements GraphicNode {
 		this.setPercentageCovered(new RealLiteral(20.0));
 	}
 
-	DensityFill(JAXBElement<DensityFillType> f) {
+	DensityFill(JAXBElement<DensityFillType> f) throws InvalidStyle {
 
 		DensityFillType t = f.getValue();
 

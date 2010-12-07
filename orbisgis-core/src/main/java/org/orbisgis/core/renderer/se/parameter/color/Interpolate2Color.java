@@ -6,6 +6,7 @@ import org.gdms.data.feature.Feature;
 import org.orbisgis.core.renderer.persistance.se.InterpolateType;
 import org.orbisgis.core.renderer.persistance.se.InterpolationPointType;
 import org.orbisgis.core.renderer.persistance.se.ModeType;
+import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 
 import org.orbisgis.core.renderer.se.parameter.Interpolate;
 import org.orbisgis.core.renderer.se.parameter.InterpolationPoint;
@@ -19,7 +20,7 @@ public class Interpolate2Color extends Interpolate<ColorParameter, ColorLiteral>
         super(fallback);
     }
     
-    public Interpolate2Color(JAXBElement<InterpolateType> expr) {
+    public Interpolate2Color(JAXBElement<InterpolateType> expr) throws InvalidStyle {
         InterpolateType t = expr.getValue();
         
         this.fallbackValue = new ColorLiteral(t.getFallbackValue());

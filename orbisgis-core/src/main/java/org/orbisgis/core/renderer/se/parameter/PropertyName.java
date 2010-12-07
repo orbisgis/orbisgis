@@ -9,6 +9,7 @@ import org.orbisgis.core.renderer.persistance.ogc.ExpressionType;
 import org.orbisgis.core.renderer.persistance.ogc.ObjectFactory;
 import org.orbisgis.core.renderer.persistance.ogc.PropertyNameType;
 import org.orbisgis.core.renderer.persistance.se.ParameterValueType;
+import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 
 public abstract class PropertyName implements SeParameter {
 
@@ -25,13 +26,17 @@ public abstract class PropertyName implements SeParameter {
 		this.fieldName = fieldName;
 	}
 
-	public PropertyName(JAXBElement<PropertyNameType> expr) {
-		if (expr.getValue().getContent().size() == 1) {
-			this.fieldName = (String) expr.getValue().getContent().get(0);
+	public PropertyName(PropertyNameType pName) throws InvalidStyle {
+		if (pName.getContent().size() == 1) {
+			this.fieldName = (String) pName.getContent().get(0);
 			this.fieldId = -1;
 		} else {
-			System.out.println("Error in PropertyName(JAXBElement)");
+			throw new InvalidStyle("Invalid field name");
 		}
+	}
+
+	public PropertyName(JAXBElement<PropertyNameType> expr) throws InvalidStyle {
+		this(expr.getValue());
 	}
 
 	public synchronized void register(PropertyNameListener l) {

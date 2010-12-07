@@ -37,6 +37,8 @@
  */
 package org.orbisgis.core.ui.plugins.toc;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 import org.gdms.data.types.Constraint;
 import org.gdms.data.types.GeometryConstraint;
@@ -46,6 +48,7 @@ import org.orbisgis.core.Services;
 import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.layerModel.MapContext;
 import org.orbisgis.core.map.MapTransform;
+import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.sif.UIFactory;
 import org.orbisgis.core.sif.UIPanel;
 import org.orbisgis.core.ui.editor.IEditor;
@@ -114,6 +117,8 @@ public class EditSELegendPlugIn extends AbstractPlugIn {
 			if (UIFactory.showDialog((UIPanel)controller.getMainPanel())) {
 				layer.setFeatureTypeStyle(controller.getEditedFeatureTypeStyle());
 			}
+		} catch (InvalidStyle ex) {
+			Services.getErrorManager().error(Names.ERROR_EDIT_LEGEND_LAYER, ex);
 		} catch (DriverException e) {
 			Services.getErrorManager().error(Names.ERROR_EDIT_LEGEND_LAYER, e);
 		}

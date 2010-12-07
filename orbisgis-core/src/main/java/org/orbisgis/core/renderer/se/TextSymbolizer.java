@@ -51,6 +51,7 @@ import org.orbisgis.core.renderer.persistance.se.TextSymbolizerType;
 
 import org.gdms.driver.DriverException;
 import org.orbisgis.core.map.MapTransform;
+import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 
 import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.label.Label;
@@ -138,7 +139,7 @@ public final class TextSymbolizer extends VectorSymbolizer {
 		return of.createTextSymbolizer(s);
 	}
 
-	public TextSymbolizer(JAXBElement<TextSymbolizerType> st) {
+	public TextSymbolizer(JAXBElement<TextSymbolizerType> st) throws InvalidStyle {
 		super(st);
 		TextSymbolizerType tst = st.getValue();
 

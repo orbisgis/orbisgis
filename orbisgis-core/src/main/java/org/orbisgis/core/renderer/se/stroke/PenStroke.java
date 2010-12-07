@@ -15,6 +15,7 @@ import org.gdms.data.feature.Feature;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.persistance.se.ObjectFactory;
 import org.orbisgis.core.renderer.persistance.se.ParameterValueType;
+import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.common.ShapeHelper;
 import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.fill.GraphicFill;
@@ -26,12 +27,10 @@ import org.orbisgis.core.renderer.se.parameter.color.ColorParameter;
 import org.orbisgis.core.renderer.se.parameter.real.RealLiteral;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
-import org.orbisgis.core.renderer.se.parameter.string.StringLiteral;
 import org.orbisgis.core.renderer.se.parameter.string.StringParameter;
 
 /**
  * Basic stroke for linear features
- * @todo implement dasharray/dashoffset
  * @author maxence
  */
 public final class PenStroke extends Stroke {
@@ -91,10 +90,9 @@ public final class PenStroke extends Stroke {
     }
 
 	/**
-	 * @todo line cap line join !
 	 * @param t
 	 */
-    public PenStroke(PenStrokeType t) {
+    public PenStroke(PenStrokeType t) throws InvalidStyle {
         this();
 
         if (t.getColor() != null) {
@@ -147,7 +145,7 @@ public final class PenStroke extends Stroke {
         //this.updateBasicStroke();
     }
 
-    public PenStroke(JAXBElement<PenStrokeType> s) {
+    public PenStroke(JAXBElement<PenStrokeType> s) throws InvalidStyle {
         this(s.getValue());
     }
 
@@ -337,8 +335,7 @@ public final class PenStroke extends Stroke {
 
         if (width != null) {
             w = width.getValue(feat);
-            // TODO add scale and dpi
-            w = Uom.toPixel(w, getUom(), mt.getDpi(), mt.getScaleDenominator(), null); // 100% based on view box height or width ?
+            w = Uom.toPixel(w, getUom(), mt.getDpi(), mt.getScaleDenominator(), null); // 100% based on view box height or width ? TODO
         }
 
 
@@ -374,12 +371,18 @@ public final class PenStroke extends Stroke {
 
     }
 
+
+    /**
+     * Draw a pen stroke
+     *
+     * @todo DashOffset
+     */
     @Override
     public void draw(Graphics2D g2, Shape shp, Feature feat, boolean selected, MapTransform mt) throws ParameterException, IOException {
 
         Paint paint = null;
-        // remove preGap, postGap from the line
-        Shape shape = this.getPreparedShape(shp);
+
+        Shape shape = shp;
 
         BasicStroke stroke = null;
 
@@ -409,7 +412,6 @@ public final class PenStroke extends Stroke {
 			if (selected) {
                 c = ColorHelper.invert(c);
             }
-
 
             Color ac = c;
             if (this.opacity != null) {
@@ -452,10 +454,6 @@ public final class PenStroke extends Stroke {
             s.setStipple(stipple.getJAXBType());
         }
 
-        if (this.uom != null) {
-            s.setUnitOfMeasure(this.uom.toURN());
-        }
-
         if (this.dashArray != null) {
             //s.setDashArray(null);
 			s.setDashArray(dashArray.getJAXBParameterValueType());
@@ -483,6 +481,7 @@ public final class PenStroke extends Stroke {
 			}
         }
 
+		/*
         if (this.preGap != null) {
             s.setPreGap(this.preGap.getJAXBParameterValueType());
         }
@@ -490,6 +489,7 @@ public final class PenStroke extends Stroke {
         if (this.postGap != null) {
             s.setPostGap(this.postGap.getJAXBParameterValueType());
         }
+		*/
 
         if (this.width != null) {
             s.setWidth(this.width.getJAXBParameterValueType());

@@ -18,6 +18,7 @@ import org.orbisgis.core.renderer.persistance.se.ObjectFactory;
 
 import org.gdms.data.feature.Feature;
 import org.orbisgis.core.map.MapTransform;
+import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.SymbolizerNode;
 import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
@@ -33,7 +34,7 @@ public final class GraphicCollection implements SymbolizerNode {
         graphics = new ArrayList<Graphic>();
     }
 
-    public GraphicCollection(JAXBElement<? extends GraphicType> g, SymbolizerNode parent) {
+    public GraphicCollection(JAXBElement<? extends GraphicType> g, SymbolizerNode parent) throws InvalidStyle {
         this();
         this.setParent(parent);
         if (g.getDeclaredType() == CompositeGraphicType.class) {

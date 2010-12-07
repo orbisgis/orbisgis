@@ -187,7 +187,7 @@ public abstract class LegendUICategorizePanel extends LegendUIComponent
 					categorize.addClass(new RealLiteral(1000.0), new StringLiteral(""));
 				}
 
-				fireChange();
+				//fireChange();
 
 			}
 		});

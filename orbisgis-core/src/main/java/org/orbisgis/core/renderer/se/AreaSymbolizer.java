@@ -48,11 +48,13 @@ import java.util.ArrayList;
 import javax.xml.bind.JAXBElement;
 import org.orbisgis.core.renderer.Drawer;
 import org.orbisgis.core.renderer.persistance.se.AreaSymbolizerType;
+import org.orbisgis.core.renderer.persistance.se.GeometryType;
 import org.orbisgis.core.renderer.persistance.se.ObjectFactory;
 
 import org.gdms.data.feature.Feature;
 import org.gdms.driver.DriverException;
 import org.orbisgis.core.map.MapTransform;
+import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.common.ShapeHelper;
 
 
@@ -62,6 +64,7 @@ import org.orbisgis.core.renderer.se.fill.Fill;
 import org.orbisgis.core.renderer.se.fill.SolidFill;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
+import org.orbisgis.core.renderer.se.parameter.geometry.GeometryAttribute;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
 
@@ -83,15 +86,14 @@ public final class AreaSymbolizer extends VectorSymbolizer implements FillNode, 
 		this.setStroke(new PenStroke());
 	}
 
-	public AreaSymbolizer(JAXBElement<AreaSymbolizerType> st) {
+	public AreaSymbolizer(JAXBElement<AreaSymbolizerType> st) throws InvalidStyle {
 		super(st);
 
 		AreaSymbolizerType ast = st.getValue();
 
 
 		if (ast.getGeometry() != null) {
-			// TODO createGeometryFunction from XML
-			this.setGeometry(SeParameterFactory.createGeometryParameter(ast.getGeometry()));
+			this.setGeometry(new GeometryAttribute(ast.getGeometry().getPropertyName()));
 		}
 
 		if (ast.getUnitOfMeasure() != null) {
@@ -231,5 +233,4 @@ public final class AreaSymbolizer extends VectorSymbolizer implements FillNode, 
 	public void draw(Drawer drawer, Feature feat, boolean selected) {
 		drawer.drawAreaSymbolizer(feat, selected);
 	}
-
 }

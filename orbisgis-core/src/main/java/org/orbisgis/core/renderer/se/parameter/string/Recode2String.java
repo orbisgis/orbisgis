@@ -4,6 +4,7 @@ import javax.xml.bind.JAXBElement;
 import org.gdms.data.feature.Feature;
 import org.orbisgis.core.renderer.persistance.se.MapItemType;
 import org.orbisgis.core.renderer.persistance.se.RecodeType;
+import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.Recode;
 import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
@@ -14,7 +15,7 @@ public class Recode2String extends Recode<StringParameter, StringLiteral> implem
         super(fallback, lookupValue);
     }
 
-    public Recode2String(JAXBElement<RecodeType> expr) {
+    public Recode2String(JAXBElement<RecodeType> expr) throws InvalidStyle {
         RecodeType t = expr.getValue();
 
         this.fallbackValue = new StringLiteral(t.getFallbackValue());

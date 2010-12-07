@@ -1,20 +1,26 @@
 package org.orbisgis.core.renderer.se.parameter.geometry;
 
 import com.vividsolutions.jts.geom.Geometry;
+import javax.xml.bind.JAXBElement;
 import org.gdms.data.feature.Feature;
 import org.gdms.driver.DriverException;
-import org.orbisgis.core.renderer.persistance.ogc.LiteralType;
+import org.orbisgis.core.renderer.persistance.ogc.PropertyNameType;
 import org.orbisgis.core.renderer.persistance.se.GeometryType;
+import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.PropertyName;
 
-public class GeometryAttribute extends PropertyName implements GeometryParameter {
+public class GeometryAttribute extends PropertyName {
 
-	public GeometryAttribute(LiteralType literalType) {
-		throw new UnsupportedOperationException("Not yet implemented");
+    public GeometryAttribute(JAXBElement<PropertyNameType> expr) throws InvalidStyle {
+        super(expr);
 	}
 
-    @Override
+	public GeometryAttribute(PropertyNameType propertyName) throws InvalidStyle {
+		super(propertyName);
+	}
+
+
     public Geometry getTheGeom(Feature feat) throws ParameterException {
         try {
             return getFieldValue(feat).getAsGeometry();
@@ -23,7 +29,6 @@ public class GeometryAttribute extends PropertyName implements GeometryParameter
         }
     }
 
-	@Override
 	public GeometryType getJAXBGeometryType() {
 		throw new UnsupportedOperationException("Not supported yet.");
 	}

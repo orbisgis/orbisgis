@@ -162,6 +162,10 @@ public abstract class LegendUIComponent extends LegendUIAbstractPanel {
 		return isNullComponent;
 	}
 
+	public boolean isInlinedAndNotNull() {
+		return !(isNested() || isNull());
+	}
+
 	/**
 	 * @return true if this component has no parent
 	 */
@@ -439,9 +443,8 @@ public abstract class LegendUIComponent extends LegendUIAbstractPanel {
 	protected abstract void mountComponent();
 
 	protected abstract void turnOff();
+
 	protected abstract void turnOn();
 
-
 	public abstract Class getEditedClass();
-
 }

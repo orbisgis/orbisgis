@@ -12,7 +12,7 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlSeeAlso;
 import javax.xml.bind.annotation.XmlType;
-import org.orbisgis.core.renderer.persistance.se.UnitaryOperatorType;
+import org.orbisgis.core.renderer.persistance.se.UnaryOperatorType;
 
 
 /**
@@ -35,7 +35,7 @@ import org.orbisgis.core.renderer.persistance.se.UnitaryOperatorType;
 @XmlType(name = "ExpressionType")
 @XmlSeeAlso({
     org.orbisgis.core.renderer.persistance.se.FunctionType.class,
-    UnitaryOperatorType.class,
+    UnaryOperatorType.class,
     BinaryOperatorType.class,
     LiteralType.class,
     PropertyNameType.class,

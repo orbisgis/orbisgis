@@ -14,8 +14,9 @@ import org.gdms.driver.DriverException;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.Drawer;
 import org.orbisgis.core.renderer.persistance.se.TextSymbolizerType;
+import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
-import org.orbisgis.core.renderer.se.parameter.geometry.GeometryParameter;
+import org.orbisgis.core.renderer.se.parameter.geometry.GeometryAttribute;
 
 /**
  * Entry point for all kind of symbolizer
@@ -30,7 +31,7 @@ public abstract class Symbolizer implements SymbolizerNode, Comparable {
 
  	protected String name;
     protected String desc;
-    protected GeometryParameter the_geom;
+    protected GeometryAttribute the_geom;
 
     private SymbolizerNode parent;
 
@@ -93,11 +94,11 @@ public abstract class Symbolizer implements SymbolizerNode, Comparable {
         this.level = level;
     }
 
-    public GeometryParameter getGeometry() {
+    public GeometryAttribute getGeometry() {
         return the_geom;
     }
 
-    public void setGeometry(GeometryParameter the_geom) {
+    public void setGeometry(GeometryAttribute the_geom) {
         this.the_geom = the_geom;
     }
 
@@ -140,7 +141,7 @@ public abstract class Symbolizer implements SymbolizerNode, Comparable {
         }*/
     }
 
-    public static Symbolizer createSymbolizerFromJAXBElement(JAXBElement<? extends SymbolizerType> st) {
+    public static Symbolizer createSymbolizerFromJAXBElement(JAXBElement<? extends SymbolizerType> st) throws InvalidStyle {
         if (st.getDeclaredType() == org.orbisgis.core.renderer.persistance.se.AreaSymbolizerType.class) {
             return new AreaSymbolizer((JAXBElement<AreaSymbolizerType>) st);
         } else if (st.getDeclaredType() == org.orbisgis.core.renderer.persistance.se.LineSymbolizerType.class) {

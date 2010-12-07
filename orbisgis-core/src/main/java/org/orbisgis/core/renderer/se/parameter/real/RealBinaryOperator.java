@@ -6,6 +6,7 @@ import org.gdms.data.feature.Feature;
 import org.orbisgis.core.renderer.persistance.ogc.BinaryOperatorType;
 import org.orbisgis.core.renderer.persistance.ogc.ExpressionType;
 import org.orbisgis.core.renderer.persistance.se.ParameterValueType;
+import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
 
@@ -36,7 +37,7 @@ public final class RealBinaryOperator implements RealParameter {
 		setRightValue(r);
 	}
 
-	public RealBinaryOperator(JAXBElement<BinaryOperatorType> expr) {
+	public RealBinaryOperator(JAXBElement<BinaryOperatorType> expr) throws InvalidStyle {
 		ctx = RealParameterContext.realContext;
 
 		BinaryOperatorType t = expr.getValue();

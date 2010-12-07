@@ -20,6 +20,7 @@ import org.orbisgis.core.renderer.persistance.se.ObjectFactory;
 import org.orbisgis.core.renderer.persistance.se.PieChartType;
 import org.orbisgis.core.renderer.persistance.se.PieSubtypeType;
 import org.orbisgis.core.renderer.persistance.se.SliceType;
+import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 
 import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.fill.Fill;
@@ -43,7 +44,7 @@ public final class PieChart extends Graphic implements StrokeNode {
     }
 
 
-    PieChart(JAXBElement<PieChartType> pieE) {
+    PieChart(JAXBElement<PieChartType> pieE) throws InvalidStyle {
         this();
 
         PieChartType t = pieE.getValue();

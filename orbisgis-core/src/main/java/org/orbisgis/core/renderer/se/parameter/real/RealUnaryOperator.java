@@ -5,7 +5,8 @@ import org.gdms.data.feature.Feature;
 import org.orbisgis.core.renderer.persistance.ogc.ExpressionType;
 import org.orbisgis.core.renderer.persistance.se.ObjectFactory;
 import org.orbisgis.core.renderer.persistance.se.ParameterValueType;
-import org.orbisgis.core.renderer.persistance.se.UnitaryOperatorType;
+import org.orbisgis.core.renderer.persistance.se.UnaryOperatorType;
+import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
 
@@ -32,9 +33,9 @@ public final class RealUnaryOperator implements RealParameter {
 		setOperand(value);
     }
 
-    public RealUnaryOperator(JAXBElement<UnitaryOperatorType> expr) {
+    public RealUnaryOperator(JAXBElement<UnaryOperatorType> expr) throws InvalidStyle {
 		this();
-        UnitaryOperatorType t = expr.getValue();
+        UnaryOperatorType t = expr.getValue();
 
         this.setOperand(SeParameterFactory.createRealParameter((JAXBElement<? extends ExpressionType>)t.getExpression()));
 
@@ -97,7 +98,7 @@ public final class RealUnaryOperator implements RealParameter {
     @Override
     public JAXBElement<? extends ExpressionType> getJAXBExpressionType() {
 
-        UnitaryOperatorType o = new UnitaryOperatorType();
+        UnaryOperatorType o = new UnaryOperatorType();
 
         o.setExpression(this.getOperand().getJAXBExpressionType());
 

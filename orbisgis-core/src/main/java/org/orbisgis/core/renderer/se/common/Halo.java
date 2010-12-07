@@ -10,6 +10,7 @@ import org.gdms.data.feature.Feature;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.persistance.se.HaloType;
 import org.orbisgis.core.renderer.se.FillNode;
+import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 
 import org.orbisgis.core.renderer.se.SymbolizerNode;
 import org.orbisgis.core.renderer.se.UomNode;
@@ -33,7 +34,7 @@ public final class Halo implements SymbolizerNode, UomNode, FillNode {
 		this.radius = radius;
 	}
 
-	public Halo(HaloType halo) {
+	public Halo(HaloType halo) throws InvalidStyle {
 		if (halo.getFill() != null) {
 			this.setFill(Fill.createFromJAXBElement(halo.getFill()));
 		}

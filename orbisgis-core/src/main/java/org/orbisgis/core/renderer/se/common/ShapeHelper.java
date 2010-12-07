@@ -104,6 +104,93 @@ public class ShapeHelper {
 
 
 	/**
+	 * Split a line into two lines. The first line length equals firstLineLenght parameter
+	 * The sum of the two line length equals the length of the initial line.
+	 *
+	 * If firstLineLenght > initial line length, only one line (initial line copy) is returned
+	 *
+	 * @param line the line to split
+	 * @param firstLineLength expected length of the first returned line
+	 *
+	 * @return Generated lines.
+	 */
+	public static ArrayList<Shape> splitLine(Shape line, double firstLineLength){
+
+		ArrayList<Shape> shapes = new ArrayList<Shape>();
+
+		PathIterator it = line.getPathIterator(null);
+		double coords[] = new double[6];
+
+		Double x1 = null;
+		Double y1 = null;
+
+		Path2D.Double segment = new Path2D.Double();
+		double p = 0.0;
+		double p1;
+
+		it.currentSegment(coords);
+
+		x1 = coords[0];
+		y1 = coords[1];
+		segment.moveTo(x1, y1);
+
+		it.next();
+
+		double x2 = 0.0;
+		double y2 = 0.0;
+
+		boolean first = true;
+
+		while (!it.isDone()){
+			it.currentSegment(coords);
+
+			x2 = coords[0];
+			y2 = coords[1];
+
+			double xx, yy;
+			xx = x2-x1;
+			yy = y2-y1;
+			p1 = Math.sqrt(xx*xx + yy*yy);
+			p += p1;
+
+			if (first && p > firstLineLength){
+				first = false;
+				// Le point courant dépasse la limite de longueur
+				double delta = (p - firstLineLength);
+
+				// Obtenir le point qui est exactement à la limite
+				Point2D.Double pt = getPointAt(x1, y1, x2, y2, p1-delta);
+
+				x1 = pt.x;
+				y1 = pt.y;
+
+				// On termine le segment, l'ajoute à la liste de shapes
+				segment.lineTo(x1, y1);
+				p = 0;
+				shapes.add(segment);
+
+				// Et commence le nouveau segment à
+				segment = new Path2D.Double();
+				segment.moveTo(x1, y1);
+
+			} else {
+				// Le point courant dépasse la limite de longueur
+				segment.lineTo(x2, y2);
+				x1 = x2;
+				y1 = y2;
+				it.next();
+			}
+		}
+		//last segment end with last point
+		segment.lineTo(x1, y1);
+
+		shapes.add(segment);
+
+		return shapes;
+	}
+
+
+	/**
 	 * Split a linear feature in the specified number of part, which have all the same length
 	 * @param line  the line to split
 	 * @param nbPart the number of part to create
@@ -149,21 +236,26 @@ public class ShapeHelper {
 			p += p1;
 
 			if (p > segLength){
+				// Le point courant dépasse la limite de longueur
 				double delta = (p - segLength);
 
+				// Obtenir le point qui est exactement à la limite
 				Point2D.Double pt = getPointAt(x1, y1, x2, y2, p1-delta);
 
 				x1 = pt.x;
 				y1 = pt.y;
 
+				// On termine le segment, l'ajoute à la liste de shapes
 				segment.lineTo(x1, y1);
 				p = 0;
 				shapes.add(segment);
+
+				// Et commence le nouveau segment à
 				segment = new Path2D.Double();
 				segment.moveTo(x1, y1);
 
-
 			} else {
+				// Le point courant dépasse la limite de longueur
 				segment.lineTo(x2, y2);
 				x1 = x2;
 				y1 = y2;

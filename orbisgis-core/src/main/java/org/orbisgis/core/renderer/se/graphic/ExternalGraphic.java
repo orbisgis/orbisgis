@@ -17,6 +17,7 @@ import org.orbisgis.core.renderer.persistance.se.ObjectFactory;
 
 import org.gdms.data.feature.Feature;
 import org.orbisgis.core.map.MapTransform;
+import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 
 import org.orbisgis.core.renderer.se.common.Halo;
 import org.orbisgis.core.renderer.se.common.OnlineResource;
@@ -51,7 +52,7 @@ public final class ExternalGraphic extends Graphic {
     public ExternalGraphic(){
     }
 
-    ExternalGraphic(JAXBElement<ExternalGraphicType> extG) throws IOException {
+    ExternalGraphic(JAXBElement<ExternalGraphicType> extG) throws IOException, InvalidStyle {
         ExternalGraphicType t = extG.getValue();
 
         if (t.getHalo() != null){

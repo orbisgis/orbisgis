@@ -5,6 +5,7 @@ import org.gdms.data.feature.Feature;
 import org.orbisgis.core.renderer.persistance.se.InterpolateType;
 import org.orbisgis.core.renderer.persistance.se.InterpolationPointType;
 import org.orbisgis.core.renderer.persistance.se.ModeType;
+import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.parameter.Interpolate;
 import org.orbisgis.core.renderer.se.parameter.InterpolationPoint;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
@@ -22,7 +23,7 @@ public final class Interpolate2Real extends Interpolate<RealParameter, RealLiter
 		ctx = RealParameterContext.realContext;
     }
 
-    public Interpolate2Real(JAXBElement<InterpolateType> expr) {
+    public Interpolate2Real(JAXBElement<InterpolateType> expr) throws InvalidStyle {
 		super();
 		ctx = RealParameterContext.realContext;
         InterpolateType t = expr.getValue();
