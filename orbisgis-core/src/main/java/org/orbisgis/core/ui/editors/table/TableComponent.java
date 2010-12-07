@@ -38,6 +38,7 @@ package org.orbisgis.core.ui.editors.table;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Insets;
 import java.awt.Rectangle;
@@ -232,8 +233,8 @@ public class TableComponent extends JPanel implements WorkbenchFrame {
 	private Component getTableToolBar() {
 		JToolBar toolBar = new JToolBar();
 		toolBar.setFloatable(false);
-		toolBar.add(getPanelInformation(), BorderLayout.NORTH);
-		toolBar.add(getRegexTextField(), BorderLayout.SOUTH);
+		toolBar.add(getPanelInformation(), BorderLayout.WEST);
+		toolBar.add(getRegexTextField(), BorderLayout.EAST);
 		return toolBar;
 	}
 
@@ -311,7 +312,7 @@ public class TableComponent extends JPanel implements WorkbenchFrame {
 									.getText("orbisgis.org.orbisgis.core.ui.editors.table.TableComponent.put_a_text"));
 			}
 		});
-
+		
 		regexPanel.add(label);
 		regexPanel.add(regexTxtFilter);
 		return regexPanel;
@@ -390,6 +391,8 @@ public class TableComponent extends JPanel implements WorkbenchFrame {
 				.setText(I18N
 						.getText("orbisgis.org.orbisgis.core.ui.editors.table.TableComponent.rowNumber"));
 		nbRowsSelectedLabel = nbRowsMessage;
+		nbRowsMessage.setVerticalAlignment(JLabel.CENTER);
+		nbRowsMessage.setPreferredSize(new Dimension(230, 19));
 		return nbRowsMessage;
 	}
 
@@ -403,7 +406,7 @@ public class TableComponent extends JPanel implements WorkbenchFrame {
 						.getText("orbisgis.org.orbisgis.core.ui.editors.table.TableComponent.put_a_sqlwhere"));
 		txtFilter
 				.setToolTipText(I18N
-						.getText("orbisgis.org.orbisgis.core.ui.editors.table.TableComponent.searchEnter"));
+						.getText("orbisgis.org.orbisgis.core.ui.editors.table.TableComponent.searchCtrlEnter"));
 		txtFilter.addKeyListener(new KeyListener() {
 
 			@Override
@@ -867,7 +870,7 @@ public class TableComponent extends JPanel implements WorkbenchFrame {
 			component.repaint();
 			if (e.isPopupTrigger()) {
 				JComponent[] menus = null;
-				final JPopupMenu pop = getPopupMenu();
+				final JPopupMenu pop = getPopupMenu();				
 				menus = wbContext.getWorkbench().getFrame()
 						.getMenuTableTreePopup().getJMenus();
 				for (JComponent menu : menus) {

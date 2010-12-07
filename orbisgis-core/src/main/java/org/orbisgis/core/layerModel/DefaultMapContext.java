@@ -247,7 +247,8 @@ public class DefaultMapContext implements MapContext {
 				}
 			}
 
-			selectedLayers = newSelection.toArray(new ILayer[newSelection.size()]);
+			selectedLayers = newSelection.toArray(new ILayer[newSelection
+					.size()]);
 		}
 	}
 

@@ -299,24 +299,24 @@ public class FeatureInstaller {
 
 	/**
 	 * Create a popupmenu without icon
-	 *
+	 * 
 	 * @param frame
 	 * @param plugIn
 	 * @param menuPath
 	 * @param group
 	 * @param checkBox
 	 * @param wbContext
-	 * @return
 	 */
-	public JMenu addPopupMenuItem(WorkbenchFrame frame, AbstractPlugIn plugIn,
+	public void addPopupMenuItem(WorkbenchFrame frame, AbstractPlugIn plugIn,
 			String[] menuPath, String group, boolean checkBox,
 			WorkbenchContext wbContext) {
-		return addPopupMenuItem(frame, plugIn, menuPath, group, checkBox, null,
+		addPopupMenuItem(frame, plugIn, menuPath, group, checkBox, null,
 				wbContext);
 	}
 
 	/**
 	 * Create a popup memu, attached to an orbisgis workbenchFrame.
+	 * 
 	 * @param frame
 	 * @param plugIn
 	 * @param menuPath
@@ -324,9 +324,8 @@ public class FeatureInstaller {
 	 * @param checkBox
 	 * @param icon
 	 * @param wbContext
-	 * @return
 	 */
-	public JMenu addPopupMenuItem(WorkbenchFrame frame, AbstractPlugIn plugIn,
+	public void addPopupMenuItem(WorkbenchFrame frame, AbstractPlugIn plugIn,
 			String[] menuPath, String group, boolean checkBox, ImageIcon icon,
 			WorkbenchContext wbContext) {
 		plugIn.createPlugInContext(wbContext);
@@ -340,7 +339,6 @@ public class FeatureInstaller {
 					i != menuPath.length - 1 ? null : plugIn, checkBox);
 			frame.getMenuTreePopup().addMenu(mymenu);
 		}
-		return null;
 	}
 
 	public void addRegisterCustomQuery(Class<? extends CustomQuery> queryClass) {

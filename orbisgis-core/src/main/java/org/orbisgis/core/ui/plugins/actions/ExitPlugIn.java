@@ -37,6 +37,8 @@
  */
 package org.orbisgis.core.ui.plugins.actions;
 
+import java.awt.Component;
+
 import javax.swing.JButton;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
@@ -69,12 +71,12 @@ public class ExitPlugIn extends AbstractPlugIn {
 	}
 
 	public boolean execute(PlugInContext context) throws Exception {
-		execute();
+		openExitDialog(context.getWorkbenchContext().getWorkbench().getFrame());
 		return true;
 	}
 
-	public static void execute() {
-		int answer = JOptionPane.showConfirmDialog(null, "Really quit?",
+	public static void openExitDialog(Component component) {
+		int answer = JOptionPane.showConfirmDialog(component, "Really quit?",
 				"OrbisGIS", JOptionPane.YES_NO_OPTION);
 		if (answer == JOptionPane.YES_OPTION) {
 			OrbisGISWorkspace psm = (OrbisGISWorkspace) Services

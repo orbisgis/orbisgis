@@ -13,7 +13,7 @@
  *
  * Copyright (C) 2007 Erwan BOCHER, Fernando GONZALEZ CORTES, Thomas LEDUC
  *
- * Copyright (C) 2010 Erwan BOCHER, Alexis GUEGANNO, Maxence LAURENT
+ * Copyright (C) 2010 Erwan BOCHER, Alexis GUEGANNO, Maxence LAURENT, Antoine GOURLAY, Adelin PIAU
  *
  * This file is part of OrbisGIS.
  *
@@ -46,7 +46,6 @@ import org.orbisgis.core.ui.pluginSystem.PlugInContext.SourceAvailability;
 import org.orbisgis.core.ui.pluginSystem.workbench.Names;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchContext;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchFrame;
-import org.orbisgis.core.ui.plugins.views.geocognition.OpenGeocognitionElementJob;
 import org.orbisgis.core.ui.preferences.lookandfeel.OrbisGISIcon;
 
 public class GeocatalogShowTablePlugIn extends AbstractPlugIn {
@@ -76,8 +75,8 @@ public class GeocatalogShowTablePlugIn extends AbstractPlugIn {
 
 	public void openTable(String currentNode) {
 		BackgroundManager bm = Services.getService(BackgroundManager.class);
-		bm.backgroundOperation(new OpenGeocognitionElementJob(
-				new EditableSource(currentNode)));
+		bm.backgroundOperation(new OpenGeocatalogElementJob(new EditableSource(
+				currentNode)));
 	}
 
 	public boolean isEnabled() {

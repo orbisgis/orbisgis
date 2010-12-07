@@ -157,8 +157,17 @@ public class Renderer {
 			// fetch symbolizers and rules
 			style.getSymbolizers(mt, symbs, overlays, rList, fRList);
 
+
+			long tV1b = System.currentTimeMillis();
+
+			System.out.println ("Initialisation:" + (tV1b - tV1));
+
 			// Create new dataSource with only feature in current extent
+			pm.startTask("Filtering (spatial)...");
+			pm.progressTo(0);
 			FilterDataSourceDecorator featureInExtent = featureInExtent(mt, sds, pm);
+			pm.progressTo(100);
+			pm.endTask();
 
 			if (featureInExtent != null) {
 				featureInExtent.open();
@@ -170,6 +179,8 @@ public class Renderer {
 				// Foreach rList without ElseFilter
 				for (Rule r : rList) {
 
+					pm.startTask("Filtering (rule)...");
+					pm.progressTo(0);
 					FilterDataSourceDecorator filteredDs = r.getFilteredDataSource(featureInExtent);
 
 					if (filteredDs != featureInExtent) {
@@ -190,6 +201,8 @@ public class Renderer {
 					} else {
 						elseWhere = "1 = 0";
 					}
+					pm.progressTo(100);
+					pm.endTask();
 				}
 
 
@@ -204,6 +217,7 @@ public class Renderer {
 					selected.add((int)sFid);
 				}
 
+				pm.endTask();
 				long tV2 = System.currentTimeMillis();
 				System.out.println("Filtering done in " + (tV2 - tV1) + "[ms]");
 
@@ -217,7 +231,6 @@ public class Renderer {
 				for (Symbolizer s : symbs) {
 					total += rulesDs.get(s.getRule()).getRowCount();
 				}
-				long tLoad = 0;
 
 				for (Symbolizer s : symbs) {
 					pm.startTask("Drawing " + layer.getName() + " (" + s.getName() + ")");
@@ -235,19 +248,15 @@ public class Renderer {
 							}
 						}
 
-						long tBefore = System.currentTimeMillis();
 						Feature feat = new Feature(metadata);
 						feat.setValues(fds.getRow(fid));
-
-						long tAfter = System.currentTimeMillis();
-						tLoad += tAfter - tBefore;
 
 						s.draw(g2, feat, selected.contains((int) fds.getOriginalIndex(fid)), mt);
 
 						pm.progressTo((int) (100 * ++layerCount / total));
 					}
 					long tf2 = System.currentTimeMillis();
-					System.out.println("Level done in " + (tf2 - tf1) + "[ms]  (data access: " + tLoad + " [ms])");
+					System.out.println("Level done in " + (tf2 - tf1) + "[ms]");
 					pm.endTask();
 				}
 

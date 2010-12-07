@@ -95,14 +95,19 @@ public class SetInactivePlugIn extends AbstractPlugIn {
 		}
 
 		if (option != JOptionPane.CANCEL_OPTION) {
-			mapContext.setActiveLayer(null);
+			try {
+				layer.getDataSource().syncWithSource();
+				mapContext.setActiveLayer(null);
+			} catch (DriverException e) {
+				Services.getErrorManager().error("Cannot revert layer", e);
+				return;
+			}
 		}
 	}
 
 	public boolean isEnabled() {
 		return getPlugInContext().checkLayerAvailability(
-				new SelectionAvailability[] {SelectionAvailability.EQUAL},
-				1,
-				new LayerAvailability[] {LayerAvailability.ACTIVE_LAYER});
+				new SelectionAvailability[] { SelectionAvailability.EQUAL }, 1,
+				new LayerAvailability[] { LayerAvailability.ACTIVE_LAYER });
 	}
 }

@@ -11,7 +11,7 @@
 	<artifactId>orbisgis-core</artifactId>
 	<name>orbisgis-core</name>
 	<version>3.0</version>
-	<url>http://maven.apache.org</url>
+	<url>http://orbisgis.org</url>
 	<dependencies>
 		<dependency>
 			<groupId>junit</groupId>
@@ -128,14 +128,18 @@
 					</includes>
 				</configuration>
 			</plugin>
-		 <plugin>
-		  <groupId>org.apache.maven.plugins</groupId>
-		  <artifactId>maven-compiler-plugin</artifactId>
-		  <version>2.0.2</version>
-		  <configuration>
-		   <showDeprecation>true</showDeprecation>
-		  </configuration>
-		 </plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+				<version>2.3.1</version>
+				<configuration>
+		         	<archive>
+		            	<manifest>
+		            	  <mainClass>org.orbisgis.core.Main</mainClass>
+		          	    </manifest>
+		          	</archive>
+	       		</configuration>
+			</plugin>
 		</plugins>
 	</build>
 </project>

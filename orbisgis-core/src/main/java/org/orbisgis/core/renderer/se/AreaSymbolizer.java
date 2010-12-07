@@ -171,18 +171,14 @@ public final class AreaSymbolizer extends VectorSymbolizer implements FillNode, 
 	public void draw(Graphics2D g2, Feature feat, boolean selected, MapTransform mt) throws ParameterException, IOException, DriverException {
 
 		ArrayList<Shape> shapes = this.getShape(feat, mt);
+
 		if (shapes != null) {
 			for (Shape shp : shapes) {
+
 				if (fill != null) {
-					fill.draw(g2, shp, feat, selected, mt);
-				}
-			}
-		}
+				   fill.draw(g2, shp, feat, selected, mt);
+    			}
 
-		shapes = this.getLines(feat, mt);
-
-		if (shapes != null) {
-			for (Shape shp : shapes) {
 				if (perpendicularOffset != null) {
 					double offset = perpendicularOffset.getValue(feat);
 					shp = ShapeHelper.perpendicularOffset(shp, offset);
