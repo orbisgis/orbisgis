@@ -43,27 +43,40 @@ import org.gdms.data.types.DimensionConstraint;
 import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
+import org.gdms.data.values.ValueFactory;
+import org.gdms.geometryUtils.CoordinatesUtils;
 import org.gdms.sql.function.Argument;
 import org.gdms.sql.function.Arguments;
 import org.gdms.sql.function.Function;
 import org.gdms.sql.function.FunctionException;
 
+import com.vividsolutions.jts.geom.Geometry;
+
 public class ST_Force_2D implements Function {
 
-	public Value evaluate(DataSourceFactory dsf,Value[] args) throws FunctionException {
+	public Value evaluate(DataSourceFactory dsf, Value[] args)
+			throws FunctionException {
+		if (!args[0].isNull()) {
+			Geometry geom = args[0].getAsGeometry();
+			if (!Double.isNaN(geom.getCoordinate().z)) {
+				return ValueFactory.createValue(CoordinatesUtils
+						.force_2D(args[0].getAsGeometry()));
+			}
+			return args[0];
+		}
 		return args[0];
 	}
 
 	public String getDescription() {
-		return "Changes the metadata of the parameter by setting its dimension to 2D.";
+		return "Forces the geometries into XY mode. Metadata are also modified.";
 	}
 
 	public String getName() {
-		return "ST_Constraint2D";
+		return "ST_Force_2D";
 	}
 
 	public String getSqlOrder() {
-		return "select ST_Constraint2D(the_geom) from myTable";
+		return "select ST_Force_2D(the_geom) from myTable";
 	}
 
 	public boolean isAggregate() {
@@ -81,7 +94,6 @@ public class ST_Force_2D implements Function {
 		Constraint[] result = new Constraint[constrs.length + 1];
 		System.arraycopy(constrs, 0, result, 0, constrs.length);
 		result[result.length - 1] = new DimensionConstraint(2);
-
 		return TypeFactory.createType(type.getTypeCode(), result);
 	}
 

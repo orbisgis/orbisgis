@@ -95,7 +95,7 @@ public class ST_SetZ implements Function {
 		} else {
 			double z = args[1].getAsDouble();
 
-			return ValueFactory.createValue(CoordinatesUtils.updateZ(geometry,
+			return ValueFactory.createValue(CoordinatesUtils.force_3D(geometry,
 					z));
 		}
 

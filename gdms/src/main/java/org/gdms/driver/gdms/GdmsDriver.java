@@ -38,10 +38,13 @@ package org.gdms.driver.gdms;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.metadata.Metadata;
+import org.gdms.data.types.Type;
 import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.FileReadWriteDriver;
@@ -52,102 +55,121 @@ import org.orbisgis.utils.FileUtils;
 
 public class GdmsDriver extends GDMSModelDriver implements FileReadWriteDriver {
 
-	static final byte VERSION_NUMBER = 3;
-	private GdmsReader reader;
+        static final byte VERSION_NUMBER = 3;
+        private GdmsReader reader;
 
-	public void copy(File in, File out) throws IOException {
-		FileUtils.copy(in, out);
-	}
+        public void copy(File in, File out) throws IOException {
+                FileUtils.copy(in, out);
+        }
 
-	public void createSource(String path, Metadata metadata,
-			DataSourceFactory dataSourceFactory) throws DriverException {
-		try {
-			GdmsWriter writer = new GdmsWriter(new File(path));
-			writer.writeMetadata(0, metadata);
-			writer.close();
-		} catch (IOException e) {
-			throw new DriverException("Could not create source: ", e);
-		}
-	}
+        public void createSource(String path, Metadata metadata,
+                DataSourceFactory dataSourceFactory) throws DriverException {
+                try {
+                        GdmsWriter writer = new GdmsWriter(new File(path));
+                        writer.writeMetadata(0, metadata);
+                        writer.close();
+                } catch (IOException e) {
+                        throw new DriverException("Could not create source: ", e);
+                }
+        }
 
-	public void writeFile(File file, DataSource dataSource, IProgressMonitor pm)
-			throws DriverException {
-		try {
-			GdmsWriter writer = new GdmsWriter(file);
-			writer.write(dataSource, pm);
-			writer.close();
-		} catch (IOException e) {
-			throw new DriverException(e.getMessage(), e);
-		}
-	}
+        public void writeFile(File file, DataSource dataSource, IProgressMonitor pm)
+                throws DriverException {
+                try {
+                        GdmsWriter writer = new GdmsWriter(file);
+                        writer.write(dataSource, pm);
+                        writer.close();
+                } catch (IOException e) {
+                        throw new DriverException(e.getMessage(), e);
+                }
+        }
 
-	public void close() throws DriverException {
-		try {
-			reader.close();
-			reader = null;
-		} catch (IOException e) {
-			throw new DriverException(e);
-		}
-	}
+        public void close() throws DriverException {
+                try {
+                        reader.close();
+                        reader = null;
+                } catch (IOException e) {
+                        throw new DriverException(e);
+                }
+        }
 
-	public void open(File file) throws DriverException {
-		try {
-			reader = new GdmsReader(file);
-			reader.readMetadata();
-		} catch (IOException e) {
-			throw new DriverException(e);
-		}
-	}
+        public void open(File file) throws DriverException {
+                try {
+                        reader = new GdmsReader(file);
+                        reader.readMetadata();
+                } catch (IOException e) {
+                        throw new DriverException(e);
+                }
+        }
 
-	public Metadata getMetadata() throws DriverException {
-		return reader.getMetadata();
-	}
+        public Metadata getMetadata() throws DriverException {
+                if (reader == null) {
+                        return null;
+                }
+                return reader.getMetadata();
+        }
 
-	public int getType() {
-		return SourceManager.VECTORIAL | SourceManager.FILE;
-	}
+        public int getType() {
+                int type = SourceManager.FILE;
+                if (reader != null) {
+                        try {
+                                Metadata m = getMetadata();
+                                for (int i = 0; i < m.getFieldCount(); i++) {
+                                        switch (m.getFieldType(i).getTypeCode()) {
+                                                case Type.GEOMETRY:
+                                                        type = type | SourceManager.VECTORIAL;
+                                                        break;
+                                                case Type.RASTER:
+                                                        type = type | SourceManager.RASTER;
+                                                        break;
+                                        }
+                                }
+                        } catch (DriverException ex) {
+                        }
+                }
+                return type;
+        }
 
-	public void setDataSourceFactory(DataSourceFactory dsf) {
-	}
+        public void setDataSourceFactory(DataSourceFactory dsf) {
+        }
 
-	public String getDriverId() {
-		return "GDMS driver";
-	}
+        public String getDriverId() {
+                return "GDMS driver";
+        }
 
-	public Value getFieldValue(long rowIndex, int fieldId)
-			throws DriverException {
-		return reader.getFieldValue(rowIndex, fieldId);
-	}
+        public Value getFieldValue(long rowIndex, int fieldId)
+                throws DriverException {
+                return reader.getFieldValue(rowIndex, fieldId);
+        }
 
-	public long getRowCount() throws DriverException {
-		return reader.getRowCount();
-	}
+        public long getRowCount() throws DriverException {
+                return reader.getRowCount();
+        }
 
-	public Number[] getScope(int dimension) throws DriverException {
-		return reader.getScope(dimension);
-	}
+        public Number[] getScope(int dimension) throws DriverException {
+                return reader.getScope(dimension);
+        }
 
-	public boolean isCommitable() {
-		return true;
-	}
+        public boolean isCommitable() {
+                return true;
+        }
 
-	public String validateMetadata(Metadata metadata) {
-		return null;
-	}
+        public String validateMetadata(Metadata metadata) {
+                return null;
+        }
 
-	@Override
-	public String[] getFileExtensions() {
-		return new String[] { "gdms" };
-	}
+        @Override
+        public String[] getFileExtensions() {
+                return new String[]{"gdms"};
+        }
 
-	@Override
-	public String getTypeDescription() {
-		return "GDMS native file";
-	}
+        @Override
+        public String getTypeDescription() {
+                return "GDMS native file";
+        }
 
-	@Override
-	public String getTypeName() {
-		return "GDMS";
-	}
-
+        @Override
+        public String getTypeName() {
+                return "GDMS";
+        }
 }

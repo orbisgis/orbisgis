@@ -65,7 +65,7 @@ public class ST_AddZToGeometry implements Function {
 
 		ZFieldValue = args[1].getAsDouble();
 
-		Geometry geom = CoordinatesUtils.updateZ(geometry, ZFieldValue);
+		Geometry geom = CoordinatesUtils.force_3D(geometry, ZFieldValue);
 
 		return ValueFactory.createValue(geom);
 

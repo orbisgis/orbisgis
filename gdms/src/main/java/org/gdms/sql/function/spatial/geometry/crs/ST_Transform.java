@@ -47,7 +47,7 @@ public class ST_Transform extends AbstractSpatialFunction {
 	@Override
 	public Arguments[] getFunctionArguments() {
 		return new Arguments[] { new Arguments(Argument.GEOMETRY,
-				Argument.STRING, Argument.STRING) };
+				Argument.INT, Argument.INT) };
 	}
 
 	@Override

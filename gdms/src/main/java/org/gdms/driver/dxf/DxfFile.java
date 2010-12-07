@@ -27,11 +27,7 @@ package org.gdms.driver.dxf;
 import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
-import java.util.HashMap;
-import java.util.Map;
 
-import javax.swing.JFileChooser;
-import javax.swing.JFrame;
 
 import org.gdms.data.metadata.DefaultMetadata;
 import org.gdms.data.types.Constraint;
@@ -89,8 +85,9 @@ public class DxfFile {
 	 * @throws DriverException
 	 */
 	public static void initializeDXF_SCHEMA() throws DriverException {
-		if (DXF_SCHEMA.getFieldCount() != 0)
-			return;
+		if (DXF_SCHEMA.getFieldCount() != 0) {
+                        return;
+                }
 		DXF_SCHEMA.addField("GEOMETRY", Type.GEOMETRY,
 				new Constraint[] { new GeometryConstraint(
 						GeometryConstraint.GEOMETRY_COLLECTION) });
@@ -139,19 +136,19 @@ public class DxfFile {
 					DxfBLOCKS.readEntities(raf, dxfFile.driver);
 				} else if (group.equals(ENTITIES)) {
 					DxfENTITIES.readEntities(raf, dxfFile.driver);
-				} else if (group.equals(OBJECTS)) {
-					// objects = DxfOBJECTS.readObjects(br);
-				} else if (group.getCode() == 999) {
-					System.out.println("Commentaire : " + group.getValue());
-				} else {
+//				} else if (group.equals(OBJECTS)) {
+//					// objects = DxfOBJECTS.readObjects(br);
+//				} else if (group.getCode() == 999) {
+//					System.out.println("Commentaire : " + group.getValue());
+//				} else {
 					// System.out.println("Group " + group.getCode() + " " +
 					// group.getValue() + " UNKNOWN");
 				}
-			} else if (group.getCode() == 999) {
+//			} else if (group.getCode() == 999) {
 				// System.out.println("Commentaire : " + group.getValue());
 			} else if (group.equals(EOF)) {
 				break;
-			} else {
+//			} else {
 				// System.out.println("Group " + group.getCode() + " " +
 				// group.getValue() + " UNKNOWN");
 			}

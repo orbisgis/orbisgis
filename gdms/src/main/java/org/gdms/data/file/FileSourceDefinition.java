@@ -38,6 +38,8 @@
 package org.gdms.data.file;
 
 import java.io.File;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.gdms.data.AbstractDataSourceDefinition;
 import org.gdms.data.DataSource;
@@ -48,6 +50,7 @@ import org.gdms.driver.DriverUtilities;
 import org.gdms.driver.FileDriver;
 import org.gdms.driver.FileReadWriteDriver;
 import org.gdms.driver.ReadOnlyDriver;
+import org.gdms.driver.gdms.GdmsDriver;
 import org.gdms.source.directory.DefinitionType;
 import org.gdms.source.directory.FileDefinitionType;
 import org.orbisgis.progress.IProgressMonitor;
@@ -59,82 +62,96 @@ import org.orbisgis.utils.I18N;
  * 
  */
 public class FileSourceDefinition extends AbstractDataSourceDefinition {
-	public File file;
 
-	public FileSourceDefinition(File file) {
-		this.file = file;
-	}
+        public File file;
 
-	public FileSourceDefinition(String fileName) {
-		this.file = new File(fileName);
-	}
+        public FileSourceDefinition(File file) {
+                this.file = file;
+        }
 
-	public DataSource createDataSource(String tableName, IProgressMonitor pm)
-			throws DataSourceCreationException {
-		if (!file.exists()) {
-			throw new DataSourceCreationException(file + " "
-					+ I18N.getText("gdms.datasource.error.noexits"));
-		}
-		((ReadOnlyDriver) getDriver())
-				.setDataSourceFactory(getDataSourceFactory());
+        public FileSourceDefinition(String fileName) {
+                this.file = new File(fileName);
+        }
 
-		FileDataSourceAdapter ds = new FileDataSourceAdapter(
-				getSource(tableName), file, (FileDriver) getDriver(), true);
-		return ds;
-	}
+        public DataSource createDataSource(String tableName, IProgressMonitor pm)
+                throws DataSourceCreationException {
+                if (!file.exists()) {
+                        throw new DataSourceCreationException(file + " "
+                                + I18N.getText("gdms.datasource.error.noexits"));
+                }
+                ((ReadOnlyDriver) getDriver()).setDataSourceFactory(getDataSourceFactory());
 
-	protected ReadOnlyDriver getDriverInstance() {
-		return DriverUtilities.getDriver(getDataSourceFactory()
-				.getSourceManager().getDriverManager(), file);
-	}
+                FileDataSourceAdapter ds = new FileDataSourceAdapter(
+                        getSource(tableName), file, (FileDriver) getDriver(), true);
+                return ds;
+        }
 
-	public File getFile() {
-		return file;
-	}
+        protected ReadOnlyDriver getDriverInstance() {
+                return DriverUtilities.getDriver(getDataSourceFactory().getSourceManager().getDriverManager(), file);
+        }
 
-	public void createDataSource(DataSource contents, IProgressMonitor pm)
-			throws DriverException {
-		FileReadWriteDriver d = (FileReadWriteDriver) getDriver();
-		d.setDataSourceFactory(getDataSourceFactory());
-		contents.open();
-		try {
-			d.writeFile(file, contents, pm);
-		} catch (DriverException e) {
-			contents.close();
-			throw e;
-		}
-		contents.close();
-	}
+        public File getFile() {
+                return file;
+        }
 
-	public DefinitionType getDefinition() {
-		FileDefinitionType ret = new FileDefinitionType();
-		ret.setPath(file.getAbsolutePath());
-		return ret;
-	}
+        public void createDataSource(DataSource contents, IProgressMonitor pm)
+                throws DriverException {
+                FileReadWriteDriver d = (FileReadWriteDriver) getDriver();
+                d.setDataSourceFactory(getDataSourceFactory());
+                contents.open();
+                try {
+                        d.writeFile(file, contents, pm);
+                } catch (DriverException e) {
+                        contents.close();
+                        throw e;
+                }
+                contents.close();
+        }
 
-	public static DataSourceDefinition createFromXML(
-			FileDefinitionType definitionType) {
-		return new FileSourceDefinition(definitionType.getPath());
-	}
+        public DefinitionType getDefinition() {
+                FileDefinitionType ret = new FileDefinitionType();
+                ret.setPath(file.getAbsolutePath());
+                return ret;
+        }
 
-	@Override
-	public String calculateChecksum(DataSource open) throws DriverException {
-		long lastModified = file.lastModified();
-		return Long.toString(lastModified);
-	}
+        public static DataSourceDefinition createFromXML(
+                FileDefinitionType definitionType) {
+                return new FileSourceDefinition(definitionType.getPath());
+        }
 
-	@Override
-	public boolean equals(DataSourceDefinition obj) {
-		if (obj instanceof FileSourceDefinition) {
-			FileSourceDefinition dsd = (FileSourceDefinition) obj;
-			if (file.equals(dsd.file)) {
-				return true;
-			} else {
-				return false;
-			}
-		} else {
-			return false;
-		}
-	}
+        @Override
+        public String calculateChecksum(DataSource open) throws DriverException {
+                long lastModified = file.lastModified();
+                return Long.toString(lastModified);
+        }
 
+        @Override
+        public boolean equals(DataSourceDefinition obj) {
+                if (obj instanceof FileSourceDefinition) {
+                        FileSourceDefinition dsd = (FileSourceDefinition) obj;
+                        if (file.equals(dsd.file)) {
+                                return true;
+                        } else {
+                                return false;
+                        }
+                } else {
+                        return false;
+                }
+        }
+
+        @Override
+        public int getType() {
+                try {
+                        if (getDriver().getTypeName().equals("GDMS") && getDriver().getMetadata() == null) {
+                                GdmsDriver d = (GdmsDriver) getDriver();
+                                d.open(file);
+                                int type = d.getType();
+                                d.close();
+                                return type;
+                        }
+
+                } catch (DriverException ex) {
+                }
+                return super.getType();
+        }
 }

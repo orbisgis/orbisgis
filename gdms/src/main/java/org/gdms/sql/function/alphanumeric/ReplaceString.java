@@ -59,7 +59,7 @@ public class ReplaceString implements Function {
 			String textFrom = arg0[1].getAsString();
 			String textTo = arg0[2].getAsString();
 
-			text.replace(textFrom, textTo);
+			text = text.replace(textFrom, textTo);
 
 		}
 		return ValueFactory.createValue(text);

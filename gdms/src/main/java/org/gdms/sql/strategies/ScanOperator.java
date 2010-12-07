@@ -145,8 +145,11 @@ public class ScanOperator extends AbstractOperator {
 
 	public void initialize() throws DriverException {
 		super.initialize();
+                if (dataSource != null) {
+                        return;
+                }
 		try {
-			dataSource = dsf.getDataSource(tableName, DataSourceFactory.NORMAL);
+			setDataSource(dsf.getDataSource(tableName, DataSourceFactory.NORMAL));
 			dataSource.open();
 		} catch (NoSuchTableException e) {
 			throw new DriverException("Cannot find the table " + tableName, e);
@@ -350,4 +353,11 @@ public class ScanOperator extends AbstractOperator {
 			return null;
 		}
 	}
+
+        /**
+         * @param dataSource the dataSource to set
+         */
+        public void setDataSource(DataSource dataSource) {
+                this.dataSource = dataSource;
+        }
 }
