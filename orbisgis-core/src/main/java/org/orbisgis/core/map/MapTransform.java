@@ -252,7 +252,8 @@ public class MapTransform implements PointTransformation {
 	/**
 	 * Transforms an envelope in map units to image units
 	 * 
-	 * @param geographic envelope
+	 * @param geographic
+	 *            envelope
 	 * @return Rectangle2DDouble
 	 */
 	public Rectangle2DDouble toPixel(Envelope geographicEnvelope) {
@@ -264,7 +265,8 @@ public class MapTransform implements PointTransformation {
 		final Point2D ul = trans.transform(upperLeft, null);
 		final Point2D lr = trans.transform(lowerRight, null);
 
-		return new Rectangle2DDouble(ul.getX(), ul.getY(), lr.getX(), lr.getY());
+		return new Rectangle2DDouble(ul.getX(), ul.getY(), lr.getX()
+				- ul.getX(), lr.getY() - ul.getY());
 	}
 
 	/**
@@ -334,6 +336,14 @@ public class MapTransform implements PointTransformation {
 	}
 
 	public Shape getShape(Geometry geom) {
+
+		Rectangle2DDouble rectangle2dDouble = toPixel(geom
+				.getEnvelopeInternal());
+
+		if ((rectangle2dDouble.getHeight() <= 1)
+				&& (rectangle2dDouble.getWidth() <= 1)) {
+			return rectangle2dDouble;
+		}
 		return getShapeWriter().toShape(geom);
 	}
 
