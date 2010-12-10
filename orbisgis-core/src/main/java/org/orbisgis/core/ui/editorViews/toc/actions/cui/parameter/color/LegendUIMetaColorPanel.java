@@ -64,18 +64,12 @@ public abstract class LegendUIMetaColorPanel extends LegendUIAbstractMetaPanel {
 	private ColorParameter color;
 	private int initial;
 	private LegendUIComponent comp;
-	private Class[] classes;
+	private final Class[] classes = { ColorLiteral.class, ColorAttribute.class, Categorize2Color.class, Recode2Color.class};
 
 	public LegendUIMetaColorPanel(String name, LegendUIController controller, LegendUIComponent parent, ColorParameter c, boolean isNullable) {
 		super(name, controller, parent, 0, isNullable);
 
 		this.color = c;
-
-		classes = new Class[4];
-		classes[0] = ColorLiteral.class;
-		classes[1] = ColorAttribute.class;
-		classes[2] = Categorize2Color.class;
-		classes[3] = Recode2Color.class;
 
 		if (color == null) {
 			comp = null;

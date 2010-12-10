@@ -150,7 +150,7 @@ public final class ViewBox implements SymbolizerNode {
         dx = Uom.toPixel(dx, this.getUom(), dpi, scale, width);
         dy = Uom.toPixel(dy, this.getUom(), dpi, scale, height);
 
-		if (Math.abs(dx) <= 0.00021 || Math.abs(dy) <= 0.00021){
+		if (dx <= 0.00021 || dy <= 0.00021){
 			throw new ParameterException("View-box is too small: (" + dx + ";" + dy + ")");
 		}
 

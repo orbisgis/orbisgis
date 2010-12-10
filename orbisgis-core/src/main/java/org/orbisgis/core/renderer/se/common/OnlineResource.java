@@ -54,8 +54,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import javax.media.jai.InterpolationBilinear;
+import javax.media.jai.InterpolationBicubic2;
 
 import javax.media.jai.JAI;
 import javax.media.jai.PlanarImage;
@@ -79,6 +78,8 @@ import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 public class OnlineResource implements ExternalGraphicSource, MarkGraphicSource {
 
 	private URL url;
+
+	private PlanarImage rowImage;
 
 	/**
 	 *
@@ -107,9 +108,14 @@ public class OnlineResource implements ExternalGraphicSource, MarkGraphicSource 
 	@Override
 	public PlanarImage getPlanarImage(ViewBox viewBox, Feature feat, MapTransform mt, String mimeType)
 			throws IOException, ParameterException {
-		PlanarImage img = JAI.create("url", url);
 
-		System.out.println("Download external graphic from " + url);
+		if (rowImage == null){
+			rowImage = JAI.create("url", url);
+			System.out.println("Download external graphic from " + url);
+		}
+		
+		PlanarImage img = rowImage;
+
 
 		if (viewBox != null && mt != null && viewBox.usable()) {
 			if (mt == null) {
@@ -130,6 +136,8 @@ public class OnlineResource implements ExternalGraphicSource, MarkGraphicSource 
 			double widthDst = dim.getX();
 			double heightDst = dim.getY();
 
+			System.out.println("(" + width + ";" + height + ")" + " (" + widthDst + ";" + heightDst + ")");
+
 			if (widthDst > 0 && heightDst > 0) {
 				double ratio_x = widthDst / width;
 				double ratio_y = heightDst / height;
@@ -140,9 +148,9 @@ public class OnlineResource implements ExternalGraphicSource, MarkGraphicSource 
 				pb.add((float) ratio_y);
 				pb.add(0.0F);
 				pb.add(0.0F);
-				pb.add(new InterpolationBilinear());
+				pb.add(InterpolationBicubic2.getInstance(InterpolationBicubic2.INTERP_BICUBIC_2));
 
-				return JAI.create("scale", pb, null);
+				return JAI.create("scale", pb);
 			} else {
 				return img;
 			}

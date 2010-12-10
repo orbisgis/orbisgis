@@ -16,7 +16,6 @@ import org.orbisgis.core.map.MapTransform;
 
 import org.orbisgis.core.renderer.persistance.se.GraphicStrokeType;
 import org.orbisgis.core.renderer.persistance.se.ObjectFactory;
-import org.orbisgis.core.renderer.persistance.se.RelativeOrientationType;
 import org.orbisgis.core.renderer.se.GraphicNode;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 
@@ -24,6 +23,7 @@ import org.orbisgis.core.renderer.se.common.RelativeOrientation;
 import org.orbisgis.core.renderer.se.common.ShapeHelper;
 import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.graphic.GraphicCollection;
+import org.orbisgis.core.renderer.se.graphic.MarkGraphic;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
@@ -53,6 +53,13 @@ public final class GraphicStroke extends Stroke implements GraphicNode {
 			this.setRelativeOrientation(RelativeOrientation.readFromToken(gst.getRelativeOrientation().value()));
 		}
     }
+
+	public GraphicStroke() {
+		this.graphic = new GraphicCollection();
+		MarkGraphic mg = new MarkGraphic();
+		mg.setTo3mmCircle();
+		graphic.addGraphic(mg);
+	}
 
 	@Override
     public void setGraphicCollection(GraphicCollection graphic) {

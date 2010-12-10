@@ -2,7 +2,10 @@ package org.orbisgis.core.renderer.se.fill;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
+import java.awt.Paint;
 import java.awt.Shape;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.xml.bind.JAXBElement;
 
@@ -99,10 +102,9 @@ public final class SolidFill extends Fill {
 	}
 
 	@Override
-	public void draw(Graphics2D g2, Shape shp, Feature feat, boolean selected, MapTransform mt) throws ParameterException {
-
+	public Paint getPaint(Feature feat, boolean selected, MapTransform mt) throws ParameterException {
 		Color c = new Color(128, 128, 128);
-		
+
 		if (color != null){
 			c = color.getColor(feat);
 		}
@@ -120,7 +122,12 @@ public final class SolidFill extends Fill {
 			ac = ColorHelper.invert(ac);
 		}
 
-		g2.setPaint(ac);
+		return ac;
+	}
+
+	@Override
+	public void draw(Graphics2D g2, Shape shp, Feature feat, boolean selected, MapTransform mt) throws ParameterException {
+		g2.setPaint(getPaint(feat, selected, mt));
 		g2.fill(shp);
 	}
 

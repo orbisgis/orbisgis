@@ -59,13 +59,18 @@ public class TextGraphic extends Graphic {
 
         Rectangle2D bounds = new Rectangle2D.Double(label.getMinX(), label.getMinY(), label.getWidth(), label.getHeight());
 
+		System.out.println("Bounds: " + bounds);
+
 
         if (transform != null) {
             AffineTransform at = this.transform.getGraphicalAffineTransform(feat, false, mt, (double)label.getWidth(), (double)label.getHeight());
 
             Shape atShp = at.createTransformedShape(bounds);
 
+			System.out.println("Bounds: " + atShp.getBounds2D());
+
             RenderableGraphics rg = Graphic.getNewRenderableGraphics(atShp.getBounds2D(), 0);
+
             rg.drawRenderedImage(label.createRendering(mt.getCurrentRenderContext()), at);
             return rg;
         } else {

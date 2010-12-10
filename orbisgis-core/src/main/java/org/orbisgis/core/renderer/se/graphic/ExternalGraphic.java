@@ -138,11 +138,11 @@ public final class ExternalGraphic extends Graphic {
 
         // Create shape based on image bbox
 
-        if (graphic == null) {
-            img = source.getPlanarImage(viewBox, feat, mt, mimeType);
-        } else {
-            img = graphic;
-        }
+        //if (graphic == null) {
+        img = source.getPlanarImage(viewBox, feat, mt, mimeType);
+        //} else {
+        //    img = graphic;
+        //}
 
         if (img == null){
             return null;

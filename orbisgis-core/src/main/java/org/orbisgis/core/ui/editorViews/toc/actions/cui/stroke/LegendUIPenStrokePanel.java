@@ -66,25 +66,28 @@ import org.orbisgis.core.ui.preferences.lookandfeel.OrbisGISIcon;
 public abstract class LegendUIPenStrokePanel extends LegendUIComponent implements LegendUIStrokeComponent{
 
 	private final PenStroke penStroke;
+
 	private final LegendUIMetaColorPanel color;
+
 	private final LegendUIMetaRealPanel strokeWidth;
 
 	private final LegendUIMetaRealPanel opacity;
 
 	private final LegendUIMetaRealPanel dashOffset;
 
+	private UomInput uom;
+
+	private ComboBoxInput lineCap;
+
+	private ComboBoxInput lineJoin;
 
 	private final LineCap[] lCapValues;
+
 	private final LineJoin[] lJoinValues;
 
 	private LegendUIAbstractPanel content;
 	private LegendUIAbstractPanel content2;
 	private LegendUIAbstractPanel header;
-
-	private UomInput uom;
-
-	private ComboBoxInput lineCap;
-	private ComboBoxInput lineJoin;
 
 	//private TextInput dashArray;
 	private LegendUIMetaStringPanel dashArray;

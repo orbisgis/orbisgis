@@ -10,6 +10,8 @@ import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 
 import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.media.jai.RenderableGraphics;
 import javax.xml.bind.JAXBElement;
@@ -74,7 +76,7 @@ public final class DensityFill extends Fill implements GraphicNode {
 	 */
 	public void setHatchesOrientation(RealParameter orientation) {
 		this.orientation = orientation;
-		if (this.orientation != null){
+		if (this.orientation != null) {
 			this.orientation.setContext(RealParameterContext.realContext);
 		}
 	}
@@ -109,7 +111,7 @@ public final class DensityFill extends Fill implements GraphicNode {
 	 */
 	public void setPercentageCovered(RealParameter percent) {
 		this.percentageCovered = percent;
-		if (this.percentageCovered != null){
+		if (this.percentageCovered != null) {
 			this.percentageCovered.setContext(RealParameterContext.percentageContext);
 		}
 	}
@@ -118,8 +120,17 @@ public final class DensityFill extends Fill implements GraphicNode {
 		return percentageCovered;
 	}
 
-	@Override
 	public void draw(Graphics2D g2, Shape shp, Feature feat, boolean selected, MapTransform mt) throws ParameterException, IOException {
+		Paint painter = getPaint(feat, selected, mt);
+
+		if (painter != null) {
+			g2.setPaint(painter);
+			g2.fill(shp);
+		}
+	}
+
+	@Override
+	public Paint getPaint(Feature feat, boolean selected, MapTransform mt) throws ParameterException {
 		double percentage = 0.0;
 
 		if (percentageCovered != null) {
@@ -192,7 +203,7 @@ public final class DensityFill extends Fill implements GraphicNode {
 				BufferedImage img = new BufferedImage(ix, iy, BufferedImage.TYPE_INT_ARGB);
 				Graphics2D tile = img.createGraphics();
 
-				g2.setRenderingHints(mt.getCurrentRenderContext().getRenderingHints());
+				tile.setRenderingHints(mt.getCurrentRenderContext().getRenderingHints());
 
 				Color c = hatches.getColor().getColor(feat);
 
@@ -200,10 +211,10 @@ public final class DensityFill extends Fill implements GraphicNode {
 					c = ColorHelper.invert(c);
 				}
 
-            	Color ac = c;
-	            if (this.hatches.getOpacity() != null) {
-    	            ac = ColorHelper.getColorWithAlpha(c, this.hatches.getOpacity().getValue(feat));
-        	    }
+				Color ac = c;
+				if (this.hatches.getOpacity() != null) {
+					ac = ColorHelper.getColorWithAlpha(c, this.hatches.getOpacity().getValue(feat));
+				}
 
 
 				tile.setColor(ac);
@@ -228,19 +239,13 @@ public final class DensityFill extends Fill implements GraphicNode {
 
 				painter = new TexturePaint(img, new Rectangle2D.Double(0, 0, ix, iy));
 			} else if (mark != null) { // Marked
-				RenderableGraphics g = mark.getGraphic(feat, selected, mt);
-
-				if (g != null) {
-                }
+				return null;
 			} else {
 				throw new ParameterException("Neither marks or hatches are defined");
 			}
-
-			if (painter != null) {
-				g2.setPaint(painter);
-				g2.fill(shp);
-			}
+			return painter;
 		}
+		return null;
 	}
 
 	private double getTextureSize(double markWidth, double markHeight, double percentage) {

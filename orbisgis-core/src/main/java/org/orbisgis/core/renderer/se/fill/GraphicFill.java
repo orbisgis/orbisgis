@@ -1,6 +1,7 @@
 package org.orbisgis.core.renderer.se.fill;
 
 import java.awt.Graphics2D;
+import java.awt.Paint;
 
 import java.awt.Shape;
 import java.awt.TexturePaint;
@@ -9,6 +10,8 @@ import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.media.jai.RenderableGraphics;
 import javax.xml.bind.JAXBElement;
@@ -119,7 +122,7 @@ public final class GraphicFill extends Fill implements UomNode {
      */
     @Override
     public void draw(Graphics2D g2, Shape shp, Feature feat, boolean selected, MapTransform mt) throws ParameterException, IOException {
-        TexturePaint stipple = this.getStipplePainter(feat, selected, mt);
+        Paint stipple = this.getPaint(feat, selected, mt);
 
         // TODO handle selected ! 
         if (stipple != null) {
@@ -137,8 +140,15 @@ public final class GraphicFill extends Fill implements UomNode {
      * @throws ParameterException
      * @throws IOException
      */
-    public TexturePaint getStipplePainter(Feature feat, boolean selected, MapTransform mt) throws ParameterException, IOException {
-        RenderableGraphics img = graphic.getGraphic(feat, selected, mt);
+	@Override
+    public Paint getPaint(Feature feat, boolean selected, MapTransform mt) throws ParameterException {
+        RenderableGraphics img;
+		try {
+			img = graphic.getGraphic(feat, selected, mt);
+		} catch (IOException ex) {
+			Logger.getLogger(GraphicFill.class.getName()).log(Level.SEVERE, null, ex);
+			return null;
+		}
 
         if (img != null) {
             double gX = 0.0;

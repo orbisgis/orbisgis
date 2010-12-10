@@ -57,7 +57,7 @@ public class LegendUIMetaFillPanel extends LegendUIAbstractMetaPanel {
 
 	private FillNode fNode;
 	private LegendUIComponent comp;
-	private Class[] classes;
+	private final Class[] classes = {SolidFill.class, DensityFill.class};
 
 	public LegendUIMetaFillPanel(LegendUIController controller, LegendUIComponent parent, FillNode fillNode, boolean isNullable) {
 		super("fill", controller, parent, 0, isNullable);
@@ -65,10 +65,6 @@ public class LegendUIMetaFillPanel extends LegendUIAbstractMetaPanel {
 		this.fNode = fillNode;
 
 		Fill f = fNode.getFill();
-
-		classes = new Class[2];
-		classes[0] = SolidFill.class;
-		classes[1] = DensityFill.class;
 
 		comp = null;
 		if (f != null) {

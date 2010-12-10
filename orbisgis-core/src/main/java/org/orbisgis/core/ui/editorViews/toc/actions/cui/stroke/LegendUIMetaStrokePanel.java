@@ -45,6 +45,7 @@ import org.orbisgis.core.ui.editorViews.toc.actions.cui.LegendUIAbstractMetaPane
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.LegendUIComponent;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.LegendUIController;
 import org.orbisgis.core.renderer.se.StrokeNode;
+import org.orbisgis.core.renderer.se.stroke.GraphicStroke;
 
 /**
  *
@@ -54,15 +55,13 @@ public class LegendUIMetaStrokePanel extends LegendUIAbstractMetaPanel {
 
 	private StrokeNode sNode;
 	private LegendUIComponent comp;
-	private Class[] classes;
+
+	private final Class[] classes = {PenStroke.class, GraphicStroke.class};
 
 	public LegendUIMetaStrokePanel(LegendUIController controller, LegendUIComponent parent, StrokeNode strokeNode, boolean isNullable) {
 		super("stroke", controller, parent, 0, isNullable);
 
 		this.sNode = strokeNode;
-
-		classes = new Class[1];
-		classes[0] = PenStroke.class;
 
 		comp = null;
 		if (sNode.getStroke() != null) {
@@ -92,6 +91,28 @@ public class LegendUIMetaStrokePanel extends LegendUIAbstractMetaPanel {
 					throw new UnsupportedOperationException("Unreachable code.");
 				}
 			};
+		} else if (newClass == GraphicStroke.class){
+			GraphicStroke gStroke;
+
+			if (sNode.getStroke() instanceof GraphicStroke){
+				gStroke = (GraphicStroke) sNode.getStroke();
+			} else {
+				gStroke = new GraphicStroke();
+			}
+
+			return new LegendUIGraphicStrokePanel(controller, parent, gStroke, false) {
+
+				@Override
+				protected void turnOff() {
+					throw new UnsupportedOperationException("Not supported yet.");
+				}
+
+				@Override
+				protected void turnOn() {
+					throw new UnsupportedOperationException("Not supported yet.");
+				}
+			};
+
 		} else {
 			return null;
 		}

@@ -65,19 +65,14 @@ import org.orbisgis.core.ui.editorViews.toc.actions.cui.parameter.LegendUIRecode
 public abstract class LegendUIMetaRealPanel extends LegendUIAbstractMetaPanel {
 
 	private RealParameter real;
-	private Class[] classes;
 	private LegendUIComponent comp;
+
+	private final Class[] classes = {RealLiteral.class, RealAttribute.class, Categorize2Real.class, Recode2Real.class};
 
 	public LegendUIMetaRealPanel(String name, LegendUIController controller, LegendUIComponent parent, RealParameter r, boolean isNullable) {
 		super(name, controller, parent, 0, isNullable);
 
 		this.real = r;
-
-		classes = new Class[4];
-		classes[0] = RealLiteral.class;
-		classes[1] = RealAttribute.class;
-		classes[2] = Categorize2Real.class;
-		classes[3] = Recode2Real.class;
 
 		comp = null;
 		if (real != null) {

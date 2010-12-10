@@ -53,15 +53,12 @@ public abstract class LegendUIMetaGraphicPanel extends LegendUIAbstractMetaPanel
 
 	private Graphic graphic;
 	private LegendUIComponent comp;
-	private Class[] classes;
+	private final Class[] classes = {MarkGraphic.class};
 
 	public LegendUIMetaGraphicPanel(String name, LegendUIController controller, LegendUIComponent parent, Graphic g, boolean isNullable) {
 		super(name, controller, parent, 0, isNullable);
 
 		this.graphic = g;
-
-		classes = new Class[1];
-		classes[0] = MarkGraphic.class;
 
 		comp = null;
 		if (graphic != null) {

@@ -50,6 +50,8 @@ import org.orbisgis.core.ui.preferences.lookandfeel.OrbisGISIcon;
 
 /**
  *
+ * This component edit string literals
+ *
  * @author maxence
  */
 public abstract class LegendUIStringLiteralPanel extends LegendUIComponent
@@ -63,7 +65,9 @@ public abstract class LegendUIStringLiteralPanel extends LegendUIComponent
 		super(name, controller, parent, 0, isNullable);
 		this.string = s;
 
-		//label = new JLabel(name + ": ");
+		/*
+		 *  TextInput ask to implement  the valueChanged method, which propagate any new value edited by the user
+		 */
 		input = new TextInput(name, string.getValue(null), 20, false) {
 
 			@Override
@@ -93,7 +97,6 @@ public abstract class LegendUIStringLiteralPanel extends LegendUIComponent
 		return StringLiteral.class;
 	}
 
-
 	@Override
 	protected void turnOff() {
 		stringChanged(null);
@@ -104,5 +107,9 @@ public abstract class LegendUIStringLiteralPanel extends LegendUIComponent
 		stringChanged(this.string);
 	}
 
+	/**
+	 * This method is primarly called when user want to activate or disactivate
+	 * @param string
+	 */
 	protected abstract void stringChanged(StringLiteral string);
 }

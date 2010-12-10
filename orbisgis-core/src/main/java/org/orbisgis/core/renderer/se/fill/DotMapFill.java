@@ -1,6 +1,7 @@
 package org.orbisgis.core.renderer.se.fill;
 
 import java.awt.Graphics2D;
+import java.awt.Paint;
 import java.awt.Shape;
 
 import java.io.IOException;
@@ -67,6 +68,11 @@ public final class DotMapFill extends Fill implements GraphicNode {
 
 	public RealParameter getTotalQantity() {
 		return totalQuantity;
+	}
+
+	@Override
+	public Paint getPaint(Feature feat, boolean selected, MapTransform mt) throws ParameterException {
+		return null;
 	}
 
 	@Override

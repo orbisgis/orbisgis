@@ -73,19 +73,25 @@ public abstract class LegendUIComponent extends LegendUIAbstractPanel {
 	private String name;
 	// Is the (this) UI represents a NULL element (such as no fill) ?
 	protected boolean isNullComponent;
+
 	// Panel in which mount UI element
 	protected LegendUIAbstractPanel editor;
 	// Panel reserved for special
 	protected LegendUIAbstractPanel toolbar;
+
 	private JButton nullifier;
 
 	/**
+	 * This constructor shall be called by each subclasses constructors !
+	 * The constructor and the subclasses constructor shouln't add anything to the JPanel
 	 *
-	 * @param name
+	 * @see LegendUIComponent.mountChildren()
+	 *
+	 * @param name name of the component (as listed in the TOC)
 	 * @param controller
-	 * @param parent
+	 * @param parent new component will be a child of parent
 	 * @param weight unused
-	 * @param nullable does the edited element be null ?
+	 * @param nullable can the edited element be null ?
 	 */
 	public LegendUIComponent(String name, LegendUIController controller, LegendUIComponent parent, float weight, boolean nullable) {
 		super(controller);
@@ -431,20 +437,42 @@ public abstract class LegendUIComponent extends LegendUIAbstractPanel {
 		}
 	};
 
+
 	/**
-	 *
-	 * @return
+	 * The icon describing this component
+	 * @return the icon
 	 */
 	public abstract Icon getIcon();
 
 	/**
-	 * start from this.removeAll() and go on
+	 * This method is called by the controller. It's the method that actually add
+	 * sub-components in the editor LegendUIAbstractPanel (i.e. the JPanel).
+	 *
+	 * It's the only method that add and update the LegendUIAbstractPanel content!
+	 *
+	 * Implementators shall only add content to the editor LegendUIAbstractPanel
+	 *
+	 * @see
+	 *
 	 */
 	protected abstract void mountComponent();
 
+	/**
+	 * This method is called when the user want to disactivate this component
+	 */
 	protected abstract void turnOff();
 
+	/**
+	 * This method is called when the user want to (re-)activate this component
+	 */
 	protected abstract void turnOn();
 
+	/**
+	 * Return the edited SE Component Class
+	 * This is used by LegendUIAbstractMetaPanel().
+	 *
+	 * @return
+	 */
 	public abstract Class getEditedClass();
+
 }

@@ -48,7 +48,6 @@ import java.util.ArrayList;
 import javax.xml.bind.JAXBElement;
 import org.orbisgis.core.renderer.Drawer;
 import org.orbisgis.core.renderer.persistance.se.AreaSymbolizerType;
-import org.orbisgis.core.renderer.persistance.se.GeometryType;
 import org.orbisgis.core.renderer.persistance.se.ObjectFactory;
 
 import org.gdms.data.feature.Feature;
@@ -174,7 +173,6 @@ public final class AreaSymbolizer extends VectorSymbolizer implements FillNode, 
 
 		if (shapes != null) {
 			for (Shape shp : shapes) {
-
 				if (fill != null) {
 				   fill.draw(g2, shp, feat, selected, mt);
     			}

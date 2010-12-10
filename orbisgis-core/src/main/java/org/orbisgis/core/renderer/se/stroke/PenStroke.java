@@ -396,7 +396,7 @@ public final class PenStroke extends Stroke {
 
         if (this.useColor == false) {
             if (stipple != null) {
-                paint = stipple.getStipplePainter(feat, selected, mt);
+                paint = stipple.getPaint(feat, selected, mt);
             } else {
                 // TOOD Warn Stiple has to be used, but is undefined
             }

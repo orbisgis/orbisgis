@@ -118,26 +118,33 @@ public abstract class Graphic implements SymbolizerNode, UomNode {
      * @param margin margin (top, bottom, left and right) to add to bounds
      * @return new empty RenderableGraphcis
      */
-    public static RenderableGraphics getNewRenderableGraphics(Rectangle2D bounds, double margin) {
+    public static RenderableGraphics getNewRenderableGraphics(Rectangle2D bounds, double margin) throws ParameterException {
 
 		double width = bounds.getWidth() + 2 * margin;
 		double height = bounds.getHeight() + 2 * margin;
 
-		if (width < 1){
-			width = 1;
+		if (width < 1.0){
+			width = 1.0;
 		}
 
-		if (height < 1){
-			height = 1;
+		if (height < 1.0){
+			height = 1.0;
 		}
 
-        RenderableGraphics rg = new RenderableGraphics(new Rectangle2D.Double(
-                bounds.getMinX() - margin,
-                bounds.getMinY() - margin,
-                width, height));
+		System.out.println ("Width: " + width  + " -- Height: " + height);
+
+		RenderableGraphics rg  = null;
+		try {
+        	rg = new RenderableGraphics(new Rectangle2D.Double(
+            	    bounds.getMinX() - margin,
+                	bounds.getMinY() - margin,
+	                width, height));
+		}
+		catch (Exception e){
+			throw new ParameterException("Invalid bounds !");
+		}
 
         return rg;
-
     }
 
     public abstract boolean dependsOnFeature();

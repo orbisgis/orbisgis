@@ -64,19 +64,13 @@ public abstract class LegendUIMetaStringPanel extends LegendUIAbstractMetaPanel 
 
 	private StringParameter string;
 	private LegendUIComponent comp;
-	private Class[] classes;
+
+	private final Class[] classes = {StringLiteral.class, StringAttribute.class, Categorize2String.class, Recode2String.class};
 
 	public LegendUIMetaStringPanel(String name, LegendUIController controller, LegendUIComponent parent, StringParameter s, boolean isNullable) {
 		super(name, controller, parent, 0, isNullable);
 
 		this.string = s;
-
-		classes = new Class[4];
-
-		classes[0] = StringLiteral.class;
-		classes[1] = StringAttribute.class;
-		classes[2] = Categorize2String.class;
-		classes[3] = Recode2String.class;
 
 		comp = null;
 		if (string != null) {

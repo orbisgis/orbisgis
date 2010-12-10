@@ -51,16 +51,15 @@ import org.orbisgis.core.ui.preferences.lookandfeel.OrbisGISIcon;
  */
 public class LegendUIMetaMarkSource extends LegendUIAbstractMetaPanel {
 
-	private Class[] classes;
 	private LegendUIComponent comp;
 	private MarkGraphic mark;
+
+	private final Class[] classes = { WellKnownName.class};
 
 	public LegendUIMetaMarkSource(LegendUIController ctrl, LegendUIComponent parent, MarkGraphic mark) {
 		super("Source", ctrl, parent, 0, false);
 		this.mark = mark;
 
-		classes = new Class[1];
-		classes[0] = WellKnownName.class;
 
 		comp = null;
 		if (mark.getSource() != null) {

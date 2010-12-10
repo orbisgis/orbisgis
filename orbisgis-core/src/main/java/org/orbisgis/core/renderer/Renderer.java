@@ -251,7 +251,14 @@ public class Renderer {
 						Feature feat = new Feature(metadata);
 						feat.setValues(fds.getRow(fid));
 
-						s.draw(g2, feat, selected.contains((int) fds.getOriginalIndex(fid)), mt);
+						long originalIndex;
+						if (fds == featureInExtent){
+							originalIndex = fds.getOriginalIndex(fid);
+						} else {
+							originalIndex = featureInExtent.getOriginalIndex(fds.getOriginalIndex(fid));
+						}
+
+						s.draw(g2, feat, selected.contains((int)originalIndex), mt);
 
 						pm.progressTo((int) (100 * ++layerCount / total));
 					}

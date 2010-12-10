@@ -1,6 +1,7 @@
 package org.orbisgis.core.renderer.se.fill;
 
 import java.awt.Graphics2D;
+import java.awt.Paint;
 import java.awt.Shape;
 import java.io.IOException;
 import javax.xml.bind.JAXBElement;
@@ -79,6 +80,8 @@ public abstract class Fill implements SymbolizerNode {
      * @throws IOException
      */
     public abstract void draw(Graphics2D g2, Shape shp, Feature feat, boolean selected, MapTransform mt) throws ParameterException, IOException;
+
+	public abstract Paint getPaint(Feature feat, boolean selected, MapTransform mt) throws ParameterException;
 
     public abstract JAXBElement<? extends FillType> getJAXBElement();
     public abstract FillType getJAXBType();

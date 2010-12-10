@@ -78,11 +78,12 @@ public abstract class VectorSymbolizer extends Symbolizer implements UomNode {
 				}
 			} else {
 				Shape shape = mt.getShape(geom);
-
-				if (transform != null) {
-					shape = transform.getGraphicalAffineTransform(feat, false, mt, (double) mt.getWidth(), (double) mt.getHeight()).createTransformedShape(shape); // TODO widht and height?
+				if (shape != null) {
+					if (transform != null) {
+						shape = transform.getGraphicalAffineTransform(feat, false, mt, (double) mt.getWidth(), (double) mt.getHeight()).createTransformedShape(shape); // TODO widht and height?
+					}
+					shapes.add(shape);
 				}
-				shapes.add(shape);
 			}
 		}
 
@@ -125,19 +126,27 @@ public abstract class VectorSymbolizer extends Symbolizer implements UomNode {
 				}
 			} else if (geom instanceof Polygon) {
 				Polygon p = (Polygon) geom;
-				shapes.add(mt.getShape(p.getExteriorRing()));
+				Shape shape = mt.getShape(p.getExteriorRing());
+				if (shape != null) {
+					shapes.add(shape);
+				}
 				int i;
 				// Be aware of polygon holes ! (requiered for
 				for (i = 0; i < p.getNumInteriorRing(); i++) {
-					shapes.add(mt.getShape(p.getInteriorRingN(i)));
+					shape = mt.getShape(p.getInteriorRingN(i));
+					if (shape != null) {
+						shapes.add(shape);
+					}
 				}
 			} else {
 				Shape shape = mt.getShape(geom);
 
-				if (transform != null) {
-					shape = transform.getGraphicalAffineTransform(feat, false, mt, (double) mt.getWidth(), (double) mt.getHeight()).createTransformedShape(shape); // TODO widht and height?
+				if (shape != null) {
+					if (transform != null) {
+						shape = transform.getGraphicalAffineTransform(feat, false, mt, (double) mt.getWidth(), (double) mt.getHeight()).createTransformedShape(shape); // TODO widht and height?
+					}
+					shapes.add(shape);
 				}
-				shapes.add(shape);
 			}
 		}
 
