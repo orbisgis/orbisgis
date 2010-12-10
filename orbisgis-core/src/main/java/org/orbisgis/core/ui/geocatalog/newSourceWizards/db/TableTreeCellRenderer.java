@@ -48,13 +48,9 @@ import javax.swing.tree.DefaultTreeCellRenderer;
 
 import org.gdms.data.types.GeometryConstraint;
 import org.gdms.driver.TableDescription;
-import org.orbisgis.core.images.OrbisGISIcon;
+import org.orbisgis.core.ui.preferences.lookandfeel.OrbisGISIcon;
 
 
-/**
- * @author berengere Claudeau
- *
- */
 public class TableTreeCellRenderer extends DefaultTreeCellRenderer {
 		private static final long serialVersionUID = -4952164947192738782L;
 		@Override

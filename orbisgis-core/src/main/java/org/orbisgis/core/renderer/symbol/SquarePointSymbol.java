@@ -43,7 +43,7 @@ import java.awt.geom.Point2D;
 
 import org.gdms.driver.DriverException;
 import org.orbisgis.core.map.MapTransform;
-import org.orbisgis.core.renderer.RenderPermission;
+import org.orbisgis.core.renderer.RenderContext;
 
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
@@ -59,7 +59,7 @@ public class SquarePointSymbol extends AbstractSquarePointSymbol {
 
 	@Override
 	public Envelope draw(Graphics2D g, Geometry geom, MapTransform mt,
-			RenderPermission permission) throws DriverException {
+			RenderContext permission) throws DriverException {
 		int drawingSize = size;
 		if (mapUnits) {
 			try {

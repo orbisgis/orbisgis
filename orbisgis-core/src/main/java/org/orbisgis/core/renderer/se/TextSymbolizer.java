@@ -1,18 +1,57 @@
+/*
+ * OrbisGIS is a GIS application dedicated to scientific spatial simulation.
+ * This cross-platform GIS is developed at French IRSTV institute and is able to
+ * manipulate and create vector and raster spatial information. OrbisGIS is
+ * distributed under GPL 3 license. It is produced by the "Atelier SIG" team of
+ * the IRSTV Institute <http://www.irstv.cnrs.fr/> CNRS FR 2488.
+ *
+ *
+ *  Team leader Erwan BOCHER, scientific researcher,
+ *
+ *  User support leader : Gwendall Petit, geomatic engineer.
+ *
+ *
+ * Copyright (C) 2007 Erwan BOCHER, Fernando GONZALEZ CORTES, Thomas LEDUC
+ *
+ * Copyright (C) 2010 Erwan BOCHER, Pierre-Yves FADET, Alexis GUEGANNO, Maxence LAURENT
+ *
+ * This file is part of OrbisGIS.
+ *
+ * OrbisGIS is free software: you can redistribute it and/or modify it under the
+ * terms of the GNU General Public License as published by the Free Software
+ * Foundation, either version 3 of the License, or (at your option) any later
+ * version.
+ *
+ * OrbisGIS is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
+ * A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along with
+ * OrbisGIS. If not, see <http://www.gnu.org/licenses/>.
+ *
+ * For more information, please consult: <http://www.orbisgis.org/>
+ *
+ * or contact directly:
+ * erwan.bocher _at_ ec-nantes.fr
+ * gwendall.petit _at_ ec-nantes.fr
+ */
+
 package org.orbisgis.core.renderer.se;
 
 import java.awt.Graphics2D;
 import java.awt.Shape;
 import java.io.IOException;
 import java.util.ArrayList;
-import javax.swing.JPanel;
 import javax.xml.bind.JAXBElement;
 import org.gdms.data.feature.Feature;
+import org.orbisgis.core.renderer.Drawer;
 
 import org.orbisgis.core.renderer.persistance.se.ObjectFactory;
 import org.orbisgis.core.renderer.persistance.se.TextSymbolizerType;
 
 import org.gdms.driver.DriverException;
 import org.orbisgis.core.map.MapTransform;
+import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 
 import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.label.Label;
@@ -20,14 +59,18 @@ import org.orbisgis.core.renderer.se.label.PointLabel;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
+import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
 import org.orbisgis.core.renderer.se.transform.Transform;
 
 public final class TextSymbolizer extends VectorSymbolizer {
 
+	private RealParameter perpendicularOffset;
+	private Label label;
+
 	public TextSymbolizer() {
 		super();
 		this.name = "Label";
-		label = new PointLabel();
+		setLabel(new PointLabel());
 		uom = Uom.MM;
 	}
 
@@ -46,6 +89,9 @@ public final class TextSymbolizer extends VectorSymbolizer {
 
 	public void setPerpendicularOffset(RealParameter perpendicularOffset) {
 		this.perpendicularOffset = perpendicularOffset;
+		if (this.perpendicularOffset != null){
+			this.perpendicularOffset.setContext(RealParameterContext.realContext);
+		}
 	}
 
 	@Override
@@ -54,8 +100,6 @@ public final class TextSymbolizer extends VectorSymbolizer {
 
 		if (shapes != null) {
 			for (Shape shp : shapes) {
-
-
 				if (shp != null && label != null) {
 					label.draw(g2, shp, feat, selected, mt);
 				}
@@ -72,12 +116,13 @@ public final class TextSymbolizer extends VectorSymbolizer {
 		this.setJAXBProperty(s);
 
 
-		s.setUnitOfMeasure(this.getUom().toURN());
+		if (this.getUom() != null){
+			s.setUnitOfMeasure(this.getUom().toURN());
+		}
 
 		if (transform != null) {
 			s.setTransform(transform.getJAXBType());
 		}
-
 
 		if (perpendicularOffset != null) {
 			s.setPerpendicularOffset(perpendicularOffset.getJAXBParameterValueType());
@@ -87,15 +132,24 @@ public final class TextSymbolizer extends VectorSymbolizer {
 			s.setLabel(label.getJAXBElement());
 		}
 
+		if (this.level >= 0){
+			s.setLevel(this.level);
+		}
+
 		return of.createTextSymbolizer(s);
 	}
 
-	public TextSymbolizer(JAXBElement<TextSymbolizerType> st) {
+	public TextSymbolizer(JAXBElement<TextSymbolizerType> st) throws InvalidStyle {
+		super(st);
 		TextSymbolizerType tst = st.getValue();
 
 
 		if (tst.getGeometry() != null) {
 			// TODO
+		}
+
+		if (tst.getLevel() != null){
+			this.setLevel(tst.getLevel());
 		}
 
 		if (tst.getUnitOfMeasure() != null) {
@@ -114,6 +168,9 @@ public final class TextSymbolizer extends VectorSymbolizer {
 			this.setLabel(Label.createLabelFromJAXBElement(tst.getLabel()));
 		}
 	}
-	private RealParameter perpendicularOffset;
-	private Label label;
+
+	@Override
+	public void draw(Drawer drawer, Feature feat, boolean selected) {
+		drawer.drawTextSymbolizer(feat, selected);
+	}
 }

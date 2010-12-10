@@ -121,7 +121,7 @@ public class JobQueue implements BackgroundManager {
 	}
 
 	public synchronized Job[] getJobs() {
-		Job[] jobs = queue.toArray(new Job[0]);
+		Job[] jobs = queue.toArray(new Job[queue.size()]);
 		if (current == null) {
 			return jobs;
 		} else {

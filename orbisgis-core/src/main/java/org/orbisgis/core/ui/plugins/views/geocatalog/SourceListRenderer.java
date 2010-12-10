@@ -58,9 +58,9 @@ import org.gdms.source.Source;
 import org.gdms.source.SourceManager;
 import org.orbisgis.core.DataManager;
 import org.orbisgis.core.Services;
-import org.orbisgis.core.images.IconLoader;
-import org.orbisgis.core.images.OrbisGISIcon;
 import org.orbisgis.core.ui.geocatalog.newSourceWizards.SourceRenderer;
+import org.orbisgis.core.ui.preferences.lookandfeel.OrbisGISIcon;
+import org.orbisgis.core.ui.preferences.lookandfeel.images.IconLoader;
 
 public class SourceListRenderer implements ListCellRenderer {
 
@@ -73,6 +73,8 @@ public class SourceListRenderer implements ListCellRenderer {
 	private static final Icon raster = OrbisGISIcon.IMAGE;
 	private static final Icon alphanumeric_database = IconLoader
 			.getIcon("database.png");
+	private static final Icon system_table = IconLoader
+	.getIcon("drive.png");
 	private static final Icon spatial = OrbisGISIcon.GEOFILE;
 	private static final Icon alphanumeric_file = IconLoader
 			.getIcon("flatfile.png");
@@ -142,6 +144,9 @@ public class SourceListRenderer implements ListCellRenderer {
 					} else if ((sourceType & SourceManager.DB) == SourceManager.DB) {
 						icon = alphanumeric_database;
 					}
+					else if ((sourceType & SourceManager.SYSTEM_TABLE) == SourceManager.SYSTEM_TABLE) {
+						icon = system_table;
+					}
 				}
 				if (null != icon) {
 					iconAndLabel.setIcon(icon);
@@ -161,7 +166,6 @@ public class SourceListRenderer implements ListCellRenderer {
 				}
 				iconAndLabel.setText(text);
 				iconAndLabel.setVisible(true);
-
 				if (selected) {
 					this.setBackground(SELECTED);
 					iconAndLabel.setForeground(SELECTED_FONT);

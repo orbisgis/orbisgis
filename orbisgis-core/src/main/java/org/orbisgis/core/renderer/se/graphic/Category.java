@@ -2,12 +2,12 @@ package org.orbisgis.core.renderer.se.graphic;
 
 import org.orbisgis.core.renderer.se.FillNode;
 import org.orbisgis.core.renderer.se.GraphicNode;
-import org.orbisgis.core.renderer.se.StrokeNode;
 import org.orbisgis.core.renderer.se.SymbolizerNode;
 import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.fill.Fill;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 import org.orbisgis.core.renderer.se.stroke.Stroke;
+import org.orbisgis.core.renderer.se.StrokeNode;
 
 /**
  *

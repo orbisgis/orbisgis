@@ -1,27 +1,28 @@
 package org.orbisgis.core.renderer.se.parameter.real;
 
 import javax.xml.bind.JAXBElement;
-import org.gdms.data.DataSource;
 import org.gdms.data.feature.Feature;
-import org.gdms.driver.DriverException;
 import org.orbisgis.core.renderer.persistance.ogc.PropertyNameType;
+import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.PropertyName;
 
 public class RealAttribute extends PropertyName implements RealParameter{
 
-	private Double min;
-	private Double max;
+	private RealParameterContext ctx;
 
 	public RealAttribute(){
+		ctx = RealParameterContext.realContext;
 	}
 
-    public RealAttribute(String fieldName, DataSource ds) throws DriverException{
-        super(fieldName, ds);
+    public RealAttribute(String fieldName) {
+        super(fieldName);
+		ctx = RealParameterContext.realContext;
     }
 
-    public RealAttribute(JAXBElement<PropertyNameType> expr) {
+    public RealAttribute(JAXBElement<PropertyNameType> expr) throws InvalidStyle {
         super(expr);
+		ctx = RealParameterContext.realContext;
     }
 
     @Override
@@ -34,12 +35,17 @@ public class RealAttribute extends PropertyName implements RealParameter{
     }
 
 	@Override
-	public void setMinValue(Double min) {
-		this.min = min;
+	public String toString(){
+		return "<" + this.fieldName + ">";
 	}
 
 	@Override
-	public void setMaxValue(Double max) {
-		this.max = max;
+	public void setContext(RealParameterContext ctx) {
+		this.ctx = ctx;
+	}
+
+	@Override
+	public RealParameterContext getContext() {
+		return ctx;
 	}
 }

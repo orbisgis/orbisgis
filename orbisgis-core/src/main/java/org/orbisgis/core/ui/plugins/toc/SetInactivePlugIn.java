@@ -43,7 +43,6 @@ import javax.swing.JOptionPane;
 import org.gdms.data.NonEditableDataSourceException;
 import org.gdms.driver.DriverException;
 import org.orbisgis.core.Services;
-import org.orbisgis.core.images.OrbisGISIcon;
 import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.layerModel.MapContext;
 import org.orbisgis.core.ui.pluginSystem.AbstractPlugIn;
@@ -53,6 +52,7 @@ import org.orbisgis.core.ui.pluginSystem.PlugInContext.SelectionAvailability;
 import org.orbisgis.core.ui.pluginSystem.workbench.Names;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchContext;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchFrame;
+import org.orbisgis.core.ui.preferences.lookandfeel.OrbisGISIcon;
 
 public class SetInactivePlugIn extends AbstractPlugIn {
 
@@ -95,14 +95,19 @@ public class SetInactivePlugIn extends AbstractPlugIn {
 		}
 
 		if (option != JOptionPane.CANCEL_OPTION) {
-			mapContext.setActiveLayer(null);
+			try {
+				layer.getDataSource().syncWithSource();
+				mapContext.setActiveLayer(null);
+			} catch (DriverException e) {
+				Services.getErrorManager().error("Cannot revert layer", e);
+				return;
+			}
 		}
 	}
 
 	public boolean isEnabled() {
 		return getPlugInContext().checkLayerAvailability(
-				new SelectionAvailability[] {SelectionAvailability.EQUAL},
-				1,
-				new LayerAvailability[] {LayerAvailability.ACTIVE_LAYER});
+				new SelectionAvailability[] { SelectionAvailability.EQUAL }, 1,
+				new LayerAvailability[] { LayerAvailability.ACTIVE_LAYER });
 	}
 }

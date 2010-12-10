@@ -18,6 +18,7 @@ import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.persistance.se.CompositeSymbolizerType;
 import org.orbisgis.core.renderer.persistance.se.ObjectFactory;
 import org.orbisgis.core.renderer.persistance.se.SymbolizerType;
+import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 
@@ -49,7 +50,7 @@ public final class CompositeSymbolizer implements SymbolizerNode {
     }
 
 
-    public CompositeSymbolizer(JAXBElement<? extends SymbolizerType> st) {
+    public CompositeSymbolizer(JAXBElement<? extends SymbolizerType> st) throws InvalidStyle {
         symbolizers = new ArrayList<Symbolizer>();
         
         if (st.getDeclaredType() == org.orbisgis.core.renderer.persistance.se.CompositeSymbolizerType.class){
@@ -94,8 +95,14 @@ public final class CompositeSymbolizer implements SymbolizerNode {
     public void addSymbolizer(Symbolizer s){
         symbolizers.add(s);
         s.setParent(this);
+		if (s.getLevel() < 0){
+			s.setLevel(symbolizers.size());
+		}
     }
 
+	/**
+	 * @deprecated
+	 */
 	public void moveSymbolizerDown(Symbolizer s){
 		int index = symbolizers.indexOf(s);
 		if (index > -1 && index < symbolizers.size()-1){
@@ -105,6 +112,9 @@ public final class CompositeSymbolizer implements SymbolizerNode {
 	}
 
 
+	/**
+	 * @deprecated
+	 */
 	public void moveSymbolizerUp(Symbolizer s){
 		int index = symbolizers.indexOf(s);
 		if (index > 0){

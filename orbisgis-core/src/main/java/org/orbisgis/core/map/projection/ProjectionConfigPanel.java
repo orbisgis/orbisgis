@@ -1,4 +1,4 @@
-/*package org.orbisgis.core.map.projection;
+package org.orbisgis.core.map.projection;
 
 import java.awt.BorderLayout;
 import java.awt.GridLayout;
@@ -13,7 +13,7 @@ import javax.swing.JTabbedPane;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
-import fr.cts.crs.NullCRS;
+import fr.cts.util.CRSUtil;
 import fr.cts.util.CRSUtil;
 
 public class ProjectionConfigPanel extends JDialog implements ActionListener {
@@ -58,7 +58,7 @@ public class ProjectionConfigPanel extends JDialog implements ActionListener {
 		projectionPanel = new JPanel();
 		projectionTabbedPane = new JTabbedPane();
 		projectionTab = new ProjectionTab();
-		wktTab = new WKTTab(new NullCRS().toString());
+		wktTab = new WKTTab("");
 		projectionTabbedPane.addTab("Projections list", null, projectionTab,
 				null);
 		projectionTabbedPane.addTab("WKT projection", null, wktTab, null);
@@ -78,8 +78,9 @@ public class ProjectionConfigPanel extends JDialog implements ActionListener {
 				int index = sourceTabbedPane.getSelectedIndex();
 				if (sourceTabbedPane.getTitleAt(index).equals("WKT projection")) {
 					String sridASText = projectionTab.getSRS();
-					wktTab.setWKT(
-							CRSUtil.getCRSFromEPSG(sridASText).toString());
+					wktTab
+							.setWKT(CRSUtil.getCRSFromEPSG(sridASText)
+									.toString());
 				}
 
 			}
@@ -110,10 +111,9 @@ public class ProjectionConfigPanel extends JDialog implements ActionListener {
 
 		JFrame frame = new JFrame();
 
-		frame.add(new ProjectionConfigPanel(frame,false));
+		frame.add(new ProjectionConfigPanel(frame, false));
 
 		frame.show();
 	}
 
 }
-*/

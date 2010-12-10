@@ -10,10 +10,12 @@ import org.gdms.data.feature.Feature;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.persistance.se.ObjectFactory;
 import org.orbisgis.core.renderer.persistance.se.TranslateType;
+import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
+import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
 
 /**
  *
@@ -21,17 +23,21 @@ import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
  */
 public class Translate implements Transformation {
 
+    private RealParameter x;
+    private RealParameter y;
+
     public Translate(RealParameter x, RealParameter y) {
-        this.x = x;
-        this.y = y;
+        setX(x);
+		setY(y);
     }
 
-    Translate(TranslateType t) {
+    Translate(TranslateType t) throws InvalidStyle {
         if (t.getX() != null)
-            this.x = SeParameterFactory.createRealParameter(t.getX());
+            setX(SeParameterFactory.createRealParameter(t.getX()));
         if (t.getY() != null)
-            this.y = SeParameterFactory.createRealParameter(t.getY());
+            setY(SeParameterFactory.createRealParameter(t.getY()));
     }
+
 
 
 
@@ -41,15 +47,15 @@ public class Translate implements Transformation {
     }
 
     @Override
-    public AffineTransform getAffineTransform(Feature feat, Uom uom, MapTransform mt) throws ParameterException {
+    public AffineTransform getAffineTransform(Feature feat, Uom uom, MapTransform mt, Double width, Double height) throws ParameterException {
         double tx = 0.0;
         if (x != null) {
-            tx = Uom.toPixel(x.getValue(feat), uom, mt.getDpi(), mt.getScaleDenominator(), 0.0);
+            tx = Uom.toPixel(x.getValue(feat), uom, mt.getDpi(), mt.getScaleDenominator(), width);
         }
 
         double ty = 0.0;
         if (y != null) {
-            ty = Uom.toPixel(y.getValue(feat), uom, mt.getDpi(), mt.getScaleDenominator(), 0.0);
+            ty = Uom.toPixel(y.getValue(feat), uom, mt.getDpi(), mt.getScaleDenominator(), height);
         }
 
         return AffineTransform.getTranslateInstance(tx, ty);
@@ -58,11 +64,8 @@ public class Translate implements Transformation {
 
     @Override
     public boolean dependsOnFeature() {
-        if (this.x != null && x.dependsOnFeature())
-            return true;
-        if (this.y != null && y.dependsOnFeature())
-            return true;
-        return false;
+        return (this.x != null && x.dependsOnFeature())
+				|| (this.y != null && y.dependsOnFeature());
     }
 
     @Override
@@ -85,6 +88,17 @@ public class Translate implements Transformation {
         return t;
     }
 
-    private RealParameter x;
-    private RealParameter y;
+	private void setY(RealParameter y) {
+		this.y = y;
+		if (y != null){
+			y.setContext(RealParameterContext.realContext);
+		}
+	}
+
+	private void setX(RealParameter x) {
+		this.x = x;
+		if (x != null){
+			x.setContext(RealParameterContext.realContext);
+		}
+	}
 }

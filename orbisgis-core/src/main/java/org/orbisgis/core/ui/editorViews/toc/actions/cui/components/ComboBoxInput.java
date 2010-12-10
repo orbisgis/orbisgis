@@ -1,9 +1,4 @@
 /*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
-
-/*
  * OrbisGIS is a GIS application dedicated to scientific spatial simulation.
  * This cross-platform GIS is developed at French IRSTV institute and is able to
  * manipulate and create vector and raster spatial information. OrbisGIS is
@@ -55,7 +50,7 @@ public abstract class ComboBoxInput extends JPanel implements ActionListener {
 
 	JComboBox combo;
 
-	public ComboBoxInput(String[] possibilities, int defaultChoice) {
+	public ComboBoxInput(Object[] possibilities, int defaultChoice) {
 		super();
 
 		combo = new JComboBox(possibilities);

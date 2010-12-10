@@ -89,8 +89,8 @@ public class FunctionPanelFilter extends AbstractListModel implements ListModel 
 				}
 				i++;
 			}
-			this.srsNames = names.toArray(new String[0]);
-			this.ids = objs.toArray(new Object[0]);
+			this.srsNames = names.toArray(new String[names.size()]);
+			this.ids = objs.toArray(new Object[objs.size()]);
 
 		}
 

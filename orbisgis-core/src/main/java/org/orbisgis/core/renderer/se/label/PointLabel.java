@@ -18,17 +18,22 @@ import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.persistance.se.ObjectFactory;
 import org.orbisgis.core.renderer.persistance.se.ParameterValueType;
 import org.orbisgis.core.renderer.persistance.se.PointLabelType;
+import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
 import org.orbisgis.core.renderer.se.parameter.real.RealLiteral;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
+import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
 
 /**
  *
  * @author maxence
- * @todo implements
  */
-public class PointLabel extends Label {
+public final class PointLabel extends Label {
+
+
+    private RealParameter rotation;
+    private ExclusionZone exclusionZone;
 
     /**
      *
@@ -39,17 +44,25 @@ public class PointLabel extends Label {
 
     }
 
-    PointLabel(JAXBElement<PointLabelType> pl) {
+    PointLabel(JAXBElement<PointLabelType> pl) throws InvalidStyle {
         super(pl);
 
         PointLabelType plt = pl.getValue();
 
+        if (plt.getHorizontalAlignment() != null) {
+            this.hAlign = HorizontalAlignment.fromString(SeParameterFactory.extractToken(plt.getHorizontalAlignment()));
+        }
+
+        if (plt.getVerticalAlignment() != null) {
+            this.vAlign = VerticalAlignment.fromString(SeParameterFactory.extractToken(plt.getVerticalAlignment()));
+        }
+
         if (plt.getExclusionZone() != null){
-            this.exclusionZone = ExclusionZone.createFromJAXBElement(plt.getExclusionZone());
+            setExclusionZone(ExclusionZone.createFromJAXBElement(plt.getExclusionZone()));
         }
 
         if (plt.getRotation() != null){
-            this.rotation = SeParameterFactory.createRealParameter(plt.getRotation());
+            setRotation(SeParameterFactory.createRealParameter(plt.getRotation()));
         }
 
     }
@@ -69,6 +82,9 @@ public class PointLabel extends Label {
 
     public void setRotation(RealParameter rotation) {
         this.rotation = rotation;
+		if (this.rotation != null){
+			this.rotation.setContext(RealParameterContext.realContext);
+		}
     }
 
     @Override
@@ -133,6 +149,10 @@ public class PointLabel extends Label {
         return of.createPointLabel(pl);
     }
 
-    private RealParameter rotation;
-    private ExclusionZone exclusionZone;
+	@Override
+	public boolean dependsOnFeature() {
+		return ((label != null && label.dependsOnFeature())
+			|| (exclusionZone != null && exclusionZone.dependsOnFeature())
+			|| (rotation != null && rotation.dependsOnFeature()));
+	}
 }

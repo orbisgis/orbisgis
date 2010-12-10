@@ -7,6 +7,7 @@ import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.geom.Arc2D;
 
+import javax.swing.Icon;
 import javax.swing.JButton;
 
 public class J3DButton extends JButton {
@@ -19,8 +20,14 @@ public class J3DButton extends JButton {
 		setBorderPainted(false);
 		setContentAreaFilled(false);
 	}
-	
-	public J3DButton(){
+
+	public J3DButton(Icon icon) {
+		super(icon);
+		setBorderPainted(false);
+		setContentAreaFilled(false);
+	}
+
+	public J3DButton() {
 		setBorderPainted(false);
 		setContentAreaFilled(false);
 	}

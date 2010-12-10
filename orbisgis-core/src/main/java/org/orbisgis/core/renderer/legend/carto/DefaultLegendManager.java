@@ -20,7 +20,7 @@ public class DefaultLegendManager implements LegendManager {
 
 	@Override
 	public Legend[] getAvailableLegends() {
-		return newInstances.toArray(new Legend[0]);
+		return newInstances.toArray(new Legend[newInstances.size()]);
 	}
 
 	@Override

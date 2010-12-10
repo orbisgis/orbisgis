@@ -8,12 +8,11 @@
  *
  *  Team leader Erwan BOCHER, scientific researcher,
  *
- *  User support leader : Gwendall Petit, geomatic engineer.
  *
  *
  * Copyright (C) 2007 Erwan BOCHER, Fernando GONZALEZ CORTES, Thomas LEDUC
  *
- * Copyright (C) 2010 Erwan BOCHER, Pierre-Yves FADET, Alexis GUEGANNO, Maxence LAURENT
+ * Copyright (C) 2010 Erwan BOCHER,  Alexis GUEGANNO, Antoine GOURLAY, Adelin PIAU, Gwendall PETIT
  *
  * This file is part of OrbisGIS.
  *
@@ -32,8 +31,7 @@
  * For more information, please consult: <http://www.orbisgis.org/>
  *
  * or contact directly:
- * erwan.bocher _at_ ec-nantes.fr
- * gwendall.petit _at_ ec-nantes.fr
+ * info _at_ orbisgis.org
  */
 package org.orbisgis.core.ui.workspace;
 
@@ -61,9 +59,9 @@ import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
 import org.orbisgis.core.Services;
-import org.orbisgis.core.images.IconLoader;
 import org.orbisgis.core.sif.UIFactory;
 import org.orbisgis.core.sif.UIPanel;
+import org.orbisgis.core.ui.preferences.lookandfeel.images.IconLoader;
 import org.orbisgis.core.workspace.DefaultWorkspace;
 import org.orbisgis.core.workspace.Workspace;
 import org.orbisgis.utils.I18N;
@@ -85,7 +83,8 @@ public class WorkspaceFolderPanel extends JPanel implements UIPanel {
 		panel = new JPanel(new BorderLayout());
 		JLabel label = new JLabel(I18N.getText("orbisgis.core.ui.workspace")
 				+ " : ");
-		combobox = new JComboBox(workspaces.toArray(new String[0]));
+		combobox = new JComboBox(workspaces.toArray(new String[workspaces
+				.size()]));
 		combobox.addActionListener(new ActionListener() {
 
 			@Override
@@ -94,6 +93,8 @@ public class WorkspaceFolderPanel extends JPanel implements UIPanel {
 			}
 		});
 		btFolder = new JButton();
+		btFolder.setBorderPainted(false);
+		btFolder.setContentAreaFilled(false);
 		btFolder.setIcon(IconLoader.getIcon("open.png"));
 		btFolder.setToolTipText(I18N
 				.getText("orbisgis.core.file.choose_folder"));

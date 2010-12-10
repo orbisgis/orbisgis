@@ -13,7 +13,7 @@
  *
  * Copyright (C) 2007 Erwan BOCHER, Fernando GONZALEZ CORTES, Thomas LEDUC
  *
- * Copyright (C) 2010 Erwan BOCHER, Pierre-Yves FADET, Alexis GUEGANNO, Maxence LAURENT
+ * Copyright (C) 2010 Erwan BOCHER, Alexis GUEGANNO, Maxence LAURENT
  *
  * This file is part of OrbisGIS.
  *
@@ -48,6 +48,8 @@ import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 
+import org.orbisgis.core.ui.editors.map.tool.Rectangle2DDouble;
+
 import com.vividsolutions.jts.awt.PointTransformation;
 import com.vividsolutions.jts.awt.ShapeWriter;
 import com.vividsolutions.jts.geom.Coordinate;
@@ -66,6 +68,8 @@ public class MapTransform implements PointTransformation {
 	private Envelope adjustedExtent;
 
 	private AffineTransform trans = new AffineTransform();
+
+	private AffineTransform transInv = new AffineTransform();
 
 	private Envelope extent;
 
@@ -211,8 +215,12 @@ public class MapTransform implements PointTransformation {
 		trans.concatenate(AffineTransform
                 .getTranslateInstance(-adjustedExtent.getMinX(),
                                       -adjustedExtent.getMinY() - adjustedExtent.getHeight()));
-
-
+		try {
+			transInv = trans.createInverse();
+		} catch (NoninvertibleTransformException ex) {
+			transInv = null;
+			throw new RuntimeException(ex);
+		}
 	}
 
 	/**
@@ -312,10 +320,10 @@ public class MapTransform implements PointTransformation {
 	/**
 	 * Transforms an envelope in map units to image units
 	 * 
-	 * @param geographicEnvelope
-	 * @return
+	 * @param geographic envelope
+	 * @return Rectangle2DDouble
 	 */
-	public Envelope toPixel(Envelope geographicEnvelope) {
+	public Rectangle2DDouble toPixel(Envelope geographicEnvelope) {
 		final Point2D lowerRight = new Point2D.Double(geographicEnvelope
 				.getMaxX(), geographicEnvelope.getMinY());
 		final Point2D upperLeft = new Point2D.Double(geographicEnvelope
@@ -324,8 +332,7 @@ public class MapTransform implements PointTransformation {
 		final Point2D ul = trans.transform(upperLeft, null);
 		final Point2D lr = trans.transform(lowerRight, null);
 
-		return new Envelope(new Coordinate(ul.getX(), ul.getY()),
-				new Coordinate(lr.getX(), lr.getY()));
+		return new Rectangle2DDouble(ul.getX(), ul.getY(), lr.getX() - ul.getX(), lr.getY() - ul.getY());
 	}
 
 	/**
@@ -336,11 +343,10 @@ public class MapTransform implements PointTransformation {
 	 * @return
 	 */
 	public Point2D toMapPoint(int i, int j) {
-		try {
-			return trans.createInverse().transform(new Point2D.Double(i, j),
-					null);
-		} catch (NoninvertibleTransformException e) {
-			throw new RuntimeException(e);
+		if (transInv != null){
+			return transInv.transform(new Point2D.Double(i, j), null);
+		} else{
+			throw new RuntimeException("NonInvertibleMatrix");
 		}
 	}
 
@@ -394,8 +400,18 @@ public class MapTransform implements PointTransformation {
 		return converter;
 	}
 
+	/**
+	 * @param geom
+	 * @return
+	 */
 	public Shape getShape(Geometry geom) {
-		return getShapeWriter().toShape(geom);
+		Rectangle2DDouble bd = toPixel(geom.getEnvelopeInternal());
+
+	    if (bd.getHeight() <= 1 && bd.getWidth() <= 1) {
+			return bd;
+    	} else {
+			return getShapeWriter().toShape(geom);
+		}
 	}
 
 	public void redraw() {

@@ -37,6 +37,7 @@
  */
 package org.orbisgis.core.ui.plugins.editors.mapEditor;
 
+import java.awt.Color;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
 import java.awt.geom.Point2D;
@@ -67,28 +68,32 @@ public class ShowXYPlugIn extends AbstractPlugIn {
 	private MouseMotionAdapter mouseMotionAdapter = new MouseMotionAdapter() {
 		@Override
 		public void mouseMoved(MouseEvent e) {
-			String xCoord = "", yCoord = "", scale = "";
+			String xCoord = "", yCoord = "";
 			ToolManager toolManager = getPlugInContext().getToolManager();
 			if (toolManager != null) {
 				Point2D point = toolManager.getLastRealMousePosition();
 				if (point != null) {
-					//if (getPlugInContext().isGeographicCRS()) {
-						//xCoord = ("" + point.getX()).substring(0, MAX_DIGIT);
-						//yCoord = ("" + point.getY()).substring(0, MAX_DIGIT);
-					//} else {
-						xCoord = "X:" + (int) point.getX();
-						yCoord = "Y:" + (int) point.getY();
-					//}
+					// if (getPlugInContext().isGeographicCRS()) {
+					// xCoord = ("" + point.getX()).substring(0, MAX_DIGIT);
+					// yCoord = ("" + point.getY()).substring(0, MAX_DIGIT);
+					// } else {
+					xCoord = "X:" + (int) point.getX();
+					yCoord = "Y:" + (int) point.getY();
+					//scale = "SCALE: 1/"
+						//	+ (int) getPlugInContext().getMapEditor()
+							//		.getMapTransform().getScaleDenominator();
+					// }
 				}
-				scale = "1:" + (int)toolManager.getMapTransform().getScaleDenominator();
+				//scale = "1:" + (int)toolManager.getMapTransform().getScaleDenominator();
 			}
-			showXY.setText(xCoord + "  ," + yCoord + "  ," + scale);
+			showXY.setText(xCoord + "  " + yCoord );
 		}
 	};
 
 	@Override
 	public void initialize(final PlugInContext context) throws Exception {
 		showXY = new JLabel();
+		showXY.setForeground(Color.blue);
 		showXY.setEnabled(false);
 		EditorManager em = Services.getService(EditorManager.class);
 		em
@@ -100,7 +105,7 @@ public class ShowXYPlugIn extends AbstractPlugIn {
 
 	@Override
 	public boolean isEnabled() {
-		showXY.setText("0.0     0.0");
+		showXY.setText("0.0     0.0  ");
 		boolean isVisible = false;
 		IEditor editor = Services.getService(EditorManager.class)
 				.getActiveEditor();

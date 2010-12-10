@@ -69,7 +69,7 @@ public class GeometryProperties {
 			v = ValueFactory.createValue(geom.getCoordinates()[0].z);
 		} else if (fieldName.equals(GEOMETRY_END_Z)) {
 			v = ValueFactory.createValue(geom.getCoordinates()[geom
-					.getCoordinates().length - 1].z);
+					.getCoordinates().length].z);
 		} else if (fieldName.equals(GEOMETRY_MEAN_Z)) {
 			Coordinate[] coords = geom.getCoordinates();
 			int count = coords.length;

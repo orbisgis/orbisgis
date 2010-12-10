@@ -276,7 +276,7 @@ public class PnlIntervalLegend extends PnlAbstractClassifiedLegend {
 		try {
 			SpatialDataSourceDecorator sds = legendContext.getLayer().getDataSource();
 			rm = new RangeMethod(sds,
-					new RealAttribute((String) cmbFieldNames.getSelectedItem(), sds),
+					new RealAttribute((String) cmbFieldNames.getSelectedItem()),
 					(Integer) cmbIntervalCount.getSelectedItem());
 
 			int typeOfIntervals = cmbIntervalType.getSelectedIndex();

@@ -42,15 +42,16 @@ import java.io.IOException;
 import javax.swing.JButton;
 
 import org.orbisgis.core.Services;
-import org.orbisgis.core.images.OrbisGISIcon;
 import org.orbisgis.core.sif.UIFactory;
 import org.orbisgis.core.ui.pluginSystem.AbstractPlugIn;
 import org.orbisgis.core.ui.pluginSystem.PlugInContext;
 import org.orbisgis.core.ui.pluginSystem.workbench.Names;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchContext;
+import org.orbisgis.core.ui.preferences.lookandfeel.OrbisGISIcon;
 import org.orbisgis.core.ui.workspace.WorkspaceFolderPanel;
 import org.orbisgis.core.workspace.DefaultWorkspace;
 import org.orbisgis.core.workspace.Workspace;
+import org.orbisgis.utils.I18N;
 
 public class ChangeWorkspacePlugIn extends AbstractPlugIn {
 
@@ -83,7 +84,7 @@ public class ChangeWorkspacePlugIn extends AbstractPlugIn {
 				}
 
 			} catch (IOException e) {
-				Services.getErrorManager().error("Cannot change workspace", e);
+				Services.getErrorManager().error(I18N.getText("orbisgis.core.ui.workspace.cannot_change"), e);
 			}
 		}
 		return true;

@@ -12,9 +12,10 @@ public enum Uom {
 	 * Note that converting ground unit to pixel is done by using a constant scale
 	 *
 	 * @param value the value to convert
-	 * @param uom the value base uom
+	 * @param uom unit of measure for value
 	 * @param dpi the current resolution
 	 * @param scale the current scale (for converting ground meters and ground feet to media units)
+	 * @param v100p the value to return when uom is "percent" and value is 100 (%)
 	 * @return
 	 * @throws ParameterException
 	 *
@@ -33,10 +34,8 @@ public enum Uom {
 
 		switch (uom) {
 			case IN:
-				//System.out.println ("From Inch: " + value + " * " + dpi + " = " + value * dpi);
 				return value * dpi; // [IN] * [PX]/[IN] => [PX]
 			case MM:
-				//System.out.println ("From mm: " + value + "/25.4 * " + dpi + " = " + (value / 25.4) * dpi);
 				return (value / 25.4) * dpi; // [MM] * [IN]/[MM] * [PX]/[IN] => [PX]
 			case PT: // 1PT == 1/72[IN] whatever dpi is
 				return (value / 72.0) * dpi; // 1/72[IN] * 72 *[PX]/[IN] => [PX]
@@ -44,7 +43,6 @@ public enum Uom {
 				if (scale == null){
 					throw new ParameterException("Scale is invalid");
 				}
-				//System.out.println ("From gm: "+ ((value * 1000 * dpi) / (scale * 25.4)));
 				return (value * 1000 * dpi) / (scale * 25.4);
 			case GFT:
 				if (scale == null){
@@ -53,7 +51,8 @@ public enum Uom {
 				return (value * 12 * dpi) / (scale);
 			case PERCENT:
 				if (v100p == null){
-					throw new ParameterException("100% value is invalid");
+					return value;
+					//throw new ParameterException("100% value is invalid");
 				}
 				return value * v100p / 100.0;
 			case PX:

@@ -46,7 +46,7 @@ import javax.swing.ImageIcon;
 
 import org.orbisgis.core.Services;
 import org.orbisgis.core.edition.EditableElement;
-import org.orbisgis.core.images.OrbisGISIcon;
+import org.orbisgis.core.layerModel.DefaultMapContext;
 import org.orbisgis.core.layerModel.MapContext;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.ui.editor.IEditor;
@@ -62,7 +62,8 @@ import org.orbisgis.core.ui.pluginSystem.workbench.Names;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchContext;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchFrame;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchToolBar;
-
+import org.orbisgis.core.ui.preferences.lookandfeel.OrbisGISIcon;
+import org.orbisgis.utils.I18N;
 
 public class MapEditorPlugIn extends ViewPlugIn implements WorkbenchFrame,
 		IEditor {
@@ -71,12 +72,10 @@ public class MapEditorPlugIn extends ViewPlugIn implements WorkbenchFrame,
 	private MapControl mapControl;
 	private WorkbenchToolBar mapToolBar;
 
-
 	private String editors[];
 	private EditableElement mapElement;
 	private Automaton defaultTool;
 	private ImageIcon defaultMouseCursor;
-
 
 	private org.orbisgis.core.ui.pluginSystem.menu.MenuTree menuTree;
 
@@ -85,12 +84,12 @@ public class MapEditorPlugIn extends ViewPlugIn implements WorkbenchFrame,
 	}
 
 	public MapEditorPlugIn() {
-		WorkbenchContext wbContext = Services.getService(WorkbenchContext.class);
-		mapEditor = new RootPanePanel ();
+		WorkbenchContext wbContext = Services
+				.getService(WorkbenchContext.class);
+		mapEditor = new RootPanePanel();
 		mapControl = new MapControl();
-		//Map editor tool bar
-		mapToolBar = new WorkbenchToolBar(wbContext,
-				Names.MAP_TOOLBAR_NAME);
+		// Map editor tool bar
+		mapToolBar = new WorkbenchToolBar(wbContext, Names.MAP_TOOLBAR_NAME);
 
 		WorkbenchToolBar scaleToolBar = new WorkbenchToolBar(wbContext,
 				Names.MAP_TOOLBAR_SCALE);
@@ -110,7 +109,8 @@ public class MapEditorPlugIn extends ViewPlugIn implements WorkbenchFrame,
 		Services.registerService(ViewPlugIn.class,
 				"Gives access to the current MapContext", this);
 
-		Automaton defaultTool = (Automaton) Services.getService(Automaton.class);
+		Automaton defaultTool = (Automaton) Services
+				.getService(Automaton.class);
 		this.defaultTool = defaultTool;
 		this.defaultMouseCursor = OrbisGISIcon.ZOOMIN;
 		editors = new String[0];
@@ -118,9 +118,9 @@ public class MapEditorPlugIn extends ViewPlugIn implements WorkbenchFrame,
 		if (context.getWorkbenchContext().getWorkbench().getFrame()
 				.getViewDecorator(Names.EDITOR_MAP_ID) == null)
 			context.getWorkbenchContext().getWorkbench().getFrame().getViews()
-			.add(
-					new ViewDecorator(this, Names.EDITOR_MAP_ID,
-							getIcon("map.png"), editors));
+					.add(
+							new ViewDecorator(this, Names.EDITOR_MAP_ID,
+									getIcon("map.png"), editors));
 	}
 
 	public boolean execute(PlugInContext context) throws Exception {
@@ -134,29 +134,27 @@ public class MapEditorPlugIn extends ViewPlugIn implements WorkbenchFrame,
 
 	public void setElement(EditableElement element) {
 		MapContext mapContext = (MapContext) element.getObject();
-		try {
-/*			mapControl = new MapControl(mapContext, element,
-					getIndependentToolInstance(defaultTool, defaultMouseCursor));*/
-			//TODO
+		try {			
 			mapControl.setMapContext(mapContext);
 			mapControl.setElement(element);
-			mapControl.setDefaultTool(getIndependentToolInstance(defaultTool, defaultMouseCursor));
+			mapControl.setDefaultTool(getIndependentToolInstance(defaultTool,
+					defaultMouseCursor));
 			mapControl.initMapControl();
 			mapEditor.setContentPane(mapControl);
-			mapToolBar.setPreferredSize(new Dimension(mapControl.getWidth(),30));
+			mapToolBar
+					.setPreferredSize(new Dimension(mapControl.getWidth(), 30));
 			mapToolBar.setFloatable(false);
 			mapEditor.add(mapToolBar, BorderLayout.PAGE_END);
 
-
 		} catch (TransitionException e) {
-			Services.getErrorManager()
-					.error("The default tool is not valid", e);
+			Services.getErrorManager().error(
+					I18N.getText("orbisgis.core.tool.not_valid"), e);
 		} catch (InstantiationException e) {
-			Services.getErrorManager()
-					.error("The default tool is not valid", e);
+			Services.getErrorManager().error(
+					I18N.getText("orbisgis.core.tool.not_valid"), e);
 		} catch (IllegalAccessException e) {
-			Services.getErrorManager()
-					.error("The default tool is not valid", e);
+			Services.getErrorManager().error(
+					I18N.getText("orbisgis.core.tool.not_valid"), e);
 		}
 
 		this.mapElement = element;
@@ -218,7 +216,7 @@ public class MapEditorPlugIn extends ViewPlugIn implements WorkbenchFrame,
 		this.defaultMouseCursor = defaultMouseCursor;
 	}
 
-	//View plugin is updated by EditorViewPlugIn
+	// View plugin is updated by EditorViewPlugIn
 	public boolean isEnabled() {
 		return true;
 	}
@@ -238,7 +236,6 @@ public class MapEditorPlugIn extends ViewPlugIn implements WorkbenchFrame,
 	public WorkbenchToolBar getMapToolBar() {
 		return mapToolBar;
 	}
-
 
 	public WorkbenchToolBar getScaleToolBar() {
 		return mapToolBar.getToolbars().get(Names.MAP_TOOLBAR_SCALE);

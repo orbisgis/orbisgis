@@ -15,8 +15,8 @@ import java.awt.geom.Point2D;
 import org.gdms.driver.DriverException;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.map.MapTransform;
-import org.orbisgis.core.renderer.AllowAllRenderPermission;
-import org.orbisgis.core.renderer.RenderPermission;
+import org.orbisgis.core.renderer.AllowAllRenderContext;
+import org.orbisgis.core.renderer.RenderContext;
 import org.orbisgis.core.ui.util.GUIUtil;
 
 import com.vividsolutions.jts.geom.Coordinate;
@@ -227,7 +227,7 @@ public class SymbolUtil {
 
 	private static void paintGeometry(Graphics g, Geometry geom, Symbol symbol)
 			throws DriverException {
-		RenderPermission renderPermission = new AllowAllRenderPermission();
+		RenderContext renderPermission = new AllowAllRenderContext();
 		if (symbol.acceptGeometry(geom)) {
 			Symbol sym = RenderUtils.buildSymbolToDraw(symbol, geom);
 			sym

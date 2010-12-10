@@ -3,7 +3,6 @@ package org.orbisgis.core.renderer.se;
 import com.vividsolutions.jts.geom.Geometry;
 import java.awt.Graphics2D;
 import java.io.IOException;
-import javax.swing.JPanel;
 import javax.xml.bind.JAXBElement;
 import org.orbisgis.core.renderer.persistance.se.AreaSymbolizerType;
 import org.orbisgis.core.renderer.persistance.se.LineSymbolizerType;
@@ -13,11 +12,11 @@ import org.orbisgis.core.renderer.persistance.se.SymbolizerType;
 import org.gdms.data.feature.Feature;
 import org.gdms.driver.DriverException;
 import org.orbisgis.core.map.MapTransform;
+import org.orbisgis.core.renderer.Drawer;
 import org.orbisgis.core.renderer.persistance.se.TextSymbolizerType;
+import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
-import org.orbisgis.core.renderer.se.parameter.geometry.GeometryParameter;
-import org.orbisgis.core.ui.editorViews.toc.actions.cui.EditFeatureTypeStylePanel;
-import org.orbisgis.core.ui.editorViews.toc.actions.cui.EditSymbolizerPanel;
+import org.orbisgis.core.renderer.se.parameter.geometry.GeometryAttribute;
 
 /**
  * Entry point for all kind of symbolizer
@@ -25,24 +24,23 @@ import org.orbisgis.core.ui.editorViews.toc.actions.cui.EditSymbolizerPanel;
  * @todo Add a general draw method that fit well for vectors and raster; implement fetch default geometry
  * @author maxence
  */
-public abstract class Symbolizer implements SymbolizerNode, Comparable, PanelableNode {
+public abstract class Symbolizer implements SymbolizerNode, Comparable {
 
     protected static final String DEFAULT_NAME = "Default Symbolizer";
     protected static final String VERSION = "1.9";
 
  	protected String name;
     protected String desc;
-    protected GeometryParameter the_geom;
+    protected GeometryAttribute the_geom;
 
     private SymbolizerNode parent;
 
-    protected int level = -1;
-
-
+    protected long level;
 
     public Symbolizer() {
         name = Symbolizer.DEFAULT_NAME;
         desc = "";
+		level = -1;
     }
 
 	@Override
@@ -66,6 +64,7 @@ public abstract class Symbolizer implements SymbolizerNode, Comparable, Panelabl
         if (t.getDescription() != null){
             // TODO  implement ows:Description
         }
+		level = -1;
     }
 
     public String getName() {
@@ -87,19 +86,19 @@ public abstract class Symbolizer implements SymbolizerNode, Comparable, Panelabl
         desc = description;
     }
 
-    public int getLevel() {
+    public long getLevel() {
         return level;
     }
 
-    public void setLevel(int level) {
+    public void setLevel(long level) {
         this.level = level;
     }
 
-    public GeometryParameter getGeometry() {
+    public GeometryAttribute getGeometry() {
         return the_geom;
     }
 
-    public void setGeometry(GeometryParameter the_geom) {
+    public void setGeometry(GeometryAttribute the_geom) {
         this.the_geom = the_geom;
     }
 
@@ -142,7 +141,7 @@ public abstract class Symbolizer implements SymbolizerNode, Comparable, Panelabl
         }*/
     }
 
-    public static Symbolizer createSymbolizerFromJAXBElement(JAXBElement<? extends SymbolizerType> st) {
+    public static Symbolizer createSymbolizerFromJAXBElement(JAXBElement<? extends SymbolizerType> st) throws InvalidStyle {
         if (st.getDeclaredType() == org.orbisgis.core.renderer.persistance.se.AreaSymbolizerType.class) {
             return new AreaSymbolizer((JAXBElement<AreaSymbolizerType>) st);
         } else if (st.getDeclaredType() == org.orbisgis.core.renderer.persistance.se.LineSymbolizerType.class) {
@@ -154,7 +153,7 @@ public abstract class Symbolizer implements SymbolizerNode, Comparable, Panelabl
         } else if (st.getDeclaredType() == org.orbisgis.core.renderer.persistance.se.RasterSymbolizerType.class) {
             return new RasterSymbolizer((JAXBElement<RasterSymbolizerType>) st);
         } else {
-            System.out.println("NULLLLLLL => " + st.getDeclaredType());
+            System.out.println("NULL => " + st.getDeclaredType());
             return null;
         }
     }
@@ -172,7 +171,7 @@ public abstract class Symbolizer implements SymbolizerNode, Comparable, Panelabl
     }
 
 	/**
-	 * Go through parent symbolizers and return the rule
+	 * Go through parents and return the rule
 	 */
     public Rule getRule(){
         SymbolizerNode pIt = this.parent;
@@ -185,11 +184,7 @@ public abstract class Symbolizer implements SymbolizerNode, Comparable, Panelabl
 
     public abstract void draw(Graphics2D g2, Feature feat, boolean selected, MapTransform mt) throws ParameterException, IOException, DriverException;
 
+	public abstract void draw(Drawer drawer, Feature feat, boolean selected);
+
     public abstract JAXBElement<? extends SymbolizerType> getJAXBElement();
-
-
-	@Override
-	public JPanel getEditionPanel(EditFeatureTypeStylePanel ftsPanel){
-		return new EditSymbolizerPanel(ftsPanel, this);
-	}
 }

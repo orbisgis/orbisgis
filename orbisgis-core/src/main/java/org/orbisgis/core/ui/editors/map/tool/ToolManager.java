@@ -84,7 +84,6 @@ import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
-import java.net.URL;
 import java.util.ArrayList;
 
 import javax.swing.ImageIcon;
@@ -109,7 +108,7 @@ import org.orbisgis.core.layerModel.MapContextListener;
 import org.orbisgis.core.layerModel.SelectionEvent;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.map.TransformListener;
-import org.orbisgis.core.renderer.AllowAllRenderPermission;
+import org.orbisgis.core.renderer.AllowAllRenderContext;
 import org.orbisgis.core.renderer.symbol.Symbol;
 import org.orbisgis.core.renderer.symbol.SymbolFactory;
 import org.orbisgis.core.ui.editors.map.tools.PanTool;
@@ -129,7 +128,7 @@ import com.vividsolutions.jts.geom.Polygon;
 /**
  * Adapter from the MapControl Behaviours to Automaton's interface. It's also
  * the EditionContext of the system.
- *
+ * 
  * @author Fernando Gonzlez Corts
  */
 public class ToolManager extends MouseAdapter implements MouseMotionListener,
@@ -196,7 +195,7 @@ public class ToolManager extends MouseAdapter implements MouseMotionListener,
 
 	/**
 	 * Creates a new EditionToolAdapter.
-	 *
+	 * 
 	 * @param defaultTool
 	 * @param mapContext
 	 * @param mapTransform
@@ -288,7 +287,14 @@ public class ToolManager extends MouseAdapter implements MouseMotionListener,
 	public void mouseMoved(MouseEvent e) {
 		lastMouseX = e.getPoint().x;
 		lastMouseY = e.getPoint().y;
-		component.repaint();
+
+		// hack to go around bad Swing drawing when the MapControl
+		// is empty AND when the new sqlConsole plugin is loaded
+		// (very weird !)
+		// TODO : change this one day
+		if (mapContext.getLayerModel().getLayerCount() != 0) {
+			component.repaint();
+		}
 
 		setAdjustedHandler();
 	}
@@ -460,7 +466,7 @@ public class ToolManager extends MouseAdapter implements MouseMotionListener,
 				Graphics2D graphics = bi.createGraphics();
 
 				symbol.draw(graphics, geometry, mapTransform,
-						new AllowAllRenderPermission());
+						new AllowAllRenderContext());
 
 				g2.drawImage(bi, 0, 0, null);
 			} catch (DriverException e) {
@@ -483,6 +489,7 @@ public class ToolManager extends MouseAdapter implements MouseMotionListener,
 		} else {
 			Font f = g2.getFont();
 			g2.setFont(f.deriveFont(Font.BOLD, 16));
+			g2.setColor(Color.black);
 			int height = lastMouseY + 3 * uiTolerance;
 			for (String text : textToDraw) {
 				g2.drawString(text, lastMouseX + uiTolerance, height);
@@ -510,7 +517,7 @@ public class ToolManager extends MouseAdapter implements MouseMotionListener,
 	/**
 	 * Draws the cursor at the mouse cursor position or at the adjusted point if
 	 * any
-	 *
+	 * 
 	 * @param g
 	 */
 	private void drawCursor(Graphics g) {

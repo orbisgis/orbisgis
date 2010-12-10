@@ -19,7 +19,7 @@ import javax.imageio.ImageIO;
 import org.gdms.data.types.GeometryConstraint;
 import org.gdms.driver.DriverException;
 import org.orbisgis.core.map.MapTransform;
-import org.orbisgis.core.renderer.RenderPermission;
+import org.orbisgis.core.renderer.RenderContext;
 
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
@@ -63,7 +63,7 @@ public class ImageSymbol extends AbstractSymbol implements Symbol {
 	}
 
 	public Envelope draw(Graphics2D g, Geometry geom, MapTransform mt,
-			RenderPermission permission) throws DriverException {
+			RenderContext permission) throws DriverException {
 		// LiteShape ls = new LiteShape(geom, at, false);
 		Shape ls = mt.getShapeWriter().toShape(geom);
 		PathIterator pi = ls.getPathIterator(null);

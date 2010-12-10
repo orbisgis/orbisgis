@@ -51,8 +51,8 @@ import org.gdms.driver.DriverException;
 import org.gdms.sql.strategies.IncompatibleTypesException;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.map.MapTransform;
-import org.orbisgis.core.renderer.AllowAllRenderPermission;
-import org.orbisgis.core.renderer.RenderPermission;
+import org.orbisgis.core.renderer.AllowAllRenderContext;
+import org.orbisgis.core.renderer.RenderContext;
 import org.orbisgis.core.renderer.classification.ClassificationMethodException;
 import org.orbisgis.core.renderer.classification.ProportionalMethod;
 import org.orbisgis.core.renderer.legend.Legend;
@@ -118,7 +118,7 @@ public class DefaultProportionalPointLegend extends AbstractCartoLegend
 	public void preprocess(SpatialDataSourceDecorator sds)
 			throws RenderException, ClassificationMethodException {
 		try {
-			proportionnalMethod = new ProportionalMethod(sds, new RealAttribute(field, sds));
+			proportionnalMethod = new ProportionalMethod(sds, new RealAttribute(field));
 			proportionnalMethod.setMethod(method);
 			proportionnalMethod.build(Math.pow(maxSize, 2));
 		} catch (ParameterException ex) {
@@ -296,7 +296,7 @@ public class DefaultProportionalPointLegend extends AbstractCartoLegend
 		try {
 			Point geom = gf.createPoint(new Coordinate(lineStartX, textOffset
 					+ bigSize / 2));
-			RenderPermission renderPermission = new AllowAllRenderPermission();
+			RenderContext renderPermission = new AllowAllRenderContext();
 			big.draw((Graphics2D) g, geom, new MapTransform(),
 					renderPermission);
 
@@ -326,7 +326,7 @@ public class DefaultProportionalPointLegend extends AbstractCartoLegend
 
 	private void drawCircle(Graphics2D g, int bigSize, double smallSize,
 			int textOffset, int lineStartX, int lineEndX,
-			RenderPermission renderPermission, String text)
+			RenderContext renderPermission, String text)
 			throws DriverException {
 		StandardPointSymbol small = (StandardPointSymbol) symbol.cloneSymbol();
 		small.setSize((int) smallSize);

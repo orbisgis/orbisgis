@@ -40,11 +40,14 @@ package org.orbisgis.core.ui.plugins.views.geomark;
 
 import javax.swing.JMenuItem;
 
-import org.orbisgis.core.images.OrbisGISIcon;
+import org.orbisgis.core.PersistenceException;
+import org.orbisgis.core.layerModel.MapContext;
 import org.orbisgis.core.ui.editor.IEditor;
 import org.orbisgis.core.ui.pluginSystem.PlugInContext;
 import org.orbisgis.core.ui.pluginSystem.ViewPlugIn;
 import org.orbisgis.core.ui.pluginSystem.workbench.Names;
+import org.orbisgis.core.ui.plugins.views.MapEditorPlugIn;
+import org.orbisgis.core.ui.preferences.lookandfeel.OrbisGISIcon;
 
 public class GeomarkViewPlugIn extends ViewPlugIn {
 
@@ -59,7 +62,7 @@ public class GeomarkViewPlugIn extends ViewPlugIn {
 		menuItem = context.getFeatureInstaller().addMainMenuItem(this,
 				new String[] { Names.VIEW }, Names.GEOMARK, true,
 				OrbisGISIcon.GEOMARK_ICON, editors, panel, context);
-		context.getFeatureInstaller().addRegisterCustomQuery(Geomark.class);
+		context.getFeatureInstaller().addRegisterCustomQuery(OG_Geomark.class);
 	}
 
 	public boolean execute(PlugInContext context) throws Exception {
@@ -73,7 +76,15 @@ public class GeomarkViewPlugIn extends ViewPlugIn {
 	}
 
 	public boolean isEnabled() {
-		return true;
+		boolean isEnabled = false;
+		MapEditorPlugIn mapEditor = null;
+		if ((mapEditor = getPlugInContext().getMapEditor()) != null) {
+			MapContext mc = (MapContext) mapEditor.getElement().getObject();
+			if (mc != null) {
+				isEnabled = true;
+			}
+		}
+		return isEnabled;
 	}
 
 	public boolean isSelected() {
@@ -85,6 +96,12 @@ public class GeomarkViewPlugIn extends ViewPlugIn {
 
 	public String getName() {
 		return "Geomark view";
+	}
+
+	@Override
+	public void saveStatus() throws PersistenceException {
+		super.saveStatus();
+		panel.saveGeoMarkFile();
 	}
 
 }

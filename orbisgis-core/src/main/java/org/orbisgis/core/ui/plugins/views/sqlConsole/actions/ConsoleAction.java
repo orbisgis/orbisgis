@@ -49,7 +49,7 @@ import java.util.Map;
 
 import javax.swing.ImageIcon;
 
-import org.orbisgis.core.images.IconLoader;
+import org.orbisgis.core.ui.preferences.lookandfeel.images.IconLoader;
 
 public class ConsoleAction {
 	public final static int EXECUTE = 110;

@@ -10,7 +10,7 @@ import java.awt.geom.PathIterator;
 import org.gdms.data.types.GeometryConstraint;
 import org.gdms.driver.DriverException;
 import org.orbisgis.core.map.MapTransform;
-import org.orbisgis.core.renderer.RenderPermission;
+import org.orbisgis.core.renderer.RenderContext;
 
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
@@ -58,7 +58,7 @@ public class SelectionSymbol extends AbstractGeometrySymbol {
 
 	@Override
 	public Envelope draw(Graphics2D g, Geometry geom, MapTransform mt,
-			RenderPermission permission) throws DriverException {
+			RenderContext permission) throws DriverException {
 
 		if ((geom.getDimension() == 1) || (!paintingHandles)) {
 			SymbolUtil.paint(geom, g, mt, false, fillStroke, fillColor, true,

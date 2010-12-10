@@ -18,6 +18,7 @@ import org.orbisgis.core.renderer.persistance.se.ObjectFactory;
 
 import org.gdms.data.feature.Feature;
 import org.orbisgis.core.map.MapTransform;
+import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.SymbolizerNode;
 import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
@@ -33,7 +34,7 @@ public final class GraphicCollection implements SymbolizerNode {
         graphics = new ArrayList<Graphic>();
     }
 
-    public GraphicCollection(JAXBElement<? extends GraphicType> g, SymbolizerNode parent) {
+    public GraphicCollection(JAXBElement<? extends GraphicType> g, SymbolizerNode parent) throws InvalidStyle {
         this();
         this.setParent(parent);
         if (g.getDeclaredType() == CompositeGraphicType.class) {
@@ -62,6 +63,22 @@ public final class GraphicCollection implements SymbolizerNode {
         return graphics.get(i);
     }
 
+	/**
+	 *
+	 * @param graphic
+	 * @param index
+	 */
+	public void addGraphic(Graphic graphic, int index) {
+        if (graphic != null) {
+			if (index >= 0 && index < graphics.size()){
+				graphics.add(index, graphic);
+			}else{
+            	graphics.add(graphic);
+			}
+            graphic.setParent(this);
+        }
+    }
+
     public void addGraphic(Graphic graphic) {
         if (graphic != null) {
             graphics.add(graphic);
@@ -70,12 +87,39 @@ public final class GraphicCollection implements SymbolizerNode {
         }
     }
 
-    public void delGraphic(Graphic graphic) {
-        if (graphics.remove(graphic)) {
-        } else {
-            // TODO Throw error
-        }
+	public boolean moveGraphicDown(int index){
+		if (index >= 0 && index < graphics.size()-1){
+			Graphic g = graphics.remove(index);
+			graphics.add(index+1, g);
+			return true;
+		} else{
+			return false;
+		}
+	}
 
+
+	public boolean moveGraphicUp(int index){
+		if (index > 0 && index < graphics.size()){
+			Graphic g = graphics.remove(index);
+			graphics.add(index-1, g);
+			return true;
+		} else{
+			return false;
+		}
+	}
+
+    public boolean delGraphic(int i) {
+		try{
+			graphics.remove(i);
+			return true;
+		}
+		catch(Exception e){
+			return false;
+		}
+    }
+
+    public boolean delGraphic(Graphic graphic) {
+        return (graphics.remove(graphic));
     }
 
     @Override

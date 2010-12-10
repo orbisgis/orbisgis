@@ -84,7 +84,7 @@ public class EPWindowHelper {
 		if (ret == null) {
 			return new IWindow[0];
 		} else {
-			return ret.toArray(new IWindow[0]);
+			return ret.toArray(new IWindow[ret.size()]);
 		}
 	}
 

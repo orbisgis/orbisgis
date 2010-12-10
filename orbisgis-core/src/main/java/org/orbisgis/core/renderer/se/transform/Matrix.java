@@ -11,39 +11,48 @@ import org.orbisgis.core.map.MapTransform;
 
 import org.orbisgis.core.renderer.persistance.se.MatrixType;
 import org.orbisgis.core.renderer.persistance.se.ObjectFactory;
+import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
 import org.orbisgis.core.renderer.se.parameter.real.RealLiteral;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
+import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
 
 /**
  * Affine Transformation based on RealParameters
  * Warning: conversion to pixel unit will give strange behavior !
  * @author maxence
  */
-public class Matrix implements Transformation {
+public final class Matrix implements Transformation {
 
+
+	private final double DEF_A = 1.0;
+	private final double DEF_B = 0.0;
+	private final double DEF_C = 0.0;
+	private final double DEF_D = 1.0;
+	private final double DEF_E = 0.0;
+	private final double DEF_F = 0.0;
     /**
      * Create an identity matrix
      *
      */
     public Matrix() {
-        a = new RealLiteral(1.0);
-        b = new RealLiteral(0.0);
-        c = new RealLiteral(0.0);
-        d = new RealLiteral(1.0);
-        e = new RealLiteral(0.0);
-        f = new RealLiteral(0.0);
+        setA(new RealLiteral(DEF_A));
+        setB(new RealLiteral(DEF_B));
+        setC(new RealLiteral(DEF_C));
+        setD(new RealLiteral(DEF_D));
+        setE(new RealLiteral(DEF_E));
+        setF(new RealLiteral(DEF_F));
     }
 
     public Matrix(double a, double b, double c, double d, double e, double f) {
-        this.a = new RealLiteral(a);
-        this.b = new RealLiteral(b);
-        this.c = new RealLiteral(c);
-        this.d = new RealLiteral(d);
-        this.e = new RealLiteral(e);
-        this.f = new RealLiteral(f);
+        setA(new RealLiteral(a));
+        setB(new RealLiteral(b));
+        setC(new RealLiteral(c));
+        setD(new RealLiteral(d));
+        setE(new RealLiteral(e));
+        setF(new RealLiteral(f));
     }
 
     /**
@@ -57,34 +66,29 @@ public class Matrix implements Transformation {
      */
     public Matrix(RealParameter a, RealParameter b, RealParameter c,
             RealParameter d, RealParameter e, RealParameter f) {
-        if (a == null) {
-            a = new RealLiteral(0.0);
+		this();
+        if (a != null) {
+			setA(a);
         }
-        if (b == null) {
-            b = new RealLiteral(0.0);
+        if (b != null) {
+			setB(b);
         }
-        if (c == null) {
-            c = new RealLiteral(0.0);
+        if (c != null) {
+			setC(c);
         }
-        if (d == null) {
-            d = new RealLiteral(0.0);
+        if (d != null) {
+			setD(d);
         }
-        if (e == null) {
-            e = new RealLiteral(0.0);
+        if (e != null) {
+			setE(e);
         }
-        if (f == null) {
-            f = new RealLiteral(0.0);
+        if (f != null) {
+			setF(f);
         }
-
-        this.a = a;
-        this.b = b;
-        this.c = c;
-        this.d = d;
-        this.e = e;
-        this.f = f;
     }
 
-    Matrix(MatrixType m) {
+    Matrix(MatrixType m) throws InvalidStyle {
+		this();
         if (m.getA() != null)
             this.setA(SeParameterFactory.createRealParameter(m.getA()));
         if (m.getB() != null)
@@ -108,6 +112,7 @@ public class Matrix implements Transformation {
             a = new RealLiteral(0.0);
         }
         this.a = a;
+		this.a.setContext(RealParameterContext.realContext);
     }
 
     public RealParameter getB() {
@@ -119,6 +124,7 @@ public class Matrix implements Transformation {
             b = new RealLiteral(0.0);
         }
         this.b = b;
+		this.b.setContext(RealParameterContext.realContext);
     }
 
     public RealParameter getC() {
@@ -130,6 +136,7 @@ public class Matrix implements Transformation {
             c = new RealLiteral(0.0);
         }
         this.c = c;
+		this.c.setContext(RealParameterContext.realContext);
     }
 
     public RealParameter getD() {
@@ -141,6 +148,7 @@ public class Matrix implements Transformation {
             d = new RealLiteral(0.0);
         }
         this.d = d;
+		this.d.setContext(RealParameterContext.realContext);
     }
 
     public RealParameter getE() {
@@ -152,6 +160,7 @@ public class Matrix implements Transformation {
             e = new RealLiteral(0.0);
         }
         this.e = e;
+		this.e.setContext(RealParameterContext.realContext);
     }
 
     public RealParameter getF() {
@@ -163,6 +172,7 @@ public class Matrix implements Transformation {
             f = new RealLiteral(0.0);
         }
         this.f = f;
+		this.f.setContext(RealParameterContext.realContext);
     }
 
     @Override
@@ -176,14 +186,18 @@ public class Matrix implements Transformation {
     }
 
     @Override
-    public AffineTransform getAffineTransform(Feature feat, Uom uom, MapTransform mt) throws ParameterException {
-        return new AffineTransform( // TODO DPI !
-                Uom.toPixel(a.getValue(feat), uom, mt.getDpi(), mt.getScaleDenominator(), 0.0),
-                Uom.toPixel(b.getValue(feat), uom, mt.getDpi(), mt.getScaleDenominator(), 0.0),
-                Uom.toPixel(c.getValue(feat), uom, mt.getDpi(), mt.getScaleDenominator(), 0.0),
-                Uom.toPixel(d.getValue(feat), uom, mt.getDpi(), mt.getScaleDenominator(), 0.0),
-                Uom.toPixel(e.getValue(feat), uom, mt.getDpi(), mt.getScaleDenominator(), 0.0),
-                Uom.toPixel(f.getValue(feat), uom, mt.getDpi(), mt.getScaleDenominator(), 0.0));
+    public AffineTransform getAffineTransform(Feature feat, Uom uom, MapTransform mt, Double width, Double height) throws ParameterException {
+        return new AffineTransform(
+                //Uom.toPixel(a.getValue(feat), uom, mt.getDpi(), mt.getScaleDenominator(), null),
+				a.getValue(feat),
+				b.getValue(feat),
+				c.getValue(feat),
+                //Uom.toPixel(b.getValue(feat), uom, mt.getDpi(), mt.getScaleDenominator(), null),
+                //Uom.toPixel(c.getValue(feat), uom, mt.getDpi(), mt.getScaleDenominator(), null),
+                //Uom.toPixel(d.getValue(feat), uom, mt.getDpi(), mt.getScaleDenominator(), null),
+				d.getValue(feat),
+                Uom.toPixel(e.getValue(feat), uom, mt.getDpi(), mt.getScaleDenominator(), width),
+                Uom.toPixel(f.getValue(feat), uom, mt.getDpi(), mt.getScaleDenominator(), height));
     }
 
     @Override
@@ -199,22 +213,22 @@ public class Matrix implements Transformation {
      */
     public void simplify() throws ParameterException {
         if (!a.dependsOnFeature()) {
-            a = new RealLiteral(a.getValue(null));
+            setA(new RealLiteral(a.getValue(null)));
         }
         if (!b.dependsOnFeature()) {
-            b = new RealLiteral(b.getValue(null));
+            setB(new RealLiteral(b.getValue(null)));
         }
         if (!c.dependsOnFeature()) {
-            c = new RealLiteral(c.getValue(null));
+            setC(new RealLiteral(c.getValue(null)));
         }
         if (!d.dependsOnFeature()) {
-            d = new RealLiteral(d.getValue(null));
+            setD(new RealLiteral(d.getValue(null)));
         }
         if (!e.dependsOnFeature()) {
-            e = new RealLiteral(e.getValue(null));
+            setE(new RealLiteral(e.getValue(null)));
         }
         if (!f.dependsOnFeature()) {
-            f = new RealLiteral(f.getValue(null));
+            setF(new RealLiteral(f.getValue(null)));
         }
     }
 

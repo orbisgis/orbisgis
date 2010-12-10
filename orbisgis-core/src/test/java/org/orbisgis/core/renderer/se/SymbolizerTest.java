@@ -34,6 +34,7 @@ import org.gdms.driver.DriverException;
 import org.gdms.driver.driverManager.DriverLoadException;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.persistance.se.SymbolizerType;
+import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 
 /**
@@ -74,7 +75,7 @@ public class SymbolizerTest extends TestCase {
         super.tearDown();
     }
 
-    public void testMarshall() throws ParameterException {
+    public void testMarshall() throws ParameterException, InvalidStyle {
 
         //String xml = "../../datas2tests/xmlse/as_gf.xml";
         //String xml = "../../datas2tests/xmlse/pSymb.xml";

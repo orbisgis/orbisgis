@@ -37,20 +37,24 @@
  */
 package org.orbisgis.core.ui.plugins.views;
 
+import javax.swing.JButton;
 import javax.swing.JMenuItem;
 
-import org.orbisgis.core.images.OrbisGISIcon;
 import org.orbisgis.core.ui.pluginSystem.PlugInContext;
 import org.orbisgis.core.ui.pluginSystem.ViewPlugIn;
 import org.orbisgis.core.ui.pluginSystem.workbench.Names;
+import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchContext;
+import org.orbisgis.core.ui.preferences.lookandfeel.OrbisGISIcon;
 
 public class MemoryViewPlugIn extends ViewPlugIn {
 
 	private ViewPanel panel;
 	private JMenuItem menuItem;
+	private JButton btn;
 
 	public MemoryViewPlugIn() {
-
+		btn = new JButton(OrbisGISIcon.MEMORY_ICON);
+		btn.setToolTipText(Names.MEMORY);
 	}
 
 	public void initialize(PlugInContext context) throws Exception {
@@ -58,6 +62,9 @@ public class MemoryViewPlugIn extends ViewPlugIn {
 		menuItem = context.getFeatureInstaller().addMainMenuItem(this,
 				new String[] { Names.VIEW }, Names.MEMORY, true,
 				OrbisGISIcon.MEMORY_ICON, null, panel, context);
+		WorkbenchContext wbcontext = context.getWorkbenchContext();
+		wbcontext.getWorkbench().getFrame().getViewToolBar().addPlugIn(this,
+				btn, context);
 	}
 
 	public boolean execute(PlugInContext context) throws Exception {

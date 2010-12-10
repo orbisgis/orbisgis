@@ -1,16 +1,17 @@
 package org.orbisgis.core.ui.plugins.toc;
 
 
+import javax.swing.JOptionPane;
 import org.gdms.data.types.Constraint;
 import org.gdms.data.types.GeometryConstraint;
 import org.gdms.data.types.Type;
 import org.gdms.driver.DriverException;
 import org.orbisgis.core.Services;
-import org.orbisgis.core.images.OrbisGISIcon;
 import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.layerModel.MapContext;
 
 import org.orbisgis.core.renderer.se.FeatureTypeStyle;
+import org.orbisgis.core.renderer.se.SeExceptions;
 import org.orbisgis.core.sif.OpenFilePanel;
 import org.orbisgis.core.sif.UIFactory;
 
@@ -22,6 +23,7 @@ import org.orbisgis.core.ui.pluginSystem.PlugInContext.LayerAvailability;
 import org.orbisgis.core.ui.pluginSystem.workbench.Names;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchContext;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchFrame;
+import org.orbisgis.core.ui.preferences.lookandfeel.OrbisGISIcon;
 
 public class ImportFeatureTypeStylePlugIn extends AbstractPlugIn {
 
@@ -66,7 +68,11 @@ public class ImportFeatureTypeStylePlugIn extends AbstractPlugIn {
 
 			if (UIFactory.showDialog(inputXMLPanel)) {
 				String seFile = inputXMLPanel.getSelectedFile().getAbsolutePath();
-                layer.setFeatureTypeStyle(new FeatureTypeStyle(layer, seFile));
+				try {
+					layer.setFeatureTypeStyle(new FeatureTypeStyle(layer, seFile));
+				} catch (SeExceptions.InvalidStyle ex) {
+					JOptionPane.showMessageDialog(null, ex.getMessage(), "Error while loading the style", JOptionPane.ERROR_MESSAGE);
+				}
 			}
 
 		} catch (DriverException e) {

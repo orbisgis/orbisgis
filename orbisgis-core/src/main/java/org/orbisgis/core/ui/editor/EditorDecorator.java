@@ -56,7 +56,6 @@ public class EditorDecorator implements IEditor {
 		this.editor = editor;
 		this.icon = icon;
 		this.id = id;
-
 	}
 
 	public boolean acceptElement(String typeId) {

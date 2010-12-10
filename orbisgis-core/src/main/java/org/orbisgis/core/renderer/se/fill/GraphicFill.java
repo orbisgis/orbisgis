@@ -1,6 +1,7 @@
 package org.orbisgis.core.renderer.se.fill;
 
 import java.awt.Graphics2D;
+import java.awt.Paint;
 
 import java.awt.Shape;
 import java.awt.TexturePaint;
@@ -9,6 +10,8 @@ import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.media.jai.RenderableGraphics;
 import javax.xml.bind.JAXBElement;
@@ -19,21 +22,28 @@ import org.orbisgis.core.renderer.persistance.se.TileGapType;
 
 import org.gdms.data.feature.Feature;
 import org.orbisgis.core.map.MapTransform;
+import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.UomNode;
 import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.graphic.GraphicCollection;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
+import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
 
 public final class GraphicFill extends Fill implements UomNode {
+
+    private GraphicCollection graphic;
+    private Uom uom;
+    private RealParameter gapX;
+    private RealParameter gapY;
 
     public GraphicFill() {
         this.setGapX(null);
         this.setGapY(null);
     }
 
-    public GraphicFill(GraphicFillType gft) {
+    public GraphicFill(GraphicFillType gft) throws InvalidStyle {
         if (gft.getGraphic() != null) {
             this.setGraphic(new GraphicCollection(gft.getGraphic(), this));
         }
@@ -53,7 +63,7 @@ public final class GraphicFill extends Fill implements UomNode {
         }
     }
 
-    GraphicFill(JAXBElement<GraphicFillType> f) {
+    GraphicFill(JAXBElement<GraphicFillType> f) throws InvalidStyle {
         this(f.getValue());
     }
 
@@ -71,6 +81,7 @@ public final class GraphicFill extends Fill implements UomNode {
         this.uom = uom;
     }
 
+	@Override
 	public Uom getOwnUom(){
 		return uom;
 	}
@@ -86,10 +97,16 @@ public final class GraphicFill extends Fill implements UomNode {
 
     public void setGapX(RealParameter gap) {
         gapX = gap;
+		if (gap != null){
+			gap.setContext(RealParameterContext.realContext);
+		}
     }
 
     public void setGapY(RealParameter gap) {
         gapY = gap;
+		if (gap != null){
+			gap.setContext(RealParameterContext.realContext);
+		}
     }
 
     public RealParameter getGapX() {
@@ -105,7 +122,7 @@ public final class GraphicFill extends Fill implements UomNode {
      */
     @Override
     public void draw(Graphics2D g2, Shape shp, Feature feat, boolean selected, MapTransform mt) throws ParameterException, IOException {
-        TexturePaint stipple = this.getStipplePainter(feat, selected, mt);
+        Paint stipple = this.getPaint(feat, selected, mt);
 
         // TODO handle selected ! 
         if (stipple != null) {
@@ -123,8 +140,15 @@ public final class GraphicFill extends Fill implements UomNode {
      * @throws ParameterException
      * @throws IOException
      */
-    public TexturePaint getStipplePainter(Feature feat, boolean selected, MapTransform mt) throws ParameterException, IOException {
-        RenderableGraphics img = graphic.getGraphic(feat, selected, mt);
+	@Override
+    public Paint getPaint(Feature feat, boolean selected, MapTransform mt) throws ParameterException {
+        RenderableGraphics img;
+		try {
+			img = graphic.getGraphic(feat, selected, mt);
+		} catch (IOException ex) {
+			Logger.getLogger(GraphicFill.class.getName()).log(Level.SEVERE, null, ex);
+			return null;
+		}
 
         if (img != null) {
             double gX = 0.0;
@@ -144,8 +168,8 @@ public final class GraphicFill extends Fill implements UomNode {
                 }
             }
 
-            gX = Uom.toPixel(gX, getUom(), mt.getDpi(), mt.getScaleDenominator(), 0.0);
-            gY = Uom.toPixel(gY, getUom(), mt.getDpi(), mt.getScaleDenominator(), 0.0);
+            gX = Uom.toPixel(gX, getUom(), mt.getDpi(), mt.getScaleDenominator(), (double)img.getWidth());
+            gY = Uom.toPixel(gY, getUom(), mt.getDpi(), mt.getScaleDenominator(), (double)img.getHeight());
 
             BufferedImage i = new BufferedImage((int) (img.getWidth() + gX), (int) (img.getHeight() + gY), BufferedImage.TYPE_INT_ARGB);
             Graphics2D tile = i.createGraphics();
@@ -202,8 +226,4 @@ public final class GraphicFill extends Fill implements UomNode {
         ObjectFactory of = new ObjectFactory();
         return of.createGraphicFill(this.getJAXBType());
     }
-    private GraphicCollection graphic;
-    private Uom uom;
-    private RealParameter gapX;
-    private RealParameter gapY;
 }

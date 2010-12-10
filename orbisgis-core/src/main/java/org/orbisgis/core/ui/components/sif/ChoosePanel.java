@@ -5,15 +5,14 @@
  * distributed under GPL 3 license. It is produced by the "Atelier SIG" team of
  * the IRSTV Institute <http://www.irstv.cnrs.fr/> CNRS FR 2488.
  *
- * 
+ *
  *  Team leader Erwan BOCHER, scientific researcher,
- * 
- *  User support leader : Gwendall Petit, geomatic engineer.
+ *
  *
  *
  * Copyright (C) 2007 Erwan BOCHER, Fernando GONZALEZ CORTES, Thomas LEDUC
  *
- * Copyright (C) 2010 Erwan BOCHER, Pierre-Yves FADET, Alexis GUEGANNO, Maxence LAURENT
+ * Copyright (C) 2010 Erwan BOCHER,  Alexis GUEGANNO, Antoine GOURLAY, Adelin PIAU, Gwendall PETIT
  *
  * This file is part of OrbisGIS.
  *
@@ -32,8 +31,7 @@
  * For more information, please consult: <http://www.orbisgis.org/>
  *
  * or contact directly:
- * erwan.bocher _at_ ec-nantes.fr
- * gwendall.petit _at_ ec-nantes.fr
+ * info _at_ orbisgis.org
  */
 package org.orbisgis.core.ui.components.sif;
 
@@ -102,6 +100,7 @@ public class ChoosePanel extends AbstractUIPanel {
 		flowLayout.setAlignment(CRFlowLayout.LEFT);
 		pnlButtons.setLayout(flowLayout);
 		JButton btnAll = new JButton("Select All");
+		btnAll.setBorderPainted(false);
 		btnAll.addActionListener(new ActionListener() {
 
 			@Override
@@ -112,6 +111,7 @@ public class ChoosePanel extends AbstractUIPanel {
 
 		});
 		JButton btnNone = new JButton("Select none");
+		btnNone.setBorderPainted(false);
 		btnNone.addActionListener(new ActionListener() {
 
 			@Override

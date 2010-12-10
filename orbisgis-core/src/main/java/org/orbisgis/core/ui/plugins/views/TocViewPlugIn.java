@@ -43,7 +43,6 @@ import javax.swing.JMenuItem;
 
 import org.orbisgis.core.Services;
 import org.orbisgis.core.edition.EditableElement;
-import org.orbisgis.core.images.OrbisGISIcon;
 import org.orbisgis.core.layerModel.MapContext;
 import org.orbisgis.core.ui.editor.EditorListener;
 import org.orbisgis.core.ui.editor.IEditor;
@@ -54,6 +53,7 @@ import org.orbisgis.core.ui.pluginSystem.PlugInContext;
 import org.orbisgis.core.ui.pluginSystem.ViewPlugIn;
 import org.orbisgis.core.ui.pluginSystem.workbench.Names;
 import org.orbisgis.core.ui.plugins.views.editor.EditorManager;
+import org.orbisgis.core.ui.preferences.lookandfeel.OrbisGISIcon;
 
 public class TocViewPlugIn extends ViewPlugIn {
 

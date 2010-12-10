@@ -44,54 +44,66 @@
 
 package org.orbisgis.core.ui.plugins.views.sqlConsole.actions;
 
+import java.awt.event.ActionEvent;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
 
-import javax.swing.text.JTextComponent;
+import javax.swing.JOptionPane;
+import javax.swing.text.BadLocationException;
 
 import org.orbisgis.core.Services;
 import org.orbisgis.core.background.BackgroundManager;
 import org.orbisgis.core.sif.SaveFilePanel;
 import org.orbisgis.core.sif.UIFactory;
+import org.orbisgis.core.ui.plugins.views.sqlConsole.blockComment.QuoteSQL;
+import org.orbisgis.core.ui.plugins.views.sqlConsole.codereformat.CodeReformator;
+import org.orbisgis.core.ui.plugins.views.sqlConsole.ui.SQLConsolePanel;
 
 public class SQLConsoleKeyListener extends KeyAdapter {
 
-	private JTextComponent txt;
+	private SQLConsolePanel panel;
+	private CodeReformator codeReformator;
+        private ActionsListener actionsListener;
 
-	public SQLConsoleKeyListener(JTextComponent txt) {
-		this.txt = txt;
+	public SQLConsoleKeyListener(SQLConsolePanel panel,
+			CodeReformator codeReformator, ActionsListener listener) {
+		this.panel = panel;
+		this.codeReformator = codeReformator;
+                this.actionsListener = listener;
 	}
 
 	public void keyPressed(KeyEvent e) {
-
-		String originalText = txt.getText();
-		if ((e.getKeyCode() == KeyEvent.VK_ALT) && e.isControlDown()) {
-			BackgroundManager bm = (BackgroundManager) Services
-					.getService(BackgroundManager.class);
+		String originalText = panel.getText();
+		if ((e.getKeyCode() == KeyEvent.VK_ENTER) && e.isControlDown()) {
+			BackgroundManager bm = Services.getService(BackgroundManager.class);
 			bm.backgroundOperation(new ExecuteScriptProcess(originalText));
 
-		} else if ((e.getKeyCode() == KeyEvent.VK_S) && e.isControlDown()
-				&& e.isShiftDown()) {
-			try {
-				final SaveFilePanel outfilePanel = new SaveFilePanel(
-						"org.orbisgis.core.ui.views.sqlConsoleOutFile",
-						"Save script");
-				outfilePanel.addFilter("sql", "SQL script (*.sql)");
+		} else if ((e.getKeyCode() == KeyEvent.VK_S) && e.isControlDown()) {
+                    ActionEvent ev = new ActionEvent(this, ConsoleAction.SAVE, String.valueOf(ConsoleAction.SAVE));
+                    actionsListener.actionPerformed(ev);
+		}
+		// Format SQL code
+		else if ((e.getKeyCode() == KeyEvent.VK_F) && e.isControlDown()) {
+			panel.replaceCurrentSQLStatement(
+					codeReformator.reformat(panel.getCurrentSQLStatement()));
 
-				if (UIFactory.showDialog(outfilePanel)) {
-					final BufferedWriter out = new BufferedWriter(
-							new FileWriter(outfilePanel.getSelectedFile()));
-					out.write(originalText);
-					out.close();
-				}
-			} catch (IOException e1) {
-				Services.getErrorManager().error(
-						"Cannot save code completion test case", e1);
-			}
+		}
+		// Quote SQL
+		else if ((e.getKeyCode() == KeyEvent.VK_SLASH) && e.isControlDown()) {
+			QuoteSQL.quoteSQL(panel, false);
+
+		}
+		// Unquote SQL
+		else if ((e.getKeyCode() == KeyEvent.VK_BACK_SLASH)
+				&& e.isControlDown()) {
+			QuoteSQL.unquoteSQL(panel);
+
+		} else if ((e.getKeyCode() == KeyEvent.VK_O) && e.isControlDown()) {
+			ActionEvent ev = new ActionEvent(this, ConsoleAction.OPEN, String.valueOf(ConsoleAction.OPEN));
+                    actionsListener.actionPerformed(ev);
 		}
 	}
-
 }

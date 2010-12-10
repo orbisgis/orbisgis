@@ -40,10 +40,10 @@ import java.awt.Component;
 import java.awt.image.ColorModel;
 import java.net.URL;
 
-import org.orbisgis.core.images.IconLoader;
 import org.orbisgis.core.renderer.legend.RasterLegend;
 import org.orbisgis.core.sif.AbstractUIPanel;
 import org.orbisgis.core.sif.UIPanel;
+import org.orbisgis.core.ui.preferences.lookandfeel.images.IconLoader;
 
 public class RasterDefaultStyleUIPanel extends AbstractUIPanel implements
 		UIPanel {

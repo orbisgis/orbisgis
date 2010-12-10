@@ -10,6 +10,7 @@ import org.gdms.data.feature.Feature;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.persistance.se.ObjectFactory;
 import org.orbisgis.core.renderer.persistance.se.TextGraphicType;
+import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.label.StyledLabel;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
@@ -20,7 +21,7 @@ public class TextGraphic extends Graphic {
     public TextGraphic(){
     }
 
-    TextGraphic(JAXBElement<TextGraphicType> tge) {
+    TextGraphic(JAXBElement<TextGraphicType> tge) throws InvalidStyle {
         TextGraphicType tgt = tge.getValue();
 
         if (tgt.getUnitOfMeasure() != null) {
@@ -58,13 +59,18 @@ public class TextGraphic extends Graphic {
 
         Rectangle2D bounds = new Rectangle2D.Double(label.getMinX(), label.getMinY(), label.getWidth(), label.getHeight());
 
+		System.out.println("Bounds: " + bounds);
+
 
         if (transform != null) {
-            AffineTransform at = this.transform.getGraphicalAffineTransform(feat, false, mt);
+            AffineTransform at = this.transform.getGraphicalAffineTransform(feat, false, mt, (double)label.getWidth(), (double)label.getHeight());
 
             Shape atShp = at.createTransformedShape(bounds);
 
+			System.out.println("Bounds: " + atShp.getBounds2D());
+
             RenderableGraphics rg = Graphic.getNewRenderableGraphics(atShp.getBounds2D(), 0);
+
             rg.drawRenderedImage(label.createRendering(mt.getCurrentRenderContext()), at);
             return rg;
         } else {

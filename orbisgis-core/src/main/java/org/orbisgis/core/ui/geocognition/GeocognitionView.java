@@ -1,4 +1,39 @@
-package org.orbisgis.core.ui.geocognition;
+/*
+ * OrbisGIS is a GIS application dedicated to scientific spatial simulation.
+ * This cross-platform GIS is developed at French IRSTV institute and is able to
+ * manipulate and create vector and raster spatial information. OrbisGIS is
+ * distributed under GPL 3 license. It is produced by the "Atelier SIG" team of
+ * the IRSTV Institute <http://www.irstv.cnrs.fr/> CNRS FR 2488.
+ *
+ *
+ *  Team leader Erwan BOCHER, scientific researcher,
+ *
+ *
+ *
+ * Copyright (C) 2007 Erwan BOCHER, Fernando GONZALEZ CORTES, Thomas LEDUC
+ *
+ * Copyright (C) 2010 Erwan BOCHER,  Alexis GUEGANNO, Antoine GOURLAY, Adelin PIAU, Gwendall PETIT
+ *
+ * This file is part of OrbisGIS.
+ *
+ * OrbisGIS is free software: you can redistribute it and/or modify it under the
+ * terms of the GNU General Public License as published by the Free Software
+ * Foundation, either version 3 of the License, or (at your option) any later
+ * version.
+ *
+ * OrbisGIS is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
+ * A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along with
+ * OrbisGIS. If not, see <http://www.gnu.org/licenses/>.
+ *
+ * For more information, please consult: <http://www.orbisgis.org/>
+ *
+ * or contact directly:
+ * info _at_ orbisgis.org
+ */
+ package org.orbisgis.core.ui.geocognition;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
@@ -35,13 +70,10 @@ import org.orbisgis.core.geocognition.mapContext.GeocognitionMapContextFactory;
 import org.orbisgis.core.geocognition.sql.GeocognitionCustomQueryFactory;
 import org.orbisgis.core.geocognition.sql.GeocognitionFunctionFactory;
 import org.orbisgis.core.geocognition.symbology.GeocognitionSymbolFactory;
-import org.orbisgis.core.images.IconLoader;
-import org.orbisgis.core.images.OrbisGISIcon;
 import org.orbisgis.core.layerModel.DefaultMapContext;
 import org.orbisgis.core.layerModel.MapContext;
 import org.orbisgis.core.sif.CRFlowLayout;
-import org.orbisgis.core.sif.CarriageReturn;
-import org.orbisgis.core.ui.components.text.JTextFilter;
+import org.orbisgis.core.ui.components.text.JButtonTextField;
 import org.orbisgis.core.ui.editor.IEditor;
 import org.orbisgis.core.ui.pluginSystem.menu.MenuTree;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchFrame;
@@ -55,6 +87,7 @@ import org.orbisgis.core.ui.plugins.views.geocognition.wizards.NewFolder;
 import org.orbisgis.core.ui.plugins.views.geocognition.wizards.NewMap;
 import org.orbisgis.core.ui.plugins.views.geocognition.wizards.NewRegisteredSQLArtifact;
 import org.orbisgis.core.ui.plugins.views.geocognition.wizards.NewSymbol;
+import org.orbisgis.core.ui.preferences.lookandfeel.OrbisGISIcon;
 import org.orbisgis.core.workspace.Workspace;
 import org.orbisgis.progress.NullProgressMonitor;
 
@@ -75,7 +108,7 @@ public class GeocognitionView extends JPanel implements WorkbenchFrame {
 		return tree.getPopup();
 	}
 
-	private JTextFilter txtFilter;
+	private JButtonTextField txtFilter;
 	private JPanel controlPanel;
 	private ArrayList<FilterButton> filterButtons;
 	private ModificationListener modificationListener = new ModificationListener();
@@ -96,15 +129,10 @@ public class GeocognitionView extends JPanel implements WorkbenchFrame {
 		if (controlPanel == null) {
 			controlPanel = new JPanel();
 			CRFlowLayout layout = new CRFlowLayout();
-			layout.setHgap(2);
-			layout.setVgap(2);
 			layout.setAlignment(CRFlowLayout.LEFT);
 			controlPanel.setLayout(layout);
-			controlPanel.add(getFilterButtonPanel());
-			controlPanel.add(new CarriageReturn());
-
-			txtFilter = new JTextFilter();
-			txtFilter.addDocumentListener(new DocumentListener() {
+			txtFilter = new JButtonTextField(8);
+			txtFilter.getDocument().addDocumentListener(new DocumentListener() {
 
 				@Override
 				public void removeUpdate(DocumentEvent e) {
@@ -122,78 +150,57 @@ public class GeocognitionView extends JPanel implements WorkbenchFrame {
 				}
 			});
 			controlPanel.add(txtFilter);
+
+			filterButtons = new ArrayList<FilterButton>();
+
+			JToggleButton btn = new JToggleButton(OrbisGISIcon.MAP);
+			btn.setMargin(new Insets(0, 0, 0, 0));
+			btn.addActionListener(new ActionListener() {
+
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					doFilter();
+				}
+
+			});
+			btn.setBorderPainted(false);
+			btn.setContentAreaFilled(false);
+			controlPanel.add(btn);
+			IGeocognitionFilter filter = new Map();
+			filterButtons.add(new FilterButton(filter, btn));
+
+			btn = new JToggleButton(OrbisGISIcon.SCRIPT_CODE);
+			btn.setMargin(new Insets(0, 0, 0, 0));
+			btn.addActionListener(new ActionListener() {
+
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					doFilter();
+				}
+
+			});
+			btn.setBorderPainted(false);
+			btn.setContentAreaFilled(false);
+			controlPanel.add(btn);
+			filter = new SQL();
+			filterButtons.add(new FilterButton(filter, btn));
+			btn = new JToggleButton(OrbisGISIcon.PALETTE);
+			btn.setMargin(new Insets(0, 0, 0, 0));
+			btn.addActionListener(new ActionListener() {
+
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					doFilter();
+				}
+
+			});
+			btn.setBorderPainted(false);
+			btn.setContentAreaFilled(false);
+			controlPanel.add(btn);
+			filter = new Symbology();
+			filterButtons.add(new FilterButton(filter, btn));
 		}
 		return controlPanel;
-	}
-
-	private JPanel getFilterButtonPanel() {
-		JPanel btnPanel = new JPanel();
-		// TODO (pyf): mettre les filtres sous forme de plugins
-
-		/*
-		 * ExtensionPointManager<IGeocognitionFilter> epm = new
-		 * ExtensionPointManager<IGeocognitionFilter>(
-		 * "org.orbisgis.core.ui.views.geocognition.Filter");
-		 * ArrayList<ItemAttributes<IGeocognitionFilter>> attributes = epm
-		 * .getItemAttributes("/extension/filter");
-		 */
-		filterButtons = new ArrayList<FilterButton>();
-		/*
-		 * for (ItemAttributes<IGeocognitionFilter> itemAttributes : attributes)
-		 * { String iconAttribute = itemAttributes.getAttribute("icon"); URL
-		 * iconURL = this.getClass().getResource(iconAttribute); JToggleButton
-		 * btn = new JToggleButton(new ImageIcon(iconURL)); btn.setMargin(new
-		 * Insets(0, 0, 0, 0)); btn.addActionListener(new ActionListener() {
-		 *
-		 * @Override public void actionPerformed(ActionEvent e) { doFilter(); }
-		 *
-		 * }); btnPanel.add(btn); IGeocognitionFilter filter =
-		 * itemAttributes.getInstance("class"); filterButtons.add(new
-		 * FilterButton(filter, btn)); }
-		 */
-
-		JToggleButton btn = new JToggleButton(OrbisGISIcon.MAP);
-		btn.setMargin(new Insets(0, 0, 0, 0));
-		btn.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				doFilter();
-			}
-
-		});
-		btnPanel.add(btn);
-		IGeocognitionFilter filter = new Map();
-		filterButtons.add(new FilterButton(filter, btn));
-
-		btn = new JToggleButton(OrbisGISIcon.SCRIPT_CODE);
-		btn.setMargin(new Insets(0, 0, 0, 0));
-		btn.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				doFilter();
-			}
-
-		});
-		btnPanel.add(btn);
-		filter = new SQL();
-		filterButtons.add(new FilterButton(filter, btn));
-		btn = new JToggleButton(OrbisGISIcon.PALETTE);
-		btn.setMargin(new Insets(0, 0, 0, 0));
-		btn.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				doFilter();
-			}
-
-		});
-		btnPanel.add(btn);
-		filter = new Symbology();
-		filterButtons.add(new FilterButton(filter, btn));
-
-		return btnPanel;
 	}
 
 	private void doFilter() {
@@ -265,7 +272,7 @@ public class GeocognitionView extends JPanel implements WorkbenchFrame {
 
 			if (element != null) {
 				EditorManager em = Services.getService(EditorManager.class);
-				em.open(element,new NullProgressMonitor());
+				em.open(element, new NullProgressMonitor());
 			} else {
 				Services.getErrorManager().warning("Cannot find initial map");
 			}
@@ -277,7 +284,7 @@ public class GeocognitionView extends JPanel implements WorkbenchFrame {
 
 	/**
 	 * A simple method to populate the geocognition on the fly
-	 *
+	 * 
 	 * @param geocognition
 	 */
 	private void populateGeoCognitionWithOGCFunctions(Geocognition geocognition) {

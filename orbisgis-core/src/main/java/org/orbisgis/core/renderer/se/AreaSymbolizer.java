@@ -1,3 +1,44 @@
+/*
+ * OrbisGIS is a GIS application dedicated to scientific spatial simulation.
+ * This cross-platform GIS is developed at French IRSTV institute and is able to
+ * manipulate and create vector and raster spatial information. OrbisGIS is
+ * distributed under GPL 3 license. It is produced by the "Atelier SIG" team of
+ * the IRSTV Institute <http://www.irstv.cnrs.fr/> CNRS FR 2488.
+ *
+ *
+ *  Team leader Erwan BOCHER, scientific researcher,
+ *
+ *  User support leader : Gwendall Petit, geomatic engineer.
+ *
+ *
+ * Copyright (C) 2007 Erwan BOCHER, Fernando GONZALEZ CORTES, Thomas LEDUC
+ *
+ * Copyright (C) 2010 Erwan BOCHER, Pierre-Yves FADET, Alexis GUEGANNO, Maxence LAURENT
+ *
+ * This file is part of OrbisGIS.
+ *
+ * OrbisGIS is free software: you can redistribute it and/or modify it under the
+ * terms of the GNU General Public License as published by the Free Software
+ * Foundation, either version 3 of the License, or (at your option) any later
+ * version.
+ *
+ * OrbisGIS is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
+ * A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along with
+ * OrbisGIS. If not, see <http://www.gnu.org/licenses/>.
+ *
+ * For more information, please consult: <http://www.orbisgis.org/>
+ *
+ * or contact directly:
+ * erwan.bocher _at_ ec-nantes.fr
+ * gwendall.petit _at_ ec-nantes.fr
+ */
+
+
+
+
 package org.orbisgis.core.renderer.se;
 
 import java.awt.Graphics2D;
@@ -5,14 +46,16 @@ import java.awt.Shape;
 import java.io.IOException;
 import java.util.ArrayList;
 import javax.xml.bind.JAXBElement;
+import org.orbisgis.core.renderer.Drawer;
 import org.orbisgis.core.renderer.persistance.se.AreaSymbolizerType;
 import org.orbisgis.core.renderer.persistance.se.ObjectFactory;
 
 import org.gdms.data.feature.Feature;
 import org.gdms.driver.DriverException;
 import org.orbisgis.core.map.MapTransform;
+import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
+import org.orbisgis.core.renderer.se.common.ShapeHelper;
 
-import org.orbisgis.core.renderer.persistance.se.SymbolizerType;
 
 import org.orbisgis.core.renderer.se.common.Uom;
 
@@ -20,7 +63,9 @@ import org.orbisgis.core.renderer.se.fill.Fill;
 import org.orbisgis.core.renderer.se.fill.SolidFill;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
+import org.orbisgis.core.renderer.se.parameter.geometry.GeometryAttribute;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
+import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
 
 import org.orbisgis.core.renderer.se.stroke.PenStroke;
 import org.orbisgis.core.renderer.se.stroke.Stroke;
@@ -28,25 +73,26 @@ import org.orbisgis.core.renderer.se.transform.Transform;
 
 public final class AreaSymbolizer extends VectorSymbolizer implements FillNode, StrokeNode {
 
+	private RealParameter perpendicularOffset;
+	private Stroke stroke;
+	private Fill fill;
+
 	public AreaSymbolizer() {
 		super();
 		name = "Area symbolizer";
 		uom = Uom.MM;
-		fill = new SolidFill();
-		fill.setParent(this);
-		stroke = new PenStroke();
-		stroke.setParent(this);
+		this.setFill(new SolidFill());
+		this.setStroke(new PenStroke());
 	}
 
-	public AreaSymbolizer(JAXBElement<AreaSymbolizerType> st) {
-		super((JAXBElement<? extends SymbolizerType>) st);
+	public AreaSymbolizer(JAXBElement<AreaSymbolizerType> st) throws InvalidStyle {
+		super(st);
 
 		AreaSymbolizerType ast = st.getValue();
 
 
 		if (ast.getGeometry() != null) {
-			// TODO createGeometryFunction from XML
-			this.setGeometry(SeParameterFactory.createGeometryParameter(ast.getGeometry()));
+			this.setGeometry(new GeometryAttribute(ast.getGeometry().getPropertyName()));
 		}
 
 		if (ast.getUnitOfMeasure() != null) {
@@ -55,6 +101,10 @@ public final class AreaSymbolizer extends VectorSymbolizer implements FillNode, 
 
 		if (ast.getPerpendicularOffset() != null) {
 			this.setPerpendicularOffset(SeParameterFactory.createRealParameter(ast.getPerpendicularOffset()));
+		}
+
+		if (ast.getLevel() != null){
+			this.setLevel(ast.getLevel());
 		}
 
 		if (ast.getTransform() != null) {
@@ -102,6 +152,9 @@ public final class AreaSymbolizer extends VectorSymbolizer implements FillNode, 
 
 	public void setPerpendicularOffset(RealParameter perpendicularOffset) {
 		this.perpendicularOffset = perpendicularOffset;
+		if (this.perpendicularOffset != null){
+			this.perpendicularOffset.setContext(RealParameterContext.realContext);
+		}
 	}
 
 	/**
@@ -115,21 +168,20 @@ public final class AreaSymbolizer extends VectorSymbolizer implements FillNode, 
 	 */
 	@Override
 	public void draw(Graphics2D g2, Feature feat, boolean selected, MapTransform mt) throws ParameterException, IOException, DriverException {
-		ArrayList<Shape> shapes = this.getShape(feat, mt);
 
+		ArrayList<Shape> shapes = this.getShape(feat, mt);
 		if (shapes != null) {
 			for (Shape shp : shapes) {
 				if (fill != null) {
+				   fill.draw(g2, shp, feat, selected, mt);
+    			}
 
-					//System.out.println("Shape type is : " + shp.getClass());
-					fill.draw(g2, shp, feat, selected, mt);
+				if (perpendicularOffset != null) {
+					double offset = perpendicularOffset.getValue(feat);
+					shp = ShapeHelper.perpendicularOffset(shp, offset);
 				}
 
 				if (stroke != null) {
-					if (perpendicularOffset != null) {
-						double offset = perpendicularOffset.getValue(feat);
-						// TODO apply perpendicular offset to shp !
-					}
 					stroke.draw(g2, shp, feat, selected, mt);
 				}
 			}
@@ -151,6 +203,10 @@ public final class AreaSymbolizer extends VectorSymbolizer implements FillNode, 
 			s.setTransform(transform.getJAXBType());
 		}
 
+		if (level >= 0){
+			s.setLevel(level);
+		}
+
 		if (this.perpendicularOffset != null) {
 			s.setPerpendicularOffset(perpendicularOffset.getJAXBParameterValueType());
 		}
@@ -165,7 +221,9 @@ public final class AreaSymbolizer extends VectorSymbolizer implements FillNode, 
 
 		return of.createAreaSymbolizer(s);
 	}
-	private RealParameter perpendicularOffset;
-	private Stroke stroke;
-	private Fill fill;
+
+	@Override
+	public void draw(Drawer drawer, Feature feat, boolean selected) {
+		drawer.drawAreaSymbolizer(feat, selected);
+	}
 }

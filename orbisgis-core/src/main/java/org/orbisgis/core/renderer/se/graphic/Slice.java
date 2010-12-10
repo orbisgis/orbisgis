@@ -6,6 +6,7 @@ import org.orbisgis.core.renderer.se.SymbolizerNode;
 import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.fill.Fill;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
+import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
 
 public class Slice implements SymbolizerNode, FillNode {
 
@@ -26,6 +27,9 @@ public class Slice implements SymbolizerNode, FillNode {
 
     public void setGap(RealParameter gap) {
         this.gap = gap;
+		if (gap != null){
+			gap.setContext(RealParameterContext.nonNegativeContext);
+		}
     }
 
     public String getName() {
@@ -42,6 +46,9 @@ public class Slice implements SymbolizerNode, FillNode {
 
     public void setValue(RealParameter value) {
         this.value = value;
+		if (value != null){
+			value.setContext(RealParameterContext.realContext);
+		}
     }
 
     @Override

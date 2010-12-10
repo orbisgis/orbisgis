@@ -76,16 +76,16 @@ public abstract class RealLiteralInput extends JPanel {
 		this.initial = initialValue;
 
 		boolean useSlider;
-		String label = name;
-		if (min != null && max != null) {
-			if (min > max) {
-				throw new IndexOutOfBoundsException("Bounds are invalid (min > max)");
-			}
+		String label = "";
+		if (name != null)
+			label = name;
 
-			useSlider = true;
-			label += " (" + min + "< x < " + max + ")";
+		useSlider = (min != null && max != null);
+
+		if (useSlider) {
+			if (min > max)
+				throw new IndexOutOfBoundsException("Bounds are invalid (min > max)");
 		} else {
-			useSlider = false;
 			if (min != null) {
 				label += " ( > " + min + ")";
 			} else if (max != null) {
@@ -99,6 +99,8 @@ public abstract class RealLiteralInput extends JPanel {
 		if (useSlider) {
 			slider = new JSlider(min.intValue(), max.intValue(), initialValue.intValue());
 			sliderValue = new JLabel();
+			sliderValue.setSize(40,15); // Todo compute size of the bigger text with user font !
+
 			updateSliderValue();
 
 			slider.setMajorTickSpacing(10);

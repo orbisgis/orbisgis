@@ -9,16 +9,23 @@ import javax.xml.bind.JAXBElement;
 import org.orbisgis.core.renderer.persistance.se.ExclusionRadiusType;
 import org.orbisgis.core.renderer.persistance.se.ExclusionRectangleType;
 import org.orbisgis.core.renderer.persistance.se.ExclusionZoneType;
+import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.SymbolizerNode;
+import org.orbisgis.core.renderer.se.UomNode;
 import org.orbisgis.core.renderer.se.common.Uom;
 
 /**
  *
  * @author maxence
  */
-public abstract class ExclusionZone implements SymbolizerNode {
+public abstract class ExclusionZone implements SymbolizerNode, UomNode {
 
-    public static ExclusionZone createFromJAXBElement(JAXBElement<? extends ExclusionZoneType> ezt){
+    public abstract JAXBElement<? extends ExclusionZoneType> getJAXBElement();
+
+    protected SymbolizerNode parent;
+    protected Uom uom;
+
+    public static ExclusionZone createFromJAXBElement(JAXBElement<? extends ExclusionZoneType> ezt) throws InvalidStyle {
         if (ezt.getDeclaredType() == ExclusionRadiusType.class){
             return new ExclusionRadius((JAXBElement<ExclusionRadiusType>)ezt);
         }
@@ -35,9 +42,17 @@ public abstract class ExclusionZone implements SymbolizerNode {
             return parent.getUom();
         else
             return uom;
-
-
     }
+
+	@Override
+	public Uom getOwnUom(){
+		return uom;
+	}
+
+	@Override
+	public void setUom(Uom uom){
+		this.uom = uom;
+	}
 
     @Override
     public SymbolizerNode getParent() {
@@ -49,8 +64,5 @@ public abstract class ExclusionZone implements SymbolizerNode {
         parent = node;
     }
 
-    public abstract JAXBElement<? extends ExclusionZoneType> getJAXBElement();
-
-    protected SymbolizerNode parent;
-    protected Uom uom;
+	public abstract boolean dependsOnFeature();
 }

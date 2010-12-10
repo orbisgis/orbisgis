@@ -315,7 +315,7 @@ public class Toc extends ResourceTree implements WorkbenchFrame {
 		if (layers.size() == 0) {
 			return null;
 		} else {
-			return new TransferableLayer(element, layers.toArray(new ILayer[0]));
+			return new TransferableLayer(element, layers.toArray(new ILayer[layers.size()]));
 		}
 	}
 
@@ -554,7 +554,6 @@ public class Toc extends ResourceTree implements WorkbenchFrame {
 	}
 
 	public void setMapContext(EditableElement element, MapEditorPlugIn mapEditor) {
-
 		this.mapEditor = mapEditor;
 		setMapContext(element);
 	}

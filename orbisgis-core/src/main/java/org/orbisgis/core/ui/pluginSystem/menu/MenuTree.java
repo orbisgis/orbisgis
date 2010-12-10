@@ -99,7 +99,7 @@ public class MenuTree {
 				}
 			}
 
-			return ret.toArray(new JComponent[0]);
+			return ret.toArray(new JComponent[ret.size()]);
 		} else {
 			throw new IllegalStateException("There are unlinked menus:"
 					+ unlinkedMenus.get(0).getId() + ". Parent not found: "
@@ -120,7 +120,7 @@ public class MenuTree {
 				}
 			}
 
-			return ret.toArray(new JComponent[0]);
+			return ret.toArray(new JComponent[ret.size()]);
 		} else {
 			throw new IllegalStateException("There are unlinked menus:"
 					+ unlinkedMenus.get(0).getId() + ". Parent not found: "

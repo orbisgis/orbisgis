@@ -55,12 +55,12 @@ import org.orbisgis.core.DataManager;
 import org.orbisgis.core.OrbisgisCoreServices;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.configuration.BasicConfiguration;
-import org.orbisgis.core.images.IconLoader;
 import org.orbisgis.core.sif.UIFactory;
 import org.orbisgis.core.ui.configuration.EPConfigHelper;
 import org.orbisgis.core.ui.editor.IEditor;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchContext;
 import org.orbisgis.core.ui.plugins.views.editor.EditorManager;
+import org.orbisgis.core.ui.preferences.lookandfeel.images.IconLoader;
 import org.orbisgis.core.ui.window.EPWindowHelper;
 import org.orbisgis.utils.CollectionUtils;
 
@@ -151,7 +151,7 @@ public class OrbisGISWorkspace implements WorkspaceListener {
 		boolean ret;
 		if (memoryResources.size() > 0) {
 			String resourceList = CollectionUtils
-					.getCommaSeparated(memoryResources.toArray(new String[0]));
+					.getCommaSeparated(memoryResources.toArray(new String[memoryResources.size()]));
 
 			int exit = JOptionPane
 					.showConfirmDialog(

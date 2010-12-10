@@ -61,7 +61,7 @@ public class ClassificationTest extends TestCase {
 		SpatialDataSourceDecorator sds = new SpatialDataSourceDecorator(ds);
 		sds.open();
 
-		RangeMethod rm = new RangeMethod(sds, new RealAttribute("PTOT90", sds), 3);
+		RangeMethod rm = new RangeMethod(sds, new RealAttribute("PTOT90"), 3);
 
 		rm.disecStandard();
 
@@ -86,7 +86,7 @@ public class ClassificationTest extends TestCase {
 		SpatialDataSourceDecorator sds = new SpatialDataSourceDecorator(ds);
 		sds.open();
 
-		RangeMethod rm = new RangeMethod(sds, new RealAttribute("runoff_win", sds), 2);
+		RangeMethod rm = new RangeMethod(sds, new RealAttribute("runoff_win"), 2);
 
 		try {
 			rm.disecStandard();
@@ -94,7 +94,7 @@ public class ClassificationTest extends TestCase {
 		} catch (IllegalArgumentException e) {
 		}
 
-		rm = new RangeMethod(sds, new RealAttribute("runoff_win", sds), 4);
+		rm = new RangeMethod(sds, new RealAttribute("runoff_win"), 4);
 
 		try {
 			rm.disecStandard();
@@ -109,7 +109,7 @@ public class ClassificationTest extends TestCase {
 		SpatialDataSourceDecorator sds = new SpatialDataSourceDecorator(ds);
 		sds.open();
 
-		RangeMethod rm = new RangeMethod(sds, new RealAttribute("runoff_win", sds), 1);
+		RangeMethod rm = new RangeMethod(sds, new RealAttribute("runoff_win"), 1);
 
 		try {
 			rm.disecMean();
@@ -117,7 +117,7 @@ public class ClassificationTest extends TestCase {
 		} catch (IllegalArgumentException e) {
 		}
 
-		rm = new RangeMethod(sds, new RealAttribute("runoff_win", sds), 3);
+		rm = new RangeMethod(sds, new RealAttribute("runoff_win"), 3);
 
 		try {
 			rm.disecMean();
@@ -125,7 +125,7 @@ public class ClassificationTest extends TestCase {
 		} catch (IllegalArgumentException e) {
 		}
 
-		rm = new RangeMethod(sds, new RealAttribute("runoff_win", sds), 5);
+		rm = new RangeMethod(sds, new RealAttribute("runoff_win"), 5);
 
 		try {
 			rm.disecMean();
@@ -141,7 +141,7 @@ public class ClassificationTest extends TestCase {
 		SpatialDataSourceDecorator sds = new SpatialDataSourceDecorator(ds);
 		sds.open();
 
-		RangeMethod rm = new RangeMethod(sds, new RealAttribute("PTOT90", sds), 4);
+		RangeMethod rm = new RangeMethod(sds, new RealAttribute("PTOT90"), 4);
 
 		rm.disecEquivalences();
 
@@ -160,7 +160,7 @@ public class ClassificationTest extends TestCase {
 		SpatialDataSourceDecorator sds = new SpatialDataSourceDecorator(ds);
 		sds.open();
 
-		RangeMethod rm = new RangeMethod(sds, new RealAttribute("PTOT90", sds), 4);
+		RangeMethod rm = new RangeMethod(sds, new RealAttribute("PTOT90"), 4);
 
 		rm.disecMean();
 
@@ -178,7 +178,7 @@ public class ClassificationTest extends TestCase {
 		SpatialDataSourceDecorator sds = new SpatialDataSourceDecorator(ds);
 		sds.open();
 
-		RangeMethod rm = new RangeMethod(sds, new RealAttribute("PTOT90", sds), 4);
+		RangeMethod rm = new RangeMethod(sds, new RealAttribute("PTOT90"), 4);
 
 		rm.disecQuantiles();
 
@@ -195,7 +195,7 @@ public class ClassificationTest extends TestCase {
 		SpatialDataSourceDecorator sds = new SpatialDataSourceDecorator(ds);
 		sds.open();
 
-		ProportionalMethod pm = new ProportionalMethod(sds, new RealAttribute("PTOT90", sds));
+		ProportionalMethod pm = new ProportionalMethod(sds, new RealAttribute("PTOT90"));
 
 		pm.build(3000);
 

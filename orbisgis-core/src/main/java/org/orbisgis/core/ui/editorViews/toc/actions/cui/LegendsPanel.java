@@ -109,6 +109,9 @@ public class LegendsPanel extends JPanel implements UIPanel, LegendContext {
 			case GeometryConstraint.MULTI_POLYGON:
 				geometryType = ILegendPanel.POLYGON;
 				break;
+			case GeometryConstraint.GEOMETRY_COLLECTION:
+				geometryType = ILegendPanel.ALL;
+				break;
 			}
 		}
 

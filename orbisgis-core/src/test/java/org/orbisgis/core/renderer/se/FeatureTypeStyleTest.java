@@ -38,6 +38,7 @@ import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.layerModel.LayerException;
 import org.orbisgis.core.renderer.Renderer;
 import org.orbisgis.core.renderer.persistance.se.FeatureTypeStyleType;
+import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 
 
 
@@ -79,7 +80,7 @@ public class FeatureTypeStyleTest extends TestCase {
         super.tearDown();
     }
 
-    public void testAreaSymbolizer() throws ParameterException, IOException, DriverException {
+    public void testAreaSymbolizer() throws ParameterException, IOException, DriverException, InvalidStyle {
         String xml = "../../datas2tests/xmlse/fts_r_asps.xml";
 
         JAXBContext jaxbContext;

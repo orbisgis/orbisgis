@@ -2,8 +2,12 @@ package org.orbisgis.core.renderer.se.stroke;
 
 import java.awt.Graphics2D;
 import java.awt.Shape;
+import java.awt.geom.AffineTransform;
+import java.awt.geom.Point2D;
+import java.awt.image.RenderedImage;
 
 import java.io.IOException;
+import java.util.ArrayList;
 
 import javax.media.jai.RenderableGraphics;
 import javax.xml.bind.JAXBElement;
@@ -12,18 +16,29 @@ import org.orbisgis.core.map.MapTransform;
 
 import org.orbisgis.core.renderer.persistance.se.GraphicStrokeType;
 import org.orbisgis.core.renderer.persistance.se.ObjectFactory;
-import org.orbisgis.core.renderer.persistance.se.RelativeOrientationType;
 import org.orbisgis.core.renderer.se.GraphicNode;
+import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 
 import org.orbisgis.core.renderer.se.common.RelativeOrientation;
+import org.orbisgis.core.renderer.se.common.ShapeHelper;
+import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.graphic.GraphicCollection;
+import org.orbisgis.core.renderer.se.graphic.MarkGraphic;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
+import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
 
 public final class GraphicStroke extends Stroke implements GraphicNode {
 
-    GraphicStroke(JAXBElement<GraphicStrokeType> elem) {
+	public final static double MIN_LENGTH = 1; // In pixel !
+
+
+    private GraphicCollection graphic;
+    private RealParameter length;
+    private RelativeOrientation orientation;
+
+    GraphicStroke(JAXBElement<GraphicStrokeType> elem) throws InvalidStyle {
 		GraphicStrokeType gst = elem.getValue();
 
 		if (gst.getGraphic() != null){
@@ -35,10 +50,16 @@ public final class GraphicStroke extends Stroke implements GraphicNode {
 		}
 
 		if (gst.getRelativeOrientation() != null){
-			this.setRelativeOrientation(RelativeOrientation.valueOf(gst.getRelativeOrientation().value()));
-			System.out.println ("RelativeOrientation: " + this.getRelativeOrientation());
+			this.setRelativeOrientation(RelativeOrientation.readFromToken(gst.getRelativeOrientation().value()));
 		}
     }
+
+	public GraphicStroke() {
+		this.graphic = new GraphicCollection();
+		MarkGraphic mg = new MarkGraphic();
+		mg.setTo3mmCircle();
+		graphic.addGraphic(mg);
+	}
 
 	@Override
     public void setGraphicCollection(GraphicCollection graphic) {
@@ -52,6 +73,9 @@ public final class GraphicStroke extends Stroke implements GraphicNode {
 
     public void setLength(RealParameter length) {
         this.length = length;
+		if (this.length != null){
+			this.length.setContext(RealParameterContext.nonNegativeContext);
+		}
     }
 
     public RealParameter getLength() {
@@ -63,36 +87,85 @@ public final class GraphicStroke extends Stroke implements GraphicNode {
     }
 
     public RelativeOrientation getRelativeOrientation() {
-        return orientation;
+		if (orientation != null){
+        	return orientation;
+		} else {
+			return RelativeOrientation.PORTRAYAL;
+		}
     }
+
 
     @Override
     public void draw(Graphics2D g2, Shape shp, Feature feat, boolean selected, MapTransform mt) throws ParameterException, IOException {
         RenderableGraphics g = graphic.getGraphic(feat, selected, mt);
+		RenderedImage createRendering = g.createRendering(mt.getCurrentRenderContext());
+
 
         if (g != null) {
-            double l;
+            double segLength;
+
+			double gWidth = g.getWidth();
+			double lineLength = ShapeHelper.getLineLength(shp);
+
+			RelativeOrientation rOrient = this.getRelativeOrientation();
+
             if (length != null) {
-                l = length.getValue(feat);
-                if (l <= 0.0) {
-                    // TODO l \in R-* is forbiden ! Should throw, or set l = line.linearLength()
-                    // for the time, let us l = graphic natural length...
-                    l = (double) g.getWidth();
+				segLength = Uom.toPixel(length.getValue(feat), getUom(), mt.getDpi(), mt.getScaleDenominator(), lineLength); // TODO 100%
+
+                if (segLength <= GraphicStroke.MIN_LENGTH || segLength > lineLength) {
+                    segLength = lineLength;
                 }
             } else {
-                l = (double) g.getWidth();
+				switch (rOrient){
+					case NORMAL:
+					case NORMAL_UP:
+                		segLength = gWidth;
+						break;
+					case LINE:
+					case LINE_UP:
+						segLength = g.getHeight();
+						break;
+					case PORTRAYAL:
+					default:
+						segLength = Math.sqrt(gWidth*gWidth + g.getHeight()*g.getHeight());
+						break;
+
+				}
             }
 
-			System.out.println ("GraphicStroke not yet implemented");
+			int nbSegments = (int)((lineLength / segLength) + 0.5);
 
-            /* TODO implements :
-             *
-             * dont forget to take into account preGap and postGap !!!
-             * Split the line in n part of linear length == l
-             * for each part
-             *   fetch the point at half the linear length
-             *   plot g on this point, according to the orientation
-             */
+			segLength = lineLength/nbSegments;
+
+			ArrayList<Shape> segments = ShapeHelper.splitLine(shp, nbSegments);
+
+			for (Shape seg : segments){
+				Point2D.Double pt = ShapeHelper.getPointAt(seg, segLength/2);
+				AffineTransform at = AffineTransform.getTranslateInstance(pt.x, pt.y);
+
+
+				if (rOrient != RelativeOrientation.PORTRAYAL){
+					Point2D.Double ptA = ShapeHelper.getPointAt(seg, 0.5 * (segLength - gWidth));
+					Point2D.Double ptB = ShapeHelper.getPointAt(seg, 0.75 * (segLength - gWidth));
+
+					double theta = Math.atan2(ptB.y - ptA.y, ptB.x - ptA.x);
+					//System.out.println("("+ ptA.x + ";" + ptA.y +")"  + "(" + ptB.x + ";" + ptB.y+ ")" + "   => Angle: " + (theta/0.0175));
+
+					switch (rOrient){
+						case LINE:
+							theta += 0.5*Math.PI;
+							break;
+						case NORMAL_UP:
+							if (theta < -Math.PI/2 || theta > Math.PI/2){
+								theta += Math.PI;
+							}
+							break;
+					}
+
+					at.concatenate(AffineTransform.getRotateInstance(theta));
+				}
+				g2.drawRenderedImage(createRendering, at);
+			}
         }
     }
 
@@ -121,16 +194,14 @@ public final class GraphicStroke extends Stroke implements GraphicNode {
         if (graphic != null) {
             s.setGraphic(graphic.getJAXBElement());
         }
+
         if (length != null) {
             s.setLength(length.getJAXBParameterValueType());
         }
+
         if (orientation != null) {
-            s.setRelativeOrientation(RelativeOrientationType.LINE);
-        }
+            s.setRelativeOrientation(orientation.getJaxbType());
+		}
         return s;
     }
-    private GraphicCollection graphic;
-    private RealParameter length;
-    private RelativeOrientation orientation;
-
 }

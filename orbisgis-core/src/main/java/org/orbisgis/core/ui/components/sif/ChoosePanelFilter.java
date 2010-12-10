@@ -90,8 +90,8 @@ public class ChoosePanelFilter extends AbstractListModel implements ListModel {
 				}
 				i++;
 			}
-			this.srsNames = names.toArray(new String[0]);
-			this.ids = objs.toArray(new String[0]);
+			this.srsNames = names.toArray(new String[names.size()]);
+			this.ids = objs.toArray(new String[objs.size()]);
 
 		}
 

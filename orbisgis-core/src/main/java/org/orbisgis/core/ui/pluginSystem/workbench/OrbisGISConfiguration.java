@@ -5,15 +5,14 @@
  * distributed under GPL 3 license. It is produced by the "Atelier SIG" team of
  * the IRSTV Institute <http://www.irstv.cnrs.fr/> CNRS FR 2488.
  *
- * 
+ *
  *  Team leader Erwan BOCHER, scientific researcher,
- * 
- *  User support leader : Gwendall Petit, geomatic engineer.
+ *
  *
  *
  * Copyright (C) 2007 Erwan BOCHER, Fernando GONZALEZ CORTES, Thomas LEDUC
  *
- * Copyright (C) 2010 Erwan BOCHER, Pierre-Yves FADET, Alexis GUEGANNO, Maxence LAURENT
+ * Copyright (C) 2010 Erwan BOCHER,  Alexis GUEGANNO, Antoine GOURLAY, Adelin PIAU, Gwendall PETIT
  *
  * This file is part of OrbisGIS.
  *
@@ -32,22 +31,21 @@
  * For more information, please consult: <http://www.orbisgis.org/>
  *
  * or contact directly:
- * erwan.bocher _at_ ec-nantes.fr
- * gwendall.petit _at_ ec-nantes.fr
+ * info _at_ orbisgis.org
  */
 package org.orbisgis.core.ui.pluginSystem.workbench;
 
 import org.orbisgis.core.ui.pluginSystem.PlugInContext;
-import org.orbisgis.core.ui.plugins.views.BeanShellConsoleViewPlugIn;
 import org.orbisgis.core.ui.plugins.views.EditorViewPlugIn;
 import org.orbisgis.core.ui.plugins.views.GeoCatalogViewPlugIn;
 import org.orbisgis.core.ui.plugins.views.GeocognitionViewPlugIn;
 import org.orbisgis.core.ui.plugins.views.InformationViewPlugIn;
 import org.orbisgis.core.ui.plugins.views.MemoryViewPlugIn;
 import org.orbisgis.core.ui.plugins.views.OutputViewPlugIn;
-import org.orbisgis.core.ui.plugins.views.SQLConsoleViewPlugIn;
 import org.orbisgis.core.ui.plugins.views.TocViewPlugIn;
+import org.orbisgis.core.ui.plugins.views.beanShellConsole.BeanShellConsoleViewPlugIn;
 import org.orbisgis.core.ui.plugins.views.geomark.GeomarkViewPlugIn;
+import org.orbisgis.core.ui.plugins.views.sqlConsole.SQLConsoleViewPlugIn;
 
 //all views plugins so orbisgis UI
 public class OrbisGISConfiguration {
@@ -59,11 +57,17 @@ public class OrbisGISConfiguration {
 		EditorViewPlugIn editorViewPlugIn = new EditorViewPlugIn();
 		editorViewPlugIn.initialize(pluginContext);
 
-		OutputViewPlugIn outputViewPlugIn = new OutputViewPlugIn();
-		outputViewPlugIn.initialize(pluginContext);
+		TocViewPlugIn tocViewPlugIn = new TocViewPlugIn();
+		tocViewPlugIn.initialize(pluginContext);
+		
+		GeoCatalogViewPlugIn catalogViewPlugIn = new GeoCatalogViewPlugIn();
+		catalogViewPlugIn.initialize(pluginContext);
 
 		GeocognitionViewPlugIn geocognitionPlugin = new GeocognitionViewPlugIn();
 		geocognitionPlugin.initialize(pluginContext);
+
+		SQLConsoleViewPlugIn consoleViewPlugIn = new SQLConsoleViewPlugIn();
+		consoleViewPlugIn.initialize(pluginContext);
 
 		BeanShellConsoleViewPlugIn beanShellConsoleViewPlugIn = new BeanShellConsoleViewPlugIn();
 		beanShellConsoleViewPlugIn.initialize(pluginContext);
@@ -71,17 +75,11 @@ public class OrbisGISConfiguration {
 		InformationViewPlugIn informationViewPlugIn = new InformationViewPlugIn();
 		informationViewPlugIn.initialize(pluginContext);
 
-		GeoCatalogViewPlugIn catalogViewPlugIn = new GeoCatalogViewPlugIn();
-		catalogViewPlugIn.initialize(pluginContext);
-
-		SQLConsoleViewPlugIn consoleViewPlugIn = new SQLConsoleViewPlugIn();
-		consoleViewPlugIn.initialize(pluginContext);
+		OutputViewPlugIn outputViewPlugIn = new OutputViewPlugIn();
+		outputViewPlugIn.initialize(pluginContext);
 
 		GeomarkViewPlugIn geomarkViewPlugIn = new GeomarkViewPlugIn();
 		geomarkViewPlugIn.initialize(pluginContext);
-
-		TocViewPlugIn tocViewPlugIn = new TocViewPlugIn();
-		tocViewPlugIn.initialize(pluginContext);
 
 		MemoryViewPlugIn memoryViewPlugIn = new MemoryViewPlugIn();
 		memoryViewPlugIn.initialize(pluginContext);

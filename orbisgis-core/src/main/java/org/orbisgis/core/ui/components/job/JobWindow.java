@@ -13,7 +13,7 @@
  *
  * Copyright (C) 2007 Erwan BOCHER, Fernando GONZALEZ CORTES, Thomas LEDUC
  *
- * Copyright (C) 2010 Erwan BOCHER, Pierre-Yves FADET, Alexis GUEGANNO, Maxence LAURENT
+ * Copyright (C) 2010 Erwan BOCHER, Pierre-Yves FADET, Alexis GUEGANNO, Maxence LAURENT, Adelin PIAU
  *
  * This file is part of OrbisGIS.
  *
@@ -34,6 +34,7 @@
  * or contact directly:
  * erwan.bocher _at_ ec-nantes.fr
  * gwendall.petit _at_ ec-nantes.fr
+ * adelin.piau _at_ ec-nantes.fr
  */
 
 package org.orbisgis.core.ui.components.job;
@@ -52,12 +53,13 @@ import java.util.HashMap;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JWindow;
-import javax.swing.SwingUtilities;
 
+import org.apache.log4j.Logger;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.background.BackgroundManager;
 import org.orbisgis.core.background.Job;
 import org.orbisgis.core.background.JobId;
+import org.orbisgis.core.background.JobQueue;
 import org.orbisgis.core.background.ProgressBar;
 import org.orbisgis.core.sif.CRFlowLayout;
 import org.orbisgis.core.sif.CarriageReturn;
@@ -68,12 +70,14 @@ import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchContext;
  */
 
 public class JobWindow extends JPanel {
+	
+	private static Logger logger = Logger.getLogger(JobQueue.class);
 
 	private JWindow window;
 	private JPanel progressPanel;
 	private Container parent;
 	private HashMap<JobId, Component[]> idBar = new HashMap<JobId, Component[]>();
-	private static final int TOOLBAR_SIZE = 33;
+	private static final int TOOLBAR_SIZE = 90;
 	private static final int RIGHT_POPUP_OFFSET = 10;
 
 	public JobWindow() {
@@ -84,7 +88,7 @@ public class JobWindow extends JPanel {
 			initUI();
 
 		}
-		window.setSize(200, 100);
+		window.setSize(200, 80);
 		window.setBackground(Color.GRAY);
 		WorkbenchContext wbContext = Services
 				.getService(WorkbenchContext.class);
@@ -100,7 +104,6 @@ public class JobWindow extends JPanel {
 
 	public void centerParent() {
 		int x;
-		int y;
 
 		// Find out our parent
 		Point topLeft = parent.getLocationOnScreen();
@@ -114,13 +117,7 @@ public class JobWindow extends JPanel {
 		else
 			x = topLeft.x;
 
-		if (parentSize.height > mySize.height)
-			y = ((parentSize.height - mySize.height) - TOOLBAR_SIZE)
-					+ topLeft.y;
-		else
-			y = topLeft.y;
-
-		window.setLocation(x, y);
+		window.setLocation(x, topLeft.y+47);
 	}
 
 	public void initUI() {
@@ -130,7 +127,6 @@ public class JobWindow extends JPanel {
 		progressPanel.setLayout(new CRFlowLayout());
 		JScrollPane scrollPane = new JScrollPane(progressPanel);
 		window.requestFocus();
-		window.setAlwaysOnTop(true);
 		window.addFocusListener(new FocusAdapter() {
 			public void focusGained(FocusEvent e) {
 				window.dispatchEvent(new WindowEvent(window,
@@ -163,7 +159,8 @@ public class JobWindow extends JPanel {
 				idBar.put(job.getId(), new Component[] { bar, cr });
 			}
 		}
-		System.out.println("Added job " + job.getId());
+		
+		logger.info("Added job " + job.getId());
 		window.setVisible(true);
 	}
 
@@ -184,7 +181,7 @@ public class JobWindow extends JPanel {
 			repaint(0, 0, getWidth(), getHeight());
 			progressPanel.invalidate();
 			progressPanel.doLayout();
-			System.out.println("Removed job " + job.getId());
+			logger.info("Removed job " + job.getId());
 		}
 		if (idBar.isEmpty())
 			hide();
@@ -194,6 +191,6 @@ public class JobWindow extends JPanel {
 		Component[] comps = idBar.get(job.getId());
 		ProgressBar bar = (ProgressBar) comps[0];
 		bar.setJob(job);
-		System.out.println("Replaced job " + job.getId());
+		logger.info("Replaced job " + job.getId());
 	}
 }

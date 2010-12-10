@@ -5,15 +5,14 @@
  * distributed under GPL 3 license. It is produced by the "Atelier SIG" team of
  * the IRSTV Institute <http://www.irstv.cnrs.fr/> CNRS FR 2488.
  *
- * 
+ *
  *  Team leader Erwan BOCHER, scientific researcher,
- * 
- *  User support leader : Gwendall Petit, geomatic engineer.
+ *
  *
  *
  * Copyright (C) 2007 Erwan BOCHER, Fernando GONZALEZ CORTES, Thomas LEDUC
  *
- * Copyright (C) 2010 Erwan BOCHER, Pierre-Yves FADET, Alexis GUEGANNO, Maxence LAURENT
+ * Copyright (C) 2010 Erwan BOCHER,  Alexis GUEGANNO, Antoine GOURLAY, Adelin PIAU, Gwendall PETIT
  *
  * This file is part of OrbisGIS.
  *
@@ -32,8 +31,7 @@
  * For more information, please consult: <http://www.orbisgis.org/>
  *
  * or contact directly:
- * erwan.bocher _at_ ec-nantes.fr
- * gwendall.petit _at_ ec-nantes.fr
+ * info _at_ orbisgis.org
  */
 package org.orbisgis.core.ui.geocatalog.newSourceWizards.wms;
 
@@ -51,13 +49,13 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
 import org.orbisgis.core.sif.UIPanel;
-import org.orbisgis.core.ui.components.text.JTextFilter;
+import org.orbisgis.core.ui.components.text.JButtonTextField;
 
 public class SRSPanel extends JPanel implements UIPanel {
 
 	private WMSConnectionPanel wmsConnection;
 	private JList lstSRS;
-	private JTextFilter txtFilter;
+	private JButtonTextField txtFilter;
 	private SRSListModel SRSlistModel;
 	private JPanel searchPanel;
 	private Component scrollPane;
@@ -119,8 +117,8 @@ public class SRSPanel extends JPanel implements UIPanel {
 			searchPanel = new JPanel();
 			JLabel label = new JLabel("Search a SRS code : ");
 
-			txtFilter = new JTextFilter();
-			txtFilter.addDocumentListener(new DocumentListener() {
+			txtFilter = new JButtonTextField();
+			txtFilter.getDocument().addDocumentListener(new DocumentListener() {
 
 				@Override
 				public void removeUpdate(DocumentEvent e) {

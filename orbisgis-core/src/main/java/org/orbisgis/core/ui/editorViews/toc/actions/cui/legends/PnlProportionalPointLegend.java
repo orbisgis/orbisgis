@@ -89,6 +89,7 @@ import org.orbisgis.core.ui.editorViews.toc.actions.cui.SymbolEditionValidation;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.SymbolFilter;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.components.Canvas;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.legend.ILegendPanel;
+import org.orbisgis.core.ui.editors.map.tool.Rectangle2DDouble;
 
 import com.vividsolutions.jts.geom.Envelope;
 
@@ -246,7 +247,7 @@ public class PnlProportionalPointLegend extends JPanel implements ILegendPanel {
 						MapTransform mt = legendContext
 								.getCurrentMapTransform();
 						Envelope env = new Envelope(0, maxSize, 0, maxSize);
-						Envelope pixelEnv = mt.toPixel(env);
+						Rectangle2DDouble pixelEnv = mt.toPixel(env);
 						pixelHeight = (int) pixelEnv.getHeight();
 					} else {
 						pixelHeight = (int) maxSize;

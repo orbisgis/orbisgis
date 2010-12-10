@@ -1,10 +1,47 @@
+/*
+ * OrbisGIS is a GIS application dedicated to scientific spatial simulation.
+ * This cross-platform GIS is developed at French IRSTV institute and is able to
+ * manipulate and create vector and raster spatial information. OrbisGIS is
+ * distributed under GPL 3 license. It is produced by the "Atelier SIG" team of
+ * the IRSTV Institute <http://www.irstv.cnrs.fr/> CNRS FR 2488.
+ *
+ *
+ *  Team leader Erwan BOCHER, scientific researcher,
+ *
+ *  User support leader : Gwendall Petit, geomatic engineer.
+ *
+ *
+ * Copyright (C) 2007 Erwan BOCHER, Fernando GONZALEZ CORTES, Thomas LEDUC
+ *
+ * Copyright (C) 2010 Erwan BOCHER, Pierre-Yves FADET, Alexis GUEGANNO, Maxence LAURENT
+ *
+ * This file is part of OrbisGIS.
+ *
+ * OrbisGIS is free software: you can redistribute it and/or modify it under the
+ * terms of the GNU General Public License as published by the Free Software
+ * Foundation, either version 3 of the License, or (at your option) any later
+ * version.
+ *
+ * OrbisGIS is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
+ * A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along with
+ * OrbisGIS. If not, see <http://www.gnu.org/licenses/>.
+ *
+ * For more information, please consult: <http://www.orbisgis.org/>
+ *
+ * or contact directly:
+ * erwan.bocher _at_ ec-nantes.fr
+ * gwendall.petit _at_ ec-nantes.fr
+ */
+
+
 package org.orbisgis.core.renderer.se.parameter;
 
 import java.util.ArrayList;
 import java.util.List;
-import javax.swing.JPanel;
 import javax.xml.bind.JAXBElement;
-import org.gdms.data.DataSource;
 import org.gdms.data.feature.Feature;
 import org.orbisgis.core.renderer.persistance.ogc.ExpressionType;
 import org.orbisgis.core.renderer.persistance.se.MapItemType;
@@ -13,7 +50,6 @@ import org.orbisgis.core.renderer.persistance.se.ParameterValueType;
 import org.orbisgis.core.renderer.persistance.se.RecodeType;
 
 import org.orbisgis.core.renderer.se.parameter.string.*;
-import org.orbisgis.core.ui.editorViews.toc.actions.cui.EditFeatureTypeStylePanel;
 
 public abstract class Recode<ToType extends SeParameter, FallbackType extends ToType> implements SeParameter {
 
@@ -72,21 +108,30 @@ public abstract class Recode<ToType extends SeParameter, FallbackType extends To
      * Add a new map item
      * @param key
      * @param value
+	 * @return index of new map item or -1 when key already exists
      */
-    public void addMapItem(String key, ToType value) {
+    public int addMapItem(String key, ToType value) {
         MapItem<ToType> item = new MapItem<ToType>(value, key);
 
         if (mapItems.contains(item)) {
-            //TODO  throw break unique value rules
+			return -1;
         } else {
             mapItems.add(item);
         }
+
+		return mapItems.size() - 1;
     }
 
     public ToType getMapItemValue(String key) {
         MapItem<ToType> item = new MapItem<ToType>(null, key);
         return mapItems.get(mapItems.indexOf(item)).getValue();
     }
+
+
+	public MapItem<ToType> getMapItem(int i){
+		return mapItems.get(i);
+	}
+
 
     public ToType getMapItemValue(int i) {
         return mapItems.get(i).getValue();
@@ -100,6 +145,12 @@ public abstract class Recode<ToType extends SeParameter, FallbackType extends To
         MapItem<ToType> item = new MapItem<ToType>(null, key);
         mapItems.remove(item);
     }
+
+	public void removeMapItem(int i){
+		if (i >= 0 && i < mapItems.size()){
+			mapItems.remove(i);
+		}
+	}
 
     public ToType getParameter(Feature feat) {
         try {
@@ -141,12 +192,6 @@ public abstract class Recode<ToType extends SeParameter, FallbackType extends To
         ObjectFactory of = new ObjectFactory();
         return of.createRecode(r);
     }
-
-	@Override
-	public JPanel getEditionPanel(EditFeatureTypeStylePanel ftsPanel){
-		throw new UnsupportedOperationException("Not yet implemented ("+ this.getClass() + " )");
-	}
-
 
     protected FallbackType fallbackValue;
     protected StringParameter lookupValue;

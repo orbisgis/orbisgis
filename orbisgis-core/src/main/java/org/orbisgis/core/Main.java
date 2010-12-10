@@ -59,6 +59,7 @@ import org.orbisgis.core.ui.configuration.EPConfigHelper;
 import org.orbisgis.core.ui.configuration.WorkspaceConfiguration;
 import org.orbisgis.core.ui.errors.CacheMessages;
 import org.orbisgis.core.ui.errors.FilteringErrorListener;
+import org.orbisgis.core.ui.preferences.translation.OrbisGISI18N;
 import org.orbisgis.core.ui.workspace.DefaultSwingWorkspace;
 import org.orbisgis.core.workspace.DefaultWorkspace;
 import org.orbisgis.core.workspace.OrbisGISWorkspace;
@@ -75,7 +76,6 @@ public class Main {
 	public final static String DOCUMENT = "doc";
 	public final static String WORKSPACE = "w";
 	public static String I18N_SETLOCALE = "";
-	public final static String PROPERTIES_OPTION = "properties";
 
 	public static String MIN_JAVA_VERSION = "1.6.";
 
@@ -111,7 +111,7 @@ public class Main {
 		if (commandLine.hasOption(I18N_FILE))
 			I18N_SETLOCALE = commandLine.getOption(I18N_FILE).getArg(0);
 		// Init I18n
-		I18N.addI18n(I18N_SETLOCALE, "orbisgis", Main.class);
+		I18N.addI18n(I18N_SETLOCALE, "orbisgis", OrbisGISI18N.class);
 
 	}
 
@@ -166,7 +166,7 @@ public class Main {
 	}
 
 	/**
-	 *  Install OrbisGIS core services
+	 * Install OrbisGIS core services
 	 */
 	private static void initServices() {
 		Services

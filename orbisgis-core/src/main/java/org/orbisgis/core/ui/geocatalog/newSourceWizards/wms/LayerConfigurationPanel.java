@@ -22,10 +22,10 @@ import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
 
-import org.orbisgis.core.images.IconLoader;
 import org.orbisgis.core.sif.CRFlowLayout;
 import org.orbisgis.core.sif.CarriageReturn;
 import org.orbisgis.core.sif.UIPanel;
+import org.orbisgis.core.ui.preferences.lookandfeel.images.IconLoader;
 
 public class LayerConfigurationPanel extends JPanel implements UIPanel {
 

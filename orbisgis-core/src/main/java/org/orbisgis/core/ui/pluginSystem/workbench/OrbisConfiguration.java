@@ -8,12 +8,11 @@
  *
  *  Team leader Erwan BOCHER, scientific researcher,
  *
- *  User support leader : Gwendall Petit, geomatic engineer.
  *
  *
  * Copyright (C) 2007 Erwan BOCHER, Fernando GONZALEZ CORTES, Thomas LEDUC
  *
- * Copyright (C) 2010 Erwan BOCHER, Pierre-Yves FADET, Alexis GUEGANNO, Maxence LAURENT
+ * Copyright (C) 2010 Erwan BOCHER,  Alexis GUEGANNO, Antoine GOURLAY, Adelin PIAU, Gwendall PETIT
  *
  * This file is part of OrbisGIS.
  *
@@ -32,8 +31,7 @@
  * For more information, please consult: <http://www.orbisgis.org/>
  *
  * or contact directly:
- * erwan.bocher _at_ ec-nantes.fr
- * gwendall.petit _at_ ec-nantes.fr
+ * info _at_ orbisgis.org
  */
 package org.orbisgis.core.ui.pluginSystem.workbench;
 
@@ -46,7 +44,6 @@ import javax.swing.event.MenuEvent;
 import javax.swing.event.MenuListener;
 
 import org.orbisgis.core.Services;
-import org.orbisgis.core.images.OrbisGISIcon;
 import org.orbisgis.core.ui.editors.map.tool.Automaton;
 import org.orbisgis.core.ui.editors.map.tools.CompassTool;
 import org.orbisgis.core.ui.editors.map.tools.EditionSelectionTool;
@@ -112,7 +109,7 @@ import org.orbisgis.core.ui.plugins.status.FreeDefaultWorkspacePlugIn;
 import org.orbisgis.core.ui.plugins.status.WorkspaceNamePlugin;
 import org.orbisgis.core.ui.plugins.toc.CreateChoroplethPlugIn;
 import org.orbisgis.core.ui.plugins.toc.CreateGroupPlugIn;
-import org.orbisgis.core.ui.plugins.toc.EditFeatureTypeStylePlugIn;
+import org.orbisgis.core.ui.plugins.toc.EditSELegendPlugIn;
 import org.orbisgis.core.ui.plugins.toc.ExportFeatureTypeStylePlugIn;
 import org.orbisgis.core.ui.plugins.toc.GroupLayersPlugIn;
 import org.orbisgis.core.ui.plugins.toc.ImportFeatureTypeStylePlugIn;
@@ -155,6 +152,7 @@ import org.orbisgis.core.ui.plugins.views.geocognition.OpenGeocognitionPlugIn;
 import org.orbisgis.core.ui.plugins.views.geocognition.RemoveGeocognitionPlugIn;
 import org.orbisgis.core.ui.plugins.workspace.ChangeWorkspacePlugIn;
 import org.orbisgis.core.ui.plugins.workspace.SaveWorkspacePlugIn;
+import org.orbisgis.core.ui.preferences.lookandfeel.OrbisGISIcon;
 import org.orbisgis.core.ui.windows.mainFrame.OrbisGISFrame;
 
 public class OrbisConfiguration implements Setup {
@@ -174,7 +172,7 @@ public class OrbisConfiguration implements Setup {
 
 	// TOC
 	//private EditLegendPlugIn editLegendPlugIn = new EditLegendPlugIn();
-	private EditFeatureTypeStylePlugIn editFts = new EditFeatureTypeStylePlugIn();
+	private EditSELegendPlugIn editFts = new EditSELegendPlugIn();
     private ImportFeatureTypeStylePlugIn importFTSPlugIn = new ImportFeatureTypeStylePlugIn();
     private ExportFeatureTypeStylePlugIn exportFTSPlugIn = new ExportFeatureTypeStylePlugIn();
     private CreateChoroplethPlugIn createChoroPlugIn = new CreateChoroplethPlugIn();
@@ -260,7 +258,8 @@ public class OrbisConfiguration implements Setup {
 	private ShowXYPlugIn showXYPlugIn = new ShowXYPlugIn();
 	// Scale panel plugin is a swing component to execute action on map editor
 	private ScalePlugIn scalePlugIn = new ScalePlugIn();
-	//private CoordinateReferenceSystemPlugIn CRSPlugIn = new CoordinateReferenceSystemPlugIn();
+	// private CoordinateReferenceSystemPlugIn CRSPlugIn = new
+	// CoordinateReferenceSystemPlugIn();
 
 	// right click on Map
 	private ExportMapAsImagePlugIn exportMasAsImagePlugIn = new ExportMapAsImagePlugIn();
@@ -471,6 +470,11 @@ public class OrbisConfiguration implements Setup {
 		rasterAlgebraPlugIn.initialize(plugInContext);
 	}
 
+	/**
+	 * Create here all toolbars available in the plugincontext.
+	 * 
+	 * @param plugInContext
+	 */
 	private void configureToolBar(PlugInContext plugInContext) {
 		// Frame tool bar
 		OrbisGISFrame frame = plugInContext.getWorkbenchContext()
@@ -508,8 +512,12 @@ public class OrbisConfiguration implements Setup {
 		wbToolBar.add(wbEditionTable);
 
 		WorkbenchToolBar wbStatusMainToolBar = new WorkbenchToolBar(wbContext,
-				Names.STATUS_TOOLBAR_MAIN);
+				Names.MAIN_STATUS_TOOLBAR_MAIN);
 		wbToolBar.add(wbStatusMainToolBar);
+
+		WorkbenchToolBar wbViewToolBar = new WorkbenchToolBar(wbContext,
+				Names.VIEW_TOOLBAR);
+		wbToolBar.add(wbViewToolBar);
 
 	}
 

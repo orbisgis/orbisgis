@@ -41,13 +41,13 @@ package org.orbisgis.core.ui.plugins.properties;
 import javax.swing.JButton;
 import javax.swing.JMenuItem;
 
-import org.orbisgis.core.images.OrbisGISIcon;
 import org.orbisgis.core.sif.UIFactory;
 import org.orbisgis.core.ui.configuration.ConfigurationPanel;
 import org.orbisgis.core.ui.pluginSystem.AbstractPlugIn;
 import org.orbisgis.core.ui.pluginSystem.PlugInContext;
 import org.orbisgis.core.ui.pluginSystem.workbench.Names;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchContext;
+import org.orbisgis.core.ui.preferences.lookandfeel.OrbisGISIcon;
 
 public class ConfigurationPlugIn extends AbstractPlugIn {
 

@@ -20,6 +20,12 @@
 		</xs:complexType>
 	</xs:element>
 	
+	<xs:element name="idTime">
+		<xs:complexType>
+			<xs:attribute name="name" type="xs:long" use="required"/>
+		</xs:complexType>
+	</xs:element>
+	
 	<xs:element name="ogcCrs">
 		<xs:complexType>
 			<xs:attribute name="name" type="xs:string" use="required"/>
@@ -29,10 +35,10 @@
 	<xs:element name="map-context">
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element ref="layer-collection"/>
-				<xs:element ref="selected-layer" maxOccurs="unbounded"/>
+			    <xs:element ref="idTime"/>
 				<xs:element ref="boundingBox"/>
-				<xs:element ref="ogcCrs"/>
+				<xs:element ref="layer-collection"/>
+				<xs:element ref="selected-layer" maxOccurs="unbounded"/>				
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>

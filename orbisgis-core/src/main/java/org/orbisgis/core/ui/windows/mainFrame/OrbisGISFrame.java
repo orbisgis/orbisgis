@@ -8,12 +8,11 @@
  *
  *  Team leader Erwan BOCHER, scientific researcher,
  *
- *  User support leader : Gwendall Petit, geomatic engineer.
  *
  *
  * Copyright (C) 2007 Erwan BOCHER, Fernando GONZALEZ CORTES, Thomas LEDUC
  *
- * Copyright (C) 2010 Erwan BOCHER, Pierre-Yves FADET, Alexis GUEGANNO, Maxence LAURENT
+ * Copyright (C) 2010 Erwan BOCHER,  Alexis GUEGANNO, Antoine GOURLAY, Adelin PIAU, Gwendall PETIT
  *
  * This file is part of OrbisGIS.
  *
@@ -32,8 +31,7 @@
  * For more information, please consult: <http://www.orbisgis.org/>
  *
  * or contact directly:
- * erwan.bocher _at_ ec-nantes.fr
- * gwendall.petit _at_ ec-nantes.fr
+ * info _at_ orbisgis.org
  */
 package org.orbisgis.core.ui.windows.mainFrame;
 
@@ -41,6 +39,7 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.Insets;
 import java.awt.Rectangle;
 import java.awt.Toolkit;
 import java.awt.event.WindowAdapter;
@@ -55,6 +54,7 @@ import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.Map;
 
+import javax.swing.BorderFactory;
 import javax.swing.JFrame;
 import javax.swing.JMenuBar;
 import javax.swing.JPanel;
@@ -69,7 +69,6 @@ import org.apache.log4j.Logger;
 import org.orbisgis.core.ApplicationInfo;
 import org.orbisgis.core.PersistenceException;
 import org.orbisgis.core.Services;
-import org.orbisgis.core.images.OrbisGISIcon;
 import org.orbisgis.core.ui.components.job.JobPopup;
 import org.orbisgis.core.ui.editor.EditorListener;
 import org.orbisgis.core.ui.editor.IEditor;
@@ -89,6 +88,7 @@ import org.orbisgis.core.ui.plugins.views.TocViewPlugIn;
 import org.orbisgis.core.ui.plugins.views.ViewDecorator;
 import org.orbisgis.core.ui.plugins.views.editor.EditorManager;
 import org.orbisgis.core.ui.plugins.views.geocatalog.Catalog;
+import org.orbisgis.core.ui.preferences.lookandfeel.OrbisGISIcon;
 import org.orbisgis.core.ui.window.IWindow;
 import org.orbisgis.core.workspace.Workspace;
 import org.orbisgis.utils.I18N;
@@ -176,7 +176,12 @@ public class OrbisGISFrame extends JFrame implements IWindow {
 	}
 
 	public WorkbenchToolBar getMainStatusToolBar() {
-		return workbenchToolBar.getToolbars().get(Names.STATUS_TOOLBAR_MAIN);
+		return workbenchToolBar.getToolbars().get(
+				Names.MAIN_STATUS_TOOLBAR_MAIN);
+	}
+
+	public WorkbenchToolBar getViewToolBar() {
+		return workbenchToolBar.getToolbars().get(Names.VIEW_TOOLBAR);
 	}
 
 	public Toc getToc() {
@@ -218,8 +223,15 @@ public class OrbisGISFrame extends JFrame implements IWindow {
 		// Initialize views
 		root = new RootWindow(viewSerializer);
 
+		root.getRootWindowProperties().getComponentProperties().setInsets(
+				new Insets(0, 0, 0, 0));
 		root.getRootWindowProperties().getSplitWindowProperties()
 				.setContinuousLayoutEnabled(false);
+
+		root.getRootWindowProperties().getWindowAreaProperties().setInsets(
+				new Insets(0, 0, 0, 0));
+		root.getRootWindowProperties().getWindowAreaProperties().setBorder(
+				BorderFactory.createEmptyBorder());
 
 		root.getRootWindowProperties().getTabWindowProperties()
 				.getTabProperties().getFocusedProperties()
@@ -253,7 +265,6 @@ public class OrbisGISFrame extends JFrame implements IWindow {
 		ApplicationInfo ai = (ApplicationInfo) Services
 				.getService(ApplicationInfo.class);
 
-		// I18N.loadFile("fr");
 		this.setTitle(I18N.getText("orbisgis.platform") + " - "
 				+ ai.getVersionNumber() + " - " + ai.getVersionName());
 
@@ -269,7 +280,8 @@ public class OrbisGISFrame extends JFrame implements IWindow {
 
 			@Override
 			public void windowClosing(WindowEvent e) {
-				ExitPlugIn.execute();
+				ExitPlugIn.openExitDialog(workbenchContext.getWorkbench()
+						.getFrame());
 			}
 
 		});
@@ -278,11 +290,15 @@ public class OrbisGISFrame extends JFrame implements IWindow {
 		jobPopup = new JobPopup();
 		jobPopup.initialize();
 
+		// A panel to display the statustoolbar on the left side and the
+		// viewtoolbar on the rigth side
 		JPanel jPanel = new JPanel();
 		BorderLayout layout = new BorderLayout();
 		jPanel.setLayout(layout);
+		jPanel.add(getMainStatusToolBar(), BorderLayout.WEST);
+		jPanel.add(getViewToolBar(), BorderLayout.EAST);
 
-		this.getContentPane().add(getMainStatusToolBar(), BorderLayout.SOUTH);
+		this.getContentPane().add(jPanel, BorderLayout.SOUTH);
 
 	}
 
@@ -468,7 +484,7 @@ public class OrbisGISFrame extends JFrame implements IWindow {
 	/**
 	 * Writes the id of the view and then writes the status. Reads the id,
 	 * obtains the data from the extension xml and reads the status
-	 *
+	 * 
 	 */
 	private class MyViewSerializer implements ViewSerializer {
 

@@ -59,8 +59,10 @@ public abstract class Names {
 
 
 	//Main status toolbar
-	public static final String STATUS_TOOLBAR_MAIN = I18N.getText("orbisgis.sttoolbar.main");;
+	public static final String MAIN_STATUS_TOOLBAR_MAIN = I18N.getText("orbisgis.sttoolbar.main");;
+	public static final String VIEW_TOOLBAR = I18N.getText("orbisgis.toolbar.view");;
 
+	
 	/**************************************************** MAIN MENU ************************************************************/
 	// MAIN MENU
 	// File

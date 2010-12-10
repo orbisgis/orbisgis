@@ -196,7 +196,7 @@ public class Menu implements IMenu {
 	}
 
 	public IMenu[] getChildren() {
-		return children.toArray(new IMenu[0]);
+		return children.toArray(new IMenu[children.size()]);
 	}
 
 	public void remove(IMenu menuToDelete) {

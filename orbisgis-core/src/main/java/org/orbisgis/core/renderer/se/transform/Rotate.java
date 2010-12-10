@@ -10,40 +10,46 @@ import org.gdms.data.feature.Feature;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.persistance.se.ObjectFactory;
 import org.orbisgis.core.renderer.persistance.se.RotateType;
+import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
+import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
 
 /**
  *
  * @author maxence
  */
-public class Rotate implements Transformation {
+public final class Rotate implements Transformation {
+
+    private RealParameter x;
+    private RealParameter y;
+    private RealParameter rotation;
 
     public Rotate(RealParameter rotation) {
-        this.rotation = rotation;
-        this.x = null;
-        this.y = null;
+        setRotation(rotation);
+		setX(null);
+		setY(null);
     }
 
     public Rotate(RealParameter rotation, RealParameter ox, RealParameter oy) {
-        this.rotation = rotation;
-        this.x = ox;
-        this.y = oy;
+		setRotation(rotation);
+        setX(ox);
+        setY(oy);
     }
 
-    Rotate(RotateType r) {
+    Rotate(RotateType r) throws InvalidStyle {
         if (r.getAngle() != null) {
-            this.rotation = SeParameterFactory.createRealParameter(r.getAngle());
+            setRotation(SeParameterFactory.createRealParameter(r.getAngle()));
         }
 
         if (r.getX() != null) {
-            this.x = SeParameterFactory.createRealParameter(r.getX());
+            setX(SeParameterFactory.createRealParameter(r.getX()));
         }
 
         if (r.getY() != null) {
-            this.y = SeParameterFactory.createRealParameter(r.getY());
+            setY(SeParameterFactory.createRealParameter(r.getY()));
         }
     }
 
@@ -53,6 +59,9 @@ public class Rotate implements Transformation {
 
     public void setRotation(RealParameter rotation) {
         this.rotation = rotation;
+		if (rotation != null){
+			rotation.setContext(RealParameterContext.realContext);
+		}
     }
 
     public RealParameter getX() {
@@ -61,6 +70,9 @@ public class Rotate implements Transformation {
 
     public void setX(RealParameter x) {
         this.x = x;
+		if (this.x != null){
+			this.x.setContext(RealParameterContext.realContext);
+		}
     }
 
     public RealParameter getY() {
@@ -69,6 +81,9 @@ public class Rotate implements Transformation {
 
     public void setY(RealParameter y) {
         this.y = y;
+		if (this.y != null){
+			this.y.setContext(RealParameterContext.realContext);
+		}
     }
 
     @Override
@@ -91,26 +106,20 @@ public class Rotate implements Transformation {
     }
 
     @Override
-    public AffineTransform getAffineTransform(Feature feat, Uom uom, MapTransform mt) throws ParameterException {
+    public AffineTransform getAffineTransform(Feature feat, Uom uom, MapTransform mt, Double width, Double height) throws ParameterException {
         double ox = 0.0;
-
         if (x != null) {
-            ox = Uom.toPixel(x.getValue(feat), uom, mt.getDpi(), mt.getScaleDenominator(), 0.0);
-
-
+            ox = Uom.toPixel(x.getValue(feat), uom, mt.getDpi(), mt.getScaleDenominator(), width);
         }
+
         double oy = 0.0;
         if (y != null) {
-            oy = Uom.toPixel(y.getValue(feat), uom, mt.getDpi(), mt.getScaleDenominator(), 0.0);
-
-
-
+            oy = Uom.toPixel(y.getValue(feat), uom, mt.getDpi(), mt.getScaleDenominator(), height);
         }
+
         double theta = 0.0;
         if (rotation != null) {
             theta = rotation.getValue(feat) * Math.PI / 180.0; // convert to rad
-
-
         }
         return AffineTransform.getRotateInstance(theta, ox, oy);
     }
@@ -140,7 +149,4 @@ public class Rotate implements Transformation {
 
         return r;
     }
-    private RealParameter x;
-    private RealParameter y;
-    private RealParameter rotation;
 }

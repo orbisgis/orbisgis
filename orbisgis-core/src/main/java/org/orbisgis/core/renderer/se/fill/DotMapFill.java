@@ -1,6 +1,7 @@
 package org.orbisgis.core.renderer.se.fill;
 
 import java.awt.Graphics2D;
+import java.awt.Paint;
 import java.awt.image.BufferedImage;
 import java.awt.Shape;
 import java.awt.geom.AffineTransform;
@@ -18,6 +19,7 @@ import org.orbisgis.core.renderer.persistance.se.DotMapFillType;
 
 import org.orbisgis.core.renderer.persistance.se.ObjectFactory;
 import org.orbisgis.core.renderer.se.GraphicNode;
+import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.graphic.GraphicCollection;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
@@ -25,7 +27,7 @@ import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 
 public final class DotMapFill extends Fill implements GraphicNode {
 
-    DotMapFill(JAXBElement<DotMapFillType> f) {
+    DotMapFill(JAXBElement<DotMapFillType> f) throws InvalidStyle {
 		DotMapFillType dmf = f.getValue();
 
 		if (dmf.getGraphic() != null){
@@ -67,6 +69,11 @@ public final class DotMapFill extends Fill implements GraphicNode {
     public RealParameter getTotalQantity() {
         return totalQuantity;
     }
+
+	@Override
+	public Paint getPaint(Feature feat, boolean selected, MapTransform mt) throws ParameterException {
+		throw new UnsupportedOperationException("Not supported yet.");
+	}
 
     @Override
     public void draw(Graphics2D g2, Shape shp, Feature feat, boolean selected, MapTransform mt) throws ParameterException, IOException {
@@ -235,5 +242,4 @@ public final class DotMapFill extends Fill implements GraphicNode {
     private GraphicCollection mark;
     private RealParameter quantityPerMark;
     private RealParameter totalQuantity;
-
 }

@@ -7,7 +7,6 @@ package org.orbisgis.core.renderer.se;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -23,7 +22,6 @@ import javax.xml.bind.ValidationEvent;
 import javax.xml.bind.ValidationEventLocator;
 import javax.xml.bind.util.ValidationEventCollector;
 import javax.xml.validation.Schema;
-import org.gdms.driver.driverManager.DriverLoadException;
 
 import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.map.MapTransform;
@@ -32,6 +30,7 @@ import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.persistance.se.FeatureTypeStyleType;
 import org.orbisgis.core.renderer.persistance.se.ObjectFactory;
 import org.orbisgis.core.renderer.persistance.se.RuleType;
+import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.common.Uom;
 
 /**
@@ -47,7 +46,7 @@ public final class FeatureTypeStyle implements SymbolizerNode {
 		this.addRule(new Rule(layer));
 	}
 
-	public FeatureTypeStyle(ILayer layer, String seFile) {
+	public FeatureTypeStyle(ILayer layer, String seFile) throws InvalidStyle {
 		rules = new ArrayList<Rule>();
 		this.layer = layer;
 
@@ -66,33 +65,35 @@ public final class FeatureTypeStyle implements SymbolizerNode {
 			JAXBElement<FeatureTypeStyleType> fts = (JAXBElement<FeatureTypeStyleType>) u.unmarshal(
 					new FileInputStream(seFile));
 
+			String errors = "";
 			for (ValidationEvent event : validationCollector.getEvents()) {
 				String msg = event.getMessage();
 				ValidationEventLocator locator = event.getLocator();
 				int line = locator.getLineNumber();
 				int column = locator.getColumnNumber();
-				System.out.println("Error at line " + line + " column " + column);
+				errors = errors + "Error at line " + line + " column " + column + " (" + msg + ")\n";
 			}
 
-			this.setFromJAXB(fts);
+			if (errors.isEmpty()){
+				this.setFromJAXB(fts);
+			}else{
+				throw new SeExceptions.InvalidStyle(errors);
+			}
 
-		} catch (IOException ex) {
-			Logger.getLogger(FeatureTypeStyle.class.getName()).log(Level.SEVERE, null, ex);
-		} catch (DriverLoadException ex) {
-			Logger.getLogger(FeatureTypeStyle.class.getName()).log(Level.SEVERE, null, ex);
-		} catch (JAXBException ex) {
-			Logger.getLogger(FeatureTypeStyle.class.getName()).log(Level.SEVERE, null, ex);
+		} catch (Exception ex){
+			Logger.getLogger(FeatureTypeStyle.class.getName()).log(Level.SEVERE, "Error while loading style", ex);
+			throw new SeExceptions.InvalidStyle("Error while loading the style: " + ex);
 		}
 
 	}
 
-	public FeatureTypeStyle(JAXBElement<FeatureTypeStyleType> ftst, ILayer layer) {
+	public FeatureTypeStyle(JAXBElement<FeatureTypeStyleType> ftst, ILayer layer) throws InvalidStyle {
 		rules = new ArrayList<Rule>();
 		this.layer = layer;
 		this.setFromJAXB(ftst);
 	}
 
-	private void setFromJAXB(JAXBElement<FeatureTypeStyleType> ftst) {
+	private void setFromJAXB(JAXBElement<FeatureTypeStyleType> ftst) throws InvalidStyle {
 		FeatureTypeStyleType fts = ftst.getValue();
 
 		if (fts.getName() != null) {
@@ -188,6 +189,7 @@ public final class FeatureTypeStyle implements SymbolizerNode {
 		}
 
 		Collections.sort(layerSymbolizers);
+		Collections.sort(overlaySymbolizers);
 	}
 
 	public void resetSymbolizerLevels() {
@@ -240,25 +242,29 @@ public final class FeatureTypeStyle implements SymbolizerNode {
 		return rules;
 	}
 
-	public void moveRuleUp(int i) {
+	public boolean moveRuleUp(int i) {
 		try {
 			if (i > 0) {
 				Rule r = rules.remove(i);
 				rules.add(i - 1, r);
+				return true;
 			}
 		} catch (IndexOutOfBoundsException ex) {
 		}
+		return false;
 	}
 
-	public void moveRuleDown(int i) {
+	public boolean moveRuleDown(int i) {
 		try {
 			if (i < rules.size() - 1) {
 				Rule r = rules.remove(i);
 				rules.add(i + 1, r);
+				return true;
 			}
 
 		} catch (IndexOutOfBoundsException ex) {
 		}
+		return false;
 	}
 
 	public void addRule(Rule r) {
@@ -266,12 +272,15 @@ public final class FeatureTypeStyle implements SymbolizerNode {
 		rules.add(r);
 	}
 
-	public void deleteRule(int i) {
+	public boolean deleteRule(int i) {
 		try {
 			rules.remove(i);
+			return true;
 		} catch (IndexOutOfBoundsException ex) {
+			return false;
 		}
 	}
+
 	private String name;
 	private ArrayList<Rule> rules;
 	private ILayer layer;

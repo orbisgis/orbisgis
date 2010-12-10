@@ -7,13 +7,15 @@ import javax.xml.bind.JAXBElement;
 import org.orbisgis.core.renderer.persistance.se.StrokeType;
 import org.gdms.data.feature.Feature;
 import org.orbisgis.core.map.MapTransform;
+import org.orbisgis.core.renderer.persistance.se.CompoundStrokeType;
 import org.orbisgis.core.renderer.persistance.se.GraphicStrokeType;
 import org.orbisgis.core.renderer.persistance.se.PenStrokeType;
+import org.orbisgis.core.renderer.persistance.se.TextStrokeType;
+import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.SymbolizerNode;
 import org.orbisgis.core.renderer.se.UomNode;
 import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
-import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 
 /**
  * Style description for linear features (Area or Line)
@@ -23,19 +25,25 @@ import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
  */
 public abstract class Stroke implements SymbolizerNode, UomNode {
 
+	protected Uom uom;
+    protected SymbolizerNode parent;
+
     /**
-     * Create a new fill based on the jaxbelement
+     * Create a new stroke based on the jaxbelement
      *
-     * @param s XML Fill
-     * @return Java Fill
+     * @param s XML Stroke
+     * @return Java Stroke
      */
-    public static Stroke createFromJAXBElement(JAXBElement<? extends StrokeType> s){
+    public static Stroke createFromJAXBElement(JAXBElement<? extends StrokeType> s) throws InvalidStyle{
         if (s.getDeclaredType() == PenStrokeType.class){
             return new PenStroke((JAXBElement<PenStrokeType>)s);
-        }
-        else if (s.getDeclaredType() == GraphicStrokeType.class){
+        } else if (s.getDeclaredType() == GraphicStrokeType.class){
             return new GraphicStroke((JAXBElement<GraphicStrokeType>)s);
-        }
+        }else if (s.getDeclaredType() == CompoundStrokeType.class){
+			return new CompoundStroke((JAXBElement<CompoundStrokeType>)s);
+        }else if (s.getDeclaredType() == TextStrokeType.class){
+			return new TextStroke((JAXBElement<TextStrokeType>)s);
+		}
 
         // TODO Shoudl never occurs !
         return null;
@@ -46,6 +54,7 @@ public abstract class Stroke implements SymbolizerNode, UomNode {
         this.uom = uom;
     }
 
+	@Override
 	public Uom getOwnUom(){
 		return uom;
 	}
@@ -57,22 +66,6 @@ public abstract class Stroke implements SymbolizerNode, UomNode {
         } else {
             return uom;
         }
-    }
-
-    public void setPreGap(RealParameter gap) {
-        preGap = gap;
-    }
-
-    public void setPostGap(RealParameter gap) {
-        postGap = gap;
-    }
-
-    public RealParameter getPostGap() {
-        return postGap;
-    }
-
-    public RealParameter getPreGap() {
-        return preGap;
     }
 
     @Override
@@ -106,35 +99,20 @@ public abstract class Stroke implements SymbolizerNode, UomNode {
      */
     public abstract void draw(Graphics2D g2, Shape shp, Feature feat, boolean selected, MapTransform mt) throws ParameterException, IOException;
 
-    /**
-     * Take into account preGap and postGap
-	 *
-     * @param shp
-     * @return
-     * @todo implements
-     */
-    public Shape getPreparedShape(Shape shp) {
-        return shp;
-    }
-
     public abstract JAXBElement<? extends StrokeType> getJAXBElement();
 
     protected void setJAXBProperties(StrokeType s) {
+		/*
         if (postGap != null) {
             s.setPostGap(postGap.getJAXBParameterValueType());
         }
         if (preGap != null) {
             s.setPreGap(preGap.getJAXBParameterValueType());
-        }
+        }*/
         if (uom != null) {
             s.setUnitOfMeasure(uom.toURN());
         }
     }
-
-    protected Uom uom;
-    protected RealParameter preGap;
-    protected RealParameter postGap;
-    protected SymbolizerNode parent;
 
     public abstract boolean dependsOnFeature();
 }

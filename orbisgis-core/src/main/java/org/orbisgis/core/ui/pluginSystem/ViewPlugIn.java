@@ -45,11 +45,11 @@ import javax.swing.JComponent;
 import javax.swing.JPanel;
 
 import org.orbisgis.core.PersistenceException;
-import org.orbisgis.core.images.IconLoader;
 import org.orbisgis.core.ui.editor.IEditor;
 import org.orbisgis.core.ui.editors.map.tool.Automaton;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchContext;
 import org.orbisgis.core.ui.plugins.views.ViewDecorator;
+import org.orbisgis.core.ui.preferences.lookandfeel.images.IconLoader;
 import org.orbisgis.utils.I18N;
 
 /**

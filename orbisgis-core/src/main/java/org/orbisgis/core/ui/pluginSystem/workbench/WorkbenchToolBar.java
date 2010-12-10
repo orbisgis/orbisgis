@@ -8,12 +8,11 @@
  *
  *  Team leader Erwan BOCHER, scientific researcher,
  *
- *  User support leader : Gwendall Petit, geomatic engineer.
  *
  *
  * Copyright (C) 2007 Erwan BOCHER, Fernando GONZALEZ CORTES, Thomas LEDUC
  *
- * Copyright (C) 2010 Erwan BOCHER, Pierre-Yves FADET, Alexis GUEGANNO, Maxence LAURENT
+ * Copyright (C) 2010 Erwan BOCHER,  Alexis GUEGANNO, Antoine GOURLAY, Adelin PIAU, Gwendall PETIT
  *
  * This file is part of OrbisGIS.
  *
@@ -32,8 +31,7 @@
  * For more information, please consult: <http://www.orbisgis.org/>
  *
  * or contact directly:
- * erwan.bocher _at_ ec-nantes.fr
- * gwendall.petit _at_ ec-nantes.fr
+ * info _at_ orbisgis.org
  */
 package org.orbisgis.core.ui.pluginSystem.workbench;
 
@@ -62,7 +60,6 @@ import javax.swing.JToggleButton;
 import javax.swing.JToolBar;
 
 import org.orbisgis.core.Services;
-import org.orbisgis.core.images.IconLoader;
 import org.orbisgis.core.ui.components.button.DropDownButton;
 import org.orbisgis.core.ui.editor.IEditor;
 import org.orbisgis.core.ui.editors.map.tool.Automaton;
@@ -70,6 +67,7 @@ import org.orbisgis.core.ui.editors.map.tool.TransitionException;
 import org.orbisgis.core.ui.pluginSystem.AbstractPlugIn;
 import org.orbisgis.core.ui.pluginSystem.PlugIn;
 import org.orbisgis.core.ui.pluginSystem.PlugInContext;
+import org.orbisgis.core.ui.pluginSystem.ViewPlugIn;
 import org.orbisgis.core.ui.plugins.views.MapEditorPlugIn;
 import org.orbisgis.core.ui.plugins.views.editor.EditorManager;
 
@@ -103,6 +101,7 @@ public class WorkbenchToolBar extends EnableableToolBar implements Observer {
 	public WorkbenchToolBar(WorkbenchContext workbenchContext, String name) {
 		super(name);
 		this.context = workbenchContext;
+		setBorderPainted(false);
 		setOpaque(false);
 		setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
 	}
@@ -121,7 +120,9 @@ public class WorkbenchToolBar extends EnableableToolBar implements Observer {
 		dropDownButton.addToToolBar(this);
 		dropDownButton.setVisible(false);
 		dropDownButton.setEnabled(false);
+		dropDownButton.setBorderPainted(false);
 		setOpaque(false);
+		setBorderPainted(false);
 	}
 
 	public void addPanelPlugIn(final PlugIn plugIn, Component c,
@@ -133,8 +134,14 @@ public class WorkbenchToolBar extends EnableableToolBar implements Observer {
 
 	public void addPlugIn(final PlugIn plugIn, Component c,
 			PlugInContext plugInContext) {
+		if (plugIn instanceof ViewPlugIn){
+			((ViewPlugIn) plugIn).setPlugInContext(plugInContext);
+		}
+		else{
 		((AbstractPlugIn) plugIn).setPlugInContext(plugInContext);
+		}
 		toolsPlugInObservers.add(plugIn);
+		((JButton) c).setBorderPainted(false);
 		((JButton) c).addActionListener(AbstractPlugIn.toActionListener(plugIn,
 				context));
 		add(c, plugIn);
@@ -148,7 +155,7 @@ public class WorkbenchToolBar extends EnableableToolBar implements Observer {
 				((JComboBox) comp).addItemListener(AbstractPlugIn
 						.toItemListener((PlugIn) constraints, context));
 			} else if (comp instanceof JToolBar) {
-				// TODO : For the moment tool bar is not floatable. This resolve
+				// TODO : Currently toolbar is not floatable. This resolve
 				// a problem, but not the solution
 				// Maybe we'll extend JToolbar parent to modify toolbar
 				// comportment.
@@ -218,6 +225,8 @@ public class WorkbenchToolBar extends EnableableToolBar implements Observer {
 			};
 		}
 		c.setIcon(icon);
+		c.setBorderPainted(false);
+
 		return addCursorAutomaton(automaton.getName(), automaton, c, icon);
 	}
 
@@ -225,6 +234,7 @@ public class WorkbenchToolBar extends EnableableToolBar implements Observer {
 			final Automaton automaton, final AbstractButton button,
 			final ImageIcon icon) {
 		toolsPlugInObservers.add(automaton);
+		button.setBorderPainted(false);
 		add(button, dropDown, tooltip, new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				EditorManager em = (EditorManager) Services

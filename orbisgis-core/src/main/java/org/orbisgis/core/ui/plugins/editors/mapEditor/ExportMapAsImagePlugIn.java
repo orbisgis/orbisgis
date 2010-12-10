@@ -50,6 +50,7 @@ import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.layerModel.MapContext;
 import org.orbisgis.core.sif.SaveFilePanel;
 import org.orbisgis.core.sif.UIFactory;
+import org.orbisgis.core.ui.editors.map.tool.Rectangle2DDouble;
 import org.orbisgis.core.ui.pluginSystem.AbstractPlugIn;
 import org.orbisgis.core.ui.pluginSystem.PlugInContext;
 import org.orbisgis.core.ui.pluginSystem.workbench.Names;
@@ -79,7 +80,7 @@ public class ExportMapAsImagePlugIn extends AbstractPlugIn {
 		Envelope intersectEnv = envelope.intersection(mapEditor
 				.getMapTransform().getAdjustedExtent());
 
-		Envelope layerPixelEnvelope = mapEditor.getMapTransform().toPixel(
+		Rectangle2DDouble layerPixelEnvelope = mapEditor.getMapTransform().toPixel(
 				intersectEnv);
 
 		BufferedImage subImg = image.getSubimage((int) layerPixelEnvelope

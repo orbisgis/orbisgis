@@ -7,6 +7,8 @@ import org.orbisgis.core.renderer.se.parameter.Literal;
 
 public class StringLiteral extends Literal implements StringParameter{
 
+    private String v;
+
     public StringLiteral(){
         v = "";
     }
@@ -38,5 +40,4 @@ public class StringLiteral extends Literal implements StringParameter{
         return v;
     }
 
-    private String v;
 }

@@ -5,25 +5,27 @@
 package org.orbisgis.core.renderer.se;
 
 import com.vividsolutions.jts.geom.Geometry;
-import javax.swing.JPanel;
+
 import org.gdms.data.DataSourceCreationException;
-import org.gdms.data.SpatialDataSourceDecorator;
+import org.gdms.data.FilterDataSourceDecorator;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.driverManager.DriverLoadException;
 import org.gdms.sql.parser.ParseException;
 import org.gdms.sql.strategies.SemanticException;
+
 import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.map.MapTransform;
+import org.orbisgis.core.renderer.persistance.se.DomainConstraintsType;
+import org.orbisgis.core.renderer.persistance.se.ElseFilterType;
 import org.orbisgis.core.renderer.persistance.se.RuleType;
+import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.common.Uom;
-import org.orbisgis.core.ui.editorViews.toc.actions.cui.EditFeatureTypeStylePanel;
-import org.orbisgis.core.ui.editorViews.toc.actions.cui.EditRulePanel;
 
 /**
  *
  * @author maxence
  */
-public final class Rule implements SymbolizerNode, PanelableNode {
+public final class Rule implements SymbolizerNode {
 
 	public static final String DEFAULT_NAME = "Default Rule";
 
@@ -35,6 +37,7 @@ public final class Rule implements SymbolizerNode, PanelableNode {
 	private boolean fallbackRule = false;
 	private Double minScaleDenom = null;
 	private Double maxScaleDenom = null;
+	private CompositeSymbolizer symbolizer;
 
 
 	public Rule() {
@@ -84,7 +87,7 @@ public final class Rule implements SymbolizerNode, PanelableNode {
 		symbolizer.addSymbolizer(symb);
 	}
 
-	public Rule(RuleType rt, ILayer layer) {
+	public Rule(RuleType rt, ILayer layer) throws InvalidStyle {
 		this(layer);
 
 		if (rt.getName() != null) {
@@ -96,12 +99,15 @@ public final class Rule implements SymbolizerNode, PanelableNode {
 		/*
 		 * Is a fallback rule ?
 		 */
-		if (rt.getElseFilter() != null) {
+		/*if (rt.getElseFilter() != null) {
 			this.fallbackRule = true;
 		} else {
 			this.fallbackRule = false;
 			//this.filter = new FilterOperator(rt.getFilter());
-		}
+		}*/
+
+		// If a ElseFilter is defined, this rule is a fallback one
+		this.fallbackRule = rt.getElseFilter() != null;
 
 		if (rt.getMinScaleDenominator() != null) {
 			this.setMinScaleDenom(rt.getMinScaleDenominator());
@@ -113,6 +119,10 @@ public final class Rule implements SymbolizerNode, PanelableNode {
 
 		if (rt.getSymbolizer() != null) {
 			this.setCompositeSymbolizer(new CompositeSymbolizer(rt.getSymbolizer()));
+		}
+
+		if (rt.getDomainConstraints() != null && rt.getDomainConstraints().getTimePeriod() != null){
+			this.setWhere(rt.getDomainConstraints().getTimePeriod());
 		}
 	}
 
@@ -140,11 +150,19 @@ public final class Rule implements SymbolizerNode, PanelableNode {
 			rt.setMaxScaleDenominator(maxScaleDenom);
 		}
 
+		if (this.isFallbackRule()){
+			rt.setElseFilter(new ElseFilterType());
+		} else if(this.getWhere() != null && !this.getWhere().isEmpty())
+		{
+			// Temp HACK TODO !! Serialize Filters !!!!
+			rt.setDomainConstraints(new DomainConstraintsType());
+		    rt.getDomainConstraints().setTimePeriod(this.getWhere());
+		}
+
 		rt.setSymbolizer(this.symbolizer.getJAXBElement());
 
 		return rt;
 	}
-	private CompositeSymbolizer symbolizer;
 
 	@Override
 	public Uom getUom() {
@@ -182,18 +200,11 @@ public final class Rule implements SymbolizerNode, PanelableNode {
 	 * @throws ParseException
 	 * @throws SemanticException
 	 */
-	public SpatialDataSourceDecorator getFilteredDataSource(SpatialDataSourceDecorator sds) throws DriverLoadException, DataSourceCreationException, DriverException, ParseException, SemanticException {
-
+	public FilterDataSourceDecorator getFilteredDataSource(FilterDataSourceDecorator fds) throws DriverLoadException, DataSourceCreationException, DriverException, ParseException, SemanticException {
 		if (where != null && !where.isEmpty()) {
-			String query = "select * from " + sds.getName() + " WHERE " + where;
-
-			System.out.println(" here is the where: " + where);
-			SpatialDataSourceDecorator filteredSds = new SpatialDataSourceDecorator(sds.getDataSourceFactory().getDataSourceFromSQL(query));
-			System.out.println(" and the filtered DataSource: " + filteredSds.getName());
-
-			return filteredSds;
+			return new FilterDataSourceDecorator(fds, where);
 		} else {
-			return sds;
+			return fds;
 		}
 	}
 
@@ -206,13 +217,14 @@ public final class Rule implements SymbolizerNode, PanelableNode {
 	 * @throws ParseException
 	 * @throws SemanticException
 	 */
-	public SpatialDataSourceDecorator getFilteredDataSource() throws DriverLoadException, DataSourceCreationException, DriverException, ParseException, SemanticException {
+	/*
+	public FilterDataSourceDecorator getFilteredDataSource() throws DriverLoadException, DataSourceCreationException, DriverException, ParseException, SemanticException {
 		FeatureTypeStyle ft = (FeatureTypeStyle) fts;
 
 		ILayer layer = ft.getLayer();
 		SpatialDataSourceDecorator sds = layer.getDataSource();
 		return this.getFilteredDataSource(sds);
-	}
+	}*/
 
 	public boolean isFallbackRule() {
 		return fallbackRule;
@@ -254,9 +266,6 @@ public final class Rule implements SymbolizerNode, PanelableNode {
 
 	public boolean isDomainAllowed(MapTransform mt) {
 		double scale = mt.getScaleDenominator();
-		System.out.println("Current scale is  1:" + scale);
-		System.out.println("Min : " + this.minScaleDenom);
-		System.out.println("Max : " + this.maxScaleDenom);
 
 		return (this.minScaleDenom == null && this.maxScaleDenom == null)
 				|| (this.minScaleDenom == null && this.maxScaleDenom != null && this.maxScaleDenom > scale)
@@ -278,10 +287,5 @@ public final class Rule implements SymbolizerNode, PanelableNode {
 
 	public void setName(String name) {
 		this.name = name;
-	}
-
-	@Override
-	public JPanel getEditionPanel(EditFeatureTypeStylePanel ftsPanel) {
-		return new EditRulePanel(this, ftsPanel);
 	}
 }

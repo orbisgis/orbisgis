@@ -41,6 +41,7 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Container;
+import java.awt.Insets;
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.dnd.DropTarget;
@@ -70,7 +71,6 @@ import org.orbisgis.core.edition.EditableElement;
 import org.orbisgis.core.edition.EditableElementException;
 import org.orbisgis.core.edition.EditableElementListener;
 import org.orbisgis.core.errorManager.ErrorManager;
-import org.orbisgis.core.images.IconLoader;
 import org.orbisgis.core.ui.editor.EditorDecorator;
 import org.orbisgis.core.ui.editor.EditorListener;
 import org.orbisgis.core.ui.editor.IEditor;
@@ -80,6 +80,7 @@ import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchContext;
 import org.orbisgis.core.ui.plugins.views.MapEditorPlugIn;
 import org.orbisgis.core.ui.plugins.views.TableEditorPlugIn;
 import org.orbisgis.core.ui.plugins.views.geocognition.OpenGeocognitionElementJob;
+import org.orbisgis.core.ui.preferences.lookandfeel.images.IconLoader;
 import org.orbisgis.progress.NullProgressMonitor;
 
 public class EditorPanel extends Container {
@@ -95,7 +96,7 @@ public class EditorPanel extends Container {
 		this.setLayout(new BorderLayout());
 		root = new RootWindow(null);
 		root.getRootWindowProperties().getSplitWindowProperties()
-				.setContinuousLayoutEnabled(false);
+				.setContinuousLayoutEnabled(false);	
 		root.getRootWindowProperties().getTabWindowProperties()
 				.getCloseButtonProperties().setVisible(false);
 		root.getRootWindowProperties().getTabWindowProperties()
@@ -106,14 +107,17 @@ public class EditorPanel extends Container {
 				.getMinimizeButtonProperties().setVisible(false);
 		root.getRootWindowProperties().getTabWindowProperties()
 				.getMaximizeButtonProperties().setVisible(false);
-		root.getRootWindowProperties().getWindowAreaProperties().setBorder(
-				BorderFactory.createEmptyBorder());
+		root.getRootWindowProperties().getWindowAreaProperties().setInsets(
+				new Insets(0, 0, 0, 0));
 		root.getRootWindowProperties().getTabWindowProperties()
 				.getTabProperties().getFocusedProperties()
 				.getComponentProperties().setBackgroundColor(
 						new Color(100, 140, 190));
 		root.getRootWindowProperties().getWindowAreaProperties()
 				.setBackgroundColor(new Color(238, 238, 238));
+		
+		root.getRootWindowProperties().getWindowAreaProperties().setBorder(
+				BorderFactory.createEmptyBorder());
 
 		// Disable undock
 		DockingWindowProperties defaultWindowProperties = root
@@ -121,7 +125,7 @@ public class EditorPanel extends Container {
 		defaultWindowProperties.setDockEnabled(false);
 		defaultWindowProperties.setUndockEnabled(false);
 		defaultWindowProperties.setUndockOnDropEnabled(false);
-
+		
 
 
 		this.add(root, BorderLayout.CENTER);
@@ -221,7 +225,7 @@ public class EditorPanel extends Container {
 			}
 		}
 
-		return ret.toArray(new IEditor[0]);
+		return ret.toArray(new IEditor[ret.size()]);
 	}
 
 	private EditorInfo[] getEditorsByDocument(EditableElement document) {
@@ -232,7 +236,7 @@ public class EditorPanel extends Container {
 			}
 		}
 
-		return ret.toArray(new EditorInfo[0]);
+		return ret.toArray(new EditorInfo[ret.size()]);
 	}
 
 	/**
@@ -556,7 +560,7 @@ public class EditorPanel extends Container {
 			}
 		}
 
-		return ret.toArray(new IEditor[0]);
+		return ret.toArray(new IEditor[ret.size()]);
 	}
 
 	public IEditor[] getEditors(String editorId) {
@@ -569,7 +573,7 @@ public class EditorPanel extends Container {
 			}
 		}
 
-		return ret.toArray(new IEditor[0]);
+		return ret.toArray(new IEditor[ret.size()]);
 	}
 
 	public String getEditorId(IEditor editor) {

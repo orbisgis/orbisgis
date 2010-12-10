@@ -42,16 +42,14 @@ import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.geom.Rectangle2D;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.gdms.data.SpatialDataSourceDecorator;
 import org.gdms.driver.DriverException;
 import org.gdms.sql.strategies.IncompatibleTypesException;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.map.MapTransform;
-import org.orbisgis.core.renderer.AllowAllRenderPermission;
-import org.orbisgis.core.renderer.RenderPermission;
+import org.orbisgis.core.renderer.AllowAllRenderContext;
+import org.orbisgis.core.renderer.RenderContext;
 import org.orbisgis.core.renderer.classification.ClassificationMethodException;
 import org.orbisgis.core.renderer.classification.ProportionalMethod;
 import org.orbisgis.core.renderer.legend.Legend;
@@ -117,7 +115,7 @@ public class DefaultProportionalLineLegend extends AbstractCartoLegend
 	public void preprocess(SpatialDataSourceDecorator sds)
 			throws RenderException, ClassificationMethodException {
 		try {
-			proportionnalMethod = new ProportionalMethod(sds, new RealAttribute(field, sds));
+			proportionnalMethod = new ProportionalMethod(sds, new RealAttribute(field));
 			proportionnalMethod.setMethod(method);
 			proportionnalMethod.build(Math.pow(maxSize, 2));
 
@@ -302,7 +300,7 @@ public class DefaultProportionalLineLegend extends AbstractCartoLegend
 			LineString geom = new GeometryFactory().createLineString(new Coordinate[]{coordStartLine,
 						coordEndLine});
 
-			RenderPermission renderPermission = new AllowAllRenderPermission();
+			RenderContext renderPermission = new AllowAllRenderContext();
 			double realMaxSize = getSize(maxValue, 1);
 			big.draw((Graphics2D) g, geom, new MapTransform(),
 					renderPermission);
@@ -324,7 +322,7 @@ public class DefaultProportionalLineLegend extends AbstractCartoLegend
 
 	private void drawLine(Graphics2D g, int bigSize, double smallSize,
 			int textOffset, int lineStartX, int lineEndX,
-			RenderPermission renderPermission, String text)
+			RenderContext renderPermission, String text)
 			throws DriverException {
 		StandardLineSymbol small = (StandardLineSymbol) symbol.cloneSymbol();
 		small.setLineWidth((int) smallSize);

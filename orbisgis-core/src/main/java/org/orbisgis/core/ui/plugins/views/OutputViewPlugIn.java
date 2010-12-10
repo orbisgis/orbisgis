@@ -37,21 +37,25 @@
  */
 package org.orbisgis.core.ui.plugins.views;
 
+import javax.swing.JButton;
 import javax.swing.JMenuItem;
 
 import org.orbisgis.core.Services;
-import org.orbisgis.core.images.OrbisGISIcon;
 import org.orbisgis.core.ui.pluginSystem.PlugInContext;
 import org.orbisgis.core.ui.pluginSystem.ViewPlugIn;
 import org.orbisgis.core.ui.pluginSystem.workbench.Names;
+import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchContext;
+import org.orbisgis.core.ui.preferences.lookandfeel.OrbisGISIcon;
 
 public class OutputViewPlugIn extends ViewPlugIn {
 
 	private OutputPanel panel;
 	private JMenuItem menuItem;
+	private JButton btn;
 
 	public OutputViewPlugIn() {
-
+		btn = new JButton(OrbisGISIcon.OUTPUT_ICON);
+		btn.setToolTipText(Names.OUTPUT);
 	}
 
 	public void initialize(PlugInContext context) throws Exception {
@@ -59,6 +63,9 @@ public class OutputViewPlugIn extends ViewPlugIn {
 		menuItem = context.getFeatureInstaller().addMainMenuItem(this,
 				new String[] { Names.VIEW }, Names.OUTPUT, true,
 				OrbisGISIcon.OUTPUT_ICON, null, panel, context);
+		WorkbenchContext wbcontext = context.getWorkbenchContext();
+		wbcontext.getWorkbench().getFrame().getViewToolBar().addPlugIn(this,
+				btn, context);
 		Services.registerService(OutputManager.class,
 				"Service to send messages to the output system", panel);
 	}

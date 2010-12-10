@@ -3,19 +3,17 @@ package org.orbisgis.core.renderer.se.parameter.color;
 
 import java.awt.Color;
 import java.util.Iterator;
-import javax.swing.JPanel;
 import javax.xml.bind.JAXBElement;
 import org.gdms.data.feature.Feature;
 import org.orbisgis.core.renderer.persistance.se.CategorizeType;
 import org.orbisgis.core.renderer.persistance.se.ParameterValueType;
 import org.orbisgis.core.renderer.persistance.se.ThreshholdsBelongToType;
+import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 
 import org.orbisgis.core.renderer.se.parameter.Categorize;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
-import org.orbisgis.core.ui.editorViews.toc.actions.cui.EditCategorizePanel;
-import org.orbisgis.core.ui.editorViews.toc.actions.cui.EditFeatureTypeStylePanel;
 
 
 public class Categorize2Color extends Categorize<ColorParameter, ColorLiteral> implements ColorParameter {
@@ -24,7 +22,7 @@ public class Categorize2Color extends Categorize<ColorParameter, ColorLiteral> i
         super(initialClass, fallback, lookupValue);
     }
 
-    public Categorize2Color(JAXBElement<CategorizeType> expr) {
+    public Categorize2Color(JAXBElement<CategorizeType> expr) throws InvalidStyle {
         CategorizeType t = expr.getValue();
 
         this.fallbackValue = new ColorLiteral(t.getFallbackValue());
@@ -50,21 +48,13 @@ public class Categorize2Color extends Categorize<ColorParameter, ColorLiteral> i
     }
 
     @Override
-    public Color getColor(Feature feat){
-        try {
-            return getParameter(feat).getColor(feat);
-        } catch (ParameterException ex) {
-            // fetch the fallback  value
-            // it's a literal so no need to access the feature
-            return this.fallbackValue.getColor(feat);
-        }
+    public Color getColor(Feature feat) throws ParameterException{
+
+		if (feat == null){
+			throw new ParameterException("No feature");
+		}
+
+        return getParameter(feat).getColor(feat);
     }
-
-	@Override
-	public JPanel getEditionPanel(EditFeatureTypeStylePanel ftsPanel){
-		return new EditCategorizePanel(this);
-	}
-
-
 
 }

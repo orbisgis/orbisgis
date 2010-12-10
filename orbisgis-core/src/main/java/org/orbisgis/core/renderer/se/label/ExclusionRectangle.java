@@ -7,29 +7,34 @@ package org.orbisgis.core.renderer.se.label;
 import javax.xml.bind.JAXBElement;
 import org.orbisgis.core.renderer.persistance.se.ExclusionRectangleType;
 import org.orbisgis.core.renderer.persistance.se.ObjectFactory;
+import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
+import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
 
 /**
  *
  * @author maxence
  */
-public class ExclusionRectangle extends ExclusionZone {
+public final class ExclusionRectangle extends ExclusionZone {
 
-    ExclusionRectangle(JAXBElement<ExclusionRectangleType> ert) {
+    private RealParameter x;
+    private RealParameter y;
+
+    ExclusionRectangle(JAXBElement<ExclusionRectangleType> ert) throws InvalidStyle {
         ExclusionRectangleType e = ert.getValue();
 
         if (e.getX() != null){
-            this.x = SeParameterFactory.createRealParameter(e.getX());
+            setX(SeParameterFactory.createRealParameter(e.getX()));
         }
 
         if (e.getY() != null){
-            this.y = SeParameterFactory.createRealParameter(e.getY());
+            setY(SeParameterFactory.createRealParameter(e.getY()));
         }
 
         if (e.getUnitOfMeasure() != null){
-            this.uom = Uom.fromOgcURN(e.getUnitOfMeasure());
+            setUom(Uom.fromOgcURN(e.getUnitOfMeasure()));
         }
     }
 
@@ -39,6 +44,9 @@ public class ExclusionRectangle extends ExclusionZone {
 
     public void setX(RealParameter x) {
         this.x = x;
+		if (x != null){
+			x.setContext(RealParameterContext.percentageContext);
+		}
     }
 
     public RealParameter getY() {
@@ -47,6 +55,9 @@ public class ExclusionRectangle extends ExclusionZone {
 
     public void setY(RealParameter y) {
         this.y = y;
+		if (this.y != null){
+			y.setContext(RealParameterContext.percentageContext);
+		}
     }
 
     @Override
@@ -69,6 +80,10 @@ public class ExclusionRectangle extends ExclusionZone {
 
         return of.createExclusionRectangle(r);
     }
-    private RealParameter x;
-    private RealParameter y;
+
+	@Override
+	public boolean dependsOnFeature() {
+		return (x != null && x.dependsOnFeature()) || (y != null && y.dependsOnFeature());
+	}
+
 }

@@ -40,4 +40,6 @@ public interface TableEditableElement extends EditableElement {
 	 * @return
 	 */
 	MapContext getMapContext();
+	
+	
 }

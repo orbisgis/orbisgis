@@ -10,37 +10,39 @@ import org.gdms.data.feature.Feature;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.persistance.se.ObjectFactory;
 import org.orbisgis.core.renderer.persistance.se.ScaleType;
+import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
+import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
 
 /**
  *
  * @author maxence
  */
-public class Scale implements Transformation {
+public final class Scale implements Transformation {
 
     public Scale(RealParameter x, RealParameter y) {
-        this.x = x;
-        this.y = y;
+		setX(x);
+		setY(y);
     }
 
     public Scale(RealParameter xy) {
-        this.x = xy;
-        this.y = xy;
+        setX(xy);
+        setY(xy);
     }
 
-    Scale(ScaleType s) {
+    Scale(ScaleType s) throws InvalidStyle {
         if (s.getXY() != null) {
-            this.x = SeParameterFactory.createRealParameter(s.getXY());
-            this.y = SeParameterFactory.createRealParameter(s.getXY());
+            setX(SeParameterFactory.createRealParameter(s.getXY()));
+            setY(SeParameterFactory.createRealParameter(s.getXY()));
         } else {
             if (s.getX() != null) {
-                this.x = SeParameterFactory.createRealParameter(s.getX());
+                setX(SeParameterFactory.createRealParameter(s.getX()));
             }
             if (s.getY() != null) {
-                this.y = SeParameterFactory.createRealParameter(s.getY());
+                setY(SeParameterFactory.createRealParameter(s.getY()));
             }
         }
     }
@@ -51,6 +53,9 @@ public class Scale implements Transformation {
 
     public void setX(RealParameter x) {
         this.x = x;
+		if (this.x != null){
+			this.x.setContext(RealParameterContext.realContext);
+		}
     }
 
     public RealParameter getY() {
@@ -59,6 +64,9 @@ public class Scale implements Transformation {
 
     public void setY(RealParameter y) {
         this.y = y;
+		if (this.y != null){
+			this.y.setContext(RealParameterContext.realContext);
+		}
     }
 
     @Override
@@ -73,16 +81,20 @@ public class Scale implements Transformation {
     }
 
     @Override
-    public AffineTransform getAffineTransform(Feature feat, Uom uom, MapTransform mt) throws ParameterException {
-        double sx = 0.0;
+    public AffineTransform getAffineTransform(Feature feat, Uom uom, MapTransform mt, Double width, Double height) throws ParameterException {
+        double sx = 1.0;
         if (x != null) {
-            sx = Uom.toPixel(x.getValue(feat), uom, mt.getDpi(), mt.getScaleDenominator(), 0.0);
+            //sx = Uom.toPixel(x.getValue(feat), uom, mt.getDpi(), mt.getScaleDenominator(), null);
+			sx = x.getValue(feat);
         }
 
-        double sy = 0.0;
+        double sy = 1.0;
         if (y != null) {
-            sy = Uom.toPixel(y.getValue(feat), uom, mt.getDpi(), mt.getScaleDenominator(), 0.0);
+            //sy = Uom.toPixel(y.getValue(feat), uom, mt.getDpi(), mt.getScaleDenominator(), null);
+			sy = y.getValue(feat);
         }
+
+		//AffineTransform.getTranslateInstance(A;, sy);
 
         return AffineTransform.getScaleInstance(sx, sy);
     }
@@ -99,7 +111,7 @@ public class Scale implements Transformation {
     public ScaleType getJAXBType() {
         ScaleType s = new ScaleType();
 
-        if (y == null || x == null) {
+        if (y == null ^ x == null) {
             RealParameter xy;
             if (x != null) {
                 xy = x;

@@ -7,18 +7,12 @@ package org.orbisgis.core.renderer.se;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryCollection;
-import com.vividsolutions.jts.geom.GeometryFactory;
-import com.vividsolutions.jts.geom.LineString;
-import com.vividsolutions.jts.geom.MultiLineString;
-import com.vividsolutions.jts.geom.MultiPoint;
-import com.vividsolutions.jts.geom.MultiPolygon;
 import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.Polygon;
 import java.awt.Graphics2D;
 import java.awt.Shape;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
-import java.awt.geom.Rectangle2D;
 import java.io.IOException;
 import java.util.ArrayList;
 import javax.xml.bind.JAXBElement;
@@ -84,10 +78,12 @@ public abstract class VectorSymbolizer extends Symbolizer implements UomNode {
 				}
 			} else {
 				Shape shape = mt.getShape(geom);
-				if (transform != null) {
-					shape = transform.getGraphicalAffineTransform(feat, true, mt).createTransformedShape(shape);
+				if (shape != null) {
+					if (transform != null) {
+						shape = transform.getGraphicalAffineTransform(feat, false, mt, (double) mt.getWidth(), (double) mt.getHeight()).createTransformedShape(shape); // TODO widht and height?
+					}
+					shapes.add(shape);
 				}
-				shapes.add(shape);
 			}
 		}
 
@@ -101,13 +97,70 @@ public abstract class VectorSymbolizer extends Symbolizer implements UomNode {
 		return shapes;
 	}
 
+	/**
+	 * Convert a spatial feature into a set of linear shape
+	 *
+	 * @param sds the data source
+	 * @param fid the feature id
+	 * @throws ParameterException
+	 * @throws IOException
+	 * @throws DriverException
+	 */
+	public ArrayList<Shape> getLines(Feature feat, MapTransform mt) throws ParameterException, IOException, DriverException {
+
+		Geometry geom = this.getTheGeom(feat); // geom + function
+
+		ArrayList<Shape> shapes = new ArrayList<Shape>();
+
+		ArrayList<Geometry> geom2Process = new ArrayList<Geometry>();
+
+		geom2Process.add(geom);
+
+		while (!geom2Process.isEmpty()) {
+			geom = geom2Process.remove(0);
+
+			// Uncollectionize
+			if (geom instanceof GeometryCollection) {
+				for (int i = 0; i < geom.getNumGeometries(); i++) {
+					geom2Process.add(geom.getGeometryN(i));
+				}
+			} else if (geom instanceof Polygon) {
+				Polygon p = (Polygon) geom;
+				Shape shape = mt.getShape(p.getExteriorRing());
+				if (shape != null) {
+					shapes.add(shape);
+				}
+				int i;
+				// Be aware of polygon holes ! (requiered for
+				for (i = 0; i < p.getNumInteriorRing(); i++) {
+					shape = mt.getShape(p.getInteriorRingN(i));
+					if (shape != null) {
+						shapes.add(shape);
+					}
+				}
+			} else {
+				Shape shape = mt.getShape(geom);
+
+				if (shape != null) {
+					if (transform != null) {
+						shape = transform.getGraphicalAffineTransform(feat, false, mt, (double) mt.getWidth(), (double) mt.getHeight()).createTransformedShape(shape); // TODO widht and height?
+					}
+					shapes.add(shape);
+				}
+			}
+		}
+
+		return shapes;
+	}
+
 	public Point2D getPointShape(Feature feat, MapTransform mt) throws ParameterException, IOException, DriverException {
 		Geometry geom = this.getTheGeom(feat); // geom + function
 
 
 		AffineTransform at = mt.getAffineTransform();
+
 		if (transform != null) {
-			at.preConcatenate(transform.getGraphicalAffineTransform(feat, true, mt));
+			at.preConcatenate(transform.getGraphicalAffineTransform(feat, false, mt, (double) mt.getWidth(), (double) mt.getHeight()));
 		}
 
 		Point point = geom.getInteriorPoint();
@@ -121,7 +174,7 @@ public abstract class VectorSymbolizer extends Symbolizer implements UomNode {
 
 		AffineTransform at = mt.getAffineTransform();
 		if (transform != null) {
-			at.preConcatenate(transform.getGraphicalAffineTransform(feat, true, mt));
+			at.preConcatenate(transform.getGraphicalAffineTransform(feat, false, mt, (double) mt.getWidth(), (double) mt.getHeight())); // TODO width and height
 		}
 
 		Coordinate[] coordinates = geom.getCoordinates();
@@ -138,6 +191,7 @@ public abstract class VectorSymbolizer extends Symbolizer implements UomNode {
 		return uom;
 	}
 
+	@Override
 	public Uom getOwnUom() {
 		return uom;
 	}

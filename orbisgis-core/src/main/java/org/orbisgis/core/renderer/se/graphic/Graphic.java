@@ -13,6 +13,7 @@ import org.orbisgis.core.renderer.persistance.se.ExternalGraphicType;
 import org.orbisgis.core.renderer.persistance.se.MarkGraphicType;
 import org.orbisgis.core.renderer.persistance.se.PieChartType;
 import org.orbisgis.core.renderer.persistance.se.TextGraphicType;
+import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.SymbolizerNode;
 import org.orbisgis.core.renderer.se.UomNode;
 import org.orbisgis.core.renderer.se.common.Uom;
@@ -25,7 +26,7 @@ import org.orbisgis.core.renderer.se.transform.Transform;
  */
 public abstract class Graphic implements SymbolizerNode, UomNode {
 
-    public static Graphic createFromJAXBElement(JAXBElement<? extends GraphicType> gr) {
+    public static Graphic createFromJAXBElement(JAXBElement<? extends GraphicType> gr) throws InvalidStyle {
 
         try {
             if (gr.getDeclaredType() == ExternalGraphicType.class) {
@@ -54,6 +55,12 @@ public abstract class Graphic implements SymbolizerNode, UomNode {
         return null;
     }
 
+	@Override
+	public String toString(){
+		return this.getClass().getSimpleName();
+	}
+
+
     @Override
     public Uom getUom() {
         if (uom != null) {
@@ -63,6 +70,7 @@ public abstract class Graphic implements SymbolizerNode, UomNode {
         }
     }
 
+	@Override
 	public Uom getOwnUom(){
 		return uom;
 	}
@@ -110,15 +118,33 @@ public abstract class Graphic implements SymbolizerNode, UomNode {
      * @param margin margin (top, bottom, left and right) to add to bounds
      * @return new empty RenderableGraphcis
      */
-    public static RenderableGraphics getNewRenderableGraphics(Rectangle2D bounds, double margin) {
+    public static RenderableGraphics getNewRenderableGraphics(Rectangle2D bounds, double margin) throws ParameterException {
 
-        RenderableGraphics rg = new RenderableGraphics(new Rectangle2D.Double(
-                bounds.getMinX() - margin,
-                bounds.getMinY() - margin,
-                bounds.getWidth() + 2 * margin,
-                bounds.getHeight() + 2 * margin));
+		double width = bounds.getWidth() + 2 * margin;
+		double height = bounds.getHeight() + 2 * margin;
+
+		if (width < 1.0){
+			width = 1.0;
+		}
+
+		if (height < 1.0){
+			height = 1.0;
+		}
+
+		System.out.println ("Width: " + width  + " -- Height: " + height);
+
+		RenderableGraphics rg  = null;
+		try {
+        	rg = new RenderableGraphics(new Rectangle2D.Double(
+            	    bounds.getMinX() - margin,
+                	bounds.getMinY() - margin,
+	                width, height));
+		}
+		catch (Exception e){
+			throw new ParameterException("Invalid bounds !");
+		}
+
         return rg;
-
     }
 
     public abstract boolean dependsOnFeature();

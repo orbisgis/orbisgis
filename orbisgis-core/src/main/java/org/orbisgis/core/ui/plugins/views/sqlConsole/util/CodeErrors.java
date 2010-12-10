@@ -46,7 +46,7 @@ package org.orbisgis.core.ui.plugins.views.sqlConsole.util;
 
 import org.gdms.sql.parser.ParseException;
 import org.gdms.sql.parser.TokenMgrError;
-import org.orbisgis.core.javaManager.autocompletion.NodeUtils;
+import org.orbisgis.core.ui.plugins.views.beanShellConsole.javaManager.autocompletion.NodeUtils;
 
 public class CodeErrors {
 

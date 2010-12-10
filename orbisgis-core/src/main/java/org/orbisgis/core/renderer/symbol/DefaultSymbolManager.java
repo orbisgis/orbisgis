@@ -143,7 +143,7 @@ public class DefaultSymbolManager implements SymbolManager {
 			}
 
 			return SymbolFactory.createSymbolComposite(ret
-					.toArray(new Symbol[0]));
+					.toArray(new Symbol[ret.size()]));
 		}
 	}
 

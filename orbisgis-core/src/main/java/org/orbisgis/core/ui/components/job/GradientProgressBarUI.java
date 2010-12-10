@@ -13,6 +13,7 @@ import javax.swing.JProgressBar;
 import javax.swing.plaf.basic.BasicProgressBarUI;
 
 public class GradientProgressBarUI extends BasicProgressBarUI {
+	
 	@Override
 	public void paint(Graphics g, JComponent c) {
 		Graphics2D g2 = (Graphics2D) g;
@@ -27,9 +28,13 @@ public class GradientProgressBarUI extends BasicProgressBarUI {
 		// to go for quality over speed
 		g2.setRenderingHint(RenderingHints.KEY_RENDERING,
 				RenderingHints.VALUE_RENDER_QUALITY);
+		
 		super.paint(g, c);
 	}
 
+	/* (non-Javadoc)
+	 * @see javax.swing.plaf.basic.BasicProgressBarUI#paintDeterminate(java.awt.Graphics, javax.swing.JComponent)
+	 */
 	protected void paintDeterminate(Graphics g, JComponent c) {
 		if (progressBar.getOrientation() == JProgressBar.VERTICAL) {
 			super.paintDeterminate(g, c);
@@ -55,8 +60,12 @@ public class GradientProgressBarUI extends BasicProgressBarUI {
 				width / 2, height / 4, color, false);
 		g2.setPaint(gradient);
 
-		g2.fillRoundRect(b.left, b.top, amountFull - 1, barRectHeight - 1,
-				arcSize, arcSize);
+		if(amountFull<2)
+			g2.fillRoundRect(b.left, b.top, 1, barRectHeight - 1,
+					arcSize, arcSize);
+		else
+			g2.fillRoundRect(b.left, b.top, amountFull - 1, barRectHeight - 1,
+					arcSize, arcSize);
 
 		// Deal with possible text painting
 		if (progressBar.isStringPainted()) {
@@ -65,6 +74,26 @@ public class GradientProgressBarUI extends BasicProgressBarUI {
 		}
 	}
 
+	
+	/* (non-Javadoc)
+	 * @see javax.swing.plaf.basic.BasicProgressBarUI#paintIndeterminate(java.awt.Graphics, javax.swing.JComponent)
+	 */
+	protected void paintIndeterminate(Graphics g, JComponent c) {
+		if (progressBar.getOrientation() == JProgressBar.VERTICAL) {
+			super.paintDeterminate(g, c);
+			return;
+		}
+		
+		int arcSize = progressBar.getHeight() / 2 - 1;
+		Graphics2D g2 = (Graphics2D) g;
+		boxRect = getBox(boxRect);
+		
+		if (boxRect != null) {
+			g2.setColor(progressBar.getForeground());
+			g2.fillRoundRect(boxRect.x, boxRect.y, boxRect.width, boxRect.height, arcSize, arcSize);//Go and come bar
+		}
+	}
+	
 	@Override
 	public Dimension getPreferredSize(JComponent c) {
 		Dimension dim = super.getPreferredSize(c);

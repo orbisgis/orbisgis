@@ -70,7 +70,7 @@ public class GeocognitionSymbol extends AbstractExtensionElement implements
 			}
 
 			return SymbolFactory.createSymbolComposite(ret
-					.toArray(new Symbol[0]));
+					.toArray(new Symbol[ret.size()]));
 		}
 	}
 

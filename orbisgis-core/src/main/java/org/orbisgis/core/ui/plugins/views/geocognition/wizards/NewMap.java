@@ -51,11 +51,11 @@ import javax.swing.Icon;
 import org.orbisgis.core.geocognition.GeocognitionElement;
 import org.orbisgis.core.geocognition.GeocognitionElementFactory;
 import org.orbisgis.core.geocognition.mapContext.GeocognitionMapContextFactory;
-import org.orbisgis.core.images.OrbisGISIcon;
 import org.orbisgis.core.layerModel.DefaultMapContext;
 import org.orbisgis.core.ui.pluginSystem.workbench.Names;
 import org.orbisgis.core.ui.plugins.views.geocognition.wizard.ElementRenderer;
 import org.orbisgis.core.ui.plugins.views.geocognition.wizard.INewGeocognitionElement;
+import org.orbisgis.core.ui.preferences.lookandfeel.OrbisGISIcon;
 
 public class NewMap implements INewGeocognitionElement {
 

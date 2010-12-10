@@ -5,15 +5,14 @@
  * distributed under GPL 3 license. It is produced by the "Atelier SIG" team of
  * the IRSTV Institute <http://www.irstv.cnrs.fr/> CNRS FR 2488.
  *
- * 
+ *
  *  Team leader Erwan BOCHER, scientific researcher,
- * 
- *  User support leader : Gwendall Petit, geomatic engineer.
+ *
  *
  *
  * Copyright (C) 2007 Erwan BOCHER, Fernando GONZALEZ CORTES, Thomas LEDUC
  *
- * Copyright (C) 2010 Erwan BOCHER, Pierre-Yves FADET, Alexis GUEGANNO, Maxence LAURENT
+ * Copyright (C) 2010 Erwan BOCHER,  Alexis GUEGANNO, Antoine GOURLAY, Adelin PIAU, Gwendall PETIT
  *
  * This file is part of OrbisGIS.
  *
@@ -32,8 +31,7 @@
  * For more information, please consult: <http://www.orbisgis.org/>
  *
  * or contact directly:
- * erwan.bocher _at_ ec-nantes.fr
- * gwendall.petit _at_ ec-nantes.fr
+ * info _at_ orbisgis.org
  */
 package org.orbisgis.core.ui.components.sif;
 
@@ -52,10 +50,12 @@ import javax.swing.ListSelectionModel;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
+import org.gdms.sql.customQuery.QueryManager;
+import org.gdms.sql.function.FunctionManager;
 import org.orbisgis.core.sif.AbstractUIPanel;
 import org.orbisgis.core.sif.CRFlowLayout;
 import org.orbisgis.core.sif.CarriageReturn;
-import org.orbisgis.core.ui.components.text.JTextFilter;
+import org.orbisgis.core.ui.components.text.JButtonTextField;
 import org.orbisgis.core.ui.pluginSystem.workbench.Names;
 import org.orbisgis.utils.I18N;
 
@@ -70,8 +70,12 @@ public class FunctionPanel extends AbstractUIPanel {
 	private JPanel pane;
 	private FunctionPanelFilter functionPanelFilter;
 	private JPanel searchPanel;
-	private JTextFilter txtFilter;
 	private JLabel functionLabelCount;
+	private static int functionsCount;
+	static {
+		functionsCount = FunctionManager.getFunctionNames().length
+				+ QueryManager.getQueryNames().length;
+	}
 
 	public FunctionPanel(String title, String[] names, Object[] ids) {
 		this.title = title;
@@ -131,14 +135,15 @@ public class FunctionPanel extends AbstractUIPanel {
 		pnlButtons.setVisible(multiple);
 		pane.add(pnlButtons, BorderLayout.EAST);
 		functionLabelCount = new JLabel(I18N
-				.getText(Names.FUNCTION_PANEL_NUMBER + " : " + names.length));
+				.getText(Names.FUNCTION_PANEL_NUMBER + " : " + names.length)
+				+ " on " + functionsCount + " functions.");
 		pane.add(functionLabelCount, BorderLayout.SOUTH);
+
 	}
 
 	public int getNbAvailableFunctions() {
 		return functionPanelFilter.ids.length;
 	}
-	
 
 	public JList getJListFunction() {
 		if (null == lst) {
@@ -155,22 +160,22 @@ public class FunctionPanel extends AbstractUIPanel {
 			searchPanel = new JPanel();
 			JLabel label = new JLabel(I18N.getText(Names.SEARCH) + " : ");
 
-			txtFilter = new JTextFilter();
-			txtFilter.addDocumentListener(new DocumentListener() {
+			final JButtonTextField txtFilter = new JButtonTextField();
+			txtFilter.getDocument().addDocumentListener(new DocumentListener() {
 
 				@Override
 				public void removeUpdate(DocumentEvent e) {
-					doFilter();
+					doFilter(txtFilter);
 				}
 
 				@Override
 				public void insertUpdate(DocumentEvent e) {
-					doFilter();
+					doFilter(txtFilter);
 				}
 
 				@Override
 				public void changedUpdate(DocumentEvent e) {
-					doFilter();
+					doFilter(txtFilter);
 				}
 			});
 			searchPanel.add(label);
@@ -180,7 +185,7 @@ public class FunctionPanel extends AbstractUIPanel {
 
 	}
 
-	private void doFilter() {
+	private void doFilter(JButtonTextField txtFilter) {
 		functionPanelFilter.filter(txtFilter.getText());
 	}
 

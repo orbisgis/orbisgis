@@ -152,6 +152,12 @@ public class DefaultWorkspace implements Workspace {
 		}
 	}
 
+	/**
+	 * 
+	 * @return the default current OrbisGIS workspace. If there is no default
+	 *         workspace return null.
+	 * @throws FileNotFoundException
+	 */
 	protected File getDefaultWorkspaceFile() throws FileNotFoundException {
 		ApplicationInfo ogInfo = Services.getService(ApplicationInfo.class);
 		ogInfo.getHomeFolder().mkdirs();
@@ -159,12 +165,23 @@ public class DefaultWorkspace implements Workspace {
 		return file;
 	}
 
+	/**
+	 * 
+	 * @return all OrbisGIS workspaces
+	 * @throws FileNotFoundException
+	 */
 	protected File getDefaultWorkspacesFile() throws FileNotFoundException {
 		ApplicationInfo ogInfo = Services.getService(ApplicationInfo.class);
 		File file = new File(ogInfo.getHomeFolder(), "workspaces.txt");
 		return file;
 	}
 
+	/**
+	 * 
+	 * @return a list of all OrbisGIS workspaces stored in the workspaces.txt
+	 *         file in the user home folder.
+	 * @throws FileNotFoundException
+	 */
 	public ArrayList<String> loadWorkspaces() throws FileNotFoundException {
 		ApplicationInfo ogInfo = Services.getService(ApplicationInfo.class);
 		ArrayList<String> workspacesList = new ArrayList<String>();

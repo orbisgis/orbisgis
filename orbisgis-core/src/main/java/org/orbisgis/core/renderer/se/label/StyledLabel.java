@@ -17,7 +17,7 @@ import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.persistance.se.FontType;
 import org.orbisgis.core.renderer.persistance.se.StyledLabelType;
 import org.orbisgis.core.renderer.se.FillNode;
-import org.orbisgis.core.renderer.se.StrokeNode;
+import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.SymbolizerNode;
 import org.orbisgis.core.renderer.se.common.Halo;
 import org.orbisgis.core.renderer.se.common.Uom;
@@ -32,6 +32,8 @@ import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 import org.orbisgis.core.renderer.se.parameter.string.StringLiteral;
 import org.orbisgis.core.renderer.se.parameter.string.StringParameter;
 import org.orbisgis.core.renderer.se.stroke.Stroke;
+import org.orbisgis.core.renderer.se.StrokeNode;
+import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
 
 public final class StyledLabel implements SymbolizerNode, FillNode, StrokeNode {
 
@@ -60,7 +62,7 @@ public final class StyledLabel implements SymbolizerNode, FillNode, StrokeNode {
         this.setFill(f);
     }
 
-    public StyledLabel(StyledLabelType sl) {
+    public StyledLabel(StyledLabelType sl) throws InvalidStyle {
         if (sl.getFill() != null){
             this.setFill(Fill.createFromJAXBElement(sl.getFill()));
         }
@@ -164,6 +166,9 @@ public final class StyledLabel implements SymbolizerNode, FillNode, StrokeNode {
 
     public void setFontSize(RealParameter fontSize) {
         this.fontSize = fontSize;
+		if (this.fontSize != null){
+			this.fontSize.setContext(RealParameterContext.percentageContext);
+		}
     }
 
     public StringParameter getFontStyle() {
@@ -183,7 +188,7 @@ public final class StyledLabel implements SymbolizerNode, FillNode, StrokeNode {
     }
 
     public RenderableGraphics getImage(Feature feat, boolean selected, MapTransform mt) throws ParameterException, IOException {
-
+		// TODO DEFAULT VALUES !!!
         String text = labelText.getValue(feat);
 
         String family = fontFamily.getValue(feat);
@@ -298,4 +303,12 @@ public final class StyledLabel implements SymbolizerNode, FillNode, StrokeNode {
     private Stroke stroke;
     private Fill fill;
     private Halo halo;
+
+	public boolean dependsOnFeature() {
+        return (labelText != null && labelText.dependsOnFeature())
+        || (fontFamily != null && fontFamily.dependsOnFeature())
+        || (fontWeight != null && fontWeight.dependsOnFeature())
+        || (fontStyle != null && fontStyle.dependsOnFeature())
+        || (fontSize != null && fontSize.dependsOnFeature());
+	}
 }

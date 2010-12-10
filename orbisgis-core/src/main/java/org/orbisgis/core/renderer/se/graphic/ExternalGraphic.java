@@ -3,6 +3,7 @@ package org.orbisgis.core.renderer.se.graphic;
 import java.awt.Dimension;
 import java.awt.Shape;
 import java.awt.geom.AffineTransform;
+import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 
 import java.io.IOException;
@@ -16,6 +17,7 @@ import org.orbisgis.core.renderer.persistance.se.ObjectFactory;
 
 import org.gdms.data.feature.Feature;
 import org.orbisgis.core.map.MapTransform;
+import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 
 import org.orbisgis.core.renderer.se.common.Halo;
 import org.orbisgis.core.renderer.se.common.OnlineResource;
@@ -24,6 +26,7 @@ import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
+import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
 import org.orbisgis.core.renderer.se.transform.Transform;
 
 /**
@@ -38,10 +41,18 @@ import org.orbisgis.core.renderer.se.transform.Transform;
  */
 public final class ExternalGraphic extends Graphic {
 
+    private ExternalGraphicSource source;
+    private ViewBox viewBox;
+    private RealParameter opacity;
+    private Halo halo;
+    private PlanarImage graphic;
+
+	private String mimeType;
+
     public ExternalGraphic(){
     }
 
-    ExternalGraphic(JAXBElement<ExternalGraphicType> extG) throws IOException {
+    ExternalGraphic(JAXBElement<ExternalGraphicType> extG) throws IOException, InvalidStyle {
         ExternalGraphicType t = extG.getValue();
 
         if (t.getHalo() != null){
@@ -67,6 +78,8 @@ public final class ExternalGraphic extends Graphic {
         if (t.getOnlineResource() != null){
             this.setSource(new OnlineResource(t.getOnlineResource()));
         }
+
+		this.mimeType = t.getFormat();
     }
 
     public Halo getHalo() {
@@ -84,6 +97,9 @@ public final class ExternalGraphic extends Graphic {
 
     public void setOpacity(RealParameter opacity) {
         this.opacity = opacity;
+		if (this.opacity != null){
+			this.opacity.setContext(RealParameterContext.percentageContext);
+		}
     }
 
     public ViewBox getViewBox() {
@@ -99,14 +115,14 @@ public final class ExternalGraphic extends Graphic {
     @Override
     public void updateGraphic() {
         graphic = null;
-
+		/*
         try {
             if (source != null) {
                 graphic = source.getPlanarImage(viewBox, null, null);
             }
         } catch (Exception ex) {
             ex.printStackTrace();
-        }
+        }*/
     }
 
     public void setSource(ExternalGraphicSource src) throws IOException {
@@ -116,23 +132,17 @@ public final class ExternalGraphic extends Graphic {
 
     @Override
     public RenderableGraphics getRenderableGraphics(Feature feat, boolean selected, MapTransform mt) throws ParameterException, IOException {
-
-        AffineTransform at = new AffineTransform();
-        if (transform != null){
-            at = transform.getGraphicalAffineTransform(feat, false, mt);
-        }
-
         // TODO Implements SELECTED!
 
         PlanarImage img;
 
         // Create shape based on image bbox
 
-        if (graphic == null) {
-            img = source.getPlanarImage(viewBox, feat, mt);
-        } else {
-            img = graphic;
-        }
+        //if (graphic == null) {
+        img = source.getPlanarImage(viewBox, feat, mt, mimeType);
+        //} else {
+        //    img = graphic;
+        //}
 
         if (img == null){
             return null;
@@ -141,9 +151,15 @@ public final class ExternalGraphic extends Graphic {
         double w = img.getWidth();
         double h = img.getHeight();
 
+        AffineTransform at = new AffineTransform();
+        if (transform != null){
+            at = transform.getGraphicalAffineTransform(feat, false, mt, w, h);
+        }
+
+
         // reserve the place for halo
         if (halo != null) {
-            double r = Uom.toPixel(halo.getRadius().getValue(feat), halo.getUom(), mt.getDpi(), mt.getScaleDenominator(), 0.0); // TODO SCALE, DPI...
+			double r = halo.getHaloRadius(feat, mt);
             w += 2 * r;
             h += 2 * r;
         }
@@ -174,7 +190,7 @@ public final class ExternalGraphic extends Graphic {
         double delta = 0.0;
 
         if (this.halo != null) {
-            delta += Uom.toPixel(halo.getRadius().getValue(feat), halo.getUom(), mt.getDpi(), mt.getScaleDenominator(), 0.0);
+			delta += halo.getHaloRadius(feat, mt);
         }
 
         return delta;
@@ -183,18 +199,18 @@ public final class ExternalGraphic extends Graphic {
     @Override
     public double getMaxWidth(Feature feat, MapTransform mt) throws ParameterException, IOException {
         double delta = 0.0;
-        if (viewBox != null) {
+        if (viewBox != null && viewBox.usable()) {
             PlanarImage img;
             if (graphic == null) {
-                img = source.getPlanarImage(viewBox, feat, mt);
+                img = source.getPlanarImage(viewBox, feat, mt, mimeType);
             } else {
                 img = graphic;
             }
 
             if (img != null){
-                Dimension dim = viewBox.getDimensionInPixel(feat, img.getHeight() / img.getWidth(), mt.getScaleDenominator(), mt.getDpi());
+                Point2D dim = viewBox.getDimensionInPixel(feat, img.getHeight(), img.getWidth(), mt.getScaleDenominator(), mt.getDpi());
 
-                delta = Math.max(dim.getHeight(), dim.getWidth());
+                delta = Math.max(dim.getY(), dim.getX());
             }
             else{
                 return 0.0;
@@ -237,6 +253,10 @@ public final class ExternalGraphic extends Graphic {
             source.setJAXBSource(e);
         }
 
+		if (mimeType != null){
+			e.setFormat(mimeType);
+		}
+
         if (opacity != null) {
             e.setOpacity(opacity.getJAXBParameterValueType());
         }
@@ -256,10 +276,4 @@ public final class ExternalGraphic extends Graphic {
         ObjectFactory of = new ObjectFactory();
         return of.createExternalGraphic(e);
     }
-    private ExternalGraphicSource source;
-    private ViewBox viewBox;
-    private RealParameter opacity;
-    private Halo halo;
-    private PlanarImage graphic;
-
 }

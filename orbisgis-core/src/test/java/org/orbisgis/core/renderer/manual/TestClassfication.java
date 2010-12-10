@@ -100,7 +100,7 @@ public class TestClassfication {
 			ds = layer.getDataSource();
 			SpatialDataSourceDecorator sds = new SpatialDataSourceDecorator(ds);
 			RangeMethod intervalsDicretizationMethod = new RangeMethod(sds,
-					new RealAttribute("PTOT90", sds), 4);
+					new RealAttribute("PTOT90"), 4);
 
 			intervalsDicretizationMethod.disecMean();
 

@@ -23,7 +23,7 @@ import org.orbisgis.core.renderer.se.parameter.ParameterException;
 public interface Transformation {
     public boolean allowedForGeometries();
 
-    public abstract AffineTransform getAffineTransform(Feature feat, Uom uom, MapTransform mt) throws ParameterException, IOException;
+    public abstract AffineTransform getAffineTransform(Feature feat, Uom uom, MapTransform mt, Double width, Double height) throws ParameterException, IOException;
 
     public abstract JAXBElement<?> getJAXBElement();
 

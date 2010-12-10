@@ -17,7 +17,9 @@ import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.persistance.se.LineLabelType;
 import org.orbisgis.core.renderer.persistance.se.ObjectFactory;
 import org.orbisgis.core.renderer.persistance.se.ParameterValueType;
+import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
+import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
 
 /**
  *
@@ -26,8 +28,20 @@ import org.orbisgis.core.renderer.se.parameter.ParameterException;
  */
 public class LineLabel extends Label {
 
-    LineLabel(JAXBElement<LineLabelType> l) {
-        super(l);
+    public LineLabel(LineLabelType t) throws InvalidStyle {
+		super(t);
+
+        if (t.getHorizontalAlignment() != null) {
+            this.hAlign = HorizontalAlignment.fromString(SeParameterFactory.extractToken(t.getHorizontalAlignment()));
+        }
+
+        if (t.getVerticalAlignment() != null) {
+            this.vAlign = VerticalAlignment.fromString(SeParameterFactory.extractToken(t.getVerticalAlignment()));
+        }
+	}
+
+    public LineLabel(JAXBElement<LineLabelType> l) throws InvalidStyle {
+		this(l.getValue());
     }
 
     /**
@@ -55,6 +69,11 @@ public class LineLabel extends Label {
 
     @Override
     public JAXBElement<LineLabelType> getJAXBElement() {
+        ObjectFactory of = new ObjectFactory();
+        return of.createLineLabel(this.getJAXBType());
+	}
+
+    public LineLabelType getJAXBType() {
         LineLabelType ll = new LineLabelType();
 
         if (uom != null) {
@@ -77,10 +96,11 @@ public class LineLabel extends Label {
             ll.setStyledLabel(label.getJAXBType());
         }
 
-        ObjectFactory of = new ObjectFactory();
-
-        return of.createLineLabel(ll);
+		return ll;
     }
 
-
+	@Override
+	public boolean dependsOnFeature() {
+		return label != null && label.dependsOnFeature();
+	}
 }
