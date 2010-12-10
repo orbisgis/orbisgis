@@ -36,6 +36,7 @@
  */
 package org.gdms.sql.function.alphanumeric;
 
+import org.gdms.data.DataSourceFactory;
 import org.gdms.data.types.InvalidTypeException;
 import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeFactory;
@@ -48,7 +49,7 @@ import org.gdms.sql.function.FunctionException;
 
 public class ReplaceString implements Function {
 
-	public Value evaluate(Value[] arg0) throws FunctionException {
+	public Value evaluate(DataSourceFactory dsf, Value[] arg0) throws FunctionException {
 		String text;
 		if (arg0[0].isNull()) {
 			return ValueFactory.createNullValue();
@@ -58,7 +59,7 @@ public class ReplaceString implements Function {
 			String textFrom = arg0[1].getAsString();
 			String textTo = arg0[2].getAsString();
 
-			text.replace(textFrom, textTo);
+			text = text.replace(textFrom, textTo);
 
 		}
 		return ValueFactory.createValue(text);

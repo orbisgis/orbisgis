@@ -64,49 +64,51 @@ import com.vividsolutions.jts.geom.Geometry;
 
 /**
  * class that implements the methods of the database drivers related to SQL
- *
+ * 
  * @author Fernando Gonzalez Cortes
- *
+ * 
  */
 public abstract class DefaultSQL implements DBReadWriteDriver, ValueWriter {
 	protected String tableName;
 	protected String schemaName;
 
 	private ValueWriter valueWriter = ValueWriter.internalValueWriter;
-	
+
 	/**
-	 * @return "schemaName"."tableName" 
-	 * or "tableName" if any schema have been specified
-	 * or "" if neither schema nor table have been specified.
+	 * @return "schemaName"."tableName" or "tableName" if any schema have been
+	 *         specified or "" if neither schema nor table have been specified.
 	 * 
-	 * 	NOTA : 	Current schema and table are specified by using open or createSource methods. 
-	 * 			open or createSource methods must have been called before.
+	 *         NOTA : Current schema and table are specified by using open or
+	 *         createSource methods. open or createSource methods must have been
+	 *         called before.
 	 * 
 	 * @see org.gdms.driver.DBDriver.{@link #open(Connection, String)}
 	 * @see org.gdms.driver.DBDriver.{@link #open(Connection, String)}
 	 * @see org.gdms.driver.DBDriver.{@link #createSource(DBSource, Metadata)}
 	 */
-	protected String getTableAndSchemaName(){
+	protected String getTableAndSchemaName() {
 		String tableAndSchemaName = "";
-		if(tableName != null)
-			if(tableName.length() != 0){
-				tableAndSchemaName =  "\"" + tableName + "\"";
-				if(schemaName != null)
-					if(schemaName.length()!=0)
-						tableAndSchemaName = "\"" + schemaName + "\"" + "." + "\"" + tableName + "\"";
+		if (tableName != null)
+			if (tableName.length() != 0) {
+				tableAndSchemaName = "\"" + tableName + "\"";
+				if (schemaName != null)
+					if (schemaName.length() != 0)
+						tableAndSchemaName = "\"" + schemaName + "\"" + "."
+								+ "\"" + tableName + "\"";
 			}
 		return tableAndSchemaName;
 	}
+
 	/**
 	 * @see org.gdms.driver.DBReadWriteDriver#getInsertSQL(java.lang.String,
 	 *      java.lang.String[], org.gdms.data.types.Type[],
 	 *      org.gdms.data.values.Value[])
 	 */
-	public String getInsertSQL(String[] fieldNames,
-			Type[] fieldTypes, Value[] row) throws DriverException {
+	public String getInsertSQL(String[] fieldNames, Type[] fieldTypes,
+			Value[] row) throws DriverException {
 		StringBuffer sql = new StringBuffer();
-		sql.append("INSERT INTO ").append(getTableAndSchemaName()).append(" (\"").append(
-				fieldNames[0]);
+		sql.append("INSERT INTO ").append(getTableAndSchemaName()).append(
+				" (\"").append(fieldNames[0]);
 
 		for (int i = 1; i < fieldNames.length; i++) {
 			sql.append("\", \"").append(fieldNames[i]);
@@ -134,9 +136,9 @@ public abstract class DefaultSQL implements DBReadWriteDriver, ValueWriter {
 	 *      java.lang.String[], org.gdms.data.types.Type[],
 	 *      org.gdms.data.values.Value[])
 	 */
-	public String getUpdateSQL(String[] pkNames,
-			Value[] pkValues, String[] fieldNames, Type[] fieldTypes,
-			Value[] row) throws DriverException {
+	public String getUpdateSQL(String[] pkNames, Value[] pkValues,
+			String[] fieldNames, Type[] fieldTypes, Value[] row)
+			throws DriverException {
 		StringBuffer sql = new StringBuffer();
 		sql.append("UPDATE ").append(getTableAndSchemaName()).append(" SET ");
 		String separator = "";
@@ -165,9 +167,9 @@ public abstract class DefaultSQL implements DBReadWriteDriver, ValueWriter {
 	public void rollBackTrans(Connection con) throws SQLException {
 		execute(con, "ROLLBACK;");
 	}
-	
+
 	@Override
-	public String[] getSchemas(Connection c) throws DriverException{
+	public String[] getSchemas(Connection c) throws DriverException {
 		DatabaseMetaData md = null;
 		ResultSet rs = null;
 		ArrayList<String> schemas = new ArrayList<String>();
@@ -176,24 +178,25 @@ public abstract class DefaultSQL implements DBReadWriteDriver, ValueWriter {
 			rs = md.getSchemas();
 			int i = 0;
 			while (rs.next()) {
-				
+
 				schemas.add(rs.getString("TABLE_SCHEM"));
 				i++;
 			}
-
+			rs.close();
+			rs = null;
 		} catch (SQLException e) {
 			throw new DriverException(e);
 		}
-		return schemas.toArray(new String[0]);
+		return schemas.toArray(new String[schemas.size()]);
 	}
 
 	@Override
-	public TableDescription[] getTables(Connection c, String catalog, 
+	public TableDescription[] getTables(Connection c, String catalog,
 			String schemaPattern, String tableNamePattern, String[] types)
-	throws DriverException {
-		
+			throws DriverException {
+
 		// Retrieves the name, schema, and type of each Database.
-		
+
 		DatabaseMetaData md = null;
 		ResultSet rs = null;
 		ArrayList<TableDescription> tables = new ArrayList<TableDescription>();
@@ -207,11 +210,13 @@ public abstract class DefaultSQL implements DBReadWriteDriver, ValueWriter {
 						.getString("TABLE_TYPE"), rs.getString("TABLE_SCHEM")));
 				i++;
 			}
+			rs.close();
+			rs = null;
 		} catch (SQLException e) {
 			throw new DriverException(e);
 		}
 
-		return tables.toArray(new TableDescription[0]);
+		return tables.toArray(new TableDescription[tables.size()]);
 	}
 
 	@Override
@@ -340,7 +345,7 @@ public abstract class DefaultSQL implements DBReadWriteDriver, ValueWriter {
 
 	/**
 	 * Gets the rules used to
-	 *
+	 * 
 	 * @return
 	 * @throws DriverException
 	 */
@@ -354,10 +359,10 @@ public abstract class DefaultSQL implements DBReadWriteDriver, ValueWriter {
 			throws DriverException {
 		StringBuilder sql = null;
 		Connection c = null;
-		
+
 		this.tableName = source.getTableName();
 		this.schemaName = source.getSchemaName();
-		
+
 		try {
 			c = getConnection(source.getHost(), source.getPort(), source
 					.getDbName(), source.getUser(), source.getPassword());
@@ -420,7 +425,7 @@ public abstract class DefaultSQL implements DBReadWriteDriver, ValueWriter {
 
 	/**
 	 * Gets the instructions to execute after a table creation
-	 *
+	 * 
 	 * @param source
 	 * @param metadata
 	 * @return
@@ -444,7 +449,7 @@ public abstract class DefaultSQL implements DBReadWriteDriver, ValueWriter {
 
 	/**
 	 * If the type is increased automatically
-	 *
+	 * 
 	 * @param type
 	 * @return
 	 * @throws DriverException
@@ -461,7 +466,7 @@ public abstract class DefaultSQL implements DBReadWriteDriver, ValueWriter {
 
 	/**
 	 * Gets the value to show in insert statements for autoincrement fields
-	 *
+	 * 
 	 * @return
 	 */
 	protected String getAutoIncrementDefaultValue() {
@@ -472,8 +477,8 @@ public abstract class DefaultSQL implements DBReadWriteDriver, ValueWriter {
 	 * @see org.gdms.driver.DBReadWriteDriver#getAddFieldSQL(java.lang.String,
 	 *      java.lang.String, org.gdms.data.types.Type)
 	 */
-	public String getAddFieldSQL(String fieldName,
-			Type fieldType) throws DriverException {
+	public String getAddFieldSQL(String fieldName, Type fieldType)
+			throws DriverException {
 		ConversionRule rule = getSuitableRule(fieldType);
 		return "ALTER TABLE " + getTableAndSchemaName() + " ADD "
 				+ rule.getSQL(fieldName, fieldType);
@@ -483,32 +488,31 @@ public abstract class DefaultSQL implements DBReadWriteDriver, ValueWriter {
 	 * @see org.gdms.driver.DBReadWriteDriver#getChangeFieldNameSQL(java.lang.String,
 	 *      java.lang.String, java.lang.String)
 	 */
-	public String getChangeFieldNameSQL(String oldName,
-			String newName) throws DriverException {
-		return "ALTER TABLE " + getTableAndSchemaName() + " RENAME COLUMN \"" + oldName
-				+ "\" TO \"" + newName + "\"";
+	public String getChangeFieldNameSQL(String oldName, String newName)
+			throws DriverException {
+		return "ALTER TABLE " + getTableAndSchemaName() + " RENAME COLUMN \""
+				+ oldName + "\" TO \"" + newName + "\"";
 	}
 
 	/**
 	 * @see org.gdms.driver.DBReadWriteDriver#getDeleteFieldSQL(java.lang.String,
 	 *      java.lang.String)
 	 */
-	public String getDeleteFieldSQL(String fieldName)
-			throws DriverException {
-		return "ALTER TABLE " + getTableAndSchemaName() + " DROP COLUMN \"" + fieldName
-				+ "\"";
+	public String getDeleteFieldSQL(String fieldName) throws DriverException {
+		return "ALTER TABLE " + getTableAndSchemaName() + " DROP COLUMN \""
+				+ fieldName + "\"";
 	}
 
 	/**
 	 * @see org.gdms.driver.DBReadWriteDriver#getDeleteRecordSQL(java.lang.String,
 	 *      java.lang.String[], org.gdms.data.values.Value[])
 	 */
-	public String getDeleteRecordSQL(String[] names,
-			Value[] pks) throws DriverException {
+	public String getDeleteRecordSQL(String[] names, Value[] pks)
+			throws DriverException {
 		// Delete sql statement
-		StringBuffer sql = new StringBuffer("DELETE FROM ").append(getTableAndSchemaName())
-				.append(" WHERE \"").append(names[0]).append("\"=").append(
-						pks[0].getStringValue(this));
+		StringBuffer sql = new StringBuffer("DELETE FROM ").append(
+				getTableAndSchemaName()).append(" WHERE \"").append(names[0])
+				.append("\"=").append(pks[0].getStringValue(this));
 
 		for (int i = 1; i < pks.length; i++) {
 			sql.append(" AND \"").append(names[i]).append("\"=").append(

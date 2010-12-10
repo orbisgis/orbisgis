@@ -39,6 +39,7 @@ package org.gdms.sql.function.spatial.raster.algebra;
 
 import java.util.Map;
 
+import org.gdms.data.DataSourceFactory;
 import org.gdms.data.values.RasterValue;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
@@ -58,7 +59,7 @@ import org.grap.processing.operation.GeoRasterMath;
 public class ST_RasterAlgebra extends AbstractRasterFunction {
 
 	@Override
-	public Value evaluate(Value... args) throws FunctionException {
+	public Value evaluate(DataSourceFactory dsf,Value... args) throws FunctionException {
 		final GeoRaster raster1 = args[0].getAsRaster();
 		Value value2 = args[1];
 		if (value2 instanceof RasterValue) {

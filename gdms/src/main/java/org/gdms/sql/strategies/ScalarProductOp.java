@@ -204,7 +204,7 @@ public class ScalarProductOp extends AbstractOperator implements Operator,
 				}
 				SelectionOp pushed = new SelectionOp();
 				Expression[] expressionsToPush = toPush
-						.toArray(new Expression[0]);
+						.toArray(new Expression[toPush.size()]);
 				transformFieldReferences(expressionsToPush, i, tablesNumFields);
 				pushed.setExpressions(expressionsToPush);
 				pushed.addChild(getOperator(i));

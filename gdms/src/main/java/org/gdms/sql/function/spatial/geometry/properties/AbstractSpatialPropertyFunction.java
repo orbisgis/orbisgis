@@ -36,6 +36,7 @@
  */
 package org.gdms.sql.function.spatial.geometry.properties;
 
+import org.gdms.data.DataSourceFactory;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.sql.function.Argument;
@@ -49,15 +50,15 @@ public abstract class AbstractSpatialPropertyFunction implements Function {
 		return new Arguments[] { new Arguments(Argument.GEOMETRY) };
 	}
 
-	final public Value evaluate(final Value[] args) throws FunctionException {
+	final public Value evaluate(DataSourceFactory dsf, Value[] args) throws FunctionException {
 		if (args[0].isNull()) {
 			return ValueFactory.createNullValue();
 		} else {
-			return evaluateResult(args);
+			return evaluateResult(dsf, args);
 		}
 	}
 
-	protected abstract Value evaluateResult(Value[] args)
+	protected abstract Value evaluateResult(DataSourceFactory dsf, Value[] args)
 			throws FunctionException;
 	
 	@Override

@@ -41,6 +41,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 
+import org.gdms.sql.customQuery.cluster.kmeans.ST_KMeans;
 import org.gdms.sql.customQuery.showAttributes.ShowCall;
 import org.gdms.sql.customQuery.spatial.geometry.convert.ST_Explode;
 import org.gdms.sql.customQuery.spatial.geometry.create.ST_BigCreateGrid;
@@ -49,7 +50,9 @@ import org.gdms.sql.customQuery.spatial.geometry.create.ST_CreatePointsGrid;
 import org.gdms.sql.customQuery.spatial.geometry.create.ST_CreateWebGrid;
 import org.gdms.sql.customQuery.spatial.geometry.create.ST_Extrude;
 import org.gdms.sql.customQuery.spatial.geometry.create.ST_RandomGeometry;
+import org.gdms.sql.customQuery.spatial.geometry.other.ST_MainDirections;
 import org.gdms.sql.customQuery.spatial.geometry.qa.ST_InternalGapFinder;
+import org.gdms.sql.customQuery.spatial.geometry.topology.ST_Graph;
 import org.gdms.sql.customQuery.spatial.geometry.topology.ST_PlanarGraph;
 import org.gdms.sql.customQuery.spatial.geometry.topology.ST_ToLineNoder;
 import org.gdms.sql.customQuery.spatial.raster.Interpolation.ST_Interpolate;
@@ -90,8 +93,10 @@ public class QueryManager {
 		registerQuery(ST_RasterToPolygons.class);
 		registerQuery(ST_VectorizeLine.class);
 		registerQuery(ST_CreatePointsGrid.class);
-		// registerQuery(ST_Transform.class);
 		registerQuery(ST_Interpolate.class);
+		registerQuery(ST_KMeans.class);
+		registerQuery(ST_Graph.class);
+		registerQuery(ST_MainDirections.class);
 	}
 
 	/**

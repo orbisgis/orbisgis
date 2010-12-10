@@ -16,13 +16,90 @@ public class CoordinatesUtils {
 	public static boolean vertexInserted = false;
 
 	/**
+	 * Convert a xyz geometry to xy.
+	 * 
+	 * @param geom
+	 * @param value
+	 * @return
+	 */
+	public static Geometry force_2D(Geometry geom) {
+
+		// return new Geometry2DTransformer().transform(geom);
+		geom.apply(new CoordinateSequenceFilter() {
+			boolean done = false;
+
+			public boolean isGeometryChanged() {
+				return true;
+			}
+
+			public boolean isDone() {
+				return done;
+			}
+
+			public void filter(CoordinateSequence seq, int i) {
+				seq.setOrdinate(i, 2, Double.NaN);
+
+				if (i == seq.size()) {
+					done = true;
+				}
+			}
+
+		});
+
+		return geom;
+
+	}
+
+	/**
+	 * Convert a xy geometry to xyz. If the z does not exits a z equals to zero
+	 * is added.
+	 * 
+	 * @param geom
+	 * @param value
+	 * @return
+	 */
+	public static Geometry force_3D(Geometry geom) {
+
+		geom.apply(new CoordinateSequenceFilter() {
+			boolean done = false;
+
+			public boolean isGeometryChanged() {
+				return true;
+			}
+
+			public boolean isDone() {
+				return done;
+			}
+
+			public void filter(CoordinateSequence seq, int i) {
+				Coordinate coord = seq.getCoordinate(i);
+				double x = coord.x;
+				double y = coord.y;
+				double z = coord.z;
+				seq.setOrdinate(i, 0, x);
+				seq.setOrdinate(i, 1, y);
+				if (Double.isNaN(z)) {
+					seq.setOrdinate(i, 2, 0);
+				}
+				if (i == seq.size()) {
+					done = true;
+				}
+			}
+
+		});
+
+		return geom;
+
+	}
+
+	/**
 	 * Update all z ordinate by a new value
 	 * 
 	 * @param geom
 	 * @param value
 	 * @return
 	 */
-	public static Geometry updateZ(Geometry geom, final double value) {
+	public static Geometry force_3D(Geometry geom, final double value) {
 
 		geom.apply(new CoordinateSequenceFilter() {
 			boolean done = false;
@@ -53,13 +130,14 @@ public class CoordinatesUtils {
 	}
 
 	/**
-	 * Update all z ordinate by a new value
+	 * Update all z ordinate by a new value for the first and the last
+	 * coordinates.
 	 * 
 	 * @param geom
 	 * @param value
 	 * @return
 	 */
-	public static Geometry updateZStartEnd(Geometry geom, final double startZ,
+	public static Geometry force_3DStartEnd(Geometry geom, final double startZ,
 			final double endZ) {
 
 		final double D = geom.getLength();
@@ -151,24 +229,25 @@ public class CoordinatesUtils {
 
 		return lineString;
 	}
-	
+
 	/**
-     * @param coordinates not empty
-     */
-    public static Coordinate closest(Collection coordinates, Coordinate p) {
-        Assert.isTrue(!coordinates.isEmpty());
+	 * @param coordinates
+	 *            not empty
+	 */
+	public static Coordinate closest(Collection coordinates, Coordinate p) {
+		Assert.isTrue(!coordinates.isEmpty());
 
-        Coordinate closest = (Coordinate) coordinates.iterator().next();
+		Coordinate closest = (Coordinate) coordinates.iterator().next();
 
-        for (Iterator i = coordinates.iterator(); i.hasNext();) {
-            Coordinate candidate = (Coordinate) i.next();
+		for (Iterator i = coordinates.iterator(); i.hasNext();) {
+			Coordinate candidate = (Coordinate) i.next();
 
-            if (p.distance(candidate) < p.distance(closest)) {
-                closest = candidate;
-            }
-        }
+			if (p.distance(candidate) < p.distance(closest)) {
+				closest = candidate;
+			}
+		}
 
-        return closest;
-    }
+		return closest;
+	}
 
 }

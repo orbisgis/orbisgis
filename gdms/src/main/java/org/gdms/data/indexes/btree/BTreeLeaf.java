@@ -110,7 +110,7 @@ public class BTreeLeaf extends AbstractBTreeNode implements BTreeNode {
 	}
 
 	public Value[] getAllValues() throws IOException {
-		return values.toArray(new Value[0]);
+		return values.toArray(new Value[values.size()]);
 
 	}
 
@@ -198,7 +198,7 @@ public class BTreeLeaf extends AbstractBTreeNode implements BTreeNode {
 
 		// Write a ValueCollection with the used values
 		ValueCollection vc = ValueFactory.createValue(values
-				.toArray(new Value[0]));
+				.toArray(new Value[values.size()]));
 		byte[] valuesBytes = vc.getBytes();
 		dos.writeInt(valuesBytes.length);
 		dos.write(valuesBytes);

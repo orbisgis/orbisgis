@@ -43,13 +43,13 @@ public class DropColumnOperator extends AbstractOperator implements Operator {
 			ds.commit();
 			ds.close();
 		} catch (DriverLoadException e) {
-			throw new ExecutionException("Cannot add the column", e);
+			throw new ExecutionException("Cannot delete the column", e);
 		} catch (NoSuchTableException e) {
-			throw new ExecutionException("Cannot add the column", e);
+			throw new ExecutionException("Cannot delete the column", e);
 		} catch (AlreadyClosedException e) {
-			throw new ExecutionException("Cannot add the column", e);
+			throw new ExecutionException("Cannot delete the column", e);
 		} catch (DataSourceCreationException e) {
-			throw new ExecutionException("Cannot add the column", e);
+			throw new ExecutionException("Cannot delete the column", e);
 		} catch (DriverException e) {
 			throw new ExecutionException("Cannot edit the table", e);
 		} catch (NonEditableDataSourceException e) {
@@ -57,27 +57,6 @@ public class DropColumnOperator extends AbstractOperator implements Operator {
 		}
 
 		return null;
-	}
-
-	private Type getTypeFromSQLEngineConstants(String type) {
-
-		if (type.equalsIgnoreCase("text")) {
-			return TypeFactory.createType(Type.STRING);
-		}
-
-		else if (type.equalsIgnoreCase("numeric")) {
-
-			return TypeFactory.createType(Type.DOUBLE);
-		}
-
-		else if (type.equalsIgnoreCase("integer")) {
-
-			return TypeFactory.createType(Type.INT);
-		}
-
-		else {
-			throw new UnsupportedOperationException("Unsupported type");
-		}
 	}
 
 	@Override

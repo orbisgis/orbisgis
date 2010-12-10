@@ -41,6 +41,7 @@ import ij.process.ImageProcessor;
 import java.awt.geom.Point2D;
 import java.io.IOException;
 
+import org.gdms.data.DataSourceFactory;
 import org.gdms.data.types.Constraint;
 import org.gdms.data.types.DimensionConstraint;
 import org.gdms.data.types.InvalidTypeException;
@@ -65,7 +66,7 @@ public class ST_SetZ implements Function {
 
 	private ImageProcessor demIp = null;
 
-	public Value evaluate(Value[] args) throws FunctionException {
+	public Value evaluate(DataSourceFactory dsf,Value[] args) throws FunctionException {
 		if ((args[0].isNull()) || (args[1].isNull())) {
 			return ValueFactory.createNullValue();
 		}
@@ -94,7 +95,7 @@ public class ST_SetZ implements Function {
 		} else {
 			double z = args[1].getAsDouble();
 
-			return ValueFactory.createValue(CoordinatesUtils.updateZ(geometry,
+			return ValueFactory.createValue(CoordinatesUtils.force_3D(geometry,
 					z));
 		}
 

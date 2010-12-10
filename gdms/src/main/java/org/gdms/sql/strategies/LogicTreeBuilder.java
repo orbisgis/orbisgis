@@ -49,7 +49,6 @@ import org.gdms.driver.driverManager.DriverLoadException;
 import org.gdms.sql.evaluator.And;
 import org.gdms.sql.evaluator.Division;
 import org.gdms.sql.evaluator.Equals;
-import org.gdms.sql.evaluator.ExistsOperator;
 import org.gdms.sql.evaluator.Expression;
 import org.gdms.sql.evaluator.Field;
 import org.gdms.sql.evaluator.FunctionOperator;
@@ -186,9 +185,9 @@ public class LogicTreeBuilder {
 			InsertOperator ret = new InsertOperator();
 			ret.addChild(top);
 			int valueStartIndex;
-			if (node.jjtGetChild(1) instanceof ASTSQLId) {
+			if (node.jjtGetChild(1) instanceof ASTSQLIdSequence) {
 				int i = 1;
-				while (node.jjtGetChild(i) instanceof ASTSQLId) {
+				while (node.jjtGetChild(i) instanceof ASTSQLIdSequence) {
 					ret.addField(getId(node.jjtGetChild(i)));
 					i++;
 				}
@@ -366,11 +365,11 @@ public class LogicTreeBuilder {
 		} else if (node instanceof ASTSQLSelect) {
 			Operator last = null;
 
-			// Scalar product
+			// Scalar product or ScanOperator if only 1 table
 			SimpleNode tableListNode = getChildNode(node, ASTSQLTableList.class);
 			Operator scalarProductOp = null;
 			if (tableListNode != null) {
-				scalarProductOp = getOperator(node.jjtGetChild(1));
+                               scalarProductOp = getOperator(tableListNode);
 				last = scalarProductOp;
 			}
 
@@ -577,10 +576,13 @@ public class LogicTreeBuilder {
 			}
 			return ret;
 		} else if (node instanceof ASTSQLTableList) {
+                    if (node.jjtGetNumChildren() == 1) {
+                        return getOperator(node.jjtGetChild(0));
+                    }
 			ScalarProductOp ret = new ScalarProductOp();
 			for (int i = 0; i < node.jjtGetNumChildren(); i++) {
 				SimpleNode tableRefNode = (SimpleNode) node.jjtGetChild(i);
-				ScanOperator tableScanOperator = (ScanOperator) getOperator(tableRefNode);
+				Operator tableScanOperator = getOperator(tableRefNode);
 				ret.addChild(tableScanOperator);
 			}
 			return ret;
@@ -592,10 +594,9 @@ public class LogicTreeBuilder {
 			}
 			return new ScanOperator(dsf, tableName, tableAlias);
 		} else if (node instanceof ASTSQLWhere) {
+                    Expression ex = getSQLExpression((SimpleNode) node.jjtGetChild(0));
 			SelectionOp ret = new SelectionOp();
-			ret
-					.setExpression(getSQLExpression((SimpleNode) node
-							.jjtGetChild(0)));
+			ret.setExpression(ex);
 			return ret;
 		} else {
 			/*
@@ -627,14 +628,12 @@ public class LogicTreeBuilder {
 		return ret;
 	}
 
-	private Expression getSQLExpression(Node node) throws SemanticException,
-			DriverException {
+	private Expression getSQLExpression(Node node) throws SemanticException, DriverException {
 		Expression ret = getExpression(node);
 		return ret;
 	}
 
-	private Expression getExpression(Node theNode) throws SemanticException,
-			DriverException {
+	private Expression getExpression(Node theNode) throws SemanticException, DriverException {
 		SimpleNode node = (SimpleNode) theNode;
 		if (node instanceof ASTSQLSumExpr) {
 			// Get expressions or bypass if only one child
@@ -749,17 +748,7 @@ public class LogicTreeBuilder {
 			return is;
 
 		} else if (node instanceof ASTSQLExistsClause) {
-			Node valueList = node.jjtGetChild(0);
-			Token token = node.first_token;
-			boolean not = token.next.kind == SQLEngineConstants.NOT;
-
-			if (not) {
-				throw new UnsupportedOperationException(
-						"Not Exists is not supported");
-			}
-
-			return new ExistsOperator(getOperator(valueList));
-
+			throw new UnsupportedOperationException("Exists is not supported");
 		} else if (node instanceof ASTSQLSelect) {
 			return new SelectResultOperator(getOperator(node));
 		} else if (node instanceof ASTSQLPattern) {

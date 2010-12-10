@@ -36,6 +36,7 @@
  */
 package org.gdms.sql.function.alphanumeric;
 
+import org.gdms.data.DataSourceFactory;
 import org.gdms.data.types.Type;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
@@ -48,7 +49,8 @@ import org.gdms.sql.strategies.IncompatibleTypesException;
 public class Max implements Function {
 	private Value max = ValueFactory.createNullValue();
 
-	public Value evaluate(Value[] args) throws FunctionException {
+	public Value evaluate(DataSourceFactory dsf, Value[] args)
+			throws FunctionException {
 		if (!args[0].isNull()) {
 			try {
 				if (max.isNull()) {

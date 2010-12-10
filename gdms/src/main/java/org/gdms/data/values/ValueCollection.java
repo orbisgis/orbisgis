@@ -157,7 +157,7 @@ public class ValueCollection extends AbstractValue {
 	 * @return DOCUMENT ME!
 	 */
 	public Value[] getValues() {
-		return (Value[]) values.toArray(new Value[0]);
+		return (Value[]) values.toArray(new Value[values.size()]);
 	}
 
 	/**

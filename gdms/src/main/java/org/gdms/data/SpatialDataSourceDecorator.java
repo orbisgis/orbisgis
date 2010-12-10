@@ -61,7 +61,7 @@ public class SpatialDataSourceDecorator extends AbstractDataSourceDecorator {
 	/**
 	 * Gets the full extent of the data accessed
 	 * 
-	 * @return Rectangle2D
+	 * @return Envelope
 	 * 
 	 * @throws DriverException
 	 *             if the operation fails
@@ -194,7 +194,6 @@ public class SpatialDataSourceDecorator extends AbstractDataSourceDecorator {
 		}
 	}
 
-	
 	/**
 	 * Returns the CRS of the geometric field that is given as parameter
 	 * 
@@ -203,34 +202,31 @@ public class SpatialDataSourceDecorator extends AbstractDataSourceDecorator {
 	 * @return
 	 * @throws DriverException
 	 */
-	/*public CoordinateReferenceSystem getCRS() throws DriverException {
+	/*
+	 * public CoordinateReferenceSystem getCRS() throws DriverException {
+	 * 
+	 * String fieldName = getFieldName(getSpatialFieldIndex());
+	 * 
+	 * Type fieldType = getMetadata().getFieldType(
+	 * getFieldIndexByName(fieldName)); CRSConstraint crsConstraint =
+	 * (CRSConstraint) fieldType .getConstraint(Constraint.CRS);
+	 * 
+	 * if (null == crsConstraint) { return NullCRS.singleton; } else { return
+	 * crsConstraint.getCrs(); }
+	 * 
+	 * }
+	 */
 
-		String fieldName = getFieldName(getSpatialFieldIndex());
-
-		Type fieldType = getMetadata().getFieldType(
-				getFieldIndexByName(fieldName));
-		CRSConstraint crsConstraint = (CRSConstraint) fieldType
-				.getConstraint(Constraint.CRS);
-
-		if (null == crsConstraint) {
-			return NullCRS.singleton;
-		} else {
-			return crsConstraint.getCrs();
-		}
-
-	}*/
-
-	
 	/**
 	 * Sets the CRS of the geometric field that is given as 2nd parameter
 	 * 
 	 * @param crs
 	 * @param fieldName
-	 *//*
-	public void setCRS(final CoordinateReferenceSystem crs,
-			final String fieldName) {
-		crsMap.put(fieldName, crs);
-	}*/
+	 */
+	/*
+	 * public void setCRS(final CoordinateReferenceSystem crs, final String
+	 * fieldName) { crsMap.put(fieldName, crs); }
+	 */
 
 	/**
 	 * Sets the default geometry of the DataSource to a JTS geometry

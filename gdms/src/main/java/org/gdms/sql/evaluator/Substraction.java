@@ -49,8 +49,8 @@ public class Substraction extends ArithmeticOperator {
 
 	public Value evaluateExpression(IProgressMonitor pm) throws EvaluationException,
 			IncompatibleTypesException {
-		return getLeftOperator().evaluate(pm).suma(
-				ValueFactory.createValue(-1).producto(
+		return getLeftOperator().evaluate(pm).sum(
+				ValueFactory.createValue(-1).multiply(
 						getRightOperator().evaluate(pm)));
 	}
 

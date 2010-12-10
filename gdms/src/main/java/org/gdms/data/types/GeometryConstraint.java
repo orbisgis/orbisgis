@@ -39,6 +39,7 @@ package org.gdms.data.types;
 import org.gdms.data.values.Value;
 
 import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.GeometryCollection;
 import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.MultiLineString;
 import com.vividsolutions.jts.geom.MultiPoint;
@@ -64,6 +65,8 @@ public class GeometryConstraint extends AbstractIntConstraint {
 
 	private static final String POINT_TEXT = "Point";
 
+	private static final String GEOMETRYCOLLECTION_TEXT = "GeometryCollection";
+
 	public static final int POINT = 10;
 
 	public static final int MULTI_POINT = 12;
@@ -75,6 +78,8 @@ public class GeometryConstraint extends AbstractIntConstraint {
 	public static final int POLYGON = 18;
 
 	public static final int MULTI_POLYGON = 20;
+
+	public static final int GEOMETRY_COLLECTION = 22;
 
 	public GeometryConstraint(final int constraintValue) {
 		super(constraintValue);
@@ -134,6 +139,8 @@ public class GeometryConstraint extends AbstractIntConstraint {
 			type = LINESTRING;
 		} else if (geometry instanceof MultiLineString) {
 			type = MULTI_LINESTRING;
+		} else if (geometry instanceof GeometryCollection) {
+			type = GEOMETRY_COLLECTION;
 		} else {
 			type = -1;
 		}
@@ -144,13 +151,14 @@ public class GeometryConstraint extends AbstractIntConstraint {
 	@Override
 	public String[] getChoiceStrings() throws UnsupportedOperationException {
 		return new String[] { POINT_TEXT, MULTI_POINT_TEXT, LINESTRING_TEXT,
-				MULTI_LINESTRING_TEXT, POLYGON_TEXT, MULTI_POLYGON_TEXT };
+				MULTI_LINESTRING_TEXT, POLYGON_TEXT, MULTI_POLYGON_TEXT,
+				GEOMETRYCOLLECTION_TEXT };
 	}
 
 	@Override
 	public int[] getChoiceCodes() throws UnsupportedOperationException {
 		return new int[] { POINT, MULTI_POINT, LINESTRING, MULTI_LINESTRING,
-				POLYGON, MULTI_POLYGON };
+				POLYGON, MULTI_POLYGON, GEOMETRY_COLLECTION };
 	}
 
 	@Override
@@ -173,6 +181,8 @@ public class GeometryConstraint extends AbstractIntConstraint {
 			return POLYGON_TEXT;
 		case MULTI_POLYGON:
 			return MULTI_POLYGON_TEXT;
+		case GEOMETRY_COLLECTION:
+			return GEOMETRYCOLLECTION_TEXT;
 		default:
 			throw new IllegalStateException("bug!");
 		}

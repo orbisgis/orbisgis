@@ -73,7 +73,7 @@ public class UpdateOperator extends AbstractExpressionOperator implements
 			ret.add(filterExpression);
 		}
 
-		return ret.toArray(new Expression[0]);
+		return ret.toArray(new Expression[ret.size()]);
 	}
 
 	public ObjectDriver getResultContents(IProgressMonitor pm)

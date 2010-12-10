@@ -36,6 +36,7 @@
  */
 package org.gdms.sql.function.spatial.raster.hydrology;
 
+import org.gdms.data.DataSourceFactory;
 import org.gdms.data.types.InvalidTypeException;
 import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeFactory;
@@ -51,7 +52,7 @@ import org.grap.processing.OperationException;
 import org.grap.processing.operation.topographicIndices.LSFactorOp;
 
 public class ST_LSFactor implements Function {
-	public Value evaluate(Value[] args) throws FunctionException {
+	public Value evaluate(DataSourceFactory dsf,Value[] args) throws FunctionException {
 		final GeoRaster grSlope = args[0].getAsRaster();
 		final GeoRaster grAccflow = args[1].getAsRaster();
 

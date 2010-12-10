@@ -78,6 +78,8 @@
 package org.gdms.sql.strategies;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
@@ -108,12 +110,22 @@ public class RowMappedDriver extends AbstractMetadataSQLDriver implements
 		this.map = map;
 	}
 
+        @Override
 	public Value getFieldValue(long rowIndex, int fieldId)
 			throws DriverException {
 		return source.getFieldValue(map.get((int) rowIndex), fieldId);
 	}
 
+        @Override
 	public long getRowCount() throws DriverException {
 		return map.size();
 	}
+
+        public long getOriginalIndex(long rowIndex) {
+            return map.get((int) rowIndex);
+        }
+
+        public List<Integer> getIndexMap() {
+            return map;
+        }
 }

@@ -37,6 +37,7 @@
 
 package org.gdms.sql.function.alphanumeric;
 
+import org.gdms.data.DataSourceFactory;
 import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
@@ -49,8 +50,8 @@ public class AutoNumeric implements Function {
 	private final static Value one = ValueFactory.createValue(1l);
 	private Value autoIncrementField = ValueFactory.createValue(0l);
 
-	public Value evaluate(Value[] args) throws FunctionException {
-		autoIncrementField = autoIncrementField.suma(one);
+	public Value evaluate(DataSourceFactory dsf, Value[] args) throws FunctionException {
+		autoIncrementField = autoIncrementField.sum(one);
 		return autoIncrementField;
 	}
 

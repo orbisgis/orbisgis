@@ -36,6 +36,7 @@
  */
 package org.gdms.sql.function.alphanumeric;
 
+import org.gdms.data.DataSourceFactory;
 import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
@@ -47,14 +48,15 @@ import org.gdms.sql.function.FunctionException;
 
 /**
  * DOCUMENT ME!
- *
+ * 
  * @author Fernando Gonzalez Cortes
  */
 public class ConcatenateFunction implements Function {
 	/**
 	 * @see org.gdms.sql.function.Function#evaluate(org.gdms.data.values.Value[])
 	 */
-	public Value evaluate(Value[] args) throws FunctionException {
+	public Value evaluate(DataSourceFactory dsf, Value[] args)
+			throws FunctionException {
 		String ret = "";
 		for (int i = 0; i < args.length; i++) {
 			if (args[i].isNull()) {
@@ -102,6 +104,5 @@ public class ConcatenateFunction implements Function {
 	public Value getAggregateResult() {
 		return null;
 	}
-
 
 }

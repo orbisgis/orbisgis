@@ -36,6 +36,7 @@
  */
 package org.gdms.sql.function.spatial.geometry.operators;
 
+import org.gdms.data.DataSourceFactory;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.sql.function.Argument;
@@ -47,12 +48,13 @@ import com.vividsolutions.jts.geom.Geometry;
 
 public class ST_Intersection extends AbstractSpatialFunction {
 
-	public Value evaluate(final Value[] args) throws FunctionException {
+	public Value evaluate(DataSourceFactory dsf, Value[] args)
+			throws FunctionException {
 		if ((args[0].isNull()) || (args[1].isNull())) {
 			return ValueFactory.createNullValue();
 		} else {
 			final Geometry geom1 = args[0].getAsGeometry();
-			final Geometry geom2 = args[1].getAsGeometry();			
+			final Geometry geom2 = args[1].getAsGeometry();
 			final Geometry intersection = geom1.intersection(geom2);
 			return ValueFactory.createValue(intersection);
 		}
@@ -78,6 +80,5 @@ public class ST_Intersection extends AbstractSpatialFunction {
 	public String getSqlOrder() {
 		return "select ST_Intersection(the_geom1,the_geom2) from myTable;";
 	}
-
 
 }

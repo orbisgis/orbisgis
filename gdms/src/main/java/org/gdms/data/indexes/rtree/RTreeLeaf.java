@@ -201,7 +201,7 @@ public class RTreeLeaf extends AbstractRTreeNode implements RTreeNode {
 	// }
 
 	public Envelope[] getAllValues() throws IOException {
-		return geometries.toArray(new Envelope[0]);
+		return geometries.toArray(new Envelope[geometries.size()]);
 	}
 
 	public void mergeWithLeft(RTreeNode leftNode) throws IOException {
@@ -311,7 +311,7 @@ public class RTreeLeaf extends AbstractRTreeNode implements RTreeNode {
 		dos.writeInt(geometries.size());
 
 		// Write a ValueCollection with the used values
-		Envelope[] used = geometries.toArray(new Envelope[0]);
+		Envelope[] used = geometries.toArray(new Envelope[geometries.size()]);
 		Value[] usedValues = new Value[4 * used.length];
 		for (int i = 0; i < usedValues.length / 4; i++) {
 			usedValues[4 * i] = ValueFactory.createValue(used[i].getMinX());

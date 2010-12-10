@@ -383,7 +383,7 @@ public class IndexManager {
 					+ dsName);
 		}
 
-		return ret.toArray(new String[0]);
+		return ret.toArray(new String[ret.size()]);
 	}
 
 	/**

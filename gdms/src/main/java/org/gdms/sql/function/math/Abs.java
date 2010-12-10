@@ -43,6 +43,7 @@
 
 package org.gdms.sql.function.math;
 
+import org.gdms.data.DataSourceFactory;
 import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
@@ -55,12 +56,12 @@ import org.gdms.sql.function.FunctionException;
 public class Abs implements Function {
 	private static final Value minusOne = ValueFactory.createValue(-1);
 
-	public Value evaluate(final Value[] args) throws FunctionException {
+	public Value evaluate(DataSourceFactory dsf, Value[] args) throws FunctionException {
 		if (args[0].isNull()) {
 			return ValueFactory.createNullValue();
 		} else {
 			if (args[0].getAsDouble() < 0) {
-				return args[0].producto(minusOne);
+				return args[0].multiply(minusOne);
 			} else {
 				return args[0];
 			}

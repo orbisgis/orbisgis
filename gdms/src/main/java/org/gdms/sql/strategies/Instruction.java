@@ -113,7 +113,7 @@ public class Instruction {
 			}
 		}
 
-		return ret.toArray(new String[0]);
+		return ret.toArray(new String[ret.size()]);
 	}
 
 	public Metadata getResultMetadata() throws DriverException {

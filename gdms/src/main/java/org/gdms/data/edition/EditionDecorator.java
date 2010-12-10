@@ -288,7 +288,7 @@ public class EditionDecorator extends AbstractDataSourceDecorator implements
 			}
 		}
 
-		return ret.toArray(new Value[0]);
+		return ret.toArray(new Value[ret.size()]);
 	}
 
 	public void setFieldValue(long row, int fieldId, Value value)

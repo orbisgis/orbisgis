@@ -48,7 +48,7 @@ public class Sum extends ArithmeticOperator {
 
 	public Value evaluateExpression(IProgressMonitor pm) throws EvaluationException,
 			IncompatibleTypesException {
-		return getLeftOperator().evaluate(pm).suma(getRightOperator().evaluate(pm));
+		return getLeftOperator().evaluate(pm).sum(getRightOperator().evaluate(pm));
 	}
 
 	@Override

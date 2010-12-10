@@ -61,20 +61,9 @@ import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.Polygon;
 
-/**
- * DOCUMENT ME!
- *
- * @author Fernando Gonzalez Cortes
- */
 public class ValuesTest extends TestCase {
 	private java.sql.Date d;
 
-	/**
-	 * DOCUMENT ME!
-	 *
-	 * @throws Exception
-	 *             DOCUMENT ME!
-	 */
 	public void testArrayValue() throws Exception {
 		Value[] v = new Value[7];
 
@@ -103,7 +92,8 @@ public class ValuesTest extends TestCase {
 
 		String value = "0.05";
 
-		Value v = ValueFactory.createValue(value, SQLEngineConstants.FLOATING_POINT_LITERAL);
+		Value v = ValueFactory.createValue(value,
+				SQLEngineConstants.FLOATING_POINT_LITERAL);
 		assertTrue(v.getAsDouble() == 0.05);
 	}
 
@@ -209,7 +199,7 @@ public class ValuesTest extends TestCase {
 
 	/**
 	 * DOCUMENT ME!
-	 *
+	 * 
 	 * @throws IncompatibleTypesException
 	 *             DOCUMENT ME!
 	 */
@@ -257,7 +247,7 @@ public class ValuesTest extends TestCase {
 
 	/**
 	 * DOCUMENT ME!
-	 *
+	 * 
 	 * @throws Exception
 	 *             DOCUMENT ME!
 	 */
@@ -924,10 +914,10 @@ public class ValuesTest extends TestCase {
 		// Value strv = ValueFactory.createValue("s");
 		// Value falsev = numv.less(numv);
 		// Value truev = numv.equals(numv);
-		assertTrue(nullv.producto(numv).isNull());
-		assertTrue(numv.producto(nullv).isNull());
-		assertTrue(nullv.suma(numv).isNull());
-		assertTrue(numv.suma(nullv).isNull());
+		assertTrue(nullv.multiply(numv).isNull());
+		assertTrue(numv.multiply(nullv).isNull());
+		assertTrue(nullv.sum(numv).isNull());
+		assertTrue(numv.sum(nullv).isNull());
 		// TODO uncomment and fix this bad behavior
 		// assertTrue(strv.like(nullv).isNull());
 		// assertTrue(nullv.like(strv).isNull());

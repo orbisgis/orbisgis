@@ -50,7 +50,6 @@ import java.util.Set;
 
 import org.gdms.data.WarningListener;
 import org.gdms.data.metadata.Metadata;
-import org.gdms.data.metadata.MetadataUtilities;
 import org.gdms.data.types.Constraint;
 import org.gdms.data.types.DimensionConstraint;
 import org.gdms.data.types.GeometryConstraint;
@@ -392,10 +391,10 @@ public class PostgreSQLDriver extends DefaultDBDriver {
 			dc = new DimensionConstraint(2);
 		}
 
-		//Constraint crsConstraint = MetadataUtilities.getCRSConstraint(srid);
+		// Constraint crsConstraint = MetadataUtilities.getCRSConstraint(srid);
 
 		if (gc == null) {
-			return new Constraint[] { dc};
+			return new Constraint[] { dc };
 		} else {
 			return new Constraint[] { gc, dc };
 		}
@@ -691,7 +690,7 @@ public class PostgreSQLDriver extends DefaultDBDriver {
 		schemas.remove("pg_catalog");
 		schemas.remove("pg_toast_temp_1");
 
-		return schemas.toArray(new String[0]);
+		return schemas.toArray(new String[schemas.size()]);
 	}
 
 }

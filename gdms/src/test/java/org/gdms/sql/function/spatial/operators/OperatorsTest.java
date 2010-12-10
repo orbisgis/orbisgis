@@ -61,14 +61,14 @@ public class OperatorsTest extends FunctionTest {
 		assertTrue(res.isNull());
 
 		// Test normal input value and type
-		res = evaluate(function, ValueFactory.createValue(g1), ValueFactory
+		res = evaluate(function, ValueFactory.createValue(JTSMultiPolygon2D), ValueFactory
 				.createValue(4));
 		assertTrue(res.getType() == Type.GEOMETRY);
-		assertTrue(res.getAsGeometry().equals(g1.buffer(4)));
+		assertTrue(res.getAsGeometry().equals(JTSMultiPolygon2D.buffer(4)));
 
 		// Test too many parameters
 		try {
-			res = evaluate(function, ValueFactory.createValue(g2), ValueFactory
+			res = evaluate(function, ValueFactory.createValue(JTSMultiLineString2D), ValueFactory
 					.createValue(4), ValueFactory.createValue(4), ValueFactory
 					.createValue(4));
 			assertTrue(false);
@@ -77,13 +77,13 @@ public class OperatorsTest extends FunctionTest {
 
 		// Test wrong parameter type
 		try {
-			res = evaluate(function, ValueFactory.createValue(g2), ValueFactory
+			res = evaluate(function, ValueFactory.createValue(JTSMultiLineString2D), ValueFactory
 					.createValue(3), ValueFactory.createValue(3));
 			assertTrue(false);
 		} catch (IncompatibleTypesException e) {
 		}
 		try {
-			res = evaluate(function, ValueFactory.createValue(g2), ValueFactory
+			res = evaluate(function, ValueFactory.createValue(JTSMultiLineString2D), ValueFactory
 					.createValue(""), ValueFactory.createValue(""));
 			assertTrue(false);
 		} catch (IncompatibleTypesException e) {
@@ -101,26 +101,26 @@ public class OperatorsTest extends FunctionTest {
 		ST_Difference function = new ST_Difference();
 		Value res = evaluate(function, new ColumnValue(Type.GEOMETRY,
 				ValueFactory.createNullValue()), new ColumnValue(Type.GEOMETRY,
-				ValueFactory.createValue(g1)));
+				ValueFactory.createValue(JTSMultiPolygon2D)));
 		assertTrue(res.isNull());
 
 		// Test normal input value and type
-		res = evaluate(function, ValueFactory.createValue(g2), ValueFactory
-				.createValue(g1));
+		res = evaluate(function, ValueFactory.createValue(JTSMultiLineString2D), ValueFactory
+				.createValue(JTSMultiPolygon2D));
 		assertTrue(res.getType() == Type.GEOMETRY);
-		assertTrue(res.getAsGeometry().equalsExact(g2.difference(g1)));
+		assertTrue(res.getAsGeometry().equalsExact(JTSMultiLineString2D.difference(JTSMultiPolygon2D)));
 
 		// Test too many parameters
 		try {
-			res = evaluate(function, ValueFactory.createValue(g1), ValueFactory
-					.createValue(g1), ValueFactory.createValue(g3));
+			res = evaluate(function, ValueFactory.createValue(JTSMultiPolygon2D), ValueFactory
+					.createValue(JTSMultiPolygon2D), ValueFactory.createValue(JTSMultiPoint2D));
 			assertTrue(false);
 		} catch (IncompatibleTypesException e) {
 		}
 
 		// Test wrong parameter type
 		try {
-			res = evaluate(function, ValueFactory.createValue(g2), ValueFactory
+			res = evaluate(function, ValueFactory.createValue(JTSMultiLineString2D), ValueFactory
 					.createValue(true));
 			assertTrue(false);
 		} catch (IncompatibleTypesException e) {
@@ -136,15 +136,15 @@ public class OperatorsTest extends FunctionTest {
 
 		// Test normal input value and type
 		function = new ST_GeomUnion();
-		res = evaluate(function, ValueFactory.createValue(g2));
+		res = evaluate(function, ValueFactory.createValue(JTSMultiLineString2D));
 		Value res2 = evaluate(function, new ColumnValue(Type.GEOMETRY,
 				ValueFactory.createNullValue()));
 		assertTrue(res.equals(res2).getAsBoolean());
 
 		// Test too many parameters
 		try {
-			res = evaluate(function, ValueFactory.createValue(g2), ValueFactory
-					.createValue(g2));
+			res = evaluate(function, ValueFactory.createValue(JTSMultiLineString2D), ValueFactory
+					.createValue(JTSMultiLineString2D));
 			assertTrue(false);
 		} catch (IncompatibleTypesException e) {
 		}
@@ -157,7 +157,7 @@ public class OperatorsTest extends FunctionTest {
 		}
 
 		// Test it works with geometry collections
-		evaluate(function, ValueFactory.createValue(geomCollection));
+		evaluate(function, ValueFactory.createValue(JTSGeometryCollection));
 
 		// Test zero rows
 		assertTrue(evaluateAggregatedZeroRows(new ST_GeomUnion()).isNull());
@@ -167,27 +167,27 @@ public class OperatorsTest extends FunctionTest {
 		// Test null input
 		ST_Intersection function = new ST_Intersection();
 		Value res = evaluate(function, new ColumnValue(Type.GEOMETRY,
-				ValueFactory.createValue(g2)), new ColumnValue(Type.GEOMETRY,
+				ValueFactory.createValue(JTSMultiLineString2D)), new ColumnValue(Type.GEOMETRY,
 				ValueFactory.createNullValue()));
 		assertTrue(res.isNull());
 
 		// Test normal input value and type
-		res = evaluate(function, ValueFactory.createValue(g3), ValueFactory
-				.createValue(g2));
+		res = evaluate(function, ValueFactory.createValue(JTSMultiPoint2D), ValueFactory
+				.createValue(JTSMultiLineString2D));
 		assertTrue(res.getType() == Type.GEOMETRY);
-		assertTrue(res.getAsGeometry().equalsExact(g3.intersection(g2)));
+		assertTrue(res.getAsGeometry().equalsExact(JTSMultiPoint2D.intersection(JTSMultiLineString2D)));
 
 		// Test too many parameters
 		try {
-			res = evaluate(function, ValueFactory.createValue(g3), ValueFactory
-					.createValue(g1), ValueFactory.createValue(g3));
+			res = evaluate(function, ValueFactory.createValue(JTSMultiPoint2D), ValueFactory
+					.createValue(JTSMultiPolygon2D), ValueFactory.createValue(JTSMultiPoint2D));
 			assertTrue(false);
 		} catch (IncompatibleTypesException e) {
 		}
 
 		// Test wrong parameter type
 		try {
-			res = evaluate(function, ValueFactory.createValue(g3), ValueFactory
+			res = evaluate(function, ValueFactory.createValue(JTSMultiPoint2D), ValueFactory
 					.createValue(false));
 			assertTrue(false);
 		} catch (IncompatibleTypesException e) {
@@ -198,20 +198,20 @@ public class OperatorsTest extends FunctionTest {
 		// Test null input
 		ST_SymDifference function = new ST_SymDifference();
 		Value res = evaluate(function, new ColumnValue(Type.GEOMETRY,
-				ValueFactory.createValue(g3)), new ColumnValue(Type.GEOMETRY,
+				ValueFactory.createValue(JTSMultiPoint2D)), new ColumnValue(Type.GEOMETRY,
 				ValueFactory.createNullValue()));
 		assertTrue(res.isNull());
 
 		// Test normal input value and type
-		res = evaluate(function, ValueFactory.createValue(g2), ValueFactory
-				.createValue(g2));
+		res = evaluate(function, ValueFactory.createValue(JTSMultiLineString2D), ValueFactory
+				.createValue(JTSMultiLineString2D));
 		assertTrue(res.getType() == Type.GEOMETRY);
-		assertTrue(res.getAsGeometry().equalsExact(g2.symDifference(g2)));
+		assertTrue(res.getAsGeometry().equalsExact(JTSMultiLineString2D.symDifference(JTSMultiLineString2D)));
 
 		// Test too many parameters
 		try {
-			res = evaluate(function, ValueFactory.createValue(g2), ValueFactory
-					.createValue(g1), ValueFactory.createValue(g3));
+			res = evaluate(function, ValueFactory.createValue(JTSMultiLineString2D), ValueFactory
+					.createValue(JTSMultiPolygon2D), ValueFactory.createValue(JTSMultiPoint2D));
 			assertTrue(false);
 		} catch (IncompatibleTypesException e) {
 		}
@@ -234,16 +234,16 @@ public class OperatorsTest extends FunctionTest {
 		assertTrue(res.isNull());
 
 		// Test normal input value and type
-		res = evaluate(function, ValueFactory.createValue(g1));
+		res = evaluate(function, ValueFactory.createValue(JTSMultiPolygon2D));
 		assertTrue(res.getType() == Type.GEOMETRY);
-		assertTrue(res.getAsGeometry().contains(g1));
-		assertTrue(g1.contains(res.getAsGeometry()));
+		assertTrue(res.getAsGeometry().contains(JTSMultiPolygon2D));
+		assertTrue(JTSMultiPolygon2D.contains(res.getAsGeometry()));
 		System.out.println(res.getAsGeometry());
 		assertTrue(res.getAsGeometry().getNumGeometries() == 1);
 
 		// Test too many parameters
 		try {
-			res = evaluate(function, ValueFactory.createValue(g2), ValueFactory
+			res = evaluate(function, ValueFactory.createValue(JTSMultiLineString2D), ValueFactory
 					.createValue(4));
 			assertTrue(false);
 		} catch (IncompatibleTypesException e) {

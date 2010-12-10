@@ -72,20 +72,26 @@
 			<artifactId>jts</artifactId>
 			<version>1.11</version>
 		</dependency>
+
+         <dependency>
+                <groupId>fr.cts</groupId>
+                        <artifactId>cts</artifactId>
+                                <version>0.0.2</version>
+                                  </dependency>
+	 <dependency>
+    	<groupId>proj4j</groupId>
+  		<artifactId>proj4j</artifactId>
+  		<version>0.0.1-SNAPSHOT</version> 
+  	</dependency> 
+    <dependency>
+      <groupId>jGridShiftApi</groupId>
+      <artifactId>jGridShiftApi</artifactId>
+      <version>1.0.0</version>
+      <scope>compile</scope>
+    </dependency> 
 	</dependencies>
 	<build>
 		<plugins>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-source-plugin</artifactId>
-				<executions>
-					<execution>
-						<goals>
-							<goal>jar</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>

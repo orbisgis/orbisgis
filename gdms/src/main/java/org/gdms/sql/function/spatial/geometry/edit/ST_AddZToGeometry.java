@@ -36,6 +36,7 @@
  */
 package org.gdms.sql.function.spatial.geometry.edit;
 
+import org.gdms.data.DataSourceFactory;
 import org.gdms.data.types.Constraint;
 import org.gdms.data.types.DimensionConstraint;
 import org.gdms.data.types.InvalidTypeException;
@@ -55,7 +56,7 @@ public class ST_AddZToGeometry implements Function {
 
 	private double ZFieldValue;
 
-	public Value evaluate(Value[] args) throws FunctionException {
+	public Value evaluate(DataSourceFactory dsf, Value[] args) throws FunctionException {
 		if ((args[0].isNull()) || (args[1].isNull())) {
 			return ValueFactory.createNullValue();
 		}
@@ -64,7 +65,7 @@ public class ST_AddZToGeometry implements Function {
 
 		ZFieldValue = args[1].getAsDouble();
 
-		Geometry geom = CoordinatesUtils.updateZ(geometry, ZFieldValue);
+		Geometry geom = CoordinatesUtils.force_3D(geometry, ZFieldValue);
 
 		return ValueFactory.createValue(geom);
 

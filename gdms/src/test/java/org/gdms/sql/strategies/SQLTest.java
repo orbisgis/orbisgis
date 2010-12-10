@@ -48,6 +48,7 @@ import org.gdms.data.DataSourceFactory;
 import org.gdms.data.DigestUtilities;
 import org.gdms.data.SpatialDataSourceDecorator;
 import org.gdms.data.metadata.DefaultMetadata;
+import org.gdms.data.metadata.Metadata;
 import org.gdms.data.types.Constraint;
 import org.gdms.data.types.GeometryConstraint;
 import org.gdms.data.types.Type;
@@ -108,7 +109,7 @@ public class SQLTest extends SourceTest {
 		metadata.addField("f1", Type.INT);
 		dsf.getSourceManager().register("source",
 				new GenericObjectDriver(metadata));
-		dsf.executeSQL("insert into source (f1) values(ABS(2));");
+		dsf.executeSQL("insert into source (f1) values(AVG(2));");
 	}
 
 	public void testCreateAsTableCustomQuery() throws Exception {
@@ -163,13 +164,13 @@ public class SQLTest extends SourceTest {
 						+ super.getSHPTABLE());
 		dsf
 				.executeSQL("delete from temp where exists (select a.gid from centroid a, temp b where st_intersects(a.the_geom, b.the_geom));");
-	
+
 		DataSource ds = dsf.getDataSource("temp");
 
 		ds.open();
-		assertTrue(ds.getRowCount()==0);
+		assertTrue(ds.getRowCount() == 0);
 		ds.close();
-	
+
 	}
 
 	public void testDropTablePurge() throws Exception {
@@ -207,16 +208,20 @@ public class SQLTest extends SourceTest {
 		dsf.executeSQL("select register('" + backupDir
 				+ "/addColumn.shp','temp')");
 		dsf.executeSQL("alter table temp rename to erwan;");
-
 	}
 
 	public void testRenameColumn() throws Exception {
-		dsf.executeSQL("select register('" + backupDir
-				+ "/addColumn.shp','temp')");
-		dsf.executeSQL("create table temp as select *  from "
+		dsf.getSourceManager().register("landcover2000",
+				new File(internalData + "landcover2000.shp"));
+		dsf.executeSQL("create table diwall as select *  from landcover2000;"
 				+ super.getSHPTABLE());
-		dsf.executeSQL("alter table temp rename column type to erwan");
+		dsf.executeSQL("alter table diwall rename column type to erwan");
 
+		DataSource ds = dsf.getDataSource("diwall");
+		ds.open();
+		Metadata metadata = ds.getMetadata();
+		assertTrue(metadata.getFieldIndex("erwan") != -1);
+		ds.close();
 	}
 
 	public void testRenameColumnExists() throws Exception {
@@ -225,7 +230,6 @@ public class SQLTest extends SourceTest {
 		dsf.executeSQL("create table temp as select *  from "
 				+ super.getSHPTABLE());
 		dsf.executeSQL("alter table temp rename column type to type");
-
 	}
 
 	public void testAddColumn() throws Exception {
@@ -276,7 +280,6 @@ public class SQLTest extends SourceTest {
 				.executeSQL("create table temp as select a.*{except the_geom}  from "
 						+ super.getSHPTABLE() + "  a");
 		DataSource dsOut = dsf.getDataSource("temp");
-
 		dsOut.open();
 		assertTrue(dsOut.getFieldIndexByName("the_geom") == -1);
 		dsOut.close();
@@ -701,6 +704,15 @@ public class SQLTest extends SourceTest {
 		}
 	}
 
+	
+	public void testSelectFunction() throws Exception{
+		
+		dsf.getSourceManager().register("landcover2000",
+				new File(internalData + "landcover2000.shp"));
+		
+		
+	}
+	
 	public void testSelectWhere() throws Exception {
 
 		String query = "SELECT * FROM " + super.getSHPTABLE()
@@ -715,7 +727,6 @@ public class SQLTest extends SourceTest {
 	}
 
 	public void testSelectWhereExists() throws Exception {
-
 		String data = super.getAnySpatialResource();
 
 		DataSource d = dsf.getDataSourceFromSQL("select * from " + data

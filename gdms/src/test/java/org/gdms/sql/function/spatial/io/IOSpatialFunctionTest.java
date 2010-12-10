@@ -51,18 +51,18 @@ import com.vividsolutions.jts.io.WKTWriter;
 public class IOSpatialFunctionTest extends FunctionTest {
 
 	public void testAsWKT() throws Exception {
-		String str = testSpatialFunction(new ST_AsWKT(), g1, 1).getAsString();
-		assertTrue(str.equals(new WKTWriter().write(g1)));
+		String str = testSpatialFunction(new ST_AsWKT(), JTSMultiPolygon2D, 1).getAsString();
+		assertTrue(str.equals(new WKTWriter().write(JTSMultiPolygon2D)));
 		Point p3d = new GeometryFactory().createPoint(new Coordinate(3, 3, 3));
 		str = testSpatialFunction(new ST_AsWKT(), p3d, 1).getAsString();
 		assertTrue(str.equals(new WKTWriter(3).write(p3d)));
 	}
 
 	public void testGeomFromText() throws Exception {
-		String wkt = new WKTWriter().write(g1);
+		String wkt = new WKTWriter().write(JTSMultiPolygon2D);
 		Geometry g = testSpatialFunction(new ST_GeomFromText(),
 				ValueFactory.createValue(wkt), Type.STRING, 1).getAsGeometry();
-		assertTrue(g.equals(g1));
+		assertTrue(g.equals(JTSMultiPolygon2D));
 		Point p3d = new GeometryFactory().createPoint(new Coordinate(3, 3, 3));
 		wkt = new WKTWriter(3).write(p3d);
 		g = testSpatialFunction(new ST_GeomFromText(),

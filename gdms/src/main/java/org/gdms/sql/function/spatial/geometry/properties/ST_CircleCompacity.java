@@ -36,6 +36,7 @@
  */
 package org.gdms.sql.function.spatial.geometry.properties;
 
+import org.gdms.data.DataSourceFactory;
 import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
@@ -48,7 +49,7 @@ import com.vividsolutions.jts.geom.Geometry;
 public class ST_CircleCompacity extends AbstractSpatialPropertyFunction {
 	private final static double DPI = 2 * Math.PI;
 
-	public Value evaluateResult(final Value[] args) throws FunctionException {
+	public Value evaluateResult(DataSourceFactory dsf, Value[] args) throws FunctionException {
 		final Geometry geomBuild = args[0].getAsGeometry();
 		final double sBuild = geomBuild.getArea();
 		final double pBuild = geomBuild.getLength();

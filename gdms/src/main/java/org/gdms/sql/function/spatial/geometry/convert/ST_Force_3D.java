@@ -37,11 +37,14 @@
  */
 package org.gdms.sql.function.spatial.geometry.convert;
 
+import org.gdms.data.DataSourceFactory;
 import org.gdms.data.types.Constraint;
 import org.gdms.data.types.DimensionConstraint;
 import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
+import org.gdms.data.values.ValueFactory;
+import org.gdms.geometryUtils.CoordinatesUtils;
 import org.gdms.sql.function.Argument;
 import org.gdms.sql.function.Arguments;
 import org.gdms.sql.function.Function;
@@ -49,20 +52,25 @@ import org.gdms.sql.function.FunctionException;
 
 public class ST_Force_3D implements Function {
 
-	public Value evaluate(Value[] args) throws FunctionException {
+	public Value evaluate(DataSourceFactory dsf, Value[] args)
+			throws FunctionException {
+		if (!args[0].isNull()) {
+			return ValueFactory.createValue(CoordinatesUtils.force_3D(args[0]
+					.getAsGeometry()));
+		}
 		return args[0];
 	}
 
 	public String getDescription() {
-		return "Changes the metadata of the parameter by setting its dimension to 3D.";
+		return "Forces the geometries into XYZ mode. Metadata are also modified.";
 	}
 
 	public String getName() {
-		return "ST_Constraint3D";
+		return "ST_Force_3D";
 	}
 
 	public String getSqlOrder() {
-		return "select ST_Constraint3D(the_geom) from myTable";
+		return "select ST_Force_3D(the_geom) from myTable";
 	}
 
 	public boolean isAggregate() {

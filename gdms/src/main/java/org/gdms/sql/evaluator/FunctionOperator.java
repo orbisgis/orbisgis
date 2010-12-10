@@ -60,6 +60,7 @@ public class FunctionOperator extends AbstractOperator implements Expression {
 	private DataSourceFactory dsf;
 	private boolean lastCall = false;
 	private Value lastReturnValue = null;
+	private Type returnType = null;
 
 	public FunctionOperator(DataSourceFactory dsf, String name,
 			Expression[] arguments) {
@@ -75,7 +76,8 @@ public class FunctionOperator extends AbstractOperator implements Expression {
 		this.name = name;
 	}
 
-	public Value evaluateExpression(IProgressMonitor pm) throws EvaluationException {
+	public Value evaluateExpression(IProgressMonitor pm)
+			throws EvaluationException {
 		Function fnc = getFunction();
 		try {
 			if (lastCall) {
@@ -90,7 +92,7 @@ public class FunctionOperator extends AbstractOperator implements Expression {
 				for (int i = 0; i < args.length; i++) {
 					args[i] = getChild(i).evaluate(pm);
 				}
-				lastReturnValue = fnc.evaluate(args);
+				lastReturnValue = fnc.evaluate(dsf, args);
 				return lastReturnValue;
 			}
 		} catch (RuntimeException e) {
@@ -111,15 +113,17 @@ public class FunctionOperator extends AbstractOperator implements Expression {
 		}
 		ret.add(this);
 
-		return ret.toArray(new FunctionOperator[0]);
+		return ret.toArray(new FunctionOperator[ret.size()]);
 	}
 
 	public Type getType() throws DriverException {
-		Type[] argsTypes = getArgumentsTypes();		
-		return getFunction().getType(argsTypes);
+		if (returnType == null) {
+			Type[] argsTypes = getArgumentsTypes();
+			returnType = getFunction().getType(argsTypes);
+		}
+		return returnType;
 	}
-	
-	
+
 	private Type[] getArgumentsTypes() throws DriverException {
 		Type[] argsTypes = new Type[getChildCount()];
 		for (int i = 0; i < argsTypes.length; i++) {
@@ -186,7 +190,7 @@ public class FunctionOperator extends AbstractOperator implements Expression {
 	}
 
 	public void replaceStarBy(Expression[] expressions) {
-		if (star!=null) {
+		if (star != null) {
 			super.setChildren(expressions);
 		} else {
 			// ignore

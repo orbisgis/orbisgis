@@ -57,70 +57,73 @@ import com.vividsolutions.jts.io.WKTReader;
 
 public abstract class FunctionTest extends TestCase {
 
-	protected Geometry g1;
-	protected Geometry g2;
-	protected Geometry g3;
-	protected Geometry g4; // With two holes
-	protected Geometry geomCollection;
-	protected Geometry lineString;
-	protected Geometry multiLineString;
+	protected Geometry JTSMultiPolygon2D;
+	protected Geometry JTSMultiLineString2D;
+	protected Geometry JTSMultiPoint2D;
+	protected Geometry JTSPolygon2D; // With two holes
+	protected Geometry JTSGeometryCollection;
+	protected Geometry JTSPoint3D;
+	private Geometry JTSLineString2D;
 
 	public static DataSourceFactory dsf = new DataSourceFactory();
 
-	
 	@Override
 	protected void setUp() throws Exception {
 		WKTReader wktr = new WKTReader();
-		g1 = wktr.read("MULTIPOLYGON (((0 0, 1 1, 0 1, 0 0)))");
-		g2 = wktr.read("MULTILINESTRING ((0 0, 1 1, 0 1, 0 0))");
-		g3 = wktr.read("MULTIPOINT (0 0, 1 1, 0 1, 0 0)");
-		g4 = wktr
+		JTSMultiPolygon2D = wktr.read("MULTIPOLYGON (((0 0, 1 1, 0 1, 0 0)))");
+		JTSMultiLineString2D = wktr
+				.read("MULTILINESTRING ((0 0, 1 1, 0 1, 0 0))");
+		JTSMultiPoint2D = wktr.read("MULTIPOINT (0 0, 1 1, 0 1, 0 0)");
+		JTSPolygon2D = wktr
 				.read("POLYGON ((181 124, 87 162, 76 256, 166 315, 286 325, 373 255, 387 213, 377 159, 351 121, 298 101, 234 56, 181 124), (165 244, 227 219, 234 300, 168 288, 165 244), (244 130, 305 135, 324 186, 306 210, 272 206, 206 174, 244 130))");
 
-		lineString =  wktr.read("LINESTRING (182926.9929378531 2426741.3309792844, 182923 2426740, 182911 2426741, 182892.98591865166 2426741.8352893963)");
-		multiLineString = wktr.read("MULTILINESTRING ((183567.4305275123 2427174.0239940695, 183554.57165989507 2427169.953758708, 183514.0431114669 2427155.6831430644, 183464.95219365245 2427123.7169640227, 183415.2904512123 2427073.484396957, 183399.87818631704 2427058.642956687, 183355.35386550863 2427011.264512751, 183305.12129844268 2426956.4653486786, 183284.57161191572 2426924.4991696365, 183257.17202987973 2426879.9748488283, 183197 2426813, 183176 2426791, 183155.56524649635 2426776.0847669416, 183138 2426768, 183113 2426761, 183074 2426761, 183018.5673363165 2426762.3849759237, 182967.19311999905 2426760.101677421, 182935 2426744, 182923 2426740, 182911 2426741, 182892.98591865166 2426741.8352893963, 182875 2426729, 182865 2426715, 182847.3199485917 2426696.1693193363, 182791.37913526825 2426634.5202597557, 182778.82099350175 2426607.1206777194, 182778.82099350175 2426577.4377971804, 182761.6962547293 2426524.9219316114, 182761.6962547293 2426496.380700324, 182767.40450098677 2426476.9726630487))");
+		JTSLineString2D = wktr.read("LINESTRING (1 1, 2 1, 2 2, 1 2, 1 1)");
+		JTSPoint3D = wktr.read("POINT(0 10 20)");
 
 		GeometryFactory gf = new GeometryFactory();
-		geomCollection = gf.createGeometryCollection(new Geometry[] { g1, g2, g4 });
-		geomCollection = gf.createGeometryCollection(new Geometry[] { g3, g4,
-				geomCollection });
-		
-		
+		JTSGeometryCollection = gf.createGeometryCollection(new Geometry[] {
+				JTSMultiPolygon2D, JTSMultiLineString2D, JTSPolygon2D });
 		// first datasource
-		final GenericObjectDriver driver1 = new GenericObjectDriver(new String[] {
-				"pk", "geom" }, new Type[] {
-				TypeFactory.createType(Type.INT,
-						new Constraint[] { new PrimaryKeyConstraint() }),
-				TypeFactory.createType(Type.GEOMETRY) });
+		final GenericObjectDriver driver1 = new GenericObjectDriver(
+				new String[] { "pk", "geom" },
+				new Type[] {
+						TypeFactory
+								.createType(
+										Type.INT,
+										new Constraint[] { new PrimaryKeyConstraint() }),
+						TypeFactory.createType(Type.GEOMETRY) });
 
 		// insert all filled rows...
-		String g1 = "POLYGON ((0 0, 1 0, 1 1, 0 1, 0 0))";
-		String g2 = "MULTILINESTRING ((1 0, 2 0, 2 1, 1 1, 1 0))";
-		String g3 = "LINESTRING (1 1, 2 1, 2 2, 1 2, 1 1)";
-		String g4 = "MULTIPOLYGON (((0 1, 1 1, 1 2, 0 2, 0 1)))";
 		driver1.addValues(new Value[] { ValueFactory.createValue(1),
-				ValueFactory.createValue(wktr.read(g1)) });
+				ValueFactory.createValue(JTSMultiPolygon2D) });
 		driver1.addValues(new Value[] { ValueFactory.createValue(2),
-				ValueFactory.createValue(wktr.read(g2)) });
+				ValueFactory.createValue(JTSMultiLineString2D) });
 		driver1.addValues(new Value[] { ValueFactory.createValue(3),
-				ValueFactory.createValue(wktr.read(g3)) });
+				ValueFactory.createValue(JTSLineString2D) });
 		driver1.addValues(new Value[] { ValueFactory.createValue(4),
-				ValueFactory.createValue(wktr.read(g4)) });
+				ValueFactory.createValue(JTSPolygon2D) });
 		// and register this new driver...
-		dsf.getSourceManager().register("ds1", driver1);
+
+		if (!dsf.exists("ds1")) {
+			dsf.getSourceManager().register("ds1", driver1);
+		}
 
 		// second datasource
-		final GenericObjectDriver driver2 = new GenericObjectDriver(new String[] {
-				"pk", "geom" }, new Type[] {
-				TypeFactory.createType(Type.INT,
-						new Constraint[] { new PrimaryKeyConstraint() }),
-				TypeFactory.createType(Type.GEOMETRY) });
-		// insert all filled rows...
-		Geometry geometry = wktr.read(g1);
+		final GenericObjectDriver driver2 = new GenericObjectDriver(
+				new String[] { "pk", "geom" },
+				new Type[] {
+						TypeFactory
+								.createType(
+										Type.INT,
+										new Constraint[] { new PrimaryKeyConstraint() }),
+						TypeFactory.createType(Type.GEOMETRY) });
+
 		driver1.addValues(new Value[] { ValueFactory.createValue(1),
-				ValueFactory.createValue(geometry) });
+				ValueFactory.createValue(JTSMultiPolygon2D) });
 		// and register this new driver...
-		dsf.getSourceManager().register("ds2", driver2);
+		if (!dsf.exists("ds1")) {
+			dsf.getSourceManager().register("ds2", driver2);
+		}
 	}
 
 	protected Value evaluate(Function function, ColumnValue... args)
@@ -142,7 +145,7 @@ public abstract class FunctionTest extends TestCase {
 	private Value evaluateFunction(Function function, Value[] values)
 			throws FunctionException {
 		if (function.isAggregate()) {
-			Value lastEvaluation = function.evaluate(values);
+			Value lastEvaluation = function.evaluate(dsf, values);
 			Value lastCall = function.getAggregateResult();
 			if (lastCall != null) {
 				return lastCall;
@@ -150,7 +153,7 @@ public abstract class FunctionTest extends TestCase {
 				return lastEvaluation;
 			}
 		} else {
-			return function.evaluate(values);
+			return function.evaluate(dsf, values);
 		}
 	}
 

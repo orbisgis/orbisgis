@@ -40,6 +40,7 @@ package org.gdms.source;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -65,6 +66,8 @@ import org.gdms.data.db.DBSource;
 import org.gdms.data.db.DBTableSourceDefinition;
 import org.gdms.data.file.FileSourceDefinition;
 import org.gdms.data.object.ObjectSourceDefinition;
+import org.gdms.data.system.SystemSource;
+import org.gdms.data.system.SystemSourceDefinition;
 import org.gdms.data.wms.WMSSource;
 import org.gdms.data.wms.WMSSourceDefinition;
 import org.gdms.driver.DriverException;
@@ -73,11 +76,13 @@ import org.gdms.driver.asc.AscDriver;
 import org.gdms.driver.csvstring.CSVStringDriver;
 import org.gdms.driver.dbf.DBFDriver;
 import org.gdms.driver.driverManager.DriverManager;
+import org.gdms.driver.dxf.DXFDriver;
 import org.gdms.driver.gdms.GdmsDriver;
 import org.gdms.driver.geotif.TifDriver;
 import org.gdms.driver.h2.H2spatialDriver;
 import org.gdms.driver.hsqldb.HSQLDBDriver;
 import org.gdms.driver.jpg.JPGDriver;
+import org.gdms.driver.mifmid.MifMidDriver;
 import org.gdms.driver.png.PngDriver;
 import org.gdms.driver.postgresql.PostgreSQLDriver;
 import org.gdms.driver.shapefile.ShapefileDriver;
@@ -93,7 +98,6 @@ import org.gdms.sql.strategies.SQLProcessor;
 import org.gdms.sql.strategies.SemanticException;
 import org.gdms.sql.strategies.TableNotFoundException;
 import org.orbisgis.progress.IProgressMonitor;
-import org.orbisgis.progress.NullProgressMonitor;
 import org.orbisgis.utils.FileUtils;
 
 public class DefaultSourceManager implements SourceManager {
@@ -125,6 +129,9 @@ public class DefaultSourceManager implements SourceManager {
 
 	private String lastUID = "gdms" + System.currentTimeMillis();
 
+	public static final String SPATIAL_REF_SYSTEM = "spatial_ref_table";
+	public static final String SPATIAL_REF_TABLE_SYSTEM_PATH = "spatial_ref_sys_extended.gdms";
+
 	public DefaultSourceManager(DataSourceFactory dsf, String baseDir)
 			throws IOException {
 		dm.registerDriver(CSVStringDriver.class);
@@ -141,6 +148,8 @@ public class DefaultSourceManager implements SourceManager {
 		dm.registerDriver(AscDriver.class);
 		dm.registerDriver(JPGDriver.class);
 		dm.registerDriver(PngDriver.class);
+		dm.registerDriver(DXFDriver.class);
+		dm.registerDriver(MifMidDriver.class);
 		this.dsf = dsf;
 		changeSourceInfoDirectory(baseDir);
 	}
@@ -368,7 +377,7 @@ public class DefaultSourceManager implements SourceManager {
 				.clone();
 		for (SourceListener listener : list) {
 			listener.sourceRemoved(new SourceRemovalEvent(name, names
-					.toArray(new String[0]), true, this));
+					.toArray(new String[names.size()]), true, this));
 		}
 	}
 
@@ -870,10 +879,38 @@ public class DefaultSourceManager implements SourceManager {
 		} catch (DriverException e) {
 			throw new InitializationException(e);
 		}
+
+		loadSystemTables();
+	}
+
+	/**
+	 * A method used to register some table system TODO : Must be change with
+	 * GDMS 2.0
+	 */
+	public void loadSystemTables() {
+
+		// create spatial_ref_sys source
+		if (!exists(SPATIAL_REF_SYSTEM)) {
+			InputStream in = this.getClass().getResourceAsStream(
+					SPATIAL_REF_TABLE_SYSTEM_PATH);
+			String tempPath = getSourceInfoDirectory().getAbsolutePath()
+					+ File.separator + SPATIAL_REF_TABLE_SYSTEM_PATH;
+			try {
+				FileUtils.copy(in, new File(tempPath));
+				register(SPATIAL_REF_SYSTEM, new SystemSourceDefinition(
+						new SystemSource(new File(tempPath))));
+			} catch (IOException e) {
+				dsf.getWarningListener().throwWarning(
+						"Cannot load the spatial reference system. The coordinate"
+								+ "tranformations won't be available.");
+			}
+
+		}
+
 	}
 
 	public String[] getSourceNames() {
-		return nameSource.keySet().toArray(new String[0]);
+		return nameSource.keySet().toArray(new String[nameSource.size()]);
 	}
 
 	public void addCommitListener(CommitListener listener) {

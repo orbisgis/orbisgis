@@ -153,7 +153,7 @@ public class SQLProcessor {
 	 * @throws SemanticException
 	 * @throws DriverException
 	 */
-	private Instruction prepareInstruction(Operator op, String sql,
+	public Instruction prepareInstruction(Operator op, String sql,
 			boolean doOpenClose) throws ParseException, SemanticException,
 			DriverException {
 		// Preprocessor

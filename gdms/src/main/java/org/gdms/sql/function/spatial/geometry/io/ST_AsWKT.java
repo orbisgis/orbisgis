@@ -36,6 +36,7 @@
  */
 package org.gdms.sql.function.spatial.geometry.io;
 
+import org.gdms.data.DataSourceFactory;
 import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
@@ -48,7 +49,7 @@ import com.vividsolutions.jts.io.WKTWriter;
 
 public class ST_AsWKT extends AbstractSpatialPropertyFunction {
 
-	public Value evaluateResult(final Value[] args) throws FunctionException {
+	public Value evaluateResult(DataSourceFactory dsf, Value[] args) throws FunctionException {
 		final Geometry geom = args[0].getAsGeometry();
 		return ValueFactory.createValue(new WKTWriter(3).write(geom));
 	}

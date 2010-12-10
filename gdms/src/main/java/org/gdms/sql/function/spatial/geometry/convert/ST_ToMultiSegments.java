@@ -39,6 +39,7 @@ package org.gdms.sql.function.spatial.geometry.convert;
 
 import java.util.List;
 
+import org.gdms.data.DataSourceFactory;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.sql.function.Argument;
@@ -53,7 +54,7 @@ import com.vividsolutions.jts.geom.LineString;
 public class ST_ToMultiSegments extends AbstractSpatialFunction {
 	private final static GeometryFactory factory = new GeometryFactory();
 
-	public Value evaluate(Value[] args) throws FunctionException {
+	public Value evaluate(DataSourceFactory dsf,Value[] args) throws FunctionException {
 		if (args[0].isNull()) {
 			return ValueFactory.createNullValue();
 		} else {

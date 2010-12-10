@@ -37,6 +37,7 @@
 
 package org.gdms.sql.function.alphanumeric;
 
+import org.gdms.data.DataSourceFactory;
 import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
@@ -52,7 +53,7 @@ public class Average implements Function {
 	private double sumOfValues = 0;
 	private int numberOfValues = 0;
 
-	public Value evaluate(Value[] args) throws FunctionException {
+	public Value evaluate(DataSourceFactory dsf, Value[] args) throws FunctionException {
 		if (!args[0].isNull()) {
 			try {
 				sumOfValues += args[0].getAsDouble();

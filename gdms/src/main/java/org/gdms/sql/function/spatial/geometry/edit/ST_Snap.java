@@ -36,6 +36,7 @@
  */
 package org.gdms.sql.function.spatial.geometry.edit;
 
+import org.gdms.data.DataSourceFactory;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.sql.function.Argument;
@@ -48,7 +49,7 @@ import com.vividsolutions.jts.operation.overlay.snap.GeometrySnapper;
 
 public class ST_Snap extends AbstractSpatialFunction {
 
-	public Value evaluate(final Value[] args) throws FunctionException {
+	public Value evaluate(DataSourceFactory dsf, Value[] args) throws FunctionException {
 
 		Geometry g1 = args[0].getAsGeometry();
 		Geometry g2 = args[1].getAsGeometry();

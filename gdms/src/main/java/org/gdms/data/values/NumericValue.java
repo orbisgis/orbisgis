@@ -106,7 +106,7 @@ abstract class NumericValue extends AbstractValue implements Serializable {
 	 * @throws IncompatibleTypesException
 	 *             If value is not a numeric value.
 	 */
-	public Value producto(Value value) throws IncompatibleTypesException {
+	public Value multiply(Value value) throws IncompatibleTypesException {
 		if (value.isNull()) {
 			return ValueFactory.createNullValue();
 		} else {
@@ -131,7 +131,7 @@ abstract class NumericValue extends AbstractValue implements Serializable {
 	 * @throws IncompatibleTypesException
 	 *             If value is not a numeric value.
 	 */
-	public Value suma(Value value) throws IncompatibleTypesException {
+	public Value sum(Value value) throws IncompatibleTypesException {
 		if (value.isNull()) {
 			return ValueFactory.createNullValue();
 		} else {

@@ -49,72 +49,80 @@ import org.grap.model.GeoRaster;
 import com.vividsolutions.jts.geom.Geometry;
 
 /**
- * Parent wrapper. This class provides very basic implementation of the operations that can be made with values.
- * Most of the methods are supposed to be overriden by children. If not, they will
- * throw <code>IncompatibleTypeException</code>s
+ * Parent wrapper. This class provides very basic implementation of the
+ * operations that can be made with values. Most of the methods are supposed to
+ * be overriden by children. If not, they will throw
+ * <code>IncompatibleTypeException</code>s
  * 
- * @author Fernando Gonzalez Cortes
  */
 public abstract class AbstractValue implements Value {
+
 	/**
-         * Compute a logical AND between this and the parameter value, if possible. Must be overriden by children.
-         * @param value
-         * @return
-         *          The result of the AND operation
-         * @throws IncompatibleTypesException
-         *          If the operation is not implemented. Default behaviour.
-         */
+	 * Compute a logical AND between this and the parameter value, if possible.
+	 * Must be overriden by children.
+	 * 
+	 * @param value
+	 * @return The result of the AND operation
+	 * @throws IncompatibleTypesException
+	 *             If the operation is not implemented. Default behaviour.
+	 */
 	public Value and(Value value) throws IncompatibleTypesException {
 		throw new IncompatibleTypesException("Cannot operate with " + value
 				+ " and " + this);
 	}
 
 	/**
-         * Compute a logical OR between this and the parameter value. Must be overriden by children.
-         * @param value
-         * @return
-         *          The result of the or operation.
-         * @throws IncompatibleTypesException
-         *          If the operation is not implemented or possible between these two products.
-         */
+	 * Compute a logical OR between this and the parameter value. Must be
+	 * overriden by children.
+	 * 
+	 * @param value
+	 * @return The result of the or operation.
+	 * @throws IncompatibleTypesException
+	 *             If the operation is not implemented or possible between these
+	 *             two products.
+	 */
 	public Value or(Value value) throws IncompatibleTypesException {
 		throw new IncompatibleTypesException("Cannot operate with " + value
 				+ " and " + this);
 	}
 
 	/**
-         * Compute the product between this and the parameter value. Must be overriden by children.
-         * @param value
-         * @return
-         *          The result of the product.
-         * @throws IncompatibleTypesException
-         *          If the operation is not implemented or possible between these two products.
+	 * Compute the product between this and the parameter value. Must be
+	 * overriden by children.
+	 * 
+	 * @param value
+	 * @return The result of the product.
+	 * @throws IncompatibleTypesException
+	 *             If the operation is not implemented or possible between these
+	 *             two products.
 	 */
-	public Value producto(Value value) throws IncompatibleTypesException {
+	public Value multiply(Value value) throws IncompatibleTypesException {
 		throw new IncompatibleTypesException("Cannot operate with " + value
 				+ " and " + this);
 	}
 
 	/**
-         * Compute a sum between this and the parameter value. Must be overriden by children.
-         * @param value
-         * @return
-         *          The result of the sum.
-         * @throws IncompatibleTypesException
-         *          If the operation is not implemented or possible between these two products.
+	 * Compute a sum between this and the parameter value. Must be overriden by
+	 * children.
+	 * 
+	 * @param value
+	 * @return The result of the sum.
+	 * @throws IncompatibleTypesException
+	 *             If the operation is not implemented or possible between these
+	 *             two products.
 	 */
-	public Value suma(Value value) throws IncompatibleTypesException {
+	public Value sum(Value value) throws IncompatibleTypesException {
 		throw new IncompatibleTypesException("Cannot operate with " + value
 				+ " and " + this);
 	}
 
 	/**
-         * Compute the inverse of this value. Must be overriden by children.
-         * @param value
-         * @return
-         *          The result of the inverse operation.
-         * @throws IncompatibleTypesException
-         *          If the operation is not implemented.
+	 * Compute the inverse of this value. Must be overriden by children.
+	 * 
+	 * @param value
+	 * @return The result of the inverse operation.
+	 * @throws IncompatibleTypesException
+	 *             If the operation is not implemented.
 	 */
 	public Value inversa() throws IncompatibleTypesException {
 		throw new IncompatibleTypesException(this
@@ -122,78 +130,94 @@ public abstract class AbstractValue implements Value {
 	}
 
 	/**
-         * Test if this and value are equal. Must be overriden by children.
-         * @param value
-         * @return
-         *      A Value which determines if this and value are equals, for instance a BooleanValue.
-         * @throws IncompatibleTypesException
-         *      If the operation is not implemented or possible between these two products.
-         */
+	 * Test if this and value are equal. Must be overriden by children.
+	 * 
+	 * @param value
+	 * @return A Value which determines if this and value are equals, for
+	 *         instance a BooleanValue.
+	 * @throws IncompatibleTypesException
+	 *             If the operation is not implemented or possible between these
+	 *             two products.
+	 */
 	public Value equals(Value value) throws IncompatibleTypesException {
 		throw new IncompatibleTypesException("Cannot operate with " + value
 				+ " and " + this);
 	}
 
 	/**
-         * Test if this and value are not equals. Must be overriden by children.
-         * @param value
-         * @return
-         *          A Value which determines if this and value are not equals, for instance a BooleanValue.
-         * @throws IncompatibleTypesException
-         *          If the operation is not implemented or possible between these two products.
-         */
+	 * Test if this and value are not equals. Must be overriden by children.
+	 * 
+	 * @param value
+	 * @return A Value which determines if this and value are not equals, for
+	 *         instance a BooleanValue.
+	 * @throws IncompatibleTypesException
+	 *             If the operation is not implemented or possible between these
+	 *             two products.
+	 */
 	public Value notEquals(Value value) throws IncompatibleTypesException {
 		throw new IncompatibleTypesException("Cannot operate with " + value
 				+ " and " + this);
 	}
 
 	/**
-         * Test if this is strictly greater than value. Must be overriden by children.
-         * @param value
-         * @return
-         *          A value (preferably a BooleanValue) which determines which one is greater.
-         * @throws IncompatibleTypesException
-         *          If the operation is not implemented or possible between these two products.
-         */
+	 * Test if this is strictly greater than value. Must be overriden by
+	 * children.
+	 * 
+	 * @param value
+	 * @return A value (preferably a BooleanValue) which determines which one is
+	 *         greater.
+	 * @throws IncompatibleTypesException
+	 *             If the operation is not implemented or possible between these
+	 *             two products.
+	 */
 	public Value greater(Value value) throws IncompatibleTypesException {
 		throw new IncompatibleTypesException("Cannot operate with " + value
 				+ " and " + this);
 	}
 
 	/**
-         * Test if this is strictly smaller than value. Must be overriden by children.
-         * @param
-         * @return
-         *          A value (preferably a BooleanValue) which determines if this is smmaller than value.
-         * @throws IncompatibleTypesException
-         *          If the operation is not implemented or possible between these two products.
-         */
+	 * Test if this is strictly smaller than value. Must be overriden by
+	 * children.
+	 * 
+	 * @param
+	 * @return A value (preferably a BooleanValue) which determines if this is
+	 *         smmaller than value.
+	 * @throws IncompatibleTypesException
+	 *             If the operation is not implemented or possible between these
+	 *             two products.
+	 */
 	public Value less(Value value) throws IncompatibleTypesException {
 		throw new IncompatibleTypesException("Cannot operate with " + value
 				+ " and " + this);
 	}
 
 	/**
-         * Test if this is greater or equal than value. Must be overriden by children.
-         * @param value
-         * @return
-         *          A value (preferably a BooleanValue) which determines which one is greater.
-         * @throws IncompatibleTypesException
-         *          If the operation is not implemented or possible between these two products.
-         */
+	 * Test if this is greater or equal than value. Must be overriden by
+	 * children.
+	 * 
+	 * @param value
+	 * @return A value (preferably a BooleanValue) which determines which one is
+	 *         greater.
+	 * @throws IncompatibleTypesException
+	 *             If the operation is not implemented or possible between these
+	 *             two products.
+	 */
 	public Value greaterEqual(Value value) throws IncompatibleTypesException {
 		throw new IncompatibleTypesException("Cannot operate with " + value
 				+ " and " + this);
 	}
 
 	/**
-         * Test if this is smaller than or equal to value. Must be overriden by children.
-         * @param value
-         * @return
-         *          A value (preferably a BooleanValue) which determines which one is smaller.
-         * @throws IncompatibleTypesException
-         *          If the operation is not implemented or possible between these two products.
-         */
+	 * Test if this is smaller than or equal to value. Must be overriden by
+	 * children.
+	 * 
+	 * @param value
+	 * @return A value (preferably a BooleanValue) which determines which one is
+	 *         smaller.
+	 * @throws IncompatibleTypesException
+	 *             If the operation is not implemented or possible between these
+	 *             two products.
+	 */
 	public Value lessEqual(Value value) throws IncompatibleTypesException {
 		throw new IncompatibleTypesException("Cannot operate with " + value
 				+ " and " + this);
@@ -208,11 +232,11 @@ public abstract class AbstractValue implements Value {
 	}
 
 	/**
-         * Check if this is equal to an arbitrary Object obj
-         * @param obj
-         * @return
-         *          true if so.
-         */
+	 * Check if this is equal to an arbitrary Object obj
+	 * 
+	 * @param obj
+	 * @return true if so.
+	 */
 	public boolean doEquals(Object obj) {
 		if (obj instanceof Value) {
 			try {
@@ -226,39 +250,42 @@ public abstract class AbstractValue implements Value {
 	}
 
 	/**
-         * Check if this is equal to an arbitrary Object obj
-         * @param obj
-         * @return
-         *          true if so.
-         */
+	 * Check if this is equal to an arbitrary Object obj
+	 * 
+	 * @param obj
+	 * @return true if so.
+	 */
 	public boolean equals(Object obj) {
 		return doEquals(obj);
 	}
 
 	/**
-         * Compute a hash code for this value.
-         * @return
-         *      The hashcode as an int.
-         */
+	 * Compute a hash code for this value.
+	 * 
+	 * @return The hashcode as an int.
+	 */
 	public int hashCode() {
 		return doHashCode();
 	}
 
-        /**
-         * return a representation of this Value as a String.
-         * @return
-         */
+	/**
+	 * return a representation of this Value as a String.
+	 * 
+	 * @return
+	 */
 	@Override
 	public String toString() {
 		return getStringValue(ValueWriter.internalValueWriter);
 	}
 
-        /**
-         * Return this value as an array of bytes, if possible. Must be overriden by children.
-         * @return
-         * @throws IncompatibleTypesException
-         *
-         */
+	/**
+	 * Return this value as an array of bytes, if possible. Must be overriden by
+	 * children.
+	 * 
+	 * @return
+	 * @throws IncompatibleTypesException
+	 * 
+	 */
 	public byte[] getAsBinary() throws IncompatibleTypesException {
 		if (isNull()) {
 			return null;
@@ -266,12 +293,15 @@ public abstract class AbstractValue implements Value {
 		throw new IncompatibleTypesException("This value is not binary: "
 				+ toString() + "(" + TypeFactory.getTypeName(getType()) + ")");
 	}
-        /**
-         * try to retrieve this Value as a boolean. Must be overriden by children, when such an operation is possible..
-         * @return
-         * @throws IncompatibleTypesException
-         *      If the cast can't be made.
-         */
+
+	/**
+	 * try to retrieve this Value as a boolean. Must be overriden by children,
+	 * when such an operation is possible..
+	 * 
+	 * @return
+	 * @throws IncompatibleTypesException
+	 *             If the cast can't be made.
+	 */
 	public boolean getAsBoolean() throws IncompatibleTypesException {
 		if (isNull()) {
 			return false;
@@ -280,12 +310,14 @@ public abstract class AbstractValue implements Value {
 				+ toString() + "(" + TypeFactory.getTypeName(getType()) + ")");
 	}
 
-        /**
-         * Try to retrieve this Value as a Byte. Must be overriden by children, when such an operation is possible..
-         * @return
-         * @throws IncompatibleTypesException
-         *      If the cast can't be made.
-         */
+	/**
+	 * Try to retrieve this Value as a Byte. Must be overriden by children, when
+	 * such an operation is possible..
+	 * 
+	 * @return
+	 * @throws IncompatibleTypesException
+	 *             If the cast can't be made.
+	 */
 	public byte getAsByte() throws IncompatibleTypesException {
 		if (isNull()) {
 			return 0;
@@ -294,12 +326,14 @@ public abstract class AbstractValue implements Value {
 				+ toString() + "(" + TypeFactory.getTypeName(getType()) + ")");
 	}
 
-        /**
-         * Try to retrieve this Value as a Date. Must be overriden by children, when such an operation is possible..
-         * @return
-         * @throws IncompatibleTypesException
-         *      If the cast can't be made.
-         */
+	/**
+	 * Try to retrieve this Value as a Date. Must be overriden by children, when
+	 * such an operation is possible..
+	 * 
+	 * @return
+	 * @throws IncompatibleTypesException
+	 *             If the cast can't be made.
+	 */
 	public Date getAsDate() throws IncompatibleTypesException {
 		if (isNull()) {
 			return null;
@@ -308,12 +342,14 @@ public abstract class AbstractValue implements Value {
 				+ toString() + "(" + TypeFactory.getTypeName(getType()) + ")");
 	}
 
-        /**
-         * Try to retrieve this Value as a Double. Must be overriden by children, when such an operation is possible..
-         * @return
-         * @throws IncompatibleTypesException
-         *      If the cast can't be made.
-         */
+	/**
+	 * Try to retrieve this Value as a Double. Must be overriden by children,
+	 * when such an operation is possible..
+	 * 
+	 * @return
+	 * @throws IncompatibleTypesException
+	 *             If the cast can't be made.
+	 */
 	public double getAsDouble() throws IncompatibleTypesException {
 		if (isNull()) {
 			return 0;
@@ -322,12 +358,14 @@ public abstract class AbstractValue implements Value {
 				+ toString() + "(" + TypeFactory.getTypeName(getType()) + ")");
 	}
 
-        /**
-         * Try to retrieve this Value as a Float. Must be overriden by children, when such an operation is possible..
-         * @return
-         * @throws IncompatibleTypesException
-         *      If the cast can't be made.
-         */
+	/**
+	 * Try to retrieve this Value as a Float. Must be overriden by children,
+	 * when such an operation is possible..
+	 * 
+	 * @return
+	 * @throws IncompatibleTypesException
+	 *             If the cast can't be made.
+	 */
 	public float getAsFloat() throws IncompatibleTypesException {
 		if (isNull()) {
 			return 0;
@@ -336,12 +374,14 @@ public abstract class AbstractValue implements Value {
 				+ toString() + "(" + TypeFactory.getTypeName(getType()) + ")");
 	}
 
-        /**
-         * Try to retrieve this Value as a Geometry. Must be overriden by children, when such an operation is possible..
-         * @return
-         * @throws IncompatibleTypesException
-         *      If the cast can't be made.
-         */
+	/**
+	 * Try to retrieve this Value as a Geometry. Must be overriden by children,
+	 * when such an operation is possible..
+	 * 
+	 * @return
+	 * @throws IncompatibleTypesException
+	 *             If the cast can't be made.
+	 */
 	public Geometry getAsGeometry() throws IncompatibleTypesException {
 		if (isNull()) {
 			return null;
@@ -350,12 +390,14 @@ public abstract class AbstractValue implements Value {
 				+ toString() + "(" + TypeFactory.getTypeName(getType()) + ")");
 	}
 
-        /**
-         * Try to retrieve this Value as a Raster. Must be overriden by children, when such an operation is possible..
-         * @return
-         * @throws IncompatibleTypesException
-         *      If the cast can't be made.
-         */
+	/**
+	 * Try to retrieve this Value as a Raster. Must be overriden by children,
+	 * when such an operation is possible..
+	 * 
+	 * @return
+	 * @throws IncompatibleTypesException
+	 *             If the cast can't be made.
+	 */
 	public GeoRaster getAsRaster() throws IncompatibleTypesException {
 		if (isNull()) {
 			return null;
@@ -364,12 +406,14 @@ public abstract class AbstractValue implements Value {
 				+ toString() + "(" + TypeFactory.getTypeName(getType()) + ")");
 	}
 
-        /**
-         * Try to retrieve this Value as an int. Must be overriden by children, when such an operation is possible..
-         * @return
-         * @throws IncompatibleTypesException
-         *      If the cast can't be made.
-         */
+	/**
+	 * Try to retrieve this Value as an int. Must be overriden by children, when
+	 * such an operation is possible..
+	 * 
+	 * @return
+	 * @throws IncompatibleTypesException
+	 *             If the cast can't be made.
+	 */
 	public int getAsInt() throws IncompatibleTypesException {
 		if (isNull()) {
 			return 0;
@@ -378,12 +422,14 @@ public abstract class AbstractValue implements Value {
 				+ toString() + "(" + TypeFactory.getTypeName(getType()) + ")");
 	}
 
-        /**
-         * Try to retrieve this Value as a long. Must be overriden by children, when such an operation is possible..
-         * @return
-         * @throws IncompatibleTypesException
-         *      If the cast can't be made.
-         */
+	/**
+	 * Try to retrieve this Value as a long. Must be overriden by children, when
+	 * such an operation is possible..
+	 * 
+	 * @return
+	 * @throws IncompatibleTypesException
+	 *             If the cast can't be made.
+	 */
 	public long getAsLong() throws IncompatibleTypesException {
 		if (isNull()) {
 			return 0;
@@ -392,12 +438,14 @@ public abstract class AbstractValue implements Value {
 				+ toString() + "(" + TypeFactory.getTypeName(getType()) + ")");
 	}
 
-        /**
-         * Try to retrieve this Value as a short. Must be overriden by children, when such an operation is possible..
-         * @return
-         * @throws IncompatibleTypesException
-         *      If the cast can't be made.
-         */
+	/**
+	 * Try to retrieve this Value as a short. Must be overriden by children,
+	 * when such an operation is possible..
+	 * 
+	 * @return
+	 * @throws IncompatibleTypesException
+	 *             If the cast can't be made.
+	 */
 	public short getAsShort() throws IncompatibleTypesException {
 		if (isNull()) {
 			return 0;
@@ -406,12 +454,14 @@ public abstract class AbstractValue implements Value {
 				+ toString() + "(" + TypeFactory.getTypeName(getType()) + ")");
 	}
 
-        /**
-         * Try to retrieve this Value as a String. Must be overriden by children, when such an operation is possible..
-         * @return
-         * @throws IncompatibleTypesException
-         *      If the cast can't be made.
-         */
+	/**
+	 * Try to retrieve this Value as a String. Must be overriden by children,
+	 * when such an operation is possible..
+	 * 
+	 * @return
+	 * @throws IncompatibleTypesException
+	 *             If the cast can't be made.
+	 */
 	public String getAsString() throws IncompatibleTypesException {
 		if (isNull()) {
 			return null;
@@ -420,12 +470,14 @@ public abstract class AbstractValue implements Value {
 				+ toString() + "(" + TypeFactory.getTypeName(getType()) + ")");
 	}
 
-        /**
-         * Try to retrieve this Value as a Time. Must be overriden by children, when such an operation is possible..
-         * @return
-         * @throws IncompatibleTypesException
-         *      If the cast can't be made.
-         */
+	/**
+	 * Try to retrieve this Value as a Time. Must be overriden by children, when
+	 * such an operation is possible..
+	 * 
+	 * @return
+	 * @throws IncompatibleTypesException
+	 *             If the cast can't be made.
+	 */
 	public Time getAsTime() throws IncompatibleTypesException {
 		if (isNull()) {
 			return null;
@@ -434,12 +486,14 @@ public abstract class AbstractValue implements Value {
 				+ toString() + "(" + TypeFactory.getTypeName(getType()) + ")");
 	}
 
-        /**
-         * Try to retrieve this Value as a TimeStamp. Must be overriden by children, when such an operation is possible..
-         * @return
-         * @throws IncompatibleTypesException
-         *      If the cast can't be made.
-         */
+	/**
+	 * Try to retrieve this Value as a TimeStamp. Must be overriden by children,
+	 * when such an operation is possible..
+	 * 
+	 * @return
+	 * @throws IncompatibleTypesException
+	 *             If the cast can't be made.
+	 */
 	public Timestamp getAsTimestamp() throws IncompatibleTypesException {
 		if (isNull()) {
 			return null;
@@ -448,12 +502,14 @@ public abstract class AbstractValue implements Value {
 				+ toString() + "(" + TypeFactory.getTypeName(getType()) + ")");
 	}
 
-        /**
-         * Try to retrieve this Value as a ValueCollection. Must be overriden by children, when such an operation is possible..
-         * @return
-         * @throws IncompatibleTypesException
-         *      If the cast can't be made.
-         */
+	/**
+	 * Try to retrieve this Value as a ValueCollection. Must be overriden by
+	 * children, when such an operation is possible..
+	 * 
+	 * @return
+	 * @throws IncompatibleTypesException
+	 *             If the cast can't be made.
+	 */
 	public ValueCollection getAsValueCollection()
 			throws IncompatibleTypesException {
 		if (isNull()) {
@@ -464,23 +520,24 @@ public abstract class AbstractValue implements Value {
 						+ TypeFactory.getTypeName(getType()) + ")");
 	}
 
-        /**
-         * Check if this Value is null
-         * @return
-         *      true if it is.
-         */
+	/**
+	 * Check if this Value is null
+	 * 
+	 * @return true if it is.
+	 */
 	public boolean isNull() {
 		return false;
 	}
 
-        /**
-         * Try to cast this Value to the type identified by typeCode. Must be overriden by children.
-         * @param typeCode
-         * @return
-         *          The casted Value
-         * @throws IncompatibleTypesException
-         *          If the opoeration is not possible
-         */
+	/**
+	 * Try to cast this Value to the type identified by typeCode. Must be
+	 * overriden by children.
+	 * 
+	 * @param typeCode
+	 * @return The casted Value
+	 * @throws IncompatibleTypesException
+	 *             If the opoeration is not possible
+	 */
 	@Override
 	public Value toType(int typeCode) throws IncompatibleTypesException {
 		if (typeCode == getType()) {

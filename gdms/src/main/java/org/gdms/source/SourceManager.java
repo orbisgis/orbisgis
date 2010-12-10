@@ -97,6 +97,11 @@ public interface SourceManager {
 	public static final int WMS = 64;
 
 	/**
+	 * The source is a system table
+	 */
+	public static final int SYSTEM_TABLE = 128;
+
+	/**
 	 * Sets the driver manager used to load the drivers of the sources
 	 * 
 	 * @param dm
@@ -451,5 +456,7 @@ public interface SourceManager {
 	 */
 	public abstract String[] getAllNames(String sourceName)
 			throws NoSuchTableException;
+
+	public void loadSystemTables();
 
 }

@@ -36,6 +36,7 @@
  */
 package org.gdms.sql.function.alphanumeric;
 
+import org.gdms.data.DataSourceFactory;
 import org.gdms.data.types.Type;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
@@ -53,12 +54,12 @@ public class Sum implements Function {
 	/**
 	 * @see org.gdms.sql.function.Function#evaluate(org.gdms.data.values.Value[])
 	 */
-	public Value evaluate(Value[] args) throws FunctionException {
+	public Value evaluate(DataSourceFactory dsf,Value[] args) throws FunctionException {
 		if (!args[0].isNull()) {
 			if (acum.isNull()) {
 				acum = args[0];
 			} else {
-				acum = acum.suma(args[0]);
+				acum = acum.sum(args[0]);
 			}
 		}
 		return acum;

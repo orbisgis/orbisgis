@@ -139,7 +139,7 @@ public class H2spatialDriver extends DefaultDBDriver {
 					List<Constraint> constraints = addGlobalConstraints(
 							resultsetMetadata, pkFieldsList, jdbcFieldIndex);
 					return TypeFactory.createType(Type.STRING, constraints
-							.toArray(new Constraint[0]));
+							.toArray(new Constraint[constraints.size()]));
 				}
 			}
 			return super.getGDMSType(resultsetMetadata, pkFieldsList,

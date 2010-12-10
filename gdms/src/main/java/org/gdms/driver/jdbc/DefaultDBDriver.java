@@ -98,12 +98,14 @@ public abstract class DefaultDBDriver extends DefaultSQL {
 
 				final DatabaseMetaData dbmd = conn.getMetaData();
 
-				final ResultSet pKSet = dbmd.getPrimaryKeys(null, schemaName,
+				ResultSet pKSet = dbmd.getPrimaryKeys(null, schemaName,
 						tableName);
 				final List<String> pKFieldsList = new LinkedList<String>();
 				while (pKSet.next()) {
 					pKFieldsList.add(pKSet.getString("COLUMN_NAME"));
 				}
+				pKSet.close();
+				pKSet = null;
 
 				for (int i = 0; i < fc; i++) {
 					try {
@@ -248,7 +250,7 @@ public abstract class DefaultDBDriver extends DefaultSQL {
 			throws SQLException {
 		return getOrderFields(c, tableName, null);
 	}
-	
+
 	/**
 	 * Gets the order by clause of an instruction that orders by the primary key
 	 * fields for the specified table in the specified schema
@@ -256,13 +258,13 @@ public abstract class DefaultDBDriver extends DefaultSQL {
 	 * @param c
 	 * @param tableName
 	 * @param schemaName
-	 * @return 
+	 * @return
 	 * @throws SQLException
 	 * 
 	 * @see DefaultDBDriver#getOrderFields(Connection, String)
 	 */
-	protected static String getOrderFields(Connection c, String tableName, String schemaName)
-			throws SQLException {
+	protected static String getOrderFields(Connection c, String tableName,
+			String schemaName) throws SQLException {
 		DatabaseMetaData metadata = c.getMetaData();
 		ResultSet res = metadata.getPrimaryKeys(null, schemaName, tableName);
 
@@ -273,22 +275,26 @@ public abstract class DefaultDBDriver extends DefaultSQL {
 		while (res.next()) {
 			order = order + ", \"" + res.getString("COLUMN_NAME") + "\"";
 		}
+		res.close();
+		res = null;
 
 		return order;
 	}
 
 	/**
-	 * @see {@link DriverException.gdms.driver.DBDriver}{@link #open(Connection, String)}
+	 * @see {@link DriverException.gdms.driver.DBDriver}
+	 *      {@link #open(Connection, String)}
 	 */
 	public void open(Connection con, String tableName) throws DriverException {
 		open(con, tableName, null);
 	}
 
-	
 	/**
-	 * @see {@link DriverException.gdms.driver.DBDriver}{@link #open(Connection, String, String)}
+	 * @see {@link DriverException.gdms.driver.DBDriver}
+	 *      {@link #open(Connection, String, String)}
 	 */
-	public void open(Connection con, String tableName, String schemaName) throws DriverException {
+	public void open(Connection con, String tableName, String schemaName)
+			throws DriverException {
 		try {
 			orderFieldName = getOrderFields(con, tableName, schemaName);
 
@@ -298,9 +304,9 @@ public abstract class DefaultDBDriver extends DefaultSQL {
 			this.conn = con;
 			this.tableName = tableName;
 			this.schemaName = schemaName;
-			if(this.schemaName == null){
-				for(TableDescription table : getTables(con)){
-					if(table.getName().equals(tableName)){
+			if (this.schemaName == null) {
+				for (TableDescription table : getTables(con)) {
+					if (table.getName().equals(tableName)) {
 						this.schemaName = table.getSchema();
 						break;
 					}
@@ -334,8 +340,7 @@ public abstract class DefaultDBDriver extends DefaultSQL {
 	 * @return
 	 * @throws DriverException
 	 */
-	protected String getSelectSQL(String orderFieldName)
-			throws DriverException {
+	protected String getSelectSQL(String orderFieldName) throws DriverException {
 		String sql = "SELECT * FROM " + getTableAndSchemaName();
 		if (orderFieldName != null) {
 			sql += " ORDER BY " + orderFieldName;
@@ -541,7 +546,7 @@ public abstract class DefaultDBDriver extends DefaultSQL {
 	protected String getTableName() {
 		return tableName;
 	}
-	
+
 	/**
 	 * getter for the schema name
 	 * 

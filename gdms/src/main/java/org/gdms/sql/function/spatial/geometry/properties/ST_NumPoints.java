@@ -36,6 +36,7 @@
  */
 package org.gdms.sql.function.spatial.geometry.properties;
 
+import org.gdms.data.DataSourceFactory;
 import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
@@ -44,7 +45,7 @@ import org.gdms.sql.function.FunctionException;
 
 public class ST_NumPoints extends AbstractSpatialPropertyFunction {
 
-	public Value evaluateResult(final Value[] args) throws FunctionException {
+	public Value evaluateResult(DataSourceFactory dsf, Value[] args) throws FunctionException {
 		return ValueFactory.createValue(args[0].getAsGeometry().getNumPoints());
 	}
 

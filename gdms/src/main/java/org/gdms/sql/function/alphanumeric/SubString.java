@@ -36,6 +36,7 @@
  */
 package org.gdms.sql.function.alphanumeric;
 
+import org.gdms.data.DataSourceFactory;
 import org.gdms.data.types.InvalidTypeException;
 import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeFactory;
@@ -48,7 +49,7 @@ import org.gdms.sql.function.FunctionException;
 
 public class SubString implements Function {
 
-	public Value evaluate(Value[] arg0) throws FunctionException {
+	public Value evaluate(DataSourceFactory dsf,Value[] arg0) throws FunctionException {
 		// Return a null value is the two arguments are null
 		if ((arg0[0].isNull()) || (arg0[1].isNull())) {
 			return ValueFactory.createNullValue();
