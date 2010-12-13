@@ -40,6 +40,7 @@
 package org.orbisgis.core.renderer;
 
 import java.awt.Graphics2D;
+import org.gdms.data.SpatialDataSourceDecorator;
 import org.gdms.data.feature.Feature;
 import org.orbisgis.core.map.MapTransform;
 
@@ -48,6 +49,9 @@ import org.orbisgis.core.map.MapTransform;
  * @author maxence
  */
 public interface Drawer {
+
+
+	void setSpatialDataSouerce(SpatialDataSourceDecorator sds);
 
 	void initEnv(MapTransform mt);
 
@@ -62,11 +66,11 @@ public interface Drawer {
 	String getXMLSVG();
 
 
-	void drawPointSymbolizer(Feature feat, boolean selected);
-	void drawLineSymbolizer(Feature feat, boolean selected);
-	void drawAreaSymbolizer(Feature feat, boolean selected);
-	void drawTextSymbolizer(Feature feat, boolean selected);
-	void drawRasterSymbolizer(Feature feat, boolean selected);
+	void drawPointSymbolizer(long fid, boolean selected);
+	void drawLineSymbolizer(long fid, boolean selected);
+	void drawAreaSymbolizer(long fid, boolean selected);
+	void drawTextSymbolizer(long fid, boolean selected);
+	void drawRasterSymbolizer(long fid, boolean selected);
 
     //void draw(Graphics2D g2, Feature feat, boolean selected, MapTransform mt);
 }

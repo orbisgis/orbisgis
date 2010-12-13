@@ -69,6 +69,7 @@ public class Interpolate2Color extends Interpolate<ColorParameter, ColorLiteral>
 
 		InterpolationPoint<ColorParameter> ip1 = i_points.get(k);
 		InterpolationPoint<ColorParameter> ip2 = i_points.get(k+1);
+
 		double d1 = ip1.getData();
 		double d2 = ip2.getData();
 
@@ -78,7 +79,9 @@ public class Interpolate2Color extends Interpolate<ColorParameter, ColorLiteral>
 
 		switch(this.mode){
 		case CUBIC:
-
+			return new Color((int)cubicInterpolation(d1, d2, value, c1.getRed(), c2.getRed(), -1.0, -1.0),
+					(int)cubicInterpolation(d1, d2, value, c1.getGreen(), c2.getGreen(), -1.0, -1.0),
+					(int)cubicInterpolation(d1, d2, value, c1.getBlue(), c2.getBlue(), -1.0, 1.0));
 		case COSINE:
 			return new Color((int)cosineInterpolation(d1, d2, value, c1.getRed(), c2.getRed()),
 					(int)cosineInterpolation(d1, d2, value, c1.getGreen(), c2.getGreen()),

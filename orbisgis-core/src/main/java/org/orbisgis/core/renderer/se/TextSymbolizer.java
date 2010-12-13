@@ -170,7 +170,7 @@ public final class TextSymbolizer extends VectorSymbolizer {
 	}
 
 	@Override
-	public void draw(Drawer drawer, Feature feat, boolean selected) {
-		drawer.drawTextSymbolizer(feat, selected);
+	public void draw(Drawer drawer, long fid, boolean selected) {
+		drawer.drawTextSymbolizer(fid, selected);
 	}
 }

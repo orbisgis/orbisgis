@@ -182,7 +182,7 @@ public final class PointSymbolizer extends VectorSymbolizer implements GraphicNo
 	private GraphicCollection graphic;
 
 	@Override
-	public void draw(Drawer drawer, Feature feat, boolean selected) {
-		drawer.drawPointSymbolizer(feat, selected);
+	public void draw(Drawer drawer, long fid, boolean selected) {
+		drawer.drawPointSymbolizer(fid, selected);
 	}
 }
