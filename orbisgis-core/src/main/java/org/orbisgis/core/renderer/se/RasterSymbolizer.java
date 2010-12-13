@@ -237,8 +237,8 @@ public class RasterSymbolizer extends Symbolizer {
     private AreaSymbolizer outline;
 
 	@Override
-	public void draw(Drawer drawer, Feature feat, boolean selected) {
-		drawer.drawRasterSymbolizer(feat, selected);
+	public void draw(Drawer drawer, long fid, boolean selected) {
+		drawer.drawRasterSymbolizer(fid, selected);
 	}
 
 }

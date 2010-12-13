@@ -184,7 +184,7 @@ public abstract class Symbolizer implements SymbolizerNode, Comparable {
 
     public abstract void draw(Graphics2D g2, Feature feat, boolean selected, MapTransform mt) throws ParameterException, IOException, DriverException;
 
-	public abstract void draw(Drawer drawer, Feature feat, boolean selected);
+	public abstract void draw(Drawer drawer, long fid, boolean selected);
 
     public abstract JAXBElement<? extends SymbolizerType> getJAXBElement();
 }

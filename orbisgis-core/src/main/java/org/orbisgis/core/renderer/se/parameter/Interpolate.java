@@ -161,10 +161,18 @@ public abstract class Interpolate<ToType extends SeParameter, FallbackType exten
 		return -1;
 	}
 
+
+	protected double cubicInterpolation(double d1, double d2, double x,
+			double v1, double v2, double v3, double v4){
+		double mu = (x - d1) / (d2 - d1);
+
+		return 0.0;
+	}
+
 	protected double cosineInterpolation(double d1, double d2, double x, double v1, double v2) {
-		double x1 = (x - d1) / (d2 - d1);
-		double cosXPi = Math.cos(x1 * Math.PI);
-		return v1 + (v1 * (cosXPi - 1) + v2 * (1 - cosXPi)) * 0.5;
+		double mu = (x - d1) / (d2 - d1);
+		double mu2 = (1 - Math.cos(mu * Math.PI)) * 0.5;
+		return v1 + mu2*(v2-v1);
 	}
 
 	protected double linearInterpolation(double d1, double d2, double x, double v1, double v2) {

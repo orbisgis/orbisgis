@@ -223,7 +223,7 @@ public final class AreaSymbolizer extends VectorSymbolizer implements FillNode, 
 	}
 
 	@Override
-	public void draw(Drawer drawer, Feature feat, boolean selected) {
-		drawer.drawAreaSymbolizer(feat, selected);
+	public void draw(Drawer drawer, long fid, boolean selected) {
+		drawer.drawAreaSymbolizer(0, selected);
 	}
 }

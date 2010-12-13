@@ -72,6 +72,8 @@ public final class Interpolate2Real extends Interpolate<RealParameter, RealLiter
 
 		switch(this.mode){
 		case CUBIC:
+			return cubicInterpolation(ip1.getData(), ip2.getData(), value,
+			ip1.getValue().getValue(feat), ip2.getValue().getValue(feat), -1.0, -1.0);
 		case COSINE:
 			return cosineInterpolation(ip1.getData(), ip2.getData(), value,
 			ip1.getValue().getValue(feat), ip2.getValue().getValue(feat));

@@ -194,7 +194,7 @@ public final class LineSymbolizer extends VectorSymbolizer implements StrokeNode
 	}
 
 	@Override
-	public void draw(Drawer drawer, Feature feat, boolean selected) {
-		drawer.drawLineSymbolizer(feat, selected);
+	public void draw(Drawer drawer, long fid, boolean selected) {
+		drawer.drawLineSymbolizer(fid, selected);
 	}
 }

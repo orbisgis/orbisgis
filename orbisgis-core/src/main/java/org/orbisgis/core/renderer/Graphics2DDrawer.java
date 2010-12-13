@@ -41,6 +41,7 @@
 package org.orbisgis.core.renderer;
 
 import java.awt.Graphics2D;
+import org.gdms.data.SpatialDataSourceDecorator;
 import org.gdms.data.feature.Feature;
 import org.orbisgis.core.map.MapTransform;
 
@@ -81,27 +82,32 @@ public class Graphics2DDrawer implements Drawer {
 	}
 
 	@Override
-	public void drawPointSymbolizer(Feature feat, boolean selected) {
+	public void setSpatialDataSouerce(SpatialDataSourceDecorator sds) {
 		throw new UnsupportedOperationException("Not supported yet.");
 	}
 
 	@Override
-	public void drawLineSymbolizer(Feature feat, boolean selected) {
+	public void drawPointSymbolizer(long fid, boolean selected) {
 		throw new UnsupportedOperationException("Not supported yet.");
 	}
 
 	@Override
-	public void drawAreaSymbolizer(Feature feat, boolean selected) {
+	public void drawLineSymbolizer(long fid, boolean selected) {
 		throw new UnsupportedOperationException("Not supported yet.");
 	}
 
 	@Override
-	public void drawTextSymbolizer(Feature feat, boolean selected) {
+	public void drawAreaSymbolizer(long fid, boolean selected) {
 		throw new UnsupportedOperationException("Not supported yet.");
 	}
 
 	@Override
-	public void drawRasterSymbolizer(Feature feat, boolean selected) {
+	public void drawTextSymbolizer(long fid, boolean selected) {
+		throw new UnsupportedOperationException("Not supported yet.");
+	}
+
+	@Override
+	public void drawRasterSymbolizer(long fid, boolean selected) {
 		throw new UnsupportedOperationException("Not supported yet.");
 	}
 
