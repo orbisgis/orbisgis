@@ -600,7 +600,9 @@ public class TableComponent extends JPanel implements WorkbenchFrame {
 			int column, IProgressMonitor pm) {
 		TableColumn col = table.getColumnModel().getColumn(column);
 		int margin = 5;
+		int headerMargin = 10;
 		int width = 0;
+
 
 		// Get width of column header
 		TableCellRenderer renderer = col.getHeaderRenderer();
@@ -617,7 +619,7 @@ public class TableComponent extends JPanel implements WorkbenchFrame {
 		// Check header
 		comp = renderer.getTableCellRendererComponent(table, col
 				.getHeaderValue(), false, false, 0, column);
-		width = Math.max(width, comp.getPreferredSize().width);
+		width = Math.max(width, comp.getPreferredSize().width + 2 * headerMargin);
 		// Get maximum width of column data
 		for (int r = 0; r < rowsToCheck; r++) {
 			if (r / 100 == r / 100.0) {
