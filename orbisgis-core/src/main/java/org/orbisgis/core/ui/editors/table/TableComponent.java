@@ -680,7 +680,13 @@ public class TableComponent extends JPanel implements WorkbenchFrame {
 				renderers);
 	}
 
-	private int getRowIndex(int row) {
+	/**
+	 * Retrieve the index of the data in the data source shown at the index row
+	 * in the displayed table.
+	 * @param row
+	 * @return
+	 */
+	public int getRowIndex(int row) {
 		if (indexes != null) {
 			row = indexes.get(row);
 		}
@@ -788,16 +794,14 @@ public class TableComponent extends JPanel implements WorkbenchFrame {
 
 					@Override
 					public String getTaskName() {
-						return I18N
-								.getText("orbisgis.org.orbisgis.core.ui.editors.table.TableComponent.columnOptimalWidth");
+						return I18N.getText("orbisgis.org.orbisgis.core.ui.editors.table.TableComponent.columnOptimalWidth");
 					}
 				});
 			} else if (SETWIDTH.equals(e.getActionCommand())) {
 				TableColumn selectedTableColumn = table.getTableHeader()
 						.getColumnModel().getColumn(selectedColumn);
 				AskValue av = new AskValue(
-						I18N
-								.getText("orbisgis.org.orbisgis.core.ui.editors.table.TableComponent.newColumnWidth"),
+						I18N.getText("orbisgis.org.orbisgis.core.ui.editors.table.TableComponent.newColumnWidth"),
 						null, null, Integer.toString(selectedTableColumn
 								.getPreferredWidth()));
 				av.setType(SQLUIPanel.INT);
@@ -917,30 +921,25 @@ public class TableComponent extends JPanel implements WorkbenchFrame {
 			JPopupMenu pop = new JPopupMenu();
 			addMenu(
 					pop,
-					I18N
-							.getText("orbisgis.org.orbisgis.core.ui.editors.table.TableComponent.optimalWidth"),
+					I18N.getText("orbisgis.org.orbisgis.core.ui.editors.table.TableComponent.optimalWidth"),
 					IconLoader.getIcon("text_letterspacing.png"), OPTIMALWIDTH);
 			addMenu(
 					pop,
-					I18N
-							.getText("orbisgis.org.orbisgis.core.ui.editors.table.TableComponent.setWidth"),
+					I18N.getText("orbisgis.org.orbisgis.core.ui.editors.table.TableComponent.setWidth"),
 					null, SETWIDTH);
 			pop.addSeparator();
 			if (tableModel.getColumnType(selectedColumn).getTypeCode() != Type.GEOMETRY) {
 				addMenu(
 						pop,
-						I18N
-								.getText("orbisgis.org.orbisgis.core.ui.editors.table.TableComponent.sortAscending"),
+						I18N.getText("orbisgis.org.orbisgis.core.ui.editors.table.TableComponent.sortAscending"),
 						IconLoader.getIcon("thumb_up.png"), SORTUP);
 				addMenu(
 						pop,
-						I18N
-								.getText("orbisgis.org.orbisgis.core.ui.editors.table.TableComponent.sortDescending"),
+						I18N.getText("orbisgis.org.orbisgis.core.ui.editors.table.TableComponent.sortDescending"),
 						IconLoader.getIcon("thumb_down.png"), SORTDOWN);
 				addMenu(
 						pop,
-						I18N
-								.getText("orbisgis.org.orbisgis.core.ui.editors.table.TableComponent.noSort"),
+						I18N.getText("orbisgis.org.orbisgis.core.ui.editors.table.TableComponent.noSort"),
 						OrbisGISIcon.TABLE_REFRESH, NOSORT);
 			}
 			return pop;

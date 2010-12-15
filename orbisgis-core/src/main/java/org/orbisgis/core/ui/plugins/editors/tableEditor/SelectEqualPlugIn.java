@@ -61,14 +61,18 @@ import org.orbisgis.progress.IProgressMonitor;
 
 public class SelectEqualPlugIn extends AbstractPlugIn {
 
+	@Override
 	public boolean execute(PlugInContext context) throws Exception {
 		IEditor editor = context.getActiveEditor();
 		final TableEditableElement element = (TableEditableElement) editor
 				.getElement();
-		final int rowIndex = ((TableComponent) editor.getView().getComponent())
-				.getTable().rowAtPoint(getEvent().getPoint());
-		final int columnIndex = ((TableComponent) editor.getView()
-				.getComponent()).getTable()
+		//We must retrieve the indices of the element we have selected.
+		//We must be careful, as the rowIndex we retrieve is no the one
+		//we want to use to retrieve the data in the data source.
+		TableComponent currentTable = (TableComponent) editor.getView().getComponent();
+		final int rowIndex = currentTable.getTable().rowAtPoint(getEvent().getPoint());
+		final int dbRowIndex = currentTable.getRowIndex(rowIndex);
+		final int columnIndex = currentTable.getTable()
 				.columnAtPoint(getEvent().getPoint());
 		BackgroundManager bm = Services.getService(BackgroundManager.class);
 		bm.backgroundOperation(new BackgroundJob() {
@@ -78,7 +82,7 @@ public class SelectEqualPlugIn extends AbstractPlugIn {
 				try {
 					DataSource dataSource = element.getDataSource();
 					ArrayList<Integer> newSel = new ArrayList<Integer>();
-					Value ref = dataSource.getFieldValue(rowIndex, columnIndex);
+					Value ref = dataSource.getFieldValue(dbRowIndex, columnIndex);
 					for (int i = 0; i < dataSource.getRowCount(); i++) {
 						if (dataSource.getFieldValue(i, columnIndex)
 								.equals(ref).getAsBoolean()) {
@@ -116,6 +120,7 @@ public class SelectEqualPlugIn extends AbstractPlugIn {
 				OrbisGISIcon.TABLE_SELECT_SAME_VALUE, wbContext);
 	}
 
+	@Override
 	public boolean isEnabled() {
 
 		TableEditorPlugIn table = getPlugInContext().getTableEditor();
