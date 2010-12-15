@@ -52,6 +52,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
+import javax.swing.JLabel;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
@@ -141,9 +142,12 @@ public class WorkbenchToolBar extends EnableableToolBar implements Observer {
 		((AbstractPlugIn) plugIn).setPlugInContext(plugInContext);
 		}
 		toolsPlugInObservers.add(plugIn);
-		((JButton) c).setBorderPainted(false);
-		((JButton) c).addActionListener(AbstractPlugIn.toActionListener(plugIn,
-				context));
+		if(c instanceof JButton)
+		{
+			((JButton) c).setBorderPainted(false);
+			((JButton) c).addActionListener(AbstractPlugIn.toActionListener(plugIn,
+					context));
+		}
 		add(c, plugIn);
 	}
 

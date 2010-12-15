@@ -47,6 +47,7 @@ import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchContext;
 import org.orbisgis.core.ui.preferences.lookandfeel.images.IconLoader;
 import org.orbisgis.core.workspace.DefaultWorkspace;
 import org.orbisgis.core.workspace.Workspace;
+import org.orbisgis.utils.I18N;
 
 public class FreeDefaultWorkspacePlugIn extends AbstractPlugIn {
 
@@ -54,7 +55,7 @@ public class FreeDefaultWorkspacePlugIn extends AbstractPlugIn {
 
 	public FreeDefaultWorkspacePlugIn() {
 		btn = new JButton(IconLoader.getIcon("application_form_delete.png"));
-		btn.setToolTipText("Free default workspace");
+		btn.setToolTipText(I18N.getText("org.orbisgis.core.ui.plugins.status.FreeDefaultWorkspacePlugIn.FreeDefault"));
 	}
 
 	public boolean execute(PlugInContext context) throws Exception {
@@ -67,7 +68,7 @@ public class FreeDefaultWorkspacePlugIn extends AbstractPlugIn {
 
 		return true;
 	}
-
+	
 	public void initialize(PlugInContext context) throws Exception {
 		WorkbenchContext wbcontext = context.getWorkbenchContext();
 		wbcontext.getWorkbench().getFrame().getMainStatusToolBar().addPlugIn(
