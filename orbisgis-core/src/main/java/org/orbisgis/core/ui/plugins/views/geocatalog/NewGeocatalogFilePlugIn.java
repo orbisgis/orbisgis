@@ -50,6 +50,7 @@ import org.orbisgis.core.sif.UIPanel;
 import org.orbisgis.core.ui.pluginSystem.AbstractPlugIn;
 import org.orbisgis.core.ui.pluginSystem.PlugInContext;
 import org.orbisgis.core.ui.pluginSystem.workbench.Names;
+import org.orbisgis.core.ui.pluginSystem.workbench.OrbisConfiguration;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchContext;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchFrame;
 import org.orbisgis.core.ui.preferences.lookandfeel.OrbisGISIcon;
@@ -58,6 +59,7 @@ import org.orbisgis.utils.FileUtils;
 
 public class NewGeocatalogFilePlugIn extends AbstractPlugIn {
 
+	@Override
 	public boolean execute(PlugInContext context) throws Exception {
 		OpenGdmsFilePanel filePanel = new OpenGdmsFilePanel(
 				"Select the file to add");
@@ -65,17 +67,19 @@ public class NewGeocatalogFilePlugIn extends AbstractPlugIn {
 
 			File[] files = filePanel.getSelectedFiles();
 			for (File file : files) {
-				DataManager dm = (DataManager) Services
-						.getService(DataManager.class);
-				SourceManager sourceManager = dm.getSourceManager();
-				try {
-					String name = sourceManager.getUniqueName(FileUtils
-							.getFileNameWithoutExtensionU(file));
-					sourceManager.register(name, file);
-				} catch (SourceAlreadyExistsException e) {
-					Services.getErrorManager().error(
-							"The source is already registered: "
-									+ e.getMessage());
+				if(OrbisConfiguration.isFileEligible(file)) {
+					DataManager dm = (DataManager) Services
+							.getService(DataManager.class);
+					SourceManager sourceManager = dm.getSourceManager();
+					try {
+						String name = sourceManager.getUniqueName(FileUtils
+								.getFileNameWithoutExtensionU(file));
+						sourceManager.register(name, file);
+					} catch (SourceAlreadyExistsException e) {
+						Services.getErrorManager().error(
+								"The source is already registered: "
+										+ e.getMessage());
+					}
 				}
 			}
 		}

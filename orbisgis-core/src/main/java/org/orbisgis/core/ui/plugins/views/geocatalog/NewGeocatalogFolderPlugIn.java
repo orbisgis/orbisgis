@@ -36,7 +36,6 @@ Thomas LEDUC, scientific researcher, Fernando GONZALEZ
  * or contact directly:
  * info@orbisgis.org
  */
-
 package org.orbisgis.core.ui.plugins.views.geocatalog;
 
 import java.io.File;
@@ -51,6 +50,7 @@ import org.orbisgis.core.sif.UIPanel;
 import org.orbisgis.core.ui.pluginSystem.AbstractPlugIn;
 import org.orbisgis.core.ui.pluginSystem.PlugInContext;
 import org.orbisgis.core.ui.pluginSystem.workbench.Names;
+import org.orbisgis.core.ui.pluginSystem.workbench.OrbisConfiguration;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchContext;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchFrame;
 import org.orbisgis.core.ui.preferences.lookandfeel.OrbisGISIcon;
@@ -62,8 +62,8 @@ public class NewGeocatalogFolderPlugIn extends AbstractPlugIn {
 	@Override
 	public boolean execute(PlugInContext context) throws Exception {
 		OpenGdmsFolderPanel folderPanel = new OpenGdmsFolderPanel(
-				"Select the folder to add");
-		if (UIFactory.showDialog(new UIPanel[] { folderPanel })) {
+			"Select the folder to add");
+		if (UIFactory.showDialog(new UIPanel[]{folderPanel})) {
 
 			File[] files = folderPanel.getSelectedFiles();
 			for (File file : files) {
@@ -76,15 +76,14 @@ public class NewGeocatalogFolderPlugIn extends AbstractPlugIn {
 	@Override
 	public void initialize(PlugInContext context) throws Exception {
 		WorkbenchContext wbContext = context.getWorkbenchContext();
-		WorkbenchFrame frame = wbContext.getWorkbench().getFrame()
-				.getGeocatalog();
+		WorkbenchFrame frame = wbContext.getWorkbench().getFrame().getGeocatalog();
 		context.getFeatureInstaller().addPopupMenuItem(
-				frame,
-				this,
-				new String[] { Names.POPUP_GEOCATALOG_ADD,
-						Names.POPUP_GEOCATALOG_FOLDER },
-				Names.POPUP_GEOCATALOG_ADD, false,
-				OrbisGISIcon.GEOCATALOG_FILE, wbContext);
+			frame,
+			this,
+			new String[]{Names.POPUP_GEOCATALOG_ADD,
+				Names.POPUP_GEOCATALOG_FOLDER},
+			Names.POPUP_GEOCATALOG_ADD, false,
+			OrbisGISIcon.GEOCATALOG_FILE, wbContext);
 
 	}
 
@@ -98,23 +97,22 @@ public class NewGeocatalogFolderPlugIn extends AbstractPlugIn {
 	 * If the file is acceptable by the FileFilter, it is processed
 	 * @param file
 	 */
-	private void processFolder(File file, FileFilter filter){
-		if(file.isDirectory()){
-			for(File content : file.listFiles()){
+	private void processFolder(File file, FileFilter filter) {
+		if (file.isDirectory()) {
+			for (File content : file.listFiles()) {
 				processFolder(content, filter);
 			}
 		} else {
-			if(filter.accept(file)){
+			if (filter.accept(file) && OrbisConfiguration.isFileEligible(file)) {
 				DataManager dm = (DataManager) Services.getService(DataManager.class);
 				SourceManager sourceManager = dm.getSourceManager();
 				try {
-					String name = sourceManager.getUniqueName(FileUtils
-							.getFileNameWithoutExtensionU(file));
+					String name = sourceManager.getUniqueName(FileUtils.getFileNameWithoutExtensionU(file));
 					sourceManager.register(name, file);
 				} catch (SourceAlreadyExistsException e) {
 					Services.getErrorManager().error(
-							"The source is already registered: "
-									+ e.getMessage());
+						"The source is already registered: "
+						+ e.getMessage());
 				}
 			}
 		}

@@ -35,12 +35,21 @@
  */
 package org.orbisgis.core.ui.pluginSystem.workbench;
 
+import java.io.File;
+import java.lang.reflect.Array;
+import java.util.ArrayList;
+import java.util.Arrays;
 import javax.swing.AbstractButton;
 import javax.swing.ImageIcon;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.event.MenuEvent;
 import javax.swing.event.MenuListener;
+import org.gdms.driver.FileDriver;
+import org.gdms.driver.driverManager.Driver;
+import org.gdms.driver.driverManager.DriverManager;
+import org.gdms.source.SourceManager;
+import org.orbisgis.core.DataManager;
 
 import org.orbisgis.core.Services;
 import org.orbisgis.core.ui.editors.map.tool.Automaton;
@@ -149,6 +158,9 @@ import org.orbisgis.core.ui.preferences.lookandfeel.OrbisGISIcon;
 import org.orbisgis.core.ui.windows.mainFrame.OrbisGISFrame;
 
 public class OrbisConfiguration implements Setup {
+	//The list of extensions that are suported byt the software.
+	//used to select the files that will be imported.
+	public static ArrayList<String> SUPPORTED_EXTENSIONS = null;
 
 	// OrbisGIS main ToolBar & OrbisGIS main menu
 	private ExitPlugIn exitPlugIn = new ExitPlugIn();
@@ -288,6 +300,17 @@ public class OrbisConfiguration implements Setup {
 		// all instances
 		frame.setTableMenuTreePopup();
 		frame.setMapMenuTreePopup();
+		//We must fill the file formats that we are able to process
+		DataManager dataManager = (DataManager) Services.getService(DataManager.class);
+		SourceManager sm = dataManager.getSourceManager();
+		DriverManager driverMan = sm.getDriverManager();
+		SUPPORTED_EXTENSIONS = new ArrayList<String>();
+		for(String name : driverMan.getDriverNames()){
+			Driver dri = driverMan.getDriver(name);
+			if(dri instanceof FileDriver){
+				SUPPORTED_EXTENSIONS.addAll(Arrays.asList(((FileDriver) dri).getFileExtensions()));
+			}
+		}
 	}
 
 	private void configurePopup(PlugInContext context) {
@@ -544,5 +567,21 @@ public class OrbisConfiguration implements Setup {
 	private AbstractButton add(Automaton tool, ImageIcon icon,
 			WorkbenchToolBar wbToolbar) {
 		return wbToolbar.addAutomaton(tool, icon);
+	}
+
+	/**
+	 * Checks that a file can be imported in GDMS
+	 * @param file
+	 * @return
+	 */
+	public static boolean isFileEligible(File file){
+		String fileName = file.getName();
+		int index = fileName.lastIndexOf('.');
+		if(index >=0 && index < fileName.length()){
+
+			String ext = fileName.substring(index+1);
+			return OrbisConfiguration.SUPPORTED_EXTENSIONS.contains(ext);
+		}
+		return false;
 	}
 }
