@@ -58,7 +58,7 @@ public class GeocognitionTreeModel extends FilterTreeModelDecorator {
 
 	@Override
 	protected boolean isFiltered() {
-		return (super.isFiltered() || (this.filters.size() != 0));
+		return (super.isFiltered() || (!this.filters.isEmpty()));
 	}
 
 	@Override
@@ -67,7 +67,7 @@ public class GeocognitionTreeModel extends FilterTreeModelDecorator {
 
 		if (super.isFiltered(element)) {
 			if (isLeaf(element)) {
-				if (filters.size() > 0) {
+				if (!filters.isEmpty()) {
 					boolean anyMatches = false;
 					for (IGeocognitionFilter filter : filters) {
 						if (filter.accept(element.getTypeId())) {

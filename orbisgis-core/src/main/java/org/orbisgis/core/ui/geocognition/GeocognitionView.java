@@ -33,7 +33,7 @@
  * or contact directly:
  * info _at_ orbisgis.org
  */
- package org.orbisgis.core.ui.geocognition;
+package org.orbisgis.core.ui.geocognition;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
@@ -93,350 +93,342 @@ import org.orbisgis.progress.NullProgressMonitor;
 
 public class GeocognitionView extends JPanel implements WorkbenchFrame {
 
-	public static final String FIRST_MAP = "/Maps/MyFirstMap";
-	private GeocognitionTree tree;
+        public static final String FIRST_MAP = "/Maps/MyFirstMap";
+        private GeocognitionTree tree;
 
-	public GeocognitionTree getTree() {
-		return tree;
-	}
+        public GeocognitionTree getTree() {
+                return tree;
+        }
 
-	public MenuTree getMenuTreePopup() {
-		return tree.getMenuTree();
-	}
+        public MenuTree getMenuTreePopup() {
+                return tree.getMenuTree();
+        }
 
-	public JPopupMenu getPopup() {
-		return tree.getPopup();
-	}
-
-	private JButtonTextField txtFilter;
-	private JPanel controlPanel;
+        public JPopupMenu getPopup() {
+                return tree.getPopup();
+        }
+        private JButtonTextField txtFilter;
+        private JPanel controlPanel;
 	private ArrayList<FilterButton> filterButtons;
-	private ModificationListener modificationListener = new ModificationListener();
-	private TreeListener treeListener = new TreeListener();
+        private ModificationListener modificationListener = new ModificationListener();
+        private TreeListener treeListener = new TreeListener();
 
-	public TreeListener getTreeListener() {
-		return treeListener;
-	}
+        public TreeListener getTreeListener() {
+                return treeListener;
+        }
 
-	public GeocognitionView() {
-		tree = new GeocognitionTree();
-		this.setLayout(new BorderLayout());
-		this.add(getControlPanel(), BorderLayout.NORTH);
-		this.add(tree, BorderLayout.CENTER);
-	}
+        public GeocognitionView() {
+                tree = new GeocognitionTree();
+                this.setLayout(new BorderLayout());
+                this.add(getControlPanel(), BorderLayout.NORTH);
+                this.add(tree, BorderLayout.CENTER);
+        }
 
-	private JPanel getControlPanel() {
-		if (controlPanel == null) {
-			controlPanel = new JPanel();
-			CRFlowLayout layout = new CRFlowLayout();
-			layout.setAlignment(CRFlowLayout.LEFT);
-			controlPanel.setLayout(layout);
-			txtFilter = new JButtonTextField(8);
-			txtFilter.getDocument().addDocumentListener(new DocumentListener() {
+        private JPanel getControlPanel() {
+                if (controlPanel == null) {
+                        controlPanel = new JPanel();
+                        CRFlowLayout layout = new CRFlowLayout();
+                        layout.setAlignment(CRFlowLayout.LEFT);
+                        controlPanel.setLayout(layout);
+                        txtFilter = new JButtonTextField(8);
+                        txtFilter.getDocument().addDocumentListener(new DocumentListener() {
 
-				@Override
-				public void removeUpdate(DocumentEvent e) {
-					doFilter();
-				}
+                                @Override
+                                public void removeUpdate(DocumentEvent e) {
+                                        doFilter();
+                                }
 
-				@Override
-				public void insertUpdate(DocumentEvent e) {
-					doFilter();
-				}
+                                @Override
+                                public void insertUpdate(DocumentEvent e) {
+                                        doFilter();
+                                }
 
-				@Override
-				public void changedUpdate(DocumentEvent e) {
-					doFilter();
-				}
-			});
-			controlPanel.add(txtFilter);
+                                @Override
+                                public void changedUpdate(DocumentEvent e) {
+                                        doFilter();
+                                }
+                        });
+                        controlPanel.add(txtFilter);
 
-			filterButtons = new ArrayList<FilterButton>();
+                        filterButtons = new ArrayList<FilterButton>();
 
-			JToggleButton btn = new JToggleButton(OrbisGISIcon.MAP);
-			btn.setMargin(new Insets(0, 0, 0, 0));
-			btn.addActionListener(new ActionListener() {
+                        JToggleButton btn = new JToggleButton(OrbisGISIcon.MAP);
+                        btn.setMargin(new Insets(0, 0, 0, 0));
+                        btn.addActionListener(new ActionListener() {
 
-				@Override
-				public void actionPerformed(ActionEvent e) {
-					doFilter();
-				}
+                                @Override
+                                public void actionPerformed(ActionEvent e) {
+                                        doFilter();
+                                }
+                        });
+                        btn.setBorderPainted(false);
+                        btn.setOpaque(true);
+                        btn.setSelected(true);
+                        controlPanel.add(btn);
+                        IGeocognitionFilter filter = new Map();
+                        filterButtons.add(new FilterButton(filter, btn));
 
-			});
-			btn.setBorderPainted(false);
-			btn.setContentAreaFilled(false);
-			controlPanel.add(btn);
-			IGeocognitionFilter filter = new Map();
-			filterButtons.add(new FilterButton(filter, btn));
+                        btn = new JToggleButton(OrbisGISIcon.SCRIPT_CODE);
+                        btn.setMargin(new Insets(0, 0, 0, 0));
+                        btn.addActionListener(new ActionListener() {
 
-			btn = new JToggleButton(OrbisGISIcon.SCRIPT_CODE);
-			btn.setMargin(new Insets(0, 0, 0, 0));
-			btn.addActionListener(new ActionListener() {
+                                @Override
+                                public void actionPerformed(ActionEvent e) {
+                                        doFilter();
+                                }
+                        });
+                        btn.setBorderPainted(false);
+                        btn.setOpaque(true);
+                        btn.setSelected(true);
+                        controlPanel.add(btn);
+                        filter = new SQL();
+                        filterButtons.add(new FilterButton(filter, btn));
+                        btn = new JToggleButton(OrbisGISIcon.PALETTE);
+                        btn.setMargin(new Insets(0, 0, 0, 0));
+                        btn.addActionListener(new ActionListener() {
 
-				@Override
-				public void actionPerformed(ActionEvent e) {
-					doFilter();
-				}
-
-			});
-			btn.setBorderPainted(false);
-			btn.setContentAreaFilled(false);
-			controlPanel.add(btn);
-			filter = new SQL();
-			filterButtons.add(new FilterButton(filter, btn));
-			btn = new JToggleButton(OrbisGISIcon.PALETTE);
-			btn.setMargin(new Insets(0, 0, 0, 0));
-			btn.addActionListener(new ActionListener() {
-
-				@Override
-				public void actionPerformed(ActionEvent e) {
-					doFilter();
-				}
-
-			});
-			btn.setBorderPainted(false);
-			btn.setContentAreaFilled(false);
-			controlPanel.add(btn);
-			filter = new Symbology();
-			filterButtons.add(new FilterButton(filter, btn));
-		}
-		return controlPanel;
-	}
+                                @Override
+                                public void actionPerformed(ActionEvent e) {
+                                        doFilter();
+                                }
+                        });
+                        btn.setBorderPainted(false);
+                        btn.setOpaque(true);
+                        controlPanel.add(btn);
+                        filter = new Symbology();
+                        filterButtons.add(new FilterButton(filter, btn));
+                }
+                return controlPanel;
+        }
 
 	private void doFilter() {
-		ArrayList<IGeocognitionFilter> filters = new ArrayList<IGeocognitionFilter>();
-		for (FilterButton filterButton : filterButtons) {
-			if (filterButton.getButton().isSelected()) {
-				filters.add(filterButton.getFilter());
-			}
-		}
-		tree.filter(txtFilter.getText(), filters);
-	}
+                ArrayList<IGeocognitionFilter> filters = new ArrayList<IGeocognitionFilter>();
+                for (FilterButton filterButton : filterButtons) {
+                        if (filterButton.getButton().isSelected()) {
+                                filters.add(filterButton.getFilter());
+                        }
+                }
+                tree.filter(txtFilter.getText(), filters);
+        }
 
-	public void delete() {
-		Geocognition geocog = Services.getService(Geocognition.class);
-		removeListenerRecursively(geocog.getRoot());
-		geocog.removeGeocognitionListener(treeListener);
-	}
+        public void delete() {
+                Geocognition geocog = Services.getService(Geocognition.class);
+                removeListenerRecursively(geocog.getRoot());
+                geocog.removeGeocognitionListener(treeListener);
+        }
 
-	private void removeListenerRecursively(GeocognitionElement element) {
-		if (element.isFolder()) {
-			for (int i = 0; i < element.getElementCount(); i++) {
-				removeListenerRecursively(element.getElement(i));
-			}
-		} else {
-			element.removeElementListener(modificationListener);
-		}
-	}
+        private void removeListenerRecursively(GeocognitionElement element) {
+                if (element.isFolder()) {
+                        for (int i = 0; i < element.getElementCount(); i++) {
+                                removeListenerRecursively(element.getElement(i));
+                        }
+                } else {
+                        element.removeElementListener(modificationListener);
+                }
+        }
 
-	public Component getComponent() {
-		return this;
-	}
+        public Component getComponent() {
+                return this;
+        }
 
-	public void initialize() {
+        public void initialize() {
 
-		// TODO:mettre les éléments geocognition sous forme de plugins
-		Geocognition geocog = Services.getService(Geocognition.class);
-		geocog.addElementFactory(new GeocognitionFunctionFactory());
-		geocog.addElementFactory(new GeocognitionCustomQueryFactory());
-		geocog.addElementFactory(new GeocognitionMapContextFactory());
-		geocog.addElementFactory(new GeocognitionSymbolFactory());
+                // TODO:mettre les éléments geocognition sous forme de plugins
+                Geocognition geocog = Services.getService(Geocognition.class);
+                geocog.addElementFactory(new GeocognitionFunctionFactory());
+                geocog.addElementFactory(new GeocognitionCustomQueryFactory());
+                geocog.addElementFactory(new GeocognitionMapContextFactory());
+                geocog.addElementFactory(new GeocognitionSymbolFactory());
 
-		ElementRenderer[] renderers = new ElementRenderer[4];
-		NewRegisteredSQLArtifact newRegisteredSQLArtifact = new NewRegisteredSQLArtifact();
-		renderers[0] = newRegisteredSQLArtifact.getElementRenderer();
-		NewMap newMap = new NewMap();
-		renderers[1] = newMap.getElementRenderer();
-		NewFolder newFolder = new NewFolder();
-		renderers[2] = newFolder.getElementRenderer();
-		NewSymbol newSymbol = new NewSymbol();
-		renderers[3] = newSymbol.getElementRenderer();
-		tree.setRenderers(renderers);
+                ElementRenderer[] renderers = new ElementRenderer[4];
+                NewRegisteredSQLArtifact newRegisteredSQLArtifact = new NewRegisteredSQLArtifact();
+                renderers[0] = newRegisteredSQLArtifact.getElementRenderer();
+                NewMap newMap = new NewMap();
+                renderers[1] = newMap.getElementRenderer();
+                NewFolder newFolder = new NewFolder();
+                renderers[2] = newFolder.getElementRenderer();
+                NewSymbol newSymbol = new NewSymbol();
+                renderers[3] = newSymbol.getElementRenderer();
+                tree.setRenderers(renderers);
 
-		// Load startup if it's the first time
-		Workspace ws = Services.getService(Workspace.class);
-		File cognitionFile = ws
-				.getFile(OrbisGISPersitenceConfig.COGNITION_CREATED_FILE);
-		if (!cognitionFile.exists()) {
-			// Populate on the fly geocognition
-			Geocognition geocognition = Services.getService(Geocognition.class);
-			geocognition.clear();
-			MapContext mc = new DefaultMapContext();
-			geocognition.addElement(FIRST_MAP, mc);
+                // Load startup if it's the first time
+                Workspace ws = Services.getService(Workspace.class);
+                File cognitionFile = ws.getFile(OrbisGISPersitenceConfig.COGNITION_CREATED_FILE);
+                if (!cognitionFile.exists()) {
+                        // Populate on the fly geocognition
+                        Geocognition geocognition = Services.getService(Geocognition.class);
+                        geocognition.clear();
+                        MapContext mc = new DefaultMapContext();
+                        geocognition.addElement(FIRST_MAP, mc);
 
-			populateGeoCognitionWithOGCFunctions(geocognition);
+                        populateGeoCognitionWithOGCFunctions(geocognition);
 
-			// Open first map
-			GeocognitionElement element = geocognition
-					.getGeocognitionElement(FIRST_MAP);
+                        // Open first map
+                        GeocognitionElement element = geocognition.getGeocognitionElement(FIRST_MAP);
 
-			if (element != null) {
-				EditorManager em = Services.getService(EditorManager.class);
-				em.open(element, new NullProgressMonitor());
-			} else {
-				Services.getErrorManager().warning("Cannot find initial map");
-			}
-		}
+                        if (element != null) {
+                                EditorManager em = Services.getService(EditorManager.class);
+                                em.open(element, new NullProgressMonitor());
+                        } else {
+                                Services.getErrorManager().warning("Cannot find initial map");
+                        }
+                }
 
-		// Listen modifications
-		geocog.addGeocognitionListener(treeListener);
-	}
+                // Listen modifications
+                geocog.addGeocognitionListener(treeListener);
+        }
 
-	/**
-	 * A simple method to populate the geocognition on the fly
-	 * 
-	 * @param geocognition
-	 */
-	private void populateGeoCognitionWithOGCFunctions(Geocognition geocognition) {
+        /**
+         * A simple method to populate the geocognition on the fly
+         *
+         * @param geocognition
+         */
+        private void populateGeoCognitionWithOGCFunctions(Geocognition geocognition) {
 
-		String[] functions = FunctionManager.getFunctionNames();
+                String[] functions = FunctionManager.getFunctionNames();
 
-		String SQLFolder = "SQL";
-		geocognition.addFolder(SQLFolder);
+                String SQLFolder = "SQL";
+                geocognition.addFolder(SQLFolder);
 
-		for (int i = 0; i < functions.length; i++) {
+                for (int i = 0; i < functions.length; i++) {
 
-			String functionName = functions[i].toLowerCase();
+                        String functionName = functions[i].toLowerCase();
 
-			Function function = FunctionManager.getFunction(functionName);
+                        Function function = FunctionManager.getFunction(functionName);
 
-			geocognition.addElement(SQLFolder + "/" + function.getName(),
-					function.getClass());
+                        geocognition.addElement(SQLFolder + "/" + function.getName(),
+                                function.getClass());
 
-		}
+                }
 
-	}
+        }
 
-	private void addListenerRecursively(GeocognitionElement element) {
-		if (element.isFolder()) {
-			for (int i = 0; i < element.getElementCount(); i++) {
-				addListenerRecursively(element.getElement(i));
-			}
-		} else {
-			// Just to not have twice the same listener
-			element.removeElementListener(modificationListener);
+        private void addListenerRecursively(GeocognitionElement element) {
+                if (element.isFolder()) {
+                        for (int i = 0; i < element.getElementCount(); i++) {
+                                addListenerRecursively(element.getElement(i));
+                        }
+                } else {
+                        // Just to not have twice the same listener
+                        element.removeElementListener(modificationListener);
 
-			element.addElementListener(modificationListener);
-		}
-	}
+                        element.addElementListener(modificationListener);
+                }
+        }
 
-	public void loadStatus() throws PersistenceException {
-		Workspace ws = Services.getService(Workspace.class);
-		File cognitionFile = ws
-				.getFile(OrbisGISPersitenceConfig.COGNITION_CREATED_FILE);
-		if (cognitionFile.exists()) {
-			try {
-				Geocognition geocognition = Services
-						.getService(Geocognition.class);
-				InputStream is = new BufferedInputStream(new FileInputStream(
-						cognitionFile));
-				geocognition.read(is);
-				is.close();
-			} catch (IOException e) {
-				throw new PersistenceException("Cannot read geocognition", e);
-			}
-		}
+        public void loadStatus() throws PersistenceException {
+                Workspace ws = Services.getService(Workspace.class);
+                File cognitionFile = ws.getFile(OrbisGISPersitenceConfig.COGNITION_CREATED_FILE);
+                if (cognitionFile.exists()) {
+                        try {
+                                Geocognition geocognition = Services.getService(Geocognition.class);
+                                InputStream is = new BufferedInputStream(new FileInputStream(
+                                        cognitionFile));
+                                geocognition.read(is);
+                                is.close();
+                        } catch (IOException e) {
+                                throw new PersistenceException("Cannot read geocognition", e);
+                        }
+                }
 
-		tree.setGeocognitionModel();
-	}
+                tree.setGeocognitionModel();
+        }
 
-	public void saveStatus() throws PersistenceException {
-		Workspace ws = (Workspace) Services.getService(Workspace.class);
-		File cognitionFile = ws
-				.getFile(OrbisGISPersitenceConfig.COGNITION_CREATED_FILE);
-		Geocognition geocognition = Services.getService(Geocognition.class);
-		try {
-			BufferedOutputStream os = new BufferedOutputStream(
-					new FileOutputStream(cognitionFile));
-			geocognition.write(os);
-			os.close();
-		} catch (FileNotFoundException e) {
-			throw new RuntimeException("bug!", e);
-		} catch (IOException e) {
-			throw new PersistenceException("Cannot read geocognition", e);
-		}
-	}
+        public void saveStatus() throws PersistenceException {
+                Workspace ws = (Workspace) Services.getService(Workspace.class);
+                File cognitionFile = ws.getFile(OrbisGISPersitenceConfig.COGNITION_CREATED_FILE);
+                Geocognition geocognition = Services.getService(Geocognition.class);
+                try {
+                        BufferedOutputStream os = new BufferedOutputStream(
+                                new FileOutputStream(cognitionFile));
+                        geocognition.write(os);
+                        os.close();
+                } catch (FileNotFoundException e) {
+                        throw new RuntimeException("bug!", e);
+                } catch (IOException e) {
+                        throw new PersistenceException("Cannot read geocognition", e);
+                }
+        }
 
-	private final class TreeListener implements GeocognitionListener {
-		@Override
-		public boolean elementRemoving(Geocognition geocognition,
-				GeocognitionElement element) {
-			return closeEditorsRecursively(element);
-		}
+        private final class TreeListener implements GeocognitionListener {
 
-		@Override
-		public void elementRemoved(Geocognition geocognition,
-				GeocognitionElement element) {
-			removeListenerRecursively(element);
-		}
+                @Override
+                public boolean elementRemoving(Geocognition geocognition,
+                        GeocognitionElement element) {
+                        return closeEditorsRecursively(element);
+                }
 
-		private boolean closeEditorsRecursively(GeocognitionElement element) {
-			if (element.isFolder()) {
-				for (int i = 0; i < element.getElementCount(); i++) {
-					if (!closeEditorsRecursively(element.getElement(i))) {
-						return false;
-					}
-				}
-			} else {
-				EditorManager em = Services.getService(EditorManager.class);
-				IEditor[] editors = em.getEditor(element);
-				for (IEditor editor : editors) {
-					if (!em.closeEditor(editor)) {
-						return false;
-					}
-				}
-			}
+                @Override
+                public void elementRemoved(Geocognition geocognition,
+                        GeocognitionElement element) {
+                        removeListenerRecursively(element);
+                }
 
-			return true;
-		}
+                private boolean closeEditorsRecursively(GeocognitionElement element) {
+                        if (element.isFolder()) {
+                                for (int i = 0; i < element.getElementCount(); i++) {
+                                        if (!closeEditorsRecursively(element.getElement(i))) {
+                                                return false;
+                                        }
+                                }
+                        } else {
+                                EditorManager em = Services.getService(EditorManager.class);
+                                IEditor[] editors = em.getEditor(element);
+                                for (IEditor editor : editors) {
+                                        if (!em.closeEditor(editor)) {
+                                                return false;
+                                        }
+                                }
+                        }
 
-		@Override
-		public void elementMoved(Geocognition geocognition,
-				GeocognitionElement element, GeocognitionElement oldParent) {
-		}
+                        return true;
+                }
 
-		@Override
-		public void elementAdded(Geocognition geocognition,
-				GeocognitionElement parent, GeocognitionElement newElement) {
-			addListenerRecursively(newElement);
-		}
-	}
+                @Override
+                public void elementMoved(Geocognition geocognition,
+                        GeocognitionElement element, GeocognitionElement oldParent) {
+                }
 
-	private class FilterButton {
-		private IGeocognitionFilter filter;
-		private JToggleButton button;
+                @Override
+                public void elementAdded(Geocognition geocognition,
+                        GeocognitionElement parent, GeocognitionElement newElement) {
+                        addListenerRecursively(newElement);
+                }
+        }
 
-		public FilterButton(IGeocognitionFilter filter, JToggleButton button) {
-			super();
-			this.filter = filter;
-			this.button = button;
-		}
+        private class FilterButton {
 
-		public IGeocognitionFilter getFilter() {
-			return filter;
-		}
+                private IGeocognitionFilter filter;
+                private JToggleButton button;
 
-		public JToggleButton getButton() {
-			return button;
-		}
+                public FilterButton(IGeocognitionFilter filter, JToggleButton button) {
+                        super();
+                        this.filter = filter;
+                        this.button = button;
+                }
 
-	}
+                public IGeocognitionFilter getFilter() {
+                        return filter;
+                }
 
-	private class ModificationListener implements EditableElementListener {
+                public JToggleButton getButton() {
+                        return button;
+                }
+        }
 
-		@Override
-		public void contentChanged(EditableElement element) {
-		}
+        private class ModificationListener implements EditableElementListener {
 
-		@Override
-		public void idChanged(EditableElement element) {
+                @Override
+                public void contentChanged(EditableElement element) {
+                }
 
-		}
+                @Override
+                public void idChanged(EditableElement element) {
+                }
 
-		@Override
-		public void saved(EditableElement element) {
-			tree.repaint();
-		}
-
-	}
+                @Override
+                public void saved(EditableElement element) {
+                        tree.repaint();
+                }
+        }
 }

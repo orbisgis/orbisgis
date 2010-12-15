@@ -116,6 +116,6 @@ public class FilterTreeModelDecorator extends AbstractTreeModel {
 	}
 
 	protected boolean isFiltered() {
-		return !filterText.trim().equals("");
+		return !filterText.trim().isEmpty();
 	}
 }
