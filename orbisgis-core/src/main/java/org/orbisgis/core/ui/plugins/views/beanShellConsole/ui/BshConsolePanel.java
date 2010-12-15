@@ -110,6 +110,8 @@ public class BshConsolePanel extends JPanel {
 		setBtClear();
 		setBtSave();
 		northPanel.setFloatable(false);
+                northPanel.setBorderPainted(false);
+                northPanel.setOpaque(false);
 		return northPanel;
 	}
 

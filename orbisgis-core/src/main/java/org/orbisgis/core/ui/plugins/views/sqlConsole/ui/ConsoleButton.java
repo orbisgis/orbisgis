@@ -64,5 +64,6 @@ public class ConsoleButton extends JButton {
 		setActionCommand(actionCommandType.toString());
 		addActionListener(actionsListener);
 		setBorderPainted(false);
+                setOpaque(false);
 	}
 }

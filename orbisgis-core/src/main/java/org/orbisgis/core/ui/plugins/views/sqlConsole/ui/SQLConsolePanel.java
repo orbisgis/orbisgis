@@ -131,6 +131,8 @@ public class SQLConsolePanel extends JPanel implements DropTargetListener {
         setBtClear();
         setBtSave();
         northPanel.setFloatable(false);
+        northPanel.setBorderPainted(false);
+        northPanel.setOpaque(false);
 
         return northPanel;
     }
