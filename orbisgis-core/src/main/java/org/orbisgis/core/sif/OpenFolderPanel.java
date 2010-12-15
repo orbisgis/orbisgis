@@ -95,13 +95,18 @@ public class OpenFolderPanel extends AbstractUIPanel implements SQLUIPanel {
 		return getFileChooser().getFileFilter();
 	}
 
+	/**
+	 * This method validates the input selected in the panel. it returns a message
+	 * when a problem has been encountered, and null otherwise.
+	 * @return
+	 */
 	@Override
 	public String validateInput() {
 		File file = getSelectedFile();
 		if (file == null) {
-			return "A file must be selected";
+			return "A folder must be selected !";
 		} else if (!file.exists()) {
-			return "The file must exist";
+			return "The folder must exist !";
 		} else if(!file.isDirectory()){
 			return "You are supposed to work in a directory !";
 		} else {
