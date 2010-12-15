@@ -89,6 +89,7 @@ public class ScalePlugIn extends AbstractPlugIn {
 		DefaultScales.add(50000000);
 	}
 
+	@Override
 	public boolean execute(PlugInContext context) throws Exception {
 		MapEditorPlugIn mapEditor = null;
 		if ((mapEditor = context.getMapEditor()) != null) {
@@ -114,6 +115,7 @@ public class ScalePlugIn extends AbstractPlugIn {
 		return false;
 	}
 
+	@Override
 	public void initialize(PlugInContext context) throws Exception {
 		panel = new JPanel(new BorderLayout());
 		JLabel label = new JLabel("Scale : ");
@@ -146,8 +148,9 @@ public class ScalePlugIn extends AbstractPlugIn {
 			for (int i = 0; i < DefaultScales.size(); i++) {
 				if (Math.abs(((Integer) DefaultScales.get(i)) - currentScale) == 0
 						|| Math.abs(((Integer) DefaultScales.get(i))
-								- currentScale) == 1)
+								- currentScale) == 1) {
 					scaleSelected = DefaultScales.get(i);
+				}
 			}
 			if (scaleSelected == 0) {
 				scaleSelected = new Integer(currentScale);
@@ -226,6 +229,7 @@ public class ScalePlugIn extends AbstractPlugIn {
 		return horizontalScale;
 	}
 
+	@Override
 	public boolean isEnabled() {
 		boolean isVisible = false;
 		IEditor editor = Services.getService(EditorManager.class)
@@ -235,8 +239,9 @@ public class ScalePlugIn extends AbstractPlugIn {
 			MapContext mc = (MapContext) editor.getElement().getObject();
 			// isVisible = !getPlugInContext().isGeographicCRS();
 			isVisible = mc.getLayerModel().getLayerCount() > 0;
-			if (isVisible)
+			if (isVisible) {
 				updateComponent();
+			}
 		}
 		panel.setEnabled(isVisible);
 		return isVisible;

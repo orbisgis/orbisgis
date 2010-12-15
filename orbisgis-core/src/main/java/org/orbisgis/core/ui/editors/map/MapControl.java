@@ -144,7 +144,6 @@ public class MapControl extends JComponent implements ComponentListener,
 		synchronized (this) {
 			this.processId = lastProcessId++;
 		}
-		this.mapContext = mapContext;
 		setDoubleBuffered(true);
 		setOpaque(true);
 		status = DIRTY;
