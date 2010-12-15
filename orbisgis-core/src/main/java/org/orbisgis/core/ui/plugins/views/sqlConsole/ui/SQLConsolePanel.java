@@ -125,7 +125,7 @@ public class SQLConsolePanel extends JPanel implements DropTargetListener {
         northPanel.add(getBtClear());
         northPanel.add(getBtOpen());
         northPanel.add(getBtSave());
-        northPanel.add(new JLabel("Find a text "));
+        northPanel.add(new JLabel("  Find a text "));
         northPanel.add(getJTextFieldPanel());
         setBtExecute();
         setBtClear();

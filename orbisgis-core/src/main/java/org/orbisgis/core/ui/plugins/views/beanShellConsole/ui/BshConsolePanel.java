@@ -104,7 +104,7 @@ public class BshConsolePanel extends JPanel {
 		northPanel.add(getBtClear());
 		northPanel.add(getBtOpen());
 		northPanel.add(getBtSave());
-		northPanel.add(new JLabel("Find a text "));
+		northPanel.add(new JLabel("  Find a text "));
 		northPanel.add(getJTextFieldPanel());
 		setBtExecute();
 		setBtClear();
