@@ -1,5 +1,5 @@
 /*
- * OrbisGIS is a GIS application dedicated to scientific spatial simulation.
+arde * OrbisGIS is a GIS application dedicated to scientific spatial simulation.
  * This cross-platform GIS is developed at French IRSTV institute and is able to
  * manipulate and create vector and raster spatial information. OrbisGIS is
  * distributed under GPL 3 license. It is produced by the "Atelier SIG" team of
@@ -100,7 +100,7 @@ public class GDMSProj4CRSFactory {
 
 	public CoordinateReferenceSystem getCRSFromSRID(String srid) {
 		StringBuffer sb = new StringBuffer("SELECT * FROM "
-				+ DefaultSourceManager.SPATIAL_REF_SYSTEM + " WHERE SRID = '");
+				+ DefaultSourceManager.SPATIAL_REF_SYSTEM + " WHERE srid = '");
 		sb.append(srid + "'");
 		DataSource ds;
 		CoordinateReferenceSystem crs = null;
