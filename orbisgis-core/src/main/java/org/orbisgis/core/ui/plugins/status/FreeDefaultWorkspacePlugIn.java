@@ -55,7 +55,7 @@ public class FreeDefaultWorkspacePlugIn extends AbstractPlugIn {
 
 	public FreeDefaultWorkspacePlugIn() {
 		btn = new JButton(IconLoader.getIcon("application_form_delete.png"));
-		btn.setToolTipText(I18N.getText("org.orbisgis.core.ui.plugins.status.FreeDefaultWorkspacePlugIn.FreeDefault"));
+		btn.setToolTipText(I18N.getText("orbisgis.org.orbisgis.core.ui.plugins.status.FreeDefaultWorkspacePlugIn.FreeDefault"));
 	}
 
 	public boolean execute(PlugInContext context) throws Exception {
