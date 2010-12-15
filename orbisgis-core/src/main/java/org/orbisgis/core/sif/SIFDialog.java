@@ -68,6 +68,7 @@ public class SIFDialog extends AbstractOutsideFrame {
 		btnOk.setBorderPainted(false);
 		btnOk.addActionListener(new ActionListener() {
 
+			@Override
 			public void actionPerformed(ActionEvent e) {
 				exit(true);
 			}
@@ -78,6 +79,7 @@ public class SIFDialog extends AbstractOutsideFrame {
 		btnCancel.setBorderPainted(false);
 		btnCancel.addActionListener(new ActionListener() {
 
+			@Override
 			public void actionPerformed(ActionEvent e) {
 				exit(false);
 			}
@@ -115,10 +117,12 @@ public class SIFDialog extends AbstractOutsideFrame {
 		this.setIconImage(getPanel().getIconImage());
 	}
 
+	@Override
 	public void canContinue() {
 		btnOk.setEnabled(true);
 	}
 
+	@Override
 	public void cannotContinue() {
 		btnOk.setEnabled(false);
 	}

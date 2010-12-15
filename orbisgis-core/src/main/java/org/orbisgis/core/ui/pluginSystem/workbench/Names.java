@@ -201,6 +201,8 @@ public abstract class Names {
 	public static final String POPUP_GEOCATALOG_DB = I18N.getText("orbisgis.ui.popupmenu.geocatalog.db.path1");
 	// File
 	public static final String POPUP_GEOCATALOG_FILE = I18N.getText("orbisgis.ui.popupmenu.geocatalog.file.path1");
+	// Folder
+	public static final String POPUP_GEOCATALOG_FOLDER = I18N.getText("orbisgis.ui.popupmenu.geocatalog.folder.path1");
 	// Show Table
 	public static final String POPUP_GEOCATALOG_TABLE = I18N.getText("orbisgis.ui.popupmenu.geocatalog.table.path1");
 	public static final String POPUP_GEOCATALOG_TABLE_GROUP = I18N.getText("orbisgis.ui.popupmenu.geocatalog.table.group");

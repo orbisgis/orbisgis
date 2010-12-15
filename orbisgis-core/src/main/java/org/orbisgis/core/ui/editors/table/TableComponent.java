@@ -40,6 +40,7 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.GridBagConstraints;
 import java.awt.Insets;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
@@ -57,6 +58,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.TreeSet;
 import java.util.regex.Pattern;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
 
 import javax.swing.DefaultListSelectionModel;
 import javax.swing.Icon;
@@ -70,6 +73,8 @@ import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.JToolBar;
 import javax.swing.ListSelectionModel;
+import javax.swing.Spring;
+import javax.swing.SpringLayout;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.event.ListSelectionEvent;
@@ -99,6 +104,7 @@ import org.orbisgis.core.Services;
 import org.orbisgis.core.background.BackgroundJob;
 import org.orbisgis.core.background.BackgroundManager;
 import org.orbisgis.core.errorManager.ErrorManager;
+import org.orbisgis.core.sif.CRFlowLayout;
 import org.orbisgis.core.sif.SQLUIPanel;
 import org.orbisgis.core.sif.UIFactory;
 import org.orbisgis.core.ui.components.sif.AskValue;
@@ -238,8 +244,8 @@ public class TableComponent extends JPanel implements WorkbenchFrame {
 
 	public JPanel getPanelInformation() {
 		final JPanel informationPanel = new JPanel();
-		final FlowLayout flowLayout = new FlowLayout();
-		flowLayout.setAlignment(FlowLayout.LEFT);
+		final CRFlowLayout flowLayout = new CRFlowLayout();
+		flowLayout.setAlignment(CRFlowLayout.LEFT);
 		informationPanel.setLayout(flowLayout);
 		informationPanel.add(getNbRowsInformation());
 		return informationPanel;
@@ -248,19 +254,17 @@ public class TableComponent extends JPanel implements WorkbenchFrame {
 
 	private JPanel getRegexTextField() {
 		final JPanel regexPanel = new JPanel();
-		final FlowLayout flowLayout = new FlowLayout();
-		flowLayout.setAlignment(FlowLayout.RIGHT);
-		regexPanel.setLayout(flowLayout);
+//		final FlowLayout flowLayout = new FlowLayout();
+//		flowLayout.setAlignment(FlowLayout.TRAILING);
+//		regexPanel.setLayout(flowLayout);
+		final BoxLayout horizontalLayout = new BoxLayout(regexPanel,BoxLayout.LINE_AXIS);
+		regexPanel.setLayout(horizontalLayout);
 		JLabel label = new JLabel(
-				I18N
-						.getText("orbisgis.org.orbisgis.core.ui.editors.table.TableComponent.search"));
+				I18N.getText("orbisgis.org.orbisgis.core.ui.editors.table.TableComponent.search"));
 		final JButtonTextField regexTxtFilter = new JButtonTextField(20);
 		regexTxtFilter.setBackground(Color.WHITE);
-		regexTxtFilter
-				.setText(I18N
-						.getText("orbisgis.org.orbisgis.core.ui.editors.table.TableComponent.put_a_text"));
-		regexTxtFilter
-				.setToolTipText(I18N
+		regexTxtFilter.setText(I18N.getText("orbisgis.org.orbisgis.core.ui.editors.table.TableComponent.put_a_text"));
+		regexTxtFilter.setToolTipText(I18N
 						.getText("orbisgis.org.orbisgis.core.ui.editors.table.TableComponent.searchEnter"));
 
 		regexTxtFilter.addKeyListener(new KeyListener() {
@@ -294,23 +298,23 @@ public class TableComponent extends JPanel implements WorkbenchFrame {
 		});
 
 		regexTxtFilter.addMouseListener(new MouseAdapter() {
+			@Override
 			public void mousePressed(MouseEvent e) {
 				if (regexTxtFilter
 						.getText()
-						.equals(
-								I18N
-										.getText("orbisgis.org.orbisgis.core.ui.editors.table.TableComponent.put_a_text")))
+						.equals(I18N	
+						.getText("orbisgis.org.orbisgis.core.ui.editors.table.TableComponent.put_a_text"))){
 					regexTxtFilter.setText("");
+				}
 			}
 
+			@Override
 			public void mouseExited(MouseEvent e) {
-				if (regexTxtFilter.getText().equals(""))
-					regexTxtFilter
-							.setText(I18N
-									.getText("orbisgis.org.orbisgis.core.ui.editors.table.TableComponent.put_a_text"));
+				if (regexTxtFilter.getText().equals("")) {
+					regexTxtFilter.setText(I18N.getText("orbisgis.org.orbisgis.core.ui.editors.table.TableComponent.put_a_text"));
+				}
 			}
 		});
-		
 		regexPanel.add(label);
 		regexPanel.add(regexTxtFilter);
 		return regexPanel;

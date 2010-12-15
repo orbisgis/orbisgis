@@ -5,15 +5,17 @@
  * distributed under GPL 3 license. It is produced by the "Atelier SIG" team of
  * the IRSTV Institute <http://www.irstv.cnrs.fr/> CNRS FR 2488.
  *
- * 
  *  Team leader Erwan BOCHER, scientific researcher,
- * 
+ *
  *  User support leader : Gwendall Petit, geomatic engineer.
  *
+ * Previous computer developer : Pierre-Yves FADET, computer engineer,
+Thomas LEDUC, scientific researcher, Fernando GONZALEZ
+ * CORTES, computer engineer.
  *
  * Copyright (C) 2007 Erwan BOCHER, Fernando GONZALEZ CORTES, Thomas LEDUC
  *
- * Copyright (C) 2010 Erwan BOCHER, Pierre-Yves FADET, Alexis GUEGANNO, Maxence LAURENT
+ * Copyright (C) 2010 Erwan BOCHER, Alexis GUEGANNO, Maxence LAURENT, Antoine GOURLAY
  *
  * This file is part of OrbisGIS.
  *
@@ -32,81 +34,43 @@
  * For more information, please consult: <http://www.orbisgis.org/>
  *
  * or contact directly:
- * erwan.bocher _at_ ec-nantes.fr
- * gwendall.petit _at_ ec-nantes.fr
+ * info@orbisgis.org
  */
 
 package org.orbisgis.core.ui.plugins.views.geocatalog;
 
-import java.util.Vector;
+import java.io.File;
+import javax.swing.filechooser.FileFilter;
 
-import org.gdms.data.wms.WMSSource;
+import org.gdms.data.SourceAlreadyExistsException;
 import org.gdms.source.SourceManager;
-import org.gvsig.remoteClient.wms.WMSClient;
-import org.gvsig.remoteClient.wms.WMSLayer;
 import org.orbisgis.core.DataManager;
 import org.orbisgis.core.Services;
-import org.orbisgis.core.errorManager.ErrorManager;
 import org.orbisgis.core.sif.UIFactory;
 import org.orbisgis.core.sif.UIPanel;
-import org.orbisgis.core.ui.geocatalog.newSourceWizards.wms.LayerConfigurationPanel;
-import org.orbisgis.core.ui.geocatalog.newSourceWizards.wms.SRSPanel;
-import org.orbisgis.core.ui.geocatalog.newSourceWizards.wms.WMSConnectionPanel;
 import org.orbisgis.core.ui.pluginSystem.AbstractPlugIn;
 import org.orbisgis.core.ui.pluginSystem.PlugInContext;
 import org.orbisgis.core.ui.pluginSystem.workbench.Names;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchContext;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchFrame;
 import org.orbisgis.core.ui.preferences.lookandfeel.OrbisGISIcon;
+import org.orbisgis.core.ui.wizards.OpenGdmsFolderPanel;
+import org.orbisgis.utils.FileUtils;
 
-public class WMSGeocatalogPlugIn extends AbstractPlugIn {
+public class NewGeocatalogFolderPlugIn extends AbstractPlugIn {
 
+	@Override
 	public boolean execute(PlugInContext context) throws Exception {
-		WMSConnectionPanel wmsConnection = new WMSConnectionPanel();
-		LayerConfigurationPanel layerConfiguration = new LayerConfigurationPanel(
-				wmsConnection);
-		SRSPanel srsPanel = new SRSPanel(wmsConnection);
-		if (UIFactory.showDialog(new UIPanel[] { wmsConnection,
-				layerConfiguration, srsPanel })) {
-			WMSClient client = wmsConnection.getWMSClient();
-			String validImageFormat = getFirstImageFormat(client.getFormats());
-			if (validImageFormat == null) {
-				Services.getService(ErrorManager.class).error(
-						"Cannot find a suitable image format");
-			} else {
-				Object[] layers = layerConfiguration.getSelectedLayers();
-				for (Object layer : layers) {
-					String layerName = ((WMSLayer) layer).getName();
-					WMSSource source = new WMSSource(client.getHost(),
-							layerName, srsPanel.getSRS(), validImageFormat);
-					SourceManager sourceManager = Services.getService(
-							DataManager.class).getSourceManager();
-					String uniqueName = sourceManager.getUniqueName(layerName);
-					sourceManager.register(uniqueName, source);
-				}
-			}
+		OpenGdmsFolderPanel folderPanel = new OpenGdmsFolderPanel(
+				"Select the folder to add");
+		if (UIFactory.showDialog(new UIPanel[] { folderPanel })) {
 
+			File[] files = folderPanel.getSelectedFiles();
+			for (File file : files) {
+				processFolder(file, folderPanel.getSelectedFilter());
+			}
 		}
 		return true;
-	}
-
-	private String getFirstImageFormat(Vector<?> formats) {
-		String[] preferredFormats = new String[] { "image/png", "image/jpeg",
-				"image/gif", "image/tiff" };
-		for (int i = 0; i < preferredFormats.length; i++) {
-			if (formats.contains(preferredFormats[i])) {
-				return preferredFormats[i];
-			}
-		}
-
-		for (Object object : formats) {
-			String format = object.toString();
-			if (format.startsWith("image/")) {
-				return format;
-			}
-		}
-
-		return null;
 	}
 
 	@Override
@@ -118,13 +82,41 @@ public class WMSGeocatalogPlugIn extends AbstractPlugIn {
 				frame,
 				this,
 				new String[] { Names.POPUP_GEOCATALOG_ADD,
-						Names.POPUP_GEOCATALOG_WMS },
+						Names.POPUP_GEOCATALOG_FOLDER },
 				Names.POPUP_GEOCATALOG_ADD, false,
-				OrbisGISIcon.GEOCATALOG_WMS, wbContext);
+				OrbisGISIcon.GEOCATALOG_FILE, wbContext);
+
 	}
 
 	@Override
 	public boolean isEnabled() {
 		return true;
+	}
+
+	/**
+	 * the method that actually process the content of a directory, or a file.
+	 * If the file is acceptable by the FileFilter, it is processed
+	 * @param file
+	 */
+	private void processFolder(File file, FileFilter filter){
+		if(file.isDirectory()){
+			for(File content : file.listFiles()){
+				processFolder(content, filter);
+			}
+		} else {
+			if(filter.accept(file)){
+				DataManager dm = (DataManager) Services.getService(DataManager.class);
+				SourceManager sourceManager = dm.getSourceManager();
+				try {
+					String name = sourceManager.getUniqueName(FileUtils
+							.getFileNameWithoutExtensionU(file));
+					sourceManager.register(name, file);
+				} catch (SourceAlreadyExistsException e) {
+					Services.getErrorManager().error(
+							"The source is already registered: "
+									+ e.getMessage());
+				}
+			}
+		}
 	}
 }

@@ -1,42 +1,42 @@
 /*
  * OrbisGIS is a GIS application dedicated to scientific spatial simulation.
- * This cross-platform GIS is developed at French IRSTV institute and is able
- * to manipulate and create vector and raster spatial information. OrbisGIS
- * is distributed under GPL 3 license. It is produced  by the geo-informatic team of
- * the IRSTV Institute <http://www.irstv.cnrs.fr/>, CNRS FR 2488:
- *    Erwan BOCHER, scientific researcher,
- *    Thomas LEDUC, scientific researcher,
- *    Fernando GONZALEZ CORTES, computer engineer.
+ * This cross-platform GIS is developed at French IRSTV institute and is able to
+ * manipulate and create vector and raster spatial information. OrbisGIS is
+ * distributed under GPL 3 license. It is produced by the "Atelier SIG" team of
+ * the IRSTV Institute <http://www.irstv.cnrs.fr/> CNRS FR 2488.
+ *
+ *  Team leader Erwan BOCHER, scientific researcher,
+ *
+ *  User support leader : Gwendall Petit, geomatic engineer.
+ *
+ * Previous computer developer : Pierre-Yves FADET, computer engineer,
+Thomas LEDUC, scientific researcher, Fernando GONZALEZ
+ * CORTES, computer engineer.
  *
  * Copyright (C) 2007 Erwan BOCHER, Fernando GONZALEZ CORTES, Thomas LEDUC
  *
+ * Copyright (C) 2010 Erwan BOCHER, Alexis GUEGANNO, Maxence LAURENT, Antoine GOURLAY
+ *
  * This file is part of OrbisGIS.
  *
- * OrbisGIS is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * OrbisGIS is free software: you can redistribute it and/or modify it under the
+ * terms of the GNU General Public License as published by the Free Software
+ * Foundation, either version 3 of the License, or (at your option) any later
+ * version.
  *
- * OrbisGIS is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
+ * OrbisGIS is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
+ * A PARTICULAR PURPOSE. See the GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
- * along with OrbisGIS. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License along with
+ * OrbisGIS. If not, see <http://www.gnu.org/licenses/>.
  *
- * For more information, please consult:
- *    <http://orbisgis.cerma.archi.fr/>
- *    <http://sourcesup.cru.fr/projects/orbisgis/>
+ * For more information, please consult: <http://www.orbisgis.org/>
  *
  * or contact directly:
- *    erwan.bocher _at_ ec-nantes.fr
- *    fergonco _at_ gmail.com
- *    thomas.leduc _at_ cerma.archi.fr
+ * info@orbisgis.org
  */
-/**
- *
- */
+
 package org.orbisgis.core.sif;
 
 import java.awt.Component;
@@ -45,7 +45,11 @@ import java.io.File;
 import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileFilter;
 
-public class OpenFilePanel extends AbstractUIPanel implements SQLUIPanel {
+/**
+ *
+ * @author alexis, jean-yves
+ */
+public class OpenFolderPanel extends AbstractUIPanel implements SQLUIPanel {
 
 	public static final String FIELD_NAME = "file";
 
@@ -56,8 +60,8 @@ public class OpenFilePanel extends AbstractUIPanel implements SQLUIPanel {
 	private String title;
 
 	private String id;
-
-	public OpenFilePanel(String id, String title) {
+	
+	public OpenFolderPanel(String id, String title) {
 		this.id = id;
 		this.title = title;
 	}
@@ -87,6 +91,10 @@ public class OpenFilePanel extends AbstractUIPanel implements SQLUIPanel {
 				new FormatFilter(extensions, description));
 	}
 
+	public FileFilter getSelectedFilter(){
+		return getFileChooser().getFileFilter();
+	}
+
 	@Override
 	public String validateInput() {
 		File file = getSelectedFile();
@@ -94,6 +102,8 @@ public class OpenFilePanel extends AbstractUIPanel implements SQLUIPanel {
 			return "A file must be selected";
 		} else if (!file.exists()) {
 			return "The file must exist";
+		} else if(!file.isDirectory()){
+			return "You are supposed to work in a directory !";
 		} else {
 			return null;
 		}
@@ -114,6 +124,7 @@ public class OpenFilePanel extends AbstractUIPanel implements SQLUIPanel {
 			fileChooser = new JFileChooser();
 			fileChooser.setControlButtonsAreShown(false);
 			fileChooser.setMultiSelectionEnabled(true);
+			fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 		}
 		return fileChooser;
 	}
@@ -249,5 +260,6 @@ public class OpenFilePanel extends AbstractUIPanel implements SQLUIPanel {
 	public void setCurrentDirectory(File dir) {
 		fileChooser.setCurrentDirectory(dir);
 	}
+
 
 }

@@ -128,6 +128,7 @@ import org.orbisgis.core.ui.plugins.views.geocatalog.GeocatalogDeleteSourcePlugI
 import org.orbisgis.core.ui.plugins.views.geocatalog.GeocatalogSaveInDataBasePlugIn;
 import org.orbisgis.core.ui.plugins.views.geocatalog.GeocatalogSaveInFilePlugIn;
 import org.orbisgis.core.ui.plugins.views.geocatalog.GeocatalogShowTablePlugIn;
+import org.orbisgis.core.ui.plugins.views.geocatalog.NewGeocatalogFolderPlugIn;
 import org.orbisgis.core.ui.plugins.views.geocatalog.NewGeocatalogFilePlugIn;
 import org.orbisgis.core.ui.plugins.views.geocatalog.NewGeocognitionDBPlugIn;
 import org.orbisgis.core.ui.plugins.views.geocatalog.WMSGeocatalogPlugIn;
@@ -194,6 +195,7 @@ public class OrbisConfiguration implements Setup {
 	private GeocognitionUnRegisterBuiltInCustomQueryPlugIn geocognitionUnRegisterBuiltInCustomQuery = new GeocognitionUnRegisterBuiltInCustomQueryPlugIn();
 
 	// Geocatalog popup
+	private NewGeocatalogFolderPlugIn newGeocatalogFolder = new NewGeocatalogFolderPlugIn();
 	private NewGeocatalogFilePlugIn newGeocatalogFile = new NewGeocatalogFilePlugIn();
 	private NewGeocognitionDBPlugIn newGeocognitionDB = new NewGeocognitionDBPlugIn();
 	private ConvertXYZDemGeocatalogPlugIn convertXYZDemGeocatalogPlugIn = new ConvertXYZDemGeocatalogPlugIn();
@@ -325,6 +327,7 @@ public class OrbisConfiguration implements Setup {
 			geocognitionUnRegisterBuiltInCustomQuery.initialize(context);
 
 			// Geocatalog popup
+			newGeocatalogFolder.initialize(context);
 			newGeocatalogFile.initialize(context);
 			wMSGeocatalogPlugIn.initialize(context);
 			newGeocognitionDB.initialize(context);
