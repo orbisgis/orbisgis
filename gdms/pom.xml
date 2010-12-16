@@ -76,7 +76,7 @@
 	 <dependency>
 	 	<groupId>fr.cts</groupId>
 	 	<artifactId>cts</artifactId>
-	 	<version>0.0.2</version>
+	 	<version>0.0.3</version>
 	 </dependency>
 	 <dependency>
     	<groupId>proj4j</groupId>

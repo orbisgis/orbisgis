@@ -133,7 +133,7 @@ public class ConstraintFactory {
 		case Constraint.AUTO_INCREMENT:
 			c = "AutoIncrement";
 			break;
-		case Constraint.CRS:
+		case Constraint.SRID:
 			c = "CRS";
 			break;
 		case Constraint.GEOMETRY_DIMENSION:

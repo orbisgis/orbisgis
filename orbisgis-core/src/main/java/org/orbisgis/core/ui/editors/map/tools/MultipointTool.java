@@ -74,6 +74,7 @@ public class MultipointTool extends AbstractMultipointTool {
 		SpatialDataSourceDecorator sds = mc.getActiveLayer().getDataSource();
 		try {
 			Value[] row = new Value[sds.getMetadata().getFieldCount()];
+                        mp.setSRID(sds.getSRID());
 			row[sds.getSpatialFieldIndex()] = ValueFactory.createValue(mp);
 			row = ToolUtilities.populateNotNullFields(sds, row);
 			sds.insertFilledRow(row);

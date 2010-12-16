@@ -34,21 +34,40 @@
  *    fergonco _at_ gmail.com
  *    thomas.leduc _at_ cerma.archi.fr
  */
-package org.gdms.sql.function.spatial.geometry;
+package org.gdms.data.types;
 
-import org.gdms.data.types.Type;
-import org.gdms.data.types.TypeFactory;
+import com.vividsolutions.jts.geom.Geometry;
 import org.gdms.data.values.Value;
-import org.gdms.sql.function.Function;
 
-public abstract class AbstractSpatialFunction implements Function {
+/**
+ * Indicates that the field is part of the primary key
+ *
+ */
+public class SRIDConstraint extends AbstractIntConstraint {
 
-        final public Type getType(Type[] types) {
-                return TypeFactory.createType(Type.GEOMETRY);
+        public SRIDConstraint(int constraintValue) {
+                super(constraintValue);
         }
 
         @Override
-        public Value getAggregateResult() {
-                return null;
+	public int getConstraintCode() {
+		return Constraint.SRID;
+	}
+
+        @Override
+	public boolean allowsFieldRemoval() {
+		return true;
+	}
+
+        @Override
+        public String check(Value value) {
+                if (value.getType() == Type.GEOMETRY || value.getType() == Type.RASTER) {
+                        Geometry g = value.getAsGeometry();
+                        if (g.getSRID() != constraintValue) {
+                                return "Expected SRID " + constraintValue + ", found " + g.getSRID();
+                        }
+                        return null;
+                }
+                return "The value is not spatial!";
         }
 }

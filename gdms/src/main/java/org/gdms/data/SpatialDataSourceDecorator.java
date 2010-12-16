@@ -49,10 +49,13 @@ import org.grap.model.GeoRaster;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
+import org.gdms.data.types.Constraint;
+import org.gdms.data.types.SRIDConstraint;
 
 public class SpatialDataSourceDecorator extends AbstractDataSourceDecorator {
 
 	private int spatialFieldIndex = -1;
+        private int srid = -1;
 
 	public SpatialDataSourceDecorator(DataSource dataSource) {
 		super(dataSource);
@@ -87,6 +90,19 @@ public class SpatialDataSourceDecorator extends AbstractDataSourceDecorator {
 			return fieldValue.getAsRaster();
 		}
 	}
+
+        public int getSRID() {
+                return srid;
+        }
+
+        @Override
+        public void open() throws DriverException {
+                super.open();
+                Constraint[] c = getMetadata().getFieldType(getSpatialFieldIndex()).getConstraints(Constraint.SRID);
+                if (c.length != 0) {
+                        srid = ((SRIDConstraint)c[0]).getConstraintCode();
+                }
+        }
 
 	/**
 	 * Gets the default geometry of the DataSource as a JTS geometry or null if
@@ -233,7 +249,6 @@ public class SpatialDataSourceDecorator extends AbstractDataSourceDecorator {
 	 * 
 	 * @param rowIndex
 	 * @param geom
-	 * @return
 	 * @throws DriverException
 	 */
 	public void setGeometry(long rowIndex, Geometry geom)
@@ -249,7 +264,6 @@ public class SpatialDataSourceDecorator extends AbstractDataSourceDecorator {
 	 * @param fieldName
 	 * @param rowIndex
 	 * @param geom
-	 * @return
 	 * @throws DriverException
 	 */
 	public void setGeometry(String fieldName, long rowIndex, Geometry geom)

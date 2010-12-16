@@ -117,6 +117,7 @@ public class PointTool extends AbstractPointTool {
 		SpatialDataSourceDecorator sds = mc.getActiveLayer().getDataSource();
 		try {
 			Value[] row = new Value[sds.getMetadata().getFieldCount()];
+                        g.setSRID(sds.getSRID());
 			row[sds.getSpatialFieldIndex()] = ValueFactory.createValue(g);
 			row = ToolUtilities.populateNotNullFields(sds, row);
 			sds.insertFilledRow(row);

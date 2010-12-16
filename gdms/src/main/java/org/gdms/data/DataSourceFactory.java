@@ -57,6 +57,8 @@ import org.gdms.data.wms.WMSSource;
 import org.gdms.data.wms.WMSSourceDefinition;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.ObjectDriver;
+import org.gdms.driver.ReadAccess;
+import org.gdms.driver.driverManager.Driver;
 import org.gdms.driver.driverManager.DriverLoadException;
 import org.gdms.source.DefaultSourceManager;
 import org.gdms.source.SourceManager;

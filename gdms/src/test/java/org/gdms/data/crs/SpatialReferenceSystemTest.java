@@ -34,8 +34,8 @@ public class SpatialReferenceSystemTest extends SourceTest {
 
 		for (int i = 0; i < ds.getRowCount(); i++) {
 
-			String sourceCodeCRS = ds.getFieldValue(i, 0).getAsString();
-			String targetCodeCRS = ds.getFieldValue(i, 2).getAsString();
+			int sourceCodeCRS = ds.getFieldValue(i, 0).getAsInt();
+			int targetCodeCRS = ds.getFieldValue(i, 2).getAsInt();
 
 			SpatialReferenceSystem spatialReferenceSystem = new SpatialReferenceSystem(
 					dsf, sourceCodeCRS, targetCodeCRS);
@@ -65,7 +65,7 @@ public class SpatialReferenceSystemTest extends SourceTest {
 
 		// 320002120 for Lambert 93 nadgrid
 		CoordinateReferenceSystem crs = gdmsProj4CRSFactory
-				.getCRSFromSRID("4326");
+				.getCRSFromSRID(4326);
 
 		System.out.println(crs.getName());
 

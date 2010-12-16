@@ -36,7 +36,6 @@
  */
 package org.gdms.driver;
 
-
 /**
  * A description of a table in a remote database.
  * Contains a name, a type and a schema.
@@ -45,58 +44,78 @@ package org.gdms.driver;
  * @author Fernando Gonzalez Cortes
  */
 public class TableDescription {
-	private String name;
-	private String type;
-	private String schema;
-	private int geometryType;
 
-	public TableDescription(String name, String type) {
-		this(name,type,null);
-	}
+        private String name;
+        private String type;
+        private String schema;
+        private int geometryType;
+        private int srid = -1;
 
-	public TableDescription(String name, String type, String schema) {
-		this(name,type,schema,0);
-	}
+        public TableDescription(String name, String type) {
+                this(name, type, null);
+        }
 
-	public TableDescription(String name, String type, String schema, int geometryType) {
-		this.name = name;
-		this.type = type;
-		this.schema = schema;
-		this.geometryType = geometryType;
-	}
-	
-	public String getName() {
-		return name;
-	}
+        public TableDescription(String name, String type, String schema) {
+                this(name, type, schema, 0);
+        }
 
-	public void setName(String name) {
-		this.name = name;
-	}
+        public TableDescription(String name, String type, String schema, int geometryType) {
+                this(name, type, schema, geometryType, -1);
+        }
 
-	public String getType() {
-		return type;
-	}
+        public TableDescription(String name, String type, String schema, int geometryType, int srid) {
+                this.name = name;
+                this.type = type;
+                this.schema = schema;
+                this.geometryType = geometryType;
+                this.srid = srid;
+        }
 
-	public void setType(String type) {
-		this.type = type;
-	}
+        public String getName() {
+                return name;
+        }
 
-	public String getSchema() {
-		return schema;
-	}
+        public void setName(String name) {
+                this.name = name;
+        }
 
-	public void setSchema(String schema) {
-		this.schema = schema;
-	}
+        public String getType() {
+                return type;
+        }
 
-	public void setGeometryType(int geometryType) {
-		this.geometryType = geometryType;
-		
-	}
-	public int getGeometryType() {
-		return this.geometryType;
-		
-	}
+        public void setType(String type) {
+                this.type = type;
+        }
 
-	
+        public String getSchema() {
+                return schema;
+        }
+
+        public void setSchema(String schema) {
+                this.schema = schema;
+        }
+
+        public void setGeometryType(int geometryType) {
+                this.geometryType = geometryType;
+
+        }
+
+        public int getGeometryType() {
+                return this.geometryType;
+
+        }
+
+        /**
+         * @return the srid
+         */
+        public int getSrid() {
+                return srid;
+        }
+
+        /**
+         * @param srid the srid to set
+         */
+        public void setSrid(int srid) {
+                this.srid = srid;
+        }
 }

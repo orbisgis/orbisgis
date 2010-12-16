@@ -98,7 +98,7 @@ public class GDMSProj4CRSFactory {
 		return dsf;
 	}
 
-	public CoordinateReferenceSystem getCRSFromSRID(String srid) {
+	public CoordinateReferenceSystem getCRSFromSRID(int srid) {
 		StringBuffer sb = new StringBuffer("SELECT * FROM "
 				+ DefaultSourceManager.SPATIAL_REF_SYSTEM + " WHERE srid = '");
 		sb.append(srid + "'");
@@ -173,7 +173,7 @@ public class GDMSProj4CRSFactory {
 	}
 
 	private static CoordinateReferenceSystem parseCRS(String namespace,
-			String name, String id, Map<String, String> parameters) {
+			String name, int id, Map<String, String> parameters) {
 		GeodeticDatum gd = getGeodeticDatum(parameters);
 		if (gd == null) {
 			LOG.fine("No datum definition");
@@ -196,7 +196,7 @@ public class GDMSProj4CRSFactory {
 			}
 			CoordinateSystem cs = new CoordinateSystem(new Axis[] { Axis.X,
 					Axis.Y, Axis.Z }, new Unit[] { unit, unit, unit });
-			return new GeocentricCRS(new Identifier(namespace, id, name), gd,
+			return new GeocentricCRS(new Identifier(namespace, String.valueOf(id), name), gd,
 					cs);
 		} else if (sproj.equals("longlat")) {
 			Unit unit = Unit.DEGREE;
@@ -207,13 +207,13 @@ public class GDMSProj4CRSFactory {
 			CoordinateSystem cs = new CoordinateSystem(new Axis[] {
 					Axis.LONGITUDE, Axis.LATITUDE, Axis.HEIGHT }, new Unit[] {
 					unit, unit, Unit.METER });
-			return new Geographic3DCRS(new Identifier(namespace, id, name), gd,
+			return new Geographic3DCRS(new Identifier(namespace, String.valueOf(id), name), gd,
 					cs);
 		} else {
 			Projection proj = getProjection(sproj, gd.getEllipsoid(),
 					parameters);
 			if (null != proj) {
-				return new ProjectedCRS(new Identifier(namespace, id, name),
+				return new ProjectedCRS(new Identifier(namespace, String.valueOf(id), name),
 						gd, proj);
 			} else {
 				LOG.fine("Unknown projection : " + sproj);
