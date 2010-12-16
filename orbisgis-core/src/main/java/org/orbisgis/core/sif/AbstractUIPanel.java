@@ -40,18 +40,22 @@ import java.net.URL;
 
 public abstract class AbstractUIPanel implements UIPanel {
 
+	@Override
 	public URL getIconURL() {
 		return UIFactory.getDefaultIcon();
 	}
 
+	@Override
 	public String getInfoText() {
 		return UIFactory.getDefaultOkMessage();
 	}
 
+	@Override
 	public String postProcess() {
 		return null;
 	}
 
+	@Override
 	public String initialize() {
 		return null;
 	}

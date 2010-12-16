@@ -57,8 +57,24 @@ import org.orbisgis.core.ui.preferences.lookandfeel.OrbisGISIcon;
 import org.orbisgis.core.ui.wizards.OpenGdmsFolderPanel;
 import org.orbisgis.utils.FileUtils;
 
+/**
+ * This plugin is used when the user wants to open the files contained in a folder
+ * using the geocatalog.
+ * It will open a panel dedicated to the selection of the wanted folders. This panel
+ * will then return the selected folders to this PlugIn
+ *
+ * @author alexis, jean-yves
+ */
 public class NewGeocatalogFolderPlugIn extends AbstractPlugIn {
 
+	/**
+	 * The method responsible of the execution of this plugin. It retrieves the folder
+	 * selected by the user and analyze their content to add the eligible files
+	 * to the geocatalog.
+	 * @param context
+	 * @return
+	 * @throws Exception
+	 */
 	@Override
 	public boolean execute(PlugInContext context) throws Exception {
 		OpenGdmsFolderPanel folderPanel = new OpenGdmsFolderPanel(
@@ -67,12 +83,20 @@ public class NewGeocatalogFolderPlugIn extends AbstractPlugIn {
 
 			File[] files = folderPanel.getSelectedFiles();
 			for (File file : files) {
+				//for each folder, we apply the method processFolder.
+				//We use the filter selected by the user in the panel
+				//to succeed in this operation.
 				processFolder(file, folderPanel.getSelectedFilter());
 			}
 		}
 		return true;
 	}
 
+	/**
+	 * Plugin initialization.
+	 * @param context
+	 * @throws Exception
+	 */
 	@Override
 	public void initialize(PlugInContext context) throws Exception {
 		WorkbenchContext wbContext = context.getWorkbenchContext();
@@ -87,6 +111,10 @@ public class NewGeocatalogFolderPlugIn extends AbstractPlugIn {
 
 	}
 
+	/**
+	 * Used directly in the geocatalog, always enabled.
+	 * @return
+	 */
 	@Override
 	public boolean isEnabled() {
 		return true;

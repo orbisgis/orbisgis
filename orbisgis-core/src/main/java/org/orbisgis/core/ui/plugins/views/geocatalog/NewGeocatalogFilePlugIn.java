@@ -57,16 +57,34 @@ import org.orbisgis.core.ui.preferences.lookandfeel.OrbisGISIcon;
 import org.orbisgis.core.ui.wizards.OpenGdmsFilePanel;
 import org.orbisgis.utils.FileUtils;
 
+/**
+ * This plugin is used when the user wants to open a file using the geocatalog.
+ * It will open a panel dedicated to the selection of the wanted files. This panel
+ * will then return the selected files to this PlugIn
+ */
+
 public class NewGeocatalogFilePlugIn extends AbstractPlugIn {
 
+	/**
+	 * During execution, the plugin wil create a OpenGdmsFilePanel to let the user
+	 * select the files he wants.
+	 * The only files imported in the geocatalog are those for which we have
+	 * a driver register in the DataManager.
+	 * @param context
+	 * @return
+	 * @throws Exception
+	 */
 	@Override
 	public boolean execute(PlugInContext context) throws Exception {
 		OpenGdmsFilePanel filePanel = new OpenGdmsFilePanel(
 				"Select the file to add");
 		if (UIFactory.showDialog(new UIPanel[] { filePanel })) {
-
+			//We can retrieve the files that have been selected by the user
 			File[] files = filePanel.getSelectedFiles();
 			for (File file : files) {
+				//For each file, we ensure that we have a driver
+				//that can be used to read it. If we don't, we don't
+				//open the file.
 				if(OrbisConfiguration.isFileEligible(file)) {
 					DataManager dm = (DataManager) Services
 							.getService(DataManager.class);
@@ -86,6 +104,12 @@ public class NewGeocatalogFilePlugIn extends AbstractPlugIn {
 		return true;
 	}
 
+	/**
+	 * The method used for plugin initialization.
+	 * @param context
+	 * @throws Exception
+	 */
+	@Override
 	public void initialize(PlugInContext context) throws Exception {
 		WorkbenchContext wbContext = context.getWorkbenchContext();
 		WorkbenchFrame frame = wbContext.getWorkbench().getFrame()
@@ -100,6 +124,11 @@ public class NewGeocatalogFilePlugIn extends AbstractPlugIn {
 
 	}
 
+	/**
+	 * As this plugin is used directly by the geocatalog, it is naturally enabled.
+	 * @return
+	 */
+	@Override
 	public boolean isEnabled() {
 		return true;
 	}

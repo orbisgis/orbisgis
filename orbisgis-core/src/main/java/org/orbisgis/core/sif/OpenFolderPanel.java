@@ -39,56 +39,22 @@ Thomas LEDUC, scientific researcher, Fernando GONZALEZ
 
 package org.orbisgis.core.sif;
 
-import java.awt.Component;
 import java.io.File;
 
-import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileFilter;
 
 /**
- *
+ * This class handles the panel used to import the content of a folder in the geocatalog
  * @author alexis, jean-yves
  */
-public class OpenFolderPanel extends AbstractUIPanel implements SQLUIPanel {
+public class OpenFolderPanel extends AbstractOpenPanel {
 
-	public static final String FIELD_NAME = "file";
+	public static final String FIELD_NAME = "folder";
 
 	public static final String FILTER_NAME = "filter";
-
-	private JFileChooser fileChooser;
-
-	private String title;
-
-	private String id;
 	
 	public OpenFolderPanel(String id, String title) {
-		this.id = id;
-		this.title = title;
-	}
-
-	public void addFilter(String extension, String description) {
-		addFilter(new String[] { extension }, description);
-	}
-
-	public void addAllFilter(final String description) {
-		getFileChooser().addChoosableFileFilter(new FileFilter() {
-
-			@Override
-			public String getDescription() {
-				return description;
-			}
-
-			@Override
-			public boolean accept(File f) {
-				return true;
-			}
-
-		});
-	}
-
-	public void addFilter(String[] extensions, String description) {
-		getFileChooser().addChoosableFileFilter(
-				new FormatFilter(extensions, description));
+		super(id, title);
 	}
 
 	public FileFilter getSelectedFilter(){
@@ -115,25 +81,14 @@ public class OpenFolderPanel extends AbstractUIPanel implements SQLUIPanel {
 	}
 
 	@Override
-	public Component getComponent() {
-		return getFileChooser();
+	public boolean showFoldersOnly(){
+		return true;
 	}
 
-	@Override
-	public String getId() {
-		return id;
-	}
-
-	public JFileChooser getFileChooser() {
-		if (fileChooser == null) {
-			fileChooser = new JFileChooser();
-			fileChooser.setControlButtonsAreShown(false);
-			fileChooser.setMultiSelectionEnabled(true);
-			fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-		}
-		return fileChooser;
-	}
-
+	/**
+	 * Return the names of the fields in the FileChooser.
+	 * @return
+	 */
 	@Override
 	public String[] getFieldNames() {
 		return new String[] { FIELD_NAME, FILTER_NAME };
@@ -145,25 +100,6 @@ public class OpenFolderPanel extends AbstractUIPanel implements SQLUIPanel {
 	}
 
 	@Override
-	public String getTitle() {
-		return title;
-	}
-
-	@Override
-	public String[] getValues() {
-		String ret = "";
-		File[] selectedFiles = getSelectedFiles();
-		String separator = "";
-		for (File file : selectedFiles) {
-			ret = ret + separator + file.getAbsolutePath();
-			separator = "||";
-		}
-
-		return new String[] { ret,
-				getFileChooser().getFileFilter().getDescription() };
-	}
-
-	@Override
 	public void setValue(String fieldName, String fieldValue) {
 		if (fieldName.equals(FIELD_NAME)) {
 			String[] files = fieldValue.split("\\Q||\\E");
@@ -171,100 +107,15 @@ public class OpenFolderPanel extends AbstractUIPanel implements SQLUIPanel {
 			for (int i = 0; i < selectedFiles.length; i++) {
 				selectedFiles[i] = new File(files[i]);
 			}
-			fileChooser.setSelectedFiles(selectedFiles);
+			getFileChooser().setSelectedFiles(selectedFiles);
 		} else {
-			FileFilter[] filters = fileChooser.getChoosableFileFilters();
+			FileFilter[] filters = getFileChooser().getChoosableFileFilters();
 			for (FileFilter fileFilter : filters) {
 				if (fieldValue.equals(fileFilter.getDescription())) {
-					fileChooser.setFileFilter(fileFilter);
+					getFileChooser().setFileFilter(fileFilter);
 				}
 			}
 		}
 	}
-
-	public File getSelectedFile() {
-		return fileChooser.getSelectedFile();
-	}
-
-	public File[] getSelectedFiles() {
-		if (fileChooser.isMultiSelectionEnabled()) {
-			return fileChooser.getSelectedFiles();
-		} else {
-			return new File[] { fileChooser.getSelectedFile() };
-		}
-	}
-
-	protected final class FormatFilter extends FileFilter {
-		private final String[] extensions;
-		private String description;
-
-		private FormatFilter(String[] extensions, String description) {
-			this.extensions = extensions;
-			this.description = description + " (";
-			String separator = "";
-			for (String extension : extensions) {
-				this.description += separator + "*." + extension;
-				separator = ",";
-			}
-			this.description += ")";
-		}
-
-		@Override
-		public String getDescription() {
-			return description;
-		}
-
-		@Override
-		public boolean accept(File f) {
-			if (f == null) {
-				return true;
-			} else {
-				for (String extension : extensions) {
-					if (f.getAbsolutePath().toLowerCase().endsWith(
-							"." + extension.toLowerCase())
-							|| f.isDirectory()) {
-						return true;
-					}
-				}
-				return false;
-			}
-		}
-
-		public File autoComplete(File selectedFile) {
-			if (selectedFile.isDirectory()) {
-				return null;
-			} else {
-				if (!selectedFile.isAbsolute()) {
-					selectedFile = new File(fileChooser.getCurrentDirectory()
-							+ File.separator + selectedFile.getName());
-				}
-				if (accept(selectedFile)) {
-					return selectedFile;
-				} else {
-					return new File(selectedFile.getAbsolutePath() + "."
-							+ extensions[0]);
-				}
-			}
-		}
-	}
-
-	@Override
-	public String[] getErrorMessages() {
-		return null;
-	}
-
-	@Override
-	public String[] getValidationExpressions() {
-		return null;
-	}
-
-	public void setSelectedFile(File file) {
-		fileChooser.setSelectedFile(file);
-	}
-
-	public void setCurrentDirectory(File dir) {
-		fileChooser.setCurrentDirectory(dir);
-	}
-
 
 }

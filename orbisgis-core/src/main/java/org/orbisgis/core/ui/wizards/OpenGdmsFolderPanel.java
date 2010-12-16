@@ -49,7 +49,8 @@ import org.orbisgis.core.Services;
 import org.orbisgis.core.sif.OpenFolderPanel;
 
 /**
- *
+ * This panel is used to select the folders where we want to search for new datasources
+ * to import in the geocatalog.
  * @author alexis, jean-yves
  */
 public class OpenGdmsFolderPanel extends OpenFolderPanel  {
