@@ -583,7 +583,7 @@ public class OrbisConfiguration implements Setup {
 		if (index >= 0 && index < fileName.length()) {
 
 			String ext = fileName.substring(index + 1);
-			return OrbisConfiguration.SUPPORTED_EXTENSIONS.contains(ext);
+			return OrbisConfiguration.SUPPORTED_EXTENSIONS.contains(ext.toLowerCase());
 		}
 		return false;
 	}
