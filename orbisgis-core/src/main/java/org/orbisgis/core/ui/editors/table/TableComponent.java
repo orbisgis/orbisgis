@@ -39,12 +39,12 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.GridBagConstraints;
 import java.awt.Insets;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseAdapter;
@@ -58,9 +58,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.TreeSet;
 import java.util.regex.Pattern;
-import javax.swing.Box;
-import javax.swing.BoxLayout;
 
+import javax.swing.BoxLayout;
 import javax.swing.DefaultListSelectionModel;
 import javax.swing.Icon;
 import javax.swing.JButton;
@@ -73,8 +72,6 @@ import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.JToolBar;
 import javax.swing.ListSelectionModel;
-import javax.swing.Spring;
-import javax.swing.SpringLayout;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.event.ListSelectionEvent;
@@ -297,24 +294,24 @@ public class TableComponent extends JPanel implements WorkbenchFrame {
 			}
 		});
 
-		regexTxtFilter.addMouseListener(new MouseAdapter() {
+		regexTxtFilter.addFocusListener(new FocusListener() {
 			@Override
-			public void mousePressed(MouseEvent e) {
-				if (regexTxtFilter
+	        public void focusGained(FocusEvent e) {
+	        	if (regexTxtFilter
 						.getText()
 						.equals(I18N	
 						.getText("orbisgis.org.orbisgis.core.ui.editors.table.TableComponent.put_a_text"))){
 					regexTxtFilter.setText("");
 				}
-			}
-
+	        }
+			
 			@Override
-			public void mouseExited(MouseEvent e) {
-				if (regexTxtFilter.getText().equals("")) {
+	        public void focusLost(FocusEvent e) {
+	        	if (regexTxtFilter.getText().equals("")) {
 					regexTxtFilter.setText(I18N.getText("orbisgis.org.orbisgis.core.ui.editors.table.TableComponent.put_a_text"));
 				}
-			}
-		});
+	        }
+	     });
 		regexPanel.add(label);
 		regexPanel.add(regexTxtFilter);
 		return regexPanel;
@@ -459,24 +456,26 @@ public class TableComponent extends JPanel implements WorkbenchFrame {
 
 		});
 
-		txtFilter.addMouseListener(new MouseAdapter() {
-			public void mousePressed(MouseEvent e) {
-				if (txtFilter
+		txtFilter.addFocusListener(new FocusListener() {
+			@Override
+	        public void focusGained(FocusEvent e) {
+	        	if (txtFilter
 						.getText()
 						.equals(
 								I18N
 										.getText("orbisgis.org.orbisgis.core.ui.editors.table.TableComponent.put_a_sqlwhere")))
 					txtFilter.setText("");
-			}
+	        };
 
-			public void mouseExited(MouseEvent e) {
-				if (txtFilter.getText().equals(""))
+	        @Override
+	        public void focusLost(FocusEvent e) {
+		        if (txtFilter.getText().equals(""))
 					txtFilter
 							.setText(I18N
 									.getText("orbisgis.org.orbisgis.core.ui.editors.table.TableComponent.put_a_sqlwhere"));
-			}
-		});
-
+	        }
+	     });
+		
 		return txtFilter;
 
 	}
