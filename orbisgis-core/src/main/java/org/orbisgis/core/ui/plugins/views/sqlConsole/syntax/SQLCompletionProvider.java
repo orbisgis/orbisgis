@@ -227,7 +227,7 @@ public class SQLCompletionProvider extends DefaultCompletionProvider implements 
             boolean tableFielsdToo = false;
             if (word.startsWith("(")) {
                 addCompletion(new TokenCompletion(this, SQLEngineConstants.SELECT, e.tokenImage));
-                tableFielsdToo = true;
+//                tableFielsdToo = true;
             }
 
             // SQL Statement not complete, auto-completion needed
@@ -244,7 +244,7 @@ public class SQLCompletionProvider extends DefaultCompletionProvider implements 
             addCompletions(getSourceNamesCompletion(false));
         } else {
             // SELECT clause
-            addCompletions(getSourceNamesCompletion(true));
+            addCompletions(getSourceNamesCompletion(false));
             addCompletions(new ArrayList(getFunctionCompletions()));
         }
     }
@@ -318,13 +318,13 @@ public class SQLCompletionProvider extends DefaultCompletionProvider implements 
             String toLowerCase = content.trim().toLowerCase();
 
             if (toLowerCase.endsWith("or") || toLowerCase.endsWith("and")) {
-                addCompletions(new ArrayList(getSourceNamesCompletion(true)));
+                addCompletions(new ArrayList(getSourceNamesCompletion(false)));
                 addCompletions(new ArrayList(getFunctionCompletions()));
                 addCompletion(new TokenCompletion(this, 0, imgBool));
                 addCompletion(new TokenCompletion(this, 1, imgBool));
                 return;
             }
-            tableWithFields = true;
+//            tableWithFields = true;
             if ((tokenKind == SQLEngineConstants.ID || tokenKind == SQLEngineConstants.BOOLEAN_LITERAL
                     || tokenKind == SQLEngineConstants.CLOSEPAREN || tokenKind == SQLEngineConstants.FLOATING_POINT_LITERAL
                     || tokenKind == SQLEngineConstants.INTEGER_LITERAL || tokenKind == SQLEngineConstants.NULL
@@ -334,9 +334,9 @@ public class SQLCompletionProvider extends DefaultCompletionProvider implements 
             }
         }
 
-        if (tokenKind == SQLEngineConstants.WHERE || tokenKind == SQLEngineConstants.SELECT) {
-            tableWithFields = true;
-        }
+//        if (tokenKind == SQLEngineConstants.WHERE || tokenKind == SQLEngineConstants.SELECT) {
+//            tableWithFields = true;
+//        }
 
         HashSet words = new HashSet();
         for (int i = 0; i < e.expectedTokenSequences.length; i++) {
