@@ -1,6 +1,7 @@
 package org.orbisgis.core.renderer.se.parameter.string;
 
 import javax.xml.bind.JAXBElement;
+import org.gdms.data.SpatialDataSourceDecorator;
 
 import org.gdms.data.feature.Feature;
 import org.gdms.data.values.Value;
@@ -29,9 +30,9 @@ public class StringAttribute extends PropertyName implements StringParameter{
     }
 
     @Override
-    public String getValue(Feature feat) throws ParameterException{ // TODO implement
+    public String getValue(SpatialDataSourceDecorator sds, long fid) throws ParameterException{ // TODO implement
         try {
-			Value fieldValue = getFieldValue(feat);
+			Value fieldValue = getFieldValue(sds, fid);
 			return fieldValue.toString();
         } catch (Exception e) {
             throw new ParameterException("Could not fetch feature attribute \""+ fieldName +"\" (" + e + ")");

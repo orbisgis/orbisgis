@@ -42,7 +42,7 @@ import java.awt.Shape;
 import java.io.IOException;
 import java.util.ArrayList;
 import javax.xml.bind.JAXBElement;
-import org.gdms.data.feature.Feature;
+import org.gdms.data.SpatialDataSourceDecorator;
 
 import org.gdms.driver.DriverException;
 import org.orbisgis.core.map.MapTransform;
@@ -144,19 +144,19 @@ public final class LineSymbolizer extends VectorSymbolizer implements StrokeNode
 	 * @todo make sure the geom is a line or an area; implement p_offset
 	 */
 	@Override
-	public void draw(Graphics2D g2, Feature feat, boolean selected, MapTransform mt) throws ParameterException, IOException, DriverException {
+	public void draw(Graphics2D g2, SpatialDataSourceDecorator sds, long fid, boolean selected, MapTransform mt) throws ParameterException, IOException, DriverException {
 		if (stroke != null) {
-			ArrayList<Shape> shapes = this.getLines(feat, mt);
+			ArrayList<Shape> shapes = this.getLines(sds, fid, mt);
 
 			if (shapes != null) {
 				for (Shape shp : shapes) {
 					if (shp != null) {
 						if (perpendicularOffset != null) {
-							double offset = Uom.toPixel(perpendicularOffset.getValue(feat),
+							double offset = Uom.toPixel(perpendicularOffset.getValue(sds, fid),
 									getUom(), mt.getDpi(), mt.getScaleDenominator(), null);
 							shp = ShapeHelper.perpendicularOffset(shp, offset);
 						}
-						stroke.draw(g2, shp, feat, selected, mt);
+						stroke.draw(g2, sds, fid, shp, selected, mt);
 					}
 				}
 			}

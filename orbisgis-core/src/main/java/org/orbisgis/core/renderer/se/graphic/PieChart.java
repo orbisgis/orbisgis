@@ -13,8 +13,8 @@ import java.util.List;
 
 import javax.media.jai.RenderableGraphics;
 import javax.xml.bind.JAXBElement;
+import org.gdms.data.SpatialDataSourceDecorator;
 
-import org.gdms.data.feature.Feature;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.persistance.se.ObjectFactory;
 import org.orbisgis.core.renderer.persistance.se.PieChartType;
@@ -167,7 +167,7 @@ public final class PieChart extends Graphic implements StrokeNode {
 		if (holeRadius != null){
 			if (this.radius != null && !this.radius.dependsOnFeature()){
 				try {
-					holeRadius.setContext(new RealParameterContext(0.0, radius.getValue(null)));
+					holeRadius.setContext(new RealParameterContext(0.0, radius.getValue(null, -1)));
 				} catch (ParameterException ex) {
 					// don't throw anything since radius does not depends on features
 				}
@@ -212,7 +212,7 @@ public final class PieChart extends Graphic implements StrokeNode {
      * @param fid
      */
     @Override
-    public RenderableGraphics getRenderableGraphics(Feature feat, boolean selected, MapTransform mt) throws ParameterException, IOException {
+    public RenderableGraphics getRenderableGraphics(SpatialDataSourceDecorator sds, long fid, boolean selected, MapTransform mt) throws ParameterException, IOException {
 
         int nSlices = slices.size();
 
@@ -224,14 +224,14 @@ public final class PieChart extends Graphic implements StrokeNode {
         double r = 30; // 30px by default
 
         if (radius != null) {
-            r = Uom.toPixel(this.getRadius().getValue(feat), this.getUom(), mt.getDpi(), mt.getScaleDenominator(), null); // TODO 100%
+            r = Uom.toPixel(this.getRadius().getValue(sds, fid), this.getUom(), mt.getDpi(), mt.getScaleDenominator(), null); // TODO 100%
         }
 
         double holeR = 0.0;
 
         Area hole = null;
         if (this.holeRadius != null) {
-            holeR = Uom.toPixel(this.getHoleRadius().getValue(feat), this.getUom(), mt.getDpi(), mt.getScaleDenominator(), r);
+            holeR = Uom.toPixel(this.getHoleRadius().getValue(sds, fid), this.getUom(), mt.getDpi(), mt.getScaleDenominator(), r);
             hole = new Area(new Arc2D.Double(-holeR, -holeR, 2 * holeR, 2 * holeR, 0, 360, Arc2D.CHORD));
         }
 
@@ -239,12 +239,12 @@ public final class PieChart extends Graphic implements StrokeNode {
 
         for (int i = 0; i < nSlices; i++) {
             Slice slc = slices.get(i);
-            values[i] = slc.getValue().getValue(feat);
+            values[i] = slc.getValue().getValue(sds, fid);
             total += values[i];
             stackedValues[i] = total;
             RealParameter gap = slc.getGap();
             if (gap != null) {
-                gaps[i] = Uom.toPixel(slc.getGap().getValue(feat), this.getUom(), mt.getDpi(), mt.getScaleDenominator(), r);
+                gaps[i] = Uom.toPixel(slc.getGap().getValue(sds, fid), this.getUom(), mt.getDpi(), mt.getScaleDenominator(), r);
             } else {
                 gaps[i] = 0.0;
             }
@@ -255,7 +255,7 @@ public final class PieChart extends Graphic implements StrokeNode {
         double pieMaxR = r + maxGap;
 
         if (stroke != null) {
-            pieMaxR += stroke.getMaxWidth(feat, mt);
+            pieMaxR += stroke.getMaxWidth(sds, fid, mt);
         }
 
 
@@ -265,7 +265,7 @@ public final class PieChart extends Graphic implements StrokeNode {
 
         AffineTransform at = null;
         if (this.getTransform() != null) {
-            at = this.getTransform().getGraphicalAffineTransform(feat, false, mt, r, r);
+            at = this.getTransform().getGraphicalAffineTransform(false, sds, fid, mt, r, r);
 
             // Apply the AT to the bbox
             Shape newBounds = at.createTransformedShape(bounds);
@@ -339,7 +339,7 @@ public final class PieChart extends Graphic implements StrokeNode {
 
 
             if (fill != null) {
-                fill.draw(rg, atShp, feat, selected, mt);
+                fill.draw(rg, sds, fid, atShp, selected, mt);
             }
 
 
@@ -369,7 +369,7 @@ public final class PieChart extends Graphic implements StrokeNode {
                 Rectangle2D anchor = labelAt.createTransformedShape(new Rectangle2D.Double(0, 0, 1, 1)).getBounds2D();
 
 
-                rg.drawRenderedImage(label.getImage(feat, selected, mt).createRendering(mt.getCurrentRenderContext()), AffineTransform.getTranslateInstance(anchor.getCenterX(), anchor.getCenterY()));
+                rg.drawRenderedImage(label.getImage(sds, fid, selected, mt).createRendering(mt.getCurrentRenderContext()), AffineTransform.getTranslateInstance(anchor.getCenterX(), anchor.getCenterY()));
             }
 
         }
@@ -377,7 +377,7 @@ public final class PieChart extends Graphic implements StrokeNode {
         // Stokes must be drawn after fills 
         if (stroke != null) {
             for (int i = 0; i < nSlices; i++) {
-                stroke.draw(rg, shapes[i], feat, selected, mt);
+                stroke.draw(rg, sds, fid, shapes[i], selected, mt);
             }
         }
 
@@ -385,7 +385,7 @@ public final class PieChart extends Graphic implements StrokeNode {
     }
 
     @Override
-    public double getMaxWidth(Feature feat, MapTransform mt) throws ParameterException, IOException {
+    public double getMaxWidth(SpatialDataSourceDecorator sds, long fid, MapTransform mt) throws ParameterException, IOException {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 

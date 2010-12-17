@@ -6,7 +6,6 @@
 package org.orbisgis.core.renderer.se.parameter.real;
 
 import junit.framework.TestCase;
-import org.gdms.data.feature.Feature;
 import org.orbisgis.core.renderer.se.parameter.Interpolate.InterpolationMode;
 import org.orbisgis.core.renderer.se.parameter.InterpolationPoint;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
@@ -59,23 +58,23 @@ public class Interpolate2RealTest extends TestCase {
 		double result;
 
 		interpolate.setLookupValue(new RealLiteral(1.0));
-		result = interpolate.getValue(null);
+		result = interpolate.getValue(null, -1);
 
 		System.out.println("Result is: " + result);
 		assertEquals(result, 100.0);
 
 		interpolate.setLookupValue(new RealLiteral(20.0));
-		result = interpolate.getValue(null);
+		result = interpolate.getValue(null, -1);
 		System.out.println("Result is: " + result);
 		assertEquals(result, 102.5);
 
 		interpolate.setLookupValue(new RealLiteral(55.0));
-		result = interpolate.getValue(null);
+		result = interpolate.getValue(null, -1);
 		System.out.println("Result is: " + result);
 		assertEquals(result, 155.0);
 
 		interpolate.setLookupValue(new RealLiteral(70.0));
-		result = interpolate.getValue(null);
+		result = interpolate.getValue(null, -1);
 		System.out.println("Result is: " + result);
 		assertEquals(result, 200.0);
 	}
@@ -108,22 +107,22 @@ public class Interpolate2RealTest extends TestCase {
 		double result;
 
 		interpolate.setLookupValue(new RealLiteral(1.0));
-		result = interpolate.getValue(null);
+		result = interpolate.getValue(null, -1);
 		System.out.println("Result is: " + result);
 		assertEquals(result, 100.0);
 
 		interpolate.setLookupValue(new RealLiteral(20.0));
-		result = interpolate.getValue(null);
+		result = interpolate.getValue(null, -1);
 		System.out.println("Result is: " + result);
 		assertEquals(result, 101.46446609406726);
 
 		interpolate.setLookupValue(new RealLiteral(55.0));
-		result = interpolate.getValue(null);
+		result = interpolate.getValue(null, -1);
 		System.out.println("Result is: " + result);
 		assertEquals(result, 155.0);
 
 		interpolate.setLookupValue(new RealLiteral(70.0));
-		result = interpolate.getValue(null);
+		result = interpolate.getValue(null, -1);
 		System.out.println("Result is: " + result);
 		assertEquals(result, 200.0);
 	}

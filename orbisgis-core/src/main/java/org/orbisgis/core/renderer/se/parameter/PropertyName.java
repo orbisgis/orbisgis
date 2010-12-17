@@ -2,6 +2,7 @@ package org.orbisgis.core.renderer.se.parameter;
 
 import java.util.ArrayList;
 import javax.xml.bind.JAXBElement;
+import org.gdms.data.SpatialDataSourceDecorator;
 import org.gdms.data.feature.Feature;
 import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
@@ -73,11 +74,11 @@ public abstract class PropertyName implements SeParameter {
 		return fieldName;
 	}
 
-	public Value getFieldValue(Feature feat) throws DriverException {
+	public Value getFieldValue(SpatialDataSourceDecorator sds, long fid) throws DriverException {
 		if (this.fieldId == -1) {
-			this.fieldId = feat.getMetadata().getFieldIndex(fieldName);
+			this.fieldId = sds.getMetadata().getFieldIndex(fieldName);
 		}
-		return feat.getValue(fieldId);
+		return sds.getFieldValue(fid, fieldId);
 	}
 
 	@Override

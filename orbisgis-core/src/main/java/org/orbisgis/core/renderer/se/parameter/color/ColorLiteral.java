@@ -41,6 +41,7 @@ package org.orbisgis.core.renderer.se.parameter.color;
 import java.util.Random;
 import java.awt.Color;
 import javax.xml.bind.JAXBElement;
+import org.gdms.data.SpatialDataSourceDecorator;
 import org.gdms.data.feature.Feature;
 import org.orbisgis.core.renderer.persistance.ogc.LiteralType;
 import org.orbisgis.core.renderer.se.parameter.Literal;
@@ -87,7 +88,7 @@ public class ColorLiteral extends Literal implements ColorParameter{
     }
 
     @Override
-    public Color getColor(Feature feat){
+    public Color getColor(SpatialDataSourceDecorator sds, long fid){
         return color;
     }
 

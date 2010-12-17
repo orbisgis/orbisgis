@@ -1,7 +1,7 @@
 package org.orbisgis.core.renderer.se.parameter.color;
 
 import java.awt.Color;
-import org.gdms.data.feature.Feature;
+import org.gdms.data.SpatialDataSourceDecorator;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.SeParameter;
 
@@ -15,5 +15,5 @@ import org.orbisgis.core.renderer.se.parameter.SeParameter;
  */
 public interface ColorParameter extends SeParameter {
     
-    Color getColor(Feature feat) throws ParameterException;
+    public abstract Color getColor(SpatialDataSourceDecorator sds, long fid) throws ParameterException;
 }

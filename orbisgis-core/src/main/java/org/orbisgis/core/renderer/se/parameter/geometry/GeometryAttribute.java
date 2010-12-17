@@ -2,6 +2,7 @@ package org.orbisgis.core.renderer.se.parameter.geometry;
 
 import com.vividsolutions.jts.geom.Geometry;
 import javax.xml.bind.JAXBElement;
+import org.gdms.data.SpatialDataSourceDecorator;
 import org.gdms.data.feature.Feature;
 import org.gdms.driver.DriverException;
 import org.orbisgis.core.renderer.persistance.ogc.PropertyNameType;
@@ -21,9 +22,9 @@ public class GeometryAttribute extends PropertyName {
 	}
 
 
-    public Geometry getTheGeom(Feature feat) throws ParameterException {
+    public Geometry getTheGeom(SpatialDataSourceDecorator sds, long fid) throws ParameterException {
         try {
-            return getFieldValue(feat).getAsGeometry();
+            return getFieldValue(sds, fid).getAsGeometry();
         } catch (DriverException ex) {
             throw new ParameterException("Could not fetch feature attribute \"" + fieldName + "\"");
         }

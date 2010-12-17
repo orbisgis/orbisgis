@@ -2,6 +2,7 @@ package org.orbisgis.core.renderer.se.parameter.color;
 
 import java.awt.Color;
 import javax.xml.bind.JAXBElement;
+import org.gdms.data.SpatialDataSourceDecorator;
 import org.gdms.data.feature.Feature;
 import org.orbisgis.core.renderer.persistance.se.InterpolateType;
 import org.orbisgis.core.renderer.persistance.se.InterpolationPointType;
@@ -53,15 +54,15 @@ public class Interpolate2Color extends Interpolate<ColorParameter, ColorLiteral>
      * @return
      */
     @Override
-    public Color getColor(Feature feat) throws ParameterException{
-		double value = this.lookupValue.getValue(feat);
+    public Color getColor(SpatialDataSourceDecorator sds, long fid) throws ParameterException{
+		double value = this.lookupValue.getValue(sds, fid);
 
-		if (i_points.get(0).getData() > value){
-			return i_points.get(0).getValue().getColor(feat);
+		if (i_points.get(0).getData() >= value){
+			return i_points.get(0).getValue().getColor(sds, fid);
 		}
 
-		if (i_points.get(i_points.size()-1).getData() < value){
-			return i_points.get(i_points.size()-1).getValue().getColor(feat);
+		if (i_points.get(i_points.size()-1).getData() <= value){
+			return i_points.get(i_points.size()-1).getValue().getColor(sds, fid);
 		}
 
 
@@ -73,8 +74,8 @@ public class Interpolate2Color extends Interpolate<ColorParameter, ColorLiteral>
 		double d1 = ip1.getData();
 		double d2 = ip2.getData();
 
-		Color c1 = ip1.getValue().getColor(feat);
-		Color c2 = ip2.getValue().getColor(feat);
+		Color c1 = ip1.getValue().getColor(sds, fid);
+		Color c2 = ip2.getValue().getColor(sds, fid);
 
 
 		switch(this.mode){

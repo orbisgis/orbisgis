@@ -4,7 +4,7 @@ package org.orbisgis.core.renderer.se.parameter.color;
 import java.awt.Color;
 import java.util.Iterator;
 import javax.xml.bind.JAXBElement;
-import org.gdms.data.feature.Feature;
+import org.gdms.data.SpatialDataSourceDecorator;
 import org.orbisgis.core.renderer.persistance.se.CategorizeType;
 import org.orbisgis.core.renderer.persistance.se.ParameterValueType;
 import org.orbisgis.core.renderer.persistance.se.ThreshholdsBelongToType;
@@ -48,13 +48,13 @@ public class Categorize2Color extends Categorize<ColorParameter, ColorLiteral> i
     }
 
     @Override
-    public Color getColor(Feature feat) throws ParameterException{
+    public Color getColor(SpatialDataSourceDecorator sds, long fid) throws ParameterException{
 
-		if (feat == null){
+		if (sds == null){
 			throw new ParameterException("No feature");
 		}
 
-        return getParameter(feat).getColor(feat);
+        return getParameter(sds, fid).getColor(sds, fid);
     }
 
 }

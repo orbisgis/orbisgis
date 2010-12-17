@@ -2,7 +2,7 @@ package org.orbisgis.core.renderer.se.parameter.real;
 
 import java.util.Iterator;
 import javax.xml.bind.JAXBElement;
-import org.gdms.data.feature.Feature;
+import org.gdms.data.SpatialDataSourceDecorator;
 import org.orbisgis.core.renderer.persistance.se.CategorizeType;
 import org.orbisgis.core.renderer.persistance.se.ParameterValueType;
 import org.orbisgis.core.renderer.persistance.se.ThreshholdsBelongToType;
@@ -47,13 +47,13 @@ public final class Categorize2Real extends Categorize<RealParameter, RealLiteral
     }
 
     @Override
-    public double getValue(Feature feat) throws ParameterException{
+    public double getValue(SpatialDataSourceDecorator sds, long fid) throws ParameterException{
 
-		if (feat == null){
+		if (sds == null){
 			throw new ParameterException("No feature");
 		}
 
-		return getParameter(feat).getValue(feat);
+		return getParameter(sds, fid).getValue(sds, fid);
     }
 
 

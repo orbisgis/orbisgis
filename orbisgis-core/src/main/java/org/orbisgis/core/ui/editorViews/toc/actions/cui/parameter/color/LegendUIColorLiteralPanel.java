@@ -108,7 +108,7 @@ public abstract class LegendUIColorLiteralPanel extends LegendUIComponent implem
 	@Override
 	protected void mountComponent() {
 		editor.add(label);
-		updateButton(color.getColor(null));
+		updateButton(color.getColor(null, -1));
 	}
 
 	@Override

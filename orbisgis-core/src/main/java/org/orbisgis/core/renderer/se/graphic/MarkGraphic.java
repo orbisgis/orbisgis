@@ -43,6 +43,7 @@ import java.awt.geom.Rectangle2D;
 import java.io.IOException;
 import javax.media.jai.RenderableGraphics;
 import javax.xml.bind.JAXBElement;
+import org.gdms.data.SpatialDataSourceDecorator;
 import org.orbisgis.core.renderer.persistance.se.MarkGraphicType;
 import org.orbisgis.core.renderer.persistance.se.ObjectFactory;
 import org.gdms.data.feature.Feature;
@@ -224,7 +225,7 @@ public final class MarkGraphic extends Graphic implements FillNode, StrokeNode, 
 	@Override
 	public void updateGraphic() {
 		try {
-			shape = source.getShape(viewBox, null, null, null, markIndex, mimeType);
+			shape = source.getShape(viewBox, null, -1, null, null, markIndex, mimeType);
 		} catch (Exception e) {
 			shape = null;
 		}
@@ -246,12 +247,12 @@ public final class MarkGraphic extends Graphic implements FillNode, StrokeNode, 
 	 * @throws IOException
 	 */
 	@Override
-	public RenderableGraphics getRenderableGraphics(Feature feat, boolean selected, MapTransform mt) throws ParameterException, IOException {
+	public RenderableGraphics getRenderableGraphics(SpatialDataSourceDecorator sds, long fid, boolean selected, MapTransform mt) throws ParameterException, IOException {
 		Shape shp;
 
 		// If the shape doesn't depends on feature (i.e. not null), we used the cached one
 		if (shape == null) {
-			shp = source.getShape(viewBox, feat, mt.getScaleDenominator(), mt.getDpi(), markIndex, mimeType);
+			shp = source.getShape(viewBox, sds, fid, mt.getScaleDenominator(), mt.getDpi(), markIndex, mimeType);
 		} else {
 			shp = shape;
 		}
@@ -260,29 +261,29 @@ public final class MarkGraphic extends Graphic implements FillNode, StrokeNode, 
 		Shape atShp = shp;
 
 		if (transform != null) {
-			atShp = this.transform.getGraphicalAffineTransform(feat, false, mt, shp.getBounds().getWidth(),
+			atShp = this.transform.getGraphicalAffineTransform(false, sds, fid, mt, shp.getBounds().getWidth(),
 					shp.getBounds().getHeight()).createTransformedShape(shp);
 		}
 
 		Rectangle2D bounds = atShp.getBounds2D();
 
-		double margin = this.getMargin(feat, mt);
+		double margin = this.getMargin(sds, fid, mt);
 
 		RenderableGraphics rg = Graphic.getNewRenderableGraphics(bounds, margin);
 
 		if (halo != null) {
-			halo.draw(rg, atShp, feat, mt);
+			halo.draw(rg, sds, fid, atShp, mt);
 		}
 
 		if (fill != null) {
-			fill.draw(rg, atShp, feat, selected, mt);
+			fill.draw(rg, sds, fid, atShp, selected, mt);
 		}
 
 		if (stroke != null) {
 			if (pOffset != null) {
-				atShp = ShapeHelper.perpendicularOffset(atShp, pOffset.getValue(feat));
+				atShp = ShapeHelper.perpendicularOffset(atShp, pOffset.getValue(sds, fid));
 			}
-			stroke.draw(rg, atShp, feat, selected, mt);
+			stroke.draw(rg, sds, fid, atShp, selected, mt);
 		}
 
 		return rg;
@@ -297,21 +298,21 @@ public final class MarkGraphic extends Graphic implements FillNode, StrokeNode, 
 	 * @throws ParameterException
 	 * @throws IOException
 	 */
-	private double getMargin(Feature feat, MapTransform mt) throws ParameterException, IOException {
+	private double getMargin(SpatialDataSourceDecorator sds, long fid, MapTransform mt) throws ParameterException, IOException {
 		double sWidth = 0.0;
 		double haloR = 0.0;
 		double offset = 0.0;
 
 		if (stroke != null) {
-			sWidth += stroke.getMaxWidth(feat, mt);
+			sWidth += stroke.getMaxWidth(sds, fid, mt);
 		}
 
 		if (this.halo != null) {
-			haloR = halo.getHaloRadius(feat, mt);
+			haloR = halo.getHaloRadius(sds, fid, mt);
 		}
 
 		if (this.pOffset != null){
-			offset = pOffset.getValue(feat);
+			offset = pOffset.getValue(sds, fid);
 		}
 
 		double max = Math.max(sWidth, haloR);
@@ -319,15 +320,15 @@ public final class MarkGraphic extends Graphic implements FillNode, StrokeNode, 
 	}
 
 	@Override
-	public double getMaxWidth(Feature feat, MapTransform mt) throws ParameterException, IOException {
+	public double getMaxWidth(SpatialDataSourceDecorator sds, long fid, MapTransform mt) throws ParameterException, IOException {
 		double delta = 0.0;
 
 		if (viewBox != null && viewBox.usable()) {
-			Point2D dim = viewBox.getDimensionInPixel(feat, defaultSize, defaultSize, mt.getScaleDenominator(), mt.getDpi());
+			Point2D dim = viewBox.getDimensionInPixel(sds, fid, defaultSize, defaultSize, mt.getScaleDenominator(), mt.getDpi());
 			delta = Math.max(dim.getY(), dim.getY());
 		}
 
-		delta += this.getMargin(feat, mt);
+		delta += this.getMargin(sds, fid, mt);
 
 		return delta;
 	}

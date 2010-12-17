@@ -6,6 +6,7 @@ package org.orbisgis.core.renderer.se.transform;
 
 import java.awt.geom.AffineTransform;
 import javax.xml.bind.JAXBElement;
+import org.gdms.data.SpatialDataSourceDecorator;
 import org.gdms.data.feature.Feature;
 import org.orbisgis.core.map.MapTransform;
 
@@ -186,18 +187,18 @@ public final class Matrix implements Transformation {
     }
 
     @Override
-    public AffineTransform getAffineTransform(Feature feat, Uom uom, MapTransform mt, Double width, Double height) throws ParameterException {
+    public AffineTransform getAffineTransform(SpatialDataSourceDecorator sds, long fid, Uom uom, MapTransform mt, Double width, Double height) throws ParameterException {
         return new AffineTransform(
                 //Uom.toPixel(a.getValue(feat), uom, mt.getDpi(), mt.getScaleDenominator(), null),
-				a.getValue(feat),
-				b.getValue(feat),
-				c.getValue(feat),
+				a.getValue(sds, fid),
+				b.getValue(sds, fid),
+				c.getValue(sds, fid),
                 //Uom.toPixel(b.getValue(feat), uom, mt.getDpi(), mt.getScaleDenominator(), null),
                 //Uom.toPixel(c.getValue(feat), uom, mt.getDpi(), mt.getScaleDenominator(), null),
                 //Uom.toPixel(d.getValue(feat), uom, mt.getDpi(), mt.getScaleDenominator(), null),
-				d.getValue(feat),
-                Uom.toPixel(e.getValue(feat), uom, mt.getDpi(), mt.getScaleDenominator(), width),
-                Uom.toPixel(f.getValue(feat), uom, mt.getDpi(), mt.getScaleDenominator(), height));
+				d.getValue(sds, fid),
+                Uom.toPixel(e.getValue(sds, fid), uom, mt.getDpi(), mt.getScaleDenominator(), width),
+                Uom.toPixel(f.getValue(sds, fid), uom, mt.getDpi(), mt.getScaleDenominator(), height));
     }
 
     @Override
@@ -213,22 +214,22 @@ public final class Matrix implements Transformation {
      */
     public void simplify() throws ParameterException {
         if (!a.dependsOnFeature()) {
-            setA(new RealLiteral(a.getValue(null)));
+            setA(new RealLiteral(a.getValue(null, -1)));
         }
         if (!b.dependsOnFeature()) {
-            setB(new RealLiteral(b.getValue(null)));
+            setB(new RealLiteral(b.getValue(null, -1)));
         }
         if (!c.dependsOnFeature()) {
-            setC(new RealLiteral(c.getValue(null)));
+            setC(new RealLiteral(c.getValue(null, -1)));
         }
         if (!d.dependsOnFeature()) {
-            setD(new RealLiteral(d.getValue(null)));
+            setD(new RealLiteral(d.getValue(null, -1)));
         }
         if (!e.dependsOnFeature()) {
-            setE(new RealLiteral(e.getValue(null)));
+            setE(new RealLiteral(e.getValue(null, -1)));
         }
         if (!f.dependsOnFeature()) {
-            setF(new RealLiteral(f.getValue(null)));
+            setF(new RealLiteral(f.getValue(null, -1)));
         }
     }
 

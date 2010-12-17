@@ -2,7 +2,7 @@ package org.orbisgis.core.renderer.se.parameter.color;
 
 import java.awt.Color;
 import javax.xml.bind.JAXBElement;
-import org.gdms.data.feature.Feature;
+import org.gdms.data.SpatialDataSourceDecorator;
 import org.orbisgis.core.renderer.persistance.se.MapItemType;
 import org.orbisgis.core.renderer.persistance.se.RecodeType;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
@@ -31,10 +31,10 @@ public class Recode2Color extends Recode<ColorParameter, ColorLiteral> implement
 
 
     @Override
-    public Color getColor(Feature feat) throws ParameterException{
-		if (feat == null){
+    public Color getColor(SpatialDataSourceDecorator sds, long fid) throws ParameterException{
+		if (sds == null){
 			throw new ParameterException("No feature");
 		}
-        return getParameter(feat).getColor(feat);
+        return getParameter(sds, fid).getColor(sds, fid);
     }
 }

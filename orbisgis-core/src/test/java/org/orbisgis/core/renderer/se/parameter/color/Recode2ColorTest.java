@@ -49,21 +49,21 @@ public class Recode2ColorTest extends TestCase {
             recode.addMapItem(key1, c1);
             assertTrue(recode.getNumMapItem() == 1);
             assertTrue(recode.getMapItemKey(0).equals("k1"));
-            assertTrue(recode.getMapItemValue(0).getColor(null) == c1.getColor(null));
-            assertTrue(recode.getMapItemValue("k1").getColor(null) == c1.getColor(null));
+            assertTrue(recode.getMapItemValue(0).getColor(null, -1) == c1.getColor(null, -1));
+            assertTrue(recode.getMapItemValue("k1").getColor(null, -1) == c1.getColor(null, -1));
             recode.addMapItem(key2, c2);
             assertTrue(recode.getNumMapItem() == 2);
             assertTrue(recode.getMapItemKey(0).equals("k1"));
             assertTrue(recode.getMapItemKey(1).equals("k2"));
-            assertTrue(recode.getMapItemValue(1).getColor(null) == c2.getColor(null));
-            assertTrue(recode.getMapItemValue("k2").getColor(null) == c2.getColor(null));
+            assertTrue(recode.getMapItemValue(1).getColor(null, -1) == c2.getColor(null, -1));
+            assertTrue(recode.getMapItemValue("k2").getColor(null, -1) == c2.getColor(null, -1));
             recode.addMapItem(key3, c3);
             assertTrue(recode.getNumMapItem() == 3);
             assertTrue(recode.getMapItemKey(0).equals("k1"));
             assertTrue(recode.getMapItemKey(1).equals("k2"));
             assertTrue(recode.getMapItemKey(2).equals("k3"));
-            assertTrue(recode.getMapItemValue(2).getColor(null) == c3.getColor(null));
-            assertTrue(recode.getMapItemValue("k3").getColor(null) == c3.getColor(null));
+            assertTrue(recode.getMapItemValue(2).getColor(null, -1) == c3.getColor(null, -1));
+            assertTrue(recode.getMapItemValue("k3").getColor(null, -1) == c3.getColor(null, -1));
         } catch (ParameterException ex) {
             Logger.getLogger(Recode2ColorTest.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -72,11 +72,11 @@ public class Recode2ColorTest extends TestCase {
     public void testGetParameter(){
         try {
             recode.setLookupValue(new StringLiteral("k1"));
-            assertTrue(recode.getParameter(null).getColor(null) == c1.getColor(null));
+            assertTrue(recode.getParameter(null, -1).getColor(null, -1) == c1.getColor(null, -1));
             recode.setLookupValue(new StringLiteral("k2"));
-            assertTrue(recode.getParameter(null).getColor(null) == c2.getColor(null));
+            assertTrue(recode.getParameter(null, -1).getColor(null, -1) == c2.getColor(null, -1));
             recode.setLookupValue(new StringLiteral("k3"));
-            assertTrue(recode.getParameter(null).getColor(null) == c3.getColor(null));
+            assertTrue(recode.getParameter(null, -1).getColor(null, -1) == c3.getColor(null, -1));
         } catch (ParameterException ex) {
             Logger.getLogger(Recode2ColorTest.class.getName()).log(Level.SEVERE, null, ex);
         }

@@ -5,6 +5,7 @@ import java.awt.Paint;
 import java.awt.Shape;
 import java.io.IOException;
 import javax.xml.bind.JAXBElement;
+import org.gdms.data.SpatialDataSourceDecorator;
 import org.orbisgis.core.renderer.persistance.se.FillType;
 import org.gdms.data.feature.Feature;
 import org.orbisgis.core.map.MapTransform;
@@ -79,9 +80,9 @@ public abstract class Fill implements SymbolizerNode {
      * @throws ParameterException
      * @throws IOException
      */
-    public abstract void draw(Graphics2D g2, Shape shp, Feature feat, boolean selected, MapTransform mt) throws ParameterException, IOException;
+    public abstract void draw(Graphics2D g2, SpatialDataSourceDecorator sds, long fid, Shape shp, boolean selected, MapTransform mt) throws ParameterException, IOException;
 
-	public abstract Paint getPaint(Feature feat, boolean selected, MapTransform mt) throws ParameterException;
+	public abstract Paint getPaint(long fid, SpatialDataSourceDecorator sds, boolean selected, MapTransform mt) throws ParameterException;
 
     public abstract JAXBElement<? extends FillType> getJAXBElement();
     public abstract FillType getJAXBType();

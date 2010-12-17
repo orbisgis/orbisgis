@@ -258,7 +258,7 @@ public class Renderer {
 							originalIndex = featureInExtent.getOriginalIndex(fds.getOriginalIndex(fid));
 						}
 
-						s.draw(g2, feat, selected.contains((int)originalIndex), mt);
+						s.draw(g2, sds, originalIndex, selected.contains((int)originalIndex), mt);
 
 						pm.progressTo((int) (100 * ++layerCount / total));
 					}
@@ -282,6 +282,7 @@ public class Renderer {
 
 		} catch (Exception ex) {
 			java.util.logging.Logger.getLogger("Could not draw " + layer.getName()).log(Level.SEVERE, "Error while drawing " + layer.getName(), ex);
+			ex.printStackTrace(System.err);
 		}
 		return layerCount;
 	}

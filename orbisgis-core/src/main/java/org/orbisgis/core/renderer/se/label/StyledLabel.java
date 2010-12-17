@@ -10,8 +10,8 @@ import java.awt.geom.Rectangle2D;
 
 import java.io.IOException;
 import javax.media.jai.RenderableGraphics;
+import org.gdms.data.SpatialDataSourceDecorator;
 
-import org.gdms.data.feature.Feature;
 import org.orbisgis.core.map.MapTransform;
 
 import org.orbisgis.core.renderer.persistance.se.FontType;
@@ -187,18 +187,18 @@ public final class StyledLabel implements SymbolizerNode, FillNode, StrokeNode {
         this.fontWeight = fontWeight;
     }
 
-    public RenderableGraphics getImage(Feature feat, boolean selected, MapTransform mt) throws ParameterException, IOException {
+    public RenderableGraphics getImage(SpatialDataSourceDecorator sds, long fid, boolean selected, MapTransform mt) throws ParameterException, IOException {
 		// TODO DEFAULT VALUES !!!
-        String text = labelText.getValue(feat);
+        String text = labelText.getValue(sds, fid);
 
-        String family = fontFamily.getValue(feat);
+        String family = fontFamily.getValue(sds, fid);
 
         // Family is comma delimeted list of fonts family
         // TODO Choose the first available
 
-        String weight = fontWeight.getValue(feat);
-        String style = fontStyle.getValue(feat);
-        double size = fontSize.getValue(feat);
+        String weight = fontWeight.getValue(sds, fid);
+        String style = fontStyle.getValue(sds, fid);
+        double size = fontSize.getValue(sds, fid);
 
         int st = Font.PLAIN;
 
@@ -234,17 +234,17 @@ public final class StyledLabel implements SymbolizerNode, FillNode, StrokeNode {
         double margin = 0.0;
 
         if (stroke != null) {
-            margin = stroke.getMaxWidth(feat, mt);
+            margin = stroke.getMaxWidth(sds, fid, mt);
         }
 
         rg = Graphic.getNewRenderableGraphics(outline.getBounds2D(), margin);
 
         if (fill != null) {
-            fill.draw(rg, outline, feat, selected, mt);
+            fill.draw(rg, sds, fid, outline, selected, mt);
         }
 
         if (stroke != null) {
-            stroke.draw(rg, outline, feat, selected, mt);
+            stroke.draw(rg, sds, fid, outline, selected, mt);
         }
 
         // HALO, FILL, STROKE

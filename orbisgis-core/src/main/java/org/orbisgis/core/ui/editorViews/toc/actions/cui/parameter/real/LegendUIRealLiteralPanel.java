@@ -86,7 +86,7 @@ public abstract class LegendUIRealLiteralPanel extends LegendUIComponent impleme
 	protected void mountComponent() {
 		min = real.getContext().getMin();
 		max = real.getContext().getMax();
-		initial = real.getValue(null);
+		initial = real.getValue(null, -1);
 
 		boolean useSlider = min != null && max != null;
 

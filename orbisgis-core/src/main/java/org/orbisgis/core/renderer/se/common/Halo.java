@@ -5,6 +5,7 @@ import java.awt.Shape;
 import java.awt.geom.Rectangle2D;
 
 import java.io.IOException;
+import org.gdms.data.SpatialDataSourceDecorator;
 
 import org.gdms.data.feature.Feature;
 import org.orbisgis.core.map.MapTransform;
@@ -99,18 +100,18 @@ public final class Halo implements SymbolizerNode, UomNode, FillNode {
 		parent = node;
 	}
 
-	public double getHaloRadius(Feature feat, MapTransform mt) throws ParameterException {
-		return Uom.toPixel(radius.getValue(feat), getUom(), mt.getDpi(), mt.getScaleDenominator(), null); // TODO 100%
+	public double getHaloRadius(SpatialDataSourceDecorator sds, long fid, MapTransform mt) throws ParameterException {
+		return Uom.toPixel(radius.getValue(sds, fid), getUom(), mt.getDpi(), mt.getScaleDenominator(), null); // TODO 100%
 	}
 
-	public void draw(Graphics2D g2, Shape shp, Feature feat, MapTransform mt) throws ParameterException, IOException {
+	public void draw(Graphics2D g2, SpatialDataSourceDecorator sds, long fid, Shape shp, MapTransform mt) throws ParameterException, IOException {
 		if (radius != null && fill != null) {
-			double r = this.getHaloRadius(feat, mt);
+			double r = this.getHaloRadius(sds, fid, mt);
 
 			if (r > 0.0) {
 				System.out.println("Halo radius is: " + r);
 				Shape halo = ShapeHelper.perpendicularOffset(shp, r);
-				fill.draw(g2, halo, feat, false, mt);
+				fill.draw(g2, sds, fid, halo, false, mt);
 			}
 		}
 	}

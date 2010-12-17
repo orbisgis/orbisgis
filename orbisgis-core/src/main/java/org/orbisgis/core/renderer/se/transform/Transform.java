@@ -8,6 +8,7 @@ import java.awt.geom.AffineTransform;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import org.gdms.data.SpatialDataSourceDecorator;
 import org.gdms.data.feature.Feature;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.persistance.se.MatrixType;
@@ -83,9 +84,9 @@ public class Transform implements SymbolizerNode, UomNode {
      * @return AffineTransofrm
      * @throws ParameterException
      */
-    public AffineTransform getGraphicalAffineTransform(Feature feat, boolean isForSpatialFeatures, MapTransform mt, Double width, Double height) throws ParameterException, IOException {
+    public AffineTransform getGraphicalAffineTransform(boolean isForSpatialFeatures, SpatialDataSourceDecorator sds, long fid, MapTransform mt, Double width, Double height) throws ParameterException, IOException {
         //return consolidateTrasformations(false).getGraphicalAffineTransform();
-        this.consolidateTransformations(feat, isForSpatialFeatures, mt, width, height);
+        this.consolidateTransformations(sds, fid, isForSpatialFeatures, mt, width, height);
         return consolidated;
     }
 
@@ -94,14 +95,14 @@ public class Transform implements SymbolizerNode, UomNode {
      * This method must be called after each modification of one of its transformations !
      *
      */
-    public void consolidateTransformations(Feature feat, boolean forGeometries, MapTransform mt, Double width, Double height) throws ParameterException, IOException {
+    public void consolidateTransformations(SpatialDataSourceDecorator sds, long fid, boolean forGeometries, MapTransform mt, Double width, Double height) throws ParameterException, IOException {
         int i;
 
         // Result is Identity
         consolidated = new AffineTransform();
         for (Transformation t : transformations) {
             if (!forGeometries || t.allowedForGeometries()) {
-                AffineTransform at = t.getAffineTransform(feat, this.getUom(), mt, width, height);
+                AffineTransform at = t.getAffineTransform(sds, fid, this.getUom(), mt, width, height);
                 consolidated.preConcatenate(at);
             }
         }

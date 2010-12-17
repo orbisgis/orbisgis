@@ -38,13 +38,12 @@
 
 package org.orbisgis.core.renderer.se.graphic;
 
-import java.awt.Dimension;
 import java.awt.Polygon;
 import java.awt.Shape;
 import java.awt.geom.Arc2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
-import org.gdms.data.feature.Feature;
+import org.gdms.data.SpatialDataSourceDecorator;
 
 import org.orbisgis.core.renderer.persistance.se.MarkGraphicType;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
@@ -84,15 +83,15 @@ public enum WellKnownName implements MarkGraphicSource {
     }
 
     @Override
-    public Shape getShape(ViewBox viewBox, Feature feat, Double scale, Double dpi, RealParameter markIndex, String mimeType) throws ParameterException {
-        if (feat == null && viewBox != null && viewBox.dependsOnFeature()){
+    public Shape getShape(ViewBox viewBox, SpatialDataSourceDecorator sds, long fid, Double scale, Double dpi, RealParameter markIndex, String mimeType) throws ParameterException {
+        if (sds == null && viewBox != null && viewBox.dependsOnFeature()){
             return null;
         }
 
         double x=10.0, y=10.0; // The size of the shape, [final unit] => [px]
 
         if (viewBox != null && viewBox.usable()) {
-            Point2D box = viewBox.getDimensionInPixel(feat, MarkGraphic.defaultSize, MarkGraphic.defaultSize, scale, dpi);
+            Point2D box = viewBox.getDimensionInPixel(sds, fid, MarkGraphic.defaultSize, MarkGraphic.defaultSize, scale, dpi);
             x = box.getX();
             y = box.getY();
         }

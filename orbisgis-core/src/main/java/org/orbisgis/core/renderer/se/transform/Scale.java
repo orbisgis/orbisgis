@@ -6,6 +6,7 @@ package org.orbisgis.core.renderer.se.transform;
 
 import java.awt.geom.AffineTransform;
 import javax.xml.bind.JAXBElement;
+import org.gdms.data.SpatialDataSourceDecorator;
 import org.gdms.data.feature.Feature;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.persistance.se.ObjectFactory;
@@ -81,17 +82,17 @@ public final class Scale implements Transformation {
     }
 
     @Override
-    public AffineTransform getAffineTransform(Feature feat, Uom uom, MapTransform mt, Double width, Double height) throws ParameterException {
+    public AffineTransform getAffineTransform(SpatialDataSourceDecorator sds, long fid, Uom uom, MapTransform mt, Double width, Double height) throws ParameterException {
         double sx = 1.0;
         if (x != null) {
             //sx = Uom.toPixel(x.getValue(feat), uom, mt.getDpi(), mt.getScaleDenominator(), null);
-			sx = x.getValue(feat);
+			sx = x.getValue(sds, fid);
         }
 
         double sy = 1.0;
         if (y != null) {
             //sy = Uom.toPixel(y.getValue(feat), uom, mt.getDpi(), mt.getScaleDenominator(), null);
-			sy = y.getValue(feat);
+			sy = y.getValue(sds, fid);
         }
 
 		//AffineTransform.getTranslateInstance(A;, sy);

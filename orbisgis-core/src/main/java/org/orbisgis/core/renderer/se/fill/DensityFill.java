@@ -5,16 +5,13 @@ import java.awt.Graphics2D;
 import java.awt.Paint;
 import java.awt.Shape;
 import java.awt.TexturePaint;
-import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 
 import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
-import javax.media.jai.RenderableGraphics;
 import javax.xml.bind.JAXBElement;
+import org.gdms.data.SpatialDataSourceDecorator;
 import org.orbisgis.core.renderer.persistance.se.DensityFillType;
 
 import org.orbisgis.core.renderer.persistance.se.ObjectFactory;
@@ -120,8 +117,8 @@ public final class DensityFill extends Fill implements GraphicNode {
 		return percentageCovered;
 	}
 
-	public void draw(Graphics2D g2, Shape shp, Feature feat, boolean selected, MapTransform mt) throws ParameterException, IOException {
-		Paint painter = getPaint(feat, selected, mt);
+	public void draw(Graphics2D g2, SpatialDataSourceDecorator sds, long fid, Shape shp, boolean selected, MapTransform mt) throws ParameterException, IOException {
+		Paint painter = getPaint(fid, sds, selected, mt);
 
 		if (painter != null) {
 			g2.setPaint(painter);
@@ -130,11 +127,11 @@ public final class DensityFill extends Fill implements GraphicNode {
 	}
 
 	@Override
-	public Paint getPaint(Feature feat, boolean selected, MapTransform mt) throws ParameterException {
+	public Paint getPaint(long fid, SpatialDataSourceDecorator sds, boolean selected, MapTransform mt) throws ParameterException {
 		double percentage = 0.0;
 
 		if (percentageCovered != null) {
-			percentage = percentageCovered.getValue(feat);
+			percentage = percentageCovered.getValue(sds, fid);
 		}
 
 		if (percentage > 100) {
@@ -149,13 +146,13 @@ public final class DensityFill extends Fill implements GraphicNode {
 
 				if (this.orientation != null) {
 					// SE ask for clockwise angle, Math.cos()/sin() want counterclockwise
-					theta = this.orientation.getValue(feat);
+					theta = this.orientation.getValue(sds, fid);
 				}
 
 				theta *= Math.PI / 180.0;
 
 				// Stroke width
-				double sWidth = hatches.getMaxWidth(feat, mt);
+				double sWidth = hatches.getMaxWidth(sds, fid, mt);
 
 				// Perpendiculat dist bw two hatches
 				double pDist = 100 * sWidth / percentage;
@@ -205,7 +202,7 @@ public final class DensityFill extends Fill implements GraphicNode {
 
 				tile.setRenderingHints(mt.getCurrentRenderContext().getRenderingHints());
 
-				Color c = hatches.getColor().getColor(feat);
+				Color c = hatches.getColor().getColor(sds, fid);
 
 				if (selected) {
 					c = ColorHelper.invert(c);
@@ -213,13 +210,13 @@ public final class DensityFill extends Fill implements GraphicNode {
 
 				Color ac = c;
 				if (this.hatches.getOpacity() != null) {
-					ac = ColorHelper.getColorWithAlpha(c, this.hatches.getOpacity().getValue(feat));
+					ac = ColorHelper.getColorWithAlpha(c, this.hatches.getOpacity().getValue(sds, fid));
 				}
 
 
 				tile.setColor(ac);
 
-				tile.setStroke(hatches.getBasicStroke(feat, mt, null));
+				tile.setStroke(hatches.getBasicStroke(sds, fid, mt, null));
 
 				int ipDist = (int) pDist;
 

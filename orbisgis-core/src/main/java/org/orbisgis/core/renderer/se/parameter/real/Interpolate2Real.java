@@ -1,6 +1,7 @@
 package org.orbisgis.core.renderer.se.parameter.real;
 
 import javax.xml.bind.JAXBElement;
+import org.gdms.data.SpatialDataSourceDecorator;
 import org.gdms.data.feature.Feature;
 import org.orbisgis.core.renderer.persistance.se.InterpolateType;
 import org.orbisgis.core.renderer.persistance.se.InterpolationPointType;
@@ -51,16 +52,16 @@ public final class Interpolate2Real extends Interpolate<RealParameter, RealLiter
     }
 
     @Override
-    public double getValue(Feature feat) throws ParameterException {
+    public double getValue(SpatialDataSourceDecorator sds, long fid) throws ParameterException {
 
-		double value = this.lookupValue.getValue(feat);
+		double value = this.lookupValue.getValue(sds, fid);
 
 		if (i_points.get(0).getData() > value){
-			return i_points.get(0).getValue().getValue(feat);
+			return i_points.get(0).getValue().getValue(sds, fid);
 		}
 
 		if (i_points.get(i_points.size()-1).getData() < value){
-			return i_points.get(i_points.size()-1).getValue().getValue(feat);
+			return i_points.get(i_points.size()-1).getValue().getValue(sds, fid);
 		}
 
 
@@ -73,13 +74,13 @@ public final class Interpolate2Real extends Interpolate<RealParameter, RealLiter
 		switch(this.mode){
 		case CUBIC:
 			return cubicInterpolation(ip1.getData(), ip2.getData(), value,
-			ip1.getValue().getValue(feat), ip2.getValue().getValue(feat), -1.0, -1.0);
+			ip1.getValue().getValue(sds, fid), ip2.getValue().getValue(sds, fid), -1.0, -1.0);
 		case COSINE:
 			return cosineInterpolation(ip1.getData(), ip2.getData(), value,
-			ip1.getValue().getValue(feat), ip2.getValue().getValue(feat));
+			ip1.getValue().getValue(sds, fid), ip2.getValue().getValue(sds, fid));
 		case LINEAR:
 			return linearInterpolation(ip1.getData(), ip2.getData(), value,
-			ip1.getValue().getValue(feat), ip2.getValue().getValue(feat));
+			ip1.getValue().getValue(sds, fid), ip2.getValue().getValue(sds, fid));
 
 		}
         return 0.0; // TODO compute interpolation

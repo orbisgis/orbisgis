@@ -16,6 +16,7 @@ import java.awt.geom.Point2D;
 import java.io.IOException;
 import java.util.ArrayList;
 import javax.xml.bind.JAXBElement;
+import org.gdms.data.SpatialDataSourceDecorator;
 import org.orbisgis.core.renderer.persistance.se.SymbolizerType;
 
 import org.gdms.data.feature.Feature;
@@ -47,7 +48,7 @@ public abstract class VectorSymbolizer extends Symbolizer implements UomNode {
 	}
 
 	@Override
-	public abstract void draw(Graphics2D g2, Feature feat, boolean selected, MapTransform mt)
+	public abstract void draw(Graphics2D g2, SpatialDataSourceDecorator sds, long fid, boolean selected, MapTransform mt)
 			throws ParameterException, IOException, DriverException;
 
 	/**
@@ -60,9 +61,9 @@ public abstract class VectorSymbolizer extends Symbolizer implements UomNode {
 	 * @throws IOException
 	 * @throws DriverException
 	 */
-	public ArrayList<Shape> getShape(Feature feat, MapTransform mt) throws ParameterException, IOException, DriverException {
+	public ArrayList<Shape> getShape(SpatialDataSourceDecorator sds, long fid, MapTransform mt) throws ParameterException, IOException, DriverException {
 
-		Geometry geom = this.getTheGeom(feat); // geom + function
+		Geometry geom = this.getTheGeom(sds, fid); // geom + function
 
 		ArrayList<Shape> shapes = new ArrayList<Shape>();
 
@@ -80,7 +81,7 @@ public abstract class VectorSymbolizer extends Symbolizer implements UomNode {
 				Shape shape = mt.getShape(geom);
 				if (shape != null) {
 					if (transform != null) {
-						shape = transform.getGraphicalAffineTransform(feat, false, mt, (double) mt.getWidth(), (double) mt.getHeight()).createTransformedShape(shape); // TODO widht and height?
+						shape = transform.getGraphicalAffineTransform(false, sds, fid, mt, (double) mt.getWidth(), (double) mt.getHeight()).createTransformedShape(shape); // TODO widht and height?
 					}
 					shapes.add(shape);
 				}
@@ -106,9 +107,9 @@ public abstract class VectorSymbolizer extends Symbolizer implements UomNode {
 	 * @throws IOException
 	 * @throws DriverException
 	 */
-	public ArrayList<Shape> getLines(Feature feat, MapTransform mt) throws ParameterException, IOException, DriverException {
+	public ArrayList<Shape> getLines(SpatialDataSourceDecorator sds, long fid, MapTransform mt) throws ParameterException, IOException, DriverException {
 
-		Geometry geom = this.getTheGeom(feat); // geom + function
+		Geometry geom = this.getTheGeom(sds, fid); // geom + function
 
 		ArrayList<Shape> shapes = new ArrayList<Shape>();
 
@@ -143,7 +144,7 @@ public abstract class VectorSymbolizer extends Symbolizer implements UomNode {
 
 				if (shape != null) {
 					if (transform != null) {
-						shape = transform.getGraphicalAffineTransform(feat, false, mt, (double) mt.getWidth(), (double) mt.getHeight()).createTransformedShape(shape); // TODO widht and height?
+						shape = transform.getGraphicalAffineTransform(false, sds, fid, mt, (double) mt.getWidth(), (double) mt.getHeight()).createTransformedShape(shape); // TODO widht and height?
 					}
 					shapes.add(shape);
 				}
@@ -153,14 +154,14 @@ public abstract class VectorSymbolizer extends Symbolizer implements UomNode {
 		return shapes;
 	}
 
-	public Point2D getPointShape(Feature feat, MapTransform mt) throws ParameterException, IOException, DriverException {
-		Geometry geom = this.getTheGeom(feat); // geom + function
+	public Point2D getPointShape(SpatialDataSourceDecorator sds, long fid, MapTransform mt) throws ParameterException, IOException, DriverException {
+		Geometry geom = this.getTheGeom(sds, fid); // geom + function
 
 
 		AffineTransform at = mt.getAffineTransform();
 
 		if (transform != null) {
-			at.preConcatenate(transform.getGraphicalAffineTransform(feat, false, mt, (double) mt.getWidth(), (double) mt.getHeight()));
+			at.preConcatenate(transform.getGraphicalAffineTransform(false, sds, fid, mt, (double) mt.getWidth(), (double) mt.getHeight()));
 		}
 
 		Point point = geom.getInteriorPoint();
@@ -169,12 +170,12 @@ public abstract class VectorSymbolizer extends Symbolizer implements UomNode {
 		return at.transform(new Point2D.Double(point.getX(), point.getY()), null);
 	}
 
-	public Point2D getFirstPointShape(Feature feat, MapTransform mt) throws ParameterException, IOException, DriverException {
-		Geometry geom = this.getTheGeom(feat); // geom + function
+	public Point2D getFirstPointShape(SpatialDataSourceDecorator sds, long fid, MapTransform mt) throws ParameterException, IOException, DriverException {
+		Geometry geom = this.getTheGeom(sds, fid); // geom + function
 
 		AffineTransform at = mt.getAffineTransform();
 		if (transform != null) {
-			at.preConcatenate(transform.getGraphicalAffineTransform(feat, false, mt, (double) mt.getWidth(), (double) mt.getHeight())); // TODO width and height
+			at.preConcatenate(transform.getGraphicalAffineTransform(false, sds, fid, mt, (double) mt.getWidth(), (double) mt.getHeight())); // TODO width and height
 		}
 
 		Coordinate[] coordinates = geom.getCoordinates();

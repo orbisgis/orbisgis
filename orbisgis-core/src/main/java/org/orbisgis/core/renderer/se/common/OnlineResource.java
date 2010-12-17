@@ -58,6 +58,7 @@ import javax.media.jai.InterpolationBicubic2;
 
 import javax.media.jai.JAI;
 import javax.media.jai.PlanarImage;
+import org.gdms.data.SpatialDataSourceDecorator;
 import org.gdms.data.feature.Feature;
 import org.orbisgis.core.map.MapTransform;
 
@@ -106,7 +107,7 @@ public class OnlineResource implements ExternalGraphicSource, MarkGraphicSource 
 	}
 
 	@Override
-	public PlanarImage getPlanarImage(ViewBox viewBox, Feature feat, MapTransform mt, String mimeType)
+	public PlanarImage getPlanarImage(ViewBox viewBox, SpatialDataSourceDecorator sds, long fid, MapTransform mt, String mimeType)
 			throws IOException, ParameterException {
 
 		if (rowImage == null){
@@ -121,7 +122,7 @@ public class OnlineResource implements ExternalGraphicSource, MarkGraphicSource 
 			if (mt == null) {
 				return null;
 			}
-			if (feat == null && viewBox != null && viewBox.dependsOnFeature()) {
+			if (sds == null && viewBox != null && viewBox.dependsOnFeature()) {
 				throw new ParameterException("View box depends on feature");
 			}
 
@@ -131,7 +132,7 @@ public class OnlineResource implements ExternalGraphicSource, MarkGraphicSource 
 			double width = img.getWidth();
 			double height = img.getHeight();
 
-			Point2D dim = viewBox.getDimensionInPixel(feat, height, width, mt.getScaleDenominator(), mt.getDpi());
+			Point2D dim = viewBox.getDimensionInPixel(sds, fid, height, width, mt.getScaleDenominator(), mt.getDpi());
 
 			double widthDst = dim.getX();
 			double heightDst = dim.getY();
@@ -185,7 +186,7 @@ public class OnlineResource implements ExternalGraphicSource, MarkGraphicSource 
 		return null;
 	}
 
-	private Shape getTrueTypeGlyph(ViewBox viewBox, Feature feat, Double scale, Double dpi, RealParameter markIndex) throws ParameterException, IOException {
+	private Shape getTrueTypeGlyph(ViewBox viewBox, SpatialDataSourceDecorator sds, long fid, Double scale, Double dpi, RealParameter markIndex) throws ParameterException, IOException {
 
 		try {
 			InputStream iStream = url.openStream();
@@ -194,7 +195,7 @@ public class OnlineResource implements ExternalGraphicSource, MarkGraphicSource 
 
 			System.out.println ("Font: " + font.getNumGlyphs());
 
-			double value = markIndex.getValue(feat);
+			double value = markIndex.getValue(sds, fid);
 
 			char[] data = {(char) value};
 
@@ -216,7 +217,7 @@ public class OnlineResource implements ExternalGraphicSource, MarkGraphicSource 
 			double height = bounds2D.getHeight();
 
 			if (viewBox != null && viewBox.usable()) {
-				Point2D dim = viewBox.getDimensionInPixel(feat, height, width, scale, dpi);
+				Point2D dim = viewBox.getDimensionInPixel(sds, fid, height, width, scale, dpi);
 				if (Math.abs(dim.getX()) <= 0 || Math.abs(dim.getY()) <= 0) {
 					return null;
 				}
@@ -242,11 +243,11 @@ public class OnlineResource implements ExternalGraphicSource, MarkGraphicSource 
 	}
 
 	@Override
-	public Shape getShape(ViewBox viewBox, Feature feat, Double scale, Double dpi, RealParameter markIndex, String mimeType) throws ParameterException, IOException {
+	public Shape getShape(ViewBox viewBox, SpatialDataSourceDecorator sds, long fid, Double scale, Double dpi, RealParameter markIndex, String mimeType) throws ParameterException, IOException {
 
 		if (mimeType != null){
 			if (mimeType.equalsIgnoreCase("application/x-font-ttf")) {
-				return getTrueTypeGlyph(viewBox, feat, scale, dpi, markIndex);
+				return getTrueTypeGlyph(viewBox, sds, fid, scale, dpi, markIndex);
 			}
 		}
 

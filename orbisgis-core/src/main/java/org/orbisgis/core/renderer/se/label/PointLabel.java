@@ -11,6 +11,7 @@ import java.awt.geom.AffineTransform;
 import java.io.IOException;
 import javax.media.jai.RenderableGraphics;
 import javax.xml.bind.JAXBElement;
+import org.gdms.data.SpatialDataSourceDecorator;
 
 import org.gdms.data.feature.Feature;
 import org.orbisgis.core.map.MapTransform;
@@ -88,8 +89,8 @@ public final class PointLabel extends Label {
     }
 
     @Override
-    public void draw(Graphics2D g2, Shape shp, Feature feat, boolean selected, MapTransform mt) throws ParameterException, IOException {
-        RenderableGraphics l = this.label.getImage(feat, selected, mt);
+    public void draw(Graphics2D g2, SpatialDataSourceDecorator sds, long fid, Shape shp, boolean selected, MapTransform mt) throws ParameterException, IOException {
+        RenderableGraphics l = this.label.getImage(sds, fid, selected, mt);
 
         // convert lineShape to a point
         // create AT according to rotation and exclusionZone
@@ -99,13 +100,13 @@ public final class PointLabel extends Label {
         
         if (this.exclusionZone != null){
             if (this.exclusionZone instanceof ExclusionRadius){
-                double radius = ((ExclusionRadius)(this.exclusionZone)).getRadius().getValue(feat);
+                double radius = ((ExclusionRadius)(this.exclusionZone)).getRadius().getValue(sds, fid);
                 x += radius;
                 y += radius;
             }
             else{
-                x += ((ExclusionRectangle)(this.exclusionZone)).getX().getValue(feat);
-                y += ((ExclusionRectangle)(this.exclusionZone)).getY().getValue(feat);
+                x += ((ExclusionRectangle)(this.exclusionZone)).getX().getValue(sds, fid);
+                y += ((ExclusionRectangle)(this.exclusionZone)).getY().getValue(sds, fid);
             }
         }
 

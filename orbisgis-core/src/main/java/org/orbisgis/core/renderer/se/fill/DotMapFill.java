@@ -6,6 +6,7 @@ import java.awt.Shape;
 
 import java.io.IOException;
 import javax.xml.bind.JAXBElement;
+import org.gdms.data.SpatialDataSourceDecorator;
 import org.gdms.data.feature.Feature;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.persistance.se.DotMapFillType;
@@ -71,12 +72,12 @@ public final class DotMapFill extends Fill implements GraphicNode {
 	}
 
 	@Override
-	public Paint getPaint(Feature feat, boolean selected, MapTransform mt) throws ParameterException {
+	public Paint getPaint(long fid, SpatialDataSourceDecorator sds, boolean selected, MapTransform mt) throws ParameterException {
 		return null;
 	}
 
 	@Override
-	public void draw(Graphics2D g2, Shape shp, Feature feat, boolean selected, MapTransform mt) throws ParameterException, IOException {
+	public void draw(Graphics2D g2, SpatialDataSourceDecorator sds, long fid, Shape shp, boolean selected, MapTransform mt) throws ParameterException, IOException {
 	}
 
 	@Override

@@ -48,7 +48,7 @@ import java.awt.geom.Point2D;
 import java.io.IOException;
 import javax.media.jai.RenderableGraphics;
 import javax.xml.bind.JAXBElement;
-import org.gdms.data.feature.Feature;
+import org.gdms.data.SpatialDataSourceDecorator;
 import org.orbisgis.core.renderer.Drawer;
 import org.orbisgis.core.renderer.persistance.se.ObjectFactory;
 import org.orbisgis.core.renderer.persistance.se.PointSymbolizerType;
@@ -122,14 +122,14 @@ public final class PointSymbolizer extends VectorSymbolizer implements GraphicNo
 	}
 
 	@Override
-	public void draw(Graphics2D g2, Feature feat, boolean selected, MapTransform mt) throws IOException, DriverException {
+	public void draw(Graphics2D g2, SpatialDataSourceDecorator sds, long fid, boolean selected, MapTransform mt) throws IOException, DriverException {
 		if (graphic != null && graphic.getNumGraphics() > 0) {
 
 			try {
-				Point2D pt = this.getPointShape(feat, mt);
+				Point2D pt = this.getPointShape(sds, fid, mt);
 				// This is to emulate ExtractFirstPoint geom function !!!
 				//Point2D pt = this.getFirstPointShape(sds, fid);
-				RenderableGraphics rg = graphic.getGraphic(feat, selected, mt);
+				RenderableGraphics rg = graphic.getGraphic(sds, fid, selected, mt);
 
 				//RenderedImage cache = graphic.getCache(sds, fid, selected);
 				//if (cache != null) {

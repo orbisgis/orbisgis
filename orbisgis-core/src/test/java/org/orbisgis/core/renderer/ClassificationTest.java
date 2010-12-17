@@ -66,6 +66,12 @@ public class ClassificationTest extends TestCase {
 		rm.disecStandard();
 
 		Range[] ranges = rm.getRanges();
+
+		System.out.println ("Ranges");
+		System.out.println ("  " + ranges[0].getMinRange() + " " + ranges[0].getMaxRange());
+		System.out.println ("  " + ranges[1].getMinRange() + " " + ranges[1].getMaxRange());
+		System.out.println ("  " + ranges[2].getMinRange() + " " + ranges[2].getMaxRange());
+
 		assertTrue(checkRange(ranges[0], 0.05, 0.2));
 		assertTrue(checkRange(ranges[1], 0.2, 0.4));
 		assertTrue(checkRange(ranges[2], 0.4, 1));

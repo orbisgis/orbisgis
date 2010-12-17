@@ -6,6 +6,7 @@ package org.orbisgis.core.renderer.se.transform;
 
 import java.awt.geom.AffineTransform;
 import javax.xml.bind.JAXBElement;
+import org.gdms.data.SpatialDataSourceDecorator;
 import org.gdms.data.feature.Feature;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.persistance.se.ObjectFactory;
@@ -106,20 +107,20 @@ public final class Rotate implements Transformation {
     }
 
     @Override
-    public AffineTransform getAffineTransform(Feature feat, Uom uom, MapTransform mt, Double width, Double height) throws ParameterException {
+    public AffineTransform getAffineTransform(SpatialDataSourceDecorator sds, long fid, Uom uom, MapTransform mt, Double width, Double height) throws ParameterException {
         double ox = 0.0;
         if (x != null) {
-            ox = Uom.toPixel(x.getValue(feat), uom, mt.getDpi(), mt.getScaleDenominator(), width);
+            ox = Uom.toPixel(x.getValue(sds, fid), uom, mt.getDpi(), mt.getScaleDenominator(), width);
         }
 
         double oy = 0.0;
         if (y != null) {
-            oy = Uom.toPixel(y.getValue(feat), uom, mt.getDpi(), mt.getScaleDenominator(), height);
+            oy = Uom.toPixel(y.getValue(sds, fid), uom, mt.getDpi(), mt.getScaleDenominator(), height);
         }
 
         double theta = 0.0;
         if (rotation != null) {
-            theta = rotation.getValue(feat) * Math.PI / 180.0; // convert to rad
+            theta = rotation.getValue(sds, fid) * Math.PI / 180.0; // convert to rad
         }
         return AffineTransform.getRotateInstance(theta, ox, oy);
     }

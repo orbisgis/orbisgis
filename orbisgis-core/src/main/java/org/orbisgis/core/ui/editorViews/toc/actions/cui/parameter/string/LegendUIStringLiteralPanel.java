@@ -68,7 +68,7 @@ public abstract class LegendUIStringLiteralPanel extends LegendUIComponent
 		/*
 		 *  TextInput ask to implement  the valueChanged method, which propagate any new value edited by the user
 		 */
-		input = new TextInput(name, string.getValue(null), 20, false) {
+		input = new TextInput(name, string.getValue(null, -1), 20, false) {
 
 			@Override
 			protected void valueChanged(String s) {

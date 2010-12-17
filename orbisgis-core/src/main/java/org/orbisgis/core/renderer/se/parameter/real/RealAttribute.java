@@ -1,6 +1,7 @@
 package org.orbisgis.core.renderer.se.parameter.real;
 
 import javax.xml.bind.JAXBElement;
+import org.gdms.data.SpatialDataSourceDecorator;
 import org.gdms.data.feature.Feature;
 import org.orbisgis.core.renderer.persistance.ogc.PropertyNameType;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
@@ -26,9 +27,9 @@ public class RealAttribute extends PropertyName implements RealParameter{
     }
 
     @Override
-    public double getValue(Feature feat) throws ParameterException{
+    public double getValue(SpatialDataSourceDecorator sds, long fid) throws ParameterException{
         try{
-            return this.getFieldValue(feat).getAsDouble();
+            return this.getFieldValue(sds, fid).getAsDouble();
         } catch (Exception e) {
             throw new ParameterException("Could not fetch feature attribute \""+ fieldName +"\"");
         }

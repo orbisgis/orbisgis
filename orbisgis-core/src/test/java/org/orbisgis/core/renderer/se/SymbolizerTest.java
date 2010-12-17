@@ -142,10 +142,9 @@ public class SymbolizerTest extends TestCase {
             System.out.println("Avant Symbolizers");
 
 
-
             long fid;
             for (fid = 0; fid < ds.getRowCount(); fid++) {
-                cs.draw(g2, null, false, mt);
+                cs.draw(g2, sds, fid, false, mt);
             }
 
             System.out.println("Creation JFrame");

@@ -4,6 +4,7 @@ import java.awt.Graphics2D;
 import java.awt.Shape;
 import java.io.IOException;
 import javax.xml.bind.JAXBElement;
+import org.gdms.data.SpatialDataSourceDecorator;
 import org.orbisgis.core.renderer.persistance.se.StrokeType;
 import org.gdms.data.feature.Feature;
 import org.orbisgis.core.map.MapTransform;
@@ -84,7 +85,7 @@ public abstract class Stroke implements SymbolizerNode, UomNode {
      * @param fid
      * @return
      */
-    public abstract double getMaxWidth(Feature feat, MapTransform mt) throws ParameterException, IOException;
+    public abstract double getMaxWidth(SpatialDataSourceDecorator sds, long fid, MapTransform mt) throws ParameterException, IOException;
 
     //public abstract void getStroke(DataSource ds, int fid);
     /**
@@ -97,7 +98,7 @@ public abstract class Stroke implements SymbolizerNode, UomNode {
      * @throws ParameterException
      * @throws IOException
      */
-    public abstract void draw(Graphics2D g2, Shape shp, Feature feat, boolean selected, MapTransform mt) throws ParameterException, IOException;
+    public abstract void draw(Graphics2D g2, SpatialDataSourceDecorator sds, long fid, Shape shp, boolean selected, MapTransform mt) throws ParameterException, IOException;
 
     public abstract JAXBElement<? extends StrokeType> getJAXBElement();
 

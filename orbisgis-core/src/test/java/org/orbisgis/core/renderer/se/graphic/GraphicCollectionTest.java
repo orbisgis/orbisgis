@@ -247,7 +247,7 @@ public class GraphicCollectionTest extends TestCase {
 
         RenderableGraphics rg;
 		MapTransform mt = new MapTransform();
-        rg = collec.getGraphic(null, false, mt);
+        rg = collec.getGraphic(null, -1, false, mt);
 
         rg.setPaint(Color.BLACK);
         rg.drawLine((int)rg.getMinX(), 0, (int)(rg.getMinX() + rg.getWidth()), 0);

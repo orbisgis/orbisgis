@@ -41,6 +41,7 @@ import java.awt.Graphics2D;
 import java.awt.Shape;
 import java.io.IOException;
 import javax.xml.bind.JAXBElement;
+import org.gdms.data.SpatialDataSourceDecorator;
 import org.gdms.data.feature.Feature;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.persistance.se.ObjectFactory;
@@ -89,13 +90,13 @@ public final class TextStroke extends Stroke {
 	}
 
 	@Override
-	public double getMaxWidth(Feature feat, MapTransform mt) throws ParameterException, IOException {
+	public double getMaxWidth(SpatialDataSourceDecorator sds, long fid, MapTransform mt) throws ParameterException, IOException {
 		if (lineLabel != null){
 			StyledLabel label = lineLabel.getLabel();
 		    if (label != null){
 				RealParameter size = label.getFontSize();
 				if (size != null){
-					double value = size.getValue(feat);
+					double value = size.getValue(sds, fid);
 					return Uom.toPixel(value, label.getUom(), mt.getDpi(), mt.getScaleDenominator(), null);
 				}
 			}
@@ -104,7 +105,7 @@ public final class TextStroke extends Stroke {
 	}
 
 	@Override
-	public void draw(Graphics2D g2, Shape shp, Feature feat, boolean selected, MapTransform mt) throws ParameterException, IOException {
+	public void draw(Graphics2D g2, SpatialDataSourceDecorator sds, long fid, Shape shp, boolean selected, MapTransform mt) throws ParameterException, IOException {
 		throw new UnsupportedOperationException("Not supported yet.");
 	}
 

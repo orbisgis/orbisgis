@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.xml.bind.JAXBElement;
+import org.gdms.data.SpatialDataSourceDecorator;
 import org.orbisgis.core.renderer.persistance.se.PenStrokeType;
 
 import org.gdms.data.feature.Feature;
@@ -116,7 +117,7 @@ public final class PenStroke extends Stroke {
         if (t.getLineCap() != null) {
 			try {
 				StringParameter lCap = SeParameterFactory.createStringParameter(t.getLineCap());
-				this.setLineCap(LineCap.valueOf(lCap.getValue(null).toUpperCase()));
+				this.setLineCap(LineCap.valueOf(lCap.getValue(null, -1).toUpperCase()));
 			} catch (Exception ex) {
 				Logger.getLogger(PenStroke.class.getName()).log(Level.SEVERE, "Could not convert line cap", ex);
 			}
@@ -125,7 +126,7 @@ public final class PenStroke extends Stroke {
         if (t.getLineJoin() != null) {
 			try {
 				StringParameter lJoin = SeParameterFactory.createStringParameter(t.getLineJoin());
-				this.setLineJoin(LineJoin.valueOf(lJoin.getValue(null).toUpperCase()));
+				this.setLineJoin(LineJoin.valueOf(lJoin.getValue(null, -1).toUpperCase()));
 			} catch (Exception ex) {
 				Logger.getLogger(PenStroke.class.getName()).log(Level.SEVERE, "Could not convert line join", ex);
 			}
@@ -284,7 +285,7 @@ public final class PenStroke extends Stroke {
         }
     }*/
 
-    private BasicStroke createBasicStroke(Feature feat, MapTransform mt, Double v100p) throws ParameterException {
+    private BasicStroke createBasicStroke(SpatialDataSourceDecorator sds, long fid, MapTransform mt, Double v100p) throws ParameterException {
 
 
 		Double scale = null;
@@ -334,17 +335,17 @@ public final class PenStroke extends Stroke {
         double w = 1.0;
 
         if (width != null) {
-            w = width.getValue(feat);
+            w = width.getValue(sds, fid);
             w = Uom.toPixel(w, getUom(), mt.getDpi(), mt.getScaleDenominator(), null); // 100% based on view box height or width ? TODO
         }
 
 
-		if (this.dashArray != null && ! this.dashArray.getValue(feat).isEmpty()){
+		if (this.dashArray != null && ! this.dashArray.getValue(sds, fid).isEmpty()){
 
 			float dashO = 0.0f;
 			float[] dashA;
 
-			String sDash = this.dashArray.getValue(feat);
+			String sDash = this.dashArray.getValue(sds, fid);
 			String[] splitedDash = sDash.split(" ");
 
 			dashA = new float[splitedDash.length];
@@ -353,7 +354,7 @@ public final class PenStroke extends Stroke {
 			}
 
 			if (this.dashOffset != null){
-            	dashO = (float) Uom.toPixel(this.dashOffset.getValue(feat), getUom(), mt.getDpi(), mt.getScaleDenominator(), v100p);
+            	dashO = (float) Uom.toPixel(this.dashOffset.getValue(sds, fid), getUom(), mt.getDpi(), mt.getScaleDenominator(), v100p);
 			}
         	return new BasicStroke((float) w, cap, join, 10.0f, dashA, dashO);
 		}
@@ -362,11 +363,11 @@ public final class PenStroke extends Stroke {
 		}
     }
 
-    public BasicStroke getBasicStroke(Feature feat, MapTransform mt, Double v100p) throws ParameterException {
+    public BasicStroke getBasicStroke(SpatialDataSourceDecorator sds, long fid, MapTransform mt, Double v100p) throws ParameterException {
         //if (bStroke != null) {
         //    return bStroke;
         //} else {
-    		return this.createBasicStroke(feat, mt, v100p);
+    		return this.createBasicStroke(sds, fid, mt, v100p);
         //}
 
     }
@@ -378,7 +379,7 @@ public final class PenStroke extends Stroke {
      * @todo DashOffset
      */
     @Override
-    public void draw(Graphics2D g2, Shape shp, Feature feat, boolean selected, MapTransform mt) throws ParameterException, IOException {
+    public void draw(Graphics2D g2, SpatialDataSourceDecorator sds, long fid, Shape shp, boolean selected, MapTransform mt) throws ParameterException, IOException {
 
         Paint paint = null;
 
@@ -387,7 +388,7 @@ public final class PenStroke extends Stroke {
         BasicStroke stroke = null;
 
         //if (this.bStroke == null) {
-        stroke = this.createBasicStroke(feat, mt, ShapeHelper.getAreaPerimeterLength(shp));
+        stroke = this.createBasicStroke(sds, fid, mt, ShapeHelper.getAreaPerimeterLength(shp));
         //} else {
         //    stroke = this.bStroke;
         //}
@@ -396,7 +397,7 @@ public final class PenStroke extends Stroke {
 
         if (this.useColor == false) {
             if (stipple != null) {
-                paint = stipple.getPaint(feat, selected, mt);
+                paint = stipple.getPaint(fid, sds, selected, mt);
             } else {
                 // TOOD Warn Stiple has to be used, but is undefined
             }
@@ -404,7 +405,7 @@ public final class PenStroke extends Stroke {
             Color c;
 
             if (this.color != null) {
-                c = color.getColor(feat);
+                c = color.getColor(sds, fid);
             } else {
                 c = Color.BLACK;
             }
@@ -415,7 +416,7 @@ public final class PenStroke extends Stroke {
 
             Color ac = c;
             if (this.opacity != null) {
-                paint = ColorHelper.getColorWithAlpha(c, this.opacity.getValue(feat));
+                paint = ColorHelper.getColorWithAlpha(c, this.opacity.getValue(sds, fid));
             }
 
         }
@@ -427,9 +428,9 @@ public final class PenStroke extends Stroke {
     }
 
     @Override
-    public double getMaxWidth(Feature feat, MapTransform mt) throws ParameterException {
+    public double getMaxWidth(SpatialDataSourceDecorator sds, long fid, MapTransform mt) throws ParameterException {
         if (this.width != null) {
-            return Uom.toPixel(width.getValue(feat), this.getUom(), mt.getDpi(), mt.getScaleDenominator(), null);
+            return Uom.toPixel(width.getValue(sds, fid), this.getUom(), mt.getDpi(), mt.getScaleDenominator(), null);
         } else {
             return 0.0;
         }
@@ -472,13 +473,7 @@ public final class PenStroke extends Stroke {
         }
 
         if (this.opacity != null) {
-			try {
-				if (this.opacity.getValue(null) != 100.0) {
-					s.setOpacity(this.opacity.getJAXBParameterValueType());
-				}
-			} catch (ParameterException ex) {
-				s.setOpacity(this.opacity.getJAXBParameterValueType());
-			}
+			s.setOpacity(this.opacity.getJAXBParameterValueType());
         }
 
 		/*

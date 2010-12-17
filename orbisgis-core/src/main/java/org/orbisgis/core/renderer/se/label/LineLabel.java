@@ -11,6 +11,7 @@ import java.io.IOException;
 
 import javax.media.jai.RenderableGraphics;
 import javax.xml.bind.JAXBElement;
+import org.gdms.data.SpatialDataSourceDecorator;
 import org.gdms.data.feature.Feature;
 import org.orbisgis.core.map.MapTransform;
 
@@ -48,9 +49,9 @@ public class LineLabel extends Label {
      *
      */
     @Override
-    public void draw(Graphics2D g2, Shape shp, Feature feat, boolean selected, MapTransform mt) throws ParameterException, IOException {
+    public void draw(Graphics2D g2, SpatialDataSourceDecorator sds, long fid, Shape shp, boolean selected, MapTransform mt) throws ParameterException, IOException {
         
-        RenderableGraphics l = this.label.getImage(feat, selected, mt);
+        RenderableGraphics l = this.label.getImage(sds, fid, selected, mt);
 
 
         // convert lineShape to a point

@@ -8,6 +8,7 @@ import java.awt.Graphics2D;
 import java.awt.Shape;
 import java.io.IOException;
 import javax.xml.bind.JAXBElement;
+import org.gdms.data.SpatialDataSourceDecorator;
 import org.orbisgis.core.renderer.persistance.se.LabelType;
 
 import org.gdms.data.feature.Feature;
@@ -128,7 +129,7 @@ public abstract class Label implements SymbolizerNode, UomNode{
         label.setParent(this);
     }
 
-    public abstract void draw(Graphics2D g2, Shape shp, Feature feat, boolean selected, MapTransform mt) throws ParameterException, IOException;
+    public abstract void draw(Graphics2D g2, SpatialDataSourceDecorator sds, long fid, Shape shp, boolean selected, MapTransform mt) throws ParameterException, IOException;
 
     public abstract JAXBElement<? extends LabelType> getJAXBElement();
 

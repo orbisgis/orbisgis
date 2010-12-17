@@ -3,6 +3,7 @@ package org.orbisgis.core.renderer.se.graphic;
 import java.io.IOException;
 import javax.media.jai.RenderableGraphics;
 import javax.xml.bind.JAXBElement;
+import org.gdms.data.SpatialDataSourceDecorator;
 import org.gdms.data.feature.Feature;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.persistance.se.AxisChartType;
@@ -157,12 +158,12 @@ public final class AxisChart extends Graphic {
     }
 
     @Override
-    public RenderableGraphics getRenderableGraphics(Feature feat, boolean selected, MapTransform mt) throws ParameterException, IOException {
+    public RenderableGraphics getRenderableGraphics(SpatialDataSourceDecorator sds, long fid, boolean selected, MapTransform mt) throws ParameterException, IOException {
         return null; // TODO implements
     }
 
     @Override
-    public double getMaxWidth(Feature feat, MapTransform mt) throws ParameterException, IOException {
+    public double getMaxWidth(SpatialDataSourceDecorator sds, long fid, MapTransform mt) throws ParameterException, IOException {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 

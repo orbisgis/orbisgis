@@ -43,6 +43,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import javax.xml.bind.JAXBElement;
+import org.gdms.data.SpatialDataSourceDecorator;
 import org.gdms.data.feature.Feature;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.persistance.se.CompoundStrokeType;
@@ -128,22 +129,22 @@ public final class CompoundStroke extends Stroke {
 	}
 
 	@Override
-	public double getMaxWidth(Feature feat, MapTransform mt) throws ParameterException, IOException {
+	public double getMaxWidth(SpatialDataSourceDecorator sds, long fid, MapTransform mt) throws ParameterException, IOException {
 		throw new UnsupportedOperationException("Not supported yet.");
 	}
 
 	@Override
-	public void draw(Graphics2D g2, Shape shp, Feature feat, boolean selected, MapTransform mt) throws ParameterException, IOException {
+	public void draw(Graphics2D g2, SpatialDataSourceDecorator sds, long fid, Shape shp, boolean selected, MapTransform mt) throws ParameterException, IOException {
 
 		double initGap = 0.0;
 		double endGap = 0.0;
 
 		if (preGap != null) {
-			initGap = preGap.getValue(feat);
+			initGap = preGap.getValue(sds, fid);
 		}
 
 		if (postGap != null) {
-			endGap = postGap.getValue(feat);
+			endGap = postGap.getValue(sds, fid);
 		}
 
 

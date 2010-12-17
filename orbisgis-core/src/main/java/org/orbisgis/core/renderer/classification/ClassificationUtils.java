@@ -49,8 +49,8 @@ public class ClassificationUtils {
 			throws DriverException, ParameterException {
 
 		double[] values = new double[(int) sds.getRowCount()];
-		for (int i = 0; i < values.length; i++) {
-			values[i] = value.getValue(sds.getFeature(i));
+		for (long i = 0; i < values.length; i++) {
+			values[(int)i] = value.getValue(sds, i);
 		}
 		Arrays.sort(values);
 		return values;

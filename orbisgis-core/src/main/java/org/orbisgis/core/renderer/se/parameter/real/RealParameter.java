@@ -39,7 +39,7 @@
 
 package org.orbisgis.core.renderer.se.parameter.real;
 
-import org.gdms.data.feature.Feature;
+import org.gdms.data.SpatialDataSourceDecorator;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.SeParameter;
 
@@ -54,7 +54,7 @@ public interface RealParameter extends SeParameter {
 
 	RealParameterContext getContext();
 
-    double getValue(Feature feat) throws ParameterException;
+    public abstract double getValue(SpatialDataSourceDecorator sds, long fid) throws ParameterException;
 
 	@Override
 	String toString();

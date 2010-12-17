@@ -12,6 +12,7 @@ import java.util.List;
 
 import javax.media.jai.RenderableGraphics;
 import javax.xml.bind.JAXBElement;
+import org.gdms.data.SpatialDataSourceDecorator;
 import org.orbisgis.core.renderer.persistance.se.CompositeGraphicType;
 import org.orbisgis.core.renderer.persistance.se.GraphicType;
 import org.orbisgis.core.renderer.persistance.se.ObjectFactory;
@@ -158,7 +159,7 @@ public final class GraphicCollection implements SymbolizerNode {
      * @throws ParameterException
      * @throws IOException
      */
-    public RenderableGraphics getGraphic(Feature feat, boolean selected, MapTransform mt)
+    public RenderableGraphics getGraphic(SpatialDataSourceDecorator sds, long fid, boolean selected, MapTransform mt)
             throws ParameterException, IOException {
         /*
          * if the graphics collection doesn't depends on feature and the current
@@ -186,7 +187,7 @@ public final class GraphicCollection implements SymbolizerNode {
         Iterator<Graphic> it = graphics.iterator();
         while (it.hasNext()) {
             Graphic g = it.next();
-            RenderableGraphics img = g.getRenderableGraphics(feat, selected, mt);
+            RenderableGraphics img = g.getRenderableGraphics(sds, fid, selected, mt);
             if (img != null) {
                 float mX = img.getMinX();
                 float w = img.getWidth();
@@ -239,13 +240,13 @@ public final class GraphicCollection implements SymbolizerNode {
         return false;
     }
 
-    public double getMaxWidth(Feature feat, MapTransform mt) throws ParameterException, IOException {
+    public double getMaxWidth(SpatialDataSourceDecorator sds, long fid, MapTransform mt) throws ParameterException, IOException {
         double maxWidth = 0.0;
 
         Iterator<Graphic> it = graphics.iterator();
         while (it.hasNext()) {
             Graphic g = it.next();
-            maxWidth = Math.max(g.getMaxWidth(feat, mt), maxWidth);
+            maxWidth = Math.max(g.getMaxWidth(sds, fid, mt), maxWidth);
         }
         return maxWidth;
     }
@@ -269,7 +270,7 @@ public final class GraphicCollection implements SymbolizerNode {
         }
     }
 
-	public RenderedImage getCache(Feature feat, boolean selected, MapTransform mt)
+	public RenderedImage getCache(SpatialDataSourceDecorator sds, long fid, boolean selected, MapTransform mt)
             throws ParameterException, IOException {
 
         /*if (!selected && ! this.dependsOnFeature() && imageCache != null){
@@ -277,7 +278,7 @@ public final class GraphicCollection implements SymbolizerNode {
 		}*/
 
 
-		RenderableGraphics rGraphic = this.getGraphic(feat, selected, mt);
+		RenderableGraphics rGraphic = this.getGraphic(sds, fid, selected, mt);
     	RenderedImage rImage = null;
 		if (rGraphic != null){
 			rImage = rGraphic.createRendering(mt.getCurrentRenderContext());

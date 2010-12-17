@@ -8,6 +8,7 @@ import java.util.logging.Logger;
 import javax.xml.bind.JAXBElement;
 import org.orbisgis.core.renderer.persistance.se.CategorizeType;
 import org.gdms.data.DataSource;
+import org.gdms.data.SpatialDataSourceDecorator;
 import org.gdms.data.feature.Feature;
 import org.orbisgis.core.renderer.persistance.ogc.ExpressionType;
 import org.orbisgis.core.renderer.persistance.se.ObjectFactory;
@@ -221,15 +222,15 @@ public abstract class Categorize<ToType extends SeParameter, FallbackType extend
 
 	}
 
-	protected ToType getParameter(Feature feat) {
+	protected ToType getParameter(SpatialDataSourceDecorator sds, long fid) {
 		try {
 			if (getNumClasses() > 1) {
-				double value = lookupValue.getValue(feat);
+				double value = lookupValue.getValue(sds, fid);
 				Iterator<ToType> cIt = classValues.iterator();
 				Iterator<RealParameter> tIt = thresholds.iterator();
 				ToType classValue = this.firstClass;
 				while (cIt.hasNext()) {
-					double threshold = tIt.next().getValue(feat);
+					double threshold = tIt.next().getValue(sds, fid);
 
 					if ((!succeeding && value <= threshold) || ((value < threshold))) {
 						return classValue;

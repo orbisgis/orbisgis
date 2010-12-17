@@ -40,6 +40,7 @@
 package org.orbisgis.core.renderer.se.graphic;
 
 import java.awt.geom.Point2D;
+import org.gdms.data.SpatialDataSourceDecorator;
 import org.gdms.data.feature.Feature;
 import org.orbisgis.core.renderer.persistance.se.ViewBoxType;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
@@ -125,19 +126,19 @@ public final class ViewBox implements SymbolizerNode {
      * @return
      * @throws ParameterException
      */
-    public Point2D getDimensionInPixel(Feature feat, double height, double width, Double scale, Double dpi) throws ParameterException {
+    public Point2D getDimensionInPixel(SpatialDataSourceDecorator sds, long fid, double height, double width, Double scale, Double dpi) throws ParameterException {
         double dx, dy;
 
 		double ratio = height / width;
 
         if (x != null && y != null) {
-            dx = x.getValue(feat);
-            dy = y.getValue(feat);
+            dx = x.getValue(sds, fid);
+            dy = y.getValue(sds, fid);
         } else if (x != null) {
-            dx = x.getValue(feat);
+            dx = x.getValue(sds, fid);
             dy = dx * ratio;
         } else if (y != null) {
-            dy = y.getValue(feat);
+            dy = y.getValue(sds, fid);
             dx = dy / ratio;
         } else { // nothing is defined
             dx = width;

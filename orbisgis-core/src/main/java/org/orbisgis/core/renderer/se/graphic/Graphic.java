@@ -5,6 +5,7 @@ import java.io.IOException;
 
 import javax.media.jai.RenderableGraphics;
 import javax.xml.bind.JAXBElement;
+import org.gdms.data.SpatialDataSourceDecorator;
 import org.orbisgis.core.renderer.persistance.se.GraphicType;
 import org.gdms.data.feature.Feature;
 import org.orbisgis.core.map.MapTransform;
@@ -109,7 +110,7 @@ public abstract class Graphic implements SymbolizerNode, UomNode {
      * @throws ParameterException
      * @throws IOException
      */
-    public abstract RenderableGraphics getRenderableGraphics(Feature feat, boolean selected, MapTransform mt)
+    public abstract RenderableGraphics getRenderableGraphics(SpatialDataSourceDecorator sds, long fid, boolean selected, MapTransform mt)
             throws ParameterException, IOException;
 
     /**
@@ -151,7 +152,7 @@ public abstract class Graphic implements SymbolizerNode, UomNode {
 
     public abstract JAXBElement<? extends GraphicType> getJAXBElement();
 
-    public abstract double getMaxWidth(Feature feat, MapTransform mt) throws ParameterException, IOException;
+    public abstract double getMaxWidth(SpatialDataSourceDecorator sds, long fid, MapTransform mt) throws ParameterException, IOException;
 
     public abstract void updateGraphic();
     

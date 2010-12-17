@@ -8,6 +8,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.xml.bind.JAXBElement;
+import org.gdms.data.SpatialDataSourceDecorator;
 
 import org.orbisgis.core.renderer.persistance.se.ObjectFactory;
 import org.orbisgis.core.renderer.persistance.se.SolidFillType;
@@ -102,16 +103,16 @@ public final class SolidFill extends Fill {
 	}
 
 	@Override
-	public Paint getPaint(Feature feat, boolean selected, MapTransform mt) throws ParameterException {
+	public Paint getPaint(long fid, SpatialDataSourceDecorator sds, boolean selected, MapTransform mt) throws ParameterException {
 		Color c = new Color(128, 128, 128);
 
 		if (color != null){
-			c = color.getColor(feat);
+			c = color.getColor(sds, fid);
 		}
 		Double op = 100.0;
 
 		if (this.opacity != null) {
-			op = this.opacity.getValue(feat);
+			op = this.opacity.getValue(sds, fid);
 		}
 
 		// Add opacity to the color
@@ -126,8 +127,8 @@ public final class SolidFill extends Fill {
 	}
 
 	@Override
-	public void draw(Graphics2D g2, Shape shp, Feature feat, boolean selected, MapTransform mt) throws ParameterException {
-		g2.setPaint(getPaint(feat, selected, mt));
+	public void draw(Graphics2D g2, SpatialDataSourceDecorator sds, long fid, Shape shp, boolean selected, MapTransform mt) throws ParameterException {
+		g2.setPaint(getPaint(fid, sds, selected, mt));
 		g2.fill(shp);
 	}
 

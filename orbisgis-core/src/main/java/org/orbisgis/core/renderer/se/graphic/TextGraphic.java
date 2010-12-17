@@ -6,7 +6,7 @@ import java.awt.geom.Rectangle2D;
 import java.io.IOException;
 import javax.media.jai.RenderableGraphics;
 import javax.xml.bind.JAXBElement;
-import org.gdms.data.feature.Feature;
+import org.gdms.data.SpatialDataSourceDecorator;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.persistance.se.ObjectFactory;
 import org.orbisgis.core.renderer.persistance.se.TextGraphicType;
@@ -53,9 +53,9 @@ public class TextGraphic extends Graphic {
      * @todo implements !
      */
     @Override
-    public RenderableGraphics getRenderableGraphics(Feature feat, boolean selected, MapTransform mt) throws ParameterException, IOException {
+    public RenderableGraphics getRenderableGraphics(SpatialDataSourceDecorator sds, long fid, boolean selected, MapTransform mt) throws ParameterException, IOException {
 
-        RenderableGraphics label = styledLabel.getImage(feat, selected, mt);
+        RenderableGraphics label = styledLabel.getImage(sds, fid, selected, mt);
 
         Rectangle2D bounds = new Rectangle2D.Double(label.getMinX(), label.getMinY(), label.getWidth(), label.getHeight());
 
@@ -63,7 +63,7 @@ public class TextGraphic extends Graphic {
 
 
         if (transform != null) {
-            AffineTransform at = this.transform.getGraphicalAffineTransform(feat, false, mt, (double)label.getWidth(), (double)label.getHeight());
+            AffineTransform at = this.transform.getGraphicalAffineTransform(false, sds, fid, mt, (double)label.getWidth(), (double)label.getHeight());
 
             Shape atShp = at.createTransformedShape(bounds);
 
@@ -79,7 +79,7 @@ public class TextGraphic extends Graphic {
     }
 
     @Override
-    public double getMaxWidth(Feature feat, MapTransform mt) throws ParameterException, IOException {
+    public double getMaxWidth(SpatialDataSourceDecorator sds, long fid, MapTransform mt) throws ParameterException, IOException {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 

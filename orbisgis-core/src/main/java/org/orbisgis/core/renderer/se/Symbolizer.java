@@ -4,6 +4,7 @@ import com.vividsolutions.jts.geom.Geometry;
 import java.awt.Graphics2D;
 import java.io.IOException;
 import javax.xml.bind.JAXBElement;
+import org.gdms.data.SpatialDataSourceDecorator;
 import org.orbisgis.core.renderer.persistance.se.AreaSymbolizerType;
 import org.orbisgis.core.renderer.persistance.se.LineSymbolizerType;
 import org.orbisgis.core.renderer.persistance.se.PointSymbolizerType;
@@ -102,11 +103,11 @@ public abstract class Symbolizer implements SymbolizerNode, Comparable {
         this.the_geom = the_geom;
     }
 
-    public Geometry getTheGeom(Feature feat) throws DriverException, ParameterException {
+    public Geometry getTheGeom(SpatialDataSourceDecorator sds, long fid) throws DriverException, ParameterException {
         if (the_geom != null) {
-            return the_geom.getTheGeom(feat);
+            return the_geom.getTheGeom(sds, fid);
         } else {
-			return feat.getGeometry();
+			return sds.getGeometry(fid);
         }
     }
 
@@ -182,7 +183,7 @@ public abstract class Symbolizer implements SymbolizerNode, Comparable {
         return (Rule)pIt;
     }
 
-    public abstract void draw(Graphics2D g2, Feature feat, boolean selected, MapTransform mt) throws ParameterException, IOException, DriverException;
+    public abstract void draw(Graphics2D g2, SpatialDataSourceDecorator sds, long fid, boolean selected, MapTransform mt) throws ParameterException, IOException, DriverException;
 
 	public abstract void draw(Drawer drawer, long fid, boolean selected);
 

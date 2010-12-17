@@ -11,7 +11,7 @@ import java.util.ArrayList;
 
 import javax.media.jai.RenderableGraphics;
 import javax.xml.bind.JAXBElement;
-import org.gdms.data.feature.Feature;
+import org.gdms.data.SpatialDataSourceDecorator;
 import org.orbisgis.core.map.MapTransform;
 
 import org.orbisgis.core.renderer.persistance.se.GraphicStrokeType;
@@ -96,8 +96,8 @@ public final class GraphicStroke extends Stroke implements GraphicNode {
 
 
     @Override
-    public void draw(Graphics2D g2, Shape shp, Feature feat, boolean selected, MapTransform mt) throws ParameterException, IOException {
-        RenderableGraphics g = graphic.getGraphic(feat, selected, mt);
+    public void draw(Graphics2D g2, SpatialDataSourceDecorator sds, long fid, Shape shp, boolean selected, MapTransform mt) throws ParameterException, IOException {
+        RenderableGraphics g = graphic.getGraphic(sds, fid, selected, mt);
 		RenderedImage createRendering = g.createRendering(mt.getCurrentRenderContext());
 
 
@@ -110,7 +110,7 @@ public final class GraphicStroke extends Stroke implements GraphicNode {
 			RelativeOrientation rOrient = this.getRelativeOrientation();
 
             if (length != null) {
-				segLength = Uom.toPixel(length.getValue(feat), getUom(), mt.getDpi(), mt.getScaleDenominator(), lineLength); // TODO 100%
+				segLength = Uom.toPixel(length.getValue(sds, fid), getUom(), mt.getDpi(), mt.getScaleDenominator(), lineLength); // TODO 100%
 
                 if (segLength <= GraphicStroke.MIN_LENGTH || segLength > lineLength) {
                     segLength = lineLength;
@@ -170,8 +170,8 @@ public final class GraphicStroke extends Stroke implements GraphicNode {
     }
 
     @Override
-    public double getMaxWidth(Feature feat, MapTransform mt) throws IOException, ParameterException {
-        return graphic.getMaxWidth(feat, mt);
+    public double getMaxWidth(SpatialDataSourceDecorator sds, long fid, MapTransform mt) throws IOException, ParameterException {
+        return graphic.getMaxWidth(sds, fid, mt);
     }
 
     

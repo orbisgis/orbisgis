@@ -2,6 +2,7 @@ package org.orbisgis.core.renderer.se.parameter.color;
 
 import java.awt.Color;
 import javax.xml.bind.JAXBElement;
+import org.gdms.data.SpatialDataSourceDecorator;
 import org.gdms.data.feature.Feature;
 import org.orbisgis.core.renderer.persistance.ogc.PropertyNameType;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
@@ -20,9 +21,9 @@ public class ColorAttribute extends PropertyName implements ColorParameter {
     }
 
     @Override
-    public Color getColor(Feature feat) throws ParameterException {
+    public Color getColor(SpatialDataSourceDecorator sds, long fid) throws ParameterException {
         try {
-            return Color.getColor(getFieldValue(feat).getAsString());
+            return Color.getColor(getFieldValue(sds, fid).getAsString());
         } catch (Exception e) {
             throw new ParameterException("Could not fetch feature attribute \"" + fieldName + "\"");
         }

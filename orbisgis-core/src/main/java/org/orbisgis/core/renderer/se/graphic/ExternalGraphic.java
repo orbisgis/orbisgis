@@ -11,6 +11,7 @@ import java.io.IOException;
 import javax.media.jai.PlanarImage;
 import javax.media.jai.RenderableGraphics;
 import javax.xml.bind.JAXBElement;
+import org.gdms.data.SpatialDataSourceDecorator;
 
 import org.orbisgis.core.renderer.persistance.se.ExternalGraphicType;
 import org.orbisgis.core.renderer.persistance.se.ObjectFactory;
@@ -131,7 +132,7 @@ public final class ExternalGraphic extends Graphic {
     }
 
     @Override
-    public RenderableGraphics getRenderableGraphics(Feature feat, boolean selected, MapTransform mt) throws ParameterException, IOException {
+    public RenderableGraphics getRenderableGraphics(SpatialDataSourceDecorator sds, long fid, boolean selected, MapTransform mt) throws ParameterException, IOException {
         // TODO Implements SELECTED!
 
         PlanarImage img;
@@ -139,7 +140,7 @@ public final class ExternalGraphic extends Graphic {
         // Create shape based on image bbox
 
         //if (graphic == null) {
-        img = source.getPlanarImage(viewBox, feat, mt, mimeType);
+        img = source.getPlanarImage(viewBox, sds, fid, mt, mimeType);
         //} else {
         //    img = graphic;
         //}
@@ -153,13 +154,13 @@ public final class ExternalGraphic extends Graphic {
 
         AffineTransform at = new AffineTransform();
         if (transform != null){
-            at = transform.getGraphicalAffineTransform(feat, false, mt, w, h);
+            at = transform.getGraphicalAffineTransform(false, sds, fid, mt, w, h);
         }
 
 
         // reserve the place for halo
         if (halo != null) {
-			double r = halo.getHaloRadius(feat, mt);
+			double r = halo.getHaloRadius(sds, fid, mt);
             w += 2 * r;
             h += 2 * r;
         }
@@ -175,7 +176,7 @@ public final class ExternalGraphic extends Graphic {
         RenderableGraphics rg = Graphic.getNewRenderableGraphics(imageSize, 0);
 
         if (halo != null) {
-            halo.draw(rg, atShp, feat, mt);
+            halo.draw(rg, sds, fid, atShp, mt);
         }
 
         // TODO how to set opacity ?
@@ -186,29 +187,29 @@ public final class ExternalGraphic extends Graphic {
         return rg;
     }
 
-    public double getMargin(Feature feat, MapTransform mt) throws ParameterException, IOException {
+    public double getMargin(SpatialDataSourceDecorator sds, long fid, MapTransform mt) throws ParameterException, IOException {
         double delta = 0.0;
 
         if (this.halo != null) {
-			delta += halo.getHaloRadius(feat, mt);
+			delta += halo.getHaloRadius(sds, fid, mt);
         }
 
         return delta;
     }
 
     @Override
-    public double getMaxWidth(Feature feat, MapTransform mt) throws ParameterException, IOException {
+    public double getMaxWidth(SpatialDataSourceDecorator sds, long fid, MapTransform mt) throws ParameterException, IOException {
         double delta = 0.0;
         if (viewBox != null && viewBox.usable()) {
             PlanarImage img;
             if (graphic == null) {
-                img = source.getPlanarImage(viewBox, feat, mt, mimeType);
+                img = source.getPlanarImage(viewBox, sds, fid, mt, mimeType);
             } else {
                 img = graphic;
             }
 
             if (img != null){
-                Point2D dim = viewBox.getDimensionInPixel(feat, img.getHeight(), img.getWidth(), mt.getScaleDenominator(), mt.getDpi());
+                Point2D dim = viewBox.getDimensionInPixel(sds, fid, img.getHeight(), img.getWidth(), mt.getScaleDenominator(), mt.getDpi());
 
                 delta = Math.max(dim.getY(), dim.getX());
             }
@@ -217,7 +218,7 @@ public final class ExternalGraphic extends Graphic {
             }
         }
 
-        delta += this.getMargin(feat, mt);
+        delta += this.getMargin(sds, fid, mt);
 
         return delta;
     }

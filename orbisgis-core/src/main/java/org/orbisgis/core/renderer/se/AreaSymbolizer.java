@@ -46,11 +46,11 @@ import java.awt.Shape;
 import java.io.IOException;
 import java.util.ArrayList;
 import javax.xml.bind.JAXBElement;
+import org.gdms.data.SpatialDataSourceDecorator;
 import org.orbisgis.core.renderer.Drawer;
 import org.orbisgis.core.renderer.persistance.se.AreaSymbolizerType;
 import org.orbisgis.core.renderer.persistance.se.ObjectFactory;
 
-import org.gdms.data.feature.Feature;
 import org.gdms.driver.DriverException;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
@@ -167,23 +167,23 @@ public final class AreaSymbolizer extends VectorSymbolizer implements FillNode, 
 	 * @throws DriverException
 	 */
 	@Override
-	public void draw(Graphics2D g2, Feature feat, boolean selected, MapTransform mt) throws ParameterException, IOException, DriverException {
+	public void draw(Graphics2D g2, SpatialDataSourceDecorator sds, long fid, boolean selected, MapTransform mt) throws ParameterException, IOException, DriverException {
 
-		ArrayList<Shape> shapes = this.getShape(feat, mt);
+		ArrayList<Shape> shapes = this.getShape(sds, fid, mt);
 
 		if (shapes != null) {
 			for (Shape shp : shapes) {
 				if (fill != null) {
-				   fill.draw(g2, shp, feat, selected, mt);
+				   fill.draw(g2, sds, fid, shp, selected, mt);
     			}
 
 				if (perpendicularOffset != null) {
-					double offset = perpendicularOffset.getValue(feat);
+					double offset = perpendicularOffset.getValue(sds, fid);
 					shp = ShapeHelper.perpendicularOffset(shp, offset);
 				}
 
 				if (stroke != null) {
-					stroke.draw(g2, shp, feat, selected, mt);
+					stroke.draw(g2, sds, fid, shp, selected, mt);
 				}
 			}
 		}

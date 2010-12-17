@@ -43,7 +43,7 @@ import java.awt.Shape;
 import java.io.IOException;
 import java.util.ArrayList;
 import javax.xml.bind.JAXBElement;
-import org.gdms.data.feature.Feature;
+import org.gdms.data.SpatialDataSourceDecorator;
 import org.orbisgis.core.renderer.Drawer;
 
 import org.orbisgis.core.renderer.persistance.se.ObjectFactory;
@@ -95,13 +95,13 @@ public final class TextSymbolizer extends VectorSymbolizer {
 	}
 
 	@Override
-	public void draw(Graphics2D g2, Feature feat, boolean selected, MapTransform mt) throws ParameterException, IOException, DriverException {
-		ArrayList<Shape> shapes = this.getShape(feat, mt);
+	public void draw(Graphics2D g2, SpatialDataSourceDecorator sds, long fid, boolean selected, MapTransform mt) throws ParameterException, IOException, DriverException {
+		ArrayList<Shape> shapes = this.getShape(sds, fid, mt);
 
 		if (shapes != null) {
 			for (Shape shp : shapes) {
 				if (shp != null && label != null) {
-					label.draw(g2, shp, feat, selected, mt);
+					label.draw(g2, sds, fid, shp, selected, mt);
 				}
 			}
 		}

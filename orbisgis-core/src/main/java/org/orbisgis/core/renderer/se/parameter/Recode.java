@@ -42,6 +42,7 @@ package org.orbisgis.core.renderer.se.parameter;
 import java.util.ArrayList;
 import java.util.List;
 import javax.xml.bind.JAXBElement;
+import org.gdms.data.SpatialDataSourceDecorator;
 import org.gdms.data.feature.Feature;
 import org.orbisgis.core.renderer.persistance.ogc.ExpressionType;
 import org.orbisgis.core.renderer.persistance.se.MapItemType;
@@ -152,9 +153,9 @@ public abstract class Recode<ToType extends SeParameter, FallbackType extends To
 		}
 	}
 
-    public ToType getParameter(Feature feat) {
+    public ToType getParameter(SpatialDataSourceDecorator sds, long fid) {
         try {
-            String key = lookupValue.getValue(feat);
+            String key = lookupValue.getValue(sds, fid);
             return getMapItemValue(key);
         } catch (Exception e) {
             return fallbackValue;

@@ -2,6 +2,7 @@ package org.orbisgis.core.renderer.se.parameter.string;
 
 import java.util.Iterator;
 import javax.xml.bind.JAXBElement;
+import org.gdms.data.SpatialDataSourceDecorator;
 import org.gdms.data.feature.Feature;
 import org.orbisgis.core.renderer.persistance.se.CategorizeType;
 import org.orbisgis.core.renderer.persistance.se.ParameterValueType;
@@ -44,11 +45,11 @@ public class Categorize2String extends Categorize<StringParameter, StringLiteral
     }
 
     @Override
-    public String getValue(Feature feat) {
+    public String getValue(SpatialDataSourceDecorator sds, long fid) {
         try {
-            return getParameter(feat).getValue(feat);
+            return getParameter(sds, fid).getValue(sds, fid);
         } catch (ParameterException ex) {
-            return this.fallbackValue.getValue( feat);
+            return this.fallbackValue.getValue( sds, fid);
         }
     }
 }

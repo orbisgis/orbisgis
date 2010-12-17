@@ -15,6 +15,7 @@ import java.util.logging.Logger;
 
 import javax.media.jai.RenderableGraphics;
 import javax.xml.bind.JAXBElement;
+import org.gdms.data.SpatialDataSourceDecorator;
 
 import org.orbisgis.core.renderer.persistance.se.GraphicFillType;
 import org.orbisgis.core.renderer.persistance.se.ObjectFactory;
@@ -121,8 +122,8 @@ public final class GraphicFill extends Fill implements UomNode {
      * see Fill
      */
     @Override
-    public void draw(Graphics2D g2, Shape shp, Feature feat, boolean selected, MapTransform mt) throws ParameterException, IOException {
-        Paint stipple = this.getPaint(feat, selected, mt);
+    public void draw(Graphics2D g2, SpatialDataSourceDecorator sds, long fid, Shape shp, boolean selected, MapTransform mt) throws ParameterException, IOException {
+        Paint stipple = this.getPaint(fid, sds, selected, mt);
 
         // TODO handle selected ! 
         if (stipple != null) {
@@ -141,10 +142,10 @@ public final class GraphicFill extends Fill implements UomNode {
      * @throws IOException
      */
 	@Override
-    public Paint getPaint(Feature feat, boolean selected, MapTransform mt) throws ParameterException {
+    public Paint getPaint(long fid, SpatialDataSourceDecorator sds, boolean selected, MapTransform mt) throws ParameterException {
         RenderableGraphics img;
 		try {
-			img = graphic.getGraphic(feat, selected, mt);
+			img = graphic.getGraphic(sds, fid, selected, mt);
 		} catch (IOException ex) {
 			Logger.getLogger(GraphicFill.class.getName()).log(Level.SEVERE, null, ex);
 			return null;
@@ -155,14 +156,14 @@ public final class GraphicFill extends Fill implements UomNode {
             double gY = 0.0;
 
             if (gapX != null) {
-                gX = gapX.getValue(feat);
+                gX = gapX.getValue(sds, fid);
                 if (gX < 0.0) {
                     gX = 0.0;
                 }
             }
 
             if (gapY != null) {
-                gY = gapY.getValue(feat);
+                gY = gapY.getValue(sds, fid);
                 if (gY < 0.0) {
                     gY = 0.0;
                 }
