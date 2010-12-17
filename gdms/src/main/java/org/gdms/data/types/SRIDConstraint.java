@@ -49,6 +49,10 @@ public class SRIDConstraint extends AbstractIntConstraint {
                 super(constraintValue);
         }
 
+        public SRIDConstraint(byte[] constraintBytes) {
+                super(constraintBytes);
+        }
+
         @Override
 	public int getConstraintCode() {
 		return Constraint.SRID;
