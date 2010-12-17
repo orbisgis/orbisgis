@@ -58,7 +58,6 @@ import org.orbisgis.core.ui.plugins.views.editor.EditorManager;
 public class ShowXYPlugIn extends AbstractPlugIn {
 
 	private JLabel showXY;
-	private final static int MAX_DIGIT = 7;
 
 	public boolean execute(PlugInContext context) throws Exception {
 		return true;
@@ -66,7 +65,7 @@ public class ShowXYPlugIn extends AbstractPlugIn {
 
 	private MouseMotionAdapter mouseMotionAdapter = new MouseMotionAdapter() {
 		public void mouseMoved(MouseEvent e) {
-			String xCoord = "", yCoord = "";
+			String xCoord = "", yCoord = "", scale = "";
 			ToolManager toolManager = getPlugInContext().getToolManager();
 			if (toolManager != null) {
 				Point2D point = toolManager.getLastRealMousePosition();
@@ -77,13 +76,12 @@ public class ShowXYPlugIn extends AbstractPlugIn {
 					// } else {
 					xCoord = "X:" + (int) point.getX();
 					yCoord = "Y:" + (int) point.getY();
-					//scale = "SCALE: 1/"
-						//	+ (int) getPlugInContext().getMapEditor()
-							//		.getMapTransform().getScaleDenominator();
-					// }
+					scale = "SCALE: 1/"
+							+ (int) getPlugInContext().getMapEditor()
+									.getMapTransform().getScaleDenominator();
 				}
 			}
-			showXY.setText(xCoord + "  " + yCoord );
+			showXY.setText(xCoord + "  " + yCoord + " " + scale);
 		}
 	};
 

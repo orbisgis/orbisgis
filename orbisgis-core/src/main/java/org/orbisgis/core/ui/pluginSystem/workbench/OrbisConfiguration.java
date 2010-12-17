@@ -158,8 +158,8 @@ import org.orbisgis.core.ui.preferences.lookandfeel.OrbisGISIcon;
 import org.orbisgis.core.ui.windows.mainFrame.OrbisGISFrame;
 
 public class OrbisConfiguration implements Setup {
-	//The list of extensions that are suported byt the software.
-	//used to select the files that will be imported.
+	// The list of extensions that are suported byt the software.
+	// used to select the files that will be imported.
 	public static ArrayList<String> SUPPORTED_EXTENSIONS = null;
 
 	// OrbisGIS main ToolBar & OrbisGIS main menu
@@ -256,7 +256,7 @@ public class OrbisConfiguration implements Setup {
 	// Tool bar on map
 	private ShowXYPlugIn showXYPlugIn = new ShowXYPlugIn();
 	// Scale panel plugin is a swing component to execute action on map editor
-	private ScalePlugIn scalePlugIn = new ScalePlugIn();
+	// private ScalePlugIn scalePlugIn = new ScalePlugIn();
 	// private CoordinateReferenceSystemPlugIn CRSPlugIn = new
 	// CoordinateReferenceSystemPlugIn();
 
@@ -300,15 +300,17 @@ public class OrbisConfiguration implements Setup {
 		// all instances
 		frame.setTableMenuTreePopup();
 		frame.setMapMenuTreePopup();
-		//We must fill the file formats that we are able to process
-		DataManager dataManager = (DataManager) Services.getService(DataManager.class);
+		// We must fill the file formats that we are able to process
+		DataManager dataManager = (DataManager) Services
+				.getService(DataManager.class);
 		SourceManager sm = dataManager.getSourceManager();
 		DriverManager driverMan = sm.getDriverManager();
 		SUPPORTED_EXTENSIONS = new ArrayList<String>();
-		for(String name : driverMan.getDriverNames()){
+		for (String name : driverMan.getDriverNames()) {
 			Driver dri = driverMan.getDriver(name);
-			if(dri instanceof FileDriver){
-				SUPPORTED_EXTENSIONS.addAll(Arrays.asList(((FileDriver) dri).getFileExtensions()));
+			if (dri instanceof FileDriver) {
+				SUPPORTED_EXTENSIONS.addAll(Arrays.asList(((FileDriver) dri)
+						.getFileExtensions()));
 			}
 		}
 	}
@@ -467,7 +469,7 @@ public class OrbisConfiguration implements Setup {
 		createSourceFromSelectionPlugIn.initialize(plugInContext);
 
 		// Map tools
-		scalePlugIn.initialize(plugInContext);
+		// scalePlugIn.initialize(plugInContext);
 		showXYPlugIn.initialize(plugInContext);
 		// CRSPlugIn.initialize(plugInContext);
 
@@ -571,15 +573,16 @@ public class OrbisConfiguration implements Setup {
 
 	/**
 	 * Checks that a file can be imported in GDMS
+	 * 
 	 * @param file
 	 * @return
 	 */
-	public static boolean isFileEligible(File file){
+	public static boolean isFileEligible(File file) {
 		String fileName = file.getName();
 		int index = fileName.lastIndexOf('.');
-		if(index >=0 && index < fileName.length()){
+		if (index >= 0 && index < fileName.length()) {
 
-			String ext = fileName.substring(index+1);
+			String ext = fileName.substring(index + 1);
 			return OrbisConfiguration.SUPPORTED_EXTENSIONS.contains(ext);
 		}
 		return false;
