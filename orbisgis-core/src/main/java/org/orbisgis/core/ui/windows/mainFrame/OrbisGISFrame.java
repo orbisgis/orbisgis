@@ -100,6 +100,7 @@ public class OrbisGISFrame extends JFrame implements IWindow {
 	private JMenuBar actionMenuBar;
 	private JobPopup jobPopup;
 
+
 	private WorkbenchToolBar workbenchToolBar;
 
 	public JMenuBar getActionMenuBar() {
@@ -286,9 +287,12 @@ public class OrbisGISFrame extends JFrame implements IWindow {
 
 		});
 
+		
+
 		/* Job popup at bootom right to follow processes loading */
-		jobPopup = new JobPopup();
+		jobPopup = new JobPopup(this);
 		jobPopup.initialize();
+
 
 		// A panel to display the statustoolbar on the left side and the
 		// viewtoolbar on the rigth side
@@ -299,7 +303,6 @@ public class OrbisGISFrame extends JFrame implements IWindow {
 		jPanel.add(getViewToolBar(), BorderLayout.EAST);
 
 		this.getContentPane().add(jPanel, BorderLayout.SOUTH);
-
 	}
 
 	private void initializeViews() {
