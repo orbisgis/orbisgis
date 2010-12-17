@@ -207,8 +207,8 @@ public class OrbisConfiguration implements Setup {
 	private GeocognitionUnRegisterBuiltInCustomQueryPlugIn geocognitionUnRegisterBuiltInCustomQuery = new GeocognitionUnRegisterBuiltInCustomQueryPlugIn();
 
 	// Geocatalog popup
-	private NewGeocatalogFolderPlugIn newGeocatalogFolder = new NewGeocatalogFolderPlugIn();
 	private NewGeocatalogFilePlugIn newGeocatalogFile = new NewGeocatalogFilePlugIn();
+	private NewGeocatalogFolderPlugIn newGeocatalogFolder = new NewGeocatalogFolderPlugIn();
 	private NewGeocognitionDBPlugIn newGeocognitionDB = new NewGeocognitionDBPlugIn();
 	private ConvertXYZDemGeocatalogPlugIn convertXYZDemGeocatalogPlugIn = new ConvertXYZDemGeocatalogPlugIn();
 	private WMSGeocatalogPlugIn wMSGeocatalogPlugIn = new WMSGeocatalogPlugIn();
@@ -352,8 +352,8 @@ public class OrbisConfiguration implements Setup {
 			geocognitionUnRegisterBuiltInCustomQuery.initialize(context);
 
 			// Geocatalog popup
-			newGeocatalogFolder.initialize(context);
 			newGeocatalogFile.initialize(context);
+			newGeocatalogFolder.initialize(context);
 			wMSGeocatalogPlugIn.initialize(context);
 			newGeocognitionDB.initialize(context);
 			convertXYZDemGeocatalogPlugIn.initialize(context);
