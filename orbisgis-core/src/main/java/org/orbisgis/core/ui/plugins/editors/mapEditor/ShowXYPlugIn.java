@@ -98,7 +98,10 @@ public class ShowXYPlugIn extends AbstractPlugIn {
 	}
 
 	public boolean isEnabled() {
-		showXY.setText("0.0     0.0  ");
+		String scale = "SCALE: 1/"
+			+ (int) getPlugInContext().getMapEditor()
+					.getMapTransform().getScaleDenominator();
+		showXY.setText("0.0     0.0  "+ scale);
 		boolean isVisible = false;
 		IEditor editor = Services.getService(EditorManager.class)
 				.getActiveEditor();
