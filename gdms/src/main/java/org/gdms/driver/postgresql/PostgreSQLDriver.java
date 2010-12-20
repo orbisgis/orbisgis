@@ -47,6 +47,8 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.gdms.data.WarningListener;
 import org.gdms.data.metadata.Metadata;
@@ -100,6 +102,7 @@ public class PostgreSQLDriver extends DefaultDBDriver {
         private int rowCount;
         private boolean isPostGISTable;
         private int srid;
+        private List<DriverException> nonblockingErrors = new ArrayList<DriverException>();
 
         /**
          *
@@ -161,16 +164,23 @@ public class PostgreSQLDriver extends DefaultDBDriver {
         @Override
         public void open(Connection con, String tableName, String schemaName)
                 throws DriverException {
+                nonblockingErrors.clear();
                 this.tableName = tableName;
                 this.schemaName = schemaName;
 
+
+                geometryFields = new HashSet<String>();
+                geometryTypes = new HashMap<String, String>();
+                geometryDimensions = new HashMap<String, Integer>();
+                fields = new ArrayList<String>();
+                Statement st;
                 try {
-                        geometryFields = new HashSet<String>();
-                        geometryTypes = new HashMap<String, String>();
-                        geometryDimensions = new HashMap<String, Integer>();
-                        fields = new ArrayList<String>();
-                        Statement st = con.createStatement();
-                        ResultSet res = null;
+                        st = con.createStatement();
+                } catch (SQLException ex) {
+                        throw new DriverException(ex);
+                }
+                ResultSet res = null;
+                try {
                         if (schemaName != null) {
                                 if (schemaName.length() != 0) {
                                         res = st.executeQuery("select * from \"geometry_columns\"" + " where \"f_table_schema\" = '" + schemaName + "' and \"f_table_name\" = '" + tableName + "'");
@@ -203,19 +213,29 @@ public class PostgreSQLDriver extends DefaultDBDriver {
                                 srid = res.getInt("srid");
 
                         }
-                        res.close();
+                } catch (SQLException ex) {
+                        nonblockingErrors.add(new DriverException("WARNING: the specified database is not spatial", ex));
+                } finally {
+                        try {
+                                if (res != null) {
+                                        res.close();
+                                }
+                        } catch (SQLException ex) {
+                                throw new DriverException(ex);
+                        }
+                }
+                try {
                         res = st.executeQuery("select * from " + getTableAndSchemaName()
                                 + " where false");
                         ResultSetMetaData metadata = res.getMetaData();
                         if (!isPostGISTable) {
-                                boolean geometryFounded = false;
-                                for (int i = 0; (i < metadata.getColumnCount() || !geometryFounded); i++) {
+                                for (int i = 0; i < metadata.getColumnCount(); i++) {
                                         if (metadata.getColumnTypeName(i + 1).equals("geometry")) {
-                                                geometryFounded = true;
                                                 String geomFieldName = metadata.getColumnName(i + 1);
                                                 geometryFields.add(geomFieldName);
                                                 geometryTypes.put(geomFieldName, "GEOMETRY");
                                                 geometryDimensions.put(geomFieldName, Type.GEOMETRY);
+                                                break;
                                         }
                                 }
                         }
@@ -253,6 +273,7 @@ public class PostgreSQLDriver extends DefaultDBDriver {
         public TableDescription[] getTables(Connection c, String catalog,
                 String schemaPattern, String tableNamePattern, String[] types)
                 throws DriverException {
+                nonblockingErrors.clear();
                 TableDescription[] tableDescriptions = super.getTables(c, catalog,
                         schemaPattern, tableNamePattern, types);
 
@@ -261,8 +282,12 @@ public class PostgreSQLDriver extends DefaultDBDriver {
                 ResultSet res = null;
                 try {
                         st = c.createStatement();
-                        res = st.executeQuery("select * from \"geometry_columns\";");
+                } catch (SQLException ex) {
+                        throw new DriverException(ex);
+                }
 
+                try {
+                        res = st.executeQuery("select * from \"geometry_columns\";");
                         while (res.next()) {
                                 for (int i = 0; i < tableDescriptions.length; i++) {
                                         if (res.getString("f_table_name").equals(
@@ -304,16 +329,16 @@ public class PostgreSQLDriver extends DefaultDBDriver {
                                 }
                         }
                 } catch (SQLException e) {
-                        throw new DriverException(e);
+                        nonblockingErrors.add(new DriverException("WARNING: the specified database is not spatial", e));
                 }
 
                 // Else, search if there is a geometry object in each column of each
                 // database
                 // If a geometry object is found, the geometry type of the database is
                 // set to ALL
-                try {
-                        for (int i = 0; i < tableDescriptions.length; i++) {
-                                if (tableDescriptions[i].getGeometryType() == 0) {
+                for (int i = 0; i < tableDescriptions.length; i++) {
+                        if (tableDescriptions[i].getGeometryType() == 0) {
+                                try {
                                         res = st.executeQuery("SELECT * FROM \""
                                                 + tableDescriptions[i].getSchema() + "\".\""
                                                 + tableDescriptions[i].getName() + "\" LIMIT 2 ;");
@@ -329,11 +354,10 @@ public class PostgreSQLDriver extends DefaultDBDriver {
                                                         break;
                                                 }
                                         }
-
+                                } catch (SQLException e) {
+                                        nonblockingErrors.add(new DriverException(e.getMessage(), e));
                                 }
                         }
-                } catch (SQLException e) {
-                        throw new DriverException(e);
                 }
 
                 return tableDescriptions;
@@ -689,5 +713,12 @@ public class PostgreSQLDriver extends DefaultDBDriver {
                 schemas.remove("pg_toast_temp_1");
 
                 return schemas.toArray(new String[schemas.size()]);
+        }
+
+        @Override
+        public DriverException[] getLastNonBlockingErrors() {
+                DriverException[] ex = nonblockingErrors.toArray(new DriverException[nonblockingErrors.size()]);
+                nonblockingErrors.clear();
+                return ex;
         }
 }

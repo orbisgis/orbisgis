@@ -36,6 +36,7 @@
  */
 package org.orbisgis.core.ui.geocatalog.newSourceWizards.db;
 
+import java.awt.Color;
 import java.awt.Component;
 import java.net.URL;
 import java.sql.Connection;
@@ -52,7 +53,9 @@ import org.gdms.data.db.DBSource;
 import org.gdms.driver.DBDriver;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.TableDescription;
+import org.orbisgis.core.Services;
 import org.orbisgis.core.sif.UIPanel;
+import org.orbisgis.core.ui.plugins.views.OutputManager;
 
 public class TableSelectionPanel implements UIPanel {
 
@@ -105,6 +108,7 @@ public class TableSelectionPanel implements UIPanel {
 			DBDriver dbDriver = firstPanel.getDBDriver();
 			final Connection connection = firstPanel.getConnection();
 			final String[] schemas = dbDriver.getSchemas(connection);
+                        OutputManager om = Services.getService(OutputManager.class);
 
 			DefaultMutableTreeNode rootNode =
 			// new DefaultMutableTreeNode ("Schemas");
@@ -124,6 +128,15 @@ public class TableSelectionPanel implements UIPanel {
 				final TableDescription[] tableDescriptions = dbDriver
 						.getTables(connection, null, schema, null,
 								new String[] { "TABLE" });
+
+                                // we send possible loading errors to the Output window
+                                DriverException[] exs = dbDriver.getLastNonBlockingErrors();
+                                if (exs.length != 0) {
+                                        for (int i = 0; i < exs.length; i++) {
+                                                om.println(exs[i].getMessage(), Color.ORANGE);
+                                        }
+                                }
+
 				if (tableDescriptions.length > 0) {
 					schemaNode.add(tableNode);
 					for (TableDescription tableDescription : tableDescriptions) {

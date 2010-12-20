@@ -521,4 +521,9 @@ public abstract class DefaultSQL implements DBReadWriteDriver, ValueWriter {
 
 		return sql.toString();
 	}
+
+        @Override
+        public DriverException[] getLastNonBlockingErrors() {
+                return new DriverException[0];
+        }
 }
