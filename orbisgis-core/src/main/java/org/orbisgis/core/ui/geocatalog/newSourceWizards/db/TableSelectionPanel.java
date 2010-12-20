@@ -117,6 +117,17 @@ public class TableSelectionPanel implements UIPanel {
 			// Add Data to the tree
 			for (String schema : schemas) {
 
+                                final TableDescription[] tableDescriptions = dbDriver
+						.getTables(connection, null, schema, null,
+								new String[] { "TABLE" });
+                                final TableDescription[] viewDescriptions = dbDriver
+						.getTables(connection, null, schema, null,
+								new String[] { "VIEW" });
+
+                                if (tableDescriptions.length == 0 && viewDescriptions.length == 0) {
+                                        continue;
+                                }
+
 				// list schemas
 				DefaultMutableTreeNode schemaNode = new DefaultMutableTreeNode(
 						new SchemaNode(schema));
@@ -125,9 +136,6 @@ public class TableSelectionPanel implements UIPanel {
 				// list Tables
 				DefaultMutableTreeNode tableNode = new DefaultMutableTreeNode(
 						"Tables");
-				final TableDescription[] tableDescriptions = dbDriver
-						.getTables(connection, null, schema, null,
-								new String[] { "TABLE" });
 
                                 // we send possible loading errors to the Output window
                                 DriverException[] exs = dbDriver.getLastNonBlockingErrors();
@@ -148,9 +156,6 @@ public class TableSelectionPanel implements UIPanel {
 				// list View
 				DefaultMutableTreeNode viewNode = new DefaultMutableTreeNode(
 						"Views");
-				final TableDescription[] viewDescriptions = dbDriver
-						.getTables(connection, null, schema, null,
-								new String[] { "VIEW" });
 				if (viewDescriptions.length > 0) {
 					schemaNode.add(viewNode);
 					for (TableDescription viewDescription : viewDescriptions) {

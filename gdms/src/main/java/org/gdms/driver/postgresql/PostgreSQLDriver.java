@@ -76,6 +76,7 @@ import org.postgresql.PGConnection;
 
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.io.WKTWriter;
+import java.util.Arrays;
 import org.gdms.data.types.SRIDConstraint;
 
 /**
@@ -276,6 +277,8 @@ public class PostgreSQLDriver extends DefaultDBDriver {
                 nonblockingErrors.clear();
                 TableDescription[] tableDescriptions = super.getTables(c, catalog,
                         schemaPattern, tableNamePattern, types);
+                List<TableDescription> tablesDescToReturn = new ArrayList<TableDescription>();
+                tablesDescToReturn.addAll(Arrays.asList(tableDescriptions));
 
                 // Retrieves the PostGIS geometryType of each Database.
                 Statement st;
@@ -356,11 +359,13 @@ public class PostgreSQLDriver extends DefaultDBDriver {
                                         }
                                 } catch (SQLException e) {
                                         nonblockingErrors.add(new DriverException(e.getMessage(), e));
+                                        tablesDescToReturn.remove(tableDescriptions[i]);
                                 }
+
                         }
                 }
 
-                return tableDescriptions;
+                return tablesDescToReturn.toArray(new TableDescription[tablesDescToReturn.size()]);
         }
 
         @Override
