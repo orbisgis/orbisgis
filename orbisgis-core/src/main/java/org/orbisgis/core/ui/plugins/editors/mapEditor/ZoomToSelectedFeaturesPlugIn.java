@@ -122,8 +122,7 @@ public class ZoomToSelectedFeaturesPlugIn extends AbstractPlugIn {
 			MapContext mc = (MapContext) mapEditor.getElement().getObject();
 			ILayer[] layers = mc.getLayerModel().getLayersRecursively();
 			for (ILayer lyr : layers) {
-				if (!lyr.isWMS()) {
-					lyr.getSelection();
+				if (!lyr.isWMS()) {					
 					if (lyr.getSelection().length > 0)
 						isEnabled = true;
 				}
