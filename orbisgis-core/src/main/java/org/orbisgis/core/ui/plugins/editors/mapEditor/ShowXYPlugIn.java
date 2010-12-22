@@ -98,15 +98,15 @@ public class ShowXYPlugIn extends AbstractPlugIn {
 	}
 
 	public boolean isEnabled() {
-		String scale = "SCALE: 1/"
-			+ (int) getPlugInContext().getMapEditor()
-					.getMapTransform().getScaleDenominator();
-		showXY.setText("0.0     0.0  "+ scale);
 		boolean isVisible = false;
 		IEditor editor = Services.getService(EditorManager.class)
 				.getActiveEditor();
+		MapEditorPlugIn mapEditor = getPlugInContext().getMapEditor();
 		if (editor != null && editor instanceof MapEditorPlugIn
-				&& getPlugInContext().getMapEditor() != null) {
+				&& mapEditor != null) {
+			String scale = "SCALE: 1/"
+					+ (int) mapEditor.getMapTransform().getScaleDenominator();
+			showXY.setText("0.0     0.0  " + scale);
 			MapContext mc = (MapContext) editor.getElement().getObject();
 			isVisible = mc.getLayerModel().getLayerCount() > 0;
 		}
