@@ -652,7 +652,7 @@ public class EditorPanel extends Container {
 		for (int i = 0; i < editors.length; i++) {
 			if (editors[i].acceptElement(element.getTypeId())) {
 				try {
-					editor = editors[i].getClass().newInstance();
+					editor = editors[i];
 					editor.initialize(plugInContext);
 				} catch (InstantiationException e) {
 					e.printStackTrace();

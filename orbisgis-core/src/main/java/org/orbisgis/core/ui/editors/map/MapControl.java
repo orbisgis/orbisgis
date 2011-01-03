@@ -100,6 +100,7 @@ public class MapControl extends JComponent implements ComponentListener,
 
 	/** The map will query the data to obtain a new image. */
 	public static final int DIRTY = 1;
+        private RefreshLayerListener refreshLayerListener;
 
 	private int status = DIRTY;
 
@@ -202,9 +203,10 @@ public class MapControl extends JComponent implements ComponentListener,
 		} else {
 			mapTransform.setExtent(rootLayer.getEnvelope());
 		}
+                refreshLayerListener = new RefreshLayerListener();
 
 		// Add refresh listener
-		addLayerListenerRecursively(rootLayer, new RefreshLayerListener());
+		addLayerListenerRecursively(rootLayer, refreshLayerListener);
 
 		setLayout(new BorderLayout());
 	}
@@ -547,6 +549,8 @@ public class MapControl extends JComponent implements ComponentListener,
 		 */
 		toolManager.freeResources();
 		toolManager = null;
+                
+                removeLayerListenerRecursively(mapContext.getLayerModel(), refreshLayerListener);
 	}
 
 	public void setShowCoordinates(boolean showCoordinates) {

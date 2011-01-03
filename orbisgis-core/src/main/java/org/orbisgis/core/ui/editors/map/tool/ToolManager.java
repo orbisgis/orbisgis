@@ -150,6 +150,7 @@ public class ToolManager extends MouseAdapter implements MouseMotionListener,
 	private Automaton currentTool;
 
 	private ILayer activeLayer = null;
+        private MapContextListener mapContextListener;
 
 	private double[] values = new double[0];
 
@@ -213,50 +214,37 @@ public class ToolManager extends MouseAdapter implements MouseMotionListener,
 		setTool(defaultTool);
 		this.defaultTool = defaultTool;
 		updateCursor();
+                mapContextListener = new MapContextListener() {
 
-		this.mapContext.addMapContextListener(new MapContextListener() {
+                        public void layerSelectionChanged(MapContext mapContext) {
+                        }
 
-			public void layerSelectionChanged(MapContext mapContext) {
+                        public void activeLayerChanged(ILayer previousActiveLayer, MapContext mapContext) {
+                                ILayer layer = mapContext.getActiveLayer();
+                                if (activeLayer == layer) {
+                                        return;
+                                }
+                                freeResources();
+                                activeLayer = layer;
+                                if (activeLayer != null) {
+                                        activeLayer.addLayerListener(layerListener);
+                                        activeLayer.getDataSource().addEditionListener(layerListener);
+                                        activeLayer.getDataSource().addDataSourceListener(layerListener);
+                                }
+                                try {
+                                        setTool(ToolManager.this.defaultTool);
+                                } catch (TransitionException e) {
+                                        try {
+                                                setTool(ToolManager.this.defaultTool);
+                                        } catch (TransitionException e1) {
+                                                throw new RuntimeException();
+                                        }
+                                }
+                                recalculateHandlers();
+                        }
+                };
 
-			}
-
-			public void activeLayerChanged(ILayer previousActiveLayer,
-					MapContext mapContext) {
-				ILayer layer = mapContext.getActiveLayer();
-				if (activeLayer == layer) {
-					return;
-				}
-
-				freeResources();
-
-				activeLayer = layer;
-
-				if (activeLayer != null) {
-					activeLayer.addLayerListener(layerListener);
-					activeLayer.getDataSource().addEditionListener(
-							layerListener);
-					activeLayer.getDataSource().addDataSourceListener(
-							layerListener);
-				}
-
-				// Initialize the current tool before anything can fail
-				try {
-					setTool(ToolManager.this.defaultTool);
-				} catch (TransitionException e) {
-					try {
-						setTool(ToolManager.this.defaultTool);
-					} catch (TransitionException e1) {
-						/*
-						 * SelectionTool does not fails at initialization
-						 */
-						throw new RuntimeException();
-					}
-				}
-
-				recalculateHandlers();
-
-			}
-		});
+		this.mapContext.addMapContextListener(mapContextListener);
 
 		mapTransform.addTransformListener(new TransformListener() {
 			public void extentChanged(Envelope oldExtent,
@@ -282,6 +270,7 @@ public class ToolManager extends MouseAdapter implements MouseMotionListener,
 				// ignore it
 			}
 		}
+                this.mapContext.removeMapContextListener(mapContextListener);
 	}
 
 	public void mouseMoved(MouseEvent e) {
