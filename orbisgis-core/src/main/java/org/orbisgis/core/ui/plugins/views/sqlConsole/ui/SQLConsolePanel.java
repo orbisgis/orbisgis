@@ -93,6 +93,7 @@ public class SQLConsolePanel extends JPanel implements DropTargetListener {
     private SearchWord searchWord;
     private int lastSQLStatementToReformatStart;
     private int lastSQLStatementToReformatEnd;
+    private SQLCompletionProvider cpl;
     // An instance of the private subclass of the default highlight painter
     Highlighter.HighlightPainter myHighlightPainter = (HighlightPainter) new WordHighlightPainter(
             new Color(205, 235, 255));
@@ -144,7 +145,7 @@ public class SQLConsolePanel extends JPanel implements DropTargetListener {
             scriptPanel.getDocument().addDocumentListener(actionAndKeyListener);
             scriptPanel.setDropTarget(new DropTarget(centerPanel, this));
             scriptPanel.setLineWrap(true);
-            SQLCompletionProvider cpl = new SQLCompletionProvider(scriptPanel);
+            cpl = new SQLCompletionProvider(scriptPanel);
             cpl.install();
 
             CodeReformator codeReformator = new CodeReformator(";", COMMENT_SPECS);
@@ -484,4 +485,10 @@ public class SQLConsolePanel extends JPanel implements DropTargetListener {
 
         setButtonsStatus();
     }
+
+        public void freeResources() {
+                if (cpl != null) {
+                        cpl.freeExternalResources();
+                }
+        }
 }

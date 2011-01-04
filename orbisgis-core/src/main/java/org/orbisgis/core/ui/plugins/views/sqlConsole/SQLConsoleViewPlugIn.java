@@ -86,6 +86,13 @@ public class SQLConsoleViewPlugIn extends ViewPlugIn {
 		btn.setToolTipText(Names.SQLCONSOLE);
 	}
 
+        @Override
+        public void delete() {
+                if (panel != null) {
+                        panel.freeResources();
+                }
+        }
+
 	public void initialize(PlugInContext context) throws Exception {
 		panel = new SQLConsolePanel(new ConsoleListener() {
 
