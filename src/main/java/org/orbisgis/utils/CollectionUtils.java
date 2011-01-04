@@ -36,8 +36,19 @@
  */
 package org.orbisgis.utils;
 
-public class CollectionUtils {
+/**
+ * Utility class for dealing with arrays
+ */
+public final class CollectionUtils {
 
+        /**
+         * Check if the given array contains the given object.
+         *
+         * Note that object references are compared, not their value or equality.
+         * @param collection an array
+         * @param testObject an object
+         * @return true if the array contains the object
+         */
 	public static boolean contains(Object[] collection, Object testObject) {
 		for (Object object : collection) {
 			if (object == testObject) {
@@ -48,6 +59,13 @@ public class CollectionUtils {
 		return false;
 	}
 
+        /**
+         * Gets a comma-separated String describing an array.
+         *
+         * The .toString() method of the objects is used.
+         * @param array an array, possibly empty
+         * @return a comma-separated representation String, possibly empty
+         */
 	public static String getCommaSeparated(Object[] array) {
 		StringBuilder ret = new StringBuilder("");
 		String separator = "";
@@ -59,6 +77,13 @@ public class CollectionUtils {
 		return ret.toString();
 	}
 
+        /**
+         * Check if the given array contains the given integer.
+         *
+         * @param array an array
+         * @param element an integer
+         * @return true if the array contains the integer
+         */
 	public static boolean contains(int[] array, int element) {
 		for (int i = 0; i < array.length; i++) {
 			if (array[i] == element) {
@@ -69,6 +94,15 @@ public class CollectionUtils {
 		return false;
 	}
 
+        /**
+         * Gets the index of the first occurrence of an object inside an array,
+         * or -1 if not found.
+         *
+         * Note that object references are compared, not their value or equality.
+         * @param array an array of Object
+         * @param element an Object to look for
+         * @return an integer between 0 and array.length, or -1 if not found
+         */
 	public static int indexOf(Object[] array, Object element) {
 		for (int i = 0; i < array.length; i++) {
 			if (array[i] == element) {
@@ -78,5 +112,8 @@ public class CollectionUtils {
 		return -1;
 
 	}
+
+        private CollectionUtils() {
+        }
 
 }

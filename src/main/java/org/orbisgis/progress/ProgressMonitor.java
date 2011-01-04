@@ -36,103 +36,96 @@
  */
 package org.orbisgis.progress;
 
+/**
+ * Default implementation of an IProgressMonitor.
+ *
+ */
 public class ProgressMonitor implements IProgressMonitor {
 
-	private Task overallTask;
+        private Task overallTask;
+        private Task currentTask;
+        private boolean cancelled;
 
-	private Task currentTask;
+        public ProgressMonitor(String taskName) {
+                init(taskName);
+        }
 
-	private boolean cancelled;
+        @Override
+        public void init(String taskName) {
+                overallTask = new Task(taskName);
+        }
 
-	public ProgressMonitor(String taskName) {
-		init(taskName);
-	}
+        @Override
+        public void startTask(String taskName) {
+                currentTask = new Task(taskName);
+        }
 
-	/**
-	 * @param taskName
-	 */
-	public void init(String taskName) {
-		overallTask = new Task(taskName);
-	}
+        private class Task {
 
-	/**
-	 * @param taskName
-	 * @param percentage
-	 */
-	public void startTask(String taskName) {
-		currentTask = new Task(taskName);
-	}
+                String taskName;
+                int percentage;
 
-	private class Task {
+                Task(String taskName) {
+                        this.taskName = taskName;
+                        this.percentage = 0;
+                }
+        }
 
-		String taskName;
+        @Override
+        public void endTask() {
+                currentTask = null;
+        }
 
-		int percentage;
+        @Override
+        public void progressTo(int progress) {
+                if (currentTask != null) {
+                        this.currentTask.percentage = progress;
+                } else {
+                        overallTask.percentage = progress;
+                }
+        }
 
-		public Task(String taskName) {
-			this.taskName = taskName;
-			this.percentage = 0;
-		}
+        @Override
+        public int getOverallProgress() {
+                return overallTask.percentage;
+        }
 
-	}
+        @Override
+        public String toString() {
+                StringBuilder ret = new StringBuilder().append(overallTask.taskName).append(": ");
+                ret.append(overallTask.percentage).append("\n");
+                if (currentTask != null) {
+                        ret.append(currentTask.taskName).append(": ");
+                        ret.append(currentTask.percentage).append("\n");
+                }
 
-	/**
-	 *
-	 */
-	public void endTask() {
-		currentTask = null;
-	}
+                return ret.toString();
+        }
 
-	/**
-	 * @param progress
-	 */
-	public void progressTo(int progress) {
-		if (currentTask != null) {
-			this.currentTask.percentage = progress;
-		} else {
-			overallTask.percentage = progress;
-		}
-	}
+        @Override
+        public synchronized boolean isCancelled() {
+                return cancelled;
+        }
 
-	/**
-	 * @return
-	 */
-	public int getOverallProgress() {
-		return (int) overallTask.percentage;
-	}
+        public synchronized void setCancelled(boolean cancelled) {
+                this.cancelled = cancelled;
+        }
 
-	public String toString() {
-		String ret = overallTask.taskName + ": " + overallTask.percentage
-				+ "\n";
-		if (currentTask != null) {
-			ret += currentTask.taskName + ": " + currentTask.percentage + "\n";
-		}
+        @Override
+        public String getCurrentTaskName() {
+                if (currentTask != null) {
+                        return currentTask.taskName;
+                } else {
+                        return null;
+                }
+        }
 
-		return ret;
-	}
-
-	public synchronized boolean isCancelled() {
-		return cancelled;
-	}
-
-	public synchronized void setCancelled(boolean cancelled) {
-		this.cancelled = cancelled;
-	}
-
-	public String getCurrentTaskName() {
-		if (currentTask != null) {
-			return currentTask.taskName;
-		} else {
-			return null;
-		}
-	}
-
-	public int getCurrentProgress() {
-		if (currentTask != null) {
-			return currentTask.percentage;
-		} else {
-			return 0;
-		}
-	}
-
+        @Override
+        public int getCurrentProgress() {
+                if (currentTask != null) {
+                        return currentTask.percentage;
+                } else {
+                        return 0;
+                }
+        }
 }

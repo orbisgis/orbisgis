@@ -36,34 +36,46 @@
  */
 package org.orbisgis.progress;
 
+/**
+ * Empty ProgressMonitor
+ *
+ * This ProgressMonitor does nothing.
+ */
 public class NullProgressMonitor implements IProgressMonitor {
 
-	public void endTask() {
-	}
+        @Override
+        public void endTask() {
+        }
 
-	public void init(String taskName) {
-	}
+        @Override
+        public void init(String taskName) {
+        }
 
-	public void progressTo(int progress) {
-	}
+        @Override
+        public void progressTo(int progress) {
+        }
 
-	public boolean isCancelled() {
-		return false;
-	}
+        @Override
+        public boolean isCancelled() {
+                return false;
+        }
 
-	public String getCurrentTaskName() {
-		return null;
-	}
+        @Override
+        public String getCurrentTaskName() {
+                return null;
+        }
 
-	public int getOverallProgress() {
-		return 0;
-	}
+        @Override
+        public int getOverallProgress() {
+                return 0;
+        }
 
-	public void startTask(String taskName) {
-	}
+        @Override
+        public void startTask(String taskName) {
+        }
 
-	public int getCurrentProgress() {
-		return 0;
-	}
-
+        @Override
+        public int getCurrentProgress() {
+                return 0;
+        }
 }

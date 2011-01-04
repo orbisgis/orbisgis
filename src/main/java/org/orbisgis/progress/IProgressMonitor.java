@@ -38,52 +38,52 @@ package org.orbisgis.progress;
 
 public interface IProgressMonitor {
 
-	public abstract void init(String taskName);
+        public abstract void init(String taskName);
 
-	/**
-	 * Adds a new child task to the last added
-	 *
-	 * @param taskName
-	 *            Task name
-	 */
-	public abstract void startTask(String taskName);
+        /**
+         * Adds a new child task to the last added
+         *
+         * @param taskName
+         *            Task name
+         */
+        public abstract void startTask(String taskName);
 
-	public abstract void endTask();
+        public abstract void endTask();
 
-	/**
-	 * Gets the current name of the task. The name at init or the name at the
-	 * last call to startTask if any
-	 *
-	 * @return
-	 */
-	String getCurrentTaskName();
+        /**
+         * Gets the current name of the task. The name at init or the name at the
+         * last call to startTask if any
+         *
+         * @return
+         */
+        String getCurrentTaskName();
 
-	/**
-	 * Indicates the progress of the last added task
-	 *
-	 * @param i
-	 */
-	public abstract void progressTo(int progress);
+        /**
+         * Indicates the progress of the last added task
+         *
+         * @param progress
+         */
+        public abstract void progressTo(int progress);
 
-	/**
-	 * Gets the progress of the overall process
-	 *
-	 * @return
-	 */
-	public abstract int getOverallProgress();
+        /**
+         * Gets the progress of the overall process
+         *
+         * @return
+         */
+        public abstract int getOverallProgress();
 
-	/**
-	 * Gets the progress of the current process
-	 *
-	 * @return
-	 */
-	public abstract int getCurrentProgress();
+        /**
+         * Gets the progress of the current process
+         *
+         * @return
+         */
+        public abstract int getCurrentProgress();
 
-	/**
-	 * Returns true if the process is cancelled and should end as quickly as
-	 * possible
-	 *
-	 * @return
-	 */
-	public boolean isCancelled();
+        /**
+         * Returns true if the process is cancelled and should end as quickly as
+         * possible
+         *
+         * @return
+         */
+        public boolean isCancelled();
 }
