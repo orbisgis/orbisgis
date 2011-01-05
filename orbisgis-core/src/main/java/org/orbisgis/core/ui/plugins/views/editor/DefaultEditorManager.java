@@ -82,7 +82,7 @@ public class DefaultEditorManager implements EditorManager {
 
 	@Override
 	public boolean hasEditor(EditableElement element) {
-		return EditorPanel.getFirstEditor(element) != null;
+		return EditorPanel.hasEditor(element);
 	}
 
 	@Override

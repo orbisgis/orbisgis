@@ -61,10 +61,10 @@ public class TableEditorPlugIn extends ViewPlugIn implements IEditor {
 	}
 
 	public TableEditorPlugIn() {
-		table = new TableComponent(this);
 	}
 
 	public void initialize(PlugInContext context) {
+                table = new TableComponent(this);
 		editors = new String[0];
 		setPlugInContext(context);
 		if (context.getWorkbenchContext().getWorkbench().getFrame()

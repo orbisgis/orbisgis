@@ -119,1110 +119,1113 @@ import org.orbisgis.utils.I18N;
 
 public class TableComponent extends JPanel implements WorkbenchFrame {
 
-	private static final String OPTIMALWIDTH = "OPTIMALWIDTH";
-	private static final String SETWIDTH = "SETWIDTH";
-	private static final String SORTUP = "SORTUP";
-	private static final String SORTDOWN = "SORTDOWN";
-	private static final String NOSORT = "NOSORT";
+        private static final String OPTIMALWIDTH = "OPTIMALWIDTH";
+        private static final String SETWIDTH = "SETWIDTH";
+        private static final String SORTUP = "SORTUP";
+        private static final String SORTDOWN = "SORTDOWN";
+        private static final String NOSORT = "NOSORT";
 
-	private static final Color NUMERIC_COLOR = new Color(205, 197, 191);
-	private static final Color DEFAULT_COLOR = new Color(238, 229, 222);
+        private static final Color NUMERIC_COLOR = new Color(205, 197, 191);
+        private static final Color DEFAULT_COLOR = new Color(238, 229, 222);
 
-	// Swing components
-	private javax.swing.JScrollPane jScrollPane = null;
-	private JTable table = null;
-	private JLabel nbRowsSelectedLabel = null;
-	private SQLCompletionProvider cpl;
+        // Swing components
+        private javax.swing.JScrollPane jScrollPane = null;
+        private JTable table = null;
+        private JLabel nbRowsSelectedLabel = null;
+        private SQLCompletionProvider cpl;
 
-	// Model
-	private int selectedColumn = -1;
-	private DataSourceDataModel tableModel;
-	private DataSource dataSource;
-	private ArrayList<Integer> indexes = null;
-	private Selection selection;
-	private TableEditableElement element;
-	private int selectedRowsCount;
+        // Model
+        private int selectedColumn = -1;
+        private DataSourceDataModel tableModel;
+        private DataSource dataSource;
+        private ArrayList<Integer> indexes = null;
+        private Selection selection;
+        private TableEditableElement element;
+        private int selectedRowsCount;
 
-	// listeners
-	private ActionListener menuListener = new PopupActionListener();
-	private ModificationListener listener = new ModificationListener();
-	private SelectionListener selectionListener = new SyncSelectionListener();
-	// flags
-	private boolean managingSelection;
-	private TableEditorPlugIn editor;
+        // listeners
+        private ActionListener menuListener = new PopupActionListener();
+        private ModificationListener listener = new ModificationListener();
+        private SelectionListener selectionListener = new SyncSelectionListener();
+        // flags
+        private boolean managingSelection;
+        private TableEditorPlugIn editor;
 
-	private org.orbisgis.core.ui.pluginSystem.menu.MenuTree menuTree;
+        private org.orbisgis.core.ui.pluginSystem.menu.MenuTree menuTree;
 
-	private int patternCaseOption = Pattern.CASE_INSENSITIVE;
+        private int patternCaseOption = Pattern.CASE_INSENSITIVE;
 
-	@Override
-	public org.orbisgis.core.ui.pluginSystem.menu.MenuTree getMenuTreePopup() {
-		return menuTree;
-	}
+        @Override
+        public org.orbisgis.core.ui.pluginSystem.menu.MenuTree getMenuTreePopup() {
+                return menuTree;
+        }
 
-	/**
-	 * This is the default constructor
-	 * 
-	 * @throws DriverException
-	 */
-	public TableComponent(TableEditorPlugIn editor) {
-		this.editor = editor;
-		initialize();
-	}
+        /**
+         * This is the default constructor
+         *
+         * @throws DriverException
+         */
+        public TableComponent(TableEditorPlugIn editor) {
+                this.editor = editor;
+                initialize();
+        }
 
-	/**
-	 * This method initializes this
-	 */
-	private void initialize() {
-		menuTree = new org.orbisgis.core.ui.pluginSystem.menu.MenuTree();
-		this.setLayout(new BorderLayout());
-		add(getJScrollPane(), BorderLayout.CENTER);
-		add(getTableToolBar(), BorderLayout.NORTH);
-		add(getWhereTextField(), BorderLayout.SOUTH);
-	}
+        /**
+         * This method initializes this
+         */
+        private void initialize() {
+                menuTree = new org.orbisgis.core.ui.pluginSystem.menu.MenuTree();
+                this.setLayout(new BorderLayout());
+                add(getJScrollPane(), BorderLayout.CENTER);
+                add(getTableToolBar(), BorderLayout.NORTH);
+                add(getWhereTextField(), BorderLayout.SOUTH);
+        }
 
-	/**
-	 * This method initializes table
-	 * 
-	 * @return javax.swing.JTable
-	 */
-	public javax.swing.JTable getTable() {
-		if (table == null) {
-			table = new JTable();
+        /**
+         * This method initializes table
+         *
+         * @return javax.swing.JTable
+         */
+        public javax.swing.JTable getTable() {
+                if (table == null) {
+                        table = new JTable();
 			table
 					.setSelectionBackground(UIColorPreferences.TABLE_EDITOR_SELECTION_BACKGROUND);
-			table.setAutoResizeMode(javax.swing.JTable.AUTO_RESIZE_OFF);
-			table.getSelectionModel().setSelectionMode(
-					ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
-			table.setDragEnabled(true);
-			table.getSelectionModel().addListSelectionListener(
-					new ListSelectionListener() {
-						@Override
-						public void valueChanged(ListSelectionEvent e) {
-							if (!e.getValueIsAdjusting()) {
-								if (!managingSelection && (selection != null)) {
-									managingSelection = true;
+                        table.setAutoResizeMode(javax.swing.JTable.AUTO_RESIZE_OFF);
+                        table.getSelectionModel().setSelectionMode(
+                                ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+                        table.setDragEnabled(true);
+                        table.getSelectionModel().addListSelectionListener(
+                                new ListSelectionListener() {
+                                        @Override
+                                        public void valueChanged(ListSelectionEvent e) {
+                                                if (!e.getValueIsAdjusting()) {
+                                                        if (!managingSelection && (selection != null)) {
+                                                                managingSelection = true;
 									int[] selectedRows = table
 											.getSelectedRows();
-									if (indexes != null) {
-										for (int i = 0; i < selectedRows.length; i++) {
+                                                                if (indexes != null) {
+                                                                        for (int i = 0; i < selectedRows.length; i++) {
 											selectedRows[i] = indexes
 													.get(selectedRows[i]);
-										}
-									}
-									selectedRowsCount = selectedRows.length;
-									selection.setSelectedRows(selectedRows);
-									managingSelection = false;
-									updateRowsMessage();
+                                                                        }
+                                                                }
+                                                                selectedRowsCount = selectedRows.length;
+                                                                selection.setSelectedRows(selectedRows);
+                                                                managingSelection = false;
+                                                                updateRowsMessage();
 
-								}
-							}
-						}
-					});
-			table.getTableHeader().setReorderingAllowed(false);
-			table.getTableHeader().addMouseListener(
-					new HeaderPopupMouseAdapter());
-			table.addMouseListener(new CellPopupMouseAdapter());
-			table.setColumnSelectionAllowed(true);
-			table.getColumnModel().setSelectionModel(
-					new DefaultListSelectionModel());
-		}
+                                                        }
+                                                }
+                                        }
+                                });
+                        table.getTableHeader().setReorderingAllowed(false);
+                        table.getTableHeader().addMouseListener(
+                                new HeaderPopupMouseAdapter());
+                        table.addMouseListener(new CellPopupMouseAdapter());
+                        table.setColumnSelectionAllowed(true);
+                        table.getColumnModel().setSelectionModel(
+                                new DefaultListSelectionModel());
+                }
 
-		return table;
-	}
+                return table;
+        }
 
-	private Component getTableToolBar() {
-		JToolBar toolBar = new JToolBar();
-		toolBar.setFloatable(false);
-		toolBar.add(getPanelInformation(), BorderLayout.WEST);
-		toolBar.add(getRegexTextField(), BorderLayout.EAST);
-		return toolBar;
-	}
+        private Component getTableToolBar() {
+                JToolBar toolBar = new JToolBar();
+                toolBar.setFloatable(false);
+                toolBar.add(getPanelInformation(), BorderLayout.WEST);
+                toolBar.add(getRegexTextField(), BorderLayout.EAST);
+                return toolBar;
+        }
 
-	public JPanel getPanelInformation() {
-		final JPanel informationPanel = new JPanel();
-		final CRFlowLayout flowLayout = new CRFlowLayout();
-		flowLayout.setAlignment(CRFlowLayout.LEFT);
-		informationPanel.setLayout(flowLayout);
-		informationPanel.add(getNbRowsInformation());
-		return informationPanel;
+        public JPanel getPanelInformation() {
+                final JPanel informationPanel = new JPanel();
+                final CRFlowLayout flowLayout = new CRFlowLayout();
+                flowLayout.setAlignment(CRFlowLayout.LEFT);
+                informationPanel.setLayout(flowLayout);
+                informationPanel.add(getNbRowsInformation());
+                return informationPanel;
 
-	}
+        }
 
-	private JPanel getRegexTextField() {
-		final JPanel regexPanel = new JPanel();
+        private JPanel getRegexTextField() {
+                final JPanel regexPanel = new JPanel();
 //		final FlowLayout flowLayout = new FlowLayout();
 //		flowLayout.setAlignment(FlowLayout.TRAILING);
 //		regexPanel.setLayout(flowLayout);
 		final BoxLayout horizontalLayout = new BoxLayout(regexPanel,BoxLayout.LINE_AXIS);
-		regexPanel.setLayout(horizontalLayout);
-		JLabel label = new JLabel(
-				I18N.getText("orbisgis.org.orbisgis.core.ui.editors.table.TableComponent.search"));
-		final JButtonTextField regexTxtFilter = new JButtonTextField(20);
-		regexTxtFilter.setBackground(Color.WHITE);
-		regexTxtFilter.setText(I18N.getText("orbisgis.org.orbisgis.core.ui.editors.table.TableComponent.put_a_text"));
+                regexPanel.setLayout(horizontalLayout);
+                JLabel label = new JLabel(
+                        I18N.getText("orbisgis.org.orbisgis.core.ui.editors.table.TableComponent.search"));
+                final JButtonTextField regexTxtFilter = new JButtonTextField(20);
+                regexTxtFilter.setBackground(Color.WHITE);
+                regexTxtFilter.setText(I18N.getText("orbisgis.org.orbisgis.core.ui.editors.table.TableComponent.put_a_text"));
 		regexTxtFilter.setToolTipText(I18N
 						.getText("orbisgis.org.orbisgis.core.ui.editors.table.TableComponent.searchEnter"));
 
-		regexTxtFilter.addKeyListener(new KeyListener() {
+                regexTxtFilter.addKeyListener(new KeyListener() {
 
-			@Override
-			public void keyTyped(KeyEvent e) {
+                        @Override
+                        public void keyTyped(KeyEvent e) {
 
-			}
+                        }
 
-			@Override
-			public void keyReleased(KeyEvent e) {
+                        @Override
+                        public void keyReleased(KeyEvent e) {
 
-			}
+                        }
 
-			@Override
-			public void keyPressed(KeyEvent e) {
-				if (e.getKeyCode() == KeyEvent.VK_ENTER) {
-					final String whereText = regexTxtFilter.getText();
-					if (whereText.length() == 0) {
-						if (selectedRowsCount > 0) {
-							selection.clearSelection();
-							updateRowsMessage();
-						}
+                        @Override
+                        public void keyPressed(KeyEvent e) {
+                                if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+                                        final String whereText = regexTxtFilter.getText();
+                                        if (whereText.length() == 0) {
+                                                if (selectedRowsCount > 0) {
+                                                        selection.clearSelection();
+                                                        updateRowsMessage();
+                                                }
 
-					} else {
-						findTextPattern(whereText);
-					}
+                                        } else {
+                                                findTextPattern(whereText);
+                                        }
 
-				}
-			}
-		});
+                                }
+                        }
+                });
 
-		regexTxtFilter.addFocusListener(new FocusListener() {
-			@Override
-	        public void focusGained(FocusEvent e) {
+                regexTxtFilter.addFocusListener(new FocusListener() {
+                        @Override
+                        public void focusGained(FocusEvent e) {
 	        	if (regexTxtFilter
 						.getText()
-						.equals(I18N	
+						.equals(I18N
 						.getText("orbisgis.org.orbisgis.core.ui.editors.table.TableComponent.put_a_text"))){
-					regexTxtFilter.setText("");
-				}
-	        }
-			
-			@Override
-	        public void focusLost(FocusEvent e) {
-	        	if (regexTxtFilter.getText().equals("")) {
-					regexTxtFilter.setText(I18N.getText("orbisgis.org.orbisgis.core.ui.editors.table.TableComponent.put_a_text"));
-				}
-	        }
-	     });
-		regexPanel.add(label);
-		regexPanel.add(regexTxtFilter);
-		return regexPanel;
-	}
+                                        regexTxtFilter.setText("");
+                                }
+                        }
 
-	public void findTextPattern(final String text) {
+                        @Override
+                        public void focusLost(FocusEvent e) {
+                                if (regexTxtFilter.getText().equals("")) {
+                                        regexTxtFilter.setText(I18N.getText("orbisgis.org.orbisgis.core.ui.editors.table.TableComponent.put_a_text"));
+                                }
+                        }
+                });
+                regexPanel.add(label);
+                regexPanel.add(regexTxtFilter);
+                return regexPanel;
+        }
 
-		String quote = "\\Q";
-		String endQuote = "\\E";
+        public void findTextPattern(final String text) {
 
-		String regex = quote + text + endQuote;
-		final Pattern pattern = Pattern.compile(regex, patternCaseOption);
-		BackgroundManager bm = Services.getService(BackgroundManager.class);
-		bm.backgroundOperation(new BackgroundJob() {
+                String quote = "\\Q";
+                String endQuote = "\\E";
 
-			@Override
-			public void run(IProgressMonitor pm) {
-				try {
-					ArrayList<Integer> filtered = new ArrayList<Integer>();
-					pm.startTask("Searching...");
-					for (int i = 0; i < tableModel.getRowCount(); i++) {
-						if (i / 100 == i / 100.0) {
-							if (pm.isCancelled()) {
-								break;
-							} else {
+                String regex = quote + text + endQuote;
+                final Pattern pattern = Pattern.compile(regex, patternCaseOption);
+                BackgroundManager bm = Services.getService(BackgroundManager.class);
+                bm.backgroundOperation(new BackgroundJob() {
+
+                        @Override
+                        public void run(IProgressMonitor pm) {
+                                try {
+                                        ArrayList<Integer> filtered = new ArrayList<Integer>();
+                                        pm.startTask("Searching...");
+                                        for (int i = 0; i < tableModel.getRowCount(); i++) {
+                                                if (i / 100 == i / 100.0) {
+                                                        if (pm.isCancelled()) {
+                                                                break;
+                                                        } else {
 								pm.progressTo((int) (100 * i / tableModel
 										.getRowCount()));
-							}
-						}
-						Value[] values = dataSource.getRow(i);
-						boolean select = false;
-						for (int j = 0; j < values.length; j++) {
-							Value value = values[j];
-							if (value.getType() == Type.GEOMETRY) {
-								continue;
-							}
-							String valueString = value.toString();
-							pattern.matcher(valueString).reset();
-							select = select
-									|| (pattern.matcher(valueString).find());
-						}
-						pm.endTask();
+                                                        }
+                                                }
+                                                Value[] values = dataSource.getRow(i);
+                                                boolean select = false;
+                                                for (int j = 0; j < values.length; j++) {
+                                                        Value value = values[j];
+                                                        if (value.getType() == Type.GEOMETRY) {
+                                                                continue;
+                                                        }
+                                                        String valueString = value.toString();
+                                                        pattern.matcher(valueString).reset();
+                                                        select = select
+                                                                || (pattern.matcher(valueString).find());
+                                                }
+                                                pm.endTask();
 
-						if (select) {
-							filtered.add(i);
-						}
+                                                if (select) {
+                                                        filtered.add(i);
+                                                }
 
-					}
+                                        }
 
-					int[] sel = new int[filtered.size()];
+                                        int[] sel = new int[filtered.size()];
 
-					for (int i = 0; i < sel.length; i++) {
-						sel[i] = filtered.get(i);
-					}
-					selection.setSelectedRows(sel);
-					updateTableSelection();
+                                        for (int i = 0; i < sel.length; i++) {
+                                                sel[i] = filtered.get(i);
+                                        }
+                                        selection.setSelectedRows(sel);
+                                        updateTableSelection();
 
-				} catch (DriverException e1) {
-					e1.printStackTrace();
-				}
+                                } catch (DriverException e1) {
+                                        e1.printStackTrace();
+                                }
 
-			}
+                        }
 
-			@Override
-			public String getTaskName() {
+                        @Override
+                        public String getTaskName() {
 				return I18N
 						.getText("orbisgis.org.orbisgis.core.ui.editors.table.TableComponent.searching");
-			}
-		});
+                        }
+                });
 
-	}
+        }
 
-	private JLabel getNbRowsInformation() {
-		JLabel nbRowsMessage = new JLabel();
+        private JLabel getNbRowsInformation() {
+                JLabel nbRowsMessage = new JLabel();
 		nbRowsMessage
 				.setText(I18N
 						.getText("orbisgis.org.orbisgis.core.ui.editors.table.TableComponent.rowNumber"));
-		nbRowsSelectedLabel = nbRowsMessage;
-		nbRowsMessage.setVerticalAlignment(JLabel.CENTER);
-		nbRowsMessage.setPreferredSize(new Dimension(230, 19));
-		return nbRowsMessage;
-	}
+                nbRowsSelectedLabel = nbRowsMessage;
+                nbRowsMessage.setVerticalAlignment(JLabel.CENTER);
+                nbRowsMessage.setPreferredSize(new Dimension(230, 19));
+                return nbRowsMessage;
+        }
 
-	private JTextField getWhereTextField() {
-		final JButtonTextField txtFilter = new JButtonTextField(20);
-		cpl = new SQLCompletionProvider(txtFilter);
-		cpl.install();
-		txtFilter.setBackground(Color.WHITE);
+        private JTextField getWhereTextField() {
+                final JButtonTextField txtFilter = new JButtonTextField(20);
+                cpl = new SQLCompletionProvider(txtFilter);
+                cpl.install();
+                txtFilter.setBackground(Color.WHITE);
 		txtFilter
 				.setText(I18N
 						.getText("orbisgis.org.orbisgis.core.ui.editors.table.TableComponent.put_a_sqlwhere"));
 		txtFilter
 				.setToolTipText(I18N
 						.getText("orbisgis.org.orbisgis.core.ui.editors.table.TableComponent.searchCtrlEnter"));
-		txtFilter.addKeyListener(new KeyListener() {
+                txtFilter.addKeyListener(new KeyListener() {
 
-			@Override
-			public void keyPressed(KeyEvent e) {
-				if ((e.getKeyCode() == KeyEvent.VK_ENTER) && e.isControlDown()) {
-					final String whereText = txtFilter.getText();
-					if (whereText.length() == 0) {
-						if (selectedRowsCount > 0) {
-							selection.clearSelection();
-							updateRowsMessage();
-						}
+                        @Override
+                        public void keyPressed(KeyEvent e) {
+                                if ((e.getKeyCode() == KeyEvent.VK_ENTER) && e.isControlDown()) {
+                                        final String whereText = txtFilter.getText();
+                                        if (whereText.length() == 0) {
+                                                if (selectedRowsCount > 0) {
+                                                        selection.clearSelection();
+                                                        updateRowsMessage();
+                                                }
 
-					} else {
+                                        } else {
 
-						try {
-							FilterDataSourceDecorator filterDataSourceDecorator = new FilterDataSourceDecorator(
-									dataSource);
-							filterDataSourceDecorator.setFilter(whereText);
+                                                try {
+                                                        FilterDataSourceDecorator filterDataSourceDecorator = new FilterDataSourceDecorator(
+                                                                dataSource);
+                                                        filterDataSourceDecorator.setFilter(whereText);
 
 							long dsRowCount = filterDataSourceDecorator
 									.getRowCount();
 
 							List<Integer> map = filterDataSourceDecorator
 									.getIndexMap();
-							int[] sel = new int[map.size()];
-							for (int i = 0; i < dsRowCount; i++) {
+                                                        int[] sel = new int[map.size()];
+                                                        for (int i = 0; i < dsRowCount; i++) {
 								sel[i] = (int) filterDataSourceDecorator
 										.getOriginalIndex(i);
-							}
+                                                        }
 
-							selection.setSelectedRows(sel);
+                                                        selection.setSelectedRows(sel);
 
-						} catch (DriverException e1) {
-							e1.printStackTrace();
-						}
+                                                } catch (DriverException e1) {
+                                                        e1.printStackTrace();
+                                                }
 
-					}
-				}
-			}
+                                        }
+                                }
+                        }
 
-			@Override
-			public void keyReleased(KeyEvent e) {
-			}
+                        @Override
+                        public void keyReleased(KeyEvent e) {
+                        }
 
-			@Override
-			public void keyTyped(KeyEvent e) {
-			}
+                        @Override
+                        public void keyTyped(KeyEvent e) {
+                        }
 
-		});
+                });
 
-		txtFilter.addFocusListener(new FocusListener() {
-			@Override
-	        public void focusGained(FocusEvent e) {
+                txtFilter.addFocusListener(new FocusListener() {
+                        @Override
+                        public void focusGained(FocusEvent e) {
 	        	if (txtFilter
 						.getText()
 						.equals(
 								I18N
 										.getText("orbisgis.org.orbisgis.core.ui.editors.table.TableComponent.put_a_sqlwhere")))
-					txtFilter.setText("");
+                                        txtFilter.setText("");
 	        };
 
-	        @Override
-	        public void focusLost(FocusEvent e) {
+                        @Override
+                        public void focusLost(FocusEvent e) {
 		        if (txtFilter.getText().equals(""))
 					txtFilter
 							.setText(I18N
 									.getText("orbisgis.org.orbisgis.core.ui.editors.table.TableComponent.put_a_sqlwhere"));
-	        }
-	     });
-		
-		return txtFilter;
+                                }
+                });
 
-	}
+                return txtFilter;
 
-	/**
-	 * This method initializes jScrollPane
-	 * 
-	 * @return javax.swing.JScrollPane
-	 */
-	private javax.swing.JScrollPane getJScrollPane() {
-		if (jScrollPane == null) {
-			jScrollPane = new javax.swing.JScrollPane();
-			jScrollPane.setViewportView(getTable());
-		}
+        }
 
-		return jScrollPane;
-	}
+        /**
+         * This method initializes jScrollPane
+         *
+         * @return javax.swing.JScrollPane
+         */
+        private javax.swing.JScrollPane getJScrollPane() {
+                if (jScrollPane == null) {
+                        jScrollPane = new javax.swing.JScrollPane();
+                        jScrollPane.setViewportView(getTable());
+                }
 
-	/**
-	 * Shows a dialog with the error type
-	 * 
-	 * @param msg
-	 */
-	private void inputError(String msg, Exception e) {
-		Services.getService(ErrorManager.class).error(msg, e);
-		getTable().requestFocus();
-	}
+                return jScrollPane;
+        }
 
-	public boolean tableHasFocus() {
-		return table.hasFocus() || table.isEditing();
-	}
+        /**
+         * Shows a dialog with the error type
+         *
+         * @param msg
+         */
+        private void inputError(String msg, Exception e) {
+                Services.getService(ErrorManager.class).error(msg, e);
+                getTable().requestFocus();
+        }
 
-	public String[] getSelectedFieldNames() {
-		int[] selected = table.getSelectedColumns();
-		String[] ret = new String[selected.length];
+        public boolean tableHasFocus() {
+                return table.hasFocus() || table.isEditing();
+        }
 
-		for (int i = 0; i < ret.length; i++) {
-			ret[i] = tableModel.getColumnName(selected[i]);
-		}
+        public String[] getSelectedFieldNames() {
+                int[] selected = table.getSelectedColumns();
+                String[] ret = new String[selected.length];
 
-		return ret;
-	}
+                for (int i = 0; i < ret.length; i++) {
+                        ret[i] = tableModel.getColumnName(selected[i]);
+                }
 
-	public void setElement(TableEditableElement element) {
-		if (this.dataSource != null) {
-			this.dataSource.removeEditionListener(listener);
-			this.dataSource.removeMetadataEditionListener(listener);
-			this.selection.removeSelectionListener(selectionListener);
-		}
-		this.element = element;
-		if (this.element == null) {
-			this.dataSource = null;
-			this.selection = null;
-			table.setModel(new DefaultTableModel());
-		} else {
-			this.dataSource = element.getDataSource();
-			this.dataSource.addEditionListener(listener);
-			this.dataSource.addMetadataEditionListener(listener);
-			this.cpl.setRootText("SELECT * FROM " + dataSource.getName()
-					+ " WHERE");
+                return ret;
+        }
 
-			tableModel = new DataSourceDataModel();
-			table.setModel(tableModel);
-			table.setBackground(DEFAULT_COLOR);
-			autoResizeColWidth(Math.min(5, tableModel.getRowCount()),
-					new HashMap<String, Integer>(),
-					new HashMap<String, TableCellRenderer>());
-			this.selection = element.getSelection();
-			this.selection.setSelectionListener(selectionListener);
-			selectedRowsCount = selection.getSelectedRows().length;
-			updateTableSelection();
-			updateRowsMessage();
+        public void setElement(TableEditableElement element) {
+                this.element = element;
+                if (this.element == null) {
+                        if (this.dataSource != null) {
+                                this.dataSource.removeEditionListener(listener);
+                                this.dataSource.removeMetadataEditionListener(listener);
+                                this.dataSource = null;
+                        }
+                        if (this.selection != null) {
+                                this.selection.removeSelectionListener(selectionListener);
+                                this.selection = null;
+                        }
+                        this.cpl.freeExternalResources();
+                        table.setModel(new DefaultTableModel());
+                } else {
+                        this.dataSource = element.getDataSource();
+                        this.dataSource.addEditionListener(listener);
+                        this.dataSource.addMetadataEditionListener(listener);
+                        this.cpl.setRootText("SELECT * FROM " + dataSource.getName()
+                                + " WHERE");
 
-		}
-	}
+                        tableModel = new DataSourceDataModel();
+                        table.setModel(tableModel);
+                        table.setBackground(DEFAULT_COLOR);
+                        autoResizeColWidth(Math.min(5, tableModel.getRowCount()),
+                                new HashMap<String, Integer>(),
+                                new HashMap<String, TableCellRenderer>());
+                        this.selection = element.getSelection();
+                        this.selection.setSelectionListener(selectionListener);
+                        selectedRowsCount = selection.getSelectedRows().length;
+                        updateTableSelection();
+                        updateRowsMessage();
 
-	private void autoResizeColWidth(int rowsToCheck,
-			HashMap<String, Integer> widths,
-			HashMap<String, TableCellRenderer> renderers) {
-		DefaultTableColumnModel colModel = new DefaultTableColumnModel();
-		int maxWidth = 200;
-		for (int i = 0; i < tableModel.getColumnCount(); i++) {
-			TableColumn col = new TableColumn(i);
-			String columnName = tableModel.getColumnName(i);
-			int columnType = tableModel.getColumnType(i).getTypeCode();
+                }
+        }
 
-			col.setHeaderValue(columnName);
-			TableCellRenderer tableCellRenderer = renderers.get(columnName);
+        private void autoResizeColWidth(int rowsToCheck,
+                HashMap<String, Integer> widths,
+                HashMap<String, TableCellRenderer> renderers) {
+                DefaultTableColumnModel colModel = new DefaultTableColumnModel();
+                int maxWidth = 200;
+                for (int i = 0; i < tableModel.getColumnCount(); i++) {
+                        TableColumn col = new TableColumn(i);
+                        String columnName = tableModel.getColumnName(i);
+                        int columnType = tableModel.getColumnType(i).getTypeCode();
 
-			if (tableCellRenderer == null) {
-				tableCellRenderer = new ButtonHeaderRenderer();
-			}
-			col.setHeaderRenderer(tableCellRenderer);
+                        col.setHeaderValue(columnName);
+                        TableCellRenderer tableCellRenderer = renderers.get(columnName);
 
-			Integer width = widths.get(columnName);
-			if (width == null) {
-				width = getColumnOptimalWidth(rowsToCheck, maxWidth, i,
-						new NullProgressMonitor());
-			}
-			col.setPreferredWidth(width);
-			colModel.addColumn(col);
-			switch (columnType) {
-			case Type.DOUBLE:
-			case Type.INT:
-			case Type.LONG:
-				NumberFormat formatter = NumberFormat.getCurrencyInstance();
-				FormatRenderer formatRenderer = new FormatRenderer(formatter);
-				formatRenderer.setHorizontalAlignment(SwingConstants.RIGHT);
-				formatRenderer.setBackground(NUMERIC_COLOR);
-				col.setCellRenderer(formatRenderer);
-				break;
-			default:
-				break;
-			}
+                        if (tableCellRenderer == null) {
+                                tableCellRenderer = new ButtonHeaderRenderer();
+                        }
+                        col.setHeaderRenderer(tableCellRenderer);
 
-		}
-		table.setColumnModel(colModel);
-	}
+                        Integer width = widths.get(columnName);
+                        if (width == null) {
+                                width = getColumnOptimalWidth(rowsToCheck, maxWidth, i,
+                                        new NullProgressMonitor());
+                        }
+                        col.setPreferredWidth(width);
+                        colModel.addColumn(col);
+                        switch (columnType) {
+                                case Type.DOUBLE:
+                                case Type.INT:
+                                case Type.LONG:
+                                        NumberFormat formatter = NumberFormat.getCurrencyInstance();
+                                        FormatRenderer formatRenderer = new FormatRenderer(formatter);
+                                        formatRenderer.setHorizontalAlignment(SwingConstants.RIGHT);
+                                        formatRenderer.setBackground(NUMERIC_COLOR);
+                                        col.setCellRenderer(formatRenderer);
+                                        break;
+                                default:
+                                        break;
+                        }
 
-	private int getColumnOptimalWidth(int rowsToCheck, int maxWidth,
-			int column, IProgressMonitor pm) {
-		TableColumn col = table.getColumnModel().getColumn(column);
-		int margin = 5;
-		int headerMargin = 10;
-		int width = 0;
+                }
+                table.setColumnModel(colModel);
+        }
+
+        private int getColumnOptimalWidth(int rowsToCheck, int maxWidth,
+                int column, IProgressMonitor pm) {
+                TableColumn col = table.getColumnModel().getColumn(column);
+                int margin = 5;
+                int headerMargin = 10;
+                int width = 0;
 
 
-		// Get width of column header
-		TableCellRenderer renderer = col.getHeaderRenderer();
+                // Get width of column header
+                TableCellRenderer renderer = col.getHeaderRenderer();
 
-		if (renderer == null) {
-			renderer = table.getTableHeader().getDefaultRenderer();
-		}
+                if (renderer == null) {
+                        renderer = table.getTableHeader().getDefaultRenderer();
+                }
 
 		Component comp = renderer.getTableCellRendererComponent(table, col
 				.getHeaderValue(), false, false, 0, 0);
 
-		width = comp.getPreferredSize().width;
+                width = comp.getPreferredSize().width;
 
-		// Check header
+                // Check header
 		comp = renderer.getTableCellRendererComponent(table, col
 				.getHeaderValue(), false, false, 0, column);
-		width = Math.max(width, comp.getPreferredSize().width + 2 * headerMargin);
-		// Get maximum width of column data
-		for (int r = 0; r < rowsToCheck; r++) {
-			if (r / 100 == r / 100.0) {
-				if (pm.isCancelled()) {
-					break;
-				} else {
-					pm.progressTo(100 * r / rowsToCheck);
-				}
-			}
-			renderer = table.getCellRenderer(r, column);
+                width = Math.max(width, comp.getPreferredSize().width + 2 * headerMargin);
+                // Get maximum width of column data
+                for (int r = 0; r < rowsToCheck; r++) {
+                        if (r / 100 == r / 100.0) {
+                                if (pm.isCancelled()) {
+                                        break;
+                                } else {
+                                        pm.progressTo(100 * r / rowsToCheck);
+                                }
+                        }
+                        renderer = table.getCellRenderer(r, column);
 			comp = renderer.getTableCellRendererComponent(table, table
 					.getValueAt(r, column), false, false, r, column);
-			width = Math.max(width, comp.getPreferredSize().width);
-		}
+                        width = Math.max(width, comp.getPreferredSize().width);
+                }
 
-		// limit
-		width = Math.min(width, maxWidth);
+                // limit
+                width = Math.min(width, maxWidth);
 
-		// Add margin
-		width += 2 * margin;
+                // Add margin
+                width += 2 * margin;
 
-		return width;
-	}
+                return width;
+        }
 
-	private void refreshTableStructure() {
-		TableColumnModel columnModel = table.getColumnModel();
-		HashMap<String, Integer> widths = new HashMap<String, Integer>();
-		HashMap<String, TableCellRenderer> renderers = new HashMap<String, TableCellRenderer>();
-		try {
-			for (int i = 0; i < dataSource.getMetadata().getFieldCount(); i++) {
-				String columnName = null;
-				try {
-					columnName = dataSource.getMetadata().getFieldName(i);
-				} catch (DriverException e) {
-				}
-				int columnIndex = -1;
-				if (columnName != null) {
-					try {
-						columnIndex = columnModel.getColumnIndex(columnName);
-					} catch (IllegalArgumentException e) {
-						columnIndex = -1;
-					}
-					if (columnIndex != -1) {
-						TableColumn column = columnModel.getColumn(columnIndex);
-						widths.put(columnName, column.getPreferredWidth());
-						renderers.put(columnName, column.getHeaderRenderer());
-					}
-				}
-			}
-		} catch (DriverException e) {
+        private void refreshTableStructure() {
+                TableColumnModel columnModel = table.getColumnModel();
+                HashMap<String, Integer> widths = new HashMap<String, Integer>();
+                HashMap<String, TableCellRenderer> renderers = new HashMap<String, TableCellRenderer>();
+                try {
+                        for (int i = 0; i < dataSource.getMetadata().getFieldCount(); i++) {
+                                String columnName = null;
+                                try {
+                                        columnName = dataSource.getMetadata().getFieldName(i);
+                                } catch (DriverException e) {
+                                }
+                                int columnIndex = -1;
+                                if (columnName != null) {
+                                        try {
+                                                columnIndex = columnModel.getColumnIndex(columnName);
+                                        } catch (IllegalArgumentException e) {
+                                                columnIndex = -1;
+                                        }
+                                        if (columnIndex != -1) {
+                                                TableColumn column = columnModel.getColumn(columnIndex);
+                                                widths.put(columnName, column.getPreferredWidth());
+                                                renderers.put(columnName, column.getHeaderRenderer());
+                                        }
+                                }
+                        }
+                } catch (DriverException e) {
 			Services
 					.getService(ErrorManager.class)
 					.warning(
 							I18N
 									.getText("orbisgis.org.orbisgis.core.ui.editors.table.TableComponent.refreshTableStructure"),
-							e);
-		}
-		tableModel.fireTableStructureChanged();
-		autoResizeColWidth(Math.min(5, tableModel.getRowCount()), widths,
-				renderers);
-	}
+                                e);
+                }
+                tableModel.fireTableStructureChanged();
+                autoResizeColWidth(Math.min(5, tableModel.getRowCount()), widths,
+                        renderers);
+        }
 
-	/**
-	 * Retrieve the index of the data in the data source shown at the index row
-	 * in the displayed table.
-	 * @param row
-	 * @return
-	 */
-	public int getRowIndex(int row) {
-		if (indexes != null) {
-			row = indexes.get(row);
-		}
-		return row;
-	}
+        /**
+         * Retrieve the index of the data in the data source shown at the index row
+         * in the displayed table.
+         * @param row
+         * @return
+         */
+        public int getRowIndex(int row) {
+                if (indexes != null) {
+                        row = indexes.get(row);
+                }
+                return row;
+        }
 
-	private void updateTableSelection() {
-		if (!managingSelection) {
-			managingSelection = true;
-			ListSelectionModel model = table.getSelectionModel();
-			model.setValueIsAdjusting(true);
-			model.clearSelection();
-			for (int i : selection.getSelectedRows()) {
-				if (indexes != null) {
-					Integer sortedIndex = indexes.indexOf(i);
-					model.addSelectionInterval(sortedIndex, sortedIndex);
-				} else {
-					model.addSelectionInterval(i, i);
-				}
-			}
-			selectedRowsCount = selection.getSelectedRows().length;
-			model.setValueIsAdjusting(false);
-			managingSelection = false;
-			updateRowsMessage();
-		}
-	}
+        private void updateTableSelection() {
+                if (!managingSelection) {
+                        managingSelection = true;
+                        ListSelectionModel model = table.getSelectionModel();
+                        model.setValueIsAdjusting(true);
+                        model.clearSelection();
+                        for (int i : selection.getSelectedRows()) {
+                                if (indexes != null) {
+                                        Integer sortedIndex = indexes.indexOf(i);
+                                        model.addSelectionInterval(sortedIndex, sortedIndex);
+                                } else {
+                                        model.addSelectionInterval(i, i);
+                                }
+                        }
+                        selectedRowsCount = selection.getSelectedRows().length;
+                        model.setValueIsAdjusting(false);
+                        managingSelection = false;
+                        updateRowsMessage();
+                }
+        }
 
-	private void fireTableDataChanged() {
-		Rectangle r = table.getVisibleRect();
-		// to avoid losing the selection
-		managingSelection = true;
+        private void fireTableDataChanged() {
+                Rectangle r = table.getVisibleRect();
+                // to avoid losing the selection
+                managingSelection = true;
 
-		tableModel.fireTableDataChanged();
+                tableModel.fireTableDataChanged();
 
-		managingSelection = false;
-		updateTableSelection();
+                managingSelection = false;
+                updateTableSelection();
 
-		table.scrollRectToVisible(r);
-	}
+                table.scrollRectToVisible(r);
+        }
 
-	public void updateRowsMessage() {
+        public void updateRowsMessage() {
 
-		if (selectedRowsCount > 0) {
+                if (selectedRowsCount > 0) {
 			nbRowsSelectedLabel
 					.setText(I18N
 							.getText("orbisgis.org.orbisgis.core.ui.editors.table.TableComponent.rowSelected")
-							+ selectedRowsCount + " / " + table.getRowCount());
-		} else {
+                                + selectedRowsCount + " / " + table.getRowCount());
+                } else {
 			nbRowsSelectedLabel
 					.setText(I18N
 							.getText("orbisgis.org.orbisgis.core.ui.editors.table.TableComponent.rowNumber")
-							+ tableModel.getRowCount());
-		}
-	}
+                                + tableModel.getRowCount());
+                }
+        }
 
-	public void moveSelectionUp() {
-		int[] selectedRows = selection.getSelectedRows();
-		HashSet<Integer> selectedRowSet = new HashSet<Integer>();
-		indexes = new ArrayList<Integer>();
-		for (int i : selectedRows) {
-			indexes.add(i);
-			selectedRowSet.add(i);
-		}
-		for (int i = 0; i < tableModel.getRowCount(); i++) {
-			if (!selectedRowSet.contains(i)) {
-				indexes.add(i);
-			}
-		}
-		fireTableDataChanged();
-	}
+        public void moveSelectionUp() {
+                int[] selectedRows = selection.getSelectedRows();
+                HashSet<Integer> selectedRowSet = new HashSet<Integer>();
+                indexes = new ArrayList<Integer>();
+                for (int i : selectedRows) {
+                        indexes.add(i);
+                        selectedRowSet.add(i);
+                }
+                for (int i = 0; i < tableModel.getRowCount(); i++) {
+                        if (!selectedRowSet.contains(i)) {
+                                indexes.add(i);
+                        }
+                }
+                fireTableDataChanged();
+        }
 
-	private class SyncSelectionListener implements SelectionListener {
+        private class SyncSelectionListener implements SelectionListener {
 
-		@Override
-		public void selectionChanged() {
-			updateTableSelection();
-		}
+                @Override
+                public void selectionChanged() {
+                        updateTableSelection();
+                }
 
-	}
+        }
 
-	private final class PopupActionListener implements ActionListener {
+        private final class PopupActionListener implements ActionListener {
 
-		@Override
-		public void actionPerformed(ActionEvent e) {
-			if (OPTIMALWIDTH.equals(e.getActionCommand())) {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                        if (OPTIMALWIDTH.equals(e.getActionCommand())) {
 				BackgroundManager bm = Services
 						.getService(BackgroundManager.class);
-				bm.backgroundOperation(new BackgroundJob() {
+                                bm.backgroundOperation(new BackgroundJob() {
 
-					@Override
-					public void run(IProgressMonitor pm) {
+                                        @Override
+                                        public void run(IProgressMonitor pm) {
 						final int width = getColumnOptimalWidth(table
 								.getRowCount(), Integer.MAX_VALUE,
-								selectedColumn, pm);
+                                                        selectedColumn, pm);
 						final TableColumn col = table.getColumnModel()
 								.getColumn(selectedColumn);
-						SwingUtilities.invokeLater(new Runnable() {
+                                                SwingUtilities.invokeLater(new Runnable() {
 
-							@Override
-							public void run() {
-								col.setPreferredWidth(width);
-							}
-						});
-					}
+                                                        @Override
+                                                        public void run() {
+                                                                col.setPreferredWidth(width);
+                                                        }
+                                                });
+                                        }
 
-					@Override
-					public String getTaskName() {
-						return I18N.getText("orbisgis.org.orbisgis.core.ui.editors.table.TableComponent.columnOptimalWidth");
-					}
-				});
-			} else if (SETWIDTH.equals(e.getActionCommand())) {
+                                        @Override
+                                        public String getTaskName() {
+                                                return I18N.getText("orbisgis.org.orbisgis.core.ui.editors.table.TableComponent.columnOptimalWidth");
+                                        }
+                                });
+                        } else if (SETWIDTH.equals(e.getActionCommand())) {
 				TableColumn selectedTableColumn = table.getTableHeader()
 						.getColumnModel().getColumn(selectedColumn);
-				AskValue av = new AskValue(
-						I18N.getText("orbisgis.org.orbisgis.core.ui.editors.table.TableComponent.newColumnWidth"),
+                                AskValue av = new AskValue(
+                                        I18N.getText("orbisgis.org.orbisgis.core.ui.editors.table.TableComponent.newColumnWidth"),
 						null, null, Integer.toString(selectedTableColumn
 								.getPreferredWidth()));
-				av.setType(SQLUIPanel.INT);
-				if (UIFactory.showDialog(av)) {
+                                av.setType(SQLUIPanel.INT);
+                                if (UIFactory.showDialog(av)) {
 					selectedTableColumn.setPreferredWidth(Integer.parseInt(av
 							.getValue()));
-				}
-			} else if (SORTUP.equals(e.getActionCommand())) {
+                                }
+                        } else if (SORTUP.equals(e.getActionCommand())) {
 				BackgroundManager bm = Services
 						.getService(BackgroundManager.class);
-				bm.backgroundOperation(new SortJob(true));
-			} else if (SORTDOWN.equals(e.getActionCommand())) {
+                                bm.backgroundOperation(new SortJob(true));
+                        } else if (SORTDOWN.equals(e.getActionCommand())) {
 				BackgroundManager bm = Services
 						.getService(BackgroundManager.class);
-				bm.backgroundOperation(new SortJob(false));
-			} else if (NOSORT.equals(e.getActionCommand())) {
-				indexes = null;
-				fireTableDataChanged();
-			}
-			table.getTableHeader().repaint();
-		}
-	}
+                                bm.backgroundOperation(new SortJob(false));
+                        } else if (NOSORT.equals(e.getActionCommand())) {
+                                indexes = null;
+                                fireTableDataChanged();
+                        }
+                        table.getTableHeader().repaint();
+                }
+        }
 
-	private abstract class PopupMouseAdapter extends MouseAdapter {
+        private abstract class PopupMouseAdapter extends MouseAdapter {
 		WorkbenchContext wbContext = Services
 				.getService(WorkbenchContext.class);
 
-		@Override
-		public void mousePressed(MouseEvent e) {
-			updateContext(e);
-			popup(e);
+                @Override
+                public void mousePressed(MouseEvent e) {
+                        updateContext(e);
+                        popup(e);
 
-		}
+                }
 
-		@Override
-		public void mouseReleased(MouseEvent e) {
-			popup(e);
-		}
+                @Override
+                public void mouseReleased(MouseEvent e) {
+                        popup(e);
+                }
 
-		/**
-		 * This method is used to update the popup context. Used by plugins to
-		 * determine when it's showing.
-		 * 
-		 * @param e
-		 */
-		private void updateContext(MouseEvent e) {
+                /**
+                 * This method is used to update the popup context. Used by plugins to
+                 * determine when it's showing.
+                 *
+                 * @param e
+                 */
+                private void updateContext(MouseEvent e) {
 			boolean oneColumnHeaderIsSelected = table.getTableHeader()
 					.contains(e.getPoint());
-			selectedColumn = table.columnAtPoint(e.getPoint());
-			int clickedRow = table.rowAtPoint(e.getPoint());
-			if (oneColumnHeaderIsSelected) {
-				if ("ColumnAction".equals(getExtensionPointId())) {
-					wbContext.setHeaderSelected(selectedColumn);
-				} else {
-					wbContext.setRowSelected(e);
-					if (!table.isRowSelected(clickedRow)) {
+                        selectedColumn = table.columnAtPoint(e.getPoint());
+                        int clickedRow = table.rowAtPoint(e.getPoint());
+                        if (oneColumnHeaderIsSelected) {
+                                if ("ColumnAction".equals(getExtensionPointId())) {
+                                        wbContext.setHeaderSelected(selectedColumn);
+                                } else {
+                                        wbContext.setRowSelected(e);
+                                        if (!table.isRowSelected(clickedRow)) {
 						selection.setSelectedRows(new int[] { clickedRow });
-						updateTableSelection();
-					}
-				}
-			} else {
-				wbContext.setRowSelected(e);
-				if (!table.isRowSelected(clickedRow)) {
+                                                updateTableSelection();
+                                        }
+                                }
+                        } else {
+                                wbContext.setRowSelected(e);
+                                if (!table.isRowSelected(clickedRow)) {
 					selection.setSelectedRows(new int[] { clickedRow });
-					updateTableSelection();
-				}
-			}
-		}
+                                        updateTableSelection();
+                                }
+                        }
+                }
 
-		private void popup(final MouseEvent e) {
+                private void popup(final MouseEvent e) {
 
-			final Component component = getComponent();
-			component.repaint();
-			if (e.isPopupTrigger()) {
-				JComponent[] menus = null;
-				final JPopupMenu pop = getPopupMenu();				
+                        final Component component = getComponent();
+                        component.repaint();
+                        if (e.isPopupTrigger()) {
+                                JComponent[] menus = null;
+                                final JPopupMenu pop = getPopupMenu();
 				menus = wbContext.getWorkbench().getFrame()
 						.getMenuTableTreePopup().getJMenus();
-				for (JComponent menu : menus) {
-					pop.add(menu);
-				}
-				pop.show(component, e.getX(), e.getY());
-			}
+                                for (JComponent menu : menus) {
+                                        pop.add(menu);
+                                }
+                                pop.show(component, e.getX(), e.getY());
+                        }
 
-		}
+                }
 
-		protected void addMenu(JPopupMenu pop, String text, Icon icon,
-				String actionCommand) {
-			JMenuItem menu = new JMenuItem(text);
-			menu.setIcon(icon);
-			menu.setActionCommand(actionCommand);
-			menu.addActionListener(menuListener);
-			pop.add(menu);
-		}
+                protected void addMenu(JPopupMenu pop, String text, Icon icon,
+                        String actionCommand) {
+                        JMenuItem menu = new JMenuItem(text);
+                        menu.setIcon(icon);
+                        menu.setActionCommand(actionCommand);
+                        menu.addActionListener(menuListener);
+                        pop.add(menu);
+                }
 
-		protected abstract Component getComponent();
+                protected abstract Component getComponent();
 
-		protected abstract String getExtensionPointId();
+                protected abstract String getExtensionPointId();
 
-		protected abstract JPopupMenu getPopupMenu();
-	}
+                protected abstract JPopupMenu getPopupMenu();
+        }
 
-	private class HeaderPopupMouseAdapter extends PopupMouseAdapter {
+        private class HeaderPopupMouseAdapter extends PopupMouseAdapter {
 
-		@Override
-		protected Component getComponent() {
-			return table.getTableHeader();
-		}
+                @Override
+                protected Component getComponent() {
+                        return table.getTableHeader();
+                }
 
-		@Override
-		protected String getExtensionPointId() {
-			return "ColumnAction";
-		}
+                @Override
+                protected String getExtensionPointId() {
+                        return "ColumnAction";
+                }
 
-		@Override
-		protected JPopupMenu getPopupMenu() {
-			JPopupMenu pop = new JPopupMenu();
-			addMenu(
-					pop,
-					I18N.getText("orbisgis.org.orbisgis.core.ui.editors.table.TableComponent.optimalWidth"),
-					IconLoader.getIcon("text_letterspacing.png"), OPTIMALWIDTH);
-			addMenu(
-					pop,
-					I18N.getText("orbisgis.org.orbisgis.core.ui.editors.table.TableComponent.setWidth"),
-					null, SETWIDTH);
-			pop.addSeparator();
-			if (tableModel.getColumnType(selectedColumn).getTypeCode() != Type.GEOMETRY) {
-				addMenu(
-						pop,
-						I18N.getText("orbisgis.org.orbisgis.core.ui.editors.table.TableComponent.sortAscending"),
-						IconLoader.getIcon("thumb_up.png"), SORTUP);
-				addMenu(
-						pop,
-						I18N.getText("orbisgis.org.orbisgis.core.ui.editors.table.TableComponent.sortDescending"),
-						IconLoader.getIcon("thumb_down.png"), SORTDOWN);
-				addMenu(
-						pop,
-						I18N.getText("orbisgis.org.orbisgis.core.ui.editors.table.TableComponent.noSort"),
-						OrbisGISIcon.TABLE_REFRESH, NOSORT);
-			}
-			return pop;
-		}
-	}
+                @Override
+                protected JPopupMenu getPopupMenu() {
+                        JPopupMenu pop = new JPopupMenu();
+                        addMenu(
+                                pop,
+                                I18N.getText("orbisgis.org.orbisgis.core.ui.editors.table.TableComponent.optimalWidth"),
+                                IconLoader.getIcon("text_letterspacing.png"), OPTIMALWIDTH);
+                        addMenu(
+                                pop,
+                                I18N.getText("orbisgis.org.orbisgis.core.ui.editors.table.TableComponent.setWidth"),
+                                null, SETWIDTH);
+                        pop.addSeparator();
+                        if (tableModel.getColumnType(selectedColumn).getTypeCode() != Type.GEOMETRY) {
+                                addMenu(
+                                        pop,
+                                        I18N.getText("orbisgis.org.orbisgis.core.ui.editors.table.TableComponent.sortAscending"),
+                                        IconLoader.getIcon("thumb_up.png"), SORTUP);
+                                addMenu(
+                                        pop,
+                                        I18N.getText("orbisgis.org.orbisgis.core.ui.editors.table.TableComponent.sortDescending"),
+                                        IconLoader.getIcon("thumb_down.png"), SORTDOWN);
+                                addMenu(
+                                        pop,
+                                        I18N.getText("orbisgis.org.orbisgis.core.ui.editors.table.TableComponent.noSort"),
+                                        OrbisGISIcon.TABLE_REFRESH, NOSORT);
+                        }
+                        return pop;
+                }
+        }
 
-	private class CellPopupMouseAdapter extends PopupMouseAdapter {
+        private class CellPopupMouseAdapter extends PopupMouseAdapter {
 
-		@Override
-		protected Component getComponent() {
-			return table;
-		}
+                @Override
+                protected Component getComponent() {
+                        return table;
+                }
 
-		@Override
-		protected String getExtensionPointId() {
-			return "CellAction";
-		}
+                @Override
+                protected String getExtensionPointId() {
+                        return "CellAction";
+                }
 
-		@Override
-		protected JPopupMenu getPopupMenu() {
-			return new JPopupMenu();
-		}
-	}
+                @Override
+                protected JPopupMenu getPopupMenu() {
+                        return new JPopupMenu();
+                }
+        }
 
-	private class ModificationListener implements EditionListener,
-			MetadataEditionListener {
+        private class ModificationListener implements EditionListener,
+                MetadataEditionListener {
 
-		@Override
-		public void multipleModification(MultipleEditionEvent e) {
-			tableModel.fireTableDataChanged();
-		}
+                @Override
+                public void multipleModification(MultipleEditionEvent e) {
+                        tableModel.fireTableDataChanged();
+                }
 
-		@Override
-		public void singleModification(EditionEvent e) {
-			if (e.getType() != EditionEvent.RESYNC) {
-				int row = (int) e.getRowIndex();
-				if (indexes != null) {
-					row = indexes.indexOf(new Integer(row));
-				}
-				int column = e.getFieldIndex();
-				if ((e.getType() == EditionEvent.DELETE)
-						|| (e.getType() == EditionEvent.INSERT)) {
-					refreshTableStructure();
+                @Override
+                public void singleModification(EditionEvent e) {
+                        if (e.getType() != EditionEvent.RESYNC) {
+                                int row = (int) e.getRowIndex();
+                                if (indexes != null) {
+                                        row = indexes.indexOf(new Integer(row));
+                                }
+                                int column = e.getFieldIndex();
+                                if ((e.getType() == EditionEvent.DELETE)
+                                        || (e.getType() == EditionEvent.INSERT)) {
+                                        refreshTableStructure();
 
-				} else {
-					tableModel.fireTableCellUpdated(row, column);
-				}
-				if (row != -1) {
-					table.scrollRectToVisible(table.getCellRect(row, column,
-							true));
-				}
-			} else {
-				refreshTableStructure();
-			}
-		}
+                                } else {
+                                        tableModel.fireTableCellUpdated(row, column);
+                                }
+                                if (row != -1) {
+                                        table.scrollRectToVisible(table.getCellRect(row, column,
+                                                true));
+                                }
+                        } else {
+                                refreshTableStructure();
+                        }
+                }
 
-		@Override
-		public void fieldAdded(FieldEditionEvent event) {
-			fieldRemoved(null);
-		}
+                @Override
+                public void fieldAdded(FieldEditionEvent event) {
+                        fieldRemoved(null);
+                }
 
-		@Override
-		public void fieldModified(FieldEditionEvent event) {
-			fieldRemoved(null);
-		}
+                @Override
+                public void fieldModified(FieldEditionEvent event) {
+                        fieldRemoved(null);
+                }
 
-		@Override
-		public void fieldRemoved(FieldEditionEvent event) {
-			refreshTableStructure();
-		}
+                @Override
+                public void fieldRemoved(FieldEditionEvent event) {
+                        refreshTableStructure();
+                }
 
-	}
+        }
 
-	public class DataSourceDataModel extends AbstractTableModel {
-		private Metadata metadata;
+        public class DataSourceDataModel extends AbstractTableModel {
+                private Metadata metadata;
 
-		private Metadata getMetadata() throws DriverException {
-			if (metadata == null) {
-				metadata = dataSource.getMetadata();
+                private Metadata getMetadata() throws DriverException {
+                        if (metadata == null) {
+                                metadata = dataSource.getMetadata();
 
-			}
+                        }
 
-			return metadata;
-		}
+                        return metadata;
+                }
 
-		/**
-		 * Returns the name of the field.
-		 * 
-		 * @param col
-		 *            index of field
-		 * 
-		 * @return Name of field
-		 */
-		@Override
-		public String getColumnName(int col) {
-			try {
-				return getMetadata().getFieldName(col);
-			} catch (DriverException e) {
-				return null;
-			}
-		}
+                /**
+                 * Returns the name of the field.
+                 *
+                 * @param col
+                 *            index of field
+                 *
+                 * @return Name of field
+                 */
+                @Override
+                public String getColumnName(int col) {
+                        try {
+                                return getMetadata().getFieldName(col);
+                        } catch (DriverException e) {
+                                return null;
+                        }
+                }
 
-		/**
-		 * Returns the type of field
-		 * 
-		 * @param col
-		 *            index of field
-		 * @return Type of field
-		 */
-		public Type getColumnType(int col) {
-			try {
-				return getMetadata().getFieldType(col);
-			} catch (DriverException e) {
-				return null;
-			}
-		}
+                /**
+                 * Returns the type of field
+                 *
+                 * @param col
+                 *            index of field
+                 * @return Type of field
+                 */
+                public Type getColumnType(int col) {
+                        try {
+                                return getMetadata().getFieldType(col);
+                        } catch (DriverException e) {
+                                return null;
+                        }
+                }
 
-		/**
-		 * Returns the number of fields.
-		 * 
-		 * @return number of fields
-		 */
-		@Override
-		public int getColumnCount() {
-			try {
-				return getMetadata().getFieldCount();
-			} catch (DriverException e) {
-				return 0;
-			}
-		}
+                /**
+                 * Returns the number of fields.
+                 *
+                 * @return number of fields
+                 */
+                @Override
+                public int getColumnCount() {
+                        try {
+                                return getMetadata().getFieldCount();
+                        } catch (DriverException e) {
+                                return 0;
+                        }
+                }
 
-		/**
-		 * Returns number of rows.
-		 * 
-		 * @return number of rows.
-		 */
-		@Override
-		public int getRowCount() {
-			try {
-				return (int) dataSource.getRowCount();
-			} catch (DriverException e) {
-				return 0;
-			}
-		}
+                /**
+                 * Returns number of rows.
+                 *
+                 * @return number of rows.
+                 */
+                @Override
+                public int getRowCount() {
+                        try {
+                                return (int) dataSource.getRowCount();
+                        } catch (DriverException e) {
+                                return 0;
+                        }
+                }
 
-		/**
-		 * @see javax.swing.table.TableModel#getValueAt(int, int)
-		 */
-		@Override
-		public Object getValueAt(int row, int col) {
-			try {
+                /**
+                 * @see javax.swing.table.TableModel#getValueAt(int, int)
+                 */
+                @Override
+                public Object getValueAt(int row, int col) {
+                        try {
 				return dataSource.getFieldValue(getRowIndex(row), col)
 						.toString();
-			} catch (DriverException e) {
-				return "";
-			}
-		}
+                        } catch (DriverException e) {
+                                return "";
+                        }
+                }
 
-		/**
-		 * @see javax.swing.table.TableModel#isCellEditable(int, int)
-		 */
-		@Override
-		public boolean isCellEditable(int rowIndex, int columnIndex) {
-			if (element.isEditable()) {
-				try {
-					Type fieldType = getMetadata().getFieldType(columnIndex);
-					Constraint c = fieldType.getConstraint(Constraint.READONLY);
-					return (fieldType.getTypeCode() != Type.RASTER)
-							&& (c == null);
-				} catch (DriverException e) {
-					return false;
-				}
-			} else {
-				return false;
-			}
-		}
+                /**
+                 * @see javax.swing.table.TableModel#isCellEditable(int, int)
+                 */
+                @Override
+                public boolean isCellEditable(int rowIndex, int columnIndex) {
+                        if (element.isEditable()) {
+                                try {
+                                        Type fieldType = getMetadata().getFieldType(columnIndex);
+                                        Constraint c = fieldType.getConstraint(Constraint.READONLY);
+                                        return (fieldType.getTypeCode() != Type.RASTER)
+                                                && (c == null);
+                                } catch (DriverException e) {
+                                        return false;
+                                }
+                        } else {
+                                return false;
+                        }
+                }
 
-		/**
-		 * @see javax.swing.table.TableModel#setValueAt(java.lang.Object, int,
-		 *      int)
-		 */
-		@Override
-		public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
-			try {
-				Type type = getMetadata().getFieldType(columnIndex);
-				String strValue = aValue.toString().trim();
+                /**
+                 * @see javax.swing.table.TableModel#setValueAt(java.lang.Object, int,
+                 *      int)
+                 */
+                @Override
+                public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
+                        try {
+                                Type type = getMetadata().getFieldType(columnIndex);
+                                String strValue = aValue.toString().trim();
 				Value v = ValueFactory.createValueByType(strValue, type
 						.getTypeCode());
-				dataSource.setFieldValue(getRowIndex(rowIndex), columnIndex, v);
-			} catch (DriverException e1) {
-				throw new RuntimeException(e1);
-			} catch (NumberFormatException e) {
-				inputError("Cannot parse number: " + e.getMessage(), e);
-			} catch (ParseException e) {
-				inputError(e.getMessage(), e);
-			}
-		}
-	}
+                                dataSource.setFieldValue(getRowIndex(rowIndex), columnIndex, v);
+                        } catch (DriverException e1) {
+                                throw new RuntimeException(e1);
+                        } catch (NumberFormatException e) {
+                                inputError("Cannot parse number: " + e.getMessage(), e);
+                        } catch (ParseException e) {
+                                inputError(e.getMessage(), e);
+                        }
+                }
+        }
 
-	private final class SortJob implements BackgroundJob {
+        private final class SortJob implements BackgroundJob {
 
-		private boolean ascending;
+                private boolean ascending;
 
-		public SortJob(boolean ascending) {
-			this.ascending = ascending;
-		}
+                public SortJob(boolean ascending) {
+                        this.ascending = ascending;
+                }
 
-		@Override
-		public void run(IProgressMonitor pm) {
-			try {
-				int rowCount = (int) dataSource.getRowCount();
-				Value[][] cache = new Value[rowCount][1];
-				for (int i = 0; i < rowCount; i++) {
-					cache[i][0] = dataSource.getFieldValue(i, selectedColumn);
-				}
-				ArrayList<Boolean> order = new ArrayList<Boolean>();
-				order.add(ascending);
-				TreeSet<Integer> sortset = new TreeSet<Integer>(
-						new SortComparator(cache, order));
-				for (int i = 0; i < rowCount; i++) {
-					if (i / 100 == i / 100.0) {
-						if (pm.isCancelled()) {
-							break;
-						} else {
-							pm.progressTo(100 * i / rowCount);
-						}
-					}
-					sortset.add(new Integer(i));
-				}
-				ArrayList<Integer> indexes = new ArrayList<Integer>();
-				Iterator<Integer> it = sortset.iterator();
-				while (it.hasNext()) {
-					Integer integer = (Integer) it.next();
-					indexes.add(integer);
-				}
-				TableComponent.this.indexes = indexes;
-				SwingUtilities.invokeLater(new Runnable() {
+                @Override
+                public void run(IProgressMonitor pm) {
+                        try {
+                                int rowCount = (int) dataSource.getRowCount();
+                                Value[][] cache = new Value[rowCount][1];
+                                for (int i = 0; i < rowCount; i++) {
+                                        cache[i][0] = dataSource.getFieldValue(i, selectedColumn);
+                                }
+                                ArrayList<Boolean> order = new ArrayList<Boolean>();
+                                order.add(ascending);
+                                TreeSet<Integer> sortset = new TreeSet<Integer>(
+                                        new SortComparator(cache, order));
+                                for (int i = 0; i < rowCount; i++) {
+                                        if (i / 100 == i / 100.0) {
+                                                if (pm.isCancelled()) {
+                                                        break;
+                                                } else {
+                                                        pm.progressTo(100 * i / rowCount);
+                                                }
+                                        }
+                                        sortset.add(new Integer(i));
+                                }
+                                ArrayList<Integer> indexes = new ArrayList<Integer>();
+                                Iterator<Integer> it = sortset.iterator();
+                                while (it.hasNext()) {
+                                        Integer integer = (Integer) it.next();
+                                        indexes.add(integer);
+                                }
+                                TableComponent.this.indexes = indexes;
+                                SwingUtilities.invokeLater(new Runnable() {
 
-					@Override
-					public void run() {
-						fireTableDataChanged();
-					}
-				});
-			} catch (DriverException e) {
-				Services.getService(ErrorManager.class).error("Cannot sort", e);
-			}
-		}
+                                        @Override
+                                        public void run() {
+                                                fireTableDataChanged();
+                                        }
+                                });
+                        } catch (DriverException e) {
+                                Services.getService(ErrorManager.class).error("Cannot sort", e);
+                        }
+                }
 
-		@Override
-		public String getTaskName() {
+                @Override
+                public String getTaskName() {
 			return I18N
 					.getText("orbisgis.org.orbisgis.core.ui.editors.table.TableComponent.sorting");
-		}
-	}
+                }
+        }
 
-	public class ButtonHeaderRenderer extends JButton implements
-			TableCellRenderer {
+        public class ButtonHeaderRenderer extends JButton implements
+                TableCellRenderer {
 
-		public ButtonHeaderRenderer() {
-			setMargin(new Insets(0, 0, 0, 0));
-		}
+                public ButtonHeaderRenderer() {
+                        setMargin(new Insets(0, 0, 0, 0));
+                }
 
-		@Override
-		public Component getTableCellRendererComponent(JTable table,
-				Object value, boolean isSelected, boolean hasFocus, int row,
-				int column) {
-			setText((value == null) ? "" : value.toString());
-			boolean isPressed = (column == selectedColumn);
-			if (isPressed) {
-				setPressedColumn(column);
-			}
-			getModel().setPressed(isPressed);
-			getModel().setArmed(isPressed);
-			return this;
-		}
+                @Override
+                public Component getTableCellRendererComponent(JTable table,
+                        Object value, boolean isSelected, boolean hasFocus, int row,
+                        int column) {
+                        setText((value == null) ? "" : value.toString());
+                        boolean isPressed = (column == selectedColumn);
+                        if (isPressed) {
+                                setPressedColumn(column);
+                        }
+                        getModel().setPressed(isPressed);
+                        getModel().setArmed(isPressed);
+                        return this;
+                }
 
-		public void setPressedColumn(int col) {
-			selectedColumn = col;
-		}
-	}
+                public void setPressedColumn(int col) {
+                        selectedColumn = col;
+                }
+        }
 
-	public int getSelectedColumn() {
-		return selectedColumn;
-	}
+        public int getSelectedColumn() {
+                return selectedColumn;
+        }
 }
