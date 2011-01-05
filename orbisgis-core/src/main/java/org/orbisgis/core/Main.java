@@ -59,6 +59,7 @@ import org.orbisgis.core.ui.configuration.EPConfigHelper;
 import org.orbisgis.core.ui.configuration.WorkspaceConfiguration;
 import org.orbisgis.core.ui.errors.CacheMessages;
 import org.orbisgis.core.ui.errors.FilteringErrorListener;
+import org.orbisgis.core.ui.pluginSystem.message.ErrorMessages;
 import org.orbisgis.core.ui.preferences.translation.OrbisGISI18N;
 import org.orbisgis.core.ui.workspace.DefaultSwingWorkspace;
 import org.orbisgis.core.workspace.DefaultWorkspace;
@@ -97,9 +98,9 @@ public class Main {
 	private static void initApplication(Splash splash, String[] args)
 			throws Exception {
 		splash.setVisible(true);
-		splash.updateText("OrbisGIS services initialization.");
+		Splash.updateText("OrbisGIS services initialization.");
 		initServices();
-		splash.updateText("OrbisGIS services initialization ready.");
+		Splash.updateText("OrbisGIS services initialization ready.");
 		parseCommandLine(args);
 		initI18n(splash);
 		init(splash, args);
@@ -220,8 +221,7 @@ public class Main {
 		try {
 			commandLine.parse(args);
 		} catch (ParseException e) {
-			Services.getErrorManager().error(
-					"Syntax error in command line to run OrbisGIS!", e);
+			ErrorMessages.error(ErrorMessages.CommandLineError, e);
 			throw e;
 		}
 	}
