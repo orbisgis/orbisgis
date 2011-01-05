@@ -37,7 +37,7 @@
  */
 package org.orbisgis.core;
 
-// Upadates: 2004.04.02, 2004.01.09
+// Updates: 2004.04.02, 2004.01.09
 
 import java.awt.BorderLayout;
 import java.awt.Color;
