@@ -41,14 +41,15 @@ package org.orbisgis.core.ui.plugins.editors.mapEditor;
 import javax.swing.JButton;
 
 import org.gdms.driver.DriverException;
-import org.orbisgis.core.Services;
 import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.layerModel.MapContext;
 import org.orbisgis.core.ui.pluginSystem.AbstractPlugIn;
 import org.orbisgis.core.ui.pluginSystem.PlugInContext;
+import org.orbisgis.core.ui.pluginSystem.message.ErrorMessages;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchContext;
 import org.orbisgis.core.ui.plugins.views.MapEditorPlugIn;
 import org.orbisgis.core.ui.preferences.lookandfeel.OrbisGISIcon;
+import org.orbisgis.utils.I18N;
 
 public class RedoMapPlugIn extends AbstractPlugIn {
 
@@ -56,16 +57,20 @@ public class RedoMapPlugIn extends AbstractPlugIn {
 
 	public RedoMapPlugIn() {
 		btn = new JButton(OrbisGISIcon.REDO_ICON);
+		btn
+				.setToolTipText(I18N
+						.getText("orbisgis.org.orbisgis.core.ui.plugins.editors.tableEditor.redo"));
 	}
 
 	public boolean execute(PlugInContext context) throws Exception {
-		MapEditorPlugIn mapEditor = (MapEditorPlugIn) getPlugInContext().getActiveEditor();
+		MapEditorPlugIn mapEditor = (MapEditorPlugIn) getPlugInContext()
+				.getActiveEditor();
 		MapContext mc = (MapContext) mapEditor.getElement().getObject();
 		ILayer activeLayer = mc.getActiveLayer();
 		try {
 			activeLayer.getDataSource().redo();
 		} catch (DriverException e) {
-			Services.getErrorManager().error("Cannot redo", e);
+			ErrorMessages.error(ErrorMessages.CannotRedo, e);
 		}
 		return true;
 	}
@@ -79,10 +84,11 @@ public class RedoMapPlugIn extends AbstractPlugIn {
 	public boolean isEnabled() {
 		boolean isEnabled = false;
 		MapEditorPlugIn mapEditor = null;
-		if((mapEditor=getPlugInContext().getMapEditor()) != null){
+		if ((mapEditor = getPlugInContext().getMapEditor()) != null) {
 			MapContext mc = (MapContext) mapEditor.getElement().getObject();
 			ILayer activeLayer = mc.getActiveLayer();
-			isEnabled = (activeLayer != null) && activeLayer.getDataSource().canRedo();
+			isEnabled = (activeLayer != null)
+					&& activeLayer.getDataSource().canRedo();
 		}
 		btn.setEnabled(isEnabled);
 		return isEnabled;

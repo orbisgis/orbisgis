@@ -42,12 +42,12 @@ import javax.swing.JButton;
 
 import org.gdms.data.SpatialDataSourceDecorator;
 import org.gdms.driver.DriverException;
-import org.orbisgis.core.Services;
-import org.orbisgis.core.errorManager.ErrorManager;
 import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.layerModel.MapContext;
 import org.orbisgis.core.ui.pluginSystem.AbstractPlugIn;
 import org.orbisgis.core.ui.pluginSystem.PlugInContext;
+import org.orbisgis.core.ui.pluginSystem.message.ErrorMessages;
+import org.orbisgis.core.ui.pluginSystem.workbench.Names;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchContext;
 import org.orbisgis.core.ui.plugins.views.MapEditorPlugIn;
 import org.orbisgis.core.ui.preferences.lookandfeel.OrbisGISIcon;
@@ -61,6 +61,7 @@ public class ZoomToSelectedFeaturesPlugIn extends AbstractPlugIn {
 
 	public ZoomToSelectedFeaturesPlugIn() {
 		btn = new JButton(OrbisGISIcon.ZOOM_SELECTED);
+		btn.setToolTipText(Names.POPUP_TABLE_ZOOMTOSELECTED_PATH1);
 	}
 
 	public boolean execute(PlugInContext context) throws Exception {
@@ -97,8 +98,7 @@ public class ZoomToSelectedFeaturesPlugIn extends AbstractPlugIn {
 
 				}
 			} catch (DriverException e) {
-				Services.getService(ErrorManager.class).error(
-						"Cannot compute envelope", e);
+				ErrorMessages.error(ErrorMessages.CannotComputeEnvelope, e);
 			}
 		}
 
@@ -122,7 +122,7 @@ public class ZoomToSelectedFeaturesPlugIn extends AbstractPlugIn {
 			MapContext mc = (MapContext) mapEditor.getElement().getObject();
 			ILayer[] layers = mc.getLayerModel().getLayersRecursively();
 			for (ILayer lyr : layers) {
-				if (!lyr.isWMS()) {					
+				if (!lyr.isWMS()) {
 					if (lyr.getSelection().length > 0)
 						isEnabled = true;
 				}

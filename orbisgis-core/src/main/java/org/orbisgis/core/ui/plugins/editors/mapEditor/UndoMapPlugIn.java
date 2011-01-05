@@ -40,14 +40,15 @@ package org.orbisgis.core.ui.plugins.editors.mapEditor;
 import javax.swing.JButton;
 
 import org.gdms.driver.DriverException;
-import org.orbisgis.core.Services;
 import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.layerModel.MapContext;
 import org.orbisgis.core.ui.pluginSystem.AbstractPlugIn;
 import org.orbisgis.core.ui.pluginSystem.PlugInContext;
+import org.orbisgis.core.ui.pluginSystem.message.ErrorMessages;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchContext;
 import org.orbisgis.core.ui.plugins.views.MapEditorPlugIn;
 import org.orbisgis.core.ui.preferences.lookandfeel.OrbisGISIcon;
+import org.orbisgis.utils.I18N;
 
 public class UndoMapPlugIn extends AbstractPlugIn {
 
@@ -55,16 +56,20 @@ public class UndoMapPlugIn extends AbstractPlugIn {
 
 	public UndoMapPlugIn() {
 		btn = new JButton(OrbisGISIcon.UNDO_ICON);
+		btn
+				.setToolTipText(I18N
+						.getText("orbisgis.org.orbisgis.core.ui.plugins.editors.tableEditor.undo"));
 	}
 
 	public boolean execute(PlugInContext context) throws Exception {
-		MapEditorPlugIn mapEditor = (MapEditorPlugIn) getPlugInContext().getActiveEditor();
+		MapEditorPlugIn mapEditor = (MapEditorPlugIn) getPlugInContext()
+				.getActiveEditor();
 		MapContext mc = (MapContext) mapEditor.getElement().getObject();
 		ILayer activeLayer = mc.getActiveLayer();
 		try {
 			activeLayer.getDataSource().undo();
 		} catch (DriverException e) {
-			Services.getErrorManager().error("Cannot undo", e);
+			ErrorMessages.error(ErrorMessages.CannotUndo, e);
 		}
 		return true;
 	}
@@ -78,10 +83,11 @@ public class UndoMapPlugIn extends AbstractPlugIn {
 	public boolean isEnabled() {
 		boolean isEnabled = false;
 		MapEditorPlugIn mapEditor = null;
-		if((mapEditor=getPlugInContext().getMapEditor()) != null){
+		if ((mapEditor = getPlugInContext().getMapEditor()) != null) {
 			MapContext mc = (MapContext) mapEditor.getElement().getObject();
 			ILayer activeLayer = mc.getActiveLayer();
-			isEnabled =  (activeLayer != null) && activeLayer.getDataSource().canUndo();
+			isEnabled = (activeLayer != null)
+					&& activeLayer.getDataSource().canUndo();
 		}
 		btn.setEnabled(isEnabled);
 		return isEnabled;

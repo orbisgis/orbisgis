@@ -45,15 +45,16 @@ import javax.swing.JButton;
 import org.gdms.data.DataSource;
 import org.gdms.data.SpatialDataSourceDecorator;
 import org.gdms.driver.DriverException;
-import org.orbisgis.core.Services;
 import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.layerModel.MapContext;
 import org.orbisgis.core.ui.editor.IEditor;
 import org.orbisgis.core.ui.pluginSystem.AbstractPlugIn;
 import org.orbisgis.core.ui.pluginSystem.PlugInContext;
+import org.orbisgis.core.ui.pluginSystem.message.ErrorMessages;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchContext;
 import org.orbisgis.core.ui.plugins.views.MapEditorPlugIn;
 import org.orbisgis.core.ui.preferences.lookandfeel.OrbisGISIcon;
+import org.orbisgis.utils.I18N;
 
 public class DeleteMapSelectionPlugIn extends AbstractPlugIn {
 
@@ -61,6 +62,8 @@ public class DeleteMapSelectionPlugIn extends AbstractPlugIn {
 
 	public DeleteMapSelectionPlugIn() {
 		btn = new JButton(OrbisGISIcon.REMOVE);
+		btn.setToolTipText(I18N
+				.getText("orbisgis.ui.popupmenu.table.deleteFromSelection"));
 	}
 
 	public boolean execute(PlugInContext context) throws Exception {
@@ -77,8 +80,7 @@ public class DeleteMapSelectionPlugIn extends AbstractPlugIn {
 			}
 			dataSource.setDispatchingMode(DataSource.DISPATCH);
 		} catch (DriverException e) {
-			Services.getErrorManager().error("Cannot delete selected features",
-					e);
+			ErrorMessages.error(ErrorMessages.CannotDeleteSelectedRow, e);
 		}
 		return true;
 	}
@@ -92,11 +94,10 @@ public class DeleteMapSelectionPlugIn extends AbstractPlugIn {
 	public boolean isEnabled() {
 		boolean isEnabled = false;
 		MapEditorPlugIn mapEditor = null;
-		if((mapEditor=getPlugInContext().getMapEditor()) != null){
+		if ((mapEditor = getPlugInContext().getMapEditor()) != null) {
 			MapContext map = (MapContext) mapEditor.getElement().getObject();
 			ILayer activeLayer = map.getActiveLayer();
-			if(activeLayer != null
-					&& activeLayer.getSelection().length > 0)
+			if (activeLayer != null && activeLayer.getSelection().length > 0)
 				isEnabled = true;
 		}
 		btn.setEnabled(isEnabled);

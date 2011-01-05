@@ -50,6 +50,7 @@ import org.orbisgis.core.ui.pluginSystem.PlugInContext;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchContext;
 import org.orbisgis.core.ui.plugins.views.MapEditorPlugIn;
 import org.orbisgis.core.ui.preferences.lookandfeel.OrbisGISIcon;
+import org.orbisgis.utils.I18N;
 
 public class ClearMapSelectionPlugIn extends AbstractPlugIn {
 
@@ -57,6 +58,8 @@ public class ClearMapSelectionPlugIn extends AbstractPlugIn {
 
 	public ClearMapSelectionPlugIn() {
 		btn = new JButton(OrbisGISIcon.EDIT_CLEAR);
+		btn.setToolTipText(I18N
+				.getText("orbisgis.ui.popupmenu.table.clearSelection"));
 	}
 
 	public boolean execute(PlugInContext context) throws Exception {
@@ -79,11 +82,11 @@ public class ClearMapSelectionPlugIn extends AbstractPlugIn {
 	public boolean isEnabled() {
 		boolean isEnabled = false;
 		MapEditorPlugIn mapEditor = null;
-		if((mapEditor=getPlugInContext().getMapEditor()) != null){
+		if ((mapEditor = getPlugInContext().getMapEditor()) != null) {
 			MapContext mc = (MapContext) mapEditor.getElement().getObject();
 			ILayer[] layers = mc.getLayerModel().getLayersRecursively();
 			for (ILayer lyr : layers) {
-				if (!lyr.isWMS()){
+				if (!lyr.isWMS()) {
 					lyr.getSelection();
 					if (lyr.getSelection().length > 0)
 						isEnabled = true;

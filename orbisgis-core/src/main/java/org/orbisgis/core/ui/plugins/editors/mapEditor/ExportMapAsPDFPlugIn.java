@@ -63,6 +63,7 @@ import org.orbisgis.core.sif.UIPanel;
 import org.orbisgis.core.ui.editors.map.actions.export.ScaleEditor;
 import org.orbisgis.core.ui.pluginSystem.AbstractPlugIn;
 import org.orbisgis.core.ui.pluginSystem.PlugInContext;
+import org.orbisgis.core.ui.pluginSystem.message.ErrorMessages;
 import org.orbisgis.core.ui.pluginSystem.workbench.Names;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchContext;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchFrame;
@@ -70,6 +71,7 @@ import org.orbisgis.core.ui.plugins.views.MapEditorPlugIn;
 import org.orbisgis.core.ui.plugins.views.editor.EditorManager;
 import org.orbisgis.core.ui.preferences.lookandfeel.images.IconLoader;
 import org.orbisgis.progress.NullProgressMonitor;
+import org.orbisgis.utils.I18N;
 
 import com.itextpdf.text.Document;
 import com.itextpdf.text.DocumentException;
@@ -82,12 +84,13 @@ import com.vividsolutions.jts.geom.Envelope;
 public class ExportMapAsPDFPlugIn extends AbstractPlugIn {
 
 	public boolean execute(PlugInContext context) throws Exception {
-		MapEditorPlugIn mapEditor = (MapEditorPlugIn) getPlugInContext().getActiveEditor();
+		MapEditorPlugIn mapEditor = (MapEditorPlugIn) getPlugInContext()
+				.getActiveEditor();
 		MapContext mapContext = (MapContext) mapEditor.getElement().getObject();
 
 		final SaveFilePanel outfilePanel = new SaveFilePanel(
-				"org.orbisgis.core.ui.editors.map.actions.ExportMapAsPDF",
-				"Choose a file format");
+				"org.orbisgis.core.ui.editors.map.actions.ExportMapAsPDF", I18N
+						.getText("orbisgis.core.file.chooseFileFormat"));
 		outfilePanel.addFilter("pdf", "Portable Document Format (*.pdf)");
 
 		ScaleEditor scaleEditor = new ScaleEditor(mapEditor.getMapTransform()
@@ -110,9 +113,6 @@ public class ExportMapAsPDFPlugIn extends AbstractPlugIn {
 
 	public void initialize(PlugInContext context) throws Exception {
 		WorkbenchContext wbContext = context.getWorkbenchContext();
-		// TODO (pyf): trouver MapEditorPlugIn.getMapCOntrol.getToolManager ->
-		// contient MenbuTree
-		// & addPopupMenuItem ajoute à ce MenuTree le menu
 		WorkbenchFrame frame = wbContext.getWorkbench().getFrame()
 				.getMapEditor();
 		context.getFeatureInstaller().addPopupMenuItem(frame, this,
@@ -145,7 +145,8 @@ public class ExportMapAsPDFPlugIn extends AbstractPlugIn {
 				float pageHeight = document.getPageSize().getHeight();
 
 				// Add the north
-				final java.net.URL url = IconLoader.getIconUrl("simplenorth.png");
+				final java.net.URL url = IconLoader
+						.getIconUrl("simplenorth.png");
 
 				PdfContentByte cb = writer.getDirectContent();
 
@@ -171,7 +172,6 @@ public class ExportMapAsPDFPlugIn extends AbstractPlugIn {
 				r.draw(g2dMap, width, height, envelope, layer,
 						new NullProgressMonitor());
 
-				
 				ILayer[] layers = mapContext.getLayerModel()
 						.getLayersRecursively();
 
@@ -239,15 +239,16 @@ public class ExportMapAsPDFPlugIn extends AbstractPlugIn {
 				cb.addTemplate(templateLegend, 0, 0);
 				cb.addTemplate(templateScale, 0, 0);
 
-				JOptionPane.showMessageDialog(null, "The file has been saved.");
+				JOptionPane.showMessageDialog(null, I18N
+						.getText("orbisgis.core.file.fileSaved"));
 			}
 
 		} catch (FileNotFoundException e) {
-			Services.getErrorManager().error("Cannot write on the disk", e);
+			ErrorMessages.error(ErrorMessages.CannotWriteOnDisk, e);
 		} catch (DocumentException e) {
-			Services.getErrorManager().error("Cannot write the PDF", e);
+			ErrorMessages.error(ErrorMessages.CannotWritePDF, e);
 		} catch (Exception e) {
-			Services.getErrorManager().error("Cannot export in PDF", e);
+			ErrorMessages.error(ErrorMessages.CannotWritePDF, e);
 		}
 
 		document.close();
@@ -256,7 +257,7 @@ public class ExportMapAsPDFPlugIn extends AbstractPlugIn {
 
 	public boolean isEnabled() {
 		MapEditorPlugIn mapEditor = null;
-		if((mapEditor=getPlugInContext().getMapEditor()) != null){
+		if ((mapEditor = getPlugInContext().getMapEditor()) != null) {
 			MapContext mc = (MapContext) mapEditor.getElement().getObject();
 			return mc.getLayerModel().getLayerCount() >= 1;
 		}

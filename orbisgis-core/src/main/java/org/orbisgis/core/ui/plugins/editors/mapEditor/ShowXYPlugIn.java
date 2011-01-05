@@ -54,6 +54,7 @@ import org.orbisgis.core.ui.pluginSystem.workbench.Names;
 import org.orbisgis.core.ui.plugins.editor.PlugInEditorListener;
 import org.orbisgis.core.ui.plugins.views.MapEditorPlugIn;
 import org.orbisgis.core.ui.plugins.views.editor.EditorManager;
+import org.orbisgis.utils.I18N;
 
 public class ShowXYPlugIn extends AbstractPlugIn {
 
@@ -64,6 +65,7 @@ public class ShowXYPlugIn extends AbstractPlugIn {
 	}
 
 	private MouseMotionAdapter mouseMotionAdapter = new MouseMotionAdapter() {
+		@Override
 		public void mouseMoved(MouseEvent e) {
 			String xCoord = "", yCoord = "", scale = "";
 			ToolManager toolManager = getPlugInContext().getToolManager();
@@ -76,7 +78,9 @@ public class ShowXYPlugIn extends AbstractPlugIn {
 					// } else {
 					xCoord = "X:" + (int) point.getX();
 					yCoord = "Y:" + (int) point.getY();
-					scale = "SCALE: 1/"
+					scale = I18N
+							.getText("orbisgis.org.orbisgis.core.ui.plugins.editors.mapEditor.scale")
+							+ ": 1/"
 							+ (int) getPlugInContext().getMapEditor()
 									.getMapTransform().getScaleDenominator();
 				}
@@ -90,10 +94,9 @@ public class ShowXYPlugIn extends AbstractPlugIn {
 		showXY.setForeground(Color.blue);
 		showXY.setEnabled(false);
 		EditorManager em = Services.getService(EditorManager.class);
-		em
-				.addEditorListener(new PlugInEditorListener(this, showXY,
-						Names.MAP_TOOLBAR_PROJECTION, mouseMotionAdapter,
-						context, true));
+		em.addEditorListener(new PlugInEditorListener(this, showXY,
+				Names.MAP_TOOLBAR_PROJECTION, mouseMotionAdapter, context,
+				true));
 
 	}
 
@@ -104,7 +107,9 @@ public class ShowXYPlugIn extends AbstractPlugIn {
 		MapEditorPlugIn mapEditor = getPlugInContext().getMapEditor();
 		if (editor != null && editor instanceof MapEditorPlugIn
 				&& mapEditor != null) {
-			String scale = "SCALE: 1/"
+			String scale = I18N
+					.getText("orbisgis.org.orbisgis.core.ui.plugins.editors.mapEditor.scale")
+					+ ": 1/"
 					+ (int) mapEditor.getMapTransform().getScaleDenominator();
 			showXY.setText("0.0     0.0  " + scale);
 			MapContext mc = (MapContext) editor.getElement().getObject();

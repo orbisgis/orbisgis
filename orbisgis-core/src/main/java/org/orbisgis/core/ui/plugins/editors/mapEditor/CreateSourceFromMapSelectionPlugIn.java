@@ -56,7 +56,6 @@ import org.gdms.driver.driverManager.DriverLoadException;
 import org.gdms.source.SourceManager;
 import org.orbisgis.core.DataManager;
 import org.orbisgis.core.Services;
-import org.orbisgis.core.errorManager.ErrorManager;
 import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.layerModel.MapContext;
 import org.orbisgis.core.ui.editor.IEditor;
@@ -65,10 +64,11 @@ import org.orbisgis.core.ui.pluginSystem.AbstractPlugIn;
 import org.orbisgis.core.ui.pluginSystem.PlugInContext;
 import org.orbisgis.core.ui.pluginSystem.PlugInContext.LayerAvailability;
 import org.orbisgis.core.ui.pluginSystem.PlugInContext.SelectionAvailability;
+import org.orbisgis.core.ui.pluginSystem.message.ErrorMessages;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchContext;
-import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchFrame;
 import org.orbisgis.core.ui.plugins.views.TableEditorPlugIn;
 import org.orbisgis.core.ui.preferences.lookandfeel.OrbisGISIcon;
+import org.orbisgis.utils.I18N;
 
 public class CreateSourceFromMapSelectionPlugIn extends AbstractPlugIn {
 
@@ -76,6 +76,8 @@ public class CreateSourceFromMapSelectionPlugIn extends AbstractPlugIn {
 
 	public CreateSourceFromMapSelectionPlugIn() {
 		btn = new JButton(OrbisGISIcon.TABLE_CREATE_SRC_ICON);
+		btn.setToolTipText(I18N
+				.getText("orbisgis.ui.popupmenu.table.createFromSelection"));
 	}
 
 	public boolean execute(PlugInContext context) throws Exception {
@@ -102,12 +104,6 @@ public class CreateSourceFromMapSelectionPlugIn extends AbstractPlugIn {
 		WorkbenchContext wbContext = context.getWorkbenchContext();
 		wbContext.getWorkbench().getFrame().getEditionMapToolBar().addPlugIn(
 				this, btn, context);
-
-		WorkbenchFrame frame = wbContext.getWorkbench().getFrame().getToc();
-		context.getFeatureInstaller().addPopupMenuItem(frame, this,
-				new String[] { "Create datasource from selection" },
-				"toc.Selection", false, OrbisGISIcon.TABLE_CREATE_SRC_ICON,
-				wbContext);
 	}
 
 	public static void createSourceFromSelection(DataSource original,
@@ -142,19 +138,17 @@ public class CreateSourceFromMapSelectionPlugIn extends AbstractPlugIn {
 			newds.commit();
 			newds.close();
 		} catch (SourceAlreadyExistsException e) {
-			Services.getService(ErrorManager.class).error("Bug", e);
+			ErrorMessages.error(ErrorMessages.CannotRegisterSource, e);
 		} catch (DriverLoadException e) {
-			Services.getService(ErrorManager.class).error("Bug", e);
+			ErrorMessages.error(ErrorMessages.CannotFindTheDataSource, e);
 		} catch (NoSuchTableException e) {
-			Services.getService(ErrorManager.class).error("Bug", e);
+			ErrorMessages.error(ErrorMessages.CannotFindTheDataSource, e);
 		} catch (DriverException e) {
-			Services.getService(ErrorManager.class).error(
-					"Cannot create source", e);
+			ErrorMessages.error(ErrorMessages.CannotCreateSource, e);
 		} catch (DataSourceCreationException e) {
-			Services.getService(ErrorManager.class).error(
-					"Cannot create source", e);
+			ErrorMessages.error(ErrorMessages.CannotCreateSource, e);
 		} catch (NonEditableDataSourceException e) {
-			Services.getService(ErrorManager.class).error("Bug", e);
+			ErrorMessages.error(ErrorMessages.CannotModifyDataSource, e);
 		}
 	}
 
