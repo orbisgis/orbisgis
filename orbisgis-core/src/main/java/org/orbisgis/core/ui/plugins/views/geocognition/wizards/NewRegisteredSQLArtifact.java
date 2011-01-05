@@ -58,6 +58,7 @@ import org.orbisgis.core.geocognition.Geocognition;
 import org.orbisgis.core.geocognition.GeocognitionElement;
 import org.orbisgis.core.geocognition.GeocognitionElementFactory;
 import org.orbisgis.core.geocognition.GeocognitionFilter;
+import org.orbisgis.core.geocognition.sql.AbstractBuiltInSQLArtifact;
 import org.orbisgis.core.geocognition.sql.GeocognitionBuiltInCustomQuery;
 import org.orbisgis.core.geocognition.sql.GeocognitionBuiltInFunction;
 import org.orbisgis.core.geocognition.sql.GeocognitionCustomQueryFactory;
@@ -81,7 +82,7 @@ public class NewRegisteredSQLArtifact implements INewGeocognitionElement {
 			@Override
 			public Icon getIcon(String contentTypeId,
 					Map<String, String> properties) {
-				if (OrbisGISPersitenceConfig.GeocognitionCustomQueryFactory_id
+				if (OrbisGISPersitenceConfig.GEOCONGITION_CUSTOMQUERY_FACTORY_ID
 						.equals(contentTypeId)) {
 					String registered = properties
 							.get(GeocognitionBuiltInCustomQuery.REGISTERED);
@@ -92,7 +93,7 @@ public class NewRegisteredSQLArtifact implements INewGeocognitionElement {
 					} else {
 						return OrbisGISIcon.BUILT_QUERY_ERR;
 					}
-				} else if (OrbisGISPersitenceConfig.GeocognitionFunctionFactory_ID
+				} else if (OrbisGISPersitenceConfig.GEOCOGNITION_FUNCTION_FACTORY_ID
 						.equals(contentTypeId)) {
 					String registered = properties
 							.get(GeocognitionBuiltInFunction.REGISTERED);
@@ -122,7 +123,7 @@ public class NewRegisteredSQLArtifact implements INewGeocognitionElement {
 					if (element
 							.getTypeId()
 							.equals(
-									OrbisGISPersitenceConfig.GeocognitionCustomQueryFactory_id)) {
+									OrbisGISPersitenceConfig.GEOCONGITION_CUSTOMQUERY_FACTORY_ID)) {
 						Class<? extends CustomQuery> cqClass = (Class<? extends CustomQuery>) element
 								.getObject();
 						if (cqClass != null) {
@@ -133,7 +134,7 @@ public class NewRegisteredSQLArtifact implements INewGeocognitionElement {
 					} else if (element
 							.getTypeId()
 							.equals(
-									OrbisGISPersitenceConfig.GeocognitionFunctionFactory_ID)) {
+									OrbisGISPersitenceConfig.GEOCOGNITION_FUNCTION_FACTORY_ID)) {
 						Class<? extends Function> cqClass = (Class<? extends Function>) element
 								.getObject();
 						return cqClass.newInstance().getDescription();
@@ -174,9 +175,9 @@ public class NewRegisteredSQLArtifact implements INewGeocognitionElement {
 						public boolean accept(GeocognitionElement element) {
 							String typeId = element.getTypeId();
 							if (typeId
-									.equals(OrbisGISPersitenceConfig.GeocognitionCustomQueryFactory_id)
+									.equals(OrbisGISPersitenceConfig.GEOCONGITION_CUSTOMQUERY_FACTORY_ID)
 									|| typeId
-											.equals(OrbisGISPersitenceConfig.GeocognitionFunctionFactory_ID)) {
+											.equals(OrbisGISPersitenceConfig.GEOCOGNITION_FUNCTION_FACTORY_ID)) {
 								return element.getId().toLowerCase().equals(
 										artifactName.toLowerCase());
 							} else {
