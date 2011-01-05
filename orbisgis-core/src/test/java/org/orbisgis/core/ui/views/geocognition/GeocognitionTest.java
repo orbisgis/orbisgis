@@ -9,7 +9,6 @@ import java.io.InputStream;
 
 import junit.framework.TestCase;
 
-import org.orbisgis.core.OrbisGISPersitenceConfig;
 import org.orbisgis.core.OrbisgisCoreServices;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.errorManager.DefaultErrorManager;
@@ -28,6 +27,7 @@ import org.orbisgis.core.workspace.Workspace;
 
 public class GeocognitionTest extends TestCase {
 
+	private static final String STARTUP_GEOCOGNITION_XML = "startup.geocognition.xml";
 	private DefaultGeocognition gc;
 
 	@Override
@@ -50,7 +50,7 @@ public class GeocognitionTest extends TestCase {
 
 	public void testLoadAndCheckInitialGeocognition() throws Exception {
 		InputStream geocognitionStream = GeocognitionView.class
-				.getResourceAsStream(OrbisGISPersitenceConfig.STARTUP_GEOCOGNITION_XML);
+				.getResourceAsStream(GeocognitionTest.STARTUP_GEOCOGNITION_XML);
 		gc.read(geocognitionStream);
 		GeocognitionElement[] elems = gc.getElements(new GeocognitionFilter() {
 
@@ -67,7 +67,7 @@ public class GeocognitionTest extends TestCase {
 
 	public void testLoadInitialMap() throws Exception {
 		InputStream geocognitionStream = GeocognitionView.class
-				.getResourceAsStream(OrbisGISPersitenceConfig.STARTUP_GEOCOGNITION_XML);
+				.getResourceAsStream(GeocognitionTest.STARTUP_GEOCOGNITION_XML);
 		gc.read(geocognitionStream);
 		assertTrue(gc.getGeocognitionElement(GeocognitionView.FIRST_MAP) != null);
 	}
