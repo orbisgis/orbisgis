@@ -37,6 +37,7 @@ package org.orbisgis.core.ui.geocognition;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
+import java.awt.FlowLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -253,7 +254,7 @@ public class GeocognitionView extends JPanel implements WorkbenchFrame {
 
                 // Load startup if it's the first time
                 Workspace ws = Services.getService(Workspace.class);
-                File cognitionFile = ws.getFile(OrbisGISPersitenceConfig.COGNITION_CREATED_FILE);
+                File cognitionFile = ws.getFile(OrbisGISPersitenceConfig.GEOCOGNITION_CREATED_FILE);
                 if (!cognitionFile.exists()) {
                         // Populate on the fly geocognition
                         Geocognition geocognition = Services.getService(Geocognition.class);
@@ -318,7 +319,7 @@ public class GeocognitionView extends JPanel implements WorkbenchFrame {
 
         public void loadStatus() throws PersistenceException {
                 Workspace ws = Services.getService(Workspace.class);
-                File cognitionFile = ws.getFile(OrbisGISPersitenceConfig.COGNITION_CREATED_FILE);
+                File cognitionFile = ws.getFile(OrbisGISPersitenceConfig.GEOCOGNITION_CREATED_FILE);
                 if (cognitionFile.exists()) {
                         try {
                                 Geocognition geocognition = Services.getService(Geocognition.class);
@@ -335,8 +336,8 @@ public class GeocognitionView extends JPanel implements WorkbenchFrame {
         }
 
         public void saveStatus() throws PersistenceException {
-                Workspace ws = (Workspace) Services.getService(Workspace.class);
-                File cognitionFile = ws.getFile(OrbisGISPersitenceConfig.COGNITION_CREATED_FILE);
+                Workspace ws = Services.getService(Workspace.class);
+                File cognitionFile = ws.getFile(OrbisGISPersitenceConfig.GEOCOGNITION_CREATED_FILE);
                 Geocognition geocognition = Services.getService(Geocognition.class);
                 try {
                         BufferedOutputStream os = new BufferedOutputStream(
