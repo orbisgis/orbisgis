@@ -25,7 +25,7 @@ public class GeocognitionBuiltInCustomQuery extends AbstractBuiltInSQLArtifact
 
 	@Override
 	public String getTypeId() {
-		return OrbisGISPersitenceConfig.GeocognitionCustomQueryFactory_id;
+		return OrbisGISPersitenceConfig.GEOCONGITION_CUSTOMQUERY_FACTORY_ID;
 	}
 
 	@SuppressWarnings("unchecked")
