@@ -156,14 +156,14 @@ public class SQLConsoleViewPlugIn extends ViewPlugIn {
 								.getTransferData(geocogFlavor);
 						if (elems.length == 1) {
 							if ((elems[0].getTypeId()
-									.equals(OrbisGISPersitenceConfig.GeocognitionFunctionFactory_ID))) {
+									.equals(OrbisGISPersitenceConfig.GEOCOGNITION_FUNCTION_FACTORY_ID))) {
 								Function f = FunctionManager
 										.getFunction(elems[0].getId());
 								if (f != null) {
 									return f.getSqlOrder();
 								}
 							} else if ((elems[0].getTypeId()
-									.equals(OrbisGISPersitenceConfig.GeocognitionCustomQueryFactory_id))) {
+									.equals(OrbisGISPersitenceConfig.GEOCONGITION_CUSTOMQUERY_FACTORY_ID))) {
 								CustomQuery cq = QueryManager.getQuery(elems[0]
 										.getId());
 								if (cq != null) {
