@@ -290,7 +290,7 @@ public class PlugInContext {
 							return false;
 						break;
 					case CUSTOM_QUERY_IS_NOT_REGISTERED:
-						if (OrbisGISPersitenceConfig.GeocognitionCustomQueryFactory_id
+						if (OrbisGISPersitenceConfig.GEOCONGITION_CUSTOMQUERY_FACTORY_ID
 								.equals(el.getTypeId())) {
 							String registered = el.getProperties().get(
 									GeocognitionBuiltInCustomQuery.REGISTERED);
@@ -302,7 +302,7 @@ public class PlugInContext {
 						}
 						return false;
 					case FUNCTION_QUERY_IS_NOT_REGISTERED:
-						if (OrbisGISPersitenceConfig.GeocognitionFunctionFactory_ID
+						if (OrbisGISPersitenceConfig.GEOCOGNITION_FUNCTION_FACTORY_ID
 								.equals(el.getTypeId())) {
 							String registered = el.getProperties().get(
 									GeocognitionBuiltInFunction.REGISTERED);
@@ -314,7 +314,7 @@ public class PlugInContext {
 						}
 						return false;
 					case CUSTOM_QUERY_IS_REGISTERED:
-						if (OrbisGISPersitenceConfig.GeocognitionCustomQueryFactory_id
+						if (OrbisGISPersitenceConfig.GEOCONGITION_CUSTOMQUERY_FACTORY_ID
 								.equals(el.getTypeId())) {
 							String registered = el.getProperties().get(
 									GeocognitionBuiltInCustomQuery.REGISTERED);
@@ -326,7 +326,7 @@ public class PlugInContext {
 						}
 						return false;
 					case FUNCTION_QUERY_IS_REGISTERED:
-						if (OrbisGISPersitenceConfig.GeocognitionFunctionFactory_ID
+						if (OrbisGISPersitenceConfig.GEOCOGNITION_FUNCTION_FACTORY_ID
 								.equals(el.getTypeId())) {
 							String registered = el.getProperties().get(
 									GeocognitionBuiltInFunction.REGISTERED);
@@ -518,7 +518,7 @@ public class PlugInContext {
 	/****** Tools PlugIns (visibility constraints) ******/
 	public static void checkTool(Automaton automaton) {
 		boolean check = false;
-		EditorManager em = (EditorManager) Services
+			EditorManager em = (EditorManager) Services
 				.getService(EditorManager.class);
 		IEditor editor = em.getActiveEditor();
 		if (editor == null || !(editor instanceof MapEditorPlugIn))
