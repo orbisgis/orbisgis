@@ -297,13 +297,6 @@ public class Catalog extends JPanel implements DragGestureListener,
 		ret.setLayout(new BorderLayout());
 
 		GeocatalogFilterDecorator filter = new GeocatalogFilterDecorator(
-				"geocatalog.filters.AllFilter",
-				I18N
-						.getText("orbisgis.org.orbisgis.core.ui.plugins.views.geocatalog.allFilter"),
-				new AllFilter());
-		listModel.getFilters().add(filter);
-
-		filter = new GeocatalogFilterDecorator(
 				"geocatalog.filters.AllExcludeSystemTable",
 				I18N
 						.getText("orbisgis.org.orbisgis.core.ui.plugins.views.geocatalog.allExceptFilter"),
@@ -449,8 +442,9 @@ public class Catalog extends JPanel implements DragGestureListener,
 					AskValue av = new AskValue(
 							I18N
 									.getText("orbisgis.org.orbisgis.core.ui.plugins.views.geocatalog.newTag"),
-									I18N
-									.getText("orbisgis.org.orbisgis.core.ui.message.askValue.sql"), I18N
+							I18N
+									.getText("orbisgis.org.orbisgis.core.ui.message.askValue.sql"),
+							I18N
 									.getText("orbisgis.org.orbisgis.core.ui.message.askValue.error"));
 					if (UIFactory.showDialog(av)) {
 						String tagText = av.getValue();
