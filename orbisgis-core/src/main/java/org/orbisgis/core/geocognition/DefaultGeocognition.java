@@ -605,6 +605,6 @@ public class DefaultGeocognition implements Geocognition {
 
 	//TODO to be externalized
 	public static String getCognitionContextPath() {
-		return OrbisGISPersitenceConfig.OG_COGNITION_PERSISTENCE_FILE;
+		return OrbisGISPersitenceConfig.GEOCOGNITION_PERSISTENCE_FILE;
 	}
 }

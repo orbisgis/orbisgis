@@ -59,7 +59,7 @@ class FolderElement extends AbstractGeocognitionElement implements
 
 	@Override
 	public String getTypeId() {
-		return OrbisGISPersitenceConfig.GeocognitionFolderElement_ID;
+		return OrbisGISPersitenceConfig.GEOCOGNITION_FOLDER_ELEMENT_ID;
 	}
 
 	@Override
