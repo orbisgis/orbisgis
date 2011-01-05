@@ -684,4 +684,8 @@ public class Catalog extends JPanel implements DragGestureListener,
 		}
 		selectionModel.setValueIsAdjusting(false);
 	}
+
+	public JList getListFilters() {
+		return lstFilters;
+	}
 }

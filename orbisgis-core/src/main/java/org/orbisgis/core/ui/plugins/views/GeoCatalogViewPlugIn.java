@@ -80,6 +80,7 @@ public class GeoCatalogViewPlugIn extends ViewPlugIn {
 
 	public void initialize(PlugInContext context) throws Exception {
 		panel = new Catalog();
+		panel.getListFilters().setSelectedIndex(0);
 		menuItem = context.getFeatureInstaller().addMainMenuItem(this,
 				new String[] { Names.VIEW }, Names.GEOCATALOG, true,
 				OrbisGISIcon.GEOCATALOG_ICON, null, panel, context);
