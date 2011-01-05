@@ -42,10 +42,10 @@ import javax.swing.JButton;
 
 import org.gdms.data.DataSource;
 import org.gdms.driver.DriverException;
-import org.orbisgis.core.Services;
 import org.orbisgis.core.ui.editor.IEditor;
 import org.orbisgis.core.ui.pluginSystem.AbstractPlugIn;
 import org.orbisgis.core.ui.pluginSystem.PlugInContext;
+import org.orbisgis.core.ui.pluginSystem.message.ErrorMessages;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchContext;
 import org.orbisgis.core.ui.preferences.lookandfeel.OrbisGISIcon;
 
@@ -63,7 +63,7 @@ public class RedoTablePlugIn extends AbstractPlugIn {
 		try {
 			dataSource.redo();
 		} catch (DriverException e) {
-			Services.getErrorManager().error("Cannot redo", e);
+			ErrorMessages.error(ErrorMessages.CannotRedo, e);
 		}
 		return true;
 	}

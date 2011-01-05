@@ -69,7 +69,7 @@ public class SelectNonePlugIn extends AbstractPlugIn {
 
 			@Override
 			public String getTaskName() {
-				return "Select none";
+				return Names.POPUP_TABLE_CLEAR_SELECTION;
 			}
 		});
 		return true;
@@ -77,19 +77,19 @@ public class SelectNonePlugIn extends AbstractPlugIn {
 
 	public void initialize(PlugInContext context) throws Exception {
 		WorkbenchContext wbContext = context.getWorkbenchContext();
-		WorkbenchFrame frame = (WorkbenchFrame) wbContext.getWorkbench()
+		WorkbenchFrame frame = wbContext.getWorkbench()
 				.getFrame().getTableEditor();
 		context.getFeatureInstaller().addPopupMenuItem(frame, this,
-				new String[] { Names.POPUP_TABLE_NONE_PATH1 },
-				Names.POPUP_TABLE_NONE_GROUP, false,
-				OrbisGISIcon.EDIT_CLEAR, wbContext);
+				new String[] { Names.POPUP_TABLE_CLEAR_SELECTION },
+				Names.POPUP_TABLE_NONE_GROUP, false, OrbisGISIcon.EDIT_CLEAR,
+				wbContext);
 	}
 
 	public boolean isEnabled() {
 		boolean isEnabled = false;
 		IEditor editor = null;
-		if((editor=getPlugInContext().getTableEditor()) != null
-				&& getSelectedColumn() ==-1){
+		if ((editor = getPlugInContext().getTableEditor()) != null
+				&& getSelectedColumn() == -1) {
 
 			final TableEditableElement element = (TableEditableElement) editor
 					.getElement();

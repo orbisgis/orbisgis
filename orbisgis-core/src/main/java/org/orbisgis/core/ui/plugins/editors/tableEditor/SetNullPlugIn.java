@@ -42,16 +42,15 @@ import org.gdms.driver.DriverException;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.background.BackgroundJob;
 import org.orbisgis.core.background.BackgroundManager;
-import org.orbisgis.core.errorManager.ErrorManager;
 import org.orbisgis.core.ui.editor.IEditor;
 import org.orbisgis.core.ui.editors.table.TableComponent;
 import org.orbisgis.core.ui.editors.table.TableEditableElement;
 import org.orbisgis.core.ui.pluginSystem.AbstractPlugIn;
 import org.orbisgis.core.ui.pluginSystem.PlugInContext;
+import org.orbisgis.core.ui.pluginSystem.message.ErrorMessages;
 import org.orbisgis.core.ui.pluginSystem.workbench.Names;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchContext;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchFrame;
-import org.orbisgis.core.ui.plugins.views.TableEditorPlugIn;
 import org.orbisgis.progress.IProgressMonitor;
 
 public class SetNullPlugIn extends AbstractPlugIn {
@@ -77,8 +76,7 @@ public class SetNullPlugIn extends AbstractPlugIn {
 											getEvent().getPoint()),
 							ValueFactory.createNullValue());
 				} catch (DriverException e) {
-					Services.getService(ErrorManager.class).error(
-							"Cannot set null", e);
+					ErrorMessages.error(ErrorMessages.CannotSetNullValue, e);
 				}
 			}
 
@@ -92,7 +90,7 @@ public class SetNullPlugIn extends AbstractPlugIn {
 
 	public void initialize(PlugInContext context) throws Exception {
 		WorkbenchContext wbContext = context.getWorkbenchContext();
-		WorkbenchFrame frame = (WorkbenchFrame) wbContext.getWorkbench()
+		WorkbenchFrame frame = wbContext.getWorkbench()
 				.getFrame().getTableEditor();
 		context.getFeatureInstaller().addPopupMenuItem(frame, this,
 				new String[] { Names.POPUP_TABLE_SETNULL_PATH1 },
@@ -108,7 +106,7 @@ public class SetNullPlugIn extends AbstractPlugIn {
 		if ((editor = getPlugInContext().getTableEditor()) != null
 				&& getSelectedColumn() == -1 && getEvent() != null) {
 
-			editor = (TableEditorPlugIn) editor;
+			editor = editor;
 			TableEditableElement element = (TableEditableElement) editor
 					.getElement();
 			if (element.getSelection().getSelectedRows().length > 0) {
@@ -122,8 +120,7 @@ public class SetNullPlugIn extends AbstractPlugIn {
 						isEnabled = element.isEditable()
 								&& !element.getDataSource().isNull(row, column);
 					} catch (DriverException e) {
-						Services.getService(ErrorManager.class).error(
-								"Cannot set null row", e);
+						ErrorMessages.error(ErrorMessages.CannotTestNullValue, e);
 						return false;
 					}
 				}

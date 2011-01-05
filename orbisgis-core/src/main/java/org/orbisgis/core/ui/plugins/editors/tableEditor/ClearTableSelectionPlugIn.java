@@ -51,6 +51,7 @@ import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchContext;
 import org.orbisgis.core.ui.plugins.views.TableEditorPlugIn;
 import org.orbisgis.core.ui.preferences.lookandfeel.OrbisGISIcon;
 import org.orbisgis.progress.IProgressMonitor;
+import org.orbisgis.utils.I18N;
 
 public class ClearTableSelectionPlugIn extends AbstractPlugIn {
 
@@ -58,6 +59,8 @@ public class ClearTableSelectionPlugIn extends AbstractPlugIn {
 
 	public ClearTableSelectionPlugIn() {
 		btn = new JButton(OrbisGISIcon.EDIT_CLEAR);
+		btn.setToolTipText(I18N
+				.getText("orbisgis.ui.popupmenu.table.clearSelection"));
 	}
 
 	public boolean execute(final PlugInContext context) throws Exception {
@@ -75,7 +78,7 @@ public class ClearTableSelectionPlugIn extends AbstractPlugIn {
 
 			@Override
 			public String getTaskName() {
-				return "Clear selection";
+				return I18N.getText("orbisgis.ui.popupmenu.table.clearSelection");
 			}
 		});
 		return true;

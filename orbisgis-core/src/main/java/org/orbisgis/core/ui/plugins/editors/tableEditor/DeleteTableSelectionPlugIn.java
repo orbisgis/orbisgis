@@ -51,12 +51,14 @@ import org.orbisgis.core.ui.editor.IEditor;
 import org.orbisgis.core.ui.editors.table.TableEditableElement;
 import org.orbisgis.core.ui.pluginSystem.AbstractPlugIn;
 import org.orbisgis.core.ui.pluginSystem.PlugInContext;
+import org.orbisgis.core.ui.pluginSystem.message.ErrorMessages;
 import org.orbisgis.core.ui.pluginSystem.workbench.Names;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchContext;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchFrame;
 import org.orbisgis.core.ui.plugins.views.TableEditorPlugIn;
 import org.orbisgis.core.ui.preferences.lookandfeel.OrbisGISIcon;
 import org.orbisgis.progress.IProgressMonitor;
+import org.orbisgis.utils.I18N;
 
 public class DeleteTableSelectionPlugIn extends AbstractPlugIn {
 
@@ -64,6 +66,8 @@ public class DeleteTableSelectionPlugIn extends AbstractPlugIn {
 
 	public DeleteTableSelectionPlugIn() {
 		btn = new JButton(OrbisGISIcon.REMOVE);
+		btn.setToolTipText(I18N
+				.getText("orbisgis.ui.popupmenu.table.deleteFromSelection"));
 	}
 
 	public boolean execute(final PlugInContext context) throws Exception {
@@ -81,7 +85,8 @@ public class DeleteTableSelectionPlugIn extends AbstractPlugIn {
 
 			@Override
 			public String getTaskName() {
-				return "Delete selection";
+				return I18N
+						.getText("orbisgis.ui.popupmenu.table.cannotDeleteFromSelection");
 			}
 		});
 		return true;
@@ -89,7 +94,7 @@ public class DeleteTableSelectionPlugIn extends AbstractPlugIn {
 
 	public void initialize(PlugInContext context) throws Exception {
 		WorkbenchContext wbContext = context.getWorkbenchContext();
-		WorkbenchFrame frame = (WorkbenchFrame) wbContext.getWorkbench()
+		WorkbenchFrame frame = wbContext.getWorkbench()
 				.getFrame().getTableEditor();
 		wbContext.getWorkbench().getFrame().getEditionTableToolBar().addPlugIn(
 				this, btn, context);
@@ -98,7 +103,6 @@ public class DeleteTableSelectionPlugIn extends AbstractPlugIn {
 				Names.POPUP_TABLE_REMOVE_GROUP, false,
 				OrbisGISIcon.REMOVE, wbContext);
 	}
-
 
 	public static void removeSelection(TableEditableElement element) {
 		int[] sel = element.getSelection().getSelectedRows().clone();
@@ -111,23 +115,21 @@ public class DeleteTableSelectionPlugIn extends AbstractPlugIn {
 			}
 			dataSource.setDispatchingMode(DataSource.DISPATCH);
 		} catch (DriverException e) {
-			Services.getErrorManager().error("Cannot delete selected features",
-					e);
+			ErrorMessages.error(ErrorMessages.CannotDeleteSelectedRow, e);
 		}
 	}
 
 	public boolean isEnabled() {
 		boolean isEnabled = false;
 		TableEditorPlugIn tableEditor = null;
-		if((tableEditor=getPlugInContext().getTableEditor()) != null
-				&& getSelectedColumn()==-1){
+		if ((tableEditor = getPlugInContext().getTableEditor()) != null
+				&& getSelectedColumn() == -1) {
 			TableEditableElement element = (TableEditableElement) tableEditor
 					.getElement();
-			if(element.getSelection().getSelectedRows().length > 0) {
-				if( element.isEditable() ) {
+			if (element.getSelection().getSelectedRows().length > 0) {
+				if (element.isEditable()) {
 					isEnabled = true;
-				}
-				else if( element.getMapContext() == null ) {
+				} else if (element.getMapContext() == null) {
 					isEnabled = element.getDataSource().isEditable();
 				}
 			}

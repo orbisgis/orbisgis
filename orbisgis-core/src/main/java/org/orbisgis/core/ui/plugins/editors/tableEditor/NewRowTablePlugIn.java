@@ -45,19 +45,19 @@ import javax.swing.JButton;
 import org.gdms.data.DataSource;
 import org.gdms.driver.DriverException;
 import org.gdms.sql.strategies.IncompatibleTypesException;
-import org.orbisgis.core.Services;
-import org.orbisgis.core.errorManager.ErrorManager;
 import org.orbisgis.core.sif.UIFactory;
 import org.orbisgis.core.ui.components.sif.AskValidRow;
 import org.orbisgis.core.ui.editor.IEditor;
 import org.orbisgis.core.ui.editors.table.TableEditableElement;
 import org.orbisgis.core.ui.pluginSystem.AbstractPlugIn;
 import org.orbisgis.core.ui.pluginSystem.PlugInContext;
+import org.orbisgis.core.ui.pluginSystem.message.ErrorMessages;
 import org.orbisgis.core.ui.pluginSystem.workbench.Names;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchContext;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchFrame;
 import org.orbisgis.core.ui.plugins.views.TableEditorPlugIn;
 import org.orbisgis.core.ui.preferences.lookandfeel.OrbisGISIcon;
+import org.orbisgis.utils.I18N;
 
 public class NewRowTablePlugIn extends AbstractPlugIn {
 
@@ -65,6 +65,7 @@ public class NewRowTablePlugIn extends AbstractPlugIn {
 
 	public NewRowTablePlugIn() {
 		btn = new JButton(OrbisGISIcon.TABLE_ADDROW);
+		btn.setToolTipText(I18N.getText(Names.POPUP_TABLE_ADDROW));
 	}
 
 	public boolean execute(PlugInContext context) throws Exception {
@@ -77,7 +78,7 @@ public class NewRowTablePlugIn extends AbstractPlugIn {
 
 	public void initialize(PlugInContext context) throws Exception {
 		WorkbenchContext wbContext = context.getWorkbenchContext();
-		WorkbenchFrame frame = (WorkbenchFrame) wbContext.getWorkbench()
+		WorkbenchFrame frame = wbContext.getWorkbench()
 				.getFrame().getTableEditor();
 		wbContext.getWorkbench().getFrame().getEditionTableToolBar().addPlugIn(
 				this, btn, context);
@@ -90,36 +91,35 @@ public class NewRowTablePlugIn extends AbstractPlugIn {
 	public static void addRow(TableEditableElement element) {
 		DataSource ds = element.getDataSource();
 		try {
-			AskValidRow rowInput = new AskValidRow("Introduce row values", ds);
+			AskValidRow rowInput = new AskValidRow(
+					I18N
+							.getText("orbisgis.ui.popupmenu.table.addRow.introduceValue"),
+					ds);
 			if (UIFactory.showDialog(rowInput)) {
 				ds.insertFilledRow(rowInput.getRow());
 			}
 		} catch (IllegalArgumentException e) {
-			Services.getService(ErrorManager.class).error("Cannot add row", e);
+			ErrorMessages.error(ErrorMessages.CannotInsertANewRow, e);
 		} catch (IncompatibleTypesException e) {
-			Services.getService(ErrorManager.class).error(
-					"Incompatible types at insertion", e);
+			ErrorMessages.error(ErrorMessages.IncompatibleFieldTypes, e);
 		} catch (DriverException e) {
-			Services.getService(ErrorManager.class).error("Data access error",
-					e);
+			ErrorMessages.error(ErrorMessages.DataError, e);
 		} catch (ParseException e) {
-			Services.getService(ErrorManager.class).error("Unrecognized input",
-					e);
+			ErrorMessages.error(ErrorMessages.BadInputValue, e);
 		}
 	}
 
 	public boolean isEnabled() {
 		boolean isEnabled = false;
 		TableEditorPlugIn tableEditor = null;
-		if((tableEditor=getPlugInContext().getTableEditor()) != null
-				&& getSelectedColumn()==-1){
+		if ((tableEditor = getPlugInContext().getTableEditor()) != null
+				&& getSelectedColumn() == -1) {
 			TableEditableElement element = (TableEditableElement) tableEditor
 					.getElement();
-			if(element.getSelection().getSelectedRows().length == 1) {
-				if( element.isEditable() ) {
+			if (element.getSelection().getSelectedRows().length == 1) {
+				if (element.isEditable()) {
 					isEnabled = true;
-				}
-				else if( element.getMapContext() == null ) {
+				} else if (element.getMapContext() == null) {
 					isEnabled = element.getDataSource().isEditable();
 				}
 			}

@@ -42,12 +42,13 @@ import javax.swing.JButton;
 
 import org.gdms.data.DataSource;
 import org.gdms.driver.DriverException;
-import org.orbisgis.core.Services;
 import org.orbisgis.core.ui.editor.IEditor;
 import org.orbisgis.core.ui.pluginSystem.AbstractPlugIn;
 import org.orbisgis.core.ui.pluginSystem.PlugInContext;
+import org.orbisgis.core.ui.pluginSystem.message.ErrorMessages;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchContext;
 import org.orbisgis.core.ui.preferences.lookandfeel.OrbisGISIcon;
+import org.orbisgis.utils.I18N;
 
 public class UndoTablePlugIn extends AbstractPlugIn {
 
@@ -55,6 +56,7 @@ public class UndoTablePlugIn extends AbstractPlugIn {
 
 	public UndoTablePlugIn() {
 		btn = new JButton(OrbisGISIcon.UNDO_ICON);
+		btn.setToolTipText(I18N.getText("orbisgis.org.orbisgis.core.ui.plugins.editors.tableEditor.undo"));
 	}
 
 	@Override
@@ -64,7 +66,7 @@ public class UndoTablePlugIn extends AbstractPlugIn {
 		try {
 			dataSource.undo();
 		} catch (DriverException e) {
-			Services.getErrorManager().error("Cannot undo", e);
+			ErrorMessages.error(ErrorMessages.CannotUndo, e);
 		}
 		return true;
 	}

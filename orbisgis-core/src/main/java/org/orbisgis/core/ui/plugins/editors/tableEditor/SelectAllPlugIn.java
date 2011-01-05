@@ -39,12 +39,11 @@
 package org.orbisgis.core.ui.plugins.editors.tableEditor;
 
 import org.gdms.driver.DriverException;
-import org.orbisgis.core.Services;
-import org.orbisgis.core.errorManager.ErrorManager;
 import org.orbisgis.core.ui.editor.IEditor;
 import org.orbisgis.core.ui.editors.table.TableEditableElement;
 import org.orbisgis.core.ui.pluginSystem.AbstractPlugIn;
 import org.orbisgis.core.ui.pluginSystem.PlugInContext;
+import org.orbisgis.core.ui.pluginSystem.message.ErrorMessages;
 import org.orbisgis.core.ui.pluginSystem.workbench.Names;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchContext;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchFrame;
@@ -60,15 +59,14 @@ public class SelectAllPlugIn extends AbstractPlugIn {
 			element.getSelection().selectInterval(0,
 					(int) element.getDataSource().getRowCount() - 1);
 		} catch (DriverException e) {
-			Services.getService(ErrorManager.class).error(
-					"Cannot get the number of rows", e);
+			ErrorMessages.error(ErrorMessages.CannotObtainNumberRows, e);
 		}
 		return true;
 	}
 
 	public void initialize(PlugInContext context) throws Exception {
 		WorkbenchContext wbContext = context.getWorkbenchContext();
-		WorkbenchFrame frame = (WorkbenchFrame) wbContext.getWorkbench()
+		WorkbenchFrame frame = wbContext.getWorkbench()
 				.getFrame().getTableEditor();
 		context.getFeatureInstaller().addPopupMenuItem(frame, this,
 				new String[] { Names.POPUP_TABLE_SELECT_ALLROW },
@@ -89,8 +87,7 @@ public class SelectAllPlugIn extends AbstractPlugIn {
 						.getSelection().getSelectedRows().length;
 
 			} catch (DriverException e) {
-				Services.getService(ErrorManager.class).error(
-						"Cannot read source", e);
+				ErrorMessages.error(ErrorMessages.CannotReadSource, e);
 				isEnabled = false;
 			}
 		}
