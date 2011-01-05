@@ -71,6 +71,7 @@ import org.gdms.driver.ReadOnlyDriver;
 import org.gdms.driver.driverManager.DriverLoadException;
 import org.gdms.source.SourceEvent;
 import org.gdms.source.SourceListener;
+import org.gdms.source.SourceManager;
 import org.gdms.source.SourceRemovalEvent;
 import org.gdms.sql.function.Argument;
 import org.gdms.sql.function.Arguments;
@@ -723,10 +724,15 @@ public class SQLCompletionProvider extends DefaultCompletionProvider implements 
                 // this is an expensive operation that should only be done once
                 try {
                         DataSource ds = dataManager.getDataSourceFactory().getDataSource(sourceName);
-                        ds.open();
                         ReadOnlyDriver d = ds.getDriver();
-                        m = d.getMetadata();
-                        ds.close();
+                        if ((d.getType() & SourceManager.RASTER) == SourceManager.RASTER) {
+                                // this is a raster : easy !
+                                m = d.getMetadata();
+                        } else {
+                                ds.open();
+                                m = d.getMetadata();
+                                ds.close();
+                        }
                         // then we cache it
                         cachedMetadatas.put(sourceName, m);
                         return m;

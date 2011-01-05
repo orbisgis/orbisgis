@@ -68,6 +68,7 @@ import org.orbisgis.wkt.parser.ParseException;
 
 public abstract class AbstractRasterDriver implements FileReadWriteDriver {
 
+        public static final String RASTER_COLUMN_NAME = "raster";
         protected GeoRaster geoRaster;
         protected RasterMetadata metadata;
         protected Envelope envelope;
@@ -170,14 +171,20 @@ public abstract class AbstractRasterDriver implements FileReadWriteDriver {
                 DefaultMetadata metadata = new DefaultMetadata();
                 try {
                         Constraint[] c = null;
-                        // adding SRID constraint
-                        if (srid != -1) {
-                                c = new Constraint[] {new RasterTypeConstraint(geoRaster.getType()),
-                                new SRIDConstraint(srid)};
+                        if (geoRaster != null) {
+                                
+                                // adding SRID constraint
+                                if (srid != -1) {
+                                        c = new Constraint[]{new RasterTypeConstraint(geoRaster.getType()),
+                                                        new SRIDConstraint(srid)};
+                                } else {
+                                        c = new Constraint[]{new RasterTypeConstraint(geoRaster.getType())};
+                                }
                         } else {
-                                c = new Constraint[] {new RasterTypeConstraint(geoRaster.getType())};
+                                c = new Constraint[0];
                         }
-                        metadata.addField("raster", TypeFactory.createType(Type.RASTER,c));
+                        metadata.addField(RASTER_COLUMN_NAME, TypeFactory.createType(Type.RASTER, c));
+
                 } catch (IOException e) {
                         throw new DriverException("Cannot read the raster type", e);
                 }
