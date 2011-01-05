@@ -87,7 +87,7 @@ public class GeocognitionUnRegisterBuiltInFunctionPlugIn extends AbstractPlugIn 
 
 	@SuppressWarnings("unchecked")
 	public void execute(Geocognition geocognition, GeocognitionElement element) {
-		if (OrbisGISPersitenceConfig.GeocognitionFunctionFactory_ID.equals(element
+		if (OrbisGISPersitenceConfig.GEOCOGNITION_FUNCTION_FACTORY_ID.equals(element
 				.getTypeId())) {
 			Class<? extends Function> fnc = (Class<? extends Function>) element
 					.getObject();
