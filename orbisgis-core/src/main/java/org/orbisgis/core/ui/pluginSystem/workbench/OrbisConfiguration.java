@@ -36,21 +36,21 @@
 package org.orbisgis.core.ui.pluginSystem.workbench;
 
 import java.io.File;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
+
 import javax.swing.AbstractButton;
 import javax.swing.ImageIcon;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.event.MenuEvent;
 import javax.swing.event.MenuListener;
+
 import org.gdms.driver.FileDriver;
 import org.gdms.driver.driverManager.Driver;
 import org.gdms.driver.driverManager.DriverManager;
 import org.gdms.source.SourceManager;
 import org.orbisgis.core.DataManager;
-
 import org.orbisgis.core.Services;
 import org.orbisgis.core.ui.editors.map.tool.Automaton;
 import org.orbisgis.core.ui.editors.map.tools.CompassTool;
@@ -84,7 +84,6 @@ import org.orbisgis.core.ui.plugins.editors.mapEditor.ExportMapAsImagePlugIn;
 import org.orbisgis.core.ui.plugins.editors.mapEditor.ExportMapAsPDFPlugIn;
 import org.orbisgis.core.ui.plugins.editors.mapEditor.FullExtentPlugIn;
 import org.orbisgis.core.ui.plugins.editors.mapEditor.RedoMapPlugIn;
-import org.orbisgis.core.ui.plugins.editors.mapEditor.ScalePlugIn;
 import org.orbisgis.core.ui.plugins.editors.mapEditor.ShowXYPlugIn;
 import org.orbisgis.core.ui.plugins.editors.mapEditor.UndoMapPlugIn;
 import org.orbisgis.core.ui.plugins.editors.mapEditor.ZoomToSelectedFeaturesPlugIn;
@@ -93,7 +92,6 @@ import org.orbisgis.core.ui.plugins.editors.tableEditor.AddFieldPlugIn;
 import org.orbisgis.core.ui.plugins.editors.tableEditor.AddValuePlugIn;
 import org.orbisgis.core.ui.plugins.editors.tableEditor.ChangeFieldNamePlugIn;
 import org.orbisgis.core.ui.plugins.editors.tableEditor.ClearTableSelectionPlugIn;
-import org.orbisgis.core.ui.plugins.editors.tableEditor.CreateSourceFromTableSelectionPlugIn;
 import org.orbisgis.core.ui.plugins.editors.tableEditor.DeleteTableSelectionPlugIn;
 import org.orbisgis.core.ui.plugins.editors.tableEditor.NewRowTablePlugIn;
 import org.orbisgis.core.ui.plugins.editors.tableEditor.RedoTablePlugIn;
@@ -137,8 +135,8 @@ import org.orbisgis.core.ui.plugins.views.geocatalog.GeocatalogDeleteSourcePlugI
 import org.orbisgis.core.ui.plugins.views.geocatalog.GeocatalogSaveInDataBasePlugIn;
 import org.orbisgis.core.ui.plugins.views.geocatalog.GeocatalogSaveInFilePlugIn;
 import org.orbisgis.core.ui.plugins.views.geocatalog.GeocatalogShowTablePlugIn;
-import org.orbisgis.core.ui.plugins.views.geocatalog.NewGeocatalogFolderPlugIn;
 import org.orbisgis.core.ui.plugins.views.geocatalog.NewGeocatalogFilePlugIn;
+import org.orbisgis.core.ui.plugins.views.geocatalog.NewGeocatalogFolderPlugIn;
 import org.orbisgis.core.ui.plugins.views.geocatalog.NewGeocognitionDBPlugIn;
 import org.orbisgis.core.ui.plugins.views.geocatalog.WMSGeocatalogPlugIn;
 import org.orbisgis.core.ui.plugins.views.geocognition.GeocognitionAddMapPlugIn;
@@ -242,7 +240,6 @@ public class OrbisConfiguration implements Setup {
 	private UndoTablePlugIn undoTablePlugIn = new UndoTablePlugIn();
 	private NewRowTablePlugIn newRowTablePlugIn = new NewRowTablePlugIn();
 	private RedoTablePlugIn redoTablePlugIn = new RedoTablePlugIn();
-	private CreateSourceFromTableSelectionPlugIn createSourceFromSelectionPlugIn = new CreateSourceFromTableSelectionPlugIn();
 
 	// Map editor PlugIn
 	private FullExtentPlugIn fullExtentPlugIn = new FullExtentPlugIn();
@@ -466,7 +463,6 @@ public class OrbisConfiguration implements Setup {
 		selectionTableUpPlugIn.initialize(plugInContext);
 		deleteTableSelectionPlugIn.initialize(plugInContext);
 		newRowTablePlugIn.initialize(plugInContext);
-		createSourceFromSelectionPlugIn.initialize(plugInContext);
 
 		// Map tools
 		// scalePlugIn.initialize(plugInContext);
@@ -583,7 +579,8 @@ public class OrbisConfiguration implements Setup {
 		if (index >= 0 && index < fileName.length()) {
 
 			String ext = fileName.substring(index + 1);
-			return OrbisConfiguration.SUPPORTED_EXTENSIONS.contains(ext.toLowerCase());
+			return OrbisConfiguration.SUPPORTED_EXTENSIONS.contains(ext
+					.toLowerCase());
 		}
 		return false;
 	}
