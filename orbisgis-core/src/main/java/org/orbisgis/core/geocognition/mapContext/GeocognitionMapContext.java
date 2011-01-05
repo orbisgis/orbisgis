@@ -53,7 +53,7 @@ public class GeocognitionMapContext extends AbstractExtensionElement implements
 
 	@Override
 	public String getTypeId() {
-		return OrbisGISPersitenceConfig.GeocognitionMapContextFactory_id;
+		return OrbisGISPersitenceConfig.GEOCOGNITION_MAPCONTEXT_FACTORY_ID;
 	}
 
 	@Override

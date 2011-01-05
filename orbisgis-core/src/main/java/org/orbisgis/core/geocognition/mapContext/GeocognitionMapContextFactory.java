@@ -43,7 +43,7 @@ public class GeocognitionMapContextFactory implements
 
 	@Override
 	public boolean acceptContentTypeId(String typeId) {
-		return OrbisGISPersitenceConfig.GeocognitionMapContextFactory_id
+		return OrbisGISPersitenceConfig.GEOCOGNITION_MAPCONTEXT_FACTORY_ID
 				.equals(typeId);
 	}
 
