@@ -67,6 +67,7 @@ import net.infonode.docking.theme.ShapedGradientDockingTheme;
 
 import org.apache.log4j.Logger;
 import org.orbisgis.core.ApplicationInfo;
+import org.orbisgis.core.OrbisGISPersitenceConfig;
 import org.orbisgis.core.PersistenceException;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.ui.components.job.JobPopup;
@@ -74,12 +75,11 @@ import org.orbisgis.core.ui.editor.EditorListener;
 import org.orbisgis.core.ui.editor.IEditor;
 import org.orbisgis.core.ui.editorViews.toc.Toc;
 import org.orbisgis.core.ui.editors.table.TableComponent;
-import org.orbisgis.core.ui.geocognition.GeocognitionView;
 import org.orbisgis.core.ui.pluginSystem.workbench.Names;
 import org.orbisgis.core.ui.pluginSystem.workbench.OrbisWorkbench;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchContext;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchToolBar;
-import org.orbisgis.core.ui.plugins.actions.ExitPlugIn;
+import org.orbisgis.core.ui.plugins.orbisgisFrame.ExitPlugIn;
 import org.orbisgis.core.ui.plugins.views.GeoCatalogViewPlugIn;
 import org.orbisgis.core.ui.plugins.views.GeocognitionViewPlugIn;
 import org.orbisgis.core.ui.plugins.views.MapEditorPlugIn;
@@ -88,6 +88,7 @@ import org.orbisgis.core.ui.plugins.views.TocViewPlugIn;
 import org.orbisgis.core.ui.plugins.views.ViewDecorator;
 import org.orbisgis.core.ui.plugins.views.editor.EditorManager;
 import org.orbisgis.core.ui.plugins.views.geocatalog.Catalog;
+import org.orbisgis.core.ui.plugins.views.geocognition.GeocognitionView;
 import org.orbisgis.core.ui.preferences.lookandfeel.OrbisGISIcon;
 import org.orbisgis.core.ui.window.IWindow;
 import org.orbisgis.core.workspace.Workspace;
@@ -96,10 +97,8 @@ import org.orbisgis.utils.I18N;
 public class OrbisGISFrame extends JFrame implements IWindow {
 
 	private static final Logger logger = Logger.getLogger(OrbisGISFrame.class);
-	private static final String LAYOUT_PERSISTENCE_FILE = "org.orbisgis.core.ui.ViewLayout.obj";
 	private JMenuBar actionMenuBar;
 	private JobPopup jobPopup;
-
 
 	private WorkbenchToolBar workbenchToolBar;
 
@@ -287,12 +286,9 @@ public class OrbisGISFrame extends JFrame implements IWindow {
 
 		});
 
-		
-
 		/* Job popup at bootom right to follow processes loading */
 		jobPopup = new JobPopup(this);
 		jobPopup.initialize();
-
 
 		// A panel to display the statustoolbar on the left side and the
 		// viewtoolbar on the rigth side
@@ -356,7 +352,7 @@ public class OrbisGISFrame extends JFrame implements IWindow {
 		if (!perspectiveLoaded) {
 			// Load default perspective
 			loadPerspective(OrbisGISFrame.class
-					.getResourceAsStream(LAYOUT_PERSISTENCE_FILE));
+					.getResourceAsStream(OrbisGISPersitenceConfig.LAYOUT_PERSISTENCE_FILE));
 		}
 		this.setVisible(true);
 
@@ -442,18 +438,26 @@ public class OrbisGISFrame extends JFrame implements IWindow {
 
 		this.getContentPane().add(root, BorderLayout.CENTER);
 
+		loadWorkspacePerspective();
+
+	}
+
+	/**
+	 * Method to load the workspace perspective used by docking window.
+	 */
+	private void loadWorkspacePerspective() {
 		Workspace ws = (Workspace) Services.getService(Workspace.class);
 		FileInputStream layoutStream;
 		try {
 			layoutStream = new FileInputStream(ws
-					.getFile(LAYOUT_PERSISTENCE_FILE));
+					.getFile(OrbisGISPersitenceConfig.LAYOUT_PERSISTENCE_FILE));
 			loadPerspective(layoutStream);
 		} catch (FileNotFoundException e) {
 			logger.error("Could not recover perspective, missing file", e);
 		}
 	}
 
-	private void loadPerspective(InputStream layoutStream) {
+	public void loadPerspective(InputStream layoutStream) {
 		try {
 			ObjectInputStream ois = new ObjectInputStream(layoutStream);
 			root.read(ois);
@@ -469,7 +473,7 @@ public class OrbisGISFrame extends JFrame implements IWindow {
 		try {
 			Workspace ws = (Workspace) Services.getService(Workspace.class);
 			FileOutputStream fos = new FileOutputStream(ws
-					.getFile(LAYOUT_PERSISTENCE_FILE));
+					.getFile(OrbisGISPersitenceConfig.LAYOUT_PERSISTENCE_FILE));
 			ObjectOutputStream oos = new ObjectOutputStream(fos);
 			root.write(oos);
 			oos.close();

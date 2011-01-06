@@ -1,7 +1,8 @@
-package org.orbisgis.core.ui.geocatalog.newSourceWizards.wms;
+package org.orbisgis.core.ui.plugins.views.geocatalog.newSourceWizards.wms;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
@@ -12,11 +13,11 @@ import java.net.URL;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
-import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 
 import org.gvsig.remoteClient.wms.WMSClient;
@@ -33,12 +34,24 @@ public class WMSConnectionPanel extends JPanel implements SQLUIPanel {
 
 	private static final String TITLE_PREFIX = "Name:";
 	private static final String VERSION_PREFIX = "Version:";
-	private JTextField txtURL;
+	private JComboBox txtURL;
 	private JLabel lblVersion;
 	private JLabel lblTitle;
 	private JTextArea txtDescription;
 
 	private WMSClient client;
+
+	private static final String[] servers = new String[] {
+			// "http://hypercube.telascience.org/cgi-bin/mapserv?map=/geo/haiti/mapfiles/4326.map&",
+			"http://cartorisque.prim.net/wms/france",
+			"http://osm.wheregroup.com/cgi-bin/osm_basic.xml?SERVICE=WMS&",
+			"http://services.sandre.eaufrance.fr/geo/zonage",
+			"http://services.sandre.eaufrance.fr/geo/stations",
+			"http://services.sandre.eaufrance.fr/geo/ouvrage"
+	// "http://mapserver.flightgear.org/cgi-bin/landcover",
+	// "http://wms.jpl.nasa.gov/wms.cgi",
+	// "http://nasa.network.com/wms"
+	};
 
 	public WMSConnectionPanel() {
 		GridBagLayout gl = new GridBagLayout();
@@ -53,7 +66,10 @@ public class WMSConnectionPanel extends JPanel implements SQLUIPanel {
 		c.weighty = 0;
 		JPanel pnlURL = new JPanel();
 		pnlURL.setBorder(BorderFactory.createTitledBorder("Server URL"));
-		txtURL = new JTextField(40);
+		txtURL = new JComboBox(servers);
+		txtURL.setEditable(true);
+		txtURL.setMaximumSize(new Dimension(100, 20));
+
 		JButton btnConnect = new JButton("Connect...");
 		btnConnect.addActionListener(new ActionListener() {
 
@@ -87,7 +103,7 @@ public class WMSConnectionPanel extends JPanel implements SQLUIPanel {
 		txtDescription.setEditable(false);
 		JScrollPane comp = new JScrollPane(txtDescription);
 		pnlInfo.add(comp, BorderLayout.CENTER);
-		this.add(pnlInfo, c);
+		this.add(pnlInfo, c);		
 	}
 
 	private void connect() {
@@ -96,7 +112,7 @@ public class WMSConnectionPanel extends JPanel implements SQLUIPanel {
 
 			@Override
 			public void run(IProgressMonitor pm) {
-				String wmsURL = txtURL.getText().trim();
+				String wmsURL = txtURL.getSelectedItem().toString().trim();
 				try {
 					client = WMSClientPool.getWMSClient(wmsURL);
 					client.getCapabilities(null, false, null);
@@ -185,12 +201,19 @@ public class WMSConnectionPanel extends JPanel implements SQLUIPanel {
 
 	@Override
 	public String[] getValues() {
-		return new String[] { txtURL.getText() };
+		Object[] items = txtURL.getSelectedObjects();
+		String[] values = new String[items.length];
+		for (int i = 0; i < items.length; i++) {
+			values[i] = items[i].toString();
+		}
+
+		return values;
 	}
 
 	@Override
 	public void setValue(String fieldName, String fieldValue) {
-		txtURL.setText(fieldValue);
+		txtURL.addItem(fieldValue);
+		txtURL.setSelectedItem(fieldValue);
 	}
 
 	@Override

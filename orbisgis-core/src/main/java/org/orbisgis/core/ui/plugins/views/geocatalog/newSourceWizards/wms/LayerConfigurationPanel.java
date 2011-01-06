@@ -1,4 +1,4 @@
-package org.orbisgis.core.ui.geocatalog.newSourceWizards.wms;
+package org.orbisgis.core.ui.plugins.views.geocatalog.newSourceWizards.wms;
 
 import java.awt.Component;
 import java.awt.Dimension;

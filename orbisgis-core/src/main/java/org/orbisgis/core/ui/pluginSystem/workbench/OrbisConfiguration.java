@@ -76,7 +76,6 @@ import org.orbisgis.core.ui.editors.map.tools.raster.RasterInfoTool;
 import org.orbisgis.core.ui.editors.map.tools.raster.WandTool;
 import org.orbisgis.core.ui.editors.map.tools.raster.WatershedTool;
 import org.orbisgis.core.ui.pluginSystem.PlugInContext;
-import org.orbisgis.core.ui.plugins.actions.ExitPlugIn;
 import org.orbisgis.core.ui.plugins.editors.mapEditor.ClearMapSelectionPlugIn;
 import org.orbisgis.core.ui.plugins.editors.mapEditor.CreateSourceFromMapSelectionPlugIn;
 import org.orbisgis.core.ui.plugins.editors.mapEditor.DeleteMapSelectionPlugIn;
@@ -106,11 +105,15 @@ import org.orbisgis.core.ui.plugins.editors.tableEditor.ShowFieldStatisticsPlugI
 import org.orbisgis.core.ui.plugins.editors.tableEditor.UndoTablePlugIn;
 import org.orbisgis.core.ui.plugins.editors.tableEditor.ZoomToLayerFromTable;
 import org.orbisgis.core.ui.plugins.editors.tableEditor.ZoomToSelectedPlugIn;
-import org.orbisgis.core.ui.plugins.help.AboutOrbisGISPlugIn;
-import org.orbisgis.core.ui.plugins.help.OnlineHelpOrbisGISPlugIn;
-import org.orbisgis.core.ui.plugins.properties.ConfigurationPlugIn;
-import org.orbisgis.core.ui.plugins.status.FreeDefaultWorkspacePlugIn;
-import org.orbisgis.core.ui.plugins.status.WorkspaceNamePlugin;
+import org.orbisgis.core.ui.plugins.orbisgisFrame.BasicPerspectivePlugIn;
+import org.orbisgis.core.ui.plugins.orbisgisFrame.ExitPlugIn;
+import org.orbisgis.core.ui.plugins.orbisgisFrame.help.AboutOrbisGISPlugIn;
+import org.orbisgis.core.ui.plugins.orbisgisFrame.help.OnlineHelpOrbisGISPlugIn;
+import org.orbisgis.core.ui.plugins.orbisgisFrame.properties.ConfigurationPlugIn;
+import org.orbisgis.core.ui.plugins.orbisgisFrame.status.FreeDefaultWorkspacePlugIn;
+import org.orbisgis.core.ui.plugins.orbisgisFrame.status.WorkspaceNamePlugin;
+import org.orbisgis.core.ui.plugins.orbisgisFrame.workspace.ChangeWorkspacePlugIn;
+import org.orbisgis.core.ui.plugins.orbisgisFrame.workspace.SaveWorkspacePlugIn;
 import org.orbisgis.core.ui.plugins.toc.CreateGroupPlugIn;
 import org.orbisgis.core.ui.plugins.toc.EditLegendPlugIn;
 import org.orbisgis.core.ui.plugins.toc.GroupLayersPlugIn;
@@ -150,8 +153,6 @@ import org.orbisgis.core.ui.plugins.views.geocognition.GeocognitionUnRegisterBui
 import org.orbisgis.core.ui.plugins.views.geocognition.GeocognitionUnRegisterBuiltInFunctionPlugIn;
 import org.orbisgis.core.ui.plugins.views.geocognition.OpenGeocognitionPlugIn;
 import org.orbisgis.core.ui.plugins.views.geocognition.RemoveGeocognitionPlugIn;
-import org.orbisgis.core.ui.plugins.workspace.ChangeWorkspacePlugIn;
-import org.orbisgis.core.ui.plugins.workspace.SaveWorkspacePlugIn;
 import org.orbisgis.core.ui.preferences.lookandfeel.OrbisGISIcon;
 import org.orbisgis.core.ui.windows.mainFrame.OrbisGISFrame;
 
@@ -167,6 +168,7 @@ public class OrbisConfiguration implements Setup {
 	private AboutOrbisGISPlugIn aboutOrbisGIS = new AboutOrbisGISPlugIn();
 	private OnlineHelpOrbisGISPlugIn onlineHelpOrbisGIS = new OnlineHelpOrbisGISPlugIn();
 
+	private BasicPerspectivePlugIn basicPerspectivePlugIn = new BasicPerspectivePlugIn();
 	// OrbisGIS status
 	private WorkspaceNamePlugin workspaceNamePlugin = new WorkspaceNamePlugin();
 	private FreeDefaultWorkspacePlugIn freeDefaultWorkspacePlugIn = new FreeDefaultWorkspacePlugIn();
@@ -398,6 +400,7 @@ public class OrbisConfiguration implements Setup {
 		exitPlugIn.initialize(plugInContext);
 		aboutOrbisGIS.initialize(plugInContext);
 		onlineHelpOrbisGIS.initialize(plugInContext);
+		basicPerspectivePlugIn.initialize(plugInContext);
 
 		// Status toolbar
 		workspaceNamePlugin.initialize(plugInContext);

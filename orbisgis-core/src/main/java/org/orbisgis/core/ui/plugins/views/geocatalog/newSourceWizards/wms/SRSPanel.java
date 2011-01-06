@@ -33,7 +33,7 @@
  * or contact directly:
  * info _at_ orbisgis.org
  */
-package org.orbisgis.core.ui.geocatalog.newSourceWizards.wms;
+package org.orbisgis.core.ui.plugins.views.geocatalog.newSourceWizards.wms;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
