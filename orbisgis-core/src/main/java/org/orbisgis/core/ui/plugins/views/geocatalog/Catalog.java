@@ -88,7 +88,6 @@ import org.orbisgis.core.ui.components.text.JButtonTextField;
 import org.orbisgis.core.ui.geocatalog.newSourceWizards.SourceRenderer;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchFrame;
 import org.orbisgis.core.ui.plugins.views.geocatalog.filters.AllExcludeSytemTableFilter;
-import org.orbisgis.core.ui.plugins.views.geocatalog.filters.AllFilter;
 import org.orbisgis.core.ui.plugins.views.geocatalog.filters.AlphanumericFilter;
 import org.orbisgis.core.ui.plugins.views.geocatalog.filters.DBsFilter;
 import org.orbisgis.core.ui.plugins.views.geocatalog.filters.FilesFilter;
@@ -685,6 +684,10 @@ public class Catalog extends JPanel implements DragGestureListener,
 		selectionModel.setValueIsAdjusting(false);
 	}
 
+	/**
+	 * Get the filters stored in a JList
+	 * @return {@link JList}
+	 */
 	public JList getListFilters() {
 		return lstFilters;
 	}
