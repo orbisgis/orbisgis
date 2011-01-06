@@ -22,7 +22,7 @@ import org.orbisgis.core.geocognition.sql.GeocognitionFunctionFactory;
 import org.orbisgis.core.geocognition.symbology.GeocognitionLegendFactory;
 import org.orbisgis.core.geocognition.symbology.GeocognitionSymbolFactory;
 import org.orbisgis.core.ui.TestWorkspace;
-import org.orbisgis.core.ui.geocognition.GeocognitionView;
+import org.orbisgis.core.ui.plugins.views.geocognition.GeocognitionView;
 import org.orbisgis.core.workspace.Workspace;
 
 public class GeocognitionTest extends TestCase {
