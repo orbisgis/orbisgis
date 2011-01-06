@@ -52,92 +52,95 @@ import org.gdms.sql.customQuery.TableDefinition;
 import org.gdms.sql.function.Argument;
 import org.gdms.sql.function.Arguments;
 import org.orbisgis.progress.IProgressMonitor;
+import org.orbisgis.utils.FileUtils;
 
 public class RegisterCall implements CustomQuery {
 
-	public ObjectDriver evaluate(DataSourceFactory dsf, DataSource[] tables,
-			Value[] values, IProgressMonitor pm) throws ExecutionException {
-		try {
-			final SourceManager sourceManager = dsf.getSourceManager();
-			if (values.length == 1) {
-				String name = values[0].toString();
-				sourceManager.register(name, new FileSourceDefinition(dsf
-						.getResultFile()));
-			} else if (values.length == 2) {
-				final String file = values[0].toString();
-				final String name = values[1].toString();
-				sourceManager.register(name, new FileSourceDefinition(file));
-			} else if ((values.length == 6) || (values.length == 8) || (values.length == 9)) {
-				final String vendor = values[0].toString();
-				final String host = values[1].toString();
-				final String port = values[2].toString();
-				final String dbName = values[3].toString();
-				final String user = values[4].toString();
-				final String password = values[5].toString();
-				String schemaName = null;
-				String tableName = null;
-				String name = null;
-				if (values.length == 8) {
-					tableName = values[6].toString();
-					name = values[7].toString();
-				}
-				if (values.length == 9) {
-					schemaName = values[6].toString();
-					tableName = values[7].toString();
-					name = values[8].toString();
-				}
+        public ObjectDriver evaluate(DataSourceFactory dsf, DataSource[] tables,
+                Value[] values, IProgressMonitor pm) throws ExecutionException {
+                try {
+                        final SourceManager sourceManager = dsf.getSourceManager();
+                        if (values.length == 1) {
+                                final String file = values[0].toString();
+                                final FileSourceDefinition fileSourceDefinition = new FileSourceDefinition(file);
+                                String name = FileUtils.getFileNameWithoutExtensionU(fileSourceDefinition.getFile());
+                                sourceManager.register(name, fileSourceDefinition);
+                        } else if (values.length == 2) {
+                                final String file = values[0].toString();
+                                final String name = values[1].toString();
+                                sourceManager.register(name, new FileSourceDefinition(file));
+                        } else if ((values.length == 8) || (values.length == 9)) {
+                                final String vendor = values[0].toString();
+                                final String host = values[1].toString();
+                                final int port = values[2].getAsInt();
+                                final String dbName = values[3].toString();
+                                final String user = values[4].toString();
+                                final String password = values[5].toString();
+                                String schemaName = null;
+                                String tableName = null;
+                                String name = null;
+                                if (values.length == 8) {
+                                        tableName = values[6].toString();
+                                        name = values[7].toString();
+                                }
+                                if (values.length == 9) {
+                                        schemaName = values[6].toString();
+                                        tableName = values[7].toString();
+                                        name = values[8].toString();
+                                }
 
-				if (tableName == null) {
-					throw new ExecutionException("Not implemented yet");
-				}
-				sourceManager.register(name, new DBTableSourceDefinition(
-						new DBSource(host, Integer.parseInt(port), dbName,
-								user, password, schemaName ,tableName, "jdbc:" + vendor)));
-			} else {
-				throw new ExecutionException("Usage: \n"
-						+ "1) select register ('name');\n"
-						+ "2) select register ('path_to_file', 'name');\n"
-						+ "3) select register ('vendor', 'host', port, "
-						+ "dbName, user, password, tableName, dsEntryName);\n"
-						+ "4) select register ('vendor', 'host', port, "
-						+ "dbName, user, password, schema, tableName, dsEntryName);\n");
-			}
-		} catch (SourceAlreadyExistsException e) {
-			throw new ExecutionException(e);
-		}
-		return null;
-	}
+                                sourceManager.register(name, new DBTableSourceDefinition(
+                                        new DBSource(host, port, dbName,
+                                        user, password, schemaName, tableName, "jdbc:" + vendor)));
+                        } else {
+                                throw new ExecutionException("Usage: \n"
+                                        + "1) select register ('path_to_file', 'name');\n"
+                                        + "3) select register ('vendor', 'host', port, "
+                                        + "'dbName', 'user', 'password', 'tableName', 'displayName');\n"
+                                        + "4) select register ('vendor', 'host', port, "
+                                        + "'dbName', 'user', 'password', 'schema', 'tableName', 'displayName');\n");
+                        }
+                } catch (SourceAlreadyExistsException e) {
+                        throw new ExecutionException(e);
+                }
+                return null;
+        }
 
-	public String getName() {
-		return "Register";
-	}
+        public String getName() {
+                return "Register";
+        }
 
-	public String getDescription() {
-		return "Register a new file or a database.";
-	}
+        public String getDescription() {
+                return "Register a existing file or a database. If it does not existl";
+        }
 
-	public String getSqlOrder() {
-		return "select register('C:\\Temp\\myShape.shp','myTable');";
-	}
+        public String getSqlOrder() {
+                return "1) select register ('path_to_file')"
+                        + "2) select register ('path_to_file', 'name');\n"
+                        + "3) select register ('vendor', 'host', port, "
+                        + "'dbName', 'user', 'password', 'tableName', 'displayName');\n"
+                        + "4) select register ('vendor', 'host', port, "
+                        + "'dbName', 'user', 'password', 'schema', 'tableName', 'displayName');\n";
+        }
 
-	public Metadata getMetadata(Metadata[] tables) {
-		return null;
-	}
+        public Metadata getMetadata(Metadata[] tables) {
+                return null;
+        }
 
-	public TableDefinition[] geTablesDefinitions() {
-		return new TableDefinition[] {};
-	}
+        public TableDefinition[] geTablesDefinitions() {
+                return new TableDefinition[]{};
+        }
 
-	public Arguments[] getFunctionArguments() {
-		return new Arguments[] {
-				new Arguments(Argument.STRING),
-				new Arguments(Argument.STRING, Argument.STRING),
-				new Arguments(Argument.STRING, Argument.STRING,
-						Argument.STRING, Argument.STRING, Argument.STRING,
-						Argument.STRING, Argument.STRING, Argument.STRING),
-				new Arguments(Argument.STRING, Argument.STRING,
-						Argument.STRING, Argument.STRING, Argument.STRING,
-						Argument.STRING, Argument.STRING, Argument.STRING,
-						Argument.STRING) };
-	}
+        public Arguments[] getFunctionArguments() {
+                return new Arguments[]{
+                                new Arguments(Argument.STRING),
+                                new Arguments(Argument.STRING, Argument.STRING),
+                                new Arguments(Argument.STRING, Argument.STRING,
+                                Argument.INT, Argument.STRING, Argument.STRING,
+                                Argument.STRING, Argument.STRING, Argument.STRING),
+                                new Arguments(Argument.STRING, Argument.STRING,
+                                Argument.INT, Argument.STRING, Argument.STRING,
+                                Argument.STRING, Argument.STRING, Argument.STRING,
+                                Argument.STRING)};
+        }
 }
