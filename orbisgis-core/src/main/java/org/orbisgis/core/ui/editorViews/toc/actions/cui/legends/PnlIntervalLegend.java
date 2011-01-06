@@ -160,7 +160,7 @@ public class PnlIntervalLegend extends PnlAbstractClassifiedLegend {
 			}
 		});
 		lblSecondColor.setBackground(Color.RED);
-		pnl.add(lblSecondColor);
+		pnl.add(lblSecondColor);	
 
 		return pnl;
 	}

@@ -46,7 +46,7 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
 import org.orbisgis.core.ui.components.text.JButtonTextField;
-import org.orbisgis.core.ui.geocatalog.newSourceWizards.wms.SRSListModel;
+import org.orbisgis.core.ui.plugins.views.geocatalog.newSourceWizards.wms.SRSListModel;
 
 import fr.cts.util.CRSUtil;
 
