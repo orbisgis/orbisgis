@@ -38,8 +38,6 @@ package org.orbisgis.core.sif;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Component;
-import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
@@ -55,6 +53,7 @@ import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import javax.swing.JToolBar;
 import javax.swing.border.BevelBorder;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
@@ -63,6 +62,7 @@ import org.gdms.data.DataSourceCreationException;
 import org.gdms.driver.DriverException;
 import org.orbisgis.core.ui.preferences.lookandfeel.OrbisGISIcon;
 import org.orbisgis.core.ui.preferences.lookandfeel.images.IconLoader;
+import org.orbisgis.utils.I18N;
 
 public class ControlPanel extends JPanel {
 	private JList list;
@@ -72,7 +72,7 @@ public class ControlPanel extends JPanel {
 	private JTextField txtNew;
 	private PersistentPanelDecorator sqlPanel;
 	private JButton btnLoad;
-	private JPanel east;
+	private JToolBar east;
 
 	public ControlPanel(SQLUIPanel panel) throws DriverException,
 			DataSourceCreationException {
@@ -112,7 +112,8 @@ public class ControlPanel extends JPanel {
 		btnSave.setMargin(new Insets(0, 0, 0, 0));
 		btnSave.setVisible(false);
 		btnSave.setIcon(OrbisGISIcon.SAVE_ICON);
-		btnSave.setToolTipText("Clic here to save a favorite");
+		btnSave.setToolTipText(I18N
+				.getText("orbisgis.sif.ControlPanel.SaveFavorite"));
 
 		btnSave.addActionListener(new ActionListener() {
 
@@ -122,13 +123,15 @@ public class ControlPanel extends JPanel {
 			}
 
 		});
+		btnSave.setBorderPainted(false);
 		JPanel south = new JPanel();
 		south.add(btnSave);
 		south.add(txtNew);
 		this.add(south, BorderLayout.SOUTH);
 		btnDelete = new JButton();
 		btnDelete.setIcon(OrbisGISIcon.CANCEL);
-		btnDelete.setToolTipText("Clic here to delete a favorite");
+		btnDelete.setToolTipText(I18N
+				.getText("orbisgis.sif.ControlPanel.DeleteFavorite"));
 		btnDelete.addActionListener(new ActionListener() {
 
 			public void actionPerformed(ActionEvent e) {
@@ -137,9 +140,12 @@ public class ControlPanel extends JPanel {
 			}
 
 		});
+		btnDelete.setBorderPainted(false);
+
 		btnLoad = new JButton();
 		btnLoad.setIcon(OrbisGISIcon.FOLDER_USER);
-		btnLoad.setToolTipText("Clic here to load a favorite");
+		btnLoad.setToolTipText(I18N
+				.getText("orbisgis.sif.ControlPanel.LoadFavorite"));
 		btnLoad.addActionListener(new ActionListener() {
 
 			public void actionPerformed(ActionEvent e) {
@@ -148,20 +154,51 @@ public class ControlPanel extends JPanel {
 			}
 
 		});
-		east = new JPanel();
-		east.setLayout(new CRFlowLayout());
+		btnLoad.setBorderPainted(false);
+
+		JButton btnCollapse = new JButton();
+		btnCollapse.setIcon(IconLoader.getIcon("go-previous.png"));
+		btnCollapse.setToolTipText(I18N
+				.getText("orbisgis.sif.ControlPanel.CollapseFavorites"));
+		btnCollapse.addActionListener(new ActionListener() {
+
+			public void actionPerformed(ActionEvent e) {
+				collapse();
+			}
+
+		});
+		btnCollapse.setBorderPainted(false);
+		east = new JToolBar();
+		east.setFloatable(false);
 		east.add(btnDelete);
-		east.add(new CarriageReturn());
 		east.add(btnLoad);
-		this.add(east, BorderLayout.EAST);
+		east.add(btnCollapse);
+		east.setOpaque(false);
+		this.add(east, BorderLayout.NORTH);
+		this.setOpaque(false);
 
 		this.setBackground(Color.white);
 		this.setMinimumSize(new Dimension(100, 40));
 
-		collapsed = new JLabel(getVertical("FAVORITES"));
-		collapsed.setHorizontalAlignment(JLabel.CENTER);
+		collapsed = new JLabel(getVertical(I18N
+				.getText("orbisgis.sif.ControlPanel.Favorites")), IconLoader
+				.getIcon("go-next.png"), JLabel.CENTER);
+		collapsed.setIconTextGap(20);
+		collapsed.setVerticalTextPosition(JLabel.BOTTOM);
+		collapsed.setHorizontalTextPosition(JLabel.CENTER);
+		collapsed.setToolTipText(I18N
+				.getText("orbisgis.sif.ControlPanel.ExpandFavorites"));
+
 		this.add(collapsed, BorderLayout.WEST);
-		listen(this);
+		collapsed.addMouseListener(new MouseAdapter() {
+
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				if (!list.isVisible()) {
+					expand();
+				}
+			}
+		});
 		this.setBorder(BorderFactory.createBevelBorder(BevelBorder.RAISED));
 
 		collapse();
@@ -213,41 +250,4 @@ public class ControlPanel extends JPanel {
 		this.setBackground(btnSave.getBackground());
 	}
 
-	private void listen(Component comp) {
-		comp.addMouseListener(new MouseAdapter() {
-
-			@Override
-			public void mouseExited(MouseEvent e) {
-				if ((ControlPanel.this.getMousePosition() == null)
-						&& !exitInLeftEdge(e)) {
-					collapse();
-				}
-			}
-
-			private boolean exitInLeftEdge(MouseEvent e) {
-				int x = e.getLocationOnScreen().x;
-				int controlX = ControlPanel.this.getLocationOnScreen().x;
-				if (Math.abs(x - controlX) < 10) {
-					return true;
-				} else {
-					return false;
-				}
-			}
-
-			@Override
-			public void mouseEntered(MouseEvent e) {
-				if (!list.isVisible()) {
-					expand();
-				}
-			}
-
-		});
-
-		if (comp instanceof Container) {
-			Component[] children = ((Container) comp).getComponents();
-			for (Component component : children) {
-				listen(component);
-			}
-		}
-	}
 }
