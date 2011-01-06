@@ -5,7 +5,7 @@
 // Generated on: 2009.04.16 at 03:30:38 PM CEST 
 //
 
-package org.orbisgis.core.ui.geocatalog.persistence;
+package org.orbisgis.core.ui.plugins.views.geocatalog.persistence;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
