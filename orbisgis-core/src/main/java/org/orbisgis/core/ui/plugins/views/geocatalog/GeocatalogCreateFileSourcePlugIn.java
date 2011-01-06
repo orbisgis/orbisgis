@@ -64,12 +64,12 @@ import org.orbisgis.core.sif.SaveFilePanel;
 import org.orbisgis.core.sif.UIFactory;
 import org.orbisgis.core.sif.UIPanel;
 import org.orbisgis.core.ui.components.sif.ChoosePanel;
-import org.orbisgis.core.ui.geocatalog.actions.create.MetadataCreation;
 import org.orbisgis.core.ui.pluginSystem.AbstractPlugIn;
 import org.orbisgis.core.ui.pluginSystem.PlugInContext;
 import org.orbisgis.core.ui.pluginSystem.workbench.Names;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchContext;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchFrame;
+import org.orbisgis.core.ui.plugins.views.geocatalog.actions.create.MetadataCreation;
 import org.orbisgis.utils.FileUtils;
 
 public class GeocatalogCreateFileSourcePlugIn extends AbstractPlugIn {

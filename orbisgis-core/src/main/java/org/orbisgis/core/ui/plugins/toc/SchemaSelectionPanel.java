@@ -53,7 +53,7 @@ import org.gdms.driver.TableDescription;
 import org.orbisgis.core.sif.CRFlowLayout;
 import org.orbisgis.core.sif.CarriageReturn;
 import org.orbisgis.core.sif.UIPanel;
-import org.orbisgis.core.ui.geocatalog.newSourceWizards.db.ConnectionPanel;
+import org.orbisgis.core.ui.plugins.views.geocatalog.newSourceWizards.db.ConnectionPanel;
 
 public class SchemaSelectionPanel extends JPanel implements UIPanel {
 

@@ -49,15 +49,16 @@ import javax.xml.bind.JAXBException;
 
 import org.gdms.source.SourceManager;
 import org.orbisgis.core.DataManager;
+import org.orbisgis.core.OrbisGISPersitenceConfig;
 import org.orbisgis.core.PersistenceException;
 import org.orbisgis.core.Services;
-import org.orbisgis.core.ui.geocatalog.persistence.ActiveFilter;
-import org.orbisgis.core.ui.geocatalog.persistence.Tag;
 import org.orbisgis.core.ui.pluginSystem.PlugInContext;
 import org.orbisgis.core.ui.pluginSystem.ViewPlugIn;
 import org.orbisgis.core.ui.pluginSystem.workbench.Names;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchContext;
 import org.orbisgis.core.ui.plugins.views.geocatalog.Catalog;
+import org.orbisgis.core.ui.plugins.views.geocatalog.persistence.ActiveFilter;
+import org.orbisgis.core.ui.plugins.views.geocatalog.persistence.Tag;
 import org.orbisgis.core.ui.preferences.lookandfeel.OrbisGISIcon;
 import org.orbisgis.core.ui.window.EPWindowHelper;
 import org.orbisgis.core.workspace.Workspace;
@@ -101,9 +102,9 @@ public class GeoCatalogViewPlugIn extends ViewPlugIn {
 		if (catalogFile.exists()) {
 			try {
 				JAXBContext jc = JAXBContext.newInstance(
-						"org.orbisgis.core.ui.geocatalog.persistence",
+						OrbisGISPersitenceConfig.GEOCATALOG_PERSISTENCE_FILE,
 						EPWindowHelper.class.getClassLoader());
-				org.orbisgis.core.ui.geocatalog.persistence.Catalog cat = (org.orbisgis.core.ui.geocatalog.persistence.Catalog) jc
+				org.orbisgis.core.ui.plugins.views.geocatalog.persistence.Catalog cat = (org.orbisgis.core.ui.plugins.views.geocatalog.persistence.Catalog) jc
 						.createUnmarshaller().unmarshal(catalogFile);
 				List<ActiveFilter> filters = cat.getActiveFilter();
 				ArrayList<String> filterIds = new ArrayList<String>();
@@ -139,7 +140,7 @@ public class GeoCatalogViewPlugIn extends ViewPlugIn {
 	}
 
 	public void saveStatus() throws PersistenceException {
-		org.orbisgis.core.ui.geocatalog.persistence.Catalog cat = new org.orbisgis.core.ui.geocatalog.persistence.Catalog();
+		org.orbisgis.core.ui.plugins.views.geocatalog.persistence.Catalog cat = new org.orbisgis.core.ui.plugins.views.geocatalog.persistence.Catalog();
 		String[] ids = panel.getActiveFiltersId();
 		for (String filterId : ids) {
 			ActiveFilter af = new ActiveFilter();
@@ -161,7 +162,7 @@ public class GeoCatalogViewPlugIn extends ViewPlugIn {
 		File file = ws.getFile(CATALOG_PERSISTENCE_FILE);
 		try {
 			JAXBContext jc = JAXBContext.newInstance(
-					"org.orbisgis.core.ui.geocatalog.persistence",
+					OrbisGISPersitenceConfig.GEOCATALOG_PERSISTENCE_FILE,
 					EPWindowHelper.class.getClassLoader());
 			PrintWriter printWriter = new PrintWriter(file);
 			jc.createMarshaller().marshal(cat, printWriter);

@@ -45,7 +45,6 @@ import org.orbisgis.core.Services;
 import org.orbisgis.core.background.BackgroundManager;
 import org.orbisgis.core.sif.UIFactory;
 import org.orbisgis.core.sif.UIPanel;
-import org.orbisgis.core.ui.geocatalog.newSourceWizards.db.ConnectionPanel;
 import org.orbisgis.core.ui.pluginSystem.AbstractPlugIn;
 import org.orbisgis.core.ui.pluginSystem.PlugInContext;
 import org.orbisgis.core.ui.pluginSystem.workbench.Names;
@@ -53,6 +52,7 @@ import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchContext;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchFrame;
 import org.orbisgis.core.ui.plugins.toc.ExportInDatabaseOperation;
 import org.orbisgis.core.ui.plugins.toc.SchemaSelectionPanel;
+import org.orbisgis.core.ui.plugins.views.geocatalog.newSourceWizards.db.ConnectionPanel;
 
 public class GeocatalogSaveInDataBasePlugIn extends AbstractPlugIn {
 

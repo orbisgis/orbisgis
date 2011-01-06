@@ -58,7 +58,7 @@ import org.gdms.source.Source;
 import org.gdms.source.SourceManager;
 import org.orbisgis.core.DataManager;
 import org.orbisgis.core.Services;
-import org.orbisgis.core.ui.geocatalog.newSourceWizards.SourceRenderer;
+import org.orbisgis.core.ui.plugins.views.geocatalog.newSourceWizards.SourceRenderer;
 import org.orbisgis.core.ui.preferences.lookandfeel.OrbisGISIcon;
 import org.orbisgis.core.ui.preferences.lookandfeel.images.IconLoader;
 
