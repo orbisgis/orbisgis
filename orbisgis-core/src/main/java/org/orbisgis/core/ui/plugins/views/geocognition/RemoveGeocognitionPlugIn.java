@@ -62,7 +62,7 @@ public class RemoveGeocognitionPlugIn extends AbstractPlugIn {
 					.getWorkbenchContext().getWorkbench().getFrame()
 					.getGeocognitionView();
 			int answer = JOptionPane.showConfirmDialog(geocognitionView
-					.getComponent(), I18N.getText("org.orbisgis.core.ui.plugins.views.geocognition.removeElement"), Names.GEOCOGNITION,
+					.getComponent(), I18N.getText("orbisgis.org.orbisgis.core.ui.plugins.views.geocognition.removeElement"), Names.GEOCOGNITION,
 					JOptionPane.YES_NO_OPTION);
 			if (answer == JOptionPane.YES_OPTION) {
 				for (GeocognitionElement element : elements) {
