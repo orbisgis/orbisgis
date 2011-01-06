@@ -48,7 +48,7 @@ import java.util.ArrayList;
 import org.apache.log4j.Logger;
 import org.orbisgis.core.ApplicationInfo;
 import org.orbisgis.core.Services;
-import org.orbisgis.core.ui.configuration.PeriodicSaveWorkspace;
+import org.orbisgis.core.ui.plugins.orbisgisFrame.configuration.PeriodicSaveWorkspace;
 import org.orbisgis.utils.FileUtils;
 
 public class DefaultWorkspace implements Workspace {

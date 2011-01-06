@@ -352,7 +352,7 @@ public class PlugInContext {
 	public void executeGeocognitionElement(INewGeocognitionElement element) {
 		EPGeocognitionWizardHelper wh = new EPGeocognitionWizardHelper();
 		GeocognitionTree tree = workbenchContext.getWorkbench().getFrame()
-				.getGeocognition().getTree();
+				.getGeocognitionView().getTree();
 		TreePath[] parents = tree.getSelection();
 		try {
 			element.runWizard();
@@ -394,13 +394,13 @@ public class PlugInContext {
 
 	public GeocognitionElement[] getElements() {
 		GeocognitionTree tree = workbenchContext.getWorkbench().getFrame()
-				.getGeocognition().getTree();
+				.getGeocognitionView().getTree();
 		TreePath[] res = tree.getSelection();
 		return tree.toElementArray(res);
 	}
 
 	public GeocognitionTree getTree() {
-		return workbenchContext.getWorkbench().getFrame().getGeocognition()
+		return workbenchContext.getWorkbench().getFrame().getGeocognitionView()
 				.getTree();
 	}
 

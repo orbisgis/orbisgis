@@ -189,11 +189,19 @@ public class OrbisGISFrame extends JFrame implements IWindow {
 				.getPanel();
 	}
 
-	public GeocognitionView getGeocognition() {
+	/**
+	 * Get the GeoCognition view
+	 * @return {@link GeocognitionView}
+	 */
+	public GeocognitionView getGeocognitionView() {
 		return ((GeocognitionViewPlugIn) getViewDecorator(Names.GEOCOGNITION)
 				.getView()).getPanel();
 	}
 
+	/**
+	 * Get the GeoCatalogView
+	 * @return {@link Catalog}
+	 */
 	public Catalog getGeocatalog() {
 		return ((GeoCatalogViewPlugIn) getViewDecorator(Names.GEOCATALOG)
 				.getView()).getPanel();
