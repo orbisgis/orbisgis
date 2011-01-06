@@ -49,6 +49,8 @@ public class OrbisGISPersitenceConfig {
 	public static final String WINDOW_PERSISTENCE_FILE = "org.orbisgis.core.ui.window.persistence";
 	public static final String WINDOW_CREATED_FILE = "windows.xml";
 
+	public static final String GEOCATALOG_PERSISTENCE_FILE = "org.orbisgis.core.ui.plugins.views.geocatalog.persistence";
+
 	public static final String GEOCOGNITION_CREATED_FILE = "org.orbisgis.core.ui.Geocognition.xml";
 	public static final String GEOCOGNITION_PERSISTENCE_FILE = "org.orbisgis.core.geocognition.persistence";
 
