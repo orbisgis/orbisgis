@@ -170,9 +170,9 @@ public class ControlPanel extends JPanel {
 		btnCollapse.setBorderPainted(false);
 		east = new JToolBar();
 		east.setFloatable(false);
-		east.add(btnDelete);
-		east.add(btnLoad);
 		east.add(btnCollapse);
+		east.add(btnDelete);
+		east.add(btnLoad);		
 		east.setOpaque(false);
 		this.add(east, BorderLayout.NORTH);
 		this.setOpaque(false);
