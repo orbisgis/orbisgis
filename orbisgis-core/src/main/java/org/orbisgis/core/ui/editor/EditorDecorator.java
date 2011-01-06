@@ -40,6 +40,7 @@ package org.orbisgis.core.ui.editor;
 import java.awt.Component;
 
 import javax.swing.Icon;
+import org.gdms.data.NoSuchTableException;
 
 import org.orbisgis.core.PersistenceException;
 import org.orbisgis.core.edition.EditableElement;
@@ -67,7 +68,11 @@ public class EditorDecorator implements IEditor {
 	}
 
 	public Component getComponent() {
-		return getView().getComponent();
+                final ViewPlugIn view = getView();
+                if (view == null) {
+                        throw new org.gdms.data.ClosedDataSourceException("The source is closed or does not actually exist!");
+                }
+		return view.getComponent();
 	}
 
 	public void loadStatus() throws PersistenceException {
