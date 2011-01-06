@@ -499,16 +499,18 @@ public class SQLCompletionProvider extends DefaultCompletionProvider implements 
                 for (int i = 0; i < functions.length; i++) {
                         Function function = FunctionManager.getFunction(functions[i]);
 
-                        // trying to get it from the cache
-                        Completion compl = cachedCompletions.get(function.getName());
-                        if (compl != null) {
-                                a.add(compl);
-                                continue;
-                        }
                         // else we build it
 
                         Arguments[] args = function.getFunctionArguments();
                         for (int j = 0; j < args.length; j++) {
+
+                                // trying to get it from the cache
+                                Completion compl = cachedCompletions.get(function.getName() + '_' + j);
+                                if (compl != null) {
+                                        a.add(compl);
+                                        continue;
+                                }
+
                                 ArrayList params = new ArrayList();
 
                                 // will contain all argument types needed to call function.getType(...)
@@ -538,7 +540,7 @@ public class SQLCompletionProvider extends DefaultCompletionProvider implements 
                                 c.setSummary(function.getDescription());
                                 c.setParams(params);
                                 // and we cache it for reuse
-                                cachedCompletions.put(function.getName(), c);
+                                cachedCompletions.put(function.getName() + '_' + j, c);
                                 a.add(c);
                         }
                 }
@@ -549,16 +551,17 @@ public class SQLCompletionProvider extends DefaultCompletionProvider implements 
                 for (int i = 0; i < customQueries.length; i++) {
                         CustomQuery query = QueryManager.getQuery(customQueries[i]);
 
-                        // trying to get it from the cache
-                        Completion compl = cachedCompletions.get(query.getName());
-                        if (compl != null) {
-                                a.add(compl);
-                                continue;
-                        }
                         // else we build it
 
                         Arguments[] args = query.getFunctionArguments();
                         for (int j = 0; j < args.length; j++) {
+                                // trying to get it from the cache
+                                Completion compl = cachedCompletions.get(query.getName() + '_' + j);
+                                if (compl != null) {
+                                        a.add(compl);
+                                        continue;
+                                }
+
                                 ArrayList params = new ArrayList();
 
                                 // will contain all argument types needed to call function.getType(...)
@@ -586,7 +589,7 @@ public class SQLCompletionProvider extends DefaultCompletionProvider implements 
                                 c.setSummary(query.getDescription());
                                 c.setParams(params);
                                 // and we cache it for reuse
-                                cachedCompletions.put(query.getName(), c);
+                                cachedCompletions.put(query.getName() + '_' + i, c);
                                 a.add(c);
                         }
                 }
