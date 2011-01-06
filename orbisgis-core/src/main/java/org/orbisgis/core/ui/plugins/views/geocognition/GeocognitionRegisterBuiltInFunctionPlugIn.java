@@ -78,7 +78,7 @@ public class GeocognitionRegisterBuiltInFunctionPlugIn extends AbstractPlugIn {
 	public void initialize(PlugInContext context) throws Exception {
 		WorkbenchContext wbContext = context.getWorkbenchContext();
 		WorkbenchFrame frame = wbContext.getWorkbench().getFrame()
-				.getGeocognition();
+				.getGeocognitionView();
 		context.getFeatureInstaller().addPopupMenuItem(frame, this,
 				new String[] { Names.POPUP_GEOCOGNITION_REG_BUILT_PATH1 },
 				Names.POPUP_GEOCOGNITION_REG_BUILT_GROUP, false,
