@@ -83,6 +83,7 @@ public class DefaultMapContext implements MapContext {
         private org.orbisgis.core.layerModel.persistence.MapContext jaxbMapContext;
         private Envelope boundingBox;
         private long idTime;
+        private boolean selectionInducedRefresh = false;
 //        private int srid = -1;
 
         /**
@@ -156,6 +157,22 @@ public class DefaultMapContext implements MapContext {
                 for (MapContextListener listener : listeners) {
                         listener.layerSelectionChanged(this);
                 }
+        }
+
+        /**
+         * @return the selectionInducedRefresh
+         */
+        @Override
+        public boolean isSelectionInducedRefresh() {
+                return selectionInducedRefresh;
+        }
+
+        /**
+         * @param selectionInducedRefresh the selectionInducedRefresh to set
+         */
+        @Override
+        public void setSelectionInducedRefresh(boolean selectionInducedRefresh) {
+                this.selectionInducedRefresh = selectionInducedRefresh;
         }
 
         private final class OpenerListener extends LayerListenerAdapter implements

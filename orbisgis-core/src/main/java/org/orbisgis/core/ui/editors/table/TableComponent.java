@@ -35,6 +35,8 @@
  */
 package org.orbisgis.core.ui.editors.table;
 
+import com.vividsolutions.jts.geom.Envelope;
+import com.vividsolutions.jts.geom.Geometry;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
@@ -91,6 +93,7 @@ import org.gdms.data.edition.FieldEditionEvent;
 import org.gdms.data.edition.MetadataEditionListener;
 import org.gdms.data.edition.MultipleEditionEvent;
 import org.gdms.data.metadata.Metadata;
+import org.gdms.data.metadata.MetadataUtilities;
 import org.gdms.data.types.Constraint;
 import org.gdms.data.types.Type;
 import org.gdms.data.values.Value;
@@ -101,11 +104,13 @@ import org.orbisgis.core.Services;
 import org.orbisgis.core.background.BackgroundJob;
 import org.orbisgis.core.background.BackgroundManager;
 import org.orbisgis.core.errorManager.ErrorManager;
+import org.orbisgis.core.layerModel.MapContext;
 import org.orbisgis.core.sif.CRFlowLayout;
 import org.orbisgis.core.sif.SQLUIPanel;
 import org.orbisgis.core.sif.UIFactory;
 import org.orbisgis.core.ui.components.sif.AskValue;
 import org.orbisgis.core.ui.components.text.JButtonTextField;
+import org.orbisgis.core.ui.editors.map.MapContextManager;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchContext;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchFrame;
 import org.orbisgis.core.ui.plugins.views.TableEditorPlugIn;
@@ -211,7 +216,43 @@ public class TableComponent extends JPanel implements WorkbenchFrame {
                                                                         }
                                                                 }
                                                                 selectedRowsCount = selectedRows.length;
+
+                                                                MapContext mapC = TableComponent.this.element.getMapContext();
+                                                                Envelope env = new Envelope();
+                                                                if (mapC != null) {
+                                                                        env = mapC.getBoundingBox();
+                                                                }
+
+                                                                boolean mustUpdate = false;
+                                                                DataSource dataSource = TableComponent.this.dataSource;
+                                                                try {
+                                                                        int geometryIndex = MetadataUtilities.getSpatialFieldIndex(dataSource.getMetadata());
+
+                                                                        for (int i = 0; i < selectedRowsCount; i++) {
+                                                                                Geometry g = dataSource.getFieldValue(selectedRows[i], geometryIndex).getAsGeometry();
+                                                                                if (g.getEnvelopeInternal().intersects(env)) {
+                                                                                        // geometry is on screen -> update
+                                                                                        mustUpdate = true;
+                                                                                        break;
+                                                                                }
+
+                                                                        }
+                                                                        final int[] oldSelectedRows = selection.getSelectedRows();
+                                                                for (int i = 0; i < oldSelectedRows.length; i++) {
+                                                                        Geometry g = dataSource.getFieldValue(oldSelectedRows[i], geometryIndex).getAsGeometry();
+                                                                        if (g.getEnvelopeInternal().intersects(env)) {
+                                                                                        // old geometry was on screen -> update
+                                                                                        mustUpdate = true;
+                                                                                        break;
+                                                                                }
+                                                                }
+                                                                } catch (DriverException ex) {
+                                                                        mustUpdate = true;
+                                                                }
+                                                                mapC.setSelectionInducedRefresh(mustUpdate);
+                                                                
                                                                 selection.setSelectedRows(selectedRows);
+                                                                
                                                                 managingSelection = false;
                                                                 updateRowsMessage();
 

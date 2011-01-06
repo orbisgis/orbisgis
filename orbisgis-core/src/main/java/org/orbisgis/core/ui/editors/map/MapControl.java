@@ -520,7 +520,9 @@ public class MapControl extends JComponent implements ComponentListener,
 		}
 
 		public void selectionChanged(SelectionEvent e) {
-			invalidateImage();
+                        if (mapContext.isSelectionInducedRefresh()) {
+                                invalidateImage();
+                        }
 		}
 
 		public void multipleModification(MultipleEditionEvent e) {
@@ -543,7 +545,7 @@ public class MapControl extends JComponent implements ComponentListener,
 
 	}
 
-	public void closing() {
+        public void closing() {
 		/*
 		 * if (drawer != null) { drawer.cancel(); }
 		 */

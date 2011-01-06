@@ -207,6 +207,16 @@ public interface MapContext {
 	 */
 	void setActiveLayer(ILayer activeLayer) throws IllegalStateException;
 
+        /**
+         * @return the selectionInducedRefresh
+         */
+        boolean isSelectionInducedRefresh();
+
+        /**
+         * @param selectionInducedRefresh the selectionInducedRefresh to set
+         */
+        void setSelectionInducedRefresh(boolean selectionInducedRefresh);
+
 	/**
 	 * get the mapcontext {@link CoordinateReferenceSystem}
 	 * 
