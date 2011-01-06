@@ -36,7 +36,7 @@
  * gwendall.petit _at_ ec-nantes.fr
  */
 
-package org.orbisgis.core.ui.plugins.properties;
+package org.orbisgis.core.ui.plugins.orbisgisFrame.properties;
 
 import javax.swing.JButton;
 import javax.swing.JMenuItem;
