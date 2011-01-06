@@ -80,8 +80,8 @@ import org.orbisgis.core.renderer.legend.RenderException;
 import org.orbisgis.core.renderer.symbol.RenderUtils;
 import org.orbisgis.core.renderer.symbol.SelectionSymbol;
 import org.orbisgis.core.renderer.symbol.Symbol;
-import org.orbisgis.core.ui.configuration.RenderingConfiguration;
 import org.orbisgis.core.ui.editors.map.tool.Rectangle2DDouble;
+import org.orbisgis.core.ui.plugins.orbisgisFrame.configuration.RenderingConfiguration;
 import org.orbisgis.progress.IProgressMonitor;
 import org.orbisgis.progress.NullProgressMonitor;
 
