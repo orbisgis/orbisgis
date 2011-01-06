@@ -52,9 +52,7 @@ public class GeocatalogShowTablePlugIn extends AbstractPlugIn {
 
 	public boolean execute(PlugInContext context) throws Exception {
 		String[] res = getPlugInContext().getSelectedSources();
-		if (res.length == 0) {
-			openTable(null);
-		} else {
+		if (res.length > 0) {
 			for (String resource : res) {
 				openTable(resource);
 			}

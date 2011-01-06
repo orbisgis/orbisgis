@@ -69,9 +69,7 @@ public class GeocatalogSaveInFilePlugIn extends AbstractPlugIn {
 	public boolean execute(PlugInContext context) throws Exception {
 		DataManager dm = Services.getService(DataManager.class);
 		String[] res = getPlugInContext().getSelectedSources();
-		if (res.length == 0) {
-			execute(dm.getSourceManager(), null);
-		} else {
+		if (res.length > 0) {
 			for (String resource : res) {
 				execute(dm.getSourceManager(), resource);
 			}

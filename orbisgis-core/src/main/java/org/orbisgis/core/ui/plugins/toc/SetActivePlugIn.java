@@ -54,9 +54,7 @@ public class SetActivePlugIn extends AbstractPlugIn {
 		MapContext mapContext = getPlugInContext().getMapContext();
 		ILayer[] selectedResources = mapContext.getSelectedLayers();
 
-		if (selectedResources.length == 0) {
-			execute(mapContext, null);
-		} else {
+		if (selectedResources.length > 0) {
 			for (ILayer resource : selectedResources) {
 				execute(mapContext, resource);
 			}
@@ -69,8 +67,8 @@ public class SetActivePlugIn extends AbstractPlugIn {
 		WorkbenchFrame frame = wbContext.getWorkbench().getFrame().getToc();
 		context.getFeatureInstaller().addPopupMenuItem(frame, this,
 				new String[] { Names.POPUP_TOC_ACTIVE_PATH1 },
-				Names.POPUP_TOC_ACTIVE_GROUP, false,
-				OrbisGISIcon.PENCIL, wbContext);
+				Names.POPUP_TOC_ACTIVE_GROUP, false, OrbisGISIcon.PENCIL,
+				wbContext);
 	}
 
 	public void execute(MapContext mapContext, ILayer layer) {
@@ -79,10 +77,10 @@ public class SetActivePlugIn extends AbstractPlugIn {
 
 	public boolean isEnabled() {
 		return getPlugInContext().checkLayerAvailability(
-				new SelectionAvailability[] {SelectionAvailability.EQUAL},
+				new SelectionAvailability[] { SelectionAvailability.EQUAL },
 				1,
-				new LayerAvailability[] {	LayerAvailability.VECTORIAL,
-											LayerAvailability.NOT_ACTIVE_LAYER,
-											LayerAvailability.IS_EDTABLE});
+				new LayerAvailability[] { LayerAvailability.VECTORIAL,
+						LayerAvailability.NOT_ACTIVE_LAYER,
+						LayerAvailability.IS_EDTABLE });
 	}
 }
