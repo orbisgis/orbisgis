@@ -73,6 +73,8 @@ import org.gdms.source.SourceEvent;
 import org.gdms.source.SourceListener;
 import org.gdms.source.SourceManager;
 import org.gdms.source.SourceRemovalEvent;
+import org.gdms.sql.customQuery.CustomQuery;
+import org.gdms.sql.customQuery.QueryManager;
 import org.gdms.sql.function.Argument;
 import org.gdms.sql.function.Arguments;
 import org.gdms.sql.function.Function;
@@ -167,6 +169,9 @@ public class SQLCompletionProvider extends DefaultCompletionProvider implements 
         public void freeExternalResources() {
                 // unlisten to SourceManager
                 dataManager.getSourceManager().removeSourceListener(this);
+
+                cachedMetadatas.clear();
+                cachedCompletions.clear();
         }
 
         private boolean checkSourcesToLoad() {
@@ -534,6 +539,54 @@ public class SQLCompletionProvider extends DefaultCompletionProvider implements 
                                 c.setParams(params);
                                 // and we cache it for reuse
                                 cachedCompletions.put(function.getName(), c);
+                                a.add(c);
+                        }
+                }
+
+                // retrieve all registered functions
+                String[] customQueries = QueryManager.getQueryNames();
+
+                for (int i = 0; i < customQueries.length; i++) {
+                        CustomQuery query = QueryManager.getQuery(customQueries[i]);
+
+                        // trying to get it from the cache
+                        Completion compl = cachedCompletions.get(query.getName());
+                        if (compl != null) {
+                                a.add(compl);
+                                continue;
+                        }
+                        // else we build it
+
+                        Arguments[] args = query.getFunctionArguments();
+                        for (int j = 0; j < args.length; j++) {
+                                ArrayList params = new ArrayList();
+
+                                // will contain all argument types needed to call function.getType(...)
+                                Type[] types = new Type[args[j].getArgumentCount()];
+
+                                for (int l = 0; l < args[j].getArgumentCount(); l++) {
+                                        Argument arg = args[j].getArgument(l);
+                                        int typeCode = arg.getTypeCode();
+
+                                        // no need to auto-complete a NULL argument
+                                        if (typeCode != Type.NULL) {
+                                                // adds a parameter with no name but a type
+                                                params.add(new ParameterizedCompletion.Parameter(DefaultType.typesDescription.get(typeCode).replace("TYPE_", "").replace("ALL", "ANY"), null));
+                                        }
+                                        // builds the actual corresponding type
+                                        types[l] = TypeFactory.createType(typeCode, DefaultType.typesDescription.get(typeCode));
+                                }
+                                String typeDesc = null;
+
+                                // and its description
+                                typeDesc = "TABLE";
+
+                                SQLFunctionCompletion c = new SQLFunctionCompletion(this, query.getName(), typeDesc);
+                                c.setShortDescription(query.getDescription() + "<br>Ex :<br><br>" + query.getSqlOrder());
+                                c.setSummary(query.getDescription());
+                                c.setParams(params);
+                                // and we cache it for reuse
+                                cachedCompletions.put(query.getName(), c);
                                 a.add(c);
                         }
                 }
