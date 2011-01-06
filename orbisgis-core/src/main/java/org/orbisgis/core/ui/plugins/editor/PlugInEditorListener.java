@@ -49,8 +49,6 @@ import org.orbisgis.core.ui.plugins.views.MapEditorPlugIn;
 /**
  * 
  * Adapt editor listener for plug-in
- * 
- * @author pierre-yves
  *
  */
 public class PlugInEditorListener implements EditorListener {

@@ -47,12 +47,12 @@ import org.orbisgis.core.errorManager.ErrorManager;
 import org.orbisgis.core.sif.UIFactory;
 import org.orbisgis.core.ui.editor.IEditor;
 import org.orbisgis.core.ui.editors.table.TableEditableElement;
-import org.orbisgis.core.ui.geocatalog.actions.create.FieldEditor;
 import org.orbisgis.core.ui.pluginSystem.AbstractPlugIn;
 import org.orbisgis.core.ui.pluginSystem.PlugInContext;
 import org.orbisgis.core.ui.pluginSystem.workbench.Names;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchContext;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchFrame;
+import org.orbisgis.core.ui.plugins.views.geocatalog.actions.create.FieldEditor;
 import org.orbisgis.core.ui.preferences.lookandfeel.OrbisGISIcon;
 
 public class AddFieldPlugIn extends AbstractPlugIn {
