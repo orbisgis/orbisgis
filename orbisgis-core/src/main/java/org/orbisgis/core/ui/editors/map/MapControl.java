@@ -523,6 +523,7 @@ public class MapControl extends JComponent implements ComponentListener,
                         if (mapContext.isSelectionInducedRefresh()) {
                                 invalidateImage();
                         }
+                        mapContext.setSelectionInducedRefresh(false);
 		}
 
 		public void multipleModification(MultipleEditionEvent e) {
