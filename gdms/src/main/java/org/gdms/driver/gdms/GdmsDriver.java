@@ -117,17 +117,20 @@ public class GdmsDriver extends GDMSModelDriver implements FileReadWriteDriver {
                                 for (int i = 0; i < m.getFieldCount(); i++) {
                                         switch (m.getFieldType(i).getTypeCode()) {
                                                 case Type.GEOMETRY:
-                                                        type = type | SourceManager.VECTORIAL;
+                                                        type |= SourceManager.VECTORIAL;
                                                         break;
                                                 case Type.RASTER:
-                                                        type = type | SourceManager.RASTER;
+                                                        type |= SourceManager.RASTER;
                                                         break;
                                         }
                                 }
                         } catch (DriverException ex) {
                         }
+                        return type;
+                } else {
+                        return type | SourceManager.VECTORIAL;
                 }
-                return type;
+                
         }
 
         public void setDataSourceFactory(DataSourceFactory dsf) {
