@@ -102,7 +102,7 @@ public class SaveInFilePlugIn extends AbstractPlugIn {
 				BackgroundManager bm = Services
 						.getService(BackgroundManager.class);
 				bm.backgroundOperation(new ExportInFileOperation(dsf, resource
-						.getName(), savedFile));
+						.getName(), savedFile, null));
 
 			}
 		}

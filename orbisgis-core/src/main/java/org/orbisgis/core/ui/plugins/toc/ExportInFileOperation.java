@@ -46,9 +46,12 @@ import org.gdms.data.DataSourceFactory;
 import org.gdms.data.file.FileSourceDefinition;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.driverManager.DriverLoadException;
+import org.gdms.source.SourceManager;
 import org.gdms.sql.strategies.SemanticException;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.background.BackgroundJob;
+import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchFrame;
+import org.orbisgis.core.ui.plugins.views.geocatalog.Catalog;
 import org.orbisgis.progress.IProgressMonitor;
 
 public class ExportInFileOperation implements BackgroundJob {
@@ -56,12 +59,14 @@ public class ExportInFileOperation implements BackgroundJob {
 	private File savedFile;
 	private DataSourceFactory dsf;
 	private String sourceName;
+        private WorkbenchFrame frame;
 
 	public ExportInFileOperation(DataSourceFactory dsf, String sourceName,
-			File savedFile) {
+			File savedFile, WorkbenchFrame frame) {
 		this.sourceName = sourceName;
 		this.savedFile = savedFile;
 		this.dsf = dsf;
+                this.frame = frame;
 	}
 
 	@Override
@@ -78,7 +83,11 @@ public class ExportInFileOperation implements BackgroundJob {
 			fileName = fileName.substring(0, index);
 		}
 		final FileSourceDefinition def = new FileSourceDefinition(savedFile);
-		dsf.getSourceManager().register(fileName, def);
+                final SourceManager sourceManager = dsf.getSourceManager();
+                if (sourceManager.exists(fileName)) {
+                        fileName = sourceManager.getUniqueName(fileName);
+                }
+		sourceManager.register(fileName, def);
 		try {
 			dsf.saveContents(fileName, dsf.getDataSource(sourceName), pm);
 			JOptionPane.showMessageDialog(null,
@@ -93,6 +102,10 @@ public class ExportInFileOperation implements BackgroundJob {
 		} catch (DataSourceCreationException e) {
 			Services.getErrorManager().error("Cannot read the datasource.", e);
 		}
+
+                if (frame != null && frame instanceof Catalog) {
+                        ((Catalog)frame).repaint();
+                }
 
 	}
 
