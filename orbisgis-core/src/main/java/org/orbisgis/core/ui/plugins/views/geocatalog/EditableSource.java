@@ -63,12 +63,11 @@ public class EditableSource extends AbstractTableEditableElement implements
 	public static final String EDITABLE_RESOURCE_TYPE = "org.orbisgis.core.ui.geocatalog.EditableResource";
 
 	private String sourceName;
+        private boolean editing = false;
 	private DataSource ds;
 	private SourceSelection resourceSelection = new SourceSelection();
 
 	private NameChangeSourceListener listener = new NameChangeSourceListener();
-
-	private boolean isSystemTable;
 
 	public EditableSource(String sourceName) {
 		this.sourceName = sourceName;
@@ -103,8 +102,6 @@ public class EditableSource extends AbstractTableEditableElement implements
 			DataManager dataManager = Services.getService(DataManager.class);
 			if (ds == null) {
 				DataSourceFactory dsf = dataManager.getDataSourceFactory();
-				isSystemTable = dsf.getSourceManager().getSource(sourceName)
-						.isSystemTableSource();
 				ds = dsf.getDataSource(sourceName);
 			}
 			ds.open();
@@ -144,15 +141,29 @@ public class EditableSource extends AbstractTableEditableElement implements
 	}
 
 	public boolean isEditable() {
-		if (isSystemTable) {
+		if (ds.getSource().isSystemTableSource()) {
 			return false;
 		}
-		return ds.isEditable();
+		return editing && ds.isEditable();
 	}
 
 	public MapContext getMapContext() {
 		return null;
 	}
+
+        /**
+         * @return the Editing
+         */
+        public boolean isEditing() {
+                return editing;
+        }
+
+        /**
+         * @param Editing the Editing to set
+         */
+        public void setEditing(boolean Editing) {
+                this.editing = Editing;
+        }
 
 	private class NameChangeSourceListener implements SourceListener {
 

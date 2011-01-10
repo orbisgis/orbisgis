@@ -134,6 +134,8 @@ public class Catalog extends JPanel implements DragGestureListener,
 
 	private org.orbisgis.core.ui.pluginSystem.menu.MenuTree menuTree;
 
+        private HashMap<String, EditableSource> editingSources;
+
 	@Override
 	public org.orbisgis.core.ui.pluginSystem.menu.MenuTree getMenuTreePopup() {
 		return menuTree;
@@ -188,16 +190,18 @@ public class Catalog extends JPanel implements DragGestureListener,
 		});
 		listModel = new SourceListModel();
 		lstSources.setModel(listModel);
+
 		this.setLayout(new BorderLayout());
 		this.add(new JScrollPane(lstSources), BorderLayout.CENTER);
 		this.add(getNorthPanel(), BorderLayout.NORTH);
-		SourceListRenderer cellRenderer = new SourceListRenderer();
+		SourceListRenderer cellRenderer = new SourceListRenderer(this);
 		cellRenderer.setRenderers(new SourceRenderer[0]);
 		lstSources.setCellRenderer(cellRenderer);
 
 		dragSource = DragSource.getDefaultDragSource();
 		dragSource.createDefaultDragGestureRecognizer(lstSources,
 				DnDConstants.ACTION_COPY_OR_MOVE, this);
+                editingSources = new HashMap<String, EditableSource>();
 
 	}
 
@@ -591,6 +595,29 @@ public class Catalog extends JPanel implements DragGestureListener,
 		}
 		selectionModel.setValueIsAdjusting(false);
 	}
+
+        public boolean isEditingSource(String source) {
+                EditableSource s = editingSources.get(source);
+                return s != null && s.isEditing();
+        }
+
+        public EditableSource getEditingSource(String name) {
+                return editingSources.get(name);
+        }
+
+        /**
+         * @param currentEditedSource the currentEditedSource to add
+         */
+        public void addEditingSource(String currentEditedSource, EditableSource source) {
+                editingSources.put(currentEditedSource, source);
+        }
+
+        public void removeEditingSource(String currentEditedSource) {
+                EditableSource s = editingSources.get(currentEditedSource);
+                if (s != null) {
+                        s.setEditing(false);
+                }
+        }
 
 	public class TagFilter implements IFilter {
 

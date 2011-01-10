@@ -132,12 +132,16 @@ import org.orbisgis.core.ui.plugins.toc.raster.threshold.RasterThresholdPlugIn;
 import org.orbisgis.core.ui.plugins.views.MapEditorPlugIn;
 import org.orbisgis.core.ui.plugins.views.TableEditorPlugIn;
 import org.orbisgis.core.ui.plugins.views.geocatalog.ConvertXYZDemGeocatalogPlugIn;
+import org.orbisgis.core.ui.plugins.views.geocatalog.GeocatalogStopEditionPlugIn;
 import org.orbisgis.core.ui.plugins.views.geocatalog.GeocatalogClearPlugIn;
 import org.orbisgis.core.ui.plugins.views.geocatalog.GeocatalogCreateFileSourcePlugIn;
 import org.orbisgis.core.ui.plugins.views.geocatalog.GeocatalogDeleteSourcePlugIn;
+import org.orbisgis.core.ui.plugins.views.geocatalog.GeocatalogSaveChangesPlugIn;
 import org.orbisgis.core.ui.plugins.views.geocatalog.GeocatalogSaveInDataBasePlugIn;
 import org.orbisgis.core.ui.plugins.views.geocatalog.GeocatalogSaveInFilePlugIn;
 import org.orbisgis.core.ui.plugins.views.geocatalog.GeocatalogShowTablePlugIn;
+import org.orbisgis.core.ui.plugins.views.geocatalog.GeocatalogStartEditionPlugIn;
+import org.orbisgis.core.ui.plugins.views.geocatalog.GeocatalogRevertSourcePlugIn;
 import org.orbisgis.core.ui.plugins.views.geocatalog.NewGeocatalogFilePlugIn;
 import org.orbisgis.core.ui.plugins.views.geocatalog.NewGeocatalogFolderPlugIn;
 import org.orbisgis.core.ui.plugins.views.geocatalog.NewGeocognitionDBPlugIn;
@@ -219,6 +223,10 @@ public class OrbisConfiguration implements Setup {
 	private GeocatalogShowTablePlugIn geocatalogShowTable = new GeocatalogShowTablePlugIn();
 	private GeocatalogSaveInFilePlugIn geocatalogSaveInFilePlugIn = new GeocatalogSaveInFilePlugIn();
 	private GeocatalogSaveInDataBasePlugIn geocatalogSaveInDataBasePlugIn = new GeocatalogSaveInDataBasePlugIn();
+        private GeocatalogSaveChangesPlugIn geocatalogSaveChangesPlugIn = new GeocatalogSaveChangesPlugIn();
+        private GeocatalogStartEditionPlugIn geocatalogStartEditionPligIn = new GeocatalogStartEditionPlugIn();
+        private GeocatalogStopEditionPlugIn geocatalogStopEditionPlugIn = new GeocatalogStopEditionPlugIn();
+        private GeocatalogRevertSourcePlugIn geocatalogRevertSourcePlugIn = new GeocatalogRevertSourcePlugIn();
 
 	// Table editor Plugins
 	// Row actions
@@ -363,6 +371,10 @@ public class OrbisConfiguration implements Setup {
 			geocatalogShowTable.initialize(context);
 			geocatalogSaveInFilePlugIn.initialize(context);
 			geocatalogSaveInDataBasePlugIn.initialize(context);
+                        geocatalogSaveChangesPlugIn.initialize(context);
+                        geocatalogStartEditionPligIn.initialize(context);
+                        geocatalogStopEditionPlugIn.initialize(context);
+                        geocatalogRevertSourcePlugIn.initialize(context);
 
 			// Table Editor PlugIn popup
 			setNullPlugIn.initialize(context);
