@@ -40,6 +40,7 @@ package org.orbisgis.core.ui.plugins.views.sqlConsole.syntax;
 
 import java.io.ByteArrayInputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -107,6 +108,7 @@ public class SQLCompletionProvider extends DefaultCompletionProvider implements 
         private final Map<String, Metadata> cachedMetadatas = Collections.synchronizedMap(new TreeMap<String, Metadata>());
         private final Map<String, Completion> cachedCompletions = Collections.synchronizedMap(new TreeMap<String, Completion>());
         private final BlockingDeque<String> sourcesToLoad = new LinkedBlockingDeque<String>();
+        private int[] tableWithFieldsCase;
         // source loading & thread synchronisation
         private final Object lock = new Object();
         private volatile boolean isLoadingSources = false;
@@ -148,6 +150,25 @@ public class SQLCompletionProvider extends DefaultCompletionProvider implements 
                 auto.setAutoCompleteSingleChoices(true);
                 auto.setShowDescWindow(true);
                 auto.install(textC);
+
+                // completion init
+                tableWithFieldsCase = new int[15];
+                tableWithFieldsCase[0] = SQLEngineConstants.EQUAL;
+                tableWithFieldsCase[1] = SQLEngineConstants.WHERE;
+                tableWithFieldsCase[2] = SQLEngineConstants.SELECT;
+                tableWithFieldsCase[3] = SQLEngineConstants.NOT;
+                tableWithFieldsCase[4] = SQLEngineConstants.PLUS;
+                tableWithFieldsCase[5] = SQLEngineConstants.MINUS;
+                tableWithFieldsCase[6] = SQLEngineConstants.GREATER;
+                tableWithFieldsCase[7] = SQLEngineConstants.GREATEREQUAL;
+                tableWithFieldsCase[8] = SQLEngineConstants.LESS;
+                tableWithFieldsCase[9] = SQLEngineConstants.LESSEQUAL;
+                tableWithFieldsCase[10] = SQLEngineConstants.NOTEQUAL;
+                tableWithFieldsCase[11] = SQLEngineConstants.NOTEQUAL2;
+                tableWithFieldsCase[12] = SQLEngineConstants.SLASH;
+                tableWithFieldsCase[13] = SQLEngineConstants.ASTERISK;
+                tableWithFieldsCase[14] = SQLEngineConstants.CONCAT;
+                Arrays.sort(tableWithFieldsCase);
 
                 // listen to SourceManager
                 dataManager = Services.getService(DataManager.class);
@@ -472,7 +493,9 @@ public class SQLCompletionProvider extends DefaultCompletionProvider implements 
                         }
                 }
 
-                if (tokenKind == SQLEngineConstants.WHERE || tokenKind == SQLEngineConstants.SELECT) {
+
+
+                if (Arrays.binarySearch(tableWithFieldsCase, tokenKind) >= 0) {
                         tableWithFields = true;
                 }
 
