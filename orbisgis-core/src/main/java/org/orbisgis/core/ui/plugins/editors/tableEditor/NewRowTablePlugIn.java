@@ -117,11 +117,7 @@ public class NewRowTablePlugIn extends AbstractPlugIn {
 			TableEditableElement element = (TableEditableElement) tableEditor
 					.getElement();
 			if (element.getSelection().getSelectedRows().length == 1) {
-				if (element.isEditable()) {
-					isEnabled = true;
-				} else if (element.getMapContext() == null) {
-					isEnabled = element.getDataSource().isEditable();
-				}
+				isEnabled = element.isEditable();
 			}
 		}
 		btn.setEnabled(isEnabled);

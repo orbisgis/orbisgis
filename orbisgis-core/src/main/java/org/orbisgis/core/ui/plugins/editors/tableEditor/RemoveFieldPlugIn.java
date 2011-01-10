@@ -87,7 +87,6 @@ public class RemoveFieldPlugIn extends AbstractPlugIn {
 	}
 
 	public boolean isEnabled() {
-		boolean isEnabled = false;
 		IEditor editor = null;
 		if ((editor = getPlugInContext().getTableEditor()) != null) {
 			final TableEditableElement element = (TableEditableElement) editor
@@ -97,15 +96,15 @@ public class RemoveFieldPlugIn extends AbstractPlugIn {
 					Metadata metadata = element.getDataSource().getMetadata();
 					Type type = metadata.getFieldType(getSelectedColumn());
 					int typeCode = type.getTypeCode();
-					if (typeCode != Type.GEOMETRY)
-						return isEnabled = true;
+					if (typeCode != Type.GEOMETRY) {
+                                                return true;
+                                        }
 				}
 			} catch (DriverException e) {
 				ErrorMessages.error(ErrorMessages.CannotAccessFieldInformation,
 						e);
-				return isEnabled;
 			}
 		}
-		return isEnabled;
+		return false;
 	}
 }

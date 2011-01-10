@@ -35,7 +35,6 @@
  * erwan.bocher _at_ ec-nantes.fr
  * gwendall.petit _at_ ec-nantes.fr
  */
-
 package org.orbisgis.core.ui.plugins.editors.tableEditor;
 
 import org.gdms.data.DataSource;
@@ -63,149 +62,150 @@ import org.orbisgis.core.ui.preferences.lookandfeel.OrbisGISIcon;
 
 public class AddValuePlugIn extends AbstractPlugIn {
 
-	private DataSource dataSource;
+        private DataSource dataSource;
 
-	public boolean execute(PlugInContext context) throws Exception {
-		IEditor editor = context.getActiveEditor();
-		final TableEditableElement element = (TableEditableElement) editor
-				.getElement();
-		dataSource = element.getDataSource();
-		MultiInputPanel mip = new MultiInputPanel("Add value");
-		try {
-			Metadata metadata = dataSource.getMetadata();
-			Type type = metadata.getFieldType(getSelectedColumn());
-			int typeCode = type.getTypeCode();
-			switch (typeCode) {
-			case Type.BOOLEAN:
-				mip.addInput("value", "Choose a value", new ComboBoxChoice(
-						"true", "false"));
-				break;
-			case Type.DOUBLE:
-			case Type.FLOAT:
-				mip.addInput("value", "Put a value", new DoubleType());
-				break;
-			case Type.INT:
-			case Type.LONG:
-			case Type.SHORT:
-				mip.addInput("value", "Put a value", "0", new IntType());
-				break;
-			case Type.STRING:
-				mip.addInput("value", "Put a value", " text ", new StringType(
-						10));
-				break;
-			default:
-				throw new IllegalArgumentException("Unknown data type: "
-						+ typeCode);
-			}
-			int size = element.getSelection().getSelectedRows().length;
-			if (size > 0) {
-				mip.addInput("check", "Apply on selected row", null,
-						new CheckBoxChoice(true));
-			}
-			if (UIFactory.showDialog(mip)) {
-				int[] selectedRow = null;
-				if (mip.getInput("check").equalsIgnoreCase("true")) {
-					selectedRow = element.getSelection().getSelectedRows();
+        public boolean execute(PlugInContext context) throws Exception {
+                IEditor editor = context.getActiveEditor();
+                final TableEditableElement element = (TableEditableElement) editor.getElement();
+                dataSource = element.getDataSource();
+                MultiInputPanel mip = new MultiInputPanel("Add value");
+                try {
+                        Metadata metadata = dataSource.getMetadata();
+                        Type type = metadata.getFieldType(getSelectedColumn());
+                        int typeCode = type.getTypeCode();
+                        switch (typeCode) {
+                                case Type.BOOLEAN:
+                                        mip.addInput("value", "Choose a value", new ComboBoxChoice(
+                                                "true", "false"));
+                                        break;
+                                case Type.DOUBLE:
+                                case Type.FLOAT:
+                                        mip.addInput("value", "Put a value", new DoubleType());
+                                        break;
+                                case Type.INT:
+                                case Type.LONG:
+                                case Type.SHORT:
+                                        mip.addInput("value", "Put a value", "0", new IntType());
+                                        break;
+                                case Type.STRING:
+                                        mip.addInput("value", "Put a value", " text ", new StringType(
+                                                10));
+                                        break;
+                                default:
+                                        throw new IllegalArgumentException("Unknown data type: "
+                                                + typeCode);
+                        }
+                        int size = element.getSelection().getSelectedRows().length;
+                        if (size > 0) {
+                                mip.addInput("check", "Apply on selected row", null,
+                                        new CheckBoxChoice(true));
+                        }
+                        if (UIFactory.showDialog(mip)) {
+                                int[] selectedRow = null;
+                                if (mip.getInput("check").equalsIgnoreCase("true")) {
+                                        selectedRow = element.getSelection().getSelectedRows();
 
-				} else {
-					selectedRow = new int[(int) dataSource.getRowCount()];
-				}
+                                } else {
+                                        selectedRow = new int[(int) dataSource.getRowCount()];
+                                }
 
-				switch (typeCode) {
-				case Type.BOOLEAN:
-					setValue(selectedRow, new Boolean(mip.getInput("value")),
-							getSelectedColumn());
-					break;
-				case Type.DOUBLE:
-				case Type.FLOAT:
-					setValue(selectedRow, new Double(mip.getInput("value")),
-							getSelectedColumn());
-					break;
-				case Type.INT:
-				case Type.LONG:
-				case Type.SHORT:
-					setValue(selectedRow, new Integer(mip.getInput("value")),
-							(int) getSelectedColumn());
-					break;
-				case Type.STRING:
-					setValue(selectedRow, mip.getInput("value"), getSelectedColumn());
-					break;
-				default:
-					throw new IllegalArgumentException("Unknown data type: "
-							+ typeCode);
-				}
+                                switch (typeCode) {
+                                        case Type.BOOLEAN:
+                                                setValue(selectedRow,
+                                                        Boolean.valueOf(mip.getInput("value")), getSelectedColumn());
+                                                break;
+                                        case Type.DOUBLE:
+                                        case Type.FLOAT:
+                                                setValue(selectedRow, new Double(mip.getInput("value")),
+                                                        getSelectedColumn());
+                                                break;
+                                        case Type.INT:
+                                        case Type.LONG:
+                                        case Type.SHORT:
+                                                setValue(selectedRow, new Integer(mip.getInput("value")), getSelectedColumn());
+                                                break;
+                                        case Type.STRING:
+                                                setValue(selectedRow, mip.getInput("value"), getSelectedColumn());
+                                                break;
+                                        default:
+                                                throw new IllegalArgumentException("Unknown data type: "
+                                                        + typeCode);
+                                }
 
-			}
+                        }
 
-		} catch (DriverException e) {
-			e.printStackTrace();
-		} catch (NonEditableDataSourceException e) {
-			e.printStackTrace();
-		}
-		return true;
-	}
+                } catch (DriverException e) {
+                        e.printStackTrace();
+                } catch (NonEditableDataSourceException e) {
+                        e.printStackTrace();
+                }
+                return true;
+        }
 
-	public void initialize(PlugInContext context) throws Exception {
-		WorkbenchContext wbContext = context.getWorkbenchContext();
-		WorkbenchFrame frame = (WorkbenchFrame) wbContext.getWorkbench()
-				.getFrame().getTableEditor();
-		context.getFeatureInstaller().addPopupMenuItem(frame, this,
-				new String[] { Names.POPUP_TABLE_ADDVALUE_PATH1 },
-				Names.POPUP_TABLE_ADDVALUE_GROUP, false,
-				OrbisGISIcon.TABLE_ADDVALUE, wbContext);
-	}
+        public void initialize(PlugInContext context) throws Exception {
+                WorkbenchContext wbContext = context.getWorkbenchContext();
+                WorkbenchFrame frame = (WorkbenchFrame) wbContext.getWorkbench().getFrame().getTableEditor();
+                context.getFeatureInstaller().addPopupMenuItem(frame, this,
+                        new String[]{Names.POPUP_TABLE_ADDVALUE_PATH1},
+                        Names.POPUP_TABLE_ADDVALUE_GROUP, false,
+                        OrbisGISIcon.TABLE_ADDVALUE, wbContext);
+        }
 
-	private void setValue(int[] selectedRow, String value,
-			int selectedColumnIndex) throws DriverException,
-			NonEditableDataSourceException {
-		for (int i = 0; i < selectedRow.length; i++)
-			dataSource.setString(i, selectedColumnIndex, value);
-		dataSource.commit();
-	}
+        private void setValue(int[] selectedRow, String value,
+                int selectedColumnIndex) throws DriverException,
+                NonEditableDataSourceException {
+                for (int i = 0; i < selectedRow.length; i++) {
+                        dataSource.setString(i, selectedColumnIndex, value);
+                }
+                dataSource.commit();
+        }
 
-	private void setValue(int[] selectedRow, Integer value,
-			int selectedColumnIndex) throws DriverException,
-			NonEditableDataSourceException {
-		for (int i = 0; i < selectedRow.length; i++)
-			dataSource.setInt(i, selectedColumnIndex, value);
-		dataSource.commit();
-	}
+        private void setValue(int[] selectedRow, Integer value,
+                int selectedColumnIndex) throws DriverException,
+                NonEditableDataSourceException {
+                for (int i = 0; i < selectedRow.length; i++) {
+                        dataSource.setInt(i, selectedColumnIndex, value);
+                }
+                dataSource.commit();
+        }
 
-	private void setValue(int[] selectedRow, double value,
-			int selectedColumnIndex) throws DriverException,
-			NonEditableDataSourceException {
-		for (int i = 0; i < selectedRow.length; i++)
-			dataSource.setDouble(i, selectedColumnIndex, value);
-		dataSource.commit();
-	}
+        private void setValue(int[] selectedRow, double value,
+                int selectedColumnIndex) throws DriverException,
+                NonEditableDataSourceException {
+                for (int i = 0; i < selectedRow.length; i++) {
+                        dataSource.setDouble(i, selectedColumnIndex, value);
+                }
+                dataSource.commit();
+        }
 
-	private void setValue(int[] selectedRow, boolean value,
-			int selectedColumnIndex) throws DriverException,
-			NonEditableDataSourceException {
-		for (int i = 0; i < selectedRow.length; i++)
-			dataSource.setBoolean(i, selectedColumnIndex, value);
-		dataSource.commit();
-	}
+        private void setValue(int[] selectedRow, boolean value,
+                int selectedColumnIndex) throws DriverException,
+                NonEditableDataSourceException {
+                for (int i = 0; i < selectedRow.length; i++) {
+                        dataSource.setBoolean(i, selectedColumnIndex, value);
+                }
+                dataSource.commit();
+        }
 
-	public boolean isEnabled() {
-		boolean isEnabled = false;
-		IEditor tableEditor = null;
-		if((tableEditor=getPlugInContext().getTableEditor()) != null){
-			final TableEditableElement element = (TableEditableElement) tableEditor.getElement();
-			try {
-				if (element!=null && (getSelectedColumn()!= -1) && element.isEditable()) {
-					Metadata metadata = element.getDataSource().getMetadata();
-					Type type = metadata.getFieldType(getSelectedColumn());
-					int typeCode = type.getTypeCode();
-					if (typeCode != Type.GEOMETRY)
-						return isEnabled = true;
-				}
+        public boolean isEnabled() {
+                IEditor tableEditor = null;
+                if ((tableEditor = getPlugInContext().getTableEditor()) != null) {
+                        final TableEditableElement element = (TableEditableElement) tableEditor.getElement();
+                        try {
+                                if (element != null && (getSelectedColumn() != -1) && element.isEditable()) {
+                                        Metadata metadata = element.getDataSource().getMetadata();
+                                        Type type = metadata.getFieldType(getSelectedColumn());
+                                        int typeCode = type.getTypeCode();
+                                        if (typeCode != Type.GEOMETRY) {
+                                                return true;
+                                        }
+                                }
 
-			} catch (DriverException e) {
-				Services.getService(ErrorManager.class).error(
-						"Cannot access field information", e);
-			}
-		}
-		return isEnabled;
-	}
+                        } catch (DriverException e) {
+                                Services.getService(ErrorManager.class).error(
+                                        "Cannot access field information", e);
+                        }
+                }
+                return false;
+        }
 }

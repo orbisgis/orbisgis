@@ -92,7 +92,7 @@ public class AddFieldPlugIn extends AbstractPlugIn {
 		if((tableEditor=getPlugInContext().getTableEditor()) != null) {
 			final TableEditableElement element =
 				(TableEditableElement) tableEditor.getElement();
-			isEnabled = getSelectedColumn()!=-1 && element.getDataSource().isEditable();
+			isEnabled = getSelectedColumn()!=-1 && element.isEditable();
 		}
 		return isEnabled;
 	}

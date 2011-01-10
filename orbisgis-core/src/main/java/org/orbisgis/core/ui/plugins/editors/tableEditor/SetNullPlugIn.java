@@ -106,7 +106,6 @@ public class SetNullPlugIn extends AbstractPlugIn {
 		if ((editor = getPlugInContext().getTableEditor()) != null
 				&& getSelectedColumn() == -1 && getEvent() != null) {
 
-			editor = editor;
 			TableEditableElement element = (TableEditableElement) editor
 					.getElement();
 			if (element.getSelection().getSelectedRows().length > 0) {

@@ -93,7 +93,7 @@ public class ChangeFieldNamePlugIn extends AbstractPlugIn {
 			final TableEditableElement element = (TableEditableElement) tableEditor
 					.getElement();
 			isEnabled = (getSelectedColumn() != -1)
-					&& element.getDataSource().isEditable();
+					&& element.isEditable();
 		}
 		return isEnabled;
 	}
