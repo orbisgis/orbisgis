@@ -43,7 +43,6 @@ public class GeocatalogSaveChangesPlugIn extends AbstractPlugIn {
                                         Services.getErrorManager().error("It is not possible to save " + "this source.", e);
                                 }
                         }
-                        s.setEditing(false);
                         JOptionPane.showMessageDialog(null, "The source has been saved");
 
                 }
