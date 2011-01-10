@@ -91,19 +91,7 @@ public class RemoveFieldPlugIn extends AbstractPlugIn {
 		if ((editor = getPlugInContext().getTableEditor()) != null) {
 			final TableEditableElement element = (TableEditableElement) editor
 					.getElement();
-			try {
-				if ((getSelectedColumn() != -1) && element.isEditable()) {
-					Metadata metadata = element.getDataSource().getMetadata();
-					Type type = metadata.getFieldType(getSelectedColumn());
-					int typeCode = type.getTypeCode();
-					if (typeCode != Type.GEOMETRY) {
-                                                return true;
-                                        }
-				}
-			} catch (DriverException e) {
-				ErrorMessages.error(ErrorMessages.CannotAccessFieldInformation,
-						e);
-			}
+				return (getSelectedColumn() != -1) && element.isEditable();
 		}
 		return false;
 	}
