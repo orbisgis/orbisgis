@@ -161,13 +161,13 @@ public class PlugInContext {
 							break;
 						case IS_MODIFIED:
 							SpatialDataSourceDecorator dataSource = layer
-									.getDataSource();
+									.getSpatialDataSource();
 							if ((dataSource == null)
 									|| !dataSource.isModified())
 								return false;
 							break;
 						case DATASOURCE_NOT_NULL:
-							if (layer.getDataSource() == null)
+							if (layer.getSpatialDataSource() == null)
 								return false;
 							break;
 						case ACTIVE_LAYER:
@@ -179,7 +179,7 @@ public class PlugInContext {
 								return false;
 							break;
 						case IS_EDTABLE:
-							if (!layer.getDataSource().isEditable())
+							if (!layer.getSpatialDataSource().isEditable())
 								return false;
 							break;
 						case ROW_SELECTED:
@@ -605,7 +605,7 @@ public class PlugInContext {
 			ILayer[] selectedLayers = mapContext.getSelectedLayers();
 			if (selectedLayers.length > 0) {
 				for (ILayer layer : selectedLayers) {
-					if ((sds = layer.getDataSource()) != null
+					if ((sds = layer.getSpatialDataSource()) != null
 							&& !sds.isModified())
 						return false;
 				}
@@ -626,7 +626,7 @@ public class PlugInContext {
 			ILayer[] selectedLayers = mapContext.getSelectedLayers();
 			if (selectedLayers.length > 0) {
 				for (ILayer layer : selectedLayers) {
-					if ((sds = layer.getDataSource()) != null
+					if ((sds = layer.getSpatialDataSource()) != null
 							&& !sds.isEditable())
 						return false;
 				}

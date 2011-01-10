@@ -71,7 +71,7 @@ public class MultipointTool extends AbstractMultipointTool {
 
 	protected void multipointDone(MultiPoint mp, MapContext mc, ToolManager tm)
 			throws TransitionException {
-		SpatialDataSourceDecorator sds = mc.getActiveLayer().getDataSource();
+		SpatialDataSourceDecorator sds = mc.getActiveLayer().getSpatialDataSource();
 		try {
 			Value[] row = new Value[sds.getMetadata().getFieldCount()];
                         mp.setSRID(sds.getSRID());

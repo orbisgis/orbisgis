@@ -94,7 +94,7 @@ public class TestClassfication {
 		layer.open();
 		DataSource ds;
 		try {
-			ds = layer.getDataSource();
+			ds = layer.getSpatialDataSource();
 			RangeMethod intervalsDicretizationMethod = new RangeMethod(ds,
 					"PTOT90", 4);
 

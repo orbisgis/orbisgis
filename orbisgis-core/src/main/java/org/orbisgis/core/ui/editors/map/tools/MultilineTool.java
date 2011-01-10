@@ -81,7 +81,7 @@ public class MultilineTool extends AbstractMultilineTool {
 
 	protected void multilineDone(MultiLineString mls, MapContext mc,
 			ToolManager tm) throws TransitionException {
-		SpatialDataSourceDecorator sds = mc.getActiveLayer().getDataSource();
+		SpatialDataSourceDecorator sds = mc.getActiveLayer().getSpatialDataSource();
 		try {
 			Value[] row = new Value[sds.getMetadata().getFieldCount()];
                         mls.setSRID(sds.getSRID());

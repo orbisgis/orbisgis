@@ -81,7 +81,7 @@ public class PolygonTool extends AbstractPolygonTool {
 					.createMultiPolygon(new Polygon[] { pol });
 		}
 
-		SpatialDataSourceDecorator sds = mc.getActiveLayer().getDataSource();
+		SpatialDataSourceDecorator sds = mc.getActiveLayer().getSpatialDataSource();
 		try {
 			Value[] row = new Value[sds.getMetadata().getFieldCount()];
                         g.setSRID(sds.getSRID());

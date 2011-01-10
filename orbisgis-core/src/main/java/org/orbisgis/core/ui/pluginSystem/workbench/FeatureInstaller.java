@@ -298,6 +298,20 @@ public class FeatureInstaller {
 	}
 
 	/**
+	 * Create a popupmenu only with text
+	 * 
+	 * @param frame
+	 * @param plugIn
+	 * @param menuPath
+	 * @param wbContext
+	 */
+	public void addPopupMenuItem(WorkbenchFrame frame, AbstractPlugIn plugIn,
+			String[] menuPath, WorkbenchContext wbContext) {
+		addPopupMenuItem(frame, plugIn, menuPath, null, false, null, wbContext);
+
+	}
+
+	/**
 	 * Create a popupmenu without icon
 	 * 
 	 * @param frame
@@ -361,9 +375,4 @@ public class FeatureInstaller {
 		geocognition.addElement("SQL/" + name, clazz);
 	}
 
-	/*
-	 * public void addFilter(WorkbenchFrame frame, PlugIn executable,
-	 * WorkbenchContext wbContext) {
-	 * frame.getSourceListModel().getFilters().add(executable); }
-	 */
 }

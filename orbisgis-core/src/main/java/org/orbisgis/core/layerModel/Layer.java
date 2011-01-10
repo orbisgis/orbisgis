@@ -128,7 +128,7 @@ public class Layer extends GdmsLayer {
 		return legend;
 	}
 
-	public SpatialDataSourceDecorator getDataSource() {
+	public SpatialDataSourceDecorator getSpatialDataSource() {
 		return dataSource;
 	}
 
@@ -335,7 +335,7 @@ public class Layer extends GdmsLayer {
 			throw new UnsupportedOperationException(
 					"This layer is not a raster layer");
 		}
-		return getDataSource().getRaster(0);
+		return getSpatialDataSource().getRaster(0);
 	}
 
 	private class RefreshSelectionEditionListener implements EditionListener {

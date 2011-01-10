@@ -136,10 +136,18 @@ import org.orbisgis.core.ui.plugins.views.geocatalog.GeocatalogStopEditionPlugIn
 import org.orbisgis.core.ui.plugins.views.geocatalog.GeocatalogClearPlugIn;
 import org.orbisgis.core.ui.plugins.views.geocatalog.GeocatalogCreateFileSourcePlugIn;
 import org.orbisgis.core.ui.plugins.views.geocatalog.GeocatalogDeleteSourcePlugIn;
+import org.orbisgis.core.ui.plugins.views.geocatalog.GeocatalogEditDataSourcePlugIn;
+import org.orbisgis.core.ui.plugins.views.geocatalog.GeocatalogRevertSourcePlugIn;
+import org.orbisgis.core.ui.plugins.views.geocatalog.GeocatalogSaveChangesPlugIn;
+import org.orbisgis.core.ui.plugins.views.geocatalog.GeocatalogSaveChangesPlugIn;
 import org.orbisgis.core.ui.plugins.views.geocatalog.GeocatalogSaveChangesPlugIn;
 import org.orbisgis.core.ui.plugins.views.geocatalog.GeocatalogSaveInDataBasePlugIn;
 import org.orbisgis.core.ui.plugins.views.geocatalog.GeocatalogSaveInFilePlugIn;
 import org.orbisgis.core.ui.plugins.views.geocatalog.GeocatalogShowTablePlugIn;
+import org.orbisgis.core.ui.plugins.views.geocatalog.GeocatalogStartEditionPlugIn;
+import org.orbisgis.core.ui.plugins.views.geocatalog.GeocatalogStopEditionPlugIn;
+import org.orbisgis.core.ui.plugins.views.geocatalog.GeocatalogStartEditionPlugIn;
+import org.orbisgis.core.ui.plugins.views.geocatalog.GeocatalogRevertSourcePlugIn;
 import org.orbisgis.core.ui.plugins.views.geocatalog.GeocatalogStartEditionPlugIn;
 import org.orbisgis.core.ui.plugins.views.geocatalog.GeocatalogRevertSourcePlugIn;
 import org.orbisgis.core.ui.plugins.views.geocatalog.NewGeocatalogFilePlugIn;
@@ -223,10 +231,11 @@ public class OrbisConfiguration implements Setup {
 	private GeocatalogShowTablePlugIn geocatalogShowTable = new GeocatalogShowTablePlugIn();
 	private GeocatalogSaveInFilePlugIn geocatalogSaveInFilePlugIn = new GeocatalogSaveInFilePlugIn();
 	private GeocatalogSaveInDataBasePlugIn geocatalogSaveInDataBasePlugIn = new GeocatalogSaveInDataBasePlugIn();
-        private GeocatalogSaveChangesPlugIn geocatalogSaveChangesPlugIn = new GeocatalogSaveChangesPlugIn();
-        private GeocatalogStartEditionPlugIn geocatalogStartEditionPligIn = new GeocatalogStartEditionPlugIn();
-        private GeocatalogStopEditionPlugIn geocatalogStopEditionPlugIn = new GeocatalogStopEditionPlugIn();
-        private GeocatalogRevertSourcePlugIn geocatalogRevertSourcePlugIn = new GeocatalogRevertSourcePlugIn();
+	private GeocatalogEditDataSourcePlugIn geocatalogEditDataSourcePlugIn = new GeocatalogEditDataSourcePlugIn();
+	private GeocatalogSaveChangesPlugIn geocatalogSaveChangesPlugIn = new GeocatalogSaveChangesPlugIn();
+	private GeocatalogStartEditionPlugIn geocatalogStartEditionPligIn = new GeocatalogStartEditionPlugIn();
+	private GeocatalogStopEditionPlugIn geocatalogStopEditionPlugIn = new GeocatalogStopEditionPlugIn();
+	private GeocatalogRevertSourcePlugIn geocatalogRevertSourcePlugIn = new GeocatalogRevertSourcePlugIn();
 
 	// Table editor Plugins
 	// Row actions
@@ -371,6 +380,11 @@ public class OrbisConfiguration implements Setup {
 			geocatalogShowTable.initialize(context);
 			geocatalogSaveInFilePlugIn.initialize(context);
 			geocatalogSaveInDataBasePlugIn.initialize(context);
+			geocatalogEditDataSourcePlugIn.initialize(context);
+			geocatalogSaveChangesPlugIn.initialize(context);
+			geocatalogStartEditionPligIn.initialize(context);
+			geocatalogStopEditionPlugIn.initialize(context);
+			geocatalogRevertSourcePlugIn.initialize(context);
                         geocatalogSaveChangesPlugIn.initialize(context);
                         geocatalogStartEditionPligIn.initialize(context);
                         geocatalogStopEditionPlugIn.initialize(context);

@@ -76,7 +76,7 @@ public class PnlUniqueValueLegend extends PnlAbstractClassifiedLegend {
 	@Override
 	protected void addAllAction() {
 		ILayer layer = legendContext.getLayer();
-		SpatialDataSourceDecorator sdsd = layer.getDataSource();
+		SpatialDataSourceDecorator sdsd = layer.getSpatialDataSource();
 		String selitem = (String) cmbFields.getSelectedItem();
 
 		legend.clear();
@@ -123,7 +123,7 @@ public class PnlUniqueValueLegend extends PnlAbstractClassifiedLegend {
 		if (rowCount < 32) {
 			try {
 				SpatialDataSourceDecorator ds = legendContext.getLayer()
-						.getDataSource();
+						.getSpatialDataSource();
 				ArrayList<String> options = new ArrayList<String>();
 				ArrayList<Value> values = new ArrayList<Value>();
 				for (int i = 0; i < ds.getRowCount() && values.size() < 32; i++) {
@@ -190,7 +190,7 @@ public class PnlUniqueValueLegend extends PnlAbstractClassifiedLegend {
 				try {
 					legend.setClassificationField((String) cmbFields
 							.getSelectedItem(), legendContext.getLayer()
-							.getDataSource());
+							.getSpatialDataSource());
 				} catch (DriverException e1) {
 					Services.getErrorManager().error(
 							"Cannot access the type of the field", e1);
@@ -221,12 +221,12 @@ public class PnlUniqueValueLegend extends PnlAbstractClassifiedLegend {
 		ArrayList<String> comboValuesArray = new ArrayList<String>();
 		try {
 			ILayer layer = legendContext.getLayer();
-			int numFields = layer.getDataSource().getFieldCount();
+			int numFields = layer.getSpatialDataSource().getFieldCount();
 			for (int i = 0; i < numFields; i++) {
-				int fieldType = layer.getDataSource().getFieldType(i)
+				int fieldType = layer.getSpatialDataSource().getFieldType(i)
 						.getTypeCode();
 				if (fieldType != Type.GEOMETRY && fieldType != Type.RASTER) {
-					comboValuesArray.add(layer.getDataSource().getFieldName(i));
+					comboValuesArray.add(layer.getSpatialDataSource().getFieldName(i));
 				}
 			}
 		} catch (DriverException e) {

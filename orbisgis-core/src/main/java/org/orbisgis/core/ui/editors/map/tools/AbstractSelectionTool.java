@@ -148,9 +148,9 @@ public abstract class AbstractSelectionTool extends Selection {
 		Geometry selectionRect = p.getEnvelope();
 
 		ILayer activeLayer = getLayer(mc);
-		SpatialDataSourceDecorator ds = activeLayer.getDataSource();
+		SpatialDataSourceDecorator ds = activeLayer.getSpatialDataSource();
 		try {
-			Iterator<Integer> l = queryLayer(activeLayer.getDataSource(), p);
+			Iterator<Integer> l = queryLayer(activeLayer.getSpatialDataSource(), p);
 			while (l.hasNext()) {
 				int rowIndex = l.next();
 				Geometry g = (Geometry) ds.getGeometry(rowIndex);
@@ -221,7 +221,7 @@ public abstract class AbstractSelectionTool extends Selection {
 
 		Geometry selectionRect = rect.getEnvelope();
 
-		SpatialDataSourceDecorator ds = activeLayer.getDataSource();
+		SpatialDataSourceDecorator ds = activeLayer.getSpatialDataSource();
 		try {
 			ArrayList<Integer> newSelection = new ArrayList<Integer>();
 			Iterator<Integer> l = queryLayer(ds, rect);
@@ -330,7 +330,7 @@ public abstract class AbstractSelectionTool extends Selection {
 	@Override
 	public void transitionTo_MakeMove(MapContext mc, ToolManager tm)
 			throws TransitionException, FinishedAutomatonException {
-		SpatialDataSourceDecorator ds = getLayer(mc).getDataSource();
+		SpatialDataSourceDecorator ds = getLayer(mc).getSpatialDataSource();
 		for (int i = 0; i < selected.size(); i++) {
 			Handler handler = selected.get(i);
 			Geometry g;

@@ -88,7 +88,7 @@ public class VertexAditionTool extends VertexAdition {
 		Point2D p = new Point2D.Double(tm.getValues()[0], tm.getValues()[1]);
 		try {
 			ILayer activeLayer = mc.getActiveLayer();
-			SpatialDataSourceDecorator sds = activeLayer.getDataSource();
+			SpatialDataSourceDecorator sds = activeLayer.getSpatialDataSource();
 			int[] selection = activeLayer.getSelection();
 			for (int i = 0; i < selection.length; i++) {
 				int geomIndex = selection[i];
@@ -121,7 +121,7 @@ public class VertexAditionTool extends VertexAdition {
 		Point2D p = tm.getLastRealMousePosition();
 		try {
 			ILayer activeLayer = mc.getActiveLayer();
-			SpatialDataSourceDecorator sds = activeLayer.getDataSource();
+			SpatialDataSourceDecorator sds = activeLayer.getSpatialDataSource();
 			int[] selection = activeLayer.getSelection();
 			for (int i = 0; i < selection.length; i++) {
 				int geomIndex = selection[i];

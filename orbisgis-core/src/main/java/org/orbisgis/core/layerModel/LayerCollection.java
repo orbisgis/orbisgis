@@ -395,7 +395,7 @@ public class LayerCollection extends AbstractLayer {
          * so it is null. 
          * @return
          */
-	public SpatialDataSourceDecorator getDataSource() {
+	public SpatialDataSourceDecorator getSpatialDataSource() {
 		return null;
 	}
 

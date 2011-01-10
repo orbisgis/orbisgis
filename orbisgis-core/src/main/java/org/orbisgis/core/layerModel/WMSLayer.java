@@ -34,7 +34,7 @@ public class WMSLayer extends GdmsLayer {
 	}
 
 	@Override
-	public SpatialDataSourceDecorator getDataSource() {
+	public SpatialDataSourceDecorator getSpatialDataSource() {
 		return null;
 	}
 

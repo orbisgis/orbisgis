@@ -77,7 +77,7 @@ public class RevertLayerPlugIn extends AbstractPlugIn {
 
 	public void execute(MapContext mapContext, ILayer layer) {
 		try {
-			layer.getDataSource().syncWithSource();
+			layer.getSpatialDataSource().syncWithSource();
 		} catch (DriverException e) {
 			Services.getErrorManager().error("Cannot revert layer", e);
 			return;

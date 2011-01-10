@@ -72,9 +72,7 @@ public class EditLegendPlugIn extends AbstractPlugIn {
 		MapContext mapContext = getPlugInContext().getMapContext();
 		ILayer[] selectedResources = mapContext.getSelectedLayers();
 
-		if (selectedResources.length == 0) {
-			execute(mapContext, null);
-		} else {
+		if (selectedResources.length >= 0) {
 			for (ILayer resource : selectedResources) {
 				execute(mapContext, resource);
 			}
@@ -87,14 +85,14 @@ public class EditLegendPlugIn extends AbstractPlugIn {
 		WorkbenchFrame frame = wbContext.getWorkbench().getFrame().getToc();
 		context.getFeatureInstaller().addPopupMenuItem(frame, this,
 				new String[] { Names.POPUP_TOC_LEGEND_PATH },
-				Names.POPUP_TOC_LEGEND_GROUP, false,
-				OrbisGISIcon.EDIT_LEGEND, wbContext);
+				Names.POPUP_TOC_LEGEND_GROUP, false, OrbisGISIcon.EDIT_LEGEND,
+				wbContext);
 	}
 
 	public void execute(MapContext mapContext, ILayer layer) {
 		try {
-			Type typ = layer.getDataSource().getMetadata().getFieldType(
-					layer.getDataSource().getSpatialFieldIndex());
+			Type typ = layer.getSpatialDataSource().getMetadata().getFieldType(
+					layer.getSpatialDataSource().getSpatialFieldIndex());
 			GeometryConstraint cons = (GeometryConstraint) typ
 					.getConstraint(Constraint.GEOMETRY_TYPE);
 
@@ -141,8 +139,7 @@ public class EditLegendPlugIn extends AbstractPlugIn {
 
 	public boolean isEnabled() {
 		return getPlugInContext().checkLayerAvailability(
-				new SelectionAvailability[] {SelectionAvailability.EQUAL},
-				1,
-				new LayerAvailability[] {LayerAvailability.VECTORIAL});
+				new SelectionAvailability[] { SelectionAvailability.EQUAL }, 1,
+				new LayerAvailability[] { LayerAvailability.VECTORIAL });
 	}
 }

@@ -5,9 +5,9 @@
  * distributed under GPL 3 license. It is produced by the "Atelier SIG" team of
  * the IRSTV Institute <http://www.irstv.cnrs.fr/> CNRS FR 2488.
  *
- *
+ * 
  *  Team leader Erwan BOCHER, scientific researcher,
- *
+ * 
  *  User support leader : Gwendall Petit, geomatic engineer.
  *
  *
@@ -36,61 +36,69 @@
  * gwendall.petit _at_ ec-nantes.fr
  */
 
-package org.orbisgis.core.ui.plugins.editors.mapEditor;
+package org.orbisgis.core.ui.plugins.views.geocatalog;
 
-import javax.swing.JButton;
-
-import org.gdms.driver.DriverException;
-import org.orbisgis.core.layerModel.ILayer;
-import org.orbisgis.core.layerModel.MapContext;
+import org.gdms.source.Source;
+import org.gdms.source.SourceManager;
+import org.orbisgis.core.DataManager;
+import org.orbisgis.core.Services;
 import org.orbisgis.core.ui.pluginSystem.AbstractPlugIn;
 import org.orbisgis.core.ui.pluginSystem.PlugInContext;
-import org.orbisgis.core.ui.pluginSystem.message.ErrorMessages;
+import org.orbisgis.core.ui.pluginSystem.workbench.Names;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchContext;
-import org.orbisgis.core.ui.plugins.views.MapEditorPlugIn;
+import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchFrame;
 import org.orbisgis.core.ui.preferences.lookandfeel.OrbisGISIcon;
-import org.orbisgis.utils.I18N;
 
-public class RedoMapPlugIn extends AbstractPlugIn {
-
-	private JButton btn;
-
-	public RedoMapPlugIn() {
-		btn = new JButton(OrbisGISIcon.REDO_ICON);
-		btn
-				.setToolTipText(I18N
-						.getText("orbisgis.org.orbisgis.core.ui.plugins.editors.tableEditor.redo"));
-	}
+public class GeocatalogEditDataSourcePlugIn extends AbstractPlugIn {
 
 	public boolean execute(PlugInContext context) throws Exception {
-		MapEditorPlugIn mapEditor = (MapEditorPlugIn) getPlugInContext()
-				.getActiveEditor();
-		MapContext mc = (MapContext) mapEditor.getElement().getObject();
-		ILayer activeLayer = mc.getActiveLayer();
-		try {
-			activeLayer.getSpatialDataSource().redo();
-		} catch (DriverException e) {
-			ErrorMessages.error(ErrorMessages.CannotRedo, e);
+		DataManager dm = Services.getService(DataManager.class);
+		String[] res = getPlugInContext().getSelectedSources();
+		if (res.length > 0) {
+			for (String resource : res) {
+				execute(dm.getSourceManager(), resource);
+			}
 		}
 		return true;
 	}
 
 	public void initialize(PlugInContext context) throws Exception {
-		WorkbenchContext wbcontext = context.getWorkbenchContext();
-		wbcontext.getWorkbench().getFrame().getEditionMapToolBar().addPlugIn(
-				this, btn, context);
+		WorkbenchContext wbContext = context.getWorkbenchContext();
+		WorkbenchFrame frame = wbContext.getWorkbench().getFrame()
+				.getGeocatalog();
+		context.getFeatureInstaller().addPopupMenuItem(frame, this,
+				new String[] { Names.POPUP_TOC_ACTIVE_PATH1 },
+				Names.POPUP_TOC_ACTIVE_GROUP, false, OrbisGISIcon.PENCIL,
+				wbContext);
+
+	}
+
+	public void execute(SourceManager sourceManager, String currentNode) {
+
 	}
 
 	public boolean isEnabled() {
-		boolean isEnabled = false;
-		MapEditorPlugIn mapEditor = null;
-		if ((mapEditor = getPlugInContext().getMapEditor()) != null) {
-			MapContext mc = (MapContext) mapEditor.getElement().getObject();
-			ILayer activeLayer = mc.getActiveLayer();
-			isEnabled = (activeLayer != null)
-					&& activeLayer.getSpatialDataSource().canRedo();
+		WorkbenchContext workbenchContext = getPlugInContext()
+				.getWorkbenchContext();
+		String[] res = workbenchContext.getWorkbench().getFrame()
+				.getGeocatalog().getSelectedSources();
+		DataManager dataManager = Services.getService(DataManager.class);
+		SourceManager sourceManager = dataManager.getSourceManager();
+		boolean acceptsAllSources = false;
+
+		if (res.length > 0) {
+
+			for (String src : res) {
+				Source source = sourceManager.getSource(src);
+				int type = source.getType();
+				if ((type & SourceManager.WMS) == SourceManager.WMS) {
+					acceptsAllSources = false;
+				} else {
+					acceptsAllSources = true;
+				}
+			}
 		}
-		btn.setEnabled(isEnabled);
-		return isEnabled;
+
+		return acceptsAllSources;
 	}
 }

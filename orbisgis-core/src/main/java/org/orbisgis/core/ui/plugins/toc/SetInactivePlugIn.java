@@ -85,7 +85,7 @@ public class SetInactivePlugIn extends AbstractPlugIn {
 				JOptionPane.YES_NO_CANCEL_OPTION);
 		if (option == JOptionPane.YES_OPTION) {
 			try {
-				mapContext.getActiveLayer().getDataSource().commit();
+				mapContext.getActiveLayer().getSpatialDataSource().commit();
 			} catch (DriverException e) {
 				Services.getErrorManager().error("Cannot save layer", e);
 			} catch (NonEditableDataSourceException e) {
@@ -96,7 +96,7 @@ public class SetInactivePlugIn extends AbstractPlugIn {
 
 		if (option != JOptionPane.CANCEL_OPTION) {
 			try {
-				layer.getDataSource().syncWithSource();
+				layer.getSpatialDataSource().syncWithSource();
 				mapContext.setActiveLayer(null);
 			} catch (DriverException e) {
 				Services.getErrorManager().error("Cannot revert layer", e);

@@ -7,9 +7,17 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
 import java.net.ConnectException;
 import java.net.URL;
+import java.util.ArrayList;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
@@ -18,6 +26,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
+import javax.swing.JToolBar;
 import javax.swing.SwingUtilities;
 
 import org.gvsig.remoteClient.wms.WMSClient;
@@ -28,30 +37,27 @@ import org.orbisgis.core.layerModel.WMSClientPool;
 import org.orbisgis.core.sif.CRFlowLayout;
 import org.orbisgis.core.sif.CarriageReturn;
 import org.orbisgis.core.sif.SQLUIPanel;
+import org.orbisgis.core.ui.pluginSystem.message.ErrorMessages;
+import org.orbisgis.core.ui.plugins.views.geocatalog.WMSGeocatalogPlugIn;
+import org.orbisgis.core.ui.preferences.lookandfeel.images.IconLoader;
+import org.orbisgis.core.workspace.Workspace;
 import org.orbisgis.progress.IProgressMonitor;
+import org.orbisgis.utils.I18N;
 
 public class WMSConnectionPanel extends JPanel implements SQLUIPanel {
 
-	private static final String TITLE_PREFIX = "Name:";
-	private static final String VERSION_PREFIX = "Version:";
-	private JComboBox txtURL;
+	private static final String TITLE_PREFIX = I18N
+			.getText("orbisgis.org.orbisgis.name");
+	private static final String VERSION_PREFIX = I18N
+			.getText("orbisgis.org.orbisgis.version");
+	private static final String WMSServerFile = "wmsServerList.txt";
+	private JComboBox cmbURLServer;
 	private JLabel lblVersion;
 	private JLabel lblTitle;
 	private JTextArea txtDescription;
 
 	private WMSClient client;
-
-	private static final String[] servers = new String[] {
-			// "http://hypercube.telascience.org/cgi-bin/mapserv?map=/geo/haiti/mapfiles/4326.map&",
-			"http://cartorisque.prim.net/wms/france",
-			"http://osm.wheregroup.com/cgi-bin/osm_basic.xml?SERVICE=WMS&",
-			"http://services.sandre.eaufrance.fr/geo/zonage",
-			"http://services.sandre.eaufrance.fr/geo/stations",
-			"http://services.sandre.eaufrance.fr/geo/ouvrage"
-	// "http://mapserver.flightgear.org/cgi-bin/landcover",
-	// "http://wms.jpl.nasa.gov/wms.cgi",
-	// "http://nasa.network.com/wms"
-	};
+	private ArrayList<String> serverswms;
 
 	public WMSConnectionPanel() {
 		GridBagLayout gl = new GridBagLayout();
@@ -64,22 +70,80 @@ public class WMSConnectionPanel extends JPanel implements SQLUIPanel {
 		c.gridy = 0;
 		c.weightx = 1;
 		c.weighty = 0;
-		JPanel pnlURL = new JPanel();
-		pnlURL.setBorder(BorderFactory.createTitledBorder("Server URL"));
-		txtURL = new JComboBox(servers);
-		txtURL.setEditable(true);
-		txtURL.setMaximumSize(new Dimension(100, 20));
+		JPanel pnlURL = new JPanel(new BorderLayout());
+		pnlURL.setBorder(BorderFactory.createTitledBorder(I18N
+				.getText("orbisgis.org.orbisgis.wms.url")));
 
-		JButton btnConnect = new JButton("Connect...");
+		serverswms = loadWMSServers();
+		cmbURLServer = new JComboBox(serverswms.toArray(new String[serverswms
+				.size()]));
+		cmbURLServer.setEditable(true);
+		cmbURLServer.setMaximumSize(new Dimension(100, 20));
+
+		pnlURL.add(cmbURLServer, BorderLayout.NORTH);
+		JToolBar wmsBtnManager = new JToolBar();
+		wmsBtnManager.setFloatable(false);
+		wmsBtnManager.setOpaque(false);
+
+		JButton btnConnect = new JButton(IconLoader
+				.getIcon("server_connect.png"));
+		btnConnect.setToolTipText(I18N
+				.getText("orbisgis.org.orbisgis.wms.serverConnect"));
 		btnConnect.addActionListener(new ActionListener() {
-
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				connect();
 			}
 		});
-		pnlURL.add(txtURL);
-		pnlURL.add(btnConnect);
+		btnConnect.setBorderPainted(false);
+
+		JButton btnDelete = new JButton(IconLoader.getIcon("remove.png"));
+		btnDelete.setToolTipText(I18N
+				.getText("orbisgis.org.orbisgis.wms.url.delete"));
+		btnDelete.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				String item = cmbURLServer.getSelectedItem().toString();
+				if (serverswms.contains(item)) {
+					serverswms.remove(item);
+					saveWMSServerFile();
+					cmbURLServer.removeItem(item);
+				}
+			}
+		});
+		btnDelete.setBorderPainted(false);
+
+		JButton btnUpdate = new JButton(IconLoader.getIcon("arrow_refresh.png"));
+		btnUpdate.setToolTipText(I18N
+				.getText("orbisgis.org.orbisgis.wms.url.reload"));
+		btnUpdate.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+
+				try {
+					ArrayList<String> updateServersList = readWMSServerFile(WMSGeocatalogPlugIn.class
+							.getResourceAsStream(WMSServerFile));
+
+					for (String updatewms : updateServersList) {
+						if (!serverswms.contains(updatewms)) {
+							serverswms.add(updatewms);
+							cmbURLServer.addItem(updatewms);
+						}
+					}
+					saveWMSServerFile();
+				} catch (IOException e1) {
+					ErrorMessages.error(ErrorMessages.CannotUpdate + " "
+							+ WMSServerFile, e1);
+				}
+
+			}
+		});
+		btnUpdate.setBorderPainted(false);
+
+		wmsBtnManager.add(btnConnect);
+		wmsBtnManager.add(btnDelete);
+		wmsBtnManager.add(btnUpdate);
+		pnlURL.add(wmsBtnManager, BorderLayout.SOUTH);
 		this.add(pnlURL, c);
 
 		// Info panel
@@ -89,8 +153,8 @@ public class WMSConnectionPanel extends JPanel implements SQLUIPanel {
 		c.weighty = 1;
 		JPanel pnlInfo = new JPanel();
 		pnlInfo.setLayout(new BorderLayout());
-		pnlInfo.setBorder(BorderFactory
-				.createTitledBorder("Server information"));
+		pnlInfo.setBorder(BorderFactory.createTitledBorder(I18N
+				.getText("orbisgis.org.orbisgis.wms.serverInformation")));
 		JPanel pnlNorth = new JPanel();
 		pnlNorth.setLayout(new CRFlowLayout());
 		lblVersion = new JLabel(VERSION_PREFIX);
@@ -103,7 +167,67 @@ public class WMSConnectionPanel extends JPanel implements SQLUIPanel {
 		txtDescription.setEditable(false);
 		JScrollPane comp = new JScrollPane(txtDescription);
 		pnlInfo.add(comp, BorderLayout.CENTER);
-		this.add(pnlInfo, c);		
+		this.add(pnlInfo, c);
+	}
+
+	private ArrayList<String> loadWMSServers() {
+		Workspace ws = (Workspace) Services.getService(Workspace.class);
+		File file = ws.getFile(WMSServerFile);
+		try {
+			if (file.exists()) {
+				return readWMSServerFile(new FileInputStream(file));
+			} else {
+				return readWMSServerFile(WMSGeocatalogPlugIn.class
+						.getResourceAsStream(WMSServerFile));
+			}
+		} catch (IOException e) {
+			ErrorMessages.error(ErrorMessages.CannotFind + " " + WMSServerFile,
+					e);
+		}
+
+		return null;
+	}
+
+	/**
+	 * Read the wms servers file list to populate the combobox
+	 * 
+	 * @param layoutStream
+	 * @return
+	 * @throws IOException
+	 */
+	private ArrayList<String> readWMSServerFile(InputStream layoutStream)
+			throws IOException {
+		ArrayList<String> serversList = new ArrayList<String>();
+		BufferedReader bufferedReader = new BufferedReader(
+				new InputStreamReader(layoutStream));
+
+		String str;
+		while ((str = bufferedReader.readLine()) != null) {
+			if (str.length() > 0) {
+				if (!serversList.contains(str)) {
+					serversList.add(str);
+				}
+			}
+		}
+		bufferedReader.close();
+		layoutStream.close();
+
+		return serversList;
+	}
+
+	public void saveWMSServerFile() {
+		try {
+			Workspace ws = (Workspace) Services.getService(Workspace.class);
+			File file = ws.getFile(WMSServerFile);
+			PrintWriter pw = new PrintWriter(file);
+			for (String server : serverswms) {
+				pw.println(server);
+			}
+			pw.close();
+		} catch (FileNotFoundException e) {
+			ErrorMessages.error(ErrorMessages.CannotSave + " " + WMSServerFile,
+					e);
+		}
 	}
 
 	private void connect() {
@@ -112,7 +236,8 @@ public class WMSConnectionPanel extends JPanel implements SQLUIPanel {
 
 			@Override
 			public void run(IProgressMonitor pm) {
-				String wmsURL = txtURL.getSelectedItem().toString().trim();
+				String wmsURL = cmbURLServer.getSelectedItem().toString()
+						.trim();
 				try {
 					client = WMSClientPool.getWMSClient(wmsURL);
 					client.getCapabilities(null, false, null);
@@ -129,20 +254,30 @@ public class WMSConnectionPanel extends JPanel implements SQLUIPanel {
 							txtDescription.setText(client
 									.getServiceInformation().abstr);
 							txtDescription.setCaretPosition(0);
+
 						}
 					});
+					if (!serverswms.contains(wmsURL)) {
+						serverswms.add(wmsURL);
+						saveWMSServerFile();
+					}
 				} catch (ConnectException e) {
-					Services.getErrorManager().error(
-							"Cannot connect to specified url: " + wmsURL, e);
+					ErrorMessages.error(I18N
+							.getText("orbisgis.errorMessages.wms.CannotConnect"
+									+ " " + wmsURL), e);
 				} catch (IOException e) {
-					Services.getErrorManager().error(
-							"Cannot get capabilities: " + wmsURL, e);
+					ErrorMessages
+							.error(
+									I18N
+											.getText("orbisgis.errorMessages.wms.CannotGetCapabilities"
+													+ " " + wmsURL), e);
 				}
 			}
 
 			@Override
 			public String getTaskName() {
-				return "Connecting server";
+				return I18N
+						.getText("orbisgis.org.orbisgis.wms.connectingServer");
 			}
 		});
 	}
@@ -162,13 +297,13 @@ public class WMSConnectionPanel extends JPanel implements SQLUIPanel {
 
 	@Override
 	public String getTitle() {
-		return "WMS server connection";
+		return I18N.getText("orbisgis.org.orbisgis.wms.serverConnection");
 	}
 
 	@Override
 	public String validateInput() {
 		if (client == null) {
-			return "Connect to a WMS server";
+			return I18N.getText("orbisgis.org.orbisgis.wms.connectWMSServer");
 		}
 
 		return null;
@@ -201,7 +336,7 @@ public class WMSConnectionPanel extends JPanel implements SQLUIPanel {
 
 	@Override
 	public String[] getValues() {
-		Object[] items = txtURL.getSelectedObjects();
+		Object[] items = cmbURLServer.getSelectedObjects();
 		String[] values = new String[items.length];
 		for (int i = 0; i < items.length; i++) {
 			values[i] = items[i].toString();
@@ -212,13 +347,15 @@ public class WMSConnectionPanel extends JPanel implements SQLUIPanel {
 
 	@Override
 	public void setValue(String fieldName, String fieldValue) {
-		txtURL.addItem(fieldValue);
-		txtURL.setSelectedItem(fieldValue);
+		if (!serverswms.contains(fieldName)) {
+			cmbURLServer.addItem(fieldValue);
+			cmbURLServer.setSelectedItem(fieldValue);
+		}
 	}
 
 	@Override
 	public boolean showFavorites() {
-		return true;
+		return false;
 	}
 
 	@Override
@@ -228,7 +365,7 @@ public class WMSConnectionPanel extends JPanel implements SQLUIPanel {
 
 	@Override
 	public String getInfoText() {
-		return "Input a server url to connect to";
+		return I18N.getText("orbisgis.org.orbisgis.wms.urlInput");
 	}
 
 	@Override

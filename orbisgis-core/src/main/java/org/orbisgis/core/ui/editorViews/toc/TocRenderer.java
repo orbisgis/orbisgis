@@ -162,7 +162,7 @@ public class TocRenderer extends TocAbstractRenderer implements
 				iconAndLabel.setIcon(icon);
 			}
 			String name = node.getName();
-			SpatialDataSourceDecorator dataSource = node.getDataSource();
+			SpatialDataSourceDecorator dataSource = node.getSpatialDataSource();
 			if ((dataSource != null) && (dataSource.isModified())) {
 				name += "*";
 			}

@@ -1,0 +1,9 @@
+http://hypercube.telascience.org/cgi-bin/mapserv?
+http://cartorisque.prim.net/wms/france
+http://osm.wheregroup.com/cgi-bin/osm_basic.xml?SERVICE=WMS&
+http://services.sandre.eaufrance.fr/geo/zonage
+http://services.sandre.eaufrance.fr/geo/stations
+http://services.sandre.eaufrance.fr/geo/ouvrage
+http://mapserver.flightgear.org/cgi-bin/landcover
+http://wms.jpl.nasa.gov/wms.cgi
+http://nasa.network.com/wms	

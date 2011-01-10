@@ -115,7 +115,7 @@ public class LineTool extends AbstractLineTool {
 					.createMultiLineString(new LineString[] { ls });
 		}
 
-		SpatialDataSourceDecorator sds = mc.getActiveLayer().getDataSource();
+		SpatialDataSourceDecorator sds = mc.getActiveLayer().getSpatialDataSource();
 		try {
 			Value[] row = new Value[sds.getMetadata().getFieldCount()];
                         g.setSRID(sds.getSRID());

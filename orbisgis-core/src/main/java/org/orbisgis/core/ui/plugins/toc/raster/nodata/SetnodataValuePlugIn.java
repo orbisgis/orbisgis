@@ -64,7 +64,7 @@ public class SetnodataValuePlugIn extends AbstractPlugIn {
 	public boolean accepts(MapContext mc, ILayer layer) {
 		try {
 			if (layer.isRaster()) {
-				SpatialDataSourceDecorator ds = layer.getDataSource();
+				SpatialDataSourceDecorator ds = layer.getSpatialDataSource();
 				if (ds.getRaster(0).getType() != ImagePlus.COLOR_RGB) {
 					return true;
 				}

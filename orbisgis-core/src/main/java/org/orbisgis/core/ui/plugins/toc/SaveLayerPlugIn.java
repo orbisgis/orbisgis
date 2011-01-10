@@ -80,7 +80,7 @@ public class SaveLayerPlugIn extends AbstractPlugIn{
 
 	public void execute(MapContext mapContext, ILayer layer) {
 		try {
-			layer.getDataSource().commit();
+			layer.getSpatialDataSource().commit();
 		} catch (DriverException e) {
 			Services.getErrorManager().error("Cannot save layer", e);
 			return;

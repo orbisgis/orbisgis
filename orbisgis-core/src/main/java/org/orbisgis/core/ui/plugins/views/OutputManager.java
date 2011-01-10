@@ -44,7 +44,7 @@ import java.awt.Color;
  * information should be accumulated so that user can see previous messages. The
  * amount of historic information the user can access is not specified
  * 
- * @author Fernando Gonzalez Cortes
+ * 
  */
 public interface OutputManager {
 
