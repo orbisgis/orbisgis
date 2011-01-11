@@ -161,7 +161,7 @@ public class SIFWizard extends AbstractOutsideFrame {
 
 	public JButton getBtnFinish() {
 		if (btnFinish == null) {
-			btnFinish = new JButton(I18N.getText("orbisgis.org.core.Finish"));
+			btnFinish = new JButton(I18N.getText("orbisgis.org.core.finish"));
 			btnFinish.setBorderPainted(false);
 			btnFinish.addActionListener(new ActionListener() {
 
