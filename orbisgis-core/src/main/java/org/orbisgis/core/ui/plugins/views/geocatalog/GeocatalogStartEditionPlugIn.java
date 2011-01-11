@@ -52,7 +52,7 @@ public class GeocatalogStartEditionPlugIn extends AbstractPlugIn {
         public boolean isEnabled() {
                 if (!getPlugInContext().checkLayerAvailability(
                         new SelectionAvailability[]{SelectionAvailability.SUPERIOR},
-                        0, new SourceAvailability[]{SourceAvailability.RASTER})) {
+                        0, new SourceAvailability[]{SourceAvailability.RASTER, SourceAvailability.WMS})) {
                         return false;
                 }
                 String[] res = getPlugInContext().getSelectedSources();
