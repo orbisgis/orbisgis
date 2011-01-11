@@ -45,6 +45,7 @@ import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.layerModel.MapContext;
 import org.orbisgis.core.ui.editor.IEditor;
 import org.orbisgis.core.ui.editorViews.toc.EditableLayer;
+import org.orbisgis.core.ui.editors.table.Selection;
 import org.orbisgis.core.ui.pluginSystem.AbstractPlugIn;
 import org.orbisgis.core.ui.pluginSystem.PlugInContext;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchContext;
@@ -68,7 +69,11 @@ public class ClearMapSelectionPlugIn extends AbstractPlugIn {
 		ILayer[] layers = mc.getLayerModel().getLayersRecursively();
 		EditableElement element = editor.getElement();
 		for (ILayer lyr : layers) {
-			new EditableLayer(element, lyr).getSelection().clearSelection();
+                        final Selection selection = new EditableLayer(element, lyr).getSelection();
+                        if (!mc.isSelectionInducedRefresh()) {
+                                mc.checkSelectionRefresh(new int[0], selection.getSelectedRows(), lyr.getSpatialDataSource());
+                        }
+			selection.clearSelection();
 		}
 		return true;
 	}

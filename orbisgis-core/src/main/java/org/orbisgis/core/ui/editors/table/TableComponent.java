@@ -231,43 +231,15 @@ public class TableComponent extends JPanel implements WorkbenchFrame {
                 return table;
         }
 
-        private void checkSelectionRefresh() {
-                checkSelectionRefresh(new int[0]);
+        private void checkSelectionRefresh(int [] selectedRows) {
+                if (this.element.getMapContext() != null) {
+                        this.element.getMapContext().checkSelectionRefresh(selectedRows, selection.getSelectedRows(), dataSource);
+                }
+                
         }
 
-        private void checkSelectionRefresh(int[] selectedRows) throws IncompatibleTypesException {
-                MapContext mapC = TableComponent.this.element.getMapContext();
-                Envelope env = new Envelope();
-                if (mapC != null) {
-                        env = mapC.getBoundingBox();
-                        boolean mustUpdate = false;
-                        try {
-                                int geometryIndex = MetadataUtilities.getSpatialFieldIndex(dataSource.getMetadata());
-                                for (int i = 0; i < selectedRows.length; i++) {
-                                        Geometry g = dataSource.getFieldValue(selectedRows[i], geometryIndex).getAsGeometry();
-                                        if (g.getEnvelopeInternal().intersects(env)) {
-                                                // geometry is on screen -> update
-                                                mustUpdate = true;
-                                                break;
-                                        }
-                                }
-                                if (!mustUpdate) {
-                                        final int[] oldSelectedRows = selection.getSelectedRows();
-                                        for (int i = 0; i < oldSelectedRows.length; i++) {
-                                                Geometry g = dataSource.getFieldValue(oldSelectedRows[i], geometryIndex).getAsGeometry();
-                                                if (g.getEnvelopeInternal().intersects(env)) {
-                                                        // old geometry was on screen -> update
-                                                        mustUpdate = true;
-                                                        break;
-                                                }
-                                        }
-                                }
-
-                        } catch (DriverException ex) {
-                                mustUpdate = true;
-                        }
-                        mapC.setSelectionInducedRefresh(mustUpdate);
-                }
+        private void checkSelectionRefresh() {
+                checkSelectionRefresh(new int[0]);
         }
 
         private Component getTableToolBar() {

@@ -64,6 +64,9 @@ import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.io.ParseException;
 import com.vividsolutions.jts.io.WKTReader;
+import org.gdms.data.DataSource;
+import org.gdms.data.metadata.MetadataUtilities;
+import org.gdms.driver.DriverException;
 
 /**
  * Class that contains the status of the map view.
@@ -600,7 +603,7 @@ public class DefaultMapContext implements MapContext {
                         }
                 }
         }
-        /**
+        /*
          * A mapcontext must have only one {@link CoordinateReferenceSystem} By
          * default the crs is set to null.
          */
@@ -615,5 +618,36 @@ public class DefaultMapContext implements MapContext {
          * public void setCoordinateReferenceSystem(CoordinateReferenceSystem
          * crs) { this.crs = crs; }
          */
+
+        public void checkSelectionRefresh(final int[] selectedRows,final int[] oldSelectedRows,final DataSource dataSource) {
+                Envelope env = new Envelope();
+                env = getBoundingBox();
+                boolean mustUpdate = false;
+                try {
+                        int geometryIndex = MetadataUtilities.getSpatialFieldIndex(dataSource.getMetadata());
+                        for (int i = 0; i < selectedRows.length; i++) {
+                                Geometry g = dataSource.getFieldValue(selectedRows[i], geometryIndex).getAsGeometry();
+                                if (g.getEnvelopeInternal().intersects(env)) {
+                                        // geometry is on screen -> update
+                                        mustUpdate = true;
+                                        break;
+                                }
+                        }
+                        if (!mustUpdate) {
+                                for (int i = 0; i < oldSelectedRows.length; i++) {
+                                        Geometry g = dataSource.getFieldValue(oldSelectedRows[i], geometryIndex).getAsGeometry();
+                                        if (g.getEnvelopeInternal().intersects(env)) {
+                                                // old geometry was on screen -> update
+                                                mustUpdate = true;
+                                                break;
+                                        }
+                                }
+                        }
+
+                } catch (DriverException ex) {
+                        mustUpdate = true;
+                }
+                setSelectionInducedRefresh(mustUpdate);
+        }
 
 }

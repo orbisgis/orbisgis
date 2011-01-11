@@ -39,6 +39,7 @@
 package org.orbisgis.core.layerModel;
 
 import java.awt.image.BufferedImage;
+import org.gdms.data.DataSource;
 
 import org.orbisgis.progress.IProgressMonitor;
 
@@ -216,6 +217,8 @@ public interface MapContext {
          * @param selectionInducedRefresh the selectionInducedRefresh to set
          */
         void setSelectionInducedRefresh(boolean selectionInducedRefresh);
+
+        void checkSelectionRefresh(final int[] selectedRows, final int[] oldSelectedRows, final DataSource dataSource);
 
 	/**
 	 * get the mapcontext {@link CoordinateReferenceSystem}

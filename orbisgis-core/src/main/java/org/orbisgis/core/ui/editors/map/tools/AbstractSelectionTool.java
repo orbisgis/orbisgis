@@ -158,7 +158,7 @@ public abstract class AbstractSelectionTool extends Selection {
 					if ((tm.getMouseModifiers() & MouseEvent.CTRL_DOWN_MASK) == MouseEvent.CTRL_DOWN_MASK) {
 						int[] newSel = toggleSelection(activeLayer
 								.getSelection(), rowIndex);
-
+                                                mc.checkSelectionRefresh(newSel, activeLayer.getSelection(), ds);
 						activeLayer.setSelection(newSel);
 						if (newSel.length > 0) {
 							transition("selection"); //$NON-NLS-1$
@@ -169,6 +169,7 @@ public abstract class AbstractSelectionTool extends Selection {
 						return;
 					} else {
 						int[] newSelection = new int[] { rowIndex };
+                                                mc.checkSelectionRefresh(newSelection, activeLayer.getSelection(), ds);
 						activeLayer.setSelection(newSelection);
 						transition("selection"); //$NON-NLS-1$
 						return;
@@ -245,6 +246,7 @@ public abstract class AbstractSelectionTool extends Selection {
 				for (int i = 0; i < newSelection.size(); i++) {
 					newSel = toggleSelection(newSel, newSelection.get(i));
 				}
+                                mc.checkSelectionRefresh(newSel, activeLayer.getSelection(), ds);
 				activeLayer.setSelection(newSel);
 
 			} else {
@@ -252,6 +254,7 @@ public abstract class AbstractSelectionTool extends Selection {
 				for (int i = 0; i < ns.length; i++) {
 					ns[i] = newSelection.get(i);
 				}
+                                mc.checkSelectionRefresh(ns, activeLayer.getSelection(), ds);
 				activeLayer.setSelection(ns);
 			}
 

@@ -64,23 +64,13 @@ public class ClearTableSelectionPlugIn extends AbstractPlugIn {
 	}
 
 	public boolean execute(final PlugInContext context) throws Exception {
-		BackgroundManager bm = Services.getService(BackgroundManager.class);
-		bm.backgroundOperation(new BackgroundJob() {
-
-			@Override
-			public void run(IProgressMonitor pm) {
-
-				IEditor editor = context.getActiveEditor();
-				TableEditableElement element = (TableEditableElement) editor
-						.getElement();
-				element.getSelection().clearSelection();
-			}
-
-			@Override
-			public String getTaskName() {
-				return I18N.getText("orbisgis.ui.popupmenu.table.clearSelection");
-			}
-		});
+                IEditor editor = context.getActiveEditor();
+                TableEditableElement element = (TableEditableElement) editor
+                                .getElement();
+                if (element.getMapContext() != null) {
+                        element.getMapContext().checkSelectionRefresh(new int[0], element.getSelection().getSelectedRows(), element.getDataSource());;
+                }
+                element.getSelection().clearSelection();
 		return true;
 	}
 

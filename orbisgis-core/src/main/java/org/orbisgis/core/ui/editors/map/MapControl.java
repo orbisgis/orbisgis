@@ -149,8 +149,23 @@ public class MapControl extends JComponent implements ComponentListener,
 		setOpaque(true);
 		status = DIRTY;
 
+                // creating objects
 		toolManager = new ToolManager(defaultTool, mapContext, mapTransform,
 				this);
+
+                // Set extent with BoundingBox value
+		ILayer rootLayer = mapContext.getLayerModel();
+		Envelope boundingBox = mapContext.getBoundingBox();
+		if (boundingBox != null) {
+			mapTransform.setExtent(boundingBox);
+		} else {
+			mapTransform.setExtent(rootLayer.getEnvelope());
+		}
+
+                setLayout(new BorderLayout());
+                
+                // adding listeners at the end
+                // to prevent multiple useless repaint
 		toolManager.addToolListener(new ToolListener() {
 
 			@Override
@@ -172,7 +187,6 @@ public class MapControl extends JComponent implements ComponentListener,
 		this.addMouseWheelListener(toolManager);
 		this.addMouseMotionListener(toolManager);
 
-		// events
 		this.addComponentListener(this);
 
 		mapTransform.addTransformListener(new TransformListener() {
@@ -195,20 +209,10 @@ public class MapControl extends JComponent implements ComponentListener,
 		if (element instanceof LeafElement)
 			mapTransform.addTransformListener((LeafElement) element);
 
-		// Set extent with BoundingBox value
-		ILayer rootLayer = mapContext.getLayerModel();
-		Envelope boundingBox = mapContext.getBoundingBox();
-		if (boundingBox != null) {
-			mapTransform.setExtent(boundingBox);
-		} else {
-			mapTransform.setExtent(rootLayer.getEnvelope());
-		}
                 refreshLayerListener = new RefreshLayerListener();
 
 		// Add refresh listener
 		addLayerListenerRecursively(rootLayer, refreshLayerListener);
-
-		setLayout(new BorderLayout());
 	}
 
 	private void addLayerListenerRecursively(ILayer rootLayer,
@@ -522,8 +526,8 @@ public class MapControl extends JComponent implements ComponentListener,
 		public void selectionChanged(SelectionEvent e) {
                         if (mapContext.isSelectionInducedRefresh()) {
                                 invalidateImage();
+                                mapContext.setSelectionInducedRefresh(false);
                         }
-                        mapContext.setSelectionInducedRefresh(false);
 		}
 
 		public void multipleModification(MultipleEditionEvent e) {
