@@ -17,6 +17,7 @@ import javax.swing.event.TreeSelectionListener;
 
 import org.orbisgis.core.sif.AbstractUIPanel;
 import org.orbisgis.core.ui.pluginSystem.menu.IMenu;
+import org.orbisgis.utils.I18N;
 
 public class ConfigurationPanel extends AbstractUIPanel {
 
@@ -33,7 +34,8 @@ public class ConfigurationPanel extends AbstractUIPanel {
 		configTree = new ConfigurationTree(root, configs);
 
 		// Panel shown at the opening of the dialog
-		JLabel label = new JLabel("Click on a item on the left");
+		JLabel label = new JLabel(I18N
+				.getText("orbisgis.org.orbisgis.configuration.clickItemLeft"));
 		label.setHorizontalAlignment(SwingConstants.CENTER);
 		init = new JPanel();
 		init.setLayout(new BorderLayout());
@@ -121,7 +123,7 @@ public class ConfigurationPanel extends AbstractUIPanel {
 			config.applyUserInput();
 		}
 	}
-	
+
 	public void loadConfigurations() {
 		for (ConfigurationDecorator config : configs) {
 			config.loadAndApply();

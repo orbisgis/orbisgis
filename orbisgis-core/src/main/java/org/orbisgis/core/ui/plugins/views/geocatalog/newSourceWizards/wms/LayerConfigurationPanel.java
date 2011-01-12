@@ -26,6 +26,7 @@ import org.orbisgis.core.sif.CRFlowLayout;
 import org.orbisgis.core.sif.CarriageReturn;
 import org.orbisgis.core.sif.UIPanel;
 import org.orbisgis.core.ui.preferences.lookandfeel.images.IconLoader;
+import org.orbisgis.utils.I18N;
 
 public class LayerConfigurationPanel extends JPanel implements UIPanel {
 
@@ -164,12 +165,12 @@ public class LayerConfigurationPanel extends JPanel implements UIPanel {
 
 	@Override
 	public String getInfoText() {
-		return "Select server layers";
+		return I18N.getText("orbisgis.org.orbisgis.wms.serverLayers");
 	}
 
 	@Override
 	public String getTitle() {
-		return "Layer configuration";
+		return I18N.getText("orbisgis.org.orbisgis.wms.layerConfiguration");
 	}
 
 	@Override
@@ -222,7 +223,8 @@ public class LayerConfigurationPanel extends JPanel implements UIPanel {
 	@Override
 	public String validateInput() {
 		if (getSelectedLayers().length == 0) {
-			return "At least a layer must be selected";
+			return I18N
+					.getText("orbisgis.org.orbisgis.core.AtLeastAlayerMustBeSelected");
 		}
 
 		return null;

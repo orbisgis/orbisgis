@@ -8,12 +8,14 @@
  *
  *  Team leader Erwan BOCHER, scientific researcher,
  *
- *  User support leader : Gwendall Petit, geomatic engineer.
  *
  *
  * Copyright (C) 2007 Erwan BOCHER, Fernando GONZALEZ CORTES, Thomas LEDUC
  *
- * Copyright (C) 2010 Erwan BOCHER, Pierre-Yves FADET, Alexis GUEGANNO, Maxence LAURENT
+ * Copyright (C) 2010 Erwan BOCHER, Pierre-Yves FADET, Alexis GUEGANNO, Maxence LAURENT, Antoine GOURLAY
+ * 
+ * Copyright (C) 2011 Erwan BOCHER,Alexis GUEGANNO, Antoine GOURLAY
+ * 
  *
  * This file is part of OrbisGIS.
  *
@@ -32,8 +34,7 @@
  * For more information, please consult: <http://www.orbisgis.org/>
  *
  * or contact directly:
- * erwan.bocher _at_ ec-nantes.fr
- * gwendall.petit _at_ ec-nantes.fr
+ * info_at_orbisgis.org
  */
 
 package org.orbisgis.core.ui.plugins.editors.mapEditor;
@@ -42,6 +43,9 @@ import javax.swing.JButton;
 
 import org.gdms.data.SpatialDataSourceDecorator;
 import org.gdms.driver.DriverException;
+import org.orbisgis.core.Services;
+import org.orbisgis.core.background.BackgroundJob;
+import org.orbisgis.core.background.BackgroundManager;
 import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.layerModel.MapContext;
 import org.orbisgis.core.ui.pluginSystem.AbstractPlugIn;
@@ -51,6 +55,8 @@ import org.orbisgis.core.ui.pluginSystem.workbench.Names;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchContext;
 import org.orbisgis.core.ui.plugins.views.MapEditorPlugIn;
 import org.orbisgis.core.ui.preferences.lookandfeel.OrbisGISIcon;
+import org.orbisgis.progress.IProgressMonitor;
+import org.orbisgis.utils.I18N;
 
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
@@ -65,47 +71,70 @@ public class ZoomToSelectedFeaturesPlugIn extends AbstractPlugIn {
 	}
 
 	public boolean execute(PlugInContext context) throws Exception {
-		MapEditorPlugIn mapEditor = (MapEditorPlugIn) getPlugInContext()
+		final MapEditorPlugIn mapEditor = (MapEditorPlugIn) getPlugInContext()
 				.getActiveEditor();
-		MapContext mc = (MapContext) mapEditor.getElement().getObject();
-		ILayer[] layers = mc.getLayerModel().getLayersRecursively();
-		Envelope rect = null;
-		for (ILayer lyr : layers) {
-			try {
-				int[] selectedRow = lyr.getSelection();
+		final MapContext mc = (MapContext) mapEditor.getElement().getObject();
 
-				SpatialDataSourceDecorator sds = lyr.getSpatialDataSource();
+		BackgroundManager bm = Services.getService(BackgroundManager.class);
+		bm.backgroundOperation(new BackgroundJob() {
 
-				Geometry geometry = null;
-				Envelope geometryEnvelope = null;
-				for (int i = 0; i < selectedRow.length; i++) {
-					if (sds.isDefaultVectorial()) {
-						geometry = sds.getGeometry(selectedRow[i]);
-						if (geometry != null) {
-							geometryEnvelope = geometry.buffer(0.01)
-									.getEnvelopeInternal();
-						}
-					} else if (sds.isDefaultRaster()) {
-						geometryEnvelope = sds.getRaster(selectedRow[i])
-								.getMetadata().getEnvelope();
-					}
-
-					if (rect == null) {
-						rect = new Envelope(geometryEnvelope);
-					} else {
-						rect.expandToInclude(geometryEnvelope);
-					}
-
-				}
-			} catch (DriverException e) {
-				ErrorMessages.error(ErrorMessages.CannotComputeEnvelope, e);
+			@Override
+			public String getTaskName() {
+				return I18N
+						.getText("orbisgis.org.orbisgis.core.ui.plugins.editors.tableEditor.zoomToSelectedLayer.extent");
 			}
-		}
 
-		if (rect != null) {
-			mapEditor.getMapTransform().setExtent(rect);
+			@Override
+			public void run(IProgressMonitor pm) {
+				ILayer[] layers = mc.getSelectedLayers();
+				Envelope rect = null;
+				for (ILayer lyr : layers) {
+					if (!lyr.isWMS()) {
+						try {
+							int[] selectedRow = lyr.getSelection();
 
-		}
+							SpatialDataSourceDecorator sds = lyr
+									.getSpatialDataSource();
+
+							Geometry geometry = null;
+							Envelope geometryEnvelope = null;
+							for (int i = 0; i < selectedRow.length; i++) {
+								if (sds.isDefaultVectorial()) {
+									geometry = sds.getGeometry(selectedRow[i]);
+									if (geometry != null) {
+										geometryEnvelope = geometry
+												.buffer(0.01)
+												.getEnvelopeInternal();
+									}
+								} else if (sds.isDefaultRaster()) {
+									geometryEnvelope = sds.getRaster(
+											selectedRow[i]).getMetadata()
+											.getEnvelope();
+								}
+
+								if (rect == null) {
+									rect = new Envelope(geometryEnvelope);
+								} else {
+									rect.expandToInclude(geometryEnvelope);
+								}
+
+							}
+						} catch (DriverException e) {
+							ErrorMessages.error(
+									ErrorMessages.CannotComputeEnvelope, e);
+						}
+					}
+
+					if (rect != null) {
+						mapEditor.getMapTransform().setExtent(rect);
+
+					}
+				}
+
+			}
+
+		});
+
 		return true;
 	}
 

@@ -47,6 +47,7 @@ import org.orbisgis.core.ui.pluginSystem.PlugInContext;
 import org.orbisgis.core.ui.pluginSystem.workbench.Names;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchContext;
 import org.orbisgis.core.ui.preferences.lookandfeel.OrbisGISIcon;
+import org.orbisgis.utils.I18N;
 
 public class ConfigurationPlugIn extends AbstractPlugIn {
 
@@ -54,7 +55,7 @@ public class ConfigurationPlugIn extends AbstractPlugIn {
 	private JButton btn;
 
 	public ConfigurationPlugIn() {
-		btn = new JButton(OrbisGISIcon.PREFERENCES_SYSTEM );
+		btn = new JButton(OrbisGISIcon.PREFERENCES_SYSTEM);
 		btn.setToolTipText(Names.CONFIGURATION);
 	}
 
@@ -72,7 +73,8 @@ public class ConfigurationPlugIn extends AbstractPlugIn {
 		wbcontext.getWorkbench().getFrame().getMainToolBar().addPlugIn(this,
 				btn, context);
 		menuItem = context.getFeatureInstaller().addMainMenuItem(this,
-				new String[] { Names.FILE }, "Configuration", false,
+				new String[] { Names.FILE },
+				I18N.getText("orbisgis.org.orbisgis.configuration"), false,
 				OrbisGISIcon.PREFERENCES_SYSTEM, null, null, context);
 	}
 

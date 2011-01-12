@@ -50,6 +50,7 @@ import javax.swing.event.DocumentListener;
 
 import org.orbisgis.core.sif.UIPanel;
 import org.orbisgis.core.ui.components.text.JButtonTextField;
+import org.orbisgis.utils.I18N;
 
 public class SRSPanel extends JPanel implements UIPanel {
 
@@ -76,12 +77,12 @@ public class SRSPanel extends JPanel implements UIPanel {
 
 	@Override
 	public String getInfoText() {
-		return "Choose the appropriate SRS";
+		return "";
 	}
 
 	@Override
 	public String getTitle() {
-		return "SRS selection";
+		return I18N.getText("orbisgis.org.orbisgis.wms.SRSSelection");
 	}
 
 	@Override
@@ -115,7 +116,8 @@ public class SRSPanel extends JPanel implements UIPanel {
 
 		if (null == searchPanel) {
 			searchPanel = new JPanel();
-			JLabel label = new JLabel("Search a SRS code : ");
+			JLabel label = new JLabel(I18N
+					.getText("orbisgis.org.orbisgis.wms.SearchSRSCode"));
 
 			txtFilter = new JButtonTextField();
 			txtFilter.getDocument().addDocumentListener(new DocumentListener() {
@@ -154,7 +156,7 @@ public class SRSPanel extends JPanel implements UIPanel {
 	@Override
 	public String validateInput() {
 		if (lstSRS.getSelectedIndex() == -1) {
-			return "A SRS must be selected";
+			return I18N.getText("orbisgis.org.orbisgis.wms.ChooseSRSCode");
 		}
 		return null;
 	}

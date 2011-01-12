@@ -54,6 +54,7 @@ import org.orbisgis.core.PersistenceException;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.ui.pluginSystem.PlugInContext;
 import org.orbisgis.core.ui.pluginSystem.ViewPlugIn;
+import org.orbisgis.core.ui.pluginSystem.message.ErrorMessages;
 import org.orbisgis.core.ui.pluginSystem.workbench.Names;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchContext;
 import org.orbisgis.core.ui.plugins.views.geocatalog.Catalog;
@@ -62,6 +63,7 @@ import org.orbisgis.core.ui.plugins.views.geocatalog.persistence.Tag;
 import org.orbisgis.core.ui.preferences.lookandfeel.OrbisGISIcon;
 import org.orbisgis.core.ui.window.EPWindowHelper;
 import org.orbisgis.core.workspace.Workspace;
+import org.orbisgis.utils.I18N;
 
 public class GeoCatalogViewPlugIn extends ViewPlugIn {
 
@@ -134,7 +136,7 @@ public class GeoCatalogViewPlugIn extends ViewPlugIn {
 				panel.setActiveLabels(activeLabels
 						.toArray(new String[activeLabels.size()]));
 			} catch (JAXBException e) {
-				throw new PersistenceException("Cannot load geocatalog", e);
+				throw new PersistenceException(I18N.getText("orbisgis.org.orbisgis.core.geocatalog.cannotLoad"), e);
 			}
 		}
 	}
@@ -168,9 +170,9 @@ public class GeoCatalogViewPlugIn extends ViewPlugIn {
 			jc.createMarshaller().marshal(cat, printWriter);
 			printWriter.close();
 		} catch (JAXBException e) {
-			throw new PersistenceException("Cannot save geocatalog", e);
+			throw new PersistenceException(I18N.getText("orbisgis.org.orbisgis.core.geocatalog.cannotSave"), e);
 		} catch (FileNotFoundException e) {
-			throw new PersistenceException("Cannot write the file: " + file);
+			throw new PersistenceException(ErrorMessages.CannotWriteFile+ ": " + file);
 		}
 	}
 

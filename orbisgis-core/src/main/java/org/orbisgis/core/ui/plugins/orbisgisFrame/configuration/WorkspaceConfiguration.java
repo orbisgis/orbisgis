@@ -9,6 +9,7 @@ import org.orbisgis.core.Services;
 import org.orbisgis.core.configuration.BasicConfiguration;
 import org.orbisgis.core.workspace.DefaultWorkspace;
 import org.orbisgis.core.workspace.Workspace;
+import org.orbisgis.utils.I18N;
 
 public class WorkspaceConfiguration implements IConfiguration {
 
@@ -81,7 +82,11 @@ public class WorkspaceConfiguration implements IConfiguration {
 		try {
 			return Integer.parseInt(sTimer);
 		} catch (NumberFormatException e) {
-			Services.getErrorManager().warning("No timer to save workspace");
+			Services
+					.getErrorManager()
+					.warning(
+							I18N
+									.getText("orbisgis.org.orbisgis.configuration.workspace.noTimer"));
 		}
 		return 0;
 	}
@@ -104,15 +109,18 @@ public class WorkspaceConfiguration implements IConfiguration {
 		if (panel.getAuthCheck().isSelected()) {
 			String timer = panel.getTimer().getValue();
 			if (timer.equals("")) {
-				return "You must specify a timer greater than 1.";
+				return I18N
+						.getText("orbisgis.org.orbisgis.configuration.workspace.timerGreaterThan1");
 			} else {
 				try {
 					int timerValue = Integer.parseInt(timer);
 					if (timerValue < 1 && timerValue > 60) {
-						return "You must specify a timer between 1 and 60.";
+						return I18N
+								.getText("orbisgis.org.orbisgis.configuration.workspace.timerBetween1and60");
 					}
 				} catch (NumberFormatException e) {
-					return "Only numeric value allowed.";
+					return I18N
+							.getText("orbisgis.org.orbisgis.configuration.workspace.onlyNumericAllowed");
 				}
 
 			}
@@ -120,5 +128,4 @@ public class WorkspaceConfiguration implements IConfiguration {
 		}
 		return null;
 	}
-
 }

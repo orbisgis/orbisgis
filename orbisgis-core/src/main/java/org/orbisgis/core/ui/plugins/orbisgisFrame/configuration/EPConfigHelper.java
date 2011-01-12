@@ -6,6 +6,7 @@ import org.orbisgis.core.Services;
 import org.orbisgis.core.ui.pluginSystem.menu.IMenu;
 import org.orbisgis.core.ui.pluginSystem.menu.Menu;
 import org.orbisgis.core.ui.pluginSystem.menu.MenuTree;
+import org.orbisgis.utils.I18N;
 
 public class EPConfigHelper {
 	private static ArrayList<ConfigurationDecorator> configs;
@@ -15,24 +16,21 @@ public class EPConfigHelper {
 	 * 
 	 * @return the installed configurations
 	 */
-	// TODO (pyf) : mettre sous forme de plugin
 	public static ArrayList<ConfigurationDecorator> getConfigurations() {
 		if (configs == null) {
 			configs = new ArrayList<ConfigurationDecorator>();
-			configs
-					.add(new ConfigurationDecorator(
-							new ProxyConfiguration(),
-							"org.orbisgis.core.ui.configurations.ProxyConfiguration",
-							"Proxy", "org.orbisgis.core.ui.Updates"));
+			configs.add(new ConfigurationDecorator(new ProxyConfiguration(),
+					"org.orbisgis.core.ui.configurations.ProxyConfiguration",
+					I18N.getText("orbisgis.org.orbisgis.configuration.proxy"),
+					"org.orbisgis.core.ui.Updates"));
 			configs.add(new ConfigurationDecorator(
 					new RenderingConfiguration(),
 					"org.orbisgis.core.ui.RenderingConfiguration",
-					"Rules",
+					I18N.getText("orbisgis.org.orbisgis.configuration.rules"),
 					"org.orbisgis.core.ui.RenderingConfiguration"));
 			configs.add(new ConfigurationDecorator(
 					new WorkspaceConfiguration(),
-					"org.orbisgis.core.ui.WorkspaceConfiguration",
-					"Workspace",
+					"org.orbisgis.core.ui.WorkspaceConfiguration", "Workspace",
 					"org.orbisgis.core.ui.WorkspaceConfiguration"));
 		}
 
@@ -44,19 +42,18 @@ public class EPConfigHelper {
 	 * 
 	 * @return the installed configuration menu
 	 */
-	// TODO (pyf): mettre sous forme de plugin
 	public static IMenu getConfigurationMenu() {
 		MenuTree menuTree = new MenuTree();
-		Menu m1 = new Menu(null, "org.orbisgis.core.ui.Updates", null,
-				"WWW", null, null,false);
+		Menu m1 = new Menu(null, "org.orbisgis.core.ui.Updates", null, "WWW",
+				null, null, false);
 		menuTree.addMenu(m1);
-		Menu m2 = new Menu(null,
-				"org.orbisgis.core.ui.RenderingConfiguration", null,
-				"Rendering", null, null,false);
+		Menu m2 = new Menu(null, "org.orbisgis.core.ui.RenderingConfiguration",
+				null,
+				I18N.getText("orbisgis.org.orbisgis.configuration.rendering"),
+				null, null, false);
 		menuTree.addMenu(m2);
-		Menu m3 = new Menu(null,
-				"org.orbisgis.core.ui.WorkspaceConfiguration", null,
-				"Workspace", null, null,false);
+		Menu m3 = new Menu(null, "org.orbisgis.core.ui.WorkspaceConfiguration",
+				null, "Workspace", null, null, false);
 		menuTree.addMenu(m3);
 		IMenu root = menuTree.getRoot();
 		return root;
@@ -98,10 +95,19 @@ public class EPConfigHelper {
 
 		for (ConfigurationDecorator config : getConfigurations()) {
 			if (!scanMenu(root, config.getParentId())) {
-				Services.getErrorManager().error(
-						"The configuration group " + config.getParentId()
-								+ " for the configuration " + config.getId()
-								+ " does not exist.\n");
+				Services
+						.getErrorManager()
+						.error(
+								I18N
+										.getText("orbisgis.org.orbisgis.configuration.group")
+										+ " "
+										+ config.getParentId()
+										+ I18N
+												.getText("orbisgis.org.orbisgis.for")
+										+ " "
+										+ config.getId()
+										+ I18N
+												.getText("orbisgis.org.orbisgis.doesNotExist"));
 			} else {
 				config.loadAndApply();
 			}

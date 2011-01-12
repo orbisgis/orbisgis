@@ -1,38 +1,38 @@
 /*
  * OrbisGIS is a GIS application dedicated to scientific spatial simulation.
- * This cross-platform GIS is developed at French IRSTV institute and is able
- * to manipulate and create vector and raster spatial information. OrbisGIS
- * is distributed under GPL 3 license. It is produced  by the geo-informatic team of
- * the IRSTV Institute <http://www.irstv.cnrs.fr/>, CNRS FR 2488:
- *    Erwan BOCHER, scientific researcher,
- *    Thomas LEDUC, scientific researcher,
- *    Fernando GONZALEZ CORTES, computer engineer.
+ * This cross-platform GIS is developed at French IRSTV institute and is able to
+ * manipulate and create vector and raster spatial information. OrbisGIS is
+ * distributed under GPL 3 license. It is produced by the "Atelier SIG" team of
+ * the IRSTV Institute <http://www.irstv.cnrs.fr/> CNRS FR 2488.
+ *
+ * 
+ *  Team leader Erwan BOCHER, scientific researcher. * 
+ * 
  *
  * Copyright (C) 2007 Erwan BOCHER, Fernando GONZALEZ CORTES, Thomas LEDUC
  *
+ * Copyright (C) 2010 Erwan BOCHER, Pierre-Yves FADET, Alexis GUEGANNO,Adelin PIAU
+ * 
+ * Copyright (C) 2011 Erwan BOCHER, Alexis GUEGANNO, Antoine GOURLAY
+ *
  * This file is part of OrbisGIS.
  *
- * OrbisGIS is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * OrbisGIS is free software: you can redistribute it and/or modify it under the
+ * terms of the GNU General Public License as published by the Free Software
+ * Foundation, either version 3 of the License, or (at your option) any later
+ * version.
  *
- * OrbisGIS is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
+ * OrbisGIS is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
+ * A PARTICULAR PURPOSE. See the GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
- * along with OrbisGIS. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License along with
+ * OrbisGIS. If not, see <http://www.gnu.org/licenses/>.
  *
- * For more information, please consult:
- *    <http://orbisgis.cerma.archi.fr/>
- *    <http://sourcesup.cru.fr/projects/orbisgis/>
+ * For more information, please consult: <http://www.orbisgis.org/>
  *
  * or contact directly:
- *    erwan.bocher _at_ ec-nantes.fr
- *    fergonco _at_ gmail.com
- *    thomas.leduc _at_ cerma.archi.fr
+ * info_at_orbisgis.org
  */
 package org.orbisgis.core.ui.plugins.views.geocatalog.newSourceWizards.db;
 
@@ -55,7 +55,9 @@ import org.gdms.driver.DriverException;
 import org.gdms.driver.TableDescription;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.sif.UIPanel;
+import org.orbisgis.core.ui.pluginSystem.message.ErrorMessages;
 import org.orbisgis.core.ui.plugins.views.OutputManager;
+import org.orbisgis.utils.I18N;
 
 public class TableSelectionPanel implements UIPanel {
 
@@ -77,13 +79,12 @@ public class TableSelectionPanel implements UIPanel {
 
 	@Override
 	public URL getIconURL() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
 	public String getTitle() {
-		return "Select table(s) name(s)...";
+		return I18N.getText("orbisgis.org.orbisgis.core.db.selectTableOrView");
 	}
 
 	@Override
@@ -108,7 +109,7 @@ public class TableSelectionPanel implements UIPanel {
 			DBDriver dbDriver = firstPanel.getDBDriver();
 			final Connection connection = firstPanel.getConnection();
 			final String[] schemas = dbDriver.getSchemas(connection);
-                        OutputManager om = Services.getService(OutputManager.class);
+			OutputManager om = Services.getService(OutputManager.class);
 
 			DefaultMutableTreeNode rootNode =
 			// new DefaultMutableTreeNode ("Schemas");
@@ -117,16 +118,17 @@ public class TableSelectionPanel implements UIPanel {
 			// Add Data to the tree
 			for (String schema : schemas) {
 
-                                final TableDescription[] tableDescriptions = dbDriver
+				final TableDescription[] tableDescriptions = dbDriver
 						.getTables(connection, null, schema, null,
 								new String[] { "TABLE" });
-                                final TableDescription[] viewDescriptions = dbDriver
+				final TableDescription[] viewDescriptions = dbDriver
 						.getTables(connection, null, schema, null,
 								new String[] { "VIEW" });
 
-                                if (tableDescriptions.length == 0 && viewDescriptions.length == 0) {
-                                        continue;
-                                }
+				if (tableDescriptions.length == 0
+						&& viewDescriptions.length == 0) {
+					continue;
+				}
 
 				// list schemas
 				DefaultMutableTreeNode schemaNode = new DefaultMutableTreeNode(
@@ -135,15 +137,15 @@ public class TableSelectionPanel implements UIPanel {
 
 				// list Tables
 				DefaultMutableTreeNode tableNode = new DefaultMutableTreeNode(
-						"Tables");
+						I18N.getText("orbisgis.org.orbisgis.core.db.tables"));
 
-                                // we send possible loading errors to the Output window
-                                DriverException[] exs = dbDriver.getLastNonBlockingErrors();
-                                if (exs.length != 0) {
-                                        for (int i = 0; i < exs.length; i++) {
-                                                om.println(exs[i].getMessage(), Color.ORANGE);
-                                        }
-                                }
+				// we send possible loading errors to the Output window
+				DriverException[] exs = dbDriver.getLastNonBlockingErrors();
+				if (exs.length != 0) {
+					for (int i = 0; i < exs.length; i++) {
+						om.println(exs[i].getMessage(), Color.ORANGE);
+					}
+				}
 
 				if (tableDescriptions.length > 0) {
 					schemaNode.add(tableNode);
@@ -155,7 +157,7 @@ public class TableSelectionPanel implements UIPanel {
 
 				// list View
 				DefaultMutableTreeNode viewNode = new DefaultMutableTreeNode(
-						"Views");
+						I18N.getText("orbisgis.org.orbisgis.core.db.views"));
 				if (viewDescriptions.length > 0) {
 					schemaNode.add(viewNode);
 					for (TableDescription viewDescription : viewDescriptions) {
@@ -178,7 +180,8 @@ public class TableSelectionPanel implements UIPanel {
 	@Override
 	public String validateInput() {
 		String validateInput = null;
-		validateInput = (getSelectedDBSources().length == 0) ? "Please select at least a table"
+		validateInput = (getSelectedDBSources().length == 0) ? I18N
+				.getText("orbisgis.org.orbisgis.core.db.selectAtLeastTableOrView")
 				: null;
 		return validateInput;
 	}
@@ -207,6 +210,7 @@ public class TableSelectionPanel implements UIPanel {
 					tables.add(((TableNode) selectedObject));
 			}
 		} catch (SQLException e) {
+			ErrorMessages.error(I18N.getText(""));
 			e.printStackTrace();
 		} catch (DriverException e) {
 			e.printStackTrace();

@@ -8,12 +8,14 @@
  *
  *  Team leader Erwan BOCHER, scientific researcher,
  *
- *  User support leader : Gwendall Petit, geomatic engineer.
  *
  *
  * Copyright (C) 2007 Erwan BOCHER, Fernando GONZALEZ CORTES, Thomas LEDUC
  *
- * Copyright (C) 2010 Erwan BOCHER, Pierre-Yves FADET, Alexis GUEGANNO, Maxence LAURENT
+ * Copyright (C) 2010 Erwan BOCHER, Pierre-Yves FADET, Alexis GUEGANNO, Maxence LAURENT, Antoine GOURLAY
+ * 
+ * Copyright (C) 2011 Erwan BOCHER,Alexis GUEGANNO, Antoine GOURLAY
+ * 
  *
  * This file is part of OrbisGIS.
  *
@@ -32,8 +34,7 @@
  * For more information, please consult: <http://www.orbisgis.org/>
  *
  * or contact directly:
- * erwan.bocher _at_ ec-nantes.fr
- * gwendall.petit _at_ ec-nantes.fr
+ * info_at_orbisgis.org
  */
 
 package org.orbisgis.core.ui.plugins.editors.tableEditor;
@@ -64,13 +65,15 @@ public class ClearTableSelectionPlugIn extends AbstractPlugIn {
 	}
 
 	public boolean execute(final PlugInContext context) throws Exception {
-                IEditor editor = context.getActiveEditor();
-                TableEditableElement element = (TableEditableElement) editor
-                                .getElement();
-                if (element.getMapContext() != null) {
-                        element.getMapContext().checkSelectionRefresh(new int[0], element.getSelection().getSelectedRows(), element.getDataSource());;
-                }
-                element.getSelection().clearSelection();
+		IEditor editor = context.getActiveEditor();
+		TableEditableElement element = (TableEditableElement) editor
+				.getElement();
+		if (element.getMapContext() != null) {
+			element.getMapContext().checkSelectionRefresh(new int[0],
+					element.getSelection().getSelectedRows(),
+					element.getDataSource());
+		}
+		element.getSelection().clearSelection();
 		return true;
 	}
 

@@ -43,6 +43,7 @@ import org.orbisgis.core.sif.SIFWizard;
 import org.orbisgis.core.sif.SaveFilePanel;
 import org.orbisgis.core.sif.UIFactory;
 import org.orbisgis.core.sif.UIPanel;
+import org.orbisgis.utils.I18N;
 
 public class ConvertXYZDEMWizard {
 
@@ -59,13 +60,13 @@ public class ConvertXYZDEMWizard {
 	public UIPanel[] getWizardPanels() {
 
 		infilePanel = new OpenFilePanel(IN_FILE_ID,
-				"Select XYZ file to convert");
+				I18N.getText("orbisgis.org.orbisgis.xyz.selectInputFile"));
 		infilePanel.addFilter("xyz", "XYZ DEM (*.xyz)");
 
 		uixyzPanel = new UIXYZDEMPanel();
 
 		outfilePanel = new SaveFilePanel(OUT_FILE_ID,
-				"Select the raster file to save to");
+				I18N.getText("orbisgis.org.orbisgis.xyz.selectOutputFileFormat"));
 		outfilePanel.addFilter("tif", "TIF with TFW format (*.tif)");
 
 		return new UIPanel[] { infilePanel, uixyzPanel, outfilePanel };

@@ -98,6 +98,26 @@ public class ErrorMessages {
 			.getText("orbisgis.errorMessages.CannotFind");
 	public static final String CannotSave = I18N
 			.getText("orbisgis.errorMessages.CannotSave");
+	public static final String CannotSaveFile = I18N
+			.getText("orbisgis.errorMessages.CannotSaveFile");
+	public static final String CannotWriteFile = I18N
+			.getText("orbisgis.errorMessages.CannotWriteFile");
+	public static final String CannotRemoveSource = I18N
+			.getText("orbisgis.errorMessages.CannotRemoveSource");
+	public static final String CannotRevertSource = I18N
+			.getText("orbisgis.errorMessages.CannotRevertSource");
+	public static final String CannotSaveSource = I18N
+			.getText("orbisgis.errorMessages.CannotSaveSource");
+	public static final String SourceAlreadyRegistered = I18N
+			.getText("orbisgis.errorMessages.SourceAlreadyRegistered");
+	public static final String CannotConnect = I18N
+			.getText("orbisgis.errorMessages.CannotConnect");
+	public static final String FileNotFound = I18N
+			.getText("orbisgis.errorMessages.FileNotFound");
+	public static final String CannotConvertFile = I18N
+			.getText("orbisgis.errorMessages.CannotConvertFile");
+	public static final String CannotSaveWorkspace = I18N
+	.getText("orbisgis.errorMessages.CannotSaveWorkspace");
 
 	/**
 	 * Return an error message and the exception

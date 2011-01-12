@@ -18,6 +18,7 @@ import org.orbisgis.core.sif.multiInputPanel.InputType;
 import org.orbisgis.core.sif.multiInputPanel.IntType;
 import org.orbisgis.core.sif.multiInputPanel.PasswordType;
 import org.orbisgis.core.sif.multiInputPanel.StringType;
+import org.orbisgis.utils.I18N;
 
 public class ProxyConfiguration implements IConfiguration {
 	private static final String SYSTEM_SOCKS_PROXY_PORT = "socksProxyPort";
@@ -84,15 +85,21 @@ public class ProxyConfiguration implements IConfiguration {
 				}
 			});
 
-			String[] proxyLabels = { "Host: ", "Port: " };
+			String[] proxyLabels = {
+					I18N.getText("orbisgis.org.orbisgis.core.hostName"),
+					I18N.getText("orbisgis.org.orbisgis.core.port") };
 			InputType[] proxyInputs = { host, port };
-			JPanel proxyPanel = new ConfigUnitPanel("Proxy", proxyCheck,
-					"Enable Proxy", proxyLabels, proxyInputs);
+			JPanel proxyPanel = new ConfigUnitPanel(I18N
+					.getText("orbisgis.org.orbisgis.core.proxy"), proxyCheck,
+					I18N.getText("orbisgis.org.orbisgis.core.enableProxy"), proxyLabels, proxyInputs);
 
-			String[] authLabels = { "User: ", "Password: " };
+			String[] authLabels = {
+					I18N.getText("orbisgis.org.orbisgis.core.userName"),
+					I18N.getText("orbisgis.org.orbisgis.core.password") };
 			InputType[] authInputs = { user, pass };
-			JPanel authPanel = new ConfigUnitPanel("Authentication", authCheck,
-					"Enable Authentication", authLabels, authInputs);
+			JPanel authPanel = new ConfigUnitPanel(I18N
+					.getText("orbisgis.org.orbisgis.core.authentication"),
+					authCheck, I18N.getText("orbisgis.org.orbisgis.core.enableAuthentification"), authLabels, authInputs);
 
 			panel.add(proxyPanel);
 			panel.add(new CarriageReturn());
@@ -224,29 +231,32 @@ public class ProxyConfiguration implements IConfiguration {
 	public String validateInput() {
 		if (proxyCheck.isSelected()) {
 			if (host.getValue().equals("")) {
-				return "You must specify a correct host";
+				return I18N
+						.getText("orbisgis.org.orbisgis.core.hostCannotBeNull");
 			}
 
 			try {
 				int p = Integer.parseInt(port.getValue());
 				if (p < 0 || p > 65535) {
-					return "You must specify a correct port";
+					return I18N
+							.getText("orbisgis.org.orbisgis.core.portNumber");
 				}
 			} catch (NumberFormatException e) {
-				return "You must specify a correct port";
+				return I18N.getText("orbisgis.org.orbisgis.core.portNumber");
 			}
 
 			if (authCheck.isSelected()) {
 				if (user.getValue().equals("")) {
-					return "You must specify a correct user";
+					return I18N
+							.getText("orbisgis.org.orbisgis.core.userNameCannotBeNull");
 				}
 
 				if (pass.getValue().equals("")) {
-					return "You must specify a correct password";
+					return I18N
+							.getText("orbisgis.org.orbisgis.core.passwordCannotBeNull");
 				}
 			}
 		}
-
 		return null;
 	}
 }

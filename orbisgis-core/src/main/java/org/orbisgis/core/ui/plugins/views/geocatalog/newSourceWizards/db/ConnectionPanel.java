@@ -54,6 +54,8 @@ import org.orbisgis.core.sif.multiInputPanel.IntType;
 import org.orbisgis.core.sif.multiInputPanel.MultiInputPanel;
 import org.orbisgis.core.sif.multiInputPanel.PasswordType;
 import org.orbisgis.core.sif.multiInputPanel.StringType;
+import org.orbisgis.core.ui.pluginSystem.message.ErrorMessages;
+import org.orbisgis.utils.I18N;
 
 public class ConnectionPanel extends MultiInputPanel {
 	private final static int LENGTH = 20;
@@ -65,25 +67,34 @@ public class ConnectionPanel extends MultiInputPanel {
 	public static final String PASSWORD = "pass";
 
 	public ConnectionPanel() {
-		super("org.orbisgis.core.ui.geocatalog.resources.db.FirstUIPanel",
-				"Connect to database");
-		setInfoText("Introduce the connection parameters");
-		addInput(DBTYPE, "DataBase type", getDriverInput());
-		addValidationExpression(DBTYPE + " is not null",
-				"Please choose a DataBase type");
-		addInput(HOST, "Host name", "127.0.0.1", new StringType(LENGTH));
-		addValidationExpression(HOST + " is not null", "Please choose a host");
-		addInput(PORT, "Port number (0=default)", "0", new IntType(LENGTH));
+		super("org.orbisgis.core.ui.geocatalog.resources.db.FirstUIPanel", I18N
+				.getText("orbisgis.org.core.db.connect"));
+		setInfoText(I18N
+				.getText("orbisgis.org.orbisgis.core.db.connectionParameters"));
+		addInput(DBTYPE, I18N.getText("orbisgis.org.orbisgis.core.db.dbType"),
+				getDriverInput());
+		addValidationExpression(DBTYPE + " is not null", I18N
+				.getText("orbisgis.org.orbisgis.core.db.dbTypeChooser"));
+		addInput(HOST, I18N.getText("orbisgis.org.orbisgis.core.hostName"),
+				"127.0.0.1", new StringType(LENGTH));
+		addValidationExpression(HOST + " is not null", I18N
+				.getText("orbisgis.org.orbisgis.core.db.hostNameChooser"));
+		addInput(PORT, I18N
+				.getText("orbisgis.org.orbisgis.core.db.portNumberDefault"),
+				"0", new IntType(LENGTH));
 
 		addValidationExpression("(" + PORT + " >= 0) and (" + PORT
-				+ " <= 32767)",
-				"Port number is a number in the range [0,32767]");
-		addInput(DBNAME, "Database name", "database_name", new StringType(
-				LENGTH));
-		addValidationExpression(DBNAME + " is not null",
-				"Database name is mandatory");
-		addInput(USER, "User name", "postgres", new StringType(LENGTH));
-		addInput(PASSWORD, "Password", "", new PasswordType(LENGTH));
+				+ " <= 32767)", I18N
+				.getText("orbisgis.org.orbisgis.core.db.portNumber"));
+		addInput(DBNAME, I18N.getText("orbisgis.org.orbisgis.core.db.dbName"),
+				"database_name", new StringType(LENGTH));
+		addValidationExpression(DBNAME + " is not null", I18N
+				.getText("orbisgis.org.orbisgis.core.db.dbNameMandatory"));
+		addInput(USER, I18N.getText("orbisgis.org.orbisgis.core.userName"),
+				"postgres", new StringType(LENGTH));
+		addInput(PASSWORD, I18N
+				.getText("orbisgis.org.orbisgis.core.password"), "",
+				new PasswordType(LENGTH));
 	}
 
 	private InputType getDriverInput() {
@@ -110,7 +121,7 @@ public class ConnectionPanel extends MultiInputPanel {
 			connection.close();
 			return null;
 		} catch (SQLException e) {
-			return "Can not connect: " + e.getMessage();
+			return ErrorMessages.CannotConnect + ": " + e.getMessage();
 		}
 	}
 

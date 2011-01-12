@@ -13,6 +13,7 @@ import javax.swing.JPanel;
 
 import org.orbisgis.core.sif.CRFlowLayout;
 import org.orbisgis.core.sif.CarriageReturn;
+import org.orbisgis.utils.I18N;
 
 public class RenderingConfigurationPanel extends JPanel implements ItemListener {
 
@@ -48,7 +49,10 @@ public class RenderingConfigurationPanel extends JPanel implements ItemListener 
 		crf.setAlignment(CRFlowLayout.LEFT);
 		JPanel checkJPanel = new JPanel(crf);
 		setAntialiasingCheck(new JCheckBox());
-		getAntialiasingCheck().setText("Activate antialiasing.");
+		getAntialiasingCheck()
+				.setText(
+						I18N
+								.getText("orbisgis.org.orbisgis.configuration.activateAntialiasing"));
 		getAntialiasingCheck().setSelected(antialiasing);
 		getAntialiasingCheck().addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -68,12 +72,15 @@ public class RenderingConfigurationPanel extends JPanel implements ItemListener 
 		items.add(RenderingConfiguration.items4);
 
 		compositeCb = new JComboBox(items);
-		if (composite_value!=null)
-		compositeCb.setSelectedItem(composite_value);
+		if (composite_value != null)
+			compositeCb.setSelectedItem(composite_value);
 		getCompositeCb().setEnabled(composite);
 		getCompositeCb().addItemListener(this);
 		setCompositeCheck(new JCheckBox());
-		getCompositeCheck().setText("Activate source-over alpha combination");
+		getCompositeCheck()
+				.setText(
+						I18N
+								.getText("orbisgis.org.orbisgis.configuration.activateSourceOver"));
 		getCompositeCheck().setSelected(composite);
 
 		getCompositeCheck().addActionListener(new ActionListener() {

@@ -10,6 +10,7 @@ import javax.swing.tree.TreePath;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.ui.components.resourceTree.AbstractTreeModel;
 import org.orbisgis.core.ui.pluginSystem.menu.IMenu;
+import org.orbisgis.utils.I18N;
 
 class ConfigurationTreeModel extends AbstractTreeModel {
 	private List<TreeModelListener> listeners;
@@ -60,7 +61,7 @@ class ConfigurationTreeModel extends AbstractTreeModel {
 			}
 		} else {
 			Services.getErrorManager().error("bug!",
-					new RuntimeException("Only menus can have children"));
+					new RuntimeException(I18N.getText("orbisgis.org.orbisgis.configuration.menuChildren")));
 			return null;
 		}
 	}
@@ -79,7 +80,7 @@ class ConfigurationTreeModel extends AbstractTreeModel {
 			return childCount;
 		} else {
 			Services.getErrorManager().error("bug!",
-					new RuntimeException("Only menus can have children"));
+					new RuntimeException(I18N.getText("orbisgis.org.orbisgis.configuration.menuChildren")));
 			return 0;
 		}
 	}
@@ -110,7 +111,7 @@ class ConfigurationTreeModel extends AbstractTreeModel {
 			return -1;
 		} else {
 			Services.getErrorManager().error("bug!",
-					new RuntimeException("Only menus can have children"));
+					new RuntimeException(I18N.getText("orbisgis.org.orbisgis.configuration.menuChildren")));
 			return -1;
 		}
 	}
