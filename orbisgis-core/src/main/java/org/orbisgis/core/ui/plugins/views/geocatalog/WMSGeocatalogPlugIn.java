@@ -62,9 +62,8 @@ import org.orbisgis.utils.I18N;
 public class WMSGeocatalogPlugIn extends AbstractPlugIn {
 
 	public boolean execute(PlugInContext context) throws Exception {
-		WMSConnectionPanel wmsConnection = new WMSConnectionPanel();
-		LayerConfigurationPanel layerConfiguration = new LayerConfigurationPanel(
-				wmsConnection);
+		LayerConfigurationPanel layerConfiguration = new LayerConfigurationPanel();
+                WMSConnectionPanel wmsConnection = new WMSConnectionPanel(layerConfiguration);
 		SRSPanel srsPanel = new SRSPanel(wmsConnection);
 		if (UIFactory.showDialog(new UIPanel[] { wmsConnection,
 				layerConfiguration, srsPanel })) {

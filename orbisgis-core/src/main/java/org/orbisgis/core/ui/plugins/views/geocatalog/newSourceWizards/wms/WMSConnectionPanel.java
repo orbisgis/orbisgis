@@ -94,11 +94,13 @@ public class WMSConnectionPanel extends JPanel implements SQLUIPanel {
 
 	private WMSClient client;
 	private ArrayList<String> serverswms;
+        private LayerConfigurationPanel configPanel;
 
-	public WMSConnectionPanel() {
+	public WMSConnectionPanel(LayerConfigurationPanel configPanel) {
 		GridBagLayout gl = new GridBagLayout();
 		this.setLayout(gl);
 		GridBagConstraints c = new GridBagConstraints();
+                this.configPanel = configPanel;
 
 		// Connection panel
 		c.fill = GridBagConstraints.HORIZONTAL;
@@ -284,6 +286,7 @@ public class WMSConnectionPanel extends JPanel implements SQLUIPanel {
 							client = WMSClientPool.getWMSClient(wmsURL);
 						}
 					}
+                                        configPanel.setClient(client);
 					client.getCapabilities(null, false, null);
 					SwingUtilities.invokeLater(new Runnable() {
 
