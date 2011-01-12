@@ -69,11 +69,15 @@ public class ClearMapSelectionPlugIn extends AbstractPlugIn {
 		ILayer[] layers = mc.getLayerModel().getLayersRecursively();
 		EditableElement element = editor.getElement();
 		for (ILayer lyr : layers) {
-                        final Selection selection = new EditableLayer(element, lyr).getSelection();
-                        if (!mc.isSelectionInducedRefresh()) {
-                                mc.checkSelectionRefresh(new int[0], selection.getSelectedRows(), lyr.getSpatialDataSource());
-                        }
-			selection.clearSelection();
+			if (!lyr.isWMS()) {
+				final Selection selection = new EditableLayer(element, lyr)
+						.getSelection();
+				if (!mc.isSelectionInducedRefresh()) {
+					mc.checkSelectionRefresh(new int[0], selection
+							.getSelectedRows(), lyr.getSpatialDataSource());
+				}
+				selection.clearSelection();
+			}
 		}
 		return true;
 	}
