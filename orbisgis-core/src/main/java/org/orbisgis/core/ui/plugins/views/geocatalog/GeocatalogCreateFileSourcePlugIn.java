@@ -128,7 +128,7 @@ public class GeocatalogCreateFileSourcePlugIn extends AbstractPlugIn {
 		ChoosePanel cp = new ChoosePanel(
 				I18N
 						.getText("orbisgis.org.orbisgis.core.geocatalog.selectTypeSource"),
-				typeNames, driverNames);
+				typeNames, driverNames);	
 		if (UIFactory.showDialog(cp)) {
 			// Create wizard
 			UIPanel[] wizardPanels = new UIPanel[2];

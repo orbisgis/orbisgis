@@ -44,6 +44,8 @@ import javax.swing.filechooser.FileFilter;
 import javax.swing.plaf.FileChooserUI;
 import javax.swing.plaf.basic.BasicFileChooserUI;
 
+import org.orbisgis.utils.I18N;
+
 public class SaveFilePanel extends OpenFilePanel {
 
 	private boolean fileMustNotExist;
@@ -88,10 +90,10 @@ public class SaveFilePanel extends OpenFilePanel {
 	public String validateInput() {
 		File file = getSelectedFile();
 		if (file == null) {
-			return "A file must be specified";
+			return I18N.getText("orbisgis.core.file.aFileMustSelected");
 		} else if (fileMustNotExist) {
 			if (getSelectedFile().exists()) {
-				return "The file already exists";
+				return I18N.getText("orbisgis.core.file.fileAlreadyExists");
 			} else {
 				return null;
 			}
@@ -112,11 +114,13 @@ public class SaveFilePanel extends OpenFilePanel {
 	@Override
 	public String postProcess() {
 		if (getSelectedFile().exists()) {
-			int ret = JOptionPane.showConfirmDialog(null,
-					"The file already exists. Overwrite?", "Existing file",
+			int ret = JOptionPane.showConfirmDialog(null, I18N
+					.getText("orbisgis.core.file.fileAlreadyExists")
+					+ " " + I18N.getText("orbisgis.core.file.overwrite"), I18N
+					.getText("orbisgis.core.file.existing"),
 					JOptionPane.YES_NO_OPTION);
 			if (ret == JOptionPane.NO_OPTION) {
-				return "The file already exists";
+				return I18N.getText("orbisgis.core.file.fileAlreadyExists");
 			}
 		}
 		return null;

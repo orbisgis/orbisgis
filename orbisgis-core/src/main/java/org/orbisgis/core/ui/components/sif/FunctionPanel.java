@@ -195,7 +195,8 @@ public class FunctionPanel extends AbstractUIPanel {
 
 	public String validateInput() {
 		if (lst.getSelectedIndex() == -1) {
-			return "An item must be selected";
+			return I18N
+					.getText("orbisgis.org.orbisgis.core.anItemMustBeSelected");
 		}
 		return null;
 	}
