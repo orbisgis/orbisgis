@@ -91,6 +91,7 @@ import org.orbisgis.core.ui.plugins.editors.tableEditor.AddFieldPlugIn;
 import org.orbisgis.core.ui.plugins.editors.tableEditor.AddValuePlugIn;
 import org.orbisgis.core.ui.plugins.editors.tableEditor.ChangeFieldNamePlugIn;
 import org.orbisgis.core.ui.plugins.editors.tableEditor.ClearTableSelectionPlugIn;
+import org.orbisgis.core.ui.plugins.editors.tableEditor.CreateSourceFromTableSelectionPlugIn;
 import org.orbisgis.core.ui.plugins.editors.tableEditor.DeleteTableSelectionPlugIn;
 import org.orbisgis.core.ui.plugins.editors.tableEditor.NewRowTablePlugIn;
 import org.orbisgis.core.ui.plugins.editors.tableEditor.RedoTablePlugIn;
@@ -135,13 +136,13 @@ import org.orbisgis.core.ui.plugins.views.geocatalog.ConvertXYZDemGeocatalogPlug
 import org.orbisgis.core.ui.plugins.views.geocatalog.GeocatalogClearPlugIn;
 import org.orbisgis.core.ui.plugins.views.geocatalog.GeocatalogCreateFileSourcePlugIn;
 import org.orbisgis.core.ui.plugins.views.geocatalog.GeocatalogDeleteSourcePlugIn;
+import org.orbisgis.core.ui.plugins.views.geocatalog.GeocatalogRevertSourcePlugIn;
 import org.orbisgis.core.ui.plugins.views.geocatalog.GeocatalogSaveChangesPlugIn;
 import org.orbisgis.core.ui.plugins.views.geocatalog.GeocatalogSaveInDataBasePlugIn;
 import org.orbisgis.core.ui.plugins.views.geocatalog.GeocatalogSaveInFilePlugIn;
 import org.orbisgis.core.ui.plugins.views.geocatalog.GeocatalogShowTablePlugIn;
-import org.orbisgis.core.ui.plugins.views.geocatalog.GeocatalogStopEditionPlugIn;
 import org.orbisgis.core.ui.plugins.views.geocatalog.GeocatalogStartEditionPlugIn;
-import org.orbisgis.core.ui.plugins.views.geocatalog.GeocatalogRevertSourcePlugIn;
+import org.orbisgis.core.ui.plugins.views.geocatalog.GeocatalogStopEditionPlugIn;
 import org.orbisgis.core.ui.plugins.views.geocatalog.NewGeocatalogFilePlugIn;
 import org.orbisgis.core.ui.plugins.views.geocatalog.NewGeocatalogFolderPlugIn;
 import org.orbisgis.core.ui.plugins.views.geocatalog.NewGeocognitionDBPlugIn;
@@ -239,6 +240,7 @@ public class OrbisConfiguration implements Setup {
 	private SelectNonePlugIn selectNonePlugIn = new SelectNonePlugIn();
 	private ZoomToSelectedPlugIn zoomToSelectedPlugIn = new ZoomToSelectedPlugIn();
 	private ZoomToLayerFromTable zoomToLayerFromTable = new ZoomToLayerFromTable();
+	private CreateSourceFromTableSelectionPlugIn createSourceFromTableSelectionPlugIn = new CreateSourceFromTableSelectionPlugIn();
 	// Column actions
 	private ChangeFieldNamePlugIn changeFieldNamePlugIn = new ChangeFieldNamePlugIn();
 	private RemoveFieldPlugIn removeFieldPlugIn = new RemoveFieldPlugIn();
@@ -389,6 +391,7 @@ public class OrbisConfiguration implements Setup {
 			showFieldInfoPlugIn.initialize(context);
 			showFieldStatisticsPlugIn.initialize(context);
 			addValuePlugIn.initialize(context);
+			createSourceFromTableSelectionPlugIn.initialize(context);
 
 			// Map editor : right click on Map
 			exportMasAsImagePlugIn.initialize(context);

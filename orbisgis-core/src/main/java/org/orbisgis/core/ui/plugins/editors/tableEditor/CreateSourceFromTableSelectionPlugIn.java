@@ -37,7 +37,7 @@
  * info_at_orbisgis.org
  */
 
-package org.orbisgis.core.ui.plugins.editors.mapEditor;
+package org.orbisgis.core.ui.plugins.editors.tableEditor;
 
 import java.io.File;
 
@@ -71,11 +71,11 @@ import org.orbisgis.core.ui.plugins.views.TableEditorPlugIn;
 import org.orbisgis.core.ui.preferences.lookandfeel.OrbisGISIcon;
 import org.orbisgis.utils.I18N;
 
-public class CreateSourceFromMapSelectionPlugIn extends AbstractPlugIn {
+public class CreateSourceFromTableSelectionPlugIn extends AbstractPlugIn {
 
 	private JButton btn;
 
-	public CreateSourceFromMapSelectionPlugIn() {
+	public CreateSourceFromTableSelectionPlugIn() {
 		btn = new JButton(OrbisGISIcon.TABLE_CREATE_SRC_ICON);
 		btn.setToolTipText(I18N
 				.getText("orbisgis.ui.popupmenu.table.createFromSelection"));
@@ -92,7 +92,7 @@ public class CreateSourceFromMapSelectionPlugIn extends AbstractPlugIn {
 		} else {
 			IEditor editor = context.getActiveEditor();
 			MapContext mc = (MapContext) editor.getElement().getObject();
-			ILayer[] layers = mc.getSelectedLayers();// getLayersRecursively();
+			ILayer[] layers = mc.getSelectedLayers();
 			for (ILayer layer : layers) {
 				createSourceFromSelection(layer.getSpatialDataSource(), layer
 						.getSelection());
@@ -103,7 +103,7 @@ public class CreateSourceFromMapSelectionPlugIn extends AbstractPlugIn {
 
 	public void initialize(PlugInContext context) throws Exception {
 		WorkbenchContext wbContext = context.getWorkbenchContext();
-		wbContext.getWorkbench().getFrame().getEditionMapToolBar().addPlugIn(
+		wbContext.getWorkbench().getFrame().getEditionTableToolBar().addPlugIn(
 				this, btn, context);
 	}
 
@@ -155,7 +155,7 @@ public class CreateSourceFromMapSelectionPlugIn extends AbstractPlugIn {
 
 	public boolean isEnabled() {
 		boolean isEnabled = false;
-		isEnabled = getPlugInContext().getMapEditor() != null
+		isEnabled = getPlugInContext().getTableEditor() != null
 				&& getPlugInContext()
 						.checkLayerAvailability(
 								new SelectionAvailability[] { SelectionAvailability.SUPERIOR },
