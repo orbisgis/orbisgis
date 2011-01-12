@@ -57,6 +57,7 @@ import org.orbisgis.core.Services;
 import org.orbisgis.core.sif.UIFactory;
 import org.orbisgis.core.ui.pluginSystem.AbstractPlugIn;
 import org.orbisgis.core.ui.pluginSystem.PlugInContext;
+import org.orbisgis.core.ui.pluginSystem.message.ErrorMessages;
 import org.orbisgis.core.ui.pluginSystem.workbench.Names;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchContext;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchFrame;
@@ -92,9 +93,9 @@ public class ConvertXYZDemGeocatalogPlugIn extends AbstractPlugIn {
 				sourceManager.register(name, outfile);
 
 			} catch (FileNotFoundException e) {
-				Services.getErrorManager().error("File not found", e);
+				ErrorMessages.error(ErrorMessages.FileNotFound,e);
 			} catch (IOException e) {
-				Services.getErrorManager().error("Cannot convert the file", e);
+				ErrorMessages.error(ErrorMessages.CannotConvertFile,e);
 			}
 
 		}

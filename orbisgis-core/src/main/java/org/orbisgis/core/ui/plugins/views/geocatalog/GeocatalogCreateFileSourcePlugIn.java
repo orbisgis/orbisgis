@@ -71,6 +71,7 @@ import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchContext;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchFrame;
 import org.orbisgis.core.ui.plugins.views.geocatalog.actions.create.MetadataCreation;
 import org.orbisgis.utils.FileUtils;
+import org.orbisgis.utils.I18N;
 
 public class GeocatalogCreateFileSourcePlugIn extends AbstractPlugIn {
 
@@ -125,7 +126,7 @@ public class GeocatalogCreateFileSourcePlugIn extends AbstractPlugIn {
 			typeNames[i] = rod.getTypeDescription();
 		}
 
-		ChoosePanel cp = new ChoosePanel("Select the type of source",
+		ChoosePanel cp = new ChoosePanel(I18N.getText("orbisgis.org.orbisgis.core.geocatalog.selectTypeSource"),
 				typeNames, driverNames);
 		if (UIFactory.showDialog(cp)) {
 			// Create wizard

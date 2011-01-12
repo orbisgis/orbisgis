@@ -5,17 +5,15 @@
  * distributed under GPL 3 license. It is produced by the "Atelier SIG" team of
  * the IRSTV Institute <http://www.irstv.cnrs.fr/> CNRS FR 2488.
  *
- *  Team leader Erwan BOCHER, scientific researcher,
- *
- *  User support leader : Gwendall Petit, geomatic engineer.
- *
- * Previous computer developer : Pierre-Yves FADET, computer engineer,
-Thomas LEDUC, scientific researcher, Fernando GONZALEZ
- * CORTES, computer engineer.
+ * 
+ *  Team leader Erwan BOCHER, scientific researcher. * 
+ * 
  *
  * Copyright (C) 2007 Erwan BOCHER, Fernando GONZALEZ CORTES, Thomas LEDUC
  *
- * Copyright (C) 2010 Erwan BOCHER, Alexis GUEGANNO, Maxence LAURENT, Antoine GOURLAY
+ * Copyright (C) 2010 Erwan BOCHER, Pierre-Yves FADET, Alexis GUEGANNO,Adelin PIAU
+ * 
+ * Copyright (C) 2011 Erwan BOCHER, Alexis GUEGANNO, Antoine GOURLAY
  *
  * This file is part of OrbisGIS.
  *
@@ -34,7 +32,7 @@ Thomas LEDUC, scientific researcher, Fernando GONZALEZ
  * For more information, please consult: <http://www.orbisgis.org/>
  *
  * or contact directly:
- * info@orbisgis.org
+ * info_at_orbisgis.org
  */
 
 package org.orbisgis.core.ui.plugins.views.geocatalog;
@@ -49,6 +47,7 @@ import org.orbisgis.core.sif.UIFactory;
 import org.orbisgis.core.sif.UIPanel;
 import org.orbisgis.core.ui.pluginSystem.AbstractPlugIn;
 import org.orbisgis.core.ui.pluginSystem.PlugInContext;
+import org.orbisgis.core.ui.pluginSystem.message.ErrorMessages;
 import org.orbisgis.core.ui.pluginSystem.workbench.Names;
 import org.orbisgis.core.ui.pluginSystem.workbench.OrbisConfiguration;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchContext;
@@ -94,9 +93,7 @@ public class NewGeocatalogFilePlugIn extends AbstractPlugIn {
 								.getFileNameWithoutExtensionU(file));
 						sourceManager.register(name, file);
 					} catch (SourceAlreadyExistsException e) {
-						Services.getErrorManager().error(
-								"The source is already registered: "
-										+ e.getMessage());
+						ErrorMessages.error(ErrorMessages.SourceAlreadyRegistered + ": ", e);
 					}
 				}
 			}

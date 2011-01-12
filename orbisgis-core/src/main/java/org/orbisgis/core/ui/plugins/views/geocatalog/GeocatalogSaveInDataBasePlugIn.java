@@ -110,7 +110,6 @@ public class GeocatalogSaveInDataBasePlugIn extends AbstractPlugIn {
 		DataManager dataManager = Services.getService(DataManager.class);
 		SourceManager sourceManager = dataManager.getSourceManager();
 		boolean acceptsAllSources = false;
-
 		if (res.length > 0) {
 
 			for (String src : res) {

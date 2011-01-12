@@ -5,17 +5,15 @@
  * distributed under GPL 3 license. It is produced by the "Atelier SIG" team of
  * the IRSTV Institute <http://www.irstv.cnrs.fr/> CNRS FR 2488.
  *
- *  Team leader Erwan BOCHER, scientific researcher,
- *
- *  User support leader : Gwendall Petit, geomatic engineer.
- *
- * Previous computer developer : Pierre-Yves FADET, computer engineer,
-Thomas LEDUC, scientific researcher, Fernando GONZALEZ
- * CORTES, computer engineer.
+ * 
+ *  Team leader Erwan BOCHER, scientific researcher. * 
+ * 
  *
  * Copyright (C) 2007 Erwan BOCHER, Fernando GONZALEZ CORTES, Thomas LEDUC
  *
- * Copyright (C) 2010 Erwan BOCHER, Alexis GUEGANNO, Maxence LAURENT, Antoine GOURLAY
+ * Copyright (C) 2010 Erwan BOCHER, Pierre-Yves FADET, Alexis GUEGANNO,Adelin PIAU
+ * 
+ * Copyright (C) 2011 Erwan BOCHER, Alexis GUEGANNO, Antoine GOURLAY
  *
  * This file is part of OrbisGIS.
  *
@@ -34,8 +32,9 @@ Thomas LEDUC, scientific researcher, Fernando GONZALEZ
  * For more information, please consult: <http://www.orbisgis.org/>
  *
  * or contact directly:
- * info@orbisgis.org
+ * info_at_orbisgis.org
  */
+
 package org.orbisgis.core.ui.plugins.views.geocatalog;
 
 import java.io.File;
@@ -60,6 +59,7 @@ import org.orbisgis.core.ui.preferences.lookandfeel.OrbisGISIcon;
 import org.orbisgis.core.ui.wizards.OpenGdmsFolderPanel;
 import org.orbisgis.progress.IProgressMonitor;
 import org.orbisgis.utils.FileUtils;
+import org.orbisgis.utils.I18N;
 
 /**
  * This plugin is used when the user wants to open the files contained in a
@@ -82,8 +82,8 @@ public class NewGeocatalogFolderPlugIn extends AbstractPlugIn {
 	 */
 	@Override
 	public boolean execute(PlugInContext context) throws Exception {
-		final OpenGdmsFolderPanel folderPanel = new OpenGdmsFolderPanel(
-				"Select the folder to add");
+		final OpenGdmsFolderPanel folderPanel = new OpenGdmsFolderPanel(I18N
+				.getText("orbisgis.org.core.folderAdd"));
 		if (UIFactory.showDialog(new UIPanel[] { folderPanel })) {
 
 			File[] files = folderPanel.getSelectedFiles();
@@ -97,7 +97,7 @@ public class NewGeocatalogFolderPlugIn extends AbstractPlugIn {
 
 					@Override
 					public String getTaskName() {
-						return "Add from folder";
+						return I18N.getText("orbisgis.org.core.addFromFolder");
 					}
 
 					@Override
