@@ -50,6 +50,7 @@ import org.orbisgis.core.ui.pluginSystem.workbench.Names;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchContext;
 import org.orbisgis.core.ui.preferences.lookandfeel.OrbisGISIcon;
 import org.orbisgis.core.workspace.OrbisGISWorkspace;
+import org.orbisgis.utils.I18N;
 
 public class ExitPlugIn extends AbstractPlugIn {
 
@@ -76,8 +77,9 @@ public class ExitPlugIn extends AbstractPlugIn {
 	}
 
 	public static void openExitDialog(Component component) {
-		int answer = JOptionPane.showConfirmDialog(component, "Really quit?",
-				"OrbisGIS", JOptionPane.YES_NO_OPTION);
+		int answer = JOptionPane.showConfirmDialog(component, I18N
+				.getText("orbisgis.org.orbisgis.core.exit"), "OrbisGIS",
+				JOptionPane.YES_NO_OPTION);
 		if (answer == JOptionPane.YES_OPTION) {
 			OrbisGISWorkspace psm = (OrbisGISWorkspace) Services
 					.getService(OrbisGISWorkspace.class);

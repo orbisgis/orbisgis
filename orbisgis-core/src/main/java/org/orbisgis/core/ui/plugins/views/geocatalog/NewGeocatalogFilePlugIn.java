@@ -55,36 +55,37 @@ import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchFrame;
 import org.orbisgis.core.ui.preferences.lookandfeel.OrbisGISIcon;
 import org.orbisgis.core.ui.wizards.OpenGdmsFilePanel;
 import org.orbisgis.utils.FileUtils;
+import org.orbisgis.utils.I18N;
 
 /**
  * This plugin is used when the user wants to open a file using the geocatalog.
- * It will open a panel dedicated to the selection of the wanted files. This panel
- * will then return the selected files to this PlugIn
+ * It will open a panel dedicated to the selection of the wanted files. This
+ * panel will then return the selected files to this PlugIn
  */
 
 public class NewGeocatalogFilePlugIn extends AbstractPlugIn {
 
 	/**
-	 * During execution, the plugin wil create a OpenGdmsFilePanel to let the user
-	 * select the files he wants.
-	 * The only files imported in the geocatalog are those for which we have
-	 * a driver register in the DataManager.
+	 * During execution, the plugin wil create a OpenGdmsFilePanel to let the
+	 * user select the files he wants. The only files imported in the geocatalog
+	 * are those for which we have a driver register in the DataManager.
+	 * 
 	 * @param context
 	 * @return
 	 * @throws Exception
 	 */
 	@Override
 	public boolean execute(PlugInContext context) throws Exception {
-		OpenGdmsFilePanel filePanel = new OpenGdmsFilePanel(
-				"Select the file to add");
+		OpenGdmsFilePanel filePanel = new OpenGdmsFilePanel(I18N
+				.getText("orbisgis.org.core.selectFileAdd"));
 		if (UIFactory.showDialog(new UIPanel[] { filePanel })) {
-			//We can retrieve the files that have been selected by the user
+			// We can retrieve the files that have been selected by the user
 			File[] files = filePanel.getSelectedFiles();
 			for (File file : files) {
-				//For each file, we ensure that we have a driver
-				//that can be used to read it. If we don't, we don't
-				//open the file.
-				if(OrbisConfiguration.isFileEligible(file)) {
+				// For each file, we ensure that we have a driver
+				// that can be used to read it. If we don't, we don't
+				// open the file.
+				if (OrbisConfiguration.isFileEligible(file)) {
 					DataManager dm = (DataManager) Services
 							.getService(DataManager.class);
 					SourceManager sourceManager = dm.getSourceManager();
@@ -93,7 +94,9 @@ public class NewGeocatalogFilePlugIn extends AbstractPlugIn {
 								.getFileNameWithoutExtensionU(file));
 						sourceManager.register(name, file);
 					} catch (SourceAlreadyExistsException e) {
-						ErrorMessages.error(ErrorMessages.SourceAlreadyRegistered + ": ", e);
+						ErrorMessages
+								.error(ErrorMessages.SourceAlreadyRegistered
+										+ ": ", e);
 					}
 				}
 			}
@@ -103,6 +106,7 @@ public class NewGeocatalogFilePlugIn extends AbstractPlugIn {
 
 	/**
 	 * The method used for plugin initialization.
+	 * 
 	 * @param context
 	 * @throws Exception
 	 */
@@ -122,7 +126,9 @@ public class NewGeocatalogFilePlugIn extends AbstractPlugIn {
 	}
 
 	/**
-	 * As this plugin is used directly by the geocatalog, it is naturally enabled.
+	 * As this plugin is used directly by the geocatalog, it is naturally
+	 * enabled.
+	 * 
 	 * @return
 	 */
 	@Override

@@ -59,13 +59,13 @@ import org.gdms.source.RasterDriverFilter;
 import org.gdms.source.SourceManager;
 import org.orbisgis.core.DataManager;
 import org.orbisgis.core.Services;
-import org.orbisgis.core.errorManager.ErrorManager;
 import org.orbisgis.core.sif.SaveFilePanel;
 import org.orbisgis.core.sif.UIFactory;
 import org.orbisgis.core.sif.UIPanel;
 import org.orbisgis.core.ui.components.sif.ChoosePanel;
 import org.orbisgis.core.ui.pluginSystem.AbstractPlugIn;
 import org.orbisgis.core.ui.pluginSystem.PlugInContext;
+import org.orbisgis.core.ui.pluginSystem.message.ErrorMessages;
 import org.orbisgis.core.ui.pluginSystem.workbench.Names;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchContext;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchFrame;
@@ -102,7 +102,6 @@ public class GeocatalogCreateFileSourcePlugIn extends AbstractPlugIn {
 						wbContext);
 	}
 
-	
 	public void execute(SourceManager sourceManager, String sourceName) {
 		// Get the non raster writable drivers
 		DataManager dm = (DataManager) Services.getService(DataManager.class);
@@ -126,7 +125,9 @@ public class GeocatalogCreateFileSourcePlugIn extends AbstractPlugIn {
 			typeNames[i] = rod.getTypeDescription();
 		}
 
-		ChoosePanel cp = new ChoosePanel(I18N.getText("orbisgis.org.orbisgis.core.geocatalog.selectTypeSource"),
+		ChoosePanel cp = new ChoosePanel(
+				I18N
+						.getText("orbisgis.org.orbisgis.core.geocatalog.selectTypeSource"),
 				typeNames, driverNames);
 		if (UIFactory.showDialog(cp)) {
 			// Create wizard
@@ -139,19 +140,20 @@ public class GeocatalogCreateFileSourcePlugIn extends AbstractPlugIn {
 			} else if ((driver.getType() & SourceManager.DB) == SourceManager.DB) {
 				file = false;
 			} else {
-				Services.getErrorManager().error(
-						"Unsupported source type: " + cp.getSelected());
+				ErrorMessages.error(ErrorMessages.UnsupportedSourceType + " "
+						+ cp.getSelected());
 				return;
 			}
-			SaveFilePanel saveFilePanel = new SaveFilePanel(null,
-					"Select the file to create");
+			SaveFilePanel saveFilePanel = new SaveFilePanel(null, I18N
+					.getText("orbisgis.org.core.selectFileCreate"));
 			if (file) {
 				saveFilePanel.setFileMustNotExist(true);
 				saveFilePanel.addFilter(((FileDriver) driver)
 						.getFileExtensions(), driver.getTypeDescription());
 				wizardPanels[0] = saveFilePanel;
 			} else {
-				throw new UnsupportedOperationException("Not implemented yet");
+				throw new UnsupportedOperationException(
+						ErrorMessages.NotImplementedYet);
 			}
 			MetadataCreation mc = new MetadataCreation(driver);
 			wizardPanels[1] = mc;
@@ -181,14 +183,14 @@ public class GeocatalogCreateFileSourcePlugIn extends AbstractPlugIn {
 					name = FileUtils.getFileNameWithoutExtensionU(selectedFile);
 				} else {
 					throw new UnsupportedOperationException(
-							"Not implemented yet");
+							ErrorMessages.NotImplementedYet);
 				}
 
 				try {
 					dm.getDataSourceFactory().createDataSource(dsc);
 				} catch (DriverException e) {
-					Services.getErrorManager().error(
-							"Cannot create source: " + dsc, e);
+					ErrorMessages.error(ErrorMessages.CannotCreateSource + " "
+							+ dsc, e);
 					return;
 				}
 
@@ -196,11 +198,9 @@ public class GeocatalogCreateFileSourcePlugIn extends AbstractPlugIn {
 				try {
 					sourceManager.register(name, dsd);
 				} catch (SourceAlreadyExistsException e) {
-					Services.getService(ErrorManager.class).error(
-							"Name collision", e);
+					ErrorMessages.error(ErrorMessages.SourceAlreadyExists, e);
 				} catch (InitializationException e) {
-					Services.getService(ErrorManager.class).error(
-							"Cannot initialize source", e);
+					ErrorMessages.error(ErrorMessages.CannotInitializeSource, e);
 				}
 			}
 		}

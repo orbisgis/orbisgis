@@ -117,7 +117,15 @@ public class ErrorMessages {
 	public static final String CannotConvertFile = I18N
 			.getText("orbisgis.errorMessages.CannotConvertFile");
 	public static final String CannotSaveWorkspace = I18N
-	.getText("orbisgis.errorMessages.CannotSaveWorkspace");
+			.getText("orbisgis.errorMessages.CannotSaveWorkspace");
+	public static final String UnsupportedSourceType = I18N
+			.getText("orbisgis.errorMessages.UnsupportedSourceType");
+	public static final String NotImplementedYet = I18N
+			.getText("orbisgis.errorMessages.NotImplementedYet");
+	public static final String SourceAlreadyExists = I18N
+			.getText("orbisgis.errorMessages.SourceAlreadyExists");
+	public static final String CannotInitializeSource = I18N
+			.getText("orbisgis.errorMessages.CannotInitializeSource");
 
 	/**
 	 * Return an error message and the exception

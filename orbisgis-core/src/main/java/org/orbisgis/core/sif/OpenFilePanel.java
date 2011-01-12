@@ -46,6 +46,8 @@ import java.io.File;
 
 import javax.swing.filechooser.FileFilter;
 
+import org.orbisgis.utils.I18N;
+
 public class OpenFilePanel extends AbstractOpenPanel {
 
 	public static final String FIELD_NAME = "file";
@@ -53,20 +55,21 @@ public class OpenFilePanel extends AbstractOpenPanel {
 	public static final String FILTER_NAME = "filter";
 
 	public OpenFilePanel(String id, String title) {
-		super(id,title);
+		super(id, title);
 	}
 
 	/**
 	 * Check that the input given by the user can be used.
+	 * 
 	 * @return
 	 */
 	@Override
 	public String validateInput() {
 		File file = getSelectedFile();
 		if (file == null) {
-			return "A file must be selected";
+			return I18N.getText("orbisgis.core.file.aFileMustSelected");
 		} else if (!file.exists()) {
-			return "The file must exist";
+			return I18N.getText("orbisgis.core.file.aFileMustExists");
 		} else {
 			return null;
 		}
@@ -74,6 +77,7 @@ public class OpenFilePanel extends AbstractOpenPanel {
 
 	/**
 	 * Return the names of the fields in the FileChooser.
+	 * 
 	 * @return
 	 */
 	@Override
@@ -83,12 +87,14 @@ public class OpenFilePanel extends AbstractOpenPanel {
 
 	/**
 	 * we don't want to show only folders, as we are about to import files.
+	 * 
 	 * @return
 	 */
 	@Override
-	public boolean showFoldersOnly(){
+	public boolean showFoldersOnly() {
 		return false;
 	}
+
 	@Override
 	public int[] getFieldTypes() {
 		return new int[] { SQLUIPanel.STRING, SQLUIPanel.STRING };

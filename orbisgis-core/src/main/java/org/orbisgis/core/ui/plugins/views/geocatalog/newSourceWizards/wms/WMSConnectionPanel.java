@@ -201,6 +201,7 @@ public class WMSConnectionPanel extends JPanel implements SQLUIPanel {
 		pnlInfo.add(pnlNorth, BorderLayout.NORTH);
 		txtDescription = new JTextArea("\n\n\n\n\n\n");
 		txtDescription.setEditable(false);
+		txtDescription.setLineWrap(true);
 		JScrollPane comp = new JScrollPane(txtDescription);
 		pnlInfo.add(comp, BorderLayout.CENTER);
 		this.add(pnlInfo, c);
@@ -275,7 +276,14 @@ public class WMSConnectionPanel extends JPanel implements SQLUIPanel {
 				String wmsURL = cmbURLServer.getSelectedItem().toString()
 						.trim();
 				try {
-					client = WMSClientPool.getWMSClient(wmsURL);
+					if (client == null) {
+						client = WMSClientPool.getWMSClient(wmsURL);
+					}
+					else {
+						if(!client.getHost().equals(wmsURL)){
+							client = WMSClientPool.getWMSClient(wmsURL);
+						}
+					}
 					client.getCapabilities(null, false, null);
 					SwingUtilities.invokeLater(new Runnable() {
 
