@@ -129,10 +129,14 @@ public class WorkspaceFolderPanel extends JPanel implements UIPanel {
 		jCheckBox = new JCheckBox(I18N
 				.getText("orbisgis.core.ui.workspace.default"));
 		jCheckBox.setEnabled(true);
+		final DefaultWorkspace workspace = (DefaultWorkspace) Services
+				.getService(Workspace.class);
+		selected = workspace.isDefaultWorkspace();
 		jCheckBox.setSelected(selected);
 		jCheckBox.addItemListener(new ItemListener() {
 			public void itemStateChanged(ItemEvent e) {
 				setCheckBoxSelected(jCheckBox.isSelected());
+				workspace.setDefaultWorkspace(jCheckBox.isSelected());
 			}
 		});
 		panel.add(label);
@@ -178,7 +182,7 @@ public class WorkspaceFolderPanel extends JPanel implements UIPanel {
 	}
 
 	private void setCheckBoxSelected(boolean selected) {
-		this.selected = selected;
+		this.selected = selected;		
 	}
 
 	public boolean isSelected() {

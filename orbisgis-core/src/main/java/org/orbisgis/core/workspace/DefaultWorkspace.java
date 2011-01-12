@@ -333,16 +333,15 @@ public class DefaultWorkspace implements Workspace {
 
 	public void writeDefaultWorkspaceFile(String workspaceFile)
 			throws IOException {
-
-		if (!getDefaultWorkspaceFile().exists()) {
-			try {
-				PrintWriter pw = new PrintWriter(getDefaultWorkspaceFile());
-				pw.println(workspaceFile);
-				pw.close();
-			} catch (FileNotFoundException e) {
-				throw new RuntimeException("Cannot initialize system", e);
-			}
+		getDefaultWorkspaceFile().delete();
+		try {
+			PrintWriter pw = new PrintWriter(getDefaultWorkspaceFile());
+			pw.println(workspaceFile);
+			pw.close();
+		} catch (FileNotFoundException e) {
+			throw new RuntimeException("Cannot initialize system", e);
 		}
+
 	}
 
 	public void freeDefaultWorkspace() throws IOException {
