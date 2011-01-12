@@ -146,7 +146,7 @@ public class GeocatalogSaveInFilePlugIn extends AbstractPlugIn {
 
 	public boolean isEnabled() {
 		return getPlugInContext().checkLayerAvailability(
-				new SelectionAvailability[] { SelectionAvailability.EQUAL }, 1,
+				new SelectionAvailability[] { SelectionAvailability.SUPERIOR }, 0,
 				new SourceAvailability[] { SourceAvailability.WMS });
 	}
 }
