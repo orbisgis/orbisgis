@@ -93,7 +93,7 @@ public class SaveInDataBasePlugIn extends AbstractPlugIn {
 
 	public boolean isEnabled() {
 		return getPlugInContext().checkLayerAvailability(
-				new SelectionAvailability[] { SelectionAvailability.EQUAL }, 1,
+				new SelectionAvailability[] { SelectionAvailability.SUPERIOR }, 0,
 				new LayerAvailability[] { LayerAvailability.VECTORIAL });
 	}
 }

@@ -186,6 +186,11 @@ public class PlugInContext {
 							if (layer.getSelection().length <= 0)
 								return false;
 							break;
+                                                case EXPORTABLE:
+                                                        if (!isVectorial(layer) && !isRaster(layer)) {
+                                                                return false;
+                                                        }
+                                                        break;
 						default:
 							break;
 						}
@@ -203,7 +208,7 @@ public class PlugInContext {
 	};
 
 	public static enum LayerAvailability {
-		VECTORIAL, RASTER,ACCEPT_CHILDS, LAYER_NOT_NULL, DATASOURCE_NOT_NULL, IS_MODIFIED, ACTIVE_LAYER, NOT_ACTIVE_LAYER, IS_EDTABLE, ROW_SELECTED
+		VECTORIAL, RASTER,ACCEPT_CHILDS, LAYER_NOT_NULL, DATASOURCE_NOT_NULL, IS_MODIFIED, ACTIVE_LAYER, NOT_ACTIVE_LAYER, IS_EDTABLE, ROW_SELECTED, EXPORTABLE
 	};
 
 	public MapContext getMapContext() {
