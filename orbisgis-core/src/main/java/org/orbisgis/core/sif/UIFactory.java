@@ -40,6 +40,8 @@ import java.io.File;
 import java.net.URL;
 import java.util.HashMap;
 
+import javax.swing.SwingUtilities;
+
 import org.gdms.data.DataSourceFactory;
 
 public class UIFactory {

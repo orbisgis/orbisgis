@@ -54,6 +54,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.JToolBar;
+import javax.swing.SwingUtilities;
 
 import org.gdms.data.types.GeometryConstraint;
 import org.orbisgis.core.Services;
@@ -251,7 +252,7 @@ public class LegendsPanel extends JPanel implements UIPanel, LegendContext {
 
 	private JPanel getLegendContainer() {
 		pnlContainer = new JPanel();
-		pnlContainer.setPreferredSize(new Dimension(550, 400));
+		pnlContainer.setPreferredSize(new Dimension(600, 400));
 		cardLayout = new CardLayout();
 		pnlContainer.setLayout(cardLayout);
 		pnlContainer.add(new JLabel("Add or select a legend on the left"),

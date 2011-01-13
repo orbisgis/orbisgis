@@ -136,7 +136,6 @@ public class SimplePanel extends JPanel {
 		} else {
 			centerPanel = uiPanel;
 		}
-
 		this.add(centerPanel, BorderLayout.CENTER);
 	}
 

@@ -38,6 +38,7 @@
 package org.orbisgis.core.ui.plugins.toc;
 
 import javax.swing.JOptionPane;
+import javax.swing.SwingUtilities;
 
 import org.gdms.data.types.Constraint;
 import org.gdms.data.types.GeometryConstraint;
