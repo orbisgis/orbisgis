@@ -1,9 +1,10 @@
-http://hypercube.telascience.org/cgi-bin/mapserv?
 http://cartorisque.prim.net/wms/france
 http://osm.wheregroup.com/cgi-bin/osm_basic.xml?SERVICE=WMS&
 http://services.sandre.eaufrance.fr/geo/zonage
 http://services.sandre.eaufrance.fr/geo/stations
-http://services.sandre.eaufrance.fr/geo/ouvrage
-http://mapserver.flightgear.org/cgi-bin/landcover
-http://wms.jpl.nasa.gov/wms.cgi
-http://nasa.network.com/wms	
+http://geolittoral.application.equipement.gouv.fr/wms/metropole?
+http://wms1.agr.gc.ca/cgi-bin/mapeco?
+http://sd1878-2.sivit.org/geoserver/wms
+http://ws.carmencarto.fr/WMS/105/ONF_Forets?
+http://ws.carmencarto.fr/WMS/105/ONF_RB_Metro?
+http://atlas.gc.ca/cgi-bin/atlaswms_fr?
