@@ -145,8 +145,8 @@ public class WMSConnectionPanel extends JPanel implements SQLUIPanel {
 				if (serverswms.contains(item)) {
 					serverswms.remove(item);
 					saveWMSServerFile();
-					cmbURLServer.removeItem(item);
 				}
+                                cmbURLServer.removeItem(item);
 			}
 		});
 		btnDelete.setBorderPainted(false);
@@ -275,9 +275,9 @@ public class WMSConnectionPanel extends JPanel implements SQLUIPanel {
 
 			@Override
 			public void run(IProgressMonitor pm) {
-				String wmsURL = cmbURLServer.getSelectedItem().toString()
-						.trim();
-				try {
+				String originalWmsURL = cmbURLServer.getSelectedItem().toString();
+                                String wmsURL = originalWmsURL.trim();
+                                try {
 					if (client == null) {
 						client = WMSClientPool.getWMSClient(wmsURL);
 					}
@@ -304,10 +304,12 @@ public class WMSConnectionPanel extends JPanel implements SQLUIPanel {
 
 						}
 					});
-					if (!serverswms.contains(wmsURL)) {
-						serverswms.add(wmsURL);
+
+                                        if (!serverswms.contains(originalWmsURL)) {
+						serverswms.add(originalWmsURL);
 						saveWMSServerFile();
-					}
+                                        }
+
 				} catch (ConnectException e) {
 					ErrorMessages.error(I18N
 							.getText("orbisgis.errorMessages.wms.CannotConnect"
@@ -394,10 +396,7 @@ public class WMSConnectionPanel extends JPanel implements SQLUIPanel {
 
 	@Override
 	public void setValue(String fieldName, String fieldValue) {
-		if (!serverswms.contains(fieldName)) {
-			cmbURLServer.addItem(fieldValue);
-			cmbURLServer.setSelectedItem(fieldValue);
-		}
+                cmbURLServer.setSelectedItem(fieldValue);
 	}
 
 	@Override
