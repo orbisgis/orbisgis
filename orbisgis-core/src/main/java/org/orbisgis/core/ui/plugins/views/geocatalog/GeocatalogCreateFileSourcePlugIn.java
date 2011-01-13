@@ -57,6 +57,7 @@ import org.gdms.source.FileDriverFilter;
 import org.gdms.source.NotDriverFilter;
 import org.gdms.source.RasterDriverFilter;
 import org.gdms.source.SourceManager;
+import org.gdms.source.WritableDriverFilter;
 import org.orbisgis.core.DataManager;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.sif.SaveFilePanel;
@@ -109,7 +110,7 @@ public class GeocatalogCreateFileSourcePlugIn extends AbstractPlugIn {
 
 		Driver[] filtered = driverManager.getDrivers(new AndDriverFilter(
 				new FileDriverFilter(), new NotDriverFilter(
-						new RasterDriverFilter())));
+						new RasterDriverFilter()), new WritableDriverFilter()));
 
 		createSource(dm, driverManager, filtered);
 	}
