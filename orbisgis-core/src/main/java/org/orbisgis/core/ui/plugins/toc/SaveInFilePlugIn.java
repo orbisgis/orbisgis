@@ -67,67 +67,71 @@ import org.orbisgis.core.ui.pluginSystem.PlugInContext.SelectionAvailability;
 import org.orbisgis.core.ui.pluginSystem.workbench.Names;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchContext;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchFrame;
+import org.orbisgis.utils.I18N;
 
 public class SaveInFilePlugIn extends AbstractPlugIn {
 
-        public boolean execute(PlugInContext context) throws DriverException {
-                MapContext mapContext = getPlugInContext().getMapContext();
-                ILayer[] selectedResources = mapContext.getSelectedLayers();
-                for (ILayer resource : selectedResources) {
-                        if (resource.isWMS()) {
-                                continue;
-                        }
-                        final SaveFilePanel outfilePanel = new SaveFilePanel(
-                                "org.orbisgis.core.ui.editorViews.toc.actions.SaveInFile",
-                                "Choose a file format");
+	public boolean execute(PlugInContext context) throws DriverException {
+		MapContext mapContext = getPlugInContext().getMapContext();
+		ILayer[] selectedResources = mapContext.getSelectedLayers();
+		for (ILayer resource : selectedResources) {
+			if (resource.isWMS()) {
+				continue;
+			}
+			final SaveFilePanel outfilePanel = new SaveFilePanel(
+					"org.orbisgis.core.ui.editorViews.toc.actions.SaveInFile",
+					I18N.getText("orbisgis.core.file.chooseFileFormat"));
 
-                        DataManager dm = Services.getService(DataManager.class);
-                        final DataSourceFactory dsf = dm.getDataSourceFactory();
-                        SourceManager sourceManager = dm.getSourceManager();
-                        DriverManager driverManager = sourceManager.getDriverManager();
-                        DriverFilter filter = null;
-                        if (resource.isRaster()) {
-                                filter = new RasterDriverFilter();
-                        } else if (resource.isVectorial()) {
-                                // no other choice but to add CSV here
-                                // because of CSVStringDriver implementation
-                                filter = new OrDriverFilter(new VectorialDriverFilter(),
-                                        new CSVFileDriverFilter());
-                        }
-                        Driver[] filtered = driverManager.getDrivers(new AndDriverFilter(
-                                new FileDriverFilter(), filter,
-                                new WritableDriverFilter()));
-                        for (int i = 0; i < filtered.length; i++) {
-                                FileDriver fileDriver = (FileDriver) filtered[i];
-                                String[] extensions = fileDriver.getFileExtensions();
-                                outfilePanel.addFilter(extensions, fileDriver.getTypeDescription());
-                        }
+			DataManager dm = Services.getService(DataManager.class);
+			final DataSourceFactory dsf = dm.getDataSourceFactory();
+			SourceManager sourceManager = dm.getSourceManager();
+			DriverManager driverManager = sourceManager.getDriverManager();
+			DriverFilter filter = null;
+			if (resource.isRaster()) {
+				filter = new RasterDriverFilter();
+			} else if (resource.isVectorial()) {
+				// no other choice but to add CSV here
+				// because of CSVStringDriver implementation
+				filter = new OrDriverFilter(new VectorialDriverFilter(),
+						new CSVFileDriverFilter());
+			}
+			Driver[] filtered = driverManager
+					.getDrivers(new AndDriverFilter(new FileDriverFilter(),
+							filter, new WritableDriverFilter()));
+			for (int i = 0; i < filtered.length; i++) {
+				FileDriver fileDriver = (FileDriver) filtered[i];
+				String[] extensions = fileDriver.getFileExtensions();
+				outfilePanel.addFilter(extensions, fileDriver
+						.getTypeDescription());
+			}
 
-                        if (UIFactory.showDialog(outfilePanel)) {
-                                final File savedFile = new File(outfilePanel.getSelectedFile().getAbsolutePath());
-                                BackgroundManager bm = Services.getService(BackgroundManager.class);
-                                bm.backgroundOperation(new ExportInFileOperation(dsf, resource.getName(), savedFile, null));
+			if (UIFactory.showDialog(outfilePanel)) {
+				final File savedFile = new File(outfilePanel.getSelectedFile()
+						.getAbsolutePath());
+				BackgroundManager bm = Services
+						.getService(BackgroundManager.class);
+				bm.backgroundOperation(new ExportInFileOperation(dsf, resource
+						.getName(), savedFile, null));
 
-                        }
-                }
-                return true;
-        }
+			}
+		}
+		return true;
+	}
 
-        public void initialize(PlugInContext context) throws Exception {
-                WorkbenchContext wbContext = context.getWorkbenchContext();
-                WorkbenchFrame frame = wbContext.getWorkbench().getFrame().getToc();
-                context.getFeatureInstaller().addPopupMenuItem(
-                        frame,
-                        this,
-                        new String[]{Names.POPUP_TOC_EXPORT_SAVE,
-                                Names.TOC_EXPORT_SAVEIN_FILE},
-                        Names.POPUP_TOC_EXPORT_GROUP, false, null, wbContext);
-        }
+	public void initialize(PlugInContext context) throws Exception {
+		WorkbenchContext wbContext = context.getWorkbenchContext();
+		WorkbenchFrame frame = wbContext.getWorkbench().getFrame().getToc();
+		context.getFeatureInstaller().addPopupMenuItem(
+				frame,
+				this,
+				new String[] { Names.POPUP_TOC_EXPORT_SAVE,
+						Names.TOC_EXPORT_SAVEIN_FILE },
+				Names.POPUP_TOC_EXPORT_GROUP, false, null, wbContext);
+	}
 
-        public boolean isEnabled() {
-                return getPlugInContext().checkLayerAvailability(
-                        new SelectionAvailability[]{SelectionAvailability.SUPERIOR},
-                        0,
-                        new LayerAvailability[]{ LayerAvailability.EXPORTABLE});
-        }
+	public boolean isEnabled() {
+		return getPlugInContext().checkLayerAvailability(
+				new SelectionAvailability[] { SelectionAvailability.SUPERIOR },
+				0, new LayerAvailability[] { LayerAvailability.EXPORTABLE });
+	}
 }

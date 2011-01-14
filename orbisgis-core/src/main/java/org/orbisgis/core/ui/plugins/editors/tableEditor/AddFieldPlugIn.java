@@ -42,13 +42,12 @@ import org.gdms.data.DataSource;
 import org.gdms.data.types.TypeDefinition;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.ReadWriteDriver;
-import org.orbisgis.core.Services;
-import org.orbisgis.core.errorManager.ErrorManager;
 import org.orbisgis.core.sif.UIFactory;
 import org.orbisgis.core.ui.editor.IEditor;
 import org.orbisgis.core.ui.editors.table.TableEditableElement;
 import org.orbisgis.core.ui.pluginSystem.AbstractPlugIn;
 import org.orbisgis.core.ui.pluginSystem.PlugInContext;
+import org.orbisgis.core.ui.pluginSystem.message.ErrorMessages;
 import org.orbisgis.core.ui.pluginSystem.workbench.Names;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchContext;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchFrame;
@@ -70,8 +69,7 @@ public class AddFieldPlugIn extends AbstractPlugIn {
 				dataSource.addField(fe.getFieldName(), fe.getType());
 			}
 		} catch (DriverException e) {
-			Services.getService(ErrorManager.class)
-					.error("Cannot add field", e);
+			ErrorMessages.error(ErrorMessages.CannotAddField, e);
 		}
 		return true;
 	}
@@ -89,10 +87,10 @@ public class AddFieldPlugIn extends AbstractPlugIn {
 	public boolean isEnabled() {
 		boolean isEnabled = false;
 		IEditor tableEditor = null;
-		if((tableEditor=getPlugInContext().getTableEditor()) != null) {
-			final TableEditableElement element =
-				(TableEditableElement) tableEditor.getElement();
-			isEnabled = getSelectedColumn()!=-1 && element.isEditable();
+		if ((tableEditor = getPlugInContext().getTableEditor()) != null) {
+			final TableEditableElement element = (TableEditableElement) tableEditor
+					.getElement();
+			isEnabled = getSelectedColumn() != -1 && element.isEditable();
 		}
 		return isEnabled;
 	}

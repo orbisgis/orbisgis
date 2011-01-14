@@ -41,9 +41,6 @@ package org.orbisgis.core.ui.plugins.editors.tableEditor;
 
 import javax.swing.JButton;
 
-import org.orbisgis.core.Services;
-import org.orbisgis.core.background.BackgroundJob;
-import org.orbisgis.core.background.BackgroundManager;
 import org.orbisgis.core.ui.editor.IEditor;
 import org.orbisgis.core.ui.editors.table.TableEditableElement;
 import org.orbisgis.core.ui.pluginSystem.AbstractPlugIn;
@@ -51,7 +48,6 @@ import org.orbisgis.core.ui.pluginSystem.PlugInContext;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchContext;
 import org.orbisgis.core.ui.plugins.views.TableEditorPlugIn;
 import org.orbisgis.core.ui.preferences.lookandfeel.OrbisGISIcon;
-import org.orbisgis.progress.IProgressMonitor;
 import org.orbisgis.utils.I18N;
 
 public class ClearTableSelectionPlugIn extends AbstractPlugIn {

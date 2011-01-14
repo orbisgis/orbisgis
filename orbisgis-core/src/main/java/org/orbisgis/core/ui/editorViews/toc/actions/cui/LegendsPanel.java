@@ -54,7 +54,6 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.JToolBar;
-import javax.swing.SwingUtilities;
 
 import org.gdms.data.types.GeometryConstraint;
 import org.orbisgis.core.Services;

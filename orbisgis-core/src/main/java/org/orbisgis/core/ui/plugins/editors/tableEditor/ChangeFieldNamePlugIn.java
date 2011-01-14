@@ -40,19 +40,19 @@ package org.orbisgis.core.ui.plugins.editors.tableEditor;
 
 import org.gdms.data.DataSource;
 import org.gdms.driver.DriverException;
-import org.orbisgis.core.Services;
-import org.orbisgis.core.errorManager.ErrorManager;
 import org.orbisgis.core.sif.UIFactory;
 import org.orbisgis.core.ui.editor.IEditor;
 import org.orbisgis.core.ui.editors.table.FieldNameChooser;
 import org.orbisgis.core.ui.editors.table.TableEditableElement;
 import org.orbisgis.core.ui.pluginSystem.AbstractPlugIn;
 import org.orbisgis.core.ui.pluginSystem.PlugInContext;
+import org.orbisgis.core.ui.pluginSystem.message.ErrorMessages;
 import org.orbisgis.core.ui.pluginSystem.workbench.Names;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchContext;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchFrame;
 import org.orbisgis.core.ui.plugins.views.TableEditorPlugIn;
 import org.orbisgis.core.ui.preferences.lookandfeel.OrbisGISIcon;
+import org.orbisgis.utils.I18N;
 
 public class ChangeFieldNamePlugIn extends AbstractPlugIn {
 
@@ -62,16 +62,19 @@ public class ChangeFieldNamePlugIn extends AbstractPlugIn {
 				.getElement();
 		try {
 			DataSource dataSource = element.getDataSource();
-			FieldNameChooser av = new FieldNameChooser(dataSource
-					.getFieldNames(), "New field name", "strlength(txt) > 0",
-					"Empty name not allowed", dataSource.getMetadata()
-							.getFieldName(getSelectedColumn()));
+			FieldNameChooser av = new FieldNameChooser(
+					dataSource.getFieldNames(),
+					I18N
+							.getText("orbisgis.ui.popupmenu.table.changeFieldName.new"),
+					"strlength(txt) > 0",
+					I18N
+							.getText("orbisgis.ui.popupmenu.table.changeFieldName.emptyNameNotAllowed"),
+					dataSource.getMetadata().getFieldName(getSelectedColumn()));
 			if (UIFactory.showDialog(av)) {
 				dataSource.setFieldName(getSelectedColumn(), av.getValue());
 			}
 		} catch (DriverException e) {
-			Services.getService(ErrorManager.class).error(
-					"Cannot change field name", e);
+			ErrorMessages.error(ErrorMessages.CannotRenameField, e);
 		}
 		return true;
 	}
@@ -87,13 +90,12 @@ public class ChangeFieldNamePlugIn extends AbstractPlugIn {
 	}
 
 	public boolean isEnabled() {
-		boolean isEnabled =  false;
+		boolean isEnabled = false;
 		TableEditorPlugIn tableEditor = null;
-		if((tableEditor=getPlugInContext().getTableEditor()) != null){
+		if ((tableEditor = getPlugInContext().getTableEditor()) != null) {
 			final TableEditableElement element = (TableEditableElement) tableEditor
 					.getElement();
-			isEnabled = (getSelectedColumn() != -1)
-					&& element.isEditable();
+			isEnabled = (getSelectedColumn() != -1) && element.isEditable();
 		}
 		return isEnabled;
 	}

@@ -40,7 +40,6 @@ package org.orbisgis.core.ui.editor;
 import java.awt.Component;
 
 import javax.swing.Icon;
-import org.gdms.data.NoSuchTableException;
 
 import org.orbisgis.core.PersistenceException;
 import org.orbisgis.core.edition.EditableElement;

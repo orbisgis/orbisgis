@@ -38,7 +38,6 @@
 package org.orbisgis.core.ui.plugins.toc;
 
 import javax.swing.JOptionPane;
-import javax.swing.SwingUtilities;
 
 import org.gdms.data.types.Constraint;
 import org.gdms.data.types.GeometryConstraint;
@@ -60,6 +59,7 @@ import org.orbisgis.core.ui.pluginSystem.AbstractPlugIn;
 import org.orbisgis.core.ui.pluginSystem.PlugInContext;
 import org.orbisgis.core.ui.pluginSystem.PlugInContext.LayerAvailability;
 import org.orbisgis.core.ui.pluginSystem.PlugInContext.SelectionAvailability;
+import org.orbisgis.core.ui.pluginSystem.message.ErrorMessages;
 import org.orbisgis.core.ui.pluginSystem.workbench.Names;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchContext;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchFrame;
@@ -126,15 +126,13 @@ public class EditLegendPlugIn extends AbstractPlugIn {
 				try {
 					layer.setLegend(pan.getLegends());
 				} catch (DriverException e) {
-					Services.getErrorManager().error(
-							Names.ERROR_EDIT_LEGEND_DRIVER, e);
-
+					ErrorMessages.error(Names.ERROR_EDIT_LEGEND_DRIVER, e);
 				} catch (ClassificationMethodException e) {
-					Services.getErrorManager().error(e.getMessage());
+					ErrorMessages.error(e.getMessage());
 				}
 			}
 		} catch (DriverException e) {
-			Services.getErrorManager().error(Names.ERROR_EDIT_LEGEND_LAYER, e);
+			ErrorMessages.error(Names.ERROR_EDIT_LEGEND_DRIVER, e);
 		}
 	}
 

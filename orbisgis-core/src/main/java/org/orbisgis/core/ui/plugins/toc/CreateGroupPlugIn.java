@@ -47,6 +47,7 @@ import org.orbisgis.core.ui.pluginSystem.AbstractPlugIn;
 import org.orbisgis.core.ui.pluginSystem.PlugInContext;
 import org.orbisgis.core.ui.pluginSystem.PlugInContext.LayerAvailability;
 import org.orbisgis.core.ui.pluginSystem.PlugInContext.SelectionAvailability;
+import org.orbisgis.core.ui.pluginSystem.message.ErrorMessages;
 import org.orbisgis.core.ui.pluginSystem.workbench.Names;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchContext;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchFrame;
@@ -92,7 +93,7 @@ public class CreateGroupPlugIn extends AbstractPlugIn {
 			try {
 				resource.addLayer(newLayerCollection);
 			} catch (LayerException e) {
-				throw new RuntimeException("bug!");
+				throw new RuntimeException(ErrorMessages.CannotAddLayer);
 			}
 		}
 	}

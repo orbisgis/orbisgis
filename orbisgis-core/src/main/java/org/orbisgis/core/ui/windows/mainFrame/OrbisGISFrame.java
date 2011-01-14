@@ -75,6 +75,7 @@ import org.orbisgis.core.ui.editor.EditorListener;
 import org.orbisgis.core.ui.editor.IEditor;
 import org.orbisgis.core.ui.editorViews.toc.Toc;
 import org.orbisgis.core.ui.editors.table.TableComponent;
+import org.orbisgis.core.ui.pluginSystem.message.ErrorMessages;
 import org.orbisgis.core.ui.pluginSystem.workbench.Names;
 import org.orbisgis.core.ui.pluginSystem.workbench.OrbisWorkbench;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchContext;
@@ -191,6 +192,7 @@ public class OrbisGISFrame extends JFrame implements IWindow {
 
 	/**
 	 * Get the GeoCognition view
+	 * 
 	 * @return {@link GeocognitionView}
 	 */
 	public GeocognitionView getGeocognitionView() {
@@ -200,6 +202,7 @@ public class OrbisGISFrame extends JFrame implements IWindow {
 
 	/**
 	 * Get the GeoCatalogView
+	 * 
 	 * @return {@link Catalog}
 	 */
 	public Catalog getGeocatalog() {
@@ -513,8 +516,8 @@ public class OrbisGISFrame extends JFrame implements IWindow {
 					vd.loadStatus(activeEditor, em.getEditorId(activeEditor));
 					return vd.getDockingView();
 				} catch (Throwable t) {
-					Services.getErrorManager().error(
-							"Cannot recover view " + id, t);
+					ErrorMessages.error(ErrorMessages.CannotRecoverView + " "
+							+ id, t);
 				}
 			}
 

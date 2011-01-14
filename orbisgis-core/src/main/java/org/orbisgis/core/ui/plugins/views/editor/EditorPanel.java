@@ -70,11 +70,11 @@ import org.orbisgis.core.background.BackgroundManager;
 import org.orbisgis.core.edition.EditableElement;
 import org.orbisgis.core.edition.EditableElementException;
 import org.orbisgis.core.edition.EditableElementListener;
-import org.orbisgis.core.errorManager.ErrorManager;
 import org.orbisgis.core.ui.editor.EditorDecorator;
 import org.orbisgis.core.ui.editor.EditorListener;
 import org.orbisgis.core.ui.editor.IEditor;
 import org.orbisgis.core.ui.pluginSystem.PlugInContext;
+import org.orbisgis.core.ui.pluginSystem.message.ErrorMessages;
 import org.orbisgis.core.ui.pluginSystem.workbench.Names;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchContext;
 import org.orbisgis.core.ui.plugins.views.MapEditorPlugIn;
@@ -295,8 +295,8 @@ public class EditorPanel extends Container {
 				try {
 					document.save();
 				} catch (EditableElementException e) {
-					Services.getService(ErrorManager.class).error(
-							"Problem saving", e);
+					ErrorMessages.error(ErrorMessages.CannotSave + ""
+							+ document.getId(), e);
 				}
 				done.add(document);
 			}

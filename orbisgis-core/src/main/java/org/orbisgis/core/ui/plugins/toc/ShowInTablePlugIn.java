@@ -60,10 +60,7 @@ public class ShowInTablePlugIn extends AbstractPlugIn {
 	public boolean execute(PlugInContext context) throws Exception {
 		MapContext mapContext = getPlugInContext().getMapContext();
 		ILayer[] selectedResources = mapContext.getSelectedLayers();
-
-		if (selectedResources.length == 0) {
-			execute(mapContext, null);
-		} else {
+		if (selectedResources.length > 0) {
 			for (ILayer resource : selectedResources) {
 				execute(mapContext, resource);
 			}
@@ -81,7 +78,6 @@ public class ShowInTablePlugIn extends AbstractPlugIn {
 				OrbisGISIcon.SHOW_ATTRIBUTES, wbContext);
 	}
 
-
 	public void execute(final MapContext mapContext, ILayer layer) {
 
 		GeocognitionElement[] element = Services.getService(Geocognition.class)
@@ -98,14 +94,14 @@ public class ShowInTablePlugIn extends AbstractPlugIn {
 	}
 
 	public boolean isEnabled() {
-		return getPlugInContext().checkLayerAvailability(
-				new SelectionAvailability[] {SelectionAvailability.EQUAL},
-				1,
-				new LayerAvailability[] {LayerAvailability.DATASOURCE_NOT_NULL});
+		return getPlugInContext()
+				.checkLayerAvailability(
+						new SelectionAvailability[] { SelectionAvailability.EQUAL },
+						1,
+						new LayerAvailability[] { LayerAvailability.DATASOURCE_NOT_NULL });
 	}
 
 	public boolean isSelected() {
-		// TODO Auto-generated method stub
 		return false;
 	}
 }

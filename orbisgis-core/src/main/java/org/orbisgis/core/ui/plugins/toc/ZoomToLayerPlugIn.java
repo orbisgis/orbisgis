@@ -54,6 +54,7 @@ import org.orbisgis.core.ui.plugins.views.MapEditorPlugIn;
 import org.orbisgis.core.ui.plugins.views.editor.EditorManager;
 import org.orbisgis.core.ui.preferences.lookandfeel.OrbisGISIcon;
 import org.orbisgis.progress.IProgressMonitor;
+import org.orbisgis.utils.I18N;
 
 import com.vividsolutions.jts.geom.Envelope;
 
@@ -85,7 +86,7 @@ public class ZoomToLayerPlugIn extends AbstractPlugIn {
 
 			@Override
 			public String getTaskName() {
-				return "Zoom to layer";
+				return I18N.getText("orbisgis.org.orbisgis.zoomToLayer");
 			}
 		});
 		return true;

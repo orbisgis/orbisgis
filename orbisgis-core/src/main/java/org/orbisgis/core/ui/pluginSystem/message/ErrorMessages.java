@@ -126,6 +126,20 @@ public class ErrorMessages {
 			.getText("orbisgis.errorMessages.SourceAlreadyExists");
 	public static final String CannotInitializeSource = I18N
 			.getText("orbisgis.errorMessages.CannotInitializeSource");
+	public static final String CannotRecoverView = I18N
+			.getText("orbisgis.errorMessages.CannotRecoverView");
+	public static final String CannotAddField = null;
+	public static final String UnknownDataType = null;
+	public static final String CannotAddValue = null;
+	public static final String CannotRenameField = null;
+	public static final String CannotAddLayer = null;
+	public static final String SQLStatementError = null;
+	public static final String SourceAlreadyRegisteredWithName = null;
+	public static final String CannotReadDataSource = null;
+	public static final String CannotDeleteLayer = null;
+	public static final String CannotSavelayer = null;
+	public static final String CannotExportInSelectedFormat = null;
+	public static final String CannotRevertlayer = null;
 
 	/**
 	 * Return an error message and the exception
@@ -143,6 +157,16 @@ public class ErrorMessages {
 	 */
 	public static void error(String message) {
 		Services.getService(ErrorManager.class).error(message);
+	}
+
+	/**
+	 * Return an error message and the exception
+	 * 
+	 * @param message
+	 * @param t
+	 */
+	public static void error(String message, Throwable t) {
+		Services.getService(ErrorManager.class).error(message, t);
 	}
 
 }

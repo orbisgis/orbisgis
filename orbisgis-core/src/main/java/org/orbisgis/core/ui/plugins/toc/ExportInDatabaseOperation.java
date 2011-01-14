@@ -46,8 +46,8 @@ import org.gdms.driver.DBDriver;
 import org.gdms.driver.DriverException;
 import org.gdms.sql.parser.ParseException;
 import org.gdms.sql.strategies.SemanticException;
-import org.orbisgis.core.Services;
 import org.orbisgis.core.background.BackgroundJob;
+import org.orbisgis.core.ui.pluginSystem.message.ErrorMessages;
 import org.orbisgis.progress.IProgressMonitor;
 
 public class ExportInDatabaseOperation implements BackgroundJob {
@@ -79,7 +79,6 @@ public class ExportInDatabaseOperation implements BackgroundJob {
 	public void run(IProgressMonitor pm) {
 
 		try {
-
 			boolean changeName = false;
 			String layerName = outSourceName;
 			if (dsf.getSourceManager().exists(outSourceName)) {
@@ -103,24 +102,21 @@ public class ExportInDatabaseOperation implements BackgroundJob {
 
 			if (changeName) {
 				JOptionPane.showMessageDialog(null,
-						"The table has been registered in the GeoCatalog with the name "
-								+ layerName + " because of existing name");
+						ErrorMessages.SourceAlreadyExists);
 			} else {
 				JOptionPane.showMessageDialog(null,
-						"The table has been registered in the GeoCatalog with the name "
+						ErrorMessages.SourceAlreadyRegisteredWithName + " "
 								+ layerName);
 			}
 
 		} catch (ParseException e) {
-			Services.getErrorManager().error("Error in the SQL statement.", e);
+			ErrorMessages.error(ErrorMessages.SQLStatementError, e);
 		} catch (SemanticException e) {
-			Services.getErrorManager().error("Error in the SQL statement.", e);
+			ErrorMessages.error(ErrorMessages.SQLStatementError, e);
 		} catch (DriverException e) {
-			Services.getErrorManager()
-					.error("Cannot create the datasource.", e);
+			ErrorMessages.error(ErrorMessages.CannotCreateDataSource, e);
 		} catch (ExecutionException e) {
-			Services.getErrorManager()
-					.error("Cannot create the datasource.", e);
+			ErrorMessages.error(ErrorMessages.CannotCreateDataSource, e);
 		}
 
 	}

@@ -42,17 +42,18 @@ import javax.swing.JOptionPane;
 
 import org.gdms.data.NonEditableDataSourceException;
 import org.gdms.driver.DriverException;
-import org.orbisgis.core.Services;
 import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.layerModel.MapContext;
 import org.orbisgis.core.ui.pluginSystem.AbstractPlugIn;
 import org.orbisgis.core.ui.pluginSystem.PlugInContext;
 import org.orbisgis.core.ui.pluginSystem.PlugInContext.LayerAvailability;
 import org.orbisgis.core.ui.pluginSystem.PlugInContext.SelectionAvailability;
+import org.orbisgis.core.ui.pluginSystem.message.ErrorMessages;
 import org.orbisgis.core.ui.pluginSystem.workbench.Names;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchContext;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchFrame;
 import org.orbisgis.core.ui.preferences.lookandfeel.OrbisGISIcon;
+import org.orbisgis.utils.I18N;
 
 public class SetInactivePlugIn extends AbstractPlugIn {
 
@@ -60,9 +61,7 @@ public class SetInactivePlugIn extends AbstractPlugIn {
 		MapContext mapContext = getPlugInContext().getMapContext();
 		ILayer[] selectedResources = mapContext.getSelectedLayers();
 
-		if (selectedResources.length == 0) {
-			execute(mapContext, null);
-		} else {
+		if (selectedResources.length > 0) {
 			for (ILayer resource : selectedResources) {
 				execute(mapContext, resource);
 			}
@@ -80,17 +79,17 @@ public class SetInactivePlugIn extends AbstractPlugIn {
 	}
 
 	public void execute(MapContext mapContext, ILayer layer) {
-		int option = JOptionPane.showConfirmDialog(null,
-				"Do you want to save your changes", "Stop edition",
+		int option = JOptionPane.showConfirmDialog(null, I18N
+				.getText("orbisgis.org.orbisgis.edit.saveChange"), I18N
+				.getText("orbisgis.org.orbisgis.edit.stopEdition"),
 				JOptionPane.YES_NO_CANCEL_OPTION);
 		if (option == JOptionPane.YES_OPTION) {
 			try {
 				mapContext.getActiveLayer().getSpatialDataSource().commit();
 			} catch (DriverException e) {
-				Services.getErrorManager().error("Cannot save layer", e);
+				ErrorMessages.error(ErrorMessages.CannotSavelayer, e);
 			} catch (NonEditableDataSourceException e) {
-				Services.getErrorManager().error("This layer cannot be saved",
-						e);
+				ErrorMessages.error(ErrorMessages.CannotSavelayer, e);
 			}
 		}
 
@@ -99,7 +98,7 @@ public class SetInactivePlugIn extends AbstractPlugIn {
 				layer.getSpatialDataSource().syncWithSource();
 				mapContext.setActiveLayer(null);
 			} catch (DriverException e) {
-				Services.getErrorManager().error("Cannot revert layer", e);
+				ErrorMessages.error(ErrorMessages.CannotRevertlayer, e);
 				return;
 			}
 		}
