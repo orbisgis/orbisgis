@@ -62,14 +62,14 @@ import org.orbisgis.core.ui.editors.map.tool.ToolManager;
 import org.orbisgis.core.ui.pluginSystem.workbench.FeatureInstaller;
 import org.orbisgis.core.ui.pluginSystem.workbench.Names;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchContext;
-import org.orbisgis.core.ui.plugins.views.MapEditorPlugIn;
-import org.orbisgis.core.ui.plugins.views.TableEditorPlugIn;
 import org.orbisgis.core.ui.plugins.views.ViewDecorator;
 import org.orbisgis.core.ui.plugins.views.editor.EditorManager;
 import org.orbisgis.core.ui.plugins.views.geocognition.GeocognitionTree;
 import org.orbisgis.core.ui.plugins.views.geocognition.wizard.EPGeocognitionWizardHelper;
 import org.orbisgis.core.ui.plugins.views.geocognition.wizard.INewGeocognitionElement;
 import org.orbisgis.core.ui.plugins.views.geocognition.wizard.NewGeocognitionObject;
+import org.orbisgis.core.ui.plugins.views.mapEditor.MapEditorPlugIn;
+import org.orbisgis.core.ui.plugins.views.tableEditor.TableEditorPlugIn;
 
 import com.vividsolutions.jts.util.Assert;
 

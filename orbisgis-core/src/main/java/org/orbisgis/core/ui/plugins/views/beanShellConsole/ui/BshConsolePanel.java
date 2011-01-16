@@ -58,6 +58,7 @@ import org.orbisgis.core.ui.components.text.JButtonTextField;
 import org.orbisgis.core.ui.plugins.views.beanShellConsole.actions.BshActionsListener;
 import org.orbisgis.core.ui.plugins.views.beanShellConsole.actions.BshConsoleAction;
 import org.orbisgis.core.ui.plugins.views.beanShellConsole.actions.BshConsoleListener;
+import org.orbisgis.utils.I18N;
 
 public class BshConsolePanel extends JPanel {
 	private JButton btExecute = null;
@@ -104,14 +105,15 @@ public class BshConsolePanel extends JPanel {
 		northPanel.add(getBtClear());
 		northPanel.add(getBtOpen());
 		northPanel.add(getBtSave());
-		northPanel.add(new JLabel("  Find a text "));
+		northPanel.add(new JLabel("  "
+				+ I18N.getText("orbisgis.org.orbisgis.FindText") + " "));
 		northPanel.add(getJTextFieldPanel());
 		setBtExecute();
 		setBtClear();
 		setBtSave();
 		northPanel.setFloatable(false);
-                northPanel.setBorderPainted(false);
-                northPanel.setOpaque(false);
+		northPanel.setBorderPainted(false);
+		northPanel.setOpaque(false);
 		return northPanel;
 	}
 
@@ -196,10 +198,13 @@ public class BshConsolePanel extends JPanel {
 			}
 
 			if (patternFound > 0) {
-				setStatusMessage("'" + pattern + "' found " + patternFound
-						+ " times.");
+				setStatusMessage(pattern + " "
+						+ I18N.getText("orbisgis.org.orbisgis.found") + " "
+						+ patternFound + " "
+						+ I18N.getText("orbisgis.org.orbisgis.Times"));
 			} else {
-				setStatusMessage("'" + pattern + "' not found.");
+				setStatusMessage(pattern + " "
+						+ I18N.getText("orbisgis.org.orbisgis.notFound"));
 			}
 		} catch (BadLocationException e) {
 		}
@@ -210,6 +215,8 @@ public class BshConsolePanel extends JPanel {
 		if (null == btExecute) {
 			btExecute = new BshConsoleButton(BshConsoleAction.EXECUTE,
 					actionAndKeyListener);
+			btExecute.setToolTipText(I18N
+					.getText("orbisgis.org.orbisgis.Execute"));
 		}
 		return btExecute;
 	}
@@ -218,6 +225,7 @@ public class BshConsolePanel extends JPanel {
 		if (null == btClear) {
 			btClear = new BshConsoleButton(BshConsoleAction.CLEAR,
 					actionAndKeyListener);
+			btClear.setToolTipText(I18N.getText("orbisgis.org.orbisgis.Clear"));
 		}
 		return btClear;
 	}
@@ -226,6 +234,7 @@ public class BshConsolePanel extends JPanel {
 		if (null == btOpen) {
 			btOpen = new BshConsoleButton(BshConsoleAction.OPEN,
 					actionAndKeyListener);
+			btOpen.setToolTipText(I18N.getText("orbisgis.org.orbisgis.Open"));
 		}
 		return btOpen;
 	}
@@ -234,6 +243,7 @@ public class BshConsolePanel extends JPanel {
 		if (null == btSave) {
 			btSave = new BshConsoleButton(BshConsoleAction.SAVE,
 					actionAndKeyListener);
+			btSave.setToolTipText(I18N.getText("orbisgis.org.orbisgis.Save"));
 		}
 		return btSave;
 	}

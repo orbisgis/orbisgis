@@ -76,9 +76,9 @@ import org.orbisgis.core.ui.components.resourceTree.ResourceTree;
 import org.orbisgis.core.ui.editor.IEditor;
 import org.orbisgis.core.ui.editorViews.toc.TocTreeModel.LegendNode;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchFrame;
-import org.orbisgis.core.ui.plugins.views.MapEditorPlugIn;
 import org.orbisgis.core.ui.plugins.views.editor.EditorManager;
 import org.orbisgis.core.ui.plugins.views.geocatalog.TransferableSource;
+import org.orbisgis.core.ui.plugins.views.mapEditor.MapEditorPlugIn;
 import org.orbisgis.progress.IProgressMonitor;
 
 public class Toc extends ResourceTree implements WorkbenchFrame {

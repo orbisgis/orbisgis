@@ -33,7 +33,7 @@
  * or contact directly:
  * info _at_ orbisgis.org
  */
-package org.orbisgis.core.ui.plugins.views;
+package org.orbisgis.core.ui.plugins.views.geocatalog;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -57,7 +57,6 @@ import org.orbisgis.core.ui.pluginSystem.ViewPlugIn;
 import org.orbisgis.core.ui.pluginSystem.message.ErrorMessages;
 import org.orbisgis.core.ui.pluginSystem.workbench.Names;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchContext;
-import org.orbisgis.core.ui.plugins.views.geocatalog.Catalog;
 import org.orbisgis.core.ui.plugins.views.geocatalog.persistence.ActiveFilter;
 import org.orbisgis.core.ui.plugins.views.geocatalog.persistence.Tag;
 import org.orbisgis.core.ui.preferences.lookandfeel.OrbisGISIcon;
@@ -188,6 +187,6 @@ public class GeoCatalogViewPlugIn extends ViewPlugIn {
 	}
 
 	public String getName() {
-		return "Geocatalog view";
+		return I18N.getText("orbisgis.org.orbisgis.geocatalog.view");
 	}
 }

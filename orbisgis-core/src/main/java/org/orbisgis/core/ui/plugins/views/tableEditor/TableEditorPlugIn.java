@@ -35,7 +35,7 @@
  * erwan.bocher _at_ ec-nantes.fr
  * gwendall.petit _at_ ec-nantes.fr
  */
-package org.orbisgis.core.ui.plugins.views;
+package org.orbisgis.core.ui.plugins.views.tableEditor;
 
 import java.awt.Component;
 
@@ -48,7 +48,9 @@ import org.orbisgis.core.ui.pluginSystem.PlugInContext;
 import org.orbisgis.core.ui.pluginSystem.ViewPlugIn;
 import org.orbisgis.core.ui.pluginSystem.workbench.Names;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchContext;
+import org.orbisgis.core.ui.plugins.views.ViewDecorator;
 import org.orbisgis.core.ui.plugins.views.geocatalog.EditableSource;
+import org.orbisgis.utils.I18N;
 
 public class TableEditorPlugIn extends ViewPlugIn implements IEditor {
 	private TableEditableElement element;
@@ -64,7 +66,7 @@ public class TableEditorPlugIn extends ViewPlugIn implements IEditor {
 	}
 
 	public void initialize(PlugInContext context) {
-                table = new TableComponent(this);
+		table = new TableComponent(this);
 		editors = new String[0];
 		setPlugInContext(context);
 		if (context.getWorkbenchContext().getWorkbench().getFrame()
@@ -120,11 +122,11 @@ public class TableEditorPlugIn extends ViewPlugIn implements IEditor {
 		return false;
 	}
 
-	//View plugin is updated by EditorViewPlugIn
-	public boolean isEnabled() {		
+	// View plugin is updated by EditorViewPlugIn
+	public boolean isEnabled() {
 		return true;
 	}
-	
+
 	public boolean isSelected() {
 		return true;
 	}
@@ -132,9 +134,9 @@ public class TableEditorPlugIn extends ViewPlugIn implements IEditor {
 	public ViewPlugIn getView() {
 		return this;
 	}
-	
-	public String getName() {		
-		return "Table editor view";
+
+	public String getName() {
+		return I18N.getText("orbisgis.org.orbisgis.tableEditor.view");
 	}
 
 }

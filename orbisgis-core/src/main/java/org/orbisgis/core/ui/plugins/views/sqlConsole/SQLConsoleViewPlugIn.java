@@ -50,7 +50,6 @@ import java.io.IOException;
 import javax.swing.JButton;
 import javax.swing.JMenuItem;
 
-import org.apache.log4j.Logger;
 import org.gdms.sql.customQuery.CustomQuery;
 import org.gdms.sql.customQuery.QueryManager;
 import org.gdms.sql.function.Function;
@@ -64,6 +63,7 @@ import org.orbisgis.core.sif.SaveFilePanel;
 import org.orbisgis.core.sif.UIFactory;
 import org.orbisgis.core.ui.pluginSystem.PlugInContext;
 import org.orbisgis.core.ui.pluginSystem.ViewPlugIn;
+import org.orbisgis.core.ui.pluginSystem.message.ErrorMessages;
 import org.orbisgis.core.ui.pluginSystem.workbench.Names;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchContext;
 import org.orbisgis.core.ui.plugins.views.geocognition.TransferableGeocognitionElement;
@@ -71,12 +71,11 @@ import org.orbisgis.core.ui.plugins.views.sqlConsole.actions.ConsoleListener;
 import org.orbisgis.core.ui.plugins.views.sqlConsole.actions.ExecuteScriptProcess;
 import org.orbisgis.core.ui.plugins.views.sqlConsole.ui.SQLConsolePanel;
 import org.orbisgis.core.ui.preferences.lookandfeel.OrbisGISIcon;
+import org.orbisgis.utils.I18N;
 
 public class SQLConsoleViewPlugIn extends ViewPlugIn {
 
 	private SQLConsolePanel panel;
-	private static final Logger logger = Logger
-			.getLogger(SQLConsoleViewPlugIn.class);
 	private final String EOL = System.getProperty("line.separator");
 	private JMenuItem menuItem;
 	private JButton btn;
@@ -86,20 +85,20 @@ public class SQLConsoleViewPlugIn extends ViewPlugIn {
 		btn.setToolTipText(Names.SQLCONSOLE);
 	}
 
-        @Override
-        public void delete() {
-                if (panel != null) {
-                        panel.freeResources();
-                }
-        }
+	@Override
+	public void delete() {
+		if (panel != null) {
+			panel.freeResources();
+		}
+	}
 
 	public void initialize(PlugInContext context) throws Exception {
 		panel = new SQLConsolePanel(new ConsoleListener() {
 
 			public void save(String text) throws IOException {
 				final SaveFilePanel outfilePanel = new SaveFilePanel(
-						"org.orbisgis.core.ui.views.sqlConsoleOutFile",
-						"Save script");
+						"org.orbisgis.core.ui.views.sqlConsoleOutFile", I18N
+								.getText("orbisgis.org.orbisgis.saveScript"));
 				outfilePanel.addFilter("sql", "SQL script (*.sql)");
 
 				if (UIFactory.showDialog(outfilePanel)) {
@@ -113,7 +112,7 @@ public class SQLConsoleViewPlugIn extends ViewPlugIn {
 			public String open() throws IOException {
 				final OpenFilePanel inFilePanel = new OpenFilePanel(
 						"org.orbisgis.plugins.core.ui.views.sqlConsoleInFile",
-						"Load script");
+						I18N.getText("orbisgis.org.orbisgis.openScript"));
 				inFilePanel.addFilter("sql", "SQL script (*.sql)");
 
 				if (UIFactory.showDialog(inFilePanel)) {
@@ -134,7 +133,8 @@ public class SQLConsoleViewPlugIn extends ViewPlugIn {
 			}
 
 			public void execute(String text) {
-				BackgroundManager bm = Services.getService(BackgroundManager.class);
+				BackgroundManager bm = Services
+						.getService(BackgroundManager.class);
 				bm.backgroundOperation(new ExecuteScriptProcess(text));
 			}
 
@@ -172,9 +172,17 @@ public class SQLConsoleViewPlugIn extends ViewPlugIn {
 							}
 						}
 					} catch (UnsupportedFlavorException e) {
-						logger.error("bug dropping function", e);
+						ErrorMessages
+								.error(
+										I18N
+												.getText("orbisgis.errorMessages.CannotDropFunction"),
+										e);
 					} catch (IOException e) {
-						logger.error("bug dropping function", e);
+						ErrorMessages
+								.error(
+										I18N
+												.getText("orbisgis.errorMessages.CannotDropFunction"),
+										e);
 					}
 				}
 				return null;
@@ -210,7 +218,7 @@ public class SQLConsoleViewPlugIn extends ViewPlugIn {
 	}
 
 	public String getName() {
-		return "SQL view";
+		return I18N.getText("orbisgis.org.orbisgis.sql.view");
 	}
 
 }

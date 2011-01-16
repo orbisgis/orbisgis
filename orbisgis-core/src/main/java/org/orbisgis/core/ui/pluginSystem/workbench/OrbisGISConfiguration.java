@@ -36,16 +36,16 @@
 package org.orbisgis.core.ui.pluginSystem.workbench;
 
 import org.orbisgis.core.ui.pluginSystem.PlugInContext;
-import org.orbisgis.core.ui.plugins.views.EditorViewPlugIn;
-import org.orbisgis.core.ui.plugins.views.GeoCatalogViewPlugIn;
-import org.orbisgis.core.ui.plugins.views.GeocognitionViewPlugIn;
-import org.orbisgis.core.ui.plugins.views.InformationViewPlugIn;
-import org.orbisgis.core.ui.plugins.views.MemoryViewPlugIn;
-import org.orbisgis.core.ui.plugins.views.OutputViewPlugIn;
-import org.orbisgis.core.ui.plugins.views.TocViewPlugIn;
 import org.orbisgis.core.ui.plugins.views.beanShellConsole.BeanShellConsoleViewPlugIn;
+import org.orbisgis.core.ui.plugins.views.editor.EditorViewPlugIn;
+import org.orbisgis.core.ui.plugins.views.geocatalog.GeoCatalogViewPlugIn;
+import org.orbisgis.core.ui.plugins.views.geocognition.GeocognitionViewPlugIn;
 import org.orbisgis.core.ui.plugins.views.geomark.GeomarkViewPlugIn;
+import org.orbisgis.core.ui.plugins.views.information.InformationViewPlugIn;
+import org.orbisgis.core.ui.plugins.views.memory.MemoryViewPlugIn;
+import org.orbisgis.core.ui.plugins.views.output.OutputViewPlugIn;
 import org.orbisgis.core.ui.plugins.views.sqlConsole.SQLConsoleViewPlugIn;
+import org.orbisgis.core.ui.plugins.views.toc.TocViewPlugIn;
 
 //all views plugins so orbisgis UI
 public class OrbisGISConfiguration {

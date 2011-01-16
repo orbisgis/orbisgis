@@ -35,7 +35,7 @@
  * erwan.bocher _at_ ec-nantes.fr
  * gwendall.petit _at_ ec-nantes.fr
  */
-package org.orbisgis.core.ui.plugins.views;
+package org.orbisgis.core.ui.plugins.views.mapEditor;
 
 import java.awt.BorderLayout;
 import java.awt.Component;

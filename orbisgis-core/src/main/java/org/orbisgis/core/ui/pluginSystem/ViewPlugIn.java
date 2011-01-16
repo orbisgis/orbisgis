@@ -52,6 +52,8 @@ import org.orbisgis.core.ui.plugins.views.ViewDecorator;
 import org.orbisgis.core.ui.preferences.lookandfeel.images.IconLoader;
 import org.orbisgis.utils.I18N;
 
+import bsh.This;
+
 /**
  * Default implementation of Docking PlugIn. OrbisGIS based on Docking Window library.
  * So to add docking view as plug-in we created a specific plug-in

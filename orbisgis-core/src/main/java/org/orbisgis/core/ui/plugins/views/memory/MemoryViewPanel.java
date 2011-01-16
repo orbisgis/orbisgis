@@ -35,23 +35,22 @@
  * erwan.bocher _at_ ec-nantes.fr
  * gwendall.petit _at_ ec-nantes.fr
  */
-package org.orbisgis.core.ui.plugins.views;
+package org.orbisgis.core.ui.plugins.views.memory;
 
 import java.awt.Color;
 import java.awt.Graphics;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import javax.swing.JFrame;
 import javax.swing.JPanel;
 
-public class ViewPanel extends JPanel {
-	public ViewPanel() {
+public class MemoryViewPanel extends JPanel {
+	public MemoryViewPanel() {
 		final Timer timer = new Timer(true);
 		timer.scheduleAtFixedRate(new TimerTask() {
 			@Override
 			public void run() {
-				ViewPanel.this.repaint();
+				MemoryViewPanel.this.repaint();
 			}
 		}, 500, 500);
 	}
@@ -76,11 +75,4 @@ public class ViewPanel extends JPanel {
 		g.drawString(memoryUsed / 1024 + "MB", 10, getHeight() - 20);
 	}
 
-	public static void main(String[] args) {
-		final JFrame frm = new JFrame();
-		frm.getContentPane().add(new ViewPanel());
-		frm.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		frm.setSize(100, 200);
-		frm.setVisible(true);
-	}
 }

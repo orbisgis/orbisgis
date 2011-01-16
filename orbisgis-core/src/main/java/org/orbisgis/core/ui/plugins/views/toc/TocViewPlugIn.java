@@ -35,7 +35,7 @@
  * erwan.bocher _at_ ec-nantes.fr
  * gwendall.petit _at_ ec-nantes.fr
  */
-package org.orbisgis.core.ui.plugins.views;
+package org.orbisgis.core.ui.plugins.views.toc;
 
 import java.awt.Component;
 
@@ -53,7 +53,10 @@ import org.orbisgis.core.ui.pluginSystem.PlugInContext;
 import org.orbisgis.core.ui.pluginSystem.ViewPlugIn;
 import org.orbisgis.core.ui.pluginSystem.workbench.Names;
 import org.orbisgis.core.ui.plugins.views.editor.EditorManager;
+import org.orbisgis.core.ui.plugins.views.mapEditor.MapEditorPlugIn;
+import org.orbisgis.core.ui.plugins.views.tableEditor.TableEditorPlugIn;
 import org.orbisgis.core.ui.preferences.lookandfeel.OrbisGISIcon;
+import org.orbisgis.utils.I18N;
 
 public class TocViewPlugIn extends ViewPlugIn {
 
@@ -72,8 +75,6 @@ public class TocViewPlugIn extends ViewPlugIn {
 		editors[1] = Names.EDITOR_TABLE_ID;
 
 		panel = new Toc();
-		// setComponent(panel,"Memory", getIcon("utilities-system-monitor.png"),
-		// context);
 		menuItem = context.getFeatureInstaller().addMainMenuItem(this,
 				new String[] { Names.VIEW }, Names.TOC, true, OrbisGISIcon.MAP,
 				editors, panel, context);
@@ -181,6 +182,6 @@ public class TocViewPlugIn extends ViewPlugIn {
 	}
 
 	public String getName() {
-		return "Toc view";
+		return I18N.getText("orbisgis.org.orbisgis.toc.view");
 	}
 }

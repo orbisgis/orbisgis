@@ -56,7 +56,7 @@ import org.gdms.driver.TableDescription;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.sif.UIPanel;
 import org.orbisgis.core.ui.pluginSystem.message.ErrorMessages;
-import org.orbisgis.core.ui.plugins.views.OutputManager;
+import org.orbisgis.core.ui.plugins.views.output.OutputManager;
 import org.orbisgis.utils.I18N;
 
 public class TableSelectionPanel implements UIPanel {

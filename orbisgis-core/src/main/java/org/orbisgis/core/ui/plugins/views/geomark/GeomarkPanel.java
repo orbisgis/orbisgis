@@ -74,10 +74,11 @@ import org.orbisgis.core.Services;
 import org.orbisgis.core.layerModel.MapContext;
 import org.orbisgis.core.ui.editor.IEditor;
 import org.orbisgis.core.ui.editors.map.MapContextManager;
-import org.orbisgis.core.ui.plugins.views.MapEditorPlugIn;
+import org.orbisgis.core.ui.plugins.views.mapEditor.MapEditorPlugIn;
 import org.orbisgis.core.ui.preferences.lookandfeel.OrbisGISIcon;
 import org.orbisgis.core.workspace.DefaultWorkspace;
 import org.orbisgis.core.workspace.Workspace;
+import org.orbisgis.utils.I18N;
 
 import com.vividsolutions.jts.geom.Envelope;
 
@@ -150,7 +151,8 @@ public class GeomarkPanel extends JPanel implements ListSelectionListener {
 
 		JButton addButton = new JButton();
 		addButton.setIcon(OrbisGISIcon.WORLD_ADD);
-		addButton.setToolTipText("Press the button to add a geomark!");
+		addButton.setToolTipText(I18N
+				.getText("orbisgis.org.orbisgis.geomark.add"));
 		HireListener hireListener = new HireListener(addButton);
 		addButton.setActionCommand(addString);
 		addButton.addActionListener(hireListener);
@@ -159,7 +161,8 @@ public class GeomarkPanel extends JPanel implements ListSelectionListener {
 
 		deleteButton = new JButton();
 		deleteButton.setIcon(OrbisGISIcon.WORLD_DEL);
-		deleteButton.setToolTipText("Press the button to delete a geomark!");
+		deleteButton.setToolTipText(I18N
+				.getText("orbisgis.org.orbisgis.geomark.remove"));
 		deleteButton.setBorderPainted(false);
 		deleteButton.setActionCommand(removeString);
 		deleteButton.addActionListener(new FireListener());

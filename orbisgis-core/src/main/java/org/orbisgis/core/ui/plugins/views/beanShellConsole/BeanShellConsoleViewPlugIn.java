@@ -60,13 +60,15 @@ import org.orbisgis.core.sif.UIFactory;
 import org.orbisgis.core.ui.editors.map.MapContextManager;
 import org.orbisgis.core.ui.pluginSystem.PlugInContext;
 import org.orbisgis.core.ui.pluginSystem.ViewPlugIn;
+import org.orbisgis.core.ui.pluginSystem.message.ErrorMessages;
 import org.orbisgis.core.ui.pluginSystem.workbench.Names;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchContext;
-import org.orbisgis.core.ui.plugins.views.OutputManager;
 import org.orbisgis.core.ui.plugins.views.beanShellConsole.actions.BshCompletionKeyListener;
 import org.orbisgis.core.ui.plugins.views.beanShellConsole.actions.BshConsoleListener;
 import org.orbisgis.core.ui.plugins.views.beanShellConsole.ui.BshConsolePanel;
+import org.orbisgis.core.ui.plugins.views.output.OutputManager;
 import org.orbisgis.core.ui.preferences.lookandfeel.OrbisGISIcon;
+import org.orbisgis.utils.I18N;
 
 import bsh.EvalError;
 import bsh.Interpreter;
@@ -103,15 +105,19 @@ public class BeanShellConsoleViewPlugIn extends ViewPlugIn {
 			interpreter.eval("setAccessibility(true)");
 
 		} catch (EvalError e) {
-			Services.getErrorManager().error("Cannot initialize bean shell", e);
+			ErrorMessages
+					.error(
+							I18N
+									.getText("orbisgis.org.orbisgis.beanshell.CannotInitializeBeanshell"),
+							e);
 		}
 
 		panel = new BshConsolePanel(new BshConsoleListener() {
 
 			public void save(String text) throws IOException {
 				final SaveFilePanel outfilePanel = new SaveFilePanel(
-						"org.orbisgis.cores.BeanShellConsoleOutFile",
-						"Save script");
+						"org.orbisgis.cores.BeanShellConsoleOutFile", I18N
+								.getText("orbisgis.org.orbisgis.saveScript"));
 				outfilePanel.addFilter("bsh", "BeanShell Script (*.bsh)");
 
 				if (UIFactory.showDialog(outfilePanel)) {
@@ -125,15 +131,16 @@ public class BeanShellConsoleViewPlugIn extends ViewPlugIn {
 			public String open() throws IOException {
 				final OpenFilePanel inFilePanel = new OpenFilePanel(
 						"org.orbisgis.plugins.views.BeanShellConsoleInFile",
-						"Open script");
+						I18N.getText("orbisgis.org.orbisgis.openScript"));
 				inFilePanel.addFilter("bsh", "BeanShell Script (*.bsh)");
 
 				if (UIFactory.showDialog(inFilePanel)) {
 					File selectedFile = inFilePanel.getSelectedFile();
 					long fileLength = selectedFile.length();
 					if (fileLength > 1048576) {
-						throw new IOException("Script files of more "
-								+ "than 1048576 bytes can't be read !!");
+						throw new IOException(
+								I18N
+										.getText("orbisgis.org.orbisgis.CannotReadScript"));
 					} else {
 						FileReader fr = new FileReader(selectedFile);
 						char[] buff = new char[(int) fileLength];
@@ -206,7 +213,8 @@ public class BeanShellConsoleViewPlugIn extends ViewPlugIn {
 			interpreter.eval(text);
 			String out = getOutput();
 			if (out.length() > 0) {
-				outputManager.println("--------BeanShell result ------------",
+				outputManager.println(I18N
+						.getText("orbisgis.org.orbisgis.beanshell.result"),
 						Color.GREEN);
 
 				outputManager.println(out, Color.blue);
@@ -214,10 +222,15 @@ public class BeanShellConsoleViewPlugIn extends ViewPlugIn {
 			}
 
 		} catch (IllegalArgumentException e) {
-			Services.getErrorManager().error(
-					"Cannot execute the beanshel script.", e);
+			ErrorMessages
+					.error(
+							I18N
+									.getText("orbisgis.org.orbisgis.beanshell.CannotExecuteScript"),
+							e);
+
 		} catch (EvalError e) {
-			outputManager.println("--------BeanShell error ------------",
+			outputManager.println(I18N
+					.getText("orbisgis.org.orbisgis.beanshell.error"),
 					Color.RED);
 			outputManager.println(e.getErrorText(), Color.RED);
 			outputManager.println("--------------------", Color.RED);
@@ -242,6 +255,6 @@ public class BeanShellConsoleViewPlugIn extends ViewPlugIn {
 	}
 
 	public String getName() {
-		return "BeanShell View";
+		return I18N.getText("orbisgis.org.orbisgis.beanshell.view");
 	}
 }

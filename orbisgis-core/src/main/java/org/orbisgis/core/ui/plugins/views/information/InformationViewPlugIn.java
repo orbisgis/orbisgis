@@ -5,9 +5,9 @@
  * distributed under GPL 3 license. It is produced by the "Atelier SIG" team of
  * the IRSTV Institute <http://www.irstv.cnrs.fr/> CNRS FR 2488.
  *
- * 
+ *
  *  Team leader Erwan BOCHER, scientific researcher,
- * 
+ *
  *  User support leader : Gwendall Petit, geomatic engineer.
  *
  *
@@ -35,49 +35,49 @@
  * erwan.bocher _at_ ec-nantes.fr
  * gwendall.petit _at_ ec-nantes.fr
  */
-package org.orbisgis.core.ui.plugins.views;
+package org.orbisgis.core.ui.plugins.views.information;
 
-import java.awt.Color;
+import javax.swing.JMenuItem;
 
-/**
- * Interface to manage the output of information to the user. Typically this
- * information should be accumulated so that user can see previous messages. The
- * amount of historic information the user can access is not specified
- * 
- * 
- */
-public interface OutputManager {
+import org.orbisgis.core.Services;
+import org.orbisgis.core.ui.pluginSystem.PlugInContext;
+import org.orbisgis.core.ui.pluginSystem.ViewPlugIn;
+import org.orbisgis.core.ui.pluginSystem.workbench.Names;
+import org.orbisgis.core.ui.preferences.lookandfeel.OrbisGISIcon;
+import org.orbisgis.utils.I18N;
 
-	/**
-	 * Adds code to the output window
-	 * 
-	 * @param out
-	 */
-	void print(String out);
+public class InformationViewPlugIn extends ViewPlugIn {
 
-	/**
-	 * Adds text in the specified color
-	 * 
-	 * @param text
-	 * @param color
-	 */
-	void print(String text, Color color);
+	private Table panel;
+	private JMenuItem menuItem;
 
-	/**
-	 * Adds code to the output window and adds a carriage return to the end of
-	 * the string
-	 * 
-	 * @param out
-	 */
-	void println(String out);
+	public void initialize(PlugInContext context) throws Exception {
+		panel = new Table();
+		Services.registerService(InformationManager.class,
+				"Service to show tabular information to the user.", panel);
+		menuItem = context.getFeatureInstaller().addMainMenuItem(this,
+				new String[] { Names.VIEW }, Names.INFORMATION, true,
+				OrbisGISIcon.GEOINFORMATION, null, panel, context);
+	}
 
-	/**
-	 * Adds text in the specified color and adds a carriage return to the end of
-	 * the string
-	 * 
-	 * @param text
-	 * @param color
-	 */
-	void println(String text, Color color);
+	public boolean execute(PlugInContext context) throws Exception {
+		getPlugInContext().loadView(getId());
+		return true;
+	}
+
+	public boolean isEnabled() {
+		return true;
+	}
+
+	public boolean isSelected() {
+		boolean isSelected = false;
+		isSelected = getPlugInContext().viewIsOpen(getId());
+		menuItem.setSelected(isSelected);
+		return isSelected;
+	}
+
+	public String getName() {
+		return I18N.getText("orbisgis.org.orbisgis.information.view");
+	}
 
 }

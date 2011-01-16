@@ -35,7 +35,7 @@
  * erwan.bocher _at_ ec-nantes.fr
  * gwendall.petit _at_ ec-nantes.fr
  */
-package org.orbisgis.core.ui.plugins.views;
+package org.orbisgis.core.ui.plugins.views.output;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -54,9 +54,10 @@ import javax.swing.text.StyleConstants;
 import javax.swing.text.StyleContext;
 
 import org.orbisgis.core.Services;
-import org.orbisgis.core.errorManager.ErrorManager;
+import org.orbisgis.core.ui.pluginSystem.message.ErrorMessages;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchContext;
 import org.orbisgis.core.ui.preferences.lookandfeel.OrbisGISIcon;
+import org.orbisgis.utils.I18N;
 
 public class OutputPanel extends JPanel implements OutputManager {
 
@@ -83,7 +84,7 @@ public class OutputPanel extends JPanel implements OutputManager {
 		buttonsPanel.setLayout(flowLayout);
 		JButton deleteBt = new JButton();
 		deleteBt.setIcon(OrbisGISIcon.EDIT_CLEAR);
-		deleteBt.setToolTipText("Clear the text");
+		deleteBt.setToolTipText(I18N.getText("orbisgis.org.orbisgis.Clear"));
 		deleteBt.setBorderPainted(false);
 		deleteBt.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ae) {
@@ -126,8 +127,7 @@ public class OutputPanel extends JPanel implements OutputManager {
 				jTextArea.getDocument().remove(0, len - MAX_CHARACTERS);
 			}
 		} catch (BadLocationException e) {
-			Services.getService(ErrorManager.class).error(
-					"Cannot add error message", e);
+			ErrorMessages.error(ErrorMessages.CannotAddErrorMessage, e);
 		}
 		jTextArea.setCaretPosition(jTextArea.getDocument().getLength());
 

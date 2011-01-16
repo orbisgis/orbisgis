@@ -5,9 +5,9 @@
  * distributed under GPL 3 license. It is produced by the "Atelier SIG" team of
  * the IRSTV Institute <http://www.irstv.cnrs.fr/> CNRS FR 2488.
  *
- *
+ * 
  *  Team leader Erwan BOCHER, scientific researcher,
- *
+ * 
  *  User support leader : Gwendall Petit, geomatic engineer.
  *
  *
@@ -35,56 +35,49 @@
  * erwan.bocher _at_ ec-nantes.fr
  * gwendall.petit _at_ ec-nantes.fr
  */
-package org.orbisgis.core.ui.plugins.views;
+package org.orbisgis.core.ui.plugins.views.output;
 
-import javax.swing.JButton;
-import javax.swing.JMenuItem;
+import java.awt.Color;
 
-import org.orbisgis.core.ui.pluginSystem.PlugInContext;
-import org.orbisgis.core.ui.pluginSystem.ViewPlugIn;
-import org.orbisgis.core.ui.pluginSystem.workbench.Names;
-import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchContext;
-import org.orbisgis.core.ui.preferences.lookandfeel.OrbisGISIcon;
+/**
+ * Interface to manage the output of information to the user. Typically this
+ * information should be accumulated so that user can see previous messages. The
+ * amount of historic information the user can access is not specified
+ * 
+ * 
+ */
+public interface OutputManager {
 
-public class MemoryViewPlugIn extends ViewPlugIn {
+	/**
+	 * Adds code to the output window
+	 * 
+	 * @param out
+	 */
+	void print(String out);
 
-	private ViewPanel panel;
-	private JMenuItem menuItem;
-	private JButton btn;
+	/**
+	 * Adds text in the specified color
+	 * 
+	 * @param text
+	 * @param color
+	 */
+	void print(String text, Color color);
 
-	public MemoryViewPlugIn() {
-		btn = new JButton(OrbisGISIcon.MEMORY_ICON);
-		btn.setToolTipText(Names.MEMORY);
-	}
+	/**
+	 * Adds code to the output window and adds a carriage return to the end of
+	 * the string
+	 * 
+	 * @param out
+	 */
+	void println(String out);
 
-	public void initialize(PlugInContext context) throws Exception {
-		panel = new ViewPanel();
-		menuItem = context.getFeatureInstaller().addMainMenuItem(this,
-				new String[] { Names.VIEW }, Names.MEMORY, true,
-				OrbisGISIcon.MEMORY_ICON, null, panel, context);
-		WorkbenchContext wbcontext = context.getWorkbenchContext();
-		wbcontext.getWorkbench().getFrame().getViewToolBar().addPlugIn(this,
-				btn, context);
-	}
-
-	public boolean execute(PlugInContext context) throws Exception {
-		getPlugInContext().loadView(getId());
-		return true;
-	}
-
-	public boolean isEnabled() {
-		return true;
-	}
-
-	public boolean isSelected() {
-		boolean isSelected = false;
-		isSelected = getPlugInContext().viewIsOpen(getId());
-		menuItem.setSelected(isSelected);
-		return isSelected;
-	}
-
-	public String getName() {
-		return "Memory view";
-	}
+	/**
+	 * Adds text in the specified color and adds a carriage return to the end of
+	 * the string
+	 * 
+	 * @param text
+	 * @param color
+	 */
+	void println(String text, Color color);
 
 }

@@ -130,8 +130,6 @@ import org.orbisgis.core.ui.plugins.toc.ZoomToLayerPlugIn;
 import org.orbisgis.core.ui.plugins.toc.raster.nodata.SetnodataValuePlugIn;
 import org.orbisgis.core.ui.plugins.toc.raster.style.RasterDefaultStylePlugIn;
 import org.orbisgis.core.ui.plugins.toc.raster.threshold.RasterThresholdPlugIn;
-import org.orbisgis.core.ui.plugins.views.MapEditorPlugIn;
-import org.orbisgis.core.ui.plugins.views.TableEditorPlugIn;
 import org.orbisgis.core.ui.plugins.views.geocatalog.ConvertXYZDemGeocatalogPlugIn;
 import org.orbisgis.core.ui.plugins.views.geocatalog.GeocatalogClearPlugIn;
 import org.orbisgis.core.ui.plugins.views.geocatalog.GeocatalogCreateFileSourcePlugIn;
@@ -158,6 +156,8 @@ import org.orbisgis.core.ui.plugins.views.geocognition.GeocognitionUnRegisterBui
 import org.orbisgis.core.ui.plugins.views.geocognition.GeocognitionUnRegisterBuiltInFunctionPlugIn;
 import org.orbisgis.core.ui.plugins.views.geocognition.OpenGeocognitionPlugIn;
 import org.orbisgis.core.ui.plugins.views.geocognition.RemoveGeocognitionPlugIn;
+import org.orbisgis.core.ui.plugins.views.mapEditor.MapEditorPlugIn;
+import org.orbisgis.core.ui.plugins.views.tableEditor.TableEditorPlugIn;
 import org.orbisgis.core.ui.preferences.lookandfeel.OrbisGISIcon;
 import org.orbisgis.core.ui.windows.mainFrame.OrbisGISFrame;
 

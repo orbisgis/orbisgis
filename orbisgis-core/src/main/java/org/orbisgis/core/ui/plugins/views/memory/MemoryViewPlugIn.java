@@ -35,30 +35,36 @@
  * erwan.bocher _at_ ec-nantes.fr
  * gwendall.petit _at_ ec-nantes.fr
  */
-package org.orbisgis.core.ui.plugins.views;
+package org.orbisgis.core.ui.plugins.views.memory;
 
+import javax.swing.JButton;
 import javax.swing.JMenuItem;
 
-import org.orbisgis.core.Services;
 import org.orbisgis.core.ui.pluginSystem.PlugInContext;
 import org.orbisgis.core.ui.pluginSystem.ViewPlugIn;
 import org.orbisgis.core.ui.pluginSystem.workbench.Names;
-import org.orbisgis.core.ui.plugins.views.information.InformationManager;
-import org.orbisgis.core.ui.plugins.views.information.Table;
+import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchContext;
 import org.orbisgis.core.ui.preferences.lookandfeel.OrbisGISIcon;
 
-public class InformationViewPlugIn extends ViewPlugIn {
+public class MemoryViewPlugIn extends ViewPlugIn {
 
-	private Table panel;
+	private MemoryViewPanel panel;
 	private JMenuItem menuItem;
+	private JButton btn;
+
+	public MemoryViewPlugIn() {
+		btn = new JButton(OrbisGISIcon.MEMORY_ICON);
+		btn.setToolTipText(Names.MEMORY);
+	}
 
 	public void initialize(PlugInContext context) throws Exception {
-		panel = new Table();
-		Services.registerService(InformationManager.class,
-				"Service to show tabular information to the user.", panel);
+		panel = new MemoryViewPanel();
 		menuItem = context.getFeatureInstaller().addMainMenuItem(this,
-				new String[] { Names.VIEW }, Names.INFORMATION, true,
-				OrbisGISIcon.GEOINFORMATION, null, panel, context);
+				new String[] { Names.VIEW }, Names.MEMORY, true,
+				OrbisGISIcon.MEMORY_ICON, null, panel, context);
+		WorkbenchContext wbcontext = context.getWorkbenchContext();
+		wbcontext.getWorkbench().getFrame().getViewToolBar().addPlugIn(this,
+				btn, context);
 	}
 
 	public boolean execute(PlugInContext context) throws Exception {
@@ -78,7 +84,7 @@ public class InformationViewPlugIn extends ViewPlugIn {
 	}
 
 	public String getName() {
-		return "Information view";
+		return "Memory view";
 	}
 
 }

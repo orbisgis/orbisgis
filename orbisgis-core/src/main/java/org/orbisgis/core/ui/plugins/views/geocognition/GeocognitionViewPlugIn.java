@@ -35,29 +35,38 @@
  * erwan.bocher _at_ ec-nantes.fr
  * gwendall.petit _at_ ec-nantes.fr
  */
-package org.orbisgis.core.ui.plugins.views;
+package org.orbisgis.core.ui.plugins.views.geocognition;
 
 import java.awt.Component;
 
+import javax.swing.JButton;
 import javax.swing.JMenuItem;
-import javax.swing.JPanel;
 
-import org.orbisgis.core.Services;
+import org.orbisgis.core.PersistenceException;
 import org.orbisgis.core.ui.pluginSystem.PlugInContext;
 import org.orbisgis.core.ui.pluginSystem.ViewPlugIn;
 import org.orbisgis.core.ui.pluginSystem.workbench.Names;
-import org.orbisgis.core.ui.plugins.views.editor.DefaultEditorManager;
-import org.orbisgis.core.ui.plugins.views.editor.EditorManager;
-import org.orbisgis.core.ui.plugins.views.editor.EditorPanel;
+import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchContext;
 import org.orbisgis.core.ui.preferences.lookandfeel.OrbisGISIcon;
+import org.orbisgis.utils.I18N;
 
-public class EditorViewPlugIn extends ViewPlugIn {
+public class GeocognitionViewPlugIn extends ViewPlugIn {
 
-	private EditorPanel panel;
+	private GeocognitionView panel;
 	private JMenuItem menuItem;
+	private JButton btn;
 
-	public EditorViewPlugIn() {
+	public GeocognitionViewPlugIn() {
+		btn = new JButton(OrbisGISIcon.GEOCOGNITION_ICON);
+		btn.setToolTipText(Names.GEOCOGNITION);
+	}
 
+	public GeocognitionView getPanel() {
+		return panel;
+	}
+
+	public void delete() {
+		panel.delete();
 	}
 
 	public Component getComponent() {
@@ -65,22 +74,19 @@ public class EditorViewPlugIn extends ViewPlugIn {
 	}
 
 	public void initialize(PlugInContext context) throws Exception {
-		panel = new EditorPanel();
-		Services.registerService(EditorManager.class,
-				"Gets access to the active editor and its document",
-				new DefaultEditorManager(panel));
+		panel = new GeocognitionView();
+		panel.initialize();
 		menuItem = context.getFeatureInstaller().addMainMenuItem(this,
-				new String[] { Names.VIEW }, Names.EDITORS, true,
-				OrbisGISIcon.EDITORS_ICON, null, new JPanel(), context);
+				new String[] { Names.VIEW }, Names.GEOCOGNITION, true,
+				OrbisGISIcon.GEOCOGNITION_ICON, null, panel, context);
+		WorkbenchContext wbcontext = context.getWorkbenchContext();
+		wbcontext.getWorkbench().getFrame().getViewToolBar().addPlugIn(this,
+				btn, context);
 	}
 
 	public boolean execute(PlugInContext context) throws Exception {
 		getPlugInContext().loadView(getId());
 		return true;
-	}
-
-	public void saveStatus() {
-		panel.saveAllDocuments();
 	}
 
 	public boolean isEnabled() {
@@ -94,7 +100,15 @@ public class EditorViewPlugIn extends ViewPlugIn {
 		return isSelected;
 	}
 
+	public void loadStatus() throws PersistenceException {
+		panel.loadStatus();
+	}
+
+	public void saveStatus() throws PersistenceException {
+		panel.saveStatus();
+	}
+
 	public String getName() {
-		return "Editor view";
+		return I18N.getText("orbisgis.org.orbisgis.geocognition.view");
 	}
 }

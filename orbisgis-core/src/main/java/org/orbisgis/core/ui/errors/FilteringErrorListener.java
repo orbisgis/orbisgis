@@ -5,7 +5,7 @@ import java.awt.Color;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.errorManager.ErrorListener;
 import org.orbisgis.core.errorManager.ErrorManager;
-import org.orbisgis.core.ui.plugins.views.OutputManager;
+import org.orbisgis.core.ui.plugins.views.output.OutputManager;
 import org.orbisgis.core.ui.windows.errors.ErrorMessage;
 
 public class FilteringErrorListener implements ErrorListener {

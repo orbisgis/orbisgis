@@ -54,7 +54,7 @@ import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
 import org.orbisgis.core.errorManager.ErrorManager;
-import org.orbisgis.core.ui.plugins.views.OutputManager;
+import org.orbisgis.core.ui.plugins.views.output.OutputManager;
 
 /**
  * 

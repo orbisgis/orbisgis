@@ -49,8 +49,10 @@ import org.orbisgis.core.PersistenceException;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.ui.editor.IEditor;
 import org.orbisgis.core.ui.pluginSystem.ViewPlugIn;
+import org.orbisgis.core.ui.pluginSystem.message.ErrorMessages;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchContext;
 import org.orbisgis.core.ui.plugins.views.editor.DockingWindowUtil;
+import org.orbisgis.utils.I18N;
 
 public class ViewDecorator {
 	private String id = "null";
@@ -112,8 +114,8 @@ public class ViewDecorator {
 		try {
 			view.loadStatus();
 		} catch (PersistenceException e) {
-			Services.getErrorManager().error(
-					"Cannot recover previous status of view " + getId(), e);
+			ErrorMessages.error(ErrorMessages.CannotRecoverPreviousStatusOfView
+					+ " " + getId(), e);
 		}
 		component = view.getComponent();
 		dockingView = new View(id, icon, component);
@@ -194,9 +196,8 @@ public class ViewDecorator {
 		if (activeComponent == null) {
 			activeComponent = dockingView.getComponent();
 		}
-		dockingView
-				.setComponent(new JLabel(
-						"<html>View not available.<br/>Select an associated editor.</html>"));
+		dockingView.setComponent(new JLabel(I18N
+				.getText("orbisgis.errorMessages.viewNotAvailable")));
 	}
 
 	public void editorClosed(String editorId) {

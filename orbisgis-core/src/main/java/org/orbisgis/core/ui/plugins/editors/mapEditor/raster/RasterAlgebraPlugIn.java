@@ -60,11 +60,13 @@ import org.orbisgis.core.ui.components.sif.RasterLayerCombo;
 import org.orbisgis.core.ui.editor.IEditor;
 import org.orbisgis.core.ui.pluginSystem.AbstractPlugIn;
 import org.orbisgis.core.ui.pluginSystem.PlugInContext;
+import org.orbisgis.core.ui.pluginSystem.message.ErrorMessages;
 import org.orbisgis.core.ui.pluginSystem.workbench.Names;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchContext;
-import org.orbisgis.core.ui.plugins.views.MapEditorPlugIn;
 import org.orbisgis.core.ui.plugins.views.editor.EditorManager;
+import org.orbisgis.core.ui.plugins.views.mapEditor.MapEditorPlugIn;
 import org.orbisgis.core.ui.preferences.lookandfeel.OrbisGISIcon;
+import org.orbisgis.utils.I18N;
 
 public class RasterAlgebraPlugIn extends AbstractPlugIn {
 
@@ -83,14 +85,18 @@ public class RasterAlgebraPlugIn extends AbstractPlugIn {
 			MapContext mapContext = (MapContext) editor.getElement()
 					.getObject();
 
-			final MultiInputPanel mip = new MultiInputPanel("Image calculator");
-			mip.addInput("source1", "Raster layer1", new RasterLayerCombo(
-					mapContext));
-			mip.addInput("method", "Method", new ComboBoxChoice(
-					GeoRasterCalculator.operators.keySet().toArray(
-							new String[0])));
-			mip.addInput("source2", "Raster layer2", new RasterLayerCombo(
-					mapContext));
+			final MultiInputPanel mip = new MultiInputPanel(I18N
+					.getText("orbisgis.org.orbisgis.imageCalculator"));
+			mip.addInput("source1", I18N
+					.getText("orbisgis.org.orbisgis.ui.layer1"),
+					new RasterLayerCombo(mapContext));
+			mip.addInput("method", I18N
+					.getText("orbisgis.org.orbisgis.ui.method"),
+					new ComboBoxChoice(GeoRasterCalculator.operators.keySet()
+							.toArray(new String[0])));
+			mip.addInput("source2", I18N
+					.getText("orbisgis.org.orbisgis.ui.layer2"),
+					new RasterLayerCombo(mapContext));
 
 			if (UIFactory.showDialog(mip)) {
 				final ILayer raster1 = mapContext.getLayerModel()
@@ -118,19 +124,20 @@ public class RasterAlgebraPlugIn extends AbstractPlugIn {
 			}
 
 		} catch (OperationException e) {
-			Services.getErrorManager().error("Cannot do the operation", e);
+			ErrorMessages.error(I18N
+					.getText("orbisgis.org.orbisgis.raster.cannotDoOperation"),
+					e);
 		} catch (IOException e) {
-			Services.getErrorManager().error(
-					"Error in " + this.getClass().getSimpleName(), e);
+			ErrorMessages.error(ErrorMessages.ErrorIn + " "
+					+ this.getClass().getSimpleName(), e);
 		} catch (LayerException e) {
-			Services.getErrorManager().error(
-					"Error in " + this.getClass().getSimpleName(), e);
+			ErrorMessages.error(ErrorMessages.ErrorIn + " "
+					+ this.getClass().getSimpleName(), e);
 		} catch (DriverException e) {
-			Services.getErrorManager().error(
-					"Problem while accessing GeoRaster datas", e);
+			ErrorMessages
+					.error(ErrorMessages.ProblemWhileAccessingGeoRaster, e);
 		} catch (DriverLoadException e) {
-			Services.getErrorManager().error(
-					"Cannot create the resulting GeoRaster layer", e);
+			ErrorMessages.error(ErrorMessages.CannotCreateGeoRaster, e);
 		}
 		return false;
 	}

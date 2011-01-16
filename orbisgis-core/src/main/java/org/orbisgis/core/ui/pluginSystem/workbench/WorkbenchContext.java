@@ -49,8 +49,8 @@ import org.orbisgis.core.Services;
 import org.orbisgis.core.ui.editor.IEditor;
 import org.orbisgis.core.ui.pluginSystem.PlugIn;
 import org.orbisgis.core.ui.pluginSystem.PlugInContext;
-import org.orbisgis.core.ui.plugins.views.MapEditorPlugIn;
 import org.orbisgis.core.ui.plugins.views.editor.EditorManager;
+import org.orbisgis.core.ui.plugins.views.mapEditor.MapEditorPlugIn;
 
 public abstract class WorkbenchContext extends Observable {
 

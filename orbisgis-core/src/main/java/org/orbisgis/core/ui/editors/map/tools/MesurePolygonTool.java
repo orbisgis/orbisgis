@@ -49,7 +49,7 @@ import org.orbisgis.core.ui.editors.map.tool.DrawingException;
 import org.orbisgis.core.ui.editors.map.tool.ToolManager;
 import org.orbisgis.core.ui.editors.map.tool.TransitionException;
 import org.orbisgis.core.ui.pluginSystem.PlugInContext;
-import org.orbisgis.core.ui.plugins.views.OutputManager;
+import org.orbisgis.core.ui.plugins.views.output.OutputManager;
 import org.orbisgis.utils.I18N;
 
 import com.vividsolutions.jts.geom.Geometry;

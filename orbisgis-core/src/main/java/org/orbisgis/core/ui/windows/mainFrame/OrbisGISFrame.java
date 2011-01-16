@@ -81,15 +81,15 @@ import org.orbisgis.core.ui.pluginSystem.workbench.OrbisWorkbench;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchContext;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchToolBar;
 import org.orbisgis.core.ui.plugins.orbisgisFrame.ExitPlugIn;
-import org.orbisgis.core.ui.plugins.views.GeoCatalogViewPlugIn;
-import org.orbisgis.core.ui.plugins.views.GeocognitionViewPlugIn;
-import org.orbisgis.core.ui.plugins.views.MapEditorPlugIn;
-import org.orbisgis.core.ui.plugins.views.TableEditorPlugIn;
-import org.orbisgis.core.ui.plugins.views.TocViewPlugIn;
 import org.orbisgis.core.ui.plugins.views.ViewDecorator;
 import org.orbisgis.core.ui.plugins.views.editor.EditorManager;
 import org.orbisgis.core.ui.plugins.views.geocatalog.Catalog;
+import org.orbisgis.core.ui.plugins.views.geocatalog.GeoCatalogViewPlugIn;
 import org.orbisgis.core.ui.plugins.views.geocognition.GeocognitionView;
+import org.orbisgis.core.ui.plugins.views.geocognition.GeocognitionViewPlugIn;
+import org.orbisgis.core.ui.plugins.views.mapEditor.MapEditorPlugIn;
+import org.orbisgis.core.ui.plugins.views.tableEditor.TableEditorPlugIn;
+import org.orbisgis.core.ui.plugins.views.toc.TocViewPlugIn;
 import org.orbisgis.core.ui.preferences.lookandfeel.OrbisGISIcon;
 import org.orbisgis.core.ui.window.IWindow;
 import org.orbisgis.core.workspace.Workspace;
@@ -475,8 +475,13 @@ public class OrbisGISFrame extends JFrame implements IWindow {
 			perspectiveLoaded = true;
 			ois.close();
 		} catch (Exception e) {
-			Services.getErrorManager().error(
-					"Cannot recover the layout of the window", e);
+			Services
+					.getErrorManager()
+					.error(
+
+							I18N
+									.getText("orbisgis.org.orbisgis.layout.cannotRecoverLayout"),
+							e);
 		}
 	}
 

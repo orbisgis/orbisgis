@@ -46,8 +46,9 @@ import org.orbisgis.core.ui.editor.IEditor;
 import org.orbisgis.core.ui.pluginSystem.PlugInContext;
 import org.orbisgis.core.ui.pluginSystem.ViewPlugIn;
 import org.orbisgis.core.ui.pluginSystem.workbench.Names;
-import org.orbisgis.core.ui.plugins.views.MapEditorPlugIn;
+import org.orbisgis.core.ui.plugins.views.mapEditor.MapEditorPlugIn;
 import org.orbisgis.core.ui.preferences.lookandfeel.OrbisGISIcon;
+import org.orbisgis.utils.I18N;
 
 public class GeomarkViewPlugIn extends ViewPlugIn {
 
@@ -95,7 +96,7 @@ public class GeomarkViewPlugIn extends ViewPlugIn {
 	}
 
 	public String getName() {
-		return "Geomark view";
+		return I18N.getText("orbisgis.org.orbisgis.geomark.view");
 	}
 
 	@Override
