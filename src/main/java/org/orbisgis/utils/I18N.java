@@ -20,7 +20,7 @@ public abstract class I18N {
 	
 	
 	//translate 
-	public static String getText(final String key) {
+	public static String getString(final String key) {
 		//Get context (ResourceBundle) with the key:
 		//myplugin.key = my translation -> get context : myplugin
 		int contextIndex = key.indexOf(".");
