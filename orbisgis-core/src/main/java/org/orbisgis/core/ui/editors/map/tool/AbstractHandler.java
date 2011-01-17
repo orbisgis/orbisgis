@@ -65,6 +65,7 @@ import java.awt.Point;
 import java.awt.geom.Point2D;
 
 import org.orbisgis.core.map.MapTransform;
+import org.orbisgis.utils.I18N;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.GeometryFactory;
@@ -130,7 +131,7 @@ public abstract class AbstractHandler implements Handler {
 		Coordinate[] coords = g.getCoordinates();
 		if (coords.length <= minNumVertex) {
 			throw new CannotChangeGeometryException(
-					"Invalid geometry. Too few vertex");
+					I18N.getString("orbisgis.org.orbisgis.ui.tool.AbstractHandler.invalidGeometryToFewVertex")); //$NON-NLS-1$
 		}
 		Coordinate[] newCoords = new Coordinate[coords.length - 1];
 		for (int i = 0; i < vertexIndex; i++) {

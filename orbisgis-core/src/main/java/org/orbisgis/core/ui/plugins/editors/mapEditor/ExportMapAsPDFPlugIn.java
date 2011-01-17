@@ -89,9 +89,9 @@ public class ExportMapAsPDFPlugIn extends AbstractPlugIn {
 		MapContext mapContext = (MapContext) mapEditor.getElement().getObject();
 
 		final SaveFilePanel outfilePanel = new SaveFilePanel(
-				"org.orbisgis.core.ui.editors.map.actions.ExportMapAsPDF", I18N
-						.getString("orbisgis.core.file.chooseFileFormat"));
-		outfilePanel.addFilter("pdf", "Portable Document Format (*.pdf)");
+				"org.orbisgis.core.ui.editors.map.actions.ExportMapAsPDF", I18N //$NON-NLS-1$
+						.getString("orbisgis.core.file.chooseFileFormat")); //$NON-NLS-1$
+		outfilePanel.addFilter("pdf", "Portable Document Format (*.pdf)"); //$NON-NLS-1$ //$NON-NLS-2$
 
 		ScaleEditor scaleEditor = new ScaleEditor(mapEditor.getMapTransform()
 				.getScaleDenominator());
@@ -133,7 +133,7 @@ public class ExportMapAsPDFPlugIn extends AbstractPlugIn {
 
 			Renderer r = new Renderer();
 
-			if (outputFile.getName().toLowerCase().endsWith("pdf")) {
+			if (outputFile.getName().toLowerCase().endsWith("pdf")) { //$NON-NLS-1$
 
 				FileOutputStream fos = new FileOutputStream(outputFile);
 
@@ -146,7 +146,7 @@ public class ExportMapAsPDFPlugIn extends AbstractPlugIn {
 
 				// Add the north
 				final java.net.URL url = IconLoader
-						.getIconUrl("simplenorth.png");
+						.getIconUrl("simplenorth.png"); //$NON-NLS-1$
 
 				PdfContentByte cb = writer.getDirectContent();
 
@@ -185,7 +185,10 @@ public class ExportMapAsPDFPlugIn extends AbstractPlugIn {
 				int maxHeight = 30;
 
 				g2dLegend.translate(10, 10);
-				g2dLegend.drawString("Legend", 0, 10);
+				g2dLegend
+						.drawString(
+								I18N
+										.getString("orbisgis.org.orbisgis.ui.map.exportMapAsPDFPlugIn.legend"), 0, 10); //$NON-NLS-1$
 
 				for (int i = 0; i < layers.length; i++) {
 					g2dLegend.translate(0, maxHeight + 10);
@@ -240,7 +243,7 @@ public class ExportMapAsPDFPlugIn extends AbstractPlugIn {
 				cb.addTemplate(templateScale, 0, 0);
 
 				JOptionPane.showMessageDialog(null, I18N
-						.getString("orbisgis.core.file.fileSaved"));
+						.getString("orbisgis.core.file.fileSaved")); //$NON-NLS-1$
 			}
 
 		} catch (FileNotFoundException e) {

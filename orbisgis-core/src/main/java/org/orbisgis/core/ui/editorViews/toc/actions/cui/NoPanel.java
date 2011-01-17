@@ -42,6 +42,7 @@ import javax.swing.JLabel;
 
 import org.orbisgis.core.renderer.legend.Legend;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.legend.ILegendPanel;
+import org.orbisgis.utils.I18N;
 
 public class NoPanel implements ILegendPanel {
 
@@ -56,7 +57,7 @@ public class NoPanel implements ILegendPanel {
 	}
 
 	public Component getComponent() {
-		return new JLabel("No suitable editor for this legend");
+		return new JLabel(I18N.getString("orbisgis.org.orbisgis.ui.toc.noPanel.noSuitableEditorLegend")); //$NON-NLS-1$
 	}
 
 	public Legend getLegend() {
@@ -64,11 +65,11 @@ public class NoPanel implements ILegendPanel {
 	}
 
 	public String getLegendTypeName() {
-		throw new RuntimeException("bug!");
+		throw new RuntimeException(I18N.getString("orbisgis.org.orbisgis.ui.toc.noPanel.bug")); //$NON-NLS-1$
 	}
 
 	public ILegendPanel newInstance() {
-		throw new RuntimeException("bug!");
+		throw new RuntimeException(I18N.getString("orbisgis.org.orbisgis.ui.toc.noPanel.bug")); //$NON-NLS-1$
 	}
 
 	public void setLegend(Legend legend) {

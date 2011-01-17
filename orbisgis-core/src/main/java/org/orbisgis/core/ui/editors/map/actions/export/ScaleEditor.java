@@ -28,6 +28,7 @@ import org.orbisgis.core.ui.components.patterns.PatternConfigurator;
 import org.orbisgis.core.ui.components.preview.JNumericSpinner;
 import org.orbisgis.core.ui.components.preview.SizeSelector;
 import org.orbisgis.core.ui.components.preview.UnitSelector;
+import org.orbisgis.utils.I18N;
 
 public class ScaleEditor extends JPanel implements UIPanel {
 
@@ -71,11 +72,11 @@ public class ScaleEditor extends JPanel implements UIPanel {
 				changeScale();
 			}
 		});
-		controlPanel.add(new JLabel("Select scale type:"));
+		controlPanel.add(new JLabel(I18N.getString("orbisgis.org.orbisgis.ui.scaleEditor.selectScaleType"))); //$NON-NLS-1$
 		controlPanel.add(cmbScaleType);
 		controlPanel.add(new CarriageReturn());
 
-		controlPanel.add(new JLabel("Part count: "));
+		controlPanel.add(new JLabel(I18N.getString("orbisgis.org.orbisgis.ui.scaleEditor.partCount"))); //$NON-NLS-1$
 		spnPartCount = new JNumericSpinner(4);
 		spnPartCount.setInc(1);
 		spnPartCount.setMin(0);
@@ -99,7 +100,7 @@ public class ScaleEditor extends JPanel implements UIPanel {
 				safeSyncScale();
 			}
 		};
-		controlPanel.add(new JLabel("Part size: "));
+		controlPanel.add(new JLabel(I18N.getString("orbisgis.org.orbisgis.ui.scaleEditor.partSize"))); //$NON-NLS-1$
 		UnitSelector unitSelector = new UnitSelector();
 		spnPartSize = new SizeSelector(5, unitSelector);
 		spnPartSize.addChangeListener(synListener);
@@ -108,14 +109,14 @@ public class ScaleEditor extends JPanel implements UIPanel {
 		controlPanel.add(unitSelector);
 		controlPanel.add(new CarriageReturn());
 
-		controlPanel.add(new JLabel("Height: "));
+		controlPanel.add(new JLabel(I18N.getString("orbisgis.org.orbisgis.ui.scaleEditor.height"))); //$NON-NLS-1$
 		spnHeight = new SizeSelector(5, unitSelector);
 		spnHeight.addChangeListener(synListener);
 		spnHeight.setMin(0);
 		controlPanel.add(spnHeight);
 		controlPanel.add(new CarriageReturn());
 
-		controlPanel.add(new JLabel("Labeled parts: "));
+		controlPanel.add(new JLabel(I18N.getString("orbisgis.org.orbisgis.ui.scaleEditor.labeledPart"))); //$NON-NLS-1$
 		PatternChangeListener patternChangeListener = new PatternChangeListener() {
 
 			@Override
@@ -130,7 +131,7 @@ public class ScaleEditor extends JPanel implements UIPanel {
 		controlPanel.add(labelPattern);
 		controlPanel.add(new CarriageReturn());
 
-		controlPanel.add(new JLabel("Remarked parts: "));
+		controlPanel.add(new JLabel(I18N.getString("orbisgis.org.orbisgis.ui.scaleEditor.remarkedPart"))); //$NON-NLS-1$
 		markPattern = new PatternConfigurator();
 		markPattern.setPreferredSize(patternSize);
 		markPattern.addChangeListener(patternChangeListener);
@@ -217,7 +218,7 @@ public class ScaleEditor extends JPanel implements UIPanel {
 
 	@Override
 	public String getTitle() {
-		return "Choose scale";
+		return I18N.getString("orbisgis.org.orbisgis.ui.scaleEditor.chooseScale"); //$NON-NLS-1$
 	}
 
 	@Override
@@ -237,7 +238,7 @@ public class ScaleEditor extends JPanel implements UIPanel {
 
 	@Override
 	public String getInfoText() {
-		return "Choose the scale to use";
+		return I18N.getString("orbisgis.org.orbisgis.ui.scaleEditor.chooseScaleToUse"); //$NON-NLS-1$
 	}
 
 	@Override

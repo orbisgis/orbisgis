@@ -40,15 +40,14 @@ import java.io.File;
 import java.net.URL;
 import java.util.HashMap;
 
-import javax.swing.SwingUtilities;
-
 import org.gdms.data.DataSourceFactory;
+import org.orbisgis.utils.I18N;
 
 public class UIFactory {
 
 	private static HashMap<String, String> inputs = new HashMap<String, String>();
-	static File baseDir = new File(System.getProperty("user.home")
-			+ File.separator + ".sif");
+	static File baseDir = new File(System.getProperty("user.home") //$NON-NLS-1$
+			+ File.separator + ".sif"); //$NON-NLS-1$
 	private static URL defaultIconURL;
 	private static String okMessage;
 	private static Window mainFrame = null;
@@ -122,7 +121,7 @@ public class UIFactory {
 		AbstractOutsideFrame dlg;
 		if (panels.length == 0) {
 			throw new IllegalArgumentException(
-					"At least a panel has to be specified");
+					I18N.getString("orbisgis.org.orbisgis.sif.uIFactory.atLeastAPanelHasToBeSpecified")); //$NON-NLS-1$
 		} else if (panels.length == 1) {
 			if (okCancel) {
 				dlg = getSimpleDialog(panels[0]);
@@ -154,14 +153,14 @@ public class UIFactory {
 
 	public static void setPersistencyDirectory(File baseDir) {
 		if (!baseDir.exists()) {
-			throw new IllegalArgumentException(baseDir + " doesn't exist");
+			throw new IllegalArgumentException(baseDir + I18N.getString("orbisgis.org.orbisgis.sif.uIFactory.doesntExist")); //$NON-NLS-1$
 		}
 		UIFactory.baseDir = baseDir;
 	}
 
 	public static void setTempDirectory(File tempDir) {
 		if (!tempDir.exists()) {
-			throw new IllegalArgumentException(tempDir + " doesn't exist");
+			throw new IllegalArgumentException(tempDir + I18N.getString("orbisgis.org.orbisgis.sif.uIFactory.doesntExist")); //$NON-NLS-1$
 		}
 		dsf.setTempDir(tempDir.getAbsolutePath());
 	}

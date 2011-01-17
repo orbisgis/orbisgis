@@ -84,6 +84,7 @@ import org.orbisgis.core.ui.editors.map.tool.Rectangle2DDouble;
 import org.orbisgis.core.ui.plugins.orbisgisFrame.configuration.RenderingConfiguration;
 import org.orbisgis.progress.IProgressMonitor;
 import org.orbisgis.progress.NullProgressMonitor;
+import org.orbisgis.utils.I18N;
 
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
@@ -134,7 +135,7 @@ public class Renderer {
 			} else {
 				layer = layers[i];
 				if (layer.isVisible() && extent.intersects(layer.getEnvelope())) {
-					logger.debug("Drawing " + layer.getName());
+					logger.debug(I18N.getString("orbisgis.org.orbisgis.renderer.drawing") + layer.getName()); //$NON-NLS-1$
 					long t1 = System.currentTimeMillis();
 					if (layer.isWMS()) {
 						// Iterate over next layers to make only one call to the
@@ -175,29 +176,29 @@ public class Renderer {
 												height, extent, pm);
 									} catch (IOException e) {
 										Services.getErrorManager().error(
-												"Cannot draw raster:"
+												I18N.getString("orbisgis.org.orbisgis.renderer.cannotDrawRaster") //$NON-NLS-1$
 														+ layer.getName(), e);
 									}
 								} else {
 									logger
-											.warn("Not drawn: "
+											.warn(I18N.getString("orbisgis.org.orbisgis.renderer.notDraw") //$NON-NLS-1$
 													+ layer.getName());
 								}
 							} catch (DriverException e) {
 								Services.getErrorManager().error(
-										"Cannot draw : " + layer.getName(), e);
+										I18N.getString("orbisgis.org.orbisgis.renderer.cannotDraw") + layer.getName(), e); //$NON-NLS-1$
 							}
 							pm.progressTo(100 - (100 * i) / layers.length);
 						}
 					}
 					long t2 = System.currentTimeMillis();
-					logger.info("Rendering time:" + (t2 - t1));
+					logger.info(I18N.getString("orbisgis.org.orbisgis.renderer.renderingTime") + (t2 - t1)); //$NON-NLS-1$
 				}
 			}
 		}
 
 		long total2 = System.currentTimeMillis();
-		logger.info("Total rendering time:" + (total2 - total1));
+		logger.info(I18N.getString("orbisgis.org.orbisgis.renderer.totalRenderingTime") + (total2 - total1)); //$NON-NLS-1$
 	}
 
 	private boolean sameServer(ILayer layer, ILayer layer2) {
@@ -218,13 +219,13 @@ public class Renderer {
 			g2.drawImage(image, 0, 0, null);
 		} catch (WMSException e) {
 			Services.getService(ErrorManager.class).error(
-					"Cannot get WMS image", e);
+					I18N.getString("orbisgis.org.orbisgis.renderer.cannotGetWMSImage"), e); //$NON-NLS-1$
 		} catch (ServerErrorException e) {
 			Services.getService(ErrorManager.class).error(
-					"Cannot get WMS image", e);
+					I18N.getString("orbisgis.org.orbisgis.renderer.cannotGetWMSImage"), e); //$NON-NLS-1$
 		} catch (IOException e) {
 			Services.getService(ErrorManager.class).error(
-					"Cannot get WMS image", e);
+					I18N.getString("orbisgis.org.orbisgis.renderer.cannotGetWMSImage"), e); //$NON-NLS-1$
 		}
 	}
 
@@ -249,7 +250,7 @@ public class Renderer {
 	private void drawRasterLayer(MapTransform mt, ILayer layer, Graphics2D g2,
 			int width, int height, Envelope extent, IProgressMonitor pm)
 			throws DriverException, IOException {
-		logger.debug("raster envelope: " + layer.getEnvelope());
+		logger.debug(I18N.getString("orbisgis.org.orbisgis.renderer.rasterEnvelope") + layer.getEnvelope()); //$NON-NLS-1$
 		GraphicsConfiguration configuration = GraphicsEnvironment
 				.getLocalGraphicsEnvironment().getDefaultScreenDevice()
 				.getDefaultConfiguration();
@@ -278,7 +279,7 @@ public class Renderer {
 						(int) layerPixelEnvelope.getMinY(),
 						(int) layerPixelEnvelope.getWidth() + 1,
 						(int) layerPixelEnvelope.getHeight() + 1, null);
-				pm.startTask("Drawing " + layer.getName());
+				pm.startTask(I18N.getString("orbisgis.org.orbisgis.renderer.drawing") + layer.getName()); //$NON-NLS-1$
 				String bands = ((RasterLegend) legend).getBands();
 				if (bands != null) {
 					g2.drawImage(invertRGB(layerImage, bands), 0, 0, null);
@@ -335,7 +336,7 @@ public class Renderer {
 				Iterator<Integer> it = getIterator(mt.getAdjustedExtent(), sds);
 
 				long rowCount = sds.getRowCount();
-				pm.startTask("Drawing " + layer.getName());
+				pm.startTask(I18N.getString("orbisgis.org.orbisgis.renderer.drawing") + layer.getName()); //$NON-NLS-1$
 				int i = 0;
 				while (it.hasNext()) {
 					Integer index = it.next();
@@ -365,7 +366,7 @@ public class Renderer {
 							}
 							Envelope symbolEnvelope;
 							if (g.getGeometryType()
-									.equals("GeometryCollection")) {
+									.equals(I18N.getString("orbisgis.org.orbisgis.renderer.geometryCollection"))) { //$NON-NLS-1$
 								symbolEnvelope = drawGeometryCollection(mt, g2,
 										sym, g, permission);
 							} else {
@@ -388,7 +389,7 @@ public class Renderer {
 
 		} catch (RenderException e) {
 			Services.getErrorManager().warning(
-					"Cannot draw layer: " + layer.getName(), e);
+					I18N.getString("orbisgis.org.orbisgis.renderer.cannotDrawLayer") + layer.getName(), e); //$NON-NLS-1$
 		}
 	}
 
@@ -424,7 +425,7 @@ public class Renderer {
 	private Envelope drawGeometryCollection(MapTransform mt, Graphics2D g2,
 			Symbol sym, Geometry g, DefaultRendererPermission permission)
 			throws DriverException {
-		if (g.getGeometryType().equals("GeometryCollection")) {
+		if (g.getGeometryType().equals(I18N.getString("orbisgis.org.orbisgis.renderer.geometryCollection"))) { //$NON-NLS-1$
 			Envelope ret = null;
 			for (int j = 0; j < g.getNumGeometries(); j++) {
 				Geometry childGeom = g.getGeometryN(j);
@@ -550,7 +551,7 @@ public class Renderer {
 			return blue;
 		} else {
 			throw new IllegalArgumentException(
-					"The RGB code doesn't contain RGB codes");
+					I18N.getString("orbisgis.org.orbisgis.renderer.cannotCreatRGBCodes")); //$NON-NLS-1$
 		}
 	}
 
@@ -570,12 +571,12 @@ public class Renderer {
 				.getProperty(RenderingConfiguration.SYSTEM_COMPOSITE_STATUS);
 
 		if (antialiasing != null || composite != null) {
-			if (antialiasing.equals("true")) {
+			if (antialiasing.equals("true")) { //$NON-NLS-1$
 				g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
 						RenderingHints.VALUE_ANTIALIAS_ON);
 			}
 
-			if (composite.equals("true")) {
+			if (composite.equals("true")) { //$NON-NLS-1$
 				AlphaComposite ac = AlphaComposite
 						.getInstance(AlphaComposite.SRC);
 				ac = AlphaComposite

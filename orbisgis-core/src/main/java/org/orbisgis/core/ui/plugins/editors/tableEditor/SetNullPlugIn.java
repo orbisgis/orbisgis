@@ -52,6 +52,7 @@ import org.orbisgis.core.ui.pluginSystem.workbench.Names;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchContext;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchFrame;
 import org.orbisgis.progress.IProgressMonitor;
+import org.orbisgis.utils.I18N;
 
 public class SetNullPlugIn extends AbstractPlugIn {
 
@@ -82,7 +83,8 @@ public class SetNullPlugIn extends AbstractPlugIn {
 
 			@Override
 			public String getTaskName() {
-				return "Set to null";
+				return I18N
+						.getString("orbisgis.org.orbisgis.tableEditor.setNullPlugIn.setNotNull"); //$NON-NLS-1$
 			}
 		});
 		return true;
@@ -90,8 +92,8 @@ public class SetNullPlugIn extends AbstractPlugIn {
 
 	public void initialize(PlugInContext context) throws Exception {
 		WorkbenchContext wbContext = context.getWorkbenchContext();
-		WorkbenchFrame frame = wbContext.getWorkbench()
-				.getFrame().getTableEditor();
+		WorkbenchFrame frame = wbContext.getWorkbench().getFrame()
+				.getTableEditor();
 		context.getFeatureInstaller().addPopupMenuItem(frame, this,
 				new String[] { Names.POPUP_TABLE_SETNULL_PATH1 },
 				Names.POPUP_TABLE_SETNULL_GROUP, false, wbContext);
@@ -119,7 +121,8 @@ public class SetNullPlugIn extends AbstractPlugIn {
 						isEnabled = element.isEditable()
 								&& !element.getDataSource().isNull(row, column);
 					} catch (DriverException e) {
-						ErrorMessages.error(ErrorMessages.CannotTestNullValue, e);
+						ErrorMessages.error(ErrorMessages.CannotTestNullValue,
+								e);
 						return false;
 					}
 				}

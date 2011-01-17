@@ -1,6 +1,5 @@
 package org.orbisgis.core.ui.editorViews.toc;
 
-import org.gdms.data.ClosedDataSourceException;
 import org.gdms.data.DataSource;
 import org.gdms.data.NonEditableDataSourceException;
 import org.gdms.data.edition.EditionEvent;
@@ -13,6 +12,7 @@ import org.orbisgis.core.edition.AbstractEditableElement;
 import org.orbisgis.core.edition.EditableElementException;
 import org.orbisgis.core.ui.editors.table.TableEditableElement;
 import org.orbisgis.progress.IProgressMonitor;
+import org.orbisgis.utils.I18N;
 
 public abstract class AbstractTableEditableElement extends
 		AbstractEditableElement implements TableEditableElement {
@@ -50,9 +50,9 @@ public abstract class AbstractTableEditableElement extends
 			if (isEditable())
 			getDataSource().commit();
 		} catch (DriverException e) {
-			throw new EditableElementException("Could not save", e);
+			throw new EditableElementException(I18N.getString("orbisgis.org.orbisgis.ui.toc.abstractTableEditableElement.cannotSave"), e); //$NON-NLS-1$
 		} catch (NonEditableDataSourceException e) {
-			throw new EditableElementException("Non editable element", e);
+			throw new EditableElementException(I18N.getString("orbisgis.org.orbisgis.ui.toc.abstractTableEditableElement.nonEditableElement"), e); //$NON-NLS-1$
 		}
 	}
 

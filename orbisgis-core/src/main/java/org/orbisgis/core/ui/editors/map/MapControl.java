@@ -80,6 +80,7 @@ import org.orbisgis.core.ui.editors.map.tool.ToolManager;
 import org.orbisgis.core.ui.editors.map.tool.TransitionException;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchContext;
 import org.orbisgis.progress.IProgressMonitor;
+import org.orbisgis.utils.I18N;
 
 import com.vividsolutions.jts.geom.Envelope;
 
@@ -171,7 +172,7 @@ public class MapControl extends JComponent implements ComponentListener,
 			@Override
 			public void transitionException(ToolManager toolManager,
 					TransitionException e) {
-				Services.getService(ErrorManager.class).error("Tool error", e);
+				Services.getService(ErrorManager.class).error(I18N.getString("orbisgis.org.orbisgis.ui.mapControl.toolError"), e); //$NON-NLS-1$
 			}
 
 			@Override
@@ -303,7 +304,7 @@ public class MapControl extends JComponent implements ComponentListener,
 				BackgroundManager bm = Services
 						.getService(BackgroundManager.class);
 				bm.nonBlockingBackgroundOperation(new DefaultJobId(
-						"org.orbisgis.jobs.MapControl-" + processId), drawer);
+						"org.orbisgis.jobs.MapControl-" + processId), drawer); //$NON-NLS-1$
 				// bm.addBackgroundListener( Services.getService(
 				// WorkbenchContext.class ) );
 			}
@@ -381,7 +382,7 @@ public class MapControl extends JComponent implements ComponentListener,
 		}
 
 		public String getTaskName() {
-			return "Drawing";
+			return I18N.getString("orbisgis.org.orbisgis.ui.mapControl.drawing"); //$NON-NLS-1$
 		}
 
 		public void run(IProgressMonitor pm) {
@@ -408,7 +409,7 @@ public class MapControl extends JComponent implements ComponentListener,
 				mapContext.setBoundingBox(mapTransform.getExtent());
 				WorkbenchContext wbContext = Services
 						.getService(WorkbenchContext.class);
-				wbContext.setLastAction("Update toolbar");
+				wbContext.setLastAction("Update toolbar"); //$NON-NLS-1$
 			}
 		}
 
@@ -571,7 +572,7 @@ public class MapControl extends JComponent implements ComponentListener,
 
 	@Override
 	public void componentAdded(ContainerEvent e) {
-		System.out.println("component added");
+		System.out.println("component added"); //$NON-NLS-1$
 
 	}
 

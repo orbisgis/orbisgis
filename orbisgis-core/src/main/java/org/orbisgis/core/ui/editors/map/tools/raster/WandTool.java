@@ -58,8 +58,11 @@ import org.gdms.driver.DriverException;
 import org.gdms.driver.driverManager.DriverLoadException;
 import org.gdms.driver.generic.GenericObjectDriver;
 import org.grap.model.GeoRaster;
-import org.orbisgis.core.Services;
 import org.orbisgis.core.DataManager;
+import org.orbisgis.core.Services;
+import org.orbisgis.core.layerModel.ILayer;
+import org.orbisgis.core.layerModel.LayerException;
+import org.orbisgis.core.layerModel.MapContext;
 import org.orbisgis.core.renderer.legend.carto.LegendFactory;
 import org.orbisgis.core.renderer.legend.carto.UniqueSymbolLegend;
 import org.orbisgis.core.renderer.symbol.Symbol;
@@ -68,9 +71,7 @@ import org.orbisgis.core.ui.editors.map.tool.ToolManager;
 import org.orbisgis.core.ui.editors.map.tool.TransitionException;
 import org.orbisgis.core.ui.editors.map.tools.AbstractPointTool;
 import org.orbisgis.core.ui.pluginSystem.PlugInContext;
-import org.orbisgis.core.layerModel.ILayer;
-import org.orbisgis.core.layerModel.LayerException;
-import org.orbisgis.core.layerModel.MapContext;
+import org.orbisgis.utils.I18N;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.GeometryFactory;
@@ -79,7 +80,7 @@ import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.Polygon;
 
 public class WandTool extends AbstractPointTool {
-	private final static String wandLayername = "wand";
+	private final static String wandLayername = I18N.getString("orbisgis.org.orbisgis.ui.tools.WandTool.0"); //$NON-NLS-1$
 	private final static DataSourceFactory dsf = ((DataManager) Services
 			.getService(DataManager.class)).getDataSourceFactory();
 	private final static GeometryFactory geometryFactory = new GeometryFactory();
@@ -152,28 +153,28 @@ public class WandTool extends AbstractPointTool {
 			wandLayer.setLegend(uniqueSymbolLegend);
 		} catch (LayerException e) {
 			Services.getErrorManager().error(
-					"Cannot use wand tool: " + e.getMessage(), e);
+					I18N.getString("orbisgis.org.orbisgis.ui.tools.WandTool.cannotUseWandTool") + e.getMessage(), e); //$NON-NLS-1$
 		} catch (DriverException e) {
 			Services.getErrorManager().error(
-					"Cannot apply the legend : " + e.getMessage(), e);
+					I18N.getString("orbisgis.org.orbisgis.ui.tools.WandTool.cannotApplyLegend") + e.getMessage(), e); //$NON-NLS-1$
 		} catch (IOException e) {
 			Services.getErrorManager().error(
-					"Error accessing the GeoRaster : " + e.getMessage(), e);
+					I18N.getString("orbisgis.org.orbisgis.ui.tools.WandTool.errorAccessingGeoraster") + e.getMessage(), e); //$NON-NLS-1$
 		} catch (DriverLoadException e) {
 			Services.getErrorManager().error(
-					"Error accessing the wand layer datasource : "
+					I18N.getString("orbisgis.org.orbisgis.ui.tools.WandTool.errorAccessingWandDatasource") //$NON-NLS-1$
 							+ e.getMessage(), e);
 		} catch (NoSuchTableException e) {
 			Services.getErrorManager().error(
-					"Error accessing the wand layer datasource : "
+					I18N.getString("orbisgis.org.orbisgis.ui.tools.WandTool.errorAccessingWandDatasource") //$NON-NLS-1$
 							+ e.getMessage(), e);
 		} catch (DataSourceCreationException e) {
 			Services.getErrorManager().error(
-					"Error accessing the wand layer datasource : "
+					I18N.getString("orbisgis.org.orbisgis.ui.tools.WandTool.errorAccessingWandDatasource") //$NON-NLS-1$
 							+ e.getMessage(), e);
 		} catch (NonEditableDataSourceException e) {
 			Services.getErrorManager().error(
-					"Error committing the wand layer datasource : "
+					I18N.getString("orbisgis.org.orbisgis.ui.tools.WandTool.errorCommittingWandDatasource") //$NON-NLS-1$
 							+ e.getMessage(), e);
 		}
 	}
@@ -183,7 +184,7 @@ public class WandTool extends AbstractPointTool {
 			DataSourceCreationException, DriverException,
 			NonEditableDataSourceException {
 		final GenericObjectDriver driver = new GenericObjectDriver(
-				new String[] { "the_geom", "area" }, new Type[] {
+				new String[] { "the_geom", "area" }, new Type[] { //$NON-NLS-1$ //$NON-NLS-2$
 						TypeFactory.createType(Type.GEOMETRY),
 						TypeFactory.createType(Type.DOUBLE) });
 		dsf.getSourceManager().register(wandLayername, driver);
@@ -216,6 +217,6 @@ public class WandTool extends AbstractPointTool {
 	}
 
 	public String getName() {
-		return "Vectorize a set of pixels";
+		return I18N.getString("orbisgis.org.orbisgis.ui.tools.WandTool.vectorizeSetPixels"); //$NON-NLS-1$
 	}
 }

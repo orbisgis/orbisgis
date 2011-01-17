@@ -1,6 +1,7 @@
 package org.orbisgis.core.ui.editors.table;
 
 import org.orbisgis.core.ui.components.sif.AskValue;
+import org.orbisgis.utils.I18N;
 
 public class FieldNameChooser extends AskValue {
 
@@ -16,7 +17,7 @@ public class FieldNameChooser extends AskValue {
 	public String postProcess() {
 		for (String fieldName : fieldNames) {
 			if (fieldName.equals(getValue())) {
-				return "Repeated field name";
+				return I18N.getString("orbisgis.org.orbisgis.ui.table.fieldNameChooser.repeatedFieldName"); //$NON-NLS-1$
 			}
 		}
 

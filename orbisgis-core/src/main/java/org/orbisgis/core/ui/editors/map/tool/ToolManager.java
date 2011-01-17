@@ -116,6 +116,7 @@ import org.orbisgis.core.ui.editors.map.tools.ToolUtilities;
 import org.orbisgis.core.ui.editors.map.tools.ZoomInTool;
 import org.orbisgis.core.ui.editors.map.tools.ZoomOutTool;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchContext;
+import org.orbisgis.utils.I18N;
 
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
@@ -134,13 +135,13 @@ import com.vividsolutions.jts.geom.Polygon;
 public class ToolManager extends MouseAdapter implements MouseMotionListener,
 		MouseWheelListener {
 
-	public static final String TERMINATE = "t";
+	public static final String TERMINATE = "t"; //$NON-NLS-1$
 
-	public static final String RELEASE = "release";
+	public static final String RELEASE = "release"; //$NON-NLS-1$
 
-	public static final String PRESS = "press";
+	public static final String PRESS = "press"; //$NON-NLS-1$
 
-	public static final String POINT = "point";
+	public static final String POINT = "point"; //$NON-NLS-1$
 
 	public static GeometryFactory toolsGeometryFactory = new GeometryFactory();
 
@@ -319,7 +320,7 @@ public class ToolManager extends MouseAdapter implements MouseMotionListener,
 			leftClickTransition(e, POINT);
 			setTool(oldTool);
 		} catch (TransitionException e1) {
-			Services.getErrorManager().error("cannot set Automaton", e1);
+			Services.getErrorManager().error(I18N.getString("orbisgis.org.orbisgis.ui.tool.toolManager.cannotSetAutomaton"), e1); //$NON-NLS-1$
 		}
 	}
 
@@ -372,7 +373,7 @@ public class ToolManager extends MouseAdapter implements MouseMotionListener,
 				setTool(new PanTool());
 				leftClickTransition(e, PRESS);
 			} catch (TransitionException e1) {
-				Services.getErrorManager().error("cannot set Automaton", e1);
+				Services.getErrorManager().error(I18N.getString("orbisgis.org.orbisgis.ui.tool.toolManager.cannotSetAutomaton"), e1); //$NON-NLS-1$
 			}
 		}
 	}
@@ -460,7 +461,7 @@ public class ToolManager extends MouseAdapter implements MouseMotionListener,
 				g2.drawImage(bi, 0, 0, null);
 			} catch (DriverException e) {
 				Services.getErrorManager().error(
-						"The legend of the map cannot be drawn correctly", e);
+						I18N.getString("orbisgis.org.orbisgis.ui.tool.toolManager.cannotDrawTheLegend"), e); //$NON-NLS-1$
 			}
 		}
 		if (adjustedPoint != null) {
@@ -657,7 +658,7 @@ public class ToolManager extends MouseAdapter implements MouseMotionListener,
 							component.repaint();
 						} catch (NoSuchTransitionException e1) {
 							Services.getErrorManager().error(
-									"Error in the tool.", e1);
+									I18N.getString("orbisgis.org.orbisgis.ui.tool.toolManager.errorInTool"), e1); //$NON-NLS-1$
 						} catch (TransitionException e1) {
 							fireToolError(e1);
 						}
@@ -778,7 +779,7 @@ public class ToolManager extends MouseAdapter implements MouseMotionListener,
 			}
 		} catch (DriverException e) {
 			Services.getErrorManager().warning(
-					"Cannot recalculate the handlers", e);
+					I18N.getString("orbisgis.org.orbisgis.ui.tool.toolManager.cannotRecalculateHandlers"), e); //$NON-NLS-1$
 		}
 	}
 

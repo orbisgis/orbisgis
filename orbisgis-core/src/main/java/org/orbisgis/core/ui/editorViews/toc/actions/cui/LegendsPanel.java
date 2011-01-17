@@ -67,17 +67,18 @@ import org.orbisgis.core.sif.UIFactory;
 import org.orbisgis.core.sif.UIPanel;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.legend.ILegendPanel;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.legend.ISymbolEditor;
+import org.orbisgis.utils.I18N;
 
 public class LegendsPanel extends JPanel implements UIPanel, LegendContext {
 
-	private static final String NO_LEGEND_ID = "no-legend";
+	private static final String NO_LEGEND_ID = "no-legend"; //$NON-NLS-1$
 	private int geometryType;
 	private ArrayList<LegendElement> legends = new ArrayList<LegendElement>();
 	private LegendList legendList;
 	private ILegendPanel[] availableLegends;
 	private JPanel pnlContainer;
 	private CardLayout cardLayout;
-	private String lastUID = "";
+	private String lastUID = ""; //$NON-NLS-1$
 	private GeometryConstraint gc;
 	private ILayer layer;
 	private JTextField txtMinScale;
@@ -131,10 +132,10 @@ public class LegendsPanel extends JPanel implements UIPanel, LegendContext {
 	}
 
 	private String getNewId() {
-		String name = "gdms" + System.currentTimeMillis();
+		String name = "gdms" + System.currentTimeMillis(); //$NON-NLS-1$
 
 		while (name.equals(lastUID)) {
-			name = "" + System.currentTimeMillis();
+			name = "" + System.currentTimeMillis(); //$NON-NLS-1$
 		}
 
 		lastUID = name;
@@ -156,7 +157,7 @@ public class LegendsPanel extends JPanel implements UIPanel, LegendContext {
 
 	private JToolBar getLegendToolBar() {
 		JToolBar toolBar = new JToolBar();
-		toolBar.add(new JLabel("Layer : " + layer.getName()));
+		toolBar.add(new JLabel(I18N.getString("orbisgis.org.orbisgis.ui.toc.legendsPanel.layer") + layer.getName())); //$NON-NLS-1$
 		toolBar.setFloatable(false);
 		return toolBar;
 	}
@@ -170,9 +171,9 @@ public class LegendsPanel extends JPanel implements UIPanel, LegendContext {
 		CRFlowLayout flowLayout = new CRFlowLayout();
 		flowLayout.setVgap(14);
 		pnlLabels.setLayout(flowLayout);
-		pnlLabels.add(new JLabel("Min. scale:"));
+		pnlLabels.add(new JLabel(I18N.getString("orbisgis.org.orbisgis.ui.toc.legendsPanel.minScale"))); //$NON-NLS-1$
 		pnlLabels.add(new CarriageReturn());
-		pnlLabels.add(new JLabel("Max. scale:"));
+		pnlLabels.add(new JLabel(I18N.getString("orbisgis.org.orbisgis.ui.toc.legendsPanel.maxScale"))); //$NON-NLS-1$
 		pnlScale.add(pnlLabels);
 
 		JPanel pnlTexts = new JPanel();
@@ -207,8 +208,8 @@ public class LegendsPanel extends JPanel implements UIPanel, LegendContext {
 					}
 				} else {
 					Services.getErrorManager().error(
-							"There is no selected legend, "
-									+ "cannot set scale.");
+							I18N.getString("orbisgis.org.orbisgis.ui.toc.legendsPanel.noSelectedLegend") //$NON-NLS-1$
+									+ I18N.getString("orbisgis.org.orbisgis.ui.toc.legendsPanel.cannotSetScale")); //$NON-NLS-1$
 				}
 			}
 
@@ -218,7 +219,7 @@ public class LegendsPanel extends JPanel implements UIPanel, LegendContext {
 		txtMaxScale = new JTextField(10);
 		txtMaxScale.addKeyListener(keyAdapter);
 		pnlTexts.add(txtMinScale);
-		btnCurrentScaleToMin = new JButton("Current scale");
+		btnCurrentScaleToMin = new JButton(I18N.getString("orbisgis.org.orbisgis.ui.toc.legendsPanel.currentScale")); //$NON-NLS-1$
 		btnCurrentScaleToMin.addActionListener(new ActionListener() {
 
 			public void actionPerformed(ActionEvent e) {
@@ -231,7 +232,7 @@ public class LegendsPanel extends JPanel implements UIPanel, LegendContext {
 		pnlTexts.add(btnCurrentScaleToMin);
 		pnlTexts.add(new CarriageReturn());
 		pnlTexts.add(txtMaxScale);
-		btnCurrentScaleToMax = new JButton("Current scale");
+		btnCurrentScaleToMax = new JButton(I18N.getString("orbisgis.org.orbisgis.ui.toc.legendsPanel.currentScale")); //$NON-NLS-1$
 		btnCurrentScaleToMax.addActionListener(new ActionListener() {
 
 			public void actionPerformed(ActionEvent e) {
@@ -245,7 +246,7 @@ public class LegendsPanel extends JPanel implements UIPanel, LegendContext {
 		pnlScale.add(pnlTexts);
 
 		pnlScale.setPreferredSize(new Dimension(200, 100));
-		pnlScale.setBorder(BorderFactory.createTitledBorder("Scale"));
+		pnlScale.setBorder(BorderFactory.createTitledBorder(I18N.getString("orbisgis.org.orbisgis.ui.toc.legendsPanel.scale"))); //$NON-NLS-1$
 		return pnlScale;
 	}
 
@@ -254,7 +255,7 @@ public class LegendsPanel extends JPanel implements UIPanel, LegendContext {
 		pnlContainer.setPreferredSize(new Dimension(600, 400));
 		cardLayout = new CardLayout();
 		pnlContainer.setLayout(cardLayout);
-		pnlContainer.add(new JLabel("Add or select a legend on the left"),
+		pnlContainer.add(new JLabel(I18N.getString("orbisgis.org.orbisgis.ui.toc.legendsPanel.addOrSelectLegendLeft")), //$NON-NLS-1$
 				NO_LEGEND_ID);
 		return pnlContainer;
 	}
@@ -310,15 +311,15 @@ public class LegendsPanel extends JPanel implements UIPanel, LegendContext {
 			Legend legend = legends.get(index).getLegend();
 			int minScale = legend.getMinScale();
 			if (minScale != Integer.MIN_VALUE) {
-				txtMinScale.setText(minScale + "");
+				txtMinScale.setText(minScale + ""); //$NON-NLS-1$
 			} else {
-				txtMinScale.setText("");
+				txtMinScale.setText(""); //$NON-NLS-1$
 			}
 			int maxScale = legend.getMaxScale();
 			if (maxScale != Integer.MAX_VALUE) {
-				txtMaxScale.setText(maxScale + "");
+				txtMaxScale.setText(maxScale + ""); //$NON-NLS-1$
 			} else {
-				txtMaxScale.setText("");
+				txtMaxScale.setText(""); //$NON-NLS-1$
 			}
 		} else {
 			cardLayout.show(pnlContainer, NO_LEGEND_ID);
@@ -403,7 +404,7 @@ public class LegendsPanel extends JPanel implements UIPanel, LegendContext {
 	}
 
 	public String getTitle() {
-		return "Legend edition";
+		return I18N.getString("orbisgis.org.orbisgis.ui.toc.legendsPanel.legendEdition"); //$NON-NLS-1$
 	}
 
 	public String initialize() {
@@ -416,7 +417,7 @@ public class LegendsPanel extends JPanel implements UIPanel, LegendContext {
 
 	public String validateInput() {
 		if (legends.size() == 0) {
-			return "You must create almost one legend";
+			return I18N.getString("orbisgis.org.orbisgis.ui.toc.legendsPanel.mustCreateAlmostOneLegend"); //$NON-NLS-1$
 		}
 
 		for (LegendElement legendElement : legends) {
@@ -445,7 +446,7 @@ public class LegendsPanel extends JPanel implements UIPanel, LegendContext {
 			try {
 				Integer.parseInt(minScale);
 			} catch (NumberFormatException e) {
-				return "Min. scale is not a valid number";
+				return I18N.getString("orbisgis.org.orbisgis.ui.toc.legendsPanel.minScaleIsNotAValidNumber"); //$NON-NLS-1$
 			}
 		}
 

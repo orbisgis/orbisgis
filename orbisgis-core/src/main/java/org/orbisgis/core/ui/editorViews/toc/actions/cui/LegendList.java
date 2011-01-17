@@ -61,6 +61,7 @@ import org.orbisgis.core.ui.components.sif.AskValue;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.components.LegendPicker;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.legend.ILegendPanel;
 import org.orbisgis.core.ui.preferences.lookandfeel.OrbisGISIcon;
+import org.orbisgis.utils.I18N;
 
 public class LegendList extends JPanel {
 	private JToolBar toolBar;
@@ -82,7 +83,7 @@ public class LegendList extends JPanel {
 
 		jButtonMenuUp = new JButton();
 		jButtonMenuUp.setIcon(OrbisGISIcon.GO_UP);
-		jButtonMenuUp.setToolTipText("Up");
+		jButtonMenuUp.setToolTipText(I18N.getString("orbisgis.org.orbisgis.ui.toc.legendList.up")); //$NON-NLS-1$
 		jButtonMenuUp.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
 				jButtonMenuUpActionPerformed(evt);
@@ -92,7 +93,7 @@ public class LegendList extends JPanel {
 
 		jButtonMenuDown = new JButton();
 		jButtonMenuDown.setIcon(OrbisGISIcon.GO_DOWN);
-		jButtonMenuDown.setToolTipText("Down");
+		jButtonMenuDown.setToolTipText(I18N.getString("orbisgis.org.orbisgis.ui.toc.legendList.down")); //$NON-NLS-1$
 		jButtonMenuDown.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
 				jButtonMenuDownActionPerformed(evt);
@@ -102,7 +103,7 @@ public class LegendList extends JPanel {
 
 		jButtonMenuAdd = new JButton();
 		jButtonMenuAdd.setIcon(OrbisGISIcon.PICTURE_ADD);
-		jButtonMenuAdd.setToolTipText("Add");
+		jButtonMenuAdd.setToolTipText(I18N.getString("orbisgis.org.orbisgis.ui.toc.legendList.add")); //$NON-NLS-1$
 		jButtonMenuAdd.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
 				jButtonMenuAddActionPerformed(evt);
@@ -112,7 +113,7 @@ public class LegendList extends JPanel {
 
 		jButtonMenuDel = new JButton();
 		jButtonMenuDel.setIcon(OrbisGISIcon.PICTURE_DEL);
-		jButtonMenuDel.setToolTipText("Delete");
+		jButtonMenuDel.setToolTipText(I18N.getString("orbisgis.org.orbisgis.ui.toc.legendList.delete")); //$NON-NLS-1$
 		jButtonMenuDel.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
 				jButtonMenuDelActionPerformed(evt);
@@ -122,7 +123,7 @@ public class LegendList extends JPanel {
 
 		jButtonMenuRename = new JButton();
 		jButtonMenuRename.setIcon(OrbisGISIcon.PICTURE_EDI);
-		jButtonMenuRename.setToolTipText("Rename");
+		jButtonMenuRename.setToolTipText(I18N.getString("orbisgis.org.orbisgis.ui.toc.legendList.rename")); //$NON-NLS-1$
 		jButtonMenuRename.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
 				jButtonMenuRenameActionPerformed(evt);
@@ -233,9 +234,9 @@ public class LegendList extends JPanel {
 		String legendName = (String) list.getSelectedValue();
 		int idx = list.getSelectedIndex();
 
-		AskValue ask = new AskValue("Insert the new name", "txt is not null",
-				"A name must be specified", legendName);
-		String newName = "";
+		AskValue ask = new AskValue(I18N.getString("orbisgis.org.orbisgis.ui.toc.legendList.insertNewName"), "txt is not null", //$NON-NLS-1$ //$NON-NLS-2$
+				I18N.getString("orbisgis.org.orbisgis.ui.toc.legendList.aNameMustBeSpecified"), legendName); //$NON-NLS-1$
+		String newName = ""; //$NON-NLS-1$
 		if (UIFactory.showDialog(ask)) {
 			newName = ask.getValue();
 			legendsPanel.legendRenamed(idx, newName);
@@ -330,7 +331,7 @@ public class LegendList extends JPanel {
 		public Object getElementAt(int index) {
 			String legendName = legendsPanel.getLegendsNames()[index];
 			if ((legendName == null) || legendName.trim().length() == 0) {
-				legendName = "(no name)";
+				legendName = I18N.getString("orbisgis.org.orbisgis.ui.toc.legendList.noName"); //$NON-NLS-1$
 			}
 			return legendName;
 		}

@@ -58,14 +58,15 @@ import org.orbisgis.core.ui.editors.map.tool.TransitionException;
 import org.orbisgis.core.ui.editors.map.tools.AbstractPointTool;
 import org.orbisgis.core.ui.pluginSystem.PlugInContext;
 import org.orbisgis.core.ui.plugins.views.information.InformationManager;
+import org.orbisgis.utils.I18N;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Point;
 
 public class RasterInfoTool extends AbstractPointTool {
-	public final static String[] LABELS = new String[] { "pixel X", "pixel Y",
-			"pixel value", "Raster width", "Raster height", "RealWorld X",
-			"RealWorld Y" };
+	public final static String[] LABELS = new String[] { I18N.getString("orbisgis.org.orbisgis.ui.rasterInfoTool.pixelX"), I18N.getString("orbisgis.org.orbisgis.ui.rasterInfoTool.pixelY"), //$NON-NLS-1$ //$NON-NLS-2$
+			I18N.getString("orbisgis.org.orbisgis.ui.rasterInfoTool.pixelValue"), I18N.getString("orbisgis.org.orbisgis.ui.rasterInfoTool.rasterWidth"), I18N.getString("orbisgis.org.orbisgis.ui.rasterInfoTool.rasterHeight"), I18N.getString("orbisgis.org.orbisgis.ui.rasterInfoTool.realworldX"), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+			I18N.getString("orbisgis.org.orbisgis.ui.rasterInfoTool.realworldY") }; //$NON-NLS-1$
 
 	public boolean isEnabled(MapContext vc, ToolManager tm) {
 		try {
@@ -104,8 +105,8 @@ public class RasterInfoTool extends AbstractPointTool {
 			// populate the PixelInfoView...
 			InformationManager im = Services
 					.getService(InformationManager.class);
-			String[] columnsNames = new String[] { "column", "row", "value",
-					"width", "height", "x", "y" };
+			String[] columnsNames = new String[] { I18N.getString("orbisgis.org.orbisgis.ui.rasterInfoTool.column"), I18N.getString("orbisgis.org.orbisgis.ui.rasterInfoTool.row"), I18N.getString("orbisgis.org.orbisgis.ui.rasterInfoTool.value"), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+					I18N.getString("orbisgis.org.orbisgis.ui.rasterInfoTool.width"), I18N.getString("orbisgis.org.orbisgis.ui.rasterInfoTool.height"), I18N.getString("orbisgis.org.orbisgis.ui.rasterInfoTool.x"), I18N.getString("orbisgis.org.orbisgis.ui.rasterInfoTool.y") }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
 			Type[] types = new Type[columnsNames.length];
 			for (int i = 0; i < types.length; i++) {
 				types[i] = TypeFactory.createType(Type.STRING);
@@ -122,13 +123,13 @@ public class RasterInfoTool extends AbstractPointTool {
 			im.setContents(dataManager.getDataSourceFactory().getDataSource(omd));
 		} catch (IOException e) {
 			Services.getErrorManager().error(
-					"Problem while accessing GeoRaster datas", e);
+					I18N.getString("orbisgis.org.orbisgis.ui.rasterInfoTool.cannotAccessingGeorasterDatas"), e); //$NON-NLS-1$
 		} catch (DriverLoadException e) {
 			Services.getErrorManager().error(
-					"Problem with the ObjectMemoryDriver", e);
+					I18N.getString("orbisgis.org.orbisgis.ui.rasterInfoTool.problemWithGenericDriver"), e); //$NON-NLS-1$
 		} catch (DriverException e) {
 			Services.getErrorManager().error(
-					"Problem while accessing GeoRaster datas", e);
+					I18N.getString("orbisgis.org.orbisgis.ui.rasterInfoTool.cannotAccessingGeorasterDatas"), e); //$NON-NLS-1$
 		}
 	}
 
@@ -149,6 +150,6 @@ public class RasterInfoTool extends AbstractPointTool {
 	}
 	
 	public String getName() {
-		return "Get pixel value";
+		return I18N.getString("orbisgis.org.orbisgis.ui.rasterInfoTool.getPixelValue"); //$NON-NLS-1$
 	}
 }
