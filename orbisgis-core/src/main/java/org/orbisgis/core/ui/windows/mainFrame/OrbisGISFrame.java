@@ -276,7 +276,7 @@ public class OrbisGISFrame extends JFrame implements IWindow {
 		ApplicationInfo ai = (ApplicationInfo) Services
 				.getService(ApplicationInfo.class);
 
-		this.setTitle(I18N.getText("orbisgis.platform") + " - "
+		this.setTitle(I18N.getString("orbisgis.platform") + " - "
 				+ ai.getVersionNumber() + " - " + ai.getVersionName());
 
 		this.setIconImage(OrbisGISIcon.ORBISGIS_LOGOMINI.getImage());
@@ -480,7 +480,7 @@ public class OrbisGISFrame extends JFrame implements IWindow {
 					.error(
 
 							I18N
-									.getText("orbisgis.org.orbisgis.layout.cannotRecoverLayout"),
+									.getString("orbisgis.org.orbisgis.layout.cannotRecoverLayout"),
 							e);
 		}
 	}

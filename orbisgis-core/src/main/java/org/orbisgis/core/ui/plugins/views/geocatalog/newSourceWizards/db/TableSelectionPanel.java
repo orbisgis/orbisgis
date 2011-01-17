@@ -84,7 +84,7 @@ public class TableSelectionPanel implements UIPanel {
 
 	@Override
 	public String getTitle() {
-		return I18N.getText("orbisgis.org.orbisgis.core.db.selectTableOrView");
+		return I18N.getString("orbisgis.org.orbisgis.core.db.selectTableOrView");
 	}
 
 	@Override
@@ -137,7 +137,7 @@ public class TableSelectionPanel implements UIPanel {
 
 				// list Tables
 				DefaultMutableTreeNode tableNode = new DefaultMutableTreeNode(
-						I18N.getText("orbisgis.org.orbisgis.core.db.tables"));
+						I18N.getString("orbisgis.org.orbisgis.core.db.tables"));
 
 				// we send possible loading errors to the Output window
 				DriverException[] exs = dbDriver.getLastNonBlockingErrors();
@@ -157,7 +157,7 @@ public class TableSelectionPanel implements UIPanel {
 
 				// list View
 				DefaultMutableTreeNode viewNode = new DefaultMutableTreeNode(
-						I18N.getText("orbisgis.org.orbisgis.core.db.views"));
+						I18N.getString("orbisgis.org.orbisgis.core.db.views"));
 				if (viewDescriptions.length > 0) {
 					schemaNode.add(viewNode);
 					for (TableDescription viewDescription : viewDescriptions) {
@@ -181,7 +181,7 @@ public class TableSelectionPanel implements UIPanel {
 	public String validateInput() {
 		String validateInput = null;
 		validateInput = (getSelectedDBSources().length == 0) ? I18N
-				.getText("orbisgis.org.orbisgis.core.db.selectAtLeastTableOrView")
+				.getString("orbisgis.org.orbisgis.core.db.selectAtLeastTableOrView")
 				: null;
 		return validateInput;
 	}
@@ -210,7 +210,7 @@ public class TableSelectionPanel implements UIPanel {
 					tables.add(((TableNode) selectedObject));
 			}
 		} catch (SQLException e) {
-			ErrorMessages.error(I18N.getText(""));
+			ErrorMessages.error(I18N.getString(""));
 			e.printStackTrace();
 		} catch (DriverException e) {
 			e.printStackTrace();

@@ -72,7 +72,7 @@ public class WMSGeocatalogPlugIn extends AbstractPlugIn {
 			if (validImageFormat == null) {
 				ErrorMessages
 						.error(I18N
-								.getText("orbisgis.errorMessages.wms.CannotFindImageFormat"));
+								.getString("orbisgis.errorMessages.wms.CannotFindImageFormat"));
 			} else {
 				Object[] layers = layerConfiguration.getSelectedLayers();
 				for (Object layer : layers) {

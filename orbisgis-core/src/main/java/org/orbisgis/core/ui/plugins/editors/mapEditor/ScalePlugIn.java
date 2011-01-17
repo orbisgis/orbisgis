@@ -121,7 +121,7 @@ public class ScalePlugIn extends AbstractPlugIn {
 		panel = new JPanel(new BorderLayout());
 		JLabel label = new JLabel(
 				I18N
-						.getText("orbisgis.org.orbisgis.core.ui.plugins.editors.mapEditor.scale")
+						.getString("orbisgis.org.orbisgis.core.ui.plugins.editors.mapEditor.scale")
 						+ " : ");
 		label.setAlignmentX(Component.LEFT_ALIGNMENT);
 		combobox = new JComboBox(DefaultScales.toArray(new Integer[0]));

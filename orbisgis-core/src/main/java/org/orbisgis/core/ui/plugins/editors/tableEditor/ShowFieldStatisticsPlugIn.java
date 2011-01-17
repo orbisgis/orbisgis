@@ -117,7 +117,7 @@ public class ShowFieldStatisticsPlugIn extends AbstractPlugIn {
 			om
 					.println(
 							I18N
-									.getText("orbisgis.org.orbisgis.core.ui.plugins.editors.tableEditor.fieldStatistics")
+									.getString("orbisgis.org.orbisgis.core.ui.plugins.editors.tableEditor.fieldStatistics")
 									+ fieldName, Color.red);
 			for (int i = 0; i < dsResult.getRowCount(); i++) {
 

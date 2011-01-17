@@ -61,7 +61,7 @@ class ConfigurationTreeModel extends AbstractTreeModel {
 			}
 		} else {
 			Services.getErrorManager().error("bug!",
-					new RuntimeException(I18N.getText("orbisgis.org.orbisgis.configuration.menuChildren")));
+					new RuntimeException(I18N.getString("orbisgis.org.orbisgis.configuration.menuChildren")));
 			return null;
 		}
 	}
@@ -80,7 +80,7 @@ class ConfigurationTreeModel extends AbstractTreeModel {
 			return childCount;
 		} else {
 			Services.getErrorManager().error("bug!",
-					new RuntimeException(I18N.getText("orbisgis.org.orbisgis.configuration.menuChildren")));
+					new RuntimeException(I18N.getString("orbisgis.org.orbisgis.configuration.menuChildren")));
 			return 0;
 		}
 	}
@@ -111,7 +111,7 @@ class ConfigurationTreeModel extends AbstractTreeModel {
 			return -1;
 		} else {
 			Services.getErrorManager().error("bug!",
-					new RuntimeException(I18N.getText("orbisgis.org.orbisgis.configuration.menuChildren")));
+					new RuntimeException(I18N.getString("orbisgis.org.orbisgis.configuration.menuChildren")));
 			return -1;
 		}
 	}

@@ -59,7 +59,7 @@ public class RedoMapPlugIn extends AbstractPlugIn {
 		btn = new JButton(OrbisGISIcon.REDO_ICON);
 		btn
 				.setToolTipText(I18N
-						.getText("orbisgis.org.orbisgis.core.ui.plugins.editors.tableEditor.redo"));
+						.getString("orbisgis.org.orbisgis.core.ui.plugins.editors.tableEditor.redo"));
 	}
 
 	public boolean execute(PlugInContext context) throws Exception {

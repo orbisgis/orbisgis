@@ -182,6 +182,6 @@ public class TocViewPlugIn extends ViewPlugIn {
 	}
 
 	public String getName() {
-		return I18N.getText("orbisgis.org.orbisgis.toc.view");
+		return I18N.getString("orbisgis.org.orbisgis.toc.view");
 	}
 }

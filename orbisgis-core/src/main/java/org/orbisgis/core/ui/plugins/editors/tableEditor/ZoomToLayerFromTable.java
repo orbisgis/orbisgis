@@ -95,7 +95,7 @@ public class ZoomToLayerFromTable extends AbstractPlugIn {
 			@Override
 			public String getTaskName() {
 				return I18N
-						.getText("orbisgis.org.orbisgis.core.ui.plugins.editors.tableEditor.zoomToLayer.extent");
+						.getString("orbisgis.org.orbisgis.core.ui.plugins.editors.tableEditor.zoomToLayer.extent");
 			}
 		});
 		return true;

@@ -128,7 +128,7 @@ public class SQLConsolePanel extends JPanel implements DropTargetListener {
 		northPanel.add(getBtOpen());
 		northPanel.add(getBtSave());
 		northPanel.add(new JLabel("  "
-				+ I18N.getText("orbisgis.org.orbisgis.FindText") + " "));
+				+ I18N.getString("orbisgis.org.orbisgis.FindText") + " "));
 		northPanel.add(getJTextFieldPanel());
 		setBtExecute();
 		setBtClear();
@@ -232,12 +232,12 @@ public class SQLConsolePanel extends JPanel implements DropTargetListener {
 
 			if (patternFound > 0) {
 				setStatusMessage(pattern + " "
-						+ I18N.getText("orbisgis.org.orbisgis.found") + " "
+						+ I18N.getString("orbisgis.org.orbisgis.found") + " "
 						+ patternFound + " "
-						+ I18N.getText("orbisgis.org.orbisgis.Times"));
+						+ I18N.getString("orbisgis.org.orbisgis.Times"));
 			} else {
 				setStatusMessage(pattern + " "
-						+ I18N.getText("orbisgis.org.orbisgis.notFound"));
+						+ I18N.getString("orbisgis.org.orbisgis.notFound"));
 			}
 		} catch (BadLocationException e) {
 		}
@@ -249,7 +249,7 @@ public class SQLConsolePanel extends JPanel implements DropTargetListener {
 			btExecute = new ConsoleButton(ConsoleAction.EXECUTE,
 					actionAndKeyListener);
 			btExecute.setToolTipText(I18N
-					.getText("orbisgis.org.orbisgis.Execute"));
+					.getString("orbisgis.org.orbisgis.Execute"));
 		}
 		return btExecute;
 	}
@@ -258,7 +258,7 @@ public class SQLConsolePanel extends JPanel implements DropTargetListener {
 		if (null == btClear) {
 			btClear = new ConsoleButton(ConsoleAction.CLEAR,
 					actionAndKeyListener);
-			btClear.setToolTipText(I18N.getText("orbisgis.org.orbisgis.Clear"));
+			btClear.setToolTipText(I18N.getString("orbisgis.org.orbisgis.Clear"));
 		}
 		return btClear;
 	}
@@ -266,7 +266,7 @@ public class SQLConsolePanel extends JPanel implements DropTargetListener {
 	private JButton getBtOpen() {
 		if (null == btOpen) {
 			btOpen = new ConsoleButton(ConsoleAction.OPEN, actionAndKeyListener);
-			btOpen.setToolTipText(I18N.getText("orbisgis.org.orbisgis.Open"));
+			btOpen.setToolTipText(I18N.getString("orbisgis.org.orbisgis.Open"));
 		}
 		return btOpen;
 	}
@@ -274,7 +274,7 @@ public class SQLConsolePanel extends JPanel implements DropTargetListener {
 	private JButton getBtSave() {
 		if (null == btSave) {
 			btSave = new ConsoleButton(ConsoleAction.SAVE, actionAndKeyListener);
-			btSave.setToolTipText(I18N.getText("orbisgis.org.orbisgis.Save"));
+			btSave.setToolTipText(I18N.getString("orbisgis.org.orbisgis.Save"));
 		}
 		return btSave;
 	}
@@ -495,7 +495,7 @@ public class SQLConsolePanel extends JPanel implements DropTargetListener {
 				ErrorMessages
 						.error(
 								I18N
-										.getText("orbisgis.org.orbisgis.textArea.BadLocationException"),
+										.getString("orbisgis.org.orbisgis.textArea.BadLocationException"),
 								e);
 			}
 		} else {

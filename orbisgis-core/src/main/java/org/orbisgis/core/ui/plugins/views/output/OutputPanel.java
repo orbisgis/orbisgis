@@ -84,7 +84,7 @@ public class OutputPanel extends JPanel implements OutputManager {
 		buttonsPanel.setLayout(flowLayout);
 		JButton deleteBt = new JButton();
 		deleteBt.setIcon(OrbisGISIcon.EDIT_CLEAR);
-		deleteBt.setToolTipText(I18N.getText("orbisgis.org.orbisgis.Clear"));
+		deleteBt.setToolTipText(I18N.getString("orbisgis.org.orbisgis.Clear"));
 		deleteBt.setBorderPainted(false);
 		deleteBt.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ae) {

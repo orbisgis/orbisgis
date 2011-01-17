@@ -71,8 +71,8 @@ public abstract class Polygon implements Automaton {
 
 		if ("Point".equals(status)) {
 
-			ret.add(I18N.getText("orbisgis.core.ui.editors.map.tool.polygon_point_to_done"));
-			ret.add(I18N.getText("orbisgis.core.ui.editors.map.tool.cancel"));
+			ret.add(I18N.getString("orbisgis.core.ui.editors.map.tool.polygon_point_to_done"));
+			ret.add(I18N.getString("orbisgis.core.ui.editors.map.tool.cancel"));
 
 		}
 
@@ -328,11 +328,11 @@ public abstract class Polygon implements Automaton {
 	public String getMessage() {
 
 		if ("Standby".equals(status)) {
-			return I18N.getText("orbisgis.core.ui.editors.map.tool.polygon_standby");
+			return I18N.getString("orbisgis.core.ui.editors.map.tool.polygon_standby");
 		}
 
 		if ("Point".equals(status)) {
-			return I18N.getText("orbisgis.core.ui.editors.map.tool.polygon_point");
+			return I18N.getString("orbisgis.core.ui.editors.map.tool.polygon_point");
 		}
 
 		if ("Done".equals(status)) {
@@ -351,7 +351,7 @@ public abstract class Polygon implements Automaton {
 	}
 
 	public String getTooltip() {
-		return I18N.getText("orbisgis.core.ui.editors.map.tool.polygon_tooltip");
+		return I18N.getString("orbisgis.core.ui.editors.map.tool.polygon_tooltip");
 	}
 
 	private ImageIcon mouseCursor;

@@ -119,6 +119,6 @@ public class SelectionTool extends AbstractSelectionTool {
 
 	public String getName() {
 		return I18N
-				.getText("orbisgis.core.ui.editors.map.tool.selection_tooltip");
+				.getString("orbisgis.core.ui.editors.map.tool.selection_tooltip");
 	}
 }

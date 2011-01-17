@@ -88,7 +88,7 @@ public class SaveLayerPlugIn extends AbstractPlugIn {
 			return;
 		}
 		JOptionPane.showMessageDialog(null, I18N
-				.getText("orbisgis.org.orbisgis.layerSaved"));
+				.getString("orbisgis.org.orbisgis.layerSaved"));
 	}
 
 	public boolean isEnabled() {

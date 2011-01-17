@@ -110,7 +110,7 @@ public class FunctionPanel extends AbstractUIPanel {
 		CRFlowLayout flowLayout = new CRFlowLayout();
 		flowLayout.setAlignment(CRFlowLayout.LEFT);
 		pnlButtons.setLayout(flowLayout);
-		JButton btnAll = new JButton(I18N.getText(Names.SELECT_ALL));
+		JButton btnAll = new JButton(I18N.getString(Names.SELECT_ALL));
 		btnAll.addActionListener(new ActionListener() {
 
 			@Override
@@ -120,7 +120,7 @@ public class FunctionPanel extends AbstractUIPanel {
 			}
 
 		});
-		JButton btnNone = new JButton(I18N.getText(Names.SELECT_NONE));
+		JButton btnNone = new JButton(I18N.getString(Names.SELECT_NONE));
 		btnNone.addActionListener(new ActionListener() {
 
 			@Override
@@ -135,7 +135,7 @@ public class FunctionPanel extends AbstractUIPanel {
 		pnlButtons.setVisible(multiple);
 		pane.add(pnlButtons, BorderLayout.EAST);
 		functionLabelCount = new JLabel(I18N
-				.getText(Names.FUNCTION_PANEL_NUMBER + " : " + names.length)
+				.getString(Names.FUNCTION_PANEL_NUMBER + " : " + names.length)
 				+ " on " + functionsCount + " functions.");
 		pane.add(functionLabelCount, BorderLayout.SOUTH);
 
@@ -158,7 +158,7 @@ public class FunctionPanel extends AbstractUIPanel {
 
 		if (null == searchPanel) {
 			searchPanel = new JPanel();
-			JLabel label = new JLabel(I18N.getText(Names.SEARCH) + " : ");
+			JLabel label = new JLabel(I18N.getString(Names.SEARCH) + " : ");
 
 			final JButtonTextField txtFilter = new JButtonTextField();
 			txtFilter.getDocument().addDocumentListener(new DocumentListener() {
@@ -196,7 +196,7 @@ public class FunctionPanel extends AbstractUIPanel {
 	public String validateInput() {
 		if (lst.getSelectedIndex() == -1) {
 			return I18N
-					.getText("orbisgis.org.orbisgis.core.anItemMustBeSelected");
+					.getString("orbisgis.org.orbisgis.core.anItemMustBeSelected");
 		}
 		return null;
 	}

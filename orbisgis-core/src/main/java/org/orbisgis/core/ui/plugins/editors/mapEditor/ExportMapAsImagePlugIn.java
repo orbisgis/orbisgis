@@ -92,7 +92,7 @@ public class ExportMapAsImagePlugIn extends AbstractPlugIn {
 
 		final SaveFilePanel outfilePanel = new SaveFilePanel(
 				"org.orbisgis.core.ui.editors.map.actions.ExportMapAsImage",
-				I18N.getText("orbisgis.core.file.chooseFileFormat"));
+				I18N.getString("orbisgis.core.file.chooseFileFormat"));
 		outfilePanel.addFilter("png", "Portable Network Graphics (*.png)");
 
 		if (UIFactory.showDialog(outfilePanel)) {
@@ -103,7 +103,7 @@ public class ExportMapAsImagePlugIn extends AbstractPlugIn {
 				ImageIO.write(subImg, "png", savedFile);
 
 				JOptionPane.showMessageDialog(null, I18N
-						.getText("orbisgis.core.file.fileSaved"));
+						.getString("orbisgis.core.file.fileSaved"));
 
 			} catch (IOException e) {
 				ErrorMessages.error(ErrorMessages.CannotWriteImage, e);

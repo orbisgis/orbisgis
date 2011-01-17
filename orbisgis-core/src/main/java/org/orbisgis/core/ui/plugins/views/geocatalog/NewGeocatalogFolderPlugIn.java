@@ -83,7 +83,7 @@ public class NewGeocatalogFolderPlugIn extends AbstractPlugIn {
 	@Override
 	public boolean execute(PlugInContext context) throws Exception {
 		final OpenGdmsFolderPanel folderPanel = new OpenGdmsFolderPanel(I18N
-				.getText("orbisgis.org.core.folderAdd"));
+				.getString("orbisgis.org.core.folderAdd"));
 		if (UIFactory.showDialog(new UIPanel[] { folderPanel })) {
 
 			File[] files = folderPanel.getSelectedFiles();
@@ -97,7 +97,7 @@ public class NewGeocatalogFolderPlugIn extends AbstractPlugIn {
 
 					@Override
 					public String getTaskName() {
-						return I18N.getText("orbisgis.org.core.addFromFolder");
+						return I18N.getString("orbisgis.org.core.addFromFolder");
 					}
 
 					@Override

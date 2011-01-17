@@ -68,16 +68,16 @@ public class ShowFieldInfoPlugIn extends AbstractPlugIn {
 			OutputManager om = Services.getService(OutputManager.class);
 			om
 					.print(I18N
-							.getText("orbisgis.org.orbisgis.core.ui.plugins.editors.tableEditor.fieldName")
+							.getString("orbisgis.org.orbisgis.core.ui.plugins.editors.tableEditor.fieldName")
 							+ metadata.getFieldName(getSelectedColumn()) + "\n");
 			Type type = metadata.getFieldType(getSelectedColumn());
 			om
 					.print(I18N
-							.getText("orbisgis.org.orbisgis.core.ui.plugins.editors.tableEditor.fieldType")
+							.getString("orbisgis.org.orbisgis.core.ui.plugins.editors.tableEditor.fieldType")
 							+ TypeFactory.getTypeName(type.getTypeCode())
 							+ "\n"
 							+ I18N
-									.getText("orbisgis.org.orbisgis.core.ui.plugins.editors.tableEditor.fieldConstraints")
+									.getString("orbisgis.org.orbisgis.core.ui.plugins.editors.tableEditor.fieldConstraints")
 							+ ":\n");
 			Constraint[] cons = type.getConstraints();
 			for (Constraint constraint : cons) {

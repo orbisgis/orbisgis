@@ -86,7 +86,7 @@ public class WorkspaceConfiguration implements IConfiguration {
 					.getErrorManager()
 					.warning(
 							I18N
-									.getText("orbisgis.org.orbisgis.configuration.workspace.noTimer"));
+									.getString("orbisgis.org.orbisgis.configuration.workspace.noTimer"));
 		}
 		return 0;
 	}
@@ -110,17 +110,17 @@ public class WorkspaceConfiguration implements IConfiguration {
 			String timer = panel.getTimer().getValue();
 			if (timer.equals("")) {
 				return I18N
-						.getText("orbisgis.org.orbisgis.configuration.workspace.timerGreaterThan1");
+						.getString("orbisgis.org.orbisgis.configuration.workspace.timerGreaterThan1");
 			} else {
 				try {
 					int timerValue = Integer.parseInt(timer);
 					if (timerValue < 1 && timerValue > 60) {
 						return I18N
-								.getText("orbisgis.org.orbisgis.configuration.workspace.timerBetween1and60");
+								.getString("orbisgis.org.orbisgis.configuration.workspace.timerBetween1and60");
 					}
 				} catch (NumberFormatException e) {
 					return I18N
-							.getText("orbisgis.org.orbisgis.configuration.workspace.onlyNumericAllowed");
+							.getString("orbisgis.org.orbisgis.configuration.workspace.onlyNumericAllowed");
 				}
 
 			}

@@ -19,11 +19,11 @@ public class WorkspacePanel extends JPanel implements ItemListener {
 
 	private static final int MAX_DIGITS = 5;
 	private static final String TIMER_LABEL = I18N
-			.getText("orbisgis.org.orbisgis.configuration.workspace.timerMinutes");
+			.getString("orbisgis.org.orbisgis.configuration.workspace.timerMinutes");
 	private static final String TIMER_GROUP = I18N
-			.getText("orbisgis.ui.menu.file.text.saveWorkspace");
+			.getString("orbisgis.ui.menu.file.text.saveWorkspace");
 	private static final String TIMER_CHECK = I18N
-			.getText("orbisgis.org.core.enableSaving");
+			.getString("orbisgis.org.core.enableSaving");
 
 	private JCheckBox authCheck;
 

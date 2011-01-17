@@ -165,12 +165,12 @@ public class LayerConfigurationPanel extends JPanel implements UIPanel {
 
         @Override
         public String getInfoText() {
-                return I18N.getText("orbisgis.org.orbisgis.wms.serverLayers");
+                return I18N.getString("orbisgis.org.orbisgis.wms.serverLayers");
         }
 
         @Override
         public String getTitle() {
-                return I18N.getText("orbisgis.org.orbisgis.wms.layerConfiguration");
+                return I18N.getString("orbisgis.org.orbisgis.wms.layerConfiguration");
         }
 
         @Override
@@ -225,7 +225,7 @@ public class LayerConfigurationPanel extends JPanel implements UIPanel {
         @Override
         public String validateInput() {
                 if (getSelectedLayers().length == 0) {
-                        return I18N.getText("orbisgis.org.orbisgis.core.AtLeastAlayerMustBeSelected");
+                        return I18N.getString("orbisgis.org.orbisgis.core.AtLeastAlayerMustBeSelected");
                 }
 
                 return null;

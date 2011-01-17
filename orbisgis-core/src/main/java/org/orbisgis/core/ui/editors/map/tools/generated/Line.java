@@ -72,11 +72,11 @@ public abstract class Line implements Automaton {
 		if ("Point".equals(status)) {
 
 			ret.add(I18N
-					.getText("orbisgis.core.ui.editors.map.tool.cancel"));
+					.getString("orbisgis.core.ui.editors.map.tool.cancel"));
 
 			ret
 					.add(I18N
-							.getText("orbisgis.core.ui.editors.map.tool.line_point_to_done"));
+							.getString("orbisgis.core.ui.editors.map.tool.line_point_to_done"));
 
 		}
 
@@ -330,12 +330,12 @@ public abstract class Line implements Automaton {
 
 		if ("Standby".equals(status)) {
 			return I18N
-					.getText("orbisgis.core.ui.editors.map.tool.line_standby");
+					.getString("orbisgis.core.ui.editors.map.tool.line_standby");
 		}
 
 		if ("Point".equals(status)) {
 			return I18N
-					.getText("orbisgis.core.ui.editors.map.tool.line_point");
+					.getString("orbisgis.core.ui.editors.map.tool.line_point");
 		}
 
 		if ("Done".equals(status)) {
@@ -355,7 +355,7 @@ public abstract class Line implements Automaton {
 
 	public String getTooltip() {
 		return I18N
-				.getText("orbisgis.core.ui.editors.map.tool.line_tooltip");
+				.getString("orbisgis.core.ui.editors.map.tool.line_tooltip");
 	}
 
 	private ImageIcon mouseCursor;

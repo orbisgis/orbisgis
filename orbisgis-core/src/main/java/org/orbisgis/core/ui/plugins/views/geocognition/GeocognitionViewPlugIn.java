@@ -109,6 +109,6 @@ public class GeocognitionViewPlugIn extends ViewPlugIn {
 	}
 
 	public String getName() {
-		return I18N.getText("orbisgis.org.orbisgis.geocognition.view");
+		return I18N.getString("orbisgis.org.orbisgis.geocognition.view");
 	}
 }

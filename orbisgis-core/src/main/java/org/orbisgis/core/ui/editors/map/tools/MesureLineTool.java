@@ -99,6 +99,6 @@ public class MesureLineTool extends AbstractLineTool {
 	}
 
 	public String getName() {
-		return I18N.getText("orbisgis.core.ui.editors.map.tool.mesure.length");
+		return I18N.getString("orbisgis.core.ui.editors.map.tool.mesure.length");
 	}
 }

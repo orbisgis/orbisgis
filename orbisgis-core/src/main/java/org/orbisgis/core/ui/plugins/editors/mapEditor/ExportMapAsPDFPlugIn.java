@@ -90,7 +90,7 @@ public class ExportMapAsPDFPlugIn extends AbstractPlugIn {
 
 		final SaveFilePanel outfilePanel = new SaveFilePanel(
 				"org.orbisgis.core.ui.editors.map.actions.ExportMapAsPDF", I18N
-						.getText("orbisgis.core.file.chooseFileFormat"));
+						.getString("orbisgis.core.file.chooseFileFormat"));
 		outfilePanel.addFilter("pdf", "Portable Document Format (*.pdf)");
 
 		ScaleEditor scaleEditor = new ScaleEditor(mapEditor.getMapTransform()
@@ -240,7 +240,7 @@ public class ExportMapAsPDFPlugIn extends AbstractPlugIn {
 				cb.addTemplate(templateScale, 0, 0);
 
 				JOptionPane.showMessageDialog(null, I18N
-						.getText("orbisgis.core.file.fileSaved"));
+						.getString("orbisgis.core.file.fileSaved"));
 			}
 
 		} catch (FileNotFoundException e) {

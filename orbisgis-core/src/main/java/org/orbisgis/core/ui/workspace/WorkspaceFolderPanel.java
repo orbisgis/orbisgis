@@ -81,7 +81,7 @@ public class WorkspaceFolderPanel extends JPanel implements UIPanel {
 		setLayout(new BorderLayout());
 		this.comboList = workspaces;
 		panel = new JPanel(new BorderLayout());
-		JLabel label = new JLabel(I18N.getText("orbisgis.core.ui.workspace")
+		JLabel label = new JLabel(I18N.getString("orbisgis.core.ui.workspace")
 				+ " : ");
 		combobox = new JComboBox(workspaces.toArray(new String[workspaces
 				.size()]));
@@ -97,7 +97,7 @@ public class WorkspaceFolderPanel extends JPanel implements UIPanel {
 		btFolder.setContentAreaFilled(false);
 		btFolder.setIcon(IconLoader.getIcon("open.png"));
 		btFolder.setToolTipText(I18N
-				.getText("orbisgis.core.file.choose_folder"));
+				.getString("orbisgis.core.file.choose_folder"));
 		btFolder.setPreferredSize(new Dimension(30, 20));
 		btFolder.addActionListener(new ActionListener() {
 			@Override
@@ -127,7 +127,7 @@ public class WorkspaceFolderPanel extends JPanel implements UIPanel {
 		});
 
 		jCheckBox = new JCheckBox(I18N
-				.getText("orbisgis.core.ui.workspace.default"));
+				.getString("orbisgis.core.ui.workspace.default"));
 		jCheckBox.setEnabled(true);
 		final DefaultWorkspace workspace = (DefaultWorkspace) Services
 				.getService(Workspace.class);
@@ -162,13 +162,13 @@ public class WorkspaceFolderPanel extends JPanel implements UIPanel {
 	@Override
 	public String getInfoText() {
 		return I18N
-				.getText("orbisgis.core.ui.workspace.selectWorkspaceFilePanel.infoText");
+				.getString("orbisgis.core.ui.workspace.selectWorkspaceFilePanel.infoText");
 	}
 
 	@Override
 	public String getTitle() {
 		return I18N
-				.getText("orbisgis.core.ui.workspace.selectWorkspaceFilePanel.title");
+				.getString("orbisgis.core.ui.workspace.selectWorkspaceFilePanel.title");
 	}
 
 	@Override
@@ -201,7 +201,7 @@ public class WorkspaceFolderPanel extends JPanel implements UIPanel {
 			return null;
 		} else if (file.exists() && !file.isDirectory()) {
 			setCheckBoxSelected(false);
-			return I18N.getText("orbisgis.core.file.must_be_a_directory ");
+			return I18N.getString("orbisgis.core.file.must_be_a_directory ");
 		} else {
 			return checkWorkspace(file);
 		}
@@ -228,11 +228,11 @@ public class WorkspaceFolderPanel extends JPanel implements UIPanel {
 				} catch (IOException e1) {
 					setCheckBoxSelected(false);
 					return I18N
-							.getText("orbisgis.core.ui.workspace.cannot_read_version");
+							.getString("orbisgis.core.ui.workspace.cannot_read_version");
 				} catch (NumberFormatException e) {
 					setCheckBoxSelected(false);
 					return I18N
-							.getText("orbisgis.core.ui.workspace.cannot_read_version");
+							.getString("orbisgis.core.ui.workspace.cannot_read_version");
 				}
 			} else {
 				version = DefaultWorkspace.WORKSPACE_VERSION;
@@ -241,14 +241,14 @@ public class WorkspaceFolderPanel extends JPanel implements UIPanel {
 					.getService(Workspace.class);
 			if (dw.getWsVersion() != version) {
 				setCheckBoxSelected(false);
-				return I18N.getText("orbisgis.core.ui.workspace.bad_version");
+				return I18N.getString("orbisgis.core.ui.workspace.bad_version");
 			}
 		} else if (file.exists() && file.isDirectory()) {
 
 			File versionFile = new File(file, "org.orbisgis.version.txt");
 			if (!versionFile.exists()) {
 				setCheckBoxSelected(false);
-				return I18N.getText("orbisgis.core.ui.workspace.invalid");
+				return I18N.getString("orbisgis.core.ui.workspace.invalid");
 			} else {
 				DefaultWorkspace workspace = (DefaultWorkspace) Services
 						.getService(Workspace.class);
@@ -259,7 +259,7 @@ public class WorkspaceFolderPanel extends JPanel implements UIPanel {
 					if (file.getAbsolutePath().equals(currentWorkspacefolder)
 							&& !isSelected()) {
 						return I18N
-								.getText("orbisgis.core.ui.workspace.already_used");
+								.getString("orbisgis.core.ui.workspace.already_used");
 					}
 				}
 			}

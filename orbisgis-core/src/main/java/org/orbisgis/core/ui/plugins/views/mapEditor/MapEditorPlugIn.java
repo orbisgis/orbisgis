@@ -148,13 +148,13 @@ public class MapEditorPlugIn extends ViewPlugIn implements WorkbenchFrame,
 
 		} catch (TransitionException e) {
 			Services.getErrorManager().error(
-					I18N.getText("orbisgis.core.tool.not_valid"), e);
+					I18N.getString("orbisgis.core.tool.not_valid"), e);
 		} catch (InstantiationException e) {
 			Services.getErrorManager().error(
-					I18N.getText("orbisgis.core.tool.not_valid"), e);
+					I18N.getString("orbisgis.core.tool.not_valid"), e);
 		} catch (IllegalAccessException e) {
 			Services.getErrorManager().error(
-					I18N.getText("orbisgis.core.tool.not_valid"), e);
+					I18N.getString("orbisgis.core.tool.not_valid"), e);
 		}
 
 		this.mapElement = element;
@@ -230,7 +230,7 @@ public class MapEditorPlugIn extends ViewPlugIn implements WorkbenchFrame,
 	}
 
 	public String getName() {
-		return I18N.getText("orbisgis.org.orbisgis.mapEditor.view");
+		return I18N.getString("orbisgis.org.orbisgis.mapEditor.view");
 	}
 
 	public WorkbenchToolBar getMapToolBar() {

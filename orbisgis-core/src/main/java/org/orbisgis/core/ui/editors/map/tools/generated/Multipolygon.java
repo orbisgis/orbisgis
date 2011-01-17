@@ -68,19 +68,19 @@ public abstract class Multipolygon implements Automaton {
 
 		if ("Standby".equals(status)) {
 
-			ret.add(I18N.getText("orbisgis.core.ui.editors.map.tool.cancel"));
+			ret.add(I18N.getString("orbisgis.core.ui.editors.map.tool.cancel"));
 
-			ret.add(I18N.getText("orbisgis.core.ui.editors.map.tool.multipolygon_standby_to_done"));
+			ret.add(I18N.getString("orbisgis.core.ui.editors.map.tool.multipolygon_standby_to_done"));
 
 		}
 
 		if ("Point".equals(status)) {
 
-			ret.add(I18N.getText("orbisgis.core.ui.editors.map.tool.cancel"));
+			ret.add(I18N.getString("orbisgis.core.ui.editors.map.tool.cancel"));
 
-			ret.add(I18N.getText("orbisgis.core.ui.editors.map.tool.multipolygon_point_to_line"));
+			ret.add(I18N.getString("orbisgis.core.ui.editors.map.tool.multipolygon_point_to_line"));
 
-			ret.add(I18N.getText("orbisgis.core.ui.editors.map.tool.multipolygon_point_to_done"));
+			ret.add(I18N.getString("orbisgis.core.ui.editors.map.tool.multipolygon_point_to_done"));
 
 		}
 
@@ -431,11 +431,11 @@ public abstract class Multipolygon implements Automaton {
 	public String getMessage() {
 
 		if ("Standby".equals(status)) {
-			return I18N.getText("orbisgis.core.ui.editors.map.tool.multipolygon_standby");
+			return I18N.getString("orbisgis.core.ui.editors.map.tool.multipolygon_standby");
 		}
 
 		if ("Point".equals(status)) {
-			return I18N.getText("orbisgis.core.ui.editors.map.tool.multipolygon_point");
+			return I18N.getString("orbisgis.core.ui.editors.map.tool.multipolygon_point");
 		}
 
 		if ("Line".equals(status)) {
@@ -458,7 +458,7 @@ public abstract class Multipolygon implements Automaton {
 	}
 
 	public String getTooltip() {
-		return I18N.getText("orbisgis.core.ui.editors.map.tool.multipolygon_tooltip");
+		return I18N.getString("orbisgis.core.ui.editors.map.tool.multipolygon_tooltip");
 	}
 
 	private ImageIcon mouseCursor;

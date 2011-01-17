@@ -68,32 +68,32 @@ public class ConnectionPanel extends MultiInputPanel {
 
 	public ConnectionPanel() {
 		super("org.orbisgis.core.ui.geocatalog.resources.db.FirstUIPanel", I18N
-				.getText("orbisgis.org.core.db.connect"));
+				.getString("orbisgis.org.core.db.connect"));
 		setInfoText(I18N
-				.getText("orbisgis.org.orbisgis.core.db.connectionParameters"));
-		addInput(DBTYPE, I18N.getText("orbisgis.org.orbisgis.core.db.dbType"),
+				.getString("orbisgis.org.orbisgis.core.db.connectionParameters"));
+		addInput(DBTYPE, I18N.getString("orbisgis.org.orbisgis.core.db.dbType"),
 				getDriverInput());
 		addValidationExpression(DBTYPE + " is not null", I18N
-				.getText("orbisgis.org.orbisgis.core.db.dbTypeChooser"));
-		addInput(HOST, I18N.getText("orbisgis.org.orbisgis.core.hostName"),
+				.getString("orbisgis.org.orbisgis.core.db.dbTypeChooser"));
+		addInput(HOST, I18N.getString("orbisgis.org.orbisgis.core.hostName"),
 				"127.0.0.1", new StringType(LENGTH));
 		addValidationExpression(HOST + " is not null", I18N
-				.getText("orbisgis.org.orbisgis.core.db.hostNameChooser"));
+				.getString("orbisgis.org.orbisgis.core.db.hostNameChooser"));
 		addInput(PORT, I18N
-				.getText("orbisgis.org.orbisgis.core.db.portNumberDefault"),
+				.getString("orbisgis.org.orbisgis.core.db.portNumberDefault"),
 				"0", new IntType(LENGTH));
 
 		addValidationExpression("(" + PORT + " >= 0) and (" + PORT
 				+ " <= 32767)", I18N
-				.getText("orbisgis.org.orbisgis.core.db.portNumber"));
-		addInput(DBNAME, I18N.getText("orbisgis.org.orbisgis.core.db.dbName"),
+				.getString("orbisgis.org.orbisgis.core.db.portNumber"));
+		addInput(DBNAME, I18N.getString("orbisgis.org.orbisgis.core.db.dbName"),
 				"database_name", new StringType(LENGTH));
 		addValidationExpression(DBNAME + " is not null", I18N
-				.getText("orbisgis.org.orbisgis.core.db.dbNameMandatory"));
-		addInput(USER, I18N.getText("orbisgis.org.orbisgis.core.userName"),
+				.getString("orbisgis.org.orbisgis.core.db.dbNameMandatory"));
+		addInput(USER, I18N.getString("orbisgis.org.orbisgis.core.userName"),
 				"postgres", new StringType(LENGTH));
 		addInput(PASSWORD, I18N
-				.getText("orbisgis.org.orbisgis.core.password"), "",
+				.getString("orbisgis.org.orbisgis.core.password"), "",
 				new PasswordType(LENGTH));
 	}
 

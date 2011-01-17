@@ -76,9 +76,9 @@ public class GeocatalogStopEditionPlugIn extends AbstractPlugIn {
 						.showConfirmDialog(
 								catalog,
 								I18N
-										.getText("orbisgis.org.orbisgis.core.editing.saveChanges"),
+										.getString("orbisgis.org.orbisgis.core.editing.saveChanges"),
 								I18N
-										.getText("orbisgis.org.orbisgis.core.editing.stop"),
+										.getString("orbisgis.org.orbisgis.core.editing.stop"),
 								JOptionPane.YES_NO_CANCEL_OPTION);
 				if (option == JOptionPane.YES_OPTION) {
 					try {

@@ -194,7 +194,7 @@ public class CompassTool extends Compass {
 	}
 
 	public String getName() {
-		return I18N.getText("orbisgis.core.ui.editors.map.tool.mesure.angle");
+		return I18N.getString("orbisgis.core.ui.editors.map.tool.mesure.angle");
 	}
 
 }

@@ -52,7 +52,7 @@ public class RenderingConfigurationPanel extends JPanel implements ItemListener 
 		getAntialiasingCheck()
 				.setText(
 						I18N
-								.getText("orbisgis.org.orbisgis.configuration.activateAntialiasing"));
+								.getString("orbisgis.org.orbisgis.configuration.activateAntialiasing"));
 		getAntialiasingCheck().setSelected(antialiasing);
 		getAntialiasingCheck().addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -80,7 +80,7 @@ public class RenderingConfigurationPanel extends JPanel implements ItemListener 
 		getCompositeCheck()
 				.setText(
 						I18N
-								.getText("orbisgis.org.orbisgis.configuration.activateSourceOver"));
+								.getString("orbisgis.org.orbisgis.configuration.activateSourceOver"));
 		getCompositeCheck().setSelected(composite);
 
 		getCompositeCheck().addActionListener(new ActionListener() {

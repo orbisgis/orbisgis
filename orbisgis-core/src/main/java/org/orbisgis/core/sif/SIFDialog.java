@@ -66,7 +66,7 @@ public class SIFDialog extends AbstractOutsideFrame {
 	private void init(boolean okCancel) {
 		this.setLayout(new BorderLayout());
 
-		btnOk = new JButton(I18N.getText("orbisgis.org.core.ok"));
+		btnOk = new JButton(I18N.getString("orbisgis.org.core.ok"));
 		btnOk.setBorderPainted(false);
 		btnOk.addActionListener(new ActionListener() {
 
@@ -77,7 +77,7 @@ public class SIFDialog extends AbstractOutsideFrame {
 
 		});
 		getRootPane().setDefaultButton(btnOk);
-		btnCancel = new JButton(I18N.getText("orbisgis.org.core.cancel"));
+		btnCancel = new JButton(I18N.getString("orbisgis.org.core.cancel"));
 		btnCancel.setBorderPainted(false);
 		btnCancel.addActionListener(new ActionListener() {
 

@@ -107,7 +107,7 @@ public class SelectEqualPlugIn extends AbstractPlugIn {
 			@Override
 			public String getTaskName() {
 				return I18N
-						.getText("orbisgis.org.orbisgis.core.ui.plugins.editors.tableEditor.findMatch");
+						.getString("orbisgis.org.orbisgis.core.ui.plugins.editors.tableEditor.findMatch");
 			}
 		});
 		return true;

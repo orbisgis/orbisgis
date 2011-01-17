@@ -72,7 +72,7 @@ public class ExportInFileOperation implements BackgroundJob {
 
 	@Override
 	public String getTaskName() {
-		return I18N.getText("orbisgis.org.orbisgsis.exportInFile");
+		return I18N.getString("orbisgis.org.orbisgsis.exportInFile");
 	}
 
 	@Override
@@ -92,7 +92,7 @@ public class ExportInFileOperation implements BackgroundJob {
 		try {
 			dsf.saveContents(fileName, dsf.getDataSource(sourceName), pm);
 			JOptionPane.showMessageDialog(null,
-					I18N.getText("orbisgis.org.orbisgsis.exportInFile.geocatalog"));
+					I18N.getString("orbisgis.org.orbisgsis.exportInFile.geocatalog"));
 		} catch (SemanticException e) {
 			ErrorMessages.error(ErrorMessages.SQLStatementError, e);
 		} catch (DriverException e) {

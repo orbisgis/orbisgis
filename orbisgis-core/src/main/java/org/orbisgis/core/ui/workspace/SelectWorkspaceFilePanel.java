@@ -100,9 +100,9 @@ public class SelectWorkspaceFilePanel extends AbstractUIPanel implements
 	public String validateInput() {
 		File file = getSelectedFile();
 		if (file == null) {
-			return I18N.getText("orbisgis.core.file.set_folder_name");
+			return I18N.getString("orbisgis.core.file.set_folder_name");
 		} else if (file.exists() && !file.isDirectory()) {
-			return I18N.getText("orbisgis.core.file.must_be_a_directory");
+			return I18N.getString("orbisgis.core.file.must_be_a_directory");
 		} else {
 			return checkWorkspace(file);
 		}
@@ -281,9 +281,9 @@ public class SelectWorkspaceFilePanel extends AbstractUIPanel implements
 					fr.close();
 					version = Integer.parseInt(strVersion.trim());
 				} catch (IOException e1) {
-					return I18N.getText("orbisgis.core.ui.workspace.bad_version");
+					return I18N.getString("orbisgis.core.ui.workspace.bad_version");
 				} catch (NumberFormatException e) {
-					return I18N.getText("orbisgis.core.ui.workspace.bad_version");
+					return I18N.getString("orbisgis.core.ui.workspace.bad_version");
 				}
 			} else {
 				version = DefaultWorkspace.WORKSPACE_VERSION;
@@ -291,14 +291,14 @@ public class SelectWorkspaceFilePanel extends AbstractUIPanel implements
 			DefaultSwingWorkspace dw = (DefaultSwingWorkspace) Services
 					.getService(Workspace.class);
 			if (dw.getWsVersion() != version) {
-				return I18N.getText("orbisgis.core.ui.workspace.invalid");
+				return I18N.getString("orbisgis.core.ui.workspace.invalid");
 			}
 		} else if (file.exists() && file.isDirectory()) {
 
 			File versionFile = new File(file, "org.orbisgis.version.txt");
 			if (!versionFile.exists()) {
 				return I18N
-				.getText("orbisgis.core.ui.workspace.invalid");
+				.getString("orbisgis.core.ui.workspace.invalid");
 			}
 		}
 		return null;

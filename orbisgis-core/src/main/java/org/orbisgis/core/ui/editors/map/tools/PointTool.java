@@ -132,6 +132,6 @@ public class PointTool extends AbstractPointTool {
 	}
 
 	public String getName() {
-		return I18N.getText("orbisgis.core.ui.editors.map.tool.point_tooltip");
+		return I18N.getString("orbisgis.core.ui.editors.map.tool.point_tooltip");
 	}
 }

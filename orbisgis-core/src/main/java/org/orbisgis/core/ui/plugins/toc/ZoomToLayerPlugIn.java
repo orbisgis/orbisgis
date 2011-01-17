@@ -86,7 +86,7 @@ public class ZoomToLayerPlugIn extends AbstractPlugIn {
 
 			@Override
 			public String getTaskName() {
-				return I18N.getText("orbisgis.org.orbisgis.zoomToLayer");
+				return I18N.getString("orbisgis.org.orbisgis.zoomToLayer");
 			}
 		});
 		return true;

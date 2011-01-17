@@ -85,7 +85,7 @@ public class Main {
 
 		if (!IsVersion(MIN_JAVA_VERSION)) {
 			JOptionPane.showMessageDialog(null, I18N
-					.getText("orbisgis.main.version"));
+					.getString("orbisgis.main.version"));
 			splash.setVisible(false);
 			splash.dispose();
 		} else {
@@ -127,7 +127,7 @@ public class Main {
 		try {
 			initProperties();
 			splash.updateVersion();
-			Splash.updateText(I18N.getText("orbisgis.main.loading"));
+			Splash.updateText(I18N.getString("orbisgis.main.loading"));
 			Workspace wrsk = Services.getService(Workspace.class);
 
 			if (commandLine.hasOption(WORKSPACE)) {

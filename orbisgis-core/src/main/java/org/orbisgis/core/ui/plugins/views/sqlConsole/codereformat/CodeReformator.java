@@ -94,7 +94,7 @@ public class CodeReformator implements ICodeReformator {
 
 			// i18n[editextras.reformatFailed=Reformat failed, normalized
 			// Strings differ]
-			StringBuilder msg = new StringBuilder(I18N.getText("orbisgis.core.ui.plugins.views.sqlConsole.codereformat.reformatFailed"));
+			StringBuilder msg = new StringBuilder(I18N.getString("orbisgis.core.ui.plugins.views.sqlConsole.codereformat.reformatFailed"));
 			msg.append(_lineSep);
 			msg.append(normalizedBefore);
 			msg.append(_lineSep);

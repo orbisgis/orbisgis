@@ -48,6 +48,7 @@ import org.orbisgis.core.renderer.legend.Legend;
 import org.orbisgis.core.renderer.legend.LegendListener;
 import org.orbisgis.core.renderer.legend.RenderException;
 import org.orbisgis.core.renderer.symbol.Symbol;
+import org.orbisgis.utils.I18N;
 
 public class LegendDecorator implements Legend, EditionListener {
 
@@ -91,7 +92,7 @@ public class LegendDecorator implements Legend, EditionListener {
 		} catch (Exception e) {
 			valid = false;
 			// Catch exception since we don't trust Legend implementations
-			throw new RenderException("Cannot cache the symbols", e);
+			throw new RenderException(I18N.getString("orbisgis.org.orbisgis.layerModel.LegendDecorator.cannotCacheSymbols"), e); //$NON-NLS-1$
 		}
 	}
 
@@ -113,7 +114,7 @@ public class LegendDecorator implements Legend, EditionListener {
 				initialize(sds);
 			} catch (RenderException e1) {
 				valid = false;
-				logger.error("Cannot update symbol", e1);
+				logger.error(I18N.getString("orbisgis.org.orbisgis.layerModel.LegendDecorator.cannotUpdateSymbol"), e1); //$NON-NLS-1$
 			}
 		} else {
 			switch (e.getType()) {
@@ -126,7 +127,7 @@ public class LegendDecorator implements Legend, EditionListener {
 							.getRowIndex()));
 				} catch (RenderException e1) {
 					symbols.add(null);
-					logger.error("Cannot update symbol", e1);
+					logger.error(I18N.getString("orbisgis.org.orbisgis.layerModel.LegendDecorator.cannotUpdateSymbol"), e1); //$NON-NLS-1$
 				}
 				break;
 			case EditionEvent.MODIFY:
@@ -135,7 +136,7 @@ public class LegendDecorator implements Legend, EditionListener {
 							.getRowIndex()));
 				} catch (RenderException e1) {
 					symbols.set((int) e.getRowIndex(), null);
-					logger.error("Cannot update symbol", e1);
+					logger.error(I18N.getString("orbisgis.org.orbisgis.layerModel.LegendDecorator.cannotUpdateSymbol"), e1); //$NON-NLS-1$
 				}
 				break;
 			}

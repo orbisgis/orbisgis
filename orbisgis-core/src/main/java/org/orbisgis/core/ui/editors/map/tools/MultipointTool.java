@@ -98,7 +98,7 @@ public class MultipointTool extends AbstractMultipointTool {
 
 	public String getName() {
 		return I18N
-				.getText("orbisgis.core.ui.editors.map.tool.multipoint_tooltip");
+				.getString("orbisgis.core.ui.editors.map.tool.multipoint_tooltip");
 	}
 
 }

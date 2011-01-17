@@ -71,11 +71,11 @@ public class OrbisGISApplicationInfo implements ApplicationInfo {
 
 	@Override
 	public String getVersionName() {
-		return I18N.getText("orbisgis.org.orbisgis.versionName");
+		return I18N.getString("orbisgis.org.orbisgis.versionName");
 	}
 
 	@Override
 	public String getVersionNumber() {
-		return I18N.getText("orbisgis.org.orbisgis.version");
+		return I18N.getString("orbisgis.org.orbisgis.version");
 	}
 }

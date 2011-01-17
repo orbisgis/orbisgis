@@ -65,7 +65,7 @@ public class NewRowTablePlugIn extends AbstractPlugIn {
 
 	public NewRowTablePlugIn() {
 		btn = new JButton(OrbisGISIcon.TABLE_ADDROW);
-		btn.setToolTipText(I18N.getText(Names.POPUP_TABLE_ADDROW));
+		btn.setToolTipText(I18N.getString(Names.POPUP_TABLE_ADDROW));
 	}
 
 	public boolean execute(PlugInContext context) throws Exception {
@@ -93,7 +93,7 @@ public class NewRowTablePlugIn extends AbstractPlugIn {
 		try {
 			AskValidRow rowInput = new AskValidRow(
 					I18N
-							.getText("orbisgis.ui.popupmenu.table.addRow.introduceValue"),
+							.getString("orbisgis.ui.popupmenu.table.addRow.introduceValue"),
 					ds);
 			if (UIFactory.showDialog(rowInput)) {
 				ds.insertFilledRow(rowInput.getRow());

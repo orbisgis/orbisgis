@@ -167,6 +167,6 @@ public class ZoomOutTool extends ZoomOut {
 
 	public String getName() {
 		return I18N
-				.getText("orbisgis.core.ui.editors.map.tool.zoomout_tooltip");
+				.getString("orbisgis.core.ui.editors.map.tool.zoomout_tooltip");
 	}
 }

@@ -98,7 +98,7 @@ public class SQLConsoleViewPlugIn extends ViewPlugIn {
 			public void save(String text) throws IOException {
 				final SaveFilePanel outfilePanel = new SaveFilePanel(
 						"org.orbisgis.core.ui.views.sqlConsoleOutFile", I18N
-								.getText("orbisgis.org.orbisgis.saveScript"));
+								.getString("orbisgis.org.orbisgis.saveScript"));
 				outfilePanel.addFilter("sql", "SQL script (*.sql)");
 
 				if (UIFactory.showDialog(outfilePanel)) {
@@ -112,7 +112,7 @@ public class SQLConsoleViewPlugIn extends ViewPlugIn {
 			public String open() throws IOException {
 				final OpenFilePanel inFilePanel = new OpenFilePanel(
 						"org.orbisgis.plugins.core.ui.views.sqlConsoleInFile",
-						I18N.getText("orbisgis.org.orbisgis.openScript"));
+						I18N.getString("orbisgis.org.orbisgis.openScript"));
 				inFilePanel.addFilter("sql", "SQL script (*.sql)");
 
 				if (UIFactory.showDialog(inFilePanel)) {
@@ -175,13 +175,13 @@ public class SQLConsoleViewPlugIn extends ViewPlugIn {
 						ErrorMessages
 								.error(
 										I18N
-												.getText("orbisgis.errorMessages.CannotDropFunction"),
+												.getString("orbisgis.errorMessages.CannotDropFunction"),
 										e);
 					} catch (IOException e) {
 						ErrorMessages
 								.error(
 										I18N
-												.getText("orbisgis.errorMessages.CannotDropFunction"),
+												.getString("orbisgis.errorMessages.CannotDropFunction"),
 										e);
 					}
 				}
@@ -218,7 +218,7 @@ public class SQLConsoleViewPlugIn extends ViewPlugIn {
 	}
 
 	public String getName() {
-		return I18N.getText("orbisgis.org.orbisgis.sql.view");
+		return I18N.getString("orbisgis.org.orbisgis.sql.view");
 	}
 
 }

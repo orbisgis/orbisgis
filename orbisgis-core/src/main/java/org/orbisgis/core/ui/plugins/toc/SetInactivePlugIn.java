@@ -80,8 +80,8 @@ public class SetInactivePlugIn extends AbstractPlugIn {
 
 	public void execute(MapContext mapContext, ILayer layer) {
 		int option = JOptionPane.showConfirmDialog(null, I18N
-				.getText("orbisgis.org.orbisgis.edit.saveChange"), I18N
-				.getText("orbisgis.org.orbisgis.edit.stopEdition"),
+				.getString("orbisgis.org.orbisgis.edit.saveChange"), I18N
+				.getString("orbisgis.org.orbisgis.edit.stopEdition"),
 				JOptionPane.YES_NO_CANCEL_OPTION);
 		if (option == JOptionPane.YES_OPTION) {
 			try {

@@ -133,7 +133,7 @@ public class VertexDeletionTool extends VertexDeletion {
 			} catch (CannotChangeGeometryException e) {
 				throw new DrawingException(
 						I18N
-								.getText("orbisgis.core.ui.editors.map.tool.VertexDeletionTool_1")); //$NON-NLS-1$
+								.getString("orbisgis.core.ui.editors.map.tool.VertexDeletionTool_1")); //$NON-NLS-1$
 			}
 		}
 	}
@@ -161,6 +161,6 @@ public class VertexDeletionTool extends VertexDeletion {
 
 	public String getName() {
 		return I18N
-				.getText("orbisgis.core.ui.editors.map.tool.vertexDeletion_tooltip");
+				.getString("orbisgis.core.ui.editors.map.tool.vertexDeletion_tooltip");
 	}
 }

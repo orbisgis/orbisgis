@@ -65,7 +65,7 @@ public class DeleteTableSelectionPlugIn extends AbstractPlugIn {
 
         public DeleteTableSelectionPlugIn() {
                 btn = new JButton(OrbisGISIcon.REMOVE);
-                btn.setToolTipText(I18N.getText("orbisgis.ui.popupmenu.table.deleteFromSelection"));
+                btn.setToolTipText(I18N.getString("orbisgis.ui.popupmenu.table.deleteFromSelection"));
         }
 
         public boolean execute(final PlugInContext context) throws Exception {
@@ -82,7 +82,7 @@ public class DeleteTableSelectionPlugIn extends AbstractPlugIn {
 
                         @Override
                         public String getTaskName() {
-                                return I18N.getText("orbisgis.ui.popupmenu.table.cannotDeleteFromSelection");
+                                return I18N.getString("orbisgis.ui.popupmenu.table.cannotDeleteFromSelection");
                         }
                 });
                 return true;

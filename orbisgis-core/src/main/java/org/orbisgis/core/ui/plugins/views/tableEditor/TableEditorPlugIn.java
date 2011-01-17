@@ -136,7 +136,7 @@ public class TableEditorPlugIn extends ViewPlugIn implements IEditor {
 	}
 
 	public String getName() {
-		return I18N.getText("orbisgis.org.orbisgis.tableEditor.view");
+		return I18N.getString("orbisgis.org.orbisgis.tableEditor.view");
 	}
 
 }

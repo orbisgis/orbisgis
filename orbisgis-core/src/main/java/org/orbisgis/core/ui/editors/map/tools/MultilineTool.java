@@ -99,6 +99,6 @@ public class MultilineTool extends AbstractMultilineTool {
 
 	public String getName() {
 		return I18N
-				.getText("orbisgis.core.ui.editors.map.tool.multiline_tooltip");
+				.getString("orbisgis.core.ui.editors.map.tool.multiline_tooltip");
 	}
 }

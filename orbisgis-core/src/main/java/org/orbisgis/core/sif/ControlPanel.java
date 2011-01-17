@@ -113,7 +113,7 @@ public class ControlPanel extends JPanel {
 		btnSave.setVisible(false);
 		btnSave.setIcon(OrbisGISIcon.SAVE_ICON);
 		btnSave.setToolTipText(I18N
-				.getText("orbisgis.sif.ControlPanel.SaveFavorite"));
+				.getString("orbisgis.sif.ControlPanel.SaveFavorite"));
 
 		btnSave.addActionListener(new ActionListener() {
 
@@ -131,7 +131,7 @@ public class ControlPanel extends JPanel {
 		btnDelete = new JButton();
 		btnDelete.setIcon(OrbisGISIcon.CANCEL);
 		btnDelete.setToolTipText(I18N
-				.getText("orbisgis.sif.ControlPanel.DeleteFavorite"));
+				.getString("orbisgis.sif.ControlPanel.DeleteFavorite"));
 		btnDelete.addActionListener(new ActionListener() {
 
 			public void actionPerformed(ActionEvent e) {
@@ -145,7 +145,7 @@ public class ControlPanel extends JPanel {
 		btnLoad = new JButton();
 		btnLoad.setIcon(OrbisGISIcon.FOLDER_USER);
 		btnLoad.setToolTipText(I18N
-				.getText("orbisgis.sif.ControlPanel.LoadFavorite"));
+				.getString("orbisgis.sif.ControlPanel.LoadFavorite"));
 		btnLoad.addActionListener(new ActionListener() {
 
 			public void actionPerformed(ActionEvent e) {
@@ -159,7 +159,7 @@ public class ControlPanel extends JPanel {
 		JButton btnCollapse = new JButton();
 		btnCollapse.setIcon(IconLoader.getIcon("go-previous.png"));
 		btnCollapse.setToolTipText(I18N
-				.getText("orbisgis.sif.ControlPanel.CollapseFavorites"));
+				.getString("orbisgis.sif.ControlPanel.CollapseFavorites"));
 		btnCollapse.addActionListener(new ActionListener() {
 
 			public void actionPerformed(ActionEvent e) {
@@ -181,13 +181,13 @@ public class ControlPanel extends JPanel {
 		this.setMinimumSize(new Dimension(100, 40));
 
 		collapsed = new JLabel(getVertical(I18N
-				.getText("orbisgis.sif.ControlPanel.Favorites")), IconLoader
+				.getString("orbisgis.sif.ControlPanel.Favorites")), IconLoader
 				.getIcon("go-next.png"), JLabel.CENTER);
 		collapsed.setIconTextGap(20);
 		collapsed.setVerticalTextPosition(JLabel.BOTTOM);
 		collapsed.setHorizontalTextPosition(JLabel.CENTER);
 		collapsed.setToolTipText(I18N
-				.getText("orbisgis.sif.ControlPanel.ExpandFavorites"));
+				.getString("orbisgis.sif.ControlPanel.ExpandFavorites"));
 
 		this.add(collapsed, BorderLayout.WEST);
 		collapsed.addMouseListener(new MouseAdapter() {

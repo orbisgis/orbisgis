@@ -86,20 +86,20 @@ public class ProxyConfiguration implements IConfiguration {
 			});
 
 			String[] proxyLabels = {
-					I18N.getText("orbisgis.org.orbisgis.core.hostName"),
-					I18N.getText("orbisgis.org.orbisgis.core.port") };
+					I18N.getString("orbisgis.org.orbisgis.core.hostName"),
+					I18N.getString("orbisgis.org.orbisgis.core.port") };
 			InputType[] proxyInputs = { host, port };
 			JPanel proxyPanel = new ConfigUnitPanel(I18N
-					.getText("orbisgis.org.orbisgis.core.proxy"), proxyCheck,
-					I18N.getText("orbisgis.org.orbisgis.core.enableProxy"), proxyLabels, proxyInputs);
+					.getString("orbisgis.org.orbisgis.core.proxy"), proxyCheck,
+					I18N.getString("orbisgis.org.orbisgis.core.enableProxy"), proxyLabels, proxyInputs);
 
 			String[] authLabels = {
-					I18N.getText("orbisgis.org.orbisgis.core.userName"),
-					I18N.getText("orbisgis.org.orbisgis.core.password") };
+					I18N.getString("orbisgis.org.orbisgis.core.userName"),
+					I18N.getString("orbisgis.org.orbisgis.core.password") };
 			InputType[] authInputs = { user, pass };
 			JPanel authPanel = new ConfigUnitPanel(I18N
-					.getText("orbisgis.org.orbisgis.core.authentication"),
-					authCheck, I18N.getText("orbisgis.org.orbisgis.core.enableAuthentification"), authLabels, authInputs);
+					.getString("orbisgis.org.orbisgis.core.authentication"),
+					authCheck, I18N.getString("orbisgis.org.orbisgis.core.enableAuthentification"), authLabels, authInputs);
 
 			panel.add(proxyPanel);
 			panel.add(new CarriageReturn());
@@ -232,28 +232,28 @@ public class ProxyConfiguration implements IConfiguration {
 		if (proxyCheck.isSelected()) {
 			if (host.getValue().equals("")) {
 				return I18N
-						.getText("orbisgis.org.orbisgis.core.hostCannotBeNull");
+						.getString("orbisgis.org.orbisgis.core.hostCannotBeNull");
 			}
 
 			try {
 				int p = Integer.parseInt(port.getValue());
 				if (p < 0 || p > 65535) {
 					return I18N
-							.getText("orbisgis.org.orbisgis.core.portNumber");
+							.getString("orbisgis.org.orbisgis.core.portNumber");
 				}
 			} catch (NumberFormatException e) {
-				return I18N.getText("orbisgis.org.orbisgis.core.portNumber");
+				return I18N.getString("orbisgis.org.orbisgis.core.portNumber");
 			}
 
 			if (authCheck.isSelected()) {
 				if (user.getValue().equals("")) {
 					return I18N
-							.getText("orbisgis.org.orbisgis.core.userNameCannotBeNull");
+							.getString("orbisgis.org.orbisgis.core.userNameCannotBeNull");
 				}
 
 				if (pass.getValue().equals("")) {
 					return I18N
-							.getText("orbisgis.org.orbisgis.core.passwordCannotBeNull");
+							.getString("orbisgis.org.orbisgis.core.passwordCannotBeNull");
 				}
 			}
 		}

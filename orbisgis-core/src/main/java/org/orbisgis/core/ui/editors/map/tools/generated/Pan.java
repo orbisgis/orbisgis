@@ -299,11 +299,11 @@ public abstract class Pan implements Automaton {
 	public String getMessage() {
 
 		if ("Standby".equals(status)) {
-			return I18N.getText("orbisgis.core.ui.editors.map.tool.pan_standby");
+			return I18N.getString("orbisgis.core.ui.editors.map.tool.pan_standby");
 		}
 
 		if ("OnePointLeft".equals(status)) {
-			return I18N.getText("orbisgis.core.ui.editors.map.tool.pan_onepointleft");
+			return I18N.getString("orbisgis.core.ui.editors.map.tool.pan_onepointleft");
 		}
 
 		if ("RectangleDone".equals(status)) {
@@ -322,7 +322,7 @@ public abstract class Pan implements Automaton {
 	}
 
 	public String getTooltip() {
-		return I18N.getText("orbisgis.core.ui.editors.map.tool.pan_tooltip");
+		return I18N.getString("orbisgis.core.ui.editors.map.tool.pan_tooltip");
 	}
 
 	private ImageIcon mouseCursor;

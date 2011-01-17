@@ -99,7 +99,7 @@ public class GeocatalogSaveInFilePlugIn extends AbstractPlugIn {
 			PlugInContext context) {
 		final SaveFilePanel outfilePanel = new SaveFilePanel(
 				"org.orbisgis.core.ui.plugins.views.geocatalog.SaveInFile",
-				I18N.getText("orbisgis.core.file.chooseFileFormat"));
+				I18N.getString("orbisgis.core.file.chooseFileFormat"));
 
 		DataManager dm = Services.getService(DataManager.class);
 		DataSourceFactory dsf = dm.getDataSourceFactory();

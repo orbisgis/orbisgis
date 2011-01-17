@@ -180,6 +180,6 @@ public class PanTool extends Pan {
 	}
 
 	public String getName() {
-		return I18N.getText("orbisgis.core.ui.editors.map.tool.pan_tooltip");
+		return I18N.getString("orbisgis.core.ui.editors.map.tool.pan_tooltip");
 	}
 }

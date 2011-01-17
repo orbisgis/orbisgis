@@ -77,7 +77,7 @@ public class NewGeocatalogFilePlugIn extends AbstractPlugIn {
 	@Override
 	public boolean execute(PlugInContext context) throws Exception {
 		OpenGdmsFilePanel filePanel = new OpenGdmsFilePanel(I18N
-				.getText("orbisgis.org.core.selectFileAdd"));
+				.getString("orbisgis.org.core.selectFileAdd"));
 		if (UIFactory.showDialog(new UIPanel[] { filePanel })) {
 			// We can retrieve the files that have been selected by the user
 			File[] files = filePanel.getSelectedFiles();

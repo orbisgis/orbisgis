@@ -83,7 +83,7 @@ public class GeocatalogSaveChangesPlugIn extends AbstractPlugIn {
 					.showMessageDialog(
 							geocatalog,
 							I18N
-									.getText("orbisgis.org.orbisgis.core.geocatalog.sourceSaved"));
+									.getString("orbisgis.org.orbisgis.core.geocatalog.sourceSaved"));
 
 		}
 		// DO NOT REMOVE

@@ -63,7 +63,7 @@ public class DeleteMapSelectionPlugIn extends AbstractPlugIn {
 	public DeleteMapSelectionPlugIn() {
 		btn = new JButton(OrbisGISIcon.REMOVE);
 		btn.setToolTipText(I18N
-				.getText("orbisgis.ui.popupmenu.table.deleteFromSelection"));
+				.getString("orbisgis.ui.popupmenu.table.deleteFromSelection"));
 	}
 
 	public boolean execute(PlugInContext context) throws Exception {

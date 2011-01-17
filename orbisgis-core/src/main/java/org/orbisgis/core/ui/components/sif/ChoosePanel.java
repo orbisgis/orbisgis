@@ -134,7 +134,7 @@ public class ChoosePanel extends AbstractUIPanel {
 
 	public String validateInput() {
 		if (lst.getSelectedIndex() == -1) {
-			return I18N.getText("orbisgis.org.orbisgis.core.anItemMustBeSelected");
+			return I18N.getString("orbisgis.org.orbisgis.core.anItemMustBeSelected");
 		}
 
 		return null;

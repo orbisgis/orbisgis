@@ -70,7 +70,7 @@ public class AddValuePlugIn extends AbstractPlugIn {
 				.getElement();
 		dataSource = element.getDataSource();
 		MultiInputPanel mip = new MultiInputPanel(I18N
-				.getText("orbisgis.ui.popupmenu.table.addvalue.path1"));
+				.getString("orbisgis.ui.popupmenu.table.addvalue.path1"));
 		try {
 			Metadata metadata = dataSource.getMetadata();
 			Type type = metadata.getFieldType(getSelectedColumn());
@@ -81,7 +81,7 @@ public class AddValuePlugIn extends AbstractPlugIn {
 						.addInput(
 								"value",
 								I18N
-										.getText("orbisgis.ui.popupmenu.table.addvalue.chooseAValue"),
+										.getString("orbisgis.ui.popupmenu.table.addvalue.chooseAValue"),
 								new ComboBoxChoice("true", "false"));
 				break;
 			case Type.DOUBLE:
@@ -90,7 +90,7 @@ public class AddValuePlugIn extends AbstractPlugIn {
 						.addInput(
 								"value",
 								I18N
-										.getText("orbisgis.ui.popupmenu.table.addvalue.putAValue"),
+										.getString("orbisgis.ui.popupmenu.table.addvalue.putAValue"),
 								new DoubleType());
 				break;
 			case Type.INT:
@@ -100,7 +100,7 @@ public class AddValuePlugIn extends AbstractPlugIn {
 						.addInput(
 								"value",
 								I18N
-										.getText("orbisgis.ui.popupmenu.table.addvalue.putAValue"),
+										.getString("orbisgis.ui.popupmenu.table.addvalue.putAValue"),
 								"0", new IntType());
 				break;
 			case Type.STRING:
@@ -108,7 +108,7 @@ public class AddValuePlugIn extends AbstractPlugIn {
 						.addInput(
 								"value",
 								I18N
-										.getText("orbisgis.ui.popupmenu.table.addvalue.putAValue"),
+										.getString("orbisgis.ui.popupmenu.table.addvalue.putAValue"),
 								" text ", new StringType(10));
 				break;
 			default:
@@ -121,7 +121,7 @@ public class AddValuePlugIn extends AbstractPlugIn {
 						.addInput(
 								"check",
 								I18N
-										.getText("orbisgis.ui.popupmenu.table.addvalue.applyOnSelectedRow"),
+										.getString("orbisgis.ui.popupmenu.table.addvalue.applyOnSelectedRow"),
 								null, new CheckBoxChoice(true));
 			}
 			if (UIFactory.showDialog(mip)) {

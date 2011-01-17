@@ -17,12 +17,13 @@ import org.orbisgis.core.layerModel.persistence.LayerType;
 import org.orbisgis.core.renderer.legend.Legend;
 import org.orbisgis.core.renderer.legend.RasterLegend;
 import org.orbisgis.core.renderer.legend.WMSLegend;
+import org.orbisgis.utils.I18N;
 
 import com.vividsolutions.jts.geom.Envelope;
 
 public class WMSLayer extends GdmsLayer {
 
-	private static final String NOT_SUPPORTED = "Method not supported in WMS layers";
+	private static final String NOT_SUPPORTED = I18N.getString("orbisgis.org.orbisgis.wMSLayer.methodNotSupportedInWMSLayer"); //$NON-NLS-1$
 	private DataSource ds;
 	private Envelope envelope;
 	private WMSConnection connection;
@@ -101,13 +102,13 @@ public class WMSLayer extends GdmsLayer {
 		super.open();
 		try {
 			ds.open();
-			String host = ds.getString(0, "host");
+			String host = ds.getString(0, "host"); //$NON-NLS-1$
 			WMSClient client = WMSClientPool.getWMSClient(host);
 			client.getCapabilities(null, false, null);
 			WMSStatus status = new WMSStatus();
-			wmslayerName = ds.getString(0, "layer");
+			wmslayerName = ds.getString(0, "layer"); //$NON-NLS-1$
 			status.addLayerName(wmslayerName);
-			status.setSrs(ds.getString(0, "srs"));
+			status.setSrs(ds.getString(0, "srs")); //$NON-NLS-1$
 
 			BoundaryBox bbox = getLayerBoundingBox(wmslayerName, client
 					.getRootLayer(), status.getSrs());
@@ -116,17 +117,17 @@ public class WMSLayer extends GdmsLayer {
 					- bbox.getYmin()));
 			envelope = new Envelope(bbox.getXmin(), bbox.getXmax(), bbox
 					.getYmin(), bbox.getYmax());
-			status.setFormat(ds.getString(0, "format"));
+			status.setFormat(ds.getString(0, "format")); //$NON-NLS-1$
 			connection = new WMSConnection(client, status);
 			ds.close();
 		} catch (AlreadyClosedException e) {
-			throw new LayerException("Bug", e);
+			throw new LayerException(I18N.getString("orbisgis.org.orbisgis.wMSLayer.bug"), e); //$NON-NLS-1$
 		} catch (DriverException e) {
-			throw new LayerException("Cannot open wms description", e);
+			throw new LayerException(I18N.getString("orbisgis.org.orbisgis.wMSLayer.cannotOpenWMSDescription"), e); //$NON-NLS-1$
 		} catch (ConnectException e) {
-			throw new LayerException("Cannot connect to WMS server", e);
+			throw new LayerException(I18N.getString("orbisgis.org.orbisgis.wMSLayer.cannotConnectToWmsServer"), e); //$NON-NLS-1$
 		} catch (IOException e) {
-			throw new LayerException("Cannot retrieve WMS server content", e);
+			throw new LayerException(I18N.getString("orbisgis.org.orbisgis.wMSLayer.cannotRetrieveWMSServerContent"), e); //$NON-NLS-1$
 		}
 	}
 

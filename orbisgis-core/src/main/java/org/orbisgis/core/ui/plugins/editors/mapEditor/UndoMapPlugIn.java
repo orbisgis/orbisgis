@@ -58,7 +58,7 @@ public class UndoMapPlugIn extends AbstractPlugIn {
 		btn = new JButton(OrbisGISIcon.UNDO_ICON);
 		btn
 				.setToolTipText(I18N
-						.getText("orbisgis.org.orbisgis.core.ui.plugins.editors.tableEditor.undo"));
+						.getString("orbisgis.org.orbisgis.core.ui.plugins.editors.tableEditor.undo"));
 	}
 
 	public boolean execute(PlugInContext context) throws Exception {

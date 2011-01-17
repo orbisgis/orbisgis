@@ -86,16 +86,16 @@ public class RasterAlgebraPlugIn extends AbstractPlugIn {
 					.getObject();
 
 			final MultiInputPanel mip = new MultiInputPanel(I18N
-					.getText("orbisgis.org.orbisgis.imageCalculator"));
+					.getString("orbisgis.org.orbisgis.imageCalculator"));
 			mip.addInput("source1", I18N
-					.getText("orbisgis.org.orbisgis.ui.layer1"),
+					.getString("orbisgis.org.orbisgis.ui.layer1"),
 					new RasterLayerCombo(mapContext));
 			mip.addInput("method", I18N
-					.getText("orbisgis.org.orbisgis.ui.method"),
+					.getString("orbisgis.org.orbisgis.ui.method"),
 					new ComboBoxChoice(GeoRasterCalculator.operators.keySet()
 							.toArray(new String[0])));
 			mip.addInput("source2", I18N
-					.getText("orbisgis.org.orbisgis.ui.layer2"),
+					.getString("orbisgis.org.orbisgis.ui.layer2"),
 					new RasterLayerCombo(mapContext));
 
 			if (UIFactory.showDialog(mip)) {
@@ -125,7 +125,7 @@ public class RasterAlgebraPlugIn extends AbstractPlugIn {
 
 		} catch (OperationException e) {
 			ErrorMessages.error(I18N
-					.getText("orbisgis.org.orbisgis.raster.cannotDoOperation"),
+					.getString("orbisgis.org.orbisgis.raster.cannotDoOperation"),
 					e);
 		} catch (IOException e) {
 			ErrorMessages.error(ErrorMessages.ErrorIn + " "

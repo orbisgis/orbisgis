@@ -135,7 +135,7 @@ public class GeoCatalogViewPlugIn extends ViewPlugIn {
 				panel.setActiveLabels(activeLabels
 						.toArray(new String[activeLabels.size()]));
 			} catch (JAXBException e) {
-				throw new PersistenceException(I18N.getText("orbisgis.org.orbisgis.core.geocatalog.cannotLoad"), e);
+				throw new PersistenceException(I18N.getString("orbisgis.org.orbisgis.core.geocatalog.cannotLoad"), e);
 			}
 		}
 	}
@@ -169,7 +169,7 @@ public class GeoCatalogViewPlugIn extends ViewPlugIn {
 			jc.createMarshaller().marshal(cat, printWriter);
 			printWriter.close();
 		} catch (JAXBException e) {
-			throw new PersistenceException(I18N.getText("orbisgis.org.orbisgis.core.geocatalog.cannotSave"), e);
+			throw new PersistenceException(I18N.getString("orbisgis.org.orbisgis.core.geocatalog.cannotSave"), e);
 		} catch (FileNotFoundException e) {
 			throw new PersistenceException(ErrorMessages.CannotWriteFile+ ": " + file);
 		}
@@ -187,6 +187,6 @@ public class GeoCatalogViewPlugIn extends ViewPlugIn {
 	}
 
 	public String getName() {
-		return I18N.getText("orbisgis.org.orbisgis.geocatalog.view");
+		return I18N.getString("orbisgis.org.orbisgis.geocatalog.view");
 	}
 }

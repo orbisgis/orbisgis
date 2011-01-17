@@ -78,7 +78,7 @@ public class CreateSourceFromMapSelectionPlugIn extends AbstractPlugIn {
 	public CreateSourceFromMapSelectionPlugIn() {
 		btn = new JButton(OrbisGISIcon.TABLE_CREATE_SRC_ICON);
 		btn.setToolTipText(I18N
-				.getText("orbisgis.ui.popupmenu.table.createFromSelection"));
+				.getString("orbisgis.ui.popupmenu.table.createFromSelection"));
 	}
 
 	public boolean execute(PlugInContext context) throws Exception {

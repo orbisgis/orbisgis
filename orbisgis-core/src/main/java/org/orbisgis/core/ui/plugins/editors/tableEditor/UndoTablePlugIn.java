@@ -56,7 +56,7 @@ public class UndoTablePlugIn extends AbstractPlugIn {
 
 	public UndoTablePlugIn() {
 		btn = new JButton(OrbisGISIcon.UNDO_ICON);
-		btn.setToolTipText(I18N.getText("orbisgis.org.orbisgis.core.ui.plugins.editors.tableEditor.undo"));
+		btn.setToolTipText(I18N.getString("orbisgis.org.orbisgis.core.ui.plugins.editors.tableEditor.undo"));
 	}
 
 	@Override

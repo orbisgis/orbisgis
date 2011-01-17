@@ -90,10 +90,10 @@ public class SaveFilePanel extends OpenFilePanel {
 	public String validateInput() {
 		File file = getSelectedFile();
 		if (file == null) {
-			return I18N.getText("orbisgis.core.file.aFileMustSelected");
+			return I18N.getString("orbisgis.core.file.aFileMustSelected");
 		} else if (fileMustNotExist) {
 			if (getSelectedFile().exists()) {
-				return I18N.getText("orbisgis.core.file.fileAlreadyExists");
+				return I18N.getString("orbisgis.core.file.fileAlreadyExists");
 			} else {
 				return null;
 			}
@@ -115,12 +115,12 @@ public class SaveFilePanel extends OpenFilePanel {
 	public String postProcess() {
 		if (getSelectedFile().exists()) {
 			int ret = JOptionPane.showConfirmDialog(null, I18N
-					.getText("orbisgis.core.file.fileAlreadyExists")
-					+ " " + I18N.getText("orbisgis.core.file.overwrite"), I18N
-					.getText("orbisgis.core.file.existing"),
+					.getString("orbisgis.core.file.fileAlreadyExists")
+					+ " " + I18N.getString("orbisgis.core.file.overwrite"), I18N
+					.getString("orbisgis.core.file.existing"),
 					JOptionPane.YES_NO_OPTION);
 			if (ret == JOptionPane.NO_OPTION) {
-				return I18N.getText("orbisgis.core.file.fileAlreadyExists");
+				return I18N.getString("orbisgis.core.file.fileAlreadyExists");
 			}
 		}
 		return null;

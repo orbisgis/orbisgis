@@ -60,7 +60,7 @@ public class ClearMapSelectionPlugIn extends AbstractPlugIn {
 	public ClearMapSelectionPlugIn() {
 		btn = new JButton(OrbisGISIcon.EDIT_CLEAR);
 		btn.setToolTipText(I18N
-				.getText("orbisgis.ui.popupmenu.table.clearSelection"));
+				.getString("orbisgis.ui.popupmenu.table.clearSelection"));
 	}
 
 	public boolean execute(PlugInContext context) throws Exception {

@@ -72,11 +72,11 @@ public class OpenFolderPanel extends AbstractOpenPanel {
 	public String validateInput() {
 		File file = getSelectedFile();
 		if (file == null) {
-			return I18N.getText("orbisgis.org.orbisgis.core.folderMustBeSelected");
+			return I18N.getString("orbisgis.org.orbisgis.core.folderMustBeSelected");
 		} else if (!file.exists()) {
-			return I18N.getText("orbisgis.org.orbisgis.core.folderMustExist");
+			return I18N.getString("orbisgis.org.orbisgis.core.folderMustExist");
 		} else if(!file.isDirectory()){
-			return I18N.getText("orbisgis.org.orbisgis.core.folderMustBeDirectory");
+			return I18N.getString("orbisgis.org.orbisgis.core.folderMustBeDirectory");
 		} else {
 			return null;
 		}

@@ -96,7 +96,7 @@ public class GeomarkViewPlugIn extends ViewPlugIn {
 	}
 
 	public String getName() {
-		return I18N.getText("orbisgis.org.orbisgis.geomark.view");
+		return I18N.getString("orbisgis.org.orbisgis.geomark.view");
 	}
 
 	@Override

@@ -43,129 +43,129 @@ import org.orbisgis.utils.I18N;
 public class ErrorMessages {
 
 	public static final String CannotRegisterSource = I18N
-			.getText("orbisgis.errorMessages.CannotRegisterSource");
+			.getString("orbisgis.errorMessages.CannotRegisterSource");
 	public static final String CannotFindTheDataSource = I18N
-			.getText("orbisgis.errorMessages.CannotFindTheDataSource");
+			.getString("orbisgis.errorMessages.CannotFindTheDataSource");
 	public static final String CannotCreateSource = I18N
-			.getText("orbisgis.errorMessages.CannotCreateSource");
+			.getString("orbisgis.errorMessages.CannotCreateSource");
 	public static final String CannotModifyDataSource = I18N
-			.getText("orbisgis.errorMessages.CannotModifyDataSource");
+			.getString("orbisgis.errorMessages.CannotModifyDataSource");
 	public static final String CannotDeleteField = I18N
-			.getText("orbisgis.errorMessages.CannotDeleteField");
+			.getString("orbisgis.errorMessages.CannotDeleteField");
 	public static final String CannotAccessFieldInformation = I18N
-			.getText("orbisgis.errorMessages.CannotAccessFieldInformation");
+			.getString("orbisgis.errorMessages.CannotAccessFieldInformation");
 	public static final String CannotRedo = I18N
-			.getText("orbisgis.errorMessages.CannotRedo");
+			.getString("orbisgis.errorMessages.CannotRedo");
 	public static final String CannotDeleteSelectedRow = I18N
-			.getText("orbisgis.errorMessages.CannotDeleteSelectedRow");
+			.getString("orbisgis.errorMessages.CannotDeleteSelectedRow");
 	public static final String CannotInsertANewRow = I18N
-			.getText("orbisgis.errorMessages.CannotAdd");
+			.getString("orbisgis.errorMessages.CannotAdd");
 	public static final String IncompatibleFieldTypes = I18N
-			.getText("orbisgis.errorMessages.IncompatibleTypes");
+			.getString("orbisgis.errorMessages.IncompatibleTypes");
 	public static final String DataError = I18N
-			.getText("orbisgis.errorMessages.dataAccessError");
+			.getString("orbisgis.errorMessages.dataAccessError");
 	public static final String BadInputValue = I18N
-			.getText("orbisgis.errorMessages.badInputValue");
+			.getString("orbisgis.errorMessages.badInputValue");
 	public static final String CannotObtainNumberRows = I18N
-			.getText("orbisgis.errorMessages.CannotObtainNumberRows");
+			.getString("orbisgis.errorMessages.CannotObtainNumberRows");
 	public static final String CannotReadSource = I18N
-			.getText("orbisgis.errorMessages.CannotReadSource");
+			.getString("orbisgis.errorMessages.CannotReadSource");
 	public static final String CannotSetNullValue = I18N
-			.getText("orbisgis.errorMessages.CannotSetNullValue");
+			.getString("orbisgis.errorMessages.CannotSetNullValue");
 	public static final String CannotTestNullValue = I18N
-			.getText("orbisgis.errorMessages.CannotTestNullValue");
+			.getString("orbisgis.errorMessages.CannotTestNullValue");
 	public static final String CannotObtainDataSource = I18N
-			.getText("orbisgis.errorMessages.CannotObtainDataSource");
+			.getString("orbisgis.errorMessages.CannotObtainDataSource");
 	public static final String CannotCreateDataSource = I18N
-			.getText("orbisgis.errorMessages.CannotCreateDataSource");
+			.getString("orbisgis.errorMessages.CannotCreateDataSource");
 	public static final String WrongSQLQuery = I18N
-			.getText("orbisgis.errorMessages.WrongSQLQuery");
+			.getString("orbisgis.errorMessages.WrongSQLQuery");
 	public static final String CannotUndo = I18N
-			.getText("orbisgis.errorMessages.CannotUndo");
+			.getString("orbisgis.errorMessages.CannotUndo");
 	public static final String CannotComputeEnvelope = I18N
-			.getText("orbisgis.errorMessages.CannotComputeEnvelope");
+			.getString("orbisgis.errorMessages.CannotComputeEnvelope");
 	public static final String CannotWriteImage = I18N
-			.getText("orbisgis.errorMessages.cannotWriteImage");
+			.getString("orbisgis.errorMessages.cannotWriteImage");
 	public static final String CannotWriteOnDisk = I18N
-			.getText("orbisgis.errorMessages.cannotWriteOnDisk");
+			.getString("orbisgis.errorMessages.cannotWriteOnDisk");
 	public static final String CannotWritePDF = I18N
-			.getText("orbisgis.errorMessages.cannotWritePDF");
+			.getString("orbisgis.errorMessages.cannotWritePDF");
 	public static final String CommandLineError = I18N
-			.getText("orbisgis.errorMessages.CommandLineError");
+			.getString("orbisgis.errorMessages.CommandLineError");
 	public static final String CannotUpdate = I18N
-			.getText("orbisgis.errorMessages.CannotUpdate");
+			.getString("orbisgis.errorMessages.CannotUpdate");
 	public static final String CannotFind = I18N
-			.getText("orbisgis.errorMessages.CannotFind");
+			.getString("orbisgis.errorMessages.CannotFind");
 	public static final String CannotSave = I18N
-			.getText("orbisgis.errorMessages.CannotSave");
+			.getString("orbisgis.errorMessages.CannotSave");
 	public static final String CannotSaveFile = I18N
-			.getText("orbisgis.errorMessages.CannotSaveFile");
+			.getString("orbisgis.errorMessages.CannotSaveFile");
 	public static final String CannotWriteFile = I18N
-			.getText("orbisgis.errorMessages.CannotWriteFile");
+			.getString("orbisgis.errorMessages.CannotWriteFile");
 	public static final String CannotRemoveSource = I18N
-			.getText("orbisgis.errorMessages.CannotRemoveSource");
+			.getString("orbisgis.errorMessages.CannotRemoveSource");
 	public static final String CannotRevertSource = I18N
-			.getText("orbisgis.errorMessages.CannotRevertSource");
+			.getString("orbisgis.errorMessages.CannotRevertSource");
 	public static final String CannotSaveSource = I18N
-			.getText("orbisgis.errorMessages.CannotSaveSource");
+			.getString("orbisgis.errorMessages.CannotSaveSource");
 	public static final String SourceAlreadyRegistered = I18N
-			.getText("orbisgis.errorMessages.SourceAlreadyRegistered");
+			.getString("orbisgis.errorMessages.SourceAlreadyRegistered");
 	public static final String CannotConnect = I18N
-			.getText("orbisgis.errorMessages.CannotConnect");
+			.getString("orbisgis.errorMessages.CannotConnect");
 	public static final String FileNotFound = I18N
-			.getText("orbisgis.errorMessages.FileNotFound");
+			.getString("orbisgis.errorMessages.FileNotFound");
 	public static final String CannotConvertFile = I18N
-			.getText("orbisgis.errorMessages.CannotConvertFile");
+			.getString("orbisgis.errorMessages.CannotConvertFile");
 	public static final String CannotSaveWorkspace = I18N
-			.getText("orbisgis.errorMessages.CannotSaveWorkspace");
+			.getString("orbisgis.errorMessages.CannotSaveWorkspace");
 	public static final String UnsupportedSourceType = I18N
-			.getText("orbisgis.errorMessages.UnsupportedSourceType");
+			.getString("orbisgis.errorMessages.UnsupportedSourceType");
 	public static final String NotImplementedYet = I18N
-			.getText("orbisgis.errorMessages.NotImplementedYet");
+			.getString("orbisgis.errorMessages.NotImplementedYet");
 	public static final String SourceAlreadyExists = I18N
-			.getText("orbisgis.errorMessages.SourceAlreadyExists");
+			.getString("orbisgis.errorMessages.SourceAlreadyExists");
 	public static final String CannotInitializeSource = I18N
-			.getText("orbisgis.errorMessages.CannotInitializeSource");
+			.getString("orbisgis.errorMessages.CannotInitializeSource");
 	public static final String CannotRecoverView = I18N
-			.getText("orbisgis.errorMessages.CannotRecoverView");
+			.getString("orbisgis.errorMessages.CannotRecoverView");
 	public static final String CannotAddField = I18N
-			.getText("orbisgis.errorMessages.CannotAddField");
+			.getString("orbisgis.errorMessages.CannotAddField");
 	public static final String UnknownDataType = I18N
-			.getText("orbisgis.errorMessages.UnknownDataType");
+			.getString("orbisgis.errorMessages.UnknownDataType");
 	public static final String CannotAddValue = I18N
-			.getText("orbisgis.errorMessages.CannotAddValue");
+			.getString("orbisgis.errorMessages.CannotAddValue");
 	public static final String CannotRenameField = I18N
-			.getText("orbisgis.errorMessages.CannotRenameField");
+			.getString("orbisgis.errorMessages.CannotRenameField");
 	public static final String CannotAddLayer = I18N
-			.getText("orbisgis.errorMessages.CannotAddLayer");
+			.getString("orbisgis.errorMessages.CannotAddLayer");
 	public static final String SQLStatementError = I18N
-			.getText("orbisgis.errorMessages.SQLStatementError");
+			.getString("orbisgis.errorMessages.SQLStatementError");
 	public static final String SourceAlreadyRegisteredWithName = I18N
-			.getText("orbisgis.errorMessages.SourceAlreadyRegisteredWithName");
+			.getString("orbisgis.errorMessages.SourceAlreadyRegisteredWithName");
 	public static final String CannotReadDataSource = I18N
-			.getText("orbisgis.errorMessages.CannotReadDataSource");
+			.getString("orbisgis.errorMessages.CannotReadDataSource");
 	public static final String CannotDeleteLayer = I18N
-			.getText("orbisgis.errorMessages.CannotDeleteLayer");
+			.getString("orbisgis.errorMessages.CannotDeleteLayer");
 	public static final String CannotSavelayer = I18N
-			.getText("orbisgis.errorMessages.CannotSavelayer");
+			.getString("orbisgis.errorMessages.CannotSavelayer");
 	public static final String CannotExportInSelectedFormat = I18N
-			.getText("orbisgis.errorMessages.CannotExportInSelectedFormat");
+			.getString("orbisgis.errorMessages.CannotExportInSelectedFormat");
 	public static final String CannotRevertlayer = I18N
-			.getText("orbisgis.errorMessages.CannotRevertlayer");
+			.getString("orbisgis.errorMessages.CannotRevertlayer");
 	public static final String ErrorIn = I18N
-			.getText("orbisgis.errorMessages.ErrorIn");
+			.getString("orbisgis.errorMessages.ErrorIn");
 	public static final String ProblemWhileAccessingGeoRaster = I18N
-			.getText("orbisgis.errorMessages.ProblemWhileAccessingGeoRaster");
+			.getString("orbisgis.errorMessages.ProblemWhileAccessingGeoRaster");
 	public static final String CannotCreateGeoRaster = I18N
-			.getText("orbisgis.errorMessages.CannotCreateGeoRaster");
+			.getString("orbisgis.errorMessages.CannotCreateGeoRaster");
 	public static final String CannotRenderTable = I18N
-			.getText("orbisgis.errorMessages.CannotRenderTable");
+			.getString("orbisgis.errorMessages.CannotRenderTable");
 	public static final String CannotEditTable = I18N
-			.getText("orbisgis.errorMessages.CannotEditTable");
+			.getString("orbisgis.errorMessages.CannotEditTable");
 	public static final String CannotAddErrorMessage = I18N
-			.getText("orbisgis.errorMessages.CannotAddErrorMessage");
+			.getString("orbisgis.errorMessages.CannotAddErrorMessage");
 	public static final String CannotRecoverPreviousStatusOfView = I18N
-			.getText("+ getId()");
+			.getString("+ getId()");
 
 	/**
 	 * Return an error message and the exception

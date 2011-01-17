@@ -80,7 +80,7 @@ public class SaveInFilePlugIn extends AbstractPlugIn {
 			}
 			final SaveFilePanel outfilePanel = new SaveFilePanel(
 					"org.orbisgis.core.ui.editorViews.toc.actions.SaveInFile",
-					I18N.getText("orbisgis.core.file.chooseFileFormat"));
+					I18N.getString("orbisgis.core.file.chooseFileFormat"));
 
 			DataManager dm = Services.getService(DataManager.class);
 			final DataSourceFactory dsf = dm.getDataSourceFactory();

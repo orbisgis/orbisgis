@@ -197,7 +197,7 @@ public class ViewDecorator {
 			activeComponent = dockingView.getComponent();
 		}
 		dockingView.setComponent(new JLabel(I18N
-				.getText("orbisgis.errorMessages.viewNotAvailable")));
+				.getString("orbisgis.errorMessages.viewNotAvailable")));
 	}
 
 	public void editorClosed(String editorId) {

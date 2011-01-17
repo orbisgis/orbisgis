@@ -38,11 +38,7 @@
 
 package org.orbisgis.core.ui.plugins.orbisgisFrame;
 
-import java.io.ObjectInputStream;
-
 import javax.swing.JMenuItem;
-
-import net.infonode.docking.RootWindow;
 
 import org.orbisgis.core.OrbisGISPersitenceConfig;
 import org.orbisgis.core.Services;

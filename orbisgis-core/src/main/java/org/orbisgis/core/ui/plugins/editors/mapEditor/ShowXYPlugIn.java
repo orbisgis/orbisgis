@@ -79,7 +79,7 @@ public class ShowXYPlugIn extends AbstractPlugIn {
 					xCoord = "X:" + (int) point.getX();
 					yCoord = "Y:" + (int) point.getY();
 					scale = I18N
-							.getText("orbisgis.org.orbisgis.core.ui.plugins.editors.mapEditor.scale")
+							.getString("orbisgis.org.orbisgis.core.ui.plugins.editors.mapEditor.scale")
 							+ ": 1/"
 							+ (int) getPlugInContext().getMapEditor()
 									.getMapTransform().getScaleDenominator();
@@ -108,7 +108,7 @@ public class ShowXYPlugIn extends AbstractPlugIn {
 		if (editor != null && editor instanceof MapEditorPlugIn
 				&& mapEditor != null) {
 			String scale = I18N
-					.getText("orbisgis.org.orbisgis.core.ui.plugins.editors.mapEditor.scale")
+					.getString("orbisgis.org.orbisgis.core.ui.plugins.editors.mapEditor.scale")
 					+ ": 1/"
 					+ (int) mapEditor.getMapTransform().getScaleDenominator();
 			showXY.setText("0.0     0.0  " + scale);

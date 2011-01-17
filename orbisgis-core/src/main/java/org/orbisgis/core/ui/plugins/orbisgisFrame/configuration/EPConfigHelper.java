@@ -21,12 +21,12 @@ public class EPConfigHelper {
 			configs = new ArrayList<ConfigurationDecorator>();
 			configs.add(new ConfigurationDecorator(new ProxyConfiguration(),
 					"org.orbisgis.core.ui.configurations.ProxyConfiguration",
-					I18N.getText("orbisgis.org.orbisgis.configuration.proxy"),
+					I18N.getString("orbisgis.org.orbisgis.configuration.proxy"),
 					"org.orbisgis.core.ui.Updates"));
 			configs.add(new ConfigurationDecorator(
 					new RenderingConfiguration(),
 					"org.orbisgis.core.ui.RenderingConfiguration",
-					I18N.getText("orbisgis.org.orbisgis.configuration.rules"),
+					I18N.getString("orbisgis.org.orbisgis.configuration.rules"),
 					"org.orbisgis.core.ui.RenderingConfiguration"));
 			configs.add(new ConfigurationDecorator(
 					new WorkspaceConfiguration(),
@@ -49,7 +49,7 @@ public class EPConfigHelper {
 		menuTree.addMenu(m1);
 		Menu m2 = new Menu(null, "org.orbisgis.core.ui.RenderingConfiguration",
 				null,
-				I18N.getText("orbisgis.org.orbisgis.configuration.rendering"),
+				I18N.getString("orbisgis.org.orbisgis.configuration.rendering"),
 				null, null, false);
 		menuTree.addMenu(m2);
 		Menu m3 = new Menu(null, "org.orbisgis.core.ui.WorkspaceConfiguration",
@@ -99,15 +99,15 @@ public class EPConfigHelper {
 						.getErrorManager()
 						.error(
 								I18N
-										.getText("orbisgis.org.orbisgis.configuration.group")
+										.getString("orbisgis.org.orbisgis.configuration.group")
 										+ " "
 										+ config.getParentId()
 										+ I18N
-												.getText("orbisgis.org.orbisgis.for")
+												.getString("orbisgis.org.orbisgis.for")
 										+ " "
 										+ config.getId()
 										+ I18N
-												.getText("orbisgis.org.orbisgis.doesNotExist"));
+												.getString("orbisgis.org.orbisgis.doesNotExist"));
 			} else {
 				config.loadAndApply();
 			}

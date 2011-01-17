@@ -85,7 +85,7 @@ public class DataSourceTableModel implements TableModel {
 			return ds.getFieldName(columnIndex);
 		} catch (DriverException e) {
 			ErrorMessages.error(ErrorMessages.CannotRenderTable, e);
-			return I18N.getText("orbisgis.org.orbisgis.name") + "!";
+			return I18N.getString("orbisgis.org.orbisgis.name") + "!";
 		}
 	}
 

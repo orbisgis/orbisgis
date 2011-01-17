@@ -74,7 +74,7 @@ public class ConfigurationPlugIn extends AbstractPlugIn {
 				btn, context);
 		menuItem = context.getFeatureInstaller().addMainMenuItem(this,
 				new String[] { Names.FILE },
-				I18N.getText("orbisgis.org.orbisgis.configuration"), false,
+				I18N.getString("orbisgis.org.orbisgis.configuration"), false,
 				OrbisGISIcon.PREFERENCES_SYSTEM, null, null, context);
 	}
 

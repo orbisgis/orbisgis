@@ -41,6 +41,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.orbisgis.utils.CollectionUtils;
+import org.orbisgis.utils.I18N;
 
 public abstract class AbstractLayer implements ILayer {
 	private String name;
@@ -115,10 +116,10 @@ public abstract class AbstractLayer implements ILayer {
 		String tmpName = name;
 		if (allLayersNames.contains(tmpName)) {
 			int i = 1;
-			while (allLayersNames.contains(tmpName + "_" + i)) {
+			while (allLayersNames.contains(tmpName + "_" + i)) { //$NON-NLS-1$
 				i++;
 			}
-			tmpName += "_" + i;
+			tmpName += "_" + i; //$NON-NLS-1$
 		}
 		allLayersNames.add(tmpName);
 		return tmpName;
@@ -181,7 +182,7 @@ public abstract class AbstractLayer implements ILayer {
 
 	public void moveTo(ILayer layer) throws LayerException {
 		if (CollectionUtils.contains(getLayersRecursively(), layer)) {
-			throw new LayerException("Cannot move a layer to its child");
+			throw new LayerException(I18N.getString("orbisgis.org.orbisgis.layerModel.abstractLayer.cannotMoveLayerToItsChild")); //$NON-NLS-1$
 		}
 		ILayer oldParent = getParent();
 		oldParent.remove(this, true);

@@ -77,7 +77,7 @@ public class InformationViewPlugIn extends ViewPlugIn {
 	}
 
 	public String getName() {
-		return I18N.getText("orbisgis.org.orbisgis.information.view");
+		return I18N.getString("orbisgis.org.orbisgis.information.view");
 	}
 
 }

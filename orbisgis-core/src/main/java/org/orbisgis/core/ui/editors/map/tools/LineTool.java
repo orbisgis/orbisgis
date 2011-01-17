@@ -132,7 +132,7 @@ public class LineTool extends AbstractLineTool {
 	}
 
 	public String getName() {
-		return I18N.getText("orbisgis.core.ui.editors.map.tool.line_tooltip");
+		return I18N.getString("orbisgis.core.ui.editors.map.tool.line_tooltip");
 	}
 
 }

@@ -82,7 +82,7 @@ public class SRSPanel extends JPanel implements UIPanel {
 
 	@Override
 	public String getTitle() {
-		return I18N.getText("orbisgis.org.orbisgis.wms.SRSSelection");
+		return I18N.getString("orbisgis.org.orbisgis.wms.SRSSelection");
 	}
 
 	@Override
@@ -117,7 +117,7 @@ public class SRSPanel extends JPanel implements UIPanel {
 		if (null == searchPanel) {
 			searchPanel = new JPanel();
 			JLabel label = new JLabel(I18N
-					.getText("orbisgis.org.orbisgis.wms.SearchSRSCode"));
+					.getString("orbisgis.org.orbisgis.wms.SearchSRSCode"));
 
 			txtFilter = new JButtonTextField();
 			txtFilter.getDocument().addDocumentListener(new DocumentListener() {
@@ -156,7 +156,7 @@ public class SRSPanel extends JPanel implements UIPanel {
 	@Override
 	public String validateInput() {
 		if (lstSRS.getSelectedIndex() == -1) {
-			return I18N.getText("orbisgis.org.orbisgis.wms.ChooseSRSCode");
+			return I18N.getString("orbisgis.org.orbisgis.wms.ChooseSRSCode");
 		}
 		return null;
 	}

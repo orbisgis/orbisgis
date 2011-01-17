@@ -161,7 +161,7 @@ public class BshScriptPanel extends JScrollPane implements DropTargetListener {
 				ErrorMessages
 						.error(
 								I18N
-										.getText("orbisgis.org.orbisgis.textArea.BadLocationException"),
+										.getString("orbisgis.org.orbisgis.textArea.BadLocationException"),
 								e);
 			}
 		} else {

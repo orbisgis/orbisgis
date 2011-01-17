@@ -162,6 +162,6 @@ public class VertexAditionTool extends VertexAdition {
 
 	public String getName() {
 		return I18N
-				.getText("orbisgis.core.ui.editors.map.tool.vertexAdition_tooltip");
+				.getString("orbisgis.core.ui.editors.map.tool.vertexAdition_tooltip");
 	}
 }

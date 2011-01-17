@@ -13,6 +13,7 @@ import org.orbisgis.core.geocognition.mapContext.GeocognitionException;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.map.TransformListener;
 import org.orbisgis.progress.IProgressMonitor;
+import org.orbisgis.utils.I18N;
 
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
@@ -40,15 +41,15 @@ public final class LeafElement extends AbstractGeocognitionElement implements
 	public void setId(String id) throws IllegalArgumentException {
 		if (fixedId != null) {
 			if (!id.toLowerCase().equals(fixedId.toLowerCase())) {
-				throw new IllegalArgumentException("This element cannot "
-						+ "have an id different than " + fixedId);
+				throw new IllegalArgumentException(I18N.getString("orbisgis.org.orbigis.leafElement.thisElementCannot") //$NON-NLS-1$
+						+ I18N.getString("orbisgis.org.orbigis.leafElement.haveAnIdDifferentThan") + fixedId); //$NON-NLS-1$
 			} else {
 				try {
 					element.idChanged(id);
 					this.id = id;
 					fireIdChanged();
 				} catch (GeocognitionException e) {
-					throw new IllegalArgumentException("Cannot change id", e);
+					throw new IllegalArgumentException(I18N.getString("orbisgis.org.orbigis.leafElement.cannotChangeId"), e); //$NON-NLS-1$
 				}
 			}
 		} else {
@@ -61,8 +62,8 @@ public final class LeafElement extends AbstractGeocognitionElement implements
 							if (child.getId().toLowerCase().equals(
 									id.toLowerCase())) {
 								throw new GeocognitionException(
-										"There is already "
-												+ "an element with the id:"
+										I18N.getString("orbisgis.org.orbigis.leafElement.thereIsAlready") //$NON-NLS-1$
+												+ I18N.getString("orbisgis.org.orbigis.leafElement.anElementWithTheId") //$NON-NLS-1$
 												+ id);
 							}
 						}
@@ -72,7 +73,7 @@ public final class LeafElement extends AbstractGeocognitionElement implements
 				this.id = id;
 				fireIdChanged();
 			} catch (GeocognitionException e) {
-				throw new IllegalArgumentException("Cannot change id", e);
+				throw new IllegalArgumentException(I18N.getString("orbisgis.org.orbigis.leafElement.cannotChangeId"), e); //$NON-NLS-1$
 			}
 		}
 	}
@@ -85,13 +86,13 @@ public final class LeafElement extends AbstractGeocognitionElement implements
 	@Override
 	public void addElement(GeocognitionElement element) {
 		throw new UnsupportedOperationException(
-				"This element cannot have children");
+				I18N.getString("orbisgis.org.orbigis.leafElement.cannotHaveChildren")); //$NON-NLS-1$
 	}
 
 	@Override
 	public boolean removeElement(GeocognitionElement element) {
 		throw new UnsupportedOperationException(
-				"This element cannot have children");
+				I18N.getString("orbisgis.org.orbigis.leafElement.cannotHaveChildren")); //$NON-NLS-1$
 	}
 
 	@Override
@@ -102,25 +103,25 @@ public final class LeafElement extends AbstractGeocognitionElement implements
 	@Override
 	public GeocognitionElement getElement(int i) {
 		throw new UnsupportedOperationException(
-				"This element cannot have children");
+				I18N.getString("orbisgis.org.orbigis.leafElement.cannotHaveChildren")); //$NON-NLS-1$
 	}
 
 	@Override
 	public GeocognitionElement getElement(String id) {
 		throw new UnsupportedOperationException(
-				"This element cannot have children");
+				I18N.getString("orbisgis.org.orbigis.leafElement.cannotHaveChildren")); //$NON-NLS-1$
 	}
 
 	@Override
 	public int getElementCount() {
 		throw new UnsupportedOperationException(
-				"This element cannot have children");
+				I18N.getString("orbisgis.org.orbigis.leafElement.cannotHaveChildren")); //$NON-NLS-1$
 	}
 
 	@Override
 	public boolean removeElement(String elementId) {
 		throw new UnsupportedOperationException(
-				"This element cannot have children");
+				I18N.getString("orbisgis.org.orbigis.leafElement.cannotHaveChildren")); //$NON-NLS-1$
 	}
 
 	@Override
@@ -230,7 +231,7 @@ public final class LeafElement extends AbstractGeocognitionElement implements
 			return DefaultGeocognition.getXML(getJAXBObject(), getTypeId());
 		} catch (JAXBException e) {
 			throw new GeocognitionException(
-					"Cannot get the xml of the element", e);
+					I18N.getString("orbisgis.org.orbigis.leafElement.cannotGetTheXML"), e); //$NON-NLS-1$
 		}
 	}
 
@@ -241,13 +242,13 @@ public final class LeafElement extends AbstractGeocognitionElement implements
 			element.setJAXBObject(xmlObject);
 		} catch (IllegalArgumentException e) {
 			throw new GeocognitionException(
-					"Cannot set the xml of the element", e);
+					I18N.getString("orbisgis.org.orbigis.leafElement.cannotSetTheXML"), e); //$NON-NLS-1$
 		} catch (JAXBException e) {
 			throw new GeocognitionException(
-					"Cannot set the xml of the element", e);
+					I18N.getString("orbisgis.org.orbigis.leafElement.cannotSetTheXML"), e); //$NON-NLS-1$
 		} catch (GeocognitionException e) {
 			throw new GeocognitionException(
-					"Cannot set the xml of the element", e);
+					I18N.getString("orbisgis.org.orbigis.leafElement.cannotSetTheXML"), e); //$NON-NLS-1$
 		}
 	}
 

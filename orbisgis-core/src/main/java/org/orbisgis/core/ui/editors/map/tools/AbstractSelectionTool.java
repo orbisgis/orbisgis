@@ -303,7 +303,7 @@ public abstract class AbstractSelectionTool extends Selection {
 				if (!ToolUtilities.isActiveLayerEditable(mc)) {
 					throw new TransitionException(
 							I18N
-									.getText("orbisgis.core.ui.editors.map.tool.selectionTool_0")); //$NON-NLS-1$
+									.getString("orbisgis.core.ui.editors.map.tool.selectionTool_0")); //$NON-NLS-1$
 				}
 				selected.add(handler);
 				geom.set(handler.getGeometryIndex());
@@ -435,7 +435,7 @@ public abstract class AbstractSelectionTool extends Selection {
 		} catch (CannotChangeGeometryException e) {
 			throw new DrawingException(
 					I18N
-							.getText("org.orbisgis.core.ui.editors.map.tool.selectionTool_1") + e.getMessage()); //$NON-NLS-1$
+							.getString("org.orbisgis.core.ui.editors.map.tool.selectionTool_1") + e.getMessage()); //$NON-NLS-1$
 		}
 	}
 

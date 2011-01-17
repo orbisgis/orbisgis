@@ -65,10 +65,10 @@ public class ChangeFieldNamePlugIn extends AbstractPlugIn {
 			FieldNameChooser av = new FieldNameChooser(
 					dataSource.getFieldNames(),
 					I18N
-							.getText("orbisgis.ui.popupmenu.table.changeFieldName.new"),
+							.getString("orbisgis.ui.popupmenu.table.changeFieldName.new"),
 					"strlength(txt) > 0",
 					I18N
-							.getText("orbisgis.ui.popupmenu.table.changeFieldName.emptyNameNotAllowed"),
+							.getString("orbisgis.ui.popupmenu.table.changeFieldName.emptyNameNotAllowed"),
 					dataSource.getMetadata().getFieldName(getSelectedColumn()));
 			if (UIFactory.showDialog(av)) {
 				dataSource.setFieldName(getSelectedColumn(), av.getValue());

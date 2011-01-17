@@ -78,7 +78,7 @@ public class ExitPlugIn extends AbstractPlugIn {
 	}
 
 	public static void openExitDialog(Component component) {
-		int answer = JOptionPane.showConfirmDialog(component,I18N.getText("orbisgis.org.orbisgis.core.exit"),
+		int answer = JOptionPane.showConfirmDialog(component,I18N.getString("orbisgis.org.orbisgis.core.exit"),
 				"OrbisGIS", JOptionPane.YES_NO_OPTION);
 		if (answer == JOptionPane.YES_OPTION) {
 			OrbisGISWorkspace psm = (OrbisGISWorkspace) Services

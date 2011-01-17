@@ -60,13 +60,13 @@ public class ConvertXYZDEMWizard {
 	public UIPanel[] getWizardPanels() {
 
 		infilePanel = new OpenFilePanel(IN_FILE_ID,
-				I18N.getText("orbisgis.org.orbisgis.xyz.selectInputFile"));
+				I18N.getString("orbisgis.org.orbisgis.xyz.selectInputFile"));
 		infilePanel.addFilter("xyz", "XYZ DEM (*.xyz)");
 
 		uixyzPanel = new UIXYZDEMPanel();
 
 		outfilePanel = new SaveFilePanel(OUT_FILE_ID,
-				I18N.getText("orbisgis.org.orbisgis.xyz.selectOutputFileFormat"));
+				I18N.getString("orbisgis.org.orbisgis.xyz.selectOutputFileFormat"));
 		outfilePanel.addFilter("tif", "TIF with TFW format (*.tif)");
 
 		return new UIPanel[] { infilePanel, uixyzPanel, outfilePanel };

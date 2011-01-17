@@ -131,13 +131,13 @@ public class PickCoordinatesPointTool extends AbstractPointTool {
 				.getService(OutputManager.class);
 		Color color = Color.blue;
 		om.print(I18N
-				.getText("orbisgis.core.ui.editors.map.tool.pickCoordinate")
+				.getString("orbisgis.core.ui.editors.map.tool.pickCoordinate")
 				+ " : " + g.toText() + "\n", color);
 	}
 
 	public String getName() {
 		return I18N
-				.getText("orbisgis.core.ui.editors.map.tool.pickCoordinate_tooltip");
+				.getString("orbisgis.core.ui.editors.map.tool.pickCoordinate_tooltip");
 	}
 
 }

@@ -118,10 +118,10 @@ public class FeatureInstaller {
 		if (menuPath.length == 0) {
 			return parent;
 		}
-		JMenu child = (JMenu) childMenuItem(I18N.getText(menuPath[0]), parent);
+		JMenu child = (JMenu) childMenuItem(I18N.getString(menuPath[0]), parent);
 		if (child == null) {
 			child = (JMenu) installMnemonic(
-					new JMenu(I18N.getText(menuPath[0])), parent);
+					new JMenu(I18N.getString(menuPath[0])), parent);
 			parent.add(child);
 		}
 		return createMenusIfNecessary(plugIn, child, behead(menuPath));
@@ -220,27 +220,27 @@ public class FeatureInstaller {
 		// If PlugIn is a View PlugIn get is panel Component
 		if (wbContext != null && panel != null)
 			((ViewPlugIn) plugIn).createPlugInContext(panel, I18N
-					.getText(menuItemName), icon, editors, wbContext);
+					.getString(menuItemName), icon, editors, wbContext);
 		else
 			((AbstractPlugIn) plugIn).createPlugInContext(wbContext);
 		// ((AbstractPlugIn) plugIn).setPlugInContext(plugInContext);
 		JMenuItem menuItem = installMenuItem(plugIn, menuPath, I18N
-				.getText(menuItemName), checkBox, icon);
+				.getString(menuItemName), checkBox, icon);
 		return menuItem;
 	}
 
 	public JMenuItem installMenuItem(PlugIn plugIn, String[] menuPath,
 			String menuItemName, boolean checkBox, Icon icon) {
-		JMenu menu = menuBarMenu(I18N.getText(menuPath[0]));
+		JMenu menu = menuBarMenu(I18N.getString(menuPath[0]));
 		if (menu == null) {
 			menu = (JMenu) installMnemonic(
-					new JMenu(I18N.getText(menuPath[0])), menuBar());
+					new JMenu(I18N.getString(menuPath[0])), menuBar());
 			addToMenuBar(menu);
 		}
 		JMenu parent = createMenusIfNecessary(plugIn, menu, behead(menuPath));
 		final JMenuItem menuItem = installMnemonic(
-				checkBox ? new JCheckBoxMenuItem(I18N.getText(menuItemName))
-						: new JMenuItem(I18N.getText(menuItemName)), parent);
+				checkBox ? new JCheckBoxMenuItem(I18N.getString(menuItemName))
+						: new JMenuItem(I18N.getString(menuItemName)), parent);
 		menuItem.setIcon(icon);
 		associate(menuItem, plugIn);
 		insert(menuItem, createMenu(parent), null);
@@ -345,10 +345,10 @@ public class FeatureInstaller {
 		plugIn.createPlugInContext(wbContext);
 		Menu mymenu = null;
 		for (int i = 0; i < menuPath.length; i++) {
-			String parent = i == 0 ? null : I18N.getText(menuPath[i - 1]);
-			mymenu = new Menu(parent, I18N.getText(menuPath[i]),
+			String parent = i == 0 ? null : I18N.getString(menuPath[i - 1]);
+			mymenu = new Menu(parent, I18N.getString(menuPath[i]),
 					i != menuPath.length - 1 ? null : group, I18N
-							.getText(menuPath[i]),
+							.getString(menuPath[i]),
 					i != menuPath.length - 1 ? null : icon,
 					i != menuPath.length - 1 ? null : plugIn, checkBox);
 			frame.getMenuTreePopup().addMenu(mymenu);

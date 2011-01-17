@@ -108,6 +108,6 @@ public class MesurePolygonTool extends AbstractPolygonTool {
 	}
 
 	public String getName() {
-		return I18N.getText("orbisgis.core.ui.editors.map.tool.mesure.area");
+		return I18N.getString("orbisgis.core.ui.editors.map.tool.mesure.area");
 	}
 }

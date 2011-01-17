@@ -152,7 +152,7 @@ public class GeomarkPanel extends JPanel implements ListSelectionListener {
 		JButton addButton = new JButton();
 		addButton.setIcon(OrbisGISIcon.WORLD_ADD);
 		addButton.setToolTipText(I18N
-				.getText("orbisgis.org.orbisgis.geomark.add"));
+				.getString("orbisgis.org.orbisgis.geomark.add"));
 		HireListener hireListener = new HireListener(addButton);
 		addButton.setActionCommand(addString);
 		addButton.addActionListener(hireListener);
@@ -162,7 +162,7 @@ public class GeomarkPanel extends JPanel implements ListSelectionListener {
 		deleteButton = new JButton();
 		deleteButton.setIcon(OrbisGISIcon.WORLD_DEL);
 		deleteButton.setToolTipText(I18N
-				.getText("orbisgis.org.orbisgis.geomark.remove"));
+				.getString("orbisgis.org.orbisgis.geomark.remove"));
 		deleteButton.setBorderPainted(false);
 		deleteButton.setActionCommand(removeString);
 		deleteButton.addActionListener(new FireListener());

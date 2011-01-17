@@ -83,9 +83,9 @@ import org.orbisgis.utils.I18N;
 public class WMSConnectionPanel extends JPanel implements SQLUIPanel {
 
 	private static final String TITLE_PREFIX = I18N
-			.getText("orbisgis.org.orbisgis.name");
+			.getString("orbisgis.org.orbisgis.name");
 	private static final String VERSION_PREFIX = I18N
-			.getText("orbisgis.org.orbisgis.version");
+			.getString("orbisgis.org.orbisgis.version");
 	private static final String WMSServerFile = "wmsServerList.txt";
 	private JComboBox cmbURLServer;
 	private JLabel lblVersion;
@@ -110,7 +110,7 @@ public class WMSConnectionPanel extends JPanel implements SQLUIPanel {
 		c.weighty = 0;
 		JPanel pnlURL = new JPanel(new BorderLayout());
 		pnlURL.setBorder(BorderFactory.createTitledBorder(I18N
-				.getText("orbisgis.org.orbisgis.wms.url")));
+				.getString("orbisgis.org.orbisgis.wms.url")));
 
 		serverswms = loadWMSServers();
 		cmbURLServer = new JComboBox(serverswms.toArray(new String[serverswms
@@ -126,7 +126,7 @@ public class WMSConnectionPanel extends JPanel implements SQLUIPanel {
 		JButton btnConnect = new JButton(IconLoader
 				.getIcon("server_connect.png"));
 		btnConnect.setToolTipText(I18N
-				.getText("orbisgis.org.orbisgis.wms.serverConnect"));
+				.getString("orbisgis.org.orbisgis.wms.serverConnect"));
 		btnConnect.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -137,7 +137,7 @@ public class WMSConnectionPanel extends JPanel implements SQLUIPanel {
 
 		JButton btnDelete = new JButton(IconLoader.getIcon("remove.png"));
 		btnDelete.setToolTipText(I18N
-				.getText("orbisgis.org.orbisgis.wms.url.delete"));
+				.getString("orbisgis.org.orbisgis.wms.url.delete"));
 		btnDelete.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -153,7 +153,7 @@ public class WMSConnectionPanel extends JPanel implements SQLUIPanel {
 
 		JButton btnUpdate = new JButton(IconLoader.getIcon("arrow_refresh.png"));
 		btnUpdate.setToolTipText(I18N
-				.getText("orbisgis.org.orbisgis.wms.url.reload"));
+				.getString("orbisgis.org.orbisgis.wms.url.reload"));
 		btnUpdate.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -192,7 +192,7 @@ public class WMSConnectionPanel extends JPanel implements SQLUIPanel {
 		JPanel pnlInfo = new JPanel();
 		pnlInfo.setLayout(new BorderLayout());
 		pnlInfo.setBorder(BorderFactory.createTitledBorder(I18N
-				.getText("orbisgis.org.orbisgis.wms.serverInformation")));
+				.getString("orbisgis.org.orbisgis.wms.serverInformation")));
 		JPanel pnlNorth = new JPanel();
 		pnlNorth.setLayout(new CRFlowLayout());
 		lblVersion = new JLabel(VERSION_PREFIX);
@@ -312,13 +312,13 @@ public class WMSConnectionPanel extends JPanel implements SQLUIPanel {
 
 				} catch (ConnectException e) {
 					ErrorMessages.error(I18N
-							.getText("orbisgis.errorMessages.wms.CannotConnect"
+							.getString("orbisgis.errorMessages.wms.CannotConnect"
 									+ " " + wmsURL), e);
 				} catch (IOException e) {
 					ErrorMessages
 							.error(
 									I18N
-											.getText("orbisgis.errorMessages.wms.CannotGetCapabilities"
+											.getString("orbisgis.errorMessages.wms.CannotGetCapabilities"
 													+ " " + wmsURL), e);
 				}
 			}
@@ -326,7 +326,7 @@ public class WMSConnectionPanel extends JPanel implements SQLUIPanel {
 			@Override
 			public String getTaskName() {
 				return I18N
-						.getText("orbisgis.org.orbisgis.wms.connectingServer");
+						.getString("orbisgis.org.orbisgis.wms.connectingServer");
 			}
 		});
 	}
@@ -346,13 +346,13 @@ public class WMSConnectionPanel extends JPanel implements SQLUIPanel {
 
 	@Override
 	public String getTitle() {
-		return I18N.getText("orbisgis.org.orbisgis.wms.serverConnection");
+		return I18N.getString("orbisgis.org.orbisgis.wms.serverConnection");
 	}
 
 	@Override
 	public String validateInput() {
 		if (client == null) {
-			return I18N.getText("orbisgis.org.orbisgis.wms.connectWMSServer");
+			return I18N.getString("orbisgis.org.orbisgis.wms.connectWMSServer");
 		}
 
 		return null;
@@ -411,7 +411,7 @@ public class WMSConnectionPanel extends JPanel implements SQLUIPanel {
 
 	@Override
 	public String getInfoText() {
-		return I18N.getText("orbisgis.org.orbisgis.wms.urlInput");
+		return I18N.getString("orbisgis.org.orbisgis.wms.urlInput");
 	}
 
 	@Override

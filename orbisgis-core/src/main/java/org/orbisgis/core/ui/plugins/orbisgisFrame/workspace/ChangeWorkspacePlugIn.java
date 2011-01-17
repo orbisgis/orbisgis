@@ -84,7 +84,7 @@ public class ChangeWorkspacePlugIn extends AbstractPlugIn {
 				}
 
 			} catch (IOException e) {
-				Services.getErrorManager().error(I18N.getText("orbisgis.core.ui.workspace.cannot_change"), e);
+				Services.getErrorManager().error(I18N.getString("orbisgis.core.ui.workspace.cannot_change"), e);
 			}
 		}
 		return true;

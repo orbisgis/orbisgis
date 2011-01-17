@@ -128,7 +128,7 @@ public class GeocatalogCreateFileSourcePlugIn extends AbstractPlugIn {
 
 		ChoosePanel cp = new ChoosePanel(
 				I18N
-						.getText("orbisgis.org.orbisgis.core.geocatalog.selectTypeSource"),
+						.getString("orbisgis.org.orbisgis.core.geocatalog.selectTypeSource"),
 				typeNames, driverNames);	
 		if (UIFactory.showDialog(cp)) {
 			// Create wizard
@@ -146,7 +146,7 @@ public class GeocatalogCreateFileSourcePlugIn extends AbstractPlugIn {
 				return;
 			}
 			SaveFilePanel saveFilePanel = new SaveFilePanel(null, I18N
-					.getText("orbisgis.org.core.selectFileCreate"));
+					.getString("orbisgis.org.core.selectFileCreate"));
 			if (file) {
 				saveFilePanel.setFileMustNotExist(true);
 				saveFilePanel.addFilter(((FileDriver) driver)

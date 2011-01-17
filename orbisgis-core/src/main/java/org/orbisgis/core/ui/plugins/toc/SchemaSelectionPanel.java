@@ -88,7 +88,7 @@ public class SchemaSelectionPanel extends JPanel implements UIPanel {
 
 	@Override
 	public String getTitle() {
-		return I18N.getText("orbisgis.org.orbisgis.db.setTableAndSchema");
+		return I18N.getString("orbisgis.org.orbisgis.db.setTableAndSchema");
 	}
 
 	@Override
@@ -120,12 +120,12 @@ public class SchemaSelectionPanel extends JPanel implements UIPanel {
 				jPanelSchema = new JPanel();
 				jPanelSchema.setLayout(new CRFlowLayout());
 				jPanelSchema.add(new JLabel(I18N
-						.getText("orbisgis.org.orbisgis.core.db.tableName")
+						.getString("orbisgis.org.orbisgis.core.db.tableName")
 						+ " :"));
 				jPanelSchema.add(layerText);
 				jPanelSchema.add(new CarriageReturn());
 				jPanelSchema.add(new JLabel(I18N
-						.getText("orbisgis.org.orbisgis.core.db.schemaName")
+						.getString("orbisgis.org.orbisgis.core.db.schemaName")
 						+ " :"));
 				jPanelSchema.add(schemasCb);
 
@@ -159,10 +159,10 @@ public class SchemaSelectionPanel extends JPanel implements UIPanel {
 
 		if (getSourceName().length() == 0) {
 			validateInput = I18N
-					.getText("orbisgis.org.orbisgis.core.db.selectTableName");
+					.getString("orbisgis.org.orbisgis.core.db.selectTableName");
 		} else if (ifTableExists(getSourceName())) {
 			validateInput = I18N
-					.getText("orbisgis.org.orbisgis.core.db.tableAlreadyExistsInDb");
+					.getString("orbisgis.org.orbisgis.core.db.tableAlreadyExistsInDb");
 		}
 		return validateInput;
 	}

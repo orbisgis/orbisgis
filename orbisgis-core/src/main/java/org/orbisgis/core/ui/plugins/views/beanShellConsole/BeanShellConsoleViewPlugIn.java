@@ -108,7 +108,7 @@ public class BeanShellConsoleViewPlugIn extends ViewPlugIn {
 			ErrorMessages
 					.error(
 							I18N
-									.getText("orbisgis.org.orbisgis.beanshell.CannotInitializeBeanshell"),
+									.getString("orbisgis.org.orbisgis.beanshell.CannotInitializeBeanshell"),
 							e);
 		}
 
@@ -117,7 +117,7 @@ public class BeanShellConsoleViewPlugIn extends ViewPlugIn {
 			public void save(String text) throws IOException {
 				final SaveFilePanel outfilePanel = new SaveFilePanel(
 						"org.orbisgis.cores.BeanShellConsoleOutFile", I18N
-								.getText("orbisgis.org.orbisgis.saveScript"));
+								.getString("orbisgis.org.orbisgis.saveScript"));
 				outfilePanel.addFilter("bsh", "BeanShell Script (*.bsh)");
 
 				if (UIFactory.showDialog(outfilePanel)) {
@@ -131,7 +131,7 @@ public class BeanShellConsoleViewPlugIn extends ViewPlugIn {
 			public String open() throws IOException {
 				final OpenFilePanel inFilePanel = new OpenFilePanel(
 						"org.orbisgis.plugins.views.BeanShellConsoleInFile",
-						I18N.getText("orbisgis.org.orbisgis.openScript"));
+						I18N.getString("orbisgis.org.orbisgis.openScript"));
 				inFilePanel.addFilter("bsh", "BeanShell Script (*.bsh)");
 
 				if (UIFactory.showDialog(inFilePanel)) {
@@ -140,7 +140,7 @@ public class BeanShellConsoleViewPlugIn extends ViewPlugIn {
 					if (fileLength > 1048576) {
 						throw new IOException(
 								I18N
-										.getText("orbisgis.org.orbisgis.CannotReadScript"));
+										.getString("orbisgis.org.orbisgis.CannotReadScript"));
 					} else {
 						FileReader fr = new FileReader(selectedFile);
 						char[] buff = new char[(int) fileLength];
@@ -214,7 +214,7 @@ public class BeanShellConsoleViewPlugIn extends ViewPlugIn {
 			String out = getOutput();
 			if (out.length() > 0) {
 				outputManager.println(I18N
-						.getText("orbisgis.org.orbisgis.beanshell.result"),
+						.getString("orbisgis.org.orbisgis.beanshell.result"),
 						Color.GREEN);
 
 				outputManager.println(out, Color.blue);
@@ -225,12 +225,12 @@ public class BeanShellConsoleViewPlugIn extends ViewPlugIn {
 			ErrorMessages
 					.error(
 							I18N
-									.getText("orbisgis.org.orbisgis.beanshell.CannotExecuteScript"),
+									.getString("orbisgis.org.orbisgis.beanshell.CannotExecuteScript"),
 							e);
 
 		} catch (EvalError e) {
 			outputManager.println(I18N
-					.getText("orbisgis.org.orbisgis.beanshell.error"),
+					.getString("orbisgis.org.orbisgis.beanshell.error"),
 					Color.RED);
 			outputManager.println(e.getErrorText(), Color.RED);
 			outputManager.println("--------------------", Color.RED);
@@ -255,6 +255,6 @@ public class BeanShellConsoleViewPlugIn extends ViewPlugIn {
 	}
 
 	public String getName() {
-		return I18N.getText("orbisgis.org.orbisgis.beanshell.view");
+		return I18N.getString("orbisgis.org.orbisgis.beanshell.view");
 	}
 }

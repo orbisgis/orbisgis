@@ -128,7 +128,7 @@ public class CategorizedChoosePanel extends JPanel implements SQLUIPanel {
 				|| (((Option) selectionPath.getLastPathComponent())
 						.isCategory())) {
 			return I18N
-					.getText("orbisgis.org.orbisgis.core.anItemMustBeSelected");
+					.getString("orbisgis.org.orbisgis.core.anItemMustBeSelected");
 		}
 
 		return null;

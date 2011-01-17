@@ -35,7 +35,7 @@ public class ConfigurationPanel extends AbstractUIPanel {
 
 		// Panel shown at the opening of the dialog
 		JLabel label = new JLabel(I18N
-				.getText("orbisgis.org.orbisgis.configuration.clickItemLeft"));
+				.getString("orbisgis.org.orbisgis.configuration.clickItemLeft"));
 		label.setHorizontalAlignment(SwingConstants.CENTER);
 		init = new JPanel();
 		init.setLayout(new BorderLayout());

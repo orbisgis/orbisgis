@@ -81,7 +81,7 @@ public class ZoomToSelectedFeaturesPlugIn extends AbstractPlugIn {
 			@Override
 			public String getTaskName() {
 				return I18N
-						.getText("orbisgis.org.orbisgis.core.ui.plugins.editors.tableEditor.zoomToSelectedLayer.extent");
+						.getString("orbisgis.org.orbisgis.core.ui.plugins.editors.tableEditor.zoomToSelectedLayer.extent");
 			}
 
 			@Override
