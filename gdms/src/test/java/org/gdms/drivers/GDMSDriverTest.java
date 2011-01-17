@@ -85,6 +85,8 @@ import org.grap.model.RasterMetadata;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.GeometryFactory;
+import org.gdms.driver.gdms.GdmsDriver;
+import org.gdms.driver.gdms.GdmsReader;
 
 public class GDMSDriverTest extends TestCase {
 
@@ -383,4 +385,13 @@ public class GDMSDriverTest extends TestCase {
 		ds.getAsString();
 		ds.close();
 	}
+
+        public void testOpenBadFile() throws Exception {
+                GdmsReader reader = new GdmsReader(new File("src/test/resources/badgdms.gdms"));
+                try {
+                reader.readMetadata();
+                assertTrue(false);
+                } catch(DriverException ex) {
+                }
+        }
 }
