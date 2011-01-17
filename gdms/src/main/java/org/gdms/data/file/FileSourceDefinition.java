@@ -77,7 +77,7 @@ public class FileSourceDefinition extends AbstractDataSourceDefinition {
                 throws DataSourceCreationException {
                 if (!file.exists()) {
                         throw new DataSourceCreationException(file + " "
-                                + I18N.getText("gdms.datasource.error.noexits"));
+                                + I18N.getString("gdms.datasource.error.noexits"));
                 }
                 ((ReadOnlyDriver) getDriver()).setDataSourceFactory(getDataSourceFactory());
 

@@ -112,20 +112,20 @@ public class DeleteOperator extends AbstractExpressionOperator implements
 			ds.close();
 
 		} catch (IncompatibleTypesException e) {
-			throw new ExecutionException(I18N.getText("Cannot filter table"), e);
+			throw new ExecutionException(I18N.getString("Cannot filter table"), e);
 		} catch (EvaluationException e) {
-			throw new ExecutionException(I18N.getText("Cannot filter table"), e);
+			throw new ExecutionException(I18N.getString("Cannot filter table"), e);
 		} catch (DriverException e) {
-			throw new ExecutionException(I18N.getText("Cannot filter table"), e);
+			throw new ExecutionException(I18N.getString("Cannot filter table"), e);
 		} catch (DriverLoadException e) {
-			throw new ExecutionException(I18N.getText("Cannot delete rows"), e);
+			throw new ExecutionException(I18N.getString("Cannot delete rows"), e);
 		} catch (NoSuchTableException e) {
-			throw new ExecutionException(I18N.getText("Table not found"), e);
+			throw new ExecutionException(I18N.getString("Table not found"), e);
 		} catch (DataSourceCreationException e) {
-			throw new ExecutionException(I18N.getText("Cannot access table"), e);
+			throw new ExecutionException(I18N.getString("Cannot access table"), e);
 		} catch (NonEditableDataSourceException e) {
 			throw new ExecutionException(I18N
-					.getText("The source is not editable"), e);
+					.getString("The source is not editable"), e);
 		} catch (SemanticException e) {
 			throw new ExecutionException("", e);
 		}
