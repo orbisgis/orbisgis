@@ -262,6 +262,6 @@ public class ReadBufferManager {
 	 */
 	public boolean isEOF() throws IOException {
 		return (buffer.remaining() == 0)
-				&& (windowStart + buffer.capacity() == channel.size());
+				&& (windowStart + buffer.capacity() >= channel.size());
 	}
 }

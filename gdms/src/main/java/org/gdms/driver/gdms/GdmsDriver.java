@@ -110,10 +110,14 @@ public class GdmsDriver extends GDMSModelDriver implements FileReadWriteDriver {
         }
 
         public int getType() {
+                // by default this is a file driver
                 int type = SourceManager.FILE;
-                if (reader != null) {
+
+                // when it is actually bound to a file, we check for additional data
+                // (getMetadata() != null) excludes the case of a corrupted gdms file
+                if (reader != null && reader.getMetadata() != null) {
                         try {
-                                Metadata m = getMetadata();
+                                Metadata m = reader.getMetadata();
                                 for (int i = 0; i < m.getFieldCount(); i++) {
                                         switch (m.getFieldType(i).getTypeCode()) {
                                                 case Type.GEOMETRY:
@@ -128,6 +132,15 @@ public class GdmsDriver extends GDMSModelDriver implements FileReadWriteDriver {
                         }
                         return type;
                 } else {
+                        // if we cannot tell, we add VECTORIAL
+                        // WARNING: this is needed so that GDMS can be considered
+                        // a writable vectorial driver
+                        //
+                        // 01/11/2011
+                        // TODO: getType should be split between a method that
+                        // returns the type of the current file loaded by the driver
+                        // and a static method that returns the types this driver
+                        // can work with
                         return type | SourceManager.VECTORIAL;
                 }
                 

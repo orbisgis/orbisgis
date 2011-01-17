@@ -105,6 +105,14 @@ public class GdmsReader {
          *                  If there is a problem while reading the metadatas.
          */
 	public void readMetadata() throws IOException, DriverException {
+                // Be sure we are at the beginning of the file
+                rbm.position(0);
+
+                // Be sure the file isn't empty
+                if (rbm.isEOF()) {
+                        throw new DriverException("The file is not a well formed GDMS file.");
+                }
+
 		// Read version
 		version = rbm.get();
 		if ((version != 2) && (version != 3)) {
