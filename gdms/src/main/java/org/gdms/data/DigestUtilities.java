@@ -36,12 +36,11 @@
  */
 package org.gdms.data;
 
+import biz.source_code.base64Coder.Base64Coder;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
 import org.gdms.driver.DriverException;
-
-import sun.misc.BASE64Encoder;
 
 public class DigestUtilities {
 	public static byte[] getDigest(DataSource ds)
@@ -76,7 +75,6 @@ public class DigestUtilities {
 
 	public static String getBase64Digest(DataSource ds)
 			throws NoSuchAlgorithmException, DriverException {
-		BASE64Encoder enc = new BASE64Encoder();
-		return enc.encode(getDigest(ds));
+		return String.valueOf(Base64Coder.encode(getDigest(ds)));
 	}
 }
