@@ -1,5 +1,6 @@
 package org.orbisgis.core.ui.editorViews.toc;
 
+import org.gdms.data.ClosedDataSourceException;
 import org.gdms.data.DataSource;
 import org.gdms.data.NonEditableDataSourceException;
 import org.gdms.data.edition.EditionEvent;
@@ -20,8 +21,11 @@ public abstract class AbstractTableEditableElement extends
 
 	@Override
 	public boolean isModified() {
-		return getDataSource().isModified();
-	}
+                if (!getDataSource().isOpen()) {
+                        return false;
+                }
+                return getDataSource().isModified();
+        }
 
 	@Override
 	public void close(IProgressMonitor progressMonitor)
