@@ -100,10 +100,7 @@ public class DefaultEditorManager implements EditorManager {
 					element.open(pm);
 					editor.setElement(element);
 				} catch (EditableElementException e) {
-					logger.debug(
-							"Cannot open the document: " + element.getId(), e);
-					editor = new EditorDecorator(new ErrorEditor(element
-							.getId(), e.getMessage()), null, "");
+                                        throw new UnsupportedOperationException("There was an error opening the element.",e);
 				}
 				this.editorPanel.addEditor(editor);
 			} else {
