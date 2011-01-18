@@ -50,6 +50,7 @@ import org.orbisgis.core.ui.pluginSystem.workbench.Names;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchContext;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchFrame;
 import org.orbisgis.core.ui.preferences.lookandfeel.OrbisGISIcon;
+import org.orbisgis.utils.I18N;
 
 public class GroupLayersPlugIn extends AbstractPlugIn {
 
@@ -60,7 +61,7 @@ public class GroupLayersPlugIn extends AbstractPlugIn {
 
 		DataManager dataManager = (DataManager) Services
 				.getService(DataManager.class);
-		ILayer col = dataManager.createLayerCollection("group"
+		ILayer col = dataManager.createLayerCollection(I18N.getString("orbisgis.org.orbisgis.ui.groupLayersPlugIn.group") //$NON-NLS-1$
 				+ System.currentTimeMillis());
 		ILayer parent = layers[0].getParent();
 		try {
@@ -69,7 +70,7 @@ public class GroupLayersPlugIn extends AbstractPlugIn {
 				layer.moveTo(col);
 			}
 		} catch (LayerException e) {
-			throw new RuntimeException("bug!");
+			throw new RuntimeException(I18N.getString("orbisgis.org.orbisgis.ui.groupLayersPlugIn.bug")); //$NON-NLS-1$
 		}
 
 		return true;

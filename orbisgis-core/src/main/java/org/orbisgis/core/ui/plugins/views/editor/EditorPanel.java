@@ -82,6 +82,7 @@ import org.orbisgis.core.ui.plugins.views.mapEditor.MapEditorPlugIn;
 import org.orbisgis.core.ui.plugins.views.tableEditor.TableEditorPlugIn;
 import org.orbisgis.core.ui.preferences.lookandfeel.images.IconLoader;
 import org.orbisgis.progress.NullProgressMonitor;
+import org.orbisgis.utils.I18N;
 
 public class EditorPanel extends Container {
 
@@ -160,9 +161,9 @@ public class EditorPanel extends Container {
 										elements));
 					} catch (UnsupportedFlavorException e) {
 						Services.getErrorManager().error(
-								"Cannot open this type of element", e);
+								I18N.getString("orbisgis.org.orbisgis.ui.editorPanel.cannotOpenElementType"), e); //$NON-NLS-1$
 					} catch (IOException e) {
-						Services.getErrorManager().error("Cannot open element",
+						Services.getErrorManager().error(I18N.getString("orbisgis.org.orbisgis.ui.editorPanel.cannotOpenElement"), //$NON-NLS-1$
 								e);
 					}
 				}
@@ -295,7 +296,7 @@ public class EditorPanel extends Container {
 				try {
 					document.save();
 				} catch (EditableElementException e) {
-					ErrorMessages.error(ErrorMessages.CannotSave + ""
+					ErrorMessages.error(ErrorMessages.CannotSave + "" //$NON-NLS-1$
 							+ document.getId(), e);
 				}
 				done.add(document);
@@ -320,11 +321,11 @@ public class EditorPanel extends Container {
 							editorDecorator.getId())) {
 						if (editorInfo.element.isModified()) {
 							int res = JOptionPane.showConfirmDialog(
-									EditorPanel.this, "There are unsaved "
-											+ "changes in "
+									EditorPanel.this, I18N.getString("orbisgis.org.orbisgis.ui.editorPanel.unsaved") //$NON-NLS-1$
+											+ I18N.getString("orbisgis.org.orbisgis.ui.editorPanel.changesIn") //$NON-NLS-1$
 											+ editorInfo.element.getId()
-											+ ", save them before closing?",
-									"Close editor",
+											+ I18N.getString("orbisgis.org.orbisgis.ui.editorPanel.saveBeforeClosing"), //$NON-NLS-1$
+									I18N.getString("orbisgis.org.orbisgis.ui.editorPanel.closeEditor"), //$NON-NLS-1$
 									JOptionPane.YES_NO_CANCEL_OPTION);
 							if (res == JOptionPane.CANCEL_OPTION) {
 								throw new OperationAbortedException();
@@ -336,7 +337,7 @@ public class EditorPanel extends Container {
 				} catch (OperationAbortedException e) {
 					throw e;
 				} catch (Exception e) {
-					logger.error("Problem closing editor", e);
+					logger.error(I18N.getString("orbisgis.org.orbisgis.ui.editorPanel.problemClosingEditor"), e); //$NON-NLS-1$
 				}
 			}
 
@@ -380,9 +381,9 @@ public class EditorPanel extends Container {
 				try {
 					editorInfo.element.close(new NullProgressMonitor());
 				} catch (UnsupportedOperationException e) {
-					logger.debug("Cannot close editor", e);
+					logger.debug(I18N.getString("orbisgis.org.orbisgis.ui.editorPanel.cannotCloseEditor"), e); //$NON-NLS-1$
 				} catch (EditableElementException e) {
-					logger.debug("Cannot close editor", e);
+					logger.debug(I18N.getString("orbisgis.org.orbisgis.ui.editorPanel.cannotCloseEditor"), e); //$NON-NLS-1$
 				}
 			}
 		}
@@ -466,7 +467,7 @@ public class EditorPanel extends Container {
 				EditorDecorator editor = editorInfo.getEditorDecorator();
 				String title = editor.getTitle();
 				if (editor.getElement().isModified()) {
-					title = "*" + title;
+					title = "*" + title; //$NON-NLS-1$
 				}
 				view.getViewProperties().setTitle(title);
 			}
@@ -491,7 +492,7 @@ public class EditorPanel extends Container {
 		} catch (OperationAbortedException e) {
 			return false;
 		} catch (Exception e) {
-			Services.getErrorManager().error("Cannot close editor", e);
+			Services.getErrorManager().error(I18N.getString("orbisgis.org.orbisgis.ui.editorPanel.cannotCloseEditor"), e); //$NON-NLS-1$
 			return false;
 		}
 	}
@@ -535,7 +536,7 @@ public class EditorPanel extends Container {
 			}
 		}
 
-		throw new IllegalArgumentException("The editor does not exist");
+		throw new IllegalArgumentException(I18N.getString("orbisgis.org.orbisgis.ui.editorPanel.editorDoesntExist")); //$NON-NLS-1$
 	}
 
 	public IEditor[] getEditors() {
@@ -601,7 +602,7 @@ public class EditorPanel extends Container {
 		}
 		WorkbenchContext wbContext = Services
 				.getService(WorkbenchContext.class);
-		wbContext.setLastAction("Editor changed");
+		wbContext.setLastAction("Editor changed"); //$NON-NLS-1$
 	}
 
 	@SuppressWarnings("unchecked")
@@ -635,7 +636,7 @@ public class EditorPanel extends Container {
 		}
 		WorkbenchContext wbContext = Services
 				.getService(WorkbenchContext.class);
-		wbContext.setLastAction("Editor changed");
+		wbContext.setLastAction("Editor changed"); //$NON-NLS-1$
 	}
 
 	public static boolean hasEditor(EditableElement element) {
@@ -672,10 +673,10 @@ public class EditorPanel extends Container {
 
 				if (editor instanceof MapEditorPlugIn) {
 					ed = new EditorDecorator(editor, IconLoader
-							.getIcon("map.png"), Names.EDITOR_MAP_ID);
+							.getIcon("map.png"), Names.EDITOR_MAP_ID); //$NON-NLS-1$
 				} else if (editor instanceof TableEditorPlugIn) {
 					ed = new EditorDecorator(editor, IconLoader
-							.getIcon("openattributes.png"),
+							.getIcon("openattributes.png"), //$NON-NLS-1$
 							Names.EDITOR_TABLE_ID);
 				}
 			}

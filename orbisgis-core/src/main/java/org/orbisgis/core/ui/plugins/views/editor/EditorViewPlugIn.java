@@ -48,6 +48,7 @@ import org.orbisgis.core.ui.pluginSystem.PlugInContext;
 import org.orbisgis.core.ui.pluginSystem.ViewPlugIn;
 import org.orbisgis.core.ui.pluginSystem.workbench.Names;
 import org.orbisgis.core.ui.preferences.lookandfeel.OrbisGISIcon;
+import org.orbisgis.utils.I18N;
 
 public class EditorViewPlugIn extends ViewPlugIn {
 
@@ -65,7 +66,7 @@ public class EditorViewPlugIn extends ViewPlugIn {
 	public void initialize(PlugInContext context) throws Exception {
 		panel = new EditorPanel();
 		Services.registerService(EditorManager.class,
-				"Gets access to the active editor and its document",
+				I18N.getString("org.orbisgis.org.ui.editorViewPlugIn.accessToActiveEditor"), //$NON-NLS-1$
 				new DefaultEditorManager(panel));
 		menuItem = context.getFeatureInstaller().addMainMenuItem(this,
 				new String[] { Names.VIEW }, Names.EDITORS, true,
@@ -98,6 +99,6 @@ public class EditorViewPlugIn extends ViewPlugIn {
 	}
 
 	public String getName() {
-		return "Editor view";
+		return I18N.getString("org.orbisgis.org.ui.editorViewPlugIn.editorView"); //$NON-NLS-1$
 	}
 }

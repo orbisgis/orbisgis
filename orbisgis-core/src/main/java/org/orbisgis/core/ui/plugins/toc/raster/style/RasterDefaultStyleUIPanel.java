@@ -44,6 +44,7 @@ import org.orbisgis.core.renderer.legend.RasterLegend;
 import org.orbisgis.core.sif.AbstractUIPanel;
 import org.orbisgis.core.sif.UIPanel;
 import org.orbisgis.core.ui.preferences.lookandfeel.images.IconLoader;
+import org.orbisgis.utils.I18N;
 
 public class RasterDefaultStyleUIPanel extends AbstractUIPanel implements
 		UIPanel {
@@ -60,11 +61,11 @@ public class RasterDefaultStyleUIPanel extends AbstractUIPanel implements
 	}
 
 	public URL getIconURL() {
-		return IconLoader.getIconUrl("palette.png");
+		return IconLoader.getIconUrl("palette.png"); //$NON-NLS-1$
 	}
 
 	public String getTitle() {
-		return "Raster style";
+		return I18N.getString("orbisgis.org.orbisgis.ui.rasterDefaultStyleUIPanel.rasterStyle"); //$NON-NLS-1$
 	}
 
 	public String initialize() {
@@ -72,7 +73,7 @@ public class RasterDefaultStyleUIPanel extends AbstractUIPanel implements
 	}
 
 	public String getInfoText() {
-		return "Edit the raster styling";
+		return I18N.getString("orbisgis.org.orbisgis.ui.rasterDefaultStyleUIPanel.editRasterStyle"); //$NON-NLS-1$
 	}
 
 	public String postProcess() {

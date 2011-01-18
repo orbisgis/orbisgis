@@ -37,7 +37,6 @@
  */
 package org.orbisgis.core.ui.plugins.orbisgisFrame.status;
 
-import javax.swing.JButton;
 import javax.swing.JLabel;
 
 import org.orbisgis.core.Services;
@@ -46,6 +45,7 @@ import org.orbisgis.core.ui.pluginSystem.PlugInContext;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchContext;
 import org.orbisgis.core.workspace.DefaultWorkspace;
 import org.orbisgis.core.workspace.Workspace;
+import org.orbisgis.utils.I18N;
 
 public class WorkspaceNamePlugin extends AbstractPlugIn {
 
@@ -55,11 +55,11 @@ public class WorkspaceNamePlugin extends AbstractPlugIn {
 
 		DefaultWorkspace workspace = (DefaultWorkspace) Services
 				.getService(Workspace.class);
-		StringBuffer message = new StringBuffer("Workspace : ");
+		StringBuffer message = new StringBuffer(I18N.getString("orbisgis.org.orbisgis.ui.workspaceNamePlugin.workspace")); //$NON-NLS-1$
 		String currentWorkspaceName = workspace.getWorkspaceFolder();
 		if (currentWorkspaceName.length() > 60) {
 			currentWorkspaceName.substring(60);
-			currentWorkspaceName = currentWorkspaceName + "...";
+			currentWorkspaceName = currentWorkspaceName + "..."; //$NON-NLS-1$
 		}
 		message.append(currentWorkspaceName);
 		btn = new JLabel(message.toString());

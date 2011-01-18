@@ -58,8 +58,8 @@ import org.orbisgis.core.ui.pluginSystem.PlugInContext;
 import org.orbisgis.core.ui.pluginSystem.workbench.Names;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchContext;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchFrame;
-import org.orbisgis.core.ui.preferences.lookandfeel.OrbisGISIcon;
 import org.orbisgis.core.ui.preferences.lookandfeel.images.IconLoader;
+import org.orbisgis.utils.I18N;
 
 public class RasterThresholdPlugIn extends AbstractPlugIn {
 
@@ -70,15 +70,15 @@ public class RasterThresholdPlugIn extends AbstractPlugIn {
 		ILayer layer = selectedResources[0];
 		GeoRaster geoRasterSrc = layer.getRaster();
 		final MultiInputPanel mip = new MultiInputPanel(
-				"Min - Max pixel extraction");
-		mip.addInput("MinValue", "Min value", new Double(geoRasterSrc.getMin())
+				I18N.getString("orbisgis.org.orbisgis.ui.rasterThresholdPlugIn.minMaxPixelExtraction")); //$NON-NLS-1$
+		mip.addInput("MinValue", I18N.getString("orbisgis.org.orbisgis.ui.rasterThresholdPlugIn.minValue"), new Double(geoRasterSrc.getMin()) //$NON-NLS-1$ //$NON-NLS-2$
 				.toString(), new DoubleType(12));
-		mip.addInput("MaxValue", "Max value", new Float(geoRasterSrc.getMax())
+		mip.addInput("MaxValue", I18N.getString("orbisgis.org.orbisgis.ui.rasterThresholdPlugIn.maxValue"), new Float(geoRasterSrc.getMax()) //$NON-NLS-1$ //$NON-NLS-2$
 				.toString(), new DoubleType(12));
 
 		if (UIFactory.showDialog(mip)) {
-			final double min = new Double(mip.getInput("MinValue"));
-			final double max = new Double(mip.getInput("MaxValue"));
+			final double min = new Double(mip.getInput("MinValue")); //$NON-NLS-1$
+			final double max = new Double(mip.getInput("MaxValue")); //$NON-NLS-1$
 			final GeoRaster geoRasterResult = GeoRasterFactory.createGeoRaster(
 					geoRasterSrc.getImagePlus(), geoRasterSrc.getMetadata());
 			geoRasterResult.setRangeValues(min, max);
@@ -89,7 +89,7 @@ public class RasterThresholdPlugIn extends AbstractPlugIn {
 				// save the computed GeoRaster in a tempFile
 				final DataSourceFactory dsf = ((DataManager) Services
 						.getService(DataManager.class)).getDataSourceFactory();
-				final String tempFile = dsf.getTempFile() + ".tif";
+				final String tempFile = dsf.getTempFile() + ".tif"; //$NON-NLS-1$
 				geoRasterResult.save(tempFile);
 
 				// populate the GeoView TOC with a new RasterLayer
@@ -110,7 +110,7 @@ public class RasterThresholdPlugIn extends AbstractPlugIn {
 		context.getFeatureInstaller().addPopupMenuItem(frame, this,
 				new String[] { Names.POPUP_TOC_RASTER_THRESHOLD },
 				Names.POPUP_TOC_LEGEND_GROUP, false,
-				IconLoader.getIcon("color_swatch.png"), wbContext);
+				IconLoader.getIcon("color_swatch.png"), wbContext); //$NON-NLS-1$
 	}
 
 	@Override
@@ -140,7 +140,7 @@ public class RasterThresholdPlugIn extends AbstractPlugIn {
 		} catch (DriverException e) {
 		} catch (IOException e) {
 			Services.getErrorManager().error(
-					"Raster type unreadable for this layer", e);
+					I18N.getString("orbisgis.org.orbisgis.ui.rasterThresholdPlugIn.cannotReadGeorasterType"), e); //$NON-NLS-1$
 		}
 
 		return false;

@@ -50,6 +50,7 @@ import java.util.Map;
 import javax.swing.ImageIcon;
 
 import org.orbisgis.core.ui.preferences.lookandfeel.images.IconLoader;
+import org.orbisgis.utils.I18N;
 
 public class BshConsoleAction {
 	public final static int EXECUTE = 110;
@@ -72,14 +73,14 @@ public class BshConsoleAction {
 	static {
 		mapOfActions = new HashMap<Integer, InternalConsoleAction>(7);
 
-		mapOfActions.put(EXECUTE, new InternalConsoleAction("execute.png",
-				"Click to execute query"));
-		mapOfActions.put(CLEAR, new InternalConsoleAction("erase.png",
-				"Clear console"));
-		mapOfActions.put(OPEN, new InternalConsoleAction("open.png",
-				"Open an already saved SQL script"));
-		mapOfActions.put(SAVE, new InternalConsoleAction("save.png",
-				"Save current console"));
+		mapOfActions.put(EXECUTE, new InternalConsoleAction("execute.png", //$NON-NLS-1$
+				I18N.getString("orbisgis.org.orbisgis.ui.bshConsoleAction.execute"))); //$NON-NLS-1$
+		mapOfActions.put(CLEAR, new InternalConsoleAction("erase.png", //$NON-NLS-1$
+				I18N.getString("orbisgis.org.orbisgis.ui.bshConsoleAction.clear"))); //$NON-NLS-1$
+		mapOfActions.put(OPEN, new InternalConsoleAction("open.png", //$NON-NLS-1$
+				I18N.getString("orbisgis.org.orbisgis.ui.bshConsoleAction.open"))); //$NON-NLS-1$
+		mapOfActions.put(SAVE, new InternalConsoleAction("save.png", //$NON-NLS-1$
+				I18N.getString("orbisgis.org.orbisgis.ui.bshConsoleAction.save"))); //$NON-NLS-1$
 	}
 
 	public static ImageIcon getImageIcon(final int type) {

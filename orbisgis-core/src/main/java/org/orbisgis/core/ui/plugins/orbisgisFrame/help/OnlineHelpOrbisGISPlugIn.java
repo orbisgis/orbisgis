@@ -50,10 +50,11 @@ import org.orbisgis.core.errorManager.ErrorManager;
 import org.orbisgis.core.ui.pluginSystem.AbstractPlugIn;
 import org.orbisgis.core.ui.pluginSystem.PlugInContext;
 import org.orbisgis.core.ui.pluginSystem.workbench.Names;
+import org.orbisgis.utils.I18N;
 
 public class OnlineHelpOrbisGISPlugIn extends AbstractPlugIn {
 
-	private String url = "http://brehat.ec-nantes.fr/orbisgis_download/documentation/online/orbisgis_help.htm";
+	private String url = I18N.getString("orbisgis.org.orbisgis.ui.help.onlineHelpOrbisGISPlugIn.serverURL"); //$NON-NLS-1$
 	private JMenuItem menuItem;
 
 	public void initialize(PlugInContext context) throws Exception {
@@ -70,19 +71,19 @@ public class OnlineHelpOrbisGISPlugIn extends AbstractPlugIn {
 					java.awt.Desktop.getDesktop().browse(new URI(Names.ONLINE_URL));
 				} catch (IOException e) {
 					Services.getService(ErrorManager.class).error(
-							"Serveur not available ", e);
+							I18N.getString("orbisgis.org.orbisgis.ui.help.onlineHelpOrbisGISPlugIn.serverNotAvailable"), e); //$NON-NLS-1$
 				} catch (URISyntaxException e) {
 					Services.getService(ErrorManager.class).error(
-							"Bug syntaxe error ", e);
+							I18N.getString("orbisgis.org.orbisgis.ui.help.onlineHelpOrbisGISPlugIn.bugSyntaxeError"), e); //$NON-NLS-1$
 				}
 			} else {
 				Services.getService(ErrorManager.class).error(
-						"This OS is not supported");
+						I18N.getString("orbisgis.org.orbisgis.ui.help.onlineHelpOrbisGISPlugIn.OsUnsupported")); //$NON-NLS-1$
 			}
 
 		} else {
 			Services.getService(ErrorManager.class).error(
-					"This OS is not supported");
+					I18N.getString("orbisgis.org.orbisgis.ui.help.onlineHelpOrbisGISPlugIn.OsUnsupported")); //$NON-NLS-1$
 		}
 		return true;
 	}

@@ -58,6 +58,7 @@ import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchContext;
 import org.orbisgis.core.ui.plugins.views.beanShellConsole.javaManager.autocompletion.Completion;
 import org.orbisgis.core.ui.plugins.views.beanShellConsole.javaManager.autocompletion.Option;
 import org.orbisgis.core.ui.plugins.views.beanShellConsole.ui.CompletionPopUp;
+import org.orbisgis.utils.I18N;
 
 public class BshCompletionKeyListener extends KeyAdapter {
 
@@ -75,8 +76,11 @@ public class BshCompletionKeyListener extends KeyAdapter {
 		try {
 			completion = new Completion();
 		} catch (LinkageError e) {
-			Services.getService(ErrorManager.class).error(
-					"Completion system cannot be initialized", e);
+			Services
+					.getService(ErrorManager.class)
+					.error(
+							I18N
+									.getString("orbisgis.org.orbisgis.ui.bshCompletionKeyListener.cannotInitializeCompletion"), e); //$NON-NLS-1$
 		}
 	}
 
@@ -93,17 +97,20 @@ public class BshCompletionKeyListener extends KeyAdapter {
 						.getCaretPosition(), script);
 				showList(list, p);
 			} catch (Exception e1) {
-				logger.debug("Bug autocompleting", e1);
+				logger
+						.debug(
+								I18N
+										.getString("orbisgis.org.orbisgis.ui.bshCompletionKeyListener.bugAutocompleting"), e1); //$NON-NLS-1$
 			}
 		} else if ((e.getKeyCode() == KeyEvent.VK_S) && e.isControlDown()
 				&& e.isShiftDown()) {
 			try {
-				SaveFilePanel sfp = new SaveFilePanel(null,
-						"Save code completion test case");
-				sfp.setCurrentDirectory(new File("/home/fergonco/"
-						+ "ogworkspace/geocognition/orbisgis-core/"
-						+ "src/test/resources/" + "org/orbisgis/javaManager/"));
-				sfp.addFilter("compl", "completion file");
+				SaveFilePanel sfp = new SaveFilePanel(
+						null,
+						I18N
+								.getString("orbisgis.org.orbisgis.ui.bshCompletionKeyListener.saveCodeCompletionTest")); //$NON-NLS-1$
+				sfp.setCurrentDirectory(new File(".")); //$NON-NLS-1$ //$NON-NLS-2$
+				sfp.addFilter("compl", "completion file"); //$NON-NLS-1$ //$NON-NLS-2$
 				if (UIFactory.showDialog(sfp)) {
 					Option[] list = completion.getOptions(originalText, txt
 							.getCaretPosition(), script);
@@ -112,16 +119,19 @@ public class BshCompletionKeyListener extends KeyAdapter {
 					StringBuffer sb = new StringBuffer();
 					sb.append(txt.getCaretPosition());
 					for (Option option : list) {
-						sb.append(";").append(option.getAsString());
+						sb.append(";").append(option.getAsString()); //$NON-NLS-1$
 					}
-					dos.write(sb.append("\n").toString().getBytes());
+					dos.write(sb.append("\n").toString().getBytes()); //$NON-NLS-1$
 					String content = originalText;
 					dos.write(content.getBytes());
 					dos.close();
 				}
 			} catch (IOException e1) {
-				Services.getErrorManager().error(
-						"Cannot save code completion test case", e1);
+				Services
+						.getErrorManager()
+						.error(
+								I18N
+										.getString("orbisgis.org.orbisgis.ui.bshCompletionKeyListener.cannotSaveCompletion"), e1); //$NON-NLS-1$
 			}
 		}
 	}

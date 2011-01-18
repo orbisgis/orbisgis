@@ -60,8 +60,8 @@ class ConfigurationTreeModel extends AbstractTreeModel {
 				return null;
 			}
 		} else {
-			Services.getErrorManager().error("bug!",
-					new RuntimeException(I18N.getString("orbisgis.org.orbisgis.configuration.menuChildren")));
+			Services.getErrorManager().error(I18N.getString("orbisgis.org.orbisgis.configurationTreeModel.bug"), //$NON-NLS-1$
+					new RuntimeException(I18N.getString("orbisgis.org.orbisgis.configuration.menuChildren"))); //$NON-NLS-1$
 			return null;
 		}
 	}
@@ -79,8 +79,8 @@ class ConfigurationTreeModel extends AbstractTreeModel {
 
 			return childCount;
 		} else {
-			Services.getErrorManager().error("bug!",
-					new RuntimeException(I18N.getString("orbisgis.org.orbisgis.configuration.menuChildren")));
+			Services.getErrorManager().error(I18N.getString("orbisgis.org.orbisgis.configurationTreeModel.bug"), //$NON-NLS-1$
+					new RuntimeException(I18N.getString("orbisgis.org.orbisgis.configuration.menuChildren"))); //$NON-NLS-1$
 			return 0;
 		}
 	}
@@ -110,8 +110,8 @@ class ConfigurationTreeModel extends AbstractTreeModel {
 
 			return -1;
 		} else {
-			Services.getErrorManager().error("bug!",
-					new RuntimeException(I18N.getString("orbisgis.org.orbisgis.configuration.menuChildren")));
+			Services.getErrorManager().error(I18N.getString("orbisgis.org.orbisgis.configurationTreeModel.bug"), //$NON-NLS-1$
+					new RuntimeException(I18N.getString("orbisgis.org.orbisgis.configuration.menuChildren"))); //$NON-NLS-1$
 			return -1;
 		}
 	}

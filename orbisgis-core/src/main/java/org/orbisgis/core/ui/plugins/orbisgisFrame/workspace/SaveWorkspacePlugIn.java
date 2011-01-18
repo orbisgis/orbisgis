@@ -54,6 +54,7 @@ import org.orbisgis.core.ui.plugins.views.editor.EditorManager;
 import org.orbisgis.core.ui.preferences.lookandfeel.OrbisGISIcon;
 import org.orbisgis.core.workspace.Workspace;
 import org.orbisgis.progress.IProgressMonitor;
+import org.orbisgis.utils.I18N;
 
 public class SaveWorkspacePlugIn extends AbstractPlugIn {
 
@@ -77,13 +78,13 @@ public class SaveWorkspacePlugIn extends AbstractPlugIn {
 					ws.saveWorkspace();
 				} catch (IOException e) {
 					Services.getErrorManager()
-							.error("Cannot save workspace", e);
+							.error(I18N.getString("orbisgis.org.orbisgis.ui.saveWorkspacePlugIn.cannotSaveWorkspace"), e); //$NON-NLS-1$
 				}
 			}
 
 			@Override
 			public String getTaskName() {
-				return "Saving Workspace";
+				return I18N.getString("orbisgis.org.orbisgis.ui.saveWorkspacePlugIn.savingWorkspace"); //$NON-NLS-1$
 			}
 		});
 		return true;

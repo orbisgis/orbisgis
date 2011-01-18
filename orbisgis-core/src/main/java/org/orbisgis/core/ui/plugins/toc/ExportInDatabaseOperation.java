@@ -49,6 +49,7 @@ import org.gdms.sql.strategies.SemanticException;
 import org.orbisgis.core.background.BackgroundJob;
 import org.orbisgis.core.ui.pluginSystem.message.ErrorMessages;
 import org.orbisgis.progress.IProgressMonitor;
+import org.orbisgis.utils.I18N;
 
 public class ExportInDatabaseOperation implements BackgroundJob {
 
@@ -72,7 +73,8 @@ public class ExportInDatabaseOperation implements BackgroundJob {
 
 	@Override
 	public String getTaskName() {
-		return "Exporting in a database";
+		return I18N
+				.getString("orbisgis.org.orbisgis.ui.exportInDatabaseOperation.exportingInDB"); //$NON-NLS-1$
 	}
 
 	@Override
@@ -87,17 +89,17 @@ public class ExportInDatabaseOperation implements BackgroundJob {
 			}
 
 			// register both sources
-			String registerDB = "select register('" + dbDriver.getDriverId()
-					+ "' ,'" + dbSource.getHost() + "'," + " '"
-					+ dbSource.getPort() + "','" + dbSource.getDbName() + "','"
-					+ dbSource.getUser() + "','" + dbSource.getPassword()
-					+ "','" + schemaName + "','" + outSourceName + "','"
-					+ layerName + "');";
+			String registerDB = "select register('" + dbDriver.getDriverId() //$NON-NLS-1$
+					+ "' ,'" + dbSource.getHost() + "'," + " '" //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+					+ dbSource.getPort() + "','" + dbSource.getDbName() + "','" //$NON-NLS-1$ //$NON-NLS-2$
+					+ dbSource.getUser() + "','" + dbSource.getPassword() //$NON-NLS-1$
+					+ "','" + schemaName + "','" + outSourceName + "','" //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+					+ layerName + "');"; //$NON-NLS-1$
 
 			dsf.executeSQL(registerDB);
 			// Do the migration
-			String load = "create table " + layerName + " as select * "
-					+ "from " + inSourceName + " ;";
+			String load = "create table " + layerName + " as select * " //$NON-NLS-1$ //$NON-NLS-2$
+					+ "from " + inSourceName + " ;"; //$NON-NLS-1$ //$NON-NLS-2$
 			dsf.executeSQL(load, pm);
 
 			if (changeName) {
@@ -105,7 +107,7 @@ public class ExportInDatabaseOperation implements BackgroundJob {
 						ErrorMessages.SourceAlreadyExists);
 			} else {
 				JOptionPane.showMessageDialog(null,
-						ErrorMessages.SourceAlreadyRegisteredWithName + " "
+						ErrorMessages.SourceAlreadyRegisteredWithName + " " //$NON-NLS-1$
 								+ layerName);
 			}
 

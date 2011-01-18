@@ -52,6 +52,7 @@ import org.orbisgis.core.ui.pluginSystem.workbench.Names;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchContext;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchFrame;
 import org.orbisgis.core.ui.preferences.lookandfeel.OrbisGISIcon;
+import org.orbisgis.utils.I18N;
 
 public class CreateGroupPlugIn extends AbstractPlugIn {
 
@@ -85,7 +86,7 @@ public class CreateGroupPlugIn extends AbstractPlugIn {
 				.getService(DataManager.class);
 		if (vcm.getActiveMapContext() != null) {
 			ILayer newLayerCollection = dataManager
-					.createLayerCollection("group" + System.currentTimeMillis());
+					.createLayerCollection(I18N.getString("orbisgis.org.orbisgis.ui.createGroupPlugIn.group") + System.currentTimeMillis()); //$NON-NLS-1$
 
 			if ((resource == null) || (!resource.acceptsChilds())) {
 				resource = vcm.getActiveMapContext().getLayerModel();
