@@ -1,5 +1,4 @@
-/*
-arde * OrbisGIS is a GIS application dedicated to scientific spatial simulation.
+/* OrbisGIS is a GIS application dedicated to scientific spatial simulation.
  * This cross-platform GIS is developed at French IRSTV institute and is able to
  * manipulate and create vector and raster spatial information. OrbisGIS is
  * distributed under GPL 3 license. It is produced by the "Atelier SIG" team of
@@ -49,6 +48,8 @@ import org.gdms.driver.driverManager.DriverLoadException;
 import org.gdms.source.DefaultSourceManager;
 import org.gdms.sql.parser.ParseException;
 import org.gdms.sql.strategies.SemanticException;
+import org.osgeo.proj4j.proj.CassiniProjection;
+import org.osgeo.proj4j.proj.StereographicAzimuthalProjection;
 
 import fr.cts.CoordinateOperation;
 import fr.cts.Ellipsoid;
@@ -73,6 +74,7 @@ import fr.cts.op.Identity;
 import fr.cts.op.projection.LambertConicConformal1SP;
 import fr.cts.op.projection.LambertConicConformal2SP;
 import fr.cts.op.projection.Projection;
+import fr.cts.op.projection.ProjectionAdapterForProj4j;
 import fr.cts.op.projection.TransverseMercator;
 import fr.cts.op.projection.UniversalTransverseMercator;
 import fr.cts.op.transformation.GeocentricTranslation;
@@ -81,8 +83,9 @@ import fr.cts.op.transformation.SevenParameterTransformation;
 
 /**
  * 
- * Create a CTS CoordinateReferenceSystem using the spatial reference system table.
- *
+ * Create a CTS CoordinateReferenceSystem using the spatial reference system
+ * table.
+ * 
  */
 public class GDMSProj4CRSFactory {
 
@@ -129,19 +132,14 @@ public class GDMSProj4CRSFactory {
 
 			ds.close();
 		} catch (DriverLoadException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (DataSourceCreationException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (DriverException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (ParseException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (SemanticException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
@@ -196,8 +194,8 @@ public class GDMSProj4CRSFactory {
 			}
 			CoordinateSystem cs = new CoordinateSystem(new Axis[] { Axis.X,
 					Axis.Y, Axis.Z }, new Unit[] { unit, unit, unit });
-			return new GeocentricCRS(new Identifier(namespace, String.valueOf(id), name), gd,
-					cs);
+			return new GeocentricCRS(new Identifier(namespace, String
+					.valueOf(id), name), gd, cs);
 		} else if (sproj.equals("longlat")) {
 			Unit unit = Unit.DEGREE;
 			if (stometer != null) {
@@ -207,14 +205,14 @@ public class GDMSProj4CRSFactory {
 			CoordinateSystem cs = new CoordinateSystem(new Axis[] {
 					Axis.LONGITUDE, Axis.LATITUDE, Axis.HEIGHT }, new Unit[] {
 					unit, unit, Unit.METER });
-			return new Geographic3DCRS(new Identifier(namespace, String.valueOf(id), name), gd,
-					cs);
+			return new Geographic3DCRS(new Identifier(namespace, String
+					.valueOf(id), name), gd, cs);
 		} else {
 			Projection proj = getProjection(sproj, gd.getEllipsoid(),
 					parameters);
 			if (null != proj) {
-				return new ProjectedCRS(new Identifier(namespace, String.valueOf(id), name),
-						gd, proj);
+				return new ProjectedCRS(new Identifier(namespace, String
+						.valueOf(id), name), gd, proj);
 			} else {
 				LOG.fine("Unknown projection : " + sproj);
 				return null;
@@ -481,6 +479,27 @@ public class GDMSProj4CRSFactory {
 							Unit.DEGREE));
 			map.put(Parameter.FALSE_NORTHING, new Measure(y_0, Unit.METER));
 			return new UniversalTransverseMercator(ell, map);
+		} else if (proj.equals("sterea") || proj.equals("stere")) {
+			org.osgeo.proj4j.proj.Projection proj4J = new StereographicAzimuthalProjection(
+					lat_0, lon_0);
+			proj4J.setFalseNorthing(y_0);
+			proj4J.setFalseEasting(x_0);
+			proj4J.setScaleFactor(k_0);
+			proj4J
+					.setEllipsoid(ProjectionAdapterForProj4j
+							.createEllipsoid(ell));
+			return ProjectionAdapterForProj4j.createProjection(proj4J);
+		}
+		else if(proj.equals("cass")){
+			//+proj=cass +lat_0=11.25217861111111 +lon_0=-60.68600888888889 +x_0=37718.66159325 +y_0=36209.91512952 +a=6378293.645208759 +b=6356617.987679838 +to_meter=0.201166195164 +no_defs
+			org.osgeo.proj4j.proj.Projection proj4J = new CassiniProjection();
+			proj4J.setFalseNorthing(y_0);
+			proj4J.setFalseEasting(x_0);
+			proj4J
+					.setEllipsoid(ProjectionAdapterForProj4j
+							.createEllipsoid(ell));
+			return ProjectionAdapterForProj4j.createProjection(proj4J);
+
 		} else {
 			LOG.fine(proj + " is not yet implemented");
 			return null;
