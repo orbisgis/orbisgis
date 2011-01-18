@@ -79,6 +79,11 @@ public class SetInactivePlugIn extends AbstractPlugIn {
 	}
 
 	public void execute(MapContext mapContext, ILayer layer) {
+                // we close directly if nothing is modified
+                if (!mapContext.getActiveLayer().getSpatialDataSource().isModified()) {
+                        mapContext.setActiveLayer(null);
+                        return;
+                }
 		int option = JOptionPane.showConfirmDialog(null, I18N
 				.getString("orbisgis.org.orbisgis.edit.saveChange"), I18N
 				.getString("orbisgis.org.orbisgis.edit.stopEdition"),
@@ -91,9 +96,7 @@ public class SetInactivePlugIn extends AbstractPlugIn {
 			} catch (NonEditableDataSourceException e) {
 				ErrorMessages.error(ErrorMessages.CannotSavelayer, e);
 			}
-		}
-
-		if (option != JOptionPane.CANCEL_OPTION) {
+		} else if (option == JOptionPane.NO_OPTION) {
 			try {
 				layer.getSpatialDataSource().syncWithSource();
 				mapContext.setActiveLayer(null);

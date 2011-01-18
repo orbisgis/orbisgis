@@ -77,6 +77,9 @@ public class SimplePanel extends JPanel {
 	private static final String LAST_INPUT = "lastInput"; //$NON-NLS-1$
 	private static String dsName = "source"; //$NON-NLS-1$
 
+        // a somehow difficult to stumble upon constant, to represent a canceled action
+        public static final String CANCELED_ACTION = String.valueOf(Integer.MAX_VALUE);
+
 	private MsgPanel msgPanel;
 	private UIPanel panel;
 	private OutsideFrame frame;
@@ -484,7 +487,10 @@ public class SimplePanel extends JPanel {
 		String ret = panel.postProcess();
 		if (ret == null) {
 			return true;
-		} else {
+		} else if (ret.equals(CANCELED_ACTION)) {
+                        // no message, just cancel the action!
+                        return false;
+                } else {
 			JOptionPane.showMessageDialog(null, ret);
 			return false;
 		}

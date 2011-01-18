@@ -119,9 +119,11 @@ public class SaveFilePanel extends OpenFilePanel {
 					+ " " + I18N.getString("orbisgis.core.file.overwrite"), I18N
 					.getString("orbisgis.core.file.existing"),
 					JOptionPane.YES_NO_OPTION);
-			if (ret == JOptionPane.NO_OPTION) {
-				return I18N.getString("orbisgis.core.file.fileAlreadyExists");
-			}
+			if (ret == JOptionPane.NO_OPTION || ret == JOptionPane.CLOSED_OPTION) {
+				// just do nothing...
+                                // still, this isn't clean code...
+                                return SimplePanel.CANCELED_ACTION;
+                        }
 		}
 		return null;
 	}
