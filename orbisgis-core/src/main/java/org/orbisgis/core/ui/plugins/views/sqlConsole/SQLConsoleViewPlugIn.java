@@ -95,7 +95,7 @@ public class SQLConsoleViewPlugIn extends ViewPlugIn {
 	public void initialize(PlugInContext context) throws Exception {
 		panel = new SQLConsolePanel(new ConsoleListener() {
 
-			public void save(String text) throws IOException {
+			public boolean save(String text) throws IOException {
 				final SaveFilePanel outfilePanel = new SaveFilePanel(
 						"org.orbisgis.core.ui.views.sqlConsoleOutFile", I18N
 								.getString("orbisgis.org.orbisgis.saveScript"));
@@ -106,7 +106,9 @@ public class SQLConsoleViewPlugIn extends ViewPlugIn {
 							new FileWriter(outfilePanel.getSelectedFile()));
 					out.write(text);
 					out.close();
+                                        return true;
 				}
+                                return false;
 			}
 
 			public String open() throws IOException {

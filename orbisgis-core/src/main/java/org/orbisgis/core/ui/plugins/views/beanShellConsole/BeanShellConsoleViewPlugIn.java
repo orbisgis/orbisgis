@@ -114,7 +114,7 @@ public class BeanShellConsoleViewPlugIn extends ViewPlugIn {
 
 		panel = new BshConsolePanel(new BshConsoleListener() {
 
-			public void save(String text) throws IOException {
+			public boolean save(String text) throws IOException {
 				final SaveFilePanel outfilePanel = new SaveFilePanel(
 						"org.orbisgis.cores.BeanShellConsoleOutFile", I18N
 								.getString("orbisgis.org.orbisgis.saveScript"));
@@ -125,7 +125,9 @@ public class BeanShellConsoleViewPlugIn extends ViewPlugIn {
 							new FileWriter(outfilePanel.getSelectedFile()));
 					out.write(text);
 					out.close();
+                                        return true;
 				}
+                                return false;
 			}
 
 			public String open() throws IOException {

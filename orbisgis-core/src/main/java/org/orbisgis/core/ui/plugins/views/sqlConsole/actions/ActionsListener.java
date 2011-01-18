@@ -112,8 +112,12 @@ public class ActionsListener implements ActionListener, DocumentListener {
 			break;
 		case ConsoleAction.SAVE:
 			try {
-				listener.save(consolePanel.getText());
-				consolePanel.setStatusMessage("The file has been saved.");
+				boolean saved = listener.save(consolePanel.getText());
+                                if (saved) {
+                                        consolePanel.setStatusMessage("The file has been saved.");
+                                } else {
+                                        consolePanel.setStatusMessage("");
+                                }
 			} catch (IOException e1) {
 				Services.getErrorManager().error("IO error.", e1);
 			}

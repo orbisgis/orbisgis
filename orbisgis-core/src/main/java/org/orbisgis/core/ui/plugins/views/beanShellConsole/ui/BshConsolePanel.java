@@ -38,11 +38,14 @@ package org.orbisgis.core.ui.plugins.views.beanShellConsole.ui;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JToolBar;
+import javax.swing.Timer;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.text.BadLocationException;
@@ -74,6 +77,7 @@ public class BshConsolePanel extends JPanel {
 	private JToolBar toolBar;
 	private JLabel statusMessage;
 	private SearchWord searchWord;
+        private Timer timer;
 
 	// An instance of the private subclass of the default highlight painter
 	Highlighter.HighlightPainter myHighlightPainter = (HighlightPainter) new WordHighlightPainter(
@@ -134,13 +138,28 @@ public class BshConsolePanel extends JPanel {
 			statusMessage = new JLabel();
 			toolBar.add(statusMessage);
 			toolBar.setFloatable(false);
+
+                        timer = new Timer(4000, new ActionListener() {
+
+                                @Override
+                                public void actionPerformed(ActionEvent e) {
+                                        setStatusMessage("");
+                                }
+                        });
+                        timer.setRepeats(false);
 		}
 
 		return toolBar;
 	}
 
 	public void setStatusMessage(String message) {
-		statusMessage.setText(message);
+		if (message.isEmpty()) {
+                        statusMessage.setText(message);
+                        return;
+                } else {
+                        timer.restart();
+                        statusMessage.setText(message);
+                }
 	}
 
 	private JPanel getJTextFieldPanel() {

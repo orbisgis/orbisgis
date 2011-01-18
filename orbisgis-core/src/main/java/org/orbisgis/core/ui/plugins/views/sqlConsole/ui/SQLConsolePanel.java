@@ -46,12 +46,15 @@ import java.awt.dnd.DropTargetDragEvent;
 import java.awt.dnd.DropTargetDropEvent;
 import java.awt.dnd.DropTargetEvent;
 import java.awt.dnd.DropTargetListener;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.IOException;
 
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JToolBar;
+import javax.swing.Timer;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.text.BadLocationException;
@@ -92,6 +95,7 @@ public class SQLConsolePanel extends JPanel implements DropTargetListener {
 	private JToolBar toolBar;
 	private JLabel statusMessage;
 	private SearchWord searchWord;
+        private Timer timer;
 	private int lastSQLStatementToReformatStart;
 	private int lastSQLStatementToReformatEnd;
 	private SQLCompletionProvider cpl;
@@ -168,13 +172,28 @@ public class SQLConsolePanel extends JPanel implements DropTargetListener {
 			statusMessage = new JLabel();
 			toolBar.add(statusMessage);
 			toolBar.setFloatable(false);
+
+                        timer = new Timer(4000, new ActionListener() {
+
+                                @Override
+                                public void actionPerformed(ActionEvent e) {
+                                        setStatusMessage("");
+                                }
+                        });
+                        timer.setRepeats(false);
 		}
 
 		return toolBar;
 	}
 
 	public void setStatusMessage(String message) {
-		statusMessage.setText(message);
+                if (message.isEmpty()) {
+                        statusMessage.setText(message);
+                        return;
+                } else {
+                        timer.restart();
+                        statusMessage.setText(message);
+                }
 	}
 
 	private JPanel getJTextFieldPanel() {

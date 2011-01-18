@@ -69,9 +69,10 @@ public interface ConsoleListener {
 	 * Saves the content of the console
 	 * 
 	 * @param text
-	 * @throws IOException
+         * @return true if the file has been saved, false otherwise
+         * @throws IOException
 	 */
-	void save(String text) throws IOException;
+	boolean save(String text) throws IOException;
 
 	/**
 	 * Invoked when the text of the console is changed
