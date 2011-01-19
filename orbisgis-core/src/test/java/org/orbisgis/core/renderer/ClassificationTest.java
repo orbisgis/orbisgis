@@ -61,7 +61,7 @@ public class ClassificationTest extends TestCase {
 		SpatialDataSourceDecorator sds = new SpatialDataSourceDecorator(ds);
 		sds.open();
 
-		RangeMethod rm = new RangeMethod(sds, new RealAttribute("PTOT90"), 3);
+		RangeMethod rm = new RangeMethod(sds, new RealAttribute("runoff_win"), 3);
 
 		rm.disecStandard();
 
@@ -147,7 +147,7 @@ public class ClassificationTest extends TestCase {
 		SpatialDataSourceDecorator sds = new SpatialDataSourceDecorator(ds);
 		sds.open();
 
-		RangeMethod rm = new RangeMethod(sds, new RealAttribute("PTOT90"), 4);
+		RangeMethod rm = new RangeMethod(sds, new RealAttribute("runoff_win"), 4);
 
 		rm.disecEquivalences();
 
@@ -166,7 +166,7 @@ public class ClassificationTest extends TestCase {
 		SpatialDataSourceDecorator sds = new SpatialDataSourceDecorator(ds);
 		sds.open();
 
-		RangeMethod rm = new RangeMethod(sds, new RealAttribute("PTOT90"), 4);
+		RangeMethod rm = new RangeMethod(sds, new RealAttribute("gid"), 4);
 
 		rm.disecMean();
 
@@ -184,7 +184,7 @@ public class ClassificationTest extends TestCase {
 		SpatialDataSourceDecorator sds = new SpatialDataSourceDecorator(ds);
 		sds.open();
 
-		RangeMethod rm = new RangeMethod(sds, new RealAttribute("PTOT90"), 4);
+		RangeMethod rm = new RangeMethod(sds, new RealAttribute("gid"), 4);
 
 		rm.disecQuantiles();
 
@@ -201,7 +201,7 @@ public class ClassificationTest extends TestCase {
 		SpatialDataSourceDecorator sds = new SpatialDataSourceDecorator(ds);
 		sds.open();
 
-		ProportionalMethod pm = new ProportionalMethod(sds, new RealAttribute("PTOT90"));
+		ProportionalMethod pm = new ProportionalMethod(sds, new RealAttribute("gid"));
 
 		pm.build(3000);
 
