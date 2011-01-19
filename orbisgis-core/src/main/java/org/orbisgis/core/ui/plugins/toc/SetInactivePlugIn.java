@@ -91,6 +91,7 @@ public class SetInactivePlugIn extends AbstractPlugIn {
 		if (option == JOptionPane.YES_OPTION) {
 			try {
 				mapContext.getActiveLayer().getSpatialDataSource().commit();
+                                mapContext.setActiveLayer(null);
 			} catch (DriverException e) {
 				ErrorMessages.error(ErrorMessages.CannotSavelayer, e);
 			} catch (NonEditableDataSourceException e) {
