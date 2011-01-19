@@ -68,7 +68,7 @@ public abstract class LegendUIAlgebricalPanel extends LegendUIComponent implemen
 
 			@Override
 			protected void valueChanged(String s) {
-				r = RealParameterFactory.createFromString(s, controller.getEditedFeatureTypeStyle().getLayer().getDataSource());
+				r = RealParameterFactory.createFromString(s, controller.getEditedFeatureTypeStyle().getLayer().getSpatialDataSource());
 				if (r != null){
 					realChanged(r);
 				}

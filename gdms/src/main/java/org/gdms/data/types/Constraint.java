@@ -47,7 +47,7 @@ import org.gdms.data.values.Value;
 public interface Constraint {
 
 	public static final int AUTO_INCREMENT = 1;
-	public static final int CRS = 2;
+	public static final int SRID = 2;
 	public static final int GEOMETRY_TYPE = 4;
 	public static final int GEOMETRY_DIMENSION = 8;
 	public static final int LENGTH = 16;
@@ -62,7 +62,7 @@ public interface Constraint {
 	public static final int UNIQUE = 8192;
 	public static final int RASTER_TYPE = 16384;
 	public static final int DEFAULT_STRING_VALUE = 32768;
-	public static final int ALL = AUTO_INCREMENT | CRS | GEOMETRY_DIMENSION
+	public static final int ALL = AUTO_INCREMENT | SRID | GEOMETRY_DIMENSION
 			| GEOMETRY_TYPE | LENGTH | MAX | MIN | NOT_NULL | PATTERN | PK
 			| PRECISION | READONLY | SCALE | UNIQUE | RASTER_TYPE;
 

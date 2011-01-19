@@ -10,6 +10,7 @@ import java.util.Properties;
 import org.orbisgis.core.OrbisGISPersitenceConfig;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.workspace.Workspace;
+import org.orbisgis.utils.I18N;
 
 public class DefaultBasicConfiguration implements BasicConfiguration {
 	private Properties properties = new Properties();
@@ -28,10 +29,10 @@ public class DefaultBasicConfiguration implements BasicConfiguration {
 			try {
 				properties.load(new FileInputStream(propertiesFile));
 			} catch (FileNotFoundException e) {
-				Services.getErrorManager().error("bug!", e);
+				Services.getErrorManager().error(I18N.getString("orbisgis.org.orbisgis.defaultBasicConfiguration.bug"), e); //$NON-NLS-1$
 			} catch (IOException e) {
 				Services.getErrorManager().error(
-						"The configuration preferences cannot be loaded", e);
+						I18N.getString("orbisgis.org.orbisgis.defaultBasicConfiguration.cannotLoadConfigurationPreferences"), e); //$NON-NLS-1$
 			}
 		}
 	}
@@ -39,12 +40,12 @@ public class DefaultBasicConfiguration implements BasicConfiguration {
 	@Override
 	public void save() {
 		try {
-			properties.store(new FileOutputStream(propertiesFile), "");
+			properties.store(new FileOutputStream(propertiesFile), ""); //$NON-NLS-1$
 		} catch (FileNotFoundException e) {
-			Services.getErrorManager().error("bug!", e);
+			Services.getErrorManager().error(I18N.getString("orbisgis.org.orbisgis.defaultBasicConfiguration.bug"), e); //$NON-NLS-1$
 		} catch (IOException e) {
 			Services.getErrorManager().error(
-					"The configuration preferences cannot be stored", e);
+					I18N.getString("orbisgis.org.orbisgis.defaultBasicConfiguration.cannotSavedConfigurationPreferences"), e); //$NON-NLS-1$
 		}
 	}
 

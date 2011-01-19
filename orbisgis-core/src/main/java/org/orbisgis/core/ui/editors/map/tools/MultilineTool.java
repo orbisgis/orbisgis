@@ -81,9 +81,10 @@ public class MultilineTool extends AbstractMultilineTool {
 
 	protected void multilineDone(MultiLineString mls, MapContext mc,
 			ToolManager tm) throws TransitionException {
-		SpatialDataSourceDecorator sds = mc.getActiveLayer().getDataSource();
+		SpatialDataSourceDecorator sds = mc.getActiveLayer().getSpatialDataSource();
 		try {
 			Value[] row = new Value[sds.getMetadata().getFieldCount()];
+                        mls.setSRID(sds.getSRID());
 			row[sds.getSpatialFieldIndex()] = ValueFactory.createValue(mls);
 			row = ToolUtilities.populateNotNullFields(sds, row);
 			sds.insertFilledRow(row);
@@ -98,6 +99,6 @@ public class MultilineTool extends AbstractMultilineTool {
 
 	public String getName() {
 		return I18N
-				.getText("orbisgis.core.ui.editors.map.tool.multiline_tooltip");
+				.getString("orbisgis.core.ui.editors.map.tool.multiline_tooltip");
 	}
 }

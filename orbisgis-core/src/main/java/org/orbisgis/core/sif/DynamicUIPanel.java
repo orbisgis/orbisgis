@@ -43,6 +43,8 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
+import org.orbisgis.utils.I18N;
+
 public class DynamicUIPanel implements SQLUIPanel {
 
 	private String[] errorMsgs;
@@ -100,7 +102,7 @@ public class DynamicUIPanel implements SQLUIPanel {
 			txts[i] = new JTextField(10);
 			textPanel.add(txts[i]);
 			textPanel.add(new CarriageReturn());
-			labelPanel.add(new JLabel(names[i] + ": "));
+			labelPanel.add(new JLabel(names[i] + ": ")); //$NON-NLS-1$
 			labelPanel.add(new CarriageReturn());
 		}
 
@@ -138,7 +140,7 @@ public class DynamicUIPanel implements SQLUIPanel {
 
 		if (index == -1) {
 			throw new IllegalArgumentException(
-					"There is no field with the name: " + fieldName);
+					I18N.getString("orbisgis.org.orbisgis.sif.dynamicUIPanel.thereIsNoFieldWithName") + fieldName); //$NON-NLS-1$
 		}
 
 		return txts[index].getText();

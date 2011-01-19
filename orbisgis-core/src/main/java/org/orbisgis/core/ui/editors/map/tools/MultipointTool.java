@@ -71,9 +71,10 @@ public class MultipointTool extends AbstractMultipointTool {
 
 	protected void multipointDone(MultiPoint mp, MapContext mc, ToolManager tm)
 			throws TransitionException {
-		SpatialDataSourceDecorator sds = mc.getActiveLayer().getDataSource();
+		SpatialDataSourceDecorator sds = mc.getActiveLayer().getSpatialDataSource();
 		try {
 			Value[] row = new Value[sds.getMetadata().getFieldCount()];
+                        mp.setSRID(sds.getSRID());
 			row[sds.getSpatialFieldIndex()] = ValueFactory.createValue(mp);
 			row = ToolUtilities.populateNotNullFields(sds, row);
 			sds.insertFilledRow(row);
@@ -97,7 +98,7 @@ public class MultipointTool extends AbstractMultipointTool {
 
 	public String getName() {
 		return I18N
-				.getText("orbisgis.core.ui.editors.map.tool.multipoint_tooltip");
+				.getString("orbisgis.core.ui.editors.map.tool.multipoint_tooltip");
 	}
 
 }

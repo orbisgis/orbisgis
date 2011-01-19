@@ -53,6 +53,7 @@ public class ConstraintFactory {
 		samples.put(Constraint.MAX, new MaxConstraint(3));
 		samples.put(Constraint.MIN, new MinConstraint(3));
 		samples.put(Constraint.NOT_NULL, new NotNullConstraint());
+                samples.put(Constraint.SRID, new SRIDConstraint(1));
 		samples.put(Constraint.PATTERN, new PatternConstraint(""));
 		samples.put(Constraint.PK, new PrimaryKeyConstraint());
 		samples.put(Constraint.PRECISION, new PrecisionConstraint(2));
@@ -71,6 +72,9 @@ public class ConstraintFactory {
 		case Constraint.AUTO_INCREMENT:
 			c = new AutoIncrementConstraint(constraintBytes);
 			break;
+                case Constraint.SRID:
+                        c = new SRIDConstraint(constraintBytes);
+                        break;
 		case Constraint.GEOMETRY_DIMENSION:
 			c = new DimensionConstraint(constraintBytes);
 			break;
@@ -133,8 +137,8 @@ public class ConstraintFactory {
 		case Constraint.AUTO_INCREMENT:
 			c = "AutoIncrement";
 			break;
-		case Constraint.CRS:
-			c = "CRS";
+		case Constraint.SRID:
+			c = "SRID";
 			break;
 		case Constraint.GEOMETRY_DIMENSION:
 			c = "Dimension";
@@ -251,6 +255,8 @@ public class ConstraintFactory {
 			return new PrecisionConstraint(i);
 		case Constraint.SCALE:
 			return new ScaleConstraint(i);
+                case Constraint.SRID:
+                        return new SRIDConstraint(i);
 		default:
 			throw new IllegalArgumentException(
 					"This constraint does not use int:" + code);

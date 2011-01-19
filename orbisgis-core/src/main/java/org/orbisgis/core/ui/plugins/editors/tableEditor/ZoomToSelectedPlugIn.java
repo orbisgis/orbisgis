@@ -43,20 +43,21 @@ import org.gdms.driver.DriverException;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.background.BackgroundJob;
 import org.orbisgis.core.background.BackgroundManager;
-import org.orbisgis.core.errorManager.ErrorManager;
 import org.orbisgis.core.ui.editor.IEditor;
 import org.orbisgis.core.ui.editors.table.Selection;
 import org.orbisgis.core.ui.editors.table.TableEditableElement;
 import org.orbisgis.core.ui.pluginSystem.AbstractPlugIn;
 import org.orbisgis.core.ui.pluginSystem.PlugInContext;
+import org.orbisgis.core.ui.pluginSystem.message.ErrorMessages;
 import org.orbisgis.core.ui.pluginSystem.workbench.Names;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchContext;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchFrame;
-import org.orbisgis.core.ui.plugins.views.MapEditorPlugIn;
-import org.orbisgis.core.ui.plugins.views.TableEditorPlugIn;
 import org.orbisgis.core.ui.plugins.views.editor.EditorManager;
+import org.orbisgis.core.ui.plugins.views.mapEditor.MapEditorPlugIn;
+import org.orbisgis.core.ui.plugins.views.tableEditor.TableEditorPlugIn;
 import org.orbisgis.core.ui.preferences.lookandfeel.OrbisGISIcon;
 import org.orbisgis.progress.IProgressMonitor;
+import org.orbisgis.utils.I18N;
 
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
@@ -109,7 +110,7 @@ public class ZoomToSelectedPlugIn extends AbstractPlugIn {
 						}
 					}
 
-					EditorManager em = (EditorManager) Services
+					EditorManager em = Services
 							.getService(EditorManager.class);
 					IEditor[] editors = em.getEditors(Names.EDITOR_MAP_ID,
 							element.getMapContext());
@@ -119,14 +120,15 @@ public class ZoomToSelectedPlugIn extends AbstractPlugIn {
 					}
 
 				} catch (DriverException e) {
-					Services.getService(ErrorManager.class).error(
-							"Cannot compute envelope", e);
+
+					ErrorMessages.error(ErrorMessages.CannotComputeEnvelope, e);
 				}
 			}
 
 			@Override
 			public String getTaskName() {
-				return "Calculating selected extent";
+				return I18N
+						.getString("orbisgis.org.orbisgis.core.ui.plugins.editors.tableEditor.zoomToSelectedLayer.extent");
 			}
 		});
 		return true;
@@ -134,7 +136,7 @@ public class ZoomToSelectedPlugIn extends AbstractPlugIn {
 
 	public void initialize(PlugInContext context) throws Exception {
 		WorkbenchContext wbContext = context.getWorkbenchContext();
-		WorkbenchFrame frame = (WorkbenchFrame) wbContext.getWorkbench()
+		WorkbenchFrame frame = wbContext.getWorkbench()
 				.getFrame().getTableEditor();
 		context.getFeatureInstaller().addPopupMenuItem(frame, this,
 				new String[] { Names.POPUP_TABLE_ZOOMTOSELECTED_PATH1 },

@@ -82,12 +82,10 @@ public class SourceListModel extends AbstractListModel implements ListModel {
 		DataManager dm = Services.getService(DataManager.class);
 		SourceManager sourceManager = dm.getSourceManager();
 		String[] names = sourceManager.getSourceNames();
-		logger.debug("Showing " + names.length + " sources");
 		if (nameFilter != null) {
 			IFilter textFilter = new TextFilter();
 			names = filter(sourceManager, names, textFilter);
 		}
-		logger.debug("Showing " + names.length + " sources");
 
 		if (filters.size() > 0) {
 			names = filter(sourceManager, names, new OrFilter());

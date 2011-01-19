@@ -54,7 +54,7 @@ public class GeocognitionFunctionFactory implements GeocognitionElementFactory {
 
 	@Override
 	public boolean acceptContentTypeId(String typeId) {
-		return OrbisGISPersitenceConfig.GeocognitionFunctionFactory_ID
+		return OrbisGISPersitenceConfig.GEOCOGNITION_FUNCTION_FACTORY_ID
 				.equals(typeId);
 	}
 

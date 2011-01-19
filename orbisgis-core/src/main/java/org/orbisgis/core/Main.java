@@ -55,10 +55,11 @@ import org.orbisgis.core.commandline.ParseException;
 import org.orbisgis.core.configuration.BasicConfiguration;
 import org.orbisgis.core.errorManager.DefaultErrorManager;
 import org.orbisgis.core.errorManager.ErrorManager;
-import org.orbisgis.core.ui.configuration.EPConfigHelper;
-import org.orbisgis.core.ui.configuration.WorkspaceConfiguration;
 import org.orbisgis.core.ui.errors.CacheMessages;
 import org.orbisgis.core.ui.errors.FilteringErrorListener;
+import org.orbisgis.core.ui.pluginSystem.message.ErrorMessages;
+import org.orbisgis.core.ui.plugins.orbisgisFrame.configuration.EPConfigHelper;
+import org.orbisgis.core.ui.plugins.orbisgisFrame.configuration.WorkspaceConfiguration;
 import org.orbisgis.core.ui.preferences.translation.OrbisGISI18N;
 import org.orbisgis.core.ui.workspace.DefaultSwingWorkspace;
 import org.orbisgis.core.workspace.DefaultWorkspace;
@@ -84,7 +85,7 @@ public class Main {
 
 		if (!IsVersion(MIN_JAVA_VERSION)) {
 			JOptionPane.showMessageDialog(null, I18N
-					.getText("orbisgis.main.version"));
+					.getString("orbisgis.main.version"));
 			splash.setVisible(false);
 			splash.dispose();
 		} else {
@@ -126,7 +127,7 @@ public class Main {
 		try {
 			initProperties();
 			splash.updateVersion();
-			Splash.updateText(I18N.getText("orbisgis.main.loading"));
+			Splash.updateText(I18N.getString("orbisgis.main.loading"));
 			Workspace wrsk = Services.getService(Workspace.class);
 
 			if (commandLine.hasOption(WORKSPACE)) {
@@ -220,8 +221,7 @@ public class Main {
 		try {
 			commandLine.parse(args);
 		} catch (ParseException e) {
-			Services.getErrorManager().error(
-					"Syntax error in command line to run OrbisGIS!", e);
+			ErrorMessages.error(ErrorMessages.CommandLineError, e);
 			throw e;
 		}
 	}

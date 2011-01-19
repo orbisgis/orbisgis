@@ -60,6 +60,7 @@ import org.gdms.sql.customQuery.spatial.raster.convert.ST_RasterToPoints;
 import org.gdms.sql.customQuery.spatial.raster.convert.ST_RasterToPolygons;
 import org.gdms.sql.customQuery.spatial.raster.convert.ST_RasterizeLine;
 import org.gdms.sql.customQuery.spatial.raster.convert.ST_VectorizeLine;
+import org.gdms.sql.customQuery.system.ExportCall;
 import org.gdms.sql.customQuery.system.FunctionHelp;
 import org.gdms.sql.customQuery.system.RegisterCall;
 import org.gdms.sql.customQuery.system.RegisterFunction;
@@ -76,6 +77,7 @@ public class QueryManager {
 
 	static {
 		registerQuery(RegisterCall.class);
+                registerQuery(ExportCall.class);
 		registerQuery(ST_Extrude.class);
 		registerQuery(ShowCall.class);
 		registerQuery(RegisterFunction.class);

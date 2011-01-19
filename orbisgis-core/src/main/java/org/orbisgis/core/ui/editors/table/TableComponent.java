@@ -39,11 +39,12 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
-import java.awt.FlowLayout;
 import java.awt.Insets;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseAdapter;
@@ -101,14 +102,16 @@ import org.orbisgis.core.Services;
 import org.orbisgis.core.background.BackgroundJob;
 import org.orbisgis.core.background.BackgroundManager;
 import org.orbisgis.core.errorManager.ErrorManager;
+import org.orbisgis.core.layerModel.MapContext;
+import org.orbisgis.core.sif.CRFlowLayout;
 import org.orbisgis.core.sif.SQLUIPanel;
 import org.orbisgis.core.sif.UIFactory;
 import org.orbisgis.core.ui.components.sif.AskValue;
 import org.orbisgis.core.ui.components.text.JButtonTextField;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchContext;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchFrame;
-import org.orbisgis.core.ui.plugins.views.TableEditorPlugIn;
 import org.orbisgis.core.ui.plugins.views.sqlConsole.syntax.SQLCompletionProvider;
+import org.orbisgis.core.ui.plugins.views.tableEditor.TableEditorPlugIn;
 import org.orbisgis.core.ui.preferences.lookandfeel.OrbisGISIcon;
 import org.orbisgis.core.ui.preferences.lookandfeel.UIColorPreferences;
 import org.orbisgis.core.ui.preferences.lookandfeel.images.IconLoader;
@@ -118,21 +121,18 @@ import org.orbisgis.utils.I18N;
 
 public class TableComponent extends JPanel implements WorkbenchFrame {
 
-	private static final String OPTIMALWIDTH = "OPTIMALWIDTH";
-	private static final String SETWIDTH = "SETWIDTH";
-	private static final String SORTUP = "SORTUP";
-	private static final String SORTDOWN = "SORTDOWN";
-	private static final String NOSORT = "NOSORT";
-
+	private static final String OPTIMALWIDTH = "OPTIMALWIDTH"; //$NON-NLS-1$
+	private static final String SETWIDTH = "SETWIDTH"; //$NON-NLS-1$
+	private static final String SORTUP = "SORTUP"; //$NON-NLS-1$
+	private static final String SORTDOWN = "SORTDOWN"; //$NON-NLS-1$
+	private static final String NOSORT = "NOSORT"; //$NON-NLS-1$
 	private static final Color NUMERIC_COLOR = new Color(205, 197, 191);
 	private static final Color DEFAULT_COLOR = new Color(238, 229, 222);
-
 	// Swing components
 	private javax.swing.JScrollPane jScrollPane = null;
 	private JTable table = null;
 	private JLabel nbRowsSelectedLabel = null;
 	private SQLCompletionProvider cpl;
-
 	// Model
 	private int selectedColumn = -1;
 	private DataSourceDataModel tableModel;
@@ -141,7 +141,6 @@ public class TableComponent extends JPanel implements WorkbenchFrame {
 	private Selection selection;
 	private TableEditableElement element;
 	private int selectedRowsCount;
-
 	// listeners
 	private ActionListener menuListener = new PopupActionListener();
 	private ModificationListener listener = new ModificationListener();
@@ -149,9 +148,7 @@ public class TableComponent extends JPanel implements WorkbenchFrame {
 	// flags
 	private boolean managingSelection;
 	private TableEditorPlugIn editor;
-
 	private org.orbisgis.core.ui.pluginSystem.menu.MenuTree menuTree;
-
 	private int patternCaseOption = Pattern.CASE_INSENSITIVE;
 
 	@Override
@@ -196,6 +193,7 @@ public class TableComponent extends JPanel implements WorkbenchFrame {
 			table.setDragEnabled(true);
 			table.getSelectionModel().addListSelectionListener(
 					new ListSelectionListener() {
+
 						@Override
 						public void valueChanged(ListSelectionEvent e) {
 							if (!e.getValueIsAdjusting()) {
@@ -210,7 +208,10 @@ public class TableComponent extends JPanel implements WorkbenchFrame {
 										}
 									}
 									selectedRowsCount = selectedRows.length;
+									checkSelectionRefresh(selectedRows);
+
 									selection.setSelectedRows(selectedRows);
+
 									managingSelection = false;
 									updateRowsMessage();
 
@@ -230,6 +231,18 @@ public class TableComponent extends JPanel implements WorkbenchFrame {
 		return table;
 	}
 
+	private void checkSelectionRefresh(int[] selectedRows) {
+		if (this.element.getMapContext() != null) {
+			this.element.getMapContext().checkSelectionRefresh(selectedRows,
+					selection.getSelectedRows(), dataSource);
+		}
+
+	}
+
+	private void checkSelectionRefresh() {
+		checkSelectionRefresh(new int[0]);
+	}
+
 	private Component getTableToolBar() {
 		JToolBar toolBar = new JToolBar();
 		toolBar.setFloatable(false);
@@ -240,8 +253,8 @@ public class TableComponent extends JPanel implements WorkbenchFrame {
 
 	public JPanel getPanelInformation() {
 		final JPanel informationPanel = new JPanel();
-		final FlowLayout flowLayout = new FlowLayout();
-		flowLayout.setAlignment(FlowLayout.LEFT);
+		final CRFlowLayout flowLayout = new CRFlowLayout();
+		flowLayout.setAlignment(CRFlowLayout.LEFT);
 		informationPanel.setLayout(flowLayout);
 		informationPanel.add(getNbRowsInformation());
 		return informationPanel;
@@ -250,31 +263,29 @@ public class TableComponent extends JPanel implements WorkbenchFrame {
 
 	private JPanel getRegexTextField() {
 		final JPanel regexPanel = new JPanel();
-		final FlowLayout flowLayout = new FlowLayout();
-		flowLayout.setAlignment(FlowLayout.RIGHT);
+		final CRFlowLayout flowLayout = new CRFlowLayout();
+		flowLayout.setAlignment(CRFlowLayout.RIGHT);
 		regexPanel.setLayout(flowLayout);
 		JLabel label = new JLabel(
 				I18N
-						.getText("orbisgis.org.orbisgis.core.ui.editors.table.TableComponent.search"));
+						.getString("orbisgis.org.orbisgis.core.ui.editors.table.TableComponent.search")); //$NON-NLS-1$
 		final JButtonTextField regexTxtFilter = new JButtonTextField(20);
 		regexTxtFilter.setBackground(Color.WHITE);
 		regexTxtFilter
 				.setText(I18N
-						.getText("orbisgis.org.orbisgis.core.ui.editors.table.TableComponent.put_a_text"));
+						.getString("orbisgis.org.orbisgis.core.ui.editors.table.TableComponent.put_a_text")); //$NON-NLS-1$
 		regexTxtFilter
 				.setToolTipText(I18N
-						.getText("orbisgis.org.orbisgis.core.ui.editors.table.TableComponent.searchEnter"));
+						.getString("orbisgis.org.orbisgis.core.ui.editors.table.TableComponent.searchEnter")); //$NON-NLS-1$
 
 		regexTxtFilter.addKeyListener(new KeyListener() {
 
 			@Override
 			public void keyTyped(KeyEvent e) {
-
 			}
 
 			@Override
 			public void keyReleased(KeyEvent e) {
-
 			}
 
 			@Override
@@ -283,7 +294,9 @@ public class TableComponent extends JPanel implements WorkbenchFrame {
 					final String whereText = regexTxtFilter.getText();
 					if (whereText.length() == 0) {
 						if (selectedRowsCount > 0) {
+							checkSelectionRefresh();
 							selection.clearSelection();
+							selectedRowsCount = 0;
 							updateRowsMessage();
 						}
 
@@ -295,24 +308,28 @@ public class TableComponent extends JPanel implements WorkbenchFrame {
 			}
 		});
 
-		regexTxtFilter.addMouseListener(new MouseAdapter() {
-			public void mousePressed(MouseEvent e) {
+		regexTxtFilter.addFocusListener(new FocusListener() {
+
+			@Override
+			public void focusGained(FocusEvent e) {
 				if (regexTxtFilter
 						.getText()
 						.equals(
 								I18N
-										.getText("orbisgis.org.orbisgis.core.ui.editors.table.TableComponent.put_a_text")))
-					regexTxtFilter.setText("");
+										.getString("orbisgis.org.orbisgis.core.ui.editors.table.TableComponent.put_a_text"))) { //$NON-NLS-1$
+					regexTxtFilter.setText(""); //$NON-NLS-1$
+				}
 			}
 
-			public void mouseExited(MouseEvent e) {
-				if (regexTxtFilter.getText().equals(""))
+			@Override
+			public void focusLost(FocusEvent e) {
+				if (regexTxtFilter.getText().equals("")) { //$NON-NLS-1$
 					regexTxtFilter
 							.setText(I18N
-									.getText("orbisgis.org.orbisgis.core.ui.editors.table.TableComponent.put_a_text"));
+									.getString("orbisgis.org.orbisgis.core.ui.editors.table.TableComponent.put_a_text")); //$NON-NLS-1$
+				}
 			}
 		});
-		
 		regexPanel.add(label);
 		regexPanel.add(regexTxtFilter);
 		return regexPanel;
@@ -320,8 +337,8 @@ public class TableComponent extends JPanel implements WorkbenchFrame {
 
 	public void findTextPattern(final String text) {
 
-		String quote = "\\Q";
-		String endQuote = "\\E";
+		String quote = "\\Q"; //$NON-NLS-1$
+		String endQuote = "\\E"; //$NON-NLS-1$
 
 		String regex = quote + text + endQuote;
 		final Pattern pattern = Pattern.compile(regex, patternCaseOption);
@@ -332,7 +349,7 @@ public class TableComponent extends JPanel implements WorkbenchFrame {
 			public void run(IProgressMonitor pm) {
 				try {
 					ArrayList<Integer> filtered = new ArrayList<Integer>();
-					pm.startTask("Searching...");
+					pm.startTask(I18N.getString("orbisgis.org.orbisgis.ui.table.tableComponent.searching")); //$NON-NLS-1$
 					for (int i = 0; i < tableModel.getRowCount(); i++) {
 						if (i / 100 == i / 100.0) {
 							if (pm.isCancelled()) {
@@ -367,6 +384,14 @@ public class TableComponent extends JPanel implements WorkbenchFrame {
 					for (int i = 0; i < sel.length; i++) {
 						sel[i] = filtered.get(i);
 					}
+
+					MapContext mapC = TableComponent.this.element
+							.getMapContext();
+					if (mapC != null) {
+						mapC.setSelectionInducedRefresh(true);
+					}
+
+					checkSelectionRefresh(sel);
 					selection.setSelectedRows(sel);
 					updateTableSelection();
 
@@ -379,7 +404,7 @@ public class TableComponent extends JPanel implements WorkbenchFrame {
 			@Override
 			public String getTaskName() {
 				return I18N
-						.getText("orbisgis.org.orbisgis.core.ui.editors.table.TableComponent.searching");
+						.getString("orbisgis.org.orbisgis.core.ui.editors.table.TableComponent.searching"); //$NON-NLS-1$
 			}
 		});
 
@@ -389,7 +414,7 @@ public class TableComponent extends JPanel implements WorkbenchFrame {
 		JLabel nbRowsMessage = new JLabel();
 		nbRowsMessage
 				.setText(I18N
-						.getText("orbisgis.org.orbisgis.core.ui.editors.table.TableComponent.rowNumber"));
+						.getString("orbisgis.org.orbisgis.core.ui.editors.table.TableComponent.rowNumber")); //$NON-NLS-1$
 		nbRowsSelectedLabel = nbRowsMessage;
 		nbRowsMessage.setVerticalAlignment(JLabel.CENTER);
 		nbRowsMessage.setPreferredSize(new Dimension(230, 19));
@@ -403,10 +428,10 @@ public class TableComponent extends JPanel implements WorkbenchFrame {
 		txtFilter.setBackground(Color.WHITE);
 		txtFilter
 				.setText(I18N
-						.getText("orbisgis.org.orbisgis.core.ui.editors.table.TableComponent.put_a_sqlwhere"));
+						.getString("orbisgis.org.orbisgis.core.ui.editors.table.TableComponent.put_a_sqlwhere")); //$NON-NLS-1$
 		txtFilter
 				.setToolTipText(I18N
-						.getText("orbisgis.org.orbisgis.core.ui.editors.table.TableComponent.searchCtrlEnter"));
+						.getString("orbisgis.org.orbisgis.core.ui.editors.table.TableComponent.searchCtrlEnter")); //$NON-NLS-1$
 		txtFilter.addKeyListener(new KeyListener() {
 
 			@Override
@@ -415,7 +440,9 @@ public class TableComponent extends JPanel implements WorkbenchFrame {
 					final String whereText = txtFilter.getText();
 					if (whereText.length() == 0) {
 						if (selectedRowsCount > 0) {
+							checkSelectionRefresh();
 							selection.clearSelection();
+							selectedRowsCount = 0;
 							updateRowsMessage();
 						}
 
@@ -436,6 +463,13 @@ public class TableComponent extends JPanel implements WorkbenchFrame {
 										.getOriginalIndex(i);
 							}
 
+							MapContext mapC = TableComponent.this.element
+									.getMapContext();
+							if (mapC != null) {
+								mapC.setSelectionInducedRefresh(true);
+							}
+
+							checkSelectionRefresh(sel);
 							selection.setSelectedRows(sel);
 
 						} catch (DriverException e1) {
@@ -453,24 +487,30 @@ public class TableComponent extends JPanel implements WorkbenchFrame {
 			@Override
 			public void keyTyped(KeyEvent e) {
 			}
-
 		});
 
-		txtFilter.addMouseListener(new MouseAdapter() {
-			public void mousePressed(MouseEvent e) {
+		txtFilter.addFocusListener(new FocusListener() {
+
+			@Override
+			public void focusGained(FocusEvent e) {
 				if (txtFilter
 						.getText()
 						.equals(
 								I18N
-										.getText("orbisgis.org.orbisgis.core.ui.editors.table.TableComponent.put_a_sqlwhere")))
-					txtFilter.setText("");
+										.getString("orbisgis.org.orbisgis.core.ui.editors.table.TableComponent.put_a_sqlwhere"))) { //$NON-NLS-1$
+					txtFilter.setText(""); //$NON-NLS-1$
+				}
 			}
 
-			public void mouseExited(MouseEvent e) {
-				if (txtFilter.getText().equals(""))
+			;
+
+			@Override
+			public void focusLost(FocusEvent e) {
+				if (txtFilter.getText().equals("")) { //$NON-NLS-1$
 					txtFilter
 							.setText(I18N
-									.getText("orbisgis.org.orbisgis.core.ui.editors.table.TableComponent.put_a_sqlwhere"));
+									.getString("orbisgis.org.orbisgis.core.ui.editors.table.TableComponent.put_a_sqlwhere")); //$NON-NLS-1$
+				}
 			}
 		});
 
@@ -518,22 +558,25 @@ public class TableComponent extends JPanel implements WorkbenchFrame {
 	}
 
 	public void setElement(TableEditableElement element) {
-		if (this.dataSource != null) {
-			this.dataSource.removeEditionListener(listener);
-			this.dataSource.removeMetadataEditionListener(listener);
-			this.selection.removeSelectionListener(selectionListener);
-		}
 		this.element = element;
 		if (this.element == null) {
-			this.dataSource = null;
-			this.selection = null;
+			if (this.dataSource != null) {
+				this.dataSource.removeEditionListener(listener);
+				this.dataSource.removeMetadataEditionListener(listener);
+				this.dataSource = null;
+			}
+			if (this.selection != null) {
+				this.selection.removeSelectionListener(selectionListener);
+				this.selection = null;
+			}
+			this.cpl.freeExternalResources();
 			table.setModel(new DefaultTableModel());
 		} else {
 			this.dataSource = element.getDataSource();
 			this.dataSource.addEditionListener(listener);
 			this.dataSource.addMetadataEditionListener(listener);
-			this.cpl.setRootText("SELECT * FROM " + dataSource.getName()
-					+ " WHERE");
+			this.cpl.setRootText("SELECT * FROM " + dataSource.getName() //$NON-NLS-1$
+					+ " WHERE"); //$NON-NLS-1$
 
 			tableModel = new DataSourceDataModel();
 			table.setModel(tableModel);
@@ -597,6 +640,7 @@ public class TableComponent extends JPanel implements WorkbenchFrame {
 			int column, IProgressMonitor pm) {
 		TableColumn col = table.getColumnModel().getColumn(column);
 		int margin = 5;
+		int headerMargin = 10;
 		int width = 0;
 
 		// Get width of column header
@@ -614,7 +658,8 @@ public class TableComponent extends JPanel implements WorkbenchFrame {
 		// Check header
 		comp = renderer.getTableCellRendererComponent(table, col
 				.getHeaderValue(), false, false, 0, column);
-		width = Math.max(width, comp.getPreferredSize().width);
+		width = Math.max(width, comp.getPreferredSize().width + 2
+				* headerMargin);
 		// Get maximum width of column data
 		for (int r = 0; r < rowsToCheck; r++) {
 			if (r / 100 == r / 100.0) {
@@ -669,7 +714,7 @@ public class TableComponent extends JPanel implements WorkbenchFrame {
 					.getService(ErrorManager.class)
 					.warning(
 							I18N
-									.getText("orbisgis.org.orbisgis.core.ui.editors.table.TableComponent.refreshTableStructure"),
+									.getString("orbisgis.org.orbisgis.core.ui.editors.table.TableComponent.refreshTableStructure"), //$NON-NLS-1$
 							e);
 		}
 		tableModel.fireTableStructureChanged();
@@ -677,7 +722,14 @@ public class TableComponent extends JPanel implements WorkbenchFrame {
 				renderers);
 	}
 
-	private int getRowIndex(int row) {
+	/**
+	 * Retrieve the index of the data in the data source shown at the index row
+	 * in the displayed table.
+	 * 
+	 * @param row
+	 * @return
+	 */
+	public int getRowIndex(int row) {
 		if (indexes != null) {
 			row = indexes.get(row);
 		}
@@ -723,12 +775,12 @@ public class TableComponent extends JPanel implements WorkbenchFrame {
 		if (selectedRowsCount > 0) {
 			nbRowsSelectedLabel
 					.setText(I18N
-							.getText("orbisgis.org.orbisgis.core.ui.editors.table.TableComponent.rowSelected")
-							+ selectedRowsCount + " / " + table.getRowCount());
+							.getString("orbisgis.org.orbisgis.core.ui.editors.table.TableComponent.rowSelected") //$NON-NLS-1$
+							+ selectedRowsCount + " / " + table.getRowCount()); //$NON-NLS-1$
 		} else {
 			nbRowsSelectedLabel
 					.setText(I18N
-							.getText("orbisgis.org.orbisgis.core.ui.editors.table.TableComponent.rowNumber")
+							.getString("orbisgis.org.orbisgis.core.ui.editors.table.TableComponent.rowNumber") //$NON-NLS-1$
 							+ tableModel.getRowCount());
 		}
 	}
@@ -755,7 +807,6 @@ public class TableComponent extends JPanel implements WorkbenchFrame {
 		public void selectionChanged() {
 			updateTableSelection();
 		}
-
 	}
 
 	private final class PopupActionListener implements ActionListener {
@@ -786,7 +837,7 @@ public class TableComponent extends JPanel implements WorkbenchFrame {
 					@Override
 					public String getTaskName() {
 						return I18N
-								.getText("orbisgis.org.orbisgis.core.ui.editors.table.TableComponent.columnOptimalWidth");
+								.getString("orbisgis.org.orbisgis.core.ui.editors.table.TableComponent.columnOptimalWidth"); //$NON-NLS-1$
 					}
 				});
 			} else if (SETWIDTH.equals(e.getActionCommand())) {
@@ -794,7 +845,7 @@ public class TableComponent extends JPanel implements WorkbenchFrame {
 						.getColumnModel().getColumn(selectedColumn);
 				AskValue av = new AskValue(
 						I18N
-								.getText("orbisgis.org.orbisgis.core.ui.editors.table.TableComponent.newColumnWidth"),
+								.getString("orbisgis.org.orbisgis.core.ui.editors.table.TableComponent.newColumnWidth"), //$NON-NLS-1$
 						null, null, Integer.toString(selectedTableColumn
 								.getPreferredWidth()));
 				av.setType(SQLUIPanel.INT);
@@ -819,6 +870,7 @@ public class TableComponent extends JPanel implements WorkbenchFrame {
 	}
 
 	private abstract class PopupMouseAdapter extends MouseAdapter {
+
 		WorkbenchContext wbContext = Services
 				.getService(WorkbenchContext.class);
 
@@ -845,20 +897,23 @@ public class TableComponent extends JPanel implements WorkbenchFrame {
 					.contains(e.getPoint());
 			selectedColumn = table.columnAtPoint(e.getPoint());
 			int clickedRow = table.rowAtPoint(e.getPoint());
+			final int[] row = new int[] { clickedRow };
 			if (oneColumnHeaderIsSelected) {
-				if ("ColumnAction".equals(getExtensionPointId())) {
+				if ("ColumnAction".equals(getExtensionPointId())) { //$NON-NLS-1$
 					wbContext.setHeaderSelected(selectedColumn);
 				} else {
 					wbContext.setRowSelected(e);
 					if (!table.isRowSelected(clickedRow)) {
-						selection.setSelectedRows(new int[] { clickedRow });
+						checkSelectionRefresh(row);
+						selection.setSelectedRows(row);
 						updateTableSelection();
 					}
 				}
 			} else {
 				wbContext.setRowSelected(e);
 				if (!table.isRowSelected(clickedRow)) {
-					selection.setSelectedRows(new int[] { clickedRow });
+					checkSelectionRefresh(row);
+					selection.setSelectedRows(row);
 					updateTableSelection();
 				}
 			}
@@ -870,7 +925,7 @@ public class TableComponent extends JPanel implements WorkbenchFrame {
 			component.repaint();
 			if (e.isPopupTrigger()) {
 				JComponent[] menus = null;
-				final JPopupMenu pop = getPopupMenu();				
+				final JPopupMenu pop = getPopupMenu();
 				menus = wbContext.getWorkbench().getFrame()
 						.getMenuTableTreePopup().getJMenus();
 				for (JComponent menu : menus) {
@@ -906,7 +961,7 @@ public class TableComponent extends JPanel implements WorkbenchFrame {
 
 		@Override
 		protected String getExtensionPointId() {
-			return "ColumnAction";
+			return "ColumnAction"; //$NON-NLS-1$
 		}
 
 		@Override
@@ -915,29 +970,29 @@ public class TableComponent extends JPanel implements WorkbenchFrame {
 			addMenu(
 					pop,
 					I18N
-							.getText("orbisgis.org.orbisgis.core.ui.editors.table.TableComponent.optimalWidth"),
-					IconLoader.getIcon("text_letterspacing.png"), OPTIMALWIDTH);
+							.getString("orbisgis.org.orbisgis.core.ui.editors.table.TableComponent.optimalWidth"), //$NON-NLS-1$
+					IconLoader.getIcon("text_letterspacing.png"), OPTIMALWIDTH); //$NON-NLS-1$
 			addMenu(
 					pop,
 					I18N
-							.getText("orbisgis.org.orbisgis.core.ui.editors.table.TableComponent.setWidth"),
+							.getString("orbisgis.org.orbisgis.core.ui.editors.table.TableComponent.setWidth"), //$NON-NLS-1$
 					null, SETWIDTH);
 			pop.addSeparator();
 			if (tableModel.getColumnType(selectedColumn).getTypeCode() != Type.GEOMETRY) {
 				addMenu(
 						pop,
 						I18N
-								.getText("orbisgis.org.orbisgis.core.ui.editors.table.TableComponent.sortAscending"),
-						IconLoader.getIcon("thumb_up.png"), SORTUP);
+								.getString("orbisgis.org.orbisgis.core.ui.editors.table.TableComponent.sortAscending"), //$NON-NLS-1$
+						IconLoader.getIcon("thumb_up.png"), SORTUP); //$NON-NLS-1$
 				addMenu(
 						pop,
 						I18N
-								.getText("orbisgis.org.orbisgis.core.ui.editors.table.TableComponent.sortDescending"),
-						IconLoader.getIcon("thumb_down.png"), SORTDOWN);
+								.getString("orbisgis.org.orbisgis.core.ui.editors.table.TableComponent.sortDescending"), //$NON-NLS-1$
+						IconLoader.getIcon("thumb_down.png"), SORTDOWN); //$NON-NLS-1$
 				addMenu(
 						pop,
 						I18N
-								.getText("orbisgis.org.orbisgis.core.ui.editors.table.TableComponent.noSort"),
+								.getString("orbisgis.org.orbisgis.core.ui.editors.table.TableComponent.noSort"), //$NON-NLS-1$
 						OrbisGISIcon.TABLE_REFRESH, NOSORT);
 			}
 			return pop;
@@ -953,7 +1008,7 @@ public class TableComponent extends JPanel implements WorkbenchFrame {
 
 		@Override
 		protected String getExtensionPointId() {
-			return "CellAction";
+			return "CellAction"; //$NON-NLS-1$
 		}
 
 		@Override
@@ -1008,10 +1063,10 @@ public class TableComponent extends JPanel implements WorkbenchFrame {
 		public void fieldRemoved(FieldEditionEvent event) {
 			refreshTableStructure();
 		}
-
 	}
 
 	public class DataSourceDataModel extends AbstractTableModel {
+
 		private Metadata metadata;
 
 		private Metadata getMetadata() throws DriverException {
@@ -1092,7 +1147,7 @@ public class TableComponent extends JPanel implements WorkbenchFrame {
 				return dataSource.getFieldValue(getRowIndex(row), col)
 						.toString();
 			} catch (DriverException e) {
-				return "";
+				return ""; //$NON-NLS-1$
 			}
 		}
 
@@ -1130,7 +1185,7 @@ public class TableComponent extends JPanel implements WorkbenchFrame {
 			} catch (DriverException e1) {
 				throw new RuntimeException(e1);
 			} catch (NumberFormatException e) {
-				inputError("Cannot parse number: " + e.getMessage(), e);
+				inputError(I18N.getString("orbisgis.org.orbisgis.ui.table.tableComponent.cannotParseNumber") + e.getMessage(), e); //$NON-NLS-1$
 			} catch (ParseException e) {
 				inputError(e.getMessage(), e);
 			}
@@ -1182,14 +1237,14 @@ public class TableComponent extends JPanel implements WorkbenchFrame {
 					}
 				});
 			} catch (DriverException e) {
-				Services.getService(ErrorManager.class).error("Cannot sort", e);
+				Services.getService(ErrorManager.class).error(I18N.getString("orbisgis.org.orbisgis.ui.table.tableComponent.cannotSort"), e); //$NON-NLS-1$
 			}
 		}
 
 		@Override
 		public String getTaskName() {
 			return I18N
-					.getText("orbisgis.org.orbisgis.core.ui.editors.table.TableComponent.sorting");
+					.getString("orbisgis.org.orbisgis.core.ui.editors.table.TableComponent.sorting"); //$NON-NLS-1$
 		}
 	}
 
@@ -1204,7 +1259,7 @@ public class TableComponent extends JPanel implements WorkbenchFrame {
 		public Component getTableCellRendererComponent(JTable table,
 				Object value, boolean isSelected, boolean hasFocus, int row,
 				int column) {
-			setText((value == null) ? "" : value.toString());
+			setText((value == null) ? "" : value.toString()); //$NON-NLS-1$
 			boolean isPressed = (column == selectedColumn);
 			if (isPressed) {
 				setPressedColumn(column);

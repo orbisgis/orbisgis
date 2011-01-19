@@ -299,11 +299,11 @@ public abstract class ZoomIn implements Automaton {
 	public String getMessage() {
 
 		if ("Standby".equals(status)) {
-			return I18N.getText("orbisgis.core.ui.editors.map.tool.zoomin_standby");
+			return I18N.getString("orbisgis.core.ui.editors.map.tool.zoomin_standby");
 		}
 
 		if ("OnePointLeft".equals(status)) {
-			return I18N.getText("orbisgis.core.ui.editors.map.tool.zoomin_onepointleft");
+			return I18N.getString("orbisgis.core.ui.editors.map.tool.zoomin_onepointleft");
 		}
 
 		if ("RectangleDone".equals(status)) {
@@ -322,7 +322,7 @@ public abstract class ZoomIn implements Automaton {
 	}
 
 	public String getTooltip() {
-		return I18N.getText("orbisgis.core.ui.editors.map.tool.zoomin_tooltip");
+		return I18N.getString("orbisgis.core.ui.editors.map.tool.zoomin_tooltip");
 	}
 
 	private ImageIcon mouseCursor;

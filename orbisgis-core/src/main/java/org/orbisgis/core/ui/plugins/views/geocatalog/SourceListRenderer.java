@@ -41,12 +41,12 @@
  * Pierre-Yves.Fadet _at_ ec-nantes.fr
  * gwendall.petit _at_ ec-nantes.fr
  **/
-
 package org.orbisgis.core.ui.plugins.views.geocatalog;
 
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.FlowLayout;
+import java.awt.Font;
 
 import javax.swing.Icon;
 import javax.swing.JLabel;
@@ -58,128 +58,132 @@ import org.gdms.source.Source;
 import org.gdms.source.SourceManager;
 import org.orbisgis.core.DataManager;
 import org.orbisgis.core.Services;
-import org.orbisgis.core.ui.geocatalog.newSourceWizards.SourceRenderer;
+import org.orbisgis.core.ui.plugins.views.geocatalog.newSourceWizards.SourceRenderer;
 import org.orbisgis.core.ui.preferences.lookandfeel.OrbisGISIcon;
 import org.orbisgis.core.ui.preferences.lookandfeel.images.IconLoader;
 
 public class SourceListRenderer implements ListCellRenderer {
 
-	private static final Color SELECTED = Color.lightGray;
-	private static final Color DESELECTED = Color.white;
-	private static final Color SELECTED_FONT = Color.white;
-	private static final Color DESELECTED_FONT = Color.black;
+        private static final Color SELECTED = Color.lightGray;
+        private static final Color DESELECTED = Color.white;
+        private static final Color SELECTED_FONT = Color.white;
+        private static final Color DESELECTED_FONT = Color.black;
+        private SourceRenderer[] renderers = new SourceRenderer[0];
+        private static final Icon raster = OrbisGISIcon.IMAGE;
+        private static final Icon alphanumeric_database = IconLoader.getIcon("database.png");
+        private static final Icon system_table = IconLoader.getIcon("drive.png");
+        private static final Icon spatial = OrbisGISIcon.GEOFILE;
+        private static final Icon alphanumeric_file = IconLoader.getIcon("flatfile.png");
+        private static final Icon server_connect = IconLoader.getIcon("server_connect.png");
+        private Catalog geocatalog;
+        private OurJPanel ourJPanel = null;
 
-	private SourceRenderer[] renderers = new SourceRenderer[0];
-	private static final Icon raster = OrbisGISIcon.IMAGE;
-	private static final Icon alphanumeric_database = IconLoader
-			.getIcon("database.png");
-	private static final Icon system_table = IconLoader
-	.getIcon("drive.png");
-	private static final Icon spatial = OrbisGISIcon.GEOFILE;
-	private static final Icon alphanumeric_file = IconLoader
-			.getIcon("flatfile.png");
-	private static final Icon server_connect = IconLoader
-			.getIcon("server_connect.png");
+        public SourceListRenderer(Catalog catalog) {
+                ourJPanel = new OurJPanel();
+                this.geocatalog = catalog;
+        }
 
-	private OurJPanel ourJPanel = null;
+        @Override
+        public Component getListCellRendererComponent(JList list, Object value,
+                int index, boolean isSelected, boolean cellHasFocus) {
+                ourJPanel = new OurJPanel();
+                ourJPanel.setNodeCosmetic((String) value, isSelected, cellHasFocus);
+                return ourJPanel;
+        }
 
-	public SourceListRenderer() {
-		ourJPanel = new OurJPanel();
-	}
+        private class OurJPanel extends JPanel {
 
-	@Override
-	public Component getListCellRendererComponent(JList list, Object value,
-			int index, boolean isSelected, boolean cellHasFocus) {
-		ourJPanel.setNodeCosmetic((String) value, isSelected, cellHasFocus);
-		return ourJPanel;
-	}
+                private JLabel iconAndLabel;
 
-	private class OurJPanel extends JPanel {
+                public OurJPanel() {
+                        FlowLayout fl = new FlowLayout(FlowLayout.LEADING);
+                        fl.setHgap(0);
+                        setLayout(fl);
+                        iconAndLabel = new JLabel();
+                        add(iconAndLabel);
+                }
 
-		private JLabel iconAndLabel;
+                public void setNodeCosmetic(String source, boolean selected,
+                        boolean hasFocus) {
+                        DataManager dataManager = Services.getService(DataManager.class);
+                        SourceManager sourceManager = dataManager.getSourceManager();
 
-		public OurJPanel() {
-			FlowLayout fl = new FlowLayout(FlowLayout.LEADING);
-			fl.setHgap(0);
-			setLayout(fl);
-			iconAndLabel = new JLabel();
-			add(iconAndLabel);
-		}
+                        Icon icon = null;
+                        for (SourceRenderer renderer : renderers) {
+                                icon = renderer.getIcon(sourceManager, source);
+                                if (icon != null) {
+                                        break;
+                                }
+                        }
+                        Source src = sourceManager.getSource(source);
 
-		public void setNodeCosmetic(String source, boolean selected,
-				boolean hasFocus) {
-			DataManager dataManager = (DataManager) Services
-					.getService(DataManager.class);
-			SourceManager sourceManager = dataManager.getSourceManager();
+                        if (src != null) {
 
-			Icon icon = null;
-			for (SourceRenderer renderer : renderers) {
-				icon = renderer.getIcon(sourceManager, source);
-				if (icon != null) {
-					break;
-				}
-			}
-			Source src = sourceManager.getSource(source);
+                                if (src.isFileSource()) {
+                                        if (src.getFile() != null) {
+                                                if (!src.getFile().exists()) {
+                                                        icon = OrbisGISIcon.REMOVE;
+                                                }
+                                        }
+                                }
 
-			if (src != null) {
+                                if (icon == null) {
+                                        int sourceType = src.getType();
+                                        if ((sourceType & SourceManager.VECTORIAL) == SourceManager.VECTORIAL) {
+                                                icon = spatial;
+                                        } else if ((sourceType & SourceManager.RASTER) == SourceManager.RASTER) {
+                                                icon = raster;
+                                        } else if ((sourceType & SourceManager.WMS) == SourceManager.WMS) {
+                                                icon = server_connect;
+                                        } else if ((sourceType & SourceManager.FILE) == SourceManager.FILE) {
+                                                icon = alphanumeric_file;
+                                        } else if ((sourceType & SourceManager.DB) == SourceManager.DB) {
+                                                icon = alphanumeric_database;
+                                        } else if ((sourceType & SourceManager.SYSTEM_TABLE) == SourceManager.SYSTEM_TABLE) {
+                                                icon = system_table;
+                                        }
+                                }
+                                if (null != icon) {
+                                        iconAndLabel.setIcon(icon);
+                                } else {
+                                        iconAndLabel.setIcon(null);
+                                }
+                                String text = null;
+                                for (SourceRenderer renderer : renderers) {
+                                        text = renderer.getText(sourceManager, source);
+                                        if (text != null) {
+                                                break;
+                                        }
+                                }
+                                if (text == null) {
+                                        text = source;
+                                        text += " (" + src.getTypeName() + ")";
+                                }
+                                if (geocatalog.isEditingSource(source)) {
+                                        System.out.println("Editing source " + source);
+                                        final EditableSource editingSource = geocatalog.getEditingSource(source);
+                                        if (editingSource.getDataSource() != null && editingSource.isModified()) {
+                                                text += "*";
+                                        }
+                                        Font font = iconAndLabel.getFont();
+                                        font = font.deriveFont(Font.ITALIC, font.getSize());
+                                        iconAndLabel.setFont(font);
+                                }
+                                iconAndLabel.setText(text);
+                                iconAndLabel.setVisible(true);
+                                if (selected) {
+                                        this.setBackground(SELECTED);
+                                        iconAndLabel.setForeground(SELECTED_FONT);
+                                } else {
+                                        this.setBackground(DESELECTED);
+                                        iconAndLabel.setForeground(DESELECTED_FONT);
+                                }
+                        }
 
-				if (src.isFileSource()) {
-					if (src.getFile() != null) {
-						if (!src.getFile().exists()) {
-							icon = OrbisGISIcon.REMOVE;
-						}
-					}
-				}
+                }
+        }
 
-				if (icon == null) {
-					int sourceType = src.getType();
-					if ((sourceType & SourceManager.VECTORIAL) == SourceManager.VECTORIAL) {
-						icon = spatial;
-					} else if ((sourceType & SourceManager.RASTER) == SourceManager.RASTER) {
-						icon = raster;
-					} else if ((sourceType & SourceManager.WMS) == SourceManager.WMS) {
-						icon = server_connect;
-					} else if ((sourceType & SourceManager.FILE) == SourceManager.FILE) {
-						icon = alphanumeric_file;
-					} else if ((sourceType & SourceManager.DB) == SourceManager.DB) {
-						icon = alphanumeric_database;
-					}
-					else if ((sourceType & SourceManager.SYSTEM_TABLE) == SourceManager.SYSTEM_TABLE) {
-						icon = system_table;
-					}
-				}
-				if (null != icon) {
-					iconAndLabel.setIcon(icon);
-				} else {
-					iconAndLabel.setIcon(null);
-				}
-				String text = null;
-				for (SourceRenderer renderer : renderers) {
-					text = renderer.getText(sourceManager, source);
-					if (text != null) {
-						break;
-					}
-				}
-				if (text == null) {
-					text = source;
-					text += " (" + src.getTypeName() + ")";
-				}
-				iconAndLabel.setText(text);
-				iconAndLabel.setVisible(true);
-				if (selected) {
-					this.setBackground(SELECTED);
-					iconAndLabel.setForeground(SELECTED_FONT);
-				} else {
-					this.setBackground(DESELECTED);
-					iconAndLabel.setForeground(DESELECTED_FONT);
-				}
-			}
-
-		}
-	}
-
-	public void setRenderers(SourceRenderer[] renderers) {
-		this.renderers = renderers;
-	}
-
+        public void setRenderers(SourceRenderer[] renderers) {
+                this.renderers = renderers;
+        }
 }

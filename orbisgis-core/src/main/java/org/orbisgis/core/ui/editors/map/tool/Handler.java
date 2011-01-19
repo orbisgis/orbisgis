@@ -64,6 +64,7 @@ import java.awt.Graphics2D;
 import java.awt.geom.Point2D;
 
 import org.orbisgis.core.map.MapTransform;
+import org.orbisgis.utils.I18N;
 
 import com.vividsolutions.jts.geom.Geometry;
 
@@ -74,7 +75,7 @@ import com.vividsolutions.jts.geom.Geometry;
  * @author Fernando Gonzlez Corts
  */
 public interface Handler {
-	public static final String THE_GEOMETRY_IS_NOT_VALID = "The geometry is not valid";
+	public static final String THE_GEOMETRY_IS_NOT_VALID = I18N.getString("orbisgis.org.orbisgis.ui.tool.handler.geometryNotValid"); //$NON-NLS-1$
 
 	/**
 	 * Gets the real world coordinates of the handler

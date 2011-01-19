@@ -47,17 +47,10 @@ package org.orbisgis.core.ui.plugins.views.sqlConsole.actions;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import java.io.BufferedWriter;
-import java.io.FileWriter;
-import java.io.IOException;
 
-import javax.swing.JOptionPane;
-import javax.swing.text.BadLocationException;
 
 import org.orbisgis.core.Services;
 import org.orbisgis.core.background.BackgroundManager;
-import org.orbisgis.core.sif.SaveFilePanel;
-import org.orbisgis.core.sif.UIFactory;
 import org.orbisgis.core.ui.plugins.views.sqlConsole.blockComment.QuoteSQL;
 import org.orbisgis.core.ui.plugins.views.sqlConsole.codereformat.CodeReformator;
 import org.orbisgis.core.ui.plugins.views.sqlConsole.ui.SQLConsolePanel;

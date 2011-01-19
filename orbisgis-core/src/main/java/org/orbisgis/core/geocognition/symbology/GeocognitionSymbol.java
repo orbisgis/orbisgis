@@ -37,14 +37,14 @@ public class GeocognitionSymbol extends AbstractExtensionElement implements
 
 	public GeocognitionSymbol(SymbolList sl, GeocognitionElementFactory factory) {
 		super(factory);
-		this.symbol = getSymbolFromXML((SymbolType) sl.getSymbol());
+		this.symbol = getSymbolFromXML(sl.getSymbol());
 	}
 
 	private Symbol getSymbolFromXML(SymbolType sim) {
 		if (sim instanceof SimpleSymbolType) {
 			SimpleSymbolType simpleSymbol = (SimpleSymbolType) sim;
 			String id = simpleSymbol.getSymbolTypeId();
-			SymbolManager sm = (SymbolManager) Services
+			SymbolManager sm = Services
 					.getService(SymbolManager.class);
 			Symbol ret = sm.createSymbol(id);
 			if (ret == null) {
@@ -125,7 +125,7 @@ public class GeocognitionSymbol extends AbstractExtensionElement implements
 
 	@Override
 	public String getTypeId() {
-		return OrbisGISPersitenceConfig.GeocognitionSymbolFactory_ID;
+		return OrbisGISPersitenceConfig.GEOCOGNITION_SYMBOL_FACTORY_ID;
 	}
 
 	@Override

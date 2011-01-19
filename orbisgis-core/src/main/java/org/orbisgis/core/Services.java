@@ -54,6 +54,7 @@ import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
 import org.orbisgis.core.errorManager.ErrorManager;
+import org.orbisgis.core.ui.plugins.views.output.OutputManager;
 
 /**
  * 
@@ -207,6 +208,14 @@ public class Services {
 	 */
 	public static ErrorManager getErrorManager() {
 		return getService(ErrorManager.class);
+	}
+	
+	/**
+	 * A method to get the outputmanager 
+	 * @return {@link OutputManager}
+	 */
+	public static OutputManager getOutputManager(){
+		return Services.getService(OutputManager.class);
 	}
 
 	@SuppressWarnings("unchecked")

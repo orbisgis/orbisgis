@@ -41,15 +41,12 @@ package org.orbisgis.core.ui.plugins.editors.tableEditor;
 import javax.swing.JOptionPane;
 
 import org.gdms.data.DataSource;
-import org.gdms.data.metadata.Metadata;
-import org.gdms.data.types.Type;
 import org.gdms.driver.DriverException;
-import org.orbisgis.core.Services;
-import org.orbisgis.core.errorManager.ErrorManager;
 import org.orbisgis.core.ui.editor.IEditor;
 import org.orbisgis.core.ui.editors.table.TableEditableElement;
 import org.orbisgis.core.ui.pluginSystem.AbstractPlugIn;
 import org.orbisgis.core.ui.pluginSystem.PlugInContext;
+import org.orbisgis.core.ui.pluginSystem.message.ErrorMessages;
 import org.orbisgis.core.ui.pluginSystem.workbench.Names;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchContext;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchFrame;
@@ -57,29 +54,29 @@ import org.orbisgis.core.ui.preferences.lookandfeel.OrbisGISIcon;
 
 public class RemoveFieldPlugIn extends AbstractPlugIn {
 
-
 	public boolean execute(PlugInContext context) throws Exception {
 		IEditor editor = context.getActiveEditor();
 		final TableEditableElement element = (TableEditableElement) editor
 				.getElement();
 		try {
 			DataSource dataSource = element.getDataSource();
-			int option = JOptionPane.showConfirmDialog(null, "Delete field "
-					+ dataSource.getFieldName(getSelectedColumn()) + "?",
-					"Remove field", JOptionPane.YES_NO_OPTION);
+			int option = JOptionPane.showConfirmDialog(null,
+					Names.POPUP_TABLE_DELETEFIELD_OPTION
+							+ dataSource.getFieldName(getSelectedColumn())
+							+ "?", Names.POPUP_TABLE_REMOVEFIELD_OPTION,
+					JOptionPane.YES_NO_OPTION);
 			if (option == JOptionPane.YES_OPTION) {
 				dataSource.removeField(getSelectedColumn());
 			}
 		} catch (DriverException e) {
-			Services.getService(ErrorManager.class).error(
-					"Cannot remove field", e);
+			ErrorMessages.error(ErrorMessages.CannotDeleteField, e);
 		}
 		return true;
 	}
 
 	public void initialize(PlugInContext context) throws Exception {
 		WorkbenchContext wbContext = context.getWorkbenchContext();
-		WorkbenchFrame frame = (WorkbenchFrame) wbContext.getWorkbench()
+		WorkbenchFrame frame = wbContext.getWorkbench()
 				.getFrame().getTableEditor();
 		context.getFeatureInstaller().addPopupMenuItem(frame, this,
 				new String[] { Names.POPUP_TABLE_REMOVEFIELD_PATH1 },
@@ -88,25 +85,12 @@ public class RemoveFieldPlugIn extends AbstractPlugIn {
 	}
 
 	public boolean isEnabled() {
-		boolean isEnabled = false;
 		IEditor editor = null;
-		if((editor=getPlugInContext().getTableEditor()) != null){
+		if ((editor = getPlugInContext().getTableEditor()) != null) {
 			final TableEditableElement element = (TableEditableElement) editor
 					.getElement();
-			try {
-				if ((getSelectedColumn() != -1) && element.isEditable()) {
-					Metadata metadata = element.getDataSource().getMetadata();
-					Type type = metadata.getFieldType(getSelectedColumn());
-					int typeCode = type.getTypeCode();
-					if (typeCode != Type.GEOMETRY)
-						return isEnabled = true;
-				}
-			} catch (DriverException e) {
-				Services.getService(ErrorManager.class).error(
-						"Cannot access field information", e);
-				return isEnabled;
-			}
+				return (getSelectedColumn() != -1) && element.isEditable();
 		}
-		return isEnabled;
+		return false;
 	}
 }

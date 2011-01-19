@@ -34,7 +34,6 @@
  * or contact directly:
  * info _at_ orbisgis.org
  */
-
 package org.orbisgis.core.ui.plugins.views.geocatalog;
 
 import org.orbisgis.core.Services;
@@ -50,38 +49,42 @@ import org.orbisgis.core.ui.preferences.lookandfeel.OrbisGISIcon;
 
 public class GeocatalogShowTablePlugIn extends AbstractPlugIn {
 
-	public boolean execute(PlugInContext context) throws Exception {
-		String[] res = getPlugInContext().getSelectedSources();
-		if (res.length == 0) {
-			openTable(null);
-		} else {
-			for (String resource : res) {
-				openTable(resource);
-			}
-		}
-		return true;
-	}
+        public boolean execute(PlugInContext context) throws Exception {
+                String[] res = getPlugInContext().getSelectedSources();
+                if (res.length > 0) {
+                        for (String resource : res) {
+                                openTable(resource);
+                        }
+                }
+                return true;
+        }
 
-	public void initialize(PlugInContext context) throws Exception {
-		WorkbenchContext wbContext = context.getWorkbenchContext();
-		WorkbenchFrame frame = wbContext.getWorkbench().getFrame()
-				.getGeocatalog();
-		context.getFeatureInstaller().addPopupMenuItem(frame, this,
-				new String[] { Names.POPUP_GEOCATALOG_TABLE },
-				Names.POPUP_GEOCATALOG_TABLE_GROUP, false,
-				OrbisGISIcon.SHOW_ATTRIBUTES, wbContext);
+        public void initialize(PlugInContext context) throws Exception {
+                WorkbenchContext wbContext = context.getWorkbenchContext();
+                WorkbenchFrame frame = wbContext.getWorkbench().getFrame().getGeocatalog();
+                context.getFeatureInstaller().addPopupMenuItem(frame, this,
+                        new String[]{Names.POPUP_GEOCATALOG_TABLE},
+                        Names.POPUP_GEOCATALOG_TABLE_GROUP, false,
+                        OrbisGISIcon.SHOW_ATTRIBUTES, wbContext);
 
-	}
+        }
 
-	public void openTable(String currentNode) {
-		BackgroundManager bm = Services.getService(BackgroundManager.class);
-		bm.backgroundOperation(new OpenGeocatalogElementJob(new EditableSource(
-				currentNode)));
-	}
+        public void openTable(String currentNode) {
+                BackgroundManager bm = Services.getService(BackgroundManager.class);
+                final Catalog geocatalog = getPlugInContext().getWorkbenchContext().getWorkbench().getFrame().getGeocatalog();
+                EditableSource s = geocatalog.getEditingSource(currentNode);
+                if (s == null) {
+                        // no edition
+                        s = new EditableSource(currentNode);
+                        s.setEditing(false);
+                        geocatalog.addEditingSource(currentNode, s);
+                }
+                bm.backgroundOperation(new OpenGeocatalogElementJob(s));
+        }
 
-	public boolean isEnabled() {
-		return getPlugInContext().checkLayerAvailability(
-				new SelectionAvailability[] { SelectionAvailability.SUPERIOR },
-				0, new SourceAvailability[] { SourceAvailability.RASTER });
-	}
+        public boolean isEnabled() {
+                return getPlugInContext().checkLayerAvailability(
+                        new SelectionAvailability[]{SelectionAvailability.SUPERIOR},
+                        0, new SourceAvailability[]{SourceAvailability.RASTER});
+        }
 }

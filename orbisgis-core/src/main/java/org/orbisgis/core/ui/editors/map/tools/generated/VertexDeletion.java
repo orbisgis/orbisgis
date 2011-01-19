@@ -251,7 +251,7 @@ public abstract class VertexDeletion implements Automaton {
 	public String getMessage() {
 
 		if ("Standby".equals(status)) {
-			return I18N.getText("orbisgis.core.ui.editors.map.tool.vertexDeletion_standby");
+			return I18N.getString("orbisgis.core.ui.editors.map.tool.vertexDeletion_standby");
 		}
 
 		if ("Done".equals(status)) {
@@ -270,7 +270,7 @@ public abstract class VertexDeletion implements Automaton {
 	}
 
 	public String getTooltip() {
-		return I18N.getText("orbisgis.core.ui.editors.map.tool.vertexDeletion_tooltip");
+		return I18N.getString("orbisgis.core.ui.editors.map.tool.vertexDeletion_tooltip");
 	}
 
 	private ImageIcon mouseCursor;

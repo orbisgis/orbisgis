@@ -56,7 +56,7 @@ public class GeocognitionCustomQueryFactory implements
 
 	@Override
 	public boolean acceptContentTypeId(String typeId) {
-		return OrbisGISPersitenceConfig.GeocognitionCustomQueryFactory_id
+		return OrbisGISPersitenceConfig.GEOCONGITION_CUSTOMQUERY_FACTORY_ID
 				.equals(typeId);
 	}
 

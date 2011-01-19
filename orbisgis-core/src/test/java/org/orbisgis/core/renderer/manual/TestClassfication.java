@@ -97,7 +97,7 @@ public class TestClassfication {
 		layer.open();
 		DataSource ds;
 		try {
-			ds = layer.getDataSource();
+			ds = layer.getSpatialDataSource();
 			SpatialDataSourceDecorator sds = new SpatialDataSourceDecorator(ds);
 			RangeMethod intervalsDicretizationMethod = new RangeMethod(sds,
 					new RealAttribute("PTOT90"), 4);

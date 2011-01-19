@@ -126,18 +126,18 @@ public class ExplodeTest extends TestCase {
 		dsf.getSourceManager().register("ds1", driver1);
 		dsf.getSourceManager().register("ds1p",
 				"select pk, geom as g1, geom as g2 from ds1;");
-		evaluate(dsf.getDataSourceFromSQL("select Explode() from ds1p;"));
-		evaluate(dsf.getDataSourceFromSQL("select Explode(g1) from ds1p;"));
+		evaluate(dsf.getDataSourceFromSQL("select st_Explode() from ds1p;"));
+		evaluate(dsf.getDataSourceFromSQL("select st_Explode(g1) from ds1p;"));
 	}
 
 	public void testWrongParameters() throws Exception {
 		try {
-			testWrongParameters("select explode(geom, geom) from ds1p;");
+			testWrongParameters("select st_explode(geom, geom) from ds1p;");
 			assertTrue(false);
 		} catch (SemanticException e) {
 		}
 		try {
-			testWrongParameters("select explode('o') from ds1p;");
+			testWrongParameters("select st_explode('o') from ds1p;");
 			assertTrue(false);
 		} catch (IncompatibleTypesException e) {
 		}

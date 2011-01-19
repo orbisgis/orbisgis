@@ -4,6 +4,7 @@ import java.io.File;
 
 import org.gdms.SourceTest;
 import org.gdms.data.DataSource;
+import org.gdms.source.DefaultSourceManager;
 
 import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.io.WKTReader;
@@ -34,8 +35,8 @@ public class SpatialReferenceSystemTest extends SourceTest {
 
 		for (int i = 0; i < ds.getRowCount(); i++) {
 
-			String sourceCodeCRS = ds.getFieldValue(i, 0).getAsString();
-			String targetCodeCRS = ds.getFieldValue(i, 2).getAsString();
+			int sourceCodeCRS = ds.getFieldValue(i, 0).getAsInt();
+			int targetCodeCRS = ds.getFieldValue(i, 2).getAsInt();
 
 			SpatialReferenceSystem spatialReferenceSystem = new SpatialReferenceSystem(
 					dsf, sourceCodeCRS, targetCodeCRS);
@@ -61,13 +62,28 @@ public class SpatialReferenceSystemTest extends SourceTest {
 	public void testGDMSProj4CRSFactory() throws Exception {
 
 		dsf.getSourceManager().loadSystemTables();
+
+		DataSource ds = dsf
+				.getDataSource(DefaultSourceManager.SPATIAL_REF_SYSTEM);
+
+		ds.open();
+
 		GDMSProj4CRSFactory gdmsProj4CRSFactory = new GDMSProj4CRSFactory(dsf);
 
-		// 320002120 for Lambert 93 nadgrid
-		CoordinateReferenceSystem crs = gdmsProj4CRSFactory
-				.getCRSFromSRID("4326");
+		long rowCount = ds.getRowCount();
 
-		System.out.println(crs.getName());
+		for (int i = 0; i < rowCount; i++) {
+
+			int srid = Integer.parseInt(ds.getFieldValue(i, 0).getAsString());
+			System.out.println("Row : " + i + "SRID : " + srid);
+
+			CoordinateReferenceSystem crs = gdmsProj4CRSFactory
+					.getCRSFromSRID(srid);
+			assertTrue(crs != null);
+
+		}
+
+		ds.close();
 
 	}
 

@@ -250,7 +250,7 @@ public abstract class ZoomOut implements Automaton {
 	public String getMessage() {
 
 		if ("Standby".equals(status)) {
-			return I18N.getText("orbisgis.core.ui.editors.map.tool.zoomout_standby");
+			return I18N.getString("orbisgis.core.ui.editors.map.tool.zoomout_standby");
 		}
 
 		if ("Done".equals(status)) {
@@ -269,7 +269,7 @@ public abstract class ZoomOut implements Automaton {
 	}
 
 	public String getTooltip() {
-		return I18N.getText("orbisgis.core.ui.editors.map.tool.zoomout_tooltip");
+		return I18N.getString("orbisgis.core.ui.editors.map.tool.zoomout_tooltip");
 	}
 
 	private ImageIcon mouseCursor;

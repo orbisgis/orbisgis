@@ -224,10 +224,11 @@ public interface ILayer {
 	/**
 	 * Returns a {@link DataSource} to access the source of this layer
 	 * 
-	 * @return A DataSource or null if this layer is not backed up by a
-	 *         DataSource (Layer collections and WMS layers, for example)
+	 * @return A SpatialDataSourceDecorator or null if this layer is not backed
+	 *         up by a SpatialDataSourceDecorator (Layer collections and WMS
+	 *         layers, for example)
 	 */
-	SpatialDataSourceDecorator getDataSource();
+	SpatialDataSourceDecorator getSpatialDataSource();
 
     public FeatureTypeStyle getFeatureTypeStyle();
 

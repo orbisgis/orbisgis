@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import org.orbisgis.core.OrbisGISPersitenceConfig;
 import org.orbisgis.core.geocognition.mapContext.GeocognitionException;
 import org.orbisgis.progress.IProgressMonitor;
+import org.orbisgis.utils.I18N;
 
 class FolderElement extends AbstractGeocognitionElement implements
 		GeocognitionElement {
@@ -32,8 +33,8 @@ class FolderElement extends AbstractGeocognitionElement implements
 
 	public void addElement(GeocognitionElement element, boolean fireEvents) {
 		if (getElement(element.getId()) != null) {
-			throw new UnsupportedOperationException("There is already "
-					+ "an element with that id: " + element.getId());
+			throw new UnsupportedOperationException(I18N.getString("orbisgis.org.orbisgis.folderElement.thereIsAlready") //$NON-NLS-1$
+					+ I18N.getString("orbisgis.org.orbisgis.folderElement.elementWithId") + element.getId()); //$NON-NLS-1$
 		}
 		elements.add(element);
 		((AbstractGeocognitionElement) element).setParent(this);
@@ -49,17 +50,17 @@ class FolderElement extends AbstractGeocognitionElement implements
 
 	@Override
 	public Object getObject() {
-		throw new UnsupportedOperationException("Folders do not wrap objects");
+		throw new UnsupportedOperationException(I18N.getString("orbisgis.org.orbisgis.folderElement.foldesDoNotWrapObjects")); //$NON-NLS-1$
 	}
 
 	@Override
 	public Object getJAXBObject() {
-		throw new RuntimeException("bug");
+		throw new RuntimeException(I18N.getString("orbisgis.org.orbisgis.folderElement.bug")); //$NON-NLS-1$
 	}
 
 	@Override
 	public String getTypeId() {
-		return OrbisGISPersitenceConfig.GeocognitionFolderElement_ID;
+		return OrbisGISPersitenceConfig.GEOCOGNITION_FOLDER_ELEMENT_ID;
 	}
 
 	@Override
@@ -111,7 +112,7 @@ class FolderElement extends AbstractGeocognitionElement implements
 	}
 
 	private void unsupported() {
-		throw new UnsupportedOperationException("Folders cannot be edited");
+		throw new UnsupportedOperationException(I18N.getString("orbisgis.org.orbisgis.folderElement.cannotBeEdited")); //$NON-NLS-1$
 	}
 
 	@Override
@@ -142,13 +143,13 @@ class FolderElement extends AbstractGeocognitionElement implements
 	@Override
 	public String getXMLContent() {
 		throw new UnsupportedOperationException(
-				"Cannot extract XML from a folder");
+				I18N.getString("orbisgis.org.orbisgis.folderElement.cannotExtractXMLFromFolder")); //$NON-NLS-1$
 	}
 
 	@Override
 	public void setXMLContent(String xml) {
 		throw new UnsupportedOperationException(
-				"Cannot extract XML from a folder");
+				I18N.getString("orbisgis.org.orbisgis.folderElement.cannotExtractXMLFromFolder")); //$NON-NLS-1$
 	}
 
 	@Override

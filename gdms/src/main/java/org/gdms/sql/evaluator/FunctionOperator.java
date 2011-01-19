@@ -37,6 +37,7 @@
 package org.gdms.sql.evaluator;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.types.Type;
@@ -108,9 +109,7 @@ public class FunctionOperator extends AbstractOperator implements Expression {
 	public FunctionOperator[] getFunctionReferences() {
 		ArrayList<FunctionOperator> ret = new ArrayList<FunctionOperator>();
 		FunctionOperator[] childFunctionRefs = super.getFunctionReferences();
-		for (FunctionOperator functionRef : childFunctionRefs) {
-			ret.add(functionRef);
-		}
+                ret.addAll(Arrays.asList(childFunctionRefs));
 		ret.add(this);
 
 		return ret.toArray(new FunctionOperator[ret.size()]);

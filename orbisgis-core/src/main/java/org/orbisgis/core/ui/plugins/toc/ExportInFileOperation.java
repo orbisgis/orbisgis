@@ -46,27 +46,33 @@ import org.gdms.data.DataSourceFactory;
 import org.gdms.data.file.FileSourceDefinition;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.driverManager.DriverLoadException;
+import org.gdms.source.SourceManager;
 import org.gdms.sql.strategies.SemanticException;
-import org.orbisgis.core.Services;
 import org.orbisgis.core.background.BackgroundJob;
+import org.orbisgis.core.ui.pluginSystem.message.ErrorMessages;
+import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchFrame;
+import org.orbisgis.core.ui.plugins.views.geocatalog.Catalog;
 import org.orbisgis.progress.IProgressMonitor;
+import org.orbisgis.utils.I18N;
 
 public class ExportInFileOperation implements BackgroundJob {
 
 	private File savedFile;
 	private DataSourceFactory dsf;
 	private String sourceName;
+	private WorkbenchFrame frame;
 
 	public ExportInFileOperation(DataSourceFactory dsf, String sourceName,
-			File savedFile) {
+			File savedFile, WorkbenchFrame frame) {
 		this.sourceName = sourceName;
 		this.savedFile = savedFile;
 		this.dsf = dsf;
+		this.frame = frame;
 	}
 
 	@Override
 	public String getTaskName() {
-		return "Exporting in a file";
+		return I18N.getString("orbisgis.org.orbisgis.exportInFile");
 	}
 
 	@Override
@@ -78,20 +84,27 @@ public class ExportInFileOperation implements BackgroundJob {
 			fileName = fileName.substring(0, index);
 		}
 		final FileSourceDefinition def = new FileSourceDefinition(savedFile);
-		dsf.getSourceManager().register(fileName, def);
+		final SourceManager sourceManager = dsf.getSourceManager();
+		if (sourceManager.exists(fileName)) {
+			fileName = sourceManager.getUniqueName(fileName);
+		}
+		sourceManager.register(fileName, def);
 		try {
 			dsf.saveContents(fileName, dsf.getDataSource(sourceName), pm);
 			JOptionPane.showMessageDialog(null,
-					"The file has been exported and added in the geocatalog.");
+					I18N.getString("orbisgis.org.orbisgis.exportInFile.geocatalog"));
 		} catch (SemanticException e) {
-			Services.getErrorManager().error("Error in the SQL statement.", e);
+			ErrorMessages.error(ErrorMessages.SQLStatementError, e);
 		} catch (DriverException e) {
-			Services.getErrorManager()
-					.error("Cannot create the datasource.", e);
+			ErrorMessages.error(ErrorMessages.CannotCreateDataSource, e);
 		} catch (DriverLoadException e) {
-			Services.getErrorManager().error("Cannot read the datasource.", e);
+			ErrorMessages.error(ErrorMessages.CannotReadDataSource, e);
 		} catch (DataSourceCreationException e) {
-			Services.getErrorManager().error("Cannot read the datasource.", e);
+			ErrorMessages.error(ErrorMessages.CannotReadDataSource, e);
+		}
+
+		if (frame != null && frame instanceof Catalog) {
+			((Catalog) frame).repaint();
 		}
 
 	}

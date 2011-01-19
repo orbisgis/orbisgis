@@ -80,7 +80,7 @@ public abstract class AbstractMultipolygonTool extends Multipolygon implements
 		if (points.size() < 3)
 			throw new TransitionException(
 					I18N
-							.getText("orbisgis.core.ui.editors.map.tool.multipolygonTool_0")); //$NON-NLS-1$
+							.getString("orbisgis.core.ui.editors.map.tool.multipolygonTool_0")); //$NON-NLS-1$
 
 		addPolygon(vc);
 
@@ -99,7 +99,7 @@ public abstract class AbstractMultipolygonTool extends Multipolygon implements
 		if (!p.isValid()) {
 			throw new TransitionException(
 					I18N
-							.getText("orbisgis.core.ui.editors.map.tool.multipolygonTool_2")); //$NON-NLS-1$
+							.getString("orbisgis.core.ui.editors.map.tool.multipolygonTool_2")); //$NON-NLS-1$
 		}
 		polygons.add(p);
 	}
@@ -121,7 +121,7 @@ public abstract class AbstractMultipolygonTool extends Multipolygon implements
 				|| ((points.size() == 0) && (polygons.size() == 0)))
 			throw new TransitionException(
 					I18N
-							.getText("orbisgis.core.ui.editors.map.tool.multipolygonTool_0")); //$NON-NLS-1$
+							.getString("orbisgis.core.ui.editors.map.tool.multipolygonTool_0")); //$NON-NLS-1$
 		if (points.size() > 0) {
 			addPolygon(vc);
 		}
@@ -130,7 +130,7 @@ public abstract class AbstractMultipolygonTool extends Multipolygon implements
 		if (!mp.isValid()) {
 			throw new TransitionException(
 					I18N
-							.getText("orbisgis.core.ui.editors.map.tool.multipolygonTool_2")); //$NON-NLS-1$
+							.getString("orbisgis.core.ui.editors.map.tool.multipolygonTool_2")); //$NON-NLS-1$
 		}
 		multipolygonDone(mp, vc, tm);
 
@@ -179,7 +179,7 @@ public abstract class AbstractMultipolygonTool extends Multipolygon implements
 		if (!mp.isValid()) {
 			throw new DrawingException(
 					I18N
-							.getText("orbisgis.core.ui.editors.map.tool.multipolygonTool_2")); //$NON-NLS-1$
+							.getString("orbisgis.core.ui.editors.map.tool.multipolygonTool_2")); //$NON-NLS-1$
 		}
 	}
 

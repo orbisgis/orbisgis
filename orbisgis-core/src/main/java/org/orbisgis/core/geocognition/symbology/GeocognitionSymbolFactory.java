@@ -35,7 +35,7 @@ public class GeocognitionSymbolFactory implements GeocognitionElementFactory {
 
 	@Override
 	public boolean acceptContentTypeId(String typeId) {
-		return OrbisGISPersitenceConfig.GeocognitionSymbolFactory_ID
+		return OrbisGISPersitenceConfig.GEOCOGNITION_SYMBOL_FACTORY_ID
 				.equals(typeId);
 	}
 }

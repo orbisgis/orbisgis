@@ -62,12 +62,14 @@ import fr.cts.op.CoordinateOperationSequence;
 public class SpatialReferenceSystem {
 
 	private CoordinateOperationSequence coordinateOperationSequence = null;
+        private int targetSRID;
 
 	
-	public SpatialReferenceSystem(DataSourceFactory dsf, String sourceCRS, String targetCRS) {
+	public SpatialReferenceSystem(DataSourceFactory dsf, int sourceCRS, int targetCRS) {
 		GDMSProj4CRSFactory gdmsProj4CRSFactory = new GDMSProj4CRSFactory(dsf);
 		init((GeodeticCRS) gdmsProj4CRSFactory.getCRSFromSRID(sourceCRS),
 				(GeodeticCRS) gdmsProj4CRSFactory.getCRSFromSRID(targetCRS));
+                this.targetSRID = targetCRS;
 	}
 
 	public SpatialReferenceSystem(GeodeticCRS sourceCRS, GeodeticCRS targetCRS) {
@@ -94,7 +96,9 @@ public class SpatialReferenceSystem {
 	}
 
 	public Geometry transform(Geometry geom) {
-		return getGeometryTransformer().transform(geom);
+		Geometry g = getGeometryTransformer().transform(geom);
+                g.setSRID(targetSRID);
+                return g;
 	}
 
 	public GeometryTransformer getGeometryTransformer() {

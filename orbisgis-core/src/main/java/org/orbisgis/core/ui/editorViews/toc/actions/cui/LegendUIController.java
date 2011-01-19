@@ -88,7 +88,7 @@ public final class LegendUIController {
 		GeometryConstraint cons = null;
 		try {
 			ILayer layer = style.getLayer();
-			Type type = layer.getDataSource().getMetadata().getFieldType(layer.getDataSource().getSpatialFieldIndex());
+			Type type = layer.getSpatialDataSource().getMetadata().getFieldType(layer.getSpatialDataSource().getSpatialFieldIndex());
 			cons = (GeometryConstraint) type.getConstraint(Constraint.GEOMETRY_TYPE);
 		} catch (DriverException ex) {
 			Logger.getLogger(LegendUIController.class.getName()).log(Level.SEVERE, null, ex);

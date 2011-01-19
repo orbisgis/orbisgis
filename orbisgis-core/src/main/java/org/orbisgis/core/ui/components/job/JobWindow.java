@@ -39,20 +39,12 @@
 
 package org.orbisgis.core.ui.components.job;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Component;
-import java.awt.Container;
-import java.awt.Dimension;
-import java.awt.Point;
-import java.awt.event.FocusAdapter;
-import java.awt.event.FocusEvent;
-import java.awt.event.WindowEvent;
 import java.util.HashMap;
 
+import javax.swing.JLayeredPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.JWindow;
 
 import org.apache.log4j.Logger;
 import org.orbisgis.core.Services;
@@ -64,6 +56,7 @@ import org.orbisgis.core.background.ProgressBar;
 import org.orbisgis.core.sif.CRFlowLayout;
 import org.orbisgis.core.sif.CarriageReturn;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchContext;
+import org.orbisgis.core.ui.windows.mainFrame.OrbisGISFrame;
 
 /**
  * Job popup at bootom right to follow processes loading
@@ -73,72 +66,38 @@ public class JobWindow extends JPanel {
 	
 	private static Logger logger = Logger.getLogger(JobQueue.class);
 
-	private JWindow window;
+	private JLayeredPane jobPopupLayeredPane;
+	private JScrollPane progressPopup;
 	private JPanel progressPanel;
-	private Container parent;
 	private HashMap<JobId, Component[]> idBar = new HashMap<JobId, Component[]>();
-	private static final int TOOLBAR_SIZE = 90;
-	private static final int RIGHT_POPUP_OFFSET = 10;
 
-	public JobWindow() {
+	public JobWindow(final OrbisGISFrame orbisGISFrame) {
+		jobPopupLayeredPane = orbisGISFrame.getLayeredPane();
 	}
 
 	public void show() {
-		if (window == null) {
+		if (progressPopup == null) {
 			initUI();
-
 		}
-		window.setSize(200, 80);
-		window.setBackground(Color.GRAY);
-		WorkbenchContext wbContext = Services
-				.getService(WorkbenchContext.class);
-		parent = wbContext.getWorkbench().getFrame();
-		centerParent();
+
+		progressPopup.setLocation(Services.getService(WorkbenchContext.class)
+				.getWorkbench().getFrame().getSize().width - 208, 25);
+		jobPopupLayeredPane.add(progressPopup, 0);
+		
 	}
 
 	public void hide() {
-		if (window != null) {
-			window.setVisible(false);
+		if (progressPopup != null) {
+			progressPopup.setVisible(false);
 		}
-	}
-
-	public void centerParent() {
-		int x;
-
-		// Find out our parent
-		Point topLeft = parent.getLocationOnScreen();
-		Dimension parentSize = parent.getSize();
-
-		Dimension mySize = window.getSize();
-
-		if (parentSize.width > mySize.width)
-			x = ((parentSize.width - mySize.width) - RIGHT_POPUP_OFFSET)
-					+ topLeft.x;
-		else
-			x = topLeft.x;
-
-		window.setLocation(x, topLeft.y+47);
+		jobPopupLayeredPane.remove(progressPopup);
 	}
 
 	public void initUI() {
-		window = new JWindow();
-
 		progressPanel = new JPanel();
 		progressPanel.setLayout(new CRFlowLayout());
-		JScrollPane scrollPane = new JScrollPane(progressPanel);
-		window.requestFocus();
-		window.addFocusListener(new FocusAdapter() {
-			public void focusGained(FocusEvent e) {
-				window.dispatchEvent(new WindowEvent(window,
-						WindowEvent.WINDOW_ACTIVATED));
-			}
-
-			public void focusLost(FocusEvent e) {
-				hide();
-			}
-		});
-		window.add(scrollPane, BorderLayout.CENTER);
-		window.pack();
+		progressPopup = new JScrollPane(progressPanel);
+		progressPopup.setSize(200, 80);	
 	}
 
 	public void addJob(Job job) {
@@ -161,7 +120,7 @@ public class JobWindow extends JPanel {
 		}
 		
 		logger.info("Added job " + job.getId());
-		window.setVisible(true);
+		progressPopup.setVisible(true);
 	}
 
 	private BackgroundManager getBackgroundManager() {

@@ -79,7 +79,7 @@ public abstract class LegendUIPropertyNamePanel extends LegendUIComponent
 
 		ArrayList<String> possibilities = new ArrayList<String>();
 		possibilities.add("Select...");
-		SpatialDataSourceDecorator ds = controller.getEditedFeatureTypeStyle().getLayer().getDataSource();
+		SpatialDataSourceDecorator ds = controller.getEditedFeatureTypeStyle().getLayer().getSpatialDataSource();
 
 		int current = 0;
 

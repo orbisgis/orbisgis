@@ -89,7 +89,7 @@ public class VertexDeletionTool extends VertexDeletion {
 		Point2D p = tm.getLastRealMousePosition();
 		ArrayList<Handler> handlers = tm.getCurrentHandlers();
 		ILayer activeLayer = mc.getActiveLayer();
-		SpatialDataSourceDecorator sds = activeLayer.getDataSource();
+		SpatialDataSourceDecorator sds = activeLayer.getSpatialDataSource();
 
 		for (Handler handler : handlers) {
 			if (p.distance(handler.getPoint()) < tm.getTolerance()) {
@@ -133,7 +133,7 @@ public class VertexDeletionTool extends VertexDeletion {
 			} catch (CannotChangeGeometryException e) {
 				throw new DrawingException(
 						I18N
-								.getText("orbisgis.core.ui.editors.map.tool.VertexDeletionTool_1")); //$NON-NLS-1$
+								.getString("orbisgis.core.ui.editors.map.tool.VertexDeletionTool_1")); //$NON-NLS-1$
 			}
 		}
 	}
@@ -161,6 +161,6 @@ public class VertexDeletionTool extends VertexDeletion {
 
 	public String getName() {
 		return I18N
-				.getText("orbisgis.core.ui.editors.map.tool.vertexDeletion_tooltip");
+				.getString("orbisgis.core.ui.editors.map.tool.vertexDeletion_tooltip");
 	}
 }

@@ -59,6 +59,8 @@
  */
 package org.orbisgis.core.ui.editors.map.tool;
 
+import org.orbisgis.utils.I18N;
+
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.CoordinateSequence;
 import com.vividsolutions.jts.geom.CoordinateSequenceFilter;
@@ -128,7 +130,7 @@ public class PointHandler extends AbstractHandler implements Handler {
 	public Geometry remove() throws CannotChangeGeometryException {
 		if (geometryType == Primitive.POINT_GEOMETRY_TYPE) {
 			throw new CannotChangeGeometryException(
-					"Cannot remove a vertex from a point geometry");
+					I18N.getString("orbisgis.org.orbisgis.ui.tool.pointHandler.cannotRemoveVertexFromPointGeometry")); //$NON-NLS-1$
 		} else if ((geometryType == Primitive.LINE_GEOMETRY_TYPE)
 				|| (geometryType == Primitive.MULTIPOINT_GEOMETRY_TYPE)) {
 			com.vividsolutions.jts.geom.Geometry g = removeVertex();

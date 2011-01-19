@@ -66,7 +66,7 @@ public abstract class AbstractMultilineTool extends Multiline implements
 		points = ToolUtilities.removeDuplicated(points);
 		if (((points.size() < 2) && (points.size() > 0))
 				|| ((points.size() == 0) && (lines.size() == 0)))
-			throw new TransitionException(I18N.getText("orbisgis.core.ui.editors.map.tool.multilineTool_0")); //$NON-NLS-1$
+			throw new TransitionException(I18N.getString("orbisgis.core.ui.editors.map.tool.multilineTool_0")); //$NON-NLS-1$
 		if (points.size() > 0) {
 			addLine();
 		}
@@ -74,7 +74,7 @@ public abstract class AbstractMultilineTool extends Multiline implements
 		MultiLineString mls = gf.createMultiLineString(lines
 				.toArray(new LineString[0]));
 		if (!mls.isValid()) {
-			throw new TransitionException(I18N.getText("orbisgis.core.ui.editors.map.tool.multilineTool_1")); //$NON-NLS-1$
+			throw new TransitionException(I18N.getString("orbisgis.core.ui.editors.map.tool.multilineTool_1")); //$NON-NLS-1$
 		}
 
 		multilineDone(mls, vc, tm);
@@ -107,7 +107,7 @@ public abstract class AbstractMultilineTool extends Multiline implements
 			throws FinishedAutomatonException, TransitionException {
 		points = ToolUtilities.removeDuplicated(points);
 		if (points.size() < 2)
-			throw new TransitionException(I18N.getText("org.orbisgis.core.ui.editors.map.tool.multilineTool.0")); //$NON-NLS-1$
+			throw new TransitionException(I18N.getString("org.orbisgis.core.ui.editors.map.tool.multilineTool.0")); //$NON-NLS-1$
 
 		addLine();
 
@@ -117,7 +117,7 @@ public abstract class AbstractMultilineTool extends Multiline implements
 	protected void addLine() throws TransitionException {
 		LineString ls = gf.createLineString(points.toArray(new Coordinate[0]));
 		if (!ls.isValid()) {
-			throw new TransitionException(I18N.getText("org.orbisgis.core.ui.editors.map.tool.multilineTool.1")); //$NON-NLS-1$
+			throw new TransitionException(I18N.getString("org.orbisgis.core.ui.editors.map.tool.multilineTool.1")); //$NON-NLS-1$
 		}
 		lines.add(ls);
 	}
@@ -161,7 +161,7 @@ public abstract class AbstractMultilineTool extends Multiline implements
 		tm.addGeomToDraw(mls);
 
 		if (!mls.isValid()) {
-			throw new DrawingException(I18N.getText("org.orbisgis.core.ui.editors.map.tool.multilineTool.1")); //$NON-NLS-1$
+			throw new DrawingException(I18N.getString("org.orbisgis.core.ui.editors.map.tool.multilineTool.1")); //$NON-NLS-1$
 		}
 	}
 

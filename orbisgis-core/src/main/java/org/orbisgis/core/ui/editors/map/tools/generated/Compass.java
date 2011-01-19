@@ -48,7 +48,7 @@ public abstract class Compass implements Automaton {
 
 		}
 
-		ret.add(I18N.getText("orbisgis.core.ui.editors.map.tool.cancel"));
+		ret.add(I18N.getString("orbisgis.core.ui.editors.map.tool.cancel"));
 
 		return ret.toArray(new String[0]);
 	}
@@ -341,7 +341,7 @@ public abstract class Compass implements Automaton {
 
 	public String getTooltip() {
 		return I18N
-				.getText("orbisgis.core.ui.editors.map.tool.compass_tooltip");
+				.getString("orbisgis.core.ui.editors.map.tool.compass_tooltip");
 	}
 
 	private ImageIcon mouseCursor;

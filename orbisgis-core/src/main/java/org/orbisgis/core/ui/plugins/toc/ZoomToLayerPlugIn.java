@@ -50,10 +50,11 @@ import org.orbisgis.core.ui.pluginSystem.PlugInContext.SelectionAvailability;
 import org.orbisgis.core.ui.pluginSystem.workbench.Names;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchContext;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchFrame;
-import org.orbisgis.core.ui.plugins.views.MapEditorPlugIn;
 import org.orbisgis.core.ui.plugins.views.editor.EditorManager;
+import org.orbisgis.core.ui.plugins.views.mapEditor.MapEditorPlugIn;
 import org.orbisgis.core.ui.preferences.lookandfeel.OrbisGISIcon;
 import org.orbisgis.progress.IProgressMonitor;
+import org.orbisgis.utils.I18N;
 
 import com.vividsolutions.jts.geom.Envelope;
 
@@ -68,7 +69,6 @@ public class ZoomToLayerPlugIn extends AbstractPlugIn {
 			@Override
 			public void run(IProgressMonitor pm) {
 
-
 				ILayer[] layers = mapContext.getSelectedLayers();
 
 				Envelope env = new Envelope(layers[0].getEnvelope());
@@ -77,7 +77,8 @@ public class ZoomToLayerPlugIn extends AbstractPlugIn {
 				}
 				EditorManager em = (EditorManager) Services
 						.getService(EditorManager.class);
-				IEditor[] editors = em.getEditors(Names.EDITOR_MAP_ID, mapContext);
+				IEditor[] editors = em.getEditors(Names.EDITOR_MAP_ID,
+						mapContext);
 				for (IEditor editor : editors) {
 					((MapEditorPlugIn) editor).getMapTransform().setExtent(env);
 				}
@@ -85,7 +86,7 @@ public class ZoomToLayerPlugIn extends AbstractPlugIn {
 
 			@Override
 			public String getTaskName() {
-				return "Zoom to layer";
+				return I18N.getString("orbisgis.org.orbisgis.zoomToLayer"); //$NON-NLS-1$
 			}
 		});
 		return true;
@@ -94,20 +95,21 @@ public class ZoomToLayerPlugIn extends AbstractPlugIn {
 	public void initialize(PlugInContext context) throws Exception {
 		WorkbenchContext wbContext = context.getWorkbenchContext();
 		WorkbenchFrame frame = wbContext.getWorkbench().getFrame().getToc();
-		context.getFeatureInstaller().addPopupMenuItem(frame, this,
-				new String[] { Names.POPUP_TOC_ZOOM_PATH1 },
-				Names.POPUP_TOC_ZOOM_GROUP, false,
-				OrbisGISIcon.ZOOM, wbContext);
+		context.getFeatureInstaller()
+				.addPopupMenuItem(frame, this,
+						new String[] { Names.POPUP_TOC_ZOOM_PATH1 },
+						Names.POPUP_TOC_ZOOM_GROUP, false, OrbisGISIcon.ZOOM,
+						wbContext);
 	}
 
 	public boolean isEnabled() {
 		return getPlugInContext().checkLayerAvailability(
-				new SelectionAvailability[]{ SelectionAvailability.SUPERIOR , SelectionAvailability.ACTIVE_MAPCONTEXT},
-				0,
-				new LayerAvailability[]{});
+				new SelectionAvailability[] { SelectionAvailability.SUPERIOR,
+						SelectionAvailability.ACTIVE_MAPCONTEXT }, 0,
+				new LayerAvailability[] {});
 	}
 
 	public String getName() {
-		return "ZoomToLayer";
+		return I18N.getString("orbisgis.org.orbisgis.zoomToLayer"); //$NON-NLS-1$
 	}
 }

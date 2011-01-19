@@ -75,9 +75,9 @@ public class GeocatalogClearPlugIn extends AbstractPlugIn {
 				.showConfirmDialog(
 						null,
 						I18N
-								.getText("orbisgis.org.orbisgis.core.ui.plugins.views.geocatalog.clearAction"),
+								.getString("orbisgis.org.orbisgis.core.ui.plugins.views.geocatalog.clearAction"),
 						I18N
-								.getText("orbisgis.org.orbisgis.core.ui.plugins.views.geocatalog.clear"),
+								.getString("orbisgis.org.orbisgis.core.ui.plugins.views.geocatalog.clear"),
 						JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
 		if (option == JOptionPane.YES_OPTION) {
 			try {
@@ -88,7 +88,7 @@ public class GeocatalogClearPlugIn extends AbstractPlugIn {
 						.getErrorManager()
 						.error(
 								I18N
-										.getText("orbisgis.org.orbisgis.core.ui.plugins.views.geocatalog.cannotClear"),
+										.getString("orbisgis.org.orbisgis.core.ui.plugins.views.geocatalog.cannotClear"),
 								e);
 			}
 		}

@@ -54,16 +54,17 @@ import org.gdms.sql.parser.ParseException;
 import org.gdms.sql.strategies.SemanticException;
 import org.orbisgis.core.DataManager;
 import org.orbisgis.core.Services;
-import org.orbisgis.core.errorManager.ErrorManager;
 import org.orbisgis.core.ui.editor.IEditor;
 import org.orbisgis.core.ui.editors.table.TableEditableElement;
 import org.orbisgis.core.ui.pluginSystem.AbstractPlugIn;
 import org.orbisgis.core.ui.pluginSystem.PlugInContext;
+import org.orbisgis.core.ui.pluginSystem.message.ErrorMessages;
 import org.orbisgis.core.ui.pluginSystem.workbench.Names;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchContext;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchFrame;
-import org.orbisgis.core.ui.plugins.views.OutputManager;
+import org.orbisgis.core.ui.plugins.views.output.OutputManager;
 import org.orbisgis.core.ui.preferences.lookandfeel.OrbisGISIcon;
+import org.orbisgis.utils.I18N;
 
 public class ShowFieldStatisticsPlugIn extends AbstractPlugIn {
 
@@ -72,7 +73,7 @@ public class ShowFieldStatisticsPlugIn extends AbstractPlugIn {
 		final TableEditableElement element = (TableEditableElement) editor
 				.getElement();
 		try {
-			final DataSourceFactory dsf = ((DataManager) Services
+			final DataSourceFactory dsf = (Services
 					.getService(DataManager.class)).getDataSourceFactory();
 
 			DataSource ds = element.getDataSource();
@@ -113,7 +114,11 @@ public class ShowFieldStatisticsPlugIn extends AbstractPlugIn {
 			dsResult.open();
 			Metadata metadataResult = dsResult.getMetadata();
 
-			om.println("Statistics on field : " + fieldName, Color.red);
+			om
+					.println(
+							I18N
+									.getString("orbisgis.org.orbisgis.core.ui.plugins.editors.tableEditor.fieldStatistics")
+									+ fieldName, Color.red);
 			for (int i = 0; i < dsResult.getRowCount(); i++) {
 
 				for (int k = 0; k < metadataResult.getFieldCount(); k++) {
@@ -127,23 +132,22 @@ public class ShowFieldStatisticsPlugIn extends AbstractPlugIn {
 			dsResult.close();
 
 		} catch (DriverException e) {
-			Services.getService(ErrorManager.class).error(
-					"Cannot access field information", e);
+			ErrorMessages.error(ErrorMessages.CannotAccessFieldInformation, e);
 		} catch (DriverLoadException e) {
-			e.printStackTrace();
+			ErrorMessages.error(ErrorMessages.CannotObtainDataSource, e);
 		} catch (DataSourceCreationException e) {
-			e.printStackTrace();
+			ErrorMessages.error(ErrorMessages.CannotCreateDataSource, e);
 		} catch (ParseException e) {
-			e.printStackTrace();
+			ErrorMessages.error(ErrorMessages.CannotCreateDataSource, e);
 		} catch (SemanticException e) {
-			e.printStackTrace();
+			ErrorMessages.error(ErrorMessages.WrongSQLQuery, e);
 		}
 		return true;
 	}
 
 	public void initialize(PlugInContext context) throws Exception {
 		WorkbenchContext wbContext = context.getWorkbenchContext();
-		WorkbenchFrame frame = (WorkbenchFrame) wbContext.getWorkbench()
+		WorkbenchFrame frame = wbContext.getWorkbench()
 				.getFrame().getTableEditor();
 		context.getFeatureInstaller().addPopupMenuItem(frame, this,
 				new String[] { Names.POPUP_TABLE_SHOWFIELDSTAT_PATH1 },
@@ -194,8 +198,8 @@ public class ShowFieldStatisticsPlugIn extends AbstractPlugIn {
 	public boolean isEnabled() {
 		boolean isEnabled = false;
 		IEditor editor = null;
-		if((editor=getPlugInContext().getTableEditor()) != null
-				&& getSelectedColumn()!=-1){
+		if ((editor = getPlugInContext().getTableEditor()) != null
+				&& getSelectedColumn() != -1) {
 			final TableEditableElement element = (TableEditableElement) editor
 					.getElement();
 			try {
@@ -216,8 +220,8 @@ public class ShowFieldStatisticsPlugIn extends AbstractPlugIn {
 				}
 
 			} catch (DriverException e) {
-				Services.getService(ErrorManager.class).error(
-						"Cannot access field information", e);
+				ErrorMessages.error(ErrorMessages.CannotAccessFieldInformation,
+						e);
 			}
 		}
 		return isEnabled;

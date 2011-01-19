@@ -43,9 +43,12 @@ import org.gdms.data.DataSourceFactory;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.FileDriver;
 import org.gdms.driver.driverManager.Driver;
+import org.gdms.driver.driverManager.DriverFilter;
 import org.gdms.driver.driverManager.DriverManager;
 import org.gdms.source.AndDriverFilter;
+import org.gdms.source.CSVFileDriverFilter;
 import org.gdms.source.FileDriverFilter;
+import org.gdms.source.OrDriverFilter;
 import org.gdms.source.RasterDriverFilter;
 import org.gdms.source.SourceManager;
 import org.gdms.source.VectorialDriverFilter;
@@ -64,6 +67,7 @@ import org.orbisgis.core.ui.pluginSystem.PlugInContext.SelectionAvailability;
 import org.orbisgis.core.ui.pluginSystem.workbench.Names;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchContext;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchFrame;
+import org.orbisgis.utils.I18N;
 
 public class SaveInFilePlugIn extends AbstractPlugIn {
 
@@ -71,24 +75,29 @@ public class SaveInFilePlugIn extends AbstractPlugIn {
 		MapContext mapContext = getPlugInContext().getMapContext();
 		ILayer[] selectedResources = mapContext.getSelectedLayers();
 		for (ILayer resource : selectedResources) {
+			if (resource.isWMS()) {
+				continue;
+			}
 			final SaveFilePanel outfilePanel = new SaveFilePanel(
 					"org.orbisgis.core.ui.editorViews.toc.actions.SaveInFile",
-					"Choose a file format");
+					I18N.getString("orbisgis.core.file.chooseFileFormat"));
 
 			DataManager dm = Services.getService(DataManager.class);
 			final DataSourceFactory dsf = dm.getDataSourceFactory();
 			SourceManager sourceManager = dm.getSourceManager();
 			DriverManager driverManager = sourceManager.getDriverManager();
-			Driver[] filtered = null;
+			DriverFilter filter = null;
 			if (resource.isRaster()) {
-				filtered = driverManager.getDrivers(new AndDriverFilter(
-						new FileDriverFilter(), new RasterDriverFilter(),
-						new WritableDriverFilter()));
+				filter = new RasterDriverFilter();
 			} else if (resource.isVectorial()) {
-				filtered = driverManager.getDrivers(new AndDriverFilter(
-						new FileDriverFilter(), new VectorialDriverFilter(),
-						new WritableDriverFilter()));
+				// no other choice but to add CSV here
+				// because of CSVStringDriver implementation
+				filter = new OrDriverFilter(new VectorialDriverFilter(),
+						new CSVFileDriverFilter());
 			}
+			Driver[] filtered = driverManager
+					.getDrivers(new AndDriverFilter(new FileDriverFilter(),
+							filter, new WritableDriverFilter()));
 			for (int i = 0; i < filtered.length; i++) {
 				FileDriver fileDriver = (FileDriver) filtered[i];
 				String[] extensions = fileDriver.getFileExtensions();
@@ -102,7 +111,7 @@ public class SaveInFilePlugIn extends AbstractPlugIn {
 				BackgroundManager bm = Services
 						.getService(BackgroundManager.class);
 				bm.backgroundOperation(new ExportInFileOperation(dsf, resource
-						.getName(), savedFile));
+						.getName(), savedFile, null));
 
 			}
 		}
@@ -123,7 +132,6 @@ public class SaveInFilePlugIn extends AbstractPlugIn {
 	public boolean isEnabled() {
 		return getPlugInContext().checkLayerAvailability(
 				new SelectionAvailability[] { SelectionAvailability.SUPERIOR },
-				0,
-				new LayerAvailability[] { });
+				0, new LayerAvailability[] { LayerAvailability.EXPORTABLE });
 	}
 }

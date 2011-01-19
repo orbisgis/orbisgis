@@ -72,7 +72,7 @@ public class GeocognitionRegisterBuiltInCustomQueryPlugIn extends AbstractPlugIn
 	public void initialize(PlugInContext context) throws Exception {
 		WorkbenchContext wbContext = context.getWorkbenchContext();
 		WorkbenchFrame frame = wbContext.getWorkbench().getFrame()
-				.getGeocognition();
+				.getGeocognitionView();
 		context
 				.getFeatureInstaller()
 				.addPopupMenuItem(
@@ -86,7 +86,7 @@ public class GeocognitionRegisterBuiltInCustomQueryPlugIn extends AbstractPlugIn
 
 	@SuppressWarnings("unchecked")
 	public void execute(Geocognition geocognition, GeocognitionElement element) {
-		if (OrbisGISPersitenceConfig.GeocognitionCustomQueryFactory_id.equals(element
+		if (OrbisGISPersitenceConfig.GEOCONGITION_CUSTOMQUERY_FACTORY_ID.equals(element
 				.getTypeId())) {
 			Class<? extends CustomQuery> queryClass = (Class<? extends CustomQuery>) element
 					.getObject();

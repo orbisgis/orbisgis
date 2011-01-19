@@ -53,7 +53,7 @@ public class GeocognitionMapContext extends AbstractExtensionElement implements
 
 	@Override
 	public String getTypeId() {
-		return OrbisGISPersitenceConfig.GeocognitionMapContextFactory_id;
+		return OrbisGISPersitenceConfig.GEOCOGNITION_MAPCONTEXT_FACTORY_ID;
 	}
 
 	@Override
@@ -92,8 +92,8 @@ public class GeocognitionMapContext extends AbstractExtensionElement implements
 	public boolean isModified() {
 		ILayer[] layers = mapContext.getLayerModel().getLayersRecursively();
 		for (ILayer layer : layers) {
-			if ((layer.getDataSource() != null)
-					&& layer.getDataSource().isModified()) {
+			if ((layer.getSpatialDataSource() != null)
+					&& layer.getSpatialDataSource().isModified()) {
 				return true;
 			}
 		}

@@ -1,23 +1,19 @@
-/**
+/*
  * OrbisGIS is a GIS application dedicated to scientific spatial simulation.
  * This cross-platform GIS is developed at French IRSTV institute and is able to
  * manipulate and create vector and raster spatial information. OrbisGIS is
- * distributed under GPL 3 license. It is produced by the geo-informatic team of
+ * distributed under GPL 3 license. It is produced by the "Atelier SIG" team of
  * the IRSTV Institute <http://www.irstv.cnrs.fr/> CNRS FR 2488.
  *
- *
- *  Lead Erwan BOCHER, scientific researcher,
- *
- *  Developer lead : Pierre-Yves FADET, computer engineer.
- *
- *  User support lead : Gwendall Petit, geomatic engineer.
- *
- * Previous computer developer : Thomas LEDUC, scientific researcher, Fernando GONZALEZ
- * CORTES, computer engineer.
+ * 
+ *  Team leader Erwan BOCHER, scientific researcher. * 
+ * 
  *
  * Copyright (C) 2007 Erwan BOCHER, Fernando GONZALEZ CORTES, Thomas LEDUC
  *
- * Copyright (C) 2010 Erwan BOCHER, Fernando GONZALEZ CORTES, Thomas LEDUC
+ * Copyright (C) 2010 Erwan BOCHER, Pierre-Yves FADET, Alexis GUEGANNO,Adelin PIAU
+ * 
+ * Copyright (C) 2011 Erwan BOCHER, Alexis GUEGANNO, Antoine GOURLAY
  *
  * This file is part of OrbisGIS.
  *
@@ -33,14 +29,11 @@
  * You should have received a copy of the GNU General Public License along with
  * OrbisGIS. If not, see <http://www.gnu.org/licenses/>.
  *
- * For more information, please consult: <http://orbisgis.cerma.archi.fr/>
- * <http://sourcesup.cru.fr/projects/orbisgis/>
+ * For more information, please consult: <http://www.orbisgis.org/>
  *
  * or contact directly:
- * erwan.bocher _at_ ec-nantes.fr
- * Pierre-Yves.Fadet _at_ ec-nantes.fr
- * gwendall.petit _at_ ec-nantes.fr
- **/
+ * info_at_orbisgis.org
+ */
 
 package org.orbisgis.core.ui.plugins.views.geocatalog;
 
@@ -51,13 +44,13 @@ import org.orbisgis.core.DataManager;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.sif.UIFactory;
 import org.orbisgis.core.sif.UIPanel;
-import org.orbisgis.core.ui.geocatalog.newSourceWizards.db.ConnectionPanel;
-import org.orbisgis.core.ui.geocatalog.newSourceWizards.db.TableSelectionPanel;
 import org.orbisgis.core.ui.pluginSystem.AbstractPlugIn;
 import org.orbisgis.core.ui.pluginSystem.PlugInContext;
 import org.orbisgis.core.ui.pluginSystem.workbench.Names;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchContext;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchFrame;
+import org.orbisgis.core.ui.plugins.views.geocatalog.newSourceWizards.db.ConnectionPanel;
+import org.orbisgis.core.ui.plugins.views.geocatalog.newSourceWizards.db.TableSelectionPanel;
 import org.orbisgis.core.ui.preferences.lookandfeel.OrbisGISIcon;
 
 public class NewGeocognitionDBPlugIn extends AbstractPlugIn {
@@ -89,8 +82,8 @@ public class NewGeocognitionDBPlugIn extends AbstractPlugIn {
 				this,
 				new String[] { Names.POPUP_GEOCATALOG_ADD,
 						Names.POPUP_GEOCATALOG_DB },
-				Names.POPUP_GEOCATALOG_ADD, false,
-				OrbisGISIcon.GEOCATALOG_DB, wbContext);
+				Names.POPUP_GEOCATALOG_ADD, false, OrbisGISIcon.GEOCATALOG_DB,
+				wbContext);
 	}
 
 	public boolean isEnabled() {

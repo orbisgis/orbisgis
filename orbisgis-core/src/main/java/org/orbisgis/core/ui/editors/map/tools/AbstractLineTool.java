@@ -85,12 +85,12 @@ public abstract class AbstractLineTool extends Line implements InsertionTool {
 			throws FinishedAutomatonException, TransitionException {
 		points = ToolUtilities.removeDuplicated(points);
 		if (points.size() < 2)
-			throw new TransitionException(I18N.getText("orbisgis.core.ui.editors.map.tool.multilineTool_0")); //$NON-NLS-1$
+			throw new TransitionException(I18N.getString("orbisgis.core.ui.editors.map.tool.multilineTool_0")); //$NON-NLS-1$
 		LineString ls = new GeometryFactory().createLineString(points
 				.toArray(new Coordinate[0]));
 		com.vividsolutions.jts.geom.Geometry g = ls;
 		if (!g.isValid()) {
-			throw new TransitionException(I18N.getText("orbisgis.core.ui.editors.map.tool.lineTool_0")); //$NON-NLS-1$
+			throw new TransitionException(I18N.getString("orbisgis.core.ui.editors.map.tool.lineTool_0")); //$NON-NLS-1$
 		}
 		lineDone(ls, vc, tm);
 
@@ -108,7 +108,7 @@ public abstract class AbstractLineTool extends Line implements InsertionTool {
 		tm.addGeomToDraw(ls);
 
 		if (!ls.isValid()) {
-			throw new DrawingException(I18N.getText("orbisgis.core.ui.editors.map.tool.lineTool_0")); //$NON-NLS-1$
+			throw new DrawingException(I18N.getString("orbisgis.core.ui.editors.map.tool.lineTool_0")); //$NON-NLS-1$
 		}
 	}
 

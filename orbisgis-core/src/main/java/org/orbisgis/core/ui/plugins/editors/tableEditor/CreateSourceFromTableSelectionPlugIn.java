@@ -15,6 +15,8 @@
  *
  * Copyright (C) 2010 Erwan BOCHER, Pierre-Yves FADET, Alexis GUEGANNO, Maxence LAURENT
  *
+ * Copyright (C) 2011 Erwan BOCHER, Alexis GUEGANNO, Antoine GOURLAY
+ *
  * This file is part of OrbisGIS.
  *
  * OrbisGIS is free software: you can redistribute it and/or modify it under the
@@ -32,8 +34,7 @@
  * For more information, please consult: <http://www.orbisgis.org/>
  *
  * or contact directly:
- * erwan.bocher _at_ ec-nantes.fr
- * gwendall.petit _at_ ec-nantes.fr
+ * info_at_orbisgis.org
  */
 
 package org.orbisgis.core.ui.plugins.editors.tableEditor;
@@ -56,7 +57,6 @@ import org.gdms.driver.driverManager.DriverLoadException;
 import org.gdms.source.SourceManager;
 import org.orbisgis.core.DataManager;
 import org.orbisgis.core.Services;
-import org.orbisgis.core.errorManager.ErrorManager;
 import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.layerModel.MapContext;
 import org.orbisgis.core.ui.editor.IEditor;
@@ -65,9 +65,11 @@ import org.orbisgis.core.ui.pluginSystem.AbstractPlugIn;
 import org.orbisgis.core.ui.pluginSystem.PlugInContext;
 import org.orbisgis.core.ui.pluginSystem.PlugInContext.LayerAvailability;
 import org.orbisgis.core.ui.pluginSystem.PlugInContext.SelectionAvailability;
+import org.orbisgis.core.ui.pluginSystem.message.ErrorMessages;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchContext;
-import org.orbisgis.core.ui.plugins.views.TableEditorPlugIn;
+import org.orbisgis.core.ui.plugins.views.tableEditor.TableEditorPlugIn;
 import org.orbisgis.core.ui.preferences.lookandfeel.OrbisGISIcon;
+import org.orbisgis.utils.I18N;
 
 public class CreateSourceFromTableSelectionPlugIn extends AbstractPlugIn {
 
@@ -75,6 +77,8 @@ public class CreateSourceFromTableSelectionPlugIn extends AbstractPlugIn {
 
 	public CreateSourceFromTableSelectionPlugIn() {
 		btn = new JButton(OrbisGISIcon.TABLE_CREATE_SRC_ICON);
+		btn.setToolTipText(I18N
+                .getString("orbisgis.ui.popupmenu.table.createFromSelection"));
 	}
 
 	public boolean execute(PlugInContext context) throws Exception {
@@ -88,9 +92,9 @@ public class CreateSourceFromTableSelectionPlugIn extends AbstractPlugIn {
 		} else {
 			IEditor editor = context.getActiveEditor();
 			MapContext mc = (MapContext) editor.getElement().getObject();
-			ILayer[] layers = mc.getSelectedLayers();// getLayersRecursively();
+			ILayer[] layers = mc.getSelectedLayers();
 			for (ILayer layer : layers) {
-				createSourceFromSelection(layer.getDataSource(), layer
+				createSourceFromSelection(layer.getSpatialDataSource(), layer
 						.getSelection());
 			}
 		}
@@ -134,30 +138,32 @@ public class CreateSourceFromTableSelectionPlugIn extends AbstractPlugIn {
 			}
 			newds.commit();
 			newds.close();
-		} catch (SourceAlreadyExistsException e) {
-			Services.getService(ErrorManager.class).error("Bug", e);
-		} catch (DriverLoadException e) {
-			Services.getService(ErrorManager.class).error("Bug", e);
-		} catch (NoSuchTableException e) {
-			Services.getService(ErrorManager.class).error("Bug", e);
-		} catch (DriverException e) {
-			Services.getService(ErrorManager.class).error(
-					"Cannot create source", e);
-		} catch (DataSourceCreationException e) {
-			Services.getService(ErrorManager.class).error(
-					"Cannot create source", e);
-		} catch (NonEditableDataSourceException e) {
-			Services.getService(ErrorManager.class).error("Bug", e);
-		}
+
+        } catch (SourceAlreadyExistsException e) {
+            ErrorMessages.error(ErrorMessages.CannotRegisterSource, e);
+        } catch (DriverLoadException e) {
+            ErrorMessages.error(ErrorMessages.CannotFindTheDataSource, e);
+        } catch (NoSuchTableException e) {
+            ErrorMessages.error(ErrorMessages.CannotFindTheDataSource, e);
+        } catch (DriverException e) {
+            ErrorMessages.error(ErrorMessages.CannotCreateSource, e);
+        } catch (DataSourceCreationException e) {
+            ErrorMessages.error(ErrorMessages.CannotCreateSource, e);
+        } catch (NonEditableDataSourceException e) {
+            ErrorMessages.error(ErrorMessages.CannotModifyDataSource, e);
+        }
 	}
 
 	public boolean isEnabled() {
 		boolean isEnabled = false;
-		isEnabled =  getPlugInContext().getTableEditor() != null &&
-						getPlugInContext().checkLayerAvailability(
-							new SelectionAvailability[] {SelectionAvailability.SUPERIOR},
-							0,
-							new LayerAvailability[] {LayerAvailability.VECTORIAL, LayerAvailability.ROW_SELECTED});
+		isEnabled =  getPlugInContext().getTableEditor() != null
+						&& getPlugInContext()
+							.checkLayerAvailability(
+								new SelectionAvailability[] {SelectionAvailability.SUPERIOR},
+								0,
+								new LayerAvailability[] {
+										LayerAvailability.VECTORIAL,
+										LayerAvailability.ROW_SELECTED });
 		btn.setEnabled(isEnabled);
 		return isEnabled;
 	}

@@ -6,14 +6,14 @@
  * the IRSTV Institute <http://www.irstv.cnrs.fr/> CNRS FR 2488.
  *
  * 
- *  Team leader Erwan BOCHER, scientific researcher,
+ *  Team leader Erwan BOCHER, scientific researcher.
  * 
- *  User support leader : Gwendall Petit, geomatic engineer.
- *
  *
  * Copyright (C) 2007 Erwan BOCHER, Fernando GONZALEZ CORTES, Thomas LEDUC
  *
- * Copyright (C) 2010 Erwan BOCHER, Pierre-Yves FADET, Alexis GUEGANNO, Maxence LAURENT
+ * Copyright (C) 2010 Erwan BOCHER, Pierre-Yves FADET, Alexis GUEGANNO,Adelin PIAU
+ * 
+ * Copyright (C) 2011 Erwan BOCHER, Alexis GUEGANNO, Antoine GOURLAY
  *
  * This file is part of OrbisGIS.
  *
@@ -32,8 +32,7 @@
  * For more information, please consult: <http://www.orbisgis.org/>
  *
  * or contact directly:
- * erwan.bocher _at_ ec-nantes.fr
- * gwendall.petit _at_ ec-nantes.fr
+ * info_at_orbisgis.org
  */
 
 package org.orbisgis.core.ui.plugins.views.geocatalog;
@@ -46,33 +45,34 @@ import org.gvsig.remoteClient.wms.WMSClient;
 import org.gvsig.remoteClient.wms.WMSLayer;
 import org.orbisgis.core.DataManager;
 import org.orbisgis.core.Services;
-import org.orbisgis.core.errorManager.ErrorManager;
 import org.orbisgis.core.sif.UIFactory;
 import org.orbisgis.core.sif.UIPanel;
-import org.orbisgis.core.ui.geocatalog.newSourceWizards.wms.LayerConfigurationPanel;
-import org.orbisgis.core.ui.geocatalog.newSourceWizards.wms.SRSPanel;
-import org.orbisgis.core.ui.geocatalog.newSourceWizards.wms.WMSConnectionPanel;
 import org.orbisgis.core.ui.pluginSystem.AbstractPlugIn;
 import org.orbisgis.core.ui.pluginSystem.PlugInContext;
+import org.orbisgis.core.ui.pluginSystem.message.ErrorMessages;
 import org.orbisgis.core.ui.pluginSystem.workbench.Names;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchContext;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchFrame;
+import org.orbisgis.core.ui.plugins.views.geocatalog.newSourceWizards.wms.LayerConfigurationPanel;
+import org.orbisgis.core.ui.plugins.views.geocatalog.newSourceWizards.wms.SRSPanel;
+import org.orbisgis.core.ui.plugins.views.geocatalog.newSourceWizards.wms.WMSConnectionPanel;
 import org.orbisgis.core.ui.preferences.lookandfeel.OrbisGISIcon;
+import org.orbisgis.utils.I18N;
 
 public class WMSGeocatalogPlugIn extends AbstractPlugIn {
 
 	public boolean execute(PlugInContext context) throws Exception {
-		WMSConnectionPanel wmsConnection = new WMSConnectionPanel();
-		LayerConfigurationPanel layerConfiguration = new LayerConfigurationPanel(
-				wmsConnection);
+		LayerConfigurationPanel layerConfiguration = new LayerConfigurationPanel();
+                WMSConnectionPanel wmsConnection = new WMSConnectionPanel(layerConfiguration);
 		SRSPanel srsPanel = new SRSPanel(wmsConnection);
 		if (UIFactory.showDialog(new UIPanel[] { wmsConnection,
 				layerConfiguration, srsPanel })) {
 			WMSClient client = wmsConnection.getWMSClient();
 			String validImageFormat = getFirstImageFormat(client.getFormats());
 			if (validImageFormat == null) {
-				Services.getService(ErrorManager.class).error(
-						"Cannot find a suitable image format");
+				ErrorMessages
+						.error(I18N
+								.getString("orbisgis.errorMessages.wms.CannotFindImageFormat"));
 			} else {
 				Object[] layers = layerConfiguration.getSelectedLayers();
 				for (Object layer : layers) {
@@ -109,6 +109,7 @@ public class WMSGeocatalogPlugIn extends AbstractPlugIn {
 		return null;
 	}
 
+	@Override
 	public void initialize(PlugInContext context) throws Exception {
 		WorkbenchContext wbContext = context.getWorkbenchContext();
 		WorkbenchFrame frame = wbContext.getWorkbench().getFrame()
@@ -118,10 +119,11 @@ public class WMSGeocatalogPlugIn extends AbstractPlugIn {
 				this,
 				new String[] { Names.POPUP_GEOCATALOG_ADD,
 						Names.POPUP_GEOCATALOG_WMS },
-				Names.POPUP_GEOCATALOG_ADD, false,
-				OrbisGISIcon.GEOCATALOG_WMS, wbContext);
+				Names.POPUP_GEOCATALOG_ADD, false, OrbisGISIcon.GEOCATALOG_WMS,
+				wbContext);
 	}
 
+	@Override
 	public boolean isEnabled() {
 		return true;
 	}

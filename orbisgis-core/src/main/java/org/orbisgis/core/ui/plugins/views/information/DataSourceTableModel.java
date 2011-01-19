@@ -51,6 +51,8 @@ import javax.swing.table.TableModel;
 import org.gdms.data.DataSource;
 import org.gdms.driver.DriverException;
 import org.orbisgis.core.Services;
+import org.orbisgis.core.ui.pluginSystem.message.ErrorMessages;
+import org.orbisgis.utils.I18N;
 
 public class DataSourceTableModel implements TableModel {
 
@@ -82,8 +84,8 @@ public class DataSourceTableModel implements TableModel {
 		try {
 			return ds.getFieldName(columnIndex);
 		} catch (DriverException e) {
-			Services.getErrorManager().error("Cannot render table", e);
-			return "name!";
+			ErrorMessages.error(ErrorMessages.CannotRenderTable, e);
+			return I18N.getString("orbisgis.org.orbisgis.name") + "!";
 		}
 	}
 
@@ -91,7 +93,7 @@ public class DataSourceTableModel implements TableModel {
 		try {
 			return (int) ds.getRowCount();
 		} catch (DriverException e) {
-			Services.getErrorManager().error("Cannot render table", e);
+			ErrorMessages.error(ErrorMessages.CannotRenderTable, e);
 			return 0;
 		}
 	}
@@ -100,7 +102,7 @@ public class DataSourceTableModel implements TableModel {
 		try {
 			return ds.getFieldValue(rowIndex, columnIndex);
 		} catch (DriverException e) {
-			Services.getErrorManager().error("Cannot render table", e);
+			ErrorMessages.error(ErrorMessages.CannotRenderTable, e);
 			return null;
 		}
 	}
@@ -114,7 +116,7 @@ public class DataSourceTableModel implements TableModel {
 	}
 
 	public void setValueAt(Object value, int rowIndex, int columnIndex) {
-		throw new UnsupportedOperationException("Cannot edit table");
+		throw new UnsupportedOperationException(ErrorMessages.CannotEditTable);
 	}
 
 	public DataSource getDataSource() {

@@ -53,7 +53,8 @@ import org.gdms.driver.TableDescription;
 import org.orbisgis.core.sif.CRFlowLayout;
 import org.orbisgis.core.sif.CarriageReturn;
 import org.orbisgis.core.sif.UIPanel;
-import org.orbisgis.core.ui.geocatalog.newSourceWizards.db.ConnectionPanel;
+import org.orbisgis.core.ui.plugins.views.geocatalog.newSourceWizards.db.ConnectionPanel;
+import org.orbisgis.utils.I18N;
 
 public class SchemaSelectionPanel extends JPanel implements UIPanel {
 
@@ -87,7 +88,7 @@ public class SchemaSelectionPanel extends JPanel implements UIPanel {
 
 	@Override
 	public String getTitle() {
-		return "Set a table name and choose a schema...";
+		return I18N.getString("orbisgis.org.orbisgis.db.setTableAndSchema");
 	}
 
 	@Override
@@ -118,10 +119,14 @@ public class SchemaSelectionPanel extends JPanel implements UIPanel {
 
 				jPanelSchema = new JPanel();
 				jPanelSchema.setLayout(new CRFlowLayout());
-				jPanelSchema.add(new JLabel("Table name :"));
+				jPanelSchema.add(new JLabel(I18N
+						.getString("orbisgis.org.orbisgis.core.db.tableName")
+						+ " :"));
 				jPanelSchema.add(layerText);
 				jPanelSchema.add(new CarriageReturn());
-				jPanelSchema.add(new JLabel("Schema name :"));
+				jPanelSchema.add(new JLabel(I18N
+						.getString("orbisgis.org.orbisgis.core.db.schemaName")
+						+ " :"));
 				jPanelSchema.add(schemasCb);
 
 			} catch (SQLException e) {
@@ -153,9 +158,11 @@ public class SchemaSelectionPanel extends JPanel implements UIPanel {
 		String validateInput = null;
 
 		if (getSourceName().length() == 0) {
-			validateInput = "Please select a table name.";
+			validateInput = I18N
+					.getString("orbisgis.org.orbisgis.core.db.selectTableName");
 		} else if (ifTableExists(getSourceName())) {
-			validateInput = "The table already exists in the database.";
+			validateInput = I18N
+					.getString("orbisgis.org.orbisgis.core.db.tableAlreadyExistsInDb");
 		}
 		return validateInput;
 	}

@@ -38,6 +38,8 @@
 
 package org.orbisgis.core.ui.plugins.views.geocognition;
 
+import javax.swing.JOptionPane;
+
 import org.orbisgis.core.geocognition.Geocognition;
 import org.orbisgis.core.geocognition.GeocognitionElement;
 import org.orbisgis.core.ui.pluginSystem.AbstractPlugIn;
@@ -48,17 +50,24 @@ import org.orbisgis.core.ui.pluginSystem.workbench.Names;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchContext;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchFrame;
 import org.orbisgis.core.ui.preferences.lookandfeel.OrbisGISIcon;
+import org.orbisgis.utils.I18N;
 
 public class RemoveGeocognitionPlugIn extends AbstractPlugIn {
 
 	public boolean execute(PlugInContext context) throws Exception {
 		Geocognition geocog = getPlugInContext().getGeocognition();
 		GeocognitionElement[] elements = getPlugInContext().getElements();
-		if (elements.length == 0) {
-			execute(geocog, null);
-		} else {
-			for (GeocognitionElement element : elements) {
-				execute(geocog, element);
+		if (elements.length > 0) {
+			GeocognitionView geocognitionView = getPlugInContext()
+					.getWorkbenchContext().getWorkbench().getFrame()
+					.getGeocognitionView();
+			int answer = JOptionPane.showConfirmDialog(geocognitionView
+					.getComponent(), I18N.getString("orbisgis.org.orbisgis.core.ui.plugins.views.geocognition.removeElement"), Names.GEOCOGNITION,
+					JOptionPane.YES_NO_OPTION);
+			if (answer == JOptionPane.YES_OPTION) {
+				for (GeocognitionElement element : elements) {
+					execute(geocog, element);
+				}
 			}
 		}
 		return true;
@@ -67,7 +76,7 @@ public class RemoveGeocognitionPlugIn extends AbstractPlugIn {
 	public void initialize(PlugInContext context) throws Exception {
 		WorkbenchContext wbContext = context.getWorkbenchContext();
 		WorkbenchFrame frame = wbContext.getWorkbench().getFrame()
-				.getGeocognition();
+				.getGeocognitionView();
 		context.getFeatureInstaller().addPopupMenuItem(frame, this,
 				new String[] { Names.POPUP_GEOCOGNITION_REMOVE_PATH1 },
 				Names.POPUP_GEOCOGNITION_REMOVE_GROUP, false,

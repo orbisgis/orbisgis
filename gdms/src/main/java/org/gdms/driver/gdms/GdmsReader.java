@@ -98,6 +98,17 @@ public class GdmsReader {
 	}
 
         /**
+         * Checks if there is enough remaining bytes, i.e. if there is more than
+         * nb bytes left in the file
+         * @param nb
+         */
+        private void checkRemainingBytes(long nb) throws DriverException, IOException {
+                if (rbm.remaining() < nb) {
+                        throw new DriverException("The file is not a well formed GDMS file.");
+                }
+        }
+
+        /**
          * Retrieve the metadatas contained in the gdms file.
          * @throws IOException
          *                  If the file format is not supported
@@ -105,6 +116,17 @@ public class GdmsReader {
          *                  If there is a problem while reading the metadatas.
          */
 	public void readMetadata() throws IOException, DriverException {
+                // Be sure we are at the beginning of the file
+                rbm.position(0);
+
+                // Check for long-enough header
+                // version: 1 byte
+                // rowCount: 4 bytes
+                // fieldCount: 4 bytes
+                // min: 16 bytes
+                // max: 16 bytes
+                checkRemainingBytes(41);
+
 		// Read version
 		version = rbm.get();
 		if ((version != 2) && (version != 3)) {
@@ -124,19 +146,40 @@ public class GdmsReader {
 		String[] fieldNames = new String[fieldCount];
 		Type[] fieldTypes = new Type[fieldCount];
 		for (int i = 0; i < fieldCount; i++) {
+
+                        // check there is a name length : 4 bytes
+                        checkRemainingBytes(4);
+
 			// read name
 			int nameLength = rbm.getInt();
+
+                        // check that there is the name
+                        checkRemainingBytes(nameLength);
+
+                        // reading the name
 			byte[] nameBytes = new byte[nameLength];
 			rbm.get(nameBytes);
 			fieldNames[i] = new String(nameBytes);
+
+                        // check that there is the type
+                        // typeCode: 4 bytes
+                        // numConstraints: 4 bytes
+                        checkRemainingBytes(8);
 
 			// read type
 			int typeCode = rbm.getInt();
 			int numConstraints = rbm.getInt();
 			Constraint[] constraints = new Constraint[numConstraints];
 			for (int j = 0; j < numConstraints; j++) {
+                                // check that there is the info
+                                checkRemainingBytes(8);
+
 				int type = rbm.getInt();
 				int size = rbm.getInt();
+
+                                // check that there is the bytes
+                                checkRemainingBytes(size);
+
 				byte[] constraintBytes = new byte[size];
 				rbm.get(constraintBytes);
 				constraints[j] = ConstraintFactory.createConstraint(type,
@@ -152,15 +195,25 @@ public class GdmsReader {
 
 		this.rowIndexes = new int[rowCount];
 		if (version == 2) {
+                        // check there is enough rowIndexes
+                        // 4 bytes / index
+                        checkRemainingBytes(rowCount * 4);
+
 			// read row indexes after metadata
 			for (int i = 0; i < rowCount; i++) {
 				this.rowIndexes[i] = rbm.getInt();
 			}
 		} else if (version == GdmsDriver.VERSION_NUMBER) {
 			if (rowCount > 0) {
+                                checkRemainingBytes(4);
 				// read row indexes at the end of the file
 				int rowIndexesDir = rbm.getInt();
 				rbm.position(rowIndexesDir);
+
+                                // check there is enough rowIndexes
+                                // 4 bytes / index
+                                checkRemainingBytes(rowCount * 4);
+
 				for (int i = 0; i < rowCount; i++) {
 					this.rowIndexes[i] = rbm.getInt();
 				}

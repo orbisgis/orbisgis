@@ -148,9 +148,9 @@ public abstract class AbstractSelectionTool extends Selection {
 		Geometry selectionRect = p.getEnvelope();
 
 		ILayer activeLayer = getLayer(mc);
-		SpatialDataSourceDecorator ds = activeLayer.getDataSource();
+		SpatialDataSourceDecorator ds = activeLayer.getSpatialDataSource();
 		try {
-			Iterator<Integer> l = queryLayer(activeLayer.getDataSource(), p);
+			Iterator<Integer> l = queryLayer(activeLayer.getSpatialDataSource(), p);
 			while (l.hasNext()) {
 				int rowIndex = l.next();
 				Geometry g = (Geometry) ds.getGeometry(rowIndex);
@@ -158,7 +158,7 @@ public abstract class AbstractSelectionTool extends Selection {
 					if ((tm.getMouseModifiers() & MouseEvent.CTRL_DOWN_MASK) == MouseEvent.CTRL_DOWN_MASK) {
 						int[] newSel = toggleSelection(activeLayer
 								.getSelection(), rowIndex);
-
+                                                mc.checkSelectionRefresh(newSel, activeLayer.getSelection(), ds);
 						activeLayer.setSelection(newSel);
 						if (newSel.length > 0) {
 							transition("selection"); //$NON-NLS-1$
@@ -169,6 +169,7 @@ public abstract class AbstractSelectionTool extends Selection {
 						return;
 					} else {
 						int[] newSelection = new int[] { rowIndex };
+                                                mc.checkSelectionRefresh(newSelection, activeLayer.getSelection(), ds);
 						activeLayer.setSelection(newSelection);
 						transition("selection"); //$NON-NLS-1$
 						return;
@@ -221,7 +222,7 @@ public abstract class AbstractSelectionTool extends Selection {
 
 		Geometry selectionRect = rect.getEnvelope();
 
-		SpatialDataSourceDecorator ds = activeLayer.getDataSource();
+		SpatialDataSourceDecorator ds = activeLayer.getSpatialDataSource();
 		try {
 			ArrayList<Integer> newSelection = new ArrayList<Integer>();
 			Iterator<Integer> l = queryLayer(ds, rect);
@@ -245,6 +246,7 @@ public abstract class AbstractSelectionTool extends Selection {
 				for (int i = 0; i < newSelection.size(); i++) {
 					newSel = toggleSelection(newSel, newSelection.get(i));
 				}
+                                mc.checkSelectionRefresh(newSel, activeLayer.getSelection(), ds);
 				activeLayer.setSelection(newSel);
 
 			} else {
@@ -252,6 +254,7 @@ public abstract class AbstractSelectionTool extends Selection {
 				for (int i = 0; i < ns.length; i++) {
 					ns[i] = newSelection.get(i);
 				}
+                                mc.checkSelectionRefresh(ns, activeLayer.getSelection(), ds);
 				activeLayer.setSelection(ns);
 			}
 
@@ -300,7 +303,7 @@ public abstract class AbstractSelectionTool extends Selection {
 				if (!ToolUtilities.isActiveLayerEditable(mc)) {
 					throw new TransitionException(
 							I18N
-									.getText("orbisgis.core.ui.editors.map.tool.selectionTool_0")); //$NON-NLS-1$
+									.getString("orbisgis.core.ui.editors.map.tool.selectionTool_0")); //$NON-NLS-1$
 				}
 				selected.add(handler);
 				geom.set(handler.getGeometryIndex());
@@ -330,7 +333,7 @@ public abstract class AbstractSelectionTool extends Selection {
 	@Override
 	public void transitionTo_MakeMove(MapContext mc, ToolManager tm)
 			throws TransitionException, FinishedAutomatonException {
-		SpatialDataSourceDecorator ds = getLayer(mc).getDataSource();
+		SpatialDataSourceDecorator ds = getLayer(mc).getSpatialDataSource();
 		for (int i = 0; i < selected.size(); i++) {
 			Handler handler = selected.get(i);
 			Geometry g;
@@ -432,7 +435,7 @@ public abstract class AbstractSelectionTool extends Selection {
 		} catch (CannotChangeGeometryException e) {
 			throw new DrawingException(
 					I18N
-							.getText("org.orbisgis.core.ui.editors.map.tool.selectionTool_1") + e.getMessage()); //$NON-NLS-1$
+							.getString("org.orbisgis.core.ui.editors.map.tool.selectionTool_1") + e.getMessage()); //$NON-NLS-1$
 		}
 	}
 

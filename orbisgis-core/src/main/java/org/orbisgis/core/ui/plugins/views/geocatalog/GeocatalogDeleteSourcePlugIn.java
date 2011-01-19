@@ -49,6 +49,7 @@ import org.orbisgis.core.DataManager;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.ui.pluginSystem.AbstractPlugIn;
 import org.orbisgis.core.ui.pluginSystem.PlugInContext;
+import org.orbisgis.core.ui.pluginSystem.message.ErrorMessages;
 import org.orbisgis.core.ui.pluginSystem.workbench.Names;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchContext;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchFrame;
@@ -81,8 +82,8 @@ public class GeocatalogDeleteSourcePlugIn extends AbstractPlugIn {
 		try {
 			sourceManager.remove(currentNode);
 		} catch (IllegalStateException e) {
-			Services.getErrorManager().error(
-					"Cannot remove the resource: " + currentNode, e);
+			ErrorMessages.error(ErrorMessages.CannotRemoveSource + ": "
+					+ currentNode, e);
 		}
 	}
 

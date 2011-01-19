@@ -41,7 +41,6 @@ import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
-import org.gdms.sql.function.Argument;
 import org.gdms.sql.function.Arguments;
 import org.gdms.sql.function.Function;
 import org.gdms.sql.function.FunctionException;
@@ -50,11 +49,8 @@ public class Random implements Function {
 
 	public Value evaluate(DataSourceFactory dsf, Value[] args)
 			throws FunctionException {
-		if (args[0].isNull()) {
-			return ValueFactory.createNullValue();
-		} else {
+		
 			return ValueFactory.createValue(Math.random());
-		}
 	}
 
 	public String getName() {

@@ -45,7 +45,6 @@ import java.io.IOException;
 import javax.imageio.ImageIO;
 import javax.swing.JOptionPane;
 
-import org.orbisgis.core.Services;
 import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.layerModel.MapContext;
 import org.orbisgis.core.sif.SaveFilePanel;
@@ -53,17 +52,20 @@ import org.orbisgis.core.sif.UIFactory;
 import org.orbisgis.core.ui.editors.map.tool.Rectangle2DDouble;
 import org.orbisgis.core.ui.pluginSystem.AbstractPlugIn;
 import org.orbisgis.core.ui.pluginSystem.PlugInContext;
+import org.orbisgis.core.ui.pluginSystem.message.ErrorMessages;
 import org.orbisgis.core.ui.pluginSystem.workbench.Names;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchContext;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchFrame;
-import org.orbisgis.core.ui.plugins.views.MapEditorPlugIn;
+import org.orbisgis.core.ui.plugins.views.mapEditor.MapEditorPlugIn;
+import org.orbisgis.utils.I18N;
 
 import com.vividsolutions.jts.geom.Envelope;
 
 public class ExportMapAsImagePlugIn extends AbstractPlugIn {
 
 	public boolean execute(PlugInContext context) throws Exception {
-		MapEditorPlugIn mapEditor = (MapEditorPlugIn) getPlugInContext().getActiveEditor();
+		MapEditorPlugIn mapEditor = (MapEditorPlugIn) getPlugInContext()
+				.getActiveEditor();
 		BufferedImage image = mapEditor.getMapTransform().getImage();
 		MapContext mc = (MapContext) mapEditor.getElement().getObject();
 
@@ -80,8 +82,8 @@ public class ExportMapAsImagePlugIn extends AbstractPlugIn {
 		Envelope intersectEnv = envelope.intersection(mapEditor
 				.getMapTransform().getAdjustedExtent());
 
-		Rectangle2DDouble layerPixelEnvelope = mapEditor.getMapTransform().toPixel(
-				intersectEnv);
+		Rectangle2DDouble layerPixelEnvelope = mapEditor.getMapTransform()
+				.toPixel(intersectEnv);
 
 		BufferedImage subImg = image.getSubimage((int) layerPixelEnvelope
 				.getMinX(), (int) layerPixelEnvelope.getMinY(),
@@ -90,7 +92,7 @@ public class ExportMapAsImagePlugIn extends AbstractPlugIn {
 
 		final SaveFilePanel outfilePanel = new SaveFilePanel(
 				"org.orbisgis.core.ui.editors.map.actions.ExportMapAsImage",
-				"Choose a file format");
+				I18N.getString("orbisgis.core.file.chooseFileFormat"));
 		outfilePanel.addFilter("png", "Portable Network Graphics (*.png)");
 
 		if (UIFactory.showDialog(outfilePanel)) {
@@ -100,10 +102,11 @@ public class ExportMapAsImagePlugIn extends AbstractPlugIn {
 			try {
 				ImageIO.write(subImg, "png", savedFile);
 
-				JOptionPane.showMessageDialog(null, "The file has been saved.");
+				JOptionPane.showMessageDialog(null, I18N
+						.getString("orbisgis.core.file.fileSaved"));
 
 			} catch (IOException e) {
-				Services.getErrorManager().error("Cannot write image", e);
+				ErrorMessages.error(ErrorMessages.CannotWriteImage, e);
 			}
 
 		}
@@ -124,7 +127,7 @@ public class ExportMapAsImagePlugIn extends AbstractPlugIn {
 
 	public boolean isEnabled() {
 		MapEditorPlugIn mapEditor = null;
-		if((mapEditor=getPlugInContext().getMapEditor()) != null){
+		if ((mapEditor = getPlugInContext().getMapEditor()) != null) {
 			MapContext map = (MapContext) mapEditor.getElement().getObject();
 			return map.getLayerModel().getLayerCount() > 0;
 		}

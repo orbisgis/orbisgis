@@ -49,6 +49,7 @@ import java.util.Map;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 
+import org.orbisgis.core.OrbisGISPersitenceConfig;
 import org.orbisgis.core.PersistenceException;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.ui.window.persistence.Property;
@@ -63,10 +64,9 @@ public class EPWindowHelper {
 	private static IWindow wnd = null;
 
 	public static void showInitial() {
-		// TODO (pyf): delete Extension build		
 		wnd = new OrbisGISFrame();
 		register("org.orbisgis.MainFrame", wnd);
-		wnd.showWindow();			
+		wnd.showWindow();
 	}
 
 	private static void register(String id, IWindow wnd) {
@@ -75,7 +75,7 @@ public class EPWindowHelper {
 			wndLlist = new ArrayList<IWindow>();
 		}
 		wndLlist.add(wnd);
-		if(windowsById.get(id) == null)
+		if (windowsById.get(id) == null)
 			windowsById.put(id, wndLlist);
 	}
 
@@ -119,10 +119,11 @@ public class EPWindowHelper {
 
 		try {
 			JAXBContext jc = JAXBContext.newInstance(
-					"org.orbisgis.core.ui.window.persistence",
+					OrbisGISPersitenceConfig.WINDOW_PERSISTENCE_FILE,
 					EPWindowHelper.class.getClassLoader());
-			Workspace ws = (Workspace) Services.getService(Workspace.class);
-			File file = ws.getFile("windows.xml");
+			Workspace ws = Services.getService(Workspace.class);
+			File file = ws
+					.getFile(OrbisGISPersitenceConfig.WINDOW_CREATED_FILE);
 
 			PrintWriter printWriter = new PrintWriter(file);
 			jc.createMarshaller().marshal(wnds, printWriter);
@@ -150,11 +151,12 @@ public class EPWindowHelper {
 
 	public static void loadStatus() {
 		cleanWindows();
-		Workspace ws = (Workspace) Services.getService(Workspace.class);
-		File file = ws.getFile("windows.xml");
+		Workspace ws = Services.getService(Workspace.class);
+		File file = ws.getFile(OrbisGISPersitenceConfig.WINDOW_CREATED_FILE);
 		if (file.exists()) {
 			try {
-				JAXBContext jc = JAXBContext.newInstance("org.orbisgis.core.ui.window.persistence",
+				JAXBContext jc = JAXBContext.newInstance(
+						OrbisGISPersitenceConfig.WINDOW_PERSISTENCE_FILE,
 						EPWindowHelper.class.getClassLoader());
 				Windows wnds = (Windows) jc.createUnmarshaller()
 						.unmarshal(file);

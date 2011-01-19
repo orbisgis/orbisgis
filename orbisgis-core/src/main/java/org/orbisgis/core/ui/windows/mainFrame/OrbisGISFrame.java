@@ -67,6 +67,7 @@ import net.infonode.docking.theme.ShapedGradientDockingTheme;
 
 import org.apache.log4j.Logger;
 import org.orbisgis.core.ApplicationInfo;
+import org.orbisgis.core.OrbisGISPersitenceConfig;
 import org.orbisgis.core.PersistenceException;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.ui.components.job.JobPopup;
@@ -74,20 +75,21 @@ import org.orbisgis.core.ui.editor.EditorListener;
 import org.orbisgis.core.ui.editor.IEditor;
 import org.orbisgis.core.ui.editorViews.toc.Toc;
 import org.orbisgis.core.ui.editors.table.TableComponent;
-import org.orbisgis.core.ui.geocognition.GeocognitionView;
+import org.orbisgis.core.ui.pluginSystem.message.ErrorMessages;
 import org.orbisgis.core.ui.pluginSystem.workbench.Names;
 import org.orbisgis.core.ui.pluginSystem.workbench.OrbisWorkbench;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchContext;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchToolBar;
-import org.orbisgis.core.ui.plugins.actions.ExitPlugIn;
-import org.orbisgis.core.ui.plugins.views.GeoCatalogViewPlugIn;
-import org.orbisgis.core.ui.plugins.views.GeocognitionViewPlugIn;
-import org.orbisgis.core.ui.plugins.views.MapEditorPlugIn;
-import org.orbisgis.core.ui.plugins.views.TableEditorPlugIn;
-import org.orbisgis.core.ui.plugins.views.TocViewPlugIn;
+import org.orbisgis.core.ui.plugins.orbisgisFrame.ExitPlugIn;
 import org.orbisgis.core.ui.plugins.views.ViewDecorator;
 import org.orbisgis.core.ui.plugins.views.editor.EditorManager;
 import org.orbisgis.core.ui.plugins.views.geocatalog.Catalog;
+import org.orbisgis.core.ui.plugins.views.geocatalog.GeoCatalogViewPlugIn;
+import org.orbisgis.core.ui.plugins.views.geocognition.GeocognitionView;
+import org.orbisgis.core.ui.plugins.views.geocognition.GeocognitionViewPlugIn;
+import org.orbisgis.core.ui.plugins.views.mapEditor.MapEditorPlugIn;
+import org.orbisgis.core.ui.plugins.views.tableEditor.TableEditorPlugIn;
+import org.orbisgis.core.ui.plugins.views.toc.TocViewPlugIn;
 import org.orbisgis.core.ui.preferences.lookandfeel.OrbisGISIcon;
 import org.orbisgis.core.ui.window.IWindow;
 import org.orbisgis.core.workspace.Workspace;
@@ -96,7 +98,6 @@ import org.orbisgis.utils.I18N;
 public class OrbisGISFrame extends JFrame implements IWindow {
 
 	private static final Logger logger = Logger.getLogger(OrbisGISFrame.class);
-	private static final String LAYOUT_PERSISTENCE_FILE = "org.orbisgis.core.ui.ViewLayout.obj";
 	private JMenuBar actionMenuBar;
 	private JobPopup jobPopup;
 
@@ -189,11 +190,21 @@ public class OrbisGISFrame extends JFrame implements IWindow {
 				.getPanel();
 	}
 
-	public GeocognitionView getGeocognition() {
+	/**
+	 * Get the GeoCognition view
+	 * 
+	 * @return {@link GeocognitionView}
+	 */
+	public GeocognitionView getGeocognitionView() {
 		return ((GeocognitionViewPlugIn) getViewDecorator(Names.GEOCOGNITION)
 				.getView()).getPanel();
 	}
 
+	/**
+	 * Get the GeoCatalogView
+	 * 
+	 * @return {@link Catalog}
+	 */
 	public Catalog getGeocatalog() {
 		return ((GeoCatalogViewPlugIn) getViewDecorator(Names.GEOCATALOG)
 				.getView()).getPanel();
@@ -265,7 +276,7 @@ public class OrbisGISFrame extends JFrame implements IWindow {
 		ApplicationInfo ai = (ApplicationInfo) Services
 				.getService(ApplicationInfo.class);
 
-		this.setTitle(I18N.getText("orbisgis.platform") + " - "
+		this.setTitle(I18N.getString("orbisgis.platform") + " - "
 				+ ai.getVersionNumber() + " - " + ai.getVersionName());
 
 		this.setIconImage(OrbisGISIcon.ORBISGIS_LOGOMINI.getImage());
@@ -287,7 +298,7 @@ public class OrbisGISFrame extends JFrame implements IWindow {
 		});
 
 		/* Job popup at bootom right to follow processes loading */
-		jobPopup = new JobPopup();
+		jobPopup = new JobPopup(this);
 		jobPopup.initialize();
 
 		// A panel to display the statustoolbar on the left side and the
@@ -299,7 +310,6 @@ public class OrbisGISFrame extends JFrame implements IWindow {
 		jPanel.add(getViewToolBar(), BorderLayout.EAST);
 
 		this.getContentPane().add(jPanel, BorderLayout.SOUTH);
-
 	}
 
 	private void initializeViews() {
@@ -353,7 +363,7 @@ public class OrbisGISFrame extends JFrame implements IWindow {
 		if (!perspectiveLoaded) {
 			// Load default perspective
 			loadPerspective(OrbisGISFrame.class
-					.getResourceAsStream(LAYOUT_PERSISTENCE_FILE));
+					.getResourceAsStream(OrbisGISPersitenceConfig.LAYOUT_PERSISTENCE_FILE));
 		}
 		this.setVisible(true);
 
@@ -439,26 +449,39 @@ public class OrbisGISFrame extends JFrame implements IWindow {
 
 		this.getContentPane().add(root, BorderLayout.CENTER);
 
+		loadWorkspacePerspective();
+
+	}
+
+	/**
+	 * Method to load the workspace perspective used by docking window.
+	 */
+	private void loadWorkspacePerspective() {
 		Workspace ws = (Workspace) Services.getService(Workspace.class);
 		FileInputStream layoutStream;
 		try {
 			layoutStream = new FileInputStream(ws
-					.getFile(LAYOUT_PERSISTENCE_FILE));
+					.getFile(OrbisGISPersitenceConfig.LAYOUT_PERSISTENCE_FILE));
 			loadPerspective(layoutStream);
 		} catch (FileNotFoundException e) {
 			logger.error("Could not recover perspective, missing file", e);
 		}
 	}
 
-	private void loadPerspective(InputStream layoutStream) {
+	public void loadPerspective(InputStream layoutStream) {
 		try {
 			ObjectInputStream ois = new ObjectInputStream(layoutStream);
 			root.read(ois);
 			perspectiveLoaded = true;
 			ois.close();
 		} catch (Exception e) {
-			Services.getErrorManager().error(
-					"Cannot recover the layout of the window", e);
+			Services
+					.getErrorManager()
+					.error(
+
+							I18N
+									.getString("orbisgis.org.orbisgis.layout.cannotRecoverLayout"),
+							e);
 		}
 	}
 
@@ -466,7 +489,7 @@ public class OrbisGISFrame extends JFrame implements IWindow {
 		try {
 			Workspace ws = (Workspace) Services.getService(Workspace.class);
 			FileOutputStream fos = new FileOutputStream(ws
-					.getFile(LAYOUT_PERSISTENCE_FILE));
+					.getFile(OrbisGISPersitenceConfig.LAYOUT_PERSISTENCE_FILE));
 			ObjectOutputStream oos = new ObjectOutputStream(fos);
 			root.write(oos);
 			oos.close();
@@ -498,8 +521,8 @@ public class OrbisGISFrame extends JFrame implements IWindow {
 					vd.loadStatus(activeEditor, em.getEditorId(activeEditor));
 					return vd.getDockingView();
 				} catch (Throwable t) {
-					Services.getErrorManager().error(
-							"Cannot recover view " + id, t);
+					ErrorMessages.error(ErrorMessages.CannotRecoverView + " "
+							+ id, t);
 				}
 			}
 

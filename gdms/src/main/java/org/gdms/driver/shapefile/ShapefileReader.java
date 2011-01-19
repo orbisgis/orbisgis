@@ -94,6 +94,8 @@ public class ShapefileReader {
 
 	private ShapeType fileShapeType = ShapeType.UNDEFINED;
 
+        private int srid = -1;
+
 	/**
 	 * Creates a new instance of ShapeFile.
 	 *
@@ -208,7 +210,11 @@ public class ShapefileReader {
 					+ fileShapeType + " to " + recordType);
 		}
 
-		return handler.read(buffer, recordType);
+		Geometry g = handler.read(buffer, recordType);
+                if (g != null && srid != -1) {
+                        g.setSRID(srid);
+                }
+                return g;
 	}
 
 	/**
@@ -218,4 +224,11 @@ public class ShapefileReader {
 	public void setHandler(ShapeHandler handler) {
 		this.handler = handler;
 	}
+
+        /**
+         * @param srid the srid to set
+         */
+        public void setSrid(int srid) {
+                this.srid = srid;
+        }
 }

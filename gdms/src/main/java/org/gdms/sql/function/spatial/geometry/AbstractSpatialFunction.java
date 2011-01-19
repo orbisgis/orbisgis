@@ -42,12 +42,13 @@ import org.gdms.data.values.Value;
 import org.gdms.sql.function.Function;
 
 public abstract class AbstractSpatialFunction implements Function {
-	final public Type getType(Type[] types) {
-		return TypeFactory.createType(Type.GEOMETRY);
-	}
-	
-	@Override
-	public Value getAggregateResult() {
-		return null;
-	}
+
+        final public Type getType(Type[] types) {
+                return TypeFactory.createType(Type.GEOMETRY);
+        }
+
+        @Override
+        public Value getAggregateResult() {
+                return null;
+        }
 }

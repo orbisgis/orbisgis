@@ -85,10 +85,8 @@ import org.orbisgis.core.sif.UIFactory;
 import org.orbisgis.core.ui.components.jlist.OGList;
 import org.orbisgis.core.ui.components.sif.AskValue;
 import org.orbisgis.core.ui.components.text.JButtonTextField;
-import org.orbisgis.core.ui.geocatalog.newSourceWizards.SourceRenderer;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchFrame;
 import org.orbisgis.core.ui.plugins.views.geocatalog.filters.AllExcludeSytemTableFilter;
-import org.orbisgis.core.ui.plugins.views.geocatalog.filters.AllFilter;
 import org.orbisgis.core.ui.plugins.views.geocatalog.filters.AlphanumericFilter;
 import org.orbisgis.core.ui.plugins.views.geocatalog.filters.DBsFilter;
 import org.orbisgis.core.ui.plugins.views.geocatalog.filters.FilesFilter;
@@ -99,6 +97,7 @@ import org.orbisgis.core.ui.plugins.views.geocatalog.filters.RasterFilter;
 import org.orbisgis.core.ui.plugins.views.geocatalog.filters.TableSystemFilter;
 import org.orbisgis.core.ui.plugins.views.geocatalog.filters.VectorialFilter;
 import org.orbisgis.core.ui.plugins.views.geocatalog.filters.WMSFilter;
+import org.orbisgis.core.ui.plugins.views.geocatalog.newSourceWizards.SourceRenderer;
 import org.orbisgis.core.ui.preferences.lookandfeel.OrbisGISIcon;
 import org.orbisgis.utils.CollectionUtils;
 import org.orbisgis.utils.I18N;
@@ -134,6 +133,8 @@ public class Catalog extends JPanel implements DragGestureListener,
 	private DefaultListModel tagListModel;
 
 	private org.orbisgis.core.ui.pluginSystem.menu.MenuTree menuTree;
+
+        private HashMap<String, EditableSource> editingSources;
 
 	@Override
 	public org.orbisgis.core.ui.pluginSystem.menu.MenuTree getMenuTreePopup() {
@@ -189,16 +190,18 @@ public class Catalog extends JPanel implements DragGestureListener,
 		});
 		listModel = new SourceListModel();
 		lstSources.setModel(listModel);
+
 		this.setLayout(new BorderLayout());
 		this.add(new JScrollPane(lstSources), BorderLayout.CENTER);
 		this.add(getNorthPanel(), BorderLayout.NORTH);
-		SourceListRenderer cellRenderer = new SourceListRenderer();
+		SourceListRenderer cellRenderer = new SourceListRenderer(this);
 		cellRenderer.setRenderers(new SourceRenderer[0]);
 		lstSources.setCellRenderer(cellRenderer);
 
 		dragSource = DragSource.getDefaultDragSource();
 		dragSource.createDefaultDragGestureRecognizer(lstSources,
 				DnDConstants.ACTION_COPY_OR_MOVE, this);
+                editingSources = new HashMap<String, EditableSource>();
 
 	}
 
@@ -274,7 +277,7 @@ public class Catalog extends JPanel implements DragGestureListener,
 				.add(
 						new JLabel(
 								I18N
-										.getText("orbisgis.org.orbisgis.core.ui.plugins.views.geocatalog.openFilter")),
+										.getString("orbisgis.org.orbisgis.core.ui.plugins.views.geocatalog.openFilter")),
 						c);
 		c.fill = GridBagConstraints.BOTH;
 		c.weightx = 0.5;
@@ -293,76 +296,69 @@ public class Catalog extends JPanel implements DragGestureListener,
 		ret
 				.setBorder(BorderFactory
 						.createTitledBorder(I18N
-								.getText("orbisgis.org.orbisgis.core.ui.plugins.views.geocatalog.filters")));
+								.getString("orbisgis.org.orbisgis.core.ui.plugins.views.geocatalog.filters")));
 		ret.setLayout(new BorderLayout());
 
 		GeocatalogFilterDecorator filter = new GeocatalogFilterDecorator(
-				"geocatalog.filters.AllFilter",
-				I18N
-						.getText("orbisgis.org.orbisgis.core.ui.plugins.views.geocatalog.allFilter"),
-				new AllFilter());
-		listModel.getFilters().add(filter);
-
-		filter = new GeocatalogFilterDecorator(
 				"geocatalog.filters.AllExcludeSystemTable",
 				I18N
-						.getText("orbisgis.org.orbisgis.core.ui.plugins.views.geocatalog.allExceptFilter"),
+						.getString("orbisgis.org.orbisgis.core.ui.plugins.views.geocatalog.allExceptFilter"),
 				new AllExcludeSytemTableFilter());
 		listModel.getFilters().add(filter);
 
 		filter = new GeocatalogFilterDecorator(
 				"geocatalog.filters.GeoFilter",
 				I18N
-						.getText("orbisgis.org.orbisgis.core.ui.plugins.views.geocatalog.geoFilter"),
+						.getString("orbisgis.org.orbisgis.core.ui.plugins.views.geocatalog.geoFilter"),
 				new GeoFilter());
 		listModel.getFilters().add(filter);
 
 		filter = new GeocatalogFilterDecorator(
 				"geocatalog.filters.FilesFilter",
 				I18N
-						.getText("orbisgis.org.orbisgis.core.ui.plugins.views.geocatalog.fileFilter"),
+						.getString("orbisgis.org.orbisgis.core.ui.plugins.views.geocatalog.fileFilter"),
 				new FilesFilter());
 		listModel.getFilters().add(filter);
 
 		filter = new GeocatalogFilterDecorator(
 				"geocatalog.filters.DBsFilter",
 				I18N
-						.getText("orbisgis.org.orbisgis.core.ui.plugins.views.geocatalog.dbFilter"),
+						.getString("orbisgis.org.orbisgis.core.ui.plugins.views.geocatalog.dbFilter"),
 				new DBsFilter());
 		listModel.getFilters().add(filter);
 
 		filter = new GeocatalogFilterDecorator(
 				"geocatalog.filters.AlphanumericFilter",
 				I18N
-						.getText("orbisgis.org.orbisgis.core.ui.plugins.views.geocatalog.alphanumericFilter"),
+						.getString("orbisgis.org.orbisgis.core.ui.plugins.views.geocatalog.alphanumericFilter"),
 				new AlphanumericFilter());
 		listModel.getFilters().add(filter);
 
 		filter = new GeocatalogFilterDecorator(
 				"geocatalog.filters.WMSFilter",
 				I18N
-						.getText("orbisgis.org.orbisgis.core.ui.plugins.views.geocatalog.wmsFilter"),
+						.getString("orbisgis.org.orbisgis.core.ui.plugins.views.geocatalog.wmsFilter"),
 				new WMSFilter());
 		listModel.getFilters().add(filter);
 
 		filter = new GeocatalogFilterDecorator(
 				"geocatalog.filters.RasterFilter",
 				I18N
-						.getText("orbisgis.org.orbisgis.core.ui.plugins.views.geocatalog.rasterFilter"),
+						.getString("orbisgis.org.orbisgis.core.ui.plugins.views.geocatalog.rasterFilter"),
 				new RasterFilter());
 		listModel.getFilters().add(filter);
 
 		filter = new GeocatalogFilterDecorator(
 				"geocatalog.filters.VectorialFilter",
 				I18N
-						.getText("orbisgis.org.orbisgis.core.ui.plugins.views.geocatalog.vectorialFilter"),
+						.getString("orbisgis.org.orbisgis.core.ui.plugins.views.geocatalog.vectorialFilter"),
 				new VectorialFilter());
 		listModel.getFilters().add(filter);
 
 		filter = new GeocatalogFilterDecorator(
 				"geocatalog.filters.SystemTableFilter",
 				I18N
-						.getText("orbisgis.org.orbisgis.core.ui.plugins.views.geocatalog.systemTableFilter"),
+						.getString("orbisgis.org.orbisgis.core.ui.plugins.views.geocatalog.systemTableFilter"),
 				new TableSystemFilter());
 		listModel.getFilters().add(filter);
 
@@ -399,7 +395,7 @@ public class Catalog extends JPanel implements DragGestureListener,
 		ret
 				.setBorder(BorderFactory
 						.createTitledBorder(I18N
-								.getText("orbisgis.org.orbisgis.core.ui.plugins.views.geocatalog.tags")));
+								.getString("orbisgis.org.orbisgis.core.ui.plugins.views.geocatalog.tags")));
 		ret.setLayout(new BorderLayout());
 		lstTags = new JList();
 		tagListModel = new DefaultListModel();
@@ -448,10 +444,11 @@ public class Catalog extends JPanel implements DragGestureListener,
 				if (AC_BTN_ADD_TAG.equals(e.getActionCommand())) {
 					AskValue av = new AskValue(
 							I18N
-									.getText("orbisgis.org.orbisgis.core.ui.plugins.views.geocatalog.newTag"),
-									I18N
-									.getText("orbisgis.org.orbisgis.core.ui.message.askValue.sql"), I18N
-									.getText("orbisgis.org.orbisgis.core.ui.message.askValue.error"));
+									.getString("orbisgis.org.orbisgis.core.ui.plugins.views.geocatalog.newTag"),
+							I18N
+									.getString("orbisgis.org.orbisgis.core.ui.message.askValue.sql"),
+							I18N
+									.getString("orbisgis.org.orbisgis.core.ui.message.askValue.error"));
 					if (UIFactory.showDialog(av)) {
 						String tagText = av.getValue();
 						addTag(tagText);
@@ -486,7 +483,7 @@ public class Catalog extends JPanel implements DragGestureListener,
 		if (!tagSources.isEmpty() && lstSources.getSelectedIndices().length > 0) {
 			JMenu menu = new JMenu(
 					I18N
-							.getText("orbisgis.org.orbisgis.core.ui.plugins.views.geocatalog.tag"));
+							.getString("orbisgis.org.orbisgis.core.ui.plugins.views.geocatalog.tag"));
 			Iterator<String> tagsIterator = tagSources.keySet().iterator();
 			while (tagsIterator.hasNext()) {
 				String tag = tagsIterator.next();
@@ -599,6 +596,29 @@ public class Catalog extends JPanel implements DragGestureListener,
 		selectionModel.setValueIsAdjusting(false);
 	}
 
+        public boolean isEditingSource(String source) {
+                EditableSource s = editingSources.get(source);
+                return s != null && s.isEditing();
+        }
+
+        public EditableSource getEditingSource(String name) {
+                return editingSources.get(name);
+        }
+
+        /**
+         * @param currentEditedSource the currentEditedSource to add
+         */
+        public void addEditingSource(String currentEditedSource, EditableSource source) {
+                editingSources.put(currentEditedSource, source);
+        }
+
+        public void removeEditingSource(String currentEditedSource) {
+                EditableSource s = editingSources.get(currentEditedSource);
+                if (s != null) {
+                        s.setEditing(false);
+                }
+        }
+
 	public class TagFilter implements IFilter {
 
 		private String tag;
@@ -689,5 +709,13 @@ public class Catalog extends JPanel implements DragGestureListener,
 			}
 		}
 		selectionModel.setValueIsAdjusting(false);
+	}
+
+	/**
+	 * Get the filters stored in a JList
+	 * @return {@link JList}
+	 */
+	public JList getListFilters() {
+		return lstFilters;
 	}
 }

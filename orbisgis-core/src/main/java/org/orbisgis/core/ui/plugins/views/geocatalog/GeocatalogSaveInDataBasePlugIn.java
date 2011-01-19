@@ -38,21 +38,22 @@
 
 package org.orbisgis.core.ui.plugins.views.geocatalog;
 
-import org.gdms.source.Source;
 import org.gdms.source.SourceManager;
 import org.orbisgis.core.DataManager;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.background.BackgroundManager;
 import org.orbisgis.core.sif.UIFactory;
 import org.orbisgis.core.sif.UIPanel;
-import org.orbisgis.core.ui.geocatalog.newSourceWizards.db.ConnectionPanel;
 import org.orbisgis.core.ui.pluginSystem.AbstractPlugIn;
 import org.orbisgis.core.ui.pluginSystem.PlugInContext;
+import org.orbisgis.core.ui.pluginSystem.PlugInContext.SelectionAvailability;
+import org.orbisgis.core.ui.pluginSystem.PlugInContext.SourceAvailability;
 import org.orbisgis.core.ui.pluginSystem.workbench.Names;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchContext;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchFrame;
 import org.orbisgis.core.ui.plugins.toc.ExportInDatabaseOperation;
 import org.orbisgis.core.ui.plugins.toc.SchemaSelectionPanel;
+import org.orbisgis.core.ui.plugins.views.geocatalog.newSourceWizards.db.ConnectionPanel;
 
 public class GeocatalogSaveInDataBasePlugIn extends AbstractPlugIn {
 
@@ -102,28 +103,8 @@ public class GeocatalogSaveInDataBasePlugIn extends AbstractPlugIn {
 	}
 
 	public boolean isEnabled() {
-
-		WorkbenchContext workbenchContext = getPlugInContext()
-				.getWorkbenchContext();
-		String[] res = workbenchContext.getWorkbench().getFrame()
-				.getGeocatalog().getSelectedSources();
-		DataManager dataManager = Services.getService(DataManager.class);
-		SourceManager sourceManager = dataManager.getSourceManager();
-		boolean acceptsAllSources = false;
-
-		if (res.length > 0) {
-
-			for (String src : res) {
-				Source source = sourceManager.getSource(src);
-				int type = source.getType();
-				if ((type & SourceManager.WMS) == SourceManager.WMS) {
-					acceptsAllSources = false;
-				} else {
-					acceptsAllSources = true;
-				}
-			}
-		}
-
-		return acceptsAllSources;
+                return getPlugInContext().checkLayerAvailability(
+				new SelectionAvailability[] { SelectionAvailability.SUPERIOR }, 0,
+				new SourceAvailability[] { SourceAvailability.WMS, SourceAvailability.RASTER });
 	}
 }

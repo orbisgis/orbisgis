@@ -27,6 +27,7 @@ import org.orbisgis.core.geocognition.persistence.GeocognitionNode;
 import org.orbisgis.core.geocognition.persistence.NodeContent;
 import org.orbisgis.progress.IProgressMonitor;
 import org.orbisgis.progress.NullProgressMonitor;
+import org.orbisgis.utils.I18N;
 
 public class DefaultGeocognition implements Geocognition {
 
@@ -44,7 +45,7 @@ public class DefaultGeocognition implements Geocognition {
 
 	public DefaultGeocognition() {
 		this.root = new FolderElement(this);
-		(this).root.setId("");
+		(this).root.setId(""); //$NON-NLS-1$
 	}
 
 	@Override
@@ -66,7 +67,7 @@ public class DefaultGeocognition implements Geocognition {
 	public void read(InputStream is) throws PersistenceException {
 		clear();
 		readIn(root, is);
-		root.setId("");
+		root.setId(""); //$NON-NLS-1$
 	}
 
 	private void readIn(GeocognitionElement rootElement, InputStream is)
@@ -90,7 +91,7 @@ public class DefaultGeocognition implements Geocognition {
 					xmlRoot = upgradeNonVersioned(is);
 				} catch (TransformerException e) {
 					Services.getService(ErrorManager.class).error(
-							"Cannot upgrade geocognition to new version", e);
+							I18N.getString("orbisgis.org.orbisgis.defaultGeocognition.cannotUpgradeGeocognition"), e); //$NON-NLS-1$
 				}
 			}
 			GeocognitionElement readRoot = fromXML(xmlRoot);
@@ -99,9 +100,9 @@ public class DefaultGeocognition implements Geocognition {
 			}
 			rootElement.setId(readRoot.getId());
 		} catch (JAXBException e) {
-			throw new PersistenceException("Cannot read geocognition", e);
+			throw new PersistenceException(I18N.getString("orbisgis.org.orbisgis.defaultGeocognition.cannotReadGeocognition"), e); //$NON-NLS-1$
 		} catch (IOException e) {
-			throw new PersistenceException("Cannot read geocognition file", e);
+			throw new PersistenceException(I18N.getString("orbisgis.org.orbisgis.defaultGeocognition.cannotReadGeocognitionFile"), e); //$NON-NLS-1$
 		}
 	}
 
@@ -114,11 +115,11 @@ public class DefaultGeocognition implements Geocognition {
 
 	private GeocognitionNode upgradeNonVersioned(InputStream is)
 			throws TransformerException, JAXBException {
-		logger.debug("Non versioned geocognition. Upgrading...");
+		logger.debug(I18N.getString("orbisgis.org.orbisgis.defaultGeocognition.nonVersionnedGeocognitionUpgrade")); //$NON-NLS-1$
 		TransformerFactory xformFactory = TransformerFactory.newInstance();
 		Transformer transformer = xformFactory.newTransformer(new StreamSource(
 				this.getClass().getResourceAsStream(
-						"/org/orbisgis/core/geocognition/Unversioned.xsl")));
+						"/org/orbisgis/core/geocognition/Unversioned.xsl"))); //$NON-NLS-1$
 		ByteArrayOutputStream bos = new ByteArrayOutputStream();
 		StreamResult result = new StreamResult(bos);
 		transformer.transform(new StreamSource(is), result);
@@ -134,7 +135,7 @@ public class DefaultGeocognition implements Geocognition {
 			for (GeocognitionElementFactory factory : factories) {
 				String contextPath = factory.getJAXBContextPath();
 				if (contextPath != null) {
-					classpath += ":" + contextPath;
+					classpath += ":" + contextPath; //$NON-NLS-1$
 				}
 			}
 			jaxbContext = JAXBContext.newInstance(classpath,
@@ -167,23 +168,23 @@ public class DefaultGeocognition implements Geocognition {
 					typeId));
 			if (factory == null) {
 				Services.getErrorManager().warning(
-						"Non recognized geocognition element: "
-								+ xmlRoot.getId() + ": " + typeId
-								+ ". Element won't be available.");
+						I18N.getString("orbisgis.org.orbisgis.defaultGeocognition.UnrecognizedGeocognitionElement") //$NON-NLS-1$
+								+ xmlRoot.getId() + ": " + typeId //$NON-NLS-1$
+								+ I18N.getString("orbisgis.org.orbisgis.defaultGeocognition.elementwontAvailable")); //$NON-NLS-1$
 			} else {
 				try {
 					ret = new LeafElement(factory.createElementFromXML(
 							xmlObject, typeId));
 				} catch (PersistenceException e) {
 					Services.getErrorManager().warning(
-							"Cannot restore element: " + xmlRoot.getId() + ": "
-									+ typeId + ". Element won't be available.",
+							I18N.getString("orbisgis.org.orbisgis.defaultGeocognition.cannotRestoreElement") + xmlRoot.getId() + ": " //$NON-NLS-1$ //$NON-NLS-2$
+									+ typeId + I18N.getString("orbisgis.org.orbisgis.defaultGeocognition.elementwontAvailable"), //$NON-NLS-1$
 							e);
 				} catch (RuntimeException e) {
 					Services.getErrorManager().warning(
-							"Non recognized geocognition content: "
-									+ xmlRoot.getId() + ": " + typeId
-									+ ". Element won't be available.", e);
+							I18N.getString("orbisgis.org.orbisgis.defaultGeocognition.unrecognizedGeocognitionContent") //$NON-NLS-1$
+									+ xmlRoot.getId() + ": " + typeId //$NON-NLS-1$
+									+ I18N.getString("orbisgis.org.orbisgis.defaultGeocognition.elementwontAvailable"), e); //$NON-NLS-1$
 				}
 			}
 		}
@@ -283,7 +284,7 @@ public class DefaultGeocognition implements Geocognition {
 			JAXBContext jc = getJAXBContext();
 			jc.createMarshaller().marshal(root, bos);
 		} catch (JAXBException e) {
-			throw new PersistenceException("Cannot save geocognition", e);
+			throw new PersistenceException(I18N.getString("orbisgis.org.orbisgis.defaultGeocognition.cannotSaveGeocognition"), e); //$NON-NLS-1$
 		}
 	}
 
@@ -291,7 +292,7 @@ public class DefaultGeocognition implements Geocognition {
 	public void write(OutputStream bos, String... ids)
 			throws PersistenceException, IllegalArgumentException {
 		GeocognitionElement container = new FolderElement(this);
-		container.setId("");
+		container.setId(""); //$NON-NLS-1$
 		for (String elementId : ids) {
 			Id rid = new Id(elementId);
 			GeocognitionElement el = getElement(root, rid);
@@ -299,7 +300,7 @@ public class DefaultGeocognition implements Geocognition {
 				container.addElement(el);
 				el = container;
 			} else {
-				throw new IllegalArgumentException("The path does not exist: "
+				throw new IllegalArgumentException(I18N.getString("orbisgis.org.orbisgis.defaultGeocognition.thePathDoesntNotExist") //$NON-NLS-1$
 						+ elementId);
 			}
 		}
@@ -319,7 +320,7 @@ public class DefaultGeocognition implements Geocognition {
 			GeocognitionElementFactory factory = getFactoryByObject(element);
 			if (factory == null) {
 				throw new IllegalArgumentException(
-						"The type is not supported: " + element.getClass());
+						I18N.getString("orbisgis.org.orbisgis.defaultGeocognition.typeNotSupported") + element.getClass()); //$NON-NLS-1$
 			}
 			newElement = new LeafElement(factory
 					.createGeocognitionElement(element));
@@ -345,7 +346,7 @@ public class DefaultGeocognition implements Geocognition {
 	private void addInElement(Id id, GeocognitionElement newElement) {
 		if (getElement(root, id) != null) {
 			throw new IllegalArgumentException(
-					"There is already an element with the id: " + id);
+					I18N.getString("orbisgis.org.orbisgis.defaultGeocognition.alreadyAnElementWithTheid") + id); //$NON-NLS-1$
 		}
 		newElement.setId(id.getLast());
 		GeocognitionElement parent = createNecessaryNodes(id);
@@ -358,7 +359,7 @@ public class DefaultGeocognition implements Geocognition {
 			GeocognitionElement elem = current.getElement(id.getPart(i));
 			if ((elem == null) && (!current.isFolder())) {
 				throw new IllegalArgumentException(current.getId()
-						+ " is not a folder");
+						+ I18N.getString("orbisgis.org.orbisgis.defaultGeocognition.notAFolder")); //$NON-NLS-1$
 			} else if ((elem == null) && (current.isFolder())) {
 				FolderElement newFolder = new FolderElement(this);
 				newFolder.setId(id.getPart(i));
@@ -407,7 +408,7 @@ public class DefaultGeocognition implements Geocognition {
 					return (T) object;
 				} catch (ClassCastException e) {
 					throw new IllegalArgumentException(
-							"Wrong type. The element " + "type is: "
+							I18N.getString("orbisgis.org.orbisgis.defaultGeocognition.wrongTypeElement") + I18N.getString("orbisgis.org.orbisgis.defaultGeocognition.typeIs") //$NON-NLS-1$ //$NON-NLS-2$
 									+ object.getClass());
 				}
 			}
@@ -443,7 +444,7 @@ public class DefaultGeocognition implements Geocognition {
 		Id ident = new Id(id);
 		GeocognitionElement parent = getElement(root, ident.getParent());
 		if (parent == null) {
-			throw new IllegalArgumentException("The parent does not exist: "
+			throw new IllegalArgumentException(I18N.getString("orbisgis.org.orbisgis.defaultGeocognition.parentDoentExist") //$NON-NLS-1$
 					+ id);
 		} else {
 			GeocognitionElement element = parent.getElement(ident.getLast());
@@ -452,7 +453,7 @@ public class DefaultGeocognition implements Geocognition {
 				return removeElement(parent, element);
 			} else {
 				throw new IllegalArgumentException(
-						"The element does not exist: " + id);
+						I18N.getString("orbisgis.org.orbisgis.defaultGeocognition.elementDoesntExist") + id); //$NON-NLS-1$
 			}
 		}
 	}
@@ -548,12 +549,12 @@ public class DefaultGeocognition implements Geocognition {
 		GeocognitionElement toMove = getElement(root, new Id(id));
 		if (toMove == null) {
 			throw new IllegalArgumentException(
-					"The specified element does not exist: " + id);
+					I18N.getString("orbisgis.org.orbisgis.defaultGeocognition.specifiedElementDoesntExist") + id); //$NON-NLS-1$
 		}
 		GeocognitionElement toMoveTo = getElement(root, new Id(newParent));
 		if (toMoveTo == null) {
 			throw new IllegalArgumentException(
-					"The specified element does not exist: " + newParent);
+					I18N.getString("orbisgis.org.orbisgis.defaultGeocognition.specifiedElementDoesntExist") + newParent); //$NON-NLS-1$
 		}
 		if (toMoveTo.isFolder()) {
 			GeocognitionElement oldParent = toMove.getParent();
@@ -566,8 +567,8 @@ public class DefaultGeocognition implements Geocognition {
 				throw e;
 			}
 		} else {
-			throw new UnsupportedOperationException("The specified "
-					+ "destination does not accept children: " + newParent);
+			throw new UnsupportedOperationException(I18N.getString("orbisgis.org.orbisgis.defaultGeocognition.theSpecified") //$NON-NLS-1$
+					+ I18N.getString("orbisgis.org.orbisgis.defaultGeocognition.destinationDoesntAcceptChildren") + newParent); //$NON-NLS-1$
 		}
 	}
 
@@ -605,6 +606,6 @@ public class DefaultGeocognition implements Geocognition {
 
 	//TODO to be externalized
 	public static String getCognitionContextPath() {
-		return OrbisGISPersitenceConfig.OG_COGNITION_PERSISTENCE_FILE;
+		return OrbisGISPersitenceConfig.GEOCOGNITION_PERSISTENCE_FILE;
 	}
 }

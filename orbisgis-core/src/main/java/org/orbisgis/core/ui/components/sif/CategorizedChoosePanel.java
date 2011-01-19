@@ -22,6 +22,7 @@ import javax.swing.tree.TreeSelectionModel;
 
 import org.orbisgis.core.sif.SQLUIPanel;
 import org.orbisgis.core.sif.UIFactory;
+import org.orbisgis.utils.I18N;
 
 public class CategorizedChoosePanel extends JPanel implements SQLUIPanel {
 
@@ -126,7 +127,8 @@ public class CategorizedChoosePanel extends JPanel implements SQLUIPanel {
 		if ((selectionPath == null)
 				|| (((Option) selectionPath.getLastPathComponent())
 						.isCategory())) {
-			return "An item must be selected";
+			return I18N
+					.getString("orbisgis.org.orbisgis.core.anItemMustBeSelected");
 		}
 
 		return null;

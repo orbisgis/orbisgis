@@ -43,10 +43,14 @@ import java.io.File;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.driver.FileDriver;
 import org.gdms.driver.driverManager.Driver;
+import org.gdms.driver.driverManager.DriverFilter;
 import org.gdms.driver.driverManager.DriverManager;
 import org.gdms.source.AndDriverFilter;
 import org.gdms.source.CSVFileDriverFilter;
 import org.gdms.source.FileDriverFilter;
+import org.gdms.source.NotDriverFilter;
+import org.gdms.source.OrDriverFilter;
+import org.gdms.source.RasterDriverFilter;
 import org.gdms.source.SourceManager;
 import org.gdms.source.VectorialDriverFilter;
 import org.gdms.source.WritableDriverFilter;
@@ -63,17 +67,16 @@ import org.orbisgis.core.ui.pluginSystem.workbench.Names;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchContext;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchFrame;
 import org.orbisgis.core.ui.plugins.toc.ExportInFileOperation;
+import org.orbisgis.utils.I18N;
 
 public class GeocatalogSaveInFilePlugIn extends AbstractPlugIn {
 
 	public boolean execute(PlugInContext context) throws Exception {
 		DataManager dm = Services.getService(DataManager.class);
 		String[] res = getPlugInContext().getSelectedSources();
-		if (res.length == 0) {
-			execute(dm.getSourceManager(), null);
-		} else {
+		if (res.length > 0) {
 			for (String resource : res) {
-				execute(dm.getSourceManager(), resource);
+				execute(dm.getSourceManager(), resource, context);
 			}
 		}
 		return true;
@@ -92,18 +95,38 @@ public class GeocatalogSaveInFilePlugIn extends AbstractPlugIn {
 
 	}
 
-	public void execute(SourceManager sourceManager, String currentNode) {
+	public void execute(SourceManager sourceManager, String currentNode,
+			PlugInContext context) {
 		final SaveFilePanel outfilePanel = new SaveFilePanel(
 				"org.orbisgis.core.ui.plugins.views.geocatalog.SaveInFile",
-				"Choose a file format");
+				I18N.getString("orbisgis.core.file.chooseFileFormat"));
 
 		DataManager dm = Services.getService(DataManager.class);
 		DataSourceFactory dsf = dm.getDataSourceFactory();
 		DriverManager driverManager = sourceManager.getDriverManager();
 
+		int type = sourceManager.getSource(currentNode).getType();
+		DriverFilter filter;
+		if ((type & SourceManager.VECTORIAL) == sourceManager.VECTORIAL) {
+			// no other choice but to add CSV here
+			// because of CSVStringDriver implementation
+			filter = new OrDriverFilter(new VectorialDriverFilter(),
+					new CSVFileDriverFilter());
+		} else if ((type & SourceManager.RASTER) == sourceManager.RASTER) {
+			filter = new RasterDriverFilter();
+		} else if ((type & SourceManager.WMS) == sourceManager.WMS) {
+			filter = new DriverFilter() {
+
+				@Override
+				public boolean acceptDriver(Driver driver) {
+					return false;
+				}
+			};
+		} else {
+			filter = new NotDriverFilter(new RasterDriverFilter());
+		}
 		Driver[] filtered = driverManager.getDrivers(new AndDriverFilter(
-				new FileDriverFilter(), new CSVFileDriverFilter(),
-				new VectorialDriverFilter(), new WritableDriverFilter()));
+				filter, new WritableDriverFilter(), new FileDriverFilter()));
 		for (int i = 0; i < filtered.length; i++) {
 			FileDriver fileDriver = (FileDriver) filtered[i];
 			String[] extensions = fileDriver.getFileExtensions();
@@ -115,14 +138,15 @@ public class GeocatalogSaveInFilePlugIn extends AbstractPlugIn {
 					.getAbsolutePath());
 			BackgroundManager bm = Services.getService(BackgroundManager.class);
 			bm.backgroundOperation(new ExportInFileOperation(dsf, currentNode,
-					savedFile));
+					savedFile, context.getWorkbenchContext().getWorkbench()
+							.getFrame().getGeocatalog()));
 		}
 
 	}
 
 	public boolean isEnabled() {
 		return getPlugInContext().checkLayerAvailability(
-				new SelectionAvailability[] { SelectionAvailability.EQUAL }, 1,
+				new SelectionAvailability[] { SelectionAvailability.SUPERIOR }, 0,
 				new SourceAvailability[] { SourceAvailability.WMS });
 	}
 }

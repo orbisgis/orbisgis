@@ -63,16 +63,17 @@ import javax.swing.text.Highlighter;
 import javax.swing.text.JTextComponent;
 import javax.swing.text.StyledDocument;
 
-import org.orbisgis.core.Services;
 import org.orbisgis.core.ui.components.jtextComponent.BracketMatcher;
 import org.orbisgis.core.ui.components.jtextComponent.RedZigZagPainter;
 import org.orbisgis.core.ui.components.jtextComponent.TextLineNumber;
 import org.orbisgis.core.ui.components.text.UndoRedoInstaller;
 import org.orbisgis.core.ui.editorViews.toc.TransferableLayer;
+import org.orbisgis.core.ui.pluginSystem.message.ErrorMessages;
 import org.orbisgis.core.ui.plugins.views.beanShellConsole.actions.BshActionsListener;
 import org.orbisgis.core.ui.plugins.views.beanShellConsole.actions.BshConsoleListener;
 import org.orbisgis.core.ui.plugins.views.beanShellConsole.syntax.JavaDocument;
 import org.orbisgis.core.ui.plugins.views.geocatalog.TransferableSource;
+import org.orbisgis.utils.I18N;
 
 public class BshScriptPanel extends JScrollPane implements DropTargetListener {
 
@@ -157,8 +158,11 @@ public class BshScriptPanel extends JScrollPane implements DropTargetListener {
 			try {
 				jTextPane.getDocument().insertString(position, query, null);
 			} catch (BadLocationException e) {
-				Services.getErrorManager().error("Cannot place the text there",
-						e);
+				ErrorMessages
+						.error(
+								I18N
+										.getString("orbisgis.org.orbisgis.textArea.BadLocationException"),
+								e);
 			}
 		} else {
 			dtde.rejectDrop();

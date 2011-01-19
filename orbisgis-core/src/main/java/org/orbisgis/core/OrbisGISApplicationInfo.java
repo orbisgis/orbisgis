@@ -39,6 +39,8 @@ package org.orbisgis.core;
 
 import java.io.File;
 
+import org.orbisgis.utils.I18N;
+
 public class OrbisGISApplicationInfo implements ApplicationInfo {
 
 	@Override
@@ -51,7 +53,7 @@ public class OrbisGISApplicationInfo implements ApplicationInfo {
 	public File getUserHomeFolder() {
 		return new File(System.getProperty("user.home"));
 	}
-	
+
 	@Override
 	public File getHomeFolder() {
 		return new File(System.getProperty("user.home") + "/.OrbisGIS");
@@ -69,11 +71,11 @@ public class OrbisGISApplicationInfo implements ApplicationInfo {
 
 	@Override
 	public String getVersionName() {
-		return "Barcelona";
+		return I18N.getString("orbisgis.org.orbisgis.versionName");
 	}
 
 	@Override
 	public String getVersionNumber() {
-		return "3.0 Beta";
+		return I18N.getString("orbisgis.org.orbisgis.version");
 	}
 }

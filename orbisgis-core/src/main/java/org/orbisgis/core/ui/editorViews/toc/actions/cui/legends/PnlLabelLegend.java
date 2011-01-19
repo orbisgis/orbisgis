@@ -160,7 +160,7 @@ public class PnlLabelLegend extends JPanel implements ILegendPanel {
 			syncing = true;
 			try {
 				SpatialDataSourceDecorator sds = legendContext.getLayer()
-						.getDataSource();
+						.getSpatialDataSource();
 				Metadata m = sds.getMetadata();
 				ArrayList<String> fieldNames = new ArrayList<String>();
 

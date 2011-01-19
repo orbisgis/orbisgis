@@ -45,6 +45,7 @@ import org.gdms.data.ExecutionException;
 import org.gdms.data.NoSuchTableException;
 import org.gdms.data.NonEditableDataSourceException;
 import org.gdms.data.metadata.Metadata;
+import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.ObjectDriver;
@@ -55,119 +56,123 @@ import org.gdms.sql.evaluator.Field;
 import org.orbisgis.progress.IProgressMonitor;
 
 public class InsertOperator extends AbstractExpressionOperator implements
-		Operator {
+        Operator {
 
-	private ArrayList<Expression> fields = new ArrayList<Expression>();
-	private ArrayList<Expression> values = new ArrayList<Expression>();
+        private ArrayList<Expression> fields = new ArrayList<Expression>();
+        private ArrayList<Expression> values = new ArrayList<Expression>();
 
-	@Override
-	protected Expression[] getExpressions() throws DriverException {
-		return getFields().toArray(new Expression[getFields().size()]);
-	}
+        @Override
+        protected Expression[] getExpressions() throws DriverException {
+                return getFields().toArray(new Expression[getFields().size()]);
+        }
 
-	private ArrayList<Expression> getFields() throws DriverException {
-		if (fields == null) {
-			fields = new ArrayList<Expression>();
-			Metadata metadata = getOperator(0).getResultMetadata();
-			for (int i = 0; i < metadata.getFieldCount(); i++) {
-				fields.add(new Field(metadata.getFieldName(i)));
-			}
-		}
-		return fields;
-	}
+        private ArrayList<Expression> getFields() throws DriverException {
+                if (fields == null) {
+                        fields = new ArrayList<Expression>();
+                        Metadata metadata = getOperator(0).getResultMetadata();
+                        for (int i = 0; i < metadata.getFieldCount(); i++) {
+                                fields.add(new Field(metadata.getFieldName(i)));
+                        }
+                }
+                return fields;
+        }
 
-	public ObjectDriver getResultContents(IProgressMonitor pm)
-			throws ExecutionException {
-		String sourceName = getTableName();
-		try {
-			DataSource ds = getDataSourceFactory().getDataSource(sourceName);
-			ds.open();
-			Value[] row = new Value[ds.getFieldCount()];
-			for (int i = 0; i < fields.size(); i++) {
-				Field field = (Field) fields.get(i);
-				System.out.println(field.getFieldName());
-				int fieldIndex = ds.getFieldIndexByName(field.getFieldName());
-				row[fieldIndex] = values.get(i).evaluate(pm);
-			}
-			ds.insertFilledRow(row);
-			ds.commit();
-			ds.close();
-			return null;
-		} catch (DriverLoadException e) {
-			throw new ExecutionException("Cannot perform the insertion", e);
-		} catch (NoSuchTableException e) {
-			throw new ExecutionException("Cannot perform the insertion", e);
-		} catch (AlreadyClosedException e) {
-			throw new ExecutionException("Cannot perform the insertion", e);
-		} catch (DataSourceCreationException e) {
-			throw new ExecutionException("Cannot perform the insertion", e);
-		} catch (DriverException e) {
-			throw new ExecutionException("Cannot perform the insertion", e);
-		} catch (EvaluationException e) {
-			throw new ExecutionException("Cannot evaluate value to insert", e);
-		} catch (NonEditableDataSourceException e) {
-			throw new ExecutionException("The data source " + sourceName
-					+ " is not editable", e);
-		}
-	}
+        public ObjectDriver getResultContents(IProgressMonitor pm)
+                throws ExecutionException {
+                String sourceName = getTableName();
+                try {
+                        DataSource ds = getDataSourceFactory().getDataSource(sourceName);
+                        ds.open();
+                        Value[] row = new Value[ds.getFieldCount()];
+                        for (int i = 0; i < fields.size(); i++) {
+                                Field field = (Field) fields.get(i);
+                                System.out.println(field.getFieldName());
+                                int fieldIndex = ds.getFieldIndexByName(field.getFieldName());
+                                row[fieldIndex] = values.get(i).evaluate(pm);
+                        }
+                        ds.insertFilledRow(row);
+                        ds.commit();
+                        ds.close();
+                        return null;
+                } catch (DriverLoadException e) {
+                        throw new ExecutionException("Cannot perform the insertion", e);
+                } catch (NoSuchTableException e) {
+                        throw new ExecutionException("Cannot perform the insertion", e);
+                } catch (AlreadyClosedException e) {
+                        throw new ExecutionException("Cannot perform the insertion", e);
+                } catch (DataSourceCreationException e) {
+                        throw new ExecutionException("Cannot perform the insertion", e);
+                } catch (DriverException e) {
+                        throw new ExecutionException("Cannot perform the insertion", e);
+                } catch (EvaluationException e) {
+                        throw new ExecutionException("Cannot evaluate value to insert", e);
+                } catch (NonEditableDataSourceException e) {
+                        throw new ExecutionException("The data source " + sourceName
+                                + " is not editable", e);
+                }
+        }
 
-	public Metadata getResultMetadata() throws DriverException {
-		return null;
-	}
+        public Metadata getResultMetadata() throws DriverException {
+                return null;
+        }
 
-	public void addField(String fieldName) {
-		fields.add(new Field(fieldName));
-	}
+        public void addField(String fieldName) {
+                fields.add(new Field(fieldName));
+        }
 
-	public void addAllFields() {
-		fields = null;
-	}
+        public void addAllFields() {
+                fields = null;
+        }
 
-	public void addFieldValue(Expression value) {
-		values.add(value);
-	}
+        public void addFieldValue(Expression value) {
+                values.add(value);
+        }
 
-	/**
-	 * Validates that the number of values to insert is equal to the number of
-	 * specified fields. Also checks that the assignment between the types is
-	 * possible
-	 * 
-	 * @see org.gdms.sql.strategies.AbstractExpressionOperator#validateExpressionTypes()
-	 */
-	@Override
-	public void validateExpressionTypes() throws SemanticException,
-			DriverException {
-		if (getFields().size() != values.size()) {
-			throw new SemanticException("There are a different "
-					+ "number of values and fields");
-		}
+        /**
+         * Validates that the number of values to insert is equal to the number of
+         * specified fields. Also checks that the assignment between the types is
+         * possible
+         *
+         * @see org.gdms.sql.strategies.AbstractExpressionOperator#validateExpressionTypes()
+         */
+        @Override
+        public void validateExpressionTypes() throws SemanticException,
+                DriverException {
+                if (getFields().size() != values.size()) {
+                        throw new SemanticException("There are a different "
+                                + "number of values and fields");
+                }
 
-		// TODO take into account function operator
-		for (int i = 0; i < getFields().size(); i++) {
-			Expression exp = values.get(i);
-			if (getFields().get(i).getType().getTypeCode() != exp.getType()
-					.getTypeCode()) {
-				throw new IncompatibleTypesException("The types in the " + i
-						+ "th assignment are not the same");
-			}
-		}
-		super.validateExpressionTypes();
-	}
+                // TODO take into account function operator
+                for (int i = 0; i < getFields().size(); i++) {
+                        Expression exp = values.get(i);
+                        if (getFields().get(i).getType().getTypeCode() != exp.getType().getTypeCode()) {
+                                // different types, lets check if the column type
+                                // contains the expression type
+                                final int typeCode = getFields().get(i).getType().getTypeCode();
+                                if (TypeFactory.getBroaderType(typeCode, exp.getType().getTypeCode()) != typeCode) {
+                                        throw new IncompatibleTypesException("The types in the " + i
+                                                + "th assignment are not compatible");
+                                }
+                        }
+                }
+                super.validateExpressionTypes();
+        }
 
-	/**
-	 * Validates that there is no field reference in the values to assign
-	 * 
-	 * @see org.gdms.sql.strategies.AbstractExpressionOperator#validateFieldReferences()
-	 */
-	@Override
-	public void validateFieldReferences() throws SemanticException,
-			DriverException {
-		for (Expression value : values) {
-			if (value.getFieldReferences().length > 0) {
-				throw new SemanticException("Values cannot "
-						+ "have field references");
-			}
-		}
-		super.validateFieldReferences();
-	}
+        /**
+         * Validates that there is no field reference in the values to assign
+         *
+         * @see org.gdms.sql.strategies.AbstractExpressionOperator#validateFieldReferences()
+         */
+        @Override
+        public void validateFieldReferences() throws SemanticException,
+                DriverException {
+                for (Expression value : values) {
+                        if (value.getFieldReferences().length > 0) {
+                                throw new SemanticException("Values cannot "
+                                        + "have field references");
+                        }
+                }
+                super.validateFieldReferences();
+        }
 }

@@ -46,30 +46,37 @@ import org.gdms.driver.DriverException;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.background.BackgroundJob;
 import org.orbisgis.core.background.BackgroundManager;
-import org.orbisgis.core.errorManager.ErrorManager;
 import org.orbisgis.core.ui.editor.IEditor;
 import org.orbisgis.core.ui.editors.table.TableComponent;
 import org.orbisgis.core.ui.editors.table.TableEditableElement;
 import org.orbisgis.core.ui.pluginSystem.AbstractPlugIn;
 import org.orbisgis.core.ui.pluginSystem.PlugInContext;
+import org.orbisgis.core.ui.pluginSystem.message.ErrorMessages;
 import org.orbisgis.core.ui.pluginSystem.workbench.Names;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchContext;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchFrame;
-import org.orbisgis.core.ui.plugins.views.TableEditorPlugIn;
+import org.orbisgis.core.ui.plugins.views.tableEditor.TableEditorPlugIn;
 import org.orbisgis.core.ui.preferences.lookandfeel.OrbisGISIcon;
 import org.orbisgis.progress.IProgressMonitor;
+import org.orbisgis.utils.I18N;
 
 public class SelectEqualPlugIn extends AbstractPlugIn {
 
+	@Override
 	public boolean execute(PlugInContext context) throws Exception {
 		IEditor editor = context.getActiveEditor();
 		final TableEditableElement element = (TableEditableElement) editor
 				.getElement();
-		final int rowIndex = ((TableComponent) editor.getView().getComponent())
-				.getTable().rowAtPoint(getEvent().getPoint());
-		final int columnIndex = ((TableComponent) editor.getView()
-				.getComponent()).getTable()
-				.columnAtPoint(getEvent().getPoint());
+		// We must retrieve the indices of the element we have selected.
+		// We must be careful, as the rowIndex we retrieve is no the one
+		// we want to use to retrieve the data in the data source.
+		TableComponent currentTable = (TableComponent) editor.getView()
+				.getComponent();
+		final int rowIndex = currentTable.getTable().rowAtPoint(
+				getEvent().getPoint());
+		final int dbRowIndex = currentTable.getRowIndex(rowIndex);
+		final int columnIndex = currentTable.getTable().columnAtPoint(
+				getEvent().getPoint());
 		BackgroundManager bm = Services.getService(BackgroundManager.class);
 		bm.backgroundOperation(new BackgroundJob() {
 
@@ -78,7 +85,8 @@ public class SelectEqualPlugIn extends AbstractPlugIn {
 				try {
 					DataSource dataSource = element.getDataSource();
 					ArrayList<Integer> newSel = new ArrayList<Integer>();
-					Value ref = dataSource.getFieldValue(rowIndex, columnIndex);
+					Value ref = dataSource.getFieldValue(dbRowIndex,
+							columnIndex);
 					for (int i = 0; i < dataSource.getRowCount(); i++) {
 						if (dataSource.getFieldValue(i, columnIndex)
 								.equals(ref).getAsBoolean()) {
@@ -92,14 +100,14 @@ public class SelectEqualPlugIn extends AbstractPlugIn {
 
 					element.getSelection().setSelectedRows(sel);
 				} catch (DriverException e) {
-					Services.getService(ErrorManager.class).error(
-							"Cannot read source", e);
+					ErrorMessages.error(ErrorMessages.CannotReadSource, e);
 				}
 			}
 
 			@Override
 			public String getTaskName() {
-				return "Finding matches";
+				return I18N
+						.getString("orbisgis.org.orbisgis.core.ui.plugins.editors.tableEditor.findMatch");
 			}
 		});
 		return true;
@@ -108,7 +116,7 @@ public class SelectEqualPlugIn extends AbstractPlugIn {
 	@Override
 	public void initialize(PlugInContext context) throws Exception {
 		WorkbenchContext wbContext = context.getWorkbenchContext();
-		WorkbenchFrame frame = (WorkbenchFrame) wbContext.getWorkbench()
+		WorkbenchFrame frame = wbContext.getWorkbench()
 				.getFrame().getTableEditor();
 		context.getFeatureInstaller().addPopupMenuItem(frame, this,
 				new String[] { Names.POPUP_TABLE_EQUALS_PATH1 },
@@ -116,6 +124,7 @@ public class SelectEqualPlugIn extends AbstractPlugIn {
 				OrbisGISIcon.TABLE_SELECT_SAME_VALUE, wbContext);
 	}
 
+	@Override
 	public boolean isEnabled() {
 
 		TableEditorPlugIn table = getPlugInContext().getTableEditor();

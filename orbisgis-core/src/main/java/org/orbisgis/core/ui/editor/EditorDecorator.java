@@ -45,6 +45,7 @@ import org.orbisgis.core.PersistenceException;
 import org.orbisgis.core.edition.EditableElement;
 import org.orbisgis.core.ui.pluginSystem.PlugInContext;
 import org.orbisgis.core.ui.pluginSystem.ViewPlugIn;
+import org.orbisgis.utils.I18N;
 
 public class EditorDecorator implements IEditor {
 
@@ -67,7 +68,11 @@ public class EditorDecorator implements IEditor {
 	}
 
 	public Component getComponent() {
-		return getView().getComponent();
+                final ViewPlugIn view = getView();
+                if (view == null) {
+                        throw new org.gdms.data.ClosedDataSourceException(I18N.getString("orbisgis.org.orbisgis.ui.editorDecorator.sourceClosedOrDoesntExist")); //$NON-NLS-1$
+                }
+		return view.getComponent();
 	}
 
 	public void loadStatus() throws PersistenceException {

@@ -52,13 +52,13 @@ import org.orbisgis.core.ui.pluginSystem.AbstractPlugIn;
 import org.orbisgis.core.ui.pluginSystem.PlugInContext;
 import org.orbisgis.core.ui.pluginSystem.workbench.Names;
 import org.orbisgis.core.ui.plugins.editor.PlugInEditorListener;
-import org.orbisgis.core.ui.plugins.views.MapEditorPlugIn;
 import org.orbisgis.core.ui.plugins.views.editor.EditorManager;
+import org.orbisgis.core.ui.plugins.views.mapEditor.MapEditorPlugIn;
+import org.orbisgis.utils.I18N;
 
 public class ShowXYPlugIn extends AbstractPlugIn {
 
 	private JLabel showXY;
-	private final static int MAX_DIGIT = 7;
 
 	@Override
 	public boolean execute(PlugInContext context) throws Exception {
@@ -68,7 +68,7 @@ public class ShowXYPlugIn extends AbstractPlugIn {
 	private MouseMotionAdapter mouseMotionAdapter = new MouseMotionAdapter() {
 		@Override
 		public void mouseMoved(MouseEvent e) {
-			String xCoord = "", yCoord = "";
+			String xCoord = "", yCoord = "", scale = "";
 			ToolManager toolManager = getPlugInContext().getToolManager();
 			if (toolManager != null) {
 				Point2D point = toolManager.getLastRealMousePosition();
@@ -79,14 +79,15 @@ public class ShowXYPlugIn extends AbstractPlugIn {
 					// } else {
 					xCoord = "X:" + (int) point.getX();
 					yCoord = "Y:" + (int) point.getY();
-					//scale = "SCALE: 1/"
-						//	+ (int) getPlugInContext().getMapEditor()
-							//		.getMapTransform().getScaleDenominator();
-					// }
+					scale = I18N
+							.getString("orbisgis.org.orbisgis.core.ui.plugins.editors.mapEditor.scale")
+							+ ": 1/"
+							+ (int) getPlugInContext().getMapEditor()
+									.getMapTransform().getScaleDenominator();
 				}
 				//scale = "1:" + (int)toolManager.getMapTransform().getScaleDenominator();
 			}
-			showXY.setText(xCoord + "  " + yCoord );
+			showXY.setText(xCoord + "  " + yCoord + " " + scale);
 		}
 	};
 
@@ -96,21 +97,25 @@ public class ShowXYPlugIn extends AbstractPlugIn {
 		showXY.setForeground(Color.blue);
 		showXY.setEnabled(false);
 		EditorManager em = Services.getService(EditorManager.class);
-		em
-				.addEditorListener(new PlugInEditorListener(this, showXY,
-						Names.MAP_TOOLBAR_PROJECTION, mouseMotionAdapter,
-						context, true));
+		em.addEditorListener(new PlugInEditorListener(this, showXY,
+				Names.MAP_TOOLBAR_PROJECTION, mouseMotionAdapter, context,
+				true));
 
 	}
 
 	@Override
 	public boolean isEnabled() {
-		showXY.setText("0.0     0.0  ");
 		boolean isVisible = false;
 		IEditor editor = Services.getService(EditorManager.class)
 				.getActiveEditor();
+		MapEditorPlugIn mapEditor = getPlugInContext().getMapEditor();
 		if (editor != null && editor instanceof MapEditorPlugIn
-				&& getPlugInContext().getMapEditor() != null) {
+				&& mapEditor != null) {
+			String scale = I18N
+					.getString("orbisgis.org.orbisgis.core.ui.plugins.editors.mapEditor.scale")
+					+ ": 1/"
+					+ (int) mapEditor.getMapTransform().getScaleDenominator();
+			showXY.setText("0.0     0.0  " + scale);
 			MapContext mc = (MapContext) editor.getElement().getObject();
 			isVisible = mc.getLayerModel().getLayerCount() > 0;
 		}

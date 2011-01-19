@@ -77,7 +77,7 @@ public class SelectResultOperator extends Operand implements Expression {
 		Metadata metadata = operator.getResultMetadata();
 		if (metadata.getFieldCount() != 1) {
 			throw new IncompatibleTypesException(I18N
-					.getText("nested query result must "
+					.getString("nested query result must "
 							+ "have just one field"));
 		}
 	}
@@ -89,10 +89,10 @@ public class SelectResultOperator extends Operand implements Expression {
 			return res.getFieldValue(0, 0);
 		} catch (ExecutionException e) {
 			throw new EvaluationException(I18N
-					.getText("Cannot evaluate subquery"), e);
+					.getString("Cannot evaluate subquery"), e);
 		} catch (DriverException e) {
 			throw new EvaluationException(I18N
-					.getText("Cannot evaluate subquery"), e);
+					.getString("Cannot evaluate subquery"), e);
 		}
 	}
 

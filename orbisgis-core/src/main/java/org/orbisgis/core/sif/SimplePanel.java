@@ -68,13 +68,17 @@ import org.gdms.driver.driverManager.DriverLoadException;
 import org.gdms.driver.generic.GenericObjectDriver;
 import org.gdms.sql.parser.ParseException;
 import org.gdms.sql.strategies.SemanticException;
+import org.orbisgis.utils.I18N;
 
 public class SimplePanel extends JPanel {
 
 	private static final Logger logger = Logger.getLogger(SimplePanel.class);
 
-	private static final String LAST_INPUT = "lastInput";
-	private static String dsName = "source";
+	private static final String LAST_INPUT = "lastInput"; //$NON-NLS-1$
+	private static String dsName = "source"; //$NON-NLS-1$
+
+        // a somehow difficult to stumble upon constant, to represent a canceled action
+        public static final String CANCELED_ACTION = String.valueOf(Integer.MAX_VALUE);
 
 	private MsgPanel msgPanel;
 	private UIPanel panel;
@@ -124,10 +128,10 @@ public class SimplePanel extends JPanel {
 					split.add(uiPanel, BorderLayout.CENTER);
 					centerPanel = split;
 				} catch (DriverException e) {
-					logger.error("Error obtaining favorites", e);
+					logger.error(I18N.getString("orbisgis.org.orbisgis.sif.simplePanel.errorObtainingFavorites"), e); //$NON-NLS-1$
 					centerPanel = uiPanel;
 				} catch (DataSourceCreationException e) {
-					logger.error("Error obtaining favorites", e);
+					logger.error(I18N.getString("orbisgis.org.orbisgis.sif.simplePanel.errorObtainingFavorites"), e); //$NON-NLS-1$
 					centerPanel = uiPanel;
 				}
 			} else {
@@ -136,7 +140,6 @@ public class SimplePanel extends JPanel {
 		} else {
 			centerPanel = uiPanel;
 		}
-
 		this.add(centerPanel, BorderLayout.CENTER);
 	}
 
@@ -170,9 +173,9 @@ public class SimplePanel extends JPanel {
 		try {
 			err = panel.initialize();
 		} catch (Exception e) {
-			String msg = "Cannot initialize dialog";
+			String msg = I18N.getString("orbisgis.org.orbisgis.sif.simplePanel.cannotInitializeDialog"); //$NON-NLS-1$
 			logger.error(msg, e);
-			err = msg + ": " + e.getMessage();
+			err = msg + ": " + e.getMessage(); //$NON-NLS-1$
 		}
 		if (err == null) {
 			validateInput();
@@ -187,8 +190,8 @@ public class SimplePanel extends JPanel {
 		try {
 			err = panel.validateInput();
 		} catch (Exception e) {
-			logger.error("Error while validating UIPanel", e);
-			err = "Error validating: " + e.getMessage();
+			logger.error(I18N.getString("orbisgis.org.orbisgis.sif.simplePanel.errorValidatingUIPanel"), e); //$NON-NLS-1$
+			err = I18N.getString("orbisgis.org.orbisgis.sif.simplePanel.errorValidating") + e.getMessage(); //$NON-NLS-1$
 		}
 		if (err != null) {
 		} else if ((err == null) && (panel instanceof SQLUIPanel)) {
@@ -204,7 +207,7 @@ public class SimplePanel extends JPanel {
 							Integer.parseInt(values[i]);
 						} catch (NumberFormatException e) {
 							err = sqlPanel.getFieldNames()[i]
-									+ " must be an int expression";
+									+ I18N.getString("orbisgis.org.orbisgis.sif.simplePanel.mustBeAnIntExpression"); //$NON-NLS-1$
 						}
 						break;
 					case SQLUIPanel.DOUBLE:
@@ -212,7 +215,7 @@ public class SimplePanel extends JPanel {
 							Double.parseDouble(values[i]);
 						} catch (NumberFormatException e) {
 							err = sqlPanel.getFieldNames()[i]
-									+ " must be a floating point expression";
+									+ I18N.getString("orbisgis.org.orbisgis.sif.simplePanel.mustBeAFloatExpression"); //$NON-NLS-1$
 						}
 						break;
 					}
@@ -228,9 +231,9 @@ public class SimplePanel extends JPanel {
 				if (validationExpr != null) {
 					try {
 						for (int i = 0; i < errMsgs.length; i++) {
-							String sql = "select * from source where "
+							String sql = "select * from source where " //$NON-NLS-1$
 									+ validationExpr[i];
-							logger.debug("Validating interface: " + sql);
+							logger.debug(I18N.getString("orbisgis.org.orbisgis.sif.simplePanel.validatingInterface") + sql); //$NON-NLS-1$
 							DataSource result = UIFactory.dsf
 									.getDataSourceFromSQL(sql);
 							result.open();
@@ -239,31 +242,31 @@ public class SimplePanel extends JPanel {
 							if (rowCount == 0) {
 								err = errMsgs[i];
 								if (err == null) {
-									err = "Invalid input";
+									err = I18N.getString("orbisgis.org.orbisgis.sif.simplePanel.invalidInput"); //$NON-NLS-1$
 								}
 								break;
 							}
 
 						}
 					} catch (DriverLoadException e) {
-						logger.error("Bug in SIF", e);
-						msgPanel.setError("Could not validate dialog! : "
+						logger.error(I18N.getString("orbisgis.org.orbisgis.sif.simplePanel.bugInSIF"), e); //$NON-NLS-1$
+						msgPanel.setError(I18N.getString("orbisgis.org.orbisgis.sif.simplePanel.couldNotValidateDialog") //$NON-NLS-1$
 								+ e.getMessage());
 					} catch (DataSourceCreationException e) {
-						logger.error("Bug in SIF", e);
-						msgPanel.setError("Could not validate dialog! : "
+						logger.error(I18N.getString("orbisgis.org.orbisgis.sif.simplePanel.bugInSIF"), e); //$NON-NLS-1$
+						msgPanel.setError(I18N.getString("orbisgis.org.orbisgis.sif.simplePanel.couldNotValidateDialog") //$NON-NLS-1$
 								+ e.getMessage());
 					} catch (DriverException e) {
-						logger.error("Bug in SIF", e);
-						msgPanel.setError("Could not validate dialog! : "
+						logger.error(I18N.getString("orbisgis.org.orbisgis.sif.simplePanel.bugInSIF"), e); //$NON-NLS-1$
+						msgPanel.setError(I18N.getString("orbisgis.org.orbisgis.sif.simplePanel.couldNotValidateDialog") //$NON-NLS-1$
 								+ e.getMessage());
 					} catch (ParseException e) {
-						logger.error("Bug in SIF", e);
-						msgPanel.setError("Could not validate dialog! : "
+						logger.error(I18N.getString("orbisgis.org.orbisgis.sif.simplePanel.bugInSIF"), e); //$NON-NLS-1$
+						msgPanel.setError(I18N.getString("orbisgis.org.orbisgis.sif.simplePanel.couldNotValidateDialog") //$NON-NLS-1$
 								+ e.getMessage());
 					} catch (SemanticException e) {
-						logger.error("Bug in SIF", e);
-						msgPanel.setError("Could not validate dialog! : "
+						logger.error(I18N.getString("orbisgis.org.orbisgis.sif.simplePanel.bugInSIF"), e); //$NON-NLS-1$
+						msgPanel.setError(I18N.getString("orbisgis.org.orbisgis.sif.simplePanel.couldNotValidateDialog") //$NON-NLS-1$
 								+ e.getMessage());
 					}
 				}
@@ -360,20 +363,20 @@ public class SimplePanel extends JPanel {
 						ds.commit();
 						ds.close();
 					} catch (DriverException e) {
-						logger.error("Error while saving SIF input", e);
-						msgPanel.setError("Cannot save input");
+						logger.error(I18N.getString("orbisgis.org.orbisgis.sif.simplePanel.errorSavingSIFInput"), e); //$NON-NLS-1$
+						msgPanel.setError(I18N.getString("orbisgis.org.orbisgis.sif.simplePanel.cannotSaveInput")); //$NON-NLS-1$
 					} catch (NonEditableDataSourceException e) {
-						logger.error("Error while saving SIF input", e);
-						throw new RuntimeException("bug", e);
+						logger.error(I18N.getString("orbisgis.org.orbisgis.sif.simplePanel.errorSavingSIFInput"), e); //$NON-NLS-1$
+						throw new RuntimeException(I18N.getString("orbisgis.org.orbisgis.sif.simplePanel.bug"), e); //$NON-NLS-1$
 					} catch (DriverLoadException e) {
-						logger.error("Error while saving SIF input", e);
-						throw new RuntimeException("bug", e);
+						logger.error(I18N.getString("orbisgis.org.orbisgis.sif.simplePanel.errorSavingSIFInput"), e); //$NON-NLS-1$
+						throw new RuntimeException(I18N.getString("orbisgis.org.orbisgis.sif.simplePanel.bug"), e); //$NON-NLS-1$
 					} catch (NoSuchTableException e) {
-						logger.error("Error while saving SIF input", e);
-						throw new RuntimeException("bug", e);
+						logger.error(I18N.getString("orbisgis.org.orbisgis.sif.simplePanel.errorSavingSIFInput"), e); //$NON-NLS-1$
+						throw new RuntimeException(I18N.getString("orbisgis.org.orbisgis.sif.simplePanel.bug"), e); //$NON-NLS-1$
 					} catch (DataSourceCreationException e) {
-						logger.error("Error while saving SIF input", e);
-						msgPanel.setError("Cannot save input");
+						logger.error(I18N.getString("orbisgis.org.orbisgis.sif.simplePanel.errorSavingSIFInput"), e); //$NON-NLS-1$
+						msgPanel.setError(I18N.getString("orbisgis.org.orbisgis.sif.simplePanel.cannotSaveInput")); //$NON-NLS-1$
 					}
 				}
 			}
@@ -409,7 +412,7 @@ public class SimplePanel extends JPanel {
 	}
 
 	private File getLastInputFile(String id) {
-		return new File(UIFactory.baseDir, id + "-last.csv");
+		return new File(UIFactory.baseDir, id + "-last.csv"); //$NON-NLS-1$
 	}
 
 	public boolean loadInput(HashMap<String, String> inputs) {
@@ -439,17 +442,17 @@ public class SimplePanel extends JPanel {
 							}
 							ds.close();
 						} catch (DriverException e) {
-							logger.error("Error while restoring SIF input", e);
-							msgPanel.setError("Cannot restore last input");
+							logger.error(I18N.getString("orbisgis.org.orbisgis.sif.simplePanel.errorRestoringSIFInput"), e); //$NON-NLS-1$
+							msgPanel.setError(I18N.getString("orbisgis.org.orbisgis.sif.simplePanel.cannotRestoreLastInput")); //$NON-NLS-1$
 						} catch (DriverLoadException e) {
-							logger.error("Error while restoring SIF input", e);
-							msgPanel.setError("Cannot restore last input");
+							logger.error(I18N.getString("orbisgis.org.orbisgis.sif.simplePanel.errorRestoringSIFInput"), e); //$NON-NLS-1$
+							msgPanel.setError(I18N.getString("orbisgis.org.orbisgis.sif.simplePanel.cannotRestoreLastInput")); //$NON-NLS-1$
 						} catch (NoSuchTableException e) {
-							logger.error("Error while restoring SIF input", e);
-							msgPanel.setError("Cannot restore last input");
+							logger.error(I18N.getString("orbisgis.org.orbisgis.sif.simplePanel.errorRestoringSIFInput"), e); //$NON-NLS-1$
+							msgPanel.setError(I18N.getString("orbisgis.org.orbisgis.sif.simplePanel.cannotRestoreLastInput")); //$NON-NLS-1$
 						} catch (DataSourceCreationException e) {
-							logger.error("Error while restoring SIF input", e);
-							msgPanel.setError("Cannot restore last input");
+							logger.error(I18N.getString("orbisgis.org.orbisgis.sif.simplePanel.errorRestoringSIFInput"), e); //$NON-NLS-1$
+							msgPanel.setError(I18N.getString("orbisgis.org.orbisgis.sif.simplePanel.cannotRestoreLastInput")); //$NON-NLS-1$
 						}
 					}
 				}
@@ -484,7 +487,10 @@ public class SimplePanel extends JPanel {
 		String ret = panel.postProcess();
 		if (ret == null) {
 			return true;
-		} else {
+		} else if (ret.equals(CANCELED_ACTION)) {
+                        // no message, just cancel the action!
+                        return false;
+                } else {
 			JOptionPane.showMessageDialog(null, ret);
 			return false;
 		}

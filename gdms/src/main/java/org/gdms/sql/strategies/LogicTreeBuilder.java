@@ -186,12 +186,11 @@ public class LogicTreeBuilder {
 			ret.addChild(top);
 			int valueStartIndex;
 			if (node.jjtGetChild(1) instanceof ASTSQLIdSequence) {
-				int i = 1;
-				while (node.jjtGetChild(i) instanceof ASTSQLIdSequence) {
-					ret.addField(getId(node.jjtGetChild(i)));
-					i++;
-				}
-				valueStartIndex = i;
+				String[] s = getIdSequence((ASTSQLIdSequence) node.jjtGetChild(1));
+                                for (int i = 0; i < s.length; i++) {
+                                        ret.addField(s[i]);
+                                }
+				valueStartIndex = 2;
 			} else {
 				ret.addAllFields();
 				valueStartIndex = 1;

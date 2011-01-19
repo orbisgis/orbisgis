@@ -25,7 +25,7 @@ public class GeocognitionBuiltInFunction extends AbstractBuiltInSQLArtifact
 
 	@Override
 	public String getTypeId() {
-		return OrbisGISPersitenceConfig.GeocognitionFunctionFactory_ID;
+		return OrbisGISPersitenceConfig.GEOCOGNITION_FUNCTION_FACTORY_ID;
 	}
 
 	@SuppressWarnings("unchecked")

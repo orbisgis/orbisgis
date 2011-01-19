@@ -57,7 +57,7 @@ public class CreateChoroplethPlugIn extends AbstractPlugIn {
 
 	public void execute(MapContext mapContext, ILayer layer) {
 		try {
-			Type typ = layer.getDataSource().getMetadata().getFieldType(layer.getDataSource().getSpatialFieldIndex());
+			Type typ = layer.getSpatialDataSource().getMetadata().getFieldType(layer.getSpatialDataSource().getSpatialFieldIndex());
 			GeometryConstraint cons = (GeometryConstraint) typ.getConstraint(Constraint.GEOMETRY_TYPE);
 			// 1) Create a panel
 			ChoroplethWizardPanel pan = new ChoroplethWizardPanel(layer);
@@ -91,7 +91,7 @@ public class CreateChoroplethPlugIn extends AbstractPlugIn {
 			try {
 				// Only 1 layer is selected, ans it's a layer of polygons
 				if (selectedResources.length == 1){
-					SpatialDataSourceDecorator sds = selectedResources[0].getDataSource();
+					SpatialDataSourceDecorator sds = selectedResources[0].getSpatialDataSource();
 					return sds.getRowCount() > 0 && sds.getGeometry(0).getGeometryType().contains("Polygon");
 				}
 			} catch (DriverException ex) {

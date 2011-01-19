@@ -43,6 +43,9 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 
+import org.gdms.data.DataSource;
+import org.gdms.data.metadata.MetadataUtilities;
+import org.gdms.driver.DriverException;
 import org.gdms.source.SourceEvent;
 import org.gdms.source.SourceListener;
 import org.gdms.source.SourceRemovalEvent;
@@ -74,35 +77,30 @@ import org.orbisgis.core.renderer.se.Rule;
  * 
  */
 public class DefaultMapContext implements MapContext {
-	private ILayer root;
 
+	private ILayer root;
 	private ILayer[] selectedLayers = new ILayer[0];
 	private Rule[] selectedRules = new Rule[0];
 
 	private ArrayList<MapContextListener> listeners = new ArrayList<MapContextListener>();
-
 	private OpenerListener openerListener;
-
 	private LayerRemovalSourceListener sourceListener;
-
 	private ILayer activeLayer;
-
 	private boolean open = false;
-
 	private org.orbisgis.core.layerModel.persistence.MapContext jaxbMapContext;
-
 	private Envelope boundingBox;
-
 	private long idTime;
+	private boolean selectionInducedRefresh = false;
+
+	// private int srid = -1;
 
 	/**
-	 */
+         */
 	public DefaultMapContext() {
 		openerListener = new OpenerListener();
 		sourceListener = new LayerRemovalSourceListener();
-		DataManager dataManager = (DataManager) Services
-				.getService(DataManager.class);
-		setRoot(dataManager.createLayerCollection("root"));
+		DataManager dataManager = Services.getService(DataManager.class);
+		setRoot(dataManager.createLayerCollection("root")); //$NON-NLS-1$
 		this.jaxbMapContext = null;
 		idTime = System.currentTimeMillis();
 	}
@@ -193,6 +191,23 @@ public class DefaultMapContext implements MapContext {
 		}
 	}
 
+	/**
+	 * @return the selectionInducedRefresh
+	 */
+	@Override
+	public boolean isSelectionInducedRefresh() {
+		return selectionInducedRefresh;
+	}
+
+	/**
+	 * @param selectionInducedRefresh
+	 *            the selectionInducedRefresh to set
+	 */
+	@Override
+	public void setSelectionInducedRefresh(boolean selectionInducedRefresh) {
+		this.selectionInducedRefresh = selectionInducedRefresh;
+	}
+
 	private final class OpenerListener extends LayerListenerAdapter implements
 			LayerListener {
 
@@ -203,18 +218,26 @@ public class DefaultMapContext implements MapContext {
 					try {
 						layer.open();
 						layer.addLayerListenerRecursively(openerListener);
-						// checkLayerCRS(layer);
+						// checking & possibly setting SRID
+						// checkSRID(layer);
 					} catch (LayerException ex) {
-						Services.getErrorManager().error(
-								"Cannot open layer: " + layer.getName()
-										+ ". The layer is removed from view.",
-								ex);
+						Services
+								.getErrorManager()
+								.error(
+										I18N
+												.getString("orbisgis.org.orbisgis.defaultMapContext.cannotOpenLayer") + layer.getName() //$NON-NLS-1$
+												+ I18N
+														.getString("orbisgis.org.orbisgis.defaultMapContext.layerRemovedFromView"), //$NON-NLS-1$
+										ex);
 						try {
 							layer.getParent().remove(layer);
 						} catch (LayerException e1) {
-							Services.getErrorManager().error(
-									"Cannot remove layer: " + layer.getName(),
-									ex);
+							Services
+									.getErrorManager()
+									.error(
+											I18N
+													.getString("orbisgis.org.orbisgis.defaultMapContext.cannotRemoveLayer") + layer.getName(), //$NON-NLS-1$
+											ex);
 						}
 					}
 				}
@@ -224,9 +247,7 @@ public class DefaultMapContext implements MapContext {
 		@Override
 		public void layerRemoved(LayerCollectionEvent e) {
 			HashSet<ILayer> newSelection = new HashSet<ILayer>();
-			for (ILayer selectedLayer : selectedLayers) {
-				newSelection.add(selectedLayer);
-			}
+			newSelection.addAll(Arrays.asList(selectedLayers));
 			ILayer[] affected = e.getAffected();
 			for (final ILayer layer : affected) {
 				// Check active
@@ -241,37 +262,75 @@ public class DefaultMapContext implements MapContext {
 					try {
 						layer.close();
 					} catch (LayerException e1) {
-						Services.getErrorManager().warning(
-								"Cannot close layer: " + layer.getName(), e1);
+						Services
+								.getErrorManager()
+								.warning(
+										I18N
+												.getString("orbisgis.org.orbisgis.defaultMapContext.cannotCloseLayer") + layer.getName(), e1); //$NON-NLS-1$
 					}
 				}
 			}
 
 			selectedLayers = newSelection.toArray(new ILayer[newSelection
 					.size()]);
+			// checkIfHasToResetSRID();
 		}
 	}
 
-	/*
-	 * private void checkLayerCRS(final ILayer layer) throws LayerException,
-	 * DriverException {
-	 * 
-	 * CoordinateReferenceSystem layerCRS = layer.getDataSource().getCRS();
-	 * 
-	 * if (crs == null) { crs = layerCRS;
-	 * 
-	 * } else if (!checkCRSProjection(layerCRS)) { throw new
-	 * LayerException("Cannot add a layer with CRS" +
-	 * "' because it's different from map CRS."); }
-	 * 
-	 * }
-	 * 
-	 * public boolean checkCRSProjection(CoordinateReferenceSystem layerCRS) {
-	 * 
-	 * return (layerCRS.getProjection().equals(crs.getProjection()));
-	 * 
-	 * }
-	 */
+	// /**
+	// * Reset if necessary the SRID of this MapContext
+	// */
+	// private void checkIfHasToResetSRID() {
+	// // maybe we need to reset the SRID
+	// if (getLayers().length == 0) {
+	// // reset it
+	// srid = -1;
+	// }
+	// }
+
+	// /**
+	// * Checks if the given layer can or cannot be added because of its SRID.
+	// *
+	// * If the methods does not throw an exception, the layer MUST be added.
+	// * @param layer the layer to check
+	// * @throws LayerException if the SRID of the layer is not compatible
+	// * with the one of the MapContext
+	// */
+	// private void checkSRID(final ILayer layer) throws LayerException {
+	// // getting the SRID of the layer
+	// int layerSRID = -1;
+	// try {
+	// Metadata m = layer.getDataSource().getMetadata();
+	// int spatialIndex = layer.getDataSource().getSpatialFieldIndex();
+	// Constraint[] c =
+	// m.getFieldType(spatialIndex).getConstraints(Constraint.SRID);
+	// if (c.length != 0) {
+	// layerSRID = Integer.parseInt(((SRIDConstaint)
+	// c[0]).getConstraintValue());
+	// }
+	// } catch (DriverException ex) {
+	// throw new LayerException(ex);
+	// }
+	//
+	// if (srid == -1) {
+	// if (layerSRID != -1) {
+	// // this layer is ok, this SRID become the one and only one
+	// // of the Mapcontext
+	// srid = layerSRID;
+	// return;
+	// } else {
+	// // nobody has a SRID...
+	// return;
+	// }
+	// } else {
+	// if (layerSRID != srid) {
+	// // different SRIDs!! Problem
+	// throw new LayerException("Cannot add a layer with SRID " + layerSRID +
+	// "because the"
+	// + "current MapContext has the SRID " + srid);
+	// }
+	// }
+	// }
 
 	/**
 	 * Creates a layer from the information obtained in the specified XML mapped
@@ -279,12 +338,12 @@ public class DefaultMapContext implements MapContext {
 	 * an error message is sent to the ErrorManager service
 	 * 
 	 * @param layer
+	 * @param layerPersistenceMap
 	 * @return
 	 */
 	public ILayer recoverTree(LayerType layer,
 			HashMap<ILayer, LayerType> layerPersistenceMap) {
-		DataManager dataManager = (DataManager) Services
-				.getService(DataManager.class);
+		DataManager dataManager = Services.getService(DataManager.class);
 		ILayer ret = null;
 		if (layer instanceof LayerCollectionType) {
 			LayerCollectionType xmlLayerCollection = (LayerCollectionType) layer;
@@ -296,9 +355,12 @@ public class DefaultMapContext implements MapContext {
 					try {
 						ret.addLayer(lyr);
 					} catch (Exception e) {
-						Services.getErrorManager().error(
-								"Cannot add layer to collection: "
-										+ lyr.getName(), e);
+						Services
+								.getErrorManager()
+								.error(
+										I18N
+												.getString("orbisgis.org.orbisgis.defaultMapContext.cannotAddLayerToCollection") //$NON-NLS-1$
+												+ lyr.getName(), e);
 					}
 				}
 			}
@@ -307,8 +369,11 @@ public class DefaultMapContext implements MapContext {
 				ret = dataManager.createLayer(layer.getSourceName());
 				layerPersistenceMap.put(ret, layer);
 			} catch (LayerException e) {
-				Services.getErrorManager().error(
-						"Cannot recover layer: " + layer.getName(), e);
+				Services
+						.getErrorManager()
+						.error(
+								I18N
+										.getString("orbisgis.org.orbisgis.defaultMapContext.cannotRecoverLayer") + layer.getName(), e); //$NON-NLS-1$
 			}
 		}
 		return ret;
@@ -326,7 +391,7 @@ public class DefaultMapContext implements MapContext {
 		if (!isOpen()) {
 			throw new IllegalStateException(
 					I18N
-							.getText("orbisgis.core.ui.plugins.views.geocognition.wizards.newMap"));
+							.getString("orbisgis.core.ui.plugins.views.geocognition.wizards.newMap")); //$NON-NLS-1$
 		}
 	}
 
@@ -354,10 +419,10 @@ public class DefaultMapContext implements MapContext {
 			org.orbisgis.core.layerModel.persistence.MapContext xmlMapContext = new org.orbisgis.core.layerModel.persistence.MapContext();
 
 			// Set the id time
-			IdTime idTime = new IdTime();
-			idTime.setName(getIdTime());
+			IdTime tempIdTime = new IdTime();
+			tempIdTime.setName(getIdTime());
 
-			xmlMapContext.setIdTime(idTime);
+			xmlMapContext.setIdTime(tempIdTime);
 
 			// get BoundinBox from ,persistence file
 			BoundingBox boundingBox = new BoundingBox();
@@ -366,7 +431,7 @@ public class DefaultMapContext implements MapContext {
 				Geometry geom = geomF.toGeometry(getBoundingBox());
 				boundingBox.setName(geom.toText());
 			} else {
-				boundingBox.setName("");
+				boundingBox.setName(""); //$NON-NLS-1$
 			}
 			xmlMapContext.setBoundingBox(boundingBox);
 
@@ -392,8 +457,11 @@ public class DefaultMapContext implements MapContext {
 	@Override
 	public void setJAXBObject(Object jaxbObject) {
 		if (isOpen()) {
-			throw new IllegalStateException("The map must"
-					+ " be closed to invoke this method");
+			throw new IllegalStateException(
+					I18N
+							.getString("orbisgis.org.orbisgis.defaultMapContext.theMapMust") //$NON-NLS-1$
+							+ I18N
+									.getString("orbisgis.org.orbisgis.defaultMapContext.beClosedToInvokeThisMethod")); //$NON-NLS-1$
 		}
 		org.orbisgis.core.layerModel.persistence.MapContext mapContext = (org.orbisgis.core.layerModel.persistence.MapContext) jaxbObject;
 
@@ -418,8 +486,11 @@ public class DefaultMapContext implements MapContext {
 				try {
 					layers[i].close();
 				} catch (LayerException e) {
-					Services.getErrorManager().error(
-							"Could not close layer: " + layers[i].getName());
+					Services
+							.getErrorManager()
+							.error(
+									I18N
+											.getString("orbisgis.org.orbisgis.defaultMapContext.cannotCloseLayer") + layers[i].getName()); //$NON-NLS-1$
 				}
 			}
 		}
@@ -436,7 +507,9 @@ public class DefaultMapContext implements MapContext {
 	public void open(IProgressMonitor pm) throws LayerException {
 
 		if (isOpen()) {
-			throw new IllegalStateException("The map is already open");
+			throw new IllegalStateException(
+					I18N
+							.getString("orbisgis.org.orbisgis.defaultMapContext.mapAlreadyOpen")); //$NON-NLS-1$
 		}
 
 		this.activeLayer = null;
@@ -457,15 +530,18 @@ public class DefaultMapContext implements MapContext {
 				String boundingBoxValue = jaxbMapContext.getBoundingBox()
 						.getName();
 
-				if (!boundingBoxValue.equals("")) {
+				if (!boundingBoxValue.isEmpty()) {
 					boundingBox = new WKTReader().read(boundingBoxValue)
 							.getEnvelopeInternal();
 				} else {
 					boundingBox = null;
 				}
 			} catch (ParseException e) {
-				Services.getErrorManager().error(
-						"Cannot read the bounding box", e);
+				Services
+						.getErrorManager()
+						.error(
+								I18N
+										.getString("orbisgis.org.orbisgis.defaultMapContext.cannotReadBoundingBox"), e); //$NON-NLS-1$
 			}
 			/*
 			 * /String wkt = jaxbMapContext.getOgcCrs().getName(); if (wkt !=
@@ -492,9 +568,13 @@ public class DefaultMapContext implements MapContext {
 					try {
 						layers[i].open();
 					} catch (LayerException e) {
-						Services.getService(ErrorManager.class).warning(
-								"Cannot open '" + layers[i].getName()
-										+ "'. Layer is removed", e);
+						Services
+								.getService(ErrorManager.class)
+								.warning(
+										I18N
+												.getString("orbisgis.org.orbisgis.defaultMapContext.cannotOpen") + layers[i].getName() //$NON-NLS-1$
+												+ I18N
+														.getString("orbisgis.org.orbisgis.defaultMapContext.layerIsRemoved"), e); //$NON-NLS-1$
 						toRemove.add(layers[i]);
 					}
 				}
@@ -504,9 +584,13 @@ public class DefaultMapContext implements MapContext {
 							layers[i].restoreLayer(layerPersistenceMap
 									.get(layers[i]));
 						} catch (LayerException e) {
-							Services.getService(ErrorManager.class).warning(
-									"Cannot restore '" + layers[i].getName()
-											+ "'. Layer is removed", e);
+							Services
+									.getService(ErrorManager.class)
+									.warning(
+											I18N
+													.getString("orbisgis.org.orbisgis.defaultMapContext.cannotRestore") + layers[i].getName() //$NON-NLS-1$
+													+ I18N
+															.getString("orbisgis.org.orbisgis.defaultMapContext.layerIsRemoved"), e); //$NON-NLS-1$
 							toRemove.add(layers[i]);
 						}
 					}
@@ -547,7 +631,6 @@ public class DefaultMapContext implements MapContext {
 							return;
 						}
 					}
-
 				});
 			}
 			setSelectedLayers(selected.toArray(new ILayer[selected.size()]));
@@ -594,15 +677,19 @@ public class DefaultMapContext implements MapContext {
 				try {
 					layer.getParent().remove(layer);
 				} catch (LayerException e) {
-					Services.getErrorManager().error(
-							"Cannot associate layer: " + layer.getName()
-									+ ". The layer must be removed manually.");
+					Services
+							.getErrorManager()
+							.error(
+									I18N
+											.getString("orbisgis.org.orbisgis.defaultMapContext.cannotAssociateLayer") + layer.getName() //$NON-NLS-1$
+											+ I18N
+													.getString("orbisgis.org.orbisgis.defaultMapContext.layerMustRemovedManually")); //$NON-NLS-1$
 				}
 			}
 		}
 	}
 
-	/**
+	/*
 	 * A mapcontext must have only one {@link CoordinateReferenceSystem} By
 	 * default the crs is set to null.
 	 */
@@ -617,4 +704,40 @@ public class DefaultMapContext implements MapContext {
 		 * public void setCoordinateReferenceSystem(CoordinateReferenceSystem
 		 * crs) { this.crs = crs; }
 		 */
+
+	public void checkSelectionRefresh(final int[] selectedRows,
+			final int[] oldSelectedRows, final DataSource dataSource) {
+		Envelope env = new Envelope();
+		env = getBoundingBox();
+		boolean mustUpdate = false;
+		try {
+			int geometryIndex = MetadataUtilities
+					.getSpatialFieldIndex(dataSource.getMetadata());
+			for (int i = 0; i < selectedRows.length; i++) {
+				Geometry g = dataSource.getFieldValue(selectedRows[i],
+						geometryIndex).getAsGeometry();
+				if (g.getEnvelopeInternal().intersects(env)) {
+					// geometry is on screen -> update
+					mustUpdate = true;
+					break;
+				}
+			}
+			if (!mustUpdate) {
+				for (int i = 0; i < oldSelectedRows.length; i++) {
+					Geometry g = dataSource.getFieldValue(oldSelectedRows[i],
+							geometryIndex).getAsGeometry();
+					if (g.getEnvelopeInternal().intersects(env)) {
+						// old geometry was on screen -> update
+						mustUpdate = true;
+						break;
+					}
+				}
+			}
+
+		} catch (DriverException ex) {
+			mustUpdate = true;
+		}
+		setSelectionInducedRefresh(mustUpdate);
+	}
+
 }

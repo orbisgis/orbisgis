@@ -81,7 +81,7 @@ public class ProportionalMethod {
 		if ((method == LOGARITHMIC) && (minValue <= 0)) {
 			throw new ClassificationMethodException(
 					I18N
-							.getText("orbisgis.org.orbisgis.core.renderer.legend.carto.defaultProportionalLegend.symbolSize.logarithmic"));
+							.getString("orbisgis.org.orbisgis.core.renderer.legend.carto.defaultProportionalLegend.symbolSize.logarithmic"));
 
 		}
 		if (minSymbolArea >= 10) {

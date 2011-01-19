@@ -95,7 +95,7 @@ public class DBTableDataSourceAdapter extends DriverDataSource implements
 			con = null;
 		} catch (SQLException e) {
 			throw new DriverException(I18N
-					.getText("gdms.datasource.error.datasource.close"), e);
+					.getString("gdms.datasource.error.datasource.close"), e);
 		}
 
 		DefaultSourceManager sm = (DefaultSourceManager) getDataSourceFactory()
@@ -135,7 +135,7 @@ public class DBTableDataSourceAdapter extends DriverDataSource implements
 					.getSchemaName());
 		} catch (SQLException e) {
 			throw new DriverException(I18N
-					.getText("gdms.driver.error.connection.open"), e);
+					.getString("gdms.driver.error.connection.open"), e);
 		}
 
 		DefaultSourceManager sm = (DefaultSourceManager) getDataSourceFactory()
@@ -173,7 +173,7 @@ public class DBTableDataSourceAdapter extends DriverDataSource implements
 				readWriteDriver.beginTrans(con);
 			} catch (SQLException e) {
 				throw new DriverException(I18N
-						.getText("gdms.driver.error.connection.open"), e);
+						.getString("gdms.driver.error.connection.open"), e);
 			}
 		}
 
@@ -198,13 +198,13 @@ public class DBTableDataSourceAdapter extends DriverDataSource implements
 						readWriteDriver.rollBackTrans(con);
 					} catch (SQLException e1) {
 						throw new DriverException(I18N
-								.getText("gdms.driver.error.connection.open"),
+								.getString("gdms.driver.error.connection.open"),
 								e1);
 					}
 				}
 
 				throw new DriverException(I18N
-						.getText("gdms.driver.error.connection.open"), e);
+						.getString("gdms.driver.error.connection.open"), e);
 			}
 		}
 
@@ -214,7 +214,7 @@ public class DBTableDataSourceAdapter extends DriverDataSource implements
 				readWriteDriver.commitTrans(con);
 			} catch (SQLException e) {
 				throw new DriverException(I18N
-						.getText("gdms.driver.error.connection.open"), e);
+						.getString("gdms.driver.error.connection.open"), e);
 			}
 		}
 
@@ -235,7 +235,7 @@ public class DBTableDataSourceAdapter extends DriverDataSource implements
 			((DBReadWriteDriver) driver).beginTrans(getConnection());
 		} catch (SQLException e) {
 			throw new DriverException(I18N
-					.getText("gdms.driver.error.connection.open"), e);
+					.getString("gdms.driver.error.connection.open"), e);
 		}
 
 		String sql = null;
@@ -264,7 +264,7 @@ public class DBTableDataSourceAdapter extends DriverDataSource implements
 				((DBReadWriteDriver) driver).rollBackTrans(getConnection());
 			} catch (SQLException e1) {
 				throw new DriverException(I18N
-						.getText("gdms.driver.error.connection.open"), e1);
+						.getString("gdms.driver.error.connection.open"), e1);
 			}
 			throw new DriverException(e.getMessage() + ":" + sql, e);
 		}
@@ -273,7 +273,7 @@ public class DBTableDataSourceAdapter extends DriverDataSource implements
 			((DBReadWriteDriver) driver).commitTrans(getConnection());
 		} catch (SQLException e) {
 			throw new DriverException(I18N
-					.getText("gdms.driver.error.connection.open"), e);
+					.getString("gdms.driver.error.connection.open"), e);
 		}
 
 		fireCommit(this);
@@ -319,7 +319,7 @@ public class DBTableDataSourceAdapter extends DriverDataSource implements
 					.getSchemaName());
 		} catch (SQLException e) {
 			throw new DriverException(I18N
-					.getText("gdms.driver.error.connection.close"), e);
+					.getString("gdms.driver.error.connection.close"), e);
 		}
 	}
 

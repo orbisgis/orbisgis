@@ -51,6 +51,7 @@ import org.orbisgis.core.layerModel.persistence.LayerType;
 import org.orbisgis.core.renderer.legend.Legend;
 import org.orbisgis.core.renderer.legend.RasterLegend;
 import org.orbisgis.core.renderer.legend.WMSLegend;
+import org.orbisgis.utils.I18N;
 
 import com.vividsolutions.jts.geom.Envelope;
 import org.orbisgis.core.renderer.se.FeatureTypeStyle;
@@ -407,7 +408,7 @@ public class LayerCollection extends AbstractLayer {
          * so it is null. 
          * @return
          */
-	public SpatialDataSourceDecorator getDataSource() {
+	public SpatialDataSourceDecorator getSpatialDataSource() {
 		return null;
 	}
 
@@ -415,42 +416,42 @@ public class LayerCollection extends AbstractLayer {
 
 	public RasterLegend[] getRasterLegend() throws DriverException,
 			UnsupportedOperationException {
-		throw new UnsupportedOperationException("Cannot set "
-				+ "a legend on a layer collection");
+		throw new UnsupportedOperationException(I18N.getString("orbisgis.org.orbisgis.layerModel.LayerCollection.cannotSet") //$NON-NLS-1$
+				+ I18N.getString("orbisgis.org.orbisgis.layerModel.LayerCollection.aLegendOnLayerCollection")); //$NON-NLS-1$
 	}
 
 	public RasterLegend[] getRasterLegend(String fieldName)
 			throws IllegalArgumentException {
-		throw new UnsupportedOperationException("Cannot set "
-				+ "a legend on a layer collection");
+		throw new UnsupportedOperationException(I18N.getString("orbisgis.org.orbisgis.layerModel.LayerCollection.cannotSet") //$NON-NLS-1$
+				+ I18N.getString("orbisgis.org.orbisgis.layerModel.LayerCollection.aLegendOnLayerCollection")); //$NON-NLS-1$
 	}
 
 	public Legend[] getVectorLegend() throws DriverException,
 			UnsupportedOperationException {
-		throw new UnsupportedOperationException("Cannot set "
-				+ "a legend on a layer collection");
+		throw new UnsupportedOperationException(I18N.getString("orbisgis.org.orbisgis.layerModel.LayerCollection.cannotSet") //$NON-NLS-1$
+				+ I18N.getString("orbisgis.org.orbisgis.layerModel.LayerCollection.aLegendOnLayerCollection")); //$NON-NLS-1$
 	}
 
 	public Legend[] getVectorLegend(String fieldName)
 			throws IllegalArgumentException {
-		throw new UnsupportedOperationException("Cannot set "
-				+ "a legend on a layer collection");
+		throw new UnsupportedOperationException(I18N.getString("orbisgis.org.orbisgis.layerModel.LayerCollection.cannotSet") //$NON-NLS-1$
+				+ I18N.getString("orbisgis.org.orbisgis.layerModel.LayerCollection.aLegendOnLayerCollection")); //$NON-NLS-1$
 	}
 
 	public void setLegend(String fieldName, Legend... legends)
 			throws DriverException {
-		throw new UnsupportedOperationException("Cannot set "
-				+ "a legend on a layer collection");
+		throw new UnsupportedOperationException(I18N.getString("orbisgis.org.orbisgis.layerModel.LayerCollection.cannotSet") //$NON-NLS-1$
+				+ I18N.getString("orbisgis.org.orbisgis.layerModel.LayerCollection.aLegendOnLayerCollection")); //$NON-NLS-1$
 	}
 
 	public void setLegend(Legend... l) throws DriverException {
-		throw new UnsupportedOperationException("Cannot set "
-				+ "a legend on a layer collection");
+		throw new UnsupportedOperationException(I18N.getString("orbisgis.org.orbisgis.layerModel.LayerCollection.cannotSet") //$NON-NLS-1$
+				+ I18N.getString("orbisgis.org.orbisgis.layerModel.LayerCollection.aLegendOnLayerCollection")); //$NON-NLS-1$
 	}
 
 	public GeoRaster getRaster() throws DriverException {
-		throw new UnsupportedOperationException("Cannot do this "
-				+ "operation on a layer collection");
+		throw new UnsupportedOperationException(I18N.getString("orbisgis.org.orbisgis.layerModel.LayerCollection.cannotdoThis") //$NON-NLS-1$
+				+ I18N.getString("orbisgis.org.orbisgis.layerModel.LayerCollection.operationOnLayerCollection")); //$NON-NLS-1$
 	}
 
 	public int[] getSelection() {
@@ -462,14 +463,14 @@ public class LayerCollection extends AbstractLayer {
 
 	public Legend[] getRenderingLegend() throws DriverException {
 		throw new UnsupportedOperationException(
-				"Cannot draw a layer collection");
+				I18N.getString("orbisgis.org.orbisgis.layerModel.LayerCollection.cannotDrawLayerCollection")); //$NON-NLS-1$
 	}
 
 	@Override
 	public WMSConnection getWMSConnection()
 			throws UnsupportedOperationException {
-		throw new UnsupportedOperationException("Cannot do this "
-				+ "operation on a layer collection");
+		throw new UnsupportedOperationException(I18N.getString("orbisgis.org.orbisgis.layerModel.LayerCollection.cannotdoThis") //$NON-NLS-1$
+				+ I18N.getString("orbisgis.org.orbisgis.layerModel.LayerCollection.operationOnLayerCollection")); //$NON-NLS-1$
 	}
 
 	@Override
@@ -479,8 +480,8 @@ public class LayerCollection extends AbstractLayer {
 
 	@Override
 	public WMSLegend getWMSLegend() {
-		throw new UnsupportedOperationException("Cannot set "
-				+ "a legend on a layer collection");
+		throw new UnsupportedOperationException(I18N.getString("orbisgis.org.orbisgis.layerModel.LayerCollection.cannotSet") //$NON-NLS-1$
+				+ I18N.getString("orbisgis.org.orbisgis.layerModel.LayerCollection.aLegendOnLayerCollection")); //$NON-NLS-1$
 	}
     
     @Override
@@ -564,10 +565,10 @@ public class LayerCollection extends AbstractLayer {
 		String tmpName = name;
 		if (allLayersNames.contains(tmpName)) {
 			int i = 1;
-			while (allLayersNames.contains(tmpName + "_" + i)) {
+			while (allLayersNames.contains(tmpName + "_" + i)) { //$NON-NLS-1$
 				i++;
 			}
-			tmpName += "_" + i;
+			tmpName += "_" + i; //$NON-NLS-1$
 		}
 		allLayersNames.add(tmpName);
 		return tmpName;

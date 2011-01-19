@@ -61,6 +61,7 @@ import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.renderer.legend.Legend;
 import org.orbisgis.core.renderer.se.Rule;
 import org.orbisgis.core.sif.CRFlowLayout;
+import org.orbisgis.utils.I18N;
 
 public class TocRenderer extends TocAbstractRenderer implements
 		TreeCellRenderer {
@@ -164,9 +165,9 @@ public class TocRenderer extends TocAbstractRenderer implements
 				iconAndLabel.setIcon(icon);
 			}
 			String name = node.getName();
-			SpatialDataSourceDecorator dataSource = node.getDataSource();
+			SpatialDataSourceDecorator dataSource = node.getSpatialDataSource();
 			if ((dataSource != null) && (dataSource.isModified())) {
-				name += "*";
+				name += "*"; //$NON-NLS-1$
 			}
 			iconAndLabel.setText(name);
 			iconAndLabel.setVisible(true);
@@ -276,7 +277,7 @@ public class TocRenderer extends TocAbstractRenderer implements
 
 			} catch (Exception e) {
 				Services.getErrorManager().error(
-						"Cannot access the legends in layer " + node.getName(),
+						I18N.getString("orbisgis.org.orbisgis.ui.toc.tocRenderer.cannotAccessLegendsLayer") + node.getName(), //$NON-NLS-1$
 						e);
 			}
 		}
@@ -331,7 +332,7 @@ public class TocRenderer extends TocAbstractRenderer implements
 				}
 			} catch (DriverException e) {
 				Services.getErrorManager().error(
-						"Cannot access the legends in layer " + node.getName(),
+						I18N.getString("orbisgis.org.orbisgis.ui.toc.tocRenderer.cannotAccessLegendsLayer") + node.getName(), //$NON-NLS-1$
 						e);
 			}
 		}
@@ -374,7 +375,7 @@ public class TocRenderer extends TocAbstractRenderer implements
 				}
 			} catch (DriverException e) {
 				Services.getErrorManager().error(
-						"Cannot access the legends in layer " + node.getName(),
+						I18N.getString("orbisgis.org.orbisgis.ui.toc.tocRenderer.cannotAccessLegendsLayer") + node.getName(), //$NON-NLS-1$
 						e);
 			}
 		}

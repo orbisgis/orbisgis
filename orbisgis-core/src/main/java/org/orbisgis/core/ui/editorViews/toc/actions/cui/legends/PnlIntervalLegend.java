@@ -106,7 +106,7 @@ public class PnlIntervalLegend extends PnlAbstractClassifiedLegend {
 				try {
 					legend.setClassificationField((String) cmbFieldNames
 							.getSelectedItem(), legendContext.getLayer()
-							.getDataSource());
+							.getSpatialDataSource());
 				} catch (DriverException e1) {
 					Services.getErrorManager().error(
 							"Cannot access the type of the field", e1);
@@ -165,7 +165,7 @@ public class PnlIntervalLegend extends PnlAbstractClassifiedLegend {
 			}
 		});
 		lblSecondColor.setBackground(Color.RED);
-		pnl.add(lblSecondColor);
+		pnl.add(lblSecondColor);	
 
 		return pnl;
 	}
@@ -247,12 +247,12 @@ public class PnlIntervalLegend extends PnlAbstractClassifiedLegend {
 		}
 		try {
 			ILayer layer = legendContext.getLayer();
-			int numFields = layer.getDataSource().getFieldCount();
+			int numFields = layer.getSpatialDataSource().getFieldCount();
 			for (int i = 0; i < numFields; i++) {
-				int fieldType = layer.getDataSource().getFieldType(i)
+				int fieldType = layer.getSpatialDataSource().getFieldType(i)
 						.getTypeCode();
 				if (TypeFactory.isNumerical(fieldType)) {
-					validFieldNames.add(layer.getDataSource().getFieldName(i));
+					validFieldNames.add(layer.getSpatialDataSource().getFieldName(i));
 				}
 			}
 		} catch (DriverException e) {
@@ -274,8 +274,7 @@ public class PnlIntervalLegend extends PnlAbstractClassifiedLegend {
 	protected void addAllAction() {
 		RangeMethod rm = null;
 		try {
-			SpatialDataSourceDecorator sds = legendContext.getLayer().getDataSource();
-			rm = new RangeMethod(sds,
+			rm = new RangeMethod(legendContext.getLayer().getSpatialDataSource(),
 					new RealAttribute((String) cmbFieldNames.getSelectedItem()),
 					(Integer) cmbIntervalCount.getSelectedItem());
 

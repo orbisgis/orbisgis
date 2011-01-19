@@ -35,7 +35,6 @@
  * erwan.bocher _at_ ec-nantes.fr
  * gwendall.petit _at_ ec-nantes.fr
  */
-
 package org.orbisgis.core.ui.plugins.editors.tableEditor;
 
 import org.gdms.data.DataSource;
@@ -43,8 +42,6 @@ import org.gdms.data.NonEditableDataSourceException;
 import org.gdms.data.metadata.Metadata;
 import org.gdms.data.types.Type;
 import org.gdms.driver.DriverException;
-import org.orbisgis.core.Services;
-import org.orbisgis.core.errorManager.ErrorManager;
 import org.orbisgis.core.sif.UIFactory;
 import org.orbisgis.core.sif.multiInputPanel.CheckBoxChoice;
 import org.orbisgis.core.sif.multiInputPanel.ComboBoxChoice;
@@ -56,10 +53,12 @@ import org.orbisgis.core.ui.editor.IEditor;
 import org.orbisgis.core.ui.editors.table.TableEditableElement;
 import org.orbisgis.core.ui.pluginSystem.AbstractPlugIn;
 import org.orbisgis.core.ui.pluginSystem.PlugInContext;
+import org.orbisgis.core.ui.pluginSystem.message.ErrorMessages;
 import org.orbisgis.core.ui.pluginSystem.workbench.Names;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchContext;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchFrame;
 import org.orbisgis.core.ui.preferences.lookandfeel.OrbisGISIcon;
+import org.orbisgis.utils.I18N;
 
 public class AddValuePlugIn extends AbstractPlugIn {
 
@@ -70,37 +69,60 @@ public class AddValuePlugIn extends AbstractPlugIn {
 		final TableEditableElement element = (TableEditableElement) editor
 				.getElement();
 		dataSource = element.getDataSource();
-		MultiInputPanel mip = new MultiInputPanel("Add value");
+		MultiInputPanel mip = new MultiInputPanel(I18N
+				.getString("orbisgis.ui.popupmenu.table.addvalue.path1"));
 		try {
 			Metadata metadata = dataSource.getMetadata();
 			Type type = metadata.getFieldType(getSelectedColumn());
 			int typeCode = type.getTypeCode();
 			switch (typeCode) {
 			case Type.BOOLEAN:
-				mip.addInput("value", "Choose a value", new ComboBoxChoice(
-						"true", "false"));
+				mip
+						.addInput(
+								"value",
+								I18N
+										.getString("orbisgis.ui.popupmenu.table.addvalue.chooseAValue"),
+								new ComboBoxChoice("true", "false"));
 				break;
 			case Type.DOUBLE:
 			case Type.FLOAT:
-				mip.addInput("value", "Put a value", new DoubleType());
+				mip
+						.addInput(
+								"value",
+								I18N
+										.getString("orbisgis.ui.popupmenu.table.addvalue.putAValue"),
+								new DoubleType());
 				break;
 			case Type.INT:
 			case Type.LONG:
 			case Type.SHORT:
-				mip.addInput("value", "Put a value", "0", new IntType());
+				mip
+						.addInput(
+								"value",
+								I18N
+										.getString("orbisgis.ui.popupmenu.table.addvalue.putAValue"),
+								"0", new IntType());
 				break;
 			case Type.STRING:
-				mip.addInput("value", "Put a value", " text ", new StringType(
-						10));
+				mip
+						.addInput(
+								"value",
+								I18N
+										.getString("orbisgis.ui.popupmenu.table.addvalue.putAValue"),
+								" text ", new StringType(10));
 				break;
 			default:
-				throw new IllegalArgumentException("Unknown data type: "
-						+ typeCode);
+				throw new IllegalArgumentException(
+						ErrorMessages.UnknownDataType + " : " + typeCode);
 			}
 			int size = element.getSelection().getSelectedRows().length;
 			if (size > 0) {
-				mip.addInput("check", "Apply on selected row", null,
-						new CheckBoxChoice(true));
+				mip
+						.addInput(
+								"check",
+								I18N
+										.getString("orbisgis.ui.popupmenu.table.addvalue.applyOnSelectedRow"),
+								null, new CheckBoxChoice(true));
 			}
 			if (UIFactory.showDialog(mip)) {
 				int[] selectedRow = null;
@@ -113,7 +135,8 @@ public class AddValuePlugIn extends AbstractPlugIn {
 
 				switch (typeCode) {
 				case Type.BOOLEAN:
-					setValue(selectedRow, new Boolean(mip.getInput("value")),
+					setValue(selectedRow, Boolean
+							.valueOf(mip.getInput("value")),
 							getSelectedColumn());
 					break;
 				case Type.DOUBLE:
@@ -125,22 +148,23 @@ public class AddValuePlugIn extends AbstractPlugIn {
 				case Type.LONG:
 				case Type.SHORT:
 					setValue(selectedRow, new Integer(mip.getInput("value")),
-							(int) getSelectedColumn());
+							getSelectedColumn());
 					break;
 				case Type.STRING:
-					setValue(selectedRow, mip.getInput("value"), getSelectedColumn());
+					setValue(selectedRow, mip.getInput("value"),
+							getSelectedColumn());
 					break;
 				default:
-					throw new IllegalArgumentException("Unknown data type: "
-							+ typeCode);
+					throw new IllegalArgumentException(
+							ErrorMessages.UnknownDataType + ": " + typeCode);
 				}
 
 			}
 
 		} catch (DriverException e) {
-			e.printStackTrace();
+			ErrorMessages.error(ErrorMessages.DataError, e);
 		} catch (NonEditableDataSourceException e) {
-			e.printStackTrace();
+			ErrorMessages.error(ErrorMessages.CannotAddValue, e);
 		}
 		return true;
 	}
@@ -158,54 +182,60 @@ public class AddValuePlugIn extends AbstractPlugIn {
 	private void setValue(int[] selectedRow, String value,
 			int selectedColumnIndex) throws DriverException,
 			NonEditableDataSourceException {
-		for (int i = 0; i < selectedRow.length; i++)
+		for (int i = 0; i < selectedRow.length; i++) {
 			dataSource.setString(i, selectedColumnIndex, value);
+		}
 		dataSource.commit();
 	}
 
 	private void setValue(int[] selectedRow, Integer value,
 			int selectedColumnIndex) throws DriverException,
 			NonEditableDataSourceException {
-		for (int i = 0; i < selectedRow.length; i++)
+		for (int i = 0; i < selectedRow.length; i++) {
 			dataSource.setInt(i, selectedColumnIndex, value);
+		}
 		dataSource.commit();
 	}
 
 	private void setValue(int[] selectedRow, double value,
 			int selectedColumnIndex) throws DriverException,
 			NonEditableDataSourceException {
-		for (int i = 0; i < selectedRow.length; i++)
+		for (int i = 0; i < selectedRow.length; i++) {
 			dataSource.setDouble(i, selectedColumnIndex, value);
+		}
 		dataSource.commit();
 	}
 
 	private void setValue(int[] selectedRow, boolean value,
 			int selectedColumnIndex) throws DriverException,
 			NonEditableDataSourceException {
-		for (int i = 0; i < selectedRow.length; i++)
+		for (int i = 0; i < selectedRow.length; i++) {
 			dataSource.setBoolean(i, selectedColumnIndex, value);
+		}
 		dataSource.commit();
 	}
 
 	public boolean isEnabled() {
-		boolean isEnabled = false;
 		IEditor tableEditor = null;
-		if((tableEditor=getPlugInContext().getTableEditor()) != null){
-			final TableEditableElement element = (TableEditableElement) tableEditor.getElement();
+		if ((tableEditor = getPlugInContext().getTableEditor()) != null) {
+			final TableEditableElement element = (TableEditableElement) tableEditor
+					.getElement();
 			try {
-				if (element!=null && (getSelectedColumn()!= -1) && element.isEditable()) {
+				if (element != null && (getSelectedColumn() != -1)
+						&& element.isEditable()) {
 					Metadata metadata = element.getDataSource().getMetadata();
 					Type type = metadata.getFieldType(getSelectedColumn());
 					int typeCode = type.getTypeCode();
-					if (typeCode != Type.GEOMETRY)
-						return isEnabled = true;
+					if (typeCode != Type.GEOMETRY) {
+						return true;
+					}
 				}
 
 			} catch (DriverException e) {
-				Services.getService(ErrorManager.class).error(
-						"Cannot access field information", e);
+				ErrorMessages.error(ErrorMessages.CannotAccessFieldInformation,
+						e);
 			}
 		}
-		return isEnabled;
+		return false;
 	}
 }

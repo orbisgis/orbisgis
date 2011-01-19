@@ -5,8 +5,9 @@ import java.awt.Color;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.errorManager.ErrorListener;
 import org.orbisgis.core.errorManager.ErrorManager;
-import org.orbisgis.core.ui.plugins.views.OutputManager;
+import org.orbisgis.core.ui.plugins.views.output.OutputManager;
 import org.orbisgis.core.ui.windows.errors.ErrorMessage;
+import org.orbisgis.utils.I18N;
 
 public class FilteringErrorListener implements ErrorListener {
 	private ErrorManager errorService;
@@ -42,8 +43,8 @@ public class FilteringErrorListener implements ErrorListener {
 				&& (System.currentTimeMillis() - lastTimeStamp) < 5000) {
 			if (!ignoredMsgShown) {
 				ignoredMsgShown = true;
-				reportOutputManager(new ErrorMessage("Similar error "
-						+ "messages not shown", null, false));
+				reportOutputManager(new ErrorMessage(I18N.getString("orbisgis.org.orbisgis.errors.filteringErrorListener.similarError") //$NON-NLS-1$
+						+ I18N.getString("orbisgis.org.orbisgis.errors.filteringErrorListener.messagesNotShown"), null, false)); //$NON-NLS-1$
 			}
 			return false;
 		} else {
@@ -71,7 +72,7 @@ public class FilteringErrorListener implements ErrorListener {
 		} else {
 			color = new Color(128, 128, 0);
 		}
-		om.print(errorMessage.getLongMessage() + "\n", color);
+		om.print(errorMessage.getLongMessage() + "\n", color); //$NON-NLS-1$
 	}
 
 	public void error(String userMsg, Throwable e) {

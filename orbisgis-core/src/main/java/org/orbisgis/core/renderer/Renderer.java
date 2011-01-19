@@ -72,6 +72,7 @@ import org.orbisgis.core.map.MapTransform;
 
 import org.orbisgis.progress.IProgressMonitor;
 import org.orbisgis.progress.NullProgressMonitor;
+import org.orbisgis.utils.I18N;
 
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
@@ -135,7 +136,7 @@ public class Renderer {
 		try {
 			long tV1 = System.currentTimeMillis();
 
-			SpatialDataSourceDecorator sds = layer.getDataSource();
+			SpatialDataSourceDecorator sds = layer.getSpatialDataSource();
 			sds.open();
 
 			Metadata metadata = sds.getMetadata();
@@ -369,7 +370,7 @@ public class Renderer {
 			} else {
 				layer = layers[i];
 				if (layer.isVisible() && extent.intersects(layer.getEnvelope())) {
-					logger.debug("Drawing " + layer.getName());
+					logger.debug(I18N.getString("orbisgis.org.orbisgis.renderer.drawing") + layer.getName()); //$NON-NLS-1$
 					long t1 = System.currentTimeMillis();
 					if (layer.isWMS()) {
 						System.out.println("   -> WMS Layer...");
@@ -395,7 +396,7 @@ public class Renderer {
 						drawWMS(
 								g2, width, height, extent, conn);
 					} else {
-						SpatialDataSourceDecorator sds = layer.getDataSource();
+						SpatialDataSourceDecorator sds = layer.getSpatialDataSource();
 						if (sds != null) {
 							try {
 								if (sds.isDefaultVectorial()) {
@@ -403,10 +404,13 @@ public class Renderer {
 								} else if (sds.isDefaultRaster()) {
 									logger.warn("Raster Not Yet supported => Not drawn: " + layer.getName());
 								} else {
-									logger.warn("Not drawn: " + layer.getName());
+									logger
+											.warn(I18N.getString("orbisgis.org.orbisgis.renderer.notDraw") //$NON-NLS-1$
+													+ layer.getName());
 								}
-							} catch (DriverException ex) {
-								java.util.logging.Logger.getLogger(Renderer.class.getName()).log(Level.SEVERE, null, ex);
+							} catch (DriverException e) {
+								Services.getErrorManager().error(
+										I18N.getString("orbisgis.org.orbisgis.renderer.cannotDraw") + layer.getName(), e); //$NON-NLS-1$
 							}
 							pm.progressTo(100
 									- (100 * i) / layers.length);
@@ -417,15 +421,13 @@ public class Renderer {
 
 					}
 					long t2 = System.currentTimeMillis();
-					logger.info("Rendering time:" + (t2 - t1) + " for " + count + " features");
-
-
+					logger.info(I18N.getString("orbisgis.org.orbisgis.renderer.renderingTime") + (t2 - t1)); //$NON-NLS-1$
 				}
 			}
 		}
 
 		long total2 = System.currentTimeMillis();
-		logger.info("Total rendering time:" + (total2 - total1));
+		logger.info(I18N.getString("orbisgis.org.orbisgis.renderer.totalRenderingTime") + (total2 - total1)); //$NON-NLS-1$
 
 
 
@@ -449,13 +451,13 @@ public class Renderer {
 			g2.drawImage(image, 0, 0, null);
 		} catch (WMSException e) {
 			Services.getService(ErrorManager.class).error(
-					"Cannot get WMS image", e);
+					I18N.getString("orbisgis.org.orbisgis.renderer.cannotGetWMSImage"), e); //$NON-NLS-1$
 		} catch (ServerErrorException e) {
 			Services.getService(ErrorManager.class).error(
-					"Cannot get WMS image", e);
+					I18N.getString("orbisgis.org.orbisgis.renderer.cannotGetWMSImage"), e); //$NON-NLS-1$
 		} catch (IOException e) {
 			Services.getService(ErrorManager.class).error(
-					"Cannot get WMS image", e);
+					I18N.getString("orbisgis.org.orbisgis.renderer.cannotGetWMSImage"), e); //$NON-NLS-1$
 		}
 	}
 
@@ -663,7 +665,7 @@ public class Renderer {
 
 		} else {
 			throw new IllegalArgumentException(
-					"The RGB code doesn't contain RGB codes");
+					I18N.getString("orbisgis.org.orbisgis.renderer.cannotCreatRGBCodes")); //$NON-NLS-1$
 
 
 

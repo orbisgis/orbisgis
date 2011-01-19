@@ -416,21 +416,8 @@ public class ShapeHelper {
 				// BC line orientation
 				double beta = Math.atan2(cy - by, cx - bx);
 
-				System.out.println("Alpha: " + alpha / _0_0175);
-				System.out.println("Beta: " + beta / _0_0175);
-
 				// ABC Angle
 				gamma = alpha - beta;
-
-				System.out.println("gamma: " + gamma / _0_0175);
-
-				System.out.println("Offset: " + offset);
-
-				System.out.println("i-1: " + ax + ";" + ay);
-				System.out.println("i:   " + bx + ";" + by);
-				System.out.println("i+1: " + cx + ";" + cy);
-
-
 
 				if (Math.abs(gamma) > _0_0175 * 5
 						&& (offset < 0 && gamma > Math.PI
@@ -442,109 +429,16 @@ public class ShapeHelper {
 					double x2, y2;
 
 					double a1 = alpha - theta;
-					// Arc beginning
 					x1 = bx + Math.cos(a1) * absOffset;
 					y1 = by + Math.sin(a1) * absOffset;
 
-					// Arc end
 					double a2 = beta + theta;
 
 					x2 = bx + Math.cos(a2) * absOffset;
 					y2 = by + Math.sin(a2) * absOffset;
 
-					// Move to arc begin
 					newShp.lineTo(x1, y1);
 					newShp.lineTo(x2, y2);
-
-
-					// Interior
-					/*gamma = (alpha + beta) / 2;
-
-					double a1, a2;
-					double b1, b2;
-
-					a1 = (ay - by) / (ax - bx);
-					a2 = (cy - by) / (cx - bx);
-
-					b1 = by - a1 * bx;
-					b2 = by - a2 * bx;
-
-					b1 -= offset / Math.cos(alpha);
-					b2 += offset / Math.cos(beta);
-
-					double x2 = 0, y2 = 0;
-
-					double localXOffset = offset;
-
-					if (Double.isInfinite(a1) && Double.isInfinite(a2)) {
-					System.out.println("Should never occurs !!!");
-					continue;
-
-					} else if (Double.isInfinite(a1)) {
-					// special case for vertical lines
-					// Seg i-1 -> i is vertical
-					if (alpha < 0 && offset > 0 || alpha > 0 && offset < 0)
-					localXOffset *= -1;
-
-					x2 = bx + localXOffset;
-					y2 = a2 * x2 + b2;
-					} else if (Double.isInfinite(a2)) {
-					// special case for vertical lines
-					// Seg i -> i+i is vertical
-
-					if (beta > 0 && offset > 0 || beta < 0 && offset < 0)
-					localXOffset *= -1;
-
-					x2 = bx + localXOffset;
-					y2 = a1 * x2 + b1;
-					} else {
-					x2 = (b2 - b1) / (a1 - a2);
-					y2 = a1 * x2 + b1;
-					}*/
-
-					/* Make sure (x2;y2) is good ! (i.e. within abcd polygon)
-					 *   dâc = 90°
-					 *   bĉe = 90°
-					 *                       d
-					 *                ..--'|
-					 *          ..--''     |
-					 *  a .--''            |
-					 *    \                |
-					 *     \               |
-					 *      \ (i)          |(i+1)
-					 *       \_____________|
-					 *       b             c
-					 */
-					/*
-
-					double dx1 = bx - ax;
-					double dy1 = by - ay;
-
-					double dx2 = cx - bx;
-					double dy2 = cy - by;
-
-					System.out.println ("dX1 : " + dx1);
-					System.out.println ("dY1 : " + dy1);
-
-					System.out.println ("dX2 : " + dx2);
-					System.out.println ("dY2 : " + dy2);
-
-					Point2D.Double d = getLineIntersection(ax, ay, ax + dy1, ay - dx1,
-					cx, cy, cx + dy2, cy - dx2);
-
-					if (d != null){
-					double[] pxs = {ax, bx, cx, d.x};
-					double[] pys = {ay, by, cy, d.y};
-
-					// If the point is in the polygon
-					if (isPointInPolygon(pxs, pys, x2, y2)){
-					System.out.println ("Point is accepted => " + x2 + ";" + y2);
-					newShp.lineTo(x2, y2);
-					} else {
-					System.out.println ("Point is rejected -> accept intersection => " + d.x + ";" + d.y);
-					newShp.lineTo(d.x, d.y);
-					}
-					}*/
 				} else {
 
 					// Exterior
@@ -574,8 +468,6 @@ public class ShapeHelper {
 					double x3;
 					double y3;
 
-					System.out.println("H: " + h);
-
 					if (Math.abs(h) < 0.001) {
 						dx = bx - x1;
 						dy = by - y1;
@@ -597,8 +489,8 @@ public class ShapeHelper {
 			}
 		}
 
-		//return newShp;
-		return clean(newShp);
+		return newShp;
+		//return clean(newShp);
 	}
 
 	/**
@@ -639,32 +531,24 @@ public class ShapeHelper {
 		ArrayList<Double> x = new ArrayList<Double>();
 		ArrayList<Double> y = new ArrayList<Double>();
 
-		Path2D.Double cleaned = new Path2D.Double();
-
 		double coords[] = new double[6];
 
 		// Want a direct access to coordinates !!!
 		while (!it.isDone()) {
 			it.currentSegment(coords);
-
 			x.add(coords[0]);
 			y.add(coords[1]);
-
 			it.next();
 		}
 
-
-		int i, j;
-
-		int k, l = 0;
-
-		cleaned.moveTo(x.get(0), y.get(0));
+		int i, j, k = 0;
 
 		Point2D.Double intersection;
 
 		double x1, x2;
 		double y1, y2;
 
+		// Iterate allong line points, from first to last-1
 		for (i = 0; i < x.size() - 1; i++) {
 			x1 = x.get(i);
 			x2 = x.get(i + 1);
@@ -673,17 +557,17 @@ public class ShapeHelper {
 
 			intersection = null;
 
+			// Check for loop in the 5 next segment, stating by the farest
 			for (j = i + 5; j > i+1; j--) {
-				k = j;
-				l = (k + 1);
+				k = (j + 1);
 
-				if (l >= x.size())
-					continue;
-
+				if (k >= x.size())
+					break;
 
 				intersection = computeSegmentIntersection(x1, y1, x2, y2,
-						x.get(k), y.get(k), x.get(l), y.get(l));
+						x.get(j), y.get(j), x.get(k), y.get(k));
 
+				// The first detected intersection is the one to take into account
 				if (intersection != null) {
 					break;
 				}
@@ -691,20 +575,27 @@ public class ShapeHelper {
 
 			if (intersection != null) {
 				System.out.println ("Intersection: " + intersection.x + ", " + intersection.y);
-				cleaned.lineTo(intersection.x, intersection.y);
-				cleaned.lineTo(x.get(l), y.get(l));
-				System.out.println ("L-Point: " + x.get(l) + ", " + y.get(l));
-				if (l > i) {
-					i = l-1;
+				System.out.println ("L-Point: " + x.get(k) + ", " + y.get(k));
+
+				for (j=0;j<k-i;j++){
+					x.remove(i+1);
+					y.remove(i+1);
 				}
+
+				x.add(i+1, intersection.x);
+				y.add(i+1, intersection.y);
+
 			} else {
 				System.out.println ("i+1 - Point: " + x2 + ", " + y2);
-				cleaned.lineTo(x2, y2);
 			}
 		}
 
-		cleaned.lineTo(x.get(x.size()-1), y.get(y.size()-1));
+		Path2D.Double cleaned = new Path2D.Double();
 
+		cleaned.moveTo(x.get(0), y.get(0));
+		for (i=1;i<x.size();i++){
+			cleaned.lineTo(x.get(i), y.get(i));
+		}
 
 		return cleaned;
 	}

@@ -43,6 +43,7 @@ import org.orbisgis.core.Services;
 import org.orbisgis.core.background.BackgroundListener;
 import org.orbisgis.core.background.BackgroundManager;
 import org.orbisgis.core.background.Job;
+import org.orbisgis.core.ui.windows.mainFrame.OrbisGISFrame;
 
 public class JobPopup {
 
@@ -52,12 +53,11 @@ public class JobPopup {
 		return panel;
 	}
 
-	public JobPopup() {
-		panel = new JobWindow();
+	public JobPopup(final OrbisGISFrame orbisGISFrame) {
+		panel = new JobWindow(orbisGISFrame);
 	}
 
 	public void initialize() {
-
 		BackgroundManager bm = (BackgroundManager) Services
 				.getService(BackgroundManager.class);
 

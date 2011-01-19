@@ -55,8 +55,8 @@ public class ImportFeatureTypeStylePlugIn extends AbstractPlugIn {
 
 	public void execute(MapContext mapContext, ILayer layer) {
 		try {
-			Type typ = layer.getDataSource().getMetadata().getFieldType(
-					layer.getDataSource().getSpatialFieldIndex());
+			Type typ = layer.getSpatialDataSource().getMetadata().getFieldType(
+					layer.getSpatialDataSource().getSpatialFieldIndex());
 			GeometryConstraint cons = (GeometryConstraint) typ
 					.getConstraint(Constraint.GEOMETRY_TYPE);
 

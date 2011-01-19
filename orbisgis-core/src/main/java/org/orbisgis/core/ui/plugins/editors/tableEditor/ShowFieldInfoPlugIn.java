@@ -45,16 +45,17 @@ import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeFactory;
 import org.gdms.driver.DriverException;
 import org.orbisgis.core.Services;
-import org.orbisgis.core.errorManager.ErrorManager;
 import org.orbisgis.core.ui.editor.IEditor;
 import org.orbisgis.core.ui.editors.table.TableEditableElement;
 import org.orbisgis.core.ui.pluginSystem.AbstractPlugIn;
 import org.orbisgis.core.ui.pluginSystem.PlugInContext;
+import org.orbisgis.core.ui.pluginSystem.message.ErrorMessages;
 import org.orbisgis.core.ui.pluginSystem.workbench.Names;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchContext;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchFrame;
-import org.orbisgis.core.ui.plugins.views.OutputManager;
+import org.orbisgis.core.ui.plugins.views.output.OutputManager;
 import org.orbisgis.core.ui.preferences.lookandfeel.OrbisGISIcon;
+import org.orbisgis.utils.I18N;
 
 public class ShowFieldInfoPlugIn extends AbstractPlugIn {
 
@@ -65,12 +66,19 @@ public class ShowFieldInfoPlugIn extends AbstractPlugIn {
 		try {
 			Metadata metadata = element.getDataSource().getMetadata();
 			OutputManager om = Services.getService(OutputManager.class);
-			om.print("Field name:" + metadata.getFieldName(getSelectedColumn())
-					+ "\n");
+			om
+					.print(I18N
+							.getString("orbisgis.org.orbisgis.core.ui.plugins.editors.tableEditor.fieldName")
+							+ metadata.getFieldName(getSelectedColumn()) + "\n");
 			Type type = metadata.getFieldType(getSelectedColumn());
-			om.print("Field type:"
-					+ TypeFactory.getTypeName(type.getTypeCode())
-					+ "\nConstraints:\n");
+			om
+					.print(I18N
+							.getString("orbisgis.org.orbisgis.core.ui.plugins.editors.tableEditor.fieldType")
+							+ TypeFactory.getTypeName(type.getTypeCode())
+							+ "\n"
+							+ I18N
+									.getString("orbisgis.org.orbisgis.core.ui.plugins.editors.tableEditor.fieldConstraints")
+							+ ":\n");
 			Constraint[] cons = type.getConstraints();
 			for (Constraint constraint : cons) {
 				om.print("  "
@@ -80,15 +88,14 @@ public class ShowFieldInfoPlugIn extends AbstractPlugIn {
 			}
 
 		} catch (DriverException e) {
-			Services.getService(ErrorManager.class).error(
-					"Cannot access field information", e);
+			ErrorMessages.error(ErrorMessages.CannotAccessFieldInformation, e);
 		}
 		return true;
 	}
 
 	public void initialize(PlugInContext context) throws Exception {
 		WorkbenchContext wbContext = context.getWorkbenchContext();
-		WorkbenchFrame frame = (WorkbenchFrame) wbContext.getWorkbench()
+		WorkbenchFrame frame = wbContext.getWorkbench()
 				.getFrame().getTableEditor();
 		context.getFeatureInstaller().addPopupMenuItem(frame, this,
 				new String[] { Names.POPUP_TABLE_SHOWFIELD_PATH1 },

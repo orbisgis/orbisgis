@@ -59,8 +59,8 @@ public class CreateTableOperator extends AbstractOperator implements Operator {
 	public ObjectDriver getResultContents(IProgressMonitor pm)
 			throws ExecutionException {
 		DataSource ds;
+                SourceManager sourceManager = dsf.getSourceManager();
 		try {
-			SourceManager sourceManager = dsf.getSourceManager();
 			if (!sourceManager.exists(tableName)) {
                         sourceManager.register(tableName, dsf.getResultFile());
 			}
@@ -74,6 +74,10 @@ public class CreateTableOperator extends AbstractOperator implements Operator {
 			sourceManager.remove(ds.getName());
 			return null;
 		} catch (DriverException e1) {
+                        // keep the sourceManager in the same state as before the call
+                        if (sourceManager.exists(tableName)) {
+                                sourceManager.remove(tableName);
+                        }
 			throw new ExecutionException("Cannot create table:" + tableName, e1);
 		}
 	}

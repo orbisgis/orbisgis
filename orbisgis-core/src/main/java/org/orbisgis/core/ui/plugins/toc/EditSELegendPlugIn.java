@@ -37,8 +37,6 @@
  */
 package org.orbisgis.core.ui.plugins.toc;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 import org.gdms.data.types.Constraint;
 import org.gdms.data.types.GeometryConstraint;
@@ -61,8 +59,8 @@ import org.orbisgis.core.ui.pluginSystem.PlugInContext.SelectionAvailability;
 import org.orbisgis.core.ui.pluginSystem.workbench.Names;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchContext;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchFrame;
-import org.orbisgis.core.ui.plugins.views.MapEditorPlugIn;
 import org.orbisgis.core.ui.plugins.views.editor.EditorManager;
+import org.orbisgis.core.ui.plugins.views.mapEditor.MapEditorPlugIn;
 import org.orbisgis.core.ui.preferences.lookandfeel.OrbisGISIcon;
 
 public class EditSELegendPlugIn extends AbstractPlugIn {
@@ -94,8 +92,8 @@ public class EditSELegendPlugIn extends AbstractPlugIn {
 
 	public void execute(MapContext mapContext, ILayer layer) {
 		try {
-			Type typ = layer.getDataSource().getMetadata().getFieldType(
-					layer.getDataSource().getSpatialFieldIndex());
+			Type typ = layer.getSpatialDataSource().getMetadata().getFieldType(
+					layer.getSpatialDataSource().getSpatialFieldIndex());
 
 			GeometryConstraint cons = (GeometryConstraint) typ.getConstraint(Constraint.GEOMETRY_TYPE);
 

@@ -76,10 +76,11 @@ import org.orbisgis.core.ui.components.resourceTree.ResourceTree;
 import org.orbisgis.core.ui.editor.IEditor;
 import org.orbisgis.core.ui.editorViews.toc.TocTreeModel.RuleNode;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchFrame;
-import org.orbisgis.core.ui.plugins.views.MapEditorPlugIn;
 import org.orbisgis.core.ui.plugins.views.editor.EditorManager;
 import org.orbisgis.core.ui.plugins.views.geocatalog.TransferableSource;
+import org.orbisgis.core.ui.plugins.views.mapEditor.MapEditorPlugIn;
 import org.orbisgis.progress.IProgressMonitor;
+import org.orbisgis.utils.I18N;
 
 public class Toc extends ResourceTree implements WorkbenchFrame {
 
@@ -108,7 +109,7 @@ public class Toc extends ResourceTree implements WorkbenchFrame {
 
 		tocRenderer = new TocRenderer(this);
 		DataManager dataManager = (DataManager) Services.getService(DataManager.class);
-		treeModel = new TocTreeModel(dataManager.createLayerCollection("root"),
+		treeModel = new TocTreeModel(dataManager.createLayerCollection("root"), //$NON-NLS-1$
 				getTree());
 		this.setModel(treeModel);
 		this.setTreeCellRenderer(tocRenderer);
@@ -272,7 +273,7 @@ public class Toc extends ResourceTree implements WorkbenchFrame {
 							layer.moveTo(dropNode);
 						} catch (LayerException e) {
 							Services.getErrorManager().error(
-									"Cannot move layer", e);
+									I18N.getString("orbisgis.org.orbisgis.ui.toc.cannotMoveLayer"), e); //$NON-NLS-1$
 						}
 					}
 				} else {
@@ -285,7 +286,7 @@ public class Toc extends ResourceTree implements WorkbenchFrame {
 									layer.moveTo(parent, index);
 								} catch (LayerException e) {
 									Services.getErrorManager().error(
-											"Cannot move layer: "
+											I18N.getString("orbisgis.org.orbisgis.ui.toc.cannotMoveLayer") //$NON-NLS-1$
 											+ layer.getName());
 								}
 							}
@@ -301,9 +302,9 @@ public class Toc extends ResourceTree implements WorkbenchFrame {
 				return false;
 			}
 		} catch (UnsupportedFlavorException e1) {
-			throw new RuntimeException("bug", e1);
+			throw new RuntimeException(I18N.getString("orbisgis.org.orbisgis.ui.toc.bug"), e1); //$NON-NLS-1$
 		} catch (IOException e1) {
-			throw new RuntimeException("bug", e1);
+			throw new RuntimeException(I18N.getString("orbisgis.org.orbisgis.ui.toc.bug"), e1); //$NON-NLS-1$
 		}
 
 		return true;
@@ -434,7 +435,7 @@ public class Toc extends ResourceTree implements WorkbenchFrame {
 					dropNode = parent;
 				} else {
 					Services.getErrorManager().error(
-							"Cannot create layer on " + dropNode.getName());
+							I18N.getString("orbisgis.org.orbisgis.ui.toc.cannotCreateLayerOn") + dropNode.getName()); //$NON-NLS-1$
 					return;
 				}
 			} else {
@@ -450,22 +451,22 @@ public class Toc extends ResourceTree implements WorkbenchFrame {
 					try {
 						dropNode.insertLayer(dataManager.createLayer(sourceName), index);
 					} catch (LayerException e) {
-						throw new RuntimeException("Cannot "
-								+ "add the layer to the destination", e);
+						throw new RuntimeException(I18N.getString("orbisgis.org.orbisgis.ui.toc.cannot") //$NON-NLS-1$
+								+ I18N.getString("orbisgis.org.orbisgis.ui.toc.addLayerToDestination"), e); //$NON-NLS-1$
 					}
 				}
 			}
 		}
 
 		public String getTaskName() {
-			return "Importing resources";
+			return I18N.getString("orbisgis.org.orbisgis.ui.toc.importingResources"); //$NON-NLS-1$
 		}
 	}
 
 	private void addLayerListenerRecursively(ILayer rootLayer,
 			MyLayerListener refreshLayerListener) {
 		rootLayer.addLayerListener(refreshLayerListener);
-		DataSource dataSource = rootLayer.getDataSource();
+		DataSource dataSource = rootLayer.getSpatialDataSource();
 		if (dataSource != null) {
 			dataSource.addEditionListener(refreshLayerListener);
 			dataSource.addDataSourceListener(refreshLayerListener);
@@ -479,7 +480,7 @@ public class Toc extends ResourceTree implements WorkbenchFrame {
 	private void removeLayerListenerRecursively(ILayer rootLayer,
 			MyLayerListener refreshLayerListener) {
 		rootLayer.removeLayerListener(refreshLayerListener);
-		DataSource dataSource = rootLayer.getDataSource();
+		DataSource dataSource = rootLayer.getSpatialDataSource();
 		if (dataSource != null) {
 			dataSource.removeEditionListener(refreshLayerListener);
 			dataSource.removeDataSourceListener(refreshLayerListener);
@@ -529,8 +530,10 @@ public class Toc extends ResourceTree implements WorkbenchFrame {
 
 		} else {
 			// Remove the references to the mapContext
-			DataManager dataManager = (DataManager) Services.getService(DataManager.class);
-			treeModel = new TocTreeModel(dataManager.createLayerCollection("root"), getTree());
+			DataManager dataManager = (DataManager) Services
+					.getService(DataManager.class);
+			treeModel = new TocTreeModel(dataManager
+					.createLayerCollection("root"), getTree()); //$NON-NLS-1$
 			ignoreSelection = true;
 			this.setModel(treeModel);
 			ignoreSelection = false;

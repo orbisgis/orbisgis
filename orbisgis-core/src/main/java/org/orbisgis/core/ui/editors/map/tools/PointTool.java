@@ -114,9 +114,10 @@ public class PointTool extends AbstractPointTool {
 					.createMultiPoint(new Point[] { point });
 		}
 
-		SpatialDataSourceDecorator sds = mc.getActiveLayer().getDataSource();
+		SpatialDataSourceDecorator sds = mc.getActiveLayer().getSpatialDataSource();
 		try {
 			Value[] row = new Value[sds.getMetadata().getFieldCount()];
+                        g.setSRID(sds.getSRID());
 			row[sds.getSpatialFieldIndex()] = ValueFactory.createValue(g);
 			row = ToolUtilities.populateNotNullFields(sds, row);
 			sds.insertFilledRow(row);
@@ -131,6 +132,6 @@ public class PointTool extends AbstractPointTool {
 	}
 
 	public String getName() {
-		return I18N.getText("orbisgis.core.ui.editors.map.tool.point_tooltip");
+		return I18N.getString("orbisgis.core.ui.editors.map.tool.point_tooltip");
 	}
 }

@@ -49,8 +49,10 @@ import org.orbisgis.core.PersistenceException;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.ui.editor.IEditor;
 import org.orbisgis.core.ui.pluginSystem.ViewPlugIn;
+import org.orbisgis.core.ui.pluginSystem.message.ErrorMessages;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchContext;
 import org.orbisgis.core.ui.plugins.views.editor.DockingWindowUtil;
+import org.orbisgis.utils.I18N;
 
 public class ViewDecorator {
 	private String id = "null";
@@ -94,10 +96,6 @@ public class ViewDecorator {
 		return id;
 	}
 
-	/*
-	 * public String getTitle() { return title; }
-	 */
-
 	public ImageIcon getIcon() {
 		return icon;
 	}
@@ -116,8 +114,8 @@ public class ViewDecorator {
 		try {
 			view.loadStatus();
 		} catch (PersistenceException e) {
-			Services.getErrorManager().error(
-					"Cannot recover previous status of view " + getId(), e);
+			ErrorMessages.error(ErrorMessages.CannotRecoverPreviousStatusOfView
+					+ " " + getId(), e);
 		}
 		component = view.getComponent();
 		dockingView = new View(id, icon, component);
@@ -144,12 +142,6 @@ public class ViewDecorator {
 
 		editorChanged(activeEditor, activeEditorId);
 	}
-
-	/*
-	 * private Icon getImageIcon() { if (icon != null) { URL url =
-	 * ViewDecorator.class.getResource(icon); if (url != null) { return new
-	 * ImageIcon(url); } else { return null; } } else { return null; } }
-	 */
 
 	public Component getViewComponent() {
 		return component;
@@ -204,21 +196,20 @@ public class ViewDecorator {
 		if (activeComponent == null) {
 			activeComponent = dockingView.getComponent();
 		}
-		dockingView
-				.setComponent(new JLabel(
-						"<html>View not available.<br/>Select an associated editor.</html>"));
+		dockingView.setComponent(new JLabel(I18N
+				.getString("orbisgis.errorMessages.viewNotAvailable")));
 	}
 
 	public void editorClosed(String editorId) {
 		WorkbenchContext wbContext = Services
-			.getService(WorkbenchContext.class);
+				.getService(WorkbenchContext.class);
 		wbContext.setLastAction("Editor closed");
 		if (this.editors.length == 0) {
 			return;
 		} else {
 			if ((dockingView != null) && isAssociatedEditor(editorId)) {
 				((ViewPlugIn) view).editorViewDisabled();
-				
+
 			}
 		}
 	}

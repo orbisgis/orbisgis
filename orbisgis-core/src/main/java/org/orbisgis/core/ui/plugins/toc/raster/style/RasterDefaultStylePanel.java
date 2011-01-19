@@ -54,9 +54,10 @@ import org.grap.lut.LutGenerator;
 import org.orbisgis.core.renderer.legend.RasterLegend;
 import org.orbisgis.core.sif.CRFlowLayout;
 import org.orbisgis.core.sif.CarriageReturn;
+import org.orbisgis.utils.I18N;
 
 public class RasterDefaultStylePanel extends JPanel {
-	private static final String DEFAULT_COLOR_MODEL = "default";
+	private static final String DEFAULT_COLOR_MODEL = "default"; //$NON-NLS-1$
 	private JComboBox cmbColorModels;
 	private JLabel jLabel;
 	private JSlider opacitySlider;
@@ -98,7 +99,7 @@ public class RasterDefaultStylePanel extends JPanel {
 
 		opacitySlider = new JSlider(0, 100, 100);
 		opacitySlider.setBorder(BorderFactory
-				.createTitledBorder("Opacity (in %)"));
+				.createTitledBorder(I18N.getString("orbisgis.org.orbisgis.ui.rasterDefaultStylePanel.opacityPercent"))); //$NON-NLS-1$
 		opacitySlider.setMajorTickSpacing(25);
 		opacitySlider.setMinorTickSpacing(5);
 		opacitySlider.setPaintTicks(true);

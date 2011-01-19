@@ -15,7 +15,7 @@ public class WKTTab extends JPanel {
 	private String driverWKTHTML;
 
 	private static final String NO_SRS_INFO = I18N
-			.getText("MapContext contains no CRS text information");
+			.getString("MapContext contains no CRS text information");
 
 	public WKTTab(String driverWKT) {
 		setWKT(driverWKT);

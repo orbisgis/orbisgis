@@ -55,6 +55,7 @@ import javax.swing.text.BadLocationException;
 
 import org.orbisgis.core.Services;
 import org.orbisgis.core.ui.plugins.views.beanShellConsole.ui.BshConsolePanel;
+import org.orbisgis.utils.I18N;
 
 public class BshActionsListener implements ActionListener, DocumentListener {
 
@@ -75,10 +76,10 @@ public class BshActionsListener implements ActionListener, DocumentListener {
 		case BshConsoleAction.CLEAR:
 			if (consolePanel.getText().trim().length() > 0) {
 				int answer = JOptionPane.showConfirmDialog(null,
-						"Do you want to clear the contents of the console?",
-						"Clear script", JOptionPane.YES_NO_OPTION);
+						I18N.getString("orbisgis.org.orbisgis.ui.bshActionsListener.clearTheConsole"), //$NON-NLS-1$
+						I18N.getString("orbisgis.org.orbisgis.ui.bshActionsListener.clearScript"), JOptionPane.YES_NO_OPTION); //$NON-NLS-1$
 				if (answer == JOptionPane.YES_OPTION) {
-					consolePanel.setText("");
+					consolePanel.setText(""); //$NON-NLS-1$
 				}
 			}
 			break;
@@ -91,13 +92,13 @@ public class BshActionsListener implements ActionListener, DocumentListener {
 						answer = JOptionPane
 								.showConfirmDialog(
 										null,
-										"Do you want to clear all before loadding the file ?",
-										"Open file",
+										I18N.getString("orbisgis.org.orbisgis.ui.bshActionsListener.clearAllBeforeOpenFile"), //$NON-NLS-1$
+										I18N.getString("orbisgis.org.orbisgis.ui.bshActionsListener.openFile"), //$NON-NLS-1$
 										JOptionPane.YES_NO_CANCEL_OPTION);
 					}
 
 					if (answer == JOptionPane.YES_OPTION) {
-						consolePanel.setText("");
+						consolePanel.setText(""); //$NON-NLS-1$
 					}
 
 					if (answer != JOptionPane.CANCEL_OPTION) {
@@ -105,17 +106,21 @@ public class BshActionsListener implements ActionListener, DocumentListener {
 					}
 				}
 			} catch (BadLocationException e1) {
-				Services.getErrorManager().error("Cannot add script", e1);
+				Services.getErrorManager().error(I18N.getString("orbisgis.org.orbisgis.ui.bshActionsListener.cannotAddScript"), e1); //$NON-NLS-1$
 			} catch (IOException e1) {
-				Services.getErrorManager().error("IO error.", e1);
+				Services.getErrorManager().error(I18N.getString("orbisgis.org.orbisgis.ui.bshActionsListener.ioError"), e1); //$NON-NLS-1$
 			}
 			break;
 		case BshConsoleAction.SAVE:
 			try {
-				listener.save(consolePanel.getText());
-				consolePanel.setStatusMessage("The file has been saved.");
+				boolean saved = listener.save(consolePanel.getText());
+                                if (saved) {
+                                        consolePanel.setStatusMessage(I18N.getString("orbisgis.org.orbisgis.ui.bshActionsListener.fileSaved"));
+                                } else {
+                                        consolePanel.setStatusMessage("");
+                                }
 			} catch (IOException e1) {
-				Services.getErrorManager().error("IO error.", e1);
+				Services.getErrorManager().error(I18N.getString("orbisgis.org.orbisgis.ui.bshActionsListener.ioError"), e1); //$NON-NLS-1$
 			}
 
 			break;

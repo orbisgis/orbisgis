@@ -54,6 +54,7 @@ import org.orbisgis.core.ui.pluginSystem.workbench.Names;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchContext;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchFrame;
 import org.orbisgis.core.ui.preferences.lookandfeel.OrbisGISIcon;
+import org.orbisgis.utils.I18N;
 
 public class RasterDefaultStylePlugIn extends AbstractPlugIn {
 
@@ -80,11 +81,11 @@ public class RasterDefaultStylePlugIn extends AbstractPlugIn {
 			}
 
 		} catch (DriverException e) {
-			Services.getErrorManager().error("Cannot get the legend", e);
+			Services.getErrorManager().error(I18N.getString("orbisgis.org.orbisgis.ui.rasterDefaultStylePlugIn.cannotGetLegend"), e); //$NON-NLS-1$
 		} catch (IOException e) {
-			Services.getErrorManager().error("Cannot get the default style", e);
+			Services.getErrorManager().error(I18N.getString("orbisgis.org.orbisgis.ui.rasterDefaultStylePlugIn.cannotGetDefaultStyle"), e); //$NON-NLS-1$
 
-			Services.getErrorManager().error("Cannot get the default style", e);
+			Services.getErrorManager().error(I18N.getString("orbisgis.org.orbisgis.ui.rasterDefaultStylePlugIn.cannotGetDefaultStyle"), e); //$NON-NLS-1$
 		}
 
 		return false;

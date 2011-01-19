@@ -244,7 +244,7 @@ public class DataSourceFactory {
 			return getDataSource(new ObjectSourceDefinition(object), mode,
 					new NullProgressMonitor());
 		} catch (DriverLoadException e) {
-			throw new RuntimeException(I18N.getText("gdms.bug"));
+			throw new RuntimeException(I18N.getString("gdms.bug"));
 		} catch (DataSourceCreationException e) {
 			throw new RuntimeException("bug!");
 		}

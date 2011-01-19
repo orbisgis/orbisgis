@@ -77,7 +77,7 @@ public class FileSourceDefinition extends AbstractDataSourceDefinition {
                 throws DataSourceCreationException {
                 if (!file.exists()) {
                         throw new DataSourceCreationException(file + " "
-                                + I18N.getText("gdms.datasource.error.noexits"));
+                                + I18N.getString("gdms.datasource.error.noexits"));
                 }
                 ((ReadOnlyDriver) getDriver()).setDataSourceFactory(getDataSourceFactory());
 
@@ -99,10 +99,15 @@ public class FileSourceDefinition extends AbstractDataSourceDefinition {
                 FileReadWriteDriver d = (FileReadWriteDriver) getDriver();
                 d.setDataSourceFactory(getDataSourceFactory());
                 contents.open();
+                boolean fileExisted = file.exists();
                 try {
                         d.writeFile(file, contents, pm);
                 } catch (DriverException e) {
                         contents.close();
+                        // keep the filesystem in the same state as before the call
+                        if (!fileExisted) {
+                                file.delete();
+                        }
                         throw e;
                 }
                 contents.close();

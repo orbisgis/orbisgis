@@ -5,6 +5,8 @@
 package org.orbisgis.core.renderer.se;
 
 import com.vividsolutions.jts.geom.Geometry;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.gdms.data.DataSourceCreationException;
 import org.gdms.data.FilterDataSourceDecorator;
@@ -61,8 +63,9 @@ public final class Rule implements SymbolizerNode {
 
 		Geometry geometry = null;
 		try {
-			geometry = layer.getDataSource().getGeometry(0);
+			geometry = layer.getSpatialDataSource().getGeometry(0);
 		} catch (DriverException ex) {
+			Logger.getLogger(Rule.class.getName()).log(Level.SEVERE, null, ex);
 		}
 
 		Symbolizer symb;

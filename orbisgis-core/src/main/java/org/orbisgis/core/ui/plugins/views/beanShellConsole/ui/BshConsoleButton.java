@@ -65,5 +65,6 @@ public class BshConsoleButton extends JButton {
 		setActionCommand(actionCommandType.toString());
 		addActionListener(actionsListener);
 		setBorderPainted(false);
+                setOpaque(false);
 	}
 }

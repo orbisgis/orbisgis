@@ -77,6 +77,7 @@ import org.orbisgis.core.ui.editorViews.toc.actions.cui.components.SymbolCollect
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.components.SymbolSelection;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.legend.ISymbolEditor;
 import org.orbisgis.core.ui.preferences.lookandfeel.OrbisGISIcon;
+import org.orbisgis.utils.I18N;
 
 /**
  *
@@ -104,7 +105,7 @@ public class SymbolBuilder extends JPanel implements UIPanel,
 		}
 
 		public Component getComponent() {
-			return new JLabel("No suitable editor");
+			return new JLabel(I18N.getString("orbisgis.org.orbisgis.ui.toc.symbolBuilder.noSuitableEditor")); //$NON-NLS-1$
 		}
 
 		public boolean accepts(Symbol symbol) {
@@ -257,7 +258,7 @@ public class SymbolBuilder extends JPanel implements UIPanel,
 		jToolBar1.setRollover(true);
 
 		jButtonSymbolUp.setIcon(OrbisGISIcon.GO_UP);
-		jButtonSymbolUp.setToolTipText("Up");
+		jButtonSymbolUp.setToolTipText(I18N.getString("orbisgis.org.orbisgis.ui.toc.symbolBuilder.up")); //$NON-NLS-1$
 		jButtonSymbolUp.setFocusable(false);
 		jButtonSymbolUp.setHorizontalTextPosition(SwingConstants.CENTER);
 		jButtonSymbolUp.setVerticalTextPosition(SwingConstants.BOTTOM);
@@ -269,7 +270,7 @@ public class SymbolBuilder extends JPanel implements UIPanel,
 		jToolBar1.add(jButtonSymbolUp);
 
 		jButtonSymbolDown.setIcon(OrbisGISIcon.GO_DOWN);
-		jButtonSymbolDown.setToolTipText("Down");
+		jButtonSymbolDown.setToolTipText(I18N.getString("orbisgis.org.orbisgis.ui.toc.symbolBuilder.down")); //$NON-NLS-1$
 		jButtonSymbolDown.setFocusable(false);
 		jButtonSymbolDown.setHorizontalTextPosition(SwingConstants.CENTER);
 		jButtonSymbolDown.setVerticalTextPosition(SwingConstants.BOTTOM);
@@ -281,7 +282,7 @@ public class SymbolBuilder extends JPanel implements UIPanel,
 		jToolBar1.add(jButtonSymbolDown);
 
 		jButtonSymbolAdd.setIcon(OrbisGISIcon.ADD);
-		jButtonSymbolAdd.setToolTipText("Add");
+		jButtonSymbolAdd.setToolTipText(I18N.getString("orbisgis.org.orbisgis.ui.toc.symbolBuilder.add")); //$NON-NLS-1$
 		jButtonSymbolAdd.setFocusable(false);
 		jButtonSymbolAdd.setHorizontalTextPosition(SwingConstants.CENTER);
 		jButtonSymbolAdd.setVerticalTextPosition(SwingConstants.BOTTOM);
@@ -293,7 +294,7 @@ public class SymbolBuilder extends JPanel implements UIPanel,
 		jToolBar1.add(jButtonSymbolAdd);
 
 		jButtonSymbolDel.setIcon(OrbisGISIcon.DEL);
-		jButtonSymbolDel.setToolTipText("Delete");
+		jButtonSymbolDel.setToolTipText(I18N.getString("orbisgis.org.orbisgis.ui.toc.symbolBuilder.delete")); //$NON-NLS-1$
 		jButtonSymbolDel.setFocusable(false);
 		jButtonSymbolDel.setHorizontalTextPosition(SwingConstants.CENTER);
 		jButtonSymbolDel.setVerticalTextPosition(SwingConstants.BOTTOM);
@@ -305,7 +306,7 @@ public class SymbolBuilder extends JPanel implements UIPanel,
 		jToolBar1.add(jButtonSymbolDel);
 
 		jButtonSymbolRename.setIcon(OrbisGISIcon.PENCIL);
-		jButtonSymbolRename.setToolTipText("Rename");
+		jButtonSymbolRename.setToolTipText(I18N.getString("orbisgis.org.orbisgis.ui.toc.symbolBuilder.rename")); //$NON-NLS-1$
 		jButtonSymbolRename.setFocusable(false);
 		jButtonSymbolRename.setHorizontalTextPosition(SwingConstants.CENTER);
 		jButtonSymbolRename.setVerticalTextPosition(SwingConstants.BOTTOM);
@@ -339,7 +340,7 @@ public class SymbolBuilder extends JPanel implements UIPanel,
 				jPanelButtonsCollection, BoxLayout.PAGE_AXIS));
 
 		btnToCollection.setIcon(OrbisGISIcon.SAVE);
-		btnToCollection.setToolTipText("Save");
+		btnToCollection.setToolTipText(I18N.getString("orbisgis.org.orbisgis.ui.toc.symbolBuilder.save")); //$NON-NLS-1$
 		btnToCollection.setFocusable(false);
 		btnToCollection.setHorizontalTextPosition(SwingConstants.CENTER);
 		btnToCollection.setVerticalTextPosition(SwingConstants.BOTTOM);
@@ -351,7 +352,7 @@ public class SymbolBuilder extends JPanel implements UIPanel,
 		jPanelButtonsCollection.add(btnToCollection);
 
 		btnFromCollection.setIcon(OrbisGISIcon.ADD);
-		btnFromCollection.setToolTipText("Add");
+		btnFromCollection.setToolTipText(I18N.getString("orbisgis.org.orbisgis.ui.toc.symbolBuilder.add")); //$NON-NLS-1$
 		btnFromCollection.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
 				jButtonFromCollectionActionPerformed(evt);
@@ -426,7 +427,7 @@ public class SymbolBuilder extends JPanel implements UIPanel,
 				pnlEdition.add(selected.getComponent(), BorderLayout.CENTER);
 			} else {
 				Services.getErrorManager().error(
-						"There is no suitable editor for the symbol");
+						I18N.getString("orbisgis.org.orbisgis.ui.toc.symbolBuilder.noSuitableEditorForSymbol")); //$NON-NLS-1$
 			}
 
 			refresh();
@@ -520,13 +521,13 @@ public class SymbolBuilder extends JPanel implements UIPanel,
 	private void jButtonSymbolRenameActionPerformed(ActionEvent evt) {
 		int idx = lstSymbols.getSelectedIndex();
 		Symbol selectedSymbol = model.getSymbol(idx);
-		AskValue ask = new AskValue("Insert the new name", "txt is not null",
-				"A name must be specified", selectedSymbol.getName());
-		String new_name = "";
+		AskValue ask = new AskValue(I18N.getString("orbisgis.org.orbisgis.ui.toc.symbolBuilder.insertNewName"), "txt is not null", //$NON-NLS-1$ //$NON-NLS-2$
+				I18N.getString("orbisgis.org.orbisgis.ui.toc.symbolBuilder.nameMustBeSpecified"), selectedSymbol.getName()); //$NON-NLS-1$
+		String new_name = ""; //$NON-NLS-1$
 		if (UIFactory.showDialog(ask)) {
 			new_name = ask.getValue();
 
-			if (new_name != null && new_name != "") {
+			if (new_name != null && new_name != "") { //$NON-NLS-1$
 				selectedSymbol.setName(new_name);
 				model.refresh();
 				lstSymbols.setSelectedIndex(idx);
@@ -543,9 +544,9 @@ public class SymbolBuilder extends JPanel implements UIPanel,
 	 */
 	private void jButtonToCollectionActionPerformed(ActionEvent evt) {
 		Geocognition geocognition = Services.getService(Geocognition.class);
-		geocognition.addElement(geocognition.getUniqueId("symbol"),
+		geocognition.addElement(geocognition.getUniqueId("symbol"), //$NON-NLS-1$
 				getSymbolComposite());
-		JOptionPane.showMessageDialog(this, "Symbol saved in geocognition");
+		JOptionPane.showMessageDialog(this, I18N.getString("orbisgis.org.orbisgis.ui.toc.symbolBuilder.symbolSavedInGeocognition")); //$NON-NLS-1$
 	}
 
 	private JPanel canvasPreview;
@@ -575,7 +576,7 @@ public class SymbolBuilder extends JPanel implements UIPanel,
 	}
 
 	public String getTitle() {
-		return "Symbol edition";
+		return I18N.getString("orbisgis.org.orbisgis.ui.toc.symbolBuilder.symbolEdition"); //$NON-NLS-1$
 	}
 
 	public String initialize() {
@@ -588,7 +589,7 @@ public class SymbolBuilder extends JPanel implements UIPanel,
 
 	public String validateInput() {
 		if (lstSymbols.getModel().getSize() == 0) {
-			return "At least a symbol must be created";
+			return I18N.getString("orbisgis.org.orbisgis.ui.toc.symbolBuilder.atLeastSymbolMustCreated"); //$NON-NLS-1$
 		}
 
 		if (validation != null) {

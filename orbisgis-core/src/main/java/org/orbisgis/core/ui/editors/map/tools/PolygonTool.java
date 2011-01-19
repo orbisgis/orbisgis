@@ -81,9 +81,10 @@ public class PolygonTool extends AbstractPolygonTool {
 					.createMultiPolygon(new Polygon[] { pol });
 		}
 
-		SpatialDataSourceDecorator sds = mc.getActiveLayer().getDataSource();
+		SpatialDataSourceDecorator sds = mc.getActiveLayer().getSpatialDataSource();
 		try {
 			Value[] row = new Value[sds.getMetadata().getFieldCount()];
+                        g.setSRID(sds.getSRID());
 			row[sds.getSpatialFieldIndex()] = ValueFactory.createValue(g);
 			row = ToolUtilities.populateNotNullFields(sds, row);
 			sds.insertFilledRow(row);
@@ -108,7 +109,7 @@ public class PolygonTool extends AbstractPolygonTool {
 
 	public String getName() {
 		return I18N
-				.getText("orbisgis.core.ui.editors.map.tool.polygon_tooltip");
+				.getString("orbisgis.core.ui.editors.map.tool.polygon_tooltip");
 	}
 
 }

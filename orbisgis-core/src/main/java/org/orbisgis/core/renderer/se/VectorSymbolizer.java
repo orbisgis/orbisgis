@@ -157,7 +157,6 @@ public abstract class VectorSymbolizer extends Symbolizer implements UomNode {
 	public Point2D getPointShape(SpatialDataSourceDecorator sds, long fid, MapTransform mt) throws ParameterException, IOException, DriverException {
 		Geometry geom = this.getTheGeom(sds, fid); // geom + function
 
-
 		AffineTransform at = mt.getAffineTransform();
 
 		if (transform != null) {
@@ -181,6 +180,26 @@ public abstract class VectorSymbolizer extends Symbolizer implements UomNode {
 		Coordinate[] coordinates = geom.getCoordinates();
 
 		return at.transform(new Point2D.Double(coordinates[0].x, coordinates[0].y), null);
+	}
+
+	public ArrayList<Point2D> getPoints(SpatialDataSourceDecorator sds, long fid, MapTransform mt) throws ParameterException, IOException, DriverException {
+		Geometry geom = this.getTheGeom(sds, fid); // geom + function
+
+		ArrayList<Point2D> points = new ArrayList<Point2D>();
+
+		AffineTransform at = mt.getAffineTransform();
+		if (transform != null) {
+			at.preConcatenate(transform.getGraphicalAffineTransform(false, sds, fid, mt, (double) mt.getWidth(), (double) mt.getHeight())); // TODO width and height
+		}
+
+		Coordinate[] coordinates = geom.getCoordinates();
+
+		int i;
+		for (i = 0; i < coordinates.length; i++) {
+			points.add(at.transform(new Point2D.Double(coordinates[i].x, coordinates[i].y), null));
+		}
+
+		return points;
 	}
 
 	public Transform getTransform() {

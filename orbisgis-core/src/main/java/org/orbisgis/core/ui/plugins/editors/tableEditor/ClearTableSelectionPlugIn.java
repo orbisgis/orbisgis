@@ -8,12 +8,14 @@
  *
  *  Team leader Erwan BOCHER, scientific researcher,
  *
- *  User support leader : Gwendall Petit, geomatic engineer.
  *
  *
  * Copyright (C) 2007 Erwan BOCHER, Fernando GONZALEZ CORTES, Thomas LEDUC
  *
- * Copyright (C) 2010 Erwan BOCHER, Pierre-Yves FADET, Alexis GUEGANNO, Maxence LAURENT
+ * Copyright (C) 2010 Erwan BOCHER, Pierre-Yves FADET, Alexis GUEGANNO, Maxence LAURENT, Antoine GOURLAY
+ * 
+ * Copyright (C) 2011 Erwan BOCHER,Alexis GUEGANNO, Antoine GOURLAY
+ * 
  *
  * This file is part of OrbisGIS.
  *
@@ -32,25 +34,21 @@
  * For more information, please consult: <http://www.orbisgis.org/>
  *
  * or contact directly:
- * erwan.bocher _at_ ec-nantes.fr
- * gwendall.petit _at_ ec-nantes.fr
+ * info_at_orbisgis.org
  */
 
 package org.orbisgis.core.ui.plugins.editors.tableEditor;
 
 import javax.swing.JButton;
 
-import org.orbisgis.core.Services;
-import org.orbisgis.core.background.BackgroundJob;
-import org.orbisgis.core.background.BackgroundManager;
 import org.orbisgis.core.ui.editor.IEditor;
 import org.orbisgis.core.ui.editors.table.TableEditableElement;
 import org.orbisgis.core.ui.pluginSystem.AbstractPlugIn;
 import org.orbisgis.core.ui.pluginSystem.PlugInContext;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchContext;
-import org.orbisgis.core.ui.plugins.views.TableEditorPlugIn;
+import org.orbisgis.core.ui.plugins.views.tableEditor.TableEditorPlugIn;
 import org.orbisgis.core.ui.preferences.lookandfeel.OrbisGISIcon;
-import org.orbisgis.progress.IProgressMonitor;
+import org.orbisgis.utils.I18N;
 
 public class ClearTableSelectionPlugIn extends AbstractPlugIn {
 
@@ -58,26 +56,20 @@ public class ClearTableSelectionPlugIn extends AbstractPlugIn {
 
 	public ClearTableSelectionPlugIn() {
 		btn = new JButton(OrbisGISIcon.EDIT_CLEAR);
+		btn.setToolTipText(I18N
+				.getString("orbisgis.ui.popupmenu.table.clearSelection"));
 	}
 
 	public boolean execute(final PlugInContext context) throws Exception {
-		BackgroundManager bm = Services.getService(BackgroundManager.class);
-		bm.backgroundOperation(new BackgroundJob() {
-
-			@Override
-			public void run(IProgressMonitor pm) {
-
-				IEditor editor = context.getActiveEditor();
-				TableEditableElement element = (TableEditableElement) editor
-						.getElement();
-				element.getSelection().clearSelection();
-			}
-
-			@Override
-			public String getTaskName() {
-				return "Clear selection";
-			}
-		});
+		IEditor editor = context.getActiveEditor();
+		TableEditableElement element = (TableEditableElement) editor
+				.getElement();
+		if (element.getMapContext() != null) {
+			element.getMapContext().checkSelectionRefresh(new int[0],
+					element.getSelection().getSelectedRows(),
+					element.getDataSource());
+		}
+		element.getSelection().clearSelection();
 		return true;
 	}
 

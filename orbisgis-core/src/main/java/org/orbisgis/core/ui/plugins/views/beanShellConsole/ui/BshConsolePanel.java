@@ -38,11 +38,14 @@ package org.orbisgis.core.ui.plugins.views.beanShellConsole.ui;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JToolBar;
+import javax.swing.Timer;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.text.BadLocationException;
@@ -58,6 +61,7 @@ import org.orbisgis.core.ui.components.text.JButtonTextField;
 import org.orbisgis.core.ui.plugins.views.beanShellConsole.actions.BshActionsListener;
 import org.orbisgis.core.ui.plugins.views.beanShellConsole.actions.BshConsoleAction;
 import org.orbisgis.core.ui.plugins.views.beanShellConsole.actions.BshConsoleListener;
+import org.orbisgis.utils.I18N;
 
 public class BshConsolePanel extends JPanel {
 	private JButton btExecute = null;
@@ -73,6 +77,7 @@ public class BshConsolePanel extends JPanel {
 	private JToolBar toolBar;
 	private JLabel statusMessage;
 	private SearchWord searchWord;
+        private Timer timer;
 
 	// An instance of the private subclass of the default highlight painter
 	Highlighter.HighlightPainter myHighlightPainter = (HighlightPainter) new WordHighlightPainter(
@@ -104,12 +109,15 @@ public class BshConsolePanel extends JPanel {
 		northPanel.add(getBtClear());
 		northPanel.add(getBtOpen());
 		northPanel.add(getBtSave());
-		northPanel.add(new JLabel("Find a text "));
+		northPanel.add(new JLabel("  "
+				+ I18N.getString("orbisgis.org.orbisgis.FindText") + " "));
 		northPanel.add(getJTextFieldPanel());
 		setBtExecute();
 		setBtClear();
 		setBtSave();
 		northPanel.setFloatable(false);
+		northPanel.setBorderPainted(false);
+		northPanel.setOpaque(false);
 		return northPanel;
 	}
 
@@ -130,13 +138,28 @@ public class BshConsolePanel extends JPanel {
 			statusMessage = new JLabel();
 			toolBar.add(statusMessage);
 			toolBar.setFloatable(false);
+
+                        timer = new Timer(4000, new ActionListener() {
+
+                                @Override
+                                public void actionPerformed(ActionEvent e) {
+                                        setStatusMessage("");
+                                }
+                        });
+                        timer.setRepeats(false);
 		}
 
 		return toolBar;
 	}
 
 	public void setStatusMessage(String message) {
-		statusMessage.setText(message);
+		if (message.isEmpty()) {
+                        statusMessage.setText(message);
+                        return;
+                } else {
+                        timer.restart();
+                        statusMessage.setText(message);
+                }
 	}
 
 	private JPanel getJTextFieldPanel() {
@@ -194,10 +217,13 @@ public class BshConsolePanel extends JPanel {
 			}
 
 			if (patternFound > 0) {
-				setStatusMessage("'" + pattern + "' found " + patternFound
-						+ " times.");
+				setStatusMessage(pattern + " "
+						+ I18N.getString("orbisgis.org.orbisgis.found") + " "
+						+ patternFound + " "
+						+ I18N.getString("orbisgis.org.orbisgis.Times"));
 			} else {
-				setStatusMessage("'" + pattern + "' not found.");
+				setStatusMessage(pattern + " "
+						+ I18N.getString("orbisgis.org.orbisgis.notFound"));
 			}
 		} catch (BadLocationException e) {
 		}
@@ -208,6 +234,8 @@ public class BshConsolePanel extends JPanel {
 		if (null == btExecute) {
 			btExecute = new BshConsoleButton(BshConsoleAction.EXECUTE,
 					actionAndKeyListener);
+			btExecute.setToolTipText(I18N
+					.getString("orbisgis.org.orbisgis.Execute"));
 		}
 		return btExecute;
 	}
@@ -216,6 +244,7 @@ public class BshConsolePanel extends JPanel {
 		if (null == btClear) {
 			btClear = new BshConsoleButton(BshConsoleAction.CLEAR,
 					actionAndKeyListener);
+			btClear.setToolTipText(I18N.getString("orbisgis.org.orbisgis.Clear"));
 		}
 		return btClear;
 	}
@@ -224,6 +253,7 @@ public class BshConsolePanel extends JPanel {
 		if (null == btOpen) {
 			btOpen = new BshConsoleButton(BshConsoleAction.OPEN,
 					actionAndKeyListener);
+			btOpen.setToolTipText(I18N.getString("orbisgis.org.orbisgis.Open"));
 		}
 		return btOpen;
 	}
@@ -232,6 +262,7 @@ public class BshConsolePanel extends JPanel {
 		if (null == btSave) {
 			btSave = new BshConsoleButton(BshConsoleAction.SAVE,
 					actionAndKeyListener);
+			btSave.setToolTipText(I18N.getString("orbisgis.org.orbisgis.Save"));
 		}
 		return btSave;
 	}

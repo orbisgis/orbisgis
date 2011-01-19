@@ -74,8 +74,7 @@ public interface DBDriver extends ReadOnlyDriver {
 	 * 
 	 * @param conn
 	 * 
-	 * @throws SQLException
-	 *             If the free fails
+         * @throws DriverException
 	 */
 	public void close(Connection conn) throws DriverException;
 
@@ -165,5 +164,12 @@ public interface DBDriver extends ReadOnlyDriver {
 	 * @return
 	 */
 	String[] getPrefixes();
+
+        /**
+         * Gets all non blocking errors that have happened since the last
+         * call to any DBDriver method that could throw DriverException.
+         * @return an array of exceptions, possibly empty
+         */
+        DriverException[] getLastNonBlockingErrors();
 
 }

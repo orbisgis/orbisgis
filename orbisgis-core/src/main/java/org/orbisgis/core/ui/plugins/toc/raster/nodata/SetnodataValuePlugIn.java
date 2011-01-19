@@ -56,15 +56,15 @@ import org.orbisgis.core.ui.pluginSystem.PlugInContext.SelectionAvailability;
 import org.orbisgis.core.ui.pluginSystem.workbench.Names;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchContext;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchFrame;
-import org.orbisgis.core.ui.preferences.lookandfeel.OrbisGISIcon;
 import org.orbisgis.core.ui.preferences.lookandfeel.images.IconLoader;
+import org.orbisgis.utils.I18N;
 
 public class SetnodataValuePlugIn extends AbstractPlugIn {
 
 	public boolean accepts(MapContext mc, ILayer layer) {
 		try {
 			if (layer.isRaster()) {
-				SpatialDataSourceDecorator ds = layer.getDataSource();
+				SpatialDataSourceDecorator ds = layer.getSpatialDataSource();
 				if (ds.getRaster(0).getType() != ImagePlus.COLOR_RGB) {
 					return true;
 				}
@@ -87,28 +87,28 @@ public class SetnodataValuePlugIn extends AbstractPlugIn {
 		try {
 			GeoRaster geoRasterSrc = layer.getRaster();
 
-			final MultiInputPanel mip = new MultiInputPanel("Set nodatavalue");
+			final MultiInputPanel mip = new MultiInputPanel(I18N.getString("orbisgis.org.orbisgis.ui.setnodataValuePlugIn.setNoData")); //$NON-NLS-1$
 
-			mip.addInput("minvalue", "Min value", new Float(geoRasterSrc
+			mip.addInput("minvalue", I18N.getString("orbisgis.org.orbisgis.ui.setnodataValuePlugIn.minValue"), new Float(geoRasterSrc //$NON-NLS-1$ //$NON-NLS-2$
 					.getMin()).toString(), new DoubleType(10, false));
-			mip.addInput("maxvalue", "Max value", new Float(geoRasterSrc
+			mip.addInput("maxvalue", I18N.getString("orbisgis.org.orbisgis.ui.setnodataValuePlugIn.maxValue"), new Float(geoRasterSrc //$NON-NLS-1$ //$NON-NLS-2$
 					.getMax()).toString(), new DoubleType(10, false));
 
 			double noDataValue = geoRasterSrc.getNoDataValue();
 			if (Double.isNaN(noDataValue)) {
-				mip.addInput("nodatavalue", "Nodata value", null,
+				mip.addInput("nodatavalue", I18N.getString("orbisgis.org.orbisgis.ui.setnodataValuePlugIn.noData"), null, //$NON-NLS-1$ //$NON-NLS-2$
 						new NullableDoubleType(10));
 			} else {
-				mip.addInput("nodatavalue", "Nodata value", new Float(
+				mip.addInput("nodatavalue", I18N.getString("orbisgis.org.orbisgis.ui.setnodataValuePlugIn.noData"), new Float( //$NON-NLS-1$ //$NON-NLS-2$
 						noDataValue).toString(), new NullableDoubleType(10));
 			}
 
-			mip.group("Range values", new String[] { "minvalue", "maxvalue" });
-			mip.group("Change nodata", new String[] { "nodatavalue" });
+			mip.group(I18N.getString("orbisgis.org.orbisgis.ui.setnodataValuePlugIn.rangeValues"), new String[] { "minvalue", "maxvalue" }); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+			mip.group(I18N.getString("orbisgis.org.orbisgis.ui.setnodataValuePlugIn.changeNoData"), new String[] { "nodatavalue" }); //$NON-NLS-1$ //$NON-NLS-2$
 
 			if (UIFactory.showDialog(mip)) {
 
-				String ndv = mip.getInput("nodatavalue");
+				String ndv = mip.getInput("nodatavalue"); //$NON-NLS-1$
 				if (ndv == null) {
 					geoRasterSrc.setNodataValue(Float.NaN);
 				} else {
@@ -118,10 +118,10 @@ public class SetnodataValuePlugIn extends AbstractPlugIn {
 			}
 		} catch (DriverException e) {
 			Services.getErrorManager().error(
-					"Cannot read the raster from the layer ", e);
+					I18N.getString("orbisgis.org.orbisgis.ui.setnodataValuePlugIn.cannotReadRasterLayer"), e); //$NON-NLS-1$
 		} catch (IOException e) {
 			Services.getErrorManager().error(
-					"Cannot compute " + layer.getName(), e);
+					I18N.getString("orbisgis.org.orbisgis.ui.setnodataValuePlugIn.cannotCompute") + layer.getName(), e); //$NON-NLS-1$
 		}
 		return false;
 	}
@@ -131,8 +131,8 @@ public class SetnodataValuePlugIn extends AbstractPlugIn {
 		WorkbenchContext wbContext = context.getWorkbenchContext();
 		WorkbenchFrame frame = wbContext.getWorkbench().getFrame().getToc();
 		context.getFeatureInstaller().addPopupMenuItem(frame, this,
-				new String[] { "Change nodata" }, Names.POPUP_TOC_LEGEND_GROUP,
-				false, IconLoader.getIcon("contrast.png"), wbContext);
+				new String[] { I18N.getString("orbisgis.org.orbisgis.ui.setnodataValuePlugIn.changeNoData") }, Names.POPUP_TOC_LEGEND_GROUP, //$NON-NLS-1$
+				false, IconLoader.getIcon("contrast.png"), wbContext); //$NON-NLS-1$
 
 	}
 

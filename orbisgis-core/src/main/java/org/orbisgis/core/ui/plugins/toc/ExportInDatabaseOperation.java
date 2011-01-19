@@ -46,9 +46,10 @@ import org.gdms.driver.DBDriver;
 import org.gdms.driver.DriverException;
 import org.gdms.sql.parser.ParseException;
 import org.gdms.sql.strategies.SemanticException;
-import org.orbisgis.core.Services;
 import org.orbisgis.core.background.BackgroundJob;
+import org.orbisgis.core.ui.pluginSystem.message.ErrorMessages;
 import org.orbisgis.progress.IProgressMonitor;
+import org.orbisgis.utils.I18N;
 
 public class ExportInDatabaseOperation implements BackgroundJob {
 
@@ -72,14 +73,14 @@ public class ExportInDatabaseOperation implements BackgroundJob {
 
 	@Override
 	public String getTaskName() {
-		return "Exporting in a database";
+		return I18N
+				.getString("orbisgis.org.orbisgis.ui.exportInDatabaseOperation.exportingInDB"); //$NON-NLS-1$
 	}
 
 	@Override
 	public void run(IProgressMonitor pm) {
 
 		try {
-
 			boolean changeName = false;
 			String layerName = outSourceName;
 			if (dsf.getSourceManager().exists(outSourceName)) {
@@ -88,39 +89,36 @@ public class ExportInDatabaseOperation implements BackgroundJob {
 			}
 
 			// register both sources
-			String registerDB = "select register('" + dbDriver.getDriverId()
-					+ "' ,'" + dbSource.getHost() + "'," + " '"
-					+ dbSource.getPort() + "','" + dbSource.getDbName() + "','"
-					+ dbSource.getUser() + "','" + dbSource.getPassword()
-					+ "','" + schemaName + "','" + outSourceName + "','"
-					+ layerName + "');";
+			String registerDB = "select register('" + dbDriver.getDriverId() //$NON-NLS-1$
+					+ "' ,'" + dbSource.getHost() + "'," + " '" //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+					+ dbSource.getPort() + "','" + dbSource.getDbName() + "','" //$NON-NLS-1$ //$NON-NLS-2$
+					+ dbSource.getUser() + "','" + dbSource.getPassword() //$NON-NLS-1$
+					+ "','" + schemaName + "','" + outSourceName + "','" //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+					+ layerName + "');"; //$NON-NLS-1$
 
 			dsf.executeSQL(registerDB);
 			// Do the migration
-			String load = "create table " + layerName + " as select * "
-					+ "from " + inSourceName + " ;";
+			String load = "create table " + layerName + " as select * " //$NON-NLS-1$ //$NON-NLS-2$
+					+ "from " + inSourceName + " ;"; //$NON-NLS-1$ //$NON-NLS-2$
 			dsf.executeSQL(load, pm);
 
 			if (changeName) {
 				JOptionPane.showMessageDialog(null,
-						"The table has been registered in the GeoCatalog with the name "
-								+ layerName + " because of existing name");
+						ErrorMessages.SourceAlreadyExists);
 			} else {
 				JOptionPane.showMessageDialog(null,
-						"The table has been registered in the GeoCatalog with the name "
+						ErrorMessages.SourceAlreadyRegisteredWithName + " " //$NON-NLS-1$
 								+ layerName);
 			}
 
 		} catch (ParseException e) {
-			Services.getErrorManager().error("Error in the SQL statement.", e);
+			ErrorMessages.error(ErrorMessages.SQLStatementError, e);
 		} catch (SemanticException e) {
-			Services.getErrorManager().error("Error in the SQL statement.", e);
+			ErrorMessages.error(ErrorMessages.SQLStatementError, e);
 		} catch (DriverException e) {
-			Services.getErrorManager()
-					.error("Cannot create the datasource.", e);
+			ErrorMessages.error(ErrorMessages.CannotCreateDataSource, e);
 		} catch (ExecutionException e) {
-			Services.getErrorManager()
-					.error("Cannot create the datasource.", e);
+			ErrorMessages.error(ErrorMessages.CannotCreateDataSource, e);
 		}
 
 	}

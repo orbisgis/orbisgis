@@ -365,7 +365,7 @@ public abstract class LegendUICategorizePanel extends LegendUIComponent
 		footer.removeAll();
 		JLabel text;
 
-		SpatialDataSourceDecorator sds = controller.getEditedFeatureTypeStyle().getLayer().getDataSource();
+		SpatialDataSourceDecorator sds = controller.getEditedFeatureTypeStyle().getLayer().getSpatialDataSource();
 
 		try {
 			RangeMethod rangesHelper = new RangeMethod(sds, (RealAttribute) p, 4);

@@ -80,7 +80,7 @@ public abstract class AbstractPolygonTool extends Polygon implements
 		if (points.size() < 3) {
 			throw new TransitionException(
 					I18N
-							.getText("orbisgis.core.ui.editors.map.tool.multipolygonTool_0")); //$NON-NLS-1$
+							.getString("orbisgis.core.ui.editors.map.tool.multipolygonTool_0")); //$NON-NLS-1$
 		}
 		ArrayList<Coordinate> tempPoints = (ArrayList<Coordinate>) points
 				.clone();
@@ -94,7 +94,7 @@ public abstract class AbstractPolygonTool extends Polygon implements
 		if (!pol.isValid()) {
 			throw new TransitionException(
 					I18N
-							.getText("orbisgis.core.ui.editors.map.tool.polygonTool_1")); //$NON-NLS-1$
+							.getString("orbisgis.core.ui.editors.map.tool.polygonTool_1")); //$NON-NLS-1$
 		}
 		polygonDone(pol, vc, tm);
 
@@ -134,7 +134,7 @@ public abstract class AbstractPolygonTool extends Polygon implements
 			if (!geom.isValid()) {
 				throw new DrawingException(
 						I18N
-								.getText("orbisgis.core.ui.editors.map.tool.polygonTool_1")); //$NON-NLS-1$
+								.getString("orbisgis.core.ui.editors.map.tool.polygonTool_1")); //$NON-NLS-1$
 			}
 		}
 	}

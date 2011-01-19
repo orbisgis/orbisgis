@@ -35,10 +35,6 @@
  * erwan.bocher _at_ ec-nantes.fr
  * gwendall.petit _at_ ec-nantes.fr
  */
-
-
-
-
 package org.orbisgis.core.renderer.se;
 
 import java.awt.Graphics2D;
@@ -46,6 +42,7 @@ import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import javax.media.jai.RenderableGraphics;
 import javax.xml.bind.JAXBElement;
 import org.gdms.data.SpatialDataSourceDecorator;
@@ -126,23 +123,24 @@ public final class PointSymbolizer extends VectorSymbolizer implements GraphicNo
 		if (graphic != null && graphic.getNumGraphics() > 0) {
 
 			try {
-				Point2D pt = this.getPointShape(sds, fid, mt);
-				// This is to emulate ExtractFirstPoint geom function !!!
-				//Point2D pt = this.getFirstPointShape(sds, fid);
+				ArrayList<Point2D> pts = this.getPoints(sds, fid, mt);
 				RenderableGraphics rg = graphic.getGraphic(sds, fid, selected, mt);
-
-				//RenderedImage cache = graphic.getCache(sds, fid, selected);
-				//if (cache != null) {
 
 				if (rg != null) {
 					double x = 0, y = 0;
+					for (Point2D pt : pts) {
+						// This is to emulate ExtractFirstPoint geom function !!!
+						//Point2D pt = this.getFirstPointShape(sds, fid);
 
-					x = pt.getX();
-					y = pt.getY();
+						//RenderedImage cache = graphic.getCache(sds, fid, selected);
+						//if (cache != null) {
 
-					// Draw the graphic right over the point !
-					g2.drawRenderedImage(rg.createRendering(mt.getCurrentRenderContext()), AffineTransform.getTranslateInstance(x, y));
-					//g2.drawRenderedImage(cache, AffineTransform.getTranslateInstance(x, y));
+						x = pt.getX();
+						y = pt.getY();
+
+						// Draw the graphic right over the point !
+						g2.drawRenderedImage(rg.createRendering(mt.getCurrentRenderContext()), AffineTransform.getTranslateInstance(x, y));
+					}
 				}
 			} catch (ParameterException ex) {
 				Services.getErrorManager().error("Could not render feature ", ex);
@@ -167,7 +165,7 @@ public final class PointSymbolizer extends VectorSymbolizer implements GraphicNo
 			s.setTransform(transform.getJAXBType());
 		}
 
-		if (this.level >= 0){
+		if (this.level >= 0) {
 			s.setLevel(level);
 		}
 
@@ -178,7 +176,6 @@ public final class PointSymbolizer extends VectorSymbolizer implements GraphicNo
 
 		return of.createPointSymbolizer(s);
 	}
-
 	private GraphicCollection graphic;
 
 	@Override

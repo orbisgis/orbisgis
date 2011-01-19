@@ -50,6 +50,7 @@ import org.gdms.data.types.Type;
 import org.gdms.driver.DriverException;
 import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.ui.preferences.lookandfeel.OrbisGISIcon;
+import org.orbisgis.utils.I18N;
 
 public abstract class TocAbstractRenderer {
 
@@ -61,7 +62,7 @@ public abstract class TocAbstractRenderer {
 			if (layer.isWMS()) {
 				return OrbisGISIcon.SERVER_CONNECT;
 			} else {
-				SpatialDataSourceDecorator dataSource = layer.getDataSource();
+				SpatialDataSourceDecorator dataSource = layer.getSpatialDataSource();
 				if (!dataSource.isOpen()) {
 					return null;
 				}
@@ -89,7 +90,7 @@ public abstract class TocAbstractRenderer {
 						} else if ((geomType == GeometryConstraint.GEOMETRY_COLLECTION)) {
 							return OrbisGISIcon.LAYER_MIXE;
 						} else {
-							throw new RuntimeException("Bug");
+							throw new RuntimeException(I18N.getString("orbisgis.org.orbisgis.toc.tocAbstractRenderer.bug")); //$NON-NLS-1$
 						}
 					}
 

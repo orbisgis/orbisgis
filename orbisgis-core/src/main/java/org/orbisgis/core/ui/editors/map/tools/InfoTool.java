@@ -94,7 +94,7 @@ public class InfoTool extends AbstractRectangleTool {
 			boolean smallerThanTolerance, MapContext vc, ToolManager tm)
 			throws TransitionException {
 		ILayer layer = vc.getSelectedLayers()[0];
-		DataSource ds = layer.getDataSource();
+		DataSource ds = layer.getSpatialDataSource();
 		String sql = null;
 		try {
 			SpatialDataSourceDecorator sds = new SpatialDataSourceDecorator(ds);
@@ -188,7 +188,7 @@ public class InfoTool extends AbstractRectangleTool {
 	}
 
 	public String getName() {
-		return I18N.getText("orbisgis.core.ui.editors.map.tool.information");
+		return I18N.getString("orbisgis.core.ui.editors.map.tool.information");
 	}
 
 }

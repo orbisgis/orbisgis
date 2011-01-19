@@ -74,12 +74,10 @@ public class ReadBufferManager {
 	public ReadBufferManager(FileChannel channel, int bufferSize)
 			throws IOException {
 		this.channel = channel;
-		buffer = ByteBuffer.allocate(bufferSize);
-		channel.position(0);
-		channel.read(buffer);
-		buffer.flip();
+		buffer = ByteBuffer.allocate(0);
 		windowStart = 0;
 		this.bufferSize = bufferSize;
+                getWindowOffset(0, bufferSize);
 	}
 
 	/**
@@ -262,6 +260,16 @@ public class ReadBufferManager {
 	 */
 	public boolean isEOF() throws IOException {
 		return (buffer.remaining() == 0)
-				&& (windowStart + buffer.capacity() == channel.size());
+				&& (windowStart + buffer.capacity() >= channel.size());
 	}
+
+        /**
+         * Gets the number of remaining bytes in the current file, starting from the
+         * current position.
+         * @return a number of bytes >= 0
+         * @throws IOException 
+         */
+        public long remaining() throws IOException {
+                return channel.size() - windowStart - buffer.position();
+        }
 }

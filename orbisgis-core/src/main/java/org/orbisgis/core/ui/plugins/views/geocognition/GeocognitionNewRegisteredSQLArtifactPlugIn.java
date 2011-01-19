@@ -65,7 +65,7 @@ public class GeocognitionNewRegisteredSQLArtifactPlugIn extends AbstractPlugIn {
 	public void initialize(PlugInContext context) throws Exception {
 		WorkbenchContext wbContext = context.getWorkbenchContext();
 		WorkbenchFrame frame = wbContext.getWorkbench().getFrame()
-				.getGeocognition();
+				.getGeocognitionView();
 		context.getFeatureInstaller().addPopupMenuItem(
 				frame,
 				this,

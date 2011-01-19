@@ -53,8 +53,8 @@ import org.grap.processing.Operation;
 import org.grap.processing.OperationException;
 import org.grap.processing.operation.hydrology.D8OpDirection;
 import org.grap.processing.operation.hydrology.D8OpWatershedFromOutletIndex;
-import org.orbisgis.core.Services;
 import org.orbisgis.core.DataManager;
+import org.orbisgis.core.Services;
 import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.layerModel.LayerException;
 import org.orbisgis.core.layerModel.MapContext;
@@ -62,6 +62,7 @@ import org.orbisgis.core.ui.editors.map.tool.ToolManager;
 import org.orbisgis.core.ui.editors.map.tool.TransitionException;
 import org.orbisgis.core.ui.editors.map.tools.AbstractPointTool;
 import org.orbisgis.core.ui.pluginSystem.PlugInContext;
+import org.orbisgis.utils.I18N;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Point;
@@ -122,7 +123,7 @@ public class WatershedTool extends AbstractPointTool {
 				// save the computed GeoRaster in a tempFile
 				final DataSourceFactory dsf = ((DataManager) Services
 						.getService(DataManager.class)).getDataSourceFactory();
-				final String tempFile = dsf.getTempFile() + ".tif";
+				final String tempFile = dsf.getTempFile() + ".tif"; 
 				grWatershedFromOutletIndex.save(tempFile);
 
 				// populate the GeoView TOC with a new RasterLayer
@@ -133,18 +134,18 @@ public class WatershedTool extends AbstractPointTool {
 				vc.getLayerModel().insertLayer(newLayer, 0);
 			}
 		} catch (IOException e) {
-			Services.getErrorManager().error("Problem to access the GeoRaster",
+			Services.getErrorManager().error(I18N.getString("orbisgis.org.orbisgis.ui.watershedTool.cannotAccesingGeoraster"), //$NON-NLS-1$
 					e);
 		} catch (LayerException e) {
-			Services.getErrorManager().error("Problem adding the new layer", e);
+			Services.getErrorManager().error(I18N.getString("orbisgis.org.orbisgis.ui.watershedTool.cannotAddNewLayer"), e); //$NON-NLS-1$
 		} catch (OperationException e) {
 			Services.getErrorManager().error(
-					"Operation error with thie GeoRaster", e);
+					I18N.getString("orbisgis.org.orbisgis.ui.watershedTool.operationError"), e); //$NON-NLS-1$
 		} catch (DriverLoadException e) {
 			Services.getErrorManager().error(
-					"Cannot create the resulting layer of raster type ", e);
+					I18N.getString("orbisgis.org.orbisgis.ui.watershedTool.cannotCreateLayer"), e); //$NON-NLS-1$
 		} catch (DriverException e) {
-			Services.getErrorManager().error("Problem to access the GeoRaster",
+			Services.getErrorManager().error(I18N.getString("orbisgis.org.orbisgis.ui.watershedTool.cannotAccesingGeoraster"), //$NON-NLS-1$
 					e);
 		}
 	}
@@ -166,6 +167,6 @@ public class WatershedTool extends AbstractPointTool {
 	}
 
 	public String getName() {
-		return "Compute a watershed";
+		return I18N.getString("orbisgis.org.orbisgis.ui.watershedTool.computeWatershed"); //$NON-NLS-1$
 	}
 }

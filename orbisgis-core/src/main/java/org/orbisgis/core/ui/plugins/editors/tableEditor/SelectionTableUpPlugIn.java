@@ -47,7 +47,7 @@ import org.orbisgis.core.ui.pluginSystem.PlugInContext;
 import org.orbisgis.core.ui.pluginSystem.workbench.Names;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchContext;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchFrame;
-import org.orbisgis.core.ui.plugins.views.TableEditorPlugIn;
+import org.orbisgis.core.ui.plugins.views.tableEditor.TableEditorPlugIn;
 import org.orbisgis.core.ui.preferences.lookandfeel.OrbisGISIcon;
 
 public class SelectionTableUpPlugIn extends AbstractPlugIn {
@@ -56,6 +56,7 @@ public class SelectionTableUpPlugIn extends AbstractPlugIn {
 
 	public SelectionTableUpPlugIn() {
 		btn = new JButton(OrbisGISIcon.TABLE_ROW_UP);
+		btn.setToolTipText(Names.POPUP_TABLE_UP_PATH1);
 	}
 
 	public boolean execute(PlugInContext context) throws Exception {
@@ -67,7 +68,7 @@ public class SelectionTableUpPlugIn extends AbstractPlugIn {
 
 	public void initialize(PlugInContext context) throws Exception {
 		WorkbenchContext wbContext = context.getWorkbenchContext();
-		WorkbenchFrame frame = (WorkbenchFrame) wbContext.getWorkbench()
+		WorkbenchFrame frame = wbContext.getWorkbench()
 				.getFrame().getTableEditor();
 		wbContext.getWorkbench().getFrame().getEditionTableToolBar().addPlugIn(
 				this, btn, context);
@@ -80,10 +81,10 @@ public class SelectionTableUpPlugIn extends AbstractPlugIn {
 	public boolean isEnabled() {
 		boolean isEnabled = false;
 		IEditor editor = null;
-		if((editor=getPlugInContext().getTableEditor()) != null
-				&& getSelectedColumn() ==-1){
-			isEnabled= ((TableEditableElement) editor.getElement()).getSelection()
-							.getSelectedRows().length > 0;
+		if ((editor = getPlugInContext().getTableEditor()) != null
+				&& getSelectedColumn() == -1) {
+			isEnabled = ((TableEditableElement) editor.getElement())
+					.getSelection().getSelectedRows().length > 0;
 		}
 		btn.setEnabled(isEnabled);
 		return isEnabled;

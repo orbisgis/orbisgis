@@ -38,7 +38,6 @@ package org.orbisgis.core.sif;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
 
@@ -89,7 +88,6 @@ public class MsgPanel extends JPanel {
 		};
 		central.setLayout(layout);
 		central.setBackground(Color.white);
-		central.setPreferredSize(new Dimension(200, 50));
 
 		title = new JLabel();
 		title.setFont(Font.decode("Arial-BOLD-14"));

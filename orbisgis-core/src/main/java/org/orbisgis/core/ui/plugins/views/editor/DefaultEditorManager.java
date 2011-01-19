@@ -44,6 +44,7 @@ import org.orbisgis.core.ui.editor.EditorDecorator;
 import org.orbisgis.core.ui.editor.EditorListener;
 import org.orbisgis.core.ui.editor.IEditor;
 import org.orbisgis.progress.IProgressMonitor;
+import org.orbisgis.utils.I18N;
 
 public class DefaultEditorManager implements EditorManager {
 
@@ -82,7 +83,7 @@ public class DefaultEditorManager implements EditorManager {
 
 	@Override
 	public boolean hasEditor(EditableElement element) {
-		return EditorPanel.getFirstEditor(element) != null;
+		return EditorPanel.hasEditor(element);
 	}
 
 	@Override
@@ -92,7 +93,7 @@ public class DefaultEditorManager implements EditorManager {
 
 		if (editor == null) {
 			throw new UnsupportedOperationException(
-					"There is no suitable editor for this element");
+					I18N.getString("orbisgis.org.orbisgis.ui.defaultEditorManager.noSuitableEditorForElement")); //$NON-NLS-1$
 		} else {
 			if (!this.editorPanel.isBeingEdited(element, editor.getEditor()
 					.getClass())) {
@@ -100,10 +101,7 @@ public class DefaultEditorManager implements EditorManager {
 					element.open(pm);
 					editor.setElement(element);
 				} catch (EditableElementException e) {
-					logger.debug(
-							"Cannot open the document: " + element.getId(), e);
-					editor = new EditorDecorator(new ErrorEditor(element
-							.getId(), e.getMessage()), null, "");
+                                        throw new UnsupportedOperationException(I18N.getString("orbisgis.org.orbisgis.ui.defaultEditorManager.errorOpeningElement"),e); //$NON-NLS-1$
 				}
 				this.editorPanel.addEditor(editor);
 			} else {
