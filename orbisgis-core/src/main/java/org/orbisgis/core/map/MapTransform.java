@@ -55,6 +55,7 @@ import com.vividsolutions.jts.awt.ShapeWriter;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
+import java.awt.HeadlessException;
 import java.awt.RenderingHints;
 import java.awt.image.ColorModel;
 import java.awt.image.renderable.RenderContext;
@@ -82,7 +83,9 @@ public class MapTransform implements PointTransformation {
 	private static RenderContext draftContext;
 	private static RenderContext screenContext;
 
-	private double dpi = Toolkit.getDefaultToolkit().getScreenResolution();
+	private double dpi;
+
+	private static final double DEFAULT_DPI = 96.0;
 
     static {
         ImageLayout layout = new ImageLayout();
@@ -112,6 +115,15 @@ public class MapTransform implements PointTransformation {
 
 
         draftContext = new RenderContext(AffineTransform.getTranslateInstance(0.0, 0.0), draftHints);
+	}
+
+
+	public MapTransform(){
+		try{
+			this.dpi = Toolkit.getDefaultToolkit().getScreenResolution();
+		} catch (HeadlessException e){
+			this.dpi = DEFAULT_DPI;
+		}
 	}
 
 	/**
@@ -374,7 +386,6 @@ public class MapTransform implements PointTransformation {
 		if (adjustedExtent == null) {
 			return 0;
 		} else {
-			int dpi = Toolkit.getDefaultToolkit().getScreenResolution();
 			double metersByPixel = 0.0254 / dpi;
 			double imageMeters = getWidth() * metersByPixel;
 
