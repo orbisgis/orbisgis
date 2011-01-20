@@ -241,7 +241,7 @@ public class ST_MainDirections implements CustomQuery {
 				"the_geom", "theta", "percent" });
 	}
 
-	public TableDefinition[] geTablesDefinitions() {
+	public TableDefinition[] getTablesDefinitions() {
 		return new TableDefinition[] { TableDefinition.GEOMETRY };
 	}
 

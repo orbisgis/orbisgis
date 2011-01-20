@@ -197,7 +197,7 @@ public class CustomQueryOperator extends AbstractExpressionOperator implements
 
 		Metadata[] tables = getTablesMetadata();
 
-		TableDefinition[] tablesDef = getCustomQuery().geTablesDefinitions();
+		TableDefinition[] tablesDef = getCustomQuery().getTablesDefinitions();
 		if (tables.length != tablesDef.length) {
 			throw new SemanticException("Invalid number of tables. "
 					+ getCustomQuery().getName() + " expects "

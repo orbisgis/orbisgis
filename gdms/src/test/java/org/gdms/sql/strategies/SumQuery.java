@@ -113,7 +113,7 @@ public class SumQuery implements CustomQuery {
 				.createType(Type.DOUBLE) }, new String[] { "sum" });
 	}
 
-	public TableDefinition[] geTablesDefinitions() {
+	public TableDefinition[] getTablesDefinitions() {
 		return new TableDefinition[] { TableDefinition.ANY };
 	}
 

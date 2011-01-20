@@ -51,7 +51,7 @@ public class RegisterFunction implements CustomQuery {
 	}
 
 	@Override
-	public TableDefinition[] geTablesDefinitions() {
+	public TableDefinition[] getTablesDefinitions() {
 		return new TableDefinition[] {};
 	}
 

@@ -127,7 +127,7 @@ public class RegisterCall implements CustomQuery {
                 return null;
         }
 
-        public TableDefinition[] geTablesDefinitions() {
+        public TableDefinition[] getTablesDefinitions() {
                 return new TableDefinition[]{};
         }
 

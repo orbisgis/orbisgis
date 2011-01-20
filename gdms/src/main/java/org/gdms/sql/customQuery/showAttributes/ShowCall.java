@@ -131,7 +131,7 @@ public class ShowCall implements CustomQuery {
 		return null;
 	}
 
-	public TableDefinition[] geTablesDefinitions() {
+	public TableDefinition[] getTablesDefinitions() {
 		return new TableDefinition[0];
 	}
 

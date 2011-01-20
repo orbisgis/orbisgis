@@ -124,7 +124,7 @@ public class ExportCall implements CustomQuery {
         }
 
         @Override
-        public TableDefinition[] geTablesDefinitions() {
+        public TableDefinition[] getTablesDefinitions() {
                 return new TableDefinition[]{};
         }
 

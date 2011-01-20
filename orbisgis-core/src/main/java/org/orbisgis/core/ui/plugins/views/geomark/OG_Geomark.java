@@ -116,7 +116,7 @@ public class OG_Geomark implements CustomQuery {
 		return null;
 	}
 
-	public TableDefinition[] geTablesDefinitions() {
+	public TableDefinition[] getTablesDefinitions() {
 		return new TableDefinition[] { TableDefinition.GEOMETRY };
 	}
 

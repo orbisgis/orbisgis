@@ -135,7 +135,7 @@ public class ST_RandomGeometry implements CustomQuery {
 		return "select ST_RandomGeometry('misc|point|linestring|linearring|polygon'[, number]);";
 	}
 
-	public TableDefinition[] geTablesDefinitions() {
+	public TableDefinition[] getTablesDefinitions() {
 		return new TableDefinition[0];
 	}
 

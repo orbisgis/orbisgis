@@ -208,7 +208,7 @@ public class ST_RasterToPolygons implements CustomQuery {
 				"the_geom", "value" });
 	}
 
-	public TableDefinition[] geTablesDefinitions() {
+	public TableDefinition[] getTablesDefinitions() {
 		return new TableDefinition[] { TableDefinition.RASTER };
 	}
 

@@ -321,7 +321,7 @@ public class ST_KMeans implements CustomQuery {
 				cellIndexFieldName, "clusterNumber" });
 	}
 
-	public TableDefinition[] geTablesDefinitions() {
+	public TableDefinition[] getTablesDefinitions() {
 		return new TableDefinition[] { TableDefinition.ANY };
 	}
 

@@ -107,7 +107,7 @@ public interface CustomQuery {
 	 *
 	 * @return
 	 */
-	public TableDefinition[] geTablesDefinitions();
+	public TableDefinition[] getTablesDefinitions();
 
 	/**
 	 * Gets all the possible combinations of arguments this function can take
