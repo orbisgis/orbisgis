@@ -132,6 +132,9 @@ public class SpatialDataSourceDecorator extends AbstractDataSourceDecorator {
 		if (spatialFieldIndex == -1) {
 			spatialFieldIndex = MetadataUtilities
 					.getSpatialFieldIndex(getMetadata());
+			if(spatialFieldIndex == -1) {
+				throw new DriverException("Unable to retrieve spatial informations in this source");
+			}
 		}
 		return spatialFieldIndex;
 	}
