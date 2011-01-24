@@ -85,6 +85,37 @@ public final class FileUtils {
                 }
         }
 
+
+        /**
+         * Deletes a file if exists
+         *
+         * @param file
+         * @return true iif the file vas deleted
+         */
+        public static boolean deleteFile(File file) {
+                if (file != null && file.exists()) {
+                        return file.delete();
+                }
+                return false;
+        }
+
+        /**
+         * A simple method to delete all shape files : dbf, shp, shx, prj.
+         *
+         * @param fileShp
+         * @throws IOException 
+         */
+        public static void deleteSHPFiles(File fileShp) throws IOException {
+                        File fileShx = getFileWithExtension(fileShp, "shx");
+                        File fileDbf = getFileWithExtension(fileShp, "dbf");
+                        File filePrj = getFileWithExtension(fileShp, "prj");
+
+                        deleteFile(fileShp);
+                        deleteFile(fileShx);
+                        deleteFile(fileDbf);
+                        deleteFile(filePrj);
+        }
+
         /**
          * Delete all the files in the directory.
          * This method takes care to remove all the files in the child directories
