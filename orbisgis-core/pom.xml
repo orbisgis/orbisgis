@@ -63,7 +63,7 @@
 			<groupId>org.gdms</groupId>
 			<artifactId>gdms</artifactId>
 			<version>1.5.0</version>
-		</dependency>	
+		</dependency>
 		<dependency>
 			<groupId>bsh</groupId>
 			<artifactId>bsh</artifactId>
@@ -85,20 +85,20 @@
 			<version>1.4.1</version>
 		</dependency>
 		<dependency>
-    <groupId>org.eclipse.jdt.core.compiler</groupId>
-    <artifactId>ecj</artifactId>
-    <version>3.5.1</version>
-</dependency>
-	 <dependency>
-	  <groupId>com.fifesoft</groupId>
-	  <artifactId>rsyntaxtextarea</artifactId>
-	  <version>1.4.1</version>
-	 </dependency>
-	 <dependency>
-	  <groupId>com.fifesoft</groupId>
-	  <artifactId>autocomplete</artifactId>
-	  <version>1.4.1</version>
-	 </dependency>
+			<groupId>org.eclipse.jdt.core.compiler</groupId>
+			<artifactId>ecj</artifactId>
+			<version>3.5.1</version>
+		</dependency>
+		<dependency>
+			<groupId>com.fifesoft</groupId>
+			<artifactId>rsyntaxtextarea</artifactId>
+			<version>1.4.1</version>
+		</dependency>
+		<dependency>
+			<groupId>com.fifesoft</groupId>
+			<artifactId>autocomplete</artifactId>
+			<version>1.4.1</version>
+		</dependency>
 	</dependencies>
 	<build>
 		<plugins>
@@ -113,16 +113,101 @@
 				</configuration>
 			</plugin>
 			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>rpm-maven-plugin</artifactId>
+				<version>2.1-alpha-1</version>
+				<executions>
+					<execution>
+						<phase>deploy</phase>
+						<goals>
+							<goal>rpm</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<copyright>GPL</copyright>
+					<distribution>OrsbiGIS</distribution>
+					<needarch>noarch</needarch>
+					<packager>irstv</packager>
+					<prefix>/usr/share</prefix>
+					<group>Science</group>
+					<defineStatements>
+						<defineStatement>_unpackaged_files_terminate_build 0</defineStatement>
+					</defineStatements>
+					<mappings>
+						<mapping>
+							<directory>/usr/local/OrbisGIS/lib</directory>
+							<filemode>775</filemode>
+							<username>root</username>
+							<groupname>users</groupname>
+							<sources>
+								<source>
+									<location>target/lib</location>
+								</source>
+							</sources>
+						</mapping>
+						<mapping>
+							<directory>/usr/local/OrbisGIS</directory>
+							<filemode>775</filemode>
+							<username>root</username>
+							<groupname>users</groupname>
+							<sources>
+								<source>
+									<location>target/${project.name}-${project.version}.jar</location>
+								</source>
+							</sources>
+						</mapping>
+						<mapping>
+							<directory>/usr/local/OrbisGIS</directory>
+							<filemode>775</filemode>
+							<username>root</username>
+							<groupname>users</groupname>
+							<sources>
+								<source>
+									<location>src/bin/orbisgis.sh</location>
+								</source>
+							</sources>
+						</mapping>
+						<mapping>
+							<directory>/usr/local/bin</directory>
+							<sources>
+								<source>
+									<location>src/bin/orbisgis</location>
+								</source>
+							</sources>
+						</mapping>
+					</mappings>
+					<postinstall>
+						#!/bin/sh
+						chmod 775 /usr/local/bin/orbisgis
+						chown root:users /usr/local/bin/orbisgis
+					</postinstall>
+					<postremove>
+						#!/bin/sh
+						if [ -d /usr/local/OrbisGIS ]
+						then
+							rm -rf /usr/local/OrbisGIS
+						else
+							echo "Files have been moved locally, remove them manually"
+						fi
+						if [ -e /usr/local/bin/orbisgis ]
+						then
+							rm -f /usr/local/bin/orbisgis ]
+						fi
+					</postremove>
+				</configuration>
+			</plugin>
+			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-jar-plugin</artifactId>
 				<version>2.3.1</version>
 				<configuration>
-		         	<archive>
-		            	<manifest>
-		            	  <mainClass>org.orbisgis.core.Main</mainClass>
-		          	    </manifest>
-		          	</archive>
-	       		</configuration>
+					<archive>
+						<manifest>
+							<mainClass>org.orbisgis.core.Main</mainClass>
+						</manifest>
+					</archive>
+				</configuration>
 			</plugin>
 		</plugins>
 	</build>
