@@ -22,7 +22,7 @@ public final class I18N {
          * @param key the key
          * @return the text, or the key itself if it is not well-formed
          */
-        public static String getText(final String key) {
+        public static String getString(final String key) {
                 //Get context (ResourceBundle) with the key:
                 //myplugin.key = my translation -> get context : myplugin
                 int contextIndex = key.indexOf('.');
