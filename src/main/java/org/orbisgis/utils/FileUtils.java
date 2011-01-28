@@ -558,7 +558,10 @@ public final class FileUtils {
 
                                         if (name.toLowerCase().endsWith(extension)) {
                                                 int extensionStart = name.lastIndexOf('.');
-                                                String ret2 = name.substring(0, name.indexOf(name.substring(extensionStart)));
+                                                if ( extensionStart == -1) {
+                                                        return false;
+                                                }
+                                                String ret2 = name.substring(0, extensionStart);
                                                 return ret2.equals(ret);
                                         }
                                         return false;
