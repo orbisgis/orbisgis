@@ -213,57 +213,51 @@ public class WorkspaceFolderPanel extends JPanel implements UIPanel {
 
 	private String checkWorkspace(File file) {
 
-		if (file == null) {
-			return null;
-		} else if (file.exists() && !file.isDirectory()) {
-			File versionFile = new File(file, "org.orbisgis.version.txt");
-			int version;
-			if (versionFile.exists()) {
-				try {
-					BufferedReader fr = new BufferedReader(new FileReader(
-							versionFile));
-					String strVersion = fr.readLine();
-					fr.close();
-					version = Integer.parseInt(strVersion.trim());
-				} catch (IOException e1) {
-					setCheckBoxSelected(false);
-					return I18N
-							.getString("orbisgis.core.ui.workspace.cannot_read_version");
-				} catch (NumberFormatException e) {
-					setCheckBoxSelected(false);
-					return I18N
-							.getString("orbisgis.core.ui.workspace.cannot_read_version");
-				}
-			} else {
-				version = DefaultWorkspace.WORKSPACE_VERSION;
-			}
-			DefaultSwingWorkspace dw = (DefaultSwingWorkspace) Services
-					.getService(Workspace.class);
-			if (dw.getWsVersion() != version) {
-				setCheckBoxSelected(false);
-				return I18N.getString("orbisgis.core.ui.workspace.bad_version");
-			}
-		} else if (file.exists() && file.isDirectory()) {
+                if (file == null || !file.exists()) {
+                        return null;
+                } else if (file.isDirectory()) {
+                        File versionFile = new File(file, "org.orbisgis.version.txt");
+                        int version = DefaultWorkspace.WORKSPACE_VERSION;
+                        if (versionFile.exists()) {
+                                try {
+                                        BufferedReader fr = new BufferedReader(new FileReader(
+                                                versionFile));
+                                        String strVersion = fr.readLine();
+                                        if (strVersion == null) {
+                                                setCheckBoxSelected(false);
+                                                return I18N.getString("orbisgis.core.ui.workspace.cannot_read_version");
+                                        }
+                                        fr.close();
+                                        version = Integer.parseInt(strVersion.trim());
+                                } catch (IOException e1) {
+                                        setCheckBoxSelected(false);
+                                        return I18N.getString("orbisgis.core.ui.workspace.cannot_read_version");
+                                } catch (NumberFormatException e) {
+                                        setCheckBoxSelected(false);
+                                        return I18N.getString("orbisgis.core.ui.workspace.cannot_read_version");
+                                }
+                        } else {
+                                setCheckBoxSelected(false);
+                                return I18N.getString("orbisgis.core.ui.workspace.invalid");
+                        }
 
-			File versionFile = new File(file, "org.orbisgis.version.txt");
-			if (!versionFile.exists()) {
-				setCheckBoxSelected(false);
-				return I18N.getString("orbisgis.core.ui.workspace.invalid");
-			} else {
-				DefaultWorkspace workspace = (DefaultWorkspace) Services
-						.getService(Workspace.class);
+                        DefaultSwingWorkspace dw = (DefaultSwingWorkspace) Services.getService(Workspace.class);
+                        if (dw.getWsVersion() != version) {
+                                setCheckBoxSelected(false);
+                                return I18N.getString("orbisgis.core.ui.workspace.bad_version");
+                        }
+                        DefaultWorkspace workspace = (DefaultWorkspace) Services.getService(Workspace.class);
 
-				String currentWorkspacefolder = workspace.getWorkspaceFolder();
-				if (currentWorkspacefolder != null) {
+                        String currentWorkspacefolder = workspace.getWorkspaceFolder();
+                        if (currentWorkspacefolder != null) {
 
-					if (file.getAbsolutePath().equals(currentWorkspacefolder)
-							&& !isSelected()) {
-						return I18N
-								.getString("orbisgis.core.ui.workspace.already_used");
-					}
-				}
-			}
-		}
+                                if (file.getAbsolutePath().equals(currentWorkspacefolder)
+                                        && !isSelected()) {
+                                        return I18N.getString("orbisgis.core.ui.workspace.already_used");
+                                }
+                        }
+                }
+
 		return null;
 
 	}

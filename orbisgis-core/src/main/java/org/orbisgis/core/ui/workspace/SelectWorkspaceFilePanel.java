@@ -268,39 +268,36 @@ public class SelectWorkspaceFilePanel extends AbstractUIPanel implements
 
 	private String checkWorkspace(File file) {
 
-		if (file == null) {
-			return null;
-		} else if (file.exists() && !file.isDirectory()) {
-			File versionFile = new File(file, "org.orbisgis.version.txt");
-			int version;
-			if (versionFile.exists()) {
-				try {
-					BufferedReader fr = new BufferedReader(new FileReader(
-							versionFile));
-					String strVersion = fr.readLine();
-					fr.close();
-					version = Integer.parseInt(strVersion.trim());
-				} catch (IOException e1) {
-					return I18N.getString("orbisgis.core.ui.workspace.bad_version");
-				} catch (NumberFormatException e) {
-					return I18N.getString("orbisgis.core.ui.workspace.bad_version");
-				}
-			} else {
-				version = DefaultWorkspace.WORKSPACE_VERSION;
-			}
-			DefaultSwingWorkspace dw = (DefaultSwingWorkspace) Services
-					.getService(Workspace.class);
-			if (dw.getWsVersion() != version) {
-				return I18N.getString("orbisgis.core.ui.workspace.invalid");
-			}
-		} else if (file.exists() && file.isDirectory()) {
+                if (file == null || !file.exists()) {
+                        return null;
+                } else if (file.isDirectory()) {
+                        File versionFile = new File(file, "org.orbisgis.version.txt");
+                        int version = DefaultWorkspace.WORKSPACE_VERSION;
+                        if (versionFile.exists()) {
+                                try {
+                                        BufferedReader fr = new BufferedReader(new FileReader(
+                                                versionFile));
+                                        String strVersion = fr.readLine();
+                                        fr.close();
+                                        if (strVersion == null) {
+                                                return I18N.getString("orbisgis.core.ui.workspace.cannot_read_version");
+                                        }
+                                        version = Integer.parseInt(strVersion.trim());
+                                } catch (IOException e1) {
+                                        return I18N.getString("orbisgis.core.ui.workspace.cannot_read_version");
+                                } catch (NumberFormatException e) {
+                                        return I18N.getString("orbisgis.core.ui.workspace.cannot_read_version");
+                                }
+                        } else {
+                                return I18N.getString("orbisgis.core.ui.workspace.invalid");
+                        }
 
-			File versionFile = new File(file, "org.orbisgis.version.txt");
-			if (!versionFile.exists()) {
-				return I18N
-				.getString("orbisgis.core.ui.workspace.invalid");
-			}
-		}
+                        DefaultSwingWorkspace dw = (DefaultSwingWorkspace) Services.getService(Workspace.class);
+                        if (dw.getWsVersion() != version) {
+                                return I18N.getString("orbisgis.core.ui.workspace.bad_version");
+                        }
+                }
+
 		return null;
 
 	}

@@ -70,7 +70,7 @@ public class OpenFilePanel extends AbstractOpenPanel {
         } else if (!file.exists()) {
             return I18N.getString("orbisgis.core.file.aFileMustExists");
         } else {
-            return " ";
+            return null;
         }
     }
 

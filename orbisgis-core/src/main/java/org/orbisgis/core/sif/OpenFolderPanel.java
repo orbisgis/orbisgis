@@ -78,7 +78,7 @@ public class OpenFolderPanel extends AbstractOpenPanel {
 		} else if(!file.isDirectory()){
 			return I18N.getString("orbisgis.org.orbisgis.core.folderMustBeDirectory");
 		} else {
-			return " ";
+			return null;
 		}
 	}
 

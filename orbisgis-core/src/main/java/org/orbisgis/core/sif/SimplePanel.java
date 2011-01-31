@@ -193,8 +193,7 @@ public class SimplePanel extends JPanel {
 			logger.error(I18N.getString("orbisgis.org.orbisgis.sif.simplePanel.errorValidatingUIPanel"), e); //$NON-NLS-1$
 			err = I18N.getString("orbisgis.org.orbisgis.sif.simplePanel.errorValidating") + e.getMessage(); //$NON-NLS-1$
 		}
-		if (err != null) {
-		} else if ((err == null) && (panel instanceof SQLUIPanel)) {
+		if ((err == null) && (panel instanceof SQLUIPanel)) {
 			SQLUIPanel sqlPanel = (SQLUIPanel) panel;
 			// Type check
 			int[] types = sqlPanel.getFieldTypes();
@@ -271,17 +270,16 @@ public class SimplePanel extends JPanel {
 					}
 				}
 			}
-		} else {
-			err = null;
 		}
 
-		if (err != null) {
-			msgPanel.setError(err);
-			frame.cannotContinue();
-		} else {
-			msgPanel.setText(panel.getInfoText());
+                if (err == null) {
+                        final String infoText = panel.getInfoText();
+                        msgPanel.setText(infoText == null ? " " : infoText);
 			frame.canContinue();
-		}
+                } else {
+                        msgPanel.setError(err);
+			frame.cannotContinue();
+                }
 	}
 
 	private void registerUISource(SQLUIPanel sqlPanel) {
