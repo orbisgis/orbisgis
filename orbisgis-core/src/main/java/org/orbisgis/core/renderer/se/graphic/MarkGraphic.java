@@ -281,7 +281,10 @@ public final class MarkGraphic extends Graphic implements FillNode, StrokeNode, 
 
 		if (stroke != null) {
 			if (pOffset != null) {
-				atShp = ShapeHelper.perpendicularOffset(atShp, pOffset.getValue(sds, fid));
+				Shape natShp = ShapeHelper.perpendicularOffset(atShp, pOffset.getValue(sds, fid));
+				if (natShp != null){
+					atShp = natShp;
+				}
 			}
 			stroke.draw(rg, sds, fid, atShp, selected, mt);
 		}

@@ -179,7 +179,10 @@ public final class AreaSymbolizer extends VectorSymbolizer implements FillNode, 
 
 				if (perpendicularOffset != null) {
 					double offset = perpendicularOffset.getValue(sds, fid);
-					shp = ShapeHelper.perpendicularOffset(shp, offset);
+					Shape nshp = ShapeHelper.perpendicularOffset(shp, offset);
+					if (nshp != null){
+						shp = nshp;
+					}
 				}
 
 				if (stroke != null) {

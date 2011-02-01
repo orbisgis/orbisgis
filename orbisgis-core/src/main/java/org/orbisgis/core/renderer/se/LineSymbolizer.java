@@ -154,7 +154,10 @@ public final class LineSymbolizer extends VectorSymbolizer implements StrokeNode
 						if (perpendicularOffset != null) {
 							double offset = Uom.toPixel(perpendicularOffset.getValue(sds, fid),
 									getUom(), mt.getDpi(), mt.getScaleDenominator(), null);
-							shp = ShapeHelper.perpendicularOffset(shp, offset);
+							Shape nshp = ShapeHelper.perpendicularOffset(shp, offset);
+							if (nshp != null){
+								shp = nshp;
+							}
 						}
 						stroke.draw(g2, sds, fid, shp, selected, mt);
 					}

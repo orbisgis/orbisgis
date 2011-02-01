@@ -335,162 +335,540 @@ public class ShapeHelper {
 		return null;
 	}
 
-	private static Shape perpendicularOffsetForLine(Shape shp, double offset) {
-		Path2D.Double newShp = new Path2D.Double();
+	private static class Vertex {
 
-		offset *= -1;
+		double x;
+		double y;
 
-		PathIterator it = shp.getPathIterator(null);
-		ArrayList<Double> x = new ArrayList<Double>();
-		ArrayList<Double> y = new ArrayList<Double>();
+		public Vertex(double x, double y) {
+			this.x = x;
+			this.y = y;
+		}
 
-		double absOffset = Math.abs(offset);
+		public boolean equals(Vertex v) {
+			return Math.abs(v.x - this.x) < 0.0001 && Math.abs(v.y - this.y) < 0.0001;
+		}
+
+		@Override
+		public String toString(){
+			return "" + x + ";" + y;
+		}
+	}
+
+	private static class Edge {
+
+		int m_pos;
+		int m_dir;
+
+		boolean processed;
+
+		public Edge(){
+			this.processed = false;
+			m_pos = 0;
+			m_dir = 0;
+		}
+
+		public boolean hasBeedProcessed(){
+			return processed;
+		}
+
+		public boolean is11() {
+			return m_pos == 1 && m_dir == 1;
+		}
+
+		public boolean is10() {
+			return m_pos == 0 && m_dir == 1;
+		}
+
+		public boolean isUnfeasible() {
+			return m_pos == 0;
+		}
+
+		@Override
+		public String toString(){
+			return "" + m_dir + m_pos;
+		}
+	}
+
+	/**
+	 * Convert Shape into a list of coordinates.
+	 * Will also convert curves to set of segment
+	 * @param shp the shape to convert
+	 * @return array list of coordinate, same order
+	 */
+	private static ArrayList<Vertex> getVertexes(Shape shp) {
+		ArrayList<Vertex> vertexes = new ArrayList<Vertex>();
+
+		PathIterator it = shp.getPathIterator(null, 0.2);
 
 		double coords[] = new double[6];
+
 
 		// Want a direct access to coordinates !!!
 		while (!it.isDone()) {
 			it.currentSegment(coords);
 
+			Vertex v = new Vertex(coords[0], coords[1]);
 
-			// Duplet ?
-			if (x.size() > 0) {
-				if (Math.abs(coords[0] - x.get(x.size() - 1) + coords[1] - y.get(y.size() - 1)) > 5) {
-					x.add(coords[0]);
-					y.add(coords[1]);
+			if (vertexes.size() > 0) {
+				if (!v.equals(vertexes.get(vertexes.size() - 1))) {
+					vertexes.add(v);
 				}
 			} else {
-				x.add(coords[0]);
-				y.add(coords[1]);
+				vertexes.add(v);
 			}
+
 
 			it.next();
 		}
 
+		return vertexes;
+	}
+
+	/**
+	 * Remove point which stands in the middle of a straight line
+	 * @param vertexes
+	 */
+	private static void removeUselessVertex(ArrayList<Vertex> vertexes) {
+		if (isClosed(vertexes)){
+			vertexes.remove(vertexes.size()-1);
+		}
+	}
+
+	/**
+	 * Compute the row offset vertexes
+	 * @param vertexes
+	 * @param offset
+	 * @return list of corresponding offseted vertex
+	 */
+	private static ArrayList<Vertex> createOffsetVertexes(ArrayList<Vertex> vertexes, double offset, boolean closed) {
+
 		int i;
+
+		ArrayList<Vertex> offseted = new ArrayList<Vertex>();
+
+		double absOffset = Math.abs(offset);
 
 		double gamma;
 		double theta = Math.PI / 2;
 
-		if (offset < 0) {
-			theta *= -1;
-		}
+		for (i = 0; i < vertexes.size(); i++) {
+			if (i == 0 && !closed) {
+				// First point (unclosed path case
+				Vertex v = vertexes.get(i);
+				Vertex v_p1 = vertexes.get(i + 1);
 
-		for (i = 0; i < x.size(); i++) {
-			if (i == 0) {
-				// First point (linear case)
-				gamma = Math.atan2(y.get(i + 1) - y.get(i), x.get(i + 1) - x.get(i)) + theta;
+				gamma = Math.atan2(v_p1.y - v.y, v_p1.x - v.x) + theta;
 
-				newShp.moveTo(x.get(i) + Math.cos(gamma) * absOffset,
-						y.get(i) + Math.sin(gamma) * absOffset);
+				Vertex ov = new Vertex(v.x + Math.cos(gamma) * absOffset, v.y + Math.sin(gamma) * absOffset);
+				offseted.add(ov);
 
-			} else if (i == x.size() - 1) {
-				// Last point (linear case)
-				gamma = Math.atan2(y.get(i) - y.get(i - 1), x.get(i) - x.get(i - 1)) + theta;
+			} else if (i == vertexes.size() - 1 && ! closed) {
+				// Last point (unclosed path case)
 
-				newShp.lineTo(x.get(i) + Math.cos(gamma) * absOffset,
-						y.get(i) + Math.sin(gamma) * absOffset);
+				Vertex v = vertexes.get(i);
+				Vertex v_m1 = vertexes.get(i - 1);
+
+				gamma = Math.atan2(v.y - v_m1.y, v.x - v_m1.x) + theta;
+
+				offseted.add(new Vertex(v.x + Math.cos(gamma) * absOffset, v.y + Math.sin(gamma) * absOffset));
 			} else {
 
-				final double ax = x.get(i - 1);
-				final double ay = y.get(i - 1);
+				Vertex v = vertexes.get(i);
+				Vertex v_m1 = vertexes.get((i - 1 + vertexes.size()) % vertexes.size()); // TODO handle Closed path  Case ! (with modulo...)
+				Vertex v_p1 = vertexes.get((i + 1) % vertexes.size());
 
-				final double bx = x.get(i);
-				final double by = y.get(i);
+				double e_p1_x = v_p1.x - v.x;
+				double e_p1_y = v_p1.y - v.y;
+				double e_p1_norm = Math.sqrt(e_p1_x * e_p1_x + e_p1_y * e_p1_y);
 
-				final double cx = x.get(i + 1);
-				final double cy = y.get(i + 1);
+				e_p1_x /= e_p1_norm;
+				e_p1_y /= e_p1_norm;
 
-				// other point
-				/*
-				 *    a  (i-1)
-				 *    \
-				 *     \
-				 *      \ (i)          (i+1)
-				 *       \_____________
-				 *       b             c
-				 */
+				double e_x = v.x - v_m1.x;
+				double e_y = v.y - v_m1.y;
+				double e_norm = Math.sqrt(e_x * e_x + e_y * e_y);
 
-				// AB line orientation
-				double alpha = Math.atan2(ay - by, ax - bx);
-				// BC line orientation
-				double beta = Math.atan2(cy - by, cx - bx);
+				e_x /= e_norm;
+				e_y /= e_norm;
 
-				// ABC Angle
-				gamma = alpha - beta;
 
-				if (Math.abs(gamma) > _0_0175 * 5
-						&& (offset < 0 && gamma > Math.PI
-						|| offset < 0 && gamma < 0 && gamma > -Math.PI
-						|| offset > 0 && gamma < -Math.PI
-						|| offset > 0 && gamma > 0 && gamma < Math.PI)) {
+				double dx_tmp;
+				double dy_tmp;
 
-					double x1, y1;
-					double x2, y2;
 
-					double a1 = alpha - theta;
-					x1 = bx + Math.cos(a1) * absOffset;
-					y1 = by + Math.sin(a1) * absOffset;
+				// Determine gamma angle : law of cosines
+				//a
+				dx_tmp = v_p1.x - v.x;
+				dy_tmp = v_p1.y - v.y;
+				double a_length = Math.sqrt(dx_tmp * dx_tmp + dy_tmp * dy_tmp);
 
-					double a2 = beta + theta;
+				//b
+				dx_tmp = v.x - v_m1.x;
+				dy_tmp = v.y - v_m1.y;
+				double b_length = Math.sqrt(dx_tmp * dx_tmp + dy_tmp * dy_tmp);
 
-					x2 = bx + Math.cos(a2) * absOffset;
-					y2 = by + Math.sin(a2) * absOffset;
+				// c
+				dx_tmp = v_p1.x - v_m1.x;
+				dy_tmp = v_p1.y - v_m1.y;
+				double c_length = Math.sqrt(dx_tmp * dx_tmp + dy_tmp * dy_tmp);
 
-					newShp.lineTo(x1, y1);
-					newShp.lineTo(x2, y2);
+				gamma = Math.acos((c_length * c_length - a_length * a_length - b_length * b_length) / (-2 * a_length * b_length));
+
+				System.out.println("Gamma is : " + gamma / _0_0175);
+
+				if (Math.abs(gamma - Math.PI) < 0.0001){
+					vertexes.remove(i);
+					i--;
+					continue;
+				}
+
+				double angle_status = crossProduct(v_m1.x, v_m1.y, v.x, v.y, v_p1.x, v_p1.y) * offset;
+
+				if (angle_status < 0) {
+					// Interior
+					System.out.println("Interior:");
+					double dx = e_p1_x - e_x;
+					double dy = e_p1_y - e_y;
+					double d_norm = Math.sqrt(dx * dx + dy * dy);
+
+					dx /= d_norm;
+					dy /= d_norm;
+
+					dx *= absOffset / Math.sin(gamma / 2);
+					dy *= absOffset / Math.sin(gamma / 2);
+
+					offseted.add(new Vertex(v.x + dx, v.y + dy));
+
 				} else {
-
 					// Exterior
-					double a1 = alpha - theta;
+					System.out.println("Exterior:");
+					double dx = e_x - e_p1_x;
+					double dy = e_y - e_p1_y;
+					double d_norm = Math.sqrt(dx * dx + dy * dy);
 
-					double x1, y1;
-					double x2, y2;
+					dx /= d_norm;
+					dy /= d_norm;
 
-					// Arc beginning
-					x1 = bx + Math.cos(a1) * absOffset;
-					y1 = by + Math.sin(a1) * absOffset;
+					dx *= absOffset / Math.cos((Math.PI - gamma) / 2);
+					dy *= absOffset / Math.cos((Math.PI - gamma) / 2);
 
-					// Arc end
-					double a2 = beta + theta;
+					offseted.add(new Vertex(v.x + dx, v.y + dy));
 
-					x2 = bx + Math.cos(a2) * absOffset;
-					y2 = by + Math.sin(a2) * absOffset;
-
-					// Move to arc begin
-					newShp.lineTo(x1, y1);
-
-					double dx = (x1 + x2) / 2 - bx;
-					double dy = (y1 + y2) / 2 - by;
-
-					double h = Math.sqrt(dx * dx + dy * dy);
-
-					double x3;
-					double y3;
-
-					if (Math.abs(h) < 0.001) {
-						dx = bx - x1;
-						dy = by - y1;
-						x3 = bx - dy;
-						y3 = by + dx;
-					} else {
-						x3 = bx + dx * absOffset / h;
-						y3 = by + dy * absOffset / h;
-					}
-
-					//newShp.quadTo(x3, y3, x2, y2);
-					newShp.lineTo(x3, y3);
-					newShp.lineTo(x2, y2);
-
-					System.out.println("A: " + x1 + " " + y1);
-					System.out.println("B: " + x2 + " " + y2);
-					System.out.println("Ctrl: " + x3 + " " + y3);
 				}
 			}
 		}
+		return offseted;
+	}
 
-		return newShp;
-		//return clean(newShp);
+	private static ArrayList<Edge> computeEdges(ArrayList<Vertex> vertexes, ArrayList<Vertex> offsetVertexes, double offset, boolean closed) {
+		ArrayList<Edge> offstedEdges = new ArrayList<Edge>();
+
+		int i;
+
+		offset *= -1;
+		double absOffset = Math.abs(offset);
+
+
+		for (i = 0; i < vertexes.size(); i++) {
+
+			if (i < vertexes.size() - 1 || closed) {
+				int j = (i + 1) % vertexes.size();
+				Vertex v1 = vertexes.get(i);
+				Vertex v2 = vertexes.get(j);
+				Vertex ov1 = offsetVertexes.get(i);
+				Vertex ov2 = offsetVertexes.get(j);
+
+				Edge e = new Edge();
+				e.m_dir = (isSegIntersect(v1.x, v1.y, ov1.x, ov1.y, v2.x, v2.y, ov2.x, ov2.y) ? 0 : 1);
+				offstedEdges.add(e);
+			}
+		}
+
+		for (i = 0; i < offstedEdges.size() - (closed ? 0: 1) ; i++) {
+			Edge e = offstedEdges.get(i);
+			if (e.m_dir == 0) {
+				e.m_pos = 0;
+			} else {
+				Vertex p31 = offsetVertexes.get(i);
+				Vertex p32 = offsetVertexes.get((i + 1) % vertexes.size());
+
+				double d1 = absOffset;
+				double d2 = absOffset;
+				int j;
+				e.m_pos = 1;
+				for (j = 0; j < offstedEdges.size() - (closed ? 0: 1); j++) {
+					Vertex p1 = vertexes.get(j);
+					Vertex p2 = vertexes.get((j + 1) % vertexes.size());
+
+					double p41x = p31.x + (p2.y - p1.y);
+					double p42x = p32.x + (p2.y - p1.y);
+
+					double p41y = p31.y + (p2.x - p1.x);
+					double p42y = p32.y + (p2.x - p1.x);
+
+					double h = Math.sqrt((p1.x - p2.x) * (p1.x - p2.x) + (p1.y - p2.y) * (p1.y - p2.y));
+
+					if (crossProduct(p31.x, p31.y, p41x, p41y, p1.x, p1.y) * crossProduct(p31.x, p31.y, p41x, p41y, p2.x, p2.y) < 0) {
+						double d = Math.abs(crossProduct(p1.x, p1.y, p2.x, p2.y, p31.x, p31.y) / h);
+						//System.out.println(i + ";"+ j + ";" + d + ";" + absOffset);
+						if (d < d1) {
+							d1 = d;
+						}
+					}
+
+					if (crossProduct(p32.x, p32.y, p42x, p42y, p1.x, p1.y) * crossProduct(p32.x, p32.y, p42x, p42y, p2.x, p2.y) < 0) {
+						double d = Math.abs(crossProduct(p1.x, p1.y, p2.x, p2.y, p32.x, p32.y) / h);
+						//System.out.println((i+1) + ";"+ j + ";" + d + ";" + absOffset);
+						if (d < d2) {
+							d2 = d;
+						}
+					}
+
+
+					if (d1 < absOffset && d2 < absOffset) {
+						System.out.println ("Invalid !");
+						e.m_pos = 0;
+						break;
+					}
+				}
+			}
+		}
+		return offstedEdges;
+	}
+
+	private static Shape createShapeFromVertexes(ArrayList<Vertex> vertexes, boolean closed) {
+		if (vertexes.size() < 2){
+			return null;
+		}
+
+		Path2D.Double shp = new Path2D.Double();
+
+		shp.moveTo(vertexes.get(0).x, vertexes.get(0).y);
+
+		int i;
+
+		for (i = 1; i < vertexes.size(); i++) {
+			Vertex v = vertexes.get(i);
+			shp.lineTo(v.x, v.y);
+		}
+
+		if (closed){
+			shp.closePath();
+		}
+
+		return shp;
+	}
+
+	private static ArrayList<Vertex> computeRawLink(ArrayList<Edge> edges, ArrayList<Vertex> vertexes) {
+
+		ArrayList<Vertex> rawLink = new ArrayList<Vertex>();
+
+		ArrayList<Integer> offsetLinkList = new ArrayList<Integer>();
+		ArrayList<Integer> bufferLinkList = new ArrayList<Integer>();
+
+		int i;
+
+		for (i = 0; i < edges.size(); i++) {
+			Edge e = edges.get(i);
+			offsetLinkList.add(i);
+		}
+
+		int backward = 0;
+		int forward = 0;
+
+		int in_dir = 0;
+		int in_pos = 0;
+
+		for (i = 0; i < edges.size(); i++) {
+			Edge e = edges.get(i);
+			System.out.println ("Edge is: " + e);
+			if (e.is11()) {
+				backward = i;
+				break;
+			} else {
+				edges.remove(e);
+				edges.add(e);
+			}
+		}
+
+		while (backward < edges.size()){
+
+			System.out.println ("Backward edge is " + backward);
+			for (i = (backward + 1) % edges.size(); i != backward ; i = (i+1) % edges.size()) {
+				Edge e = edges.get(i);
+				if (e.hasBeedProcessed()){
+					break;
+				}
+				if (e.is11()) {
+					forward = i;
+					e.processed = true;
+					break;
+				} else {
+					if (e.m_dir == 0){
+						in_dir += 1;
+					}
+					if (e.m_pos == 0){
+						in_pos += 1;
+					}
+					if (e.is10()) {
+						bufferLinkList.add(i);
+						bufferLinkList.add((i + 1) % vertexes.size());
+					}
+				}
+			}
+
+			System.out.println ("Forward edge is " + forward);
+
+
+			if (backward == forward){
+				break;
+			}
+
+			System.out.println (" in_dir: " + in_dir + "    in_pos: " + in_pos);
+
+			int bn = (backward + 1) % vertexes.size();
+			int fn = (forward + 1) % vertexes.size();
+
+			if (in_dir == 0 && in_pos == 0) {
+				System.out.println ("Add " + vertexes.get(bn));
+				rawLink.add(vertexes.get(bn));
+			} else if (in_dir == 0 && in_pos > 0) {
+				for (Integer j : bufferLinkList) {
+					rawLink.add(vertexes.get(j));
+					System.out.println ("Add " + vertexes.get(j));
+				}
+			} else if (in_dir == 1) {
+				Vertex v1 = vertexes.get(backward);
+				Vertex v2 = vertexes.get(bn);
+				Vertex v3 = vertexes.get(forward);
+				Vertex v4 = vertexes.get(fn);
+
+				Point2D.Double inter = getLineIntersection(v1.x, v1.y, v2.x, v2.y, v3.x, v3.y, v4.x, v4.y);
+
+				Vertex nv = new Vertex(inter.x, inter.y);
+				rawLink.add(nv);
+				System.out.println ("Add " + nv);
+			} else if (in_dir > 1) {
+				Vertex v1 = vertexes.get(backward);
+				Vertex v2 = vertexes.get(bn);
+				Vertex v3 = vertexes.get(forward);
+				Vertex v4 = vertexes.get(fn);
+				Point2D.Double inter = getLineIntersection(v1.x, v1.y, v2.x, v2.y, v3.x, v3.y, v4.x, v4.y);
+
+				if (inter != null
+						&& isPointOnSegement(v1.x, v1.y, v2.x, v2.y, inter.x, inter.y)
+						&& isPointOnSegement(v3.x, v3.y, v4.x, v4.y, inter.x, inter.y)) {
+					// 3.1
+					Vertex nv = new Vertex(inter.x, inter.y);
+					rawLink.add(nv);
+					System.out.println ("Add3.1 " + nv);
+				} else {
+					// 3.2
+					for (int j = backward + 1; j < forward; j++) {
+						Vertex vn = vertexes.get(j);
+						Vertex vm = vertexes.get((j + 1) % vertexes.size());
+
+						Point2D.Double i1 = getLineIntersection(v1.x, v1.y, v2.x, v2.y, vn.x, vn.y, vm.x, vm.y);
+						Point2D.Double i2 = getLineIntersection(vn.x, vn.y, vm.x, vm.y, v3.x, v3.y, v4.x, v4.y);
+
+						if (i1 != null && i2 != null
+								&& isPointOnSegement(v1.x, v1.y, v2.x, v2.y, i1.x, i1.y)
+								&& isPointOnSegement(v3.x, v3.y, v4.x, v3.y, i2.x, i2.y)) {
+							rawLink.add(new Vertex(i1.x, i1.y));
+							rawLink.add(new Vertex(i2.x, i2.y));
+
+							Vertex nv = new Vertex(i1.x, i1.y);
+							rawLink.add(nv);
+							System.out.println ("Add3.2a " + nv);
+
+							nv = new Vertex(i2.x, i2.y);
+							rawLink.add(nv);
+							System.out.println ("Add3.2b " + nv);
+						}
+					}
+				}
+			}
+
+			backward = forward;
+			in_dir = 0;
+			in_pos = 0;
+			bufferLinkList.clear();
+		}
+
+		return rawLink;
+	}
+
+	private static boolean isPointOnSegement(double x1, double y1, double x2, double y2, double x3, double y3) {
+
+		double dist12 = (x2-x1)*(x2-x1) + (y2-y1)*(y2-y1);
+		double dist13 = (x3-x1)*(x3-x1) + (y3-y1)*(y3-y1);
+		double dist23 = (x3-x2)*(x3-x2) + (y3-y2)*(y3-y2);
+
+		return Math.abs(dist12 - dist13 - dist23) < 0.01;
+
+		/*if (Math.abs(x1 - x2) < 0.0001) {
+			// segment is vertical, check against y value
+
+			double ymin = Math.min(y1, y2);
+			double ymax = Math.max(y1, y2);
+			return y3 > ymin && y3 < ymax;
+		} else {
+			// check against X values
+			double xmin = Math.min(x1, x2);
+			double xmax = Math.max(x1, x2);
+			return x3 > xmin && x3 < xmax;
+		}*/
+	}
+
+	private static boolean isClosed(ArrayList<Vertex> vertexes) {
+		return vertexes.get(0).equals(vertexes.get(vertexes.size() - 1));
+	}
+
+	private static Shape contourParallelShape(Shape shp, double offset) {
+		ArrayList<Vertex> vertexes = getVertexes(shp);
+
+		System.out.println ("Initial vertexes: ");
+		for (Vertex v : vertexes){
+			System.out.println (v);
+		}
+
+		boolean closed = isClosed(vertexes);
+
+		removeUselessVertex(vertexes);
+
+		System.out.println ("Cleaned vertexes: ");
+		for (Vertex v : vertexes){
+			System.out.println (v);
+		}
+
+		ArrayList<Vertex> offsetVertexes = createOffsetVertexes(vertexes, offset, closed);
+
+		System.out.println ("Offset vertexes: ");
+		for (Vertex v : offsetVertexes){
+			System.out.println (v);
+		}
+
+
+
+		ArrayList<Edge> edges = computeEdges(vertexes, offsetVertexes, offset, closed);
+
+		System.out.println ("Edges: ");
+		for (Edge e : edges){
+			System.out.println (e);
+		}
+
+		ArrayList<Vertex> rawLink = computeRawLink(edges, offsetVertexes);
+
+		System.out.println ("Raw Link: ");
+		for (Vertex v : rawLink){
+			System.out.println (v);
+		}
+
+
+		return createShapeFromVertexes(rawLink, closed);
+
+		//return null;
 	}
 
 	/**
@@ -509,6 +887,17 @@ public class ShapeHelper {
 		return (x2 - x1) * (y3 - y1) - (x3 - x1) * (y2 - y1);
 	}
 
+	private static boolean isSegIntersect(double x1, double y1, double x2, double y2, double x3, double y3, double x4, double y4) {
+		double cp1, cp2, cp3, cp4;
+
+		cp1 = crossProduct(x1, y1, x2, y2, x3, y3);
+		cp2 = crossProduct(x1, y1, x2, y2, x4, y4);
+		cp3 = crossProduct(x3, y3, x4, y4, x1, y1);
+		cp4 = crossProduct(x3, y3, x4, y4, x2, y2);
+
+		return (cp1 * cp2 < 0 && cp3 * cp4 < 0);
+	}
+
 	private static Point2D.Double computeSegmentIntersection(double x1, double y1, double x2, double y2, double x3, double y3, double x4, double y4) {
 		double cp1, cp2, cp3, cp4;
 
@@ -524,80 +913,6 @@ public class ShapeHelper {
 			// none or many intersection point !
 			return null;
 		}
-	}
-
-	private static Shape clean(Shape shp) {
-		PathIterator it = shp.getPathIterator(null);
-		ArrayList<Double> x = new ArrayList<Double>();
-		ArrayList<Double> y = new ArrayList<Double>();
-
-		double coords[] = new double[6];
-
-		// Want a direct access to coordinates !!!
-		while (!it.isDone()) {
-			it.currentSegment(coords);
-			x.add(coords[0]);
-			y.add(coords[1]);
-			it.next();
-		}
-
-		int i, j, k = 0;
-
-		Point2D.Double intersection;
-
-		double x1, x2;
-		double y1, y2;
-
-		// Iterate allong line points, from first to last-1
-		for (i = 0; i < x.size() - 1; i++) {
-			x1 = x.get(i);
-			x2 = x.get(i + 1);
-			y1 = y.get(i);
-			y2 = y.get(i + 1);
-
-			intersection = null;
-
-			// Check for loop in the 5 next segment, stating by the farest
-			for (j = i + 5; j > i+1; j--) {
-				k = (j + 1);
-
-				if (k >= x.size())
-					break;
-
-				intersection = computeSegmentIntersection(x1, y1, x2, y2,
-						x.get(j), y.get(j), x.get(k), y.get(k));
-
-				// The first detected intersection is the one to take into account
-				if (intersection != null) {
-					break;
-				}
-			}
-
-			if (intersection != null) {
-				System.out.println ("Intersection: " + intersection.x + ", " + intersection.y);
-				System.out.println ("L-Point: " + x.get(k) + ", " + y.get(k));
-
-				for (j=0;j<k-i;j++){
-					x.remove(i+1);
-					y.remove(i+1);
-				}
-
-				x.add(i+1, intersection.x);
-				y.add(i+1, intersection.y);
-
-			} else {
-				System.out.println ("i+1 - Point: " + x2 + ", " + y2);
-			}
-		}
-
-		Path2D.Double cleaned = new Path2D.Double();
-
-		cleaned.moveTo(x.get(0), y.get(0));
-		for (i=1;i<x.size();i++){
-			cleaned.lineTo(x.get(i), y.get(i));
-		}
-
-		return cleaned;
 	}
 
 	private static Point2D.Double getLineIntersection(double x1, double y1, double x2, double y2, double x3, double y3, double x4, double y4) {
@@ -636,6 +951,7 @@ public class ShapeHelper {
 	}
 
 	public static Shape perpendicularOffset(Shape shp, double offset) {
-		return perpendicularOffsetForLine(shp, offset);
+		return contourParallelShape(shp, offset);
+		//return perpendicularOffsetForLine(shp, offset);
 	}
 }

@@ -111,7 +111,9 @@ public final class Halo implements SymbolizerNode, UomNode, FillNode {
 			if (r > 0.0) {
 				System.out.println("Halo radius is: " + r);
 				Shape halo = ShapeHelper.perpendicularOffset(shp, r);
-				fill.draw(g2, sds, fid, halo, false, mt);
+				if (halo != null){
+					fill.draw(g2, sds, fid, halo, false, mt);
+				}
 			}
 		}
 	}
