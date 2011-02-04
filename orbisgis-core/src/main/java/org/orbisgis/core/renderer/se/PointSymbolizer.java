@@ -97,10 +97,6 @@ public final class PointSymbolizer extends VectorSymbolizer implements GraphicNo
 			this.setTransform(new Transform(ast.getTransform()));
 		}
 
-		if (ast.getLevel() != null){
-			this.setLevel(ast.getLevel());
-		}
-
 		if (ast.getGraphic() != null) {
 			this.setGraphicCollection(new GraphicCollection(ast.getGraphic(), this));
 
@@ -164,11 +160,6 @@ public final class PointSymbolizer extends VectorSymbolizer implements GraphicNo
 		if (transform != null) {
 			s.setTransform(transform.getJAXBType());
 		}
-
-		if (this.level >= 0) {
-			s.setLevel(level);
-		}
-
 
 		if (graphic != null) {
 			s.setGraphic(graphic.getJAXBElement());

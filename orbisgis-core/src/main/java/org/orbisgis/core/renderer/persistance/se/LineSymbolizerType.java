@@ -29,7 +29,6 @@ import javax.xml.bind.annotation.XmlType;
  *       &lt;sequence>
  *         &lt;element ref="{http://www.opengis.net/se}Geometry" minOccurs="0"/>
  *         &lt;element ref="{http://www.opengis.net/se}UnitOfMeasure" minOccurs="0"/>
- *         &lt;element ref="{http://www.opengis.net/se}Level" minOccurs="0"/>
  *         &lt;element ref="{http://www.opengis.net/se}PerpendicularOffset" minOccurs="0"/>
  *         &lt;element ref="{http://www.opengis.net/se}Transform" minOccurs="0"/>
  *         &lt;element ref="{http://www.opengis.net/se}Stroke" minOccurs="0"/>
@@ -45,7 +44,6 @@ import javax.xml.bind.annotation.XmlType;
 @XmlType(name = "LineSymbolizerType", propOrder = {
     "geometry",
     "unitOfMeasure",
-    "level",
     "perpendicularOffset",
     "transform",
     "stroke"
@@ -59,9 +57,6 @@ public class LineSymbolizerType
     @XmlElement(name = "UnitOfMeasure")
     @XmlSchemaType(name = "anyURI")
     protected String unitOfMeasure;
-    @XmlElement(name = "Level")
-    @XmlSchemaType(name = "unsignedInt")
-    protected Long level;
     @XmlElement(name = "PerpendicularOffset")
     protected ParameterValueType perpendicularOffset;
     @XmlElement(name = "Transform")
@@ -115,30 +110,6 @@ public class LineSymbolizerType
      */
     public void setUnitOfMeasure(String value) {
         this.unitOfMeasure = value;
-    }
-
-    /**
-     * Gets the value of the level property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link Long }
-     *     
-     */
-    public Long getLevel() {
-        return level;
-    }
-
-    /**
-     * Sets the value of the level property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link Long }
-     *     
-     */
-    public void setLevel(Long value) {
-        this.level = value;
     }
 
     /**

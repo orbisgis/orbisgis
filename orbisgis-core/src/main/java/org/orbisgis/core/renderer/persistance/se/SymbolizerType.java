@@ -43,7 +43,8 @@ import org.orbisgis.core.renderer.persistance.ows._1.DescriptionType;
 @XmlType(name = "SymbolizerType", propOrder = {
     "version",
     "name",
-    "description"
+    "description",
+    "extension"
 })
 @XmlSeeAlso({
     LineSymbolizerType.class,
@@ -61,6 +62,8 @@ public abstract class SymbolizerType {
     protected String name;
     @XmlElement(name = "Description")
     protected DescriptionType description;
+    @XmlElement(name = "Extension")
+    protected ExtensionType extension;
 
     /**
      * Gets the value of the version property.
@@ -134,4 +137,27 @@ public abstract class SymbolizerType {
         this.description = value;
     }
 
+     /**
+      * Gets the value of the extension property.
+      *
+      * @return
+      *     possible object is
+      *     {@link ExtensionType }
+      *
+      */
+     public ExtensionType getExtension() {
+         return extension;
+     }
+
+     /**
+      * Sets the value of the extension property.
+      *
+      * @param value
+      *     allowed object is
+      *     {@link ExtensionType }
+      *
+      */
+     public void setExtension(ExtensionType value) {
+         this.extension = value;
+     }
 }

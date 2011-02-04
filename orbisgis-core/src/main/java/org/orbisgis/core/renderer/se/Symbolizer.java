@@ -6,14 +6,16 @@ import java.io.IOException;
 import javax.xml.bind.JAXBElement;
 import org.gdms.data.SpatialDataSourceDecorator;
 import org.orbisgis.core.renderer.persistance.se.AreaSymbolizerType;
+import org.orbisgis.core.renderer.persistance.se.ExtensionParameterType;
 import org.orbisgis.core.renderer.persistance.se.LineSymbolizerType;
 import org.orbisgis.core.renderer.persistance.se.PointSymbolizerType;
 import org.orbisgis.core.renderer.persistance.se.RasterSymbolizerType;
 import org.orbisgis.core.renderer.persistance.se.SymbolizerType;
-import org.gdms.data.feature.Feature;
 import org.gdms.driver.DriverException;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.Drawer;
+import org.orbisgis.core.renderer.persistance.se.ExtensionType;
+import org.orbisgis.core.renderer.persistance.se.ObjectFactory;
 import org.orbisgis.core.renderer.persistance.se.TextSymbolizerType;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
@@ -65,7 +67,15 @@ public abstract class Symbolizer implements SymbolizerNode, Comparable {
         if (t.getDescription() != null){
             // TODO  implement ows:Description
         }
-		level = -1;
+
+        if (t.getExtension() != null){
+            for (ExtensionParameterType param : t.getExtension().getExtensionParameter()){
+                if (param.getName().equalsIgnoreCase("level")){
+                    level = Integer.parseInt(param.getContent());
+                    break;
+                }
+            }
+        }
     }
 
     public String getName() {
@@ -122,13 +132,23 @@ public abstract class Symbolizer implements SymbolizerNode, Comparable {
     }
 
     public void setJAXBProperty(SymbolizerType s) {
+        ObjectFactory of = new ObjectFactory();
+
 		// TODO Load description from XML
         s.setDescription(null);
         s.setName(name);
         s.setVersion("1.9");
+
+        ExtensionType exts = of.createExtensionType();
+        ExtensionParameterType param = of.createExtensionParameterType();
+        param.setName("level");
+        param.setContent("" + level);
+        exts.getExtensionParameter().add(param);
+
+        s.setExtension(exts);
     }
 
-    public void setPropertiesFromJAXB(SymbolizerType st) {
+    /*public void setPropertiesFromJAXB(SymbolizerType st) {
         if (st.getName() != null) {
             this.name = st.getName();
         }
@@ -137,10 +157,10 @@ public abstract class Symbolizer implements SymbolizerNode, Comparable {
 			// TODO Load description from XML
         }
 
-        /*if (st.getVersion() != null){
-         * // TODO IMplement
-        }*/
-    }
+        if (st.getVersion() != null){
+         // TODO IMplement
+        }
+    }*/
 
     public static Symbolizer createSymbolizerFromJAXBElement(JAXBElement<? extends SymbolizerType> st) throws InvalidStyle {
         if (st.getDeclaredType() == org.orbisgis.core.renderer.persistance.se.AreaSymbolizerType.class) {

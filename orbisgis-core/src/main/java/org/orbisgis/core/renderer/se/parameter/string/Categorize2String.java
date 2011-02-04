@@ -41,7 +41,7 @@ public class Categorize2String extends Categorize<StringParameter, StringLiteral
         } else {
             this.setThresholdsSucceeding();
         }
-
+        super.setPropertyFromJaxB(t);
     }
 
     @Override

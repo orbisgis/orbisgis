@@ -27,7 +27,6 @@ import javax.xml.bind.annotation.XmlType;
  *       &lt;sequence>
  *         &lt;element ref="{http://www.opengis.net/se}Geometry" minOccurs="0"/>
  *         &lt;element ref="{http://www.opengis.net/se}UnitOfMeasure" minOccurs="0"/>
- *         &lt;element ref="{http://www.opengis.net/se}Level" minOccurs="0"/>
  *         &lt;element ref="{http://www.opengis.net/se}Opacity" minOccurs="0"/>
  *         &lt;element ref="{http://www.opengis.net/se}ChannelSelection" minOccurs="0"/>
  *         &lt;element ref="{http://www.opengis.net/se}OverlapBehavior" minOccurs="0"/>
@@ -47,7 +46,6 @@ import javax.xml.bind.annotation.XmlType;
 @XmlType(name = "RasterSymbolizerType", propOrder = {
     "geometry",
     "unitOfMeasure",
-    "level",
     "opacity",
     "channelSelection",
     "overlapBehavior",
@@ -65,9 +63,6 @@ public class RasterSymbolizerType
     @XmlElement(name = "UnitOfMeasure")
     @XmlSchemaType(name = "anyURI")
     protected String unitOfMeasure;
-    @XmlElement(name = "Level")
-    @XmlSchemaType(name = "unsignedInt")
-    protected Long level;
     @XmlElement(name = "Opacity")
     protected ParameterValueType opacity;
     @XmlElement(name = "ChannelSelection")
@@ -129,30 +124,6 @@ public class RasterSymbolizerType
      */
     public void setUnitOfMeasure(String value) {
         this.unitOfMeasure = value;
-    }
-
-    /**
-     * Gets the value of the level property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link Long }
-     *     
-     */
-    public Long getLevel() {
-        return level;
-    }
-
-    /**
-     * Sets the value of the level property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link Long }
-     *     
-     */
-    public void setLevel(Long value) {
-        this.level = value;
     }
 
     /**

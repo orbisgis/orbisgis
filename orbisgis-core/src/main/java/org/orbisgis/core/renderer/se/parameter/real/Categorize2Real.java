@@ -25,6 +25,7 @@ public final class Categorize2Real extends Categorize<RealParameter, RealLiteral
     public Categorize2Real(JAXBElement<CategorizeType> expr) throws InvalidStyle {
         CategorizeType t = expr.getValue();
 
+
         this.fallbackValue = new RealLiteral(t.getFallbackValue());
         this.setLookupValue(SeParameterFactory.createRealParameter(t.getLookupValue()));
 
@@ -44,6 +45,7 @@ public final class Categorize2Real extends Categorize<RealParameter, RealLiteral
         else
             this.setThresholdsSucceeding();
              
+        super.setPropertyFromJaxB(t);
     }
 
     @Override

@@ -132,10 +132,6 @@ public final class TextSymbolizer extends VectorSymbolizer {
 			s.setLabel(label.getJAXBElement());
 		}
 
-		if (this.level >= 0){
-			s.setLevel(this.level);
-		}
-
 		return of.createTextSymbolizer(s);
 	}
 
@@ -146,10 +142,6 @@ public final class TextSymbolizer extends VectorSymbolizer {
 
 		if (tst.getGeometry() != null) {
 			// TODO
-		}
-
-		if (tst.getLevel() != null){
-			this.setLevel(tst.getLevel());
 		}
 
 		if (tst.getUnitOfMeasure() != null) {

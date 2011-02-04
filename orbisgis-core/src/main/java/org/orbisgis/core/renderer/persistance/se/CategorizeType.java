@@ -36,6 +36,7 @@ import javax.xml.bind.annotation.XmlType;
  *           &lt;element ref="{http://www.opengis.net/se}Threshold"/>
  *           &lt;element ref="{http://www.opengis.net/se}Value"/>
  *         &lt;/sequence>
+ *         &lt;element ref="{http://www.opengis.net/se}Extension" minOccurs="0"/>
  *       &lt;/sequence>
  *       &lt;attribute name="threshholdsBelongTo" type="{http://www.opengis.net/se}ThreshholdsBelongToType" />
  *     &lt;/extension>
@@ -49,7 +50,8 @@ import javax.xml.bind.annotation.XmlType;
 @XmlType(name = "CategorizeType", propOrder = {
     "lookupValue",
     "firstValue",
-    "thresholdAndValue"
+    "thresholdAndValue",
+    "extension"
 })
 public class CategorizeType
     extends FunctionType
@@ -64,6 +66,8 @@ public class CategorizeType
         @XmlElementRef(name = "Value", namespace = "http://www.opengis.net/se", type = JAXBElement.class)
     })
     protected List<JAXBElement<ParameterValueType>> thresholdAndValue;
+    @XmlElement(name = "Extension")
+    protected ExtensionType extension;
     @XmlAttribute
     protected ThreshholdsBelongToType threshholdsBelongTo;
 
@@ -144,6 +148,31 @@ public class CategorizeType
         }
         return this.thresholdAndValue;
     }
+
+    /**
+      * Gets the value of the extension property.
+      *
+      * @return
+      *     possible object is
+      *     {@link ExtensionType }
+      *
+      */
+     public ExtensionType getExtension() {
+         return extension;
+     }
+
+     /**
+      * Sets the value of the extension property.
+      *
+      * @param value
+      *     allowed object is
+      *     {@link ExtensionType }
+      *
+      */
+     public void setExtension(ExtensionType value) {
+         this.extension = value;
+     }
+
 
     /**
      * Gets the value of the threshholdsBelongTo property.

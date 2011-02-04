@@ -106,10 +106,6 @@ public final class AreaSymbolizer extends VectorSymbolizer implements FillNode, 
 			this.setPerpendicularOffset(SeParameterFactory.createRealParameter(ast.getPerpendicularOffset()));
 		}
 
-		if (ast.getLevel() != null){
-			this.setLevel(ast.getLevel());
-		}
-
 		if (ast.getTransform() != null) {
 			this.setTransform(new Transform(ast.getTransform()));
 		}
@@ -209,10 +205,6 @@ public final class AreaSymbolizer extends VectorSymbolizer implements FillNode, 
 
 		if (transform != null) {
 			s.setTransform(transform.getJAXBType());
-		}
-
-		if (level >= 0){
-			s.setLevel(level);
 		}
 
 		if (this.perpendicularOffset != null) {

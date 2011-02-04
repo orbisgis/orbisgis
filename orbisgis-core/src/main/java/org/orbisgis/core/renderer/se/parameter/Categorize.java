@@ -9,8 +9,9 @@ import javax.xml.bind.JAXBElement;
 import org.orbisgis.core.renderer.persistance.se.CategorizeType;
 import org.gdms.data.DataSource;
 import org.gdms.data.SpatialDataSourceDecorator;
-import org.gdms.data.feature.Feature;
 import org.orbisgis.core.renderer.persistance.ogc.ExpressionType;
+import org.orbisgis.core.renderer.persistance.se.ExtensionParameterType;
+import org.orbisgis.core.renderer.persistance.se.ExtensionType;
 import org.orbisgis.core.renderer.persistance.se.ObjectFactory;
 import org.orbisgis.core.renderer.persistance.se.ParameterValueType;
 import org.orbisgis.core.renderer.persistance.se.ThreshholdsBelongToType;
@@ -28,12 +29,18 @@ import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
 public abstract class Categorize<ToType extends SeParameter, FallbackType extends ToType> implements SeParameter {
 
 
+    private static String SD_FACTOR_KEY="SdFactor";
+    private static String METHOD_KEY="method";
+
+
 	private CategorizeMethod method;
 	private boolean succeeding = true;
 	private RealParameter lookupValue;
 	protected FallbackType fallbackValue;
 	private ToType firstClass;
 	//private ArrayList<Category<ToType>> classes;
+
+    private double sdFactor;
 
 	private ArrayList<ToType> classValues;
 	private ArrayList<RealParameter> thresholds;
@@ -65,7 +72,6 @@ public abstract class Categorize<ToType extends SeParameter, FallbackType extend
 	}
 
 	public enum CategorizeMethod {
-
 		MANUAL, NATURAL_BREAKS, QUANTILE, EQUAL_INTERVAL, STANDARD_DEVIATION
 	}
 
@@ -74,6 +80,7 @@ public abstract class Categorize<ToType extends SeParameter, FallbackType extend
 		this.classValues = new ArrayList<ToType>();
 		this.thresholds = new ArrayList<RealParameter>();
 		this.listeners = new ArrayList<CategorizeListener>();
+        this.sdFactor = 1.0;
 	}
 
 	public Categorize(ToType firstClassValue, FallbackType fallbackValue, RealParameter lookupValue) {
@@ -298,12 +305,53 @@ public abstract class Categorize<ToType extends SeParameter, FallbackType extend
 
 	}
 
+    public CategorizeMethod getMethod() {
+        return method;
+    }
+
+    public void setMethod(CategorizeMethod method) {
+        this.method = method;
+    }
+
+    public double getSdFactor() {
+        return sdFactor;
+    }
+
+    public void setSdFactor(double sdFactor) {
+        this.sdFactor = sdFactor;
+    }
+
 	@Override
 	public ParameterValueType getJAXBParameterValueType() {
 		ParameterValueType p = new ParameterValueType();
 		p.getContent().add(this.getJAXBExpressionType());
 		return p;
 	}
+
+    protected void setPropertyFromJaxB(CategorizeType t){
+
+        method = CategorizeMethod.MANUAL;
+        if (t.getExtension() != null){
+            for (ExtensionParameterType param : t.getExtension().getExtensionParameter()){
+                if (param.getName().equalsIgnoreCase(METHOD_KEY)){
+                    try {
+                        method = CategorizeMethod.valueOf(param.getContent());
+                    } catch (IllegalArgumentException e){
+                        method = CategorizeMethod.MANUAL;
+                    }
+                    break;
+                }
+            }
+
+            if (method == CategorizeMethod.STANDARD_DEVIATION){
+                for (ExtensionParameterType param : t.getExtension().getExtensionParameter()){
+                    if (param.getName().equalsIgnoreCase(SD_FACTOR_KEY)){
+                        sdFactor = Double.parseDouble(param.getContent());
+                    }
+                }
+            }
+        }
+    }
 
 	@Override
 	public JAXBElement<? extends ExpressionType> getJAXBExpressionType() {
@@ -337,6 +385,23 @@ public abstract class Categorize<ToType extends SeParameter, FallbackType extend
 			tv.add(of.createThreshold(tIt.next().getJAXBParameterValueType()));
 			tv.add(of.createValue(cIt.next().getJAXBParameterValueType()));
 		}
+
+
+
+        ExtensionType exts = of.createExtensionType();
+        ExtensionParameterType param = of.createExtensionParameterType();
+        param.setName(METHOD_KEY);
+        param.setContent(method.name());
+        exts.getExtensionParameter().add(param);
+
+        if (method == CategorizeMethod.STANDARD_DEVIATION){
+            ExtensionParameterType sd = of.createExtensionParameterType();
+            sd.setName(SD_FACTOR_KEY);
+            sd.setContent("" + sdFactor);
+            exts.getExtensionParameter().add(sd);
+        }
+
+        c.setExtension(exts);
 
 		return of.createCategorize(c);
 	}

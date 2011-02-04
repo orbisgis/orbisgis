@@ -84,6 +84,7 @@ public class ObjectFactory {
     private final static QName _LineJoin_QNAME = new QName("http://www.opengis.net/se", "LineJoin");
     private final static QName _Version_QNAME = new QName("http://www.opengis.net/se", "Version");
     private final static QName _SemanticTypeIdentifier_QNAME = new QName("http://www.opengis.net/se", "SemanticTypeIdentifier");
+    private final static QName _Extension_QNAME = new QName("http://www.opengis.net/se", "Extension");
     private final static QName _Normalization_QNAME = new QName("http://www.opengis.net/se", "Normalization");
     private final static QName _ExclusionRectangle_QNAME = new QName("http://www.opengis.net/se", "ExclusionRectangle");
     private final static QName _FontWeight_QNAME = new QName("http://www.opengis.net/se", "FontWeight");
@@ -106,6 +107,7 @@ public class ObjectFactory {
     private final static QName _MaxScaleDenominator_QNAME = new QName("http://www.opengis.net/se", "MaxScaleDenominator");
     private final static QName _Graphic_QNAME = new QName("http://www.opengis.net/se", "Graphic");
     private final static QName _Encoding_QNAME = new QName("http://www.opengis.net/se", "Encoding");
+    private final static QName _ExtensionParameter_QNAME = new QName("http://www.opengis.net/se", "ExtensionParameter");
     private final static QName _Parameter_QNAME = new QName("http://www.opengis.net/se", "Parameter");
     private final static QName _Angle_QNAME = new QName("http://www.opengis.net/se", "Angle");
     private final static QName _Transform_QNAME = new QName("http://www.opengis.net/se", "Transform");
@@ -188,7 +190,6 @@ public class ObjectFactory {
     private final static QName _RasterSymbolizer_QNAME = new QName("http://www.opengis.net/se", "RasterSymbolizer");
     private final static QName _Gap_QNAME = new QName("http://www.opengis.net/se", "Gap");
     private final static QName _AreaSymbolizer_QNAME = new QName("http://www.opengis.net/se", "AreaSymbolizer");
-    private final static QName _Level_QNAME = new QName("http://www.opengis.net/se", "Level");
     private final static QName _LineLabel_QNAME = new QName("http://www.opengis.net/se", "LineLabel");
     private final static QName _Name_QNAME = new QName("http://www.opengis.net/se", "Name");
     private final static QName _DashOffset_QNAME = new QName("http://www.opengis.net/se", "DashOffset");
@@ -489,6 +490,15 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link ExtensionType }
+     *
+     */
+    public ExtensionType createExtensionType() {
+        return new ExtensionType();
+    }
+
+
+    /**
      * Create an instance of {@link TextStrokeType }
      * 
      */
@@ -742,6 +752,14 @@ public class ObjectFactory {
      */
     public PointSymbolizerType createPointSymbolizerType() {
         return new PointSymbolizerType();
+    }
+
+    /**
+     * Create an instance of {@link ExtensionParameterType }
+     *
+     */
+    public ExtensionParameterType createExtensionParameterType() {
+        return new ExtensionParameterType();
     }
 
     /**
@@ -1268,6 +1286,15 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link ExtensionType }{@code >}}
+     *
+     */
+    @XmlElementDecl(namespace = "http://www.opengis.net/se", name = "Extension")
+    public JAXBElement<ExtensionType> createExtension(ExtensionType value) {
+        return new JAXBElement<ExtensionType>(_Extension_QNAME, ExtensionType.class, null, value);
+    }
+
+    /**
      * Create an instance of {@link JAXBElement }{@code <}{@link ParameterValueType }{@code >}}
      * 
      */
@@ -1464,6 +1491,16 @@ public class ObjectFactory {
     public JAXBElement<String> createEncoding(String value) {
         return new JAXBElement<String>(_Encoding_QNAME, String.class, null, value);
     }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link ExtensionParameterType }{@code >}}
+     *
+     */
+    @XmlElementDecl(namespace = "http://www.opengis.net/se", name = "ExtensionParameter")
+    public JAXBElement<ExtensionParameterType> createExtensionParameter(ExtensionParameterType value) {
+        return new JAXBElement<ExtensionParameterType>(_ExtensionParameter_QNAME, ExtensionParameterType.class, null, value);
+    }
+
 
     /**
      * Create an instance of {@link JAXBElement }{@code <}{@link ParameterType }{@code >}}
@@ -2201,15 +2238,6 @@ public class ObjectFactory {
     @XmlElementDecl(namespace = "http://www.opengis.net/se", name = "AreaSymbolizer", substitutionHeadNamespace = "http://www.opengis.net/se", substitutionHeadName = "Symbolizer")
     public JAXBElement<AreaSymbolizerType> createAreaSymbolizer(AreaSymbolizerType value) {
         return new JAXBElement<AreaSymbolizerType>(_AreaSymbolizer_QNAME, AreaSymbolizerType.class, null, value);
-    }
-
-    /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link Long }{@code >}}
-     * 
-     */
-    @XmlElementDecl(namespace = "http://www.opengis.net/se", name = "Level")
-    public JAXBElement<Long> createLevel(Long value) {
-        return new JAXBElement<Long>(_Level_QNAME, Long.class, null, value);
     }
 
     /**
