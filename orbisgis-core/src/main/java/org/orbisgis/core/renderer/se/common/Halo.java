@@ -1,5 +1,6 @@
 package org.orbisgis.core.renderer.se.common;
 
+import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Shape;
 import java.awt.geom.Rectangle2D;
@@ -8,6 +9,7 @@ import java.io.IOException;
 import org.gdms.data.SpatialDataSourceDecorator;
 
 import org.gdms.data.feature.Feature;
+import org.orbisgis.core.Services;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.persistance.se.HaloType;
 import org.orbisgis.core.renderer.se.FillNode;
@@ -22,131 +24,135 @@ import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
 import org.orbisgis.core.renderer.se.parameter.real.RealLiteral;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
+import org.orbisgis.utils.I18N;
 
 public final class Halo implements SymbolizerNode, UomNode, FillNode {
 
-	public Halo() {
-		setFill(new SolidFill());
-		setRadius(new RealLiteral(5));
-	}
+    public Halo() {
+        setFill(new SolidFill());
+        setRadius(new RealLiteral(5));
+    }
 
-	public Halo(Fill fill, RealParameter radius) {
-		this.fill = fill;
-		this.radius = radius;
-	}
+    public Halo(Fill fill, RealParameter radius) {
+        this.fill = fill;
+        this.radius = radius;
+    }
 
-	public Halo(HaloType halo) throws InvalidStyle {
-		if (halo.getFill() != null) {
-			this.setFill(Fill.createFromJAXBElement(halo.getFill()));
-		}
+    public Halo(HaloType halo) throws InvalidStyle {
+        if (halo.getFill() != null) {
+            this.setFill(Fill.createFromJAXBElement(halo.getFill()));
+        }
 
-		if (halo.getRadius() != null) {
-			this.setRadius(SeParameterFactory.createRealParameter(halo.getRadius()));
-		}
+        if (halo.getRadius() != null) {
+            this.setRadius(SeParameterFactory.createRealParameter(halo.getRadius()));
+        }
 
-		if (halo.getUnitOfMeasure() != null) {
-			this.setUom(Uom.fromOgcURN(halo.getUnitOfMeasure()));
-		}
-	}
+        if (halo.getUnitOfMeasure() != null) {
+            this.setUom(Uom.fromOgcURN(halo.getUnitOfMeasure()));
+        }
+    }
 
-	@Override
-	public Uom getUom() {
-		if (uom == null) {
-			return getParent().getUom();
-		} else {
-			return uom;
-		}
-	}
+    @Override
+    public Uom getUom() {
+        if (uom == null) {
+            return getParent().getUom();
+        } else {
+            return uom;
+        }
+    }
 
-	@Override
-	public Uom getOwnUom() {
-		return uom;
-	}
+    @Override
+    public Uom getOwnUom() {
+        return uom;
+    }
 
-	@Override
-	public void setUom(Uom uom) {
-		this.uom = uom;
-	}
+    @Override
+    public void setUom(Uom uom) {
+        this.uom = uom;
+    }
 
-	public void setRadius(RealParameter radius) {
-		this.radius = radius;
-		if (this.radius != null) {
-			this.radius.setContext(RealParameterContext.realContext);
-		}
-	}
+    public void setRadius(RealParameter radius) {
+        this.radius = radius;
+        if (this.radius != null) {
+            this.radius.setContext(RealParameterContext.realContext);
+        }
+    }
 
-	@Override
-	public void setFill(Fill fill) {
-		this.fill = fill;
-		fill.setParent(this);
-	}
+    @Override
+    public void setFill(Fill fill) {
+        this.fill = fill;
+        fill.setParent(this);
+    }
 
-	@Override
-	public Fill getFill() {
-		return fill;
-	}
+    @Override
+    public Fill getFill() {
+        return fill;
+    }
 
-	public RealParameter getRadius() {
-		return radius;
-	}
+    public RealParameter getRadius() {
+        return radius;
+    }
 
-	@Override
-	public SymbolizerNode getParent() {
-		return parent;
-	}
+    @Override
+    public SymbolizerNode getParent() {
+        return parent;
+    }
 
-	@Override
-	public void setParent(SymbolizerNode node) {
-		parent = node;
-	}
+    @Override
+    public void setParent(SymbolizerNode node) {
+        parent = node;
+    }
 
-	public double getHaloRadius(SpatialDataSourceDecorator sds, long fid, MapTransform mt) throws ParameterException {
-		return Uom.toPixel(radius.getValue(sds, fid), getUom(), mt.getDpi(), mt.getScaleDenominator(), null); // TODO 100%
-	}
+    public double getHaloRadius(SpatialDataSourceDecorator sds, long fid, MapTransform mt) throws ParameterException {
+        return Uom.toPixel(radius.getValue(sds, fid), getUom(), mt.getDpi(), mt.getScaleDenominator(), null); // TODO 100%
+    }
 
-	public void draw(Graphics2D g2, SpatialDataSourceDecorator sds, long fid, Shape shp, MapTransform mt) throws ParameterException, IOException {
-		if (radius != null && fill != null) {
-			double r = this.getHaloRadius(sds, fid, mt);
+    public void draw(Graphics2D g2, SpatialDataSourceDecorator sds, long fid, Shape shp, MapTransform mt) throws ParameterException, IOException {
+        if (radius != null && fill != null) {
+            double r = this.getHaloRadius(sds, fid, mt);
 
-			if (r > 0.0) {
-				System.out.println("Halo radius is: " + r);
-				Shape halo = ShapeHelper.perpendicularOffset(shp, r);
-				if (halo != null){
-					fill.draw(g2, sds, fid, halo, false, mt);
-				}
-			}
-		}
-	}
+            if (r > 0.0) {
+                System.out.println("Halo radius is: " + r);
+                Shape halo = ShapeHelper.perpendicularOffset(shp, r);
+                if (halo != null) {
+                    fill.draw(g2, sds, fid, halo, false, mt);
+                } else {
+                    Services.getOutputManager().println(I18N.getString("orbisgis.org.orbisgis.renderer.cannotCreatePerpendicularOffset"),
+                            Color.ORANGE);
+                }
+            }
+        }
+    }
 
-	public boolean dependsOnFeature() {
-		if (this.fill.dependsOnFeature()) {
-			return true;
-		}
-		if (this.radius.dependsOnFeature()) {
-			return true;
-		}
-		return false;
-	}
+    public boolean dependsOnFeature() {
+        if (this.fill.dependsOnFeature()) {
+            return true;
+        }
+        if (this.radius.dependsOnFeature()) {
+            return true;
+        }
+        return false;
+    }
 
-	public HaloType getJAXBType() {
-		HaloType h = new HaloType();
+    public HaloType getJAXBType() {
+        HaloType h = new HaloType();
 
-		if (fill != null) {
-			h.setFill(fill.getJAXBElement());
-		}
+        if (fill != null) {
+            h.setFill(fill.getJAXBElement());
+        }
 
-		if (radius != null) {
-			h.setRadius(radius.getJAXBParameterValueType());
-		}
+        if (radius != null) {
+            h.setRadius(radius.getJAXBParameterValueType());
+        }
 
-		if (uom != null) {
-			h.setUnitOfMeasure(uom.toURN());
-		}
+        if (uom != null) {
+            h.setUnitOfMeasure(uom.toURN());
+        }
 
-		return h;
-	}
-	private Uom uom;
-	private RealParameter radius;
-	private Fill fill;
-	private SymbolizerNode parent;
+        return h;
+    }
+    private Uom uom;
+    private RealParameter radius;
+    private Fill fill;
+    private SymbolizerNode parent;
 }

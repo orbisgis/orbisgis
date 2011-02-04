@@ -37,6 +37,7 @@
  */
 package org.orbisgis.core.renderer.se;
 
+import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Shape;
 import java.io.IOException;
@@ -45,6 +46,7 @@ import javax.xml.bind.JAXBElement;
 import org.gdms.data.SpatialDataSourceDecorator;
 
 import org.gdms.driver.DriverException;
+import org.orbisgis.core.Services;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.Drawer;
 
@@ -61,6 +63,7 @@ import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
 import org.orbisgis.core.renderer.se.stroke.PenStroke;
 import org.orbisgis.core.renderer.se.stroke.Stroke;
 import org.orbisgis.core.renderer.se.transform.Transform;
+import org.orbisgis.utils.I18N;
 
 /**
  * Define a style for line features
@@ -72,132 +75,135 @@ import org.orbisgis.core.renderer.se.transform.Transform;
  */
 public final class LineSymbolizer extends VectorSymbolizer implements StrokeNode {
 
-	private RealParameter perpendicularOffset;
-	private Stroke stroke;
+    private RealParameter perpendicularOffset;
+    private Stroke stroke;
 
-	public LineSymbolizer() {
-		super();
-		this.name = "Line Symbolizer";
-		setUom(Uom.MM);
-		setStroke(new PenStroke());
-	}
+    public LineSymbolizer() {
+        super();
+        this.name = "Line Symbolizer";
+        setUom(Uom.MM);
+        setStroke(new PenStroke());
+    }
 
-	public LineSymbolizer(JAXBElement<LineSymbolizerType> st) throws InvalidStyle {
-		super(st);
-		LineSymbolizerType ast = st.getValue();
-
-
-		if (ast.getGeometry() != null) {
-			// TODO
-		}
-
-		if (ast.getUnitOfMeasure() != null) {
-			this.uom = Uom.fromOgcURN(ast.getUnitOfMeasure());
-		}
-
-		if (ast.getPerpendicularOffset() != null) {
-			this.setPerpendicularOffset(SeParameterFactory.createRealParameter(ast.getPerpendicularOffset()));
-		}
-
-		if (ast.getLevel() != null) {
-			this.setLevel(ast.getLevel());
-		}
-
-		if (ast.getTransform() != null) {
-			this.setTransform(new Transform(ast.getTransform()));
-		}
-
-		if (ast.getStroke() != null) {
-			this.setStroke(Stroke.createFromJAXBElement(ast.getStroke()));
-		}
-	}
-
-	@Override
-	public Stroke getStroke() {
-		return stroke;
-	}
-
-	@Override
-	public void setStroke(Stroke stroke) {
-		this.stroke = stroke;
-		stroke.setParent(this);
-	}
-
-	public RealParameter getPerpendicularOffset() {
-		return perpendicularOffset;
-	}
-
-	public void setPerpendicularOffset(RealParameter perpendicularOffset) {
-		this.perpendicularOffset = perpendicularOffset;
-		if (this.perpendicularOffset != null) {
-			this.perpendicularOffset.setContext(RealParameterContext.realContext);
-		}
-	}
-
-	/**
-	 *
-	 * @param g2
-	 * @param sds
-	 * @param fid
-	 * @throws ParameterException
-	 * @throws IOException
-	 * @todo make sure the geom is a line or an area; implement p_offset
-	 */
-	@Override
-	public void draw(Graphics2D g2, SpatialDataSourceDecorator sds, long fid, boolean selected, MapTransform mt) throws ParameterException, IOException, DriverException {
-		if (stroke != null) {
-			ArrayList<Shape> shapes = this.getLines(sds, fid, mt);
-
-			if (shapes != null) {
-				for (Shape shp : shapes) {
-					if (shp != null) {
-						if (perpendicularOffset != null) {
-							double offset = Uom.toPixel(perpendicularOffset.getValue(sds, fid),
-									getUom(), mt.getDpi(), mt.getScaleDenominator(), null);
-							Shape nshp = ShapeHelper.perpendicularOffset(shp, offset);
-							if (nshp != null){
-								shp = nshp;
-							}
-						}
-						stroke.draw(g2, sds, fid, shp, selected, mt);
-					}
-				}
-			}
-		}
-	}
-
-	@Override
-	public JAXBElement<LineSymbolizerType> getJAXBElement() {
-		ObjectFactory of = new ObjectFactory();
-		LineSymbolizerType s = of.createLineSymbolizerType();
-
-		this.setJAXBProperty(s);
+    public LineSymbolizer(JAXBElement<LineSymbolizerType> st) throws InvalidStyle {
+        super(st);
+        LineSymbolizerType ast = st.getValue();
 
 
-		s.setUnitOfMeasure(this.getUom().toURN());
+        if (ast.getGeometry() != null) {
+            // TODO
+        }
 
-		if (transform != null) {
-			s.setTransform(transform.getJAXBType());
-		}
+        if (ast.getUnitOfMeasure() != null) {
+            this.uom = Uom.fromOgcURN(ast.getUnitOfMeasure());
+        }
 
-		if (level >= 0) {
-			s.setLevel(level);
-		}
+        if (ast.getPerpendicularOffset() != null) {
+            this.setPerpendicularOffset(SeParameterFactory.createRealParameter(ast.getPerpendicularOffset()));
+        }
 
-		if (this.perpendicularOffset != null) {
-			s.setPerpendicularOffset(perpendicularOffset.getJAXBParameterValueType());
-		}
+        if (ast.getLevel() != null) {
+            this.setLevel(ast.getLevel());
+        }
 
-		if (stroke != null) {
-			s.setStroke(stroke.getJAXBElement());
-		}
+        if (ast.getTransform() != null) {
+            this.setTransform(new Transform(ast.getTransform()));
+        }
+
+        if (ast.getStroke() != null) {
+            this.setStroke(Stroke.createFromJAXBElement(ast.getStroke()));
+        }
+    }
+
+    @Override
+    public Stroke getStroke() {
+        return stroke;
+    }
+
+    @Override
+    public void setStroke(Stroke stroke) {
+        this.stroke = stroke;
+        stroke.setParent(this);
+    }
+
+    public RealParameter getPerpendicularOffset() {
+        return perpendicularOffset;
+    }
+
+    public void setPerpendicularOffset(RealParameter perpendicularOffset) {
+        this.perpendicularOffset = perpendicularOffset;
+        if (this.perpendicularOffset != null) {
+            this.perpendicularOffset.setContext(RealParameterContext.realContext);
+        }
+    }
+
+    /**
+     *
+     * @param g2
+     * @param sds
+     * @param fid
+     * @throws ParameterException
+     * @throws IOException
+     * @todo make sure the geom is a line or an area; implement p_offset
+     */
+    @Override
+    public void draw(Graphics2D g2, SpatialDataSourceDecorator sds, long fid, boolean selected, MapTransform mt) throws ParameterException, IOException, DriverException {
+        if (stroke != null) {
+            ArrayList<Shape> shapes = this.getLines(sds, fid, mt);
+
+            if (shapes != null) {
+                for (Shape shp : shapes) {
+                    if (shp != null) {
+                        if (perpendicularOffset != null) {
+                            double offset = Uom.toPixel(perpendicularOffset.getValue(sds, fid),
+                                    getUom(), mt.getDpi(), mt.getScaleDenominator(), null);
+                            shp = ShapeHelper.perpendicularOffset(shp, offset);
+                            if (shp == null) {
+                                Services.getOutputManager().println(I18N.getString("orbisgis.org.orbisgis.renderer.cannotCreatePerpendicularOffset"),
+                                        Color.ORANGE);
+                            }
+                        }
+                        if (shp != null) {
+                            stroke.draw(g2, sds, fid, shp, selected, mt);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    @Override
+    public JAXBElement<LineSymbolizerType> getJAXBElement() {
+        ObjectFactory of = new ObjectFactory();
+        LineSymbolizerType s = of.createLineSymbolizerType();
+
+        this.setJAXBProperty(s);
 
 
-		return of.createLineSymbolizer(s);
-	}
+        s.setUnitOfMeasure(this.getUom().toURN());
 
-	@Override
-	public void draw(Drawer drawer, long fid, boolean selected) {
-		drawer.drawLineSymbolizer(fid, selected);
-	}
+        if (transform != null) {
+            s.setTransform(transform.getJAXBType());
+        }
+
+        if (level >= 0) {
+            s.setLevel(level);
+        }
+
+        if (this.perpendicularOffset != null) {
+            s.setPerpendicularOffset(perpendicularOffset.getJAXBParameterValueType());
+        }
+
+        if (stroke != null) {
+            s.setStroke(stroke.getJAXBElement());
+        }
+
+
+        return of.createLineSymbolizer(s);
+    }
+
+    @Override
+    public void draw(Drawer drawer, long fid, boolean selected) {
+        drawer.drawLineSymbolizer(fid, selected);
+    }
 }

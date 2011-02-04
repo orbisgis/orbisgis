@@ -41,6 +41,7 @@
 
 package org.orbisgis.core.renderer.se;
 
+import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Shape;
 import java.io.IOException;
@@ -52,6 +53,7 @@ import org.orbisgis.core.renderer.persistance.se.AreaSymbolizerType;
 import org.orbisgis.core.renderer.persistance.se.ObjectFactory;
 
 import org.gdms.driver.DriverException;
+import org.orbisgis.core.Services;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.common.ShapeHelper;
@@ -70,6 +72,7 @@ import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
 import org.orbisgis.core.renderer.se.stroke.PenStroke;
 import org.orbisgis.core.renderer.se.stroke.Stroke;
 import org.orbisgis.core.renderer.se.transform.Transform;
+import org.orbisgis.utils.I18N;
 
 public final class AreaSymbolizer extends VectorSymbolizer implements FillNode, StrokeNode {
 
@@ -179,13 +182,14 @@ public final class AreaSymbolizer extends VectorSymbolizer implements FillNode, 
 
 				if (perpendicularOffset != null) {
 					double offset = perpendicularOffset.getValue(sds, fid);
-					Shape nshp = ShapeHelper.perpendicularOffset(shp, offset);
-					if (nshp != null){
-						shp = nshp;
-					}
+					shp = ShapeHelper.perpendicularOffset(shp, offset);
+                    if (shp == null){
+                        Services.getOutputManager().println(I18N.getString("orbisgis.org.orbisgis.renderer.cannotCreatePerpendicularOffset"),
+                        Color.ORANGE);
+                    }
 				}
 
-				if (stroke != null) {
+				if (stroke != null && shp != null) {
 					stroke.draw(g2, sds, fid, shp, selected, mt);
 				}
 			}
