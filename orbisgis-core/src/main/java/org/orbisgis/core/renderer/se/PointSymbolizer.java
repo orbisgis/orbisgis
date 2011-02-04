@@ -119,24 +119,27 @@ public final class PointSymbolizer extends VectorSymbolizer implements GraphicNo
 		if (graphic != null && graphic.getNumGraphics() > 0) {
 
 			try {
-				ArrayList<Point2D> pts = this.getPoints(sds, fid, mt);
+				//ArrayList<Point2D> pts = this.getPoints(sds, fid, mt);
 				RenderableGraphics rg = graphic.getGraphic(sds, fid, selected, mt);
 
 				if (rg != null) {
 					double x = 0, y = 0;
-					for (Point2D pt : pts) {
+					//for (Point2D pt : pts) {
 						// This is to emulate ExtractFirstPoint geom function !!!
 						//Point2D pt = this.getFirstPointShape(sds, fid);
 
 						//RenderedImage cache = graphic.getCache(sds, fid, selected);
 						//if (cache != null) {
 
+                        Point2D pt = getPointShape(sds, fid, mt);
+
+
 						x = pt.getX();
 						y = pt.getY();
 
 						// Draw the graphic right over the point !
 						g2.drawRenderedImage(rg.createRendering(mt.getCurrentRenderContext()), AffineTransform.getTranslateInstance(x, y));
-					}
+					//}
 				}
 			} catch (ParameterException ex) {
 				Services.getErrorManager().error("Could not render feature ", ex);

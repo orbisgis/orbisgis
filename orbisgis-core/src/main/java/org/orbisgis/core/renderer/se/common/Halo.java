@@ -103,6 +103,14 @@ public final class Halo implements SymbolizerNode, UomNode, FillNode {
         parent = node;
     }
 
+    /**
+     * Return the halo radius in pixel
+     * @param sds
+     * @param fid
+     * @param mt
+     * @return
+     * @throws ParameterException
+     */
     public double getHaloRadius(SpatialDataSourceDecorator sds, long fid, MapTransform mt) throws ParameterException {
         return Uom.toPixel(radius.getValue(sds, fid), getUom(), mt.getDpi(), mt.getScaleDenominator(), null); // TODO 100%
     }
@@ -113,6 +121,7 @@ public final class Halo implements SymbolizerNode, UomNode, FillNode {
 
             if (r > 0.0) {
                 System.out.println("Halo radius is: " + r);
+
                 Shape halo = ShapeHelper.perpendicularOffset(shp, r);
                 if (halo != null) {
                     fill.draw(g2, sds, fid, halo, false, mt);

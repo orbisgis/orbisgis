@@ -177,7 +177,7 @@ public final class AreaSymbolizer extends VectorSymbolizer implements FillNode, 
     			}
 
 				if (perpendicularOffset != null) {
-					double offset = perpendicularOffset.getValue(sds, fid);
+                    double offset = Uom.toPixel(perpendicularOffset.getValue(sds, fid), this.getUom(), mt.getDpi(), mt.getScaleDenominator(), null);
 					shp = ShapeHelper.perpendicularOffset(shp, offset);
                     if (shp == null){
                         Services.getOutputManager().println(I18N.getString("orbisgis.org.orbisgis.renderer.cannotCreatePerpendicularOffset"),

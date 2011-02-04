@@ -41,6 +41,7 @@ package org.orbisgis.core.renderer.se.graphic;
 import java.awt.Polygon;
 import java.awt.Shape;
 import java.awt.geom.Arc2D;
+import java.awt.geom.Path2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import org.gdms.data.SpatialDataSourceDecorator;
@@ -103,15 +104,22 @@ public enum WellKnownName implements MarkGraphicSource {
         switch (this.valueOf(this.name())) {
             // TODO Implement other well known name !
             case HALFCIRCLE:
-                return new Arc2D.Double(-x2, -y2, x, y, 90, 180, Arc2D.PIE);
+                Path2D.Double p = new Path2D.Double();
+                p.moveTo(0, 0);
+                Arc2D.Double arc = new Arc2D.Double(-x2, -y2, x, y, -90, -180, Arc2D.CHORD);
+                p.append(arc, true);
+                p.moveTo(0, 0);
+                p.closePath();
+                return p;
             case CIRCLE:
-                return new Arc2D.Double(-x2, -y2, x, y, 0, 360, Arc2D.CHORD);
+                return new Arc2D.Double(-x2, -y2, x, y, 0, -360, Arc2D.CHORD);
             case TRIANGLE: {
                 int h3 = (int) (y / 3);
                 Polygon polygon = new Polygon();
                 polygon.addPoint((int) x2, h3);
-                polygon.addPoint(0, -2 * h3);
                 polygon.addPoint((int) -x2, h3);
+                polygon.addPoint(0, -2 * h3);
+                polygon.addPoint((int) x2, h3);
                 return polygon;
             }
             case STAR: // 5 branches
@@ -126,35 +134,36 @@ public enum WellKnownName implements MarkGraphicSource {
                 double sin1 = 0.809016994374947562285171898111;
                 double sin2 = 0.309016994374947617796323129369;
 
-                // alpha = 270
                 star.addPoint(0, (int) (cry - 0.5));
-
-                // alpha = 306
-                star.addPoint((int) (cos1 * x2 + 0.5), (int) (sin1 * y2 - 0.5));
-
-                // alpha = 342
-                star.addPoint((int) (cos2 * crx + 0.5), (int) (sin2 * cry - 0.5));
-
-                // alpha = 18
-                star.addPoint((int) (cos2 * x2 + 0.5), (int) (-sin2 * y2 - 0.5));
-
-                // alpha = 54
-                star.addPoint((int) (cos1 * crx + 0.5), (int) (-sin1 * cry - 0.5));
-
-                // alpha = 90
-                star.addPoint(0, (int) (-y2 - 0.5));
-
-                // alpha = 126
-                star.addPoint((int) (-cos1 * crx + 0.5), (int) (-sin1 * cry - 0.5));
-
-                // alpha = 162
-                star.addPoint((int) (-cos2 * x2 + 0.5), (int) (-sin2 * y2 - 0.5));
+                // alpha = 234
+                star.addPoint((int) (-cos1 * x2 + 0.5), (int) (sin1 * y2 - 0.5));
 
                 // alpha = 198
                 star.addPoint((int) (-cos2 * crx + 0.5), (int) (sin2 * cry - 0.5));
 
-                // alpha = 234
-                star.addPoint((int) (-cos1 * x2 + 0.5), (int) (sin1 * y2 - 0.5));
+                // alpha = 162
+                star.addPoint((int) (-cos2 * x2 + 0.5), (int) (-sin2 * y2 - 0.5));
+
+                // alpha = 126
+                star.addPoint((int) (-cos1 * crx + 0.5), (int) (-sin1 * cry - 0.5));
+
+                // alpha = 90
+                star.addPoint(0, (int) (-y2 - 0.5));
+
+                // alpha = 54
+                star.addPoint((int) (cos1 * crx + 0.5), (int) (-sin1 * cry - 0.5));
+
+                // alpha = 18
+                star.addPoint((int) (cos2 * x2 + 0.5), (int) (-sin2 * y2 - 0.5));
+
+                // alpha = 342
+                star.addPoint((int) (cos2 * crx + 0.5), (int) (sin2 * cry - 0.5));
+
+                // alpha = 306
+                star.addPoint((int) (cos1 * x2 + 0.5), (int) (sin1 * y2 - 0.5));
+
+                // alpha = 270
+                star.addPoint(0, (int) (cry - 0.5));
 
                 return star;
             }
@@ -182,8 +191,9 @@ public enum WellKnownName implements MarkGraphicSource {
 
 				cross.addPoint(-minxy6, -minxy6);
 
-				return cross;
+				cross.addPoint(-minxy6, -y2);
 
+				return cross;
 
             case X: // TODO IMPLEMENT
 
@@ -208,6 +218,8 @@ public enum WellKnownName implements MarkGraphicSource {
 
 				xShape.addPoint(- x2, - y2 +minxy6);
 				xShape.addPoint(- x2 + minxy6, - y2);
+
+				xShape.addPoint(0, -minxy6);
 
 				return xShape;
             case SQUARE:

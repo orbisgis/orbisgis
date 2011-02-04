@@ -284,7 +284,8 @@ public final class MarkGraphic extends Graphic implements FillNode, StrokeNode, 
 
         if (stroke != null) {
             if (pOffset != null) {
-                atShp = ShapeHelper.perpendicularOffset(atShp, pOffset.getValue(sds, fid));
+                double offset = Uom.toPixel(pOffset.getValue(sds, fid), this.getUom(), mt.getDpi(), mt.getScaleDenominator(), null);
+                atShp = ShapeHelper.perpendicularOffset(atShp, offset);
                 if (atShp == null) {
                     Services.getOutputManager().println(I18N.getString("orbisgis.org.orbisgis.renderer.cannotCreatePerpendicularOffset"),
                             Color.ORANGE);
@@ -321,7 +322,7 @@ public final class MarkGraphic extends Graphic implements FillNode, StrokeNode, 
         }
 
         if (this.pOffset != null) {
-            offset = pOffset.getValue(sds, fid);
+            offset = Uom.toPixel(pOffset.getValue(sds, fid), this.getUom(), mt.getDpi(), mt.getScaleDenominator(), null);
         }
 
         double max = Math.max(sWidth, haloR);
