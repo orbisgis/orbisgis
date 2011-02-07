@@ -37,7 +37,7 @@
 		<repository>
 			<id>IRSTV</id>
 			<name>IRSTV repository</name>
-			<url>http://repo.orbisgis.org/</url>
+			<url>http://repo.orbisgis.org</url>
 		</repository>
 		<repository>
 			<id>repo2.maven.org</id>
@@ -50,7 +50,7 @@
 		<pluginRepository>
 			<id>IRSTV</id>
 			<name>IRSTV repository</name>
-			<url>http://repo.orbisgis.org/</url>
+			<url>http://repo.orbisgis.org</url>
 		</pluginRepository>
 
 	</pluginRepositories>
