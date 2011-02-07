@@ -319,11 +319,7 @@ public class Renderer {
 		BufferedImage image = mt.getImage();
 		Graphics2D g2 = image.createGraphics();
 
-
-
 		this.draw(mt, g2, image.getWidth(), image.getHeight(), layer, pm);
-
-
 	}
 
 	/**

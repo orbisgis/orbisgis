@@ -42,7 +42,6 @@ package org.orbisgis.core.ui.editorViews.toc.actions.cui.stroke;
 
 import java.awt.BorderLayout;
 import javax.swing.Icon;
-import org.orbisgis.core.renderer.se.parameter.color.ColorParameter;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 import org.orbisgis.core.renderer.se.parameter.string.StringParameter;
 import org.orbisgis.core.renderer.se.stroke.PenStroke;
@@ -54,7 +53,7 @@ import org.orbisgis.core.ui.editorViews.toc.actions.cui.LegendUIComponent;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.LegendUIController;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.components.ComboBoxInput;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.components.UomInput;
-import org.orbisgis.core.ui.editorViews.toc.actions.cui.parameter.color.LegendUIMetaColorPanel;
+import org.orbisgis.core.ui.editorViews.toc.actions.cui.fill.LegendUIMetaFillPanel;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.parameter.real.LegendUIMetaRealPanel;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.parameter.string.LegendUIMetaStringPanel;
 import org.orbisgis.core.ui.preferences.lookandfeel.OrbisGISIcon;
@@ -67,11 +66,11 @@ public abstract class LegendUIPenStrokePanel extends LegendUIComponent implement
 
 	private final PenStroke penStroke;
 
-	private final LegendUIMetaColorPanel color;
+    private final LegendUIMetaFillPanel fill;
 
 	private final LegendUIMetaRealPanel strokeWidth;
 
-	private final LegendUIMetaRealPanel opacity;
+	//private final LegendUIMetaRealPanel opacity;
 
 	private final LegendUIMetaRealPanel dashOffset;
 
@@ -99,23 +98,17 @@ public abstract class LegendUIPenStrokePanel extends LegendUIComponent implement
 		this.header = new LegendUIAbstractPanel(controller);
 		this.penStroke = pStroke;
 
-		this.color = new LegendUIMetaColorPanel("Color", controller, this, penStroke.getColor(), true) {
+        this.fill = new LegendUIMetaFillPanel(controller, this, pStroke, false);
+        fill.init();
 
-			@Override
-			public void colorChanged(ColorParameter newColor) {
-				penStroke.setColor(newColor);
-			}
-		};
-		color.init();
-
-		this.opacity = new LegendUIMetaRealPanel("Opacity", controller, this, penStroke.getOpacity(), true) {
+		/*this.opacity = new LegendUIMetaRealPanel("Opacity", controller, this, penStroke.getOpacity(), true) {
 
 			@Override
 			public void realChanged(RealParameter newReal) {
 				penStroke.setOpacity(newReal);
 			}
 		};
-		this.opacity.init();
+		this.opacity.init();*/
 
 		this.strokeWidth = new LegendUIMetaRealPanel("Width", controller, this, penStroke.getWidth(), true) {
 
@@ -186,9 +179,9 @@ public abstract class LegendUIPenStrokePanel extends LegendUIComponent implement
 
 		content.removeAll();
 
-		content.add(color, BorderLayout.NORTH);
+		content.add(fill, BorderLayout.NORTH);
 		content.add(strokeWidth, BorderLayout.CENTER);
-		content.add(opacity, BorderLayout.SOUTH);
+		//content.add(opacity, BorderLayout.SOUTH);
 
 		content2.removeAll();
 		content2.add(content, BorderLayout.NORTH);

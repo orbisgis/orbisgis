@@ -12,19 +12,17 @@ import javax.xml.bind.JAXBElement;
 import org.gdms.data.SpatialDataSourceDecorator;
 import org.orbisgis.core.renderer.persistance.se.PenStrokeType;
 
-import org.gdms.data.feature.Feature;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.persistance.se.ObjectFactory;
 import org.orbisgis.core.renderer.persistance.se.ParameterValueType;
+import org.orbisgis.core.renderer.se.FillNode;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.common.ShapeHelper;
 import org.orbisgis.core.renderer.se.common.Uom;
-import org.orbisgis.core.renderer.se.fill.GraphicFill;
+import org.orbisgis.core.renderer.se.fill.Fill;
+import org.orbisgis.core.renderer.se.fill.SolidFill;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
-import org.orbisgis.core.renderer.se.parameter.color.ColorHelper;
-import org.orbisgis.core.renderer.se.parameter.color.ColorLiteral;
-import org.orbisgis.core.renderer.se.parameter.color.ColorParameter;
 import org.orbisgis.core.renderer.se.parameter.real.RealLiteral;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
@@ -34,12 +32,10 @@ import org.orbisgis.core.renderer.se.parameter.string.StringParameter;
  * Basic stroke for linear features
  * @author maxence
  */
-public final class PenStroke extends Stroke {
+public final class PenStroke extends Stroke implements FillNode {
 
-    private ColorParameter color;
-    private GraphicFill stipple;
-    private boolean useColor;
-    private RealParameter opacity;
+    private Fill fill;
+    //private RealParameter opacity;
     private RealParameter width;
 
     private LineJoin lineJoin;
@@ -74,12 +70,11 @@ public final class PenStroke extends Stroke {
      * Create a standard undashed 0.1mm-wide opaque black stroke
      */
     public PenStroke() {
-        setColor(new ColorLiteral(Color.BLACK));
+        setFill(new SolidFill(Color.BLACK, 100.0));
         setWidth(new RealLiteral(0.1));
-        setOpacity(new RealLiteral(100.0));
+        //setOpacity(new RealLiteral(100.0));
 
         setUom(null);
-		setStipple(null);
 
 		setDashArray(null);
 		setDashOffset(null);
@@ -96,10 +91,8 @@ public final class PenStroke extends Stroke {
     public PenStroke(PenStrokeType t) throws InvalidStyle {
         this();
 
-        if (t.getColor() != null) {
-            this.setColor(SeParameterFactory.createColorParameter(t.getColor()));
-        } else if (t.getStipple() != null) {
-            this.setStipple(new GraphicFill(t.getStipple()));
+        if (t.getFill() != null){
+            this.setFill(Fill.createFromJAXBElement(t.getFill()));
         }
 
         if (t.getDashArray() != null) {
@@ -132,9 +125,9 @@ public final class PenStroke extends Stroke {
 			}
         }
 
-        if (t.getOpacity() != null) {
+        /*if (t.getOpacity() != null) {
             this.setOpacity(SeParameterFactory.createRealParameter(t.getOpacity()));
-        }
+        }*/
 
         if (t.getUnitOfMeasure() != null) {
             this.setUom(Uom.fromOgcURN(t.getUnitOfMeasure()));
@@ -153,62 +146,22 @@ public final class PenStroke extends Stroke {
 
     @Override
     public boolean dependsOnFeature() {
-        if (useColor) {
-            if (color != null && color.dependsOnFeature()) {
-                return true;
-            }
-        } else {
-            if (stipple != null && stipple.dependsOnFeature()) {
-                return true;
-            }
-        }
-
-        return (this.dashOffset != null && dashOffset.dependsOnFeature())
-                || (this.opacity != null && opacity.dependsOnFeature())
+        return (fill != null && fill.dependsOnFeature() || this.dashOffset != null && dashOffset.dependsOnFeature())
+                //|| (this.opacity != null && opacity.dependsOnFeature())
                 || (this.width != null && width.dependsOnFeature());
     }
 
-
-
-    /**
-     * default painter is either a solid color or a stipple
-     * @return true when default is color, false when it's the stipple
-     */
-    public boolean useColor() {
-        return useColor;
+    @Override
+    public Fill getFill() {
+        return fill;
     }
 
-    /**
-     * Indicates which painter to use
-     * If default painter is undefined, a random solid color is used
-     * @param useColor true => use color; false => use stipple
-     */
-    public void setUseColor(boolean useColor) {
-        this.useColor = useColor;
-        //updateBasicStroke();
-    }
-
-    public void setColor(ColorParameter color) {
-        this.color = color;
-        useColor = true;
-        //updateBasicStroke();
-    }
-
-    public ColorParameter getColor() {
-        return color;
-    }
-
-    public void setStipple(GraphicFill stipple) {
-        this.stipple = stipple;
-		if (stipple != null){
-    	    stipple.setParent(this);
-	        useColor = false;
-        	//updateBasicStroke();
-		}
-    }
-
-    public GraphicFill getStipple() {
-        return stipple;
+    @Override
+    public void setFill(Fill fill) {
+        if (fill != null){
+            fill.setParent(this);
+        }
+        this.fill = fill;
     }
 
     public void setLineCap(LineCap cap) {
@@ -229,7 +182,7 @@ public final class PenStroke extends Stroke {
         return lineJoin;
     }
 
-    public void setOpacity(RealParameter opacity) {
+    /*public void setOpacity(RealParameter opacity) {
         this.opacity = opacity;
 
 		if (opacity != null) {
@@ -240,7 +193,7 @@ public final class PenStroke extends Stroke {
 
     public RealParameter getOpacity() {
         return this.opacity;
-    }
+    }*/
 
     public void setWidth(RealParameter width) {
         this.width = width;
@@ -395,31 +348,7 @@ public final class PenStroke extends Stroke {
 
         g2.setStroke(stroke);
 
-        if (this.useColor == false) {
-            if (stipple != null) {
-                paint = stipple.getPaint(fid, sds, selected, mt);
-            } else {
-                // TOOD Warn Stiple has to be used, but is undefined
-            }
-        } else {
-            Color c;
-
-            if (this.color != null) {
-                c = color.getColor(sds, fid);
-            } else {
-                c = Color.BLACK;
-            }
-
-			if (selected) {
-                c = ColorHelper.invert(c);
-            }
-
-            Color ac = c;
-            if (this.opacity != null) {
-                paint = ColorHelper.getColorWithAlpha(c, this.opacity.getValue(sds, fid));
-            }
-
-        }
+        paint = fill.getPaint(fid, sds, selected, mt);
 
         if (paint != null) {
             g2.setPaint(paint);
@@ -447,12 +376,8 @@ public final class PenStroke extends Stroke {
 
         this.setJAXBProperties(s);
 
-        if (useColor) {
-            if (color != null) {
-                s.setColor(color.getJAXBParameterValueType());
-            }
-        } else if (stipple != null) {
-            s.setStipple(stipple.getJAXBType());
+        if (this.fill != null){
+            s.setFill(fill.getJAXBElement());
         }
 
         if (this.dashArray != null) {
@@ -472,19 +397,9 @@ public final class PenStroke extends Stroke {
             s.setLineJoin(this.lineJoin.getParameterValueType());
         }
 
-        if (this.opacity != null) {
+        /*if (this.opacity != null) {
 			s.setOpacity(this.opacity.getJAXBParameterValueType());
-        }
-
-		/*
-        if (this.preGap != null) {
-            s.setPreGap(this.preGap.getJAXBParameterValueType());
-        }
-
-        if (this.postGap != null) {
-            s.setPostGap(this.postGap.getJAXBParameterValueType());
-        }
-		*/
+        }*/
 
         if (this.width != null) {
             s.setWidth(this.width.getJAXBParameterValueType());

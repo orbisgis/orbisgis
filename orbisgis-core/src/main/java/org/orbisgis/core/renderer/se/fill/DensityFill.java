@@ -16,7 +16,6 @@ import org.orbisgis.core.renderer.persistance.se.DensityFillType;
 
 import org.orbisgis.core.renderer.persistance.se.ObjectFactory;
 
-import org.gdms.data.feature.Feature;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.se.GraphicNode;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
@@ -202,19 +201,11 @@ public final class DensityFill extends Fill implements GraphicNode {
 
 				tile.setRenderingHints(mt.getCurrentRenderContext().getRenderingHints());
 
-				Color c = hatches.getColor().getColor(sds, fid);
-
-				if (selected) {
-					c = ColorHelper.invert(c);
-				}
-
-				Color ac = c;
-				if (this.hatches.getOpacity() != null) {
-					ac = ColorHelper.getColorWithAlpha(c, this.hatches.getOpacity().getValue(sds, fid));
-				}
-
-
-				tile.setColor(ac);
+                if (hatches.getFill() != null){
+                    tile.setPaint(hatches.getFill().getPaint(fid, sds, selected, mt));
+                } else {
+                    tile.setColor(Color.black);
+                }
 
 				tile.setStroke(hatches.getBasicStroke(sds, fid, mt, null));
 
