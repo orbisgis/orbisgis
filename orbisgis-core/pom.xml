@@ -170,6 +170,8 @@
 						</mapping>
 						<mapping>
 							<directory>/usr/local/bin</directory>
+							<username>root</username>
+							<groupname>users</groupname>
 							<sources>
 								<source>
 									<location>src/bin/orbisgis</location>
