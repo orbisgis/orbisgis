@@ -1,14 +1,11 @@
 package org.orbisgis.core.renderer.se.common;
 
-import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Shape;
-import java.awt.geom.Rectangle2D;
 
 import java.io.IOException;
 import org.gdms.data.SpatialDataSourceDecorator;
 
-import org.gdms.data.feature.Feature;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.persistance.se.HaloType;
@@ -120,14 +117,14 @@ public final class Halo implements SymbolizerNode, UomNode, FillNode {
             double r = this.getHaloRadius(sds, fid, mt);
 
             if (r > 0.0) {
-                System.out.println("Halo radius is: " + r);
+                //System.out.println("Halo radius is: " + r);
 
-                Shape halo = ShapeHelper.perpendicularOffset(shp, r);
-                if (halo != null) {
-                    fill.draw(g2, sds, fid, halo, false, mt);
-                } else {
-                    Services.getOutputManager().println(I18N.getString("orbisgis.org.orbisgis.renderer.cannotCreatePerpendicularOffset"),
-                            Color.ORANGE);
+                for (Shape halo : ShapeHelper.perpendicularOffset(shp, r)) {
+                    if (halo != null) {
+                        fill.draw(g2, sds, fid, halo, false, mt);
+                    } else {
+                        Services.getErrorManager().error(I18N.getString("orbisgis.org.orbisgis.renderer.cannotCreatePerpendicularOffset"));
+                    }
                 }
             }
         }

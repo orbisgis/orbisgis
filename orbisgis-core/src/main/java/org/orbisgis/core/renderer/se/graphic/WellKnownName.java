@@ -60,22 +60,22 @@ public enum WellKnownName implements MarkGraphicSource {
     SQUARE, CIRCLE, HALFCIRCLE, TRIANGLE, STAR, CROSS, X;
 
     public static WellKnownName fromString(String token){
-        if (token.equals("SQUARE")){
+        if (token.equalsIgnoreCase("SQUARE")){
             return SQUARE;
         }
-        else if (token.equals("HALFCIRCLE")){
+        else if (token.equalsIgnoreCase("HALFCIRCLE")){
             return HALFCIRCLE;
         }
-        else if (token.equals("TRIANGLE")){
+        else if (token.equalsIgnoreCase("TRIANGLE")){
             return TRIANGLE;
         }
-        else if (token.equals("STAR")){
+        else if (token.equalsIgnoreCase("STAR")){
             return STAR;
         }
-        else if (token.equals("CROSS")){
+        else if (token.equalsIgnoreCase("CROSS")){
             return CROSS;
         }
-        else if (token.equals("X")){
+        else if (token.equalsIgnoreCase("X")){
             return X;
         }
         else{

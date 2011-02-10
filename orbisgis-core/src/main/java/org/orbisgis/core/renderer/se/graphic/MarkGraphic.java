@@ -37,7 +37,7 @@
  */
 package org.orbisgis.core.renderer.se.graphic;
 
-import java.awt.Color;
+
 import java.awt.Shape;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
@@ -47,7 +47,7 @@ import javax.xml.bind.JAXBElement;
 import org.gdms.data.SpatialDataSourceDecorator;
 import org.orbisgis.core.renderer.persistance.se.MarkGraphicType;
 import org.orbisgis.core.renderer.persistance.se.ObjectFactory;
-import org.gdms.data.feature.Feature;
+
 import org.orbisgis.core.Services;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.se.FillNode;
@@ -255,7 +255,11 @@ public final class MarkGraphic extends Graphic implements FillNode, StrokeNode, 
 
         // If the shape doesn't depends on feature (i.e. not null), we used the cached one
         if (shape == null) {
-            shp = source.getShape(viewBox, sds, fid, mt.getScaleDenominator(), mt.getDpi(), markIndex, mimeType);
+            if (source != null) {
+                shp = source.getShape(viewBox, sds, fid, mt.getScaleDenominator(), mt.getDpi(), markIndex, mimeType);
+            } else {
+                shp = WellKnownName.CIRCLE.getShape(viewBox, sds, fid, mt.getScaleDenominator(), mt.getDpi(), markIndex, mimeType);
+            }
         } else {
             shp = shape;
         }
@@ -285,13 +289,14 @@ public final class MarkGraphic extends Graphic implements FillNode, StrokeNode, 
         if (stroke != null) {
             if (pOffset != null) {
                 double offset = Uom.toPixel(pOffset.getValue(sds, fid), this.getUom(), mt.getDpi(), mt.getScaleDenominator(), null);
-                atShp = ShapeHelper.perpendicularOffset(atShp, offset);
-                if (atShp == null) {
-                    Services.getOutputManager().println(I18N.getString("orbisgis.org.orbisgis.renderer.cannotCreatePerpendicularOffset"),
-                            Color.ORANGE);
+                for (Shape offShp : ShapeHelper.perpendicularOffset(atShp, offset)){
+                  if (offShp == null) {
+                      Services.getErrorManager().error(I18N.getString("orbisgis.org.orbisgis.renderer.cannotCreatePerpendicularOffset"));
+                  }else{
+                      stroke.draw(rg, sds, fid, offShp, selected, mt);
+                  }
                 }
-            }
-            if (atShp != null) {
+            } else{
                 stroke.draw(rg, sds, fid, atShp, selected, mt);
             }
         }
@@ -326,7 +331,7 @@ public final class MarkGraphic extends Graphic implements FillNode, StrokeNode, 
         }
 
         double max = Math.max(sWidth, haloR);
-        return Math.max(max, offset);
+        return Math.max(max, 2*offset);
     }
 
     @Override

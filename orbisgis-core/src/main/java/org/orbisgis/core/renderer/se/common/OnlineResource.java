@@ -59,7 +59,7 @@ import javax.media.jai.InterpolationBicubic2;
 import javax.media.jai.JAI;
 import javax.media.jai.PlanarImage;
 import org.gdms.data.SpatialDataSourceDecorator;
-import org.gdms.data.feature.Feature;
+
 import org.orbisgis.core.map.MapTransform;
 
 import org.orbisgis.core.renderer.persistance.ows._1.OnlineResourceType;
@@ -137,7 +137,7 @@ public class OnlineResource implements ExternalGraphicSource, MarkGraphicSource 
 			double widthDst = dim.getX();
 			double heightDst = dim.getY();
 
-			System.out.println("(" + width + ";" + height + ")" + " (" + widthDst + ";" + heightDst + ")");
+			//System.out.println("(" + width + ";" + height + ")" + " (" + widthDst + ";" + heightDst + ")");
 
 			if (widthDst > 0 && heightDst > 0) {
 				double ratio_x = widthDst / width;

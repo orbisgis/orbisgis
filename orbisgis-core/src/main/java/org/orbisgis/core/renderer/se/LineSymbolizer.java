@@ -153,13 +153,15 @@ public final class LineSymbolizer extends VectorSymbolizer implements StrokeNode
                         if (perpendicularOffset != null) {
                             double offset = Uom.toPixel(perpendicularOffset.getValue(sds, fid),
                                     getUom(), mt.getDpi(), mt.getScaleDenominator(), null);
-                            shp = ShapeHelper.perpendicularOffset(shp, offset);
-                            if (shp == null) {
-                                Services.getOutputManager().println(I18N.getString("orbisgis.org.orbisgis.renderer.cannotCreatePerpendicularOffset"),
-                                        Color.ORANGE);
+                            for (Shape offShp : ShapeHelper.perpendicularOffset(shp, offset)) {
+                                if (offShp == null) {
+                                    Services.getOutputManager().println(I18N.getString("orbisgis.org.orbisgis.renderer.cannotCreatePerpendicularOffset"),
+                                            Color.ORANGE);
+                                } else{
+                                    stroke.draw(g2, sds, fid, offShp, selected, mt);
+                                }
                             }
-                        }
-                        if (shp != null) {
+                        } else {
                             stroke.draw(g2, sds, fid, shp, selected, mt);
                         }
                     }

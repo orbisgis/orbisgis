@@ -17,7 +17,6 @@ import org.orbisgis.core.renderer.persistance.se.CompositeGraphicType;
 import org.orbisgis.core.renderer.persistance.se.GraphicType;
 import org.orbisgis.core.renderer.persistance.se.ObjectFactory;
 
-import org.gdms.data.feature.Feature;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.SymbolizerNode;

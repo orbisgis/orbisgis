@@ -45,6 +45,7 @@ import java.awt.geom.PathIterator;
 import java.awt.geom.Point2D;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 /**
  *
@@ -53,7 +54,7 @@ import java.util.ArrayList;
 public class ShapeHelper {
 
     public static final double _0_0175 = Math.PI / 180.0;
-    private static final boolean VERBOSE = true;
+    private static final boolean VERBOSE = false;
 
     /**
      * Compute the perimeter of the shape
@@ -421,33 +422,64 @@ public class ShapeHelper {
      * @param shp the shape to convert
      * @return array list of coordinate, same order
      */
-    private static ArrayList<Vertex> getVertexes(Shape shp) {
-        ArrayList<Vertex> vertexes = new ArrayList<Vertex>();
+    private static ArrayList<ArrayList<Vertex>> getVertexes(Shape shp) {
+
+        ArrayList<ArrayList<Vertex>> shapes = new ArrayList<ArrayList<Vertex>>();
 
         PathIterator it = shp.getPathIterator(null, 0.2);
 
+        ArrayList<Vertex> vertexes = new ArrayList<Vertex>();
+
+        System.out.println("NEW :");
         double coords[] = new double[6];
 
+        Vertex v;
 
+        System.out.println("Extract:");
         // Want a direct access to coordinates !!!
         while (!it.isDone()) {
-            it.currentSegment(coords);
+            int type = it.currentSegment(coords);
+            switch (type) {
+                case PathIterator.SEG_CLOSE:
+                    System.out.println ("Closing: ");
+                    //v = new Vertex(coords[0], coords[1]);
+                    //System.out.println (v);
+                    //vertexes.add(v);
+                    //v = new Vertex(vertexes.get(0).x, vertexes.get(0).y);
+                    //System.out.println (v);
+                    //vertexes.add(v);
 
-            Vertex v = new Vertex(coords[0], coords[1]);
+                    shapes.add(vertexes);
+                    vertexes = new ArrayList<Vertex>();
+                    break;
+                case PathIterator.SEG_QUADTO:
+                case PathIterator.SEG_CUBICTO:
+                    System.out.println ("Arc");
+                    break;
+                case PathIterator.SEG_LINETO:
+                case PathIterator.SEG_MOVETO:
+                    System.out.println ("LineTo");
+                    v = new Vertex(coords[0], coords[1]);
+                    if (vertexes.size() > 0) {
+                        if (!v.equals(vertexes.get(vertexes.size() - 1))) {
+                            vertexes.add(v);
+                            System.out.println (v);
+                        }
+                    } else {
+                        vertexes.add(v);
+                        System.out.println (v);
+                    }
+                    break;
 
-            if (vertexes.size() > 0) {
-                if (!v.equals(vertexes.get(vertexes.size() - 1))) {
-                    vertexes.add(v);
-                }
-            } else {
-                vertexes.add(v);
             }
-
-
             it.next();
         }
 
-        return vertexes;
+        if (vertexes.size() > 1){
+           shapes.add(vertexes);
+        }
+
+        return shapes;
     }
 
     /**
@@ -461,7 +493,7 @@ public class ShapeHelper {
     }
 
     /**
-     * Compute the row offset vertexes
+     * Compute offset vertexes
      * @param vertexes
      * @param offset
      * @return list of corresponding offseted vertex
@@ -485,7 +517,7 @@ public class ShapeHelper {
 
                 gamma = Math.atan2(v_p1.y - v.y, v_p1.x - v.x) + theta;
 
-                Vertex ov = new Vertex(v.x + Math.cos(gamma) * absOffset, v.y + Math.sin(gamma) * absOffset);
+                Vertex ov = new Vertex(v.x - Math.cos(gamma) * offset, v.y - Math.sin(gamma) * offset);
                 offseted.add(ov);
 
             } else if (i == vertexes.size() - 1 && !closed) {
@@ -496,7 +528,7 @@ public class ShapeHelper {
 
                 gamma = Math.atan2(v.y - v_m1.y, v.x - v_m1.x) + theta;
 
-                offseted.add(new Vertex(v.x + Math.cos(gamma) * absOffset, v.y + Math.sin(gamma) * absOffset));
+                offseted.add(new Vertex(v.x - Math.cos(gamma) * offset, v.y - Math.sin(gamma) * offset));
             } else {
 
                 Vertex v = vertexes.get(i);
@@ -659,12 +691,19 @@ public class ShapeHelper {
         }
     }
 
+    /**
+     * According to offseted and original vertexes. compoute edge status
+     * @param vertexes
+     * @param offsetVertexes
+     * @param offset
+     * @param closed
+     * @return
+     */
     private static ArrayList<Edge> computeEdges(ArrayList<Vertex> vertexes, ArrayList<Vertex> offsetVertexes, double offset, boolean closed) {
         ArrayList<Edge> offstedEdges = new ArrayList<Edge>();
 
         int i;
 
-        offset *= -1;
         double absOffset = Math.abs(offset);
 
 
@@ -687,7 +726,7 @@ public class ShapeHelper {
             Edge e = offstedEdges.get(i);
             if (e.m_dir == 0) {
                 e.m_pos = 0;
-            } else {
+            } else if (closed){
                 Vertex p31 = offsetVertexes.get(i);
                 Vertex p32 = offsetVertexes.get((i + 1) % vertexes.size());
 
@@ -732,6 +771,13 @@ public class ShapeHelper {
         return offstedEdges;
     }
 
+    /**
+     * Transform list of vertex into Shape
+     *
+     * @param vertexes list of vertex
+     * @param closed is the vertexes represent a ring ?
+     * @return shape corresponding to vertexes
+     */
     private static Shape createShapeFromVertexes(ArrayList<Vertex> vertexes, boolean closed) {
         if (vertexes.size() < 2) {
             return null;
@@ -749,7 +795,7 @@ public class ShapeHelper {
                 double dx = v.quadX2 - v.x;
                 double dy = v.quadY2 - v.y;
 
-                if (dx * dx + dy * dy < -25) {
+                if (dx * dx + dy * dy < 9) {
                     shp.lineTo(v.quadX1, v.quadY1);
                     shp.quadTo(v.quadX2, v.quadY2, v.quadX3, v.quadY3);
                 } else {
@@ -767,7 +813,13 @@ public class ShapeHelper {
         return shp;
     }
 
-    private static ArrayList<Vertex> computeRawLink(ArrayList<Edge> edges, ArrayList<Vertex> vertexes) {
+    /**
+     * According to edges status and offseted vertexes, determine which vertexes will be part of the offset contour
+     * @param edges
+     * @param vertexes
+     * @return
+     */
+    private static ArrayList<Vertex> computeRawLink(ArrayList<Edge> edges, ArrayList<Vertex> vertexes, boolean closed) {
 
         ArrayList<Vertex> rawLink = new ArrayList<Vertex>();
 
@@ -777,7 +829,7 @@ public class ShapeHelper {
         int i;
 
         for (i = 0; i < edges.size(); i++) {
-            Edge e = edges.get(i);
+            //Edge e = edges.get(i);
             offsetLinkList.add(i);
         }
 
@@ -786,6 +838,15 @@ public class ShapeHelper {
 
         int in_dir = 0;
         int in_pos = 0;
+
+        if (!closed){
+            rawLink.add(vertexes.get(0));
+        }
+
+        if (edges.size() == 1){
+            rawLink.add(vertexes.get(0));
+            rawLink.add(vertexes.get(1));
+        }
 
         for (i = 0; i < offsetLinkList.size(); i++) {
             int id = offsetLinkList.get(i);
@@ -849,6 +910,7 @@ public class ShapeHelper {
             int fn = (offsetLinkList.get(forward) + 1) % vertexes.size();
 
             if (in_dir == 0 && in_pos == 0) {
+                // Add backward edge 2nd point
                 if (VERBOSE) {
                     System.out.println("Add " + vertexes.get(bn));
                 }
@@ -868,10 +930,16 @@ public class ShapeHelper {
 
                 Point2D.Double inter = getLineIntersection(v1.x, v1.y, v2.x, v2.y, v3.x, v3.y, v4.x, v4.y);
 
-                Vertex nv = new Vertex(inter.x, inter.y);
-                rawLink.add(nv);
-                if (VERBOSE) {
-                    System.out.println("Add " + nv);
+                if (inter != null){
+                    Vertex nv = new Vertex(inter.x, inter.y);
+                    rawLink.add(nv);
+                    if (VERBOSE) {
+                        System.out.println("Add " + nv);
+                    }
+                }else{
+                    if (VERBOSE) {
+                        System.out.println("Skip");
+                    }
                 }
             } else if (in_dir > 1) {
                 Vertex v1 = vertexes.get(offsetLinkList.get(backward));
@@ -955,53 +1023,103 @@ public class ShapeHelper {
         return vertexes.get(0).equals(vertexes.get(vertexes.size() - 1));
     }
 
-    private static Shape contourParallelShape(Shape shp, double offset) {
-        ArrayList<Vertex> vertexes = getVertexes(shp);
-
-        if (VERBOSE) {
-            System.out.println("Original vertexes: ");
-            for (Vertex v : vertexes) {
-                System.out.println(v);
+    private static void normalize(ArrayList<Vertex> vertexes) {
+        double maxY = Double.NEGATIVE_INFINITY;
+        int id = -1;
+        int i = 0;
+        for (Vertex v : vertexes) {
+            if (v.y > maxY) {
+                maxY = v.y;
+                id = i;
             }
+            System.out.println(v);
+            i++;
         }
 
-        boolean closed = isClosed(vertexes);
+        Vertex p = vertexes.get(id);
+        Vertex pp1 = vertexes.get((id + 1) % vertexes.size());
+        Vertex pm1 = vertexes.get((id - 1 + vertexes.size()) % vertexes.size());
 
-        removeUselessVertex(vertexes);
-        ArrayList<Vertex> offsetVertexes = createOffsetVertexes(vertexes, offset, closed);
+        System.out.println("----");
 
-        if (VERBOSE) {
-            System.out.println("Cleaned vertexes: ");
-            for (Vertex v : vertexes) {
-                System.out.println(v);
+        System.out.println(pm1);
+        System.out.println(p);
+        System.out.println(pp1);
+
+        double px = (pp1.x + pm1.x) / 2;
+        double py = (pp1.y + pm1.y) / 2;
+
+        px = p.x - 2 * (p.x - px);
+        py = p.y - 2 * (p.y - py);
+
+        System.out.println(px + ";" + py);
+        double cp = crossProduct(p.x, p.y, px, py, pp1.x, pp1.y);
+
+        System.out.println("CROSSPRODUCT: " + cp);
+
+        if (cp > 0) {
+            Collections.reverse(vertexes);
+        }
+    }
+
+    private static ArrayList<Shape> contourParallelShape(Shape shp, double offset) {
+        ArrayList<ArrayList<Vertex>> shapes = getVertexes(shp);
+        ArrayList<Shape> rawShapes = new ArrayList<Shape>();
+
+        for (ArrayList<Vertex> vertexes : shapes) {
+            if (VERBOSE) {
+                System.out.println("Original vertexes: ");
+                for (Vertex v : vertexes) {
+                    System.out.println(v);
+                }
+                System.out.println(".....................");
             }
 
-            System.out.println("Offset vertexes: ");
-            for (Vertex v : offsetVertexes) {
-                System.out.println(v);
+            boolean closed = isClosed(vertexes);
+
+            removeUselessVertex(vertexes);
+
+            if (closed) {
+                normalize(vertexes);
             }
+
+            ArrayList<Vertex> offsetVertexes = createOffsetVertexes(vertexes, offset, closed);
+
+            if (VERBOSE) {
+                System.out.println("Cleaned vertexes: ");
+                for (Vertex v : vertexes) {
+                    System.out.println(v);
+                }
+
+                System.out.println("Offset vertexes: ");
+                for (Vertex v : offsetVertexes) {
+                    System.out.println(v);
+                }
+            }
+
+            ArrayList<Edge> edges = computeEdges(vertexes, offsetVertexes, offset, closed);
+
+            if (VERBOSE) {
+                System.out.println("Edges: ");
+                for (Edge e : edges) {
+                    System.out.println(e);
+                }
+            }
+
+            ArrayList<Vertex> rawLink = computeRawLink(edges, offsetVertexes, closed);
+
+            if (VERBOSE) {
+                System.out.println("Raw Link: ");
+                for (Vertex v : rawLink) {
+                    System.out.println(v);
+                }
+            }
+
+            rawShapes.add(createShapeFromVertexes(rawLink, closed));
         }
 
-        ArrayList<Edge> edges = computeEdges(vertexes, offsetVertexes, offset, closed);
-
-        if (VERBOSE) {
-            System.out.println("Edges: ");
-            for (Edge e : edges) {
-                System.out.println(e);
-            }
-        }
-
-        ArrayList<Vertex> rawLink = computeRawLink(edges, offsetVertexes);
-
-        if (VERBOSE) {
-            System.out.println("Raw Link: ");
-            for (Vertex v : rawLink) {
-                System.out.println(v);
-            }
-        }
-
-
-        return createShapeFromVertexes(rawLink, closed);
+        return rawShapes;
+        //return createShapeFromVertexes(rawLink, closed);
 
         //return null;
     }
@@ -1051,19 +1169,30 @@ public class ShapeHelper {
     }
 
     private static Point2D.Double getLineIntersection(double x1, double y1, double x2, double y2, double x3, double y3, double x4, double y4) {
-        if (VERBOSE) {
-            System.out.println(x1 + ";" + y1 + " --> " + x2 + ";" + y2);
-            System.out.println(x3 + ";" + y3 + " --> " + x4 + ";" + y4);
-        }
 
-        double a1 = (y2 - y1) / (x2 - x1);
-        double a2 = (y4 - y3) / (x4 - x3);
+        double denom1 = x2 -x1;
+        double denom2 = x4-x3;
+
+        if (denom1 < 0.0001)
+            denom1 = 0;
+        if (denom2 < 0.0001)
+            denom2 = 0;
+
+        double a1 = (y2 - y1) / denom1;
+        double a2 = (y4 - y3) / denom2;
 
         double b1 = y2 - a1 * x2;
         double b2 = y4 - a2 * x4;
 
         double x;
         double y;
+
+        if (VERBOSE) {
+            System.out.println(x1 + ";" + y1 + " --> " + x2 + ";" + y2);
+            System.out.println(x3 + ";" + y3 + " --> " + x4 + ";" + y4);
+            System.out.println ("a1: " + a1);
+            System.out.println ("a2: " + a2);
+        }
 
 
         if (Double.isInfinite(a1) && Double.isInfinite(a2)) {
@@ -1076,8 +1205,10 @@ public class ShapeHelper {
             y = a1 * x + b1;
         } else {
             x = (b2 - b1) / (a1 - a2);
-            System.out.println ("a1-a2:" + (a1-a2));
-            System.out.println ("b1-b2:" + (b2-b1));
+            if (VERBOSE){
+                System.out.println("a1-a2:" + (a1 - a2));
+                System.out.println("b1-b2:" + (b2 - b1));
+            }
             y = a1 * x + b1;
             if (Double.isNaN(x) || Double.isInfinite(x)) {
                 return null;
@@ -1091,7 +1222,8 @@ public class ShapeHelper {
         return new Point2D.Double(x, y);
     }
 
-    public static Shape perpendicularOffset(Shape shp, double offset) {
+    public static ArrayList<Shape> perpendicularOffset(Shape shp, double offset) {
+
         return contourParallelShape(shp, offset);
         //return perpendicularOffsetForLine(shp, offset);
     }

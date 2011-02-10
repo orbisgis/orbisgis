@@ -3,15 +3,20 @@ package org.orbisgis.core.renderer.se.stroke;
 import java.awt.Graphics2D;
 import java.awt.Shape;
 import java.io.IOException;
+
 import javax.xml.bind.JAXBElement;
+
 import org.gdms.data.SpatialDataSourceDecorator;
+
 import org.orbisgis.core.renderer.persistance.se.StrokeType;
-import org.gdms.data.feature.Feature;
+
 import org.orbisgis.core.map.MapTransform;
+
 import org.orbisgis.core.renderer.persistance.se.CompoundStrokeType;
 import org.orbisgis.core.renderer.persistance.se.GraphicStrokeType;
 import org.orbisgis.core.renderer.persistance.se.PenStrokeType;
 import org.orbisgis.core.renderer.persistance.se.TextStrokeType;
+
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.SymbolizerNode;
 import org.orbisgis.core.renderer.se.UomNode;
@@ -86,6 +91,17 @@ public abstract class Stroke implements SymbolizerNode, UomNode {
      * @return
      */
     public abstract double getMaxWidth(SpatialDataSourceDecorator sds, long fid, MapTransform mt) throws ParameterException, IOException;
+
+    /**
+     *  Return the minimum required length to totally draw the stoke
+     * @param sds
+     * @param fid
+     * @param mt
+     * @return
+     * @throws ParameterException
+     * @throws IOException
+     */
+    public abstract double getMinLength(SpatialDataSourceDecorator sds, long fid, MapTransform mt) throws ParameterException, IOException;
 
     //public abstract void getStroke(DataSource ds, int fid);
     /**

@@ -352,7 +352,7 @@ public final class PieChart extends Graphic implements StrokeNode {
                 }
                 p *= 100;
 
-                StyledLabel label = new StyledLabel(Double.toString(p));
+                StyledLabel label = new StyledLabel(Integer.toString((int) Math.round(p)));
                 AffineTransform labelAt = (AffineTransform) gapAt.clone();
 
 

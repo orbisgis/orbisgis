@@ -133,6 +133,11 @@ public final class CompoundStroke extends Stroke {
 		throw new UnsupportedOperationException("Not supported yet.");
 	}
 
+    @Override
+    public double getMinLength(SpatialDataSourceDecorator sds, long fid, MapTransform mt) throws ParameterException, IOException {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
 	@Override
 	public void draw(Graphics2D g2, SpatialDataSourceDecorator sds, long fid, Shape shp, boolean selected, MapTransform mt) throws ParameterException, IOException {
 

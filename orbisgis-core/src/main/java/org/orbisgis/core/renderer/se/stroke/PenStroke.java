@@ -366,6 +366,11 @@ public final class PenStroke extends Stroke implements FillNode {
     }
 
     @Override
+    public double getMinLength(SpatialDataSourceDecorator sds, long fid, MapTransform mt) throws ParameterException, IOException {
+        return 0;
+    }
+
+    @Override
     public JAXBElement<PenStrokeType> getJAXBElement() {
         ObjectFactory of = new ObjectFactory();
         return of.createPenStroke(this.getJAXBType());

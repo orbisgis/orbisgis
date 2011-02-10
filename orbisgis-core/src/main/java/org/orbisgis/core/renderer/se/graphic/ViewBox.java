@@ -146,7 +146,7 @@ public final class ViewBox implements SymbolizerNode {
 			return null;
         }
 
-		System.out.println ("DX DY: " + dx + ";" + dy);
+		//System.out.println ("DX DY: " + dx + ";" + dy);
 
         dx = Uom.toPixel(dx, this.getUom(), dpi, scale, width);
         dy = Uom.toPixel(dy, this.getUom(), dpi, scale, height);

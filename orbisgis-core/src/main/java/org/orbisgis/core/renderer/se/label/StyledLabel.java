@@ -37,6 +37,16 @@ import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
 
 public final class StyledLabel implements SymbolizerNode, FillNode, StrokeNode {
 
+    private SymbolizerNode parent;
+    private StringParameter labelText;
+    private StringParameter fontFamily;
+    private StringParameter fontWeight;
+    private StringParameter fontStyle;
+    private RealParameter fontSize;
+    private Stroke stroke;
+    private Fill fill;
+    private Halo halo;
+
     public StyledLabel() {
         this.labelText = new StringLiteral("Label");
         this.fontFamily = new StringLiteral("Arial");
@@ -63,19 +73,19 @@ public final class StyledLabel implements SymbolizerNode, FillNode, StrokeNode {
     }
 
     public StyledLabel(StyledLabelType sl) throws InvalidStyle {
-        if (sl.getFill() != null){
+        if (sl.getFill() != null) {
             this.setFill(Fill.createFromJAXBElement(sl.getFill()));
         }
 
-        if (sl.getStroke() != null){
+        if (sl.getStroke() != null) {
             this.setStroke(Stroke.createFromJAXBElement(sl.getStroke()));
         }
 
-        if (sl.getFont() != null){
+        if (sl.getFont() != null) {
             FontType font = sl.getFont();
 
             font.getFontSize();
-            
+
             this.setFontSize(SeParameterFactory.createRealParameter(font.getFontSize()));
 
             this.setFontFamily(SeParameterFactory.createStringParameter(font.getFontFamily()));
@@ -83,11 +93,11 @@ public final class StyledLabel implements SymbolizerNode, FillNode, StrokeNode {
             this.setFontWeight(SeParameterFactory.createStringParameter(font.getFontWeight()));
         }
 
-        if (sl.getHalo() != null){
+        if (sl.getHalo() != null) {
             this.setHalo(new Halo(sl.getHalo()));
         }
 
-        if (sl.getLabelText() != null){
+        if (sl.getLabelText() != null) {
             this.setLabelText(SeParameterFactory.createStringParameter(sl.getLabelText()));
         }
     }
@@ -107,12 +117,12 @@ public final class StyledLabel implements SymbolizerNode, FillNode, StrokeNode {
         parent = node;
     }
 
-	@Override
+    @Override
     public Fill getFill() {
         return fill;
     }
 
-	@Override
+    @Override
     public void setFill(Fill fill) {
         this.fill = fill;
         if (fill != null) {
@@ -139,12 +149,12 @@ public final class StyledLabel implements SymbolizerNode, FillNode, StrokeNode {
         this.labelText = labelText;
     }
 
-	@Override
+    @Override
     public Stroke getStroke() {
         return stroke;
     }
 
-	@Override
+    @Override
     public void setStroke(Stroke stroke) {
         this.stroke = stroke;
         if (stroke != null) {
@@ -166,9 +176,9 @@ public final class StyledLabel implements SymbolizerNode, FillNode, StrokeNode {
 
     public void setFontSize(RealParameter fontSize) {
         this.fontSize = fontSize;
-		if (this.fontSize != null){
-			this.fontSize.setContext(RealParameterContext.percentageContext);
-		}
+        if (this.fontSize != null) {
+            this.fontSize.setContext(RealParameterContext.percentageContext);
+        }
     }
 
     public StringParameter getFontStyle() {
@@ -188,17 +198,30 @@ public final class StyledLabel implements SymbolizerNode, FillNode, StrokeNode {
     }
 
     public RenderableGraphics getImage(SpatialDataSourceDecorator sds, long fid, boolean selected, MapTransform mt) throws ParameterException, IOException {
-		// TODO DEFAULT VALUES !!!
+        // TODO DEFAULT VALUES !!!
         String text = labelText.getValue(sds, fid);
 
-        String family = fontFamily.getValue(sds, fid);
+        String family = "Arial";
+        if (fontFamily != null) {
+            family = fontFamily.getValue(sds, fid);
+        }
 
-        // Family is comma delimeted list of fonts family
-        // TODO Choose the first available
+        // TODO Family is comma delimeted list of fonts family. Choose the first available
 
-        String weight = fontWeight.getValue(sds, fid);
-        String style = fontStyle.getValue(sds, fid);
-        double size = fontSize.getValue(sds, fid);
+        String weight = "normal";
+        if (fontWeight != null) {
+            weight = fontWeight.getValue(sds, fid);
+        }
+
+        String style = "normal";
+        if (fontStyle != null) {
+            fontStyle.getValue(sds, fid);
+        }
+
+        double size = 12;
+        if (fontSize != null) {
+            size = fontSize.getValue(sds, fid);
+        }
 
         int st = Font.PLAIN;
 
@@ -236,8 +259,25 @@ public final class StyledLabel implements SymbolizerNode, FillNode, StrokeNode {
         if (stroke != null) {
             margin = stroke.getMaxWidth(sds, fid, mt);
         }
+        if (halo != null){
+            margin += halo.getHaloRadius(sds, fid, mt);
+        }
 
         rg = Graphic.getNewRenderableGraphics(outline.getBounds2D(), margin);
+
+        if (halo != null){
+            //halo.draw(rg, sds, fid, outline.getBounds(), mt);
+            halo.draw(rg, sds, fid, outline, mt);
+        }
+
+        /**
+         * No fill and no stroke : apply default solidfill !
+         */
+        if (fill == null && stroke == null){
+            SolidFill sf = new SolidFill(Color.BLACK, 100.0);
+            sf.draw(rg, sds, fid, outline, selected, mt);
+            sf.setParent(this);
+        }
 
         if (fill != null) {
             fill.draw(rg, sds, fid, outline, selected, mt);
@@ -291,24 +331,12 @@ public final class StyledLabel implements SymbolizerNode, FillNode, StrokeNode {
 
         return l;
     }
-    private SymbolizerNode parent;
 
-    private StringParameter labelText;
-    
-    private StringParameter fontFamily;
-    private StringParameter fontWeight;
-    private StringParameter fontStyle;
-    private RealParameter fontSize;
-
-    private Stroke stroke;
-    private Fill fill;
-    private Halo halo;
-
-	public boolean dependsOnFeature() {
+    public boolean dependsOnFeature() {
         return (labelText != null && labelText.dependsOnFeature())
-        || (fontFamily != null && fontFamily.dependsOnFeature())
-        || (fontWeight != null && fontWeight.dependsOnFeature())
-        || (fontStyle != null && fontStyle.dependsOnFeature())
-        || (fontSize != null && fontSize.dependsOnFeature());
-	}
+                || (fontFamily != null && fontFamily.dependsOnFeature())
+                || (fontWeight != null && fontWeight.dependsOnFeature())
+                || (fontStyle != null && fontStyle.dependsOnFeature())
+                || (fontSize != null && fontSize.dependsOnFeature());
+    }
 }

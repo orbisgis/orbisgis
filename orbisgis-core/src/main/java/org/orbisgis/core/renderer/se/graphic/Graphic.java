@@ -132,7 +132,7 @@ public abstract class Graphic implements SymbolizerNode, UomNode {
 			height = 1.0;
 		}
 
-		System.out.println ("Width: " + width  + " -- Height: " + height);
+		//System.out.println ("Width: " + width  + " -- Height: " + height);
 
 		RenderableGraphics rg  = null;
 		try {

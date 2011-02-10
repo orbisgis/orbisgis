@@ -59,7 +59,7 @@ public class TextGraphic extends Graphic {
 
         Rectangle2D bounds = new Rectangle2D.Double(label.getMinX(), label.getMinY(), label.getWidth(), label.getHeight());
 
-		System.out.println("Bounds: " + bounds);
+		//System.out.println("Bounds: " + bounds);
 
 
         if (transform != null) {
@@ -67,7 +67,7 @@ public class TextGraphic extends Graphic {
 
             Shape atShp = at.createTransformedShape(bounds);
 
-			System.out.println("Bounds: " + atShp.getBounds2D());
+			//System.out.println("Bounds: " + atShp.getBounds2D());
 
             RenderableGraphics rg = Graphic.getNewRenderableGraphics(atShp.getBounds2D(), 0);
 

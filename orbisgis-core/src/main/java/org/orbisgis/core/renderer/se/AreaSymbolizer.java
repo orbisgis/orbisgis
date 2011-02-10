@@ -35,10 +35,6 @@
  * erwan.bocher _at_ ec-nantes.fr
  * gwendall.petit _at_ ec-nantes.fr
  */
-
-
-
-
 package org.orbisgis.core.renderer.se;
 
 import java.awt.Color;
@@ -76,154 +72,156 @@ import org.orbisgis.utils.I18N;
 
 public final class AreaSymbolizer extends VectorSymbolizer implements FillNode, StrokeNode {
 
-	private RealParameter perpendicularOffset;
-	private Stroke stroke;
-	private Fill fill;
+    private RealParameter perpendicularOffset;
+    private Stroke stroke;
+    private Fill fill;
 
-	public AreaSymbolizer() {
-		super();
-		name = "Area symbolizer";
-		uom = Uom.MM;
-		this.setFill(new SolidFill());
-		this.setStroke(new PenStroke());
-	}
+    public AreaSymbolizer() {
+        super();
+        name = "Area symbolizer";
+        uom = Uom.MM;
+        this.setFill(new SolidFill());
+        this.setStroke(new PenStroke());
+    }
 
-	public AreaSymbolizer(JAXBElement<AreaSymbolizerType> st) throws InvalidStyle {
-		super(st);
+    public AreaSymbolizer(JAXBElement<AreaSymbolizerType> st) throws InvalidStyle {
+        super(st);
 
-		AreaSymbolizerType ast = st.getValue();
+        AreaSymbolizerType ast = st.getValue();
 
 
-		if (ast.getGeometry() != null) {
-			this.setGeometry(new GeometryAttribute(ast.getGeometry().getPropertyName()));
-		}
+        if (ast.getGeometry() != null) {
+            this.setGeometry(new GeometryAttribute(ast.getGeometry().getPropertyName()));
+        }
 
-		if (ast.getUnitOfMeasure() != null) {
-			this.uom = Uom.fromOgcURN(ast.getUnitOfMeasure());
-		}
+        if (ast.getUnitOfMeasure() != null) {
+            this.uom = Uom.fromOgcURN(ast.getUnitOfMeasure());
+        }
 
-		if (ast.getPerpendicularOffset() != null) {
-			this.setPerpendicularOffset(SeParameterFactory.createRealParameter(ast.getPerpendicularOffset()));
-		}
+        if (ast.getPerpendicularOffset() != null) {
+            this.setPerpendicularOffset(SeParameterFactory.createRealParameter(ast.getPerpendicularOffset()));
+        }
 
-		if (ast.getTransform() != null) {
-			this.setTransform(new Transform(ast.getTransform()));
-		}
+        if (ast.getTransform() != null) {
+            this.setTransform(new Transform(ast.getTransform()));
+        }
 
-		if (ast.getFill() != null) {
-			this.setFill(Fill.createFromJAXBElement(ast.getFill()));
-		}
+        if (ast.getFill() != null) {
+            this.setFill(Fill.createFromJAXBElement(ast.getFill()));
+        }
 
-		if (ast.getStroke() != null) {
-			this.setStroke(Stroke.createFromJAXBElement(ast.getStroke()));
-		}
-	}
+        if (ast.getStroke() != null) {
+            this.setStroke(Stroke.createFromJAXBElement(ast.getStroke()));
+        }
+    }
 
-	@Override
-	public void setStroke(Stroke stroke) {
-		if (stroke != null) {
-			stroke.setParent(this);
-		}
-		this.stroke = stroke;
-	}
+    @Override
+    public void setStroke(Stroke stroke) {
+        if (stroke != null) {
+            stroke.setParent(this);
+        }
+        this.stroke = stroke;
+    }
 
-	@Override
-	public Stroke getStroke() {
-		return stroke;
-	}
+    @Override
+    public Stroke getStroke() {
+        return stroke;
+    }
 
-	@Override
-	public void setFill(Fill fill) {
-		if (fill != null) {
-			fill.setParent(this);
-		}
-		this.fill = fill;
-	}
+    @Override
+    public void setFill(Fill fill) {
+        if (fill != null) {
+            fill.setParent(this);
+        }
+        this.fill = fill;
+    }
 
-	@Override
-	public Fill getFill() {
-		return fill;
-	}
+    @Override
+    public Fill getFill() {
+        return fill;
+    }
 
-	public RealParameter getPerpendicularOffset() {
-		return perpendicularOffset;
-	}
+    public RealParameter getPerpendicularOffset() {
+        return perpendicularOffset;
+    }
 
-	public void setPerpendicularOffset(RealParameter perpendicularOffset) {
-		this.perpendicularOffset = perpendicularOffset;
-		if (this.perpendicularOffset != null){
-			this.perpendicularOffset.setContext(RealParameterContext.realContext);
-		}
-	}
+    public void setPerpendicularOffset(RealParameter perpendicularOffset) {
+        this.perpendicularOffset = perpendicularOffset;
+        if (this.perpendicularOffset != null) {
+            this.perpendicularOffset.setContext(RealParameterContext.realContext);
+        }
+    }
 
-	/**
-	 *
-	 * @param g2
-	 * @param sds
-	 * @param fid
-	 * @throws ParameterException
-	 * @throws IOException error while accessing external resource
-	 * @throws DriverException
-	 */
-	@Override
-	public void draw(Graphics2D g2, SpatialDataSourceDecorator sds, long fid, boolean selected, MapTransform mt) throws ParameterException, IOException, DriverException {
+    /**
+     *
+     * @param g2
+     * @param sds
+     * @param fid
+     * @throws ParameterException
+     * @throws IOException error while accessing external resource
+     * @throws DriverException
+     */
+    @Override
+    public void draw(Graphics2D g2, SpatialDataSourceDecorator sds, long fid, boolean selected, MapTransform mt) throws ParameterException, IOException, DriverException {
 
-		ArrayList<Shape> shapes = this.getShape(sds, fid, mt);
+        ArrayList<Shape> shapes = this.getShape(sds, fid, mt);
 
-		if (shapes != null) {
-			for (Shape shp : shapes) {
-				if (fill != null) {
-				   fill.draw(g2, sds, fid, shp, selected, mt);
-    			}
+        if (shapes != null) {
+            for (Shape shp : shapes) {
+                if (fill != null) {
+                    fill.draw(g2, sds, fid, shp, selected, mt);
+                }
 
-				if (perpendicularOffset != null) {
-                    double offset = Uom.toPixel(perpendicularOffset.getValue(sds, fid), this.getUom(), mt.getDpi(), mt.getScaleDenominator(), null);
-					shp = ShapeHelper.perpendicularOffset(shp, offset);
-                    if (shp == null){
-                        Services.getOutputManager().println(I18N.getString("orbisgis.org.orbisgis.renderer.cannotCreatePerpendicularOffset"),
-                        Color.ORANGE);
+                if (stroke != null && shp != null) {
+                    if (perpendicularOffset != null) {
+                        double offset = Uom.toPixel(perpendicularOffset.getValue(sds, fid), this.getUom(), mt.getDpi(), mt.getScaleDenominator(), null);
+                        for (Shape offShp : ShapeHelper.perpendicularOffset(shp, offset)) {
+                            if (offShp == null) {
+                                Services.getErrorManager().error(I18N.getString("orbisgis.org.orbisgis.renderer.cannotCreatePerpendicularOffset"));
+                            }else{
+                                stroke.draw(g2, sds, fid, offShp, selected, mt);
+                            }
+                        }
+                    } else {
+                        stroke.draw(g2, sds, fid, shp, selected, mt);
                     }
-				}
+                }
+            }
+        }
+    }
 
-				if (stroke != null && shp != null) {
-					stroke.draw(g2, sds, fid, shp, selected, mt);
-				}
-			}
-		}
-	}
+    @Override
+    public JAXBElement<AreaSymbolizerType> getJAXBElement() {
+        ObjectFactory of = new ObjectFactory();
+        AreaSymbolizerType s = of.createAreaSymbolizerType();
 
-	@Override
-	public JAXBElement<AreaSymbolizerType> getJAXBElement() {
-		ObjectFactory of = new ObjectFactory();
-		AreaSymbolizerType s = of.createAreaSymbolizerType();
+        this.setJAXBProperty(s);
 
-		this.setJAXBProperty(s);
+        if (uom != null) {
+            s.setUnitOfMeasure(this.getUom().toURN());
+        }
 
-		if (uom != null) {
-			s.setUnitOfMeasure(this.getUom().toURN());
-		}
+        if (transform != null) {
+            s.setTransform(transform.getJAXBType());
+        }
 
-		if (transform != null) {
-			s.setTransform(transform.getJAXBType());
-		}
+        if (this.perpendicularOffset != null) {
+            s.setPerpendicularOffset(perpendicularOffset.getJAXBParameterValueType());
+        }
 
-		if (this.perpendicularOffset != null) {
-			s.setPerpendicularOffset(perpendicularOffset.getJAXBParameterValueType());
-		}
+        if (fill != null) {
+            s.setFill(fill.getJAXBElement());
+        }
 
-		if (fill != null) {
-			s.setFill(fill.getJAXBElement());
-		}
+        if (stroke != null) {
+            s.setStroke(stroke.getJAXBElement());
+        }
 
-		if (stroke != null) {
-			s.setStroke(stroke.getJAXBElement());
-		}
+        return of.createAreaSymbolizer(s);
+    }
 
-		return of.createAreaSymbolizer(s);
-	}
-
-	@Override
-	public void draw(Drawer drawer, long fid, boolean selected) {
-		drawer.drawAreaSymbolizer(0, selected);
-	}
+    @Override
+    public void draw(Drawer drawer, long fid, boolean selected) {
+        drawer.drawAreaSymbolizer(0, selected);
+    }
 }
