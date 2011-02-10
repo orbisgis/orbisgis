@@ -68,7 +68,7 @@ public class OnlineHelpOrbisGISPlugIn extends AbstractPlugIn {
 			if (Desktop.getDesktop()
 					.isSupported(java.awt.Desktop.Action.BROWSE)) {
 				try {
-					java.awt.Desktop.getDesktop().browse(new URI(Names.ONLINE_URL));
+					java.awt.Desktop.getDesktop().browse(new URI(url));
 				} catch (IOException e) {
 					Services.getService(ErrorManager.class).error(
 							I18N.getString("orbisgis.org.orbisgis.ui.help.onlineHelpOrbisGISPlugIn.serverNotAvailable"), e); //$NON-NLS-1$

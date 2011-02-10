@@ -50,73 +50,71 @@ import org.orbisgis.utils.I18N;
 
 public class OpenFilePanel extends AbstractOpenPanel {
 
-	public static final String FIELD_NAME = "file";
+    public static final String FIELD_NAME = "file";
+    public static final String FILTER_NAME = "filter";
 
-	public static final String FILTER_NAME = "filter";
+    public OpenFilePanel(String id, String title) {
+        super(id, title);
+    }
 
-	public OpenFilePanel(String id, String title) {
-		super(id, title);
-	}
+    /**
+     * Check that the input given by the user can be used.
+     *
+     * @return
+     */
+    @Override
+    public String validateInput() {
+        File file = getSelectedFile();
+        if (file == null) {
+            return I18N.getString("orbisgis.core.file.aFileMustSelected");
+        } else if (!file.exists()) {
+            return I18N.getString("orbisgis.core.file.aFileMustExists");
+        } else {
+            return null;
+        }
+    }
 
-	/**
-	 * Check that the input given by the user can be used.
-	 * 
-	 * @return
-	 */
-	@Override
-	public String validateInput() {
-		File file = getSelectedFile();
-		if (file == null) {
-			return I18N.getString("orbisgis.core.file.aFileMustSelected");
-		} else if (!file.exists()) {
-			return I18N.getString("orbisgis.core.file.aFileMustExists");
-		} else {
-			return null;
-		}
-	}
+    /**
+     * Return the names of the fields in the FileChooser.
+     *
+     * @return
+     */
+    @Override
+    public String[] getFieldNames() {
+        return new String[]{FIELD_NAME, FILTER_NAME};
+    }
 
-	/**
-	 * Return the names of the fields in the FileChooser.
-	 * 
-	 * @return
-	 */
-	@Override
-	public String[] getFieldNames() {
-		return new String[] { FIELD_NAME, FILTER_NAME };
-	}
+    /**
+     * we don't want to show only folders, as we are about to import files.
+     *
+     * @return
+     */
+    @Override
+    public boolean showFoldersOnly() {
+        return false;
+    }
 
-	/**
-	 * we don't want to show only folders, as we are about to import files.
-	 * 
-	 * @return
-	 */
-	@Override
-	public boolean showFoldersOnly() {
-		return false;
-	}
+    @Override
+    public int[] getFieldTypes() {
+        return new int[]{SQLUIPanel.STRING, SQLUIPanel.STRING};
+    }
 
-	@Override
-	public int[] getFieldTypes() {
-		return new int[] { SQLUIPanel.STRING, SQLUIPanel.STRING };
-	}
-
-	@Override
-	public void setValue(String fieldName, String fieldValue) {
-		if (fieldName.equals(FIELD_NAME)) {
-			String[] files = fieldValue.split("\\Q||\\E");
-			File[] selectedFiles = new File[files.length];
-			for (int i = 0; i < selectedFiles.length; i++) {
-				selectedFiles[i] = new File(files[i]);
-			}
-			getFileChooser().setSelectedFiles(selectedFiles);
-		} else {
-			FileFilter[] filters = getFileChooser().getChoosableFileFilters();
-			for (FileFilter fileFilter : filters) {
-				if (fieldValue.equals(fileFilter.getDescription())) {
-					getFileChooser().setFileFilter(fileFilter);
-				}
-			}
-		}
-	}
-
+    @Override
+    public void setValue(String fieldName, String fieldValue) {
+        if (fieldName.equals(FIELD_NAME)) {
+            String[] files = fieldValue.split("\\Q||\\E");
+            File[] selectedFiles = new File[files.length];
+            for (int i = 0; i < selectedFiles.length; i++) {
+                selectedFiles[i] = new File(files[i]);
+            }
+            getFileChooser().setSelectedFiles(selectedFiles);
+        } else {
+            FileFilter[] filters = getFileChooser().getChoosableFileFilters();
+            for (FileFilter fileFilter : filters) {
+                if (fieldValue.equals(fileFilter.getDescription())) {
+                    getFileChooser().setFileFilter(fileFilter);
+                }
+            }
+        }
+    }
 }

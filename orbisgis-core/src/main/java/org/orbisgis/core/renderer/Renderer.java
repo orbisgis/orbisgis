@@ -37,8 +37,6 @@
  */
 package org.orbisgis.core.renderer;
 
-import ij.process.ColorProcessor;
-
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.geom.Rectangle2D;
@@ -54,7 +52,6 @@ import java.util.logging.Level;
 
 import javax.imageio.ImageIO;
 
-import org.apache.log4j.Logger;
 import org.gdms.data.SpatialDataSourceDecorator;
 import org.gdms.data.feature.Feature;
 import org.gdms.driver.DriverException;
@@ -78,6 +75,8 @@ import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.index.quadtree.Quadtree;
+import ij.process.ColorProcessor;
+import java.awt.Color;
 import java.util.ArrayList;
 import java.util.HashMap;
 import org.gdms.data.FilterDataSourceDecorator;
@@ -85,10 +84,11 @@ import org.gdms.data.metadata.Metadata;
 import org.orbisgis.core.renderer.se.FeatureTypeStyle;
 import org.orbisgis.core.renderer.se.Rule;
 import org.orbisgis.core.renderer.se.Symbolizer;
+import org.orbisgis.core.ui.plugins.views.output.OutputManager;
 
 public class Renderer {
 
-	private static Logger logger = Logger.getLogger(Renderer.class.getName());
+    private static OutputManager logger = Services.getOutputManager();
 
 	/**
 	 * Create a view which correspond to feature in MapContext adjusted extend
@@ -366,7 +366,7 @@ public class Renderer {
 			} else {
 				layer = layers[i];
 				if (layer.isVisible() && extent.intersects(layer.getEnvelope())) {
-					logger.debug(I18N.getString("orbisgis.org.orbisgis.renderer.drawing") + layer.getName()); //$NON-NLS-1$
+                    logger.println(I18N.getString("orbisgis.org.orbisgis.renderer.drawing") + layer.getName()); //$NON-NLS-1$
 					long t1 = System.currentTimeMillis();
 					if (layer.isWMS()) {
 						System.out.println("   -> WMS Layer...");
@@ -398,11 +398,10 @@ public class Renderer {
 								if (sds.isDefaultVectorial()) {
 									count += this.drawVector(g2, mt, layer, pm);
 								} else if (sds.isDefaultRaster()) {
-									logger.warn("Raster Not Yet supported => Not drawn: " + layer.getName());
+									logger.println("Raster Not Yet supported => Not drawn: " + layer.getName(), Color.red);
 								} else {
-									logger
-											.warn(I18N.getString("orbisgis.org.orbisgis.renderer.notDraw") //$NON-NLS-1$
-													+ layer.getName());
+									logger.println(I18N.getString("orbisgis.org.orbisgis.renderer.notDraw") //$NON-NLS-1$
+													+ layer.getName(), Color.RED);
 								}
 							} catch (DriverException e) {
 								Services.getErrorManager().error(
@@ -417,13 +416,13 @@ public class Renderer {
 
 					}
 					long t2 = System.currentTimeMillis();
-					logger.info(I18N.getString("orbisgis.org.orbisgis.renderer.renderingTime") + (t2 - t1)); //$NON-NLS-1$
+					logger.println(I18N.getString("orbisgis.org.orbisgis.renderer.renderingTime") + (t2 - t1)); //$NON-NLS-1$
 				}
 			}
 		}
 
 		long total2 = System.currentTimeMillis();
-		logger.info(I18N.getString("orbisgis.org.orbisgis.renderer.totalRenderingTime") + (total2 - total1)); //$NON-NLS-1$
+		logger.println(I18N.getString("orbisgis.org.orbisgis.renderer.totalRenderingTime") + (total2 - total1)); //$NON-NLS-1$
 
 
 

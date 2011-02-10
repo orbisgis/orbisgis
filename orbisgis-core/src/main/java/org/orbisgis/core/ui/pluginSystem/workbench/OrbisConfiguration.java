@@ -179,7 +179,7 @@ public class OrbisConfiguration implements Setup {
 	private AboutOrbisGISPlugIn aboutOrbisGIS = new AboutOrbisGISPlugIn();
 	private OnlineHelpOrbisGISPlugIn onlineHelpOrbisGIS = new OnlineHelpOrbisGISPlugIn();
 
-	private BasicPerspectivePlugIn basicPerspectivePlugIn = new BasicPerspectivePlugIn();
+	//private BasicPerspectivePlugIn basicPerspectivePlugIn = new BasicPerspectivePlugIn();
 	// OrbisGIS status
 	private WorkspaceNamePlugin workspaceNamePlugin = new WorkspaceNamePlugin();
 	private FreeDefaultWorkspacePlugIn freeDefaultWorkspacePlugIn = new FreeDefaultWorkspacePlugIn();
@@ -432,7 +432,7 @@ public class OrbisConfiguration implements Setup {
 		exitPlugIn.initialize(plugInContext);
 		aboutOrbisGIS.initialize(plugInContext);
 		onlineHelpOrbisGIS.initialize(plugInContext);
-		basicPerspectivePlugIn.initialize(plugInContext);
+		//basicPerspectivePlugIn.initialize(plugInContext);
 
 		// Status toolbar
 		workspaceNamePlugin.initialize(plugInContext);

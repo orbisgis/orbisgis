@@ -63,7 +63,7 @@ public class DefaultWorkspace implements Workspace {
 
 	private ArrayList<WorkspaceListener> listeners = new ArrayList<WorkspaceListener>();
 
-	public static int WORKSPACE_VERSION = 3;
+	public static int WORKSPACE_VERSION = 4;
 
 	/* Workspace saving timer */
 	private PeriodicSaveWorkspace timer;
@@ -106,7 +106,7 @@ public class DefaultWorkspace implements Workspace {
 	 */
 	public File getFile(String name) {
 		File ret = new File(getWorkspaceFolder(), name);
-		if (!ret.getParentFile().exists()) {
+		if (ret.getParentFile() != null && !ret.getParentFile().exists()) {
 			ret.getParentFile().mkdirs();
 		}
 
