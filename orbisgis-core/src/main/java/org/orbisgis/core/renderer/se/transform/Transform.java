@@ -95,7 +95,8 @@ public class Transform implements SymbolizerNode, UomNode {
      * This method must be called after each modification of one of its transformations !
      *
      */
-    public void consolidateTransformations(SpatialDataSourceDecorator sds, long fid, boolean forGeometries, MapTransform mt, Double width, Double height) throws ParameterException, IOException {
+    public void consolidateTransformations(SpatialDataSourceDecorator sds, long fid, boolean forGeometries,
+            MapTransform mt, Double width, Double height) throws ParameterException, IOException {
         int i;
 
         // Result is Identity

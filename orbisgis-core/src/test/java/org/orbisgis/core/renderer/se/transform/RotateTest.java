@@ -30,10 +30,9 @@ public class RotateTest extends TestCase {
     }
 
     /**
-     * Test of getRotation method, of class Rotate.
+     * Test of getRotation method, of class Rotate. TODO
      */
     public void testRotate() {
-        Rotate r = new Rotate(new RealLiteral(180.0));
-        assertTrue(r.equals(r));
+        assertTrue(false);
     }
 }

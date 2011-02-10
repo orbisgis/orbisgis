@@ -5,6 +5,7 @@ import java.util.logging.Logger;
 import junit.framework.TestCase;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.real.RealLiteral;
+import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 
 /**
  *
@@ -34,9 +35,9 @@ public class Categorize2ColorTest extends TestCase {
         t5 = new RealLiteral(300.0);
 
         categorize = new Categorize2Color(class1, fallback, new RealLiteral());
-        categorize.addClass(t1, class2);
-        categorize.addClass(t2, class3);
-        categorize.addClass(t3, class4);
+        //categorize.addClass(t1, class2);
+        //categorize.addClass(t2, class3);
+        //categorize.addClass(t3, class4);
 
     }
 
@@ -46,7 +47,7 @@ public class Categorize2ColorTest extends TestCase {
     }
 
     public void testConstructor(){
-        assertTrue(categorize.getNumClasses() == 4);
+        assertTrue(categorize.getNumClasses() == 1);
         try {
             assertTrue(categorize.getClassValue(0).getColor(null, -1) == class1.getColor(null, -1));
         } catch (ParameterException ex) {
@@ -55,43 +56,61 @@ public class Categorize2ColorTest extends TestCase {
     }
 
     public void testAddClasses(){
-        /*try {
+        try {
             categorize.addClass(t1, class2);
+            System.out.println ("Num Classes:" + categorize.getNumClasses());
 
             assertTrue(categorize.getNumClasses() == 2);
-            assertTrue(categorize.getClassValue(0).getColor(null) == class1.getColor(null));
-            assertTrue(categorize.getClassValue(1).getColor(null) == class2.getColor(null));
+            assertTrue(categorize.getClassValue(0).getColor(null, -1) == class1.getColor(null, -1));
+            assertTrue(categorize.getClassValue(1).getColor(null, -1) == class2.getColor(null, -1));
             categorize.addClass(t2, class3);
             assertTrue(categorize.getNumClasses() == 3);
-            assertTrue(categorize.getClassValue(0).getColor(null) == class1.getColor(null));
-            assertTrue(categorize.getClassValue(1).getColor(null) == class2.getColor(null));
-            assertTrue(categorize.getClassValue(2).getColor(null) == class3.getColor(null));
+            assertTrue(categorize.getClassValue(0).getColor(null, -1) == class1.getColor(null, -1));
+            assertTrue(categorize.getClassValue(1).getColor(null, -1) == class2.getColor(null, -1));
+            assertTrue(categorize.getClassValue(2).getColor(null, -1) == class3.getColor(null, -1));
             categorize.addClass(t3, class4);
             assertTrue(categorize.getNumClasses() == 4);
-            assertTrue(categorize.getClassValue(0).getColor(null) == class1.getColor(null));
-            assertTrue(categorize.getClassValue(1).getColor(null) == class4.getColor(null));
-            assertTrue(categorize.getClassValue(2).getColor(null) == class2.getColor(null));
-            assertTrue(categorize.getClassValue(3).getColor(null) == class3.getColor(null));
+            assertTrue(categorize.getClassValue(0).getColor(null, -1) == class1.getColor(null, -1));
+            assertTrue(categorize.getClassValue(1).getColor(null, -1) == class2.getColor(null, -1));
+            assertTrue(categorize.getClassValue(2).getColor(null, -1) == class3.getColor(null, -1));
+            assertTrue(categorize.getClassValue(3).getColor(null, -1) == class4.getColor(null, -1));
         } catch (ParameterException ex) {
             Logger.getLogger(Categorize2ColorTest.class.getName()).log(Level.SEVERE, null, ex);
-        }*/
+        }
 
     }
 
     public void testSetThresholds(){
         try {
+            // To retrieve classes...
+            testAddClasses();
             categorize.setThresholdValue(2, t4);
             assertTrue(categorize.getNumClasses() == 4);
             assertTrue(categorize.getClassValue(0).getColor(null, -1) == class1.getColor(null, -1));
-            assertTrue(categorize.getClassValue(1).getColor(null, -1) == class4.getColor(null, -1));
+            assertTrue(categorize.getClassValue(1).getColor(null, -1) == class2.getColor(null, -1));
             assertTrue(categorize.getClassValue(2).getColor(null, -1) == class3.getColor(null, -1));
-            assertTrue(categorize.getClassValue(3).getColor(null, -1) == class2.getColor(null, -1));
+            assertTrue(categorize.getClassValue(3).getColor(null, -1) == class4.getColor(null, -1));
+
+            // Thresholds : 75, 100, 200
+            assertTrue(categorize.getThresholdValue(0).getValue(null, -1) == t4.getValue(null, -1));
+            assertTrue(categorize.getThresholdValue(1).getValue(null, -1) == t1.getValue(null, -1));
+            assertTrue(categorize.getThresholdValue(2).getValue(null, -1) == t2.getValue(null, -1));
+
+
+            // Thresholds : 75, 100, 200, 500
             categorize.setThresholdValue(0, t5);
             assertTrue(categorize.getNumClasses() == 4);
             assertTrue(categorize.getClassValue(0).getColor(null, -1) == class1.getColor(null, -1));
-            assertTrue(categorize.getClassValue(1).getColor(null, -1) == class3.getColor(null, -1));
-            assertTrue(categorize.getClassValue(2).getColor(null, -1) == class2.getColor(null, -1));
+            assertTrue(categorize.getClassValue(1).getColor(null, -1) == class2.getColor(null, -1));
+            assertTrue(categorize.getClassValue(2).getColor(null, -1) == class3.getColor(null, -1));
             assertTrue(categorize.getClassValue(3).getColor(null, -1) == class4.getColor(null, -1));
+
+            assertTrue(categorize.getThresholdValue(0).getValue(null, -1) == t1.getValue(null, -1));
+            assertTrue(categorize.getThresholdValue(1).getValue(null, -1) == t2.getValue(null, -1));
+            assertTrue(categorize.getThresholdValue(2).getValue(null, -1) == t5.getValue(null, -1));
+
+
+
         } catch (ParameterException ex) {
             Logger.getLogger(Categorize2ColorTest.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -102,18 +121,19 @@ public class Categorize2ColorTest extends TestCase {
 
     public void testRemoveClasses(){
         try {
+            testAddClasses();
             categorize.removeClass(0);
             assertTrue(categorize.getNumClasses() == 3);
-            assertTrue(categorize.getClassValue(0).getColor(null, -1) == class4.getColor(null, -1));
-            assertTrue(categorize.getClassValue(1).getColor(null, -1) == class2.getColor(null, -1));
-            assertTrue(categorize.getClassValue(2).getColor(null, -1) == class3.getColor(null, -1));
+            assertTrue(categorize.getClassValue(0).getColor(null, -1) == class2.getColor(null, -1));
+            assertTrue(categorize.getClassValue(1).getColor(null, -1) == class3.getColor(null, -1));
+            assertTrue(categorize.getClassValue(2).getColor(null, -1) == class4.getColor(null, -1));
             categorize.removeClass(2);
             assertTrue(categorize.getNumClasses() == 2);
-            assertTrue(categorize.getClassValue(0).getColor(null, -1) == class4.getColor(null, -1));
-            assertTrue(categorize.getClassValue(1).getColor(null, -1) == class2.getColor(null, -1));
+            assertTrue(categorize.getClassValue(0).getColor(null, -1) == class2.getColor(null, -1));
+            assertTrue(categorize.getClassValue(1).getColor(null, -1) == class3.getColor(null, -1));
             categorize.removeClass(1);
             assertTrue(categorize.getNumClasses() == 1);
-            assertTrue(categorize.getClassValue(0).getColor(null, -1) == class4.getColor(null, -1));
+            assertTrue(categorize.getClassValue(0).getColor(null, -1) == class2.getColor(null, -1));
         } catch (ParameterException ex) {
             Logger.getLogger(Categorize2ColorTest.class.getName()).log(Level.SEVERE, null, ex);
         }

@@ -97,4 +97,9 @@ public final class Categorize2Real extends Categorize<RealParameter, RealLiteral
 		return ctx;
 	}
 
+    @Override
+    public int compareTo(Object o) {
+        return 0;
+    }
+
 }

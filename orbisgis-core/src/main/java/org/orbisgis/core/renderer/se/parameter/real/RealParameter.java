@@ -43,7 +43,7 @@ import org.gdms.data.SpatialDataSourceDecorator;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.SeParameter;
 
-public interface RealParameter extends SeParameter {
+public interface RealParameter extends SeParameter, Comparable {
 
 	//void setMinValue(Double min);
 	//void setMaxValue(Double max);

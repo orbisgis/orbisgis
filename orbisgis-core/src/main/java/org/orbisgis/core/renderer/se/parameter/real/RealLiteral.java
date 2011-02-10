@@ -113,4 +113,22 @@ public class RealLiteral extends Literal implements RealParameter {
 			}
 		}
 	}
+
+    @Override
+    public int compareTo(Object o) {
+        if (o instanceof RealLiteral){
+           RealLiteral ol = (RealLiteral) o;
+           double v1 = this.getValue(null, -1);
+           double v2 = ol.getValue(null, -1);
+
+           if (v1 < v2)
+               return -1;
+           else if (v1 > v2)
+               return 1;
+           else
+              return 0;
+        }
+
+        return 0;
+    }
 }

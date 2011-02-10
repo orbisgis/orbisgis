@@ -15,9 +15,9 @@ import org.orbisgis.core.renderer.se.parameter.real.RealUnaryOperator.RealUnitar
  *
  * @author maxence
  */
-public class RealUnitaryOperatorTest extends TestCase {
+public class RealUnaryOperatorTest extends TestCase {
     
-    public RealUnitaryOperatorTest(String testName) {
+    public RealUnaryOperatorTest(String testName) {
         super(testName);
     }
 
@@ -38,7 +38,7 @@ public class RealUnitaryOperatorTest extends TestCase {
             RealUnaryOperator op2 = new RealUnaryOperator(new RealLiteral(-25.0), RealUnitaryOperatorType.SQRT);
             assertEquals(Double.NaN, op2.getValue(null, -1));
         } catch (ParameterException ex) {
-            Logger.getLogger(RealUnitaryOperatorTest.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(RealUnaryOperatorTest.class.getName()).log(Level.SEVERE, null, ex);
         }
 
     }
@@ -50,20 +50,8 @@ public class RealUnitaryOperatorTest extends TestCase {
             RealUnaryOperator op2 = new RealUnaryOperator(new RealLiteral(-100), RealUnitaryOperatorType.LOG);
             assertEquals(Double.NaN, op2.getValue(null, -1));
         }
-        /*
-        public void runTest(){
-        testSqrt();
-        testLog();
-        }*/
         catch (ParameterException ex) {
-            Logger.getLogger(RealUnitaryOperatorTest.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(RealUnaryOperatorTest.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-
-
-/*
-    public void runTest(){
-        testSqrt();
-        testLog();
-    }*/
 }

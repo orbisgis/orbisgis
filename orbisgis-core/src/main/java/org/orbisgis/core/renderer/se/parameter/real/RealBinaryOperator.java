@@ -191,4 +191,9 @@ public final class RealBinaryOperator implements RealParameter {
 	public RealParameterContext getContext(){
 		return ctx;
 	}
+
+    @Override
+    public int compareTo(Object o) {
+        return 0;
+    }
 }

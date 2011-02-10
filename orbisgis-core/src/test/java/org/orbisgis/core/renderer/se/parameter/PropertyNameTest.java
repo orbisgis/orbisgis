@@ -9,7 +9,7 @@ import java.io.File;
 import junit.framework.TestCase;
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceFactory;
-import org.gdms.data.feature.Feature;
+import org.gdms.data.SpatialDataSourceDecorator;
 import org.orbisgis.core.renderer.se.parameter.real.RealAttribute;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 import org.orbisgis.core.renderer.se.parameter.string.StringAttribute;
@@ -22,11 +22,11 @@ import org.orbisgis.core.renderer.se.parameter.string.StringParameter;
 public class PropertyNameTest extends TestCase {
 
     private DataSourceFactory dsf = new DataSourceFactory();
+    private SpatialDataSourceDecorator sds;
     private DataSource ds;
 
     // Data to test
-    File src = new File("../../datas2tests/shp/Swiss/g4districts98_region.shp");
-
+    File src = new File("src/test/resources/data/landcover2000.shp");
 
 
     public PropertyNameTest(String testName) {
@@ -37,13 +37,14 @@ public class PropertyNameTest extends TestCase {
     protected void setUp() throws Exception {
         super.setUp();
         ds = dsf.getDataSource(src);
-        ds.open();
+        sds = new SpatialDataSourceDecorator(ds);
+        sds.open();
     }
 
     @Override
     protected void tearDown() throws Exception {
         super.tearDown();
-        ds.close();
+        sds.close();
     }
 
 
@@ -52,17 +53,10 @@ public class PropertyNameTest extends TestCase {
      * @throws Exception
      */
     public void testRealAttribute() throws Exception {
-		/*
-        long n = ds.getRowCount();
-
-        RealParameter name = new RealAttribute("DEC01", ds);
-
-        long i;
-        for (i=0;i<n;i++){
-            System.out.println ("DEC01 " + i + ": " + name.getValue(feat));
-        }
-		 *
-		 */
+        RealParameter real = new RealAttribute("runoff_win");
+        assertTrue(real.getValue(sds, 0) == 0.05);
+        assertTrue(real.getValue(sds, 50) == 0.4);
+        assertTrue(real.getValue(sds, 1221) == 0.4);
     }
 
     /**
@@ -70,22 +64,11 @@ public class PropertyNameTest extends TestCase {
      * @throws Exception
      */
     public void testStringAttribute() throws Exception {
-		/*
-        long n = ds.getRowCount();
+        StringParameter string = new StringAttribute("type");
 
-        StringParameter name = new StringAttribute("NAME_ANSI", ds);
-
-        long i;
-        for (i=0;i<n;i++){
-            System.out.println ("Name " + i + ": " + name.getValue(feat));
-        }
-
-        ((StringAttribute)name).setColumnName("AK", ds);
-        for (i=0;i<n;i++){
-            System.out.println ("AK " + i + ": " + name.getValue(feat));
-        }
-		 *
-		 */
+        assertTrue(string.getValue(sds, 56).equals("vegetables"));
+        assertTrue(string.getValue(sds, 47).equals("corn"));
+        assertTrue(string.getValue(sds, 40).equals("grassland"));
     }
     
 

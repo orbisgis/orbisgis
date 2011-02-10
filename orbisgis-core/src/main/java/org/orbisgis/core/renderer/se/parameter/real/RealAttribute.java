@@ -49,4 +49,9 @@ public class RealAttribute extends PropertyName implements RealParameter{
 	public RealParameterContext getContext() {
 		return ctx;
 	}
+
+    @Override
+    public int compareTo(Object o) {
+        return 0;
+    }
 }

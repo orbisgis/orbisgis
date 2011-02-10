@@ -45,8 +45,13 @@ import org.orbisgis.core.geocognition.ImportExportTest;
 import org.orbisgis.core.layerModel.LayerModelTest;
 import org.orbisgis.core.renderer.ClassificationTest;
 import org.orbisgis.core.renderer.LiteShapeTest;
-import org.orbisgis.core.renderer.legend.LegendTest;
-import org.orbisgis.core.renderer.symbol.SymbolTest;
+import org.orbisgis.core.renderer.se.common.ShapeHelperTest;
+import org.orbisgis.core.renderer.se.parameter.PropertyNameTest;
+import org.orbisgis.core.renderer.se.parameter.color.Categorize2ColorTest;
+import org.orbisgis.core.renderer.se.parameter.color.Recode2ColorTest;
+import org.orbisgis.core.renderer.se.parameter.real.Interpolate2RealTest;
+import org.orbisgis.core.renderer.se.parameter.real.RealUnaryOperatorTest;
+import org.orbisgis.core.renderer.se.transform.TransformTest;
 
 public class AllTests extends TestCase {
 
@@ -56,14 +61,22 @@ public class AllTests extends TestCase {
 		// $JUnit-BEGIN$
 		suite.addTestSuite(LayerModelTest.class);
 		suite.addTestSuite(LiteShapeTest.class);
-		suite.addTestSuite(LegendTest.class);
 		suite.addTestSuite(FormatTest.class);
 		suite.addTestSuite(ClassificationTest.class);
 		suite.addTestSuite(MapContextTest.class);
 		suite.addTestSuite(MapTransformTest.class);
-		suite.addTestSuite(SymbolTest.class);
+
 		suite.addTestSuite(GeoCognitionTest.class);
 		suite.addTestSuite(ImportExportTest.class);
+
+        // SE Test
+		suite.addTestSuite(ShapeHelperTest.class);
+		suite.addTestSuite(PropertyNameTest.class);
+		suite.addTestSuite(Categorize2ColorTest.class);
+		suite.addTestSuite(Recode2ColorTest.class);
+        suite.addTestSuite(Interpolate2RealTest.class);
+        suite.addTestSuite(RealUnaryOperatorTest.class);
+        suite.addTestSuite(TransformTest.class);
 		// $JUnit-END$
 		return suite;
 	}

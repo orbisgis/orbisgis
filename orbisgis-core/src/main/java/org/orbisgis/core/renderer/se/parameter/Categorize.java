@@ -1,6 +1,7 @@
 package org.orbisgis.core.renderer.se.parameter;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Level;
@@ -225,8 +226,7 @@ public abstract class Categorize<ToType extends SeParameter, FallbackType extend
 	}
 
 	private void sortClasses() {
-		//Collections.sort(thresholds);
-
+		Collections.sort(thresholds);
 	}
 
 	protected ToType getParameter(SpatialDataSourceDecorator sds, long fid) {

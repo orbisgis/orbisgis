@@ -71,18 +71,22 @@ public class Recode2ColorTest extends TestCase {
 
     public void testGetParameter(){
         try {
+            testAddMapItems();
             recode.setLookupValue(new StringLiteral("k1"));
-            assertTrue(recode.getParameter(null, -1).getColor(null, -1) == c1.getColor(null, -1));
+
+            assertTrue(recode.getColor(null, -1) == c1.getColor(null, -1));
             recode.setLookupValue(new StringLiteral("k2"));
-            assertTrue(recode.getParameter(null, -1).getColor(null, -1) == c2.getColor(null, -1));
+            assertTrue(recode.getColor(null, -1) == c2.getColor(null, -1));
             recode.setLookupValue(new StringLiteral("k3"));
-            assertTrue(recode.getParameter(null, -1).getColor(null, -1) == c3.getColor(null, -1));
+            assertTrue(recode.getColor(null, -1) == c3.getColor(null, -1));
         } catch (ParameterException ex) {
             Logger.getLogger(Recode2ColorTest.class.getName()).log(Level.SEVERE, null, ex);
+            assertTrue(false);
         }
     }
 
     public void testRemoveMapItem(){
+        testAddMapItems();
         assertTrue(recode.getNumMapItem() == 3);
         recode.removeMapItem("k2");
 

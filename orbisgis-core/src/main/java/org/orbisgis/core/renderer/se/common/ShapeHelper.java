@@ -617,13 +617,13 @@ public class ShapeHelper {
 
                     gamma = Math.atan2(v.y - v_m1.y, v.x - v_m1.x) + theta;
 
-                    double quadx3 = v.x + Math.cos(gamma) * absOffset;
-                    double quady3 = v.y + Math.sin(gamma) * absOffset;
+                    double quadx3 = v.x - Math.cos(gamma) * offset;
+                    double quady3 = v.y - Math.sin(gamma) * offset;
 
                     gamma = Math.atan2(v_p1.y - v.y, v_p1.x - v.x) + theta;
 
-                    double quadx1 = v.x + Math.cos(gamma) * absOffset;
-                    double quady1 = v.y + Math.sin(gamma) * absOffset;
+                    double quadx1 = v.x - Math.cos(gamma) * offset;
+                    double quady1 = v.y - Math.sin(gamma) * offset;
 
                     double deltaX = (quadx1 + quadx3) / 2 - v.x;
                     double deltaY = (quady1 + quady3) / 2 - v.y;
@@ -790,7 +790,8 @@ public class ShapeHelper {
                 double dx = v.quadX2 - v.x;
                 double dy = v.quadY2 - v.y;
 
-                if (dx * dx + dy * dy < -9) { // i.e. never  (a² + b² > 0) !
+                if (dx * dx + dy * dy > 9) {
+                //if (dx * dx + dy * dy < -9) { // i.e. never  (a² + b² > 0) !
                     shp.lineTo(v.quadX1, v.quadY1);
                     shp.quadTo(v.quadX2, v.quadY2, v.quadX3, v.quadY3);
                 } else {
@@ -1183,10 +1184,10 @@ public class ShapeHelper {
         double denom1 = x2 - x1;
         double denom2 = x4 - x3;
 
-        if (denom1 < 0.0001) {
+        if (Math.abs(denom1) < 0.0001) {
             denom1 = 0;
         }
-        if (denom2 < 0.0001) {
+        if (Math.abs(denom2) < 0.0001) {
             denom2 = 0;
         }
 
