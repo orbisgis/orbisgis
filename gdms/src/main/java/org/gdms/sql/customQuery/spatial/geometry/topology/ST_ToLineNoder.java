@@ -123,7 +123,7 @@ public class ST_ToLineNoder implements CustomQuery {
 				"the_geom" });
 	}
 
-	public TableDefinition[] geTablesDefinitions() {
+	public TableDefinition[] getTablesDefinitions() {
 		return new TableDefinition[] { TableDefinition.GEOMETRY };
 	}
 

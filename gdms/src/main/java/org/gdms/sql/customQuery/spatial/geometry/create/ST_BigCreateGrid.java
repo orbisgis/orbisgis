@@ -225,7 +225,7 @@ public class ST_BigCreateGrid implements CustomQuery {
 				"gid" });
 	}
 
-	public TableDefinition[] geTablesDefinitions() {
+	public TableDefinition[] getTablesDefinitions() {
 		return new TableDefinition[] { TableDefinition.GEOMETRY };
 	}
 

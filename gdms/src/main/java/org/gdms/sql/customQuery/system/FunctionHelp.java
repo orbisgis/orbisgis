@@ -70,7 +70,7 @@ public class FunctionHelp implements CustomQuery {
 	}
 
 	@Override
-	public TableDefinition[] geTablesDefinitions() {
+	public TableDefinition[] getTablesDefinitions() {
 		return new TableDefinition[0];
 	}
 

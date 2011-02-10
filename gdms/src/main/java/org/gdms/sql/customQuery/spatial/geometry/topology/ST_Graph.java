@@ -105,7 +105,7 @@ public class ST_Graph implements CustomQuery {
 		return null;
 	}
 
-	public TableDefinition[] geTablesDefinitions() {
+	public TableDefinition[] getTablesDefinitions() {
 		return new TableDefinition[] { TableDefinition.GEOMETRY };
 	}
 

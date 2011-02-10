@@ -151,7 +151,7 @@ public class ST_RasterToPoints implements CustomQuery {
 				"the_geom", "value" });
 	}
 
-	public TableDefinition[] geTablesDefinitions() {
+	public TableDefinition[] getTablesDefinitions() {
 		return new TableDefinition[] { TableDefinition.RASTER };
 	}
 

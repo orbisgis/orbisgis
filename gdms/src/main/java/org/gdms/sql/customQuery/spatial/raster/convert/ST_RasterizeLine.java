@@ -200,7 +200,7 @@ public class ST_RasterizeLine implements CustomQuery {
 				.createType(Type.RASTER) }, new String[] { "raster" });
 	}
 
-	public TableDefinition[] geTablesDefinitions() {
+	public TableDefinition[] getTablesDefinitions() {
 		return new TableDefinition[] { TableDefinition.GEOMETRY,
 				TableDefinition.RASTER };
 	}

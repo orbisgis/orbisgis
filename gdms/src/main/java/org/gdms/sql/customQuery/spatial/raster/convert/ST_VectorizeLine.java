@@ -190,7 +190,7 @@ public class ST_VectorizeLine implements CustomQuery {
 		return null;
 	}
 
-	public TableDefinition[] geTablesDefinitions() {
+	public TableDefinition[] getTablesDefinitions() {
 		return new TableDefinition[] { TableDefinition.RASTER };
 	}
 

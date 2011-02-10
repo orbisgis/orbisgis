@@ -298,7 +298,7 @@ public class ST_Extrude implements CustomQuery {
 		}
 	}
 
-	public TableDefinition[] geTablesDefinitions() {
+	public TableDefinition[] getTablesDefinitions() {
 		return new TableDefinition[] { TableDefinition.GEOMETRY };
 	}
 

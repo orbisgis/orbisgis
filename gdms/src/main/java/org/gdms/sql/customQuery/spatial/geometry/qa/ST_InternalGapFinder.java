@@ -91,7 +91,7 @@ public class ST_InternalGapFinder implements CustomQuery {
 		return tables[0];
 	}
 
-	public TableDefinition[] geTablesDefinitions() {
+	public TableDefinition[] getTablesDefinitions() {
 		return new TableDefinition[] { TableDefinition.GEOMETRY };
 	}
 

@@ -145,7 +145,7 @@ public class ST_RasterToXYZ implements CustomQuery {
 				"z" });
 	}
 
-	public TableDefinition[] geTablesDefinitions() {
+	public TableDefinition[] getTablesDefinitions() {
 		return new TableDefinition[] { TableDefinition.RASTER };
 	}
 

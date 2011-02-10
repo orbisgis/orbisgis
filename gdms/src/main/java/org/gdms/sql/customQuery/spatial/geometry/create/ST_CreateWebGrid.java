@@ -170,7 +170,7 @@ public class ST_CreateWebGrid implements CustomQuery {
 				"gid" });
 	}
 
-	public TableDefinition[] geTablesDefinitions() {
+	public TableDefinition[] getTablesDefinitions() {
 		return new TableDefinition[] { TableDefinition.GEOMETRY };
 	}
 

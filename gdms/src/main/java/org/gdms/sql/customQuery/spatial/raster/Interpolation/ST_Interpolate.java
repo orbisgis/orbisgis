@@ -130,7 +130,7 @@ public class ST_Interpolate implements CustomQuery {
 		}
 	}
 
-	public TableDefinition[] geTablesDefinitions() {
+	public TableDefinition[] getTablesDefinitions() {
 		return new TableDefinition[] { TableDefinition.GEOMETRY };
 	}
 
