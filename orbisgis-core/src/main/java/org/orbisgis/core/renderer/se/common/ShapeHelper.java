@@ -54,7 +54,7 @@ import java.util.Collections;
 public class ShapeHelper {
 
     public static final double _0_0175 = Math.PI / 180.0;
-    private static final boolean VERBOSE = false;
+    private static final boolean _DEBUG_ = false;
 
     /**
      * Compute the perimeter of the shape
@@ -430,44 +430,39 @@ public class ShapeHelper {
 
         ArrayList<Vertex> vertexes = new ArrayList<Vertex>();
 
-        System.out.println("NEW :");
+        if (_DEBUG_) {
+            System.out.println("New subshape:");
+        }
         double coords[] = new double[6];
 
         Vertex v;
 
-        System.out.println("Extract:");
         // Want a direct access to coordinates !!!
         while (!it.isDone()) {
             int type = it.currentSegment(coords);
             switch (type) {
                 case PathIterator.SEG_CLOSE:
-                    System.out.println ("Closing: ");
-                    //v = new Vertex(coords[0], coords[1]);
-                    //System.out.println (v);
-                    //vertexes.add(v);
-                    //v = new Vertex(vertexes.get(0).x, vertexes.get(0).y);
-                    //System.out.println (v);
-                    //vertexes.add(v);
-
+                    if (_DEBUG_) {
+                        System.out.println("Close;");
+                    }
                     shapes.add(vertexes);
                     vertexes = new ArrayList<Vertex>();
                     break;
                 case PathIterator.SEG_QUADTO:
                 case PathIterator.SEG_CUBICTO:
-                    System.out.println ("Arc");
                     break;
                 case PathIterator.SEG_LINETO:
                 case PathIterator.SEG_MOVETO:
-                    System.out.println ("LineTo");
                     v = new Vertex(coords[0], coords[1]);
+                    if (_DEBUG_) {
+                        System.out.println("LineTo;" + v);
+                    }
                     if (vertexes.size() > 0) {
                         if (!v.equals(vertexes.get(vertexes.size() - 1))) {
                             vertexes.add(v);
-                            System.out.println (v);
                         }
                     } else {
                         vertexes.add(v);
-                        System.out.println (v);
                     }
                     break;
 
@@ -475,8 +470,8 @@ public class ShapeHelper {
             it.next();
         }
 
-        if (vertexes.size() > 1){
-           shapes.add(vertexes);
+        if (vertexes.size() > 1) {
+            shapes.add(vertexes);
         }
 
         return shapes;
@@ -572,7 +567,7 @@ public class ShapeHelper {
 
                 gamma = Math.acos((c_length * c_length - a_length * a_length - b_length * b_length) / (-2 * a_length * b_length));
 
-                if (VERBOSE) {
+                if (_DEBUG_) {
                     System.out.println("Gamma is : " + gamma / _0_0175);
                 }
 
@@ -584,13 +579,13 @@ public class ShapeHelper {
                 }
 
                 double angle_status = crossProduct(v_m1.x, v_m1.y, v.x, v.y, v_p1.x, v_p1.y) * offset;
-                if (VERBOSE) {
+                if (_DEBUG_) {
                     System.out.println("Status is: " + angle_status);
                 }
 
                 if (angle_status < 0) {
                     // Interior
-                    if (VERBOSE) {
+                    if (_DEBUG_) {
                         System.out.println("Interior:");
                     }
                     double dx = e_p1_x - e_x;
@@ -607,7 +602,7 @@ public class ShapeHelper {
 
                 } else {
                     // Exterior
-                    if (VERBOSE) {
+                    if (_DEBUG_) {
                         System.out.println("Exterior:");
                     }
                     double dx = e_x - e_p1_x;
@@ -726,14 +721,14 @@ public class ShapeHelper {
             Edge e = offstedEdges.get(i);
             if (e.m_dir == 0) {
                 e.m_pos = 0;
-            } else if (closed){
+            } else if (closed) {
                 Vertex p31 = offsetVertexes.get(i);
                 Vertex p32 = offsetVertexes.get((i + 1) % vertexes.size());
 
                 double d1 = absOffset;
                 double d2 = absOffset;
                 int j;
-                if (VERBOSE) {
+                if (_DEBUG_) {
                     System.out.println("NEW EDGE: " + i);
                 }
                 for (j = 0; j < offstedEdges.size() - (closed ? 0 : 1); j++) {
@@ -742,7 +737,7 @@ public class ShapeHelper {
 
                     double d = getDistanceFromSegment(p1.x, p1.y, p2.x, p2.y, p31.x, p31.y);
                     if (d < d1) {
-                        if (VERBOSE) {
+                        if (_DEBUG_) {
                             System.out.println("New shortest : " + " pt" + i + " edge" + j);
                         }
                         d1 = d;
@@ -751,7 +746,7 @@ public class ShapeHelper {
                     d = getDistanceFromSegment(p1.x, p1.y, p2.x, p2.y, p32.x, p32.y);
 
                     if (d < d2) {
-                        if (VERBOSE) {
+                        if (_DEBUG_) {
                             System.out.println("New shortest : " + " pt" + (i + 1) + " edge" + j);
                         }
                         d2 = d;
@@ -759,7 +754,7 @@ public class ShapeHelper {
 
 
                     if (d1 < absOffset - 0.1 && d2 < absOffset - 0.1) {
-                        if (VERBOSE) {
+                        if (_DEBUG_) {
                             System.out.println("Invalid !: " + d1 + ";" + d2 + ";" + absOffset);
                         }
                         e.m_pos = 0;
@@ -795,7 +790,7 @@ public class ShapeHelper {
                 double dx = v.quadX2 - v.x;
                 double dy = v.quadY2 - v.y;
 
-                if (dx * dx + dy * dy < 9) {
+                if (dx * dx + dy * dy < -9) { // i.e. never  (a² + b² > 0) !
                     shp.lineTo(v.quadX1, v.quadY1);
                     shp.quadTo(v.quadX2, v.quadY2, v.quadX3, v.quadY3);
                 } else {
@@ -839,11 +834,11 @@ public class ShapeHelper {
         int in_dir = 0;
         int in_pos = 0;
 
-        if (!closed){
+        if (!closed) {
             rawLink.add(vertexes.get(0));
         }
 
-        if (edges.size() == 1){
+        if (edges.size() == 1) {
             rawLink.add(vertexes.get(0));
             rawLink.add(vertexes.get(1));
         }
@@ -851,7 +846,7 @@ public class ShapeHelper {
         for (i = 0; i < offsetLinkList.size(); i++) {
             int id = offsetLinkList.get(i);
             Edge e = edges.get(id);
-            if (VERBOSE) {
+            if (_DEBUG_) {
                 System.out.println("Edge is: " + e);
             }
             if (e.is11()) {
@@ -865,7 +860,7 @@ public class ShapeHelper {
 
         while (backward < offsetLinkList.size()) {
 
-            if (VERBOSE) {
+            if (_DEBUG_) {
                 System.out.println("Backward edge is " + offsetLinkList.get(backward));
             }
             for (i = (backward + 1) % offsetLinkList.size(); i != backward; i = (i + 1) % offsetLinkList.size()) {
@@ -892,7 +887,7 @@ public class ShapeHelper {
                 }
             }
 
-            if (VERBOSE) {
+            if (_DEBUG_) {
                 System.out.println("Forward edge is " + offsetLinkList.get(forward));
             }
 
@@ -901,7 +896,7 @@ public class ShapeHelper {
                 break;
             }
 
-            if (VERBOSE) {
+            if (_DEBUG_) {
                 System.out.println("Status : " + edges.get(offsetLinkList.get(backward)) + ";" + edges.get(offsetLinkList.get(forward)));
                 System.out.println(" in_dir: " + in_dir + "    in_pos: " + in_pos);
             }
@@ -911,14 +906,14 @@ public class ShapeHelper {
 
             if (in_dir == 0 && in_pos == 0) {
                 // Add backward edge 2nd point
-                if (VERBOSE) {
+                if (_DEBUG_) {
                     System.out.println("Add " + vertexes.get(bn));
                 }
                 rawLink.add(vertexes.get(bn));
             } else if (in_dir == 0 && in_pos > 0) {
                 for (Integer j : bufferLinkList) {
                     rawLink.add(vertexes.get(j));
-                    if (VERBOSE) {
+                    if (_DEBUG_) {
                         System.out.println("Add " + vertexes.get(j));
                     }
                 }
@@ -930,14 +925,14 @@ public class ShapeHelper {
 
                 Point2D.Double inter = getLineIntersection(v1.x, v1.y, v2.x, v2.y, v3.x, v3.y, v4.x, v4.y);
 
-                if (inter != null){
+                if (inter != null) {
                     Vertex nv = new Vertex(inter.x, inter.y);
                     rawLink.add(nv);
-                    if (VERBOSE) {
+                    if (_DEBUG_) {
                         System.out.println("Add " + nv);
                     }
-                }else{
-                    if (VERBOSE) {
+                } else {
+                    if (_DEBUG_) {
                         System.out.println("Skip");
                     }
                 }
@@ -954,7 +949,7 @@ public class ShapeHelper {
                     // 3.1
                     Vertex nv = new Vertex(inter.x, inter.y);
                     rawLink.add(nv);
-                    if (VERBOSE) {
+                    if (_DEBUG_) {
                         System.out.println("Add3.1 " + nv);
                     }
                 } else {
@@ -974,13 +969,13 @@ public class ShapeHelper {
 
                             Vertex nv = new Vertex(i1.x, i1.y);
                             rawLink.add(nv);
-                            if (VERBOSE) {
+                            if (_DEBUG_) {
                                 System.out.println("Add3.2a " + nv);
                             }
 
                             nv = new Vertex(i2.x, i2.y);
                             rawLink.add(nv);
-                            if (VERBOSE) {
+                            if (_DEBUG_) {
                                 System.out.println("Add3.2b " + nv);
                             }
                         }
@@ -1027,12 +1022,21 @@ public class ShapeHelper {
         double maxY = Double.NEGATIVE_INFINITY;
         int id = -1;
         int i = 0;
+
+        if (_DEBUG_) {
+            System.out.println("Normalize");
+        }
+
         for (Vertex v : vertexes) {
             if (v.y > maxY) {
                 maxY = v.y;
                 id = i;
             }
-            System.out.println(v);
+
+            if (_DEBUG_) {
+                System.out.println(v);
+            }
+
             i++;
         }
 
@@ -1040,11 +1044,12 @@ public class ShapeHelper {
         Vertex pp1 = vertexes.get((id + 1) % vertexes.size());
         Vertex pm1 = vertexes.get((id - 1 + vertexes.size()) % vertexes.size());
 
-        System.out.println("----");
-
-        System.out.println(pm1);
-        System.out.println(p);
-        System.out.println(pp1);
+        if (_DEBUG_) {
+            System.out.println("----");
+            System.out.println(pm1);
+            System.out.println(p);
+            System.out.println(pp1);
+        }
 
         double px = (pp1.x + pm1.x) / 2;
         double py = (pp1.y + pm1.y) / 2;
@@ -1052,10 +1057,15 @@ public class ShapeHelper {
         px = p.x - 2 * (p.x - px);
         py = p.y - 2 * (p.y - py);
 
-        System.out.println(px + ";" + py);
+        if (_DEBUG_) {
+            System.out.println(px + ";" + py);
+        }
         double cp = crossProduct(p.x, p.y, px, py, pp1.x, pp1.y);
 
-        System.out.println("CROSSPRODUCT: " + cp);
+
+        if (_DEBUG_) {
+            System.out.println("CROSSPRODUCT: " + cp);
+        }
 
         if (cp > 0) {
             Collections.reverse(vertexes);
@@ -1067,7 +1077,7 @@ public class ShapeHelper {
         ArrayList<Shape> rawShapes = new ArrayList<Shape>();
 
         for (ArrayList<Vertex> vertexes : shapes) {
-            if (VERBOSE) {
+            if (_DEBUG_) {
                 System.out.println("Original vertexes: ");
                 for (Vertex v : vertexes) {
                     System.out.println(v);
@@ -1085,7 +1095,7 @@ public class ShapeHelper {
 
             ArrayList<Vertex> offsetVertexes = createOffsetVertexes(vertexes, offset, closed);
 
-            if (VERBOSE) {
+            if (_DEBUG_) {
                 System.out.println("Cleaned vertexes: ");
                 for (Vertex v : vertexes) {
                     System.out.println(v);
@@ -1099,7 +1109,7 @@ public class ShapeHelper {
 
             ArrayList<Edge> edges = computeEdges(vertexes, offsetVertexes, offset, closed);
 
-            if (VERBOSE) {
+            if (_DEBUG_) {
                 System.out.println("Edges: ");
                 for (Edge e : edges) {
                     System.out.println(e);
@@ -1108,7 +1118,7 @@ public class ShapeHelper {
 
             ArrayList<Vertex> rawLink = computeRawLink(edges, offsetVertexes, closed);
 
-            if (VERBOSE) {
+            if (_DEBUG_) {
                 System.out.println("Raw Link: ");
                 for (Vertex v : rawLink) {
                     System.out.println(v);
@@ -1170,13 +1180,15 @@ public class ShapeHelper {
 
     private static Point2D.Double getLineIntersection(double x1, double y1, double x2, double y2, double x3, double y3, double x4, double y4) {
 
-        double denom1 = x2 -x1;
-        double denom2 = x4-x3;
+        double denom1 = x2 - x1;
+        double denom2 = x4 - x3;
 
-        if (denom1 < 0.0001)
+        if (denom1 < 0.0001) {
             denom1 = 0;
-        if (denom2 < 0.0001)
+        }
+        if (denom2 < 0.0001) {
             denom2 = 0;
+        }
 
         double a1 = (y2 - y1) / denom1;
         double a2 = (y4 - y3) / denom2;
@@ -1187,11 +1199,11 @@ public class ShapeHelper {
         double x;
         double y;
 
-        if (VERBOSE) {
+        if (_DEBUG_) {
             System.out.println(x1 + ";" + y1 + " --> " + x2 + ";" + y2);
             System.out.println(x3 + ";" + y3 + " --> " + x4 + ";" + y4);
-            System.out.println ("a1: " + a1);
-            System.out.println ("a2: " + a2);
+            System.out.println("a1: " + a1);
+            System.out.println("a2: " + a2);
         }
 
 
@@ -1205,7 +1217,7 @@ public class ShapeHelper {
             y = a1 * x + b1;
         } else {
             x = (b2 - b1) / (a1 - a2);
-            if (VERBOSE){
+            if (_DEBUG_) {
                 System.out.println("a1-a2:" + (a1 - a2));
                 System.out.println("b1-b2:" + (b2 - b1));
             }
@@ -1215,7 +1227,7 @@ public class ShapeHelper {
             }
         }
 
-        if (VERBOSE) {
+        if (_DEBUG_) {
             System.out.println(" intersection is: " + x + ";" + y);
         }
 
