@@ -84,7 +84,9 @@ public enum WellKnownName implements MarkGraphicSource {
     }
 
     @Override
-    public Shape getShape(ViewBox viewBox, SpatialDataSourceDecorator sds, long fid, Double scale, Double dpi, RealParameter markIndex, String mimeType) throws ParameterException {
+    public Shape getShape(ViewBox viewBox, SpatialDataSourceDecorator sds, 
+            long fid, Double scale, Double dpi, RealParameter markIndex,
+            String mimeType) throws ParameterException {
         if (sds == null && viewBox != null && viewBox.dependsOnFeature()){
             return null;
         }

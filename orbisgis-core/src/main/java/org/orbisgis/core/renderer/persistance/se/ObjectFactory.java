@@ -102,6 +102,7 @@ public class ObjectFactory {
     private final static QName _RedChannel_QNAME = new QName("http://www.opengis.net/se", "RedChannel");
     private final static QName _VerticalAlignment_QNAME = new QName("http://www.opengis.net/se", "VerticalAlignment");
     private final static QName _Log10_QNAME = new QName("http://www.opengis.net/se", "Log10");
+    private final static QName _Ln_QNAME = new QName("http://www.opengis.net/se", "Ln");
     private final static QName _InlineContent_QNAME = new QName("http://www.opengis.net/se", "InlineContent");
     private final static QName _Normalize_QNAME = new QName("http://www.opengis.net/se", "Normalize");
     private final static QName _DomainValue_QNAME = new QName("http://www.opengis.net/se", "DomainValue");
@@ -1446,6 +1447,16 @@ public class ObjectFactory {
     public JAXBElement<ParameterValueType> createVerticalAlignment(ParameterValueType value) {
         return new JAXBElement<ParameterValueType>(_VerticalAlignment_QNAME, ParameterValueType.class, null, value);
     }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link UnaryOperatorType }{@code >}}
+     *
+     */
+    @XmlElementDecl(namespace = "http://www.opengis.net/se", name = "Ln", substitutionHeadNamespace = "http://www.opengis.net/ogc", substitutionHeadName = "expression")
+    public JAXBElement<UnaryOperatorType> createLn(UnaryOperatorType value) {
+        return new JAXBElement<UnaryOperatorType>(_Ln_QNAME, UnaryOperatorType.class, null, value);
+    }
+
 
     /**
      * Create an instance of {@link JAXBElement }{@code <}{@link UnaryOperatorType }{@code >}}

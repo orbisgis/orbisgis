@@ -61,6 +61,7 @@ import java.awt.image.ColorModel;
 import java.awt.image.renderable.RenderContext;
 import javax.media.jai.ImageLayout;
 import javax.media.jai.JAI;
+import org.orbisgis.core.Services;
 
 public class MapTransform implements PointTransformation {
 
@@ -122,6 +123,7 @@ public class MapTransform implements PointTransformation {
 		try{
 			this.dpi = Toolkit.getDefaultToolkit().getScreenResolution();
 		} catch (HeadlessException e){
+            Services.getErrorManager().error("Could not retrieve current DPI. Use 96.0!");
 			this.dpi = DEFAULT_DPI;
 		}
 	}

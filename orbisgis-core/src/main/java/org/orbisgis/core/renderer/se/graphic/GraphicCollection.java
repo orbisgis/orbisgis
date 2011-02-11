@@ -5,6 +5,7 @@ import java.awt.geom.Rectangle2D;
 import java.awt.image.RenderedImage;
 
 import java.io.IOException;
+import java.security.Provider.Service;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -13,6 +14,7 @@ import java.util.List;
 import javax.media.jai.RenderableGraphics;
 import javax.xml.bind.JAXBElement;
 import org.gdms.data.SpatialDataSourceDecorator;
+import org.orbisgis.core.Services;
 import org.orbisgis.core.renderer.persistance.se.CompositeGraphicType;
 import org.orbisgis.core.renderer.persistance.se.GraphicType;
 import org.orbisgis.core.renderer.persistance.se.ObjectFactory;
@@ -63,18 +65,18 @@ public final class GraphicCollection implements SymbolizerNode {
         return graphics.get(i);
     }
 
-	/**
-	 *
-	 * @param graphic
-	 * @param index
-	 */
-	public void addGraphic(Graphic graphic, int index) {
+    /**
+     *
+     * @param graphic
+     * @param index
+     */
+    public void addGraphic(Graphic graphic, int index) {
         if (graphic != null) {
-			if (index >= 0 && index < graphics.size()){
-				graphics.add(index, graphic);
-			}else{
-            	graphics.add(graphic);
-			}
+            if (index >= 0 && index < graphics.size()) {
+                graphics.add(index, graphic);
+            } else {
+                graphics.add(graphic);
+            }
             graphic.setParent(this);
         }
     }
@@ -87,35 +89,33 @@ public final class GraphicCollection implements SymbolizerNode {
         }
     }
 
-	public boolean moveGraphicDown(int index){
-		if (index >= 0 && index < graphics.size()-1){
-			Graphic g = graphics.remove(index);
-			graphics.add(index+1, g);
-			return true;
-		} else{
-			return false;
-		}
-	}
+    public boolean moveGraphicDown(int index) {
+        if (index >= 0 && index < graphics.size() - 1) {
+            Graphic g = graphics.remove(index);
+            graphics.add(index + 1, g);
+            return true;
+        } else {
+            return false;
+        }
+    }
 
-
-	public boolean moveGraphicUp(int index){
-		if (index > 0 && index < graphics.size()){
-			Graphic g = graphics.remove(index);
-			graphics.add(index-1, g);
-			return true;
-		} else{
-			return false;
-		}
-	}
+    public boolean moveGraphicUp(int index) {
+        if (index > 0 && index < graphics.size()) {
+            Graphic g = graphics.remove(index);
+            graphics.add(index - 1, g);
+            return true;
+        } else {
+            return false;
+        }
+    }
 
     public boolean delGraphic(int i) {
-		try{
-			graphics.remove(i);
-			return true;
-		}
-		catch(Exception e){
-			return false;
-		}
+        try {
+            graphics.remove(i);
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
     }
 
     public boolean delGraphic(Graphic graphic) {
@@ -151,9 +151,9 @@ public final class GraphicCollection implements SymbolizerNode {
      *    - PointSymbolizer
      *
      *
-	 * @param feat The feature the graphic is for
-	 * @param selected is the feature selected ?
-	 * @param mt the current map transform
+     * @param feat The feature the graphic is for
+     * @param selected is the feature selected ?
+     * @param mt the current map transform
      * @return a specific image for this feature
      * @throws ParameterException
      * @throws IOException
@@ -163,13 +163,13 @@ public final class GraphicCollection implements SymbolizerNode {
         /*
          * if the graphics collection doesn't depends on feature and the current
          * feature is not selected, use cached graphic
-		 * Note that the graphic is regenerated every time the scale change (to
-		 * support gm ant gft units)
+         * Note that the graphic is regenerated every time the scale change (to
+         * support gm ant gft units)
          */
         if (!selected
-				&& ! this.dependsOnFeature()
-				&& this.graphicCache != null
-				&& mt.getScaleDenominator() == this.scaleCache){
+                && !this.dependsOnFeature()
+                && this.graphicCache != null
+                && mt.getScaleDenominator() == this.scaleCache) {
             return graphicCache;
         }
 
@@ -186,27 +186,31 @@ public final class GraphicCollection implements SymbolizerNode {
         Iterator<Graphic> it = graphics.iterator();
         while (it.hasNext()) {
             Graphic g = it.next();
-            RenderableGraphics img = g.getRenderableGraphics(sds, fid, selected, mt);
-            if (img != null) {
-                float mX = img.getMinX();
-                float w = img.getWidth();
-                float mY = img.getMinY();
-                float h = img.getHeight();
+            try {
+                RenderableGraphics img = g.getRenderableGraphics(sds, fid, selected, mt);
+                if (img != null) {
+                    float mX = img.getMinX();
+                    float w = img.getWidth();
+                    float mY = img.getMinY();
+                    float h = img.getHeight();
 
-                images.add(img);
+                    images.add(img);
 
-                if (mX< xmin) {
-                    xmin = mX;
+                    if (mX < xmin) {
+                        xmin = mX;
+                    }
+                    if (mY < ymin) {
+                        ymin = mY;
+                    }
+                    if (mX + w > xmax) {
+                        xmax = mX + w;
+                    }
+                    if (img.getMinY() + img.getHeight() > ymax) {
+                        ymax = mY + h;
+                    }
                 }
-                if (mY < ymin) {
-                    ymin = mY;
-                }
-                if (mX + w > xmax) {
-                    xmax = mX + w;
-                }
-                if (img.getMinY() + img.getHeight() > ymax) {
-                    ymax = mY + h;
-                }
+            } catch (ParameterException ex) {
+                Services.getErrorManager().error(ex.getMessage());
             }
         }
 
@@ -220,8 +224,8 @@ public final class GraphicCollection implements SymbolizerNode {
                 rg.drawRenderedImage(g.createRendering(mt.getCurrentRenderContext()), new AffineTransform());
             }
 
-            if (!selected && ! this.dependsOnFeature()){
-				scaleCache = mt.getScaleDenominator();
+            if (!selected && !this.dependsOnFeature()) {
+                scaleCache = mt.getScaleDenominator();
                 graphicCache = rg;
             }
             return rg;
@@ -231,8 +235,8 @@ public final class GraphicCollection implements SymbolizerNode {
     }
 
     public final boolean dependsOnFeature() {
-        for (Graphic g : this.graphics){
-            if (g.dependsOnFeature()){
+        for (Graphic g : this.graphics) {
+            if (g.dependsOnFeature()) {
                 return true;
             }
         }
@@ -269,36 +273,33 @@ public final class GraphicCollection implements SymbolizerNode {
         }
     }
 
-	public RenderedImage getCache(SpatialDataSourceDecorator sds, long fid, boolean selected, MapTransform mt)
+    public RenderedImage getCache(SpatialDataSourceDecorator sds, long fid, boolean selected, MapTransform mt)
             throws ParameterException, IOException {
 
         /*if (!selected && ! this.dependsOnFeature() && imageCache != null){
-			return imageCache;
-		}*/
+        return imageCache;
+        }*/
 
 
-		RenderableGraphics rGraphic = this.getGraphic(sds, fid, selected, mt);
-    	RenderedImage rImage = null;
-		if (rGraphic != null){
-			rImage = rGraphic.createRendering(mt.getCurrentRenderContext());
-		}
+        RenderableGraphics rGraphic = this.getGraphic(sds, fid, selected, mt);
+        RenderedImage rImage = null;
+        if (rGraphic != null) {
+            rImage = rGraphic.createRendering(mt.getCurrentRenderContext());
+        }
 
-		/*
-		 * Only cache if the graphic doesn't depends on features attribute
-		 * and only if it's not a selected highlighted graphic
-		 */
-		if (!selected && !this.dependsOnFeature()){
-			this.imageCache = rImage;
-		}
+        /*
+         * Only cache if the graphic doesn't depends on features attribute
+         * and only if it's not a selected highlighted graphic
+         */
+        if (!selected && !this.dependsOnFeature()) {
+            this.imageCache = rImage;
+        }
 
-		return rImage;
-	}
-
+        return rImage;
+    }
     RenderableGraphics graphicCache = null;
     RenderedImage imageCache = null;
-	double scaleCache = -1;
-
+    double scaleCache = -1;
     private ArrayList<Graphic> graphics;
     private SymbolizerNode parent;
 }
-

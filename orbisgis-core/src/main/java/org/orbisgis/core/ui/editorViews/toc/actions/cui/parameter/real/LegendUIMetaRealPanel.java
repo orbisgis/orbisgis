@@ -83,6 +83,7 @@ public abstract class LegendUIMetaRealPanel extends LegendUIAbstractMetaPanel {
 	@Override
 	protected final LegendUIComponent getCompForClass(Class newClass) {
 
+        // TODO Detect Proportional
 		if (newClass == RealLiteral.class) {
 			RealLiteral literal;
 			if (real instanceof RealLiteral) {

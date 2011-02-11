@@ -1,22 +1,51 @@
 /*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+ * OrbisGIS is a GIS application dedicated to scientific spatial simulation.
+ * This cross-platform GIS is developed at French IRSTV institute and is able to
+ * manipulate and create vector and raster spatial information. OrbisGIS is
+ * distributed under GPL 3 license. It is produced by the "Atelier SIG" team of
+ * the IRSTV Institute <http://www.irstv.cnrs.fr/> CNRS FR 2488.
+ *
+ *
+ *  Team leader Erwan BOCHER, scientific researcher,
+ *
+ *  User support leader : Gwendall Petit, geomatic engineer.
+ *
+ *
+ * Copyright (C) 2007 Erwan BOCHER, Fernando GONZALEZ CORTES, Thomas LEDUC
+ *
+ * Copyright (C) 2010 Erwan BOCHER, Pierre-Yves FADET, Alexis GUEGANNO, Maxence LAURENT
+ *
+ * This file is part of OrbisGIS.
+ *
+ * OrbisGIS is free software: you can redistribute it and/or modify it under the
+ * terms of the GNU General Public License as published by the Free Software
+ * Foundation, either version 3 of the License, or (at your option) any later
+ * version.
+ *
+ * OrbisGIS is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
+ * A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along with
+ * OrbisGIS. If not, see <http://www.gnu.org/licenses/>.
+ *
+ * For more information, please consult: <http://www.orbisgis.org/>
+ *
+ * or contact directly:
+ * erwan.bocher _at_ ec-nantes.fr
+ * gwendall.petit _at_ ec-nantes.fr
  */
-package org.orbisgis.core.renderer.se.graphic;
 
+package org.orbisgis.core.renderer.se.graphic;
 
 import com.sun.media.jai.widget.DisplayJAI;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Container;
-
 import java.io.IOException;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.media.jai.RenderableGraphics;
-
 import javax.swing.JFrame;
-
 import junit.framework.TestCase;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.errorManager.ErrorListener;
@@ -27,15 +56,16 @@ import org.orbisgis.core.renderer.se.PointSymbolizer;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 
+
 /**
  *
  * @author maxence
  */
-public class GraphicCollectionTest extends TestCase {
+public class ProportionalSymbolsTest extends TestCase {
 
     private FeatureTypeStyle fts;
 
-    public GraphicCollectionTest(String testName) throws IOException {
+    public ProportionalSymbolsTest(String testName) throws IOException {
         super(testName);
     }
 
@@ -54,7 +84,7 @@ public class GraphicCollectionTest extends TestCase {
         super.tearDown();
     }
 
-    public void testGraphic() throws IOException, ParameterException, InvalidStyle {
+    public void testProportionalSymbols() throws IOException, ParameterException, InvalidStyle {
         JFrame frame = new JFrame();
         frame.setTitle("Test GraphicCollection");
 
@@ -67,7 +97,7 @@ public class GraphicCollectionTest extends TestCase {
 
         System.out.println(dj.getColorModel());
 
-        fts = new FeatureTypeStyle(null, "src/test/resources/org/orbisgis/core/renderer/se/graphics.se");
+        fts = new FeatureTypeStyle(null, "src/test/resources/org/orbisgis/core/renderer/se/prop_symbols.se");
         PointSymbolizer ps = (PointSymbolizer) fts.getRules().get(0).getCompositeSymbolizer().getSymbolizerList().get(0);
         GraphicCollection collec = ps.getGraphicCollection();
 
@@ -93,16 +123,13 @@ public class GraphicCollectionTest extends TestCase {
         frame.setVisible(true); // show the frame.
 
         System.out.print("");
-        
+
         try {
             Thread.sleep(20000);
         } catch (InterruptedException ex) {
-            Logger.getLogger(GraphicCollectionTest.class.getName()).log(Level.SEVERE, null, ex);
         }
-        
+
     }
-
-
 
 	protected class FailErrorManager implements ErrorManager {
 
@@ -134,4 +161,6 @@ public class GraphicCollectionTest extends TestCase {
             System.out.println ("WARN: " + userMsg);
 		}
 	}
+
+
 }

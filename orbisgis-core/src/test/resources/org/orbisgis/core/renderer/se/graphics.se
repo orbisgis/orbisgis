@@ -6,17 +6,16 @@
       <CompositeGraphic>
         <!-- Background: draughtboard -->
         <MarkGraphic>
-          <UnitOfMeasure>urn:ogc:def:uom:se::px</UnitOfMeasure>
+          <UnitOfMeasure>urn:ogc:def:uom:se::mm</UnitOfMeasure>
           <WellKnownName>SQUARE</WellKnownName>
           <ViewBox>
-            <Width>1000</Width>
-            <Height>600</Height>
+            <Width>270</Width>
+            <Height>160</Height>
            </ViewBox>
                 <GraphicFill>
                     <CompositeGraphic>
                     <MarkGraphic>
                         <WellKnownName>SQUARE</WellKnownName>
-                              <UnitOfMeasure>urn:ogc:def:uom:se::mm</UnitOfMeasure>
                         <ViewBox><Width>2</Width></ViewBox>
                         <SolidFill>
                             <Color>#BBBBBB</Color>
@@ -31,7 +30,6 @@
                     </MarkGraphic>
                     <MarkGraphic>
                         <WellKnownName>SQUARE</WellKnownName>
-                              <UnitOfMeasure>urn:ogc:def:uom:se::mm</UnitOfMeasure>
                         <ViewBox><Width>2</Width></ViewBox>
                         <SolidFill>
                             <Color>#BBBBBB</Color>

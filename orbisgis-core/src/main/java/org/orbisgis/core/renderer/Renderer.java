@@ -132,6 +132,9 @@ public class Renderer {
 	public int drawVector(Graphics2D g2,
 			MapTransform mt, ILayer layer, IProgressMonitor pm) throws DriverException {
 
+        Services.getOutputManager().println("Current DPI is " + mt.getDpi());
+        Services.getOutputManager().println("Current SCALE is 1: " + mt.getScaleDenominator());
+
 		int layerCount = 0;
 		try {
 			long tV1 = System.currentTimeMillis();

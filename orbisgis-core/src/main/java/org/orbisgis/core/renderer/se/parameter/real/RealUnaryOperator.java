@@ -2,7 +2,7 @@ package org.orbisgis.core.renderer.se.parameter.real;
 
 import javax.xml.bind.JAXBElement;
 import org.gdms.data.SpatialDataSourceDecorator;
-import org.gdms.data.feature.Feature;
+
 import org.orbisgis.core.renderer.persistance.ogc.ExpressionType;
 import org.orbisgis.core.renderer.persistance.se.ObjectFactory;
 import org.orbisgis.core.renderer.persistance.se.ParameterValueType;
@@ -21,7 +21,7 @@ public final class RealUnaryOperator implements RealParameter {
 	private RealParameterContext ctx;
 
     public enum RealUnitaryOperatorType {
-        SQRT, LOG;
+        SQRT, LOG, LN;
     }
 
     public RealUnaryOperator() {
@@ -42,8 +42,11 @@ public final class RealUnaryOperator implements RealParameter {
 
         String operator = expr.getName().getLocalPart();
 
-        if (operator.equals("Log10")){
+        if (operator.equals("Log")){
             this.op = RealUnitaryOperatorType.LOG;
+        }
+        else if (operator.equals("Ln")){
+            this.op = RealUnitaryOperatorType.LN;
         }
         else if (operator.equals("Sqrt")){
             this.op = RealUnitaryOperatorType.SQRT;
@@ -82,6 +85,8 @@ public final class RealUnaryOperator implements RealParameter {
         switch (op) {
             case SQRT:
                 return Math.sqrt(value);
+            case LN:
+                return Math.log(value);
             case LOG:
                 return Math.log10(value); // TODO quelle base ?
             default:
@@ -108,6 +113,8 @@ public final class RealUnaryOperator implements RealParameter {
         switch (op) {
             case SQRT:
                 return of.createSqrt(o);
+            case LN:
+                return of.createLn(o);
             case LOG:
                 return of.createLog10(o);
         }
