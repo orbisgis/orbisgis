@@ -184,9 +184,14 @@ public final class GraphicStroke extends Stroke implements GraphicNode {
     }
     
     @Override
-    public boolean dependsOnFeature() {
-        return graphic != null && graphic.dependsOnFeature() ||
-               length != null && length.dependsOnFeature();
+    public String dependsOnFeature() {
+        String result = "";
+        if (graphic != null)
+            result += " " + graphic.dependsOnFeature();
+        if (length != null)
+            result += " " + length.dependsOnFeature();
+
+        return result.trim();
     }
 
     @Override

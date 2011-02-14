@@ -42,7 +42,6 @@ import java.awt.Shape;
 import java.io.IOException;
 import javax.xml.bind.JAXBElement;
 import org.gdms.data.SpatialDataSourceDecorator;
-import org.gdms.data.feature.Feature;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.persistance.se.ObjectFactory;
 import org.orbisgis.core.renderer.persistance.se.TextStrokeType;
@@ -133,7 +132,7 @@ public final class TextStroke extends Stroke {
 	}
 
 	@Override
-	public boolean dependsOnFeature() {
+	public String dependsOnFeature() {
 		return lineLabel.dependsOnFeature();
 	}
 }

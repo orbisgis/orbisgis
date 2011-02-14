@@ -23,7 +23,6 @@ import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.graphic.GraphicCollection;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
-import org.orbisgis.core.renderer.se.parameter.color.ColorHelper;
 import org.orbisgis.core.renderer.se.parameter.real.RealLiteral;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
@@ -116,6 +115,7 @@ public final class DensityFill extends Fill implements GraphicNode {
 		return percentageCovered;
 	}
 
+    @Override
 	public void draw(Graphics2D g2, SpatialDataSourceDecorator sds, long fid, Shape shp, boolean selected, MapTransform mt) throws ParameterException, IOException {
 		Paint painter = getPaint(fid, sds, selected, mt);
 
@@ -249,23 +249,28 @@ public final class DensityFill extends Fill implements GraphicNode {
 	}
 
 	@Override
-	public boolean dependsOnFeature() {
+	public String dependsOnFeature() {
+
+        String pc = "";
+        if (percentageCovered != null){
+            pc = percentageCovered.dependsOnFeature();
+        }
+
 		if (useHatches()) {
-			if (hatches != null && this.hatches.dependsOnFeature()) {
-				return true;
+            String h = "";
+            String o = "";
+			if (hatches != null) {
+				h = hatches.dependsOnFeature();
 			}
-			if (orientation != null && this.orientation.dependsOnFeature()) {
-				return true;
+			if (orientation != null) {
+                o = orientation.dependsOnFeature();
 			}
-		} else if (mark != null && this.mark.dependsOnFeature()) {
-			return true;
+            return (pc + " " + o + " " + h).trim();
+		} else if (mark != null) {
+            return (pc + " " + mark.dependsOnFeature()).trim();
 		}
 
-		if (percentageCovered != null && this.percentageCovered.dependsOnFeature()) {
-			return true;
-		}
-
-		return false;
+		return "";
 	}
 
 	@Override

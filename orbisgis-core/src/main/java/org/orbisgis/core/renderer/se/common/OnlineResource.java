@@ -122,7 +122,7 @@ public class OnlineResource implements ExternalGraphicSource, MarkGraphicSource 
 			if (mt == null) {
 				return null;
 			}
-			if (sds == null && viewBox != null && viewBox.dependsOnFeature()) {
+			if (sds == null && viewBox != null && !viewBox.dependsOnFeature().isEmpty()) {
 				throw new ParameterException("View box depends on feature");
 			}
 

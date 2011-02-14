@@ -45,7 +45,6 @@
                     </CompositeGraphic>
                 </GraphicFill>
             </MarkGraphic>
-
                 <ExternalGraphic>
                     <OnlineResource ns4:href="https://www.yoplait.ca/ResourceDocs/fr/logo_yop.jpg"/>
                     <ViewBox>
@@ -178,7 +177,7 @@
                         <Transform>
                             <Translate>
                            <X>-125</X>
-                           <Y>-40</Y>
+                           <Y>-35</Y>
                         </Translate>
                     </Transform>
                 </TextGraphic>
@@ -206,7 +205,7 @@
                         <Transform>
                             <Translate>
                            <X>-110</X>
-                           <Y>-40</Y>
+                           <Y>-35</Y>
                         </Translate>
                     </Transform>
                 </TextGraphic>
@@ -266,46 +265,10 @@
                         <Transform>
                             <Translate>
                            <X>-95</X>
-                           <Y>-40</Y>
+                           <Y>-35</Y>
                         </Translate>
                     </Transform>
                 </TextGraphic>
-
-
-                <MarkGraphic>
-		    <WellKnownName>STAR</WellKnownName>
-		    <ViewBox>
-		        <Height>10</Height>
-		    </ViewBox>
-		    <SolidFill />
-		    <PenStroke />
-
-                    <Transform>
-                           <Translate>
-                            <X>-125</X>
-                            <Y>-30</Y>
-                        </Translate>
-                    </Transform>
-                    <Halo>
-                        <Radius>2</Radius>
-                        <SolidFill>
-                           <Color>#ffffff</Color>
-                        </SolidFill>
-                    </Halo>
-                </MarkGraphic>
-
-		<TextGraphic>
-                    <StyledLabel>
-                        <LabelText>StarHalo</LabelText>
-                    </StyledLabel>
-                        <Transform>
-                            <Translate>
-                           <X>-125</X>
-                           <Y>-25</Y>
-                        </Translate>
-                    </Transform>
-                </TextGraphic>
-
 
 
 		<TextGraphic>
@@ -948,9 +911,6 @@
             </Translate>
           </Transform>
         </TextGraphic>
-
-
-
       </CompositeGraphic>
     </PointSymbolizer>
   </Rule>

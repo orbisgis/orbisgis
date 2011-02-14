@@ -81,6 +81,6 @@ public abstract class CompoundStrokeElement implements SymbolizerNode {
 		this.parent = node;
 	}
 
-	public abstract boolean dependsOnFeature();
+	public abstract String dependsOnFeature();
 
 }

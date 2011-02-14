@@ -374,11 +374,11 @@ public class ShapeHelper {
 
         @Override
         public String toString() {
-            //if (quadX1 != null){
-            //    return "" + x + ";" + y + "   " + quadX1 + ";" + quadY2 + "  " + quadX2 +";" + quadY2 + "   " + quadX3 + ";" + quadY3;
-            //} else{
-            return "" + x + ";" + y;
-            //}
+            if (quadX1 != null) {
+                return "" + x + ";" + y + "   " + quadX1 + ";" + quadY2 + "  " + quadX2 + ";" + quadY2 + "   " + quadX3 + ";" + quadY3;
+            } else {
+                return "" + x + ";" + y;
+            }
         }
     }
 
@@ -779,8 +779,23 @@ public class ShapeHelper {
         }
 
         Path2D.Double shp = new Path2D.Double();
+        Vertex v1 = vertexes.get(0);
 
-        shp.moveTo(vertexes.get(0).x, vertexes.get(0).y);
+        if (v1.quadX1 != null){
+                double dx = v1.quadX2 - v1.x;
+                double dy = v1.quadY2 - v1.y;
+
+                if (dx * dx + dy * dy > 9) {
+                    //if (dx * dx + dy * dy < -9) { // i.e. never  (a² + b² > 0) !
+                    shp.moveTo(v1.quadX1, v1.quadY1);
+                    shp.quadTo(v1.quadX2, v1.quadY2, v1.quadX3, v1.quadY3);
+                } else {
+                    shp.moveTo(v1.x, v1.y);
+                }
+
+        } else{
+            shp.moveTo(v1.x, v1.y);
+        }
 
         int i;
 
@@ -791,7 +806,7 @@ public class ShapeHelper {
                 double dy = v.quadY2 - v.y;
 
                 if (dx * dx + dy * dy > 9) {
-                //if (dx * dx + dy * dy < -9) { // i.e. never  (a² + b² > 0) !
+                    //if (dx * dx + dy * dy < -9) { // i.e. never  (a² + b² > 0) !
                     shp.lineTo(v.quadX1, v.quadY1);
                     shp.quadTo(v.quadX2, v.quadY2, v.quadX3, v.quadY3);
                 } else {

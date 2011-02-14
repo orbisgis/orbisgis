@@ -131,5 +131,5 @@ public abstract class Stroke implements SymbolizerNode, UomNode {
         }
     }
 
-    public abstract boolean dependsOnFeature();
+    public abstract String dependsOnFeature();
 }

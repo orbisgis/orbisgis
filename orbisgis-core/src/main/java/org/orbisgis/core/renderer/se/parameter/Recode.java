@@ -43,7 +43,6 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.xml.bind.JAXBElement;
 import org.gdms.data.SpatialDataSourceDecorator;
-import org.gdms.data.feature.Feature;
 import org.orbisgis.core.renderer.persistance.ogc.ExpressionType;
 import org.orbisgis.core.renderer.persistance.se.MapItemType;
 import org.orbisgis.core.renderer.persistance.se.ObjectFactory;
@@ -65,19 +64,22 @@ public abstract class Recode<ToType extends SeParameter, FallbackType extends To
     }
 
     @Override
-    public final boolean dependsOnFeature() {
-        if (this.getLookupValue().dependsOnFeature()) {
-            return true;
+    public final String dependsOnFeature() {
+        String result = "";
+        String lookup = this.getLookupValue().dependsOnFeature();
+        if (lookup != null && !lookup.isEmpty()){
+            result = lookup;
         }
 
         int i;
         for (i = 0; i < this.getNumMapItem(); i++) {
-            if (this.getMapItemValue(i).dependsOnFeature()) {
-                return true;
+            String r = this.getMapItemValue(i).dependsOnFeature();
+            if (r != null && !r.isEmpty()){
+                result += " " + r;
             }
         }
 
-        return false;
+        return result;
     }
 
     public void setFallbackValue(FallbackType fallbackValue) {

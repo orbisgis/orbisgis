@@ -22,6 +22,10 @@ import org.orbisgis.core.renderer.persistance.se.ElseFilterType;
 import org.orbisgis.core.renderer.persistance.se.RuleType;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.common.Uom;
+import org.orbisgis.core.renderer.se.graphic.ExternalGraphic;
+import org.orbisgis.core.renderer.se.graphic.Graphic;
+import org.orbisgis.core.renderer.se.graphic.GraphicCollection;
+import org.orbisgis.core.renderer.se.graphic.MarkGraphic;
 
 /**
  *
@@ -207,11 +211,41 @@ public final class Rule implements SymbolizerNode {
 	 */
 	public FilterDataSourceDecorator getFilteredDataSource(FilterDataSourceDecorator fds) throws DriverLoadException, DataSourceCreationException, DriverException, ParseException, SemanticException {
 		if (where != null && !where.isEmpty()) {
-			return new FilterDataSourceDecorator(fds, where);
+			return new FilterDataSourceDecorator(fds, where + getOrderBy());
+        } else if (!getOrderBy().isEmpty()){
+			return new FilterDataSourceDecorator(fds, "1=1 "+ getOrderBy());
 		} else {
 			return fds;
 		}
 	}
+
+    private String getOrderBy(){
+        for (Symbolizer s : getCompositeSymbolizer().getSymbolizerList()){
+            if (s instanceof PointSymbolizer){
+                PointSymbolizer ps = (PointSymbolizer) s;
+                GraphicCollection gc = ps.getGraphicCollection();
+                int i;
+                String f = " ";
+                for (i=0;i<gc.getNumGraphics();i++){
+                    Graphic g = gc.getGraphic(i);
+                    if (g instanceof MarkGraphic){
+                        f += " " + ((MarkGraphic)g).getViewBox().dependsOnFeature();
+                    } else if (g instanceof ExternalGraphic){
+                        f += " " + ((ExternalGraphic)g).getViewBox().dependsOnFeature();
+                    }
+                    // TODO add others !
+                }
+                f = f.trim();
+                if (!f.isEmpty()){
+                    String[] split = f.split(" ");
+                    return " ORDER BY " + split[0] + " DESC";
+                }else{
+                    return "";
+                }
+            }
+        }
+        return "";
+    }
 
 	/**
 	 * Return a Spatial data source, according to rule filter and specified extent

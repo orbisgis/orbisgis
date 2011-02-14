@@ -156,11 +156,16 @@ public final class ExternalGraphic extends Graphic {
         }
 
 
+        double px = 0;
+        double py = 0;
+
         // reserve the place for halo
         if (halo != null) {
 			double r = halo.getHaloRadius(sds, fid, mt);
             w += 2 * r;
             h += 2 * r;
+            px = r;
+            py = r;
         }
 
         Rectangle2D bounds = new Rectangle2D.Double(0.0, 0.0, w, h);
@@ -175,9 +180,12 @@ public final class ExternalGraphic extends Graphic {
 
         if (halo != null) {
             halo.draw(rg, sds, fid, atShp, mt);
+            // And add a translation to center image
+            at.concatenate(AffineTransform.getTranslateInstance(px, py));
         }
 
         // TODO how to set opacity ?
+
 
         // apply the AT and draw the ext graphic
         rg.drawRenderedImage(img, at);
@@ -223,21 +231,28 @@ public final class ExternalGraphic extends Graphic {
 
 
     @Override
-    public boolean dependsOnFeature() {
-        if (halo != null && this.getHalo().dependsOnFeature()){
-            return true;
+    public String dependsOnFeature() {
+
+        String h = "";
+        String o = "";
+        String t = "";
+        String v = "";
+
+
+        if (halo != null){
+            h = halo.dependsOnFeature();
         }
-        if (opacity != null && this.getOpacity().dependsOnFeature()){
-            return true;
+        if (opacity != null){
+            o = opacity.dependsOnFeature();
         }
-        if (transform != null && this.getTransform().dependsOnFeature()){
-            return true;
+        if (transform != null){
+            t = transform.dependsOnFeature();
         }
-        if (viewBox != null && this.getViewBox().dependsOnFeature()){
-            return true;
+        if (viewBox != null){
+            v = viewBox.dependsOnFeature();
         }
 
-        return false;
+        return (h + " " + o + " " + t + " " + v + " ").trim();
     }
 
     @Override

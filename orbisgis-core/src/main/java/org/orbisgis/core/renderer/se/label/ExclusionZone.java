@@ -64,5 +64,5 @@ public abstract class ExclusionZone implements SymbolizerNode, UomNode {
         parent = node;
     }
 
-	public abstract boolean dependsOnFeature();
+	public abstract String dependsOnFeature();
 }

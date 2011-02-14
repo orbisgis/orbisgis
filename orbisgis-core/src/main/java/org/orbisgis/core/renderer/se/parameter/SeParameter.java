@@ -17,12 +17,12 @@ import org.orbisgis.core.renderer.persistance.se.ParameterValueType;
 public interface SeParameter{
 
     /**
-     * return true if the parameter depends on a feature.
+     * return field names the parameter depends on.
      * Actually, it means that at least one child of this parameter access a feature attribute.
-     * When true, the expression should be computed for each features. When false, a cached value can be used
-     * @return
+     *
+     * @return field names the parameter depends on or null if parameter doesn't depends on the feature
      */
-    boolean dependsOnFeature();
+    String dependsOnFeature();
 
     ParameterValueType getJAXBParameterValueType();
    

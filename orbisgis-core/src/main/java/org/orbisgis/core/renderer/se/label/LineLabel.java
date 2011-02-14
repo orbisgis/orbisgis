@@ -101,7 +101,10 @@ public class LineLabel extends Label {
     }
 
 	@Override
-	public boolean dependsOnFeature() {
-		return label != null && label.dependsOnFeature();
+	public String dependsOnFeature() {
+        if (label != null){
+            return label.dependsOnFeature();
+        }
+        return "";
 	}
 }

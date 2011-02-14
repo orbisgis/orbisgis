@@ -152,10 +152,19 @@ public final class StrokeElement extends CompoundStrokeElement implements Stroke
 	}
 
 	@Override
-	public boolean dependsOnFeature() {
-		return (this.length != null && this.length.dependsOnFeature()) ||
-			   (this.preGap != null && this.preGap.dependsOnFeature()) ||
-			   (this.postGap != null && this.postGap.dependsOnFeature()) ||
-			   (this.stroke != null && this.stroke.dependsOnFeature());
+	public String dependsOnFeature() {
+
+        String result = "";
+
+        if (length != null)
+            result += " " + length.dependsOnFeature();
+        if (preGap != null)
+            result += " " + preGap.dependsOnFeature();
+        if (postGap != null)
+            result += " " + postGap.dependsOnFeature();
+        if (stroke != null)
+            result += " " + stroke.dependsOnFeature();
+
+        return result.trim();
 	}
 }

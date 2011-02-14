@@ -46,7 +46,6 @@ import java.io.IOException;
 import javax.xml.bind.JAXBElement;
 import org.gdms.data.SpatialDataSourceDecorator;
 import org.orbisgis.core.renderer.persistance.se.FillType;
-import org.gdms.data.feature.Feature;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.persistance.se.DensityFillType;
 import org.orbisgis.core.renderer.persistance.se.DotMapFillType;
@@ -109,7 +108,7 @@ public abstract class Fill implements SymbolizerNode {
     }
 
     
-    public abstract boolean dependsOnFeature();
+    public abstract String dependsOnFeature();
 
     /**
      *

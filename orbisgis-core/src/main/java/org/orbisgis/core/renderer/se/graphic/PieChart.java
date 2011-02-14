@@ -165,7 +165,7 @@ public final class PieChart extends Graphic implements StrokeNode {
     public void setHoleRadius(RealParameter holeRadius) {
         this.holeRadius = holeRadius;
 		if (holeRadius != null){
-			if (this.radius != null && !this.radius.dependsOnFeature()){
+			if (this.radius != null && this.radius.dependsOnFeature().isEmpty()){
 				try {
 					holeRadius.setContext(new RealParameterContext(0.0, radius.getValue(null, -1)));
 				} catch (ParameterException ex) {
@@ -395,8 +395,25 @@ public final class PieChart extends Graphic implements StrokeNode {
 
 
     @Override
-    public boolean dependsOnFeature() {
-        return true;
+    public String dependsOnFeature() {
+        String result = "";
+        if (radius != null){
+            result += " " + radius.dependsOnFeature();
+        }
+        if (holeRadius != null){
+            result += " " + holeRadius.dependsOnFeature();
+        }
+        if (stroke != null){
+            result += " " + stroke.dependsOnFeature();
+        }
+        if (this.transform != null){
+            result += " " + transform.dependsOnFeature();
+        }
+        for (Slice s : slices){
+            result += s.dependsOnFeature();
+        }
+
+        return result.trim();
     }
 
     @Override

@@ -37,17 +37,12 @@ public final class PenStroke extends Stroke implements FillNode {
     private Fill fill;
     //private RealParameter opacity;
     private RealParameter width;
-
     private LineJoin lineJoin;
     private LineCap lineCap;
-
-	private StringParameter dashArray;
+    private StringParameter dashArray;
     private RealParameter dashOffset;
 
-
-	//private BasicStroke bStroke;
-
-
+    //private BasicStroke bStroke;
     public enum LineCap {
 
         BUTT, ROUND, SQUARE;
@@ -76,28 +71,28 @@ public final class PenStroke extends Stroke implements FillNode {
 
         setUom(null);
 
-		setDashArray(null);
-		setDashOffset(null);
+        setDashArray(null);
+        setDashOffset(null);
 
-		setLineCap(LineCap.ROUND);
-		setLineJoin(LineJoin.BEVEL);
+        setLineCap(LineCap.ROUND);
+        setLineJoin(LineJoin.BEVEL);
 
         //updateBasicStroke();
     }
 
-	/**
-	 * @param t
-	 */
+    /**
+     * @param t
+     */
     public PenStroke(PenStrokeType t) throws InvalidStyle {
         this();
 
-        if (t.getFill() != null){
+        if (t.getFill() != null) {
             this.setFill(Fill.createFromJAXBElement(t.getFill()));
         }
 
         if (t.getDashArray() != null) {
-			this.setDashArray(SeParameterFactory.createStringParameter(t.getDashArray()));
-		}
+            this.setDashArray(SeParameterFactory.createStringParameter(t.getDashArray()));
+        }
 
         if (t.getDashOffset() != null) {
             this.setDashOffset(SeParameterFactory.createRealParameter(t.getDashOffset()));
@@ -108,33 +103,32 @@ public final class PenStroke extends Stroke implements FillNode {
         }
 
         if (t.getLineCap() != null) {
-			try {
-				StringParameter lCap = SeParameterFactory.createStringParameter(t.getLineCap());
-				this.setLineCap(LineCap.valueOf(lCap.getValue(null, -1).toUpperCase()));
-			} catch (Exception ex) {
-				Logger.getLogger(PenStroke.class.getName()).log(Level.SEVERE, "Could not convert line cap", ex);
-			}
+            try {
+                StringParameter lCap = SeParameterFactory.createStringParameter(t.getLineCap());
+                this.setLineCap(LineCap.valueOf(lCap.getValue(null, -1).toUpperCase()));
+            } catch (Exception ex) {
+                Logger.getLogger(PenStroke.class.getName()).log(Level.SEVERE, "Could not convert line cap", ex);
+            }
         }
 
         if (t.getLineJoin() != null) {
-			try {
-				StringParameter lJoin = SeParameterFactory.createStringParameter(t.getLineJoin());
-				this.setLineJoin(LineJoin.valueOf(lJoin.getValue(null, -1).toUpperCase()));
-			} catch (Exception ex) {
-				Logger.getLogger(PenStroke.class.getName()).log(Level.SEVERE, "Could not convert line join", ex);
-			}
+            try {
+                StringParameter lJoin = SeParameterFactory.createStringParameter(t.getLineJoin());
+                this.setLineJoin(LineJoin.valueOf(lJoin.getValue(null, -1).toUpperCase()));
+            } catch (Exception ex) {
+                Logger.getLogger(PenStroke.class.getName()).log(Level.SEVERE, "Could not convert line join", ex);
+            }
         }
 
         /*if (t.getOpacity() != null) {
-            this.setOpacity(SeParameterFactory.createRealParameter(t.getOpacity()));
+        this.setOpacity(SeParameterFactory.createRealParameter(t.getOpacity()));
         }*/
 
         if (t.getUnitOfMeasure() != null) {
             this.setUom(Uom.fromOgcURN(t.getUnitOfMeasure()));
+        } else {
+            this.uom = null;
         }
-		else{
-			this.uom = null;
-		}
 
         //this.updateBasicStroke();
     }
@@ -143,12 +137,27 @@ public final class PenStroke extends Stroke implements FillNode {
         this(s.getValue());
     }
 
-
     @Override
-    public boolean dependsOnFeature() {
-        return (fill != null && fill.dependsOnFeature() || this.dashOffset != null && dashOffset.dependsOnFeature())
-                //|| (this.opacity != null && opacity.dependsOnFeature())
-                || (this.width != null && width.dependsOnFeature());
+    public String dependsOnFeature() {
+        String f = "";
+        String dOffset = "";
+        String dArray = "";
+        String w = "";
+
+        if (fill != null) {
+            f = fill.dependsOnFeature();
+        }
+        if (dashOffset != null) {
+            dOffset = dashOffset.dependsOnFeature();
+        }
+        if (dashArray != null) {
+            dArray = dashArray.dependsOnFeature();
+        }
+        if (width != null){
+            w = width.dependsOnFeature();
+        }
+
+        return (f + " " + w + " " + dOffset + " " + dArray).trim();
     }
 
     @Override
@@ -158,7 +167,7 @@ public final class PenStroke extends Stroke implements FillNode {
 
     @Override
     public void setFill(Fill fill) {
-        if (fill != null){
+        if (fill != null) {
             fill.setParent(this);
         }
         this.fill = fill;
@@ -183,24 +192,23 @@ public final class PenStroke extends Stroke implements FillNode {
     }
 
     /*public void setOpacity(RealParameter opacity) {
-        this.opacity = opacity;
+    this.opacity = opacity;
 
-		if (opacity != null) {
-			this.opacity.setContext(RealParameterContext.percentageContext);
-		}
-        //updateBasicStroke();
+    if (opacity != null) {
+    this.opacity.setContext(RealParameterContext.percentageContext);
+    }
+    //updateBasicStroke();
     }
 
     public RealParameter getOpacity() {
-        return this.opacity;
+    return this.opacity;
     }*/
-
     public void setWidth(RealParameter width) {
         this.width = width;
 
-		if (width != null){
-			width.setContext(RealParameterContext.nonNegativeContext);
-		}
+        if (width != null) {
+            width.setContext(RealParameterContext.nonNegativeContext);
+        }
         //updateBasicStroke();
     }
 
@@ -214,40 +222,39 @@ public final class PenStroke extends Stroke implements FillNode {
 
     public void setDashOffset(RealParameter dashOffset) {
         this.dashOffset = dashOffset;
-		if (dashOffset != null){
-			dashOffset.setContext(RealParameterContext.realContext);
-		}
+        if (dashOffset != null) {
+            dashOffset.setContext(RealParameterContext.realContext);
+        }
         //updateBasicStroke();
     }
 
-	public StringParameter getDashArray() {
-		return dashArray;
-	}
+    public StringParameter getDashArray() {
+        return dashArray;
+    }
 
-	public void setDashArray(StringParameter dashArray) {
-		this.dashArray = dashArray;
-	}
+    public void setDashArray(StringParameter dashArray) {
+        this.dashArray = dashArray;
+    }
 
-	/*
+    /*
     private void updateBasicStroke() {
-        try {
-            bStroke = createBasicStroke(null, null);
-        } catch (Exception e) {
-			// thrown if the stroke depends on the feature
-            this.bStroke = null;
-        }
+    try {
+    bStroke = createBasicStroke(null, null);
+    } catch (Exception e) {
+    // thrown if the stroke depends on the feature
+    this.bStroke = null;
+    }
     }*/
-
     private BasicStroke createBasicStroke(SpatialDataSourceDecorator sds, long fid, MapTransform mt, Double v100p) throws ParameterException {
 
 
-		Double scale = null;
-		Double dpi = null;
+        Double scale = null;
+        Double dpi = null;
 
-		if (mt != null){
-			scale = mt.getScaleDenominator();
-			dpi = mt.getDpi();
-		}
+        if (mt != null) {
+            scale = mt.getScaleDenominator();
+            dpi = mt.getDpi();
+        }
 
         int cap;
         if (this.lineCap == null) {
@@ -293,38 +300,36 @@ public final class PenStroke extends Stroke implements FillNode {
         }
 
 
-		if (this.dashArray != null && ! this.dashArray.getValue(sds, fid).isEmpty()){
+        if (this.dashArray != null && !this.dashArray.getValue(sds, fid).isEmpty()) {
 
-			float dashO = 0.0f;
-			float[] dashA;
+            float dashO = 0.0f;
+            float[] dashA;
 
-			String sDash = this.dashArray.getValue(sds, fid);
-			String[] splitedDash = sDash.split(" ");
+            String sDash = this.dashArray.getValue(sds, fid);
+            String[] splitedDash = sDash.split(" ");
 
-			dashA = new float[splitedDash.length];
-			for (int i = 0;i<splitedDash.length;i++){
-            	dashA[i] = (float) Uom.toPixel(Double.parseDouble(splitedDash[i]), getUom(), mt.getDpi(), mt.getScaleDenominator(), v100p);
-			}
+            dashA = new float[splitedDash.length];
+            for (int i = 0; i < splitedDash.length; i++) {
+                dashA[i] = (float) Uom.toPixel(Double.parseDouble(splitedDash[i]), getUom(), mt.getDpi(), mt.getScaleDenominator(), v100p);
+            }
 
-			if (this.dashOffset != null){
-            	dashO = (float) Uom.toPixel(this.dashOffset.getValue(sds, fid), getUom(), mt.getDpi(), mt.getScaleDenominator(), v100p);
-			}
-        	return new BasicStroke((float) w, cap, join, 10.0f, dashA, dashO);
-		}
-		else{
-			return new BasicStroke((float) w, cap, join);
-		}
+            if (this.dashOffset != null) {
+                dashO = (float) Uom.toPixel(this.dashOffset.getValue(sds, fid), getUom(), mt.getDpi(), mt.getScaleDenominator(), v100p);
+            }
+            return new BasicStroke((float) w, cap, join, 10.0f, dashA, dashO);
+        } else {
+            return new BasicStroke((float) w, cap, join);
+        }
     }
 
     public BasicStroke getBasicStroke(SpatialDataSourceDecorator sds, long fid, MapTransform mt, Double v100p) throws ParameterException {
         //if (bStroke != null) {
         //    return bStroke;
         //} else {
-    		return this.createBasicStroke(sds, fid, mt, v100p);
+        return this.createBasicStroke(sds, fid, mt, v100p);
         //}
 
     }
-
 
     /**
      * Draw a pen stroke
@@ -381,13 +386,13 @@ public final class PenStroke extends Stroke implements FillNode {
 
         this.setJAXBProperties(s);
 
-        if (this.fill != null){
+        if (this.fill != null) {
             s.setFill(fill.getJAXBElement());
         }
 
         if (this.dashArray != null) {
             //s.setDashArray(null);
-			s.setDashArray(dashArray.getJAXBParameterValueType());
+            s.setDashArray(dashArray.getJAXBParameterValueType());
         }
 
         if (this.dashOffset != null) {
@@ -403,7 +408,7 @@ public final class PenStroke extends Stroke implements FillNode {
         }
 
         /*if (this.opacity != null) {
-			s.setOpacity(this.opacity.getJAXBParameterValueType());
+        s.setOpacity(this.opacity.getJAXBParameterValueType());
         }*/
 
         if (this.width != null) {
@@ -412,5 +417,4 @@ public final class PenStroke extends Stroke implements FillNode {
 
         return s;
     }
-
 }

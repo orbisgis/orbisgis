@@ -7,7 +7,6 @@ package org.orbisgis.core.renderer.se.transform;
 import java.awt.geom.AffineTransform;
 import javax.xml.bind.JAXBElement;
 import org.gdms.data.SpatialDataSourceDecorator;
-import org.gdms.data.feature.Feature;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.persistance.se.ObjectFactory;
 import org.orbisgis.core.renderer.persistance.se.ScaleType;
@@ -77,8 +76,8 @@ public final class Scale implements Transformation {
 
     
     @Override
-    public boolean dependsOnFeature(){
-        return (this.x != null && x.dependsOnFeature()) || (this.y != null && y.dependsOnFeature());
+    public String dependsOnFeature(){
+        return (x.dependsOnFeature() + " " + y.dependsOnFeature()).trim();
     }
 
     @Override

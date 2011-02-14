@@ -74,7 +74,7 @@ public final class RealUnaryOperator implements RealParameter {
     }
 
     @Override
-    public boolean dependsOnFeature() {
+    public String dependsOnFeature() {
         return v.dependsOnFeature();
     }
 

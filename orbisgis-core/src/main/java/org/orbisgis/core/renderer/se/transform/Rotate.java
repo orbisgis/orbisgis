@@ -7,7 +7,6 @@ package org.orbisgis.core.renderer.se.transform;
 import java.awt.geom.AffineTransform;
 import javax.xml.bind.JAXBElement;
 import org.gdms.data.SpatialDataSourceDecorator;
-import org.gdms.data.feature.Feature;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.persistance.se.ObjectFactory;
 import org.orbisgis.core.renderer.persistance.se.RotateType;
@@ -93,17 +92,8 @@ public final class Rotate implements Transformation {
     }
 
     @Override
-    public boolean dependsOnFeature() {
-        if (this.x != null && x.dependsOnFeature()) {
-            return true;
-        }
-        if (this.y != null && y.dependsOnFeature()) {
-            return true;
-        }
-        if (this.rotation != null && rotation.dependsOnFeature()) {
-            return true;
-        }
-        return false;
+    public String dependsOnFeature() {
+        return (x.dependsOnFeature() + " " + y.dependsOnFeature() + " " + rotation + " ").trim();
     }
 
     @Override

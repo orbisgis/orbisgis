@@ -83,11 +83,6 @@ public class ColorLiteral extends Literal implements ColorParameter{
     }
 
     @Override
-    public boolean dependsOnFeature(){
-        return false;
-    }
-
-    @Override
     public Color getColor(SpatialDataSourceDecorator sds, long fid){
         return color;
     }

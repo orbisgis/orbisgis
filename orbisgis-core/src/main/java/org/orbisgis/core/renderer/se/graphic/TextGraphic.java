@@ -105,8 +105,8 @@ public class TextGraphic extends Graphic {
 
 
     @Override
-    public boolean dependsOnFeature() {
-        return true;
+    public String dependsOnFeature() {
+        return styledLabel.dependsOnFeature();
     }
 
     @Override

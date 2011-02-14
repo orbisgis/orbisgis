@@ -332,11 +332,20 @@ public final class StyledLabel implements SymbolizerNode, FillNode, StrokeNode {
         return l;
     }
 
-    public boolean dependsOnFeature() {
-        return (labelText != null && labelText.dependsOnFeature())
-                || (fontFamily != null && fontFamily.dependsOnFeature())
-                || (fontWeight != null && fontWeight.dependsOnFeature())
-                || (fontStyle != null && fontStyle.dependsOnFeature())
-                || (fontSize != null && fontSize.dependsOnFeature());
+    public String dependsOnFeature() {
+
+        String result = "";
+        if (labelText != null)
+            result += " " + labelText.dependsOnFeature();
+        if (fontFamily != null)
+            result += " " + fontFamily.dependsOnFeature();
+        if (fontWeight != null)
+            result += " " + fontWeight.dependsOnFeature();
+        if (fontStyle != null)
+            result += " " + fontStyle.dependsOnFeature();
+        if (fontSize != null)
+            result += " " + fontSize.dependsOnFeature();
+
+        return result.trim();
     }
 }

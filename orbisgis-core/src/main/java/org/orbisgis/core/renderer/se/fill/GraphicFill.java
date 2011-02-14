@@ -60,7 +60,6 @@ import org.orbisgis.core.renderer.persistance.se.GraphicFillType;
 import org.orbisgis.core.renderer.persistance.se.ObjectFactory;
 import org.orbisgis.core.renderer.persistance.se.TileGapType;
 
-import org.gdms.data.feature.Feature;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.UomNode;
@@ -224,15 +223,23 @@ public final class GraphicFill extends Fill implements UomNode {
 
 
     @Override
-    public boolean dependsOnFeature() {
-        if (gapX != null && this.gapX.dependsOnFeature())
-            return true;
-        if (gapY != null && this.gapY.dependsOnFeature())
-            return true;
-        if (graphic != null && this.graphic.dependsOnFeature())
-            return true;
+    public String dependsOnFeature() {
 
-        return false;
+        String gx = "";
+        String gy = "";
+        String g = "";
+
+        if (gapX != null){
+            gx = gapX.dependsOnFeature();
+        }
+        if (gapY != null){
+            gy = gapY.dependsOnFeature();
+        }
+        if (graphic != null){
+            g = graphic.dependsOnFeature();
+        }
+
+        return (gx + " " + gy + " " + g).trim();
     }
 
     @Override

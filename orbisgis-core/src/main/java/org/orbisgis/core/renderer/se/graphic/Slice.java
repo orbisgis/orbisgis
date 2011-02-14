@@ -84,6 +84,21 @@ public class Slice implements SymbolizerNode, FillNode {
 
         return s;
     }
+
+    public String dependsOnFeature() {
+        String result = "";
+        if (fill != null){
+            result += " " + fill.dependsOnFeature();
+        }
+        if (value != null){
+            result += " " + value.dependsOnFeature();
+        }
+        if (gap != null)
+            result += " " + gap.dependsOnFeature();
+
+        return result.trim();
+    }
+
     private String name;
     private RealParameter value;
     private Fill fill;

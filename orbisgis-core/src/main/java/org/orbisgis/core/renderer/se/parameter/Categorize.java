@@ -93,19 +93,23 @@ public abstract class Categorize<ToType extends SeParameter, FallbackType extend
 	}
 
 	@Override
-	public final boolean dependsOnFeature() {
-		if (this.getLookupValue().dependsOnFeature()) {
-			return true;
+	public final String dependsOnFeature() {
+        String result = "";
+
+        String lookup = this.getLookupValue().dependsOnFeature();
+        if (lookup != null && !lookup.isEmpty()){
+			result = lookup;
 		}
 
 		int i;
 		for (i = 0; i < this.getNumClasses(); i++) {
-			if (this.getClassValue(i).dependsOnFeature()) {
-				return true;
+            String r = this.getClassValue(i).dependsOnFeature();
+            if (r != null && !r.isEmpty()){
+                result += r;
 			}
 		}
 
-		return false;
+		return result;
 	}
 
 	public void setFallbackValue(FallbackType fallbackValue) {

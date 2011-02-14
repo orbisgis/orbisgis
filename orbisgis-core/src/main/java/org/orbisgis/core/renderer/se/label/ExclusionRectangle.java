@@ -82,8 +82,15 @@ public final class ExclusionRectangle extends ExclusionZone {
     }
 
 	@Override
-	public boolean dependsOnFeature() {
-		return (x != null && x.dependsOnFeature()) || (y != null && y.dependsOnFeature());
+	public String dependsOnFeature() {
+        String result = "";
+
+        if (x != null)
+            result = x.dependsOnFeature();
+        if (y != null)
+            result += " " + y.dependsOnFeature();
+
+        return result.trim();
 	}
 
 }

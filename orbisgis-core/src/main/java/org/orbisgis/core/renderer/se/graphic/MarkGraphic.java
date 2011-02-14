@@ -396,30 +396,38 @@ public final class MarkGraphic extends Graphic implements FillNode, StrokeNode, 
     }
 
     @Override
-    public boolean dependsOnFeature() {
-        if (viewBox != null && viewBox.dependsOnFeature()) {
-            return true;
+    public String dependsOnFeature() {
+
+        String v = "";
+        String pO = "";
+        String h = "";
+        String f = "";
+        String s = "";
+        String t = "";
+        String mI = "";
+
+        if (viewBox != null){
+            v = viewBox.dependsOnFeature();
         }
-        if (pOffset != null && pOffset.dependsOnFeature()) {
-            return true;
+        if (pOffset != null){
+            pO = pOffset.dependsOnFeature();
         }
-        if (halo != null && halo.dependsOnFeature()) {
-            return true;
+        if (halo != null){
+            h = halo.dependsOnFeature();
         }
-        if (fill != null && fill.dependsOnFeature()) {
-            return true;
+        if (fill != null){
+            f = fill.dependsOnFeature();
         }
-        if (stroke != null && stroke.dependsOnFeature()) {
-            return true;
+        if (stroke != null){
+            s = stroke.dependsOnFeature();
         }
-        if (transform != null && this.getTransform().dependsOnFeature()) {
-            return true;
+        if (transform != null){
+            t = transform.dependsOnFeature();
+        }
+        if (markIndex != null){
+            mI = markIndex.dependsOnFeature();
         }
 
-        if (markIndex != null && markIndex.dependsOnFeature()) {
-            return true;
-        }
-
-        return false;
+        return (v + " " + pO + " " + h + " " + f + " " + s + " " + t + " " + mI).trim();
     }
 }

@@ -7,7 +7,6 @@ import javax.media.jai.RenderableGraphics;
 import javax.xml.bind.JAXBElement;
 import org.gdms.data.SpatialDataSourceDecorator;
 import org.orbisgis.core.renderer.persistance.se.GraphicType;
-import org.gdms.data.feature.Feature;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.persistance.se.AxisChartType;
 import org.orbisgis.core.renderer.persistance.se.ExternalGraphicType;
@@ -148,7 +147,7 @@ public abstract class Graphic implements SymbolizerNode, UomNode {
         return rg;
     }
 
-    public abstract boolean dependsOnFeature();
+    public abstract String dependsOnFeature();
 
     public abstract JAXBElement<? extends GraphicType> getJAXBElement();
 

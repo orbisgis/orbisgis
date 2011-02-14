@@ -60,7 +60,9 @@ public final class ExclusionRadius extends ExclusionZone {
     }
 
 	@Override
-	public boolean dependsOnFeature() {
-		return radius != null && radius.dependsOnFeature();
+	public String dependsOnFeature() {
+        if (radius != null)
+            return radius.dependsOnFeature();
+        return "";
 	}
 }

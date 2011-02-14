@@ -41,7 +41,6 @@ package org.orbisgis.core.renderer.se.parameter.real;
 
 import javax.xml.bind.JAXBElement;
 import org.gdms.data.SpatialDataSourceDecorator;
-import org.gdms.data.feature.Feature;
 import org.orbisgis.core.renderer.persistance.ogc.LiteralType;
 import org.orbisgis.core.renderer.se.parameter.Literal;
 
@@ -79,11 +78,6 @@ public class RealLiteral extends Literal implements RealParameter {
 	public void setValue(double value) {
 		v = value;
 		checkContext();
-	}
-
-	@Override
-	public boolean dependsOnFeature() {
-		return false;
 	}
 
 	@Override

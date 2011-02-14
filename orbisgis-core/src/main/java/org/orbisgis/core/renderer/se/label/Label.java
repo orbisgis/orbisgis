@@ -11,7 +11,6 @@ import javax.xml.bind.JAXBElement;
 import org.gdms.data.SpatialDataSourceDecorator;
 import org.orbisgis.core.renderer.persistance.se.LabelType;
 
-import org.gdms.data.feature.Feature;
 import org.orbisgis.core.map.MapTransform;
 
 import org.orbisgis.core.renderer.persistance.se.LineLabelType;
@@ -133,5 +132,5 @@ public abstract class Label implements SymbolizerNode, UomNode{
 
     public abstract JAXBElement<? extends LabelType> getJAXBElement();
 
-    public abstract boolean dependsOnFeature();
+    public abstract String dependsOnFeature();
 }

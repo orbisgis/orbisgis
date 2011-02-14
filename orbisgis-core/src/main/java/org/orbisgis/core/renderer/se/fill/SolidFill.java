@@ -173,14 +173,17 @@ public final class SolidFill extends Fill {
 	}
 
 	@Override
-	public boolean dependsOnFeature() {
-		if (color != null && this.color.dependsOnFeature()) {
-			return true;
+	public String dependsOnFeature() {
+        String c = "";
+		if (color != null) {
+            c = color.dependsOnFeature();
 		}
-		if (opacity != null && this.opacity.dependsOnFeature()) {
-			return true;
+
+        String o = "";
+		if (opacity != null) {
+            o = opacity.dependsOnFeature();
 		}
-		return false;
+		return (c + " " + o).trim();
 	}
 
 	@Override

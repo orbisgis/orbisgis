@@ -2,7 +2,6 @@ package org.orbisgis.core.renderer.se.parameter.string;
 
 import javax.xml.bind.JAXBElement;
 import org.gdms.data.SpatialDataSourceDecorator;
-import org.gdms.data.feature.Feature;
 import org.orbisgis.core.renderer.persistance.ogc.LiteralType;
 import org.orbisgis.core.renderer.se.parameter.Literal;
 
@@ -29,11 +28,6 @@ public class StringLiteral extends Literal implements StringParameter{
 
     public void setValue(String value){
         v = value;
-    }
-
-    @Override
-    public boolean dependsOnFeature(){
-        return false;
     }
 
     @Override

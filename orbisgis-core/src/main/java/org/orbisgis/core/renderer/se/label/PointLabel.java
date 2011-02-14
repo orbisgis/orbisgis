@@ -13,7 +13,6 @@ import javax.media.jai.RenderableGraphics;
 import javax.xml.bind.JAXBElement;
 import org.gdms.data.SpatialDataSourceDecorator;
 
-import org.gdms.data.feature.Feature;
 import org.orbisgis.core.map.MapTransform;
 
 import org.orbisgis.core.renderer.persistance.se.ObjectFactory;
@@ -151,9 +150,16 @@ public final class PointLabel extends Label {
     }
 
 	@Override
-	public boolean dependsOnFeature() {
-		return ((label != null && label.dependsOnFeature())
-			|| (exclusionZone != null && exclusionZone.dependsOnFeature())
-			|| (rotation != null && rotation.dependsOnFeature()));
+	public String dependsOnFeature() {
+
+        String result = "";
+        if (label != null)
+            result = label.dependsOnFeature();
+        if (exclusionZone != null)
+            result += " " + exclusionZone.dependsOnFeature();
+        if (rotation != null)
+            result += " " + rotation.dependsOnFeature();
+
+        return result.trim();
 	}
 }

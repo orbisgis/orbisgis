@@ -9,7 +9,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import org.gdms.data.SpatialDataSourceDecorator;
-import org.gdms.data.feature.Feature;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.persistance.se.MatrixType;
 import org.orbisgis.core.renderer.persistance.se.RotateType;
@@ -147,13 +146,13 @@ public class Transform implements SymbolizerNode, UomNode {
 
         return t;
     }
-    public boolean dependsOnFeature() {
+
+    public String dependsOnFeature() {
+        String result = "";
         for (Transformation t : this.transformations){
-            if (t.dependsOnFeature()){
-                return true;
-            }
+            result += t.dependsOnFeature();
         }
-        return false;
+        return result.trim();
     }
 
     @Override

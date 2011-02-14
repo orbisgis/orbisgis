@@ -87,7 +87,7 @@ public enum WellKnownName implements MarkGraphicSource {
     public Shape getShape(ViewBox viewBox, SpatialDataSourceDecorator sds, 
             long fid, Double scale, Double dpi, RealParameter markIndex,
             String mimeType) throws ParameterException {
-        if (sds == null && viewBox != null && viewBox.dependsOnFeature()){
+        if (sds == null && viewBox != null && !viewBox.dependsOnFeature().isEmpty()){
             return null;
         }
 

@@ -46,7 +46,7 @@ import java.awt.Shape;
 import java.io.IOException;
 import javax.xml.bind.JAXBElement;
 import org.gdms.data.SpatialDataSourceDecorator;
-import org.gdms.data.feature.Feature;
+
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.persistance.se.DotMapFillType;
 
@@ -120,17 +120,22 @@ public final class DotMapFill extends Fill implements GraphicNode {
 	}
 
 	@Override
-	public boolean dependsOnFeature() {
-		if (mark != null && this.mark.dependsOnFeature()) {
-			return true;
+	public String dependsOnFeature() {
+        String m = "";
+        String q = "";
+        String t = "";
+
+		if (mark != null){
+            m = mark.dependsOnFeature();
 		}
-		if (this.quantityPerMark != null && quantityPerMark.dependsOnFeature()) {
-			return true;
+		if (this.quantityPerMark != null){
+            q = quantityPerMark.dependsOnFeature();
 		}
-		if (this.totalQuantity != null && totalQuantity.dependsOnFeature()) {
-			return true;
+		if (this.totalQuantity != null) {
+            t = totalQuantity.dependsOnFeature();
 		}
-		return false;
+
+        return (m + " " + q + " " + t).trim();
 	}
 
 	@Override

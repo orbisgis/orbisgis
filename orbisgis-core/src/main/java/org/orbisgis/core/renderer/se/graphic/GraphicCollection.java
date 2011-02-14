@@ -5,7 +5,6 @@ import java.awt.geom.Rectangle2D;
 import java.awt.image.RenderedImage;
 
 import java.io.IOException;
-import java.security.Provider.Service;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -167,7 +166,7 @@ public final class GraphicCollection implements SymbolizerNode {
          * support gm ant gft units)
          */
         if (!selected
-                && !this.dependsOnFeature()
+                && this.dependsOnFeature().isEmpty()
                 && this.graphicCache != null
                 && mt.getScaleDenominator() == this.scaleCache) {
             return graphicCache;
@@ -224,7 +223,7 @@ public final class GraphicCollection implements SymbolizerNode {
                 rg.drawRenderedImage(g.createRendering(mt.getCurrentRenderContext()), new AffineTransform());
             }
 
-            if (!selected && !this.dependsOnFeature()) {
+            if (!selected && this.dependsOnFeature().isEmpty()) {
                 scaleCache = mt.getScaleDenominator();
                 graphicCache = rg;
             }
@@ -234,13 +233,12 @@ public final class GraphicCollection implements SymbolizerNode {
         }
     }
 
-    public final boolean dependsOnFeature() {
+    public final String dependsOnFeature() {
+        String result = "";
         for (Graphic g : this.graphics) {
-            if (g.dependsOnFeature()) {
-                return true;
-            }
+            result += " " + g.dependsOnFeature();
         }
-        return false;
+        return result.trim();
     }
 
     public double getMaxWidth(SpatialDataSourceDecorator sds, long fid, MapTransform mt) throws ParameterException, IOException {
@@ -291,7 +289,7 @@ public final class GraphicCollection implements SymbolizerNode {
          * Only cache if the graphic doesn't depends on features attribute
          * and only if it's not a selected highlighted graphic
          */
-        if (!selected && !this.dependsOnFeature()) {
+        if (!selected && this.dependsOnFeature().isEmpty()) {
             this.imageCache = rImage;
         }
 

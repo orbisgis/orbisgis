@@ -216,8 +216,8 @@ public final class AxisChart extends Graphic {
 
 
     @Override
-    public boolean dependsOnFeature() {
-        return true;
+    public String dependsOnFeature() {
+        return "";
     }
 
 

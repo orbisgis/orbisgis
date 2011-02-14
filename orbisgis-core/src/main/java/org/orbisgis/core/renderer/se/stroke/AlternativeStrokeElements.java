@@ -72,12 +72,11 @@ public class AlternativeStrokeElements extends CompoundStrokeElement {
 	}
 
 	@Override
-	public boolean dependsOnFeature() {
+	public String dependsOnFeature() {
+        String result = " ";
 		for (StrokeElement elem : elements) {
-			if (elem.dependsOnFeature()) {
-				return true;
-			}
+            result += elem.dependsOnFeature();
 		}
-		return false;
+		return result.trim();
 	}
 }

@@ -3,7 +3,6 @@ package org.orbisgis.core.renderer.se.parameter;
 import java.util.ArrayList;
 import javax.xml.bind.JAXBElement;
 import org.gdms.data.SpatialDataSourceDecorator;
-import org.gdms.data.feature.Feature;
 import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
 import org.orbisgis.core.renderer.persistance.ogc.ExpressionType;
@@ -59,8 +58,8 @@ public abstract class PropertyName implements SeParameter {
 	}
 
 	@Override
-	public boolean dependsOnFeature() {
-		return true;
+	public String dependsOnFeature() {
+		return getColumnName();
 	}
 
 	public final void setColumnName(String fieldName) {

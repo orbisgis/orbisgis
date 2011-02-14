@@ -3,7 +3,6 @@ package org.orbisgis.core.renderer.se.parameter.real;
 import java.util.List;
 import javax.xml.bind.JAXBElement;
 import org.gdms.data.SpatialDataSourceDecorator;
-import org.gdms.data.feature.Feature;
 import org.orbisgis.core.renderer.persistance.ogc.BinaryOperatorType;
 import org.orbisgis.core.renderer.persistance.ogc.ExpressionType;
 import org.orbisgis.core.renderer.persistance.se.ParameterValueType;
@@ -90,8 +89,8 @@ public final class RealBinaryOperator implements RealParameter {
 	}
 
 	@Override
-	public boolean dependsOnFeature() {
-		return (l.dependsOnFeature()) || (r.dependsOnFeature());
+	public String dependsOnFeature() {
+        return (l.dependsOnFeature() + " " + r.dependsOnFeature()).trim();
 	}
 
 	/**

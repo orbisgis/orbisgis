@@ -7,7 +7,6 @@ package org.orbisgis.core.renderer.se.transform;
 import java.awt.geom.AffineTransform;
 import javax.xml.bind.JAXBElement;
 import org.gdms.data.SpatialDataSourceDecorator;
-import org.gdms.data.feature.Feature;
 import org.orbisgis.core.map.MapTransform;
 
 import org.orbisgis.core.renderer.persistance.se.MatrixType;
@@ -177,13 +176,13 @@ public final class Matrix implements Transformation {
     }
 
     @Override
-    public boolean dependsOnFeature(){
-        return (a.dependsOnFeature()
-                || b.dependsOnFeature()
-                || c.dependsOnFeature()
-                || d.dependsOnFeature()
-                ||e.dependsOnFeature()
-                ||f.dependsOnFeature());
+    public String dependsOnFeature(){
+        return (a.dependsOnFeature() + " "
+                + b.dependsOnFeature() + " "
+                + c.dependsOnFeature() + " "
+                + d.dependsOnFeature() + " "
+                + e.dependsOnFeature() + " "
+                + f.dependsOnFeature()).trim();
     }
 
     @Override
@@ -213,22 +212,29 @@ public final class Matrix implements Transformation {
      * @throws ParameterException when somethung wen wrong...
      */
     public void simplify() throws ParameterException {
-        if (!a.dependsOnFeature()) {
+        String sa = a.dependsOnFeature();
+        String sb = b.dependsOnFeature();
+        String sc = c.dependsOnFeature();
+        String sd = d.dependsOnFeature();
+        String se = e.dependsOnFeature();
+        String sf = f.dependsOnFeature();
+
+        if (sa != null && !sa.isEmpty()){
             setA(new RealLiteral(a.getValue(null, -1)));
         }
-        if (!b.dependsOnFeature()) {
+        if (sb != null && !sb.isEmpty()){
             setB(new RealLiteral(b.getValue(null, -1)));
         }
-        if (!c.dependsOnFeature()) {
+        if (sc != null && !sc.isEmpty()){
             setC(new RealLiteral(c.getValue(null, -1)));
         }
-        if (!d.dependsOnFeature()) {
+        if (sd != null && !sd.isEmpty()){
             setD(new RealLiteral(d.getValue(null, -1)));
         }
-        if (!e.dependsOnFeature()) {
+        if (se != null && !se.isEmpty()){
             setE(new RealLiteral(e.getValue(null, -1)));
         }
-        if (!f.dependsOnFeature()) {
+        if (sf != null && !sf.isEmpty()){
             setF(new RealLiteral(f.getValue(null, -1)));
         }
     }

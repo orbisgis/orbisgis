@@ -137,8 +137,16 @@ final class StrokeAnnotationGraphic implements SymbolizerNode {
 		return sagt;
 	}
 
-	boolean dependsOnFeature() {
-		return (this.graphic != null && this.graphic.dependsOnFeature()) ||
-			   (this.relativePosition != null && this.relativePosition.dependsOnFeature());
+	String dependsOnFeature() {
+        String result = "";
+
+        if (graphic != null){
+            result += " " + graphic.dependsOnFeature();
+        }
+        if (relativePosition != null){
+            result += " " + relativePosition.dependsOnFeature();
+        }
+
+        return result.trim();
 	}
 }

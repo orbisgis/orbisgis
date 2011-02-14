@@ -65,11 +65,28 @@ public class HatchedFill extends Fill {
     private Stroke stroke;
 
     @Override
-    public boolean dependsOnFeature() {
-        return (angle != null && angle.dependsOnFeature())
-                || (offset != null && offset.dependsOnFeature())
-                || (distance != null && distance.dependsOnFeature())
-                || (stroke != null && stroke.dependsOnFeature());
+    public String dependsOnFeature() {
+
+        String a = "";
+        String d = "";
+        String s = "";
+        String o = "";
+
+        if (angle != null) {
+            a = angle.dependsOnFeature();
+        }
+        if (distance != null) {
+            d = distance.dependsOnFeature();
+        }
+        if (offset != null) {
+            o = offset.dependsOnFeature();
+        }
+        if (stroke != null) {
+            s = stroke.dependsOnFeature();
+        }
+
+        return (a + " " + d + " " + o + " " + s).trim();
+
     }
 
     @Override
@@ -79,21 +96,21 @@ public class HatchedFill extends Fill {
 
     @Override
     public Paint getPaint(long fid, SpatialDataSourceDecorator sds, boolean selected, MapTransform mt) throws ParameterException {
-    
+
         Paint painter = null;
 
         double theta = -45.0;
 
-        if (this.angle != null){
+        if (this.angle != null) {
             theta = angle.getValue(sds, fid);
         }
 
         // convert to rad
-        theta *= Math.PI/180.0;
+        theta *= Math.PI / 180.0;
 
         double pDist = 10;
 
-        if (distance != null){
+        if (distance != null) {
             pDist = distance.getValue(sds, fid);
         }
 
@@ -105,31 +122,28 @@ public class HatchedFill extends Fill {
             minL = pDist;
         }
 
-        if (minL < pDist){
+        if (minL < pDist) {
             minL = pDist;
         }
 
         double cosTheta = Math.cos(theta);
         double sinTheta = Math.sin(theta);
 
-        if (Math.abs(sinTheta) < 0.0001){
+        if (Math.abs(sinTheta) < 0.0001) {
             // == vertical
-
-        }
-        else if(Math.abs(sinTheta) < 0.0001) {
+        } else if (Math.abs(sinTheta) < 0.0001) {
             // == horizontal
-
-        } else{
+        } else {
             // == oblique
-            double dy = sinTheta*minL;
-            double dist = dy*cosTheta;
+            double dy = sinTheta * minL;
+            double dist = dy * cosTheta;
 
             int ratio = (int) Math.ceil(dist / pDist);
 
-            double finalDist = ratio*dist;
+            double finalDist = ratio * dist;
 
-            double dx = finalDist/sinTheta;
-            dy = Math.tan(theta)*dx;
+            double dx = finalDist / sinTheta;
+            dy = Math.tan(theta) * dx;
         }
 
         return painter;

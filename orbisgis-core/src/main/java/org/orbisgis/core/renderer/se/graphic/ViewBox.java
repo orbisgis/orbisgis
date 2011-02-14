@@ -114,8 +114,18 @@ public final class ViewBox implements SymbolizerNode {
         parent = node;
     }
 
-    public boolean dependsOnFeature() {
-        return (x != null && x.dependsOnFeature()) || (y != null && y.dependsOnFeature());
+    public String dependsOnFeature() {
+        String sx = "";
+        String sy = "";
+
+        if (x != null){
+            sx = x.dependsOnFeature();
+        }
+        if (y != null){
+            sy = y.dependsOnFeature();
+        }
+
+        return (sx + " " + sy).trim();
     }
 
     /**

@@ -29,5 +29,5 @@ public interface Transformation {
 
     public abstract Object getJAXBType();
 
-    public boolean dependsOnFeature();
+    public String dependsOnFeature();
 }

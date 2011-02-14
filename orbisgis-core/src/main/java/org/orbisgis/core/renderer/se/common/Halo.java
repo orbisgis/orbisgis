@@ -130,14 +130,9 @@ public final class Halo implements SymbolizerNode, UomNode, FillNode {
         }
     }
 
-    public boolean dependsOnFeature() {
-        if (this.fill.dependsOnFeature()) {
-            return true;
-        }
-        if (this.radius.dependsOnFeature()) {
-            return true;
-        }
-        return false;
+    public String dependsOnFeature() {
+
+        return (radius.dependsOnFeature() + " " + fill.dependsOnFeature()).trim();
     }
 
     public HaloType getJAXBType() {

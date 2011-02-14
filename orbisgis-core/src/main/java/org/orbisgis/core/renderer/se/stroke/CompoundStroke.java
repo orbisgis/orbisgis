@@ -157,20 +157,17 @@ public final class CompoundStroke extends Stroke {
 	}
 
 	@Override
-	public boolean dependsOnFeature() {
+	public String dependsOnFeature() {
+        String result = "";
 		for (StrokeAnnotationGraphic sag : annotations) {
-			if (sag.dependsOnFeature()) {
-				return true;
-			}
+            result += sag.dependsOnFeature();
 		}
 
 		for (CompoundStrokeElement elem : elements) {
-			if (elem.dependsOnFeature()) {
-				return true;
-			}
+            result += elem.dependsOnFeature();
 		}
 
-		return false;
+		return result.trim();
 	}
 
 	private void addCompoundStrokeElement(CompoundStrokeElement cse) {

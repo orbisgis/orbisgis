@@ -37,8 +37,8 @@ public abstract class Literal implements SeParameter {
 	}
 
     @Override
-    public boolean dependsOnFeature() {
-        return false;
+    public String dependsOnFeature() {
+        return "";
     }
 
 
