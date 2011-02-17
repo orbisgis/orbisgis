@@ -96,7 +96,7 @@ public class FunctionListModel extends AbstractListModel implements ListModel {
             ArrayList<FunctionElement> functionsFiltered = new ArrayList<FunctionElement>();
 
             for (FunctionElement functionElement : functionsList) {
-                if (functionElement.getFunctionName().toLowerCase().contains(text)) {
+                if (functionElement.getFunctionName().toLowerCase().contains(text.toLowerCase())) {
                     functionsFiltered.add(functionElement);
                 }
             }
