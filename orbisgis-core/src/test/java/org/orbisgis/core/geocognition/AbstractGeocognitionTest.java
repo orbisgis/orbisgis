@@ -42,8 +42,6 @@ import java.io.ByteArrayOutputStream;
 
 import org.orbisgis.core.AbstractTest;
 import org.orbisgis.core.geocognition.mapContext.GeocognitionMapContextFactory;
-import org.orbisgis.core.geocognition.sql.GeocognitionCustomQueryFactory;
-import org.orbisgis.core.geocognition.sql.GeocognitionFunctionFactory;
 import org.orbisgis.core.geocognition.symbology.GeocognitionLegendFactory;
 import org.orbisgis.core.geocognition.symbology.GeocognitionSymbolFactory;
 
@@ -57,8 +55,6 @@ public class AbstractGeocognitionTest extends AbstractTest {
 
 		gc = new DefaultGeocognition();
 		gc.addElementFactory(new GeocognitionSymbolFactory());
-		gc.addElementFactory(new GeocognitionFunctionFactory());
-		gc.addElementFactory(new GeocognitionCustomQueryFactory());
 		gc.addElementFactory(new GeocognitionLegendFactory());
 		gc.addElementFactory(new GeocognitionMapContextFactory());
 	}

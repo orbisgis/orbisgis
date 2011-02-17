@@ -17,8 +17,6 @@ import org.orbisgis.core.geocognition.DefaultGeocognition;
 import org.orbisgis.core.geocognition.GeocognitionElement;
 import org.orbisgis.core.geocognition.GeocognitionFilter;
 import org.orbisgis.core.geocognition.mapContext.GeocognitionMapContextFactory;
-import org.orbisgis.core.geocognition.sql.GeocognitionCustomQueryFactory;
-import org.orbisgis.core.geocognition.sql.GeocognitionFunctionFactory;
 import org.orbisgis.core.geocognition.symbology.GeocognitionLegendFactory;
 import org.orbisgis.core.geocognition.symbology.GeocognitionSymbolFactory;
 import org.orbisgis.core.ui.TestWorkspace;
@@ -42,8 +40,6 @@ public class GeocognitionTest extends TestCase {
 
 		gc = new DefaultGeocognition();
 		gc.addElementFactory(new GeocognitionSymbolFactory());
-		gc.addElementFactory(new GeocognitionFunctionFactory());
-		gc.addElementFactory(new GeocognitionCustomQueryFactory());
 		gc.addElementFactory(new GeocognitionLegendFactory());
 		gc.addElementFactory(new GeocognitionMapContextFactory());
 	}

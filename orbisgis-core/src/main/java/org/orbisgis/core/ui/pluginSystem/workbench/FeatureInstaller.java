@@ -357,22 +357,17 @@ public class FeatureInstaller {
 
 	public void addRegisterCustomQuery(Class<? extends CustomQuery> queryClass) {
 		if (QueryManager.getQuery(queryClass.getSimpleName()) == null) {
-			QueryManager.registerQuery(queryClass);
-			addToGeocognition(queryClass.getSimpleName(), queryClass);
+			QueryManager.registerQuery(queryClass);			
 		}
 
 	}
 
 	public void addRegisterFunction(Class<? extends Function> functionClass) {
 		if (FunctionManager.getFunction(functionClass.getSimpleName()) == null) {
-			FunctionManager.addFunction(functionClass);
-			addToGeocognition(functionClass.getSimpleName(), functionClass);
+			FunctionManager.addFunction(functionClass);			
 		}
 	}
 
-	public void addToGeocognition(String name, Class clazz) {
-		Geocognition geocognition = Services.getService(Geocognition.class);
-		geocognition.addElement("SQL/" + name, clazz);
-	}
+	
 
 }

@@ -106,7 +106,6 @@ import org.orbisgis.core.ui.plugins.editors.tableEditor.ShowFieldStatisticsPlugI
 import org.orbisgis.core.ui.plugins.editors.tableEditor.UndoTablePlugIn;
 import org.orbisgis.core.ui.plugins.editors.tableEditor.ZoomToLayerFromTable;
 import org.orbisgis.core.ui.plugins.editors.tableEditor.ZoomToSelectedPlugIn;
-import org.orbisgis.core.ui.plugins.orbisgisFrame.BasicPerspectivePlugIn;
 import org.orbisgis.core.ui.plugins.orbisgisFrame.ExitPlugIn;
 import org.orbisgis.core.ui.plugins.orbisgisFrame.configuration.ConfigurationPlugIn;
 import org.orbisgis.core.ui.plugins.orbisgisFrame.help.AboutOrbisGISPlugIn;
@@ -148,12 +147,7 @@ import org.orbisgis.core.ui.plugins.views.geocatalog.WMSGeocatalogPlugIn;
 import org.orbisgis.core.ui.plugins.views.geocognition.GeocognitionAddMapPlugIn;
 import org.orbisgis.core.ui.plugins.views.geocognition.GeocognitionClearPlugIn;
 import org.orbisgis.core.ui.plugins.views.geocognition.GeocognitionNewFolderPlugIn;
-import org.orbisgis.core.ui.plugins.views.geocognition.GeocognitionNewRegisteredSQLArtifactPlugIn;
 import org.orbisgis.core.ui.plugins.views.geocognition.GeocognitionNewSymbolPlugIn;
-import org.orbisgis.core.ui.plugins.views.geocognition.GeocognitionRegisterBuiltInCustomQueryPlugIn;
-import org.orbisgis.core.ui.plugins.views.geocognition.GeocognitionRegisterBuiltInFunctionPlugIn;
-import org.orbisgis.core.ui.plugins.views.geocognition.GeocognitionUnRegisterBuiltInCustomQueryPlugIn;
-import org.orbisgis.core.ui.plugins.views.geocognition.GeocognitionUnRegisterBuiltInFunctionPlugIn;
 import org.orbisgis.core.ui.plugins.views.geocognition.OpenGeocognitionPlugIn;
 import org.orbisgis.core.ui.plugins.views.geocognition.RemoveGeocognitionPlugIn;
 import org.orbisgis.core.ui.plugins.views.mapEditor.MapEditorPlugIn;
@@ -203,14 +197,9 @@ public class OrbisConfiguration implements Setup {
 	private OpenGeocognitionPlugIn openGeocognitionPlugIn = new OpenGeocognitionPlugIn();
 	private RemoveGeocognitionPlugIn removeGeocognitionPlugIn = new RemoveGeocognitionPlugIn();
 	private GeocognitionAddMapPlugIn geocognitionAddMapPlugIn = new GeocognitionAddMapPlugIn();
-	private GeocognitionNewRegisteredSQLArtifactPlugIn geocognitionNewRegisteredSQLArtifact = new GeocognitionNewRegisteredSQLArtifactPlugIn();
 	private GeocognitionNewFolderPlugIn geocognitionNewFolder = new GeocognitionNewFolderPlugIn();
 	private GeocognitionNewSymbolPlugIn geocognitionNewSymbol = new GeocognitionNewSymbolPlugIn();
-	private GeocognitionRegisterBuiltInFunctionPlugIn geocognitionRegisterBuiltInFunction = new GeocognitionRegisterBuiltInFunctionPlugIn();
-	private GeocognitionUnRegisterBuiltInFunctionPlugIn geocognitionUnRegisterBuiltInFunction = new GeocognitionUnRegisterBuiltInFunctionPlugIn();
-	private GeocognitionRegisterBuiltInCustomQueryPlugIn geocognitionRegisterBuiltInCustomQuery = new GeocognitionRegisterBuiltInCustomQueryPlugIn();
-	private GeocognitionUnRegisterBuiltInCustomQueryPlugIn geocognitionUnRegisterBuiltInCustomQuery = new GeocognitionUnRegisterBuiltInCustomQueryPlugIn();
-
+	
 	// Geocatalog popup
 	private NewGeocatalogFilePlugIn newGeocatalogFile = new NewGeocatalogFilePlugIn();
 	private NewGeocatalogFolderPlugIn newGeocatalogFolder = new NewGeocatalogFolderPlugIn();
@@ -351,14 +340,9 @@ public class OrbisConfiguration implements Setup {
 			openGeocognitionPlugIn.initialize(context);
 			removeGeocognitionPlugIn.initialize(context);
 			geocognitionClearPlugIn.initialize(context);
-			geocognitionNewRegisteredSQLArtifact.initialize(context);
 			geocognitionAddMapPlugIn.initialize(context);
 			geocognitionNewFolder.initialize(context);
 			geocognitionNewSymbol.initialize(context);
-			geocognitionRegisterBuiltInFunction.initialize(context);
-			geocognitionUnRegisterBuiltInFunction.initialize(context);
-			geocognitionRegisterBuiltInCustomQuery.initialize(context);
-			geocognitionUnRegisterBuiltInCustomQuery.initialize(context);
 
 			// Geocatalog popup
 			newGeocatalogFile.initialize(context);

@@ -33,7 +33,6 @@ public class GeocognitionRenderer extends AbstractTreeRenderer {
 				Icon elementIcon = renderer.getIcon(typeId, properties);
 				if (elementIcon != null) {
 					icon = elementIcon;
-					// tooltip = resizeTooltip(renderer.getTooltip(element));
 					tooltip = renderer.getTooltip(element);
 					break;
 				}

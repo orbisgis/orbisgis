@@ -46,13 +46,10 @@ import org.gdms.driver.DriverException;
 import org.gdms.source.Source;
 import org.gdms.source.SourceManager;
 import org.orbisgis.core.DataManager;
-import org.orbisgis.core.OrbisGISPersitenceConfig;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.geocognition.Geocognition;
 import org.orbisgis.core.geocognition.GeocognitionElement;
 import org.orbisgis.core.geocognition.mapContext.GeocognitionException;
-import org.orbisgis.core.geocognition.sql.GeocognitionBuiltInCustomQuery;
-import org.orbisgis.core.geocognition.sql.GeocognitionBuiltInFunction;
 import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.layerModel.MapContext;
 import org.orbisgis.core.ui.editor.IEditor;
@@ -293,56 +290,7 @@ public class PlugInContext {
 								.getService(EditorManager.class);
 						if (!em.hasEditor(el))
 							return false;
-						break;
-					case CUSTOM_QUERY_IS_NOT_REGISTERED:
-						if (OrbisGISPersitenceConfig.GEOCONGITION_CUSTOMQUERY_FACTORY_ID
-								.equals(el.getTypeId())) {
-							String registered = el.getProperties().get(
-									GeocognitionBuiltInCustomQuery.REGISTERED);
-							if ((registered != null)
-									&& registered
-											.equals(GeocognitionBuiltInCustomQuery.IS_NOT_REGISTERED)) {
-								break;
-							}
-						}
-						return false;
-					case FUNCTION_QUERY_IS_NOT_REGISTERED:
-						if (OrbisGISPersitenceConfig.GEOCOGNITION_FUNCTION_FACTORY_ID
-								.equals(el.getTypeId())) {
-							String registered = el.getProperties().get(
-									GeocognitionBuiltInFunction.REGISTERED);
-							if ((registered != null)
-									&& registered
-											.equals(GeocognitionBuiltInFunction.IS_NOT_REGISTERED)) {
-								break;
-							}
-						}
-						return false;
-					case CUSTOM_QUERY_IS_REGISTERED:
-						if (OrbisGISPersitenceConfig.GEOCONGITION_CUSTOMQUERY_FACTORY_ID
-								.equals(el.getTypeId())) {
-							String registered = el.getProperties().get(
-									GeocognitionBuiltInCustomQuery.REGISTERED);
-							if ((registered != null)
-									&& registered
-											.equals(GeocognitionBuiltInCustomQuery.IS_REGISTERED)) {
-								break;
-							}
-						}
-						return false;
-					case FUNCTION_QUERY_IS_REGISTERED:
-						if (OrbisGISPersitenceConfig.GEOCOGNITION_FUNCTION_FACTORY_ID
-								.equals(el.getTypeId())) {
-							String registered = el.getProperties().get(
-									GeocognitionBuiltInFunction.REGISTERED);
-							if ((registered != null)
-									&& registered
-											.equals(GeocognitionBuiltInFunction.IS_REGISTERED)) {
-								break;
-							}
-						}
-						return false;
-
+						break;					
 					default:
 						break;
 					}
