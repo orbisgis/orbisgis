@@ -198,7 +198,6 @@ public final class StyledLabel implements SymbolizerNode, FillNode, StrokeNode {
     }
 
     public RenderableGraphics getImage(SpatialDataSourceDecorator sds, long fid, boolean selected, MapTransform mt) throws ParameterException, IOException {
-        // TODO DEFAULT VALUES !!!
         String text = labelText.getValue(sds, fid);
 
         String family = "Arial";

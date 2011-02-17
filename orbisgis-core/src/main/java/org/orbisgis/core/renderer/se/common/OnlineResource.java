@@ -35,26 +35,29 @@
  * erwan.bocher _at_ ec-nantes.fr
  * gwendall.petit _at_ ec-nantes.fr
  */
-
-
 package org.orbisgis.core.renderer.se.common;
 
+import com.kitfox.svg.app.beans.SVGIcon;
+import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.FontFormatException;
+import java.awt.Graphics2D;
 import java.awt.Shape;
 import java.awt.font.FontRenderContext;
 import java.awt.font.TextLayout;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
-import java.awt.image.renderable.ParameterBlock;
+import java.awt.image.BufferedImage;
+import java.awt.image.RenderedImage;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.media.jai.InterpolationBicubic2;
 
 import javax.media.jai.JAI;
 import javax.media.jai.PlanarImage;
@@ -78,189 +81,272 @@ import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
  */
 public class OnlineResource implements ExternalGraphicSource, MarkGraphicSource {
 
-	private URL url;
+    private URL url;
+    private PlanarImage rowImage;
 
-	private PlanarImage rowImage;
+    /**
+     *
+     */
+    public OnlineResource() {
+        url = null;
+    }
 
-	/**
-	 *
-	 */
-	public OnlineResource() {
-		url = null;
-	}
+    public OnlineResource(String url) throws MalformedURLException {
+        this.url = new URL(url);
+    }
 
-	public OnlineResource(String url) throws MalformedURLException {
-		this.url = new URL(url);
-	}
+    public OnlineResource(OnlineResourceType onlineResource) throws MalformedURLException {
+        System.out.println("Read online ressource");
+        this.url = new URL(onlineResource.getHref());
+    }
 
-	public OnlineResource(OnlineResourceType onlineResource) throws MalformedURLException {
-		System.out.println("Read online ressource");
-		this.url = new URL(onlineResource.getHref());
-	}
+    public URL getUrl() {
+        return url;
+    }
 
-	public URL getUrl() {
-		return url;
-	}
+    public void setUrl(String url) throws MalformedURLException {
+        this.url = new URL(url);
+    }
 
-	public void setUrl(String url) throws MalformedURLException {
-		this.url = new URL(url);
-	}
+    @Override
+    public RenderedImage getPlanarImage(ViewBox viewBox, SpatialDataSourceDecorator sds, long fid, MapTransform mt, String mimeType)
+            throws IOException, ParameterException {
 
-	@Override
-	public PlanarImage getPlanarImage(ViewBox viewBox, SpatialDataSourceDecorator sds, long fid, MapTransform mt, String mimeType)
-			throws IOException, ParameterException {
+        if (mimeType != null && mimeType.equalsIgnoreCase("image/svg+xml")) {
+            return getSvgImage(viewBox, sds, fid, mt, mimeType);
+        } else {
+            return getJAIImage(viewBox, sds, fid, mt, mimeType);
+        }
+    }
 
-		if (rowImage == null){
-			rowImage = JAI.create("url", url);
-			System.out.println("Download external graphic from " + url);
-		}
-		
-		PlanarImage img = rowImage;
+    public RenderedImage getSvgImage(ViewBox viewBox, SpatialDataSourceDecorator sds, long fid, MapTransform mt, String mimeType)
+            throws IOException, ParameterException {
+        try {
+            SVGIcon icon = new SVGIcon();
+            icon.setSvgURI(url.toURI());
+            BufferedImage img;
 
+            if (viewBox != null && mt != null && viewBox.usable()) {
+                if (mt == null) {
+                    return null;
+                }
+                if (sds == null && viewBox != null && !viewBox.dependsOnFeature().isEmpty()) {
+                    throw new ParameterException("View box depends on feature");
+                }
 
-		if (viewBox != null && mt != null && viewBox.usable()) {
-			if (mt == null) {
-				return null;
-			}
-			if (sds == null && viewBox != null && !viewBox.dependsOnFeature().isEmpty()) {
-				throw new ParameterException("View box depends on feature");
-			}
+                double width = icon.getIconWidth();
+                double height = icon.getIconHeight();
 
-			ParameterBlock pb = new ParameterBlock();
-			pb.addSource(img);
+                Point2D dim = viewBox.getDimensionInPixel(sds, fid, height, width, mt.getScaleDenominator(), mt.getDpi());
 
-			double width = img.getWidth();
-			double height = img.getHeight();
+                double widthDst = dim.getX();
+                double heightDst = dim.getY();
 
-			Point2D dim = viewBox.getDimensionInPixel(sds, fid, height, width, mt.getScaleDenominator(), mt.getDpi());
+                if (widthDst > 0 && heightDst > 0) {
+                    img = new BufferedImage((int)(widthDst+0.5), (int)(heightDst + 0.5), BufferedImage.TYPE_4BYTE_ABGR);
+                    icon.setPreferredSize(new Dimension((int)(widthDst + 0.5), (int)(heightDst+0.5)));
+                    icon.setScaleToFit(true);
+                } else {
+                    img = new BufferedImage(icon.getIconWidth(), icon.getIconHeight(), BufferedImage.TYPE_4BYTE_ABGR);
+                }
+            } else {
+                img = new BufferedImage(icon.getIconWidth(), icon.getIconHeight(), BufferedImage.TYPE_4BYTE_ABGR);
+            }
+            icon.setAntiAlias(true);
+            Graphics2D g2 = (Graphics2D) img.getGraphics();
+            g2.addRenderingHints(mt.getRenderingHints());
+            icon.paintIcon((Component)null, g2, 0, 0);
+            return img;
+        } catch (URISyntaxException ex) {
+            throw new IOException(ex);
+        }
+    }
 
-			double widthDst = dim.getX();
-			double heightDst = dim.getY();
+    public PlanarImage getJAIImage(ViewBox viewBox, SpatialDataSourceDecorator sds, long fid, MapTransform mt, String mimeType)
+            throws IOException, ParameterException {
 
-			//System.out.println("(" + width + ";" + height + ")" + " (" + widthDst + ";" + heightDst + ")");
+        if (rowImage == null) {
+            rowImage = JAI.create("url", url);
+            System.out.println("Download external graphic from " + url);
+        }
 
-			if (widthDst > 0 && heightDst > 0) {
-				double ratio_x = widthDst / width;
-				double ratio_y = heightDst / height;
-
-				//System.out.println("Ratios: " + ratio_x + ";" + ratio_y);
-
-				pb.add((float) ratio_x);
-				pb.add((float) ratio_y);
-				pb.add(0.0F);
-				pb.add(0.0F);
-				pb.add(InterpolationBicubic2.getInstance(InterpolationBicubic2.INTERP_BICUBIC_2));
-
-				return JAI.create("scale", pb);
-			} else {
-				return img;
-			}
-
-		} else {
-			return img;
-		}
-	}
-
-	@Override
-	public void setJAXBSource(ExternalGraphicType e) {
-		OnlineResourceType o = new OnlineResourceType();
-
-		o.setHref(url.toExternalForm());
-
-		e.setOnlineResource(o);
-	}
-
-	public Font getFont(){
-		InputStream iStream = null;
-		try {
-			iStream = url.openStream();
-			return Font.createFont(Font.TRUETYPE_FONT, iStream);
-		} catch (FontFormatException ex) {
-		} catch (IOException ex) {
-		} finally {
-			try {
-				iStream.close();
-			} catch (IOException ex) {
-			}
-		}
-		return null;
-	}
-
-	private Shape getTrueTypeGlyph(ViewBox viewBox, SpatialDataSourceDecorator sds, long fid, Double scale, Double dpi, RealParameter markIndex) throws ParameterException, IOException {
-
-		try {
-			InputStream iStream = url.openStream();
-			Font font = Font.createFont(Font.TRUETYPE_FONT, iStream);
-			iStream.close();
-
-			System.out.println ("Font: " + font.getNumGlyphs());
-
-			double value = markIndex.getValue(sds, fid);
-
-			char[] data = {(char) value};
-
-			String text = String.copyValueOf(data);
-
-			// Scale is used to have an high resolution
-			AffineTransform at = AffineTransform.getTranslateInstance(0, 0);
-
-			FontRenderContext fontCtx = new FontRenderContext(at, true, true);
-			TextLayout tl = new TextLayout(text, font, fontCtx);
-
-			Shape glyphOutline = tl.getOutline(at);
-
-			Rectangle2D bounds2D = glyphOutline.getBounds2D();
+        PlanarImage img = rowImage;
 
 
+        if (viewBox != null && mt != null && viewBox.usable()) {
+            if (mt == null) {
+                return null;
+            }
+            if (sds == null && viewBox != null && !viewBox.dependsOnFeature().isEmpty()) {
+                throw new ParameterException("View box depends on feature");
+            }
 
-			double width = bounds2D.getWidth();
-			double height = bounds2D.getHeight();
+            double width = img.getWidth();
+            double height = img.getHeight();
 
-			if (viewBox != null && viewBox.usable()) {
-				Point2D dim = viewBox.getDimensionInPixel(sds, fid, height, width, scale, dpi);
-				if (Math.abs(dim.getX()) <= 0 || Math.abs(dim.getY()) <= 0) {
-					return null;
-				}
+            Point2D dim = viewBox.getDimensionInPixel(sds, fid, height, width, mt.getScaleDenominator(), mt.getDpi());
 
-				at = AffineTransform.getScaleInstance(dim.getX() / width,
-						dim.getY() / height);
+            double widthDst = dim.getX();
+            double heightDst = dim.getY();
 
-				fontCtx = new FontRenderContext(at, true, true);
-				tl = new TextLayout(text, font, fontCtx);
-				glyphOutline = tl.getOutline(at);
+            if (widthDst > 0 && heightDst > 0) {
+                double ratio_x = widthDst / width;
+                double ratio_y = heightDst / height;
+                return JAI.create("SubsampleAverage", img, ratio_x, ratio_y, mt.getRenderingHints());
+            } else {
+                return img;
+            }
 
-			}
-			Rectangle2D gb = glyphOutline.getBounds2D();
-			at = AffineTransform.getTranslateInstance(-gb.getCenterX(), -gb.getCenterY());
+        } else {
+            return img;
+        }
+    }
 
-			return at.createTransformedShape(glyphOutline);
+    @Override
+    public void setJAXBSource(ExternalGraphicType e) {
+        OnlineResourceType o = new OnlineResourceType();
 
-		} catch (FontFormatException ex) {
-			Logger.getLogger(OnlineResource.class.getName()).log(Level.SEVERE, null, ex);
-		}
-		return null;
+        o.setHref(url.toExternalForm());
 
-	}
+        e.setOnlineResource(o);
+    }
 
-	@Override
-	public Shape getShape(ViewBox viewBox, SpatialDataSourceDecorator sds, long fid, Double scale, Double dpi, RealParameter markIndex, String mimeType) throws ParameterException, IOException {
+    public Font getFont() {
+        InputStream iStream = null;
+        try {
+            iStream = url.openStream();
+            return Font.createFont(Font.TRUETYPE_FONT, iStream);
+        } catch (FontFormatException ex) {
+        } catch (IOException ex) {
+        } finally {
+            try {
+                iStream.close();
+            } catch (IOException ex) {
+            }
+        }
+        return null;
+    }
 
-		if (mimeType != null){
-			if (mimeType.equalsIgnoreCase("application/x-font-ttf")) {
-				return getTrueTypeGlyph(viewBox, sds, fid, scale, dpi, markIndex);
-			}
-		}
+    private Shape getTrueTypeGlyph(ViewBox viewBox, SpatialDataSourceDecorator sds, long fid, Double scale, Double dpi, RealParameter markIndex) throws ParameterException, IOException {
 
-		return null;
-	}
+        try {
+            InputStream iStream = url.openStream();
+            Font font = Font.createFont(Font.TRUETYPE_FONT, iStream);
+            iStream.close();
 
-	@Override
-	public void setJAXBSource(MarkGraphicType m) {
-		OnlineResourceType o = new OnlineResourceType();
+            System.out.println("Font: " + font.getNumGlyphs());
 
-		o.setHref(url.toExternalForm());
+            double value = markIndex.getValue(sds, fid);
 
-		m.setOnlineResource(o);
+            char[] data = {(char) value};
 
-	}
+            String text = String.copyValueOf(data);
+
+            // Scale is used to have an high resolution
+            AffineTransform at = AffineTransform.getTranslateInstance(0, 0);
+
+            FontRenderContext fontCtx = new FontRenderContext(at, true, true);
+            TextLayout tl = new TextLayout(text, font, fontCtx);
+
+            Shape glyphOutline = tl.getOutline(at);
+
+            Rectangle2D bounds2D = glyphOutline.getBounds2D();
+
+            double width = bounds2D.getWidth();
+            double height = bounds2D.getHeight();
+
+            if (viewBox != null && viewBox.usable()) {
+                Point2D dim = viewBox.getDimensionInPixel(sds, fid, height, width, scale, dpi);
+                if (Math.abs(dim.getX()) <= 0 || Math.abs(dim.getY()) <= 0) {
+                    return null;
+                }
+
+                at = AffineTransform.getScaleInstance(dim.getX() / width,
+                        dim.getY() / height);
+
+                fontCtx = new FontRenderContext(at, true, true);
+                tl = new TextLayout(text, font, fontCtx);
+                glyphOutline = tl.getOutline(at);
+
+            }
+            Rectangle2D gb = glyphOutline.getBounds2D();
+            at = AffineTransform.getTranslateInstance(-gb.getCenterX(), -gb.getCenterY());
+
+            return at.createTransformedShape(glyphOutline);
+
+        } catch (FontFormatException ex) {
+            Logger.getLogger(OnlineResource.class.getName()).log(Level.SEVERE, null, ex);
+            throw new ParameterException(ex);
+        }
+    }
+
+    @Override
+    public Shape getShape(ViewBox viewBox, SpatialDataSourceDecorator sds, long fid, Double scale, Double dpi, RealParameter markIndex, String mimeType) throws ParameterException, IOException {
+
+        if (mimeType != null) {
+            if (mimeType.equalsIgnoreCase("application/x-font-ttf")) {
+                return getTrueTypeGlyph(viewBox, sds, fid, scale, dpi, markIndex);
+            }
+        }
+
+        throw new ParameterException("Unknown MIME type: " + mimeType);
+    }
+
+    @Override
+    public void setJAXBSource(MarkGraphicType m) {
+        OnlineResourceType o = new OnlineResourceType();
+
+        o.setHref(url.toExternalForm());
+
+        m.setOnlineResource(o);
+
+    }
+
+    @Override
+    public double getDefaultMaxWidth(SpatialDataSourceDecorator sds, long fid,
+            Double scale, Double dpi, RealParameter markIndex, String mimeType)
+            throws IOException, ParameterException {
+
+        if (mimeType != null) {
+            if (mimeType.equalsIgnoreCase("application/x-font-ttf")) {
+                return getTrueTypeGlyphMaxSize(sds, fid, scale, dpi, markIndex);
+            }
+        }
+
+        return 0.0;
+
+    }
+
+    private double getTrueTypeGlyphMaxSize(SpatialDataSourceDecorator sds, long fid,
+            Double scale, Double dpi, RealParameter markIndex)
+            throws IOException, ParameterException {
+        try {
+            InputStream iStream = url.openStream();
+            Font font = Font.createFont(Font.TRUETYPE_FONT, iStream);
+            iStream.close();
+
+            System.out.println("Font: " + font.getNumGlyphs());
+
+            double value = markIndex.getValue(sds, fid);
+            char[] data = {(char) value};
+
+            String text = String.copyValueOf(data);
+
+            // Scale is used to have an high resolution
+            AffineTransform at = AffineTransform.getTranslateInstance(0, 0);
+
+            FontRenderContext fontCtx = new FontRenderContext(at, true, true);
+            TextLayout tl = new TextLayout(text, font, fontCtx);
+
+            Shape glyphOutline = tl.getOutline(at);
+
+            Rectangle2D bounds2D = glyphOutline.getBounds2D();
+
+            return Math.max(bounds2D.getWidth(), bounds2D.getHeight());
+
+        } catch (FontFormatException ex) {
+            Logger.getLogger(OnlineResource.class.getName()).log(Level.SEVERE, null, ex);
+            throw new ParameterException(ex);
+        }
+    }
 }

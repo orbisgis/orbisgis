@@ -107,15 +107,8 @@ public final class Rule implements SymbolizerNode {
 
 		/*
 		 * Is a fallback rule ?
-		 */
-		/*if (rt.getElseFilter() != null) {
-			this.fallbackRule = true;
-		} else {
-			this.fallbackRule = false;
-			//this.filter = new FilterOperator(rt.getFilter());
-		}*/
-
-		// If a ElseFilter is defined, this rule is a fallback one
+		 * If a ElseFilter is defined, this rule is a fallback one
+         */
 		this.fallbackRule = rt.getElseFilter() != null;
 
 		if (rt.getMinScaleDenominator() != null) {

@@ -56,8 +56,10 @@ import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
  * @author maxence
  */
 public enum WellKnownName implements MarkGraphicSource {
-
     SQUARE, CIRCLE, HALFCIRCLE, TRIANGLE, STAR, CROSS, X;
+
+    public static double DEFAULT_SIZE = 10.0;
+
 
     public static WellKnownName fromString(String token){
         if (token.equalsIgnoreCase("SQUARE")){
@@ -91,7 +93,7 @@ public enum WellKnownName implements MarkGraphicSource {
             return null;
         }
 
-        double x=10.0, y=10.0; // The size of the shape, [final unit] => [px]
+        double x=DEFAULT_SIZE, y=DEFAULT_SIZE; // The size of the shape, [final unit] => [px]
 
         if (viewBox != null && viewBox.usable()) {
             Point2D box = viewBox.getDimensionInPixel(sds, fid, MarkGraphic.defaultSize, MarkGraphic.defaultSize, scale, dpi);
@@ -233,5 +235,11 @@ public enum WellKnownName implements MarkGraphicSource {
 	@Override
     public void setJAXBSource(MarkGraphicType m){
         m.setWellKnownName(this.toString());
+    }
+
+    @Override
+    public double getDefaultMaxWidth(SpatialDataSourceDecorator sds, long fid, 
+            Double scale, Double dpi, RealParameter markIndex, String mimeType) {
+        return DEFAULT_SIZE;
     }
 }

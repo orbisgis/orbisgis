@@ -1,0 +1,1619 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<FeatureTypeStyle xmlns="http://www.opengis.net/se" xmlns:ns2="http://www.opengis.net/ows/1.1" xmlns:ns3="http://www.opengis.net/ogc" xmlns:ns4="http://www.w3.org/1999/xlink">
+  <Rule>
+    <PointSymbolizer>
+      <UnitOfMeasure>urn:ogc:def:uom:se::mm</UnitOfMeasure>
+      <CompositeGraphic>
+        <!-- Background: draughtboard -->
+        <MarkGraphic>
+          <UnitOfMeasure>urn:ogc:def:uom:se::mm</UnitOfMeasure>
+          <WellKnownName>SQUARE</WellKnownName>
+          <ViewBox>
+            <Width>270</Width>
+            <Height>160</Height>
+           </ViewBox>
+                <GraphicFill>
+                    <CompositeGraphic>
+                    <MarkGraphic>
+                        <WellKnownName>SQUARE</WellKnownName>
+                        <ViewBox><Width>4</Width></ViewBox>
+                        <SolidFill>
+                            <Color>#888888</Color>
+                            <Opacity>100</Opacity>
+                        </SolidFill>
+                    </MarkGraphic>
+                    <MarkGraphic>
+                        <WellKnownName>SQUARE</WellKnownName>
+                        <ViewBox><Width>2</Width></ViewBox>
+                        <SolidFill>
+                            <Color>#BBBBBB</Color>
+                            <Opacity>100</Opacity>
+                        </SolidFill>
+                        <Transform>
+                            <Translate>
+                               <X>1</X>
+                               <Y>1</Y>
+                            </Translate>
+                        </Transform>
+                    </MarkGraphic>
+                    <MarkGraphic>
+                        <WellKnownName>SQUARE</WellKnownName>
+                        <ViewBox><Width>2</Width></ViewBox>
+                        <SolidFill>
+                            <Color>#BBBBBB</Color>
+                            <Opacity>100</Opacity>
+                        </SolidFill>
+                        <Transform>
+                            <Translate>
+                               <X>-1</X>
+                               <Y>-1</Y>
+                            </Translate>
+                        </Transform>
+                    </MarkGraphic>
+                    </CompositeGraphic>
+                </GraphicFill>
+            </MarkGraphic>
+
+     
+        <MarkGraphic>
+          <WellKnownName>Square</WellKnownName>
+          <ViewBox>
+	    <Height>15</Height>
+          </ViewBox>
+	  <SolidFill />
+          <Transform>
+            <Translate>
+              <X>-125</X>
+              <Y>-70</Y>
+            </Translate>
+          </Transform>
+        </MarkGraphic>
+
+        <TextGraphic>
+         <StyledLabel>
+           <LabelText>SF Default</LabelText>
+         </StyledLabel>
+         <Transform>
+          <Translate>
+            <X>-125</X>
+            <Y>-60</Y>
+          </Translate>
+         </Transform>
+        </TextGraphic>
+
+        <MarkGraphic>
+          <WellKnownName>Square</WellKnownName>
+          <ViewBox>
+	    <Height>15</Height>
+          </ViewBox>
+	  <SolidFill>
+	    <Color>#ff0000</Color>
+	  </SolidFill>
+          <Transform>
+            <Translate>
+              <X>-105</X>
+              <Y>-70</Y>
+            </Translate>
+          </Transform>
+        </MarkGraphic>
+
+        <TextGraphic>
+         <StyledLabel>
+           <LabelText>SF red</LabelText>
+         </StyledLabel>
+         <Transform>
+          <Translate>
+            <X>-105</X>
+            <Y>-60</Y>
+          </Translate>
+         </Transform>
+        </TextGraphic>
+
+        <MarkGraphic>
+          <WellKnownName>Square</WellKnownName>
+          <ViewBox>
+	    <Height>15</Height>
+          </ViewBox>
+	  <SolidFill>
+	    <Color>#ff0000</Color>
+	    <Opacity>75</Opacity>
+	  </SolidFill>
+          <Transform>
+            <Translate>
+              <X>-85</X>
+              <Y>-70</Y>
+            </Translate>
+          </Transform>
+        </MarkGraphic>
+
+        <TextGraphic>
+         <StyledLabel>
+           <LabelText>SF red75%</LabelText>
+         </StyledLabel>
+         <Transform>
+          <Translate>
+            <X>-85</X>
+            <Y>-60</Y>
+          </Translate>
+         </Transform>
+        </TextGraphic>
+
+        <MarkGraphic>
+          <WellKnownName>Square</WellKnownName>
+          <ViewBox>
+	    <Height>15</Height>
+          </ViewBox>
+	  <SolidFill>
+	    <Color>#ff0000</Color>
+	    <Opacity>25</Opacity>
+	  </SolidFill>
+          <Transform>
+            <Translate>
+              <X>-65</X>
+              <Y>-70</Y>
+            </Translate>
+          </Transform>
+        </MarkGraphic>
+
+        <TextGraphic>
+         <StyledLabel>
+           <LabelText>SF red25%</LabelText>
+         </StyledLabel>
+         <Transform>
+          <Translate>
+            <X>-65</X>
+            <Y>-60</Y>
+          </Translate>
+         </Transform>
+        </TextGraphic>
+
+
+
+     
+        <MarkGraphic>
+          <WellKnownName>Square</WellKnownName>
+          <ViewBox>
+	    <Height>15</Height>
+          </ViewBox>
+	  <GraphicFill>
+	     <MarkGraphic>
+	        <SolidFill />
+		<PenStroke />
+	     </MarkGraphic>
+	  </GraphicFill>
+          <Transform>
+            <Translate>
+              <X>-125</X>
+              <Y>-45</Y>
+            </Translate>
+          </Transform>
+        </MarkGraphic>
+
+        <TextGraphic>
+         <StyledLabel>
+           <LabelText>GF Default</LabelText>
+         </StyledLabel>
+         <Transform>
+          <Translate>
+            <X>-125</X>
+            <Y>-35</Y>
+          </Translate>
+         </Transform>
+        </TextGraphic>
+
+        <MarkGraphic>
+          <WellKnownName>Square</WellKnownName>
+          <ViewBox>
+	    <Height>15</Height>
+          </ViewBox>
+	  <GraphicFill>
+	     <MarkGraphic>
+	        <SolidFill />
+		<PenStroke />
+	     </MarkGraphic>
+	     <TileGap />
+	  </GraphicFill>
+          <Transform>
+            <Translate>
+              <X>-105</X>
+              <Y>-45</Y>
+            </Translate>
+          </Transform>
+        </MarkGraphic>
+
+        <TextGraphic>
+         <StyledLabel>
+           <LabelText>SG Tilenone</LabelText>
+         </StyledLabel>
+         <Transform>
+          <Translate>
+            <X>-105</X>
+            <Y>-35</Y>
+          </Translate>
+         </Transform>
+        </TextGraphic>
+
+        <MarkGraphic>
+          <WellKnownName>Square</WellKnownName>
+          <ViewBox>
+	    <Height>15</Height>
+          </ViewBox>
+          <Transform>
+            <Translate>
+              <X>-85</X>
+              <Y>-45</Y>
+            </Translate>
+          </Transform>
+	  <GraphicFill>
+	     <MarkGraphic>
+	        <SolidFill />
+		<PenStroke />
+	     </MarkGraphic>
+	     <TileGap>
+	        <X>3</X>
+	     </TileGap>
+	  </GraphicFill>
+
+        </MarkGraphic>
+
+        <TextGraphic>
+         <StyledLabel>
+           <LabelText>SG: TileX:3</LabelText>
+         </StyledLabel>
+         <Transform>
+          <Translate>
+            <X>-85</X>
+            <Y>-35</Y>
+          </Translate>
+         </Transform>
+        </TextGraphic>
+
+        <MarkGraphic>
+          <WellKnownName>Square</WellKnownName>
+          <ViewBox>
+	    <Height>15</Height>
+          </ViewBox>
+	 <GraphicFill>
+	     <MarkGraphic>
+	        <SolidFill />
+		<PenStroke />
+	     </MarkGraphic>
+
+	     <TileGap>
+	        <X>2</X>
+		<Y>2</Y>
+	     </TileGap>
+	  </GraphicFill>
+
+          <Transform>
+            <Translate>
+              <X>-65</X>
+              <Y>-45</Y>
+            </Translate>
+          </Transform>
+        </MarkGraphic>
+
+        <TextGraphic>
+         <StyledLabel>
+           <LabelText>SG Tile2x2</LabelText>
+         </StyledLabel>
+         <Transform>
+          <Translate>
+            <X>-65</X>
+            <Y>-35</Y>
+          </Translate>
+         </Transform>
+        </TextGraphic>
+
+<!-- New quadrant -->     
+
+        <TextGraphic>
+         <StyledLabel>
+           <LabelText>0%</LabelText>
+	   <Font>
+	     <FontSize>24</FontSize>
+	     <FontWeight>bold</FontWeight>
+	   </Font>
+         </StyledLabel>
+         <Transform>
+          <Translate>
+            <X>10</X>
+          </Translate>
+         </Transform>
+        </TextGraphic>
+
+        <TextGraphic>
+         <StyledLabel>
+           <LabelText>30%</LabelText>
+	   <Font>
+	     <FontSize>24</FontSize>
+	     <FontWeight>bold</FontWeight>
+	   </Font>
+         </StyledLabel>
+         <Transform>
+          <Translate>
+            <X>30</X>
+          </Translate>
+         </Transform>
+        </TextGraphic>
+
+
+        <TextGraphic>
+         <StyledLabel>
+           <LabelText>50%</LabelText>
+	   <Font>
+	     <FontSize>24</FontSize>
+	     <FontWeight>bold</FontWeight>
+	   </Font>
+         </StyledLabel>
+         <Transform>
+          <Translate>
+            <X>50</X>
+          </Translate>
+         </Transform>
+        </TextGraphic>
+
+        <TextGraphic>
+         <StyledLabel>
+           <LabelText>60%</LabelText>
+	   <Font>
+	     <FontSize>24</FontSize>
+	     <FontWeight>bold</FontWeight>
+	   </Font>
+         </StyledLabel>
+         <Transform>
+          <Translate>
+            <X>70</X>
+          </Translate>
+         </Transform>
+        </TextGraphic>
+
+        <TextGraphic>
+         <StyledLabel>
+           <LabelText>80%</LabelText>
+	   <Font>
+	     <FontSize>24</FontSize>
+	     <FontWeight>bold</FontWeight>
+	   </Font>
+         </StyledLabel>
+         <Transform>
+          <Translate>
+            <X>90</X>
+          </Translate>
+         </Transform>
+        </TextGraphic>
+
+
+        <TextGraphic>
+         <StyledLabel>
+           <LabelText>100%</LabelText>
+	   <Font>
+	     <FontSize>24</FontSize>
+	     <FontWeight>bold</FontWeight>
+	   </Font>
+         </StyledLabel>
+         <Transform>
+          <Translate>
+            <X>110</X>
+          </Translate>
+         </Transform>
+        </TextGraphic>
+
+
+        <MarkGraphic>
+          <WellKnownName>Square</WellKnownName>
+          <ViewBox>
+	    <Height>15</Height>
+          </ViewBox>
+	  <DensityFill>
+	     <MarkGraphic>
+          <WellKnownName>Square</WellKnownName>
+	       <PenStroke />
+	       <SolidFill />
+	     </MarkGraphic>
+	     <Percentage>0</Percentage>
+	  </DensityFill>
+	  <PenStroke />
+          <Transform>
+            <Translate>
+              <X>10</X>
+              <Y>-70</Y>
+            </Translate>
+          </Transform>
+        </MarkGraphic>
+
+        <MarkGraphic>
+          <WellKnownName>Square</WellKnownName>
+          <ViewBox>
+	    <Height>15</Height>
+          </ViewBox>
+	  <DensityFill>
+	     <MarkGraphic>
+          <WellKnownName>Square</WellKnownName>
+	       <PenStroke />
+	       <SolidFill />
+	     </MarkGraphic>
+	     <Percentage>30</Percentage>
+	  </DensityFill>
+	  <PenStroke />
+          <Transform>
+            <Translate>
+              <X>30</X>
+              <Y>-70</Y>
+            </Translate>
+          </Transform>
+        </MarkGraphic>
+
+
+        <MarkGraphic>
+          <WellKnownName>Square</WellKnownName>
+          <ViewBox>
+	    <Height>15</Height>
+          </ViewBox>
+	  <DensityFill>
+	     <MarkGraphic>
+          <WellKnownName>Square</WellKnownName>
+	       <PenStroke />
+	       <SolidFill />
+	     </MarkGraphic>
+	     <Percentage>50</Percentage>
+	  </DensityFill>
+	  <PenStroke />
+          <Transform>
+            <Translate>
+              <X>50</X>
+              <Y>-70</Y>
+            </Translate>
+          </Transform>
+        </MarkGraphic>
+
+
+        <MarkGraphic>
+          <WellKnownName>Square</WellKnownName>
+          <ViewBox>
+	    <Height>15</Height>
+          </ViewBox>
+	  <DensityFill>
+	     <MarkGraphic>
+          <WellKnownName>Square</WellKnownName>
+	       <PenStroke />
+	       <SolidFill />
+	     </MarkGraphic>
+	     <Percentage>60</Percentage>
+	  </DensityFill>
+	  <PenStroke />
+          <Transform>
+            <Translate>
+              <X>70</X>
+              <Y>-70</Y>
+            </Translate>
+          </Transform>
+        </MarkGraphic>
+
+
+
+
+        <MarkGraphic>
+          <WellKnownName>Square</WellKnownName>
+          <ViewBox>
+	    <Height>15</Height>
+          </ViewBox>
+	  <DensityFill>
+	     <MarkGraphic>
+          <WellKnownName>Square</WellKnownName>
+	       <PenStroke />
+	       <SolidFill />
+	     </MarkGraphic>
+	     <Percentage>80</Percentage>
+	  </DensityFill>
+	  <PenStroke />
+          <Transform>
+            <Translate>
+              <X>90</X>
+              <Y>-70</Y>
+            </Translate>
+          </Transform>
+        </MarkGraphic>
+
+        <MarkGraphic>
+          <WellKnownName>Square</WellKnownName>
+          <ViewBox>
+	    <Height>15</Height>
+          </ViewBox>
+	  <DensityFill>
+	     <MarkGraphic>
+          <WellKnownName>Square</WellKnownName>
+	       <PenStroke />
+	       <SolidFill />
+	     </MarkGraphic>
+	     <Percentage>100</Percentage>
+	  </DensityFill>
+	  <PenStroke />
+          <Transform>
+            <Translate>
+              <X>110</X>
+              <Y>-70</Y>
+            </Translate>
+          </Transform>
+        </MarkGraphic>
+
+<!-- NEW line -->
+
+        <MarkGraphic>
+          <WellKnownName>Square</WellKnownName>
+          <ViewBox>
+	    <Height>15</Height>
+          </ViewBox>
+	  <DensityFill>
+	     <MarkGraphic>
+	       <WellKnownName>star</WellKnownName>
+	       <ViewBox>
+	         <Height>5</Height>
+	       </ViewBox>
+	       <PenStroke />
+	       <SolidFill />
+	     </MarkGraphic>
+	     <Percentage>1</Percentage>
+	  </DensityFill>
+	  <PenStroke />
+          <Transform>
+            <Translate>
+              <X>10</X>
+              <Y>-50</Y>
+            </Translate>
+          </Transform>
+        </MarkGraphic>
+
+        <MarkGraphic>
+          <WellKnownName>Square</WellKnownName>
+          <ViewBox>
+	    <Height>15</Height>
+          </ViewBox>
+	  <DensityFill>
+	     <MarkGraphic>
+	       <WellKnownName>star</WellKnownName>
+	       <ViewBox>
+	         <Height>5</Height>
+	       </ViewBox>
+	       <PenStroke />
+	       <SolidFill />
+	     </MarkGraphic>
+	     <Percentage>31</Percentage>
+	  </DensityFill>
+	  <PenStroke />
+          <Transform>
+            <Translate>
+              <X>30</X>
+              <Y>-50</Y>
+            </Translate>
+          </Transform>
+        </MarkGraphic>
+
+
+        <MarkGraphic>
+          <WellKnownName>Square</WellKnownName>
+          <ViewBox>
+	    <Height>15</Height>
+          </ViewBox>
+	  <DensityFill>
+	     <MarkGraphic>
+	       <WellKnownName>star</WellKnownName>
+	       <ViewBox>
+	         <Height>5</Height>
+	       </ViewBox>
+	       <PenStroke />
+	       <SolidFill />
+	     </MarkGraphic>
+	     <Percentage>51</Percentage>
+	  </DensityFill>
+	  <PenStroke />
+          <Transform>
+            <Translate>
+              <X>50</X>
+              <Y>-50</Y>
+            </Translate>
+          </Transform>
+        </MarkGraphic>
+
+
+        <MarkGraphic>
+          <WellKnownName>Square</WellKnownName>
+          <ViewBox>
+	    <Height>15</Height>
+          </ViewBox>
+	  <DensityFill>
+	     <MarkGraphic>
+	       <WellKnownName>star</WellKnownName>
+	       <ViewBox>
+	         <Height>5</Height>
+	       </ViewBox>
+	       <PenStroke />
+	       <SolidFill />
+	     </MarkGraphic>
+	     <Percentage>60</Percentage>
+	  </DensityFill>
+	  <PenStroke />
+          <Transform>
+            <Translate>
+              <X>70</X>
+              <Y>-50</Y>
+            </Translate>
+          </Transform>
+        </MarkGraphic>
+
+
+
+
+        <MarkGraphic>
+          <WellKnownName>Square</WellKnownName>
+          <ViewBox>
+	    <Height>15</Height>
+          </ViewBox>
+	  <DensityFill>
+	     <MarkGraphic>
+	       <WellKnownName>star</WellKnownName>
+	       <ViewBox>
+	         <Height>5</Height>
+	       </ViewBox>
+	       <PenStroke />
+	       <SolidFill />
+	     </MarkGraphic>
+	     <Percentage>80</Percentage>
+	  </DensityFill>
+	  <PenStroke />
+          <Transform>
+            <Translate>
+              <X>90</X>
+              <Y>-50</Y>
+            </Translate>
+          </Transform>
+        </MarkGraphic>
+
+        <MarkGraphic>
+          <WellKnownName>Square</WellKnownName>
+          <ViewBox>
+	    <Height>15</Height>
+          </ViewBox>
+	  <DensityFill>
+	     <MarkGraphic>
+	       <WellKnownName>star</WellKnownName>
+	       <ViewBox>
+	         <Height>5</Height>
+	       </ViewBox>
+	       <PenStroke />
+	       <SolidFill />
+	     </MarkGraphic>
+	     <Percentage>100</Percentage>
+	  </DensityFill>
+	  <PenStroke />
+          <Transform>
+            <Translate>
+              <X>110</X>
+              <Y>-50</Y>
+            </Translate>
+          </Transform>
+        </MarkGraphic>
+
+<!-- NEW line -->
+
+        <MarkGraphic>
+          <WellKnownName>Square</WellKnownName>
+          <ViewBox>
+	    <Height>15</Height>
+          </ViewBox>
+	  <DensityFill>
+	     <MarkGraphic>
+	       <WellKnownName>circle</WellKnownName>
+	       <ViewBox>
+	         <Height>5</Height>
+		 <Width>3</Width>
+	       </ViewBox>
+	       <PenStroke />
+	       <SolidFill />
+	     </MarkGraphic>
+	     <Percentage>1</Percentage>
+	  </DensityFill>
+	  <PenStroke />
+          <Transform>
+            <Translate>
+              <X>10</X>
+              <Y>-30</Y>
+            </Translate>
+          </Transform>
+        </MarkGraphic>
+
+        <MarkGraphic>
+          <WellKnownName>Square</WellKnownName>
+          <ViewBox>
+	    <Height>15</Height>
+          </ViewBox>
+	  <DensityFill>
+	     <MarkGraphic>
+	       <WellKnownName>circle</WellKnownName>
+	       <ViewBox>
+	         <Height>5</Height>
+		 <Width>3</Width>
+	       </ViewBox>
+	       <PenStroke />
+	       <SolidFill />
+	     </MarkGraphic>
+	     <Percentage>31</Percentage>
+	  </DensityFill>
+	  <PenStroke />
+          <Transform>
+            <Translate>
+              <X>30</X>
+              <Y>-30</Y>
+            </Translate>
+          </Transform>
+        </MarkGraphic>
+
+
+        <MarkGraphic>
+          <WellKnownName>Square</WellKnownName>
+          <ViewBox>
+	    <Height>15</Height>
+          </ViewBox>
+	  <DensityFill>
+	     <MarkGraphic>
+	       <WellKnownName>circle</WellKnownName>
+	       <ViewBox>
+	         <Height>5</Height>
+		 <Width>3</Width>
+	       </ViewBox>
+	       <PenStroke />
+	       <SolidFill />
+	     </MarkGraphic>
+	     <Percentage>51</Percentage>
+	  </DensityFill>
+	  <PenStroke />
+          <Transform>
+            <Translate>
+              <X>50</X>
+              <Y>-30</Y>
+            </Translate>
+          </Transform>
+        </MarkGraphic>
+
+
+        <MarkGraphic>
+          <WellKnownName>Square</WellKnownName>
+          <ViewBox>
+	    <Height>15</Height>
+          </ViewBox>
+	  <DensityFill>
+	     <MarkGraphic>
+	       <WellKnownName>circle</WellKnownName>
+	       <ViewBox>
+	         <Height>5</Height>
+		 <Width>3</Width>
+	       </ViewBox>
+	       <PenStroke />
+	       <SolidFill />
+	     </MarkGraphic>
+	     <Percentage>60</Percentage>
+	  </DensityFill>
+	  <PenStroke />
+          <Transform>
+            <Translate>
+              <X>70</X>
+              <Y>-30</Y>
+            </Translate>
+          </Transform>
+        </MarkGraphic>
+
+
+
+
+        <MarkGraphic>
+          <WellKnownName>Square</WellKnownName>
+          <ViewBox>
+	    <Height>15</Height>
+          </ViewBox>
+	  <DensityFill>
+	     <MarkGraphic>
+	       <WellKnownName>circle</WellKnownName>
+	       <ViewBox>
+	         <Height>5</Height>
+		 <Width>3</Width>
+	       </ViewBox>
+	       <PenStroke />
+	       <SolidFill />
+	     </MarkGraphic>
+	     <Percentage>80</Percentage>
+	  </DensityFill>
+	  <PenStroke />
+          <Transform>
+            <Translate>
+              <X>90</X>
+              <Y>-30</Y>
+            </Translate>
+          </Transform>
+        </MarkGraphic>
+
+        <MarkGraphic>
+          <WellKnownName>Square</WellKnownName>
+          <ViewBox>
+	    <Height>15</Height>
+          </ViewBox>
+	  <DensityFill>
+	     <MarkGraphic>
+	       <WellKnownName>circle</WellKnownName>
+	       <ViewBox>
+	         <Height>5</Height>
+		 <Width>3</Width>
+	       </ViewBox>
+	       <PenStroke />
+	       <SolidFill />
+	     </MarkGraphic>
+	     <Percentage>100</Percentage>
+	  </DensityFill>
+	  <PenStroke />
+          <Transform>
+            <Translate>
+              <X>110</X>
+              <Y>-30</Y>
+            </Translate>
+          </Transform>
+        </MarkGraphic>
+<!-- NEW LINE -->
+
+
+        <MarkGraphic>
+          <WellKnownName>Square</WellKnownName>
+          <ViewBox>
+	    <Height>15</Height>
+          </ViewBox>
+	  <DensityFill>
+	     <MarkGraphic>
+	     <ViewBox><Width>5</Width></ViewBox>
+	       <PenStroke />
+	       <SolidFill />
+	     </MarkGraphic>
+	     <Percentage>0</Percentage>
+	  </DensityFill>
+	  <PenStroke />
+          <Transform>
+            <Translate>
+              <X>10</X>
+              <Y>-10</Y>
+            </Translate>
+          </Transform>
+        </MarkGraphic>
+        <MarkGraphic>
+          <WellKnownName>Square</WellKnownName>
+          <ViewBox>
+	    <Height>15</Height>
+          </ViewBox>
+	  <DensityFill>
+	     <MarkGraphic>
+	     <ViewBox><Width>5</Width></ViewBox>
+	       <PenStroke />
+	       <SolidFill />
+	     </MarkGraphic>
+	     <Percentage>30</Percentage>
+	  </DensityFill>
+	  <PenStroke />
+          <Transform>
+            <Translate>
+              <X>30</X>
+              <Y>-10</Y>
+            </Translate>
+          </Transform>
+        </MarkGraphic>
+
+
+        <MarkGraphic>
+          <WellKnownName>Square</WellKnownName>
+          <ViewBox>
+	    <Height>15</Height>
+          </ViewBox>
+	  <DensityFill>
+	     <MarkGraphic>
+	     <ViewBox><Width>5</Width></ViewBox>
+	       <PenStroke />
+	       <SolidFill />
+	     </MarkGraphic>
+	     <Percentage>50</Percentage>
+	  </DensityFill>
+	  <PenStroke />
+          <Transform>
+            <Translate>
+              <X>50</X>
+              <Y>-10</Y>
+            </Translate>
+          </Transform>
+        </MarkGraphic>
+
+
+        <MarkGraphic>
+          <WellKnownName>Square</WellKnownName>
+          <ViewBox>
+	    <Height>15</Height>
+          </ViewBox>
+	  <DensityFill>
+	     <MarkGraphic>
+	     <ViewBox><Width>5</Width></ViewBox>
+	       <PenStroke />
+	       <SolidFill />
+	     </MarkGraphic>
+	     <Percentage>60</Percentage>
+	  </DensityFill>
+	  <PenStroke />
+          <Transform>
+            <Translate>
+              <X>70</X>
+              <Y>-10</Y>
+            </Translate>
+          </Transform>
+        </MarkGraphic>
+
+
+
+
+        <MarkGraphic>
+          <WellKnownName>Square</WellKnownName>
+          <ViewBox>
+	    <Height>15</Height>
+          </ViewBox>
+	  <DensityFill>
+	     <MarkGraphic>
+	     <ViewBox><Width>5</Width></ViewBox>
+	       <PenStroke />
+	       <SolidFill />
+	     </MarkGraphic>
+	     <Percentage>80</Percentage>
+	  </DensityFill>
+	  <PenStroke />
+          <Transform>
+            <Translate>
+              <X>90</X>
+              <Y>-10</Y>
+            </Translate>
+          </Transform>
+        </MarkGraphic>
+
+        <MarkGraphic>
+          <WellKnownName>Square</WellKnownName>
+          <ViewBox>
+	    <Height>15</Height>
+          </ViewBox>
+	  <DensityFill>
+	     <MarkGraphic>
+	     <ViewBox><Width>5</Width></ViewBox>
+	       <PenStroke />
+	       <SolidFill />
+	     </MarkGraphic>
+	     <Percentage>100</Percentage>
+	  </DensityFill>
+	  <PenStroke />
+          <Transform>
+            <Translate>
+              <X>110</X>
+              <Y>-10</Y>
+            </Translate>
+          </Transform>
+        </MarkGraphic>
+
+
+
+
+<!-- HATCH 2mm def -->
+
+        <MarkGraphic>
+          <WellKnownName>Square</WellKnownName>
+          <ViewBox>
+	    <Height>15</Height>
+          </ViewBox>
+	  <DensityFill>
+	      <PenStroke>
+	         <Width>2</Width>
+	      </PenStroke>
+	     <Percentage>0</Percentage>
+	  </DensityFill>
+	  <PenStroke />
+          <Transform>
+            <Translate>
+              <X>10</X>
+              <Y>10</Y>
+            </Translate>
+          </Transform>
+        </MarkGraphic>
+
+        
+
+        <MarkGraphic>
+          <WellKnownName>Square</WellKnownName>
+          <ViewBox>
+	    <Height>15</Height>
+          </ViewBox>
+	  <DensityFill>
+	      <PenStroke>
+	         <Width>2</Width>
+	      </PenStroke>
+	     <Percentage>30</Percentage>
+	  </DensityFill>
+	  <PenStroke />
+          <Transform>
+            <Translate>
+              <X>30</X>
+              <Y>10</Y>
+            </Translate>
+          </Transform>
+        </MarkGraphic>
+
+        
+
+        <MarkGraphic>
+          <WellKnownName>Square</WellKnownName>
+          <ViewBox>
+	    <Height>15</Height>
+          </ViewBox>
+	  <DensityFill>
+	      <PenStroke>
+	         <Width>2</Width>
+	      </PenStroke>
+	     <Percentage>50</Percentage>
+	  </DensityFill>
+	  <PenStroke />
+          <Transform>
+            <Translate>
+              <X>50</X>
+              <Y>10</Y>
+            </Translate>
+          </Transform>
+        </MarkGraphic>
+
+        
+
+        <MarkGraphic>
+          <WellKnownName>Square</WellKnownName>
+          <ViewBox>
+	    <Height>15</Height>
+          </ViewBox>
+	  <DensityFill>
+	      <PenStroke>
+	         <Width>2</Width>
+	      </PenStroke>
+	     <Percentage>60</Percentage>
+	  </DensityFill>
+	  <PenStroke />
+          <Transform>
+            <Translate>
+              <X>70</X>
+              <Y>10</Y>
+            </Translate>
+          </Transform>
+        </MarkGraphic>
+
+        
+
+
+        <MarkGraphic>
+          <WellKnownName>Square</WellKnownName>
+          <ViewBox>
+	    <Height>15</Height>
+          </ViewBox>
+	  <DensityFill>
+	      <PenStroke>
+	         <Width>2</Width>
+	      </PenStroke>
+	     <Percentage>80</Percentage>
+	  </DensityFill>
+	  <PenStroke />
+          <Transform>
+            <Translate>
+              <X>90</X>
+              <Y>10</Y>
+            </Translate>
+          </Transform>
+        </MarkGraphic>
+
+        
+
+        <MarkGraphic>
+          <WellKnownName>Square</WellKnownName>
+          <ViewBox>
+	    <Height>15</Height>
+          </ViewBox>
+	  <DensityFill>
+	      <PenStroke>
+	         <Width>2</Width>
+	      </PenStroke>
+	     <Percentage>100</Percentage>
+	  </DensityFill>
+	  <PenStroke />
+          <Transform>
+            <Translate>
+              <X>110</X>
+              <Y>10</Y>
+            </Translate>
+          </Transform>
+        </MarkGraphic>
+
+        
+
+
+<!-- HATCH 1mm def -->
+
+        <MarkGraphic>
+          <WellKnownName>Square</WellKnownName>
+          <ViewBox>
+	    <Height>15</Height>
+          </ViewBox>
+	  <DensityFill>
+	      <PenStroke>
+	         <Width>1</Width>
+	      </PenStroke>
+	      <Orientation>45</Orientation>
+	     <Percentage>0</Percentage>
+	  </DensityFill>
+	  <PenStroke />
+          <Transform>
+            <Translate>
+              <X>10</X>
+              <Y>30</Y>
+            </Translate>
+          </Transform>
+        </MarkGraphic>
+
+        
+
+        <MarkGraphic>
+          <WellKnownName>Square</WellKnownName>
+          <ViewBox>
+	    <Height>15</Height>
+          </ViewBox>
+	  <DensityFill>
+	      <PenStroke>
+	         <Width>1</Width>
+	      </PenStroke>
+	      <Orientation>45</Orientation>
+	     <Percentage>30</Percentage>
+	  </DensityFill>
+	  <PenStroke />
+          <Transform>
+            <Translate>
+              <X>30</X>
+              <Y>30</Y>
+            </Translate>
+          </Transform>
+        </MarkGraphic>
+
+        
+
+        <MarkGraphic>
+          <WellKnownName>Square</WellKnownName>
+          <ViewBox>
+	    <Height>15</Height>
+          </ViewBox>
+	  <DensityFill>
+	      <PenStroke>
+	         <Width>1</Width>
+	      </PenStroke>
+	      <Orientation>45</Orientation>
+	     <Percentage>50</Percentage>
+	  </DensityFill>
+	  <PenStroke />
+          <Transform>
+            <Translate>
+              <X>50</X>
+              <Y>30</Y>
+            </Translate>
+          </Transform>
+        </MarkGraphic>
+
+        
+
+        <MarkGraphic>
+          <WellKnownName>Square</WellKnownName>
+          <ViewBox>
+	    <Height>15</Height>
+          </ViewBox>
+	  <DensityFill>
+	      <PenStroke>
+	         <Width>1</Width>
+	      </PenStroke>
+	      <Orientation>45</Orientation>
+	     <Percentage>60</Percentage>
+	  </DensityFill>
+	  <PenStroke />
+          <Transform>
+            <Translate>
+              <X>70</X>
+              <Y>30</Y>
+            </Translate>
+          </Transform>
+        </MarkGraphic>
+
+        
+
+
+        <MarkGraphic>
+          <WellKnownName>Square</WellKnownName>
+          <ViewBox>
+	    <Height>15</Height>
+          </ViewBox>
+	  <DensityFill>
+	      <PenStroke>
+	         <Width>1</Width>
+	      </PenStroke>
+	      <Orientation>45</Orientation>
+	     <Percentage>80</Percentage>
+	  </DensityFill>
+	  <PenStroke />
+          <Transform>
+            <Translate>
+              <X>90</X>
+              <Y>30</Y>
+            </Translate>
+          </Transform>
+        </MarkGraphic>
+
+        
+
+        <MarkGraphic>
+          <WellKnownName>Square</WellKnownName>
+          <ViewBox>
+	    <Height>15</Height>
+          </ViewBox>
+	  <DensityFill>
+	      <PenStroke>
+	         <Width>1</Width>
+	      </PenStroke>
+	      <Orientation>45</Orientation>
+	     <Percentage>100</Percentage>
+	  </DensityFill>
+	  <PenStroke />
+          <Transform>
+            <Translate>
+              <X>110</X>
+              <Y>30</Y>
+            </Translate>
+          </Transform>
+        </MarkGraphic>
+
+        
+
+
+
+
+<!-- HATCH 1mm def -->
+
+        <MarkGraphic>
+          <WellKnownName>Square</WellKnownName>
+          <ViewBox>
+	    <Height>15</Height>
+          </ViewBox>
+	  <DensityFill>
+	      <PenStroke>
+	         <Width>1</Width>
+	      </PenStroke>
+	      <Orientation>90</Orientation>
+	     <Percentage>0</Percentage>
+	  </DensityFill>
+	  <PenStroke />
+          <Transform>
+            <Translate>
+              <X>10</X>
+              <Y>50</Y>
+            </Translate>
+          </Transform>
+        </MarkGraphic>
+
+        
+
+        <MarkGraphic>
+          <WellKnownName>Square</WellKnownName>
+          <ViewBox>
+	    <Height>15</Height>
+          </ViewBox>
+	  <DensityFill>
+	      <PenStroke>
+	         <Width>1</Width>
+	      </PenStroke>
+	      <Orientation>90</Orientation>
+	     <Percentage>30</Percentage>
+	  </DensityFill>
+	  <PenStroke />
+          <Transform>
+            <Translate>
+              <X>30</X>
+              <Y>50</Y>
+            </Translate>
+          </Transform>
+        </MarkGraphic>
+
+        
+
+        <MarkGraphic>
+          <WellKnownName>Square</WellKnownName>
+          <ViewBox>
+	    <Height>15</Height>
+          </ViewBox>
+	  <DensityFill>
+	      <PenStroke>
+	         <Width>1</Width>
+	      </PenStroke>
+	      <Orientation>90</Orientation>
+	     <Percentage>50</Percentage>
+	  </DensityFill>
+	  <PenStroke />
+          <Transform>
+            <Translate>
+              <X>50</X>
+              <Y>50</Y>
+            </Translate>
+          </Transform>
+        </MarkGraphic>
+
+        
+
+        <MarkGraphic>
+          <WellKnownName>Square</WellKnownName>
+          <ViewBox>
+	    <Height>15</Height>
+          </ViewBox>
+	  <DensityFill>
+	      <PenStroke>
+	         <Width>1</Width>
+	      </PenStroke>
+	      <Orientation>90</Orientation>
+	     <Percentage>60</Percentage>
+	  </DensityFill>
+	  <PenStroke />
+          <Transform>
+            <Translate>
+              <X>70</X>
+              <Y>50</Y>
+            </Translate>
+          </Transform>
+        </MarkGraphic>
+
+        
+
+
+        <MarkGraphic>
+          <WellKnownName>Square</WellKnownName>
+          <ViewBox>
+	    <Height>15</Height>
+          </ViewBox>
+	  <DensityFill>
+	      <PenStroke>
+	         <Width>1</Width>
+	      </PenStroke>
+	      <Orientation>90</Orientation>
+	     <Percentage>80</Percentage>
+	  </DensityFill>
+	  <PenStroke />
+          <Transform>
+            <Translate>
+              <X>90</X>
+              <Y>50</Y>
+            </Translate>
+          </Transform>
+        </MarkGraphic>
+
+        
+
+        <MarkGraphic>
+          <WellKnownName>Square</WellKnownName>
+          <ViewBox>
+	    <Height>15</Height>
+          </ViewBox>
+	  <DensityFill>
+	      <PenStroke>
+	         <Width>1</Width>
+	      </PenStroke>
+	      <Orientation>90</Orientation>
+	     <Percentage>100</Percentage>
+	  </DensityFill>
+	  <PenStroke />
+          <Transform>
+            <Translate>
+              <X>110</X>
+              <Y>50</Y>
+            </Translate>
+          </Transform>
+        </MarkGraphic>
+
+        
+
+
+<!-- HATCH 1mm def -->
+
+        <MarkGraphic>
+          <WellKnownName>Square</WellKnownName>
+          <ViewBox>
+	    <Height>15</Height>
+          </ViewBox>
+	  <DensityFill>
+	      <PenStroke>
+	         <Width>1</Width>
+	      </PenStroke>
+	      <Orientation>0</Orientation>
+	     <Percentage>0</Percentage>
+	  </DensityFill>
+	  <PenStroke />
+          <Transform>
+            <Translate>
+              <X>10</X>
+              <Y>70</Y>
+            </Translate>
+          </Transform>
+        </MarkGraphic>
+
+        
+
+        <MarkGraphic>
+          <WellKnownName>Square</WellKnownName>
+          <ViewBox>
+	    <Height>15</Height>
+          </ViewBox>
+	  <DensityFill>
+	      <PenStroke>
+	         <Width>1</Width>
+	      </PenStroke>
+	      <Orientation>0</Orientation>
+	     <Percentage>30</Percentage>
+	  </DensityFill>
+	  <PenStroke />
+          <Transform>
+            <Translate>
+              <X>30</X>
+              <Y>70</Y>
+            </Translate>
+          </Transform>
+        </MarkGraphic>
+
+        
+
+        <MarkGraphic>
+          <WellKnownName>Square</WellKnownName>
+          <ViewBox>
+	    <Height>15</Height>
+          </ViewBox>
+	  <DensityFill>
+	      <PenStroke>
+	         <Width>1</Width>
+	      </PenStroke>
+	      <Orientation>0</Orientation>
+	     <Percentage>50</Percentage>
+	  </DensityFill>
+	  <PenStroke />
+          <Transform>
+            <Translate>
+              <X>50</X>
+              <Y>70</Y>
+            </Translate>
+          </Transform>
+        </MarkGraphic>
+
+        
+
+        <MarkGraphic>
+          <WellKnownName>Square</WellKnownName>
+          <ViewBox>
+	    <Height>15</Height>
+          </ViewBox>
+	  <DensityFill>
+	      <PenStroke>
+	         <Width>1</Width>
+	      </PenStroke>
+	      <Orientation>0</Orientation>
+	     <Percentage>60</Percentage>
+	  </DensityFill>
+	  <PenStroke />
+          <Transform>
+            <Translate>
+              <X>70</X>
+              <Y>70</Y>
+            </Translate>
+          </Transform>
+        </MarkGraphic>
+
+        
+
+
+        <MarkGraphic>
+          <WellKnownName>Square</WellKnownName>
+          <ViewBox>
+	    <Height>15</Height>
+          </ViewBox>
+	  <DensityFill>
+	      <PenStroke>
+	         <Width>1</Width>
+	      </PenStroke>
+	      <Orientation>0</Orientation>
+	     <Percentage>80</Percentage>
+	  </DensityFill>
+	  <PenStroke />
+          <Transform>
+            <Translate>
+              <X>90</X>
+              <Y>70</Y>
+            </Translate>
+          </Transform>
+        </MarkGraphic>
+
+        
+
+        <MarkGraphic>
+          <WellKnownName>Square</WellKnownName>
+          <ViewBox>
+	    <Height>15</Height>
+          </ViewBox>
+	  <DensityFill>
+	      <PenStroke>
+	         <Width>1</Width>
+	      </PenStroke>
+	      <Orientation>0</Orientation>
+	     <Percentage>700</Percentage>
+	  </DensityFill>
+	  <PenStroke />
+          <Transform>
+            <Translate>
+              <X>110</X>
+              <Y>70</Y>
+            </Translate>
+          </Transform>
+        </MarkGraphic>
+
+
+<!-- DOT MAP -->
+        <MarkGraphic>
+          <WellKnownName>STAR</WellKnownName>
+          <ViewBox>
+	    <Height>50</Height>
+          </ViewBox>
+	  <DotMapFill>
+	      <MarkGraphic>
+	         <PenStroke />
+		 <SolidFill >
+		     <Color>#FFAF4C</Color>
+		 </SolidFill>
+	      </MarkGraphic>
+	      <ValuePerMark>3</ValuePerMark>
+	     <ValueToRepresent>20</ValueToRepresent>
+	  </DotMapFill>
+	  <PenStroke>
+	    <SolidFill>
+		     <Color>#FFAF4C</Color>
+	    </SolidFill>
+	    <Width>0.5</Width>
+	  </PenStroke>
+          <Transform>
+            <Translate>
+              <X>-25</X>
+              <Y>25</Y>
+            </Translate>
+          </Transform>
+        </MarkGraphic>
+
+
+        <MarkGraphic>
+          <WellKnownName>STAR</WellKnownName>
+          <ViewBox>
+	    <Height>50</Height>
+          </ViewBox>
+	  <DotMapFill>
+	      <MarkGraphic>
+	         <PenStroke />
+		 <SolidFill />
+	      </MarkGraphic>
+	      <ValuePerMark>3</ValuePerMark>
+	     <ValueToRepresent>20</ValueToRepresent>
+	  </DotMapFill>
+	  <PenStroke />
+          <Transform>
+            <Translate>
+              <X>-25</X>
+              <Y>60</Y>
+            </Translate>
+          </Transform>
+        </MarkGraphic>
+
+      </CompositeGraphic>
+    </PointSymbolizer>
+  </Rule>
+</FeatureTypeStyle>

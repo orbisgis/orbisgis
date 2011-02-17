@@ -4,6 +4,8 @@ import java.awt.Shape;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
+import java.awt.image.BufferedImage;
+import java.awt.image.RenderedImage;
 
 import java.io.IOException;
 
@@ -133,7 +135,7 @@ public final class ExternalGraphic extends Graphic {
     public RenderableGraphics getRenderableGraphics(SpatialDataSourceDecorator sds, long fid, boolean selected, MapTransform mt) throws ParameterException, IOException {
         // TODO Implements SELECTED!
 
-        PlanarImage img;
+        RenderedImage img;
 
         // Create shape based on image bbox
 
@@ -207,7 +209,7 @@ public final class ExternalGraphic extends Graphic {
     public double getMaxWidth(SpatialDataSourceDecorator sds, long fid, MapTransform mt) throws ParameterException, IOException {
         double delta = 0.0;
         if (viewBox != null && viewBox.usable()) {
-            PlanarImage img;
+            RenderedImage img;
             if (graphic == null) {
                 img = source.getPlanarImage(viewBox, sds, fid, mt, mimeType);
             } else {

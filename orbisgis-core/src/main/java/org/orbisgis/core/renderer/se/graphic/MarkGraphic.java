@@ -35,6 +35,7 @@
  * erwan.bocher _at_ ec-nantes.fr
  * gwendall.petit _at_ ec-nantes.fr
  */
+
 package org.orbisgis.core.renderer.se.graphic;
 
 
@@ -230,6 +231,7 @@ public final class MarkGraphic extends Graphic implements FillNode, StrokeNode, 
         try {
             shape = source.getShape(viewBox, null, -1, null, null, markIndex, mimeType);
         } catch (Exception e) {
+            Services.getErrorManager().error("Could not update graphic", e);
             shape = null;
         }
     }
@@ -340,7 +342,13 @@ public final class MarkGraphic extends Graphic implements FillNode, StrokeNode, 
 
         if (viewBox != null && viewBox.usable()) {
             Point2D dim = viewBox.getDimensionInPixel(sds, fid, defaultSize, defaultSize, mt.getScaleDenominator(), mt.getDpi());
-            delta = Math.max(dim.getY(), dim.getY());
+            delta = Math.max(dim.getX(), dim.getY());
+        } else {
+            if (source != null){
+                delta = source.getDefaultMaxWidth(sds, fid, delta, delta, markIndex, mimeType);
+            } else {
+                delta = WellKnownName.CIRCLE.getDefaultMaxWidth(sds, fid, delta, delta, markIndex, mimeType);
+            }
         }
 
         delta += this.getMargin(sds, fid, mt);
@@ -357,7 +365,6 @@ public final class MarkGraphic extends Graphic implements FillNode, StrokeNode, 
         if (uom != null) {
             m.setUnitOfMeasure(uom.toURN());
         }
-
 
         if (markIndex != null) {
             m.setMarkIndex(markIndex.getJAXBParameterValueType());
@@ -398,36 +405,30 @@ public final class MarkGraphic extends Graphic implements FillNode, StrokeNode, 
     @Override
     public String dependsOnFeature() {
 
-        String v = "";
-        String pO = "";
-        String h = "";
-        String f = "";
-        String s = "";
-        String t = "";
-        String mI = "";
+        String result = "";
 
         if (viewBox != null){
-            v = viewBox.dependsOnFeature();
+            result += " " + viewBox.dependsOnFeature();
         }
         if (pOffset != null){
-            pO = pOffset.dependsOnFeature();
+            result += " " + pOffset.dependsOnFeature();
         }
         if (halo != null){
-            h = halo.dependsOnFeature();
+            result += " " + halo.dependsOnFeature();
         }
         if (fill != null){
-            f = fill.dependsOnFeature();
+            result += " " + fill.dependsOnFeature();
         }
         if (stroke != null){
-            s = stroke.dependsOnFeature();
+            result += " " + stroke.dependsOnFeature();
         }
         if (transform != null){
-            t = transform.dependsOnFeature();
+            result += " " + transform.dependsOnFeature();
         }
         if (markIndex != null){
-            mI = markIndex.dependsOnFeature();
+            result += " " + markIndex.dependsOnFeature();
         }
 
-        return (v + " " + pO + " " + h + " " + f + " " + s + " " + t + " " + mI).trim();
+        return result.trim();
     }
 }

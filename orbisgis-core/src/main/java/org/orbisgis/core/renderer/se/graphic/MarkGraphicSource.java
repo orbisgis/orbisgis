@@ -67,8 +67,13 @@ public interface MarkGraphicSource {
 	 * @throws ParameterException
 	 * @throws IOException
 	 */
-    public abstract Shape getShape(ViewBox viewBox, SpatialDataSourceDecorator sds, long fid, Double scale, Double dpi, RealParameter markIndex, String format)
+    public abstract Shape getShape(ViewBox viewBox, SpatialDataSourceDecorator sds,
+            long fid, Double scale, Double dpi, RealParameter markIndex, String format)
             throws ParameterException, IOException;
 
     public void setJAXBSource(MarkGraphicType m);
+
+    public double getDefaultMaxWidth(SpatialDataSourceDecorator sds, long fid, 
+            Double scale, Double dpi, RealParameter markIndex, String mimeType)
+            throws ParameterException, IOException;
 }

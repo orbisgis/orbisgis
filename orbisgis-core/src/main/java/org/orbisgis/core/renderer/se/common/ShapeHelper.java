@@ -63,7 +63,7 @@ public class ShapeHelper {
      * @return
      */
     public static double getAreaPerimeterLength(Shape area) {
-        PathIterator it = area.getPathIterator(null);
+        PathIterator it = area.getPathIterator(null, 1);
 
         double coords[] = new double[6];
 
@@ -116,7 +116,7 @@ public class ShapeHelper {
 
         ArrayList<Shape> shapes = new ArrayList<Shape>();
 
-        PathIterator it = line.getPathIterator(null);
+        PathIterator it = line.getPathIterator(null, 1);
         double coords[] = new double[6];
 
         Double x1 = null;
@@ -199,7 +199,7 @@ public class ShapeHelper {
 
         double segLength = perimeter / nbPart;
 
-        PathIterator it = line.getPathIterator(null);
+        PathIterator it = line.getPathIterator(null, 1);
         double coords[] = new double[6];
 
         Double x1 = null;
@@ -293,7 +293,7 @@ public class ShapeHelper {
      * @return point representing the point at the linear length distance
      */
     public static Point2D.Double getPointAt(Shape shp, double distance) {
-        PathIterator it = shp.getPathIterator(null);
+        PathIterator it = shp.getPathIterator(null, 1);
 
         double coords[] = new double[6];
 

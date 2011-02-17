@@ -15,6 +15,14 @@
                     <CompositeGraphic>
                     <MarkGraphic>
                         <WellKnownName>SQUARE</WellKnownName>
+                        <ViewBox><Width>4</Width></ViewBox>
+                        <SolidFill>
+                            <Color>#888888</Color>
+                            <Opacity>100</Opacity>
+                        </SolidFill>
+                    </MarkGraphic>
+                    <MarkGraphic>
+                        <WellKnownName>SQUARE</WellKnownName>
                         <ViewBox><Width>2</Width></ViewBox>
                         <SolidFill>
                             <Color>#BBBBBB</Color>

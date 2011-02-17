@@ -77,7 +77,14 @@ public final class Scale implements Transformation {
     
     @Override
     public String dependsOnFeature(){
-        return (x.dependsOnFeature() + " " + y.dependsOnFeature()).trim();
+        String result = "";
+        if (x!= null){
+            result += x.dependsOnFeature();
+        }
+        if (y != null){
+            result += " " + y.dependsOnFeature();
+        }
+        return result.trim();
     }
 
     @Override

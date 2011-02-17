@@ -1,3 +1,43 @@
+/*
+ * OrbisGIS is a GIS application dedicated to scientific spatial simulation.
+ * This cross-platform GIS is developed at French IRSTV institute and is able to
+ * manipulate and create vector and raster spatial information. OrbisGIS is
+ * distributed under GPL 3 license. It is produced by the "Atelier SIG" team of
+ * the IRSTV Institute <http://www.irstv.cnrs.fr/> CNRS FR 2488.
+ *
+ *
+ *  Team leader Erwan BOCHER, scientific researcher,
+ *
+ *  User support leader : Gwendall Petit, geomatic engineer.
+ *
+ *
+ * Copyright (C) 2007 Erwan BOCHER, Fernando GONZALEZ CORTES, Thomas LEDUC
+ *
+ * Copyright (C) 2010 Erwan BOCHER, Pierre-Yves FADET, Alexis GUEGANNO, Maxence LAURENT
+ *
+ * This file is part of OrbisGIS.
+ *
+ * OrbisGIS is free software: you can redistribute it and/or modify it under the
+ * terms of the GNU General Public License as published by the Free Software
+ * Foundation, either version 3 of the License, or (at your option) any later
+ * version.
+ *
+ * OrbisGIS is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
+ * A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along with
+ * OrbisGIS. If not, see <http://www.gnu.org/licenses/>.
+ *
+ * For more information, please consult: <http://www.orbisgis.org/>
+ *
+ * or contact directly:
+ * erwan.bocher _at_ ec-nantes.fr
+ * gwendall.petit _at_ ec-nantes.fr
+ */
+
+
+
 package org.orbisgis.core.renderer.se.stroke;
 
 import java.awt.BasicStroke;
@@ -33,6 +73,9 @@ import org.orbisgis.core.renderer.se.parameter.string.StringParameter;
  * @author maxence
  */
 public final class PenStroke extends Stroke implements FillNode {
+
+    private static LineCap DEFAULT_CAP = LineCap.BUTT;
+    private static LineJoin DEFAULT_JOIN = LineJoin.ROUND;
 
     private Fill fill;
     //private RealParameter opacity;
@@ -74,8 +117,8 @@ public final class PenStroke extends Stroke implements FillNode {
         setDashArray(null);
         setDashOffset(null);
 
-        setLineCap(LineCap.ROUND);
-        setLineJoin(LineJoin.BEVEL);
+        setLineCap(null);
+        setLineJoin(null);
 
         //updateBasicStroke();
     }
@@ -139,25 +182,22 @@ public final class PenStroke extends Stroke implements FillNode {
 
     @Override
     public String dependsOnFeature() {
-        String f = "";
-        String dOffset = "";
-        String dArray = "";
-        String w = "";
+        String result = "";
 
         if (fill != null) {
-            f = fill.dependsOnFeature();
+            result = fill.dependsOnFeature();
         }
         if (dashOffset != null) {
-            dOffset = dashOffset.dependsOnFeature();
+            result +=  " " + dashOffset.dependsOnFeature();
         }
         if (dashArray != null) {
-            dArray = dashArray.dependsOnFeature();
+            result += " " + dashArray.dependsOnFeature();
         }
         if (width != null){
-            w = width.dependsOnFeature();
+            result  +=  " " + width.dependsOnFeature();
         }
 
-        return (f + " " + w + " " + dOffset + " " + dArray).trim();
+        return result.trim();
     }
 
     @Override
@@ -179,7 +219,11 @@ public final class PenStroke extends Stroke implements FillNode {
     }
 
     public LineCap getLineCap() {
-        return lineCap;
+        if (lineCap != null){
+            return lineCap;
+        } else {
+            return DEFAULT_CAP;
+        }
     }
 
     public void setLineJoin(LineJoin join) {
@@ -188,7 +232,11 @@ public final class PenStroke extends Stroke implements FillNode {
     }
 
     public LineJoin getLineJoin() {
-        return lineJoin;
+        if (lineJoin != null)
+            return lineJoin;
+        else 
+            return DEFAULT_JOIN;
+
     }
 
     /*public void setOpacity(RealParameter opacity) {
@@ -247,29 +295,20 @@ public final class PenStroke extends Stroke implements FillNode {
     }*/
     private BasicStroke createBasicStroke(SpatialDataSourceDecorator sds, long fid, MapTransform mt, Double v100p) throws ParameterException {
 
-
-        Double scale = null;
-        Double dpi = null;
-
-        if (mt != null) {
-            scale = mt.getScaleDenominator();
-            dpi = mt.getDpi();
-        }
-
         int cap;
         if (this.lineCap == null) {
             cap = BasicStroke.CAP_BUTT;
         } else {
             switch (this.lineCap) {
-                case BUTT:
-                default:
-                    cap = BasicStroke.CAP_BUTT;
-                    break;
                 case ROUND:
                     cap = BasicStroke.CAP_ROUND;
                     break;
                 case SQUARE:
                     cap = BasicStroke.CAP_SQUARE;
+                    break;
+                default:
+                case BUTT:
+                    cap = BasicStroke.CAP_BUTT;
                     break;
             }
         }
@@ -279,15 +318,15 @@ public final class PenStroke extends Stroke implements FillNode {
             join = BasicStroke.JOIN_ROUND;
         } else {
             switch (this.lineJoin) {
+                case BEVEL:
+                    join = BasicStroke.JOIN_BEVEL;
+                    break;
                 case MITRE:
                     join = BasicStroke.JOIN_MITER;
                     break;
                 case ROUND:
                 default:
                     join = BasicStroke.JOIN_ROUND;
-                    break;
-                case BEVEL:
-                    join = BasicStroke.JOIN_BEVEL;
                     break;
             }
         }
@@ -339,9 +378,9 @@ public final class PenStroke extends Stroke implements FillNode {
     @Override
     public void draw(Graphics2D g2, SpatialDataSourceDecorator sds, long fid, Shape shp, boolean selected, MapTransform mt) throws ParameterException, IOException {
 
-        Paint paint = null;
+        //Paint paint = null;
 
-        Shape shape = shp;
+        //Shape shape = shp;
 
         BasicStroke stroke = null;
 
@@ -351,13 +390,15 @@ public final class PenStroke extends Stroke implements FillNode {
         //    stroke = this.bStroke;
         //}
 
-        g2.setStroke(stroke);
+        //g2.setStroke(stroke);
 
-        paint = fill.getPaint(fid, sds, selected, mt);
+        //paint = fill.getPaint(fid, sds, selected, mt);
 
-        if (paint != null) {
-            g2.setPaint(paint);
-            g2.draw(shape);
+        if (fill != null) {
+            Shape outline = stroke.createStrokedShape(shp);
+            fill.draw(g2, sds, fid, outline, selected, mt);
+            //g2.setPaint(paint);
+            //g2.draw(shape);
         }
     }
 

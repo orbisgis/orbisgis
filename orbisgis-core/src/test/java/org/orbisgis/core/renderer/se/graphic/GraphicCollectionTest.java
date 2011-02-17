@@ -9,10 +9,13 @@ import com.sun.media.jai.widget.DisplayJAI;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Container;
+import java.awt.image.RenderedImage;
+import java.io.File;
 
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.imageio.ImageIO;
 import javax.media.jai.RenderableGraphics;
 
 import javax.swing.JFrame;
@@ -80,7 +83,12 @@ public class GraphicCollectionTest extends TestCase {
         rg.drawLine(0, (int)rg.getMinY(), 0, (int)(rg.getMinY() + rg.getHeight()));
 
         dj.setBounds((int)rg.getMinX(), (int)rg.getMinY(), (int)rg.getWidth(), (int)rg.getHeight());
-        dj.set(rg.createRendering(mt.getCurrentRenderContext()), (int)rg.getWidth()/2, (int)rg.getHeight()/2);
+
+        RenderedImage r = rg.createRendering(mt.getCurrentRenderContext());
+        dj.set(r, (int)rg.getWidth()/2, (int)rg.getHeight()/2);
+
+        File file = new File("/tmp/graphics.png");
+        ImageIO.write(r, "png", file);
 
         // Add to the JFrame’s ContentPane an instance of JScrollPane
         // containing the DisplayJAI instance.

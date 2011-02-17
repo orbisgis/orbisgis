@@ -42,6 +42,7 @@ import java.awt.Shape;
 import java.io.IOException;
 import javax.xml.bind.JAXBElement;
 import org.gdms.data.SpatialDataSourceDecorator;
+import org.orbisgis.core.Services;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.persistance.se.ObjectFactory;
 import org.orbisgis.core.renderer.persistance.se.TextStrokeType;
@@ -110,7 +111,8 @@ public final class TextStroke extends Stroke {
 
 	@Override
 	public void draw(Graphics2D g2, SpatialDataSourceDecorator sds, long fid, Shape shp, boolean selected, MapTransform mt) throws ParameterException, IOException {
-		throw new UnsupportedOperationException("Not supported yet.");
+        Services.getErrorManager().error("TextStroke not supported yet");
+
 	}
 
 	@Override

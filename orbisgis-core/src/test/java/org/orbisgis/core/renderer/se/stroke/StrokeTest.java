@@ -36,19 +36,26 @@
  * gwendall.petit _at_ ec-nantes.fr
  */
 
-package org.orbisgis.core.renderer.se.graphic;
+package org.orbisgis.core.renderer.se.stroke;
 
+
+import java.awt.image.Raster;
+import java.awt.image.RenderedImage;
+import org.orbisgis.core.renderer.se.graphic.*;
 import com.sun.media.jai.widget.DisplayJAI;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Container;
-import java.awt.image.RenderedImage;
 import java.io.File;
+
 import java.io.IOException;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.imageio.ImageIO;
 import javax.media.jai.RenderableGraphics;
+
 import javax.swing.JFrame;
+
 import junit.framework.TestCase;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.errorManager.ErrorListener;
@@ -59,16 +66,15 @@ import org.orbisgis.core.renderer.se.PointSymbolizer;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 
-
 /**
  *
  * @author maxence
  */
-public class ProportionalSymbolsTest extends TestCase {
+public class StrokeTest extends TestCase {
 
     private FeatureTypeStyle fts;
 
-    public ProportionalSymbolsTest(String testName) throws IOException {
+    public StrokeTest(String testName) throws IOException {
         super(testName);
     }
 
@@ -87,7 +93,7 @@ public class ProportionalSymbolsTest extends TestCase {
         super.tearDown();
     }
 
-    public void testProportionalSymbols() throws IOException, ParameterException, InvalidStyle {
+    public void testGraphic() throws IOException, ParameterException, InvalidStyle {
         JFrame frame = new JFrame();
         frame.setTitle("Test GraphicCollection");
 
@@ -100,7 +106,7 @@ public class ProportionalSymbolsTest extends TestCase {
 
         System.out.println(dj.getColorModel());
 
-        fts = new FeatureTypeStyle(null, "src/test/resources/org/orbisgis/core/renderer/se/prop_symbols.se");
+        fts = new FeatureTypeStyle(null, "src/test/resources/org/orbisgis/core/renderer/se/strokes.se");
         PointSymbolizer ps = (PointSymbolizer) fts.getRules().get(0).getCompositeSymbolizer().getSymbolizerList().get(0);
         GraphicCollection collec = ps.getGraphicCollection();
 
@@ -113,12 +119,13 @@ public class ProportionalSymbolsTest extends TestCase {
         rg.drawLine(0, (int)rg.getMinY(), 0, (int)(rg.getMinY() + rg.getHeight()));
 
         dj.setBounds((int)rg.getMinX(), (int)rg.getMinY(), (int)rg.getWidth(), (int)rg.getHeight());
-
         RenderedImage r = rg.createRendering(mt.getCurrentRenderContext());
         dj.set(r, (int)rg.getWidth()/2, (int)rg.getHeight()/2);
 
-        File file = new File("/tmp/prop_symbols.png");
+        File file = new File("/tmp/stroke.png");
         ImageIO.write(r, "png", file);
+
+
 
         // Add to the JFrame’s ContentPane an instance of JScrollPane
         // containing the DisplayJAI instance.
@@ -131,13 +138,16 @@ public class ProportionalSymbolsTest extends TestCase {
         frame.setVisible(true); // show the frame.
 
         System.out.print("");
-
+        
         try {
             Thread.sleep(20000);
         } catch (InterruptedException ex) {
+            Logger.getLogger(StrokeTest.class.getName()).log(Level.SEVERE, null, ex);
         }
-
+        
     }
+
+
 
 	protected class FailErrorManager implements ErrorManager {
 
@@ -169,6 +179,4 @@ public class ProportionalSymbolsTest extends TestCase {
             System.out.println ("WARN: " + userMsg);
 		}
 	}
-
-
 }

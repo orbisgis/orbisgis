@@ -16,6 +16,14 @@
                     <CompositeGraphic>
                     <MarkGraphic>
                         <WellKnownName>SQUARE</WellKnownName>
+                        <ViewBox><Width>4</Width></ViewBox>
+                        <SolidFill>
+                            <Color>#888888</Color>
+                            <Opacity>100</Opacity>
+                        </SolidFill>
+                    </MarkGraphic>
+                    <MarkGraphic>
+                        <WellKnownName>SQUARE</WellKnownName>
                         <ViewBox><Width>2</Width></ViewBox>
                         <SolidFill>
                             <Color>#BBBBBB</Color>
@@ -45,6 +53,7 @@
                     </CompositeGraphic>
                 </GraphicFill>
             </MarkGraphic>
+
                 <ExternalGraphic>
                     <OnlineResource ns4:href="https://www.yoplait.ca/ResourceDocs/fr/logo_yop.jpg"/>
                     <ViewBox>
@@ -58,6 +67,7 @@
                         </Translate>
                     </Transform>
                 </ExternalGraphic>
+
                 <TextGraphic>
                     <StyledLabel>
                         <LabelText>ExtGr</LabelText>
@@ -627,7 +637,7 @@
           <ViewBox>
 	    <Height>10</Height>
           </ViewBox>
-          <SolidFill><Color>#bb0000</Color></SolidFill>
+          <SolidFill><Color>#bb0000</Color><Opacity>50.0</Opacity></SolidFill>
           <PenStroke />
                     <Halo>
                         <Radius>4</Radius>
@@ -648,7 +658,7 @@
           <ViewBox>
 	    <Height>10</Height>
           </ViewBox>
-          <SolidFill><Color>#bb0000</Color></SolidFill>
+          <SolidFill><Color>#bb0000</Color><Opacity>50.0</Opacity></SolidFill>
           <PenStroke />
                     <Halo>
                         <Radius>4</Radius>
@@ -668,7 +678,7 @@
           <ViewBox>
 	    <Height>10</Height>
           </ViewBox>
-          <SolidFill><Color>#bb0000</Color></SolidFill>
+          <SolidFill><Color>#bb0000</Color><Opacity>50.0</Opacity></SolidFill>
           <PenStroke />
                     <Halo>
                         <Radius>4</Radius>
@@ -688,7 +698,7 @@
           <ViewBox>
 	    <Height>10</Height>
           </ViewBox>
-          <SolidFill><Color>#bb0000</Color></SolidFill>
+          <SolidFill><Color>#bb0000</Color><Opacity>50.0</Opacity></SolidFill>
           <PenStroke />
                     <Halo>
                         <Radius>4</Radius>
@@ -708,7 +718,7 @@
           <ViewBox>
 	    <Height>10</Height>
           </ViewBox>
-          <SolidFill><Color>#bb0000</Color></SolidFill>
+          <SolidFill><Color>#bb0000</Color><Opacity>50.0</Opacity></SolidFill>
           <PenStroke />
                     <Halo>
                         <Radius>4</Radius>
@@ -728,7 +738,7 @@
           <ViewBox>
 	    <Height>10</Height>
           </ViewBox>
-          <SolidFill><Color>#bb0000</Color></SolidFill>
+          <SolidFill><Color>#bb0000</Color><Opacity>50.0</Opacity></SolidFill>
           <PenStroke />
                     <Halo>
                         <Radius>4</Radius>
@@ -911,6 +921,168 @@
             </Translate>
           </Transform>
         </TextGraphic>
+
+
+
+
+        <MarkGraphic>
+          <WellKnownName>star</WellKnownName>
+          <ViewBox>
+	    <Height>5</Height>
+          </ViewBox>
+          <SolidFill><Color>#bb00bb</Color></SolidFill>
+          <PenStroke>
+          	<SolidFill><Color>#bb0000</Color>
+		<Opacity>50</Opacity>
+		</SolidFill>
+		<Width>50</Width>
+	  </PenStroke>
+          <Transform>
+            <Translate>
+              <X>-10</X>
+              <Y>45</Y>
+            </Translate>
+          </Transform>
+        </MarkGraphic>
+
+
+        <MarkGraphic>
+          <WellKnownName>Circle</WellKnownName>
+          <ViewBox>
+	    <Height>5</Height>
+          </ViewBox>
+          <SolidFill><Color>#bb00bb</Color></SolidFill>
+          <PenStroke>
+          	<SolidFill><Color>#bb0000</Color>
+		<Opacity>50</Opacity>
+		</SolidFill>
+		<Width>15</Width>
+	  </PenStroke>
+          <Transform>
+            <Translate>
+              <X>-40</X>
+              <Y>45</Y>
+            </Translate>
+          </Transform>
+        </MarkGraphic>
+
+
+        <MarkGraphic>
+          <WellKnownName>Circle</WellKnownName>
+          <ViewBox>
+	    <Height>5</Height>
+          </ViewBox>
+          <SolidFill><Color>#bb00bb</Color></SolidFill>
+          <PenStroke>
+          	<SolidFill><Color>#bb0000</Color>
+		<Opacity>50</Opacity>
+		</SolidFill>
+		
+		<Width>10</Width>
+	  </PenStroke>
+          <Transform>
+            <Translate>
+              <X>-80</X>
+              <Y>45</Y>
+            </Translate>
+          </Transform>
+        </MarkGraphic>
+
+
+<!--   SVG -->
+                <ExternalGraphic>
+                    <OnlineResource ns4:href="file:///home/maxence/ellipses.svg"/>
+		    <Format>image/svg+xml</Format>
+
+                    <ViewBox>
+                        <Width>20.0</Width>
+                    </ViewBox>
+                    <Transform>
+                            <Translate>
+                           <X>-100</X>
+                           <Y>-10</Y>
+                        </Translate>
+                    </Transform>
+                </ExternalGraphic>
+
+                <ExternalGraphic>
+                    <OnlineResource ns4:href="file:///home/maxence/stars.svg"/>
+		    <Format>image/svg+xml</Format>
+                    <ViewBox>
+                        <Width>20.0</Width>
+                    </ViewBox>
+
+                    <Transform>
+                        <Scale>
+                            <XY>0.5</XY>
+                        </Scale>
+                            <Translate>
+                           <X>-80</X>
+                           <Y>-10</Y>
+                        </Translate>
+                    </Transform>
+                </ExternalGraphic>
+                <TextGraphic>
+                    <StyledLabel>
+                        <LabelText>ExtGr(VBScale></LabelText>
+                    </StyledLabel>
+                        <Transform>
+                            <Translate>
+                           <X>-110</X>
+                           <Y>-55</Y>
+                        </Translate>
+                    </Transform>
+                </TextGraphic>
+
+
+
+                <ExternalGraphic>
+                    <OnlineResource ns4:href="file:///home/maxence/stars.svg"/>
+		    <Format>image/svg+xml</Format>
+                    <ViewBox>
+                        <Width>10.0</Width>
+                    </ViewBox>
+
+                    <Transform>
+                            <Translate>
+                           <X>-60</X>
+                           <Y>-10</Y>
+                        </Translate>
+                    </Transform>
+                    <Opacity>50.0</Opacity>
+                </ExternalGraphic>
+                <TextGraphic>
+                    <StyledLabel>
+                        <LabelText>ExtGr(Opa)></LabelText>
+                    </StyledLabel>
+                        <Transform>
+                            <Translate>
+                           <X>-95</X>
+                           <Y>-60</Y>
+                        </Translate>
+                    </Transform>
+                </TextGraphic>
+
+                <ExternalGraphic>
+                    <OnlineResource ns4:href="file:///home/maxence/stars.svg"/>
+		    <Format>image/svg+xml</Format>
+                    <ViewBox>
+                        <Width>10.0</Width>
+                    </ViewBox>
+
+                    <Transform>
+                            <Translate>
+                           <X>-40</X>
+                           <Y>-10</Y>
+                        </Translate>
+                    </Transform>
+                    <Halo>
+                        <Radius>4</Radius>
+                        <SolidFill>
+                            <Color>#ffffff</Color>
+                        </SolidFill>
+                    </Halo>
+                </ExternalGraphic>
       </CompositeGraphic>
     </PointSymbolizer>
   </Rule>
