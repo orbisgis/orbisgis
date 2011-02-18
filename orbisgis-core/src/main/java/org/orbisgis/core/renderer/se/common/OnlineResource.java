@@ -51,6 +51,7 @@ import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.awt.image.RenderedImage;
+import java.awt.image.renderable.ParameterBlock;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
@@ -82,7 +83,7 @@ import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 public class OnlineResource implements ExternalGraphicSource, MarkGraphicSource {
 
     private URL url;
-    private PlanarImage rowImage;
+    private PlanarImage rawImage;
 
     /**
      *
@@ -127,10 +128,7 @@ public class OnlineResource implements ExternalGraphicSource, MarkGraphicSource 
             BufferedImage img;
 
             if (viewBox != null && mt != null && viewBox.usable()) {
-                if (mt == null) {
-                    return null;
-                }
-                if (sds == null && viewBox != null && !viewBox.dependsOnFeature().isEmpty()) {
+                if (sds == null && !viewBox.dependsOnFeature().isEmpty()) {
                     throw new ParameterException("View box depends on feature");
                 }
 
@@ -165,19 +163,16 @@ public class OnlineResource implements ExternalGraphicSource, MarkGraphicSource 
     public PlanarImage getJAIImage(ViewBox viewBox, SpatialDataSourceDecorator sds, long fid, MapTransform mt, String mimeType)
             throws IOException, ParameterException {
 
-        if (rowImage == null) {
-            rowImage = JAI.create("url", url);
+        if (rawImage == null) {
+            rawImage = JAI.create("url", url);
             System.out.println("Download external graphic from " + url);
         }
 
-        PlanarImage img = rowImage;
+        PlanarImage img = rawImage;
 
 
         if (viewBox != null && mt != null && viewBox.usable()) {
-            if (mt == null) {
-                return null;
-            }
-            if (sds == null && viewBox != null && !viewBox.dependsOnFeature().isEmpty()) {
+            if (sds == null && !viewBox.dependsOnFeature().isEmpty()) {
                 throw new ParameterException("View box depends on feature");
             }
 
@@ -192,7 +187,21 @@ public class OnlineResource implements ExternalGraphicSource, MarkGraphicSource 
             if (widthDst > 0 && heightDst > 0) {
                 double ratio_x = widthDst / width;
                 double ratio_y = heightDst / height;
-                return JAI.create("SubsampleAverage", img, ratio_x, ratio_y, mt.getRenderingHints());
+                ParameterBlock pb = new ParameterBlock();
+                pb.addSource(img);
+                pb.add(ratio_x);
+                pb.add(ratio_y);
+                pb.add(0.0F);
+                pb.add(0.0F);
+                //pb.add(0);
+                //pb.add(InterpolationBilinear.getInstance(InterpolationBilinear.INTERP_BILINEAR));
+                if (ratio_x > 1.0 || ratio_y > 1.0){
+                    return JAI.create("scale", pb, mt.getRenderingHints());
+                } else {
+                    //return JAI.create("SubsampleAverage", pb, mt.getRenderingHints());
+                    return JAI.create("SubsampleAverage", img, ratio_x, ratio_y, mt.getRenderingHints());
+                }
+
             } else {
                 return img;
             }

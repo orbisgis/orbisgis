@@ -43,6 +43,7 @@ import java.awt.geom.Path2D;
 
 import java.awt.geom.PathIterator;
 import java.awt.geom.Point2D;
+import java.awt.geom.Rectangle2D;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -374,11 +375,11 @@ public class ShapeHelper {
 
         @Override
         public String toString() {
-            if (quadX1 != null) {
-                return "" + x + ";" + y + "   " + quadX1 + ";" + quadY2 + "  " + quadX2 + ";" + quadY2 + "   " + quadX3 + ";" + quadY3;
-            } else {
+            //if (quadX1 != null) {
+            //    return "" + x + ";" + y + "   " + quadX1 + ";" + quadY2 + "  " + quadX2 + ";" + quadY2 + "   " + quadX3 + ";" + quadY3;
+            //} else {
                 return "" + x + ";" + y;
-            }
+            //}
         }
     }
 
@@ -805,13 +806,13 @@ public class ShapeHelper {
                 double dx = v.quadX2 - v.x;
                 double dy = v.quadY2 - v.y;
 
-                if (dx * dx + dy * dy > 9) {
+                //if (dx * dx + dy * dy > 9) {
                     //if (dx * dx + dy * dy < -9) { // i.e. never  (a² + b² > 0) !
-                    shp.lineTo(v.quadX1, v.quadY1);
-                    shp.quadTo(v.quadX2, v.quadY2, v.quadX3, v.quadY3);
-                } else {
+                //    shp.lineTo(v.quadX1, v.quadY1);
+                //    shp.quadTo(v.quadX2, v.quadY2, v.quadX3, v.quadY3);
+                //} else {
                     shp.lineTo(v.x, v.y);
-                }
+                //}
             } else {
                 shp.lineTo(v.x, v.y);
             }
@@ -933,7 +934,7 @@ public class ShapeHelper {
                         System.out.println("Add " + vertexes.get(j));
                     }
                 }
-            } else if (in_dir == 1) {
+            /*} else if (in_dir == 1) {
                 Vertex v1 = vertexes.get(offsetLinkList.get(backward));
                 Vertex v2 = vertexes.get(bn);
                 Vertex v3 = vertexes.get(offsetLinkList.get(forward));
@@ -951,8 +952,8 @@ public class ShapeHelper {
                     if (_DEBUG_) {
                         System.out.println("Skip");
                     }
-                }
-            } else if (in_dir > 1) {
+                }*/
+            } else if (in_dir >= 1) {
                 Vertex v1 = vertexes.get(offsetLinkList.get(backward));
                 Vertex v2 = vertexes.get(bn);
                 Vertex v3 = vertexes.get(offsetLinkList.get(forward));
@@ -1089,8 +1090,15 @@ public class ShapeHelper {
     }
 
     private static ArrayList<Shape> contourParallelShape(Shape shp, double offset) {
+
         ArrayList<ArrayList<Vertex>> shapes = getVertexes(shp);
         ArrayList<Shape> rawShapes = new ArrayList<Shape>();
+
+        Rectangle2D bounds2D = shp.getBounds2D();
+
+        if (Math.min(bounds2D.getWidth(), bounds2D.getHeight()) < Math.abs(offset)){
+            return rawShapes;
+        }
 
         for (ArrayList<Vertex> vertexes : shapes) {
             if (_DEBUG_) {
@@ -1101,6 +1109,7 @@ public class ShapeHelper {
                 System.out.println(".....................");
             }
 
+            System.out.println ("Num Vertexes: " + vertexes.size());
             boolean closed = isClosed(vertexes);
 
             removeUselessVertex(vertexes);
@@ -1108,6 +1117,8 @@ public class ShapeHelper {
             if (closed) {
                 normalize(vertexes);
             }
+
+            System.out.println ("Num Cleaned Vertexes: " + vertexes.size());
 
             ArrayList<Vertex> offsetVertexes = createOffsetVertexes(vertexes, offset, closed);
 
@@ -1123,6 +1134,8 @@ public class ShapeHelper {
                 }
             }
 
+            System.out.println ("Num offseted Vertexes: " + offsetVertexes.size());
+
             ArrayList<Edge> edges = computeEdges(vertexes, offsetVertexes, offset, closed);
 
             if (_DEBUG_) {
@@ -1131,6 +1144,8 @@ public class ShapeHelper {
                     System.out.println(e);
                 }
             }
+
+            System.out.println ("Num edges: " + edges.size());
 
             ArrayList<Vertex> rawLink = computeRawLink(edges, offsetVertexes, closed);
 

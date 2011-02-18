@@ -222,11 +222,17 @@ public final class Rule implements SymbolizerNode {
                 for (i=0;i<gc.getNumGraphics();i++){
                     Graphic g = gc.getGraphic(i);
                     if (g instanceof MarkGraphic){
-                        f += " " + ((MarkGraphic)g).getViewBox().dependsOnFeature();
+                        MarkGraphic mark = (MarkGraphic) g;
+                        if (mark.getViewBox() != null){
+                            f += " " + mark.getViewBox().dependsOnFeature();
+                        }
                     } else if (g instanceof ExternalGraphic){
-                        f += " " + ((ExternalGraphic)g).getViewBox().dependsOnFeature();
+                        ExternalGraphic extG = (ExternalGraphic) g;
+                        if (extG.getViewBox() != null){
+                            f += " " + extG.getViewBox().dependsOnFeature();
+                        }
                     }
-                    // TODO add others !
+                    // TODO add others cases !
                 }
                 f = f.trim();
                 if (!f.isEmpty()){

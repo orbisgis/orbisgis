@@ -141,7 +141,7 @@ public abstract class Graphic implements SymbolizerNode, UomNode {
 	                width, height));
 		}
 		catch (Exception e){
-			throw new ParameterException("Invalid bounds !");
+			throw new ParameterException("Invalid bounds !", e);
 		}
 
         return rg;

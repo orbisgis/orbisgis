@@ -42,7 +42,6 @@ import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import javax.media.jai.RenderableGraphics;
 import javax.xml.bind.JAXBElement;
 import org.gdms.data.SpatialDataSourceDecorator;

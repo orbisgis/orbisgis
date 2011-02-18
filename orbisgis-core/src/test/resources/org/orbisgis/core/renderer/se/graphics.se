@@ -157,6 +157,7 @@
                         </SolidFill>
                     </Halo>
                 </ExternalGraphic>
+		
                 <TextGraphic>
                     <StyledLabel>
                         <LabelText>ExtGr(Opa)></LabelText>
@@ -1022,19 +1023,6 @@
                         </Translate>
                     </Transform>
                 </ExternalGraphic>
-                <TextGraphic>
-                    <StyledLabel>
-                        <LabelText>ExtGr(VBScale></LabelText>
-                    </StyledLabel>
-                        <Transform>
-                            <Translate>
-                           <X>-110</X>
-                           <Y>-55</Y>
-                        </Translate>
-                    </Transform>
-                </TextGraphic>
-
-
 
                 <ExternalGraphic>
                     <OnlineResource ns4:href="file:///home/maxence/stars.svg"/>
@@ -1051,17 +1039,6 @@
                     </Transform>
                     <Opacity>50.0</Opacity>
                 </ExternalGraphic>
-                <TextGraphic>
-                    <StyledLabel>
-                        <LabelText>ExtGr(Opa)></LabelText>
-                    </StyledLabel>
-                        <Transform>
-                            <Translate>
-                           <X>-95</X>
-                           <Y>-60</Y>
-                        </Translate>
-                    </Transform>
-                </TextGraphic>
 
                 <ExternalGraphic>
                     <OnlineResource ns4:href="file:///home/maxence/stars.svg"/>
@@ -1083,6 +1060,7 @@
                         </SolidFill>
                     </Halo>
                 </ExternalGraphic>
+
       </CompositeGraphic>
     </PointSymbolizer>
   </Rule>

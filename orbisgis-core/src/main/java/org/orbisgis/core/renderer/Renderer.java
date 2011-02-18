@@ -412,11 +412,7 @@ public class Renderer {
 							}
 							pm.progressTo(100
 									- (100 * i) / layers.length);
-
-
 						}
-
-
 					}
 					long t2 = System.currentTimeMillis();
 					logger.println(I18N.getString("orbisgis.org.orbisgis.renderer.renderingTime") + (t2 - t1)); //$NON-NLS-1$
@@ -541,16 +537,6 @@ public class Renderer {
 	 */
 	public void draw(BufferedImage img, Envelope extent, ILayer layer) {
 		draw(img, extent, layer, new NullProgressMonitor());
-
-
-
-
-
-
-
-
-
-
 	}
 
 	private class DefaultRendererPermission implements RenderContext {
@@ -645,63 +631,13 @@ public class Renderer {
 	private int getComponent(char rgbChar, int red, int green, int blue) {
 		if (rgbChar == 'r') {
 			return red;
-
-
-
-
 		} else if (rgbChar == 'g') {
 			return green;
-
-
-
-
 		} else if (rgbChar == 'b') {
 			return blue;
-
-
-
-
 		} else {
 			throw new IllegalArgumentException(
 					I18N.getString("orbisgis.org.orbisgis.renderer.cannotCreatRGBCodes")); //$NON-NLS-1$
-
-
-
 		}
 	}
-	/**
-	 * Apply some rendering rules Look at rendering configuration panel.
-	 *
-	 * @param g2
-
-	private void setHints(Graphics2D g2) {
-
-	Properties systemSettings = System.getProperties();
-
-	String antialiasing = systemSettings.getProperty(RenderingConfiguration.SYSTEM_ANTIALIASING_STATUS);
-	String composite = systemSettings.getProperty(RenderingConfiguration.SYSTEM_COMPOSITE_STATUS);
-
-
-
-	if (antialiasing != null || composite != null) {
-	if (antialiasing.equals("true")) {
-	g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
-	RenderingHints.VALUE_ANTIALIAS_ON);
-
-
-	}
-
-	if (composite.equals("true")) {
-	AlphaComposite ac = AlphaComposite.getInstance(AlphaComposite.SRC);
-	ac = AlphaComposite.getInstance(
-	AlphaComposite.SRC_OVER,
-	new Float(
-	systemSettings.getProperty(RenderingConfiguration.SYSTEM_COMPOSITE_VALUE)));
-	g2.setComposite(ac);
-
-	}
-	}
-
-	}
-	 */
 }

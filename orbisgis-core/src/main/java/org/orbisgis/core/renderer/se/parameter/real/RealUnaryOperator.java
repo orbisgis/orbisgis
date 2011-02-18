@@ -116,7 +116,7 @@ public final class RealUnaryOperator implements RealParameter {
             case LN:
                 return of.createLn(o);
             case LOG:
-                return of.createLog10(o);
+                return of.createLog(o);
         }
         return null;
     }
