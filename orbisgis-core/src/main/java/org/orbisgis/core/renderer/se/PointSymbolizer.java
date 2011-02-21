@@ -46,12 +46,14 @@ import javax.media.jai.RenderableGraphics;
 import javax.xml.bind.JAXBElement;
 import org.gdms.data.SpatialDataSourceDecorator;
 import org.orbisgis.core.renderer.Drawer;
+import org.orbisgis.core.renderer.persistance.se.ExtensionType;
 import org.orbisgis.core.renderer.persistance.se.ObjectFactory;
 import org.orbisgis.core.renderer.persistance.se.PointSymbolizerType;
 
 import org.gdms.driver.DriverException;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.map.MapTransform;
+import org.orbisgis.core.renderer.persistance.se.ExtensionParameterType;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.graphic.GraphicCollection;
@@ -62,117 +64,158 @@ import org.orbisgis.core.renderer.se.transform.Transform;
 
 public final class PointSymbolizer extends VectorSymbolizer implements GraphicNode {
 
-	/*
-	 * Create a default pointSymbolizer: Square 10mm
-	 *
-	 *
-	 */
-	public PointSymbolizer() {
-		super();
-		this.name = "Point symbolizer";
-		setGraphicCollection(new GraphicCollection());
-		uom = Uom.MM;
+    private static final String MODE_VERTEX = "vertex";
+    /*
+     * Create a default pointSymbolizer: Square 10mm
+     *
+     *
+     */
 
-		MarkGraphic mark = new MarkGraphic();
-		mark.setTo3mmCircle();
-		graphic.addGraphic(mark);
-	}
+    public PointSymbolizer() {
+        super();
+        this.name = "Point symbolizer";
+        setGraphicCollection(new GraphicCollection());
+        uom = Uom.MM;
 
-	public PointSymbolizer(JAXBElement<PointSymbolizerType> st) throws InvalidStyle {
-		super(st);
-		PointSymbolizerType ast = st.getValue();
+        MarkGraphic mark = new MarkGraphic();
+        mark.setTo3mmCircle();
+        graphic.addGraphic(mark);
+        onVertex = false;
+    }
 
-		if (ast.getGeometry() != null) {
-			// TODO load GeometryFunction !
-		}
+    public PointSymbolizer(JAXBElement<PointSymbolizerType> st) throws InvalidStyle {
+        super(st);
+        PointSymbolizerType ast = st.getValue();
 
-		if (ast.getUnitOfMeasure() != null) {
-			Uom u = Uom.fromOgcURN(ast.getUnitOfMeasure());
-			System.out.println("This is the UOM: " + u);
-			this.setUom(u);
-		}
+        if (ast.getGeometry() != null) {
+            // TODO load GeometryFunction !
+        }
 
-		if (ast.getTransform() != null) {
-			this.setTransform(new Transform(ast.getTransform()));
-		}
 
-		if (ast.getGraphic() != null) {
-			this.setGraphicCollection(new GraphicCollection(ast.getGraphic(), this));
+        onVertex = false;
+        if (ast.getExtension() != null) {
+            for (ExtensionParameterType param : ast.getExtension().getExtensionParameter()) {
+                if (param.getName().equalsIgnoreCase("mode")) {
+                    //level = Integer.parseInt(param.getContent());
+                    onVertex = param.getContent().equalsIgnoreCase(MODE_VERTEX);
+                    break;
+                }
+            }
+        }
 
-		}
-	}
+        if (ast.getUnitOfMeasure() != null) {
+            Uom u = Uom.fromOgcURN(ast.getUnitOfMeasure());
+            System.out.println("This is the UOM: " + u);
+            this.setUom(u);
+        }
 
-	@Override
-	public GraphicCollection getGraphicCollection() {
-		return graphic;
-	}
+        if (ast.getTransform() != null) {
+            this.setTransform(new Transform(ast.getTransform()));
+        }
 
-	@Override
-	public void setGraphicCollection(GraphicCollection graphic) {
-		this.graphic = graphic;
-		graphic.setParent(this);
-	}
+        if (ast.getGraphic() != null) {
+            this.setGraphicCollection(new GraphicCollection(ast.getGraphic(), this));
 
-	@Override
-	public void draw(Graphics2D g2, SpatialDataSourceDecorator sds, long fid, boolean selected, MapTransform mt) throws IOException, DriverException {
-		if (graphic != null && graphic.getNumGraphics() > 0) {
+        }
+    }
 
-			try {
-				//ArrayList<Point2D> pts = this.getPoints(sds, fid, mt);
-				RenderableGraphics rg = graphic.getGraphic(sds, fid, selected, mt);
+    @Override
+    public GraphicCollection getGraphicCollection() {
+        return graphic;
+    }
 
-				if (rg != null) {
-					double x = 0, y = 0;
-					//for (Point2D pt : pts) {
-						// This is to emulate ExtractFirstPoint geom function !!!
-						//Point2D pt = this.getFirstPointShape(sds, fid);
+    @Override
+    public void setGraphicCollection(GraphicCollection graphic) {
+        this.graphic = graphic;
+        graphic.setParent(this);
+    }
 
-						//RenderedImage cache = graphic.getCache(sds, fid, selected);
-						//if (cache != null) {
+    @Override
+    public void draw(Graphics2D g2, SpatialDataSourceDecorator sds, long fid, boolean selected, MapTransform mt) throws IOException, DriverException {
+        if (graphic != null && graphic.getNumGraphics() > 0) {
 
+            try {
+                //ArrayList<Point2D> pts = this.getPoints(sds, fid, mt);
+                RenderableGraphics rg = graphic.getGraphic(sds, fid, selected, mt);
+
+                if (rg != null) {
+                    double x = 0, y = 0;
+                    //for (Point2D pt : pts) {
+                    // This is to emulate ExtractFirstPoint geom function !!!
+                    //Point2D pt = this.getFirstPointShape(sds, fid);
+
+                    //RenderedImage cache = graphic.getCache(sds, fid, selected);
+                    //if (cache != null) {
+
+                    if (onVertex) {
+                        for (Point2D pt : getPoints(sds, fid, mt)) {
+                            x = pt.getX();
+                            y = pt.getY();
+
+                            // Draw the graphic right over the point !
+                            g2.drawRenderedImage(rg.createRendering(mt.getCurrentRenderContext()), AffineTransform.getTranslateInstance(x, y));
+                        }
+                    } else {
                         Point2D pt = getPointShape(sds, fid, mt);
 
 
-						x = pt.getX();
-						y = pt.getY();
+                        x = pt.getX();
+                        y = pt.getY();
 
-						// Draw the graphic right over the point !
-						g2.drawRenderedImage(rg.createRendering(mt.getCurrentRenderContext()), AffineTransform.getTranslateInstance(x, y));
-					//}
-				}
-			} catch (ParameterException ex) {
-				Services.getErrorManager().error("Could not render feature ", ex);
-			}
+                        // Draw the graphic right over the point !
+                        g2.drawRenderedImage(rg.createRendering(mt.getCurrentRenderContext()), AffineTransform.getTranslateInstance(x, y));
+                        //}
+                    }
+                }
+            } catch (ParameterException ex) {
+                Services.getErrorManager().error("Could not render feature ", ex);
+            }
+        }
+    }
 
-		}
-	}
+    @Override
+    public JAXBElement<PointSymbolizerType> getJAXBElement() {
+        ObjectFactory of = new ObjectFactory();
+        PointSymbolizerType s = of.createPointSymbolizerType();
 
-	@Override
-	public JAXBElement<PointSymbolizerType> getJAXBElement() {
-		ObjectFactory of = new ObjectFactory();
-		PointSymbolizerType s = of.createPointSymbolizerType();
-
-		this.setJAXBProperty(s);
+        this.setJAXBProperty(s);
 
 
-		if (this.uom != null) {
-			s.setUnitOfMeasure(this.getUom().toURN());
-		}
+        if (this.uom != null) {
+            s.setUnitOfMeasure(this.getUom().toURN());
+        }
 
-		if (transform != null) {
-			s.setTransform(transform.getJAXBType());
-		}
+        if (transform != null) {
+            s.setTransform(transform.getJAXBType());
+        }
 
-		if (graphic != null) {
-			s.setGraphic(graphic.getJAXBElement());
-		}
+        if (graphic != null) {
+            s.setGraphic(graphic.getJAXBElement());
+        }
 
-		return of.createPointSymbolizer(s);
-	}
-	private GraphicCollection graphic;
+        if (onVertex) {
+            ExtensionType exts = s.getExtension();
+            ExtensionParameterType param = of.createExtensionParameterType();
+            param.setName("mode");
+            param.setContent(MODE_VERTEX);
+            exts.getExtensionParameter().add(param);
+        }
 
-	@Override
-	public void draw(Drawer drawer, long fid, boolean selected) {
-		drawer.drawPointSymbolizer(fid, selected);
-	}
+        return of.createPointSymbolizer(s);
+    }
+
+    @Override
+    public void draw(Drawer drawer, long fid, boolean selected) {
+        drawer.drawPointSymbolizer(fid, selected);
+    }
+
+    public boolean isOnVertex() {
+        return onVertex;
+    }
+
+    public void setOnVertex(boolean onVertex) {
+        this.onVertex = onVertex;
+    }
+    private GraphicCollection graphic;
+    private boolean onVertex;
 }

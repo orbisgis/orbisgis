@@ -37,6 +37,9 @@
  */
 package org.orbisgis.core.ui.editorViews.toc.actions.cui;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import org.gdms.driver.DriverException;
 import org.orbisgis.core.renderer.se.StrokeNode;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.stroke.LegendUIMetaStrokePanel;
@@ -44,6 +47,7 @@ import org.orbisgis.core.ui.editorViews.toc.actions.cui.fill.LegendUIMetaFillPan
 import javax.swing.BoxLayout;
 
 import javax.swing.Icon;
+import org.orbisgis.core.layerModel.ILayer;
 
 import org.orbisgis.core.ui.preferences.lookandfeel.OrbisGISIcon;
 
@@ -55,6 +59,7 @@ import org.orbisgis.core.renderer.se.RasterSymbolizer;
 import org.orbisgis.core.renderer.se.Symbolizer;
 import org.orbisgis.core.renderer.se.TextSymbolizer;
 import org.orbisgis.core.renderer.se.VectorSymbolizer;
+import org.orbisgis.core.ui.editorViews.toc.actions.cui.components.ComboBoxInput;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.components.TextInput;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.components.UomInput;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.graphic.LegendUICompositeGraphicPanel;
@@ -66,157 +71,173 @@ import org.orbisgis.core.ui.editorViews.toc.actions.cui.parameter.real.LegendUIM
  */
 public class LegendUISymbolizerPanel extends LegendUIComponent {
 
-	private final Symbolizer symbolizer;
+    private final Symbolizer symbolizer;
+    private LegendUIMetaFillPanel mFill;
+    private LegendUIMetaStrokePanel mStroke;
+    private LegendUIMetaRealPanel pOffset;
+    private LegendUICompositeGraphicPanel gCollection;
+    private ComboBoxInput sMode;
+    private TextInput nameInput;
+    private UomInput uomInput;
 
-	private LegendUIMetaFillPanel mFill;
+    public LegendUISymbolizerPanel(LegendUIController controller, LegendUIComponent parent,
+            final Symbolizer symb) {
+        super(symb.getName(), controller, parent, 0, false);
 
-	private LegendUIMetaStrokePanel mStroke;
+        // A symbolizer UI always starts in a new panel !
+        this.extractFromParent();
 
-	private LegendUIMetaRealPanel pOffset;
+        this.symbolizer = symb;
 
-	private LegendUICompositeGraphicPanel gCollection;
+        nameInput = new TextInput("Name", symbolizer.getName(), 30, false) {
 
-	private TextInput nameInput;
-	private UomInput uomInput;
+            @Override
+            protected void valueChanged(String s) {
+                symbolizer.setName(s);
+                LegendUISymbolizerPanel.this.setName(s);
+                fireNameChanged();
+            }
+        };
 
-	public LegendUISymbolizerPanel(LegendUIController controller, LegendUIComponent parent,
-			final Symbolizer symb) {
-		super(symb.getName(), controller, parent, 0, false);
+        if (symb instanceof VectorSymbolizer) {
+            uomInput = new UomInput((VectorSymbolizer) symbolizer);
+            // Transform @todo
+        }
 
-		// A symbolizer UI always starts in a new panel !
-		this.extractFromParent();
+        if (symb instanceof AreaSymbolizer) {
+            mFill = new LegendUIMetaFillPanel(controller, this, (FillNode) symbolizer, true);
+            mFill.init();
 
-		this.symbolizer = symb;
-
-		nameInput = new TextInput("Name", symbolizer.getName(), 30, false) {
-
-			@Override
-			protected void valueChanged(String s) {
-				symbolizer.setName(s);
-				LegendUISymbolizerPanel.this.setName(s);
-				fireNameChanged();
-			}
-		};
-
-		if (symb instanceof VectorSymbolizer) {
-			uomInput = new UomInput((VectorSymbolizer) symbolizer);
-			// Transform @todo
-		}
-
-		if (symb instanceof AreaSymbolizer) {
-			mFill = new LegendUIMetaFillPanel(controller, this, (FillNode) symbolizer, true);
-			mFill.init();
-
-			mStroke = new LegendUIMetaStrokePanel(controller, this, (StrokeNode) symbolizer, true);
-			mStroke.init();
+            mStroke = new LegendUIMetaStrokePanel(controller, this, (StrokeNode) symbolizer, true);
+            mStroke.init();
 
 
-			pOffset = new LegendUIMetaRealPanel("POffset", controller, this, ((AreaSymbolizer)symbolizer).getPerpendicularOffset(), true) {
+            pOffset = new LegendUIMetaRealPanel("POffset", controller, this, ((AreaSymbolizer) symbolizer).getPerpendicularOffset(), true) {
 
-				@Override
-				public void realChanged(RealParameter newReal) {
-					((AreaSymbolizer)symbolizer).setPerpendicularOffset(newReal);
-				}
-			};
-			pOffset.init();
+                @Override
+                public void realChanged(RealParameter newReal) {
+                    ((AreaSymbolizer) symbolizer).setPerpendicularOffset(newReal);
+                }
+            };
+            pOffset.init();
 
-			//mStroke = new LegendUIMetaStrokePanel(controller, parent, (StrokeNode)symbolizer);
-		} else if (symb instanceof LineSymbolizer) {
-			mStroke = new LegendUIMetaStrokePanel(controller, this, (StrokeNode) symbolizer, false);
-			mStroke.init();
-
-
-			pOffset = new LegendUIMetaRealPanel("POffset", controller, this, ((LineSymbolizer)symbolizer).getPerpendicularOffset(), true) {
-
-				@Override
-				public void realChanged(RealParameter newReal) {
-					((LineSymbolizer)symbolizer).setPerpendicularOffset(newReal);
-				}
-			};
-			pOffset.init();
-
-			//mStroke = new LegendUIMetaStrokePanel(controller, parent, (StrokeNode)symbolizer);
-		} else if (symb instanceof PointSymbolizer) {
-			//graphics = new LegendUIGraphicCollectionPanel(controller, parent, ((PointSymbolizer)symbolizer).getGraphicCollection());
-			gCollection = new LegendUICompositeGraphicPanel(controller, this, ((PointSymbolizer) symb).getGraphicCollection());
-		} else if (symb instanceof TextSymbolizer) {
-		} else if (symb instanceof RasterSymbolizer) { // ??
-		}
-	}
-
-	public Symbolizer getSymbolizer() {
-		return symbolizer;
-	}
-
-	@Override
-	public Icon getIcon() {
-		Class cl = symbolizer.getClass();
-
-		if (cl == AreaSymbolizer.class) {
-			return OrbisGISIcon.LAYER_POLYGON;
-		} else if (cl == LineSymbolizer.class) {
-			return OrbisGISIcon.LAYER_LINE;
-		} else if (cl == PointSymbolizer.class) {
-			return OrbisGISIcon.LAYER_POINT;
-		} else if (cl == TextSymbolizer.class) {
-			return OrbisGISIcon.PENCIL;
-		} else if (cl == RasterSymbolizer.class) {
-			return OrbisGISIcon.LAYER_RGB;
-		}
-
-		return OrbisGISIcon.PENCIL;
-	}
-
-	@Override
-	protected void mountComponent() {
-		editor.removeAll();
-
-		LegendUIAbstractPanel topBar = new LegendUIAbstractPanel(controller);
-		topBar.setLayout(new BoxLayout(topBar, BoxLayout.X_AXIS));
-
-		topBar.add(nameInput);
+            //mStroke = new LegendUIMetaStrokePanel(controller, parent, (StrokeNode)symbolizer);
+        } else if (symb instanceof LineSymbolizer) {
+            mStroke = new LegendUIMetaStrokePanel(controller, this, (StrokeNode) symbolizer, false);
+            mStroke.init();
 
 
-		LegendUIAbstractPanel symbEditor = new LegendUIAbstractPanel(controller);
-		symbEditor.setLayout(new BoxLayout(symbEditor, BoxLayout.Y_AXIS));
+            pOffset = new LegendUIMetaRealPanel("POffset", controller, this, ((LineSymbolizer) symbolizer).getPerpendicularOffset(), true) {
+
+                @Override
+                public void realChanged(RealParameter newReal) {
+                    ((LineSymbolizer) symbolizer).setPerpendicularOffset(newReal);
+                }
+            };
+            pOffset.init();
+
+            //mStroke = new LegendUIMetaStrokePanel(controller, parent, (StrokeNode)symbolizer);
+        } else if (symb instanceof PointSymbolizer) {
+            //graphics = new LegendUIGraphicCollectionPanel(controller, parent, ((PointSymbolizer)symbolizer).getGraphicCollection());
+            final PointSymbolizer ps = (PointSymbolizer) symb;
+            gCollection = new LegendUICompositeGraphicPanel(controller, this, ps.getGraphicCollection());
+            ILayer layer = controller.getEditedFeatureTypeStyle().getLayer();
+
+            try {
+                if (layer.isVectorial() && layer.getSpatialDataSource().getGeometry(0).getDimension() > 0) {
+                    String[] options = {"one", "on vertices"};
+                    sMode = new ComboBoxInput(options, ps.isOnVertex() ? 1 : 0) {
+
+                        @Override
+                        protected void valueChanged(int i) {
+                            ps.setOnVertex(i == 1);
+                        }
+                    };
+                }
+            } catch (DriverException ex) {
+                Logger.getLogger(LegendUISymbolizerPanel.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        } else if (symb instanceof TextSymbolizer) {
+        } else if (symb instanceof RasterSymbolizer) { // ??
+        }
+    }
+
+    public Symbolizer getSymbolizer() {
+        return symbolizer;
+    }
+
+    @Override
+    public Icon getIcon() {
+        Class cl = symbolizer.getClass();
+
+        if (cl == AreaSymbolizer.class) {
+            return OrbisGISIcon.LAYER_POLYGON;
+        } else if (cl == LineSymbolizer.class) {
+            return OrbisGISIcon.LAYER_LINE;
+        } else if (cl == PointSymbolizer.class) {
+            return OrbisGISIcon.LAYER_POINT;
+        } else if (cl == TextSymbolizer.class) {
+            return OrbisGISIcon.PENCIL;
+        } else if (cl == RasterSymbolizer.class) {
+            return OrbisGISIcon.LAYER_RGB;
+        }
+
+        return OrbisGISIcon.PENCIL;
+    }
+
+    @Override
+    protected void mountComponent() {
+        editor.removeAll();
+
+        LegendUIAbstractPanel topBar = new LegendUIAbstractPanel(controller);
+        topBar.setLayout(new BoxLayout(topBar, BoxLayout.X_AXIS));
+
+        topBar.add(nameInput);
 
 
-		if (uomInput != null) {
-			topBar.add(uomInput);
-		}
+        LegendUIAbstractPanel symbEditor = new LegendUIAbstractPanel(controller);
+        symbEditor.setLayout(new BoxLayout(symbEditor, BoxLayout.Y_AXIS));
 
-		symbEditor.add(topBar);
 
-		if (pOffset != null){
-			symbEditor.add(pOffset);
-		}
+        if (uomInput != null) {
+            topBar.add(uomInput);
+        }
 
-		if (mStroke != null) {
-			symbEditor.add(mStroke);
-		}
+        symbEditor.add(topBar);
 
-		if (mFill != null) {
-			symbEditor.add(mFill);
-		}
+        if (pOffset != null) {
+            symbEditor.add(pOffset);
+        }
 
-		if (gCollection != null) {
-			symbEditor.add(gCollection);
-		}
+        if (mStroke != null) {
+            symbEditor.add(mStroke);
+        }
 
-		editor.add(symbEditor);
-	}
+        if (mFill != null) {
+            symbEditor.add(mFill);
+        }
 
-	@Override
-	protected void turnOff() {
-	}
+        if (sMode != null) {
+            symbEditor.add(sMode);
+        }
 
-	@Override
-	protected void turnOn() {
-	}
+        if (gCollection != null) {
+            symbEditor.add(gCollection);
+        }
 
-	@Override
-	public Class getEditedClass() {
-		return symbolizer.getClass();
-	}
+        editor.add(symbEditor);
+    }
 
+    @Override
+    protected void turnOff() {
+    }
+
+    @Override
+    protected void turnOn() {
+    }
+
+    @Override
+    public Class getEditedClass() {
+        return symbolizer.getClass();
+    }
 }
