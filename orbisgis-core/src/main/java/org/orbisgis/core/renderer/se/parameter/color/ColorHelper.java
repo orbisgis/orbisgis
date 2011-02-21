@@ -43,6 +43,7 @@ public final class ColorHelper {
      * If the resulting color is too dark or too light, a standard yellow is returned
      */
     public static Color invert(Color c){
+        //  TODO : improve
         int a = c.getAlpha();
         int r = 255 - c.getRed();
         int g = 255 - c.getGreen();

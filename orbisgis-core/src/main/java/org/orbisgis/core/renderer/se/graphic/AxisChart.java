@@ -1,10 +1,48 @@
+/*
+ * OrbisGIS is a GIS application dedicated to scientific spatial simulation.
+ * This cross-platform GIS is developed at French IRSTV institute and is able to
+ * manipulate and create vector and raster spatial information. OrbisGIS is
+ * distributed under GPL 3 license. It is produced by the "Atelier SIG" team of
+ * the IRSTV Institute <http://www.irstv.cnrs.fr/> CNRS FR 2488.
+ *
+ *
+ *  Team leader Erwan BOCHER, scientific researcher,
+ *
+ *  User support leader : Gwendall Petit, geomatic engineer.
+ *
+ *
+ * Copyright (C) 2007 Erwan BOCHER, Fernando GONZALEZ CORTES, Thomas LEDUC
+ *
+ * Copyright (C) 2010 Erwan BOCHER, Alexis GUEGANNO, Maxence LAURENT
+ *
+ * This file is part of OrbisGIS.
+ *
+ * OrbisGIS is free software: you can redistribute it and/or modify it under the
+ * terms of the GNU General Public License as published by the Free Software
+ * Foundation, either version 3 of the License, or (at your option) any later
+ * version.
+ *
+ * OrbisGIS is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
+ * A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along with
+ * OrbisGIS. If not, see <http://www.gnu.org/licenses/>.
+ *
+ * For more information, please consult: <http://www.orbisgis.org/>
+ *
+ * or contact directly:
+ * erwan.bocher _at_ ec-nantes.fr
+ * gwendall.petit _at_ ec-nantes.fr
+ */
+
+
 package org.orbisgis.core.renderer.se.graphic;
 
+import java.awt.Color;
 import java.awt.Shape;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Path2D;
-import java.awt.geom.Path2D.Double;
-import java.awt.geom.PathIterator;
 import java.awt.geom.Rectangle2D;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -19,8 +57,10 @@ import org.orbisgis.core.renderer.persistance.se.ObjectFactory;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.fill.Fill;
+import org.orbisgis.core.renderer.se.fill.SolidFill;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
+import org.orbisgis.core.renderer.se.parameter.real.RealLiteral;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
 import org.orbisgis.core.renderer.se.stroke.Stroke;
@@ -43,6 +83,7 @@ public final class AxisChart extends Graphic {
     private ArrayList<Category> categories;
     private AxisChartSubType subtype;
     public static final double DEFAULT_GAP_PX = 5; //px
+    public static final double INITIAL_GAP_PX = 5; //px
     public static final double DEFAULT_WIDTH_PX = 15; //px
 
     //private Categories stakc;
@@ -174,14 +215,16 @@ public final class AxisChart extends Graphic {
     }
 
     private double[] getMeasuresInPixel(SpatialDataSourceDecorator sds, long fid, MapTransform mt) throws ParameterException {
+        /*
         System.out.println ("SDS:" + sds);
         System.out.println ("axisScale:" + axisScale);
         System.out.println ("axisScale length:" + axisScale.getAxisLength());
         System.out.println ("axisScale measure:" + axisScale.getMeasureValue());
         System.out.println ("UOM:" + getUom());
+         */
 
-
-        double rLength = Uom.toPixel(axisScale.getAxisLength().getValue(sds, fid), getUom(), mt.getDpi(), mt.getScaleDenominator(), null);
+        double rLength = Uom.toPixel(axisScale.getAxisLength().getValue(sds, fid),
+                getUom(), mt.getDpi(), mt.getScaleDenominator(), null);
         double rMesure = axisScale.getMeasureValue().getValue(sds, fid);
 
         double[] heights = new double[categories.size()];
@@ -214,17 +257,17 @@ public final class AxisChart extends Graphic {
         }
         double cGap = DEFAULT_GAP_PX;
         if (categoryGap != null) {
-            Uom.toPixel(categoryGap.getValue(sds, fid), getUom(), mt.getDpi(),
+            cGap = Uom.toPixel(categoryGap.getValue(sds, fid), getUom(), mt.getDpi(),
                     mt.getScaleDenominator(), null);
         }
 
         double cWidth = DEFAULT_WIDTH_PX;
         if (categoryWidth != null) {
-            Uom.toPixel(categoryWidth.getValue(sds, fid), getUom(), mt.getDpi(),
+            cWidth = Uom.toPixel(categoryWidth.getValue(sds, fid), getUom(), mt.getDpi(),
                     mt.getScaleDenominator(), null);
         }
 
-        double width = (nCat - 1) * cGap + nCat * cWidth;
+        double width = (nCat - 1) * cGap + nCat * cWidth + INITIAL_GAP_PX;
 
 
         Rectangle2D.Double bounds = new Rectangle2D.Double(-width / 2, -maxHeight, width, maxHeight + -1 * minHeight);
@@ -236,9 +279,9 @@ public final class AxisChart extends Graphic {
             bounds.setRect(shp.getBounds2D());
         }
 
-        RenderableGraphics g2 = Graphic.getNewRenderableGraphics(bounds, 0);
+        RenderableGraphics g2 = Graphic.getNewRenderableGraphics(bounds, 10);
 
-        double currentX = -width / 2;
+        double currentX = -width / 2 + INITIAL_GAP_PX;
 
         double xOffset[] = new double[nCat];
 
@@ -247,6 +290,28 @@ public final class AxisChart extends Graphic {
             //Category c = categories.get(i);
             xOffset[i] = currentX;
             currentX += cGap + cWidth;
+        }
+
+        for (i = 0; i < nCat; i++) {
+            Category c = categories.get(i);
+            if (c.getFill() != null || c.getStroke() != null) {
+                Path2D.Double bar = new Path2D.Double();
+                bar.moveTo(xOffset[i], 0);
+                bar.lineTo(xOffset[i], -heights[i]);
+                bar.lineTo(xOffset[i]+cWidth, -heights[i]);
+                bar.lineTo(xOffset[i]+cWidth, 0);
+                bar.closePath();
+                Shape shp = bar;
+                if (at != null){
+                    shp = at.createTransformedShape(bar);
+                }
+                if (c.getFill() != null){
+                    c.getFill().draw(g2, sds, fid, shp, selected, mt);
+                }
+                if (c.getStroke() != null){
+                    c.getStroke().draw(g2, sds, fid, shp, selected, mt);
+                }
+            }
         }
 
         if (areaFill != null) {
@@ -283,24 +348,6 @@ public final class AxisChart extends Graphic {
 
         for (i = 0; i < nCat; i++) {
             Category c = categories.get(i);
-            if (c.getFill() != null || c.getStroke() != null) {
-                Path2D.Double bar = new Path2D.Double();
-                bar.moveTo(xOffset[i], 0);
-                bar.lineTo(xOffset[i], -heights[i]);
-                bar.lineTo(xOffset[i]+cWidth, -heights[i]);
-                bar.lineTo(xOffset[i]+cWidth, 0);
-                bar.closePath();
-                Shape shp = bar;
-                if (at != null){
-                    shp = at.createTransformedShape(bar);
-                }
-                if (c.getFill() != null){
-                    c.getFill().draw(g2, sds, fid, shp, selected, mt);
-                }
-                if (c.getStroke() != null){
-                    c.getStroke().draw(g2, sds, fid, shp, selected, mt);
-                }
-            }
             if (c.getGraphicCollection() != null) {
                 RenderableGraphics gr = c.getGraphicCollection().getGraphic(sds, fid, selected, mt);
 
@@ -311,6 +358,22 @@ public final class AxisChart extends Graphic {
                 g2.drawRenderedImage(gr.createRendering(mt.getCurrentRenderContext()), at2);
             }
         }
+
+        g2.setPaint(Color.black);
+
+        g2.drawLine((int)bounds.getMinX(), 0, (int)bounds.getMaxX(), 0);
+        g2.drawLine((int)bounds.getMinX(), (int)bounds.getMinY(), (int)bounds.getMinX(), (int)bounds.getMaxY());
+
+        /*
+        MarkGraphic arrow = new MarkGraphic();
+
+        arrow.setSource(WellKnownName.TRIANGLE);
+        arrow.setUom(Uom.MM);
+        arrow.setFill(new SolidFill(Color.black, 100.0));
+        arrow.setViewBox(new ViewBox(new RealLiteral(20)));
+        RenderableGraphics rArrow = arrow.getRenderableGraphics(sds, fid, selected, mt);
+        g2.drawRenderableImage(rArrow, AffineTransform.getTranslateInstance(0, bounds.getMinY()));
+        */
 
         return g2;
     }
@@ -398,7 +461,47 @@ public final class AxisChart extends Graphic {
 
     @Override
     public String dependsOnFeature() {
-        // TODO
-        return "";
+        String result = "";
+
+        if (areaFill != null){
+            result += " " + this.areaFill.dependsOnFeature();
+        }
+
+        if (lineStroke != null)
+            result += " " + this.lineStroke.dependsOnFeature();
+
+        if (this.categoryGap != null){
+            result += " " + categoryGap.dependsOnFeature();
+        }
+
+        if (categoryWidth != null){
+            result += " " + categoryWidth.dependsOnFeature();
+        }
+
+        if (axisScale != null){
+            if (axisScale.getAxisLength() != null){
+                result += " " + axisScale.getAxisLength().dependsOnFeature();
+            }
+            if (axisScale.getMeasureValue() != null){
+                result += " " + axisScale.getMeasureValue().dependsOnFeature();
+            }
+        }
+
+        for (Category c : categories){
+            if (c.getFill() != null){
+                result += " " + c.getFill().dependsOnFeature();
+            }
+            if (c.getStroke() != null){
+                result += " "  + c.getStroke().dependsOnFeature();
+            }
+            if (c.getGraphicCollection() != null){
+                result += " " + c.getGraphicCollection().dependsOnFeature();
+            }
+            if (c.getMeasure() != null){
+                result += " " + c.getMeasure().dependsOnFeature();
+            }
+        }
+
+        return result.trim();
     }
 }
