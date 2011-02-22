@@ -283,7 +283,7 @@ public final class StyledLabel implements SymbolizerNode, FillNode, StrokeNode {
         }
 
         if (stroke != null) {
-            stroke.draw(rg, sds, fid, outline, selected, mt);
+            stroke.draw(rg, sds, fid, outline, selected, mt, 0.0);
         }
 
         // HALO, FILL, STROKE

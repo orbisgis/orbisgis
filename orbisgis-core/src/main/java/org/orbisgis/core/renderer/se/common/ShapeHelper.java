@@ -64,7 +64,7 @@ public class ShapeHelper {
      * @return
      */
     public static double getAreaPerimeterLength(Shape area) {
-        PathIterator it = area.getPathIterator(null, 1);
+        PathIterator it = area.getPathIterator(null, 0.1);
 
         double coords[] = new double[6];
 
@@ -117,7 +117,7 @@ public class ShapeHelper {
 
         ArrayList<Shape> shapes = new ArrayList<Shape>();
 
-        PathIterator it = line.getPathIterator(null, 1);
+        PathIterator it = line.getPathIterator(null, 0.1);
         double coords[] = new double[6];
 
         Double x1 = null;
@@ -200,7 +200,7 @@ public class ShapeHelper {
 
         double segLength = perimeter / nbPart;
 
-        PathIterator it = line.getPathIterator(null, 1);
+        PathIterator it = line.getPathIterator(null, 0.1);
         double coords[] = new double[6];
 
         Double x1 = null;
@@ -294,7 +294,7 @@ public class ShapeHelper {
      * @return point representing the point at the linear length distance
      */
     public static Point2D.Double getPointAt(Shape shp, double distance) {
-        PathIterator it = shp.getPathIterator(null, 1);
+        PathIterator it = shp.getPathIterator(null, 0.1);
 
         double coords[] = new double[6];
 
@@ -427,7 +427,7 @@ public class ShapeHelper {
 
         ArrayList<ArrayList<Vertex>> shapes = new ArrayList<ArrayList<Vertex>>();
 
-        PathIterator it = shp.getPathIterator(null, 0.2);
+        PathIterator it = shp.getPathIterator(null, 0.1);
 
         ArrayList<Vertex> vertexes = new ArrayList<Vertex>();
 
@@ -1096,9 +1096,9 @@ public class ShapeHelper {
 
         Rectangle2D bounds2D = shp.getBounds2D();
 
-        if (Math.min(bounds2D.getWidth(), bounds2D.getHeight()) < Math.abs(offset)){
-            return rawShapes;
-        }
+        //if (Math.min(bounds2D.getWidth(), bounds2D.getHeight()) < Math.abs(offset)){
+        //    return rawShapes;
+        //}
 
         for (ArrayList<Vertex> vertexes : shapes) {
             if (_DEBUG_) {
@@ -1109,7 +1109,6 @@ public class ShapeHelper {
                 System.out.println(".....................");
             }
 
-            System.out.println ("Num Vertexes: " + vertexes.size());
             boolean closed = isClosed(vertexes);
 
             removeUselessVertex(vertexes);
@@ -1117,8 +1116,6 @@ public class ShapeHelper {
             if (closed) {
                 normalize(vertexes);
             }
-
-            System.out.println ("Num Cleaned Vertexes: " + vertexes.size());
 
             ArrayList<Vertex> offsetVertexes = createOffsetVertexes(vertexes, offset, closed);
 
@@ -1134,8 +1131,6 @@ public class ShapeHelper {
                 }
             }
 
-            System.out.println ("Num offseted Vertexes: " + offsetVertexes.size());
-
             ArrayList<Edge> edges = computeEdges(vertexes, offsetVertexes, offset, closed);
 
             if (_DEBUG_) {
@@ -1144,8 +1139,6 @@ public class ShapeHelper {
                     System.out.println(e);
                 }
             }
-
-            System.out.println ("Num edges: " + edges.size());
 
             ArrayList<Vertex> rawLink = computeRawLink(edges, offsetVertexes, closed);
 

@@ -309,7 +309,7 @@ public final class AxisChart extends Graphic {
                     c.getFill().draw(g2, sds, fid, shp, selected, mt);
                 }
                 if (c.getStroke() != null){
-                    c.getStroke().draw(g2, sds, fid, shp, selected, mt);
+                    c.getStroke().draw(g2, sds, fid, shp, selected, mt, 0.0);
                 }
             }
         }
@@ -343,7 +343,7 @@ public final class AxisChart extends Graphic {
             Shape shp = line;
             if (at != null)
                 shp = at.createTransformedShape(line);
-            lineStroke.draw(g2, sds, fid, shp, selected, mt);
+            lineStroke.draw(g2, sds, fid, shp, selected, mt, 0.0);
         }
 
         for (i = 0; i < nCat; i++) {

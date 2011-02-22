@@ -96,7 +96,7 @@ public final class TextSymbolizer extends VectorSymbolizer {
 
 	@Override
 	public void draw(Graphics2D g2, SpatialDataSourceDecorator sds, long fid, boolean selected, MapTransform mt) throws ParameterException, IOException, DriverException {
-		ArrayList<Shape> shapes = this.getShape(sds, fid, mt);
+		ArrayList<Shape> shapes = this.getShapes(sds, fid, mt);
 
 		if (shapes != null) {
 			for (Shape shp : shapes) {

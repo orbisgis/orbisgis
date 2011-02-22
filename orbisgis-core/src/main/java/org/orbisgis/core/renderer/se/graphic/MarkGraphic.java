@@ -289,18 +289,18 @@ public final class MarkGraphic extends Graphic implements FillNode, StrokeNode, 
         }
 
         if (stroke != null) {
+            double offset = 0.0;
             if (pOffset != null) {
-                double offset = Uom.toPixel(pOffset.getValue(sds, fid), this.getUom(), mt.getDpi(), mt.getScaleDenominator(), null);
-                for (Shape offShp : ShapeHelper.perpendicularOffset(atShp, offset)){
-                  if (offShp == null) {
-                      Services.getErrorManager().error(I18N.getString("orbisgis.org.orbisgis.renderer.cannotCreatePerpendicularOffset"));
-                  }else{
-                      stroke.draw(rg, sds, fid, offShp, selected, mt);
-                  }
-                }
-            } else{
-                stroke.draw(rg, sds, fid, atShp, selected, mt);
+                offset = Uom.toPixel(pOffset.getValue(sds, fid), this.getUom(), mt.getDpi(), mt.getScaleDenominator(), null);
+                //for (Shape offShp : ShapeHelper.perpendicularOffset(atShp, offset)){
+                // if (offShp == null) {
+                //     Services.getErrorManager().error(I18N.getString("orbisgis.org.orbisgis.renderer.cannotCreatePerpendicularOffset"));
+                //  }else{
+                // stroke.draw(rg, sds, fid, atShp, selected, mt, offset);
+                //  }
+               // }
             }
+            stroke.draw(rg, sds, fid, atShp, selected, mt, offset);
         }
 
         return rg;

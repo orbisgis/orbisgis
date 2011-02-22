@@ -96,7 +96,9 @@ public final class GraphicStroke extends Stroke implements GraphicNode {
     }
 
     @Override
-    public void draw(Graphics2D g2, SpatialDataSourceDecorator sds, long fid, Shape shp, boolean selected, MapTransform mt) throws ParameterException, IOException {
+    public void draw(Graphics2D g2, SpatialDataSourceDecorator sds, long fid,
+            Shape shp, boolean selected, MapTransform mt, double offset)
+            throws ParameterException, IOException {
         RenderableGraphics g = graphic.getGraphic(sds, fid, selected, mt);
         RenderedImage createRendering = g.createRendering(mt.getCurrentRenderContext());
 
@@ -139,31 +141,43 @@ public final class GraphicStroke extends Stroke implements GraphicNode {
             ArrayList<Shape> segments = ShapeHelper.splitLine(shp, nbSegments);
 
             for (Shape seg : segments) {
-                Point2D.Double pt = ShapeHelper.getPointAt(seg, segLength / 2);
-                AffineTransform at = AffineTransform.getTranslateInstance(pt.x, pt.y);
-
-
-                if (rOrient != RelativeOrientation.PORTRAYAL) {
-                    Point2D.Double ptA = ShapeHelper.getPointAt(seg, 0.5 * (segLength - gWidth));
-                    Point2D.Double ptB = ShapeHelper.getPointAt(seg, 0.75 * (segLength - gWidth));
-
-                    double theta = Math.atan2(ptB.y - ptA.y, ptB.x - ptA.x);
-                    //System.out.println("("+ ptA.x + ";" + ptA.y +")"  + "(" + ptB.x + ";" + ptB.y+ ")" + "   => Angle: " + (theta/0.0175));
-
-                    switch (rOrient) {
-                        case LINE:
-                            theta += 0.5 * Math.PI;
-                            break;
-                        case NORMAL_UP:
-                            if (theta < -Math.PI / 2 || theta > Math.PI / 2) {
-                                theta += Math.PI;
-                            }
-                            break;
-                    }
-
-                    at.concatenate(AffineTransform.getRotateInstance(theta));
+                ArrayList<Shape> oSegs;
+                if (Math.abs(offset) > 0.0) {
+                    oSegs = ShapeHelper.perpendicularOffset(seg, offset);
+                } else {
+                    oSegs = new ArrayList<Shape>();
+                    oSegs.add(seg);
                 }
-                g2.drawRenderedImage(createRendering, at);
+
+                for (Shape oSeg : oSegs) {
+                    if (oSeg != null) {
+                        Point2D.Double pt = ShapeHelper.getPointAt(oSeg, segLength / 2);
+                        AffineTransform at = AffineTransform.getTranslateInstance(pt.x, pt.y);
+
+
+                        if (rOrient != RelativeOrientation.PORTRAYAL) {
+                            Point2D.Double ptA = ShapeHelper.getPointAt(oSeg, 0.5 * (segLength - gWidth));
+                            Point2D.Double ptB = ShapeHelper.getPointAt(oSeg, 0.75 * (segLength - gWidth));
+
+                            double theta = Math.atan2(ptB.y - ptA.y, ptB.x - ptA.x);
+                            //System.out.println("("+ ptA.x + ";" + ptA.y +")"  + "(" + ptB.x + ";" + ptB.y+ ")" + "   => Angle: " + (theta/0.0175));
+
+                            switch (rOrient) {
+                                case LINE:
+                                    theta += 0.5 * Math.PI;
+                                    break;
+                                case NORMAL_UP:
+                                    if (theta < -Math.PI / 2 || theta > Math.PI / 2) {
+                                        theta += Math.PI;
+                                    }
+                                    break;
+                            }
+
+                            at.concatenate(AffineTransform.getRotateInstance(theta));
+                        }
+                        g2.drawRenderedImage(createRendering, at);
+                    }
+                }
             }
         }
     }

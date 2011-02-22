@@ -139,7 +139,7 @@ public final class CompoundStroke extends Stroke {
     }
 
 	@Override
-	public void draw(Graphics2D g2, SpatialDataSourceDecorator sds, long fid, Shape shp, boolean selected, MapTransform mt) throws ParameterException, IOException {
+	public void draw(Graphics2D g2, SpatialDataSourceDecorator sds, long fid, Shape shp, boolean selected, MapTransform mt, double offset) throws ParameterException, IOException {
 
 		double initGap = 0.0;
 		double endGap = 0.0;
@@ -151,9 +151,6 @@ public final class CompoundStroke extends Stroke {
 		if (postGap != null) {
 			endGap = postGap.getValue(sds, fid);
 		}
-
-
-
 	}
 
 	@Override

@@ -239,7 +239,7 @@ public class Renderer {
 				for (Symbolizer s : symbs) {
 					pm.startTask("Drawing " + layer.getName() + " (" + s.getName() + ")");
 
-					FilterDataSourceDecorator fds = rulesDs.get(s.getRule());
+					               FilterDataSourceDecorator fds = rulesDs.get(s.getRule());
 
 					int fid = 0;
 

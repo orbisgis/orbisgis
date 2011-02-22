@@ -35,17 +35,14 @@
  * erwan.bocher _at_ ec-nantes.fr
  * gwendall.petit _at_ ec-nantes.fr
  */
-
-
-
 package org.orbisgis.core.renderer.se.stroke;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics2D;
-import java.awt.Paint;
 import java.awt.Shape;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.xml.bind.JAXBElement;
@@ -76,7 +73,6 @@ public final class PenStroke extends Stroke implements FillNode {
 
     private static LineCap DEFAULT_CAP = LineCap.BUTT;
     private static LineJoin DEFAULT_JOIN = LineJoin.ROUND;
-
     private Fill fill;
     //private RealParameter opacity;
     private RealParameter width;
@@ -188,13 +184,13 @@ public final class PenStroke extends Stroke implements FillNode {
             result = fill.dependsOnFeature();
         }
         if (dashOffset != null) {
-            result +=  " " + dashOffset.dependsOnFeature();
+            result += " " + dashOffset.dependsOnFeature();
         }
         if (dashArray != null) {
             result += " " + dashArray.dependsOnFeature();
         }
-        if (width != null){
-            result  +=  " " + width.dependsOnFeature();
+        if (width != null) {
+            result += " " + width.dependsOnFeature();
         }
 
         return result.trim();
@@ -219,7 +215,7 @@ public final class PenStroke extends Stroke implements FillNode {
     }
 
     public LineCap getLineCap() {
-        if (lineCap != null){
+        if (lineCap != null) {
             return lineCap;
         } else {
             return DEFAULT_CAP;
@@ -232,10 +228,11 @@ public final class PenStroke extends Stroke implements FillNode {
     }
 
     public LineJoin getLineJoin() {
-        if (lineJoin != null)
+        if (lineJoin != null) {
             return lineJoin;
-        else 
+        } else {
             return DEFAULT_JOIN;
+        }
 
     }
 
@@ -293,7 +290,7 @@ public final class PenStroke extends Stroke implements FillNode {
     this.bStroke = null;
     }
     }*/
-    private BasicStroke createBasicStroke(SpatialDataSourceDecorator sds, long fid, MapTransform mt, Double v100p) throws ParameterException {
+    private BasicStroke createBasicStroke(SpatialDataSourceDecorator sds, long fid, MapTransform mt, Double v100p, boolean useDash) throws ParameterException {
 
         int cap;
         if (this.lineCap == null) {
@@ -339,7 +336,7 @@ public final class PenStroke extends Stroke implements FillNode {
         }
 
 
-        if (this.dashArray != null && !this.dashArray.getValue(sds, fid).isEmpty()) {
+        if (useDash && this.dashArray != null && !this.dashArray.getValue(sds, fid).isEmpty()) {
 
             float dashO = 0.0f;
             float[] dashA;
@@ -365,7 +362,7 @@ public final class PenStroke extends Stroke implements FillNode {
         //if (bStroke != null) {
         //    return bStroke;
         //} else {
-        return this.createBasicStroke(sds, fid, mt, v100p);
+        return this.createBasicStroke(sds, fid, mt, v100p, true);
         //}
 
     }
@@ -376,29 +373,76 @@ public final class PenStroke extends Stroke implements FillNode {
      * @todo DashOffset
      */
     @Override
-    public void draw(Graphics2D g2, SpatialDataSourceDecorator sds, long fid, Shape shp, boolean selected, MapTransform mt) throws ParameterException, IOException {
+    public void draw(Graphics2D g2, SpatialDataSourceDecorator sds, long fid, Shape shp, boolean selected, MapTransform mt, double offset) throws ParameterException, IOException {
 
-        //Paint paint = null;
+        if (this.fill != null) {
 
-        //Shape shape = shp;
+            if (this.dashArray != null && !this.dashArray.getValue(sds, fid).isEmpty() && Math.abs(offset) > 0.0) {
+                String value = dashArray.getValue(sds, fid);
+                String[] split = value.split("\\s+");
+                //value.split("");
 
-        BasicStroke stroke = null;
+                Shape chute = shp;
+                ArrayList<Shape> fragments = new ArrayList<Shape>();
+                BasicStroke bs = createBasicStroke(sds, fid, mt, null, false);
 
-        //if (this.bStroke == null) {
-        stroke = this.createBasicStroke(sds, fid, mt, ShapeHelper.getAreaPerimeterLength(shp));
-        //} else {
-        //    stroke = this.bStroke;
-        //}
+                double dashLengths[] = new double[split.length];
+                for (int i = 0; i < split.length; i++) {
+                    dashLengths[i] = Uom.toPixel(Double.parseDouble(split[i]), getUom(),
+                            mt.getDpi(), mt.getScaleDenominator(), null);
+                }
 
-        //g2.setStroke(stroke);
+                int i = 0;
+                int j = 0;
 
-        //paint = fill.getPaint(fid, sds, selected, mt);
+                //while (ShapeHelper.getLineLength(chute) > 0) {
+                while (chute != null) {
+                    ArrayList<Shape> splitLine = ShapeHelper.splitLine(chute, dashLengths[j]);
+                    Shape seg = splitLine.remove(0);
+                    if (splitLine.size() > 0) {
+                        chute = splitLine.remove(0);
+                    } else {
+                        chute = null;
+                    }
+                    if (i % 2 == 0) {
+                        // i.e seg to draw
+                        fragments.add(seg);
+                    } // else means blank space
 
-        if (fill != null) {
-            Shape outline = stroke.createStrokedShape(shp);
-            fill.draw(g2, sds, fid, outline, selected, mt);
-            //g2.setPaint(paint);
-            //g2.draw(shape);
+                    j = (j + 1) % split.length;
+                    i++;
+                }
+
+
+                for (Shape seg : fragments) {
+                    for (Shape oSeg : ShapeHelper.perpendicularOffset(seg, offset)){
+                        if (oSeg != null) {
+                            Shape outline = bs.createStrokedShape(oSeg);
+                            fill.draw(g2, sds, fid, outline, selected, mt);
+                        }
+                    }
+                }
+
+                return;
+            }
+
+            BasicStroke stroke = null;
+
+            stroke = this.createBasicStroke(sds, fid, mt, null /*ShapeHelper.getAreaPerimeterLength(shp)*/, true);
+
+            if (Math.abs(offset) > 0.0) {
+                for (Shape oShp : ShapeHelper.perpendicularOffset(shp, offset)) {
+                    if (oShp != null){
+                    Shape outline = stroke.createStrokedShape(oShp);
+                    fill.draw(g2, sds, fid, outline, selected, mt);
+                    }
+                }
+            } else {
+                Shape outline = stroke.createStrokedShape(shp);
+                fill.draw(g2, sds, fid, outline, selected, mt);
+                //g2.setPaint(paint);
+                //g2.draw(shape);
+            }
         }
     }
 

@@ -164,7 +164,13 @@ public final class AreaSymbolizer extends VectorSymbolizer implements FillNode, 
     @Override
     public void draw(Graphics2D g2, SpatialDataSourceDecorator sds, long fid, boolean selected, MapTransform mt) throws ParameterException, IOException, DriverException {
 
-        ArrayList<Shape> shapes = this.getShape(sds, fid, mt);
+        ArrayList<Shape> shapes = this.getShapes(sds, fid, mt);
+
+        double offset = 0.0;
+        if (perpendicularOffset != null) {
+            offset = Uom.toPixel(perpendicularOffset.getValue(sds, fid),
+                    getUom(), mt.getDpi(), mt.getScaleDenominator(), null);
+        }
 
         if (shapes != null) {
             for (Shape shp : shapes) {
@@ -173,19 +179,19 @@ public final class AreaSymbolizer extends VectorSymbolizer implements FillNode, 
                 }
 
                 if (stroke != null && shp != null) {
-                    if (perpendicularOffset != null) {
-                        double offset = Uom.toPixel(perpendicularOffset.getValue(sds, fid), this.getUom(), mt.getDpi(), mt.getScaleDenominator(), null);
+                    stroke.draw(g2, sds, fid, shp, selected, mt, offset);
+                }
+                    /*if (perpendicularOffset != null) {
                         for (Shape offShp : ShapeHelper.perpendicularOffset(shp, offset)) {
                             if (offShp == null) {
                                 Services.getErrorManager().error(I18N.getString("orbisgis.org.orbisgis.renderer.cannotCreatePerpendicularOffset"));
-                            }else{
-                                stroke.draw(g2, sds, fid, offShp, selected, mt);
+                            } else {
                             }
                         }
                     } else {
-                        stroke.draw(g2, sds, fid, shp, selected, mt);
+                        stroke.draw(g2, sds, fid, shp, selected, mt, 0.0);
                     }
-                }
+                }*/
             }
         }
     }

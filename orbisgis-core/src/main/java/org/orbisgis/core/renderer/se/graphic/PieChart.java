@@ -377,7 +377,7 @@ public final class PieChart extends Graphic implements StrokeNode {
         // Stokes must be drawn after fills 
         if (stroke != null) {
             for (int i = 0; i < nSlices; i++) {
-                stroke.draw(rg, sds, fid, shapes[i], selected, mt);
+                stroke.draw(rg, sds, fid, shapes[i], selected, mt, 0.0);
             }
         }
 

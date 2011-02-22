@@ -94,7 +94,7 @@ public abstract class VectorSymbolizer extends Symbolizer implements UomNode {
 	 * @throws IOException
 	 * @throws DriverException
 	 */
-	public ArrayList<Shape> getShape(SpatialDataSourceDecorator sds, long fid, MapTransform mt) throws ParameterException, IOException, DriverException {
+	public ArrayList<Shape> getShapes(SpatialDataSourceDecorator sds, long fid, MapTransform mt) throws ParameterException, IOException, DriverException {
 
 		Geometry geom = this.getTheGeom(sds, fid); // geom + function
 

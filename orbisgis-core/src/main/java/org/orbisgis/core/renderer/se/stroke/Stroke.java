@@ -114,7 +114,7 @@ public abstract class Stroke implements SymbolizerNode, UomNode {
      * @throws ParameterException
      * @throws IOException
      */
-    public abstract void draw(Graphics2D g2, SpatialDataSourceDecorator sds, long fid, Shape shp, boolean selected, MapTransform mt) throws ParameterException, IOException;
+    public abstract void draw(Graphics2D g2, SpatialDataSourceDecorator sds, long fid, Shape shp, boolean selected, MapTransform mt, double offset) throws ParameterException, IOException;
 
     public abstract JAXBElement<? extends StrokeType> getJAXBElement();
 
