@@ -62,6 +62,7 @@ public final class TextStroke extends Stroke {
 	private LineLabel lineLabel;
 
 	TextStroke(TextStrokeType tst) throws InvalidStyle {
+        super();
 		if (tst.getLineLabel() != null) {
 			setLineLabel(new LineLabel(tst.getLineLabel()));
 		}
@@ -69,7 +70,7 @@ public final class TextStroke extends Stroke {
 		if (tst.getUnitOfMeasure() != null) {
 			this.setUom(Uom.fromOgcURN(tst.getUnitOfMeasure()));
 		} else {
-			this.uom = null;
+            this.setUom(null);
 		}
 	}
 
@@ -136,4 +137,9 @@ public final class TextStroke extends Stroke {
 	public String dependsOnFeature() {
 		return lineLabel.dependsOnFeature();
 	}
+
+    @Override
+    public double getNaturalLength(SpatialDataSourceDecorator sds, long fid, Shape shp, MapTransform mt) throws ParameterException, IOException {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
 }

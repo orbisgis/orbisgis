@@ -78,6 +78,7 @@ public abstract class CompoundStrokeElement implements SymbolizerNode {
 
 	@Override
 	public void setParent(SymbolizerNode node) {
+        System.out.println ("CompoundStrokeElement:: Set Parent");
 		this.parent = node;
 	}
 

@@ -922,6 +922,148 @@
         </TextGraphic>
 
 
+        
+        <MarkGraphic>
+          <WellKnownName>square</WellKnownName>
+          <ViewBox>
+	    <Width>100</Width>
+	    <Height>20</Height>
+          </ViewBox>
+          <Transform>
+            <Translate>
+              <X>70</X>
+              <Y>-35</Y>
+            </Translate>
+          </Transform>
+		<CompoundStroke>
+		    <StrokeElement>
+		    	<PenStroke /> 
+                    	<Length>10</Length>
+		    </StrokeElement>
+
+		    <StrokeElement>
+                      <GraphicStroke>
+			 <MarkGraphic>
+			   <WellKnownName>circle</WellKnownName>
+			   <PenStroke />
+			   <SolidFill />
+			 </MarkGraphic>
+                      </GraphicStroke>
+                    	<Length>10</Length>
+		    </StrokeElement>
+
+		    <StrokeElement>
+		    <PenStroke> 
+		      <Width>1</Width>
+		      <DashArray>4</DashArray>
+		    </PenStroke>
+
+                    	<Length>10</Length>
+		    </StrokeElement>
+		</CompoundStroke>
+
+        </MarkGraphic>
+
+  
+        <MarkGraphic>
+          <WellKnownName>square</WellKnownName>
+          <ViewBox>
+	    <Width>100</Width>
+	    <Height>20</Height>
+          </ViewBox>
+          <Transform>
+            <Translate>
+              <X>70</X>
+              <Y>-10</Y>
+            </Translate>
+          </Transform>
+		<CompoundStroke>
+		    <StrokeElement>
+		    	<PenStroke /> 
+                    	<Length>10</Length>
+		    </StrokeElement>
+
+                    <AlternativeStrokeElements>
+		        <StrokeElement>
+                          <GraphicStroke>
+			     <MarkGraphic>
+			       <WellKnownName>circle</WellKnownName>
+			       <PenStroke />
+			       <SolidFill />
+			     </MarkGraphic>
+                          </GraphicStroke>
+                    	    <Length>10</Length>
+		        </StrokeElement>
+                    </AlternativeStrokeElements>
+
+		    <StrokeElement>
+		    <PenStroke> 
+		      <Width>1</Width>
+		      <DashArray>4</DashArray>
+		    </PenStroke>
+
+                    	<Length>10</Length>
+		    </StrokeElement>
+
+		</CompoundStroke>
+
+        </MarkGraphic>
+
+ 
+        <MarkGraphic>
+          <WellKnownName>square</WellKnownName>
+          <ViewBox>
+	    <Width>100</Width>
+	    <Height>20</Height>
+          </ViewBox>
+          <Transform>
+            <Translate>
+              <X>70</X>
+              <Y>15</Y>
+            </Translate>
+          </Transform>
+		<CompoundStroke>
+		        <StrokeElement>
+                          <GraphicStroke>
+			     <MarkGraphic>
+			       <WellKnownName>triangle</WellKnownName>
+			       <PenStroke />
+			       <SolidFill />
+			     </MarkGraphic>
+                          </GraphicStroke>
+		        </StrokeElement>
+
+
+		        <StrokeElement>
+                          <GraphicStroke>
+			     <MarkGraphic>
+			       <WellKnownName>circle</WellKnownName>
+			       <PenStroke />
+			       <SolidFill />
+			     </MarkGraphic>
+                          </GraphicStroke>
+                    	    <Length>10</Length>
+		        </StrokeElement>
+
+		    <StrokeAnnotationGraphic>
+		        <MarkGraphic>
+			    <WellKnownName>circle</WellKnownName>
+		            <PenStroke />
+		            <SolidFill>
+			        <Color>#ff0000</Color>
+			    </SolidFill>
+			    <Transform>
+			    <Translate>
+			     <Y>-3</Y>
+			    </Translate>
+			    </Transform>
+		        </MarkGraphic>
+			<RelativePosition>0</RelativePosition>
+		    </StrokeAnnotationGraphic>
+		</CompoundStroke>
+        </MarkGraphic>
+
+
 
 
       </CompositeGraphic>

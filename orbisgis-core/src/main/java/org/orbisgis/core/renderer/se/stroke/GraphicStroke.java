@@ -37,6 +37,7 @@ public final class GraphicStroke extends Stroke implements GraphicNode {
     private RelativeOrientation orientation;
 
     GraphicStroke(JAXBElement<GraphicStrokeType> elem) throws InvalidStyle {
+        super();
         GraphicStrokeType gst = elem.getValue();
 
         if (gst.getGraphic() != null) {
@@ -56,6 +57,7 @@ public final class GraphicStroke extends Stroke implements GraphicNode {
     }
 
     public GraphicStroke() {
+        super();
         this.graphic = new GraphicCollection();
         MarkGraphic mg = new MarkGraphic();
         mg.setTo3mmCircle();
@@ -96,86 +98,142 @@ public final class GraphicStroke extends Stroke implements GraphicNode {
     }
 
     @Override
+    public double getNaturalLength(SpatialDataSourceDecorator sds, long fid, Shape shp, MapTransform mt) throws ParameterException, IOException {
+
+        double naturalLength;
+        double lineLength = ShapeHelper.getLineLength(shp);
+
+        RelativeOrientation rOrient = this.getRelativeOrientation();
+
+        if (length != null) {
+
+            naturalLength = Uom.toPixel(length.getValue(sds, fid), getUom(), mt.getDpi(), mt.getScaleDenominator(), lineLength); // TODO 100%
+            if (naturalLength <= GraphicStroke.MIN_LENGTH || naturalLength > lineLength) {
+                naturalLength = lineLength;
+            }
+        } else {
+            RenderableGraphics g;
+            g = graphic.getGraphic(sds, fid, false, mt);
+            double gWidth = g.getWidth();
+            double gHeight = g.getHeight();
+
+            switch (rOrient) {
+                case NORMAL:
+                case NORMAL_UP:
+                    naturalLength = gWidth;
+                    break;
+                case LINE:
+                case LINE_UP:
+                    naturalLength = gHeight;
+                    break;
+                case PORTRAYAL:
+                default:
+                    naturalLength = Math.sqrt(gWidth * gWidth + gHeight * gHeight);
+                    break;
+
+            }
+        }
+        return naturalLength;
+
+    }
+
+    @Override
     public void draw(Graphics2D g2, SpatialDataSourceDecorator sds, long fid,
-            Shape shp, boolean selected, MapTransform mt, double offset)
+            Shape shape, boolean selected, MapTransform mt, double offset)
             throws ParameterException, IOException {
         RenderableGraphics g = graphic.getGraphic(sds, fid, selected, mt);
         RenderedImage createRendering = g.createRendering(mt.getCurrentRenderContext());
 
         if (g != null) {
-            double segLength;
 
-            double gWidth = g.getWidth();
-            double lineLength = ShapeHelper.getLineLength(shp);
-
-            RelativeOrientation rOrient = this.getRelativeOrientation();
-
-            if (length != null) {
-                segLength = Uom.toPixel(length.getValue(sds, fid), getUom(), mt.getDpi(), mt.getScaleDenominator(), lineLength); // TODO 100%
-
-                if (segLength <= GraphicStroke.MIN_LENGTH || segLength > lineLength) {
-                    segLength = lineLength;
-                }
+            ArrayList<Shape> shapes;
+            // if not using offset rapport, compute perpendiculat offset first
+            if (!this.isOffsetRapport() && Math.abs(offset) > 0.0) {
+                shapes = ShapeHelper.perpendicularOffset(shape, offset);
+                // Setting offset to 0.0 let be sure the offset will never been applied twice!
+                offset = 0.0;
             } else {
-                switch (rOrient) {
-                    case NORMAL:
-                    case NORMAL_UP:
-                        segLength = gWidth;
-                        break;
-                    case LINE:
-                    case LINE_UP:
-                        segLength = g.getHeight();
-                        break;
-                    case PORTRAYAL:
-                    default:
-                        segLength = Math.sqrt(gWidth * gWidth + g.getHeight() * g.getHeight());
-                        break;
-
-                }
+                shapes = new ArrayList<Shape>();
+                shapes.add(shape);
             }
 
-            int nbSegments = (int) ((lineLength / segLength) + 0.5);
 
-            segLength = lineLength / nbSegments;
+            for (Shape shp : shapes) {
+                double segLength = getNaturalLength(sds, fid, shp, mt);
 
-            ArrayList<Shape> segments = ShapeHelper.splitLine(shp, nbSegments);
+                double gWidth = g.getWidth();
+                double lineLength = ShapeHelper.getLineLength(shp);
 
-            for (Shape seg : segments) {
-                ArrayList<Shape> oSegs;
-                if (Math.abs(offset) > 0.0) {
-                    oSegs = ShapeHelper.perpendicularOffset(seg, offset);
+                RelativeOrientation rOrient = this.getRelativeOrientation();
+                ArrayList<Shape> segments = null;
+
+
+                double nbSegments;
+
+                int nbToDraw;
+
+                if (this.isLengthRapport()) {
+                    nbSegments = (int) ((lineLength / segLength) + 0.5);
+                    segments = ShapeHelper.splitLine(shp, (int) nbSegments);
+                    segLength = lineLength / nbSegments;
+                    nbToDraw = (int) nbSegments;
                 } else {
-                    oSegs = new ArrayList<Shape>();
-                    oSegs.add(seg);
+                    nbSegments = lineLength / segLength;
+                    segLength = lineLength / nbSegments;
+                    // Effective number of graphic to draw (skip the last one if not space left...)
+                    nbToDraw = (int) nbSegments;
+                    if (nbToDraw > 0) {
+                        // TODO remove half of extra space at the beginning of the line
+                        //shp = ShapeHelper.splitLine(shp, (nbSegments - nbToDraw)/2.0).get(1);
+                        segments = ShapeHelper.splitLineInSeg(shp, segLength);
+                    }
                 }
 
-                for (Shape oSeg : oSegs) {
-                    if (oSeg != null) {
-                        Point2D.Double pt = ShapeHelper.getPointAt(oSeg, segLength / 2);
-                        AffineTransform at = AffineTransform.getTranslateInstance(pt.x, pt.y);
-
-
-                        if (rOrient != RelativeOrientation.PORTRAYAL) {
-                            Point2D.Double ptA = ShapeHelper.getPointAt(oSeg, 0.5 * (segLength - gWidth));
-                            Point2D.Double ptB = ShapeHelper.getPointAt(oSeg, 0.75 * (segLength - gWidth));
-
-                            double theta = Math.atan2(ptB.y - ptA.y, ptB.x - ptA.x);
-                            //System.out.println("("+ ptA.x + ";" + ptA.y +")"  + "(" + ptB.x + ";" + ptB.y+ ")" + "   => Angle: " + (theta/0.0175));
-
-                            switch (rOrient) {
-                                case LINE:
-                                    theta += 0.5 * Math.PI;
-                                    break;
-                                case NORMAL_UP:
-                                    if (theta < -Math.PI / 2 || theta > Math.PI / 2) {
-                                        theta += Math.PI;
-                                    }
-                                    break;
-                            }
-
-                            at.concatenate(AffineTransform.getRotateInstance(theta));
+                int i = 0;
+                if (segments != null) {
+                    for (Shape seg : segments) {
+                        if (i == nbToDraw) {
+                            break;
                         }
-                        g2.drawRenderedImage(createRendering, at);
+                        i++;
+
+                        ArrayList<Shape> oSegs;
+                        if (this.isOffsetRapport() && Math.abs(offset) > 0.0) {
+                            oSegs = ShapeHelper.perpendicularOffset(seg, offset);
+                        } else {
+                            oSegs = new ArrayList<Shape>();
+                            oSegs.add(seg);
+                        }
+
+                        for (Shape oSeg : oSegs) {
+                            if (oSeg != null) {
+                                Point2D.Double pt = ShapeHelper.getPointAt(oSeg, segLength / 2);
+                                AffineTransform at = AffineTransform.getTranslateInstance(pt.x, pt.y);
+
+
+                                if (rOrient != RelativeOrientation.PORTRAYAL) {
+                                    Point2D.Double ptA = ShapeHelper.getPointAt(oSeg, 0.5 * (segLength - gWidth));
+                                    Point2D.Double ptB = ShapeHelper.getPointAt(oSeg, 0.75 * (segLength - gWidth));
+
+                                    double theta = Math.atan2(ptB.y - ptA.y, ptB.x - ptA.x);
+                                    //System.out.println("("+ ptA.x + ";" + ptA.y +")"  + "(" + ptB.x + ";" + ptB.y+ ")" + "   => Angle: " + (theta/0.0175));
+
+                                    switch (rOrient) {
+                                        case LINE:
+                                            theta += 0.5 * Math.PI;
+                                            break;
+                                        case NORMAL_UP:
+                                            if (theta < -Math.PI / 2 || theta > Math.PI / 2) {
+                                                theta += Math.PI;
+                                            }
+                                            break;
+                                    }
+
+                                    at.concatenate(AffineTransform.getRotateInstance(theta));
+                                }
+                                g2.drawRenderedImage(createRendering, at);
+                            }
+                        }
                     }
                 }
             }

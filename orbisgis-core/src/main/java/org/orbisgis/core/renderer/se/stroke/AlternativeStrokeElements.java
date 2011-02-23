@@ -52,10 +52,16 @@ public class AlternativeStrokeElements extends CompoundStrokeElement {
 	private ArrayList<StrokeElement> elements;
 
 	AlternativeStrokeElements(AlternativeStrokeElementsType aset) throws InvalidStyle {
+        System.out.println ("Read AlternativeStrokeElements!");
 		elements = new ArrayList<StrokeElement>();
 		for (StrokeElementType se : aset.getStrokeElement()) {
-			elements.add(new StrokeElement(se));
+            StrokeElement strokeElement = new StrokeElement(se);
+            strokeElement.setParent(this);
+			elements.add(strokeElement);
 		}
+        if (elements.isEmpty()){
+            throw new InvalidStyle("Alternative Stroke Element must, at least, contains one stroke element");
+        }
 	}
 
 	@Override
@@ -79,4 +85,12 @@ public class AlternativeStrokeElements extends CompoundStrokeElement {
 		}
 		return result.trim();
 	}
+
+    public ArrayList<StrokeElement> getElements() {
+        return elements;
+    }
+
+    public void setElements(ArrayList<StrokeElement> elements) {
+        this.elements = elements;
+    }
 }

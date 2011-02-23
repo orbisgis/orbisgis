@@ -31,8 +31,17 @@ import org.orbisgis.core.renderer.se.parameter.ParameterException;
  */
 public abstract class Stroke implements SymbolizerNode, UomNode {
 
-	protected Uom uom;
+	private Uom uom;
     protected SymbolizerNode parent;
+
+    private boolean lengthRapport;
+    private boolean offsetRapport;
+
+
+    protected Stroke(){
+        lengthRapport = true;
+        offsetRapport = false;
+    }
 
     /**
      * Create a new stroke based on the jaxbelement
@@ -85,6 +94,36 @@ public abstract class Stroke implements SymbolizerNode, UomNode {
     }
 
     /**
+     * when delineating closed shapes (i.e. a ring), indicate, whether or not,
+     * the length of stroke elements shall be scaled in order to make the pattern
+     * appear a integral # of time. This will make the junction more aesthetical
+     *
+     * @return whether or not stroke elems lenght shall be scaled
+     */
+    public boolean isLengthRapport() {
+        return lengthRapport;
+    }
+
+    public void setLengthRapport(boolean lengthRapport) {
+        this.lengthRapport = lengthRapport;
+    }
+
+    /**
+     * When delineating a line with a perpendicular offset, indicate whether or not
+     * stroke element shall following the initial line (rapport=true) or should only
+     * be bases on the offseted line (rapport=false);
+     *
+     * @return true if offseted element shall follow initial line
+     */
+    public boolean isOffsetRapport() {
+        return offsetRapport;
+    }
+
+    public void setOffsetRapport(boolean offsetRapport) {
+        this.offsetRapport = offsetRapport;
+    }
+
+    /**
      * Return the max width of the underlaying stroke
      * @param ds
      * @param fid
@@ -107,7 +146,7 @@ public abstract class Stroke implements SymbolizerNode, UomNode {
     /**
      *
      * @param g2 draw within this graphics2d
-     * @param shp stroke this shape (note this is note a LiteShape, because
+     * @param shp stroke this shape (note this is note a JTS Geometry, because
      *        stroke can be used to delineate graphics (such as MarkGraphic,
      *        PieChart or AxisChart)
 	 * @param feat the feature contains attribute
@@ -130,6 +169,8 @@ public abstract class Stroke implements SymbolizerNode, UomNode {
             s.setUnitOfMeasure(uom.toURN());
         }
     }
+
+    public abstract double getNaturalLength(SpatialDataSourceDecorator sds, long fid, Shape shp, MapTransform mt) throws ParameterException, IOException;
 
     public abstract String dependsOnFeature();
 }

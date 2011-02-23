@@ -39,18 +39,24 @@ package org.orbisgis.core.renderer.se.stroke;
 
 import java.awt.Graphics2D;
 import java.awt.Shape;
+import java.awt.geom.AffineTransform;
+import java.awt.geom.Point2D;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import javax.media.jai.RenderableGraphics;
 import javax.xml.bind.JAXBElement;
 import org.gdms.data.SpatialDataSourceDecorator;
-import org.gdms.data.feature.Feature;
+
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.persistance.se.CompoundStrokeType;
 import org.orbisgis.core.renderer.persistance.se.ObjectFactory;
 import org.orbisgis.core.renderer.persistance.se.StrokeAnnotationGraphicType;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
+import org.orbisgis.core.renderer.se.common.RelativeOrientation;
+import org.orbisgis.core.renderer.se.common.ShapeHelper;
 import org.orbisgis.core.renderer.se.common.Uom;
+import org.orbisgis.core.renderer.se.graphic.Graphic;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
@@ -62,152 +68,380 @@ import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
  */
 public final class CompoundStroke extends Stroke {
 
-	RealParameter preGap;
-	RealParameter postGap;
-	ArrayList<CompoundStrokeElement> elements;
-	ArrayList<StrokeAnnotationGraphic> annotations;
+    RealParameter preGap;
+    RealParameter postGap;
+    ArrayList<CompoundStrokeElement> elements;
+    ArrayList<StrokeAnnotationGraphic> annotations;
 
-	public CompoundStroke(CompoundStrokeType s) throws InvalidStyle {
-		if (s.getPreGap() != null) {
-			setPreGap(SeParameterFactory.createRealParameter(s.getPreGap()));
-		}
+    public CompoundStroke(CompoundStrokeType s) throws InvalidStyle {
+        super();
+        if (s.getPreGap() != null) {
+            setPreGap(SeParameterFactory.createRealParameter(s.getPreGap()));
+        }
 
-		if (s.getPostGap() != null) {
-			setPostGap(SeParameterFactory.createRealParameter(s.getPostGap()));
-		}
+        if (s.getPostGap() != null) {
+            setPostGap(SeParameterFactory.createRealParameter(s.getPostGap()));
+        }
 
-		elements = new ArrayList<CompoundStrokeElement>();
-		annotations = new ArrayList<StrokeAnnotationGraphic>();
+        elements = new ArrayList<CompoundStrokeElement>();
+        annotations = new ArrayList<StrokeAnnotationGraphic>();
 
-		if (s.getStrokeElementOrAlternativeStrokeElements() != null) {
-			for (Object o : s.getStrokeElementOrAlternativeStrokeElements()) {
-				CompoundStrokeElement cse = CompoundStrokeElement.createCompoundStrokeElement(o);
-				addCompoundStrokeElement(cse);
-			}
-		}
+        if (s.getStrokeElementOrAlternativeStrokeElements() != null) {
+            for (Object o : s.getStrokeElementOrAlternativeStrokeElements()) {
+                CompoundStrokeElement cse = CompoundStrokeElement.createCompoundStrokeElement(o);
+                addCompoundStrokeElement(cse);
+            }
+        }
 
-		if (s.getStrokeAnnotationGraphic() != null) {
-			for (StrokeAnnotationGraphicType sagt : s.getStrokeAnnotationGraphic()) {
-				StrokeAnnotationGraphic sag = new StrokeAnnotationGraphic(sagt);
-				addStrokeAnnotationGraphic(sag);
-			}
-		}
+        if (s.getStrokeAnnotationGraphic() != null) {
+            for (StrokeAnnotationGraphicType sagt : s.getStrokeAnnotationGraphic()) {
+                StrokeAnnotationGraphic sag = new StrokeAnnotationGraphic(sagt);
+                addStrokeAnnotationGraphic(sag);
+            }
+        }
 
-		if (s.getUnitOfMeasure() != null) {
-			this.setUom(Uom.fromOgcURN(s.getUnitOfMeasure()));
-		} else {
-			this.uom = null;
-		}
-	}
+        if (s.getUnitOfMeasure() != null) {
+            this.setUom(Uom.fromOgcURN(s.getUnitOfMeasure()));
+        } else {
+            this.setUom(null);
+        }
+    }
 
-	public CompoundStroke(JAXBElement<CompoundStrokeType> s) throws InvalidStyle {
-		this(s.getValue());
-	}
+    public CompoundStroke(JAXBElement<CompoundStrokeType> s) throws InvalidStyle {
+        this(s.getValue());
+    }
 
-	public void setPreGap(RealParameter preGap) {
-		this.preGap = preGap;
+    public void setPreGap(RealParameter preGap) {
+        this.preGap = preGap;
 
-		if (preGap != null) {
-			this.preGap.setContext(RealParameterContext.nonNegativeContext);
-		}
-	}
+        if (preGap != null) {
+            this.preGap.setContext(RealParameterContext.nonNegativeContext);
+        }
+    }
 
-	public void setPostGap(RealParameter postGap) {
-		this.postGap = postGap;
+    public void setPostGap(RealParameter postGap) {
+        this.postGap = postGap;
 
-		if (postGap != null) {
-			this.postGap.setContext(RealParameterContext.nonNegativeContext);
-		}
-	}
+        if (postGap != null) {
+            this.postGap.setContext(RealParameterContext.nonNegativeContext);
+        }
+    }
 
-	public RealParameter getPreGap() {
-		return preGap;
-	}
+    public RealParameter getPreGap() {
+        return preGap;
+    }
 
-	public RealParameter getPostGap() {
-		return postGap;
-	}
+    public RealParameter getPostGap() {
+        return postGap;
+    }
 
-	@Override
-	public double getMaxWidth(SpatialDataSourceDecorator sds, long fid, MapTransform mt) throws ParameterException, IOException {
-		throw new UnsupportedOperationException("Not supported yet.");
-	}
+    @Override
+    public double getMaxWidth(SpatialDataSourceDecorator sds, long fid, MapTransform mt) throws ParameterException, IOException {
+        double max = 0.0;
+        for (CompoundStrokeElement elem : elements) {
+            StrokeElement sElem = null;
+
+            if (elem instanceof StrokeElement) {
+                sElem = (StrokeElement) elem;
+            } else if (elem instanceof AlternativeStrokeElements) {
+                AlternativeStrokeElements aElem = (AlternativeStrokeElements) elem;
+                sElem = aElem.getElements().get(0);
+            }
+
+            double sWidth = sElem.getStroke().getMaxWidth(sds, fid, mt);
+            if (sWidth > max) {
+                max = sWidth;
+            }
+        }
+
+        for (StrokeAnnotationGraphic annotation : annotations) {
+            RenderableGraphics g = annotation.getGraphic().getGraphic(sds, fid, false, mt);
+            if (g != null) {
+                max = Math.max(max, Math.max(Math.max(g.getWidth(), Math.abs(g.getMinX())), Math.max(g.getHeight(), Math.abs(g.getMinY()))));
+            }
+        }
+
+        return max;
+    }
 
     @Override
     public double getMinLength(SpatialDataSourceDecorator sds, long fid, MapTransform mt) throws ParameterException, IOException {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
-	@Override
-	public void draw(Graphics2D g2, SpatialDataSourceDecorator sds, long fid, Shape shp, boolean selected, MapTransform mt, double offset) throws ParameterException, IOException {
+    @Override
+    public double getNaturalLength(SpatialDataSourceDecorator sds, long fid, Shape shp, MapTransform mt) throws ParameterException, IOException {
+        throw new UnsupportedOperationException("Nesting a compound stroke within a compound stroke is forbidden !!!");
+    }
 
-		double initGap = 0.0;
-		double endGap = 0.0;
+    @Override
+    public void draw(Graphics2D g2, SpatialDataSourceDecorator sds, long fid, Shape shape,
+            boolean selected, MapTransform mt, double offset) throws ParameterException, IOException {
 
-		if (preGap != null) {
-			initGap = preGap.getValue(sds, fid);
-		}
+        double initGap = 0.0;
+        double endGap = 0.0;
 
-		if (postGap != null) {
-			endGap = postGap.getValue(sds, fid);
-		}
-	}
+        ArrayList<Shape> shapes;
+        // if not using offset rapport, compute perpendiculat offset first
+        if (!this.isOffsetRapport() && Math.abs(offset) > 0.0) {
+            shapes = ShapeHelper.perpendicularOffset(shape, offset);
+            // Setting offset to 0.0 let be sure the offset will never been applied twice!
+            offset = 0.0;
+        } else {
+            shapes = new ArrayList<Shape>();
+            shapes.add(shape);
+        }
 
-	@Override
-	public String dependsOnFeature() {
+
+        for (Shape shp : shapes) {
+
+            if (preGap != null) {
+                initGap = Uom.toPixel(preGap.getValue(sds, fid), getUom(), mt.getDpi(), mt.getScaleDenominator(), null);
+                if (initGap > 0.0) {
+                    shp = ShapeHelper.splitLine(shp, initGap).get(1);
+                }
+            }
+
+            if (postGap != null) {
+                endGap = postGap.getValue(sds, fid);
+                endGap = Uom.toPixel(postGap.getValue(sds, fid), getUom(), mt.getDpi(), mt.getScaleDenominator(), null);
+                shp = ShapeHelper.splitLine(shp, endGap).get(0);
+            }
+
+            int nbElem = elements.size();
+
+            double lengths[] = new double[nbElem];
+            Stroke strokes[] = new Stroke[nbElem];
+            Double preGaps[] = new Double[nbElem];
+            Double postGaps[] = new Double[nbElem];
+
+            double remainingLength = ShapeHelper.getLineLength(shp);
+            double lineLength = remainingLength;
+            int nbInfinite = 0;
+
+            int i = 0;
+            for (CompoundStrokeElement elem : elements) {
+                StrokeElement sElem = null;
+
+                if (elem instanceof StrokeElement) {
+                    sElem = (StrokeElement) elem;
+                } else if (elem instanceof AlternativeStrokeElements) {
+                    AlternativeStrokeElements aElem = (AlternativeStrokeElements) elem;
+                    sElem = aElem.getElements().get(0);
+                }
+
+                strokes[i] = sElem.getStroke();
+
+                if (sElem.getLength() != null) {
+                    lengths[i] = Uom.toPixel(sElem.getLength().getValue(sds, fid),
+                            getUom(), mt.getDpi(), mt.getScaleDenominator(), null);
+                    //System.out.println("Has own length: " + lengths[i]);
+                } else {
+                    lengths[i] = sElem.getStroke().getNaturalLength(sds, fid, shp, mt);
+                    //System.out.println("Natural length: " + lengths[i]);
+                }
+
+                if (sElem.getPreGap() != null) {
+                    preGaps[i] = Uom.toPixel(sElem.getPreGap().getValue(sds, fid), getUom(), mt.getDpi(), mt.getScaleDenominator(), null);
+                    remainingLength -= preGaps[i];
+                } else {
+                    preGaps[i] = null;
+                }
+
+                if (sElem.getPostGap() != null) {
+                    postGaps[i] = Uom.toPixel(sElem.getPostGap().getValue(sds, fid), getUom(), mt.getDpi(), mt.getScaleDenominator(), null);
+                    remainingLength -= postGaps[i];
+                } else {
+                    postGaps[i] = null;
+                }
+
+                if (Double.isInfinite(lengths[i])) {
+                    nbInfinite++;
+                } else {
+                    remainingLength -= lengths[i];
+                }
+                i++;
+            }
+
+            //System.out.println(" Remain: " + remainingLength);
+            //System.out.println(" LineLength: " + lineLength);
+
+            //if (remainingLength < 0.0) {
+            //    Services.getErrorManager().error("Unable to generate compoundStroke: line too short");
+            //    return;
+            //} else {
+
+            double patternLength = lineLength - remainingLength;
+            if (nbInfinite > 0) {
+                double infiniteLength = remainingLength / nbInfinite;
+                //System.out.println(" Share remaining: " + infiniteLength);
+                for (i = 0; i < lengths.length; i++) {
+                    if (Double.isInfinite(lengths[i])) {
+                        lengths[i] = infiniteLength;
+                    }
+                }
+            } else { // fixed length pattern
+                if (this.isLengthRapport()) {
+                    // Scale pattern to lineLength intergral fraction
+                    int nbPattern = (int) ((lineLength / patternLength) + 0.5);
+                    if (nbPattern < 1) {
+                        nbPattern = 1;
+                    }
+                    // Compute factor
+                    double f = lineLength / (nbPattern * patternLength);
+                    for (i = 0; i < nbElem; i++) {
+                        lengths[i] *= f;
+                        if (preGaps[i] != null) {
+                            preGaps[i] *= f;
+                        }
+                        if (postGaps[i] != null) {
+                            postGaps[i] *= f;
+                        }
+                    }
+                }
+            }
+            //}
+
+            Shape scrap = shp;
+
+
+            //while (ShapeHelper.getLineLength(chute) > 0) {
+            i = 0; // stroke element iterator
+            int j = 0; // num pattern counter
+            while (scrap != null) {
+
+                if (preGaps[i] != null) {
+                    // Skip preGap
+                    ArrayList<Shape> splitLine = ShapeHelper.splitLine(scrap, preGaps[i]);
+                    if (splitLine.size() > 1) {
+                        scrap = splitLine.get(1);
+                    } else {
+                        break;
+                    }
+                }
+
+                if (lengths[i] > 0) {
+                    ArrayList<Shape> splitLine = ShapeHelper.splitLine(scrap, lengths[i]);
+                    //System.out.println("Extract: " + lengths[i]);
+                    Shape seg = splitLine.remove(0);
+
+                    if (splitLine.size() > 0) {
+                        scrap = splitLine.remove(0);
+                    } else {
+                        scrap = null;
+                    }
+                    strokes[i].draw(g2, sds, fid, seg, selected, mt, offset);
+                }
+
+                if (postGaps[i] != null) {
+                    // Skip postGap
+                    ArrayList<Shape> splitLine = ShapeHelper.splitLine(scrap, postGaps[i]);
+                    if (splitLine.size() > 1) {
+                        scrap = splitLine.get(1);
+                    } else {
+                        break;
+                    }
+                }
+
+                i = (i + 1) % nbElem;
+
+                if (i == 0) {
+                    // one pattern has been completed => add stroke annotation graphics !
+                    for (StrokeAnnotationGraphic annotation : annotations) {
+                        double pos = (annotation.getRelativePosition().getValue(sds, fid) + j) * patternLength;
+                        RenderableGraphics rg = annotation.getGraphic().getGraphic(sds, fid, selected, mt);
+
+                        Point2D.Double pt = ShapeHelper.getPointAt(shp, pos);
+                        AffineTransform at = AffineTransform.getTranslateInstance(pt.x, pt.y);
+                        RelativeOrientation rOrient = annotation.getRelativeOrientation();
+                        if (rOrient == null) {
+                            rOrient = RelativeOrientation.NORMAL;
+                        }
+
+                        if (rOrient != RelativeOrientation.PORTRAYAL) {
+                            Point2D.Double ptA = ShapeHelper.getPointAt(shp, pos - 5);
+                            Point2D.Double ptB = ShapeHelper.getPointAt(shp, pos + 5);
+
+                            double theta = Math.atan2(ptB.y - ptA.y, ptB.x - ptA.x);
+                            //System.out.println("("+ ptA.x + ";" + ptA.y +")"  + "(" + ptB.x + ";" + ptB.y+ ")" + "   => Angle: " + (theta/0.0175));
+
+                            switch (rOrient) {
+                                case LINE:
+                                    theta += 0.5 * Math.PI;
+                                    break;
+                                case NORMAL_UP:
+                                    if (theta < -Math.PI / 2 || theta > Math.PI / 2) {
+                                        theta += Math.PI;
+                                    }
+                                    break;
+                            }
+
+                            at.concatenate(AffineTransform.getRotateInstance(theta));
+                        }
+                        g2.drawRenderedImage(rg.createRendering(mt.getCurrentRenderContext()), at);
+
+                    }
+                    j++;
+                }
+            }
+        }
+    }
+
+    @Override
+    public String dependsOnFeature() {
         String result = "";
-		for (StrokeAnnotationGraphic sag : annotations) {
+        for (StrokeAnnotationGraphic sag : annotations) {
             result += sag.dependsOnFeature();
-		}
+        }
 
-		for (CompoundStrokeElement elem : elements) {
+        for (CompoundStrokeElement elem : elements) {
             result += elem.dependsOnFeature();
-		}
+        }
 
-		return result.trim();
-	}
+        return result.trim();
+    }
 
-	private void addCompoundStrokeElement(CompoundStrokeElement cse) {
-		elements.add(cse);
-		cse.setParent(this);
-	}
+    private void addCompoundStrokeElement(CompoundStrokeElement cse) {
+        elements.add(cse);
+        cse.setParent(this);
+    }
 
-	private void addStrokeAnnotationGraphic(StrokeAnnotationGraphic sag) {
-		annotations.add(sag);
-		sag.setParent(this);
-	}
+    private void addStrokeAnnotationGraphic(StrokeAnnotationGraphic sag) {
+        annotations.add(sag);
+        sag.setParent(this);
+    }
 
-	@Override
-	public JAXBElement<CompoundStrokeType> getJAXBElement() {
-		ObjectFactory of = new ObjectFactory();
-		return of.createCompoundStroke(this.getJAXBType());
-	}
+    @Override
+    public JAXBElement<CompoundStrokeType> getJAXBElement() {
+        ObjectFactory of = new ObjectFactory();
+        return of.createCompoundStroke(this.getJAXBType());
+    }
 
-	public CompoundStrokeType getJAXBType() {
-		CompoundStrokeType s = new CompoundStrokeType();
+    public CompoundStrokeType getJAXBType() {
+        CompoundStrokeType s = new CompoundStrokeType();
 
-		this.setJAXBProperties(s);
+        this.setJAXBProperties(s);
 
-		if (this.preGap != null) {
-			s.setPreGap(preGap.getJAXBParameterValueType());
-		}
+        if (this.preGap != null) {
+            s.setPreGap(preGap.getJAXBParameterValueType());
+        }
 
-		if (this.postGap != null) {
-			s.setPostGap(postGap.getJAXBParameterValueType());
-		}
+        if (this.postGap != null) {
+            s.setPostGap(postGap.getJAXBParameterValueType());
+        }
 
 
-		List<Object> sElem = s.getStrokeElementOrAlternativeStrokeElements();
-		List<StrokeAnnotationGraphicType> sAnnot = s.getStrokeAnnotationGraphic();
+        List<Object> sElem = s.getStrokeElementOrAlternativeStrokeElements();
+        List<StrokeAnnotationGraphicType> sAnnot = s.getStrokeAnnotationGraphic();
 
-		for (CompoundStrokeElement elem : this.elements) {
-			sElem.add(elem.getJaxbType());
-		}
+        for (CompoundStrokeElement elem : this.elements) {
+            sElem.add(elem.getJaxbType());
+        }
 
-		for (StrokeAnnotationGraphic sag : annotations) {
-			sAnnot.add(sag.getJaxbType());
-		}
+        for (StrokeAnnotationGraphic sag : annotations) {
+            sAnnot.add(sag.getJaxbType());
+        }
 
-		return s;
-	}
+        return s;
+    }
 }
