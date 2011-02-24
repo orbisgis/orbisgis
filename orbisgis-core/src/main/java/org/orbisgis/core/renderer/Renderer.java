@@ -210,7 +210,13 @@ public class Renderer {
 				}
 
 
-				FilterDataSourceDecorator elseDs = new FilterDataSourceDecorator(featureInExtent, elseWhere);
+				FilterDataSourceDecorator elseDs;
+                if (elseWhere.isEmpty()){
+                    elseDs = featureInExtent;
+                } else {
+                    elseDs =  new FilterDataSourceDecorator(featureInExtent, elseWhere);
+                }
+
 
 				for (Rule elseR : fRList) {
 					rulesDs.put(elseR, elseDs);
