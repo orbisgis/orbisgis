@@ -9,6 +9,7 @@ import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import javax.media.jai.RenderableGraphics;
 import org.gdms.data.SpatialDataSourceDecorator;
 
@@ -197,9 +198,7 @@ public final class StyledLabel implements SymbolizerNode, FillNode, StrokeNode {
         this.fontWeight = fontWeight;
     }
 
-    public RenderableGraphics getImage(SpatialDataSourceDecorator sds, long fid, boolean selected, MapTransform mt) throws ParameterException, IOException {
-        String text = labelText.getValue(sds, fid);
-
+    private RenderableGraphics getTextImage(String text, SpatialDataSourceDecorator sds, long fid, boolean selected, MapTransform mt) throws ParameterException, IOException {
         String family = "Arial";
         if (fontFamily != null) {
             family = fontFamily.getValue(sds, fid);
@@ -217,9 +216,11 @@ public final class StyledLabel implements SymbolizerNode, FillNode, StrokeNode {
             fontStyle.getValue(sds, fid);
         }
 
-        double size = 12;
+        //double size = Uom.toPixel(12, Uom.PT, mt.getDpi(), mt.getScaleDenominator(), null);
+        double size = 12.0;
         if (fontSize != null) {
-            size = fontSize.getValue(sds, fid);
+            size = Uom.toPixel(fontSize.getValue(sds, fid), getUom(), mt.getDpi(), mt.getScaleDenominator(), null);
+            size = (size * mt.getDpi()) / 72.0;
         }
 
         int st = Font.PLAIN;
@@ -237,6 +238,7 @@ public final class StyledLabel implements SymbolizerNode, FillNode, StrokeNode {
         }
 
 
+        System.out.println ("FontSize is : " + (int)size);
         Font font = new Font(family, st, (int) size);
         FontMetrics metrics = new FontMetrics(font) {
         };
@@ -288,6 +290,50 @@ public final class StyledLabel implements SymbolizerNode, FillNode, StrokeNode {
 
         // HALO, FILL, STROKE
         return rg;
+
+    }
+
+    public double getEmInPixel(SpatialDataSourceDecorator sds, long fid, MapTransform mt) throws ParameterException{
+        double size = Uom.toPixel(12, Uom.PT, mt.getDpi(), mt.getScaleDenominator(), null);
+        if (fontSize != null) {
+            size = Uom.toPixel(fontSize.getValue(sds, fid), getUom(), mt.getDpi(), mt.getScaleDenominator(), null);
+        }
+        return size / 2.0;
+    }
+
+    /**
+     * Return one graphic for each glyph and null for space ( this.getEm() give effective width of spaces)
+     * @param sds
+     * @param fid
+     * @param selected
+     * @param mt
+     * @return
+     * @throws ParameterException
+     * @throws IOException
+     */
+    public ArrayList<RenderableGraphics> getGlyphs(SpatialDataSourceDecorator sds,
+            long fid, boolean selected, MapTransform mt) throws ParameterException, IOException {
+
+        ArrayList<RenderableGraphics> rGlyphs = new ArrayList<RenderableGraphics>();
+
+        String text = labelText.getValue(sds, fid);
+        String[] glyphs = text.split("");
+
+        for (String glyph : glyphs){
+            if(!glyph.trim().isEmpty()) {
+                RenderableGraphics textImage = getTextImage(glyph, sds, fid, selected, mt);
+                rGlyphs.add(textImage);
+            } else {
+                rGlyphs.add(null);
+            }
+        }
+
+        return rGlyphs;
+    }
+
+    public RenderableGraphics getImage(SpatialDataSourceDecorator sds, long fid, boolean selected, MapTransform mt) throws ParameterException, IOException {
+        String text = labelText.getValue(sds, fid);
+        return getTextImage(text, sds, fid, selected, mt);
     }
 
     public StyledLabelType getJAXBType() {

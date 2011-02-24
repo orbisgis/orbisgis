@@ -67,6 +67,35 @@ public final class TextSymbolizer extends VectorSymbolizer {
 	private RealParameter perpendicularOffset;
 	private Label label;
 
+
+	public TextSymbolizer(JAXBElement<TextSymbolizerType> st) throws InvalidStyle {
+		super(st);
+		TextSymbolizerType tst = st.getValue();
+
+
+		if (tst.getGeometry() != null) {
+			// TODO
+		}
+
+		if (tst.getUnitOfMeasure() != null) {
+			this.uom = Uom.fromOgcURN(tst.getUnitOfMeasure());
+		}
+
+		if (tst.getPerpendicularOffset() != null) {
+			this.setPerpendicularOffset(SeParameterFactory.createRealParameter(tst.getPerpendicularOffset()));
+		}
+
+		if (tst.getTransform() != null) {
+			this.setTransform(new Transform(tst.getTransform()));
+		}
+
+		if (tst.getLabel() != null) {
+			this.setLabel(Label.createLabelFromJAXBElement(tst.getLabel()));
+		}
+	}
+
+
+
 	public TextSymbolizer() {
 		super();
 		this.name = "Label";
@@ -133,32 +162,6 @@ public final class TextSymbolizer extends VectorSymbolizer {
 		}
 
 		return of.createTextSymbolizer(s);
-	}
-
-	public TextSymbolizer(JAXBElement<TextSymbolizerType> st) throws InvalidStyle {
-		super(st);
-		TextSymbolizerType tst = st.getValue();
-
-
-		if (tst.getGeometry() != null) {
-			// TODO
-		}
-
-		if (tst.getUnitOfMeasure() != null) {
-			this.uom = Uom.fromOgcURN(tst.getUnitOfMeasure());
-		}
-
-		if (tst.getPerpendicularOffset() != null) {
-			this.setPerpendicularOffset(SeParameterFactory.createRealParameter(tst.getPerpendicularOffset()));
-		}
-
-		if (tst.getTransform() != null) {
-			this.setTransform(new Transform(tst.getTransform()));
-		}
-
-		if (tst.getLabel() != null) {
-			this.setLabel(Label.createLabelFromJAXBElement(tst.getLabel()));
-		}
 	}
 
 	@Override

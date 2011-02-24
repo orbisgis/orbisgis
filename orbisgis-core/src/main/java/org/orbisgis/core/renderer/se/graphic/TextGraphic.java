@@ -18,7 +18,7 @@ import org.orbisgis.core.renderer.se.transform.Transform;
 
 public class TextGraphic extends Graphic {
 
-    public TextGraphic(){
+    public TextGraphic() {
     }
 
     TextGraphic(JAXBElement<TextGraphicType> tge) throws InvalidStyle {
@@ -33,7 +33,7 @@ public class TextGraphic extends Graphic {
         }
 
 
-        if (tgt.getStyledLabel() != null){
+        if (tgt.getStyledLabel() != null) {
             this.setStyledLabel(new StyledLabel(tgt.getStyledLabel()));
         }
     }
@@ -57,25 +57,28 @@ public class TextGraphic extends Graphic {
 
         RenderableGraphics label = styledLabel.getImage(sds, fid, selected, mt);
 
-        Rectangle2D bounds = new Rectangle2D.Double(label.getMinX(), label.getMinY(), label.getWidth(), label.getHeight());
+        if (label != null) {
+            Rectangle2D bounds = new Rectangle2D.Double(label.getMinX(), label.getMinY(), label.getWidth(), label.getHeight());
 
-		//System.out.println("Bounds: " + bounds);
+            //System.out.println("Bounds: " + bounds);
 
 
-        if (transform != null) {
-            AffineTransform at = this.transform.getGraphicalAffineTransform(false, sds, fid, mt, (double)label.getWidth(), (double)label.getHeight());
+            if (transform != null) {
+                AffineTransform at = this.transform.getGraphicalAffineTransform(false, sds, fid, mt, (double) label.getWidth(), (double) label.getHeight());
 
-            Shape atShp = at.createTransformedShape(bounds);
+                Shape atShp = at.createTransformedShape(bounds);
 
-			//System.out.println("Bounds: " + atShp.getBounds2D());
+                //System.out.println("Bounds: " + atShp.getBounds2D());
 
-            RenderableGraphics rg = Graphic.getNewRenderableGraphics(atShp.getBounds2D(), 0);
+                RenderableGraphics rg = Graphic.getNewRenderableGraphics(atShp.getBounds2D(), 0);
 
-            rg.drawRenderedImage(label.createRendering(mt.getCurrentRenderContext()), at);
-            return rg;
-        } else {
-            return label;
+                rg.drawRenderedImage(label.createRendering(mt.getCurrentRenderContext()), at);
+                return rg;
+            } else {
+                return label;
+            }
         }
+        return null;
     }
 
     @Override
@@ -103,15 +106,13 @@ public class TextGraphic extends Graphic {
         return of.createTextGraphic(t);
     }
 
-
     @Override
     public String dependsOnFeature() {
         return styledLabel.dependsOnFeature();
     }
 
     @Override
-    public void updateGraphic(){
+    public void updateGraphic() {
     }
-
     private StyledLabel styledLabel;
 }

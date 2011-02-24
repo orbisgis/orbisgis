@@ -188,7 +188,6 @@ public class ShapeHelper {
         return shapes;
     }
 
-
     /**
      * Split a linear feature in the specified number of part, which have all the same length
      * @param line  the line to split
@@ -265,8 +264,6 @@ public class ShapeHelper {
 
         return shapes;
     }
-
-
 
     /**
      * Split a linear feature in the specified number of part, which have all the same length
@@ -393,6 +390,7 @@ public class ShapeHelper {
             x2 = coords[0];
             y2 = coords[1];
 
+            // Since two point are known, we can start to look for our point
             if (x1 != null && y1 != null) {
                 double xx, yy;
                 xx = x2 - x1;
@@ -401,17 +399,31 @@ public class ShapeHelper {
                 p += segLength;
 
                 if (p > distance) {
+                    // The point is on this segment !
                     break;
                 }
             }
 
-            x1 = x2;
-            y1 = y2;
-
             it.next();
+
+            if (!it.isDone()){
+                x1 = x2;
+                y1 = y2;
+            }
+
         }
 
-        return getPointAt(x1, y1, x2, y2, segLength - (p - distance));
+
+        if (distance < 0.0) {
+            //System.out.println ("  Negative Distance");
+            return new Point2D.Double(x1, y1);
+        } else if (distance > p) {
+            //System.out.println ("  AfterLine: " + (distance - p  + segLength));
+            return getPointAt(x1, y1, x2, y2, distance - p + segLength);
+        } else {
+            //System.out.println ("  Default: " + (segLength -p + distance));
+            return getPointAt(x1, y1, x2, y2, segLength - (p - distance));
+        }
     }
 
     private static Polygon perpendicularOffsetForArea() {
@@ -458,7 +470,7 @@ public class ShapeHelper {
             //if (quadX1 != null) {
             //    return "" + x + ";" + y + "   " + quadX1 + ";" + quadY2 + "  " + quadX2 + ";" + quadY2 + "   " + quadX3 + ";" + quadY3;
             //} else {
-                return "" + x + ";" + y;
+            return "" + x + ";" + y;
             //}
         }
     }
@@ -862,19 +874,19 @@ public class ShapeHelper {
         Path2D.Double shp = new Path2D.Double();
         Vertex v1 = vertexes.get(0);
 
-        if (v1.quadX1 != null){
-                double dx = v1.quadX2 - v1.x;
-                double dy = v1.quadY2 - v1.y;
+        if (v1.quadX1 != null) {
+            double dx = v1.quadX2 - v1.x;
+            double dy = v1.quadY2 - v1.y;
 
-                if (dx * dx + dy * dy > 9) {
-                    //if (dx * dx + dy * dy < -9) { // i.e. never  (a² + b² > 0) !
-                    shp.moveTo(v1.quadX1, v1.quadY1);
-                    shp.quadTo(v1.quadX2, v1.quadY2, v1.quadX3, v1.quadY3);
-                } else {
-                    shp.moveTo(v1.x, v1.y);
-                }
+            if (dx * dx + dy * dy > 9) {
+                //if (dx * dx + dy * dy < -9) { // i.e. never  (a² + b² > 0) !
+                shp.moveTo(v1.quadX1, v1.quadY1);
+                shp.quadTo(v1.quadX2, v1.quadY2, v1.quadX3, v1.quadY3);
+            } else {
+                shp.moveTo(v1.x, v1.y);
+            }
 
-        } else{
+        } else {
             shp.moveTo(v1.x, v1.y);
         }
 
@@ -887,11 +899,11 @@ public class ShapeHelper {
                 double dy = v.quadY2 - v.y;
 
                 //if (dx * dx + dy * dy > 9) {
-                    //if (dx * dx + dy * dy < -9) { // i.e. never  (a² + b² > 0) !
+                //if (dx * dx + dy * dy < -9) { // i.e. never  (a² + b² > 0) !
                 //    shp.lineTo(v.quadX1, v.quadY1);
                 //    shp.quadTo(v.quadX2, v.quadY2, v.quadX3, v.quadY3);
                 //} else {
-                    shp.lineTo(v.x, v.y);
+                shp.lineTo(v.x, v.y);
                 //}
             } else {
                 shp.lineTo(v.x, v.y);
@@ -1014,7 +1026,7 @@ public class ShapeHelper {
                         System.out.println("Add " + vertexes.get(j));
                     }
                 }
-            /*} else if (in_dir == 1) {
+                /*} else if (in_dir == 1) {
                 Vertex v1 = vertexes.get(offsetLinkList.get(backward));
                 Vertex v2 = vertexes.get(bn);
                 Vertex v3 = vertexes.get(offsetLinkList.get(forward));
@@ -1023,15 +1035,15 @@ public class ShapeHelper {
                 Point2D.Double inter = getLineIntersection(v1.x, v1.y, v2.x, v2.y, v3.x, v3.y, v4.x, v4.y);
 
                 if (inter != null) {
-                    Vertex nv = new Vertex(inter.x, inter.y);
-                    rawLink.add(nv);
-                    if (_DEBUG_) {
-                        System.out.println("Add " + nv);
-                    }
+                Vertex nv = new Vertex(inter.x, inter.y);
+                rawLink.add(nv);
+                if (_DEBUG_) {
+                System.out.println("Add " + nv);
+                }
                 } else {
-                    if (_DEBUG_) {
-                        System.out.println("Skip");
-                    }
+                if (_DEBUG_) {
+                System.out.println("Skip");
+                }
                 }*/
             } else if (in_dir >= 1) {
                 Vertex v1 = vertexes.get(offsetLinkList.get(backward));

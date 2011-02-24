@@ -39,7 +39,6 @@
 package org.orbisgis.core.renderer.se.stroke;
 
 
-import java.awt.image.Raster;
 import java.awt.image.RenderedImage;
 import org.orbisgis.core.renderer.se.graphic.*;
 import com.sun.media.jai.widget.DisplayJAI;

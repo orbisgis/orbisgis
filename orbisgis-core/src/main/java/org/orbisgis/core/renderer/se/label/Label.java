@@ -53,7 +53,8 @@ public abstract class Label implements SymbolizerNode, UomNode{
                 return MIDDLE;
             if (token.equals("baseline"))
                 return BASELINE;
-             return TOP;
+
+            return TOP;
         }
     }
 

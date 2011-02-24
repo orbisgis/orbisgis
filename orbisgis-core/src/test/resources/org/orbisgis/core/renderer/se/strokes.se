@@ -901,6 +901,7 @@
 	      </StyledLabel>
 	    </LineLabel>
 	  </TextStroke>
+	  <SolidFill />
           <Transform>
             <Translate>
               <X>-120</X>
