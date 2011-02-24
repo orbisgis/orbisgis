@@ -93,7 +93,19 @@ public final class Rotate implements Transformation {
 
     @Override
     public String dependsOnFeature() {
-        return (x.dependsOnFeature() + " " + y.dependsOnFeature() + " " + rotation + " ").trim();
+        String result = "";
+        if (x != null){
+            result = x.dependsOnFeature();
+        }
+        if (y!= null){
+            result += " " + y.dependsOnFeature();
+        }
+
+        if (rotation != null){
+            result += " " + rotation.dependsOnFeature();
+        }
+
+        return result.trim();
     }
 
     @Override

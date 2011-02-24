@@ -93,8 +93,8 @@
             </Slice>
 	    <Transform>
 	        <Translate>
-		  <X>-100</X>
-		  <Y>-70</Y>
+		  <X>-120</X>
+		  <Y>-65</Y>
 	        </Translate>
 	    </Transform>
         </PieChart>
@@ -138,8 +138,8 @@
             </Slice>
 	    <Transform>
 	        <Translate>
-		  <X>-80</X>
-		  <Y>-70</Y>
+		  <X>-90</X>
+		  <Y>-65</Y>
 	        </Translate>
 	    </Transform>
         </PieChart>
@@ -184,7 +184,7 @@
 	    <Transform>
 	        <Translate>
 		  <X>-60</X>
-		  <Y>-70</Y>
+		  <Y>-65</Y>
 	        </Translate>
 	    </Transform>
         </PieChart>
@@ -229,20 +229,22 @@
             </Slice>
 	    <Transform>
 	        <Translate>
-		  <X>-40</X>
-		  <Y>-70</Y>
+		  <X>-30</X>
+		  <Y>-65</Y>
 	        </Translate>
 	    </Transform>
         </PieChart>
 
 
+
+<!-- NEW LINE -->
             <PieChart>
                 <Radius>10</Radius>
-            	<!--<HoleRadius>3</HoleRadius>-->
+            	<HoleRadius>5</HoleRadius>
             	<PenStroke />
                 <Slice>
                     <Name>A</Name>
-                    <Value>0</Value>
+                    <Value>140</Value>
                     <SolidFill>
                         <Color>#Eb6101</Color>
                         <Opacity>60.0</Opacity>
@@ -251,7 +253,7 @@
 
                 <Slice>
                     <Name>B</Name>
-                    <Value>0</Value>
+                    <Value>20</Value>
                     <SolidFill>
                         <Color>#E06161</Color>
                         <Opacity>60.0</Opacity>
@@ -259,7 +261,7 @@
                 </Slice>
                 <Slice>
                     <Name>C</Name>
-                    <Value>0</Value>
+                    <Value>200</Value>
                     <SolidFill>
                         <Color>#86B51E</Color>
                     <Opacity>60.0</Opacity>
@@ -267,7 +269,7 @@
             </Slice>
             <Slice>
                 <Name>D</Name>
-                <Value>0</Value>
+                <Value>150</Value>
                 <SolidFill>
                     <Color>#1E69B5</Color>
                     <Opacity>60.0</Opacity>
@@ -275,12 +277,210 @@
             </Slice>
 	    <Transform>
 	        <Translate>
-		  <X>-20</X>
-		  <Y>-70</Y>
+		  <X>-120</X>
+		  <Y>-40</Y>
 	        </Translate>
 	    </Transform>
         </PieChart>
 
+            <PieChart>
+                <Radius>10</Radius>
+            	<HoleRadius>5</HoleRadius>
+		<PieSubtype>half</PieSubtype>
+            	<PenStroke />
+                <Slice>
+                    <Name>A</Name>
+                    <Value>100</Value>
+                    <SolidFill>
+                        <Color>#Eb6101</Color>
+                        <Opacity>60.0</Opacity>
+                    </SolidFill>
+                </Slice>
+
+                <Slice>
+                    <Name>B</Name>
+                    <Value>20</Value>
+                    <SolidFill>
+                        <Color>#E06161</Color>
+                        <Opacity>60.0</Opacity>
+                    </SolidFill>
+                </Slice>
+                <Slice>
+                    <Name>C</Name>
+                    <Value>200</Value>
+                    <SolidFill>
+                        <Color>#86B51E</Color>
+                    <Opacity>60.0</Opacity>
+                </SolidFill>
+            </Slice>
+            <Slice>
+                <Name>D</Name>
+                <Value>150</Value>
+                <SolidFill>
+                    <Color>#1E69B5</Color>
+                    <Opacity>60.0</Opacity>
+                </SolidFill>
+            </Slice>
+	    <Transform>
+	        <Translate>
+		  <X>-90</X>
+		  <Y>-40</Y>
+	        </Translate>
+	    </Transform>
+        </PieChart>
+
+            <PieChart>
+                <Radius>10</Radius>
+            	<HoleRadius>5</HoleRadius>
+		<PieSubtype>half</PieSubtype>
+            	<PenStroke />
+                <Slice>
+                    <Name>A</Name>
+                    <Value>40</Value>
+                    <SolidFill>
+                        <Color>#Eb6101</Color>
+                        <Opacity>60.0</Opacity>
+                    </SolidFill>
+                </Slice>
+
+                <Slice>
+                    <Name>B</Name>
+                    <Value>100</Value>
+                    <SolidFill>
+                        <Color>#E06161</Color>
+                        <Opacity>60.0</Opacity>
+                    </SolidFill>
+                </Slice>
+                <Slice>
+                    <Name>C</Name>
+                    <Value>200</Value>
+                    <SolidFill>
+                        <Color>#86B51E</Color>
+                    <Opacity>60.0</Opacity>
+                </SolidFill>
+            </Slice>
+            <Slice>
+                <Name>D</Name>
+                <Value>150</Value>
+                <SolidFill>
+                    <Color>#1E69B5</Color>
+                    <Opacity>60.0</Opacity>
+                </SolidFill>
+            </Slice>
+	    <Transform>
+	        <Translate>
+		  <X>-60</X>
+		  <Y>-40</Y>
+	        </Translate>
+	    </Transform>
+        </PieChart>
+
+
+            <PieChart>
+                <Radius>10</Radius>
+            	<HoleRadius>5</HoleRadius>
+		<PieSubtype>half</PieSubtype>
+            	<PenStroke />
+                <Slice>
+                    <Name>A</Name>
+                    <Value>100</Value>
+                    <SolidFill>
+                        <Color>#Eb6101</Color>
+                        <Opacity>60.0</Opacity>
+                    </SolidFill>
+                </Slice>
+
+                <Slice>
+                    <Name>B</Name>
+                    <Value>25</Value>
+                    <SolidFill>
+                        <Color>#E06161</Color>
+                        <Opacity>60.0</Opacity>
+                    </SolidFill>
+                </Slice>
+                <Slice>
+                    <Name>C</Name>
+                    <Value>120</Value>
+                    <SolidFill>
+                        <Color>#86B51E</Color>
+                    <Opacity>60.0</Opacity>
+                </SolidFill>
+            </Slice>
+            <Slice>
+                <Name>D</Name>
+                <Value>150</Value>
+                <SolidFill>
+                    <Color>#1E69B5</Color>
+                    <Opacity>60.0</Opacity>
+                </SolidFill>
+            </Slice>
+	    <Transform>
+	        <Rotate>
+		    <Angle>-90</Angle>
+		</Rotate>
+	        <Translate>
+		  <X>-30.5</X>
+		  <Y>-40</Y>
+	        </Translate>
+	    </Transform>
+        </PieChart>
+
+
+            <PieChart>
+                <Radius>10</Radius>
+            	<!--<HoleRadius>3</HoleRadius>-->
+            	<HoleRadius>5</HoleRadius>
+		<PieSubtype>half</PieSubtype>
+            	<PenStroke />
+                <Slice>
+                    <Name>A</Name>
+                    <Value>65</Value>
+                    <SolidFill>
+                        <Color>#Eb6101</Color>
+                        <Opacity>60.0</Opacity>
+                    </SolidFill>
+                </Slice>
+
+                <Slice>
+                    <Name>B</Name>
+                    <Value>40</Value>
+                    <SolidFill>
+                        <Color>#E06161</Color>
+                        <Opacity>60.0</Opacity>
+                    </SolidFill>
+                </Slice>
+                <Slice>
+                    <Name>C</Name>
+                    <Value>82</Value>
+                    <SolidFill>
+                        <Color>#86B51E</Color>
+                    <Opacity>60.0</Opacity>
+                </SolidFill>
+            </Slice>
+            <Slice>
+                <Name>D</Name>
+                <Value>15</Value>
+                <SolidFill>
+                    <Color>#1E69B5</Color>
+                    <Opacity>60.0</Opacity>
+                </SolidFill>
+            </Slice>
+	    <Transform>
+	        <Rotate>
+		    <Angle>90</Angle>
+		</Rotate>
+	        <Scale>
+		  <Y>-1</Y>
+		</Scale>
+	        <Translate>
+		  <X>-29.5</X>
+		  <Y>-40</Y>
+	        </Translate>
+	    </Transform>
+        </PieChart>
+
+
+<!-- NEW LINE -->
         <AxisChart>
 	   <AxisChartSubtype>ortho</AxisChartSubtype>
 	   <AxisScale>
@@ -289,7 +489,8 @@
 	   </AxisScale>
 	   <Transform>
 	      <Translate>
-	        <X>-80</X>
+	        <X>-125</X>
+		<Y>25</Y>
 	      </Translate>
 	   </Transform>
 
@@ -297,6 +498,7 @@
 	     <Measure>100</Measure>
 		<SolidFill>
 	           <Color>#ff0000</Color>
+		   <Opacity>60</Opacity>
 	        </SolidFill>
 	   <PenStroke>
 	     <SolidFill>
@@ -305,9 +507,10 @@
 	   </PenStroke>
 	   </Category>
 	   <Category>
-	     <Measure>20</Measure>
+	     <Measure>-20</Measure>
 		<SolidFill>
 	           <Color>#ff00FF</Color>
+		   <Opacity>60</Opacity>
 	        </SolidFill>
 	   <PenStroke>
 	     <SolidFill>
@@ -316,10 +519,11 @@
 	   </PenStroke>
 	   </Category>
 	   <Category>
-	     <Measure>-70</Measure>
-		<SolidFill>
+	     <Measure>70</Measure>
+	     <SolidFill>
 	           <Color>#00FF00</Color>
-	        </SolidFill>
+		   <Opacity>60</Opacity>
+	     </SolidFill>
 	   <PenStroke>
 	     <SolidFill>
 	       <Color>#00000</Color>
@@ -330,6 +534,35 @@
         </AxisChart>
 
 
+        <AxisChart>
+	   <AxisChartSubtype>ortho</AxisChartSubtype>
+	   <AxisScale>
+	     <AxisLength>10</AxisLength>
+	     <Measure>50</Measure>
+	   </AxisScale>
+	   <Transform>
+	      <Translate>
+	        <X>-105</X>
+		<Y>25</Y>
+	      </Translate>
+	   </Transform>
+	   <SolidFill>
+	     <Color>#0000aa</Color>
+	     <Opacity>60</Opacity>
+	   </SolidFill>
+	   <Category>
+	     <Measure>100</Measure>
+	   </Category>
+	   <Category>
+	     <Measure>20</Measure>
+	   </Category>
+	   <Category>
+	     <Measure>70</Measure>
+	   </Category>
+        </AxisChart>
+
+
+
 
         <AxisChart>
 	   <AxisChartSubtype>ortho</AxisChartSubtype>
@@ -339,7 +572,67 @@
 	   </AxisScale>
 	   <Transform>
 	      <Translate>
-	        <X>-50</X>
+	        <X>-85</X>
+		<Y>25</Y>
+	      </Translate>
+	   </Transform>
+
+	   <PenStroke>
+	     <SolidFill>
+	       <Color>#FF0000</Color>
+	     </SolidFill>
+	     <Width>1</Width>
+	   </PenStroke>
+
+	   <Category>
+	     <Measure>100</Measure>
+                <MarkGraphic>
+                  <WellKnownName>x</WellKnownName>
+                  <ViewBox>
+	              <Height>3</Height>
+                  </ViewBox>
+                  <SolidFill><Color>#bb0000</Color></SolidFill>
+                  <PenStroke />
+                </MarkGraphic>
+	   </Category>
+	   <Category>
+	     <Measure>20</Measure>
+                <MarkGraphic>
+                  <WellKnownName>x</WellKnownName>
+                  <ViewBox>
+	              <Height>3</Height>
+                  </ViewBox>
+                  <SolidFill><Color>#bb0000</Color></SolidFill>
+                  <PenStroke />
+                </MarkGraphic>
+	   </Category>
+	   <Category>
+	     <Measure>70</Measure>
+	                     <MarkGraphic>
+                  <WellKnownName>x</WellKnownName>
+                  <ViewBox>
+	              <Height>3</Height>
+                  </ViewBox>
+                  <SolidFill><Color>#bb0000</Color></SolidFill>
+                  <PenStroke />
+                </MarkGraphic>
+	   </Category>
+        </AxisChart>
+
+
+
+
+	<!--
+        <AxisChart>
+	   <AxisChartSubtype>ortho</AxisChartSubtype>
+	   <AxisScale>
+	     <AxisLength>10</AxisLength>
+	     <Measure>50</Measure>
+	   </AxisScale>
+	   <Transform>
+	      <Translate>
+	        <X>-65</X>
+		<Y>25</Y>
 	      </Translate>
 	   </Transform>
 	   <SolidFill>
@@ -368,8 +661,6 @@
 	       <Color>#00000</Color>
 	     </SolidFill>
 	   </PenStroke>
-
-
 	   </Category>
 	   <Category>
 	     <Measure>20</Measure>
@@ -413,19 +704,7 @@
 
 	   </Category>
         </AxisChart>
-
-   <!--
-<AxisChart>
-	- UoM
-        - Transfom
-	- Normalisation: Real
-	- CategoryWidth : real
-	- CategoryGap : real
-	- Categories || StackedBars
-	- AxisScale
-</AxisChart>
-   -->
-
+	-->
 
      </CompositeGraphic>
     </PointSymbolizer>

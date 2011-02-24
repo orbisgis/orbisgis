@@ -75,7 +75,7 @@ public final class PieChart extends Graphic implements StrokeNode {
             System.out.println ("XML Pie Type: " + t.getPieSubtype().value());
         }
 
-        if (t.getPieSubtype() != null && t.getPieSubtype().value().equals("HALF")){
+        if (t.getPieSubtype() != null && t.getPieSubtype().value().equalsIgnoreCase("half")){
             this.setType(PieChartSubType.HALF);
         }
         else{

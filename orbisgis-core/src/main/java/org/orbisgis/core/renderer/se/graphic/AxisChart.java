@@ -43,6 +43,8 @@ import java.awt.Color;
 import java.awt.Shape;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Path2D;
+import java.awt.geom.Point2D;
+import java.awt.geom.Point2D.Double;
 import java.awt.geom.Rectangle2D;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -57,10 +59,8 @@ import org.orbisgis.core.renderer.persistance.se.ObjectFactory;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.fill.Fill;
-import org.orbisgis.core.renderer.se.fill.SolidFill;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
-import org.orbisgis.core.renderer.se.parameter.real.RealLiteral;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
 import org.orbisgis.core.renderer.se.stroke.Stroke;
@@ -341,8 +341,9 @@ public final class AxisChart extends Graphic {
             //area.lineTo(xOffset[nCat-1]+cWidth/2, 0);
             //area.closePath();
             Shape shp = line;
-            if (at != null)
+            if (at != null){
                 shp = at.createTransformedShape(line);
+            }
             lineStroke.draw(g2, sds, fid, shp, selected, mt, 0.0);
         }
 
@@ -361,8 +362,12 @@ public final class AxisChart extends Graphic {
 
         g2.setPaint(Color.black);
 
-        g2.drawLine((int)bounds.getMinX(), 0, (int)bounds.getMaxX(), 0);
+        Point2D origin = at.transform(new Point2D.Double(0, 0), null);
+        Point2D maxX_y0 = at.transform(new Point2D.Double(0, 0), null);
+
         g2.drawLine((int)bounds.getMinX(), (int)bounds.getMinY(), (int)bounds.getMinX(), (int)bounds.getMaxY());
+        g2.drawLine((int)bounds.getMinX(), (int)origin.getY(), (int)bounds.getMaxX(), (int)maxX_y0.getY());
+
 
         /*
         MarkGraphic arrow = new MarkGraphic();
