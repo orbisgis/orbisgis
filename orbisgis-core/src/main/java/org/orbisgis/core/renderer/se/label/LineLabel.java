@@ -66,6 +66,8 @@ public class LineLabel extends Label {
         for (RenderableGraphics glyph : glyphs) {
             if (glyph != null) {
                 totalWidth += glyph.getWidth();
+            } else {
+                totalWidth += emWidth;
             }
         }
 
@@ -96,13 +98,17 @@ public class LineLabel extends Label {
             startAt = 0.0;
         }
 
+        System.out.println ("LineLength: " + lineLength);
+        System.out.println ("TotalWidth: " + totalWidth);
+        System.out.println ("StartAt: " + startAt);
+
         double currentPos = startAt;
 
 
         for (RenderableGraphics glyph : glyphs) {
             if (glyph != null) {
                 RenderedImage ri = glyph.createRendering(mt.getCurrentRenderContext());
-                System.out.println("Glyph : curPos:" + currentPos + " w: " + ri.getWidth());
+                //System.out.println("Glyph : curPos:" + currentPos + " w: " + ri.getWidth());
                 Point2D.Double pAt = ShapeHelper.getPointAt(shp, currentPos);
                 Point2D.Double pAfter = ShapeHelper.getPointAt(shp, currentPos + ri.getWidth());
 
@@ -112,10 +118,10 @@ public class LineLabel extends Label {
                 System.out.println("println Aie Aie Aie");
                 }*/
 
-                System.out.println("PointAt " + pAt.x + ";" + pAt.y);
-                System.out.println("PointAt+w " + pAfter.x + ";" + pAfter.y);
+                //System.out.println("PointAt " + pAt.x + ";" + pAt.y);
+                //System.out.println("PointAt+w " + pAfter.x + ";" + pAfter.y);
                 double theta = Math.atan2(pAfter.y - pAt.y, pAfter.x - pAt.x);
-                System.out.println("Rotation : " + (theta / 0.0175));
+                //System.out.println("Rotation : " + (theta / 0.0175));
 
                 AffineTransform at = AffineTransform.getTranslateInstance(pAt.x, pAt.y);
                 at.concatenate(AffineTransform.getRotateInstance(theta));
@@ -127,7 +133,7 @@ public class LineLabel extends Label {
 
 
             } else {
-                System.out.println ("Space...");
+                //System.out.println ("Space...");
                 currentPos += emWidth;
             }
         }

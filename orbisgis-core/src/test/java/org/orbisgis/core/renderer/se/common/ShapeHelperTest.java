@@ -8,6 +8,7 @@ package org.orbisgis.core.renderer.se.common;
 import java.awt.Shape;
 import java.awt.geom.Path2D;
 import java.awt.geom.PathIterator;
+import java.awt.geom.Point2D.Double;
 import java.util.ArrayList;
 import junit.framework.TestCase;
 
@@ -85,7 +86,28 @@ public class ShapeHelperTest extends TestCase {
 				it.next();
 			}
 		}
-
-
 	}
+
+
+	 public void testGetPointAt() {
+         Path2D.Double path = new Path2D.Double();
+         path.moveTo(10, 10);
+
+         path.lineTo(20, 10);
+         path.lineTo(20, 20);
+
+
+         Double pointAt = ShapeHelper.getPointAt(path, 30);
+
+         System.out.println ("PT: " + pointAt.getX() + ";" + pointAt.getY());
+         assertEquals(pointAt.getX(), 20.0);
+         assertEquals(pointAt.getY(), 30.0);
+
+
+         path = new Path2D.Double();
+
+
+
+
+     }
 }

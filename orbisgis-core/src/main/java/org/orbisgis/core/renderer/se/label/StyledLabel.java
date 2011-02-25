@@ -34,9 +34,10 @@ import org.orbisgis.core.renderer.se.parameter.string.StringLiteral;
 import org.orbisgis.core.renderer.se.parameter.string.StringParameter;
 import org.orbisgis.core.renderer.se.stroke.Stroke;
 import org.orbisgis.core.renderer.se.StrokeNode;
+import org.orbisgis.core.renderer.se.UomNode;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
 
-public final class StyledLabel implements SymbolizerNode, FillNode, StrokeNode {
+public final class StyledLabel implements SymbolizerNode, FillNode, StrokeNode, UomNode {
 
     private SymbolizerNode parent;
     private StringParameter labelText;
@@ -47,6 +48,7 @@ public final class StyledLabel implements SymbolizerNode, FillNode, StrokeNode {
     private Stroke stroke;
     private Fill fill;
     private Halo halo;
+    private Uom uom;
 
     public StyledLabel() {
         this.labelText = new StringLiteral("Label");
@@ -85,13 +87,24 @@ public final class StyledLabel implements SymbolizerNode, FillNode, StrokeNode {
         if (sl.getFont() != null) {
             FontType font = sl.getFont();
 
-            font.getFontSize();
+            if (font.getUnitOfMeasure() != null) {
+                this.setUom(Uom.fromOgcURN(font.getUnitOfMeasure()));
 
-            this.setFontSize(SeParameterFactory.createRealParameter(font.getFontSize()));
+            }
 
-            this.setFontFamily(SeParameterFactory.createStringParameter(font.getFontFamily()));
-            this.setFontStyle(SeParameterFactory.createStringParameter(font.getFontStyle()));
-            this.setFontWeight(SeParameterFactory.createStringParameter(font.getFontWeight()));
+            if (font.getFontSize() != null) {
+                this.setFontSize(SeParameterFactory.createRealParameter(font.getFontSize()));
+            }
+
+            if (font.getFontFamily() != null) {
+                this.setFontFamily(SeParameterFactory.createStringParameter(font.getFontFamily()));
+            }
+            if (font.getFontStyle() != null) {
+                this.setFontStyle(SeParameterFactory.createStringParameter(font.getFontStyle()));
+            }
+            if (font.getFontWeight() != null) {
+                this.setFontWeight(SeParameterFactory.createStringParameter(font.getFontWeight()));
+            }
         }
 
         if (sl.getHalo() != null) {
@@ -105,7 +118,21 @@ public final class StyledLabel implements SymbolizerNode, FillNode, StrokeNode {
 
     @Override
     public Uom getUom() {
-        return parent.getUom();
+        if (this.uom != null) {
+            return this.uom;
+        } else {
+            return parent.getUom();
+        }
+    }
+
+    @Override
+    public void setUom(Uom u) {
+        this.uom = u;
+    }
+
+    @Override
+    public Uom getOwnUom() {
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
@@ -238,7 +265,7 @@ public final class StyledLabel implements SymbolizerNode, FillNode, StrokeNode {
         }
 
 
-        System.out.println ("FontSize is : " + (int)size);
+        System.out.println("FontSize is : " + (int) size);
         Font font = new Font(family, st, (int) size);
         FontMetrics metrics = new FontMetrics(font) {
         };
@@ -260,13 +287,13 @@ public final class StyledLabel implements SymbolizerNode, FillNode, StrokeNode {
         if (stroke != null) {
             margin = stroke.getMaxWidth(sds, fid, mt);
         }
-        if (halo != null){
+        if (halo != null) {
             margin += halo.getHaloRadius(sds, fid, mt);
         }
 
         rg = Graphic.getNewRenderableGraphics(outline.getBounds2D(), margin);
 
-        if (halo != null){
+        if (halo != null) {
             //halo.draw(rg, sds, fid, outline.getBounds(), mt);
             halo.draw(rg, sds, fid, outline, mt);
         }
@@ -274,7 +301,7 @@ public final class StyledLabel implements SymbolizerNode, FillNode, StrokeNode {
         /**
          * No fill and no stroke : apply default solidfill !
          */
-        if (fill == null && stroke == null){
+        if (fill == null && stroke == null) {
             SolidFill sf = new SolidFill(Color.BLACK, 100.0);
             sf.draw(rg, sds, fid, outline, selected, mt);
             sf.setParent(this);
@@ -293,7 +320,7 @@ public final class StyledLabel implements SymbolizerNode, FillNode, StrokeNode {
 
     }
 
-    public double getEmInPixel(SpatialDataSourceDecorator sds, long fid, MapTransform mt) throws ParameterException{
+    public double getEmInPixel(SpatialDataSourceDecorator sds, long fid, MapTransform mt) throws ParameterException {
         double size = Uom.toPixel(12, Uom.PT, mt.getDpi(), mt.getScaleDenominator(), null);
         if (fontSize != null) {
             size = Uom.toPixel(fontSize.getValue(sds, fid), getUom(), mt.getDpi(), mt.getScaleDenominator(), null);
@@ -319,8 +346,8 @@ public final class StyledLabel implements SymbolizerNode, FillNode, StrokeNode {
         String text = labelText.getValue(sds, fid);
         String[] glyphs = text.split("");
 
-        for (String glyph : glyphs){
-            if(!glyph.trim().isEmpty()) {
+        for (String glyph : glyphs) {
+            if (!glyph.trim().isEmpty()) {
                 RenderableGraphics textImage = getTextImage(glyph, sds, fid, selected, mt);
                 rGlyphs.add(textImage);
             } else {
@@ -380,16 +407,21 @@ public final class StyledLabel implements SymbolizerNode, FillNode, StrokeNode {
     public String dependsOnFeature() {
 
         String result = "";
-        if (labelText != null)
+        if (labelText != null) {
             result += " " + labelText.dependsOnFeature();
-        if (fontFamily != null)
+        }
+        if (fontFamily != null) {
             result += " " + fontFamily.dependsOnFeature();
-        if (fontWeight != null)
+        }
+        if (fontWeight != null) {
             result += " " + fontWeight.dependsOnFeature();
-        if (fontStyle != null)
+        }
+        if (fontStyle != null) {
             result += " " + fontStyle.dependsOnFeature();
-        if (fontSize != null)
+        }
+        if (fontSize != null) {
             result += " " + fontSize.dependsOnFeature();
+        }
 
         return result.trim();
     }

@@ -692,9 +692,10 @@
                         <Width>5</Width>
                     </ViewBox>
                     <SolidFill>
-                        <Color>#FF0000</Color>
+                        <Color>#E13E26</Color>
                         <Opacity>100.0</Opacity>
                     </SolidFill>
+		    <PenStroke />
                 </MarkGraphic>
 		<RelativeOrientation>normal</RelativeOrientation>
 	  </GraphicStroke>
@@ -734,7 +735,7 @@
                         <Width>5</Width>
                     </ViewBox>
                     <SolidFill>
-                        <Color>#FF0000</Color>
+                        <Color>#E13E26</Color>
                         <Opacity>100.0</Opacity>
                     </SolidFill>
                 </MarkGraphic>
@@ -775,7 +776,7 @@
                         <Width>5</Width>
                     </ViewBox>
                     <SolidFill>
-                        <Color>#FF0000</Color>
+                        <Color>#E13E26</Color>
                         <Opacity>100.0</Opacity>
                     </SolidFill>
                 </MarkGraphic>
@@ -817,7 +818,7 @@
                         <Width>5</Width>
                     </ViewBox>
                     <SolidFill>
-                        <Color>#FF0000</Color>
+                        <Color>#E13E26</Color>
                         <Opacity>100.0</Opacity>
                     </SolidFill>
                 </MarkGraphic>
@@ -861,7 +862,7 @@
 		    <PerpendicularOffset>1</PerpendicularOffset>
 		    <PenStroke />
                     <SolidFill>
-                        <Color>#FF0000</Color>
+                        <Color>#E13E26</Color>
                         <Opacity>100.0</Opacity>
                     </SolidFill>
                 </MarkGraphic>
@@ -884,44 +885,6 @@
           </Translate>
          </Transform>
         </TextGraphic>
-
-
-
-<!-- NEW LINE -->
-        
-        <MarkGraphic>
-          <WellKnownName>circle</WellKnownName>
-          <ViewBox>
-	    <Width>20</Width>
-          </ViewBox>
-	  <TextStroke>
-	    <LineLabel>
-	      <StyledLabel>
-	        <LabelText>Blah Blah Blah</LabelText>
-	      </StyledLabel>
-	    </LineLabel>
-	  </TextStroke>
-	  <SolidFill />
-          <Transform>
-            <Translate>
-              <X>-120</X>
-              <Y>55</Y>
-            </Translate>
-          </Transform>
-        </MarkGraphic>
-
-        <TextGraphic>
-         <StyledLabel>
-           <LabelText>TS: def </LabelText>
-         </StyledLabel>
-         <Transform>
-          <Translate>
-            <X>-120</X>
-	    <Y>70</Y>
-          </Translate>
-         </Transform>
-        </TextGraphic>
-
 
         
         <MarkGraphic>
@@ -1051,7 +1014,7 @@
 			    <WellKnownName>circle</WellKnownName>
 		            <PenStroke />
 		            <SolidFill>
-			        <Color>#ff0000</Color>
+			        <Color>#E13E26</Color>
 			    </SolidFill>
 			    <Transform>
 			    <Translate>
@@ -1063,6 +1026,364 @@
 		    </StrokeAnnotationGraphic>
 		</CompoundStroke>
         </MarkGraphic>
+
+
+
+
+<!-- NEW LINE -->
+        
+        <MarkGraphic>
+          <WellKnownName>circle</WellKnownName>
+          <ViewBox>
+	    <Width>20</Width>
+          </ViewBox>
+	  <TextStroke>
+	    <LineLabel>
+	      <StyledLabel>
+	        <LabelText>Blah Blah Blah Blah Blah Blah Blah Blah Blah Blah Blah Blah</LabelText>
+	      </StyledLabel>
+	    </LineLabel>
+	  </TextStroke>
+	  <SolidFill />
+          <Transform>
+            <Translate>
+              <X>-120</X>
+              <Y>55</Y>
+            </Translate>
+          </Transform>
+        </MarkGraphic>
+
+        <TextGraphic>
+         <StyledLabel>
+           <LabelText>TS: def </LabelText>
+         </StyledLabel>
+         <Transform>
+          <Translate>
+            <X>-120</X>
+	    <Y>70</Y>
+          </Translate>
+         </Transform>
+        </TextGraphic>
+
+        <MarkGraphic>
+          <WellKnownName>square</WellKnownName>
+          <ViewBox>
+	    <Width>50</Width>
+	    <Height>5</Height>
+          </ViewBox>
+		<CompoundStroke>
+		  <StrokeElement>
+                    <GraphicStroke>
+                      <MarkGraphic>
+                        <WellKnownName>SQUARE</WellKnownName>
+                        <ViewBox>
+                            <Width>0.2</Width>
+                            <Height>5.0</Height>
+                        </ViewBox>
+			<Transform>
+			  <Translate>
+			    <Y>-2.5</Y>
+			  </Translate>
+			</Transform>
+                        <SolidFill>
+                            <Color>#000000</Color>
+                            <Opacity>100.0</Opacity>
+                        </SolidFill>
+                      </MarkGraphic>
+                      <Length>2.5</Length>
+                      <RelativeOrientation>normal</RelativeOrientation>
+                    </GraphicStroke>
+		  </StrokeElement>
+		  <StrokeElement>
+                    <GraphicStroke>
+                      <MarkGraphic>
+                        <WellKnownName>SQUARE</WellKnownName>
+                        <ViewBox>
+                            <Width>0.1</Width>
+                            <Height>3.0</Height>
+                        </ViewBox>
+			<Transform>
+			  <Translate>
+			    <Y>-1.5</Y>
+			  </Translate>
+			</Transform>
+
+                        <SolidFill>
+                            <Color>#000000</Color>
+                            <Opacity>100.0</Opacity>
+                        </SolidFill>
+                      </MarkGraphic>
+                      <Length>2.5</Length>
+                      <RelativeOrientation>normal</RelativeOrientation>
+                    </GraphicStroke>
+		  </StrokeElement>
+	       </CompoundStroke>
+	  <Transform>
+            <Translate>
+	      <X>-60</X>
+              <Y>55</Y>
+            </Translate>
+          </Transform>
+        </MarkGraphic>
+
+        <MarkGraphic>
+          <WellKnownName>square</WellKnownName>
+          <ViewBox>
+	    <Width>50</Width>
+	    <Height>5</Height>
+          </ViewBox>
+	  <CompoundStroke>
+	     <StrokeElement>
+	       <GraphicStroke>
+                  <MarkGraphic>
+                    <WellKnownName>SQUARE</WellKnownName>
+		    <PenStroke />
+		    <SolidFill />
+		  </MarkGraphic>
+		  <RelativeOrientation>normal</RelativeOrientation>
+	          <Length>4</Length>
+	       </GraphicStroke>
+	     </StrokeElement>
+	     <StrokeElement>
+	     <PenStroke />
+	     </StrokeElement>
+	  </CompoundStroke>
+
+          <Transform>
+            <Translate>
+	      <X>-60</X>
+              <Y>55</Y>
+            </Translate>
+          </Transform>
+        </MarkGraphic>
+
+
+        <TextGraphic>
+         <StyledLabel>
+           <LabelText>CS: Check distance /square/</LabelText>
+         </StyledLabel>
+         <Transform>
+          <Translate>
+	      <X>-60</X>
+	    <Y>70</Y>
+          </Translate>
+         </Transform>
+        </TextGraphic>
+
+
+
+
+
+        <MarkGraphic>
+          <WellKnownName>circle</WellKnownName>
+          <ViewBox>
+	    <Width>50</Width>
+	    <Height>5</Height>
+          </ViewBox>
+                <PerpendicularOffset>5</PerpendicularOffset>
+	      <CompoundStroke>
+		  <StrokeElement>
+                    <GraphicStroke>
+                      <MarkGraphic>
+                        <WellKnownName>SQUARE</WellKnownName>
+                        <ViewBox>
+                            <Width>0.1</Width>
+                            <Height>10.0</Height>
+                        </ViewBox>
+                        <SolidFill>
+                            <Color>#000000</Color>
+                            <Opacity>100.0</Opacity>
+                        </SolidFill>
+                      </MarkGraphic>
+                      <Length>10.0</Length>
+                      <RelativeOrientation>normal</RelativeOrientation>
+                    </GraphicStroke>
+		  </StrokeElement>
+	       </CompoundStroke>
+
+	  <Transform>
+            <Translate>
+              <Y>55</Y>
+            </Translate>
+          </Transform>
+        </MarkGraphic>
+
+
+
+        <MarkGraphic>
+          <WellKnownName>circle</WellKnownName>
+          <ViewBox>
+	    <Width>50</Width>
+	    <Height>5</Height>
+          </ViewBox>
+                <PerpendicularOffset>2.5</PerpendicularOffset>
+		<CompoundStroke>
+		  <PreGap>5.0</PreGap>
+		  <StrokeElement>
+                    <GraphicStroke>
+                      <MarkGraphic>
+                        <WellKnownName>SQUARE</WellKnownName>
+                        <ViewBox>
+                            <Width>0.1</Width>
+                            <Height>5.0</Height>
+                        </ViewBox>
+                        <SolidFill>
+                            <Color>#000000</Color>
+                            <Opacity>100.0</Opacity>
+                        </SolidFill>
+                      </MarkGraphic>
+                      <Length>10.0</Length>
+                      <RelativeOrientation>normal</RelativeOrientation>
+                    </GraphicStroke>
+		  </StrokeElement>
+	       </CompoundStroke>
+	  <Transform>
+            <Translate>
+              <Y>55</Y>
+            </Translate>
+          </Transform>
+        </MarkGraphic>
+
+        <MarkGraphic>
+          <WellKnownName>circle</WellKnownName>
+          <ViewBox>
+	    <Width>50</Width>
+	    <Height>5</Height>
+          </ViewBox>
+
+	  <CompoundStroke>
+	     <StrokeElement>
+	       <GraphicStroke>
+                  <MarkGraphic>
+                    <WellKnownName>SQUARE</WellKnownName>
+		    <PenStroke />
+		    <SolidFill />
+		  </MarkGraphic>
+		  <RelativeOrientation>normal</RelativeOrientation>
+	          <Length>4</Length>
+	       </GraphicStroke>
+	     </StrokeElement>
+	     <StrokeElement>
+	     <PenStroke />
+	     </StrokeElement>
+	  </CompoundStroke>
+
+
+          <Transform>
+            <Translate>
+              <Y>55</Y>
+            </Translate>
+          </Transform>
+        </MarkGraphic>
+
+
+        <TextGraphic>
+         <StyledLabel>
+           <LabelText>CS: Test Distance Ellipse</LabelText>
+         </StyledLabel>
+         <Transform>
+          <Translate>
+	    <Y>70</Y>
+          </Translate>
+         </Transform>
+        </TextGraphic>
+
+
+
+        <MarkGraphic>
+          <WellKnownName>circle</WellKnownName>
+          <ViewBox>
+	    <Width>50</Width>
+	    <Height>5</Height>
+          </ViewBox>
+                <!--<PerpendicularOffset>2.5</PerpendicularOffset>-->
+		<CompoundStroke>
+		  <StrokeElement>
+                    <GraphicStroke>
+                      <MarkGraphic>
+                        <WellKnownName>SQUARE</WellKnownName>
+                        <ViewBox>
+                            <Width>0.1</Width>
+                            <Height>10.0</Height>
+                        </ViewBox>
+			<Transform>
+			  <Translate>
+			    <Y>-5</Y>
+			  </Translate>
+			</Transform>
+                        <SolidFill>
+                            <Color>#000000</Color>
+                            <Opacity>100.0</Opacity>
+                        </SolidFill>
+                      </MarkGraphic>
+                      <Length>5.0</Length>
+                      <RelativeOrientation>normal</RelativeOrientation>
+                    </GraphicStroke>
+		  </StrokeElement>
+		  <StrokeElement>
+                    <GraphicStroke>
+                      <MarkGraphic>
+                        <WellKnownName>SQUARE</WellKnownName>
+                        <ViewBox>
+                            <Width>0.1</Width>
+                            <Height>5.0</Height>
+                        </ViewBox>
+			<Transform>
+			  <Translate>
+			    <Y>-2.5</Y>
+			  </Translate>
+			</Transform>
+
+                        <SolidFill>
+                            <Color>#000000</Color>
+                            <Opacity>100.0</Opacity>
+                        </SolidFill>
+                      </MarkGraphic>
+                      <Length>5.0</Length>
+                      <RelativeOrientation>normal</RelativeOrientation>
+                    </GraphicStroke>
+		  </StrokeElement>
+	       </CompoundStroke>
+	  <Transform>
+            <Translate>
+              <Y>55</Y>
+	      <X>60</X>
+            </Translate>
+          </Transform>
+        </MarkGraphic>
+
+        <MarkGraphic>
+          <WellKnownName>circle</WellKnownName>
+          <ViewBox>
+	    <Width>50</Width>
+	    <Height>5</Height>
+          </ViewBox>
+
+	  <CompoundStroke>
+	     <StrokeElement>
+	     <PenStroke />
+	     </StrokeElement>
+	  </CompoundStroke>
+          <Transform>
+            <Translate>
+              <Y>55</Y>
+	      <X>60</X>
+            </Translate>
+          </Transform>
+        </MarkGraphic>
+
+
+        <TextGraphic>
+         <StyledLabel>
+           <LabelText>CS: Test Distance Ellipse</LabelText>
+         </StyledLabel>
+         <Transform>
+          <Translate>
+	    <Y>70</Y>
+	    <X>60</X>
+          </Translate>
+         </Transform>
+        </TextGraphic>
 
 
 

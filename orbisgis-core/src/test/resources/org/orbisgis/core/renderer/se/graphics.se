@@ -858,6 +858,7 @@
           <StyledLabel>
             <LabelText>abcdefghijklmnopqrstuvwxyz</LabelText>
 	    <Font>
+      	       <UnitOfMeasure>urn:ogc:def:uom:se::pt</UnitOfMeasure>
 	       <FontSize>12</FontSize>
 	    </Font>
 	    <Halo>
@@ -879,6 +880,7 @@
           <StyledLabel>
             <LabelText>abcdefghijklmnopqrstuvwxyz</LabelText>
 	    <Font>
+      	       <UnitOfMeasure>urn:ogc:def:uom:se::pt</UnitOfMeasure>
 	       <FontSize>24</FontSize>
 	       <FontStyle>Italic</FontStyle>
 	    </Font>
@@ -906,6 +908,7 @@
           <StyledLabel>
             <LabelText>abcdefghijklmnopqrstuvwxyz</LabelText>
 	    <Font>
+      	       <UnitOfMeasure>urn:ogc:def:uom:se::pt</UnitOfMeasure>
 	       <FontSize>12</FontSize>
 	    </Font>
 	  <Halo>
@@ -922,72 +925,6 @@
             </Translate>
           </Transform>
         </TextGraphic>
-
-
-
-
-        <MarkGraphic>
-          <WellKnownName>star</WellKnownName>
-          <ViewBox>
-	    <Height>5</Height>
-          </ViewBox>
-          <SolidFill><Color>#bb00bb</Color></SolidFill>
-          <PenStroke>
-          	<SolidFill><Color>#bb0000</Color>
-		<Opacity>50</Opacity>
-		</SolidFill>
-		<Width>50</Width>
-	  </PenStroke>
-          <Transform>
-            <Translate>
-              <X>-10</X>
-              <Y>45</Y>
-            </Translate>
-          </Transform>
-        </MarkGraphic>
-
-
-        <MarkGraphic>
-          <WellKnownName>Circle</WellKnownName>
-          <ViewBox>
-	    <Height>5</Height>
-          </ViewBox>
-          <SolidFill><Color>#bb00bb</Color></SolidFill>
-          <PenStroke>
-          	<SolidFill><Color>#bb0000</Color>
-		<Opacity>50</Opacity>
-		</SolidFill>
-		<Width>15</Width>
-	  </PenStroke>
-          <Transform>
-            <Translate>
-              <X>-40</X>
-              <Y>45</Y>
-            </Translate>
-          </Transform>
-        </MarkGraphic>
-
-
-        <MarkGraphic>
-          <WellKnownName>Circle</WellKnownName>
-          <ViewBox>
-	    <Height>5</Height>
-          </ViewBox>
-          <SolidFill><Color>#bb00bb</Color></SolidFill>
-          <PenStroke>
-          	<SolidFill><Color>#bb0000</Color>
-		<Opacity>50</Opacity>
-		</SolidFill>
-		
-		<Width>10</Width>
-	  </PenStroke>
-          <Transform>
-            <Translate>
-              <X>-80</X>
-              <Y>45</Y>
-            </Translate>
-          </Transform>
-        </MarkGraphic>
 
 
 <!--   SVG -->

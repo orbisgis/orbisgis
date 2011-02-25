@@ -124,8 +124,6 @@ public class StrokeTest extends TestCase {
         File file = new File("/tmp/stroke.png");
         ImageIO.write(r, "png", file);
 
-
-
         // Add to the JFrame’s ContentPane an instance of JScrollPane
         // containing the DisplayJAI instance.
         //contentPane.add(new JScrollPane(dj), BorderLayout.CENTER);

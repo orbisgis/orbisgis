@@ -145,7 +145,7 @@ public final class GraphicStroke extends Stroke implements GraphicNode {
         RenderedImage createRendering = g.createRendering(mt.getCurrentRenderContext());
 
         if (g != null) {
-
+            //System.out.println ("GraphicStroke.draw");
             ArrayList<Shape> shapes;
             // if not using offset rapport, compute perpendiculat offset first
             if (!this.isOffsetRapport() && Math.abs(offset) > 0.0) {
@@ -207,13 +207,20 @@ public final class GraphicStroke extends Stroke implements GraphicNode {
 
                         for (Shape oSeg : oSegs) {
                             if (oSeg != null) {
+
+                                //System.out.println ("Going to plot a point:");
+                                segLength = ShapeHelper.getLineLength(oSeg);
                                 Point2D.Double pt = ShapeHelper.getPointAt(oSeg, segLength / 2);
                                 AffineTransform at = AffineTransform.getTranslateInstance(pt.x, pt.y);
 
 
+
                                 if (rOrient != RelativeOrientation.PORTRAYAL) {
+                                    //Point2D.Double ptA = ShapeHelper.getPointAt(oSeg, 0.5 * (segLength - gWidth));
+                                    //Point2D.Double ptB = ShapeHelper.getPointAt(oSeg, 0.75 * (segLength - gWidth));
+
                                     Point2D.Double ptA = ShapeHelper.getPointAt(oSeg, 0.5 * (segLength - gWidth));
-                                    Point2D.Double ptB = ShapeHelper.getPointAt(oSeg, 0.75 * (segLength - gWidth));
+                                    Point2D.Double ptB = ShapeHelper.getPointAt(oSeg, 0.5 * (segLength + gWidth));
 
                                     double theta = Math.atan2(ptB.y - ptA.y, ptB.x - ptA.x);
                                     //System.out.println("("+ ptA.x + ";" + ptA.y +")"  + "(" + ptB.x + ";" + ptB.y+ ")" + "   => Angle: " + (theta/0.0175));

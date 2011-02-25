@@ -40,6 +40,8 @@ package org.orbisgis.core.renderer.se.stroke;
 import java.awt.Graphics2D;
 import java.awt.Shape;
 import java.io.IOException;
+import java.util.ArrayList;
+import javax.media.jai.RenderableGraphics;
 import javax.xml.bind.JAXBElement;
 import org.gdms.data.SpatialDataSourceDecorator;
 import org.orbisgis.core.Services;
@@ -95,11 +97,14 @@ public final class TextStroke extends Stroke {
 		if (lineLabel != null){
 			StyledLabel label = lineLabel.getLabel();
 		    if (label != null){
-				RealParameter size = label.getFontSize();
-				if (size != null){
-					double value = size.getValue(sds, fid);
-					return Uom.toPixel(value, label.getUom(), mt.getDpi(), mt.getScaleDenominator(), null);
-				}
+				//RealParameter size = label.getFontSize();
+				//if (size != null){
+				//	double value = size.getValue(sds, fid);
+				//	return Uom.toPixel(value, label.getUom(), mt.getDpi(), mt.getScaleDenominator(), null);
+				//} else {
+                //    return
+                //}
+                return label.getEmInPixel(sds, fid, mt)*2.0;
 			}
 		}
 		return 0;
@@ -142,6 +147,23 @@ public final class TextStroke extends Stroke {
 
     @Override
     public double getNaturalLength(SpatialDataSourceDecorator sds, long fid, Shape shp, MapTransform mt) throws ParameterException, IOException {
-        throw new UnsupportedOperationException("Not supported yet.");
+        ArrayList<RenderableGraphics> glyphs = lineLabel.getLabel().getGlyphs(sds, fid, false, mt);
+
+        double em = lineLabel.getLabel().getEmInPixel(sds, fid, mt);
+
+        double length = 0.0;
+        for (RenderableGraphics glyph : glyphs ){
+            if (glyph != null){
+                length += glyph.getWidth();
+            }else{
+                length += em;
+            }
+        }
+
+        return length;
+
+        //RenderableGraphics image = lineLabel.getLabel().getImage(sds, fid, false, mt);
+        //return image.getWidth();
+        //throw new UnsupportedOperationException("Not supported yet.");
     }
 }

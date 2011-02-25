@@ -37,7 +37,6 @@
  */
 package org.orbisgis.core.renderer.se.common;
 
-import java.awt.Polygon;
 import java.awt.Shape;
 import java.awt.geom.Path2D;
 
@@ -56,6 +55,9 @@ public class ShapeHelper {
 
     public static final double _0_0175 = Math.PI / 180.0;
     private static final boolean _DEBUG_ = false;
+    private static final boolean ENABLE_QUAD = true;
+    private static final double FLATNESS = 1e-5;
+
 
     /**
      * Compute the perimeter of the shape
@@ -64,7 +66,7 @@ public class ShapeHelper {
      * @return
      */
     public static double getAreaPerimeterLength(Shape area) {
-        PathIterator it = area.getPathIterator(null, 0.1);
+        PathIterator it = area.getPathIterator(null, FLATNESS);
 
         double coords[] = new double[6];
 
@@ -117,7 +119,7 @@ public class ShapeHelper {
 
         ArrayList<Shape> shapes = new ArrayList<Shape>();
 
-        PathIterator it = line.getPathIterator(null, 0.1);
+        PathIterator it = line.getPathIterator(null, FLATNESS);
         double coords[] = new double[6];
 
         Double x1 = null;
@@ -189,15 +191,24 @@ public class ShapeHelper {
     }
 
     /**
-     * Split a linear feature in the specified number of part, which have all the same length
+     * Split a linear feature in segments of specified length. Last one may be shorter
+     *
      * @param line  the line to split
      * @param nbPart the number of part to create
      * @return list of equal-length segment
      */
     public static ArrayList<Shape> splitLineInSeg(Shape line, double segLength) {
         ArrayList<Shape> shapes = new ArrayList<Shape>();
+        double totalLength = ShapeHelper.getLineLength(line);
 
-        PathIterator it = line.getPathIterator(null, 0.1);
+        if (segLength <= 0.0 || segLength >= totalLength){
+            shapes.add(line);
+            return shapes;
+        }
+
+        System.out.println ("SegLength: " + segLength);
+
+        PathIterator it = line.getPathIterator(null, FLATNESS);
         double coords[] = new double[6];
 
         Double x1 = null;
@@ -277,7 +288,7 @@ public class ShapeHelper {
 
         double segLength = perimeter / nbPart;
 
-        PathIterator it = line.getPathIterator(null, 0.1);
+        PathIterator it = line.getPathIterator(null, FLATNESS);
         double coords[] = new double[6];
 
         Double x1 = null;
@@ -371,7 +382,7 @@ public class ShapeHelper {
      * @return point representing the point at the linear length distance
      */
     public static Point2D.Double getPointAt(Shape shp, double distance) {
-        PathIterator it = shp.getPathIterator(null, 0.1);
+        PathIterator it = shp.getPathIterator(null, FLATNESS);
 
         double coords[] = new double[6];
 
@@ -384,11 +395,18 @@ public class ShapeHelper {
         double y2 = 0.0;
         double segLength = 0.0;
 
+        double xF = 0.0;
+        double yF = 0.0;
         while (!it.isDone()) {
-            it.currentSegment(coords);
+            int currentSegment = it.currentSegment(coords);
 
             x2 = coords[0];
             y2 = coords[1];
+
+            if (currentSegment == PathIterator.SEG_CLOSE) {
+                x2 = xF;
+                y2 = yF;
+            }
 
             // Since two point are known, we can start to look for our point
             if (x1 != null && y1 != null) {
@@ -402,11 +420,14 @@ public class ShapeHelper {
                     // The point is on this segment !
                     break;
                 }
+            } else {
+                xF = x2;
+                yF = y2;
             }
 
             it.next();
 
-            if (!it.isDone()){
+            if (!it.isDone()) {
                 x1 = x2;
                 y1 = y2;
             }
@@ -415,21 +436,21 @@ public class ShapeHelper {
 
 
         if (distance < 0.0) {
-            //System.out.println ("  Negative Distance");
-            return new Point2D.Double(x1, y1);
-        } else if (distance > p) {
+            //System.out.println("  Negative Distance");
+            return new Point2D.Double(xF, yF);
+        //} else if (distance > p) {
             //System.out.println ("  AfterLine: " + (distance - p  + segLength));
-            return getPointAt(x1, y1, x2, y2, distance - p + segLength);
+            //    return getPointAt(x1, y1, x2, y2, distance - p + segLength);
+        //    return new Point2D.Double(x2, y2);
         } else {
             //System.out.println ("  Default: " + (segLength -p + distance));
-            return getPointAt(x1, y1, x2, y2, segLength - (p - distance));
+            return getPointAt(x1, y1, x2, y2, segLength - p + distance);
         }
     }
 
-    private static Polygon perpendicularOffsetForArea() {
-        return null;
-    }
-
+    //private static Polygon perpendicularOffsetForArea() {
+    //    return null;
+    //}
     private static class Vertex {
 
         double x;
@@ -519,7 +540,7 @@ public class ShapeHelper {
 
         ArrayList<ArrayList<Vertex>> shapes = new ArrayList<ArrayList<Vertex>>();
 
-        PathIterator it = shp.getPathIterator(null, 0.1);
+        PathIterator it = shp.getPathIterator(null, FLATNESS);
 
         ArrayList<Vertex> vertexes = new ArrayList<Vertex>();
 
@@ -878,7 +899,7 @@ public class ShapeHelper {
             double dx = v1.quadX2 - v1.x;
             double dy = v1.quadY2 - v1.y;
 
-            if (dx * dx + dy * dy > 9) {
+            if (ENABLE_QUAD && dx * dx + dy * dy > 9) {
                 //if (dx * dx + dy * dy < -9) { // i.e. never  (a² + b² > 0) !
                 shp.moveTo(v1.quadX1, v1.quadY1);
                 shp.quadTo(v1.quadX2, v1.quadY2, v1.quadX3, v1.quadY3);
@@ -898,13 +919,13 @@ public class ShapeHelper {
                 double dx = v.quadX2 - v.x;
                 double dy = v.quadY2 - v.y;
 
-                //if (dx * dx + dy * dy > 9) {
-                //if (dx * dx + dy * dy < -9) { // i.e. never  (a² + b² > 0) !
-                //    shp.lineTo(v.quadX1, v.quadY1);
-                //    shp.quadTo(v.quadX2, v.quadY2, v.quadX3, v.quadY3);
-                //} else {
-                shp.lineTo(v.x, v.y);
-                //}
+                if (ENABLE_QUAD && dx * dx + dy * dy > 9) {
+                    //if (dx * dx + dy * dy < -9) { // i.e. never  (a² + b² > 0) !
+                    shp.lineTo(v.quadX1, v.quadY1);
+                    shp.quadTo(v.quadX2, v.quadY2, v.quadX3, v.quadY3);
+                } else {
+                    shp.lineTo(v.x, v.y);
+                }
             } else {
                 shp.lineTo(v.x, v.y);
             }

@@ -56,7 +56,6 @@ import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.common.RelativeOrientation;
 import org.orbisgis.core.renderer.se.common.ShapeHelper;
 import org.orbisgis.core.renderer.se.common.Uom;
-import org.orbisgis.core.renderer.se.graphic.Graphic;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
@@ -203,9 +202,11 @@ public final class CompoundStroke extends Stroke {
             }
 
             if (postGap != null) {
-                endGap = postGap.getValue(sds, fid);
                 endGap = Uom.toPixel(postGap.getValue(sds, fid), getUom(), mt.getDpi(), mt.getScaleDenominator(), null);
-                shp = ShapeHelper.splitLine(shp, endGap).get(0);
+                if (endGap > 0.0) {
+                    double lineLength = ShapeHelper.getLineLength(shp);
+                    shp = ShapeHelper.splitLine(shp, lineLength - endGap).get(0);
+                }
             }
 
             int nbElem = elements.size();
@@ -298,6 +299,7 @@ public final class CompoundStroke extends Stroke {
                             postGaps[i] *= f;
                         }
                     }
+                    patternLength *= f;
                 }
             }
             //}
@@ -307,20 +309,20 @@ public final class CompoundStroke extends Stroke {
 
             //while (ShapeHelper.getLineLength(chute) > 0) {
             i = 0; // stroke element iterator
-            int j = 0; // num pattern counter
             while (scrap != null) {
 
                 if (preGaps[i] != null) {
-                    // Skip preGap
                     ArrayList<Shape> splitLine = ShapeHelper.splitLine(scrap, preGaps[i]);
                     if (splitLine.size() > 1) {
                         scrap = splitLine.get(1);
                     } else {
                         break;
                     }
+                    //System.out.println("preGap: " + preGaps[i]);
                 }
 
                 if (lengths[i] > 0) {
+                    // get two lines. first is the one we'll style with i'est element
                     ArrayList<Shape> splitLine = ShapeHelper.splitLine(scrap, lengths[i]);
                     //System.out.println("Extract: " + lengths[i]);
                     Shape seg = splitLine.remove(0);
@@ -330,12 +332,14 @@ public final class CompoundStroke extends Stroke {
                     } else {
                         scrap = null;
                     }
+
                     strokes[i].draw(g2, sds, fid, seg, selected, mt, offset);
+                    //System.out.println("length: " + lengths[i]);
                 }
 
                 if (postGaps[i] != null) {
-                    // Skip postGap
                     ArrayList<Shape> splitLine = ShapeHelper.splitLine(scrap, postGaps[i]);
+                    //System.out.println("postGap: " + postGaps[i]);
                     if (splitLine.size() > 1) {
                         scrap = splitLine.get(1);
                     } else {
@@ -344,46 +348,60 @@ public final class CompoundStroke extends Stroke {
                 }
 
                 i = (i + 1) % nbElem;
-
-                if (i == 0) {
-                    // one pattern has been completed => add stroke annotation graphics !
-                    for (StrokeAnnotationGraphic annotation : annotations) {
-                        double pos = (annotation.getRelativePosition().getValue(sds, fid) + j) * patternLength;
-                        RenderableGraphics rg = annotation.getGraphic().getGraphic(sds, fid, selected, mt);
-
-                        Point2D.Double pt = ShapeHelper.getPointAt(shp, pos);
-                        AffineTransform at = AffineTransform.getTranslateInstance(pt.x, pt.y);
-                        RelativeOrientation rOrient = annotation.getRelativeOrientation();
-                        if (rOrient == null) {
-                            rOrient = RelativeOrientation.NORMAL;
-                        }
-
-                        if (rOrient != RelativeOrientation.PORTRAYAL) {
-                            Point2D.Double ptA = ShapeHelper.getPointAt(shp, pos - 5);
-                            Point2D.Double ptB = ShapeHelper.getPointAt(shp, pos + 5);
-
-                            double theta = Math.atan2(ptB.y - ptA.y, ptB.x - ptA.x);
-                            //System.out.println("("+ ptA.x + ";" + ptA.y +")"  + "(" + ptB.x + ";" + ptB.y+ ")" + "   => Angle: " + (theta/0.0175));
-
-                            switch (rOrient) {
-                                case LINE:
-                                    theta += 0.5 * Math.PI;
-                                    break;
-                                case NORMAL_UP:
-                                    if (theta < -Math.PI / 2 || theta > Math.PI / 2) {
-                                        theta += Math.PI;
-                                    }
-                                    break;
-                            }
-
-                            at.concatenate(AffineTransform.getRotateInstance(theta));
-                        }
-                        g2.drawRenderedImage(rg.createRendering(mt.getCurrentRenderContext()), at);
-
+            }
+            ArrayList<Shape> splitLineInSeg = ShapeHelper.splitLineInSeg(shp, patternLength);
+            for (Shape seg : splitLineInSeg) {
+                for (StrokeAnnotationGraphic annotation : annotations) {
+                    RenderableGraphics rg = annotation.getGraphic().getGraphic(sds, fid, selected, mt);
+                    RelativeOrientation rOrient = annotation.getRelativeOrientation();
+                    if (rOrient == null) {
+                        rOrient = RelativeOrientation.NORMAL;
                     }
-                    j++;
+                    double gWidth = rg.getWidth();
+                    double gHeight = rg.getHeight();
+                    double gLength;
+                    switch (rOrient) {
+                        case NORMAL:
+                        case NORMAL_UP:
+                            gLength = gWidth;
+                            break;
+                        case LINE:
+                        case LINE_UP:
+                            gLength = gHeight;
+                            break;
+                        case PORTRAYAL:
+                        default:
+                            gLength = Math.sqrt(gWidth * gWidth + gHeight * gHeight);
+                            break;
+                    }
+                    //double pos = (annotation.getRelativePosition().getValue(sds, fid) + j) * patternLength;
+                    //double pos = j * patternLength + (annotation.getRelativePosition().getValue(sds, fid) * (patternLength - gLength) + gLength / 2.0);
+                    double pos = (ShapeHelper.getLineLength(seg) - gLength) * annotation.getRelativePosition().getValue(sds, fid) + gLength / 2.0;
+                    //System.out.println("Stroke Annotation Graphic");
+                    //System.out.println("Pos: " + pos);
+                    Point2D.Double pt = ShapeHelper.getPointAt(seg, pos);
+                    AffineTransform at = AffineTransform.getTranslateInstance(pt.x, pt.y);
+                    if (rOrient != RelativeOrientation.PORTRAYAL) {
+                        Point2D.Double ptA = ShapeHelper.getPointAt(seg, pos - gLength / 2.0);
+                        Point2D.Double ptB = ShapeHelper.getPointAt(seg, pos + gLength / 2.0);
+                        double theta = Math.atan2(ptB.y - ptA.y, ptB.x - ptA.x);
+                        System.out.println("(" + ptA.x + ";" + ptA.y + ")" + "(" + ptB.x + ";" + ptB.y + ")" + "   => Angle: " + (theta / 0.0175));
+                        switch (rOrient) {
+                            case LINE:
+                                theta += 0.5 * Math.PI;
+                                break;
+                            case NORMAL_UP:
+                                if (theta < -Math.PI / 2 || theta > Math.PI / 2) {
+                                    theta += Math.PI;
+                                }
+                                break;
+                        }
+                        at.concatenate(AffineTransform.getRotateInstance(theta));
+                    }
+                    g2.drawRenderedImage(rg.createRendering(mt.getCurrentRenderContext()), at);
                 }
             }
+
         }
     }
 
