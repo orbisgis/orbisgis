@@ -249,7 +249,7 @@ public final class HatchedFill extends Fill {
                     yStart -= hOffset / Math.sin((alpha - 90.0) * ShapeHelper._0_0175);
                 }
             } else {
-                throw new UnsupportedOperationException("Only alpha in [0°;90[ range are supported !");
+                throw new UnsupportedOperationException("There is an issue somewhere in HatchedFill...");
             }
 
             double x;
