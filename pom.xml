@@ -4,7 +4,7 @@
 	<groupId>org.orbisgis</groupId>
 	<artifactId>platform</artifactId>
 	<packaging>pom</packaging>
-	<version>3.0</version>
+	<version>3.1</version>
 	<name>platform</name>
 	<organization>
 		<name>IRSTV CNRS-FR-2488</name>
@@ -17,7 +17,8 @@
 		<module>grap</module>
 		<module>h2spatial</module>
 		<module>orbisgis-core</module>
-	</modules>
+    		<module>orbisgis-ui</module>
+  </modules>
 	<scm>
 		<connection>
 			scm:svn:http://svn.orbisgis.org/trunk/orbisgis
@@ -123,5 +124,3 @@
 		</plugins>
 	</reporting>
 </project>
-
-

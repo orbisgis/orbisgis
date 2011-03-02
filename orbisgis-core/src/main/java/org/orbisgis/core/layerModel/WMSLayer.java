@@ -23,7 +23,7 @@ import com.vividsolutions.jts.geom.Envelope;
 
 public class WMSLayer extends GdmsLayer {
 
-	private static final String NOT_SUPPORTED = I18N.getString("orbisgis.org.orbisgis.wMSLayer.methodNotSupportedInWMSLayer"); //$NON-NLS-1$
+	private static final String NOT_SUPPORTED = I18N.getString("orbisgis-core.org.orbisgis.wMSLayer.methodNotSupportedInWMSLayer"); //$NON-NLS-1$
 	private DataSource ds;
 	private Envelope envelope;
 	private WMSConnection connection;
@@ -121,13 +121,13 @@ public class WMSLayer extends GdmsLayer {
 			connection = new WMSConnection(client, status);
 			ds.close();
 		} catch (AlreadyClosedException e) {
-			throw new LayerException(I18N.getString("orbisgis.org.orbisgis.wMSLayer.bug"), e); //$NON-NLS-1$
+			throw new LayerException(I18N.getString("orbisgis-core.org.orbisgis.wMSLayer.bug"), e); //$NON-NLS-1$
 		} catch (DriverException e) {
-			throw new LayerException(I18N.getString("orbisgis.org.orbisgis.wMSLayer.cannotOpenWMSDescription"), e); //$NON-NLS-1$
+			throw new LayerException(I18N.getString("orbisgis-core.org.orbisgis.wMSLayer.cannotOpenWMSDescription"), e); //$NON-NLS-1$
 		} catch (ConnectException e) {
-			throw new LayerException(I18N.getString("orbisgis.org.orbisgis.wMSLayer.cannotConnectToWmsServer"), e); //$NON-NLS-1$
+			throw new LayerException(I18N.getString("orbisgis-core.org.orbisgis.wMSLayer.cannotConnectToWmsServer"), e); //$NON-NLS-1$
 		} catch (IOException e) {
-			throw new LayerException(I18N.getString("orbisgis.org.orbisgis.wMSLayer.cannotRetrieveWMSServerContent"), e); //$NON-NLS-1$
+			throw new LayerException(I18N.getString("orbisgis-core.org.orbisgis.wMSLayer.cannotRetrieveWMSServerContent"), e); //$NON-NLS-1$
 		}
 	}
 

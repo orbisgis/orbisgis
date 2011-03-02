@@ -4,12 +4,16 @@ import java.util.HashSet;
 
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
-import org.orbisgis.core.ui.editorViews.toc.actions.cui.legend.ILegendPanel;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
 
 public class GeometryProperties {
+
+        public static final int POINT = 1;
+	public static final int LINE = 2;
+	public static final int POLYGON = 4;
+        public static final int ALL = POINT | LINE | POLYGON;
 
 	private static final String GEOMETRY_Z = "Geometry.Z";
 	private static final String GEOMETRY_START_Z = "Geometry.StartZ";
@@ -29,13 +33,13 @@ public class GeometryProperties {
 
 		HashSet<String> names = new HashSet<String>();
 		switch (geometryType) {
-		case ILegendPanel.POINT:
+		case POINT:
 
 			names.add(GEOMETRY_NUMPOINTS);
 			names.add(GEOMETRY_Z);
 			break;
 
-		case ILegendPanel.LINE:
+		case LINE:
 
 			names.add(GEOMETRY_NUMPOINTS);
 			names.add(GEOMETRY_START_Z);
@@ -44,7 +48,7 @@ public class GeometryProperties {
 			names.add(ENVELOPE_AREA);
 			names.add(GEOMETRY_SLOPE);
 			break;
-		case ILegendPanel.POLYGON:
+		case POLYGON:
 
 			names.add(GEOMETRY_NUMPOINTS);
 			names.add(GEOMETRY_MEAN_Z);

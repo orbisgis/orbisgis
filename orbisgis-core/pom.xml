@@ -4,13 +4,13 @@
 	<parent>
 		<artifactId>platform</artifactId>
 		<groupId>org.orbisgis</groupId>
-		<version>3.0</version>
+		<version>3.1</version>
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.orbisgis</groupId>
 	<artifactId>orbisgis-core</artifactId>
 	<name>orbisgis-core</name>
-	<version>3.0</version>
+	<version>3.1-SNAPSHOT</version>
 	<url>http://orbisgis.org</url>
 	<dependencies>
 		<dependency>
@@ -20,84 +20,39 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-			<groupId>batik</groupId>
-			<artifactId>batik-svggen</artifactId>
-			<version>1.6</version>
-		</dependency>
-		<dependency>
-			<groupId>batik</groupId>
-			<artifactId>batik-awt-util</artifactId>
-			<version>1.6</version>
-		</dependency>
-		<dependency>
-			<groupId>batik</groupId>
-			<artifactId>batik-util</artifactId>
-			<version>1.6</version>
-		</dependency>
-		<dependency>
-			<groupId>batik</groupId>
-			<artifactId>batik-xml</artifactId>
-			<version>1.6</version>
-		</dependency>
-		<dependency>
-			<groupId>batik</groupId>
-			<artifactId>batik-dom</artifactId>
-			<version>1.6</version>
-		</dependency>
-		<dependency>
-			<groupId>com.iver.cit.gvsig</groupId>
-			<artifactId>remote-clients</artifactId>
-			<version>1.1.0</version>
-		</dependency>
-		<dependency>
-			<groupId>kxml2</groupId>
-			<artifactId>kxml2</artifactId>
-			<version>2.2.2</version>
-		</dependency>
-		<dependency>
-			<groupId>com.vividsolutions</groupId>
-			<artifactId>jts</artifactId>
-			<version>1.11</version>
-		</dependency>
-		<dependency>
+                        <groupId>batik</groupId>
+                        <artifactId>batik-svggen</artifactId>
+                        <version>1.6</version>
+                </dependency>
+                <dependency>
+                        <groupId>batik</groupId>
+                        <artifactId>batik-dom</artifactId>
+                        <version>1.6</version>
+                </dependency>
+                <dependency>
+                        <groupId>batik</groupId>
+                        <artifactId>batik-awt-util</artifactId>
+                        <version>1.6</version>
+                </dependency>
+                <dependency>
+                        <groupId>batik</groupId>
+                        <artifactId>batik-util</artifactId>
+                        <version>1.6</version>
+                </dependency>
+                <dependency>
+                        <groupId>batik</groupId>
+                        <artifactId>batik-xml</artifactId>
+                        <version>1.6</version>
+                </dependency>
+                <dependency>
 			<groupId>org.gdms</groupId>
 			<artifactId>gdms</artifactId>
 			<version>1.5.0</version>
 		</dependency>
-		<dependency>
-			<groupId>bsh</groupId>
-			<artifactId>bsh</artifactId>
-			<version>1.3.0</version>
-		</dependency>
-		<dependency>
-			<groupId>infonode</groupId>
-			<artifactId>idw</artifactId>
-			<version>1.6.1</version>
-		</dependency>
-		<dependency>
-			<groupId>com.lowagie</groupId>
-			<artifactId>iText</artifactId>
-			<version>5.0.2</version>
-		</dependency>
-		<dependency>
-			<groupId>commons-net</groupId>
-			<artifactId>commons-net</artifactId>
-			<version>1.4.1</version>
-		</dependency>
-		<dependency>
-			<groupId>org.eclipse.jdt.core.compiler</groupId>
-			<artifactId>ecj</artifactId>
-			<version>3.5.1</version>
-		</dependency>
-		<dependency>
-			<groupId>com.fifesoft</groupId>
-			<artifactId>rsyntaxtextarea</artifactId>
-			<version>1.4.1</version>
-		</dependency>
-		<dependency>
-			<groupId>com.fifesoft</groupId>
-			<artifactId>autocomplete</artifactId>
-			<version>1.4.1</version>
+                <dependency>
+			<groupId>com.iver.cit.gvsig</groupId>
+			<artifactId>remote-clients</artifactId>
+			<version>1.1.0</version>
 		</dependency>
 	</dependencies>
 	<build>
@@ -110,93 +65,6 @@
 					<includes>
 						<include>org/orbisgis/core/AllTests.java</include>
 					</includes>
-				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>rpm-maven-plugin</artifactId>
-				<version>2.1-alpha-1</version>
-				<executions>
-					<execution>
-						<phase>deploy</phase>
-						<goals>
-							<goal>rpm</goal>
-						</goals>
-					</execution>
-				</executions>
-				<configuration>
-					<copyright>GPL</copyright>
-					<distribution>OrsbiGIS</distribution>
-					<needarch>noarch</needarch>
-					<packager>irstv</packager>
-					<prefix>/usr/share</prefix>
-					<group>Science</group>
-					<defineStatements>
-						<defineStatement>_unpackaged_files_terminate_build 0</defineStatement>
-					</defineStatements>
-					<mappings>
-						<mapping>
-							<directory>/usr/local/OrbisGIS/lib</directory>
-							<filemode>775</filemode>
-							<username>root</username>
-							<groupname>users</groupname>
-							<sources>
-								<source>
-									<location>target/lib</location>
-								</source>
-							</sources>
-						</mapping>
-						<mapping>
-							<directory>/usr/local/OrbisGIS</directory>
-							<filemode>775</filemode>
-							<username>root</username>
-							<groupname>users</groupname>
-							<sources>
-								<source>
-									<location>target/${project.name}-${project.version}.jar</location>
-								</source>
-							</sources>
-						</mapping>
-						<mapping>
-							<directory>/usr/local/OrbisGIS</directory>
-							<filemode>775</filemode>
-							<username>root</username>
-							<groupname>users</groupname>
-							<sources>
-								<source>
-									<location>src/bin/orbisgis.sh</location>
-								</source>
-							</sources>
-						</mapping>
-						<mapping>
-							<directory>/usr/local/bin</directory>
-							<username>root</username>
-							<groupname>users</groupname>
-							<sources>
-								<source>
-									<location>src/bin/orbisgis</location>
-								</source>
-							</sources>
-						</mapping>
-					</mappings>
-					<postinstall>
-						#!/bin/sh
-						chmod 775 /usr/local/bin/orbisgis
-						chown root:users /usr/local/bin/orbisgis
-					</postinstall>
-					<postremove>
-						#!/bin/sh
-						if [ -d /usr/local/OrbisGIS ]
-						then
-							rm -rf /usr/local/OrbisGIS
-						else
-							echo "Files have been moved locally, remove them manually"
-						fi
-						if [ -e /usr/local/bin/orbisgis ]
-						then
-							rm -f /usr/local/bin/orbisgis ]
-						fi
-					</postremove>
 				</configuration>
 			</plugin>
 			<plugin>

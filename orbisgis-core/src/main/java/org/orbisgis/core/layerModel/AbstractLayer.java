@@ -182,7 +182,7 @@ public abstract class AbstractLayer implements ILayer {
 
 	public void moveTo(ILayer layer) throws LayerException {
 		if (CollectionUtils.contains(getLayersRecursively(), layer)) {
-			throw new LayerException(I18N.getString("orbisgis.org.orbisgis.layerModel.abstractLayer.cannotMoveLayerToItsChild")); //$NON-NLS-1$
+			throw new LayerException(I18N.getString("orbisgis-core.org.orbisgis.layerModel.abstractLayer.cannotMoveLayerToItsChild")); //$NON-NLS-1$
 		}
 		ILayer oldParent = getParent();
 		oldParent.remove(this, true);

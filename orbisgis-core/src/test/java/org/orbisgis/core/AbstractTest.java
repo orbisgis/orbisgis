@@ -43,8 +43,14 @@ import org.gdms.data.DataSourceFactory;
 import org.gdms.source.SourceManager;
 import org.orbisgis.core.errorManager.ErrorListener;
 import org.orbisgis.core.errorManager.ErrorManager;
-import org.orbisgis.core.ui.TestWorkspace;
-import org.orbisgis.core.workspace.Workspace;
+import org.orbisgis.core.map.export.DefaultMapExportManager;
+import org.orbisgis.core.map.export.MapExportManager;
+import org.orbisgis.core.map.export.RectanglesScale;
+import org.orbisgis.core.map.export.SingleLineScale;
+import org.orbisgis.core.renderer.legend.carto.DefaultLegendManager;
+import org.orbisgis.core.renderer.legend.carto.LegendManager;
+import org.orbisgis.core.renderer.symbol.DefaultSymbolManager;
+import org.orbisgis.core.renderer.symbol.SymbolManager;
 
 public class AbstractTest extends TestCase {
 
@@ -54,16 +60,8 @@ public class AbstractTest extends TestCase {
 	protected void setUp() throws Exception {
 		failErrorManager = new FailErrorManager();
 		Services.registerService(ErrorManager.class, "", failErrorManager);
-		TestWorkspace workspace = new TestWorkspace();
-		workspace.setWorkspaceFolder("target");
-		Services.registerService(Workspace.class, "", workspace);
-		ApplicationInfo applicationInfo = new OrbisGISApplicationInfo();
-		Services.registerService(ApplicationInfo.class,
-				"Gets information about the application: "
-						+ "name, version, etc.", applicationInfo);
 
-		OrbisgisCoreServices.installServices();
-
+                OrbisgisCoreServices.installServices();
 	}
 
 	public static void registerDataManager(DataSourceFactory dsf) {
