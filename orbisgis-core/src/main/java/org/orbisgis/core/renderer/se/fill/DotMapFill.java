@@ -35,17 +35,23 @@
  * erwan.bocher _at_ ec-nantes.fr
  * gwendall.petit _at_ ec-nantes.fr
  */
-
-
 package org.orbisgis.core.renderer.se.fill;
 
 import java.awt.Graphics2D;
 import java.awt.Paint;
 import java.awt.Shape;
+import java.awt.geom.AffineTransform;
+import java.awt.geom.Area;
+import java.awt.geom.Point2D;
+import java.awt.geom.Point2D.Double;
+import java.awt.geom.Rectangle2D;
+import java.awt.image.RenderedImage;
 
 import java.io.IOException;
+import javax.media.jai.RenderableGraphics;
 import javax.xml.bind.JAXBElement;
 import org.gdms.data.SpatialDataSourceDecorator;
+import org.orbisgis.core.Services;
 
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.persistance.se.DotMapFillType;
@@ -61,113 +67,145 @@ import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
 
 public final class DotMapFill extends Fill implements GraphicNode {
 
-	DotMapFill(JAXBElement<DotMapFillType> f) throws InvalidStyle {
-		DotMapFillType dmf = f.getValue();
+    DotMapFill(JAXBElement<DotMapFillType> f) throws InvalidStyle {
+        DotMapFillType dmf = f.getValue();
 
-		if (dmf.getGraphic() != null) {
-			this.setGraphicCollection(new GraphicCollection(dmf.getGraphic(), this));
-		}
+        if (dmf.getGraphic() != null) {
+            this.setGraphicCollection(new GraphicCollection(dmf.getGraphic(), this));
+        }
 
-		if (dmf.getValuePerMark() != null) {
-			this.setQuantityPerMark(SeParameterFactory.createRealParameter(dmf.getValuePerMark()));
-		}
+        if (dmf.getValuePerMark() != null) {
+            this.setQuantityPerMark(SeParameterFactory.createRealParameter(dmf.getValuePerMark()));
+        }
 
-		if (dmf.getValueToRepresent() != null) {
-			this.setTotalQuantity(SeParameterFactory.createRealParameter(dmf.getValueToRepresent()));
-		}
-	}
+        if (dmf.getValueToRepresent() != null) {
+            this.setTotalQuantity(SeParameterFactory.createRealParameter(dmf.getValueToRepresent()));
+        }
+    }
 
-	@Override
-	public void setGraphicCollection(GraphicCollection mark) {
-		this.mark = mark;
-		mark.setParent(this);
-	}
+    @Override
+    public void setGraphicCollection(GraphicCollection mark) {
+        this.mark = mark;
+        mark.setParent(this);
+    }
 
-	@Override
-	public GraphicCollection getGraphicCollection() {
-		return mark;
-	}
+    @Override
+    public GraphicCollection getGraphicCollection() {
+        return mark;
+    }
 
-	public void setQuantityPerMark(RealParameter quantityPerMark) {
-		this.quantityPerMark = quantityPerMark;
-		if (this.quantityPerMark != null) {
-			this.quantityPerMark.setContext(RealParameterContext.realContext);
-		}
-	}
+    public void setQuantityPerMark(RealParameter quantityPerMark) {
+        this.quantityPerMark = quantityPerMark;
+        if (this.quantityPerMark != null) {
+            this.quantityPerMark.setContext(RealParameterContext.realContext);
+        }
+    }
 
-	public RealParameter getQantityPerMark() {
-		return quantityPerMark;
-	}
+    public RealParameter getQantityPerMark() {
+        return quantityPerMark;
+    }
 
-	public void setTotalQuantity(RealParameter totalQuantity) {
-		this.totalQuantity = totalQuantity;
-		if (this.totalQuantity != null) {
-			this.totalQuantity.setContext(RealParameterContext.realContext);
-		}
-	}
+    public void setTotalQuantity(RealParameter totalQuantity) {
+        this.totalQuantity = totalQuantity;
+        if (this.totalQuantity != null) {
+            this.totalQuantity.setContext(RealParameterContext.realContext);
+        }
+    }
 
-	public RealParameter getTotalQantity() {
-		return totalQuantity;
-	}
+    public RealParameter getTotalQantity() {
+        return totalQuantity;
+    }
 
-	@Override
-	public Paint getPaint(long fid, SpatialDataSourceDecorator sds,
+    @Override
+    public Paint getPaint(long fid, SpatialDataSourceDecorator sds,
             boolean selected, MapTransform mt) throws ParameterException {
-		return null;
-	}
+        return null;
+    }
 
-	@Override
-	public void draw(Graphics2D g2, SpatialDataSourceDecorator sds,
+    @Override
+    public void draw(Graphics2D g2, SpatialDataSourceDecorator sds,
             long fid, Shape shp, boolean selected, MapTransform mt)
-        throws ParameterException, IOException {
-        throw new ParameterException("DotMap not implemented yet!");
+            throws ParameterException, IOException {
 
-	}
+        Area area = new Area(shp);
+        RenderedImage m = this.mark.getGraphic(sds, fid, selected, mt).createRendering(mt.getCurrentRenderContext());
+        double perMark = this.quantityPerMark.getValue(sds, fid);
+        double total = this.totalQuantity.getValue(sds, fid);
+        int nb = (int) Math.round(total / perMark);
 
-	@Override
-	public String dependsOnFeature() {
+        for (int i = 0; i < nb; i++) {
+            Double pos = findMarkPosition(area);
+            if (pos != null) {
+                g2.drawRenderedImage(m, AffineTransform.getTranslateInstance(pos.x, pos.y));
+            } else{
+                Services.getErrorManager().error("Could not find position for mark within area");
+            }
+        }
+    }
+
+    /**
+     * Ugly version to find a random point which stand within the area
+     * @param area
+     * @return
+     */
+    private Point2D.Double findMarkPosition(Area area) {
+        Rectangle2D bounds2D = area.getBounds2D();
+
+        for (int i = 0; i < 100; i++) {
+            double x = Math.random() * bounds2D.getWidth() + bounds2D.getMinX();
+            double y = Math.random() * bounds2D.getHeight() + bounds2D.getMinY();
+
+            if (area.contains(x, y)) {
+                return new Point2D.Double(x, y);
+            }
+        }
+        return null;
+    }
+
+    @Override
+    public String dependsOnFeature() {
         String m = "";
         String q = "";
         String t = "";
 
-		if (mark != null){
+        if (mark != null) {
             m = mark.dependsOnFeature();
-		}
-		if (this.quantityPerMark != null){
+        }
+        if (this.quantityPerMark != null) {
             q = quantityPerMark.dependsOnFeature();
-		}
-		if (this.totalQuantity != null) {
+        }
+        if (this.totalQuantity != null) {
             t = totalQuantity.dependsOnFeature();
-		}
+        }
 
         return (m + " " + q + " " + t).trim();
-	}
+    }
 
-	@Override
-	public DotMapFillType getJAXBType() {
-		DotMapFillType f = new DotMapFillType();
+    @Override
+    public DotMapFillType getJAXBType() {
+        DotMapFillType f = new DotMapFillType();
 
-		if (mark != null) {
-			f.setGraphic(mark.getJAXBElement());
-		}
+        if (mark != null) {
+            f.setGraphic(mark.getJAXBElement());
+        }
 
-		if (quantityPerMark != null) {
-			f.setValuePerMark(quantityPerMark.getJAXBParameterValueType());
-		}
+        if (quantityPerMark != null) {
+            f.setValuePerMark(quantityPerMark.getJAXBParameterValueType());
+        }
 
-		if (totalQuantity != null) {
-			f.setValuePerMark(totalQuantity.getJAXBParameterValueType());
-		}
+        if (totalQuantity != null) {
+            f.setValuePerMark(totalQuantity.getJAXBParameterValueType());
+        }
 
-		return f;
-	}
+        return f;
+    }
 
-	@Override
-	public JAXBElement<DotMapFillType> getJAXBElement() {
-		ObjectFactory of = new ObjectFactory();
-		return of.createDotMapFill(this.getJAXBType());
-	}
-	private GraphicCollection mark;
-	private RealParameter quantityPerMark;
-	private RealParameter totalQuantity;
+    @Override
+    public JAXBElement<DotMapFillType> getJAXBElement() {
+        ObjectFactory of = new ObjectFactory();
+        return of.createDotMapFill(this.getJAXBType());
+    }
+    private GraphicCollection mark;
+    private RealParameter quantityPerMark;
+    private RealParameter totalQuantity;
 }
